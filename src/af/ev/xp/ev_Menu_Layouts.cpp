@@ -24,6 +24,7 @@
 #include "ut_assert.h"
 #include "ut_string.h"
 #include "ut_misc.h"
+#include "ut_debugmsg.h"
 
 /*****************************************************************/
 
@@ -79,6 +80,8 @@ XAP_Menu_Id EV_Menu_Layout::addLayoutItem(const UT_String &/* path */, EV_Menu_L
 // todo
 //	UT_Vector *items = simpleSplit(path);
 	EV_Menu_LayoutItem *pItem = new EV_Menu_LayoutItem(m_iMaxId++, flags);
+	UT_DEBUGMSG(("Creating EV_Menu_LayoutItem(%d)\n", m_iMaxId));
+
 	// fixme: by now, I will just put the item in a random place.  Just for test purposes
 	int pos = 30;
 

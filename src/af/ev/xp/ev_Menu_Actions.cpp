@@ -25,6 +25,7 @@
 #include "ut_types.h"
 #include "ut_assert.h"
 #include "ut_string.h"
+#include "ut_debugmsg.h"
 
 
 /*****************************************************************/
@@ -158,10 +159,31 @@ EV_Menu_Action * EV_Menu_ActionSet::getAction(XAP_Menu_Id id) const
 bool EV_Menu_ActionSet::addAction(EV_Menu_Action *pAction)
 {
 	int id = pAction->getMenuId();
+	int i;
+	void *tmp;
+
+	UT_DEBUGMSG(("JCA: EV_Menu_ActionSet::addAction\n"));
+	if ((id >= m_first) && (id <= m_last))
+	{
+		// here we do exactly the same thing that setAction
+		UT_uint32 index = (id - m_first);
+		UT_uint32 error = m_actionTable.setNthItem(index, pAction, &tmp);
+		EV_Menu_Action * pTmpAction = static_cast<EV_Menu_Action *> (tmp);
+		DELETEP(pTmpAction);
+
+		return (error == 0);
+	}
+
+	for (i = m_first; i > id; --i)
+		UT_ASSERT(UT_NOT_IMPLEMENTED);
+	for (i = m_last; i < id; ++i)
+		m_actionTable.addItem(0);
+
+	m_actionTable.setNthItem(id - m_first, pAction, &tmp);
+	UT_ASSERT(tmp == 0);
+
 	m_first = min(id, m_first);
 	m_last = max(id, m_last);
-
-	UT_ASSERT(false); // TODO
 
 	return true;
 }

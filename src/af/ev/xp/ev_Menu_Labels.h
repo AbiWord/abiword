@@ -22,6 +22,7 @@
 
 #include "xap_Types.h"
 #include "ut_vector.h"
+#include "ut_string_class.h"
 
 /*****************************************************************
 ******************************************************************
@@ -45,16 +46,16 @@ public:
 	EV_Menu_Label(XAP_Menu_Id id,
 				  const char * szMenuLabel,		/* label on the actual menu itself */
 				  const char * szStatusMsg);	/* status bar message */
-	~EV_Menu_Label(void);
+	~EV_Menu_Label();
 
 	XAP_Menu_Id						getMenuId() const;
 	const char *					getMenuLabel() const;
 	const char *					getMenuStatusMessage() const;
 
-protected:
+private:
 	XAP_Menu_Id						m_id;
-	char *							m_szMenuLabel;
-	char *							m_szStatusMsg;
+	UT_String						m_stMenuLabel;
+	UT_String						m_stStatusMsg;
 };
 
 /*****************************************************************/
@@ -78,12 +79,12 @@ public:
 	const char *		getLanguage() const;
 	void				setLanguage(const char *szLanguage);
 
-protected:
+private:
 	UT_Vector			m_labelTable;
 //	EV_Menu_Label **	m_labelTable;
 	XAP_Menu_Id			m_first;
 	XAP_Menu_Id			m_last;
-	char *				m_szLanguage;	/* for the convenience of the app only  */
+	UT_String			m_stLanguage;	/* for the convenience of the app only  */
 };
 
 #endif /* EV_MENU_LABELS_H */

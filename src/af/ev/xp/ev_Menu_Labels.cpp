@@ -33,31 +33,32 @@
 EV_Menu_Label::EV_Menu_Label(XAP_Menu_Id id,
 							 const char * szMenuLabel,
 							 const char * szStatusMsg)
+	: m_id(id),
+	  m_stMenuLabel(szMenuLabel),
+	  m_stStatusMsg(szStatusMsg)
 {
-	m_id = id;
-	UT_cloneString(m_szMenuLabel,szMenuLabel);
-	UT_cloneString(m_szStatusMsg,szStatusMsg);
 }
 
 EV_Menu_Label::~EV_Menu_Label()
 {
-	FREEP(m_szMenuLabel);
-	FREEP(m_szStatusMsg);
 }
 
-XAP_Menu_Id EV_Menu_Label::getMenuId() const
+XAP_Menu_Id
+EV_Menu_Label::getMenuId() const
 {
 	return m_id;
 }
 
-const char * EV_Menu_Label::getMenuLabel() const
+const char *
+EV_Menu_Label::getMenuLabel() const
 {
-	return m_szMenuLabel;
+	return m_stMenuLabel.c_str();
 }
 
-const char * EV_Menu_Label::getMenuStatusMessage() const
+const char *
+EV_Menu_Label::getMenuStatusMessage() const
 {
-	return m_szStatusMsg;
+	return m_stStatusMsg.c_str();
 }
 
 /*****************************************************************/
@@ -66,21 +67,18 @@ EV_Menu_LabelSet::EV_Menu_LabelSet(const char * szLanguage,
 								   XAP_Menu_Id first, XAP_Menu_Id last)
 	: m_labelTable(last - first + 1),
 	  m_first(first),
-	  m_last(last)
+	  m_last(last),
+	  m_stLanguage(szLanguage)
 {
-	// TODO it's bad to call malloc/calloc from a constructor, since we cannot report failure.
-	// TODO move this allocation to somewhere else.
-	UT_cloneString(m_szLanguage,szLanguage);
-	int size = m_labelTable.getItemCount();
-
-	for (int i = 0; i < size; i++)
+	size_t size = m_labelTable.getItemCount();
+	
+	for (size_t i = 0; i < size; ++i)
 		m_labelTable.addItem(0);
 }
 
 EV_Menu_LabelSet::~EV_Menu_LabelSet()
 {
 	UT_VECTOR_SPARSEPURGEALL(EV_Menu_Label *, m_labelTable);
-	FREEP(m_szLanguage);
 }
 
 bool EV_Menu_LabelSet::setLabel(XAP_Menu_Id id,
@@ -114,7 +112,7 @@ EV_Menu_Label * EV_Menu_LabelSet::getLabel(XAP_Menu_Id id) const
 
 	if (!pLabel)
 	{
-		UT_DEBUGMSG(("WARNING: %s translation for menu id [%d] not found.\n", m_szLanguage, id));
+		UT_DEBUGMSG(("WARNING: %s translation for menu id [%d] not found.\n", m_stLanguage.c_str(), id));
 		// NOTE: only translators should see the following strings
 		// NOTE: do *not* translate them
 		pLabel = new EV_Menu_Label(id, "TODO", "untranslated menu item");
@@ -142,12 +140,11 @@ bool EV_Menu_LabelSet::addLabel(EV_Menu_Label *pLabel)
 
 const char * EV_Menu_LabelSet::getLanguage() const
 {
-	return m_szLanguage;
+	return m_stLanguage.c_str();
 }
 
 void EV_Menu_LabelSet::setLanguage(const char *szLanguage)
 {
-	FREEP(m_szLanguage);
-	UT_cloneString(m_szLanguage, szLanguage);
+	m_stLanguage = szLanguage;
 }
 

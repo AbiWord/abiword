@@ -129,7 +129,7 @@ BeginSet(en,US,true)
 	MenuLabel(AP_MENU_ID_TOOLS_AUTOSPELL, "&Auto Spellcheck", "Automatically spell-check the document")
 	MenuLabel(AP_MENU_ID_TOOLS_WORDCOUNT,	"&Word Count",		"Count the number of words in the document")
 	MenuLabel(AP_MENU_ID_TOOLS_OPTIONS,		"&Preferences",		"Set preferences")
-        MenuLabel(AP_MENU_ID_TOOLS_LANGUAGE, "&Language", "Change the language of the selected text")
+	MenuLabel(AP_MENU_ID_TOOLS_LANGUAGE, "&Language", "Change the language of the selected text")
 	MenuLabel(AP_MENU_ID_TOOLS_PLUGINS, "P&lugins", "Manage plugins")
 	MenuLabel(AP_MENU_ID_TOOLS_SCRIPTS, "S&cripts", "Exectute helper scripts")
 
@@ -176,15 +176,59 @@ BeginSet(en,US,true)
 	MenuLabel(AP_MENU_ID_SPELL_IGNOREALL,	"&Ignore All", 		"Ignore all occurrences of this word in the document")
 	MenuLabel(AP_MENU_ID_SPELL_ADD,			"&Add", 			"Add this word to the custom dictionary")
 
-     /* autotext submenu labels */
-     MenuLabel(AP_MENU_ID_INSERT_AUTOTEXT, "&Autotext", "")
-     MenuLabel(AP_MENU_ID_AUTOTEXT_ATTN, "Attention:", "")
-     MenuLabel(AP_MENU_ID_AUTOTEXT_CLOSING, "Closing:", "") 
-     MenuLabel(AP_MENU_ID_AUTOTEXT_MAIL, "Mail Instructions:", "")
-     MenuLabel(AP_MENU_ID_AUTOTEXT_REFERENCE, "Reference:", "")
-     MenuLabel(AP_MENU_ID_AUTOTEXT_SALUTATION, "Salutation:", "")
-     MenuLabel(AP_MENU_ID_AUTOTEXT_SUBJECT, "Subject:", "")
-     MenuLabel(AP_MENU_ID_AUTOTEXT_EMAIL, "Email:", "")
+	/* autotext submenu labels */
+	MenuLabel(AP_MENU_ID_INSERT_AUTOTEXT, "&Autotext", "")
+	MenuLabel(AP_MENU_ID_AUTOTEXT_ATTN, "Attention:", "")
+	MenuLabel(AP_MENU_ID_AUTOTEXT_CLOSING, "Closing:", "") 
+	MenuLabel(AP_MENU_ID_AUTOTEXT_MAIL, "Mail Instructions:", "")
+	MenuLabel(AP_MENU_ID_AUTOTEXT_REFERENCE, "Reference:", "")
+	MenuLabel(AP_MENU_ID_AUTOTEXT_SALUTATION, "Salutation:", "")
+	MenuLabel(AP_MENU_ID_AUTOTEXT_SUBJECT, "Subject:", "")
+	MenuLabel(AP_MENU_ID_AUTOTEXT_EMAIL, "Email:", "")
+
+	MenuLabel(AP_MENU_ID_AUTOTEXT_ATTN_1, "%s", " ")
+	MenuLabel(AP_MENU_ID_AUTOTEXT_ATTN_2, "%s", " ")
+	
+	MenuLabel(AP_MENU_ID_AUTOTEXT_CLOSING_1, "%s", " ")
+	MenuLabel(AP_MENU_ID_AUTOTEXT_CLOSING_2, "%s", " ")
+	MenuLabel(AP_MENU_ID_AUTOTEXT_CLOSING_3, "%s", " ")
+	MenuLabel(AP_MENU_ID_AUTOTEXT_CLOSING_4, "%s", " ")
+	MenuLabel(AP_MENU_ID_AUTOTEXT_CLOSING_5, "%s", " ")
+	MenuLabel(AP_MENU_ID_AUTOTEXT_CLOSING_6, "%s", " ")
+	MenuLabel(AP_MENU_ID_AUTOTEXT_CLOSING_7, "%s", " ")
+	MenuLabel(AP_MENU_ID_AUTOTEXT_CLOSING_8, "%s", " ")
+	MenuLabel(AP_MENU_ID_AUTOTEXT_CLOSING_9, "%s", " ")
+	MenuLabel(AP_MENU_ID_AUTOTEXT_CLOSING_10, "%s", " ")
+	MenuLabel(AP_MENU_ID_AUTOTEXT_CLOSING_11, "%s", " ")
+	MenuLabel(AP_MENU_ID_AUTOTEXT_CLOSING_12, "%s", " ")
+	
+	MenuLabel(AP_MENU_ID_AUTOTEXT_MAIL_1, "%s", " ")
+	MenuLabel(AP_MENU_ID_AUTOTEXT_MAIL_2, "%s", " ")
+	MenuLabel(AP_MENU_ID_AUTOTEXT_MAIL_3, "%s", " ")
+	MenuLabel(AP_MENU_ID_AUTOTEXT_MAIL_4, "%s", " ")
+	MenuLabel(AP_MENU_ID_AUTOTEXT_MAIL_5, "%s", " ")
+	MenuLabel(AP_MENU_ID_AUTOTEXT_MAIL_6, "%s", " ")
+	MenuLabel(AP_MENU_ID_AUTOTEXT_MAIL_7, "%s", " ")
+	MenuLabel(AP_MENU_ID_AUTOTEXT_MAIL_8, "%s", " ")
+	
+	MenuLabel(AP_MENU_ID_AUTOTEXT_REFERENCE_1, "%s", " ")
+	MenuLabel(AP_MENU_ID_AUTOTEXT_REFERENCE_2, "%s", " ")
+	MenuLabel(AP_MENU_ID_AUTOTEXT_REFERENCE_3, "%s", " ")
+	
+	MenuLabel(AP_MENU_ID_AUTOTEXT_SALUTATION_1, "%s", " ")
+	MenuLabel(AP_MENU_ID_AUTOTEXT_SALUTATION_2, "%s", " ")
+	MenuLabel(AP_MENU_ID_AUTOTEXT_SALUTATION_3, "%s", " ")
+
+	MenuLabel(AP_MENU_ID_AUTOTEXT_SALUTATION_4, "%s", " ")
+
+	MenuLabel(AP_MENU_ID_AUTOTEXT_SUBJECT_1, "%s", " ")
+
+	MenuLabel(AP_MENU_ID_AUTOTEXT_EMAIL_1, "%s", " ")
+	MenuLabel(AP_MENU_ID_AUTOTEXT_EMAIL_2, "%s", " ")
+	MenuLabel(AP_MENU_ID_AUTOTEXT_EMAIL_3, "%s", " ")
+	MenuLabel(AP_MENU_ID_AUTOTEXT_EMAIL_4, "%s", " ")
+	MenuLabel(AP_MENU_ID_AUTOTEXT_EMAIL_5, "%s", " ")
+	MenuLabel(AP_MENU_ID_AUTOTEXT_EMAIL_6, "%s", " ")
 
 	// ... add others here ...
 

@@ -44,7 +44,10 @@
 #include "xap_UnixFontManager.h"
 #include "ap_UnixStatusBar.h"
 #include "ap_UnixViewListener.h"
-#include"ut_dialogHelper.h"
+#include "ut_dialogHelper.h"
+#if 1
+#include "ev_UnixMenuBar.h"
+#endif
 
 #ifdef ABISOURCE_LICENSED_TRADEMARKS
 #include "abiword_48_tm.xpm"
@@ -380,12 +383,12 @@ AP_UnixFrame::AP_UnixFrame(AP_UnixFrame * f)
 	m_pData = NULL;
 }
 
-AP_UnixFrame::~AP_UnixFrame(void)
+AP_UnixFrame::~AP_UnixFrame()
 {
 	killFrameData();
 }
 
-bool AP_UnixFrame::initialize(void)
+bool AP_UnixFrame::initialize()
 {
 	UT_DEBUGMSG(("AP_UnixFrame::initialize"));
 	if (!initFrameData())
@@ -409,6 +412,9 @@ bool AP_UnixFrame::initialize(void)
 	_showOrHideStatusbar();
 #endif
 
+#if 0
+	m_pUnixMenu->addMenuItem("/File/Adieu");
+#endif
 	return true;
 }
 
@@ -416,7 +422,7 @@ bool AP_UnixFrame::initialize(void)
 // This is needed because toggleBar is called only when the user
 // (un)checks the show {Stantandard,Format,Extra} toolbar checkbox,
 // and thus we have to manually call this function at startup.
-void AP_UnixFrame::_showOrHideToolbars(void)
+void AP_UnixFrame::_showOrHideToolbars()
 {
 	bool *bShowBar = static_cast<AP_FrameData*> (m_pData)->m_bShowBar;
 	UT_uint32 cnt = m_vecToolbarLayoutNames.getItemCount();
@@ -433,7 +439,7 @@ void AP_UnixFrame::_showOrHideToolbars(void)
 
 // Does the initial show/hide of statusbar (based on the user prefs).
 // Idem.
-void AP_UnixFrame::_showOrHideStatusbar(void)
+void AP_UnixFrame::_showOrHideStatusbar()
 {
 	bool bShowStatusBar = static_cast<AP_FrameData*> (m_pData)->m_bShowStatusBar;
 	toggleStatusBar(bShowStatusBar);
@@ -441,7 +447,7 @@ void AP_UnixFrame::_showOrHideStatusbar(void)
 
 /*****************************************************************/
 
-bool AP_UnixFrame::initFrameData(void)
+bool AP_UnixFrame::initFrameData()
 {
 	UT_ASSERT(!((AP_FrameData*)m_pData));
 
@@ -451,7 +457,7 @@ bool AP_UnixFrame::initFrameData(void)
 	return (pData ? true : false);
 }
 
-void AP_UnixFrame::killFrameData(void)
+void AP_UnixFrame::killFrameData()
 {
 	AP_FrameData* pData = (AP_FrameData*) m_pData;
 	DELETEP(pData);
@@ -549,7 +555,7 @@ ReplaceDocument:
 	return UT_OK;
 }
 
-XAP_Frame * AP_UnixFrame::cloneFrame(void)
+XAP_Frame * AP_UnixFrame::cloneFrame()
 {
 	AP_UnixFrame * pClone = new AP_UnixFrame(this);
 	UT_Error error = UT_OK;
@@ -700,7 +706,7 @@ void AP_UnixFrame::_scrollFuncX(void * pData, UT_sint32 xoff, UT_sint32 /*xrange
 	pView->setXScrollOffset((UT_sint32)xoffNew);
 }
 
-GtkWidget * AP_UnixFrame::_createDocumentWindow(void)
+GtkWidget * AP_UnixFrame::_createDocumentWindow()
 {
 	bool bShowRulers = static_cast<AP_FrameData*> (m_pData)->m_bShowRuler;
 
@@ -873,7 +879,7 @@ void AP_UnixFrame::translateDocumentToScreen(UT_sint32 &x, UT_sint32 &y)
 	y = ty;
 }
 
-GtkWidget * AP_UnixFrame::_createStatusBarWindow(void)
+GtkWidget * AP_UnixFrame::_createStatusBarWindow()
 {
 	AP_UnixStatusBar * pUnixStatusBar = new AP_UnixStatusBar(this);
 	UT_ASSERT(pUnixStatusBar);
@@ -890,7 +896,7 @@ void AP_UnixFrame::setStatusMessage(const char * szMsg)
 	((AP_FrameData *)m_pData)->m_pStatusBar->setStatusMessage(szMsg);
 }
 
-void AP_UnixFrame::_setWindowIcon(void)
+void AP_UnixFrame::_setWindowIcon()
 {
 	// attach program icon to window
 	GtkWidget * window = getTopLevelWindow();

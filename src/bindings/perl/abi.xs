@@ -15,40 +15,14 @@ moveCursorAbs(pView, target, where)
 	FV_View *pView
 	const char *target
 	int where
+	ALIAS:
+		abi::FV_View::moveCursorAbs = 0
+		abi::FV_View::moveCursorRel = 1
 	CODE:
 		UT_UCSChar *tmp;
-		char szWhere[16];
-		sprintf(szWhere, "%d", where);
-		assert(target && target[0]);
-		// printf("moveCursorAbs\n");
-
-		switch (target[0])
-		{
-		case 'p': /* page */
-			if (UT_UCS_cloneString_char(&tmp, szWhere))
-			{
-				pView->gotoTarget(AP_JUMPTARGET_PAGE, tmp);
-				free(tmp);
-			}
-			break;
-		case 'l': /* line */
-			if (UT_UCS_cloneString_char(&tmp, szWhere))
-			{
-				pView->gotoTarget(AP_JUMPTARGET_LINE, tmp);
-				free(tmp);
-			}
-			break;
-		}
-
-void
-moveCursorRel(pView, target, where)
-	FV_View *pView
-	const char *target
-	int where
-	CODE:
-		UT_UCSChar *tmp;
-		char szWhere[16];
-		sprintf(szWhere, "%+d", where);
+		static char szWhere[16];
+		const char * format = ix ? "%+d" : "%d";
+		sprintf(szWhere, format, where);
 		assert(target && target[0]);
 		// printf("moveCursorAbs\n");
 
@@ -73,6 +47,10 @@ moveCursorRel(pView, target, where)
 bool
 setCharFormat (pView, ...)
 	FV_View *pView
+	ALIAS:
+		abi::FV_View::setCharFormat = 0
+		abi::FV_View::setSectionFormat = 1
+		abi::FV_View::setBlockFormat = 2
 	CODE:
 	{
 		XML_Char **properties = new XML_Char* [items];
@@ -82,13 +60,48 @@ setCharFormat (pView, ...)
 			properties[i - 1] = SvPV(ST(i), PL_na);
 
 		properties[items - 1] = NULL;
-		pView->setCharFormat((const XML_Char **) properties);
+
+		switch (ix) {
+		case 0:
+			pView->setCharFormat((const XML_Char **) properties);
+			break;
+		case 1:
+			pView->setSectionFormat((const XML_Char **) properties);
+			break;
+		case 2:
+			pView->setBlockFormat((const XML_Char **) properties);
+			break;
+		}
 
 		delete[] properties;
 		RETVAL = true;
 	}
 	OUTPUT:
 		RETVAL
+
+void
+changeNumColumns (pView, ncolumns)
+	FV_View *pView
+	unsigned int ncolumns
+	CODE:
+		/* this is not actually implemented, though it's in the header
+		pView->changeNumColumns (ncolumns);*/
+
+void
+cmdCharDelete (pView, forward, count)
+	FV_View *pView
+	bool forward
+	unsigned int	count
+	CODE:
+		pView->cmdCharDelete (forward, count);
+
+unsigned int
+getCurrentPageNumber (pView)
+	FV_View *pView
+	CODE:
+		RETVAL = pView->getCurrentPageNumber();
+	OUTPUT:
+	RETVAL
 
 bool
 saveAs(pView, filename, left, cpy)
@@ -116,6 +129,39 @@ write(pView, pszText)
 		RETVAL = true;
 	OUTPUT:
 		RETVAL
+
+bool
+write_OneAtTime(pView, pszText)
+	FV_View *pView
+	const char *pszText
+	CODE:
+		// THIS METHOD IS ONLY USEFUL FOR SPEED TESTS!!
+		static UT_UCSChar text[2] = { 0, 0 };
+		while ((text[0] = *pszText++) != '\0')
+			pView->cmdCharInsert(text, 1);
+		RETVAL = true;
+	OUTPUT:
+		RETVAL
+
+void
+editHeader(pView)
+	FV_View *pView
+	CODE:
+		pView->cmdEditHeader();
+
+void
+editFooter(pView)
+	FV_View *pView
+	CODE:
+		pView->cmdEditFooter();
+
+void
+editBody(pView)
+	FV_View *pView
+	CODE:
+		// pView->warpInsPtToXY(300, 300, true);
+		// pView->moveInsPtTo(FV_DOCPOS_EOD);
+		pView->clearHdrFtrEdit();
 
 unsigned int
 getPoint(pView)
@@ -155,4 +201,29 @@ getCurrentView(pFrame)
 	OUTPUT:
 		RETVAL
 
+void
+close(pFrame)
+	XAP_Frame *pFrame
+	CODE:
+		XAP_App * pApp = pFrame->getApp();
 
+		if (pFrame == pApp->getLastFocussedFrame())
+			pApp->clearLastFocussedFrame();
+
+		if (pApp->getFrameCount() <= 1)
+		{
+		  	// Delete all the open modeless dialogs
+			pApp->closeModelessDlgs();
+			pApp->reallyExit();
+		}
+
+		pApp->forgetFrame(pFrame);
+		pFrame->close();
+		delete pFrame;
+
+void
+exit()
+	CODE:
+		XAP_App::getApp()->reallyExit();
+
+MODULE = abi		PACKAGE = abi::FV_View

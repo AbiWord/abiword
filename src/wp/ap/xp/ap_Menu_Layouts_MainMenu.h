@@ -37,7 +37,7 @@ BeginLayout(Main,0)
 	    Separator()
 		MenuItem(AP_MENU_ID_FILE_PAGESETUP)
 #if defined(HAVE_GNOME)
-        MenuItem(AP_MENU_ID_FILE_PRINT_PREVIEW)
+		MenuItem(AP_MENU_ID_FILE_PRINT_PREVIEW)
 #endif
 		MenuItem(AP_MENU_ID_FILE_PRINT)
 
@@ -80,10 +80,10 @@ BeginLayout(Main,0)
 
 	BeginSubMenu(AP_MENU_ID_VIEW)
 #ifdef DEBUG
-                MenuItem(AP_MENU_ID_VIEW_NORMAL)
-                MenuItem(AP_MENU_ID_VIEW_WEB)
-                MenuItem(AP_MENU_ID_VIEW_PRINT)
-                Separator()
+		MenuItem(AP_MENU_ID_VIEW_NORMAL)
+		MenuItem(AP_MENU_ID_VIEW_WEB)
+		MenuItem(AP_MENU_ID_VIEW_PRINT)
+		Separator()
 #endif
 		BeginSubMenu(AP_MENU_ID_VIEW_TOOLBARS)
 			MenuItem(AP_MENU_ID_VIEW_TB_STD)

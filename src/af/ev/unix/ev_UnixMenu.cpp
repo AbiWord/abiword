@@ -1053,6 +1053,23 @@ bool EV_UnixMenu::_refreshMenu(AV_View * pView, GtkWidget * wMenuRoot)
 	return true;
 }
 
+/*!
+ * That will add the menu item with the specified id
+ * to the menu.  In the LayoutSet there is (should be) a
+ * LayoutItem with the same id as the menu id.
+ *
+ * This LayoutItem contains useful information about the
+ * menu item (as if it's a Normal menu item, or a Separator,
+ * or a BeginSubMenu, etc.)
+ *
+ * By now we don't care about where to insert the menu
+ * item.  I've just picked the position 30 randomly.
+ *
+ * @todo Calcule the real position of the menu item in function
+ * of (for instance) the menu label ("Format/Blah" will indicate
+ * that you will find it in the menu "Format", and that the item
+ * label is "Blah").
+ */
 bool EV_UnixMenu::_doAddMenuItem(XAP_Menu_Id id)
 {
 	EV_Menu_Layout *pLayout = getLayoutSet();
@@ -1060,10 +1077,14 @@ bool EV_UnixMenu::_doAddMenuItem(XAP_Menu_Id id)
 	EV_Menu_LayoutItem *pItem;
 	UT_uint32 pos = 30; // FIXME!
 
+	UT_DEBUGMSG(("JCA: _doAddMenuItem(%d)\n", id));	
+	UT_DEBUGMSG(("JCA: nItems = %d\n", nItems));	
+
 	for (size_t i = 0; i < nItems; ++i)
 	{
-		pItem = pLayout->getLayoutItem(0);
+		pItem = pLayout->getLayoutItem(i);
 
+		UT_DEBUGMSG(("JCA: %d\n", pItem));
 		if (pItem->getMenuId() == id)
 		{
 			_insertMenuItem(id, pos);
@@ -1074,10 +1095,21 @@ bool EV_UnixMenu::_doAddMenuItem(XAP_Menu_Id id)
 	return false;
 }
 
+/*!
+ * This method will build and put in the menubar a gtk+ widget that
+ * will be the actual menu item, knowing its id and the desired
+ * position in the menu bar.
+ *
+ * Knowing the menu id, you can get the label (and the status bar
+ * message) of the menu item (iterating over the EV_Menu_LabelSet
+ * structure).
+ *
+ * @todo Implement it.
+ */
 void EV_UnixMenu::_insertMenuItem(XAP_Menu_Id id, UT_uint32 pos)
 {
 	/* TODO: Build a gtk+ widget with this info, and put it somewhere in the menubar */
-	UT_DEBUGMSG(("_insertMenuItem(%d, %d)\n", id, pos));	
+	UT_DEBUGMSG(("JCA: _insertMenuItem(%d, %d)\n", id, pos));	
 }
 
 /*****************************************************************/
