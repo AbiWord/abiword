@@ -947,12 +947,12 @@ bool PD_Document::getRowsColsFromTableSDH(PL_StruxDocHandle tableSDH, UT_sint32 
 			else if(pfSec->getStruxType() == PTX_SectionCell)
 			{
 				cellSDH = (PL_StruxDocHandle) pfSec;
-				bool bres = m_pDoc->getPropertyFromSDH(cellSDH,"right-attach",&szRight);
+				bool bres = getPropertyFromSDH(cellSDH,"right-attach",&szRight);
 				if(szRight && *szRight)
 				{
 					Right = atoi(szRight);
 				}
-				bres = m_pDoc->getPropertyFromSDH(cellSDH,"bot-attach",&szBot);
+				bres = getPropertyFromSDH(cellSDH,"bot-attach",&szBot);
 				if(szBot && *szBot)
 				{
 					Bot = atoi(szBot);
@@ -1029,22 +1029,22 @@ PL_StruxDocHandle PD_Document::getCellSDHFromRowCol(PL_StruxDocHandle tableSDH, 
 				Top = -1;
 				Right = -1;
 				Bot = -1;
-				bool bres = m_pDoc->getPropertyFromSDH(cellSDH,"left-attach",&szLeft);
+				bool bres = getPropertyFromSDH(cellSDH,"left-attach",&szLeft);
 				if(szLeft && *szLeft)
 				{
 					Left = atoi(szLeft);
 				}
-				bres = m_pDoc->getPropertyFromSDH(cellSDH,"top-attach",&szTop);
+				bres = getPropertyFromSDH(cellSDH,"top-attach",&szTop);
 				if(szTop && *szTop)
 				{
 					Top = atoi(szTop);
 				}
-				bres = m_pDoc->getPropertyFromSDH(cellSDH,"right-attach",&szRight);
+				bres = getPropertyFromSDH(cellSDH,"right-attach",&szRight);
 				if(szRight && *szRight)
 				{
 					Right = atoi(szRight);
 				}
-				bres = m_pDoc->getPropertyFromSDH(cellSDH,"bot-attach",&szBot);
+				bres = getPropertyFromSDH(cellSDH,"bot-attach",&szBot);
 				if(szBot && *szBot)
 				{
 					Bot = atoi(szBot);
