@@ -54,7 +54,7 @@ BeginSet(de,DE,true)
 	ToolbarLabel(AP_TOOLBAR_ID_FILE_SAVE,		"Speichern", 	tb_save_xpm,NULL,		"Aktuelles Dokument speichern")
 	ToolbarLabel(AP_TOOLBAR_ID_FILE_SAVEAS,		"Speichern unter", 	tb_save_as_xpm,	NULL,	"Aktuelles Dokument unter einem anderen Namen speichern")
 	ToolbarLabel(AP_TOOLBAR_ID_FILE_PRINT,		"Drucken",	tb_print_xpm,	NULL,		"Dokument oder Teile davon drucken")
-
+        ToolbarLabel(AP_TOOLBAR_ID_FILE_PRINT_PREVIEW, "Druckvorschau", tb_print_preview_xpm, NULL, "Druckvorschau")
 	ToolbarLabel(AP_TOOLBAR_ID_EDIT_UNDO,		"Rückgängig",	tb_undo_xpm,NULL,		"Letzten Befehl rückgängig machen")
 	ToolbarLabel(AP_TOOLBAR_ID_EDIT_REDO,		"Wiederholen",	tb_redo_xpm,NULL,		"Letzten Befehl wiederholen")
 	ToolbarLabel(AP_TOOLBAR_ID_EDIT_CUT,		"Ausschneiden",	tb_cut_xpm,	NULL,		"Markierung löschen und in die Zwischenablage kopieren")
@@ -69,7 +69,7 @@ BeginSet(de,DE,true)
 	ToolbarLabel(AP_TOOLBAR_ID_FMT_UNDERLINE,	"Unterstrichen",tb_text_underline_xpm,	NULL,	"Unterstrichen")
 	ToolbarLabel(AP_TOOLBAR_ID_FMT_OVERLINE,	"Überstrichen",tb_text_overline_xpm,	NULL, "Überstrichen")
 	ToolbarLabel(AP_TOOLBAR_ID_FMT_STRIKE,		"Durchgestrichen", tb_text_strikeout_xpm,	NULL,	"Durchgestrichen")
-
+        ToolbarLabel(AP_TOOLBAR_ID_HELP, "Hilfe", tb_help_xpm, NULL, "Hilfe")
 	ToolbarLabel(AP_TOOLBAR_ID_FMT_SUPERSCRIPT,	"Höhergestellt",	tb_text_superscript_xpm,	NULL, "Höhergestellt")
 	ToolbarLabel(AP_TOOLBAR_ID_FMT_SUBSCRIPT,	"Tiefergestellt",	tb_text_subscript_xpm,		NULL, "Tiefergestellt")
 	ToolbarLabel(AP_TOOLBAR_ID_INSERT_SYMBOL,	"Symbol",	tb_symbol_xpm,		NULL, "Symbol einfügen")
@@ -93,7 +93,13 @@ BeginSet(de,DE,true)
 	ToolbarLabel(AP_TOOLBAR_ID_ZOOM,		"Zoom",			NoIcon,			NULL,	"Zoom")
 	ToolbarLabel(AP_TOOLBAR_ID_LISTS_BULLETS,		"Aufzählungsliste",		tb_lists_bullets_xpm,		NULL,		"Start/Stop Aufzählungsliste")
 	ToolbarLabel(AP_TOOLBAR_ID_LISTS_NUMBERS,		"Nummerierte Liste",		tb_lists_numbers_xpm,		NULL,		"Start/Stop Nummerierungsliste")
-	
+     
+     ToolbarLabel(AP_TOOLBAR_ID_COLOR_FORE,		"Vordergrund",	NoIcon,						NULL, "Vordergrund")
+     ToolbarLabel(AP_TOOLBAR_ID_COLOR_BACK,		"Hintergrund",	NoIcon,						NULL, "Hintergrund")
+     ToolbarLabel(AP_TOOLBAR_ID_SPELLCHECK, "Rechtscreibung", tb_spellcheck_xpm, NULL, "Rechtschreibung")
+	ToolbarLabel(AP_TOOLBAR_ID_IMG, "Neue Grafik", tb_insert_graphic_xpm, NULL, "Neue Grafik")
+  	ToolbarLabel(AP_TOOLBAR_ID_INDENT,			"Eindrücken Absatz", tb_text_indent_xpm, 		NULL, "Eindrücken Absatz")
+	ToolbarLabel(AP_TOOLBAR_ID_UNINDENT,		"Un-eindrücken Absatz", tb_text_unindent_xpm,	NULL, "Un-eindrücken Absatz")   
 	// ... add others here ...
 
 	ToolbarLabel(AP_TOOLBAR_ID__BOGUS2__,		NULL,		NoIcon,			NULL,NULL)
