@@ -50,45 +50,48 @@ if test $abi_spell != ispell; then
 	else
 		abi_pspell_cflags=""
 		abi_pspell_libs="-lpspell -laspell -laspell-common -lltdl"
+		abi_aspell_libs="-lpspell -laspell"
 	fi
 	if test $abi_spell = pspell; then
 		abi_pspell_cflags="-I$abi_pspell_opt/include"
 		abi_pspell_libs="-L$abi_pspell_opt/lib $abi_pspell_libs"
 
 		_abi_cppflags="$CPPFLAGS"
+		_abi_ldflags="$LDFLAGS"
 		CPPFLAGS="$CPPFLAGS $abi_pspell_cflags"
+		LDFLAGS="$LDFLAGS -L$abi_pspell_opt/lib"
 	fi
-	AC_CHECK_HEADER(pspell/pspell.h,
-	[
-	    AC_CHECK_LIB(pspell,new_pspell_config,[
+	AC_CHECK_HEADER(pspell/pspell.h,[
+		abi_have_new_pspell_config=no
+		abi_have_new_aspell_config=no
+		abi_spell_default=no
+
+		AC_CHECK_LIB(pspell,new_pspell_config,[
 			SPELL_LIBS="$abi_pspell_libs"
 			SPELL_CFLAGS="$abi_pspell_cflags -DHAVE_PSPELL=1"
-			abi_spell_default=no
 			abi_have_new_pspell_config=yes
-	    ],[abi_have_new_pspell_config=no],
-	    $abi_pspell_libs)
-	    if test $abi_have_new_pspell_config = no; then
-	    AC_CHECK_LIB(pspell,new_aspell_config,[
-			SPELL_LIBS="$abi_pspell_libs"
-			SPELL_CFLAGS="$abi_pspell_cflags -DHAVE_PSPELL=1"
-			abi_spell_default=no
-			abi_have_new_aspell_config=yes
-	    ],[abi_have_new_aspell_config=no],
-	    $abi_pspell_libs)
-	    fi
-	    if test $abi_have_new_pspell_config = no; then
-	    if test $abi_have_new_aspell_config = no; then
-	    AC_MSG_WARN([* * * pspell not found in system location * * *])
-	    abi_spell_default=yes
-	    fi
-	    fi
-	],
-	[
-	    AC_MSG_WARN([* * * pspell not found in system location * * *])
-	    abi_spell_default=yes
+		],[	abi_have_new_pspell_config=no
+			AC_CHECK_LIB(pspell,new_aspell_config,[
+				SPELL_LIBS="$abi_pspell_libs"
+				SPELL_CFLAGS="$abi_pspell_cflags -DHAVE_PSPELL=1"
+				abi_have_new_aspell_config=yes
+			],[	AC_CHECK_LIB(pspell,delete_aspell_config,[
+					SPELL_LIBS="$abi_aspell_libs"
+					SPELL_CFLAGS="$abi_pspell_cflags -DHAVE_PSPELL=1"
+					abi_have_new_aspell_config=yes
+				],[	abi_have_new_aspell_config=no
+					abi_spell_default=yes
+				],$abi_aspell_libs)
+			],$abi_pspell_libs)
+		],$abi_pspell_libs)
+	],[	abi_spell_default=yes
 	])
+	if test $abi_spell_default = yes; then
+		AC_MSG_WARN([* * * pspell not found in system location * * *])
+	fi
 	if test $abi_spell = pspell; then
 		CPPFLAGS="$_abi_cppflags"
+		LDFLAGS="$_abi_ldflags"
 	else
 		abi_spell=pspell
 	fi
