@@ -563,7 +563,7 @@ bool IE_Exp_RTF::_write_rtf_header(void)
 	bool wrote_cpg = 0;
 	if (langcode)
 	{
-		char* cpgname = wvLIDToCodePageConverter(langcode);
+		char* cpgname = const_cast<char*>(wvLIDToCodePageConverter(langcode));
 		UT_DEBUGMSG(("Belcon,after wvLIDToCodePageConverter(%d),cpgname=%s\n",langcode,cpgname));
 		if (UT_strnicmp(cpgname,"cp",2)==0 && UT_UCS4_isdigit(cpgname[2]))
 		{
