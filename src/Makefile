@@ -220,9 +220,15 @@ clean_PSICONV_:
 	fi
 
 clean_EXPAT_:
+ifeq ($(OS_NAME), WIN32)
+	@if [ -d $(ABI_ROOT)/../expat ]; then		\
+		$(MAKE) -f Makefile.abi -C $(ABI_ROOT)/../expat clean;	\
+	fi
+else
 	@if [ -d $(ABI_ROOT)/../expat ]; then		\
 		$(MAKE) -C $(ABI_ROOT)/../expat clean;	\
 	fi
+endif
 
 # we have to make a realclean here so the configure script reruns
 # if no makefile exists, it is already clean
@@ -244,9 +250,17 @@ realclean_PSICONV_:
 	fi	
 
 realclean_EXPAT_:
+ifeq ($(OS_NAME),WIN32)
+	@if [ -d $(ABI_ROOT)/../expat ]; then	\
+		$(MAKE) -f Makefile.abi -C $(ABI_ROOT)/../expat clean;	\
+		$(RM) $(ABI_ROOT)/../expat/config.h;	\
+		$(RM) $(ABI_ROOT)/../expat/lib/config.h;	\
+	fi	
+else
 	@if [ -d $(ABI_ROOT)/../expat -a -f $(ABI_ROOT)/../expat/lib/Makefile ]; then	\
 		$(MAKE) -C $(ABI_ROOT)/../expat distclean;	\
 	fi	
+endif
 
 clean_ABI_:
 	rm -rf $(OUTDIR) $(DIST)

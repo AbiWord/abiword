@@ -379,7 +379,7 @@ endif
 
 ifeq ($(ABI_OPT_LIBJPEG),1)
 LIBJPEG_CFLAGS=-DHAVE_LIBJPEG
-ifeq ($(OS_NAME),Win32)
+ifeq ($(OS_NAME),WIN32)
 LIBJPEG_LIBS=libjpeg.lib
 else
 LIBJPEG_LIBS=-ljpeg
@@ -680,7 +680,7 @@ endif
 
 ifeq ($(OS_NAME), WIN32)
 EXTRA_LIBS	+= $(ABI_ROOT)/../psiconv/psiconv/.libs/libpsiconv.lib
-EXTRA_LIBS	+= $(ABI_ROOT)/../expat/lib/.libs/libexpat.lib
+EXTRA_LIBS	+= $(LIBDIR)/libAbi_libexpat_s.lib
 LDFLAGS += /NODEFAULTLIB:LIBC
 else
 # For psiconv. This should pick up the static psiconv library in the

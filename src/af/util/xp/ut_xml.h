@@ -43,6 +43,9 @@
   #define XML_Encoding void
 
 #else /* EXPAT */
+  #define XML_STATIC
+  #define COMPILED_FROM_DSP
+
   #include <expat.h>
 
 #endif
