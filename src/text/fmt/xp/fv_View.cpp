@@ -1,3 +1,4 @@
+/* -*- c-basic-offset: 4; tab-width: 4; indent-tabs-mode: t -*- */
 /* AbiWord
  * Copyright (C) 1998-2000 AbiSource, Inc.
  * Copyright (c) 2001,2002 Tomas Frydrych

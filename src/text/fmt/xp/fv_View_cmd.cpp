@@ -4695,8 +4695,8 @@ UT_Error FV_View::cmdInsertTOC(void)
 	m_pDoc->insertStrux(pos,PTX_SectionTOC);
 	pos++;
 	m_pDoc->insertStrux(pos,PTX_EndTOC);
-	setPoint(getPoint()+1);
-
+	setPoint(pos+1);
+	insertParaBreakIfNeededAtPos(getPoint());
 	// Signal piceTable is stable again
 	_restorePieceTableState();
 	_generalUpdate();

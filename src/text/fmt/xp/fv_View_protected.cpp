@@ -1,3 +1,4 @@
+/* -*- c-basic-offset: 4; tab-width: 4; indent-tabs-mode: t -*- */
 /* AbiWord
  * Copyright (C) 1998-2000 AbiSource, Inc.
  * Copyright (c) 2001,2002 Tomas Frydrych
@@ -5532,10 +5533,6 @@ bool FV_View::_charInsert(const UT_UCSChar * text, UT_uint32 count, bool bForce)
 			bOK = _charMotion(false,1);
 		}
 		if(posEnd-1 == getPoint() && !isPointLegal())
-		{
-			bOK = _charMotion(false,1);
-		}
-		if(posEnd == getPoint() && m_pDoc->isTOCAtPos(getPoint()-2))
 		{
 			bOK = _charMotion(false,1);
 		}
