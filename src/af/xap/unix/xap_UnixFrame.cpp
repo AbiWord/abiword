@@ -29,7 +29,9 @@
 #include "fl_DocLayout.h"
 #include "gr_UnixGraphics.h"
 
-#define DELETEP(p)	do { if (p) delete p; } while (0)
+#define DELETEP(p)		do { if (p) delete p; } while (0)
+#define REPLACEP(p,q)	do { if (p) delete p; p = q; } while (0)
+#define ENSUREP(p)		do { UT_ASSERT(p); if (!p) goto Cleanup; } while (0)
 
 /*****************************************************************/
 
@@ -331,29 +333,39 @@ UT_Bool AP_UnixFrame::loadDocument(const char * szFilename)
 		return UT_FALSE;
 	}
 
+	UNIXGraphics * pG = NULL;
+	FL_DocLayout * pDocLayout = NULL;
+	FV_View * pView = NULL;
+	FV_ScrollObj * pScrollObj = NULL;
+
+	int height, pageLen;
+
 	// TODO fix prefix on class UNIXGraphics
 	
-	m_pG = new UNIXGraphics(m_dArea->window);
-	UT_ASSERT(m_pG);
-	FL_DocLayout * m_pDocLayout = new FL_DocLayout(m_pDoc, m_pG);
-	UT_ASSERT(m_pDocLayout);
+	pG = new UNIXGraphics(m_dArea->window);
+	ENSUREP(pG);
+	FL_DocLayout * m_pDocLayout = new FL_DocLayout(m_pDoc, pG);
+	ENSUREP(pDocLayout);
   
-	m_pDocLayout->formatAll();
+	pDocLayout->formatAll();
 
-	// TODO we are overwriting m_pView,m_pScrollObj
-	// TODO verify that if we do a new document or FileOpen
-	// TODO on an existing window that we clean up the previous
-	// TODO values of these.
-	
-	m_pView = new FV_View(m_pDocLayout);
-	m_pScrollObj = new FV_ScrollObj(this,_scrollFunc);
+	pView = new FV_View(this, pDocLayout);
+	ENSUREP(pView);
+	pScrollObj = new FV_ScrollObj(this,_scrollFunc);
+	ENSUREP(pScrollObj);
+
+	// switch to new view, cleaning up previous settings
+	REPLACEP(m_pG, pG);
+	REPLACEP(m_pDocLayout, pDocLayout);
+	REPLACEP(m_pView, pView);
+	REPLACEP(m_pScrollObj, pScrollObj);
 
 	m_pView->addScrollListener(m_pScrollObj);
 	m_pView->setWindowSize(GTK_WIDGET(m_dArea)->allocation.width,
 						   GTK_WIDGET(m_dArea)->allocation.height);
   
-	int height = m_pDocLayout->getHeight();
-	int pageLen = height/m_pDocLayout->countPages();
+	height = m_pDocLayout->getHeight();
+	pageLen = height/m_pDocLayout->countPages();
 
 	m_pVadj->value = 0.0;
 	m_pVadj->lower = 0.0;
@@ -366,8 +378,20 @@ UT_Bool AP_UnixFrame::loadDocument(const char * szFilename)
 	m_pView->draw();
 
 	return UT_TRUE;
-}
 
+Cleanup:
+	// clean up anything we created here
+	DELETEP(pG);
+	DELETEP(pDocLayout);
+	DELETEP(pView);
+	DELETEP(pScrollObj);
+
+	// change back to prior document
+	DELETEP(m_pDoc);
+	m_pDoc = m_pDocLayout->getDocument();
+
+	return UT_FALSE;
+}
 
 void AP_UnixFrame::_scrollFunc(void * pData, UT_sint32 xoff, UT_sint32 yoff)
 {

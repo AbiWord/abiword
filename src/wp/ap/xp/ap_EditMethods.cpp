@@ -17,21 +17,29 @@
  * 02111-1307, USA.
  */
 
-#undef DLGHACK		// HINT: don't even bother turning this on :-)
-#ifdef DLGHACK		// see bottom of file for an apology
+#define DLGHACK	
+#ifdef DLGHACK			// see bottom of file for an apology
 #ifdef WIN32
-#include <windows.h>
-#include "ut_debugmsg.h"
-#include "pd_Document.h"
-#include "fl_DocLayout.h"
-#include "gr_Win32Graphics.h"
+#include <windows.h>	// needs to be first
+#endif
+#ifdef UNIX
+#include <gtk/gtk.h>
 #endif
 #endif /* DLGHACK */
 
 #include "ev_EditMethod.h"
 #include "fv_View.h"
+#include "fl_DocLayout.h"
+#include "pd_Document.h"
 #include "fl_Types.h"
+#include "ap_Frame.h"
 #include "ap_EditMethods.h"
+
+
+#ifdef DLGHACK
+char * _promptFile(AP_Frame * pFrame, UT_Bool bSaveAs);
+#endif /* DLGHACK */
+
 
 /*****************************************************************/
 /*****************************************************************/
@@ -878,22 +886,64 @@ Defun(insFmtColorBlue)
 
 Defun(fileNew)
 {
-	return UT_TRUE;
+	AP_Frame * pFrame = (AP_Frame *) pView->getParentData();
+	UT_ASSERT(pFrame);
+
+	return pFrame->loadDocument(NULL);
 }
 
 Defun(fileOpen)
 {
-	return UT_TRUE;
+	AP_Frame * pFrame = (AP_Frame *) pView->getParentData();
+	UT_ASSERT(pFrame);
+	UT_Bool bRes = UT_TRUE;
+
+#ifdef DLGHACK
+	char * pNewFile = _promptFile(pFrame, UT_FALSE);
+#else
+	char * pNewFile = NULL;	
+#endif /* DLGHACK */
+
+	if (pNewFile)
+	{
+		bRes = pFrame->loadDocument(pNewFile);
+		free(pNewFile);
+	}
+
+	return bRes;
 }
 
 Defun(fileSave)
 {
+	FL_DocLayout* pLayout = pView->getLayout();
+	UT_ASSERT(pLayout);
+
+	// can only save without prompting if filename already known
+	if (!pLayout->getDocument()->getFilename())
+		return EX(fileSaveAs);
+
 	pView->cmdSave();
+
 	return UT_TRUE;
 }
 
 Defun(fileSaveAs)
 {
+	AP_Frame * pFrame = (AP_Frame *) pView->getParentData();
+	UT_ASSERT(pFrame);
+
+#ifdef DLGHACK
+	char * pNewFile = _promptFile(pFrame, UT_TRUE);
+#else
+	char * pNewFile = NULL;	
+#endif /* DLGHACK */
+
+	if (pNewFile)
+	{
+		pView->cmdSaveAs(pNewFile);
+		free(pNewFile);
+	}
+
 	return UT_TRUE;
 }
 
@@ -946,6 +996,19 @@ Defun(closeWindow)
 
 Defun(querySaveAndExit)
 {
+	// TODO: does the querySave part go here, or in the window-specific shutdown?
+
+	// for now, just try to do the exit part 
+#ifdef DLGHACK
+#ifdef WIN32
+	PostQuitMessage (0);
+#endif
+#ifdef UNIX
+	gtk_main_quit();	// what miguel uses
+//	exit(0);			// what Andy had
+#endif
+#endif /* DLGHACK */
+
 	return UT_TRUE;
 }
 
@@ -1021,55 +1084,15 @@ Defun(Test_Dump)
 /*****************************************************************/
 
 #ifdef WIN32
+#include "ut_debugmsg.h"
+#include "ap_Win32Frame.h"
+#include "gr_Win32Graphics.h"
 
-#if FRAGMENT
+char * _promptFile(AP_Frame * pFrame, UT_Bool bSaveAs)
 {
-		case RES_MENU_ITEM_NEW:
-			_newFile(hwnd, pG);
+	AP_Win32Frame * pWin32Frame = static_cast<AP_Win32Frame *>(pFrame);
+	HWND hwnd = pWin32Frame->getTopLevelWindow();
 
-			return 0;
-
-		case RES_MENU_ITEM_OPEN:
-			_showFile(_promptFile(hwnd, UT_FALSE), hwnd, pG);
-
-			return 0;
-
-#if 0 // TODO: bind save/saveas to exporters when ready
-		case RES_MENU_ITEM_SAVE:
-			{
-				char * pFileName = pDocLayout->getDocument()->getFilename();
-
-				if (pFileName)
-				{
-					RW_DocWriter dw(pDocLayout->getDocument());
-					dw.writeFile(pFileName);
-					return 0;
-				}
-				// fall through
-			}
-
-		case RES_MENU_ITEM_SAVEAS:
-			{
-				char * pNewFile = _promptFile(hwnd, UT_TRUE);
-
-				if (pNewFile)
-				{
-					RW_DocWriter dw(pDocLayout->getDocument());
-					dw.writeFile(pNewFile);
-				}
-				return 0;
-			}
-#endif
-			
-		case RES_MENU_ITEM_PRINT:
-			_printDoc(hwnd);
-			break;
-		}
-}
-#endif /* FRAGMENT */
-
-char * _promptFile(HWND hwnd, UT_Bool bSaveAs)
-{
 	OPENFILENAME ofn;       // common dialog box structure
 	char szFile[260];       // buffer for filename
 
@@ -1109,36 +1132,7 @@ char * _promptFile(HWND hwnd, UT_Bool bSaveAs)
 	return NULL;
 }
 
-UT_Bool _showFile(char *fileName, HWND hwnd, DG_Graphics *pG)
-{
-	if (!fileName)
-		return UT_FALSE;
-
-	PD_Document * doc = new PD_Document();
-
-	if (!doc->readFromFile(fileName))
-	{
-		// HACK: for now, keep going
-		UT_DEBUGMSG(("_showFile -- falling back to new file\n"));
-		doc->newDocument();
-	}
-
-	if (fileName)
-		free(fileName);
-
-//	return _showDoc(hwnd, pG);
-	return UT_FALSE;
-} 
-
-UT_Bool _newFile(HWND hwnd, DG_Graphics *pG)
-{
-	PD_Document * doc = new PD_Document();
-	doc->newDocument();
-
-//	return _showDoc(hwnd, pG);
-	return UT_FALSE;
-} 
-
+// TODO: figure out what can be shared here and move it up 
 UT_Bool _printDoc(HWND hwnd)
 {
 	PRINTDLG pd;
@@ -1165,7 +1159,7 @@ UT_Bool _printDoc(HWND hwnd)
 	pDL->formatAll();
 			
 	UT_uint32 iHeight = pDL->getHeight();
-	FV_View* pV = new FV_View(pDL);
+	FV_View* pV = new FV_View(NULL, pDL);	// TODO: fix first arg?
 
 	dg_DrawArgs da;
 	da.pG = NULL;
@@ -1206,109 +1200,47 @@ return UT_TRUE;
 
 #ifdef UNIX
 
-#if FRAGMENT
+static void set_ok (GtkWidget *widget, UT_Bool *dialog_result)
 {
-	case MENU_FILE_EXIT:
-		exit(0);
-		break;
-		
-	case MENU_FILE_NEW:
-		doc = new PD_Document();
-		doc->newDocument();
-		showDoc();
-		break;
-		
-	case MENU_FILE_OPEN:
-		fileDialogOp = which;
-		openNewDoc();
-		break;
-
-#if 0 // TODO: bind save/saveas to exporters when ready
-	case MENU_FILE_SAVE:
-		if (!pFileName)
-			break;
-		
-		saveFile(pFileName);
-		break;
-
-	case MENU_FILE_SAVEAS:
-		fileDialogOp = which;
-		openNewDoc();
-		break;
-#endif
+	*dialog_result = TRUE;
+	gtk_main_quit();
 }
-#endif /* FRAGMENT */
 
-void fileSelection(GtkWidget* pDlg, GtkFileSelection *pFS)
+char * _promptFile(AP_Frame * pFrame, UT_Bool bSaveAs)
 {
-	char *fileName;
-	fileName = gtk_file_selection_get_filename(GTK_FILE_SELECTION(pFS));
+	GtkFileSelection *pFS;
+	UT_Bool accepted = FALSE;
+	char * fileName = NULL;
 	
-	if (fileDialogOp == MENU_FILE_OPEN)
+	g_return_if_fail (wb != NULL);
+
+	pFS = (GtkFileSelection *)gtk_file_selection_new(bSaveAs ? "Save file" : "Open File");
+
+	/* Connect the signals for Ok and Cancel */
+	gtk_signal_connect(GTK_OBJECT(pFS->ok_button), "clicked",
+			    GTK_SIGNAL_FUNC(set_ok), &accepted);
+	gtk_signal_connect(GTK_OBJECT(pFS->cancel_button), "clicked",
+			    GTK_SIGNAL_FUNC(gtk_main_quit), NULL);
+
+	// TODO: not sure what these do, so I commented 'em out
+#if 0
+	gtk_window_position(GTK_WINDOW(pFS), GTK_WIN_POS_MOUSE);
+	gtk_file_selection_hide_fileop_buttons(pFS);
+#endif 
+
+	/* Run the dialog */
+	gtk_widget_show(GTK_WIDGET(pFS));
+	gtk_grab_add(GTK_WIDGET(pFS));
+	gtk_main();
+
+	if (accepted)
 	{
-		pFileName = new char[strlen(fileName) + 1];
-		strcpy(pFileName, fileName);
-		openFile(pFileName);
-	}
-	else
-	{	
-		saveFile(fileName);
+		fileName = gtk_file_selection_get_filename(pFS);
 	}
 
 	gtk_widget_destroy (GTK_WIDGET(pFS));
-}
 
-void openNewDoc(void)
-{
-	GtkWidget* pFileDlg;
-	
-	if (fileDialogOp == MENU_FILE_SAVE)
-		pFileDlg = gtk_file_selection_new("Open file");
-	else
-		pFileDlg = gtk_file_selection_new("Save file");
-
-	gtk_widget_show(pFileDlg);
-
-	gtk_file_selection_hide_fileop_buttons (GTK_FILE_SELECTION(pFileDlg));
-
-	gtk_signal_connect(GTK_OBJECT(pFileDlg), "destroy",
-					   GTK_SIGNAL_FUNC(gtk_widget_destroyed),
-					   &pFileDlg);
-
-	gtk_signal_connect(GTK_OBJECT(GTK_FILE_SELECTION (pFileDlg)->ok_button),
-					   "clicked", GTK_SIGNAL_FUNC(fileSelection),
-					   pFileDlg);
-	
-	gtk_signal_connect_object(GTK_OBJECT(GTK_FILE_SELECTION(pFileDlg)->cancel_button),
-							  "clicked", GTK_SIGNAL_FUNC(gtk_widget_destroy),
-							  GTK_OBJECT (pFileDlg));
-}	
-
-void saveFile(char* fileName)
-{
-#if 0 // TODO: bind save/saveas to exporters when ready
-	RW_DocWriter dw(pLayout->getDocument());
-	dw.writeFile(fileName);
-#endif
-}
-
-void openFile(char* fileName)
-{
-	doc = new PD_Document();
-
-	if (!doc)
-		return;
-
-	if (!doc->readFromFile(fileName))
-	{
-		// HACK: for now, keep going
-		UT_DEBUGMSG(("_showFile -- falling back to new file\n"));
-		doc->newDocument();
-	}
-  
-	pFileName = fileName;
-
-	showDoc();
+	return (fileName ? strdup(fileName) : NULL);
 }
 
 #endif /* UNIX */

@@ -28,9 +28,12 @@
 #include "ev_Win32Menu.h"
 #include "fv_View.h"
 #include "fl_DocLayout.h"
+#include "pd_Document.h"
 #include "gr_Win32Graphics.h"
 
-#define DELETEP(p)	do { if (p) delete p; } while (0)
+#define DELETEP(p)		do { if (p) delete p; } while (0)
+#define REPLACEP(p,q)	do { if (p) delete p; p = q; } while (0)
+#define ENSUREP(p)		do { UT_ASSERT(p); if (!p) goto Cleanup; } while (0)
 
 /*****************************************************************/
 
@@ -175,23 +178,40 @@ UT_Bool AP_Win32Frame::loadDocument(const char * szFilename)
 
 		return UT_FALSE;
 	}
-
-	HWND hwnd = m_hwnd;
 	
+	Win32Graphics * pG = NULL;
+	FL_DocLayout * pDocLayout = NULL;
+	FV_View * pView = NULL;
+	FV_ScrollObj * pScrollObj = NULL;
+
+	UT_uint32 iWindowHeight, iHeight;
+	HWND hwnd = m_hwnd;
+
 	// TODO fix prefix on class Win32Graphics
 
-	m_pG = new Win32Graphics(GetDC(hwnd), hwnd);
-	UT_ASSERT(m_pG);
-	m_pDocLayout = new FL_DocLayout(m_pDoc, m_pG);
-	UT_ASSERT(m_pDocLayout);
+	pG = new Win32Graphics(GetDC(hwnd), hwnd);
+	ENSUREP(pG);
+	pDocLayout = new FL_DocLayout(m_pDoc, pG);
+	ENSUREP(pDocLayout);
   
-	m_pDocLayout->formatAll();
+	pDocLayout->formatAll();
+	
+	pView = new FV_View(this,pDocLayout);
+	ENSUREP(pView);
+	pScrollObj = new FV_ScrollObj(this,_scrollFunc);
+	ENSUREP(pScrollObj);
+
+	// switch to new view, cleaning up previous settings
+	REPLACEP(m_pG, pG);
+	REPLACEP(m_pDocLayout, pDocLayout);
+	REPLACEP(m_pView, pView);
+	REPLACEP(m_pScrollObj, pScrollObj);
 			
 	RECT r;
 	GetClientRect(hwnd, &r);
-	UT_uint32 iWindowHeight = r.bottom - r.top;
+	iWindowHeight = r.bottom - r.top;
 
-	UT_uint32 iHeight = m_pDocLayout->getHeight();
+	iHeight = m_pDocLayout->getHeight();
 	SCROLLINFO si;
 	memset(&si, 0, sizeof(si));
 
@@ -202,14 +222,6 @@ UT_Bool AP_Win32Frame::loadDocument(const char * szFilename)
 	si.nPos = 0;
 	si.nPage = iWindowHeight * 10 / 9;
 	SetScrollInfo(hwnd, SB_VERT, &si, TRUE);
-
-	// TODO we are overwriting m_pView,m_pScrollObj
-	// TODO verify that if we do a new document or FileOpen
-	// TODO on an existing window that we clean up the previous
-	// TODO values of these.
-	
-	m_pView = new FV_View(m_pDocLayout);
-	m_pScrollObj = new FV_ScrollObj(this,_scrollFunc);
 
 	m_pView->addScrollListener(m_pScrollObj);
 //	m_pMouse->reset();
@@ -219,91 +231,20 @@ UT_Bool AP_Win32Frame::loadDocument(const char * szFilename)
 	InvalidateRect(hwnd, NULL, true);
 
 	return UT_TRUE;
+
+Cleanup:
+	// clean up anything we created here
+	DELETEP(pG);
+	DELETEP(pDocLayout);
+	DELETEP(pView);
+	DELETEP(pScrollObj);
+
+	// change back to prior document
+	DELETEP(m_pDoc);
+	m_pDoc = m_pDocLayout->getDocument();
+
+	return UT_FALSE;
 }
-
-// TODO: extract/improve old fallback logic from here
-#if OLD_VERSION
-UT_Bool _showDoc(HWND hwnd, DG_Graphics *pG)
-{
-	if (!doc || !pG)
-		return UT_FALSE;
-
-	FL_DocLayout * pOldDL = pDocLayout;
-	FV_View* pOldLV = pView;
-  
-	pDocLayout = new FL_DocLayout(doc, pG);
-	UT_ASSERT(pDocLayout);
-
-	if (!pDocLayout)
-	{
-		// blow away failed attempt
-		if (doc)
-			delete doc;
-
-		// stick with prior state
-		pDocLayout = pOldDL;
-		doc = pDocLayout->getDocument();
-		return UT_FALSE;
-	}
-
-	pDocLayout->formatAll();
-			
-	RECT r;
-	GetClientRect(hwnd, &r);
-	UT_uint32 iWindowHeight = r.bottom - r.top;
-
-	UT_uint32 iHeight = pDocLayout->getHeight();
-	SCROLLINFO si;
-	memset(&si, 0, sizeof(si));
-
-	si.cbSize = sizeof(si);
-	si.fMask = SIF_ALL;
-	si.nMin = 0;
-	si.nMax = iHeight;
-	si.nPos = 0;
-	si.nPage = iWindowHeight * 10 / 9;
-	SetScrollInfo(hwnd, SB_VERT, &si, TRUE);
-
-	pView = new FV_View(pDocLayout);
-
-	if (!pView)
-	{
-		// blow away failed attempt
-		if (pDocLayout)
-			delete pDocLayout;
-
-		// stick with prior state
-		pDocLayout = pOldDL;
-		pView = pOldLV;
-		doc = pDocLayout->getDocument();
-		return UT_FALSE;
-	}
-
-	if (pScrollObj)
-		delete pScrollObj;
-
-	pScrollObj = new FV_ScrollObj;
-
-	pScrollObj->m_pData = NULL;
-	pScrollObj->m_pfn = _scrollFunc;
-	pView->addScrollListener(pScrollObj);
-	pMouse->reset();
-
-	// this is gonna work, so blow away prior state
-	if (pOldDL)
-		delete pOldDL;
-
-	if (pOldLV)
-		delete pOldLV;
-
-	// enough HACKs to get a clean redisplay?
-	pView->setWindowSize(r.right - r.left, iWindowHeight);
-	InvalidateRect(hwnd, NULL, true);
-
-	return UT_TRUE;
-}
-#endif /* OLD_VERSION */
-
 
 void AP_Win32Frame::_scrollFunc(void* pData, UT_sint32 xoff, UT_sint32 yoff)
 {
@@ -349,29 +290,7 @@ LRESULT CALLBACK AP_Win32Frame::_WndProc(HWND hwnd, UINT iMsg, WPARAM wParam, LP
 	switch (iMsg)
 	{
 	case WM_CREATE :
-	{
-#if 0
-		g_hwnd = hwnd;
-		pG = new Win32Graphics(GetDC(hwnd), hwnd);
-		pScrollObj = NULL;
-		
-		pEMC = AP_GetEditMethods();
-		UT_Bool bResult = AP_LoadBindings("default",pEMC,&pEBM);
-		pEEM = new EV_EditEventMapper(pEBM);
-		pMenu = new dg_Win32Menu(pEMC);
-		pMouse = new EV_Win32Mouse(pEEM);
-		pKeyboard = new ev_Win32Keyboard(pEEM);
-
-		if ((!*szFilename) || 
-			(!_showFile(strdup(szFilename), hwnd, pG)))
-		{
-			// default to empty file if none given
-			if (!_newFile(hwnd, pG))
-				UT_ASSERT(UT_TODO);		// can't launch anything.  then what?
-		}
-#endif
-	}
-	return 0 ;
+		return 0 ;
 
 	case WM_VSCROLL:
 	{

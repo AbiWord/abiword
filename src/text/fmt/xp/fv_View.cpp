@@ -40,8 +40,9 @@
 #include "ie_types.h"
 
 
-FV_View::FV_View(FL_DocLayout* pLayout)
+FV_View::FV_View(void* pParentData, FL_DocLayout* pLayout)
 {
+	m_pParentData = pParentData;
 	m_pLayout = pLayout;
 	m_pDoc = pLayout->getDocument();
 	m_pG = m_pLayout->getGraphics();
@@ -62,6 +63,16 @@ FV_View::FV_View(FL_DocLayout* pLayout)
 	pLayout->setView(this);
 		
 	moveInsPtTo(FV_DOCPOS_BOD);
+}
+
+void* FV_View::getParentData() const
+{
+	return m_pParentData;
+}
+
+FL_DocLayout* FV_View::getLayout() const
+{
+	return m_pLayout;
 }
 
 void FV_View::_swapSelectionOrientation(void)
@@ -1634,6 +1645,11 @@ void FV_View::cmdRedo(UT_uint32 count)
 void FV_View::cmdSave(void)
 {
 	m_pDoc->save(IEFT_AbiWord_1);
+}
+
+void FV_View::cmdSaveAs(const char * szFilename)
+{
+	m_pDoc->saveAs(szFilename, IEFT_AbiWord_1);
 }
 
 UT_Bool FV_View::pasteBlock(UT_UCSChar * text, UT_uint32 count)

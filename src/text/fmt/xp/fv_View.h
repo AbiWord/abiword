@@ -74,7 +74,10 @@ class FV_View
 	friend class fl_DocListener;
 
 public:
-	FV_View(FL_DocLayout*);
+	FV_View(void*, FL_DocLayout*);
+	void* getParentData() const;
+	FL_DocLayout* getLayout() const;
+
 	void setXScrollOffset(UT_sint32);
 	void setYScrollOffset(UT_sint32);
 	void setWindowSize(UT_sint32, UT_sint32);
@@ -122,6 +125,7 @@ public:
 	void			cmdUndo(UT_uint32 count);
 	void			cmdRedo(UT_uint32 count);
 	void			cmdSave(void);
+	void			cmdSaveAs(const char * szFilename);
 	
 	void			Test_Dump(void);	/* TODO remove this */
 // ----------------------
@@ -178,6 +182,7 @@ protected:
 	PT_AttrPropIndex	m_apPoint;
 	
 	UT_Bool				m_bSelectionVisible;
+	void*				m_pParentData;
 	FL_DocLayout*		m_pLayout;
 	PD_Document*		m_pDoc;
 	DG_Graphics*		m_pG;

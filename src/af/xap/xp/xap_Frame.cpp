@@ -46,6 +46,7 @@ AP_Frame::AP_Frame(AP_Ap * ap)
 	m_ap = ap;
 
 	m_pDoc = NULL;
+	m_pDocLayout = NULL;
 	m_pView = NULL;
 	m_pScrollObj = NULL;
 	m_pG = NULL;
@@ -135,6 +136,13 @@ FV_View * AP_Frame::getCurrentView(void) const
 
 UT_Bool AP_Frame::loadDocument(const char * szFilename)
 {
+	// are we replacing another document?
+	if (m_pDoc)
+	{
+		// yep.  first make sure it's OK to discard it, 
+		// TODO: query user if dirty...
+	}
+
 	// load a document into the current frame.
 	// if no filename, create a new document.
 
@@ -155,9 +163,7 @@ UT_Bool AP_Frame::loadDocument(const char * szFilename)
 	return UT_FALSE;
 
 ReplaceDocument:
-	UT_ASSERT(!m_pDoc);					// TODO deal with discarding current document
-										// TODO and possibly querying user if dirty...
-
+	// NOTE: prior document is bound to m_pDocLayout, which gets discarded by subclass
 	m_pDoc = pNewDoc;
 	return UT_TRUE;
 }
