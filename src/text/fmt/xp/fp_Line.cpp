@@ -574,18 +574,18 @@ void fp_Line::recalcHeight()
 	m_pBlock->getLineSpacing(dLineSpace, dLineSpaceLayout, eSpacing);
 	if(fabs(dLineSpace) < 0.0001)
 	{
-		UT_DEBUGMSG(("SEVIOR: Set Linespace to 1.0 \n"));
+		xxx_UT_DEBUGMSG(("fp_Line: Set Linespace to 1.0 \n"));
 		dLineSpace = 1.0;
 	}
 	if (eSpacing == fl_BlockLayout::spacing_EXACT)
 	{
-		xxx_UT_DEBUGMSG(("SEVIOR: recalcHieght exact \n"));
+		xxx_UT_DEBUGMSG(("recalcHeight exact \n"));
 		iNewHeight = (UT_sint32) dLineSpace;
 		iNewHeightLayoutUnits = (UT_sint32) dLineSpaceLayout;
 	}
 	else if (eSpacing == fl_BlockLayout::spacing_ATLEAST)
 	{
-		xxx_UT_DEBUGMSG(("SEVIOR: recalcHieght at least \n"));
+		xxx_UT_DEBUGMSG(("SEVIOR: recalcHeight at least \n"));
 		iNewHeight = UT_MAX(iNewHeight, (UT_sint32) dLineSpace);
 		iNewHeightLayoutUnits = UT_MAX(iNewHeightLayoutUnits, (UT_sint32) dLineSpaceLayout);
 	}
@@ -594,7 +594,7 @@ void fp_Line::recalcHeight()
 		// multiple
 		iNewHeight = (UT_sint32) (iNewHeight * dLineSpace +0.5);
 		iNewHeightLayoutUnits = (UT_sint32) (iNewHeightLayoutUnits * dLineSpaceLayout +0.5);
-		xxx_UT_DEBUGMSG(("SEVIOR: recalcHeight neither dLineSpace = %f newheight =%d m_iScreenHeight =%d m_iHeight= %d\n",dLineSpace,iNewHeight,m_iScreenHeight,m_iHeight));
+		xxx_UT_DEBUGMSG(("recalcHeight neither dLineSpace = %f newheight =%d m_iScreenHeight =%d m_iHeight= %d\n",dLineSpace,iNewHeight,m_iScreenHeight,m_iHeight));
 	}
 
 	if (
@@ -669,7 +669,7 @@ void fp_Line::clearScreen(void)
 			// in case the line is asked to render before it's been
 			// assigned a height. Call it robustness, if you want.
 
-			xxx_UT_DEBUGMSG(("SEVIOR: ClearToEnd pRun cleartopos = %d yoff = %d height =%d \n",m_iClearToPos,yoffLine,getHeight()));
+			xxx_UT_DEBUGMSG(("ClearToEnd pRun cleartopos = %d yoff = %d height =%d \n",m_iClearToPos,yoffLine,getHeight()));
 			pRun->getGraphics()->fillRect(*pClr,xoffLine - m_iClearLeftOffset, yoffLine, m_iClearToPos + m_iClearLeftOffset, getHeight());
 //
 // Sevior: I added this for robustness. 
@@ -727,11 +727,11 @@ void fp_Line::clearScreenFromRunToEnd(fp_Run * ppRun)
 			UT_sint32 xoffLine, yoffLine;
 		
 			m_pContainer->getScreenOffsets(this, xoffLine, yoffLine);
-			xxx_UT_DEBUGMSG(("SEVIOR: cleartoend prun xoff %d xoffline %d \n",xoff,xoffLine));
+			xxx_UT_DEBUGMSG(("cleartoend prun xoff %d xoffline %d \n",xoff,xoffLine));
 			if(xoff == xoffLine)
 				leftClear = pRun->getDescent();
 			UT_RGBColor * pClr = pRun->getPageColor();
-			UT_DEBUGMSG(("SEVIOR: ClearToEnd pRun cleartopos = %d yoff = %d height =%d \n",m_iClearToPos,yoff,getHeight()));
+			xxx_UT_DEBUGMSG(("ClearToEnd pRun cleartopos = %d yoff = %d height =%d \n",m_iClearToPos,yoff,getHeight()));
 			pRun->getGraphics()->fillRect(*pClr,xoff - leftClear, yoff, m_iClearToPos + leftClear - (xoff - xoffLine) , getHeight());
 //
 // Sevior: I added this for robustness.
@@ -810,7 +810,7 @@ void fp_Line::clearScreenFromRunToEnd(UT_uint32 runIndex)
 			pPrev = (fp_Run *) m_vecRuns.getNthItem(j);
 			j--;
 		}
-		xxx_UT_DEBUGMSG(("SEVIOR: cleartoend index j= %d initial start %d \n",j,runIndex-1)); 
+		xxx_UT_DEBUGMSG(("cleartoend index j= %d initial start %d \n",j,runIndex-1)); 
 		leftClear = pRun->getDescent();
 		if(j>=0 && pPrev != NULL && pPrev->getType() == FPRUN_TEXT)
 			leftClear = 0;
@@ -825,11 +825,11 @@ void fp_Line::clearScreenFromRunToEnd(UT_uint32 runIndex)
 		recalcHeight();
 		UT_ASSERT(oldheight == getHeight());
 		m_pContainer->getScreenOffsets(this, xoffLine, yoffLine);
-		xxx_UT_DEBUGMSG(("SEVIOR: cleartoend index xoff %d xoffline %d \n",xoff,xoffLine));
+		xxx_UT_DEBUGMSG(("cleartoend index xoff %d xoffline %d \n",xoff,xoffLine));
 		if(xoff == xoffLine)
 				leftClear = pRun->getDescent();
 		UT_RGBColor * pClr = pRun->getPageColor();
-		xxx_UT_DEBUGMSG(("SEVIOR: ClearToEnd index cleartopos = %d yoff = %d height =%d \n",m_iClearToPos,yoff,getHeight()));
+		xxx_UT_DEBUGMSG(("ClearToEnd index cleartopos = %d yoff = %d height =%d \n",m_iClearToPos,yoff,getHeight()));
 		pRun->getGraphics()->fillRect(*pClr,xoff - leftClear, yoff, m_iClearToPos  + leftClear - (xoff - xoffLine) , getHeight());
 //
 // Sevior: I added this for robustness.

@@ -44,16 +44,16 @@ public:
 	void					appendFrag(pf_Frag * pf);
 	void					insertFrag(pf_Frag * pfPlace, pf_Frag * pfNew);
 	void					unlinkFrag(pf_Frag * pf);
-	void                    cleanFrags(pf_Frag* pFrom = 0);
-	void                    cleanFragsConst() const;
+	void                    cleanFrags(void);
+	void                    cleanFragsConst(void) const;
 	pf_Frag *               getNthFrag(UT_uint32 nthFrag) const;
 	pf_Frag *               findFirstFragBeforePos(PT_DocPosition pos) const;
 	UT_uint32               getNumberOfFrags() const;
 	UT_uint32               getFragNumber(const pf_Frag * pf) const;
 	pf_Frag *				getFirst() const;
 	pf_Frag *				getLast() const;
-	void                    setFragsDirty(pf_Frag* pFrom = 0) { pFrom ? m_pLastFragClean = pFrom : m_pLastFragClean = m_pFirst; }
-	bool                    areFragsDirty() const { return m_pLastFragClean != m_pLast; }
+	void                    setFragsDirty(void) { m_bAreFragsClean = false;}
+	bool                    areFragsDirty() const { return !m_bAreFragsClean; }
 
 #ifdef PT_TEST
 	void					__dump(FILE * fp) const;
@@ -66,7 +66,7 @@ private:
 	pf_Frag *				m_pFirst;
 	pf_Frag *				m_pLast;
 	UT_Vector               m_vecFrags;
-	pf_Frag *				m_pLastFragClean;
+	bool 				    m_bAreFragsClean;
 	mutable pf_Frag*		m_pCache;
 #ifdef DEBUG
 	double					m_rStat; // % of lookups served by the cache

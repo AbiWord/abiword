@@ -1306,6 +1306,14 @@ void FL_DocLayout::_redrawUpdate(UT_Timer * pTimer)
 		pDocLayout->setSkipUpdates(skip);
 		return;
 	}
+//
+// Check if we're printing. If so Bail out
+//
+	if(pDocLayout->m_pG->queryProperties(GR_Graphics::DGP_PAPER))
+	{
+		return;
+	}
+
 	fl_SectionLayout* pSL = pDocLayout->m_pFirstSection;
 	while (pSL)
 	{

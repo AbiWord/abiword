@@ -733,13 +733,6 @@ bool fl_DocSectionLayout::doclistener_changeStrux(const PX_ChangeRecord_StruxCha
 	setAttrPropIndex(pcrxc->getIndexAP());
 
 	_lookupProperties();
-	//
-	// Clear the header/footers first
-	//
-  	if(m_pHeaderSL)
-		m_pHeaderSL->collapse();
-  	if(m_pFooterSL)
-		m_pFooterSL->collapse();
 
 	// clear all the columns
 	fp_Column* pCol = m_pFirstColumn;
@@ -756,6 +749,13 @@ bool fl_DocSectionLayout::doclistener_changeStrux(const PX_ChangeRecord_StruxCha
 		m_pHeaderSL->clearScreen();
 	if(m_pFooterSL)
 		m_pFooterSL->clearScreen();
+	//
+	// Collapse the header/footers now
+	//
+  	if(m_pHeaderSL)
+		m_pHeaderSL->collapse();
+  	if(m_pFooterSL)
+		m_pFooterSL->collapse();
 
 	// remove all the columns from their pages
 	pCol = m_pFirstColumn;
@@ -802,6 +802,7 @@ bool fl_DocSectionLayout::doclistener_changeStrux(const PX_ChangeRecord_StruxCha
 	*/
 
 	format();
+	redrawUpdate();
 	updateBackgroundColor();
 	if(m_pHeaderSL)
 	{

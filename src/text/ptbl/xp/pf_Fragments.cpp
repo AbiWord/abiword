@@ -28,7 +28,7 @@
 pf_Fragments::pf_Fragments()
 	: m_pFirst(0),
 	  m_pLast(0),
-	  m_pLastFragClean(0),
+	  m_bAreFragsClean(false),
 	  m_pCache(0)
 {
 }
@@ -67,7 +67,7 @@ void pf_Fragments::appendFrag(pf_Frag * pf)
 		m_pLast = pf;
 		pf->setNext(NULL);
 	}
-	setFragsDirty(pf);
+	setFragsDirty();
 	
 	return;
 }
@@ -97,7 +97,7 @@ void pf_Fragments::insertFrag(pf_Frag * pfPlace, pf_Frag * pfNew)
 	pfPlace->setNext(pfNew);
 	if (m_pLast == pfPlace)
 		m_pLast = pfNew;
-	setFragsDirty(pfNew);
+	setFragsDirty();
 }
 
 void pf_Fragments::unlinkFrag(pf_Frag * pf)
@@ -108,11 +108,12 @@ void pf_Fragments::unlinkFrag(pf_Frag * pf)
 	pf_Frag * pn = pf->getNext();
 	pf_Frag * pp = pf->getPrev();
 
+	setFragsDirty();
 	if (pn)
 	{
 		pn->setPrev(pp);
-		setFragsDirty(pn);
 	}
+
 	if (pp)
 		pp->setNext(pn);
 
@@ -126,14 +127,11 @@ void pf_Fragments::unlinkFrag(pf_Frag * pf)
 }
 
 /*!
- * This method clears out and repopulates the vectore of pointers to fragments.
+ * This method clears out and repopulates the vector of pointers to fragments.
  * It also sets the doc Positions of all the fragments.
  */
-void pf_Fragments::cleanFrags(pf_Frag* pFrom)
+void pf_Fragments::cleanFrags(void)
 {
-	if (!pFrom) // pFrom is not yet used
-		pFrom = m_pFirst;
-
 	if (m_vecFrags.getItemCount() > 0)
 		m_vecFrags.clear();
 
@@ -147,8 +145,9 @@ void pf_Fragments::cleanFrags(pf_Frag* pFrom)
 		m_vecFrags.addItem((void *) pf);
 	}
 	UT_ASSERT(pfLast && (pfLast->getType() == pf_Frag::PFT_EndOfDoc));
-	xxx_UT_DEBUGMSG(("SEVIOR: Found %d Frags dopos at end = %d \n",m_vecFrags.getItemCount(),getLast()->getPos()));
-	m_pLastFragClean = pfLast;
+	xxx_UT_DEBUGMSG(("Found %d Frags dopos at end = %d \n",m_vecFrags.getItemCount(),getLast()->getPos()));
+	m_bAreFragsClean = true;
+	setCache(NULL);
 }
 
 static void pf_fragments_clean_frags(void * p)
@@ -191,9 +190,6 @@ pf_Frag * pf_Fragments::getNthFrag(UT_uint32 nthFrag) const
 */
 pf_Frag * pf_Fragments::findFirstFragBeforePos(PT_DocPosition pos) const
 {
-    if(areFragsDirty())
-		cleanFragsConst();
-
 	UT_uint32 numFrags = getNumberOfFrags();
 #ifdef DEBUG
 	UT_uint32 numIters = 0;
@@ -211,13 +207,25 @@ pf_Frag * pf_Fragments::findFirstFragBeforePos(PT_DocPosition pos) const
 
 	pf_Frag* cache = getCache();
 	if (cache && pos >= cache->getPos() && pos < cache->getPos() + cache->getLength())
-	{
-		xxx_UT_DEBUGMSG(("JCA: Value cached\n"));
+   	{
 		return cache;
 	}
-	else
-		xxx_UT_DEBUGMSG(("JCA: Value not cached\n"));
-	
+//
+//Look in the next Frag now
+// 
+	if(cache)
+	{
+		cache = cache->getNext();
+		if (cache && pos >= cache->getPos() && pos < cache->getPos() + cache->getLength())
+		{
+			setCache(cache);
+			return cache;
+		}
+	}
+//
+// OK do a binary search.
+//
+
 	UT_sint32 diff = numFrags / 2;
 	UT_sint32 curFragNo = diff;
 	pf_Frag * curFrag = m_pLast;
@@ -276,8 +284,9 @@ UT_uint32 pf_Fragments::getFragNumber(const pf_Frag * pf) const
 UT_uint32 pf_Fragments::getNumberOfFrags() const
 {
 	if (areFragsDirty())
+	{
 		cleanFragsConst();
-
+	}
 	return m_vecFrags.getItemCount();
 }
 

@@ -229,7 +229,6 @@ bool pt_PieceTable::getSpanAttrProp(PL_StruxDocHandle sdh, UT_uint32 offset, boo
 		return _getSpanAttrPropHelper(pfTemp,ppAP);
 	}
 
-	UT_ASSERT(0);
 	*ppAP = NULL;
 	return false;
 }
