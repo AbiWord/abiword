@@ -81,9 +81,13 @@ mkdir -p /usr/lib/menu
 echo '?package(abisuite):needs=X11 section=Apps/Editors title="AbiWord" command="/usr/bin/X11/AbiWord"' > \
     /usr/lib/menu/abisuite
 
-echo "Installing GNOME desktiop icon at [/usr/share/pixmaps/abiword_48.png]..."
 mkdir -p /usr/share/pixmaps
+
+echo "Installing GNOME desktiop icon at [/usr/share/pixmaps/abiword_48.png]..."
 cp $SRCDIR/AbiSuite/icons/abiword_48.png /usr/share/pixmaps/abiword_48.png
+
+echo "Installing GNOME desktiop icon at [/usr/share/pixmaps/abiword_48.xpm]..."
+cp $SRCDIR/AbiSuite/icons/abiword_48.xpm /usr/share/pixmaps/abiword_48.xpm
 
 echo "Installing GNOME desktop hook at [/usr/share/gnome/apps/Applications/abiword.desktop]..."
 mkdir -p /usr/share/gnome/apps/Applications
