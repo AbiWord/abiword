@@ -44,6 +44,10 @@ XAP_Dialog * AP_Win32Dialog_Columns::static_constructor(XAP_DialogFactory * pFac
 	return p;
 }
 
+#ifdef _MSC_VER	// MSVC++ warns about using 'this' in initializer list.
+#pragma warning(disable: 4355)
+#endif
+
 AP_Win32Dialog_Columns::AP_Win32Dialog_Columns(XAP_DialogFactory * pDlgFactory,
 											   XAP_Dialog_Id id)
 	: AP_Dialog_Columns(pDlgFactory,id), _win32Dialog(this)
