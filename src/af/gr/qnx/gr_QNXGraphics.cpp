@@ -40,6 +40,14 @@
 #define DRAW_START DrawSetup();
 #define DRAW_END   DrawTeardown();
 
+/* Global font cache */
+struct _fcache {
+	struct _fcache *next;
+	struct _fcache *prev;
+	char 		   name[36];
+} *g_pFCache = NULL;	
+
+
 int GR_QNXGraphics::DrawSetup() {
 
 	//Don't do any of this if you are printing
@@ -108,6 +116,7 @@ int GR_QNXGraphics::DrawTeardown() {
 	return 0;
 }
 
+
 GR_QNXGraphics::GR_QNXGraphics(PtWidget_t * win, PtWidget_t * draw, XAP_App *app)
 {
 	m_pApp = app;
@@ -163,65 +172,24 @@ void GR_QNXGraphics::drawChars(const UT_UCSChar* pChars, int iCharOffset,
 	PgSetTextColor(m_currentColor);
 	PgFlush();		/* Just to clear out any drawing to be done ... */
 
-#if 0
-	char      *buffer;
-
-	if (!(buffer = (char *)malloc(iLength + 1))) {
-		printf("Failed buffer allocation \n");
-		return;
+	UT_UCSChar *pNChars, utb[150];  // arbitrary biggish size for utb
+	if (iLength < (sizeof(utb) / sizeof(utb[0]))) {
+		pNChars = utb;
+	} else {
+		pNChars = new UT_UCSChar[iLength];
+	}
+	for (int i = 0; i < iLength; i++) {
+		pNChars[i] = remapGlyph(pChars[i + iCharOffset], UT_FALSE);
 	}
 
-	int i;
-	for (i = 0; i<iLength; i++) {
-		buffer[i] = (char)remapGlyph(pChars[i], UT_FALSE);	//Bad I know convert from UTC later
+	//Was: (char *)(&pChars[iCharOffset]), iLength*sizeof(UT_UCSChar), 
+	PgDrawTextmx((char *)pNChars, iLength*sizeof(UT_UCSChar), &pos, Pg_TEXT_WIDECHAR);
+
+	if (pNChars != utb) {
+		delete [] pNChars;
 	}
-	buffer[i] = '\0';
-	
-	
-	//For some reason, I _NEED_ to set the BACK_FILL flag, and
-	//if I don't set the fill color things just work fine because
-	//the last fill that happened was to wipe out the text area
-	//with the appropriate color. 
-
-	//This method is no more than a stop gap.  It fails for use
-	//on the rulers and it fails for use when scrolling text.
-	//A new method must be found!
- 
-	//This is the prefered way
-	//PgDrawTextmx(buffer, iLength, &pos, 0);
-
-	//This way would be okay if it worked
-	//PgSetFillColor(Pg_TRANSPARENT);	
-	//PgDrawTextmx(buffer, iLength, &pos, Pg_BACK_FILL);
-
-	//This way is a total kludge (assumes last draw was for background)
-	//PgSetFillColor(Pg_PURPLE);
-	//PgSetStrokeColor(Pg_PURPLE);
-	//PgDrawTextmx(buffer, iLength, &pos, Pg_BACK_FILL);
-
-	//This way is even more of a kludge
-	//PgSetFillColor(Pg_CYAN);
-	//PgSetStrokeColor(Pg_CYAN);
-	//PgChromaOn();
-	//PgSetChroma(Pg_CYAN, Pg_CHROMA_DEST_MATCH | Pg_CHROMA_NODRAW); 
-	//PgDrawTextmx(buffer, iLength, &pos, Pg_BACK_FILL);
-	//PgChromaOff();
-
-
-	//This way seems to work ok, good to use
-	PgDrawTextmx(buffer, iLength, &pos, 0);
-	printf("Drawing %d,%d [%s] \n", pos.x, pos.y, buffer);
-
-	//We always need to flush the buffer since we free it
-	PgFlush();
-	free(buffer);	
-#else
-	// TODO: need remapGlyph() before the following function call
-	PgDrawTextmx((char *)(&pChars[iCharOffset]), iLength*sizeof(UT_UCSChar), 
-		   		  &pos, Pg_TEXT_WIDECHAR);
 
 	PgFlush();
-#endif
 
 	DRAW_END
 }
@@ -251,6 +219,33 @@ void GR_QNXGraphics::setFont(GR_Font * pFont)
 	}
 
 	m_pFont = new QNXFont(font);
+
+	/* At the same time, load the font metrics into
+       a local cache to speed up access as we use them! */
+	struct _fcache *tmp;
+	for (tmp = g_pFCache; tmp; tmp = tmp->next) {
+		if (strcmp(tmp->name, font) == 0) {
+			break;
+		}
+	}
+	if (tmp == NULL &&
+		(tmp = (struct _fcache *)malloc(sizeof(*tmp))) != NULL) {
+		strcpy(tmp->name, font);
+		tmp->next = g_pFCache;
+		tmp->prev = NULL;
+		g_pFCache = tmp;	
+
+		PfLoadMetrics(font);
+	} else if (tmp && tmp->prev) {
+		if ((tmp->prev->next = tmp->next)) {
+			tmp->next->prev = tmp->prev;
+		}
+		if ((tmp->next = g_pFCache)) {
+			g_pFCache->prev = tmp;
+		}
+		tmp->prev = NULL;
+	}
+
 	m_iAscentCache = m_iDescentCache = -1;
 }
 
@@ -261,26 +256,26 @@ UT_uint32 GR_QNXGraphics::getFontHeight()
 
 UT_uint32 GR_QNXGraphics::measureUnRemappedChar(const UT_UCSChar c)
 {
+	PhRect_t rect;
+	const char *font;
+	char 	 buffer[2];
+	int 	 indices, penpos;
+
 	if (c >= 256) {
 		UT_DEBUGMSG(("TODO: Support wide characters properly "));
 		return 0;  // TODO: doesn't grok Unicode
 	}
 
-	const char *font;
 	if (!m_pFont || !(font = m_pFont->getFont())) {
 		return 0;
 	}
 
-	PhRect_t rect;
-	char 	 buffer[2];
-	int 	 indices, penpos;
-
-	memset(&rect, 0, sizeof(rect));
 	buffer[0] = (char)c;
 	buffer[1] = '\0';
 	indices = 1;			
 	penpos = 0;			
 
+#if 1
 	PfExtentTextCharPositions(&rect, 		/* Rect extent */
 				  NULL,			/* Position offset */
 				  buffer,	    	/* Buffer to hit */
@@ -292,6 +287,14 @@ UT_uint32 GR_QNXGraphics::measureUnRemappedChar(const UT_UCSChar c)
 				  1,			/* Length of buffer (0 = use strlen) */
 				  0, 			/* Number of characters to skip */
 				  NULL);		/* Clipping rectangle? */
+#else
+	PfExtentText(&rect,
+				 NULL,
+				 font,
+				 buffer,
+				 1);
+	penpos = (rect.lr.x - min(rect.ul.x, 0) + 1) - rect.ul.x;
+#endif
 	return penpos;
 }
 
