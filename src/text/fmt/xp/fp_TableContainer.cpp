@@ -530,7 +530,7 @@ void fp_CellContainer::drawLines(fp_TableContainer * pBroke)
 		{
 			_drawLine(m_cTopColor, m_iTopStyle, iLeft, iTop, iRight, iTop);
 		}
-		if(m_bDrawRight && m_iRightStyle == LS_NORMAL)
+		if(m_bDrawRight)
 		{
 			_drawLine(m_cRightColor, m_iRightStyle, iRight, iTop, iRight, iBot);
 		}

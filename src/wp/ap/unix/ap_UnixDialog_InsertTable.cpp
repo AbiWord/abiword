@@ -108,7 +108,6 @@ GtkWidget * AP_UnixDialog_InsertTable::_constructWindow(void)
 	vboxMain = GTK_DIALOG(windowInsertTable)->vbox ;
 	gtk_container_set_border_width (GTK_CONTAINER (vboxMain), 10);	
 	gtk_container_add (GTK_CONTAINER (vboxMain), _constructWindowContents());
-	gtk_box_pack_start (GTK_BOX (vboxMain), m_wContents, FALSE, FALSE, 0);
 
 	abiAddStockButton ( GTK_DIALOG(windowInsertTable), GTK_STOCK_OK, BUTTON_OK ) ;
 	abiAddStockButton ( GTK_DIALOG(windowInsertTable), GTK_STOCK_CANCEL, BUTTON_CANCEL ) ;

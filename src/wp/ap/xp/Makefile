@@ -29,6 +29,7 @@ CPPSRCS=	ap_Args.cpp			\
 		ap_Dialog_New.cpp		\
 		ap_Dialog_Break.cpp		\
 		ap_Dialog_InsertTable.cpp	\
+		ap_Dialog_FormatTable.cpp	\
 		ap_Dialog_WordCount.cpp		\
 		ap_Dialog_Field.cpp		\
 		ap_Dialog_Goto.cpp		\

@@ -65,6 +65,7 @@ ifeq ($(ABI_FE), Mac)
 PLATFORM_OBJS += $(OBJDIR)/ap_$(ABI_FE)Dlg_Replace.$(OBJ_SUFFIX)	\
 		$(OBJDIR)/ap_$(ABI_FE)Dlg_Break.$(OBJ_SUFFIX)	\
 		$(OBJDIR)/ap_$(ABI_FE)Dlg_InsertTable.$(OBJ_SUFFIX)	\
+		$(OBJDIR)/ap_$(ABI_FE)Dlg_FormatTable.$(OBJ_SUFFIX)	\
 		$(OBJDIR)/ap_$(ABI_FE)Dlg_Insert_DateTime.$(OBJ_SUFFIX)	\
 		$(OBJDIR)/ap_$(ABI_FE)Tlbr_SizeCombo.$(OBJ_SUFFIX)	\
 		$(OBJDIR)/ap_$(ABI_FE)Tlbr_FontCombo.$(OBJ_SUFFIX)
@@ -72,6 +73,7 @@ else
 PLATFORM_OBJS += $(OBJDIR)/ap_$(ABI_FE)Dialog_Replace.$(OBJ_SUFFIX)	\
 		$(OBJDIR)/ap_$(ABI_FE)Dialog_Break.$(OBJ_SUFFIX)	\
 		$(OBJDIR)/ap_$(ABI_FE)Dialog_InsertTable.$(OBJ_SUFFIX)	\
+		$(OBJDIR)/ap_$(ABI_FE)Dialog_FormatTable.$(OBJ_SUFFIX)	\
 		$(OBJDIR)/ap_$(ABI_FE)Dialog_Insert_DateTime.$(OBJ_SUFFIX)	\
 		$(OBJDIR)/ap_$(ABI_FE)Toolbar_SizeCombo.$(OBJ_SUFFIX)	\
 		$(OBJDIR)/ap_$(ABI_FE)Toolbar_FontCombo.$(OBJ_SUFFIX)
@@ -88,6 +90,7 @@ ifeq ($(ABI_OPT_GNOME),1)
 PLATFORM_OBJS+=	$(OBJDIR)/ap_$(ABI_FE)$(ABI_GNOME_PREFIX)App.$(OBJ_SUFFIX)			\
 		$(OBJDIR)/ap_$(ABI_FE)$(ABI_GNOME_PREFIX)Dialog_Break.$(OBJ_SUFFIX) 		\
 		$(OBJDIR)/ap_$(ABI_FE)$(ABI_GNOME_PREFIX)Dialog_InsertTable.$(OBJ_SUFFIX)	\
+		$(OBJDIR)/ap_$(ABI_FE)$(ABI_GNOME_PREFIX)Dialog_FormatTable.$(OBJ_SUFFIX)	\
 		$(OBJDIR)/ap_$(ABI_FE)$(ABI_GNOME_PREFIX)Dialog_New.$(OBJ_SUFFIX)		\
 		$(OBJDIR)/ap_$(ABI_FE)$(ABI_GNOME_PREFIX)Dialog_Columns.$(OBJ_SUFFIX)		\
 		$(OBJDIR)/ap_$(ABI_FE)$(ABI_GNOME_PREFIX)Dialog_Field.$(OBJ_SUFFIX)		\
@@ -127,6 +130,7 @@ OBJS=		$(PLATFORM_OBJS)				\
 		$(OBJDIR)/ap_Dialog_New.$(OBJ_SUFFIX)		\
 		$(OBJDIR)/ap_Dialog_Break.$(OBJ_SUFFIX)		\
 		$(OBJDIR)/ap_Dialog_InsertTable.$(OBJ_SUFFIX)		\
+		$(OBJDIR)/ap_Dialog_FormatTable.$(OBJ_SUFFIX)		\
 		$(OBJDIR)/ap_Dialog_WordCount.$(OBJ_SUFFIX)	\
 		$(OBJDIR)/ap_Dialog_Field.$(OBJ_SUFFIX)		\
 		$(OBJDIR)/ap_Dialog_Goto.$(OBJ_SUFFIX)		\

@@ -74,6 +74,7 @@
 #   include "ap_UnixDialog_MarkRevisions.h"
 #   include "ap_UnixDialog_ListRevisions.h"
 #   include "ap_UnixDialog_MergeCells.h"
+#   include "ap_UnixDialog_FormatTable.h"
 #ifdef HAVE_CURL
 #	include "ap_UnixDialog_Download_File.h"
 #endif
@@ -233,6 +234,7 @@
      DeclareDialog(AP_DIALOG_ID_LIST_REVISIONS,		AP_UnixDialog_ListRevisions)
      DeclareDialog(AP_DIALOG_ID_INSERT_TABLE,		AP_UnixDialog_InsertTable)
      DeclareDialog(AP_DIALOG_ID_MERGE_CELLS,		AP_UnixDialog_MergeCells)
+	 DeclareDialog(AP_DIALOG_ID_FORMAT_TABLE,		AP_UnixDialog_FormatTable)
 #ifdef HAVE_CURL
 	DeclareDialog(AP_DIALOG_ID_DOWNLOAD_FILE,	AP_UnixDialog_Download_File)
 #endif

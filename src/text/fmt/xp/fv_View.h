@@ -450,9 +450,13 @@ public:
 	bool                cmdInsertCol(PT_DocPosition posTable, bool bBefore);
 	bool                cmdMergeCells(PT_DocPosition posSource, PT_DocPosition posDestination);
 	bool                _MergeCells( PT_DocPosition posDestination,PT_DocPosition posSource, bool bBefore);
-	bool	            setTableFormat(const XML_Char * properties[]);
 	bool                getCellParams(PT_DocPosition posCol, UT_sint32 *iLeft, 
-									   UT_sint32 *iRight,UT_sint32 *iTop, UT_sint32 *iBot);
+									  UT_sint32 *iRight,UT_sint32 *iTop, UT_sint32 *iBot);
+	bool				getCellLineStyle(PT_DocPosition posCell, UT_sint32 * pLeft, UT_sint32 * pRight,
+										 UT_sint32 * pTop, UT_sint32 * pBot);
+	bool				setCellFormat(const XML_Char * properties[]);
+	bool	            setTableFormat(const XML_Char * properties[]);
+	
 	UT_Error            cmdInsertTable(UT_sint32 numRows, UT_sint32 numCols, 
 									   const XML_Char * pPropsArray[]);
 	bool                _changeCellTo(PT_DocPosition posTable,UT_sint32 rowOld, 

@@ -132,16 +132,16 @@ static void s_delete_clicked(GtkWidget * widget,
 
 void AP_UnixDialog_Replace::activate(void)
 {
-        UT_ASSERT(m_windowMain);
+	UT_ASSERT(m_windowMain);
 	ConstructWindowName();
 	gtk_window_set_title (GTK_WINDOW (m_windowMain), m_WindowName);
-        gdk_window_raise(m_windowMain->window);
+	gdk_window_raise(m_windowMain->window);
 }
 
 
 void AP_UnixDialog_Replace::notifyActiveFrame(XAP_Frame *pFrame)
 {
-        UT_ASSERT(m_windowMain);
+	UT_ASSERT(m_windowMain);
 	ConstructWindowName();
 	gtk_window_set_title (GTK_WINDOW (m_windowMain), m_WindowName);
 }
@@ -163,9 +163,9 @@ void AP_UnixDialog_Replace::runModeless(XAP_Frame * pFrame)
 
 void AP_UnixDialog_Replace::event_Find(void)
 {
-	char * findEntryText;
-
-	findEntryText = (char *) gtk_entry_get_text(GTK_ENTRY(m_entryFind));
+	char * findEntryText = (char *) gtk_entry_get_text(GTK_ENTRY(m_entryFind));
+	if (strlen(findEntryText) == 0) // do nothing when the find field is empty
+		return;
 	
 	UT_UCSChar * findString;
 
@@ -250,9 +250,9 @@ void AP_UnixDialog_Replace::event_Cancel(void)
 void AP_UnixDialog_Replace::destroy(void)
 {
 	_storeWindowData();
-        modeless_cleanup();
+	modeless_cleanup();
 	abiDestroyWidget(m_windowMain);
-        m_windowMain = NULL;
+	m_windowMain = NULL;
 }
 
 /*****************************************************************/

@@ -34,6 +34,7 @@ CPPSRCS=		ap_$(ABI_FE)App.cpp			\
 			ap_$(ABI_FE)Dialog_New.cpp		\
 			ap_$(ABI_FE)Dialog_Break.cpp		\
 			ap_$(ABI_FE)Dialog_InsertTable.cpp		\
+			ap_$(ABI_FE)Dialog_FormatTable.cpp		\
 			ap_$(ABI_FE)Dialog_Field.cpp		\
 			ap_$(ABI_FE)Dialog_Goto.cpp		\
 			ap_$(ABI_FE)Dialog_Insert_DateTime.cpp	\

@@ -377,6 +377,12 @@ dcl(DLG_MergeCells_Right,	    	     "Merge Right")
 dcl(DLG_MergeCells_Above,	    	     "Merge Above")
 dcl(DLG_MergeCells_Below,	    	     "Merge Below")
 
+dcl(DLG_FormatTableTitle,	    	     "Format Table")
+dcl(DLG_FormatTable_Borders,	   	     "Borders")
+dcl(DLG_FormatTable_Background,    	     "Background")
+dcl(DLG_FormatTable_Border_Color,    	 "Border color:")
+dcl(DLG_FormatTable_Preview,	   	     "Preview")
+dcl(DLG_FormatTable_Apply_To,	   	     "Apply to:")
 
 dcl(DLG_Field_FieldTitle,				"Field")
 dcl(DLG_Field_Types,					"&Types:")

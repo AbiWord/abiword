@@ -78,6 +78,7 @@
 #include "ap_Dialog_MarkRevisions.h"
 #include "ap_Dialog_ListRevisions.h"
 #include "ap_Dialog_MergeCells.h"
+#include "ap_Dialog_FormatTable.h"
 
 #include "xap_App.h"
 #include "xap_DialogFactory.h"
@@ -272,6 +273,7 @@ public:
 	static EV_EditMethod_Fn insertOgonekData;
 
 	static EV_EditMethod_Fn mergeCells;
+	static EV_EditMethod_Fn formatTable;
 
 	static EV_EditMethod_Fn replaceChar;
 
@@ -724,7 +726,7 @@ static EV_EditMethod s_arrayEditMethods[] =
 	EV_EditMethod(NF(fontFamily),			_D_,	""),
 	EV_EditMethod(NF(fontSize), 			_D_,	""),
 	EV_EditMethod(NF(formatPainter),		0,	""),
-
+	EV_EditMethod(NF(formatTable),			0,		""),
 
 	// g
 	EV_EditMethod(NF(go),					0,	""),
@@ -4347,6 +4349,45 @@ Defun1(mergeCells)
 	ABIWORD_VIEW;
 
 	s_doMergeCellsDlg(pView);
+	return true;
+}
+
+/***********************************************************************************/
+
+static bool s_doFormatTableDlg(FV_View * pView)
+{
+	XAP_Frame * pFrame = static_cast<XAP_Frame *> ( pView->getParentData());
+	UT_ASSERT(pFrame);
+
+	pFrame->raise();
+
+	XAP_DialogFactory * pDialogFactory
+		= (XAP_DialogFactory *)(pFrame->getDialogFactory());
+
+	AP_Dialog_FormatTable * pDialog
+		= (AP_Dialog_FormatTable *)(pDialogFactory->requestDialog(AP_DIALOG_ID_FORMAT_TABLE));
+	UT_ASSERT(pDialog);
+	if (!pDialog)
+		return false;
+
+	if(pDialog->isRunning() == true)
+	{
+		pDialog->activate();
+	}
+	else
+	{
+		pDialog->runModeless(pFrame);
+	}
+	return true;
+}
+
+
+Defun1(formatTable)
+{
+	CHECK_FRAME;
+	ABIWORD_VIEW;
+
+	s_doFormatTableDlg(pView);
 	return true;
 }
 

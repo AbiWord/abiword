@@ -35,6 +35,7 @@
 #include <gtk/gtkframe.h>
 #include <gtk/gtksignal.h>
 #include <gtk/gtkbutton.h>
+/*#include "gtkmarshalers.h"*/
 #include "gtkintl.h"
 
 #include "xap_UnixGtkColorPicker.h"
@@ -161,17 +162,12 @@ gtk_color_picker_class_init (GtkColorPickerClass *class)
 	parent_class = g_type_class_peek_parent (class);
 	
 	color_picker_signals[COLOR_SET] =
-		g_signal_new ("color_set",
-			      G_TYPE_FROM_CLASS (gobject_class),
-			      G_SIGNAL_RUN_FIRST,
-			      G_STRUCT_OFFSET (GtkColorPickerClass, color_set),
-			      NULL, NULL,
-			      NULL/*_gnome_marshal_VOID__UINT_UINT_UINT_UINT*/,
-			      G_TYPE_NONE, 4,
-			      G_TYPE_UINT,
-			      G_TYPE_UINT,
-			      G_TYPE_UINT,
-			      G_TYPE_UINT);
+    gtk_signal_new ("color_set",
+                    GTK_RUN_FIRST,
+                    GTK_CLASS_TYPE (object_class),
+                    GTK_SIGNAL_OFFSET (GtkColorPickerClass, color_set),
+					g_cclosure_marshal_VOID__VOID/*_gtk_marshal_VOID__VOID*/,
+					GTK_TYPE_NONE, 0);
 
 	gobject_class->get_property = gtk_color_picker_get_property;
 	gobject_class->set_property = gtk_color_picker_set_property;

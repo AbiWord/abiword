@@ -5089,6 +5089,100 @@ bool FV_View::getCellParams(PT_DocPosition posCell, UT_sint32 * pLeft, UT_sint32
 	return true;
 }
 
+/*!
+ * Return the left,right,top and bottom line styles of the cell containing
+ * the position cellPos. Values will be -1 if the style is not set.
+ */
+bool FV_View::getCellLineStyle(PT_DocPosition posCell, UT_sint32 * pLeft, UT_sint32 * pRight,
+							 UT_sint32 * pTop, UT_sint32 * pBot)
+{
+	PL_StruxDocHandle cellSDH;
+	bool bres = m_pDoc->getStruxOfTypeFromPosition(posCell,PTX_SectionCell,&cellSDH);
+	if(!bres)
+	{
+		return false;
+	}
+	const char * pszLeft;
+	const char * pszRight;
+	const char * pszTop;
+	const char * pszBot;
+	m_pDoc->getPropertyFromSDH(cellSDH,"left-style",&pszLeft);
+	if(pszLeft && *pszLeft)
+	{
+		*pLeft = atoi(pszLeft);
+	}
+	else
+	{
+		*pLeft = -1;
+	}
+	m_pDoc->getPropertyFromSDH(cellSDH,"right-style",&pszRight);
+	if(pszRight && *pszRight)
+	{
+		*pRight = atoi(pszRight);
+	}
+	else
+	{
+		*pRight = -1;
+	}
+	m_pDoc->getPropertyFromSDH(cellSDH,"top-style",&pszTop);
+	if(pszTop && *pszTop)
+	{
+		*pTop = atoi(pszTop);
+	}
+	else
+	{
+		*pTop = -1;
+	}
+	m_pDoc->getPropertyFromSDH(cellSDH,"bottom-style",&pszBot);
+	if(pszBot && *pszBot)
+	{
+		*pBot = atoi(pszBot);
+	}
+	else
+	{
+		*pBot = -1;
+	}
+	return true;
+}
+
+/*!
+ */
+bool FV_View::setCellFormat(const XML_Char * properties[])
+{
+	bool bRet;
+	setCursorWait();
+	//
+	// Signal PieceTable Change
+	_saveAndNotifyPieceTableChange();
+
+	PT_DocPosition posStart = getPoint();
+	PT_DocPosition posEnd = posStart;
+
+	if (!isSelectionEmpty())
+	{
+		if (m_iSelectionAnchor < posStart)
+			posStart = m_iSelectionAnchor;
+		else
+			posEnd = m_iSelectionAnchor;
+		if(posStart < 2)
+		{
+			posStart = 2;
+		}
+	}
+
+	bRet = m_pDoc->changeStruxFmt(PTC_AddFmt,posStart,posEnd,NULL,properties,PTX_SectionCell);
+
+	_generalUpdate();
+
+	// Signal PieceTable Changes have finished
+	_restorePieceTableState();
+
+	_ensureInsertionPointOnScreen();
+	clearCursorWait();
+	notifyListeners(AV_CHG_MOTION);
+	return bRet;
+}
+
 bool FV_View::setTableFormat(const XML_Char * properties[])
 {
 	bool bRet;

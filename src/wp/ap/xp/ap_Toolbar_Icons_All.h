@@ -37,6 +37,12 @@
 
 	// Include each toolbar icon that we want to build.
 
+#   include "tb_LineTop.xpm"
+#   include "tb_LineBottom.xpm"
+#   include "tb_LineLeft.xpm"
+#   include "tb_LineRight.xpm"
+#   include "tb_LineNone.xpm"
+#   include "tb_LineAll.xpm"
 #   include "tb_MergeAbove.xpm"
 #   include "tb_MergeBelow.xpm"
 #   include "tb_MergeLeft.xpm"
@@ -175,6 +181,13 @@
 	DefineToolbarIcon(tb_1column_xpm)
 	DefineToolbarIcon(tb_2column_xpm)
 	DefineToolbarIcon(tb_3column_xpm)
+
+	DefineToolbarIcon(tb_LineTop_xpm)
+	DefineToolbarIcon(tb_LineBottom_xpm)
+	DefineToolbarIcon(tb_LineLeft_xpm)
+	DefineToolbarIcon(tb_LineRight_xpm)
+	DefineToolbarIcon(tb_LineNone_xpm)
+	DefineToolbarIcon(tb_LineAll_xpm)
 
 	DefineToolbarIcon(tb_MergeAbove_xpm)
 	DefineToolbarIcon(tb_MergeBelow_xpm)

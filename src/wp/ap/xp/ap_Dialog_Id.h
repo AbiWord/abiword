@@ -56,6 +56,7 @@ enum _AP_Dialog_Id
 	AP_DIALOG_ID_LIST_REVISIONS,
 	AP_DIALOG_ID_INSERT_TABLE,
 	AP_DIALOG_ID_MERGE_CELLS,
+	AP_DIALOG_ID_FORMAT_TABLE,
 #ifdef HAVE_CURL
 	AP_DIALOG_ID_DOWNLOAD_FILE,			/* threaded download of a file, with a cancel-button */	
 #endif

@@ -5,20 +5,48 @@ RunInTerminal=false
 [Project DBase]
 ShowLocals=true
 
-[filelist]
-0=/home/uwog/Documents/Projects/C/abi-dev/abi/src/wp/ap/xp/ap_Dialog_FormatTable.cpp
-1=/home/uwog/Documents/Projects/C/abi-dev/abi/src/wp/ap/xp/ap_Dialog_FormatTable.h
-2=/home/uwog/Documents/Projects/C/abi-dev/abi/src/wp/ap/unix/ap_UnixDialog_FormatTable.h
-3=/home/uwog/Documents/Projects/C/abi-dev/abi/src/wp/ap/unix/ap_UnixDialog_FormatTable.cpp
-
 [filenumbers]
 0=1
 1=29
 2=29
-3=1
+3=231
+4=169
+5=72
+6=138
+7=542
+8=63
+9=18
 
 [filemarkers]
 0=
 1=
 2=
 3=
+4=
+5=
+6=
+7=
+8=
+9=
+
+[filelist]
+0=/home/uwog/Documents/Projects/C/abi-dev/abi/src/wp/ap/xp/ap_Dialog_FormatTable.cpp
+1=/home/uwog/Documents/Projects/C/abi-dev/abi/src/wp/ap/xp/ap_Dialog_FormatTable.h
+2=/home/uwog/Documents/Projects/C/abi-dev/abi/src/wp/ap/unix/ap_UnixDialog_FormatTable.h
+3=/home/uwog/Documents/Projects/C/abi-dev/abi/src/wp/ap/unix/ap_UnixDialog_FormatTable.cpp
+4=/home/uwog/Documents/Projects/C/abi-dev/abi/src/af/xap/unix/xap_UnixGtkColorPicker.c
+5=/home/uwog/Documents/Projects/C/abi-dev/abi/src/af/xap/unix/xap_UnixGtkColorPicker.h
+6=/home/uwog/garnome-0.14.1/gnome/gtk+/work/gtk+-2.0.6/gtk/gtkbutton.c
+7=/home/uwog/garnome-0.14.1/gnome/libgnomeui/work/libgnomeui-2.0.4/libgnomeui/gnome-color-picker.c
+8=/home/uwog/garnome-0.14.1/gnome/gtk+/work/gtk+-2.0.6/gtk/gtkbutton.h
+9=/home/uwog/Documents/Projects/C/abi-dev/abi/src/wp/ap/unix/ap_UnixDialog_Tab.cpp
+
+[find_text]
+0=m_basedonName
+1=parent_class =
+2=gtk_button_constructor
+3=parent_class
+4=GTK_OBJECT_CLASS
+
+[find_in_files]
+0=snprintf
