@@ -158,7 +158,7 @@ BOOL AP_Win32Dialog_SplitCells::_onInitDialog(HWND hWnd, WPARAM wParam, LPARAM l
 
 
 
-void AP_Win32Dialog_SplitCells::setSensitivity(AP_Dialog_SplitCells::SplitType splitThis, bool bSens)
+void AP_Win32Dialog_SplitCells::setSensitivity(AP_CellSplitType splitThis, bool bSens)
 
 {
 

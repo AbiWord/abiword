@@ -54,7 +54,7 @@ void AP_CocoaDialog_SplitCells::runModeless(XAP_Frame * pFrame)
 	startUpdater();
 }
 
-void AP_CocoaDialog_SplitCells::setSensitivity(AP_Dialog_SplitCells::SplitType mergeThis, bool bSens)
+void AP_CocoaDialog_SplitCells::setSensitivity(AP_CellSplitType mergeThis, bool bSens)
 {
 	[m_dlg setEnableButton:mergeThis to:bSens];
 }
@@ -152,60 +152,60 @@ void AP_CocoaDialog_SplitCells::_storeWindowData(void)
 
 - (IBAction)splitLeft:(id)sender
 {
-	_xap->setSplitType(AP_Dialog_SplitCells::hori_left);
+	_xap->setSplitType(hori_left);
 	_xap->onSplit();
 }
 
 - (IBAction)splitMiddleH:(id)sender
 {
-	_xap->setSplitType(AP_Dialog_SplitCells::hori_mid);
+	_xap->setSplitType(hori_mid);
 	_xap->onSplit();
 }
 
 - (IBAction)splitRight:(id)sender
 {
-	_xap->setSplitType(AP_Dialog_SplitCells::hori_right);
+	_xap->setSplitType(hori_right);
 	_xap->onSplit();
 }
 
 - (IBAction)splitTop:(id)sender
 {
-	_xap->setSplitType(AP_Dialog_SplitCells::vert_above);
+	_xap->setSplitType(vert_above);
 	_xap->onSplit();
 }
 
 - (IBAction)splitMiddleV:(id)sender
 {
-	_xap->setSplitType(AP_Dialog_SplitCells::vert_mid);
+	_xap->setSplitType(vert_mid);
 	_xap->onSplit();
 }
 
 - (IBAction)splitBottom:(id)sender
 {
-	_xap->setSplitType(AP_Dialog_SplitCells::vert_below);
+	_xap->setSplitType(vert_below);
 	_xap->onSplit();
 }
 
-- (void)setEnableButton:(AP_Dialog_SplitCells::SplitType)btn to:(bool)val
+- (void)setEnableButton:(AP_CellSplitType)btn to:(bool)val
 {
 	switch(btn)
 	{
-	case AP_Dialog_SplitCells::hori_left:
+	case hori_left:
 		[_splitLeftBtn setEnabled:(val?YES:NO)];
 		break;
-	case AP_Dialog_SplitCells::hori_mid:
+	case hori_mid:
 		[_splitMiddleHBtn setEnabled:(val?YES:NO)];
 		break;
-	case AP_Dialog_SplitCells::hori_right:
+	case hori_right:
 		[_splitRightBtn setEnabled:(val?YES:NO)];
 		break;
-	case AP_Dialog_SplitCells::vert_above:
+	case vert_above:
 		[_splitTopBtn setEnabled:(val?YES:NO)];
 		break;
-	case AP_Dialog_SplitCells::vert_mid:
+	case vert_mid:
 		[_splitMiddleVBtn setEnabled:(val?YES:NO)];
 		break;
-	case AP_Dialog_SplitCells::vert_below:
+	case vert_below:
 		[_splitBottomBtn setEnabled:(val?YES:NO)];
 		break;
 	default:

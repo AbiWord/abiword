@@ -41,7 +41,7 @@ static void s_split_left(GtkWidget *widget, gpointer data )
 {
 	AP_UnixDialog_SplitCells * dlg = static_cast<AP_UnixDialog_SplitCells *>(data);
 	UT_return_if_fail(widget && dlg);
-	dlg->setSplitType(AP_Dialog_SplitCells::hori_left);
+	dlg->setSplitType(hori_left);
 	dlg->onSplit();
 }
 
@@ -50,7 +50,7 @@ static void s_split_hori_mid(GtkWidget *widget, gpointer data )
 {
 	AP_UnixDialog_SplitCells * dlg = static_cast<AP_UnixDialog_SplitCells *>(data);
 	UT_return_if_fail(widget && dlg);
-	dlg->setSplitType(AP_Dialog_SplitCells::hori_mid);
+	dlg->setSplitType(hori_mid);
 	dlg->onSplit();
 }
 
@@ -58,7 +58,7 @@ static void s_split_right(GtkWidget *widget, gpointer data )
 {
 	AP_UnixDialog_SplitCells * dlg = static_cast<AP_UnixDialog_SplitCells *>(data);
 	UT_return_if_fail(widget && dlg);
-	dlg->setSplitType(AP_Dialog_SplitCells::hori_right);
+	dlg->setSplitType(hori_right);
 	dlg->onSplit();
 }
 
@@ -71,7 +71,7 @@ static void s_split_above(GtkWidget *widget, gpointer data )
 {
 	AP_UnixDialog_SplitCells * dlg = static_cast<AP_UnixDialog_SplitCells *>(data);
 	UT_return_if_fail(widget && dlg);
-	dlg->setSplitType(AP_Dialog_SplitCells::vert_above);
+	dlg->setSplitType(vert_above);
 	dlg->onSplit();
 }
 
@@ -80,7 +80,7 @@ static void s_split_vert_mid(GtkWidget *widget, gpointer data )
 {
 	AP_UnixDialog_SplitCells * dlg = static_cast<AP_UnixDialog_SplitCells *>(data);
 	UT_return_if_fail(widget && dlg);
-	dlg->setSplitType(AP_Dialog_SplitCells::vert_mid);
+	dlg->setSplitType(vert_mid);
 	dlg->onSplit();
 }
 
@@ -88,7 +88,7 @@ static void s_split_below(GtkWidget *widget, gpointer data )
 {
 	AP_UnixDialog_SplitCells * dlg = static_cast<AP_UnixDialog_SplitCells *>(data);
 	UT_return_if_fail(widget && dlg);
-	dlg->setSplitType(AP_Dialog_SplitCells::vert_below);
+	dlg->setSplitType(vert_below);
 	dlg->onSplit();
 }
 
@@ -141,31 +141,31 @@ void AP_UnixDialog_SplitCells::runModeless(XAP_Frame * pFrame)
 	startUpdater();
 }
 
-void AP_UnixDialog_SplitCells::setSensitivity(AP_Dialog_SplitCells::SplitType splitThis, bool bSens)
+void AP_UnixDialog_SplitCells::setSensitivity(AP_CellSplitType splitThis, bool bSens)
 {
 	switch(splitThis)
 	{
-	case AP_Dialog_SplitCells::hori_left:
+	case hori_left:
 		gtk_widget_set_sensitive( m_wSplitLeft, bSens);
 		gtk_widget_set_sensitive( m_lwSplitLeft, bSens);
 		break;
-	case AP_Dialog_SplitCells::hori_mid:
+	case hori_mid:
 		gtk_widget_set_sensitive( m_wSplitHoriMid, bSens);
 		gtk_widget_set_sensitive( m_lwSplitHoriMid, bSens);
 		break;
-	case AP_Dialog_SplitCells::hori_right:
+	case hori_right:
 		gtk_widget_set_sensitive( m_wSplitRight, bSens);
 		gtk_widget_set_sensitive( m_lwSplitRight, bSens);
 		break;
-	case AP_Dialog_SplitCells::vert_above:
+	case vert_above:
 		gtk_widget_set_sensitive( m_wSplitAbove, bSens);
 		gtk_widget_set_sensitive( m_lwSplitAbove, bSens);
 		break;
-	case AP_Dialog_SplitCells::vert_mid:
+	case vert_mid:
 		gtk_widget_set_sensitive( m_wSplitVertMid, bSens);
 		gtk_widget_set_sensitive( m_lwSplitVertMid, bSens);
 		break;
-	case AP_Dialog_SplitCells::vert_below:
+	case vert_below:
 		gtk_widget_set_sensitive( m_wSplitBelow, bSens);
 		gtk_widget_set_sensitive( m_lwSplitBelow, bSens);
 		break;

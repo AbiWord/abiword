@@ -159,7 +159,7 @@ void AP_UnixDialog_Lists::closeClicked(void)
 
 void AP_UnixDialog_Lists::runModal( XAP_Frame * pFrame)
 {
-	List_Type  savedListType;
+	FL_ListType  savedListType;
 	setModal();
 	
 	GtkWidget * mainWindow = _constructWindow();
@@ -406,7 +406,7 @@ void  AP_UnixDialog_Lists::styleChanged(gint type)
 void  AP_UnixDialog_Lists::setListTypeFromWidget(void)
 {
 	GtkWidget * wlisttype=gtk_menu_get_active(GTK_MENU(m_wListStyle_menu));
-	setNewListType(static_cast<List_Type>(GPOINTER_TO_INT(g_object_get_data(G_OBJECT(wlisttype), "user_data"))));
+	setNewListType(static_cast<FL_ListType>(GPOINTER_TO_INT(g_object_get_data(G_OBJECT(wlisttype), "user_data"))));
 }
 
 /*!
@@ -1237,7 +1237,7 @@ void AP_UnixDialog_Lists::loadXPDataIntoLocal(void)
 
 	//
 	// Now set the list type and style
-	List_Type save = getNewListType();
+	FL_ListType save = getNewListType();
 	if(getNewListType() == NOT_A_LIST)
 	{
 		styleChanged(0);

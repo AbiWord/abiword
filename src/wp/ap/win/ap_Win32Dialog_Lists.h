@@ -76,8 +76,8 @@ private:
 	void					_previewExposed();
 	void					_setDisplayedData();	// data -> "view"
 	void					_getDisplayedData(UT_sint32 controlId = -1);	// "view" -> data
-	List_Type				_getListTypeFromCombos() const;
-	void					_setListType(List_Type type);
+	FL_ListType				_getListTypeFromCombos() const;
+	void					_setListType(FL_ListType type);
 	void					_selectFont();
 	virtual const XML_Char*	_getDingbatsFontName() const;
 

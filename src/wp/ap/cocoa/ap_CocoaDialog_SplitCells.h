@@ -43,7 +43,7 @@ public:
 
 	// callbacks can fire these events
 	void			event_Close(void);
-	virtual void            setSensitivity(AP_Dialog_SplitCells::SplitType splittype, bool bsens);
+	virtual void            setSensitivity(AP_CellSplitType splittype, bool bsens);
 	virtual void            destroy(void);
 	virtual void            activate(void);
 	virtual void            notifyActiveFrame(XAP_Frame * pFrame);
@@ -71,7 +71,7 @@ private:
 - (IBAction)splitTop:(id)sender;
 - (IBAction)splitMiddleV:(id)sender;
 - (IBAction)splitBottom:(id)sender;
-- (void)setEnableButton:(AP_Dialog_SplitCells::SplitType)btn to:(bool)val;
+- (void)setEnableButton:(AP_CellSplitType)btn to:(bool)val;
 
 @end
 
