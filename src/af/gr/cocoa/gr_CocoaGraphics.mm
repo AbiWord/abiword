@@ -56,7 +56,8 @@
 # endif
 #endif
 
-#define LOCK_CONTEXT__ UT_ASSERT(m_viewLocker)
+#define CONTEXT_LOCKED__ m_viewLocker
+#define LOCK_CONTEXT__   UT_ASSERT(CONTEXT_LOCKED__)
 
 /*#define LOCK_CONTEXT__	StNSViewLocker locker(m_pWin); \
 								m_CGContext = CG_CONTEXT__; \
@@ -135,6 +136,7 @@ GR_CocoaGraphics::GR_CocoaGraphics(NSView * win, XAP_App * app)
 	m_lineStyle(LINE_SOLID),
 	m_screenResolution(0),
 	m_bIsPrinting(false),
+	m_bIsDrawing(false),
 	m_viewLocker(NULL),
 	m_fontMetricsTextStorage(nil),
 	m_fontMetricsLayoutManager(nil),
@@ -199,11 +201,13 @@ GR_CocoaGraphics::~GR_CocoaGraphics()
 
 void GR_CocoaGraphics::fillNSRect (NSRect & aRect, NSColor * color)
 {
-	::CGContextSaveGState(m_CGContext);
-	[color set];
-	::CGContextFillRect (m_CGContext, ::CGRectMake(aRect.origin.x, aRect.origin.y, 
-	                                                aRect.size.width, aRect.size.height));
-	::CGContextRestoreGState(m_CGContext);
+	if (CONTEXT_LOCKED__) {
+		::CGContextSaveGState(m_CGContext);
+		[color set];
+		::CGContextFillRect (m_CGContext, ::CGRectMake(aRect.origin.x, aRect.origin.y, 
+													   aRect.size.width, aRect.size.height));
+		::CGContextRestoreGState(m_CGContext);
+	}
 }
 
 void GR_CocoaGraphics::_beginPaint (void)
@@ -988,10 +992,8 @@ void GR_CocoaGraphics::drawImage(GR_Image* pImg, UT_sint32 xDest, UT_sint32 yDes
 
 void GR_CocoaGraphics::flush(void)
 {
-	// As far as I can tell, only the cursor calls this, and we really don't want to mark the whole view
-	// for re-display just because the cursor needs an update.
-	// [m_pWin setNeedsDisplay:YES];
-	[m_pWin displayIfNeeded];
+	if (!m_bIsDrawing)
+		[m_pWin displayIfNeeded];
 }
 
 void GR_CocoaGraphics::setColorSpace(GR_Graphics::ColorSpace /* c */)
@@ -1174,7 +1176,10 @@ bool GR_CocoaGraphics::_callUpdateCallback(NSRect * aRect)
 	if (m_updateCallback == NULL) {
 		return false;
 	}
-	return (*m_updateCallback) (aRect, this, m_updateCBparam);
+	m_bIsDrawing = true;
+	bool ret = (*m_updateCallback) (aRect, this, m_updateCBparam);
+	m_bIsDrawing = false;
+	return ret;
 }
 
 bool GR_CocoaGraphics::_isFlipped()

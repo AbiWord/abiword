@@ -23,6 +23,7 @@
 #include "ut_debugmsg.h"
 
 #include "ev_EditMethod.h"
+
 #include "xap_CocoaApp.h"
 #include "xap_CocoaToolPalette.h"
 #include "xap_App.h"
@@ -86,6 +87,14 @@ XAP_CocoaAppController* XAP_AppController_Instance = nil;
 		[self applicationOpenUntitledFile:NSApp];
 	}
 	[XAP_CocoaToolPalette instance:self];
+}
+
+- (NSApplicationTerminateReply)applicationShouldTerminate:(NSApplication *)sender
+{
+	UT_DEBUGMSG(("- (NSApplicationTerminateReply)applicationShouldTerminate:(NSApplication *)sender\n"));
+	UT_UCS4String ucs4_empty;
+	bool bQuit = ev_EditMethod_invoke("querySaveAndExit", ucs4_empty);
+	return (bQuit ? NSTerminateNow : NSTerminateCancel);
 }
 
 - (void)applicationWillTerminate:(NSNotification *)aNotification

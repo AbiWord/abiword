@@ -210,9 +210,8 @@ private:
 	
 	UT_uint32				m_screenResolution;
 	bool					m_bIsPrinting;
-	
-	
-	
+	bool					m_bIsDrawing;
+
 public:		//HACK	
 	NSColor	*			m_3dColors[COUNT_3D_COLORS];
 private:

@@ -3367,7 +3367,8 @@ Defun(querySaveAndExit)
 			}
 		}
 #endif
-
+	}
+	if (pApp->getFrameCount()) {
 		UT_uint32 ndx = pApp->getFrameCount();
 
 		// loop over windows, but stop if one can't close
@@ -3382,9 +3383,6 @@ Defun(querySaveAndExit)
 
 			ndx--;
 		}
-	}
-	else {
-		bRet = true;
 	}
 	
 	if (bRet)

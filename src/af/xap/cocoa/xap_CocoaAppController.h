@@ -46,6 +46,7 @@ class XAP_Frame;
 - (void)applicationWillFinishLaunching:(NSNotification *)aNotification;
 - (void)applicationDidFinishLaunching:(NSNotification *)aNotification;
 
+- (NSApplicationTerminateReply)applicationShouldTerminate:(NSApplication *)sender;
 - (void)applicationWillTerminate:(NSNotification *)aNotification;
 
 - (BOOL)application:(NSApplication *)theApplication openFile:(NSString *)filename;
