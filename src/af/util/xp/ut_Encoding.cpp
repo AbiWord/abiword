@@ -262,11 +262,11 @@ UT_Encoding::UT_Encoding()
 			UT_DEBUGMSG(("Encoding '%s' = ",s_Table[iCheckIndex].encs[0]));
 			for (iAltIndex = 0; (szEnc = s_Table[iCheckIndex].encs[iAltIndex]); ++iAltIndex)
 			{
-				iconv_t iconv_handle = iconv_open(szEnc,szEnc);
-				if (iconv_handle != (iconv_t)-1)
+				UT_iconv_t iconv_handle = UT_iconv_open(szEnc,szEnc);
+				if (UT_iconv_isValid(iconv_handle))
 				{
 					bFound = true;
-					iconv_close(iconv_handle);
+					UT_iconv_close(iconv_handle);
 					s_Table[iOkayIndex].encs[0] = szEnc;
 					s_Table[iOkayIndex].encs[1] = 0;
 					s_Table[iOkayIndex].desc = szName;

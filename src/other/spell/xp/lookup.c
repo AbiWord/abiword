@@ -47,6 +47,9 @@ static char Rcs_Id[] =
 
 /*
  * $Log$
+ * Revision 1.6  2001/08/10 18:32:40  dom
+ * Spelling and iconv updates. god, i hate iconv
+ *
  * Revision 1.5  2001/08/10 09:57:49  hub
  * Patch by sobomax@FreeBSD.org
  * #include "iconv.h" directive is missed from src/other/spell/xp/lookup.c and
@@ -143,7 +146,7 @@ static char Rcs_Id[] =
 #include <ctype.h>
 
 #include "ispell.h"
-#include "iconv.h"
+#include "ut_iconv.h"
 #include "msgs.h"
 
 #if 0
@@ -700,17 +703,17 @@ ispell_state_t *alloc_ispell_struct() {
 	ispell_state_t *ret;
 	ret = (ispell_state_t *)calloc(1, sizeof(ispell_state_t));
 	ret->translate_in = 
-	ret->translate_out = (iconv_t)-1;
+	ret->translate_out = (UT_iconv_t)-1;
 
 	return ret;
 }
 
 void free_ispell_struct(ispell_state_t *istate) {
 	if(istate) {
-	  if (istate->translate_in != (iconv_t)-1)
-	    iconv_close (istate->translate_in);
-	  if (istate->translate_out != (iconv_t)-1)
-	    iconv_close (istate->translate_out);
+	  if (UT_iconv_isValid(istate->translate_in))
+	    UT_iconv_close (istate->translate_in);
+	  if (UT_iconv_isValid(istate->translate_out))
+	    UT_iconv_close (istate->translate_out);
 	  
 	  free(istate);
 	}

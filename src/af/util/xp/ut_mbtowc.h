@@ -52,7 +52,7 @@ public:
  private:
   char m_buf[MB_LEN_MAX];
   int m_bufLen;
-  iconv_t cd;
+  UT_iconv_t cd;
 };
 
 #endif

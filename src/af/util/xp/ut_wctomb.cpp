@@ -19,7 +19,6 @@
 
 #include <string.h>
 #include "ut_wctomb.h"
-#include "ut_iconv.h"
 
 #if 0
 /*
@@ -161,35 +160,35 @@ void UT_Wctomb::initialize()
 
 void UT_Wctomb::setOutCharset(const char* charset)
 {
-    iconv_close(cd);
-    cd = iconv_open(charset,"UCS-2");
+    UT_iconv_close(cd);
+    cd = UT_iconv_open(charset,"UCS-2");
     //UT_ASSERT(cd!=(iconv_t)-1); //it's better to return "?" instead of crashing
 };
 
 UT_Wctomb::UT_Wctomb(const char* to_charset)
 {
-    cd = iconv_open(to_charset,"UCS-2");
+    cd = UT_iconv_open(to_charset,"UCS-2");
     //UT_ASSERT(cd!=(iconv_t)-1); //it's better to return "?" instead of crashing
 };
 
 UT_Wctomb::UT_Wctomb()
 {
-    cd = iconv_open(XAP_EncodingManager::get_instance()->getNative8BitEncodingName(),"UCS-2");
-    UT_ASSERT(cd!=(iconv_t)-1);
+    cd = UT_iconv_open(XAP_EncodingManager::get_instance()->getNative8BitEncodingName(),"UCS-2");
+    UT_ASSERT(UT_iconv_isValid(cd));
 };
 
 UT_Wctomb::UT_Wctomb(const UT_Wctomb& v)
 {
 	// Shouldn't a copy also copy the encoding?
-    cd = iconv_open(XAP_EncodingManager::get_instance()->getNative8BitEncodingName(),"UCS-2");
-    UT_ASSERT(cd!=(iconv_t)-1);
+    cd = UT_iconv_open(XAP_EncodingManager::get_instance()->getNative8BitEncodingName(),"UCS-2");
+    UT_ASSERT(UT_iconv_isValid(cd));
 };
 
 UT_Wctomb::~UT_Wctomb()
 {
     /*libiconv is stupid - we'll get segfault if we don't check  - VH */
-    if (cd!=(iconv_t)-1)
-	    iconv_close(cd);
+    if (UT_iconv_isValid(cd))
+	    UT_iconv_close(cd);
 };
 
 int UT_Wctomb::wctomb(char * pC,int &length,wchar_t wc)
@@ -205,7 +204,7 @@ int UT_Wctomb::wctomb(char * pC,int &length,wchar_t wc)
 	buf[!swap] = b1;
     }
     size_t inlen = 2, outlen = 100;
-    size_t len = iconv(cd,const_cast<ICONV_CONST char **>(&ibuf),&inlen,&obuf,&outlen);
+    size_t len = UT_iconv(cd,&ibuf,&inlen,&obuf,&outlen);
     if (len==(size_t)-1)
 	return 0;
     length = 100-outlen;

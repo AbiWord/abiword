@@ -4,7 +4,10 @@
  * This file is the work of:
  *    Dom Lachowicz <dominicl@seas.upenn.edu>
  *    Mike Nordell  <tamlin@alognet.se>
- *    and various members of the GLib team (http://www.gtk.org)
+ *
+ *    The UT_convert method was completed by Dom and Mike and was
+ *    based upon work done by various members of the GLib team 
+ *    (http://www.gtk.org)
  *
  * This program is free software; you can redistribute it and/or
  * modify it under the terms of the GNU General Public License
@@ -26,15 +29,34 @@
 #include <string.h>
 #include <stdlib.h>
 #include <errno.h>
-#include <string.h>
-#include <ut_debugmsg.h>
 
 #include "xap_EncodingManager.h"
+
+/************************************************************************/
+/************************************************************************/
+
+/*
+ * This file represents my own personal assault on iconv, the most horrid
+ * utility ever, which is yet somehow still essential.
+ *
+ * Issues - 
+ * 1) freebsd: requires extern "C" around iconv.h
+ * 2) invalid iconv handles (== iconv_t -1)
+ * 3) iconv resetting
+ * 4) ICONV_CONST passed to iconv()
+ * 5) UCS2 internally to AbiWord
+ * 6) byte-order problems
+ * 7) good C/C++ linkage
+ * 
+ * Provides solutions to all of the above plus -
+ * 1) 1-shot conversions (UT_convert)
+ * 2) wrapper class around an iconv_t handle
+ */
 
 /*!
  * This class is a nice wrapper around an iconv_t type
  */
-auto_iconv::auto_iconv(iconv_t iconv) 
+auto_iconv::auto_iconv(UT_iconv_t iconv) 
   : m_h(iconv) 
 { 
 }
@@ -43,12 +65,14 @@ auto_iconv::auto_iconv(iconv_t iconv)
  * Convert characters from in_charset to out_charset
  */
 auto_iconv::auto_iconv(const char * in_charset, const char *out_charset)
-  UT_THROWS((iconv_t))
+  UT_THROWS((UT_iconv_t))
 {
-  m_h = iconv_open (out_charset, in_charset);
+  UT_iconv_t cd = UT_iconv_open (out_charset, in_charset);
   
-  if (!is_valid())
-    UT_THROW(m_h);
+  if (!UT_iconv_isValid(cd))
+    UT_THROW(cd);
+
+  m_h = cd;
 }
 
 /*!
@@ -56,9 +80,9 @@ auto_iconv::auto_iconv(const char * in_charset, const char *out_charset)
  */
 auto_iconv::~auto_iconv() 
 { 
-  if (is_valid()) 
+  if (UT_iconv_isValid(m_h)) 
     { 
-      iconv_close(m_h); 
+      UT_iconv_close(m_h); 
     } 
 }
 
@@ -70,20 +94,64 @@ auto_iconv::operator iconv_t()
   return m_h;
 }
 
+/************************************************************************/
+/************************************************************************/
+
+//
+// everything below this line is extern "C"
+//
+
+const char * ucs2Internal ()
+{
+
+#if defined(WIN32)
+  // we special-case the win32 build, otherwise spelling and other stuff
+  // just doesn't work
+  return "UCS-LE";
+#else
+  // general case, found by hub and dom
+  if (XAP_EncodingManager__swap_stou)
+    return "UCS-2BE";
+  else
+    return "UCS-2LE";
+#endif
+
+}
+
+/************************************************************************/
+/************************************************************************/
+
 /*!
  * Returns true is the internal handle is valid, false is not
  */
-bool auto_iconv::is_valid() const 
-  { 
-    return m_h != (iconv_t)-1; 
-  }
+int UT_iconv_isValid ( UT_iconv_t cd )
+{
+  return (cd != (UT_iconv_t)-1);
+}
 
-void UT_iconv_reset(iconv_t cd)
+UT_iconv_t  UT_iconv_open( const char* to, const char* from )
+{
+    return iconv_open( to, from );
+}
+
+size_t  UT_iconv( UT_iconv_t cd, const char **inbuf, 
+		  size_t *inbytesleft, char **outbuf, size_t *outbytesleft )
+{
+    return iconv( cd, const_cast<ICONV_CONST char **>(inbuf), 
+		  inbytesleft, outbuf, outbytesleft );
+}
+
+int  UT_iconv_close( UT_iconv_t cd )
+{
+    return iconv_close( cd );
+}
+
+void UT_iconv_reset(UT_iconv_t cd)
 {
     // this insane code is needed by iconv brokenness.  see
     // http://www.abisource.com/mailinglists/abiword-dev/01/April/0135.html
     if (XAP_EncodingManager::get_instance()->cjk_locale())
-		iconv(cd,const_cast<ICONV_CONST char**>((char**)NULL),NULL,NULL,NULL);
+		UT_iconv(cd, NULL, NULL, NULL, NULL);
 };
 
 /*!
@@ -147,10 +215,10 @@ char * UT_convert(const char*	str,
 	    
 	    while (bAgain)
 	      {
-  		size_t err = iconv(cd,
-				   const_cast<ICONV_CONST char**>(&p),
-				   &inbytes_remaining,
-				   &outp, &outbytes_remaining);
+  		size_t err = UT_iconv(cd,
+				      &p,
+				      &inbytes_remaining,
+				      &outp, &outbytes_remaining);
 		
 		if (err == (size_t) -1)
 		  {

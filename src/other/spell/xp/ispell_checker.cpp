@@ -1,7 +1,7 @@
 #define  DONT_USE_GLOBALS
 
 #include "ispell.h"
-#include "iconv.h"
+#include "ut_iconv.h"
 
 #include "sp_spell.h"
 #include "ispell_checker.h"
@@ -46,8 +46,8 @@ int      easypossibilities; /* Number of "easy" corrections found */
 
 int deftflag = -1;              /* NZ for TeX mode by default */
 int prefstringchar = -1;        /* Preferred string character type */
-iconv_t  translate_in = (iconv_t)-1; /* Selected translation from/to Unicode */
-iconv_t  translate_out = (iconv_t)-1;
+UT_iconv_t  translate_in = (UT_iconv_t)-1; /* Selected translation from/to Unicode */
+UT_iconv_t  translate_out = (UT_iconv_t)-1;
 
 /*
  * The following array contains a list of characters that should be tried
@@ -84,8 +84,8 @@ static void try_autodetect_charset(FIRST_ARG(istate) char* hashname)
 		*p = '\0';
 		if (!*start) /* empty enc */
 			return;
-        	DEREF(istate, translate_in) = iconv_open(start, UCS_2_INTERNAL);
-        	DEREF(istate, translate_out) = iconv_open(UCS_2_INTERNAL, start);
+        	DEREF(istate, translate_in) = UT_iconv_open(start, UCS_2_INTERNAL);
+        	DEREF(istate, translate_out) = UT_iconv_open(UCS_2_INTERNAL, start);
 	}
 	
 }
@@ -110,12 +110,12 @@ ISpellChecker::~ISpellChecker()
 #else
     lcleanup();
 #endif
-    if(DEREF(m_pISpellState, translate_in) != (iconv_t)-1)
-        iconv_close(DEREF(m_pISpellState, translate_in));
-    DEREF(m_pISpellState, translate_in) = (iconv_t)-1;
-    if(DEREF(m_pISpellState, translate_out) != (iconv_t)-1)
-        iconv_close(DEREF(m_pISpellState, translate_out));
-    DEREF(m_pISpellState, translate_out) = (iconv_t)-1;
+    if(UT_iconv_isValid (DEREF(m_pISpellState, translate_in) ))
+        UT_iconv_close(DEREF(m_pISpellState, translate_in));
+    DEREF(m_pISpellState, translate_in) = (UT_iconv_t)-1;
+    if(UT_iconv_isValid(DEREF(m_pISpellState, translate_out)))
+        UT_iconv_close(DEREF(m_pISpellState, translate_out));
+    DEREF(m_pISpellState, translate_out) = (UT_iconv_t)-1;
 
 #if defined(DONT_USE_GLOBALS)
 	//TODO: Free the structure?
@@ -135,7 +135,7 @@ ISpellChecker::checkWord(const UT_UCSChar *word16, size_t length)
     if (!word16 || length >= (INPUTWORDLEN + MAXAFFIXLEN) || length == 0)
         return SpellChecker::LOOKUP_FAILED;
 
-    if(DEREF(m_pISpellState, translate_in) == (iconv_t)-1)
+    if(!UT_iconv_isValid(DEREF(m_pISpellState, translate_in)))
     {
         /* copy to 8bit string and null terminate */
         register char *p;
@@ -157,7 +157,7 @@ ISpellChecker::checkWord(const UT_UCSChar *word16, size_t length)
 
         len_in = length * 2;
         len_out = sizeof( word8 ) - 1;
-        iconv(DEREF(m_pISpellState, translate_in), const_cast<ICONV_CONST char **>(&In), &len_in, &Out, &len_out);
+        UT_iconv(DEREF(m_pISpellState, translate_in), &In, &len_in, &Out, &len_out);
         *Out = '\0';
     }
     
@@ -185,7 +185,7 @@ ISpellChecker::suggestWord(const UT_UCSChar *word16, size_t length)
     if (!sgvec)
       return 0;
 
-    if(DEREF(m_pISpellState, translate_in) == (iconv_t)-1)
+    if(!UT_iconv_isValid(DEREF(m_pISpellState, translate_in)))
     {
         /* copy to 8bit string and null terminate */
         register char *p;
@@ -208,7 +208,7 @@ ISpellChecker::suggestWord(const UT_UCSChar *word16, size_t length)
         char *Out = word8;
         len_in = length * 2;
         len_out = sizeof( word8 ) - 1;
-        iconv(DEREF(m_pISpellState, translate_in), const_cast<ICONV_CONST char **>(&In), &len_in, &Out, &len_out);
+        UT_iconv(DEREF(m_pISpellState, translate_in), &In, &len_in, &Out, &len_out);
         *Out = '\0';
     }
    
@@ -249,7 +249,7 @@ ISpellChecker::suggestWord(const UT_UCSChar *word16, size_t length)
 
             len_in = l;
             len_out = sizeof(unsigned short) * l;
-            iconv(DEREF(m_pISpellState, translate_out), const_cast<ICONV_CONST char **>(&In), &len_in, &Out, &len_out);	    
+            UT_iconv(DEREF(m_pISpellState, translate_out), &In, &len_in, &Out, &len_out);	    
             *((unsigned short *)Out) = 0;
         }
 
@@ -337,12 +337,12 @@ ISpellChecker::requestDictionary(const char *szLang)
     prefstringchar = findfiletype(DEREF_FIRST_ARG(m_pISpellState) "utf8", 1, deftflag < 0 ? &deftflag : (int *) NULL);
     if (prefstringchar >= 0)
     {
-        DEREF(m_pISpellState, translate_in) = iconv_open("utf-8", UCS_2_INTERNAL);
-        DEREF(m_pISpellState, translate_out) = iconv_open(UCS_2_INTERNAL, "utf-8");
+        DEREF(m_pISpellState, translate_in) = UT_iconv_open("utf-8", UCS_2_INTERNAL);
+        DEREF(m_pISpellState, translate_out) = UT_iconv_open(UCS_2_INTERNAL, "utf-8");
     }
 
     /* Test for "latinN" */
-    if(DEREF(m_pISpellState, translate_in) == (iconv_t)-1)
+    if(!UT_iconv_isValid(DEREF(m_pISpellState, translate_in)))
     {
         char teststring[64];
         int n1;
@@ -354,8 +354,8 @@ ISpellChecker::requestDictionary(const char *szLang)
             prefstringchar = findfiletype(DEREF_FIRST_ARG(m_pISpellState) teststring, 1, deftflag < 0 ? &deftflag : (int *) NULL);
             if (prefstringchar >= 0)
             {
-                DEREF(m_pISpellState, translate_in) = iconv_open(teststring, UCS_2_INTERNAL);
-                DEREF(m_pISpellState, translate_out) = iconv_open(UCS_2_INTERNAL, teststring);
+                DEREF(m_pISpellState, translate_in) = UT_iconv_open(teststring, UCS_2_INTERNAL);
+                DEREF(m_pISpellState, translate_out) = UT_iconv_open(UCS_2_INTERNAL, teststring);
                 break;
             }
         }
@@ -363,21 +363,21 @@ ISpellChecker::requestDictionary(const char *szLang)
     try_autodetect_charset(DEREF_FIRST_ARG(m_pISpellState) const_cast<char*>(hashname));
 
     /* Test for known "hashname"s */
-    if(DEREF(m_pISpellState, translate_in) == (iconv_t)-1)
+    if(!UT_iconv_isValid(DEREF(m_pISpellState, translate_in)))
     {
         if( strstr( hashname, "russian.hash" ))
         {
             /* ISO-8859-5, CP1251 or KOI8-R */
-            DEREF(m_pISpellState, translate_in) = iconv_open("KOI8-R", UCS_2_INTERNAL);
-            DEREF(m_pISpellState, translate_out) = iconv_open(UCS_2_INTERNAL, "KOI8-R");
+            DEREF(m_pISpellState, translate_in) = UT_iconv_open("KOI8-R", UCS_2_INTERNAL);
+            DEREF(m_pISpellState, translate_out) = UT_iconv_open(UCS_2_INTERNAL, "KOI8-R");
         }
     }
 
     /* If nothing found, use latin1 */
-    if(DEREF(m_pISpellState, translate_in) == (iconv_t)-1)
+    if(!UT_iconv_isValid(DEREF(m_pISpellState, translate_in)))
     {
-        DEREF(m_pISpellState, translate_in) = iconv_open("latin1", UCS_2_INTERNAL);
-        DEREF(m_pISpellState, translate_out) = iconv_open(UCS_2_INTERNAL, "latin1");
+        DEREF(m_pISpellState, translate_in) = UT_iconv_open("latin1", UCS_2_INTERNAL);
+        DEREF(m_pISpellState, translate_out) = UT_iconv_open(UCS_2_INTERNAL, "latin1");
     }
 
     if (prefstringchar < 0)

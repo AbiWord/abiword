@@ -47,14 +47,6 @@
 
 #include "xap_EncodingManager.h"
 
-const char * ucs2Internal ()
-{
-  if (XAP_EncodingManager__swap_stou)
-    return "UCS-2BE";
-  else
-    return "UCS-2LE";
-}
-
 /*
  * This is cut & pasted from glib 1.3 (c) RedHat
  * We need this for to convert UTF16 to UTF8

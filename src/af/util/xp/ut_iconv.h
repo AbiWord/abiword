@@ -20,50 +20,62 @@
 #ifndef UT_ICONV_H
 #define UT_ICONV_H
 
-// make freebsd happy
+#ifdef __cplusplus
+/* make freebsd happy */
 extern "C" {
 #include <iconv.h>
 }
+#else
+#include <iconv.h>
+#endif /* c++ */
 
 #include "ut_types.h"
-#include "ut_exception.h"
 
-typedef void* UT_iconv_t;
+typedef iconv_t UT_iconv_t;
+
+#ifdef __cplusplus
+
+#include "ut_exception.h"
 
 class auto_iconv
 {
  public:
 
-  explicit auto_iconv(iconv_t iconv);
+  explicit auto_iconv(UT_iconv_t iconv);
 
   explicit auto_iconv(const char * in_charset, const char *out_charset)
-    UT_THROWS((iconv_t));
+    UT_THROWS((UT_iconv_t));
   ~auto_iconv();
-  operator iconv_t();
-
- protected:
-  bool is_valid() const;
+  operator UT_iconv_t();
 
  private:
 
   auto_iconv(const auto_iconv&);	// no impl
   void operator=(const auto_iconv&);	// no impl
-  iconv_t m_h;
+  UT_iconv_t m_h;
 };
+
+#endif /* c++ */
 
 UT_BEGIN_EXTERN_C
 
-UT_iconv_t  UT_iconv_open( const char* to, const char* from );
-size_t      UT_iconv( UT_iconv_t cd, const char **inbuf, size_t *inbytesleft, char **outbuf, size_t *outbytesleft );
-int         UT_iconv_close( UT_iconv_t cd );
-void        UT_iconv_reset(iconv_t cd);
+const char * ucs2Internal ();
+#define UCS_2_INTERNAL ucs2Internal()
 
-char *      UT_convert                       (const char *str,
-					    UT_uint32 len,
-					    const char *to_codeset,
-					    const char *from_codeset,
-					    UT_uint32 *bytes_read,
-					    UT_uint32 *bytes_written);
+UT_iconv_t  UT_iconv_open( const char* to, const char* from );
+size_t      UT_iconv( UT_iconv_t cd, const char **inbuf, 
+		      size_t *inbytesleft, char **outbuf, 
+		      size_t *outbytesleft );
+int         UT_iconv_close( UT_iconv_t cd );
+void        UT_iconv_reset( UT_iconv_t cd );
+int         UT_iconv_isValid ( UT_iconv_t cd );
+
+char *      UT_convert (const char *str,
+			UT_uint32 len,
+			const char *to_codeset,
+			const char *from_codeset,
+			UT_uint32 *bytes_read,
+			UT_uint32 *bytes_written);
 
 UT_END_EXTERN_C
 

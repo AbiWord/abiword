@@ -30,7 +30,7 @@
 #include <string.h>
 
 
-static 	iconv_t iconv_handle_N2U = NULL, iconv_handle_U2N = NULL,
+static 	UT_iconv_t iconv_handle_N2U = NULL, iconv_handle_U2N = NULL,
 	iconv_handle_U2Latin1 = NULL,
 	iconv_handle_U2Win = NULL ,iconv_handle_Win2U = NULL;
 
@@ -103,26 +103,24 @@ const char* XAP_EncodingManager::getUCS2LEName() const
 	return UCS2LEName;
 }
 
-#define VALID_ICONV_HANDLE(i) ((i) != (iconv_t)-1)
 XAP_EncodingManager::~XAP_EncodingManager()
 {
 	UT_DEBUGMSG(("CLOSING XAP_ENCODINGMANAGER\n"));
-	if(VALID_ICONV_HANDLE(iconv_handle_N2U))
-		iconv_close(iconv_handle_N2U);
+	if(UT_iconv_isValid(iconv_handle_N2U))
+		UT_iconv_close(iconv_handle_N2U);
 
-	if(VALID_ICONV_HANDLE(iconv_handle_U2N))
-		iconv_close(iconv_handle_U2N);
+	if(UT_iconv_isValid(iconv_handle_U2N))
+		UT_iconv_close(iconv_handle_U2N);
 
-	if(VALID_ICONV_HANDLE(iconv_handle_U2Latin1))
-		iconv_close(iconv_handle_U2Latin1);
+	if(UT_iconv_isValid(iconv_handle_U2Latin1))
+		UT_iconv_close(iconv_handle_U2Latin1);
 
-	if(VALID_ICONV_HANDLE(iconv_handle_U2Win))
-		iconv_close(iconv_handle_U2Win);
+	if(UT_iconv_isValid(iconv_handle_U2Win))
+		UT_iconv_close(iconv_handle_U2Win);
   
-	if(VALID_ICONV_HANDLE(iconv_handle_Win2U))
-		iconv_close(iconv_handle_Win2U);
+	if(UT_iconv_isValid(iconv_handle_Win2U))
+		UT_iconv_close(iconv_handle_Win2U);
 }
-#undef VALID_ICONV_HANDLE
 
 XAP_EncodingManager::XAP_EncodingManager() { }
 
@@ -222,17 +220,17 @@ const char* XAP_EncodingManager::strToNative(const char* in, const char* charset
 	if (!charset || !*charset || !in || !*in || !buf)
 		return in; /*won't translate*/
 
-	iconv_t iconv_handle = iconv_open(
+	UT_iconv_t iconv_handle = UT_iconv_open(
 		bUseSysEncoding ? getNativeSystemEncodingName() : getNativeEncodingName(), charset);
 
-	if (iconv_handle == (iconv_t)-1)
+	if (!UT_iconv_isValid(iconv_handle))
 		return in;
 
 	const char* inptr = in;
 	char* outptr = buf;
 	size_t inbytes = strlen(in);
 	size_t outbytes = bufsz;	
-	size_t donecnt = iconv(iconv_handle, const_cast<ICONV_CONST char**>(&inptr), &inbytes, &outptr, &outbytes);
+	size_t donecnt = UT_iconv(iconv_handle, &inptr, &inbytes, &outptr, &outbytes);
 	const char* retstr = in;
 
 	if (donecnt != (size_t) -1 && inbytes == 0)
@@ -241,7 +239,7 @@ const char* XAP_EncodingManager::strToNative(const char* in, const char* charset
 		buf[bufsz - outbytes] = '\0';/*for sure*/
 	}
 
-	iconv_close(iconv_handle);
+	UT_iconv_close(iconv_handle);
 	return retstr;
 };
 
@@ -253,8 +251,8 @@ int XAP_EncodingManager::XAP_XML_UnknownEncodingHandler(void* /*encodingHandlerD
 {
 	if (get_instance()->cjk_locale())
 	    return 0;/*this handler doesn't support multibyte encodings*/
-	iconv_t iconv_handle = iconv_open("UCS-2",name);
-	if (iconv_handle == (iconv_t)-1)
+	UT_iconv_t iconv_handle = UT_iconv_open("UCS-2",name);
+	if (!UT_iconv_isValid(iconv_handle))
 		return 0;
 	info->convert = NULL;
 	info->release = NULL;
@@ -266,7 +264,7 @@ int XAP_EncodingManager::XAP_XML_UnknownEncodingHandler(void* /*encodingHandlerD
 			const char* iptr = ibuf;
 			char* optr = obuf;
 			ibuf[0] = (unsigned char)i;
-			size_t donecnt = iconv(iconv_handle,const_cast<ICONV_CONST char**>(&iptr),&ibuflen,&optr,&obuflen);			
+			size_t donecnt = UT_iconv(iconv_handle,&iptr,&ibuflen,&optr,&obuflen);			
 			if (donecnt!=(size_t)-1 && ibuflen==0) 
 			{
 				unsigned short uval;
@@ -280,7 +278,7 @@ int XAP_EncodingManager::XAP_XML_UnknownEncodingHandler(void* /*encodingHandlerD
 			
 		}
 	}
-	iconv_close(iconv_handle);
+	UT_iconv_close(iconv_handle);
 	return 1;
 };
 #endif
@@ -288,31 +286,31 @@ int XAP_EncodingManager::XAP_XML_UnknownEncodingHandler(void* /*encodingHandlerD
 extern "C" { char *wvLIDToCodePageConverter(unsigned short lid); }
 static void init_values(const XAP_EncodingManager* that)
 {
-	iconv_handle_N2U = iconv_open("UCS-2",that->getNativeEncodingName());
-	iconv_handle_U2N = iconv_open(that->getNativeEncodingName(),"UCS-2");
-	iconv_handle_U2Latin1 = iconv_open("ISO-8859-1","UCS-2");
+	iconv_handle_N2U = UT_iconv_open("UCS-2",that->getNativeEncodingName());
+	iconv_handle_U2N = UT_iconv_open(that->getNativeEncodingName(),"UCS-2");
+	iconv_handle_U2Latin1 = UT_iconv_open("ISO-8859-1","UCS-2");
 	
 	char* winencname = wvLIDToCodePageConverter(that->getWinLanguageCode());
-	iconv_handle_Win2U = iconv_open("UCS-2",winencname);
-	iconv_handle_U2Win = iconv_open(winencname,"UCS-2");
+	iconv_handle_Win2U = UT_iconv_open("UCS-2",winencname);
+	iconv_handle_U2Win = UT_iconv_open(winencname,"UCS-2");
 };
 
 
-static UT_UCSChar try_CToU(UT_UCSChar c,iconv_t iconv_handle)
+static UT_UCSChar try_CToU(UT_UCSChar c,UT_iconv_t iconv_handle)
 {
 	 /* 
 	   We don't support multibyte chars yet. wcstombcs should be used. 	   
 	 */
 	if (c>255)
 		return 0;			
-	if (iconv_handle == (iconv_t)-1)
+	if (!UT_iconv_isValid(iconv_handle))
 		return 0;
 	char ibuf[1],obuf[2];			
 	size_t ibuflen = 1, obuflen=2;
 	const char* iptr = ibuf;
 	char* optr = obuf;
 	ibuf[0]	= (unsigned char)c;	
-	size_t donecnt = iconv(iconv_handle,const_cast<ICONV_CONST char**>(&iptr),&ibuflen,&optr,&obuflen);			
+	size_t donecnt = UT_iconv(iconv_handle,&iptr,&ibuflen,&optr,&obuflen);			
 	if (donecnt!=(size_t)-1 && ibuflen==0) 
 	{
 		unsigned short uval;
@@ -324,9 +322,9 @@ static UT_UCSChar try_CToU(UT_UCSChar c,iconv_t iconv_handle)
 		return  0;
 };
 
-static UT_UCSChar try_UToC(UT_UCSChar c,iconv_t iconv_handle)
+static UT_UCSChar try_UToC(UT_UCSChar c,UT_iconv_t iconv_handle)
 {
-	if (iconv_handle == (iconv_t)-1)
+	if (!UT_iconv_isValid(iconv_handle))
 		return 0;
 	char ibuf[2],obuf[10];			
 	size_t ibuflen = sizeof(ibuf), obuflen=sizeof(obuf);
@@ -337,7 +335,7 @@ static UT_UCSChar try_UToC(UT_UCSChar c,iconv_t iconv_handle)
 		ibuf[XAP_EncodingManager::swap_utos] = b0;
 		ibuf[!XAP_EncodingManager::swap_utos] = b1;
 	}
-	size_t donecnt = iconv(iconv_handle,const_cast<ICONV_CONST char**>(&iptr),&ibuflen,&optr,&obuflen);
+	size_t donecnt = UT_iconv(iconv_handle,&iptr,&ibuflen,&optr,&obuflen);
 	/* reset state */
 	UT_iconv_reset(iconv_handle);
 	if (donecnt!=(size_t)-1 && ibuflen==0) 
@@ -836,21 +834,21 @@ void XAP_EncodingManager::initialize()
 		"UTF-16-LE",		// my guess
 		0 };
 	const char ** p;
-	iconv_t iconv_handle;
+	UT_iconv_t iconv_handle;
 	for (p = szUCS2BENames; *p; ++p)
 	{
-		if ((iconv_handle = iconv_open(*p,*p)) != (iconv_t)-1)
+		if ((iconv_handle = UT_iconv_open(*p,*p)) != (UT_iconv_t)-1)
 		{
-			iconv_close(iconv_handle);
+			UT_iconv_close(iconv_handle);
 			UCS2BEName = *p;
 			break;
 		}
 	}
 	for (p = szUCS2LENames; *p; ++p)
 	{
-		if ((iconv_handle = iconv_open(*p,*p)) != (iconv_t)-1)
+		if ((iconv_handle = UT_iconv_open(*p,*p)) != (UT_iconv_t)-1)
 		{
-			iconv_close(iconv_handle);
+			UT_iconv_close(iconv_handle);
 			UCS2LEName = *p;
 			break;
 		}
@@ -1060,7 +1058,7 @@ void 	XAP_EncodingManager::describe()
 		 getWinCharsetCode(),
 		int(cjk_locale()), int(can_break_words()),int(swap_utos),int(swap_stou)
 		));
-	UT_ASSERT( (iconv_handle_N2U!=(iconv_t)-1) && (iconv_handle_U2N!=(iconv_t)-1));
+	UT_ASSERT( UT_iconv_isValid(iconv_handle_N2U) && UT_iconv_isValid(iconv_handle_U2N) );
 };
 
 

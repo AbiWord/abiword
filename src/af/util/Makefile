@@ -51,7 +51,6 @@ PLATFORM_OBJS=	$(OBJDIR)/ut_debugmsg.$(OBJ_SUFFIX)	\
 		$(OBJDIR)/ut_$(ABI_FE)String.$(OBJ_SUFFIX)	\
 		$(OBJDIR)/ut_$(ABI_FE)Timer.$(OBJ_SUFFIX)	\
 		$(OBJDIR)/ut_$(ABI_FE)Locale.$(OBJ_SUFFIX)	\
-		$(OBJDIR)/ut_win_iconv.$(OBJ_SUFFIX)		\
 		$(OBJDIR)/ut_sleep.$(OBJ_SUFFIX)            \
 		$(OBJDIR)/ut_Xpm2Bmp.$(OBJ_SUFFIX)
 endif

@@ -47,6 +47,9 @@
 
 /*
  * $Log$
+ * Revision 1.5  2001/08/10 18:32:40  dom
+ * Spelling and iconv updates. god, i hate iconv
+ *
  * Revision 1.4  2001/06/26 16:33:27  dom
  * 128 StringChars and some other stuff
  *
@@ -175,7 +178,7 @@
 /*  #include "ut_types.h" */
 
 #include "ispell_def.h"
-#include "iconv.h"
+#include "ut_iconv.h"
 
 #ifdef __cplusplus
 extern "C" {
@@ -782,8 +785,8 @@ EXTERN int	easypossibilities; /* Number of "easy" corrections found */
 EXTERN int	Trynum;		/* Size of "Try" array */
 EXTERN ichar_t	Try[SET_SIZE + MAXSTRINGCHARS];
 
-EXTERN iconv_t  translate_in; /* Selected translation from/to Unicode */
-EXTERN iconv_t  translate_out;
+EXTERN UT_iconv_t  translate_in; /* Selected translation from/to Unicode */
+EXTERN UT_iconv_t  translate_out;
 
 #if defined(DONT_USE_GLOBALS)
 } ispell_state_t;

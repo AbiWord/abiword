@@ -21,7 +21,6 @@
 #include <string.h>
 #include <limits.h>
 #include "ut_mbtowc.h"
-#include "ut_iconv.h"
 
 // UTF-8 can use up to 6 bytes
 #define MY_MB_LEN_MAX 6
@@ -226,36 +225,36 @@ void UT_Mbtowc::setInCharset(const char* charset)
 {
     m_bufLen = 0;
 
-	if (cd != (iconv_t)-1)
-		iconv_close(cd);
+	if (UT_iconv_isValid(cd))
+		UT_iconv_close(cd);
 
-    cd = iconv_open("UCS-2", charset );
+    cd = UT_iconv_open("UCS-2", charset );
 };
 
 UT_Mbtowc::UT_Mbtowc(const char* from_charset): m_bufLen(0)
 {
-    cd = iconv_open("UCS-2", from_charset);
-    UT_ASSERT(cd != (iconv_t)-1);    
+    cd = UT_iconv_open("UCS-2", from_charset);
+    UT_ASSERT(UT_iconv_isValid(cd));
 };
 
 UT_Mbtowc::UT_Mbtowc(): m_bufLen(0)
 {
-    cd = iconv_open("UCS-2", XAP_EncodingManager::get_instance()->getNative8BitEncodingName() );
-    UT_ASSERT(cd != (iconv_t)-1);    
+    cd = UT_iconv_open("UCS-2", XAP_EncodingManager::get_instance()->getNative8BitEncodingName() );
+    UT_ASSERT(UT_iconv_isValid(cd)); 
 };
 
 UT_Mbtowc::UT_Mbtowc(const UT_Mbtowc& v): m_bufLen(0)
 {
 	// Shouldn't a copy also copy the encoding?
-    cd = iconv_open("UCS-2", XAP_EncodingManager::get_instance()->getNative8BitEncodingName() );
-    UT_ASSERT(cd != (iconv_t)-1);    
+    cd = UT_iconv_open("UCS-2", XAP_EncodingManager::get_instance()->getNative8BitEncodingName() );
+    UT_ASSERT(UT_iconv_isValid(cd));
 };
 
 UT_Mbtowc::~UT_Mbtowc()
 {
     /* libiconv is stupid - we'll get segfault if we don't check  - VH */
-    if (cd != (iconv_t)-1)
-	    iconv_close(cd);
+  if (UT_iconv_isValid(cd))
+	    UT_iconv_close(cd);
 };
 
 int UT_Mbtowc::mbtowc(wchar_t &wc,char mb)
@@ -269,7 +268,7 @@ int UT_Mbtowc::mbtowc(wchar_t &wc,char mb)
     unsigned char outbuf[2];
     char* outptr = (char* )outbuf;
     size_t inlen = m_bufLen, outlen = 2;
-    size_t len  = iconv(cd,const_cast<ICONV_CONST char **>(&inptr),&inlen,&outptr,&outlen);
+    size_t len  = UT_iconv(cd,&inptr,&inlen,&outptr,&outlen);
     if (len!=(size_t)-1) {
 	bool swap = XAP_EncodingManager::swap_stou;
 	unsigned short val = outbuf[swap] | (outbuf[!swap]<<8);

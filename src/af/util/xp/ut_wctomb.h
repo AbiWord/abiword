@@ -51,7 +51,7 @@ public:
   
   void setOutCharset(const char* charset);
  private:
-  iconv_t cd;
+  UT_iconv_t cd;
 };
 #endif
 #endif // UT_WCTOMB_H

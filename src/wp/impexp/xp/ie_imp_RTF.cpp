@@ -27,7 +27,7 @@
 #include <stddef.h>
 #include <ctype.h>
 #include <math.h>
-#include "iconv.h"
+#include "ut_iconv.h"
 #include "ut_types.h"
 #include "ut_assert.h"
 #include "ut_debugmsg.h"
@@ -57,15 +57,15 @@ class fl_AutoNum;
 	static char* cpname = NULL; \
 	if (!cpname)    \
 	{       \
-		iconv_t cd = iconv_open(name,name);     \
-		if (cd == (iconv_t)-1) \
+		UT_iconv_t cd = UT_iconv_open(name,name);     \
+		if (!UT_iconv_isValid(cd)) \
 		{ \
 			cpname = fallbackname;\
 		} \
 		else \
 		{ \
 			cpname = name;  \
-			iconv_close(cd); \
+			UT_iconv_close(cd); \
 		} \
 	} \
 	destination = cpname;  \

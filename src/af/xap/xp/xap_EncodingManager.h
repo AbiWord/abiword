@@ -25,10 +25,7 @@
 #include "ut_bijection.h"
 
 #include "ut_xml.h"
-
-extern "C" {
-#include "iconv.h"
-}
+#include "ut_iconv.h"
 
 struct XAP_LangInfo
 {
