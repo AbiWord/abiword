@@ -365,10 +365,7 @@ void GR_Win32Graphics::drawChars(const UT_UCSChar* pChars,
 				pCharAdvances[i] = tdu (pCharWidths[i]);
 		}
 		else
-		{
-			for (UT_uint32 i = 0; i < iLengthOrig; i++)
-				pCharAdvances[i] = tdu (0);
-		}
+			pCharAdvances=NULL;
 
 		// Unicode font and default character set handling for WinNT and Win9x
 
