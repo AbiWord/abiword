@@ -704,9 +704,14 @@ void IE_Imp_AbiWord_1::startElement(const XML_Char *name, const XML_Char **atts)
 		{
 			UT_uint32 iId = atoi(szS);
 
+			time_t tStarted = 0;
+			szS = UT_getAttribute("started",atts);
+			if(szS)
+				tStarted = (time_t) atoi(szS);
+			
 			szS = UT_getAttribute("uid",atts);
 
-			PD_VersionData v(iId, szS);
+			PD_VersionData v(iId, szS, tStarted);
 			getDoc()->addRecordToHistory(v);
 		}
 

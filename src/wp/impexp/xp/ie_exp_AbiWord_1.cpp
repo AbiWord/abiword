@@ -1339,6 +1339,7 @@ void s_AbiWord_1_Listener::_handleHistory(void)
 	{
 		UT_uint32 iVersion  =  m_pDocument->getHistoryNthId(k);
 		const UT_UUID& UID  =  m_pDocument->getHistoryNthUID(k);
+		time_t tStarted     =  m_pDocument->getHistoryNthTimeStarted(k);
 		
 		UT_String s, hUid;
 		UID.toString(hUid);
@@ -1357,8 +1358,8 @@ void s_AbiWord_1_Listener::_handleHistory(void)
 			bWroteOpenSection = true;
 		}
 
-		UT_String_sprintf(s, "<version id=\"%d\" uid=\"%s\"/>\n",
-						  iVersion, hUid.c_str());
+		UT_String_sprintf(s, "<version id=\"%d\" started=\"%d\" uid=\"%s\"/>\n",
+						  iVersion, tStarted, hUid.c_str());
 		
 		m_pie->write(s.c_str());
 	}
