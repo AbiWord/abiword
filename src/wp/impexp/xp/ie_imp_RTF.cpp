@@ -311,7 +311,7 @@ UT_Error IE_Imp_RTF::_parseFile(FILE* fp)
 
 	if (ok)
 	{
-		ok = FlushStoredChars();
+		ok = FlushStoredChars(UT_TRUE);
 	}
 	return ok ? UT_OK : UT_ERROR;
 }
