@@ -35,8 +35,6 @@ OS_ARCH		:=$(shell uname -m)
 # Compiler defaults should be fine for Intel.
 i386_ARCH_FLAGS		=
 PPC_ARCH_FLAGS		=
-ALPHA_ARCH_FLAGS 	= 
-SPARC_ARCH_FLAGS 	= 
 
 # Define tools (should gcc be cc/qcc ... same for ar?)
 CC		= qcc
