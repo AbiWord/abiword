@@ -153,7 +153,8 @@ bool XAP_CocoaModule::getErrorMsg (char ** dest) const
 	return (*dest ? true : false);
 }
 
-/* return > 0 for directory entries ending in ".Abi"
+/**
+ * return > 0 for directory entries ending in ".Abi"
  */
 static int s_Abi_only (struct dirent * d)
 {
@@ -174,7 +175,8 @@ static int s_Abi_only (struct dirent * d)
 	return 0;
 }
 
-/* return true if dirname exists and is a directory; symlinks probably not counted
+/**
+ * return true if dirname exists and is a directory; symlinks probably not counted
  */
 static bool s_dir_exists (const char * dirname)
 {
@@ -217,7 +219,8 @@ static bool s_createDirectoryIfNecessary(const char * szDir, bool publicdir = fa
 	return success;
 }	
 
-/* MacOSX applications look for plugins in Contents/Plug-ins, and there's probably
+/**
+ * MacOSX applications look for plugins in Contents/Plug-ins, and there's probably
  * no need to jump through scandir hoops identifying these. Third party plugins or
  * plugins not distributed with AbiWord.app can be found in the system directory
  * "/Library/Application Support" or in the user's home equivalent - I'm choosing
@@ -314,8 +317,6 @@ void XAP_CocoaModule::loadAllPlugins ()
 					continue;
 				}
 
-			XAP_CocoaAppController * pController = (XAP_CocoaAppController *) [NSApp delegate];
-
 			UT_UTF8String plugin_path;
 			while (n--)
 				{
@@ -325,21 +326,7 @@ void XAP_CocoaModule::loadAllPlugins ()
 
 					UT_DEBUGMSG(("FJF: loading plugin %s\n", plugin_path.utf8_str()));
 
-					bool bLoaded = false;
-
-					if (plugin_path.length() > 4)
-						if (strcmp(plugin_path.utf8_str() + plugin_path.length() - 4, ".Abi") == 0)
-							{
-								NSString * path = [NSString stringWithUTF8String:(plugin_path.utf8_str())];
-								XAP_CocoaPlugin * plugin = [pController loadPlugin:path];
-								bLoaded = [[plugin delegate] pluginActivate] ? true : false;
-							}
-					if (plugin_path.length() > 7)
-						if (strcmp(plugin_path.utf8_str() + plugin_path.length() - 7, ".so-abi") == 0)
-							{
-								bLoaded = XAP_ModuleManager::instance().loadModule (plugin_path.utf8_str());
-							}
-					if (bLoaded)
+					if (XAP_CocoaModule::loadPlugin (plugin_path))
 						{
 							UT_DEBUGMSG(("FJF: loaded plug-in: %s\n", namelist[n]->d_name));
 						}
@@ -351,4 +338,51 @@ void XAP_CocoaModule::loadAllPlugins ()
 				}
 			free (namelist);
 		}
+}
+
+bool XAP_CocoaModule::loadPlugin (const UT_UTF8String & path)
+{
+	bool bAbi = false;
+	bool bLoaded = false;
+
+	if (path.length() > 4)
+		if (strcmp(path.utf8_str() + path.length() - 4, ".Abi") == 0)
+			{
+				XAP_CocoaAppController * pController = (XAP_CocoaAppController *) [NSApp delegate];
+
+				XAP_CocoaPlugin * plugin = [pController loadPlugin:[NSString stringWithUTF8String:(path.utf8_str())]];
+
+				if (plugin)
+					{
+						bLoaded = [[plugin delegate] pluginActivate] ? true : false;
+					}
+				bAbi = true;
+			}
+
+	if (!bAbi && (path.length() > 7))
+		if (strcmp(path.utf8_str() + path.length() - 7, ".so-abi") == 0)
+			{
+				bLoaded = XAP_ModuleManager::instance().loadModule (path.utf8_str());
+			}
+
+	return bLoaded;
+}
+
+bool XAP_CocoaModule::hasPluginExtension (const UT_UTF8String & path)
+{
+	bool bHasPluginExtension = false;
+
+	if (path.length() > 4)
+		if (strcmp(path.utf8_str() + path.length() - 4, ".Abi") == 0)
+			{
+				bHasPluginExtension = true;
+			}
+
+	if (!bHasPluginExtension && (path.length() > 7))
+		if (strcmp(path.utf8_str() + path.length() - 7, ".so-abi") == 0)
+			{
+				bHasPluginExtension = true;
+			}
+
+	return bHasPluginExtension;
 }

@@ -439,14 +439,28 @@ static XAP_CocoaAppController * XAP_AppController_Instance = nil;
 
 	unsigned count = [m_FilesRequestedDuringLaunch count];
 
-	for (unsigned i = 0; i < count; i++)
+	for (unsigned i = 0; i < count; i++) // filter out plugins from list and open those first
 		{
 			NSString * filename = (NSString *) [m_FilesRequestedDuringLaunch objectAtIndex:i];
 
-			if ([self application:NSApp openFile:filename])
+			UT_UTF8String path([filename UTF8String]);
+
+			if (XAP_CocoaModule::hasPluginExtension(path))
 				{
-					bFileOpenedDuringLaunch = YES;
+					[self application:NSApp openFile:filename];
 				}
+		}
+	for (unsigned i = 0; i < count; i++) // open the rest
+		{
+			NSString * filename = (NSString *) [m_FilesRequestedDuringLaunch objectAtIndex:i];
+
+			UT_UTF8String path([filename UTF8String]);
+
+			if (!XAP_CocoaModule::hasPluginExtension(path))
+				if ([self application:NSApp openFile:filename])
+					{
+						bFileOpenedDuringLaunch = YES;
+					}
 		}
 	if (bFileOpenedDuringLaunch == NO)
 		{
@@ -480,6 +494,14 @@ static XAP_CocoaAppController * XAP_AppController_Instance = nil;
 		}
 
 	UT_DEBUGMSG(("Requested to open %s\n", [filename UTF8String]));
+
+	UT_UTF8String path([filename UTF8String]);
+
+	if (XAP_CocoaModule::hasPluginExtension(path))
+		{
+			return (XAP_CocoaModule::loadPlugin(path) ? YES : NO);
+		}
+
 	XAP_App * pApp = XAP_App::getApp();
 	XAP_Frame * pNewFrame = pApp->newFrame();
 
