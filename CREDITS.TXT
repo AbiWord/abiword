@@ -220,6 +220,7 @@ Javier Yáñez <javier@cibal.es>				Spanish
 Luis Miguel García <ktech@wanadoo.es>			Spanish
 Tamas Decsi <tamas@pressflex.com>			Hungarian
 Vadim Frolov <vadim@krug.uch.net>			Ukrainian (uk-UA)
+Olexij Tkatchenko <ot@parcs.de>				Ukrainian (uk-UA)
 GPS <GrandPooh@telkom.net>				Indonesian
 I Made Wiryana <made@nakula.rvs.uni-bielefeld.de>	Indonesian
 Martin Willemoes Hansen <mwh@stampede.org>		Danish
@@ -261,7 +262,6 @@ Alper <shullgum@yahoo.com>				Turkish
 Nikos Niktaris <niktarin@yahoo.com>			Greek
 Damon Allen Davison <allolex@users.sourceforge.net>	German
 Masayuki Hatta <mhatta@gnu.org>				Japanese
-Olexij Tkatchenko <ot@parcs.de>				Ukrainian
 unsung heroes
 -------------
 Mary Eppich
