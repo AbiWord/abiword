@@ -1328,14 +1328,10 @@ void XAP_UnixFrameImpl::_setGeometry ()
 	GdkGeometry geom;
 	geom.min_width   = 100;
 	geom.min_height  = 100;
-	geom.base_width  = user_w;
-	geom.base_height = user_h;
-	geom.width_inc  = 1;
-	geom.height_inc = 1;
 	if(getFrame()->getFrameMode() == XAP_NormalFrame)
 	{
 		gtk_window_set_geometry_hints (GTK_WINDOW(m_wTopLevelWindow), m_wTopLevelWindow, &geom,
-									   static_cast<GdkWindowHints>(GDK_HINT_MIN_SIZE|GDK_HINT_BASE_SIZE|GDK_HINT_RESIZE_INC));
+									   static_cast<GdkWindowHints>(GDK_HINT_MIN_SIZE));
 
 		gtk_window_set_default_size (GTK_WINDOW(m_wTopLevelWindow), user_w, user_h);
 	}
