@@ -5223,11 +5223,7 @@ void FV_View::_removeThisHdrFtr(fl_HdrFtrSectionLayout * pHdrFtr)
 // Remove the header/footer strux
 //
 	m_pDoc->deleteHdrFtrStrux(sdhHdrFtr);
-//
-// Change the DSL strux to remove the reference to this header/footer
-//
-	const XML_Char * remFmt[] = {pszHdrFtrType,NULL,NULL,NULL};
-	m_pDoc->changeStruxFmt(PTC_RemoveFmt,posDSL,posDSL,static_cast<const XML_Char **>(&remFmt[0]),NULL,PTX_Section);
+
 }
 
 void FV_View::_cmdEditHdrFtr(HdrFtrType hfType)
