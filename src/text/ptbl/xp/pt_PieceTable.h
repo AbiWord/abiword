@@ -72,6 +72,8 @@ public:
 	UT_uint32                               undoCount(bool bUndo) const;
 	bool					undoCmd(void);
 	bool					redoCmd(void);
+
+	void                    clearUndo() {m_history.clearHistory();}
 	
 	static const char* 		s_getLocalisedStyleName(const char *szStyle);
 

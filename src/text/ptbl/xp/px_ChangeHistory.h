@@ -73,6 +73,9 @@ public:
 	void					setClean(void);
 	bool					isDirty(void) const;
 
+	void                    clearHistory();
+	
+
 #ifdef PT_TEST
 	void					__dump(FILE* fp) const;
 #endif

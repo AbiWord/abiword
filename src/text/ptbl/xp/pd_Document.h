@@ -605,6 +605,9 @@ protected:
 												  const PP_Revision * pRev,
 												  PP_RevisionAttr &RevAttr, pf_Frag * pf,
 												  bool & bDeleted);
+
+	virtual void            _clearUndo();
+	
 	
 public:
 	// these functions allow us to retrieve visual direction at document

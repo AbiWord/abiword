@@ -927,10 +927,11 @@ bool AD_Document::_restoreVersion(XAP_Frame * pFrame, UT_uint32 iVersion)
 		// now save me as I am
 		m_bDoNotAdjustHistory = true;
 		save();
+		_clearUndo();
 		m_bDoNotAdjustHistory = false;
 	}
 
-	return false;
+	return true;
 }
 
 bool AD_Document::showHistory(AV_View * pView)

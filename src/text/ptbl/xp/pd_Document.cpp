@@ -6210,6 +6210,11 @@ bool PD_Document::getSpanAttrProp(PL_StruxDocHandle sdh, UT_uint32 offset, bool 
 	return true;
 }
 
+void PD_Document::_clearUndo()
+{
+	UT_return_if_fail(m_pPieceTable);
+	m_pPieceTable->clearUndo();
+}
 	
 
 #ifdef DEBUG

@@ -261,6 +261,9 @@ protected:
 	void            _setMarkRevisions(bool bMark) {m_bMarkRevisions = bMark;}
 
     bool            _restoreVersion(XAP_Frame * pFrame, UT_uint32 iVersion);
+
+	virtual void    _clearUndo() = 0;
+	
 	
 	virtual ~AD_Document();		//  Use unref() instead.
 
