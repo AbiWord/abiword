@@ -31,6 +31,7 @@ libWpAp_cocoa_a_SOURCES=\
 	ap_CocoaAppImpl.mm		\
 	ap_CocoaClipboard.mm	\
 	ap_CocoaDialogFactory.mm	\
+	ap_CocoaDialog_Background.mm	\
 	ap_CocoaDialog_Break.mm	\
 	ap_CocoaDialog_Columns.mm	\
 	ap_CocoaDialog_Field.mm	\
@@ -46,6 +47,7 @@ libWpAp_cocoa_a_SOURCES=\
 	ap_CocoaDialog_InsertTable.mm	\
 	ap_CocoaDialog_Lists.mm	\
 	ap_CocoaDialog_ListRevisions.mm	\
+	ap_CocoaDialog_MailMerge.mm	\
 	ap_CocoaDialog_MarkRevisions.mm	\
 	ap_CocoaDialog_MergeCells.mm	\
 	ap_CocoaDialog_MetaData.mm	\
@@ -65,6 +67,7 @@ libWpAp_cocoa_a_SOURCES=\
 	ap_CocoaFrame.mm		\
 	ap_CocoaFrameImpl.mm		\
 	ap_CocoaLeftRuler.mm		\
+	ap_CocoaPlugin.mm		\
 	ap_CocoaPrefs.mm		\
 	ap_Cocoa_ResourceIDs.mm	\
 	ap_CocoaSplash.mm		\
@@ -78,13 +81,13 @@ libWpAp_cocoa_a_SOURCES=\
 	ap_Cocoa_TB_CFactory.mm		\
 	ap_PrintingDelegate.mm
 
-#	ap_CocoaDialog_MailMerge.mm
-
 EXTRA_DIST = \
+	ap_CocoaDialog_Background.nib \
 	ap_CocoaDialog_Break.nib \
 	ap_CocoaDialog_Columns.nib \
 	ap_CocoaDialog_FormatFootnotes.nib \
 	ap_CocoaDialog_Lists.nib \
+	ap_CocoaDialog_MailMerge.nib \
 	ap_CocoaDialog_MetaData.nib \
 	ap_CocoaDialog_New.nib \
 	ap_CocoaDialog_Options.nib \

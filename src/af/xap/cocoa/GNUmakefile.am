@@ -54,9 +54,11 @@ libXap_cocoa_a_SOURCES =		\
 	xap_CocoaFrame.mm		\
 	xap_CocoaFrameImpl.mm		\
 	xap_CocoaModule.mm		\
+	xap_CocoaPlugin.mm		\
 	xap_CocoaTimer.mm		\
 	xap_CocoaToolbarWindow.mm	\
 	xap_CocoaToolbar_Icons.mm	\
+	xap_CocoaToolPalette.mm	\
 	xap_CocoaWidget.mm	\
 	xap_CocoaWindow.mm		\
 	xap_CocoaTextView.mm	\
