@@ -335,7 +335,7 @@ GR_UnixGraphics::GR_UnixGraphics(GdkWindow * win, XAP_UnixFontManager * fontMana
 	m_pColormap = gdk_rgb_get_cmap(); // = gdk_colormap_get_system();
 #ifdef USE_XFT
 	m_pVisual = GDK_VISUAL_XVISUAL(gdk_window_get_visual(win));
-	m_Drawable = GDK_WINDOW_XWINDOW(win);
+	m_Drawable = GDK_WINDOW_XWINDOW(m_pWin);
 	m_Colormap = GDK_COLORMAP_XCOLORMAP(m_pColormap);
 	m_pXftFont = NULL;
 
@@ -561,7 +561,6 @@ void GR_UnixGraphics::drawChars(const UT_UCSChar* pChars, int iCharOffset,
 	{
 		UT_DEBUGMSG(("FIXME: Put some code here!!! \n"));
 	}
-
 	if (!pCharWidths)
 	{
 		if(!m_bIsSymbol)
@@ -1437,7 +1436,6 @@ void GR_UnixGraphics::setClipRect(const UT_Rect* pRect)
 #ifdef USE_XFT
 		Region region;
 		XPoint points[4];
-
 		points[0].x = r.x;
 		points[0].y = r.y - r.height;
 			

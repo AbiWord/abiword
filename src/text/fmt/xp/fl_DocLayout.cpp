@@ -192,9 +192,7 @@ void FL_DocLayout::fillLayouts(void)
 		m_pView->updateLayout();
 		m_pView->updateScreen(false);
 	}
-
-	setLayoutIsFilling(false);
-#if 1
+#if 0
 	// WHY would we want to do this ??? (either we are loading an
 	// existing document, and then the text in it has its own lang
 	// property or we are creating a new one, in which case this has
@@ -206,6 +204,10 @@ void FL_DocLayout::fillLayouts(void)
 	
 	// 27/10/2002 - If we do not have this piece of code, Abiword does not honor the documentlocale
 	// setting under win32 
+
+    // 11/11/2002 This code is crashing the unix build. If it MUST be in the
+    // windows build, move it into ap_Win32Frame::_showDOcument after 
+    // fillLayouts
 
 	const XML_Char * doc_locale = NULL;
 	if (m_pView && XAP_App::getApp()->getPrefs()->getPrefsValue(XAP_PREF_KEY_DocumentLocale,&doc_locale))
@@ -221,6 +223,9 @@ void FL_DocLayout::fillLayouts(void)
 		m_pView->notifyListeners(AV_CHG_ALL);
 	}
 #endif
+
+
+	setLayoutIsFilling(false);
 }
 
 void FL_DocLayout::setView(FV_View* pView)

@@ -686,6 +686,7 @@ void XAP_UnixFrame::_createTopLevelWindow(void)
 	if(m_iFrameMode == XAP_NormalFrame)
 	{
 		m_wTopLevelWindow = gtk_window_new(GTK_WINDOW_TOPLEVEL);
+		gtk_widget_set_double_buffered(m_wTopLevelWindow,FALSE);
 		g_object_set_data(G_OBJECT(m_wTopLevelWindow), "ic_attr", NULL);
 		g_object_set_data(G_OBJECT(m_wTopLevelWindow), "ic", NULL);
 		gtk_window_set_title(GTK_WINDOW(m_wTopLevelWindow),

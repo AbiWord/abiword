@@ -228,7 +228,7 @@ UT_Error AP_UnixFrame::_showDocument(UT_uint32 iZoom)
 	setXScrollRange();
 	setYScrollRange();
 	updateTitle();
-
+//	pDocLayout->setView((FV_View *) m_pView);
 	pDocLayout->fillLayouts();   
 
 	if (m_pView != NULL)

@@ -44,6 +44,9 @@
 #include "spell_manager.h"
 #include "ap_EditMethods.h"
 
+
+#define ABIWORD_VIEW  	FV_View * pView = static_cast<FV_View *>(pAV_View)
+
 #if 0
 
 static bool s_ToolbarFunctions_check_inc_load(FV_View * pView)
@@ -52,21 +55,19 @@ static bool s_ToolbarFunctions_check_inc_load(FV_View * pView)
   // see ap_EditMethods.cpp around line 1024
 
   //XAP_Frame * pFrame = XAP_App::getApp()->getLastFocussedFrame();
-
-  if(pView && ((pView->getPoint() == 0) || pView->isLayoutFilling()))
+	UT_DEBUGMSG(("pView = %x \n",pView));
+	if(pView && ((pView->getPoint() == 0) || pView->isLayoutFilling()))
     {
-      return true;
+		return true;
     }
 
-  return false ;
+	return false ;
 }
 
 #define CHECK_INC_LOAD if(s_ToolbarFunctions_check_inc_load(pView)) return EV_TIS_Gray;
 #else
 #define CHECK_INC_LOAD
 #endif
-
-#define ABIWORD_VIEW  	FV_View * pView = static_cast<FV_View *>(pAV_View)
 
 /****************************************************************/
 
@@ -85,6 +86,7 @@ Defun_EV_GetToolbarItemState_Fn(ap_ToolbarGetState_ScriptsActive)
 
 Defun_EV_GetToolbarItemState_Fn(ap_ToolbarGetState_Spelling)
 {
+	ABIWORD_VIEW;
   CHECK_INC_LOAD;
 
   EV_Toolbar_ItemState s = EV_TIS_ZERO;
@@ -110,6 +112,10 @@ Defun_EV_GetToolbarItemState_Fn(ap_ToolbarGetState_Changes)
 	ABIWORD_VIEW;
 	CHECK_INC_LOAD;
 
+	if(!pView)
+	{
+		return;
+	}
 	if (pszState)
 		*pszState = NULL;
 
