@@ -1,3 +1,6 @@
+/*
+ !!! PLEASE, USE ONLY C-STYLE COMMENTS IN THIS FILE !!!
+*/
 
 #ifndef UT_ENDIAN_H
 #define UT_ENDIAN_H
@@ -18,7 +21,7 @@
 	#else
 		#define UT_BIG_ENDIAN
 	#endif
-#else
+#else /* this is for Linux */
 	#include <endian.h>
 	#if __BYTE_ORDER == __LITTLE_ENDIAN		
 		#define UT_LITTLE_ENDIAN
@@ -28,12 +31,14 @@
 #endif
 
 
-//XP macros
+/*XP macros
 
-// convert single UCS character
-// x,y are pointers to UT_UCSChar
-// we will use a temporary variable, so that x and y
-// can be the same
+ convert single UCS character
+ x,y are pointers to UT_UCSChar
+ we will use a temporary variable, so that x and y
+ can be the same
+*/
+
 #ifdef UT_LITTLE_ENDIAN		
 #define LE2BE16(x,y)                                  \
 char * lb1;                                           \
@@ -44,4 +49,5 @@ tucs = * ((UT_UCSChar *)(x)); lb1 = (char*) (&tucs);  \
 #define LE2BE16(x,y)
 #endif
 
-#endif //UT_ENDIAN_H
+#endif /*UT_ENDIAN_H*/
+
