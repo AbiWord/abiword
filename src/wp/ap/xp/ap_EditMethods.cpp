@@ -3705,12 +3705,10 @@ Defun1(viewRuler)
 	// toggle the ruler bit
 	pFrameData->m_bShowRuler = ! pFrameData->m_bShowRuler;
 
-	UT_DEBUGMSG(("viewRuler: showruler=%d\n", pFrameData->m_bShowRuler ));
+	//UT_DEBUGMSG(("viewRuler: showruler=%d\n", pFrameData->m_bShowRuler ));
 
+	// actually do the dirty work
 	pFrame->toggleRuler( pFrameData->m_bShowRuler );
-
-	// TODO: synch this implementation with ap_GetState_View
-	// s_TellNotImplemented(pFrame, "View ruler", __LINE__);
 
 	return UT_TRUE;
 }

@@ -53,7 +53,7 @@ AP_TopRuler::AP_TopRuler(XAP_Frame * pFrame)
 	m_pView = NULL;
 	m_pScrollObj = NULL;
 	m_pG = NULL;
-	m_iHeight = 0;
+	//m_iHeight = 0;
 	m_iWidth = 0;
 	m_iLeftRulerWidth = 0;
 	m_xScrollOffset = 0;
@@ -77,6 +77,9 @@ AP_TopRuler::AP_TopRuler(XAP_Frame * pFrame)
 	
 	s_iFixedHeight = 32;
 	s_iFixedWidth = 32;
+
+	// set the default to be the fixed size
+	m_iHeight = s_iFixedHeight;
 
 	// install top_ruler_prefs_listener as this lister for this func
 	pFrame->getApp()->getPrefs()->addListener( AP_TopRuler::_prefsListener, (void *)this );
@@ -149,7 +152,8 @@ void AP_TopRuler::setHeight(UT_uint32 iHeight)
 
 UT_uint32 AP_TopRuler::getHeight(void) const
 {
-	return s_iFixedHeight;
+	//return s_iFixedHeight;
+	return m_iHeight;
 }
 
 void AP_TopRuler::setWidth(UT_uint32 iWidth)

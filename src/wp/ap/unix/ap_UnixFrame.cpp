@@ -730,7 +730,7 @@ UT_Bool AP_UnixFrame::_replaceDocument(AD_Document * pDoc)
 
 void AP_UnixFrame::toggleRuler(UT_Bool bRulerOn)
 {
-	UT_DEBUGMSG(("AP_UnixFrame::toggleRuler %d\n", bRulerOn));	
+	//UT_DEBUGMSG(("AP_UnixFrame::toggleRuler %d\n", bRulerOn));	
 
 	AP_FrameData *pFrameData = (AP_FrameData *)getFrameData();
 	UT_ASSERT(pFrameData);

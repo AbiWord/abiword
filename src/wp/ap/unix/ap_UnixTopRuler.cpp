@@ -87,6 +87,8 @@ GtkWidget * AP_UnixTopRuler::createWidget(void)
 	
 	m_wTopRuler = gtk_drawing_area_new();
 
+	//UT_DEBUGMSG(("AP_UnixTopRuler::createWidget - [w=%p] [this=%p]\n", m_wTopRuler,this));
+
 	gtk_object_set_user_data(GTK_OBJECT(m_wTopRuler),this);
 	gtk_widget_show(m_wTopRuler);
 	gtk_widget_set_usize(m_wTopRuler, -1, s_iFixedHeight);
@@ -230,6 +232,9 @@ gint AP_UnixTopRuler::_fe::configure_event(GtkWidget* w, GdkEventConfigure *e)
 {
 	// a static function
 	AP_UnixTopRuler * pUnixTopRuler = (AP_UnixTopRuler *)gtk_object_get_user_data(GTK_OBJECT(w));
+
+	//UT_DEBUGMSG(("UnixTopRuler: [p %p] [size w %d h %d] received configure_event\n",
+	//			 pUnixTopRuler, e->width, e->height));
 
 	UT_uint32 iHeight = (UT_uint32)e->height;
 	if (iHeight != pUnixTopRuler->getHeight())
