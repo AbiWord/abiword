@@ -195,7 +195,7 @@ UT_uint32 XAP_UnixGnomePrintGraphics::measureUnRemappedChar(const UT_UCSChar c)
 	{
 		realChar = c;
 	}
-	float fWidth = m_pCurrentPSFont->measureUnRemappedChar(c, m_pCurrentPSFont->getSize())
+	float fWidth = m_pCurrentPSFont->measureUnRemappedChar(realChar, m_pCurrentPSFont->getSize())
 		* (float)getResolution() / (float)getDeviceResolution();
 	return static_cast<UT_uint32>(rintf(fWidth));
 }

@@ -2959,7 +2959,7 @@ bool fp_FieldRun::recalcWidth()
 #endif
 
 	UT_sint32 iNewWidth = getGR()->measureString(m_sFieldValue, 0, UT_UCS4_strlen(m_sFieldValue), aCharWidths);
-	xxx_UT_DEBUGMSG(("fp_FieldRun::recalcWidth: old width %d, new width %d\n", getWidth(), iNewWidth));
+	UT_DEBUGMSG(("fp_FieldRun::recalcWidth: old width %d, new width %d\n", getWidth(), iNewWidth));
 	if (iNewWidth != getWidth())
 	{
 		clearScreen();
