@@ -171,8 +171,13 @@ bool pt_PieceTable::changeStruxFmt(PTChangeFmt ptc,
 							{
 								revPtc = PTC_AddFmt;
 
-								attrs = UT_setPropsToNothing(attributes);
-								props = UT_setPropsToNothing(properties);
+								// used to set these to NULL, but that causes difficulties
+								// for attributes, because the attribute value gets stored
+								// directly in the hash and the hash considers NULL values
+								// invalid, so we are not able to retrieve them (and any
+								// associated names
+								attrs = UT_setPropsToValue(attributes, "-/-");
+								props = UT_setPropsToValue(properties, "-/-");
 
 							}
 							

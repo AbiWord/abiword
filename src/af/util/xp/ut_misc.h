@@ -301,4 +301,6 @@ class ABI_EXPORT UT_VersionInfo
 */
 const XML_Char ** UT_setPropsToNothing(const XML_Char ** props);
 
+const XML_Char ** UT_setPropsToValue(const XML_Char ** props, const XML_Char * value);
+
 #endif /* UTMISC_H */

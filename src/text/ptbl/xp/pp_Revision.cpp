@@ -348,7 +348,7 @@ void PP_RevisionAttr::_init(const XML_Char *r)
 			{
 				// malformed token, move onto the next one
 				UT_DEBUGMSG(("PP_RevisionAttr::_init: invalid ! token [%s]\n",t));
-				continue;
+				goto skip_this_token;
 			}
 			pProps = NULL;
 			pAttrs = NULL;
@@ -361,7 +361,7 @@ void PP_RevisionAttr::_init(const XML_Char *r)
 			{
 				// malformed token, move onto the next one
 				UT_DEBUGMSG(("PP_RevisionAttr::_init: invalid - token [%s]\n",t));
-				continue;
+				goto skip_this_token;
 			}
 
 			// insert null as needed to be able to parse the id and props
@@ -394,10 +394,13 @@ void PP_RevisionAttr::_init(const XML_Char *r)
 		// now we can retrieve the id
 		iId = atol(t);
 
-		PP_Revision * pRevision = new PP_Revision((UT_uint32)iId, eType, pProps, pAttrs);
+		{
+			PP_Revision * pRevision = new PP_Revision((UT_uint32)iId, eType, pProps, pAttrs);
 
-		m_vRev.addItem((void*)pRevision);
-
+			m_vRev.addItem((void*)pRevision);
+		}
+		
+	skip_this_token:
 		if(next_s < end_s)
 			t = strtok(next_s,",");
 		else
