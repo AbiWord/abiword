@@ -1261,11 +1261,6 @@ void AP_LeftRuler::scrollRuler(UT_sint32 yoff, UT_sint32 ylimit)
 	{
 		return;
 	}
-	if(pView->getDocument()->isPieceTableChanging())
-	{
-		return;
-	}
-
 	if (ylimit > 0)
 		m_yScrollLimit = ylimit;
 
