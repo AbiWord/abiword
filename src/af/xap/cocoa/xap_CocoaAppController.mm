@@ -312,6 +312,7 @@ static XAP_CocoaAppController * XAP_AppController_Instance = nil;
 
 			m_bAutoLoadPluginsAfterLaunch = NO;
 
+			m_PanelMenu   = [[NSMenu alloc] initWithTitle:@"Panels"];
 			m_ContextMenu = [[NSMenu alloc] initWithTitle:@"Context Menu"];
 		}
 	return self;
@@ -319,6 +320,11 @@ static XAP_CocoaAppController * XAP_AppController_Instance = nil;
 
 - (void)dealloc
 {
+	if (m_PanelMenu)
+		{
+			[m_PanelMenu release];
+			m_PanelMenu = 0;
+		}
 	if (m_ContextMenu)
 		{
 			[m_ContextMenu release];
@@ -345,6 +351,13 @@ static XAP_CocoaAppController * XAP_AppController_Instance = nil;
 
 			[[NSFileManager defaultManager] changeCurrentDirectoryPath:desktop];
 		}
+	if (NSMenu * menu = [NSApp windowsMenu])
+		if (NSMenuItem * item = [[NSMenuItem alloc] initWithTitle:@"Panels" action:nil keyEquivalent:@""])
+			{
+				[menu addItem:item];
+				[item setSubmenu:m_PanelMenu];
+				[item release];
+			}
 }
 
 - (void)applicationDidFinishLaunching:(NSNotification *)aNotification
@@ -563,9 +576,19 @@ static XAP_CocoaAppController * XAP_AppController_Instance = nil;
 	return equiv;
 }
 
+- (NSMenu *)panelMenu
+{
+	return m_PanelMenu;
+}
+
 - (NSMenu *)contextMenu
 {
 	return m_ContextMenu;
+}
+
+- (void)appendPanelItem:(NSMenuItem *)item
+{
+	[m_PanelMenu addItem:item];
 }
 
 - (void)appendContextItem:(NSMenuItem *)item

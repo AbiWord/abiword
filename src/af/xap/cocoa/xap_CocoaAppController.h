@@ -85,6 +85,7 @@ enum XAP_CocoaAppMenu_Id
 
 	IBOutlet NSMenuItem *	oMenuItem_AbiWordHelp;
 
+	NSMenu *				m_PanelMenu;
 	NSMenu *				m_ContextMenu;
 
 	NSMenu *				m_AppMenu[XAP_CocoaAppMenu_count__];
@@ -136,8 +137,10 @@ enum XAP_CocoaAppMenu_Id
 
 - (const char *)keyEquivalentForMenuID:(int /* XAP_Menu_Id */)menuid modifierMask:(unsigned int *)mask;
 
+- (NSMenu *)panelMenu;
 - (NSMenu *)contextMenu;
 
+- (void)appendPanelItem:(NSMenuItem *)item;
 - (void)appendContextItem:(NSMenuItem *)item;
 - (void)appendItem:(NSMenuItem *)item toMenu:(XAP_CocoaAppMenu_Id)appMenu;
 
