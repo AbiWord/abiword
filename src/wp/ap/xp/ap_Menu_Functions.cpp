@@ -1091,6 +1091,27 @@ Defun_EV_GetMenuItemState_Fn(ap_GetState_InTable)
 }
 
 
+Defun_EV_GetMenuItemState_Fn(ap_GetState_TableOK)
+{
+	ABIWORD_VIEW;
+	UT_return_val_if_fail (pView, EV_MIS_Gray);
+
+	if(pView->isInTable(pView->getPoint()-1) && pView->isInTable() && pView->isHdrFtrEdit())
+	{
+		return EV_MIS_Gray;
+	}
+	else if(pView->isInFootnote())
+	{
+		return EV_MIS_Gray;
+	}
+	else if(pView->isInEndnote())
+	{
+		return EV_MIS_Gray;
+	}
+    return EV_MIS_ZERO;
+}
+
+
 Defun_EV_GetMenuItemState_Fn(ap_GetState_InFootnote)
 {
 	ABIWORD_VIEW;
