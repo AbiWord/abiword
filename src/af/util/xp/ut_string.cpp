@@ -639,7 +639,7 @@ void UT_decodeUTF8string(const XML_Char * pString, UT_uint32 len, UT_GrowBuf * p
 }
 
 #if 1 // i didn't get a chance to test this -- jeff
-XML_Char * UT_encodeUTF8char(UT_UCSChar cIn)
+XML_Char* UT_encodeUTF8char(UT_UCSChar cIn)
 {
 	// convert the given unicode character into a UTF8 sequence
 	// return pointer to static buffer.
@@ -654,15 +654,15 @@ XML_Char * UT_encodeUTF8char(UT_UCSChar cIn)
 	else if (cIn < 0x0800)
 	{
 		// 110xxxxx 10xxxxxx
-		sBuf[0] = 0xc000 | ((cIn >> 6) & 0x001f);
-		sBuf[1] = 0x8000 | (    cIn    & 0x003f);
+		sBuf[0] = 0x00c0 | ((cIn >> 6) & 0x001f);
+		sBuf[1] = 0x0080 | (    cIn    & 0x003f);
 	}
 	else
 	{
 		// 1110xxxx 10xxxxxx 10xxxxxx
-		sBuf[0] = 0xe000 | ((cIn >> 12) & 0x000f);
-		sBuf[1] = 0x8000 | ((cIn >>  6) & 0x003f);
-		sBuf[2] = 0x8000 | (    cIn     & 0x003f);
+		sBuf[0] = 0x00e0 | ((cIn >> 12) & 0x000f);
+		sBuf[1] = 0x0080 | ((cIn >>  6) & 0x003f);
+		sBuf[2] = 0x0080 | (    cIn     & 0x003f);
 	}
 
 	return sBuf;
