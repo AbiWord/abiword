@@ -390,7 +390,7 @@ void AP_LeftRuler::mouseRelease(EV_EditModifierState ems, EV_EditMouseButton emb
 
 void AP_LeftRuler::mouseMotion(EV_EditModifierState ems, UT_sint32 x, UT_sint32 y)
 {
-	// The X and Y that are passed to this function are x and y on the screen, not on the ruler.
+	// The X and Y that are passed to this function are x and y on the application, not on the ruler.
 	
 	FV_View * pView = static_cast<FV_View *>(m_pView);
 	pView->getLeftRulerInfo(&m_infoCache);

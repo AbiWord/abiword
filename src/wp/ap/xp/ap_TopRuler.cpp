@@ -1295,6 +1295,8 @@ bool AP_TopRuler::isMouseOverTab(UT_uint32 x, UT_uint32 y)
 // Sevior: Look to cache this.
 	// first hit-test against the tab toggle control
 	(static_cast<FV_View *>(m_pView))->getTopRulerInfo(&m_infoCache);
+	UT_sint32 xFixed = (UT_sint32)MyMax(m_iLeftRulerWidth,s_iFixedWidth);
+	UT_sint32 xStartPixel = xFixed + (UT_sint32) m_infoCache.m_xPageViewMargin;
 
 	UT_Rect rToggle;
 
@@ -1320,7 +1322,7 @@ bool AP_TopRuler::isMouseOverTab(UT_uint32 x, UT_uint32 y)
 	if (iTab >= 0)
 	{
 		m_pG->setCursor(GR_Graphics::GR_CURSOR_LEFTRIGHT);
-		_displayStatusMessage(AP_STRING_ID_TabStopStatus, tick, anchor);
+		_displayStatusMessage(AP_STRING_ID_TabStopStatus, tick, anchor - xStartPixel);
 		return true;
 	}
 
@@ -1336,19 +1338,19 @@ bool AP_TopRuler::isMouseOverTab(UT_uint32 x, UT_uint32 y)
 	if (rLeftIndent.containsPoint(x,y))
 	{
 		m_pG->setCursor(GR_Graphics::GR_CURSOR_LEFTRIGHT);
-		_displayStatusMessage(AP_STRING_ID_LeftMarginStatus, tick,  rLeftIndent.left);
+		_displayStatusMessage(AP_STRING_ID_LeftIndentStatus, tick,  rLeftIndent.left - xStartPixel);
 		return true;
 	}
 	if (rRightIndent.containsPoint(x,y))
 	{
 		m_pG->setCursor(GR_Graphics::GR_CURSOR_LEFTRIGHT);
-		_displayStatusMessage(AP_STRING_ID_RightIndentStatus, tick, rRightIndent.left);
+		_displayStatusMessage(AP_STRING_ID_RightIndentStatus, tick, rRightIndent.left - xStartPixel);
 		return true;
 	}
 	if (rFirstLineIndent.containsPoint(x,y))
 	{
 		m_pG->setCursor(GR_Graphics::GR_CURSOR_LEFTRIGHT);
-		_displayStatusMessage(AP_STRING_ID_FirstLineIndentStatus, tick, rFirstLineIndent.left);
+		_displayStatusMessage(AP_STRING_ID_FirstLineIndentStatus, tick, rFirstLineIndent.left - xStartPixel);
 		return true;
 	}
 
@@ -1373,13 +1375,13 @@ bool AP_TopRuler::isMouseOverTab(UT_uint32 x, UT_uint32 y)
 	if (rLeftMargin.containsPoint(x,y))
 	{
 		m_pG->setCursor(GR_Graphics::GR_CURSOR_LEFTRIGHT);
-		_displayStatusMessage(AP_STRING_ID_LeftMarginStatus, tick, rLeftMargin.left);
+		_displayStatusMessage(AP_STRING_ID_LeftMarginStatus, tick, rLeftMargin.left - xStartPixel);
 		return true;
 	}
 	if (rRightMargin.containsPoint(x,y))
 	{
 		m_pG->setCursor(GR_Graphics::GR_CURSOR_LEFTRIGHT);
-		_displayStatusMessage(AP_STRING_ID_RightMarginStatus, tick, rRightMargin.left);
+		_displayStatusMessage(AP_STRING_ID_RightMarginStatus, tick, rRightMargin.left - xStartPixel);
 		return true;
 	}
 	AP_FrameData * pFrameData = (AP_FrameData *)m_pFrame->getFrameData();
