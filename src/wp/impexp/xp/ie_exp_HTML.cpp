@@ -1046,7 +1046,7 @@ static const char * s_Delimiter =
 static const char * s_Header[3] = {
 	"This HTML file was created by AbiWord.                                           ",
 	"AbiWord is a free, Open Source word processor.                                   ",
-	"You may obtain more information about AbiWord at www.abisource.com               "
+	"You can get more information about AbiWord at http://www.abisource.com               "
 };
 
 void s_HTML_Listener::_outputBegin (PT_AttrPropIndex api)
