@@ -1977,7 +1977,7 @@ void fp_TextRun::_draw(dg_DrawArgs* pDA)
 
 	// draw the background for the whole run, but only in sreen context or if
 	// it is not white
-	UT_RGBColor clrWhite(255,255,255); // FIXME: should not be hardwired?!
+	static const UT_RGBColor clrWhite(255,255,255); // FIXME: should not be hardwired?!
 	bool bDrawBckg = (getGR()->queryProperties(GR_Graphics::DGP_SCREEN)
 					 || clrNormalBackground != clrWhite);
 
