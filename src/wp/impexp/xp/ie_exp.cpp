@@ -128,7 +128,7 @@ void IE_Exp::setProps (const char * props)
 	m_props = props;
 
 	m_props_map.clear ();
-	m_props_map.parse_css_string (props);
+	m_props_map.parse_properties (props);
 }
 
 bool IE_Exp::_openFile(const char * szFilename)

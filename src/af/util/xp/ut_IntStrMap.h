@@ -278,7 +278,8 @@ public:
 	bool ins (const char *  key, const char * value); // make sure you provide valid UTF-8!
 	bool ins (const char ** attrs); // attribute pairs with a 0 value are ignored
 
-	void parse_css_string (const char * property_string); // insert key-value pairs from CSS-style string
+	void parse_properties (const char * properties); // insert key-value pairs from CSS-style string
+	void parse_attributes (const char * attributes); // insert key-value pairs from attribute list
 
 	/* returns false if no such key-value
 	 */

@@ -845,6 +845,14 @@ void UT_UTF8String::appendUCS4 (const UT_UCS4Char * sz, size_t n /* == 0 => null
 	pimpl->appendUCS4 (sz, n);
 }
 
+/* replaces <str1> with <str2> in the current string
+ */
+const UT_UTF8String & UT_UTF8String::escape (const UT_UTF8String & str1, const UT_UTF8String & str2)
+{
+	pimpl->escape (str1, str2);
+	return *this;
+}
+
 /* escapes '<', '>' & '&' in the current string
  */
 const UT_UTF8String & UT_UTF8String::escapeXML ()

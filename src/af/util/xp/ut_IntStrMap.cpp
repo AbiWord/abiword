@@ -32,8 +32,9 @@ static bool key_gt (const char * key, UT_uint32 key_length, const UT_UTF8String 
 static bool key_eq (const char * key, UT_uint32 key_length, const UT_UTF8String & key2);
 
 static void         s_pass_whitespace (const char *& csstr);
-static const char * s_pass_name (const char *& csstr);
+static const char * s_pass_name (const char *& csstr, char end);
 static const char * s_pass_value (const char *& csstr);
+static const char * s_pass_string (const char *& csstr);
 
 UT_IntStrMap::UT_IntStrMap () :
 	m_pair(0),
@@ -891,7 +892,7 @@ static void s_pass_whitespace (const char *& csstr)
 		}
 }
 
-static const char * s_pass_name (const char *& csstr)
+static const char * s_pass_name (const char *& csstr, char end)
 {
 	const char * name_end = csstr;
 
@@ -909,7 +910,7 @@ static const char * s_pass_name (const char *& csstr)
 					while (static_cast<unsigned char>(*++csstr) & 0x80) { }
 					continue;
 				}
-			else if ((isspace (static_cast<int>(u))) || (*csstr == ':'))
+			else if ((isspace (static_cast<int>(u))) || (*csstr == end))
 				{
 					name_end = csstr;
 					break;
@@ -962,12 +963,59 @@ static const char * s_pass_value (const char *& csstr)
 	return value_end;
 }
 
-void UT_UTF8Hash::parse_css_string (const char * property_string)
+static const char * s_pass_string (const char *& csstr_ptr)
 {
-	if ( property_string == 0) return;
-	if (*property_string == 0) return;
+	if (*csstr_ptr == 0) return 0;
 
-	const char * csstr = property_string;
+	const char * csstr = csstr_ptr;
+
+	char quote = 0;
+
+	if ((*csstr == '\'') || (*csstr == '"')) quote = *csstr;
+
+	bool valid = true;
+	bool skip = false;
+
+	while (true)
+		{
+			unsigned char u = static_cast<unsigned char>(*++csstr);
+
+			if ((u & 0xc0) == 0x80) continue; // trailing byte
+			if (u == 0)
+				{
+					valid = false;
+					break;
+				}
+			if (skip)
+				{
+					skip = false;
+					continue;
+				}
+			if (*csstr == quote)
+				{
+					++csstr;
+					break;
+				}
+			if (*csstr == '\\') skip = true;
+		}
+	if (valid)
+		{
+			csstr_ptr = csstr;
+			csstr--;
+		}
+	else
+		{
+			csstr = csstr_ptr;
+		}
+	return csstr; // points to end quote on success, and to start quote on failure
+}
+
+void UT_UTF8Hash::parse_properties (const char * properties)
+{
+	if ( properties == 0) return;
+	if (*properties == 0) return;
+
+	const char * csstr = properties;
 
 	UT_UTF8String name;
 	UT_UTF8String value;
@@ -986,7 +1034,7 @@ void UT_UTF8Hash::parse_css_string (const char * property_string)
 			s_pass_whitespace (csstr);
 
 			const char * name_start = csstr;
-			const char * name_end   = s_pass_name (csstr);
+			const char * name_end   = s_pass_name (csstr, ':');
 
 			if (*csstr == 0) break; // whatever we have, it's not a "name:value;" pair
 			if (name_start == name_end) // ?? stray colon?
@@ -1016,6 +1064,47 @@ void UT_UTF8Hash::parse_css_string (const char * property_string)
 					bSkip = true;
 					continue;
 				}
+			value.assign (value_start, value_end - value_start);
+
+			ins (name, value);
+		}
+}
+
+void UT_UTF8Hash::parse_attributes (const char * attributes)
+{
+	if ( attributes == 0) return;
+	if (*attributes == 0) return;
+
+	const char * atstr = attributes;
+
+	UT_UTF8String name;
+	UT_UTF8String value;
+
+	bool bSkip = false;
+
+	while (*atstr)
+		{
+			s_pass_whitespace (atstr);
+
+			const char * name_start = atstr;
+			const char * name_end   = s_pass_name (atstr, '=');
+
+			if (*atstr != '=') break; // whatever we have, it's not a name="value" pair
+			if (name_start == name_end) break; // ?? stray equals?
+
+			name.assign (name_start, name_end - name_start);
+
+			atstr++;
+
+			if ((*atstr != '\'') && (*atstr != '"')) break; // whatever we have, it's not a name="value" pair
+
+			const char * value_start = atstr;
+			const char * value_end   = s_pass_string (atstr);
+
+			if (value_start == value_end) break; // ?? no value...
+
+			value_start++;
+
 			value.assign (value_start, value_end - value_start);
 
 			ins (name, value);

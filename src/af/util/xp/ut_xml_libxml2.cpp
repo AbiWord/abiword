@@ -45,7 +45,7 @@ extern "C" {
 
 static void _startElement (void * userData, const XML_Char * name, const XML_Char ** atts)
 {
-  UT_XML * pXML = static_cast<UT_XML *>(userData);
+  UT_XML * pXML = reinterpret_cast<UT_XML *>(userData);
 
   /* libxml2 can supply atts == 0, which is a little at variance to what is expected...
    */
@@ -58,7 +58,7 @@ static void _startElement (void * userData, const XML_Char * name, const XML_Cha
 
 static void _endElement (void * userData, const XML_Char * name)
 {
-  UT_XML * pXML = static_cast<UT_XML *>(userData);
+  UT_XML * pXML = reinterpret_cast<UT_XML *>(userData);
   pXML->endElement (reinterpret_cast<const char *>(name));
 }
 
@@ -69,8 +69,28 @@ static xmlEntityPtr _getEntity (void * userData, const XML_Char * name)
 
 static void _charData (void * userData, const XML_Char * buffer, int length)
 {
-  UT_XML * pXML = static_cast<UT_XML *>(userData);
+  UT_XML * pXML = reinterpret_cast<UT_XML *>(userData);
   pXML->charData (reinterpret_cast<const char *>(buffer), length);
+}
+
+static void _processingInstruction (void * userData, const XML_Char * target, const XML_Char * data)
+{
+  UT_XML * pXML = reinterpret_cast<UT_XML *>(userData);
+  pXML->processingInstruction (reinterpret_cast<const char *>(target), reinterpret_cast<const char *>(data));
+}
+
+static void _comment (void * userData, const XML_Char * data)
+{
+  UT_XML * pXML = reinterpret_cast<UT_XML *>(userData);
+  pXML->comment (reinterpret_cast<const char *>(data));
+}
+
+static void _cdata (void * userData, const XML_Char * buffer, int length)
+{
+  UT_XML * pXML = reinterpret_cast<UT_XML *>(userData);
+  pXML->cdataSection (true);
+  pXML->charData (reinterpret_cast<const char *>(buffer), length);
+  pXML->cdataSection (false);
 }
 
 static void _errorSAXFunc(void *ctx,
@@ -81,7 +101,7 @@ static void _errorSAXFunc(void *ctx,
   va_start (args, msg);
   UT_String errorMessage(UT_String_vprintf (msg, args));
   va_end (args);
-  
+
   UT_DEBUGMSG(("%s", errorMessage.c_str()));
 }
 
@@ -93,7 +113,7 @@ static void _fatalErrorSAXFunc(void *ctx,
   va_start (args, msg);
   UT_String errorMessage(UT_String_vprintf (msg, args));
   va_end (args);
-  
+
   UT_DEBUGMSG(("%s", errorMessage.c_str()));
 }
 
@@ -103,10 +123,10 @@ static void _fatalErrorSAXFunc(void *ctx,
 
 UT_Error UT_XML::parse (const char * szFilename)
 {
-	UT_ASSERT (m_pListener);
+	UT_ASSERT (m_pListener || m_pExpertListener);
 	UT_ASSERT (szFilename);
 	
-	if ((szFilename == 0) || (m_pListener == 0)) return UT_ERROR;
+	if ((szFilename == 0) || ((m_pListener == 0) && (m_pExpertListener == 0))) return UT_ERROR;
 	if (!reset_all ()) return UT_OUTOFMEM;
 	
 	UT_Error ret = UT_OK;
@@ -137,7 +157,10 @@ UT_Error UT_XML::parse (const char * szFilename)
 	hdl.characters   = _charData;
 	hdl.error        = _errorSAXFunc;
 	hdl.fatalError   = _fatalErrorSAXFunc;
-	
+	hdl.processingInstruction = _processingInstruction;
+	hdl.comment      = _comment;
+	hdl.cdataBlock   = _cdata;
+
 	size_t length = reader->readBytes (buffer, sizeof (buffer));
 	int done = (length < sizeof (buffer));
 	
@@ -194,8 +217,8 @@ UT_Error UT_XML::parse (const char * buffer, UT_uint32 length)
 {
   if (!m_bSniffing)
     {
-      UT_ASSERT (m_pListener);
-      if (m_pListener == 0) return UT_ERROR;
+      UT_ASSERT (m_pListener || m_pExpertListener);
+      if ((m_pListener == 0) && (m_pExpertListener == 0)) return UT_ERROR;
     }
   UT_ASSERT (buffer);
   if (buffer == 0 || length == 0) return UT_ERROR;
@@ -209,10 +232,15 @@ UT_Error UT_XML::parse (const char * buffer, UT_uint32 length)
 
   memset(&hdl, 0, sizeof(hdl));
 
-  hdl.getEntity = _getEntity;
+  hdl.getEntity    = _getEntity;
   hdl.startElement = _startElement;
-  hdl.endElement = _endElement;
-  hdl.characters = _charData;
+  hdl.endElement   = _endElement;
+  hdl.characters   = _charData;
+  hdl.error        = _errorSAXFunc;
+  hdl.fatalError   = _fatalErrorSAXFunc;
+  hdl.processingInstruction = _processingInstruction;
+  hdl.comment      = _comment;
+  hdl.cdataBlock   = _cdata;
 
   ctxt = xmlCreateMemoryParserCtxt (const_cast<char *>(buffer), static_cast<int>(length));
   if (ctxt == NULL)

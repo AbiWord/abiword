@@ -204,6 +204,8 @@ public:
 
 	void		appendUCS4 (const UT_UCS4Char * sz, size_t n = 0 /* 0 == null-termination */);
 
+	const UT_UTF8String & escape (const UT_UTF8String & str1,
+				      const UT_UTF8String & str2);  // replaces <str1> with <str2> in the current string
 	const UT_UTF8String & escapeXML ();  // escapes '<', '>' & '&' in the current string
 	const UT_UTF8String & escapeMIME (); // translates the current string to MIME "quoted-printable" format
 

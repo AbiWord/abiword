@@ -22,6 +22,7 @@
 #include <stdlib.h>
 #include <string.h>	// memcpy
 #include "ut_stringbuf.h"
+#include "ut_string_class.h"
 #include "ut_assert.h"
 #include "ut_debugmsg.h"
 
@@ -466,6 +467,73 @@ void UT_UTF8Stringbuf::appendUCS4 (const UT_UCS4Char * sz, size_t n /* == 0 => n
 	*m_pEnd = 0;
 }
 
+/* replaces <str1> with <str2> in the current string
+ */
+void UT_UTF8Stringbuf::escape (const UT_UTF8String & utf8_str1,
+							   const UT_UTF8String & utf8_str2)
+{
+	size_t diff = 0;
+	size_t len1 = utf8_str1.byteLength ();
+	size_t len2 = utf8_str2.byteLength ();
+
+	const char * str1 = utf8_str1.utf8_str ();
+	const char * str2 = utf8_str2.utf8_str ();
+
+	if (len2 > len1)
+		{
+			diff = len2 - len1;
+
+			size_t incr = 0;
+
+			char * ptr = m_psz;
+			while (ptr + len1 <= m_pEnd)
+				{
+					if (memcmp (ptr, str1, len1) == 0)
+						{
+							incr += diff;
+							ptr += len1;
+						}
+					else
+						{
+							++ptr;
+						}
+				}
+			if (!grow (incr)) return;
+		}
+	else
+		{
+			diff = len1 - len2;
+		}
+
+	char * ptr = m_psz;
+	while (ptr + len1 <= m_pEnd)
+		{
+			if (memcmp (ptr, str1, len1) == 0)
+				{
+					if (diff)
+						{
+							if (len2 > len1)
+								{
+									memmove (ptr + diff, ptr, m_pEnd - ptr + 1);
+									m_pEnd += diff;
+								}
+							else
+								{
+									memmove (ptr, ptr + diff, m_pEnd - (ptr + diff) + 1);
+									m_pEnd -= diff;
+								}
+						}
+					memcpy (ptr, str2, len2);
+					ptr += len2;
+					m_strlen += utf8_str2.length () - utf8_str1.length ();
+				}
+			else
+				{
+					++ptr;
+				}
+		}
+}
+
 /* escapes '<', '>' & '&' in the current string
  */
 void UT_UTF8Stringbuf::escapeXML ()
@@ -633,7 +701,7 @@ void UT_UTF8Stringbuf::insert (char *& ptr, const char * str, size_t utf8length)
 
 bool UT_UTF8Stringbuf::grow (size_t length)
 {
-	if (length <= (m_buflen - (m_pEnd - m_psz))) return true;
+	if (length + 1 <= (m_buflen - (m_pEnd - m_psz))) return true;
 
 	if (m_psz == 0)
 	{
@@ -646,7 +714,7 @@ bool UT_UTF8Stringbuf::grow (size_t length)
 		return true;
 	}
 
-	size_t new_length = length + (m_pEnd - m_psz);
+	size_t new_length = length + (m_pEnd - m_psz) + 1;
 	size_t end_offset = m_pEnd - m_psz;
 
 	char * more = static_cast<char *>(realloc(static_cast<void *>(m_psz), new_length));

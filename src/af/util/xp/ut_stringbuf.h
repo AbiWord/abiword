@@ -88,6 +88,8 @@ private:
 //
 ////////////////////////////////////////////////////////////////////////
 
+class UT_UTF8String;
+
 class ABI_EXPORT UT_UTF8Stringbuf
 {
 public:
@@ -111,6 +113,8 @@ public:
 	void		appendUCS2 (const UT_UCS2Char * sz, size_t n /* == 0 => null-termination */);
 	void		appendUCS4 (const UT_UCS4Char * sz, size_t n /* == 0 => null-termination */);
 
+	void		escape (const UT_UTF8String & str1,
+						const UT_UTF8String & str2);  // replaces <str1> with <str2> in the current string
 	void		escapeXML ();  // escapes '<', '>' & '&' in the current string
 	void		escapeMIME (); // translates the current string to MIME "quoted-printable" format
 

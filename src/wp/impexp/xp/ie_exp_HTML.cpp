@@ -472,7 +472,7 @@ public:
 class s_HTML_Listener : public PL_Listener
 {
 public:
-	s_HTML_Listener (PD_Document * pDocument, IE_Exp_HTML * pie, bool bClipBoard,
+	s_HTML_Listener (PD_Document * pDocument, IE_Exp_HTML * pie, bool bClipBoard, bool bTemplateBody,
 					 const XAP_Exp_HTMLOptions * exp_opt);
 
 	~s_HTML_Listener ();
@@ -542,12 +542,13 @@ private:
 	PD_Document *				m_pDocument;
 	IE_Exp_HTML *				m_pie;
 	bool						m_bClipBoard;
+	bool						m_bTemplateBody;
 	const XAP_Exp_HTMLOptions *	m_exp_opt;
 
 	inline bool		get_HTML4 ()        const { return m_exp_opt->bIs4; }
 	inline bool		get_PHTML ()        const { return m_exp_opt->bIsAbiWebDoc; }
-	inline bool		get_Declare_XML ()  const { return m_exp_opt->bDeclareXML; }
-	inline bool		get_Allow_AWML ()   const { return m_exp_opt->bAllowAWML; }
+	inline bool		get_Declare_XML ()  const { return m_exp_opt->bDeclareXML && !m_exp_opt->bIs4; }
+	inline bool		get_Allow_AWML ()   const { return m_exp_opt->bAllowAWML  && !m_exp_opt->bIs4; }
 	inline bool		get_Embed_CSS ()    const { return m_exp_opt->bEmbedCSS; }
 	inline bool		get_Embed_Images () const { return m_exp_opt->bEmbedImages; }
 	inline bool		get_Multipart ()    const { return m_exp_opt->bMultipart; }
@@ -1171,6 +1172,12 @@ static const char * s_Header[3] = {
 
 void s_HTML_Listener::_outputBegin (PT_AttrPropIndex api)
 {
+	if (m_bTemplateBody)
+		{
+			m_bFirstWrite = false;
+			return;
+		}
+
 	UT_UTF8String titleProp;
 
 #ifdef HTML_META_SUPPORTED
@@ -1298,8 +1305,14 @@ void s_HTML_Listener::_outputEnd ()
 {
 	if (m_bInBlock) _closeTag ();
 
-	while (tagTop () != TT_BODY) // hmm...
-		tagPop ();
+	while (true)
+		{
+			UT_uint32 top = tagTop ();
+			if ((top == TT_BODY) || !top)
+				break;
+			tagPop ();
+		}
+	if (m_bTemplateBody) return;
 
 	if (get_PHTML ())
 		{
@@ -3402,11 +3415,12 @@ void s_HTML_Listener::_outputData (const UT_UCSChar * data, UT_uint32 length)
 	if (m_utf8_1.byteLength ()) textTrusted (m_utf8_1);
 }
 
-s_HTML_Listener::s_HTML_Listener (PD_Document * pDocument, IE_Exp_HTML * pie, bool bClipBoard,
+s_HTML_Listener::s_HTML_Listener (PD_Document * pDocument, IE_Exp_HTML * pie, bool bClipBoard, bool bTemplateBody,
 								  const XAP_Exp_HTMLOptions * exp_opt) :
 	m_pDocument (pDocument),
 	m_pie(pie),
 	m_bClipBoard(bClipBoard),
+	m_bTemplateBody(bTemplateBody),
 	m_exp_opt(exp_opt),
 	m_bInSection(false),
 	m_bInBlock(false),
@@ -4369,14 +4383,570 @@ const UT_UTF8String * s_StyleTree::lookup (const UT_UTF8String & prop_name)
 /*****************************************************************/
 /*****************************************************************/
 
+#ifdef TH_SKIP_REST
+#undef TH_SKIP_REST
+#endif
+#define TH_SKIP_REST  1
+
+#ifdef TH_SKIP_THIS
+#undef TH_SKIP_THIS
+#endif
+#define TH_SKIP_THIS  2
+
+class ABI_EXPORT s_TemplateHandler : public UT_XML::ExpertListener
+{
+public:
+	s_TemplateHandler (PD_Document * pDocument, IE_Exp_HTML * pie);
+
+	~s_TemplateHandler ();
+
+	/* Implementation of ExpertListener
+	 */
+	void	StartElement (const XML_Char * name, const XML_Char ** atts);
+	void	EndElement (const XML_Char * name);
+	void	CharData (const XML_Char * buffer, int length);
+	void	ProcessingInstruction (const XML_Char * target, const XML_Char * data);
+	void	Comment (const XML_Char * data);
+	void	StartCdataSection ();
+	void	EndCdataSection ();
+	void	Default (const XML_Char * buffer, int length);
+
+private:
+	void	_handleMetaTag (const char * key, UT_UTF8String & value);
+	void	_handleMeta ();
+
+	bool	echo () const;
+	bool	condition (const XML_Char * data) const;
+
+	PD_Document *	m_pDocument;
+	IE_Exp_HTML *	m_pie;
+
+	bool			m_cdata;
+	bool			m_empty;
+
+	UT_UTF8String	m_utf8;
+	UT_UTF8String	m_root;
+	UT_UTF8Hash		m_hash;
+	UT_NumberStack	m_mode;
+};
+
+s_TemplateHandler::s_TemplateHandler (PD_Document * pDocument, IE_Exp_HTML * pie) :
+	m_pDocument(pDocument),
+	m_pie(pie),
+	m_cdata(false),
+	m_empty(false)
+{
+	const UT_UTF8String * prop = m_pie->getProperty ("href-prefix");
+	if (prop)
+		m_root = *prop;
+}
+
+s_TemplateHandler::~s_TemplateHandler ()
+{
+	// 
+}
+
+void s_TemplateHandler::StartElement (const XML_Char * name, const XML_Char ** atts)
+{
+	if (!echo ()) return;
+
+	if (m_empty)
+		{
+			m_pie->write (">", 1);
+			m_empty = false;
+		}
+
+	m_utf8  = "<";
+	m_utf8 += name;
+
+	if (atts)
+		{
+			const XML_Char ** attr = atts;
+
+			UT_UTF8String tmp;
+
+			while (*attr)
+				{
+					bool href = ( (strcmp (*attr, "href") == 0) ||
+								 ((strcmp (*attr, "src" ) == 0) && (strcmp (name, "img") == 0)) );
+
+					m_utf8 += " ";
+					m_utf8 += *attr++;
+					m_utf8 += "=\"";
+
+					if (href && (**attr == '$'))
+						{
+							tmp  = m_root;
+							tmp += (*attr++ + 1);
+						}
+					else
+						{
+							tmp = *attr++;
+						}
+					tmp.escapeXML ();
+
+					m_utf8 += tmp;
+					m_utf8 += "\"";
+				}
+		}
+	m_pie->write (m_utf8.utf8_str (), m_utf8.byteLength ());
+
+	m_empty = true;
+}
+
+void s_TemplateHandler::EndElement (const XML_Char * name)
+{
+	if (!echo ()) return;
+
+	if (m_empty)
+		{
+			m_pie->write (" />", 3);
+			m_empty = false;
+		}
+	else
+		{
+			m_utf8  = "</";
+			m_utf8 += name;
+			m_utf8 += ">";
+			m_pie->write (m_utf8.utf8_str (), m_utf8.byteLength ());
+		}
+}
+
+void s_TemplateHandler::CharData (const XML_Char * buffer, int length)
+{
+	if (!echo ()) return;
+
+	if (m_empty)
+		{
+			m_pie->write (">", 1);
+			m_empty = false;
+		}
+	if (m_cdata)
+		{
+			m_pie->write (buffer, length);
+			return;
+		}
+	m_utf8 = buffer;
+	m_utf8.escapeXML ();
+	m_pie->write (m_utf8.utf8_str (), m_utf8.byteLength ());
+}
+
+void s_TemplateHandler::ProcessingInstruction (const XML_Char * target, const XML_Char * data)
+{
+	bool bAbiXHTML = (strncmp (target, "abi-xhtml-", 10) == 0);
+
+	if (!bAbiXHTML && !echo ()) return;
+
+	if (m_empty)
+		{
+			m_pie->write (">", 1);
+			m_empty = false;
+		}
+	if (!bAbiXHTML)
+		{
+			/* processing instruction not relevant to this - could be PHP, etc.
+			 */
+			m_utf8  = "<?";
+			m_utf8 += target;
+			m_utf8  = " ";
+			m_utf8 += data;
+			m_utf8  = "?>";
+			m_pie->write (m_utf8.utf8_str (), m_utf8.byteLength ());
+			return;
+		}
+	m_utf8 = target + 10;
+
+	if ((m_utf8 == "insert") && echo ())
+		{
+			m_utf8 = data;
+
+			if (m_utf8 == "title")
+				{
+#ifdef HTML_META_SUPPORTED
+					m_utf8 = "";
+
+					m_pDocument->getMetaDataProp (PD_META_KEY_TITLE, m_utf8);
+
+					if (m_utf8.byteLength () == 0)
+						m_utf8 = m_pie->getFileName ();
+
+					m_utf8.escapeXML ();
+					m_pie->write (m_utf8.utf8_str (), m_utf8.byteLength ());
+#endif /* HTML_META_SUPPORTED */
+				}
+			else if (m_utf8 == "meta")
+				{
+#ifdef HTML_META_SUPPORTED
+					_handleMeta ();
+#endif /* HTML_META_SUPPORTED */
+				}
+			else if (m_utf8 == "body")
+				{
+					m_pie->_writeDocument (false, true);
+				}
+		}
+	else if ((m_utf8 == "comment-replace") && echo ())
+		{
+			m_hash.clear ();
+			m_hash.parse_attributes (data);
+
+			const UT_UTF8String * sz_property = m_hash["property"];
+			const UT_UTF8String * sz_comment  = m_hash["comment"];
+
+			if (sz_property && sz_comment)
+				{
+					const UT_UTF8String * prop = m_pie->getProperty (sz_property->utf8_str ());
+
+					if (prop)
+						{
+							const UT_UTF8String DD("$$");
+
+							m_utf8 = *sz_comment;
+							m_utf8.escape (DD, *prop);
+
+							m_pie->write ("<!--", 4);
+							m_pie->write (m_utf8.utf8_str (), m_utf8.byteLength ());
+							m_pie->write ( "-->", 3);
+						}
+				}
+		}
+	else if ((m_utf8 == "menuitem") && echo ())
+		{
+			m_hash.clear ();
+			m_hash.parse_attributes (data);
+
+			const UT_UTF8String * sz_property = m_hash["property"];
+			const UT_UTF8String * sz_class    = m_hash["class"];
+			const UT_UTF8String * sz_href     = m_hash["href"];
+			const UT_UTF8String * sz_label    = m_hash["label"];
+
+			if (sz_property && sz_class && sz_href && sz_label)
+				{
+					const char * href = sz_href->utf8_str ();
+
+					if (*href == '$')
+						{
+							m_utf8  = m_root;
+							m_utf8 += href + 1;
+
+							m_hash.ins ("href", m_utf8);
+
+							sz_href = m_hash["href"];
+						}
+
+					const UT_UTF8String * prop = m_pie->getProperty (sz_property->utf8_str ());
+
+					bool ne = (prop ? (*prop != *sz_class) : true);
+
+					m_utf8  = "<td class=\"";
+					m_utf8 += *sz_class;
+					if (ne)
+						{
+							m_utf8 += "\"><a href=\"";
+							m_utf8 += *sz_href;
+						}
+					m_utf8 += "\"><div>";
+					m_utf8 += *sz_label;
+					m_utf8 += "</div>";
+					if (ne)
+						{
+							m_utf8 += "</a>";
+						}
+					m_utf8 += "</td>";
+
+					m_pie->write (m_utf8.utf8_str (), m_utf8.byteLength ());
+				}
+		}
+	else if (m_utf8 == "if")
+		{
+			if (echo ())
+				{
+					if (condition (data))
+						m_mode.push (0);
+					else
+						m_mode.push (TH_SKIP_THIS);
+				}
+			else
+				{
+					m_mode.push (TH_SKIP_REST);
+				}
+		}
+	else if (m_mode.getDepth ())
+		{
+			UT_sint32 mode;
+			m_mode.viewTop (mode);
+
+			if (m_utf8 == "elif")
+				{
+					if (mode == TH_SKIP_THIS)
+						{
+							if (condition (data))
+								{
+									m_mode.pop ();
+									m_mode.push (0);
+								}
+						}
+					else if (mode != TH_SKIP_REST)
+						{
+							m_mode.pop ();
+							m_mode.push (TH_SKIP_REST);
+						}
+				}
+			else if (m_utf8 == "else")
+				{
+					if (mode == TH_SKIP_THIS)
+						{
+							if (condition (data))
+								{
+									m_mode.pop ();
+									m_mode.push (0);
+								}
+						}
+					else if (mode != TH_SKIP_REST)
+						{
+							m_mode.pop ();
+							m_mode.push (TH_SKIP_REST);
+						}
+				}
+			else if (m_utf8 == "fi")
+				{
+					m_mode.pop ();
+				}
+		}
+}
+
+#ifdef HTML_META_SUPPORTED
+
+void s_TemplateHandler::_handleMetaTag (const char * key, UT_UTF8String & value)
+{
+	m_utf8  = "<meta name=\"";
+	m_utf8 += key;
+	m_utf8 += "\" content=\"";
+	m_utf8 += value.escapeXML ();
+	m_utf8 += "\" />\r\n";
+	m_pie->write (m_utf8.utf8_str (), m_utf8.byteLength ());
+}
+
+void s_TemplateHandler::_handleMeta ()
+{
+	UT_UTF8String metaProp = "<meta http-equiv=\"content-type\" content=\"text/html; charset=UTF-8\" />\r\n";
+
+	m_pie->write (metaProp.utf8_str (), metaProp.byteLength ());
+	
+	if (m_pDocument->getMetaDataProp (PD_META_KEY_CREATOR,  metaProp) && metaProp.size ())
+		_handleMetaTag ("Author",   metaProp);
+	
+	if (m_pDocument->getMetaDataProp (PD_META_KEY_KEYWORDS, metaProp) && metaProp.size ())
+	    _handleMetaTag ("Keywords", metaProp);
+	
+	if (m_pDocument->getMetaDataProp (PD_META_KEY_SUBJECT,  metaProp) && metaProp.size ())
+		_handleMetaTag ("Subject",  metaProp);
+}
+
+#endif /* HTML_META_SUPPORTED */
+
+bool s_TemplateHandler::echo () const
+{
+	if (!m_mode.getDepth ())
+		return true;
+
+	UT_sint32 mode;
+	m_mode.viewTop (mode);
+
+	return (mode == 0);
+}
+
+bool s_TemplateHandler::condition (const XML_Char * data) const
+{
+	const char * eq = strstr (data, "==");
+	const char * ne = strstr (data, "!=");
+
+	if (!eq && !ne)
+		return false;
+	if (eq && ne)
+		{
+			if (eq < ne)
+				ne = 0;
+			else
+				eq = 0;
+		}
+
+	UT_UTF8String var;
+	const char * value = NULL;
+
+	if (eq)
+		{
+			var.assign (data, eq - data);
+			value = eq + 2;
+		}
+	else
+		{
+			var.assign (data, ne - data);
+			value = ne + 2;
+		}
+	const UT_UTF8String * prop = m_pie->getProperty (var.utf8_str ());
+
+	bool match;
+
+	if (prop)
+		match = (*prop == value);
+	else
+		match = (*value == 0);
+
+	return (eq ? match : !match);
+}
+
+void s_TemplateHandler::Comment (const XML_Char * data)
+{
+	if (!echo ()) return;
+
+	if (m_empty)
+		{
+			m_pie->write (">", 1);
+			m_empty = false;
+		}
+	m_pie->write ("<!--", 4);
+	m_pie->write (data, strlen (data));
+	m_pie->write ("-->", 3);
+}
+
+void s_TemplateHandler::StartCdataSection ()
+{
+	if (!echo ()) return;
+
+	if (m_empty)
+		{
+			m_pie->write (">", 1);
+			m_empty = false;
+		}
+	m_pie->write ("<![CDATA[", 9);
+	m_cdata = true;
+}
+
+void s_TemplateHandler::EndCdataSection ()
+{
+	if (!echo ()) return;
+
+	if (m_empty)
+		{
+			m_pie->write (">", 1);
+			m_empty = false;
+		}
+	m_pie->write ("]]>", 3);
+	m_cdata = false;
+}
+
+void s_TemplateHandler::Default (const XML_Char * buffer, int length)
+{
+	// do nothing
+}
+
+/*****************************************************************/
+/*****************************************************************/
+
 UT_Error IE_Exp_HTML::_writeDocument ()
 {
-	bool bClipBoard = (getDocRange () != NULL);
+	if (getDocRange () != NULL) // ClipBoard
+		{
+			m_exp_opt.bEmbedImages = true;
+			return _writeDocument (true, false);
+		}
 
-	if (bClipBoard)
-		m_exp_opt.bEmbedImages = true;
+	/* Export options:
 
-	s_HTML_Listener * pListener = new s_HTML_Listener(getDoc(),this,bClipBoard,&m_exp_opt);
+	html-markup		html4 | xhtml		whether to write HTML4 or XHTML
+	html-php		yes | no			whether to add <?php instructions (for Abi's website)
+	html-xml		declare | suppress	whether to declare as <?xml (sometimes problematic with <?php )
+	html-awml		allow | suppress	whether to add extra attributes in AWML namespace
+	html-css		embed | external	whether to embed the stylesheet
+	html-images		embed | external	whether to embed images in URLs
+	html-template	<file>				use <file> as template for output
+	href-prefix		<path>				use <path> as prefix for template href attributes marked with initial '$'
+	 */
+
+	const UT_UTF8String * prop = 0;
+
+	prop = getProperty ("html-markup");
+	if (prop)
+		{
+			if (*prop == "html4")
+				m_exp_opt.bIs4 = true;
+			else if (*prop == "xhtml")
+				m_exp_opt.bIs4 = false;
+		}
+	prop = getProperty ("html-php");
+	if (prop)
+		{
+			if (*prop == "yes")
+				m_exp_opt.bIsAbiWebDoc = true;
+			else if (*prop == "no")
+				m_exp_opt.bIsAbiWebDoc = false;
+		}
+	prop = getProperty ("html-xml");
+	if (prop)
+		{
+			if (*prop == "declare")
+				m_exp_opt.bDeclareXML = true;
+			else if (*prop == "suppress")
+				m_exp_opt.bDeclareXML = false;
+		}
+	prop = getProperty ("html-awml");
+	if (prop)
+		{
+			if (*prop == "allow")
+				m_exp_opt.bAllowAWML = true;
+			else if (*prop == "suppress")
+				m_exp_opt.bAllowAWML = false;
+		}
+	prop = getProperty ("html-css");
+	if (prop)
+		{
+			if (*prop == "embed")
+				m_exp_opt.bEmbedCSS = true;
+			else if (*prop == "external")
+				m_exp_opt.bEmbedCSS = false;
+		}
+	prop = getProperty ("html-images");
+	if (prop)
+		{
+			if (*prop == "embed")
+				m_exp_opt.bEmbedImages = true;
+			else if (*prop == "external")
+				m_exp_opt.bEmbedImages = false;
+		}
+
+	prop = getProperty ("html-template");
+	if (!prop)
+		return _writeDocument (false, false);
+
+	/* template mode...
+	 */
+	m_exp_opt.bIs4 = false;
+
+	UT_UTF8String declaration;
+
+	if (m_exp_opt.bDeclareXML)
+		declaration += "<?xml version=\"1.0\"?>\r\n";
+
+	declaration += "<";
+	declaration += s_DTD_XHTML;
+	declaration += ">\r\n";
+
+	write (declaration.utf8_str (), declaration.byteLength ());
+
+	s_TemplateHandler TH(getDoc(),this);
+
+	UT_XML parser;
+	parser.setExpertListener (&TH);
+
+	UT_Error err = parser.parse (prop->utf8_str ());
+
+	return err;
+}
+
+UT_Error IE_Exp_HTML::_writeDocument (bool bClipBoard, bool bTemplateBody)
+{
+	s_HTML_Listener * pListener = new s_HTML_Listener(getDoc(),this,bClipBoard,bTemplateBody,&m_exp_opt);
 	if (pListener == 0) return UT_IE_NOMEMORY;
 
 	PL_Listener * pL = static_cast<PL_Listener *>(pListener);

@@ -99,10 +99,10 @@ static void _default (void * userData, const XML_Char * buffer, int length)
 
 UT_Error UT_XML::parse (const char * szFilename)
 {
-  UT_ASSERT (m_pListener);
+  UT_ASSERT (m_pListener || m_pExpertListener);
   UT_ASSERT (szFilename);
 
-  if ((szFilename == 0) || (m_pListener == 0)) return UT_ERROR;
+  if ((szFilename == 0) || ((m_pListener == 0) && (m_pExpertListener == 0))) return UT_ERROR;
   if (!reset_all ()) return UT_OUTOFMEM;
 
   UT_Error ret = UT_OK;

@@ -189,7 +189,8 @@ public:
 protected:
 	virtual bool		_openFile (const char * szFilename);
 	virtual UT_Error	_writeDocument ();
-
+public:
+	virtual UT_Error	_writeDocument (bool bClipBoard, bool bTemplateBody);
 private:
 	bool				m_bSuppressDialog;
 	XAP_Exp_HTMLOptions	m_exp_opt;

@@ -148,6 +148,7 @@ protected:
 
 	bool				m_error;
 
+public:
 	const UT_UTF8String & getProps () {
 		return m_props;
 	}
@@ -155,7 +156,7 @@ protected:
 		return m_props_map[key];
 	}
 
- private:
+private:
 	PD_Document *		m_pDocument;
 	PD_DocumentRange *	m_pDocRange;
 	UT_ByteBuf *		m_pByteBuf;
