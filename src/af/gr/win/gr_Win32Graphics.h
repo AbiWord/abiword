@@ -261,6 +261,7 @@ public:
 	HDC                   getPrintDC() const {return m_printHDC;}
 	
 	double                getXYRatio() const {return m_fXYRatio;}
+	double                getXYRatioPrint() const {return m_fXYRatioPrint;}
 	
 protected:
 	// all instances have to be created via GR_GraphicsFactory; see gr_Graphics.h
@@ -305,6 +306,7 @@ protected:
 	DWORD					m_3dColors[COUNT_3D_COLORS];
 	int                     m_nPrintLogPixelsY;
 	double                  m_fXYRatio;
+	double                  m_fXYRatioPrint;
 
 
 private:

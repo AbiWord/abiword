@@ -172,6 +172,16 @@ GR_Win32Graphics::GR_Win32Graphics(HDC hdc, HWND hwnd, XAP_App * app)
 	if(m_printHDC)
 	{
 		m_nPrintLogPixelsY = GetDeviceCaps(getPrintDC(), LOGPIXELSY);
+		int nLogPixelsX = GetDeviceCaps(getPrintDC(), LOGPIXELSX);
+		if(m_nPrintLogPixelsY)
+		{
+			m_fXYRatioPrint = (double)nLogPixelsX / (double) m_nPrintLogPixelsY;
+		}
+		else
+		{
+			UT_ASSERT_HARMLESS( UT_SHOULD_NOT_HAPPEN );
+			m_fXYRatioPrint = 1;
+		}
 	}
 }
 
@@ -694,7 +704,7 @@ UT_sint32 GR_Win32Graphics::measureUnRemappedChar(const UT_UCSChar c)
 	
 	iWidth *= (UT_sint32)getResolution();
 	iWidth /= (UT_sint32)getDeviceResolution();
-	
+	iWidth = (UT_sint32)((double)iWidth * m_fXYRatio);
 	return iWidth;	
 }
 

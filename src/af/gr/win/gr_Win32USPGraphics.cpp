@@ -1284,26 +1284,38 @@ void GR_Win32USPGraphics::setPrintDC(HDC dc)
 		if(getPrintDC())
 		{
 			m_nPrintLogPixelsY = GetDeviceCaps(getPrintDC(), LOGPIXELSY);
-		}
-
-		// now make our views to rebuild themselves ...
-		XAP_App * pApp = XAP_App::getApp();
-		UT_return_if_fail( pApp );
-
-		UT_uint32 iFrameCount = pApp->getFrameCount();
-		for(UT_uint32 i = 0; i < iFrameCount; i++)
-		{
-			XAP_Frame * pFrame = pApp->getFrame(i);
-			if(!pFrame)
-				continue;
-
-			AV_View * pView = pFrame->getCurrentView();
-			if(pView)
+			int nLogPixelsX = GetDeviceCaps(getPrintDC(), LOGPIXELSX);
+			if(m_nPrintLogPixelsY)
 			{
-				GR_Graphics * pG = pView->getGraphics();
+				m_fXYRatioPrint = (double)nLogPixelsX / (double) m_nPrintLogPixelsY;
+			}
+			else
+			{
+				UT_ASSERT_HARMLESS( UT_SHOULD_NOT_HAPPEN );
+				m_fXYRatioPrint = 1;
+			}
+		}
+		if(m_printHDC)
+		{
+			// now make our views to rebuild themselves ...
+			XAP_App * pApp = XAP_App::getApp();
+			UT_return_if_fail( pApp );
 
-				if(pG == this)
-					pView->remeasureChars();
+			UT_uint32 iFrameCount = pApp->getFrameCount();
+			for(UT_uint32 i = 0; i < iFrameCount; i++)
+			{
+				XAP_Frame * pFrame = pApp->getFrame(i);
+				if(!pFrame)
+					continue;
+
+				AV_View * pView = pFrame->getCurrentView();
+				if(pView)
+				{
+					GR_Graphics * pG = pView->getGraphics();
+
+					if(pG == this)
+						pView->remeasureChars();
+				}
 			}
 		}
 	}
@@ -1413,26 +1425,28 @@ void GR_Win32USPGraphics::measureRenderedCharWidths(GR_RenderInfo & ri)
 		// we currently own the static buffers; invalidate
 		RI.s_pOwnerCP = NULL;
 	}
-	
+
 	// now convert the whole lot to layout units
 	if(getPrintDC())
 	{
+		double fXYRatio = m_fXYRatio * m_fXYRatioPrint;
+
 		for(UT_uint32 i = 0; i < RI.m_iIndicesCount; ++i)
 		{
 			// RI.m_pAdvances[i] = tlu(RI.m_pAdvances[i]);
 			RI.m_pAdvances[i] = (UT_sint32)((double)RI.m_pAdvances[i]*(double)getResolution()
-											/((double)m_nPrintLogPixelsY*m_fXYRatio) + 0.5);
+											/((double)m_nPrintLogPixelsY*fXYRatio) + 0.5);
 		}
 
 		//RI.m_ABC.abcA = tlu(RI.m_ABC.abcA);
 		//RI.m_ABC.abcB = tlu(RI.m_ABC.abcB);
 		//RI.m_ABC.abcC = tlu(RI.m_ABC.abcC);
 		RI.m_ABC.abcA = (UT_sint32)((double) RI.m_ABC.abcA * (double)getResolution()
-									/((double)m_nPrintLogPixelsY*m_fXYRatio) + 0.5);
+									/((double)m_nPrintLogPixelsY*fXYRatio) + 0.5);
 		RI.m_ABC.abcB = (UT_sint32)((double) RI.m_ABC.abcB * (double)getResolution()
-									/((double)m_nPrintLogPixelsY*m_fXYRatio) + 0.5);
+									/((double)m_nPrintLogPixelsY*fXYRatio) + 0.5);
 		RI.m_ABC.abcC = (UT_sint32)((double) RI.m_ABC.abcC * (double)getResolution()
-									/((double)m_nPrintLogPixelsY*m_fXYRatio) + 0.5);
+									/((double)m_nPrintLogPixelsY*fXYRatio) + 0.5);
 	}
 	else if (m_bPrint)
 	{
