@@ -838,7 +838,7 @@ void fl_FrameLayout::_lookupProperties(const PP_AttrProp* pSectionAP)
 	{
 		m_iWidth = UT_convertToLogicalUnits(pszWidth);
 	}
-
+	UT_DEBUGMSG(("Width %s \n",pszWidth));
 // Height
 
 	if(!pSectionAP || !pSectionAP->getProperty("frame-height",pszHeight))
@@ -849,6 +849,7 @@ void fl_FrameLayout::_lookupProperties(const PP_AttrProp* pSectionAP)
 	{
 		m_iHeight = UT_convertToLogicalUnits(pszHeight);
 	}
+	UT_DEBUGMSG(("Height %s \n",pszHeight));
 
 // Xpadding
 

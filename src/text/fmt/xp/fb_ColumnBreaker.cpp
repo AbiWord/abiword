@@ -777,6 +777,7 @@ UT_sint32 fb_ColumnBreaker::breakSection(fl_DocSectionLayout * pSL)
 //
 // Code to fix order in the column
 //
+#if 1
 			if((pCurColumn->findCon(pCurContainer) >= 0) && (pCurColumn->findCon(pCurContainer)  != conPos))
 			{
 				xxx_UT_DEBUGMSG(("fb_ColumnBreaker:Container out of order. Should be at %d is at %d \n",conPos,pCurColumn->findCon(pCurContainer)));
@@ -787,6 +788,7 @@ UT_sint32 fb_ColumnBreaker::breakSection(fl_DocSectionLayout * pSL)
 				xxx_UT_DEBUGMSG(("fb_ColumnBreak: Insert at %d now num cons \n",conPos,pCurColumn->countCons()));
 //				UT_ASSERT(UT_SHOULD_NOT_HAPPEN);
 			}
+#endif
 			conPos++;
 			if (pCurContainer == pLastContainerToKeep)
 				break;

@@ -9497,7 +9497,6 @@ Defun(dlgFmtImage)
 	XAP_Dialog_Image * pDialog
 		= static_cast<XAP_Dialog_Image *>(pDialogFactory->requestDialog(XAP_DIALOG_ID_IMAGE));
 UT_return_val_if_fail(pDialog, false);
-	double width = 0., height = 0.;
 	double max_width = 0., max_height = 0.;
 	UT_sint32 x1,x2,y1,y2,iHeight,iWidth;
 	bool bEOL = false;
@@ -9512,11 +9511,15 @@ UT_return_val_if_fail(pDialog, false);
 	}
 	pDialog->setPreferedUnits(dim);
 
-	const fp_PageSize & page = pView->getPageSize ();
+	fl_BlockLayout * pBL = pView->getCurrentBlock();
+
 
 	// an approximate... TODO: make me more accurate
-	max_width  = page.Width (DIM_IN) * 72.0;
-	max_height = page.Height (DIM_IN) * 72.0;
+	fl_DocSectionLayout * pDSL = pBL->getDocSectionLayout();
+	UT_sint32 iColWidth = pDSL->getActualColumnWidth();
+	UT_sint32 iColHeight = pDSL->getActualColumnHeight();
+	max_width  = 0.95*iColWidth*72.0/UT_LAYOUT_RESOLUTION; // units are 1/72 of an inch
+	max_height = 0.95*iColHeight*72.0/UT_LAYOUT_RESOLUTION;
 
 	pDialog->setMaxWidth (max_width);
 	pDialog->setMaxHeight (max_height);
@@ -9574,11 +9577,14 @@ UT_return_val_if_fail(pDialog, false);
 		  FREEP(description);
 	  }
 
-	  // 72.0 is pixels/inch
 	  bool bDoWidth = false;
 	  if(szWidth)
 	  {
 		  double dum = UT_convertToInches(szWidth);
+		  if(dum > max_width)
+		  {
+			  dum = max_width;
+		  }
 		  if(dum > 0.0001)
 		  {
 			  bDoWidth = true;
@@ -9588,6 +9594,10 @@ UT_return_val_if_fail(pDialog, false);
 	  if(szHeight)
 	  {
 		  double dum = UT_convertToInches(szHeight);
+		  if(dum > max_height)
+		  {
+			  dum = max_height;
+		  }
 		  if(dum > 0.0001)
 		  {
 			  bDoHeight = true;
@@ -9613,7 +9623,12 @@ UT_return_val_if_fail(pDialog, false);
 			  FREEP(props_in);
 			  return false;
 		  }
-		  pDialog->setWidth(iWidth);
+		  double width = iWidth*72.0/UT_LAYOUT_RESOLUTION;
+		  if(width > max_width)
+		  {
+			  width = max_width;
+		  }
+		  pDialog->setWidth(width);
 	  }
 	  if(bDoHeight)
 	  {
@@ -9634,7 +9649,12 @@ UT_return_val_if_fail(pDialog, false);
 			  FREEP(props_in);
 			  return false;
 		  }
-		  pDialog->setHeight(iHeight);
+		  double height = iHeight*72.0/UT_LAYOUT_RESOLUTION;
+		  if(height > max_height)
+		  {
+			  height = max_height;
+		  }
+		  pDialog->setHeight(height);
 	  }
 	  FREEP(props_in);
 
@@ -9644,30 +9664,24 @@ UT_return_val_if_fail(pDialog, false);
 
 	  XAP_Dialog_Image::tAnswer ans = pDialog->getAnswer();
 	  bool bOK = (ans == XAP_Dialog_Image::a_OK);
-
+	  UT_String sWidth;
+	  UT_String sHeight;
 	  if (bOK)
 	  {
 		  WRAPPING_TYPE newWrap = pDialog->getWrapping();
 		  // now get them back in inches
-		  width  = pDialog->getWidth () / 72.0;
-		  height = pDialog->getHeight () / 72.0;
-		  char widthBuf[32];
-		  char heightBuf[32];
-
-		  // TODO: set format
+		  sWidth = pDialog->getWidthString();
+		  sHeight = pDialog->getHeightString();
+		  UT_DEBUGMSG(("Width %s Height %s \n",sWidth.c_str(),sHeight.c_str()));
 		  const XML_Char * properties[] = {"width", NULL, "height", NULL, 0};
+		  // TODO: set format
 
-		  {
-			  UT_LocaleTransactor(LC_NUMERIC, "C");
-			  sprintf(widthBuf, "%fin", width);
-			  sprintf(heightBuf, "%fin", height);
-		  }
 		  if((newWrap == WRAP_INLINE) && (oldWrap == WRAP_INLINE))
 		  {
-			  UT_DEBUGMSG(("DOM: nw:%s nh:%s\n", widthBuf, heightBuf));
+			  UT_DEBUGMSG(("DOM: nw:%s nh:%s\n", sWidth.c_str(), sHeight.c_str()));
 			  
-			  properties[1] = widthBuf;
-			  properties[3] = heightBuf;
+			  properties[1] = sWidth.c_str();
+			  properties[3] = sHeight.c_str();
 
 			  UT_UTF8String title (pDialog->getTitle());
 			  UT_UTF8String description (pDialog->getDescription());
@@ -9723,10 +9737,10 @@ UT_return_val_if_fail(pDialog, false);
 // Set width/Height
 //
 			  sProp = "frame-width";
-			  sVal = widthBuf;
+			  sVal = sWidth;	   
 			  UT_String_setProperty(sFrameProps,sProp,sVal);
 			  sProp = "frame-height";
-			  sVal = heightBuf;
+			  sVal = sHeight;
 			  UT_String_setProperty(sFrameProps,sProp,sVal);
 			  double xpos = 0.0;
 			  double ypos= 0.0;
@@ -9787,7 +9801,7 @@ UT_return_val_if_fail(pDialog, false);
 				  sVal = "wrapped-to-left";
 				  UT_String_setProperty(sFrameProps,sProp,sVal);
 				  UT_sint32 ix = 0;
-				  iWidth = UT_convertToLogicalUnits(widthBuf);
+				  iWidth = UT_convertToLogicalUnits(sWidth.c_str());
 				  if(pDialog->getPositionTo() == POSITION_TO_PARAGRAPH)
 				  {
 					  fp_Container * pCol = pLine->getColumn();

@@ -84,8 +84,8 @@ public:
 	void setWidth (UT_sint32 w);
 	void setHeight (UT_sint32 h);
 
-	void setMaxHeight ( double h ) { m_maxWidth = h; }
-	void setMaxWidth ( double w ) { m_maxHeight = w; }
+	void setMaxHeight ( double h ) { m_maxHeight = h; }
+	void setMaxWidth ( double w ) { m_maxWidth = w; }
 
 	double getMaxWidth () const { return m_maxWidth; }
 	double getMaxHeight () const { return m_maxHeight; }
