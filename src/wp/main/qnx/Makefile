@@ -67,6 +67,7 @@ ifeq ($(QNX_CAN_BUILD_DYNAMIC),1)
 	@$(MAKE_OBJDIR)
 	@echo Linking dynamic $(PROGRAM)
 	@$(CCC) -o $@ $(CFLAGS) $(OBJS) $(DYNAMIC_LDFLAGS) -L/lib -L/usr/local/lib $(LDFLAGS) $(EXTRA_LIBS) $(XLDFLAGS)
+	@bindres -q $@ Icon.wgti
 else
 	@echo "Not linking dynamic $(PROGRAM)"
 	@echo "    QNX_CAN_BUILD_DYNAMIC not defined for this platform."
@@ -77,6 +78,7 @@ ifeq ($(QNX_CAN_BUILD_STATIC),1)
 	$(MAKE_OBJDIR)
 	echo Linking static $(PROGRAM_S)
 	$(CCC) -o $@ $(CFLAGS) $(OBJS) $(STATIC_LDFLAGS) -L/lib -L/usr/local/lib $(LDFLAGS) $(EXTRA_LIBS) $(XLDFLAGS)
+	@bindres -q $@ Icon.wgti
 else
 	@echo "Not linking static $(PROGRAM)"
 	@echo "    QNX_CAN_BUILD_STATIC not defined for this platform."
