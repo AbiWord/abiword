@@ -43,6 +43,7 @@ class XAP_Win32PropertyPage
 public:
 	
 	XAP_Win32PropertyPage();	
+	virtual ~XAP_Win32PropertyPage();	
 	
 	void 						createPage(XAP_Win32App* pWin32App, WORD wRscID, XAP_String_Id	nID = 0);	
 	PROPSHEETPAGE*				getStruct(){return &m_page;}
