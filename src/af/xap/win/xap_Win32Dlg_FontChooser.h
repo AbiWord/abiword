@@ -37,7 +37,7 @@ public:
 
 protected:
 	AP_Win32Frame *			m_pWin32Frame;
-	
+
 };
 
 #endif /* AP_WIN32DIALOG_FONTCHOOSER_H */
