@@ -50,7 +50,8 @@ static gboolean focus_in_event(GtkWidget *widget,GdkEvent */*event*/,gpointer /*
 {
       XAP_Frame *pFrame=(XAP_Frame *)gtk_object_get_data(GTK_OBJECT(widget), "frame");
       UT_ASSERT(pFrame);
-      pFrame->getCurrentView()->focusChange(AV_FOCUS_NEARBY);
+	  if (pFrame->getCurrentView())
+		  pFrame->getCurrentView()->focusChange(AV_FOCUS_NEARBY);
       return FALSE;
 }
 
