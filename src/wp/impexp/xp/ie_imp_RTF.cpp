@@ -5370,7 +5370,9 @@ bool IE_Imp_RTF::TranslateKeyword(unsigned char* pKeyword, long param, bool fPar
 									m_currentRTFState.m_destinationState = RTFStateStore::rdsSkip;
 									return true;
 								}
-								FV_View * pView = pFrame->getCurrentView();
+								// TODO fix this as it appears to be a real hack. We shouldn't have access to 
+								// this from importers.
+								FV_View * pView = static_cast<FV_View*>(pFrame->getCurrentView());
 								if(pView == NULL)
 								{
 									m_iIsInHeaderFooter =1;
