@@ -91,6 +91,7 @@ protected:
 	PT_AttrPropIndex	m_apiThisBlock;
 	UT_Wctomb		m_wctomb;
 	PL_StruxDocHandle       m_sdh;
+	UT_uint32           m_currID;
 };
 
 #endif /* IE_EXP_RTF_LISTENERWRITEDOC */

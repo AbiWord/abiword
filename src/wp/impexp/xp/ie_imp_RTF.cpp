@@ -4681,10 +4681,6 @@ bool IE_Imp_RTF::HandleListLevel(RTF_msword97_list * pList, UT_uint32 levelCount
 			{
 				pLevel->m_levelStartAt = (UT_uint32) parameter;
 			}
-			else if(strcmp((char *) keyword,"levelstartAt") == 0)
-			{
-				pLevel->m_levelStartAt = (UT_uint32) parameter;
-			}
 			else if(strcmp((char *) keyword,"levelspace") == 0) // ignore
 			{
 			}

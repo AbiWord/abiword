@@ -302,7 +302,7 @@ s_RTF_ListenerWriteDoc::s_RTF_ListenerWriteDoc(PD_Document * pDocument,
 
 	m_wctomb.setOutCharset(XAP_EncodingManager::get_instance()->WindowsCharsetName());
 	// TODO emit <info> if desired
-
+	m_currID = 0;
 	_rtf_docfmt();						// deal with <docfmt>
 
 	// <section>+ will be handled by the populate code.
@@ -739,7 +739,7 @@ void s_RTF_ListenerWriteDoc::_rtf_open_block(PT_AttrPropIndex api)
 		_setListBlock( true);
 		m_pie->_rtf_open_brace();
 		m_pie->_rtf_keyword("*");
-		m_pie->_rtf_keyword("abilist");
+		m_pie->_rtf_keyword("abilist"); 
 		m_pie->_rtf_keyword_ifnotdefault("abilistid",(char *) szListid,-1);
 		m_pie->_rtf_keyword_ifnotdefault("abilistparentid",(char *) szParentid,-1);
 		m_pie->_rtf_keyword_ifnotdefault("abilistlevel",(char *) szLevel,-1);
@@ -785,7 +785,7 @@ void s_RTF_ListenerWriteDoc::_rtf_open_block(PT_AttrPropIndex api)
 	if(id != 0 )
 	{
 		m_pie->_rtf_open_brace();
-		m_pie->_rtf_keyword("pntext");
+		m_pie->_rtf_keyword("listtext");
 		// if string is "left" use "ql", but that is the default, so we don't need to write it out.
 		if (UT_strcmp(szTextAlign,"right")==0)		// output one of q{lrcj} depending upon paragraph alignment
 			m_pie->_rtf_keyword("qr");
@@ -953,6 +953,7 @@ void s_RTF_ListenerWriteDoc::_rtf_open_block(PT_AttrPropIndex api)
 		m_pie->_rtf_close_brace();
 	}
 
+
 	// if string is "left" use "ql", but that is the default, so we don't need to write it out.
 	if (UT_strcmp(szTextAlign,"right")==0)		// output one of q{lrcj} depending upon paragraph alignment
 		m_pie->_rtf_keyword("qr");
@@ -966,6 +967,36 @@ void s_RTF_ListenerWriteDoc::_rtf_open_block(PT_AttrPropIndex api)
 	m_pie->_rtf_keyword_ifnotdefault_twips("ri",(char*)szRightIndent,0);
 	m_pie->_rtf_keyword_ifnotdefault_twips("sb",(char*)szTopMargin,0);
 	m_pie->_rtf_keyword_ifnotdefault_twips("sa",(char*)szBottomMargin,0);
+
+	///
+	/// OK Now output word-97 style lists. First detect if we've moved to
+    /// a new list list structure. We need m_currID to track the previous list
+    /// we were in. 
+	///
+
+	if(id != 0 )
+	{
+		UT_uint32 iOver = m_pie->getMatchingOverideNum(id);
+		UT_uint32 iLevel = 0;
+//		if(id != m_currID)
+		{
+			UT_ASSERT(iOver);
+			fl_AutoNum * pAuto = m_pDocument->getListByID(id);
+			UT_ASSERT(pAuto);
+			while(pAuto->getParent() != NULL)
+			{
+				pAuto = pAuto->getParent();
+				iLevel++;
+			}
+			if(iLevel > 8)
+			{
+				iLevel = 8;
+			}
+			m_currID = id;
+		}
+		m_pie->_rtf_keyword("ls",iOver);
+		m_pie->_rtf_keyword("ilvl",iLevel);
+	}
 
 	if (strcmp(szLineHeight,"1.0") != 0)
 	{
