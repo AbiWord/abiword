@@ -36,7 +36,7 @@ XAP_Dialog * XAP_UnixGnomeDialog_Print::static_constructor(XAP_DialogFactory * p
 
 XAP_UnixGnomeDialog_Print::XAP_UnixGnomeDialog_Print(XAP_DialogFactory * pDlgFactory,
 													 XAP_Dialog_Id id)
-	: XAP_Dialog_Print(pDlgFactory,id), m_pGnomePrintGraphics (0)
+	: XAP_Dialog_Print(pDlgFactory,id), m_pGnomePrintGraphics (0), m_bIsPreview(false)
 {
 }
 
@@ -92,10 +92,10 @@ void XAP_UnixGnomeDialog_Print::_raisePrintDialog(XAP_Frame * pFrame)
 
 	switch (abiRunModalDialog (GTK_DIALOG(gpd), pFrame, this, GNOME_PRINT_DIALOG_RESPONSE_PRINT, false))
 	{
-	case GNOME_PRINT_DIALOG_RESPONSE_PRINT: 
-		break;
 	case GNOME_PRINT_DIALOG_RESPONSE_PREVIEW: 
 		m_bIsPreview = true;
+	case GNOME_PRINT_DIALOG_RESPONSE_PRINT: 
+		break;
 	default:
 		abiDestroyWidget (gpd); 
 		m_answer = a_CANCEL; 
@@ -110,7 +110,7 @@ void XAP_UnixGnomeDialog_Print::_raisePrintDialog(XAP_Frame * pFrame)
 	// Record outputs
 	m_bDoPrintRange				= (range == GNOME_PRINT_RANGE_RANGE);
 	m_bDoPrintSelection			= (range == GNOME_PRINT_RANGE_SELECTION);
-	m_cColorSpace				= GR_Graphics::GR_COLORSPACE_COLOR;  //BUG
+	m_cColorSpace				= GR_Graphics::GR_COLORSPACE_COLOR;
 	
 	if(m_bDoPrintRange)
 	  {
