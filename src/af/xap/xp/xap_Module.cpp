@@ -1,5 +1,4 @@
 /* AbiSource Application Framework
- * Copyright (C) 2001 AbiSource, Inc.
  * Copyright (C) 2001 Dom Lachowicz <cinamod@hotmail.com>
  * 
  * This program is free software; you can redistribute it and/or

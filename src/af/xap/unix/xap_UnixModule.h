@@ -1,5 +1,5 @@
 /* AbiSource Application Framework
- * Copyright (C) 2001 AbiSource, Inc.
+ * Copyright (C) 2001 Dom Lachowicz <doml@appligent.com>
  * 
  * This program is free software; you can redistribute it and/or
  * modify it under the terms of the GNU General Public License

@@ -1,7 +1,7 @@
 /* -*- c-basic-offset: 4; tab-width: 4; indent-tabs-mode: t -*- */
 /* AbiWord
  * Copyright (C) 1998-2001 AbiSource, Inc.
- * Copyright (C) 2001 Hubert Figuiere
+ * Copyright (C) 2001 Hubert Figuiere, Dom Lachowicz
  * 
  * This program is free software; you can redistribute it and/or
  * modify it under the terms of the GNU General Public License
@@ -52,10 +52,12 @@
 
 #include "xap_Module.h"
 
+ABI_PLUGIN_DECLARE("Applix")
+
 // we use a reference-counted sniffer
 static IE_Imp_Applix_Sniffer * m_sniffer = 0;
 
-ABI_FAR extern "C"
+ABI_FAR_CALL
 int abi_plugin_register (XAP_ModuleInfo * mi)
 {
 
@@ -78,7 +80,7 @@ int abi_plugin_register (XAP_ModuleInfo * mi)
 	return 1;
 }
 
-ABI_FAR extern "C"
+ABI_FAR_CALL
 int abi_plugin_unregister (XAP_ModuleInfo * mi)
 {
 	mi->name = 0;
@@ -98,7 +100,7 @@ int abi_plugin_unregister (XAP_ModuleInfo * mi)
 	return 1;
 }
 
-ABI_FAR extern "C"
+ABI_FAR_CALL
 int abi_plugin_supports_version (UT_uint32 major, UT_uint32 minor, 
 								 UT_uint32 release)
 {

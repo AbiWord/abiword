@@ -50,10 +50,12 @@
 
 #include "xap_Module.h"
 
+ABI_PLUGIN_DECLARE("WML")
+
 // we use a reference-counted sniffer
 static IE_Imp_WML_Sniffer * m_sniffer = 0;
 
-ABI_FAR extern "C"
+ABI_FAR_CALL
 int abi_plugin_register (XAP_ModuleInfo * mi)
 {
 
@@ -76,7 +78,7 @@ int abi_plugin_register (XAP_ModuleInfo * mi)
 	return 1;
 }
 
-ABI_FAR extern "C"
+ABI_FAR_CALL
 int abi_plugin_unregister (XAP_ModuleInfo * mi)
 {
 	mi->name = 0;
@@ -96,7 +98,7 @@ int abi_plugin_unregister (XAP_ModuleInfo * mi)
 	return 1;
 }
 
-ABI_FAR extern "C"
+ABI_FAR_CALL
 int abi_plugin_supports_version (UT_uint32 major, UT_uint32 minor, 
 								 UT_uint32 release)
 {
