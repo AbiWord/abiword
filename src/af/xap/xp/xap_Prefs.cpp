@@ -155,20 +155,25 @@ const char * XAP_Prefs::getRecent(UT_uint32 k) const
 void XAP_Prefs::addRecent(const char * szRecent)
 {
 	const char * sz;
+	UT_Bool bFound = UT_FALSE;
 
 	if (m_iMaxRecent == 0)
 		return;		// NOOP
 
 	// was it already here? 
-	UT_sint32 ndx = m_vecRecent.findItem((void *)szRecent);
-
-	if (ndx >= 0)
+	for (UT_uint32 i=0; i<m_vecRecent.getItemCount(); i++)
 	{
-		// yep, we're gonna move it up
-		m_vecRecent.deleteNthItem(ndx);
-		sz = szRecent;
+		sz = (const char *)m_vecRecent.getNthItem(i);
+		if ((sz==szRecent) || !UT_strcmp(sz, szRecent))
+		{
+			// yep, we're gonna move it up
+			m_vecRecent.deleteNthItem(i);
+			bFound = UT_TRUE;
+			break;
+		}
 	}
-	else
+
+	if (!bFound)
 	{
 		// nope.  make a new copy to store
 		UT_cloneString((char *&)sz, szRecent);
