@@ -57,7 +57,7 @@ public:
 
 	UT_Bool					(*m_pfnEnumTabStops)(void * pData, UT_uint32 k, UT_sint32 & iPosition, unsigned char & iType, UT_uint32 & iOffset);
 	void *					m_pVoidEnumTabStopsData;
-	UT_uint32				m_iTabStops;
+	UT_sint32				m_iTabStops;
 	UT_sint32				m_iDefaultTabInterval;
 	const char *			m_pszTabStops;
 
@@ -142,11 +142,16 @@ protected:
 									 AP_TopRulerInfo * pInfo,
 									 UT_Bool bDrawAll = UT_TRUE);
 
-	void	_getTabStopXAnchor(AP_TopRulerInfo * pInfo, UT_uint32 k, UT_sint32 * pTab, unsigned char & iType);
+	void	_getTabStopXAnchor(AP_TopRulerInfo * pInfo, UT_sint32 k, UT_sint32 * pTab, unsigned char & iType);
 	void	_getTabStopRect(AP_TopRulerInfo * pInfo, UT_sint32 anchor, UT_Rect * pRect);
 	void	_drawTabProperties(const UT_Rect * pClipRect,
-							   AP_TopRulerInfo * pInfo,
-							   UT_Bool bDrawAll = UT_TRUE);
+								   AP_TopRulerInfo * pInfo,
+								   UT_Bool bDrawAll = UT_TRUE);
+
+	UT_sint32		_findTabStop(AP_TopRulerInfo * pInfo, UT_uint32 x, UT_uint32 y, unsigned char & iType);
+	const char *	_getTabStopString(AP_TopRulerInfo * pInfo, UT_sint32 k);
+	void			_getTabZoneRect(AP_TopRulerInfo * pInfo, UT_Rect &rZone);
+	void			_setTabStops(ap_RulerTicks tick, UT_sint32 iTab, UT_Bool bDelete);
 
 	UT_sint32	_getColumnMarkerXRightEnd(AP_TopRulerInfo * pInfo, UT_uint32 kCol);
 	void		_getColumnMarkerRect(AP_TopRulerInfo * pInfo, UT_uint32 kCol, UT_sint32 xCenter,
@@ -159,7 +164,7 @@ protected:
 	void		_drawMarginProperties(const UT_Rect * pClipRect,
 									  AP_TopRulerInfo * pInfo, UT_RGBColor &clr);
 
-	void		_ignoreEvent(UT_RGBColor &clrBlack, UT_RGBColor &clrWhite);
+	void		_ignoreEvent(UT_RGBColor &clrBlack, UT_RGBColor &clrWhite, UT_Bool bDone);
 	double		_scalePixelDistanceToUnits(UT_sint32 xColRel, ap_RulerTicks & tick);
 	UT_sint32	_getFirstPixelInColumn(AP_TopRulerInfo * pInfo, UT_uint32 kCol);
 	void		_drawHollowRect(UT_RGBColor &clrDark, UT_RGBColor &clrLight, UT_Rect &r);
@@ -202,8 +207,12 @@ protected:
 	UT_Rect				m_draggingRect;	/* rectangle of primary thing being dragged */
 	UT_sint32			m_dragging2Center; /* center of drag-along */
 	UT_Rect				m_dragging2Rect; /* rect of drag-along */
-	UT_uint32			m_draggingTab;	/* index of tab being dragged */
+	UT_sint32			m_draggingTab;	/* index of tab being dragged */
+	unsigned char		m_draggingTabType;
+	UT_sint32			m_dragStart;
 	UT_Bool				m_bBeforeFirstMotion;
+
+	unsigned char		m_iDefaultTabType;
 	
 	/* static const*/ UT_uint32	s_iFixedHeight /* =32 */;	/* size we draw stuff w/o regard to window size */
 	/* static const*/ UT_uint32	s_iFixedWidth  /* =32 */;	/* minimum width of non-scrolling area on left */

@@ -268,8 +268,8 @@ protected:
 // TODO make a typedef to type type rather than just using 'unsigned char'
 
 #define FL_TAB_LEFT				1
-#define FL_TAB_RIGHT			2
-#define FL_TAB_CENTER			3
+#define FL_TAB_CENTER			2
+#define FL_TAB_RIGHT			3
 #define FL_TAB_DECIMAL			4
 #define FL_TAB_BAR				5
 

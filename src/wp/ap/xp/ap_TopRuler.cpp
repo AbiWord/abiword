@@ -38,6 +38,20 @@ class XAP_Frame;
 #define MyMax(a,b)		(((a)>(b)) ? (a) : (b))
 #define DELETEP(p)		do { if (p) delete p; p = NULL; } while (0)
 
+// HACK: private copy of constants from fl_BlockLayout.h
+// TODO: find a better way of passing iType for tabs?
+// NOTE: this ordering is convenient for cycling m_iDefaultTabType 
+
+#define FL_TAB_LEFT				1
+#define FL_TAB_CENTER			2
+#define FL_TAB_RIGHT			3
+#define FL_TAB_DECIMAL			4
+#define FL_TAB_BAR				5
+
+#define	tr_TABINDEX_NEW			-1
+#define	tr_TABINDEX_NONE		-2
+
+
 /*****************************************************************/
 
 AP_TopRuler::AP_TopRuler(XAP_Frame * pFrame)
@@ -53,6 +67,7 @@ AP_TopRuler::AP_TopRuler(XAP_Frame * pFrame)
 	m_xScrollLimit = 0;
 	m_bValidMouseClick = UT_FALSE;
 	m_draggingWhat = DW_NOTHING;
+	m_iDefaultTabType = FL_TAB_LEFT;
 	
 	// i wanted these to be "static const x = 32;" in the
 	// class declaration, but MSVC5 can't handle it....
@@ -515,34 +530,34 @@ void AP_TopRuler::_drawParagraphProperties(const UT_Rect * pClipRect,
 
 /*****************************************************************/
 
-// HACK: private copy of constants from fl_BlockLayout.h
-// TODO: find a better way of passing iType for tabs?
-
-#define FL_TAB_LEFT				1
-#define FL_TAB_RIGHT			2
-#define FL_TAB_CENTER			3
-#define FL_TAB_DECIMAL			4
-#define FL_TAB_BAR				5
-
 void AP_TopRuler::_getTabStopXAnchor(AP_TopRulerInfo * pInfo,
-										UT_uint32 k,
+										UT_sint32 k,
 										UT_sint32 * pTab,
 										unsigned char & iType)
 {
 	UT_sint32 xAbsLeft = _getFirstPixelInColumn(pInfo,pInfo->m_iCurrentColumn);
-	UT_sint32 xAbsRight = xAbsLeft + pInfo->u.c.m_xColumnWidth;
 
 	UT_sint32 iPosition;
 	UT_uint32 iOffset;
 
-	UT_ASSERT(k<pInfo->m_iTabStops);
+	if (k == tr_TABINDEX_NEW)
+	{
+		// this is a new tab
+		iPosition = m_dragStart;
+		iType = m_draggingTabType;
+	}
+	else
+	{
+		// look it up in the document
+		UT_ASSERT(k<pInfo->m_iTabStops);
 
-	UT_Bool bRes = pInfo->m_pfnEnumTabStops(pInfo->m_pVoidEnumTabStopsData, 
-											k, iPosition, iType, iOffset);
-	UT_ASSERT(bRes);
+		UT_Bool bRes = pInfo->m_pfnEnumTabStops(pInfo->m_pVoidEnumTabStopsData, 
+												k, iPosition, iType, iOffset);
+		UT_ASSERT(bRes);
+	}
 
 	if (pTab)
-		*pTab = xAbsLeft + pInfo->m_xrLeftIndent + iPosition;
+		*pTab = xAbsLeft + iPosition;
 
 	return;
 }
@@ -576,20 +591,28 @@ void AP_TopRuler::_drawTabProperties(const UT_Rect * pClipRect,
 		_getTabStopXAnchor(pInfo, m_draggingTab, &anchor, iType);
 		_getTabStopRect(pInfo, anchor, &rect);
 
-		_drawTabStop(rect, iType, UT_FALSE);
-		_drawTabStop(m_draggingRect, iType, UT_TRUE);
+		_drawTabStop(rect, m_draggingTabType, UT_FALSE);
+		_drawTabStop(m_draggingRect, m_draggingTabType, UT_TRUE);
 	}
-	else if (bDrawAll)
+	
+	/*
+		NOTE: even during tab drags, we might need to draw other tabs
+		that got revealed after being obscured by the dragged tab
+	*/
+	
+	if (bDrawAll)
 	{
 		// loop over all explicit tabs
 
 		UT_sint32 xAbsLeft = _getFirstPixelInColumn(pInfo,pInfo->m_iCurrentColumn);
-		UT_sint32 left = xAbsLeft + pInfo->m_xrLeftIndent;
+		UT_sint32 left = xAbsLeft + UT_MIN(pInfo->m_xrLeftIndent, pInfo->m_xrFirstLineIndent);
 
-		UT_uint32 i = 0;
-
-		for (i = 0; i < pInfo->m_iTabStops; i++)
+		for (UT_sint32 i = 0; i < pInfo->m_iTabStops; i++)
 		{
+			if ((m_draggingWhat == DW_TABSTOP) &&
+				(m_draggingTab == (UT_sint32) i))
+				continue;
+
 			_getTabStopXAnchor(pInfo, i, &anchor, iType);
 			_getTabStopRect(pInfo, anchor, &rect);
 
@@ -600,9 +623,93 @@ void AP_TopRuler::_drawTabProperties(const UT_Rect * pClipRect,
 				_drawTabStop(rect, iType, UT_TRUE);
 		}
 
-		// TODO: draw trailing default tabs 
+		if (m_draggingWhat != DW_TABSTOP)
+		{
+			// draw trailing default tabs 
+
+			UT_sint32 xAbsRight = xAbsLeft + pInfo->u.c.m_xColumnWidth;
+			UT_uint32 yTop = s_iFixedHeight/4;
+			UT_uint32 yBar = s_iFixedHeight/2;
+			UT_uint32 yBottom = yTop + yBar;
+		
+			UT_RGBColor clrDarkGray(127,127,127);
+			m_pG->setColor(clrDarkGray);
+
+			UT_ASSERT(pInfo->m_iDefaultTabInterval > 0);
+			UT_sint32 iPos = xAbsLeft;
+			for (;iPos < xAbsRight; iPos += pInfo->m_iDefaultTabInterval)
+			{
+				if (iPos <= left)
+					continue;
+
+				m_pG->drawLine(iPos, yBottom + 1, iPos, yBottom + 4);				
+			}
+		}
 	}
 }
+
+UT_sint32 AP_TopRuler::_findTabStop(AP_TopRulerInfo * pInfo, 
+									UT_uint32 x, UT_uint32 y, unsigned char & iType)
+{
+	// hit-test all the existing tabs
+	// return the index of the one found
+
+	UT_sint32 anchor;
+	UT_Rect rect;
+
+	for (UT_sint32 i = 0; i < pInfo->m_iTabStops; i++)
+	{
+		_getTabStopXAnchor(pInfo, i, &anchor, iType);
+		_getTabStopRect(pInfo, anchor, &rect);
+
+		if (rect.containsPoint(x,y))
+			return i;
+	}
+
+	return tr_TABINDEX_NONE;
+}
+
+void AP_TopRuler::_getTabZoneRect(AP_TopRulerInfo * pInfo, UT_Rect &rZone)
+{
+	// this is the zone where clicking will get you a new tab
+	// basically the bottom half of the ruler, inside the current column
+
+	UT_uint32 yBar = s_iFixedHeight/2;
+	UT_sint32 xAbsLeft = _getFirstPixelInColumn(pInfo,0);
+	UT_sint32 xAbsRight = xAbsLeft + pInfo->u.c.m_xColumnWidth;
+
+	rZone.set(xAbsLeft,  s_iFixedHeight - yBar, xAbsRight-xAbsLeft, yBar);
+}
+
+const char * AP_TopRuler::_getTabStopString(AP_TopRulerInfo * pInfo, UT_sint32 k)
+{
+	// return pointer to static buffer -- use it quickly.
+
+	UT_sint32 iPosition;
+	UT_uint32 iOffset;
+	unsigned char iType;
+
+	UT_Bool bRes = pInfo->m_pfnEnumTabStops(pInfo->m_pVoidEnumTabStopsData, 
+											k, iPosition, iType, iOffset);
+	UT_ASSERT(bRes);
+
+	const char* pStart = &pInfo->m_pszTabStops[iOffset];
+	const char* pEnd = pStart;
+	while (*pEnd && (*pEnd != ','))
+	{
+		pEnd++;
+	}
+
+	UT_uint32 iLen = pEnd - pStart;
+	UT_ASSERT(iLen<20);
+
+	static char buf[20];
+
+	strncpy(buf, pStart, iLen);
+	buf[iLen]=0;
+
+	return buf;
+}				
 
 /*****************************************************************/
 
@@ -680,7 +787,6 @@ void AP_TopRuler::_drawMarginProperties(const UT_Rect * pClipRect,
 	m_pG->fillRect(clr,rRight);
 #endif
 }
-
 /*****************************************************************/
 
 void AP_TopRuler::_draw(const UT_Rect * pClipRect, AP_TopRulerInfo * pUseInfo)
@@ -817,7 +923,21 @@ void AP_TopRuler::mousePress(EV_EditModifierState ems, EV_EditMouseButton emb, U
 	
 	m_pView->getTopRulerInfo(&m_infoCache);
 
-	// TODO: first hit-test against the tabs
+	// first hit-test against the tabs
+
+	unsigned char iType;
+	UT_sint32 iTab = _findTabStop(&m_infoCache, x, y, iType);
+	if (iTab >= 0)
+	{
+		UT_DEBUGMSG(("hit tab %ld\n",iTab));
+		m_bValidMouseClick = UT_TRUE;
+		m_draggingWhat = DW_TABSTOP;
+		m_draggingTab = iTab;
+		m_draggingTabType = iType;
+		m_dragStart = 0;
+		m_bBeforeFirstMotion = UT_TRUE;
+		return;
+	}
 
 	// next hit-test against the paragraph widgets
 	
@@ -892,16 +1012,40 @@ void AP_TopRuler::mousePress(EV_EditModifierState ems, EV_EditMouseButton emb, U
 	}
 #endif
 
-	// TODO: finally, if nothing else, create a new tab
+	// finally, if nothing else, try to create a new tab
 
-#if 0
+	UT_Rect rZone;
+	_getTabZoneRect(&m_infoCache,rZone);
+	if (rZone.containsPoint(x,y))
 	{
+		UT_DEBUGMSG(("hit new tab\n"));
 		m_bValidMouseClick = UT_TRUE;
 		m_draggingWhat = DW_TABSTOP;
+		m_draggingTab = tr_TABINDEX_NEW;
+		m_draggingTabType = m_iDefaultTabType;
 		m_bBeforeFirstMotion = UT_TRUE;
-		return;
+
+		// this is a new widget, so it needs more work to get started
+		ap_RulerTicks tick(m_pG);
+
+		UT_sint32 xAbsLeft = _getFirstPixelInColumn(&m_infoCache,m_infoCache.m_iCurrentColumn);
+		UT_sint32 xrel = ((UT_sint32)x) - xAbsLeft;
+		UT_sint32 xgrid = _snapPixelToGrid(xrel,tick);
+
+		m_dragStart = xgrid;
+
+		double dgrid = _scalePixelDistanceToUnits(xrel,tick);
+		UT_DEBUGMSG(("SettingTabStop: %s\n",m_pG->invertDimension(tick.dimType,dgrid)));
+		UT_sint32 oldDraggingCenter = m_draggingCenter;
+		UT_Rect oldDraggingRect = m_draggingRect;
+		m_draggingCenter = xAbsLeft + xgrid;
+		_getTabStopRect(&m_infoCache,m_draggingCenter,&m_draggingRect);
+		if (!m_bBeforeFirstMotion && (m_draggingCenter != oldDraggingCenter))
+			draw(&oldDraggingRect,&m_infoCache);
+		_drawTabProperties(NULL,&m_infoCache,UT_FALSE);
+
+		m_bBeforeFirstMotion = UT_FALSE;
 	}
-#endif
 
 	return;
 }
@@ -922,7 +1066,7 @@ void AP_TopRuler::mouseRelease(EV_EditModifierState ems, EV_EditMouseButton emb,
 
 	if ((y < 0) || (y > m_iHeight))
 	{
-		_ignoreEvent(clrBlack,clrWhite);
+		_ignoreEvent(clrBlack,clrWhite,UT_TRUE);
 		m_draggingWhat = DW_NOTHING;
 		return;
 	}
@@ -933,7 +1077,7 @@ void AP_TopRuler::mouseRelease(EV_EditModifierState ems, EV_EditMouseButton emb,
 	UT_uint32 xFixed = (UT_sint32)MyMax(m_iLeftRulerWidth,s_iFixedWidth);
 	if ((x < xFixed) || (x > m_iWidth))
 	{
-		_ignoreEvent(clrBlack,clrWhite);
+		_ignoreEvent(clrBlack,clrWhite,UT_TRUE);
 		m_draggingWhat = DW_NOTHING;
 		return;
 	}
@@ -1069,21 +1213,17 @@ void AP_TopRuler::mouseRelease(EV_EditModifierState ems, EV_EditMouseButton emb,
 
 	case DW_TABSTOP:
 		{
-			UT_sint32 xAbsLeft = _getFirstPixelInColumn(&m_infoCache,m_infoCache.m_iCurrentColumn);
-			double dxrel = _scalePixelDistanceToUnits(m_draggingCenter-xAbsLeft-m_infoCache.m_xrLeftIndent,tick);
+			unsigned char iType;
+			UT_sint32 iTab = _findTabStop(&m_infoCache, x, y, iType);
 
-			// TODO: replace old portion of m_infoCache->pszTabStops w/new value
+			if ((iTab >= 0) && (iTab == m_draggingTab))
+			{
+				// this tabstop is already set here ==> NOOP
+				m_draggingWhat = DW_NOTHING;
+				return;
+			}
 
-			const XML_Char * properties[3];
-			properties[0] = "tabstops";
-			properties[1] = m_pG->invertDimension(tick.dimType,dxrel);
-			properties[2] = 0;
-			UT_DEBUGMSG(("TopRuler: Tab Stop [%s]\n",properties[1]));
-
-			m_draggingWhat = DW_NOTHING;
-#if 0
-			(static_cast<FV_View *>(m_pView))->setBlockFormat(properties);
-#endif
+			_setTabStops(tick, iTab, UT_FALSE);
 		}
 		return;
 
@@ -1091,6 +1231,58 @@ void AP_TopRuler::mouseRelease(EV_EditModifierState ems, EV_EditMouseButton emb,
 		UT_ASSERT(UT_SHOULD_NOT_HAPPEN);
 		return;
 	}
+}
+
+void AP_TopRuler::_setTabStops(ap_RulerTicks tick, UT_sint32 iTab, UT_Bool bDelete)
+{
+	UT_sint32 xAbsLeft = _getFirstPixelInColumn(&m_infoCache,m_infoCache.m_iCurrentColumn);
+	double dxrel = _scalePixelDistanceToUnits(m_draggingCenter-xAbsLeft,tick);
+	
+	char buf[1024];
+
+	// first add the new tab settings
+		
+	if (!bDelete)
+	{
+		char * sz = NULL;
+		switch(m_draggingTabType)
+		{
+			case FL_TAB_LEFT:		sz = "L";	break;
+			case FL_TAB_RIGHT:		sz = "R";	break;
+			case FL_TAB_CENTER:		sz = "C";	break;
+			case FL_TAB_DECIMAL:	sz = "D";	break;
+			case FL_TAB_BAR:		sz = "B";	break;
+			default:
+				sz = "";
+		}
+		sprintf(buf, "%s/%s", m_pG->invertDimension(tick.dimType,dxrel), sz);
+	}
+	else
+	{
+		buf[0] = 0;
+	}
+
+	// then append all the remaining tabstops, if any
+
+	for (UT_sint32 i = 0; i < m_infoCache.m_iTabStops; i++)
+	{
+		if ((i == iTab) || (i == m_draggingTab))
+			continue;
+
+		if (*buf)
+			strcat(buf, ",");
+
+		strcat(buf, _getTabStopString(&m_infoCache, i));
+	}
+
+	const XML_Char * properties[3];
+	properties[0] = "tabstops";
+	properties[1] = buf;
+	properties[2] = 0;
+	UT_DEBUGMSG(("TopRuler: Tab Stop [%s]\n",properties[1]));
+
+	m_draggingWhat = DW_NOTHING;
+	(static_cast<FV_View *>(m_pView))->setBlockFormat(properties);
 }
 
 /*****************************************************************/
@@ -1109,7 +1301,7 @@ void AP_TopRuler::mouseMotion(EV_EditModifierState ems, UT_uint32 x, UT_uint32 y
 
 	if ((y < 0) || (y > m_iHeight))
 	{
-		_ignoreEvent(clrBlack,clrWhite);
+		_ignoreEvent(clrBlack,clrWhite,UT_FALSE);
 		return;
 	}
 
@@ -1119,7 +1311,7 @@ void AP_TopRuler::mouseMotion(EV_EditModifierState ems, UT_uint32 x, UT_uint32 y
 	UT_uint32 xFixed = (UT_sint32)MyMax(m_iLeftRulerWidth,s_iFixedWidth);
 	if ((x < xFixed) || (x > m_iWidth))
 	{
-		_ignoreEvent(clrBlack,clrWhite);
+		_ignoreEvent(clrBlack,clrWhite,UT_FALSE);
 		return;
 	}
 
@@ -1307,15 +1499,12 @@ void AP_TopRuler::mouseMotion(EV_EditModifierState ems, UT_uint32 x, UT_uint32 y
 			
 			UT_sint32 xAbsLeft = _getFirstPixelInColumn(&m_infoCache,m_infoCache.m_iCurrentColumn);
 			UT_sint32 xrel = ((UT_sint32)x) - xAbsLeft;
-			// tabstop is relative to the left-indent
-			// not the left edge of the column.
-			UT_sint32 xrel2 = xrel - m_infoCache.m_xrLeftIndent;
-			UT_sint32 xgrid = _snapPixelToGrid(xrel2,tick);
-			double dgrid = _scalePixelDistanceToUnits(xrel2,tick);
+			UT_sint32 xgrid = _snapPixelToGrid(xrel,tick);
+			double dgrid = _scalePixelDistanceToUnits(xrel,tick);
 			UT_DEBUGMSG(("SettingTabStop: %s\n",m_pG->invertDimension(tick.dimType,dgrid)));
 			UT_sint32 oldDraggingCenter = m_draggingCenter;
 			UT_Rect oldDraggingRect = m_draggingRect;
-			m_draggingCenter = xAbsLeft + m_infoCache.m_xrLeftIndent + xgrid;
+			m_draggingCenter = xAbsLeft + xgrid;
 			_getTabStopRect(&m_infoCache,m_draggingCenter,&m_draggingRect);
 			if (!m_bBeforeFirstMotion && (m_draggingCenter != oldDraggingCenter))
 				draw(&oldDraggingRect,&m_infoCache);
@@ -1371,7 +1560,7 @@ UT_sint32 AP_TopRuler::_getFirstPixelInColumn(AP_TopRulerInfo * pInfo, UT_uint32
 	return xAbsLeft;
 }
 
-void AP_TopRuler::_ignoreEvent(UT_RGBColor &clrBlack, UT_RGBColor &clrWhite)
+void AP_TopRuler::_ignoreEvent(UT_RGBColor &clrBlack, UT_RGBColor &clrWhite, UT_Bool bDone)
 {
 	// user released the mouse off of the ruler.  we need to treat
 	// this as a cancel.  so we need to put everything back the
@@ -1402,11 +1591,24 @@ void AP_TopRuler::_ignoreEvent(UT_RGBColor &clrBlack, UT_RGBColor &clrWhite)
 	case DW_LEFTINDENT:
 	case DW_RIGHTINDENT:
 	case DW_FIRSTLINEINDENT:
+	case DW_LEFTINDENTWITHFIRST:
 		_drawParagraphProperties(NULL,&m_infoCache,UT_TRUE);
 		break;
 		
 	case DW_TABSTOP:
-		_drawTabProperties(NULL,&m_infoCache,UT_TRUE);
+		// tabs are different.  instead of restoring the control when 
+		// dragged off, we delete it.  
+		//
+		// during the drag, this is visually indicated by leaving the 
+		// ghost in place (since the delete hasn't happened yet).  
+		// the actual delete is done on mouseup.  
+		if (bDone)
+		{
+			// delete the tab
+			m_draggingWhat = dw;
+			ap_RulerTicks tick(m_pG);
+			_setTabStops(tick, tr_TABINDEX_NONE, UT_TRUE);
+		}
 		break;
 
 	case DW_NOTHING:

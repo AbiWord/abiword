@@ -4070,7 +4070,7 @@ void FV_View::getTopRulerInfo(AP_TopRulerInfo * pInfo)
 
 		pInfo->m_pfnEnumTabStops = pBlock->s_EnumTabStops;
 		pInfo->m_pVoidEnumTabStopsData = (void *)pBlock;
-		pInfo->m_iTabStops = pBlock->getTabsCount();
+		pInfo->m_iTabStops = (UT_sint32) pBlock->getTabsCount();
 		pInfo->m_iDefaultTabInterval = pBlock->getDefaultTabInterval();
 		pInfo->m_pszTabStops = pBlock->getProperty("tabstops");
 

@@ -259,7 +259,11 @@ void fl_BlockLayout::_lookupProperties(void)
 			iPosition = pG->convertDimension(pszPosition);
 
 			UT_ASSERT(iType > 0);
-			UT_ASSERT(iPosition >= 0);
+			/*
+				The following assert is probably bogus, since tabs are 
+				column-relative, rather than block-relative.  
+			*/
+//			UT_ASSERT(iPosition >= 0);
 			
 			fl_TabStop* pTabStop = new fl_TabStop();
 			pTabStop->iPosition = iPosition;
@@ -2766,9 +2770,11 @@ UT_Bool	fl_BlockLayout::findNextTabStop(UT_sint32 iStartX, UT_sint32 iMaxX, UT_s
 	
 	// now, handle the default tabs
 
-	if (m_iLeftMargin > iStartX)
+	UT_sint32 iMin = UT_MIN(m_iLeftMargin, m_iTextIndent);
+
+	if (iMin > iStartX)
 	{
-		iPosition = m_iLeftMargin;
+		iPosition = iMin;
 		iType = FL_TAB_LEFT;
 		return UT_TRUE;
 	}
