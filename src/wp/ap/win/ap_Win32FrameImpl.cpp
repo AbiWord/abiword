@@ -1221,7 +1221,7 @@ LRESULT CALLBACK AP_Win32FrameImpl::_DocumentWndProc(HWND hwnd, UINT iMsg, WPARA
 			pWin32Keyboard->onChar(pView,hwnd,iMsg,wParam,lParam);		
 			return DefWindowProc(hwnd,iMsg,wParam,lParam);
 		}
-
+#if 0
 		case WM_UNICHAR:
 		{
 			UT_DEBUGMSG(("WM_CHAR %d  - %d\n",wParam, lParam));
@@ -1230,7 +1230,7 @@ LRESULT CALLBACK AP_Win32FrameImpl::_DocumentWndProc(HWND hwnd, UINT iMsg, WPARA
 			pWin32Keyboard->onUniChar(pView,hwnd,iMsg,wParam,lParam);		
 			return DefWindowProc(hwnd,iMsg,wParam,lParam);
 		}
-
+#endif
 		case WM_IME_CHAR:
 		{
 			ev_Win32Keyboard *pWin32Keyboard = static_cast<ev_Win32Keyboard *>(fImpl->m_pKeyboard);
