@@ -80,6 +80,8 @@ public:
 	static const char *    graphicsDescriptor(){return "Unix Pango";}
 	static GR_Graphics *   graphicsAllocator(GR_AllocInfo&);
 
+	virtual UT_sint32      measureUnRemappedChar(const UT_UCSChar c);
+	
 	virtual void		   drawChars(const UT_UCSChar* pChars,
 									  int iCharOffset, int iLength,
 									  UT_sint32 xoff, UT_sint32 yoff,
@@ -108,10 +110,12 @@ public:
 								   UT_sint32& x, UT_sint32& y,
 								   UT_sint32& x2, UT_sint32& y2,
 								   UT_sint32& height, bool& bDirection) const;
-	virtual UT_sint32 getTextWidth(const GR_RenderInfo & ri) const;
+	virtual UT_sint32 getTextWidth(GR_RenderInfo & ri);
 
 	virtual const UT_VersionInfo & getVersion() const {return s_Version;}
 
+	virtual GR_Font * getGUIFont(void);
+	
 	PangoFontMap * getFontMap() {return m_pFontMap;}
 	PangoContext * getContext() {return m_pContext;}
 
@@ -148,7 +152,7 @@ public:
 	PangoContext * m_pContext;
 
 	GR_UnixPangoFont * m_pFont;
-	
+	GR_UnixPangoFont * m_pFontGUI;
 };
 
 #endif
