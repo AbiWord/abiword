@@ -9770,7 +9770,7 @@ bool IE_Imp_RTF::HandleStyleDefinition(void)
 			if(sz != NULL)
 				// MUST NOT USED delete[] on strings allocated by malloc/calloc !!!
 				// delete [] sz;
-				FREEP(const_cast<XML_Char*>(sz));
+				free(const_cast<XML_Char*>(sz));
 		}
 		delete pCurStyleVec;
 
