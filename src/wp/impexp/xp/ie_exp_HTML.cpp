@@ -2122,7 +2122,11 @@ void s_HTML_Listener::_openTag (PT_AttrPropIndex api, PL_StruxDocHandle sdh)
 			if (m_StyleTreeBlock->class_list().byteLength ())
 			{
 				m_utf8_1 += " class=\"";
-				m_utf8_1 += m_StyleTreeBlock->class_list ();
+				if(get_Class_Only())
+					m_utf8_1 += m_StyleTreeBlock->class_name ();
+				else
+					m_utf8_1 += m_StyleTreeBlock->class_list ();
+				
 				m_utf8_1 += "\"";
 			}
 #else
@@ -2290,7 +2294,10 @@ void s_HTML_Listener::_openTag (PT_AttrPropIndex api, PL_StruxDocHandle sdh)
 			if (tree->class_list().byteLength ())
 			{
 				m_utf8_1 += " class=\"";
-				m_utf8_1 += tree->class_list ();
+				if(get_Class_Only())
+					m_utf8_1 += tree->class_name ();
+				else
+					m_utf8_1 += tree->class_list ();
 				m_utf8_1 += "\"";
 			}
 		if (bAddAWMLStyle)
@@ -2556,7 +2563,11 @@ void s_HTML_Listener::_openSpan (PT_AttrPropIndex api)
 		if (tree->class_list().byteLength ())
 		{
 			m_utf8_1 = "span class=\"";
-			m_utf8_1 += tree->class_list ();
+			if(get_Class_Only())
+				m_utf8_1 += tree->class_name ();
+			else
+				m_utf8_1 += tree->class_list ();
+			
 			m_utf8_1 += "\"";
 			bInSpan = true;
 			first = false;
@@ -2850,6 +2861,13 @@ void s_HTML_Listener::_fillColWidthsVector(void)
 		while(i < sizes)
 		{
 			for (j=i; (j<sizes) && (sProps[j] != '/') ; j++) {}
+			if(sProps[j] == 0)
+			{
+				// reached the end of the props string without finding
+				// any further sizes
+				break;
+			}
+			
 			if((j+1)>i && sProps[j] == '/')
 			{
 				UT_String sSub = sProps.substr(i,(j-i));
@@ -2897,7 +2915,10 @@ void s_HTML_Listener::_openTable (PT_AttrPropIndex api)
 
 	const char * prop = m_TableHelper.getTableProp ("table-line-thickness");
 
-	UT_sint32 border = (prop ? atoi (prop) : 1);
+	UT_sint32 border = 0;
+
+	if(prop && atof(prop) != 0.0)
+		border = 1;
 
 	UT_UTF8String border_default = "1px";
 	if (prop) border_default = prop;

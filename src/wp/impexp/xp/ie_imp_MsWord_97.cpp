@@ -286,12 +286,22 @@ static Doc_Color_t word_colors [][3] = {
 	{0xc0, 0xc0, 0xc0}, /* light gray */
 };
 
-static UT_String sMapIcoToColor (UT_uint16 ico)
+static UT_String sMapIcoToColor (UT_uint16 ico, bool bForeground)
 {
-  return UT_String_sprintf("%02x%02x%02x",
-			   word_colors[ico-1][0],
-			   word_colors[ico-1][1],
-			   word_colors[ico-1][2]);
+	// need to handle the automatic colour 0
+	if(!ico && bForeground)
+	{
+		ico = 1;
+	}
+	else if(!ico && !bForeground)
+	{
+		ico = 8;
+	}
+
+	return UT_String_sprintf("%02x%02x%02x",
+							 word_colors[ico-1][0],
+							 word_colors[ico-1][1],
+							 word_colors[ico-1][2]);
 }
 
 //
@@ -3845,7 +3855,7 @@ void IE_Imp_MsWord_97::_row_open (const wvParseStruct *ps)
     return;
 
   if (m_iCurrentRow > ps->norows) {
-	  UT_ASSERT(m_iCurrentRow <= ps->norows);
+	  //UT_ASSERT(m_iCurrentRow <= ps->norows);
 	  return;
   }
 
@@ -3909,7 +3919,7 @@ void IE_Imp_MsWord_97::_cell_open (const wvParseStruct *ps, const PAP *apap)
     return;
 
   if (!m_bRowOpen || m_iCurrentRow > ps->norows) {
-	  UT_ASSERT(m_bRowOpen || m_iCurrentRow <= ps->norows);
+	  //UT_ASSERT(m_bRowOpen || m_iCurrentRow <= ps->norows);
 	  return;
   }
 
@@ -3963,8 +3973,8 @@ void IE_Imp_MsWord_97::_cell_open (const wvParseStruct *ps, const PAP *apap)
 		    m_iCurrentRow + vspan
 		    );
 
-  propBuffer += UT_String_sprintf("color:%s;", sMapIcoToColor(apap->ptap.rgshd[m_iCurrentCell].icoFore).c_str());
-  propBuffer += UT_String_sprintf("bgcolor:%s;", sMapIcoToColor(apap->ptap.rgshd[m_iCurrentCell].icoBack).c_str());
+  propBuffer += UT_String_sprintf("color:%s;", sMapIcoToColor(apap->ptap.rgshd[m_iCurrentCell].icoFore, true).c_str());
+  propBuffer += UT_String_sprintf("bgcolor:%s;", sMapIcoToColor(apap->ptap.rgshd[m_iCurrentCell].icoBack, false).c_str());
   // so long as it's not the "auto" color
   if (apap->ptap.rgshd[m_iCurrentCell].icoBack != 0)
     propBuffer += "bg-style:1;";
@@ -3972,19 +3982,19 @@ void IE_Imp_MsWord_97::_cell_open (const wvParseStruct *ps, const PAP *apap)
   {
 	  UT_LocaleTransactor(LC_NUMERIC, "C");
 	  propBuffer += UT_String_sprintf("top-color:%s; top-thickness:%fpt; top-style:%d;",
-									  sMapIcoToColor(apap->ptap.rgtc[m_iCurrentCell].brcTop.ico).c_str(),
+									  sMapIcoToColor(apap->ptap.rgtc[m_iCurrentCell].brcTop.ico, true).c_str(),
 									  brc_to_pixel(apap->ptap.rgtc[m_iCurrentCell].brcTop.dptLineWidth),
 									  sConvertLineStyle(apap->ptap.rgtc[m_iCurrentCell].brcTop.brcType));
 	  propBuffer += UT_String_sprintf("left-color:%s; left-thickness:%fpx; left-style:%d;",
-									  sMapIcoToColor(apap->ptap.rgtc[m_iCurrentCell].brcLeft.ico).c_str(),
+									  sMapIcoToColor(apap->ptap.rgtc[m_iCurrentCell].brcLeft.ico, true).c_str(),
 									  brc_to_pixel(apap->ptap.rgtc[m_iCurrentCell].brcLeft.dptLineWidth),
 									  sConvertLineStyle(apap->ptap.rgtc[m_iCurrentCell].brcLeft.brcType));
 	  propBuffer += UT_String_sprintf("bot-color:%s; bot-thickness:%fpx; bot-style:%d;",
-									  sMapIcoToColor(apap->ptap.rgtc[m_iCurrentCell].brcBottom.ico).c_str(),
+									  sMapIcoToColor(apap->ptap.rgtc[m_iCurrentCell].brcBottom.ico, true).c_str(),
 									  brc_to_pixel(apap->ptap.rgtc[m_iCurrentCell].brcBottom.dptLineWidth),
 									  sConvertLineStyle(apap->ptap.rgtc[m_iCurrentCell].brcBottom.brcType));
 	  propBuffer += UT_String_sprintf("right-color:%s; right-thickness:%fpx; right-style:%d",
-									  sMapIcoToColor(apap->ptap.rgtc[m_iCurrentCell].brcRight.ico).c_str(),
+									  sMapIcoToColor(apap->ptap.rgtc[m_iCurrentCell].brcRight.ico, true).c_str(),
 									  brc_to_pixel(apap->ptap.rgtc[m_iCurrentCell].brcRight.dptLineWidth),
 									  sConvertLineStyle(apap->ptap.rgtc[m_iCurrentCell].brcRight.brcType));
   }
@@ -4093,7 +4103,7 @@ void IE_Imp_MsWord_97::_generateCharProps(UT_String &s, const CHP * achp, wvPars
 	U8 ico = (achp->fBidi ? achp->icoBidi : achp->ico);
 	if (ico) {
 		UT_String_sprintf(propBuffer, "color:%s;",
-						  sMapIcoToColor(ico).c_str());
+						  sMapIcoToColor(ico, true).c_str());
 		s += propBuffer;
 	}
 
@@ -4101,7 +4111,7 @@ void IE_Imp_MsWord_97::_generateCharProps(UT_String &s, const CHP * achp, wvPars
 	ico = achp->shd.icoBack;
 	if (ico) {
 		UT_String_sprintf(propBuffer, "background-color:%s;",
-						  sMapIcoToColor(ico).c_str());
+						  sMapIcoToColor(ico, false).c_str());
 		s += propBuffer;
 	}
 	
@@ -4121,7 +4131,7 @@ void IE_Imp_MsWord_97::_generateCharProps(UT_String &s, const CHP * achp, wvPars
 	// background color
 	if (achp->fHighlight) {
 		UT_String_sprintf(propBuffer,"bgcolor:%s;",
-						  sMapIcoToColor(achp->icoHighlight).c_str());
+						  sMapIcoToColor(achp->icoHighlight, false).c_str());
 		s += propBuffer;
 	}
 
@@ -4331,7 +4341,7 @@ void IE_Imp_MsWord_97::_generateParaProps(UT_String &s, const PAP * apap, wvPars
 	U8 ico = apap->shd.icoFore;
 	if (ico) {
 		UT_String_sprintf(propBuffer, "color:%s;",
-						  sMapIcoToColor(ico).c_str());
+						  sMapIcoToColor(ico, true).c_str());
 		s += propBuffer;
 	}
 
@@ -4339,7 +4349,7 @@ void IE_Imp_MsWord_97::_generateParaProps(UT_String &s, const PAP * apap, wvPars
 	ico = apap->shd.icoBack;
 	if (ico) {
 		UT_String_sprintf(propBuffer, "background-color:%s;",
-						  sMapIcoToColor(ico).c_str());
+						  sMapIcoToColor(ico, false).c_str());
 		s += propBuffer;
 	}
 
