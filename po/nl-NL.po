@@ -407,7 +407,7 @@ msgstr "&Kopiëren"
 #: po/tmp/ap_String_Id.h.h:214
 #, fuzzy
 msgid "&Create and Modify"
-msgstr "Maak en wijzig"
+msgstr "Maken en wijzigen"
 
 #. DLG_Options_Label_PrefsCurrentScheme
 #: po/tmp/ap_String_Id.h.h:216
@@ -4944,22 +4944,22 @@ msgstr "Deze cell splitsen"
 #. DLG_Lists_Square_List
 #: po/tmp/ap_String_Id.h.h:1997 po/tmp/xap_String_Id.h.h:560
 msgid "Square List"
-msgstr "Vierkant Lijst"
+msgstr "Vierkant lijst"
 
 #. MENU_LABEL_FMT_STYLE
 #: po/tmp/ap_String_Id.h.h:1999
 msgid "St&yle"
-msgstr "&Stijl"
+msgstr "&Stijlen"
 
 #. DLG_Options_Label_ViewStandardTB
 #: po/tmp/ap_String_Id.h.h:2001
 msgid "Standard Toolbar"
-msgstr "Standaard Werkbalk"
+msgstr "Standaard werkbalk"
 
 #. DLG_Lists_Star_List
 #: po/tmp/ap_String_Id.h.h:2003 po/tmp/xap_String_Id.h.h:562
 msgid "Star List"
-msgstr "Ster Lijst"
+msgstr "Ster lijst"
 
 #. DLG_Lists_Start
 #: po/tmp/ap_String_Id.h.h:2005
@@ -5069,9 +5069,8 @@ msgstr "Onderwerp:"
 #. TOOLBAR_STATUSLINE_FMT_SUBSCRIPT
 #. TOOLBAR_TOOLTIP_FMT_SUBSCRIPT
 #: po/tmp/ap_String_Id.h.h:2053 po/tmp/xap_String_Id.h.h:568
-#, fuzzy
 msgid "Subscript"
-msgstr "&Subscript"
+msgstr "Subscript"
 
 #. DLG_Spell_Suggestions
 #: po/tmp/ap_String_Id.h.h:2055
@@ -5138,7 +5137,6 @@ msgstr "Tabel"
 
 #. DLG_InsertTable_TableSize_Capital
 #: po/tmp/ap_String_Id.h.h:2081
-#, fuzzy
 msgid "Table Size"
 msgstr "Tabel grootte"
 
@@ -5211,8 +5209,9 @@ msgstr ""
 
 #. FIELD_DateTime_Wkday
 #: po/tmp/ap_String_Id.h.h:2108
+#, fuzzy
 msgid "The weekday"
-msgstr "De werkday"
+msgstr "De doordeweekse dag"
 
 #. MSG_AfterRestartNew
 #: po/tmp/ap_String_Id.h.h:2110
@@ -5251,7 +5250,7 @@ msgstr "Drie"
 #. DLG_Lists_Tick_List
 #: po/tmp/ap_String_Id.h.h:2118 po/tmp/xap_String_Id.h.h:590
 msgid "Tick List"
-msgstr "Vinkjes Lijst"
+msgstr "Vinkjes lijst"
 
 #. FIELD_DateTime_TimeZone
 #: po/tmp/ap_String_Id.h.h:2120
@@ -5260,9 +5259,8 @@ msgstr "Tijdzone"
 
 #. FIELD_Document_Title
 #: po/tmp/ap_String_Id.h.h:2122
-#, fuzzy
 msgid "Title"
-msgstr "Titel:"
+msgstr "Titel"
 
 #. DLG_ToggleCase_TitleCase
 #: po/tmp/ap_String_Id.h.h:2124
@@ -5278,7 +5276,7 @@ msgstr "Titel:"
 #. AUTOTEXT_SALUTATION_4
 #: po/tmp/ap_String_Id.h.h:2128
 msgid "To Whom It May Concern:"
-msgstr "Aan Wie Dit Aangaat:"
+msgstr "Aan wie dit aangaat:"
 
 #. AUTOTEXT_EMAIL_1
 #: po/tmp/ap_String_Id.h.h:2130
@@ -5316,9 +5314,8 @@ msgstr "Twee"
 
 #. FIELD_Document_Type
 #: po/tmp/ap_String_Id.h.h:2145
-#, fuzzy
 msgid "Type"
-msgstr "Type:"
+msgstr "Type"
 
 #. DLG_InsertBookmark_Msg
 #: po/tmp/ap_String_Id.h.h:2147
@@ -5342,7 +5339,7 @@ msgstr "HOOFDLETTERS"
 #. TOOLBAR_TOOLTIP_FMT_UNDERLINE
 #: po/tmp/ap_String_Id.h.h:2155 po/tmp/xap_String_Id.h.h:612
 msgid "Underline"
-msgstr "Onderstreep"
+msgstr "Onderstrepen"
 
 #. MENU_STATUSLINE_FMT_UNDERLINE
 #: po/tmp/ap_String_Id.h.h:2157
@@ -5353,29 +5350,29 @@ msgstr "Onderstreep het geselecteerde (omschakelen)"
 #: po/tmp/ap_String_Id.h.h:2159
 #, fuzzy
 msgid "Undo"
-msgstr "&Ongedaan maken"
+msgstr "Ongedaan maken"
 
 #. MENU_STATUSLINE_EDIT_UNDO
 #. TOOLBAR_STATUSLINE_EDIT_UNDO
 #. TOOLBAR_TOOLTIP_EDIT_UNDO
 #: po/tmp/ap_String_Id.h.h:2163
 msgid "Undo editing"
-msgstr "Ongedaan maken"
+msgstr "Wijzigingen ongedaan maken"
 
 #. DLG_Lists_Upper_Case_List
 #: po/tmp/ap_String_Id.h.h:2165 po/tmp/xap_String_Id.h.h:646
 msgid "Upper Case List"
-msgstr "Hoofdletter Lijst"
+msgstr "Hoofdletter lijst"
 
 #. DLG_Lists_Upper_Roman_List
 #: po/tmp/ap_String_Id.h.h:2167 po/tmp/xap_String_Id.h.h:648
 msgid "Upper Roman List"
-msgstr "Romeinse-Hoofdletter Lijst"
+msgstr "Romeinse-hoofdletter lijst"
 
 #. DLG_Column_RtlOrder
 #: po/tmp/ap_String_Id.h.h:2169
 msgid "Use RTL Order"
-msgstr "Gebruik \"Rechts naar Links\" volgorde"
+msgstr "Gebruik \"rechts naar links\" volgorde"
 
 #. DLG_Options_Label_HebrewContextGlyphs
 #: po/tmp/ap_String_Id.h.h:2171
@@ -5387,7 +5384,7 @@ msgstr "Gebruik symboolvormgeving voor Hebreeuws"
 #: po/tmp/ap_String_Id.h.h:2173
 #, fuzzy
 msgid "User Interface Language"
-msgstr "Selecteer Taal:"
+msgstr "Interface taal"
 
 #. DLG_Styles_LBL_UserDefined
 #: po/tmp/ap_String_Id.h.h:2175
@@ -5465,13 +5462,13 @@ msgstr "Waarschuwing: de opgegeven bladwijzer [%s] bestaat niet."
 #. MENU_STATUSLINE_VIEW_WEB
 #: po/tmp/ap_String_Id.h.h:2207
 msgid "Web Layout"
-msgstr "Web Lay-out"
+msgstr "Web lay-out"
 
 #. DLG_Styles_LBL_TxtMsg
 #: po/tmp/ap_String_Id.h.h:2209
 #, fuzzy
 msgid "What Hath God Wrought"
-msgstr "Wat Heeft God Geschapen"
+msgstr "Wat heeft god geschapen"
 
 #. DLG_Options_Label_WithExtension
 #: po/tmp/ap_String_Id.h.h:2211
@@ -5691,7 +5688,7 @@ msgstr "Een map in de opgegeven locatie bestaat niet."
 #. DLG_PLUGIN_MANAGER_TITLE
 #: po/tmp/xap_String_Id.h.h:31
 msgid "AbiWord Plugin Manager"
-msgstr "AbiWord Plugin Manager"
+msgstr "AbiWord plugin manager"
 
 #. SPELL_CANTLOAD_DLL
 #: po/tmp/xap_String_Id.h.h:33
@@ -5707,7 +5704,7 @@ msgstr ""
 #. DLG_UP_PrintPreviewTitle
 #: po/tmp/xap_String_Id.h.h:35
 msgid "AbiWord: Print Preview"
-msgstr "AbiWord: Afdrukvoorbeeld"
+msgstr "AbiWord: afdrukvoorbeeld"
 
 #. DLG_ABOUT_Title
 #: po/tmp/xap_String_Id.h.h:37
@@ -5718,7 +5715,7 @@ msgstr "Over %s"
 #. DLG_PLUGIN_MANAGER_ACTIVE
 #: po/tmp/xap_String_Id.h.h:39
 msgid "Active Plugins"
-msgstr "Actieve Plugins"
+msgstr "Actieve plugins"
 
 #. LANG_AF_ZA
 #: po/tmp/xap_String_Id.h.h:41
@@ -5738,12 +5735,12 @@ msgstr "Alle (*.*)"
 #. DLG_FOSA_ALLDOCS
 #: po/tmp/xap_String_Id.h.h:49
 msgid "All Documents"
-msgstr "Alle Documenten"
+msgstr "Alle documenten"
 
 #. DLG_FOSA_ALLIMAGES
 #: po/tmp/xap_String_Id.h.h:51
 msgid "All Image Files"
-msgstr "Alle Afbeelding Bestanden"
+msgstr "Alle afbeelding bestanden"
 
 #. DLG_HTMLOPT_ExpAllowAWML
 #: po/tmp/xap_String_Id.h.h:53
@@ -5780,7 +5777,7 @@ msgstr "Arabisch, Macintosh"
 #. ENC_ARAB_WIN
 #: po/tmp/xap_String_Id.h.h:67
 msgid "Arabic, Windows Code Page 1256"
-msgstr "Arabisch, Windows Code Pagina 1256"
+msgstr "Arabisch, Windows code pagina 1256"
 
 #. LANG_HY_AM
 #: po/tmp/xap_String_Id.h.h:69
@@ -5827,7 +5824,7 @@ msgstr "Baltisch, ISO-8859-4"
 #. ENC_BALT_WIN
 #: po/tmp/xap_String_Id.h.h:87
 msgid "Baltic, Windows Code Page 1257"
-msgstr "Baltisch, Windows Code Pagina 1257"
+msgstr "Baltisch, Windows code pagina 1257"
 
 #. LANG_EU_ES
 #: po/tmp/xap_String_Id.h.h:89
@@ -5842,18 +5839,18 @@ msgstr "Belarussisch"
 #. DLG_UP_BlackWhite
 #: po/tmp/xap_String_Id.h.h:93
 msgid "Black & White"
-msgstr "Zwart & Wit"
+msgstr "Zwart & wit"
 
 #. STYLE_BLOCKTEXT
 #: po/tmp/xap_String_Id.h.h:95
 #, fuzzy
 msgid "Block Text"
-msgstr "Blok Tekst"
+msgstr "Blok tekst"
 
 #. DLG_UFS_StyleBoldItalic
 #: po/tmp/xap_String_Id.h.h:99
 msgid "Bold Italic"
-msgstr "Vet en Schuingedrukt"
+msgstr "Vet en schuingedrukt"
 
 #. LANG_BR_FR
 #: po/tmp/xap_String_Id.h.h:105
@@ -5895,7 +5892,7 @@ msgstr "Centraal Europees, Macintosh"
 #. ENC_CENT_WIN
 #: po/tmp/xap_String_Id.h.h:121
 msgid "Central European, Windows Code Page 1250"
-msgstr "Centraal Europees, Windows Code Pagina 1250"
+msgstr "Centraal Europees, Windows code pagina 1250"
 
 #. DLG_Options_Label_LangWithKeyboard
 #: po/tmp/xap_String_Id.h.h:123
@@ -5946,7 +5943,7 @@ msgstr "Chinees Gesimplificeerd, HZ"
 #. ENC_CHSI_WIN
 #: po/tmp/xap_String_Id.h.h:141
 msgid "Chinese Simplified, Windows Code Page 936"
-msgstr "Chinees Gesimplificeerd, Windows Code Pagina 936"
+msgstr "Chinees Gesimplificeerd, Windows code pagina 936"
 
 #. ENC_CHTR_BIG5
 #: po/tmp/xap_String_Id.h.h:143
@@ -5966,7 +5963,7 @@ msgstr "Chinees Traditioneel, EUC-TW"
 #. ENC_CHTR_WIN
 #: po/tmp/xap_String_Id.h.h:149
 msgid "Chinese Traditional, Windows Code Page 950"
-msgstr "Chinees Traditioneel, Windows Code Pagina 950"
+msgstr "Chinees Traditioneel, Windows code pagina 950"
 
 #. DLG_CLIPART_Title
 #: po/tmp/xap_String_Id.h.h:151
@@ -6052,7 +6049,7 @@ msgstr "Cyrillisch, Macintosh"
 #. ENC_CYRL_WIN
 #: po/tmp/xap_String_Id.h.h:185
 msgid "Cyrillic, Windows Code Page 1251"
-msgstr "Cyrillisch, Windows Code Pagina 1251"
+msgstr "Cyrillisch, Windows code pagina 1251"
 
 #. LANG_CS_CZ
 #: po/tmp/xap_String_Id.h.h:187
@@ -6220,7 +6217,7 @@ msgstr "Bestand"
 #: po/tmp/xap_String_Id.h.h:257
 #, c-format
 msgid "File already exists.  Overwrite file '%s'?"
-msgstr "Bestand bestaat al.  Overschrijven bestand '%s'?"
+msgstr "Het bestand bestaat al. Wilt u het bestand '%s' overschrijven?"
 
 #. LANG_FI_FI
 #: po/tmp/xap_String_Id.h.h:259
@@ -6336,7 +6333,7 @@ msgstr "Grieks, Macintosh"
 #. ENC_GREE_WIN
 #: po/tmp/xap_String_Id.h.h:305
 msgid "Greek, Windows Code Page 1253"
-msgstr "Grieks, Windows Code Pagina 1253"
+msgstr "Grieks, Windows code pagina 1253"
 
 #. DLG_HTMLOPT_ExpTitle
 #: po/tmp/xap_String_Id.h.h:307
@@ -6386,7 +6383,7 @@ msgstr "Hebreeuws, Macintosh"
 #. ENC_HEBR_WIN
 #: po/tmp/xap_String_Id.h.h:329
 msgid "Hebrew, Windows Code Page 1255"
-msgstr "Hebreews, Windows Code Pagina 1255"
+msgstr "Hebreews, Windows code pagina 1255"
 
 #. DLG_Image_Height
 #: po/tmp/xap_String_Id.h.h:331
@@ -6563,7 +6560,7 @@ msgstr "Japans, Shift-JIS"
 #. ENC_JAPN_WIN
 #: po/tmp/xap_String_Id.h.h:399
 msgid "Japanese, Windows Code Page 932"
-msgstr "Japans, Windows Code Pagina 932"
+msgstr "Japans, Windows code pagina 932"
 
 #. LANG_KO_KR
 #: po/tmp/xap_String_Id.h.h:401
@@ -6589,7 +6586,7 @@ msgstr "Koreaans, KSC_5601"
 #. ENC_KORE_WIN
 #: po/tmp/xap_String_Id.h.h:409
 msgid "Korean, Windows Code Page 949"
-msgstr "Koreaans, Windows Code Pagina 949"
+msgstr "Koreaans, Windows code pagina 949"
 
 #. LANG_LA_IT
 #: po/tmp/xap_String_Id.h.h:411
@@ -6975,7 +6972,7 @@ msgstr "Thais, TIS-620"
 #. ENC_THAI_WIN
 #: po/tmp/xap_String_Id.h.h:584
 msgid "Thai, Windows Code Page 874"
-msgstr "Thais, Windows Code Pagina 874"
+msgstr "Thais, Windows code pagina 874"
 
 #. DLG_NoSaveFile_DirNotWriteable
 #: po/tmp/xap_String_Id.h.h:586
@@ -7006,7 +7003,7 @@ msgstr "Turks, Macintosh"
 #. ENC_TURK_WIN
 #: po/tmp/xap_String_Id.h.h:602
 msgid "Turkish, Windows Code Page 1254"
-msgstr "Turks, Windows Code Pagina 1254"
+msgstr "Turks, Windows code pagina 1254"
 
 #. ENC_WEST_ASCII
 #: po/tmp/xap_String_Id.h.h:604
@@ -7139,7 +7136,7 @@ msgstr "Viatnamees, VISCII"
 #. ENC_VIET_WIN
 #: po/tmp/xap_String_Id.h.h:660
 msgid "Vietnamese, Windows Code Page 1258"
-msgstr "Viatnamees, Windows Code Pagina 1258"
+msgstr "Viatnamees, Windows code pagina 1258"
 
 #. DLG_MW_MoreWindows
 #: po/tmp/xap_String_Id.h.h:662
@@ -7180,7 +7177,7 @@ msgstr "West Europees, NeXT"
 #. ENC_WEST_WIN
 #: po/tmp/xap_String_Id.h.h:676
 msgid "Western European, Windows Code Page 1252"
-msgstr "West Europees, Windows Code Pagina 1252"
+msgstr "West Europees, Windows code pagina 1252"
 
 #. TB_Zoom_WholePage
 #: po/tmp/xap_String_Id.h.h:678
