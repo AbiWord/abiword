@@ -43,10 +43,6 @@ public:
 	void event_MenuChange(GtkWidget * widget);
 	void event_FootInitialValueChange(void);
 	void event_EndInitialValueChange(void);
-	void event_FootRestartPage();
-	void event_FootRestartSection();
-	void event_EndPlaceEndSection();
-	void event_EndPlaceEndDoc();
 	void event_EndRestartSection();
 private:
 	virtual GtkWidget *		_constructWindow(void);
@@ -63,6 +59,8 @@ private:
 	GtkWidget *   m_windowMain;
 	GtkWidget *   m_wButtonApply;
 	GtkWidget *   m_wFootnotesStyleMenu;
+	GtkWidget *   m_wFootnoteNumberingMenu;
+	GtkWidget *   m_wFootnotesDontRestart;
 	GtkWidget *   m_wFootnotesRestartOnSection;
 	GtkWidget *   m_wFootnotesRestartOnPage;
 	GtkWidget *   m_wFootnotesInitialValText;
@@ -70,6 +68,7 @@ private:
 	GtkObject *   m_oFootnoteSpinAdj;
 
 	GtkWidget *   m_wEndnotesStyleMenu;
+	GtkWidget *   m_wEndnotesPlaceMenu;
 	GtkWidget *   m_wEndnotesRestartOnSection;
 	GtkWidget *   m_wEndnotesPlaceEndOfDoc;
 	GtkWidget *   m_wEndnotesPlaceEndOfSec;

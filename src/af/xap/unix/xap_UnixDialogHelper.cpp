@@ -850,6 +850,7 @@ void localizeLabel(GtkWidget * widget, const XAP_StringSet * pSS, XAP_String_Id 
 	FREEP(unixstr);	
 }
 
+
 /*!
  * Localizes a button given the string id
  */
@@ -874,6 +875,20 @@ void localizeLabelMarkup(GtkWidget * widget, const XAP_StringSet * pSS, XAP_Stri
 	UT_XML_cloneNoAmpersands(unixstr, pSS->getValueUTF8(id).c_str());
 	UT_String markupStr = UT_String_sprintf(gtk_label_get_label (GTK_LABEL(widget)), unixstr);
 	gtk_label_set_markup (GTK_LABEL(widget), markupStr.c_str());
+	FREEP(unixstr);	
+}
+
+
+/*!
+ * Localizes the label of a Menu widget given the string id
+ */
+void localizeMenu(GtkWidget * widget, const XAP_StringSet * pSS, XAP_String_Id id)
+{
+//	UT_ASSERT(GTK_IS_MENU(widget));
+	XML_Char * unixstr = NULL;	// used for conversions
+	
+	UT_XML_cloneNoAmpersands(unixstr, pSS->getValueUTF8(id).c_str());
+	gtk_menu_set_title (GTK_MENU(widget), unixstr);
 	FREEP(unixstr);	
 }
 

@@ -123,15 +123,20 @@ dcl(DLG_InsertTable_FixedColSize,	"Fixed column size:")
 
 /* Format FootNotes dialog */
 dcl(DLG_FormatFootnotes_Title,             "Format Footnotes and Endnotes")
+dcl(DLG_FormatFootnotes_Footnotes,         "Format Footnote")
+dcl(DLG_FormatFootnotes_Endnotes,          "Format Endnotes")
 dcl(DLG_FormatFootnotes_FootStyle,         "Footnote Style")
 dcl(DLG_FormatFootnotes_FootRestartSec,    "Restart on each Section")
 dcl(DLG_FormatFootnotes_FootRestartPage,   "Restart on each Page")
+dcl(DLG_FormatFootnotes_FootRestartNone,    "Don't Restart")
 dcl(DLG_FormatFootnotes_FootInitialVal,    "Initial Footnote value")
 dcl(DLG_FormatFootnotes_EndStyle,          "Endnote Style")
 dcl(DLG_FormatFootnotes_EndRestartSec,     "Restart on each Section")
 dcl(DLG_FormatFootnotes_EndInitialVal,     "Initial Endnote value")
 dcl(DLG_FormatFootnotes_EndPlaceEndDoc,    "Place at end of Document")
 dcl(DLG_FormatFootnotes_EndPlaceEndSec,    "Place at end of Section")
+dcl(DLG_FormatFootnotes_EndPlacement,      "Placement")
+dcl(DLG_FormatFootnotes_FootnoteRestart,   "Numbering")
 
 /* Word Count dialog */
 dcl(DLG_WordCount_WordCountTitle,	"Word Count")
