@@ -53,7 +53,7 @@ AUTOTEXT_SUBJECT_1="Asunto"
 BottomMarginStatus="Margen Inferior [%s]"
 
 ColumnGapStatus="Espazo entre Colunas [%s]"
-ColumnStatus="Coluna [%s]"
+ColumnStatus="Coluna [%d]"
 
 SPELL_CANTLOAD_DICT="Non se dá carregado o dicionário da língua %s"
 SPELL_CANTLOAD_DLL="Abiword non da achado o ficheiro %s.dll\n Por favor descarregue Aspell de http://aspell.net/win32/ e instale-o"
