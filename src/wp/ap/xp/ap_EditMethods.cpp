@@ -4676,7 +4676,7 @@ Defun1(selectTable)
 		UT_DEBUGMSG(("No End Table Strux found!! \n"));
 		return false;
 	}
-	posEndTab = pDoc->getStruxPosition(endTableSDH); //was +1
+	posEndTab = pDoc->getStruxPosition(endTableSDH)+1; //was +1
 	UT_DEBUGMSG(("PosEndTab %d endTableSDH %x \n",posEndTab,endTableSDH));
 	pView->cmdSelect(posStartTab,posEndTab);
 	return true;

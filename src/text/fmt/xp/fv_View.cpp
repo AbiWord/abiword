@@ -10367,6 +10367,11 @@ bool FV_View::isPointLegal(PT_DocPosition pos)
 	{
 		return true;
 	}
+	fl_BlockLayout * pBL = _findBlockAtPosition(pos);
+	if(pBL == NULL)
+	{
+	        return false;
+	}
 	bool bres = m_pDoc->getStruxOfTypeFromPosition(pos,PTX_Block,&prevSDH);
 	if(!bres)
 	{

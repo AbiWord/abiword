@@ -3702,6 +3702,17 @@ void FV_View::cmdSelect(PT_DocPosition dpBeg, PT_DocPosition dpEnd)
 	_setPoint(dpBeg);
 	_setSelectionAnchor();
 	m_Selection.setSelectionLeftAnchor(dpBeg);
+	if(dpBeg < dpEnd - 2)
+	{
+	     if(m_pDoc->isTableAtPos(dpEnd) && m_pDoc->isEndTableAtPos(dpEnd-1))
+	     {
+	          dpEnd--;
+	     }
+	     if(m_pDoc->isCellAtPos(dpEnd))
+	     {
+	          dpEnd--;
+	     }
+	}
 	m_Selection.setSelectionRightAnchor(dpEnd);
 	_setPoint (dpEnd);
 	UT_ASSERT(!isSelectionEmpty());

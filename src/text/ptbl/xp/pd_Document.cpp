@@ -1717,6 +1717,29 @@ bool PD_Document::isTableAtPos(PT_DocPosition pos)
 
 
 /*!
+ * This method returns true if there is an EndTable strux at exactly this 
+ * position.
+ */
+bool PD_Document::isEndTableAtPos(PT_DocPosition pos)
+{
+	PT_BlockOffset pOffset;
+	pf_Frag * pf = NULL;
+	/*bool bRes = */m_pPieceTable->getFragFromPosition(pos,&pf,&pOffset);
+	while(pf->getLength() == 0)
+		pf = pf->getPrev();
+	if(pf->getType() == pf_Frag::PFT_Strux)
+	{
+		pf_Frag_Strux * pfs = static_cast<pf_Frag_Strux *>(pf);
+		if(pfs->getStruxType() == PTX_EndTable)
+		{
+			return true;
+		}
+	}
+	return false;
+}
+
+
+/*!
  * This method returns true if there is a cell strux at exactly this 
  * position.
  */
