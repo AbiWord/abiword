@@ -68,8 +68,7 @@ ev_UnixKeyboard::~ev_UnixKeyboard(void)
 {
 }
 
-bool ev_UnixKeyboard::keyPressEvent(AV_View* pView,
-									   GdkEventKey* e)
+bool ev_UnixKeyboard::keyPressEvent(AV_View* pView, GdkEventKey* e)
 {
 	EV_EditBits state = 0;
 	EV_EditEventMapperResult result;
@@ -441,7 +440,7 @@ static bool s_isVirtualKeyCode(gint keyval)
 		return false; //was true before CJK patch
 //
 // Causes immediate on keypress segfault??
-	if (keyval >= GDK_KP_Space && keyval <= GDK_KP_9) // number pad keys
+	if (keyval >= GDK_KP_Space && keyval <= GDK_KP_9 && keyval != GDK_KP_Enter) // number pad keys
 		return false;
 	
 	if (keyval > 0xFF00)				// see the above table
