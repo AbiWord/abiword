@@ -61,13 +61,17 @@ void TFScrollBar::ValueChanged(float newValue) {
 		if (!pView) {
 			return;
 		}
-        if (Orientation() == B_VERTICAL &&
+        
+	float minRange , maxRange;
+	GetRange(&minRange , &maxRange);
+
+	if (Orientation() == B_VERTICAL &&
 			(UT_sint32)newValue != pView->getYScrollOffset()) {
-				pView->sendVerticalScrollEvent((UT_sint32) newValue);
+				pView->sendVerticalScrollEvent((UT_sint32) newValue, (UT_sint32)maxRange);
         }
         else if (Orientation() == B_HORIZONTAL &&
 				 (UT_sint32)newValue != pView->getXScrollOffset()) {
-				pView->sendHorizontalScrollEvent((UT_sint32) newValue);
+				pView->sendHorizontalScrollEvent((UT_sint32) newValue, (UT_sint32)maxRange);
         }
 }
 
