@@ -1892,7 +1892,6 @@ UT_Bool _printDoc(AP_Frame * pFrame, FV_View * pView)
 	}
 
 	// init some dg_DrawArgs for startPage
-	UT_uint32 iHeight = pDL->getHeight();
 	dg_DrawArgs da;
 	da.pG = NULL;
 	da.width = pDL->getWidth();
@@ -1927,6 +1926,10 @@ UT_Bool _printDoc(AP_Frame * pFrame, FV_View * pView)
 /*****************************************************************/
 
 #ifdef LINUX
+
+#include "ap_UnixApp.h"
+#include "ap_UnixFrame.h"
+#include "ps_Graphics.h"
 
 static void set_ok (GtkWidget * /*widget*/, UT_Bool *dialog_result)
 {
@@ -2313,7 +2316,40 @@ dlg_Answer _askUser(AP_Frame * pFrame, const char * szQ, dlg_Buttons b, int defB
 
 UT_Bool _printDoc(AP_Frame * pFrame, FV_View * pView)
 {
-	UT_ASSERT(0);
+//	AP_UnixFrame * pUnixFrame = static_cast<AP_UnixFrame *>(pFrame);
+	FL_DocLayout* pLayout = pView->getLayout();
+	PD_Document * doc = pLayout->getDocument();
+
+	char* title = doc->getFilename();	// TODO get a real title
+
+	// create a new graphics 
+	PS_Graphics* ppG = new PS_Graphics("junk.ps", title, "AbiWord");
+	UT_ASSERT(ppG);
+
+	// Create a new layout using the printer's graphics and format it
+	FL_DocLayout* pDL = new FL_DocLayout(doc, ppG);
+	pDL->formatAll();
+	int nPagesInDoc = pDL->countPages();
+
+	// Create the new view for the printer
+	FV_View* pV = new FV_View(NULL, pDL);	// TODO: fix first arg?
+
+	dg_DrawArgs da;
+	da.pG = NULL;
+	// TODO -- really need actual page width/height for each page. 
+	da.xoff = da.yoff = 0;
+	da.width = pDL->getWidth()/nPagesInDoc;
+	da.height = pDL->getHeight()/nPagesInDoc;
+
+	ppG->startPrint();
+
+	for(int i = 0; i < nPagesInDoc; i++)	//page numbers are zero based
+	{
+		ppG->startPage(doc->getFilename(), i, TRUE,da.width, da.height);
+		pV->draw(i, &da);
+	}
+	ppG->endPrint();
+
 	return UT_TRUE;
 }
 

@@ -70,7 +70,7 @@ FV_View::FV_View(void* pParentData, FL_DocLayout* pLayout)
 	m_pLayout = pLayout;
 	m_pDoc = pLayout->getDocument();
 	m_pG = m_pLayout->getGraphics();
-	UT_ASSERT(m_pG->queryProperties(DG_Graphics::DGP_SCREEN));
+//	UT_ASSERT(m_pG->queryProperties(DG_Graphics::DGP_SCREEN));
 	
 	m_xScrollOffset = 0;
 	m_yScrollOffset = 0;
