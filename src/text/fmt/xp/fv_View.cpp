@@ -330,14 +330,15 @@ void FV_View::insertParagraphBreak()
 		_deleteSelection();
 	}
 
-#ifdef BUFFER	// insertParagraphBreak
-	FL_BlockLayout* pBlock = _findBlockAtPosition(_getPoint());
+	/*
+		TODO: figure out how to populate attr/prop at this point
+		HYP:  decide which para to mimic, based on m_bInsPoint?
+	*/
+	m_pDoc->insertStrux(_getPoint(), /* !m_bInsPointRight, */ PTX_Block, NULL, NULL);
 
-	pBlock->insertParagraphBreak();
 	m_bInsPointRight = UT_TRUE;
 
 	m_pLayout->reformat();
-#endif
 	
 	_drawSelectionOrInsertionPoint();
 }

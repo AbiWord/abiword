@@ -216,9 +216,9 @@ FL_BlockLayout * FL_SectionLayout::getFirstBlock(void) const
 	return m_pFirstBlock;
 }
 
-FL_BlockLayout * FL_SectionLayout::appendBlock(PL_StruxDocHandle sdh)
+FL_BlockLayout * FL_SectionLayout::insertBlock(PL_StruxDocHandle sdh, FL_BlockLayout * pPrev)
 {
-	FL_BlockLayout*	pBL = new FL_BlockLayout(sdh, _getLineBreaker(), m_pLastBlock, this);
+	FL_BlockLayout*	pBL = new FL_BlockLayout(sdh, _getLineBreaker(), pPrev, this);
 	if (!pBL)
 		return pBL;
 
@@ -228,12 +228,21 @@ FL_BlockLayout * FL_SectionLayout::appendBlock(PL_StruxDocHandle sdh)
 		m_pFirstBlock = pBL;
 		m_pLastBlock = pBL;
 	}
-	else
+	else if (m_pLastBlock == pPrev)
 	{
 		m_pLastBlock = pBL;
 	}
+	else if (!pPrev)
+	{
+		m_pFirstBlock = pBL;
+	}
 
 	return pBL;
+}
+
+FL_BlockLayout * FL_SectionLayout::appendBlock(PL_StruxDocHandle sdh)
+{
+	return insertBlock(sdh, m_pLastBlock);
 }
 
 FB_LineBreaker * FL_SectionLayout::_getLineBreaker(void)

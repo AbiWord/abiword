@@ -333,6 +333,123 @@ UT_Bool fl_DocListener::insertStrux(PL_StruxFmtHandle sfh,
 	UT_DEBUGMSG(("fl_DocListener::insertStrux\n"));
 	pcr->dump();
 
+	UT_ASSERT(pcr->getType() == PX_ChangeRecord::PXT_InsertStrux);
+	const PX_ChangeRecord_Strux * pcrx = static_cast<const PX_ChangeRecord_Strux *> (pcr);
+
+	switch (pcrx->getStruxType())
+	{
+	case PTX_Section:
+	case PTX_ColumnSet:
+	case PTX_Column:
+		UT_ASSERT(UT_TODO);
+		return UT_FALSE;
+			
+	case PTX_Block:
+		{
+			fl_Layout * pL = (fl_Layout *)sfh;
+			switch (pL->getType())
+			{
+			case PTX_Block:
+				{
+					FL_BlockLayout * pBL = static_cast<FL_BlockLayout *>(pL);
+					PT_DocPosition docPosBlock = m_pDoc->getStruxPosition(pBL->m_sdh);
+					PT_BlockOffset blockOffset = (pcr->getPosition() - docPosBlock);
+
+					/*
+						The idea here is to divide the runs of the existing block 
+						into two equivalence classes.  This may involve 
+						splitting an existing run.  
+
+						All runs and lines remaining in the existing block are
+						fine, although the last run should be redrawn.
+
+						All runs in the new block need their offsets fixed, and 
+						that entire block needs to be reformatted from scratch. 
+					*/
+
+					FP_Run* pRun = pBL->m_pFirstRun;
+
+					while (pRun)
+					{			
+						UT_uint32 iWhere = pRun->containsOffset(blockOffset);
+
+						if (iWhere == FP_RUN_INSIDE)
+						{
+							// split here
+							pRun->split(blockOffset);
+							break;
+						}
+						else if (iWhere == FP_RUN_JUSTAFTER)
+						{
+							// no split needed
+							break;
+						}
+						
+						pRun = pRun->getNext();
+					}
+
+					FP_Run* pFirstNewRun = NULL;
+					if (pRun)
+					{
+						pFirstNewRun = pRun->getNext();
+					}
+					else if (blockOffset == 0)
+					{
+						// everything goes in new block
+						pFirstNewRun = pBL->m_pFirstRun;
+					}
+
+					// insert a new BlockLayout in this SectionLayout
+					FL_SectionLayout* pSL = pBL->m_pSectionLayout;
+					UT_ASSERT(pSL);
+
+					FL_BlockLayout*	pNewBL = pSL->insertBlock(sdh, pBL);
+					if (!pNewBL)
+					{
+						UT_DEBUGMSG(("no memory for BlockLayout"));
+						return UT_FALSE;
+					}
+					pNewBL->setAttrPropIndex(pcr->getIndexAP());
+
+					*psfh = (PL_StruxFmtHandle)pNewBL;
+
+					// split charwidths across the two blocks
+					UT_uint32 lenNew = pBL->m_gbCharWidths.getLength() - blockOffset;
+
+					pNewBL->m_gbCharWidths.ins(0, pBL->m_gbCharWidths.getPointer(blockOffset), lenNew);
+					pBL->m_gbCharWidths.truncate(blockOffset);
+
+					// move remaining runs to new block
+					pRun = pFirstNewRun;
+					while (pRun)
+					{
+						pRun->m_iOffsetFirst -= blockOffset;
+						pRun->m_pBL = pNewBL;
+						
+						pRun = pRun->getNext();
+					}
+
+					// fix them both					
+					pBL->reformat();
+					pNewBL->format();
+				}
+				return UT_TRUE;
+					
+			case PTX_Section:
+			case PTX_ColumnSet:
+			case PTX_Column:
+			default:
+				UT_ASSERT(UT_SHOULD_NOT_HAPPEN);
+				return UT_FALSE;
+			}
+		}
+		break;
+			
+	default:
+		UT_ASSERT(0);
+		return UT_FALSE;
+	}
+
 	return UT_TRUE;
 }
 
