@@ -132,12 +132,18 @@ fb_LineBreaker::breakParagraph(fl_BlockLayout* pBlock, fp_Line * pLineToStartAt)
 
 					UT_sint32 iTrailingSpace = 0;
 					fp_Run * pArun = (pPreviousRun ? pPreviousRun : pCurrentRun);
+//					fp_Run * pArun = pCurrentRun;
 					iTrailingSpace = _moveBackToFirstNonBlankData(pArun,
 											  &pOffendingRun);
-
 					m_iWorkingLineWidth -= iTrailingSpace;
 					if (m_iWorkingLineWidth > m_iMaxLineWidth)
 					{
+						fp_Run * pRun = pArun;
+						while(pRun && pRun != pOffendingRun)
+						{
+							m_iWorkingLineWidth -= pRun->getWidth();
+							pRun = pRun->getPrev();
+						}
 						// This run needs splitting.
 						xxx_UT_DEBUGMSG(("Break at 1 Trailing Space %d Wording width %d \n",iTrailingSpace,m_iWorkingLineWidth));
 						UT_ASSERT(pOffendingRun);
@@ -146,6 +152,7 @@ fb_LineBreaker::breakParagraph(fl_BlockLayout* pBlock, fp_Line * pLineToStartAt)
 					}
 					else
 					{
+						m_iWorkingLineWidth -= iTrailingSpace;
 						if(pCurrentRun)
 						{
 							xxx_UT_DEBUGMSG(("Break at 2 Trailing Space %d \n",iTrailingSpace));
@@ -223,7 +230,7 @@ fb_LineBreaker::breakParagraph(fl_BlockLayout* pBlock, fp_Line * pLineToStartAt)
 								pRun = pRun->getNext();
 							}
 #if DEBUG
-//							pLine->assertLineListIntegrity();
+							pLine->assertLineListIntegrity();
 							xxx_UT_DEBUGMSG(("Initial width of line %x is  %d \n",pLine,pLine->getFilledWidth()));
 #endif
 						}
@@ -348,7 +355,7 @@ UT_sint32 fb_LineBreaker::_moveBackToFirstNonBlankData(fp_Run *pCurrentRun, fp_R
 	while(pCurrentRun);
 
 	*pOffendingRun = pCurrentRun;
-
+	xxx_UT_DEBUGMSG(("_moveBackToFirstNonBlankData distance %d \n",iTrailingBlank));
 	return iTrailingBlank;
 }
 
@@ -364,12 +371,18 @@ bool fb_LineBreaker::_splitAtOrBeforeThisRun(fp_Run *pCurrentRun, UT_sint32 iTra
 // extends beyond the maximum width of the line 
 
 	m_iWorkingLineWidth -= pCurrentRun->getWidth();
-
+	m_iWorkingLineWidth += iTrailSpace;
+	if(m_iWorkingLineWidth < 0)
+	{
+		m_iWorkingLineWidth = 0;
+	}
 	fp_Run *pOffendingRun = pCurrentRun;
 	fp_RunSplitInfo splitInfo;
 	fp_TextRun *pRunToSplit = NULL;
 
 	bool bFoundBreakAfter = false;
+	xxx_UT_DEBUGMSG(("Offending run is... \n"));
+//	pOffendingRun->printText();
 	xxx_UT_DEBUGMSG((" trailing space %d working width %d max is %d \n",iTrailSpace,m_iWorkingLineWidth,m_iMaxLineWidth));
 	xxx_UT_DEBUGMSG((" findMaxLeftFitSplitPoint space given %d \n",m_iMaxLineWidth - m_iWorkingLineWidth));
 	bool bFoundSplit = pOffendingRun->findMaxLeftFitSplitPoint(m_iMaxLineWidth - m_iWorkingLineWidth, splitInfo);

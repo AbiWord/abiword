@@ -590,7 +590,6 @@ bool	fp_TextRun::findMaxLeftFitSplitPoint(UT_sint32 iMaxLeftWidth, fp_RunSplitIn
 		{
 			lenSpan = len;
 		}
-
 		for (UT_uint32 i=0; i<lenSpan; i++)
 		{
 			UT_sint32 iCW = pCharWidths[i + offset] > 0 ? pCharWidths[i + offset] : 0;
@@ -608,11 +607,12 @@ bool	fp_TextRun::findMaxLeftFitSplitPoint(UT_sint32 iMaxLeftWidth, fp_RunSplitIn
 			if (
 				(XAP_EncodingManager::get_instance()->can_break_at(pSpan[i])
 #endif
-					&& ((i + offset) != (getBlockOffset() + getLength() - 1))
+//					&& ((i + offset) != (getBlockOffset() + getLength() - 1))
 					)
 				|| bForce
 				)
 			{
+				xxx_UT_DEBUGMSG(("Found Slit point is %d i %d span char %d contiguous space %d \n",iLeftWidth,i,pSpan[i],_getPrevContSpace(i,offset,pSpan,pCharWidths)));
 				UT_sint32 ispace = 0;
 				if(pSpan[i] == UCS_SPACE)
 				{
@@ -629,7 +629,6 @@ bool	fp_TextRun::findMaxLeftFitSplitPoint(UT_sint32 iMaxLeftWidth, fp_RunSplitIn
 //
 // Ignore trailing space when chosing break points
 //
-					UT_sint32 ispace = 0;
 					if((pSpan[i] == UCS_SPACE) && ((iLeftWidth - _getPrevContSpace(i,offset,pSpan,pCharWidths)) <= iMaxLeftWidth ))
 					{
 						si.iLeftWidth = iLeftWidth;
@@ -642,6 +641,7 @@ bool	fp_TextRun::findMaxLeftFitSplitPoint(UT_sint32 iMaxLeftWidth, fp_RunSplitIn
 						break;
 					}
 				}
+				xxx_UT_DEBUGMSG(("Candidate Slit point is %d \n",	si.iLeftWidth));
 			}
 		}
 
@@ -2536,7 +2536,6 @@ UT_sint32 fp_TextRun::findTrailingSpaceDistance(void) const
 		return 0;
 	}
 	UT_sint32 iTrailingDistance = 0;
-
 	if(getLength() > 0)
 	{
 		UT_UCSChar c;
@@ -2546,6 +2545,7 @@ UT_sint32 fp_TextRun::findTrailingSpaceDistance(void) const
 		{
 			if(getCharacter(i, c) && (UCS_SPACE == c))
 			{
+				xxx_UT_DEBUGMSG(("For i %d char is |%c| trail %d \n",i,c,iTrailingDistance));
 				iTrailingDistance += pCharWidths[i + getBlockOffset()];
 			}
 			else
@@ -2555,6 +2555,7 @@ UT_sint32 fp_TextRun::findTrailingSpaceDistance(void) const
 		}
 
 	}
+	xxx_UT_DEBUGMSG(("findTrailingSpaceDistance result %d  \n",iTrailingDistance));
 
 	return iTrailingDistance;
 }
