@@ -39,6 +39,10 @@
 #include "pd_Document.h"
 #include "xap_EncodingManager.h"
 #include "ie_impGraphic_PNG.h"
+#include "ie_impGraphic_BMP.h"
+#ifdef HAVE_LIBJPEG
+#include "ie_impGraphic_JPEG.h"
+#endif
 #include "fg_Graphic.h"
 #include "fg_GraphicRaster.h"
 #include "fg_GraphicVector.h"
@@ -380,7 +384,7 @@ bool RTF_msword97_level::ParseLevelText(const UT_String szLevelText,const UT_Str
 		// sanity check
 		if (istrlen <= pText - szLevelText.c_str())
 		{
-			UT_DEBUGMSG(("RTF: parsed past the end of leveltext string %s\n",szLevelText));
+			UT_DEBUGMSG(("RTF: parsed past the end of leveltext string %s\n",szLevelText.c_str()));
 			return false;
 		}
 		pText++;
@@ -1890,7 +1894,11 @@ bool IE_Imp_RTF::StuffCurrentGroup(UT_ByteBuf & buf)
  */
 bool IE_Imp_RTF::CanHandlePictFormat(PictFormat format)
 {
-	return (format == picPNG);
+	return (format == picPNG) || (format == picBMP) 
+#ifdef HAVE_LIBJPEG
+		|| (format == picJPEG)
+#endif
+		;
 }
 
 /*!
@@ -1947,11 +1955,29 @@ bool IE_Imp_RTF::LoadPictData(PictFormat format, char * image_name)
 	SkipBackChar(ch);
 
 	// Handle the specified format appropiately
-	if (format == picPNG)
+	if (CanHandlePictFormat (format))
 	{
 		// TODO: investigate whether pictData is leaking memory or not
 
-		IE_ImpGraphic * m_pGraphicImporter = new IE_ImpGraphic_PNG();
+		IE_ImpGraphic * m_pGraphicImporter = NULL;
+		
+		switch (format)
+		{
+		case picPNG:
+			m_pGraphicImporter = new IE_ImpGraphic_PNG();
+			break;
+		case picBMP:
+			m_pGraphicImporter = new IE_ImpGraphic_BMP();
+			break;
+#ifdef HAVE_LIBJPEG
+		case picJPEG:
+			m_pGraphicImporter = new IE_ImpGraphic_JPEG();
+			break;
+#endif
+		default:
+			UT_DEBUGMSG (("Unknown format will crash !!\n"));
+			UT_ASSERT (UT_NOT_IMPLEMENTED);
+		}
 
 		FG_Graphic* pFG;
 
@@ -2108,6 +2134,10 @@ bool IE_Imp_RTF::HandlePicture()
 			if (strcmp((char *)keyword, "pngblip") == 0)
 			{
 				format = picPNG;
+			}
+			else if (strcmp((char *)keyword, "jpegblip") == 0)
+			{
+				format = picJPEG;
 			}
 			break;
 		case '{':
@@ -6620,10 +6650,4 @@ bool IE_Imp_RTF::buildAllProps(char * propBuffer,  RTFProps_ParaProps * pParas,
 	}
 	return true;
 }
-
-
-
-
-
-
 
