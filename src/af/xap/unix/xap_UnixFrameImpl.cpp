@@ -49,8 +49,283 @@
 #include "xap_Strings.h"
 
 #ifdef HAVE_GNOME
+// sorry about the XAP/AP separation breakage, but this is more important
+#include "ie_types.h"
+#include "ie_imp.h"
+#include "ie_impGraphic.h"
+#include "fg_Graphic.h"
+#include "fv_View.h"
+
 #include <gnome.h>
+#include <libgnomevfs/gnome-vfs.h>
+#include <libgnomevfs/gnome-vfs-mime-utils.h>
 #endif
+
+#ifdef HAVE_GNOME
+
+enum {
+	TARGET_IMAGE,
+	TARGET_URI_LIST,
+	TARGET_URL,
+	TARGET_UNKNOWN
+} DragDropTypes;
+
+static const GtkTargetEntry drag_types[] =
+	{
+		{"application/rtf", 0, TARGET_URI_LIST},
+		{"text/richtext", 0, TARGET_URI_LIST},
+		{"text/rtf", 0, TARGET_URI_LIST},
+		{"application/msword", 0, TARGET_URI_LIST},
+		{"application/x-applix-word", 0, TARGET_URI_LIST},
+		{"application/x-palm-database", 0, TARGET_URI_LIST},
+		{"application/vnd.palm", 0, TARGET_URI_LIST},
+		{"text/plain", 0, TARGET_URI_LIST},
+		{"text/abiword", 0, TARGET_URI_LIST},
+		{"application/x-abiword", 0, TARGET_URI_LIST},
+		{"text/xml", 0, TARGET_URI_LIST},
+		{"text/vnd.wap.wml", 0, TARGET_URI_LIST},
+		{"image/png", 0, TARGET_IMAGE},
+		{"image/bmp", 0, TARGET_IMAGE},
+		{"image/gif", 0, TARGET_IMAGE},
+		{"image/x-xpixmap", 0, TARGET_IMAGE},
+		{"image/bmp", 0, TARGET_IMAGE},
+		{"image/x-bmp", 0, TARGET_IMAGE},
+		{"image/x-cmu-raster", 0, TARGET_IMAGE},
+		{"image/tiff", 0, TARGET_IMAGE},
+		{"image/svg+xml", 0, TARGET_IMAGE},
+		{"text/html", 0, TARGET_URL}, // hack
+		{"text/html+xml", 0, TARGET_URL}, // hack
+		{"_NETSCAPE_URL", 0, TARGET_URL},
+		{"text/uri-list", 0, TARGET_URI_LIST}
+	};
+
+static int
+s_mapMimeToUriType (const char * uri)
+{
+	if (!uri || !strlen(uri))
+		return TARGET_UNKNOWN;
+
+	char * mime = gnome_vfs_get_mime_type (uri);
+	xxx_UT_DEBUGMSG(("DOM: mime %s dropped into AbiWord(%s)\n", mime, uri));
+
+	int target = TARGET_UNKNOWN;
+
+	for (size_t i = 0; i < NrElements (drag_types); i++)
+		if (!UT_stricmp (mime, drag_types[i].target)) {
+			target = drag_types[i].info;
+			break;
+		}
+	
+	g_free (mime);
+	return target;
+}
+
+static bool
+s_ensure_uri_on_disk (const gchar * uri, UT_String & outName)
+{
+	GnomeVFSResult    result = GNOME_VFS_OK;
+	GnomeVFSHandle   *handle = NULL;
+	gchar             buffer[1024];
+	GnomeVFSFileSize  bytes_read;
+	GnomeVFSURI 	 *hndl = NULL;	
+
+	outName = "";
+	hndl = gnome_vfs_uri_new (uri);
+	if (hndl == NULL) 
+		{
+			xxx_UT_DEBUGMSG(("DOM: Invalid uri was %s \n", uri));
+			return false;
+		}
+
+	if (gnome_vfs_uri_is_local (hndl)) {
+		char * short_name = gnome_vfs_uri_to_string (hndl, (GnomeVFSURIHideOptions)(GNOME_VFS_URI_HIDE_USER_NAME | GNOME_VFS_URI_HIDE_PASSWORD |
+													 GNOME_VFS_URI_HIDE_HOST_NAME | GNOME_VFS_URI_HIDE_HOST_PORT |
+													 GNOME_VFS_URI_HIDE_TOPLEVEL_METHOD | GNOME_VFS_URI_HIDE_FRAGMENT_IDENTIFIER));
+		outName = short_name;
+		g_free (short_name);
+		gnome_vfs_uri_unref (hndl);
+		return true;
+	}
+
+	char * outCName;
+	int fd = g_file_open_tmp ("XXXXXX", &outCName, NULL);
+	if (fd == -1) {
+		xxx_UT_DEBUGMSG(("DOM: no temp dir\n"));
+		gnome_vfs_uri_unref (hndl);
+		return false;
+	}
+	outName = outCName;
+	g_free (outCName);
+
+	FILE * onDisk = fdopen (fd, "r");
+	result = gnome_vfs_open_uri (&handle, hndl, GNOME_VFS_OPEN_READ);
+	
+	if(result != GNOME_VFS_OK)
+		{
+			xxx_UT_DEBUGMSG(("DOM: couldn't open handle\n"));
+			gnome_vfs_uri_unref (hndl);
+			fclose (onDisk);
+			return false;
+		}
+
+	while (true) {
+		result = gnome_vfs_read (handle, buffer, sizeof(buffer) - 1,
+								 &bytes_read);
+		if(!bytes_read || result != GNOME_VFS_OK) 
+			break;
+		fwrite (buffer, sizeof (char), bytes_read, onDisk);
+	}
+
+	fclose (onDisk);
+	gnome_vfs_close (handle);
+	gnome_vfs_uri_unref (hndl);
+
+	return true;
+}
+
+static void
+s_load_image (const UT_String & file, XAP_Frame * pFrame, FV_View * pView)
+{
+	IE_ImpGraphic * pIEG = 0;
+	FG_Graphic    * pFG  = 0;
+
+	UT_Error error = IE_ImpGraphic::constructImporter(file.c_str(), 0, &pIEG);
+	if (error != UT_OK || !pIEG)
+		{
+			xxx_UT_DEBUGMSG(("Couldn't construct importer for %s\n", file.c_str()));
+			return;
+		}
+
+	error = pIEG->importGraphic(file.c_str(), &pFG);
+
+	DELETEP(pIEG);
+
+	if (error != UT_OK || !pFG)
+		{
+			xxx_UT_DEBUGMSG(("Dom: could not import graphic (%s)\n", file.c_str()));
+			return;
+		}
+
+	pView->cmdInsertGraphic(pFG, file.c_str());
+	DELETEP(pFG);
+}
+
+static void
+s_load_document (const UT_String & file, XAP_Frame * pFrame)
+{
+	XAP_Frame * pNewFrame = 0;
+	
+	if (pFrame->isDirty() || pFrame->getFilename() || 
+		(pFrame->getViewNumber() > 0))
+		pNewFrame = XAP_App::getApp()->newFrame ();
+	else
+		pNewFrame = pFrame;
+
+	UT_Error error = pNewFrame->loadDocument(file.c_str(), 0 /* IEFT_Unknown */);
+	if (error)
+		{
+			// TODO: warn user that we couldn't open that file		 
+			// TODO: we crash if we just delete this without putting something
+			// TODO: in it, so let's go ahead and open an untitled document
+			// TODO: for now.
+			xxx_UT_DEBUGMSG(("DOM: couldn't load document %s\n", file.c_str()));
+			pNewFrame->loadDocument(NULL, 0 /* IEFT_Unknown */);
+		}
+}
+
+static void
+s_load_uri (XAP_Frame * pFrame, const char * uri)
+{
+	FV_View   * pView  = static_cast<FV_View*>(pFrame->getCurrentView ());
+
+	int type = s_mapMimeToUriType (uri);
+	if (type == TARGET_UNKNOWN)
+		{
+			xxx_UT_DEBUGMSG(("DOM: unknown uri type: %s\n", uri));
+			return;
+		}
+	else if (type == TARGET_URL)
+		{
+			xxx_UT_DEBUGMSG(("DOM: hyperlink: %s\n", uri));
+			pView->cmdInsertHyperlink(uri);
+			return;
+		}
+
+	UT_String onDisk;
+	if (!s_ensure_uri_on_disk (uri, onDisk))
+		{
+			xxx_UT_DEBUGMSG(("DOM: couldn't ensure %s on disk\n", uri));
+			return;
+		}
+
+	xxx_UT_DEBUGMSG(("DOM: %s on disk\n", onDisk.c_str()));
+
+	if (type == TARGET_IMAGE)
+		{
+			s_load_image (onDisk, pFrame, pView);
+			return;
+		}
+	else
+		{
+			s_load_document (onDisk, pFrame);
+			return;
+		}
+}
+
+static void 
+s_dnd_drop_event(GtkWidget        *widget,
+				 GdkDragContext   * /*context*/,
+				 gint              /*x*/,
+				 gint              /*y*/,
+				 GtkSelectionData *selection_data,
+				 guint             info,
+				 guint             /*time*/,
+				 XAP_UnixFrameImpl * pFrameImpl)
+{
+	xxx_UT_DEBUGMSG(("DOM: dnd_drop_event being handled\n"));
+
+	g_return_if_fail(widget != NULL);
+
+	XAP_Frame * pFrame = pFrameImpl->getFrame ();
+
+	const char * rawChar = (const char *) selection_data->data;
+	xxx_UT_DEBUGMSG(("DOM: text in selection = %s \n", rawChar));
+	GList * names = gnome_vfs_uri_list_parse (rawChar);
+
+	if (!names) {
+		// single URI
+		s_load_uri (pFrame, rawChar);
+	}
+	else {
+		// multiple URIs
+		for ( ; names != NULL; names = names->next) 
+			{
+				GnomeVFSURI * hndl = (GnomeVFSURI *)names->data;
+				char * uri = gnome_vfs_uri_to_string (hndl, GNOME_VFS_URI_HIDE_NONE);
+				s_load_uri (pFrame, uri);
+				g_free (uri);
+			}
+	}
+
+	gnome_vfs_uri_list_free (names);
+}
+
+static void
+s_dnd_real_drop_event (GtkWidget *widget, GdkDragContext * context, 
+					   gint x, gint y, guint time, gpointer ppFrame)
+{
+	xxx_UT_DEBUGMSG(("DOM: dnd drop event\n"));
+	GdkAtom selection = gdk_drag_get_selection(context);
+	gtk_drag_get_data (widget,context,selection,time);
+}
+
+static void
+s_dnd_drag_end (GtkWidget  *widget, GdkDragContext *context, gpointer ppFrame)
+{
+	xxx_UT_DEBUGMSG(("DOM: dnd end event\n"));
+}
+
+#endif // HAVE_GNOME
 
 /*****************************************************************/
 
@@ -790,6 +1065,32 @@ void XAP_UnixFrameImpl::createTopLevelWindow(void)
 					   G_CALLBACK(_fe::focusIn), NULL);
 	g_signal_connect(G_OBJECT(m_wTopLevelWindow), "focus_out_event",
 					   G_CALLBACK(_fe::focusOut), NULL);
+
+#ifdef HAVE_GNOME
+	gtk_drag_dest_set (m_wTopLevelWindow,
+					   GTK_DEST_DEFAULT_ALL,
+					   drag_types, 
+					   NrElements(drag_types), 
+					   GDK_ACTION_COPY);
+
+	g_signal_connect (G_OBJECT (m_wTopLevelWindow),
+					  "drag_data_get",
+					  G_CALLBACK (s_dnd_drop_event), 
+					  (gpointer)this);
+	g_signal_connect (G_OBJECT(m_wTopLevelWindow), 
+					  "drag_data_received",
+					  G_CALLBACK(s_dnd_drop_event), 
+					  (gpointer)this);	
+  	g_signal_connect (G_OBJECT(m_wTopLevelWindow), 
+					  "drag_drop",
+					  G_CALLBACK(s_dnd_real_drop_event), 
+					  (gpointer)this);
+	
+  	g_signal_connect (G_OBJECT(m_wTopLevelWindow), 
+					  "drag_end",
+					  G_CALLBACK(s_dnd_drag_end), 
+					  (gpointer)this);
+#endif
 
 	g_signal_connect(G_OBJECT(m_wTopLevelWindow), "delete_event",
 					   G_CALLBACK(_fe::delete_event), NULL);
