@@ -42,10 +42,6 @@
 
 // needed for unix printing
 
-#if !defined(WIN32) && !defined(__BEOS__) && !defined(__QNX__) && !defined(__APPLE__)
-#define ANY_UNIX 1
-#endif
-
 #ifdef ANY_UNIX
 #include "xap_UnixPSGraphics.h"
 #endif

@@ -3052,6 +3052,7 @@ s_closeWindow (AV_View * pAV_View, EV_EditMethodCallData * pCallData,
 Defun(closeWindow)
 {
 	CHECK_FRAME;
+#if !defined(ANY_UNIX)
 	XAP_Frame * pFrame = static_cast<XAP_Frame *> ( pAV_View->getParentData());
 	UT_ASSERT(pFrame);
 	XAP_App * pApp = pFrame->getApp();
@@ -3064,6 +3065,10 @@ Defun(closeWindow)
 
 	pPrefs->getPrefsValueBool((XML_Char*)AP_PREF_KEY_CloseOnLastDoc, &close);
 	return s_closeWindow (pAV_View, pCallData, close);
+#else
+	// must, to comply with the HIG
+	return s_closeWindow (pAV_View, pCallData, true);
+#endif
 }
 
 Defun(closeWindowX)

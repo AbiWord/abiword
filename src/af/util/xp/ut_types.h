@@ -16,8 +16,6 @@
  * Foundation, Inc., 59 Temple Place - Suite 330, Boston, MA  
  * 02111-1307, USA.
  */
- 
-
 
 #ifndef UT_TYPES_H
 #define UT_TYPES_H
@@ -269,5 +267,9 @@ defined(__BEOS__) || defined (__AIX__) || \
 
 /* This is a value from the private-use space of FriBidi */
 #define FRIBIDI_TYPE_UNSET -1
+
+#if !defined(WIN32) && !defined(__BEOS__) && !defined(__QNX__) && !defined(__APPLE__)
+#define ANY_UNIX 1
+#endif
 
 #endif /* UT_TYPES_H */
