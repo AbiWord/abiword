@@ -1,113 +1,275 @@
+%define name abiword
+%define prefix /usr
 %define version __ABI_BUILD_VERSION__
 %define release	__ABI_RELEASE_NUMBER__
+%define build_id rms
 
-#
-# spec file for AbiSuite 
-#
-Summary: AbiWord Word Processor
-Name: abiword
+# define to 0 if you don't want, 1 if you want
+%define no_static UNIX_CAN_BUILD_STATIC=__UNIX_CAN_BUILD_STATIC__
+%define debug ABI_OPT_DEBUG=__ABI_OPT_DEBUG__
+%define gnome ABI_OPT_GNOME=__ABI_OPT_GNOME__
+%define perl ABI_OPT_PERL=__ABI_OPT_PERL__
+%define jpeg ABI_OPT_LIBJPEG=__ABI_OPT_LIBJPEG__
+%define libxml2 ABI_OPT_LIBXML2=__ABI_OPT_LIBXML2__
+%define optimize ABI_OPT_OPTIMIZE=__ABI_OPT_OPTIMIZE__
+%define pspell ABI_OPT_PSPELL=__ABI_OPT_PSPELL__
+
+%define version_flag ABI_BUILD_VERSION=%{version} ABI_BUILD_ID=%{build_id}
+
+%define ABIPREFIX %{prefix}/share
+
+Name: %{name}
+Summary: Multiplattform word processor
 Version: %{version}
 Release: %{release}
-Copyright: GPL
-Group: Applications/Productivity
-Source: abiword-%{version}.tar
+Source: %{name}-%{version}.tar.gz
+Group: Applications/Publishing
 URL: http://www.abisource.com/
-Vendor: AbiSource, Inc.
-Packager: Dom Lachowicz <dominicl@seas.upenn.edu>
-AutoReqProv: yes
-
+BuildRoot: %{_tmppath}/%{name}-%{version}-buildroot
+License: GPL
+Prefix: %{prefix}
+Epoch: 1
+Packager: Builder <builder@greymalkin.yi.org>
+Distribution: RedHat 7.x Contrib
+# Basic requirements
 Requires: gtk+ >= 1.2.7
 Requires: glib >= 1.2.7
+Requires: %{name}-fonts
 
-# TODO: requirements in for *Gnome Only*
-#Requires: gnome-libs >= 1.0.57
-#Requires: gnome-print >= 0.25
-#Requires: gal >= 0.0.1
+%if %(echo %{jpeg}|cut -f 2 -d '=')
+Requires: libjpeg
+BuildRequires: libjpeg-devel
+%endif
 
-# TODO: requirements for pspell only
-#Requires: pspell >= 0.11.2
+%if %(echo %{pspell}|cut -f 2 -d '=')
+Requires: pspell >= 0.11.1
+BuildRequires: pspell-devel >= 0.11.1
+%endif
+
+%if %(echo %{libxml2}|cut -f 2 -d '=')
+Requires: libxml >= 2.0
+BuildRequires: libxml-devel >= 2.0
+%else
+Requires: expat >= 1.95.1
+BuildRequires: expat-devel >= 1.95.1
+%endif
+
+# Requirements for GNOME build
+%if %(echo %{gnome}|cut -f 2 -d '=')
+Requires: gnome-libs >= 1.0.57
+Requires: gal >= 0.8
+Requires: gnome-print >= 0.29
+BuildRequires: gnome-libs-devel
+BuildRequires: gal-devel
+BuildRequires: gnome-print-devel
 
 %description
-AbiWord is a cross-platform, Open Source Word Processor developed
-by the people at AbiSource, Inc. and by developers from around the world.
-(http://www.abisource.com)
+AbiWord is a Multiplatform Wordprocesser which for the Unix plattform comes with a GTK+ interface. For extended functionality and intergration this version is compiled with GNOME support. Abiword with the GNOME frontend is part of the GNOME Office Suite. AbiWord is made available under the GNU GPL license.
+%else
+%description
+AbiWord is a Multiplatform Wordprocesser which for the Unix plattform comes with a GTK+ interface. For extended functionality and intergration it is also possible to compile AbiWord with GNOME support. Abiword with the GNOME frontend is part of the GNOME Office Suite. AbiWord is made available under the GNU GPL license.
+%endif
+
+
+%if %(echo %{perl}|cut -f 2 -d '=')
+%package perl
+Summary: Perl Bindings Module
+Group: Development/Libraries
+Requires: perl >= 5.005
+BuildRequires: perl >= 5.005
+
+%description perl
+Perl Module containing classes for AbiWord Scripting.
+
+%endif
+
+%package fonts
+Summary: AbiWord Fonts
+Group: Applications/Productivity
+
+%description fonts
+These are the basic fonts used by AbiWord.
+
+%package clipart
+Summary: AbiWord Clipart
+Group: Applications/Productivity
+
+%description clipart
+This is the clipart portfolio used by AbiWord.
+
+%package help-de-DE
+Summary: AbiWord Help for de-DE
+Group: Documentation
+
+%description help-de-DE
+This is the AbiWord Manual for German.
+
+%package help-es-ES
+Summary: AbiWord Help for es-ES
+Group: Documentation
+
+%description help-es-ES
+This is the AbiWord Manual for Spanish.
+
+%package help-fr-FR
+Summary: AbiWord Help for fr-FR
+Group: Documentation
+
+%description help-fr-FR
+This is the AbiWord Manual for French.
+
 
 %prep
-%setup
+rm -rf $RPM_BUILD_ROOT
+
+%setup -q -n %{name}-%{version}/abi
 
 %build
-UNIX_CAN_BUILD_STATIC=0 ABI_BUILD_VERSION=%{version} make -C abi compile canonical
+
+make %{version_flag} %{debug} %{libxml2} %{no_static} %{gnome} %{jpeg} %{perl} %{optimize} compile canonical prefix=$RPM_BUILD_ROOT%{ABIPREFIX}
 
 %install
-umask 002
-UNIX_CAN_BUILD_STATIC=0 ABI_BUILD_VERSION=%{version} make -C abi install_redhat
+umask 022
 
-# I can't think of a way to do this in a non-overlapping fashion
-# as part of the %files section with %defattr() blocks, so I do
-# it here.
+make %{version_flag} %{debug} %{libxml2} %{no_static} %{gnome} %{jpeg} %{perl} %{optimize} install prefix=$RPM_BUILD_ROOT%{ABIPREFIX}
 
-# /usr/share/abisuite ; all dirs 0755
-find /usr/share/abisuite -type d -exec chown root.root {} \;
-find /usr/share/abisuite -type d -exec chmod 0755 {} \;
+# Manual fixes to Abi package
 
-# /usr/share/abisuite ; all files 0644
-find /usr/share/abisuite -type f -exec chown root.root {} \;
-find /usr/share/abisuite -type f -exec chmod 0644 {} \;
+# Fixes Abi start script
+perl -p -i -e "s|$RPM_BUILD_ROOT||" $RPM_BUILD_ROOT%{ABIPREFIX}/AbiSuite/bin/AbiWord
 
-# symlinks in /usr/bin 0777 by default ; own by root.root
-chown root.root /usr/bin/AbiWord
-chown root.root /usr/bin/abiword
+# Fixes for symlink in {prefix}/bin
+mkdir -p $RPM_BUILD_ROOT%{prefix}/bin
+ln  $RPM_BUILD_ROOT%{ABIPREFIX}/AbiSuite/bin/AbiWord $RPM_BUILD_ROOT%{prefix}/bin/abiword
 
-# exception to find above, bins 0755
-chown root.root /usr/share/abisuite/bin/AbiWord*
-chmod 0755      /usr/share/abisuite/bin/AbiWord*
+# Creates GNOME menu entries
+mkdir -p $RPM_BUILD_ROOT%{prefix}/share/pixmaps
+cp $RPM_BUILD_DIR/%{name}-%{version}/abidistfiles/icons/abiword_48.png $RPM_BUILD_ROOT%{prefix}/share/pixmaps/abiword_48.png
+%if %(echo %{gnome}|cut -f 2 -d '=')
+mkdir -p $RPM_BUILD_ROOT%{prefix}/share/gnome/apps/Applications/
+cp $RPM_BUILD_DIR/%{name}-%{version}/abi/src/pkg/linux/rpm/data/abiword.desktop $RPM_BUILD_ROOT%{prefix}/share/gnome/apps/Applications/abiword.desktop
+%endif
 
-# docs 0755 for dir
-chown root.root /usr/doc/abisuite
-chmod 0755 /usr/doc/abisuite
+# Copies all ispell dictionaries
+mkdir -p $RPM_BUILD_ROOT%{ABIPREFIX}/AbiSuite/dictionary
+cp $RPM_BUILD_DIR/%{name}-%{version}/abidistfiles/dictionary/*.hash $RPM_BUILD_ROOT%{ABIPREFIX}/AbiSuite/dictionary/
+#Remove duplicate LittleEndian hash
+/bin/rm $RPM_BUILD_ROOT%{ABIPREFIX}/AbiSuite/dictionary/Little*
 
-# docs 0644 for files
-chown root.root /usr/doc/abisuite/*
-chmod 0644 /usr/doc/abisuite/*
+# Copies all clipart
+cp $RPM_BUILD_DIR/%{name}-%{version}/abidistfiles/clipart/*.png $RPM_BUILD_ROOT%{ABIPREFIX}/AbiSuite/clipart/
 
-# menu file 0644
-chown root.root /usr/lib/menu/abisuite
-chmod 644 /usr/lib/menu/abisuite
-
-# icon file 0644
-chown root.root /usr/share/pixmaps/abiword*
-chmod 0644 /usr/share/pixmaps/abiword*
-
-# desktop file 0644
-chown root.root /usr/share/gnome/apps/Applications/abiword.desktop
-chmod 0644 /usr/share/gnome/apps/Applications/abiword.desktop
-
-%post
-/usr/sbin/chkfontpath -q -a /usr/share/abisuite/fonts
-
-%postun
-if [ "$1" = "0" ]; then
-        /usr/sbin/chkfontpath -q -r /usr/share/abisuite/fonts
-fi
-
-%files
-/usr/bin/AbiWord
-/usr/bin/abiword
-%docdir /usr/doc/abisuite
-/usr/lib/menu/abisuite
-/usr/share/pixmaps/abiword_48.png
-/usr/share/gnome/apps/Applications/abiword.desktop
-/usr/share/abisuite
+#
+# Fix for wrong file rights on fonts,icons,clipart
+chmod 644 $RPM_BUILD_ROOT%{ABIPREFIX}/AbiSuite/fonts/*
+chmod 644 $RPM_BUILD_ROOT%{ABIPREFIX}/AbiSuite/icons/*
+chmod 644 $RPM_BUILD_ROOT%{ABIPREFIX}/AbiSuite/clipart/*
+chmod 644 $RPM_BUILD_ROOT%{ABIPREFIX}/AbiSuite/templates/*
 
 %clean
-rm -rf /usr/share/abisuite
-rm -rf /usr/doc/abisuite
-rm -f /usr/bin/AbiWord
-rm -f /usr/bin/abiword
-rm -f /usr/lib/menu/abisuite
-rm -f /usr/share/pixmaps/abiword_48.png
-rm -f /usr/share/gnome/apps/Applications/abiword.desktop
-rm -rf $RPM_BUILD_DIR/abiword-%{version}
-# are there better ways to get these paths?
-rm -f $RPM_SOURCE_DIR/abiword-%{version}.tar
-rm -f $RPM_SOURCE_DIR/../SPECS/abiword-%{version}.spec
+rm -rf $RPM_BUILD_ROOT $RPM_BUILD_DIR/file.list.%{name}
+
+%files
+%defattr(-,root,root)
+%{ABIPREFIX}/AbiSuite/COPYING
+%{ABIPREFIX}/AbiSuite/readme.txt
+%{ABIPREFIX}/AbiSuite/AbiWord/readme.txt
+%{ABIPREFIX}/AbiSuite/AbiWord/help/images
+%{ABIPREFIX}/AbiSuite/AbiWord/help/en-US
+%{ABIPREFIX}/AbiSuite/AbiWord/help/index.html
+%{ABIPREFIX}/AbiSuite/AbiWord/sample
+%{ABIPREFIX}/AbiSuite/AbiWord/strings
+%{ABIPREFIX}/AbiSuite/AbiWord/system.profile-*
+%{ABIPREFIX}/AbiSuite/bin
+%{ABIPREFIX}/AbiSuite/dictionary
+%{ABIPREFIX}/AbiSuite/icons
+%{ABIPREFIX}/AbiSuite/templates
+%attr(755,-,-) %{prefix}/bin/abiword
+%attr(644,-,-) %{prefix}/share/pixmaps/abiword_48.png
+
+%if %(echo %{gnome}|cut -f 2 -d '=')
+%{prefix}/share/gnome/apps/Applications/abiword.desktop
+%endif
+
+%files clipart
+%defattr(-,root,root)
+%{ABIPREFIX}/AbiSuite/clipart
+
+%files fonts
+%defattr(-,root,root)
+%{ABIPREFIX}/AbiSuite/fonts
+
+%files help-de-DE
+%defattr(-,root,root)
+%{ABIPREFIX}/AbiSuite/AbiWord/help/de-DE
+
+%files help-es-ES
+%defattr(-,root,root)
+%{ABIPREFIX}/AbiSuite/AbiWord/help/es-ES
+
+%files help-fr-FR
+%defattr(-,root,root)
+%{ABIPREFIX}/AbiSuite/AbiWord/help/fr-FR
+
+%changelog
+
+* Sat Nov 3 2001 Rui M. Silva Seabra <rms@multicert.com>
+- Seperated the help packages.
+
+* Fri Oct 26 2001 Rui M. Silva Seabra <rms@multicert.com>
+- Tweaked spec to make gtk build not include gnome files.
+- Increase requirements details.
+- Start preparations for _real_ perl enabled builds.
+
+* Wed Oct 24 2001 Rui M. Silva Seabra <rms@multicert.com>
+- Separated fonts and clipart into sub packages.
+
+* Tue Oct 23 2001 Rui M. Silva Seabra <rms@multicert.com>
+- Applied Michele Baldessari <baldessari@tiscalinet.it> 's patch to correct
+  some bugs.
+
+* Mon Sep 10 2001 Rui M. Silva Seabra <rms@multicert.com>
+- Unified Gtk+/Gnome rpm specs into The One Spec
+
+* Thu Jun 28 2001 Martin Sevior
+- tweaked stuff for 0.90 
+- all ispell dictionaries found are installed
+
+* Sun Dec 9 2000 Christian Schaller <Uraeus@linuxrising.org>
+- Updates for RedHat 6.2
+- Updated for AbiWord 0.7.12
+- Major rewrite of compilation and files part of SPEC file
+
+* Sat May 20 2000 Christian Schaller <Uraeus@linuxrising.org>
+- Updated to version 0.7.9
+- Changed icon from xpm to png
+- Made sure Icon had correct rights
+
+* Wed Mar 1 2000 Christian Schaller <Uraeus@linuxrising.org>
+- Updated for TurboLinux 6.0
+- Updated to 0.7.8
+- Updated for Gnome-enablement
+- Minor SPEC file changes
+
+* Tue Jan 25 2000 Chmouel Boudjnah <chmouel@mandrakesoft.com> 0.7.7-2mdk
+- Fix alpha/sparc compilation.
+
+* Thu Jan 13 2000 Saugey Vincent <vince@mandrakesoft.com>
+- update to 0.7.7
+
+* Thu Oct 21 1999 Thierry Vignaud <tvignaud@mandrakesoft.com>
+- update to 0.7.6
+
+* Thu Sep 23 1999 Chmouel Boudjnah <chmouel@mandrakesoft.com>
+- Build for cooker.
+
+* Fri Sep 10 1999 Daouda LO <daouda@mandrakesoft.com>
+- Mandrake adaptations
+- bzipped the sources
+- Make the package relocatable
+
+* Sun Sep 05 1999 Vu Hung Quan <binaire@videotron.ca>
+- update to 0.7.5 ; redhat adaptation
+
+* Sat Jun 26 1999 Bernhard Rosenkraenzer <bero@mandrakesoft.com>
+- create (more or less) generic spec file...

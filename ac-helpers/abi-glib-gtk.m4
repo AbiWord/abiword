@@ -162,8 +162,13 @@ if test "$PLATFORM" = "unix"; then
 elif test "$PLATFORM" = "mac"; then
 	ABI_GLIB12_OPT(0,yes)
 
-        GLIB_CFLAGS=`$GLIB_CONFIG --cflags`
-        GLIB_LIBS=`$GLIB_CONFIG --libs`
+	if [ test "x$abi_glib_opt" = "xno" ]; then
+	        GLIB_CFLAGS=""
+        	GLIB_LIBS=""
+	else
+	        GLIB_CFLAGS=`$GLIB_CONFIG --cflags`
+        	GLIB_LIBS=`$GLIB_CONFIG --libs`
+	fi
 
         AC_SUBST(GLIB_CFLAGS)
         AC_SUBST(GLIB_LIBS)

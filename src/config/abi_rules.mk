@@ -36,6 +36,28 @@
 ##################################################################
 ##################################################################
 
+# These options should be either 0 (off) or 1 (on)
+ifneq ($(ABI_OPT_DEBUG),1)
+ABI_OPT_DEBUG=0
+endif
+ifneq ($(ABI_OPT_GNOME),1)
+ABI_OPT_GNOME=0
+endif
+ifneq ($(ABI_OPT_PERL),1)
+ABI_OPT_PERL=0
+endif
+ifneq ($(ABI_OPT_LIBJPEG),1)
+ABI_OPT_LIBJPEG=0
+endif
+ifneq ($(ABI_OPT_LIBXML2),1)
+ABI_OPT_LIBXML2=0
+endif
+ifneq ($(ABI_OPT_OPTIMIZE),1)
+ABI_OPT_OPTIMIZE=0
+endif
+ifneq ($(ABI_OPT_PSPELL),1)
+ABI_OPT_PSPELL=0
+endif
 
 ifdef LIBRARY_NAME
 ifeq ($(OS_NAME), WIN32)

@@ -144,8 +144,8 @@ pack_rpm:
 	@mkdir -p $(PACK_ROOT)
 	@(cd $(ABI_ROOT)/..; tar --exclude=CVS -cf - $(MODULE_LIST)) | \
 		(cd $(PACK_ROOT); tar xf -)
-#	@rm -f $(RPM_SOURCE_DIR)/SOURCES/abiword-$(ABI_BUILD_VERSION).tar
-	@(cd $(PACK_ROOT)/..; tar cf $(RPM_SOURCE_DIR)/SOURCES/abiword-$(ABI_BUILD_VERSION).tar \
+#	@rm -f $(RPM_SOURCE_DIR)/SOURCES/abiword-$(ABI_BUILD_VERSION).tar.gz
+	@(cd $(PACK_ROOT)/..; tar zcf $(RPM_SOURCE_DIR)/SOURCES/abiword-$(ABI_BUILD_VERSION).tar.gz \
 		 abiword-$(ABI_BUILD_VERSION))
 	@rm -rf $(PACK_ROOT)
 
@@ -158,9 +158,17 @@ rpm: pack_rpm
 # so rip the spec template through some sed magic and run with it.
 	@$(subst xxxx,$(DIST),$(VERIFY_DIRECTORY))	
 	@echo "Exporting spec file to [$(RPM_SOURCE_DIR)/SPECS]..."
-	@(sed "s/__ABI_BUILD_VERSION__/$(ABI_BUILD_VERSION)/" rpm/abiword.spec-template \
-		| sed "s/__ABI_RELEASE_NUMBER__/$(ABI_RELEASE_NUMBER)/" \
-		> $(RPM_SOURCE_DIR)/SPECS/abiword-$(ABI_BUILD_VERSION).spec)
+	@(sed -e 's/__ABI_BUILD_VERSION__/$(ABI_BUILD_VERSION)/' \
+	      -e 's/__ABI_RELEASE_NUMBER__/$(ABI_RELEASE_NUMBER)/' \
+	      -e 's/__UNIX_CAN_BUILD_STATIC__/$(UNIX_CAN_BUILD_STATIC)/' \
+	      -e 's/__ABI_OPT_DEBUG__/$(ABI_OPT_DEBUG)/' \
+	      -e 's/__ABI_OPT_GNOME__/$(ABI_OPT_GNOME)/' \
+	      -e 's/__ABI_OPT_PERL__/$(ABI_OPT_PERL)/' \
+	      -e 's/__ABI_OPT_LIBJPEG__/$(ABI_OPT_LIBJPEG)/' \
+	      -e 's/__ABI_OPT_LIBXML2__/$(ABI_OPT_LIBXML2)/' \
+	      -e 's/__ABI_OPT_OPTIMIZE__/$(ABI_OPT_OPTIMIZE)/' \
+	      -e 's/__ABI_OPT_PSPELL__/$(ABI_OPT_PSPELL)/' \
+	  rpm/abiword.spec-template > $(RPM_SOURCE_DIR)/SPECS/abiword-$(ABI_BUILD_VERSION).spec)
 	@echo "Producing RPM..."
 	rpm -ba $(RPM_SOURCE_DIR)/SPECS/abiword-$(ABI_BUILD_VERSION).spec
 	mv $(RPM_SOURCE_DIR)/RPMS/$(OS_ARCH)/abiword-$(ABI_BUILD_VERSION)-$(ABI_RELEASE_NUMBER).$(OS_ARCH).rpm $(DIST)
