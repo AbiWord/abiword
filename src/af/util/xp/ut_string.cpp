@@ -515,6 +515,29 @@ UT_sint32 UT_UCS_strcmp(const UT_UCSChar* left, const UT_UCSChar* right)
   Pierre Sarrazin <ps@cam.org>.
 */
 
+/**
+ * Convert a given character to uppercase
+ */
+UT_UCSChar UT_UCS_toupper(UT_UCSChar c)
+{
+        if (c < 128) // in ASCII range
+	  return toupper(c);
+
+#if 0
+        if (c >= 256)
+	  return c;
+#else
+	if (XAP_EncodingManager::instance->single_case())
+		return c;
+	/*let's trust libc!*/
+	UT_UCSChar local = XAP_EncodingManager::instance->try_UToNative(c);
+	if (!local || local>0xff)
+		return c;
+	local = XAP_EncodingManager::instance->try_nativeToU(toupper(local));
+	return local ? local : c;
+#endif
+}
+
 /*	Converts the given character to lowercase if it is an uppercase letter.
 	Returns it unchanged if it is not.
 	This function created by Pierre Sarrazin 1999-02-06
@@ -531,8 +554,6 @@ UT_UCSChar UT_UCS_tolower(UT_UCSChar c)
 		return c + 0x20;
 	return c;
 #else
-	if (c < 128)
-		return tolower(c);
 	if (XAP_EncodingManager::instance->single_case())
 		return c;
 	/*let's trust libc!*/

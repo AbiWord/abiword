@@ -91,6 +91,7 @@ UT_UCSChar *    UT_UCS_strnrev(UT_UCSChar * dest, UT_uint32 n);
 #endif
 
 UT_UCSChar		UT_UCS_tolower(UT_UCSChar c);
+UT_UCSChar              UT_UCS_toupper(UT_UCSChar c);
 
 char * UT_upperString(char * string);
 char * UT_lowerString(char * string);
