@@ -283,8 +283,8 @@ void AP_QNXDialog_Goto::processGoto (const char *number)
 		return;
 	}
 
-	UT_UCSChar *ucsnumber = (UT_UCSChar *) malloc (sizeof (UT_UCSChar) * (strlen(number) + 1));
-	UT_UCS_strcpy_char (ucsnumber, number);
+	UT_UCS4Char *ucsnumber = (UT_UCSChar *) malloc (sizeof (UT_UCSChar) * (strlen(number) + 1));
+	UT_UCS4_strcpy_char (ucsnumber, number);
 
 	int target = getSelectedRow ();
 	getView()->gotoTarget ((AP_JumpTarget) target, ucsnumber);
