@@ -357,7 +357,7 @@ bool UT_Vector::copy(UT_Vector *pVec)
 	return 0;
 }
 
-void* UT_Vector::operator[](UT_uint32 i) const
+const void* UT_Vector::operator[](UT_uint32 i) const
 {
 	return m_STLVec[i];
 }
