@@ -1,3 +1,5 @@
+<?xml version="1.0"?>
+<abiword version="unnumbered">
 <!-- =====================================================================  -->
 <!-- This file is an AbiWord document.                                      -->
 <!-- AbiWord is a free, Open Source word processor.                         -->
@@ -6,13 +8,12 @@
 <!-- =====================================================================  -->
 
 <!--         Build_ID          = (none) -->
-<!--         Build_Version     = (none) -->
-<!--         Build_Options     = Debug:On -->
-<!--         Build_Target      = WIN32_4.0_i386_DBG -->
-<!--         Build_CompileTime = 10:27:20 -->
-<!--         Build_CompileDate = Apr 26 1999 -->
+<!--         Build_Version     = unnumbered -->
+<!--         Build_Options     = LicensedTrademarks:Off Debug:On -->
+<!--         Build_Target      = /work/abi/src/../src/WIN32_4.0_i386_DBG/obj -->
+<!--         Build_CompileTime = 23:59:41 -->
+<!--         Build_CompileDate = Feb 17 2000 -->
 
-<abiword version="">
 <section>
 <p style="Plain Text">$Id$</p>
 <p style="Plain Text">[Last updated at Build 0.5.5]</p>
@@ -46,25 +47,25 @@
 <p></p>
 <p>For most Latin-1 languages, you should be able to just use the Menu_Layouts as is.  If, for example, your language has no concept of Italic, you might want to make a new layout which did not include Italic.  It is my belief that this feature will not be used until we get to CJKV.  I'll describe this in a future update.</p>
 <p></p>
-<p style="Normal">The part we are most interested in is [d].  The file <c props="font-family:Courier New">abi/src/wp/ap/xp/ap_Menu_LabelSet_EnUS.h</c> contains the English strings that are used for the Menu_Items and the Status Bar Help Text.  Clone this file and translate the values in the second and third columns.  Note that despite the thick layer of CPP macros, this is in fact a C++ header file, so the string values must be legal C++.  Also, give yourself credit for the translation near the top of the file (include your name and email address).  Be sure to update the language identifier in the <c props="font-family:Courier New">BeginSet()</c> macro.  Save this new file by substituting the <c props="font-family:Courier New">EnUS</c> with your language identifier.  Finally, add an <c props="font-family:Courier New">#include</c> line to <c props="font-family:Courier New">ap_Menu_LabelSet_Languages.h</c></p>
+<p style="Normal">The part we are most interested in is [d].  The file <c props="font-family:Courier New">abi/src/wp/ap/xp/ap_Menu_LabelSet_en-US.h</c> contains the English strings that are used for the Menu_Items and the Status Bar Help Text.  Clone this file and translate the values in the second and third columns.  Note that despite the thick layer of CPP macros, this is in fact a C++ header file, so the string values must be legal C++.  Also, give yourself credit for the translation near the top of the file (include your name and email address).  Be sure to update the language identifier in the <c props="font-family:Courier New">BeginSet()</c> macro.  Save this new file by substituting the <c props="font-family:Courier New">en-US</c> with your language identifier.  Finally, add an <c props="font-family:Courier New">#include</c> line to <c props="font-family:Courier New">ap_Menu_LabelSet_Languages.h</c></p>
 <p></p>
 <p><c props="font-weight:bold">3.2.  Toolbar LabelSet</c></p>
 <p></p>
 <p>AbiWord contains a dynamic, cross-platform toolbar system .... blah, blah, blah .... just like the menu system.  The only difference is that the Toolbar_LabelSet also includes a reference to the icon to be used on the toolbar button.  I put this here so that we could change the icon by language.  For example, we use an icon with a fat <c props="font-weight:bold">B</c> for the BOLD button and a slanted <c props="font-style:italic; font-weight:bold">I</c> for the ITALIC button; this is appropriate in English, but might not be in other languages.</p>
 <p></p>
-<p>The file <c props="font-family:Courier New">abi/src/wp/ap/xp/ap_TB_LabelSet_EnUS.h</c> contains the English button labels, tooltips, status messages, and icons.  Clone this file (or one of the other translations) and make your changes.  Again, please give yourself credit near the top.  Again, be sure to update the language identifier in the <c props="font-family:Courier New">BeginSet()</c> macro and add a <c props="font-family:Courier New">#include</c> line in <c props="font-family:Courier New">ap_TB_LabelSet_Languages.h</c></p>
+<p>The file <c props="font-family:Courier New">abi/src/wp/ap/xp/ap_TB_LabelSet_en-US.h</c> contains the English button labels, tooltips, status messages, and icons.  Clone this file (or one of the other translations) and make your changes.  Again, please give yourself credit near the top.  Again, be sure to update the language identifier in the <c props="font-family:Courier New">BeginSet()</c> macro and add a <c props="font-family:Courier New">#include</c> line in <c props="font-family:Courier New">ap_TB_LabelSet_Languages.h</c></p>
 <p></p>
 <p>If you'd like to change the icons -- especially for BOLD, ITALIC, UNDERLINE, and STRIKEOUT, look in the directory abi/src/wp/ap/xp/ToolbarIcons and see if there's an XPM that suits your needs or create one.  If you do decide to create a new XPM, add a reference to it in <c props="font-family:Courier New">ap_Toolbar_Icons_All.h</c> -- be sure to add it to both sections in this file.</p>
 <p></p>
 <p><c props="font-weight:bold">3.3.  Dialog and Error Messages</c></p>
 <p></p>
-<p>Menu and Toolbar strings are compiled into the source -- so that the program always remains mostly usable in each language no matter how trashed the system installation.  Dialogs and Error Messages are builtin for English and are dynamically loaded from a <c props="font-family:Courier New">XxXX.string</c> file for all other languages.</p>
+<p>Menu and Toolbar strings are compiled into the source -- so that the program always remains mostly usable in each language no matter how trashed the system installation.  Dialogs and Error Messages are builtin for English and are dynamically loaded from an x<c props="font-family:Courier New">x-XX.string</c> file for all other languages.</p>
 <p></p>
 <p>With a DEBUG build of version 0.5.5 (or later), launch AbiWord with the command:</p>
 <p></p>
 <p style="Plain Text" props="text-align:center">./AbiWord -dumpstrings</p>
 <p></p>
-<p>This will create the file <c props="font-family:Courier New">EnUS.strings</c> in the current directory.  This XML file can be used as a template.  Simply edit this file and make your translations.  Be sure to update the value of <c props="font-family:Courier New">language=</c> in the <c props="font-family:Courier New">AbiStrings</c> tag.  Also be sure to update the credits for the translation near the top of the file.  Save this file in the <c props="font-family:Courier New">abi/user/wp/strings</c> directory.</p>
+<p>This will create the file en-<c props="font-family:Courier New">US.strings</c> in the current directory.  This XML file can be used as a template.  Simply edit this file and make your translations.  Be sure to update the value of <c props="font-family:Courier New">language=</c> in the <c props="font-family:Courier New">AbiStrings</c> tag.  Also be sure to update the credits for the translation near the top of the file.  Save this file in the <c props="font-family:Courier New">abi/user/wp/strings</c> directory.</p>
 <p></p>
 <p><c props="font-weight:bold">3.3.1.  Caveats</c></p>
 <p></p>
@@ -84,14 +85,14 @@
 <p></p>
 <p>[2] change both occurrences of <c props="font-family:Courier New; font-weight:bold">_builtin_</c> to <c props="font-family:Courier New; font-weight:bold">custom</c>.</p>
 <p></p>
-<p>[3] change all three instances of <c props="font-family:Courier New; font-weight:bold">EnUS</c> to your language identifier.</p>
+<p>[3] change all three instances of <c props="font-weight:bold">en-</c><c props="font-family:Courier New; font-weight:bold">US</c> to your language identifier.</p>
 <p></p>
 <p>[4] either change the value of {<c props="font-family:Courier New">Win32</c>,<c props="font-family:Courier New">Unix</c>,<c props="font-family:Courier New">BeOS</c>}<c props="font-family:Courier New">StringSetDirectory</c> to the directory you placed the <c props="font-family:Courier New">.strings</c> file or move the <c props="font-family:Courier New">.strings</c> file to the directory listed in this value.</p>
 <p>[5] launch AbiWord again.  In the debug output, you should find something like the following:</p>
 <p></p>
 <p style="Plain Text"><c props="font-size:8pt">Found strings file for application [AbiWord Personal] (this is [AbiWord Personal]).</c></p>
-<p style="Plain Text"><c props="font-size:8pt">Found strings for language [FiFI].</c></p>
-<p style="Plain Text"><c props="font-size:8pt">Using StringSet [C:\work\abi\user\wp\strings\FiFI.strings]</c></p>
+<p style="Plain Text"><c props="font-size:8pt">Found strings for language [fi-FI].</c></p>
+<p style="Plain Text"><c props="font-size:8pt">Using StringSet [C:\work\abi\user\wp\strings\fi-FI.strings]</c></p>
 <p style="Plain Text"></p>
 <p style="Normal">If you are missing any strings in the .strings file, you'll see warning like the following:</p>
 <p style="Plain Text"></p>
