@@ -24,5 +24,7 @@
 ******************************************************************
 *****************************************************************/
 
-dcl(DLG_OK,					"_OK")
-dcl(DLG_CANCEL,				"Cancel")
+dcl(DLG_OK,					"OK")
+dcl(DLG_Cancel,				"Cancel")
+dcl(DLG_MoreWindows,		"More Windows")
+dcl(DLG_Activate,			"Activate")
