@@ -24,7 +24,13 @@ INCLUDES= @GMODULE_CFLAGS@ @GTK_CFLAGS@ \
 
 noinst_LIBRARIES = libGr_unix.a
 
+if WITH_GNOME
+libGr_unix_a_SOURCES=\
+	gr_UnixGraphics.cpp	\
+	gr_UnixImage.cpp	\
+	gr_UnixGnomeImage.cpp
+else
 libGr_unix_a_SOURCES=\
 	gr_UnixGraphics.cpp	\
 	gr_UnixImage.cpp
-
+endif
