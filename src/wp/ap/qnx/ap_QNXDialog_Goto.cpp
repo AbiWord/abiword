@@ -60,10 +60,7 @@ static int s_gotoClicked(PtWidget_t *widget, void *data, PtCallbackInfo_t *info)
 	AP_QNXDialog_Goto *dlg = (AP_QNXDialog_Goto *)data;
 	UT_ASSERT(dlg);
 
-	char *number = NULL;
-	PtGetResource(widget, Pt_ARG_TEXT_STRING, &number, 0);
-	if (number && *number)
-			dlg->processGoto (number);
+	dlg->processGoto (NULL);
 
 	return Pt_CONTINUE;
 }
@@ -274,6 +271,18 @@ int AP_QNXDialog_Goto::getSelectedRow (void)
 
 void AP_QNXDialog_Goto::processGoto (const char *number)
 {
+	//If a NULL is passed as the number, grab the string from the text box
+	if (!number) {
+		char *value = NULL;
+		PtGetResource(m_wEntry, Pt_ARG_TEXT_STRING, &value, 0);
+		number = value;
+	}
+
+	if (!number || !*number) {
+		UT_DEBUGMSG(("No goto string!"));
+		return;
+	}
+
 	UT_UCSChar *ucsnumber = (UT_UCSChar *) malloc (sizeof (UT_UCSChar) * (strlen(number) + 1));
 	UT_UCS_strcpy_char (ucsnumber, number);
 
