@@ -1344,7 +1344,7 @@ fl_BlockLayout::format(fp_Line * pLineToStartAt)
 	FV_View* pView = m_pLayout->getView();
 	if (pView)
 	{
-		if (pView->isCursorOn() == true)
+		if (pView->isCursorOn() == true && !isHdrFtr())
 		{
 			pView->eraseInsertionPoint();
 			m_bCursorErased = true;
