@@ -2231,8 +2231,8 @@ void fp_TextRun::_drawSquiggle(UT_sint32 top, UT_sint32 left, UT_sint32 right, F
 	}
 	else
 	{
-	  // Do /|/|/|/|
-	  nPoints = getGraphics()->tdu((right - left + getGraphics()->tlu(3))/2);
+	  // Do _|-|_|-|
+	  nPoints = getGraphics()->tdu((right - left + getGraphics()->tlu(3)));
 	}  
 	UT_return_if_fail(nPoints >= 1); //can be 1 for overstriking chars
 
@@ -2279,27 +2279,29 @@ void fp_TextRun::_drawSquiggle(UT_sint32 top, UT_sint32 left, UT_sint32 right, F
 	  UT_sint32 i =0;
 	  for (i = 1; i < nPoints-2; i +=2)
 	  {
-		points[i].x = points[i-1].x + getGraphics()->tlu(4);
-		points[i].y = top;
+		points[i].x = points[i-1].x + getGraphics()->tlu(2);
+		points[i].y = (bTop ? top : top + getGraphics()->tlu(2)) ;
 		points[i+1].x = points[i].x;
-		points[i+1].y = top + getGraphics()->tlu(2);
+		points[i+1].y = (bTop ? top + getGraphics()->tlu(2) : top);
+		bTop = ! bTop;
 	  }
 	  if(i == (nPoints-2))
 	  {
-	    points[i].x = points[i-1].x + getGraphics()->tlu(4);
-	    points[i].y = top;
-	    points[i+1].x = points[i].x;
-	    points[i+1].y = top + getGraphics()->tlu(2);
+		points[i].x = points[i-1].x + getGraphics()->tlu(2);
+		points[i].y = (bTop ? top : top + getGraphics()->tlu(2)) ;
+		points[i+1].x = points[i].x;
+		points[i+1].y = (bTop ? top + getGraphics()->tlu(2) : top);
+		bTop = ! bTop;
 	  }
 	  else if( i == (nPoints-1))
 	  {
 	    points[nPoints-1].x = right;
-	    points[nPoints-1].y = top + getGraphics()->tlu(1);
+	    points[i].y = (bTop ? top : top + getGraphics()->tlu(2)) ;
 	  }
 	  if (points[nPoints-1].x > right)
 	  {
 	    points[nPoints-1].x = right;
-	    points[nPoints-1].y = top + getGraphics()->tlu(1);
+	    points[i].y = (bTop ? top : top + getGraphics()->tlu(2)) ;
 	  }
 
 	}
