@@ -908,14 +908,16 @@ void XAP_Frame::updateZoom(void)
 		if      (newZoom < XAP_DLG_ZOOM_MINIMUM_ZOOM) newZoom = XAP_DLG_ZOOM_MINIMUM_ZOOM;
 		else if (newZoom > XAP_DLG_ZOOM_MAXIMUM_ZOOM) newZoom = XAP_DLG_ZOOM_MAXIMUM_ZOOM;
 		XAP_Frame::setZoomPercentage( newZoom );
-		setZoomPercentage( newZoom );
+		quickZoom( newZoom );
+//		setZoomPercentage( newZoom );
 		break;
 	case z_WHOLEPAGE:
 		newZoom = m_pView->calculateZoomPercentForWholePage() ;
 		if      (newZoom < XAP_DLG_ZOOM_MINIMUM_ZOOM) newZoom = XAP_DLG_ZOOM_MINIMUM_ZOOM;
 		else if (newZoom > XAP_DLG_ZOOM_MAXIMUM_ZOOM) newZoom = XAP_DLG_ZOOM_MAXIMUM_ZOOM;
 		XAP_Frame::setZoomPercentage( newZoom );
-		setZoomPercentage( newZoom );
+		quickZoom( newZoom );
+//		setZoomPercentage( newZoom );
 		break;
 	default:
        ;

@@ -172,14 +172,15 @@ public:
     bool                        needsReFormat(void) const { return m_bNeedsReformat;}
 
 	UT_sint32                getLeftOffset(void) const;
-
+	void                     setHeightChanged(fp_CellContainer * pCell);
+    bool                     doSimpleChange(void);
 UT_sint32                    getRightOffset(void) const;
 	UT_sint32                getTopOffset(void) const;
 UT_sint32                    getBottomOffset(void) const;
 	bool                     isDirty(void) const
 		{ return m_bIsDirty;}
-	void                     setDirty(void)
-		{ m_bIsDirty = true;}
+	void                     setDirty(void);
+
 	UT_sint32                getLineThickness(void) const;
 	UT_sint32                getColSpacing(void) const;
 	UT_sint32                getRowSpacing(void) const;
@@ -250,6 +251,8 @@ private:
 	PP_PropertyMap::Line   m_lineTop;
 	UT_sint32              m_iNumNestedTables;
 	bool                   m_bIsEndTableIn;
+    UT_sint32              m_iHeightChanged;
+	fp_CellContainer *     m_pNewHeightCell;
 };
 
 

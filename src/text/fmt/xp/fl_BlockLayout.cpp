@@ -2230,6 +2230,14 @@ void fl_BlockLayout::format()
 		if(getSectionLayout()->getContainerType() != FL_CONTAINER_DOCSECTION)
 		{
 			getSectionLayout()->setNeedsReformat();
+			if(getSectionLayout()->getContainerType() == FL_CONTAINER_CELL)
+			{
+				//
+				// Can speed up things by doing an immediate format on the
+				// the cell.
+				//
+				getSectionLayout()->format();
+			}
 		}
 		getDocSectionLayout()->setNeedsSectionBreak(true,pPrevP);
 	}
@@ -2472,7 +2480,7 @@ void fl_BlockLayout::setNeedsReformat(UT_uint32 offset)
 	// _lesser_ value is the one that matter here, Tomas, Nov 28, 2003
 	if(m_iNeedsReformat < 0 || static_cast<UT_sint32>(offset) < m_iNeedsReformat)
 		m_iNeedsReformat = offset;
-	getSectionLayout()->setNeedsReformat();
+  	getSectionLayout()->setNeedsReformat();
 	setNeedsRedraw();
 }
 

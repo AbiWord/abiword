@@ -100,7 +100,10 @@ fl_TableLayout::fl_TableLayout(FL_DocLayout* pLayout, PL_StruxDocHandle sdh,
 	  m_iRowHeightType(FL_ROW_HEIGHT_NOT_DEFINED),
 	  m_iRowHeight(0),
 	  m_iNumNestedTables(0),
-	  m_bIsEndTableIn(false)
+	  m_bIsEndTableIn(false),
+	  m_iHeightChanged(0),
+      m_pNewHeightCell(NULL)
+
 {
 	UT_DEBUGMSG(("Created Table Layout %x \n",this));
 	UT_ASSERT(pLayout);
@@ -123,6 +126,19 @@ fl_TableLayout::~fl_TableLayout()
 	setLastContainer(NULL);
 	UT_VECTOR_PURGEALL(fl_ColProps *, m_vecColProps);
 	UT_VECTOR_PURGEALL(fl_RowProps *, m_vecRowProps);
+}
+
+/*!
+ * Rather than do a complete new relayout, if we have a simple change of
+ * height for one cell, just updated the positions of the cells below it.
+ */
+void fl_TableLayout::setHeightChanged(fp_CellContainer * pCell)
+{
+	if(pCell != m_pNewHeightCell)
+	{
+		m_iHeightChanged++;
+	}
+	m_pNewHeightCell = pCell;
 }
 
 /*!
@@ -313,6 +329,85 @@ void fl_TableLayout::insertTableContainer( fp_TableContainer * pNewTab)
 	}
 }
 
+/*!
+ * Often editting ina table changes the height of just one cell. We can
+ * short circuit a complete relayout if this happens and just re-adjust the
+ * ypositions of the cells.
+ * returns true if the row size could be successfully adjusted
+ */
+bool fl_TableLayout::doSimpleChange(void)
+{
+	if(m_pNewHeightCell == NULL)
+	{
+		return false;
+	}
+	UT_sint32 iTop = m_pNewHeightCell->getTopAttach();
+	UT_sint32 iBot = m_pNewHeightCell->getBottomAttach();
+	fl_CellLayout * pCL = static_cast<fl_CellLayout *>(m_pNewHeightCell->getSectionLayout());
+	pCL->format();
+	if(iBot > iTop +1 )
+	{
+		return false;
+	}
+	fp_TableContainer * pTab = static_cast<fp_TableContainer *>(getFirstContainer());
+	if(pTab == NULL)
+	{
+		return false;
+	}
+	fp_CellContainer * pCell = pTab->getCellAtRowColumn(iTop,0);
+	UT_sint32 iMaxHeight = 0;
+	fp_Requisition Req;
+	while(pCell)
+	{
+		if((pCell->getTopAttach() != iTop) || (pCell->getBottomAttach() != iBot))
+		{
+			break;
+		}
+		pCell->sizeRequest(&Req);
+		if(Req.height > iMaxHeight)
+		{
+			iMaxHeight = Req.height;
+		}
+		pCell = static_cast<fp_CellContainer *>(pCell->getNext());
+	}
+	if(pCell && ((pCell->getLeftAttach() != 0) || (pCell->getTopAttach() <iTop)))
+	{
+		return false;
+	}
+	fp_TableRowColumn * pRow = pTab->getNthRow(iTop);
+	UT_sint32 iAlloc = pRow->allocation;	
+	iMaxHeight = pTab->getRowHeight(iTop,iMaxHeight);
+	if(iAlloc == iMaxHeight)
+	{
+		return true;
+	}
+	pTab->deleteBrokenTables(true,true);
+	setNeedsRedraw();
+	markAllRunsDirty();
+	UT_sint32 diff = iMaxHeight - iAlloc;
+	pRow->allocation += diff;
+	while(pCell)
+	{
+		pCell->setY(pCell->getY()+diff);
+		pCell = static_cast<fp_CellContainer *>(pCell->getNext());
+	}
+	pCell =  pTab->getCellAtRowColumn(iTop,0);
+	while(pCell)
+	{
+		pCell->setLineMarkers();
+		pCell = static_cast<fp_CellContainer *>(pCell->getNext());
+	}
+	m_pNewHeightCell->setMaxHeight(iMaxHeight);
+	pTab->setHeight(pTab->getHeight() + diff);
+	return true;
+}
+
+void fl_TableLayout::setDirty(void)
+{
+	xxx_UT_DEBUGMSG(("Table Dirty set true \n"));
+	m_bIsDirty = true;
+}
+
 void fl_TableLayout::format(void)
 {
 	if(m_bRecursiveFormat)
@@ -345,11 +440,15 @@ void fl_TableLayout::format(void)
 	xxx_UT_DEBUGMSG(("!!!!!!!!!!!!TableLayout format Table !!!!!!!!!\n"));
 	if(getFirstContainer() == NULL)
 	{
+		m_iHeightChanged = 0;
+		m_pNewHeightCell = NULL;
 		getNewContainer(NULL);
 		bRebuild = true;
 	}
 	else if( getFirstContainer()->countCons() == 0)
 	{
+		m_iHeightChanged = 0;
+		m_pNewHeightCell = NULL;
 		bRebuild = true;
 	}
 	if(isDirty())
@@ -357,25 +456,58 @@ void fl_TableLayout::format(void)
 		xxx_UT_DEBUGMSG(("TableLayout Mark All runs dirty \n"));
 		markAllRunsDirty();
 	}
-	fl_ContainerLayout*	pCell = getFirstLayout();
-	while (pCell)
+	bool bSim = false;
+	if((m_iHeightChanged == 1)  && !getDocument()->isDontImmediateLayout())
 	{
-		pCell->format();
-		if(bRebuild)
+		//
+		// Simple height change due to editting. Short circuit full blown 
+		// layout
+		//
+		bSim = doSimpleChange();
+		if(bSim)
 		{
-			attachCell(pCell);
+			m_bIsDirty = false;
 		}
-		pCell = pCell->getNext();
+		m_iHeightChanged = 0;
+		m_pNewHeightCell = NULL;
 	}
-	xxx_UT_DEBUGMSG(("fl_TableLayout: Finished Formatting %x isDirty %d \n",this,isDirty()));
+	
+	fl_ContainerLayout*	pCell = NULL;
+	pCell = getFirstLayout();
 
-	if(isDirty() && !getDocument()->isDontImmediateLayout())
+	if((!bSim && isDirty()) || bRebuild)
 	{
-		m_bIsDirty = false;
-		xxx_UT_DEBUGMSG(("SEVIOR: Layout pass 1 \n"));
-		static_cast<fp_TableContainer *>(getFirstContainer())->layout();
-		setNeedsRedraw();
-		markAllRunsDirty();
+		while (pCell)
+		{
+			pCell->format();
+			if(bRebuild)
+			{
+				attachCell(pCell);
+			}
+			pCell = pCell->getNext();
+		}
+		if((m_iHeightChanged == 1)  && !getDocument()->isDontImmediateLayout())
+		{
+		//
+		// Simple height change due to editting. Short circuit full blown 
+		// layout
+		//
+			bSim = doSimpleChange();
+			if(bSim)
+			{
+				m_bIsDirty = false;
+			}
+		}
+
+		xxx_UT_DEBUGMSG(("fl_TableLayout: Finished Formatting %x isDirty %d \n",this,isDirty()));
+		if((m_iHeightChanged !=0) && isDirty() && !getDocument()->isDontImmediateLayout())
+	    {
+			m_bIsDirty = false;
+			xxx_UT_DEBUGMSG(("SEVIOR: Layout pass 1 \n"));
+			static_cast<fp_TableContainer *>(getFirstContainer())->layout();
+			setNeedsRedraw();
+			markAllRunsDirty();
+		}
 	}
 //
 // The layout process can trigger a width change on a cell which requires
@@ -388,12 +520,6 @@ void fl_TableLayout::format(void)
 		setNeedsRedraw();
    		markAllRunsDirty();
 		m_bIsDirty = false;
-	}
-//	m_bNeedsReformat = m_bIsDirty;
-	m_bNeedsReformat = false;
-	if(m_bNeedsReformat)
-	{
-		UT_DEBUGMSG(("SEVIOR: After format in TableLayout need another format \n"));
 	}
 	UT_sint32 iNewHeight = -10;
 	bool isBroken = false;
@@ -444,6 +570,13 @@ void fl_TableLayout::format(void)
 		}
 	}
 	m_bRecursiveFormat = false;
+	if(!getDocument()->isDontImmediateLayout())
+	{
+		m_iHeightChanged = 0;
+		m_pNewHeightCell = NULL;
+		m_bNeedsReformat = false;
+		m_bIsDirty = false;
+	}
 }
 
 void fl_TableLayout::markAllRunsDirty(void)
@@ -455,7 +588,6 @@ void fl_TableLayout::markAllRunsDirty(void)
 	{
 		return;
 	}
-	setDirty();
 	fl_ContainerLayout*	pCL = getFirstLayout();
 	while (pCL)
 	{
@@ -1287,7 +1419,8 @@ void fl_TableLayout::collapse(void)
 		pCL->collapse();
 		pCL = pCL->getNext();
 	}
-
+	m_iHeightChanged = 0;
+	m_pNewHeightCell = NULL;
 	if(pTab)
 	{
 //
@@ -1617,7 +1750,9 @@ void fl_CellLayout::checkAndAdjustCellSize(void)
 	}
 	m_iCellHeight = Req.height;
 	xxx_UT_DEBUGMSG(("checkandadjustcellheight: Heights differ format %d %d \n",m_iCellHeight,Req.height));
+	pCell->setHeight(m_iCellHeight);
 	static_cast<fl_TableLayout *>(myContainingLayout())->setDirty();
+	static_cast<fl_TableLayout *>(myContainingLayout())->setHeightChanged(pCell);
 	myContainingLayout()->format();
 }
 	
@@ -1764,7 +1899,7 @@ void fl_CellLayout::format(void)
 			count = count + 1;
 			pBL->format();
 			if(count > 3)
-			{
+		  	{
 				UT_DEBUGMSG(("Give up trying to format. Hope for the best :-( \n"));
 				break;
 			}
@@ -1772,6 +1907,7 @@ void fl_CellLayout::format(void)
 		pBL = pBL->getNext();
 	}
 	static_cast<fp_CellContainer *>(getFirstContainer())->layout();
+	
 	UT_sint32 iNewHeight = getFirstContainer()->getHeight();
 	fl_ContainerLayout * myL = myContainingLayout();
 	if((myL->getContainerType() != FL_CONTAINER_SHADOW) &&
