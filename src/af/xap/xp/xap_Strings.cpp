@@ -65,7 +65,7 @@ const XML_Char * XAP_StringSet::getLanguageName(void) const
 XAP_BuiltinStringSet::XAP_BuiltinStringSet(XAP_App * pApp, const XML_Char * szLanguageName)
 	: XAP_StringSet(pApp,szLanguageName)
 {
-#define dcl(id,s)					s,
+#define dcl(id,s)					(const XML_Char *) s,
 
 	static const XML_Char * s_a[] =
 	{
@@ -202,7 +202,7 @@ const XML_Char * XAP_DiskStringSet::getValue(XAP_String_Id id) const
 // build a static table to map id by names into numbers
 //////////////////////////////////////////////////////////////////
 
-#define dcl(id,s)					{ #id, XAP_STRING_ID_##id },
+#define dcl(id,s)					{ (const XML_Char *) #id, XAP_STRING_ID_##id },
 
 static struct { const XML_Char * szName; XAP_String_Id id; } s_map[] =
 {
@@ -263,7 +263,7 @@ void XAP_DiskStringSet::_startElement(const XML_Char *name, const XML_Char **att
 	if (!m_parserState.m_parserStatus)		// eat if already had an error
 		return;
 
-	if (UT_XML_stricmp(name, "AbiStrings") == 0)
+	if (strcmp((char*)name, "AbiStrings") == 0)
 	{
 		// we expect something of the form:
 		// <AbiStrings app="AbiWord" ver="1.0" language="en-US">...</AbiStrings>
@@ -273,22 +273,22 @@ void XAP_DiskStringSet::_startElement(const XML_Char *name, const XML_Char **att
 		{
 			UT_ASSERT(a[1] && *a[1]);	// require a value for each attribute keyword
 
-			if (UT_XML_stricmp(a[0], "app") == 0)
+			if (strcmp((char*)a[0], "app") == 0)
 			{
 				const char * szThisApp = m_pApp->getApplicationName();
 				UT_DEBUGMSG(("Found strings file for application [%s] (this is [%s]).\n",
 							a[1],szThisApp));
-				if (UT_XML_stricmp(a[1],szThisApp) != 0)
+				if (strcmp((char*)a[1],szThisApp) != 0)
 				{
 					UT_DEBUGMSG(("Strings file does not match this application.\n"));
 					goto InvalidFileError;
 				}
 			}
-			else if (UT_XML_stricmp(a[0], "ver") == 0)
+			else if (strcmp((char*)a[0], "ver") == 0)
 			{
 				// TODO test version number
 			}
-			else if (UT_XML_stricmp(a[0], "language") == 0)
+			else if (strcmp((char*)a[0], "language") == 0)
 			{
 				UT_DEBUGMSG(("Found strings for language [%s].\n",a[1]));
 				if (!setLanguage(a[1]))
@@ -298,7 +298,7 @@ void XAP_DiskStringSet::_startElement(const XML_Char *name, const XML_Char **att
 			a += 2;
 		}
 	}
-	else if (UT_XML_stricmp(name, "Strings") == 0)
+	else if (strcmp((char*)name, "Strings") == 0)
 	{
 		// we found a set of strings.  we expect something of the form:
 		// <Strings class="type" n0="v0" n1="v1" ... />
@@ -323,7 +323,7 @@ void XAP_DiskStringSet::_startElement(const XML_Char *name, const XML_Char **att
 		{
 			UT_ASSERT(a[1] && *a[1]);	// require a value for each attribute keyword
 
-			if (UT_XML_stricmp(a[0],"class") == 0)
+			if (strcmp((char*)a[0],"class") == 0)
 				continue;
 			
 			if (!setValue(a[0],a[1]))

@@ -28,6 +28,31 @@
 #include "ut_string.h"
 #include "xap_Prefs.h"
 
+struct xmlToIdMapping {
+	char *m_name;
+	int m_type;
+};
+
+
+enum
+{
+	TT_ABIPREFERENCES,
+	TT_GEOMETRY,
+	TT_RECENT,
+	TT_SCHEME,
+	TT_SELECT
+};
+
+// keep these in alphabetical order
+static struct xmlToIdMapping s_Tokens[] =
+{
+	{ "AbiPreferences",		TT_ABIPREFERENCES },
+	{ "Geometry",			TT_GEOMETRY },
+	{ "Recent",				TT_RECENT },
+	{ "Scheme",				TT_SCHEME },
+	{ "Select",				TT_SELECT }
+};
+
 /*****************************************************************/
 
 XAP_PrefsScheme::XAP_PrefsScheme( XAP_Prefs *pPrefs, const XML_Char * szSchemeName)
@@ -64,7 +89,7 @@ bool XAP_PrefsScheme::setValue(const XML_Char * szKey, const XML_Char * szValue)
 	UT_HashEntry * pEntry = m_hash.findEntry((char*)szKey);
 	if (pEntry)
 	{
-		if (UT_stricmp(szValue,pEntry->pszRight) == 0)
+		if (strcmp((const char*)szValue,pEntry->pszRight) == 0)
 			return true;				// equal values, no changes required
 		
 		m_hash.setEntry(pEntry, (char*)szValue, NULL); // update with new value
@@ -92,7 +117,7 @@ bool XAP_PrefsScheme::getValue(const XML_Char * szKey, const XML_Char ** pszValu
 		return false;
 
 	if (pszValue)
-		*pszValue = pEntry->pszRight;
+		*pszValue = (const XML_Char*)pEntry->pszRight;
 	return true;
 }
 
@@ -136,9 +161,9 @@ bool XAP_PrefsScheme::getNthValue(UT_uint32 k, const XML_Char ** pszKey, const X
 		return false;
 
 	if (pszKey)
-		*pszKey = pEntry->pszLeft;
+		*pszKey = (const XML_Char*)pEntry->pszLeft;
 	if (pszValue)
-		*pszValue = pEntry->pszRight;
+		*pszValue = (const XML_Char*)pEntry->pszRight;
 
 	return true;
 }
@@ -365,7 +390,7 @@ XAP_PrefsScheme * XAP_Prefs::getScheme(const XML_Char * szSchemeName) const
 	{
 		XAP_PrefsScheme * p = getNthScheme(k);
 		UT_ASSERT(p);
-		if (UT_strcmp(szSchemeName,p->getSchemeName()) == 0)
+		if (strcmp((const char*)szSchemeName,(const char*)p->getSchemeName()) == 0)
 			return p;
 	}
 
@@ -377,7 +402,7 @@ bool XAP_Prefs::addScheme(XAP_PrefsScheme * pNewScheme)
 	const XML_Char * szBuiltinSchemeName = getBuiltinSchemeName();
 	const XML_Char * szThisSchemeName = pNewScheme->getSchemeName();
 	
-	if (UT_strcmp(szThisSchemeName, szBuiltinSchemeName) == 0)
+	if (strcmp((const char*)szThisSchemeName, (const char*)szBuiltinSchemeName) == 0)
 	{
 		UT_ASSERT(m_builtinScheme == NULL);
 		m_builtinScheme = pNewScheme;
@@ -393,7 +418,7 @@ XAP_PrefsScheme * XAP_Prefs::getCurrentScheme(bool bCreate)
 	{
 		// the builtin scheme is not updatable, 
 		// so we may need to create one that is
-		if ( !strcmp(m_currentScheme->getSchemeName(), "_builtin_") ) 
+		if ( !strcmp((const char*)m_currentScheme->getSchemeName(), "_builtin_") ) 
 		{
 			const XML_Char new_name[] = "_custom_";
 
@@ -515,6 +540,11 @@ static void startElement_SystemDefaultFile(void *userData, const XML_Char *name,
 	pPrefs->_startElement_SystemDefaultFile(name,atts);
 }
 
+static int n_compare (const char *name, const xmlToIdMapping *id)
+{
+	return strcmp (name, id->m_name);
+}
+
 
 /*****************************************************************/
 
@@ -525,8 +555,18 @@ void XAP_Prefs::_startElement(const XML_Char *name, const XML_Char **atts)
 	if (!m_parserState.m_parserStatus)		// eat if already had an error
 		return;
 
-	if (UT_strcmp(name, "AbiPreferences") == 0)
+	xmlToIdMapping * id = NULL;
+	id = (xmlToIdMapping *)bsearch ((const void*)name, (const void*)s_Tokens,
+									sizeof(s_Tokens)/sizeof(xmlToIdMapping),
+									sizeof (xmlToIdMapping),
+									(int (*)(const void*, const void*))n_compare);
+	if (!id)
+		return;
+
+	switch (id->m_type)
 	{
+		case TT_ABIPREFERENCES:
+		{
 		m_parserState.m_bFoundAbiPreferences = true;
 
 		// we expect something of the form:
@@ -537,7 +577,7 @@ void XAP_Prefs::_startElement(const XML_Char *name, const XML_Char **atts)
 		{
 			UT_ASSERT(a[1] && *a[1]);	// require a value for each attribute keyword
 
-			if (UT_strcmp(a[0], "app") == 0)
+			if (strcmp((const char*)a[0], "app") == 0)
 			{
 				// TODO the following test will fail if you are running
 				// TODO both an AbiWord (release) build and an AbiWord
@@ -548,22 +588,23 @@ void XAP_Prefs::_startElement(const XML_Char *name, const XML_Char **atts)
 				const char * szThisApp = m_pApp->getApplicationName();
 				UT_DEBUGMSG(("Found preferences for application [%s] (this is [%s]).\n",
 							a[1],szThisApp));
-				if (UT_strcmp(a[1],szThisApp) != 0)
+				if (strcmp((const char*)a[1],szThisApp) != 0)
 				{
 					UT_DEBUGMSG(("Preferences file does not match this application.\n"));
 					goto InvalidFileError;
 				}
 			}
-			else if (UT_strcmp(a[0], "ver") == 0)
+			else if (strcmp((const char*)a[0], "ver") == 0)
 			{
 				// TODO test version number
 			}
 
 			a += 2;
 		}
-	}
-	else if (UT_strcmp(name, "Select") == 0)
-	{
+		break;
+		}
+		case TT_SELECT:
+		{
 		m_parserState.m_bFoundSelect = true;
 		
 		// we expect something of the form:
@@ -578,13 +619,13 @@ void XAP_Prefs::_startElement(const XML_Char *name, const XML_Char **atts)
 		{
 			UT_ASSERT(a[1] && *a[1]);	// require a value for each attribute keyword
 
-			if (UT_strcmp(a[0], "scheme") == 0)
+			if (strcmp((const char*)a[0], "scheme") == 0)
 			{
 				FREEP(m_parserState.m_szSelectedSchemeName);
-				if (!UT_cloneString((char *&)m_parserState.m_szSelectedSchemeName,a[1]))
+				if (!UT_cloneString((char *&)m_parserState.m_szSelectedSchemeName,(const char*)a[1]))
 					goto MemoryError;
 			}
-			else if (UT_strcmp(a[0], "autosaveprefs") == 0)
+			else if (strcmp((char*)a[0], "autosaveprefs") == 0)
 			{
 				// m_bAutoSavePrefs controls whether we automatically
 				// save any changes in the preferences during
@@ -596,7 +637,7 @@ void XAP_Prefs::_startElement(const XML_Char *name, const XML_Char **atts)
 				
 				m_bAutoSavePrefs = (*a[1] == '1');
 			}
-			else if (UT_strcmp(a[0], "useenvlocale") == 0)
+			else if (strcmp((const char*)a[0], "useenvlocale") == 0)
 			{
 				m_bUseEnvLocale = (*a[1] == '1');
 			}
@@ -609,9 +650,10 @@ void XAP_Prefs::_startElement(const XML_Char *name, const XML_Char **atts)
 			UT_DEBUGMSG(("No scheme selected in <Select...>\n"));
 			goto InvalidFileError;
 		}
-	}
-	else if (UT_strcmp(name, "Scheme") == 0)
-	{
+		break;
+		}
+		case TT_SCHEME:
+		{
 		// we found a preferences scheme.  we expect something of the form:
 		// <Scheme name="myScheme" n0="v0" n1="v1" ... />
 		// where the [nk,vk] are arbitrary name/value pairs that mean
@@ -632,13 +674,13 @@ void XAP_Prefs::_startElement(const XML_Char *name, const XML_Char **atts)
 		{
 			UT_ASSERT(a[1] && *a[1]);	// require a value for each attribute keyword
 
-			if (UT_strcmp(a[0], "name") == 0)
+			if (strcmp((const char*)a[0], "name") == 0)
 			{
 				bIsNamed = true;
 				
 				const XML_Char * szBuiltinSchemeName = getBuiltinSchemeName();
 
-				if (UT_strcmp(a[1], szBuiltinSchemeName) == 0)
+				if (strcmp((const char*)a[1], (const char*)szBuiltinSchemeName) == 0)
 				{
 					UT_DEBUGMSG(("Reserved scheme name [%s] found in file; ignoring.\n",a[1]));
 					goto IgnoreThisScheme;
@@ -667,9 +709,10 @@ void XAP_Prefs::_startElement(const XML_Char *name, const XML_Char **atts)
 		if (!addScheme(pNewScheme))
 			goto MemoryError;
 		pNewScheme = NULL;				// we don't own it anymore
-	}
-	else if (UT_strcmp(name, "Recent") == 0)
-	{
+		break;
+		}
+		case TT_RECENT:
+		{
 		m_parserState.m_bFoundRecent = true;
 		
 		// we expect something of the form:
@@ -680,11 +723,11 @@ void XAP_Prefs::_startElement(const XML_Char *name, const XML_Char **atts)
 		{
 			UT_ASSERT(a[1] && *a[1]);	// require a value for each attribute keyword
 
-			if (UT_strcmp(a[0], "max") == 0)
+			if (strcmp((const char*)a[0], "max") == 0)
 			{
-				m_iMaxRecent = atoi(a[1]);
+				m_iMaxRecent = atoi((const char*)a[1]);
 			}
-			else if (UT_strnicmp(a[0], "name", 4) == 0)
+			else if (strncmp((const char*)a[0], "name", 4) == 0)
 			{
 				// NOTE: taking advantage of the fact that XML_Char == char
 				UT_ASSERT((sizeof(XML_Char) == sizeof(char)));
@@ -699,10 +742,11 @@ void XAP_Prefs::_startElement(const XML_Char *name, const XML_Char **atts)
 		}
 
 		_pruneRecent();
-	}
-	else if (UT_strcmp(name, "Geometry") == 0 && 
-             !(m_geom.m_flags &  PREF_FLAG_GEOMETRY_NOUPDATE))
-	{
+		break;
+		}
+		case TT_GEOMETRY:
+		{
+        if (m_geom.m_flags &  PREF_FLAG_GEOMETRY_NOUPDATE) break;
 		m_parserState.m_bFoundGeometry = true;
 		
 		// we expect something of the form:
@@ -716,34 +760,34 @@ void XAP_Prefs::_startElement(const XML_Char *name, const XML_Char **atts)
 			UT_ASSERT(a[1] && *a[1]);	// require a value for each attribute keyword
 
 
-			if (UT_strcmp(a[0], "width") == 0)
+			if (strcmp((const char*)a[0], "width") == 0)
 			{
-				m_geom.m_width = atoi(a[1]);
+				m_geom.m_width = atoi((const char*)a[1]);
 			}
-			else if (UT_strcmp(a[0], "height") == 0)
+			else if (strcmp((const char*)a[0], "height") == 0)
 			{
-				m_geom.m_height = atoi(a[1]);
+				m_geom.m_height = atoi((const char*)a[1]);
 			}
-			else if (UT_strcmp(a[0], "posx") == 0)
+			else if (strcmp((const char*)a[0], "posx") == 0)
 			{
-				m_geom.m_posx = atoi(a[1]);
+				m_geom.m_posx = atoi((const char*)a[1]);
 			}
-			else if (UT_strcmp(a[0], "posy") == 0)
+			else if (strcmp((const char*)a[0], "posy") == 0)
 			{
-				m_geom.m_posy = atoi(a[1]);
+				m_geom.m_posy = atoi((const char*)a[1]);
 			}
-			else if (UT_strcmp(a[0], "flags") == 0)
+			else if (strcmp((const char*)a[0], "flags") == 0)
 			{
-				m_geom.m_flags = atoi(a[1]) & ~PREF_FLAG_GEOMETRY_NOUPDATE;
+				m_geom.m_flags = atoi((const char*)a[1]) & ~PREF_FLAG_GEOMETRY_NOUPDATE;
 			}
-
 
 			a += 2;
 		}
+		}
 	}
-
 	// successful parse of tag...
-	
+
+
 IgnoreThisScheme:
 	DELETEP(pNewScheme);
 	return;								// success
@@ -1020,10 +1064,10 @@ bool XAP_Prefs::savePrefsFile(void)
 					// from the builtin set.
 					const XML_Char * szBuiltinValue = NO_PREF_VALUE;
 					m_builtinScheme->getValue(szKey,&szBuiltinValue);
-					if (UT_strcmp(szValue,szBuiltinValue) != 0 ||
+					if (strcmp((const char*)szValue,(const char*)szBuiltinValue) != 0 ||
 						// Always print debug values
-						UT_XML_strnicmp(szKey, DEBUG_PREFIX,
-						                sizeof(DEBUG_PREFIX) - 1) == 0)
+					strncmp((const char*)szKey, (const char*)DEBUG_PREFIX,
+						sizeof(DEBUG_PREFIX) - 1) == 0)
 					{
 						need_print = true;
 					}
@@ -1109,7 +1153,7 @@ void XAP_Prefs::_startElement_SystemDefaultFile(const XML_Char *name, const XML_
 	if (!m_parserState.m_parserStatus)		// eat if already had an error
 		return;
 
-	if (UT_strcmp(name, "SystemDefaults") == 0)
+	if (strcmp((const char*)name, "SystemDefaults") == 0)
 	{
 		// we found the system default preferences scheme.
 		//
@@ -1130,7 +1174,7 @@ void XAP_Prefs::_startElement_SystemDefaultFile(const XML_Char *name, const XML_
 			// we ignore "name=<schemename>" just incase they copied and
 			// pasted a user-profile into the system file.
 			
-			if (UT_strcmp(a[0], "name") != 0)
+			if (strcmp((const char*)a[0], "name") != 0)
 				if (!m_builtinScheme->setValue(a[0],a[1]))
 					goto MemoryError;
 

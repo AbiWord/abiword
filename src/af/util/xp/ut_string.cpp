@@ -24,7 +24,7 @@
 #include <math.h>
 #include <ctype.h>
 #ifdef HAVE_LIBXML2
-#include <glib.h>
+#include <libxml/parserInternals.h>
 #endif
 
 #include "ut_types.h"
@@ -237,19 +237,19 @@ bool UT_XML_cloneString(XML_Char *& rszDest, const XML_Char * szSource)
 UT_sint32 UT_XML_stricmp(const XML_Char * sz1, const XML_Char * sz2)
 {
 	UT_ASSERT(sizeof(char) == sizeof(XML_Char));
-	return UT_stricmp(sz1,sz2);
+	return UT_stricmp((const char*)sz1,(const char*)sz2);
 }
 
 UT_sint32 UT_XML_strnicmp(const XML_Char * sz1, const XML_Char * sz2, const UT_uint32 n)
 {
 	UT_ASSERT(sizeof(char) == sizeof(XML_Char));
-	return UT_strnicmp(sz1,sz2, n);
+	return UT_strnicmp((const char*)sz1,(const char*)sz2,n);
 }
 
 UT_sint32 UT_XML_strcmp(const XML_Char * sz1, const XML_Char * sz2)
 {
 	UT_ASSERT(sizeof(char) == sizeof(XML_Char));
-	return strcmp(sz1,sz2);
+	return strcmp((const char*)sz1,(const char*)sz2);
 }
 
 bool UT_XML_cloneNoAmpersands(XML_Char *& rszDest, const XML_Char * szSource)
@@ -925,31 +925,18 @@ static void startElement(void *userData, const XML_Char *name, const XML_Char **
 
 XML_Char *UT_decodeXMLstring(XML_Char *in)
 {
+	XML_Char *out = 0;
+#ifdef HAVE_LIBXML2
+	xmlParserCtxtPtr p = xmlCreateDocParserCtxt(in);
+	out = xmlStringDecodeEntities(p, in, XML_SUBSTITUTE_BOTH, 0, 0, 0);
+	xmlFreeParserCtxt (p);
+	return out;
+#else
 	// There has *got* to be an easier way to do this with expat, but I
 	// didn't spot it from looking at the expat source code.  Anyhow, this
 	// is just used during init to chomp the preference default value
 	// strings, so the amount of work done probably doesn't matter too
 	// much.
-	XML_Char *out = 0;
-#ifdef HAVE_LIBXML2
-	static xmlDocPtr dok;
-	//UT_DEBUGMSG(("BLAH in:%s\n",in));
-	char* in2 = 
-	  g_strdup_printf("<?xml version=\"1.0\" encoding=\"utf-8\" ?>\n"
-			  "<fake blah=\"%s\"/>\n",in);
-	dok = xmlParseDoc(in2);
-	if (dok == NULL)
-	  UT_DEBUGMSG(("XML parsing error\n"));
-	else
-	  {
-	    xmlNodePtr node = xmlDocGetRootElement(dok);
-	    out = UT_strdup(node->properties->children->content);
-	    //UT_DEBUGMSG(("BLAH out:%s\n",out));
-	  }
-	g_free(in2);
-	xmlFreeDoc(dok);
-	return out;
-#else
 	const char s1[] = "<fake blah=\"";
 	const char s2[] = "\"/>";
 	XML_Parser parser = 0;

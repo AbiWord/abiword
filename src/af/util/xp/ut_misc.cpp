@@ -295,7 +295,7 @@ const XML_Char* UT_getAttribute(const XML_Char* name, const XML_Char** atts)
 
 	while (*p)
 	{
-		if (0 == UT_stricmp(p[0], name))
+		if (0 == strcmp((const char*)p[0], (const char*)name))
 			break;
 		p += 2;
 	}

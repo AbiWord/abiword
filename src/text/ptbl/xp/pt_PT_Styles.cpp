@@ -31,13 +31,13 @@
 
 #define _s(name, type, base, follow, props)		\
 	do { const XML_Char * a[] = {				\
-			PT_NAME_ATTRIBUTE_NAME, name,		\
-			PT_TYPE_ATTRIBUTE_NAME, type,		\
-			PT_BASEDON_ATTRIBUTE_NAME, base,	\
-			PT_FOLLOWEDBY_ATTRIBUTE_NAME, follow,	\
-			PT_PROPS_ATTRIBUTE_NAME, props,		\
+			PT_NAME_ATTRIBUTE_NAME, (XML_Char*) name,	\
+			PT_TYPE_ATTRIBUTE_NAME, (XML_Char*) type,	\
+			PT_BASEDON_ATTRIBUTE_NAME, (XML_Char*) base,\
+			PT_FOLLOWEDBY_ATTRIBUTE_NAME, (XML_Char*)follow,\
+			PT_PROPS_ATTRIBUTE_NAME, (XML_Char*)props,	\
 			0};									\
-		if (!_createBuiltinStyle(name, a))		\
+		if (!_createBuiltinStyle(name, a))	\
 			goto Failed;						\
 	} while(0);
 
@@ -113,7 +113,7 @@ bool pt_PieceTable::appendStyle(const XML_Char ** attributes)
 	// verify unique name
 
 	UT_ASSERT(sizeof(char) == sizeof(XML_Char));
-	const char * szName = UT_getAttribute(PT_NAME_ATTRIBUTE_NAME, attributes);
+	const char * szName = (const char *) UT_getAttribute((const XML_Char*)PT_NAME_ATTRIBUTE_NAME, attributes);
 	if (!szName || !*szName)
 		return true;		// silently ignore unnamed styles
 

@@ -222,12 +222,12 @@ void XAP_UnixDialog_Insert_Symbol::runModeless(XAP_Frame * pFrame)
 	connectFocusModeless(GTK_WIDGET(mainWindow),m_pApp);
 
 	// To center the dialog, we need the frame of its parent.
-	XAP_UnixFrame * pUnixFrame = static_cast<XAP_UnixFrame *>(pFrame);
-	UT_ASSERT(pUnixFrame);
+	//XAP_UnixFrame * pUnixFrame = static_cast<XAP_UnixFrame *>(pFrame);
+	//UT_ASSERT(pUnixFrame);
 	
 	// Get the GtkWindow of the parent frame
-	GtkWidget * parentWindow = pUnixFrame->getTopLevelWindow();
-	UT_ASSERT(parentWindow);
+	//GtkWidget * parentWindow = pUnixFrame->getTopLevelWindow();
+	//UT_ASSERT(parentWindow);
 	
 	// Center our new dialog in its parent.
 	
@@ -506,7 +506,7 @@ GtkWidget * XAP_UnixDialog_Insert_Symbol::_constructWindow(void)
 	gtk_box_pack_start (GTK_BOX (vboxInsertS), hboxInsertS, TRUE, TRUE, 0);
 
 	UT_XML_cloneNoAmpersands(tmp, pSS->getValue(XAP_STRING_ID_DLG_Insert));
-	m_buttonOK = gtk_button_new_with_label (tmp);
+	m_buttonOK = gtk_button_new_with_label ((const gchar*)tmp);
 	FREEP(tmp);
 
 	gtk_object_set_data (GTK_OBJECT (m_windowMain), "buttonOK", m_buttonOK);
@@ -520,7 +520,7 @@ GtkWidget * XAP_UnixDialog_Insert_Symbol::_constructWindow(void)
 	gtk_box_pack_start(GTK_BOX(hboxInsertS), m_areaCurrentSym, TRUE, FALSE, 0);
 
 	UT_XML_cloneNoAmpersands(tmp, pSS->getValue(XAP_STRING_ID_DLG_Close));
-	m_buttonCancel = gtk_button_new_with_label (tmp);
+	m_buttonCancel = gtk_button_new_with_label ((const gchar*)tmp);
 	FREEP(tmp);
 
 	gtk_object_set_data (GTK_OBJECT (m_windowMain), "buttonCancel", m_buttonCancel);

@@ -302,7 +302,7 @@ GtkWidget * XAP_UnixDialog_FontChooser::constructWindow(void)
 
 	windowFontSelection = gtk_window_new (GTK_WINDOW_DIALOG);
 	gtk_object_set_data (GTK_OBJECT (windowFontSelection), "windowFontSelection", windowFontSelection);
-	gtk_window_set_title (GTK_WINDOW (windowFontSelection), pSS->getValue(XAP_STRING_ID_DLG_UFS_FontTitle));
+	gtk_window_set_title (GTK_WINDOW (windowFontSelection), (const gchar*)pSS->getValue(XAP_STRING_ID_DLG_UFS_FontTitle));
 	gtk_window_set_policy (GTK_WINDOW (windowFontSelection), FALSE, TRUE, FALSE);
 
 	vboxOuter = gtk_vbox_new (FALSE, 0);
@@ -318,14 +318,14 @@ GtkWidget * XAP_UnixDialog_FontChooser::constructWindow(void)
 	gtk_widget_show (fixedButtons);
 	gtk_box_pack_start (GTK_BOX (vboxOuter), fixedButtons, FALSE, TRUE, 0);
 
-	buttonOK = gtk_button_new_with_label (pSS->getValue(XAP_STRING_ID_DLG_OK));
+	buttonOK = gtk_button_new_with_label ((const gchar*)pSS->getValue(XAP_STRING_ID_DLG_OK));
 	gtk_object_set_data (GTK_OBJECT (windowFontSelection), "buttonOK", buttonOK);
 	gtk_widget_show (buttonOK);
 	gtk_fixed_put (GTK_FIXED (fixedButtons), buttonOK, 279, 0);
 	GTK_WIDGET_SET_FLAGS (buttonOK, GTK_CAN_DEFAULT);
 	gtk_widget_grab_default (buttonOK);
 
-	buttonCancel = gtk_button_new_with_label (pSS->getValue(XAP_STRING_ID_DLG_Cancel));
+	buttonCancel = gtk_button_new_with_label ((const gchar*)pSS->getValue(XAP_STRING_ID_DLG_Cancel));
 	gtk_object_set_data (GTK_OBJECT (windowFontSelection), "buttonCancel", buttonCancel);
 	gtk_widget_show (buttonCancel);
 	gtk_fixed_put (GTK_FIXED (fixedButtons), buttonCancel, 374, 6);
@@ -429,7 +429,7 @@ GtkWidget * XAP_UnixDialog_FontChooser::constructWindowContents(GtkObject *paren
 	                  (GtkAttachOptions) (GTK_EXPAND | GTK_FILL),
 	                  (GtkAttachOptions) (GTK_EXPAND | GTK_FILL), 0, 0);
 
-	labelFont = gtk_label_new (pSS->getValue(XAP_STRING_ID_DLG_UFS_FontLabel));
+	labelFont = gtk_label_new ((const gchar *)pSS->getValue(XAP_STRING_ID_DLG_UFS_FontLabel));
 	gtk_widget_set_name (labelFont, "labelFont");
 	gtk_widget_ref (labelFont);
 	gtk_object_set_data_full (GTK_OBJECT (window1), "labelFont", labelFont,
@@ -466,7 +466,7 @@ GtkWidget * XAP_UnixDialog_FontChooser::constructWindowContents(GtkObject *paren
 	                  (GtkAttachOptions) (GTK_FILL),
 	                  (GtkAttachOptions) (GTK_FILL), 0, 0);
 
-	labelStyle = gtk_label_new (pSS->getValue(XAP_STRING_ID_DLG_UFS_StyleLabel));
+	labelStyle = gtk_label_new ((const gchar*)pSS->getValue(XAP_STRING_ID_DLG_UFS_StyleLabel));
 	gtk_widget_set_name (labelStyle, "labelStyle");
 	gtk_widget_ref (labelStyle);
 	gtk_object_set_data_full (GTK_OBJECT (window1), "labelStyle", labelStyle,
@@ -503,7 +503,7 @@ GtkWidget * XAP_UnixDialog_FontChooser::constructWindowContents(GtkObject *paren
 	                  (GtkAttachOptions) (GTK_FILL),
 	                  (GtkAttachOptions) (GTK_FILL), 0, 0);
 
-	labelSize = gtk_label_new (pSS->getValue(XAP_STRING_ID_DLG_UFS_SizeLabel));
+	labelSize = gtk_label_new ((const gchar*)pSS->getValue(XAP_STRING_ID_DLG_UFS_SizeLabel));
 	gtk_widget_set_name (labelSize, "labelSize");
 	gtk_widget_ref (labelSize);
 	gtk_object_set_data_full (GTK_OBJECT (window1), "labelSize", labelSize,
@@ -540,7 +540,7 @@ GtkWidget * XAP_UnixDialog_FontChooser::constructWindowContents(GtkObject *paren
 	                  (GtkAttachOptions) (GTK_FILL),
 	                  (GtkAttachOptions) (GTK_FILL), 0, 0);
 
-	frameEffects = gtk_frame_new (pSS->getValue(XAP_STRING_ID_DLG_UFS_EffectsFrameLabel));
+	frameEffects = gtk_frame_new ((const gchar*)pSS->getValue(XAP_STRING_ID_DLG_UFS_EffectsFrameLabel));
 	gtk_object_set_data (parent, "frameEffects", frameEffects);
 	gtk_widget_show (frameEffects);
 	gtk_box_pack_start(GTK_BOX (vboxmisc), frameEffects, 0,0, 2);
@@ -550,13 +550,13 @@ GtkWidget * XAP_UnixDialog_FontChooser::constructWindowContents(GtkObject *paren
 	gtk_widget_show (hboxDecorations);
 	gtk_container_add (GTK_CONTAINER (frameEffects), hboxDecorations);
 
-	checkbuttonStrikeout = gtk_check_button_new_with_label (pSS->getValue(XAP_STRING_ID_DLG_UFS_StrikeoutCheck));
+	checkbuttonStrikeout = gtk_check_button_new_with_label ((const gchar*)pSS->getValue(XAP_STRING_ID_DLG_UFS_StrikeoutCheck));
 	gtk_object_set_data (parent, "checkbuttonStrikeout", checkbuttonStrikeout);
 	gtk_container_border_width (GTK_CONTAINER (checkbuttonStrikeout), 5);
 	gtk_widget_show (checkbuttonStrikeout);
 	gtk_box_pack_start (GTK_BOX (hboxDecorations), checkbuttonStrikeout, TRUE, TRUE, 0);
 
-	checkbuttonUnderline = gtk_check_button_new_with_label (pSS->getValue(XAP_STRING_ID_DLG_UFS_UnderlineCheck));
+	checkbuttonUnderline = gtk_check_button_new_with_label ((const gchar*)pSS->getValue(XAP_STRING_ID_DLG_UFS_UnderlineCheck));
 	gtk_object_set_data (parent, "checkbuttonUnderline", checkbuttonUnderline);
 	gtk_container_border_width (GTK_CONTAINER (checkbuttonUnderline), 5);
 	gtk_widget_show (checkbuttonUnderline);
@@ -571,7 +571,7 @@ GtkWidget * XAP_UnixDialog_FontChooser::constructWindowContents(GtkObject *paren
 	gtk_widget_show (hboxForEncoding);
 	gtk_box_pack_start (GTK_BOX (vboxmisc), hboxForEncoding, TRUE, TRUE, 0);
 	
-	labelEncoding = gtk_label_new (pSS->getValue(XAP_STRING_ID_DLG_UFS_EncodingLabel));
+	labelEncoding = gtk_label_new ((const gchar*)pSS->getValue(XAP_STRING_ID_DLG_UFS_EncodingLabel));
 	gtk_object_set_data (parent, "labelEncoding", labelEncoding);
 	gtk_widget_show (labelEncoding);
 	gtk_box_pack_start (GTK_BOX (hboxForEncoding), labelEncoding, 1,1, 2);
@@ -605,12 +605,12 @@ GtkWidget * XAP_UnixDialog_FontChooser::constructWindowContents(GtkObject *paren
 	gtk_widget_show (colorSelector);
 	gtk_box_pack_start (GTK_BOX (hbox1), colorSelector, TRUE, TRUE, 0);
 
-	labelTabFont = gtk_label_new (pSS->getValue(XAP_STRING_ID_DLG_UFS_FontTab));
+	labelTabFont = gtk_label_new ((const gchar*)pSS->getValue(XAP_STRING_ID_DLG_UFS_FontTab));
 	gtk_object_set_data (parent, "labelTabFont", labelTabFont);
 	gtk_widget_show (labelTabFont);
 	set_notebook_tab (notebookMain, 0, labelTabFont);
 
-	labelTabColor = gtk_label_new (pSS->getValue(XAP_STRING_ID_DLG_UFS_ColorTab));
+	labelTabColor = gtk_label_new ((const gchar*)pSS->getValue(XAP_STRING_ID_DLG_UFS_ColorTab));
 	gtk_object_set_data (parent, "labelTabColor", labelTabColor);
 	gtk_widget_show (labelTabColor);
 	set_notebook_tab (notebookMain, 1, labelTabColor);
@@ -801,35 +801,31 @@ void XAP_UnixDialog_FontChooser::runModal(XAP_Frame * pFrame)
 		// select nothing
 	        st = LIST_STYLE_NONE;
 	}
-	else if (!UT_stricmp(m_pFontStyle, "normal") &&
-			 !UT_stricmp(m_pFontWeight, "normal"))
+	else if (!strcmp((const char*)m_pFontStyle, "normal"))
 	{
-		st = LIST_STYLE_NORMAL;
+		if (!strcmp((const char*)m_pFontWeight, "normal"))
+			st = LIST_STYLE_NORMAL;
+		else if (!strcmp((const char*)m_pFontWeight, "bold"))
+			st = LIST_STYLE_BOLD;
+		else
+			UT_ASSERT(UT_SHOULD_NOT_HAPPEN);
 	}
-	else if (!UT_stricmp(m_pFontStyle, "normal") &&
-			 !UT_stricmp(m_pFontWeight, "bold"))
+	else if (!strcmp((const char*)m_pFontStyle, "italic"))
 	{
-		st = LIST_STYLE_BOLD;
-	}
-	else if (!UT_stricmp(m_pFontStyle, "italic") &&
-			 !UT_stricmp(m_pFontWeight, "normal"))
-	{
-		st = LIST_STYLE_ITALIC;		
-	}
-	else if (!UT_stricmp(m_pFontStyle, "italic") &&
-			 !UT_stricmp(m_pFontWeight, "bold"))
-	{
-		st = LIST_STYLE_BOLD_ITALIC;		
+		if (!strcmp((const char*)m_pFontWeight, "normal"))
+			st = LIST_STYLE_ITALIC;		
+		else if (!strcmp((const char*)m_pFontWeight, "bold"))
+			st = LIST_STYLE_BOLD_ITALIC;
+		else
+			UT_ASSERT(UT_SHOULD_NOT_HAPPEN);
 	}
 	else
-	{
 		UT_ASSERT(UT_SHOULD_NOT_HAPPEN);
-	}
 	if (st != LIST_STYLE_NONE)
 	  gtk_clist_select_row(GTK_CLIST(m_styleList), st, 0);
 	//gtk_clist_moveto(GTK_CLIST(m_styleList), st, 0, 0, -1);
 
-	g_snprintf(sizeString, SIZE_STRING_SIZE, "%s", std_size_string(UT_convertToPoints(m_pFontSize)));
+	g_snprintf(sizeString, SIZE_STRING_SIZE, "%s", std_size_string(UT_convertToPoints((const char*)m_pFontSize)));
 	foundAt = searchCList(GTK_CLIST(m_sizeList), (char *)XAP_EncodingManager::fontsizes_list.getSecond(sizeString));
 	
 
@@ -843,7 +839,7 @@ void XAP_UnixDialog_FontChooser::runModal(XAP_Frame * pFrame)
 	if (m_pColor)
 	{
 		UT_RGBColor c;
-		UT_parseColor(m_pColor, c);
+		UT_parseColor((const char*)m_pColor, c);
 
 		currentColor[RED] = ((gdouble) c.m_red / (gdouble) 255.0);
 		currentColor[GREEN] = ((gdouble) c.m_grn / (gdouble) 255.0);
@@ -902,7 +898,7 @@ void XAP_UnixDialog_FontChooser::runModal(XAP_Frame * pFrame)
 			rowNumber = GPOINTER_TO_INT(selectedRow->data);
 			gtk_clist_get_text(GTK_CLIST(m_fontList), rowNumber, 0, text);
 			UT_ASSERT(text && text[0]);
-			if (!m_pFontFamily || UT_stricmp(m_pFontFamily, text[0]))
+			if (!m_pFontFamily || strcmp((const char*)m_pFontFamily, text[0]))
 			{
 				setFontFamily((XML_Char*)text[0]);
 				m_bChangedFontFamily = true;
@@ -918,61 +914,66 @@ void XAP_UnixDialog_FontChooser::runModal(XAP_Frame * pFrame)
 
 		// perhaps these attributes really should be smashed
 		// into bitfields.  :)
-			if (rowNumber == LIST_STYLE_NORMAL)
+			switch (rowNumber)
 			{
-				if (!m_pFontStyle || UT_stricmp(m_pFontStyle, "normal"))
+			case LIST_STYLE_NORMAL:
+			{
+				if(!m_pFontStyle || strcmp((const char*)m_pFontStyle, "normal"))
 				{
 					setFontStyle((XML_Char*)"normal");
 					m_bChangedFontStyle = true;
 				}
-				if (!m_pFontWeight || UT_stricmp(m_pFontWeight, "normal"))
+				if(!m_pFontWeight || strcmp((const char*)m_pFontWeight, "normal"))
 				{
 					setFontWeight((XML_Char*)"normal");
 					m_bChangedFontWeight = true;
 				}
+				break;
 			}
-			else if (rowNumber == LIST_STYLE_BOLD)
+			case LIST_STYLE_BOLD:
 			{
-				if (!m_pFontStyle || UT_stricmp(m_pFontStyle, "normal"))
+				if(!m_pFontStyle || strcmp((const char*)m_pFontStyle, "normal"))
 				{
 					setFontStyle((XML_Char*)"normal");
 					m_bChangedFontStyle = true;
 				}
-				if (!m_pFontWeight || UT_stricmp(m_pFontWeight, "bold"))
+				if(!m_pFontWeight || strcmp((const char*)m_pFontWeight, "bold"))
 				{
 					setFontWeight((XML_Char*)"bold");
 					m_bChangedFontWeight = true;
 				}
+				break;
 			}
-			else if (rowNumber == LIST_STYLE_ITALIC)
+			case LIST_STYLE_ITALIC:
 			{
-				if (!m_pFontStyle || UT_stricmp(m_pFontStyle, "italic"))
+				if(!m_pFontStyle || strcmp((const char*)m_pFontStyle, "italic"))
 				{
 					setFontStyle((XML_Char*)"italic");
 					m_bChangedFontStyle = true;
 				}
-				if (!m_pFontWeight || UT_stricmp(m_pFontWeight, "normal"))
+				if(!m_pFontWeight || strcmp((const char*)m_pFontWeight, "normal"))
 				{
 					setFontWeight((XML_Char*)"normal");
 					m_bChangedFontWeight = true;
 				}
+				break;
 			}
-			else if (rowNumber == LIST_STYLE_BOLD_ITALIC)
+			case LIST_STYLE_BOLD_ITALIC:
 			{
-				if (!m_pFontStyle || UT_stricmp(m_pFontStyle, "italic"))
+				if(!m_pFontStyle || strcmp((const char*)m_pFontStyle, "italic"))
 				{
 					setFontStyle((XML_Char*)"italic");
 					m_bChangedFontStyle = true;
 				}
-				if (!m_pFontWeight || UT_stricmp(m_pFontWeight, "bold"))
+				if(!m_pFontWeight || strcmp((const char*)m_pFontWeight, "bold"))
 				{
 					setFontWeight((XML_Char*)"bold");
 					m_bChangedFontWeight = true;
 				}
+				break;
 			}
-			else
-			{
-				UT_ASSERT(0);
+			default:
+				UT_ASSERT(UT_SHOULD_NOT_HAPPEN);
 			}
 		}
 		
@@ -986,7 +987,7 @@ void XAP_UnixDialog_FontChooser::runModal(XAP_Frame * pFrame)
 			g_snprintf(sizeString, SIZE_STRING_SIZE, "%spt", 
 			    XAP_EncodingManager::fontsizes_list.getFirst(text[0]));
 
-			if (!m_pFontSize || UT_stricmp(m_pFontSize, sizeString))
+			if (!m_pFontSize || strcmp((const char*)m_pFontSize, sizeString))
 			{
 				setFontSize((XML_Char*)sizeString);
 				m_bChangedFontSize = true;
@@ -1006,7 +1007,7 @@ void XAP_UnixDialog_FontChooser::runModal(XAP_Frame * pFrame)
 					(unsigned int) (currentColor[GREEN]	* (gdouble) 255.0),
 					(unsigned int) (currentColor[BLUE] 	* (gdouble) 255.0));
 		
-			if (!m_pColor || UT_stricmp(m_pColor, buf_color))
+			if (!m_pColor || strcmp((const char*)m_pColor, buf_color))
 			{
 				setColor((XML_Char*)buf_color);
 				m_bChangedColor = true;

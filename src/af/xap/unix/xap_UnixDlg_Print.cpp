@@ -149,7 +149,7 @@ static void s_ok_clicked(GtkWidget * /* widget */,
 		// construct an error message box
 		const XAP_StringSet * pSS = data->frame->getApp()->getStringSet();
 		UT_ASSERT(pSS);
-		_notifyError_OKOnly(data->frame, pSS->getValue(XAP_STRING_ID_DLG_UP_InvalidPrintString));
+		_notifyError_OKOnly(data->frame, (const gchar*)pSS->getValue(XAP_STRING_ID_DLG_UP_InvalidPrintString));
 		return;
 	}
 
@@ -228,7 +228,7 @@ void XAP_UnixDialog_Print::_raisePrintDialog(XAP_Frame * pFrame)
 							 GTK_SIGNAL_FUNC(s_delete_clicked),
 							 (void *) &m_answer);
 	
-	gtk_window_set_title (GTK_WINDOW (window), pSS->getValue(XAP_STRING_ID_DLG_UP_PrintTitle));
+	gtk_window_set_title (GTK_WINDOW (window), (const gchar*)pSS->getValue(XAP_STRING_ID_DLG_UP_PrintTitle));
 	gtk_container_set_border_width (GTK_CONTAINER (window), 0);
 
 	// Add a main vbox
@@ -248,19 +248,19 @@ void XAP_UnixDialog_Print::_raisePrintDialog(XAP_Frame * pFrame)
 		gtk_box_pack_start (GTK_BOX (vbox2), hbox, FALSE, TRUE, 0);
 		gtk_widget_show (hbox);
 
-			label = gtk_label_new(pSS->getValue(XAP_STRING_ID_DLG_UP_PrintTo));
+			label = gtk_label_new((const gchar*)pSS->getValue(XAP_STRING_ID_DLG_UP_PrintTo));
 			gtk_misc_set_padding (GTK_MISC (label), 5,5);
 			gtk_box_pack_start (GTK_BOX (hbox), label, FALSE, TRUE, 0);
 			gtk_widget_show (label);
 
-			buttonPrint = gtk_radio_button_new_with_label (NULL, pSS->getValue(XAP_STRING_ID_DLG_UP_Printer));
+			buttonPrint = gtk_radio_button_new_with_label (NULL, (const gchar*)pSS->getValue(XAP_STRING_ID_DLG_UP_Printer));
 			gtk_toggle_button_set_active (GTK_TOGGLE_BUTTON (buttonPrint), TRUE);
 			gtk_box_pack_start (GTK_BOX (hbox), buttonPrint, FALSE, TRUE, 0);
 			gtk_widget_show (buttonPrint);
 
 			group = gtk_radio_button_group (GTK_RADIO_BUTTON (buttonPrint));
 
-			buttonFile = gtk_radio_button_new_with_label(group, pSS->getValue(XAP_STRING_ID_DLG_UP_File));
+			buttonFile = gtk_radio_button_new_with_label(group, (const gchar*)pSS->getValue(XAP_STRING_ID_DLG_UP_File));
 			gtk_box_pack_start (GTK_BOX (hbox), buttonFile, FALSE, TRUE, 0);
 			gtk_widget_show (buttonFile);
 
@@ -270,7 +270,7 @@ void XAP_UnixDialog_Print::_raisePrintDialog(XAP_Frame * pFrame)
 		gtk_box_pack_start (GTK_BOX (vbox2), hbox, FALSE, TRUE, 0);
 		gtk_widget_show (hbox);
 
-			label = gtk_label_new(pSS->getValue(XAP_STRING_ID_DLG_UP_PrinterCommand));
+			label = gtk_label_new((const gchar*)pSS->getValue(XAP_STRING_ID_DLG_UP_PrinterCommand));
 			gtk_misc_set_padding (GTK_MISC (label), 5,5);
 			gtk_box_pack_start (GTK_BOX (hbox), label, FALSE, TRUE, 0);
 			gtk_widget_show (label);
@@ -293,12 +293,12 @@ void XAP_UnixDialog_Print::_raisePrintDialog(XAP_Frame * pFrame)
 		gtk_box_pack_start (GTK_BOX (vbox2), vbox, FALSE, TRUE, 0);
 		gtk_widget_show (vbox);
 
-			label = gtk_label_new(pSS->getValue(XAP_STRING_ID_DLG_UP_PageRanges));
+			label = gtk_label_new((const gchar*)pSS->getValue(XAP_STRING_ID_DLG_UP_PageRanges));
 			gtk_misc_set_padding (GTK_MISC (label), 5,5);
 			gtk_box_pack_start (GTK_BOX (vbox), label, FALSE, TRUE, 0);
 			gtk_widget_show (label);
 
-			buttonAll = gtk_radio_button_new_with_label (NULL, pSS->getValue(XAP_STRING_ID_DLG_UP_All));
+			buttonAll = gtk_radio_button_new_with_label (NULL, (const gchar*)pSS->getValue(XAP_STRING_ID_DLG_UP_All));
 			gtk_box_pack_start (GTK_BOX (vbox), buttonAll, FALSE, TRUE, 0);
 			gtk_widget_show (buttonAll);
 
@@ -309,7 +309,7 @@ void XAP_UnixDialog_Print::_raisePrintDialog(XAP_Frame * pFrame)
 			gtk_box_pack_start (GTK_BOX (vbox), hbox, FALSE, FALSE, 0);
 			gtk_widget_show (hbox);
 
-				buttonRange = gtk_radio_button_new_with_label(group, pSS->getValue(XAP_STRING_ID_DLG_UP_From));
+				buttonRange = gtk_radio_button_new_with_label(group, (const gchar*)pSS->getValue(XAP_STRING_ID_DLG_UP_From));
 				gtk_box_pack_start (GTK_BOX (hbox), buttonRange, FALSE, FALSE, 0);
 				gtk_widget_show (buttonRange);
 
@@ -317,7 +317,7 @@ void XAP_UnixDialog_Print::_raisePrintDialog(XAP_Frame * pFrame)
 				gtk_box_pack_start (GTK_BOX (hbox), entryFrom, TRUE, TRUE, 0);
 				gtk_widget_show (entryFrom);
 
-				label = gtk_label_new(pSS->getValue(XAP_STRING_ID_DLG_UP_To));
+				label = gtk_label_new((const gchar*)pSS->getValue(XAP_STRING_ID_DLG_UP_To));
 				//gtk_misc_set_padding (GTK_MISC (label), 5,5);
 				gtk_box_pack_start (GTK_BOX (hbox), label, FALSE, FALSE, 0);
 				gtk_widget_show (label);
@@ -328,7 +328,7 @@ void XAP_UnixDialog_Print::_raisePrintDialog(XAP_Frame * pFrame)
 
 				group = gtk_radio_button_group (GTK_RADIO_BUTTON (buttonRange));
 
-			buttonSelection = gtk_radio_button_new_with_label(group, pSS->getValue(XAP_STRING_ID_DLG_UP_Selection));
+			buttonSelection = gtk_radio_button_new_with_label(group, (const gchar*)pSS->getValue(XAP_STRING_ID_DLG_UP_Selection));
 			gtk_box_pack_start (GTK_BOX (vbox), buttonSelection, FALSE, FALSE, 0);
 			gtk_widget_show (buttonSelection);
 
@@ -343,11 +343,11 @@ void XAP_UnixDialog_Print::_raisePrintDialog(XAP_Frame * pFrame)
 		gtk_box_pack_start (GTK_BOX (vbox2), hbox, TRUE, TRUE, 0);
 		gtk_widget_show (hbox);
 
-			buttonCollate = gtk_check_button_new_with_label (pSS->getValue(XAP_STRING_ID_DLG_UP_Collate));
+			buttonCollate = gtk_check_button_new_with_label ((const gchar*)pSS->getValue(XAP_STRING_ID_DLG_UP_Collate));
 			gtk_box_pack_start (GTK_BOX (hbox), buttonCollate, TRUE, TRUE, 0);
 			gtk_widget_show (buttonCollate);
 
-			label = gtk_label_new(pSS->getValue(XAP_STRING_ID_DLG_UP_Copies));
+			label = gtk_label_new((const gchar*)pSS->getValue(XAP_STRING_ID_DLG_UP_Copies));
 			gtk_misc_set_padding (GTK_MISC (label), 5,5);
 			gtk_box_pack_start (GTK_BOX (hbox), label, FALSE, FALSE, 0);
 			gtk_widget_show (label);
@@ -369,24 +369,24 @@ void XAP_UnixDialog_Print::_raisePrintDialog(XAP_Frame * pFrame)
 		gtk_box_pack_start (GTK_BOX (vbox2), hbox, FALSE, TRUE, 0);
 		gtk_widget_show (hbox);
 
-			label = gtk_label_new(pSS->getValue(XAP_STRING_ID_DLG_UP_PrintIn));
+			label = gtk_label_new((const gchar*)pSS->getValue(XAP_STRING_ID_DLG_UP_PrintIn));
 			gtk_misc_set_padding (GTK_MISC (label), 5,5);
 			gtk_box_pack_start (GTK_BOX (hbox), label, FALSE, TRUE, 0);
 			gtk_widget_show (label);
 
-			radioBW = gtk_radio_button_new_with_label (NULL, pSS->getValue(XAP_STRING_ID_DLG_UP_BlackWhite));
+			radioBW = gtk_radio_button_new_with_label (NULL, (const gchar*)pSS->getValue(XAP_STRING_ID_DLG_UP_BlackWhite));
 			gtk_box_pack_start (GTK_BOX (hbox), radioBW, FALSE, TRUE, 0);
 			gtk_widget_show (radioBW);
 
 			radioGrayscale = gtk_radio_button_new_with_label(
 				gtk_radio_button_group(GTK_RADIO_BUTTON(radioBW)),
-				pSS->getValue(XAP_STRING_ID_DLG_UP_Grayscale));
+				(const gchar*)pSS->getValue(XAP_STRING_ID_DLG_UP_Grayscale));
 			gtk_box_pack_start (GTK_BOX (hbox), radioGrayscale, FALSE, TRUE, 0);
 			gtk_widget_show (radioGrayscale);
 
 			radioColor = gtk_radio_button_new_with_label(
 				gtk_radio_button_group(GTK_RADIO_BUTTON(radioGrayscale)),
-				pSS->getValue(XAP_STRING_ID_DLG_UP_Color));
+				(const gchar*)pSS->getValue(XAP_STRING_ID_DLG_UP_Color));
 			gtk_box_pack_start (GTK_BOX (hbox), radioColor, FALSE, TRUE, 0);
 			gtk_widget_show (radioColor);
 			
@@ -401,7 +401,7 @@ void XAP_UnixDialog_Print::_raisePrintDialog(XAP_Frame * pFrame)
 		gtk_box_pack_end (GTK_BOX (vbox1), hbox, FALSE, TRUE, 0);
 		gtk_widget_show (hbox);
 
-			button = gtk_button_new_with_label (pSS->getValue(XAP_STRING_ID_DLG_Cancel));
+			button = gtk_button_new_with_label ((const gchar*)pSS->getValue(XAP_STRING_ID_DLG_Cancel));
 			gtk_signal_connect (GTK_OBJECT (button), "clicked",
 							GTK_SIGNAL_FUNC(s_cancel_clicked), &m_answer);
 			gtk_box_pack_end (GTK_BOX (hbox), button, TRUE, TRUE, 5);
@@ -416,7 +416,7 @@ void XAP_UnixDialog_Print::_raisePrintDialog(XAP_Frame * pFrame)
 			m_callbackData.frame = (XAP_Frame *) m_pUnixFrame;
 			m_callbackData.answer = &m_answer;
 			
-			button = gtk_button_new_with_label (pSS->getValue(XAP_STRING_ID_DLG_UP_PrintButton));
+			button = gtk_button_new_with_label ((const gchar*)pSS->getValue(XAP_STRING_ID_DLG_UP_PrintButton));
 			gtk_signal_connect (GTK_OBJECT (button), "clicked",
 							GTK_SIGNAL_FUNC(s_ok_clicked), &m_callbackData);
 			

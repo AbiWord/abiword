@@ -241,11 +241,11 @@ bool EV_UnixToolbar::synthesize(void)
 	UT_ASSERT((szValue) && (*szValue));
 	
 	GtkToolbarStyle style = GTK_TOOLBAR_ICONS;
-	if (UT_XML_stricmp(szValue,"icon")==0)
+	if (UT_XML_stricmp(szValue,(const XML_Char*)"icon")==0)
 		style = GTK_TOOLBAR_ICONS;
-	else if (UT_XML_stricmp(szValue,"text")==0)
+	else if (UT_XML_stricmp(szValue,(const XML_Char*)"text")==0)
 		style = GTK_TOOLBAR_TEXT;
-	else if (UT_XML_stricmp(szValue,"both")==0)
+	else if (UT_XML_stricmp(szValue,(const XML_Char*)"both")==0)
 		style = GTK_TOOLBAR_BOTH;
 	
 	m_wToolbar = gtk_toolbar_new(GTK_ORIENTATION_HORIZONTAL, style);
