@@ -59,6 +59,8 @@ BeginSet(pt,PT,UT_TRUE)
 	ToolbarLabel(AP_TOOLBAR_ID_EDIT_CUT,		"Corta",	tb_cut_xpm,		NULL,	"Cortar")
 	ToolbarLabel(AP_TOOLBAR_ID_EDIT_COPY,		"Copiar",	tb_copy_xpm,		NULL,	"Copiar")
 	ToolbarLabel(AP_TOOLBAR_ID_EDIT_PASTE,		"Colar",	tb_paste_xpm,		NULL,	"Colar")
+	ToolbarLabel(AP_TOOLBAR_ID_SPELLCHECK,		"Ortografia",	tb_spellcheck_xpm,	NULL,	"Verificar a ortografia do documento")
+	ToolbarLabel(AP_TOOLBAR_ID_IMG,			"Inserir Imagem", tb_insert_graphic_xpm,NULL,	"Inserir uma imagem no documento")
 
 	ToolbarLabel(AP_TOOLBAR_ID_FMT_STYLE,		"Estilo",	NoIcon,			NULL,	"Estilo")
 	ToolbarLabel(AP_TOOLBAR_ID_FMT_FONT,		"Tipo",		NoIcon,			NULL,	"Tipo da letra")
