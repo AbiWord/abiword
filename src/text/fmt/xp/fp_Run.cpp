@@ -467,9 +467,6 @@ fp_ImageRun::fp_ImageRun(fl_BlockLayout* pBL, GR_Graphics* pG, UT_uint32 iOffset
 	m_pImage = pImage;
 	
 	lookupProperties();
-
-	m_iAscent = m_iHeight;
-	m_iDescent = 0;
 }
 
 fp_ImageRun::~fp_ImageRun()
@@ -489,10 +486,10 @@ void fp_ImageRun::lookupProperties(void)
 	}
 	else
 	{
-		// If we have no image, we simply insert a one-inch-square "slug"
+		// If we have no image, we simply insert a square "slug"
 			
-		m_iWidth = m_pG->convertDimension("1in");
-		m_iHeight = m_pG->convertDimension("1in");
+		m_iWidth = m_pG->convertDimension("0.5in");
+		m_iHeight = m_pG->convertDimension("0.5in");
 	}
 		
 	UT_ASSERT(m_iWidth > 0);
@@ -567,6 +564,8 @@ void fp_ImageRun::_draw(dg_DrawArgs* pDA)
 	UT_sint32 xoff = 0, yoff = 0;
 	m_pLine->getScreenOffsets(this, xoff, yoff);
 
+	yoff += m_pLine->getAscent() - m_iAscent;
+	
 	if (m_pImage)
 	{
 		m_pG->drawImage(m_pImage, xoff, yoff);

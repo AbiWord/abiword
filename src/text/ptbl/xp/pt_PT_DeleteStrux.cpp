@@ -190,10 +190,7 @@ UT_Bool pt_PieceTable::_deleteStruxWithNotify(PT_DocPosition dpos,
 									preferredSpanAPI);
 	UT_ASSERT(pcrs);
 
-	// add record to history.  we do not attempt to coalesce these.
-	m_history.addChangeRecord(pcrs);
-	m_pDocument->notifyListeners(pfs,pcrs);
-
+#ifndef PT_NOTIFY_BEFORE_DELETES
 	switch (pfs->getStruxType())
 	{
 	case PTX_Section:
@@ -214,7 +211,35 @@ UT_Bool pt_PieceTable::_deleteStruxWithNotify(PT_DocPosition dpos,
 		UT_ASSERT(0);
 		return UT_FALSE;
 	}
+#endif
+	
+	// add record to history.  we do not attempt to coalesce these.
+	m_history.addChangeRecord(pcrs);
+	m_pDocument->notifyListeners(pfs,pcrs);
 
+#ifdef PT_NOTIFY_BEFORE_DELETES
+	switch (pfs->getStruxType())
+	{
+	case PTX_Section:
+		if (!_unlinkStrux_Section(pfs,ppfEnd,pfragOffsetEnd))
+			return UT_FALSE;
+		break;
+		
+	case PTX_Block:
+		{
+			pf_Frag_Strux_Block * pfsb = static_cast<pf_Frag_Strux_Block *>(pfs);
+			UT_ASSERT(preferredSpanAPI == pfsb->getPreferredSpanFmt());
+			if (!_unlinkStrux_Block(pfs,ppfEnd,pfragOffsetEnd))
+				return UT_FALSE;
+		}
+		break;
+		
+	default:
+		UT_ASSERT(0);
+		return UT_FALSE;
+	}
+#endif
+	
 	delete pfs;
 
 	return UT_TRUE;

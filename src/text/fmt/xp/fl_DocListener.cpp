@@ -44,6 +44,7 @@
 #include "pd_Document.h"
 #include "pp_AttrProp.h"
 
+// #define UPDATE_LAYOUT_ON_SIGNAL
 
 fl_DocListener::fl_DocListener(PD_Document* doc, FL_DocLayout *pLayout)
 {
@@ -63,6 +64,8 @@ UT_Bool fl_DocListener::populate(PL_StruxFmtHandle sfh,
 	UT_ASSERT(m_pLayout);
 	UT_DEBUGMSG(("fl_DocListener::populate\n"));
 
+	UT_Bool bResult = UT_FALSE;
+
 	switch (pcr->getType())
 	{
 	case PX_ChangeRecord::PXT_InsertSpan:
@@ -74,7 +77,8 @@ UT_Bool fl_DocListener::populate(PL_StruxFmtHandle sfh,
 			fl_BlockLayout * pBL = static_cast<fl_BlockLayout *>(pL);
 			PT_BlockOffset blockOffset = (pcr->getPosition() - pBL->getPosition());
 			UT_uint32 len = pcrs->getLength();
-			return pBL->doclistener_populateSpan(pcrs, blockOffset, len);
+			bResult = pBL->doclistener_populateSpan(pcrs, blockOffset, len);
+			goto finish_up;
 		}
 
 	case PX_ChangeRecord::PXT_InsertObject:
@@ -86,13 +90,24 @@ UT_Bool fl_DocListener::populate(PL_StruxFmtHandle sfh,
 			fl_BlockLayout * pBL = static_cast<fl_BlockLayout *>(pL);
 			PT_BlockOffset blockOffset = (pcr->getPosition() - pBL->getPosition());
 
-			return pBL->doclistener_populateObject(blockOffset,pcro);
+			bResult = pBL->doclistener_populateObject(blockOffset,pcro);
+			goto finish_up;
 		}
 
 	default:
 		UT_ASSERT(0);
 		return UT_FALSE;
 	}
+
+finish_up:
+	if (0 == m_iGlobCounter)
+	{
+#ifndef UPDATE_LAYOUT_ON_SIGNAL
+		m_pLayout->updateLayout();
+#endif
+	}
+	
+	return bResult;
 }
 
 UT_Bool fl_DocListener::populateStrux(PL_StruxDocHandle sdh,
@@ -150,6 +165,13 @@ UT_Bool fl_DocListener::populateStrux(PL_StruxDocHandle sdh,
 		return UT_FALSE;
 	}
 
+	if (0 == m_iGlobCounter)
+	{
+#ifndef UPDATE_LAYOUT_ON_SIGNAL
+		m_pLayout->updateLayout();
+#endif
+	}
+	
 	return UT_TRUE;
 }
 
@@ -379,7 +401,9 @@ UT_Bool fl_DocListener::change(PL_StruxFmtHandle sfh,
  finish_up:
 	if (0 == m_iGlobCounter)
 	{
-//		m_pLayout->updateLayout();
+#ifndef UPDATE_LAYOUT_ON_SIGNAL
+		m_pLayout->updateLayout();
+#endif
 	}
 	
 	return bResult;
@@ -395,8 +419,6 @@ UT_Bool fl_DocListener::insertStrux(PL_StruxFmtHandle sfh,
 {
 	UT_DEBUGMSG(("fl_DocListener::insertStrux\n"));
 
-	// TODO coordinate screen updating with the MultiStepStart/End noted in the previous function.
-	
 	UT_ASSERT(pcr->getType() == PX_ChangeRecord::PXT_InsertStrux);
 	const PX_ChangeRecord_Strux * pcrx = static_cast<const PX_ChangeRecord_Strux *> (pcr);
 
@@ -433,26 +455,40 @@ UT_Bool fl_DocListener::insertStrux(PL_StruxFmtHandle sfh,
 		switch (pcrx->getStruxType())	// see what we are inserting.
 		{
 		case PTX_Section:				// we are inserting a section.
-			{
-				// the immediately prior strux is a block.  everything from this point
-				// forward (to the next section) needs to be re-parented to this new
-				// section.  we also need to verify that there is a block immediately
-				// after this new section -- a section must be followed by a block
-				// because a section cannot contain content.
+		{
+			// the immediately prior strux is a block.  everything from this point
+			// forward (to the next section) needs to be re-parented to this new
+			// section.  we also need to verify that there is a block immediately
+			// after this new section -- a section must be followed by a block
+			// because a section cannot contain content.
 
-				fl_BlockLayout * pBL = static_cast<fl_BlockLayout *>(pL);
-				UT_Bool bResult = pBL->doclistener_insertSection(pcrx,sdh,lid,pfnBindHandles);
-				return bResult;
+			fl_BlockLayout * pBL = static_cast<fl_BlockLayout *>(pL);
+			UT_Bool bResult = pBL->doclistener_insertSection(pcrx,sdh,lid,pfnBindHandles);
+			if (0 == m_iGlobCounter)
+			{
+#ifndef UPDATE_LAYOUT_ON_SIGNAL
+				m_pLayout->updateLayout();
+#endif
 			}
+	
+			return bResult;
+		}
 		
 		case PTX_Block:					// we are inserting a block.
+		{
+			// the immediately prior strux is also a block.  insert the new
+			// block and split the content between the two blocks.
+			fl_BlockLayout * pBL = static_cast<fl_BlockLayout *>(pL);
+			UT_Bool bResult = pBL->doclistener_insertBlock(pcrx,sdh,lid,pfnBindHandles);
+			if (0 == m_iGlobCounter)
 			{
-				// the immediately prior strux is also a block.  insert the new
-				// block and split the content between the two blocks.
-				fl_BlockLayout * pBL = static_cast<fl_BlockLayout *>(pL);
-				UT_Bool bResult = pBL->doclistener_insertBlock(pcrx,sdh,lid,pfnBindHandles);
-				return bResult;
+#ifndef UPDATE_LAYOUT_ON_SIGNAL
+				m_pLayout->updateLayout();
+#endif
 			}
+	
+			return bResult;
+		}
 			
 		default:
 			UT_ASSERT(UT_SHOULD_NOT_HAPPEN);
@@ -469,3 +505,21 @@ UT_Bool fl_DocListener::insertStrux(PL_StruxFmtHandle sfh,
 	return UT_FALSE;
 }
 
+UT_Bool fl_DocListener::signal(UT_uint32 iSignal)
+{
+	switch (iSignal)
+	{
+	case PD_SIGNAL_UPDATE_LAYOUT:
+#ifdef UPDATE_LAYOUT_ON_SIGNAL
+		m_pLayout->updateLayout();
+#endif
+		m_pLayout->getView()->updateScreen();
+		break;
+		
+	default:
+		UT_ASSERT(UT_SHOULD_NOT_HAPPEN);
+		break;
+	}
+
+	return UT_TRUE;
+}

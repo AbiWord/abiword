@@ -1065,7 +1065,13 @@ UT_Bool FV_View::getCharFormat(const XML_Char *** pProps)
 
 			// did span format change?
 
-			UT_ASSERT((pRun->getLength()>0) || (pRun->getBlockOffset()==0));
+			/*
+			  The assert below is no longer true, and the code below it does
+			  not seem to depend on it.  We routinely allow zero-length runs
+			  to appear in the block, to create legitimate places for the
+			  ins pt to be when there are forced breaks around.
+			*/
+//			UT_ASSERT((pRun->getLength()>0) || (pRun->getBlockOffset()==0));
 
 			pAP = NULL;
 			pBlock->getSpanAttrProp(pRun->getBlockOffset()+pRun->getLength(),&pAP);
@@ -1812,22 +1818,6 @@ void FV_View::extSelHorizontal(UT_Bool bForward, UT_uint32 count)
 		_eraseInsertionPoint();
 		_setSelectionAnchor();
 		_charMotion(bForward, count);
-
-		/*
-		  It IS possible for the selection to be empty, even
-		  after extending it.  If the charMotion fails, for example,
-		  because we are at the end of a document, then the selection
-		  will end up empty once again.
-		*/
-		if (isSelectionEmpty())
-		{
-			_fixInsertionPointCoords();
-			_drawInsertionPoint();
-		}
-		else
-		{
-			_drawSelection();
-		}
 	}
 	else
 	{
@@ -1840,20 +1830,25 @@ void FV_View::extSelHorizontal(UT_Bool bForward, UT_uint32 count)
 		}
 		
 		_extSel(iOldPoint);
-		
-		if (isSelectionEmpty())
-		{
-			_resetSelection();
-		}
 	}
 	
-	if (!_ensureThatInsertionPointIsOnScreen())
+	_ensureThatInsertionPointIsOnScreen();
+		
+	/*
+	  It IS possible for the selection to be empty, even
+	  after extending it.  If the charMotion fails, for example,
+	  because we are at the end of a document, then the selection
+	  will end up empty once again.
+	*/
+	if (isSelectionEmpty())
 	{
-		if (isSelectionEmpty())
-		{
-			_fixInsertionPointCoords();
-			_drawInsertionPoint();
-		}
+		_resetSelection();
+		_fixInsertionPointCoords();
+		_drawInsertionPoint();
+	}
+	else
+	{
+		_drawSelection();
 	}
 
 	notifyListeners(AV_CHG_MOTION);
@@ -2351,7 +2346,7 @@ UT_Bool	FV_View::findReplace(const UT_UCSChar * find, const UT_UCSChar * replace
 {
 	UT_Bool bRes = _findReplace(find, replace, matchCase, bDoneEntireDocument);
 
-	_updateScreen();
+	updateScreen();
 	
 	if (isSelectionEmpty())
 	{
@@ -2431,24 +2426,7 @@ UT_Bool	FV_View::_findReplace(const UT_UCSChar * find, const UT_UCSChar * replac
 */
 void FV_View::_generalUpdate(void)
 {
-#if 1	
-	/*
-	  TODO RED ALERT!
-
-	  This routine has a major design problem.  It is called
-	  in response to a user command, NOT in response to
-	  a listener notification from the piece table.  In other
-	  words, this function is the reason that multiple windows
-	  on the same document are currently hosed.
-	*/
-	
-	/*
-	  TODO the following routine checks every paragraph in the
-	  document to see if it needs a reformat.  How is this going
-	  to perform on a 50-page document?
-	*/
-	m_pLayout->updateLayout();
-#endif	
+	m_pDoc->signalListeners(PD_SIGNAL_UPDATE_LAYOUT);
 
 	/*
 	  TODO note that we are far too heavy handed with the mask we
@@ -2459,8 +2437,6 @@ void FV_View::_generalUpdate(void)
 	  functionally correct.
 	*/
 	notifyListeners(AV_CHG_TYPING | AV_CHG_FMTCHAR | AV_CHG_FMTBLOCK);
-
-	_updateScreen();
 }
 
 UT_uint32 FV_View::findReplaceAll(const UT_UCSChar * find, const UT_UCSChar * replace,
@@ -3113,7 +3089,7 @@ void FV_View::draw(const UT_Rect* pClipRect)
 	}
 }
 
-void FV_View::_updateScreen(void)
+void FV_View::updateScreen(void)
 {
 	_draw(0,0,m_iWindowWidth,m_iWindowHeight,UT_TRUE,UT_FALSE);
 }

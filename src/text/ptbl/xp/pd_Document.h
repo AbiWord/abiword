@@ -48,6 +48,11 @@ class PX_ChangeRecord;
 //////////////////////////////////////////////////////////////////
 // PD_Document is the representation for a document.
 
+enum
+{
+	PD_SIGNAL_UPDATE_LAYOUT
+};
+
 class PD_Document : public AD_Document
 {
 public:
@@ -107,6 +112,7 @@ public:
 
 	UT_Bool					addListener(PL_Listener * pListener, PL_ListenerId * pListenerId);
 	UT_Bool					removeListener(PL_ListenerId listenerId);
+	UT_Bool					signalListeners(UT_uint32 iSignal) const;
 	UT_Bool					notifyListeners(pf_Frag_Strux * pfs, const PX_ChangeRecord * pcr) const;
 	UT_Bool					notifyListeners(pf_Frag_Strux * pfs,
 											pf_Frag_Strux * pfsNew,

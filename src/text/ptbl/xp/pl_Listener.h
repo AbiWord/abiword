@@ -87,6 +87,8 @@ public:
 									void (* pfnBindHandles)(PL_StruxDocHandle sdhNew,
 															PL_ListenerId lid,
 															PL_StruxFmtHandle sfhNew)) = 0;
+
+	virtual UT_Bool		signal(UT_uint32 iSignal) = 0;
 };
 	
 #endif /* PL_LISTENER_H */

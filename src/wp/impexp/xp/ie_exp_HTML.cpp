@@ -146,6 +146,8 @@ public:
 															PL_ListenerId lid,
 															PL_StruxFmtHandle sfhNew));
 
+	virtual UT_Bool		signal(UT_uint32 iSignal);
+
 protected:
 	void				_closeSection(void);
 	void				_closeBlock(void);
@@ -741,6 +743,12 @@ UT_Bool s_HTML_Listener::insertStrux(PL_StruxFmtHandle /*sfh*/,
 																 PL_StruxFmtHandle sfhNew))
 {
 	UT_ASSERT(0);						// this function is not used.
+	return UT_FALSE;
+}
+
+UT_Bool s_HTML_Listener::signal(UT_uint32 iSignal)
+{
+	UT_ASSERT(UT_SHOULD_NOT_HAPPEN);
 	return UT_FALSE;
 }
 

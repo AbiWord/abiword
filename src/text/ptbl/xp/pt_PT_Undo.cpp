@@ -103,9 +103,15 @@ UT_Bool pt_PieceTable::_doTheDo(const PX_ChangeRecord * pcr, UT_Bool bUndo)
 			UT_Bool bFoundStrux = _getStruxFromPosition(pcrSpan->getPosition(),&pfs);
 			UT_ASSERT(bFoundStrux);
 
+#ifndef PT_NOTIFY_BEFORE_DELETES
+			_deleteSpan(pft,fragOffset,pcrSpan->getBufIndex(),pcrSpan->getLength(),NULL,NULL);
+#endif			
+
 			m_pDocument->notifyListeners(pfs,pcr);
 			
+#ifdef PT_NOTIFY_BEFORE_DELETES
 			_deleteSpan(pft,fragOffset,pcrSpan->getBufIndex(),pcrSpan->getLength(),NULL,NULL);
+#endif			
 
 			DONE();
 		}
@@ -205,8 +211,13 @@ UT_Bool pt_PieceTable::_doTheDo(const PX_ChangeRecord * pcr, UT_Bool bUndo)
 					UT_ASSERT(pf->getType() == pf_Frag::PFT_Strux);
 
 					pf_Frag_Strux * pfs = static_cast<pf_Frag_Strux *> (pf);
-					m_pDocument->notifyListeners(pfs,pcr);
+#ifndef PT_NOTIFY_BEFORE_DELETES
 					UT_Bool bResult = _unlinkStrux_Block(pfs,NULL,NULL);
+#endif					
+					m_pDocument->notifyListeners(pfs,pcr);
+#ifdef PT_NOTIFY_BEFORE_DELETES
+					UT_Bool bResult = _unlinkStrux_Block(pfs,NULL,NULL);
+#endif					
 					UT_ASSERT(bResult);
 					DONE();
 
@@ -285,7 +296,9 @@ UT_Bool pt_PieceTable::_doTheDo(const PX_ChangeRecord * pcr, UT_Bool bUndo)
 			pf_Frag_Object * pfo = static_cast<pf_Frag_Object *> (pf);
 			UT_ASSERT(pfo->getIndexAP() == pcrObject->getIndexAP());
 
+#ifndef PT_NOTIFY_BEFORE_DELETES
 			_deleteObject(pfo,NULL,NULL);
+#endif			
 
 // TODO see if we can avoid this call to _getStruxFromPosition ??
 			pf_Frag_Strux * pfs = NULL;
@@ -294,6 +307,11 @@ UT_Bool pt_PieceTable::_doTheDo(const PX_ChangeRecord * pcr, UT_Bool bUndo)
 
 			DONE();
 			m_pDocument->notifyListeners(pfs,pcr);
+			
+#ifdef PT_NOTIFY_BEFORE_DELETES
+			_deleteObject(pfo,NULL,NULL);
+#endif			
+
 		}
 		return UT_TRUE;
 

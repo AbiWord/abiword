@@ -128,8 +128,14 @@ endif
 
 LINK_DLL	= $(LINK) $(OS_DLLFLAGS) $(DLLFLAGS)
 
+# For now, we do NOT notify before deletes, which means bug 7 is back.
+# uncomment the line below if you want bug 7 fixed, along with all of
+# the negative consequences of that condition.  :-)
+
+# ABI_BUG7_SWITCH=	-DPT_NOTIFY_BEFORE_DELETES
+
 CFLAGS		= $(OPTIMIZER) $(OS_CFLAGS) $(DEFINES) $(INCLUDES) $(XCFLAGS)	\
-			$(ABI_DBGDEFS) $(ABI_JSDEFS) $(ABI_INCS)
+			$(ABI_DBGDEFS) $(ABI_JSDEFS) $(ABI_INCS) $(ABI_BUG7_SWITCH)
 
 ##################################################################
 ##################################################################

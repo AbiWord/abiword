@@ -59,6 +59,8 @@ public:
 															PL_ListenerId lid,
 															PL_StruxFmtHandle sfhNew));
 
+	virtual UT_Bool		signal(UT_uint32 iSignal);
+
 protected:
 	PD_Document*		m_pDoc;
 	FL_DocLayout*		m_pLayout;

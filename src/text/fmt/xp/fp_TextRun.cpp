@@ -614,6 +614,7 @@ void fp_TextRun::_clearScreen(UT_Bool bFullLineHeightRect)
 	
 	UT_uint32 iRunBase = m_pBL->getPosition() + m_iOffsetFirst;
 
+#ifdef PT_NOTIFY_BEFORE_DELETES
 	if (
 		bFullLineHeightRect
 		|| m_bSquiggled
@@ -623,11 +624,19 @@ void fp_TextRun::_clearScreen(UT_Bool bFullLineHeightRect)
 			|| (iSel1 >= (iRunBase + m_iLen))
 			)
 		)
+#endif		
 	{
 		m_pG->clearArea(xoff, yoff, m_iWidth, m_pLine->getHeight());
 	}
-	
+
+#ifdef PT_NOTIFY_BEFORE_DELETES
+	/*
+	  To get bug 7 fixed again, reverse this if 0, and
+	  #define PT_NOTIFY_BEFORE_DELETES in the piece table
+	  code.
+	*/
 	_drawPart(xoff, yoff + m_pLine->getAscent() - m_iAscent, m_iOffsetFirst, m_iLen, pgbCharWidths);
+#endif	
 }
 
 void fp_TextRun::_draw(dg_DrawArgs* pDA)

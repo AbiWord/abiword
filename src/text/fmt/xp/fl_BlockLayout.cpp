@@ -1358,7 +1358,7 @@ void fl_BlockLayout::checkSpelling(void)
 
 	if (bUpdateScreen && pView)
 	{
-		pView->_updateScreen();
+		pView->updateScreen();
 		pView->_drawInsertionPoint();
 	}
 }

@@ -138,6 +138,10 @@ UT_Bool pt_PieceTable::_deleteSpanWithNotify(PT_DocPosition dpos,
 								   length);
 	UT_ASSERT(pcr);
 
+#ifndef PT_NOTIFY_BEFORE_DELETES
+	UT_Bool bResult = _deleteSpan(pft,fragOffset,pft->getBufIndex(),length,ppfEnd,pfragOffsetEnd);
+#endif	
+
 	if (_canCoalesceDeleteSpan(pcr))
 	{
 		m_history.coalesceHistory(pcr);
@@ -150,7 +154,9 @@ UT_Bool pt_PieceTable::_deleteSpanWithNotify(PT_DocPosition dpos,
 		m_pDocument->notifyListeners(pfs,pcr);
 	}
 
+#ifdef PT_NOTIFY_BEFORE_DELETES
 	UT_Bool bResult = _deleteSpan(pft,fragOffset,pft->getBufIndex(),length,ppfEnd,pfragOffsetEnd);
+#endif	
 
 	return bResult;
 }

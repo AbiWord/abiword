@@ -336,6 +336,27 @@ UT_Bool PD_Document::removeListener(PL_ListenerId listenerId)
 	return (m_vecListeners.setNthItem(listenerId,NULL,NULL) == 0);
 }
 
+UT_Bool PD_Document::signalListeners(UT_uint32 iSignal) const
+{
+	PL_ListenerId lid;
+	PL_ListenerId lidCount = m_vecListeners.getItemCount();
+
+	// for each listener in our vector, we send a notification.
+	// we step over null listners (for listeners which have been
+	// removed (views that went away)).
+	
+	for (lid=0; lid<lidCount; lid++)
+	{
+		PL_Listener * pListener = (PL_Listener *)m_vecListeners.getNthItem(lid);
+		if (pListener)
+		{
+			pListener->signal(iSignal);
+		}
+	}
+
+	return UT_TRUE;
+}
+
 UT_Bool PD_Document::notifyListeners(pf_Frag_Strux * pfs, const PX_ChangeRecord * pcr) const
 {
 	// notify listeners of a change.

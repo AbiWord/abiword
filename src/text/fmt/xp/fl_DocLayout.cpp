@@ -349,6 +349,11 @@ void FL_DocLayout::formatAll()
 
 void FL_DocLayout::updateLayout()
 {
+	/*
+	  TODO the following routine checks every paragraph in the
+	  document to see if it needs a reformat.  How is this going
+	  to perform on a 50-page document?
+	*/
 	UT_ASSERT(m_pDoc);
 
 	fl_SectionLayout* pSL = m_pFirstSection;

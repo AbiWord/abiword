@@ -149,6 +149,8 @@ public:
 	void			extSelNextPrevLine(UT_Bool bNext);
 	void			endDrag(UT_sint32 xPos, UT_sint32 yPos);
 
+	void			updateScreen(void);
+	
 // ----------------------
 
 	// goto -- this is really not implemented
@@ -191,7 +193,6 @@ protected:
 	void				_generalUpdate(void);
 	
 	void 				_draw(UT_sint32, UT_sint32, UT_sint32, UT_sint32, UT_Bool bDirtyRunsOnly, UT_Bool bClip=UT_FALSE);
-	void				_updateScreen(void);
 	
 	void				_drawBetweenPositions(PT_DocPosition left, PT_DocPosition right);
 	void				_clearBetweenPositions(PT_DocPosition left, PT_DocPosition right, UT_Bool bFullLineHeightRect);

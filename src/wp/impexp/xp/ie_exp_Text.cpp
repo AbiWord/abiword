@@ -141,6 +141,8 @@ public:
 															PL_ListenerId lid,
 															PL_StruxFmtHandle sfhNew));
 
+	virtual UT_Bool		signal(UT_uint32 iSignal);
+
 protected:
 	void				_closeBlock(void);
 	void				_outputData(const UT_UCSChar * p, UT_uint32 length);
@@ -293,6 +295,13 @@ UT_Bool s_Text_Listener::insertStrux(PL_StruxFmtHandle /*sfh*/,
 	UT_ASSERT(0);						// this function is not used.
 	return UT_FALSE;
 }
+
+UT_Bool s_Text_Listener::signal(UT_uint32 iSignal)
+{
+	UT_ASSERT(UT_SHOULD_NOT_HAPPEN);
+	return UT_FALSE;
+}
+
 
 
 /*****************************************************************/
