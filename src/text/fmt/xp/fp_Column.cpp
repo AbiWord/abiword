@@ -340,6 +340,7 @@ void fp_Container::draw(dg_DrawArgs* pDA)
 	const UT_Rect * pClipRect = pDA->pG->getClipRect();
 	UT_sint32 ytop,ybot;
 	UT_sint32 i;
+	UT_sint32 imax = (1<<31) -1;
 	if(pClipRect)
 	{
 		ybot = UT_MAX(pClipRect->height,getMaxLineHeight());
@@ -349,7 +350,7 @@ void fp_Container::draw(dg_DrawArgs* pDA)
 	else
 	{
 		ytop = 0;
-		ybot = 999999999;
+		ybot = imax;
 	}
 	bool bStop = false;
 	bool bStart = false;

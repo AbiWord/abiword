@@ -6164,6 +6164,8 @@ static bool s_doColumnsDlg(FV_View * pView)
 
 	UT_uint32 iColumns = 1;
 	bool bLineBetween = false;
+	bool bSpaceAfter = false;
+	bool bMaxHeight = false;
 
 	const XML_Char ** props_in = NULL;
 	const XML_Char * sz = NULL;
@@ -6204,7 +6206,19 @@ static bool s_doColumnsDlg(FV_View * pView)
 		
 	pDialog->setColumnOrder(iOrder);
 #endif	
-
+	if(props_in && props_in[0])
+	{
+		sz = UT_getAttribute("section-space-after",props_in);
+		if(sz && *sz)
+		{
+			bSpaceAfter = true;
+		}
+		sz = UT_getAttribute("section-max-column-height",props_in);
+		if(sz && *sz)
+		{
+			bMaxHeight = true;
+		}
+	}
 	pDialog->setColumns(iColumns);
 	pDialog->setLineBetween(bLineBetween);
 	pDialog->runModal(pFrame);
@@ -6227,7 +6241,8 @@ static bool s_doColumnsDlg(FV_View * pView)
 		{
 			strcpy(buf2, "off");
 		}
-		
+		bMaxHeight = bMaxHeight || pDialog->isMaxHeightChanged();
+		bSpaceAfter = bSpaceAfter || pDialog->isSpaceAfterChanged();
 #ifdef BIDI_ENABLED
 		char buf3[4];
 		if(pDialog->getColumnOrder())
@@ -6254,12 +6269,44 @@ static bool s_doColumnsDlg(FV_View * pView)
 		properties [3] = buf2;
 #endif
 #endif //not BIDI
-
-		pView->setSectionFormat(properties);
+		UT_sint32 num_in_props = sizeof(properties)/sizeof(XML_Char *);
+		UT_sint32 num_out_props = num_in_props;
+		if(bMaxHeight)
+		{
+			num_out_props += 2;
+			UT_DEBUGMSG(("SEVIOR: Max Height changed num_out_props = %d \n",num_out_props));
+		}
+		if(bSpaceAfter)
+		{
+			num_out_props += 2;
+			UT_DEBUGMSG(("SEVIOR: Space After changed num_out_props = %d \n",num_out_props));
+		}
+		const XML_Char ** props = (const XML_Char **) calloc(num_out_props,sizeof(XML_Char *));
+		UT_sint32 i = 0;
+		for(i = 0; i < num_in_props-1; i++)
+		{
+			props[i] = properties[i];
+		}
+		if(bSpaceAfter)
+		{
+			props[i++] = "section-space-after";
+			props[i++] = pDialog->getSpaceAfterString();
+		}
+		if(bMaxHeight)
+		{
+			props[i++] = "section-max-column-height";
+			props[i++] = pDialog->getHeightString();
+		}
+		props[i] = NULL;
+		for(i = 0; i< num_out_props; i++)
+		{
+			UT_DEBUGMSG(("SEVIOR: Setting property %d to %s \n",i,props[i]));
+		}
+		pView->setSectionFormat(props);
+		DELETEP(props);
 	}
 
 	free(props_in);
-
 	pDialogFactory->releaseDialog(pDialog);
 
 	return bOK;

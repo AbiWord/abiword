@@ -224,6 +224,9 @@ dcl(DLG_Column_Two,				"Two")
 dcl(DLG_Column_Three,			"Three")
 dcl(DLG_Column_Line_Between,	"Line between")
 dcl(DLG_Column_Number_Cols,	    "Number of Columns")
+dcl(DLG_Column_Space_After,     "Space after Column")
+dcl(DLG_Column_Size,            "Max Column size")
+
 #ifdef BIDI_ENABLED
 dcl(DLG_Column_RtlOrder,		"Use RTL Order")
 #endif

@@ -58,6 +58,7 @@ UT_sint32 UT_docUnitsFromPaperUnits(GR_Graphics * pG, UT_sint32 iPaperUnits);
 UT_sint32 UT_layoutUnitsFromPaperUnits(UT_sint32 iPaperUnits);
 UT_sint32 UT_paperUnitsFromLayoutUnits(UT_sint32 iLayoutUnits);
 
+const char * UT_incrementDimString(const char * dimString, double inc);
 UT_Dimension UT_determineDimension(const char * sz, UT_Dimension fallback = DIM_IN);
 const char * UT_dimensionName(UT_Dimension dim);
 const char * UT_convertInchesToDimensionString(UT_Dimension, double valueInInches, const char * szPrecision = NULL);

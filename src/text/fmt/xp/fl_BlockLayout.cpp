@@ -686,7 +686,7 @@ void fl_BlockLayout::_lookupProperties(void)
 		// this struxdochandle may already have been removed if there is another
         // view on this document. So check first
 	
-		if(m_pAutoNum->isItem(getStruxDocHandle()));
+		if(m_pAutoNum->isItem(getStruxDocHandle()))
 		{
 		   m_pAutoNum->removeItem(getStruxDocHandle());
 		}

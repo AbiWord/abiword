@@ -144,7 +144,10 @@ public:
 	static XAP_Dialog *		static_constructor(XAP_DialogFactory *, XAP_Dialog_Id id);
 
 	// callbacks can fire these events
-
+    void                            doSpaceAfterEntry(void);
+	void                            doMaxHeightEntry(void);
+    void                            doHeightSpin(void);
+	void                            doSpaceAfterSpin(void);
 	void                            checkLineBetween(void);
 	void                            readSpin(void);
 	void                            event_Toggle( UT_uint32 icolumns);
@@ -181,7 +184,17 @@ protected:
 	guint m_twoHandlerID;
 	guint m_threeHandlerID;
 	guint m_spinHandlerID;
-	
+	UT_sint32 m_iSpaceAfter;	
+	UT_sint32 m_iSpaceAfterID;
+	GtkWidget * m_wSpaceAfterSpin;
+	GtkWidget * m_wSpaceAfterEntry;
+	GtkObject * m_oSpaceAfter_adj;
+	UT_sint32 m_iMaxColumnHeight;	
+	UT_sint32 m_iMaxColumnHeightID;
+	GtkWidget * m_wMaxColumnHeightSpin;
+	GtkWidget * m_wMaxColumnHeightEntry;
+	GtkObject * m_oSpinSize_adj;
+	UT_sint32 m_iSizeHeight;
 #ifdef BIDI_ENABLED
     GtkWidget * m_checkOrder;
 #endif

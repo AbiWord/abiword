@@ -18,6 +18,7 @@
  */
 
 #include <stdlib.h>
+#include <math.h>
 
 #include "ut_string.h"
 #include "ut_assert.h"
@@ -67,6 +68,13 @@ AP_UnixDialog_Columns::AP_UnixDialog_Columns(XAP_DialogFactory * pDlgFactory,
 	m_wpreviewArea = NULL;
 	m_wGnomeButtons = NULL;
 	m_pPreviewWidget = NULL;
+	m_iSpaceAfter = 0;
+	m_iSpaceAfterID =0;
+	m_wSpaceAfterSpin = NULL;
+	m_iMaxColumnHeight = 0;
+	m_iMaxColumnHeightID = 0;
+	m_wMaxColumnHeightSpin = NULL;
+
 #ifdef BIDI_ENABLED
     m_checkOrder = NULL;
 #endif
@@ -113,6 +121,34 @@ static void s_spin_changed(GtkWidget * widget, AP_UnixDialog_Columns *dlg)
 }
 
 
+static void s_HeightSpin_changed(GtkWidget * widget, AP_UnixDialog_Columns *dlg)
+{
+	UT_ASSERT(widget && dlg);
+	dlg->doHeightSpin();
+}
+
+
+static void s_SpaceAfterSpin_changed(GtkWidget * widget, AP_UnixDialog_Columns *dlg)
+{
+	UT_ASSERT(widget && dlg);
+	dlg->doSpaceAfterSpin();
+}
+
+
+static void s_SpaceAfterEntry_changed(GtkWidget * widget, AP_UnixDialog_Columns *dlg)
+{
+	UT_ASSERT(widget && dlg);
+	dlg->doSpaceAfterEntry();
+}
+
+
+static void s_MaxHeightEntry_changed(GtkWidget * widget, AP_UnixDialog_Columns *dlg)
+{
+	UT_ASSERT(widget && dlg);
+	dlg->doMaxHeightEntry();
+}
+
+
 static void s_line_clicked(GtkWidget * widget, AP_UnixDialog_Columns * dlg)
 {
 	UT_ASSERT(widget && dlg);
@@ -152,6 +188,9 @@ static void s_delete_clicked(GtkWidget * /* widget */, gpointer /* data */,
 
 void AP_UnixDialog_Columns::runModal(XAP_Frame * pFrame)
 {
+	
+	setViewAndDoc(pFrame);
+
 	// Build the window's widgets and arrange them
 	GtkWidget * mainWindow = _constructWindow();
 	UT_ASSERT(mainWindow);
@@ -159,8 +198,16 @@ void AP_UnixDialog_Columns::runModal(XAP_Frame * pFrame)
 	connectFocus(GTK_WIDGET(mainWindow),pFrame);
 	// Populate the window's data items
 	_populateWindowData();
-	
 	// To center the dialog, we need the frame of its parent.
+
+    gtk_signal_handler_block(GTK_OBJECT(m_wSpaceAfterEntry), m_iSpaceAfterID);
+	gtk_entry_set_text( GTK_ENTRY(m_wSpaceAfterEntry),getSpaceAfterString() );
+	gtk_signal_handler_unblock(GTK_OBJECT(m_wSpaceAfterEntry),m_iSpaceAfterID);
+
+    gtk_signal_handler_block(GTK_OBJECT(m_wMaxColumnHeightEntry), m_iMaxColumnHeightID);
+	gtk_entry_set_text( GTK_ENTRY(m_wMaxColumnHeightEntry),getHeightString() );
+	gtk_signal_handler_unblock(GTK_OBJECT(m_wMaxColumnHeightEntry), m_iMaxColumnHeightID);
+
 	XAP_UnixFrame * pUnixFrame = static_cast<XAP_UnixFrame *>(pFrame);
 	UT_ASSERT(pUnixFrame);
 	
@@ -225,14 +272,46 @@ void AP_UnixDialog_Columns::runModal(XAP_Frame * pFrame)
 
 void AP_UnixDialog_Columns::checkLineBetween(void)
 {
-	if (GTK_TOGGLE_BUTTON (m_wlineBetween)->active)
+  if (GTK_TOGGLE_BUTTON (m_wlineBetween)->active)
+    {
+      setLineBetween(true);
+    }
+  else
+    {
+      setLineBetween(false);
+    }
+}
+
+void AP_UnixDialog_Columns::doHeightSpin(void)
+{
+	bool bIncrement = true;
+	UT_sint32 val = gtk_spin_button_get_value_as_int( GTK_SPIN_BUTTON(m_wMaxColumnHeightSpin));
+	UT_DEBUGMSG(("SEVIOR: spin Height %d old value = %d \n",val,m_iMaxColumnHeight));
+	if(val < m_iMaxColumnHeight)
 	{
-		setLineBetween(true);
+		bIncrement = false;
 	}
-	else
-	{
-		setLineBetween(false);
-	}
+	m_iMaxColumnHeight = val;
+	incrementMaxHeight(bIncrement);
+//  gtk_signal_handler_block(GTK_OBJECT(m_wMaxColumnHeightEntry), m_iMaxColumnHeightID);
+	gtk_entry_set_text( GTK_ENTRY(m_wMaxColumnHeightEntry),getHeightString() );
+//  gtk_signal_handler_unblock(GTK_OBJECT(m_wMaxColumnHeightEntry), m_iMaxColumnHeightID);
+}
+
+void  AP_UnixDialog_Columns::doSpaceAfterSpin(void)
+{
+	UT_DEBUGMSG(("SEVIOR: In do Space After Spin \n"));
+	bool bIncrement = true;
+	UT_sint32 val = gtk_spin_button_get_value_as_int( GTK_SPIN_BUTTON(m_wSpaceAfterSpin));
+	if(val < m_iSpaceAfter)
+    {
+		bIncrement = false;
+    }
+	m_iSpaceAfter = val;
+	incrementSpaceAfter(bIncrement);
+//  gtk_signal_handler_block(GTK_OBJECT(m_wSpaceAfterEntry), m_iSpaceAfterID);
+	gtk_entry_set_text( GTK_ENTRY(m_wSpaceAfterEntry),getSpaceAfterString() );
+//  gtk_signal_handler_unblock(GTK_OBJECT(m_wSpaceAfterEntry),m_iSpaceAfterID);
 }
 
 void AP_UnixDialog_Columns::readSpin(void)
@@ -321,6 +400,33 @@ void AP_UnixDialog_Columns::event_OK(void)
 	gtk_main_quit();
 }
 
+
+void AP_UnixDialog_Columns::doMaxHeightEntry(void)
+{
+	const char * szHeight = gtk_entry_get_text(GTK_ENTRY(m_wMaxColumnHeightEntry));
+	if(UT_determineDimension(szHeight,DIM_none) != DIM_none)
+	{
+		setMaxHeight(szHeight);
+
+		gtk_signal_handler_block(GTK_OBJECT(m_wMaxColumnHeightEntry), m_iMaxColumnHeightID);
+		gtk_entry_set_text( GTK_ENTRY(m_wMaxColumnHeightEntry),getHeightString() );
+		gtk_signal_handler_unblock(GTK_OBJECT(m_wMaxColumnHeightEntry), m_iMaxColumnHeightID);
+	}
+}
+
+void AP_UnixDialog_Columns::doSpaceAfterEntry(void)
+{
+	const char * szAfter = gtk_entry_get_text(GTK_ENTRY(m_wSpaceAfterEntry));
+	if(UT_determineDimension(szAfter,DIM_none) != DIM_none)
+	{
+		setSpaceAfter(szAfter);
+
+		gtk_signal_handler_block(GTK_OBJECT(m_wSpaceAfterEntry), m_iSpaceAfterID);
+		gtk_entry_set_text( GTK_ENTRY(m_wSpaceAfterEntry),getSpaceAfterString() );
+		gtk_signal_handler_unblock(GTK_OBJECT(m_wSpaceAfterEntry),m_iSpaceAfterID);
+	}
+}
+
 void AP_UnixDialog_Columns::event_Cancel(void)
 {
 	m_answer = AP_Dialog_Columns::a_CANCEL;
@@ -370,7 +476,7 @@ GtkWidget * AP_UnixDialog_Columns::_constructWindow(void)
 	GTK_WIDGET_SET_FLAGS (buttonCancel, GTK_CAN_DEFAULT);
 
 	m_wbuttonOk = buttonOK;
-        m_wbuttonCancel = buttonCancel;
+	m_wbuttonCancel = buttonCancel;
 
 	_connectsignals();
 	return windowColumns;
@@ -481,7 +587,26 @@ void AP_UnixDialog_Columns::_constructWindowContents(GtkWidget * windowColumns)
 	wPreviewFrame = gtk_frame_new ( pSS->getValue(AP_STRING_ID_DLG_Column_Preview));
 	gtk_widget_show(wPreviewFrame );
 	gtk_box_pack_start (GTK_BOX (hbox1), wPreviewFrame, TRUE, TRUE, 4);
-	gtk_widget_set_usize (wPreviewFrame, 100, -2); // was -2
+	double width = getPageWidth();
+	double height = getPageHeight();
+	gint rat = 0;
+	if( height > 0.000001)
+	{
+		if(height > width)
+		{
+			rat = static_cast<gint>( 100.0 *height/width);
+			gtk_widget_set_usize (wPreviewFrame, 100, rat); // was -2
+		}
+		else
+		{
+			rat = static_cast<gint>( 200.* height/width);
+			gtk_widget_set_usize(wPreviewFrame, 200, rat);
+		}
+	}
+	else
+	{
+		gtk_widget_set_usize (wPreviewFrame, 100, -2); // was -2
+	}
 
 	wDrawFrame = gtk_frame_new (NULL);
 	gtk_widget_show(wDrawFrame );
@@ -523,10 +648,11 @@ void AP_UnixDialog_Columns::_constructWindowContents(GtkWidget * windowColumns)
 #endif	
 
 /////////////////////////////////////////////////////////
-// Spin Button
+// Spin Button for Columns
 /////////////////////////////////////////////////////////
 
 	hseparator =  gtk_hseparator_new ();
+	gtk_widget_show(hseparator);
 	gtk_box_pack_start(GTK_BOX (vbox1), hseparator, FALSE, TRUE, 0);
 	hboxSpin = gtk_hbox_new (FALSE, 0);
 	gtk_widget_show(hboxSpin );
@@ -541,6 +667,57 @@ void AP_UnixDialog_Columns::_constructWindowContents(GtkWidget * windowColumns)
 	gtk_widget_show(Spinbutton);
 	gtk_box_pack_start(GTK_BOX(hboxSpin),Spinbutton,FALSE,FALSE,0);
 
+
+/////////////////////////////////////////////////////////
+// Spin Button for Space After
+/////////////////////////////////////////////////////////
+
+	GtkWidget * hboxSpinAfter = gtk_hbox_new (FALSE, 0);
+	gtk_widget_show(hboxSpinAfter );
+	gtk_box_pack_start (GTK_BOX (vbox1), hboxSpinAfter, FALSE, FALSE, 0);
+
+
+	GtkWidget * SpinLabelAfter =  gtk_label_new ( pSS->getValue(AP_STRING_ID_DLG_Column_Space_After));
+	gtk_widget_show(SpinLabelAfter);
+	gtk_box_pack_start(GTK_BOX(hboxSpinAfter),SpinLabelAfter,FALSE,FALSE,0);
+
+	GtkObject * SpinAfterAdj = gtk_adjustment_new( 1, -1000, 1000, 1, 1, 10);
+	GtkWidget * SpinAfter = gtk_entry_new();
+	gtk_widget_show (SpinAfter);
+	gtk_box_pack_start (GTK_BOX (hboxSpinAfter), SpinAfter, TRUE, TRUE, 0);
+		
+	GtkWidget * SpinAfter_dum = gtk_spin_button_new( GTK_ADJUSTMENT(SpinAfterAdj), 1.0,0);
+	gtk_widget_show(SpinAfter_dum);
+	gtk_widget_set_usize(SpinAfter_dum,10,-2);
+	gtk_box_pack_start(GTK_BOX(hboxSpinAfter),SpinAfter_dum,FALSE,FALSE,0);
+
+
+/////////////////////////////////////////////////////////
+// Spin Button for Column Height
+/////////////////////////////////////////////////////////
+
+	GtkWidget * hboxSpinSize = gtk_hbox_new (FALSE, 0);
+	gtk_widget_show(hboxSpinSize );
+	gtk_box_pack_start (GTK_BOX (vbox1), hboxSpinSize, FALSE, FALSE, 0);
+
+	GtkWidget * SpinLabelColumnSize =  gtk_label_new ( pSS->getValue(AP_STRING_ID_DLG_Column_Size));
+	gtk_widget_show(SpinLabelColumnSize);
+	gtk_box_pack_start(GTK_BOX(hboxSpinSize),SpinLabelColumnSize,FALSE,FALSE,0);
+
+	GtkObject * SpinSizeAdj = gtk_adjustment_new( 1,-2000, 2000, 1, 1, 10);
+	GtkWidget * SpinSize = gtk_entry_new();
+	gtk_widget_show (SpinSize);
+	gtk_box_pack_start (GTK_BOX (hboxSpinSize), SpinSize, TRUE, TRUE, 0);
+		
+	GtkWidget * SpinSize_dum = gtk_spin_button_new( GTK_ADJUSTMENT(SpinSizeAdj), 1.0,0);
+	gtk_widget_show(SpinSize_dum);
+	gtk_widget_set_usize(SpinSize_dum,10,-2);
+	gtk_box_pack_start(GTK_BOX(hboxSpinSize),SpinSize_dum,FALSE,FALSE,0);
+
+
+////////////////////////////////////////////////////////////////////////
+// Gnome buttons
+////////////////////////////////////////////////////////////////////////
 	vbuttonbox1 = gtk_vbutton_box_new ();
 	gtk_widget_show(vbuttonbox1 );
 	gtk_box_pack_end (GTK_BOX (hbox1), vbuttonbox1, FALSE, FALSE, 0);
@@ -560,6 +737,14 @@ void AP_UnixDialog_Columns::_constructWindowContents(GtkWidget * windowColumns)
 	m_wSpin = Spinbutton;
 	m_windowMain = windowColumns;
 	m_wpreviewArea = wPreviewArea;
+	m_wSpaceAfterSpin = SpinAfter_dum;
+	m_wSpaceAfterEntry = SpinAfter;
+	m_oSpaceAfter_adj =  SpinAfterAdj;
+	m_iSpaceAfter = (UT_sint32) GTK_ADJUSTMENT(SpinAfterAdj)->value;
+	m_wMaxColumnHeightSpin = SpinSize_dum;
+	m_wMaxColumnHeightEntry = SpinSize;
+	m_oSpinSize_adj = SpinSizeAdj;
+	m_iSizeHeight = (UT_sint32) GTK_ADJUSTMENT(SpinSizeAdj)->value;
 }
 
 void AP_UnixDialog_Columns::_connectsignals(void)
@@ -585,6 +770,29 @@ void AP_UnixDialog_Columns::_connectsignals(void)
 	m_spinHandlerID = gtk_signal_connect(GTK_OBJECT(m_wSpin),
 					   "changed",
 					   GTK_SIGNAL_FUNC(s_spin_changed),
+					   (gpointer) this);
+
+
+	gtk_signal_connect(GTK_OBJECT(m_wSpaceAfterSpin),
+					   "changed",
+					  GTK_SIGNAL_FUNC(s_SpaceAfterSpin_changed),
+					   (gpointer) this);
+
+
+	gtk_signal_connect(GTK_OBJECT(m_wMaxColumnHeightSpin),
+					   "changed",
+					  GTK_SIGNAL_FUNC(s_HeightSpin_changed),
+					   (gpointer) this);
+
+	m_iSpaceAfterID = gtk_signal_connect(GTK_OBJECT(m_wSpaceAfterEntry),
+					   "changed",
+					  GTK_SIGNAL_FUNC(s_SpaceAfterEntry_changed),
+					   (gpointer) this);
+
+
+	m_iMaxColumnHeightID = gtk_signal_connect(GTK_OBJECT(m_wMaxColumnHeightEntry),
+					   "changed",
+					  GTK_SIGNAL_FUNC(s_MaxHeightEntry_changed),
 					   (gpointer) this);
 
 	gtk_signal_connect(GTK_OBJECT(m_wlineBetween),
@@ -640,4 +848,8 @@ void AP_UnixDialog_Columns::_storeWindowData(void)
 void AP_UnixDialog_Columns::enableLineBetweenControl(bool bState)
 {
 }
+
+
+
+
 

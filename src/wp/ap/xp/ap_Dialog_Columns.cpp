@@ -23,6 +23,7 @@
 #include "ut_assert.h"
 #include "ut_string.h"
 #include "ut_debugmsg.h"
+#include "fp_PageSize.h"
 
 #include "xap_Dialog_Id.h"
 #include "xap_DialogFactory.h"
@@ -37,9 +38,17 @@ AP_Dialog_Columns::AP_Dialog_Columns(XAP_DialogFactory * pDlgFactory, XAP_Dialog
 	m_answer = a_OK;
 	m_pColumnsPreview = NULL;
 	m_bLineBetween = false;
+	m_HeightString = "0.0in";
+	m_SpaceAfterString = "0pt";
 #ifdef BIDI_ENABLED
 	m_iColumnOrder = 0;
 #endif
+	m_pDoc = NULL;
+	m_pView = NULL;
+	m_dMarginTop = 0.0;
+	m_dMarginBottom = 0.0;
+	m_dMarginLeft = 0.0;
+	m_dMarginRight = 0.0;
 }
 
 AP_Dialog_Columns::~AP_Dialog_Columns(void)
@@ -58,7 +67,7 @@ void AP_Dialog_Columns::_createPreviewFromGC(GR_Graphics * gc,
 {
 	UT_ASSERT(gc);
 
-	m_pColumnsPreview = new AP_Columns_preview(gc);
+	m_pColumnsPreview = new AP_Columns_preview(gc,this);
 	UT_ASSERT(m_pColumnsPreview);
 	
 	m_pColumnsPreview->setWindowSize(width, height);
@@ -83,6 +92,175 @@ void AP_Dialog_Columns::setColumnOrder(UT_uint32 iOrder)
 }
 #endif
 
+/*!
+ * Returns the dimensioned string that defines the maximum height of the
+ * Column.
+\returns const char * dimensioned string which is the max height of the column.
+*/ 
+const char * AP_Dialog_Columns::getHeightString(void)
+{
+	return m_HeightString.c_str(); 
+}
+
+/*!
+ * Returns the dimensioned string that defines the space between Columns.
+\returns const char * dimensioned string which is the space between columns.
+*/ 
+const char * AP_Dialog_Columns::getSpaceAfterString(void)
+{
+	return m_SpaceAfterString.c_str(); 
+}
+
+/*!
+ * Returns the increment associated with the dimension defined in the string.
+\params const char * sz the dimensioned string.
+\returns double -  the increment associated with the dimension in sz
+*/ 
+double AP_Dialog_Columns::getIncrement(const char * sz)
+{
+	double inc = 0.1;
+	UT_Dimension dim =  UT_determineDimension(sz);
+	if(dim == DIM_IN)
+	{
+		inc = 0.02;
+	}
+	else if(dim == DIM_CM)
+	{
+		inc = 0.1;
+	}
+	else if(dim == DIM_MM)
+	{
+		inc = 1.0;
+	}
+	else if(dim == DIM_PI)
+	{
+		inc = 1.0;
+	}
+	else if(dim == DIM_PT)
+	{
+		inc = 1.0;
+	}
+	else if(dim == DIM_PX)
+	{
+		inc = 1.0;
+	}
+	else
+	{
+		inc = 0.02;
+	}
+	return inc;
+}
+
+/*!
+ * Sets pointer to the Current View and document. Also sets initial values
+ * for space-after and max column height.
+\params XAP_Frame * pFrame - pointer to current Frame.
+*/
+void AP_Dialog_Columns::setViewAndDoc(XAP_Frame * pFrame)
+{
+	UT_DEBUGMSG(("SEVIOR: Setting view and doc \n"));
+	m_pView = (FV_View *) pFrame->getCurrentView();
+	m_pDoc = m_pView->getDocument();
+	const XML_Char ** pszSecProps = NULL;
+	m_pView->getSectionFormat(&pszSecProps);
+	const XML_Char * pszAfter = UT_getAttribute("section-space-after",pszSecProps);
+	const XML_Char * pszMaxHeight =  UT_getAttribute("section-max-column-height",pszSecProps);
+	if(pszAfter && *pszAfter)
+	{
+		UT_DEBUGMSG(("SEVIOR: Initial After string = %s \n",pszAfter));
+		m_SpaceAfterString =  (const char *) pszAfter;
+	}
+	if(pszMaxHeight && *pszMaxHeight)
+	{
+		UT_DEBUGMSG(("SEVIOR: Initial Height string = %s \n",pszMaxHeight));
+		m_HeightString = pszMaxHeight;
+	}
+	const XML_Char * pszMarginTop = UT_getAttribute("page-margin-top",pszSecProps);
+	const XML_Char * pszMarginBottom =  UT_getAttribute("page-margin-bottom",pszSecProps);
+	const XML_Char * pszMarginLeft =  UT_getAttribute("page-margin-left",pszSecProps);
+	const XML_Char * pszMarginRight =  UT_getAttribute("page-margin-right",pszSecProps);
+	if(pszMarginTop && *pszMarginTop)
+	{
+		m_dMarginTop = UT_convertToInches(pszMarginTop);
+	}
+	if(pszMarginBottom && *pszMarginBottom)
+	{
+		m_dMarginBottom = UT_convertToInches(pszMarginBottom);
+	}
+	if(pszMarginLeft && *pszMarginLeft)
+	{
+		m_dMarginLeft = UT_convertToInches(pszMarginLeft);
+	}
+	if(pszMarginRight && *pszMarginRight)
+	{
+		m_dMarginRight = UT_convertToInches(pszMarginRight);
+	}
+	DELETEP(pszSecProps);
+}
+
+/*!
+ * Returns the current width of the document page.
+\returns UT_sint32 width of page in inches
+*/
+double AP_Dialog_Columns::getPageWidth(void)
+{
+	double width = 1.0;
+	if(m_pDoc)
+	{
+		width =  m_pDoc->m_docPageSize.Width(fp_PageSize::inch) - m_dMarginLeft - m_dMarginRight;
+	}
+	return width;
+}
+
+
+/*!
+ * Returns the current height of the document page.
+\returns UT_sint32 height of page in inches
+*/
+double AP_Dialog_Columns::getPageHeight(void)
+{
+	double height = 1.0;
+	if(m_pDoc)
+	{
+		height =  m_pDoc->m_docPageSize.Height(fp_PageSize::inch) - m_dMarginTop - m_dMarginBottom;
+	}
+	return height;
+}
+
+/*!
+ * Increment the member variable UT_String defining the dimensioned string
+ * for the space between columns.
+ */
+void AP_Dialog_Columns::incrementSpaceAfter(bool bIncrement)
+{
+	double inc = getIncrement(m_SpaceAfterString.c_str());
+	if(!bIncrement)
+	{
+		inc = -inc;
+	}
+	m_SpaceAfterString = UT_incrementDimString(m_SpaceAfterString.c_str(),inc);
+	m_bSpaceAfterChanged = true;
+	if(m_pColumnsPreview)
+		m_pColumnsPreview->set(m_iColumns, m_bLineBetween);
+}
+
+/*!
+ * Increment the member variable UT_String defining the dimensioned string
+ * for the maximum column height.
+ */
+void AP_Dialog_Columns::incrementMaxHeight(bool bIncrement)
+{
+	double inc = getIncrement(m_HeightString.c_str());
+	if(!bIncrement)
+	{
+		inc = -inc;
+	}
+	m_HeightString = UT_incrementDimString(m_HeightString.c_str(),inc);
+	m_bMaxHeightChanged = true;
+	if(m_pColumnsPreview)
+		m_pColumnsPreview->set(m_iColumns, m_bLineBetween);
+}
+
 void AP_Dialog_Columns::setLineBetween(bool bState)
 {
 	m_bLineBetween = bState;
@@ -92,6 +270,57 @@ void AP_Dialog_Columns::setLineBetween(bool bState)
 
 }
 
+/*!
+ * Returns the 100* the fraction of the total page height in the Maximum height string.
+ */
+double AP_Dialog_Columns::getMaxHeightPercent(void)
+{
+	double height = 100.0*UT_convertToInches(getHeightString())/getPageHeight();
+	return height;
+}
+
+/*!
+ * Returns the 100* the fraction of the total page height in space after.
+ */
+double AP_Dialog_Columns::getSpaceAfterPercent(void)
+{
+	double space = 100.0*UT_convertToInches(getSpaceAfterString())/getPageHeight();
+	return space;
+}
+
+/*!
+ * Set the member string variable m_HeightString
+\params const char * szHeight is the string containing the new value
+*/
+void AP_Dialog_Columns::setMaxHeight(const char * szHeight)
+{
+	UT_Dimension dim = UT_determineDimension(szHeight, DIM_none);
+	if(dim != DIM_none)
+	{
+		m_bMaxHeightChanged = true;
+		m_HeightString = szHeight;
+		if(m_pColumnsPreview)
+			m_pColumnsPreview->set(m_iColumns, m_bLineBetween);
+	}
+}
+
+/*!
+ * Set the member string variable m_SpaceAfterString.
+\params const char * szAfter is the string containing the new value
+*/
+void AP_Dialog_Columns::setSpaceAfter(const char * szAfter)
+{
+	UT_Dimension dim = UT_determineDimension(szAfter, DIM_none);
+	if(dim != DIM_none)
+	{
+		m_bSpaceAfterChanged = true;
+		m_SpaceAfterString = szAfter;
+		if(m_pColumnsPreview)
+			m_pColumnsPreview->set(m_iColumns, m_bLineBetween);
+	}
+}
+
+
 void AP_Dialog_Columns::_drawColumnButton(GR_Graphics *gc, UT_Rect rect, UT_uint32 iColumns)
 {
 	gc->clearArea(rect.left, rect.top, rect.width, rect.height);
@@ -100,18 +329,17 @@ void AP_Dialog_Columns::_drawColumnButton(GR_Graphics *gc, UT_Rect rect, UT_uint
 	rect.width -= 4;
 	rect.top += 2;
 	rect.height -= 4;
-
-	m_previewDrawer.draw(gc, rect, iColumns, false);
+	m_previewDrawer.draw(gc, rect, iColumns, false, 0.0, 0.0);
 }
 
 	
 //////////////////////////////////////////////////////////////////
 //////////////////////////////////////////////////////////////////
 
-AP_Columns_preview::AP_Columns_preview(GR_Graphics * gc)
+AP_Columns_preview::AP_Columns_preview(GR_Graphics * gc, AP_Dialog_Columns * pColumns)
 	: XAP_Preview(gc)
 {
-
+	m_pColumns = pColumns;
 }
 
 AP_Columns_preview::~AP_Columns_preview()
@@ -124,7 +352,8 @@ void AP_Columns_preview::draw(void)
 {
 	UT_sint32 iWidth = getWindowWidth();
 	UT_sint32 iHeight = getWindowHeight();
-
+    double maxHeightPercent = m_pColumns->getMaxHeightPercent();
+	double SpacePercent = m_pColumns->getSpaceAfterPercent();
 	UT_Rect pageRect(5, 5, iWidth - 10, iHeight - 10);
 
 	m_gc->fillRect(GR_Graphics::CLR3D_Background, 0, 0, iWidth, iHeight);
@@ -148,13 +377,13 @@ void AP_Columns_preview::draw(void)
 
 	pageRect.top += 5;
 	pageRect.height -= 5;
-	m_previewDrawer.draw(m_gc, pageRect, m_iColumns, m_bLineBetween);
+	m_previewDrawer.draw(m_gc, pageRect, m_iColumns, m_bLineBetween,maxHeightPercent, SpacePercent);
 }
 
 //////////////////////////////////////////////////////////////////
 //////////////////////////////////////////////////////////////////
 
-void AP_Columns_preview_drawer::draw(GR_Graphics *gc, UT_Rect &rect, UT_sint32 iColumns, bool bLineBetween)
+void AP_Columns_preview_drawer::draw(GR_Graphics *gc, UT_Rect &rect, UT_sint32 iColumns, bool bLineBetween, double maxHeightPercent, double SpacePercent)
 {
 
 	UT_sint32 iHalfColumnGap = rect.width / 20;
@@ -164,24 +393,58 @@ void AP_Columns_preview_drawer::draw(GR_Graphics *gc, UT_Rect &rect, UT_sint32 i
 
 	UT_sint32 y_step = (y_end - y_start) / iLinesToDraw;
 	y_step = 2;
-	
+	UT_DEBUGMSG(("SEVIOR: maxheightpercent = %f \n",maxHeightPercent));
+	maxHeightPercent = maxHeightPercent/100.0;
+	SpacePercent = SpacePercent/100.0;
+	if(SpacePercent < 0.001)
+	{
+		SpacePercent = 1.1;
+	}
+	if(maxHeightPercent < 0.01)
+	{
+		maxHeightPercent = 1.1;
+	}
 	gc->setLineWidth(1);
 	UT_RGBColor Line_color(0, 0, 0);
 	gc->setColor(Line_color);
 
 	rect.left += iHalfColumnGap;
 	rect.width -= 2 * iHalfColumnGap;
-
-	for(UT_sint32 y = y_start; y < y_end; y += y_step)
+	double d_y_start = (double) y_start;
+	double d_ysize = (double) (y_end - y_start);
+	double dnum = static_cast<double>(y_step)/(d_ysize * SpacePercent);
+	UT_sint32 numSteps = 1 + static_cast<UT_sint32>(dnum);
+	for (UT_sint32 i = 1; i <= iColumns; i++)
 	{
-		for (UT_sint32 i = 1; i <= iColumns; i++)
+		UT_sint32 lskip = 0;
+		UT_sint32 curskip = 0;
+		UT_sint32 nsteps = 0;
+		for(UT_sint32 y = y_start; y < y_end; y += y_step)
 		{
 			UT_sint32 xLeft, xRight;
 
 			// a little bit of math to avoid/replace a (nasty) switch statement
 			xLeft = rect.left + iHalfColumnGap + ((i-1) * rect.width / iColumns);
 			xRight = rect.left - iHalfColumnGap + (i * rect.width / iColumns);
-			gc->drawLine(xLeft, y, xRight, y);
+			double dy = (double) y;
+			double rat = (dy - d_y_start)/d_ysize;
+			curskip = static_cast<UT_sint32>(rat/maxHeightPercent);
+			if(curskip > lskip )
+			{
+				if(nsteps < numSteps)
+				{
+					nsteps++;
+				}
+				if(nsteps >= numSteps)
+				{
+					nsteps = 0;
+					lskip = curskip;
+				}
+			}
+			else
+			{
+				gc->drawLine(xLeft, y, xRight, y);
+			}
 		}
 	}
 
@@ -197,5 +460,9 @@ void AP_Columns_preview_drawer::draw(GR_Graphics *gc, UT_Rect &rect, UT_sint32 i
 		}
 	}
 }
+
+
+
+
 
 

@@ -23,8 +23,11 @@
 #include "xap_Frame.h"
 #include "xap_Dialog.h"
 #include "fv_View.h"
+#include "pd_Document.h"
+
 
 class XAP_Frame;
+class AP_Dialog_Columns;
 
 #include "xap_Preview.h"
 
@@ -32,14 +35,14 @@ class AP_Columns_preview_drawer
 {
 public:
 
-	void			draw(GR_Graphics *gc, UT_Rect &rect, UT_sint32 iColumns, bool bLines);
+	void			draw(GR_Graphics *gc, UT_Rect &rect, UT_sint32 iColumns, bool bLines, double maxHeightPercent, double SpaceAfterPercent);
 };
 
 class AP_Columns_preview : public XAP_Preview
 {
 public:
 
-	AP_Columns_preview(GR_Graphics * gc);
+	AP_Columns_preview(GR_Graphics * gc, AP_Dialog_Columns * pColumns);
 	virtual ~AP_Columns_preview(void);
 				
 	// data twiddlers
@@ -54,7 +57,7 @@ public:
 
 private:
 	AP_Columns_preview_drawer	m_previewDrawer;
-
+	AP_Dialog_Columns *  m_pColumns;
 protected:
 
 	UT_uint32		m_iColumns;
@@ -75,36 +78,57 @@ public:
 	void							setColumns(UT_uint32 iColumns);
 
 	typedef enum { a_OK, a_CANCEL } tAnswer;
-	AP_Dialog_Columns::tAnswer		getAnswer(void) const;
-	UT_uint32						getColumns(void) const {return m_iColumns;}
+	AP_Dialog_Columns::tAnswer getAnswer(void) const;
+	UT_uint32		   getColumns(void) const {return m_iColumns;}
 
-	void							setLineBetween(bool bState);
-	bool							getLineBetween(void) const { return m_bLineBetween;}
+	void			   setLineBetween(bool bState);
+	bool			   getLineBetween(void) const { return m_bLineBetween;}
+	double             getMaxHeightPercent(void);
+	double             getSpaceAfterPercent(void);
 
 #ifdef BIDI_ENABLED
-	void							setColumnOrder(UT_uint32 iOrder);
-	UT_uint32						getColumnOrder(void) const {return m_iColumnOrder;}
+	void			   setColumnOrder(UT_uint32 iOrder);
+	UT_uint32		   getColumnOrder(void) const {return m_iColumnOrder;}
 #endif
-	
-
+	const char *       getHeightString(void);
+	const char *       getSpaceAfterString(void);
+	bool               isSpaceAfterChanged(void) const {return m_bSpaceAfterChanged;}
+	bool               isMaxHeightChanged(void) const {return m_bMaxHeightChanged;}
 protected:
+	
+	void			   _createPreviewFromGC(GR_Graphics * gc,
+							UT_uint32 width,
+							UT_uint32 height);
+	void			   _drawColumnButton(GR_Graphics *gc, UT_Rect rect, UT_uint32 iColumns);
 
-	void							_createPreviewFromGC(GR_Graphics * gc,
-										   UT_uint32 width,
-										   UT_uint32 height);
-	void							_drawColumnButton(GR_Graphics *gc, UT_Rect rect, UT_uint32 iColumns);
-
-	AP_Dialog_Columns::tAnswer		m_answer;
-	AP_Columns_preview *			m_pColumnsPreview;
-	AP_Columns_preview_drawer		m_previewDrawer;
-
+	AP_Dialog_Columns::tAnswer m_answer;
+	AP_Columns_preview *	   m_pColumnsPreview;
+	AP_Columns_preview_drawer  m_previewDrawer;
+	void                       incrementMaxHeight(bool bIncrement);
+	void                       incrementSpaceAfter(bool bIncrement);
+	double                     getIncrement(const char * sz);
+	void                       setViewAndDoc(XAP_Frame * pFrame);
+	double                     getPageWidth(void);
+	double                     getPageHeight(void);
+	void                       setMaxHeight( const char * szHeight);
+	void                       setSpaceAfter( const char * szAfter);
 private:
 
-	UT_uint32						m_iColumns;
-	bool							m_bLineBetween;
+	UT_uint32		   m_iColumns;
+	bool			   m_bLineBetween;
 #ifdef BIDI_ENABLED
-	UT_uint32						m_iColumnOrder;
+	UT_uint32		   m_iColumnOrder;
 #endif
+	UT_String                  m_HeightString;
+	UT_String                  m_SpaceAfterString;
+	PD_Document *              m_pDoc;
+	FV_View *                  m_pView;
+	bool                       m_bSpaceAfterChanged;
+	bool                       m_bMaxHeightChanged;
+	double                     m_dMarginTop;
+	double                     m_dMarginBottom;
+	double                     m_dMarginLeft;
+	double                     m_dMarginRight;
 };
 
 #endif /* AP_Dialog_Columns_H */

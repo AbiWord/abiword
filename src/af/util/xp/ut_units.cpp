@@ -279,6 +279,20 @@ const char * UT_reformatDimensionString(UT_Dimension dim, const char *sz, const 
 	return UT_formatDimensionString(dim, d);
 }
 
+/*!
+ * This method increments a dimenstioned string by the amount given.
+\param const char * dimString - string to be incremented.
+\param amount of increment.
+*/
+const char * UT_incrementDimString(const char * dimString, double inc)
+{
+  UT_Dimension dim = UT_determineDimension(dimString);
+  double val = UT_convertDimensionless(dimString);
+  val += inc;
+  const char * retv = UT_formatDimensionString(dim, val);
+  return retv;
+}
+
 
 double UT_convertToInches(const char* s)
 {
