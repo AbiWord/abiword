@@ -24,12 +24,12 @@ Scott Boesch <scott@abisource.com>              artist, trade shows
 Brian Bosse <bhb002@drake.edu>
 Justin Bradford <justin@ukans.edu>              Word import, spell dialog
 John Brewer <jbrewer@jera.com>                  started MacOS port
-Thomas Briggs <tom@sane.com>					Bug 919 Fix
+Thomas Briggs <tom@sane.com>			Lots of Win32 work, Bug 919
 Andy Burnett <andy@abisource.com>
 Christopher Caron <ChrisDigo@aol.com>           Help (French)
 Bill Carpenter <bill-abisource@carpenter.org>  	Smart Quotes
 Heath D. Carr <heath@abisource.com>
-Allan Clark <shark@blueyonder.co.uk>			StringPool fixes, Find algorith 
+Allan Clark <shark@blueyonder.co.uk>		StringPool fixes, Find algorithm
 Joaquín Cuenca Abela <cuenca@ie2.u-psud.fr>     GNOME front end, LaTeX exporter
 Philippe Defert <Philippe.Defert@cern.ch>       AIX, HPUX, IRIX64, OSF1
 Ryan Dooley <ryan@coe.missouri.edu>             started IRIX port
@@ -51,10 +51,11 @@ Richard Jefts <babs@cs.jhu.edu>                 layout navigation, font dialog, 
 Luke Jordan <ljordan@mweb.co.za>                subscript, superscript
 Joseph Kelsey <jkelsey@freei.com>		HTML centering
 Matt Kimball <robozapp@xmission.com>            layout fixes
+Andrew Klassen <ak@dkp.com>			Irix 64 fixes
 Larry Kollar <kollar@stc.net>                   MkLinux
 Matt Kraai <kraai@subdimension.com>
 Tuomas Kuosmanen <tigert@gimp.org>              artist
-Dom Lachowicz <cinamod@hotmail.com>				glib and Word export
+Dom Lachowicz <cinamod@hotmail.com>		glib and Word export, current wvWare maintainer
 Johnny C. Lam <lamj@stat.cmu.edu>               NetBSD
 Birger Langkjer <birger.langkjer@image.dk>      GNOME icon/menu integration
 James Lefavour <James@albany.net>               Win98/VC6
@@ -67,7 +68,7 @@ Caolan McNamara <Caolan.McNamara@ul.ie>         Word import
 Anders Melchiorsen <postmaster@and.nospam.kampsax.k-net.dk> 	GTK Window Autosize
 Mike Meyer <mwm@mired.org>                      ParseAFM isspace() fix
 James Montgomerie <jamie@montgomerie.net>       ANSI C patrol, libole2 integration
-David Nay										PalmDoc exporter
+David Nay					PalmDoc exporter
 Tom Newton <Tom.Newton@gtl.com>
 Mike Nordell <tamlin@algonet.se>                Windows printing fix
 Bruce Pearson <BruceP@wn.com.au>                full justification
@@ -94,7 +95,7 @@ Jim Studt <jim@federated.com>                   ARM configuration
 Petr Tesarik <tesarik@lupa.cz>                  X11 select and Paste
 Gary Thomas <gdt@linuxppc.org>                  LinuxPPC
 Dave Thompson <thompson@pdnt.com>
-Sam Tobin-Hochstadt <sytobinh@uchicago.edu>     File I/O error handling, misc fixes
+Sam Tobin-Hochstadt <sytobinh@uchicago.edu>     XHTML Importer, DocBook exporter, odd jobs
 John Tunison <nosinut@WIND.REM.CMU.EDU>         GNOME dialogs
 Göran Thyni <goran@kirra.net>                   libxml support
 Kevin Vajk <kvajk@ricochet.net>                 File import/export detection
