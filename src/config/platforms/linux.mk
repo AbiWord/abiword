@@ -184,9 +184,12 @@ PLATFORM_FLAGS      += $(HPPA_ARCH_FLAGS)
 OS_ENDIAN       = BigEndian32
 endif
 
-GLIB_CONFIG		= glib-config
-GTK_CONFIG		= gtk-config
-GNOME_CONFIG    	= gnome-config
+GLIB_CONFIG		= pkg-config glib-2.0
+GTK_CONFIG		= pkg-config gtk+-2.0
+# Not sure about this one.
+ifeq ($(ABI_OPT_GNOME),1)
+GNOME_CONFIG    	= pkg-config gnome-2.0
+endif
 LIBXML_CONFIG		= xml2-config
 
 # Shared library flags
@@ -197,7 +200,8 @@ MKSHLIB			= $(LD) $(DSO_LDOPTS) -soname $(@:$(OBJDIR)/%.so=%.so)
 # Which links can this platform create.  Define one or
 # both of these options.
 UNIX_CAN_BUILD_DYNAMIC=1
-UNIX_CAN_BUILD_STATIC=1
+# Too many users with the wrong X Extension library, set to 0 as default.
+UNIX_CAN_BUILD_STATIC=0
 
 # Compiler options for static and dynamic linkage
 DL_LIBS			= dl

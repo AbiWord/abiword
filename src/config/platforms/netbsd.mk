@@ -125,7 +125,9 @@ OS_DLLFLAGS		+=
 
 GLIB_CONFIG		= glib-config
 GTK_CONFIG		= gtk-config
+ifeq ($(ABI_OPT_GNOME),1)
 GNOME_CONFIG    	= gnome-config
+endif
 
 # Shared library flags
 MKSHLIB			= $(LD) $(DSO_LDOPTS) -soname $(@:$(OBJDIR)/%.so=%.so)
