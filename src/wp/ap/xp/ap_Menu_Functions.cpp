@@ -1054,11 +1054,17 @@ Defun_EV_GetMenuItemState_Fn(ap_GetState_MarkRevisions)
 	ABIWORD_VIEW;
 	UT_ASSERT(pView);
 
-        if(pView->isMarkRevisions()) {
-            return EV_MIS_Toggled;
-        }
+	if(pView->getDocument()->isAutoRevisioning())
+	{
+		return EV_MIS_Gray;
+	}
 
-        return EV_MIS_ZERO;
+	if(pView->isMarkRevisions())
+	{
+		return EV_MIS_Toggled;
+	}
+
+    return EV_MIS_ZERO;
 }
 
 Defun_EV_GetMenuItemState_Fn(ap_GetState_HasRevisions)
@@ -1072,11 +1078,29 @@ Defun_EV_GetMenuItemState_Fn(ap_GetState_HasRevisions)
 	return EV_MIS_ZERO;
 }
 
+Defun_EV_GetMenuItemState_Fn(ap_GetState_AutoRevision)
+{
+	ABIWORD_VIEW;
+	UT_ASSERT(pView);
+
+	if(pView->getDocument()->isAutoRevisioning())
+	{
+		return (EV_Menu_ItemState) (EV_MIS_Toggled);
+	}
+
+	return EV_MIS_ZERO;
+}
+
 Defun_EV_GetMenuItemState_Fn(ap_GetState_ShowRevisions)
 {
 	ABIWORD_VIEW;
 	UT_ASSERT(pView);
 
+	if(pView->getDocument()->isAutoRevisioning())
+	{
+		return EV_MIS_Gray;
+	}
+	   
 	if(pView->getDocument()->getHighestRevisionId() == 0)
 		return EV_MIS_Gray;
 	
@@ -1092,6 +1116,11 @@ Defun_EV_GetMenuItemState_Fn(ap_GetState_ShowRevisionsAfter)
 {
 	ABIWORD_VIEW;
 	UT_ASSERT(pView);
+
+	if(pView->getDocument()->isAutoRevisioning())
+	{
+		return EV_MIS_Gray;
+	}
 
 	if(pView->getDocument()->getHighestRevisionId() == 0)
 		return EV_MIS_Gray;
@@ -1116,6 +1145,11 @@ Defun_EV_GetMenuItemState_Fn(ap_GetState_ShowRevisionsAfterPrev)
 	ABIWORD_VIEW;
 	UT_ASSERT(pView);
 
+	if(pView->getDocument()->isAutoRevisioning())
+	{
+		return EV_MIS_Gray;
+	}
+
 	if(pView->getDocument()->getHighestRevisionId() == 0)
 		return EV_MIS_Gray;
 	
@@ -1136,6 +1170,11 @@ Defun_EV_GetMenuItemState_Fn(ap_GetState_ShowRevisionsBefore)
 {
 	ABIWORD_VIEW;
 	UT_ASSERT(pView);
+
+	if(pView->getDocument()->isAutoRevisioning())
+	{
+		return EV_MIS_Gray;
+	}
 
 	if(pView->getDocument()->getHighestRevisionId() == 0)
 		return EV_MIS_Gray;
@@ -1161,7 +1200,7 @@ Defun_EV_GetMenuItemState_Fn(ap_GetState_RevisionPresent)
 
 	if(pView->isMarkRevisions())
 		return EV_MIS_Gray;
-    else if(pView->getInsertionPointContext(NULL,NULL) != EV_EMC_REVISION)
+    else if(!pView->doesSelectionContainRevision())
         return EV_MIS_Gray;
 
 	return EV_MIS_ZERO;

@@ -1302,7 +1302,7 @@ void s_AbiWord_1_Listener::_handleRevisions(void)
 							  m_pDocument->isShowRevisions(),
 							  m_pDocument->isMarkRevisions(),
 							  m_pDocument->getShowRevisionId(),
-							  m_pDocument->getAutoRevisioning());
+							  m_pDocument->isAutoRevisioning());
 			
 			m_pie->write(s.c_str());
 			bWroteOpenRevisionsSection = true;

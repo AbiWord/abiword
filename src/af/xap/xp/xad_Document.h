@@ -72,7 +72,7 @@ class AD_VersionData
 	void           setId(UT_uint32 iid) {m_iId = iid;}
 
 	bool           isAutoRevisioned()const {return m_bAutoRevision;}
-	void           setAutoRevisioned(bool autorev) {m_bAutoRevision = autorev;}
+	void           setAutoRevisioned(bool autorev);
 	
   private:
 	UT_uint32   m_iId;
@@ -107,6 +107,11 @@ class AD_Revision
 	UT_uint32     m_iVersion;
 };
 
+enum AD_DOCUMENT_TYPE
+{
+	ADDOCUMENT_ABIWORD
+};
+
 
 class ABI_EXPORT AD_Document
 {
@@ -115,9 +120,8 @@ public:
 	void				ref(void);
 	void				unref(void);
 
-private:
-	XAP_ResourceManager *	m_pResourceManager;
-public:
+	virtual AD_DOCUMENT_TYPE getType() const = 0;
+	
 	XAP_ResourceManager &	resourceManager () const { return *m_pResourceManager; }
 
 	const char *			getFilename(void) const;
@@ -130,7 +134,8 @@ public:
 	virtual UT_Error		newDocument() = 0;
 	virtual bool			isDirty(void) const = 0;
 	virtual void            forceDirty() {m_bForcedDirty = true;};
-
+	bool                    isForcedDirty() const {return m_bForcedDirty;}
+	
 	virtual bool			canDo(bool bUndo) const = 0;
 	virtual bool			undoCmd(UT_uint32 repeatCount) = 0;
 	virtual bool			redoCmd(UT_uint32 repeatCount) = 0;
@@ -148,6 +153,7 @@ public:
 
 	UT_uint32       getTimeSinceOpen () const { return (time(NULL) - m_lastOpenedTime); }
 	time_t          getLastOpenedTime() const {return m_lastOpenedTime;}
+	void            setLastOpenedTime(time_t t) {m_lastOpenedTime = t;}
 
 	UT_uint32       getEditTime()const {return (m_iEditTime + (time(NULL) - m_lastOpenedTime));}
 	void            setEditTime(UT_uint32 t) {m_iEditTime = t;}
@@ -157,6 +163,7 @@ public:
 	
 	void			setEncodingName(const char * szEncodingName);
 	const char *	getEncodingName() const;
+
 	bool			isPieceTableChanging(void);
 
 	virtual void setMetaDataProp (const UT_String & key, const UT_UTF8String & value) = 0;
@@ -206,7 +213,6 @@ public:
 	UT_uint32           getShowRevisionId() const {return m_iShowRevisionID;}
 	UT_uint32           getRevisionId() const{ return m_iRevisionID;}
 
-	bool                getAutoRevisioning() const {return m_bAutoRevisioning;}
 	UT_uint32           findAutoRevisionId(UT_uint32 iVersion) const;
 	UT_uint32           findNearestAutoRevisionId(UT_uint32 iVersion, bool bLesser = true) const;
 	
@@ -217,25 +223,43 @@ public:
 	void                setShowRevisions(bool bShow);
 	void                setShowRevisionId(UT_uint32 iId);
 	void                setRevisionId(UT_uint32 iId);
-	void                setAutoRevisioning(bool b);
+
+	bool                isAutoRevisioning()const {return m_bAutoRevisioning;}
+	virtual void        setAutoRevisioning(bool autorev);
 	
 	virtual void        purgeRevisionTable() = 0;
+
+	virtual bool        acceptRejectRevision(bool bReject,
+											 UT_uint32 iStart,
+											 UT_uint32 iEnd,
+											 UT_uint32 iLevel) = 0;
+
+	virtual bool        rejectAllHigherRevisions(UT_uint32 iLevel) = 0;
 	
 protected:
 	void            _purgeRevisionTable();
 	void            _adjustHistoryOnSave();
+	UT_UUID *       _getDocUUID()const {return m_pUUID;};
+	char *			_getFilename(void) const;
+	void			_setFilename(char * name) {FREEP(m_szFilename); m_szFilename = name;}
+	void            _setForceDirty(bool b) {m_bForcedDirty = b;}
+	void            _setPieceTableChanging(bool b) {m_bPieceTableChanging = b;}
+	void            _setMarkRevisions(bool bMark) {m_bMarkRevisions = bMark;}
 	
 	virtual ~AD_Document();		//  Use unref() instead.
 
+private:
+	XAP_ResourceManager *	m_pResourceManager;
+	
 	int				m_iRefCount;
 	const char *	m_szFilename;
 	UT_String		m_szEncodingName;
 
+	bool			m_bPieceTableChanging;
 	time_t          m_lastSavedTime;
 	time_t          m_lastOpenedTime;
 	UT_uint32       m_iEditTime;     // previous edit time (up till open)
 	UT_uint32       m_iVersion;
-	bool			m_bPieceTableChanging;
 
 	// these are for tracking versioning
 	bool            m_bHistoryWasSaved;

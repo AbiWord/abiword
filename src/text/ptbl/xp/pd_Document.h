@@ -45,9 +45,12 @@ class UT_ByteBuf;
 class UT_GrowBuf;
 class pt_PieceTable;
 class PP_AttrProp;
+class PP_Revision;
+class PP_RevisionAttr;
 class pf_Frag_Strux;
 class PX_ChangeRecord;
 class PD_Style;
+class PD_DocIterator;
 class XAP_App;
 class fd_Field;
 class po_Bookmark;
@@ -170,6 +173,8 @@ class ABI_EXPORT PD_Document : public AD_Document
 public:
 	PD_Document(XAP_App *pApp);
 
+	virtual AD_DOCUMENT_TYPE getType() const {return ADDOCUMENT_ABIWORD;}
+	
 	virtual UT_Error		readFromFile(const char * szFilename, int ieft, const char * impProps = NULL);
 	virtual UT_Error		importFile(const char * szFilename, int ieft, bool markClean = false, bool bImportStylesFirst = true,
 									   const char * impProps = NULL);
@@ -416,7 +421,13 @@ public:
 	/////////////////////////////////////////////////////////////////////////////
 	// Functions for dealing with revisions
 	//
+	virtual bool            acceptRejectRevision(bool bReject,
+												 UT_uint32 iStart,
+												 UT_uint32 iEnd,
+												 UT_uint32 iLevel);
 
+	virtual bool            rejectAllHigherRevisions(UT_uint32 iLevel);
+	
 	virtual void            purgeRevisionTable();
 
 	void					notifyPieceTableChangeStart(void);
@@ -512,7 +523,9 @@ public:
 
 	bool      diffDocuments(const PD_Document &d, UT_Vector & vDiff) const;
 	void      diffIntoRevisions(const PD_Document &d);
-	
+
+	virtual void   setAutoRevisioning(bool autorev);
+
 protected:
 	~PD_Document();
 
@@ -520,6 +533,11 @@ protected:
 	void					_destroyDataItemData(void);
 	bool					_syncFileTypes(bool bReadSaveWriteOpen);
 
+	bool                    _acceptRejectRevision(bool bReject, UT_uint32 iStart, UT_uint32 iEnd,
+												  const PP_Revision * pRev,
+												  PP_RevisionAttr &RevAttr, pf_Frag * pf,
+												  bool & bDeleted);
+	
 public:
 	// these functions allow us to retrieve visual direction at document
 	// position pos from an associated layout. They are intended to be

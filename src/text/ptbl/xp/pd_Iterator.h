@@ -75,6 +75,11 @@ class ABI_EXPORT PD_DocIterator : public UT_TextIterator
 
 	const pf_Frag * getFrag() {return m_frag;}
 
+	void            reset() {m_pos = 0; m_frag = NULL; m_status = UTIter_OK;}
+	void            reset(PT_DocPosition pos, const pf_Frag * pf) // use with great care
+		             {m_pos = pos; m_frag = pf; _findFrag();}
+		
+
   private:
 	// private constructor
 	PD_DocIterator(pt_PieceTable & pt):m_pt(pt){};

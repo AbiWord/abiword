@@ -468,6 +468,34 @@ const PP_Revision *  PP_RevisionAttr::getGreatestLesserOrEqualRevision(UT_uint32
 	return r;
 }
 
+const PP_Revision * PP_RevisionAttr::getLowestGreaterOrEqualRevision(UT_uint32 id)
+{
+	if(id == 0)
+		return NULL;
+
+	const PP_Revision *r = NULL; // this will be the revision we are looking for
+	UT_uint32 r_id = 0xffffffff;
+
+	for(UT_uint32 i = 0; i < m_vRev.getItemCount(); i++)
+	{
+		const PP_Revision * t = (const PP_Revision *) m_vRev.getNthItem(i);
+		UT_uint32 t_id = t->getId();
+
+		// the special case speedup - if we hit our id, then we can return immediately
+		if(t_id == id)
+			return t;
+
+		if((t_id > id) && (t_id < r_id))
+		{
+			r = t;
+			r_id = t_id;
+		}
+	}
+
+	return r;
+}
+
+
 /*! finds the highest revision number in this attribute
  */
 const PP_Revision * PP_RevisionAttr::getLastRevision()

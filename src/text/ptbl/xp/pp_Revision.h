@@ -117,6 +117,7 @@ class PP_RevisionAttr
 
 	const PP_Revision *   getGreatestLesserOrEqualRevision(UT_uint32 id,
 														   const PP_Revision ** ppR);
+	const PP_Revision *   getLowestGreaterOrEqualRevision(UT_uint32 id);
 	
 	const PP_Revision *   getLastRevision();
 	const PP_Revision *   getRevisionWithId(UT_uint32 iId, UT_uint32 & iMinId);

@@ -117,8 +117,6 @@ PD_Document::PD_Document(XAP_App *pApp)
 
 PD_Document::~PD_Document()
 {
-	if (m_szFilename)
-		free(const_cast<void *>(static_cast<const void *>(m_szFilename)));
 	if (m_pPieceTable)
 		delete m_pPieceTable;
 
@@ -129,9 +127,6 @@ PD_Document::~PD_Document()
 	UT_HASH_PURGEDATA(UT_UTF8String*, &m_metaDataMap, delete) ;
 	UT_HASH_PURGEDATA(UT_UTF8String*, &m_mailMergeMap, delete) ;
 
-	if(m_pUUID)
-		delete m_pUUID;
-	
 	// we do not purge the contents of m_vecListeners
 	// since these are not owned by us.
 
@@ -285,7 +280,7 @@ UT_Error PD_Document::importFile(const char * szFilename, int ieft,
 		return errorCode;
 	}
 
-	m_lastOpenedTime = time(NULL);
+	setLastOpenedTime(time(NULL));
 	
 	// get document-wide settings from the AP
 	const PP_AttrProp * pAP = getAttrProp();
@@ -308,7 +303,7 @@ UT_Error PD_Document::importFile(const char * szFilename, int ieft,
 	if(markClean)
 		_setClean();
 	else
-	  m_bForcedDirty = true; // force this to be dirty
+	  	_setForceDirty(true); // force this to be dirty
 
 	if (strstr(szFilename, "normal.awt") == NULL)
 		XAP_App::getApp()->getPrefs()->addRecent(szFilename);
@@ -330,6 +325,7 @@ UT_Error PD_Document::importFile(const char * szFilename, int ieft,
 	
 	return UT_OK;
 }
+
 
 UT_Error PD_Document::readFromFile(const char * szFilename, int ieft,
 								   const char * impProps)
@@ -396,14 +392,16 @@ UT_Error PD_Document::readFromFile(const char * szFilename, int ieft,
 		return errorCode;
 	}
 
-	UT_ASSERT(!m_szFilename);
-	if (!UT_cloneString((char *&)m_szFilename, szFilename))
+	UT_ASSERT(!getFilename());
+	_setFilename(UT_strdup(szFilename));
+	
+	if (!getFilename())
 	{
 		UT_DEBUGMSG(("PD_Document::readFromFile -- no memory\n"));
 		return UT_IE_NOMEMORY;
 	}
 
-	m_lastOpenedTime = time(NULL);
+	setLastOpenedTime(time(NULL));
 	
 	// get document-wide settings from the AP
 	const PP_AttrProp * pAP = getAttrProp();
@@ -546,14 +544,14 @@ UT_Error PD_Document::newDocument(void)
 
 	setDocVersion(0);
 	setEditTime(0);
-	m_lastOpenedTime = time(NULL);
+	setLastOpenedTime(time(NULL));
 
-	if(!m_pUUID)
+	if(!getDocUUID())
 	{
 		UT_ASSERT( UT_SHOULD_NOT_HAPPEN );
 	}
 	else
-		m_pUUID->makeUUID();
+		_getDocUUID()->makeUUID();
 	
 	// mark the document as not-dirty
 	_setClean();
@@ -611,11 +609,10 @@ UT_Error PD_Document::saveAs(const char * szFilename, int ieft, bool cpy,
 	{
 	    // no file name currently set - make this filename the filename
 	    // stored for the doc
-	    FREEP(m_szFilename);
 	    char * szFilenameCopy = NULL;
 	    if (!UT_cloneString(szFilenameCopy,szFilename))
 			return UT_SAVE_OTHERERROR;
-	    m_szFilename = szFilenameCopy;
+	    _setFilename(szFilenameCopy);
 	    _setClean(); // only mark as clean if we're saving under a new name
 	}
 
@@ -626,7 +623,7 @@ UT_Error PD_Document::saveAs(const char * szFilename, int ieft, bool cpy,
 
 UT_Error PD_Document::save(void)
 {
-	if (!m_szFilename || !*m_szFilename)
+	if (!getFilename() || !*getFilename())
 		return UT_SAVE_NAMEERROR;
 	if (m_lastSavedAsType == IEFT_Unknown)
 		return UT_EXTENSIONERROR;
@@ -634,7 +631,7 @@ UT_Error PD_Document::save(void)
 	IE_Exp * pie = NULL;
 	UT_Error errorCode;
 
-	errorCode = IE_Exp::constructExporter(this,m_szFilename,m_lastSavedAsType,&pie);
+	errorCode = IE_Exp::constructExporter(this,getFilename(),m_lastSavedAsType,&pie);
 	if (errorCode)
 	{
 		UT_DEBUGMSG(("PD_Document::Save -- could not construct exporter\n"));
@@ -648,7 +645,7 @@ UT_Error PD_Document::save(void)
 	// see if revisions table is still needed ...
 	purgeRevisionTable();
 	
-	errorCode = pie->writeFile(m_szFilename);
+	errorCode = pie->writeFile(getFilename());
 	delete pie;
 
 	if (errorCode)
@@ -666,14 +663,14 @@ UT_Error PD_Document::save(void)
 
 bool PD_Document::isDirty(void) const
 {
-	return m_pPieceTable->isDirty() || m_bForcedDirty;
+	return m_pPieceTable->isDirty() || isForcedDirty();
 }
 
 void PD_Document::_setClean(void)
 {
 	m_pPieceTable->setClean();
 	m_pPieceTable->getFragments().cleanFrags();
-	m_bForcedDirty = false;
+	_setForceDirty(false);
 }
 
 //////////////////////////////////////////////////////////////////
@@ -3291,7 +3288,7 @@ void PD_Document::notifyPieceTableChangeStart(void)
 		UT_DEBUGMSG(("!!!!Waited %d microseconds for redraw to finish \n",i*100));
 	}
 	m_bRedrawHappenning = false;
-	m_bPieceTableChanging = true;
+	_setPieceTableChanging(true);
 //
 // Invalidate visible direction cache variables. PieceTable manipulations of
 // any sort can screw these.
@@ -3303,7 +3300,7 @@ void PD_Document::notifyPieceTableChangeStart(void)
 
 void PD_Document::notifyPieceTableChangeEnd(void)
 {
-        m_bPieceTableChanging = false;
+        _setPieceTableChanging(false);
 }
 
 void PD_Document::invalidateCache(void)
@@ -4209,7 +4206,7 @@ pf_Frag * PD_Document::getLastFrag() const
 */
 void PD_Document::forceDirty()
 {
-	m_bForcedDirty = true;
+	_setForceDirty(true);
 
 	// now notify listeners ...
 	// this is necessary so that the save command is available after
@@ -4223,6 +4220,9 @@ void PD_Document::forceDirty()
 */
 bool PD_Document::areDocumentStylesheetsEqual(const AD_Document &D) const
 {
+	if(D.getType() != ADDOCUMENT_ABIWORD)
+		return false;
+	
 	PD_Document &d = (PD_Document &)D;
 	UT_return_val_if_fail(m_pPieceTable || d.m_pPieceTable, false);
 
@@ -4280,12 +4280,318 @@ bool PD_Document::areDocumentStylesheetsEqual(const AD_Document &D) const
 	return true;
 }
 
+
 /*!
-    Clears out the revisions table if no revisions are left in the document
+    carries out the actual change in PieceTable; called by
+    acceptRejectRevision() and rejectAllHigherRevisions()
+*/
+bool PD_Document::_acceptRejectRevision(bool bReject, UT_uint32 iStart, UT_uint32 iEnd,
+										const PP_Revision * pRev,
+										PP_RevisionAttr &RevAttr, pf_Frag * pf,
+										bool & bDeleted)
+{
+	UT_return_val_if_fail(pf, false);
+	bDeleted = false;
+
+	UT_uint32 iRealDeleteCount;
+	const XML_Char * ppAttr[3];
+	const XML_Char rev[] = "revision";
+	ppAttr[0] = rev;
+	ppAttr[1] = NULL;
+	ppAttr[2] = NULL;
+
+	const XML_Char ** ppProps, ** ppAttr2;
+	bool bDeletePRev = false;
+	bool bRet = true;
+	UT_uint32 i;
+	
+	if(bReject)
+	{
+		switch(pRev->getType())
+		{
+			case PP_REVISION_ADDITION:
+			case PP_REVISION_ADDITION_AND_FMT:
+				{
+					// delete this fragment
+					bDeleted = true;
+
+					// since we need real delete, we need to step out
+					// of rev. marking mode for a moment ...
+					bool bMark = isMarkRevisions();
+					_setMarkRevisions(false);
+					bRet = deleteSpan(iStart,iEnd,NULL,iRealDeleteCount);
+					_setMarkRevisions(bMark);
+
+					return bRet;
+				}
+					
+			case PP_REVISION_DELETION:
+			case PP_REVISION_FMT_CHANGE:
+				// remove the revision attribute
+				return changeSpanFmt(PTC_RemoveFmt,iStart,iEnd,ppAttr,NULL);
+
+			default:
+				UT_ASSERT( UT_SHOULD_NOT_HAPPEN );
+				return false;
+		}
+	}
+	else
+	{
+		switch(pRev->getType())
+		{
+			case PP_REVISION_ADDITION:
+				// simply remove the revision attribute
+				return changeSpanFmt(PTC_RemoveFmt,iStart,iEnd,ppAttr,NULL);
+
+			case PP_REVISION_DELETION:
+				{
+					// delete this fragment
+					bDeleted = true;
+
+					// since we need real delete, we need to step out
+					// of rev. marking mode for a moment ...
+					bool bMark = isMarkRevisions();
+					_setMarkRevisions(false);
+					bRet = deleteSpan(iStart,iEnd,NULL,iRealDeleteCount);
+					_setMarkRevisions(bMark);
+
+					return bRet;
+				}
+					
+			case PP_REVISION_ADDITION_AND_FMT:
+				// overlay the formatting and remove the revision attribute
+				return changeSpanFmt(PTC_RemoveFmt,iStart,iEnd,ppAttr,NULL);
+
+			case PP_REVISION_FMT_CHANGE:
+				// overlay the formatting and remove this revision
+				// from the revision attribute
+				ppProps = new const XML_Char *[2* pRev->getPropertyCount() + 1];
+				ppAttr2 = new const XML_Char *[2* pRev->getAttributeCount() + 3];
+
+				for(i = 0; i < pRev->getPropertyCount(); i++)
+				{
+					pRev->getNthProperty(i, ppProps[2*i],ppProps[2*i + 1]);
+				}
+
+				ppProps[2*i] = NULL;
+
+				for(i = 0; i < pRev->getAttributeCount(); i++)
+				{
+					pRev->getNthAttribute(i, ppAttr2[2*i],ppAttr2[2*i + 1]);
+				}
+
+				if(pRev->getType() == PP_REVISION_ADDITION_AND_FMT)
+				{
+					ppAttr2[2*i] = NULL;
+				}
+				else
+				{
+					// need to set a new revision attribute
+					// first remove current revision from pRevAttr
+					RevAttr.removeRevision(pRev);
+					bDeletePRev = true;
+
+					ppAttr2[2*i] = rev;
+					ppAttr2[2*i + 1] = RevAttr.getXMLstring();
+					ppAttr2[2*i + 2] = NULL;
+
+					if(*ppAttr2[2*i + 1] == 0)
+					{
+						// no revision attribute left, which means we
+						// have to remove it by separate call to changeSpanFmt
+
+						// if this is the only attribute, we just set
+						// the whole thing to NULL
+						if(i == 0)
+						{
+							delete ppAttr2;
+							ppAttr2 = NULL;
+						}
+						else
+						{
+							// OK, there are some other attributes
+							// left, so we set the rev name to NULL
+							// and remove the formatting by a separate
+							// call to changeSpanFmt
+							ppAttr2[2*i] = NULL;
+						}
+
+						// now we use the ppAttr set to remove the
+						// revision attribute
+						bRet &= changeSpanFmt(PTC_RemoveFmt,iStart,iEnd,ppAttr,NULL);
+					}
+				}
+
+
+				bRet &= changeSpanFmt(PTC_AddFmt,iStart,iEnd,ppAttr2,ppProps);
+
+				delete ppProps;
+				delete ppAttr2;
+
+				if(bDeletePRev)
+					delete pRev;
+				
+				return bRet;
+
+			default:
+				UT_ASSERT( UT_SHOULD_NOT_HAPPEN );
+		}
+	}
+
+	return false;
+}
+
+bool PD_Document::rejectAllHigherRevisions(UT_uint32 iLevel)
+{
+	PD_DocIterator t(*this);
+	UT_return_val_if_fail(t.getStatus() == UTIter_OK, false);
+	
+	const PP_Revision * pRev;
+
+	while(t.getStatus() == UTIter_OK)
+	{
+		pf_Frag * pf = const_cast<pf_Frag *>(t.getFrag());
+		UT_return_val_if_fail(pf, false);
+
+		PT_AttrPropIndex API = pf->getIndexAP();
+
+		const PP_AttrProp * pAP = NULL;
+		m_pPieceTable->getAttrProp(API,&pAP);
+		UT_return_val_if_fail(pAP, false);
+		
+		const XML_Char * pszRevision = NULL;
+		pAP->getAttribute("revision", pszRevision);
+		
+		if(pszRevision == NULL)
+		{
+			// no revisions on this fragment
+			t += pf->getLength();
+			continue;
+		}
+			
+		PP_RevisionAttr RevAttr(pszRevision);
+		pRev = RevAttr.getLowestGreaterOrEqualRevision(iLevel);
+		if(!pRev)
+		{
+			// no higher revisions
+			t += pf->getLength();
+			continue;
+		}
+		
+		UT_uint32 iStart = t.getPosition();
+		UT_uint32 iEnd   = iStart + pf->getLength();
+		bool bDeleted = false;
+		
+		_acceptRejectRevision(true /*reject*/, iStart, iEnd, pRev, RevAttr, pf, bDeleted);
+		
+		// advance -- the call to _acceptRejectRevision could have
+		// resulted in deletion and/or merging of fragments; we have
+		// to reset the iterator
+		if(bDeleted)
+			t.reset(iStart, NULL);
+		else
+			t.reset(iEnd, NULL);
+	}
+
+	return true;
+}
+
+/*!
+   accepts or reject top visible revision between document positions
+   iStart and iEnd.
+   
+   \param bReject  true if revisions are to be rejected
+   \param iPos1    document position to start at
+   \param iPos2     document position to finish at
+   \param iLevel   the highest revision level to accept
+
+   \return         true on success
+   
+   NB: For each fragment this function removes the highest revision <=
+       iLevel. For example, if iLevel is 3 and fragment contains
+       revisions 1,2, 4, revision 2 will be removed.
+*/
+bool PD_Document::acceptRejectRevision(bool bReject, UT_uint32 iPos1,
+									   UT_uint32 iPos2, UT_uint32 iLevel)
+{
+	UT_uint32 iPosStart = UT_MIN(iPos1, iPos2);
+	UT_uint32 iPosEnd   = UT_MAX(iPos1, iPos2);
+	
+	PD_DocIterator t(*this, iPosStart);
+	UT_return_val_if_fail(t.getStatus() == UTIter_OK, false);
+	
+	
+	const PP_Revision * pSpecial;
+	const PP_Revision * pRev;
+	UT_uint32 iLenProcessed = 0;
+	bool bFirst = true;
+	
+
+	while(t.getStatus() == UTIter_OK && iPosStart + iLenProcessed < iPosEnd)
+	{
+		pf_Frag * pf = const_cast<pf_Frag *>(t.getFrag());
+		UT_return_val_if_fail(pf, false);
+		UT_uint32 iFragLen = pf->getLength();
+
+		if(bFirst)
+		{
+			// we might be working only with a part of the frag
+			bFirst = false;
+			iFragLen -= (iPosStart - pf->getPos());
+		}
+		
+		iLenProcessed += iFragLen;
+
+		PT_AttrPropIndex API = pf->getIndexAP();
+
+		const PP_AttrProp * pAP = NULL;
+		m_pPieceTable->getAttrProp(API,&pAP);
+		UT_return_val_if_fail(pAP, false);
+		
+		const XML_Char * pszRevision = NULL;
+		pAP->getAttribute("revision", pszRevision);
+		
+		if(pszRevision == NULL)
+		{
+			// no revisions on this fragment
+			t += iFragLen;
+			continue;
+		}
+			
+		PP_RevisionAttr RevAttr(pszRevision);
+		pRev = RevAttr.getGreatestLesserOrEqualRevision(iLevel, &pSpecial);
+		if(!pRev)
+		{
+			// no visible revisions
+			t += iFragLen;
+			continue;
+		}
+		
+		UT_uint32 iStart = t.getPosition();
+		UT_uint32 iEnd   = iStart + iFragLen;
+
+		bool bDeleted = false;
+		_acceptRejectRevision(bReject, iStart, iEnd, pRev, RevAttr, pf, bDeleted);
+		
+		// advance -- the call to _acceptRejectRevision could have
+		// resulted in deletion and/or merging of fragments; we have
+		// to reset the iterator
+		if(bDeleted)
+			t.reset(iStart, NULL);
+		else
+			t.reset(iEnd, NULL);
+	}
+
+	return true;
+}
+
+
+/*!
+  Clears out the revisions table if no revisions are left in the document
 */
 void PD_Document::purgeRevisionTable()
 {
-	if(m_vRevisions.getItemCount() == 0)
+	if(getRevisions().getItemCount() == 0)
 		return;
 
 	UT_String sAPI;
@@ -4737,6 +5043,14 @@ bool PD_Document::findFirstDifferenceInContent(PT_DocPosition &pos, UT_sint32 &i
 	return false;
 }
 
+void PD_Document::setAutoRevisioning(bool autorev)
+{
+	AD_Document::setAutoRevisioning(autorev);
+
+	// TODO tell our listeners to redo layout ...
+	signalListeners(PD_SIGNAL_REFORMAT_LAYOUT);	
+}
+
 
 
 /*!
@@ -4746,6 +5060,10 @@ bool PD_Document::findFirstDifferenceInContent(PT_DocPosition &pos, UT_sint32 &i
 */
 bool PD_Document::areDocumentContentsEqual(const AD_Document &D, UT_uint32 &pos) const
 {
+	pos = 0;
+	if(D.getType() != ADDOCUMENT_ABIWORD)
+		return false;
+	
 	PD_Document &d = (PD_Document &)D;
 	UT_return_val_if_fail(m_pPieceTable || d.m_pPieceTable, false);
 
@@ -4892,6 +5210,10 @@ bool PD_Document::areDocumentContentsEqual(const AD_Document &D, UT_uint32 &pos)
 */
 bool PD_Document::areDocumentFormatsEqual(const AD_Document &D, UT_uint32 &pos) const
 {
+	pos = 0;
+	if(D.getType() != ADDOCUMENT_ABIWORD)
+		return false;
+	
 	PD_Document &d = (PD_Document &)D;
 	UT_return_val_if_fail(m_pPieceTable || d.m_pPieceTable, false);
 

@@ -47,11 +47,11 @@ AD_Document::AD_Document() :
 	m_iRefCount(1),
 	m_szFilename(NULL),
 	m_szEncodingName(""), // Should this have a default? UTF-8, perhaps?
+    m_bPieceTableChanging(false),
 	m_lastSavedTime(0),
 	m_lastOpenedTime(time(NULL)),
     m_iEditTime(0),
     m_iVersion(0),
-	m_bPieceTableChanging(false),
 	m_bHistoryWasSaved(false),
 	m_bMarkRevisions(false),
 	m_bShowRevisions(true),
@@ -84,7 +84,19 @@ AD_Document::~AD_Document()
 
 	UT_VECTOR_PURGEALL(AD_VersionData*, m_vHistory);
 	UT_VECTOR_PURGEALL(AD_Revision*, m_vRevisions);
+
+	if (m_szFilename)
+		free(const_cast<void *>(static_cast<const void *>(m_szFilename)));
+
+	if(m_pUUID)
+		delete m_pUUID;
 }
+
+bool AD_Document::isPieceTableChanging(void)
+{
+        return m_bPieceTableChanging;
+}
+
 
 UT_UUID * AD_Document::getNewUUID()const
 {
@@ -124,12 +136,6 @@ void AD_Document::unref(void)
 	{
 		delete this;
 	}
-}
-
-
-bool AD_Document::isPieceTableChanging(void)
-{
-        return m_bPieceTableChanging;
 }
 
 const char * AD_Document::getFilename(void) const
@@ -335,7 +341,14 @@ void AD_Document::setDocUUID(const char * s)
 		UT_return_if_fail(0);
 	}
 	
-	m_pUUID->setUUID(s);
+	if(!m_pUUID->setUUID(s))
+	{
+		// string we were passed did not contain valid uuid
+		// if our original id was valid, we will keep it, otherwise
+		// make a new one
+		if(!m_pUUID->isValid())
+			m_pUUID->makeUUID();
+	}
 }
 
 /*!

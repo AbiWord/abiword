@@ -7779,6 +7779,47 @@ bool FV_View::isTextMisspelled() const
 	return false;
 }
 
+bool FV_View::doesSelectionContainRevision() const
+{
+	fl_BlockLayout* pBlock;
+	fp_Run* pRun;
+	UT_sint32 x, y, x2, y2;
+	UT_uint32 h;
+	bool b;
+
+	UT_uint32 iPos1 = UT_MIN(m_iInsPoint, getSelectionAnchor());
+	UT_uint32 iPos2 = UT_MAX(m_iInsPoint, getSelectionAnchor());
+
+	_findPositionCoords(iPos1, false, x, y, x2, y2, h, b,&pBlock, &pRun);
+
+	if (!pBlock)
+		return false;
+
+	if (!pRun)
+		return false;
+
+	while(pBlock)
+	{
+		if(!pRun)
+			pRun = pBlock->getFirstRun();
+		
+		while(pRun)
+		{
+			if(pRun->getBlockOffset() + pBlock->getPosition() >= iPos2)
+				return false;
+					
+			if(pRun->containsRevisions())
+				return true;
+
+			pRun = pRun->getNextRun();
+		}
+
+		pBlock = pBlock->getNextBlockInDocument();
+	}
+		
+	return false;
+}
+
 
 EV_EditMouseContext FV_View::getInsertionPointContext(UT_sint32 * pxPos, UT_sint32 * pyPos)
 {

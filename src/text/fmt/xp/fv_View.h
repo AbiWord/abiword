@@ -513,6 +513,7 @@ public:
 	void                setRevisionLevel(UT_uint32 i);
 
 	bool                cmdFindRevision(bool bNext, UT_sint32 xPos, UT_sint32 yPos);
+	bool                doesSelectionContainRevision() const;
 	
 	/* Table related functions */
 	bool                isPointLegal(PT_DocPosition pos);
@@ -702,12 +703,6 @@ protected:
 	UT_Error			_deleteHyperlink(PT_DocPosition &i, bool bSignal);
 	fp_HyperlinkRun *   _getHyperlinkInRange(PT_DocPosition &posStart,
 											 PT_DocPosition &posEnd);
-
-	void                _acceptRejectRevision(bool bReject,
-											  PT_DocPosition iStart,
-											  PT_DocPosition iEnd,
-											  const PP_RevisionAttr * pRevAttr);
-
 private:
 	PT_DocPosition		m_iInsPoint;
 	UT_sint32			m_xPoint;

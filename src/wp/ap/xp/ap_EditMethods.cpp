@@ -644,6 +644,7 @@ public:
 	static EV_EditMethod_Fn unlockGUI;
 
 	static EV_EditMethod_Fn toggleMarkRevisions;
+	static EV_EditMethod_Fn toggleAutoRevision;
 	static EV_EditMethod_Fn revisionAccept;
 	static EV_EditMethod_Fn revisionReject;
 	static EV_EditMethod_Fn revisionFindNext;
@@ -654,6 +655,7 @@ public:
 	static EV_EditMethod_Fn toggleShowRevisionsAfter;
 	static EV_EditMethod_Fn toggleShowRevisionsAfterPrevious;
 	static EV_EditMethod_Fn revisionCompareDocuments;
+	static EV_EditMethod_Fn revisionMergeDocuments;
 
 	static EV_EditMethod_Fn history;
 
@@ -1027,6 +1029,7 @@ static EV_EditMethod s_arrayEditMethods[] =
 	EV_EditMethod(NF(revisionCompareDocuments),	0,  ""),
 	EV_EditMethod(NF(revisionFindNext),		0,  ""),
 	EV_EditMethod(NF(revisionFindPrev),		0,  ""),
+	EV_EditMethod(NF(revisionMergeDocuments),	0,  ""),
 	EV_EditMethod(NF(revisionReject),		0,  ""),
 	EV_EditMethod(NF(revisionSetViewLevel),	0,  ""),
 	EV_EditMethod(NF(rotateCase),			0,	""),
@@ -1079,6 +1082,7 @@ static EV_EditMethod s_arrayEditMethods[] =
 	EV_EditMethod(NF(style),				_D_,""),
 
 	// t
+	EV_EditMethod(NF(toggleAutoRevision),  0,  ""),
 	EV_EditMethod(NF(toggleAutoSpell),      0,  ""),
 	EV_EditMethod(NF(toggleBold),			0,	""),
 	EV_EditMethod(NF(toggleBottomline), 	0,	""),
@@ -11390,6 +11394,39 @@ static bool s_doMarkRevisions(XAP_Frame * pFrame, PD_Document * pDoc, FV_View * 
 	return bOK;
 }
 
+Defun1(toggleAutoRevision)
+{
+	CHECK_FRAME;
+	ABIWORD_VIEW;
+
+	PD_Document * pDoc = pView->getDocument();
+	UT_return_val_if_fail(pDoc,false);
+	
+	bool bAuto = !pDoc->isAutoRevisioning();
+	bool bIgnore = false;
+	
+	if(!bAuto)
+	{
+		// the user asked to turn revisioning off; this would disrupt
+		// the record of changes, making it impossible to revert
+		// reliably to any earlier versions of document history
+		// we issue worning
+		XAP_Frame * pFrame = static_cast<XAP_Frame *> ( pAV_View->getParentData());
+		UT_return_val_if_fail(pFrame,false);
+		
+		bIgnore = (XAP_Dialog_MessageBox::a_YES ==
+				        pFrame->showMessageBox(AP_STRING_ID_MSG_AutoRevisionOffWarning, 
+											   XAP_Dialog_MessageBox::b_YN, 
+											   XAP_Dialog_MessageBox::a_NO));
+	
+	}
+
+	if(!bIgnore)
+		pDoc->setAutoRevisioning(bAuto);
+
+	return true;
+}
+
 Defun1(toggleMarkRevisions)
 {
 	CHECK_FRAME;
@@ -11690,22 +11727,9 @@ Defun1(revisionCompareDocuments)
 	UT_return_val_if_fail(pFrame,false);
 
 	PD_Document * pDoc2 = s_doListDocuments(pFrame, true, XAP_DIALOG_ID_COMPAREDOCUMENTS);
-	UT_uint32 pos1, pos2, iVer;
+
 	if(pDoc2)
 	{
-		UT_DEBUGMSG(("COMPARE DOCUMENTS:\n   related:     %d\n"
-					                     "   stylesheets: %d\n"
-										 "   history:     %d\n"
-					                     "   contents:    %d\n"
-					                     "   format:      %d\n",
-					 pDoc->areDocumentsRelated(*pDoc2),
-					 pDoc->areDocumentStylesheetsEqual(*pDoc2),
-					 pDoc->areDocumentHistoriesEqual(*pDoc2, iVer),
-					 pDoc->areDocumentContentsEqual(*pDoc2, pos1),
-					 pDoc->areDocumentFormatsEqual(*pDoc2, pos2)));
-
-		// pDoc->diffIntoRevisions(*pDoc2);
-
 		pFrame->raise();
 
 		XAP_DialogFactory * pDialogFactory
@@ -11719,6 +11743,59 @@ Defun1(revisionCompareDocuments)
 		pDialog->calculate(pDoc, pDoc2);
 		pDialog->runModal(pFrame);
 		pDialogFactory->releaseDialog(pDialog);
+	}
+	return true;
+}
+
+Defun1(revisionMergeDocuments)
+{
+	CHECK_FRAME;
+	ABIWORD_VIEW;
+	PD_Document * pDoc = pView->getDocument();
+	UT_return_val_if_fail(pDoc,false);
+
+	XAP_Frame * pFrame = static_cast<XAP_Frame *> ( pAV_View->getParentData());
+	UT_return_val_if_fail(pFrame,false);
+
+	PD_Document * pDoc2 = s_doListDocuments(pFrame, true, XAP_DIALOG_ID_MERGEDOCUMENTS);
+	UT_uint32 iVer;
+	if(pDoc2)
+	{
+		xxx_UT_DEBUGMSG(("MERGE DOCUMENTS:\n   related:     %d\n"
+					                     "   stylesheets: %d\n"
+										 "   history:     %d\n"
+					                     "   contents:    %d\n"
+					                     "   format:      %d\n",
+					 pDoc->areDocumentsRelated(*pDoc2),
+					 pDoc->areDocumentStylesheetsEqual(*pDoc2),
+					 pDoc->areDocumentHistoriesEqual(*pDoc2, iVer),
+					 pDoc->areDocumentContentsEqual(*pDoc2, pos1),
+					 pDoc->areDocumentFormatsEqual(*pDoc2, pos2)));
+
+		if((pDoc->getType() != ADDOCUMENT_ABIWORD) || (pDoc2->getType() != ADDOCUMENT_ABIWORD))
+		{
+			// can only diff AbiWord documents ...
+			UT_ASSERT(UT_SHOULD_NOT_HAPPEN);
+			return false;
+		}
+
+		if(pDoc->areDocumentHistoriesEqual(*pDoc2, iVer))
+		{
+			// the two docs are identical -- there is nothing to merge
+			return true;
+		}
+		
+		if(!pDoc->areDocumentsRelated(*pDoc2))
+		{
+			// the two documents are not related, issue warning ...
+			pFrame->showMessageBox(AP_STRING_ID_MSG_MergeDocsNotRelated, 
+								   XAP_Dialog_MessageBox::b_O, 
+								   XAP_Dialog_MessageBox::a_OK);
+			
+		}
+		
+		pDoc->diffIntoRevisions(*pDoc2);
+
 	}
 	return true;
 }

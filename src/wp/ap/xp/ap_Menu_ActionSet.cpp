@@ -237,6 +237,8 @@ EV_Menu_ActionSet * AP_CreateMenuActionSet(void)
 	_s(AP_MENU_ID_TOOLS_REVISIONS_ACCEPT_REVISION, 0,0,0,0, "revisionAccept", ap_GetState_RevisionPresent,NULL);
 	_s(AP_MENU_ID_TOOLS_REVISIONS_REJECT_REVISION, 0,0,0,0, "revisionReject", ap_GetState_RevisionPresent,NULL);
 	_s(AP_MENU_ID_TOOLS_REVISIONS_COMPARE_DOCUMENTS, 0,0,0,0, "revisionCompareDocuments",NULL,NULL);
+	_s(AP_MENU_ID_TOOLS_REVISIONS_MERGE_DOCUMENTS, 0,0,0,0, "revisionMergeDocuments",NULL,NULL);
+	_s(AP_MENU_ID_TOOLS_REVISIONS_AUTO, 0,0,1,0, "toggleAutoRevision",ap_GetState_AutoRevision,NULL);
 	_s(AP_MENU_ID_TOOLS_REVISIONS_FIND_NEXT, 0,0,0,0, "revisionFindNext", ap_GetState_HasRevisions,NULL);
 	_s(AP_MENU_ID_TOOLS_REVISIONS_FIND_PREV, 0,0,0,0, "revisionFindPrev", ap_GetState_HasRevisions,NULL);
 	
@@ -278,7 +280,8 @@ EV_Menu_ActionSet * AP_CreateMenuActionSet(void)
 	_s(AP_MENU_ID_CONTEXT_REVISIONS_FIND_NEXT, 0,0,0,0, "revisionFindNext", ap_GetState_HasRevisions,NULL);
 	_s(AP_MENU_ID_CONTEXT_REVISIONS_FIND_PREV, 0,0,0,0, "revisionFindPrev", ap_GetState_HasRevisions,NULL);
 	_s(AP_MENU_ID_TOOLS_REVISIONS_SET_VIEW_LEVEL, 0,1,0,0, "revisionSetViewLevel", ap_GetState_HasRevisions, NULL);
-	_s(AP_MENU_ID_TOOLS_HISTORY, 0,1,0,0, "history", NULL, NULL);
+	_s(AP_MENU_ID_TOOLS_HISTORY,  1,0,0,0,  NULL,               NULL,                   NULL);
+	_s(AP_MENU_ID_TOOLS_HISTORY_SHOW, 0,1,0,0, "history", NULL, NULL);
 
 	_s(AP_MENU_ID_WINDOW,			1,0,0,0,	NULL,				NULL,					NULL);
 	_s(AP_MENU_ID_WINDOW_NEW,		0,0,0,0,	"newWindow",		NULL,					NULL);

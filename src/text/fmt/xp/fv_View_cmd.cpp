@@ -676,7 +676,7 @@ bool FV_View::cmdSelectColumn(PT_DocPosition posOfColumn)
 	PT_DocPosition posTable,posCell;
 	UT_sint32 iLeft,iRight,iTop,iBot;
 	UT_sint32 Left,Right,Top,Bot;
-	bool bEOL;
+	bool bEOL = false; // added this stop compiler warning. Tomas
 	if(!isInTable(posOfColumn))
 	{
 		return false;
@@ -3413,7 +3413,7 @@ void FV_View::cmdPaste(bool bHonorFormatting)
 		if(isInTable())
 		{
 			fl_TableLayout * pTab = getTableAtPos(getPoint());
-			if(pTab && pTab == m_Selection.getTableLayout());
+			if(pTab && pTab == m_Selection.getTableLayout())
 			{
 				m_Selection.pasteRowOrCol();
 				return;
@@ -3770,7 +3770,8 @@ UT_Error FV_View::cmdInsertTOC(void)
 	// Signal PieceTable Change
 	_saveAndNotifyPieceTableChange();
 	m_pDoc->beginUserAtomicGlob();
-	bool bRet;
+	bool bRet = false; // was not initialised; since ret value is
+					   // UT_Error, false should correspond to OK. Tomas
 
 
 	if (!isSelectionEmpty())
@@ -4203,7 +4204,7 @@ void FV_View::cmdAcceptRejectRevision(bool bReject, UT_sint32 xPos, UT_sint32 yP
 
 	// Signal PieceTable Change
 	_saveAndNotifyPieceTableChange();
-	//m_pDoc->beginUserAtomicGlob();
+	m_pDoc->beginUserAtomicGlob();
 
 	if(isSelectionEmpty())
 	{
@@ -4219,53 +4220,25 @@ void FV_View::cmdAcceptRejectRevision(bool bReject, UT_sint32 xPos, UT_sint32 yP
 		while (pRun && pRun->getNextRun() && pRun->getBlockOffset()+ pRun->getLength() <= iRelPos)
 			pRun= pRun->getNextRun();
 
-		UT_ASSERT(pRun);
+		UT_return_if_fail(pRun);
 
-		const PP_RevisionAttr * pRevAttr = pRun->getRevisions();
 		iStart = pBlock->getPosition(false) + pRun->getBlockOffset();
 		iEnd = pBlock->getPosition(false) + pRun->getBlockOffset() + pRun->getLength();
 
-		_acceptRejectRevision(bReject,iStart,iEnd,pRevAttr);
-
-#if 0
-		fp_Run * pOrigRun = pRun;
-
-		// now we have the run we clicked on, next we need to work back
-		// through the runs to find where the revision starts
-		// this does not work -- the PT gets out of sync with the
-		// layout; we can only do one run at at time
-		while(pRun && pRun->containsRevisions())
-		{
-			// do any necessary processing to accept/reject the revision
-			const PP_RevisionAttr * pRevAttr = pRun->getRevisions();
-			iStart = pBlock->getPosition(false) + pRun->getBlockOffset();
-			iEnd = pBlock->getPosition(false) + pRun->getBlockOffset() + pRun->getLength();
-
-			_acceptRejectRevision(bReject,iStart,iEnd,pRevAttr);
-
-			pRun = pRun->getPrevRun();
-		}
-
-		// we have already processed the original run, so lets start
-		// with the one after it
-		pRun = pOrigRun->getNextRun();
-
-		while(pRun && pRun->containsRevisions())
-		{
-			// do any necessary processing to accept/reject the revision
-			const PP_RevisionAttr * pRevAttr = pRun->getRevisions();
-			iStart = pBlock->getPosition(false) + pRun->getBlockOffset();
-			iEnd = pBlock->getPosition(false) + pRun->getBlockOffset() + pRun->getLength();
-
-			_acceptRejectRevision(bReject,iStart,iEnd,pRevAttr);
-
-			pRun = pRun->getNextRun();
-		}
-#endif
+	}
+	else
+	{
+		iStart = getPoint();
+		iEnd   = getSelectionAnchor();
 	}
 
+	// remove the selection, since things will get inserted, deleted, etc.
+	_clearSelection();
+	
+	m_pDoc->acceptRejectRevision(bReject,iStart,iEnd,m_iViewRevision);
+
 	// Signal PieceTable Changes have finished
-	//m_pDoc->endUserAtomicGlob();
+	m_pDoc->endUserAtomicGlob();
 	_generalUpdate();
 	_restorePieceTableState();
 }

@@ -1,3 +1,4 @@
+
 /* AbiWord
  * Copyright (C) 1998 AbiSource, Inc.
  * 
@@ -28,7 +29,7 @@
 
 void PD_Document::__dump(FILE * fp) const
 {
-	fprintf(fp,"Dump for %s:\n",m_szFilename);
+	fprintf(fp,"Dump for %s:\n",getFilename());
 	fprintf(fp,"  Document is %s\n",((isDirty()) ? "DIRTY" : "CLEAN"));
 	
 	if (m_pPieceTable)

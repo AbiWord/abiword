@@ -163,14 +163,24 @@ bool UT_UUID::toString(UT_String & s) const
 */
 bool UT_UUID::setUUID(const UT_String &s)
 {
-	m_bIsValid = _parse(s.c_str(), m_uuid);
-	return m_bIsValid;
+	if(_parse(s.c_str(), m_uuid))
+	{
+		m_bIsValid = true;
+		return true;
+	}
+	
+	return false;
 }
 
 bool UT_UUID::setUUID(const char *s)
 {
-	m_bIsValid = _parse(s, m_uuid);
-	return m_bIsValid;
+	if(_parse(s, m_uuid))
+	{
+		m_bIsValid = true;
+		return true;
+	}
+	
+	return false;
 }
 
 /*!
