@@ -108,6 +108,9 @@ PP_AttrProp::~PP_AttrProp()
 
 /*!
  * Returns the number of properties in this PP_AttrProp.
+ *
+ * BE WEARY, BE VERY WEARY, the count can be greater than the number of valid items
+ * stored in the hash -- always check the return value of getNthProperty()
  */
 size_t PP_AttrProp::getPropertyCount (void) const
 {
@@ -119,6 +122,9 @@ size_t PP_AttrProp::getPropertyCount (void) const
 
 /*!
  * Returns the number of attributes in this PP_AttrProp.
+ *
+ * BE WEARY, BE VERY WEARY, the count can be greater than the number of valid items
+ * stored in the hash -- always check the return value of getNthAttribute()
  */
 size_t PP_AttrProp::getAttributeCount (void) const
 {
@@ -378,13 +384,20 @@ bool	PP_AttrProp::setProperty(const XML_Char * szName, const XML_Char * szValue)
 	return true;
 }
 
+/*!
+    Always check the return value before trying to work with szValue !!!
+*/
 bool	PP_AttrProp::getNthAttribute(int ndx, const XML_Char *& szName, const XML_Char *& szValue) const
 {
 	if (!m_pAttributes)
 		return false;
 	if (static_cast<UT_uint32>(ndx) >= m_pAttributes->size())
+	{
+		// UT_ASSERT_HARMLESS( UT_SHOULD_NOT_HAPPEN ); -- do not assert, some code in
+		// while loops relies on this
 		return false;
-
+	}
+	
 	int i = 0;
 	UT_GenericStringMap<XML_Char*>::UT_Cursor c(m_pAttributes);
 	const XML_Char * val = NULL;
@@ -403,14 +416,21 @@ bool	PP_AttrProp::getNthAttribute(int ndx, const XML_Char *& szName, const XML_C
 	return false;
 }
 
+/*!
+    Always check the return value before trying to work with szValue !!!
+*/
 bool	PP_AttrProp::getNthProperty(int ndx, const XML_Char *& szName, const XML_Char *& szValue) const
 {
 	if (!m_pProperties)
 		return false;
 
  	if (static_cast<UT_uint32>(ndx) >= m_pProperties->size())
+	{
+		// UT_ASSERT_HARMLESS( UT_SHOULD_NOT_HAPPEN ); -- do not assert, some code in
+		// while loops relies on this
   		return false;
-
+	}
+	
  	int i = 0;
 	UT_GenericStringMap<PropertyPair*>::UT_Cursor c(m_pProperties);
  	const PropertyPair * val = NULL;

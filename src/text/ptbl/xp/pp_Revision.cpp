@@ -155,7 +155,12 @@ void PP_Revision::_refreshString()
 
 	for(i = 0; i < iCount; i++)
 	{
-		getNthProperty(i,n,v);
+		if(!getNthProperty(i,n,v))
+		{
+			// UT_ASSERT_HARMLESS( UT_SHOULD_NOT_HAPPEN );
+			continue;
+		}
+		
 		if(!v || !*v) v = "-/-";
 		
 		m_sXMLProps += n;
@@ -168,7 +173,12 @@ void PP_Revision::_refreshString()
 	iCount = getAttributeCount();
 	for(i = 0; i < iCount; i++)
 	{
-		getNthAttribute(i,n,v);
+		if(!getNthAttribute(i,n,v))
+		{
+			// UT_ASSERT_HARMLESS( UT_SHOULD_NOT_HAPPEN );
+			continue;
+		}
+		
 		if(!v || !*v) v = "-/-";
 
 		m_sXMLAttrs += n;
