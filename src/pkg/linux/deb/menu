@@ -1,0 +1,3 @@
+?package(abiword):needs=x11 section=Apps/Editors\
+  title="AbiWord" command="/usr/bin/AbiWord"\
+  icon="/usr/share/abisuite/icons/abiword_48.xpm"

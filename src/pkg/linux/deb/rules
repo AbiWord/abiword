@@ -1,0 +1,32 @@
+#!/usr/bin/make -f
+
+# Uncomment this to turn on verbose mode.
+#export DH_VERBOSE=1
+SHELL+=-e
+
+build:
+	echo $(ABI_BUILD_VERSION)
+	(cd abi-$(ABI_BUILD_VERSION);$(MAKE) UNIX_CAN_BUILD_STATIC=0 ABI_BUILD_VERSION=$(ABI_BUILD_VERSION) ABI_DIST_TARGET="deb" distribution)
+	cp abi-$(ABI_BUILD_VERSION)/dist/abisuite-$(ABI_BUILD_VERSION)/*.deb ..
+	touch build-stamp
+
+clean:
+	# Add here commands to clean up after the build process.
+	(cd abi-$(ABI_BUILD_VERSION);$(MAKE) clean)
+	-rm -R abi-$(ABI_BUILD_VERSION)/dist/*
+	cp abi-$(ABI_BUILD_VERSION)/src/pkg/linux/deb/control debian/.
+	#cp abi-$(ABI_BUILD_VERSION)/src/pkg/linux/deb/changelog debian/.
+
+install: build
+
+# Build architecture-independent files here.
+binary-indep: 
+
+# Build architecture-dependent files here.
+binary-arch: install
+
+source diff:                                                                  
+	@echo >&2 'source and diff are obsolete - use dpkg-source -b'; false
+
+binary: binary-indep binary-arch
+.PHONY: build clean binary-indep binary-arch binary

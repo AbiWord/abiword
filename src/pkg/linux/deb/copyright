@@ -1,0 +1,40 @@
+This package was debianized by Darren Benham gecko@debian.org on
+Tue, 16 Mar 1999 12:59:22 -0800.
+
+It was downloaded from http://www.abisource.com
+
+Upstream Author(s): AbiSource, Inc.
+
+Copyright:
+
+Source code created by AbiSource is copyrighted by AbiSource, Inc., and 
+is distributed under the terms of the GNU General Public License,
+a copy of which is included in the file called COPYING.  You 
+should read this license carefully, as it defines your specific rights 
+regarding the use of covered source code, as well as the conditions 
+under which those rights are given to you.
+
+See /usr/share/common-licenses
+
+All of the following terms are trademarks or registered trademarks
+of AbiSource, Inc.:
+	AbiSource
+	AbiWord
+	AbiCalc
+	AbiFile
+	AbiSuite
+	( the stylized A logo )
+	( the 'ant' cartoon character )
+
+Except as described below, all usage of these trademarks, as well as
+similar derivative forms, is reserved for use exclusively by
+AbiSource, Inc.
+
+AbiSource, Inc. reserves the right to restrict the use of its
+trademarks.
+
+The GPL does not grant you the right to use AbiSource's
+company trademarks.  Modified versions of AbiWord may not be
+distributed using the AbiWord name without permission from
+AbiSource, Inc.
+

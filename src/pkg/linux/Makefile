@@ -81,14 +81,14 @@ endif
 
 # If deb is inside $ABI_DIST_TARGET _and_ alien is found locally
 ifneq ($(findstring deb,$(ABI_DIST_TARGET)),)
-ifneq ($(ALIEN_LOC),)
+#ifneq ($(ALIEN_LOC),)
 	DIST_DEPS += deb
-else
-bogus2:
-	@echo ""
-	@echo "Skipping DEB packaging: [/usr/bin/alien] not found."
-	@echo ""
-endif
+#else
+#bogus2:
+#	@echo ""
+#	@echo "Skipping DEB packaging: [/usr/bin/alien] not found."
+#	@echo ""
+#endif
 endif
 
 # If slp is inside $ABI_DIST_TARGET _and_ alien is found locally
@@ -108,9 +108,6 @@ endif
 # by another machine (which was explicitly told to create one).
 
 ifeq ($(findstring rpm,$(ABI_DIST_TARGET)),)
-ifneq ($(findstring deb,$(ABI_DIST_TARGET)),)
-	WIPE_RPM=1
-endif
 ifneq ($(findstring slp,$(ABI_DIST_TARGET)),)
 	WIPE_RPM=1
 endif
@@ -120,6 +117,13 @@ endif
 
 # This target builds a huge tarball of EVERY component from CVS needed
 # to build the AbiSuite tree.
+
+#DEBIAN_ROOT is the root of all work being done for debian build
+#DEB_ROOT is the root of all work being done for just the deb archive
+DEBIAN_ROOT:=$(ABI_ROOT)/dist/abisuite-$(ABI_BUILD_VERSION)
+DEB_ROOT:=$(ABI_ROOT)/dist/abisuite-$(ABI_BUILD_VERSION)/debian/tmp
+
+
 
 PACK_ROOT:=$(ABI_ROOT)/../abisuite-$(ABI_BUILD_VERSION)
 
@@ -158,8 +162,58 @@ rpm: pack_rpm
 	mv $(RPM_SOURCE_DIR)/RPMS/$(OS_ARCH)/abisuite-$(ABI_BUILD_VERSION)-$(ABI_RELEASE_NUMBER).$(OS_ARCH).rpm $(DIST)
 	mv $(RPM_SOURCE_DIR)/SRPMS/abisuite-$(ABI_BUILD_VERSION)-$(ABI_RELEASE_NUMBER).$(OS_ARCH).src.rpm $(DIST)
 
+deb::
+	@echo "Producing Deb..."
+	@rm -rf $(DEBIAN_ROOT)
+	@echo "Building Tree in directory [$(DEBIAN_ROOT)]..."
+#sources are put in /usr/bin because /usr/X11R6/bin is reserved for
+#programs that are a part of the X distribution.  FHS-compliance
+	@install -m 755 -d $(DEB_ROOT)/DEBIAN
+	@install -m 755 -d $(DEB_ROOT)/usr/bin
+	@install -m 755 -d $(DEB_ROOT)/usr/share/doc/abiword/examples
+	@install -m 755 -d $(DEB_ROOT)/usr/share/abisuite/fonts
+	@install -m 755 -d $(DEB_ROOT)/usr/share/abisuite/dictionary
+	@install -m 755 -d $(DEB_ROOT)/usr/share/abisuite/icons
+	@install -m 755 -d $(DEB_ROOT)/usr/share/abisuite/AbiWord/strings
+	@install -m 755 -d $(DEB_ROOT)/usr/share/abisuite/AbiWord/help
+	@install -m 755 -d $(DEB_ROOT)/usr/lib/menu
+	@install -m 755 -d $(DEB_ROOT)/usr/share/man/man1
+	@chmod -R 755 $(DEB_ROOT)/.
+#install binaries
+	@install -s -m 755 $(OUTDIR)/bin/*_d $(DEB_ROOT)/usr/bin/.
+	@install -m 755 deb/AbiWord $(DEB_ROOT)/usr/bin/.
+	@ln -s AbiWord $(DEB_ROOT)/usr/bin/abiword
+#install the documentation
+	@install -m 644 deb/AbiWord_d.1 $(DEB_ROOT)/usr/share/man/man1/.
+	@ln -s AbiWord_d.1.gz $(DEB_ROOT)/usr/share/man/man1/AbiWord.1.gz
+	@ln -s AbiWord_d.1.gz $(DEB_ROOT)/usr/share/man/man1/abiword.1.gz
+	@cp deb/copyright $(DEB_ROOT)/usr/share/doc/abiword/.
+	@cp deb/changelog $(DEB_ROOT)/usr/share/doc/abiword/changelog.Debian
+	@cp $(OUTDIR)/AbiSuite/readme.txt $(DEB_ROOT)/usr/share/doc/abiword/README
+	@cp -R $(OUTDIR)/AbiSuite/AbiWord/sample/* $(DEB_ROOT)/usr/share/doc/abiword/examples/.
+	@gzip -9 $(DEB_ROOT)/usr/share/doc/abiword/README
+	@gzip -9 $(DEB_ROOT)/usr/share/doc/abiword/changelog.Debian
+	@gzip -9 $(DEB_ROOT)/usr/share/man/man1/AbiWord_d.1
+#install the share stuff
+	@cp -R $(OUTDIR)/AbiSuite/icons/* $(DEB_ROOT)/usr/share/abisuite/icons/.
+	@cp -R $(OUTDIR)/AbiSuite/fonts/* $(DEB_ROOT)/usr/share/abisuite/fonts/.
+	@cp -R $(OUTDIR)/AbiSuite/AbiWord/strings/* $(DEB_ROOT)/usr/share/abisuite/AbiWord/strings/.
+	@cp -R $(OUTDIR)/AbiSuite/AbiWord/help/* $(DEB_ROOT)/usr/share/abisuite/AbiWord/help/.
+	@ln -s ../../../lib/ispell/default.hash $(DEB_ROOT)/usr/share/abisuite/dictionary/american.hash
+#other debian stuff
+	@cp deb/menu $(DEB_ROOT)/usr/lib/menu/abiword
+	@cp deb/control $(DEBIAN_ROOT)/debian/.
+	@cp deb/postinst $(DEB_ROOT)/DEBIAN/.
+	@cp deb/postrm $(DEB_ROOT)/DEBIAN/.
+	@cp deb/prerm $(DEB_ROOT)/DEBIAN/.
+	@cp deb/changelog $(DEBIAN_ROOT)/debian/.
+	(cd $(DEBIAN_ROOT);dpkg-shlibdeps $(DEB_ROOT)/usr/bin/*_d)
+	(cd $(DEBIAN_ROOT);dpkg-gencontrol -v$(ABI_BUILD_VERSION) -isp)
+	(fakeroot $(ABI_ROOT)/src/pkg/linux/scripts/install_debian.sh $(DEB_ROOT) $(ABI_ROOT)/dist/abisuite-$(ABI_BUILD_VERSION))
+#	cp $(DEBIAN_ROOT)/debian/tmp.deb $(ABI_ROOT)
+
 # We're using alien to convert from RPM to DEB package
-deb: rpm
+deb_old: rpm
 	@echo "Producing DEB..."
 	@$(subst xxxx,$(DIST),$(VERIFY_DIRECTORY))	
 	(cd $(DIST); alien --to-deb -c -k abisuite-$(ABI_BUILD_VERSION)-$(ABI_RELEASE_NUMBER).$(OS_ARCH).rpm)
@@ -178,6 +232,7 @@ include $(ABI_ROOT)/src/pkg/common/unix/tbz.mk
 
 # This target should build all packages 
 distribution: $(DIST_DEPS)
+	echo $(DIST_DEPS)
 ifeq ($(WIPE_RPM),1)
 	@rm $(DIST)/abisuite-$(ABI_BUILD_VERSION)-$(ABI_RELEASE_NUMBER).$(OS_ARCH).rpm
 endif

@@ -1,0 +1,4 @@
+#!/bin/sh -e
+# Automatically added by dh_installmenu
+if [ -x /usr/bin/update-menus ] ; then update-menus ; fi
+# End automatically added section

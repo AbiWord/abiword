@@ -1,0 +1,21 @@
+Source: abiword
+Section: editors
+Priority: optional
+Maintainer: Darren Benham <gecko@debian.org>
+Standards-Version: 3.0.1.0
+
+Package: abiword
+Architecture: any
+Depends: libpng2 (>=1.0.5), ${shlibs:Depends}
+Recommends: ispell-dictionary
+Conflicts: abi-fonts,abisuite
+Description: WYSIWYG word processor based on GTK.
+ AbiWord is the first of a complete, open source office suite.  AbiWord is
+ based on GTK and the original source includes crossplatform support for
+ win32 and BeOS.
+ .
+ AbiWord is still being developed.  It's quite usable but not yet full-
+ featured or polished.  For many applications, however, it should prove
+ effective and efficient.
+ .
+ This is a 90% upstream produced deb
