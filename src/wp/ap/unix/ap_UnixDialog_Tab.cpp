@@ -203,30 +203,21 @@ void    AP_UnixDialog_Tab::_constructGnomeButtons( GtkWidget * windowTabs)
 	//
 	// Gnome buttons
 	//
-	
-	buttonApply = gtk_button_new_with_label (pSS->getValue( AP_STRING_ID_DLG_Options_Btn_Apply));
-	gtk_widget_ref (buttonApply);
-	g_object_set_data_full (G_OBJECT (windowTabs), "buttonApply", buttonApply,
-							(GtkDestroyNotify) gtk_widget_unref);
+	buttonApply = gtk_button_new_from_stock(GTK_STOCK_APPLY);
 	gtk_widget_show (buttonApply);
 	gtk_container_add (GTK_CONTAINER (m_GnomeButtons), buttonApply);
 	GTK_WIDGET_SET_FLAGS (buttonApply, GTK_CAN_DEFAULT);
 
-	buttonOK = gtk_button_new_with_label (pSS->getValue( XAP_STRING_ID_DLG_OK));
-	gtk_widget_ref (buttonOK);
-	g_object_set_data_full (G_OBJECT (windowTabs), "buttonOK", buttonOK,
-							  (GtkDestroyNotify) gtk_widget_unref);
+	buttonOK = gtk_button_new_from_stock(GTK_STOCK_OK);
 	gtk_widget_show (buttonOK);
 	gtk_container_add (GTK_CONTAINER (m_GnomeButtons), buttonOK);
 	GTK_WIDGET_SET_FLAGS (buttonOK, GTK_CAN_DEFAULT);
-
-	buttonCancel = gtk_button_new_with_label (pSS->getValue( XAP_STRING_ID_DLG_Cancel));
-	gtk_widget_ref (buttonCancel);
-	g_object_set_data_full (G_OBJECT (windowTabs), "buttonCancel", buttonCancel,
-							  (GtkDestroyNotify) gtk_widget_unref);
+	
+	buttonCancel = gtk_button_new_from_stock(GTK_STOCK_CANCEL);
 	gtk_widget_show (buttonCancel);
 	gtk_container_add (GTK_CONTAINER (m_GnomeButtons), buttonCancel);
 	GTK_WIDGET_SET_FLAGS (buttonCancel, GTK_CAN_DEFAULT);
+
 	m_buttonApply = buttonApply;
 	m_buttonOK = buttonOK;
 	m_buttonCancel = buttonCancel;
