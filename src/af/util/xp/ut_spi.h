@@ -1,4 +1,4 @@
-/* Simple Plugin Interface
+/* Simple Plugin Interface - Section 1: Interface Definitions
  * 
  * Copyright (C) 2002 Francis James Franklin <fjf@alinameridon.com>
  * 
@@ -26,8 +26,26 @@
 #ifndef UTSPI_H
 #define UTSPI_H
 
+/* IMPORTANT - This file should be included only *once* by any given plugin,
+ * =========   and ABI_PLUGIN_SOURCE should be #defined (especially if the
+ *             plugin is written in C).
+ */
+
 #ifdef WIN32
 #define ABI_SPI_EXPORT __declspec(dllexport)
+#ifdef ABI_PLUGIN_SOURCE
+
+#include <windows.h>
+
+static HANDLE s_hModule = (HANDLE) NULL;
+
+BOOL APIENTRY DllMain (HANDLE hModule, DWORD ul_reason_for_call, LPVOID lpReserved)
+{
+  s_hModule = hModule;
+  return TRUE;
+} 
+
+#endif /* ABI_PLUGIN_SOURCE */
 #else
 #define ABI_SPI_EXPORT 
 #endif
@@ -36,9 +54,13 @@
 extern "C" {
 #endif
 
-  /* Maintainers: if changing this struct, first copy it to the section
-   *              at the bottom of this file, then increment the version
-   *              number here (hint: there are three instances)
+  /* - Start of "C"-style interface definitions ------------------------- */
+
+  /* - SPI: Field ------------------------------------------------------- */
+
+  /* Maintainers: if changing this struct, first copy it to the archive section
+   *              below, then increment the version number here (hint: there
+   *              are three instances)
    */
 #define  ABI_FIELD_SPI_VERSION 1
   struct ABI_Field_SPI_v1
@@ -57,7 +79,7 @@ extern "C" {
   };
   typedef struct ABI_Field_SPI_v1 ABI_Field_SPI;
 
-  /* -------------------------------------------------------------------- */
+  /* - SPI -------------------------------------------------------------- */
 
   /* Maintainers: if changing this struct, first copy it to the section
    *              at the bottom of this file, then increment the version
@@ -94,7 +116,7 @@ extern "C" {
   };
   typedef struct ABI_SPI_v1 ABI_SPI;
 
-  /* -------------------------------------------------------------------- */
+  /* - Required functions for SPI plugin loading & registration --------- */
 
   struct ABI_Foreign_SPI;
 
@@ -121,6 +143,8 @@ extern "C" {
    */
 #define ABI_SPI_ERROR 0
 
+  /* - SPI: Foreign ----------------------------------------------------- */
+
   struct ABI_Foreign_SPI
   {
     int version;
@@ -137,13 +161,13 @@ extern "C" {
     void * spi_data;
   };
 
-  /* -------------------------------------------------------------------- */
+  /* - Archive ---------------------------------------------------------- */
 
   /* Maintainers: include here any old versions of SPI structs that AbiWord
    *              still supports...
    */
 
-  /* -------------------------------------------------------------------- */
+  /* - End of "C"-style interface definitions --------------------------- */
 
 #ifdef __cplusplus
 }
@@ -151,6 +175,26 @@ extern "C" {
 
 #ifndef ABI_PLUGIN_SOURCE
 
+/* Simple Plugin Interface - Section 2: AbiSource Program Utilities
+ * 
+ * Copyright (C) 2002 Francis James Franklin <fjf@alinameridon.com>
+ * 
+ * This program is free software; you can redistribute it and/or
+ * modify it under the terms of the GNU General Public License
+ * as published by the Free Software Foundation; either version 2
+ * of the License, or (at your option) any later version.
+ * 
+ * This program is distributed in the hope that it will be useful,
+ * but WITHOUT ANY WARRANTY; without even the implied warranty of
+ * MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
+ * GNU General Public License for more details.
+ * 
+ * You should have received a copy of the GNU General Public License
+ * along with this program; if not, write to the Free Software
+ * Foundation, Inc., 59 Temple Place - Suite 330, Boston, MA  
+ * 02111-1307, USA.
+ */
+ 
 class UT_SPI_Field
 {
  protected:

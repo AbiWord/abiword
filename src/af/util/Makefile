@@ -119,6 +119,7 @@ OBJS=		$(PLATFORM_OBJS)						\
 		$(OBJDIR)/ut_path.$(OBJ_SUFFIX)			\
 		$(OBJDIR)/ut_math.$(OBJ_SUFFIX)         \
 		$(OBJDIR)/ut_xml.$(OBJ_SUFFIX)			\
+		$(OBJDIR)/ut_spi.$(OBJ_SUFFIX)			\
 		$(OBJDIR)/ut_contextGlyph.$(OBJ_SUFFIX)
 
 ifeq ($(ABI_OPT_PEER_EXPAT),1)

@@ -56,6 +56,7 @@ CPPSRCS=	xad_Document.cpp		\
 		xap_ViewListener.cpp		\
 		xav_View.cpp			\
 		xap_EncodingManager.cpp		\
+		xap_Spider.cpp			\
 		xap_Module.cpp			\
 		xap_ModuleManager.cpp		\
 		xap_Dlg_Language.cpp		\

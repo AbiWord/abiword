@@ -18,22 +18,26 @@
  */
 
 #include <string.h>
+
+#include "ut_assert.h"
+#include "ut_spi.h"
+
+#include "xap_Spider.h"
 #include "xap_Module.h"
 #include "xap_ModuleManager.h"
-#include "ut_assert.h"
 
 /*!
- * Private constructor
+ * Protected constructor
  */
 XAP_Module::XAP_Module ()
-	: m_creator (0), m_bLoaded(false), m_bRegistered(false)
+  : m_spider(0), m_creator (0), m_bLoaded(false), m_bRegistered(false), m_szSPI(0)
 {
 	// zero this out
 	memset (&m_info, 0, sizeof (m_info));
 }
 
 /*!
- * Private destructor
+ * Protected destructor
  */
 XAP_Module::~XAP_Module ()
 {
@@ -48,6 +52,14 @@ XAP_Module::~XAP_Module ()
 bool XAP_Module::registerThySelf ()
 {
 	UT_ASSERT (m_bLoaded && !m_bRegistered);
+
+	if (!m_bLoaded)     return false;
+	if ( m_bRegistered) return false;
+
+	m_bRegistered = true; // i.e., don't try to register again
+
+	if (m_spider)
+		if ((m_szSPI = m_spider->add_spi (this)) != 0) return true; // register properly later
 
 	int (*plugin_init_func) (XAP_ModuleInfo *);
 	int result = 0;
@@ -65,8 +77,31 @@ bool XAP_Module::registerThySelf ()
 		result = plugin_init_func (&m_info);		
 	}
 
-	m_bRegistered = true;
 	return (result ? true : false);
+}
+
+/*!
+ * SPI plugins require a further registration step. Call this *after*
+ * XAP_Spider::register_spies() - it's safe to call this for modules
+ * which aren't spies.
+ *
+ * \return true on success, false on failure
+ */
+bool XAP_Module::registerPending ()
+{
+	if (m_szSPI  == 0) return true;
+	if (m_spider == 0) return false; // huh?
+
+	UT_SPI * spi = m_spider->lookup_spi (m_szSPI);
+	if (spi == 0) return false;
+
+	m_info.name    = const_cast<char *>(spi->plugin_name ());
+	m_info.desc    = const_cast<char *>(spi->plugin_desc ());
+	m_info.version = const_cast<char *>(spi->plugin_version ());
+	m_info.author  = const_cast<char *>(spi->plugin_author ());
+	m_info.usage   = const_cast<char *>(spi->plugin_usage ());
+
+	return true;
 }
 
 /*!
@@ -79,6 +114,20 @@ bool XAP_Module::registerThySelf ()
 bool XAP_Module::unregisterThySelf ()
 {
 	UT_ASSERT (m_bLoaded && m_bRegistered);
+
+	if (!m_bRegistered) return true; // well,...
+	if (!m_bLoaded)     return true;
+
+	if (m_szSPI)
+	{
+		if (m_spider == 0) return false; // huh?
+
+		m_spider->unregister_spi (m_szSPI);
+		m_szSPI = 0;
+		memset (&m_info, 0, sizeof (m_info));
+		m_bRegistered = false;
+		return true;
+	}
 
 	int (*plugin_cleanup_func) (XAP_ModuleInfo *);
 	int result = 0;

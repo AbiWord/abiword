@@ -74,7 +74,7 @@ elif test "$PLATFORM" = "cocoa" ; then
 	dnl 
 	OBJCXX="c++"
 	OBJCXXFLAGS=""
-	OBJCXXDEPMODE="depmode=gcc"
+	OBJCXXDEPMODE="depmode=gcc3"
 fi
 AM_CONDITIONAL(WITH_UNIX,$with_unix)
 AM_CONDITIONAL(WITH_MACOSX,$with_macosx)

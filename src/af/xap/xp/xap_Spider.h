@@ -25,6 +25,8 @@
 
 struct ABI_Foreign_SPI;
 
+class UT_SPI;
+
 class XAP_Module;
 class XAP_Spider
 {
@@ -61,6 +63,8 @@ class XAP_Spider
   struct ABI_Foreign_SPI * find_spi (const char * name);
 
  public:
+  UT_SPI * lookup_spi (const char * name);
+
   /* returns a pointer to a string (the plugin's spi-name/id) inside the plugin
    * so it's only valid as long as the plugin is loaded
    * 

@@ -209,6 +209,16 @@ struct ABI_Foreign_SPI * XAP_Spider::find_spi (const char * name)
   return spi;
 }
 
+UT_SPI * XAP_Spider::lookup_spi (const char * name)
+{
+  if ( name == 0) return 0;
+  if (*name == 0) return 0;
+
+  struct ABI_Foreign_SPI * spi = find_spi (name);
+
+  return reinterpret_cast<UT_SPI *>(spi->spi_data);
+}
+
 const char * XAP_Spider::add_spi (XAP_Module * module)
 {
   ABI_SPI_Version fn_version = 0;

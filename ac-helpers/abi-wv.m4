@@ -32,6 +32,9 @@ AC_ARG_WITH(sys_wv,[  --with-sys-wv    Use system libwv],[
 if test "$ABI_NEED_WV" = "yes"; then
 
 if test "x$abi_sys_wv" != "xno"; then
+	if test "x$abi_epath" = "xyes"; then
+		AC_MSG_ERROR([* * * system wv? I was expecting to build peer wv... * * *])
+	fi
 
 # check for a shared install
 
@@ -67,7 +70,11 @@ else
 		AC_MSG_ERROR([* * * wv was not found - I looked for it in "$1" * * *])
 	fi
 	WV_CFLAGS="-I${abspath}"
-	WV_LIBS="${abspath}/libwv.a"
+	if test "x$abi_epath" = "xyes"; then
+		WV_LIBS="-L${abspath} -lwv"
+	else
+		WV_LIBS="${abspath}/libwv.a"
+	fi
 	WV_PEERDIR="${abspath}"
 
 	abi_wv_message="supplied wv in ${abspath}"

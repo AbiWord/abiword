@@ -48,6 +48,9 @@ extern "C" {
 	} XAP_ModuleInfo;
 }
 
+class UT_SPI;
+
+class XAP_Spider;
 class XAP_ModuleManager;
 
 class ABI_EXPORT XAP_Module {
@@ -66,11 +69,13 @@ protected:
 	
 private:
 
+	bool registerPending ();
 	// silly names. fscking c/c++ has the keyword 'register' taken #:^)
 	bool registerThySelf ();
 	bool unregisterThySelf ();
 	bool supportsAbiVersion (UT_uint32 major, UT_uint32 minor, 
 							 UT_uint32 release);
+	inline void setSpider (XAP_Spider * spider) { m_spider = spider; }
 	inline void setCreator (XAP_ModuleManager * creator) {m_creator = creator;}
 	inline void setLoaded (bool bLoaded) {m_bLoaded = bLoaded;}
 
@@ -98,9 +103,11 @@ public:
 	
 private:
 
+	XAP_Spider          * m_spider;
 	XAP_ModuleManager   * m_creator;
 	bool                  m_bLoaded;
 	bool                  m_bRegistered;
+	const char          * m_szSPI;
 	XAP_ModuleInfo        m_info;
 };
 
