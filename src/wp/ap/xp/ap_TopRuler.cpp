@@ -1118,6 +1118,14 @@ void AP_TopRuler::_draw(const UT_Rect * pClipRect, AP_TopRulerInfo * pUseInfo)
 
 	AP_TopRulerInfo infoLocal;
 	AP_TopRulerInfo * pInfo;
+	if(pView== NULL)
+	{
+		return;
+	}
+	if(pView->getPoint() == 0)
+	{
+		return;
+	}
 	if (pUseInfo)
 	{
 		// if we are given an info arg, use it

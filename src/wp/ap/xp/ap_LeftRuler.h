@@ -66,7 +66,14 @@ public:
 	typedef enum _mode { TRI_MODE_COLUMNS, TRI_MODE_TABLE } Mode;
 
 	AP_LeftRulerInfo(void) : 	m_mode(TRI_MODE_COLUMNS),
+								m_yPageStart(0),
+								m_yPageSize(0),
+								m_yPoint(0),
+								m_yTopMargin(0),
+								m_yBottomMargin(0),
 								m_iNumRows(0),
+								m_iCurrentRow(0),
+								m_iTablePadding(0),
 								m_vecTableRowInfo(NULL)
 		{
 		}

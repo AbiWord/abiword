@@ -66,10 +66,25 @@ class AP_TopRulerInfo
 public:
 	typedef enum _mode { TRI_MODE_COLUMNS, TRI_MODE_TABLE } Mode;
 
-	AP_TopRulerInfo(void) : 	m_mode(TRI_MODE_COLUMNS),
-								m_vecTableColInfo(NULL),
-								m_vecFullTable(NULL),
-								m_iCells(0)
+	AP_TopRulerInfo(void) :	m_mode(TRI_MODE_COLUMNS),
+							m_xPaperSize(0),
+							m_xPageViewMargin(0),
+							m_xrPoint(0),
+							m_xrLeftIndent(0),
+							m_xrFirstLineIndent(0),
+							m_xrRightIndent(0),
+							m_xrTabStop(0),
+							m_pVoidEnumTabStopsData(NULL),
+							m_iTabStops(0),
+							m_iDefaultTabInterval(0),
+							m_pszTabStops(NULL),
+							m_iCurrentColumn(0),
+							m_iNumColumns(0),
+							m_vecTableColInfo (NULL),
+							m_vecFullTable(NULL),
+							m_iTablePadding(0),
+							m_iCells(0),
+							m_iCurCell(0)
 		{
 			xxx_UT_DEBUGMSG(("SEVIOR: Creating AP_TopRulerInfo %x \n",this));
 		}
