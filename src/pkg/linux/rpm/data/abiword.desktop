@@ -5,6 +5,7 @@ Name[de]=AbiWord
 Comment=AbiWord Wordprocessor
 Comment[da]=AbiWord tekstbehandlingsprogram
 Comment[de]=AbiWord Textverarbeitungsprogramm
+Comment[fr]=Traitement de texte AbiWord
 Comment[pt]=Processador de Texto Abiword
 Comment[sv]=Ordbehandlaren Abiword
 Exec=abiword
