@@ -60,7 +60,7 @@ ${LSTR} DESC_section_clipart          "Instalon piktura (vizatime) të cilat mund
 !ifdef OPT_CRTL_URL | OPT_CRTL_LOCAL
 ${LSTR} DESC_section_crtlib           "Instalon C Runtime Library të përdorur nga AbiWord, e dobishme nëse sistemit tuaj i mungon."
 !endif
-${LSTR} DESC_ssection_dictionary      "Instalon fjalorë për gjuhë të ndryshme të cilat përdoren për kontroll drejtshkrimi të dokumentit tuaj."
+${LSTR} DESC_ssection_dictionary      "Instalon fjalorë për gjuhë të ndryshme të cilët përdoren për kontroll drejtshkrimi të dokumentit tuaj."
 !ifdef OPT_DICTIONARIES
 !endif
 !ifdef OPT_PLUGINS
