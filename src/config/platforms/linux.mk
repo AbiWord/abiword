@@ -82,7 +82,7 @@ else
 ifdef ABI_OPT_GNOME_XML2
 OBJ_DIR_SFX	= GTK_XML
 else
-OBJ_DIR_SFX	= GTK
+OBJ_DIR_SFX	= DBG
 endif
 endif
 else 
