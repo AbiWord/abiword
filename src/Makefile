@@ -66,6 +66,16 @@ ifeq ($(ABI_NATIVE),unix)
 endif
 
 ##################################################################
+## Shortcuts down to the RPM and DEB scripts, which do not need
+## the compile and canonical targets satisfied to do their work.
+
+rpm:
+	$(MAKE) -C pkg/$(ABIPKGDIR) rpm
+
+deb:
+	$(MAKE) -C pkg/$(ABIPKGDIR) deb
+
+##################################################################
 ## Targets for installs.  There is a generic install method, for
 ## developers mostly (make install), which just puts things in
 ## $prefix/AbiSuite and $prefix/bin.  /usr/local is the default

@@ -46,6 +46,17 @@ compile:
 install:
 	@echo Installing AbiSuite with [prefix=$(prefix)]
 	$(MAKE) prefix=$(prefix) -C src install
+
+##################################################################
+## Specific targets for Unix distributions 
+rpm:
+	@echo Starting RPM build
+	$(MAKE) -C src rpm
+
+deb:
+	@echo Starting DEB build
+	$(MAKE) -C src deb
+
 install_redhat:
 	@echo Installing AbiSuite for Red Hat Linux systems
 	$(MAKE) -C src install_redhat
