@@ -224,9 +224,9 @@ void AP_Dialog_Styles::_populatePreviews(void)  const
 	const XML_Char * paraValues [nParaFlds];
 
 //
-// Note to Dom: This produces a compiler warning!!!
+// Note to Dom: Actually do this code for character previews
 //
-	const static XML_Char * charFields[] = {};
+	const static XML_Char * charFields[] = {"color"};
 	const size_t nCharFlds = sizeof(charFields)/sizeof(charFields[0]);
 	const XML_Char * charValues [nCharFlds];
 
