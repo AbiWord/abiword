@@ -196,7 +196,7 @@ void fl_ContainerLayout::lookupFoldedLevel(void)
 {
  	const PP_AttrProp* pSectionAP = NULL;
 
-	getDocLayout()->getDocument()->getAttrProp(m_apIndex, &pSectionAP);
+	getAP(pSectionAP);
 
 	const XML_Char *pszTEXTFOLDED = NULL;
 	if(!pSectionAP || !pSectionAP->getProperty("text-folded",pszTEXTFOLDED))

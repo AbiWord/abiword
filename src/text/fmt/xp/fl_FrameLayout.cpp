@@ -567,7 +567,7 @@ void fl_FrameLayout::_lookupProperties(void)
 
  	const PP_AttrProp* pSectionAP = NULL;
 
-	m_pLayout->getDocument()->getAttrProp(m_apIndex, &pSectionAP);
+	getAP(pSectionAP);
 
 	const XML_Char *pszFrameType = NULL;
 	const XML_Char *pszPositionTo = NULL;

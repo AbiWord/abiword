@@ -486,7 +486,7 @@ void fl_FootnoteLayout::_lookupProperties(void)
 
  	const PP_AttrProp* pSectionAP = NULL;
 
-	m_pLayout->getDocument()->getAttrProp(m_apIndex, &pSectionAP);
+	getAP(pSectionAP);
 	// I can't think of any properties we need for now.
 	// If we need any later, we'll add them. -PL
 	const XML_Char *pszFootnotePID = NULL;
@@ -714,7 +714,7 @@ void fl_EndnoteLayout::_lookupProperties(void)
 
  	const PP_AttrProp* pSectionAP = NULL;
 
-	m_pLayout->getDocument()->getAttrProp(m_apIndex, &pSectionAP);
+	getAP(pSectionAP);
 	// I can't think of any properties we need for now.
 	// If we need any later, we'll add them. -PL
 	const XML_Char *pszEndnotePID = NULL;

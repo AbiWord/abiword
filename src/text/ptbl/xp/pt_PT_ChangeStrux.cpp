@@ -170,22 +170,7 @@ bool pt_PieceTable::changeStruxFmt(PTChangeFmt ptc,
 							ppRevAttrib[0] = name;
 							ppRevAttrib[1] = Revisions.getXMLstring();
 							ppRevAttrib[2] = NULL;
-							UT_sint32 ic = 0;
-							if(attributes)
-							{
-								for(ic=0;attributes[ic] != NULL;ic++) {}
-							}
-							const XML_Char ** FullAttribs = new const XML_Char * [ic+3];
-							UT_sint32 j=0;
-							for(j=0; j< ic;j++)
-							{
-								FullAttribs[j] = attributes[j];
-							}
-							FullAttribs[ic] = name;
-							FullAttribs[ic+1] = Revisions.getXMLstring();
-							FullAttribs[ic+2] = NULL;
-							bResult = _fmtChangeStruxWithNotify(revPtc,pfs,FullAttribs,properties,false);
-							delete [] FullAttribs;
+							bResult = _fmtChangeStruxWithNotify(revPtc,pfs,ppRevAttrib,NULL,false);
 							UT_return_val_if_fail (bResult,false);
 						}
 						if (pfs == pfs_End)

@@ -2697,7 +2697,7 @@ void FL_DocLayout::_redrawUpdate(UT_Worker * pWorker)
 	if(y1 != origY)
 	{
 		UT_DEBUGMSG(("Line pos changed \n"));
-		UT_ASSERT(0);
+//		UT_ASSERT(0);
 		pView->_ensureInsertionPointOnScreen();
 	}
 

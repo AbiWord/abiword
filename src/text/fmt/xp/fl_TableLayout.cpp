@@ -811,7 +811,7 @@ void fl_TableLayout::_lookupProperties(void)
 	}
 	const PP_AttrProp* pSectionAP = NULL;
 
-	m_pLayout->getDocument()->getAttrProp(m_apIndex, &pSectionAP);
+	getAP(pSectionAP);
 
 	/*
 	  TODO shouldn't we be using PP_evalProperty like
@@ -1747,12 +1747,27 @@ void fl_CellLayout::format(void)
 	}
 	static_cast<fp_CellContainer *>(getFirstContainer())->layout();
 	UT_sint32 iNewHeight = getFirstContainer()->getHeight();
-	if(iNewHeight != iOldHeight)
+	fl_ContainerLayout * myL = myContainingLayout();
+	if((myL->getContainerType() != FL_CONTAINER_SHADOW) &&
+	   (myL->getContainerType() != FL_CONTAINER_HDRFTR))
 	{
-		getDocSectionLayout()->setNeedsSectionBreak(true,pPrevP);
+		if(iNewHeight != iOldHeight)
+		{
+			getDocSectionLayout()->setNeedsSectionBreak(true,pPrevP);
+		}
 	}
 	m_bNeedsReformat = false;
 	checkAndAdjustCellSize();
+	if(myL->getContainerType() == FL_CONTAINER_SHADOW)
+	{
+		m_bNeedsReformat = false;
+		myL->format();
+		fp_ShadowContainer * pSC = static_cast<fp_ShadowContainer *>(myL->getFirstContainer());
+		if(pSC)
+		{
+			pSC->layout();
+		}
+	}
 }
 
 void fl_CellLayout::markAllRunsDirty(void)
@@ -1912,7 +1927,7 @@ void fl_CellLayout::_lookupProperties(void)
 
 	const PP_AttrProp* pSectionAP = NULL;
 
-	m_pLayout->getDocument()->getAttrProp(m_apIndex, &pSectionAP);
+	getAP(pSectionAP);
 	xxx_UT_DEBUGMSG(("SEVIOR: indexAp in Cell Layout %d \n",m_apIndex));
 	/*
 	  TODO shouldn't we be using PP_evalProperty like
