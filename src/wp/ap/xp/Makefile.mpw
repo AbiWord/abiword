@@ -19,62 +19,64 @@
 
 !include "{ABI_ROOT}src:config:abi_defs.mk.mpw"
 
-TARGETS = ap_Convert.cpp.o ¶
-		   ap_Dialog_Break.cpp.o ¶
-		   ap_Dialog_Columns.cpp.o ¶
-		   ap_Dialog_Field.cpp.o ¶
-		   ap_Dialog_Goto.cpp.o ¶
-		   ap_Dialog_Insert_DateTime.cpp.o ¶
-		   ap_Dialog_Lists.cpp.o ¶
-		   ap_Dialog_Options.cpp.o ¶
-		   ap_Dialog_PageNumbers.cpp.o ¶
-		   ap_Dialog_PageSetup.cpp.o ¶
-		   ap_Dialog_Paragraph.cpp.o ¶
-		   ap_Dialog_Replace.cpp.o ¶
-		   ap_Dialog_Spell.cpp.o ¶
-		   ap_Dialog_Tab.cpp.o ¶
-		   ap_Dialog_WordCount.cpp.o ¶
-		   ap_EditMethods.cpp.o ¶
-		   ap_FrameData.cpp.o ¶
-		   ap_LB_DeadAbovedot.cpp.o ¶
-		   ap_LB_DeadAcute.cpp.o ¶
-		   ap_LB_DeadBreve.cpp.o ¶
-		   ap_LB_DeadCaron.cpp.o ¶
-		   ap_LB_DeadCedilla.cpp.o ¶
-		   ap_LB_DeadCircumflex.cpp.o ¶
-		   ap_LB_DeadDiaeresis.cpp.o ¶
-		   ap_LB_DeadDoubleacute.cpp.o ¶
-		   ap_LB_DeadGrave.cpp.o ¶
-		   ap_LB_DeadMacron.cpp.o ¶
-		   ap_LB_DeadOgonek.cpp.o ¶
-		   ap_LB_DeadTilde.cpp.o ¶
-		   ap_LB_Default.cpp.o ¶
-		   ap_LB_Emacs.cpp.o ¶
-		   ap_LB_EmacsCtrlX.cpp.o ¶
-		   ap_LB_viEdit.cpp.o ¶
-		   ap_LB_viEdit_c.cpp.o ¶
-		   ap_LB_viEdit_colon.cpp.o ¶
-		   ap_LB_viEdit_d.cpp.o ¶
-		   ap_LB_viEdit_r.cpp.o ¶
-		   ap_LB_viEdit_y.cpp.o ¶
-		   ap_LB_viInput.cpp.o ¶
-		   ap_LeftRuler.cpp.o ¶
-		   ap_LoadBindings.cpp.o ¶
-		   ap_Menu_ActionSet.cpp.o ¶
-		   ap_Menu_Functions.cpp.o ¶
-		   ap_Menu_LabelSet.cpp.o ¶
-		   ap_Menu_Layouts.cpp.o ¶
-		   ap_Prefs.cpp.o ¶
-		   ap_Preview_Paragraph.cpp.o ¶
-		   ap_Ruler.cpp.o ¶
-		   ap_StatusBar.cpp.o ¶
-		   ap_Strings.cpp.o ¶
-		   ap_Toolbar_ActionSet.cpp.o ¶
-		   ap_Toolbar_Functions.cpp.o ¶
-		   ap_Toolbar_Icons.cpp.o ¶
-		   ap_Toolbar_LabelSet.cpp.o ¶
-		   ap_Toolbar_Layouts.cpp.o ¶
-		   ap_TopRuler.cpp.o
+LocalCPPOptions = -i ":ToolbarIcons:"
+
+TARGETS = "ap_Convert.o" ¶
+		   "ap_Dialog_Break.o" ¶
+		   "ap_Dialog_Columns.o" ¶
+		   "ap_Dialog_Field.o" ¶
+		   "ap_Dialog_Goto.o" ¶
+		   "ap_Dialog_Insert_DateTime.o" ¶
+		   "ap_Dialog_Lists.o" ¶
+		   "ap_Dialog_Options.o" ¶
+		   "ap_Dialog_PageNumbers.o" ¶
+		   "ap_Dialog_PageSetup.o" ¶
+		   "ap_Dialog_Paragraph.o" ¶
+		   "ap_Dialog_Replace.o" ¶
+		   "ap_Dialog_Spell.o" ¶
+		   "ap_Dialog_Tab.o" ¶
+		   "ap_Dialog_WordCount.o" ¶
+		   "ap_EditMethods.o" ¶
+		   "ap_FrameData.o" ¶
+		   "ap_LB_DeadAbovedot.o" ¶
+		   "ap_LB_DeadAcute.o" ¶
+		   "ap_LB_DeadBreve.o" ¶
+		   "ap_LB_DeadCaron.o" ¶
+		   "ap_LB_DeadCedilla.o" ¶
+		   "ap_LB_DeadCircumflex.o" ¶
+		   "ap_LB_DeadDiaeresis.o" ¶
+		   "ap_LB_DeadDoubleacute.o" ¶
+		   "ap_LB_DeadGrave.o" ¶
+		   "ap_LB_DeadMacron.o" ¶
+		   "ap_LB_DeadOgonek.o" ¶
+		   "ap_LB_DeadTilde.o" ¶
+		   "ap_LB_Default.o" ¶
+		   "ap_LB_Emacs.o" ¶
+		   "ap_LB_EmacsCtrlX.o" ¶
+		   "ap_LB_viEdit.o" ¶
+		   "ap_LB_viEdit_c.o" ¶
+		   "ap_LB_viEdit_colon.o" ¶
+		   "ap_LB_viEdit_d.o" ¶
+		   "ap_LB_viEdit_r.o" ¶
+		   "ap_LB_viEdit_y.o" ¶
+		   "ap_LB_viInput.o" ¶
+		   "ap_LeftRuler.o" ¶
+		   "ap_LoadBindings.o" ¶
+		   "ap_Menu_ActionSet.o" ¶
+		   "ap_Menu_Functions.o" ¶
+		   "ap_Menu_LabelSet.o" ¶
+		   "ap_Menu_Layouts.o" ¶
+		   "ap_Prefs.o" ¶
+		   "ap_Preview_Paragraph.o" ¶
+		   "ap_Ruler.o" ¶
+		   "ap_StatusBar.o" ¶
+		   "ap_Strings.o" ¶
+		   "ap_Toolbar_ActionSet.o" ¶
+		   "ap_Toolbar_Functions.o" ¶
+		   "ap_Toolbar_Icons.o" ¶
+		   "ap_Toolbar_LabelSet.o" ¶
+		   "ap_Toolbar_Layouts.o" ¶
+		   "ap_TopRuler.o"
 
 
 !include "{ABI_ROOT}src:config:abi_rules.mk.mpw"
