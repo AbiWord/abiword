@@ -439,9 +439,18 @@ void fl_BlockLayout::_lookupProperties(void)
 				pRun = pRun->getNextRun();
 				pTextRun->breakMeAtDirBoundaries(FRIBIDI_TYPE_IGNORE);
 			}
+			else if(pRun->getType() == FPRUN_ENDOFPARAGRAPH)
+			{
+				// need to set the direction correctly
+				pRun->setDirection(m_iDomDirection);
+				pRun->setVisDirection(m_iDomDirection);
+				pRun = pRun->getNextRun();
+			}
 			else
 				pRun = pRun->getNextRun();
 		}
+
+		
 	}
 	{
 		const PP_PropertyTypeInt *pOrphans = static_cast<const PP_PropertyTypeInt *>(getPropertyType("orphans", Property_type_int));

@@ -885,6 +885,243 @@ void fp_Line::clearScreen(void)
 }
 
 /*!
+   helper function containing the code shared by the two
+   clearScreenFromRunToEnd() functions
+*/
+void fp_Line::_doClearScreenFromRunToEnd(UT_sint32 runIndex)
+{
+	// need to get _visually_ first run on screen
+	fp_Run* pRun = static_cast<fp_Run*>(m_vecRuns.getNthItem(_getRunLogIndx(0)));
+	UT_sint32 count = m_vecRuns.getItemCount();
+
+	if(count > 0 && !pRun->getGraphics()->queryProperties(GR_Graphics::DGP_SCREEN))
+		return;
+
+
+	// not sure what the reason for this is (Tomas, Oct 25, 2003)
+	fp_Run * pFRun = pRun;
+	bool bUseFirst = false;
+	
+	if(runIndex == 1)
+	{
+		bUseFirst = true;
+	}
+	
+	// Find the first non dirty run.
+	// the run index is visual and if we are in LTR paragraph we
+	// are deleting to the right of the run, while if we are in RTL
+	// paragraph we are deleting to the _left_ (Tomas, Oct 25, 2003)
+	FriBidiCharType iDomDirection = m_pBlock->getDominantDirection();
+	
+	UT_sint32 i;
+
+	if(iDomDirection == FRIBIDI_TYPE_LTR)
+	{
+		for(i = runIndex; i < count; i++)
+		{
+			pRun = static_cast<fp_Run*>(m_vecRuns.getNthItem(_getRunLogIndx(i)));
+
+			if(pRun->isDirty())
+			{
+				runIndex++;
+			}
+			else
+			{
+				break;
+			}
+		}
+	}
+	else
+	{
+		for(i = runIndex; i>=0; i--)
+		{
+			pRun = static_cast<fp_Run*>(m_vecRuns.getNthItem(_getRunLogIndx(i)));
+
+			if(pRun->isDirty() && runIndex > 0)
+			{
+				runIndex--;
+			}
+			else
+			{
+				break;
+			}
+		}
+	}
+	
+
+	// if we have a valid index to clear from, let's do it ...
+	if(static_cast<UT_sint32>(runIndex) < count)
+	{
+		UT_sint32 xoff, yoff;
+
+		// get the run at the (visual) index
+		pRun = static_cast<fp_Run*>(m_vecRuns.getNthItem(_getRunLogIndx(runIndex)));
+
+		// Handle case where character extends behind the left side
+		// like italic Times New Roman f. Clear a litle bit before if
+		// there is clear screen there
+		UT_sint32 j = runIndex - 1;
+
+		// need to get previous _visual_ run
+		fp_Run * pPrev = j >= 0 ? getRunAtVisPos(j) : NULL;
+		
+		UT_sint32 leftClear = 0;
+		while(j >= 0 && pPrev != NULL && pPrev->getLength() == 0)
+		{
+			//pPrev = static_cast<fp_Run *>(m_vecRuns.getNthItem(j));
+			pPrev->markAsDirty();
+			pPrev = getRunAtVisPos(j);
+			j--;
+		}
+
+		// now mark the last pPrev run as dirty, so we do not have to do
+		// that later ...
+		if(pPrev)
+			pPrev->markAsDirty();
+		
+		leftClear = pRun->getDescent();
+		if(j>0 && pPrev != NULL && pPrev->getType() == FPRUN_TEXT)
+		{
+			// the text run is not at the very left edge, so we need
+			// not to clear into the margin
+			leftClear = 0;
+		}
+		else if(j>=0 && pPrev != NULL && pPrev->getType() == FPRUN_FIELD)
+		{
+			leftClear = 0;
+		}
+		else if(j>=0 && pPrev != NULL && pPrev->getType() == FPRUN_IMAGE)
+		{
+			leftClear = 0;
+		}
+		
+		if(bUseFirst)
+		{
+			getScreenOffsets(pFRun, xoff, yoff);
+		}
+		else
+		{
+			getScreenOffsets(pRun, xoff, yoff);
+		}
+		
+		UT_sint32 xoffLine, yoffLine;
+		UT_sint32 oldheight = getHeight();
+		recalcHeight();
+		UT_ASSERT(oldheight == getHeight());
+		
+		fp_VerticalContainer * pVCon= (static_cast<fp_VerticalContainer *>(getContainer()));
+		pVCon->getScreenOffsets(this, xoffLine, yoffLine);
+
+		UT_ASSERT(yoff == yoffLine);
+
+		fp_Line * pPrevLine = static_cast<fp_Line *>(getPrevContainerInSection());
+		if(pPrevLine != NULL && (pPrevLine->getContainerType() == FP_CONTAINER_LINE))
+		{
+			UT_sint32 xPrev=0;
+			UT_sint32 yPrev=0;
+
+			fp_Run * pLastRun = pPrevLine->getLastRun();
+			if(pLastRun != NULL)
+			{
+				pPrevLine->getScreenOffsets(pLastRun,xPrev,yPrev);
+				if((leftClear >0) && (yPrev > 0) && (yPrev == yoffLine))
+				{
+					leftClear = 0;
+				}
+			}
+		}
+		if(xoff == xoffLine)
+				leftClear = pRun->getAscent()/2;
+		if(getPage() == NULL)
+		{
+			return;
+		}
+		UT_ASSERT((m_iClearToPos + leftClear - (xoff-xoffLine)) <= getPage()->getWidth());
+		xxx_UT_DEBUGMSG(("Clear from runindex to end height %d \n",getHeight()));
+
+		// now we do the clearing
+		if(iDomDirection == FRIBIDI_TYPE_LTR)
+		{
+			// clear from the start of the run (minus any adjustments)
+			// to the end of the line
+			pRun->Fill(getGraphics(), xoff - leftClear,
+					   yoff,
+					   m_iClearToPos + leftClear
+					   - (xoff - xoffLine),
+					   getHeight());
+		}
+		else
+		{
+			// clear from the left edge of the line (minus any
+			// adjustments) to the end of the run
+			pRun->Fill(getGraphics(), xoffLine - leftClear,
+					   yoff,
+					   (xoff-xoffLine) + pRun->getWidth() + leftClear,
+					   getHeight());
+		}
+	
+	
+//
+// Sevior: I added this for robustness.
+//
+		getBlock()->setNeedsRedraw();
+		setNeedsRedraw();
+
+		// finally, mark all runs concerned as dirty, starting with
+		// the first run
+		if(bUseFirst)
+		{
+			//pRun = static_cast<fp_Run*>(m_vecRuns.getNthItem(_getRunLogIndx(0)));
+			pRun = pFRun;
+			runIndex = 0;
+		}
+		pRun->markAsDirty();
+		pRun->setCleared();
+
+		// now we need to mark all the runs between us and the end of
+		// the line as dirty
+		if(iDomDirection == FRIBIDI_TYPE_RTL)
+		{
+			// we are working from the visual index to the left
+			if(runIndex > 0)
+			{
+				runIndex--;
+			
+				while(runIndex >= 0)
+				{
+					pRun = static_cast<fp_Run*>(m_vecRuns.getNthItem(_getRunLogIndx(runIndex)));
+					UT_ASSERT(pRun);
+					pRun->markAsDirty();
+					// do not have to check for line identity, since we
+					// are working with runs on this line only
+					runIndex--;
+				}
+			}
+		}
+		else
+		{
+			// we are working from the visual index to the right
+			runIndex++;
+			while(runIndex < count)
+			{
+				pRun = static_cast<fp_Run*>(m_vecRuns.getNthItem(_getRunLogIndx(runIndex)));
+				UT_ASSERT(pRun);
+				pRun->markAsDirty();				
+				runIndex++;
+			}
+		}
+		
+
+	}
+	else
+	{
+		// no valid indext to clear from ...
+		getBlock()->setNeedsRedraw();
+		setNeedsRedraw();
+	}
+}
+
+/*!
  * This method clears a line from the run given to the end of the line.
 \param fp_Run * pRun
 */
@@ -907,79 +1144,9 @@ void fp_Line::clearScreenFromRunToEnd(fp_Run * ppRun)
 		UT_sint32 k = m_vecRuns.findItem(static_cast<void *>(ppRun));
 		if(k>=0)
 		{
-			UT_uint32 runIndex = static_cast<UT_uint32>(k);
-			UT_sint32 xoff, yoff;
-
-			pRun = static_cast<fp_Run*>(m_vecRuns.getNthItem(_getRunLogIndx(runIndex)));
-
-			// Handle case where character extend behind the left side
-			// like italic Times New Roman f. Clear a litle bit before if
-			// there is clear screen there
-			//
-			UT_sint32 j = runIndex - 1;
-			fp_Run * pPrev = NULL;
-			if(j>=0)
-			{
-				pPrev = static_cast<fp_Run *>(m_vecRuns.getNthItem(j));
-				pPrev->markAsDirty();
-			}
-			UT_sint32 leftClear = 0;
-			while(j >= 0 && pPrev != NULL && pPrev->getLength() == 0)
-			{
-				pPrev = static_cast<fp_Run *>(m_vecRuns.getNthItem(j));
-				j--;
-				pPrev->markAsDirty();
-			}
-			leftClear = pRun->getDescent();
-			if(j>=0 && pPrev != NULL && pPrev->getType() == FPRUN_TEXT)
-				leftClear = 0;
-			if(j>= 0 && pPrev != NULL && pPrev->getType() == FPRUN_FIELD)
-				leftClear = 0;
-			if(j>=0 && pPrev != NULL && pPrev->getType() == FPRUN_IMAGE)
-				leftClear = 0;
-			getScreenOffsets(pRun, xoff, yoff);
-			UT_sint32 xoffLine, yoffLine;
-			fp_VerticalContainer * pVCon= (static_cast<fp_VerticalContainer *>(getContainer()));
-			pVCon->getScreenOffsets(this, xoffLine, yoffLine);
-			if(xoff == xoffLine)
-				leftClear = pRun->getDescent();
-			xxx_UT_DEBUGMSG(("SEVIOR: Doing clear from run to end xoff %d yoff %d \n",xoff,yoff));
-			UT_ASSERT(yoff == yoffLine);
-			if(getPage() == NULL)
-			{
-				return;
-			}
-			UT_ASSERT((m_iClearToPos + leftClear - (xoff-xoffLine)) < getPage()->getWidth());
-			xxx_UT_DEBUGMSG(("Clear from run to end height %d \n",getHeight()));
-			pRun->Fill(getGraphics(),xoff - leftClear,
-										  yoff,
-										  m_iClearToPos + leftClear
-        										  - (xoff - xoffLine),
-										  getHeight());
-//
-// Sevior: I added this for robustness.
-//
-			pRun->markAsDirty();
-			pRun->setCleared();
-			if(pRun->getPrevRun() && pRun->getPrevRun()->getLine() == this)
-			{
-				pRun->getPrevRun()->markAsDirty();
-			}
-			getBlock()->setNeedsRedraw();
-			setNeedsRedraw();
-			pRun = pRun->getNextRun();
-			bool bStop = false;
-			while(pRun && !bStop)
-			{
-				pRun->markAsDirty();
-				pRun = pRun->getNextRun();
-				if(pRun && (pRun->getLine() != this))
-				{
-					bStop = true;
-				}
-			}
+			UT_sint32 runIndex = _getRunVisIndx((UT_uint32)k);
+			_doClearScreenFromRunToEnd(runIndex);
 		}
-
 	}
 }
 
@@ -987,7 +1154,9 @@ void fp_Line::clearScreenFromRunToEnd(fp_Run * ppRun)
 /*!
  * This method clears a line from the first non-dirty run at the given index
  * to the end of the line.
-\param UT_uint32 runIndex
+\param UT_uint32 runIndex - visual run index
+\note clearing to end in RTL paragraph means clearing from run end to
+the left edge
 */
 
 void fp_Line::clearScreenFromRunToEnd(UT_uint32 runIndex)
@@ -998,146 +1167,7 @@ void fp_Line::clearScreenFromRunToEnd(UT_uint32 runIndex)
 		return;
 	}
 
-	//fp_Run* pRun = static_cast<fp_Run*>(m_vecRuns.getNthItem(runIndex));
-	fp_Run* pRun; //#TF initialization not needed
-	UT_sint32 count = m_vecRuns.getItemCount();
-	pRun = static_cast<fp_Run*>(m_vecRuns.getNthItem(0));
-
-	fp_Run * pFRun = pRun;
-	bool bUseFirst = false;
-	if(runIndex == 1)
-	{
-		bUseFirst = true;
-	}
-	if(count > 0 && !pRun->getGraphics()->queryProperties(GR_Graphics::DGP_SCREEN))
-		return;
-
-	// Find the first non dirty run.
-
-	UT_sint32 i;
-	for(i = runIndex; i < count; i++)
-	{
-		pRun = static_cast<fp_Run*>(m_vecRuns.getNthItem(_getRunLogIndx(i)));
-
-		if(pRun->isDirty())
-		{
-			runIndex++;
-		}
-		else
-		{
-			break;
-		}
-	}
-
-	if(static_cast<UT_sint32>(runIndex) < count)
-	{
-		UT_sint32 xoff, yoff;
-
-		pRun = static_cast<fp_Run*>(m_vecRuns.getNthItem(_getRunLogIndx(runIndex)));
-
-		//
-		// Handle case where character extend behind the left side
-		// like italic Times New Roman f. Clear a litle bit before if
-		// there is clear screen there
-		//
-		// TODO: bidi bug: this only works if the logical and visual
-		// order are identical
-		UT_sint32 j = runIndex - 1;
-		fp_Run * pPrev = pRun->getPrevRun();
-		UT_sint32 leftClear = 0;
-		while(j >= 0 && pPrev != NULL && pPrev->getLength() == 0)
-		{
-			pPrev = static_cast<fp_Run *>(m_vecRuns.getNthItem(j));
-			j--;
-		}
-		leftClear = pRun->getDescent();
-		if(j>0 && pPrev != NULL && pPrev->getType() == FPRUN_TEXT)
-		{
-			leftClear = 0;
-		}
-		if(j>=0 && pPrev != NULL && pPrev->getType() == FPRUN_FIELD)
-			leftClear = 0;
-		if(j>=0 && pPrev != NULL && pPrev->getType() == FPRUN_IMAGE)
-			leftClear = 0;
-
-		if(bUseFirst)
-		{
-			getScreenOffsets(pFRun, xoff, yoff);
-		}
-		else
-		{
-			getScreenOffsets(pRun, xoff, yoff);
-		}
-		UT_sint32 xoffLine, yoffLine;
-		UT_sint32 oldheight = getHeight();
-		recalcHeight();
-		UT_ASSERT(oldheight == getHeight());
-		fp_VerticalContainer * pVCon= (static_cast<fp_VerticalContainer *>(getContainer()));
-		pVCon->getScreenOffsets(this, xoffLine, yoffLine);
-
-		UT_ASSERT(yoff == yoffLine);
-
-		fp_Line * pPrevLine = static_cast<fp_Line *>(getPrevContainerInSection());
-		if(pPrevLine != NULL && (pPrevLine->getContainerType() == FP_CONTAINER_LINE))
-		{
-			UT_sint32 xPrev=0;
-			UT_sint32 yPrev=0;
-			fp_Run * pLastRun = pPrevLine->getLastRun();
-			if(pLastRun != NULL)
-			{
-				pPrevLine->getScreenOffsets(pLastRun,xPrev,yPrev);
-				if((leftClear >0) && (yPrev > 0) && (yPrev == yoffLine))
-				{
-					leftClear = 0;
-				}
-			}
-		}
-		if(xoff == xoffLine)
-				leftClear = pRun->getAscent()/2;
-		if(getPage() == NULL)
-		{
-			return;
-		}
-		UT_ASSERT((m_iClearToPos + leftClear - (xoff-xoffLine)) <= getPage()->getWidth());
-		xxx_UT_DEBUGMSG(("Clear from runindex to end height %d \n",getHeight()));
-		pRun->Fill(getGraphics(), xoff - leftClear,
-				   yoff,
-				   m_iClearToPos + leftClear
-				   - (xoff - xoffLine),
-				   getHeight());
-
-//
-// Sevior: I added this for robustness.
-//
-		getBlock()->setNeedsRedraw();
-		setNeedsRedraw();
-		if(bUseFirst)
-		{
-			pRun = static_cast<fp_Run*>(m_vecRuns.getNthItem(_getRunLogIndx(0)));
-		}
-		pRun->markAsDirty();
-		pRun->setCleared();
-		if(pRun->getPrevRun() && pRun->getPrevRun()->getLine() == this)
-		{
-			pRun->getPrevRun()->markAsDirty();
-		}
-		pRun = pRun->getNextRun();
-		bool bStop = false;
-		while(pRun && !bStop)
-		{
-			pRun->markAsDirty();
-			pRun = pRun->getNextRun();
-			if(pRun && (pRun->getLine() != this))
-			{
-				bStop = true;
-			}
-		}
-	}
-	else
-	{
-		getBlock()->setNeedsRedraw();
-		setNeedsRedraw();
-	}
+	_doClearScreenFromRunToEnd((UT_sint32)runIndex);
 }
 
 
@@ -1927,11 +1957,11 @@ void fp_Line::layout(void)
 	//variables to keep information about how to erase the line once we are
 	//in position to do so
 	bool bLineErased		= false;
-	UT_uint32 iIndxToEraseFrom = 0;
+	UT_sint32 iIndxToEraseFrom = -1;
 
 #if 0 //def DEBUG
 
-	//some extra but lengthy degug stuff
+	//some extra but lengthy debug stuff
 	char *al;
 	char left[] = "left";
 	char right[]= "right";
@@ -2034,7 +2064,7 @@ void fp_Line::layout(void)
 		if(eWorkingDirection == WORK_FORWARD)
 		{
 			s_pOldXs[iIndx] = pRun->getX();
-				pRun->setX(iX,FP_CLEARSCREEN_NEVER);
+				pRun->Run_setX(iX,FP_CLEARSCREEN_NEVER);
 		}
 		xxx_UT_DEBUGMSG(("fp_Line::layout: iX %d, ii %d, iCountRuns %d\n"
 					 "		 run type %d\n",
@@ -2053,7 +2083,7 @@ void fp_Line::layout(void)
 		if(eWorkingDirection == WORK_BACKWARD)
 		{
 			s_pOldXs[iIndx] = pRun->getX();
-			pRun->setX(iX,FP_CLEARSCREEN_NEVER);
+			pRun->Run_setX(iX,FP_CLEARSCREEN_NEVER);
 		}
 	} //for
 
@@ -2101,14 +2131,22 @@ void fp_Line::layout(void)
 					if(bHidden)
 						continue;
 
-					//eClearScreen = iStartX == pOldXs[k] ? FP_CLEARSCREEN_NEVER : FP_CLEARSCREEN_FORCE;
+					//eClearScreen = iStartX == pOldXs[k] ?
+					//FP_CLEARSCREEN_NEVER : FP_CLEARSCREEN_FORCE;
+
+					// if we are in LTR context, the first visual run that
+					// shifts is the one to erase from; in RTL context
+					// it is the last visual run that shifts
+					
 					if(!bLineErased && iStartX != s_pOldXs[k])
 					{
-						bLineErased = true;
+						if(iDomDirection == FRIBIDI_TYPE_LTR)
+							bLineErased = true;
+						
 						iIndxToEraseFrom = k;
 					}
 
-					pRun->setX(iStartX,FP_CLEARSCREEN_NEVER);
+					pRun->Run_setX(iStartX,FP_CLEARSCREEN_NEVER);
 					iStartX += pRun->getWidth();
 				}
 
@@ -2164,21 +2202,25 @@ void fp_Line::layout(void)
 						//eClearScreen = iStartX == pOldXs[iK] ? FP_CLEARSCREEN_NEVER : FP_CLEARSCREEN_FORCE;
 						if(!bLineErased && iStartX != s_pOldXs[iK])
 						{
-							bLineErased = true;
+							if(iDomDirection == FRIBIDI_TYPE_LTR)
+								bLineErased = true;
+							
 							iIndxToEraseFrom = iK;
 						}
 
-						pRun->setX(iStartX, FP_CLEARSCREEN_NEVER);
+						pRun->Run_setX(iStartX, FP_CLEARSCREEN_NEVER);
 					}
 					else
 					{
 						//eClearScreen = iStartX == pOldXs[iK] ? FP_CLEARSCREEN_NEVER : FP_CLEARSCREEN_FORCE;
 						if(!bLineErased && iStartX != s_pOldXs[iK])
 						{
-							bLineErased = true;
+							if(iDomDirection == FRIBIDI_TYPE_LTR)
+								bLineErased = true;
+							
 							iIndxToEraseFrom = iK;
 						}
-						pRun->setX(iStartX, FP_CLEARSCREEN_NEVER);
+						pRun->Run_setX(iStartX, FP_CLEARSCREEN_NEVER);
 						iStartX += pRun->getWidth();
 					}
 				}
@@ -2210,11 +2252,13 @@ void fp_Line::layout(void)
 					//eClearScreen = iCurX + iStartX == pOldXs[k] ? FP_CLEARSCREEN_NEVER : FP_CLEARSCREEN_FORCE;
 					if(!bLineErased && iCurX + iStartX != s_pOldXs[k])
 					{
-						bLineErased = true;
+						if(iDomDirection == FRIBIDI_TYPE_LTR)
+							bLineErased = true;
+						
 						iIndxToEraseFrom = k;
 					}
 
-					pRun->setX(iCurX + iStartX, FP_CLEARSCREEN_NEVER);
+					pRun->Run_setX(iCurX + iStartX, FP_CLEARSCREEN_NEVER);
 				}
 			}
 		break;
@@ -2222,11 +2266,12 @@ void fp_Line::layout(void)
 			UT_ASSERT(UT_SHOULD_NOT_HAPPEN);
 	} //switch eAlignment
 
-	if(bLineErased)
+	// if the line needs erasure, then either bLineErased is set or 
+	if(iIndxToEraseFrom >= 0)
 	{
 		xxx_UT_DEBUGMSG(("fp_Line::layout (0x%x): clearling line from indx %d\n",
 						 this, iIndxToEraseFrom));
-		clearScreenFromRunToEnd(iIndxToEraseFrom);
+		clearScreenFromRunToEnd((UT_uint32)iIndxToEraseFrom);
 	}
 	else
 		xxx_UT_DEBUGMSG(("fp_Line::layout (0x%x): nothing to clear\n", this));
