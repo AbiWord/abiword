@@ -20,4 +20,6 @@
 #ifndef IE_IMP_SAIG_PW_H
 #define IE_IMP_SAIG_PW_H
 
+// this will be used as a Saig PatheticWriter importer
+
 #endif /* SAIG_PW_H */

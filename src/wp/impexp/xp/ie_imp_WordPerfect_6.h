@@ -97,8 +97,7 @@ public:
 	~IE_Imp_WordPerfect_6() {}
 
 	virtual UT_Error	importFile(const char * szFilename);
-	virtual void		pasteFromBuffer(PD_DocumentRange * pDocRange,
-						unsigned char * pData, UT_uint32 lenData, const char * szEncoding = 0);
+
  protected:
    void extractFile(FILE *fp);
    void _handleHardEndOfLine();

@@ -45,27 +45,14 @@
 #define X_CheckError(v)			do { if (!(v)) return 1; } while (0)
 
 WordPerfectTextAttributes::WordPerfectTextAttributes()
+  : m_extraLarge(false), m_veryLarge(false), m_large(false),
+    m_smallPrint(false), m_finePrint(false), m_superScript(false),
+    m_subScript(false), m_outline(false), m_italics(false), 
+    m_shadow(false), m_redLine(false), m_bold(false), 
+    m_strikeOut(false), m_underLine(false), m_smallCaps(false), 
+    m_Blink(false), m_reverseVideo(false)
 {
-   m_extraLarge = false;
-   m_veryLarge = false;
-   m_large = false;
-   m_smallPrint = false;
-   m_finePrint = false;
-   m_superScript = false;
-   m_subScript = false;
-   m_outline = false;
-   m_italics = false;
-   m_shadow = false;
-   m_redLine = false;
-   m_bold = false;
-   m_strikeOut = false;
-   m_underLine = false;
-   m_smallCaps = false;
-   m_Blink = false;
-   m_reverseVideo = false;
 }
-
-
 
 /****************************************************************************/
 /****************************************************************************/
@@ -157,7 +144,6 @@ bool IE_Imp_WordPerfect_6_Sniffer::recognizeContents (const char * szBuf,
 
 bool IE_Imp_WordPerfect_6_Sniffer::recognizeSuffix (const char * szSuffix)
 {
-	// We recognize both word documents and their template versions
 	return (!UT_stricmp(szSuffix,".wpd"));
 }
 
@@ -181,10 +167,6 @@ bool	IE_Imp_WordPerfect_6_Sniffer::getDlgLabels (const char ** pszDesc,
 
 /****************************************************************************/
 /****************************************************************************/
-
-// just buffer sizes, arbitrarily chosen
-#define DOC_TEXTRUN_SIZE 2048
-#define DOC_PROPBUFFER_SIZE 1024
 
 IE_Imp_WordPerfect_6::IE_Imp_WordPerfect_6(PD_Document * pDocument)
   : IE_Imp (pDocument)
@@ -218,12 +200,6 @@ UT_Error IE_Imp_WordPerfect_6::importFile(const char * szFilename)
    //delete(pStream);
    
    return UT_OK;
-}
-
-void IE_Imp_WordPerfect_6::pasteFromBuffer (PD_DocumentRange *, 
-										unsigned char *, unsigned int, const char *)
-{
-	// nada
 }
 
 void IE_Imp_WordPerfect_6::extractFile(FILE *fp)
@@ -320,11 +296,11 @@ void IE_Imp_WordPerfect_6::_handleEndOfLineGroup(FILE *fp)
    
    switch (readVal)
      {
-      case 0: // 0x00 (beginning of file)
+      case 00: // 0x00 (beginning of file)
 	break; // ignore
-      case 1: // 0x01 (soft EOL)
-      case 2: // 0x02 (soft EOC) 
-      case 3: // 0x03 (soft EOC at EOP) 
+      case 01: // 0x01 (soft EOL)
+      case 02: // 0x02 (soft EOC) 
+      case 03: // 0x03 (soft EOC at EOP) 
       case 20: // 0x014 (deletable soft EOL)
       case 21: // 0x15 (deletable soft EOC) 
       case 22: // 0x16 (deleteable soft EOC at EOP) 
@@ -468,39 +444,36 @@ void IE_Imp_WordPerfect_6::_flushText()
 
 void IE_Imp_WordPerfect_6::_appendCurrentFormat()
 {
-   XML_Char* pProps = "props";
-   XML_Char propBuffer[1024];	//TODO is this big enough?  better to make it a member and stop running all over the stack
-   propBuffer[0] = 0;
+   UT_String propBuffer ("font-weight");
 
    // bold
-   strcat(propBuffer, "font-weight:");
-   strcat(propBuffer, m_textAttributes.m_bold ? "bold" : "normal");
+   propBuffer += (m_textAttributes.m_bold ? "bold" : "normal");
+
    // italic
-   strcat(propBuffer, "; font-style:");
-   strcat(propBuffer, m_textAttributes.m_italics ? "italic" : "normal");
+   propBuffer += "; font-style:";
+   propBuffer += (m_textAttributes.m_italics ? "italic" : "normal");
+
    // underline & overline & strike-out
-   strcat(propBuffer, "; text-decoration:");
-   static UT_String decors;
-   decors.clear();
+   propBuffer += "; text-decoration:";
+
    if (m_textAttributes.m_underLine)
      {
-	decors += "underline ";
+	propBuffer += "underline ";
      }
    if (m_textAttributes.m_strikeOut)
      {
-	decors += "line-through ";
+	propBuffer += "line-through ";
      }
    if(!m_textAttributes.m_underLine  &&  
       !m_textAttributes.m_strikeOut)
      {
-	decors = "none";
+	propBuffer = "none";
      }
-   strcat(propBuffer, decors.c_str());
 
    const XML_Char* propsArray[3];
-   propsArray[0] = pProps;
-   propsArray[1] = propBuffer;
-   propsArray[2] = NULL;
+   propsArray[0] = (XML_Char *)"props";
+   propsArray[1] = (XML_Char *)propBuffer.c_str();
+   propsArray[2] = 0;
    getDoc()->appendFmt(propsArray);   
 }
 
