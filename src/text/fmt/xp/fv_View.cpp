@@ -5520,7 +5520,7 @@ bool FV_View::getCellBGColor(XML_Char * &color)
 	{
 		return false;
 	}
-	m_pDoc->getPropertyFromSDH(cellSDH,"bgcolor",const_cast<const char **>(&color));
+	m_pDoc->getPropertyFromSDH(cellSDH,"background-color",const_cast<const char **>(&color));
 	if(color && *color)
 	{
 		return true;

@@ -249,15 +249,11 @@ void AP_Dialog_FormatTable::setAllSensitivities(void)
 
 void AP_Dialog_FormatTable::setCurCellProps(void)
 {
-	
 	FV_View * pView = static_cast<FV_View *>(m_pApp->getLastFocussedFrame()->getCurrentView());
 
 	if (m_bSettingsChanged)
 		return;
 	m_iOldPos = pView->getPoint();
-
-	removeVecProp (m_vecProps, "bg-style");
-	removeVecProp (m_vecProps, "bgcolor");
 
 	XML_Char * bgColor = NULL;
 	if (pView->getCellBGColor (bgColor))
@@ -268,6 +264,10 @@ void AP_Dialog_FormatTable::setCurCellProps(void)
 	{
 		removeVecProp (m_vecProps, "background-color");
 	}
+
+	UT_String bstmp = UT_String_sprintf("%d", FS_FILL);                     
+    addOrReplaceVecProp(m_vecProps, "bg-style", bstmp.c_str());             	
+	
 	
 	// draw the preview with the changed properties
 	if(m_pFormatTablePreview)
@@ -407,7 +407,7 @@ bool AP_Dialog_FormatTable::getTopToggled()
 		return false;
 }
 
-bool	AP_Dialog_FormatTable::getBottomToggled()
+bool AP_Dialog_FormatTable::getBottomToggled()
 {
 	const XML_Char * pszStyle = NULL;
 	UT_String lineStyleString = UT_String_sprintf("%d", LS_OFF);	
@@ -422,7 +422,7 @@ bool	AP_Dialog_FormatTable::getBottomToggled()
 	
 }
 
-bool	AP_Dialog_FormatTable::getRightToggled()
+bool AP_Dialog_FormatTable::getRightToggled()
 {
 	const XML_Char * pszStyle = NULL;
 	UT_String lineStyleString = UT_String_sprintf("%d", LS_OFF);	
@@ -436,7 +436,7 @@ bool	AP_Dialog_FormatTable::getRightToggled()
 		return false;
 }
 
-bool	AP_Dialog_FormatTable::getLeftToggled()
+bool AP_Dialog_FormatTable::getLeftToggled()
 {
 
 	const XML_Char * pszStyle = NULL;
@@ -491,9 +491,6 @@ void AP_FormatTable_preview::draw(void)
 	const XML_Char * pszBGCol = NULL;
 	m_pFormatTable->getVecProp (m_pFormatTable->m_vecProps,
 				    static_cast<const XML_Char *>("background-color"), pszBGCol);
-	if (pszBGCol == NULL)
-		m_pFormatTable->getVecProp (m_pFormatTable->m_vecProps,
-					    static_cast<const XML_Char *>("bgcolor"), pszBGCol);
 	if (pszBGCol && *pszBGCol)
 	{
 		UT_parseColor(pszBGCol, tmpCol);
@@ -612,7 +609,3 @@ void AP_FormatTable_preview::draw(void)
 					   pageRect.left + pageRect.width - border, pageRect.top + pageRect.height - border);
 	}
 }
-
-
-
-
