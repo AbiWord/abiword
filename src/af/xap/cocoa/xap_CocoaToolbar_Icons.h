@@ -21,12 +21,19 @@
 #ifndef XAP_COCOATOOLBARICONS_H
 #define XAP_COCOATOOLBARICONS_H
 
-#import <AppKit/AppKit.h>
+#import <Cocoa/Cocoa.h>
 
 #include "ut_types.h"
+
 #include "xap_Toolbar_Icons.h"
 
 /*****************************************************************/
+
+@interface XAP_CocoaToolbarButton : NSButton
+{
+}
+- (void)drawRect:(NSRect)aRect;
+@end
 
 class AP_CocoaToolbar_Icons : public AP_Toolbar_Icons
 {

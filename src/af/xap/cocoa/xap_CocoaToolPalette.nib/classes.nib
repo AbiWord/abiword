@@ -123,7 +123,8 @@
                 oZoom = NSComboBox; 
             }; 
             SUPERCLASS = NSObject; 
-        }
+        }, 
+        {CLASS = "XAP_CocoaToolbarButton"; LANGUAGE = ObjC; SUPERCLASS = NSButton; }
     ); 
     IBVersion = 1; 
 }

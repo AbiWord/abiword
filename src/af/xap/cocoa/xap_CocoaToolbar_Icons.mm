@@ -20,8 +20,6 @@
  * 02111-1307, USA.
  */
  
-#import <Cocoa/Cocoa.h>
-
 #include <stdio.h>
 #include <string.h>
 
@@ -31,6 +29,47 @@
 #include "ut_string.h"
 
 #include "xap_CocoaToolbar_Icons.h"
+
+static NSPoint s_ButtonOnPoint[12] = {
+	{	 1.0f,	 8.0f	},
+	{	 1.0f,	 1.0f	},
+	{	 8.0f,	 1.0f	},
+	{	24.0f,	 1.0f	},
+	{	31.0f,	 1.0f	},
+	{	31.0f,	 8.0f	},
+	{	31.0f,	24.0f	},
+	{	31.0f,	31.0f	},
+	{	24.0f,	31.0f	},
+	{	 8.0f,	31.0f	},
+	{	 1.0f,	31.0f	},
+	{	 1.0f,	24.0f	}
+};
+
+@implementation XAP_CocoaToolbarButton
+
+- (void)drawRect:(NSRect)aRect
+{
+	if ([self state] == NSOnState)
+		{
+			[[NSColor colorWithCalibratedWhite:0.0f alpha:0.25] set];
+
+			NSBezierPath * path = [NSBezierPath bezierPath];
+
+			[path  moveToPoint:s_ButtonOnPoint[ 0]];
+			[path curveToPoint:s_ButtonOnPoint[ 2] controlPoint1:s_ButtonOnPoint[ 1] controlPoint2:s_ButtonOnPoint[ 1]];
+			[path  lineToPoint:s_ButtonOnPoint[ 3]];
+			[path curveToPoint:s_ButtonOnPoint[ 5] controlPoint1:s_ButtonOnPoint[ 4] controlPoint2:s_ButtonOnPoint[ 4]];
+			[path  lineToPoint:s_ButtonOnPoint[ 6]];
+			[path curveToPoint:s_ButtonOnPoint[ 8] controlPoint1:s_ButtonOnPoint[ 7] controlPoint2:s_ButtonOnPoint[ 7]];
+			[path  lineToPoint:s_ButtonOnPoint[ 9]];
+			[path curveToPoint:s_ButtonOnPoint[11] controlPoint1:s_ButtonOnPoint[10] controlPoint2:s_ButtonOnPoint[10]];
+			[path closePath];
+			[path fill];
+		}
+	[super drawRect:aRect];
+}
+
+@end
 
 AP_CocoaToolbar_Icons::AP_CocoaToolbar_Icons(void)
 {
