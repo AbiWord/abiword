@@ -276,7 +276,7 @@ public:
    UT_uint32 m_documentPointer;
    UT_uint16 m_indexPointer;
    bool m_undoOn;
-   bool m_firstParagraph; 
+   bool m_paragraphChanged;
    UT_Mbtowc m_Mbtowc;
    UT_GrowBuf m_textBuf;
    UT_Vector m_fontDescriptorList;

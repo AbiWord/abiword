@@ -265,8 +265,8 @@ bool	IE_Imp_WordPerfect_Sniffer::getDlgLabels (const char ** pszDesc,
 IE_Imp_WordPerfect::IE_Imp_WordPerfect(PD_Document * pDocument)
   : IE_Imp (pDocument)
 {
-   m_firstParagraph = true;
    m_undoOn = false;
+   m_paragraphChanged = true;
 
    m_wordPerfectDispatchBytes.addItem(new WordPerfectByteTag(WP_TOP_SOFT_EOL, &IE_Imp_WordPerfect::_insertSpace));
    m_wordPerfectDispatchBytes.addItem(new WordPerfectByteTag(WP_TOP_SOFT_SPACE, &IE_Imp_WordPerfect::_insertSpace));
@@ -612,9 +612,7 @@ UT_Error IE_Imp_WordPerfect::_parseDocument()
 	       }
 	  }
      }
-   
-
-   
+  
    UT_DEBUGMSG(("WordPerfect: File Pointer at %i equals or exceeds document length of %i\n", (int)ftell(m_importFile), (int)m_documentEnd));
    
    X_CheckWordPerfectError(_flushText());
@@ -651,9 +649,9 @@ UT_Error IE_Imp_WordPerfect::_handleHardEndOfLine()
    // (TODO: eliminate a prev space if it's just before this)
    UT_DEBUGMSG(("WordPerfect: Handling a hard EOL \n"));
    if(!m_undoOn)
-     {	
+     {
 	X_CheckWordPerfectError(_flushText());
-	X_CheckWordPerfectError(_appendCurrentParagraphProperties());
+	_appendCurrentParagraphProperties();		
      }
    
    return UT_OK;
@@ -759,7 +757,6 @@ UT_Error IE_Imp_WordPerfect::_handleParagraphGroup()
    UT_uint16 nonDeletableInfoSize;
 
    X_CheckWordPerfectError(_handleVariableGroupHeader(startPosition, subGroup, size, flags));   
-   
    X_CheckFileReadElementError(fread(&nonDeletableInfoSize, sizeof(UT_uint16), 1, m_importFile));
 
    // dispatch to subgroup to handle the rest of the relevant properties within the
@@ -770,7 +767,8 @@ UT_Error IE_Imp_WordPerfect::_handleParagraphGroup()
 	X_CheckWordPerfectError(_handleParagraphGroupJustification());
 	break;
      }
-   
+   m_paragraphChanged = true;
+	 
    X_CheckWordPerfectError(_skipGroup(startPosition, size));
    
    return UT_OK;
@@ -794,7 +792,7 @@ UT_Error IE_Imp_WordPerfect::_handleStyleGroup()
 }
 
 // handles a tab group
-// (TODO: not implemented, just skips over it)
+// (TODO: partially implemented, only basic tab import is done)
 UT_Error IE_Imp_WordPerfect::_handleTabGroup()
 {
    UT_DEBUGMSG(("WordPerfect: Handling a tab group\n"));
@@ -802,7 +800,6 @@ UT_Error IE_Imp_WordPerfect::_handleTabGroup()
    long startPosition = ftell(m_importFile);
    unsigned char tabDefinition;   
    UT_uint16 size;
-   unsigned char flags;
    
    X_CheckFileReadElementError(fread(&tabDefinition, sizeof(unsigned char), 1, m_importFile));
    X_CheckFileReadElementError(fread(&size, sizeof(UT_uint16), 1, m_importFile)); // I have no idea WHAT this var. does. but it's there.
@@ -1351,17 +1348,17 @@ UT_Error IE_Imp_WordPerfect::_flushText()
 {
    UT_DEBUGMSG(("WordPerfect: Flushing Text\n"));
    	
-   // if this is the first time we're calling this, then we must append the current paragraph properties
-   // so we will have a structure to insert into
-   if(m_firstParagraph)
+   // append the current paragraph properties if they are changed; m_paragraphChanged is initialized with true, so the first time
+   // we will have a structure to insert into
+   if(m_paragraphChanged)
      {	
 	_appendCurrentParagraphProperties();
-	m_firstParagraph = false;
      }
    
    if(m_textBuf.getLength() > 0)
      X_CheckDocumentError(getDoc()->appendSpan(m_textBuf.getPointer(0), m_textBuf.getLength()));   
    m_textBuf.truncate(0);
+   UT_DEBUGMSG(("WordPerfect: Text flushed\n"));
      
    
    return UT_OK;
@@ -1447,6 +1444,7 @@ UT_Error IE_Imp_WordPerfect::_appendCurrentParagraphProperties()
    propsArray[0] = pProps;
    propsArray[1] = propBuffer;
    propsArray[2] = NULL;
+   m_paragraphChanged = false;
    
    X_CheckDocumentError(getDoc()->appendStrux(PTX_Block, propsArray));   
    
