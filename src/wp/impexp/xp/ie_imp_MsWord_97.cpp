@@ -103,7 +103,7 @@ static unsigned int s_mapNameToToken(const char* name)
     {
       if (s_Tokens[k].m_name[0] == '*')
 	return k;
-      else if (!(strcasecmp(s_Tokens[k].m_name,name)))
+      else if (!(UT_stricmp(s_Tokens[k].m_name,name)))
 	return k;
     }
     return 0;

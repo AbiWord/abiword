@@ -175,6 +175,11 @@ public:
 	virtual const char* charsetFromCodepage(int lid) const;
 
 	/*
+	    This is convert charset to codepage.
+	*/
+	virtual const char* CodepageFromCharset(char *charset) const;
+
+	/*
 	    returns charsetFromCodepage( getWinLanguageCode() )
 	*/
 	virtual const char* WindowsCharsetName() const;

@@ -38,6 +38,9 @@
 
 #include "wv.h" //for wvLIDToCodePageConverter
 #include "xap_EncodingManager.h"
+#ifdef DEBUG
+#include "ut_debugmsg.h"
+#endif
 
 /*****************************************************************/
 /*****************************************************************/
@@ -441,9 +444,10 @@ UT_Bool IE_Exp_RTF::_write_rtf_header(void)
 {
 	UT_uint32 k,kLimit;
 
-	UT_uint32 langcode = XAP_EncodingManager::instance->getWinLanguageCode();	
+	UT_uint32 langcode = XAP_EncodingManager::instance->getWinLanguageCode();
 	// write <rtf-header>
 	// return UT_FALSE on error
+	UT_DEBUGMSG(("Belcon:in  IE_Exp_RTF::_write_rtf_header,langcode=%d\n",langcode));
 
 	_rtf_open_brace();
 	_rtf_keyword("rtf",1);				// major version number of spec version 1.5
@@ -453,6 +457,7 @@ UT_Bool IE_Exp_RTF::_write_rtf_header(void)
 	if (langcode) 
 	{
 		char* cpgname = wvLIDToCodePageConverter(langcode);
+		UT_DEBUGMSG(("Belcon,after wvLIDToCodePageConverter(%d),cpgname=%s\n",langcode,cpgname));
 		if (UT_strnicmp(cpgname,"cp",2)==0 && UT_UCS_isdigit(cpgname[2])) 
 		{
 			int cpg;
@@ -461,7 +466,24 @@ UT_Bool IE_Exp_RTF::_write_rtf_header(void)
 				_rtf_keyword("ansicpg",cpg);
 				wrote_cpg = 1;
 			}
-		};
+		}
+		// NOTE:we will get "GB2312","BIG5" or something else after we call
+		// NOTE:wvLIDToCodePageConverter,we can deal with them quite fine,
+		// NOTE:but we need convert them to CPxx.:-(
+		else
+		{
+			const char* codepage=XAP_EncodingManager::instance->CodepageFromCharset(cpgname);
+			if(UT_strnicmp(codepage,"cp",2)==0 && UT_UCS_isdigit(codepage[2]))
+			{
+				int cpg;
+				if (sscanf(codepage+2,"%d",&cpg)==1)
+				{
+					_rtf_keyword("ansicpg",cpg);
+					wrote_cpg = 1;
+				}
+			}
+			UT_DEBUGMSG(("Belcon:after XAP_EncodingManager::instance->CodepageFromCharset(%s),codepage=%s\n",cpgname,codepage));
+		}
 	};
 	if (!wrote_cpg)
 	    _rtf_keyword("ansicpg",1252);		// TODO what CodePage do we want here ??

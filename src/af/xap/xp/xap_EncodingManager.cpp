@@ -473,6 +473,20 @@ static const _map MSCodepagename_to_charset_name_map[]=
     {NULL,NULL}
 };
 
+/*
+ This table is only concern CJK RTF part.It is a reverse table of
+ MSCodepagename_to_charset_name_map.Iconv doesn't know some cpNNNN,
+ but M$Word know.
+*/
+static const _map charset_name_to_MSCodepagename_map[]=
+{
+/*key,value*/
+    {NULL,NULL},
+    {"GB2312","CP936"},
+    {"BIG5","CP950"},
+    {NULL,NULL}
+};
+
 /*warning: 0x400 won't be added to the values in this table. */
 static const _map langcode_to_winlangcode[]=
 {
@@ -840,6 +854,14 @@ const char* XAP_EncodingManager::charsetFromCodepage(int lid) const
     const char* ret = search_map(MSCodepagename_to_charset_name_map,cpname,&is_default);
     return is_default ? cpname : ret;
 };
+
+const char* XAP_EncodingManager::CodepageFromCharset(char *charset) const
+{
+    UT_Bool is_default;
+    const char* ret = search_map(charset_name_to_MSCodepagename_map,charset,&is_default);
+    UT_DEBUGMSG(("Belcon:in XAP_EncodingManager::CodepageFromCharset,charset=%s,ret=%s,is_default=%d\n",charset,ret,is_default));
+    return is_default ? charset : ret;
+}
 
 const char* XAP_EncodingManager::WindowsCharsetName() const
 {
