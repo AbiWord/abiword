@@ -65,6 +65,7 @@ public:
 	const PP_PropertyType *getPropertyType(const XML_Char * szName, tProperty_type Type) const;
 
 	bool hasProperties(void) const;
+	bool hasAttributes(void) const;
 	size_t getPropertyCount (void) const;
 	size_t getAttributeCount (void) const;
 	bool areAlreadyPresent(const XML_Char ** attributes, const XML_Char ** properties) const;

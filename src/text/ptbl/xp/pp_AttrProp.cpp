@@ -445,6 +445,14 @@ bool PP_AttrProp::hasProperties(void) const
 	return (m_pProperties->size() > 0);
 }
 
+bool PP_AttrProp::hasAttributes(void) const
+{
+	if (!m_pAttributes)
+		return false;
+
+	return (m_pAttributes->size() > 0);
+}
+
 bool PP_AttrProp::areAlreadyPresent(const XML_Char ** attributes, const XML_Char ** properties) const
 {
 	// return TRUE if each attribute and property is already present
