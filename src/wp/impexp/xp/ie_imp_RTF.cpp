@@ -2077,7 +2077,7 @@ UT_Error IE_Imp_RTF::_parseText()
 				// need to see if the keyword is \ftnalt indicating
 				// endnote
 				unsigned char keyword[MAX_KEYWORD_LEN];
-				long parameter = 0;
+				UT_sint16 parameter = 0;
 				bool parameterUsed = false;
 				if (ReadKeyword(keyword, &parameter, &parameterUsed, MAX_KEYWORD_LEN))
 				{
@@ -2577,7 +2577,7 @@ bool IE_Imp_RTF::ParseChar(UT_UCSChar ch,bool no_convert)
 bool IE_Imp_RTF::ParseRTFKeyword()
 {
 	unsigned char keyword[MAX_KEYWORD_LEN];
-	long parameter = 0;
+	UT_sint16 parameter = 0;
 	bool parameterUsed = false;
 	if (ReadKeyword(keyword, &parameter, &parameterUsed, MAX_KEYWORD_LEN))
 	{
@@ -2607,7 +2607,7 @@ bool IE_Imp_RTF::ParseRTFKeyword()
   \desc This function parse and read the keyword. It is called if a
   \\ is encountered in the flow. *pKeyword never contains the \\
  */
-bool IE_Imp_RTF::ReadKeyword(unsigned char* pKeyword, long* pParam, bool* pParamUsed, UT_uint32 keywordBuffLen)
+bool IE_Imp_RTF::ReadKeyword(unsigned char* pKeyword, UT_sint16* pParam, bool* pParamUsed, UT_uint32 keywordBuffLen)
 {
 	bool fNegative = false;
 	*pParam = 0;
@@ -3208,7 +3208,7 @@ bool IE_Imp_RTF::HandlePicture()
 	PictFormat format = picNone;
 
 	unsigned char keyword[MAX_KEYWORD_LEN];
-	long parameter = 0;
+	UT_sint16 parameter = 0;
 	bool parameterUsed = false;
 	RTFProps_ImageProps imageProps;
 
@@ -3345,7 +3345,7 @@ bool IE_Imp_RTF::HandleObject()
 {	
 	RTFTokenType tokenType;
 	unsigned char keyword[MAX_KEYWORD_LEN];
-	long parameter = 0;
+	UT_sint16 parameter = 0;
 	bool paramUsed = false;	
 	int nested = 1;           // nesting level							  	
 		
@@ -3397,7 +3397,7 @@ bool IE_Imp_RTF::HandleField()
 {
 	RTFTokenType tokenType;
 	unsigned char keyword[MAX_KEYWORD_LEN];
-	long parameter = 0;
+	UT_sint16 parameter = 0;
 	bool paramUsed = false;
 	bool bUseResult = false;  // true if field instruction can not be used
 	int nested = 0;           // nesting level
@@ -4063,7 +4063,7 @@ bool IE_Imp_RTF::HandleHeaderFooter(RTFHdrFtr::HdrFtrType hftype, UT_uint32 & he
 
 
 // Test the keyword against all the known handlers
-bool IE_Imp_RTF::TranslateKeyword(unsigned char* pKeyword, long param, bool fParam)
+bool IE_Imp_RTF::TranslateKeyword(unsigned char* pKeyword, UT_sint16 param, bool fParam)
 {
 	// switch on the first char to reduce the number of string comparisons
 	// NB. all RTF keywords are lowercase.
@@ -4097,7 +4097,7 @@ bool IE_Imp_RTF::TranslateKeyword(unsigned char* pKeyword, long param, bool fPar
 // this keyword will be immediately followed by either the
 // ltrch or rtlch keyword, which we need to eat up ...
 			unsigned char kwrd[MAX_KEYWORD_LEN];
-			long par = 0;
+			UT_sint16 par = 0;
 			bool parUsed = false;
 			bool ok = true;
 			unsigned char c;
@@ -5362,7 +5362,7 @@ bool IE_Imp_RTF::TranslateKeyword(unsigned char* pKeyword, long param, bool fPar
 		if (strcmp(reinterpret_cast<char*>(pKeyword), "*") == 0)
 		{
 			unsigned char keyword_star[MAX_KEYWORD_LEN];
-			long parameter_star = 0;
+			UT_sint16 parameter_star = 0;
 			bool parameterUsed_star = false;
 
 			if (ReadKeyword(keyword_star, &parameter_star, &parameterUsed_star,
@@ -7239,7 +7239,7 @@ bool IE_Imp_RTF::ReadListTable()
 	UT_VECTOR_PURGEALL(RTF_msword97_list*, m_vecWord97Lists);
 	unsigned char keyword[MAX_KEYWORD_LEN];
 	unsigned char ch;
-	long parameter = 0;
+	UT_sint16 parameter = 0;
 	bool paramUsed = false;
 	UT_uint32 nesting = 1;
 	while (nesting >0) // Outer loop
@@ -7279,7 +7279,7 @@ bool IE_Imp_RTF::HandleTableList(void)
 {
 	unsigned char keyword[MAX_KEYWORD_LEN];
 	unsigned char ch;
-	long parameter = 0;
+    UT_sint16 parameter = 0;
 	bool paramUsed = false;
 	UT_uint32 nesting = 1;
 	UT_uint32 levelCount = 0;
@@ -7355,7 +7355,7 @@ bool IE_Imp_RTF::HandleListLevel(RTF_msword97_list * pList, UT_uint32 levelCount
 {
 	unsigned char keyword[MAX_KEYWORD_LEN];
 	unsigned char ch;
-	long parameter = 0;
+	UT_sint16 parameter = 0;
 	bool paramUsed = false;
 	UT_uint32 nesting = 1;
 	UT_String szLevelNumbers;
@@ -7498,7 +7498,7 @@ bool IE_Imp_RTF::HandleListLevel(RTF_msword97_list * pList, UT_uint32 levelCount
  * These are used by the list table
  * reader.
  */
-bool IE_Imp_RTF::ParseCharParaProps( unsigned char * pKeyword, long param, bool fParam, RTFProps_CharProps * pChars, RTFProps_ParaProps * pParas, RTFProps_bCharProps * pbChars, RTFProps_bParaProps * pbParas)
+bool IE_Imp_RTF::ParseCharParaProps( unsigned char * pKeyword, UT_sint16 param, bool fParam, RTFProps_CharProps * pChars, RTFProps_ParaProps * pParas, RTFProps_bCharProps * pbChars, RTFProps_bParaProps * pbParas)
 {
 	if (strcmp(reinterpret_cast<char*>(pKeyword), "b") == 0) // bold
 	{
@@ -7757,7 +7757,7 @@ bool IE_Imp_RTF::ReadListOverrideTable(void)
 	UT_VECTOR_PURGEALL(RTF_msword97_listOverride*, m_vecWord97ListOverride);
 	unsigned char keyword[MAX_KEYWORD_LEN];
 	unsigned char ch;
-	long parameter = 0;
+	UT_sint16 parameter = 0;
 	bool paramUsed = false;
 	UT_uint32 nesting = 1;
 	while (nesting >0) // Outer loop
@@ -7825,7 +7825,7 @@ bool IE_Imp_RTF::HandleTableListOverride(void)
 {
 	unsigned char keyword[MAX_KEYWORD_LEN];
 	unsigned char ch;
-	long parameter = 0;
+	UT_sint16 parameter = 0;
 	bool paramUsed = false;
 //
 // OK define this in the data structure.
@@ -7963,7 +7963,7 @@ bool IE_Imp_RTF::ReadOneFontFromTable()
 {
 	unsigned char keyword[MAX_KEYWORD_LEN];
 	unsigned char ch;
-	long parameter = 0;
+    UT_sint16 parameter = 0;
 	bool paramUsed = false;
 
 	int nesting = 0;
@@ -7971,7 +7971,7 @@ bool IE_Imp_RTF::ReadOneFontFromTable()
 	// run though the item reading in these values
 	RTFFontTableItem::FontFamilyEnum fontFamily = RTFFontTableItem::ffNone;
 	RTFFontTableItem::FontPitch pitch = RTFFontTableItem::fpDefault;
-	UT_uint32 fontIndex = 0;
+	UT_uint16 fontIndex = 0;
 	int charSet = 0;
 	int codepage = 0;
 	unsigned char panose[10];
@@ -7994,6 +7994,8 @@ bool IE_Imp_RTF::ReadOneFontFromTable()
 	}
 	else
 	{
+		// parameter is signed. fontIndex is unsigned. We convert here. Both
+		// are 16-bits integer as per de RTF spec.
 		fontIndex = parameter;
 	}
 
@@ -8199,7 +8201,7 @@ bool IE_Imp_RTF::ReadColourTable()
 
 	unsigned char keyword[MAX_KEYWORD_LEN];
 	unsigned char ch;
-	long parameter = 0;
+	UT_sint16 parameter = 0;
 	bool paramUsed = false;
 	if (!ReadCharFromFile(&ch))
 		return false;
@@ -8322,7 +8324,7 @@ bool IE_Imp_RTF::HandleLists(_rtfListTable & rtfTable )
 {
 	unsigned char keyword[MAX_KEYWORD_LEN];
 	unsigned char ch;
-	long parameter = 0;
+	UT_sint16 parameter = 0;
 	bool paramUsed = false;
 	if (!ReadCharFromFile(&ch))
 		return false;
@@ -8763,7 +8765,7 @@ bool IE_Imp_RTF::HandleAbiLists()
 {
 	unsigned char keyword[MAX_KEYWORD_LEN];
 	unsigned char ch;
-	long parameter = 0;
+	UT_sint16 parameter = 0;
 	bool paramUsed = false;
 	if (!ReadCharFromFile(&ch))
 		return false;
@@ -9119,14 +9121,15 @@ bool IE_Imp_RTF::AddTabstop(UT_sint32 stopDist, eTabType tabType, eTabLeader tab
   (like hex char).
   It is up to the caller to distinguish beetween them and parse them.
   \retval pKeyword is the data
-  \retval pParam is the keyword parameter if any, otherwise ""
+  \retval pParam is the keyword parameter if any, otherwise "". RTF spec says it should be
+  a signed 16-bits int.
   \retval pParamUsed is a flag to tell whether there is a parameter.
   \return the type of the next token parsed.
   \note Both pParam amd pParamUsed are only used if tokenType is
   RTF_TOKEN_KEYWORD
   \note this changes the state of the file
 */
-IE_Imp_RTF::RTFTokenType IE_Imp_RTF::NextToken (unsigned char *pKeyword, long* pParam,
+IE_Imp_RTF::RTFTokenType IE_Imp_RTF::NextToken (unsigned char *pKeyword, UT_sint16* pParam,
 												bool* pParamUsed, UT_uint32 len, bool bIgnoreWhiteSpace /* = false */ )
 {
 	RTFTokenType tokenType = RTF_TOKEN_NONE;
@@ -9533,7 +9536,7 @@ bool IE_Imp_RTF::HandleStyleDefinition(void)
 	while (nesting>0 && status == true)
 	{
         unsigned char keyword[MAX_KEYWORD_LEN];
-        long parameter = 0;
+        UT_sint16 parameter = 0;
 	    bool parameterUsed = false;
 
 		if (!ReadCharFromFile(&ch))

@@ -371,8 +371,8 @@ struct ABI_EXPORT RTFProps_ImageProps
 
 	RTFProps_ImageProps ();
 	IPSizeType sizeType;
-	UT_uint32 wGoal;
-	UT_uint32 hGoal;
+	UT_uint16 wGoal;
+	UT_uint16 hGoal;
 	UT_uint16 scaleX;
 	UT_uint16 scaleY;
 	UT_uint32 width;
@@ -561,9 +561,9 @@ private:
 	bool ReadCharFromFile(unsigned char* pCh);
 	UT_UCS4Char ReadHexChar(void);
 	bool SkipBackChar(unsigned char ch);
-	bool ReadKeyword(unsigned char* pKeyword, long* pParam, bool* pParamUsed,
+	bool ReadKeyword(unsigned char* pKeyword, UT_sint16* pParam, bool* pParamUsed,
 					 UT_uint32 keywordBuffLen);
-	bool TranslateKeyword(unsigned char* pKeyword, long param, bool fParam);
+	bool TranslateKeyword(unsigned char* pKeyword, UT_sint16 param, bool fParam);
 	bool ReadColourTable();
 	bool ReadFontTable();
 	bool ReadOneFontFromTable();
@@ -589,7 +589,7 @@ private:
 	bool HandleListLevel(RTF_msword97_list * pList, UT_uint32 levelCount  );
 	bool HandleTableList(void);
 	char * getCharsInsideBrace(void);
-	bool ParseCharParaProps( unsigned char * pKeyword, long param, bool fParam, RTFProps_CharProps * pChars, RTFProps_ParaProps * pParas, RTFProps_bCharProps * pbChars, RTFProps_bParaProps * pbParas);
+	bool ParseCharParaProps( unsigned char * pKeyword, UT_sint16 param, bool fParam, RTFProps_CharProps * pChars, RTFProps_ParaProps * pParas, RTFProps_bCharProps * pbChars, RTFProps_bParaProps * pbParas);
 	bool ReadListOverrideTable(void);
 	bool HandleTableListOverride(void);
 
@@ -679,7 +679,7 @@ private:
 	    RTF_TOKEN_DATA,
 	    RTF_TOKEN_ERROR = -1
 	} RTFTokenType;
-	RTFTokenType NextToken (unsigned char *pKeyword, long* pParam,
+	RTFTokenType NextToken (unsigned char *pKeyword, UT_sint16* pParam,
 							bool* pParamUsed, UT_uint32 len, bool bIgnoreWhiteSpace=false);
 
 	UT_Error _isBidiDocument();
