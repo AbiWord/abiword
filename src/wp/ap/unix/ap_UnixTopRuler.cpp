@@ -165,7 +165,7 @@ gint AP_UnixTopRuler::_fe::button_press_event(GtkWidget * w, GdkEventButton * e)
 	EV_EditModifierState ems = 0;
 	EV_EditMouseButton emb = 0;
 
-	if (!pUnixTopRuler->getGR())
+	if (!pUnixTopRuler->getGraphics())
 		return 1;
 	
 	if (e->state & GDK_SHIFT_MASK)
@@ -184,8 +184,8 @@ gint AP_UnixTopRuler::_fe::button_press_event(GtkWidget * w, GdkEventButton * e)
 
 	UT_DEBUGMSG(("SEVIOR: e->button = %x \n",e->button));
 	pUnixTopRuler->mousePress(ems, emb, 
-				  pUnixTopRuler->getGR()->tlu(static_cast<UT_uint32>(e->x)), 
-				  pUnixTopRuler->getGR()->tlu(static_cast<UT_uint32>(e->y)));
+				  pUnixTopRuler->getGraphics()->tlu(static_cast<UT_uint32>(e->x)), 
+				  pUnixTopRuler->getGraphics()->tlu(static_cast<UT_uint32>(e->y)));
 	return 1;
 }
 
@@ -197,7 +197,7 @@ gint AP_UnixTopRuler::_fe::button_release_event(GtkWidget * w, GdkEventButton * 
 	EV_EditModifierState ems = 0;
 	EV_EditMouseButton emb = 0;
 	
-	if (!pUnixTopRuler->getGR())
+	if (!pUnixTopRuler->getGraphics())
 		return 1;
 
 	if (e->state & GDK_SHIFT_MASK)
@@ -215,8 +215,8 @@ gint AP_UnixTopRuler::_fe::button_release_event(GtkWidget * w, GdkEventButton * 
 		emb = EV_EMB_BUTTON3;
 
 	pUnixTopRuler->mouseRelease(ems, emb, 
-				  pUnixTopRuler->getGR()->tlu(static_cast<UT_uint32>(e->x)), 
-				  pUnixTopRuler->getGR()->tlu(static_cast<UT_uint32>(e->y)));
+				  pUnixTopRuler->getGraphics()->tlu(static_cast<UT_uint32>(e->x)), 
+				  pUnixTopRuler->getGraphics()->tlu(static_cast<UT_uint32>(e->y)));
 
 	// release the mouse after we are done.
 	gtk_grab_remove(w);
@@ -248,7 +248,7 @@ gint AP_UnixTopRuler::_fe::motion_notify_event(GtkWidget* w, GdkEventMotion* e)
 		return 1;
 
 	AV_View * pView = pFrame->getCurrentView();
-	if(pView == NULL || pView->getPoint() == 0 || pUnixTopRuler->getGR() == NULL)
+	if(pView == NULL || pView->getPoint() == 0 || pUnixTopRuler->getGraphics() == NULL)
 		return 1;
 
 	EV_EditModifierState ems = 0;
@@ -263,10 +263,10 @@ gint AP_UnixTopRuler::_fe::motion_notify_event(GtkWidget* w, GdkEventMotion* e)
 	// Map the mouse into coordinates relative to our window.
 
 	pUnixTopRuler->mouseMotion(ems, 
-				  pUnixTopRuler->getGR()->tlu(static_cast<UT_uint32>(e->x)), 
-				  pUnixTopRuler->getGR()->tlu(static_cast<UT_uint32>(e->y)));
-	pUnixTopRuler->isMouseOverTab(pUnixTopRuler->getGR()->tlu(static_cast<UT_uint32>(e->x)), 
-				  pUnixTopRuler->getGR()->tlu(static_cast<UT_uint32>(e->y)));
+				  pUnixTopRuler->getGraphics()->tlu(static_cast<UT_uint32>(e->x)), 
+				  pUnixTopRuler->getGraphics()->tlu(static_cast<UT_uint32>(e->y)));
+	pUnixTopRuler->isMouseOverTab(pUnixTopRuler->getGraphics()->tlu(static_cast<UT_uint32>(e->x)), 
+				  pUnixTopRuler->getGraphics()->tlu(static_cast<UT_uint32>(e->y)));
 
 	return 1;
 
@@ -290,7 +290,7 @@ gint AP_UnixTopRuler::_fe::expose(GtkWidget * w, GdkEventExpose* pExposeEvent)
 	if (!pUnixTopRuler)
 		return 0;
 
-	GR_Graphics * pG = pUnixTopRuler->getGR();
+	GR_Graphics * pG = pUnixTopRuler->getGraphics();
 	if(pG != NULL)
 	{
 		UT_Rect rClip;

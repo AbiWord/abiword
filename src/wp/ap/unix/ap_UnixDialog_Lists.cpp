@@ -1344,7 +1344,7 @@ void AP_UnixDialog_Lists::_gatherData(void)
 	}
 	else
 	{
-		copyCharToFont( static_cast<const char *>(g_list_nth_data(m_glFonts, ifont-1)));
+		copyCharToFont( static_cast<char *>(g_list_nth_data(m_glFonts, ifont-1)));
 	}
 	const gchar * pszDec = gtk_entry_get_text( GTK_ENTRY(m_wDecimalEntry));
 	copyCharToDecimal( static_cast<const char *>(pszDec));
