@@ -134,7 +134,7 @@ void UT_Vector::deleteNthItem(int n)
 	if ((n < 0) || (n >= m_iCount))
 		return;
 
-	for (int k=0; k<m_iCount-1; k++)
+	for (int k=n; k<m_iCount-1; k++)
 		m_pEntries[k] = m_pEntries[k+1];
 	m_pEntries[m_iCount-1] = 0;
 	m_iCount--;

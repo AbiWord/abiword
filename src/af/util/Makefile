@@ -18,6 +18,7 @@ OBJS=		$(ABI_NATIVE)/$(OBJDIR)/ut_debugmsg.$(OBJ_SUFFIX)	\
 		xp/$(OBJDIR)/ut_hash.$(OBJ_SUFFIX)			\
 		xp/$(OBJDIR)/ut_misc.$(OBJ_SUFFIX)			\
 		xp/$(OBJDIR)/ut_pool.$(OBJ_SUFFIX)			\
+		xp/$(OBJDIR)/ut_stack.$(OBJ_SUFFIX)			\
 		xp/$(OBJDIR)/ut_string.$(OBJ_SUFFIX)			\
 		xp/$(OBJDIR)/ut_units.$(OBJ_SUFFIX)			\
 		xp/$(OBJDIR)/ut_vector.$(OBJ_SUFFIX)
