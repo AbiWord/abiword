@@ -71,8 +71,12 @@ protected:
 	virtual void				_createTopLevelWindow(void);
 	virtual EV_Toolbar *		_newToolbar(XAP_App *app, XAP_Frame *frame, const char *, const char *);
 
-	static void _dnd_drop_event (GtkWidget *widget, GdkDragContext */*context*/, gint /*x*/, gint /*y*/,
-								 GtkSelectionData *selection_data, guint info, guint /*time*/, XAP_UnixGnomeFrame * pFrame);
+	static void _dnd_drop_event (GtkWidget *widget, GdkDragContext */*context*/, gint /*x*/, gint /*y*/,  GtkSelectionData *selection_data, guint info, guint /*time*/, XAP_UnixGnomeFrame * pFrame);
+
+	static void _dnd_real_drop_event (GtkWidget *widget, GdkDragContext * context, gint x, gint y, guint time, gpointer ppFrame);
+
+	static void  _dnd_drag_end(GtkWidget  *widget, GdkDragContext     *context, gpointer ppFrame);
+
 };
 
 #endif /* XAP_UNIXGNOMEFRAME_H */

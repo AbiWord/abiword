@@ -44,6 +44,11 @@
 #include "fg_Graphic.h"
 #include "fv_View.h"
 
+
+#ifdef HAVE_GNOMEVFS
+#include "gnome-vfs.h"
+#endif
+
 /*****************************************************************/
 
 #define ENSUREP(p)		do { UT_ASSERT(p); if (!p) goto Cleanup; } while (0)
@@ -87,7 +92,7 @@ s_mapMimeToUriType (const char * mime)
 	if (!UT_strcmp (mime, "text/abiword")) 
 		return XAP_UnixGnomeFrame::TARGET_URI_LIST;
 	if (!UT_strcmp (mime, "text/html")) 
-		return XAP_UnixGnomeFrame::TARGET_URI_LIST;
+		return XAP_UnixGnomeFrame::TARGET_URL;
 	if (!UT_strcmp (mime, "text/xml")) 
 		return XAP_UnixGnomeFrame::TARGET_URI_LIST;
 	if (!UT_strcmp (mime, "text/vnd.wap.wml")) 
@@ -123,18 +128,41 @@ void XAP_UnixGnomeFrame::_dnd_drop_event(GtkWidget        *widget,
 	FG_Graphic * pFG;
 	IEGraphicFileType iegft;
 	UT_Error error;
-	
+	UT_DEBUGMSG(("SEVIOR: _dnd_drop_event being handled \n"));
 	pUnixFrame = (XAP_UnixFrame *) gtk_object_get_user_data(GTK_OBJECT(widget));
 	pApp = pUnixFrame->getApp ();
 
+	char * rawChar = (char *) selection_data->data;
+	UT_DEBUGMSG(("SEVIOR: text in selection = %s \n", rawChar));
 	names = gnome_uri_list_extract_filenames ((char *) selection_data->data);
 
 	if (!names)
-		return;
-	
-	for (; names; names = names->next) {
-		filename = (char *) names->data;
+	{
+		UT_DEBUGMSG(("SEVIOR: No filename found in drop event \n"));
+		int type = s_mapMimeToUriType (gnome_mime_type_or_default (rawChar, "foobar"));
+		if(type== TARGET_URL)
+		{
+			UT_DEBUGMSG(("DOM: target url\n"));
+			FV_View * pView = (FV_View *) pUnixFrame->getCurrentView();
+			pView->cmdInsertHyperlink(rawChar);
+		}
+		else if (strstr(rawChar,"http:") !=0)
+		{
+			UT_DEBUGMSG(("Sevior: Overiding dumb gnome parser Inserting URL \n"));
+			FV_View * pView = (FV_View *) pUnixFrame->getCurrentView();
+			pView->cmdInsertHyperlink(rawChar);
+			return;
+		}
+		else
+		{
+			return;
+		}
+	}
 
+	for (; names; names = names->next) 
+	{
+		filename = (char *) names->data;
+		UT_DEBUGMSG(("SEVIOR: Selection %s found \n",filename));
 		int type = s_mapMimeToUriType (gnome_mime_type_or_default (filename, "foobar"));
 		switch (type) {
 
@@ -241,6 +269,18 @@ void XAP_UnixGnomeFrame::_dnd_drop_event(GtkWidget        *widget,
 	gnome_uri_list_free_strings (names);
 }
 
+void XAP_UnixGnomeFrame::_dnd_real_drop_event (GtkWidget *widget, GdkDragContext * context, gint x, gint y, guint time, gpointer ppFrame)
+{
+	UT_DEBUGMSG(("SEVIOR: drop event on Gnome frame. \n"));
+	GdkAtom selection = gdk_drag_get_selection(context);
+	gtk_drag_get_data (widget,context,selection,time);
+}
+
+void XAP_UnixGnomeFrame::_dnd_drag_end(GtkWidget  *widget, GdkDragContext *context, gpointer ppFrame)
+{
+	UT_DEBUGMSG(("SEVIOR: drop end event on Gnome frame. \n"));
+}
+
 /*****************************************************************/
 
 XAP_UnixGnomeFrame::XAP_UnixGnomeFrame(XAP_UnixGnomeApp * app)
@@ -325,10 +365,15 @@ void XAP_UnixGnomeFrame::_createTopLevelWindow(void)
                        GTK_SIGNAL_FUNC(_dnd_drop_event), 
 					   (gpointer)this);
 
-//  	gtk_signal_connect(GTK_OBJECT(m_wTopLevelWindow), 
-//  					   "drag_drop",
-//                         GTK_SIGNAL_FUNC(_dnd_real_drop_event), 
-//					   (gpointer)this);
+  	gtk_signal_connect(GTK_OBJECT(m_wTopLevelWindow), 
+  					   "drag_drop",
+                         GTK_SIGNAL_FUNC(_dnd_real_drop_event), 
+					   (gpointer)this);
+
+  	gtk_signal_connect(GTK_OBJECT(m_wTopLevelWindow), 
+  					   "drag_end",
+                         GTK_SIGNAL_FUNC(_dnd_drag_end), 
+					   (gpointer)this);
 
 	gtk_signal_connect(GTK_OBJECT(m_wTopLevelWindow), "delete_event",
 					   GTK_SIGNAL_FUNC(_fe::delete_event), NULL);

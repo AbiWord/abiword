@@ -608,7 +608,7 @@ GNOME_LIBS      += $(shell $(GNOME_CONFIG) --libs-only-L gnome gal)
 GNOME_LIBS      += -lgnomeui -lgnomeprint -lgal -lart_lgpl -lgdk_imlib -lgnome -lgnomesupport -lxml -lglade-gnome -lglade -lgnomecanvaspixbuf -lgdk_pixbuf -ltiff -ljpeg 
 
 ifeq ($(ABI_OPT_GNOMEVFS),1)
-GNOME_CFLAGS += $(shell gnome-vfs-config --cflags)
+GNOME_CFLAGS += $(shell gnome-vfs-config --cflags)/libgnomevfs
 GNOME_CFLAGS += -DHAVE_GNOMEVFS
 GNOME_LIBS   += $(shell gnome-vfs-config --libs)
 ABI_OPTIONS  +=GnomeVFS:On

@@ -179,6 +179,7 @@ int AP_UnixGnomeApp::main(const char * szAppName, int argc, char ** argv)
 	gtk_init(&Args.m_argc,&Args.m_argv);
 
 #ifdef HAVE_GNOMEVFS
+	UT_DEBUGMSG((" Initializing gnome-VFS \n"));
 	if (! gnome_vfs_init ())
 	{
 	    UT_DEBUGMSG(("DOM: gnome_vfs_init () failed!\n"));
