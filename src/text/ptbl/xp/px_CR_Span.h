@@ -32,9 +32,7 @@ public:
 	~PX_ChangeRecord_Span();
 	
 protected:
-	PT_DocPosition			m_position;	/* absolute document position of the change */
 	UT_Bool					m_bLeftSide;
-	UT_uint32				m_vsIndex;	/* which VS[] we are in */
 	pt_BufPosition			m_offset;	/* location of our text in the VS[].m_buffer */
 	UT_uint32				m_length;	/* length of our text in that buffer */
 };

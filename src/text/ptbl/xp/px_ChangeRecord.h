@@ -33,6 +33,8 @@ public:
 protected:
 	UT_Bool					m_bMultiStepStart;
 	UT_Bool					m_bMultiStepEnd;
+	PT_DocPosition			m_position;	/* absolute document position of the change */
+	UT_uint32				m_vsIndex;	/* which VS[] we are in */
 };
 
 #endif /* PX_CHANGERECORD_H */

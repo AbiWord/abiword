@@ -68,7 +68,9 @@ protected:
 	PTState					m_pts;
 	UT_uint32				m_vsIndex;		/* vs[] that we are writing to */
 	VarSet					m_vs[2];		/* [0] is initial, [1] is change */
-	
+
+	px_ChangeHistory		m_history;
+	pf_Fragments			m_fragments;
 };
 
 #endif /* PT_PIECETABLE_H */

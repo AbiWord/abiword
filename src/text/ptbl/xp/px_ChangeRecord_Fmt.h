@@ -23,9 +23,7 @@ public:
 	~PX_ChangeRecord_Fmt();
 	
 protected:
-	PT_DocPosition			m_position1;	/* absolute document position of start of the change */
 	PT_DocPosition			m_position2;	/* absolute document position of end of the change */
-	UT_uint32				m_vsIndex;		/* which VS[] we are in */
 	pt_AttrPropIndex		m_index;		/* index in VS[].m_tableAttrProp to our A/P */
 };
 

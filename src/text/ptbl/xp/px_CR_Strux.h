@@ -25,11 +25,9 @@ public:
 	~PX_ChangeRecord_Strux();
 	
 protected:
-	PT_DocPosition			m_position;	/* absolute document position of the change */
 	UT_Bool					m_bLeftSide;
-	UT_uint32				m_vsIndex;	/* which VS[] we are in */
 	pt_AttrPropIndex		m_index;	/* index in VS[].m_tableAttrProp to our A/P */
-	PT_PieceTable::PTStrux	m_type;
+	PT_PieceTable::PTStrux	m_type;		/* our type (paragraph, section) */
 };
 
 #endif /* PX_CHANGERECORD_STRUX_H */

@@ -41,6 +41,7 @@ HEADERS=		$(EXPORT_HEADERS)	\
 			pf_Frag_Object.h	\
 			pf_Frag_Strux.h		\
 			pf_Frag_Text.h		\
+			pf_Fragments.h		\
 			pp_TableAttrProp.h	\
 			px_ChangeHistory.h
 
