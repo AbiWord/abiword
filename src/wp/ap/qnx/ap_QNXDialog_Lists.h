@@ -68,10 +68,10 @@ protected:
 	PtWidget_t * m_wClose;
 	PtWidget_t * m_wResume;
 
-	PtWidget_t * m_wStartValue;
-	PtWidget_t * m_wStartValueLabel;
 	PtWidget_t * m_wMenuListType;
 	PtWidget_t * m_wMenuListTypeLabel;
+	PtWidget_t * m_wStartValue;
+	PtWidget_t * m_wStartValueLabel;
 
 	PtWidget_t * m_wCheckcurlist;
 	PtWidget_t * m_wCheckstartlist;

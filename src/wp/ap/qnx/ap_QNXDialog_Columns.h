@@ -24,6 +24,49 @@
 
 class XAP_QNXFrame;
 
+/*****************************************************************
+******************************************************************
+** Here we begin a little CPP magic to load all of the icons.
+** It is important that all of the ..._Icon_*.{h,xpm} files
+** allow themselves to be included more than one time.
+******************************************************************
+*****************************************************************/
+// This comes from ap_Toolbar_Icons.cpp
+#include "xap_Toolbar_Icons.h"
+
+#include "ap_Toolbar_Icons_All.h"
+
+/*****************************************************************
+******************************************************************
+** Here we begin a little CPP magic to construct a table of
+** the icon names and pointer to the data.
+******************************************************************
+*****************************************************************/
+
+struct _it
+{
+	const char *				m_name;
+	const char **				m_staticVariable;
+	UT_uint32					m_sizeofVariable;
+};
+
+#define DefineToolbarIcon(name)		{ #name, (const char **) ##name, sizeof(##name)/sizeof(##name[0]) },
+
+static struct _it s_itTable[] =
+{
+
+#include "ap_Toolbar_Icons_All.h"
+	
+};
+
+#undef DefineToolbarIcon
+
+// Some convience functions to make Abi's pixmaps easily available to dialogs
+static UT_Bool findIconDataByName(const char * szName, const char *** pIconData, UT_uint32 * pSizeofData) ;
+static UT_Bool label_button_with_abi_pixmap( PtWidget_t * button, const char * szIconName);
+
+
+
 /*****************************************************************/
 
 class AP_QNXDialog_Columns: public AP_Dialog_Columns
@@ -41,6 +84,8 @@ public:
 	virtual void			event_OK(void);
 	virtual void			event_Cancel(void);
 	virtual void			event_WindowDelete(void);
+	virtual void			event_previewExposed(void);
+	virtual void			event_Toggle(PtWidget_t *w);
 
 protected:
 
@@ -49,13 +94,15 @@ protected:
 	void		_populateWindowData(void);
 	void 		_storeWindowData(void);
 
+	GR_QNXGraphics	*m_pPreviewWidget;
 	
 	// pointers to widgets we need to query/set
 	PtWidget_t 	*m_windowMain;
-
-	// group of radio buttons for easy traversal
-	//GSList 	*m_radioGroup;
-
+	PtWidget_t 	*m_wlineBetween;
+	PtWidget_t 	*m_wtoggleOne;
+	PtWidget_t 	*m_wtoggleTwo;
+	PtWidget_t 	*m_wtoggleThree;
+	PtWidget_t 	*m_wpreviewArea;
 	PtWidget_t 	*m_buttonOK;
 	PtWidget_t 	*m_buttonCancel;
 	int 		done;
