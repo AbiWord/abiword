@@ -25,6 +25,7 @@
 #include "ut_vector.h"
 #include "pt_Types.h"
 #include "fl_BlockLayout.h"
+#include "fp_Column.h"
 
 class fp_Run;
 class GR_Graphics;
@@ -62,6 +63,7 @@ public:
 	inline UT_sint32			getAscent(void) const 		{ return m_iAscent; }
 	inline UT_sint32			getDescent(void) const 		{ return m_iDescent; }
 
+	inline UT_sint32			getColumnGap(void) const	{ return m_pContainer->getColumnGap(); }
 	
 	void				setMaxWidth(UT_sint32);
 	void				setMaxWidthInLayoutUnits(UT_sint32);
@@ -104,6 +106,7 @@ public:
 	void		getScreenOffsets(fp_Run* pRun, UT_sint32& xoff, UT_sint32& yoff);
 
 	void		clearScreen(void);
+	void		clearScreenFromRunToEnd(UT_uint32 runIndex);
 	void		draw(dg_DrawArgs*);
 	void        draw(GR_Graphics*);
 	void		align(void);

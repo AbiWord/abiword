@@ -564,7 +564,7 @@ void fb_LineBreaker::_breakTheLineAtLastRunToKeep(fp_Line *pLine,
 			fp_Line* pOtherLine = pCurrentRun->getLine();
 			UT_ASSERT(pOtherLine);
 
-			pOtherLine->removeRun(pCurrentRun);
+			pOtherLine->removeRun(pCurrentRun, UT_TRUE);
 			pLine->addRun(pCurrentRun);
 		}
 

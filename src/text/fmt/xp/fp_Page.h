@@ -24,6 +24,8 @@
 #include "ut_types.h"
 #include "ut_vector.h"
 #include "pt_Types.h"
+#include "fl_SectionLayout.h"
+
 
 class FL_DocLayout;
 class fp_Column;
@@ -55,7 +57,9 @@ class fp_Page
 	fp_Page*		getPrev(void) const;
 	void			setNext(fp_Page*);
 	void			setPrev(fp_Page*);
-	
+
+	UT_sint32		getColumnGap(void) const {return getOwningSection()->getColumnGap(); }
+
 	FL_DocLayout*	getDocLayout();
 	void            setView(FV_View*);
 

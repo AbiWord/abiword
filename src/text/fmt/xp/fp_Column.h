@@ -24,6 +24,7 @@
 #include "ut_types.h"
 #include "ut_vector.h"
 #include "pt_Types.h"
+#include "fp_Page.h"
 
 class fl_HdrFtrSectionLayout;
 class fl_DocSectionLayout;
@@ -65,6 +66,9 @@ public:
 	inline				fl_SectionLayout*	getSectionLayout(void) const	{ return m_pSectionLayout; }
 	inline				UT_sint32			getHeight(void) const			{ return m_iHeight; }
 	inline				UT_sint32			getHeightInLayoutUnits(void) const	{ return m_iHeightLayoutUnits; }
+
+	inline				UT_sint32			getColumnGap(void) const			{ return m_pPage->getColumnGap(); }
+
 
 	fp_Line*			getFirstLine(void) const;
 	fp_Line*			getLastLine(void) const;

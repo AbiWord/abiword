@@ -27,6 +27,8 @@
 #include "fp_Line.h"
 #include "fp_Run.h"
 #include "fp_TextRun.h"
+#include "fp_Page.h"
+#include "fl_SectionLayout.h"
 #include "gr_DrawArgs.h"
 #include "gr_Graphics.h"
 #include "ut_assert.h"
@@ -78,14 +80,15 @@ void fp_Line::setContainer(fp_Container* pContainer)
 
 UT_Bool fp_Line::removeRun(fp_Run* pRun, UT_Bool bTellTheRunAboutIt)
 {
-	UT_sint32 ndx = m_vecRuns.findItem(pRun);
-	UT_ASSERT(ndx >= 0);
-	m_vecRuns.deleteNthItem(ndx);
-
 	if (bTellTheRunAboutIt)
 	{
 		pRun->setLine(NULL);
 	}
+
+	UT_sint32 ndx = m_vecRuns.findItem(pRun);
+	UT_ASSERT(ndx >= 0);
+	m_vecRuns.deleteNthItem(ndx);
+
 
 	return UT_TRUE;
 }
@@ -376,15 +379,94 @@ void fp_Line::recalcHeight()
 
 void fp_Line::clearScreen(void)
 {
-	int count = m_vecRuns.getItemCount();
-
-	for (int i=0; i < count; i++)
+	UT_uint32 count = m_vecRuns.getItemCount();
+	if(count)
 	{
-		fp_Run* pRun = (fp_Run*) m_vecRuns.getNthItem(i);
+		fp_Run* pRun;
+		UT_Bool bNeedsClearing = UT_FALSE;
 
-		pRun->clearScreen();
+		UT_uint32 i;
+		for (i = 0; i < count; i++)
+		{
+			pRun = (fp_Run*) m_vecRuns.getNthItem(i);
+
+			if(!pRun->isDirty())
+			{
+				bNeedsClearing = UT_TRUE;
+
+				pRun->markAsDirty();
+			}
+		}
+		
+		if(bNeedsClearing)
+		{
+			pRun = (fp_Run*) m_vecRuns.getNthItem(0);
+			
+			UT_sint32 xoffLine, yoffLine;
+
+			m_pContainer->getScreenOffsets(this, xoffLine, yoffLine);
+
+			UT_sint32 columnGap = getColumnGap();
+	
+			pRun->getGraphics()->clearArea(xoffLine - columnGap / 2, yoffLine, m_iMaxWidth + columnGap, m_iHeight);
+		}
+	}
+	
+}
+
+void fp_Line::clearScreenFromRunToEnd(UT_uint32 runIndex)
+{
+	fp_Run* pRun = (fp_Run*) m_vecRuns.getNthItem(runIndex);
+	UT_uint32 count = m_vecRuns.getItemCount();
+
+	// Find the first none dirty run.
+
+	UT_uint32 i;
+	for(i = runIndex; i < count; i++)
+	{
+		pRun = (fp_Run*) m_vecRuns.getNthItem(i);
+
+		if(pRun->isDirty())
+		{
+			runIndex++;
+		}
+		else
+		{
+			break;
+		}
+	}
+
+	if(runIndex < count)
+	{
+		UT_sint32 xoff, yoff;
+
+		pRun = (fp_Run*) m_vecRuns.getNthItem(runIndex);
+
+		getScreenOffsets(pRun, xoff, yoff);
+		UT_sint32 xoffLine, yoffLine;
+
+		m_pContainer->getScreenOffsets(this, xoffLine, yoffLine);
+
+		if(runIndex == 0)
+		{
+			// Erasing the whole line so include 1/2 column gap at start and end.
+			pRun->getGraphics()->clearArea(xoff - getColumnGap() / 2, yoff, m_iMaxWidth + getColumnGap() - (xoff - xoffLine), m_iHeight);
+		}
+		else
+		{
+			// Erasing to the end so include 1/2 column gap at end.
+			pRun->getGraphics()->clearArea(xoff, yoff, m_iMaxWidth + getColumnGap() / 2 - (xoff - xoffLine), m_iHeight);
+		}
+		
+		for (i = runIndex; i < count; i++)
+		{
+			pRun = (fp_Run*) m_vecRuns.getNthItem(i);
+
+			pRun->markAsDirty();
+		}
 	}
 }
+
 
 void fp_Line::draw(GR_Graphics* pG)
 {
@@ -441,13 +523,24 @@ void fp_Line::layout(void)
 	UT_uint32 iCountRuns = m_vecRuns.getItemCount();
 	UT_sint32 iX = 0;
 	UT_uint32 i;
+	UT_Bool bLineErased = UT_FALSE;
 
 	iX = pAlignment->getStartPosition();
 	
 	for (i=0; i<iCountRuns; i++)		// TODO do we need to do this if iMoveOver is zero ??
 	{
 		fp_Run* pRun = (fp_Run*) m_vecRuns.getNthItem(i);
+		if(!bLineErased && iX != pRun->getX())
+			{
+
+			// Need to erase some or all of the line depending of Alignment mode.
+
+			pAlignment->eraseLineFromRun(this, i);
+			bLineErased = UT_TRUE;
+			}
+			
 		pRun->setX(iX);
+
 		
 		if (pRun->getType() == FPRUN_TAB)
 		{
@@ -887,23 +980,6 @@ UT_sint32 fp_Line::calculateWidthOfLine(void)
 			
 			iX = iPos;
 		}
-		else if (pRun->getType() == FPRUN_TEXT)
-		{
-			//fp_TextRun* pTextRun = static_cast<fp_TextRun*>(pRun);
-
-			if(i == 0)
-			{
-				iX += pRun->getWidth();
-			}
-			else if(i == iCountRuns - 1)
-			{
-				iX += pRun->getWidth();
-			}
-			else
-			{
-				iX += pRun->getWidth();
-			}
-		}
 		else
 		{
 			iX += pRun->getWidth();
@@ -939,23 +1015,6 @@ UT_sint32 fp_Line::calculateWidthOfLineInLayoutUnits(void)
 			pTabRun->setWidth(iPos - iX);
 			
 			iX = iPos;
-		}
-		else if (pRun->getType() == FPRUN_TEXT)
-		{
-			//fp_TextRun* pTextRun = static_cast<fp_TextRun*>(pRun);
-
-			if(i == 0)
-			{
-				iX += pRun->getWidthInLayoutUnits();
-			}
-			else if(i == iCountRuns - 1)
-			{
-				iX += pRun->getWidthInLayoutUnits();
-			}
-			else
-			{
-				iX += pRun->getWidthInLayoutUnits();
-			}
 		}
 		else
 		{

@@ -44,6 +44,20 @@ UT_sint32 fb_Alignment_left::getMove(const fp_Run *pRun)
 	return pRun->getWidth(); 
 }
 
+void fb_Alignment_left::eraseLineFromRun(fp_Line *pLine, UT_uint32 runIndex)
+{
+	if(runIndex > 0)
+	{
+		// Erase from the previous run.
+		// This is required for characters that have part of their gylph
+		// visible before their character position. eg bottom of a 'j' in
+		// Times New Roman.
+
+		runIndex--;
+	}
+	pLine->clearScreenFromRunToEnd(runIndex);
+}
+
 /////////////////////////////////////////////////////////////
 // Alignment center
 /////////////////////////////////////////////////////////////
@@ -67,13 +81,18 @@ UT_sint32 fb_Alignment_center::getMove(const fp_Run *pRun)
 	return pRun->getWidth(); 
 }
 
+void fb_Alignment_center::eraseLineFromRun(fp_Line *pLine, UT_uint32 runIndex)
+{
+	pLine->clearScreen();
+}
+
 /////////////////////////////////////////////////////////////
 // Alignment right
 /////////////////////////////////////////////////////////////
 
 void fb_Alignment_right::initialize(fp_Line *pLine)
 {
-	UT_sint32 iWidth = pLine->calculateWidthOfLine();
+	UT_sint32 iWidth = pLine->calculateWidthOfLine() - pLine->calculateWidthOfTrailingSpaces();
 
 	UT_sint32 m_iExtraWidth = pLine->getMaxWidth() - iWidth;
 
@@ -88,6 +107,11 @@ UT_sint32 fb_Alignment_right::getStartPosition()
 UT_sint32 fb_Alignment_right::getMove(const fp_Run *pRun)
 {
 	return pRun->getWidth(); 
+}
+
+void fb_Alignment_right::eraseLineFromRun(fp_Line *pLine, UT_uint32 runIndex)
+{
+	pLine->clearScreenFromRunToEnd(runIndex);
 }
 
 /////////////////////////////////////////////////////////////
@@ -142,7 +166,13 @@ void fb_Alignment_justify::_confirmJustification(fp_Line *pLine)
 	UT_sint32 iJustifiedLength = pLine->calculateWidthOfLine() - pLine->calculateWidthOfTrailingSpaces();
 	UT_sint32 iLineLength = pLine->getMaxWidth();
 
-	UT_ASSERT(iJustifiedLength == iLineLength);
+//	UT_ASSERT(iJustifiedLength == iLineLength);
 }
+
+void fb_Alignment_justify::eraseLineFromRun(fp_Line *pLine, UT_uint32 runIndex)
+{
+	pLine->clearScreenFromRunToEnd(runIndex);
+}
+
 
 #endif

@@ -677,22 +677,43 @@ void fp_TextRun::_clearScreen(UT_Bool /* bFullLineHeightRect */)
 	UT_ASSERT(!m_bDirty);
 	UT_ASSERT(m_pG->queryProperties(GR_Graphics::DGP_SCREEN));
 
-	m_pG->setFont(m_pFont);
-	
-	/*
-	  TODO this should not be hard-coded.  We need to figure out
-	  what the appropriate background color for this run is, and
-	  use that.  Note that it could vary on a run-by-run basis,
-	  since document facilities allow the background color to be
-	  changed, for things such as table cells.
-	*/
-	UT_RGBColor clrNormalBackground(255,255,255);
-	m_pG->setColor(clrNormalBackground);
-	
-	UT_sint32 xoff = 0, yoff = 0;
-	m_pLine->getScreenOffsets(this, xoff, yoff);
-	
-	m_pG->clearArea(xoff, yoff, m_iWidth, m_pLine->getHeight());
+	if(!m_pLine->isEmpty() && m_pLine->getLastRun() == this)
+	{
+		// Last run on the line so clear to end.
+
+		m_pLine->clearScreenFromRunToEnd(m_pLine->countRuns() - 1);
+	}
+	else
+	{
+		m_pG->setFont(m_pFont);
+		
+		/*
+		  TODO this should not be hard-coded.  We need to figure out
+		  what the appropriate background color for this run is, and
+		  use that.  Note that it could vary on a run-by-run basis,
+		  since document facilities allow the background color to be
+		  changed, for things such as table cells.
+		*/
+		UT_RGBColor clrNormalBackground(255,255,255);
+		m_pG->setColor(clrNormalBackground);
+		
+		UT_sint32 xoff = 0, yoff = 0;
+		m_pLine->getScreenOffsets(this, xoff, yoff);
+		
+		if(!m_pLine->isEmpty() && m_pLine->getFirstRun() == this)
+		{
+			// First run on the line so add extra at start to clear any glyph before margin.
+
+			UT_sint32 columnGap = m_pLine->getColumnGap();
+
+			m_pG->clearArea(xoff - columnGap / 2, yoff, m_iWidth + columnGap, m_pLine->getHeight());
+		}
+		else
+		{
+			m_pG->clearArea(xoff, yoff, m_iWidth, m_pLine->getHeight());
+		}
+	}
+
 }
 
 void fp_TextRun::_draw(dg_DrawArgs* pDA)

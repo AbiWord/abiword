@@ -126,6 +126,8 @@ public:
 
 	void					draw(dg_DrawArgs*);
 	void            		clearScreen(UT_Bool bFullLineHeightRect = UT_FALSE);
+	void					markAsDirty(void)	{ m_bDirty = UT_TRUE; }
+	UT_Bool					isDirty(void) const { return m_bDirty; }
 	virtual UT_uint32 		containsOffset(UT_uint32 iOffset);
 	virtual UT_Bool			canContainPoint(void) const;
 	virtual const PP_AttrProp* getAP(void) const;
