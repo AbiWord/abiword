@@ -96,6 +96,20 @@ void fp_PageSize::Set(double w, double h, Unit u)
 			m_predefined = (char *)pagesizes [i].name;
 			break;
 		}
+		if ((pagesizes [i].h == w) &&
+			(pagesizes [i].w == h) &&
+			(pagesizes [i].u == u))
+		{
+			m_predefined = (char *)pagesizes [i].name;
+			m_bisPortrait = false;
+			break;
+		}
+	}
+
+	// Force Custom Label if nothing else fits
+	if ( i == (int)_last_predefined_pagesize_dont_use_ )
+	{
+		m_predefined = (char *)pagesizes [i-1].name;
 	}
 }
 
