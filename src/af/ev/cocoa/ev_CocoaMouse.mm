@@ -111,10 +111,14 @@ void EV_CocoaMouse::mouseClick(AV_View* pView, NSEvent* e, NSView *hitView)
 	case NSLeftMouseDown:
 	case NSRightMouseDown:
 	case NSOtherMouseDown:
-		mop = EV_EMO_SINGLECLICK;
-		//detect double clicks
-		// TODO
-		//mop = EV_EMO_DOUBLECLICK;
+		switch ([e clickCount]) {
+		case 1:
+			mop = EV_EMO_SINGLECLICK;
+			break;
+		default:	/* in case of triple click */
+			mop = EV_EMO_DOUBLECLICK;
+			break;
+		}
 		break;
 	default:
 		// TODO decide something better to do here....
