@@ -20,13 +20,23 @@
 **  
 */
 
-#ifndef AP_LOADBINDINGS_DEFAULT_H
-#define AP_LOADBINDINGS_DEFAULT_H
-class EV_EditMethodContainer;
-class EV_EditBindingMap;
+#include "ut_types.h"
+#include "ut_assert.h"
+#include "ap_Menu_Id.h"
+#include "ap_Menu_Functions.h"
+#include "ev_Menu_Actions.h"
 
-UT_Bool ap_LoadBindings_Default(EV_EditMethodContainer * pemc,
-								EV_EditBindingMap **ppebm);
 
-#endif /* AP_LOADBINDINGS_DEFAULT_H */
+Defun_EV_GetMenuItemState_Fn(ap_GetState_Save)
+{
+	UT_ASSERT(pView);
+	UT_ASSERT(id == AP_MENU_ID_FILE_SAVE);
+
+	EV_Menu_ItemState s = EV_MIS_ZERO;
+
+	// TODO if (file doesn't have a filename)
+	// TODO     s |= EV_MIS_Gray;
+
+	return s;
+}
 

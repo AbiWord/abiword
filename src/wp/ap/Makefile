@@ -44,7 +44,11 @@ endif
 OBJS=		$(PLATFORM_OBJS)					\
 		xp/$(OBJDIR)/ap_EditMethods.$(OBJ_SUFFIX)		\
 		xp/$(OBJDIR)/ap_LoadBindings.$(OBJ_SUFFIX)		\
-		xp/$(OBJDIR)/ap_LoadBindings_Default.$(OBJ_SUFFIX)
+		xp/$(OBJDIR)/ap_LoadBindings_Default.$(OBJ_SUFFIX)	\
+		xp/$(OBJDIR)/ap_Menu_ActionSet.$(OBJ_SUFFIX)		\
+		xp/$(OBJDIR)/ap_Menu_Functions.$(OBJ_SUFFIX)		\
+		xp/$(OBJDIR)/ap_Menu_LabelSet.$(OBJ_SUFFIX)		\
+		xp/$(OBJDIR)/ap_Menu_Layouts.$(OBJ_SUFFIX)
 
 include $(ABI_DEPTH)/config/abi_rules.mk
 

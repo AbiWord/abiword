@@ -20,13 +20,15 @@
 **  
 */
 
-#ifndef AP_LOADBINDINGS_DEFAULT_H
-#define AP_LOADBINDINGS_DEFAULT_H
-class EV_EditMethodContainer;
-class EV_EditBindingMap;
+/*****************************************************************
+******************************************************************
+** IT IS IMPORTANT THAT THIS FILE ALLOW ITSELF TO BE INCLUDED
+** MORE THAN ONE TIME.
+******************************************************************
+*****************************************************************/
 
-UT_Bool ap_LoadBindings_Default(EV_EditMethodContainer * pemc,
-								EV_EditBindingMap **ppebm);
+// Include each language file that we want in the build.
+// TODO decide if we want to ifdef these...
 
-#endif /* AP_LOADBINDINGS_DEFAULT_H */
+#include "ap_Menu_LabelSet_EnUS.h"
 

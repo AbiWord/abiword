@@ -20,33 +20,33 @@
 **  
 */
 
-
-#ifndef EV_MENU_H
-#define EV_MENU_H
+#ifndef AP_MENU_IDSET_H
+#define AP_MENU_IDSET_H
 
 /*****************************************************************/
 /*****************************************************************/
+/** This file defines the set of Id's used for all menu-related **/
+/** things.  Each Id defines a conceptual unit which may be     **/
+/** used on one or more menus or not at all.                    **/
 /*****************************************************************/
 /*****************************************************************/
 
-#include "ut_types.h"
+/* the following Id's must start at zero and be contiguous */
 
-class EV_EditMethodContainer;
-class EV_EditMethod;
-class FV_View;
-
-class EV_Menu
+typedef enum _Ap_Menu_Id
 {
-public:
-	EV_Menu(EV_EditMethodContainer * pEMC);
-	UT_Bool invokeMenuMethod(FV_View * pView,
-								 EV_EditMethod * pEM,
-								 UT_uint32 iPrefixCount,
-								 UT_UCSChar * pData,
-								 UT_uint32 dataLength);
-	
-protected:
-	EV_EditMethodContainer *	m_pEMC;
-};
+	AP_MENU_ID__BOGUS1__ = 0,			/* must be first */
 
-#endif /* EV_MENU_H */
+	AP_MENU_ID_FILE,
+	AP_MENU_ID_FILE_NEW,
+	AP_MENU_ID_FILE_OPEN,
+	AP_MENU_ID_FILE_SAVE,
+	AP_MENU_ID_FILE_SAVEAS,
+
+	/* ... add others here ... */
+
+	AP_MENU_ID__BOGUS2__				/* must be last */
+
+} AP_Menu_Id;
+
+#endif /* AP_MENU_IDSET_H */

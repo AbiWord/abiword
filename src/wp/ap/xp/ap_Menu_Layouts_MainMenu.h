@@ -20,13 +20,21 @@
 **  
 */
 
-#ifndef AP_LOADBINDINGS_DEFAULT_H
-#define AP_LOADBINDINGS_DEFAULT_H
-class EV_EditMethodContainer;
-class EV_EditBindingMap;
+/*****************************************************************
+******************************************************************
+** IT IS IMPORTANT THAT THIS FILE ALLOW ITSELF TO BE INCLUDED
+** MORE THAN ONE TIME.
+******************************************************************
+*****************************************************************/
 
-UT_Bool ap_LoadBindings_Default(EV_EditMethodContainer * pemc,
-								EV_EditBindingMap **ppebm);
+BeginLayout(Main)
 
-#endif /* AP_LOADBINDINGS_DEFAULT_H */
+	BeginSubMenu(AP_MENU_ID_FILE)
+		MenuItem(AP_MENU_ID_FILE_NEW)
+		MenuItem(AP_MENU_ID_FILE_OPEN)
+		Separator()
+		MenuItem(AP_MENU_ID_FILE_SAVE)
+		MenuItem(AP_MENU_ID_FILE_SAVEAS)
+	EndSubMenu()
 
+EndLayout()

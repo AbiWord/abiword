@@ -20,13 +20,13 @@
 **  
 */
 
-#ifndef AP_LOADBINDINGS_DEFAULT_H
-#define AP_LOADBINDINGS_DEFAULT_H
-class EV_EditMethodContainer;
-class EV_EditBindingMap;
+#ifndef AP_MENU_LABELSET_H
+#define AP_MENU_LABELSET_H
 
-UT_Bool ap_LoadBindings_Default(EV_EditMethodContainer * pemc,
-								EV_EditBindingMap **ppebm);
+#include "ev_Menu_Labels.h"
 
-#endif /* AP_LOADBINDINGS_DEFAULT_H */
+EV_Menu_LabelSet * AP_CreateMenuLabelSet(const char * szLanguage);
+UT_uint32 AP_GetMenuLabelSetLanguageCount(void);
+const char * AP_GetNthMenuLabelLanguageName(UT_uint32 ndx);
 
+#endif /* AP_MENU_LABELSET_H */

@@ -33,6 +33,8 @@
 
 EV_Menu::EV_Menu(EV_EditMethodContainer * pEMC)
 {
+	// TODO decide if we really need to remember pEMC
+	
 	UT_ASSERT(pEMC);
 
 	m_pEMC = pEMC;

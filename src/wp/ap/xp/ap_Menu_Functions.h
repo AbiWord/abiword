@@ -20,13 +20,19 @@
 **  
 */
 
-#ifndef AP_LOADBINDINGS_DEFAULT_H
-#define AP_LOADBINDINGS_DEFAULT_H
-class EV_EditMethodContainer;
-class EV_EditBindingMap;
+#ifndef AP_MENU_FUNCTIONS_H
+#define AP_MENU_FUNCTIONS_H
 
-UT_Bool ap_LoadBindings_Default(EV_EditMethodContainer * pemc,
-								EV_EditBindingMap **ppebm);
+/*****************************************************************
+******************************************************************
+** This file defines the EV_GetMenuItemState and
+** EV_GetMenuItemComputedLabel functions used by
+** the set of menu actions.
+******************************************************************
+*****************************************************************/
 
-#endif /* AP_LOADBINDINGS_DEFAULT_H */
+#include "ev_Menu_Actions.h"
 
+Defun_EV_GetMenuItemState_Fn(ap_GetState_Save);
+
+#endif /* AP_MENU_FUNCTIONS_H */

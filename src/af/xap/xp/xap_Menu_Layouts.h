@@ -20,13 +20,11 @@
 **  
 */
 
-#ifndef AP_LOADBINDINGS_DEFAULT_H
-#define AP_LOADBINDINGS_DEFAULT_H
-class EV_EditMethodContainer;
-class EV_EditBindingMap;
+#ifndef AP_MENU_LAYOUTS_H
+#define AP_MENU_LAYOUTS_H
 
-UT_Bool ap_LoadBindings_Default(EV_EditMethodContainer * pemc,
-								EV_EditBindingMap **ppebm);
+#include "ev_Menu_Layouts.h"
 
-#endif /* AP_LOADBINDINGS_DEFAULT_H */
+EV_Menu_Layout * AP_CreateMenuLayout(const char * szName);
 
+#endif /* AP_MENU_LAYOUTS_H */

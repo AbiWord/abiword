@@ -33,6 +33,9 @@ EXPORT_HEADERS=		ev_EditBinding.h	\
 			ev_EditMethod.h		\
 			ev_Keyboard.h		\
 			ev_Menu.h		\
+			ev_Menu_Actions.h	\
+			ev_Menu_Labels.h	\
+			ev_Menu_Layouts.h	\
 			ev_Mouse.h		\
 			ev_NamedVirtualKey.h	
 
@@ -46,6 +49,9 @@ CPPSRCS=		ev_EditBinding.cpp		\
 			ev_EditMethod.cpp		\
 			ev_Keyboard.cpp			\
 			ev_Menu.cpp			\
+			ev_Menu_Actions.cpp		\
+			ev_Menu_Labels.cpp		\
+			ev_Menu_Layouts.cpp		\
 			ev_Mouse.cpp			\
 			ev_NamedVirtualKey.cpp		
 

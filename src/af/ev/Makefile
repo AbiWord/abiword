@@ -49,6 +49,9 @@ OBJS=		$(PLATFORM_OBJS)					\
 		xp/$(OBJDIR)/ev_EditMethod.$(OBJ_SUFFIX)		\
 		xp/$(OBJDIR)/ev_Keyboard.$(OBJ_SUFFIX)			\
 		xp/$(OBJDIR)/ev_Menu.$(OBJ_SUFFIX)			\
+		xp/$(OBJDIR)/ev_Menu_Actions.$(OBJ_SUFFIX)		\
+		xp/$(OBJDIR)/ev_Menu_Labels.$(OBJ_SUFFIX)		\
+		xp/$(OBJDIR)/ev_Menu_Layouts.$(OBJ_SUFFIX)		\
 		xp/$(OBJDIR)/ev_Mouse.$(OBJ_SUFFIX)			\
 		xp/$(OBJDIR)/ev_NamedVirtualKey.$(OBJ_SUFFIX)
 
