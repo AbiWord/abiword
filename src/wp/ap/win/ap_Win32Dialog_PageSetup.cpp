@@ -39,6 +39,7 @@
 
 #include "ap_Win32Dialog_PageSetup.h"
 #include "ap_Win32Resources.rc2"
+#include "xap_Win32DialogHelper.h"
 
 #include "orient-vertical.xpm"
 #include "orient-horizontal.xpm"
@@ -245,6 +246,7 @@ BOOL AP_Win32Dialog_PageSetup::_onInitDialog(HWND hWnd, WPARAM wParam, LPARAM lP
 
 	// make sure first tab is selected.
 	ShowWindow((HWND)m_vecSubDlgHWnd.getNthItem(0), SW_SHOW);
+	XAP_Win32DialogHelper::s_centerDialog(hWnd);	
 
 	return 1;							// 1 == we did not call SetFocus()
 }

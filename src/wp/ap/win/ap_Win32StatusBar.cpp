@@ -89,7 +89,7 @@ HWND AP_Win32StatusBar::createWindow(HWND hwndFrame,
 {
 	XAP_Win32App * app = static_cast<XAP_Win32App *>(m_pFrame->getApp());
 	UINT nID = 0;
-    int* pArWidths = new int[getFields()->getItemCount()];    
+    int* pArWidths = new int[getFields()->getItemCount()+1];    
     int* pCurWidth = pArWidths;
     int	nWitdh = 0;
 	
@@ -131,8 +131,12 @@ HWND AP_Win32StatusBar::createWindow(HWND hwndFrame,
 		nID++;		
 	}
 	
+	// Blank gadgets that gets the rest of the window
+	*pCurWidth = -1;
+		
+	
 	/*	Set the numer of elements in the statusbar and their size*/	
-    SendMessage(m_hwndStatusBar, SB_SETPARTS, getFields()->getItemCount(), (LPARAM)pArWidths);
+    SendMessage(m_hwndStatusBar, SB_SETPARTS, getFields()->getItemCount()+1, (LPARAM)pArWidths);
 	    
     delete pArWidths;
 	return m_hwndStatusBar;

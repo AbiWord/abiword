@@ -34,7 +34,7 @@
 #include "xap_Win32PreviewWidget.h"
 
 #include "gr_Win32Graphics.h"
-
+#include "xap_Win32DialogHelper.h"
 #include "xap_Win32Resources.rc2"
 
 /*****************************************************************/
@@ -231,6 +231,7 @@ BOOL XAP_Win32Dialog_Insert_Symbol::_onInitDialog(HWND hWnd, WPARAM wParam, LPAR
 	// Update the caption
 	ConstructWindowName();
 	SetWindowText(m_hDlg, m_WindowName);
+	XAP_Win32DialogHelper::s_centerDialog(hWnd);	
 
 	return 1;							// 1 == we did not call SetFocus()
 }
