@@ -54,21 +54,24 @@ struct AliasMIME
 };
 
 const struct AliasMIME s_list[] = {
-	{ "application/abiword",					"application/x-abiword"		},
-	{ "application/abiword-compressed",			"application/x-abiword"		},
-	{ "application/abiword-template",			"application/x-abiword"		},
-	{ "application/mathml",						"application/mathml+xml"	},
-	{ "application/xhtml",						"application/xhtml+xml"		},
-	{ "application/x-vnd.AbiSource.AbiWord",	"application/x-abiword"		},
-	{ "image/bmp",								"image/x-bmp"				}, // or is image/bmp valid? [TODO: check!]
-	{ "image/svg",								"image/svg+xml"				},
-	{ "image/svg-xml",							"image/svg+xml"				},
-	{ "text/abiword",							"application/x-abiword"		},
-	{ "text/doc",								"application/msword"		}, // or is it? [TODO: check!]
-	{ "text/mathml",							"application/mathml+xml"	}, // well, neither yet valid MIME, but...
-	{ "text/rtf",								"application/rtf"			},
-	{ "text/xml",								"application/xml"			}, // but what is this?
-	{ "text/x-abiword",							"application/x-abiword"		}
+	{ "application/abiword",					IE_MIME_AbiWord	},
+	{ "application/abiword-compressed",			IE_MIME_AbiWord	},
+	{ "application/abiword-template",			IE_MIME_AbiWord	},
+	{ "application/mathml",						IE_MIME_MathML	},
+	{ "application/xhtml",						IE_MIME_XHTML	},
+	{ "application/x-staroffice-word",			IE_MIME_SDW		},
+	{ "application/x-staroffice-words",			IE_MIME_SDW		},
+	{ "application/x-starwriter",				IE_MIME_SDW		},
+	{ "application/x-vnd.AbiSource.AbiWord",	IE_MIME_AbiWord	},
+	{ "image/bmp",								IE_MIME_BMP		},
+	{ "image/svg",								IE_MIME_SVG		},
+	{ "image/svg-xml",							IE_MIME_SVG		},
+	{ "text/abiword",							IE_MIME_AbiWord	},
+	{ "text/doc",								IE_MIME_MSWord	}, // or is it? [TODO: check!]
+	{ "text/mathml",							IE_MIME_MathML	}, // well, neither yet valid MIME, but...
+	{ "text/rtf",								IE_MIME_RTF		},
+	{ "text/xml",								IE_MIME_XML		}, // but what is this?
+	{ "text/x-abiword",							IE_MIME_AbiWord	}
 };
 const UT_uint32 s_list_count = (UT_uint32) (sizeof s_list / sizeof (struct AliasMIME));
 
