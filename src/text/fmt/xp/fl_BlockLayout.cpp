@@ -3756,6 +3756,20 @@ bool fl_BlockLayout::doclistener_insertSpan(const PX_ChangeRecord_Span * pcrs)
 	UT_uint32 i;
 	UT_uint32 _sqlist[100], *sqlist = _sqlist;
 	UT_uint32 sqcount = 0;
+	//
+	// Need this to find where to break section in the document.
+	//
+	fl_ContainerLayout * pPrevCL = getPrev();
+	fp_Page * pPrevP = NULL;
+	if(pPrevCL)
+	{
+		fp_Container * pPrevCon = pPrevCL->getFirstContainer();
+		if(pPrevCon)
+		{
+			pPrevP = pPrevCon->getPage();
+		}
+	}
+
 	if (sizeof(_sqlist) / sizeof(_sqlist[0])  < len)
 	{
 		sqlist = new UT_uint32[len];
@@ -3795,14 +3809,17 @@ bool fl_BlockLayout::doclistener_insertSpan(const PX_ChangeRecord_Span * pcrs)
 			switch (pChars[i])
 			{
 			case UCS_FF:
+				getDocSectionLayout()->setNeedsSectionBreak(true,pPrevP);
 				_doInsertForcedPageBreakRun(i + blockOffset);
 				break;
 
 			case UCS_VTAB:
+				getDocSectionLayout()->setNeedsSectionBreak(true,pPrevP);
 				_doInsertForcedColumnBreakRun(i + blockOffset);
 				break;
 
 			case UCS_LF:
+				getDocSectionLayout()->setNeedsSectionBreak(true,pPrevP);
 				_doInsertForcedLineBreakRun(i + blockOffset);
 				break;
 
