@@ -76,8 +76,13 @@ bool pt_PieceTable::_doTheDo(const PX_ChangeRecord * pcr, bool bUndo)
 			UT_ASSERT(bFound);
 
 			pf_Frag_Strux * pfs = NULL;
-			bool bFoundStrux = _getStruxFromFragSkip(pf,&pfs);
+			bool bFoundStrux = _getStruxFromFrag(pf,&pfs);
 			UT_ASSERT(bFoundStrux);
+			if(isEndFootnote((pf_Frag *) pfs))
+			{
+				bFoundStrux = _getStruxFromFragSkip((pf_Frag *)pfs,&pfs);
+				UT_ASSERT(bFoundStrux);
+			}
 			if (!_insertSpan(pf,pcrSpan->getBufIndex(),fragOffset,
 							 pcrSpan->getLength(),pcrSpan->getIndexAP(),
                              pcrSpan->getField()))
@@ -104,7 +109,13 @@ bool pt_PieceTable::_doTheDo(const PX_ChangeRecord * pcr, bool bUndo)
 			UT_ASSERT(pf->getType() == pf_Frag::PFT_Text);
 
 			pf_Frag_Strux * pfs = NULL;
-			bool bFoundStrux = _getStruxFromFragSkip(pf,&pfs);
+			bool bFoundStrux = _getStruxFromFrag(pf,&pfs);
+			UT_ASSERT(bFoundStrux);
+			if(isEndFootnote((pf_Frag *) pfs))
+			{
+				bFoundStrux = _getStruxFromFragSkip((pf_Frag *)pfs,&pfs);
+				UT_ASSERT(bFoundStrux);
+			}
 			UT_ASSERT(bFoundStrux);
 
 			pf_Frag_Text * pft = static_cast<pf_Frag_Text *> (pf);
@@ -135,7 +146,12 @@ bool pt_PieceTable::_doTheDo(const PX_ChangeRecord * pcr, bool bUndo)
 			pf_Frag_Text * pft = static_cast<pf_Frag_Text *> (pf);
 
 			pf_Frag_Strux * pfs = NULL;
-			bool bFoundStrux = _getStruxFromFragSkip(pf,&pfs);
+			bool bFoundStrux = _getStruxFromFrag(pf,&pfs);
+			if(isEndFootnote((pf_Frag *) pfs))
+			{
+				bFoundStrux = _getStruxFromFragSkip((pf_Frag *)pfs,&pfs);
+				UT_ASSERT(bFoundStrux);
+			}
 			UT_ASSERT(bFoundStrux);
 
 			// we need to loop here, because even though we have a simple (atomic) change,
@@ -187,6 +203,11 @@ bool pt_PieceTable::_doTheDo(const PX_ChangeRecord * pcr, bool bUndo)
 			pf_Frag_Strux * pfsContainer = NULL;
 			bool bFoundContainer = _getStruxFromPosition(pcrStrux->getPosition(),&pfsContainer);
 			UT_ASSERT(bFoundContainer);
+			if(isEndFootnote((pf_Frag *) pfsContainer))
+			{
+				bool bFoundStrux = _getStruxFromFragSkip((pf_Frag *)pfsContainer,&pfsContainer);
+				UT_ASSERT(bFoundStrux);
+			}
 			_insertStrux(pf,fragOffset,pfsNew);
 			DONE();
 			m_pDocument->notifyListeners(pfsContainer,pfsNew,pcr);
@@ -240,8 +261,13 @@ bool pt_PieceTable::_doTheDo(const PX_ChangeRecord * pcr, bool bUndo)
 			UT_ASSERT(bFound);
 
 			pf_Frag_Strux * pfs = NULL;
-			bool bFoundStrux = _getStruxFromFragSkip(pf,&pfs);
+			bool bFoundStrux = _getStruxFromFrag(pf,&pfs);
 			UT_ASSERT(bFoundStrux);
+			if(isEndFootnote((pf_Frag *) pfs))
+			{
+				bool bFoundStrux = _getStruxFromFragSkip((pf_Frag *)pfs,&pfs);
+				UT_ASSERT(bFoundStrux);
+			}
             pf_Frag_Object * pfo = NULL;
 			if (!_insertObject(pf,fragOffset,pcrObject->getObjectType(),
                                pcrObject->getIndexAP(),pfo))
@@ -276,8 +302,13 @@ bool pt_PieceTable::_doTheDo(const PX_ChangeRecord * pcr, bool bUndo)
 			UT_ASSERT(fragOffset == 0);
 			
 			pf_Frag_Strux * pfs = NULL;
-			bool bFoundStrux = _getStruxFromFragSkip(pf,&pfs);
+			bool bFoundStrux = _getStruxFromFrag(pf,&pfs);
 			UT_ASSERT(bFoundStrux);
+			if(isEndFootnote((pf_Frag *) pfs))
+			{
+				bool bFoundStrux = _getStruxFromFragSkip((pf_Frag *)pfs,&pfs);
+				UT_ASSERT(bFoundStrux);
+			}
 
 			pf_Frag_Object * pfo = static_cast<pf_Frag_Object *> (pf);
 			UT_ASSERT(pfo->getIndexAP() == pcrObject->getIndexAP());
@@ -302,8 +333,13 @@ bool pt_PieceTable::_doTheDo(const PX_ChangeRecord * pcr, bool bUndo)
 			UT_ASSERT(fragOffset == 0);
 
 			pf_Frag_Strux * pfs = NULL;
-			bool bFoundStrux = _getStruxFromFragSkip(pf,&pfs);
+			bool bFoundStrux = _getStruxFromFrag(pf,&pfs);
 			UT_ASSERT(bFoundStrux);
+			if(isEndFootnote((pf_Frag *) pfs))
+			{
+				bool bFoundStrux = _getStruxFromFragSkip((pf_Frag *)pfs,&pfs);
+				UT_ASSERT(bFoundStrux);
+			}
 
 			pf_Frag_Object * pfo = static_cast<pf_Frag_Object *> (pf);
 
@@ -326,8 +362,13 @@ bool pt_PieceTable::_doTheDo(const PX_ChangeRecord * pcr, bool bUndo)
 			UT_ASSERT(bFound);
 
 			pf_Frag_Strux * pfs = NULL;
-			bool bFoundStrux = _getStruxFromFragSkip(pf,&pfs);
+			bool bFoundStrux = _getStruxFromFrag(pf,&pfs);
 			UT_ASSERT(bFoundStrux);
+			if(isEndFootnote((pf_Frag *) pfs))
+			{
+				bool bFoundStrux = _getStruxFromFragSkip((pf_Frag *)pfs,&pfs);
+				UT_ASSERT(bFoundStrux);
+			}
 
 			if (!_insertFmtMark(pf,fragOffset,pcrFM->getIndexAP()))
 				return false;

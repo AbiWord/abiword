@@ -19,7 +19,7 @@
 
 
 // insertSpan-related routined for class pt_PieceTable.
-
+#include "ut_string_class.h"
 #include "ut_types.h"
 #include "ut_misc.h"
 #include "ut_assert.h"
@@ -409,8 +409,15 @@ bool pt_PieceTable::_realInsertSpan(PT_DocPosition dpos,
 
 			bFound = getFragFromPosition(dpos,&pf,&fragOffset);
 			UT_ASSERT(bFound);
-			bFoundStrux = _getStruxFromFragSkip(pf,&pfs);
+
+			bFoundStrux = _getStruxFromFrag(pf,&pfs);
 			UT_ASSERT(bFoundStrux);
+			if(isEndFootnote((pf_Frag *)pfs))
+			{
+				bFoundStrux = _getStruxFromFragSkip((pf_Frag *)pfs,&pfs);
+			}
+			UT_ASSERT(bFoundStrux);
+			xxx_UT_DEBUGMSG(("Got FragStrux at Pos %d \n",pfs->getPos()));
 
 			// with the FmtMark now gone, we make a minor adjustment so that we
 			// try to append text to the previous rather than prepend to the current.

@@ -64,7 +64,7 @@
 #include "spell_manager.h"
 #include "ut_rand.h"
 #include "fp_TableContainer.h"
-
+#include "fl_FootnoteLayout.h"
 #include "pp_Revision.h"
 #if 1
 // todo: work around to remove the INPUTWORDLEN restriction for pspell
@@ -2088,6 +2088,25 @@ void FV_View::cmdCharDelete(bool bForward, UT_uint32 count)
 				}
 			}
 
+		}
+//
+// Code to deal with deleting a footnote reference that embeds a footnote Layout.
+//
+		if(bForward)
+		{
+			if(!isInFootnote() && isInFootnote(getPoint() + count))
+			{
+				fl_FootnoteLayout * pFL = getClosestFootnote(getPoint() + count +1);
+				count += pFL->getLength();
+			}
+		}
+		else
+		{
+			if(!isInFootnote() && isInFootnote(getPoint() - count))
+			{
+				fl_FootnoteLayout * pFL = getClosestFootnote(getPoint());
+				count += pFL->getLength();
+			}
 		}
 		// Code to deal with font boundary problem.
 		// TODO: This should really be fixed by someone who understands

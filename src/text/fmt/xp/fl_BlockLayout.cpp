@@ -825,7 +825,7 @@ void fl_BlockLayout::updateOffsets(PT_DocPosition posEmbedded, UT_uint32 iEmbedd
 		if(posRun + pPrev->getLength() <= posEmbedded)
 		{
 			iDiff = (UT_sint32) (pRun->getBlockOffset() - pPrev->getBlockOffset() - pPrev->getLength());
-			UT_DEBUGMSG(("updateOffsets: after BlockOffset %d or pos %d \n",pRun->getBlockOffset(),posInBlock+pRun->getBlockOffset())); 
+			xxx_UT_DEBUGMSG(("updateOffsets: after BlockOffset %d or pos %d \n",pRun->getBlockOffset(),posInBlock+pRun->getBlockOffset())); 
 		}
 		
 //
@@ -840,7 +840,7 @@ void fl_BlockLayout::updateOffsets(PT_DocPosition posEmbedded, UT_uint32 iEmbedd
 			UT_ASSERT(pRun->getType() == FPRUN_TEXT);
 			fp_TextRun * pTRun = (fp_TextRun *) pRun;
 			UT_uint32 splitOffset = posEmbedded - posInBlock;
-			UT_DEBUGMSG(("updateOffsets: Split at offset %d \n",splitOffset));
+			xxx_UT_DEBUGMSG(("updateOffsets: Split at offset %d \n",splitOffset));
 			bool bres = pTRun->split(splitOffset);
 			UT_ASSERT(bres);
 			pRun = pTRun->getNext();
@@ -903,6 +903,7 @@ void fl_BlockLayout::updateOffsets(PT_DocPosition posEmbedded, UT_uint32 iEmbedd
 	}
 #endif
 #endif
+	setNeedsReformat();
 }
 
 /*!
@@ -2921,7 +2922,7 @@ bool	fl_BlockLayout::_doInsertTextSpan(PT_BlockOffset blockOffset, UT_uint32 len
 		{
 			sTmp += pSpan[j];
 		}
-		xxx_UT_DEBUGMSG(("fl_BlockLayout::_doInsertTextSpan lenSpan %d truelen %d text |%s| \n",lenSpan,trueLen,sTmp.c_str()));
+		UT_DEBUGMSG(("fl_BlockLayout::_doInsertTextSpan lenSpan %d truelen %d text |%s| \n",lenSpan,trueLen,sTmp.c_str()));
 #endif		
 		for(i = 1; i < trueLen; i++)
 		{
@@ -3648,7 +3649,7 @@ bool fl_BlockLayout::doclistener_insertSpan(const PX_ChangeRecord_Span * pcrs)
 	{
 		sqlist = new UT_uint32[len];
 	}
-	xxx_UT_DEBUGMSG(("fl_BlockLayout::doclistener_insertSpan(), len=%d, pos %d \n", len, getPosition()+blockOffset));
+	UT_DEBUGMSG(("fl_BlockLayout::doclistener_insertSpan(), len=%d, pos %d \n", len, getPosition()+blockOffset));
 	for (i=0; i<len; i++)
 	{
 		xxx_UT_DEBUGMSG(("fl_BlockLayout: char %d %c \n",i,(char) pChars[i]));

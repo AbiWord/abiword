@@ -70,6 +70,7 @@ fl_FootnoteLayout::fl_FootnoteLayout(FL_DocLayout* pLayout, fl_DocSectionLayout*
 fl_FootnoteLayout::~fl_FootnoteLayout()
 {
 	// NB: be careful about the order of these
+	UT_DEBUGMSG(("Deleting Footlayout %x \n",this));
 	_purgeLayout();
 	fp_FootnoteContainer * pFC = (fp_FootnoteContainer *) getFirstContainer();
 	while(pFC)
