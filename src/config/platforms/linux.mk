@@ -34,10 +34,16 @@ OS_ARCH		:= $(shell uname -m | sed -e s/i.86/i386/ -e s/sun4u/sparc64/ -e s/arm.
 
 
 # Define architecture-specific flags (L. Kollar, 3 Nov 1998)
-# (only i386 and ppc now; anyone want to add sparc & alpha?)
 # These are (probably) optional for your platform.
-i386_ARCH_FLAGS		= 	# -mno-486 -Di386
-PPC_ARCH_FLAGS		= 
+
+# Compiler defaults should be fine for Intel.
+i386_ARCH_FLAGS		=
+
+# Jerry LeVan <levan@eagle.eku.edu> provided the PPC flags
+# Gary Thomas <gdt@linuxppc.org> suggests using -fno-schedule-insns2 
+# for some EGCS builds
+PPC_ARCH_FLAGS		= -fsigned-char # -fno-schedule-insns2
+
 ALPHA_ARCH_FLAGS 	= 
 SPARC_ARCH_FLAGS 	= 
 
