@@ -73,6 +73,7 @@ AP_Dialog_Lists::AP_Dialog_Lists(XAP_DialogFactory * pDlgFactory, XAP_Dialog_Id 
 	m_paragraphPreview(0),
 	m_pListsPreview(0),
 	m_pFakeAuto(0),
+	m_pFakeDoc(0),
 	m_bDirty(false),
     m_bIsModal(false)
 {
@@ -487,6 +488,7 @@ void  AP_Dialog_Lists::generateFakeLabels(void)
 	// Now generate the AutoNum
 	//
 	DELETEP(m_pFakeAuto);
+	UNREFP(m_pFakeDoc);
 	m_pFakeDoc = new PD_Document(fakeApp);
 	m_pFakeAuto = new fl_AutoNum(m_iID, 0, m_newListType, m_newStartValue, m_pszDelim, m_pszDecimal, (PD_Document *) m_pFakeDoc);
 	m_pFakeAuto->insertFirstItem(m_pFakeSdh[0], NULL,1);
@@ -932,9 +934,9 @@ void AP_Lists_preview::draw(void)
 	//
 	// clear our screen
 	//
-	if(m_bFirst == true)
+	if (m_bFirst == true)
 	{
-	         m_gc->clearArea(0, 0, iWidth, iHeight);
+		m_gc->clearArea(0, 0, iWidth, iHeight);
 	}
 	m_gc->setColor(clrBlack);
 	UT_sint32 yoff = 5 ;
@@ -1049,5 +1051,7 @@ void AP_Lists_preview::draw(void)
 			m_gc->fillRect(clrGrey,xx,yy,awidth,aheight);
 		}
 	}
+
+	delete font;
 }
 
