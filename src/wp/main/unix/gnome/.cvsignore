@@ -1,2 +1,4 @@
 GNUmakefile.in
 GNUmakefile
+abi_ver.cpp
+.deps
