@@ -377,6 +377,8 @@ void fp_Line::setMaxWidth(UT_sint32 iMaxWidth)
 		iMaxWidth = 60;
 	}
 	m_iMaxWidth = iMaxWidth;
+	m_iClearToPos = iMaxWidth;
+	m_iClearLeftOffset = getDescent();
 }
 
 void fp_Line::setContainer(fp_Container* pContainer)
@@ -2741,7 +2743,11 @@ void fp_Line::recalcMaxWidth(bool bDontClearIfNeeded)
 	{
 		UT_ASSERT(iMaxWidth <= getPage()->getWidth());
 	}
-	setMaxWidth(iMaxWidth);
+	if(iMaxWidth < 60)
+	{
+		iMaxWidth = 60;
+	}
+	m_iMaxWidth = iMaxWidth;
 }
 
 fp_Container*	fp_Line::getNextContainerInSection(void) const

@@ -130,7 +130,8 @@ fp_Run::fp_Run(fl_BlockLayout* pBL,
 	m_pG(NULL),
 	m_iTmpX(0),
 	m_iTmpY(0),
-	m_iTmpWidth(0)
+	m_iTmpWidth(0),
+	m_pTmpLine(NULL)
 {
 	xxx_UT_DEBUGMSG(("fp_Run %x created!!! \n",this));
 	m_FillType.setDocLayout(m_pBL->getDocLayout());
@@ -178,9 +179,23 @@ bool fp_Run::isInSelectedTOC(void)
 bool fp_Run::clearIfNeeded(void)
 {
 	//	if((getTmpX() == getX()) && (getTmpWidth() == getWidth()) && (getTmpY() == getY()))
-	if((getTmpX() == getX()) && (getTmpY() == getY()))
+	if((getTmpX() == getX()) && (getTmpY() == getY()) && (getTmpLine() == getLine()))
 	{
 		return true;
+	}
+	if(getTmpLine() && (getLine() != getTmpLine()))
+	{
+		fp_Line * pTmpLine = getTmpLine();
+		UT_sint32 i = getBlock()->findLineInBlock(pTmpLine);
+		if(i < 0)
+		{
+			markWidthDirty();
+			return false;
+		}
+		fp_Run * pLastRun = pTmpLine->getLastRun();
+		pTmpLine->clearScreenFromRunToEnd(pLastRun);
+		markWidthDirty();
+		return false;
 	}
 	UT_sint32 iWidth = getWidth();
 	UT_sint32 iX = getX();

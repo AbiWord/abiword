@@ -298,6 +298,10 @@ public:
 							 UT_sint32 width, UT_sint32 height);
 	
 	fg_FillType *       getFillType(void);            
+	fp_Line *           getTmpLine(void) const
+	{ return m_pTmpLine;}
+	void                setTmpLine(fp_Line * pLine)
+	{ m_pTmpLine = pLine;}
 	UT_sint32           getTmpX(void) const
 	{ return m_iTmpX;}
 	void                setTmpX(UT_sint32 iX)
@@ -451,6 +455,7 @@ private:
 	UT_sint32               m_iTmpX;
 	UT_sint32               m_iTmpY;
 	UT_sint32               m_iTmpWidth;
+	fp_Line *               m_pTmpLine;
 };
 
 class ABI_EXPORT fp_TabRun : public fp_Run

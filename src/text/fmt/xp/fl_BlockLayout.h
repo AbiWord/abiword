@@ -309,6 +309,7 @@ public:
 	virtual bool 		    needsRedraw(void) const
 		{ return m_bNeedsRedraw; }
 	virtual void			markAllRunsDirty(void);
+	UT_sint32               findLineInBlock(fp_Line * pLine);
 	bool					checkWord(fl_PartOfBlock* pPOB);
 	void					recheckIgnoredWords();
 	void                    setStyleInTOC(bool b)

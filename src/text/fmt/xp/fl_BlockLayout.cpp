@@ -2621,6 +2621,7 @@ void fl_BlockLayout::format()
 			pRun->setTmpX(pRun->getX());
 			pRun->setTmpY(pRun->getY());
 			pRun->setTmpWidth(pRun->getWidth());
+			pRun->setTmpLine(pRun->getLine());
 			pRun = pRun->getNextRun();
 		}
 
@@ -2754,6 +2755,22 @@ void fl_BlockLayout::format()
 		m_iNeedsReformat = 0;
 	}
 	return;	// TODO return code
+}
+
+UT_sint32 fl_BlockLayout::findLineInBlock(fp_Line * pLine)
+{
+	fp_Line * pTmpLine = static_cast<fp_Line *>(getFirstContainer());
+	UT_sint32 i = 0;
+	while(pTmpLine && pTmpLine != pLine)
+	{
+		i++;
+		pTmpLine = static_cast<fp_Line *>(pTmpLine->getNext());
+	}
+	if(pTmpLine == NULL)
+	{
+		return -1;
+	}
+	return i;
 }
 
 void fl_BlockLayout::markAllRunsDirty(void)
