@@ -1343,11 +1343,11 @@ void FV_View::_moveInsPtNextPrevLine(bool bNext)
 
 
 
-	if(bDocSection || bEndNoteSection || bFootnoteSection || bCellSection)
+	if(bDocSection || bEndNoteSection || bFootnoteSection || (bCellSection && !isHdrFtrEdit()))
 	{
 		pOldColumn = static_cast<fp_Column *>(pOldLine->getColumn());
+		pOldLeader = (static_cast<fp_Column*>(pOldLine->getColumn()))->getLeader();
 	}
-	pOldLeader = (static_cast<fp_Column*>(pOldLine->getColumn()))->getLeader();
 
 	UT_sint32 iPageOffset;
 	getPageYOffset(pOldPage, iPageOffset);
@@ -1589,7 +1589,30 @@ void FV_View::_moveInsPtNextPrevLine(bool bNext)
 //
 	bool isTOC = false;
 	if(isHdrFtrEdit())
-		pPage->mapXYToPosition(xClick, yClick, iNewPoint, bBOL, bEOL,isTOC, true, &pShadow);
+	{
+		bool bGotIt = false;
+		UT_sint32 iLoop = 0;
+		while(!bGotIt && (iLoop < 50))
+		{
+			pPage->mapXYToPosition(xClick, yClick, iNewPoint, bBOL, bEOL,isTOC, true, &pShadow);
+			if(iNewPoint != iOldPoint)
+			{
+				bGotIt = true;
+			}
+			else
+			{
+				iLoop++;
+				if(bNext)
+				{
+					yClick += m_pG->tlu(1);
+				}
+				else
+				{
+					yClick -= m_pG->tlu(1);
+				}
+			}
+		}
+	}
 	else
 	{
 		pPage->mapXYToPosition(xClick, yClick, iNewPoint, bBOL, bEOL,isTOC);
