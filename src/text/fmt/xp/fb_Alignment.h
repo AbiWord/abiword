@@ -99,7 +99,11 @@ private:
 	int			m_iSpaceCountLeft;
 	int			m_iSpaceCount;
 	int			m_iExtraWidth;
-	UT_Bool		m_bRequiresJustification;
+
+#ifndef NDEBUG
+	void _confirmJustification(fp_Line *pLine);
+#endif
+
 
 };
 

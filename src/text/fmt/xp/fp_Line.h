@@ -106,7 +106,10 @@ public:
 	void		coalesceRuns(void);
 
 	UT_sint32	calculateWidthOfLine(void);
-	UT_uint32	countSpaces(void) const;
+	UT_sint32	calculateWidthOfTrailingSpaces(void);
+	void		resetJustification();
+	void		distributeJustificationAmongstSpaces(UT_sint32 iAmount);
+	UT_uint32	countJustificationPoints(void) const;
 	void		splitRunsAtSpaces(void);
 
 	UT_Bool		isLastCharacter(UT_UCSChar Character) const;

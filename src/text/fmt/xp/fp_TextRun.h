@@ -32,10 +32,12 @@
 	properties.  
 */
 
+
 class fp_TextRun : public fp_Run
 {
  public:
 	fp_TextRun(fl_BlockLayout* pBL, GR_Graphics* pG, UT_uint32 iOffsetFirst, UT_uint32 iLen, UT_Bool bLookupProperties=UT_TRUE);
+	virtual ~fp_TextRun();
 
 	virtual void			lookupProperties(void);
 	virtual void			mapXYToPosition(UT_sint32 xPos, UT_sint32 yPos, PT_DocPosition& pos, UT_Bool& bBOL, UT_Bool& bEOL);
@@ -57,12 +59,16 @@ class fp_TextRun : public fp_Run
 
 	UT_sint32				simpleRecalcWidth(void) const;
 
-	void					markJustification(UT_Bool State) { m_bJustified = State; }
+	void					resetJustification();
+	void					distributeJustificationAmongstSpaces(UT_sint32 iAmount, UT_uint32 iSpacesInRun);
+	UT_uint32				countJustificationPoints() const;
 
+	UT_Bool					getCharacter(UT_uint32 run_offset, UT_UCSChar &Character) const;
 	UT_sint32				findCharacter(UT_uint32 startPosition, UT_UCSChar Character) const;
 	UT_Bool					isFirstCharacter(UT_UCSChar Character) const;
 	UT_Bool					isLastCharacter(UT_UCSChar Character) const;
 	virtual UT_Bool			doesContainNonBlankData(void) const;
+	UT_uint32				countTrailingSpaces(void) const;
 
 
 #ifdef FMT_TEST
@@ -115,7 +121,13 @@ protected:
 	GR_Font*				m_pFont;
 	UT_RGBColor				m_colorFG;
 	UT_Bool					m_bSquiggled;
-	UT_Bool					m_bJustified;	// Set if character position has been moved for justification.
+
+	enum
+	{
+		JUSTIFICATION_NOT_USED = -1,
+	};
+	UT_sint32				m_iSpaceWidthBeforeJustification;
+
 };
 
 #endif /* FP_TEXTRUN_H */

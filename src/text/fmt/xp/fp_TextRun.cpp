@@ -50,12 +50,16 @@ fp_TextRun::fp_TextRun(fl_BlockLayout* pBL,
 	m_fDecorations = 0;
 	m_iLineWidth = 0;
 	m_bSquiggled = UT_FALSE;
-	m_bJustified = UT_FALSE;
+	m_iSpaceWidthBeforeJustification = JUSTIFICATION_NOT_USED;
 
 	if (bLookupProperties)
 	{
 		lookupProperties();
 	}
+}
+
+fp_TextRun::~fp_TextRun()
+{
 }
 
 void fp_TextRun::lookupProperties(void)
@@ -407,7 +411,8 @@ UT_Bool fp_TextRun::canMergeWithNext(void)
 		|| (pNext->m_fDecorations != m_fDecorations)
 		|| (pNext->m_pFont != m_pFont)
 		|| (m_iHeight != pNext->m_iHeight)
-		|| (pNext->m_bJustified)
+		|| (m_iSpaceWidthBeforeJustification != JUSTIFICATION_NOT_USED)
+		|| (pNext->m_iSpaceWidthBeforeJustification != JUSTIFICATION_NOT_USED)
 		)
 	{
 		return UT_FALSE;
@@ -431,8 +436,8 @@ void fp_TextRun::mergeWithNext(void)
 	UT_ASSERT(m_iDescent == pNext->m_iDescent);
 	UT_ASSERT(m_iHeight == pNext->m_iHeight);
 	UT_ASSERT(m_iLineWidth == pNext->m_iLineWidth);
+//	UT_ASSERT(m_iSpaceWidthBeforeJustification == pNext->m_iSpaceWidthBeforeJustification);
 
-	UT_ASSERT(!pNext->m_bJustified);
 
 	m_iWidth += pNext->m_iWidth;
 	m_iLen += pNext->m_iLen;
@@ -464,6 +469,7 @@ UT_Bool fp_TextRun::split(UT_uint32 iSplitOffset)
 	pNew->m_iHeight = this->m_iHeight;
 	pNew->m_iLineWidth = this->m_iLineWidth;
 	pNew->m_bDirty = this->m_bDirty;
+//	pNew->m_iSpaceWidthBeforeJustification = this->m_iSpaceWidthBeforeJustification;
 
 	pNew->m_pPrev = this;
 	pNew->m_pNext = this->m_pNext;
@@ -802,7 +808,8 @@ void fp_TextRun::_drawPart(UT_sint32 xoff,
 	UT_uint32 iLeftWidth = 0;
 	const UT_uint16 * pCharWidths = pgbCharWidths->getPointer(0);
 	
-	for (UT_uint32 i=m_iOffsetFirst; i<iStart; i++)
+	UT_uint32 i;
+	for (i=m_iOffsetFirst; i<iStart; i++)
 	{
 		iLeftWidth += pCharWidths[i];
 	}
@@ -821,11 +828,11 @@ void fp_TextRun::_drawPart(UT_sint32 xoff,
 		else
 		{
 			m_pG->drawChars(pSpan, 0, lenSpan, xoff + iLeftWidth, yoff);
-
-			for (UT_uint32 i2=offset; i2<offset+lenSpan; i2++)
+			for(i = 0; i < lenSpan; i++)
 			{
-				iLeftWidth += pCharWidths[i2];
+				iLeftWidth += pCharWidths[offset + i];
 			}
+
 
 			offset += lenSpan;
 			len -= lenSpan;
@@ -935,98 +942,105 @@ void fp_TextRun::drawSquiggle(UT_uint32 iOffset, UT_uint32 iLen)
 
 UT_sint32 fp_TextRun::findCharacter(UT_uint32 startPosition, UT_UCSChar Character) const
 {
+	// NOTE: startPosition is run-relative
+	// NOTE: return value is block-relative (don't ask me why)
 	const UT_UCSChar* pSpan;
 	UT_uint32 lenSpan;
+	UT_uint32 offset = m_iOffsetFirst + startPosition;
+	UT_uint32 len = m_iLen - startPosition;
+	UT_Bool bContinue = UT_TRUE;
 
-//	UT_ASSERT(startPosition < m_iLen);
-
-	if (m_iLen > 0)
+	if ((m_iLen > 0) && (startPosition < m_iLen))
 	{
-		if (m_pBL->getSpanPtr(m_iOffsetFirst, &pSpan, &lenSpan))
+		UT_uint32 i;
+
+		while (bContinue)
 		{
+			bContinue = m_pBL->getSpanPtr(offset, &pSpan, &lenSpan);
 			UT_ASSERT(lenSpan>0);
 
-			UT_uint32 i;
-			for(i = startPosition; i < m_iLen; i++)
+			if (len <= lenSpan)
 			{
-				if (pSpan[i] == Character)
+				for(i = 0; i < len; i++)
 				{
-					return m_iOffsetFirst + i;
+					if (pSpan[i] == Character)
+						return offset + i;
 				}
+
+				bContinue = UT_FALSE;
+			}
+			else
+			{
+				for(i = 0; i < lenSpan; i++)
+				{
+					if (pSpan[i] == Character)
+						return offset + i;
+				}
+
+				offset += lenSpan;
+				len -= lenSpan;
+
+				UT_ASSERT(offset >= m_iOffsetFirst);
+				UT_ASSERT(offset + len <= m_iOffsetFirst + m_iLen);
 			}
 		}
 	}
 
-	// No space found;
+	// not found
 
 	return -1;
 }
 
-UT_Bool fp_TextRun::isLastCharacter(UT_UCSChar Character) const
+UT_Bool fp_TextRun::getCharacter(UT_uint32 run_offset, UT_UCSChar &Character) const
 {
 	const UT_UCSChar* pSpan;
 	UT_uint32 lenSpan;
 
+	UT_ASSERT(run_offset < m_iLen);
+
 	if (m_iLen > 0)
 	{
-		if (m_pBL->getSpanPtr(m_iOffsetFirst + m_iLen - 1, &pSpan, &lenSpan))
+		if (m_pBL->getSpanPtr(run_offset + m_iOffsetFirst, &pSpan, &lenSpan))
 		{
 			UT_ASSERT(lenSpan>0);
 
-			return pSpan[0] == Character;
+			Character = pSpan[0];
+			return UT_TRUE;
 		}
 	}
 
-	// No space found;
+	// not found
+
+	return UT_FALSE;
+}
+
+UT_Bool fp_TextRun::isLastCharacter(UT_UCSChar Character) const
+{
+	UT_UCSChar c;
+
+	if (getCharacter(m_iLen - 1, c))
+		return c == Character;
+
+	// not found
 
 	return UT_FALSE;
 }
 
 UT_Bool fp_TextRun::isFirstCharacter(UT_UCSChar Character) const
 {
-	const UT_UCSChar* pSpan;
-	UT_uint32 lenSpan;
+	UT_UCSChar c;
 
-	if (m_iLen > 0)
-	{
-		if (m_pBL->getSpanPtr(m_iOffsetFirst, &pSpan, &lenSpan))
-		{
-			UT_ASSERT(lenSpan>0);
+	if (getCharacter(0, c))
+		return c == Character;
 
-			return pSpan[0] == Character;
-		}
-	}
-
-	// No space found;
+	// not found
 
 	return UT_FALSE;
 }
 
 UT_Bool	fp_TextRun::doesContainNonBlankData(void) const
 {
-	const UT_UCSChar* pSpan;
-	UT_uint32 lenSpan;
-
-	if (m_iLen > 0)
-	{
-		if (m_pBL->getSpanPtr(m_iOffsetFirst, &pSpan, &lenSpan))
-			{
-			UT_ASSERT(lenSpan>0);
-
-			UT_uint32 i;
-			for(i = 0; i < m_iLen; i++)
-			{
-				if (pSpan[i] != UCS_SPACE)	// TODO: Decide what else is a non blank character.
-				{
-					return UT_TRUE;
-				}
-			}
-		}
-	}
-
-	// No space found;
-
-	return UT_FALSE;
+	return (findCharacter(0, UCS_SPACE) >= 0);
 }
 
 UT_sint32 fp_TextRun::findTrailingSpaceDistance(void) const
@@ -1036,27 +1050,104 @@ UT_sint32 fp_TextRun::findTrailingSpaceDistance(void) const
 
 	UT_sint32 iTrailingDistance = 0;
 
-	const UT_UCSChar* pSpan;
-	UT_uint32 lenSpan;
-	UT_uint32 offset = m_iOffsetFirst;
-	UT_uint32 len = m_iLen;
-
-	if(len > 0)
+	if(m_iLen > 0)
 	{
-		m_pBL->getSpanPtr(offset, &pSpan, &lenSpan);
-		UT_ASSERT(lenSpan>0);
+		UT_UCSChar c;
 
-		if (lenSpan > len)
+		UT_sint32 i;
+		for (i = m_iLen - 1; i >= 0; i--)
 		{
-			lenSpan = len;
+			if(getCharacter(i, c) && (UCS_SPACE == c))
+			{
+				iTrailingDistance += pCharWidths[i + m_iOffsetFirst];
+			}
+			else
+			{
+				break;
+			}
 		}
 
-		UT_uint32 i;
-		for (i = lenSpan - 1; i >= 0; i--)
+	}
+
+	return iTrailingDistance;
+}
+
+void fp_TextRun::resetJustification()
+{
+	if(m_iSpaceWidthBeforeJustification != JUSTIFICATION_NOT_USED)
+	{
+		UT_GrowBuf * pgbCharWidths = m_pBL->getCharWidths();
+		UT_uint16* pCharWidths = pgbCharWidths->getPointer(0);
+
+		UT_sint32 i = findCharacter(0, UCS_SPACE);
+
+		while (i >= 0)
 		{
-			if(UCS_SPACE == pSpan[i])
+			if(pCharWidths[i] != m_iSpaceWidthBeforeJustification)
 			{
-				iTrailingDistance += pCharWidths[i + offset];
+				// set width of spaces back to normal.
+
+				m_iWidth -= pCharWidths[i] - m_iSpaceWidthBeforeJustification;
+				pCharWidths[i] = m_iSpaceWidthBeforeJustification;
+			}
+
+			// keep looping
+			i = findCharacter(i+1-m_iOffsetFirst, UCS_SPACE);
+		}
+	}
+	
+	m_iSpaceWidthBeforeJustification = JUSTIFICATION_NOT_USED;
+}
+
+void fp_TextRun::distributeJustificationAmongstSpaces(UT_sint32 iAmount, UT_uint32 iSpacesInRun)
+{
+	UT_GrowBuf * pgbCharWidths = m_pBL->getCharWidths();
+	UT_uint16* pCharWidths = pgbCharWidths->getPointer(0);
+
+	UT_ASSERT(iSpacesInRun);
+
+	if(iSpacesInRun && m_iLen > 0)
+	{
+		m_iWidth += iAmount;
+	
+		UT_sint32 i = findCharacter(0, UCS_SPACE);
+
+		while ((i >= 0) && (iSpacesInRun))
+		{
+			// remember how wide spaces in this run "really" were
+			if(m_iSpaceWidthBeforeJustification == JUSTIFICATION_NOT_USED)
+				m_iSpaceWidthBeforeJustification = pCharWidths[i];
+
+			UT_sint32 iThisAmount = iAmount / iSpacesInRun;
+
+			pCharWidths[i] += iThisAmount;
+
+			iAmount -= iThisAmount;
+
+			iSpacesInRun--;
+
+			// keep looping
+			i = findCharacter(i+1-m_iOffsetFirst, UCS_SPACE);
+		}
+	}
+
+	UT_ASSERT(iAmount == 0);
+}
+
+UT_uint32 fp_TextRun::countTrailingSpaces(void) const
+{
+	UT_uint32 iCount = 0;
+
+	if(m_iLen > 0)
+	{
+		UT_UCSChar c;
+
+		UT_sint32 i;
+		for (i = m_iLen - 1; i >= 0; i--)
+		{
+			if(getCharacter(i, c) && (UCS_SPACE == c))
+			{
+				iCount++;
 			}
 			else
 			{
@@ -1065,9 +1156,28 @@ UT_sint32 fp_TextRun::findTrailingSpaceDistance(void) const
 		}
 	}
 
-	return iTrailingDistance;
+	return iCount;
 }
 
+UT_uint32 fp_TextRun::countJustificationPoints(void) const
+{
+	UT_uint32 iCount = 0;
+
+	if(m_iLen > 0)
+	{
+		UT_sint32 i = findCharacter(0, UCS_SPACE);
+
+		while (i >= 0)
+		{
+			iCount++;
+
+			// keep looping
+			i = findCharacter(i+1-m_iOffsetFirst, UCS_SPACE);
+		}
+	}
+
+	return iCount;
+}
 
 //////////////////////////////////////////////////////////////////
 //////////////////////////////////////////////////////////////////

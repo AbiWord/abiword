@@ -106,24 +106,18 @@ void fb_Alignment_justify::initialize(fp_Line *pLine)
 {
 	if (!pLine->isLastLineInBlock())
 	{
-		pLine->splitRunsAtSpaces();
+		pLine->resetJustification();
 
-		m_iSpaceCount = pLine->countSpaces();
-		if (pLine->isLastCharacter(UCS_SPACE))
-		{
-			m_iSpaceCount--;
-		}
-		m_iSpaceCountLeft = m_iSpaceCount;
-	
-		UT_sint32 iWidth = pLine->calculateWidthOfLine();
+		UT_sint32 iWidth = pLine->calculateWidthOfLine() - pLine->calculateWidthOfTrailingSpaces();
 
 		m_iExtraWidth = pLine->getMaxWidth() - iWidth;
 
-		m_bRequiresJustification = UT_TRUE;
-	}
-	else
-	{
-		m_bRequiresJustification = UT_FALSE;
+		pLine->distributeJustificationAmongstSpaces(m_iExtraWidth);
+
+#ifndef NDEBUG	
+		_confirmJustification(pLine);
+#endif
+
 	}
 }
 
@@ -138,30 +132,17 @@ UT_sint32 fb_Alignment_justify::getMove(const fp_Run *pRun)
 
 	iAmount = pRun->getWidth();
 
-	pRun = pRun->getNext();
-
-	if(pRun && (pRun->getType() == FPRUN_TEXT))
-	{
-		// HACK: explicitly casting away the const so we can markJustification()
-		// TODO: don't pass pRun as const?  (then can properly static_cast again)
-		fp_TextRun *pTextRun = (fp_TextRun *)pRun;
-
-		if (m_bRequiresJustification && 
-			pTextRun->isFirstCharacter(UCS_SPACE) && 
-			m_iSpaceCountLeft)	// TODO: decide what to do if m_iSpaceCount = 0;
-		{
-			UT_sint32 iExtra = (UT_sint32)((double)m_iExtraWidth / m_iSpaceCountLeft);
-			
-			// Distribute remaining with remaining spaces;
-
-			m_iExtraWidth -= iExtra;
-			m_iSpaceCountLeft--;
-
-			pTextRun->markJustification(iAmount != 0);
-
-			iAmount += iExtra; 
-		}
-	}
-
 	return iAmount;
 }
+
+#ifndef NDEBUG
+
+void fb_Alignment_justify::_confirmJustification(fp_Line *pLine)
+{
+	UT_sint32 iJustifiedLength = pLine->calculateWidthOfLine() - pLine->calculateWidthOfTrailingSpaces();
+	UT_sint32 iLineLength = pLine->getMaxWidth();
+
+	UT_ASSERT(iJustifiedLength == iLineLength);
+}
+
+#endif

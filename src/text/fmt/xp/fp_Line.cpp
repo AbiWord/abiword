@@ -398,34 +398,6 @@ void fp_Line::layout(void)
 	fb_Alignment *pAlignment = getBlock()->getAlignment();
 	pAlignment->initialize(this);
 
-/*
-	m_iWidth = calculateWidthOfLine();
-
-	UT_sint32 iExtraWidth = getMaxWidth() - m_iWidth;
-
-	UT_uint32 iAlignCmd = getBlock()->getAlignment();
-
-	UT_sint32 iMoveOver = 0;
-	
-	switch (iAlignCmd)
-	{
-	case FL_ALIGN_BLOCK_LEFT:
-		iMoveOver = 0;
-		break;
-	case FL_ALIGN_BLOCK_RIGHT:
-		iMoveOver = iExtraWidth;
-		break;
-	case FL_ALIGN_BLOCK_CENTER:
-		iMoveOver = iExtraWidth / 2;
-		break;
-	case FL_ALIGN_BLOCK_JUSTIFY:
-		// TODO
-		break;
-	default:
-		UT_ASSERT(UT_SHOULD_NOT_HAPPEN);
-		break;
-	}
-*/
 
 	UT_uint32 iCountRuns = m_vecRuns.getItemCount();
 	UT_sint32 iX = 0;
@@ -719,14 +691,47 @@ UT_sint32 fp_Line::calculateWidthOfLine(void)
 	return iX;
 }
 
-UT_uint32 fp_Line::countSpaces(void) const
+UT_sint32 fp_Line::calculateWidthOfTrailingSpaces(void)
+{
+	// need to move back until we find the first non blank character and
+	// return the distance back to this character.
+
+	UT_sint32 iTrailingBlank = 0;
+
+	fp_Run *pCurrentRun = getLastRun();
+
+	do
+	{
+		if(!pCurrentRun->doesContainNonBlankData())
+		{
+			iTrailingBlank += pCurrentRun->getWidth();
+		}
+		else
+		{
+			iTrailingBlank += pCurrentRun->findTrailingSpaceDistance();
+			break;
+		}
+		
+		if(pCurrentRun == getFirstRun())
+			break;
+
+		pCurrentRun = pCurrentRun->getPrev();
+	}
+	while(pCurrentRun);
+
+
+	return iTrailingBlank;
+}
+
+UT_uint32 fp_Line::countJustificationPoints(void) const
 {
 	UT_uint32 iCountRuns = m_vecRuns.getItemCount();
-	UT_uint32 i;
-	int iSpaceCount = 0;
+	UT_sint32 i;
+	UT_uint32 iSpaceCount = 0;
+	UT_Bool bStartFound = UT_FALSE;
 
 	// first calc the width of the line
-	for (i=0; i<iCountRuns; i++)
+	for (i=iCountRuns -1 ; i >= 0; i--)
 	{
 		fp_Run* pRun = (fp_Run*) m_vecRuns.getNthItem(i);
 		
@@ -737,58 +742,33 @@ UT_uint32 fp_Line::countSpaces(void) const
 			// TODO: decide if a tab is a space.
 
 		}
+		else if (pRun->getType() == FPRUN_TEXT)
+		{
+			fp_TextRun* pTR = static_cast<fp_TextRun *>(pRun);
+			if(bStartFound)
+			{
+				iSpaceCount += pTR->countJustificationPoints();
+			}
+			else
+			{
+				if(pTR->doesContainNonBlankData())
+				{
+					iSpaceCount += pTR->countJustificationPoints();
+					iSpaceCount -= pTR->countTrailingSpaces();
+					bStartFound = UT_TRUE;
+				}
+
+			}
+		}
 		else
 		{
-			if(pRun->canBreakBefore())
-				{
-				iSpaceCount++;
-				}
+			bStartFound = UT_TRUE;
 		}
-
 	}
 
 	return iSpaceCount;
 }
 
-void fp_Line::splitRunsAtSpaces(void)
-{
-	UT_uint32 count = m_vecRuns.getItemCount();
-	for (UT_uint32 i=0; i<count; i++)
-	{
-		fp_Run* pRun = (fp_Run*) m_vecRuns.getNthItem(i);
-
-		if (pRun->getType() == FPRUN_TEXT)
-		{
-			fp_TextRun* pTR = static_cast<fp_TextRun *>(pRun);
-			UT_sint32 iSpacePosition;
-			do
-			{
-
-				iSpacePosition = pTR->findCharacter(1, UCS_SPACE);
-
-				if (iSpacePosition > 0)
-				{
-					pTR->split(iSpacePosition);
-					count++;
-				}
-			}
-			while(iSpacePosition > 0);
-		}
-	}
-	
-	count = m_vecRuns.getItemCount();
-
-	fp_Run* pRun = getLastRun();
-
-	if (pRun->getType() == FPRUN_TEXT)
-	{
-		fp_TextRun* pTR = static_cast<fp_TextRun *>(pRun);
-		UT_sint32 iSpacePosition = pTR->findCharacter(1, UCS_SPACE);
-
-		if(iSpacePosition > 0)
-			pTR->split(iSpacePosition);
-	}
-}
 
 UT_Bool fp_Line::isLastCharacter(UT_UCSChar Character) const
 {
@@ -804,4 +784,102 @@ UT_Bool fp_Line::isLastCharacter(UT_UCSChar Character) const
 	return UT_FALSE;
 }
 
+void fp_Line::resetJustification()
+{
+	UT_uint32 count = m_vecRuns.getItemCount();
+	for (UT_uint32 i=0; i<count; i++)
+	{
+		fp_Run* pRun = (fp_Run*) m_vecRuns.getNthItem(i);
+
+		if (pRun->getType() == FPRUN_TEXT)
+		{
+			fp_TextRun* pTR = static_cast<fp_TextRun *>(pRun);
+
+			pTR->resetJustification();
+		}
+	}
+}
+
+
+void fp_Line::distributeJustificationAmongstSpaces(UT_sint32 iAmount)
+{
+	if(iAmount)
+	{
+		UT_uint32 iSpaceCount = countJustificationPoints();
+
+		if(iSpaceCount)
+		{
+			// Need to distribute Extra width amongst spaces.
+
+			splitRunsAtSpaces();
+			
+			UT_uint32 count = m_vecRuns.getItemCount();
+			for (UT_uint32 i=0; i<count; i++)
+			{
+				fp_Run* pRun = (fp_Run*) m_vecRuns.getNthItem(i);
+
+				if (pRun->getType() == FPRUN_TEXT)
+				{
+					fp_TextRun* pTR = static_cast<fp_TextRun *>(pRun);
+
+					UT_uint32 iSpacesInText = pTR->countJustificationPoints();
+					if(iSpacesInText > iSpaceCount)
+						iSpacesInText = iSpaceCount;	// Takes care of trailing spaces.
+
+					if(iSpacesInText)
+					{
+						UT_sint32 iJustifyAmountForRun = (int)((double)iAmount / iSpaceCount * iSpacesInText);
+
+						pTR->distributeJustificationAmongstSpaces(iJustifyAmountForRun, iSpacesInText);
+
+						iAmount -= iJustifyAmountForRun;
+						iSpaceCount -= iSpacesInText;
+					}
+				}
+			}
+		}		
+	}
+}
+
+void fp_Line::splitRunsAtSpaces(void)
+{
+	UT_uint32 count = m_vecRuns.getItemCount();
+	for (UT_uint32 i=0; i<count; i++)
+	{
+		fp_Run* pRun = (fp_Run*) m_vecRuns.getNthItem(i);
+
+		if (pRun->getType() == FPRUN_TEXT)
+		{
+			fp_TextRun* pTR = (fp_TextRun *)pRun;
+			UT_sint32 iSpacePosition;
+
+			iSpacePosition = pTR->findCharacter(0, UCS_SPACE);
+
+			if ((iSpacePosition > 0) && 
+				((UT_uint32) iSpacePosition < pTR->getBlockOffset() + pTR->getLength() - 1))
+			{
+				pTR->split(iSpacePosition + 1);
+				count++;
+			}
+		}
+	}
+	
+	count = m_vecRuns.getItemCount();
+
+	fp_Run* pRun = getLastRun();
+
+	if (pRun->getType() == FPRUN_TEXT)
+	{
+		fp_TextRun* pTR = (fp_TextRun *)pRun;
+		UT_sint32 iSpacePosition = pTR->findCharacter(0, UCS_SPACE);
+
+		if ((iSpacePosition > 0) && 
+			((UT_uint32) iSpacePosition < pTR->getBlockOffset() + pTR->getLength() - 1))
+		{
+			pTR->split(iSpacePosition + 1);
+		}
+	}
+
+
+}
 
