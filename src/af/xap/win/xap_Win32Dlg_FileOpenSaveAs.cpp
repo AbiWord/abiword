@@ -25,8 +25,12 @@
 #include "xap_Win32Dlg_FileOpenSaveAs.h"
 #include "xap_Win32App.h"
 #include "xap_Win32Frame.h"
-#include "ie_imp.h"
-#include "ie_exp.h"
+
+/*
+  TODO these aren't really XAP-ish.  fix this.
+*/
+#include "../../wp/impexp/xp/ie_imp.h"
+#include "../../wp/impexp/xp/ie_exp.h"
 
 /*****************************************************************/
 AP_Dialog * XAP_Win32Dialog_FileOpenSaveAs::static_constructor(AP_DialogFactory * pFactory,
