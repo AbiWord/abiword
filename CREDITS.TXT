@@ -104,6 +104,7 @@ Tamas Decsi <tamas@pressflex.com>               Hungarian
 Philippe Duperron <duperron@mail.dotcom.fr>     French
 Gro Elin Hansen  <Gro.Hansen@student.uib.no>    Norwegian
 Martin Willemoes Hansen <mwh@stampede.org>      Danish
+Karl Ove Hufthammer <huftis@bigfoot.com> 	Norwegian (Nynorsk)
 Marco Innocenti <dot0037@iperbole.bologna.it>   Italian
 Jarmo Karvonen <jarmo@dawn.joensuu.fi>          Finnish
 Edouard Lafargue <Edouard.Lafargue@bigfoot.com> Norwegian
