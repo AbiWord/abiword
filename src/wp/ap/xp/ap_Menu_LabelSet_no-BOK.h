@@ -18,8 +18,8 @@
  */
 
 // Norwegian translations provided by Edouard Lafargue / Lars Ranheim
-//                                    Edouard.Lafargue@bigfoot.com
-
+//                                       Edouard.Lafargue@bigfoot.com
+//                     Karl Trygve Kalleberg <karltk@sourceforge.net>
 /*****************************************************************
 ******************************************************************
 ** IT IS IMPORTANT THAT THIS FILE ALLOW ITSELF TO BE INCLUDED
@@ -71,9 +71,10 @@ BeginSet(no,BOK,UT_TRUE)
 	MenuLabel(AP_MENU_ID_EDIT_REPLACE,		"&Erstatt",			"Erstatt med en annen tekst")
 	MenuLabel(AP_MENU_ID_EDIT_GOTO,			"Gå t&il",			"Flytt markøren til et spesifisert sted")
 	MenuLabel(AP_MENU_ID_VIEW,			"&Vis",				NULL)
-	MenuLabel(AP_MENU_ID_VIEW_TOOLBARS,		"&Verktøylinjer",				NULL)
+	MenuLabel(AP_MENU_ID_VIEW_TOOLBARS,		"&Verktøylinjer",               NULL)
 	MenuLabel(AP_MENU_ID_VIEW_TB_STD,		"&Standard",			"Vis eller fjern standard verktøylinje")
 	MenuLabel(AP_MENU_ID_VIEW_TB_FORMAT,		"&Formatering",			"Vis eller fjern verktøylinje for formatering")
+	MenuLabel(AP_MENU_ID_VIEW_TB_EXTRA,		"&Ekstra",			"Vis eller fjern ekstraverktøylinje")
 	MenuLabel(AP_MENU_ID_VIEW_RULER,		"&Linjal",			"Vis eller fjern linjaler")
 	MenuLabel(AP_MENU_ID_VIEW_STATUSBAR,		"S&tatuslinje",			"Vis eller fjern statuslinjen")
 	MenuLabel(AP_MENU_ID_VIEW_SHOWPARA,		"Vis Para&grafer",		"Vis tegn som ikke skal skrives ut")
@@ -98,17 +99,17 @@ BeginSet(no,BOK,UT_TRUE)
 	MenuLabel(AP_MENU_ID_FMT_TABS,			"&Tabulatorer",			"Sett tabulatorstopp")
 	MenuLabel(AP_MENU_ID_FMT_BOLD,			"&Fet",				"Gjør markert tekst fet (skift)")
 	MenuLabel(AP_MENU_ID_FMT_ITALIC,		"&Kursiv",			"Gjør markert tekst kursiv (skift)")
-	MenuLabel(AP_MENU_ID_FMT_UNDERLINE,		"&Understreket", "Understrek markert tekst (skift)")
-     	MenuLabel(AP_MENU_ID_FMT_OVERLINE,		"&Overstreket", "Overstreke markert tekst (skift)")
-     	MenuLabel(AP_MENU_ID_FMT_STRIKE,		"Stry&k ut", "Stryk ut markert tekst (skift)")
-	MenuLabel(AP_MENU_ID_FMT_SUPERSCRIPT,	        "&Hevet", "Hev markert tekst (skift)")
-	MenuLabel(AP_MENU_ID_FMT_SUBSCRIPT,		"S&enket", "Senk markert tekst (skift)")
+	MenuLabel(AP_MENU_ID_FMT_UNDERLINE,		"&Understreket",                "Understrek markert tekst (skift)")
+     	MenuLabel(AP_MENU_ID_FMT_OVERLINE,		"&Overstreket",                 "Overstreke markert tekst (skift)")
+     	MenuLabel(AP_MENU_ID_FMT_STRIKE,		"Stry&k ut",                    "Stryk ut markert tekst (skift)")
+	MenuLabel(AP_MENU_ID_FMT_SUPERSCRIPT,	        "&Hevet",                       "Hev markert tekst (skift)")
+	MenuLabel(AP_MENU_ID_FMT_SUBSCRIPT,		"S&enket",                      "Senk markert tekst (skift)")
 
 	MenuLabel(AP_MENU_ID_FMT_STRIKE,		"&Gjennomstreket",		"Gjennomstrek markert tekst (skift)")
 
         MenuLabel(AP_MENU_ID_TOOLS,                     "&Verktøy",			NULL)   
-	MenuLabel(AP_MENU_ID_TOOLS_SPELL,		"&Stavekontroll", "Sjekk dokumentet for stavefeil")
-	MenuLabel(AP_MENU_ID_TOOLS_WORDCOUNT,	        "&Ordtelling",		"Tell antall ord i dokumentet")
+	MenuLabel(AP_MENU_ID_TOOLS_SPELL,		"&Stavekontroll",               "Sjekk dokumentet for stavefeil")
+	MenuLabel(AP_MENU_ID_TOOLS_WORDCOUNT,	        "&Ordtelling",		        "Tell antall ord i dokumentet")
 	MenuLabel(AP_MENU_ID_TOOLS_OPTIONS,		"Egens&kaper",			"Sett egenskaper")
 
 	MenuLabel(AP_MENU_ID_ALIGN,			"&Juster",			NULL)
@@ -130,14 +131,26 @@ BeginSet(no,BOK,UT_TRUE)
 	MenuLabel(AP_MENU_ID_WINDOW_9,			"&9 %s",			"Hent dette vinduet")
 	MenuLabel(AP_MENU_ID_WINDOW_MORE,		"&Flere vinduer",		"Vis full liste av vinduer")
 
-	MenuLabel(AP_MENU_ID_HELP,			"&Hjelp",		NULL)
-	MenuLabel(AP_MENU_ID_HELP_CONTENTS,		"&Innhold",	        "Vis tilgjengelig hjelp")
-	MenuLabel(AP_MENU_ID_HELP_INDEX,		"I&ndeks",		"Vis indeks over tilgjengelig hjelp")
-	MenuLabel(AP_MENU_ID_HELP_CHECKVER,		"Vis &Versjon",         "Vis programmets versjonsnummer")
-	MenuLabel(AP_MENU_ID_HELP_SEARCH,		"&Søk etter hjelp",	"Søk på internett etter hjelp")
-	MenuLabel(AP_MENU_ID_HELP_ABOUT,		"&Om %s",		"Vis programinformasjon, versjonsnummer, og copyright")
-        MenuLabel(AP_MENU_ID_HELP_ABOUTOS,		"Om O&pen Source",      "Vis informasjon om Open Source")
+	MenuLabel(AP_MENU_ID_HELP,			"&Hjelp",		        NULL)
+	MenuLabel(AP_MENU_ID_HELP_CONTENTS,		"&Innhold",	                "Vis tilgjengelig hjelp")
+	MenuLabel(AP_MENU_ID_HELP_INDEX,		"I&ndeks",		        "Vis indeks over tilgjengelig hjelp")
+	MenuLabel(AP_MENU_ID_HELP_CHECKVER,		"Vis &Versjon",                 "Vis programmets versjonsnummer")
+	MenuLabel(AP_MENU_ID_HELP_SEARCH,		"&Søk etter hjelp",	        "Søk på internett etter hjelp")
+	MenuLabel(AP_MENU_ID_HELP_ABOUT,		"&Om %s",		        "Vis programinformasjon, versjonsnummer og copyright")
+        MenuLabel(AP_MENU_ID_HELP_ABOUTOS,		"Om O&pen Source",              "Vis informasjon om Open Source")
 
+
+        MenuLabel(AP_MENU_ID_SPELL_SUGGEST_1,           "%s",                           "Erstatt med denne stavemåten")
+        MenuLabel(AP_MENU_ID_SPELL_SUGGEST_2,           "%s",                           "Erstatt med denne stavemåten")
+        MenuLabel(AP_MENU_ID_SPELL_SUGGEST_3,           "%s",                           "Erstatt med denne stavemåten")
+        MenuLabel(AP_MENU_ID_SPELL_SUGGEST_4,           "%s",                           "Erstatt med denne stavemåten")
+        MenuLabel(AP_MENU_ID_SPELL_SUGGEST_5,           "%s",                           "Erstatt med denne stavemåten")
+        MenuLabel(AP_MENU_ID_SPELL_SUGGEST_6,           "%s",                           "Erstatt med denne stavemåten")
+        MenuLabel(AP_MENU_ID_SPELL_SUGGEST_7,           "%s",                           "Erstatt med denne stavemåten")
+        MenuLabel(AP_MENU_ID_SPELL_SUGGEST_8,           "%s",                           "Erstatt med denne stavemåten")
+        MenuLabel(AP_MENU_ID_SPELL_SUGGEST_9,           "%s",                           "Erstatt med denne stavemåten")
+        MenuLabel(AP_MENU_ID_SPELL_IGNOREALL,           "Ign&orer alle",                "Alltid ignorér dette ordet i gjeldende dokument")
+        MenuLabel(AP_MENU_ID_SPELL_ADD,                 "&Legg til",                    "Legg til ordet i egendefinert ordliste")
 
      // ... add others here ...
 

@@ -116,6 +116,7 @@ Gro Elin Hansen  <Gro.Hansen@student.uib.no>    Norwegian (Bokmål)
 Martin Willemoes Hansen <mwh@stampede.org>      Danish
 Karl Ove Hufthammer <huftis@bigfoot.com> 	    Norwegian (Nynorsk)
 Marco Innocenti <dot0037@iperbole.bologna.it>   Italian
+Karl Trygve Kalleberg <karltk@prosalg.no>       Norwegian Bokmål
 Jarmo Karvonen <jarmo@dawn.joensuu.fi>          Finnish
 Edouard Lafargue <Edouard.Lafargue@bigfoot.com> Norwegian (Bokmål)
 Birger Langkjer <birger.langkjer@image.dk>      Danish
