@@ -56,6 +56,7 @@ Name: %{name}
 Summary: Multi-platform word processor
 Version: %{version}
 Release: %{release}
+Epoch: 1
 Source: %{name}-%{version}.tar.gz
 Group: Applications/Publishing
 URL: http://www.abisource.com/
