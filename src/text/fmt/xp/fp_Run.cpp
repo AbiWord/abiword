@@ -1212,6 +1212,8 @@ void fp_Run::draw(dg_DrawArgs* pDA)
 	UT_return_if_fail(pView);
 	bool bShowRevs = pView->isShowRevisions();
 
+	double i2Du = pDA->pG->tlu(2);
+	
 	if(m_pRevisions && bShowRevs)
 	{
 		const PP_Revision * r = m_pRevisions->getLastRevision();
@@ -1234,16 +1236,17 @@ void fp_Run::draw(dg_DrawArgs* pDA)
 					UT_uint32 iWidth = getDrawingWidth();
 					
 					if(r_type == PP_REVISION_ADDITION || r_type == PP_REVISION_ADDITION_AND_FMT)
-					{
-						painter.fillRect(s_fgColor,pDA->xoff, pDA->yoff, iWidth, getGraphics()->tlu(1));
-						painter.fillRect(s_fgColor,pDA->xoff, pDA->yoff + getGraphics()->tlu(2),
-										 iWidth, getGraphics()->tlu(1));	
-					}
+						{
+							painter.fillRect(s_fgColor,pDA->xoff, pDA->yoff + i2Du, iWidth, getGraphics()->tlu(1));
+							painter.fillRect(s_fgColor,pDA->xoff, pDA->yoff + i2Du + getGraphics()->tlu(2),
+											 iWidth, getGraphics()->tlu(1));
+							
+						}
 					else if(r_type == PP_REVISION_FMT_CHANGE)
-					{
-						// draw a thick line underneath
-						painter.fillRect(s_fgColor,pDA->xoff, pDA->yoff, iWidth, getGraphics()->tlu(2));
-					}
+						{
+							// draw a thick line underneath
+							painter.fillRect(s_fgColor,pDA->xoff, pDA->yoff + i2Du, iWidth, getGraphics()->tlu(2));
+						}
 					else
 					{
 						// draw a strike-through line						
@@ -1264,7 +1267,7 @@ void fp_Run::draw(dg_DrawArgs* pDA)
 								GR_Graphics::CAP_PROJECTING,
 								GR_Graphics::LINE_SOLID);
 
-		painter.drawLine(pDA->xoff, pDA->yoff, pDA->xoff + m_iWidth, pDA->yoff);
+		painter.drawLine(pDA->xoff, pDA->yoff + i2Du, pDA->xoff + m_iWidth, pDA->yoff + i2Du);
 	}
 
 	if(m_eVisibility == FP_HIDDEN_TEXT || m_eVisibility == FP_HIDDEN_REVISION_AND_TEXT)
@@ -1275,7 +1278,7 @@ void fp_Run::draw(dg_DrawArgs* pDA)
 								GR_Graphics::CAP_PROJECTING,
 								GR_Graphics::LINE_DOTTED);
 
-		painter.drawLine(pDA->xoff, pDA->yoff, pDA->xoff + m_iWidth, pDA->yoff);
+		painter.drawLine(pDA->xoff, pDA->yoff + i2Du, pDA->xoff + m_iWidth, pDA->yoff + i2Du);
 
 	}
 	m_bIsCleared = false;
@@ -1490,7 +1493,7 @@ void fp_Run::drawDecors(double xoff, double yoff, GR_Graphics * pG)
 		setLinethickness(cur_linewidth);
 		if(b_Underline)
 		{
-			iDrop = yoff + getAscent() + getDescent()/3;
+			iDrop = yoff + getAscent() + getDescent()/3 + pG->tlu(1);
 			setUnderlineXoff( xoff);
 			setMaxUnderline(iDrop);
 		}

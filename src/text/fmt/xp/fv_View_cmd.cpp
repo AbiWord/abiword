@@ -2466,12 +2466,16 @@ bool FV_View::cmdDeleteCol(PT_DocPosition posCol)
 
 	m_pDoc->disableListUpdates();
 	m_pDoc->beginUserAtomicGlob();
-	if (!isSelectionEmpty())
+	if (!isSelectionEmpty() && !m_FrameEdit.isActive())
 	{
 		m_pDoc->beginUserAtomicGlob();
 		PP_AttrProp AttrProp_Before;
 		_deleteSelection(&AttrProp_Before);
 		m_pDoc->endUserAtomicGlob();
+	}
+	else if(m_FrameEdit.isActive())
+	{
+	       m_FrameEdit.setPointInside();
 	}
 	m_pDoc->setDontImmediatelyLayout(true);
 //
@@ -2731,12 +2735,16 @@ bool FV_View::cmdDeleteRow(PT_DocPosition posRow)
 	m_pDoc->disableListUpdates();
 	m_pDoc->beginUserAtomicGlob();
 	UT_sint32 numRows = getNumRowsInSelection();
-	if (!isSelectionEmpty())
+	if (!isSelectionEmpty() && !m_FrameEdit.isActive())
 	{
 		m_pDoc->beginUserAtomicGlob();
 		PP_AttrProp AttrProp_Before;
 		_deleteSelection(&AttrProp_Before);
 		m_pDoc->endUserAtomicGlob();
+	}
+	else if(m_FrameEdit.isActive())
+	{
+	       m_FrameEdit.setPointInside();
 	}
 	m_pDoc->setDontImmediatelyLayout(true);
 //
@@ -2923,12 +2931,16 @@ bool FV_View::cmdDeleteCell(PT_DocPosition cellPos)
 
 	m_pDoc->disableListUpdates();
 	m_pDoc->beginUserAtomicGlob();
-	if (!isSelectionEmpty())
+	if (!isSelectionEmpty() && !m_FrameEdit.isActive())
 	{
 		m_pDoc->beginUserAtomicGlob();
 		PP_AttrProp AttrProp_Before;
 		_deleteSelection(&AttrProp_Before);
 		m_pDoc->endUserAtomicGlob();
+	}
+	else if(m_FrameEdit.isActive())
+	{
+	       m_FrameEdit.setPointInside();
 	}
 	m_pDoc->setDontImmediatelyLayout(true);
 //
@@ -2986,13 +2998,17 @@ UT_Error FV_View::cmdInsertTable(UT_sint32 numRows, UT_sint32 numCols, const XML
 
 	m_pDoc->disableListUpdates();
 	m_pDoc->beginUserAtomicGlob();
-	if (!isSelectionEmpty())
+	if (!isSelectionEmpty() && !m_FrameEdit.isActive())
 	{
 		m_pDoc->setDontImmediatelyLayout(true);
 		m_pDoc->beginUserAtomicGlob();
 		PP_AttrProp AttrProp_Before;
 		_deleteSelection(&AttrProp_Before);
 		m_pDoc->endUserAtomicGlob();
+	}
+	else if(m_FrameEdit.isActive())
+	{
+	       m_FrameEdit.setPointInside();
 	}
 	else
 	{
@@ -3211,7 +3227,7 @@ void FV_View::cmdCharDelete(bool bForward, UT_uint32 count)
 	UT_uint32 iRealDeleteCount = 0;
 
 
-	if (!isSelectionEmpty())
+	if (!isSelectionEmpty() && !m_FrameEdit.isActive())
 	{
 
 		// Signal PieceTable Change
@@ -3226,6 +3242,10 @@ void FV_View::cmdCharDelete(bool bForward, UT_uint32 count)
 		m_pDoc->updateDirtyLists();
 		_fixInsertionPointCoords();
 		_ensureInsertionPointOnScreen();
+	}
+	else if(m_FrameEdit.isActive())
+        {
+	  deleteFrame();
 	}
 	else
 	{
@@ -4156,6 +4176,10 @@ void FV_View::cmdPaste(bool bHonorFormatting)
 	m_iPieceTableState = 0;
 	// Move insertion point out of field run if it is in one
 	//
+	if(m_pDoc->isFrameAtPos(getPoint()))
+	{
+	  _setPoint(getPoint()+1);
+	}
 	_charMotion(true, 0);
 
 //
@@ -4616,6 +4640,16 @@ UT_Error FV_View::cmdInsertTOC(void)
 	{
 		return false;
 	}
+	if(!isPointLegal())
+	{
+	  _charMotion(true,1);
+	}
+	PT_DocPosition posEnd = 0;
+	getEditableBounds(true, posEnd);
+	if(getPoint() >= posEnd && !isPointLegal())
+	{
+	  _charMotion(false,1);
+	}
 //
 // Close off the current block
 //
@@ -4722,13 +4756,16 @@ UT_Error FV_View::cmdInsertGraphic(FG_Graphic* pFG)
 	// Signal PieceTable Change
 	_saveAndNotifyPieceTableChange();
 
-	if (!isSelectionEmpty())
+	if (!isSelectionEmpty() && !m_FrameEdit.isActive())
 	{
 		bDidGlob = true;
 		m_pDoc->beginUserAtomicGlob();
 		_deleteSelection();
 	}
-
+	else if(m_FrameEdit.isActive())
+	{
+	       m_FrameEdit.setPointInside();
+	}
 	/*
 	  Create a unique identifier for the data item.
 	*/

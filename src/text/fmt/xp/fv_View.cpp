@@ -547,6 +547,7 @@ void FV_View::_pasteFromLocalTo(PT_DocPosition pos)
 	UT_uint32 iLen = m_pLocalBuf->getLength();
 
 	pImpRTF->pasteFromBuffer(&docRange,pData,iLen);
+
 	delete pImpRTF;
 }
 
@@ -557,8 +558,14 @@ void FV_View::pasteFromLocalTo(PT_DocPosition pos)
 	_saveAndNotifyPieceTableChange();
 	m_pDoc->disableListUpdates();
 	m_pDoc->beginUserAtomicGlob();
+	m_pDoc->setDoingPaste();
+	setCursorWait();
+	m_pDoc->setDontImmediatelyLayout(true);
 
 	_pasteFromLocalTo(pos);
+	clearCursorWait();
+	m_pDoc->clearDoingPaste();
+	m_pDoc->setDontImmediatelyLayout(false);
 
 	// restore updates and clean up dirty lists
 	m_pDoc->enableListUpdates();
@@ -570,6 +577,9 @@ void FV_View::pasteFromLocalTo(PT_DocPosition pos)
 	_restorePieceTableState();
 	_generalUpdate();
 	m_pDoc->endUserAtomicGlob();
+	// Move insertion point out of field run if it is in one
+	//
+	_charMotion(true, 0);
 	_fixInsertionPointCoords();
 	if (isSelectionEmpty())
 	{
@@ -667,6 +677,25 @@ void FV_View::convertInLineToPositioned(PT_DocPosition pos,const XML_Char ** att
 // position posXY.
 // It returns the Frag_Strux of the new frame.
 //
+	fl_BlockLayout * pBL = pBlock;
+	if((pBL == NULL) || (pRun == NULL))
+	{
+	  return;
+	}
+	fl_BlockLayout * pPrevBL = pBL;
+	while(pBL && (pBL->myContainingLayout()->getContainerType() == FL_CONTAINER_ENDNOTE) || (pBL->myContainingLayout()->getContainerType() == FL_CONTAINER_FOOTNOTE) || (pBL->myContainingLayout()->getContainerType() == FL_CONTAINER_TOC)|| (pBL->myContainingLayout()->getContainerType() == FL_CONTAINER_FRAME) )
+	{
+	        UT_DEBUGMSG(("Skipping Block %x \n",pBL));
+		pPrevBL = pBL;
+		pBL = pBL->getPrevBlockInDocument();
+	}
+	if(pBL == NULL)
+	{
+	        pBL = pPrevBL;
+	}
+	UT_ASSERT((pBL->myContainingLayout()->getContainerType() != FL_CONTAINER_HDRFTR) 
+		  && (pBL->myContainingLayout()->getContainerType() != FL_CONTAINER_SHADOW));
+	pos = pBL->getPosition();
 	m_pDoc->insertStrux(pos,PTX_SectionFrame,attributes,NULL,&pfFrame);
 	PT_DocPosition posFrame = pfFrame->getPos();
 //	m_pDoc->insertStrux(posFrame+1,PTX_Block); // might need this later!
@@ -902,6 +931,10 @@ bool FV_View::isInFrame(PT_DocPosition pos)
 // If at exactly the frame return true
 //
 	if(m_pDoc->isFrameAtPos(pos))
+	{
+		return true;
+	}
+	if(m_pDoc->isFrameAtPos(pos-1) && !m_pDoc->isEndFrameAtPos(pos))
 	{
 		return true;
 	}
@@ -2134,7 +2167,23 @@ void FV_View::moveInsPtTo(FV_DocPos dp, bool bClearSelection)
 
 
 	PT_DocPosition iPos = _getDocPos(dp);
-
+	if((dp == FV_DOCPOS_EOD) && m_pDoc->isHdrFtrAtPos(iPos) &&
+	   m_pDoc->isEndFrameAtPos(iPos-1))
+	{
+	     iPos--;
+	     while(!isPointLegal(iPos))
+	     {    
+	          iPos--;
+	     }
+	}
+	else if((dp == FV_DOCPOS_EOD) && m_pDoc->isEndFrameAtPos(iPos))
+	{
+	     iPos--;
+	     while(!isPointLegal(iPos))
+	     {    
+	          iPos--;
+	     }
+	}
 	if (iPos != getPoint())
 	{
 		bool bPointIsValid = (getPoint() >= _getDocPos(FV_DOCPOS_BOD));
@@ -2312,6 +2361,7 @@ bool FV_View::isCurrentListBlockEmpty(void)
 	//
 	fp_Run * pRun = pBlock->getFirstRun();
 	UT_uint32 ifield =0;
+	UT_uint32 iTab = 0;
 	while((bEmpty == true) && (pRun != NULL))
 	{
 		FP_RUN_TYPE runtype = static_cast<FP_RUN_TYPE>(pRun->getType());
@@ -2324,6 +2374,15 @@ bool FV_View::isCurrentListBlockEmpty(void)
 			{
 				ifield++;
 				if(ifield > 1)
+				{
+					bEmpty = false;
+					break;
+				}
+			}
+			else if(runtype == FPRUN_TAB)
+			{
+				iTab++;
+				if(iTab > 1)
 				{
 					bEmpty = false;
 					break;
@@ -2769,11 +2828,15 @@ void FV_View::insertParagraphBreak(void)
 	//
 	_saveAndNotifyPieceTableChange();
 
-	if (!isSelectionEmpty())
+	if (!isSelectionEmpty() && !m_FrameEdit.isActive())
 	{
 		bDidGlob = true;
 		//	m_pDoc->beginUserAtomicGlob();
 		_deleteSelection();
+	}
+	else if(m_FrameEdit.isActive())
+	{
+	       m_FrameEdit.setPointInside();
 	}
 
 	// insert a new paragraph with the same attributes/properties
@@ -6748,10 +6811,14 @@ void FV_View::insertSymbol(UT_UCSChar c, XML_Char * symfont)
 	// if so delete it then get the current font
 	m_pDoc->beginUserAtomicGlob();
 
-	if (!isSelectionEmpty())
+	if (!isSelectionEmpty() && !m_FrameEdit.isActive())
 	{
 		_deleteSelection();
 		_generalUpdate();
+	}
+	else if(m_FrameEdit.isActive())
+	{
+	       m_FrameEdit.setPointInside();
 	}
 	// We have to determine the current font so we can put it back after
 	// Inserting the Symbol
@@ -10379,6 +10446,7 @@ bool FV_View::isPointLegal(PT_DocPosition pos)
 	PL_StruxDocHandle prevSDH = NULL;
 	PL_StruxDocHandle nextSDH = NULL;
 	PT_DocPosition nextPos =0;
+	
 //
 // Special case which would otherwise fail..
 //
@@ -10402,6 +10470,35 @@ bool FV_View::isPointLegal(PT_DocPosition pos)
 	if( m_pDoc->isTOCAtPos(pos-1) && m_pDoc->isTOCAtPos(pos))
 	{
 		return false;
+	}
+	//
+	// Can't place between frames and the next paragraph
+	//
+	if(m_pDoc->isEndFrameAtPos(pos) &&  m_pDoc->isFrameAtPos(pos-1))
+	{
+	  return false;
+	}
+	if(m_pDoc->isEndFrameAtPos(pos-1) &&  m_pDoc->isFrameAtPos(pos))
+	{
+	  return false;
+	}
+	PT_DocPosition posEnd = 0;
+	getEditableBounds(true, posEnd);
+	if(pos > posEnd)
+	{
+	  return false;
+	}
+	if(pos == posEnd && m_pDoc->isEndFrameAtPos(pos-1))
+	{
+	  return false;
+	}
+	if((pos+1) == posEnd && m_pDoc->isEndFrameAtPos(pos))
+	{
+	  return false;
+	}
+	if(((pos+1) == posEnd) && m_pDoc->isTOCAtPos(pos-1))
+	{
+	  return false;
 	}
 	bres = m_pDoc->getNextStrux(prevSDH,&nextSDH);
 	if(!bres)
@@ -10495,7 +10592,10 @@ bool FV_View::insertFootnote(bool bFootnote)
 	{
 		return false;
 	}
-
+	if(m_FrameEdit.isActive())
+	{
+	        return false;
+	}
 //
 // Do this first
 //
@@ -10541,9 +10641,13 @@ bool FV_View::insertFootnote(bool bFootnote)
 
 	_saveAndNotifyPieceTableChange();
 	m_pDoc->beginUserAtomicGlob();
-	if (!isSelectionEmpty())
+	if (!isSelectionEmpty() && !m_FrameEdit.isActive())
 	{
 		_deleteSelection();
+	}
+	else if(m_FrameEdit.isActive())
+	{
+	       m_FrameEdit.setPointInside();
 	}
 	bool bCreatedFootnoteSL = false;
 

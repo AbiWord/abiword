@@ -419,11 +419,11 @@ void FV_VisualDragText::getImageFromSelection(double x, double y)
 		m_pDragImage = painter.genImageFromRectangle(m_recCurFrame);
 		return;
 	}
-	m_pView->_findPositionCoords(posLow, bEOL, xLow, yLow, xCaret2, yCaret2, heightCaret, bDirection, NULL, &pRunLow);
-	fl_BlockLayout * pBLow1 = pRunLow->getBlock();
 	fp_Run * pRunLow2 = NULL;
 	m_pView->_findPositionCoords(posLow+1, bEOL, xLow, yLow, xCaret2, yCaret2, heightCaret, bDirection, NULL, &pRunLow2);
 	fl_BlockLayout * pBLow2 = pRunLow2->getBlock();
+	m_pView->_findPositionCoords(posLow, bEOL, xLow, yLow, xCaret2, yCaret2, heightCaret, bDirection, NULL, &pRunLow);
+	fl_BlockLayout * pBLow1 = pRunLow->getBlock();
 	if(pBLow2 != pBLow1)
 	{
 		pRunLow = pRunLow2;
@@ -640,6 +640,11 @@ void FV_VisualDragText::mouseRelease(UT_sint32 x, UT_sint32 y)
 	m_iInitialOffX = 0;
 	m_iInitialOffY = 0;
 	PT_DocPosition oldPoint = m_pView->getPoint();
+	if(oldPoint < 2)
+	{
+	  oldPoint = 2;
+	}
+	bool bInFrame = m_pView->isInFrame(oldPoint);
 	bool bPasteTableCol = (m_pView->getPrevSelectionMode() == FV_SelectionMode_TableColumn);
 	if(!bPasteTableCol)
 	{
@@ -655,13 +660,26 @@ void FV_VisualDragText::mouseRelease(UT_sint32 x, UT_sint32 y)
 	{
 		m_pView->getDocument()->endUserAtomicGlob(); // End the big undo block
 	}
-	if(!bPasteTableCol)
+	if(m_pView->getDocument()->isEndFootnoteAtPos(newPoint))
 	{
-	        m_pView->cmdSelect(oldPoint,newPoint);
+	        newPoint++;
 	}
-	else
+	bool bFinalFrame = m_pView->isInFrame(newPoint) && !m_pView->getDocument()->isFrameAtPos(newPoint);
+	bool bDoSelect = true;
+	if(bInFrame && !bFinalFrame)
 	{
-		m_pView->cmdSelectColumn(newPoint);
+	     bDoSelect = false;
+	}
+	if(bDoSelect)
+	{
+	      if(!bPasteTableCol)
+	      {
+	            m_pView->cmdSelect(oldPoint,newPoint);
+	      }
+	      else
+	      {
+		    m_pView->cmdSelectColumn(newPoint);
+	      }
 	}
 	m_bTextCut = false;
 }

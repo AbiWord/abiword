@@ -468,8 +468,8 @@ fl_DocSectionLayout * fp_EndnoteContainer::getDocSectionLayout(void)
  */
 void fp_EndnoteContainer::draw(dg_DrawArgs* pDA)
 {
-	UT_DEBUGMSG(("Endnote: Drawing unbroken Endnote %x x %.2f, y %.2f width %.2f height %.2f \n",this,getX(),getY(),getWidth(),getHeight()));
-	UT_DEBUGMSG(("pDA yoff %d \n",pDA->yoff));
+	xxx_UT_DEBUGMSG(("Endnote: Drawing unbroken Endnote %x x %.2fd, y %.2f width %.2f height %.2f \n",this,getX(),getY(),getWidth(),getHeight()));
+	xxx_UT_DEBUGMSG(("pDA yoff %d \n",pDA->yoff));
 	const UT_Rect * pClipRect = pDA->pG->getClipRect();
 	if(pClipRect)
 	{

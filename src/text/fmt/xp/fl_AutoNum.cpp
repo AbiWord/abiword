@@ -577,9 +577,8 @@ void    fl_AutoNum::_getLabelstr( UT_UCSChar labelStr[], UT_uint32 * insPoint,
 const UT_UCSChar * fl_AutoNum::getLabel(PL_StruxDocHandle pItem)  const
 {
 	static UT_UCSChar label[100];
-	UT_uint32  insPoint=0;
-	UT_uint32 depth;
-	depth = 0;
+	UT_uint32 insPoint = 0;
+	UT_uint32 depth = 0;
 	_getLabelstr( label, &insPoint, depth , pItem);
 	if(insPoint == 0 )
 	{

@@ -423,7 +423,7 @@ void FV_View::_deleteSelection(PP_AttrProp *p_AttrProp_Before, bool bNoUpdate)
 	if(!isInFrame(iLow) && isInFrame(iHigh))
 	{
 		fl_FrameLayout * pFL = getFrameLayout(iHigh);
-		iHigh =pFL->getPosition(true)-1;
+		iHigh =pFL->getPosition(true);
 	}
 	if(isInFrame(iLow) && !isInFrame(iHigh))
 	{
@@ -2935,7 +2935,7 @@ bool FV_View::_insertField(const char* szName,
 
 
 	fd_Field * pField = NULL;
-	if (!isSelectionEmpty())
+	if (!isSelectionEmpty() && !m_FrameEdit.isActive())
 	{
 		m_pDoc->beginUserAtomicGlob();
 		_deleteSelection();
@@ -2945,6 +2945,10 @@ bool FV_View::_insertField(const char* szName,
 			pField->update();
 		}
 		m_pDoc->endUserAtomicGlob();
+	}
+	else if(m_FrameEdit.isActive())
+	{
+	       m_FrameEdit.setPointInside();
 	}
 	else
 	{
@@ -2976,10 +2980,14 @@ FV_View::_findReplaceReverse(UT_uint32* pPrefix, bool& bDoneEntireDocument, bool
 
 		PP_AttrProp AttrProp_Before;
 
-		if (!isSelectionEmpty())
+		if (!isSelectionEmpty() && !m_FrameEdit.isActive())
 		{
 			_deleteSelection(&AttrProp_Before, bNoUpdate);
 		}
+		else if(m_FrameEdit.isActive())
+		  {
+		    m_FrameEdit.setPointInside();
+		  }
 
 		// If we have a string with length, do an insert, else let it
 		// hang from the delete above
@@ -3048,9 +3056,13 @@ FV_View::_findReplace(UT_uint32* pPrefix, bool& bDoneEntireDocument, bool bNoUpd
 
 		PP_AttrProp AttrProp_Before;
 
-		if (!isSelectionEmpty())
+		if (!isSelectionEmpty() && !m_FrameEdit.isActive())
 		{
 			_deleteSelection(&AttrProp_Before, bNoUpdate);
+		}
+		else if(m_FrameEdit.isActive())
+		{
+		  m_FrameEdit.setPointInside();
 		}
 
 		// If we have a string with length, do an insert, else let it
@@ -4520,7 +4532,7 @@ bool FV_View::_charMotion(bool bForward,UT_uint32 countChars, bool bSkipCannotCo
 //
 // Scan past any strux boundaries (like table controls
 //
-		// when moving backwards, we need to also skip over the EndOfFootnote struxes
+// when moving backwards, we need to also skip over the EndOfFootnote struxes
 		while(getPoint() > posBOD && !isPointLegal())
 		{
 			_setPoint(m_iInsPoint - 1);
@@ -4805,8 +4817,12 @@ void FV_View::_doPaste(bool bUseClipboard, bool bHonorFormatting)
 {
 	// internal portion of paste operation.
 
-	if (!isSelectionEmpty())
+	if (!isSelectionEmpty() && !m_FrameEdit.isActive())
 		_deleteSelection();
+	else if(m_FrameEdit.isActive())
+	{
+	       m_FrameEdit.setPointInside();
+	}
 
 	_clearIfAtFmtMark(getPoint());
 	PD_DocumentRange dr(m_pDoc,getPoint(),getPoint());
@@ -5464,10 +5480,11 @@ bool FV_View::_charInsert(const UT_UCSChar * text, UT_uint32 count, bool bForce)
 
 	// Signal PieceTable Change
 	_saveAndNotifyPieceTableChange();
+	bool doInsert = true;
 
 	// Turn off list updates
 	m_pDoc->disableListUpdates();
-	if (!isSelectionEmpty())
+	if (!isSelectionEmpty() && !m_FrameEdit.isActive())
 	{
 		m_pDoc->beginUserAtomicGlob();
 		PP_AttrProp AttrProp_Before;
@@ -5489,6 +5506,10 @@ bool FV_View::_charInsert(const UT_UCSChar * text, UT_uint32 count, bool bForce)
 	}
 	else
 	{
+	        if(m_FrameEdit.isActive())
+		{
+		       m_FrameEdit.setPointInside();
+		}
 		bool bOK = true;
 		if(!isPointLegal() && bOK)
 		{
@@ -5496,6 +5517,24 @@ bool FV_View::_charInsert(const UT_UCSChar * text, UT_uint32 count, bool bForce)
 // If we're in an illegal position move forward till we're safe.
 //
 			bOK = _charMotion(true,1);
+		}
+		PT_DocPosition posEnd = 0;
+		getEditableBounds(true, posEnd);
+		if(posEnd == getPoint() && !isPointLegal())
+		{
+			bOK = _charMotion(false,1);
+		}
+		if(posEnd-1 == getPoint() && !isPointLegal())
+		{
+			bOK = _charMotion(false,1);
+		}
+		if(posEnd == getPoint() && m_pDoc->isTOCAtPos(getPoint()-2))
+		{
+			bOK = _charMotion(false,1);
+		}
+		if(posEnd-1 == getPoint() && m_pDoc->isEndFrameAtPos(getPoint()))
+		{
+			bOK = _charMotion(false,1);
 		}
 		bool bOverwrite = (!m_bInsertMode && !bForce);
 
@@ -5505,7 +5544,6 @@ bool FV_View::_charInsert(const UT_UCSChar * text, UT_uint32 count, bool bForce)
 			m_pDoc->beginUserAtomicGlob();
 			cmdCharDelete(true,count);
 		}
-		bool doInsert = true;
 		if(text[0] == UCS_TAB && count == 1)
 		{
 			//
@@ -5547,7 +5585,7 @@ bool FV_View::_charInsert(const UT_UCSChar * text, UT_uint32 count, bool bForce)
 			}
 		}
 		
-		if (doInsert == true)
+		if (doInsert)
 		{
 			if(pLR)
 			{
@@ -5593,7 +5631,10 @@ bool FV_View::_charInsert(const UT_UCSChar * text, UT_uint32 count, bool bForce)
 	_setPoint(getPoint());
 	_fixInsertionPointCoords();
 	_ensureInsertionPointOnScreen();
-
+	if(!doInsert)
+	{
+	  notifyListeners(AV_CHG_ALL);
+	}
 	return bResult;
 }
 
