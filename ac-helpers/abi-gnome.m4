@@ -59,7 +59,7 @@ if test "$gnome" = true ; then
 fi
 
 if test "$gnome" = true ; then
-	gnomelibs="bonobox gnomeui gal print vfs gdk_pixbuf"
+	gnomelibs="bonobox bonobox_print gnomeui gal print vfs gdk_pixbuf"
 	gnomeliberrors=`gnome-config --cflags $gnomelibs 2>&1 | grep "Unknown library"`
 	if test "x$gnomeliberrors" != "x"; then
 		AC_MSG_ERROR([One or more gnome libraries not found; require: $gnomelibs])
@@ -85,7 +85,7 @@ if test "$gnome" = true ; then
 fi
 
 if test "$gnome" = true ; then
-	GNOME_CFLAGS="`gnome-config --cflags $gnomelibs` -DHAVE_GNOME=1 -lbonobo-print"
+	GNOME_CFLAGS="`gnome-config --cflags $gnomelibs` -DHAVE_GNOME=1"
 	GNOME_LIBS="`gnome-config --libs $gnomelibs`"
 fi
 
