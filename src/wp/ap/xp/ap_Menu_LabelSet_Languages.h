@@ -39,3 +39,4 @@
 #include "ap_Menu_LabelSet_ItIT.h"
 #include "ap_Menu_LabelSet_NoNO.h"
 #include "ap_Menu_LabelSet_CsCZ.h"
+#include "ap_Menu_LabelSet_SvSE.h"

@@ -55,6 +55,7 @@ Alan Young <ayoung@teleport.com>                Alpha/NT
 translators
 -----------
 Albi <albi@linuxfan.com> <onderste@casema.net>  Dutch
+Henrik Berg <henrik@lansen.se>			Swedish
 Frédéric CELLA <fcella@mahj.org>                French
 Mauro Colorio <macolori@tin.it>                 Italian
 Philippe Duperron <duperron@mail.dotcom.fr>     French
