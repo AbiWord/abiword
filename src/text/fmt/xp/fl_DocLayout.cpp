@@ -597,6 +597,24 @@ fl_BlockLayout* FL_DocLayout::findBlockAtPosition(PT_DocPosition pos)
 		if(pView && pView->isHdrFtrEdit())
 		{
 			pShadow = pView->getEditShadow();
+//
+// We might actually be in the other HdrFtr is the point got here from an undo!
+// Check for this.
+//
+			if(!pShadow->getHdrFtrSectionLayout()->isPointInHere(pos))
+			{
+				fl_HdrFtrSectionLayout * pHF = (fl_HdrFtrSectionLayout *) pBL->getSectionLayout();
+				if(pHF->isPointInHere(pos))
+				{
+					pShadow = pHF->getFirstShadow();
+					pView->clearHdrFtrEdit();
+					pView->setHdrFtrEdit(pShadow);
+					pBL = pShadow->findBlockAtPosition(pos);
+					return pBL;
+				}
+				pBL = NULL;
+			}   
+					
 		}
 		else
 		{

@@ -2818,6 +2818,83 @@ void fl_HdrFtrSectionLayout::addPage(fp_Page* pPage)
 	markAllRunsDirty();
 }
 
+bool fl_HdrFtrSectionLayout::isPointInHere(PT_DocPosition pos)
+{
+//
+// Skip through the blocks in this shadow to find the one containing this
+// point.
+//
+    fl_BlockLayout*	pBL = m_pFirstBlock;
+	if(pBL == NULL)
+		return false;
+	if(pos < pBL->getPosition())
+	{
+//
+// This corner case is that pos == position of the HdrFtr strux
+//
+		if(pos == (pBL->getPosition() - 1))
+		{
+			return true;
+		}
+		return false;;
+	}
+//
+// OK see if the next hdrftr is ahaead of the pos
+//
+	fl_HdrFtrSectionLayout * pHF = (fl_HdrFtrSectionLayout *) getNext();
+	if(pHF == NULL)
+	{
+		PT_DocPosition posEOD;
+		m_pDoc->getBounds(true,posEOD);
+		if(pos <= posEOD)
+		{
+			return true;
+		}
+		UT_ASSERT(UT_SHOULD_NOT_HAPPEN);
+		return false;
+	}
+	fl_BlockLayout * ppBL = pHF->getFirstBlock();
+	if(ppBL != NULL)
+	{
+		if(pos < (ppBL->getPosition()-1))
+		{
+			return true;
+		}
+		return false;
+	}
+
+	fl_BlockLayout* pNext = pBL->getNext();
+	while(pNext != NULL && pNext->getPosition( true) < pos)
+	{
+		pBL = pNext;
+		pNext = pNext->getNext();
+	}
+	if(pNext != NULL)
+	{
+		return true;
+	}
+	else if(pBL && pBL->getPosition() == pos)
+	{
+		return true;
+	}
+//
+// Now the point MIGHT be in this last block. Use code from pd_Document
+// to find out. Have to check whether we're out of docrange first
+//
+	PL_StruxDocHandle sdh=NULL;
+	bool bres;
+	bres = m_pDoc->getStruxOfTypeFromPosition(pos, PTX_Block, &sdh);
+	if(bres && sdh == pBL->getStruxDocHandle())
+	{
+		return true;
+	}
+	return false;
+}
+
+/*!
+ * Removes the shadow and the corresponding element pointing to the shadow for this
+ * Page.
+ */
 void fl_HdrFtrSectionLayout::deletePage(fp_Page* pPage)
 {
 	UT_sint32 iShadow = _findShadow(pPage);
@@ -3642,7 +3719,16 @@ fl_BlockLayout * fl_HdrFtrShadow::findBlockAtPosition(PT_DocPosition pos)
 	if(pBL == NULL)
 		return NULL;
 	if(pos < pBL->getPosition())
+	{
+//
+// This corner case is that pos == position of the HdrFtr strux
+//
+		if(pos == (pBL->getPosition() - 1))
+		{
+			return pBL;
+		}
 		return NULL;
+	}
 	fl_BlockLayout* pNext = pBL->getNext();
 	while(pNext != NULL && pNext->getPosition( true) < pos)
 	{

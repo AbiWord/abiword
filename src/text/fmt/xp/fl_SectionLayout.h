@@ -349,6 +349,7 @@ public:
 	void                        checkAndRemovePages(void);
 	void                        addValidPages(void);
 	bool                        isPageHere( fp_Page *pPage);
+	bool                        isPointInHere(PT_DocPosition pos);
 	void                        collapseBlock(fl_BlockLayout * pBlock);
 	virtual void				format(void);
 	virtual void				updateLayout(void);
@@ -408,17 +409,6 @@ private:
 	fp_Container *              m_pHdrFtrContainer;
 };
 
-#if 0 // Maybe useful for different header/footer pages.
-class ABI_EXPORT fl_HdrFtrSectionLayoutDiff : public fl_HdrFtrSectionLayout
-{
-	friend class fl_DocListener;
-
-public:
-	fl_HdrFtrSectionLayoutDiff(HdrFtrType iHFType, FL_DocLayout* pLayout, fl_DocSectionLayout* pDocSL, PL_StruxDocHandle sdh, PT_AttrPropIndex ap);
-	virtual ~fl_HdrFtrSectionLayoutDiff();
-    virtual void addPage(fp_Page * pPage);
-}
-#endif
 
 class ABI_EXPORT fl_HdrFtrShadow : public fl_SectionLayout
 {

@@ -2707,6 +2707,11 @@ bool FV_View::setStyleAtPos(const XML_Char * style, PT_DocPosition posStart1, PT
 					PT_DocPosition nextPos = pNext->getPosition(false);
 					sdh = m_pDoc->findForwardStyleStrux(style, nextPos);
 				}
+				if(sdh != NULL)
+				{
+					UT_DEBUGMSG(("SEVIOR: FOund style forward \n"));
+					UT_ASSERT(0);
+				}
 			}
 //
 // OK put this heading style into any pre-exsiting Numbering Headings
