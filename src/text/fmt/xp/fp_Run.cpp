@@ -391,7 +391,7 @@ UT_Bool fp_Run::split(UT_uint32 splitOffset, UT_Bool bInsertBlock)
 		at the cost of more flicker than is theoretically needed. 
 
 		1.  Fix the width of the left run.  This usually shrinks the 
-		line and erases and moves all runs to the right.
+		line, which erases all subsequent runs and moves them left.
 		
 		2. Insert the new run into the line, creating a properly 
 		positioned RunInfo for it.  
