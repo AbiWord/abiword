@@ -35,9 +35,10 @@ XAP_Preview_Zoom::XAP_Preview_Zoom(GR_Graphics * gc)
 	m_pFont = NULL;
 
 	// m_gc is set in base class, so set up defaults
+	setZoomPercent(100);
 	setFont(XAP_Preview_Zoom::font_NORMAL);
 	setDrawAtPosition(XAP_Preview_Zoom::pos_CENTER);
-	setZoomPercent(100);
+
 }
 
 XAP_Preview_Zoom::~XAP_Preview_Zoom()
@@ -57,6 +58,8 @@ void XAP_Preview_Zoom::setFont(XAP_Preview_Zoom::tFont f)
 {
 	UT_ASSERT(m_gc);
 
+	UT_ASSERT(m_zoomPercent > 0);
+		
 	// when searching for fonts, we use these
 	GR_Font * found = NULL;
 	char fontString[10];
@@ -72,12 +75,14 @@ void XAP_Preview_Zoom::setFont(XAP_Preview_Zoom::tFont f)
  		sprintf(fontString, "%dpt", pointSize);
 
 		found = m_gc->findFont("Times New Roman", "normal", "", "normal", "", fontString);
-		UT_ASSERT(found);
 
 		if (found)
+		{
+			m_gc->setFont(found);
 			REPLACEP(m_pFont, found);
-
-		m_gc->setFont(found);
+		}
+		else 
+			UT_ASSERT(UT_SHOULD_NOT_HAPPEN);
 
 		break;
 	default:
