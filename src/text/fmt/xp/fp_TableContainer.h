@@ -102,8 +102,6 @@ public:
 	void				layout(void);
 	void		        drawBroken(dg_DrawArgs* pDa, fp_TableContainer * pTab);
 	virtual void		clearScreen(void);
-	void                clearLines(fp_TableContainer * pBroke);
-	void				clearBackground(fp_TableContainer * pBroke);
 	void                drawLines(fp_TableContainer * pBroke);
 	void                drawLinesAdjacent(void);
 	virtual void		draw(dg_DrawArgs*);
@@ -241,6 +239,7 @@ public:
 
 private:
 		
+	void                _clear(fp_TableContainer * pBroke);
 	void				_getBrokenRect(fp_TableContainer * pBroke, fp_Page* &pPage, UT_Rect &bRec);
 		
 //

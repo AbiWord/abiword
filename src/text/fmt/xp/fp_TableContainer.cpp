@@ -227,17 +227,16 @@ void fp_CellContainer::clearScreen(void)
 				|| ( (getY()+getHeight()) >= pBroke->getYBreak() && 
 					 (getY() + getHeight()) < pBroke->getYBottom()))
 			{
-				clearLines(pBroke);
-				clearBackground(pBroke);
+				_clear(pBroke);
 			}
 			pBroke = (fp_TableContainer *) pBroke->getNext();
 		}
 	}
 }
 
-void fp_CellContainer::clearLines(fp_TableContainer * pBroke)
+void fp_CellContainer::_clear(fp_TableContainer * pBroke)
 {
-	if(!m_bLinesDrawn) // FIXME MarcM: replace by m_iLeftStyle, m_iRightStyle, etc.
+	if(!m_bLinesDrawn || m_iBgStyle == FS_OFF) // FIXME MarcM: replace by m_iLeftStyle, m_iRightStyle, etc.
 	{
 		return;
 	}
@@ -252,6 +251,7 @@ void fp_CellContainer::clearLines(fp_TableContainer * pBroke)
 
 	if (pPage != NULL)
 	{
+// first clear the lines
 		if(m_iLeftStyle != LS_OFF)
 			{	getGraphics()->drawLine(bRec.left, bRec.top, bRec.left,  bRec.top + bRec.height); }
 		if(m_iTopStyle != LS_OFF)
@@ -260,23 +260,8 @@ void fp_CellContainer::clearLines(fp_TableContainer * pBroke)
 			{	getGraphics()->drawLine(bRec.left + bRec.width, bRec.top, bRec.left + bRec.width, bRec.top + bRec.height); }
 		if(m_iBottomStyle != LS_OFF)
 			{	getGraphics()->drawLine(bRec.left, bRec.top + bRec.height, bRec.left + bRec.width , bRec.top + bRec.height); }
-	}
-				
-	m_bLinesDrawn = false;
-}
 
-void fp_CellContainer::clearBackground(fp_TableContainer * pBroke)
-{
-	if (m_iBgStyle == FS_OFF)
-	{
-		return;
-	}
-	
-	UT_Rect bRec;
-	fp_Page * pPage = NULL;
-	_getBrokenRect(pBroke, pPage, bRec);
-	if (pPage != NULL)
-	{
+// then clear the background as well
 		switch (m_iBgStyle)
 		{
 			case FS_FILL:
@@ -287,6 +272,7 @@ void fp_CellContainer::clearBackground(fp_TableContainer * pBroke)
 		}
 	}
 	m_bBgDirty = true;
+	m_bLinesDrawn = false;
 }
 
 /*!
