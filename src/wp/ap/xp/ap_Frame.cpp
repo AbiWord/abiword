@@ -27,8 +27,8 @@
 #include "pd_Document.h"
 #include "xap_ViewListener.h"
 #include "xap_Scrollbar_ViewListener.h"
-#include "ap_UnixTopRuler.h"
-#include "ap_UnixLeftRuler.h"
+#include "ap_TopRuler.h"
+#include "ap_LeftRuler.h"
 #include "ap_StatusBar.h"
 AP_Frame::~AP_Frame()
 {
