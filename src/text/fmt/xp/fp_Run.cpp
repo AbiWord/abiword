@@ -681,13 +681,13 @@ void FP_Run::_drawPart(UT_sint32 xoff, UT_sint32 yoff, UT_uint32 iStart, UT_uint
 
 		if (len <= lenSpan)
 		{
-			m_pG->drawChars(pSpan, 0, len, xoff + iLeftWidth, yoff);
+			m_pG->drawChars(pSpan, 0, len, xoff + iLeftWidth, yoff - m_iAscent);
 
 			bContinue = UT_FALSE;
 		}
 		else
 		{
-			m_pG->drawChars(pSpan, 0, lenSpan, xoff + iLeftWidth, yoff);
+			m_pG->drawChars(pSpan, 0, lenSpan, xoff + iLeftWidth, yoff - m_iAscent);
 
 			for (UT_uint32 i=offset; i<offset+lenSpan; i++)
 			{

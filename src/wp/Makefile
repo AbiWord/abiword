@@ -23,7 +23,7 @@
 ABI_DEPTH=..
 include $(ABI_DEPTH)/config/abi_defs.mk
 
-DIRS=		docstrux impexp fmt guts
+DIRS=		docstrux impexp fmt guts gui
 
 include $(ABI_DEPTH)/config/abi_rules.mk
 

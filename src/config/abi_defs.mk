@@ -87,7 +87,9 @@ EXTRA_LIBS=	-L$(DIST)/lib 							\
 		$(addprefix -l,$(addsuffix $(ABI_VERSION),$(ABI_APPLIBS)))	\
 		$(addprefix -l,$(addsuffix $(MOD_VERSION),$(ABI_OTHLIBS)))	\
 		$(addprefix -l,$(ABI_LIBS))	\
+		-L/usr/src/wxGTK/lib/Linux -lwx_gtk \
 		`gtk-config --libs`
+WXINCLUDE=	-D__WXGTK__ -I/usr/src/wxGTK/include
 endif
 
 ##################################################################
