@@ -1632,13 +1632,15 @@ UT_Bool	fl_BlockLayout::_doInsertImageRun(PT_BlockOffset blockOffset, const PX_C
 					UT_sint32 iImageHeight;
 
 					UT_PNG_getDimensions(pBB, iImageWidth, iImageHeight);
-	
+
+#if 0					
 					if (pG->queryProperties(GR_Graphics::DGP_SCREEN))
 					{
 						iDisplayWidth = iImageWidth;
 						iDisplayHeight = iImageHeight;
 					}
 					else
+#endif						
 					{
 						double fScale = pG->getResolution() / 72.0;
 			

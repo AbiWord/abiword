@@ -38,6 +38,8 @@ GR_Graphics::~GR_Graphics()
 
 void GR_Graphics::setZoomPercentage(UT_uint32 iZoom)
 {
+	UT_ASSERT(iZoom > 0);
+	
 	m_iZoomPercentage = iZoom;
 }
 

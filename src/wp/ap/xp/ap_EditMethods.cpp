@@ -203,6 +203,7 @@ public:
 	static EV_EditMethod_Fn viewPara;
 	static EV_EditMethod_Fn viewHeadFoot;
 	static EV_EditMethod_Fn zoom;
+	static EV_EditMethod_Fn dlgZoom;
 
 	static EV_EditMethod_Fn insBreak;
 	static EV_EditMethod_Fn insPageNo;
@@ -416,6 +417,7 @@ static EV_EditMethod s_arrayEditMethods[] =
 	EV_EditMethod(NF(viewPara),				0,		""),
 	EV_EditMethod(NF(viewHeadFoot),			0,		""),
 	EV_EditMethod(NF(zoom),					0,		""),
+	EV_EditMethod(NF(dlgZoom),					0,		""),
 
 	EV_EditMethod(NF(insBreak),				0,		""),
 	EV_EditMethod(NF(insPageNo),			0,		""),
@@ -3104,42 +3106,26 @@ Defun1(viewHeadFoot)
 	return UT_TRUE;
 }
 
-Defun1(zoom)
+Defun(zoom)
+{
+	XAP_Frame * pFrame = (XAP_Frame *) pAV_View->getParentData();
+	UT_ASSERT(pFrame);
+
+	// TODO the cast below is ugly
+	UT_uint32 iZoom = atoi((char*) (pCallData->m_pData));
+	UT_ASSERT(iZoom > 0);
+
+	pFrame->setZoomPercentage(iZoom);
+	
+	return UT_TRUE;
+}
+
+Defun1(dlgZoom)
 {
 	XAP_Frame * pFrame = (XAP_Frame *) pAV_View->getParentData();
 	UT_ASSERT(pFrame);
 
 	s_TellNotImplemented(pFrame, "Zoom dialog", __LINE__);
-
-	// For now, we hack some zoom changes, until the dialog is done
-
-	switch (pFrame->getZoomPercentage())
-	{
-	case 100:
-		pFrame->setZoomPercentage(75);
-		break;
-		
-	case 75:
-		pFrame->setZoomPercentage(25);
-		break;
-		
-	case 25:
-		pFrame->setZoomPercentage(125);
-		break;
-		
-	case 125:
-		pFrame->setZoomPercentage(200);
-		break;
-		
-	case 200:
-		pFrame->setZoomPercentage(100);
-		break;
-		
-	default:
-		pFrame->setZoomPercentage(100);
-		break;
-	}
-	
 	
 	return UT_TRUE;
 }

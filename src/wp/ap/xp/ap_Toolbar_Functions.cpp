@@ -32,7 +32,7 @@
 #include "xap_Clipboard.h"
 #include "xap_Frame.h"
 #include "fv_View.h"
-
+#include "gr_Graphics.h"
 
 #define ABIWORD_VIEW  	FV_View * pView = static_cast<FV_View *>(pAV_View)
 
@@ -363,6 +363,23 @@ Defun_EV_GetToolbarItemState_Fn(ap_ToolbarGetState_BlockFmt)
 		
 		free(props_in);
 	}
+
+	return s;
+}
+
+Defun_EV_GetToolbarItemState_Fn(ap_ToolbarGetState_Zoom)
+{
+	ABIWORD_VIEW;
+	UT_ASSERT(pView);
+
+	EV_Toolbar_ItemState s = EV_TIS_UseString;
+
+	static char buf[10];
+
+	UT_uint32 iZoom = pView->getGraphics()->getZoomPercentage();
+	
+	sprintf(buf, "%ld%%", iZoom);
+	*pszState = buf;
 
 	return s;
 }

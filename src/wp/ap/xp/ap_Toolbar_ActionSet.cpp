@@ -103,6 +103,11 @@ EV_Toolbar_ActionSet * AP_CreateToolbarActionSet(void)
 	_s(AP_TOOLBAR_ID_1COLUMN,		EV_TBIT_GroupButton,	"sectColumns1",	AV_CHG_FMTSECTION,	ap_ToolbarGetState_SectionFmt);
 	_s(AP_TOOLBAR_ID_2COLUMN,		EV_TBIT_GroupButton,	"sectColumns2",	AV_CHG_FMTSECTION,	ap_ToolbarGetState_SectionFmt);
 	_s(AP_TOOLBAR_ID_3COLUMN,		EV_TBIT_GroupButton,	"sectColumns3",	AV_CHG_FMTSECTION,	ap_ToolbarGetState_SectionFmt);
+
+	// AV_CHG_WINDOWSIZE, below, doesn't seem right.  TODO
+	
+	_s(AP_TOOLBAR_ID_ZOOM,			EV_TBIT_ComboBox,		"zoom",			AV_CHG_WINDOWSIZE,	ap_ToolbarGetState_Zoom);
+	
 	// ... add others here ...
 	
 	_s(AP_TOOLBAR_ID__BOGUS2__,		EV_TBIT_BOGUS,			NULL,			0,					NULL);

@@ -36,5 +36,6 @@ Defun_EV_GetToolbarItemState_Fn(ap_ToolbarGetState_Clipboard);
 Defun_EV_GetToolbarItemState_Fn(ap_ToolbarGetState_CharFmt);
 Defun_EV_GetToolbarItemState_Fn(ap_ToolbarGetState_BlockFmt);
 Defun_EV_GetToolbarItemState_Fn(ap_ToolbarGetState_SectionFmt);
+Defun_EV_GetToolbarItemState_Fn(ap_ToolbarGetState_Zoom);
 
 #endif /* AP_TOOLBAR_FUNCTIONS_H */

@@ -107,7 +107,7 @@ EV_Menu_ActionSet * AP_CreateMenuActionSet(void)
 	_s(AP_MENU_ID_VIEW_STATUSBAR,	0,0,1,	"viewStatus",		ap_GetState_Bars,		NULL);
 	_s(AP_MENU_ID_VIEW_SHOWPARA,	0,0,1,	"viewPara",			ap_GetState_View,		NULL);
 	_s(AP_MENU_ID_VIEW_HEADFOOT,	0,0,1,	"viewHeadFoot",		ap_GetState_View,		NULL);
-	_s(AP_MENU_ID_VIEW_ZOOM,		0,1,0,	"zoom",				NULL,					NULL);
+	_s(AP_MENU_ID_VIEW_ZOOM,		0,1,0,	"dlgZoom",			NULL,					NULL);
 
 	_s(AP_MENU_ID_INSERT,			1,0,0,	NULL,				NULL,					NULL);
 	_s(AP_MENU_ID_INSERT_BREAK,		0,1,0,	"insBreak",			NULL,					NULL);

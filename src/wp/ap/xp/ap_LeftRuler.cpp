@@ -70,6 +70,14 @@ AP_LeftRuler::~AP_LeftRuler(void)
 
 /*****************************************************************/
 
+void AP_LeftRuler::setView(AV_View* pView, UT_uint32 iZoom)
+{
+	this->setView(pView);
+
+	UT_ASSERT(m_pG);
+	m_pG->setZoomPercentage(iZoom);
+}
+
 void AP_LeftRuler::setView(AV_View * pView)
 {
 	if (m_pView && (m_pView != pView))

@@ -240,8 +240,8 @@ UT_Bool AP_Win32Frame::_showDocument(UT_uint32 iZoom)
 	// views, like we do for all the other objects.  We also do not
 	// allocate the TopRuler, LeftRuler here; that is done as the frame is
 	// created.
-	m_pData->m_pTopRuler->setView(pView);
-	m_pData->m_pLeftRuler->setView(pView);
+	m_pData->m_pTopRuler->setView(pView, iZoom);
+	m_pData->m_pLeftRuler->setView(pView, iZoom);
 
 	RECT r;
 	GetClientRect(hwnd, &r);

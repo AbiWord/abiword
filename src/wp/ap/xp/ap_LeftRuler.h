@@ -41,6 +41,7 @@ public:
 	virtual ~AP_LeftRuler(void);
 
 	virtual void		setView(AV_View * pView);
+	void				setView(AV_View* pView, UT_uint32 iZoom);
 	void				setOffsetPageViewTopMargin(UT_uint32 iPageViewLeftMargin);
 	void				setHeight(UT_uint32 iHeight);
 	UT_uint32			getHeight(void) const;

@@ -186,8 +186,8 @@ UT_Bool AP_UnixFrame::_showDocument(UT_uint32 iZoom)
 	// views, like we do for all the other objects.  We also do not
 	// allocate the TopRuler, LeftRuler  here; that is done as the
 	// frame is created.
-	m_pData->m_pTopRuler->setView(pView);
-	m_pData->m_pLeftRuler->setView(pView);
+	m_pData->m_pTopRuler->setView(pView, iZoom);
+	m_pData->m_pLeftRuler->setView(pView, iZoom);
 	
 	m_pView->setWindowSize(GTK_WIDGET(m_dArea)->allocation.width,
 						   GTK_WIDGET(m_dArea)->allocation.height);
@@ -212,6 +212,9 @@ UT_Bool AP_UnixFrame::_showDocument(UT_uint32 iZoom)
 	m_pView->draw();
 #endif	
 
+	m_pData->m_pTopRuler->draw(NULL);
+	m_pData->m_pLeftRuler->draw(NULL);
+	
 	return UT_TRUE;
 
 Cleanup:

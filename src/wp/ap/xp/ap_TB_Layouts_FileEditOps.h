@@ -43,5 +43,7 @@ BeginLayout(FileEditOps)
 	ToolbarItem(AP_TOOLBAR_ID_EDIT_CUT)
 	ToolbarItem(AP_TOOLBAR_ID_EDIT_COPY)
 	ToolbarItem(AP_TOOLBAR_ID_EDIT_PASTE)
+	Spacer()
+	ToolbarItem(AP_TOOLBAR_ID_ZOOM)
 
 EndLayout()
