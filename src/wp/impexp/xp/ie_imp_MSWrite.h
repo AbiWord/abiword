@@ -26,8 +26,20 @@
 #include <stdio.h>
 #include "ie_imp.h"
 #include "ie_impexp_MSWrite.h"
+#include "ut_string_class.h"
+
 class PD_Document;
 
+/* the fonts */
+typedef struct wri_font {
+	short	ffid;
+	char	*name;
+} wri_font;
+
+typedef struct wri_image {
+    unsigned char *png_image;
+    int length;
+} wri_image;
 
 // The importer/reader for MS Write Files.
 
@@ -53,43 +65,37 @@ public:
 
 class ABI_EXPORT IE_Imp_MSWrite : public IE_Imp
 {
- public:
-   IE_Imp_MSWrite(PD_Document * pDocument);
-   ~IE_Imp_MSWrite();
-   
-   virtual UT_Error     importFile(const char * szFilename);
-   
- protected:
-   UT_Error			_parseFile(FILE * fp);
-   UT_Error			_writeHeader(FILE * fp);
- private:
-   static UT_uint32 ReadFileDesc(FILE * file, WRI_write_file_desc_t & desc);
-   static UT_uint32 ReadText(FILE * file, const WRI_write_file_desc_t & desc, 
-                             UT_uint16 pageNumber,	/* start at 1 */
-                             UT_Byte * buf, UT_uint32 & bufLen);
-   static UT_uint32 ReadFormatPage (FILE * file, int & pos, 
-                                    WRI_format_page_t * aPage);
-
-   static XML_Char * MakeProperties (XML_Char * buf, const size_t bufSize,
-                                     XML_Char * attr, XML_Char * value);
-   UT_Error ReadTextRangeWithFormat (FILE * fp, const UT_uint32 end, 
-                                     const WRI_format_page_t & fmtData);
-   
-   //   static UT_uint32 ReadStyle(FILE * file, 
-   //                         const write_file_desc & desc, 
-   //                         UT_uint16 pageNumber,/* start at 1 */
-   //                         text_run_array * & buf, size_t textLen);
-   //   static UT_uint32 ReadPageStyle(text_run_array * & buf, 
-   //                             UT_uint16 currentPage, 
-   //                             size_t & remainingLen);
+public:
+	IE_Imp_MSWrite(PD_Document * pDocument);
+	~IE_Imp_MSWrite();
+	
+	virtual UT_Error     importFile(const char * szFilename);
+	
+protected:
+	UT_Error			_parseFile();
+	UT_Error			_writeHeader();
+	
+private:
+	void free_ffntb ();
+	int read_ffntb ();
+	void translate_char (char ch, UT_UCS2String & buf);
+	int read_pap ();
+	int read_char (int fcFirst2, int fcLim2);
+	int wri_pict_read (unsigned char *data, int size);
+	int wri_pict_print_data ();
+	
+	FILE* mFile;
+	
+	UT_uint32 wri_fonts_count;
+	struct wri_font *wri_fonts;
+	struct wri_image **wri_images;
+	UT_uint32 wri_images_count;
+	
+	struct wri_struct *write_file_header;
+	struct wri_struct *write_picture;
+	
+	UT_UCS2String mCharBuf;    // buffer for char runs.
+	UT_ByteBuf mTextBuf;       // complete text buffer as extracted out of the file.
 };
 
 #endif /* IE_IMP_MSWRITE_H */
-
-
-
-
-
-
-
-

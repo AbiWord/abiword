@@ -23,6 +23,7 @@ ABI_ROOT:=$(shell pwd)/../../../..
 include $(ABI_ROOT)/src/config/abi_defs_wp.mk
 
 CPPSRCS=		ie_impexp_Register.cpp			\
+			ie_impexp_MSWrite.cpp			\
 			ie_exp.cpp				\
 			ie_exp_AbiWord_1.cpp			\
 			ie_exp_AWT.cpp				\
@@ -69,6 +70,7 @@ CPPSRCS=		ie_impexp_Register.cpp			\
 			ie_imp_Psion.cpp			\
 			ie_imp_PW.cpp				\
 			ie_imp_WordPerfect.cpp			\
+			ie_imp_MSWrite.cpp			\
 			ie_imp_ISCII.cpp			\
 			ie_imp_T602.cpp
 
