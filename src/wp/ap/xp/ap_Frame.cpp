@@ -489,11 +489,16 @@ void AP_Frame::_replaceView(GR_Graphics * pG, FL_DocLayout *pDocLayout,
 			    AV_ListenerId lid, AV_ListenerId lidScrollbarViewListener,
 			    UT_uint32 iZoom)
 {
+	bool holdsSelection = false;
+	PD_DocumentRange range;
+	if (m_pView && !m_pView->isSelectionEmpty ()) {
+		holdsSelection = true;
+		static_cast<FV_View*>(m_pView)->getDocumentRangeOfCurrentSelection (&range);
+	} 
+
 	// switch to new view, cleaning up previous settings
 	if (((AP_FrameData*)m_pData)->m_pDocLayout)
-	{
 		pOldDoc = ((AP_FrameData*)m_pData)->m_pDocLayout->getDocument();
-	}
 
 	REPLACEP(((AP_FrameData*)m_pData)->m_pG, pG);
 	REPLACEP(((AP_FrameData*)m_pData)->m_pDocLayout, pDocLayout);
@@ -504,8 +509,8 @@ void AP_Frame::_replaceView(GR_Graphics * pG, FL_DocLayout *pDocLayout,
 	}
 
 	REPLACEP(m_pView, pView);
-        if(getApp()->getViewSelection())
-	       getApp()->setViewSelection(pView);
+	if(getApp()->getViewSelection())
+		getApp()->setViewSelection(pView);
 
 	REPLACEP(m_pScrollObj, pScrollObj);
 	REPLACEP(m_pViewListener, pViewListener);
@@ -537,9 +542,11 @@ void AP_Frame::_replaceView(GR_Graphics * pG, FL_DocLayout *pDocLayout,
 	m_pView->setWindowSize(_getDocumentAreaWidth(), _getDocumentAreaHeight());
 
 	updateTitle();
-	//pDocLayout->setView((FV_View *) m_pView);
-	pDocLayout->fillLayouts();   
-	
+	pDocLayout->fillLayouts();      
+
+	if (holdsSelection)
+		static_cast<FV_View*>(m_pView)->cmdSelect (range.m_pos1, range.m_pos2);
+
 	_resetInsertionPoint();
 }
 
