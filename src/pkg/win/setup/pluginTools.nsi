@@ -42,9 +42,6 @@ DirText "Choose the AbiSuite directory where you previously installed Abiword:"
 
 ; For NSIS 2.xx
 CheckBitmap ..\..\pkg\win\setup\modern.bmp
-; For NSIS 1.xx
-;EnabledBitmap  ..\..\pkg\win\setup\checkbox.bmp
-;DisabledBitmap ..\..\pkg\win\setup\emptybox.bmp
 
 ; The stuff that must be installed
 ; binary, license, or whatever
@@ -69,7 +66,6 @@ Section
 
 SectionEnd
 
-;SectionDivider
 SubSection /e "Dictionary, Thesaurus, etc."
 
 SubSection "AikSaurus (thesaurus) Plugins"
@@ -87,12 +83,6 @@ Section "The AikSaurus Plugin"
 
 	DoInstall:
 	File "libAikSaurusABI.dll"
-	;File "meanings.dat"
-	;File "words.dat"
-  
-	; Write out AikSaurus data file directory
-	; TODO actually determine if already set or not and use existing data files if there?
-	;WriteRegStr HKLM SOFTWARE\Aiksaurus "Data_Dir" "$INSTDIR\AbiWord\plugins\"
 
 	End:
 SectionEnd
@@ -138,8 +128,6 @@ Section "AbiURLDict Plugin"
 	End:
 SectionEnd
 
-;SectionDivider
-
 ; OPTIONAL
 Section "AbiWikipedia Plugin"
 	SectionIn 1 2
@@ -158,10 +146,27 @@ Section "AbiWikipedia Plugin"
 	End:  
 SectionEnd
 
+; OPTIONAL
+Section "AbiGoogle Plugin"
+	SectionIn 1 2
+
+	; Testing clause to Overwrite Existing Version - if exists
+	IfFileExists "$INSTDIR\AbiWord\plugins\libAbiGoogle.dll" 0 DoInstall
+	
+	MessageBox MB_YESNO "Overwrite Existing AbiGoogle Plugin?" IDYES DoInstall
+	
+	DetailPrint "Skipping AbiGoogle Plugin (already exists)!"
+	Goto End
+
+	DoInstall:
+	File "libAbiGoogle.dll"
+
+	End:  
+SectionEnd
+
 ; Dictionary, thesaurus, encyclopedia, etc.
 SubSectionEnd
 
-;SectionDivider
 SubSection /e "Translation Plugins"
 
 ; OPTIONAL
@@ -185,24 +190,23 @@ SectionEnd
 ;SectionDivider
 
 ; OPTIONAL
-;Section "AbiFreeTranslation Plugin"
-;	SectionIn 1 2
-;
-;	; Testing clause to Overwrite Existing Version - if exists
-;	IfFileExists "$INSTDIR\AbiWord\plugins\libAbiFreeTranslation.dll" 0 DoInstall
-;	
-;	MessageBox MB_YESNO "Overwrite Existing AbiFreeTranslation Plugin?" IDYES DoInstall
-;	
-;	DetailPrint "Skipping AbiFreeTranslation Plugin (already exists)!"
-;	Goto End
-;
-;	DoInstall:
-;	File "libAbiFreeTranslation.dll"
-;
-;	End:
-;SectionEnd
-;
-;SectionDivider
+Section "AbiFreeTranslation Plugin"
+	SectionIn 1 2
+
+	; Testing clause to Overwrite Existing Version - if exists
+	IfFileExists "$INSTDIR\AbiWord\plugins\libAbiFreeTranslation.dll" 0 DoInstall
+	
+	MessageBox MB_YESNO "Overwrite Existing AbiFreeTranslation Plugin?" IDYES DoInstall
+	
+	DetailPrint "Skipping AbiFreeTranslation Plugin (already exists)!"
+	Goto End
+
+	DoInstall:
+	File "libAbiFreeTranslation.dll"
+
+	End:
+SectionEnd
+
 SubSectionEnd
 
 ;SectionDivider
