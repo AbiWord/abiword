@@ -9498,10 +9498,18 @@ void FV_View::setShowRevisions(bool bShow)
 	}
 }
 
-
 void FV_View::toggleShowRevisions()
 {
 	setShowRevisions(!m_bShowRevisions);
+}
+
+/*!
+    same as cmdSetRevisionLevel() except without layout rebuild
+ */
+void FV_View::setRevisionLevel(UT_uint32 i)
+{
+	m_pDoc->setShowRevisionId(i);
+	m_iViewRevision = i;
 }
 
 bool FV_View::isMarkRevisions()
@@ -10089,3 +10097,5 @@ void fv_PropCache::clearProps(void)
 	m_iNumProps = 0;
 	xxx_UT_DEBUGMSG(("clearing props numProps %d \n",m_iNumProps));
 }
+
+

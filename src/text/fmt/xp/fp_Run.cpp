@@ -433,6 +433,8 @@ void fp_Run::getSpanAP(const PP_AttrProp * &pSpanAP, bool &bDeleteAfter)
 
 	bDeleteAfter = false;
 
+	const PP_AttrProp * pSpanAPOrig = pSpanAP;
+	
 	const XML_Char* pRevision = NULL;
 	if(pSpanAP && pSpanAP->getAttribute("revision", pRevision))
 	{
@@ -457,10 +459,12 @@ void fp_Run::getSpanAP(const PP_AttrProp * &pSpanAP, bool &bDeleteAfter)
 		UT_uint32 iMaxId = pRev->getId();
 		
 	
-		if(!bShow)
+		if(!bShow && iId == 0)
 		{
-			// revisions are not to be shown, i.e., additions are to
-			// be hidden, fmt changes ignored, and deletions will be visible
+			// revisions are not to be shown, and the document to be
+			// shown in the state before the first revision, i.e.,
+			// additions are to be hidden, fmt changes ignored, and
+			// deletions will be visible
 
 			// see if the first revision is an addition ...
 			i = 1;
@@ -496,6 +500,99 @@ void fp_Run::getSpanAP(const PP_AttrProp * &pSpanAP, bool &bDeleteAfter)
 			// text was part of the document before the revisions were
 			// applied all other revisions need to be ingored
 			setVisibility(FP_VISIBLE);
+			return;
+		}
+		if(!bShow && iId != 0)
+		{
+			// revisions not to be shown, but document to be presented
+			// as it looks after the final revision
+
+			// the UI should not allow us any other values of iId than
+			// 0 and 0xffffffff in not-show mode, this is to catch any
+			// anomalies (e.g., misbehaving importer)
+			UT_ASSERT( iId == 0xffffffff );
+			if(iId != 0xffffffff)
+			{
+				iId = 0xffffffff;
+				// we cannot call pView->cmdSetRevisionLevel(iId) here
+				// as that results in notifying listeneres, it would
+				// create real mess
+			}
+
+			// now we need to loop through subsequent revisions,
+			// working out the their cumulative effect
+			i = 1;
+			bool bDeleted = false;
+			
+			for(i = 1; i <= (UT_sint32)iMaxId; i++)
+			{
+				pRev = m_pRevisions->getRevisionWithId(i,iMinId);
+
+				if(!pRev)
+				{
+					if(iMinId == 0xffffffff)
+					{
+						UT_ASSERT( UT_SHOULD_NOT_HAPPEN );
+						break;
+					}
+
+					// advance i so that we do not waste our time, -1
+					// because of i++ in loop
+					i = iMinId - 1;
+					continue;
+				}
+			
+			
+				if(  (pRev->getType() == PP_REVISION_FMT_CHANGE && !bDeleted)
+					 ||(pRev->getType() == PP_REVISION_ADDITION_AND_FMT))
+				{
+					// create copy of span AP and then set all props contained
+					// in our revision;
+					if(!pMySpanAP)
+					{
+						pMySpanAP = new PP_AttrProp;
+						UT_return_if_fail(pMySpanAP);
+				
+						(*pMySpanAP) = *pSpanAP;
+						(*pMySpanAP) = *pRev;
+						pSpanAP = pMySpanAP;
+						bDeleteAfter = true;
+					}
+					else
+					{
+						// add fmt to our AP
+						pMySpanAP->setAttributes(pRev->getAttributes());
+						pMySpanAP->setProperties(pRev->getProperties());
+					}
+				}
+				else if(pRev->getType() == PP_REVISION_DELETION)
+				{
+					// deletion means resetting all previous fmt
+					// changes
+					if(pMySpanAP)
+					{
+						delete pMySpanAP;
+						pMySpanAP = NULL;
+						pSpanAP = pSpanAPOrig;
+						bDeleteAfter = false;
+					}
+
+					bDeleted = true;
+				}
+				else if(pRev->getType() == PP_REVISION_ADDITION)
+				{
+					bDeleted = false;
+				}
+			} // for
+
+			if(bDeleted)
+			{
+				setVisibility(FP_HIDDEN_REVISION);
+			}
+			else
+			{
+				setVisibility(FP_VISIBLE);
+			}
 			return;
 		}
 		else if(!m_pRevisions->isVisible(iId))

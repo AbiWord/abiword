@@ -545,7 +545,8 @@ public:
 	
 	void                cmdSetRevisionLevel(UT_uint32 i);
 	UT_uint32           getRevisionLevel()const{return m_iViewRevision;}
-
+	void                setRevisionLevel(UT_uint32 i);
+	
 	/* Table related functions */
 	bool                isPointLegal(PT_DocPosition pos);
 	bool                isPointLegal(void);

@@ -46,6 +46,7 @@ public:
 	const char *        getLabel1()const;
 	const char *        getColumn1Label() const;
 	const char *        getColumn2Label() const;
+	const char *        getColumn3Label() const;
 
 	UT_uint32           getItemCount() const;
 	UT_uint32           getNthItemId(UT_uint32 n) const;

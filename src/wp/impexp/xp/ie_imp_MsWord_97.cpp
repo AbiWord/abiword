@@ -1451,6 +1451,38 @@ int IE_Imp_MsWord_97::_docProc (wvParseStruct * ps, UT_uint32 tag)
 
 		UT_DEBUGMSG(("Fnotes [%d,%d], Enotes [%d,%d]\n",
 					 m_iFootnotesStart, m_iFootnotesEnd, m_iEndnotesStart, m_iEndnotesEnd));
+
+		///////////////////////////////////////////////////////////////////////////////
+		// Set various revision states
+		//
+		// unlike Word:
+		// 
+		//     * we do not allow hidding of revision markings if
+		//       revision mode is on
+		//
+		//     * we do not differentiate between screen and print: we
+		//       print whatever is on screen
+		//
+		//     * if show revisions is off, Word shows what the
+		//       document looks like _after_ the last revision; by
+		//       default we show what it looked _before_ first
+		//       revision; we can show the post-revision state by
+		//       setting the view id to 0xffffffff
+		//
+		//     * we currently do not handle the fLockRev parameter
+		{
+			bool bShow = ps->dop.fRMView == 1 || ps->dop.fRMPrint == 1 || ps->dop.fRevMarking == 1;
+		
+			getDoc()->setShowRevisions(bShow);
+
+			if(!bShow)
+			{
+				getDoc()->setShowRevisionId(0xffffffff);
+			}
+		
+			getDoc()->setMarkRevisions(ps->dop.fRevMarking == 1);
+		}
+		
 		break;
 		
 	case DOCEND:

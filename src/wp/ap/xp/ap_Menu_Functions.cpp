@@ -1031,12 +1031,40 @@ Defun_EV_GetMenuItemState_Fn(ap_GetState_MarkRevisions)
         return EV_MIS_ZERO;
 }
 
+Defun_EV_GetMenuItemState_Fn(ap_GetState_HasRevisions)
+{
+	ABIWORD_VIEW;
+	UT_ASSERT(pView);
+
+	if(pView->getDocument()->getHighestRevisionId() == 0)
+		return EV_MIS_Gray;
+	
+	return EV_MIS_ZERO;
+}
+
 Defun_EV_GetMenuItemState_Fn(ap_GetState_ShowRevisions)
 {
 	ABIWORD_VIEW;
 	UT_ASSERT(pView);
 
-	UT_uint32 s = 0;
+	if(pView->getDocument()->getHighestRevisionId() == 0)
+		return EV_MIS_Gray;
+	
+	if(pView->isShowRevisions())
+	{
+		return EV_MIS_Gray;
+	}
+
+	return EV_MIS_ZERO;
+}
+
+Defun_EV_GetMenuItemState_Fn(ap_GetState_ShowRevisionsAfter)
+{
+	ABIWORD_VIEW;
+	UT_ASSERT(pView);
+
+	if(pView->getDocument()->getHighestRevisionId() == 0)
+		return EV_MIS_Gray;
 	
 	if(pView->isMarkRevisions())
 	{
@@ -1044,7 +1072,29 @@ Defun_EV_GetMenuItemState_Fn(ap_GetState_ShowRevisions)
 		return EV_MIS_Gray;
 	}
 
-	if(pView->isShowRevisions())
+	if(!pView->isShowRevisions() && pView->getRevisionLevel() == 0xffffffff)
+	{
+		return EV_MIS_Toggled;
+	}
+
+	return EV_MIS_ZERO;
+}
+
+Defun_EV_GetMenuItemState_Fn(ap_GetState_ShowRevisionsBefore)
+{
+	ABIWORD_VIEW;
+	UT_ASSERT(pView);
+
+	if(pView->getDocument()->getHighestRevisionId() == 0)
+		return EV_MIS_Gray;
+	
+	if(pView->isMarkRevisions())
+	{
+		// cannot hide revisions when in revisions mode
+		return EV_MIS_Gray;
+	}
+
+	if(!pView->isShowRevisions() && pView->getRevisionLevel() == 0)
 	{
 		return EV_MIS_Toggled;
 	}

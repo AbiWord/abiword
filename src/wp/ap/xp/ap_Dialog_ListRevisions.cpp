@@ -69,6 +69,12 @@ const char * AP_Dialog_ListRevisions::getColumn2Label() const
 	return m_pSS->getValue(AP_STRING_ID_DLG_ListRevisions_Column2Label);
 }
 
+const char * AP_Dialog_ListRevisions::getColumn3Label() const
+{
+	UT_return_val_if_fail(m_pSS,NULL);
+	return m_pSS->getValue(AP_STRING_ID_DLG_ListRevisions_Column3Label);
+}
+
 UT_uint32 AP_Dialog_ListRevisions::getItemCount() const
 {
 	UT_return_val_if_fail(m_pDoc,0);
@@ -95,10 +101,21 @@ const char * AP_Dialog_ListRevisions::getNthItemTime(UT_uint32 n) const
 	// TODO the date should be properly localised
 	static char s[30];
 	time_t tT = ((PD_Revision *)(m_pDoc->getRevisions()).getNthItem(n-1))->getStartTime();
-	struct tm * tM = localtime(&tT);
 
-	strftime(s,30,"%c",tM);
-
+	if(tT != 0)
+	{
+		struct tm * tM = localtime(&tT);
+		strftime(s,30,"%c",tM);
+	}
+	else
+	{
+		// we use 0 to indicate unknown time
+		s[0] = '?';
+		s[1] = '?';
+		s[2] = '?';
+		s[3] = 0;
+	}
+	
 	return s;
 }
 
