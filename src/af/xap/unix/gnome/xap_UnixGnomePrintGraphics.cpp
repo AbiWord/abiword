@@ -255,8 +255,9 @@ UT_uint32 XAP_UnixGnomePrintGraphics::measureUnRemappedChar(const UT_UCSChar c)
 		return 0;
 
 #if 1
+	unsigned char uc = c;
 	size = (int) ( _scale_factor_get_inverse () *
-		       gnome_font_get_width_string_n (m_pCurrentFont, (const char *)&c, 1) );
+		       gnome_font_get_width_string_n (m_pCurrentFont, (const char *)&uc, 1) );
 #else
 	size = (int) (_scale_factor_get_inverse () * gnome_font_get_glyph_width(m_pCurrentFont, (int)c));
 #endif
