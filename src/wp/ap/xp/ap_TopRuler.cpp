@@ -2162,7 +2162,8 @@ void AP_TopRuler::mousePress(EV_EditModifierState /* ems */,
 				{
 					AP_TopRulerTableInfo * pCurrentCellInfo = static_cast<AP_TopRulerTableInfo *>(m_infoCache.m_vecTableColInfo->getNthItem(i));
 					
-					m_iMinCellPos = xAbsLeft;
+//					m_iMinCellPos = xAbsLeft;
+					m_iMinCellPos = 0;
 					m_iMaxCellPos = xAbsLeft + pCurrentCellInfo->m_iRightCellPos - pCurrentCellInfo->m_iRightSpacing - pCurrentCellInfo->m_iLeftSpacing - xExtraMargin;
 				}
 				else if (i == m_infoCache.m_iCells)
@@ -2170,7 +2171,14 @@ void AP_TopRuler::mousePress(EV_EditModifierState /* ems */,
 					AP_TopRulerTableInfo * pPrevCellInfo = static_cast<AP_TopRulerTableInfo *>(m_infoCache.m_vecTableColInfo->getNthItem(i-1));
 					
 					m_iMinCellPos = xAbsLeft + pPrevCellInfo->m_iLeftCellPos + pPrevCellInfo->m_iLeftSpacing + pPrevCellInfo->m_iRightSpacing + xExtraMargin;
-					m_iMaxCellPos = xAbsRight;
+					if((m_infoCache.m_iCurrentColumn + 1) == m_infoCache.m_iNumColumns)
+					{
+						m_iMaxCellPos = xAbsRight + m_infoCache.u.c.m_xaRightMargin;
+					}
+					else
+					{
+						m_iMaxCellPos = xAbsRight;
+					}
 				}
 				else
 				{
