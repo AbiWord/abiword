@@ -46,7 +46,6 @@ XAP_CocoaDialog_MessageBox::XAP_CocoaDialog_MessageBox(XAP_DialogFactory * pDlgF
 XAP_CocoaDialog_MessageBox::~XAP_CocoaDialog_MessageBox(void)
 {
 	if (m_dlg != nil) {
-		[m_dlg autorelease];
 		m_dlg = nil;
 	}
 }

@@ -36,7 +36,9 @@ AbiWord_LDADD = $(REPEAT_LIBS) $(REPEAT_LIBS) @PLATFORM_LIBS@ $(REPEAT_LIBS) $(O
 #	$(top_srcdir)/src/af/xap/mac/xap_MacDlg_MessageBox.rsrc \
 #	$(top_srcdir)/src/af/xap/mac/xap_MacResources.rsrc
 
-NIBS=$(top_srcdir)/src/af/xap/cocoa/xap_CocoaToolbarWindow.nip \
+NIBS=$(top_srcdir)/src/af/xap/cocoa/xap_CocoaDlg_MessageBox.nib \
+	$(top_srcdir)/src/af/xap/cocoa/xap_GenericListChooser_Controller.nib \
+	$(top_srcdir)/src/af/xap/cocoa/xap_CocoaToolbarWindow.nib \
 	$(top_srcdir)/src/wp/ap/cocoa/ap_CocoaFrame.nib \
 	$(top_srcdir)/src/wp/ap/cocoa/ap_CocoaSplash.nib
 
@@ -53,9 +55,12 @@ PROGRAM_BUNDLE_RES=$(PROGRAM_BUNDLE)/Resources
 $(PROGRAM_BUNDLE_BIN)/AbiWord: AbiWord
 	@mkdir -p $(PROGRAM_BUNDLE_RES)
 	@mkdir -p $(PROGRAM_BUNDLE_BIN)
+	(cd $(top_srcdir)/src/af/xap/cocoa/ ; tar cf - xap_CocoaDlg_MessageBox.nib) | (cd $(PROGRAM_BUNDLE_RES) ; tar xf -) 
+	(cd $(top_srcdir)/src/af/xap/cocoa/ ; tar cf - xap_GenericListChooser_Controller.nib) | (cd $(PROGRAM_BUNDLE_RES) ; tar xf -) 
 	(cd $(top_srcdir)/src/af/xap/cocoa/ ; tar cf - xap_CocoaToolbarWindow.nib) | (cd $(PROGRAM_BUNDLE_RES) ; tar xf -) 
 	(cd $(top_srcdir)/src/wp/ap/cocoa/ ; tar cf - ap_CocoaFrame.nib) | (cd $(PROGRAM_BUNDLE_RES) ; tar xf -) 
 	(cd $(top_srcdir)/src/wp/ap/cocoa/ ; tar cf - ap_CocoaSplash.nib) | (cd $(PROGRAM_BUNDLE_RES) ; tar xf -) 
+
 	cp bundle/PkgInfo $(PROGRAM_BUNDLE)
 	cp bundle/Info.plist $(PROGRAM_BUNDLE)
 	cp bundle/AbiWord.icns $(PROGRAM_BUNDLE_RES)

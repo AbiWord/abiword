@@ -774,6 +774,11 @@ void GR_CocoaGraphics::setCursor(GR_Graphics::Cursor c)
 	case GR_CURSOR_IBEAM:
 		cursor = [NSCursor IBeamCursor];
 		break;
+
+	case GR_CURSOR_WAIT:
+		// There is no wait cursor for Cocoa.  Or something.
+		cursor = [NSCursor arrowCursor];
+		break;
 #if 0
 
 	//I have changed the shape of the arrow so get a consistent
