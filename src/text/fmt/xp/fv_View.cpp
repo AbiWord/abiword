@@ -2133,6 +2133,10 @@ void FV_View::draw(UT_sint32 x, UT_sint32 y,
 						 curY,
 						 m_yScrollOffset,
 						 m_iWindowHeight));
+
+			// since all other pages are below this one, we
+			// don't need to draw them either.  exit loop now.
+			break;
 		}
 		else if (adjustedBottom < 0)
 		{
