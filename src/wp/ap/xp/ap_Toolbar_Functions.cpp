@@ -179,7 +179,7 @@ Defun_EV_GetToolbarItemState_Fn(ap_ToolbarGetState_CharFmt)
 
 	if (prop && val)
 	{
-		// get current font info from pView
+		// get current char properties from pView
 		const XML_Char ** props_in = NULL;
 		const XML_Char * sz;
 
@@ -227,6 +227,7 @@ Defun_EV_GetToolbarItemState_Fn(ap_ToolbarGetState_BlockFmt)
 {
 	ABIWORD_VIEW;
 	UT_ASSERT(pView);
+	UT_Bool bPoints = UT_FALSE;
 
 	EV_Toolbar_ItemState s = EV_TIS_ZERO;
 
@@ -251,6 +252,18 @@ Defun_EV_GetToolbarItemState_Fn(ap_ToolbarGetState_BlockFmt)
 		val  = "justify";
 		break;
 
+	case AP_TOOLBAR_ID_PARA_0BEFORE:
+		prop = "margin-top";
+		val = "0pt";
+		bPoints = UT_TRUE;
+		break;
+
+	case AP_TOOLBAR_ID_PARA_12BEFORE:
+		prop = "margin-top";
+		val = "12pt";
+		bPoints = UT_TRUE;
+		break;
+
 	default:
 		UT_ASSERT(UT_SHOULD_NOT_HAPPEN);
 		break;
@@ -258,7 +271,7 @@ Defun_EV_GetToolbarItemState_Fn(ap_ToolbarGetState_BlockFmt)
 
 	if (prop && val)
 	{
-		// get current font info from pView
+		// get current block properties from pView
 		const XML_Char ** props_in = NULL;
 		const XML_Char * sz;
 
@@ -266,8 +279,19 @@ Defun_EV_GetToolbarItemState_Fn(ap_ToolbarGetState_BlockFmt)
 			return s;
 
 		sz = UT_getAttribute(prop, props_in);
-		if (sz && (0 == UT_stricmp(sz, val)))
-			s = EV_TIS_Toggled;
+		if (sz)
+		{
+			if (bPoints)
+			{
+				if (((int) UT_convertToPoints(sz)) == ((int) UT_convertToPoints(val)))
+					s = EV_TIS_Toggled;
+			}
+			else
+			{
+				if (0 == UT_stricmp(sz, val))
+					s = EV_TIS_Toggled;
+			}
+		}
 		
 		free(props_in);
 	}

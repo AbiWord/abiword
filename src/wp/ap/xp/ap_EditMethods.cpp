@@ -194,6 +194,9 @@ public:
 	static EV_EditMethod_Fn alignRight;
 	static EV_EditMethod_Fn alignJustify;
 
+	static EV_EditMethod_Fn paraBefore0;
+	static EV_EditMethod_Fn paraBefore12;
+
 	static EV_EditMethod_Fn singleSpace;
 	static EV_EditMethod_Fn middleSpace;
 	static EV_EditMethod_Fn doubleSpace;
@@ -356,6 +359,9 @@ static EV_EditMethod s_arrayEditMethods[] =
 	EV_EditMethod(NF(alignCenter),			0,		""),
 	EV_EditMethod(NF(alignRight),			0,		""),
 	EV_EditMethod(NF(alignJustify),			0,		""),
+
+	EV_EditMethod(NF(paraBefore0),			0,		""),
+	EV_EditMethod(NF(paraBefore12),			0,		""),
 
 	EV_EditMethod(NF(singleSpace),			0,		""),
 	EV_EditMethod(NF(middleSpace),			0,		""),
@@ -2501,6 +2507,22 @@ Defun1(alignJustify)
 {
 	ABIWORD_VIEW;
 	const XML_Char * properties[] =	{ "text-align", "justify", 0};
+	pView->setBlockFormat(properties);
+	return UT_TRUE;
+}
+
+Defun1(paraBefore0)
+{
+	ABIWORD_VIEW;
+	const XML_Char * properties[] =	{ "margin-top", "0pt", 0};
+	pView->setBlockFormat(properties);
+	return UT_TRUE;
+}
+
+Defun1(paraBefore12)
+{
+	ABIWORD_VIEW;
+	const XML_Char * properties[] =	{ "margin-top", "12pt", 0};
 	pView->setBlockFormat(properties);
 	return UT_TRUE;
 }

@@ -61,6 +61,9 @@ enum _Ap_Toolbar_Id
 	AP_TOOLBAR_ID_ALIGN_RIGHT,
 	AP_TOOLBAR_ID_ALIGN_JUSTIFY,
 
+	AP_TOOLBAR_ID_PARA_0BEFORE,
+	AP_TOOLBAR_ID_PARA_12BEFORE,
+
 	/* ... add others here ... */
 
 	AP_TOOLBAR_ID__BOGUS2__				/* must be last */

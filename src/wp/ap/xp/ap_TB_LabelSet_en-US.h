@@ -69,6 +69,9 @@ BeginSet(EnUS)
 	ToolbarLabel(AP_TOOLBAR_ID_ALIGN_RIGHT,		"Right",	tb_text_align_right_xpm,	NULL, "Right alignment")
 	ToolbarLabel(AP_TOOLBAR_ID_ALIGN_JUSTIFY,	"Justify",	tb_text_justify_xpm,	NULL, "Justify paragraph")
 
+	ToolbarLabel(AP_TOOLBAR_ID_PARA_0BEFORE,	"No space before",	tb_para_0before_xpm,	NULL, "Space before: None")
+	ToolbarLabel(AP_TOOLBAR_ID_PARA_12BEFORE,	"12 pt before",		tb_para_12before_xpm,	NULL, "Space before: 12 pt")
+
 	// ... add others here ...
 
 	ToolbarLabel(AP_TOOLBAR_ID__BOGUS2__,		NULL,		NoIcon,			NULL,NULL)

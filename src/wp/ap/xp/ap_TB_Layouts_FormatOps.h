@@ -43,4 +43,8 @@ BeginLayout(FormatOps)
 #if 0
 	ToolbarItem(AP_TOOLBAR_ID_ALIGN_JUSTIFY)
 #endif
+
+	Spacer()
+	ToolbarItem(AP_TOOLBAR_ID_PARA_0BEFORE)
+	ToolbarItem(AP_TOOLBAR_ID_PARA_12BEFORE)
 EndLayout()
