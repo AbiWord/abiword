@@ -1284,6 +1284,23 @@ void AP_Win32Frame::toggleBar(UT_uint32 iBarNb, UT_Bool bBarOn)
 	{
 		pToolbar->hide();
 	}
+
+	// We *need* to make the window recalc its layout after adding/removing a
+	// toolbar in the rebar control. Since we have no "recalcLayout" I'm
+	// aware of we use this not-so-good-but-old idiom of resizing the window.
+	RECT rc;
+	GetWindowRect(m_hwndFrame, &rc);
+	const int cx = rc.right - rc.left;
+	const int cy = rc.bottom - rc.top;
+	const UINT fFlags =
+		SWP_FRAMECHANGED	|
+		SWP_NOACTIVATE		|
+		SWP_NOCOPYBITS		|
+		SWP_NOMOVE			|
+		SWP_NOOWNERZORDER	|
+		SWP_NOZORDER;
+	SetWindowPos(m_hwndFrame, 0, 0, 0, cx - 1, cy - 1, fFlags | SWP_NOREDRAW);
+	SetWindowPos(m_hwndFrame, 0, 0, 0, cx, cy, fFlags);
 }
 
 void AP_Win32Frame::toggleStatusBar(UT_Bool bStatusBarOn)
