@@ -27,6 +27,9 @@
 #include "ut_string.h"
 #include "ut_string_class.h"
 
+#include "xap_App.h"
+#include "xap_Frame.h"
+
 /*****************************************************************/
 /*****************************************************************/
 
@@ -55,7 +58,7 @@ EV_EditMethodCallData::EV_EditMethodCallData(const UT_String& stScriptName)
  flag is actually set, so covering this "failure" case may be pointless if other
  things don't play along.  Comment out this code just to see how well it would work.
 */
-EV_EditMethodCallData::EV_EditMethodCallData(UT_UCSChar * pData, UT_uint32 dataLength)
+EV_EditMethodCallData::EV_EditMethodCallData(const UT_UCSChar * pData, UT_uint32 dataLength)
 	: m_xPos(0),
 	  m_yPos(0)
 {
@@ -234,3 +237,96 @@ EV_EditMethod * EV_EditMethodContainer::findEditMethodByName(const char * szName
 	return 0;
 }
 
+/*****************************************************************/
+/*****************************************************************/
+
+bool ev_EditMethod_invoke (const EV_EditMethod * pEM, 
+			   EV_EditMethodCallData * pData)
+{
+  // no method or no call data == bad joo joo - return false
+  UT_ASSERT(pEM);
+  UT_ASSERT(pData);
+  if ( !pEM || !pData )
+    return false ;
+
+  // no impl function == bad joo joo - return false
+  EV_EditMethod_pFn pFN = pEM->getFn();
+  UT_ASSERT(pFN);
+  if(!pFN)
+    return false ;
+
+  // no controlling view == bad joo joo - return false
+  AV_View * pView = XAP_App::getApp()->getLastFocussedFrame()->getCurrentView() ;
+  UT_ASSERT(pView);
+  if (!pView)
+    return false;
+
+  // return whatever the method says to based on the data at hand
+  return (*pFN)(pView, pData);
+}
+
+bool ev_EditMethod_invoke (const EV_EditMethod * pEM, const UT_String & data)
+{
+  EV_EditMethodCallData callData ( data.c_str(), (UT_uint32)data.size() ) ;
+  return ev_EditMethod_invoke ( pEM, &callData ) ;
+}
+
+bool ev_EditMethod_invoke (const EV_EditMethod * pEM, const UT_UCS2String & data)
+{
+  EV_EditMethodCallData callData ( data.ucs_str(), (UT_uint32)data.size() ) ;
+  return ev_EditMethod_invoke ( pEM, &callData ) ;
+}
+
+static const EV_EditMethod * s_editMethodFromName ( const char * name )
+{
+  UT_ASSERT(name);
+  EV_EditMethodContainer* pEMC = XAP_App::getApp()->getEditMethodContainer() ;
+  return pEMC->findEditMethodByName ( name ) ;
+}
+
+bool ev_EditMethod_invoke (const char * methodName, const UT_String & data)
+{
+  return ev_EditMethod_invoke ( s_editMethodFromName ( methodName ), data ) ;
+}
+
+bool ev_EditMethod_invoke (const char * methodName, const UT_UCS2String & data)
+{
+  return ev_EditMethod_invoke ( s_editMethodFromName ( methodName ), data ) ;
+}
+
+bool ev_EditMethod_invoke (const char * methodName, const char * data)
+{
+  UT_ASSERT(data);
+  if(!data) return false;
+  return ev_EditMethod_invoke ( methodName, UT_String(data) ) ;
+}
+
+bool ev_EditMethod_invoke (const char * methodName, const UT_UCSChar * data)
+{
+  UT_ASSERT(data);
+  if(!data) return false;
+  return ev_EditMethod_invoke ( methodName, UT_UCS2String(data) ) ;
+}
+
+bool ev_EditMethod_invoke (const UT_String& methodName, const UT_String & data)
+{
+  return ev_EditMethod_invoke ( methodName.c_str(), data ) ;
+}
+
+bool ev_EditMethod_invoke (const UT_String& methodName, const UT_UCS2String & data)
+{
+  return ev_EditMethod_invoke ( methodName.c_str(), data ) ;
+}
+
+/*****************************************************************/
+/*****************************************************************/
+
+bool ABI_EXPORT ev_EditMethod_exists (const char * methodName)
+{
+  return ( s_editMethodFromName ( methodName ) != NULL ) ;
+}
+
+bool ABI_EXPORT ev_EditMethod_exists (const UT_String & methodName)
+{
+  return ev_EditMethod_exists ( methodName.c_str() ) ;
+}

@@ -80,7 +80,7 @@ class ABI_EXPORT EV_EditMethodCallData
 {
 public:
 	EV_EditMethodCallData();
-	EV_EditMethodCallData(UT_UCSChar * pData, UT_uint32 dataLength);
+	EV_EditMethodCallData(const UT_UCSChar * pData, UT_uint32 dataLength);
 	EV_EditMethodCallData(const char * pChar, UT_uint32 dataLength);
 	EV_EditMethodCallData(const UT_String& stScriptName);
 	~EV_EditMethodCallData();
@@ -143,5 +143,25 @@ protected:
 	EV_EditMethod *		m_arrayStaticEditMethods;		// not malloced
 	UT_Vector			m_vecDynamicEditMethods;
 };
+
+/*****************************************************************/
+/*****************************************************************/
+
+bool ABI_EXPORT ev_EditMethod_exists (const char * methodName);
+bool ABI_EXPORT ev_EditMethod_exists (const UT_String & methodName);
+
+/*****************************************************************/
+/*****************************************************************/
+
+bool ABI_EXPORT ev_EditMethod_invoke (const EV_EditMethod * pEM, EV_EditMethodCallData * pData);
+bool ABI_EXPORT ev_EditMethod_invoke (const EV_EditMethod * pEM, const UT_String & data);
+bool ABI_EXPORT ev_EditMethod_invoke (const EV_EditMethod * pEM, const UT_UCS2String & data);
+
+bool ABI_EXPORT ev_EditMethod_invoke (const char * methodName, const UT_String & data);
+bool ABI_EXPORT ev_EditMethod_invoke (const char * methodName, const UT_UCS2String & data);
+bool ABI_EXPORT ev_EditMethod_invoke (const char * methodName, const char * data);
+bool ABI_EXPORT ev_EditMethod_invoke (const char * methodName, const UT_UCSChar * data);
+bool ABI_EXPORT ev_EditMethod_invoke (const UT_String& methodName, const UT_String & data);
+bool ABI_EXPORT ev_EditMethod_invoke (const UT_String& methodName, const UT_UCS2String & data);
 
 #endif /* EV_EDITMETHOD_H */
