@@ -187,6 +187,13 @@ bool EV_MacToolbar::synthesize(void)
 				szToolTip = pLabel->getStatusMsg();
                 
    			switch (pAction->getItemType()) {
+			case EV_TBIT_ColorFore:
+			case EV_TBIT_ColorBack:
+				UT_DEBUGMSG(("TODO: Hey Mac needs some tender love and care and a colour selector! \n"));
+				UT_ASSERT(UT_NOT_IMPLEMENTED);
+				UT_DEBUGMSG(("TODO: Handle the colour selector case \n"));
+				break;
+
 			case EV_TBIT_PushButton:
                 // get pixmap
                 

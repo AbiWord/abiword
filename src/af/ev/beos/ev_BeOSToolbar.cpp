@@ -117,6 +117,17 @@ bool EV_BeOSToolbar::synthesize(void) {
 				szToolTip = pLabel->getStatusMsg();
 				
 			switch (pAction->getItemType()) {
+			case EV_TBIT_ColorFore:
+			case EV_TBIT_ColorBack:
+				UT_DEBUGMSG(("TODO: Hey BeOS needs some tender love and care and a colour selector! \n"));
+				UT_ASSERT(UT_NOT_IMPLEMENTED);
+				UT_ASSERT(UT_stricmp(pLabel->getIconName(),"NoIcon")!=0);
+				BBitmap * bitmap = m_pBeOSToolbarIcons->GetIconBitmap(pLabel->getIconName());
+				UT_DEBUGMSG(("TODO: I'm adding with an invalid toolbar id so things don't work \n"));
+				tb->AddItem(bitmap, NULL, (XAP_Toolbar_Id)-1, szToolTip);
+			}
+			break;
+
 			case EV_TBIT_PushButton: {
 				DPRINTF(printf("EVTOOLBAR: Push button \n"));
 				UT_ASSERT(UT_stricmp(pLabel->getIconName(),"NoIcon")!=0);
@@ -183,6 +194,7 @@ bool EV_BeOSToolbar::synthesize(void) {
 			case EV_TBIT_StaticLabel:
 			case EV_TBIT_Spacer:
 				break;
+
 					
 			case EV_TBIT_BOGUS:
 			default:
@@ -591,6 +603,9 @@ void ToolbarView::MessageReceived(BMessage *msg) {
 		for (i=0; i<item_count; i++) {
 			if (items[i].id == id)
 				break;
+		}
+		if(i >= item_count) {
+			return;
 		}
 		BMenuItem *mnuitem;
 		mnuitem = items[i].menu->Menu()->FindMarked();

@@ -462,6 +462,15 @@ bool EV_Win32Toolbar::synthesize(void)
 
 				switch (pAction->getItemType())
 				{
+					//TODO: For now these are buttons which bring up a dialog, as some point,
+           		 	//make them be able to bring up some sort of additional selector.
+				case EV_TBIT_ColorFore:
+				case EV_TBIT_ColorBack:
+					UT_DEBUGMSG(("TODO: Hey Windows needs some tender love and care and a colour selector! \n"));
+					UT_ASSERT(UT_NOT_IMPLEMENTED);
+					UT_DEBUGMSG(("TODO: Handle the colour selector case \n"));
+					/* Fall through and make a push button */	
+
 				case EV_TBIT_PushButton:
 					bButton = true;
 					tbb.fsState = TBSTATE_ENABLED; 
