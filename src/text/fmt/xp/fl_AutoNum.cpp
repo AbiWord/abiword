@@ -187,7 +187,8 @@ void fl_AutoNum::setFormat(const XML_Char * format)
 
 XML_Char * fl_AutoNum::getType(void)
 {
-        return m_pszFormat;
+		//TF NOTE: These casts can't be good!
+        return (XML_Char *)m_pszFormat;
 }
 
 void fl_AutoNum::setStartValue(UT_uint32 start)
