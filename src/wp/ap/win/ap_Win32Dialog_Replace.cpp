@@ -64,7 +64,7 @@ void AP_Win32Dialog_Replace::activate(void)
 	ConstructWindowName();
 	SetWindowText(m_hWnd, m_WindowName);
 
-	SetFocus( GetDlgItem( m_hWnd,AP_RID_DIALOG_REPLACE_EDIT_FIND) );
+	SetFocus( GetDlgItem( m_hWnd,AP_RID_DIALOG_REPLACE_COMBO_FIND) );
 
 	iResult = ShowWindow( m_hWnd, SW_SHOW );
 
@@ -79,7 +79,7 @@ void AP_Win32Dialog_Replace::activate(void)
 	{
 		char * bufferNormal = new char [lenUnicode + 1];
 		UT_UCS4_strcpy_to_char(bufferNormal, bufferUnicode);
-		SetDlgItemText(m_hWnd,AP_RID_DIALOG_REPLACE_EDIT_FIND,bufferNormal);
+		SetDlgItemText(m_hWnd,AP_RID_DIALOG_REPLACE_COMBO_FIND,bufferNormal);
 		DELETEP(bufferNormal);
 	}
 	FREEP(bufferUnicode);
@@ -94,7 +94,7 @@ void AP_Win32Dialog_Replace::activate(void)
 		{
 			char * bufferNormal = new char [lenUnicode + 1];
 			UT_UCS4_strcpy_to_char(bufferNormal, bufferUnicode);
-			SetDlgItemText(m_hWnd,AP_RID_DIALOG_REPLACE_EDIT_REPLACE,bufferNormal);
+			SetDlgItemText(m_hWnd,AP_RID_DIALOG_REPLACE_COMBO_REPLACE,bufferNormal);
 			DELETEP(bufferNormal);
 		}
 		FREEP(bufferUnicode);
@@ -208,8 +208,8 @@ BOOL CALLBACK AP_Win32Dialog_Replace::s_dlgProc(HWND hWnd,UINT msg,WPARAM wParam
 
 void AP_Win32Dialog_Replace::_initButtons(HWND hWnd)
 {
-	HWND hWndEditFind = GetDlgItem(hWnd,AP_RID_DIALOG_REPLACE_EDIT_FIND);
-	HWND hWndEditReplace = GetDlgItem(hWnd,AP_RID_DIALOG_REPLACE_EDIT_REPLACE);
+	HWND hWndEditFind = GetDlgItem(hWnd,AP_RID_DIALOG_REPLACE_COMBO_FIND);
+	HWND hWndEditReplace = GetDlgItem(hWnd,AP_RID_DIALOG_REPLACE_COMBO_REPLACE);
 	DWORD lenFind = GetWindowTextLength(hWndEditFind);
 	DWORD lenReplace = GetWindowTextLength(hWndEditReplace);
 
@@ -242,6 +242,8 @@ void AP_Win32Dialog_Replace::_initButtons(HWND hWnd)
 
 BOOL AP_Win32Dialog_Replace::_onInitDialog(HWND hWnd, WPARAM wParam, LPARAM lParam)
 {
+	
+	
 	const XAP_StringSet * pSS = m_pApp->getStringSet();
 
 	if (m_id == AP_DIALOG_ID_FIND)
@@ -270,7 +272,7 @@ BOOL AP_Win32Dialog_Replace::_onInitDialog(HWND hWnd, WPARAM wParam, LPARAM lPar
 
 	_initButtons(hWnd);
 
-	SetFocus( GetDlgItem(hWnd,AP_RID_DIALOG_REPLACE_EDIT_FIND) );
+	SetFocus( GetDlgItem(hWnd,AP_RID_DIALOG_REPLACE_COMBO_FIND) );
 
 	XAP_Win32DialogHelper::s_centerDialog(hWnd);	
 	
@@ -290,8 +292,8 @@ BOOL AP_Win32Dialog_Replace::_onCommand(HWND hWnd, WPARAM wParam, LPARAM lParam)
 
 	switch (wId)
 	{
-	case AP_RID_DIALOG_REPLACE_EDIT_FIND:
-	case AP_RID_DIALOG_REPLACE_EDIT_REPLACE:
+	case AP_RID_DIALOG_REPLACE_COMBO_FIND:
+	case AP_RID_DIALOG_REPLACE_COMBO_REPLACE:
 		xxx_UT_DEBUGMSG(("_onCommand: edit control\n"));
 		_initButtons(hWnd);
 		return 0;
@@ -356,7 +358,7 @@ BOOL AP_Win32Dialog_Replace::_onBtn_FindNext(HWND hWnd)
 	char * pBufFromDialogFind = NULL;
 	UT_UCSChar * pUCSFind = NULL;
 
-	HWND hWndEditFind = GetDlgItem(hWnd,AP_RID_DIALOG_REPLACE_EDIT_FIND);
+	HWND hWndEditFind = GetDlgItem(hWnd,AP_RID_DIALOG_REPLACE_COMBO_FIND);
 	DWORD lenFind = GetWindowTextLength(hWndEditFind);
 	if (!lenFind)
 		return 1;
@@ -396,8 +398,8 @@ BOOL AP_Win32Dialog_Replace::_onBtn_Replace(HWND hWnd)
 	UT_UCSChar * pUCSFind = NULL;
 	UT_UCSChar * pUCSReplace = NULL;
 
-	HWND hWndEditFind = GetDlgItem(hWnd,AP_RID_DIALOG_REPLACE_EDIT_FIND);
-	HWND hWndEditReplace = GetDlgItem(hWnd,AP_RID_DIALOG_REPLACE_EDIT_REPLACE);
+	HWND hWndEditFind = GetDlgItem(hWnd,AP_RID_DIALOG_REPLACE_COMBO_FIND);
+	HWND hWndEditReplace = GetDlgItem(hWnd,AP_RID_DIALOG_REPLACE_COMBO_REPLACE);
 	DWORD lenFind = GetWindowTextLength(hWndEditFind);
 	DWORD lenReplace = GetWindowTextLength(hWndEditReplace);
 
@@ -453,8 +455,8 @@ BOOL AP_Win32Dialog_Replace::_onBtn_ReplaceAll(HWND hWnd)
 	UT_UCSChar * pUCSFind = NULL;
 	UT_UCSChar * pUCSReplace = NULL;
 
-	HWND hWndEditFind = GetDlgItem(hWnd,AP_RID_DIALOG_REPLACE_EDIT_FIND);
-	HWND hWndEditReplace = GetDlgItem(hWnd,AP_RID_DIALOG_REPLACE_EDIT_REPLACE);
+	HWND hWndEditFind = GetDlgItem(hWnd,AP_RID_DIALOG_REPLACE_COMBO_FIND);
+	HWND hWndEditReplace = GetDlgItem(hWnd,AP_RID_DIALOG_REPLACE_COMBO_REPLACE);
 	DWORD lenFind = GetWindowTextLength(hWndEditFind);
 	DWORD lenReplace = GetWindowTextLength(hWndEditReplace);
 
@@ -497,6 +499,34 @@ FreeMemory:
 }
 
 void AP_Win32Dialog_Replace::_updateLists()
-{
-	UT_ASSERT(UT_NOT_IMPLEMENTED);	
+{		
+	_updateList(GetDlgItem(m_hWnd, AP_RID_DIALOG_REPLACE_COMBO_FIND), 		&m_findList);
+	_updateList(GetDlgItem(m_hWnd, AP_RID_DIALOG_REPLACE_COMBO_REPLACE), 	&m_replaceList);	
 }
+
+void AP_Win32Dialog_Replace::_updateList(HWND hWnd, UT_Vector* list)
+{
+	UT_DEBUGMSG(("AP_Win32Dialog_Replace::_updateList\n"));
+	
+	UT_uint32 i = 0;
+	
+	SendMessage(hWnd, CB_RESETCONTENT, 0,0);		
+	
+	for (i = 0; i< list->getItemCount(); i++)
+	{
+		// leaving the size 0 causes the string class to determine the length itself
+		UT_UCS4String ucs4s((UT_UCS4Char*)list->getNthItem(i), 0); 
+		
+		// clone the string, since we can't use utf8_str()'s result -> ucs4s will disappear from stack
+		char* utf8s;
+		UT_cloneString(utf8s, ucs4s.utf8_str()); 
+		
+		// add it to the list
+		UT_DEBUGMSG(("FODDEX: find/replace list: %d = '%s'\n", i, utf8s));   
+    	
+    	SendMessage(hWnd, CB_ADDSTRING, 0, (LPARAM)utf8s);    		
+	}		
+	
+	SendMessage(hWnd, CB_SETCURSEL, 0,0);		
+}
+
