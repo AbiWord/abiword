@@ -34,12 +34,13 @@
 
 #include <libgnomeprint/gnome-print-master-preview.h>
 
-// the resolution that we report to the application (pixels per inch).
 #define OUR_LINE_LIMIT          200 /* FIXME:
 				       UGLY UGLY UGLY, but we need to fix the PrintPrivew
 				       show bug. Test it with something like 7 when to see
 				       what is the problem with PP. The show operator in
 				       print preview does not move th currentpoint. Chema */
+
+// the resolution that we report to the application (pixels per inch).
 #define GPG_RESOLUTION		7200
 #define GPG_DEFAULT_FONT        "Times"
 
@@ -241,109 +242,6 @@ UT_uint32 XAP_UnixGnomePrintGraphics::measureUnRemappedChar(const UT_UCSChar c)
 	return size;
 }
 
-// TODO: I'm not happy at all with this code,
-// TODO: but it works and we need this working
-// TODO: for the next release
-// TODO: FIXME!!
-#if 1
-/*
- * This is cut & pasted from glib 1.3 (c) RedHat
- * We need it only for iso-8859-1 converter and it will be
- * abandoned *very* shortly
- */
-static int
-g_unichar_to_utf8 (gint c, gchar *outbuf)
-{
-  size_t len = 0;
-  int first;
-  int i;
-
-  if (c < 0x80)
-    {
-      first = 0;
-      len = 1;
-    }
-  else if (c < 0x800)
-    {
-      first = 0xc0;
-      len = 2;
-    }
-  else if (c < 0x10000)
-    {
-      first = 0xe0;
-      len = 3;
-    }
-   else if (c < 0x200000)
-    {
-      first = 0xf0;
-      len = 4;
-    }
-  else if (c < 0x4000000)
-    {
-      first = 0xf8;
-      len = 5;
-    }
-  else
-    {
-      first = 0xfc;
-      len = 6;
-    }
-
-  if (outbuf)
-    {
-      for (i = len - 1; i > 0; --i)
-	{
-	  outbuf[i] = (c & 0x3f) | 0x80;
-	  c >>= 6;
-	}
-      outbuf[0] = c | first;
-    }
-
-  return len;
-}
-
-/*
- * print_show_iso8859_1
- *
- * Like gnome_print_show, but expects an ISO 8859.1 string.
- * NOTE: deprecate me as soon as possible
- */
-static int
-print_show_iso8859_1 (GnomePrintContext *pc, char const *text)
-{
-	gchar *p, *utf, *udyn, ubuf[4096];
-	gint len, ret, i;
-
-	g_return_val_if_fail (pc && text, -1);
-
-	if (!*text)
-		return 0;
-
-	/* We need only length * 2, because iso-8859-1 is encoded in 1-2 bytes */
-	len = strlen (text);
-	if ((unsigned int)(len * 2) > sizeof (ubuf)) {
-		udyn = g_new (gchar, len * 2);
-		utf = udyn;
-	} else {
-		udyn = NULL;
-		utf = ubuf;
-	}
-	p = utf;
-
-	for (i = 0; i < len; i++) {
-		p += g_unichar_to_utf8 (((guchar *) text)[i], p);
-	}
-
-	//UT_DEBUGMSG(("Dom: print_iso %d", *utf));
-	ret = gnome_print_show_sized (pc, utf, p - utf);
-
-	if (udyn)
-		g_free (udyn);
-
-	return ret;
-}
-#endif
-
 void XAP_UnixGnomePrintGraphics::drawChars(const UT_UCSChar* pChars, 
 										   int iCharOffset, int iLength,
 										   UT_sint32 xoff, UT_sint32 yoff)
@@ -357,38 +255,27 @@ void XAP_UnixGnomePrintGraphics::drawChars(const UT_UCSChar* pChars,
 	yoff += getFontAscent();
 
 	// unsigned buffer holds Latin-1 data to character code 255
-	unsigned char buf[OUR_LINE_LIMIT*2];
-	unsigned char * pD = buf;
-
-	const UT_UCSChar * pS = pChars+iCharOffset;
-	const UT_UCSChar * pEnd = pS+iLength;
-	UT_UCSChar currentChar;
+	guchar buf[OUR_LINE_LIMIT*6];
+	guchar * pD;
+	const UT_UCSChar * pS;
+	const UT_UCSChar * pEnd;
 
 	gnome_print_moveto(m_gpc, _scale_x_dir(xoff), _scale_y_dir(yoff));
 
-	while (pS<pEnd)
-	{
-#if 1 /* FIXME: I don't fully like this ... Chema. */
-		if (pD-buf > OUR_LINE_LIMIT)
-		{
-			*pD++ = 0;
-			print_show_iso8859_1(m_gpc, (const gchar *)buf);
+	pEnd = pChars + iCharOffset + iLength;
+	
+	for (pS = pChars + iCharOffset; pS < pEnd; pS += OUR_LINE_LIMIT) {
+			const UT_UCSChar * pB;
+			UT_UCSChar currentChar;
+
 			pD = buf;
-		}
-#endif	
-
-		// TODO deal with Unicode issues.
-		currentChar = remapGlyph(*pS, *pS >= 256 ? UT_TRUE : UT_FALSE);
-		currentChar = currentChar <= 0xff ? currentChar : XAP_EncodingManager::instance->UToNative(currentChar);
-
-		switch (currentChar)
-		{
-		default:		*pD++ = (unsigned char)currentChar; 	break;
-		}
-		pS++;
+			for (pB = pS; (pB < pS + OUR_LINE_LIMIT) && (pB < pEnd); pB++) {
+					currentChar = remapGlyph(*pB, *pB >= 256 ? UT_TRUE : UT_FALSE);
+					currentChar = currentChar <= 0xff ? currentChar : XAP_EncodingManager::instance->UToNative(currentChar);
+					pD += unichar_to_utf8 (currentChar, pD);
+			}
+			gnome_print_show_sized (m_gpc, (gchar *) buf, pD - buf);
 	}
-	*pD++ = 0;
-	print_show_iso8859_1(m_gpc, (const gchar *)buf);
 }
 
 void XAP_UnixGnomePrintGraphics::drawLine(UT_sint32 x1, UT_sint32 y1,
