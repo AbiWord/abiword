@@ -23,7 +23,6 @@
 #include "ut_assert.h"
 #include "ut_string.h"
 #include "ut_hash.h"
-#include "ut_debugmsg.h"
 
 #include "xap_Dialog_Id.h"
 #include "xap_DialogFactory.h"
@@ -118,10 +117,10 @@ AP_Dialog_Spell::~AP_Dialog_Spell(void)
 	// Why clear the selection?  MS Word doesn't either
 	if (m_pView) 
 	{
-		if (m_bIsSelection)
-			m_pView->cmdUnselectSelection();
+	  if (!m_bIsSelection && m_pView->isSelectionEmpty())
+	    m_pView->cmdUnselectSelection();
 
-		m_pView->moveInsPtTo( m_iOrigInsPoint );
+	  m_pView->moveInsPtTo( m_iOrigInsPoint );
 	}
 
 	DELETEP(m_pBlockBuf);
@@ -186,8 +185,6 @@ void AP_Dialog_Spell::runModal(XAP_Frame * pFrame)
    
    m_pChangeAll = new UT_StringPtrMap(7); // is 7 buckets adequate? too much?
    m_pIgnoreAll = new UT_StringPtrMap(7);
-
-   UT_DEBUGMSG(("modal spell dialog: xp init complete\n"));
 }
 
 bool AP_Dialog_Spell::nextMisspelledWord(void)
@@ -202,6 +199,18 @@ bool AP_Dialog_Spell::nextMisspelledWord(void)
    bool checkCaps = m_pView->getLayout()->getSpellCheckCaps();
    bool checkNumeric = m_pView->getLayout()->getSpellCheckNumbers();
 
+   // Makes this honor spelling prefs
+   XAP_App * pApp = m_pFrame->getApp();
+   UT_ASSERT(pApp);
+   XAP_Prefs * pPrefs = pApp->getPrefs();
+   UT_ASSERT(pPrefs);
+   
+   XAP_PrefsScheme *pPrefsScheme = pPrefs->getCurrentScheme();
+   UT_ASSERT(pPrefsScheme);		  
+   
+   bool b = false;
+   pPrefs->getPrefsValueBool((XML_Char*)AP_PREF_KEY_AutoSpellCheck, &b);
+
    // loop until a misspelled word or end of document is hit
    for (;;) 
    {
@@ -214,19 +223,8 @@ bool AP_Dialog_Spell::nextMisspelledWord(void)
 		   // in the block spell queue so squiggles will be updated
 	
 		   FL_DocLayout * docLayout = m_pCurrSection->getDocLayout();
-		   
-		   // Makes this honor spelling prefs
-		   XAP_App * pApp = m_pFrame->getApp();
-		   UT_ASSERT(pApp);
-		   XAP_Prefs * pPrefs = pApp->getPrefs();
-		   UT_ASSERT(pPrefs);
-	 
-		   XAP_PrefsScheme *pPrefsScheme = pPrefs->getCurrentScheme();
-		   UT_ASSERT(pPrefsScheme);
-		   
-		   bool b = false;
-		   pPrefs->getPrefsValueBool((XML_Char*)AP_PREF_KEY_AutoSpellCheck, &b);
-		   
+
+		   // causes SEGV if a table is in the document!!!
 		   if (b)
 		   {
 			   docLayout->queueBlockForBackgroundCheck(FL_DocLayout::bgcrSpelling, m_pCurrBlock);
@@ -256,11 +254,15 @@ bool AP_Dialog_Spell::nextMisspelledWord(void)
 		   // update the buffer with our new block
 		   m_pBlockBuf->truncate(0);
 		   bool bRes = m_pCurrBlock->getBlockBuf(m_pBlockBuf);
-		   UT_ASSERT(bRes);
 	     
 		   m_iWordOffset = 0;
 		   m_iSentenceStart = 0;
 		   m_iSentenceEnd = 0;
+
+		   UT_ASSERT(bRes);
+		   if (!bRes)
+		     continue;
+
 		   iBlockLength = m_pBlockBuf->getLength();
 		   // TODO not always 0 when checking selection
 		   pBlockText = (UT_UCS4Char*)m_pBlockBuf->getPointer(0);
@@ -389,12 +391,10 @@ bool AP_Dialog_Spell::nextMisspelledWord(void)
 						   !_spellCheckWord(theWord, iNewLength)) 
 					   {
 		  
-						   // unknown word...
-						   // prepare list of possibilities
+						   // unknown word... prepare list of possibilities
 						   SpellChecker * checker = _getDict();
 						   if (!checker)
 						   {
-							   UT_DEBUGMSG(("No checker returned\n"));
 							   return false;
 						   }
 						   makeWordVisible(); // display the word now.
@@ -408,7 +408,6 @@ bool AP_Dialog_Spell::nextMisspelledWord(void)
 						   }
 						   if (!m_Suggestions)
 						   {
-							   UT_DEBUGMSG(("DOM: no suggestions returned from main dictionary \n"));
 							   m_Suggestions = new UT_Vector();
 							   pApp->suggestWord(m_Suggestions,theWord,
 												 iNewLength);
@@ -428,8 +427,6 @@ bool AP_Dialog_Spell::nextMisspelledWord(void)
 							   _updateSentenceBoundaries();
 						   }
 
-						   UT_DEBUGMSG(("misspelled word found\n"));
-						   
 						   // return to caller
 						   return true;
 						   // we have all the important state information in class variables,
@@ -457,10 +454,9 @@ bool AP_Dialog_Spell::nextMisspelledWord(void)
 
 bool AP_Dialog_Spell::makeWordVisible(void)
 {
-   UT_DEBUGMSG(("making misspelled word visible in main window\n"));
-   
    // TODO why clear selection?
-   if (m_bIsSelection)
+   //if (!m_bIsSelection && m_pView->isSelectionEmpty())
+  if (m_bIsSelection && m_pView->isSelectionEmpty())
      m_pView->cmdUnselectSelection();
 
    m_pView->moveInsPtTo( (PT_DocPosition) (m_pCurrBlock->getPosition() + m_iWordOffset) );
@@ -525,24 +521,11 @@ bool AP_Dialog_Spell::changeWordWith(UT_UCSChar * newword)
 {
    bool result = true;
 
-   UT_DEBUGMSG(("changing word\n"));
-   UT_DEBUGMSG(("SAM: gp: %d\n", m_pView->getPoint()));
-
    // very small hack to fix bug #597 - seems
    // that the focus gets shifted to the textbox instead
    // of the document, so isSelectionEmpty() returns true
    makeWordVisible ();
    m_iWordLength = UT_UCS4_strlen(newword);
-
-#ifdef DEBUG   
-   UT_UCSChar * p;
-   p = newword;
-   UT_DEBUGMSG(("SAM : The new word is \n"));
-   for(int i=0;i<m_iWordLength;i++)
-   {
-	   UT_DEBUGMSG(("%c\n", (char)p[i]));
-   }
-#endif
 
    result = m_pView->cmdCharInsert(newword, m_iWordLength);
    m_pView->updateScreen();

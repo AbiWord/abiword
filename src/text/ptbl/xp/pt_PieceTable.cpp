@@ -314,9 +314,9 @@ bool pt_PieceTable::getBlockBuf(PL_StruxDocHandle sdh,
     UT_ASSERT(pgb);
 
     pf_Frag * pf = (pf_Frag *)sdh;
-    UT_ASSERT(pf->getType() == pf_Frag::PFT_Strux);
+    UT_return_val_if_fail(pf->getType() == pf_Frag::PFT_Strux, false);
     pf_Frag_Strux * pfsBlock = static_cast<pf_Frag_Strux *> (pf);
-    UT_ASSERT(pfsBlock->getStruxType() == PTX_Block);
+    UT_return_val_if_fail(pfsBlock->getStruxType() == PTX_Block, false);
 
     UT_uint32 bufferOffset = pgb->getLength();
 
