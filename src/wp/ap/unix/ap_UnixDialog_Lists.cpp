@@ -516,21 +516,15 @@ void AP_UnixDialog_Lists::setAllSensitivity(void)
 GtkWidget * AP_UnixDialog_Lists::_constructWindow (void)
 {
 	GtkWidget *contents;
-	GtkWidget *hseparator1;
 	GtkWidget *vbox1;
 
+	ConstructWindowName(); // why don't call this function constructWindowName?
 	m_wMainWindow = abiDialogNew ( true, getWindowName() );
 	vbox1 = GTK_DIALOG(m_wMainWindow)->vbox ;
-
-	ConstructWindowName(); // why don't call this function constructWindowName?
 
 	contents = _constructWindowContents();
 	gtk_widget_show (contents);
 	gtk_box_pack_start (GTK_BOX (vbox1), contents, FALSE, TRUE, 0);
-
-	hseparator1 = gtk_hseparator_new ();
-	gtk_widget_show (hseparator1);
-	gtk_box_pack_start (GTK_BOX (vbox1), hseparator1, FALSE, TRUE, 0);
 
 	if(!isModal())
 	{
