@@ -58,9 +58,18 @@ public:
 
 	static bool m_NotInitialized;
 
+/* 
+   WARNING: ugly hack because MrCPP is really broken. I can't imagine how people can work 
+   with this compiler. I really wish gcc get ported to MPW 
+*/
+#ifndef __MRC__
 protected:
+#endif
 	static void InitializeMacToolbox ();
 
+#ifdef __MRC__
+protected:
+#endif
 	/* Mac Event handling */
 	void DispatchEvent (const EventRecord & theEvent);
 	void HandleMenus (long menuSelection);
