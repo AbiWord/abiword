@@ -663,46 +663,51 @@ bool EV_CocoaToolbar::refreshToolbar(AV_View * pView, AV_ChangeMask mask)
 							NSMutableArray * styles = [NSMutableArray arrayWithCapacity:(count ? count : 32)];
 
 							if (PD_Document * pDoc = static_cast<PD_Document *>(m_pCocoaFrame->getCurrentDoc()))
-								{
-									const char * szName = 0;
-									const PD_Style * pStyle = 0;
+							{
+								const char * szName = 0;
+								const PD_Style * pStyle = 0;
 
-									for (UT_uint32 k = 0; (pDoc->enumStyles(k, &szName, &pStyle)); k++)
-										if (szName)
-											{
-												[styles addObject:[NSString stringWithUTF8String:szName]];
-											}
-									// TODO: Make style names reflect properties such as: font, size, alignment ??
+								for (UT_uint32 k = 0; (pDoc->enumStyles(k, &szName, &pStyle)); k++) {
+									if (szName) {
+										[styles addObject:[NSString stringWithUTF8String:szName]];
+									}
 								}
+								// TODO: Make style names reflect properties such as: font, size, alignment ??
+							}
 							[styles sortUsingSelector:@selector(compare:)];
 
 							[popupButton removeAllItems];
 							[popupButton addItemsWithTitles:styles];
 						}
 
-						if (!szState) break; // Mixed selection...
+						if (!szState) {
+							break; // Mixed selection...
+						}
+						
+						NSString * state = szState ? [NSString stringWithUTF8String:szState] : nil;
 
-						NSString * state = szState ? [NSString stringWithUTF8String:szState] : 0;
-
-						if ((tlbrid == AP_TOOLBAR_ID_FMT_FONT) && state)
+						if ((tlbrid == AP_TOOLBAR_ID_FMT_FONT) && state) {
 							if ([popupButton indexOfItemWithTitle:state] < 0)
 							{
 								int count = [popupButton numberOfItems];
 
 								NSMutableArray * fonts = [NSMutableArray arrayWithCapacity:(count + 1)];
 
-								for (int i = 0; i < count; i++)
-									[fonts addObject:[popupButton itemAtIndex:i]];
-
+								for (int i = 0; i < count; i++) {
+									[fonts addObject:[[popupButton itemAtIndex:i] title]];
+								}
+								
 								[fonts addObject:state]; // use attributed strings? mark absent fonts in red? [TODO]
 								[fonts sortUsingSelector:@selector(compare:)];
 
 								[popupButton removeAllItems];
 								[popupButton addItemsWithTitles:fonts];
 							}
-						if (state)
+						}
+						if (state) {
 							[popupButton selectItemWithTitle:state];
-
+						}
+						
 						break;
 					}
 
