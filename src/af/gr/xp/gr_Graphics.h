@@ -217,6 +217,9 @@ protected:
 
 	static XAP_PrefsScheme *m_pPrefsScheme;
 	static UT_uint32 m_uTick;
+
+	static UT_uint32 m_instanceCount;
+
 private:
     bool _PtInPolygon(UT_Point * pts,UT_uint32 nPoints,UT_sint32 x,UT_sint32 y);
     bool m_bIsPortrait;

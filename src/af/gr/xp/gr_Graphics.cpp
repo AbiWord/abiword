@@ -45,6 +45,8 @@ UT_uint32 GR_Graphics::m_iRemapGlyphsTableLen = 0;
 XAP_PrefsScheme *GR_Graphics::m_pPrefsScheme = 0;
 UT_uint32 GR_Graphics::m_uTick = 0;
 
+UT_uint32 GR_Graphics::m_instanceCount = 0;
+
 GR_Font::GR_Font() 
 {
 }
@@ -60,11 +62,22 @@ GR_Graphics::GR_Graphics()
 	m_iZoomPercentage = 100;
 	m_bLayoutResolutionModeEnabled = false;
 	m_bIsPortrait = true;
+
+	m_instanceCount++;
 }
 
 GR_Graphics::~GR_Graphics()
 {
 	// need this so children can clean up
+
+	m_instanceCount--;
+
+	if(m_instanceCount == 0)
+	{
+		delete m_pRemapGlyphsTableSrc;
+		delete m_pRemapGlyphsTableDst;
+	}
+
 }
 
 void GR_Graphics::drawChar(UT_UCSChar Char, UT_sint32 xoff, UT_sint32 yoff)
