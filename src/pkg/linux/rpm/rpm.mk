@@ -37,12 +37,12 @@ RPM_PKGBASENAME_DYNAMIC_NOFONTS	= abisuite-apps-$(ABI_BUILD_VERSION)-$(RPM_SUITE
 RPM_PKGBASENAME_DYNAMIC_FONTS	= abisuite-$(ABI_BUILD_VERSION)-$(RPM_SUITE_BUILD_COUNTER)
 
 # this is so ugly
-ALIEN_LOC 			= $(shell which alien)
-RPM_LOC				= $(shell which rpm)
+ALIEN 				= $(shell [ -x /usr/bin/alien ] && echo 1)
+RPM				= $(shell [ -x /usr/bin/rpm ] && echo 1)
 RPM_TOPDIR			= $(strip $(shell grep "topdir:" /etc/rpmrc | sed "s/topdir://"))
 
-ifneq ($(strip $(RPM_LOC)),)
-ifneq ($(strip $(ALIEN_LOC)),)
+ifneq ($(RPM),)
+ifneq ($(ALIEN),)
 rpm: rpm_fonts rpm_dynamic_nofonts deb_dynamic_fonts
 else
 rpm::
@@ -57,13 +57,11 @@ rpm::
 	@echo ""
 endif
 
-ALIEN = $(ALIEN_LOC) -k
-
 rpm_dynamic_nofonts: deb_dynamic_nofonts
 ifdef UNIX_CAN_BUILD_DYNAMIC
 	@echo "* Building .rpm package [dynamic,nofonts] ..."
 	@$(subst xxxx,$(DIST),$(VERIFY_DIRECTORY))
-	(cd $(DIST); $(ALIEN) --to-rpm $(DEB_PKGBASENAME_DYNAMIC_NOFONTS).deb)
+	(cd $(DIST); alien -k --to-rpm $(DEB_PKGBASENAME_DYNAMIC_NOFONTS).deb)
 	(mv $(RPM_TOPDIR)/RPMS/$(OS_ARCH)/$(RPM_PKGBASENAME_DYNAMIC_NOFONTS).$(OS_ARCH).rpm $(DIST))
 endif
 
