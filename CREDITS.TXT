@@ -94,6 +94,7 @@ Marco Innocenti <dot0037@iperbole.bologna.it>   Italian
 Jarmo Karvonen <jarmo@dawn.joensuu.fi>          Finnish
 Edouard Lafargue <Edouard.Lafargue@bigfoot.com> Norwegian
 Birger Langkjer <birger.langkjer@image.dk>      Danish
+Linus G Larsson <linus@centrumntr.se>           Swedish
 Kjartan Maraas <kmaraas@online.no>              Norwegian
 Jordi Mas <jmas@softcatala.org>                 Catalan
 Zbynek Miksa <xmiksa@informatics.muni.cz>       Czech
