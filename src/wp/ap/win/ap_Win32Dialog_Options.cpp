@@ -547,6 +547,7 @@ AP_Win32Dialog_Options_Sheet::AP_Win32Dialog_Options_Sheet() :
 XAP_Win32PropertySheet()
 {
 	m_pParent = NULL;
+	setCallBack(s_sheetInit);
 }
 
 
@@ -564,7 +565,7 @@ int AP_Win32Dialog_Options_Sheet::_onCommand(HWND hWnd, WPARAM wParam, LPARAM lP
 		HWND hWndPref = t->getParent()->getPage(PG_PREF);
 		AP_Win32Dialog_Options_Pref * prefPag = (AP_Win32Dialog_Options_Pref *) GetWindowLong(hWndPref, GWL_USERDATA);							
 		
-		if (!prefPag->isAutoSaveInRange()) return 1;
+		if (!prefPag->isAutoSaveInRange()) return 0;
 		
 		if(IsDlgButtonChecked((HWND)t->getParent()->getPage(PG_LAYOUT), AP_RID_DIALOG_OPTIONS_CHK_BGColorEnable ) != BST_CHECKED )
 			t->getParent()->_setColorForTransparent("ffffff");
@@ -576,25 +577,33 @@ int AP_Win32Dialog_Options_Sheet::_onCommand(HWND hWnd, WPARAM wParam, LPARAM lP
 	{
 		AP_Win32Dialog_Options_Sheet * t = (AP_Win32Dialog_Options_Sheet *) GetWindowLong(hWnd, GWL_USERDATA);					
 		t->getParent()->_event_SetDefaults();				
-		return 1;
+		return 0;
 	}
 	
-	return 0;
+	return 1;	// The application did not process the message
 }
+
+int CALLBACK AP_Win32Dialog_Options_Sheet::s_sheetInit(HWND hwnd,  UINT uMsg,  LPARAM lParam)
+{	
+	if (uMsg==PSCB_INITIALIZED)
+	{		
+		// Force the creation of all pages
+		PropSheet_SetCurSel(hwnd, 0,0);
+		PropSheet_SetCurSel(hwnd, 0,1);
+		PropSheet_SetCurSel(hwnd, 0,2);
+		PropSheet_SetCurSel(hwnd, 0,3);
+		PropSheet_SetCurSel(hwnd, 0,4);	
+		PropSheet_SetCurSel(hwnd, 0,0);	
+	}			
+	return 	0;
+}
+
 
 /*
 	
 */
 void AP_Win32Dialog_Options_Sheet::_onInitDialog(HWND hwnd)
-{
-	
-	// Force the creation of all sheets
-	PropSheet_SetCurSel(hwnd, 0,0);
-	PropSheet_SetCurSel(hwnd, 0,1);
-	PropSheet_SetCurSel(hwnd, 0,2);
-	PropSheet_SetCurSel(hwnd, 0,3);
-	PropSheet_SetCurSel(hwnd, 0,4);	
-
+{		
 	// let XP code tell us what all of the values should be.
 	getParent()->_populateWindowData();
 	getParent()->_initializeTransperentToggle();	
@@ -1099,10 +1108,10 @@ bool AP_Win32Dialog_Options_Pref::isAutoSaveInRange()
 	snprintf( szTemp, 10, "%d", iValue);	
 	
 	if (iValue<MINAUTOSAVEPERIOD || iValue>MAXAUTOSAVEPERIOD)
-	{
-			pParent->getFrame()->showMessageBox (AP_STRING_ID_DLG_Options_Label_InvalidRangeForAutoSave,
-							XAP_Dialog_MessageBox::b_O,
-							XAP_Dialog_MessageBox::a_OK);
+	{				
+			const XAP_StringSet * pSS = getApp()->getStringSet();	
+			::MessageBox(NULL, pSS->getValue(AP_STRING_ID_DLG_Options_Label_InvalidRangeForAutoSave), 
+				"",MB_OK);
 		
 		return false;
 	}

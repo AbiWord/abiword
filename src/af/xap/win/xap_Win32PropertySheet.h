@@ -55,6 +55,8 @@ public:
 	virtual void				_onCommand(HWND hWnd, WPARAM wParam, LPARAM lParam){};
 	static int CALLBACK			s_pageWndProc(HWND hWnd, UINT msg, WPARAM wParam,LPARAM lParam);
 	
+	
+	
 private:
 		
 	PROPSHEETPAGE				m_page;
@@ -63,7 +65,7 @@ private:
 	XAP_Win32App*				m_pWin32App;
 	XAP_Win32PropertySheet*		m_pParent;
 	DLGPROC						m_pfnDlgProc;
-	
+		
 };
 
 
@@ -77,18 +79,21 @@ public:
 	int							runModal(XAP_Win32App* pWin32App,XAP_Frame*	pFrame, XAP_String_Id	nID = 0);							
 	void 						addPage(XAP_Win32PropertyPage* pPage);
 	PROPSHEETPAGE* 				_buildPageArray(void);	
-	static int CALLBACK			s_sheetWndProc(HWND hWnd, UINT msg, WPARAM wParam,LPARAM lParam);
-	static int CALLBACK 		s_sheetInit(HWND hwnd,  UINT uMsg,  LPARAM lParam);		
+	static int CALLBACK			s_sheetWndProc(HWND hWnd, UINT msg, WPARAM wParam,LPARAM lParam);	
 	virtual	void				_onInitDialog(HWND hwnd){};	
 	void						setDialogProc(DLGPROC pfnDlgProc){m_pfnDlgProc=pfnDlgProc;};	
-	virtual int					_onCommand(HWND hWnd, WPARAM wParam, LPARAM lParam){return 0;};
-	void						setApplyButton(bool b){m_bApplyButton=b;};
+	virtual int					_onCommand(HWND hWnd, WPARAM wParam, LPARAM lParam){return 1;};
+	void						setApplyButton(bool b){m_bApplyButton=b;};	
+	void 						destroy(void);
+	void						setCallBack(PFNPROPSHEETCALLBACK pCallback) {m_pCallback=pCallback;};
 	
+	int							m_nRslt;
 private:	
 	
 	HWND						m_hWnd;
 	UT_Vector					m_vecPages;
 	PROPSHEETHEADER				m_psh;	
+	PFNPROPSHEETCALLBACK		m_pCallback;
 	DLGPROC						m_pfnDlgProc;
 	WHICHPROC 					m_lpfnDefSheet; 
 	bool						m_bApplyButton;

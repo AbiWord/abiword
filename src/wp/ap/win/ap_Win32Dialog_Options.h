@@ -43,6 +43,7 @@ public:
 		void setParent(AP_Win32Dialog_Options*	pData){m_pParent=pData;};
 		AP_Win32Dialog_Options* getParent(){return m_pParent;};
 		int _onCommand(HWND hWnd, WPARAM wParam, LPARAM lParam);
+		static int CALLBACK s_sheetInit(HWND hwnd,  UINT uMsg,  LPARAM lParam);
 		
 private:		
 	

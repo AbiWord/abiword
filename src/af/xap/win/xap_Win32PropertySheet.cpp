@@ -124,48 +124,63 @@ void XAP_Win32PropertyPage::createPage(XAP_Win32App* pWin32App, WORD wRscID,
 	XAP_Win32PropertySheet
 	
 */
-static XAP_Win32PropertySheet* gpThis = NULL;
+
 
 XAP_Win32PropertySheet::XAP_Win32PropertySheet()
 {	
 	setApplyButton(false);
 	m_lpfnDefSheet = NULL;
 	m_pfnDlgProc = s_sheetWndProc;	
-	gpThis = this;
+	m_pCallback = NULL;
 }
 
 
 
-int CALLBACK XAP_Win32PropertySheet::s_sheetInit(HWND hwnd,  UINT uMsg,  LPARAM lParam)
-{
-	if (uMsg==PSCB_INITIALIZED)
-	{
-		gpThis->_onInitDialog(hwnd);				
-	
-		if (gpThis->m_pfnDlgProc)
-		{	
-			// override the window procedure 			
-			gpThis->m_lpfnDefSheet = (WHICHPROC)GetWindowLong(hwnd, GWL_WNDPROC);
-			SetWindowLong(hwnd, GWL_WNDPROC, (LONG)gpThis->m_pfnDlgProc);
-			SetWindowLong(hwnd, GWL_USERDATA, (LONG)gpThis);	
-		}
-	}		
-	return 	0;
-}
 
 /*
 
 */
-int CALLBACK XAP_Win32PropertySheet::s_sheetWndProc(HWND hWnd, UINT msg, WPARAM wParam,
-   LPARAM lParam)
-{		
+int CALLBACK XAP_Win32PropertySheet::s_sheetWndProc(HWND hWnd, UINT msg, WPARAM wParam,  LPARAM lParam)
+{			
+	XAP_Win32PropertySheet *pThis = (XAP_Win32PropertySheet*)GetWindowLong(hWnd, GWL_USERDATA);			
+	
 	switch(msg) 
-	{		
+	{			
+	    case WM_SYSCOMMAND:  
+		{
+			// Support the closing button
+			if (wParam==SC_CLOSE)				    	
+			{
+               SendMessage (hWnd, WM_COMMAND, IDCANCEL, 0L);
+               return 0;
+            }			
+		}
+			
+		case WM_DESTROY:
+		{			 			
+			PostQuitMessage(0);
+			return 0;
+		}
+
 		case WM_COMMAND:
-		{			
-			if (gpThis->_onCommand(hWnd, wParam, lParam))
+		{	
+			if (!pThis->_onCommand(hWnd, wParam, lParam)) 	
+				return 0; // Already processed							
+			
+			if (LOWORD(wParam)==IDOK)
+			{
+				pThis->m_nRslt=IDOK;				
+				pThis->destroy();
 				return 0;
+			}				
 				
+			if (LOWORD(wParam)==IDCANCEL)
+			{				
+				pThis->m_nRslt=IDCANCEL;
+				pThis->destroy();
+				return 0;
+			}			
+
 			break;
 		}				
 						
@@ -173,7 +188,7 @@ int CALLBACK XAP_Win32PropertySheet::s_sheetWndProc(HWND hWnd, UINT msg, WPARAM 
 			break;
 	}  
 	
-	return CallWindowProc(gpThis->m_lpfnDefSheet, hWnd, msg, wParam, lParam);       	
+	return CallWindowProc(pThis->m_lpfnDefSheet, hWnd, msg, wParam, lParam);       	
 }
 
 
@@ -203,15 +218,18 @@ void XAP_Win32PropertySheet::addPage(XAP_Win32PropertyPage* pPage)
 }
 
 
+
 int XAP_Win32PropertySheet::runModal(XAP_Win32App* pWin32App, XAP_Frame * pFrame, XAP_String_Id nID/* = 0*/)
 {		
 	PROPSHEETPAGE*	pPages = _buildPageArray();
 	const XAP_StringSet * pSS = pWin32App->getStringSet();
+	MSG msg;	
+	m_nRslt = IDCANCEL;
 		
 	memset (&m_psh, 0, sizeof(PROPSHEETHEADER));
 		
 	m_psh.dwSize = sizeof(PROPSHEETHEADER);
-	m_psh.dwFlags = PSH_USECALLBACK| PSH_PROPSHEETPAGE;
+	m_psh.dwFlags = PSH_PROPSHEETPAGE;
 	m_psh.hwndParent = static_cast<XAP_Win32FrameImpl*>(pFrame->getFrameImpl())->getTopLevelWindow();
 	m_psh.hInstance = pWin32App->getInstance();    
 	m_psh.hIcon  = NULL;
@@ -219,7 +237,10 @@ int XAP_Win32PropertySheet::runModal(XAP_Win32App* pWin32App, XAP_Frame * pFrame
     m_psh.nPages = m_vecPages.getItemCount();
     m_psh.nStartPage = 0;
     m_psh.ppsp = (LPCPROPSHEETPAGE) pPages;
-    m_psh.pfnCallback = s_sheetInit;    
+    m_psh.pfnCallback = m_pCallback;    
+    
+    if (m_pCallback)
+     	m_psh.dwFlags |= PSH_USECALLBACK;    	
     
     if (!m_bApplyButton)
     	m_psh.dwFlags |= PSH_NOAPPLYNOW;
@@ -229,11 +250,47 @@ int XAP_Win32PropertySheet::runModal(XAP_Win32App* pWin32App, XAP_Frame * pFrame
 	else
 		m_psh.pszCaption  = NULL;
 
+	/*
 		
-	int nRslt = PropertySheet(&m_psh);
-    
+	*/
+	m_psh.dwFlags |= PSH_MODELESS;	
+	m_hWnd = (HWND)::PropertySheet(&m_psh);	
+	EnableWindow(m_psh.hwndParent, FALSE);
+
+	/* Subclassing */
+	m_lpfnDefSheet = (WHICHPROC)GetWindowLong(m_hWnd, GWL_WNDPROC);
+	SetWindowLong(m_hWnd, GWL_USERDATA, (LONG)this);	
+	SetWindowLong(m_hWnd, GWL_WNDPROC, (LONG)m_pfnDlgProc);
+		
+	_onInitDialog(m_hWnd);		
+
+	while (GetMessage(&msg, NULL, 0, 0))
+	{				
+		if(m_hWnd && PropSheet_IsDialogMessage(m_hWnd, &msg))
+			continue;				
+					
+		TranslateMessage(&msg);
+		DispatchMessage(&msg);		
+	}	
+	
+	destroy();
+		
 	delete pPages;    
-	return nRslt;
+	return m_nRslt;
 }
 
+/*
+
+*/
+void XAP_Win32PropertySheet::destroy(void)
+{
+	if (::IsWindow(m_hWnd))
+	{	
+		EnableWindow(m_psh.hwndParent, TRUE);
+		SetActiveWindow(m_psh.hwndParent);
+		SetFocus(m_psh.hwndParent);
+		DestroyWindow(m_hWnd);
+	}
+	return;	
+}
 
