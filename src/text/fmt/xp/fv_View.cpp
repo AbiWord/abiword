@@ -5456,6 +5456,8 @@ bool FV_View::setCellFormat(const XML_Char * properties[])
 	_ensureInsertionPointOnScreen();
 	clearCursorWait();
 	notifyListeners(AV_CHG_MOTION);
+	_fixInsertionPointCoords();
+	_ensureInsertionPointOnScreen();
 	return bRet;
 }
 

@@ -45,16 +45,17 @@
 AP_Dialog_FormatTable::AP_Dialog_FormatTable(XAP_DialogFactory * pDlgFactory, XAP_Dialog_Id id)
 	: XAP_Dialog_Modeless(pDlgFactory,id),
 	
-	m_lineStyle(LS_NORMAL),
-	m_bgFillStyle(NULL),
-	m_answer(a_OK),
-	m_pFormatTablePreview(NULL),
-	m_bSettingsChanged(false),
+	  m_lineStyle(LS_NORMAL),
+	  m_bgFillStyle(NULL),
+	  m_answer(a_OK),
+	  m_pFormatTablePreview(NULL),
+	  m_bSettingsChanged(false),
 
-	m_pAutoUpdaterMC(NULL),
-	m_borderToggled(false),
-	m_bDestroy_says_stopupdating(false),
-	m_bAutoUpdate_happening_now(false)
+	  m_pAutoUpdaterMC(NULL),
+	  m_borderToggled(false),
+	  m_bDestroy_says_stopupdating(false),
+	  m_bAutoUpdate_happening_now(false),
+	  m_iOldPos(0)
 {
 	if(m_vecProps.getItemCount() > 0)
 		m_vecProps.clear();
@@ -248,10 +249,12 @@ void AP_Dialog_FormatTable::setAllSensitivities(void)
 
 void AP_Dialog_FormatTable::setCurCellProps(void)
 {
-	if (m_bSettingsChanged)
-		return;
 	
 	FV_View * pView = static_cast<FV_View *>(m_pApp->getLastFocussedFrame()->getCurrentView());
+
+	if (m_bSettingsChanged)
+		return;
+	m_iOldPos = pView->getPoint();
 
 	removeVecProp (m_vecProps, "bg-style");
 	removeVecProp (m_vecProps, "bgcolor");
@@ -275,6 +278,7 @@ void AP_Dialog_FormatTable::setCurCellProps(void)
 
 void AP_Dialog_FormatTable::applyChanges()
 {
+	UT_DEBUGMSG(("Doing apply changes number props %d \n",m_vecProps.getItemCount()));
 	if (m_vecProps.getItemCount() == 0)
 		return;
 

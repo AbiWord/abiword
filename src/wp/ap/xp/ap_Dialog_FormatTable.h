@@ -136,6 +136,7 @@ private:
 	// Handshake variables
 	bool m_bDestroy_says_stopupdating;
 	bool m_bAutoUpdate_happening_now;
+	PT_DocPosition                      m_iOldPos;
 };
 
 #endif /* AP_DIALOG_FORMATTABLE_H */

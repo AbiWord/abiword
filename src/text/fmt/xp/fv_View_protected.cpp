@@ -448,13 +448,6 @@ bool FV_View::_restoreCellParams(PT_DocPosition posTable, UT_sint32 iLineType)
 
 	m_pDoc->disableListUpdates();
 	m_pDoc->beginUserAtomicGlob();
-	if (!isSelectionEmpty())
-	{
-		m_pDoc->beginUserAtomicGlob();
-		PP_AttrProp AttrProp_Before;
-		_deleteSelection(&AttrProp_Before);
-		m_pDoc->endUserAtomicGlob();
-	}
 	m_pDoc->setDontImmediatelyLayout(true);
 	m_pDoc->setDontChangeInsPoint();
 //
