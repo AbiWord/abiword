@@ -191,13 +191,11 @@ PtWidget_t * XAP_QNXDialog_WindowMore::_constructWindow(void)
 	windowMain = PtCreateWidget(PtWindow, NULL, n, args);
 	PtAddCallback(windowMain, Pt_CB_WINDOW_CLOSING, s_delete_clicked, this);
 
-#define MARGIN_SIZE 2 
-
 	n = 0;
 	PtSetArg(&args[n++], Pt_ARG_GROUP_ORIENTATION, Pt_GROUP_VERTICAL, 0);
-	PtSetArg(&args[n++], Pt_ARG_MARGIN_HEIGHT, MARGIN_SIZE, 0); 
-	PtSetArg(&args[n++], Pt_ARG_MARGIN_WIDTH, MARGIN_SIZE, 0); 
-	PtSetArg(&args[n++], Pt_ARG_GROUP_SPACING_Y, MARGIN_SIZE, 0); 
+	PtSetArg(&args[n++], Pt_ARG_MARGIN_HEIGHT, ABI_MODAL_MARGIN_SIZE, 0); 
+	PtSetArg(&args[n++], Pt_ARG_MARGIN_WIDTH, ABI_MODAL_MARGIN_SIZE, 0); 
+	PtSetArg(&args[n++], Pt_ARG_GROUP_SPACING_Y, ABI_MODAL_MARGIN_SIZE, 0); 
 	PtSetArg(&args[n++], Pt_ARG_GROUP_FLAGS, 
 					Pt_GROUP_EQUAL_SIZE_HORIZONTAL,
 					Pt_GROUP_EQUAL_SIZE_HORIZONTAL);

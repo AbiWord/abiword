@@ -43,6 +43,7 @@ int ph_event_ok( PtWidget_t *widget, AP_QNXDialog_InsertHyperlink * dlg,
 UT_ASSERT(widget && dlg);
 dlg->event_OK();
 
+return Pt_CONTINUE;
 }
 
 void AP_QNXDialog_InsertHyperlink::event_OK(void)
@@ -69,7 +70,7 @@ int ph_event_cancel( PtWidget_t *widget, AP_QNXDialog_InsertHyperlink * dlg,
 {
 UT_ASSERT(widget && dlg);
 dlg->event_Cancel();
-
+return Pt_CONTINUE;
 }
 void AP_QNXDialog_InsertHyperlink::event_Cancel(void)
 {
@@ -87,11 +88,13 @@ if(info->reason_subtype == (Pt_LIST_SELECTION_FINAL || Pt_LIST_SELECTION_BROWSE)
 {
 PtSetResource(dlg->mSelectedBookmark,Pt_ARG_TEXT_STRING,cb->item,0);
 }
+return Pt_CONTINUE;
 }
 int ph_event_close( PtWidget_t *widget, AP_QNXDialog_InsertHyperlink * dlg, PtCallbackInfo_t *info)
 {
 UT_ASSERT(widget && dlg);
 dlg->done=1;
+return Pt_CONTINUE;
 }
 
 XAP_Dialog * AP_QNXDialog_InsertHyperlink::static_constructor(XAP_DialogFactory * pFactory,

@@ -352,7 +352,7 @@ PtWidget_t * AP_QNXDialog_Columns::_constructWindow(void)
 	PtSetArg(&args[n++], Pt_ARG_WINDOW_RENDER_FLAGS, 0, ABI_MODAL_WINDOW_RENDER_FLAGS);
 	PtSetArg(&args[n++], Pt_ARG_WINDOW_MANAGED_FLAGS, 0, ABI_MODAL_WINDOW_MANAGE_FLAGS);
 	m_windowMain = PtCreateWidget(PtWindow, NULL, n, args);
-//    PtAddCallback(windowColumns, Pt_CB_WINDOW_CLOSING, s_deleteClicked, this);
+    PtAddCallback(m_windowMain, Pt_CB_WINDOW_CLOSING, s_delete_clicked, this);
 	
 	/* Create a vertical box in which to stuff things */
 	n = 0;

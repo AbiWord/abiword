@@ -219,8 +219,8 @@ PtWidget_t * XAP_QNXDialog_About::_constructWindow(void)
 
 	snprintf(buf, 4096, XAP_ABOUT_TITLE, m_pApp->getApplicationName());
 
-#define WIN_WIDTH  450
-#define WIN_HEIGHT 350
+#define WIN_WIDTH  420
+#define WIN_HEIGHT 320
 	n = 0;
 	PtSetArg(&args[n++], Pt_ARG_WINDOW_TITLE, buf, 0);
 	PtSetArg(&args[n++], Pt_ARG_WINDOW_RENDER_FLAGS, 0, ABI_MODAL_WINDOW_RENDER_FLAGS);

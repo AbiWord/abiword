@@ -48,13 +48,14 @@ int ph_close(PtWidget_t *widget,AP_QNXDialog_InsertBookmark *dlg,PtCallbackInfo_
 {
 UT_ASSERT(widget &&dlg);
 dlg->done=1;
+return Pt_CONTINUE;
 }
 int ph_event_cancel( PtWidget_t *widget, AP_QNXDialog_InsertBookmark * dlg, 
            PtCallbackInfo_t *info)
 {
 	UT_ASSERT(widget && dlg);
 	dlg->event_Cancel();
-    return Pt_CONTINUE;
+  return Pt_CONTINUE;
 }
 
 int ph_event_delete( PtWidget_t *widget, AP_QNXDialog_InsertBookmark * dlg, 
@@ -122,7 +123,6 @@ void AP_QNXDialog_InsertBookmark::runModal(XAP_Frame * pFrame)
 
 PtWidget_t *AP_QNXDialog_InsertBookmark::_constructWindow(void)
 {
-PtWidget_t *windowBookmark;
 PtWidget_t *PtLabel_msg;
 PtWidget_t *PtButton_cancel;
 PtWidget_t *PtButton_ok; 
