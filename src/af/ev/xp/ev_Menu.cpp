@@ -260,6 +260,8 @@ XAP_Menu_Id EV_searchMenuLabel(const EV_Menu_LabelSet *labels, const UT_String &
 {
 	const UT_Vector * labels_table = labels->getAllLabels();
 	const EV_Menu_Label *l = 0;
+
+	UT_ASSERT(labels_table);
 	UT_uint32 size_labels = labels_table->size();
 	XAP_Menu_Id id = 0;
 

@@ -96,9 +96,7 @@
 #       include "tb_hyperlink.xpm"
 #       include "tb_smiley.xpm"
 
-#ifdef ABI_OPT_PERL
 #	include "tb_script_play.xpm"
-#endif
 
 	// these are specific to one or more translations
 #	include "tb_text_bold_G.xpm"
@@ -203,9 +201,7 @@
  	DefineToolbarIcon(tb_edit_editfooter_xpm)
  	DefineToolbarIcon(tb_edit_removeheader_xpm)
  	DefineToolbarIcon(tb_edit_removefooter_xpm)
-#ifdef ABI_OPT_PERL
 	DefineToolbarIcon(tb_script_play_xpm)
-#endif
 
 	// these are specific to one or more translations
 	DefineToolbarIcon(tb_text_bold_G_xpm)

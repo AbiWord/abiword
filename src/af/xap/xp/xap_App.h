@@ -25,6 +25,7 @@
 #include "ut_vector.h"
 #include "ut_hash.h"
 #include "ut_xml.h"
+#include "ut_string_class.h"
 
 #define NUM_MODELESSID 39
 

@@ -113,10 +113,7 @@ BeginSetEnc(sv,SE,true,"iso-8859-1")
         ToolbarLabel(AP_TOOLBAR_ID_INDENT,                      "Öka indrag",      tb_text_indent_xpm,     NULL, "Öka indrag")
         ToolbarLabel(AP_TOOLBAR_ID_UNINDENT,            "Minska indrag", tb_text_unindent_xpm,   NULL, "Minska indrag")
 
-#ifdef ABI_OPT_PERL
 	ToolbarLabel(AP_TOOLBAR_ID_SCRIPT_PLAY,		"Kör skript",	tb_script_play_xpm,		NULL, "Utför skript")
-#endif
-
 
 #ifdef BIDI_ENABLED
         ToolbarLabel(AP_TOOLBAR_ID_FMT_DIR_OVERRIDE_LTR,        "Force text LTR",               tb_text_direction_ltr_xpm,      NULL, "Vänster till höger")

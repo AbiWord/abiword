@@ -109,9 +109,7 @@ BeginSetEnc(hu,HU,true,"iso-8859-2")
 	ToolbarLabel(AP_TOOLBAR_ID_INDENT,			"Nagyobb behúzás",	tb_text_indent_xpm, 	NULL, "Nagyobb behúzás")
 	ToolbarLabel(AP_TOOLBAR_ID_UNINDENT,		"Kisebb behúzás",	tb_text_unindent_xpm,	NULL, "Kisebb behúzás")
 
-#ifdef ABI_OPT_PERL
 	ToolbarLabel(AP_TOOLBAR_ID_SCRIPT_PLAY,		"Makró",	tb_script_play_xpm,		NULL, "Makró futtatása")
-#endif
 
      // ... add others here ...
 #ifdef BIDI_ENABLED

@@ -91,9 +91,7 @@
 #include "ie_exp.h"
 #include "ie_types.h"
 
-#ifdef ABI_OPT_PERL
-#include "ut_PerlBindings.h"
-#endif
+#include "ut_Script.h"
 
 /*****************************************************************/
 /*****************************************************************/
@@ -637,9 +635,7 @@ static EV_EditMethod s_arrayEditMethods[] =
 	EV_EditMethod(NF(editFooter),			0,	""),
 	EV_EditMethod(NF(editHeader),			0,	""),
 	EV_EditMethod(NF(endDrag),			0,	""),
-#ifdef ABI_OPT_PERL
 	EV_EditMethod(NF(executeScript),		EV_EMT_REQUIRE_SCRIPT_NAME,	""),
-#endif
 	EV_EditMethod(NF(extSelBOB),			0,	""),
 	EV_EditMethod(NF(extSelBOD),			0,	""),
 	EV_EditMethod(NF(extSelBOL),			0,	""),
@@ -810,9 +806,7 @@ static EV_EditMethod s_arrayEditMethods[] =
 	EV_EditMethod(NF(rotateCase),           0,  ""),
 
 	// s
-#ifdef ABI_OPT_PERL
 	EV_EditMethod(NF(scriptPlay),			0,	""),
-#endif
 	EV_EditMethod(NF(scrollLineDown),		0,	""),
 	EV_EditMethod(NF(scrollLineLeft),		0,	""),
 	EV_EditMethod(NF(scrollLineRight),		0,	""),
@@ -7608,7 +7602,6 @@ Defun(insAutotext_subject_1)
 		      AP_STRING_ID_AUTOTEXT_SUBJECT_1);
 }
 
-#ifdef ABI_OPT_PERL
 Defun1(scriptPlay)
 {
 	XAP_Frame * pFrame = static_cast<XAP_Frame *> (pAV_View->getParentData());
@@ -7622,12 +7615,19 @@ Defun1(scriptPlay)
 		return false;
 
 	UT_DEBUGMSG(("scripPlay (trying to play [%s])\n", pNewFile));
-	UT_PerlBindings& p(UT_PerlBindings::getInstance());
 
-	if (!p.evalFile(pNewFile))
-		pFrame->showMessageBox(p.errmsg().c_str(),
-							   XAP_Dialog_MessageBox::b_O,
-							   XAP_Dialog_MessageBox::a_OK);
+	UT_ScriptLibrary &instance = UT_ScriptLibrary::instance ();
+
+	if ( UT_OK != instance.execute ( pNewFile ) )
+	  {
+	    // TODO: error message box
+#if 0
+	    pFrame->showMessageBox(p.errmsg().c_str(),
+				   XAP_Dialog_MessageBox::b_O,
+				   XAP_Dialog_MessageBox::a_OK);
+#endif
+	  }
+
 	return true;
 }
 
@@ -7636,16 +7636,22 @@ Defun(executeScript)
 	XAP_Frame* pFrame = static_cast<XAP_Frame *> (pAV_View->getParentData());
 	UT_ASSERT(pFrame);
 	UT_DEBUGMSG(("executeScript (trying to execute [%s])\n", pCallData->getScriptName().c_str()));
-	UT_PerlBindings& p(UT_PerlBindings::getInstance());
+	
+	UT_ScriptLibrary &instance = UT_ScriptLibrary::instance ();
 
-	if (!p.runCallback(pCallData->getScriptName().c_str()))
-		pFrame->showMessageBox(p.errmsg().c_str(),
-							   XAP_Dialog_MessageBox::b_O,
-							   XAP_Dialog_MessageBox::a_OK);
-
+	if ( UT_OK != instance.execute ( pCallData->getScriptName().c_str() ) )
+	  {
+	    // TODO: show error message
+#if 0
+	    pFrame->showMessageBox(p.errmsg().c_str(),
+				   XAP_Dialog_MessageBox::b_O,
+				   XAP_Dialog_MessageBox::a_OK);
+#endif
+	  }
+	
 	return true;
 }
-#endif
+
 
 Defun(dlgColorPickerFore)
 {

@@ -106,9 +106,7 @@ BeginSetEnc(pt,PT,true,"iso-8859-1")
 	ToolbarLabel(AP_TOOLBAR_ID_INDENT,		"Indentar",	tb_text_indent_xpm,	NULL,	"Aumentar indentação")
 	ToolbarLabel(AP_TOOLBAR_ID_UNINDENT,		"Desindentar",	tb_text_unindent_xpm,	NULL,	"Diminuir a indentação")
 
-#ifdef ABI_OPT_PERL
 	ToolbarLabel(AP_TOOLBAR_ID_SCRIPT_PLAY,		"Executar Script",tb_script_play_xpm,	NULL,	"Executar script")
-#endif
 
 #ifdef BIDI_ENABLED
 	ToolbarLabel(AP_TOOLBAR_ID_FMT_DIR_OVERRIDE_LTR,"Esquerda para a Direita", tb_text_direction_ltr_xpm,	NULL, "Forçar orientação da Esquerda para a Direita")

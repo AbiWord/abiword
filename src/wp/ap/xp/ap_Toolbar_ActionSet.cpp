@@ -138,9 +138,7 @@ EV_Toolbar_ActionSet * AP_CreateToolbarActionSet(void)
 	_s(AP_TOOLBAR_ID_FMT_HYPERLINK, EV_TBIT_PushButton, "insertHyperlink", AV_CHG_ALL, NULL);
 	_s(AP_TOOLBAR_ID_FMT_BOOKMARK, EV_TBIT_PushButton, "insertBookmark", AV_CHG_ALL, NULL);
 
-#ifdef ABI_OPT_PERL
 	_s(AP_TOOLBAR_ID_SCRIPT_PLAY,	EV_TBIT_PushButton,	"scriptPlay",		AV_CHG_ALL,			NULL);
-#endif
 
 	// ... add others here ...
 #ifdef BIDI_ENABLED

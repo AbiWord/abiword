@@ -42,6 +42,9 @@ BeginLayout(ExtraOps)
 	ToolbarItem(AP_TOOLBAR_ID_INSERT_SYMBOL)
 
 	Spacer()
+	ToolbarItem(AP_TOOLBAR_ID_SCRIPT_PLAY)
+
+	Spacer()
 	ToolbarItem(AP_TOOLBAR_ID_PARA_0BEFORE)
 	ToolbarItem(AP_TOOLBAR_ID_PARA_12BEFORE)
 
@@ -65,8 +68,4 @@ BeginLayout(ExtraOps)
 	ToolbarItem(AP_TOOLBAR_ID_EDIT_REMOVEHEADER)
 	ToolbarItem(AP_TOOLBAR_ID_EDIT_REMOVEFOOTER)
 
-#ifdef ABI_OPT_PERL
-	Spacer()
-	ToolbarItem(AP_TOOLBAR_ID_SCRIPT_PLAY)
-#endif
 EndLayout()

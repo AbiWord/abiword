@@ -112,9 +112,7 @@ BeginSetEnc(fr,FR,true,"iso-8859-1")
 	ToolbarLabel(AP_TOOLBAR_ID_INDENT,		"Augmenter le retrait", 	tb_text_indent_xpm, 		NULL, "Augmenter le retrait")
 	ToolbarLabel(AP_TOOLBAR_ID_UNINDENT,		"Diminuer le retrait", 		tb_text_unindent_xpm,		NULL, "Diminuer le retrait")
 
-#ifdef ABI_OPT_PERL
 	ToolbarLabel(AP_TOOLBAR_ID_SCRIPT_PLAY,		"Script",				tb_script_play_xpm,			NULL, "Exécuter un script")
-#endif
 
 	// ... add others here ...
 

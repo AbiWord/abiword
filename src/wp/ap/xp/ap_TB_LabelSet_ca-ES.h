@@ -113,9 +113,7 @@ BeginSetEnc(ca,ES,true,"iso-8859-1")
 	
 	// ... add others here ...
 
-#ifdef ABI_OPT_PERL
 	ToolbarLabel(AP_TOOLBAR_ID_SCRIPT_PLAY,		"Executa extensió",	tb_script_play_xpm,		NULL, "Executa l'extensió")
-#endif
 
 #ifdef BIDI_ENABLED
 	ToolbarLabel(AP_TOOLBAR_ID_FMT_DIR_OVERRIDE_LTR,"Força text EAD",	tb_text_direction_ltr_xpm,	NULL, "Força direcció del text d'esquerra a dreta")

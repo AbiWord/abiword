@@ -25,6 +25,7 @@
 #include "xav_View.h"
 #include "xap_Strings.h"
 
+class UT_Vector;
 class XAP_Frame;
 
 class AP_Dialog_New : public XAP_Dialog_NonPersistent

@@ -115,20 +115,13 @@ BeginLayout(Main,0)
 
 	BeginSubMenu(AP_MENU_ID_INSERT)
 		MenuItem(AP_MENU_ID_INSERT_BREAK)
-		MenuItem(AP_MENU_ID_INSERT_BOOKMARK)
-		MenuItem(AP_MENU_ID_INSERT_HYPERLINK)		
 		MenuItem(AP_MENU_ID_INSERT_PAGENO)
 		MenuItem(AP_MENU_ID_INSERT_DATETIME)
 		MenuItem(AP_MENU_ID_INSERT_FIELD)
 		MenuItem(AP_MENU_ID_INSERT_SYMBOL)
-                MenuItem(AP_MENU_ID_INSERT_FILE)
-#ifdef DEBUG
-        // QUACK Un-DEBUG here to activate endnotes
-		MenuItem(AP_MENU_ID_INSERT_ENDNOTE)
-#endif
 
-                /* the autotext submenus */
-		Separator()
+                /* the autotext submenus */     
+
                 BeginSubMenu(AP_MENU_ID_INSERT_AUTOTEXT)
                      BeginSubMenu(AP_MENU_ID_AUTOTEXT_ATTN)
                           MenuItem(AP_MENU_ID_AUTOTEXT_ATTN_1)
@@ -186,7 +179,16 @@ BeginLayout(Main,0)
                      BeginSubMenu(AP_MENU_ID_AUTOTEXT_SUBJECT)
                           MenuItem(AP_MENU_ID_AUTOTEXT_SUBJECT_1)
                      EndSubMenu()
-                EndSubMenu()     
+                EndSubMenu()
+
+                Separator ()
+                MenuItem(AP_MENU_ID_INSERT_FILE)
+		MenuItem(AP_MENU_ID_INSERT_BOOKMARK)
+		MenuItem(AP_MENU_ID_INSERT_HYPERLINK)
+#ifdef DEBUG
+        // QUACK Un-DEBUG here to activate endnotes
+		MenuItem(AP_MENU_ID_INSERT_ENDNOTE)
+#endif
 
 #ifdef HAVE_GNOME 
                 // only enabled for GNOME builds in the 0.9.x releases
@@ -244,9 +246,7 @@ BeginLayout(Main,0)
 		MenuItem(AP_MENU_ID_TOOLS_WORDCOUNT)
 	    Separator()
 	    MenuItem(AP_MENU_ID_TOOLS_PLUGINS)
-#ifdef ABI_OPT_PERL
 	    MenuItem(AP_MENU_ID_TOOLS_SCRIPTS)
-#endif
 		Separator()
 		MenuItem(AP_MENU_ID_TOOLS_OPTIONS)
         EndSubMenu()

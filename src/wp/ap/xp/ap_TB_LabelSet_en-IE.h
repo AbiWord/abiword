@@ -102,9 +102,7 @@ BeginSetEnc(en,IE,false,"iso-8859-1")
 	ToolbarLabel(AP_TOOLBAR_ID_INDENT,			"Increase indent",	tb_text_indent_xpm, 	NULL, "Increase indent")
 	ToolbarLabel(AP_TOOLBAR_ID_UNINDENT,		"Decrease indent",	tb_text_unindent_xpm,	NULL, "Decrease indent")
 
-#ifdef ABI_OPT_PERL
 	ToolbarLabel(AP_TOOLBAR_ID_SCRIPT_PLAY,		"Ex. script",	tb_script_play_xpm,		NULL, "Execute script")
-#endif
 
      // ... add others here ...
 #ifdef BIDI_ENABLED
