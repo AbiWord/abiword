@@ -1950,7 +1950,7 @@ Defun1(helpCheckVer)
 {
 	UT_String versionURL = "http://www.abisource.com/users/check_version.phtml?version=";
 	versionURL += XAP_App::s_szBuild_Version;
- 	return _helpOpenURL(pAV_View, versionURL);
+ 	return _helpOpenURL(pAV_View, versionURL.c_str());
 }
 
 Defun1(helpSearch)

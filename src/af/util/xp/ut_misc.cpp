@@ -332,3 +332,46 @@ UT_sint32 signedHiWord(UT_uint32 dw)
 
 	return s32;
 }
+
+//////////////////////////////////////////////////////////////////
+
+/*!
+ * simplesplit splits the referring string along the character 'separator', 
+ * removing the separator character, and placing the resulting strings in a 
+ * UT_Vector. If 'max' is specified, this is done max times - the max + 1
+ * string in the vector will contain the remainder of the original string 
+ * (str).
+ */
+UT_Vector * simpleSplit (UT_String & str, char separator,
+						 size_t max)
+{
+	UT_Vector * utvResult = new UT_Vector();
+	UT_String* utsEntry;
+	int start = -1;
+
+	for(size_t j = 0; max == 0 || j < max; j++)
+	{
+		utsEntry = new UT_String;
+		for(start++; *(str.substr(start, 1).c_str()) != separator
+				|| j == max - 1; start++)
+		{
+			*utsEntry += str.substr(start, 1);
+			if(*(str.substr(start, 1).c_str()) == '\0') 
+				break;
+		}
+		
+		if(utsEntry->empty())
+		{
+			delete utsEntry;
+		}
+		else
+		{
+			utvResult->addItem(utsEntry);
+		}
+
+		if(*(str.substr(start, 1).c_str()) == '\0') 
+			break;
+	}
+
+	return utvResult;
+}

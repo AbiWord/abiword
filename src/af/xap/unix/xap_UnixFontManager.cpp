@@ -179,7 +179,7 @@ bool XAP_UnixFontManager::scavengeFonts(void)
 			}
 		}
 		message += "\nPlease visit http://www.abisource.com/ for more information.";
-		messageBoxOK(message);
+		messageBoxOK(message.c_str());
 		return false;
 	}
 

@@ -23,8 +23,10 @@
 #define UTMISC_H
 
 #include "ut_types.h"
-
 #include "ut_xml.h"
+
+#include "ut_vector.h"
+#include "ut_string_class.h"
 
 class UT_RGBColor;
 class UT_Rect;
@@ -81,5 +83,8 @@ const XML_Char* UT_getAttribute(const XML_Char* name, const XML_Char** atts);
 
 UT_sint32 signedHiWord(UT_uint32 dw);
 UT_sint32 signedLoWord(UT_uint32 dw);
+
+UT_Vector * simpleSplit (UT_String & str, char separator = ' ',
+						 size_t max = 0 /* 0 == full split */);
 
 #endif /* UTMISC_H */

@@ -124,10 +124,10 @@ void AP_Dialog_Options::_storeWindowData(void)
 
 	_gatherAutoSaveFileExt(stVal);
 	UT_DEBUGMSG(("Saving Auto Save File Ext [%s]\n", stVal.c_str()));
-	pPrefsScheme->setValue(XAP_PREF_KEY_AutoSaveFileExt, stVal);
+	pPrefsScheme->setValue(XAP_PREF_KEY_AutoSaveFileExt, stVal.c_str());
 	_gatherAutoSaveFilePeriod(stVal);
 	UT_DEBUGMSG(("Saving Auto Save File with a period of [%s]\n", stVal.c_str()));
-	pPrefsScheme->setValue(XAP_PREF_KEY_AutoSaveFilePeriod, stVal);
+	pPrefsScheme->setValue(XAP_PREF_KEY_AutoSaveFilePeriod, stVal.c_str());
 #endif					
 	// - - - - - - - - - - - - - - - - - - - - - - - - - - - - - -
 	// If we changed whether the ruler is to be visible

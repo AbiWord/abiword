@@ -21,9 +21,8 @@
 #include "ut_files.h"
 #include "ut_debugmsg.h"
 #include "ut_types.h"
-#include "ut_vector.h"
 #include "ut_string.h"
-#include "ut_string_class.h"
+#include "ut_misc.h"
 #include "ut_types.h"
 
 /*!
@@ -57,7 +56,7 @@ bool progExists(const char* progName)
 	UT_String envpath = getenv("PATH");
 	UT_String* path;
 
-	UT_Vector * utvPath = envpath.simplesplit(':');
+	UT_Vector * utvPath = simpleSplit(envpath, ':');
 	if (!utvPath)
 	  return false;
 
