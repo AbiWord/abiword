@@ -358,7 +358,6 @@ struct ABI_EXPORT RTFProps_SectionProps
 	enum EPageNumber {pgDecimal, pgURoman, pgLRoman, pgULtr, pgLLtr};
 
 	RTFProps_SectionProps();
-	RTFProps_SectionProps& operator=(const RTFProps_SectionProps&);
 
 	UT_uint32		m_numCols;
 	bool m_bColumnLine;
@@ -669,6 +668,7 @@ private:
 	bool _appendField (const XML_Char *xmlField);
 	XML_Char *_parseFldinstBlock (UT_ByteBuf & buf, XML_Char *xmlField, bool & isXML);
 	bool                m_bAppendAnyway;
+	RTFProps_SectionProps m_sectdProps ;
 };
 
 #endif /* IE_IMP_RTF_H */
