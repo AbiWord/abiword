@@ -449,7 +449,7 @@ GnomeUIInfo * EV_UnixGnomeMenu::_convertMenu2UIInfo (int &pos)
 		pos++;
 	}
 
-	g_renew(GnomeUIInfo, retval, i + 1);
+	retval = g_renew(GnomeUIInfo, retval, i + 1);
 	  
 	return (retval);
 }
