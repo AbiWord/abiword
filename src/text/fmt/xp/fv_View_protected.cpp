@@ -1404,9 +1404,9 @@ void FV_View::_moveInsPtNextPrevLine(bool bNext)
 	if (bNOOP)
 	{
 		if (bBOL)
-			moveInsPtTo(FV_DOCPOS_BOL);
+			moveInsPtTo(FV_DOCPOS_BOL, false);
 		else if (bEOL)
-			moveInsPtTo(FV_DOCPOS_EOL);
+			moveInsPtTo(FV_DOCPOS_EOL, false);
 		// cannot move.  should we beep?
 		return;
 	}
