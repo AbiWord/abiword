@@ -452,7 +452,7 @@ void AP_Win32App::copyToClipboard(PD_DocumentRange * pDocRange)
 	m_pClipboard->closeClipboard();				// release clipboard lock
 }
 
-void AP_Win32App::pasteFromClipboard(PD_DocumentRange * pDocRange, bool)
+void AP_Win32App::pasteFromClipboard(PD_DocumentRange * pDocRange, bool bUseClipboard, bool bHonorFormatting)
 {
 	// paste from the system clipboard using the best-for-us format
 	// that is present.
@@ -502,6 +502,10 @@ void AP_Win32App::pasteFromClipboard(PD_DocumentRange * pDocRange, bool)
 	{
 		// TODO decide what the proper order is for these.
 		// TODO decide if we need to support .ABW on the clipboard.
+		if( !bHonorFormatting )
+		{
+			TRY_TO_PASTE_IN_FORMAT(AP_CLIPBOARD_TEXTPLAIN_8BIT, IE_Imp_Text);
+		}
 
 		TRY_TO_PASTE_IN_FORMAT(AP_CLIPBOARD_RTF, IE_Imp_RTF);
 		TRY_TO_PASTE_IN_FORMAT(AP_CLIPBOARD_TEXTPLAIN_8BIT, IE_Imp_Text);
