@@ -50,5 +50,5 @@ endif
 # Install the wrapper and a sane link
 install-exec-local:
 	$(top_srcdir)/src/pkg/common/unix/scripts/makewrapper.sh AbiWord $(pkglibdir) $(pkglibdir)/bin $(DESTDIR)
-	$(mkinstalldirs) $(bindir)
+	$(mkinstalldirs) $(DESTDIR)$(bindir)
 	ln -f $(DESTDIR)$(pkglibdir)/bin/AbiWord $(DESTDIR)$(bindir)/AbiWord
