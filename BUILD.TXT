@@ -93,7 +93,6 @@ Build Instructions -- MacOS
 ---------------------------
 
 You will need to get:
--MacGTK for the glib port: http://macgtk.sourceforge.net/
 -zlib
 -libpng
 -libiconv
