@@ -980,6 +980,18 @@ bool fl_DocListener::change(PL_StruxFmtHandle sfh,
 			pCellL->doclistener_deleteStrux(pcrx);
 			goto finish_up;
 		}
+		case PTX_SectionFrame:
+		{
+			fl_Layout * pL = (fl_Layout *)sfh;
+			UT_ASSERT(pL->getType() == PTX_SectionFrame);
+			fl_FrameLayout * pFrameL = (fl_FrameLayout *) pL;
+			pFrameL->doclistener_deleteStrux(pcrx);
+			goto finish_up;
+		}
+		case PTX_EndFrame:
+		{
+			goto finish_up;
+		}
 		case PTX_EndTable:
 		{
 			goto finish_up;

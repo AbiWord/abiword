@@ -59,6 +59,14 @@ bool pt_PieceTable::_unlinkStrux(pf_Frag_Strux * pfs,
 	{
 		UT_DEBUGMSG(("_unlink Strux EndCell %x \n",pfs));
 	}
+	else if(pfs->getStruxType() == PTX_SectionFrame)
+	{
+		UT_DEBUGMSG(("_unlink Strux SectionFrame %x \n",pfs));
+	}
+	else if(pfs->getStruxType() == PTX_EndFrame)
+	{
+		UT_DEBUGMSG(("_unlink Strux EndFrame %x \n",pfs));
+	}
 	else if(pfs->getStruxType() == PTX_Block)
 	{
 		UT_DEBUGMSG(("_unlink Strux Block %x \n",pfs));
@@ -95,12 +103,14 @@ bool pt_PieceTable::_unlinkStrux(pf_Frag_Strux * pfs,
 	case PTX_SectionHdrFtr:
 	case PTX_SectionEndnote:
 	case PTX_SectionTable:
+	case PTX_SectionFrame:
 	case PTX_SectionCell:
 	case PTX_SectionFootnote:
 	case PTX_EndCell:
 	case PTX_EndTable:
 	case PTX_EndFootnote:
 	case PTX_EndEndnote:
+	case PTX_EndFrame:
 		return _unlinkStrux_Section(pfs,ppfEnd,pfragOffsetEnd);
 
 	case PTX_Block:
@@ -185,6 +195,8 @@ bool pt_PieceTable::_unlinkStrux_Block(pf_Frag_Strux * pfs,
 		return true;
 
 
+	case PTX_SectionFrame:
+    case PTX_EndFrame:
 	case PTX_SectionTable:
 	case PTX_SectionCell:
 	case PTX_EndCell:
@@ -210,9 +222,11 @@ bool pt_PieceTable::_unlinkStrux_Section(pf_Frag_Strux * pfs,
 			  || pfs->getStruxType()==PTX_SectionHdrFtr
 			  || pfs->getStruxType()==PTX_SectionEndnote
 			  || pfs->getStruxType()==PTX_SectionTable
+			  || pfs->getStruxType()==PTX_SectionFrame
 			  || pfs->getStruxType()==PTX_SectionCell
 			  || pfs->getStruxType()==PTX_EndCell
 			  || pfs->getStruxType()==PTX_EndTable 
+			  || pfs->getStruxType()==PTX_EndFrame 
 			  || pfs->getStruxType()==PTX_SectionFootnote 
 			  || pfs->getStruxType()==PTX_EndFootnote 
 			  || pfs->getStruxType()==PTX_SectionEndnote 
@@ -259,6 +273,18 @@ bool pt_PieceTable::_unlinkStrux_Section(pf_Frag_Strux * pfs,
 	case PTX_SectionTable:
         //
         // deleting tables is a multi-step process that can't make assumptions
+        // on a single step
+		_unlinkFrag(pfs,ppfEnd,pfragOffsetEnd);
+		return true;
+	case PTX_SectionFrame:
+        //
+        // deleting Frames is a multi-step process that can't make assumptions
+        // on a single step
+		_unlinkFrag(pfs,ppfEnd,pfragOffsetEnd);
+		return true;
+	case PTX_EndFrame:
+        //
+        // deleting Frames is a multi-step process that can't make assumptions
         // on a single step
 		_unlinkFrag(pfs,ppfEnd,pfragOffsetEnd);
 		return true;

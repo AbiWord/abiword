@@ -628,6 +628,14 @@ bool fl_ContainerLayout::isOnScreen() const
 
 void fl_ContainerLayout::addFrame(fl_FrameLayout * pFrame)
 {
+	UT_DEBUGMSG(("Adding frame %x to list in container %x \n",pFrame,this));
+	UT_sint32 i = m_vecFrames.findItem(static_cast<void *>(pFrame));
+	if(i>= 0)
+	{
+		UT_DEBUGMSG(("Adding already existing frame \n"));
+		UT_ASSERT(UT_SHOULD_NOT_HAPPEN);
+		return;
+	}
 	m_vecFrames.addItem(static_cast<void *>(pFrame));
 }
 
@@ -659,4 +667,14 @@ fp_FrameContainer * fl_ContainerLayout::getNthFrameContainer(UT_sint32 i) const
 
 void fl_ContainerLayout:: removeFrame(fl_FrameLayout * pFrame)
 {
+	UT_sint32 i = m_vecFrames.findItem(static_cast<void *>(pFrame));
+	if(i >= 0)
+	{
+		m_vecFrames.deleteNthItem(i);
+	}
+	else
+	{
+		UT_DEBUGMSG((" Requested Frame not found \n"));
+		UT_ASSERT(UT_SHOULD_NOT_HAPPEN);
+	}
 }

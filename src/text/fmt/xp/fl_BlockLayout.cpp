@@ -5916,10 +5916,6 @@ fl_SectionLayout * fl_BlockLayout::doclistener_insertFrame(const PX_ChangeRecord
 	{
 		pfnBindHandles(sdh,lid,sfhNew);
 	}
-	//
-	// Add this frame to the list in this layout.
-	//
-	addFrame(static_cast<fl_FrameLayout *>(pSL));
 	fl_ContainerLayout * pPrevCL = getPrev();
 	fp_Page * pPrevP = NULL;
 	if(pPrevCL)

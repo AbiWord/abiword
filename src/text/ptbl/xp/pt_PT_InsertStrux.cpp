@@ -472,7 +472,12 @@ bool pt_PieceTable::_realInsertStrux(PT_DocPosition dpos,
 
 	// create a change record to describe the change, add
 	// it to the history, and let our listeners know about it.
-
+	if(pfsNew->getStruxType() == PTX_SectionFrame)
+	{
+		// Inserting a sectionFrame screws up dos. It goes just before the next
+		// block strux found.
+		dpos = pfsNew->getPrev()->getPos() + pfsNew->getPrev()->getLength();
+	}
 	PX_ChangeRecord_Strux * pcrs
 		= new PX_ChangeRecord_Strux(PX_ChangeRecord::PXT_InsertStrux,
 									dpos,indexAP,pts);

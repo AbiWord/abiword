@@ -329,6 +329,21 @@ bool fl_FrameLayout::doclistener_deleteStrux(const PX_ChangeRecord_Strux * pcrx)
 	{
 		myContainingLayout()->setLastLayout(pPrev);
 	}
+//
+// Remove from the list of frames in the previous block
+//
+	fl_ContainerLayout * pCL = getPrev();
+	while(pCL && pCL->getContainerType() != FL_CONTAINER_BLOCK)
+	{
+		pCL = pCL->getPrev();
+	}
+	if(pCL == NULL)
+	{
+		UT_DEBUGMSG(("No BlockLayout before this frame! \n"));
+		return;
+	}
+	fl_BlockLayout * pBL = static_cast<fl_BlockLayout *>(pCL);
+	pBL->removeFrame(this);
 	delete this;			// TODO whoa!  this construct is VERY dangerous.
 
 	return true;

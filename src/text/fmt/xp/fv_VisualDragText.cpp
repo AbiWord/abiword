@@ -27,6 +27,7 @@
 #include "fp_Line.h"
 #include "fp_Run.h"
 
+
 FV_VisualDragText::FV_VisualDragText (FV_View * pView)
 	: m_pView (pView), 
 	  m_iVisualDragMode(FV_VisualDrag_NOT_ACTIVE),
@@ -147,6 +148,7 @@ void FV_VisualDragText::mouseDrag(UT_sint32 x, UT_sint32 y)
 	getGraphics()->setClipRect(NULL);
 }
 
+
 /*!
  * This method creates an image from the current selection. It sets
  * the drag rectangle, the initial offsets and the initial positions 
@@ -174,7 +176,6 @@ void FV_VisualDragText::getImageFromSelection(UT_sint32 x, UT_sint32 y)
 	UT_uint32 heightCaret;
 	UT_sint32 xCaret2, yCaret2;
 	bool bDirection,bEOL;
-
 	m_pView->_findPositionCoords(posLow, bEOL, xLow, yLow, xCaret2, yCaret2, heightCaret, bDirection, NULL, &pRunLow);
 	fp_Line * pLineLow = pRunLow->getLine();
 	fp_Run * pRunHigh = NULL;
@@ -223,7 +224,7 @@ void FV_VisualDragText::getImageFromSelection(UT_sint32 x, UT_sint32 y)
 		{
 			pRun = pNext->getFirstRun();
 			pNext->getScreenOffsets(pRun,xx,yy);
-			xx += pNext->getWidth();
+			xx += pNext->getMaxWidth();
 			if(xx > width)
 			{
 				width = xx;
@@ -271,16 +272,7 @@ void FV_VisualDragText::getImageFromSelection(UT_sint32 x, UT_sint32 y)
 	m_iLastY = y;
 	m_iInitialOffX = x - m_recCurFrame.left;
 	m_iInitialOffY = y - m_recCurFrame.top;
-
-	DELETEP(m_pDragImage);
-	if (m_recCurFrame.width > 0 && m_recCurFrame.height > 0) {
-		m_pDragImage = getGraphics()->genImageFromRectangle(m_recCurFrame);
-		UT_ASSERT(m_pDragImage);
-	}
-	else {
-		UT_DEBUGMSG(("Dragging Text - different rows have different widths or starting x values. Not yet implemented."));
-		UT_ASSERT(UT_TODO);
-	}
+	m_pDragImage = getGraphics()->genImageFromRectangle(m_recCurFrame);
 }
 
 void FV_VisualDragText::mouseCut(UT_sint32 x, UT_sint32 y)
@@ -291,6 +283,7 @@ void FV_VisualDragText::mouseCut(UT_sint32 x, UT_sint32 y)
 	drawImage();
 }
 
+
 void FV_VisualDragText::mouseCopy(UT_sint32 x, UT_sint32 y)
 {
 	getImageFromSelection(x,y);
@@ -298,7 +291,6 @@ void FV_VisualDragText::mouseCopy(UT_sint32 x, UT_sint32 y)
 	m_pView->updateScreen(false);
 	drawImage();
 }
-
 /*!
  * x and y is the location in the document windows of the mouse in logical
  * units.
@@ -327,10 +319,9 @@ void FV_VisualDragText::mouseRelease(UT_sint32 x, UT_sint32 y)
 
 void FV_VisualDragText::drawImage(void)
 {
-	if(m_pDragImage != NULL)
+	if(m_pDragImage == NULL)
 	{
-		getGraphics()->drawImage(m_pDragImage,m_recCurFrame.left,m_recCurFrame.top);
+		UT_ASSERT(UT_SHOULD_NOT_HAPPEN);
+		return;
 	}
-	// or else we already asserted when we failed to grab the image for whatever reason.
-	// no need to be redundant here
-}
+	getGraphics()->drawImage(m_pDragImage,m_recCurFrame.left,m_recCurFrame.top);}

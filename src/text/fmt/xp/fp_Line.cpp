@@ -1310,7 +1310,7 @@ void fp_Line::draw(dg_DrawArgs* pDA)
 	if(count <= 0)
 		return;
 
-	xxx_UT_DEBUGMSG(("SEVIOR: Drawing line in line pDA, width %d \n",getWidth()));
+	xxx_UT_DEBUGMSG(("SEVIOR: Drawing line %x in line pDA, width %d \n",this,getWidth()));
 	FV_View* pView = getBlock()->getDocLayout()->getView();
 	bool bShowHidden = pView->getShowPara();
 	bShowHidden = bShowHidden && pDA->pG->queryProperties(GR_Graphics::DGP_SCREEN);
@@ -2758,7 +2758,7 @@ UT_sint32 fp_Line::calculateWidthOfLine(void)
 	//UT_ASSERT(iX <= m_iMaxWidth);
 
 	m_iWidth = iX;
-
+//	UT_ASSERT(m_iWidth > 0);
 	return iX;
 }
 
