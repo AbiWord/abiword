@@ -1150,7 +1150,10 @@ void FV_View::toggleCase (ToggleCase c)
 	while(pBL && (low == pBL->getPosition(true) + pBL->getLength()))
 	{
 		pBL = pBL->getNextBlockInDocument();
-		low = pBL->getPosition();
+		if(pBL != NULL)
+		{
+			low = pBL->getPosition();
+		}
 	}
 	if(pBL == NULL)
 	{
