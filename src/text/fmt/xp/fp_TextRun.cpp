@@ -809,6 +809,44 @@ void fp_TextRun::mergeWithNext(void)
 	if(getX() > pNext->getX())
 		_setX(pNext->getX());
 
+#ifdef JUSTIFY_WITHOUT_SPLITING
+	if(m_pJustifiedSpaces)
+	{
+		UT_ASSERT(pNext->m_pJustifiedSpaces );
+		UT_uint32 iCount = m_pJustifiedSpaces->getItemCount();
+		UT_uint32 iNCount = pNext->m_pJustifiedSpaces->getItemCount();
+		UT_ASSERT( iCount && iNCount );
+
+		// get the last slot from our vector and the first slot from
+		// the next vector and see if they are continuous
+		UT_uint32 iSpaceOffset = (UT_uint32) m_pJustifiedSpaces->getNthItem(iCount - 4);
+		UT_uint32 iSpaceLength = (UT_uint32) m_pJustifiedSpaces->getNthItem(iCount - 3);
+		UT_uint32 iNSpaceOffset = (UT_uint32) pNext->m_pJustifiedSpaces->getNthItem(0);
+		UT_uint32 iNSpaceLength = (UT_uint32) pNext->m_pJustifiedSpaces->getNthItem(1);
+
+		UT_uint32 iVectIndx = 0;
+		
+		if(iSpaceOffset + iSpaceLength == iNSpaceOffset)
+		{
+			// they are continuous, so we join them
+			m_pJustifiedSpaces->setNthItem(iCount - 3, (void*) (iSpaceLength + iNSpaceLength),NULL);
+			UT_uint32 iSpaceWidth = (UT_uint32) m_pJustifiedSpaces->getNthItem(iCount - 2);
+			iSpaceWidth += (UT_uint32) pNext->m_pJustifiedSpaces->getNthItem(3);
+			m_pJustifiedSpaces->setNthItem(iCount - 2, (void*) iSpaceWidth, NULL);
+
+			iVectIndx = 4;
+		}
+		
+		for(UT_uint32 i = iVectIndx; i < iNCount; i++)
+		{
+			void * p = pNext->m_pJustifiedSpaces->getNthItem(i);
+			m_pJustifiedSpaces->addItem(p);
+		}
+	}
+	
+#endif	
+	
+
 	// join the two span buffers; this will save us refreshing the draw buffer
 	// which is very expensive
 	// however, first make sure that the buffers are uptodate (_refreshDrawBuffer
@@ -945,6 +983,76 @@ bool fp_TextRun::split(UT_uint32 iSplitOffset)
 	pNew->setVisibility(this->isHidden());
 	
 
+#ifdef JUSTIFY_WITHOUT_SPLITING
+	if(m_pJustifiedSpaces)
+	{
+		// divide the justification info between the two runs
+		for(UT_uint32 i = 0; i < m_pJustifiedSpaces->getItemCount(); i += 4)
+		{
+			UT_uint32 iSpaceOffset = (UT_uint32)m_pJustifiedSpaces->getNthItem(i);
+			UT_uint32 iSpaceLength = (UT_uint32)m_pJustifiedSpaces->getNthItem(i+1);
+
+			if(iSplitOffset >= iSpaceOffset + iSpaceLength)
+			{
+				// move on
+			}
+			else if(iSplitOffset <= iSpaceOffset)
+			{
+				// everything from this slot onwards belongs to the
+				// new run
+				pNew->m_pJustifiedSpaces = new UT_Vector;
+
+				for(UT_uint32 j = i; j < m_pJustifiedSpaces->getItemCount(); j++)
+				{
+					// as we delete the item immediately afterwards,
+					// we are always working with the i index of the
+					// old vector (not j!)
+					pNew->m_pJustifiedSpaces->addItem(m_pJustifiedSpaces->getNthItem(i));
+					m_pJustifiedSpaces->deleteNthItem(i);
+				}
+				break;
+			}
+			else
+			{
+				// this is the harder case, where we have to split the
+				// slot
+
+				// first set the correct offsets and lengths
+				pNew->m_pJustifiedSpaces = new UT_Vector;
+				
+				pNew->m_pJustifiedSpaces->setNthItem(0,(void*)iSplitOffset,NULL);
+				UT_uint32 iNewLength = iSpaceLength - (iSplitOffset - iSpaceOffset);
+				pNew->m_pJustifiedSpaces->setNthItem(1,(void*)iNewLength,NULL);
+				
+
+				m_pJustifiedSpaces->setNthItem(i+1,(void*)(iSpaceOffset - iSplitOffset),NULL);
+
+				// now divide the width of the spaces
+				UT_uint32 iSpaceWidth = (UT_uint32)m_pJustifiedSpaces->getNthItem(i+2);
+				UT_uint32 iSingleWidth = iSpaceWidth / iSpaceLength;
+
+				pNew->m_pJustifiedSpaces->setNthItem(0,(void*)(iSingleWidth * iNewLength),NULL);
+				m_pJustifiedSpaces->setNthItem(i+2,(void*)(iSingleWidth * (iSpaceLength - iNewLength)),NULL);
+				
+		
+				// everything after this slot onwards belongs to the
+				// new run
+				for(UT_uint32 j = i+4; j < m_pJustifiedSpaces->getItemCount(); j++)
+				{
+					// as we delete the item immediately afterwards,
+					// we are always working with the i index of the
+					// old vector (not j!)
+					pNew->m_pJustifiedSpaces->addItem(m_pJustifiedSpaces->getNthItem(i));
+					m_pJustifiedSpaces->deleteNthItem(i);
+				}
+				break;
+			}
+		}
+		
+	}
+	
+#endif
+	
 	pNew->setPrev(this);
 	pNew->setNext(this->getNext());
 	if (getNext())

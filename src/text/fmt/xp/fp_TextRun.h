@@ -45,7 +45,7 @@
 #include "ut_abi-pango.h"
 #endif
 
-#define JUSTIFY_WITHOUT_SPLITING
+//#define JUSTIFY_WITHOUT_SPLITING
 
 class ABI_EXPORT fp_TextRun : public fp_Run
 {
