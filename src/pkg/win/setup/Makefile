@@ -23,7 +23,7 @@ ABI_DEPTH = ../../..
 include $(ABI_DEPTH)/config/abi_defs.mk
 
 CSRCS=			setup.c			\
-			$(OUTDIR)/data.c
+			$(OBJDIR)/data.c
 
 PROGRAM=		$(BINDIR)/setup.exe
 
@@ -36,7 +36,7 @@ ABI_OTHLIBS=
 ABI_LIBS=		kernel32 user32 gdi32 winspool comdlg32 advapi32 \
 			shell32 uuid comctl32 ole32
 
-GARBAGE=		setup.map setup.pdb $(OUTDIR)/data.c _tmp_.ask
+GARBAGE=		setup.map setup.pdb $(OBJDIR)/data.c _tmp_.ask
 TARGETS=		$(PROGRAM)
 
 INCLUDES=		-I$(ABI_DEPTH)/ask/lib/xp
@@ -47,12 +47,12 @@ include $(ABI_DEPTH)/config/abi_rules.mk
 ## everything below here must *FOLLOW* abi_rules
 ##################################################################
 
-$(OUTDIR)/data.c:	abisuite.ask
-	rm -f $(OUTDIR)/_tmp_.ask
-	sed -e 's|__CANONDIR__|$(CANONDIR)|g' abisuite.ask > $(OUTDIR)/_tmp1_.ask
-	sed -e 's|__BINDIR__|$(BINDIR)|g' $(OUTDIR)/_tmp1_.ask > $(OUTDIR)/_tmp_.ask
-	$(BINDIR)/ask_gendata.exe $(OUTDIR)/_tmp_.ask $(OUTDIR)/_tmp_.c
-	mv $(OUTDIR)/_tmp_.c $(OUTDIR)/data.c
+$(OBJDIR)/data.c:	abisuite.ask
+	rm -f $(OBJDIR)/_tmp_.ask
+	sed -e 's|__CANONDIR__|$(CANONDIR)|g' abisuite.ask > $(OBJDIR)/_tmp1_.ask
+	sed -e 's|__BINDIR__|$(BINDIR)|g' $(OBJDIR)/_tmp1_.ask > $(OBJDIR)/_tmp_.ask
+	$(BINDIR)/ask_gendata.exe $(OBJDIR)/_tmp_.ask $(OBJDIR)/_tmp_.c
+	mv $(OBJDIR)/_tmp_.c $(OBJDIR)/data.c
 
 $(PROGRAM): $(OBJS)
 	@$(MAKE_OBJDIR)
