@@ -83,6 +83,8 @@ public:
 										  UT_String & sYpos,
 										  UT_String & sWidth,
 										  UT_String & sHeight,
+										  UT_String & sColXpos,
+										  UT_String & sColYpos,
 										  PT_DocPosition & posAtXY);
 	fl_FrameLayout *      getFrameLayout(void)
 		{ return m_pFrameLayout;}

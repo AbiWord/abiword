@@ -1944,10 +1944,13 @@ bool fl_BlockLayout::setFramesOnPage(fp_Line * pLastLine)
 			// 
 			if(pFrameCon)
 			{
-				pFrameCon->setX(pFrame->getFrameXColpos());
-				pFrameCon->setY(pFrame->getFrameYColpos());
 				fp_Line * pLine = static_cast<fp_Line *>(getLastContainer());
+				fp_Container * pCol = pLine->getColumn();
+				UT_return_val_if_fail(pCol,false);
 				fp_Page * pPage = pLine->getPage();
+				UT_return_val_if_fail(pPage,false);
+				pFrameCon->setX(pFrame->getFrameXColpos()+pCol->getX());
+				pFrameCon->setY(pFrame->getFrameYColpos()+pCol->getY());
 				if(pPage->findFrameContainer(pFrameCon) < 0)
 				{
 					pPage->insertFrameContainer(pFrameCon);

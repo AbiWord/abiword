@@ -3606,7 +3606,6 @@ void FV_View::cmdPaste(bool bHonorFormatting)
 
 	_fixInsertionPointCoords();
 	_ensureInsertionPointOnScreen();
-
 }
 
 void FV_View::cmdPasteSelectionAt(UT_sint32 xPos, UT_sint32 yPos)
@@ -3639,6 +3638,7 @@ void FV_View::cmdPasteSelectionAt(UT_sint32 xPos, UT_sint32 yPos)
 	_ensureInsertionPointOnScreen();
 
 	m_pDoc->endUserAtomicGlob();
+	notifyListeners(AV_CHG_ALL);
 }
 
 UT_Error FV_View::cmdDeleteBookmark(const char* szName)
