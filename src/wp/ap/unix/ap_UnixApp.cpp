@@ -69,6 +69,10 @@
 #include "xap_EncodingManager.h"
 
 #include "ie_impexp_Register.h"
+#include "xap_EditMethods.h"
+#include "ev_EditMethod.h"
+#include "xap_ModuleManager.h"
+#include "xap_Module.h"
 
 #include "ie_exp.h"
 #include "ie_exp_RTF.h"
@@ -1241,7 +1245,12 @@ int AP_UnixApp::main(const char * szAppName, int argc, char ** argv)
 			else if ((strcmp(Args.m_argv[k],"-nosplash") == 0)
 					 || (strcmp(Args.m_argv[k],"--nosplash") == 0))
 				bNoSplash = true;
-		
+
+ 	// Do a quick and dirty find for "--plugin"
+			else if ((strcmp(Args.m_argv[k],"-plugin") == 0)
+					 || (strcmp(Args.m_argv[k],"--plugin") == 0))
+				bNoSplash = true;
+
 		// Do a quick and dirty find for "-help",
 		// "--help" or "-h"
 			else if (strncmp(Args.m_argv[k],"-h",2) == 0 ||
@@ -1375,6 +1384,7 @@ bool AP_UnixApp::parseCommandLine()
     bool show = false;
 
     char *printto = NULL;
+	char * plugin = NULL;
 
 #ifdef ABI_OPT_PERL
     bool script = false;
@@ -1382,7 +1392,7 @@ bool AP_UnixApp::parseCommandLine()
 
     for (k=nFirstArg; (k<m_pArgs->m_argc); k++)
     {
-		if (*m_pArgs->m_argv[k] == '-')
+        if (*m_pArgs->m_argv[k] == '-')
 		{
 			if ((strcmp(m_pArgs->m_argv[k],"-dumpstrings") == 0)
 				|| (strcmp(m_pArgs->m_argv[k],"--dumpstrings") == 0))
@@ -1438,6 +1448,13 @@ bool AP_UnixApp::parseCommandLine()
 			{
 				k++;
 				to = m_pArgs->m_argv[k];
+				UT_DEBUGMSG(("DOM: got --to: %s\n", to));
+			}
+			else if ((strcmp (m_pArgs->m_argv[k],"-plugin") == 0)
+					 || (strcmp (m_pArgs->m_argv[k],"--plugin") == 0))
+			{
+				k++;
+				plugin = m_pArgs->m_argv[k];
 				UT_DEBUGMSG(("DOM: got --to: %s\n", to));
 			}
 			else if ((strcmp (m_pArgs->m_argv[k],"-print") == 0)
@@ -1520,7 +1537,7 @@ bool AP_UnixApp::parseCommandLine()
 
 				delete pG;
 				delete conv;
-			      }
+                  }
 			    else
 			      {
 				// no filename
@@ -1566,7 +1583,50 @@ bool AP_UnixApp::parseCommandLine()
     // command-line conversion or printing may not open any windows at all
     if ((to || printto) && !show)
 		return false;
-    
+    if(plugin)
+    {
+//
+// Start a plugin rather than the main abiword application.
+//
+	    const char * szName = NULL;
+		XAP_Module * pModule = NULL;
+
+		const UT_Vector * pVec = XAP_ModuleManager::instance().enumModules ();
+		bool bFound = false;
+		for (UT_uint32 i = 0; (i < pVec->size()) && !bFound; i++)
+		{
+			pModule = (XAP_Module *)pVec->getNthItem (i);
+			szName = pModule->getModuleInfo()->name;
+			if(UT_strcmp(szName,plugin) == 0)
+			{
+				bFound = true;
+			}
+		}
+		if(!bFound)
+		{
+			printf("Plugin %s not found or loaded \n",plugin);
+			return false;
+		}
+//
+// You must put the name of the ev_EditMethod in the usage field
+// of the plugin registered information.
+//
+		const char * evExecute = pModule->getModuleInfo()->usage;
+		EV_EditMethodContainer* pEMC = getEditMethodContainer();
+		const EV_EditMethod * pInvoke = pEMC->findEditMethodByName(evExecute);
+		if(!pInvoke)
+		{
+			printf("Plugin %s invoke method %s not found \n",plugin,evExecute);
+			return false;
+		}
+//
+// Execute the plugin, then quit
+//
+		ev_EditMethod_invoke(pInvoke, "Called From UnixGnomeApp");
+		return false;
+	}
+
+
     if (kWindowsOpened == 0)
     {
 		// no documents specified or were able to be opened,
