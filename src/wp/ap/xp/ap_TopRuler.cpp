@@ -1899,11 +1899,11 @@ UT_sint32 AP_TopRuler::setTableLineDrag(PT_DocPosition pos, UT_sint32 x, UT_sint
 				else
 				{
 					AP_TopRulerTableInfo * pPrevCellInfo = static_cast<AP_TopRulerTableInfo *>(m_infoCache.m_vecTableColInfo->getNthItem(i-1));
-					//WARING KILL AP_TopRulerTableInfo * pCurrentCellInfo = static_cast<AP_TopRulerTableInfo *>(m_infoCache.m_vecTableColInfo->getNthItem(i));
+					AP_TopRulerTableInfo * pCurrentCellInfo = static_cast<AP_TopRulerTableInfo *>(m_infoCache.m_vecTableColInfo->getNthItem(i));
 					
 					m_iMinCellPos = xAbsLeft + pPrevCellInfo->m_iLeftCellPos + pPrevCellInfo->m_iLeftSpacing + pPrevCellInfo->m_iRightSpacing + xExtraMargin;
-//					m_iMaxCellPos = xAbsLeft + pCurrentCellInfo->m_iRightCellPos - pCurrentCellInfo->m_iRightSpacing - pCurrentCellInfo->m_iLeftSpacing - xExtraMargin;
-					m_iMaxCellPos = 999999999;
+					m_iMaxCellPos = xAbsLeft + pCurrentCellInfo->m_iRightCellPos - pCurrentCellInfo->m_iRightSpacing - pCurrentCellInfo->m_iLeftSpacing - xExtraMargin;
+//					m_iMaxCellPos = 999999999;
 				}
 
 				break;
@@ -2719,12 +2719,20 @@ void AP_TopRuler::mouseRelease(EV_EditModifierState /* ems */, EV_EditMouseButto
 				
 				xxx_UT_DEBUGMSG(("SEVIOR i %d iCell %d left %d right %d \n",i,m_draggingCell,left,right));
 				UT_sint32 width = right - left;
-				dxrel = tick.scalePixelDistanceToUnits(width);
+				if(width > 0)
+				{
+					dxrel = tick.scalePixelDistanceToUnits(width);
+				}
+				else
+				{
+					width = pTInfo->m_iRightCellPos - pTInfo->m_iLeftCellPos - pTInfo->m_iLeftSpacing - pTInfo->m_iRightSpacing;
+					dxrel = tick.scalePixelDistanceToUnits(width);
+				}
 				UT_String sTmp = pView->getGraphics()->invertDimension(tick.dimType,dxrel);
 				sColWidths += sTmp;
 				sColWidths += '/';
 			}
-			UT_DEBUGMSG(("SEVIOR: COlumn Width string = %s \n",sColWidths.c_str()));
+			xxx_UT_DEBUGMSG(("SEVIOR: COlumn Width string = %s \n",sColWidths.c_str()));
 			m_draggingWhat = DW_NOTHING;
 			FV_View * pView = static_cast<FV_View *>(m_pView);
 			const XML_Char * props[5] = {NULL,NULL,NULL,NULL,NULL};
@@ -3584,7 +3592,7 @@ void AP_TopRuler::mouseMotion(EV_EditModifierState ems, UT_sint32 x, UT_sint32 y
 				x = xAbsRight;
 			}
 			UT_sint32 xrel = static_cast<UT_sint32>(x) - xStartPixel - 1; // TODO why is the -1 necessary? w/o it problems arise.
-			xxx_UT_DEBUGMSG(("MovingCellMark: %s\n",pView->getGraphics()->invertDimension(tick.dimType,tick.scalePixelDistanceToUnits(xrel))));
+			UT_DEBUGMSG(("MovingCellMark: %s\n",pView->getGraphics()->invertDimension(tick.dimType,tick.scalePixelDistanceToUnits(xrel))));
 			UT_sint32 oldDraggingCenter = m_draggingCenter;
 			UT_Rect oldDraggingRect = m_draggingRect;
 			m_draggingCenter = xStartPixel + xrel;
