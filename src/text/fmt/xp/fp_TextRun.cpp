@@ -1292,7 +1292,7 @@ void fp_TextRun::_clearScreen(bool /* bFullLineHeightRect */)
 		UT_RGBColor clrNormalBackground(_getColorPG());
 		if (getField())
 		{
-		  UT_setColor (clrNormalBackground, 220, 220, 220);
+		  clrNormalBackground -= _getView()->getColorFieldOffset();
 		}
 		getGR()->setColor(clrNormalBackground);
 
