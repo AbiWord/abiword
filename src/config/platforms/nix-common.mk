@@ -237,8 +237,8 @@ endif
 # 
 GLIB_CONFIG	= pkg-config glib-2.0 gthread-2.0
 GTK_CONFIG	= pkg-config gtk+-2.0 gthread-2.0
-# Do we need one for oaf?  If so, what?
-GNOME_CONFIG    = pkg-config libgnome-2.0 libgnomeprint-2.0 gal-2.0 libbonobo-2.0
+# Do we need one for oaf?  No, we _should_ use bonobo-activation for that. -MG
+GNOME_CONFIG    = pkg-config libgnome-2.0 bonobo-activation-2.0 libgnomeprint-2.0 gal-2.0 libbonobo-2.0
 LIBXML_CONFIG	= xml2-config
 
 # Shared library flags
