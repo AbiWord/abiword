@@ -124,8 +124,7 @@ XAP_App::~XAP_App()
 	// This is to delete static data allocated by UT_contextGlyph; it
 	// is strictly speaking not necessary -- this is really to shut up
 	// the debugger complaining about memory leaks
-	UT_contextGlyph cg(true);
-	cg.static_destructor();
+	UT_contextGlyph::static_destructor();
 	GR_CharWidthsCache::destroyCharWidthsCache();
 }
 
