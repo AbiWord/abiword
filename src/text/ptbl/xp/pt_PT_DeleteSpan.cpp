@@ -752,7 +752,18 @@ bool pt_PieceTable::_tweakDeleteSpan(PT_DocPosition & dpos1,
 		bool bDoit = false;
 		if(pf_End && ((pf_End->getPos() + pf_End->getLength() - pf_First->getPos())  == (dpos2 - dpos1 +1)))
 		{
-			bDoit = true;
+			if((pf_First->getType() == pf_Frag::PFT_Text) && (pf_First->getLength() == 2))
+			{
+				bDoit = false;
+			}
+			else if((pf_First->getType() == pf_Frag::PFT_Text) && (pf_End->getType() == pf_Frag::PFT_Text) && (pf_First != pf_End))
+			{
+				bDoit = false;
+			}
+			else
+			{
+				bDoit = true;
+			}
 		}
 		if(pf_End && ((pf_End->getPos() + pf_End->getLength() - pf_First->getPos())  == (dpos2 - dpos1)))
 		{
