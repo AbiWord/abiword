@@ -29,9 +29,6 @@
 
 #include <popt.h>
 
-// hmm.
-#include "xap_UnixPSGraphics.h"
-
 /*****************************************************************/
 
 // Static initializations:

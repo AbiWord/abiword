@@ -29,16 +29,16 @@ class AP_Args;
 #define XAP_App_BaseClass XAP_Win32App
 #elif defined(__BEOS__)
 #include "xap_BeOSApp.h"
-#define XAP_BeOSApp XAP_App_BaseClass
+#define XAP_App_BaseClass XAP_BeOSApp
 #elif defined(__QNX__)
 #include "xap_QNXApp.h"
-#define XAP_QNXApp XAP_App_BaseClass
+#define XAP_App_BaseClass XAP_QNXApp
 #elif (defined(XP_MAC_TARGET_CARBON) && XP_MAC_TARGET_CARBON) && (!defined(CARBON_ON_MACH_O) || (CARBON_ON_MACH_O == 0)) // Carbon on Mach-O as UNIX
 #include "xap_MacApp.h"
-#define XAP_MacApp XAP_App_BaseClass
+#define XAP_App_BaseClass XAP_MacApp
 #elif defined(XP_TARGET_COCOA)
 #include "xap_CocoaApp.h"
-#define XAP_CocoaApp XAP_App_BaseClass
+#define XAP_App_BaseClass XAP_CocoaApp
 #elif defined(HAVE_GNOME)
 #include "xap_UnixGnomeApp.h"
 #define XAP_App_BaseClass XAP_UnixGnomeApp
