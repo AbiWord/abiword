@@ -1293,7 +1293,7 @@ void s_HTML_Listener::_outputBegin (PT_AttrPropIndex api)
 	{
 		if (get_Declare_XML ())
 		{
-			m_utf8_1 = "version=\"1.0\"";
+			m_utf8_1 = "version=\"1.0\" encoding=\"UTF-8\"";
 			tagPI ("xml", m_utf8_1);
 		}
 		if (get_Allow_AWML ())
@@ -5929,7 +5929,7 @@ UT_Error IE_Exp_HTML::_writeDocument ()
 	UT_UTF8String declaration;
 
 	if (m_exp_opt.bDeclareXML)
-		declaration += "<?xml version=\"1.0\" encoding=\"utf-8\"?>" MYEOL;
+		declaration += "<?xml version=\"1.0\" encoding=\"UTF-8\"?>" MYEOL;
 
 	declaration += "<";
 	declaration += s_DTD_XHTML;
