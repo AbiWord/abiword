@@ -129,7 +129,7 @@ GR_Image* FG_GraphicVector::generateImage(GR_Graphics* pG)
 	else
 	{
 		// the SVG dimensions might be in a variety of units. let's see what we have.
-	   	UT_SVG_getDimensions(m_pbbSVG, &((UT_Byte*)pszWidth), &((UT_Byte*)pszHeight));
+	   	UT_SVG_getDimensions(m_pbbSVG, (UT_Byte**)(&pszWidth), (UT_Byte**)(&pszHeight));
 
 	   	UT_sint32 dimWidth = UT_determineDimension((const char*)pszWidth, DIM_PX);
 	   	UT_sint32 dimHeight = UT_determineDimension((const char*)pszHeight, DIM_PX);
