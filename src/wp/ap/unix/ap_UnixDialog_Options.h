@@ -64,6 +64,8 @@ public:
  	SET_GATHER			(ViewShowFormatBar,	UT_Bool );
  	SET_GATHER			(ViewShowExtraBar,	UT_Bool );
 
+ 	SET_GATHER			(ViewShowStatusBar,	UT_Bool );
+
 	SET_GATHER			(ViewRulerUnits,	UT_Dimension);		
 	SET_GATHER			(ViewCursorBlink,	UT_Bool);
  
@@ -111,6 +113,7 @@ public:
     GtkWidget * m_checkbuttonViewShowStandardBar;
     GtkWidget * m_checkbuttonViewShowFormatBar;
     GtkWidget * m_checkbuttonViewShowExtraBar;
+    GtkWidget * m_checkbuttonViewShowStatusBar;
     GtkWidget * m_checkbuttonViewAll;
     GtkWidget * m_checkbuttonViewHiddenText;
     GtkWidget * m_checkbuttonViewUnprintable;

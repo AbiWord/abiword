@@ -740,3 +740,9 @@ EV_Toolbar * XAP_UnixFrame::_newToolbar(XAP_App *app, XAP_Frame *frame,
 							   static_cast<XAP_UnixFrame *>(frame), 
 							   szLayout, szLanguage));
 }
+
+void XAP_UnixFrame::queue_resize()
+{
+	UT_DEBUGMSG(("XAP_UnixFrame::queue_resize\n"));	
+	gtk_widget_queue_resize(m_wTopLevelWindow);
+}

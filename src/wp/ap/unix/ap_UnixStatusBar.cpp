@@ -131,3 +131,14 @@ void AP_UnixStatusBar::_fe::destroy(GtkWidget * /*widget*/, gpointer /*data*/)
 {
 	// a static function
 }
+
+void AP_UnixStatusBar::show(void)
+{
+	gtk_widget_show (m_wStatusBar);
+}
+
+void AP_UnixStatusBar::hide(void)
+{
+	gtk_widget_hide (m_wStatusBar);
+	m_pFrame->queue_resize();
+}

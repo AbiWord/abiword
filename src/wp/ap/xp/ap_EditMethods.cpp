@@ -761,7 +761,7 @@ Defun1(scrollToBottom)
 
 Defun1(fileNew)
 {
-	XAP_Frame * pFrame = (XAP_Frame *) pAV_View->getParentData();
+	XAP_Frame * pFrame = static_cast<XAP_Frame *> ( pAV_View->getParentData());
 	UT_ASSERT(pFrame);
 	XAP_App * pApp = pFrame->getApp();
 	UT_ASSERT(pApp);
@@ -1253,7 +1253,7 @@ UT_Error fileOpen(XAP_Frame * pFrame, const char * pNewFile, IEFileType ieft)
 
 Defun1(fileOpen)
 {
-	XAP_Frame * pFrame = (XAP_Frame *) pAV_View->getParentData();
+	XAP_Frame * pFrame = static_cast<XAP_Frame *> ( pAV_View->getParentData());
 	UT_ASSERT(pFrame);
 
 	char * pNewFile = NULL;
@@ -1273,7 +1273,7 @@ Defun1(fileOpen)
 
 Defun(fileSave)
 {
-	XAP_Frame * pFrame = (XAP_Frame *) pAV_View->getParentData();
+	XAP_Frame * pFrame = static_cast<XAP_Frame *> ( pAV_View->getParentData());
 	UT_ASSERT(pFrame);
 
 	// can only save without prompting if filename already known
@@ -1307,7 +1307,7 @@ Defun(fileSave)
 
 Defun1(fileSaveAs)
 {
-	XAP_Frame * pFrame = (XAP_Frame *) pAV_View->getParentData();
+	XAP_Frame * pFrame = static_cast<XAP_Frame *> ( pAV_View->getParentData());
 	UT_ASSERT(pFrame);
 
 	char * pNewFile = NULL;
@@ -1360,7 +1360,7 @@ Defun1(redo)
 
 Defun1(newWindow)
 {
-	XAP_Frame * pFrame = (XAP_Frame *) pAV_View->getParentData();
+	XAP_Frame * pFrame = static_cast<XAP_Frame *> ( pAV_View->getParentData());
 	UT_ASSERT(pFrame);
 
 	return (pFrame->cloneFrame() ? UT_TRUE : UT_FALSE);
@@ -1368,7 +1368,7 @@ Defun1(newWindow)
 
 static UT_Bool _openRecent(AV_View* pAV_View, UT_uint32 ndx)
 {
-	XAP_Frame * pFrame = (XAP_Frame *) pAV_View->getParentData();
+	XAP_Frame * pFrame = static_cast<XAP_Frame *> ( pAV_View->getParentData());
 	UT_ASSERT(pFrame);
 	XAP_App * pApp = pFrame->getApp();
 	UT_ASSERT(pApp);
@@ -1434,7 +1434,7 @@ Defun1(openRecent_9)
 
 static UT_Bool _activateWindow(AV_View* pAV_View, UT_uint32 ndx)
 {
-	XAP_Frame * pFrame = (XAP_Frame *) pAV_View->getParentData();
+	XAP_Frame * pFrame = static_cast<XAP_Frame *> ( pAV_View->getParentData());
 	UT_ASSERT(pFrame);
 	XAP_App * pApp = pFrame->getApp();
 	UT_ASSERT(pApp);
@@ -1520,7 +1520,7 @@ static UT_Bool s_doMoreWindowsDlg(XAP_Frame* pFrame, XAP_Dialog_Id id)
 
 Defun1(dlgMoreWindows)
 {
-	XAP_Frame * pFrame = (XAP_Frame *) pAV_View->getParentData();
+	XAP_Frame * pFrame = static_cast<XAP_Frame *> ( pAV_View->getParentData());
 	UT_ASSERT(pFrame);
 
 	s_doMoreWindowsDlg(pFrame, XAP_DIALOG_ID_WINDOWMORE);
@@ -1553,7 +1553,7 @@ static UT_Bool s_doAboutDlg(XAP_Frame* pFrame, XAP_Dialog_Id id)
 
 Defun1(dlgAbout)
 {
-	XAP_Frame * pFrame = (XAP_Frame *) pAV_View->getParentData();
+	XAP_Frame * pFrame = static_cast<XAP_Frame *> ( pAV_View->getParentData());
 	UT_ASSERT(pFrame);
 
 	s_doAboutDlg(pFrame, XAP_DIALOG_ID_ABOUT);
@@ -1563,7 +1563,7 @@ Defun1(dlgAbout)
 
 UT_Bool _helpOpenURL(AV_View* pAV_View, const char* helpURL)
 {
- 	XAP_Frame * pFrame = (XAP_Frame *) pAV_View->getParentData();
+ 	XAP_Frame * pFrame = static_cast<XAP_Frame *> ( pAV_View->getParentData());
 	UT_ASSERT(pFrame);
 	pFrame->openURL(helpURL);
 	return UT_TRUE;
@@ -1571,7 +1571,7 @@ UT_Bool _helpOpenURL(AV_View* pAV_View, const char* helpURL)
 
 UT_Bool _helpLocalizeAndOpenURL(AV_View* pAV_View, UT_Bool bLocal, const char* pathBeforeLang, const char* pathAfterLang)
 {
- 	XAP_Frame * pFrame = (XAP_Frame *) pAV_View->getParentData();
+ 	XAP_Frame * pFrame = static_cast<XAP_Frame *> ( pAV_View->getParentData());
 	UT_ASSERT(pFrame);
 	XAP_App * pApp = pFrame->getApp();
 	UT_ASSERT(pApp);
@@ -1625,7 +1625,7 @@ Defun1(helpAboutOS)
 
 Defun1(cycleWindows)
 {
-	XAP_Frame * pFrame = (XAP_Frame *) pAV_View->getParentData();
+	XAP_Frame * pFrame = static_cast<XAP_Frame *> ( pAV_View->getParentData());
 	UT_ASSERT(pFrame);
 	XAP_App * pApp = pFrame->getApp();
 	UT_ASSERT(pApp);
@@ -1648,7 +1648,7 @@ Defun1(cycleWindows)
 
 Defun1(cycleWindowsBck)
 {
-	XAP_Frame * pFrame = (XAP_Frame *) pAV_View->getParentData();
+    XAP_Frame * pFrame = static_cast<XAP_Frame *> ( pAV_View->getParentData());
 	UT_ASSERT(pFrame);
 	XAP_App * pApp = pFrame->getApp();
 	UT_ASSERT(pApp);
@@ -1671,7 +1671,7 @@ Defun1(cycleWindowsBck)
 
 Defun(closeWindow)
 {
-	XAP_Frame * pFrame = (XAP_Frame *) pAV_View->getParentData();
+	XAP_Frame * pFrame = static_cast<XAP_Frame *> ( pAV_View->getParentData());
 	UT_ASSERT(pFrame);
 	XAP_App * pApp = pFrame->getApp();
 	UT_ASSERT(pApp);
@@ -1735,7 +1735,7 @@ Defun(closeWindow)
 
 Defun(querySaveAndExit)
 {
-	XAP_Frame * pFrame = (XAP_Frame *) pAV_View->getParentData();
+	XAP_Frame * pFrame = static_cast<XAP_Frame *> ( pAV_View->getParentData());
 	UT_ASSERT(pFrame);
 	XAP_App * pApp = pFrame->getApp();
 	UT_ASSERT(pApp);
@@ -1796,7 +1796,7 @@ Defun(querySaveAndExit)
 
 Defun1(fileInsertGraphic)
 {
-	XAP_Frame * pFrame = (XAP_Frame *) pAV_View->getParentData();
+	XAP_Frame * pFrame = static_cast<XAP_Frame *> ( pAV_View->getParentData());
 	UT_ASSERT(pFrame);
 
 	char* pNewFile = NULL;
@@ -2044,7 +2044,7 @@ Defun1(contextMenu)
 	// to the mouse.
 	
 	ABIWORD_VIEW;
-	XAP_Frame * pFrame = (XAP_Frame *)pView->getParentData();
+	XAP_Frame * pFrame = static_cast<XAP_Frame *> (pView->getParentData());
 	UT_ASSERT(pFrame);
 
 	UT_sint32 xPos, yPos;
@@ -2060,7 +2060,7 @@ Defun1(contextMenu)
 Defun(contextText)
 {
 	ABIWORD_VIEW;
-	XAP_Frame * pFrame = (XAP_Frame *)pView->getParentData();
+	XAP_Frame * pFrame = static_cast<XAP_Frame *> (pView->getParentData());
 	UT_ASSERT(pFrame);
 
 	// move the IP so actions have the right context
@@ -2078,7 +2078,7 @@ Defun(contextText)
 Defun(contextMisspellText)
 {
 	ABIWORD_VIEW;
-	XAP_Frame * pFrame = (XAP_Frame *)pView->getParentData();
+	XAP_Frame * pFrame = static_cast<XAP_Frame *> (pView->getParentData());
 	UT_ASSERT(pFrame);
 
 	// move the IP so actions have the right context
@@ -3008,7 +3008,7 @@ Defun(pasteSelection)
 
 static UT_Bool s_doGotoDlg(FV_View * pView, XAP_Dialog_Id id)
 {
-	XAP_Frame * pFrame = (XAP_Frame *) pView->getParentData();
+	XAP_Frame * pFrame = static_cast<XAP_Frame *> ( pView->getParentData());
 	UT_ASSERT(pFrame);
 	
 	pFrame->raise();
@@ -3044,7 +3044,7 @@ Defun1(go)
    
 static UT_Bool s_doSpellDlg(FV_View * pView, XAP_Dialog_Id id)
 {
-   XAP_Frame * pFrame = (XAP_Frame *) pView->getParentData();
+   XAP_Frame * pFrame = static_cast<XAP_Frame *> ( pView->getParentData());
    UT_ASSERT(pFrame);
 	
    pFrame->raise();
@@ -3083,7 +3083,7 @@ Defun1(dlgSpell)
 
 static UT_Bool s_doFindOrFindReplaceDlg(FV_View * pView, XAP_Dialog_Id id)
 {
-	XAP_Frame * pFrame = (XAP_Frame *) pView->getParentData();
+	XAP_Frame * pFrame = static_cast<XAP_Frame *> ( pView->getParentData());
 	UT_ASSERT(pFrame);
 
 	pFrame->raise();
@@ -3149,7 +3149,7 @@ Defun1(replace)
 
 static UT_Bool s_doFontDlg(FV_View * pView)
 {
-	XAP_Frame * pFrame = (XAP_Frame *) pView->getParentData();
+	XAP_Frame * pFrame = static_cast<XAP_Frame *> ( pView->getParentData());
 	UT_ASSERT(pFrame);
 
 	pFrame->raise();
@@ -3294,7 +3294,7 @@ static UT_Bool s_doFontDlg(FV_View * pView)
 
 static UT_Bool s_doParagraphDlg(FV_View * pView)
 {
-	XAP_Frame * pFrame = (XAP_Frame *) pView->getParentData();
+	XAP_Frame * pFrame = static_cast<XAP_Frame *> ( pView->getParentData());
 	UT_ASSERT(pFrame);
 
 	pFrame->raise();
@@ -3378,7 +3378,7 @@ static UT_Bool s_doParagraphDlg(FV_View * pView)
 
 static UT_Bool s_doOptionsDlg(FV_View * pView)
 {
-	XAP_Frame * pFrame = (XAP_Frame *) pView->getParentData();
+	XAP_Frame * pFrame = static_cast<XAP_Frame *> ( pView->getParentData());
 	UT_ASSERT(pFrame);
 
 	pFrame->raise();
@@ -3547,7 +3547,7 @@ static UT_Bool _toggleSpan(FV_View * pView,
 
 static UT_Bool s_doPrint(FV_View * pView, UT_Bool bTryToSuppressDialog)
 {
-	XAP_Frame * pFrame = (XAP_Frame *) pView->getParentData();
+	XAP_Frame * pFrame = static_cast<XAP_Frame *> ( pView->getParentData());
 	UT_ASSERT(pFrame);
 
 	pFrame->raise();
@@ -3654,7 +3654,7 @@ static UT_Bool s_doPrint(FV_View * pView, UT_Bool bTryToSuppressDialog)
 
 static UT_Bool s_doZoomDlg(FV_View * pView)
 {
-	XAP_Frame * pFrame = (XAP_Frame *) pView->getParentData();
+	XAP_Frame * pFrame = static_cast<XAP_Frame *> ( pView->getParentData());
 	UT_ASSERT(pFrame);
 
 	pFrame->raise();
@@ -3699,7 +3699,7 @@ static UT_Bool s_doZoomDlg(FV_View * pView)
 
 static UT_Bool s_doBreakDlg(FV_View * pView)
 {
-	XAP_Frame * pFrame = (XAP_Frame *) pView->getParentData();
+	XAP_Frame * pFrame = static_cast<XAP_Frame *> ( pView->getParentData());
 	UT_ASSERT(pFrame);
 
 	pFrame->raise();
@@ -3780,7 +3780,7 @@ static  FV_View_Insert_symbol_listener symbol_Listener;
 
 static UT_Bool s_InsertSymbolDlg(FV_View * pView, XAP_Dialog_Id id  )
 {
-	XAP_Frame * pFrame = (XAP_Frame *) pView->getParentData();
+	XAP_Frame * pFrame = static_cast<XAP_Frame *> ( pView->getParentData());
 	UT_ASSERT(pFrame);
 
 	pFrame->raise();
@@ -3824,7 +3824,7 @@ Defun1(printTB)
 
 Defun1(pageSetup)
 {
-	XAP_Frame * pFrame = (XAP_Frame *) pAV_View->getParentData();
+	XAP_Frame * pFrame = static_cast<XAP_Frame *> ( pAV_View->getParentData());
 	UT_ASSERT(pFrame);
 
 	s_TellNotImplemented(pFrame, "Page setup dialog", __LINE__);
@@ -3845,7 +3845,7 @@ Defun1(dlgOptions)
 Defun1(viewStd)
 {
 	// TODO: Share this function with viewFormat & viewExtra
-	XAP_Frame * pFrame = (XAP_Frame *) pAV_View->getParentData();
+	XAP_Frame * pFrame = static_cast<XAP_Frame *> ( pAV_View->getParentData());
 	UT_ASSERT(pFrame);
 
 	AP_FrameData *pFrameData = (AP_FrameData *)pFrame->getFrameData();
@@ -3872,7 +3872,7 @@ Defun1(viewStd)
 
 Defun1(viewFormat)
 {
-	XAP_Frame * pFrame = (XAP_Frame *) pAV_View->getParentData();
+	XAP_Frame * pFrame = static_cast<XAP_Frame *> ( pAV_View->getParentData());
 	UT_ASSERT(pFrame);
 
 	AP_FrameData *pFrameData = (AP_FrameData *)pFrame->getFrameData();
@@ -3899,10 +3899,10 @@ Defun1(viewFormat)
 
 Defun1(viewExtra)
 {
-	XAP_Frame * pFrame = (XAP_Frame *) pAV_View->getParentData();
+	XAP_Frame * pFrame = static_cast<XAP_Frame *> ( pAV_View->getParentData());
 	UT_ASSERT(pFrame);
 
-	AP_FrameData *pFrameData = (AP_FrameData *)pFrame->getFrameData();
+	AP_FrameData *pFrameData = static_cast<AP_FrameData *> (pFrame->getFrameData());
 	UT_ASSERT(pFrameData);
 
 	// toggle the ruler bit
@@ -3926,17 +3926,33 @@ Defun1(viewExtra)
 
 Defun1(viewStatus)
 {
-	XAP_Frame * pFrame = (XAP_Frame *) pAV_View->getParentData();
+	XAP_Frame * pFrame = static_cast<XAP_Frame *> ( pAV_View->getParentData());
 	UT_ASSERT(pFrame);
 
-	// TODO: synch this implementation with ap_GetState_Bars
-	s_TellNotImplemented(pFrame, "View status bar", __LINE__);
+	AP_FrameData *pFrameData = static_cast<AP_FrameData *> (pFrame->getFrameData());
+	UT_ASSERT(pFrameData);
+
+	// toggle the view status bit
+	pFrameData->m_bShowStatusBar = ! pFrameData->m_bShowStatusBar;
+
+	// actually do the dirty work
+	pFrame->toggleStatusBar(pFrameData->m_bShowStatusBar);
+
+	// POLICY: make this the default for new frames, too
+	XAP_App * pApp = pFrame->getApp();
+	UT_ASSERT(pApp);
+	XAP_Prefs * pPrefs = pApp->getPrefs();
+	UT_ASSERT(pPrefs);
+	XAP_PrefsScheme * pScheme = pPrefs->getCurrentScheme(UT_TRUE);
+	UT_ASSERT(pScheme);
+
+	pScheme->setValueBool(AP_PREF_KEY_StatusBarVisible, pFrameData->m_bShowStatusBar);
 	return UT_TRUE;
 }
 
 Defun1(viewRuler)
 {
-	XAP_Frame * pFrame = (XAP_Frame *) pAV_View->getParentData();
+	XAP_Frame * pFrame = static_cast<XAP_Frame *> ( pAV_View->getParentData());
 	UT_ASSERT(pFrame);
 
 	AP_FrameData *pFrameData = (AP_FrameData *)pFrame->getFrameData();
@@ -3965,7 +3981,7 @@ Defun1(viewRuler)
 
 Defun1(viewPara)
 {
-	XAP_Frame * pFrame = (XAP_Frame *) pAV_View->getParentData();
+	XAP_Frame * pFrame = static_cast<XAP_Frame *> ( pAV_View->getParentData());
 	UT_ASSERT(pFrame);
 
     AP_FrameData *pFrameData = (AP_FrameData *)pFrame->getFrameData();
@@ -3993,7 +4009,7 @@ Defun1(viewPara)
 
 Defun1(viewHeadFoot)
 {
-	XAP_Frame * pFrame = (XAP_Frame *) pAV_View->getParentData();
+	XAP_Frame * pFrame = static_cast<XAP_Frame *> ( pAV_View->getParentData());
 	UT_ASSERT(pFrame);
 
 	// TODO: synch this implementation with ap_GetState_View
@@ -4003,7 +4019,7 @@ Defun1(viewHeadFoot)
 
 Defun(zoom)
 {
-	XAP_Frame * pFrame = (XAP_Frame *) pAV_View->getParentData();
+	XAP_Frame * pFrame = static_cast<XAP_Frame *> ( pAV_View->getParentData());
 	UT_ASSERT(pFrame);
 
 	// TODO the cast below is ugly
@@ -4023,7 +4039,7 @@ Defun1(dlgZoom)
 
 static UT_Bool s_doInsertDateTime(FV_View * pView)
 {
-	XAP_Frame * pFrame = (XAP_Frame *) pView->getParentData();
+	XAP_Frame * pFrame = static_cast<XAP_Frame *> ( pView->getParentData());
 	UT_ASSERT(pFrame);
 
 	pFrame->raise();
@@ -4072,7 +4088,7 @@ Defun1(insBreak)
 
 Defun1(insPageNo)
 {
-	XAP_Frame * pFrame = (XAP_Frame *) pAV_View->getParentData();
+	XAP_Frame * pFrame = static_cast<XAP_Frame *> ( pAV_View->getParentData());
 	UT_ASSERT(pFrame);
 
 	s_TellNotImplemented(pFrame, "Insert page numbers dialog", __LINE__);
@@ -4082,7 +4098,7 @@ Defun1(insPageNo)
 #ifdef UT_DEBUG
 static UT_Bool s_doField(FV_View * pView)
 {
-	XAP_Frame * pFrame = (XAP_Frame *) pView->getParentData();
+	XAP_Frame * pFrame = static_cast<XAP_Frame *> ( pView->getParentData());
 	UT_ASSERT(pFrame);
 
 	pFrame->raise();
@@ -4114,7 +4130,7 @@ Defun1(insField)
 	ABIWORD_VIEW;
 	return s_doField(pView);
 #else
-	XAP_Frame * pFrame = (XAP_Frame *) pAV_View->getParentData();
+	XAP_Frame * pFrame = static_cast<XAP_Frame *> ( pAV_View->getParentData());
 	UT_ASSERT(pFrame);
 
 	s_TellNotImplemented(pFrame, "Insert field dialog", __LINE__);
@@ -4145,7 +4161,7 @@ Defun1(dlgParagraph)
 #ifndef NDEBUG
 static UT_Bool s_doBullets(FV_View *pView)
 {
-	XAP_Frame * pFrame = (XAP_Frame *) pView->getParentData();
+	XAP_Frame * pFrame = static_cast<XAP_Frame *> ( pView->getParentData());
 	UT_ASSERT(pFrame);
 	
 	pFrame->raise();
@@ -4180,7 +4196,7 @@ Defun1(dlgBullets)
 	return s_doBullets(pView);
 
 #else
-	XAP_Frame * pFrame = (XAP_Frame *) pAV_View->getParentData();
+	XAP_Frame * pFrame = static_cast<XAP_Frame *> ( pAV_View->getParentData());
 	s_TellNotImplemented(pFrame, "Numbering and Bullets dialog", __LINE__);
 	return UT_TRUE;
 #endif
@@ -4188,7 +4204,7 @@ Defun1(dlgBullets)
 
 Defun1(dlgBorders)
 {
-	XAP_Frame * pFrame = (XAP_Frame *) pAV_View->getParentData();
+	XAP_Frame * pFrame = static_cast<XAP_Frame *> ( pAV_View->getParentData());
 	UT_ASSERT(pFrame);
 
 	s_TellNotImplemented(pFrame, "Border and shading dialog", __LINE__);
@@ -4197,7 +4213,7 @@ Defun1(dlgBorders)
 
 Defun1(dlgColumns)
 {
-	XAP_Frame * pFrame = (XAP_Frame *) pAV_View->getParentData();
+	XAP_Frame * pFrame = static_cast<XAP_Frame *> ( pAV_View->getParentData());
 	UT_ASSERT(pFrame);
 
 	s_TellNotImplemented(pFrame, "Column settings dialog", __LINE__);
@@ -4214,7 +4230,7 @@ Defun(style)
 
 Defun1(dlgStyle)
 {
-	XAP_Frame * pFrame = (XAP_Frame *) pAV_View->getParentData();
+	XAP_Frame * pFrame = static_cast<XAP_Frame *> ( pAV_View->getParentData());
 	UT_ASSERT(pFrame);
 
 	s_TellNotImplemented(pFrame, "Styles dialog", __LINE__);
@@ -4223,7 +4239,7 @@ Defun1(dlgStyle)
 
 Defun1(dlgTabs)
 {
-	XAP_Frame * pFrame = (XAP_Frame *) pAV_View->getParentData();
+	XAP_Frame * pFrame = static_cast<XAP_Frame *> ( pAV_View->getParentData());
 	UT_ASSERT(pFrame);
 
 	s_TellNotImplemented(pFrame, "Tabs dialog", __LINE__);
@@ -4238,7 +4254,7 @@ Defun0(noop)
 
 static UT_Bool s_doWordCountDlg(FV_View * pView)
 {
-	XAP_Frame * pFrame = (XAP_Frame *) pView->getParentData();
+	XAP_Frame * pFrame = static_cast<XAP_Frame *> ( pView->getParentData());
 	UT_ASSERT(pFrame);
 
 	pFrame->raise();
@@ -4489,7 +4505,7 @@ Defun1(setEditVI)
 	ABIWORD_VIEW;
 	// enter "VI Edit Mode" (only valid when VI keys are loaded)
 	
-	XAP_Frame * pFrame = (XAP_Frame *) pAV_View->getParentData();
+	XAP_Frame * pFrame = static_cast<XAP_Frame *> ( pAV_View->getParentData());
 	UT_ASSERT(pFrame);
 
 	// When exiting input mode, vi goes to previous character
@@ -4503,7 +4519,7 @@ Defun1(setInputVI)
 {
 	// enter "VI Input Mode" (only valid when VI keys are loaded)
 	
-	XAP_Frame * pFrame = (XAP_Frame *) pAV_View->getParentData();
+	XAP_Frame * pFrame = static_cast<XAP_Frame *> ( pAV_View->getParentData());
 	UT_ASSERT(pFrame);
 
 	UT_Bool bResult = (pFrame->setInputMode("viInput") != 0);
@@ -4514,7 +4530,7 @@ Defun1(cycleInputMode)
 {
 	// switch to the next input mode { default, emacs, vi, ... }
 
-	XAP_Frame * pFrame = (XAP_Frame *) pAV_View->getParentData();
+	XAP_Frame * pFrame = static_cast<XAP_Frame *> ( pAV_View->getParentData());
 	UT_ASSERT(pFrame);
 	XAP_App * pApp = pFrame->getApp();
 	UT_ASSERT(pApp);
@@ -4547,7 +4563,7 @@ Defun1(cycleInputMode)
 
 Defun1(toggleInsertMode)
 {
-	XAP_Frame * pFrame = (XAP_Frame *) pAV_View->getParentData();
+	XAP_Frame * pFrame = static_cast<XAP_Frame *> ( pAV_View->getParentData());
 	UT_ASSERT(pFrame);
 	XAP_App * pApp = pFrame->getApp();
 	UT_ASSERT(pApp);

@@ -56,6 +56,7 @@ public:
 
 	virtual void				toggleRuler(UT_Bool bRulerOn);
 	virtual void				toggleBar(UT_uint32 iBarNb, UT_Bool bBarOn);
+	virtual void				toggleStatusBar(UT_Bool bStatusBarOn);
 
 protected:
 	virtual GtkWidget *			_createDocumentWindow(void);
@@ -67,7 +68,7 @@ protected:
 	static void					_scrollFuncY(void * pData, UT_sint32 yoff, UT_sint32 ylimit);
 	UT_Error					_replaceDocument(AD_Document * pDoc);
 	virtual void				_showOrHideToolbars(void);
-//	virtual void				_showOrHideStatusbar(void);  NOT YET IMPLEMENTED
+	virtual void				_showOrHideStatusbar(void);
 	
 	GtkAdjustment *				m_pVadj;
 	GtkAdjustment *				m_pHadj;
@@ -78,6 +79,7 @@ protected:
 	GtkWidget *					m_innertable;
 	GtkWidget *					m_topRuler;
 	GtkWidget *					m_leftRuler;
+	GtkWidget *					m_wSunkenBox;
 };
 
 #endif /* AP_UNIXFRAME_H */

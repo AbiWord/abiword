@@ -50,6 +50,7 @@ public:
 	UT_Bool				m_bInsertMode;
 	UT_Bool				m_bShowRuler;
 	UT_Bool				m_bShowBar[3]; // TODO: 3 = NB_OF_TOOLBARS...
+	UT_Bool				m_bShowStatusBar;
 	UT_Bool             m_bShowPara;
 	AP_TopRuler *		m_pTopRuler;
 	AP_LeftRuler *		m_pLeftRuler;

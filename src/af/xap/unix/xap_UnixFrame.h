@@ -78,6 +78,7 @@ public:
 	void						setTimeOfLastEvent(guint32 eventTime);
 	
 	virtual void				toggleRuler(UT_Bool bRulerOn) = 0;
+	virtual void				queue_resize();
 
 protected:
 	virtual GtkWidget *			_createDocumentWindow(void)=0;

@@ -70,6 +70,9 @@ public:
 
 	void				setStatusProgressType(int start, int end, int flags);
 	void 				setStatusProgressValue(int value);
+
+	virtual void		show(void) {} // It must be abstract, but I don't want to screw
+	virtual void		hide(void) {} // the platforms that don't implement show/hide
 	
 	/* used with AV_Listener */
 	virtual UT_Bool		notify(AV_View * pView, const AV_ChangeMask mask);

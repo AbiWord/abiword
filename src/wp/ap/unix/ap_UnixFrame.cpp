@@ -360,29 +360,36 @@ UT_Bool AP_UnixFrame::initialize(void)
 
 	_createTopLevelWindow();
 	_showOrHideToolbars();
-//	_showOrHideStatusbar(); NOT YET IMPLEMENTED!
+	_showOrHideStatusbar();
 	gtk_widget_show(m_wTopLevelWindow);
 
 	return UT_TRUE;
 }
 
+// Does the initial show/hide of toolbars (based on the user prefs).
+// This is needed because toggleBar is called only when the user
+// (un)checks the show {Stantandard,Format,Extra} toolbar checkbox,
+// and thus we have to manually call this function at startup.
 void AP_UnixFrame::_showOrHideToolbars(void)
 {
 	UT_Bool *bShowBar = static_cast<AP_FrameData*> (m_pData)->m_bShowBar;
 
 	for (UT_uint32 i = 0; i < m_vecToolbarLayoutNames.getItemCount(); i++)
 	{
+		// TODO: The two next lines are here to bind the EV_Toolbar to the
+		// AP_FrameData, but their correct place are next to the toolbar creation (JCA)
 		EV_UnixToolbar * pUnixToolbar = static_cast<EV_UnixToolbar *> (m_vecToolbars.getNthItem(i));
 		static_cast<AP_FrameData*> (m_pData)->m_pToolbar[i] = pUnixToolbar;
-		if (!bShowBar[i])
-		{
-			pUnixToolbar->hide();
-		}
-		else
-		{
-			pUnixToolbar->show();
-		}
+		toggleBar(i, bShowBar[i]);
 	}
+}
+
+// Does the initial show/hide of toolbars (based on the user prefs).
+// Idem.
+void AP_UnixFrame::_showOrHideStatusbar(void)
+{
+	UT_Bool bShowStatusBar = static_cast<AP_FrameData*> (m_pData)->m_bShowStatusBar;
+	toggleStatusBar(bShowStatusBar);
 }
 
 /*****************************************************************/
@@ -553,8 +560,6 @@ void AP_UnixFrame::_scrollFuncX(void * pData, UT_sint32 xoff, UT_sint32 /*xrange
 
 GtkWidget * AP_UnixFrame::_createDocumentWindow(void)
 {
-	GtkWidget * wSunkenBox;
-
 	UT_Bool bShowRulers = static_cast<AP_FrameData*> (m_pData)->m_bShowRuler;
 
 	// create the rulers
@@ -687,9 +692,9 @@ GtkWidget * AP_UnixFrame::_createDocumentWindow(void)
 
 	// create a 3d box and put the table in it, so that we
 	// get a sunken in look.
-	wSunkenBox = gtk_frame_new(NULL);
-	gtk_frame_set_shadow_type(GTK_FRAME(wSunkenBox), GTK_SHADOW_IN);
-	gtk_container_add(GTK_CONTAINER(wSunkenBox), m_table);
+	m_wSunkenBox = gtk_frame_new(NULL);
+	gtk_frame_set_shadow_type(GTK_FRAME(m_wSunkenBox), GTK_SHADOW_IN);
+	gtk_container_add(GTK_CONTAINER(m_wSunkenBox), m_table);
 
 	gtk_widget_show(m_hScroll);
 	gtk_widget_show(m_vScroll);
@@ -697,7 +702,7 @@ GtkWidget * AP_UnixFrame::_createDocumentWindow(void)
 	gtk_widget_show(m_innertable);
 	gtk_widget_show(m_table);
 
-	return wSunkenBox;
+	return m_wSunkenBox;
 }
 
 void AP_UnixFrame::translateDocumentToScreen(UT_sint32 &x, UT_sint32 &y)
@@ -829,4 +834,17 @@ void AP_UnixFrame::toggleBar(UT_uint32 iBarNb, UT_Bool bBarOn)
 		pFrameData->m_pToolbar[iBarNb]->show();
 	else	// turning toolbar off
 		pFrameData->m_pToolbar[iBarNb]->hide();
+}
+
+void AP_UnixFrame::toggleStatusBar(UT_Bool bStatusBarOn)
+{
+	UT_DEBUGMSG(("AP_UnixFrame::toggleStatusBar %d\n", bStatusBarOn));	
+
+	AP_FrameData *pFrameData = static_cast<AP_FrameData *> (getFrameData());
+	UT_ASSERT(pFrameData);
+	
+	if (bStatusBarOn)
+		pFrameData->m_pStatusBar->show();
+	else	// turning status bar off
+		pFrameData->m_pStatusBar->hide();
 }

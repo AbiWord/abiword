@@ -56,6 +56,7 @@ class AP_Dialog_Options : public XAP_Dialog_NonPersistent
 				   id_CHECK_VIEW_SHOW_STANDARD_TOOLBAR,
 				   id_CHECK_VIEW_SHOW_FORMAT_TOOLBAR,
 				   id_CHECK_VIEW_SHOW_EXTRA_TOOLBAR,
+				   id_CHECK_VIEW_SHOW_STATUS_BAR,
 				   id_CHECK_VIEW_ALL, id_CHECK_VIEW_HIDDEN_TEXT, 
 				   id_CHECK_VIEW_UNPRINTABLE,
 
@@ -105,6 +106,7 @@ class AP_Dialog_Options : public XAP_Dialog_NonPersistent
 	SET_GATHER			(ViewShowStandardBar,	UT_Bool);
 	SET_GATHER			(ViewShowFormatBar,	UT_Bool);
 	SET_GATHER			(ViewShowExtraBar,	UT_Bool);
+	SET_GATHER			(ViewShowStatusBar,	UT_Bool);
  	SET_GATHER			(ViewRulerUnits,	UT_Dimension);		
 	SET_GATHER			(ViewCursorBlink,	UT_Bool);
 

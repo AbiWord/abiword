@@ -645,8 +645,10 @@ Defun_EV_GetMenuItemState_Fn(ap_GetState_View)
 			s = EV_MIS_ZERO;
 		break;
 	case AP_MENU_ID_VIEW_STATUSBAR:
-		// TODO
-		s = EV_MIS_Gray;
+		if ( pFrameData->m_bShowStatusBar )
+			s = EV_MIS_Toggled;
+		else
+			s = EV_MIS_ZERO;
 		break;
 
 	default:

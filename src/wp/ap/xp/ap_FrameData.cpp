@@ -42,6 +42,7 @@ AP_FrameData::AP_FrameData(XAP_App * pApp)
 	m_bShowBar[2] = UT_TRUE;
     m_bShowPara = UT_TRUE;
 	m_bInsertMode = UT_TRUE;
+	m_bShowStatusBar = UT_TRUE;
 
 	if (pApp)
 	{
@@ -61,6 +62,9 @@ AP_FrameData::AP_FrameData(XAP_App * pApp)
 
 		if (pApp->getPrefsValueBool( AP_PREF_KEY_ExtraBarVisible, &b))
 			m_bShowBar[2] = b;
+
+		if (pApp->getPrefsValueBool( AP_PREF_KEY_StatusBarVisible, &b))
+			m_bShowStatusBar = b;
 
 		if (pApp->getPrefsValueBool( AP_PREF_KEY_ParaVisible, &b))
 			m_bShowPara = b;

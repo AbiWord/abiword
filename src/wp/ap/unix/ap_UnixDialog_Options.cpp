@@ -231,6 +231,7 @@ GtkWidget* AP_UnixDialog_Options::_constructWindowContents ()
 	GtkWidget *checkbuttonViewStandard;
 	GtkWidget *checkbuttonViewFormat;
 	GtkWidget *checkbuttonViewExtra;
+	GtkWidget *checkbuttonViewStatusBar;
 	GtkWidget *frameViewStuff;
 	GtkWidget *vbox6;
 	GtkWidget *checkbuttonViewAll;
@@ -549,6 +550,10 @@ GtkWidget* AP_UnixDialog_Options::_constructWindowContents ()
 	gtk_widget_show (checkbuttonViewExtra);
 	gtk_box_pack_start (GTK_BOX (vbox7), checkbuttonViewExtra, FALSE, FALSE, 0);
 
+	checkbuttonViewStatusBar = gtk_check_button_new_with_label (pSS->getValue(AP_STRING_ID_DLG_Options_Label_ViewStatusBar));
+	gtk_widget_show (checkbuttonViewStatusBar);
+	gtk_box_pack_start (GTK_BOX (vbox7), checkbuttonViewStatusBar, FALSE, FALSE, 0);
+
 	checkbuttonViewCursorBlink = gtk_check_button_new_with_label (pSS->getValue(AP_STRING_ID_DLG_Options_Label_ViewCursorBlink));
 	gtk_widget_ref (checkbuttonViewCursorBlink);
 	gtk_object_set_data_full (GTK_OBJECT (windowOptions), "checkbuttonViewCursorBlink", checkbuttonViewCursorBlink,
@@ -655,6 +660,7 @@ GtkWidget* AP_UnixDialog_Options::_constructWindowContents ()
     m_checkbuttonViewShowStandardBar	= checkbuttonViewStandard;
     m_checkbuttonViewShowFormatBar	= checkbuttonViewFormat;
     m_checkbuttonViewShowExtraBar	= checkbuttonViewExtra;
+    m_checkbuttonViewShowStatusBar	= checkbuttonViewStatusBar;
     m_checkbuttonViewAll			= checkbuttonViewAll;
     m_checkbuttonViewHiddenText		= checkbuttonViewHidden;
     m_checkbuttonViewUnprintable	= checkbuttonViewUnprintable;
@@ -929,6 +935,10 @@ GtkWidget *AP_UnixDialog_Options::_lookupWidget ( tControl id )
 		return m_checkbuttonViewShowExtraBar;
 		break;
 
+	case id_CHECK_VIEW_SHOW_STATUS_BAR:
+		return m_checkbuttonViewShowStatusBar;
+		break;
+
 	case id_CHECK_VIEW_ALL:
 		return m_checkbuttonViewAll;
 		break;
@@ -1004,6 +1014,7 @@ DEFINE_GET_SET_BOOL(ViewShowRuler);
 DEFINE_GET_SET_BOOL(ViewShowStandardBar);
 DEFINE_GET_SET_BOOL(ViewShowFormatBar);
 DEFINE_GET_SET_BOOL(ViewShowExtraBar);
+DEFINE_GET_SET_BOOL(ViewShowStatusBar);
 
 UT_Dimension AP_UnixDialog_Options::_gatherViewRulerUnits(void) 
 {				

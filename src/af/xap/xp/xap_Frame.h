@@ -129,6 +129,7 @@ public:
 
 	virtual void				toggleRuler(UT_Bool /*bRulerOn*/) { } //
 	virtual void				toggleBar(UT_uint32 /* iBarNb */, UT_Bool /* bBarOn */) { }
+	virtual void				toggleStatusBar(UT_Bool /* bStatusBarOn */) { }
 	virtual UT_Bool				getBarVisibility(UT_uint32 iBarNb) { return UT_TRUE; }
 
    	EV_Mouse *					getMouse(void);
@@ -143,6 +144,11 @@ public:
 											  XAP_Dialog_MessageBox::tAnswer default_answer);
 
 	UT_Error					backup();
+
+	// Useful to refresh the size of the Frame.  For instance,
+	// when the user selects hide statusbar, the Frame has to be
+	// resized in order to fill the gap leaved by the statusbar
+	virtual void				queue_resize() {}
 
 protected:
 	virtual void				_createToolbars(void);

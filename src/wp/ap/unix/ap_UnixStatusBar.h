@@ -41,6 +41,9 @@ public:
 	virtual void		setView(AV_View * pView);
 	GtkWidget *			createWidget(void);
 
+	virtual void		show(void);
+	virtual void		hide(void);
+
 protected:
 	GtkWidget *			m_wStatusBar;
 

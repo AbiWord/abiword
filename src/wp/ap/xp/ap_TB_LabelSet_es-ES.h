@@ -90,8 +90,8 @@ BeginSet(es,ES,UT_TRUE)
 	ToolbarLabel(AP_TOOLBAR_ID_3COLUMN,			"3 Columnas",		tb_3column_xpm,			NULL, "3 Columnas")
 
 	ToolbarLabel(AP_TOOLBAR_ID_ZOOM,			"Zoom",				NoIcon,					NULL, "Zoom")
-	ToolbarLabel(AP_TOOLBAR_ID_LISTS_BULLETS,	"Listas",			tb_lists_bullets_xpm,			NULL, "Listas y viñetas")
-	ToolbarLabel(AP_TOOLBAR_ID_LISTS_NUMBERS,	"Listas",			tb_lists_numbers_xpm,			NULL, "Listas y viñetas")
+	ToolbarLabel(AP_TOOLBAR_ID_LISTS_BULLETS,	"Viñetas",			tb_lists_bullets_xpm,	NULL, "Viñetas")
+	ToolbarLabel(AP_TOOLBAR_ID_LISTS_NUMBERS,	"Listas",			tb_lists_numbers_xpm,	NULL, "Listas numeradas")
 	
 	// ... add others here ...
 

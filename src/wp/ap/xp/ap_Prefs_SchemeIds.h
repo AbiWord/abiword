@@ -71,6 +71,9 @@
 #define AP_PREF_KEY_ExtraBarVisible					"ExtraBarVisible"			/* is the extra toolbar visible? {0,1} */
 #define AP_PREF_DEFAULT_ExtraBarVisible				"1"
 
+#define AP_PREF_KEY_StatusBarVisible				"StatusBarVisible"			/* is the status bar visible? {0,1} */
+#define AP_PREF_DEFAULT_StatusBarVisible			"1"
+
 #define AP_PREF_KEY_ParaVisible                     "ParaVisible"               /* are the paragraphs/spaces/tats/etc. visible? {0,1} */
 #define AP_PREF_DEFAULT_ParaVisible                 "0"
 
@@ -125,6 +128,7 @@ dcl(RulerVisible)
 dcl(StandardBarVisible)
 dcl(FormatBarVisible)
 dcl(ExtraBarVisible)
+dcl(StatusBarVisible)
 dcl(ParaVisible)
 dcl(SpellCheckWordList)
 dcl(StringSet)
