@@ -197,7 +197,11 @@ void print_encodings()
       ev++;
    }
    printf("                   StandardEncoding\n\nWhen run without"
-          " the -e parameter, Adobe StandardEncoding\nwill be used.\n\n");
+          " the -e parameter, Adobe StandardEncoding\nwill be used.\n\n"
+		  " THIS PROGRAM IS NOT TO BE USED WITH CJK FONTS !!! Please see the instructions\n"
+		  " on installing CJK fonts in the AbiWord docs.\n\n"
+
+		  );
    exit(0);
 }
 

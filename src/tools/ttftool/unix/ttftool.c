@@ -86,8 +86,11 @@ void usage()
         "    -p fsfont  :   output postcript font\n"
         "    -e encoding:   encoding, for instance ISO-8859-2; use `ttftool -e print'\n"
         "                   for list of known encodings; without the -e parameter\n"
-        "                   Adobe StandardEncoding will be used.\n"
-        );
+        "                   Adobe StandardEncoding will be used.\n\n"
+		"    THIS PROGRAM IS NOT TO BE USED WITH CJK FONTS !!! Please see the instructions\n"
+		"    on installing CJK fonts in the AbiWord docs.\n"
+
+	        );
     exit(-1);
 }
 
@@ -159,8 +162,8 @@ process the command line
 			   verbosity++;
 		   continue;
 	   }
-	
-	
+
+
 
 		usage();
     }
