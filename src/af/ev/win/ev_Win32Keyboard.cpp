@@ -162,7 +162,7 @@
 static UT_Bool s_bMapped = UT_FALSE;
 static HKL s_hKeyboardLayout = 0;
 static iconv_t s_iconv= (iconv_t)-1; /* Selected translation to Unicode */
-
+// the s_iconv will leek since there is no way to tell when a iconv_close is to be done
 
 static EV_EditBits s_mapVirtualKeyCodeToNVK(WPARAM nVirtKey);
 
@@ -193,9 +193,9 @@ void ev_Win32Keyboard::remapKeyboard(HKL hKeyboardLayout)
 		{
 			s_iconv = iconv_open( "UCS-2-INTERNAL", szCodePage );
 		}
-	}
 
-	s_hKeyboardLayout = hKeyboardLayout;
+    	s_hKeyboardLayout = hKeyboardLayout;
+	}
 }
 
 /*****************************************************************/
