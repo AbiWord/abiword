@@ -214,11 +214,33 @@ FontInfo * AP_UnixFont::getMetricsData(void)
 	
 	// call down to the Adobe code
 	int result = parseFile(fp, &m_metricsData, P_GW);
-	if (result != ok)
+	switch (result)
 	{
-		UT_DEBUGMSG(("Metric file [%s] could not be parsed for font metrics (error %d)\n", m_metricfile, result));
-		return NULL;
+	case parseError:
+		// TODO this should have a non-debug counterpart (perhaps a
+		// TODO message box) to alert the user
+		UT_DEBUGMSG(("AbiWord encountered errors parsing the font metrics file [%s].\n"
+					 "These errors were not fatal; AbiWord will continue printing,\n"
+					 "but the output may look a bit strange.\n"));
+		break;
+	case earlyEOF:
+		// TODO this should have a non-debug counterpart (perhaps a
+		// TODO message box) to alert the user
+		UT_DEBUGMSG(("AbiWord encountered a premature EOF while parsing the font metrics file [%s].\n"
+					 "Printing cannot continue.\n"));
+		UT_ASSERT(UT_SHOULD_NOT_HAPPEN);
+		break;
+	case storageProblem:
+		// if we got here, either the metrics file is broken (like it's
+		// saying it has 209384098278942398743982 kerning lines coming, and
+		// we know we can't allocate that), or we really did run out of memory.
+		UT_ASSERT(UT_SHOULD_NOT_HAPPEN);
+		break;
+	default:
+		// everything is peachy
+		break;
 	}
+
 	UT_ASSERT(m_metricsData);
 	UT_ASSERT(m_metricsData->gfi);
 	return m_metricsData;
@@ -235,7 +257,7 @@ UT_Bool AP_UnixFont::openPFA(void)
 	{
 		UT_DEBUGMSG(("Font file [%s] can not be opened for reading.\n",
 					 m_fontfile));
-		return UT_FALSE;
+		UT_ASSERT(UT_SHOULD_NOT_HAPPEN);
 	}
 
 	return UT_TRUE;
