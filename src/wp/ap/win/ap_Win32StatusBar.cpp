@@ -102,7 +102,7 @@ HWND AP_Win32StatusBar::createWindow(HWND hwndFrame,
 {
 	XAP_Win32App * app = static_cast<XAP_Win32App *>(m_pFrame->getApp());
 	m_hwndStatusBar = CreateWindowEx(0, s_StatusBarWndClassName, NULL,
-									WS_CHILD | WS_VISIBLE,
+									WS_CHILD | WS_VISIBLE | WS_CLIPCHILDREN,
 									left, top, width, s_iFixedHeight,
 									hwndFrame, NULL, app->getInstance(), NULL);
 	UT_ASSERT(m_hwndStatusBar);
