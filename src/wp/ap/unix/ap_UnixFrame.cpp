@@ -38,6 +38,8 @@
 
 /*****************************************************************/
 
+#define HACK_RULER_SIZE		25			// TODO remove this
+
 #define DELETEP(p)		do { if (p) delete p; } while (0)
 #define REPLACEP(p,q)	do { if (p) delete p; p = q; } while (0)
 #define ENSUREP(p)		do { UT_ASSERT(p); if (!p) goto Cleanup; } while (0)
@@ -361,6 +363,17 @@ GtkWidget * AP_UnixFrame::_createDocumentWindow(void)
 {
 	GtkWidget * wSunkenBox;
 
+	m_topRuler = gtk_drawing_area_new();
+	gtk_object_set_user_data(GTK_OBJECT(m_topRuler),this);
+	gtk_widget_set_usize(m_topRuler, 1, HACK_RULER_SIZE);
+	
+	// TODO set properties on the topRuler
+	m_leftRuler = gtk_drawing_area_new();
+	gtk_object_set_user_data(GTK_OBJECT(m_leftRuler),this);
+	gtk_widget_set_usize(m_leftRuler, HACK_RULER_SIZE, 1);
+	
+	// TODO set properties on the leftRuler
+
 	// set up for scroll bars.
 	m_pHadj = (GtkAdjustment*) gtk_adjustment_new(0.0, 0.0, 0.0, 0.0, 0.0, 0.0);
 	gtk_object_set_user_data(GTK_OBJECT(m_pHadj),this);
@@ -408,20 +421,42 @@ GtkWidget * AP_UnixFrame::_createDocumentWindow(void)
 	gtk_signal_connect(GTK_OBJECT(m_dArea), "configure_event",
 					   GTK_SIGNAL_FUNC(_fe::configure_event), NULL);
 
-	// create a table for scroll bars and drawing area
-	m_table = gtk_table_new(1, 2, FALSE);
+	// create a table for scroll bars, rulers, and drawing area
+
+	m_table = gtk_table_new(3, 3, FALSE);
 	gtk_object_set_user_data(GTK_OBJECT(m_table),this);
 
-	gtk_table_attach(GTK_TABLE(m_table), m_dArea,   0, 1, 0, 1, (GtkAttachOptions) (GTK_EXPAND | GTK_FILL), (GtkAttachOptions) (GTK_EXPAND | GTK_FILL), 0, 0); 
-	gtk_table_attach(GTK_TABLE(m_table), m_hScroll, 0, 1, 1, 2, (GtkAttachOptions) (GTK_EXPAND | GTK_FILL), (GtkAttachOptions) (GTK_FILL), 0, 0);
-	gtk_table_attach(GTK_TABLE(m_table), m_vScroll, 1, 2, 0, 1, (GtkAttachOptions) (GTK_FILL), (GtkAttachOptions) (GTK_EXPAND | GTK_FILL), 0, 0);
+	// arrange the widgets within our table.
+	
+	gtk_table_attach(GTK_TABLE(m_table), m_topRuler, 0, 2, 0, 1,
+					 (GtkAttachOptions)(GTK_EXPAND | GTK_FILL),
+					 (GtkAttachOptions)(GTK_FILL),
+					 0,0);
+	gtk_table_attach(GTK_TABLE(m_table), m_leftRuler, 0, 1, 1, 2,
+					 (GtkAttachOptions)(GTK_FILL),
+					 (GtkAttachOptions)(GTK_EXPAND | GTK_FILL),
+					 0,0);
+	gtk_table_attach(GTK_TABLE(m_table), m_dArea,   1, 2, 1, 2,
+					 (GtkAttachOptions) (GTK_EXPAND | GTK_FILL),
+					 (GtkAttachOptions) (GTK_EXPAND | GTK_FILL),
+					 0, 0); 
+	gtk_table_attach(GTK_TABLE(m_table), m_hScroll, 0, 2, 2, 3,
+					 (GtkAttachOptions) (GTK_EXPAND | GTK_FILL),
+					 (GtkAttachOptions) (GTK_FILL),
+					 0, 0);
+	gtk_table_attach(GTK_TABLE(m_table), m_vScroll, 2, 3, 0, 2,
+					 (GtkAttachOptions) (GTK_FILL),
+					 (GtkAttachOptions) (GTK_EXPAND | GTK_FILL),
+					 0, 0);
 
+	// create a 3d box and put the table in it, so that we
+	// get a sunken in look.
 	wSunkenBox = gtk_frame_new(NULL);
 	gtk_frame_set_shadow_type(GTK_FRAME(wSunkenBox), GTK_SHADOW_IN);
-							  
-	// the table goes in the 3D box
 	gtk_container_add(GTK_CONTAINER(wSunkenBox), m_table);
 
+	gtk_widget_show(m_topRuler);
+	gtk_widget_show(m_leftRuler);
 	gtk_widget_show(m_hScroll);
 	gtk_widget_show(m_vScroll);
 	gtk_widget_show(m_dArea);

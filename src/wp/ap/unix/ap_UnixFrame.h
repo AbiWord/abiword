@@ -52,6 +52,8 @@ protected:
 	GtkWidget *					m_vScroll;
 	GtkWidget *					m_dArea;
 	GtkWidget *					m_table;
+	GtkWidget *					m_topRuler;
+	GtkWidget *					m_leftRuler;
 };
 
 #endif /* AP_UNIXFRAME_H */
