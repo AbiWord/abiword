@@ -458,6 +458,7 @@ bool ISpellChecker::doesDictionaryExist (const char * szLang)
 
 	hashname = s_buildHashName ( XAP_App::getApp()->getAbiSuiteLibDir(), szFile.c_str());
 	FILE* in = fopen(hashname, "r");
+	FREEP(hashname);
 
 	if (!in)
 		return false;
