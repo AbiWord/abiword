@@ -336,15 +336,55 @@ void FV_View::_deleteSelection(PP_AttrProp *p_AttrProp_Before)
 
 	UT_ASSERT(iPoint != iSelAnchor);
 
-	UT_uint32 iLow = UT_MIN(iPoint,iSelAnchor);
-	UT_uint32 iHigh = UT_MAX(iPoint,iSelAnchor);
+	PT_DocPosition iLow = UT_MIN(iPoint,iSelAnchor);
+	PT_DocPosition iHigh = UT_MAX(iPoint,iSelAnchor);
 
 	// deal with character clusters, such as base char + vowel + tone mark in Thai
 	UT_uint32 iLen = iHigh - iLow;
 	_adjustDeletePosition(iLow, iLen); // modifies both iLow and iLen
 	iHigh = iLow + iLen;
 	
-	
+//
+// OK adjust for deletetions that cross footnote/endnote boundaries.
+//
+	fl_FootnoteLayout * pFHigh = NULL;
+	fl_FootnoteLayout * pFLow = NULL;
+	fl_EndnoteLayout * pEHigh = NULL;
+	fl_EndnoteLayout * pELow = NULL;
+	if(isInFootnote(iHigh))
+	{
+		pFHigh = getClosestFootnote(iHigh);
+		PT_DocPosition j = pFHigh->getPosition()+1; // Leave reference
+		if(j > iLow)
+		{
+			iLow = j;
+		}
+	}
+	else if(isInFootnote(iLow))
+	{
+
+// Here if we're not in footnote at iHigh
+
+		pFLow = getClosestFootnote(iLow);
+		iHigh = pFLow->getPosition(true) + pFLow->getLength() -1;
+	}
+	else if(isInEndnote(iHigh))
+	{
+		pEHigh = getClosestEndnote(iHigh);
+		PT_DocPosition j = pEHigh->getPosition()+1; // Leave reference
+		if(j > iLow)
+		{
+			iLow = j;
+		}
+	}
+	else if(isInEndnote(iLow))
+	{
+
+// Here if we're not in Endnote at iHigh
+
+		pELow = getClosestEndnote(iLow);
+		iHigh = pELow->getPosition(true) + pELow->getLength() -1;
+	}
 	bool bDeleteTables = !isInTable(iLow) && !isInTable(iHigh);
 	if(!bDeleteTables)
 	{

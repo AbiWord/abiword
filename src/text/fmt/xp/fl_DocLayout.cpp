@@ -466,7 +466,11 @@ void FL_DocLayout::fillLayouts(void)
 		if(!pG->queryProperties(GR_Graphics::DGP_PAPER))
 		{
 			m_pView->updateScreen(false);
-			m_pView->notifyListeners(AV_CHG_ALL);
+			XAP_Frame * pFrame = static_cast<XAP_Frame *>(m_pView->getParentData());
+			if(pFrame)
+			{
+				pFrame->setYScrollRange();
+			}
 		}
 	}
 	if(!m_pView)
@@ -539,7 +543,11 @@ void FL_DocLayout::fillLayouts(void)
 			if(!pG->queryProperties(GR_Graphics::DGP_PAPER))
 			{
 				m_pView->updateScreen(false);
-				m_pView->notifyListeners(AV_CHG_ALL);
+				XAP_Frame * pFrame = static_cast<XAP_Frame *>(m_pView->getParentData());
+				if(pFrame)
+				{
+					pFrame->setYScrollRange();
+				}
 			}
 		}
 	}
@@ -1330,6 +1338,9 @@ UT_sint32 FL_DocLayout::getHeight()
 	UT_sint32 iHeight = 0;
 	int count = m_vecPages.getItemCount();
 
+//
+// restore when we support different page heights per document.
+//
 	for (int i=0; i<count; i++)
 	{
 		fp_Page* p = m_vecPages.getNthItem(i);
@@ -1360,6 +1371,7 @@ UT_sint32 FL_DocLayout::getHeight()
 	{
 		iHeight = 0;
 	}
+	xxx_UT_DEBUGMSG(("returned height %d \n",iHeight));
 	return iHeight;
 }
 

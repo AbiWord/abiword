@@ -757,7 +757,7 @@ void fp_Page::draw(dg_DrawArgs* pDA, bool bAlwaysUseWhiteBackground)
 // only call this for printing and honour the option to not fill the paper with
 // color.
 //
-	UT_DEBUGMSG(("Draw wrap passes = %d \n",m_iCountWrapPasses));
+	xxx_UT_DEBUGMSG(("Draw wrap passes = %d \n",m_iCountWrapPasses));
 	m_iCountWrapPasses = 0;
 	int i=0;
 	if(!pDA->pG->queryProperties(GR_Graphics::DGP_SCREEN))

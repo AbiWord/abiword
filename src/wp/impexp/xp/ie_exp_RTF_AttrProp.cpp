@@ -19,19 +19,20 @@
 
 #include "pd_Style.h"
 #include "pp_Property.h"
+#include "pp_AttrProp.h"
 #include "ie_exp_RTF_AttrProp.h"
 
 const XML_Char * s_RTF_AttrPropAdapter_Style::getAttribute(const XML_Char * szName) const 
 {
     const XML_Char * szValue = 0;
-    pStyle->getAttribute(szName, szValue);
+    m_pStyle->getAttribute(szName, szValue);
     return szValue;
 }
 
 const XML_Char * s_RTF_AttrPropAdapter_Style::getProperty(const XML_Char * szName) const 
 {
     const XML_Char * szValue = 0;
-    pStyle->getProperty(szName, szValue);
+    m_pStyle->getProperty(szName, szValue);
     return szValue;
 }
 
@@ -40,13 +41,13 @@ const XML_Char * s_RTF_AttrPropAdapter_AP::getAttribute(const XML_Char * szName)
 	// we should probably have something similar for attrs as PP_evalProperty() ...
 	const XML_Char * pValue = NULL;
 
-	if(pSpanAP && pSpanAP->getAttribute(szName, pValue))
+	if(m_pSpanAP && m_pSpanAP->getAttribute(szName, pValue))
 		return pValue;
 
-	if(pBlockAP && pBlockAP->getAttribute(szName, pValue))
+	if(m_pBlockAP && m_pBlockAP->getAttribute(szName, pValue))
 		return pValue;
 
-	if(pSectionAP && pSectionAP->getAttribute(szName, pValue))
+	if(m_pSectionAP && m_pSectionAP->getAttribute(szName, pValue))
 		return pValue;
 
 	return NULL;
@@ -54,7 +55,7 @@ const XML_Char * s_RTF_AttrPropAdapter_AP::getAttribute(const XML_Char * szName)
 
 const XML_Char * s_RTF_AttrPropAdapter_AP::getProperty(const XML_Char * szName) const 
 {
-    return PP_evalProperty(szName, pSpanAP, pBlockAP, pSectionAP, 
-			   pDoc, true);
+    return PP_evalProperty(szName, m_pSpanAP, m_pBlockAP, m_pSectionAP, 
+			   m_pDoc, true);
 }
 

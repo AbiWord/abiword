@@ -48,10 +48,10 @@ public:
 class ABI_EXPORT s_RTF_AttrPropAdapter_Style : public s_RTF_AttrPropAdapter
 {
 private:
-    const PD_Style * pStyle;
+    const PD_Style * m_pStyle;
 
 public:
-    s_RTF_AttrPropAdapter_Style(const PD_Style * pStyle) : pStyle(pStyle) {}
+    s_RTF_AttrPropAdapter_Style(const PD_Style * pStyle) : m_pStyle(pStyle) {}
 
     virtual const XML_Char * getAttribute(const XML_Char * szName) const;
     virtual const XML_Char * getProperty(const XML_Char * szName) const;
@@ -60,18 +60,18 @@ public:
 class ABI_EXPORT s_RTF_AttrPropAdapter_AP : public s_RTF_AttrPropAdapter
 {
 private:
-    const PP_AttrProp * pSpanAP;
-    const PP_AttrProp * pBlockAP;
-    const PP_AttrProp * pSectionAP;
-    PD_Document * pDoc;
+    const PP_AttrProp * m_pSpanAP;
+    const PP_AttrProp * m_pBlockAP;
+    const PP_AttrProp * m_pSectionAP;
+    PD_Document *m_pDoc;
 
 public:
     s_RTF_AttrPropAdapter_AP(const PP_AttrProp * pSpanAP,
 			     const PP_AttrProp * pBlockAP,
 			     const PP_AttrProp * pSectionAP,
 			     PD_Document * pDoc) : 
-	pSpanAP(pSpanAP), pBlockAP(pBlockAP), pSectionAP(pSectionAP),
-	pDoc(pDoc) {}
+	m_pSpanAP(pSpanAP), m_pBlockAP(pBlockAP), m_pSectionAP(pSectionAP),
+	m_pDoc(pDoc) {}
 
     virtual const XML_Char * getAttribute(const XML_Char * szName) const;
     virtual const XML_Char * getProperty(const XML_Char * szName) const;

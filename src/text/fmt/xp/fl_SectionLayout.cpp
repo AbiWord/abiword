@@ -1065,7 +1065,18 @@ void fl_DocSectionLayout::_HdrFtrChangeCallback(UT_Worker * pWorker)
 // Stop the resizer and delete and clear it's pointer. It's job is done now.
 //
 	pDSL->m_pHdrFtrChangeTimer->stop();
-	DELETEP(pDSL->m_pHdrFtrChangeTimer);
+	fl_DocSectionLayout * pOrig = pDSL;
+	while(pDSL)
+	{
+
+		if(pDSL->getContainerType() == FL_CONTAINER_DOCSECTION)
+		{
+			static_cast<fl_DocSectionLayout *>(pDSL)->completeBreakSection();
+			static_cast<fl_DocSectionLayout *>(pDSL)->checkAndRemovePages();
+		}
+		pDSL = static_cast<fl_DocSectionLayout *>(pDSL->getNext());
+	}
+	DELETEP(pOrig->m_pHdrFtrChangeTimer);
 }
 /*!
  * Signal a PT change at the next opportunity to change the height of a Hdr
