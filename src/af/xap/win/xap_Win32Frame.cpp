@@ -63,7 +63,7 @@ UT_Bool XAP_Win32Frame::RegisterClass(XAP_Win32App * app)
 	wndclass.hInstance     = app->getInstance();
 	wndclass.hIcon         = LoadIcon(NULL, IDI_APPLICATION);
 	wndclass.hCursor       = LoadCursor(NULL, IDC_ARROW);
-	wndclass.hbrBackground = GetSysColorBrush(COLOR_BTNFACE);
+	wndclass.hbrBackground = (HBRUSH)(COLOR_BTNFACE+1);
 	wndclass.lpszMenuName  = NULL;
 	wndclass.lpszClassName = app->getApplicationName();
 	wndclass.hIconSm       = LoadIcon(NULL, IDI_APPLICATION);
@@ -526,7 +526,32 @@ LRESULT CALLBACK XAP_Win32Frame::_FrameWndProc(HWND hwnd, UINT iMsg, WPARAM wPar
 		
 		return DefWindowProc(hwnd, iMsg, wParam, lParam);
 	}
-	
+
+	case WM_SYSCOLORCHANGE:
+	{
+		if (f->m_hwndRebar)
+		{
+			SendMessage(f->m_hwndRebar,WM_SYSCOLORCHANGE,0,0);
+
+			REBARBANDINFO rbbi;
+			ZeroMemory(&rbbi, sizeof(rbbi));
+			rbbi.cbSize = sizeof(REBARBANDINFO);
+			rbbi.fMask = RBBIM_COLORS;
+			rbbi.clrFore = GetSysColor(COLOR_BTNTEXT);
+			rbbi.clrBack = GetSysColor(COLOR_BTNFACE);
+
+			UT_uint32 nrToolbars = f->m_vecWin32Toolbars.getItemCount();
+			for (UT_uint32 k=0; k < nrToolbars; k++)
+				SendMessage(f->m_hwndRebar, RB_SETBANDINFO,k,(LPARAM)&rbbi);
+		}
+
+		if (f->m_hwndContainer)
+			SendMessage(f->m_hwndContainer,WM_SYSCOLORCHANGE,0,0);
+		if (f->m_hwndStatusBar)
+			SendMessage(f->m_hwndStatusBar,WM_SYSCOLORCHANGE,0,0);
+		return 0;
+	}
+
 	case WM_DESTROY:
 		return 0;
 

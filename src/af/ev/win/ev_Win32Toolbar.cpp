@@ -57,7 +57,6 @@ EV_Win32Toolbar::EV_Win32Toolbar(XAP_Win32App * pWin32App, XAP_Win32Frame * pWin
 EV_Win32Toolbar::~EV_Win32Toolbar(void)
 {
 	_releaseListener();
-//	UT_VECTOR_PURGEALL(_wd *,m_vecToolbarWidgets);
 }
 
 UT_Bool EV_Win32Toolbar::toolbarEvent(AP_Toolbar_Id id,

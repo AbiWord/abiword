@@ -46,20 +46,7 @@ AP_Win32StatusBar::AP_Win32StatusBar(XAP_Frame * pFrame)
 	m_hwndStatusBar = NULL;
 	m_pG = NULL;
 
-#define X_SetColor(v,id)							\
-	do {	DWORD clr = GetSysColor(id);			\
-			UT_setColor(v,							\
-						GetRValue(clr),				\
-						GetGValue(clr),				\
-						GetBValue(clr));			\
-	} while (0)
-	
-	X_SetColor(m_clrBackground,COLOR_3DFACE);
-	X_SetColor(m_clrWhite,COLOR_3DHIGHLIGHT);
-	X_SetColor(m_clrDarkGray,COLOR_3DSHADOW);
-	X_SetColor(m_clrBlack,COLOR_BTNTEXT);
-
-#undef X_SetColor
+	_setColors();
 }
 
 AP_Win32StatusBar::~AP_Win32StatusBar(void)
@@ -170,9 +157,33 @@ LRESULT CALLBACK AP_Win32StatusBar::_StatusBarWndProc(HWND hwnd, UINT iMsg, WPAR
 			return 0;
 		}
 
+	case WM_SYSCOLORCHANGE:
+		{
+			pStatusBar->_setColors();
+			return 0;
+		}
+		
 	default:
 		break;
 	}
 
 	return DefWindowProc(hwnd, iMsg, wParam, lParam);
+}
+
+void AP_Win32StatusBar::_setColors(void)
+{
+#define X_SetColor(v,id)							\
+	do {	DWORD clr = GetSysColor(id);			\
+			UT_setColor(v,							\
+						GetRValue(clr),				\
+						GetGValue(clr),				\
+						GetBValue(clr));			\
+	} while (0)
+	
+	X_SetColor(m_clrBackground,COLOR_3DFACE);
+	X_SetColor(m_clrWhite,COLOR_3DHIGHLIGHT);
+	X_SetColor(m_clrDarkGray,COLOR_3DSHADOW);
+	X_SetColor(m_clrBlack,COLOR_BTNTEXT);
+
+#undef X_SetColor
 }
