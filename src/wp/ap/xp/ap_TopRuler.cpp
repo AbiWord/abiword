@@ -434,11 +434,11 @@ void AP_TopRuler::_getParagraphMarkerRects(AP_TopRulerInfo * pInfo,
 	UT_sint32 fs = hs * 2 + 1;			// fullSize
 
 	if (prLeftIndent)
-		prLeftIndent->set(leftCenter - hs, yBottom-fs, fs, fs);
+		prLeftIndent->set(leftCenter - hs, yBottom, fs, fs);
 	if (prFirstLineIndent)
-		prFirstLineIndent->set(firstLineCenter - hs, yBottom-2*fs-1, fs, fs);
+		prFirstLineIndent->set(firstLineCenter - hs, yBottom-fs, fs, fs);
 	if (prRightIndent)
-		prRightIndent->set(rightCenter - hs, yBottom-fs, fs, fs);
+		prRightIndent->set(rightCenter - hs, yBottom, fs, fs);
 }
 
 void AP_TopRuler::_drawParagraphProperties(const UT_Rect * pClipRect,
@@ -506,7 +506,7 @@ void AP_TopRuler::_getColumnMarkerRect(AP_TopRulerInfo * pInfo, UT_uint32 kCol,
 	UT_sint32 hs = 3;					// halfSize
 	UT_sint32 fs = hs * 2 + 1;			// fullSize
 
-	prCol->set(xCenter -hs, yTop-fs, fs, fs);
+	prCol->set(xCenter -hs, yTop-hs, fs, fs);
 }
 
 void AP_TopRuler::_drawColumnProperties(const UT_Rect * pClipRect,
