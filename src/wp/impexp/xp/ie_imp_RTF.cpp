@@ -5706,7 +5706,7 @@ bool IE_Imp_RTF::TranslateKeyword(unsigned char* pKeyword, UT_sint16 param, bool
 									m_currentRTFState.m_destinationState = RTFStateStore::rdsSkip;
 									return true;
 								}
-								if(pView->isHdrFtrEdit())
+								if(pView->isInEndnote() || pView->isInFootnote())
 								{
 									m_iIsInHeaderFooter =1;
 									m_currentRTFState.m_destinationState = RTFStateStore::rdsSkip;

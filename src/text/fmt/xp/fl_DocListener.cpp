@@ -606,6 +606,10 @@ bool fl_DocListener::populateStrux(PL_StruxDocHandle sdh,
 		fl_ContainerLayout * pCon = getTopContainerLayout();
 		fl_ContainerLayout*	pCL = NULL;
 		UT_DEBUGMSG(("!!!!Appending Table \n"));
+		if(m_pCurrentSL->getHdrFtrLayout())
+		{
+			UT_DEBUGMSG(("Appending Table into HdrFtr %x \n",m_pCurrentSL->getHdrFtrLayout()));
+		}
 		if(pCon == NULL)
 		{
 			pCL = m_pCurrentSL->append(sdh, pcr->getIndexAP(),FL_CONTAINER_TABLE);
@@ -677,6 +681,10 @@ bool fl_DocListener::populateStrux(PL_StruxDocHandle sdh,
 			return false;
 		}
 		fl_TableLayout * pTable = (fl_TableLayout *) pCon;
+		if(pTable->getHdrFtrLayout())
+		{
+			UT_DEBUGMSG(("Appending a Cell to a Table in a HDrFtr %x \n",pTable->getHdrFtrLayout()));
+		}
 		fl_ContainerLayout*	pCL = pTable->append(sdh, pcr->getIndexAP(),FL_CONTAINER_CELL);
 		UT_DEBUGMSG(("SEVIOR: Appending Cell: layout is %x \n",pCL));
 		pTable->attachCell(pCL);

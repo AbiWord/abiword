@@ -205,7 +205,7 @@ private:
 	bool        _appendSpanHdrFtr(const UT_UCSChar * p, UT_uint32 length);
 	bool		_appendFmt(const XML_Char ** attributes);
 	void        _handleHeaders(const wvParseStruct *ps);
-	bool        _handleHeadersText(UT_uint32 iPos);
+	bool        _handleHeadersText(UT_uint32 iPos, bool bDoBlockIns);
 	bool        _build_ColumnWidths(UT_NumberVector & colWidths);
 	bool        _isVectorFull(UT_NumberVector & vec);
 	void        setNumberVector(UT_NumberVector & vec, UT_sint32 i, UT_sint32 val);
@@ -292,6 +292,7 @@ private:
 	UT_sint32    m_iRight;
 	UT_uint32    m_iTextBoxesStart;
 	UT_uint32    m_iTextBoxesEnd;
+	UT_uint32    m_iPrevHeaderPosition;
 };
 
 #endif /* IE_IMP_MSWORD_H */

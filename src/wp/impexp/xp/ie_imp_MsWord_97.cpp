@@ -849,7 +849,8 @@ IE_Imp_MsWord_97::IE_Imp_MsWord_97(PD_Document * pDocument)
 	m_iLeft(0),
 	m_iRight(0),
 	m_iTextBoxesStart(0xffffffff),
-	m_iTextBoxesEnd(0xffffffff)
+	m_iTextBoxesEnd(0xffffffff),
+	m_iPrevHeaderPosition(0xffffffff)
 {
   for(UT_uint32 i = 0; i < 9; i++)
 	  m_iListIdIncrement[i] = 0;
@@ -1604,7 +1605,7 @@ int IE_Imp_MsWord_97::_charProc (wvParseStruct *ps, U16 eachchar, U8 chartype, U
 		m_bPageBreakPending = false;
 	}
 	
-	if(!_handleHeadersText(ps->currentcp))
+	if(!_handleHeadersText(ps->currentcp,true))
 		return 0;
 	if(!_handleNotesText(ps->currentcp))
 		return 0;
@@ -1715,7 +1716,7 @@ int IE_Imp_MsWord_97::_specCharProc (wvParseStruct *ps, U16 eachchar, CHP *achp)
 	PICF picf;
 #endif
 
-	if(!_handleHeadersText(ps->currentcp))
+	if(!_handleHeadersText(ps->currentcp,true))
 		return 0;
 
 	if(!_handleNotesText(ps->currentcp))
@@ -2381,8 +2382,11 @@ int IE_Imp_MsWord_97::_beginPara (wvParseStruct *ps, UT_uint32 tag,
 	{
 		bDoNotInsertStrux  = true;
 	}
-	
-
+	bool bInHdrFtr = false;
+	if((ps->currentcp+1 >= m_iHeadersStart) && (ps->currentcp < m_iHeadersEnd))
+	{
+		bInHdrFtr = true;
+	}
 	// at the end of each f/enote is a superflous paragraph marker
 	// which we do not want imported
 	if(m_bInFNotes && m_iNextFNote < m_iFootnotesCount && m_pFootnotes &&
@@ -2415,6 +2419,12 @@ int IE_Imp_MsWord_97::_beginPara (wvParseStruct *ps, UT_uint32 tag,
 	{
 	  if (apap->fInTable) 
 	  {
+		  if(bInHdrFtr && !m_bInHeaders)
+		  {
+//			  This can happen if a Table is the first strux in a HdrFtr
+			  UT_DEBUGMSG(("Inserting HdrFtr strux just before table \n"));
+			  _handleHeadersText(ps->currentcp+1, false);
+		  }
 		  if (!m_bInTable) 
 		  {
 			  m_bInTable = true;
@@ -5343,13 +5353,13 @@ bool IE_Imp_MsWord_97::_appendFmt(const XML_Char ** attributes)
 bool IE_Imp_MsWord_97::_appendStruxHdrFtr(PTStruxType pts, const XML_Char ** attributes)
 {
 	UT_return_val_if_fail(m_bInHeaders,false);
-
+	UT_DEBUGMSG(("Inserting strux of type %d in HdrFtr \n",pts));
 	bool bRet = true;
-	
 	for(UT_uint32 i = 0; i < m_pHeaders[m_iCurrentHeader].d.frag.getItemCount(); i++)
 	{
 		pf_Frag * pF = (pf_Frag*) m_pHeaders[m_iCurrentHeader].d.frag.getNthItem(i);
 		UT_return_val_if_fail(pF,false);
+		UT_DEBUGMSG(("Inserting strux of type %d in Dirivative HdrFtr \n",pts));
 
 		bRet &= getDoc()->insertStruxBeforeFrag(pF, pts, attributes);
 	}
@@ -5564,10 +5574,16 @@ void IE_Imp_MsWord_97::_handleHeaders(const wvParseStruct *ps)
     \return returns false if the present character is to be skipped,
             true otherwise
 */
-bool IE_Imp_MsWord_97::_handleHeadersText(UT_uint32 iDocPosition)
+bool IE_Imp_MsWord_97::_handleHeadersText(UT_uint32 iDocPosition,bool bDoBlockIns)
 {
+	if(iDocPosition == m_iPrevHeaderPosition)
+	{
+		return true;
+	}
 	if(iDocPosition >= m_iHeadersStart && iDocPosition < m_iHeadersEnd)
 	{
+		m_iPrevHeaderPosition = iDocPosition;
+
 		// upon entry into the header-land, we will need to search for
 		// the first header/footer section in our document, note that we are
 		// in a header section, note at what doc position the current
@@ -5696,13 +5712,15 @@ bool IE_Imp_MsWord_97::_handleHeadersText(UT_uint32 iDocPosition)
 					}
 					
 					// we use the document methods, not the importer methods intentionally 
+					UT_DEBUGMSG(("Direct Appending HdrFtr in MSWord_import \n"));
 					getDoc()->appendStrux(PTX_SectionHdrFtr, attribsS);
 					m_bInSect = true;
-					
-					getDoc()->appendStrux(PTX_Block, attribsB);
-					m_bInPara = true;
-					
-					_appendFmt(attribsC);
+					if(bDoBlockIns)
+					{
+						getDoc()->appendStrux(PTX_Block, attribsB);
+						m_bInPara = true;
+						_appendFmt(attribsC);
+					}
 					
 					// now we insert the same for any derivative headers
 					// ...
@@ -5737,7 +5755,8 @@ bool IE_Imp_MsWord_97::_handleHeadersText(UT_uint32 iDocPosition)
 						default:
 							UT_ASSERT_HARMLESS(UT_NOT_REACHED);
 						}
-						
+						UT_DEBUGMSG(("Appending Dirivative HdrFtr in MSWord_import \n"));
+					
 						getDoc()->appendStrux(PTX_SectionHdrFtr, attribsS);
 						
 						// we need to remember the HdrFtr fragment for
@@ -5750,9 +5769,11 @@ bool IE_Imp_MsWord_97::_handleHeadersText(UT_uint32 iDocPosition)
 						
 						m_pHeaders[m_iCurrentHeader].d.frag.addItem((void*)pF);
 						
-						getDoc()->appendStrux(PTX_Block, attribsB);
-						getDoc()->appendFmt(attribsC);
-						
+						if(bDoBlockIns)
+						{
+							getDoc()->appendStrux(PTX_Block, attribsB);
+							getDoc()->appendFmt(attribsC);
+						}						
 					}
 					
 					return true;
