@@ -1117,9 +1117,54 @@ UT_Bool fp_TextRun::isFirstCharacter(UT_UCSChar Character) const
 	return UT_FALSE;
 }
 
+
 UT_Bool	fp_TextRun::doesContainNonBlankData(void) const
 {
-	return (findCharacter(0, UCS_SPACE) >= 0);
+	if(m_iLen > 0)
+	{
+		const UT_UCSChar* pSpan;
+		UT_uint32 lenSpan;
+		UT_uint32 offset = m_iOffsetFirst;
+		UT_uint32 len = m_iLen;
+		UT_Bool bContinue = UT_TRUE;
+
+		UT_uint32 i;
+
+		while (bContinue)
+		{
+			bContinue = m_pBL->getSpanPtr(offset, &pSpan, &lenSpan);
+			UT_ASSERT(lenSpan>0);
+
+			if (len <= lenSpan)
+			{
+				for(i = 0; i < len; i++)
+				{
+					if (pSpan[i] != UCS_SPACE)
+						return UT_TRUE;
+				}
+
+				bContinue = UT_FALSE;
+			}
+			else
+			{
+				for(i = 0; i < lenSpan; i++)
+				{
+					if (pSpan[i] != UCS_SPACE)
+						return UT_TRUE;
+				}
+
+				offset += lenSpan;
+				len -= lenSpan;
+
+				UT_ASSERT(offset >= m_iOffsetFirst);
+				UT_ASSERT(offset + len <= m_iOffsetFirst + m_iLen);
+			}
+		}
+	}
+
+	// Only spaces found;
+
+	return UT_FALSE;
 }
 
 UT_Bool fp_TextRun::isSuperscript(void) const

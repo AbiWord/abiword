@@ -145,7 +145,7 @@ public:
 	virtual void			mapXYToPosition(UT_sint32 xPos, UT_sint32 yPos, PT_DocPosition& pos, UT_Bool& bBOL, UT_Bool& bEOL) = 0;
 	virtual void 			findPointCoords(UT_uint32 iOffset, UT_sint32& x, UT_sint32& y, UT_sint32& height) = 0;
 	virtual void			lookupProperties(void) = 0;
-	virtual UT_Bool			doesContainNonBlankData(void)	{ return UT_TRUE; }	// Things like text whould return false if it is all spaces.
+	virtual UT_Bool			doesContainNonBlankData(void) const { return UT_TRUE; }	// Things like text whould return false if it is all spaces.
 	virtual UT_Bool			isSuperscript(void) const { return UT_FALSE; }
 	virtual UT_Bool			isSubscript(void) const { return UT_FALSE; }
 
