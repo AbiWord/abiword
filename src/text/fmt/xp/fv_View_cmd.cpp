@@ -556,7 +556,7 @@ bool FV_View::cmdInsertCol(PT_DocPosition posCol, bool bBefore)
 // with a bogus line-type property. We'll restore it later.
 //
 	const char * pszTable[3] = {NULL,NULL,NULL};
-	pszTable[0] = "table-line-type";
+	pszTable[0] = "list-tag";
 	const char * szLineType = NULL;
 	UT_String sLineType;
 	UT_sint32 iLineType;
@@ -962,7 +962,7 @@ bool FV_View::cmdInsertRow(PT_DocPosition posRow, bool bBefore)
 	// with a bogus line-type property. We'll restore it later.
 	//
 	const char * pszTable[3] = {NULL,NULL,NULL};
-	pszTable[0] = "table-line-type";
+	pszTable[0] = "list-tag";
 	const char * szLineType = NULL;
 	UT_String sLineType;
 	UT_sint32 iLineType;
@@ -1239,7 +1239,7 @@ bool FV_View::cmdDeleteCol(PT_DocPosition posCol)
 // with a bogus line-type property. We'll restore it later.
 //
 	const char * pszTable[3] = {NULL,NULL,NULL};
-	pszTable[0] = "table-line-type";
+	pszTable[0] = "list-tag";
 	const char * szLineType = NULL;
 	UT_String sLineType;
 	UT_sint32 iLineType;
@@ -1500,7 +1500,7 @@ bool FV_View::cmdDeleteRow(PT_DocPosition posRow)
 // with a bogus line-type property. We'll restore it later.
 //
 	const char * pszTable[3] = {NULL,NULL,NULL};
-	pszTable[0] = "table-line-type";
+	pszTable[0] = "list-tag";
 	const char * szLineType = NULL;
 	UT_String sLineType;
 	UT_sint32 iLineType;

@@ -368,7 +368,7 @@ bool FV_View::_MergeCells( PT_DocPosition posDestination,PT_DocPosition posSourc
 bool FV_View::_restoreCellParams(PT_DocPosition posTable, UT_sint32 iLineType)
 {
 	const char * pszTable[3] = {NULL,NULL,NULL};
-	pszTable[0] = "table-line-type";
+	pszTable[0] = "list-tag";
 	UT_String sLineType;
 	UT_String_sprintf(sLineType,"%d",iLineType);
 	pszTable[1] = sLineType.c_str();
@@ -420,7 +420,7 @@ bool FV_View::_restoreCellParams(PT_DocPosition posTable, UT_sint32 iLineType)
 // with a bogus line-type property. We'll restore it later.
 //
 	const char * pszTable[3] = {NULL,NULL,NULL};
-	pszTable[0] = "table-line-ignore";
+	pszTable[0] = "list-tag";
 	const char * szLineType = NULL;
 	UT_String sLineType;
 	UT_sint32 iLineType;
