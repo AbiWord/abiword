@@ -484,9 +484,11 @@ void Text_Listener::_closeBlock(void)
 		return;
 
 	if (!m_bFirstWrite)
-	  _genLineBreak ();
-
-	m_pie->write(static_cast<const char *>(m_mbLineBreak),m_iLineBreakLen);
+	{
+		m_pie->write(static_cast<const char *>(m_mbLineBreak),m_iLineBreakLen);
+		if (m_bBreakExtra)
+			m_pie->write(static_cast<const char *>(m_mbLineBreak),m_iLineBreakLen);
+	}
 
 	m_bInBlock = false;
 	m_eDirOverride = DO_UNSET;
@@ -633,6 +635,7 @@ Text_Listener::Text_Listener(PD_Document * pDocument,
 	  m_bBigEndian(bBigEndian),
 	  m_bUnicode(bUnicode),
 	  m_bUseBOM(bToClipboard ? false : bUseBOM),
+	  m_bBreakExtra(false),
 	  m_eDirOverride(DO_UNSET),
 	  m_eDirMarkerPending(DO_UNSET),
 	  m_eSectionDir(DO_UNSET),
@@ -815,6 +818,32 @@ bool Text_Listener::populateStrux(PL_StruxDocHandle /*sdh*/,
 			_closeBlock();
 			m_bInBlock = true;
 
+			const XML_Char * szValue = NULL;
+
+			PT_AttrPropIndex api = pcr->getIndexAP();
+			const PP_AttrProp * pAP = NULL;
+			bool bHaveProp = m_pDocument->getAttrProp (api, &pAP);
+
+			m_bBreakExtra = false;
+
+			if (bHaveProp && pAP)
+			{
+				szValue = PP_evalProperty ("margin-top", 0, pAP, 0, m_pDocument, true);
+				if(szValue)
+				{
+					double inches = UT_convertToInches(szValue);
+					if (!m_bFirstWrite && (inches > 0.01))
+						m_pie->write(static_cast<const char *>(m_mbLineBreak),m_iLineBreakLen);
+				}
+				szValue = PP_evalProperty ("margin-bottom", 0, pAP, 0, m_pDocument, true);
+				if(szValue)
+				{
+					double inches = UT_convertToInches(szValue);
+					if (inches > 0.01)
+						m_bBreakExtra = true;
+				}
+			}
+
 			// in 16-bit encodings we sometimes have to issue LRM or
 			// RLM to indicate the dominant direction of the block
 			// (the actual insertion will be done in the subsequent
@@ -822,13 +851,9 @@ bool Text_Listener::populateStrux(PL_StruxDocHandle /*sdh*/,
 			// unnecessary
 			if(m_bUnicode)
 			{
-				PT_AttrPropIndex api = pcr->getIndexAP();
-				const PP_AttrProp * pAP = NULL;
-				bool bHaveProp = m_pDocument->getAttrProp (api, &pAP);
-
 				if (bHaveProp && pAP)
 				{
-					const XML_Char *szValue = NULL;
+					szValue = NULL;
 					if(pAP->getProperty("dom-dir", szValue))
 					{
 						if(!UT_stricmp("rtl",szValue))

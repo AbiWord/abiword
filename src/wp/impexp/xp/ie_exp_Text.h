@@ -164,6 +164,7 @@ protected:
 	bool				m_bBigEndian;
 	bool                m_bUnicode;
 	bool				m_bUseBOM;
+	bool				m_bBreakExtra;
 	_dirOverride        m_eDirOverride;
 	_dirOverride        m_eDirMarkerPending;
 	_dirOverride        m_eSectionDir;

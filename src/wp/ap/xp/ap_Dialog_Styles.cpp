@@ -260,7 +260,7 @@ void AP_Dialog_Styles::fillVecWithProps(const XML_Char * szStyle, bool bReplaceA
 		return;
 	}
 
-	const static XML_Char * paraFields[] = {"text-align", "text-indent", "margin-left", "margin-right", "margin-top", "margin-bottom", "line-height","tabstops","start-value","list-delim", "list-style","list-decimal","field-font","field-color"};
+	const static XML_Char * paraFields[] = {"text-align", "text-indent", "margin-left", "margin-right", "margin-top", "margin-bottom", "line-height","tabstops","start-value","list-delim", "list-style","list-decimal","field-font","field-color", "keep-together","keep-with-next","orphans","widows","dom-dir"};
 
 	const size_t nParaFlds = sizeof(paraFields)/sizeof(paraFields[0]);
 
@@ -792,7 +792,7 @@ void AP_Dialog_Styles::ModifyParagraph(void)
 		= (AP_Dialog_Paragraph *)(pDialogFactory->requestDialog(AP_DIALOG_ID_PARAGRAPH));
 	UT_ASSERT(pDialog);
 
-	const static XML_Char * paraFields[] = {"text-align", "text-indent", "margin-left", "margin-right", "margin-top", "margin-bottom", "line-height","tabstops","start-value","list-delim", "list-decimal","list-style","field-font","field-color"};
+	const static XML_Char * paraFields[] = {"text-align", "text-indent", "margin-left", "margin-right", "margin-top", "margin-bottom", "line-height","tabstops","start-value","list-delim", "list-decimal","list-style","field-font","field-color", "keep-together","keep-with-next","orphans","widows","dom-dir"};
 
     const size_t NUM_PARAPROPS = sizeof(paraFields)/sizeof(paraFields[0]);
 //
