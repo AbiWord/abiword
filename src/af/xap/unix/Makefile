@@ -34,12 +34,13 @@ CPPSRCS=		xap_UnixApp.cpp				\
 			xap_UnixDlg_MessageBox.cpp		\
 			xap_UnixDlg_Print.cpp			\
 			xap_UnixDlg_WindowMore.cpp		\
-			xap_UnixDlg_Zoom.cpp		\
+			xap_UnixDlg_Zoom.cpp			\
 			xap_UnixDlg_Insert_Symbol.cpp		\
 			xap_UnixFontXLFD.cpp			\
 			xap_UnixFont.cpp			\
 			xap_UnixFontManager.cpp			\
 			xap_UnixFrame.cpp			\
+			xap_UnixGtkTricks.cpp			\
 			xap_UnixToolbar_Icons.cpp		\
 			xap_UnixPSFont.cpp			\
 			xap_UnixPSGenerate.cpp			\

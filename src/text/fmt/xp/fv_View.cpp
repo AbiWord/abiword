@@ -1029,14 +1029,14 @@ void FV_View::cmdCharMotion(UT_Bool bForward, UT_uint32 count)
 	{
 		PT_DocPosition iPoint1 = getPoint();
 		if ( iPoint1 == iPoint )
-		  {
+		{
 		    if(!_charMotion(bForward, count))   
-		      {
-			_setPoint(iPoint);
-			notifyListeners(AV_CHG_MOTION);
-			return;
-		      }
-		  }
+			{
+				_setPoint(iPoint);
+				notifyListeners(AV_CHG_MOTION);
+				return;
+			}
+		}
 		_updateInsertionPoint();
 	}
 	notifyListeners(AV_CHG_MOTION);
@@ -2273,6 +2273,25 @@ void FV_View::_moveInsPtNextPrevPage(UT_Bool bNext)
 	UT_sint32 yPoint;
 	UT_sint32 iPointHeight;
 
+
+	fp_Page* pOldPage = _getCurrentPage();
+
+	// try to locate next/prev page
+	fp_Page* pPage = (bNext ? pOldPage->getNext() : pOldPage->getPrev());
+
+	// if couldn't move, go to top of this page instead
+	if (!pPage) 
+		pPage = pOldPage;
+
+	_moveInsPtToPage(pPage);
+}
+
+fp_Page *FV_View::_getCurrentPage(void)
+{
+	UT_sint32 xPoint;
+	UT_sint32 yPoint;
+	UT_sint32 iPointHeight;
+
 	/*
 		This function moves the IP to the beginning of the previous or 
 		next page (ie not this one).
@@ -2287,20 +2306,33 @@ void FV_View::_moveInsPtNextPrevPage(UT_Bool bNext)
 	fp_Container* pOldContainer = pOldLine->getContainer();
 	fp_Page* pOldPage = pOldContainer->getPage();
 
-	// try to locate next/prev page
-	fp_Page* pPage = (bNext ? pOldPage->getNext() : pOldPage->getPrev());
+	return pOldPage;
+}
 
-	// if couldn't move, go to top of this page instead
-	if (!pPage) 
-		pPage = pOldPage;
+void FV_View::_moveInsPtNthPage(UT_uint32 n)
+{
+	fp_Page *page = m_pLayout->getFirstPage();
 
+	if (n > m_pLayout->countPages ())
+		n = m_pLayout->countPages ();
+
+	for (UT_uint32 i = 1; i < n; i++)
+	{
+		page = page->getNext ();
+	}
+
+	_moveInsPtToPage(page);
+}
+
+void FV_View::_moveInsPtToPage(fp_Page *page)
+{
 	// move to the first pos on this page
-	PT_DocPosition iNewPoint = pPage->getFirstLastPos(UT_TRUE);
+	PT_DocPosition iNewPoint = page->getFirstLastPos(UT_TRUE);
 	_setPoint(iNewPoint, UT_FALSE);
 
 	// explicit vertical scroll to top of page
 	UT_sint32 iPageOffset;
-	getPageYOffset(pPage, iPageOffset);
+	getPageYOffset(page, iPageOffset);
 
 	iPageOffset -= fl_PAGEVIEW_PAGE_SEP /2;
 	iPageOffset -= m_yScrollOffset;
@@ -2308,7 +2340,7 @@ void FV_View::_moveInsPtNextPrevPage(UT_Bool bNext)
 	UT_Bool bVScroll = UT_FALSE;
 	if (iPageOffset < 0)
 	{
-		cmdScroll(AV_SCROLLCMD_LINEUP, (UT_uint32) (-(iPageOffset)));
+		cmdScroll(AV_SCROLLCMD_LINEUP, (UT_uint32) (-iPageOffset));
 		bVScroll = UT_TRUE;
 	}
 	else if (iPageOffset > 0)
@@ -2735,34 +2767,131 @@ void FV_View::endDrag(UT_sint32 xPos, UT_sint32 yPos)
 
 // ---------------- start goto ---------------
 
-UT_Bool FV_View::gotoTarget(FV_JumpTarget /* type */, UT_UCSChar * /* data */)
+UT_Bool FV_View::gotoTarget(AP_JumpTarget type, UT_UCSChar *data)
 {
-	UT_ASSERT(UT_NOT_IMPLEMENTED);
-
 	UT_ASSERT(m_pLayout);
+	UT_Bool inc = UT_FALSE;
+	UT_Bool dec = UT_FALSE;
 
-	// TODO:  We need a Unicode atol/strtol.
-
-	/*
-	char * numberString = (char *) calloc(UT_UCS_strlen(m_targetData) + 1, sizeof(char));
+	char * numberString = (char *) calloc(UT_UCS_strlen(data) + 1, sizeof(char));
 	UT_ASSERT(numberString);
 	
-	UT_UCS_strcpy_to_char(numberString, m_targetData);
-	
-	UT_uint32 pageNumber = atol(numberString);
+	UT_UCS_strcpy_to_char(numberString, data);
+
+	switch (numberString[0])
+	{
+	case '+':
+		inc = UT_TRUE;
+		numberString++;
+		break;
+	case '-':
+		dec = UT_TRUE;
+		numberString++;
+		break;
+	}
+
+	UT_uint32 number = atol(numberString);
+
+	if (dec || inc)
+		numberString--;
 	FREEP(numberString);
-	*/
 
 	// check for range
-//	if (pageNumber < 0 || pageNumber > (UT_uint32) m_pLayout->countPages())
-//		return UT_FALSE;
+	//	if (number < 0 || number > (UT_uint32) m_pLayout->countPages())
+	//		return UT_FALSE;
+	
+	switch (type)
+	{
+	case AP_JUMPTARGET_PAGE:
+	{
+		if (!inc && !dec)
+			_moveInsPtNthPage (number);
+		else
+		{
+			fp_Page* pOldPage = _getCurrentPage();
+			fp_Page* pPage;
 
-	// get the right page
-//	fp_Page * page = m_pLayout->getNthPage(pageNumber);
-//	UT_ASSERT(page);
+			if (inc) // TODO:  What if number passes the number of pages?
+				for (UT_uint32 i = 0; i < number; i++)
+					pPage = pOldPage->getNext();
+			else
+				for (UT_uint32 i = 0; i < number; i++)
+					pPage = pOldPage->getPrev();
 
-	// peek inside the page
-	// ...
+			if (!pPage) 
+				pPage = pOldPage;
+
+			_moveInsPtToPage(pPage);
+		}
+
+		break;
+	}
+	case AP_JUMPTARGET_LINE:
+		if (inc || dec)
+		{
+			UT_Bool bNext;
+			bNext = inc;
+
+			for (UT_uint32 i = 0; i < number; i++)
+				_moveInsPtNextPrevLine (bNext);  // HACK: A like the quick hacks... :)
+		}
+		else
+		{
+			UT_uint32 line = 0;
+			fp_Line *pLine;
+			fp_Line *pOldLine;
+			
+			fl_SectionLayout * pSL = m_pLayout->getFirstSection();
+			fl_BlockLayout * pBL = pSL->getFirstBlock();
+			pLine = pBL->getFirstLine();
+			
+			for (UT_uint32 i = 1; i < number; i++)
+			{
+				pOldLine = pLine;
+				
+				if ((pLine = pLine->getNext ()) == NULL)
+				{
+					if ((pBL = pBL->getNext ()) == NULL)
+					{
+						if ((pSL = pSL->getNext ()) == NULL)
+						{
+							pLine = pOldLine;
+							break;
+						}
+						else
+							pBL = pSL->getFirstBlock ();
+					}
+					else
+						pLine = pBL->getFirstLine ();
+				}
+			}
+
+			fp_Run* frun = pLine->getFirstRun ();
+			fl_BlockLayout* fblock = pLine->getBlock ();
+			PT_DocPosition dp = frun->getBlockOffset () + fblock->getPosition ();
+			moveInsPtTo (dp);
+		}
+		break;
+	case AP_JUMPTARGET_PICTURE:
+		// TODO
+		break;
+	default:
+		// TODO
+		;
+	}
+
+	if (isSelectionEmpty())
+	{
+		if (!_ensureThatInsertionPointIsOnScreen())
+		{
+			_fixInsertionPointCoords();
+			_drawInsertionPoint();
+		}
+	}
+	else
+	{
+		_ensureThatInsertionPointIsOnScreen();
+	}
 
 	return UT_FALSE;
 }

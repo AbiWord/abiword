@@ -948,11 +948,11 @@ fp_Line*	fp_Line::getPrevLineInSection(void) const
 
 UT_Bool	fp_Line::containsForcedColumnBreak(void) const
 {
-	if (!isEmpty())
+	if(!isEmpty())
 	{
 		fp_Run* pRun = getLastRun();
 		if (pRun->getType() == FPRUN_FORCEDCOLUMNBREAK)
-		{
+		{			
 			return UT_TRUE;
 		}
 	}
@@ -1295,4 +1295,5 @@ void fp_Line::splitRunsAtSpaces(void)
 
 
 }
+
 

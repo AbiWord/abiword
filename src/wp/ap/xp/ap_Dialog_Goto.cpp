@@ -32,56 +32,27 @@
 #include "fl_DocLayout.h"
 #include "fv_View.h"
 
+char * AP_Dialog_Goto::s_pJumpTargets[] = {
+	"Page",
+	"Line",
+//	"Picture",  TODO
+	NULL
+};
+
 AP_Dialog_Goto::AP_Dialog_Goto(XAP_DialogFactory * pDlgFactory, XAP_Dialog_Id id)
-	: XAP_Dialog_FramePersistent(pDlgFactory,id)
+	: XAP_Dialog_Modeless(pDlgFactory, id)
 {
-	persist_targetData = NULL;
-	persist_targetType = FV_JUMPTARGET_PAGE;
-		
-	m_pView = NULL;
-
-	m_targetType = FV_JUMPTARGET_PAGE;
-	m_targetData = NULL;
-
-	m_didSomething = UT_FALSE;
-
-	// is this used?
-	m_answer = a_VOID;
+  	m_pView = NULL;
+	m_answer = a_CLOSE;
 }
 
 AP_Dialog_Goto::~AP_Dialog_Goto(void)
 {
-	UT_ASSERT(!m_bInUse);
-
-	FREEP(m_targetData);
-	
-	FREEP(persist_targetData);
 }
 
-void AP_Dialog_Goto::useStart(void)
+char ** AP_Dialog_Goto::getJumpTargets(void)
 {
-	UT_DEBUGMSG(("AP_Dialog_Goto::useStart(void) I've been called\n"));
-
-	XAP_Dialog_FramePersistent::useStart();
-
-	// restore from persistent storage
-	if (persist_targetData)
-		UT_UCS_cloneString(&m_targetData, persist_targetData);
-}
-
-void AP_Dialog_Goto::useEnd(void)
-{
-
-	UT_DEBUGMSG(("AP_Dialog_Goto::useEnd(void) I've been called\n"));
-	XAP_Dialog_FramePersistent::useEnd();
-
-	// persistent dialogs don't destroy this data
-	if (m_didSomething)
-	{
-		FREEP(persist_targetData);
-		if (m_targetData)
-			UT_UCS_cloneString(&persist_targetData, m_targetData);
-	}
+	return (s_pJumpTargets);
 }
 
 AP_Dialog_Goto::tAnswer AP_Dialog_Goto::getAnswer(void) const
@@ -91,69 +62,14 @@ AP_Dialog_Goto::tAnswer AP_Dialog_Goto::getAnswer(void) const
 }
 
 // --------------------------- Setup Functions -----------------------------
-
-UT_Bool AP_Dialog_Goto::setView(AV_View * view)
+UT_Bool AP_Dialog_Goto::setView(FV_View * view)
 {
-	// we can do a static cast from AV_View into FV_View,
-	// so we can get WP specific information from it.
-	// This could be bad once we introduce an
-	// outline view, etc.
-	UT_ASSERT(view);
-
-	m_pView = static_cast<FV_View *>(view);
+	m_pView = view;
 
 	return UT_TRUE;
 }
 
-AV_View * AP_Dialog_Goto::getView(void) const
+FV_View * AP_Dialog_Goto::getView(void) const
 {
 	return m_pView;
-}
-
-UT_Bool	AP_Dialog_Goto::setTargetType(FV_JumpTarget target)
-{
-	m_targetType = target;
-	return UT_TRUE;
-}
-
-FV_JumpTarget AP_Dialog_Goto::getTargetType(void)
-{
-	return m_targetType;
-}
-
-UT_Bool AP_Dialog_Goto::setTargetData(const UT_UCSChar * string)
-{
-	FREEP(m_targetData);
-	return UT_UCS_cloneString(&m_targetData, string);
-}
-
-UT_UCSChar * AP_Dialog_Goto::getTargetData(void)
-{
-	UT_UCSChar * string = NULL;
-	if (m_targetData)
-	{
-		if (UT_UCS_cloneString(&string, m_targetData))
-			return string;
-	}
-	else
-	{
-		if (UT_UCS_cloneString_char(&string, ""))
-			return string;
-	}
-	return NULL;
-}
-
-// --------------------------- Action Functions -----------------------------
-
-UT_Bool AP_Dialog_Goto::gotoTarget(void)
-{
-	UT_ASSERT(m_pView);
-
-	UT_ASSERT(m_targetData);
-
-	// so we save our attributes to persistent storage
-	m_didSomething = UT_TRUE;
-
-	// call view to do the work
-	return m_pView->gotoTarget(m_targetType, m_targetData);
 }

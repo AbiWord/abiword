@@ -178,14 +178,20 @@ UT_Bool XAP_Dialog_Modeless::isRunning(void)
 }
 
 
-XAP_Frame *   XAP_Dialog_Modeless::getActiveFrame( void)
+XAP_Frame *   XAP_Dialog_Modeless::getActiveFrame(void)
 {
-  // This function returns the frame currently connected to a modeless dialog
+	// This function returns the frame currently connected to a modeless dialog
 
-        XAP_Frame * pFrame = m_pApp->getLastFocussedFrame();
-        if(pFrame == (XAP_Frame *) NULL)
+	XAP_Frame * pFrame = m_pApp->getLastFocussedFrame();
+	if(pFrame == (XAP_Frame *) NULL)
 	{
-	       pFrame = m_pApp->getFrame(0);
+		pFrame = m_pApp->getFrame(0);
 	}
 	return pFrame;
 }
+
+void XAP_Dialog_Modeless::setActiveFrame(XAP_Frame *pFrame)
+{
+	notifyActiveFrame(pFrame);
+}
+

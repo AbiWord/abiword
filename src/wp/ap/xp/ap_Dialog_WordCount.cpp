@@ -41,14 +41,6 @@ AP_Dialog_WordCount::~AP_Dialog_WordCount(void)
 {
 }
 
-void AP_Dialog_WordCount::useStart( void)
-{
-}
-
-void AP_Dialog_WordCount::useEnd( void)
-{
-}
-
 AP_Dialog_WordCount::tAnswer AP_Dialog_WordCount::getAnswer(void) const
 {
 	return m_answer;
@@ -66,13 +58,6 @@ void AP_Dialog_WordCount::setCount(FV_DocCount nCount)
 
 void AP_Dialog_WordCount::setCountFromActiveFrame(void)
 {
-        FV_View * pview = (FV_View *) getActiveFrame()->getCurrentView();
-        setCount(pview->countWords());
+	FV_View * pview = (FV_View *) getActiveFrame()->getCurrentView();
+	setCount(pview->countWords());
 }
-
-void AP_Dialog_WordCount::setActiveFrame(XAP_Frame *pFrame)
-{
-	notifyActiveFrame(pFrame);
-}
-
-

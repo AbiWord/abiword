@@ -33,16 +33,13 @@ public:
 	AP_UnixDialog_WordCount(XAP_DialogFactory * pDlgFactory, XAP_Dialog_Id id);
 	virtual ~AP_UnixDialog_WordCount(void);
 
-	virtual void			runModal(XAP_Frame * pFrame);
 	virtual void			runModeless(XAP_Frame * pFrame);
 	virtual void			destroy(void);
 	virtual void			activate(void);
-	// Only Windows needs this
 	virtual void			notifyActiveFrame(XAP_Frame *pFrame);
-	virtual void			notifyCloseFrame(XAP_Frame *pFrame){};
 
 	static XAP_Dialog *		static_constructor(XAP_DialogFactory *, XAP_Dialog_Id id);
-	static void				autoupdateWC(UT_Timer * pTimer);
+	static void			autoupdateWC(UT_Timer * pTimer);
 	virtual void			set_sensitivity(void);
 	virtual void			setUpdateCounter(void);
 	// callbacks can fire these events

@@ -47,9 +47,10 @@ endif
 
 # THESE ARE OBJECTS EXCLUSIVE TO THE UNIX FRONT-END
 ifeq ($(ABI_FE), Unix)
-PLATFORM_OBJS += 	$(OBJDIR)/xap_$(ABI_FE)Font.$(OBJ_SUFFIX)			\
-			$(OBJDIR)/xap_$(ABI_FE)FontManager.$(OBJ_SUFFIX)		\
+PLATFORM_OBJS += 	$(OBJDIR)/xap_$(ABI_FE)Font.$(OBJ_SUFFIX)		\
+			$(OBJDIR)/xap_$(ABI_FE)FontManager.$(OBJ_SUFFIX)	\
 			$(OBJDIR)/xap_$(ABI_FE)FontXLFD.$(OBJ_SUFFIX)		\
+			$(OBJDIR)/xap_$(ABI_FE)GtkTricks.$(OBJ_SUFFIX)		\
 			$(OBJDIR)/xap_$(ABI_FE)PSFont.$(OBJ_SUFFIX)		\
 			$(OBJDIR)/xap_$(ABI_FE)PSGenerate.$(OBJ_SUFFIX)		\
 			$(OBJDIR)/xap_$(ABI_FE)PSParseAFM.$(OBJ_SUFFIX)		\
@@ -58,7 +59,7 @@ PLATFORM_OBJS += 	$(OBJDIR)/xap_$(ABI_FE)Font.$(OBJ_SUFFIX)			\
 endif
 
 ifeq ($(ABI_FE), Win32)
-PLATFORM_OBJS +=	$(OBJDIR)/xap_$(ABI_FE)Slurp.$(OBJ_SUFFIX)			\
+PLATFORM_OBJS +=	$(OBJDIR)/xap_$(ABI_FE)Slurp.$(OBJ_SUFFIX)		\
 			$(OBJDIR)/xap_$(ABI_FE)PreviewWidget.$(OBJ_SUFFIX)
 endif
 
@@ -74,17 +75,17 @@ endif
 
 OBJS=		$(PLATFORM_OBJS)						\
 		$(OBJDIR)/xad_Document.$(OBJ_SUFFIX)				\
-		$(OBJDIR)/xap_App.$(OBJ_SUFFIX)				\
+		$(OBJDIR)/xap_App.$(OBJ_SUFFIX)					\
 		$(OBJDIR)/xap_Args.$(OBJ_SUFFIX)				\
-		$(OBJDIR)/xap_Clipboard.$(OBJ_SUFFIX)			\
+		$(OBJDIR)/xap_Clipboard.$(OBJ_SUFFIX)				\
 		$(OBJDIR)/xap_Dialog.$(OBJ_SUFFIX)				\
 		$(OBJDIR)/xap_DialogFactory.$(OBJ_SUFFIX)			\
-		$(OBJDIR)/xap_Dictionary.$(OBJ_SUFFIX)			\
-		$(OBJDIR)/xap_Dlg_About.$(OBJ_SUFFIX)			\
-		$(OBJDIR)/xap_Dlg_FileOpenSaveAs.$(OBJ_SUFFIX)		\
+		$(OBJDIR)/xap_Dictionary.$(OBJ_SUFFIX)				\
+		$(OBJDIR)/xap_Dlg_About.$(OBJ_SUFFIX)				\
+		$(OBJDIR)/xap_Dlg_FileOpenSaveAs.$(OBJ_SUFFIX)			\
 		$(OBJDIR)/xap_Dlg_FontChooser.$(OBJ_SUFFIX)			\
 		$(OBJDIR)/xap_Dlg_MessageBox.$(OBJ_SUFFIX)			\
-		$(OBJDIR)/xap_Dlg_Print.$(OBJ_SUFFIX)			\
+		$(OBJDIR)/xap_Dlg_Print.$(OBJ_SUFFIX)				\
 		$(OBJDIR)/xap_Dlg_WindowMore.$(OBJ_SUFFIX)			\
 		$(OBJDIR)/xap_Dlg_Zoom.$(OBJ_SUFFIX)				\
 		$(OBJDIR)/xap_Dlg_Insert_Symbol.$(OBJ_SUFFIX)				\

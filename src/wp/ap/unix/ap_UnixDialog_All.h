@@ -45,6 +45,7 @@
 
 #	include "ap_UnixDialog_Replace.h"
 #	include "ap_UnixDialog_Break.h"
+#	include "ap_UnixDialog_Goto.h"
 #	include "ap_UnixDialog_Paragraph.h"
 #	include "ap_UnixDialog_Options.h"
 #	include "ap_UnixDialog_Spell.h"
@@ -86,6 +87,7 @@
 
 	DeclareDialog(AP_DIALOG_ID_REPLACE,			AP_UnixGnomeDialog_Replace)
 	DeclareDialog(AP_DIALOG_ID_FIND,			AP_UnixGnomeDialog_Replace)
+	DeclareDialog(AP_DIALOG_ID_GOTO,			AP_UnixDialog_Goto)
 	DeclareDialog(AP_DIALOG_ID_BREAK,			AP_UnixGnomeDialog_Break)
 	DeclareDialog(AP_DIALOG_ID_SPELL,			AP_UnixDialog_Spell)
 	DeclareDialog(AP_DIALOG_ID_PARAGRAPH,		AP_UnixGnomeDialog_Paragraph)	
@@ -110,6 +112,7 @@
 
 	DeclareDialog(AP_DIALOG_ID_REPLACE,			AP_UnixDialog_Replace)
 	DeclareDialog(AP_DIALOG_ID_FIND,			AP_UnixDialog_Replace)
+	DeclareDialog(AP_DIALOG_ID_GOTO,			AP_UnixDialog_Goto)
 	DeclareDialog(AP_DIALOG_ID_BREAK,			AP_UnixDialog_Break)
 	DeclareDialog(AP_DIALOG_ID_SPELL,			AP_UnixDialog_Spell)
 	DeclareDialog(AP_DIALOG_ID_PARAGRAPH,		AP_UnixDialog_Paragraph)	

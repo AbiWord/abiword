@@ -34,13 +34,24 @@ public:
 	static XAP_Dialog *		static_constructor(XAP_DialogFactory *, XAP_Dialog_Id id);
 
 	virtual void			runModeless(XAP_Frame * pFrame);
+	virtual void			destroy(void);
+	virtual void			activate(void);
 
-	// public so callbacks can access them
-   	GtkWidget *				targetList;
-	GtkWidget *				targetEntry;
+	void                    setSelectedRow(int row);
+	int                     getSelectedRow(void);
+
+	GtkWidget *				m_wMainWindow;
+	GtkWidget *				m_wEntry;
+	GtkWidget *				m_wGoto;
+	int                     m_iRow;
 
 protected:
-
+	GtkWidget *             _constructWindow(void);
+	GtkWidget *             _constructWindowContents(void);
+	void                    _populateWindowData(void);
+	static void             s_targetChanged(GtkWidget *, gint, gint,
+											GdkEventButton *,  AP_UnixDialog_Goto *);
 };
 
 #endif /* AP_UNIXDIALOG_GOTO_H */
+

@@ -33,6 +33,7 @@ CPPSRCS=		ap_$(ABI_FE)App.cpp			\
 			ap_$(ABI_FE)DialogFactory.cpp		\
 			ap_$(ABI_FE)Dialog_Break.cpp		\
 			ap_$(ABI_FE)Dialog_Field.cpp		\
+			ap_$(ABI_FE)Dialog_Goto.cpp		\
 			ap_$(ABI_FE)Dialog_Insert_DateTime.cpp	\
 			ap_$(ABI_FE)Dialog_Options.cpp		\
 			ap_$(ABI_FE)Dialog_Paragraph.cpp	\

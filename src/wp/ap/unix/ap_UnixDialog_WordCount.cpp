@@ -104,18 +104,13 @@ static void s_delete_clicked(GtkWidget * /* widget */,
 
 /*****************************************************************/
 
-
-void AP_UnixDialog_WordCount::runModal(XAP_Frame * pFrame)
-{
-}
-
 void  AP_UnixDialog_WordCount::activate(void)
 {
-	UT_ASSERT(m_windowMain);
+	UT_ASSERT (m_windowMain);
         
-	setCountFromActiveFrame();
-	_updateWindowData();
-	gdk_window_raise(m_windowMain->window);
+	setCountFromActiveFrame ();
+	_updateWindowData ();
+	gdk_window_raise (m_windowMain->window);
 }
 
 void AP_UnixDialog_WordCount::runModeless(XAP_Frame * pFrame)
@@ -269,6 +264,7 @@ void AP_UnixDialog_WordCount::event_WindowDelete(void)
 	m_answer = AP_Dialog_WordCount::a_CANCEL;	
 	destroy();
 }
+
 void AP_UnixDialog_WordCount::notifyActiveFrame(XAP_Frame *pFrame)
 {
 	event_Update();
@@ -277,7 +273,7 @@ void AP_UnixDialog_WordCount::notifyActiveFrame(XAP_Frame *pFrame)
 void AP_UnixDialog_WordCount::destroy(void)
 {
 	m_bDestroy_says_stopupdating = UT_TRUE;
-	while( m_bAutoUpdate_happening_now == UT_TRUE) ;
+	while (m_bAutoUpdate_happening_now == UT_TRUE) ;
 	m_pAutoUpdateWC->stop();
 	m_answer = AP_Dialog_WordCount::a_CANCEL;	
 	modeless_cleanup();

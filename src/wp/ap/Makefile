@@ -32,6 +32,7 @@ PLATFORM_OBJS=	$(OBJDIR)/ap_$(ABI_FE)App.$(OBJ_SUFFIX)			\
 		$(OBJDIR)/ap_$(ABI_FE)Dialog_Break.$(OBJ_SUFFIX)	\
 		$(OBJDIR)/ap_$(ABI_FE)Dialog_WordCount.$(OBJ_SUFFIX)	\
 		$(OBJDIR)/ap_$(ABI_FE)Dialog_Field.$(OBJ_SUFFIX)	\
+		$(OBJDIR)/ap_$(ABI_FE)Dialog_Goto.$(OBJ_SUFFIX)		\
 		$(OBJDIR)/ap_$(ABI_FE)Dialog_Insert_DateTime.$(OBJ_SUFFIX)	\
 		$(OBJDIR)/ap_$(ABI_FE)Dialog_Options.$(OBJ_SUFFIX)	\
 		$(OBJDIR)/ap_$(ABI_FE)Dialog_Paragraph.$(OBJ_SUFFIX)	\
@@ -68,6 +69,7 @@ OBJS=		$(PLATFORM_OBJS)				\
 		$(OBJDIR)/ap_Dialog_Break.$(OBJ_SUFFIX)		\
 		$(OBJDIR)/ap_Dialog_WordCount.$(OBJ_SUFFIX)	\
 		$(OBJDIR)/ap_Dialog_Field.$(OBJ_SUFFIX)		\
+		$(OBJDIR)/ap_Dialog_Goto.$(OBJ_SUFFIX)		\
 		$(OBJDIR)/ap_Dialog_Insert_DateTime.$(OBJ_SUFFIX)		\
 		$(OBJDIR)/ap_Dialog_Options.$(OBJ_SUFFIX)	\
 		$(OBJDIR)/ap_Dialog_Paragraph.$(OBJ_SUFFIX)	\

@@ -67,7 +67,6 @@
 #include "ie_impGraphic.h"
 #include "ie_exp.h"
 #include "ie_types.h"
-#include "ap_EditMethods.h"
 
 /*****************************************************************/
 /*****************************************************************/
@@ -2955,46 +2954,40 @@ Defun(pasteSelection)
 
 /*****************************************************************/
 
-#if 0
+#ifdef UT_DEBUG
 static UT_Bool s_doGotoDlg(FV_View * pView, XAP_Dialog_Id id)
 {
 	XAP_Frame * pFrame = (XAP_Frame *) pView->getParentData();
 	UT_ASSERT(pFrame);
-
+	
 	pFrame->raise();
-
+	
 	XAP_DialogFactory * pDialogFactory
 		= (XAP_DialogFactory *)(pFrame->getDialogFactory());
-
+	
 	AP_Dialog_Goto * pDialog
 		= (AP_Dialog_Goto *)(pDialogFactory->requestDialog(id));
 	UT_ASSERT(pDialog);
 
+	pDialog->setView(pView);
 	pDialog->runModeless(pFrame);
 	
-	UT_Bool bOK = UT_TRUE;
-
-	// get result?
-	
-	pDialogFactory->releaseDialog(pDialog);
-
-	return bOK;
+	return UT_TRUE;
 }
 #endif
 
 Defun1(go)
 {
-#if 0
-	// TODO: this crashes on Win32.  does it work already on Linux?
+#ifdef UT_DEBUG
 	ABIWORD_VIEW;
 	XAP_Dialog_Id id = AP_DIALOG_ID_GOTO;
-	
+
 	return s_doGotoDlg(pView, id);
 #else
 	XAP_Frame * pFrame = (XAP_Frame *) pAV_View->getParentData();
 	UT_ASSERT(pFrame);
 
-	s_TellNotImplemented(pFrame, "Go To dialog", __LINE__);
+	s_TellNotImplemented(pFrame, "Go to dialog", __LINE__);
 	return UT_TRUE;
 #endif
 }

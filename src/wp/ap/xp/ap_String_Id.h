@@ -88,8 +88,8 @@ dcl(DLG_WordCount_Characters_No,	"Characters (no spaces)")
 dcl(DLG_WordCount_Characters_Sp,	"Characters (with spaces)")
 dcl(DLG_WordCount_Paragraphs,		"Paragraphs")
 dcl(DLG_WordCount_Lines,			"Lines")
-dcl(DLG_WordCount_Update_Rate,          "Seconds between updates")
-dcl(DLG_WordCount_Auto_Update,          " Auto Update")
+dcl(DLG_WordCount_Update_Rate,		"Seconds between updates")
+dcl(DLG_WordCount_Auto_Update,		" Auto Update")
 	
 /* Spell dialog */
 dcl(DLG_Spell_SpellTitle,		"Spelling")
@@ -207,8 +207,10 @@ dcl(DLG_Field_FieldTitle,				"Field")
 dcl(DLG_Field_Types,					"&Types:")
 dcl(DLG_Field_Fields,					"&Fields:")
 
-
-
-
-
-
+dcl(DLG_Goto_Title,						"Go to...")
+dcl(DLG_Goto_Label_Help,				"TODO: Write some help text!")
+dcl(DLG_Goto_Btn_Prev,					"<< Prev")
+dcl(DLG_Goto_Btn_Next,					"Next >>")
+dcl(DLG_Goto_Label_What,				"Go To What:")
+dcl(DLG_Goto_Label_Number,				"Number:")
+dcl(DLG_Goto_Btn_Goto,					"Go To")

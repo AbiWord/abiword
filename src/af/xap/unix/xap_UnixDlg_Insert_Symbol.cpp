@@ -415,8 +415,8 @@ GtkWidget * XAP_UnixDialog_Insert_Symbol::_constructWindow(void)
 
 	// Now put in a Vbox to hold our 3 widgets (Font Selector, Symbol Table
 	// and OK -Selected Symbol- Cancel
-	vboxInsertS = gtk_vbox_new (FALSE, 1);
-	gtk_box_set_spacing (GTK_BOX (vboxInsertS), 4);
+	vboxInsertS = gtk_vbox_new (FALSE, 4);
+//	gtk_box_set_spacing (GTK_BOX (vboxInsertS), 4);
 	gtk_widget_show(vboxInsertS);
 
 	// Insert the vbox into the dialog window

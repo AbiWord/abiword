@@ -126,15 +126,23 @@ public:
 	XAP_Dialog_Modeless(XAP_DialogFactory * pDlgFactory, XAP_Dialog_Id id);
 	virtual ~XAP_Dialog_Modeless(void);
 
-	virtual void				useStart(void);
-	virtual void				runModal(XAP_Frame * pFrame) = 0;
-	virtual void				useEnd(void);
+	void						useStart(void);
+	void						useEnd(void);
+
+// runModal is not a virtual pure function.  It's here only to make happy the old
+// dialogs that have been partially transformed to non modal dialogs (is it true?)
+	virtual void				runModal(XAP_Frame * pFrame) {}
+
 	virtual void				runModeless(XAP_Frame * pFrame) = 0;
-	virtual void				setActiveFrame(XAP_Frame *pFrame) = 0;
-	virtual void				notifyCloseFrame(XAP_Frame *pFrame) = 0;
-	virtual void				destroy(void)=0;
-	virtual void				activate(void)=0;
-        XAP_Frame *                             getActiveFrame();
+	virtual void				setActiveFrame(XAP_Frame *pFrame);
+
+// not pure functions.  Unix doesn't need to implement these functions
+	virtual void				notifyActiveFrame(XAP_Frame *pFrame) {}
+	virtual void				notifyCloseFrame(XAP_Frame *pFrame) {}
+
+	virtual void				destroy(void) = 0;
+	virtual void				activate(void) = 0;
+	XAP_Frame *					getActiveFrame();
 	void						modeless_cleanup(void);
 	UT_Bool						isRunning(void);
 

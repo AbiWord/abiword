@@ -65,7 +65,8 @@ GtkWidget * AP_UnixGnomeDialog_WordCount::_constructWindow(void)
 	XML_Char * unixstr;	// used for conversions
 
 	UT_XML_cloneNoAmpersands(unixstr, pSS->getValue(AP_STRING_ID_DLG_WordCount_WordCountTitle));
-	m_windowMain = gnome_dialog_new (unixstr, "Update", GNOME_STOCK_BUTTON_CLOSE, NULL);
+	m_windowMain = gnome_dialog_new (unixstr, pSS->getValue(XAP_STRING_ID_DLG_Update),
+									 GNOME_STOCK_BUTTON_CLOSE, NULL);
 
 	_constructWindowContents();
 	gtk_container_add (GTK_CONTAINER (GNOME_DIALOG (m_windowMain)->vbox), m_wContent);

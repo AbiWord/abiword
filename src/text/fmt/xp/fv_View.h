@@ -27,6 +27,10 @@
 #include "xav_View.h"
 #include "pt_Types.h"
 #include "gr_DrawArgs.h"
+#include "ev_EditBits.h"
+#include "ie_types.h"
+#include "xap_Prefs.h"
+#include "ap_Dialog_Goto.h"
 
 // number of milliseconds between cursor blinks
 const int AUTO_DRAW_POINT = 600;
@@ -58,12 +62,6 @@ typedef enum _FVDocPos
 	FV_DOCPOS_BOW, FV_DOCPOS_EOW_MOVE, FV_DOCPOS_EOW_SELECT	// word
 } FV_DocPos;
 
-typedef enum _FVJumpTarget
-{
-	FV_JUMPTARGET_PAGE,				// beginning of page
-	FV_JUMPTARGET_LINE				// beginning of line
-} FV_JumpTarget;
-		
 struct fv_ChangeState
 {
 	UT_Bool				bUndo;
@@ -198,8 +196,7 @@ public:
 	
 // ----------------------
 
-	// goto -- this is really not implemented
-	UT_Bool 		gotoTarget(FV_JumpTarget type, UT_UCSChar * data);
+	UT_Bool 		gotoTarget(AP_JumpTarget type, UT_UCSChar * data);
 
 	void			changeNumColumns(UT_uint32 iNumColumns);
 	
@@ -249,6 +246,9 @@ protected:
 	UT_Bool				_ensureThatInsertionPointIsOnScreen(void);
 	void			    _moveInsPtNextPrevPage(UT_Bool bNext);
 	void			    _moveInsPtNextPrevLine(UT_Bool bNext);
+	fp_Page *           _getCurrentPage(void);
+	void                _moveInsPtNthPage(UT_uint32 n);
+	void                _moveInsPtToPage(fp_Page *page);
 
 	PT_DocPosition		_getDocPosFromPoint(PT_DocPosition iPoint, FV_DocPos dp, UT_Bool bKeepLooking=UT_TRUE);
 	PT_DocPosition		_getDocPos(FV_DocPos dp, UT_Bool bKeepLooking=UT_TRUE);
