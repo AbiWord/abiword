@@ -50,7 +50,7 @@ _ZLIB_:
 		$(MAKE) ABI_ROOT=$(ABI_ROOT) -C $(ABI_ROOT)/../zlib;		\
 	else									\
 		echo peer zlib not found.  You can check it out of cvs by; \
-		cvs -d :pserver:anoncvs:anoncvs@cvs.abisource.com:/cvsroot checkout zlib; \
+		echo cvs -d :pserver:anoncvs:anoncvs@anoncvs.abisource.com:/cvsroot checkout zlib; \
 		exit 1;						\
 	fi
 
