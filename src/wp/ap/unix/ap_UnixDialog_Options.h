@@ -83,6 +83,8 @@ public:
 
 #ifdef BIDI_ENABLED
 	SET_GATHER			(OtherDirectionRtl, bool);
+	SET_GATHER			(OtherUseContextGlyphs, bool);
+	SET_GATHER			(OtherSaveContextGlyphs, bool);
 #endif
 
 	SET_GATHER			(AutoSaveFile, bool);
@@ -143,6 +145,8 @@ public:
 
 #ifdef BIDI_ENABLED
     GtkWidget * m_checkbuttonOtherDirectionRtl;
+    GtkWidget * m_checkbuttonOtherUseContextGlyphs;
+    GtkWidget * m_checkbuttonOtherSaveContextGlyphs;
 #endif
 	GtkWidget * m_checkbuttonAutoSaveFile;
 	GtkWidget * m_textAutoSaveFilePeriod;

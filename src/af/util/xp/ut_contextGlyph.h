@@ -24,7 +24,8 @@
 
 struct Letter
 {
-	UT_UCSChar code;
+	UT_UCSChar code_low;
+	UT_UCSChar code_high;
 	UT_UCSChar initial;
 	UT_UCSChar medial;
 	UT_UCSChar final;

@@ -115,6 +115,8 @@ void AP_Dialog_Options::_storeWindowData(void)
 	Save_Pref_Bool( pPrefsScheme, AP_PREF_KEY_ParaVisible, _gatherViewUnprintable() );
 #ifdef BIDI_ENABLED
 	Save_Pref_Bool( pPrefsScheme, AP_PREF_KEY_DefaultDirectionRtl, _gatherOtherDirectionRtl() );
+	Save_Pref_Bool( pPrefsScheme, XAP_PREF_KEY_UseContextGlyphs, _gatherOtherUseContextGlyphs() );
+	Save_Pref_Bool( pPrefsScheme, XAP_PREF_KEY_SaveContextGlyphs, _gatherOtherSaveContextGlyphs() );
 #endif
 
 #if 1
@@ -327,6 +329,10 @@ void AP_Dialog_Options::_populateWindowData(void)
 	//------------- other
 	if (pPrefs->getPrefsValueBool(AP_PREF_KEY_DefaultDirectionRtl,&b))
 		_setOtherDirectionRtl (b);
+	if (pPrefs->getPrefsValueBool(XAP_PREF_KEY_UseContextGlyphs,&b))
+		_setOtherUseContextGlyphs (b);
+	if (pPrefs->getPrefsValueBool(XAP_PREF_KEY_SaveContextGlyphs,&b))
+		_setOtherSaveContextGlyphs (b);
 #endif
 
 	// enable/disable controls
@@ -336,7 +342,8 @@ void AP_Dialog_Options::_populateWindowData(void)
 
 void AP_Dialog_Options::_enableDisableLogic( tControl id )
 {
-#if 0
+#if 1
+	UT_DEBUGMSG(("_enableDisableLogic: id %d, myId %d\n", id,id_CHECK_OTHER_USE_CONTEXT_GLYPHS));
 	switch (id)
 	{
 
@@ -347,7 +354,12 @@ void AP_Dialog_Options::_enableDisableLogic( tControl id )
 						_gatherSpellCheckAsType() );
 		break;
 */
+#ifdef BIDI_ENABLED
+	case id_CHECK_OTHER_USE_CONTEXT_GLYPHS:
+		_controlEnable( id_CHECK_OTHER_SAVE_CONTEXT_GLYPHS, _gatherOtherUseContextGlyphs());
+		break;
 
+#endif
 	default:
 		// do nothing
 		break;
@@ -376,6 +388,10 @@ void AP_Dialog_Options::_initEnableControls()
 
 	// general
 	_controlEnable( id_BUTTON_SAVE,					false );
+	
+#ifdef BIDI_ENABLED
+	_controlEnable( id_CHECK_OTHER_SAVE_CONTEXT_GLYPHS, _gatherOtherUseContextGlyphs());	
+#endif
 //
 // If the prefs color for transparent is white initially disable the choose
 // color button
@@ -388,6 +404,7 @@ void AP_Dialog_Options::_initEnableControls()
 	{
 		_controlEnable( id_PUSH_CHOOSE_COLOR_FOR_TRANSPARENT, true);
 	}
+	
 }
 
 void AP_Dialog_Options::_event_SetDefaults(void)

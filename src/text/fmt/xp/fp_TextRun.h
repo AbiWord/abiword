@@ -33,6 +33,7 @@
 */
 #ifdef BIDI_ENABLED
 #define MAX_SPAN_LEN 250   //initial size for m_pSpanBuff, realocated if needed
+#include "ut_timer.h"
 #endif
 
 class ABI_EXPORT fp_TextRun : public fp_Run
@@ -105,9 +106,15 @@ public:
 	static UT_uint32    s_iSpanBuffSize;
 	static UT_uint32    s_iClassInstanceCount;
 	FriBidiCharType		m_iDirOverride;
+	static bool			s_bUseContextGlyphs;
+	static bool			s_bSaveContextGlyphs;
+	static UT_Timer *	s_pPrefsTimer;
+private:
+	static void			_refreshPrefs(UT_Worker * pTimer);	
 #endif
 
 #ifdef FMT_TEST
+public:
 	virtual void			__dump(FILE * fp) const;
 #endif	
 	

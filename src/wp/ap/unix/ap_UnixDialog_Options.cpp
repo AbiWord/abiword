@@ -428,6 +428,8 @@ GtkWidget* AP_UnixDialog_Options::_constructWindowContents (GtkWidget * vbox)
 	GtkWidget *frame42;
 	GtkWidget *vbox59;
 	GtkWidget *rtl_dominant;
+	GtkWidget *use_context_glyphs;
+	GtkWidget *save_context_glyphs;
 #endif
 	
 	mainWindow = m_windowMain;
@@ -890,6 +892,13 @@ GtkWidget* AP_UnixDialog_Options::_constructWindowContents (GtkWidget * vbox)
 	rtl_dominant = gtk_check_button_new_with_label (pSS->getValue(AP_STRING_ID_DLG_Options_Label_DirectionRtl));
 	gtk_widget_show (rtl_dominant);
 	gtk_box_pack_start (GTK_BOX (vbox59), rtl_dominant, FALSE, FALSE, 0);
+	use_context_glyphs = gtk_check_button_new_with_label (pSS->getValue(AP_STRING_ID_DLG_Options_Label_UseContextGlyphs));
+	gtk_widget_show (use_context_glyphs);
+	gtk_box_pack_start (GTK_BOX (vbox59), use_context_glyphs, FALSE, FALSE, 0);
+	save_context_glyphs = gtk_check_button_new_with_label (pSS->getValue(AP_STRING_ID_DLG_Options_Label_SaveContextGlyphs));
+	gtk_widget_show (save_context_glyphs);
+	gtk_box_pack_start (GTK_BOX (vbox59), save_context_glyphs, FALSE, FALSE, 0);
+	
 #endif		
 	
 	// AUTO SAVE
@@ -957,6 +966,8 @@ GtkWidget* AP_UnixDialog_Options::_constructWindowContents (GtkWidget * vbox)
 	m_notebook = notebook1;
 #ifdef BIDI_ENABLED
 	m_checkbuttonOtherDirectionRtl = rtl_dominant;
+	m_checkbuttonOtherUseContextGlyphs = use_context_glyphs;
+	m_checkbuttonOtherSaveContextGlyphs = save_context_glyphs;
 #endif
 	m_checkbuttonAutoSaveFile = autosave_cb;
 	m_textAutoSaveFileExt = autosave_ext;
@@ -1034,6 +1045,12 @@ GtkWidget* AP_UnixDialog_Options::_constructWindowContents (GtkWidget * vbox)
 			   GTK_SIGNAL_FUNC(s_chooseTransparentColor),
 			   (gpointer) this);
 
+#ifdef BIDI_ENABLED
+	gtk_signal_connect(GTK_OBJECT(m_checkbuttonOtherUseContextGlyphs),
+			   "toggled",
+			   GTK_SIGNAL_FUNC(s_checkbutton_toggle),
+			   (gpointer) this);
+#endif
 
 	_setNotebookPageNum (0);
 	//gtk_clist_select_row (GTK_CLIST (toolbar_clist), 0, 0);
@@ -1206,6 +1223,11 @@ GtkWidget *AP_UnixDialog_Options::_lookupWidget ( tControl id )
 #ifdef BIDI_ENABLED
 	case id_CHECK_OTHER_DEFAULT_DIRECTION_RTL:
 		return m_checkbuttonOtherDirectionRtl;
+		
+	case id_CHECK_OTHER_USE_CONTEXT_GLYPHS:
+		return m_checkbuttonOtherUseContextGlyphs;
+	case id_CHECK_OTHER_SAVE_CONTEXT_GLYPHS:
+		return m_checkbuttonOtherSaveContextGlyphs;
 #endif
 
 	case id_CHECK_AUTO_SAVE_FILE:
@@ -1346,6 +1368,8 @@ DEFINE_GET_SET_BOOL(SmartQuotesEnable);
 
 #ifdef BIDI_ENABLED
 DEFINE_GET_SET_BOOL(OtherDirectionRtl);
+DEFINE_GET_SET_BOOL(OtherUseContextGlyphs);
+DEFINE_GET_SET_BOOL(OtherSaveContextGlyphs);
 #endif
 
 DEFINE_GET_SET_BOOL(AutoSaveFile);
@@ -1579,6 +1603,7 @@ void    AP_UnixDialog_Options::_setNotebookPageNum(int pn)
 	UT_ASSERT(w && GTK_IS_WIDGET(w));
 
 	int i = (int) gtk_object_get_data( GTK_OBJECT(w), "tControl" );
+	UT_DEBUGMSG(("s_checkbutton_toggle: control id = %d\n", i));
 	dlg->_enableDisableLogic( (AP_Dialog_Options::tControl) i );
 }
 

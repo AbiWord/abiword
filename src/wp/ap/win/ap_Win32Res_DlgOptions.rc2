@@ -85,14 +85,16 @@
 #define AP_RID_DIALOG_OPTIONS_COMBO_CURRENTSCHEME		1403
 #define AP_RID_DIALOG_OPTIONS_FRM_BidiOptions			1404
 #define AP_RID_DIALOG_OPTIONS_CHK_OtherDirectionRtl		1405
-#define AP_RID_DIALOG_OPTIONS_FRM_AutoSaveOptions		1406
-#define AP_RID_DIALOG_OPTIONS_CHK_AutoSaveFile			1407
-#define AP_RID_DIALOG_OPTIONS_TXT_AutoSavePeriod		1408
-#define AP_RID_DIALOG_OPTIONS_SPN_AutoSavePeriodSpin	1409
-#define AP_RID_DIALOG_OPTIONS_LBL_AutoSaveMinutes		1410
-#define AP_RID_DIALOG_OPTIONS_LBL_AutoSaveExtension		1411
-#define AP_RID_DIALOG_OPTIONS_TXT_AutoSaveExtension		1412
-#define AP_RID_DIALOG_OPTIONS_CHK_ShowSplash			1413
+#define AP_RID_DIALOG_OPTIONS_CHK_OtherUseContextGlyphs		1406
+#define AP_RID_DIALOG_OPTIONS_CHK_OtherSaveCotnextGlyphs	1407
+#define AP_RID_DIALOG_OPTIONS_FRM_AutoSaveOptions		1408
+#define AP_RID_DIALOG_OPTIONS_CHK_AutoSaveFile			1409
+#define AP_RID_DIALOG_OPTIONS_TXT_AutoSavePeriod		1410
+#define AP_RID_DIALOG_OPTIONS_SPN_AutoSavePeriodSpin	1411
+#define AP_RID_DIALOG_OPTIONS_LBL_AutoSaveMinutes		1412
+#define AP_RID_DIALOG_OPTIONS_LBL_AutoSaveExtension		1413
+#define AP_RID_DIALOG_OPTIONS_TXT_AutoSaveExtension		1414
+#define AP_RID_DIALOG_OPTIONS_CHK_ShowSplash			1415
 
 #ifdef RC_INVOKED
 // NOTE -- these placeholder strings get overridden at runtime 
@@ -260,10 +262,17 @@ BEGIN
 					5,75,270,10
 
 	GROUPBOX		"Bi-Directional Options...", AP_RID_DIALOG_OPTIONS_FRM_BidiOptions,
-					2, 87, 285, 24
+					2, 87, 285, 46
 	CONTROL			"Default to right-to-left direction of text:", AP_RID_DIALOG_OPTIONS_CHK_OtherDirectionRtl ,
 					"Button", BS_AUTOCHECKBOX | WS_TABSTOP,
 					5,98, 285, 10
+	CONTROL			"Select correct shapes of glyphs from context:", AP_RID_DIALOG_OPTIONS_CHK_OtherUseContextGlyphs ,
+					"Button", BS_AUTOCHECKBOX | WS_TABSTOP,
+					5,109, 285, 10
+	CONTROL			"Save visual glyphs", AP_RID_DIALOG_OPTIONS_CHK_OtherSaveContextGlyphs ,
+					"Button", BS_AUTOCHECKBOX | WS_TABSTOP,
+					5,120, 285, 10
+
 
 END
 

@@ -53,7 +53,11 @@
 /*****************************************************************/
 
 #ifdef BIDI_ENABLED
+#define PREFS_REFRESH_MSCS 2000
 //inicialise the static members of the class
+bool fp_TextRun::s_bUseContextGlyphs = true;
+bool fp_TextRun::s_bSaveContextGlyphs = false;
+UT_Timer * fp_TextRun::s_pPrefsTimer = 0;
 UT_UCSChar * fp_TextRun::s_pSpanBuff = 0;
 UT_uint32    fp_TextRun::s_iClassInstanceCount = 0;
 UT_uint32    fp_TextRun::s_iSpanBuffSize = 0;
@@ -89,6 +93,16 @@ fp_TextRun::fp_TextRun(fl_BlockLayout* pBL,
 //in order to be able to print rtl runs on GUI that does not support this,
 //we will need to make a copy of the run and strrev it; this is a static
 //buffer shared by all the instances;
+	if(!s_pPrefsTimer)
+	{
+		XAP_App::getApp()->getPrefsValueBool((XML_Char*)XAP_PREF_KEY_UseContextGlyphs, &s_bUseContextGlyphs);
+		XAP_App::getApp()->getPrefsValueBool((XML_Char*)XAP_PREF_KEY_SaveContextGlyphs, &s_bSaveContextGlyphs);
+		s_pPrefsTimer = UT_Timer::static_constructor(_refreshPrefs, NULL);
+		if(s_pPrefsTimer)
+			s_pPrefsTimer->set(PREFS_REFRESH_MSCS);
+	}
+	
+	
 	if(!s_pSpanBuff)
 	{
 		s_pSpanBuff = new UT_UCSChar[MAX_SPAN_LEN];
@@ -107,6 +121,7 @@ fp_TextRun::~fp_TextRun()
 	{
 		delete[] s_pSpanBuff;
 		s_pSpanBuff = (UT_UCSChar * ) 0;
+		DELETEP(s_pPrefsTimer);
 	}
 #endif
 }
@@ -1320,72 +1335,83 @@ void fp_TextRun::_drawPart(UT_sint32 xoff,
 				one character before the one in question and an unspecified
 				number of chars to follow.
 			*/
-			
-			UT_contextGlyph cg;
-			
-			const UT_UCSChar *pPrev, *pNext;
-			
-			UT_uint32 lenPrev, lenNext;
-			
-			// first the char preceding this part of the run, which is simple
-			if(!m_pBL->getSpanPtr(offset - 1, &pPrev, &lenPrev))
-				pPrev = NULL;
-				
-			// now we will retrieve 5 characters that follow this part of the run
-			#define BUFF_SIZE 5
-			UT_sint32 i;
-			
-			// two small buffers, one to keep the chars past this part
-			// and one that we will use to create the "trailing" chars
-			// for each character in this fragment
-			UT_UCSChar after[BUFF_SIZE + 1];
-			UT_UCSChar next[BUFF_SIZE + 1];
-			
-			// how many character at most can we retrieve?
-			UT_sint32 iStop = MIN(BUFF_SIZE, lenSpan - len);
-			
-			// first, getting anything that might be in the span buffer
-			for(i=0; i< iStop;i++)
-				after[i] = pSpan[len+i];
-				
-			// for anything that we miss, we need to get it the hard way
-			// as it is located in different spans
-			while(i < BUFF_SIZE && m_pBL->getSpanPtr(offset + len + i, &pNext, &lenNext))
+			if(s_bUseContextGlyphs)	
 			{
-				for(UT_uint32 j = 0; j < lenSpan && i < BUFF_SIZE; j++,i++)
-					after[i] = pNext[j];
-			}
+				UT_contextGlyph cg;
+			
+				const UT_UCSChar *pPrev, *pNext;
+				
+				UT_uint32 lenPrev, lenNext;
+			
+				// first the char preceding this part of the run, which is simple
+				if(!m_pBL->getSpanPtr(offset - 1, &pPrev, &lenPrev))
+					pPrev = NULL;
+				
+				// now we will retrieve 5 characters that follow this part of the run
+				#define BUFF_SIZE 5
+				UT_sint32 i;
+			
+				// two small buffers, one to keep the chars past this part
+				// and one that we will use to create the "trailing" chars
+				// for each character in this fragment
+				UT_UCSChar after[BUFF_SIZE + 1];
+				UT_UCSChar next[BUFF_SIZE + 1];
+			
+				// how many character at most can we retrieve?
+				UT_sint32 iStop = MIN(BUFF_SIZE, lenSpan - len);
+			
+				// first, getting anything that might be in the span buffer
+				for(i=0; i< iStop;i++)
+					after[i] = pSpan[len+i];
+				
+				// for anything that we miss, we need to get it the hard way
+				// as it is located in different spans
+				while(i < BUFF_SIZE && m_pBL->getSpanPtr(offset + len + i, &pNext, &lenNext))
+				{
+					for(UT_uint32 j = 0; j < lenSpan && i < BUFF_SIZE; j++,i++)
+						after[i] = pNext[j];
+				}
 
-			// now we have our trailing chars, so we null-terminate the array			
-			after[i] = 0;
+				// now we have our trailing chars, so we null-terminate the array			
+				after[i] = 0;
 			
-			// remember how many there are in the after buffer (including the NULL)
-			iStop = i+1;
+				// remember how many there are in the after buffer (including the NULL)
+				iStop = i+1;
 			
-			// how many trailing chars at most can we copy from our span?
-			UT_sint32 iStop2 = MIN(BUFF_SIZE, iTrueLen - 1);
+				// how many trailing chars at most can we copy from our span?
+				UT_sint32 iStop2 = MIN(BUFF_SIZE, iTrueLen - 1);
 			
-			xxx_UT_DEBUGMSG(("i %d, iStop %d, iStop2 %d, len %d, iTrueLen %d, lenSpan %d\n",
-						i,iStop,iStop2,len,iTrueLen,lenSpan));
+				xxx_UT_DEBUGMSG(("i %d, iStop %d, iStop2 %d, len %d, iTrueLen %d, lenSpan %d\n",
+								i,iStop,iStop2,len,iTrueLen,lenSpan));
 						
 			
-			// now for each character in this fragment we create
-			// an array of the chars that follow it, get the char
-			// that precedes it and then translate it using our
-			// UT_contextGlyph class, and we are done
-			for(UT_uint32 k =0; k < iTrueLen; k++)
-			{
-				for(i=0; i < iStop2; i++)
-					next[i] = pSpan[i+k+1];
-				for(UT_sint32 j = 0; j < iStop && i < BUFF_SIZE; i++,j++)
-					next[i] = after[j];
+				// now for each character in this fragment we create
+				// an array of the chars that follow it, get the char
+				// that precedes it and then translate it using our
+				// UT_contextGlyph class, and we are done
+				for(UT_uint32 k =0; k < iTrueLen; k++)
+				{
+					for(i=0; i < iStop2; i++)
+						next[i] = pSpan[i+k+1];
+					for(UT_sint32 j = 0; j < iStop && i < BUFF_SIZE; i++,j++)
+						next[i] = after[j];
 					
-				if(k > 0)
-					pPrev = &pSpan[k-1];
+					if(k > 0)
+						pPrev = &pSpan[k-1];
 					
-				s_pSpanBuff[k] = cg.getGlyph(&pSpan[k],pPrev,&next[0]);
-			}
+					s_pSpanBuff[k] = cg.getGlyph(&pSpan[k],pPrev,&next[0]);
+					if(s_bSaveContextGlyphs)
+					{
+						UT_UCSChar* pS = ((UT_UCSChar*) pSpan) + k;
+						*pS = s_pSpanBuff[k];
+					}
+				}
 			
+			}
+			else //do not use context glyphs
+			{
+				UT_UCS_strncpy(s_pSpanBuff, pSpan, iTrueLen);
+			}
 		}
 		else
 		{
@@ -2085,4 +2111,10 @@ UT_UCSChar getMirrorChar(UT_UCSChar c)
 		return c;
 }
 
+void fp_TextRun::_refreshPrefs(UT_Worker * /*pWorker*/)
+{
+	XAP_App::getApp()->getPrefsValueBool((XML_Char*)XAP_PREF_KEY_UseContextGlyphs, &s_bUseContextGlyphs);
+	XAP_App::getApp()->getPrefsValueBool((XML_Char*)XAP_PREF_KEY_SaveContextGlyphs, &s_bSaveContextGlyphs);
+	xxx_UT_DEBUGMSG(("fp_TextRun::_refreshPrefs: new values %d, %d\n", s_bUseContextGlyphs, s_bSaveContextGlyphs));
+}
 #endif

@@ -57,6 +57,8 @@ class AP_Dialog_Options : public XAP_Dialog_NonPersistent
 #ifdef BIDI_ENABLED
 //				   id_CHECK_OTHER_USE_UNICODE_DIRECTION,
 				   id_CHECK_OTHER_DEFAULT_DIRECTION_RTL,
+				   id_CHECK_OTHER_USE_CONTEXT_GLYPHS,
+				   id_CHECK_OTHER_SAVE_CONTEXT_GLYPHS,
 #endif
 				   id_CHECK_AUTO_SAVE_FILE,
 				   id_TEXT_AUTO_SAVE_FILE_EXT,
@@ -134,6 +136,8 @@ class AP_Dialog_Options : public XAP_Dialog_NonPersistent
 
 #ifdef BIDI_ENABLED
 	SET_GATHER			(OtherDirectionRtl, bool);
+	SET_GATHER			(OtherUseContextGlyphs, bool);
+	SET_GATHER			(OtherSaveContextGlyphs, bool);
 #endif
 
 #if 1 // TODO: JCA

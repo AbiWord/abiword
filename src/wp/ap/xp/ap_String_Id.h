@@ -282,6 +282,8 @@ dcl(DLG_Options_Label_DefaultPageSize, "Default page size")
 #ifdef BIDI_ENABLED
 dcl(DLG_Options_Label_DirectionRtl, "Default to right-to-left direction of text")
 dcl(DLG_Options_Label_BiDiOptions, "Bi-Directional Options")
+dcl(DLG_Options_Label_UseContextGlyphs, "Determine correct glyph shapes from context")
+dcl(DLG_Options_Label_SaveContextGlyphs, "Save visual glyph shapes")
 #endif
 
 dcl(DLG_Options_Label_AutoSave,			"Auto Save")

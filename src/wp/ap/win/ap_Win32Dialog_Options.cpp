@@ -465,13 +465,24 @@ BOOL AP_Win32Dialog_Options::_onInitTab(HWND hWnd, WPARAM wParam, LPARAM lParam)
 			// Hidi Bidi Controls
 			HWND hwndBidiBox = GetDlgItem(hWnd, AP_RID_DIALOG_OPTIONS_FRM_BidiOptions);
 			HWND hwndBidiChk = GetDlgItem(hWnd, AP_RID_DIALOG_OPTIONS_CHK_OtherDirectionRtl);
+   			HWND hwndBidiUseContextGlyphs = GetDlgItem(hWnd, AP_RID_DIALOG_OPTIONS_CHK_OtherUseContextGlyphs);
+   			HWND hwndBidiSaveContextGlyphs = GetDlgItem(hWnd, AP_RID_DIALOG_OPTIONS_CHK_OtherSaveContextGlyphs);
+
 			ShowWindow( hwndBidiBox, SW_HIDE);
 			ShowWindow( hwndBidiChk, SW_HIDE);
+   			ShowWindow( hwndBidiUseContextGlyphs, SW_HIDE);
+			ShowWindow( hwndBidiSaveContextGlyphs, SW_HIDE);
+
 #ifdef BIDI_ENABLED
 			ShowWindow( hwndBidiBox, SW_SHOW);
 			ShowWindow( hwndBidiChk, SW_SHOW);
+			ShowWindow( hwndBidiUseContextGlyphs, SW_SHOW);
+			ShowWindow( hwndBidiSaveContextGlyphs, SW_SHOW);
 			_DS(OPTIONS_FRM_BidiOptions,			DLG_Options_Label_BiDiOptions);
 			_DS(OPTIONS_CHK_OtherDirectionRtl,		DLG_Options_Label_DirectionRtl);
+			_DS(OPTIONS_CHK_OtherUseContextGlyphs,	DLG_Options_Label_UseContextGlyphs);
+			_DS(OPTIONS_CHK_OtherSaveContextGlyphs,	DLG_Options_Label_SaveContextGlyphs);
+
 #endif					
 
 			// TODO need to populate values in the _COMBO_CURRENTSCHEME
@@ -574,6 +585,8 @@ BOOL AP_Win32Dialog_Options::_onCommandTab(HWND hWnd, WPARAM wParam, LPARAM lPar
 		return 0;
 #ifdef BIDI_ENABLED
 	case AP_RID_DIALOG_OPTIONS_CHK_OtherDirectionRtl:	_enableDisableLogic(id_CHECK_OTHER_DEFAULT_DIRECTION_RTL);	return 0;
+	case AP_RID_DIALOG_OPTIONS_CHK_OtherUseContextGlyphs:	_enableDisableLogic(id_CHECK_OTHER_USE_CONTEXT_GLYPHS);	return 0;
+	case AP_RID_DIALOG_OPTIONS_CHK_OtherSaveContextGlyphs:	_enableDisableLogic(id_CHECK_OTHER_SAVE_CONTEXT_GLYPHS);return 0;
 #endif
 	case AP_RID_DIALOG_OPTIONS_CHK_AutoSaveFile:
 		_enableDisableLogic(id_CHECK_AUTO_SAVE_FILE);
@@ -717,6 +730,8 @@ void AP_Win32Dialog_Options::_controlEnable( tControl id, bool value )
 #ifdef BIDI_ENABLED
 	case id_CHECK_OTHER_DEFAULT_DIRECTION_RTL:
 		EnableWindow(GetDlgItem((HWND)m_vecSubDlgHWnd.getNthItem(PREF_INDEX),id_CHECK_OTHER_DEFAULT_DIRECTION_RTL),value);
+		EnableWindow(GetDlgItem((HWND)m_vecSubDlgHWnd.getNthItem(PREF_INDEX),id_CHECK_OTHER_USE_CONTEXT_GLYPHS),value);
+		EnableWindow(GetDlgItem((HWND)m_vecSubDlgHWnd.getNthItem(PREF_INDEX),id_CHECK_OTHER_SAVE_CONTEXT_GLYPHS),value);
 		return;
 #endif
 
@@ -767,6 +782,8 @@ DEFINE_GET_SET_BOOL(PREF_INDEX,PrefsAutoSave);
 DEFINE_GET_SET_BOOL(PREF_INDEX,ShowSplash);
 #ifdef BIDI_ENABLED
 DEFINE_GET_SET_BOOL(PREF_INDEX,OtherDirectionRtl);
+DEFINE_GET_SET_BOOL(PREF_INDEX,OtherUseContextGlyphs);
+DEFINE_GET_SET_BOOL(PREF_INDEX,OtherSaveContextGlyphs);
 #endif
 
 #undef DEFINE_GET_SET_BOOL

@@ -75,7 +75,9 @@ public:
 
 #ifdef BIDI_ENABLED
 	SET_GATHER			(OtherDirectionRtl,	bool );
-#endif  
+	SET_GATHER			(OtherUseContextGlyphs,	bool );
+	SET_GATHER			(OtherSaveContextGlyphs,bool );
+#endif
 
 	SET_GATHER			(AutoSaveFile, bool);
 	virtual void _gatherAutoSaveFilePeriod(UT_String &stRetVal);
