@@ -9,7 +9,7 @@
 
 <!-- First Polish translations provided by Sercxemulo <explo@poczta.wp.pl> and        -->
 <!-- (0.9.6+) by Piotr Banski <bansp@bigfoot.com>. Since February 2002 (0.99.2+)      --> 
-<!-- maintained by Andrzej Pruszynski <abi@rth.coi.waw.pl>. Last update: 04-Nov-2002  -->
+<!-- maintained by Andrzej Pruszynski <abi@rth.coi.waw.pl>. Last update: 10-Dec-2002  -->
 
 <AbiStrings app="AbiWord" ver="1.0" language="pl-PL">
 
@@ -436,6 +436,7 @@ DLG_Field_Types="&amp;Typ pola:"
 
 DLG_FormatTable_Apply_To="Zastosuj do:"
 DLG_FormatTable_Background="T³o"
+DLG_FormatTable_Background_Color="Kolor t³a:"
 DLG_FormatTable_Border_Color="Kolor obramowania:"
 DLG_FormatTable_Borders="Obramowanie"
 DLG_FormatTable_Preview="Podgl±d"
@@ -630,7 +631,7 @@ DLG_Options_Label_WithExtension="z rozszerzeniem:"
 
 DLG_Options_Label_DefLangForDocs="Domy¶lny jêzyk dokumentów"
 DLG_Options_Label_LangSettings="Ustawienia jêzyka"
-DLG_Options_Label_Language"Jêzyk"
+DLG_Options_Label_Language="Jêzyk"
 DLG_Options_Label_UILang="Jêzyk interfejsu u¿ytkownika"
 
 DLG_Options_OptionsTitle="Opcje programu"
@@ -821,6 +822,20 @@ FIELD_DateTime_TimeZone="Strefa czasowa"
 FIELD_DateTime_Wkday="Dzieñ tygodnia"
 FIELD_Datetime_CurrentDate="Dzisiejsza data"
 FIELD_Datetime_CurrentTime="Bie¿±cy czas"
+
+FIELD_Document_Contributor="Wspó³autor:"
+FIELD_Document_Coverage=" "
+FIELD_Document_Creator="Utworzy³:"
+FIELD_Document_Date="Data:"
+FIELD_Document_Description="Opis:"
+FIELD_Document_Keywords="S³owa kluczowe:"
+FIELD_Document_Language="Jêzyk:"
+FIELD_Document_Publisher="Wydawca:"
+FIELD_Document_Rights="Pozwolenia:"
+FIELD_Document_Subject="Tematyka:"
+FIELD_Document_Title="Tytu³:"
+FIELD_Document_Type="Rodzaj:"
+
 FIELD_Error="B³±d obliczeniowy!"
 FIELD_Numbers_CharCount="Ilo¶æ znaków (ze spacjami)"
 FIELD_Numbers_EndnoteAnchor="Zakotwiczenie przypisów koñcowych"
@@ -836,6 +851,7 @@ FIELD_Numbers_WordCount="Ilo¶æ s³ów"
 FIELD_PieceTable_MartinTest="Test Martina"
 FIELD_PieceTable_Test="Test Kelvina"
 FIELD_Type_Datetime="Data i Czas"
+FIELD_Type_Document="Dokument"
 FIELD_Type_Numbers="Numeracja"
 FIELD_Type_PieceTable="Tabela struktury"
 FirstLineIndentStatus="Wciêcie pierwszej linii [%s]"
@@ -1318,6 +1334,7 @@ MSG_AfterRestartNew="Ta zmiana bêdzie uaktywniona po ponownym uruchomieniu progr
 MSG_BookmarkNotFound="Zak³adki &quot;%s&quot; nie znaleziono w bie¿±cym dokumencie."
 MSG_CHECK_PRINT_MODE="Nag³ówki i stopki mog± byæ tworzone i modyfikowane tylko w trybie uk³adu strony.&#x000a;Aby uruchomiæ ten tryb wybierz Widok | Normalny z Menu.&#x000a;Czy uruchomiæ teraz ten tryb?"
 MSG_ConfirmSave="Zapisaæ zmiany w dokumencie %s?"
+MSG_ConfirmSaveSecondary="Je¶li zamkniesz plik bez zapisu, to zmiany dokonane w ci±gu ostatnich %d minut bêd± pominiête."
 MSG_DefaultDirectionChg="Zmieniono domy¶lny kierunek pisma."
 MSG_DirectionModeChg="Zmieniono tryb kierunku pisma."
 MSG_DlgNotImp="%s jeszcze nie jest zaimplementowane.&#x000a;Je¶li umiesz programowaæ i chcesz pomóc, dodaj kod w %s, linii %d&#x000a;i prze¶lij ³atkê do:&#x000a;&#x000a;\tabiword-dev@abisource.com&#x000a;&#x000a;Je¶li nie, prosimy o cierpliwo¶æ."
@@ -1426,6 +1443,10 @@ TOOLBAR_LABEL_DELETE_ROW="Usuniêcie wiersza"
 TOOLBAR_LABEL_INSERT_TABLE="Wstawienie tabeli"
 TOOLBAR_LABEL_MERGE_CELLS="£±czenie komórek"
 TOOLBAR_LABEL_SPLIT_CELLS="Dzielenie komórek"
+TOOLBAR_LABEL_MERGEABOVE="L±czenie z wierszem powy¿ej"
+TOOLBAR_LABEL_MERGEBELOW="L±czenie z wierszem poni¿ej"
+TOOLBAR_LABEL_MERGELEFT="L±czenie z kolumn± z lewej"
+TOOLBAR_LABEL_MERGERIGHT="L±czenie z kolumn± z prawej"
 
 TOOLBAR_STATUSLINE_1COLUMN="1 Kolumna"
 TOOLBAR_STATUSLINE_2COLUMN="2 Kolumny"
@@ -1493,6 +1514,10 @@ TOOLBAR_STATUSLINE_DELETE_ROW="Usuwa wiersz"
 TOOLBAR_STATUSLINE_INSERT_TABLE="Wstawia tabelê"
 TOOLBAR_STATUSLINE_MERGE_CELLS="£±czy te komórek"
 TOOLBAR_STATUSLINE_SPLIT_CELLS="Dokonuje podzia³u tej komórki"
+TOOLBAR_STATUSLINE_MERGEABOVE="L±czy z wierszem powy¿ej"
+TOOLBAR_STATUSLINE_MERGEBELOW="L±czy z wierszem poni¿ej"
+TOOLBAR_STATUSLINE_MERGELEFT="L±czy z kolumn± z lewej"
+TOOLBAR_STATUSLINE_MERGERIGHT="L±czy z kolumn± z prawej"
 
 TOOLBAR_TOOLTIP_1COLUMN="1 Kolumna"
 TOOLBAR_TOOLTIP_2COLUMN="2 Kolumny"
@@ -1560,6 +1585,15 @@ TOOLBAR_TOOLTIP_DELETE_ROW="Usuwa wiersz z bie¿±cej tabeli"
 TOOLBAR_TOOLTIP_INSERT_TABLE="Wstawia now± tabelê do dokumentu"
 TOOLBAR_TOOLTIP_MERGE_CELLS="£±czy komórki"
 TOOLBAR_TOOLTIP_SPLIT_CELLS="Dokonuje podzia³u komórki"
+TOOLBAR_TOOLTIP_MERGEABOVE="L±czy z wierszem powy¿ej"
+TOOLBAR_TOOLTIP_MERGEBELOW="L±czy z wierszem poni¿ej"
+TOOLBAR_TOOLTIP_MERGELEFT="L±czy z kolumn± z lewej"
+TOOLBAR_TOOLTIP_MERGERIGHT="L±czy z kolumn± z prawej"
+
+FIELD_Application_MailMerge="Poczta elektroniczna"
+MENU_LABEL_TOOLS_MAILMERGE="Poczta elektroniczna"
+MENU_STATUSLINE_TOOLS_MAILMERGE="Poczta elektroniczna"
+
 />
 
 </AbiStrings>
