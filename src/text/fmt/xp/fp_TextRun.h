@@ -214,6 +214,7 @@ private:
 	static UT_sint32 *      s_pWidthBuff;
 
 	UTShapingResult         m_eShapingRequired;
+	bool                    m_bKeepWidths;
 };
 
 #endif /* FP_TEXTRUN_H */

@@ -75,7 +75,8 @@ fp_TextRun::fp_TextRun(fl_BlockLayout* pBL,
 	m_pLanguage(NULL),
 	m_bIsOverhanging(false),
 	m_bIsJustified(false),
-	m_eShapingRequired(SR_Unknown)
+	m_eShapingRequired(SR_Unknown),
+	m_bKeepWidths(false)
 {
 	_setField(NULL);
 
@@ -156,7 +157,7 @@ void fp_TextRun::_lookupProperties(const PP_AttrProp * pSpanAP,
 	{
 		bDontClear = true;
 	}
-
+	xxx_UT_DEBUGMSG(("Lookup props in text run \n"));
 	fd_Field * fd = NULL;
 	static_cast<fl_Layout *>(getBlock())->getField(getBlockOffset(),fd);
 	_setField(fd);
@@ -256,10 +257,17 @@ void fp_TextRun::_lookupProperties(const PP_AttrProp * pSpanAP,
 
 		// change of font can mean different glyph coverage; we have
 		// to recalculate the entire drawbuffer
-		markDrawBufferDirty();
-		markWidthDirty();
-		m_eShapingRequired = SR_Unknown;
-		bChanged = true;
+//
+// If we zoom the font changes but the charwidths don't. This preserves
+// full justfication after a zoom.
+//
+		if(!m_bKeepWidths)
+		{
+			markDrawBufferDirty();
+			markWidthDirty();
+			m_eShapingRequired = SR_Unknown;
+			bChanged = true;
+		}
 	}
 
 	pG->setFont(_getFont());
@@ -1182,7 +1190,7 @@ void fp_TextRun::_measureCharWidths()
 {
 	UT_GrowBuf * pgbCharWidths = getBlock()->getCharWidths()->getCharWidths();
 	UT_GrowBufElement* pCharWidths = pgbCharWidths->getPointer(0);
-	
+	UT_DEBUGMSG(("_measureCharWidths \n"));
 	_setWidth(0);
 	if(pCharWidths == NULL)
 	{
@@ -1411,8 +1419,22 @@ void fp_TextRun::_draw(dg_DrawArgs* pDA)
 	GR_Graphics * pG = pDA->pG;
 	
 	GR_Painter painter(pG);
-
-	_refreshDrawBuffer();
+//
+// If a refresh was performed, we lose our full justification. If this is done
+// and we have full justification we abort, reformat the paragraph and redraw.
+//
+	bool bRefresh = _refreshDrawBuffer();
+	if(bRefresh && getBlock()->getAlignment()->getType() == FB_ALIGNMENT_JUSTIFY
+)
+	{
+		UT_DEBUGMSG(("_refreshDrawBuffer called on Justified run - reformat and abort \n"));
+		getBlock()->setNeedsReformat(0);
+		getBlock()->setNeedsRedraw();
+		getBlock()->markAllRunsDirty();
+		getLine()->setNeedsRedraw();
+		markAsDirty();
+		return;
+	}
 	xxx_UT_DEBUGMSG(("fp_TextRun::_draw (0x%x): m_iVisDirection %d, _getDirection() %d\n",
 					 this, m_iVisDirection, _getDirection()));
 
@@ -1462,11 +1484,14 @@ void fp_TextRun::_draw(dg_DrawArgs* pDA)
 		clrNormalBackground -= color_offset;
 		clrSelBackground -= color_offset;
 	}
-
-
+//
+// This makes sure the widths don't change underneath us after a zoom.
+//
+	m_bKeepWidths = true;
 	Fill(pG,pDA->xoff,yTopOfSel + getAscent() - getLine()->getAscent(),
 					getWidth(),
 					getLine()->getHeight());
+	m_bKeepWidths = false;
 	// calculate selection rectangles ...
 	UT_uint32 iBase = getBlock()->getPosition();
 	UT_uint32 iRunBase = iBase + getBlockOffset();
@@ -2229,7 +2254,7 @@ void fp_TextRun::resetJustification()
 {
 	UT_sint32 iAccumDiff = 0;
 	UT_sint32 iWidth = getWidth();
-	xxx_UT_DEBUGMSG(("reset Justification of run %x \n"));
+	UT_DEBUGMSG(("reset Justification of run %x \n"));
 	if(m_bIsJustified)
 	{
 		UT_sint32 iSpaceWidthBefore = _getSpaceWidthBeforeJustification();
@@ -3122,7 +3147,9 @@ void fp_TextRun::_calculateCharAdvances(UT_uint32 iLen, UT_sint32 & xoff_draw)
 			}
 			else
 				s_pCharAdvance[n] = s_pWidthBuff[n];
+			xxx_UT_DEBUGMSG(("%d ",s_pCharAdvance[n],s_pWidthBuff[n] ));
 		}
+		xxx_UT_DEBUGMSG(("ENDRUN \n"));
 
 	}
 }

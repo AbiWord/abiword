@@ -2038,7 +2038,7 @@ void fl_BlockLayout::redrawUpdate()
 	bool bFirstLineOn = false;
 	bool bLineOff = false;
 	
-
+	xxx_UT_DEBUGMSG(("redrawUpdate Called \n"));
 	// TODO -- is this really needed ??
 	// we should not need to lookup properties on redraw,
 	// _lookupProperties() gets explicitely called by our listeners
@@ -2046,9 +2046,28 @@ void fl_BlockLayout::redrawUpdate()
 	// please do not uncomment this as a quick bugfix to some other
 	// problem, and if you do uncomment it, please explain why - Tomas
 	// _lookupProperties();
-	
 	if(isHdrFtr())
 		return;
+
+	if(needsReformat())
+	{
+		UT_DEBUGMSG(("redrawUpdate Called doing format \n"));
+		format();
+		if(m_pAlignment && m_pAlignment->getType() == FB_ALIGNMENT_JUSTIFY)
+		{
+			markAllRunsDirty();
+			fp_Line* pLine = static_cast<fp_Line *>(getFirstContainer());
+			while (pLine)
+			{
+				UT_DEBUGMSG(("Drawing line in redraw update after format %x \n",pLine));
+				pLine->draw(m_pFirstRun->getGraphics());
+				pLine = static_cast<fp_Line *>(pLine->getNext());
+			}
+			m_bNeedsRedraw = false;
+			return;
+		}
+	}
+			
 	fp_Line* pLine = static_cast<fp_Line *>(getFirstContainer());
 	while (pLine)
 	{
