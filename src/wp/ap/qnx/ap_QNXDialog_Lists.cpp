@@ -358,8 +358,6 @@ void  AP_QNXDialog_Lists::startvChanged(void)
 
 void AP_QNXDialog_Lists::updateDialog(void)
 {
-  // Update the dialog
-  //
 	_populateWindowData();
 	setAllSensitivity();
 }
@@ -457,15 +455,162 @@ void AP_QNXDialog_Lists::setAllSensitivity(void)
 
 PtWidget_t * AP_QNXDialog_Lists::_constructWindow (void)
 {
-  // Code to construct the dialog window
-  //
+	const XAP_StringSet * pSS = m_pApp->getStringSet();
+
+	PtArg_t args[10];
+	int n;
+
+	n = 0;
+	ConstructWindowName();
+	PtSetArg(&args[n++], Pt_ARG_WINDOW_TITLE, m_WindowName, 0);
+	PtSetArg(&args[n++], Pt_ARG_WINDOW_RENDER_FLAGS, 0, ABI_MODAL_WINDOW_RENDER_FLAGS);
+	PtSetArg(&args[n++], Pt_ARG_WINDOW_MANAGED_FLAGS, 0, ABI_MODAL_WINDOW_MANAGE_FLAGS);
+	m_mainWindow = PtCreateWidget(PtWindow, NULL, n, args);
+
+
+	/* Everything goes into a vertical group */
+	PtSetArg(&args[n++], Pt_ARG_GROUP_ORIENTATION, Pt_GROUP_VERTICAL, 0);
+	PtSetArg(&args[n++], Pt_ARG_MARGIN_WIDTH, ABI_MODAL_MARGIN_SIZE, 0);
+	PtSetArg(&args[n++], Pt_ARG_MARGIN_HEIGHT, ABI_MODAL_MARGIN_SIZE, 0);
+	PtSetArg(&args[n++], Pt_ARG_GROUP_SPACING_Y, 5, 0);
+	PtSetArg(&args[n++], Pt_ARG_GROUP_FLAGS, 
+			Pt_GROUP_EQUAL_SIZE_HORIZONTAL, 
+			Pt_GROUP_EQUAL_SIZE_HORIZONTAL);
+	PtWidget_t *vgroup = PtCreateWidget(PtGroup, m_mainWindow, n, args);
+
+	/* Create the labels across the top */
+	n = 0;
+	PtWidget_t *hlabelgroup = PtCreateWidget(PtGroup, vgroup, n, args);
+
+	n = 0;
+	PtSetArg(&args[n++], Pt_ARG_TEXT_STRING, pSS->getValue(AP_STRING_ID_DLG_Lists_Current_List_Type), 0);
+	m_wCur_listtype = PtCreateWidget(PtLabel, hlabelgroup, n, args);
+
+	n = 0;
+	PtSetArg(&args[n++], Pt_ARG_TEXT_STRING, "xxxxxxxxxxxxx", 0);
+	m_wCur_listtypev = PtCreateWidget(PtLabel, hlabelgroup, n, args);
+
+	n = 0;
+	PtSetArg(&args[n++], Pt_ARG_TEXT_STRING, pSS->getValue(AP_STRING_ID_DLG_Lists_Current_List_Label), 0);
+	m_wCur_listlabel = PtCreateWidget(PtLabel, hlabelgroup, n, args);
+
+	n = 0;
+	PtSetArg(&args[n++], Pt_ARG_TEXT_STRING, "xxxxxxxxxxxxx", 0);
+	m_wCur_listlabelv = PtCreateWidget(PtLabel, hlabelgroup, n, args);
+
+	/* Create the radio groupings for the actions  ... */
+	n = 0;
+	PtSetArg(&args[n++], Pt_ARG_GROUP_FLAGS, Pt_GROUP_EXCLUSIVE, Pt_GROUP_EXCLUSIVE);
+	PtWidget_t *hradiogroup = PtCreateWidget(PtGroup, vgroup, n, args);
+
+	n = 0;
+	PtSetArg(&args[n++], Pt_ARG_TEXT_STRING, pSS->getValue(AP_STRING_ID_DLG_Lists_Cur_Change_Start), 0);
+	m_wCheckstartlist = PtCreateWidget(PtToggleButton, hradiogroup, n, args);
+
+	n = 0;
+	PtSetArg(&args[n++], Pt_ARG_TEXT_STRING, pSS->getValue(AP_STRING_ID_DLG_Lists_Start_New_List), 0);
+	m_wCur_changestart_button = PtCreateWidget(PtToggleButton, hradiogroup, n, args);
+
+	/* Create the actual button actions here */
+	n = 0;
+	PtWidget_t *hactiongroup = PtCreateWidget(PtGroup, vgroup, n, args);
+
+	n = 0;
+	PtSetArg(&args[n++], Pt_ARG_TEXT_STRING, "List Type:", 0);
+	PtWidget_t *dropdownlabel = PtCreateWidget(PtLabel, hactiongroup, n, args);
+
+	n = 0;
+	PtSetArg(&args[n++], Pt_ARG_WIDTH,  2 * ABI_DEFAULT_BUTTON_WIDTH, 0);
+	m_wOption_types_menu = PtCreateWidget(PtComboBox, hactiongroup, n, args);
+	const char *item;
+	item = (const char *)pSS->getValue(AP_STRING_ID_DLG_Lists_Numbered_List);
+	PtListAddItems(m_wOption_types_menu, &item, 1, 0);
+	item = (const char *)pSS->getValue(AP_STRING_ID_DLG_Lists_Lower_Case_List);
+	PtListAddItems(m_wOption_types_menu, &item, 1, 0);
+	item = (const char *)pSS->getValue(AP_STRING_ID_DLG_Lists_Upper_Case_List);
+	PtListAddItems(m_wOption_types_menu, &item, 1, 0);
+	item = (const char *)pSS->getValue(AP_STRING_ID_DLG_Lists_Bullet_List);
+	PtListAddItems(m_wOption_types_menu, &item, 1, 0);
+
+	n = 0;
+	PtSetArg(&args[n++], Pt_ARG_TEXT_STRING, "Start Value:", 0);
+	m_wCur_startingvaluel = PtCreateWidget(PtLabel, hactiongroup, n, args);
+
+	n = 0;
+	PtSetArg(&args[n++], Pt_ARG_WIDTH,  2 * ABI_DEFAULT_BUTTON_WIDTH, 0);
+	m_wCur_startingvaluev = PtCreateWidget(PtText, hactiongroup, n, args);
+
+
+	/* Buttons for the bottom */
+	n = 0;
+	PtSetArg(&args[n++], Pt_ARG_GROUP_SPACING_X, 5, 0);
+	PtWidget_t *hbutgroup = PtCreateWidget(PtGroup, vgroup, n, args);
+
+	n = 0;
+	PtSetArg(&args[n++], Pt_ARG_WIDTH,  ABI_DEFAULT_BUTTON_WIDTH, 0);
+	PtSetArg(&args[n++], Pt_ARG_TEXT_STRING, "Stop", 0);
+	PtWidget_t *stop = PtCreateWidget(PtButton, hbutgroup, n, args);
+
+	n = 0;
+	PtSetArg(&args[n++], Pt_ARG_WIDTH,  ABI_DEFAULT_BUTTON_WIDTH, 0);
+	PtSetArg(&args[n++], Pt_ARG_TEXT_STRING, "Resume", 0);
+	PtWidget_t *resume = PtCreateWidget(PtButton, hbutgroup, n, args);
+
+	n = 0;
+	PtSetArg(&args[n++], Pt_ARG_WIDTH,  ABI_DEFAULT_BUTTON_WIDTH, 0);
+	PtSetArg(&args[n++], Pt_ARG_TEXT_STRING, pSS->getValue (XAP_STRING_ID_DLG_Apply), 0);
+	PtWidget_t *m_wApply = PtCreateWidget(PtButton, hbutgroup, n, args);
+	PtAddCallback(m_wApply, Pt_CB_ACTIVATE, s_applyClicked, this);
+
+	n = 0;
+	PtSetArg(&args[n++], Pt_ARG_WIDTH,  ABI_DEFAULT_BUTTON_WIDTH, 0);
+	PtSetArg(&args[n++], Pt_ARG_TEXT_STRING, pSS->getValue (XAP_STRING_ID_DLG_Close), 0);
+	PtWidget_t *m_wClose = PtCreateWidget(PtButton, hbutgroup, n, args);
+	PtAddCallback(m_wClose, Pt_CB_ACTIVATE, s_closeClicked, this);
+
+	return m_mainWindow;
 }
 
 
 void AP_QNXDialog_Lists::_populateWindowData (void) 
 {
-  // Code to fill in the labels from the current list context in the current 
-  // view
+	PopulateDialogData();
+
+	const XAP_StringSet * pSS = m_pApp->getStringSet();
+
+	if(m_isListAtPoint == UT_TRUE) {
+		int *flags = NULL;
+
+		PtSetResource(m_wCur_listlabelv, Pt_ARG_TEXT_STRING, m_curListLabel, 0);
+		PtSetResource(m_wCur_listtypev, Pt_ARG_TEXT_STRING, m_curListType, 0);
+
+		PtGetResource(m_wCur_changestart_button, Pt_ARG_FLAGS, &flags, 0);
+		if (!flags && *flags & Pt_SET) {
+			char tmp[20];
+			int  pos;
+		
+			sprintf(tmp, "%d", m_curStartValue);
+			PtSetResource(m_wCur_startingvaluev, Pt_ARG_TEXT_STRING, tmp, 0);
+			
+			if(strstr(m_curListType, 
+					  pSS->getValue(AP_STRING_ID_DLG_Lists_Numbered_List))!=NULL)
+					pos = 1;
+			else if(strstr(m_curListType, 
+					pSS->getValue(AP_STRING_ID_DLG_Lists_Lower_Case_List))!=NULL)
+					pos = 2;
+			else if(strstr(m_curListType, 
+					pSS->getValue(AP_STRING_ID_DLG_Lists_Upper_Case_List))!=NULL)
+					pos = 3;
+			else if(strstr(m_curListType, 
+					pSS->getValue(AP_STRING_ID_DLG_Lists_Bullet_List))!=NULL)
+					pos = 4;
+			PtListGotoPos(m_wOption_types_menu, pos);
+		}
+	}
+	else {
+		PtSetResource(m_wCur_listlabelv, Pt_ARG_TEXT_STRING, "-----", 0);
+		PtSetResource(m_wCur_listtypev, Pt_ARG_TEXT_STRING, "-----", 0);
+	}
 }
 
 
