@@ -112,6 +112,10 @@ public:
 	void				removeFootnoteContainer(fp_FootnoteContainer * pFC);
 	UT_sint32           findFootnoteContainer(fp_FootnoteContainer * pFC);
 	void                clearScreenFootnotes(void);
+	UT_sint32           getFootnoteHeight(void);
+#if !defined(WITH_PANGO) && defined(USE_LAYOUT_UNITS)
+	UT_sint32           getFootnoteHeightInLayoutUnits(void);
+#endif
 #ifdef FMT_TEST
 	void				__dump(FILE * fp) const;
 #endif

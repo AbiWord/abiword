@@ -24,6 +24,7 @@
 #include "ut_types.h"	// for FREEP
 
 #include "fl_DocLayout.h"
+#include "fl_FootnoteLayout.h"
 #include "fl_BlockLayout.h"
 #include "fb_Alignment.h"
 #include "fp_Column.h"
@@ -2351,6 +2352,10 @@ bool fp_Line::getFootnoteContainers(UT_Vector * pvecFoots)
 	fp_Run * pRun = NULL;
 	UT_uint32 i =0;
 	bool bFound = false;
+	fp_FootnoteContainer * pFC = NULL;
+	PT_DocPosition posStart = getBlock()->getPosition();
+	PT_DocPosition posEnd = posStart + getLastRun()->getBlockOffset() + getLastRun()->getLength();
+	posStart += getFirstRun()->getBlockOffset();
 	for(i=0; (i< (UT_uint32) countRuns()) && !bFound; i++)
 	{
 		pRun = getRunFromIndex(i);
@@ -2359,8 +2364,17 @@ bool fp_Line::getFootnoteContainers(UT_Vector * pvecFoots)
 			fp_FieldRun * pFRun = (fp_FieldRun *) pRun;
 			if(pFRun->getFieldType() == FPFIELD_footnote_ref)
 			{
-				bFound = true;
-				pvecFoots->addItem((void *) pFRun);
+				fp_FieldFootnoteRefRun * pFNRun = (fp_FieldFootnoteRefRun *) pFRun;
+				fl_FootnoteLayout * pFL = getBlock()->getDocLayout()->findFootnoteLayout(pFNRun->getPID());
+				
+				UT_ASSERT(pFL);
+				UT_DEBUGMSG(("Pos of footnote %d start of run %d end of run %d \n",pFL->getDocPosition(),posStart,posEnd));
+				if(pFL && pFL->getDocPosition()>= posStart && pFL->getDocPosition() <= posEnd)
+				{
+					pFC = (fp_FootnoteContainer *) pFL->getFirstContainer();
+					bFound = true;
+					pvecFoots->addItem((void *) pFC);
+				}
 			}
 		}
 	}

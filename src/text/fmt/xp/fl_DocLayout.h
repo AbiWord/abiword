@@ -154,6 +154,7 @@ public:
 	void                removeFootnote(fl_FootnoteLayout *);
 	fl_FootnoteLayout * getNthFootnote(UT_sint32 i);
 	UT_sint32           getFootnoteVal(UT_uint32 footpid);
+	fl_FootnoteLayout * findFootnoteLayout(UT_uint32 footpid);
 
 	bool		getAutoSpellCheck(void) const { return (hasBackgroundCheckReason(bgcrSpelling)); }
 	bool		getSpellCheckCaps(void) const { return m_bSpellCheckCaps; }

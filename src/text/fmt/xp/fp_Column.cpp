@@ -1126,6 +1126,27 @@ void fp_Column::layout(void)
 	}
 }
 
+UT_sint32 fp_Column::getMaxHeight(void) const
+{
+	fp_VerticalContainer * pVC = (fp_VerticalContainer *) this;
+	if(!getPage())
+	{
+		return pVC->getMaxHeight();
+	}
+	return getPage()->getAvailableHeight();
+}
+
+#if !defined(WITH_PANGO) && defined(USE_LAYOUT_UNITS)
+UT_sint32 fp_Column::getMaxHeightInLayoutUnits(void) const
+{
+	fp_VerticalContainer * pVC = (fp_VerticalContainer *) this;
+	if(!getPage())
+	{
+		return pVC->getMaxHeightInLayoutUnits();
+	}
+	return getPage()->getAvailableHeightInLayoutUnits();
+}
+#endif
 fl_DocSectionLayout* fp_Column::getDocSectionLayout(void) const
 {
 	UT_ASSERT(getSectionLayout()->getType() == FL_SECTION_DOC ||

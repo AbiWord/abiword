@@ -7634,7 +7634,7 @@ bool FV_View::insertFootnote()
 //
 // Lets have a peek at the doc structure, shall we?
 //
-	m_pDoc->miniDump(pBL->getStruxDocHandle(),8);
+//	m_pDoc->miniDump(pBL->getStruxDocHandle(),8);
 	return true;
 }
 

@@ -108,6 +108,7 @@ UT_sint32 fb_ColumnBreaker::breakSection(fl_DocSectionLayout * pSL)
 		UT_sint32 iMaxSecCol = pSL->getMaxSectionColumnHeight();
  		UT_sint32 iMaxColHeight = pCurColumn->getMaxHeight();
 #endif
+		UT_sint32 iFootnoteHeight = 0;
 		bool bEquivColumnBreak = false;
 		xxx_UT_DEBUGMSG(("SEVIOR: iMaxSecCol = %d iMaxColHeight = %d \n",iMaxSecCol,iMaxColHeight));
 		if((iMaxSecCol > 0) && (iMaxSecCol < iMaxColHeight))
@@ -118,54 +119,7 @@ UT_sint32 fb_ColumnBreaker::breakSection(fl_DocSectionLayout * pSL)
 		UT_sint32 iWorkingColHeight = 0;
 
 		fp_Container* pCurContainer = pFirstContainerToKeep;
-		if (pCurContainer && 
-			pCurContainer->getContainerType() == FP_CONTAINER_LINE)
-		{
-			fp_Line* pCurLine = (fp_Line *)pCurContainer;
-			bHasFootnote |= pCurLine->containsFootnoteRef();
-			// Excellent.  If we have a footnote, we can start deducting
-			// from the working height before we lay out the text.
-			if (pCurLine->containsFootnoteRef())
-			{
-				// Unless bFirstColumn is false.  In which case we assert
-				// NOT_YET_IMPLEMENTED for now!  Hurrah!
-				if (!bFirstColumn)
-					UT_ASSERT(UT_NOT_IMPLEMENTED);
-
-				// Ok.  Now, deduct the proper amount from iMaxColHeight.
-				// We need to get the footnote section.
-
-				// I guess that what we have to do is to get the
-				// parent BlockLayout of pCurLine (pFirstLayout, I hope), and traverse its
-				// getNext() to get, hopefully, a FootnoteLayout.  Then
-				// we get its height.
-
-				UT_ASSERT(pFirstLayout->getNext() && 
-						  pFirstLayout->getNext()->getType() == PTX_SectionFootnote);
-
-				// we might have a number of footnote layouts, if we have a number of
-				// footnotes in this paragraph.
-				fl_FootnoteLayout * pFootL = static_cast<fl_FootnoteLayout *>(pFirstLayout->getNext());
-
-				// we want the height of the contained block, eh.
-				fl_BlockLayout * pBL = static_cast<fl_BlockLayout *> (pFootL->getFirstLayout());
-
-				// now, check out its height and add that to stuff.
-				fp_ContainerObject * pFC = pFootL->getFirstContainer();
-				int iFootnoteHeight = 0;
-				while (pFC && pFC->getContainerType()==FP_CONTAINER_FOOTNOTE)
-				{
-#if !defined(WITH_PANGO) && defined(USE_LAYOUT_UNITS)
-					iFootnoteHeight += pFC->getHeightInLayoutUnits();
-#else
-					iFootnoteHeight += pFC->getHeight();
-#endif
-					pFC = pFC->getNext();
-				}
-// 				UT_DEBUGMSG(("got footnote section height %d\n", iFootnoteHeight));
-				iWorkingColHeight += iFootnoteHeight;
-			}
-		}
+		
 
 		// Special handling of columns that should be skipped due to
 		// page breaks. If the previous line contains a page break,
@@ -214,6 +168,38 @@ UT_sint32 fb_ColumnBreaker::breakSection(fl_DocSectionLayout * pSL)
 			UT_sint32 iContainerMarginAfter = pCurContainer->getMarginAfter();
 #endif
 			iTotalContainerSpace = iContainerHeight + iContainerMarginAfter;
+			if (pCurContainer && 
+				pCurContainer->getContainerType() == FP_CONTAINER_LINE)
+			{
+				fp_Line* pCurLine = (fp_Line *)pCurContainer;
+				// Excellent.  If we have a footnote, we can start deducting
+				// from the working height before we lay out the text.
+				if (pCurLine->containsFootnoteReference())
+				{
+					// Ok.  Now, deduct the proper amount from iMaxColHeight.
+
+					// OK get a vector of the footnote containers in this line.
+					UT_Vector vecFootnotes;
+					pCurLine->getFootnoteContainers(&vecFootnotes);
+					fp_Page *pCurPage = pCurLine->getPage();
+					// Now loop through all these and add them to the height.
+					UT_sint32 i =0;
+					for(i=0; i< (UT_sint32) vecFootnotes.getItemCount();i++)
+					{
+						fp_FootnoteContainer * pFC = (fp_FootnoteContainer *) vecFootnotes.getNthItem(i);
+						if(pFC->getPage() == NULL || pFC->getPage() != pCurPage)
+						{
+#if !defined(WITH_PANGO) && defined(USE_LAYOUT_UNITS)
+							iFootnoteHeight += pFC->getHeightInLayoutUnits();
+#else
+							iFootnoteHeight += pFC->getHeight();
+#endif
+						}				
+					}	
+					UT_DEBUGMSG(("got footnote section height %d\n", iFootnoteHeight));
+					iWorkingColHeight += iFootnoteHeight;
+				}
+			}
 
 			if ((iWorkingColHeight + iTotalContainerSpace) > iMaxColHeight)
 			{
@@ -468,35 +454,6 @@ UT_sint32 fb_ColumnBreaker::breakSection(fl_DocSectionLayout * pSL)
 				}
 			}
 			pCurContainer = (fp_Container *) pCurContainer->getNextContainerInSection();
-			if (pCurContainer && pCurContainer->getContainerType() == FP_CONTAINER_LINE)
-			{
-				fp_Line* pCurLine = (fp_Line *)pCurContainer;
-				bHasFootnote |= pCurLine->containsFootnoteRef();
-				// Excellent.  If we have a footnote, we can start deducting
-				// from the working height before we lay out the text.
-				if (pCurLine->containsFootnoteRef())
-				{
-					// Unless bFirstColumn is false.  In which case we assert
-					// NOT_YET_IMPLEMENTED for now!  Hurrah!
-					// (This corresponds to multi-column pages, esp. footnotes on
-					// non-first columns).
-					if (!bFirstColumn)
-						UT_ASSERT(UT_NOT_IMPLEMENTED);
-
-					// Ok.  Now, deduct the proper amount from iMaxColHeight.
-					// We need to get the footnote container.  To do that,
-					// we'd better track down the layout.  
-
-					// We have a problem, now, because the container
-					// will actually contain a bunch of otherwise nonadjacent
-					// layouts.
-					
-					//fp_Page* pCurPage = pCurColumn->getPage();
-// 					fp_FootnoteContainer *pFC = 
-// 						static_cast<fp_FootnoteContainer*>(
-// 						   pSL->getFootnoteContainer(pCurContainer, pCurPage));
-				}
-			}
 		}
 //
 // End of inner while loop here. After this we've found LastContainerToKeep
@@ -515,6 +472,7 @@ UT_sint32 fb_ColumnBreaker::breakSection(fl_DocSectionLayout * pSL)
 		UT_sint32 conPos = 0;
 		while (pCurContainer)
 		{
+			xxx_UT_DEBUGMSG(("Container %x is in Column %x Type %d \n",pCurContainer,pCurColumn,pCurContainer->getContainerType()));
 			if(pCurContainer->getContainerType() == FP_CONTAINER_FOOTNOTE)
 			{
 //
@@ -532,7 +490,45 @@ UT_sint32 fb_ColumnBreaker::breakSection(fl_DocSectionLayout * pSL)
 				}
 				pCurColumn->addContainer(pCurContainer);
 			}
-		
+//
+// Now make sure footnotes are on the same page as the reference.
+//
+			if(pCurContainer->getContainerType() == FP_CONTAINER_LINE)
+			{
+				fp_Line * pCurLine = (fp_Line *) pCurContainer;
+				xxx_UT_DEBUGMSG(("About to call containerFootnoteReferenced \n"));
+				if(pCurLine->containsFootnoteReference())
+				{
+					// OK get a vector of the footnote containers in this line.
+					UT_Vector vecFootnotes;
+					pCurLine->getFootnoteContainers(&vecFootnotes);
+				
+					// Now loop through all these and check they're on this
+					// page. If not add them.
+					fp_Page * pCurPage = pCurColumn->getPage();
+					UT_ASSERT(pCurPage);
+					UT_sint32 i =0;
+					for(i=0; i< (UT_sint32) vecFootnotes.getItemCount();i++)
+					{
+						fp_FootnoteContainer * pFC = (fp_FootnoteContainer *) vecFootnotes.getNthItem(i);
+						fp_Page * myPage = pFC->getPage();
+						xxx_UT_DEBUGMSG(("Footnote %x is on Page %x \n",pFC,myPage));
+						if(myPage != pCurPage)
+						{
+							if(myPage == NULL)
+							{
+								pCurPage->insertFootnoteContainer(pFC);
+							}
+							else
+							{
+								myPage->removeFootnoteContainer(pFC);
+								pCurPage->insertFootnoteContainer(pFC);
+							}
+						}
+					}
+				}
+			}
+
 //
 // Code to fix order in the column
 //
@@ -555,7 +551,7 @@ UT_sint32 fb_ColumnBreaker::breakSection(fl_DocSectionLayout * pSL)
 					UT_DEBUGMSG((" CurContainer %x type %d \n",pCurContainer,pCurContainer->getContainerType()));
 					UT_DEBUGMSG((" FirstContainer to keep %x Last container to keep %x \n",pTab,pLastContainerToKeep));
 					UT_DEBUGMSG(("Try to recover.... \n"));
-					UT_ASSERT(UT_SHOULD_NOT_HAPPEN);
+//					UT_ASSERT(UT_SHOULD_NOT_HAPPEN);
 					pLastContainerToKeep = NULL;
 					break;
 				}

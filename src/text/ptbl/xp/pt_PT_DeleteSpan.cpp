@@ -316,7 +316,7 @@ bool pt_PieceTable::_deleteSpanWithNotify(PT_DocPosition dpos,
 
 	if (length == 0)					// TODO decide if this is an error.
 	{
-		UT_DEBUGMSG(("_deleteSpanWithNotify: length==0\n"));
+		xxx_UT_DEBUGMSG(("_deleteSpanWithNotify: length==0\n"));
 		SETP(ppfEnd, pft->getNext());
 		SETP(pfragOffsetEnd, 0);
 		return true;
@@ -496,9 +496,9 @@ bool pt_PieceTable::_tweakDeleteSpanOnce(PT_DocPosition & dpos1,
 //
 // Get the actual block strux container for the endnote. 
 //
- 		UT_DEBUGMSG(("_deleteSpan 1: orig pfsContainer %x type %d \n",pfsContainer,pfsContainer->getStruxType()));
+ 		xxx_UT_DEBUGMSG(("_deleteSpan 1: orig pfsContainer %x type %d \n",pfsContainer,pfsContainer->getStruxType()));
  		_getStruxFromFragSkip(pfsContainer,&pfsContainer);
- 		UT_DEBUGMSG(("_deleteSpan 2: After skip  pfsContainer %x type %d \n",pfsContainer,pfsContainer->getStruxType()));
+ 		xxx_UT_DEBUGMSG(("_deleteSpan 2: After skip  pfsContainer %x type %d \n",pfsContainer,pfsContainer->getStruxType()));
  		break;
 	}
  	case PTX_EndFootnote:	
@@ -506,9 +506,9 @@ bool pt_PieceTable::_tweakDeleteSpanOnce(PT_DocPosition & dpos1,
 //
 // Get the actual block strux container for the endnote. 
 //
- 		UT_DEBUGMSG(("_deleteSpan 1: orig pfsContainer %x type %d \n",pfsContainer,pfsContainer->getStruxType()));
+ 		xxx_UT_DEBUGMSG(("_deleteSpan 1: orig pfsContainer %x type %d \n",pfsContainer,pfsContainer->getStruxType()));
  		_getStruxFromFragSkip(pfsContainer,&pfsContainer);
- 		UT_DEBUGMSG(("_deleteSpan 2: After skip  pfsContainer %x type %d \n",pfsContainer,pfsContainer->getStruxType()));
+ 		xxx_UT_DEBUGMSG(("_deleteSpan 2: After skip  pfsContainer %x type %d \n",pfsContainer,pfsContainer->getStruxType()));
  		break;
 	}
 	case PTX_Block:
@@ -673,9 +673,9 @@ bool pt_PieceTable::_deleteFormatting(PT_DocPosition dpos1,
 			bool bFoundStrux = _getStruxFromPosition(dposTemp,&pfsContainerTemp);
 			if(isEndFootnote(pfsContainerTemp))
 			{
-				UT_DEBUGMSG(("_deleteSpan 5: orig pfsContainer %x type %d \n",pfsContainerTemp,pfsContainerTemp->getStruxType()));
+				xxx_UT_DEBUGMSG(("_deleteSpan 5: orig pfsContainer %x type %d \n",pfsContainerTemp,pfsContainerTemp->getStruxType()));
 				_getStruxFromFragSkip(pfsContainerTemp,&pfsContainerTemp);
-				UT_DEBUGMSG(("_deleteSpan 6: After skip  pfsContainer %x type %d \n",pfsContainerTemp,pfsContainerTemp->getStruxType()));
+				xxx_UT_DEBUGMSG(("_deleteSpan 6: After skip  pfsContainer %x type %d \n",pfsContainerTemp,pfsContainerTemp->getStruxType()));
 			}
 			UT_ASSERT(bFoundStrux);
 			bool bResult = _deleteFmtMarkWithNotify(dposTemp,static_cast<pf_Frag_FmtMark *>(pfTemp),
@@ -737,9 +737,9 @@ bool pt_PieceTable::_deleteComplexSpan(PT_DocPosition dpos1,
 	UT_ASSERT(bFoundStrux);
 	if(isEndFootnote(pfsContainer))
 	{
-		UT_DEBUGMSG(("_deleteSpan 3: orig pfsContainer %x type %d \n",pfsContainer,pfsContainer->getStruxType()));
+		xxx_UT_DEBUGMSG(("_deleteSpan 3: orig pfsContainer %x type %d \n",pfsContainer,pfsContainer->getStruxType()));
 		_getStruxFromFragSkip(pfsContainer,&pfsContainer);
-		UT_DEBUGMSG(("_deleteSpan 4: After skip  pfsContainer %x type %d \n",pfsContainer,pfsContainer->getStruxType()));
+		xxx_UT_DEBUGMSG(("_deleteSpan 4: After skip  pfsContainer %x type %d \n",pfsContainer,pfsContainer->getStruxType()));
 	}
 	// loop to delete the amount requested, one text fragment at a time.
 	// if we encounter any non-text fragments along the way, we delete
@@ -847,7 +847,7 @@ bool pt_PieceTable::_deleteComplexSpan(PT_DocPosition dpos1,
 				iTable--;
 				if(iTable==0)
 				{
-					UT_DEBUGMSG(("Doing Table delete immediately \n"));
+					xxx_UT_DEBUGMSG(("Doing Table delete immediately \n"));
 					iTable = 1;
 //
 // First delete the EndTable Strux
@@ -892,7 +892,7 @@ bool pt_PieceTable::_deleteComplexSpan(PT_DocPosition dpos1,
 //
 // First delete the EndFootnote Strux
 //
-				UT_DEBUGMSG(("Doing Footnote delete immediately \n"));
+				xxx_UT_DEBUGMSG(("Doing Footnote delete immediately \n"));
 				stDelayStruxDelete->pop((void **) &pfs);
 				PT_DocPosition myPos = pfs->getPos();
 				_deleteFormatting(myPos - pfs->getLength(), myPos);

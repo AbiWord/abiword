@@ -115,13 +115,19 @@ UT_sint32 fp_Page::getColumnGap(void) const
 }
 
 /*!
- * Returns the page height minus the top and bottom margins in layout units
+ * Returns the page height minus the top and bottom margins minus the footnotes in layout units
  */
 #if !defined(WITH_PANGO) && defined(USE_LAYOUT_UNITS)
 UT_sint32 fp_Page::getAvailableHeightInLayoutUnits(void) const
 {
 	fl_DocSectionLayout * pDSL = getNthColumnLeader(0)->getDocSectionLayout();
 	UT_sint32 avail = getHeightInLayoutUnits() - pDSL->getTopMarginInLayoutUnits() - pDSL->getBottomMarginInLayoutUnits();
+	UT_sint32 i =0;
+	for(i=0; i< (UT_sint32) countFootnoteContainers(); i++)
+	{
+		fp_FootnoteContainer * pFC = getNthFootnoteContainer(i);
+		avail -= pFC->getHeightInLayoutUnits();
+	}
 	return avail;
 }
 #endif
@@ -131,6 +137,12 @@ UT_sint32 fp_Page::getAvailableHeight(void) const
 {
 	fl_DocSectionLayout * pDSL = getNthColumnLeader(0)->getDocSectionLayout();
 	UT_sint32 avail = getHeight() - pDSL->getTopMargin() - pDSL->getBottomMargin();
+	UT_sint32 i =0;
+	for(i=0; i< (UT_sint32) countFootnoteContainers(); i++)
+	{
+		fp_FootnoteContainer * pFC = getNthFootnoteContainer(i);
+		avail -= pFC->getHeight();
+	}
 	return avail;
 }
 
@@ -901,7 +913,7 @@ void fp_Page::_reformatColumns(void)
 #else
 			UT_sint32 iYNext = pFirstNextContainer->getHeight();
 			bool bIsTable = (pFirstNextContainer->getContainerType() == FP_CONTAINER_TABLE);
-			if( !bIsTable && (iY + 3*iYNext) < (getHeight() - iBottomMargin))
+			if( !bIsTable && (iY + 3*iYNext) < (getHeight() - getFootnoteHeight() - iBottomMargin))
 #endif
 			{
 #if !defined(WITH_PANGO) && defined(USE_LAYOUT_UNITS)
@@ -923,6 +935,30 @@ void fp_Page::clearScreenFootnotes(void)
 		getNthFootnoteContainer(i)->clearScreen();
 	}
 }
+
+UT_sint32 fp_Page::getFootnoteHeight(void)
+{
+	UT_uint32 iFootnoteHeight = 0;
+	UT_uint32 i = 0;
+	for (i = 0; i < countFootnoteContainers(); i++)
+	{
+		iFootnoteHeight += getNthFootnoteContainer(i)->getHeight();
+	}
+	return iFootnoteHeight;
+}
+
+#if !defined(WITH_PANGO) && defined(USE_LAYOUT_UNITS)
+UT_sint32 fp_Page::getFootnoteHeightInLayoutUnits(void)
+{
+	UT_sint32 iFootnoteHeightLayoutUnits =0;
+	UT_uint32 i = 0;
+	for (i = 0; i < countFootnoteContainers(); i++)
+	{
+		iFootnoteHeightLayoutUnits += getNthFootnoteContainer(i)->getHeightInLayoutUnits();
+	}
+	return iFootnoteHeightLayoutUnits;
+}
+#endif
 
 void fp_Page::_reformatFootnotes(void)
 {

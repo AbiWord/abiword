@@ -260,6 +260,19 @@ public:
 	void				setPage(fp_Page* pPage) {m_pPage = pPage ;}
 	virtual fp_Page*	getPage(void) const
 		{ return m_pPage; }
+	/*!
+	  Get container's max height
+	  \return Max height
+	*/
+	UT_sint32	        getMaxHeight(void) const;
+ 	
+#if !defined(WITH_PANGO) && defined(USE_LAYOUT_UNITS)
+	/*!
+	  Get container's max height in layout units
+	  \return Max height in layout units
+	*/
+	UT_sint32	        getMaxHeightInLayoutUnits(void) const;
+#endif
 
 	void				layout(void);
 

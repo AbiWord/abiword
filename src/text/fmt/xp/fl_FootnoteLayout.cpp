@@ -60,12 +60,11 @@ fl_FootnoteLayout::fl_FootnoteLayout(FL_DocLayout* pLayout, fl_DocSectionLayout*
 	  m_bNeedsFormat(true),
 	  m_bNeedsRebuild(false),
 	  m_iFootnotePID(0),
-	  m_bHasEndFootnote(false)
+	  m_bHasEndFootnote(false),
+	  m_bIsOnPage(false)
 {
 	m_pLayout->addFootnote(this);
 	_createFootnoteContainer();
-	_insertFootnoteContainer(getFirstContainer());
-	UT_ASSERT(myContainingLayout());
 }
 
 fl_FootnoteLayout::~fl_FootnoteLayout()
@@ -205,7 +204,7 @@ fp_Container* fl_FootnoteLayout::getNewContainer(fp_Container *)
 {
 	UT_DEBUGMSG(("PLAM: creating new footnote container\n"));
 	_createFootnoteContainer();
-	_insertFootnoteContainer(getFirstContainer());
+	m_bIsOnPage = false;
 	return (fp_Container *) getLastContainer();
 }
 
@@ -264,6 +263,7 @@ void fl_FootnoteLayout::_insertFootnoteContainer(fp_Container * pNewFC)
 	// need to put onto page as well, in the appropriate place.
 	UT_ASSERT(pPage);
 	pPage->insertFootnoteContainer((fp_FootnoteContainer*)pNewFC);
+	m_bIsOnPage = true;
 }
 
 
@@ -273,7 +273,10 @@ void fl_FootnoteLayout::format(void)
 	if(getFirstContainer() == NULL)
 	{
 		getNewContainer();
-		
+	}
+	if(!m_bIsOnPage)
+	{
+		_insertFootnoteContainer(getFirstContainer());
 	}
 	fl_ContainerLayout*	pBL = getFirstLayout();
 	while (pBL)

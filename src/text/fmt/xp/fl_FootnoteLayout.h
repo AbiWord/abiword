@@ -84,6 +84,7 @@ private:
 	bool                   m_bNeedsRebuild;
 	UT_uint32              m_iFootnotePID;
 	bool                   m_bHasEndFootnote;
+	bool                   m_bIsOnPage;
 };
 
 #endif /* FOOTNOTELAYOUT_H */

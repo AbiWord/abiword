@@ -218,11 +218,17 @@ bool fl_DocListener::populateStrux(PL_StruxDocHandle sdh,
 {
 	UT_ASSERT(m_pLayout);
 
+	UT_ASSERT(pcr->getType() == PX_ChangeRecord::PXT_InsertStrux);
+	const PX_ChangeRecord_Strux * pcrx = static_cast<const PX_ChangeRecord_Strux *> (pcr);
+
 	XAP_Frame * pFrame = XAP_App::getApp()->getLastFocussedFrame();
 	if(pFrame)
 	{
-		pFrame->nullUpdate();
-		xxx_UT_DEBUGMSG(("SEVIOR: Null Update in Populate Strux \n"));
+		if(pcrx->getStruxType() == PTX_Block)
+		{
+			pFrame->nullUpdate();
+			xxx_UT_DEBUGMSG(("SEVIOR: Null Update in Populate Strux \n"));
+		}
 	}
 //
 // This piece of code detects if there is enough document to notify
@@ -248,9 +254,6 @@ bool fl_DocListener::populateStrux(PL_StruxDocHandle sdh,
 			}
 		}
 	}
-
-	UT_ASSERT(pcr->getType() == PX_ChangeRecord::PXT_InsertStrux);
-	const PX_ChangeRecord_Strux * pcrx = static_cast<const PX_ChangeRecord_Strux *> (pcr);
 
 	switch (pcrx->getStruxType())
 	{

@@ -145,7 +145,6 @@ public:
 	bool		containsForcedPageBreak(void) const;
 	bool        containsFootnoteReference(void);
 	bool        getFootnoteContainers(UT_Vector * pvecFoots);
- 
 	void        updateBackgroundColor();
 	void 		addRun(fp_Run*);
 	void		insertRunAfter(fp_Run* pRun1, fp_Run* pRun2);
@@ -227,7 +226,7 @@ public:
 	void		addDirectionUsed(FriBidiCharType dir, bool bRefreshMap = true);
 	void		removeDirectionUsed(FriBidiCharType dir, bool bRefreshMap = true);
 	void		changeDirectionUsed(FriBidiCharType oldDir, FriBidiCharType newDir, bool bRefreshMap = true);
-	bool		containsFootnoteRef() { return m_bContainsFootnoteRef; }
+
 
 #ifdef FMT_TEST
 	void		__dump(FILE * fp) const;

@@ -308,16 +308,13 @@ void FL_DocLayout::removeFootnote(fl_FootnoteLayout * pFL)
 }
 
 /*!
- * This returns the position of the footnote in the document. This is useful
- * for calculating the footnote's value and positioning it in a footnote 
- * section
+ * This method returns the footnote layout associated with the input PID
  */
-UT_sint32 FL_DocLayout::getFootnoteVal(UT_uint32 footpid)
+fl_FootnoteLayout * FL_DocLayout::findFootnoteLayout(UT_uint32 footpid)
 {
-	UT_sint32 i =0;
-	UT_sint32 pos = 1;
+	UT_sint32 i = 0;
 	fl_FootnoteLayout * pTarget = NULL;
-	fl_FootnoteLayout * pFL = NULL;
+ 	fl_FootnoteLayout * pFL = NULL;
 	for(i=0; i<(UT_sint32) m_vecFootnotes.getItemCount(); i++)
 	{
 		pFL = getNthFootnote(i);
@@ -327,6 +324,19 @@ UT_sint32 FL_DocLayout::getFootnoteVal(UT_uint32 footpid)
 			break;
 		}
 	}
+	return pTarget;
+}
+/*!
+ * This returns the position of the footnote in the document. This is useful
+ * for calculating the footnote's value and positioning it in a footnote 
+ * section
+ */
+UT_sint32 FL_DocLayout::getFootnoteVal(UT_uint32 footpid)
+{
+	UT_sint32 i =0;
+	UT_sint32 pos = 1;
+	fl_FootnoteLayout * pTarget = findFootnoteLayout(footpid);
+ 	fl_FootnoteLayout * pFL = NULL;
 	if(pTarget== NULL)
 	{
 		return 0;
