@@ -57,7 +57,6 @@ public:
   	FV_View * 					getView(void);
 	void                                            setActiveFrame(XAP_Frame *pFrame);
 	static char **              getJumpTargets(void); // TODO: Change to UT_UCSChar
-	void                        _setupJumpTargets(void);
  protected:
 	
 	// These are the "current use" dialog data items,
@@ -68,7 +67,8 @@ public:
 
 	// is this used in a modeless dialog like this?
 	tAnswer						m_answer;
-	char m_WindowName[100];
+	char			    m_WindowName[100];
+	void			    _setupJumpTargets(void);
 };
 
 #endif /* AP_DIALOG_GOTO_H */
