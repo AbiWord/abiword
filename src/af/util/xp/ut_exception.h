@@ -1,4 +1,5 @@
-/* AbiSource Program Utilities
+/* 
+ * AbiSource Program Utilities
  * Copyright (C) 2001 Dom Lachowicz <dominicl@seas.upenn.edu>
  * 
  * This program is free software; you can redistribute it and/or
@@ -46,6 +47,17 @@
 #if defined(_MSC_VER) && !(_MSC_VER > 1100)		// MSVC 5 and lower
 #define ABI_DOESNT_SUPPORT_EXCEPTIONS = 1
 #endif
+
+/*
+ * Public base-class which all of our own 
+ * exceptions should inherit from
+ */
+class UT_Exception
+{
+ public:
+  UT_Exception ();
+  virtual ~UT_Exception ();
+};
 
 //
 // UT_TRY will begin a 'try' block
