@@ -90,6 +90,9 @@ public:
 							  UT_Bool bPortrait, UT_uint32 iWidth, UT_uint32 iHeight);
 	virtual UT_Bool endPrint(void);
 
+	virtual void setCursor(GR_Graphics::Cursor c);
+	virtual GR_Graphics::Cursor getCursor(void) const;
+
 protected:
 	UT_uint32		_scale(UT_uint32 units) const;
 	UT_Bool			_startDocument(void);

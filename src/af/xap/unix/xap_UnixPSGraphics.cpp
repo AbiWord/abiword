@@ -763,3 +763,13 @@ void PS_Graphics::drawImage(GR_Image* pImg, UT_sint32 xDest, UT_sint32 yDest)
 	
 }
 
+void PS_Graphics::setCursor(GR_Graphics::Cursor)
+{
+	return;
+}
+
+GR_Graphics::Cursor PS_Graphics::getCursor(void) const
+{
+	return GR_CURSOR_INVALID;
+}
+
