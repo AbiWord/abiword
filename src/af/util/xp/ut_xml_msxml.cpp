@@ -274,7 +274,6 @@ HRESULT STDMETHODCALLTYPE AbiXMLHandler::skippedEntity(
 UT_XML::~UT_XML ()
 {
   FREEP (m_namespace);
-  if (m_decoder) stopDecoder ();
 }
 
 UT_Error UT_XML::parse (const char * szFilename)
