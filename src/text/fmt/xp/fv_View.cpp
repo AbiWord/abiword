@@ -1,3 +1,4 @@
+
 /* AbiWord
  * Copyright (C) 1998-2000 AbiSource, Inc.
  * Copyright (c) 2001,2002 Tomas Frydrych
@@ -10123,7 +10124,10 @@ void FV_View::setShowPara(bool bShowPara)
 	if (bShowPara != m_bShowPara)
 	{
 		m_bShowPara = bShowPara;
-		draw();
+		if(getPoint() > 0)
+		{
+		    draw();
+		}
 	}
 };
 
