@@ -1,4 +1,4 @@
-/* AbiWord
+/* AbiSource Application Framework
  * Copyright (C) 1998 AbiSource, Inc.
  * 
  * This program is free software; you can redistribute it and/or
@@ -17,17 +17,31 @@
  * 02111-1307, USA.
  */
 
-//////////////////////////////////////////////////////////////////
-// THIS FILE IS INCLUDED BY .cpp AND .rc FILES.
-//
-// *** RC.exe IS BRAIN-DAMAGED.  GIVING THIS FILE AN .rc2
-// *** EXTENSION MAKES #INCLUDING THIS FILE FROM Win32Main.rc
-// *** WORK -- IF THE SUFFIX IS .h ONLY THE #DEFINES WORK, THE
-// *** DIALOGS DO NOT GET COMPILED.
-//
-//////////////////////////////////////////////////////////////////
+#ifndef XAP_DIALOG_WINDOWMORE_H
+#define XAP_DIALOG_WINDOWMORE_H
 
-#define AP_RID_DIALOG_REPLACE						200
-#define AP_RID_DIALOG_FIND							201			// shares class with _REPLACE
+#include "xap_Frame.h"
+#include "xap_Dialog.h"
+class XAP_App;
 
-#include "ap_Win32Resources_DialogReplace.rc2"
+class XAP_Dialog_WindowMore : public AP_Dialog_NonPersistent
+{
+public:
+	XAP_Dialog_WindowMore(AP_DialogFactory * pDlgFactory, AP_Dialog_Id id);
+	virtual ~XAP_Dialog_WindowMore(void);
+
+	virtual void					runModal(XAP_Frame * pFrame) = 0;
+
+	typedef enum { a_OK, a_CANCEL }	tAnswer;
+
+	XAP_Dialog_WindowMore::tAnswer	getAnswer(void) const;
+    XAP_Frame * 					getSelFrame(void) const;
+	
+protected:
+	XAP_Dialog_WindowMore::tAnswer	m_answer;
+
+	XAP_App *						m_pApp;
+	UT_sint32						m_ndxSelFrame;
+};
+
+#endif /* XAP_DIALOG_WINDOWMORE_H */

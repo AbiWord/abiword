@@ -45,6 +45,7 @@
 #include "xap_Dlg_FileOpenSaveAs.h"
 #include "xap_Dlg_FontChooser.h"
 #include "xap_Dlg_Print.h"
+#include "xap_Dlg_WindowMore.h"
 
 #define FREEP(p)	do { if (p) free(p); (p)=NULL; } while (0)
 
@@ -1188,12 +1189,45 @@ Defun1(activateWindow_9)
 {
 	return _activateWindow(pAV_View, 9);
 }
+
+static UT_Bool s_doMoreWindowsDlg(XAP_Frame* pFrame, AP_Dialog_Id id)
+{
+	UT_ASSERT(pFrame);
+
+	pFrame->raise();
+
+	AP_DialogFactory * pDialogFactory
+		= (AP_DialogFactory *)(pFrame->getDialogFactory());
+
+	XAP_Dialog_WindowMore * pDialog
+		= (XAP_Dialog_WindowMore *)(pDialogFactory->requestDialog(id));
+	UT_ASSERT(pDialog);
+
+	// run the dialog 
+	pDialog->runModal(pFrame);
+
+	XAP_Frame * pSelFrame = NULL;	
+	UT_Bool bOK = (pDialog->getAnswer() == XAP_Dialog_WindowMore::a_OK);
+
+	if (bOK)
+		pSelFrame = pDialog->getSelFrame();
+
+	pDialogFactory->releaseDialog(pDialog);
+
+	// now do it 
+	if (pSelFrame)
+		pSelFrame->raise();
+
+	return bOK;
+}
+
 Defun1(dlgMoreWindows)
 {
 	XAP_Frame * pFrame = (XAP_Frame *) pAV_View->getParentData();
 	UT_ASSERT(pFrame);
 
-	s_TellNotImplemented(pFrame, "More windows dialog", __LINE__);
+	s_doMoreWindowsDlg(pFrame, XAP_DIALOG_ID_WINDOWMORE);
+//	s_TellNotImplemented(pFrame, "More windows dialog", __LINE__);
 	return UT_TRUE;
 }
 

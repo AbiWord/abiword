@@ -1,4 +1,4 @@
-/* AbiWord
+/* AbiSource Application Framework
  * Copyright (C) 1998 AbiSource, Inc.
  * 
  * This program is free software; you can redistribute it and/or
@@ -17,17 +17,25 @@
  * 02111-1307, USA.
  */
 
-//////////////////////////////////////////////////////////////////
-// THIS FILE IS INCLUDED BY .cpp AND .rc FILES.
-//
-// *** RC.exe IS BRAIN-DAMAGED.  GIVING THIS FILE AN .rc2
-// *** EXTENSION MAKES #INCLUDING THIS FILE FROM Win32Main.rc
-// *** WORK -- IF THE SUFFIX IS .h ONLY THE #DEFINES WORK, THE
-// *** DIALOGS DO NOT GET COMPILED.
-//
-//////////////////////////////////////////////////////////////////
+#ifndef XAP_MACDIALOG_WINDOWMORE_H
+#define XAP_MACDIALOG_WINDOWMORE_H
 
-#define AP_RID_DIALOG_REPLACE						200
-#define AP_RID_DIALOG_FIND							201			// shares class with _REPLACE
+#include "xap_Dlg_WindowMore.h"
+class XAP_MacFrame;
 
-#include "ap_Win32Resources_DialogReplace.rc2"
+/*****************************************************************/
+
+class XAP_MacDialog_WindowMore: public XAP_Dialog_WindowMore
+{
+public:
+	XAP_MacDialog_WindowMore(AP_DialogFactory * pDlgFactory, AP_Dialog_Id id);
+	virtual ~XAP_MacDialog_WindowMore(void);
+
+	virtual void			runModal(XAP_Frame * pFrame);
+
+	static AP_Dialog *		static_constructor(AP_DialogFactory *, AP_Dialog_Id id);
+	
+protected:
+};
+
+#endif /* XAP_MACDIALOG_WINDOWMORE_H */

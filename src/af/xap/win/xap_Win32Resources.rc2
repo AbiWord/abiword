@@ -27,7 +27,6 @@
 //
 //////////////////////////////////////////////////////////////////
 
-#define AP_RID_DIALOG_REPLACE						200
-#define AP_RID_DIALOG_FIND							201			// shares class with _REPLACE
+#define XAP_RID_DIALOG_WINDOWMORE					100
 
-#include "ap_Win32Resources_DialogReplace.rc2"
+#include "xap_Win32Res_DlgWindowMore.rc2"

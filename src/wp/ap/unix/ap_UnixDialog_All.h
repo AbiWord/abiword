@@ -37,7 +37,9 @@
 #	include "xap_UnixDlg_MessageBox.h"
 #	include "xap_UnixDlg_FileOpenSaveAs.h"
 #	include "xap_UnixDlg_Print.h"
+#	include "xap_UnixDlg_WindowMore.h"
 #	include "xap_UnixDlg_FontChooser.h"
+
 #   include "ap_UnixDialog_About.h"
 #	include "ap_UnixDialog_Replace.h"
 
@@ -53,6 +55,7 @@
 	DeclareDialog(XAP_DIALOG_ID_PRINT,			AP_UnixDialog_Print)
 	DeclareDialog(XAP_DIALOG_ID_PRINTTOFILE,	AP_UnixDialog_FileOpenSaveAs)
 	DeclareDialog(XAP_DIALOG_ID_FONT,			XAP_UnixDialog_FontChooser)
+	DeclareDialog(XAP_DIALOG_ID_WINDOWMORE,		XAP_UnixDialog_WindowMore)
 
 	DeclareDialog(AP_DIALOG_ID_REPLACE,			AP_UnixDialog_Replace)
 	DeclareDialog(AP_DIALOG_ID_FIND,			AP_UnixDialog_Replace)

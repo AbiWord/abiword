@@ -37,6 +37,7 @@ PLATFORM_OBJS=	$(ABI_NATIVE)/$(OBJDIR)/xap_$(ABI_FE)App.$(OBJ_SUFFIX)				\
 		$(ABI_NATIVE)/$(OBJDIR)/xap_$(ABI_FE)Dlg_FontChooser.$(OBJ_SUFFIX)		\
 		$(ABI_NATIVE)/$(OBJDIR)/xap_$(ABI_FE)Dlg_MessageBox.$(OBJ_SUFFIX)		\
 		$(ABI_NATIVE)/$(OBJDIR)/xap_$(ABI_FE)Dlg_Print.$(OBJ_SUFFIX)			\
+		$(ABI_NATIVE)/$(OBJDIR)/xap_$(ABI_FE)Dlg_WindowMore.$(OBJ_SUFFIX)		\
 		$(ABI_NATIVE)/$(OBJDIR)/xap_$(ABI_FE)Frame.$(OBJ_SUFFIX)			\
 		$(ABI_NATIVE)/$(OBJDIR)/xap_$(ABI_FE)Toolbar_Icons.$(OBJ_SUFFIX)
 
@@ -67,6 +68,7 @@ OBJS=		$(PLATFORM_OBJS)						\
 		xp/$(OBJDIR)/xap_Dlg_FontChooser.$(OBJ_SUFFIX)			\
 		xp/$(OBJDIR)/xap_Dlg_MessageBox.$(OBJ_SUFFIX)			\
 		xp/$(OBJDIR)/xap_Dlg_Print.$(OBJ_SUFFIX)			\
+		xp/$(OBJDIR)/xap_Dlg_WindowMore.$(OBJ_SUFFIX)			\
 		xp/$(OBJDIR)/xap_FakeClipboard.$(OBJ_SUFFIX)			\
 		xp/$(OBJDIR)/xap_Frame.$(OBJ_SUFFIX)				\
 		xp/$(OBJDIR)/xap_LoadBindings.$(OBJ_SUFFIX)			\

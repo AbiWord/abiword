@@ -34,6 +34,7 @@
 #	include "xap_Win32Dlg_FileOpenSaveAs.h"
 #	include "xap_Win32Dlg_Print.h"
 #	include "xap_Win32Dlg_FontChooser.h"
+#	include "xap_Win32Dlg_WindowMore.h"
 
 #	include "ap_Win32Dialog_Replace.h"
 #	include "ap_Win32Dialog_About.h"
@@ -48,6 +49,7 @@
 	DeclareDialog(XAP_DIALOG_ID_PRINT,			AP_Win32Dialog_Print)
 	DeclareDialog(XAP_DIALOG_ID_PRINTTOFILE,	AP_Win32Dialog_FileOpenSaveAs)
 	DeclareDialog(XAP_DIALOG_ID_FONT,			AP_Win32Dialog_FontChooser)
+	DeclareDialog(XAP_DIALOG_ID_WINDOWMORE,		XAP_Win32Dialog_WindowMore)
 
 	DeclareDialog(AP_DIALOG_ID_REPLACE,			AP_Win32Dialog_Replace)
 	DeclareDialog(AP_DIALOG_ID_FIND,			AP_Win32Dialog_Replace)

@@ -41,7 +41,7 @@ typedef enum _XAP_Dialog_Id
 	XAP_DIALOG_ID_PRINTTOFILE,			/* the file-save-as spun as pathname-for-print-to-file */
 	XAP_DIALOG_ID_FONT,
 
-	XAP_DIALOG_ID_WINDOW_MORE,
+	XAP_DIALOG_ID_WINDOWMORE,
 
 	/* ... add others here ... */
 

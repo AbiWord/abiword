@@ -32,6 +32,7 @@ CPPSRCS=	xad_Document.cpp		\
 		xap_Dlg_FontChooser.cpp		\
 		xap_Dlg_MessageBox.cpp		\
 		xap_Dlg_Print.cpp		\
+		xap_Dlg_WindowMore.cpp		\
 		xap_FakeClipboard.cpp		\
 		xap_Frame.cpp			\
 		xap_LoadBindings.cpp		\
