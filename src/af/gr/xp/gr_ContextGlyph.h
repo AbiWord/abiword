@@ -116,6 +116,7 @@ public:
 	// at the moment we could make all the public functions static, but then we
 	// would need to worry about the static data being initalised
 
+#ifndef NO_BIDI_SUPPORT
 	GRShapingResult renderString(UT_TextIterator & text,
 								 UT_UCSChar      * dest,
 								 UT_uint32         len,
@@ -123,6 +124,9 @@ public:
 								 UT_BidiCharType   iDirection,
 								 bool (*isGlyphAvailable)(UT_UCS4Char g, void * custom) = NULL,
 								 const void * custom_param = NULL) const;
+#else
+#define renderString copyString
+#endif
 	
 	GRShapingResult copyString(UT_TextIterator & text,
 							   UT_UCSChar      * dest,
@@ -140,12 +144,13 @@ public:
 									bool (*isGlyphAvailable)(UT_UCS4Char g, void * custom)=NULL,
 		                            void * custom_param = NULL) const;
 									
-
+#ifndef NO_BIDI_SUPPORT
 	bool  isNotFirstInLigature(UT_UCS4Char c) const;
 	bool  isNotContextSensitive(UT_UCS4Char c) const;
 	bool  isNotJoiningWithNext(UT_UCS4Char c, UT_UCS4Char n, UT_UCS4Char p) const;
 	bool  isNotJoiningWithPrev(UT_UCS4Char c, UT_UCS4Char n, UT_UCS4Char p) const;
-		
+#endif
+	
 private:
 	GlyphContext _evalGlyphContext( UT_TextIterator & text, UT_sint32 offset = 0) const;
 	
@@ -154,9 +159,11 @@ private:
 								UT_StringPtrMap * phChanges,
 								void            * data);
 
+#ifndef NO_BIDI_SUPPORT
 	static void _generateNoLigatureTable();
 	static void _generateNoShapingTable();
 	static void _fixHebrewLigatures(bool bShape);
+#endif
 	
 	static UT_UCS4Char _remapGlyph(UT_UCS4Char g);
 

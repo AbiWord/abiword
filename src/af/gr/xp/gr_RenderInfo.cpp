@@ -352,10 +352,12 @@ bool GR_XPRenderInfo::cut(UT_uint32 offset, UT_uint32 iLen, bool bReverse)
 	bool bContext = (((UT_uint32)m_eShapingResult & (UT_uint32) GRSR_ContextSensitive) != 0);
 
 	GR_ContextGlyph cg;
-	UT_UCS4Char c;
 
 	UT_uint32 pos = m_pText->getPosition();
 
+#ifndef NO_BIDI_SUPPORT
+	UT_UCS4Char c;
+	
 	if(!bRefresh && bLigatures)
 	{
 		// we need to recalculate the draw buffer if the character
@@ -390,7 +392,7 @@ bool GR_XPRenderInfo::cut(UT_uint32 offset, UT_uint32 iLen, bool bReverse)
 			}
 		}
 	}
-
+	
 	if(!bRefresh && bContext)
 	{
 		// we need to retrieve the characters left and right of the
@@ -419,6 +421,8 @@ bool GR_XPRenderInfo::cut(UT_uint32 offset, UT_uint32 iLen, bool bReverse)
 		}
 	}
 
+#endif
+	
 	if(bRefresh)
 	{
 		return false;

@@ -2558,6 +2558,7 @@ void fp_TextRun::setDirOverride(UT_BidiCharType dir)
 */
 void fp_TextRun::breakNeighborsAtDirBoundaries()
 {
+#ifndef NO_BIDI_SUPPORT
 	UT_BidiCharType iPrevType, iType = UT_BIDI_UNSET;
 	UT_BidiCharType iDirection = getDirection();
 
@@ -2691,10 +2692,12 @@ void fp_TextRun::breakNeighborsAtDirBoundaries()
 			break;
 
 	}
+#endif
 }
 
 void fp_TextRun::breakMeAtDirBoundaries(UT_BidiCharType iNewOverride)
 {
+#ifndef NO_BIDI_SUPPORT
 	// we cannot use the draw buffer here because in case of ligatures it might
 	// contain characters of misleading directional properties
 	fp_TextRun * pRun = this;
@@ -2752,6 +2755,7 @@ void fp_TextRun::breakMeAtDirBoundaries(UT_BidiCharType iNewOverride)
 		pRun = static_cast<fp_TextRun*>(pRun->getNextRun());
 		iPrevType = iType;
 	}
+#endif
 }
 
 

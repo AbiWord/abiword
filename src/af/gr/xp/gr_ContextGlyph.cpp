@@ -38,6 +38,7 @@ struct LigatureSequence
 	UT_UCSChar next;
 };
 
+#ifndef NO_BIDI_SUPPORT
 
 // The following table contains ligature data for two-character
 // ligatures (code_low is the first character, code_high the second).
@@ -813,7 +814,7 @@ static int s_comp_lig(const void *a, const void *b)
 
 	return ret;
 }
-
+#endif
 
 /*
    SMART QUOTES HANDLING
@@ -898,6 +899,7 @@ GR_ContextGlyph::GR_ContextGlyph()
 {
 	if(!s_bInit)
 	{
+#ifndef NO_BIDI_SUPPORT
 		// UCS_LIGATURE_PLACEHOLDER defined in ut_types.h must equal
 		// to the falue hardcode in our tables, 0xF854
 		UT_ASSERT(UCS_LIGATURE_PLACEHOLDER == 0xF854);
@@ -922,6 +924,8 @@ GR_ContextGlyph::GR_ContextGlyph()
 		
 		// init the smart quote tables with the pointers to language
 		// codes in UT_Laguage
+#endif
+		
 		UT_Language lang;
 		s_pEN_US = lang.getCodeFromCode("en-US");
 		for(UT_uint32 i = 0; i < NrElements(s_smart_quotes); i++)
@@ -945,12 +949,14 @@ void GR_ContextGlyph::static_destructor()
 {
 	UT_DEBUGMSG(("GR_ContextGlyph::static_destructor() called\n"));
 
+#ifndef NO_BIDI_SUPPORT
 	if(s_bInit)
 	{
 		s_bInit = false;
 		UT_VECTOR_PURGEALL(UCSRange*,s_noLigature);  s_noLigature.clear();
 		UT_VECTOR_PURGEALL(UCSRange*,s_noShaping);   s_noShaping.clear();
 	}
+#endif
 }
 
 void GR_ContextGlyph::_prefsListener(XAP_App *pApp, XAP_Prefs *, UT_StringPtrMap *, void *)
@@ -972,6 +978,7 @@ void GR_ContextGlyph::_prefsListener(XAP_App *pApp, XAP_Prefs *, UT_StringPtrMap
 	else
 		s_cDefaultGlyph = '?';
 
+#ifndef NO_BIDI_SUPPORT
 	// handle Hebrew shaping and Latin ligature preferences ...
 	bool bSChange = s_bHebrewShaping;
 	bNoErr = XAP_App::getApp()->getPrefsValueBool((XML_Char*)XAP_PREF_KEY_UseHebrewContextGlyphs,
@@ -1011,6 +1018,7 @@ void GR_ContextGlyph::_prefsListener(XAP_App *pApp, XAP_Prefs *, UT_StringPtrMap
 	UT_DEBUGMSG(("UT_ContextGlyph::prefs: glyphs %d, ligatures: %d, no-lig: %d, no-shap: %d\n",
 				 NrElements(s_table), NrElements(s_ligature),
 				 s_noLigature.getItemCount(), s_noShaping.getItemCount()));
+#endif
 }
 
 /*!
@@ -1098,6 +1106,7 @@ UT_UCS4Char GR_ContextGlyph::getSmartQuote(UT_TextIterator & text,
 	return c;
 }
 
+#ifndef NO_BIDI_SUPPORT
 /*!
     find and modify the handful of ligature entries that need to be
 	modified if hebrew shaping is on
@@ -1137,7 +1146,7 @@ void GR_ContextGlyph::_fixHebrewLigatures(bool bShape)
 		}
 	}
 }
-
+#endif
 
 GlyphContext GR_ContextGlyph::_evalGlyphContext(UT_TextIterator & text, UT_sint32 offset) const
 {
@@ -1168,6 +1177,7 @@ GlyphContext GR_ContextGlyph::_evalGlyphContext(UT_TextIterator & text, UT_sint3
 	
 	if(!next && prev)
 	{
+#ifndef NO_BIDI_SUPPORT
 		// text is pointing at prev, move one char to the left
 		bPrevWD = isNotJoiningWithNext(prev, current, prev2);
 		
@@ -1175,13 +1185,17 @@ GlyphContext GR_ContextGlyph::_evalGlyphContext(UT_TextIterator & text, UT_sint3
 			return GC_ISOLATE;
 		else
 			return GC_FINAL;
+#else
+		return GC_FINAL;
+#endif
 	}
 
 	// no-next has been trapped above, now we can check if next is not
 	// a character that is to be ignored (the indexing operator is
 	// necessary here, to position the iterator for us)
 	UT_UCSChar myNext = text[pos + offset + 1];
-	
+
+#ifndef NO_BIDI_SUPPORT
 	while(text.getStatus() == UTIter_OK
 		  && bsearch(static_cast<void*>(&myNext),
 					 static_cast<void*>(s_ignore),
@@ -1191,7 +1205,8 @@ GlyphContext GR_ContextGlyph::_evalGlyphContext(UT_TextIterator & text, UT_sint3
 	{
 		myNext = (++text).getChar();
 	}
-
+#endif
+	
 	UT_UCS4Char myNext2 = UCS_SPACE;
 	
 	if(text.getStatus() == UTIter_OK)
@@ -1208,28 +1223,39 @@ GlyphContext GR_ContextGlyph::_evalGlyphContext(UT_TextIterator & text, UT_sint3
 
 	if(!prev && myNext)
 	{
+#ifndef NO_BIDI_SUPPORT
 		bNextWD = isNotJoiningWithPrev(myNext, myNext2, UCS_UNKPUNK);
 		if(bNextWD)
 			return GC_ISOLATE;
 		else
 			return GC_INITIAL;
+#else
+		return GC_INITIAL;
+#endif
 	}
 
 	if(prev && !myNext)
 	{
+#ifndef NO_BIDI_SUPPORT
 		bPrevWD = isNotJoiningWithNext(prev, current, prev2);
 		if(bPrevWD)
 			return GC_ISOLATE;
 		else
 			return GC_FINAL;
-
+#else
+		return GC_FINAL;
+#endif
 	}
 	xxx_UT_DEBUGMSG(("GR_ContextGlyph::_eval: 0x%x, prev 0x%x, myNext 0x%x, myNextNext 0x%x\n",
 					 *code,*prev, *myNext,myNextNext));
-	
+
+#ifndef NO_BIDI_SUPPORT
 	bPrevWD = isNotJoiningWithNext(prev, current, prev2);
 	bNextWD = isNotJoiningWithPrev(myNext, myNext2, UCS_UNKPUNK);
-
+#else
+	bPrevWD = UT_isWordDelimiter(prev,current,prev2);
+	bNextWD = UT_isWordDelimiter(myNext,myNext2,UCS_UNKPUNK);
+#endif
 	// if both are not , then medial form is needed
 	if(!bPrevWD && !bNextWD)
 		return GC_MEDIAL;
@@ -1246,6 +1272,7 @@ GlyphContext GR_ContextGlyph::_evalGlyphContext(UT_TextIterator & text, UT_sint3
 	return GC_ISOLATE;
 }
 
+#ifndef NO_BIDI_SUPPORT
 /*!
     render string using glyph and ligature tables
     returns value indicating what kind of characters this text contained
@@ -1533,6 +1560,7 @@ GRShapingResult GR_ContextGlyph::renderString(UT_TextIterator & text,
 
 	return GRSR_None;
 }
+#endif
 
 /*! copy string into provided destination remapping any missing glyphs
     in the process; return value is always GRSR_None or GRSR_Error (this

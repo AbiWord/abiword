@@ -5048,6 +5048,7 @@ void fp_Run::setDirection(UT_BidiCharType iDir)
 // returns the direction with which the run is displayed,
 UT_BidiCharType fp_Run::getVisDirection()
 {
+#ifndef NO_BIDI_SUPPORT
  	FV_View * pView = _getView();
 	if(pView && pView->getBidiOrder() != FV_Order_Visual)
 	{
@@ -5078,6 +5079,9 @@ UT_BidiCharType fp_Run::getVisDirection()
 	}
 	else
 		return m_iVisDirection;
+#else
+	return UT_BIDI_LTR;
+#endif
 }
 
 void fp_Run::setVisDirection(UT_BidiCharType iDir)

@@ -71,28 +71,58 @@ void UT_unlink (const char * base)
 
 UT_BidiCharType UT_bidiGetCharType(UT_UCS4Char c)
 {
+#ifndef NO_BIDI_SUPPORT
 	return fribidi_get_type(c);
+#else
+	return UT_BIDI_LTR;
+#endif
 }
 
 bool UT_bidiReorderString(const UT_UCS4Char * pStrIn, UT_uint32 len, UT_BidiCharType baseDir,
 						  UT_UCS4Char * pStrOut)
 {
+#ifndef NO_BIDI_SUPPORT
 	// if this assert fails, we have a serious problem ...
 	UT_ASSERT_HARMLESS( sizeof(UT_UCS4Char) == sizeof(FriBidiChar) );
 	return (0 != fribidi_log2vis ((FriBidiChar *)pStrIn, len, &baseDir, (FriBidiChar*)pStrOut, NULL, NULL, NULL));
+#else
+	if(!pStrIn || !*pStrIn)
+		return true;
+
+	UT_return_val_if_fail( pStrOut, false );
+
+	UT_UCS4_strncpy(pStrOut, pStrIn, len);
+	return true;
+#endif
 }
 
 bool UT_bidiMapLog2Vis(const UT_UCS4Char * pStrIn, UT_uint32 len, UT_BidiCharType baseDir,
 					   UT_uint32 *pL2V, UT_uint32 * pV2L, UT_Byte * pEmbed)
 {
+#ifndef NO_BIDI_SUPPORT
 	// if this assert fails, we have a serious problem ...
 	UT_ASSERT_HARMLESS( sizeof(UT_UCS4Char) == sizeof(FriBidiChar) );
 	return (0 != fribidi_log2vis ((FriBidiChar *)pStrIn, len, &baseDir,
 								  NULL, (FriBidiStrIndex*)pL2V, (FriBidiStrIndex*)pV2L, (FriBidiLevel*)pEmbed));
+#else
+	UT_return_val_if_fail( pL2V && pV2L && pEmbed, false );
+	for(UT_uint32 i = 0; i < len; ++i)
+	{
+		pL2V[i] = i;
+		pV2L[i] = i;
+		pEmbed[i] = 0;
+	}
+
+	return true;
+#endif
 }
 
 
 bool UT_bidiGetMirrorChar(UT_UCS4Char c, UT_UCS4Char &mc)
 {
+#ifndef NO_BIDI_SUPPORT
 	return (0 != fribidi_get_mirror_char(c, (FriBidiChar*)&mc));
+#else
+	return false;
+#endif
 }
