@@ -47,14 +47,21 @@ public:
 						  PT_DocPosition position,
 						  PT_AttrPropIndex indexAP,
 						  PTStruxType struxType);
+	PX_ChangeRecord_Strux(PXType type,
+						  PT_DocPosition position,
+						  PT_AttrPropIndex indexAP,
+						  PTStruxType struxType,
+						  PT_AttrPropIndex preferredSpanAPI);
 	~PX_ChangeRecord_Strux();
 
 	virtual PX_ChangeRecord * reverse(void) const;
 	
 	PTStruxType				getStruxType(void) const;
+	PT_AttrPropIndex		getPreferredSpanFmt(void) const;
 
 protected:
 	PTStruxType				m_struxType;	/* our type (paragraph, section) */
+	PT_AttrPropIndex		m_preferredSpanAPI;	/* only used for PTX_Blocks */
 };
 
 #endif /* PX_CHANGERECORD_STRUX_H */

@@ -211,6 +211,7 @@ UT_Bool pt_PieceTable::insertStrux(PT_DocPosition dpos,
 
 	_insertStrux(pf,fragOffset,pfsNew);
 
+	PT_AttrPropIndex preferredSpanFmt = 0;
 	if (pfsNew->getStruxType() == PTX_Block)
 	{
 		// when inserting paragraphs, we try to remember the current
@@ -219,11 +220,9 @@ UT_Bool pt_PieceTable::insertStrux(PT_DocPosition dpos,
 		// inserting text at the beginning of the paragraph), we'll
 		// try to use it rather than defaulting to plain text.
 
-		_captureActiveSpan(static_cast<pf_Frag_Strux_Block *>(pfsNew));
-
-		// TODO we need to remember the capturedActiveSpan in the change record
-		// TODO so that undo can restore it.  we need to clear the it on the
-		// TODO block after the first time it is used.
+		pf_Frag_Strux_Block * pfsbNew = static_cast<pf_Frag_Strux_Block *>(pfsNew);
+		_captureActiveSpan(pfsbNew);
+		preferredSpanFmt = pfsbNew->getPreferredSpanFmt();
 	}
 
 	// create a change record to describe the change, add
@@ -231,7 +230,7 @@ UT_Bool pt_PieceTable::insertStrux(PT_DocPosition dpos,
 	
 	PX_ChangeRecord_Strux * pcrs
 		= new PX_ChangeRecord_Strux(PX_ChangeRecord::PXT_InsertStrux,
-									dpos,indexAP,pts);
+									dpos,indexAP,pts,preferredSpanFmt);
 	UT_ASSERT(pcrs);
 	m_history.addChangeRecord(pcrs);
 	m_pDocument->notifyListeners(pfsContainer,pfsNew,pcrs);

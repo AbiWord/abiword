@@ -31,6 +31,19 @@ PX_ChangeRecord_Strux::PX_ChangeRecord_Strux(PXType type,
 	: PX_ChangeRecord(type, position, indexAP)
 {
 	m_struxType = struxType;
+	m_preferredSpanAPI = 0;
+}
+
+PX_ChangeRecord_Strux::PX_ChangeRecord_Strux(PXType type,
+											 PT_DocPosition position,
+											 PT_AttrPropIndex indexAP,
+											 PTStruxType struxType,
+											 PT_AttrPropIndex preferredSpanAPI)
+	: PX_ChangeRecord(type, position, indexAP)
+{
+	m_struxType = struxType;
+	m_preferredSpanAPI = preferredSpanAPI;
+	UT_ASSERT((preferredSpanAPI==0) || (struxType==PTX_Block));
 }
 
 PX_ChangeRecord_Strux::~PX_ChangeRecord_Strux()
@@ -40,7 +53,7 @@ PX_ChangeRecord_Strux::~PX_ChangeRecord_Strux()
 PX_ChangeRecord * PX_ChangeRecord_Strux::reverse(void) const
 {
 	PX_ChangeRecord_Strux * pcr
-		= new PX_ChangeRecord_Strux(getRevType(),m_position,m_indexAP,m_struxType);
+		= new PX_ChangeRecord_Strux(getRevType(),m_position,m_indexAP,m_struxType,m_preferredSpanAPI);
 	UT_ASSERT(pcr);
 	return pcr;
 }
@@ -48,5 +61,10 @@ PX_ChangeRecord * PX_ChangeRecord_Strux::reverse(void) const
 PTStruxType PX_ChangeRecord_Strux::getStruxType(void) const
 {
 	return m_struxType;
+}
+
+PT_AttrPropIndex PX_ChangeRecord_Strux::getPreferredSpanFmt(void) const
+{
+	return m_preferredSpanAPI;
 }
 

@@ -107,6 +107,8 @@ UT_Bool pt_PieceTable::_deleteStruxWithNotify(PT_DocPosition dpos,
 											  pf_Frag_Strux * pfs,
 											  pf_Frag ** ppfEnd, UT_uint32 * pfragOffsetEnd)
 {
+	PT_AttrPropIndex preferredSpanAPI = 0;
+	
 	switch (pfs->getStruxType())
 	{
 	case PTX_Section:
@@ -116,8 +118,12 @@ UT_Bool pt_PieceTable::_deleteStruxWithNotify(PT_DocPosition dpos,
 		break;
 		
 	case PTX_Block:
-		if (!_unlinkStrux_Block(pfs,ppfEnd,pfragOffsetEnd))
-			return UT_FALSE;
+		{
+			pf_Frag_Strux_Block * pfsb = static_cast<pf_Frag_Strux_Block *>(pfs);
+			preferredSpanAPI = pfsb->getPreferredSpanFmt();
+			if (!_unlinkStrux_Block(pfs,ppfEnd,pfragOffsetEnd))
+				return UT_FALSE;
+		}
 		break;
 		
 	default:
@@ -130,7 +136,8 @@ UT_Bool pt_PieceTable::_deleteStruxWithNotify(PT_DocPosition dpos,
 	
 	PX_ChangeRecord_Strux * pcrs
 		= new PX_ChangeRecord_Strux(PX_ChangeRecord::PXT_DeleteStrux,
-									dpos, pfs->getIndexAP(), pfs->getStruxType());
+									dpos, pfs->getIndexAP(), pfs->getStruxType(),
+									preferredSpanAPI);
 	UT_ASSERT(pcrs);
 	m_history.addChangeRecord(pcrs);
 	m_pDocument->notifyListeners(pfs,pcrs);

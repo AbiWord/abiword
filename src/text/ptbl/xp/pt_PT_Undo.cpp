@@ -158,6 +158,12 @@ UT_Bool pt_PieceTable::_doTheDo(const PX_ChangeRecord * pcr)
 			if (!_createStrux(pcrStrux->getStruxType(),pcrStrux->getIndexAP(),&pfsNew))
 				return UT_FALSE;
 
+			if (pfsNew->getStruxType() == PTX_Block)
+			{
+				pf_Frag_Strux_Block * pfsbNew = static_cast<pf_Frag_Strux_Block *>(pfsNew);
+				pfsbNew->setPreferredSpanFmt(pcrStrux->getPreferredSpanFmt());
+			}
+			
 			pf_Frag * pf = NULL;
 			PT_BlockOffset fragOffset = 0;
 			UT_Bool bFoundFrag = getFragFromPosition(pcrStrux->getPosition(),&pf,&fragOffset);
