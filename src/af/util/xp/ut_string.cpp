@@ -44,6 +44,8 @@
 
 #include "xap_EncodingManager.h"
 
+#include "ut_case.h"
+
 // really simple way to determine if something is a hyperlink
 // probably not 100% correct, but better than !stricmp(http://), ...
 bool UT_isUrl ( const char * szName )
@@ -545,12 +547,19 @@ UT_UCSChar UT_UCS_toupper(UT_UCSChar c)
 #else
 	if (XAP_EncodingManager::get_instance()->single_case())
 		return c;
-	/*let's trust libc!*/
+	/*let's trust libc! -- does not seem to work :(*/
+#if 0
 	UT_UCSChar local = XAP_EncodingManager::get_instance()->try_UToNative(c);
 	if (!local || local>0xff)
 		return c;
 	local = XAP_EncodingManager::get_instance()->try_nativeToU(toupper(local));
 	return local ? local : c;
+#else
+    case_entry * letter = (case_entry *)bsearch(&c, &case_table, NrElements(case_table),sizeof(case_entry),s_cmp_case);
+    if(!letter || letter->type == 1)
+        return c;
+    return letter->other;
+#endif
 #endif
 }
 
@@ -573,11 +582,18 @@ UT_UCSChar UT_UCS_tolower(UT_UCSChar c)
 	if (XAP_EncodingManager::get_instance()->single_case())
 		return c;
 	/*let's trust libc!*/
+#if 0
 	UT_UCSChar local = XAP_EncodingManager::get_instance()->try_UToNative(c);
 	if (!local || local>0xff)
 		return c;
 	local = XAP_EncodingManager::get_instance()->try_nativeToU(tolower(local));
 	return local ? local : c;
+#else
+    case_entry * letter = (case_entry *)bsearch(&c, &case_table, NrElements(case_table),sizeof(case_entry),s_cmp_case);
+    if(!letter || letter->type == 0)
+        return c;
+    return letter->other;
+#endif
 #endif
 }
 
@@ -980,18 +996,38 @@ bool UT_isSmartQuotedCharacter(UT_UCSChar c)
 
 bool UT_UCS_isupper(UT_UCSChar c)
 {
+#if 0	
 	if (XAP_EncodingManager::get_instance()->single_case())
 	    return 1;/* FIXME: anyone has better idea? */
 	UT_UCSChar local = XAP_EncodingManager::get_instance()->try_UToNative(c);
 	return local && local <0xff ? isupper(local)!=0 : 0;
+#else
+	if(c < 127)
+		return isupper(c);
+
+    case_entry * letter = (case_entry *)bsearch(&c, &case_table, NrElements(case_table),sizeof(case_entry),s_cmp_case);
+    if(letter && letter->type == 1)
+        return true;
+    return false;
+#endif
 };
 
 bool UT_UCS_islower(UT_UCSChar c)
 {
+#if 0
 	if (XAP_EncodingManager::get_instance()->single_case())
 	    return 1;/* FIXME: anyone has better idea? */
 	UT_UCSChar local = XAP_EncodingManager::get_instance()->try_UToNative(c);
 	return local && local <0xff ? islower(local)!=0 : 0;
+#else
+	if(c < 127)
+		return islower(c);
+		
+    case_entry * letter = (case_entry *)bsearch(&c, &case_table, NrElements(case_table),sizeof(case_entry),s_cmp_case);
+    if(!letter || letter->type == 0)
+        return true;
+    return false;
+#endif
 };
 
 bool UT_UCS_isalpha(UT_UCSChar c)
