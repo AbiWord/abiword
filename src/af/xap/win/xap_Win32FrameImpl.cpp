@@ -168,7 +168,7 @@ void XAP_Win32FrameImpl::_initialize(void)
 	// get a handle to our keyboard binding mechanism
 	// and to our mouse binding mechanism.
 	
-	EV_EditEventMapper * pEEM = getFrame()->getEditEventMapper();
+	EV_EditEventMapper * pEEM = XAP_App::getApp()->getEditEventMapper();
 	UT_return_if_fail(pEEM);
 
 	m_pKeyboard = new ev_Win32Keyboard(pEEM);
@@ -234,7 +234,7 @@ void XAP_Win32FrameImpl::_createTopLevelWindow(void)
 	// synthesize a menu from the info in our
 	// base class and install it into the window.
 	m_pWin32Menu = new EV_Win32MenuBar(pWin32App,
-							getFrame()->getEditEventMapper(),
+							 XAP_App::getApp()->getEditEventMapper(),
 							m_szMenuLayoutName,
 							m_szMenuLabelSetName);
 	UT_ASSERT(m_pWin32Menu);
