@@ -6,13 +6,17 @@ The Linux tree should build easily assuming that you have all the tools
 properly installed.  You'll need gcc, make, and all the tools which usually
 accompany them.
 
-You'll also need GTK version 1.1.x or later.
+You'll also need GTK version 1.1.15 or later.
 
 Building the tree is a pretty simple process.  We use a "diving make" system,
 where virtually every directory in the tree hierarchy has its own Makefile,
 which contains the instructions for how to build the contents of that directory.
 
 To get things started, just cd into the abi/src directory, and type 'make'.
+
+There's a separate note on FONTS that you'll probably need to look at before
+you can run AbiWord.  Remember this is a work-in-progress.
+
 
 Build Instructions -- Windows NT
 --------------------------------
@@ -21,16 +25,16 @@ Building on Windows NT is remarkably similar to building on Linux.  We
 use the same set of Makefiles on Linux as well as NT.  You'll need to
 get the CygWin32 tool set from Cygnus before you can build.  See
 http://www.cygnus.com/misc/gnu-win32/ for information and downloads.
-The file you need should be called cdk.exe, and it's going to be
-around 12 megabytes.  Installing this stuff on your NT machine will
-create an environment which looks remarkably like a UNIX box.  You'll
-get a standard bash shell, GNU make, and all the standard UNIX
+The file you need should be called cdk.exe on B19 and full.exe on B20.1,
+and it's going to be around 14 megabytes.  Installing this stuff on your
+NT machine will create an environment which looks remarkably like a UNIX
+box.  You'll get a standard bash shell, GNU make, and all the standard UNIX
 utilities like sed, awk, cp, ls, mv, and so on.  This environment is
 the key which allows us to use the same set of Makefiles for both NT
 and Linux.
 
 Just in case you're wondering, yes, it should be possible to build
-this tree with a subset of the tools.  There's 12 meg of stuff there,
+this tree with a subset of the tools.  There's 14 meg of stuff there,
 and we don't *really* need all of it.  However, we haven't had time or
 motivation to identify the specific set of apps we need.  Disk space
 is cheap.  If you decide to make the effort to do so, please let us
