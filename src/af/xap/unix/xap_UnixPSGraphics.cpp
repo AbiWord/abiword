@@ -429,6 +429,7 @@ GR_Font * PS_Graphics::findFont(const char* pszFontFamily,
 	XAP_UnixFontHandle* pFont = new XAP_UnixFontHandle(pUnixFont, iSize);
 	UT_ASSERT(pFont);
 
+	m_vecFontList.addItem((void *) pFont);
 	return pFont;
 }
 
@@ -1304,7 +1305,8 @@ void PS_Graphics::_emit_DocumentNeededResources(void)
 	UT_uint32 k,n;
 	UT_uint32 kLimit = m_vecFontList.getItemCount();
 
-    bool bFontKeyword = true;
+	bool bFontKeyword = true;
+
 	for (k=0; k<kLimit; k++)
 	{
 		PSFont * psf = (PSFont *)m_vecFontList.getNthItem(k);
@@ -1323,7 +1325,6 @@ void PS_Graphics::_emit_DocumentNeededResources(void)
             // only include each font name once
 #ifdef USE_XFT
 			UT_String pName(psf->getUnixFont()->getPostscriptName());
-			UT_DEBUGMSG(("pName: %s\n", pName.c_str()));
 #else	
             const char * pName = psf->getMetricsData()->gfi->fontName;
 #endif
@@ -1354,9 +1355,9 @@ void PS_Graphics::_emit_DocumentNeededResources(void)
 	bool bEmbedFonts;
 	XAP_App::getApp()->getPrefsValueBool((const XML_Char *)XAP_PREF_KEY_EmbedFontsInPS, &bEmbedFonts);
 	if(bEmbedFonts)
-        m_ps->formatComment("DocumentSuppliedResources",&vec);
-    else
-    	m_ps->formatComment("DocumentNeededResources",&vec);
+	  m_ps->formatComment("DocumentSuppliedResources",&vec);
+	else
+	  m_ps->formatComment("DocumentNeededResources",&vec);
 
 #ifdef USE_XFT
 	UT_VECTOR_FREEALL(char*, vec);
@@ -1561,6 +1562,8 @@ void PS_Graphics::_emit_FontMacros(void)
 	char buf[1024];
 	UT_uint32 k;
 	UT_uint32 kLimit = m_vecFontList.getItemCount();
+
+	UT_DEBUGMSG(("DOM: emit_FontMacros: %d\n", kLimit));
 
 	for (k=0; k<kLimit; k++)
 	{
@@ -1895,7 +1898,6 @@ void PS_Graphics::fillRect(GR_Color3D /*c*/, UT_Rect & /*r*/)
 	UT_ASSERT(UT_SHOULD_NOT_HAPPEN);
 }
 
-
 PSFont *PS_Graphics::_findMatchPSFontCJK(PSFont * pFont)
 {
   if (!XAP_EncodingManager::get_instance()->cjk_locale())
@@ -1937,20 +1939,21 @@ PSFont *PS_Graphics::_findMatchPSFontCJK(PSFont * pFont)
   m_vecFontList.addItem((void *) p);
   p->setIndex(m_vecFontList.getItemCount() - 1);
   return p;
-};
+}
 
 void PS_Graphics::_emit_SetFont(PSFont *pFont)
 {
   if ( pFont )
     {
       char buf[1024];
+#ifdef USE_XFT
+      g_snprintf(buf, 1024, "F%d\n", pFont->getIndex()-1);
+#else
       g_snprintf(buf, 1024, "F%d\n", pFont->getIndex());
+#endif
       m_ps->writeBytes(buf);
     }
-};
-
-
-
+}
 
 void PS_Graphics::_explodePSFonts(PSFont *current, PSFont*& pEnglishFont,PSFont*& pChineseFont)
 {
