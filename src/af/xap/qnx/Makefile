@@ -28,6 +28,7 @@ CPPSRCS=		xap_QNXApp.cpp				\
 			xap_QNXClipboard.cpp			\
 			xap_QNXDlg_About.cpp			\
 			xap_QNXDlg_ClipArt.cpp			\
+			xap_QNXDlg_Encoding.cpp		\
 			xap_QNXDlg_FileOpenSaveAs.cpp		\
 			xap_QNXDlg_FontChooser.cpp		\
 			xap_QNXDlg_Language.cpp			\
