@@ -688,7 +688,9 @@ private:
     void           HandleRow(void);
 	void           HandleNote();
 	void           HandleNoteReference();
-// Frame handlers
+// Shape handlers in ie_imp_RTFObjectsAndPicts.cpp
+	void           HandleShape(void);
+
 	void           HandleShapeProp(void);
 	void           HandleShapeVal(void);
 	void           HandleShapeText(void);
@@ -717,6 +719,12 @@ private:
 	UT_Error _isBidiDocument();
 	bool     _appendSpan();
 	bool     _insertSpan();
+	
+
+private:
+	// static helpers to decode
+	static bool digVal(char ch, int& value, int base);
+	static bool hexVal(char c, int& value);
 	
 
 // import member vars
