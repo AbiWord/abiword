@@ -312,6 +312,8 @@ void IE_Imp_AbiWord_1::startElement(const XML_Char *name, const XML_Char **atts)
 		bool bOK = true;
 		if(pszId)
 		{
+			UT_uint32 id = atoi(pszId);
+			getDoc()->setMinUID(UT_UniqueId::HeaderFtr,id);
 		    bOK = getDoc()->verifySectionID(pszId);
 		}
 		if(bOK)
@@ -348,6 +350,13 @@ void IE_Imp_AbiWord_1::startElement(const XML_Char *name, const XML_Char **atts)
 		X_VerifyParseState(_PS_Block);
 		m_parseState = _PS_Sec;
 		m_bWroteSection = true;
+		const XML_Char * pszId = _getXMLPropValue("footnote-id", atts);
+		UT_ASSERT( pszId );
+		if(pszId)
+		{
+			UT_uint32 id = atoi(pszId);
+			getDoc()->setMinUID(UT_UniqueId::Footnote,id);
+		}
 		X_CheckError(getDoc()->appendStrux(PTX_SectionFootnote,atts));
 		xxx_UT_DEBUGMSG(("FInished Append footnote strux \n"));
 		return;
@@ -358,6 +367,13 @@ void IE_Imp_AbiWord_1::startElement(const XML_Char *name, const XML_Char **atts)
 		X_VerifyParseState(_PS_Block);
 		m_parseState = _PS_Sec;
 		m_bWroteSection = true;
+		const XML_Char * pszId = _getXMLPropValue("endnote-id", atts);
+		UT_ASSERT( pszId );
+		if(pszId)
+		{
+			UT_uint32 id = atoi(pszId);
+			getDoc()->setMinUID(UT_UniqueId::Endnote,id);
+		}
 		X_CheckError(getDoc()->appendStrux(PTX_SectionEndnote,atts));
 		xxx_UT_DEBUGMSG(("FInished Append Endnote strux \n"));
 		return;
@@ -367,6 +383,12 @@ void IE_Imp_AbiWord_1::startElement(const XML_Char *name, const XML_Char **atts)
 		X_VerifyParseState(_PS_Sec);
 		m_parseState = _PS_Block;
 		m_bWroteParagraph = true;
+		const XML_Char * pszId = _getXMLPropValue("list", atts);
+		if(pszId)
+		{
+			UT_uint32 id = atoi(pszId);
+			getDoc()->setMinUID(UT_UniqueId::List,id);
+		}
 		X_CheckError(getDoc()->appendStrux(PTX_Block,atts));
 		m_iInlineStart = getOperationCount();
 		return;
@@ -386,13 +408,22 @@ void IE_Imp_AbiWord_1::startElement(const XML_Char *name, const XML_Char **atts)
 		// TODO inline span formatting.
 
 	case TT_IMAGE:
+	{
 		X_VerifyParseState(_PS_Block);
 #ifdef ENABLE_RESOURCE_MANAGER
 		X_CheckError(_handleImage (atts));
 #else
+		const XML_Char * pszId = _getXMLPropValue("dataid", atts);
+		UT_ASSERT( pszId );
+		if(pszId)
+		{
+			UT_uint32 id = atoi(pszId);
+			getDoc()->setMinUID(UT_UniqueId::Image,id);
+		}
 		X_CheckError(getDoc()->appendObject(PTO_Image,atts));
 #endif
 		return;
+	}
 	case TT_BOOKMARK:
 		X_VerifyParseState(_PS_Block);
 		X_CheckError(getDoc()->appendObject(PTO_Bookmark,atts));
@@ -892,6 +923,9 @@ bool IE_Imp_AbiWord_1::_handleImage (const XML_Char ** atts)
 
 	if ( old_id == 0) return false; // huh?
 	if (*old_id == 0) return false; // huh?
+
+	UT_uint32 id = atoi(old_id);
+	getDoc()->setMinUID(UT_UniqueId::Image,id);
 
 	UT_UTF8String re_id;
 

@@ -6625,9 +6625,10 @@ void	fl_BlockLayout::StartList( List_Type lType, UT_uint32 start,const XML_Char 
 		m_bListItem = true;
 		listUpdate();
 	}
-	id = UT_rand();
-	while(id < AUTO_LIST_RESERVED)
-		id = UT_rand();
+
+	UT_return_if_fail(m_pDoc);
+	id = m_pDoc->getUID(UT_UniqueId::List);
+	
 	sprintf(lid, "%i", id);
 
 	sprintf(pid, "%i", iParentID);
@@ -7317,11 +7318,10 @@ void fl_BlockLayout::_createListLabel(void)
 #if 1
 	XML_Char * tagatt[3] = {"list-tag",NULL,NULL};
 	XML_Char tagID[12];
-	UT_uint32 itag = UT_rand();
-	while( itag < 10000)
-	{
-		itag = UT_rand();
-	}
+
+	UT_return_if_fail(m_pDoc);
+	UT_uint32 itag = m_pDoc->getUID(UT_UniqueId::List);
+
 	sprintf(tagID,"%d",itag);
 	tagatt[1] = static_cast<XML_Char *>(&tagID[0]);
 	m_pDoc->changeSpanFmt(PTC_AddFmt,getPosition(),getPosition(),NULL,const_cast<const XML_Char **>(tagatt));

@@ -7603,9 +7603,9 @@ bool FV_View::insertHeaderFooter(const XML_Char ** props, HdrFtrType hfType, fl_
 	}
 
 	static XML_Char sid[15];
-	UT_uint32 id = 0;
-	while(id < AUTO_LIST_RESERVED)
-		id = UT_rand();
+
+	UT_return_val_if_fail(m_pDoc,false);
+	UT_uint32 id = m_pDoc->getUID(UT_UniqueId::HeaderFtr);
 	sprintf(sid, "%i", id);
 
 	const XML_Char* sec_attributes1[] = {
@@ -7833,14 +7833,13 @@ bool FV_View::insertFootnote(bool bFootnote)
 
 	// add field for footnote reference
 	// first, make up an id for this footnote.
-	static XML_Char footpid[15];
-	UT_uint32 pid = 0;
-	while (pid < AUTO_LIST_RESERVED)
-		pid = UT_rand();
-	sprintf(footpid, "%i", pid);
-
+	UT_String footpid;
+	UT_return_val_if_fail(m_pDoc, false);
+	UT_uint32 pid = m_pDoc->getUID(bFootnote ? UT_UniqueId::Footnote : UT_UniqueId::Endnote);
+	UT_String_sprintf(footpid,"%d",pid);
+	
 	const XML_Char* attrs[] = {
-		"footnote-id", footpid,
+		"footnote-id", footpid.c_str(),
 		NULL, NULL
 	};
 	if(!bFootnote)
@@ -7871,7 +7870,7 @@ bool FV_View::insertFootnote(bool bFootnote)
 // This does a rebuild of the affected paragraph
 //
 	m_pDoc->changeStruxFmt(PTC_AddFmt,dpBody,dpBody,NULL,dumProps,PTX_Block);
-	if (!insertFootnoteSection(bFootnote,footpid))
+	if (!insertFootnoteSection(bFootnote,footpid.c_str()))
 	{
 		m_pDoc->endUserAtomicGlob();
 		return false;

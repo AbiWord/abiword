@@ -1462,11 +1462,16 @@ void IE_Exp_RTF::_output_MultiLevelRTF(ie_exp_RTF_MsWord97ListMulti * pMulti)
 {
 	_rtf_open_brace();
 	_rtf_keyword("list");
+#if 0
 	UT_uint32 tempID = UT_rand();
 	while(tempID < 10000)
 	{
 		tempID = UT_rand();
 	}
+#else
+	UT_uint32 tempID = getDoc()->getUID(UT_UniqueId::List);
+#endif
+	
 	_rtf_keyword("listtemplateid",tempID);
 	UT_uint32 i = 0;
 	fl_AutoNum * pAuto = NULL;
@@ -1859,11 +1864,15 @@ void IE_Exp_RTF::_output_SimpleListRTF(ie_exp_RTF_MsWord97ListSimple * pSimple)
 {
 	_rtf_open_brace();
 	_rtf_keyword("list");
+#if 0
 	UT_uint32 tempID = UT_rand();
 	while(tempID < 10000)
 	{
 		tempID = UT_rand();
 	}
+#else
+	UT_uint32 tempID = getDoc()->getUID(UT_UniqueId::List);
+#endif
 	_rtf_keyword("listtemplateid",tempID);
 	_rtf_keyword("listsimple");
 	fl_AutoNum * pAuto = pSimple->getAuto();

@@ -132,10 +132,11 @@ public:
 						const unsigned char * pData, 
 						UT_uint32 lenData, 
 						const char * szEncoding = 0);
+
+	PD_Document *           getDoc() const;
 	
  protected:
 	IE_Imp(PD_Document * pDocument);
-	PD_Document *           getDoc() const;
 
 	PT_DocPosition getDocPos() const;
 	void setClipboard (PT_DocPosition dpos);

@@ -73,6 +73,13 @@ struct header
 	UT_uint32    pos;
 	UT_uint32    len;
 	UT_uint32    pid;
+#if 0
+	struct _d 
+	{
+		UT_Vector hdr;
+		UT_Vector frag;
+	}d;
+#endif
 };
 
 
@@ -187,7 +194,7 @@ private:
 	bool        _handleHeadersText(UT_uint32 iPos);
 	
 	UT_UCS4String		m_pTextRun;
-	UT_uint32			m_iImageCount;
+	//UT_uint32			m_iImageCount;
 	UT_uint32			m_nSections;
 	bool				m_bSetPageSize;
 	UT_UCS2Char m_command [FLD_SIZE];
