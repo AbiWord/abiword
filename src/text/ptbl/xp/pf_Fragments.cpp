@@ -13,7 +13,14 @@ pf_Fragments::pf_Fragments()
 
 pf_Fragments::~pf_Fragments()
 {
-	// TODO decide if we should kill the list or if it already has been
+	while (m_pFirst)
+	{
+		pf_Frag* pNext = m_pFirst->getNext();
+		delete m_pFirst;
+		m_pFirst = pNext;
+	}
+	
+	m_pLast = NULL;
 }
 
 void pf_Fragments::appendFrag(pf_Frag * pf)

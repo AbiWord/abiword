@@ -22,6 +22,14 @@ FL_ColumnSetLayout::FL_ColumnSetLayout(FL_SectionLayout * pSectionLayout, PL_Str
 
 FL_ColumnSetLayout::~FL_ColumnSetLayout()
 {
+	while (m_pFirstColumnLayout)
+	{
+		FL_ColumnLayout* pNext = m_pFirstColumnLayout->getNext();
+		delete m_pFirstColumnLayout;
+		m_pFirstColumnLayout = pNext;
+	}
+	
+	m_pLastColumnLayout = NULL;
 }
 
 FL_SectionLayout * FL_ColumnSetLayout::getSectionLayout(void) const

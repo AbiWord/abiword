@@ -64,6 +64,9 @@ FL_DocLayout::~FL_DocLayout()
 	if (m_pDoc)
 		m_pDoc->removeListener(m_lid);
 
+	if (m_pDocListener)
+		delete m_pDocListener;
+
 	UT_VECTOR_PURGEALL(FP_Page, m_vecPages);
 	UT_VECTOR_PURGEALL(FL_SectionLayout, m_vecSectionLayouts);
 
