@@ -45,6 +45,7 @@ public:
 	virtual ~fp_FootnoteContainer();
 	UT_sint32           getValue(void);
 	void				layout(void);
+	virtual bool        isVBreakable(void) {return false;}
 	virtual void		clearScreen(void);
 	virtual void		draw(dg_DrawArgs*);
 	virtual void		draw(GR_Graphics*) {}
@@ -66,6 +67,7 @@ public:
 	virtual ~fp_EndnoteContainer();
 	UT_sint32           getValue(void);
 	void				layout(void);
+	virtual bool        isVBreakable(void) {return false;}
 	virtual void		clearScreen(void);
 	virtual void		draw(dg_DrawArgs*);
 	virtual void		draw(GR_Graphics*) {}

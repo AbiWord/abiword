@@ -39,7 +39,18 @@ public:
 	void   setStartPage(fp_Page * pPage);
 	fp_Page * getStartPage(void) { return m_pStartPage;}
 private:
+	bool                    _isThisBroken(fp_Container * pCon);
+	void                    _setLastWantedVBreak(fp_Container * pCon, UT_sint32 iBreakAt);
+	UT_sint32               _getLastWantedVBreak(fp_Container * pCon);
+	bool _breakCON(fp_Container *& pOffendingContainer,
+							fp_Container *& pLastContainerToKeep,
+							int iMaxColHeight, int iWorkingColHeight,
+							int iContainerMarginAfter);
 	bool _breakTable(fp_Container *& pOffendingContainer,
+							fp_Container *& pLastContainerToKeep,
+							int iMaxColHeight, int iWorkingColHeight,
+							int iContainerMarginAfter);
+	bool _breakTOC(fp_Container *& pOffendingContainer,
 							fp_Container *& pLastContainerToKeep,
 							int iMaxColHeight, int iWorkingColHeight,
 							int iContainerMarginAfter);

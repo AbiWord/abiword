@@ -29,12 +29,14 @@
 #include "fl_FootnoteLayout.h"
 #include "fl_Layout.h"
 #include "fl_DocLayout.h"
+#include "fl_TOCLayout.h"
 #include "fl_BlockLayout.h"
 #include "fl_TableLayout.h"
 #include "fp_TableContainer.h"
 #include "fb_LineBreaker.h"
 #include "fb_ColumnBreaker.h"
 #include "fp_FootnoteContainer.h"
+#include "fp_TOCContainer.h"
 #include "fp_Page.h"
 #include "fp_Line.h"
 #include "fp_Column.h"
@@ -1543,7 +1545,7 @@ UT_uint32 fl_DocSectionLayout::getColumnOrder(void) const
 	return m_iColumnOrder;
 }
 
-void fl_DocSectionLayout::deleteBrokenTablesFromHere(fl_TableLayout * pTL)
+void fl_DocSectionLayout::deleteBrokenTablesFromHere(fl_ContainerLayout * pTL)
 {
 	UT_DEBUGMSG(("Doing delete broken tables from here \n"));
 	if(m_bDeleteingBrokenContainers)
@@ -1563,10 +1565,20 @@ void fl_DocSectionLayout::deleteBrokenTablesFromHere(fl_TableLayout * pTL)
 				pTabC->deleteBrokenTables(true);
 			}
 		}
+		else if(pCL->getContainerType() == FL_CONTAINER_TOC)
+		{
+			fl_TOCLayout * pTOCL = static_cast<fl_TOCLayout *>(pCL);
+			fp_TOCContainer * pTOC = static_cast<fp_TOCContainer *>(pTOCL->getFirstContainer());
+			if(pTOC != NULL)
+			{
+				pTOC->deleteBrokenTOCs(true);
+			}
+		}
 		pCL = pCL->getNext();
 	}
 	m_bDeleteingBrokenContainers = false;
 }
+
 
 fl_DocSectionLayout* fl_DocSectionLayout::getNextDocSection(void) const
 {

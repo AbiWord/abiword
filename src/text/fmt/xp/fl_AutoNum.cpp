@@ -385,7 +385,7 @@ void    fl_AutoNum::_getLabelstr( UT_UCSChar labelStr[], UT_uint32 * insPoint,
 		i++;
 	}
 	if (i >= NrElements(p) || p[i] == '\0') {
-		UT_ASSERT(UT_NOT_REACHED);
+//		UT_ASSERT(UT_NOT_REACHED);
 		UT_DEBUGMSG (("Hub: not a delim (SHOULD NOT HAPPEN)!!!\n"));
 		*insPoint = 0;
 		return;

@@ -24,6 +24,7 @@
 #include "fp_Column.h"
 #include "fp_Page.h"
 #include "fp_Line.h"
+#include "fp_TOCContainer.h"
 #include "fl_SectionLayout.h"
 #include "gr_DrawArgs.h"
 #include "fp_TableContainer.h"
@@ -100,6 +101,14 @@ void fp_VerticalContainer::setHeight(UT_sint32 iHeight)
 		if(!pTab->isThisBroken())
 		{
 			UT_DEBUGMSG(("Unbroken Table container set to %d from %d \n",iHeight,pTab->getHeight()));
+		}
+	}
+	if(getContainerType() == FP_CONTAINER_TOC)
+	{
+		fp_TOCContainer * pTOC = static_cast<fp_TOCContainer *>(this);
+		if(!pTOC->isThisBroken())
+		{
+			UT_DEBUGMSG(("Unbroken TOC container set to %d from %d \n",iHeight,pTOC->getHeight()));
 		}
 	}
 	m_iHeight = iHeight;
@@ -252,6 +261,54 @@ fp_TableContainer * fp_VerticalContainer::getCorrectBrokenTable(fp_Container * p
 	return pMasterTab;
 }
 
+
+
+/*!
+ * This method returns the correct broken TOC for this line.
+ */
+fp_TOCContainer * fp_VerticalContainer::getCorrectBrokenTOC(fp_Container * pCon)
+{
+	xxx_UT_DEBUGMSG(("VerticalContainer: In get Correct proken TOC \n"));
+	bool bFound = false;
+//
+// OK scan through the broken TOC's and look for the TOC that contains this
+//
+	fp_Container * pCur = static_cast<fp_Container *>(pCon->getContainer());
+	UT_return_val_if_fail(pCur->getContainerType() == FP_CONTAINER_TOC,NULL);
+	fp_TOCContainer * pMasterTOC = static_cast<fp_TOCContainer *>(pCur);
+	UT_return_val_if_fail(pMasterTOC && pMasterTOC->getContainerType() == FP_CONTAINER_TOC,NULL);
+	fp_TOCContainer * pTOC = pMasterTOC->getFirstBrokenTOC();
+	bFound = false;
+	UT_sint32 iCount  =0;
+	while(pTOC && !bFound)
+	{
+		if(pTOC->isInBrokenTOC(pCon))
+		{
+			bFound = true;
+		}
+		else
+		{
+			pTOC = static_cast<fp_TOCContainer *>(pTOC->getNext());
+		}
+		if(!bFound)
+		{
+			iCount++;
+		}
+	}
+	if(bFound)
+	{
+		xxx_UT_DEBUGMSG(("getCorrect: Found table after %d tries \n",iCount));
+		xxx_UT_DEBUGMSG(("Container y %d height %d was found in table %d ybreak %d ybottom y %d \n",pCon->getY(),pCon->getHeight(),iCount,pTab->getYBreak(),pTab->getYBottom()));
+		return  pTOC;
+	}
+	UT_DEBUGMSG(("getCorrectBroken: No table found after %d tries, Y of Con \n",iCount,pCon->getY()));
+	if(pMasterTOC)
+	{
+//		UT_ASSERT(pMasterTOC->getFirstBrokenTOC() == NULL);
+	}
+	return pMasterTOC;
+}
+
 /*!
   Get line's offsets relative to this container
  \param  pContainer Container
@@ -266,6 +323,7 @@ void fp_VerticalContainer::getOffsets(fp_ContainerObject* pContainer, UT_sint32&
 	fp_Container * pCon = static_cast<fp_Container *>(this);
 	fp_Container * pPrev = NULL;
 	fp_TableContainer * pTab = NULL;
+	fp_TOCContainer * pTOC = NULL;
 	while(pCon && !pCon->isColumnType())
 	{
 		my_xoff += pCon->getX();
@@ -303,6 +361,18 @@ void fp_VerticalContainer::getOffsets(fp_ContainerObject* pContainer, UT_sint32&
 			}
 			pCon = static_cast<fp_Container *>(pVCon);
 		}
+		if(pCon->getContainerType() == FP_CONTAINER_TOC)
+		{
+			fp_VerticalContainer * pVCon= static_cast<fp_VerticalContainer *>(pCon);
+//
+// Lines and Cells are actually always in the Master table. To make
+// Them print on the right pages broken tables are created which
+// sit in different columns. Here we hijack the recursive search and
+// move it up the correct broken table line when we come across a cell
+// 
+			pVCon = getCorrectBrokenTOC(static_cast<fp_Container *>(pContainer));
+			pCon = static_cast<fp_Container *>(pVCon);
+		}
 		pPrev = pCon;
 		pCon = pCon->getContainer();
 	}
@@ -336,6 +406,50 @@ void fp_VerticalContainer::getOffsets(fp_ContainerObject* pContainer, UT_sint32&
 			fp_Column * pFirstLeader = pPage->getNthColumnLeader(0);
 			UT_sint32 iColOffset = pTopCol->getY() - pFirstLeader->getY();
 			if(pPage != pTab->getPage())
+			{
+				my_yoff += iColOffset;
+			}
+		}
+		UT_sint32 col_xV =0;
+		UT_sint32 col_yV =0;
+		fp_Column * pCol = static_cast<fp_Column *>(pCon);
+		pCol->getPage()->getScreenOffsets(pCol, col_xV, col_yV);
+		pCol =static_cast<fp_Column *>(pCon->getColumn());
+		pCol->getPage()->getScreenOffsets(pCol, col_x, col_y);
+		UT_sint32 ydiff = col_yV - col_y;
+		my_yoff += ydiff;
+		xoff = pCon->getX() + my_xoff + pOrig->getX();
+		yoff = pCon->getY() + my_yoff + pOrig->getY();
+		if(pCon->getContainerType() != FP_CONTAINER_COLUMN_SHADOW)
+		{
+			return;
+		}
+	}
+	if(pPrev && pPrev->getContainerType() == FP_CONTAINER_TOC)
+	{
+		pTOC = static_cast<fp_TOCContainer *>(pPrev);
+		fp_Column * pTopCol = NULL;
+		if(pTOC->isThisBroken())
+		{
+			pTopCol = static_cast<fp_Column *>(pTOC->getMasterTOC()->getFirstBrokenTOC()->getColumn());
+		}
+		else
+		{
+			if(pTOC->getFirstBrokenTOC())
+			{
+				pTopCol = static_cast<fp_Column *>(pTOC->getFirstBrokenTOC()->getColumn());
+			}
+			else
+			{
+				pTopCol = static_cast<fp_Column *>(pTOC->getColumn());
+			}
+		}
+		if(pTopCol != NULL)
+		{
+			fp_Page * pPage = pTopCol->getPage();
+			fp_Column * pFirstLeader = pPage->getNthColumnLeader(0);
+			UT_sint32 iColOffset = pTopCol->getY() - pFirstLeader->getY();
+			if(pPage != pTOC->getPage())
 			{
 				my_yoff += iColOffset;
 			}
@@ -500,6 +614,21 @@ void fp_VerticalContainer::getScreenOffsets(fp_ContainerObject* pContainer,
 			{
 				pContainer = static_cast<fp_ContainerObject *>(pVCon);
 			}
+			pCon = static_cast<fp_Container *>(pVCon);
+		}
+		if(pCon->getContainerType() == FP_CONTAINER_TOC)
+		{
+			fp_VerticalContainer * pVCon= static_cast<fp_VerticalContainer *>(pCon);
+//
+// Lines are actually always in the Master table. To make
+// Them print on the right pages broken tables are created which
+// sit in different columns. Here we put in a recursive search find
+// the correct broken table line when we come across a cell
+// 
+// Then we have to get all the offsets right for the broken table.
+//
+
+			pVCon = getCorrectBrokenTOC(static_cast<fp_Container *>(pContainer));
 			pCon = static_cast<fp_Container *>(pVCon);
 		}
 		pPrev = pCon;
@@ -749,6 +878,11 @@ bool fp_VerticalContainer::validate(void)
 			fp_TableContainer * pTab = static_cast<fp_TableContainer *>(pContainer);
 			iH = pTab->getHeight();
 		}
+		if(pContainer->getContainerType() == FP_CONTAINER_TOC)
+		{
+			fp_TOCContainer * pTOC = static_cast<fp_TOCContainer *>(pContainer);
+			iH = pTOC->getHeight();
+		}
 		curBot = curTop + iH;                    ;
 		UT_ASSERT(oldBot <= curTop);
 		if(oldBot > curTop)
@@ -798,6 +932,7 @@ void fp_VerticalContainer::draw(dg_DrawArgs* pDA)
 	{
 		fp_ContainerObject* pContainer = static_cast<fp_ContainerObject*>(getNthCon(i));
 		bool bInTable = false;
+		bool bInTOC = false;
 
 		da.xoff = pDA->xoff + pContainer->getX();
 		da.yoff = pDA->yoff + pContainer->getY();
@@ -814,6 +949,17 @@ void fp_VerticalContainer::draw(dg_DrawArgs* pDA)
 			bInTable = !(iTableBot < ytop || da.yoff > ybot);
 		}
 
+		if(pContainer->getContainerType() == FP_CONTAINER_TOC)
+		{
+			fp_TOCContainer * pTOC = static_cast<fp_TOCContainer *>(pContainer);
+			if(pTOC->isThisBroken())
+				da.xoff = pDA->xoff + pTOC->getMasterTOC()->getX();
+
+			UT_sint32 iTOCBot = da.yoff + pTOC->getHeight();
+			/* we're in the table if iTableBot < ytop, or table top > ybot */
+			bInTOC = !(iTOCBot < ytop || da.yoff > ybot);
+		}
+
 		UT_sint32 sumHeight = pContainer->getHeight() + (ybot-ytop);
 		UT_sint32 totDiff;
 		if(da.yoff < ytop)
@@ -822,7 +968,7 @@ void fp_VerticalContainer::draw(dg_DrawArgs* pDA)
 			totDiff = da.yoff + pContainer->getHeight() - ytop;
 
 //		if(bTable || (da.yoff >= ytop && da.yoff <= ybot) || (ydiff >= ytop && ydiff <= ybot))
-		if(bInTable || (totDiff < sumHeight)  || (pClipRect == NULL))
+		if((bInTable || bInTOC) || (totDiff < sumHeight)  || (pClipRect == NULL))
 		{
 			bStartedDrawing = true;
 			pContainer->draw(&da);
@@ -867,6 +1013,11 @@ void fp_VerticalContainer::mapXYToPosition(UT_sint32 x, UT_sint32 y, PT_DocPosit
 			xxx_UT_DEBUGMSG(("SEVIOR: Table container with no containers \n"));
 			return;
 		}
+		if(getContainerType() == FP_CONTAINER_TOC)
+		{
+			xxx_UT_DEBUGMSG(("SEVIOR: TOC container with no containers \n"));
+			return;
+		}
 		pos = 2;
 		bBOL = true;
 		bEOL = true;
@@ -886,6 +1037,10 @@ void fp_VerticalContainer::mapXYToPosition(UT_sint32 x, UT_sint32 y, PT_DocPosit
 		{
 			iHeight = static_cast<fp_TableContainer *>(pContainer)->getHeight();
 		}
+		else if(pContainer->getContainerType() == FP_CONTAINER_TOC)
+		{
+			iHeight = static_cast<fp_TOCContainer *>(pContainer)->getHeight();
+		}
 		else
 		{
 			iHeight = pContainer->getHeight();
@@ -904,6 +1059,10 @@ void fp_VerticalContainer::mapXYToPosition(UT_sint32 x, UT_sint32 y, PT_DocPosit
 		if(pContainerUpper->getContainerType() == FP_CONTAINER_TABLE)
 		{
 			iUHeight = static_cast<fp_TableContainer *>(pContainerUpper)->getHeight();
+		}
+		else if(pContainerUpper->getContainerType() == FP_CONTAINER_TOC)
+		{
+			iUHeight = static_cast<fp_TOCContainer *>(pContainerUpper)->getHeight();
 		}
 		else
 		{
@@ -1074,12 +1233,13 @@ fp_Container* fp_VerticalContainer::getLastContainer(void) const
 void fp_VerticalContainer::bumpContainers(fp_ContainerObject* pLastContainerToKeep)
 {
 	UT_sint32 ndx = (NULL == pLastContainerToKeep) ? 0 : (findCon(pLastContainerToKeep)+1);
+	UT_DEBUGMSG(("!!!---Bump Containers LastToKeep %x Index %d \n",pLastContainerToKeep,ndx));
+
 	UT_ASSERT(ndx >= 0);
 	UT_sint32 i;
-
+	fp_TOCContainer *pTOC = NULL;
 	fp_VerticalContainer* pNextContainer = static_cast<fp_VerticalContainer*>(getNext());
 	UT_ASSERT(pNextContainer);
-
 	if (pNextContainer->isEmpty())
 	{
 		for (i=ndx; i< static_cast<UT_sint32>(countCons()); i++)
@@ -1099,14 +1259,25 @@ void fp_VerticalContainer::bumpContainers(fp_ContainerObject* pLastContainerToKe
 					pTab->deleteBrokenTables(true);
 				}
 			}
+			if(pContainer->getContainerType() == FP_CONTAINER_TOC)
+			{
+				fp_TOCContainer *pTOC = static_cast<fp_TOCContainer *>(pContainer);
+				UT_DEBUGMSG(("Found TOC %x index %d prev %x to bump to Empty Col \n",pTOC,i,pTOC->getPrevContainerInSection()));
+				if(!pTOC->isThisBroken())
+				{
+					pTOC->deleteBrokenTOCs(true);
+				}
+			}
 #endif
 			pNextContainer->addContainer(pContainer);
 		}
 	}
 	else
 	{
+		bool bTOC = false;
 		for (i=static_cast<UT_sint32>(countCons()) - 1; i >= ndx; i--)
 		{
+			bTOC = false;
 			fp_Container* pContainer = static_cast<fp_Container*>(getNthCon(i));
 			pContainer->clearScreen();
 //
@@ -1122,11 +1293,30 @@ void fp_VerticalContainer::bumpContainers(fp_ContainerObject* pLastContainerToKe
 					pTab->deleteBrokenTables(true);
 				}
 			}
+			if(pContainer->getContainerType() == FP_CONTAINER_TOC)
+			{
+				pTOC = static_cast<fp_TOCContainer *>(pContainer);
+				UT_DEBUGMSG(("Found TOC %x index %d prev %x to bump to filled Col \n",pTOC,i,pTOC->getPrevContainerInSection()));
+				if(!pTOC->isThisBroken())
+				{
+					pTOC->deleteBrokenTOCs(true);
+				}
+				bTOC = true;
+			}
 #endif
 			pNextContainer->insertContainer(pContainer);
+			if(bTOC)
+			{
+				UT_sint32 iTOC = pNextContainer->findCon(pContainer);
+				UT_DEBUGMSG(("TOC insert at location %d in next Container \n",iTOC));
+			}
 		}
 	}
-
+	if(pTOC)
+	{
+		UT_sint32 iTOC = pNextContainer->findCon(pTOC);
+		UT_DEBUGMSG(("TOC Final location %d in next Container \n",iTOC));
+	}
 	for (i=static_cast<UT_sint32>(countCons()) - 1; i >= ndx; i--)
 	{
 		deleteNthCon(i);
@@ -1286,11 +1476,18 @@ void fp_Column::layout(void)
 // This is to speedup redraws.
 //
 		fp_TableContainer * pTab = NULL;
+		fp_TOCContainer * pTOC = NULL;
 		UT_sint32 iHeight = pContainer->getHeight();
 		if(pContainer->getContainerType() == FP_CONTAINER_TABLE)
 		{
 			pTab = static_cast<fp_TableContainer *>(pContainer);
 			iHeight = pTab->getHeight();
+		}
+		if(pContainer->getContainerType() == FP_CONTAINER_TOC)
+		{
+			pTOC = static_cast<fp_TOCContainer *>(pContainer);
+			iHeight = pTOC->getHeight();
+			UT_ASSERT(iHeight > 0);
 		}
 		else if(pContainer->getContainerType() == FP_CONTAINER_LINE)
 		{
@@ -1316,6 +1513,10 @@ void fp_Column::layout(void)
 		if(pTab)
 		{
 			iContainerHeight = pTab->getHeight();
+		}
+		if(pTOC)
+		{
+			iContainerHeight = pTOC->getHeight();
 		}
 		UT_sint32 iContainerMarginAfter = pContainer->getMarginAfter();
 		//	UT_ASSERT(iContainerHeight > 0);
@@ -1441,10 +1642,16 @@ void fp_ShadowContainer::layout(bool bForceLayout)
 	{
 		fp_Container* pContainer = static_cast<fp_Container*>(getNthCon(i));
 		fp_TableContainer * pTab = NULL;
+		fp_TOCContainer * pTOC = NULL;
 		if(pContainer->getContainerType() == FP_CONTAINER_TABLE)
 		{
 			pTab = static_cast<fp_TableContainer *>(pContainer);
 			UT_DEBUGMSG(("Found Table in shadow!!!\n"));
+		}
+		else if(pContainer->getContainerType() == FP_CONTAINER_TOC)
+		{
+			pTOC = static_cast<fp_TOCContainer *>(pContainer);
+			UT_DEBUGMSG(("Found TOC in shadow!!!\n"));
 		}
 //
 // FIXME: Implement this one day. Tables in header/footers.
@@ -1456,6 +1663,10 @@ void fp_ShadowContainer::layout(bool bForceLayout)
 		if(pTab != NULL)
 		{
 			iContainerHeight = pTab->getHeight();
+		}
+		if(pTOC != NULL)
+		{
+			iContainerHeight = pTOC->getHeight();
 		}
 		UT_sint32 iContainerMarginAfter = pContainer->getMarginAfter();
 		UT_sint32 sum = iContainerHeight + iContainerMarginAfter;

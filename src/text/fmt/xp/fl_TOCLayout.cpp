@@ -139,8 +139,8 @@ fl_TOCLayout::fl_TOCLayout(FL_DocLayout* pLayout, fl_DocSectionLayout* pDocSL, P
 	  m_iCurrentLevel(0)
 {
 	UT_ASSERT(m_pDocSL->getContainerType() == FL_CONTAINER_DOCSECTION);
-	_createTOCContainer();
-	_insertTOCContainer(static_cast<fp_TOCContainer *>(getLastContainer()));
+//	_createTOCContainer();
+//	_insertTOCContainer(static_cast<fp_TOCContainer *>(getLastContainer()));
 	m_pLayout->addTOC(this);
 }
 

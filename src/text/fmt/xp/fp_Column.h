@@ -36,6 +36,7 @@ class fl_EndnoteSectionLayout;
 class fl_HdrFtrSectionLayout;
 class fl_DocSectionLayout;
 class fl_SectionLayout;
+class fp_TOCContainer;
 class fl_HdrFtrShadow;
 class fp_Page;
 class PP_AttrProp;
@@ -121,6 +122,7 @@ public:
 								   UT_sint32& xoff,
 								   UT_sint32& yoff);
 	fp_TableContainer * getCorrectBrokenTable(fp_Container * pLine);
+	fp_TOCContainer *   getCorrectBrokenTOC(fp_Container * pLine);
 	void		 		getScreenOffsets(fp_ContainerObject* pContainer,
 										 UT_sint32& xoff,
 										 UT_sint32& yoff);

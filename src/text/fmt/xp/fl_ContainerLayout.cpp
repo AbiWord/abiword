@@ -373,6 +373,7 @@ fl_ContainerLayout * fl_ContainerLayout::insert(PL_StruxDocHandle sdh, fl_Contai
 					  sdh, indexAP, this));
 		if (pPrev)
 			pPrev->_insertIntoList(pL);
+		static_cast<fl_TOCLayout *>(pL)->getNewContainer(NULL);
 		break;
 	}
 	case FL_CONTAINER_ENDNOTE:

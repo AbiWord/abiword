@@ -5321,13 +5321,21 @@ fl_BlockLayout::doclistener_deleteStrux(const PX_ChangeRecord_Strux* pcrx)
 	// Get rid of everything else about the block
 	purgeLayout();
 	// Unlink this block
-	if (pPrevBL)
+	if(getNext() && getNext()->getNext() &&  getNext()->getNext()->getContainerType() == FL_CONTAINER_TOC)
+		{
+			UT_DEBUGMSG(("Next container is TOC \n"));
+			UT_ASSERT(0);
+		}
+	//
+	// Use actual getPrev() to preserve the structure of the document.
+	//
+	if (getPrev())
 	{
-		pPrevBL->setNext(getNext());
+		getPrev()->setNext(getNext());
 	}
 	if (getNext())
 	{
-		getNext()->setPrev(pPrevBL);
+		getNext()->setPrev(getPrev());
 	}
 
 	fl_SectionLayout* pSL = static_cast<fl_SectionLayout *>(myContainingLayout());

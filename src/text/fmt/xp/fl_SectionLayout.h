@@ -287,7 +287,7 @@ public:
 	void                setLastEndnoteContainer(fp_EndnoteContainer * pECon);
 	fp_Container *      getFirstEndnoteContainer(void);
 	fp_Container *      getLastEndnoteContainer(void);
-	void                deleteBrokenTablesFromHere(fl_TableLayout * pTL);
+	void                deleteBrokenTablesFromHere(fl_ContainerLayout * pTL);
 
 private:
 	virtual void		_lookupProperties(void);

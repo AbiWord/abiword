@@ -2743,7 +2743,7 @@ fp_TableContainer * fp_TableContainer::getFirstBrokenTable(void) const
 {
 	if(isThisBroken())
 	{
-		getMasterTable()->getFirstBrokenTable();
+		return getMasterTable()->getFirstBrokenTable();
 	}
 	return m_pFirstBrokenTable;
 }
@@ -2784,7 +2784,7 @@ fp_TableContainer * fp_TableContainer::getLastBrokenTable(void) const
 {
 	if(isThisBroken())
 	{
-		getMasterTable()->getLastBrokenTable();
+		return getMasterTable()->getLastBrokenTable();
 	}
 	return m_pLastBrokenTable;
 }
