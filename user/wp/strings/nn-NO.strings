@@ -14,6 +14,20 @@
 
 <Strings    class="XAP"
 
+DLG_HTMLOPT_ExpTitle="Innstillingar for HTML-eksportering"
+DLG_HTMLOPT_ExpLabel="Set innstillingar for HTML-eksportering:"
+DLG_HTMLOPT_ExpSave="Lagra innstillingar"
+DLG_HTMLOPT_ExpRestore="Opna innstillingar"
+DLG_HTMLOPT_ExpIs4="Eksporter som HTML 4.01"
+DLG_HTMLOPT_ExpAbiWebDoc="Eksporter med PHP-instruksjonar"
+DLG_HTMLOPT_ExpDeclareXML="Marker som XML (versjon 1.0)"
+DLG_HTMLOPT_ExpAllowAWML="Godta ekstra oppmerking i AWML-namnerommet"
+DLG_HTMLOPT_ExpEmbedCSS="Innebygg stilsett"
+DLG_HTMLOPT_ExpEmbedImages="Innebygg bilete i URI-ar (Base64-koda)"
+
+LANG_AM_ET="Amharisk (Etiopia)"
+
+
 LANG_BR_FR="Bretonsk"
 LANG_CO_FR="Korsikansk"
 LANG_ET="Estisk"
@@ -374,6 +388,39 @@ UntitledDocument="Utan namn%d"
 />
 
 <Strings    class="AP"
+
+DLG_FormatTable_Background_Color="Bakgrunnsfarge:"
+FIELD_Application_MailMerge="Utskriftsfletting"
+FIELD_Document_Contributor="Bidragsytar"
+FIELD_Document_Coverage="Omfang"
+FIELD_Document_Creator="Forfattar"
+FIELD_Document_Date="Dato"
+FIELD_Document_Description="Beskriving"
+FIELD_Document_Keywords="Stikkord"
+FIELD_Document_Language="Språk"
+FIELD_Document_Publisher="Utgjevar"
+FIELD_Document_Rights="Opphavsrett"
+FIELD_Document_Subject="Emne"
+FIELD_Document_Title="Tittel"
+FIELD_Document_Type="Type"
+FIELD_Type_Document="Dokument"
+
+MENU_LABEL_TOOLS_MAILMERGE="&amp;Utskriftsfletting"
+MENU_STATUSLINE_TOOLS_MAILMERGE="Utskriftsfletting"
+MSG_ConfirmSaveSecondary="Viss du lukkar utan å lagra, vil endringane gjort dei siste %d minutta forsvinna."
+TOOLBAR_LABEL_MERGELEFT="Slå saman til venstre"
+TOOLBAR_LABEL_MERGERIGHT="Slå saman til høgre"
+TOOLBAR_LABEL_MERGEABOVE="Slå saman over"
+TOOLBAR_LABEL_MERGEBELOW="Slå saman under"
+TOOLBAR_STATUSLINE_MERGELEFT="Slå saman med cella til venstre"
+TOOLBAR_STATUSLINE_MERGERIGHT="Slå saman med cella til høgre"
+TOOLBAR_STATUSLINE_MERGEABOVE="Slå saman med cella over"
+TOOLBAR_STATUSLINE_MERGEBELOW="Slå saman med cella under"
+TOOLBAR_TOOLTIP_MERGELEFT="Slå saman med cella til venstre"
+TOOLBAR_TOOLTIP_MERGERIGHT="Slå saman med cella til høgre"
+TOOLBAR_TOOLTIP_MERGEABOVE="Slå saman med cella over"
+TOOLBAR_TOOLTIP_MERGEBELOW="Slå saman med cella under"
+
 
 DLG_Options_Label_DefLangForDocs="Standardspråk for nye dokument"
 DLG_Options_Label_LangSettings="Språkinnstillingar"
