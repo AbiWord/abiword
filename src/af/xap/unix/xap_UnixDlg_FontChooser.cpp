@@ -600,6 +600,7 @@ GtkWidget * XAP_UnixDialog_FontChooser::constructWindowContents(GtkWidget *paren
 					  static_cast<GtkAttachOptions>(GTK_FILL), 0, 0);
 
 	frameEffects = gtk_frame_new (pSS->getValueUTF8(XAP_STRING_ID_DLG_UFS_EffectsFrameLabel).c_str());
+	gtk_frame_set_shadow_type(GTK_FRAME(frameEffects), GTK_SHADOW_NONE);
 	gtk_widget_show (frameEffects);
 	gtk_box_pack_start(GTK_BOX (vboxmisc), frameEffects, 0,0, 2);
 
@@ -712,13 +713,13 @@ GtkWidget * XAP_UnixDialog_FontChooser::constructWindowContents(GtkWidget *paren
 	/* frame with preview */
 
 	frame4 = gtk_frame_new (NULL);
+	gtk_frame_set_shadow_type(GTK_FRAME(frame4), GTK_SHADOW_NONE);
 	gtk_widget_show (frame4);
 	gtk_box_pack_start (GTK_BOX (vboxMain), frame4, FALSE, FALSE, PREVIEW_BOX_BORDER_WIDTH_PIXELS);
 	// setting the height takes into account the border applied on all
 	// sides, so we need to double the single border width
 	gtk_widget_set_usize (frame4, -1, PREVIEW_BOX_HEIGHT_PIXELS + (PREVIEW_BOX_BORDER_WIDTH_PIXELS * 2));
 	gtk_container_border_width (GTK_CONTAINER (frame4), PREVIEW_BOX_BORDER_WIDTH_PIXELS);
-	gtk_frame_set_shadow_type (GTK_FRAME (frame4), GTK_SHADOW_IN);
 
 	entryArea = createDrawingArea ();
 	gtk_widget_set_events(entryArea, GDK_EXPOSURE_MASK);

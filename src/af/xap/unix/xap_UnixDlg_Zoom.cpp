@@ -290,6 +290,7 @@ GtkWidget * XAP_UnixDialog_Zoom::_constructWindow(void)
 
   UT_XML_cloneNoAmpersands(tmp, pSS->getValueUTF8(XAP_STRING_ID_DLG_Zoom_RadioFrameCaption).c_str());
   frameZoomTo = gtk_frame_new (tmp);
+  gtk_frame_set_shadow_type(GTK_FRAME(frameZoomTo), GTK_SHADOW_NONE);
   FREEP(tmp);
   gtk_widget_show (frameZoomTo);
   gtk_box_pack_start (GTK_BOX (hboxFrames), frameZoomTo, FALSE, TRUE, 0);
@@ -355,6 +356,7 @@ GtkWidget * XAP_UnixDialog_Zoom::_constructWindow(void)
 
   UT_XML_cloneNoAmpersands(tmp, pSS->getValueUTF8(XAP_STRING_ID_DLG_Zoom_PreviewFrame).c_str());
   framePreview = gtk_frame_new (tmp);
+  gtk_frame_set_shadow_type(GTK_FRAME(framePreview), GTK_SHADOW_NONE);
   FREEP(tmp);
   gtk_widget_show (framePreview);
   gtk_box_pack_start (GTK_BOX (hboxFrames), framePreview, TRUE, TRUE, 0);

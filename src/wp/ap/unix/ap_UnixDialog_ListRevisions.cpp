@@ -136,6 +136,7 @@ void AP_UnixDialog_ListRevisions::constructWindowContents ( GtkWidget * dialog_v
   gtk_widget_show (frame1);
   gtk_box_pack_start (GTK_BOX (dialog_vbox1), frame1, TRUE, TRUE, 0);
   gtk_container_set_border_width (GTK_CONTAINER (frame1), 5);
+  gtk_frame_set_shadow_type(GTK_FRAME(frame1), GTK_SHADOW_NONE);
 
   scrolledwindow1 = gtk_scrolled_window_new (NULL, NULL);
   gtk_widget_show (scrolledwindow1);

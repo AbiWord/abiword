@@ -333,6 +333,7 @@ GtkWidget * AP_UnixDialog_FormatTable::_constructWindowContents(void)
 	gtk_box_pack_start (GTK_BOX (hboxContents), vboxPreviewApplyTo, FALSE, FALSE, 6);
 
 	framePreview = gtk_frame_new (pSS->getValueUTF8(AP_STRING_ID_DLG_FormatTable_Preview).c_str());
+	gtk_frame_set_shadow_type(GTK_FRAME(framePreview), GTK_SHADOW_NONE);
 	gtk_widget_show(framePreview);
 	gtk_container_add(GTK_CONTAINER(vboxPreviewApplyTo), framePreview);
 	

@@ -1101,7 +1101,7 @@ void GR_UnixGraphics::setCursor(GR_Graphics::Cursor c)
 		UT_ASSERT(UT_NOT_IMPLEMENTED);
 		/*FALLTHRU*/
 	case GR_CURSOR_DEFAULT:
-		cursor_number = GDK_TOP_LEFT_ARROW;
+		cursor_number = GDK_LEFT_PTR;
 		break;
 
 	case GR_CURSOR_IBEAM:

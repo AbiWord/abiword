@@ -147,8 +147,8 @@ void GR_Caret::enable()
 	if (m_nDisableCount == 0)
 		return;
 
-	--m_nDisableCount;
 	// Check to see if we still have pending disables.
+	--m_nDisableCount;
 	if (m_nDisableCount)
 		return;
 
@@ -287,8 +287,7 @@ void GR_Caret::_blink(bool bExplicit)
 				if(m_bCaret2OnScreen)
 				{
 					UT_Rect r1(m_xPoint2-m_pG->tlu(3), m_yPoint2+m_pG->tlu(1), m_pG->tlu(7), m_iPointHeight);
-					m_pG->saveRectangle(r1,1);
-				
+					m_pG->saveRectangle(r1,1);				
 			
 					m_pG->drawLine(m_xPoint2-m_pG->tlu(1), m_yPoint2+m_pG->tlu(1), 
 								   m_xPoint2-m_pG->tlu(1), m_yPoint2 + m_iPointHeight + m_pG->tlu(1));

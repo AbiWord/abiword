@@ -933,6 +933,7 @@ GtkWidget*  AP_UnixDialog_FormatFootnotes::_constructWindow(void)
   m_windowMain = abiDialogNew("format footnotes dialog", TRUE, pSS->getValueUTF8(AP_STRING_ID_DLG_FormatFootnotes_Title).c_str());
 
   frame1 = gtk_frame_new (NULL);
+  gtk_frame_set_shadow_type(GTK_FRAME(frame1), GTK_SHADOW_NONE);
   gtk_widget_show (frame1);
   gtk_container_add (GTK_CONTAINER (GTK_DIALOG(m_windowMain)->vbox), frame1);
   gtk_container_set_border_width (GTK_CONTAINER (frame1), 4);

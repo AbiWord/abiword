@@ -224,7 +224,7 @@ void AP_UnixDialog_HdrFtr::_constructWindowContents (GtkWidget * parent)
 	gtk_widget_show (HeaderFrame);
 	gtk_box_pack_start (GTK_BOX (parent), HeaderFrame, TRUE, TRUE, 0);
 	gtk_container_set_border_width (GTK_CONTAINER (HeaderFrame), 6);
-	gtk_frame_set_shadow_type (GTK_FRAME (HeaderFrame), GTK_SHADOW_ETCHED_OUT);
+	gtk_frame_set_shadow_type (GTK_FRAME (HeaderFrame), GTK_SHADOW_NONE);
 
 	vbox2 = gtk_vbox_new (FALSE, 0);
 	gtk_widget_show (vbox2);
@@ -247,7 +247,7 @@ void AP_UnixDialog_HdrFtr::_constructWindowContents (GtkWidget * parent)
 	gtk_widget_show (FooterFrame);
 	gtk_box_pack_start (GTK_BOX (parent), FooterFrame, TRUE, TRUE, 0);
 	gtk_container_set_border_width (GTK_CONTAINER (FooterFrame), 5);
-	gtk_frame_set_shadow_type (GTK_FRAME (FooterFrame), GTK_SHADOW_ETCHED_OUT);
+	gtk_frame_set_shadow_type (GTK_FRAME (FooterFrame), GTK_SHADOW_NONE);
 
 	vbox3 = gtk_vbox_new (FALSE, 0);
 	gtk_widget_show (vbox3);

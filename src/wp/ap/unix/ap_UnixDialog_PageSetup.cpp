@@ -558,6 +558,7 @@ void AP_UnixDialog_PageSetup::_constructWindowContents (GtkWidget *container)
   framePaper = gtk_frame_new (_(AP, DLG_PageSetup_Paper));
   gtk_widget_show (framePaper);
   gtk_container_add (GTK_CONTAINER (packerPage), framePaper);
+  gtk_frame_set_shadow_type(GTK_FRAME(framePaper), GTK_SHADOW_NONE);
   
   tablePaper = gtk_table_new (3, 4, TRUE);
   gtk_widget_show (tablePaper);
@@ -644,6 +645,7 @@ void AP_UnixDialog_PageSetup::_constructWindowContents (GtkWidget *container)
 
   frameOrientation = gtk_frame_new (_(AP, DLG_PageSetup_Orient));
   gtk_widget_show (frameOrientation);
+  gtk_frame_set_shadow_type(GTK_FRAME(frameOrientation), GTK_SHADOW_NONE);
 
 #ifdef ABI_GTK_DEPRECATED
   gtk_packer_add_defaults (GTK_PACKER (packerPage), frameOrientation, GTK_SIDE_TOP,
@@ -690,6 +692,7 @@ void AP_UnixDialog_PageSetup::_constructWindowContents (GtkWidget *container)
 
   frameScale = gtk_frame_new (_(AP, DLG_PageSetup_Scale));
   gtk_widget_show (frameScale);
+  gtk_frame_set_shadow_type(GTK_FRAME(frameScale), GTK_SHADOW_NONE);
 
 #ifdef ABI_GTK_DEPRECATED 
   gtk_packer_add_defaults (GTK_PACKER (packerPage), frameScale, GTK_SIDE_TOP,

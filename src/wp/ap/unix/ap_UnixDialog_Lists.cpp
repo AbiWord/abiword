@@ -706,6 +706,7 @@ GtkWidget *AP_UnixDialog_Lists::_constructWindowContents (void)
 					  (GtkAttachOptions) (0), 0, 0);
 
 	frame1 = gtk_frame_new (NULL);
+	gtk_frame_set_shadow_type(GTK_FRAME(frame1), GTK_SHADOW_NONE);
 	//gtk_widget_show (frame1);
 	gtk_box_pack_start (GTK_BOX (vbox4), frame1, TRUE, TRUE, 0);
 
@@ -822,7 +823,7 @@ GtkWidget *AP_UnixDialog_Lists::_constructWindowContents (void)
 	gtk_widget_show (preview_frame);
 	gtk_box_pack_start (GTK_BOX (vbox3), preview_frame, TRUE, TRUE, 0);
 	gtk_container_set_border_width (GTK_CONTAINER (preview_frame), 3);
-	gtk_frame_set_shadow_type (GTK_FRAME (preview_frame), GTK_SHADOW_IN);
+	gtk_frame_set_shadow_type (GTK_FRAME (preview_frame), GTK_SHADOW_NONE);
 
 	preview_area = createDrawingArea ();
         gtk_drawing_area_size (GTK_DRAWING_AREA(preview_area),180,225);

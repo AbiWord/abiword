@@ -210,6 +210,7 @@ GtkWidget * AP_UnixDialog_MergeCells::_constructWindowContents(void)
 	gtk_widget_show (frame1);
 	gtk_container_add (GTK_CONTAINER (wContents), frame1);
 	gtk_container_set_border_width (GTK_CONTAINER (frame1), 3);
+	gtk_frame_set_shadow_type(GTK_FRAME(frame1), GTK_SHADOW_NONE);
 
 	table1 = gtk_table_new (4, 2, FALSE);
 	gtk_widget_show (table1);

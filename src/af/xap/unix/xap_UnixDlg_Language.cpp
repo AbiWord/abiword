@@ -85,6 +85,7 @@ GtkWidget * XAP_UnixDialog_Language::constructWindowContents(GtkWidget *parent)
   gtk_container_add (GTK_CONTAINER (parent), vboxMain);
 
   frame3 = gtk_frame_new (pSS->getValueUTF8(XAP_STRING_ID_DLG_ULANG_LangLabel).c_str());
+  gtk_frame_set_shadow_type(GTK_FRAME(frame3), GTK_SHADOW_NONE);
   gtk_widget_show (frame3);
   gtk_box_pack_start (GTK_BOX (vboxMain), frame3, TRUE, TRUE, 0);
   gtk_container_set_border_width (GTK_CONTAINER (frame3), 4);

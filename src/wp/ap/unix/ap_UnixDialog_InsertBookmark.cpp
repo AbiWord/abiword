@@ -177,6 +177,7 @@ GtkWidget*  AP_UnixDialog_InsertBookmark::_constructWindow(void)
   gtk_widget_show (frame1);
   gtk_container_add (GTK_CONTAINER (GTK_DIALOG(m_windowMain)->vbox), frame1);
   gtk_container_set_border_width (GTK_CONTAINER (frame1), 4);
+  gtk_frame_set_shadow_type(GTK_FRAME(frame1), GTK_SHADOW_NONE);
 
   vbox2 = gtk_vbox_new (FALSE, 5);
   gtk_widget_show (vbox2);

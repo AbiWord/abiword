@@ -131,27 +131,6 @@ pagesizes[fp_PageSize::_last_predefined_pagesize_dont_use_] =
 
 	// Custom, same size as A4
 	{ 210.0,  297.0, DIM_MM,	"Custom", 28.0, 28.0, 28.0, 28.0 }
-
-#if 0
-	// the rejects
-	{   8.5,    5.5, DIM_IN,    "Half-Letter", 1.0, 1.0, 1.0, 1.0 },
-	{   7.5,   10.0, DIM_IN,    "Executive", 1.0, 1.0, 1.0, 1.0 },
-	{ 280.1,  267.0, DIM_MM,    "Tabloid/Ledger", 25.4, 25.4, 25.4, 25.4},
-	{  99.0,  191.0, DIM_MM,    "Monarch", 3.5, 3.5, 3.5, 3.5},
-	{ 297.0,  433.0, DIM_MM,    "SuperB", 28.2, 28.2, 28.2, 28.2},
-	{ 105.0,  242.0, DIM_MM,    "Envelope-Commercial", 1.8, 1.8, 1.8, 1.8},
-	{  99.0,  191.0, DIM_MM,    "Envelope-Monarch", 1.8, 1.8, 1.8, 1.8},
-	{ 105.0,  148.0, DIM_MM,    "EuroPostcard", 1.8, 1.8, 1.8, 1.8},
-	{2000.0, 2828.0, DIM_MM,	"4B",
-	  MARGIN_UNKNOWN, MARGIN_UNKNOWN, MARGIN_UNKNOWN, MARGIN_UNKNOWN },
-	{1414.0, 2000.0, DIM_MM,	"2B",
-	  MARGIN_UNKNOWN, MARGIN_UNKNOWN, MARGIN_UNKNOWN, MARGIN_UNKNOWN },
-	{ 182.0,  258.0, DIM_MM,   "B5-Japan", 28.0, 28.0, 28.0, 28.0},
-	{1682.0, 2378.0, DIM_MM,	"4A", 
-	  MARGIN_UNKNOWN, MARGIN_UNKNOWN, MARGIN_UNKNOWN, MARGIN_UNKNOWN },
-	{1189.0, 1682.0, DIM_MM,	"2A", 
-	  MARGIN_UNKNOWN, MARGIN_UNKNOWN, MARGIN_UNKNOWN, MARGIN_UNKNOWN },
-#endif
 };
 
 fp_PageSize::fp_PageSize(Predefined preDef)

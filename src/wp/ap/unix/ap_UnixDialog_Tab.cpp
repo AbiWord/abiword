@@ -289,6 +289,7 @@ void    AP_UnixDialog_Tab::_constructWindowContents( GtkWidget * windowTabs )
 	gtk_box_pack_start (GTK_BOX (hbox16), label14, FALSE, TRUE, 0);
 
 	frame3 = gtk_frame_new (NULL);
+	gtk_frame_set_shadow_type(GTK_FRAME(frame3), GTK_SHADOW_NONE);
 	gtk_widget_show (frame3);
 	gtk_box_pack_start (GTK_BOX (hbox16), frame3, TRUE, TRUE, 0);
 

@@ -387,6 +387,7 @@ GtkWidget* AP_UnixDialog_Options::_constructWindowContents (GtkWidget * vbox)
 	frame13 = gtk_frame_new (pSS->getValueUTF8(AP_STRING_ID_DLG_Options_Label_Toolbars).c_str());
 	gtk_widget_show (frame13);
 	gtk_box_pack_start (GTK_BOX (vbox17), frame13, TRUE, TRUE, 0);
+	gtk_frame_set_shadow_type(GTK_FRAME(frame13), GTK_SHADOW_NONE);
 
 	toolbar_clist = gtk_clist_new (1);
 	gtk_widget_show (toolbar_clist);
@@ -430,6 +431,7 @@ GtkWidget* AP_UnixDialog_Options::_constructWindowContents (GtkWidget * vbox)
 	frame14 = gtk_frame_new (pSS->getValueUTF8(AP_STRING_ID_DLG_Options_Label_Visible).c_str());
 	gtk_widget_show (frame14);
 	gtk_box_pack_start (GTK_BOX (vbox18), frame14, TRUE, TRUE, 0);
+	gtk_frame_set_shadow_type(GTK_FRAME(frame14), GTK_SHADOW_NONE);
 
 	vbox19 = gtk_vbox_new (FALSE, 0);
 	gtk_widget_show (vbox19);
@@ -452,6 +454,7 @@ GtkWidget* AP_UnixDialog_Options::_constructWindowContents (GtkWidget * vbox)
 	frame15 = gtk_frame_new (pSS->getValueUTF8(AP_STRING_ID_DLG_Options_Label_Look).c_str());
 	gtk_widget_show (frame15);
 	gtk_box_pack_start (GTK_BOX (vbox18), frame15, TRUE, TRUE, 2);
+	gtk_frame_set_shadow_type(GTK_FRAME(frame15), GTK_SHADOW_NONE);
 
 	vbox20 = gtk_vbox_new (FALSE, 0);
 	gtk_widget_show (vbox20);
@@ -504,6 +507,7 @@ GtkWidget* AP_UnixDialog_Options::_constructWindowContents (GtkWidget * vbox)
 	frame21 = gtk_frame_new (pSS->getValueUTF8(AP_STRING_ID_DLG_Options_Label_General).c_str());
 	gtk_widget_show (frame21);
 	gtk_box_pack_start (GTK_BOX (hbox9), frame21, TRUE, TRUE, 0);
+	gtk_frame_set_shadow_type(GTK_FRAME(frame21), GTK_SHADOW_NONE);
 
 	vbox31 = gtk_vbox_new (FALSE, 0);
 	gtk_widget_show (vbox31);
@@ -529,6 +533,7 @@ GtkWidget* AP_UnixDialog_Options::_constructWindowContents (GtkWidget * vbox)
 	frame22 = gtk_frame_new (pSS->getValueUTF8(AP_STRING_ID_DLG_Options_Label_Ignore).c_str());
 	gtk_widget_show (frame22);
 	gtk_box_pack_start (GTK_BOX (hbox9), frame22, TRUE, TRUE, 0);
+	gtk_frame_set_shadow_type(GTK_FRAME(frame22), GTK_SHADOW_NONE);
 
 	vbox32 = gtk_vbox_new (FALSE, 0);
 	gtk_widget_show (vbox32);
@@ -633,6 +638,7 @@ GtkWidget* AP_UnixDialog_Options::_constructWindowContents (GtkWidget * vbox)
 	frame38 = gtk_frame_new (pSS->getValueUTF8(AP_STRING_ID_DLG_Options_Label_ViewShowHide).c_str());
 	gtk_widget_show (frame38);
 	gtk_box_pack_start (GTK_BOX (hbox23), frame38, TRUE, TRUE, 0);
+	gtk_frame_set_shadow_type(GTK_FRAME(frame38), GTK_SHADOW_NONE);
 
 	vbox55 = gtk_vbox_new (FALSE, 0);
 	gtk_widget_show (vbox55);
@@ -653,6 +659,7 @@ GtkWidget* AP_UnixDialog_Options::_constructWindowContents (GtkWidget * vbox)
 	frame39 = gtk_frame_new (pSS->getValueUTF8(AP_STRING_ID_DLG_Options_Label_ViewViewFrame).c_str());
 	gtk_widget_show (frame39);
 	gtk_box_pack_start (GTK_BOX (hbox23), frame39, TRUE, TRUE, 0);
+	gtk_frame_set_shadow_type(GTK_FRAME(frame39), GTK_SHADOW_NONE);
 
 	vbox56 = gtk_vbox_new (FALSE, 0);
 	gtk_widget_show (vbox56);
@@ -799,6 +806,7 @@ GtkWidget* AP_UnixDialog_Options::_constructWindowContents (GtkWidget * vbox)
 	gtk_widget_show (frame40);
 	gtk_box_pack_start (GTK_BOX (vbox36), frame40, FALSE, TRUE, 0);
 	gtk_container_set_border_width (GTK_CONTAINER (frame40), 4);
+	gtk_frame_set_shadow_type(GTK_FRAME(frame40), GTK_SHADOW_NONE);
 
 	vbox57 = gtk_vbox_new (FALSE, 0);
 	gtk_widget_show (vbox57);
@@ -826,6 +834,7 @@ GtkWidget* AP_UnixDialog_Options::_constructWindowContents (GtkWidget * vbox)
 	gtk_widget_show (frame42);
 	gtk_box_pack_start (GTK_BOX (vbox36), frame42, TRUE, TRUE, 0);
 	gtk_container_set_border_width (GTK_CONTAINER (frame42), 4);
+	gtk_frame_set_shadow_type(GTK_FRAME(frame42), GTK_SHADOW_NONE);
 
 	vbox59 = gtk_vbox_new (FALSE, 0);
 	gtk_widget_show (vbox59);
@@ -855,6 +864,7 @@ GtkWidget* AP_UnixDialog_Options::_constructWindowContents (GtkWidget * vbox)
 	gtk_widget_show (frame43);
 	gtk_box_pack_start (GTK_BOX (vbox36), frame43, FALSE, TRUE, 0);
 	gtk_container_set_border_width (GTK_CONTAINER (frame43), 4);
+	gtk_frame_set_shadow_type(GTK_FRAME(frame43), GTK_SHADOW_NONE);
 
 	hbox26 = gtk_hbox_new (FALSE, 14);
 	gtk_widget_show (hbox26);
@@ -894,6 +904,7 @@ GtkWidget* AP_UnixDialog_Options::_constructWindowContents (GtkWidget * vbox)
 	gtk_widget_show (frame44);
 	gtk_box_pack_start (GTK_BOX (vbox36), frame44, FALSE, TRUE, 0);
 	gtk_container_set_border_width (GTK_CONTAINER (frame44), 4);
+	gtk_frame_set_shadow_type(GTK_FRAME(frame44), GTK_SHADOW_NONE);
 
 	vbox29 = gtk_vbox_new (FALSE, 0);
 	gtk_widget_show (vbox29);

@@ -377,6 +377,7 @@ GtkWidget * AP_UnixDialog_WordCount::_constructWindowContents(void)
 	gtk_box_pack_start (GTK_BOX (tophbox), m_pAutospinlabel, FALSE, TRUE, 0);
 
 	m_pTableframe = gtk_frame_new (NULL);
+	gtk_frame_set_shadow_type(GTK_FRAME(m_pTableframe), GTK_SHADOW_NONE);
 	gtk_box_pack_start (GTK_BOX (m_wContent), m_pTableframe, TRUE, TRUE, 0);
 	//        gtk_widget_set_usize(m_pTableframe,-2,120);
 	gtk_frame_set_label (GTK_FRAME (m_pTableframe), getActiveFrame ()->getTitle (60));

@@ -455,6 +455,7 @@ void AP_UnixDialog_Columns::_constructWindowContents(GtkWidget * windowColumns)
 	gtk_box_pack_start (GTK_BOX (windowColumns), tableTop, FALSE, FALSE, 6);
 
 	wColumnFrame = gtk_frame_new ( pSS->getValueUTF8(AP_STRING_ID_DLG_Column_Number).c_str());
+	gtk_frame_set_shadow_type(GTK_FRAME(wColumnFrame), GTK_SHADOW_NONE);
 	gtk_widget_show(wColumnFrame);
 	gtk_table_attach (GTK_TABLE (tableTop), wColumnFrame, 0, 1, 0, 1,
 				  (GtkAttachOptions) (GTK_EXPAND | GTK_FILL), (GtkAttachOptions) (GTK_EXPAND | GTK_FILL), 6, 0);
@@ -508,6 +509,7 @@ void AP_UnixDialog_Columns::_constructWindowContents(GtkWidget * windowColumns)
 	gtk_misc_set_alignment (GTK_MISC (wLabelThree), 0, 0.5);
 
 	wPreviewFrame = gtk_frame_new ( pSS->getValueUTF8(AP_STRING_ID_DLG_Column_Preview).c_str());
+	gtk_frame_set_shadow_type(GTK_FRAME(wPreviewFrame), GTK_SHADOW_NONE);
 	gtk_widget_show(wPreviewFrame);
 	gtk_table_attach (GTK_TABLE (tableTop), wPreviewFrame, 1, 2, 0, 1,
 				  (GtkAttachOptions) (GTK_EXPAND | GTK_FILL), (GtkAttachOptions) (GTK_EXPAND | GTK_FILL), 6, 0);
@@ -534,10 +536,10 @@ void AP_UnixDialog_Columns::_constructWindowContents(GtkWidget * windowColumns)
 	}
 
 	wDrawFrame = gtk_frame_new (NULL);
+	gtk_frame_set_shadow_type(GTK_FRAME(wDrawFrame), GTK_SHADOW_NONE);
 	gtk_widget_show(wDrawFrame );
 	gtk_container_add (GTK_CONTAINER (wPreviewFrame), wDrawFrame);
 	gtk_container_set_border_width (GTK_CONTAINER (wDrawFrame), 4);
-	gtk_frame_set_shadow_type (GTK_FRAME (wDrawFrame), GTK_SHADOW_OUT);
 
 	wPreviewArea = createDrawingArea ();
 	gtk_widget_ref (wPreviewArea);

@@ -537,6 +537,7 @@ void XAP_UnixDialog_FileOpenSaveAs::runModal(XAP_Frame * pFrame)
 		    m_preview = preview;
 
 		    GtkWidget * frame = gtk_frame_new (pSS->getValueUTF8(XAP_STRING_ID_DLG_IP_Activate_Label).c_str());
+			gtk_frame_set_shadow_type(GTK_FRAME(frame), GTK_SHADOW_NONE);
 		    gtk_widget_show (frame);
 		    gtk_container_add (GTK_CONTAINER(frame), preview);
 

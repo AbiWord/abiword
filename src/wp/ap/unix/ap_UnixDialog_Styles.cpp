@@ -555,6 +555,7 @@ GtkWidget* AP_UnixDialog_Styles::_constructWindowContents(
 
 	frameStyles = gtk_frame_new(
 		pSS->getValueUTF8(AP_STRING_ID_DLG_Styles_Available).c_str());
+	gtk_frame_set_shadow_type(GTK_FRAME(frameStyles), GTK_SHADOW_NONE);
 
 	GtkWidget * scrollWindow = gtk_scrolled_window_new(NULL, NULL);
 	gtk_widget_show(scrollWindow);
@@ -573,6 +574,7 @@ GtkWidget* AP_UnixDialog_Styles::_constructWindowContents(
 
 	frameList = gtk_frame_new(
 		pSS->getValueUTF8(AP_STRING_ID_DLG_Styles_List).c_str());
+	gtk_frame_set_shadow_type(GTK_FRAME(frameList), GTK_SHADOW_NONE);
 	comboList = gtk_combo_new();
 
 	// TODO: translate me
@@ -601,6 +603,8 @@ GtkWidget* AP_UnixDialog_Styles::_constructWindowContents(
 
 	frameParaPrev = gtk_frame_new(
 		pSS->getValueUTF8(AP_STRING_ID_DLG_Styles_ParaPrev).c_str());
+	gtk_frame_set_shadow_type(GTK_FRAME(frameParaPrev), GTK_SHADOW_NONE);
+
 	ParaPreviewArea = gtk_drawing_area_new();
 	gtk_drawing_area_size(GTK_DRAWING_AREA(ParaPreviewArea), 300, 70);
 	gtk_container_add(GTK_CONTAINER(frameParaPrev), ParaPreviewArea);
@@ -611,6 +615,7 @@ GtkWidget* AP_UnixDialog_Styles::_constructWindowContents(
 
 	frameCharPrev = gtk_frame_new(
 		pSS->getValueUTF8(AP_STRING_ID_DLG_Styles_CharPrev).c_str());
+	gtk_frame_set_shadow_type(GTK_FRAME(frameCharPrev), GTK_SHADOW_NONE);
 	CharPreviewArea = gtk_drawing_area_new();
 	gtk_drawing_area_size(GTK_DRAWING_AREA(CharPreviewArea), 300, 50);
 	gtk_container_add(GTK_CONTAINER(frameCharPrev), CharPreviewArea);
@@ -621,6 +626,7 @@ GtkWidget* AP_UnixDialog_Styles::_constructWindowContents(
 
 	frameDescription = gtk_frame_new(
 		pSS->getValueUTF8(AP_STRING_ID_DLG_Styles_Description).c_str());
+	gtk_frame_set_shadow_type(GTK_FRAME(frameDescription), GTK_SHADOW_NONE);
 	DescriptionArea = gtk_label_new(NULL);
 	gtk_label_set_line_wrap (GTK_LABEL(DescriptionArea), TRUE);
 	gtk_label_set_justify (GTK_LABEL(DescriptionArea), GTK_JUSTIFY_LEFT);
@@ -951,10 +957,10 @@ void  AP_UnixDialog_Styles::_constructModifyDialogContents(GtkWidget * container
 	}
 
 	previewFrame = gtk_frame_new (pSS->getValueUTF8(AP_STRING_ID_DLG_Styles_ModifyPreview).c_str());
+	gtk_frame_set_shadow_type(GTK_FRAME(previewFrame), GTK_SHADOW_NONE);
 	gtk_widget_show (previewFrame);
 	gtk_box_pack_start (GTK_BOX (OverallVbox), previewFrame, TRUE, TRUE, 2);
 	gtk_container_set_border_width (GTK_CONTAINER (previewFrame), 5);
-	gtk_frame_set_shadow_type (GTK_FRAME (previewFrame), GTK_SHADOW_IN);
 
 	modifyDrawingArea = gtk_drawing_area_new ();
 	gtk_widget_show (modifyDrawingArea);
@@ -962,10 +968,10 @@ void  AP_UnixDialog_Styles::_constructModifyDialogContents(GtkWidget * container
 	gtk_widget_set_usize (modifyDrawingArea, -2, 120);
 
 	GtkWidget * descriptionFrame = gtk_frame_new (pSS->getValueUTF8(AP_STRING_ID_DLG_Styles_ModifyDescription).c_str());
+	gtk_frame_set_shadow_type(GTK_FRAME(descriptionFrame), GTK_SHADOW_NONE);
 	gtk_widget_show (descriptionFrame);
 	gtk_box_pack_start (GTK_BOX (OverallVbox), descriptionFrame, FALSE, FALSE, 0);
 	gtk_container_set_border_width (GTK_CONTAINER (descriptionFrame), 5);
-	gtk_frame_set_shadow_type (GTK_FRAME (descriptionFrame), GTK_SHADOW_IN);
 
 	DescriptionText = gtk_label_new (NULL);
 	gtk_widget_show (DescriptionText);
