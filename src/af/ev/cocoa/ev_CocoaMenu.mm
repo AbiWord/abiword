@@ -737,7 +737,7 @@ NSMenu * EV_CocoaMenuPopup::getMenuHandle() const
 
 bool EV_CocoaMenuPopup::synthesizeMenuPopup()
 {
-	m_wMenuPopup = [[NSMenu alloc] initWithTitle:@""];
+	m_wMenuPopup = [[EV_NSMenu alloc] initWithXAP:this andTitle:@""];
 	[m_wMenuPopup setAutoenablesItems:NO];
 	synthesizeMenu(m_wMenuPopup);
 	return true;
