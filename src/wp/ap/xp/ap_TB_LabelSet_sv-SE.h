@@ -72,6 +72,8 @@ BeginSetEnc(sv,SE,true,"iso-8859-1")
 
 	ToolbarLabel(AP_TOOLBAR_ID_FMT_STYLE,		"Formatmall",		NoIcon,					NULL, "Formatmall")
 	ToolbarLabel(AP_TOOLBAR_ID_FMT_FONT,		"Typsnitt",	NoIcon,					NULL, "Typsnitt")
+	ToolbarLabel(AP_TOOLBAR_ID_FMT_HYPERLINK,	"Infoga Hyperlänk", tb_hyperlink,	NULL,	"Infoga en hyperlänk i dokumentet")
+	ToolbarLabel(AP_TOOLBAR_ID_FMT_BOOKMARK,	"Infoga bokmärke", tb_anchor,		NULL,	"Infoga ett bokmärke till dokumentet")
 	ToolbarLabel(AP_TOOLBAR_ID_FMT_SIZE,		"Teckenstorlek",	NoIcon,					NULL, "Teckenstorlek")
 	ToolbarLabel(AP_TOOLBAR_ID_FMT_BOLD,		"Fet",		tb_text_bold_F_xpm,			NULL, "Fet")
 	ToolbarLabel(AP_TOOLBAR_ID_FMT_ITALIC,		"Kursiv",		tb_text_italic_K_xpm,			NULL, "Kursiv")
