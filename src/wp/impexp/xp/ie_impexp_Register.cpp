@@ -27,6 +27,7 @@
 #include "ie_exp_RTF.h"
 #include "ie_exp_Text.h"
 #include "ie_exp_HTML.h"
+#include "ie_exp_xml2ps.h"
 
 #include "ie_imp_AbiWord_1.h"
 #include "ie_imp_GZipAbiWord.h"
@@ -75,6 +76,8 @@ void IE_ImpExp_RegisterXP ()
 	
 	IE_Exp::registerExporter(new IE_Exp_AbiWord_1_Sniffer ());
 	IE_Exp::registerExporter(new IE_Exp_AWT_Sniffer());
+
+	IE_Exp::registerExporter(new IE_Exp_XML2PS_Sniffer());
 
 	// HACK - export RTF and claim it's DOC
 	IE_Exp::registerExporter(new IE_Exp_MsWord_Hack_Sniffer ());
