@@ -68,7 +68,10 @@ public:
 	UT_Bool					getSpanPtr(PL_StruxDocHandle sdh, UT_uint32 offset,
 									   const UT_UCSChar ** ppSpan, UT_uint32 * pLength) const;
 	PT_DocPosition			getStruxPosition(PL_StruxDocHandle sdh) const;
-	
+	UT_Bool					getStruxFromPosition(PL_ListenerId listenerId,
+												 PT_DocPosition docPos,
+												 PL_StruxFmtHandle * psfh) const;
+
 	void					dump(FILE * fp) const;
 	
 protected:

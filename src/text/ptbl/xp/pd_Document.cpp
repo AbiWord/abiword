@@ -285,4 +285,11 @@ UT_Bool PD_Document::getSpanAttrProp(PL_StruxDocHandle sdh, UT_uint32 offset,
 	return m_pPieceTable->getSpanAttrProp(sdh,offset,ppAP);
 }
 
+UT_Bool PD_Document::getStruxFromPosition(PL_ListenerId listenerId,
+										  PT_DocPosition docPos,
+										  PL_StruxFmtHandle * psfh) const
+{
+	return m_pPieceTable->getStruxFromPosition(listenerId,docPos,psfh);
+}
+
 

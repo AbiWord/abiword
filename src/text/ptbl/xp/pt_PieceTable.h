@@ -66,6 +66,10 @@ public:
 									   const UT_UCSChar ** ppSpan, UT_uint32 * pLength) const;
 	PT_DocPosition			getStruxPosition(PL_StruxDocHandle sdh) const;
 	PT_DocPosition			getFragPosition(const pf_Frag * pfToFind) const;
+	
+	UT_Bool					getStruxFromPosition(PL_ListenerId listenerId,
+												 PT_DocPosition docPos,
+												 PL_StruxFmtHandle * psfh) const;
 
 	// TODO add stuff for objects like in-line images.
 

@@ -381,6 +381,43 @@ PT_DocPosition pt_PieceTable::getFragPosition(const pf_Frag * pfToFind) const
 	return 0;
 }
 
+UT_Bool pt_PieceTable::getStruxFromPosition(PL_ListenerId listenerId,
+											PT_DocPosition docPos,
+											PL_StruxFmtHandle * psfh) const
+{
+	// return the SFH of the last strux immediately prior to
+	// the given absolute document position.
+	
+	PT_DocPosition sum = 0;
+	pf_Frag * pfLastStrux = NULL;
+
+	for (pf_Frag * pf = m_fragments.getFirst(); (pf); pf=pf->getNext())
+	{
+		if (pf->getType() == pf_Frag::PFT_Text)
+		{
+			if (sum >= docPos)
+				goto FoundIt;
+
+			pf_Frag_Text * pfText = static_cast<pf_Frag_Text *>(pf);
+			sum += pfText->getLength();
+		}
+		else if (pf->getType() == pf_Frag::PFT_Strux)
+		{
+			pfLastStrux = pf;
+		}
+	}
+
+	// if we fall out of the loop, we didn't have a text node
+	// at or around the document position requested.
+	// return the last strux in the document.
+
+ FoundIt:
+
+	pf_Frag_Strux * pfs = static_cast<pf_Frag_Strux *> (pfLastStrux);
+	*psfh = pfs->getFmtHandle(listenerId);
+	return UT_TRUE;
+}
+
 void pt_PieceTable::dump(FILE * fp) const
 {
 	fprintf(fp,"  PieceTable: State %d\n",(int)m_pts);
