@@ -420,7 +420,7 @@ bool GR_Win32USPGraphics::_constructorCommonCode()
 			return false;
 		}
 #ifdef DEBUG
-		for(UT_uint32 i = 0; i < s_iMaxScript; ++i)
+		for(UT_sint32 i = 0; i < s_iMaxScript; ++i)
 		{
 			logScript(i);
 		}
@@ -633,7 +633,7 @@ bool GR_Win32USPGraphics::itemize(UT_TextIterator & text, GR_Itemization & I)
 	}
 	
 	// now we process the ouptut
-	for(i = 0; i < iItemCount; ++i)
+	for(i = 0; i < (UT_uint32)iItemCount; ++i)
 	{
 		GR_Win32USPItem * pI = new GR_Win32USPItem(pItems[i]);
 		UT_return_val_if_fail(pI, false);
@@ -672,7 +672,7 @@ bool GR_Win32USPGraphics::shape(GR_ShapingInfo & si, GR_RenderInfo *& ri)
 	GR_Win32USPRenderInfo * RI = (GR_Win32USPRenderInfo *)ri;
 
 		
-	if(RI->m_iClustSize < si.m_iLength)
+	if(RI->m_iClustSize < (UT_uint32)si.m_iLength)
 	{
 		delete [] RI->m_pClust;
 		RI->m_pClust = new WORD[si.m_iLength];
@@ -697,7 +697,7 @@ bool GR_Win32USPGraphics::shape(GR_ShapingInfo & si, GR_RenderInfo *& ri)
 	}
 
 	UT_uint32 i;
-	for(i = 0; i < si.m_iLength; ++i, ++si.m_Text)
+	for(i = 0; i < (UT_uint32)si.m_iLength; ++i, ++si.m_Text)
 	{
 		UT_return_val_if_fail(si.m_Text.getStatus() == UTIter_OK, false);
 		pInChars[i] = (WCHAR)si.m_Text.getChar();
@@ -829,7 +829,7 @@ bool GR_Win32USPGraphics::shape(GR_ShapingInfo & si, GR_RenderInfo *& ri)
 		// glyphs are in a static buffer, we need to (possibly) realloc and copy
 
 		// only realloc if necessary
-		if(RI->m_iIndicesSize < iGlyphCount)
+		if((UT_sint32)RI->m_iIndicesSize < iGlyphCount)
 		{
 			delete [] RI->m_pIndices;
 			delete [] RI->m_pVisAttr;
@@ -919,22 +919,22 @@ UT_sint32 GR_Win32USPGraphics::getTextWidth(const GR_RenderInfo & ri) const
 	GR_Win32USPRenderInfo & RI = (GR_Win32USPRenderInfo &)ri;
 	//UT_uint32 iZoom = getZoomPercentage();
 	
-	if(!RI.m_pJustify && ri.m_iOffset == 0 && ri.m_iLength == RI.m_iCharCount)
+	if(!RI.m_pJustify && ri.m_iOffset == 0 && ri.m_iLength == (UT_sint32)RI.m_iCharCount)
 		return (RI.m_ABC.abcA + RI.m_ABC.abcB + RI.m_ABC.abcC);
 
-	UT_return_val_if_fail(ri.m_iOffset + ri.m_iLength <= RI.m_iCharCount, 0);
+	UT_return_val_if_fail(ri.m_iOffset + ri.m_iLength <= (UT_sint32)RI.m_iCharCount, 0);
 	
 	UT_sint32 iWidth = 0;
 	GR_Win32USPItem & I = (GR_Win32USPItem &)*ri.m_pItem;
 	bool bReverse = I.m_si.a.fRTL != 0;
 
-	for(UT_uint32 i = ri.m_iOffset; i < ri.m_iLength + ri.m_iOffset; ++i)
+	for(UT_sint32 i = ri.m_iOffset; i < ri.m_iLength + ri.m_iOffset; ++i)
 	{
 		if(!bReverse)
 		{
 			UT_uint32 iMax = RI.m_iCharCount;
 			
-			if(i < RI.m_iCharCount - 1)
+			if(i < (UT_sint32)RI.m_iCharCount - 1)
 				iMax = RI.m_pClust[i+1];
 
 			for(UT_uint32 j = RI.m_pClust[i]; j < iMax; ++j)
@@ -953,7 +953,7 @@ UT_sint32 GR_Win32USPGraphics::getTextWidth(const GR_RenderInfo & ri) const
 			// are in visual order, and the clusters reference glyph indices, so that clust[i] >
 			// clust[i+1]
 
-			if(i < RI.m_iCharCount - 1)
+			if(i < (UT_sint32)RI.m_iCharCount - 1)
 				iMin = RI.m_pClust[i+1];
 
 			for(UT_sint32 j = (UT_sint32)RI.m_pClust[i]; j > iMin; --j)
@@ -1033,7 +1033,7 @@ void GR_Win32USPGraphics::renderChars(GR_RenderInfo & ri)
 	if(RI.m_iLength == 0)
 		return;
 	
-	UT_return_if_fail(RI.m_iOffset + RI.m_iLength <= RI.m_iCharCount);
+	UT_return_if_fail(RI.m_iOffset + RI.m_iLength <= (UT_sint32)RI.m_iCharCount);
 
 	UT_uint32 iGlyphCount = RI.m_iIndicesCount;
 	UT_uint32 iGlyphOffset = 0;
@@ -1050,7 +1050,7 @@ void GR_Win32USPGraphics::renderChars(GR_RenderInfo & ri)
 		iGlyphOffset = RI.m_pClust[iOffset];
 	}
 
-	if(RI.m_iOffset + RI.m_iLength == RI.m_iCharCount)
+	if(RI.m_iOffset + RI.m_iLength == (UT_sint32)RI.m_iCharCount)
 	{
 		// drawing from the offset to the end
 		iGlyphCount -= iGlyphOffset;
@@ -1219,7 +1219,7 @@ bool GR_Win32USPGraphics::_scriptBreak(GR_Win32USPRenderInfo &ri)
 		UT_uint32 iPosEnd   = ri.m_pText->getUpperLimit();
 		UT_return_val_if_fail(iPosEnd < 0xffffffff && iPosEnd >= iPosStart, false);
 
-		UT_uint32 iLen = UT_MIN(iPosEnd - iPosStart + 1, ri.m_iLength); // including iPosEnd
+		UT_uint32 iLen = UT_MIN(iPosEnd - iPosStart + 1, (UT_uint32)ri.m_iLength); // including iPosEnd
 
 		ri.s_pOwnerChar = &ri;
 		
@@ -1258,7 +1258,7 @@ bool GR_Win32USPGraphics::canBreak(GR_RenderInfo & ri, UT_sint32 &iNext, bool bA
 	if(!_scriptBreak(RI))
 		return false;
 
-	if(ri.m_iLength > RI.s_iAdvancesSize)
+	if(ri.m_iLength > (UT_sint32)RI.s_iAdvancesSize)
 	{
 		UT_return_val_if_fail( RI.allocStaticBuffers(ri.m_iLength),false );
 	}
@@ -1287,7 +1287,7 @@ bool GR_Win32USPGraphics::canBreak(GR_RenderInfo & ri, UT_sint32 &iNext, bool bA
 			return true;
 
 		// find the next break
-		for(UT_uint32 i = ri.m_iOffset + iDelta + 1; i < RI.m_iLength; ++i)
+		for(UT_sint32 i = ri.m_iOffset + iDelta + 1; i < RI.m_iLength; ++i)
 		{
 			if(RI.s_pLogAttr[i].fSoftBreak)
 			{
@@ -1303,7 +1303,7 @@ bool GR_Win32USPGraphics::canBreak(GR_RenderInfo & ri, UT_sint32 &iNext, bool bA
 			return true;
 
 		// find the next break
-		for(UT_uint32 i = ri.m_iOffset; i < RI.m_iLength; ++i)
+		for(UT_sint32 i = ri.m_iOffset; i < RI.m_iLength; ++i)
 		{
 			if(RI.s_pLogAttr[i].fWhiteSpace)
 			{
@@ -1371,7 +1371,7 @@ void GR_Win32USPGraphics::adjustDeletePosition(GR_RenderInfo & ri)
 	UT_return_if_fail(ri.getType() == GRRI_WIN32_UNISCRIBE);
 	GR_Win32USPRenderInfo & RI = (GR_Win32USPRenderInfo &)ri;
 
-	if(ri.m_iLength >= RI.m_iCharCount)
+	if(ri.m_iLength >= (UT_sint32)RI.m_iCharCount)
 	{
 		// we are deleting the last character of the run, or past it; we will assume that clusters
 		// do not cross run boundaries and allow the deletion happen
@@ -1418,7 +1418,7 @@ void GR_Win32USPGraphics::adjustDeletePosition(GR_RenderInfo & ri)
 		// our delete segment includes the base character, so we have to delete the entire cluster
 		iNextOffset = iOffset + 1;
 		
-		while(iNextOffset < RI.m_iCharCount
+		while(iNextOffset < (UT_sint32)RI.m_iCharCount
 			  && !RI.s_pLogAttr[iNextOffset].fCharStop)
 			iNextOffset++;
 
@@ -1777,7 +1777,7 @@ void GR_Win32USPGraphics::drawChars(const UT_UCSChar* pChars,
 		bDelete = true;
 	}
 
-	UT_uint32 i = 0;
+	UT_sint32 i = 0;
 	for(i = 0; i < iLength; ++i)
 	{
 		pwChars[i] = pChars[i+iCharOffset];
@@ -1852,7 +1852,7 @@ bool GR_Win32USPRenderInfo::split (GR_RenderInfo *&pri, bool bReverse)
 	GR_Win32USPRenderInfo & RI = (GR_Win32USPRenderInfo &) *pri;
 	RI.m_bShapingFailed = m_bShapingFailed;
 	
-	UT_return_val_if_fail( m_iClustSize > m_iOffset, false );
+	UT_return_val_if_fail( (UT_sint32)m_iClustSize > m_iOffset, false );
 	
 	UT_uint32 iGlyphOffset = m_pClust[m_iOffset];
 	UT_uint32 iGlyphLen1 = iGlyphOffset;
