@@ -532,7 +532,7 @@ bool UT_RGBColor::setColor(const char * pszColor)
 {
 	unsigned char r = m_red, g = m_grn, b = m_blu;
 	
-	if(!pszColor || !strcmp(pszColor,"transparent") || !strcmp(pszColor,"ffffff"))
+	if(!pszColor || !strcmp(pszColor,"transparent") /* || !strcmp(pszColor,"ffffff") */)
 	{
 		m_red = m_grn = m_blu = 255;
 		m_bIsTransparent = true;
@@ -574,7 +574,7 @@ void UT_parseColor(const char *p, UT_RGBColor& c)
 	  }
 
 
-	if(!strcmp(p,"transparent") || !strcmp(p,"ffffff"))
+	if(!strcmp(p,"transparent") /* || !strcmp(p,"ffffff") */)
 	{
 		c.m_red = c.m_grn = c.m_blu = 255;
 		c.m_bIsTransparent = true;
