@@ -149,7 +149,7 @@ public:
 							 &printView, m_szFile.utf8_str(), 
 							 1, true, 
 							 pDocLayout->getWidth(), pDocLayout->getHeight() / pDocLayout->countPages(), 
-							 1, pDocLayout->countPages());
+							 pDocLayout->countPages(), 1);
 			
 			DELETEP(pDocLayout);
 			
@@ -366,7 +366,7 @@ void AP_Convert::print(const char * szFile, GR_GraphicsFactory & pFactory)
 						 &printView, szFile, 
 						 1, true, 
 						 pDocLayout->getWidth(), pDocLayout->getHeight() / pDocLayout->countPages(), 
-						 1, pDocLayout->countPages());
+						 pDocLayout->countPages(), 1);
 		
 		DELETEP(pDocLayout);
 		DELETEP(pGraphics);
