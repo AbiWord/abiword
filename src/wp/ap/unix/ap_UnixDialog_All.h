@@ -49,6 +49,7 @@
 
 #	include "ap_UnixDialog_Replace.h"
 #	include "ap_UnixDialog_Break.h"
+#	include "ap_UnixDialog_InsertTable.h"
 #	include "ap_UnixDialog_Goto.h"
 #   include "ap_UnixDialog_PageNumbers.h"
 #   include "ap_UnixDialog_PageSetup.h"
@@ -88,6 +89,7 @@
 #include "xap_UnixGnomeDlg_Image.h"
 
 #   include "ap_UnixGnomeDialog_Break.h"
+#   include "ap_UnixGnomeDialog_InsertTable.h"
 #	include "ap_UnixGnomeDialog_Replace.h"
 #	include "ap_UnixGnomeDialog_Goto.h"
 #   include "ap_UnixGnomeDialog_Insert_DateTime.h"
@@ -221,6 +223,7 @@
      DeclareDialog(AP_DIALOG_ID_METADATA,		AP_UnixDialog_MetaData)
      DeclareDialog(AP_DIALOG_ID_MARK_REVISIONS,		AP_UnixDialog_MarkRevisions)
      DeclareDialog(AP_DIALOG_ID_LIST_REVISIONS,		AP_UnixDialog_ListRevisions)
+     DeclareDialog(AP_DIALOG_ID_INSERT_TABLE,		AP_UnixDialog_InsertTable)
  	// ... also add new dialogs here ...
 #   endif
 

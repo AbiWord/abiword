@@ -54,6 +54,7 @@
 #include "ap_Dialog_Replace.h"
 #include "ap_Dialog_Goto.h"
 #include "ap_Dialog_Break.h"
+#include "ap_Dialog_InsertTable.h"
 #include "ap_Dialog_Paragraph.h"
 #include "ap_Dialog_PageNumbers.h"
 #include "ap_Dialog_PageSetup.h"
@@ -543,6 +544,8 @@ public:
 	static EV_EditMethod_Fn revisionReject;
 	static EV_EditMethod_Fn revisionSetViewLevel;
 
+	static EV_EditMethod_Fn insertTable;
+
 	static EV_EditMethod_Fn noop;
 
 	// Test routines
@@ -790,6 +793,7 @@ static EV_EditMethod s_arrayEditMethods[] =
 	EV_EditMethod(NF(insertSoftBreak),		0,	""),
 	EV_EditMethod(NF(insertSpace),			0,	""),
 	EV_EditMethod(NF(insertTab),			0,	""),
+	EV_EditMethod(NF(insertTable),          0,  ""),
 	EV_EditMethod(NF(insertTildeData),		_D_,	""),
 
 	// j
@@ -7333,6 +7337,7 @@ Defun1(insEndnote)
 	return pView->insertEndnote();
 }
 
+
 /*****************************************************************/
 /*****************************************************************/
 
@@ -7872,6 +7877,61 @@ Defun1(dlgWordCount)
 
 /****************************************************************/
 /****************************************************************/
+
+static bool s_doInsertTableDlg(FV_View * pView)
+{
+	XAP_Frame * pFrame = static_cast<XAP_Frame *> ( pView->getParentData());
+	UT_ASSERT(pFrame);
+
+	pFrame->raise();
+
+	XAP_DialogFactory * pDialogFactory
+		= (XAP_DialogFactory *)(pFrame->getDialogFactory());
+
+	AP_Dialog_InsertTable * pDialog
+		= (AP_Dialog_InsertTable *)(pDialogFactory->requestDialog(AP_DIALOG_ID_INSERT_TABLE));
+	UT_ASSERT(pDialog);
+	if (!pDialog)
+		return false;
+
+	pDialog->runModal(pFrame);
+
+	AP_Dialog_InsertTable::tAnswer ans = pDialog->getAnswer();
+	bool bOK = (ans == AP_Dialog_InsertTable::a_OK);
+
+	if(pView->isHdrFtrEdit())
+		return false;
+
+	if (bOK)
+	{
+		// FIXME: add the table stux here
+		
+		for (UT_uint32 i = 0; i < pDialog->getNumRows(); i++)
+		{
+			for (UT_uint32 j = 0; j < pDialog->getNumCols(); j++)
+			{
+				// FIXME: add the table cells here
+			}
+		}
+		
+		// FIXME: add the table end stux here
+	}
+
+	pDialogFactory->releaseDialog(pDialog);
+
+	return bOK;
+}
+
+Defun1(insertTable)
+{
+	CHECK_FRAME;
+	ABIWORD_VIEW;
+	return s_doInsertTableDlg(pView);
+}
+
+
+/****************************************************************/
+/****************************************************************/
 Defun1(toggleHidden)
 {
 	CHECK_FRAME;
@@ -8169,15 +8229,15 @@ Defun1(sectColumns1)
 	return true;
 }
 
-Defun(sectColumns2)
+Defun1(sectColumns2)
 {
 	CHECK_FRAME;
 	ABIWORD_VIEW;
 	if(pView->isHdrFtrEdit())
 		return false;
+
 	const XML_Char * properties[] = { "columns", "2", 0};
 	pView->setSectionFormat(properties);
-	EX(viewPrintLayout);
 	return true;
 }
 

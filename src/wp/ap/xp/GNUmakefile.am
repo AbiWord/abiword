@@ -36,6 +36,7 @@ libWpAp_xp_a_SOURCES=	ap_Args.cpp		\
 		ap_Dialog_Background.cpp	\
 		ap_Dialog_HdrFtr.cpp		\
 		ap_Dialog_Break.cpp		\
+		ap_Dialog_InsertTable.cpp	\
 		ap_Dialog_WordCount.cpp		\
 		ap_Dialog_Field.cpp		\
 		ap_Dialog_Goto.cpp		\
