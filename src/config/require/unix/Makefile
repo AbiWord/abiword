@@ -62,21 +62,23 @@ _GTK_:
 	|| (echo gtk not found; exit 1)
 	@echo TODO verify gtk version is greater than 1.1.??
 
+# zlib can only be used if located in a system directory.
+
 _ZLIB_:
 	@if [    -r /usr/lib/libz.a				\
 	      -o -r /usr/local/lib/libz.a			\
 	      -o -r /usr/X11R6/lib/libz.a			\
 	    ]; then						\
 		echo Found zlib in system directories;		\
-	elif [ -d $(ABI_ROOT)/../zlib ]; then			\
-		echo Found zlib in peer directory;		\
-		$(MAKE) -C $(ABI_ROOT)/../zlib;			\
 	else							\
 		echo zlib not found;				\
-		echo TODO provide a nicer error message;	\
-		echo TODO with instructions for obtaining it;	\
+                echo zlib must be installed as a system library to compile AbiWord;       \
+                echo Instructions for obtaining it can be found at;             \
+                echo http://www.abisource.com/dev_download.phtml;               \
 		exit 1;						\
 	fi
+
+# libpng can only be used if located in a system directory.
 
 _LIBPNG_:
 	@if [    -r /usr/lib/libpng.a				\
@@ -84,23 +86,19 @@ _LIBPNG_:
 	      -o -r /usr/X11R6/lib/libpng.a			\
 	    ]; then						\
 		echo Found libpng in system directories;	\
-	elif [ -d $(ABI_ROOT)/../libpng ]; then			\
-		echo Found libpng in peer directory;		\
-		$(MAKE) -C $(ABI_ROOT)/../libpng;		\
 	else							\
 		echo libpng not found;				\
-		echo TODO provide a nicer error message;	\
-		echo TODO with instructions for obtaining it;	\
+                echo libpng must be installed as a system library to compile AbiWord.;   \
+                echo Instructions for obtaining it can be found at;             \
+                echo http://www.abisource.com/dev_download.phtml                \
 		exit 1;						\
 	fi
 
+# Right now, we can only build wv as a peer, not in the
+# system directories.
+
 _LIBWV_:
-	@if [    -r /lib/libwv.a				\
-	      -o -r /usr/lib/libwv.a				\
-	      -o -r /usr/local/lib/libwv.a			\
-	    ]; then						\
-		echo Found libwv in system directories;		\
-	elif [ -r $(ABI_ROOT)/../wv ]; then			\
+	@if [ -r $(ABI_ROOT)/../wv ]; then			\
 		echo Found libwv in peer directory;		\
 		if [ ! -r $(ABI_ROOT)/../wv/config.h ]; then	\
 			cd $(ABI_ROOT)/../wv; 			\
@@ -109,8 +107,9 @@ _LIBWV_:
 		$(MAKE) -f Makefile.abi -C $(ABI_ROOT)/../wv;  	\
 	else							\
 		echo wv not found;				\
-		echo TODO provide a nicer error message;	\
-		echo TODO with instructions for obtaining it;	\
+		echo wv must be installed as a peer to the abi/ directory;	\
+		echo Instructions for obtaining it can be found at;		\
+		echo http://www.abisource.com/dev_download.phtml		\
 		exit 1;						\
 	fi
 
