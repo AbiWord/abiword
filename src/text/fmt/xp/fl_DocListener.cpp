@@ -219,7 +219,7 @@ bool fl_DocListener::populateStrux(PL_StruxDocHandle sdh,
 				{
 					const XML_Char* pszID = NULL;
 					pAP->getAttribute("id", pszID);
-					xxx_UT_DEBUGMSG(("Populating header strux \n"));
+					UT_DEBUGMSG(("Populating header/footer header strux \n"));
 					fl_DocSectionLayout* pDocSL = m_pLayout->findSectionForHdrFtr((char*)pszID);
 					UT_ASSERT(pDocSL);
 			
@@ -246,9 +246,10 @@ bool fl_DocListener::populateStrux(PL_StruxDocHandle sdh,
 
 					fl_DocSectionLayout* pDocSL = m_pLayout->findSectionForHdrFtr((char*)pszID);
 					UT_ASSERT(pDocSL);
+					UT_DEBUGMSG(("Populating header/footer header strux \n"));
 			
 					// Append a HdrFtrSectionLayout to this DocLayout
-					fl_HdrFtrSectionLayout* pSL = new fl_HdrFtrSectionLayout(FL_HDRFTR_HEADER, m_pLayout, pDocSL, sdh, pcr->getIndexAP());
+					fl_HdrFtrSectionLayout* pSL = new fl_HdrFtrSectionLayout(FL_HDRFTR_FOOTER, m_pLayout, pDocSL, sdh, pcr->getIndexAP());
 					if (!pSL)
 					{
 						UT_DEBUGMSG(("no memory for SectionLayout"));
