@@ -1,0 +1,31 @@
+<awml>
+<section>
+<columnmodel>
+<column type="box" left="0in" top="0in" width="*" height="*"/>
+</columnmodel>
+<p><c PROPS="font-size:10pt">$id: $</c></p>
+<p PROPS="text-align:center"><c PROPS="font-size:24pt; font-weight:bold">AbiWord Document Format</c></p>
+<p PROPS="text-align:center"><c PROPS="font-size:10pt">Version 1.0</c></p>
+<p PROPS="text-align:center"><c PROPS="font-size:10pt">Copyright </c><c PROPS="font-size:10pt">(C) 1998</c><c PROPS="font-size:10pt"> </c><c PROPS="font-size:10pt">AbiSource, Inc., </c><c PROPS="font-size:10pt">All Rights Reserved.</c></p>
+<p PROPS="text-align:center"><c PROPS="font-style:italic">Jeff Hostetler</c></p>
+<p PROPS="text-align:center"><c PROPS="font-family:courier">jeff@abisource.com</c></p>
+<p PROPS="text-align:center">AbiSource, Inc.</p>
+<p PROPS="text-align:center">$Date$</p>
+<p PROPS="text-align:left"><c PROPS="font-weight:bold">Introduction</c></p>
+<p PROPS="text-align:left">This document describes the AbiWord file format used to represent AbiWord native documents. This document describes file format version 1.0.</p>
+<p PROPS="text-align:left">AbiWord uses XML[1] to represent a document. This does not imply that AbiWord is an XML editor; but rather, AbiWord is a Word Processor that just happens to use XML as a convenient syntax for representing documents. AbiWord contains a very strict and unforgiving import; it requires well-formed XML in strict adherance to the AbiWord DTD[2]. Our primary goal is to support documents written by AbiWord rather than hand written XML.</p>
+<p PROPS="text-align:left">AbiWord also uses some of the syntax and conventions from CSS2[3] to represent certain concepts, such as character formatting. CSS2 was designed as a style mechanism for WWW documents and not as a style mechanism for page-oriented documents. We used CSS2 as a guideline, taking parts that were of use and inventing our own mechanism as necessary.</p>
+<p PROPS="text-align:left"><c PROPS="font-weight:bold">Document Structure</c></p>
+<p PROPS="text-align:left">[??DOCTYPE, DTD address, and other MetaData??]</p>
+<p PROPS="text-align:left"><c PROPS="font-family:courier">&lt;awml&gt;</c>...<c PROPS="font-family:courier">&lt;/awml&gt;</c> The entire content of the document is contained within this pair of tags.</p>
+<p PROPS="text-align:left">[??Document defaults outside of a section??]</p>
+<p PROPS="text-align:left"><c PROPS="font-family:courier">&lt;section&gt;</c>...<c PROPS="font-size:14pt; font-family:courier">&lt;/section&gt;</c></p>
+<p PROPS="text-align:left"></p>
+<p PROPS="text-align:left"></p>
+<p PROPS="text-align:left"><c PROPS="font-weight:bold">References</c></p>
+<p PROPS="text-align:left">[1] XML</p>
+<p PROPS="text-align:left">[2] AbiWord DTD</p>
+<p PROPS="text-align:left">[3] CSS2</p>
+<p PROPS="text-align:left"></p>
+</section>
+</awml>

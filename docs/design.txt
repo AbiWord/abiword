@@ -1,4 +1,7 @@
 
+[ NOTE -- as of 4 December, this file is terribly, terribly out-of-date
+          and should be gutted and/or deleted as soon as possible.]
+
 [ NOTE -- as of 25 September, this file is terribly out-of-date :-)
           This document gives a brief summary of the various classes
           that we had at the time it was written.  Many of these
@@ -229,6 +232,10 @@ anything inside it.
 --------------------------------
 --------------------------------
 $Log$
+Revision 1.5  1998/12/05 04:29:58  jeff
+Updated build instructions.
+Started work on a document to describe our document format.
+
 Revision 1.4  1998/09/25 16:26:09  jeff
 Added 9/25 update note.
 
