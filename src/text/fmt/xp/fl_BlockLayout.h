@@ -163,6 +163,8 @@ protected:
 	void _createNewSlice();
 	void _createRuns();
 	void					_purgeLayout(UT_Bool bVisible);
+	void					_removeLine(fp_Line*);
+	void					_removeAllEmptyLines(void);
 
 	int						m_bNeedsReformat;
 	

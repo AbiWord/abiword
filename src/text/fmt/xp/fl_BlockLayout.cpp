@@ -348,6 +348,40 @@ void fl_BlockLayout::_purgeLayout(UT_Bool bVisible)
 	m_pCurrentSlice = NULL;
 }
 
+void fl_BlockLayout::_removeLine(fp_Line* pLine)
+{
+	if (m_pFirstLine == pLine)
+	{
+		m_pFirstLine = m_pFirstLine->getNext();
+	}
+			
+	if (m_pLastLine == pLine)
+	{
+		m_pLastLine = m_pLastLine->getPrev();
+	}
+			
+	pLine->remove();
+}
+
+void fl_BlockLayout::_removeAllEmptyLines(void)
+{
+	fp_Line* pLine;
+
+	pLine = m_pFirstLine;
+	while (pLine)
+	{
+		if (pLine->countRuns() == 0)
+		{
+			_removeLine(pLine);
+			pLine = m_pFirstLine;
+		}
+		else
+		{
+			pLine = pLine->getNext();
+		}
+	}
+}
+
 UT_Bool fl_BlockLayout::truncateLayout(fp_Run* pTruncRun)
 {
 	// special case, nothing to do
@@ -388,6 +422,7 @@ UT_Bool fl_BlockLayout::truncateLayout(fp_Run* pTruncRun)
 		pRun = pRun->getNext();
 	}
 
+#if 0	
 	// remove empty lines 
 	while (m_pLastLine && (m_pLastLine != m_pFirstLine))
 	{
@@ -399,7 +434,10 @@ UT_Bool fl_BlockLayout::truncateLayout(fp_Run* pTruncRun)
 
 		pLine->remove();
 	}
+#endif
 
+	_removeAllEmptyLines();
+	
 	// remove any empty slices, and reclaim space from the rest
 	int countSlices = m_vecSlices.getItemCount();
 	for (int i=countSlices-1; i>=0; i--)

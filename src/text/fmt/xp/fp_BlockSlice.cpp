@@ -192,7 +192,7 @@ void fp_BlockSlice::removeLine(fp_Line* pLine, void* p)
 	UT_sint32 ndx = m_vecLineInfos.findItem(pLI);
 	UT_ASSERT(ndx >= 0);
 
-	if (ndx > 0)
+	if (ndx >= 0)
 	{
 		m_vecLineInfos.deleteNthItem(ndx);
 
