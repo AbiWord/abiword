@@ -45,6 +45,8 @@
 #include "ut_debugmsg.h"
 #include "ut_assert.h"
 #include "ut_units.h"
+#include "fl_FrameLayout.h"
+#include "fp_FrameContainer.h"
 
 fl_ContainerLayout::fl_ContainerLayout(fl_ContainerLayout* pMyLayout, PL_StruxDocHandle sdh, PT_AttrPropIndex indexAP, PTStruxType iStrux, fl_ContainerType iType)
 	: fl_Layout(iStrux, sdh),
@@ -316,6 +318,16 @@ fl_ContainerLayout * fl_ContainerLayout::insert(PL_StruxDocHandle sdh, fl_Contai
 		if (pPrev)
 			pPrev->_insertIntoList(pL);
 		break;
+	case FL_CONTAINER_FRAME:
+	{
+		fl_DocSectionLayout * pDSL = getDocSectionLayout();
+		pL = static_cast<fl_ContainerLayout *>(new fl_FrameLayout(getDocLayout(), 
+					  pDSL, 
+					  sdh, indexAP, this));
+		if (pPrev)
+			pPrev->_insertIntoList(pL);
+		break;
+	}
 	case FL_CONTAINER_FOOTNOTE:
 	{
 		fl_DocSectionLayout * pDSL = getDocSectionLayout();
@@ -599,3 +611,39 @@ bool fl_ContainerLayout::isOnScreen() const
 	return bRet;
 }
 
+// Frames stuff
+
+void fl_ContainerLayout::addFrame(fl_FrameLayout * pFrame)
+{
+	m_vecFrames.addItem(static_cast<void *>(pFrame));
+}
+
+UT_sint32 fl_ContainerLayout::getNumFrames(void) const
+{
+	return static_cast<UT_sint32>(m_vecFrames.getItemCount());
+}
+
+fl_FrameLayout * fl_ContainerLayout::getNthFrameLayout(UT_sint32 i) const
+{
+	if(i> getNumFrames())
+	{
+		return NULL;
+	}
+	return static_cast<fl_FrameLayout *>(m_vecFrames.getNthItem(i));
+}
+
+
+fp_FrameContainer * fl_ContainerLayout::getNthFrameContainer(UT_sint32 i) const
+{
+	if(i> getNumFrames())
+	{
+		return NULL;
+	}
+	fl_FrameLayout * pFrame= static_cast<fl_FrameLayout *>(m_vecFrames.getNthItem(i));
+	fp_FrameContainer * pFC = static_cast<fp_FrameContainer *>(pFrame->getFirstContainer());
+	return pFC;
+}
+
+void fl_ContainerLayout:: removeFrame(fl_FrameLayout * pFrame)
+{
+}

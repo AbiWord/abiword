@@ -43,6 +43,7 @@
 #include "fp_TextRun.h"
 #include "fp_FieldListLabelRun.h"
 #include "fp_DirectionMarkerRun.h"
+#include "fp_FrameContainer.h"
 #include "pd_Document.h"
 #include "fd_Field.h"
 #include "pd_Style.h"
@@ -1071,6 +1072,11 @@ fl_DocSectionLayout * fl_BlockLayout::getDocSectionLayout(void) const
 		pDSL = static_cast<fl_ContainerLayout *>(getSectionLayout())->getDocSectionLayout();
 		return pDSL;
 	}
+	else if (getSectionLayout()->getType() == FL_SECTION_FRAME)
+	{
+		pDSL = static_cast<fl_ContainerLayout *>(getSectionLayout())->getDocSectionLayout();
+		return pDSL;
+	}
 	UT_ASSERT(UT_SHOULD_NOT_HAPPEN);
 	return NULL;
 }
@@ -1622,6 +1628,153 @@ fl_BlockLayout::_breakLineAfterRun(fp_Run* pRun)
 	_assertRunListIntegrity();
 }
 
+/*!
+ * This method is called at the end of the layout method in 
+ * fp_VerticalContainer. It places the frames pointed to within the block at
+ * the appropriate place on the appropriate page. Since we don't know where
+ * this is until the lines in the block are placed in a column we have to 
+ * wait until botht eh column and lines are placed on the page.
+ *
+ * pLastLine is the last line placed inthe column. If the frame should be 
+ * placed after this line we don't place any frames that should be below 
+ * this line now. In this case we wait until pLastLine is below the frame.
+ *
+ * If pLastLine is NULL we place all the frames in this block on the screen.
+ * 
+ */
+bool fl_BlockLayout::setFramesOnPage(fp_Line * pLastLine)
+{
+	if(getNumFrames() == 0)
+	{
+		return true;
+	}
+	UT_sint32 i = 0;
+	for(i=0; i< getNumFrames();i++)
+	{
+		fl_FrameLayout * pFrame = getNthFrameLayout(i);
+		if(pFrame->getFramePositionTo() == FL_FRAME_POSITIONED_TO_BLOCK_ABOVE_TEXT)
+		{
+			UT_sint32 xFpos = pFrame->getFrameXpos();
+			UT_sint32 yFpos = pFrame->getFrameYpos();
+			UT_DEBUGMSG(("xFpos %d yFpos %d \n",xFpos,yFpos));
+			// Now scan through the lines until we find a line below
+			// yFpos
+
+			UT_sint32 yoff = 0;
+			fp_Line * pFirstLine = static_cast<fp_Line *>(getFirstContainer());
+			fp_Line * pCon = pFirstLine;
+			while(pCon && (pCon != pLastLine) && yoff < yFpos )
+			{
+				yoff += pCon->getHeight();
+				yoff += pCon->getMarginBefore();
+				yoff += pCon->getMarginAfter();
+				pCon = static_cast<fp_Line *>(pCon->getNext());
+			}
+			if(pCon && (pCon == pLastLine) && (pCon != static_cast<fp_Line *>(getLastContainer())) && (yoff < yFpos))
+			{
+				// Frame is not within the container so far filled.
+				// try later
+				continue;
+			}
+
+			//
+			// Do this if we've found a line below the frame
+			// 
+			if(pCon && pCon != pLastLine && yoff >= yFpos)
+			{
+				if(pCon->getPrev())
+				{
+					pCon = static_cast<fp_Line *>(pCon->getPrev());
+				}
+			}
+			if(!pCon)
+			{
+				pCon = pFirstLine;
+			}
+			//
+			// OK at this point pCon is the first line above our frame.
+			// The Frame should be placed on the same page as this line
+			//
+			fp_Page * pPage = pCon->getPage();
+			//
+			// OK now calculate the offset from the first line to this page.
+			//
+			fp_Page * pFirstPage = pFirstLine->getPage();
+			UT_sint32 iFirstPageNo = getDocLayout()->findPage(pFirstPage);
+			UT_sint32 iThisPageNo = getDocLayout()->findPage(pPage);
+			UT_sint32 pageHeight = 0;
+			UT_sint32 yLineOff,xLineOff;
+			fp_VerticalContainer * pVCon = NULL;
+			if(iThisPageNo > iFirstPageNo)
+			{
+				//
+				// Calculate the distance from the position from the top
+				// of the first line to the bottom of the page.
+				//
+				pVCon = (static_cast<fp_VerticalContainer *>(pFirstLine->getContainer()));
+				pVCon->getOffsets(pFirstLine, xLineOff, yLineOff);
+				//
+				// this is the offset relative to the page. now subtract it
+				// from the height of the page
+				fl_DocSectionLayout * pDSL = getDocSectionLayout();
+				pageHeight = pFirstPage->getHeight() - pDSL->getTopMargin() - pDSL->getBottomMargin();
+				yoff = pageHeight - yLineOff;
+				yoff = pageHeight * (iThisPageNo- iFirstPageNo -1);
+			}
+			//
+			// OK subtract this off from yFpos
+			//
+			yFpos -= yoff;
+			pVCon = (static_cast<fp_VerticalContainer *>(pCon->getContainer()));
+			pVCon->getOffsets(pCon, xLineOff, yLineOff);
+			xFpos += xLineOff;
+			yFpos += yLineOff + pFirstLine->getY();
+			// OK, we have the X and Y positions of the frame relative to
+			// the page.
+			
+			fp_FrameContainer * pFrameCon = getNthFrameContainer(i);
+			pFrameCon->setX(xFpos);
+			pFrameCon->setY(yFpos);
+			if(pPage->findFrameContainer(pFrameCon) < 0)
+			{
+				pPage->insertFrameContainer(pFrameCon);
+			}
+		}
+		else
+		{
+			UT_DEBUGMSG(("Not implemented Yet \n"));
+			UT_ASSERT(UT_SHOULD_NOT_HAPPEN);
+		}
+
+	}
+	return true;
+}
+/*!
+ * This returns the distance from the first line in the block to the
+ * line presented here.
+ */
+bool fl_BlockLayout::getXYOffsetToLine(UT_sint32 & xoff, UT_sint32 & yoff, fp_Line * pLine)
+{
+	if(pLine == NULL)
+	{
+		return false;
+	}
+	xoff = 0;
+	yoff = 0;
+	fp_Line * pCon = static_cast<fp_Line *>(getFirstContainer());
+	while(pCon && (pCon != pLine))
+	{
+		yoff += pCon->getHeight();
+		yoff += pCon->getMarginBefore();
+		yoff += pCon->getMarginAfter();
+		pCon = static_cast<fp_Line *>(pCon->getNext());
+	}
+	if(pCon != pLine)
+	{
+		return false;
+	}
+	return true;
+}
 /*!
  * Calculate the height of the all the text contained by this block
  */
@@ -2484,6 +2637,10 @@ fl_BlockLayout* fl_BlockLayout::getNextBlockInDocument(void) const
 		{
 			pNext = pNext->getFirstLayout();
 		}
+		else if(pNext->getContainerType() == FL_CONTAINER_FRAME)
+		{
+			pNext = pNext->getFirstLayout();
+		}
 		else if(pNext->getContainerType() == FL_CONTAINER_CELL)
 		{
 			pNext = pNext->getFirstLayout();
@@ -2551,6 +2708,10 @@ fl_BlockLayout* fl_BlockLayout::getPrevBlockInDocument(void) const
 			return static_cast<fl_BlockLayout *>(pPrev);
 		}
 		else if(pPrev->getContainerType() == FL_CONTAINER_DOCSECTION)
+		{
+			pPrev = pPrev->getLastLayout();
+		}
+		else if(pPrev->getContainerType() == FL_CONTAINER_FRAME)
 		{
 			pPrev = pPrev->getLastLayout();
 		}
@@ -5673,6 +5834,96 @@ fl_SectionLayout * fl_BlockLayout::doclistener_insertTable(const PX_ChangeRecord
 		pfnBindHandles(sdh,lid,sfhNew);
 	}
 
+//
+// increment the insertion point in the view.
+//
+	FV_View* pView = getView();
+	if (pView && (pView->isActive() || pView->isPreview()))
+	{
+		pView->_setPoint(pcrx->getPosition() + fl_BLOCK_STRUX_OFFSET);
+	}
+	else if(pView && pView->getPoint() > pcrx->getPosition())
+	{
+		pView->_setPoint(pView->getPoint() + fl_BLOCK_STRUX_OFFSET);
+	}
+//
+// OK that's it!
+//
+	updateEnclosingBlockIfNeeded();
+
+	return pSL;
+}
+
+/*!
+ * Insert a Frame after this block.
+ */
+fl_SectionLayout * fl_BlockLayout::doclistener_insertFrame(const PX_ChangeRecord_Strux * pcrx,
+											   SectionType iType,
+											   PL_StruxDocHandle sdh,
+											   PL_ListenerId lid,
+											   void (* pfnBindHandles)(PL_StruxDocHandle sdhNew,
+																	   PL_ListenerId lid,
+																	   PL_StruxFmtHandle sfhNew))
+{
+	UT_ASSERT(iType == FL_SECTION_FRAME);
+	_assertRunListIntegrity();
+
+	// Insert a section at the location given in the change record.
+	// Everything from this point forward (to the next section) needs
+	// to be re-parented to this new section.  We also need to verify
+	// that this insertion point is at the end of the block (and that
+	// another block follows).	This is because a section cannot
+	// contain content.
+
+	UT_ASSERT(pcrx);
+	UT_ASSERT(pcrx->getType() == PX_ChangeRecord::PXT_InsertStrux);
+//
+// Not true always. eg Undo on a delete header/footer. We should detect this
+// and deal with it.
+//
+	PT_DocPosition pos1;
+//
+// This is to clean the fragments
+//
+	m_pDoc->getBounds(true,pos1);
+
+	fl_SectionLayout* pSL = NULL;
+
+	pSL = static_cast<fl_SectionLayout *>(static_cast<fl_ContainerLayout *>(getSectionLayout())->insert(sdh,this,pcrx->getIndexAP(), FL_CONTAINER_FRAME));
+
+		// Must call the bind function to complete the exchange of handles
+		// with the document (piece table) *** before *** anything tries
+		// to call down into the document (like all of the view
+		// listeners).
+
+	PL_StruxFmtHandle sfhNew = static_cast<PL_StruxFmtHandle>(pSL);
+	//
+	// Don't bind to shadows
+	//
+	if(pfnBindHandles)
+	{
+		pfnBindHandles(sdh,lid,sfhNew);
+	}
+	//
+	// Add this frame to the list in this layout.
+	//
+	addFrame(static_cast<fl_FrameLayout *>(pSL));
+	fl_ContainerLayout * pPrevCL = getPrev();
+	fp_Page * pPrevP = NULL;
+	if(pPrevCL)
+	{
+		fp_Container * pPrevCon = pPrevCL->getFirstContainer();
+		if(pPrevCon)
+		{
+			pPrevP = pPrevCon->getPage();
+		}
+	}
+
+	// Create a Physical Container for this frame
+
+	static_cast<fl_FrameLayout *>(pSL)->format();
+	//	getDocSectionLayout()->setNeedsSectionBreak(true,pPrevP);
+  	getDocSectionLayout()->completeBreakSection();
 //
 // increment the insertion point in the view.
 //

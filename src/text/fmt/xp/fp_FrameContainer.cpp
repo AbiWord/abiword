@@ -44,7 +44,9 @@
  */
 fp_FrameContainer::fp_FrameContainer(fl_SectionLayout* pSectionLayout) 
 	: fp_VerticalContainer(FP_CONTAINER_FRAME, pSectionLayout),
-	  m_pPage(NULL)
+	  m_pPage(NULL),
+	  m_iXpad(0),
+	  m_iYpad(0)
 {
 }
 
@@ -79,21 +81,16 @@ void fp_FrameContainer::setPage(fp_Page * pPage)
 	}
 }
 
-/*! 
- * This method returns the value of the frame reference (or anchor)
- */
-UT_uint32 fp_FrameContainer::getValue(void)
-{
-	fl_FrameLayout * pFL = static_cast<fl_FrameLayout *>(getSectionLayout());
-	return pFL->getFramePID();
-}
-
 void fp_FrameContainer::clearScreen(void)
 {
 	if(getPage() == NULL)
 	{
 		return;
 	}
+	UT_sint32 srcX,srcY;
+	srcX = getFullX();
+	srcY = getFullY();
+	getFillType()->getParent()->Fill(getGraphics(),srcX,srcY,getFullX(),getFullY(),getFullWidth(),getFullHeight());
 	fp_Container * pCon = NULL;
 	UT_sint32 i = 0;
 	for(i=0; i< static_cast<UT_sint32>(countCons()); i++)
@@ -102,19 +99,61 @@ void fp_FrameContainer::clearScreen(void)
 		pCon->clearScreen();
 	}
 }
+
+/*!
+ * All these methods are used to implement an X and Y padding around the
+ * Frame
+ */
+UT_sint32 fp_FrameContainer::getFullWidth(void) const
+{
+	return fp_VerticalContainer::getWidth();
+}
+
+UT_sint32 fp_FrameContainer::getFullHeight(void) const
+{
+	return fp_VerticalContainer::getHeight();
+}
+
+UT_sint32 fp_FrameContainer::getFullX(void) const
+{
+	return fp_VerticalContainer::getX();
+}
+
+UT_sint32 fp_FrameContainer::getFullY(void) const
+{
+	return fp_VerticalContainer::getY();
+}
+
+
+UT_sint32 fp_FrameContainer::getWidth(void) const
+{
+	UT_sint32 iWidth = fp_VerticalContainer::getWidth() - m_iXpad*2;
+	return iWidth;
+}
+
+UT_sint32 fp_FrameContainer::getX(void) const
+{
+	UT_sint32 iX = fp_VerticalContainer::getX() + m_iXpad;
+	return iX;
+}
+
+
+UT_sint32 fp_FrameContainer::getY(void) const
+{
+	UT_sint32 iY = fp_VerticalContainer::getY() + m_iYpad;
+	return iY;
+}
+
+UT_sint32 fp_FrameContainer::getHeight(void) const
+{
+	UT_sint32 iHeight = fp_VerticalContainer::getHeight() - m_iYpad*2;
+	return iHeight;
+}
+
 	
 void fp_FrameContainer::setContainer(fp_Container * pContainer)
 {
-	if (pContainer == getContainer())
-	{
-		return;
-	}
-
-	if (getContainer())
-	{
-		clearScreen();
-	}
-	fp_Container::setContainer(pContainer);
+	UT_ASSERT(UT_SHOULD_NOT_HAPPEN);
 }
 
 fl_DocSectionLayout * fp_FrameContainer::getDocSectionLayout(void)
@@ -123,6 +162,60 @@ fl_DocSectionLayout * fp_FrameContainer::getDocSectionLayout(void)
 	fl_DocSectionLayout * pDSL = static_cast<fl_DocSectionLayout *>(pFL->myContainingLayout());
 	UT_ASSERT(pDSL && (pDSL->getContainerType() == FL_CONTAINER_DOCSECTION));
 	return pDSL;
+}
+
+
+/* just a little helper function
+ */
+void fp_FrameContainer::_drawLine (const PP_PropertyMap::Line & style,
+								  UT_sint32 left, UT_sint32 top, UT_sint32 right, UT_sint32 bot,GR_Graphics * pGr)
+{
+
+	if (style.m_t_linestyle == PP_PropertyMap::linestyle_none)
+		return; // do not draw	
+	
+	GR_Graphics::JoinStyle js = GR_Graphics::JOIN_MITER;
+	GR_Graphics::CapStyle  cs = GR_Graphics::CAP_BUTT;
+
+	switch (style.m_t_linestyle)
+	{
+		case PP_PropertyMap::linestyle_dotted:
+			pGr->setLineProperties (1, js, cs, GR_Graphics::LINE_DOTTED);
+			break;
+		case PP_PropertyMap::linestyle_dashed:
+			pGr->setLineProperties (1, js, cs, GR_Graphics::LINE_ON_OFF_DASH);
+			break;
+		case PP_PropertyMap::linestyle_solid:
+			pGr->setLineProperties (1, js, cs, GR_Graphics::LINE_SOLID);
+			break;
+		default: // do nothing; shouldn't happen
+			break;
+	}
+
+	pGr->setLineWidth (static_cast<UT_sint32>(style.m_thickness));
+	pGr->setColor (style.m_color);
+
+
+	xxx_UT_DEBUGMSG(("_drawLine: top %d bot %d \n",top,bot));
+
+	pGr->drawLine (left, top, right, bot);
+	
+	pGr->setLineProperties (1, js, cs, GR_Graphics::LINE_SOLID);
+}
+
+/*!
+ * Draw the frame boundaries
+ */
+void  fp_FrameContainer::drawBoundaries(dg_DrawArgs * pDA)
+{
+	UT_sint32 iXlow = pDA->xoff - m_iXpad;
+	UT_sint32 iXhigh = iXlow + getFullWidth() ;
+	UT_sint32 iYlow = pDA->yoff - m_iYpad;
+	UT_sint32 iYhigh = iYlow + getFullHeight();
+	_drawLine(m_lineTop,iXlow,iYlow,iXhigh,iYlow,pDA->pG); // top
+	_drawLine(m_lineRight,iXhigh,iYlow,iXhigh,iYhigh,pDA->pG); // right
+	_drawLine(m_lineBottom,iXlow,iYhigh,iXhigh,iYhigh,pDA->pG); // bottom
+	_drawLine(m_lineLeft,iXlow,iYlow,iXlow,iYhigh,pDA->pG); // left
 }
 
 /*!
@@ -139,7 +232,13 @@ void fp_FrameContainer::draw(dg_DrawArgs* pDA)
 // Only draw the lines in the clipping region.
 //
 	dg_DrawArgs da = *pDA;
-
+	if(!pDA->bDirtyRunsOnly)
+	{
+		UT_sint32 srcX,srcY;
+		srcX = getFullX();
+		srcY = getFullY();
+		getFillType()->Fill(getGraphics(),srcX,srcY,getFullX(),getFullY(),getFullWidth(),getFullHeight());
+	}
 	UT_uint32 count = countCons();
 	for (UT_uint32 i = 0; i<count; i++)
 	{
@@ -148,39 +247,33 @@ void fp_FrameContainer::draw(dg_DrawArgs* pDA)
 		da.yoff = pDA->yoff + pContainer->getY();
 		pContainer->draw(&da);
 	}
-    _drawBoundaries(pDA);
+	drawBoundaries(pDA);
 }
 
+void fp_FrameContainer::setBackground (const PP_PropertyMap::Background & style)
+{
+	m_background = style;
+	PP_PropertyMap::Background background = m_background;
+	if(background.m_t_background == PP_PropertyMap::background_solid)
+	{
+		getFillType()->setColor(background.m_color);
+	}
+}
+
+
+/*!
+ * FrameContainers are not in the linked list of physical containers
+ */
 fp_Container * fp_FrameContainer::getNextContainerInSection() const
 {
-
-	fl_ContainerLayout * pCL = static_cast<fl_ContainerLayout *>(getSectionLayout());
-	fl_ContainerLayout * pNext = pCL->getNext();
-	while(pNext && pNext->getContainerType() == FL_CONTAINER_ENDNOTE)
-	{
-		pNext = pNext->getNext();
-	}
-	if(pNext)
-	{
-		return pNext->getFirstContainer();
-	}
 	return NULL;
 }
 
-
+/*!
+ * FrameContainers are not in the linked list of physical containers
+ */
 fp_Container * fp_FrameContainer::getPrevContainerInSection() const
 {
-
-	fl_ContainerLayout * pCL = static_cast<fl_ContainerLayout *>(getSectionLayout());
-	fl_ContainerLayout * pPrev = pCL->getPrev();
-	while(pPrev && pPrev->getContainerType() == FL_CONTAINER_ENDNOTE)
-	{
-		pPrev = pPrev->getPrev();
-	}
-	if(pPrev)
-	{
-		return pPrev->getLastContainer();
-	}
 	return NULL;
 }
 
@@ -204,9 +297,14 @@ void fp_FrameContainer::layout(void)
 		{
 			pContainer->clearScreen();
 		}
-			
-		pContainer->setY(iY);
-
+		if(iY > getHeight())
+		{
+			pContainer->setY(-1000000);
+		}
+		else
+		{
+			pContainer->setY(iY);
+		}
 		UT_sint32 iContainerHeight = pContainer->getHeight();
 		UT_sint32 iContainerMarginAfter = pContainer->getMarginAfter();
 
@@ -225,19 +323,13 @@ void fp_FrameContainer::layout(void)
 	// Correct height position of the last line
 	if (pPrevContainer)
 	{
-		pPrevContainer->setAssignedScreenHeight(iY - iPrevY + 1);
-	}
-
-	if (getHeight() == iY)
-	{
-		return;
-	}
-
-	setHeight(iY);
-	fp_Page * pPage = getPage();
-//	UT_ASSERT(pPage);
-	if(pPage)
-	{
-		pPage->frameHeightChanged();
+		if(iY > getHeight())
+		{
+			pPrevContainer->setAssignedScreenHeight(-1000000);
+		}
+		else
+		{
+			pPrevContainer->setAssignedScreenHeight(iY - iPrevY + 1);
+		}
 	}
 }

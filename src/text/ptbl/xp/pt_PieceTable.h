@@ -459,6 +459,7 @@ protected:
 	bool					_getStruxFromFrag(pf_Frag * pfStart, pf_Frag_Strux ** ppfs) const;
 	bool					_getStruxFromFragSkip(pf_Frag * pfStart, pf_Frag_Strux ** ppfs) const;
 
+	bool                    _getNextStruxAfterFragSkip(pf_Frag *pfStart, pf_Frag_Strux ** ppfs);
 
 	bool                    _getStruxFromPositionSkip(PT_DocPosition docPos,
 													  pf_Frag_Strux ** ppfs) const;

@@ -69,10 +69,7 @@ public:
 				   fl_DocSectionLayout * pDocSL, 
 				   PL_StruxDocHandle sdh, 
 				   PT_AttrPropIndex ap, 
-				   fl_ContainerLayout * pMyContainerLayout,
-				   SectionType iSecType,
-				   fl_ContainerType myType,
-				   PTStruxType myStruxType);
+				   fl_ContainerLayout * pMyContainerLayout);
 	virtual ~fl_FrameLayout();
 
 	virtual bool 	doclistener_changeStrux(const PX_ChangeRecord_StruxChange * pcrxc);
@@ -97,15 +94,28 @@ public:
 	fl_DocSectionLayout*	 getDocSectionLayout(void) const { return m_pDocSL; }
 	PT_DocPosition           getDocPosition(void);
 	UT_uint32                getLength(void);
+	void                     setContainerProperties(void);
+	FL_FrameType             getFrameType(void) const 
+		{return m_iFrameType;}
+	FL_FrameFormatMode       getFramePositionTo(void) const
+		{ return m_iFramePositionTo;}
+	UT_sint32                getFrameWidth(void) const
+		{ return m_iWidth;}
+	UT_sint32                getFrameHeight(void) const
+		{ return m_iHeight;}
+	UT_sint32                getFrameXpos(void) const
+		{ return m_iXpos;}
+	UT_sint32                getFrameYpos(void) const
+		{ return m_iYpos;}
+
 private:
 	void		             _lookupProperties(void);
 	void                     _purgeLayout(void);
-	UT_uint32                getFramePID(void) const
-		{return m_iFramePID;}
 	void                     _createFrameContainer(void);
 	void                     _insertFrameContainer(fp_Container * pNewFC);
 	void                     _localCollapse();
-	UT_uint32                m_iFramePID;
+	FL_FrameType             m_iFrameType;
+	FL_FrameFormatMode       m_iFramePositionTo;
 	bool                     m_bNeedsRebuild;
 	bool                     m_bNeedsFormat;
 	bool                     m_bIsOnPage;
@@ -120,6 +130,14 @@ private:
 	PP_PropertyMap::Line   m_lineLeft;
 	PP_PropertyMap::Line   m_lineRight;
 	PP_PropertyMap::Line   m_lineTop;
+
+	UT_sint32               m_iWidth;
+	UT_sint32               m_iHeight;
+	UT_sint32               m_iXpos;
+	UT_sint32               m_iYpos;
+
+	UT_sint32               m_iXpad;
+	UT_sint32               m_iYpad;
 };
 
 #endif /* FRAMELAYOUT_H */

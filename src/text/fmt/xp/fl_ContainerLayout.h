@@ -69,6 +69,8 @@ class fp_Container;
 class fp_Run;
 class fl_DocSectionLayout;
 class UT_GrowBuf;
+class fl_FrameLayout;
+class fp_FrameContainer;
 
 class ABI_EXPORT fl_ContainerLayout : public fl_Layout
 {
@@ -122,7 +124,14 @@ public:
 	FPVisibility            isHidden() const {return m_eHidden;}
 	void                    setVisibility(FPVisibility eVis) {m_eHidden = eVis;}
 	bool                    isOnScreen() const;
-	
+
+// Frames stuff	
+	UT_sint32               getNumFrames(void) const;
+	fl_FrameLayout *        getNthFrameLayout(UT_sint32 i) const;
+	fp_FrameContainer *     getNthFrameContainer(UT_sint32 i) const;
+	void                    addFrame(fl_FrameLayout * pFrame);
+	void                    removeFrame(fl_FrameLayout * pFrame);
+
 
 #ifdef FMT_TEST
 	virtual void		__dump(FILE * fp) const;
@@ -143,6 +152,7 @@ private:
 	fp_Container *              m_pFirstContainer;
 	fp_Container *              m_pLastContainer;
 	FPVisibility                m_eHidden;
+	UT_Vector                   m_vecFrames;
 };
 
 #endif /* CONTAINERLAYOUT_H */

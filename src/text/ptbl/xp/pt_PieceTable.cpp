@@ -872,6 +872,46 @@ bool pt_PieceTable::_getStruxFromFrag(pf_Frag * pfStart, pf_Frag_Strux ** ppfs) 
 }
 
 
+bool pt_PieceTable::_getNextStruxAfterFragSkip(pf_Frag *pfStart, pf_Frag_Strux ** ppfs)
+{
+
+	*ppfs = NULL;
+
+	pf_Frag * pf;
+	UT_sint32 countFoots = 0;
+	if(isFootnote(pfStart))
+	{
+		countFoots++;
+	}
+	pf = pfStart->getNext();
+	if(pf && isFootnote(pf))
+	{
+		countFoots++;
+	}
+	xxx_UT_DEBUGMSG(("_getStruxFromFragStrux: 1 countFoots %d \n",countFoots));
+	while(pf && (pf->getType() != pf_Frag::PFT_EndOfDoc) && ((pf->getType() != pf_Frag::PFT_Strux) || (countFoots > 0) 
+				 || isFootnote(pf) || isEndFootnote(pf)))
+	{
+		pf=pf->getNext();
+		if(isFootnote(pf))
+		{
+			countFoots++;
+		}
+		else if(isEndFootnote(pf))
+		{
+			countFoots--;
+		}
+		xxx_UT_DEBUGMSG(("_getStruxFromFragStrux: 2 countFoots %d \n",countFoots));
+	}
+		;
+	if (!pf)
+		return false;
+
+	*ppfs = static_cast<pf_Frag_Strux *>(pf);
+	return true;
+}
+
+
 bool pt_PieceTable::_getStruxFromFragSkip(pf_Frag * pfStart, pf_Frag_Strux ** ppfs) const
 {
 	// return the strux frag immediately prior to (containing)

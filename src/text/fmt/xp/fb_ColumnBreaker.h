@@ -28,6 +28,7 @@
 class fp_Container;
 class fl_DocSectionLayout;
 class fp_Page;
+class fl_BlockLayout;
 
 class ABI_EXPORT fb_ColumnBreaker
 {
@@ -47,6 +48,7 @@ private:
 	bool                  m_bStartFromStart;
 	bool                  m_bReBreak;
 	fl_DocSectionLayout * m_pDocSec;
+	fl_BlockLayout *      m_pCurrentBlock;
 };
 
 #endif /* COLUMNBREAKER_H */

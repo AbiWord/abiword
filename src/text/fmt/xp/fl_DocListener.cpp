@@ -592,7 +592,39 @@ bool fl_DocListener::populateStrux(PL_StruxDocHandle sdh,
 //
 		m_pDoc->setDontImmediatelyLayout(true);
 	}
+	case PTX_SectionFrame:
+	{
+		UT_ASSERT(m_pCurrentSL);
+		UT_ASSERT(m_pCurrentSL->getContainerType() == FL_CONTAINER_DOCSECTION);
+		// Append a new FrameLayout to the SectionLayout
+
+		fl_ContainerLayout*	pCL = NULL;
+		UT_DEBUGMSG(("!!!!Appending Frame \n"));
+		pCL = m_pCurrentSL->append(sdh, pcr->getIndexAP(),FL_CONTAINER_FRAME);
+		if (!pCL)
+		{
+			UT_DEBUGMSG(("no memory for TableLayout"));
+			return false;
+		}
+		m_pCurrentSL = static_cast<fl_SectionLayout *>(pCL);
+		*psfh = (PL_StruxFmtHandle)pCL;
+	}
 	break;
+	case PTX_EndFrame:
+	{
+		UT_ASSERT(m_pCurrentSL);
+		UT_ASSERT(m_pCurrentSL->getContainerType() == FL_CONTAINER_FRAME);
+		// Append a new FrameLayout to the SectionLayout
+
+		fl_ContainerLayout*	pCL = NULL;
+		UT_DEBUGMSG(("!!!!Appending EndFrame \n"));
+		pCL = m_pCurrentSL;
+		*psfh = (PL_StruxFmtHandle)pCL;
+		m_pCurrentSL = static_cast<fl_SectionLayout *>(pCL->myContainingLayout());
+		UT_ASSERT(m_pCurrentSL->getContainerType() == FL_CONTAINER_DOCSECTION);
+	}
+	break;
+
 	case PTX_SectionCell:
 	{
 		UT_ASSERT(m_pCurrentSL);
@@ -1162,6 +1194,13 @@ bool fl_DocListener::change(PL_StruxFmtHandle sfh,
 			bResult = pCL->doclistener_changeStrux(pcrxc);
 			goto finish_up;
 		}
+		case PTX_SectionFrame:
+		{
+			fl_FrameLayout * pFL = (fl_FrameLayout *) pL;
+			UT_ASSERT(pFL->getContainerType() == FL_CONTAINER_FRAME);
+			bResult = pFL->doclistener_changeStrux(pcrxc);
+			goto finish_up;
+		}
 		default:
 		{
 			UT_ASSERT(0);
@@ -1395,6 +1434,14 @@ bool fl_DocListener::insertStrux(PL_StruxFmtHandle sfh,
 	{
 		UT_DEBUGMSG(("Inserting EndCell strux at pos %d \n",pcr->getPosition()));
 	}
+	else if(pcrx->getStruxType() == PTX_SectionFrame)
+	{
+		UT_DEBUGMSG(("Inserting Frame strux at pos %d \n",pcr->getPosition()));
+	}
+	else if(pcrx->getStruxType() == PTX_EndFrame)
+	{
+		UT_DEBUGMSG(("Inserting EndFrame strux at pos %d \n",pcr->getPosition()));
+	}
 #endif
 #endif
 	fl_Layout * pL = (fl_Layout *)sfh;
@@ -1431,7 +1478,7 @@ bool fl_DocListener::insertStrux(PL_StruxFmtHandle sfh,
 		}
 #if 0
 //
-// FIXME When I get brave I'll see if we can't make a table te first layout
+// FIXME When I get brave I'll see if we can't make a table the first layout
 // in a section.
 //
 		case PTX_SectionTable:
@@ -1528,6 +1575,38 @@ bool fl_DocListener::insertStrux(PL_StruxFmtHandle sfh,
 			   xxx_UT_DEBUGMSG(("Doing Insert Table Correctly \n"));
 			   fl_SectionLayout* pCLSL = pCL->getSectionLayout();
 			   bool bResult = (pCLSL->bl_doclistener_insertTable(pCL,FL_SECTION_TABLE, pcrx,sdh,lid,pfnBindHandles) != 0);
+			   return bResult;
+		   }
+		case PTX_SectionFrame:				// we are inserting a section.
+		   {
+			   // The immediately prior strux is a block.  
+			   // OK this creates a table in the document.
+			   UT_DEBUGMSG(("Insert Frame after this Block \n"));
+			
+			   fl_ContainerLayout * pCL = static_cast<fl_ContainerLayout *>(pL);
+			   UT_DEBUGMSG(("Doing Insert Strux Frame Into Prev Block \n"));
+			   fl_SectionLayout* pCLSL = pCL->getSectionLayout();
+			   bool bResult = (pCLSL->bl_doclistener_insertFrame(pCL,FL_SECTION_FRAME, pcrx,sdh,lid,pfnBindHandles) != 0);
+			   return bResult;
+		   }
+		case PTX_EndFrame:				// we are inserting an endFrame.
+		   {
+			   // The immediately prior strux is a block.  
+			   // OK this finishes a Frame on this page
+
+			   UT_DEBUGMSG(("Insert endFrame into Block \n"));
+			   fl_ContainerLayout * pCL = static_cast<fl_ContainerLayout *>(pL);
+			   UT_DEBUGMSG(("Doing Insert Strux EndFrame adter Prev Block \n"));
+//
+// This gets us a fl_FRAMELAYOUTCell.
+//
+			   fl_FrameLayout* pCLSL = (fl_FrameLayout *) pCL->myContainingLayout();
+			   if(pCLSL->getContainerType() != FL_CONTAINER_FRAME)
+			   {
+				   m_pDoc->miniDump(pL->getStruxDocHandle(),6);
+			   }
+			   UT_ASSERT(pCLSL->getContainerType() == FL_CONTAINER_FRAME);
+			   bool bResult = pCLSL->bl_doclistener_insertEndFrame(pCL, pcrx,sdh,lid,pfnBindHandles);
 			   return bResult;
 		   }
 		case PTX_EndFootnote:
@@ -1765,8 +1844,32 @@ bool fl_DocListener::insertStrux(PL_StruxFmtHandle sfh,
 			  return bResult;
 		  }
 		default:
+		  {
+			  UT_DEBUGMSG(("Not Implemented \n"));
+			  UT_ASSERT(UT_SHOULD_NOT_HAPPEN);
+		  }
+			
+		}
+
+	}
+    case PTX_SectionFrame:						// The immediately prior strux is a Frame
+    {
+		switch (pcrx->getStruxType())	// see what we are inserting.
+		{
+		case PTX_Block:				// we are inserting a block into a frame. This is valid
+		  {
+			   // The immediately prior strux is a section.  So, this
+			   // will become the first block of the section and have no
+			   // text.
+			  UT_DEBUGMSG(("Inserting block into frame \n"));
+			  fl_SectionLayout * pSL = static_cast<fl_SectionLayout *>(pL);
+			  UT_ASSERT(pSL->getContainerType() == FL_CONTAINER_FRAME);
+			  bool bResult = pSL->bl_doclistener_insertBlock(NULL, pcrx,sdh,lid,pfnBindHandles);
+			  return bResult;
+		   }
+		default:
 		   {
-			   UT_DEBUGMSG(("Illegal strux type after cell %d \n",pcrx->getStruxType()));
+			   UT_DEBUGMSG(("Illegal strux type after frame %d \n",pcrx->getStruxType()));
 			   m_pDoc->miniDump(pL->getStruxDocHandle(),6);
 			   UT_ASSERT(UT_SHOULD_NOT_HAPPEN);
 			   return false;

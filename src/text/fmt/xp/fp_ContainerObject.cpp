@@ -31,6 +31,7 @@
 #include "fp_TableContainer.h"
 #include "fl_TableLayout.h"
 #include "fp_FootnoteContainer.h"
+#include "fp_FrameContainer.h"
 #include "fl_FootnoteLayout.h"
 #include "fl_DocLayout.h"
 #include "fp_Column.h"
@@ -64,6 +65,7 @@ bool fp_ContainerObject::isColumnType(void) const
 {
   bool b = (m_iConType == FP_CONTAINER_COLUMN) 
 	  || (m_iConType == FP_CONTAINER_COLUMN_SHADOW)
+	  || (m_iConType == FP_CONTAINER_FRAME)
 	  || (m_iConType == FP_CONTAINER_COLUMN_POSITIONED)
 	  || (m_iConType == FP_CONTAINER_FOOTNOTE)
 	  ;
@@ -233,6 +235,10 @@ fp_Page * fp_Container::getPage(void) const
 	if(pCon->getContainerType() == FP_CONTAINER_COLUMN_POSITIONED)
 	{
 		return static_cast<fp_Column *>(pCon)->getPage();
+	}
+	if(pCon->getContainerType() == FP_CONTAINER_FRAME)
+	{
+		return static_cast<fp_FrameContainer *>(pCon)->getPage();
 	}
 	if(pCon->getContainerType() == FP_CONTAINER_COLUMN_SHADOW)
 	{

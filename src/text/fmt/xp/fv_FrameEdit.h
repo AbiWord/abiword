@@ -76,6 +76,12 @@ public:
 	FV_FrameEditDragWhat  mouseMotion(UT_sint32 x, UT_sint32 y);
 	void                  drawFrame(void);
 	void                  setDragType(UT_sint32 x,UT_sint32 y);
+	bool                  getFrameStrings(UT_sint32 x, UT_sint32 y, 
+										  UT_String & sXpos,
+										  UT_String & sYpos,
+										  UT_String & sWidth,
+										  UT_String & sHeight,
+										  PT_DocPosition & posAtXY);
 private:
     void                  _xorBox(UT_Rect & rect);
 	FV_View *             m_pView;

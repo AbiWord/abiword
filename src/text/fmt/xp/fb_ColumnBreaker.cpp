@@ -32,7 +32,10 @@
 
 fb_ColumnBreaker::fb_ColumnBreaker() :
 	m_pStartPage(NULL),
-	m_bStartFromStart(true)
+	m_bStartFromStart(true),
+	m_bReBreak(false),
+	m_pDocSec(NULL),
+	m_pCurrentBlock(NULL)
 {
 }
 
@@ -962,6 +965,13 @@ fp_Container * fb_ColumnBreaker::_getNext(fp_Container * pCon)
 		}
 #endif
 	}
+#if DEBUG
+		if(pNext)
+		{
+			UT_ASSERT(pNext->getContainerType() != FP_CONTAINER_FRAME);
+		}
+#endif
+
 	return pNext;
 }
 	

@@ -451,22 +451,7 @@ void fp_Page::draw(dg_DrawArgs* pDA, bool bAlwaysUseWhiteBackground)
 
     _drawCropMarks(pDA);
 
-	// draw Frames
-	UT_sint32 count = m_vecFrames.getItemCount();
-	for (i=0; i<count; i++)
-	{
-		fp_FrameContainer* pFC = static_cast<fp_FrameContainer*>(m_vecFrames.getNthItem(i));
-		dg_DrawArgs da = *pDA;
-		if(m_pView && (m_pView->getViewMode() != VIEW_PRINT) && !pDA->pG->queryProperties(GR_Graphics::DGP_PAPER))
-		{
-			fp_Column* pFirstColumnLeader = getNthColumnLeader(0);
-			fl_DocSectionLayout* pFirstSectionLayout = (pFirstColumnLeader->getDocSectionLayout());
-			da.yoff -= pFirstSectionLayout->getTopMargin();
-		}
-		da.xoff += pFC->getX();
-		da.yoff += pFC->getY();
-		pFC->draw(&da);
-	}
+	UT_sint32 count = 0;
 
 	// draw each column on the page
 	count = m_vecColumnLeaders.getItemCount();
@@ -521,6 +506,23 @@ void fp_Page::draw(dg_DrawArgs* pDA, bool bAlwaysUseWhiteBackground)
 	for (i=0; i<count; i++)
 	{
 		fp_FootnoteContainer* pFC = static_cast<fp_FootnoteContainer*>(m_vecFootnotes.getNthItem(i));
+		dg_DrawArgs da = *pDA;
+		if(m_pView && (m_pView->getViewMode() != VIEW_PRINT) && !pDA->pG->queryProperties(GR_Graphics::DGP_PAPER))
+		{
+			fp_Column* pFirstColumnLeader = getNthColumnLeader(0);
+			fl_DocSectionLayout* pFirstSectionLayout = (pFirstColumnLeader->getDocSectionLayout());
+			da.yoff -= pFirstSectionLayout->getTopMargin();
+		}
+		da.xoff += pFC->getX();
+		da.yoff += pFC->getY();
+		pFC->draw(&da);
+	}
+
+	// draw Frames
+	count = m_vecFrames.getItemCount();
+	for (i=0; i<count; i++)
+	{
+		fp_FrameContainer* pFC = static_cast<fp_FrameContainer*>(m_vecFrames.getNthItem(i));
 		dg_DrawArgs da = *pDA;
 		if(m_pView && (m_pView->getViewMode() != VIEW_PRINT) && !pDA->pG->queryProperties(GR_Graphics::DGP_PAPER))
 		{
@@ -1546,31 +1548,7 @@ fp_FrameContainer* fp_Page::getNthFrameContainer(UT_sint32 n) const
 
 bool fp_Page::insertFrameContainer(fp_FrameContainer * pFC)
 {
-	UT_uint32 i =0;
-	UT_uint32 loc =0;
-	UT_sint32 fVal = pFC->getValue();
-	fp_FrameContainer * pFTemp = NULL;
-	for(i=0; i< m_vecFrames.getItemCount();i++)
-	{
-		pFTemp = static_cast<fp_FrameContainer *>(m_vecFrames.getNthItem(i));
-		if(fVal < pFTemp->getValue())
-		{
-			loc = i;
-			break;
-		}
-	}
-	if(pFTemp == NULL)
-	{
-		m_vecFrames.addItem(static_cast<void *>(pFC));
-	}
-	else if( i>= m_vecFrames.getItemCount())
-	{
-		m_vecFrames.addItem(static_cast<void *>(pFC));
-	}
-	else
-	{
-		m_vecFrames.insertItemAt(pFC, loc);
-	}
+	m_vecFrames.addItem(static_cast<void *>(pFC));
 	if(pFC)
 	{
 		pFC->setPage(this);

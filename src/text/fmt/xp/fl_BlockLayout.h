@@ -185,6 +185,8 @@ public:
 	UT_sint32       getEmbeddedOffset(UT_sint32 startOffset, fl_ContainerLayout *& pEmbedCL);
 	void            shuffleEmbeddedIfNeeded(fl_BlockLayout * pBlock, UT_uint32 blockOffset);
 
+	bool            getXYOffsetToLine(UT_sint32 & xoff, UT_sint32 & yoff, fp_Line * pLine);
+	bool            setFramesOnPage(fp_Line * pLastLine);
 	UT_sint32       getHeightOfBlock(void);
 	fl_BlockLayout* getNextBlockInDocument(void) const;
 	fl_BlockLayout* getPrevBlockInDocument(void) const;
@@ -315,6 +317,13 @@ public:
 														   PL_StruxFmtHandle sfhNew));
 
 	fl_SectionLayout *  doclistener_insertTable(const PX_ChangeRecord_Strux * pcrx,
+								   SectionType iType,
+								   PL_StruxDocHandle sdh,
+								   PL_ListenerId lid,
+								   void (* pfnBindHandles)(PL_StruxDocHandle sdhNew,
+														   PL_ListenerId lid,
+														   PL_StruxFmtHandle sfhNew));
+	fl_SectionLayout *  doclistener_insertFrame(const PX_ChangeRecord_Strux * pcrx,
 								   SectionType iType,
 								   PL_StruxDocHandle sdh,
 								   PL_ListenerId lid,

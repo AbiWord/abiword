@@ -83,6 +83,42 @@ public:
 
 
 /*!
+ pf_Frag_Strux_SectionFrames represents structure information for
+ a Frames section in the document.
+*/
+
+class pf_Frag_Strux_SectionFrame : public pf_Frag_Strux
+{
+public:
+	pf_Frag_Strux_SectionFrame(pt_PieceTable * pPT,
+						  PT_AttrPropIndex indexAP);
+	virtual ~pf_Frag_Strux_SectionFrame();
+
+#ifdef PT_TEST
+	virtual void			__dump(FILE * fp) const;
+#endif
+};
+
+
+/*!
+ pf_Frag_Strux_SectionEndFrame represents structure information for
+ a EndFrame section in the document.
+*/
+
+class pf_Frag_Strux_SectionEndFrame : public pf_Frag_Strux
+{
+public:
+	pf_Frag_Strux_SectionEndFrame(pt_PieceTable * pPT,
+						  PT_AttrPropIndex indexAP);
+	virtual ~pf_Frag_Strux_SectionEndFrame();
+
+#ifdef PT_TEST
+	virtual void			__dump(FILE * fp) const;
+#endif
+};
+
+
+/*!
  pf_Frag_Strux_SectionTable represents structure information for
  a table section in the document.
 */
@@ -147,24 +183,6 @@ public:
 	pf_Frag_Strux_SectionMarginnote(pt_PieceTable * pPT,
 						  PT_AttrPropIndex indexAP);
 	virtual ~pf_Frag_Strux_SectionMarginnote();
-
-#ifdef PT_TEST
-	virtual void			__dump(FILE * fp) const;
-#endif
-};
-
-
-/*!
- pf_Frag_Strux_SectionEndnote represents structure information for
- a Frame section in the document.
-*/
-
-class pf_Frag_Strux_SectionFrame : public pf_Frag_Strux
-{
-public:
-	pf_Frag_Strux_SectionFrame(pt_PieceTable * pPT,
-						  PT_AttrPropIndex indexAP);
-	virtual ~pf_Frag_Strux_SectionFrame();
 
 #ifdef PT_TEST
 	virtual void			__dump(FILE * fp) const;
@@ -243,25 +261,6 @@ public:
 	virtual void			__dump(FILE * fp) const;
 #endif
 };
-
-
-/*!
- pf_Frag_Strux_SectionEndFrame represents structure information for
- the end of a Frame section in the document.
-*/
-
-class pf_Frag_Strux_SectionEndFrame : public pf_Frag_Strux
-{
-public:
-	pf_Frag_Strux_SectionEndFrame(pt_PieceTable * pPT,
-						  PT_AttrPropIndex indexAP);
-	virtual ~pf_Frag_Strux_SectionEndFrame();
-
-#ifdef PT_TEST
-	virtual void			__dump(FILE * fp) const;
-#endif
-};
-
 
 /*!
  pf_Frag_Strux_SectionEndEndnote represents structure information for

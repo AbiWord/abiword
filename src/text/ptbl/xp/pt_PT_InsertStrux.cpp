@@ -196,8 +196,12 @@ bool pt_PieceTable::_createStrux(PTStruxType pts,
 		pfs = new pf_Frag_Strux_SectionEndnote(this, indexAP);
 		break;
 
-	case PTX_SectionTable:
-		pfs = new pf_Frag_Strux_SectionTable(this, indexAP);
+	case PTX_SectionFrame:
+		pfs = new pf_Frag_Strux_SectionFrame(this, indexAP);
+		break;
+
+	case PTX_EndFrame:
+		pfs = new pf_Frag_Strux_SectionEndFrame(this, indexAP);
 		break;
 	case PTX_SectionCell:
 		pfs = new pf_Frag_Strux_SectionCell(this, indexAP);
@@ -241,6 +245,20 @@ void pt_PieceTable::_insertStrux(pf_Frag * pf,
 								 pf_Frag_Strux * pfsNew)
 {
 	// insert the new strux frag at (pf,fragOffset)
+	//
+	// In the case of Frames, the frame must be placed just before the next
+	// strux (that's not an emebedded-type strux
+	//
+
+	if(pfsNew->getStruxType() == PTX_SectionFrame)
+	{
+		pf_Frag_Strux * pfsNext = NULL;
+		_getNextStruxAfterFragSkip(pf, &pfsNext);
+		if(pfsNext != NULL)
+	    {
+			pf = static_cast<pf_Frag *>(pfsNext);
+		}
+	}
 	switch (pf->getType())
 	{
 	default:

@@ -35,6 +35,7 @@
 #include "fp_ContainerObject.h"
 #include "fp_Column.h"
 #include "gr_Graphics.h"
+#include "pp_PropertyMap.h"
 
 class fl_TableLayout;
 class fl_DocSectionLayout;
@@ -48,15 +49,52 @@ public:
 	virtual void		clearScreen(void);
 	virtual void		draw(dg_DrawArgs*);
 	virtual void		draw(GR_Graphics*) {}
+	void                drawBoundaries(dg_DrawArgs * pDA);
 	virtual void        setContainer(fp_Container * pContainer);
 	virtual fp_Container * getNextContainerInSection(void) const;
 	virtual fp_Container * getPrevContainerInSection(void) const;
 	virtual fp_Page *   getPage(void) { return m_pPage;}
+	virtual UT_sint32   getX() const;
+	virtual UT_sint32   getY() const;
+	virtual UT_sint32   getWidth() const;
+	virtual UT_sint32   getHeight() const;
+	UT_sint32           getFullX() const;
+	UT_sint32           getFullY() const;
+	UT_sint32           getFullWidth() const;
+	UT_sint32           getFullHeight() const;
+	void                setXpad(UT_sint32 xPad)
+		{m_iXpad = xPad;}
+	void                setYpad(UT_sint32 yPad)
+		{m_iYpad = yPad;}
 	void                setPage(fp_Page * pPage);
 	fl_DocSectionLayout * getDocSectionLayout(void);
-	UT_uint32           getValue(void);
+		
+	PP_PropertyMap::Background getBackground () const;
+
+	void setBackground (const PP_PropertyMap::Background & style);
+
+	void setBottomStyle (const PP_PropertyMap::Line & style) { m_lineBottom = style; }
+	void setLeftStyle   (const PP_PropertyMap::Line & style) { m_lineLeft   = style; }
+	void setRightStyle  (const PP_PropertyMap::Line & style) { m_lineRight  = style; }
+	void setTopStyle    (const PP_PropertyMap::Line & style) { m_lineTop    = style; }
+
 private:
+	void                   _drawLine (const PP_PropertyMap::Line & style,
+									  UT_sint32 left, UT_sint32 top, 
+									  UT_sint32 right, UT_sint32 bot,
+									  GR_Graphics * pGr);
 	fp_Page * m_pPage;
+	UT_sint32 m_iXpad;
+	UT_sint32 m_iYpad;
+	
+// cell-background properties
+	PP_PropertyMap::Background	m_background;
+
+// cell-border properties
+	PP_PropertyMap::Line   m_lineBottom;
+	PP_PropertyMap::Line   m_lineLeft;
+	PP_PropertyMap::Line   m_lineRight;
+	PP_PropertyMap::Line   m_lineTop;
 };
 
 

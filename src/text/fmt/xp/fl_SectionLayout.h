@@ -150,6 +150,14 @@ public:
 											  void (* pfnBindHandles)(PL_StruxDocHandle sdhNew,
 																	  PL_ListenerId lid,
 																	  PL_StruxFmtHandle sfhNew));
+	virtual fl_SectionLayout * bl_doclistener_insertFrame(fl_ContainerLayout*,
+											  SectionType iType,
+											  const PX_ChangeRecord_Strux * pcrx,
+											  PL_StruxDocHandle sdh,
+											  PL_ListenerId lid,
+											  void (* pfnBindHandles)(PL_StruxDocHandle sdhNew,
+																	  PL_ListenerId lid,
+																	  PL_StruxFmtHandle sfhNew));
 
 	virtual bool bl_doclistener_insertObject(fl_ContainerLayout*, const PX_ChangeRecord_Object * pcro);
 	virtual bool bl_doclistener_deleteObject(fl_ContainerLayout*, const PX_ChangeRecord_Object * pcro);

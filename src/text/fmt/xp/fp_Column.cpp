@@ -29,7 +29,7 @@
 #include "gr_DrawArgs.h"
 #include "fp_TableContainer.h"
 #include "fp_FootnoteContainer.h"
-
+#include "fp_FrameContainer.h"
 #include "ut_debugmsg.h"
 #include "ut_assert.h"
 
@@ -296,12 +296,15 @@ void fp_VerticalContainer::getOffsets(fp_ContainerObject* pContainer, UT_sint32&
 // Correct for the offset of the column in continuous section breaks.
 //
 					fp_Column * pTopCol = static_cast<fp_Column *>(pTab->getMasterTable()->getFirstBrokenTable()->getColumn());
-					fp_Page * pPage = pTopCol->getPage();
-					fp_Column * pFirstLeader = pPage->getNthColumnLeader(0);
-					UT_sint32 iColOffset = pTopCol->getY() - pFirstLeader->getY();
-					if(pPage != pVCon->getPage())
+					if(pTopCol != NULL)
 					{
-						my_yoff += iColOffset;
+						fp_Page * pPage = pTopCol->getPage();
+						fp_Column * pFirstLeader = pPage->getNthColumnLeader(0);
+						UT_sint32 iColOffset = pTopCol->getY() - pFirstLeader->getY();
+						if(pPage != pVCon->getPage())
+						{
+							my_yoff += iColOffset;
+						}
 					}
 				}
 				UT_sint32 col_xV =0;
@@ -371,6 +374,7 @@ void fp_VerticalContainer::getScreenOffsets(fp_ContainerObject* pContainer,
 //
 		if(pCon->getContainerType() == FP_CONTAINER_TABLE&& 
 		   (pCon->getContainer()->getContainerType() ==  FP_CONTAINER_COLUMN ||
+			pCon->getContainer()->getContainerType() ==  FP_CONTAINER_FRAME ||
 			pCon->getContainer()->getContainerType() ==  FP_CONTAINER_COLUMN_SHADOW))
 		{
 			fp_VerticalContainer * pVCon= static_cast<fp_VerticalContainer *>(pCon);
@@ -425,6 +429,14 @@ void fp_VerticalContainer::getScreenOffsets(fp_ContainerObject* pContainer,
 	else if(pCon->getContainerType() == FP_CONTAINER_FOOTNOTE)
 	{
 		fp_FootnoteContainer * pFC = static_cast<fp_FootnoteContainer *>(pCon);
+		pFC->getPage()->getScreenOffsets(pFC, col_x, col_y);
+
+		xoff += col_x;
+		yoff += col_y;
+	}
+	else if(pCon->getContainerType() == FP_CONTAINER_FRAME)
+	{
+		fp_FrameContainer * pFC = static_cast<fp_FrameContainer *>(pCon);
 		pFC->getPage()->getScreenOffsets(pFC, col_x, col_y);
 
 		xoff += col_x;
@@ -1123,9 +1135,11 @@ void fp_Column::layout(void)
 	_setMaxContainerHeight(0);
 	UT_sint32 iY = 0, iPrevY = 0;
 	UT_sint32 iOldY  =-1;
+	UT_Vector vecBlocks;
+	fp_Line * pLastLine = NULL;
 	fp_Container *pContainer, *pPrevContainer = NULL;
- 
-	for (UT_uint32 i=0; i < countCons() ; i++)
+	UT_sint32 i  = 0;
+	for (i=0; i < static_cast<UT_sint32>(countCons()) ; i++)
 	{
 		pContainer = static_cast<fp_Container*>(getNthCon(i));
 
@@ -1162,6 +1176,22 @@ void fp_Column::layout(void)
 			pTab = static_cast<fp_TableContainer *>(pContainer);
 			iHeight = pTab->getHeight();
 		}
+		else if(pContainer->getContainerType() == FP_CONTAINER_LINE)
+		{
+			pLastLine = static_cast<fp_Line *>(pContainer);
+			UT_sint32 count = static_cast<UT_sint32>(vecBlocks.getItemCount());
+			if(count == 0)
+			{
+				vecBlocks.addItem(reinterpret_cast<void *>(pLastLine->getBlock()));
+			}
+			else
+			{
+				if(static_cast<fl_BlockLayout *>(vecBlocks.getNthItem(count-1)) != pLastLine->getBlock())
+				{
+					vecBlocks.addItem(reinterpret_cast<void *>(pLastLine->getBlock()));
+				}
+			}
+		}
 		if(iHeight > _getMaxContainerHeight())
 		{
 			_setMaxContainerHeight(iHeight);
@@ -1187,7 +1217,22 @@ void fp_Column::layout(void)
 
 		pPrevContainer = pContainer;
 	}
-
+//
+// Set the frames on the page
+//
+	UT_sint32 count = vecBlocks.getItemCount();
+	for(i=0; i < count; i++)
+	{
+		fl_BlockLayout * pBlock = static_cast<fl_BlockLayout *>(vecBlocks.getNthItem(i));
+		if(i < count -1)
+		{
+			pBlock->setFramesOnPage(NULL);
+		}
+		else
+		{
+			pBlock->setFramesOnPage(pLastLine);
+		}
+	}
 	// Correct height position of the last line
 	if (pPrevContainer)
 	{
@@ -1195,6 +1240,7 @@ void fp_Column::layout(void)
 		pPrevContainer->setAssignedScreenHeight(iY - iPrevY + getGraphics()->tlu(1));
 	}
 //	validate();
+
 	if (getHeight() == iY)
 	{
 		return;

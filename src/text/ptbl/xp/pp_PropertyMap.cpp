@@ -27,6 +27,7 @@
 
 static const char * AbiPropertyName[PP_PropertyMap::abi__count] = {
 	"background-color",
+	"background-image",
 	"bgcolor",
 	"bot-color",
 	"bot-style",
@@ -52,6 +53,10 @@ static const char * AbiPropertyName[PP_PropertyMap::abi__count] = {
 	"footer-first",
 	"footer-last",
 	"format",
+	"frame-position-to",
+	"frame-type",
+	"frame-xpos",
+	"frame-ypos",
 	"header",
 	"header-even",
 	"header-first",
@@ -239,7 +244,7 @@ PP_PropertyMap::TypeBackground PP_PropertyMap::background_type (const char * pro
 		background = background_inherit;
 	else if ((strcmp (property, "none")  == 0) || (strcmp (property, "transparent") == 0))
 		background = background_none;
-	else // assume a color-name??
+	else 
 		background = background_solid;
 
 	return background;

@@ -54,13 +54,39 @@
 #include "ut_assert.h"
 #include "ut_units.h"
 
-fl_FrameLayout::fl_FrameLayout(FL_DocLayout* pLayout, fl_DocSectionLayout* pDocSL, PL_StruxDocHandle sdh, PT_AttrPropIndex indexAP, fl_ContainerLayout * pMyContainerLayout, SectionType iSecType,fl_ContainerType myType,PTStruxType myStruxType)
- 	: fl_SectionLayout(pLayout, sdh, indexAP, iSecType,myType,myStruxType,pMyContainerLayout),
+static void s_border_properties (const XML_Char * border_color, const XML_Char * border_style, const XML_Char * border_width,
+								 const XML_Char * color, PP_PropertyMap::Line & line);
+
+static void s_background_properties (const XML_Char * pszBgStyle, const XML_Char * pszBgColor,
+									 const XML_Char * pszBackgroundColor,
+									 PP_PropertyMap::Background & background);
+
+
+fl_FrameLayout::fl_FrameLayout(FL_DocLayout* pLayout, 
+							   fl_DocSectionLayout* pDocSL, 
+							   PL_StruxDocHandle sdh, 
+							   PT_AttrPropIndex indexAP, 
+							   fl_ContainerLayout * pMyContainerLayout)
+ 	: fl_SectionLayout(pLayout, 
+					   sdh, 
+					   indexAP, 
+					   FL_SECTION_FRAME,
+					   FL_CONTAINER_FRAME,
+					   PTX_SectionFrame,
+					   pMyContainerLayout),
+	  m_iFrameType(FL_FRAME_TEXTBOX_TYPE),
+	  m_iFramePositionTo(FL_FRAME_POSITIONED_TO_BLOCK_ABOVE_TEXT),
 	  m_bNeedsRebuild(false),
 	  m_bNeedsFormat(true),
 	  m_bIsOnPage(false),
 	  m_pDocSL(pDocSL),
-	  m_bHasEndFrame(false)
+	  m_bHasEndFrame(false),
+	  m_iWidth(0),
+	  m_iHeight(0),
+	  m_iXpos(0),
+	  m_iYpos(0),
+	  m_iXpad(0),
+	  m_iYpad(0)
 {
 	UT_ASSERT(m_pDocSL->getContainerType() == FL_CONTAINER_DOCSECTION);
 }
@@ -68,7 +94,7 @@ fl_FrameLayout::fl_FrameLayout(FL_DocLayout* pLayout, fl_DocSectionLayout* pDocS
 fl_FrameLayout::~fl_FrameLayout()
 {
 	// NB: be careful about the order of these
-	UT_DEBUGMSG(("Deleting Footlayout %x \n",this));
+	UT_DEBUGMSG(("Deleting Framelayout %x \n",this));
 	_purgeLayout();
 	fp_FrameContainer * pFC = static_cast<fp_FrameContainer *>(getFirstContainer());
 	while(pFC)
@@ -85,11 +111,30 @@ fl_FrameLayout::~fl_FrameLayout()
 	setFirstContainer(NULL);
 	setLastContainer(NULL);
 }
-	
+
+/*!
+ * This loads all the properties of the container found in the piecetable
+ * into the physical frame container
+ */
+void 	fl_FrameLayout::setContainerProperties(void)
+{
+	fp_FrameContainer * pFrame = static_cast<fp_FrameContainer *>(getLastContainer());
+	if(pFrame == NULL)
+	{
+		UT_ASSERT(UT_SHOULD_NOT_HAPPEN);
+		return;
+	}
+	pFrame->setBackground(m_background  );
+	pFrame->setBottomStyle(m_lineBottom  );
+	pFrame->setTopStyle(m_lineTop  );
+	pFrame->setLeftStyle(m_lineLeft  );
+	pFrame->setRightStyle(m_lineRight );
+	pFrame->setXpad(m_iXpad);
+	pFrame->setYpad(m_iYpad);
+}
+
 /*!
  * Returns the position in the document of the PTX_SectionFrame strux
- * This is very useful for determining the value of the footnote reference
- * and anchor. 
 */
 PT_DocPosition fl_FrameLayout::getDocPosition(void) 
 {
@@ -98,7 +143,7 @@ PT_DocPosition fl_FrameLayout::getDocPosition(void)
 }
 
 /*!
- * This method returns the length of the footnote. This is such that 
+ * This method returns the length of the Frame. This is such that 
  * getDocPosition() + getLength() is one value beyond the the EndFrame
  * strux
  */
@@ -163,7 +208,7 @@ bool fl_FrameLayout::bl_doclistener_insertEndFrame(fl_ContainerLayout*,
 
 
 /*!
- * This signals an incomplete footnote section.
+ * This signals an incomplete frame section.
  */
 bool fl_FrameLayout::doclistener_deleteEndFrame( const PX_ChangeRecord_Strux * pcrx)
 {
@@ -304,7 +349,7 @@ bool fl_FrameLayout::doclistener_deleteStrux(const PX_ChangeRecord_Strux * pcrx)
  */
 void fl_FrameLayout::_purgeLayout(void)
 {
-	UT_DEBUGMSG(("embedLayout: purge \n"));
+	UT_DEBUGMSG(("FrameLayout: purge \n"));
 	fl_ContainerLayout * pCL = getFirstLayout();
 	while(pCL)
 	{
@@ -335,9 +380,9 @@ void fl_FrameLayout::_createFrameContainer(void)
 
 	fp_Container * pCon = pCL->getLastContainer();
 	UT_ASSERT(pCon);
-	UT_sint32 iWidth = pCon->getPage()->getWidth();
-	iWidth = iWidth - pDSL->getLeftMargin() - pDSL->getRightMargin();
-	pFrameContainer->setWidth(iWidth);
+	pFrameContainer->setWidth(m_iWidth);
+	pFrameContainer->setHeight(m_iHeight);
+	setContainerProperties();
 }
 
 /*!
@@ -348,7 +393,7 @@ void fl_FrameLayout::_createFrameContainer(void)
 */
 fp_Container* fl_FrameLayout::getNewContainer(fp_Container *)
 {
-	UT_DEBUGMSG(("PLAM: creating new footnote container\n"));
+	UT_DEBUGMSG(("creating new Frame container\n"));
 	_createFrameContainer();
 	m_bIsOnPage = false;
 	return static_cast<fp_Container *>(getLastContainer());
@@ -356,63 +401,9 @@ fp_Container* fl_FrameLayout::getNewContainer(fp_Container *)
 
 void fl_FrameLayout::_insertFrameContainer(fp_Container * pNewFC)
 {
-	UT_DEBUGMSG(("inserting footnote container into container list\n"));
-	fl_ContainerLayout * pUPCL = myContainingLayout();
-	fl_ContainerLayout * pPrevL = static_cast<fl_ContainerLayout *>(m_pLayout->findBlockAtPosition(getDocPosition()-1));
-	fp_Container * pPrevCon = NULL;
-	fp_Container * pUpCon = NULL;
-	fp_Page * pPage = NULL;
 
-	// get the owning container
-	if(pPrevL != NULL)
-	{
-		pPrevCon = pPrevL->getLastContainer();
-		if(pPrevL->getContainerType() == FL_CONTAINER_BLOCK)
-		{
-//
-// Code to find the Line that contains the footnote reference
-//
-			PT_DocPosition posFL = getDocPosition() - 1;
-			UT_ASSERT(pPrevL->getContainerType() == FL_CONTAINER_BLOCK);
-			fl_BlockLayout * pBL = static_cast<fl_BlockLayout *>(pPrevL);
-			fp_Run * pRun = pBL->getFirstRun();
-			PT_DocPosition posBL = pBL->getPosition();
-			while(pRun && ((posBL + pRun->getBlockOffset() + pRun->getLength()) < posFL))
-			{
-				pRun = pRun->getNextRun();
-			}
-			if(pRun && pRun->getLine())
-			{
-				pPrevCon = static_cast<fp_Container *>(pRun->getLine());
-			}
-		}
-		if(pPrevCon == NULL)
-		{
-			pPrevCon = pPrevL->getLastContainer();
-		}
-		pUpCon = pPrevCon->getContainer();
-	}
-	else
-	{
-		pUpCon = pUPCL->getLastContainer();
-	}
-	if(pPrevCon)
-	{
-		pPage = pPrevCon->getPage();
-	}
-	else
-	{
-		pPage = pUpCon->getPage();
-	}
-	pNewFC->setContainer(NULL);
+// This is all done fl_BlockLayout::setFramesOnPage
 
-	// need to put onto page as well, in the appropriate place.
-//	UT_ASSERT(pPage);
-	if(pPage)
-	{
-		pPage->insertFrameContainer(static_cast<fp_FrameContainer*>(pNewFC));
-		m_bIsOnPage = true;
-	}
 }
 
 
@@ -456,17 +447,183 @@ void fl_FrameLayout::_lookupProperties(void)
  	const PP_AttrProp* pSectionAP = NULL;
 
 	m_pLayout->getDocument()->getAttrProp(m_apIndex, &pSectionAP);
-	// I can't think of any properties we need for now.
-	// If we need any later, we'll add them. -PL
-	const XML_Char *pszFramePID = NULL;
-	if(!pSectionAP || !pSectionAP->getAttribute("footnote-id",pszFramePID))
+
+	const XML_Char *pszFrameType = NULL;
+	const XML_Char *pszPositionTo = NULL;
+	const XML_Char *pszXpos = NULL;
+	const XML_Char *pszYpos = NULL;
+	const XML_Char *pszWidth = NULL;
+	const XML_Char *pszHeight = NULL;
+	const XML_Char *pszXpad = NULL;
+	const XML_Char *pszYpad = NULL;
+
+	const XML_Char * pszColor = NULL;
+	const XML_Char * pszBorderColor = NULL;
+	const XML_Char * pszBorderStyle = NULL;
+	const XML_Char * pszBorderWidth = NULL;
+
+
+// Frame Type
+
+	if(!pSectionAP || !pSectionAP->getProperty("frame-type",pszFrameType))
 	{
-		m_iFramePID = 0;
+		m_iFrameType = FL_FRAME_TEXTBOX_TYPE;
+	}
+	else if(strcmp(pszFrameType,"textbox") == 0)
+	{
+		m_iFrameType = FL_FRAME_TEXTBOX_TYPE;
+	}
+	else 
+	{
+		UT_DEBUGMSG(("Unknown Frame Type %s \n",pszFrameType));
+		UT_ASSERT(UT_SHOULD_NOT_HAPPEN);
+		m_iFrameType = FL_FRAME_TEXTBOX_TYPE;
+	}
+
+// Position-to
+
+	if(!pSectionAP || !pSectionAP->getProperty("position-to",pszPositionTo))
+	{
+		m_iFramePositionTo = FL_FRAME_POSITIONED_TO_BLOCK_ABOVE_TEXT;
+	}
+	else if(strcmp(pszPositionTo,"block-above-text") == 0)
+	{
+		m_iFramePositionTo = FL_FRAME_POSITIONED_TO_BLOCK_ABOVE_TEXT;
+	}
+	else 
+	{
+		UT_DEBUGMSG(("Unknown Position to %s \n",pszPositionTo));
+		UT_ASSERT(UT_SHOULD_NOT_HAPPEN);
+		m_iFramePositionTo =  FL_FRAME_POSITIONED_TO_BLOCK_ABOVE_TEXT;
+	}
+
+// Xpos
+
+	if(!pSectionAP || !pSectionAP->getProperty("xpos",pszXpos))
+	{
+		m_iXpos = UT_convertToLogicalUnits("0.0in");
 	}
 	else
 	{
-		m_iFramePID = atoi(pszFramePID);
+		m_iXpos = UT_convertToLogicalUnits(pszXpos);
 	}
+	UT_DEBUGMSG(("xpos for frame is %s \n",pszXpos));
+// Ypos
+
+	if(!pSectionAP || !pSectionAP->getProperty("ypos",pszYpos))
+	{
+		m_iYpos = UT_convertToLogicalUnits("0.0in");
+	}
+	else
+	{
+		m_iYpos = UT_convertToLogicalUnits(pszYpos);
+	}
+	UT_DEBUGMSG(("ypos for frame is %s \n",pszYpos));
+
+// Width
+
+	if(!pSectionAP || !pSectionAP->getProperty("width",pszWidth))
+	{
+		m_iWidth = UT_convertToLogicalUnits("1.0in");
+	}
+	else
+	{
+		m_iWidth = UT_convertToLogicalUnits(pszWidth);
+	}
+
+// Height
+
+	if(!pSectionAP || !pSectionAP->getProperty("height",pszHeight))
+	{
+		m_iHeight = UT_convertToLogicalUnits("1.0in");
+	}
+	else
+	{
+		m_iHeight = UT_convertToLogicalUnits(pszHeight);
+	}
+
+// Xpadding
+
+
+	if(!pSectionAP || !pSectionAP->getProperty("xpad",pszXpad))
+	{
+		m_iXpad = UT_convertToLogicalUnits("0.03in");
+	}
+	else
+	{
+		m_iXpad = UT_convertToLogicalUnits(pszXpad);
+	}
+
+
+// Ypadding
+
+
+	if(!pSectionAP || !pSectionAP->getProperty("ypad",pszYpad))
+	{
+		m_iYpad = UT_convertToLogicalUnits("0.03in");
+	}
+	else
+	{
+		m_iYpad = UT_convertToLogicalUnits(pszYpad);
+	}
+
+
+	/* Frame-border properties:
+	 */
+
+	pSectionAP->getProperty ("color", pszColor);
+
+	pSectionAP->getProperty ("bot-color",pszBorderColor);
+	pSectionAP->getProperty ("bot-style",pszBorderStyle);
+	pSectionAP->getProperty ("bot-thickness",pszBorderWidth);
+
+	s_border_properties (pszBorderColor, pszBorderStyle, pszBorderWidth, pszColor, m_lineBottom);
+
+	pszBorderColor = NULL;
+	pszBorderStyle = NULL;
+	pszBorderWidth = NULL;
+
+	pSectionAP->getProperty ("left-color", pszBorderColor);
+	pSectionAP->getProperty ("left-style", pszBorderStyle);
+	pSectionAP->getProperty ("left-thickness", pszBorderWidth);
+
+	s_border_properties (pszBorderColor, pszBorderStyle, pszBorderWidth, pszColor, m_lineLeft);
+
+	pszBorderColor = NULL;
+	pszBorderStyle = NULL;
+	pszBorderWidth = NULL;
+
+	pSectionAP->getProperty ("right-color",pszBorderColor);
+	pSectionAP->getProperty ("right-style",pszBorderStyle);
+	pSectionAP->getProperty ("right-thickness", pszBorderWidth);
+
+	s_border_properties (pszBorderColor, pszBorderStyle, pszBorderWidth, pszColor, m_lineRight);
+
+	pszBorderColor = NULL;
+	pszBorderStyle = NULL;
+	pszBorderWidth = NULL;
+
+	pSectionAP->getProperty ("top-color",  pszBorderColor);
+	pSectionAP->getProperty ("top-style",  pszBorderStyle);
+	pSectionAP->getProperty ("top-thickness",pszBorderWidth);
+
+	s_border_properties (pszBorderColor, pszBorderStyle, pszBorderWidth, pszColor, m_lineTop);
+
+	/* Frame fill
+	 */
+	m_background.reset ();
+
+	const char * pszBgStyle = NULL;
+	const char * pszBgColor = NULL;
+	const char * pszBackgroundColor = NULL;
+
+	pSectionAP->getProperty ("bg-style",    pszBgStyle);
+	pSectionAP->getProperty ("bgcolor",     pszBgColor);
+	pSectionAP->getProperty ("background-col", pszBackgroundColor);
+
+	s_background_properties (pszBgStyle, pszBgColor, pszBackgroundColor, m_background);
+
+
 }
 
 void fl_FrameLayout::_localCollapse(void)
@@ -520,3 +677,89 @@ void fl_FrameLayout::collapse(void)
 	setLastContainer(NULL);
 }
 
+// Frame Background
+
+static void s_background_properties (const XML_Char * pszBgStyle, const XML_Char * pszBgColor,
+									 const XML_Char * pszBackgroundColor,
+									 PP_PropertyMap::Background & background)
+{
+	if (pszBgStyle)
+		{
+			if (strcmp (pszBgStyle, "0") == 0)
+				{
+					background.m_t_background = PP_PropertyMap::background_none;
+				}
+			else if (strcmp (pszBgStyle, "1") == 0)
+				{
+					if (pszBgColor)
+						{
+							background.m_t_background = PP_PropertyMap::background_type (pszBgColor);
+							if (background.m_t_background == PP_PropertyMap::background_solid)
+								UT_parseColor (pszBgColor, background.m_color);
+						}
+
+				}
+		}
+
+	if (pszBackgroundColor)
+		{
+			background.m_t_background = PP_PropertyMap::background_type (pszBackgroundColor);
+			if (background.m_t_background == PP_PropertyMap::background_solid)
+				UT_parseColor (pszBackgroundColor, background.m_color);
+		}
+}
+
+static void s_border_properties (const XML_Char * border_color, const XML_Char * border_style, const XML_Char * border_width,
+								 const XML_Char * color, PP_PropertyMap::Line & line)
+{
+	/* frame-border properties:
+	 * 
+	 * (1) color      - defaults to value of "color" property
+	 * (2) line-style - defaults to solid (in contrast to "none" in CSS)
+	 * (3) thickness  - defaults to 1 layout unit (??, vs "medium" in CSS)
+	 */
+	line.reset ();
+
+	PP_PropertyMap::TypeColor t_border_color = PP_PropertyMap::color_type (border_color);
+	if (t_border_color)
+		{
+			line.m_t_color = t_border_color;
+			if (t_border_color == PP_PropertyMap::color_color)
+				UT_parseColor (border_color, line.m_color);
+		}
+	else if (color)
+		{
+			PP_PropertyMap::TypeColor t_color = PP_PropertyMap::color_type (color);
+
+			line.m_t_color = t_color;
+			if (t_color == PP_PropertyMap::color_color)
+				UT_parseColor (color, line.m_color);
+		}
+
+	line.m_t_linestyle = PP_PropertyMap::linestyle_type (border_style);
+	if (!line.m_t_linestyle)
+		line.m_t_linestyle = PP_PropertyMap::linestyle_solid;
+
+	line.m_t_thickness = PP_PropertyMap::thickness_type (border_width);
+	if (line.m_t_thickness == PP_PropertyMap::thickness_length)
+		{
+			if (UT_determineDimension (border_width, (UT_Dimension)-1) == DIM_PX)
+				{
+					double thickness = UT_LAYOUT_RESOLUTION * UT_convertDimensionless (border_width);
+					line.m_thickness = static_cast<UT_sint32>(thickness / UT_PAPER_UNITS_PER_INCH);
+				}
+			else
+				line.m_thickness = UT_convertToLogicalUnits (border_width);
+
+			if (!line.m_thickness)
+				{
+					double thickness = UT_LAYOUT_RESOLUTION;
+					line.m_thickness = static_cast<UT_sint32>(thickness / UT_PAPER_UNITS_PER_INCH);
+				}
+		}
+	else // ??
+		{
+			double thickness = UT_LAYOUT_RESOLUTION;
+			line.m_thickness = static_cast<UT_sint32>(thickness / UT_PAPER_UNITS_PER_INCH);
+		}
+}

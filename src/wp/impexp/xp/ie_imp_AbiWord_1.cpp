@@ -660,6 +660,12 @@ void IE_Imp_AbiWord_1::startElement(const XML_Char *name, const XML_Char **atts)
 		X_CheckError(appendStrux(PTX_SectionCell,atts));
 		return;
 
+	case TT_FRAME:
+		m_parseState = _PS_Sec;
+		m_bWroteSection = true;
+		X_CheckError(appendStrux(PTX_SectionFrame,atts));
+		return;
+
 	case TT_OTHER:
 	default:
 		UT_DEBUGMSG(("Unknown tag [%s]\n",name));
