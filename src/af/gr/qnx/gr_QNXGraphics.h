@@ -142,15 +142,15 @@ class GR_QNXGraphics : public GR_Graphics
 								  const char* pszFontSize);
 
 	virtual UT_uint32 	getDeviceResolution(void) const;
-	int 				DrawSetup();
-	int 				DrawTeardown();
+	inline int 				DrawSetup();
+	inline int 				DrawTeardown();
 
 	PtWidget_t *  	m_pWin;
 	PtWidget_t *  	m_pDraw;
-	PdOffscreenContext_t *m_pOSC;
-	PhDrawContext_t				*m_pOldDC;
+//	PdOffscreenContext_t *m_pOSC;
+//	PhDrawContext_t				*m_pOldDC;
 	PhPoint_t		m_OffsetPoint;		
-	PhTile_t *		m_pClipList;		
+	PhTile_t		*m_pClipList;
 	struct _Pf_ctrl * m_pFontCx;	
 
 	// our currently requested font by handle

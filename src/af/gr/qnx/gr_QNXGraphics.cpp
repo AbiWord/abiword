@@ -304,8 +304,8 @@ if(pCharWidths == NULL && iLength > 1) {
 	PhPoint_t pos = {tdu(xoff),tdu(getFontAscent()) + tdu(yoff)};
 	DRAW_START
 	GR_CaretDisabler caretDisabler(getCaret());
-	PgSetTextColor(m_currentColor);	
-	PgSetFont(m_pFont->getDisplayFont());
+//	PgSetTextColor(m_currentColor);	
+//	PgSetFont(m_pFont->getDisplayFont());
 	PgDrawText((const char *)ucs2buffer,iLength*2,&pos,Pg_TEXT_WIDECHAR|Pg_TEXT_LEFT);
 	DRAW_END
 }
@@ -325,8 +325,8 @@ UT_UCS2Char ucs2buffer[2] = {(UT_UCS2Char)Char,0};
 GR_CaretDisabler caretDisabler(getCaret());
 DRAW_START
 
-PgSetTextColor(m_currentColor);	
-PgSetFont(m_pFont->getDisplayFont());
+//PgSetTextColor(m_currentColor);	
+//PgSetFont(m_pFont->getDisplayFont());
 PgDrawText((const char *)&ucs2buffer,2,&pos,Pg_TEXT_WIDECHAR|Pg_TEXT_LEFT);
 DRAW_END
 }
@@ -416,13 +416,16 @@ void GR_QNXGraphics::setFont(GR_Font * pFont)
 		m_pFont = qnxFont;
 		m_iFontAllocNo= pFont->getAllocNumber();
 		m_iAscentCache = m_iDescentCache = m_iHeightCache = -1;
+
 	}
 	//even if they are the same, make sure you set it to the new ptr, as the caller expect.
 	else 
 	{ 
 		m_pFont = qnxFont;
 	}
-
+	DRAW_START
+	PgSetFont(qnxFont->getDisplayFont());
+	DRAW_END
 }
 
 UT_uint32 GR_QNXGraphics::getFontAscent()
@@ -526,9 +529,12 @@ void GR_QNXGraphics::getColor(UT_RGBColor& clr)
 
 void GR_QNXGraphics::setColor(const UT_RGBColor& clr)
 {
-	//printf("GR: setColor %d %d %d \n", clr.m_red, clr.m_blu, clr.m_grn);
 	m_currentColor = PgRGB(clr.m_red, clr.m_grn, clr.m_blu);
-	//Defer actually setting the color until we stroke something
+	DRAW_START
+	PgSetFillColor(m_currentColor);
+	PgSetTextColor(m_currentColor);
+	PgSetStrokeColor(m_currentColor);
+	DRAW_END
 }
 
 
@@ -545,9 +551,9 @@ void GR_QNXGraphics::drawLine(UT_sint32 x1, UT_sint32 y1,
 	y1 = tdu(y1);
 	y2 = tdu(y2);
 
-	PgSetFillColor(m_currentColor);
-	PgSetStrokeColor(m_currentColor);
-	PgSetStrokeWidth(m_iLineWidth);
+//	PgSetFillColor(m_currentColor);
+//	PgSetStrokeColor(m_currentColor);
+//	PgSetStrokeWidth(m_iLineWidth);
 	PgDrawILine(x1, y1, x2, y2);
 	DRAW_END
 }
@@ -569,6 +575,9 @@ coverage.push_back((void*)(info.hichar - info.lochar));
 void GR_QNXGraphics::setLineWidth(UT_sint32 iLineWidth)
 {
 	m_iLineWidth = tdu(iLineWidth);
+	DRAW_START
+		PgSetStrokeWidth(m_iLineWidth);
+	DRAW_END
 }
 
 void GR_QNXGraphics::xorLine(UT_sint32 x1, UT_sint32 y1, UT_sint32 x2,
@@ -584,42 +593,21 @@ void GR_QNXGraphics::xorLine(UT_sint32 x1, UT_sint32 y1, UT_sint32 x2,
 	x2 = tdu(x2);
 	y1 = tdu(y1);
  	y2 = tdu(y2);
-
-	PgSetStrokeXORColor(Pg_WHITE,m_currentColor);
-	PgSetStrokeWidth(m_iLineWidth);
+	PgSetStrokeXORColor(Pg_WHITE,Pg_BLACK);
+//	PgSetStrokeWidth(m_iLineWidth);
 	PgDrawILine(x1, y1, x2, y2);
+	PgFlush();
 	PgSetDrawMode(old);
 	DRAW_END
 }
 
 void GR_QNXGraphics::polyLine(UT_Point * pts, UT_uint32 nPoints)
 {
-#if 0
-	GdkPoint * points = (GdkPoint *)UT_calloc(nPoints, sizeof(GdkPoint));
-	UT_ASSERT(points);
-
-	for (UT_uint32 i = 0; i < nPoints; i++)
-	{
-		points[i].x = pts[i].x;
-		// It seems that Windows draws each pixel along the the Y axis
-		// one pixel beyond where GDK draws it (even though both coordinate
-		// systems start at 0,0 (?)).  Subtracting one clears this up so
-		// that the poly line is in the correct place relative to where
-		// the rest of GR_QNXGraphics:: does things (drawing text, clearing
-		// areas, etc.).
-		points[i].y = pts[i].y - 1;
-	}
-
-	gdk_draw_lines(m_pWin, m_pGC, points, nPoints);
-
-	FREEP(points);
-#else
 	GR_CaretDisabler caretDisabler(getCaret());
 	for (UT_uint32 k=1; k<nPoints; k++)
 	{
 		drawLine(pts[k-1].x,pts[k-1].y, pts[k].x,pts[k].y);
 	}
-#endif
 }
 
 void GR_QNXGraphics::invertRect(const UT_Rect* pRect)
@@ -980,6 +968,7 @@ void GR_QNXGraphics::setColor3D(GR_Color3D c)
 	GR_CaretDisabler caretDisabler(getCaret());
 	PgSetStrokeColor(m_currentColor);
 	PgSetFillColor(m_currentColor);
+	PgSetTextColor(m_currentColor); //do we need this?
 
 	DRAW_END
 }
