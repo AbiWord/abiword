@@ -106,8 +106,7 @@ bool IE_Exp_Text_Sniffer::getDlgLabels(const char ** pszDesc,
  */
 bool IE_Exp_EncodedText_Sniffer::recognizeSuffix(const char * szSuffix)
 {
-	// TODO Change to ".txt" and ".text" when bug # is fixed.
-	return (!UT_stricmp(szSuffix,".etxt") || !UT_stricmp(szSuffix, ".etext"));
+	return (!UT_stricmp(szSuffix,".txt") || !UT_stricmp(szSuffix, ".text"));
 }
 
 UT_Error IE_Exp_EncodedText_Sniffer::constructExporter(PD_Document * pDocument,
@@ -122,9 +121,8 @@ bool IE_Exp_EncodedText_Sniffer::getDlgLabels(const char ** pszDesc,
 									  const char ** pszSuffixList,
 									  IEFileType * ft)
 {
-	// TODO Change to ".txt" and ".text" when bug # is fixed.
-	*pszDesc = "Encoded Text (.etxt, .etext)";
-	*pszSuffixList = "*.etxt; *.etext";
+	*pszDesc = "Encoded Text (.txt, .text)";
+	*pszSuffixList = "*.txt; *.text";
 	*ft = getFileType();
 	return true;
 }

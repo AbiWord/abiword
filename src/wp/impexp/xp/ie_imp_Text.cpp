@@ -442,7 +442,7 @@ bool IE_Imp_EncodedText_Sniffer::recognizeContents(const char * /* szBuf */,
  */
 bool IE_Imp_EncodedText_Sniffer::recognizeSuffix(const char * szSuffix)
 {
-	return (!UT_stricmp (szSuffix, ".etxt") || !UT_stricmp(szSuffix, ".etext"));
+	return (!UT_stricmp (szSuffix, ".txt") || !UT_stricmp(szSuffix, ".text"));
 }
 
 UT_Error IE_Imp_EncodedText_Sniffer::constructImporter(PD_Document * pDocument,
@@ -457,8 +457,8 @@ bool IE_Imp_EncodedText_Sniffer::getDlgLabels(const char ** pszDesc,
 											  const char ** pszSuffixList,
 											  IEFileType * ft)
 {
-	*pszDesc = "Encoded Text (.etxt, .etext)";
-	*pszSuffixList = "*.etxt; *.etext";
+	*pszDesc = "Encoded Text (.txt, .text)";
+	*pszSuffixList = "*.txt; *.text";
 	*ft = getFileType();
 	return true;
 }
