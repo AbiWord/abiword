@@ -70,7 +70,7 @@ THE_LIBS=		$(DIST)/lib/*
 $(PROGRAM): $(OBJS) $(THE_LIBS)
 	@$(MAKE_OBJDIR)
 	@echo Linking $(PROGRAM)....
-	@$(CCC) -o $@ $(CFLAGS) $(OBJS) -L/usr/local/lib $(LDFLAGS) $(EXTRA_LIBS) -L/usr/local/lib
+	@$(CCC) -o $@ $(CFLAGS) $(OBJS) -L/usr/local/lib $(LDFLAGS) $(EXTRA_LIBS) $(XLDFLAGS) -L/usr/local/lib
 
 build:: $(TARGETS)
 	@echo Exporting $(TARGETS) from `pwd`
