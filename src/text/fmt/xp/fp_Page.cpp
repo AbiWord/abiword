@@ -137,6 +137,21 @@ UT_sint32 fp_Page::getColumnGap(void) const
 	return getOwningSection()->getColumnGap();
 }
 
+/*!
+ * This method scans the page, looking for lines that overlap wrapped
+ * positioned frames. As it finds them it records the line and the block
+ * After scanning the page it calls a method in the block to rebreak
+ * the papargraph starting from the line supplied, but now making sure
+ * to not overlap any wrapped objects.
+ * If it does a re-break of any paragraph it returns the first container
+ * in the page. 
+ * and sets pNextColumn to the first column on the page.
+ * fp_ColumnBreaker then lays out the page again.
+ * If there are no rebreaks it returns NULL and fp_ColumnBreaker moves on to
+ * the next page.
+ * pNextCol is the next column fb_ColumnBreaker will evaluate it is used
+ * as an output..
+ */
 fp_Container * fp_Page::updatePageForWrapping(fp_Column *& pNextCol)
 {
 	if(m_iCountWrapPasses > 100)
@@ -266,7 +281,9 @@ fp_Container * fp_Page::updatePageForWrapping(fp_Column *& pNextCol)
 								UT_Rect recLeft;
 								UT_Rect recRight;
 								pLine->genOverlapRects(recLeft,recRight);
-								if(!overlapsWrappedFrame(recLeft) &&
+								
+								if((recLeft.width > 0 && recRight.width >0)
+								   && !overlapsWrappedFrame(recLeft) &&
 								   !overlapsWrappedFrame(recRight))
 								{
 									UT_DEBUGMSG(("Found wrapped line with extra  space %x  \n",pLine));
@@ -357,6 +374,10 @@ fp_Container * fp_Page::updatePageForWrapping(fp_Column *& pNextCol)
 bool fp_Page::overlapsWrappedFrame(fp_Line * pLine)
 {
 	UT_Rect * pRec = pLine->getScreenRect();
+	if(pRec == NULL)
+	{
+		return false;
+	}
 	bool bRes = overlapsWrappedFrame(*pRec);
 	delete pRec;
 	return bRes;

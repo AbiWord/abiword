@@ -1832,6 +1832,11 @@ bool fl_BlockLayout::setFramesOnPage(fp_Line * pLastLine)
 	for(i=0; i< getNumFrames();i++)
 	{
 		fl_FrameLayout * pFrame = getNthFrameLayout(i);
+		if(pFrame->getContainerType() != FL_CONTAINER_FRAME)
+		{
+			UT_ASSERT(UT_SHOULD_NOT_HAPPEN);
+			continue;
+		}
 		if(pFrame->getFramePositionTo() == FL_FRAME_POSITIONED_TO_BLOCK)
 		{
 			UT_sint32 xFpos = pFrame->getFrameXpos();

@@ -968,6 +968,7 @@ bool fl_ContainerLayout::isOnScreen() const
 void fl_ContainerLayout::addFrame(fl_FrameLayout * pFrame)
 {
 	UT_DEBUGMSG(("Adding frame %x to list in container %x \n",pFrame,this));
+	UT_return_if_fail(pFrame->getContainerType() == FL_CONTAINER_FRAME);
 	UT_sint32 i = m_vecFrames.findItem(pFrame);
 	if(i>= 0)
 	{

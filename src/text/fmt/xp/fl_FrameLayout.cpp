@@ -548,18 +548,8 @@ void fl_FrameLayout::format(void)
 		fl_BlockLayout * pBL = NULL;
 		if(pCL->getContainerType() != FL_CONTAINER_BLOCK)
 		{
-			while(pCL && (pCL->getContainerType() != FL_CONTAINER_BLOCK))
-			{
-				pCL = pCL->getPrev();
-			}
-			if(pCL && (pCL->getContainerType() == FL_CONTAINER_BLOCK))
-			{
-				pBL = static_cast<fl_BlockLayout *>(pCL);
-			}
-			else
-			{
-				pBL = NULL;
-			}
+			pCL = pCL->getPrevBlockInDocument();
+			pBL = static_cast<fl_BlockLayout *>(pCL);
 		}
 		else
 		{

@@ -1164,6 +1164,60 @@ void fp_VerticalContainer::mapXYToPosition(UT_sint32 x, UT_sint32 y, PT_DocPosit
 								y - pContainer->getY() , 
 								pos, bBOL, bEOL,isTOC);
 	}
+	else if(pContainer->getContainerType() == FP_CONTAINER_LINE)
+	{
+//
+// Deal with wrapped lines where more than one line can have the same Y
+//
+		fp_Line * pLine = static_cast<fp_Line *>(pContainer);
+		if(pLine->isWrapped())
+		{
+			fp_Line * pNext = static_cast<fp_Line *>(getNext());
+			if(pNext && (pNext->getY() == pLine->getY()))
+			{
+				pNext->setSameYAsPrevious(true);
+				fp_ContainerObject *pBest = pContainer;
+				UT_sint32 xmin = UT_MIN(abs(pNext->getX() - x),abs(pNext->getX()+pNext->getMaxWidth() -x));
+				while(pNext && pNext->isSameYAsPrevious())
+				{
+					if((pNext->getX() < x) && (x < pNext->getX() + pNext->getMaxWidth()))
+					{
+						pNext->mapXYToPosition(x - pContainer->getX(),
+											   y - pContainer->getY() , 
+											   pos, bBOL, bEOL,isTOC);
+						return;
+					}
+					UT_sint32 xmin1 = UT_MIN(abs(pNext->getX() - x),abs(pNext->getX()+pNext->getMaxWidth() -x));
+					if(xmin1 < xmin)
+					{
+						xmin = xmin1;
+						pBest = static_cast<fp_ContainerObject *>(pNext);
+					}
+					pNext = static_cast<fp_Line *>(pNext->getNext());
+					if(pNext->getY() == pLine->getY())
+					{
+						pNext->setSameYAsPrevious(true);
+					}
+				}
+				pBest->mapXYToPosition(x - pContainer->getX(),
+									   y - pContainer->getY() , 
+									   pos, bBOL, bEOL,isTOC);
+				return;
+			}
+			else
+			{
+				pContainer->mapXYToPosition(x - pContainer->getX(),
+											y - pContainer->getY() , 
+											pos, bBOL, bEOL,isTOC);
+			}
+		}
+		else
+		{
+			pContainer->mapXYToPosition(x - pContainer->getX(),
+								y - pContainer->getY() , 
+									pos, bBOL, bEOL,isTOC);
+		}
+	}
 	else
 	{
 		xxx_UT_DEBUGMSG(("SEVIOR: do map to position for %x \n",pContainer));

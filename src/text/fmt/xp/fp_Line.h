@@ -228,6 +228,10 @@ private:
 	void		_splitRunsAtSpaces(void);
 	void        _doClearScreenFromRunToEnd(UT_sint32 runIndex);
 	
+	
+	void  		setAscent(UT_sint32 i) { m_iAscent = i; }
+	void  		setDescent(UT_sint32 i) { m_iDescent = i; }
+	void        setScreenHeight(UT_sint32 i) {m_iScreenHeight =i;}
 
 
 	fl_BlockLayout*	m_pBlock;

@@ -245,21 +245,35 @@ void fp_Line::genOverlapRects(UT_Rect & recLeft,UT_Rect & recRight)
 		if(iBlockDir == UT_BIDI_LTR)
 			iLeftX += m_pBlock->getTextIndent();
 	}
-	UT_sint32 xoff = 0;
-	UT_sint32 yoff = 0;
-	fp_Run * pRun = getFirstRun();
-	if(pRun)
+	UT_sint32 xdiff = pRec->left - getX();
+	fp_Line * pPrev = static_cast<fp_Line *>(getPrev());
+	if(pPrev && isSameYAsPrevious())
 	{
-		getScreenOffsets(pRun,xoff,yoff);
+		recLeft.left = pPrev->getX() + pPrev->getMaxWidth() + xdiff;
+		recLeft.width = getX() + xdiff - recLeft.left;
 	}
-	iLeftX += xoff;
-	recLeft.left = iLeftX;
-	recLeft.width = pRec->left - iLeftX;
+	else
+	{
+		recLeft.left = iLeftX + xdiff;
+		recLeft.width = pRec->left - recLeft.left;
+	}
 	recRight.left = pRec->left + pRec->width;
-
-	iMaxWidth -= m_pBlock->getRightMargin();
-	iMaxWidth += xoff;
-	recRight.width = iMaxWidth - recRight.left;
+	fp_Line * pNext = static_cast<fp_Line *>(getNext());
+	if(pNext && pNext->isSameYAsPrevious())
+	{
+		recRight.width = pNext->getX() - getX() - getMaxWidth();
+	}
+	else
+	{
+		iMaxWidth -= m_pBlock->getRightMargin();
+		recRight.width = iMaxWidth +xdiff - recRight.left;
+	}
+	UT_ASSERT(recLeft.width >= 0);
+	UT_ASSERT(recRight.width >= 0);
+	if((recLeft.width < 3) && (recRight.width < 3))
+	{
+		setWrapped(false);
+	}
 	delete pRec;
 }
 
@@ -850,6 +864,38 @@ void fp_Line::recalcHeight()
 		else
 		{
 			iNewHeight = UT_MAX(iMaxAscent+static_cast<UT_sint32>(iMaxDescent*dLineSpace + 0.5), static_cast<UT_sint32>(dLineSpace));
+		}
+	}
+	fp_Line * pPrev = static_cast<fp_Line *>(getPrev());
+	if(isSameYAsPrevious() && pPrev)
+	{
+		if(iNewHeight > pPrev->getHeight())
+		{
+			pPrev->clearScreen();
+			pPrev->setHeight(iNewHeight);
+			pPrev->setAscent(iNewAscent);
+			pPrev->setDescent(iNewDescent);
+			pPrev->setScreenHeight(-1);
+			pPrev = static_cast<fp_Line *>(getPrev());
+			while(pPrev && pPrev->isSameYAsPrevious())
+			{
+				pPrev->clearScreen();
+				pPrev->setHeight(iNewHeight);
+				pPrev->setAscent(iNewAscent);
+				pPrev->setDescent(iNewDescent);
+				pPrev->setScreenHeight(-1);
+				pPrev = static_cast<fp_Line *>(getPrev());
+			}
+			return;
+		}
+		else if(iNewHeight < pPrev->getHeight())
+		{
+			clearScreen();
+			setHeight(pPrev->getHeight());
+			setAscent(pPrev->getAscent());
+			m_iScreenHeight = -1;	// undefine screen height
+			setDescent(pPrev->getDescent());
+			return;
 		}
 	}
 
