@@ -76,8 +76,8 @@ GR_UNIXGraphics::GR_UNIXGraphics(GdkWindow * win, AP_UnixFontManager * fontManag
 	m_pGC = gdk_gc_new(m_pWin);
 	m_pXORGC = gdk_gc_new(m_pWin);
 
-	m_pColormap = gdk_colormap_get_system();
-	
+	m_pColormap = gdk_rgb_get_cmap(); // = gdk_colormap_get_system();
+
 	gdk_gc_set_function(m_pXORGC, GDK_XOR);
 
 	GdkColor clrWhite;

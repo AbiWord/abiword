@@ -106,6 +106,10 @@ UT_Bool AP_UnixApp::initialize(void)
 	/*******************************/
 
 	// set up new widgets so that they work well with gdkrgb functions
+//    gtk_widget_push_visual(gtk_preview_get_visual());
+//    gtk_widget_push_colormap(gtk_preview_get_cmap());
+
+	gdk_rgb_init();
 	gtk_widget_set_default_colormap(gdk_rgb_get_cmap());
 	gtk_widget_set_default_visual(gdk_rgb_get_visual());
 

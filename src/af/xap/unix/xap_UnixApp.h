@@ -25,6 +25,9 @@
 #include "xap_UnixDialogFactory.h"
 #include "xap_UnixToolbar_ControlFactory.h"
 #include "xap_UnixFontManager.h"
+
+#include <gdk/gdk.h>
+
 class AP_Args;
 class AP_UnixToolbar_Icons;
 
@@ -50,7 +53,7 @@ public:
 	virtual AP_DialogFactory *				getDialogFactory(void);
 	virtual AP_Toolbar_ControlFactory *		getControlFactory(void);
 	AP_UnixFontManager *					getFontManager(void);
-	
+
 	static int main (const char * szAppName, int argc, char ** argv);
 
 protected:
