@@ -33,17 +33,13 @@
 
 @implementation XAP_CocoaTextView
 
-
-/* */
-- (void)setView:(AV_View*)view
+- (id)initWith:(XAP_Frame *)frame andFrame:(NSRect)windowFrame
 {
-	m_pView = view;
-}
-
-
-- (AV_View*)view
-{
-	return m_pView;
+	if (self = [super initWith:frame andFrame:windowFrame])
+	{
+		m_hasMarkedText = NO;
+	}
+	return self;
 }
 
 /* standard methods */
@@ -309,6 +305,9 @@
 
 - (void)insertText:(id)aString
 {
+	/* NSString * str = (NSString *) aString;
+	 * UT_DEBUGMSG(("insertText '%s' in window '%s'\n", [str UTF8String], [[[self window] title] UTF8String]));
+	 */
 //  	pFrame->setTimeOfLastEvent([theEvent timestamp]);
 	AV_View * pView = m_pFrame->getCurrentView();
 	ev_CocoaKeyboard * pCocoaKeyboard = static_cast<ev_CocoaKeyboard *>

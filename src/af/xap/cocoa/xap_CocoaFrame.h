@@ -62,11 +62,9 @@ class FV_View;
 	GR_CocoaGraphics	*m_pGR;
 	NSObject<XAP_MouseEventDelegate>	*_eventDelegate;
 }
-//- (id)initWith:(XAP_CocoaFrame *)frame;
 - (id)initWith:(XAP_Frame *)frame andFrame:(NSRect)windowFrame;
 - (BOOL)acceptsFirstResponder;
 - (BOOL)becomeFirstResponder;
-- (void)setXAPFrame:(XAP_Frame *)frame;
 - (XAP_Frame *)xapFrame;
 - (void)setGraphics:(GR_CocoaGraphics *)gr;
 - (void)setEventDelegate:(NSObject<XAP_MouseEventDelegate>*)delegate;

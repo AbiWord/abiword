@@ -27,10 +27,8 @@
 class AV_View;
 
 @interface XAP_CocoaTextView : XAP_CocoaNSView <NSTextInput> {
-	AV_View*	m_pView;
 	NSRange		m_selectedRange;
 	BOOL		m_hasMarkedText;
 }
-- (void)setView:(AV_View*)view;
-- (AV_View*)view;
+- (id)initWith:(XAP_Frame *)frame andFrame:(NSRect)windowFrame;
 @end

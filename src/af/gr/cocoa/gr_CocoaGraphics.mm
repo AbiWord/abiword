@@ -145,7 +145,6 @@ GR_CocoaGraphics::GR_CocoaGraphics(NSView * win, XAP_App * app)
 		NSLog(@"attaching a non-XAP_CocoaNSView to a GR_CocoaGraphics");
 	}
 
-	[m_pWin setXAPFrame:app->getLastFocussedFrame()];
 	[m_pWin setGraphics:this];
 	[m_pWin allocateGState];
 	s_iInstanceCount++;

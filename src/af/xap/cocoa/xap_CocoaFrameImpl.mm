@@ -545,11 +545,9 @@ void XAP_CocoaFrameImpl::setToolbarRect(const NSRect &r)
 	return NO;
 }
 
-
-
 - (void)keyDown:(NSEvent *)theEvent
 {
-	
+	xxx_UT_DEBUGMSG(("keyDown in window '%s'\n", [[[self window] title] UTF8String]));
 	[m_textView interpretKeyEvents:[NSArray arrayWithObject:theEvent]];
 #if 0
 	XAP_Frame * pFrame = m_frame->getFrame();

@@ -90,11 +90,6 @@
 	return NO;
 }
 
-- (void)setXAPFrame:(XAP_Frame *)frame
-{
-	m_pFrame = frame;
-}
-
 - (XAP_Frame *)xapFrame
 {
 	return m_pFrame;
