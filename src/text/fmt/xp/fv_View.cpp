@@ -3973,7 +3973,6 @@ UT_UCSChar * FV_View::getSelectionText(void)
 	return NULL;
 }
 
-// this function has not been debugged
 UT_UCSChar * FV_View::getTextBetweenPos(PT_DocPosition pos1, PT_DocPosition pos2)
 {
 	UT_ASSERT(pos2 > pos1);
