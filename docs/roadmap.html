@@ -9,7 +9,7 @@
 <H2 align=Center>AbiWord Roadmap</H2>
 
 <ul>
-<li>Last updated:  06 Aug 1999, the current tarball is 0.7.4
+<li>Last updated:  31 May 1999, the current tarball is 0.7.9
 
 <li>Please see the explanatory <a href="#notes">notes</a> at the bottom of this list.
 </ul>
@@ -50,24 +50,21 @@ development tree for the 1.1/1.2 series releases.</p></td>
     <UL>
 <hr><b>Features</b><br>
     <LI>finish headers and footers (eric@abisource.com)
-    <li>DLOG:  Format/Paragraph
     <li>DLOG:  Format/Tabs
     <li>DLOG:  File/Page Setup (aka Format/Section) (with page margins, size, orientation)
     <li>DLOG:  Format/Columns
     <li>DLOG:  Insert/Break
     <li>DLOG:  Insert/Page Numbers
-    <li>DLOG:  Insert Date,Time
     <li>DLOG:  Insert Field
-    <li>DLOG:  Insert Symbol
-    <li>DLOG:  Spell check
     <LI>DLOG:  Options, with tabs for various kinds of options
-    <li>Context menu for spell, with suggestions for mis-spelled words.
+    <LI>DLOG:  goto
+    <li>Word Export
+    <li>HTML import (sam@uchicago.edu)
 <hr><b>Other</b><br>
-    <LI>paragraph full justification  
+
 
 <hr><b>Notable Bugs</b><br>
     <li>bug:  spaces should not wrap to the beginning of a line (362) (eric@abisource.com)
-    <LI>fix bug 7 (character overhang redraw problems) (eric@abisource.com)
     </UL>
     </TD>
 
@@ -76,18 +73,14 @@ development tree for the 1.1/1.2 series releases.</p></td>
     <UL>
 
     <li>Design and implement a consistent scheme for moving documents between systems (including between differing platforms) and preserving as much of the font information as possible.
-    <li>Gnome-ify
     <LI>show invisibles 
     <LI>lists
     <LI>horizontal rules
     <li>tabs:  center, right
     <li>View/Toolbars
-    <li>View/Ruler
     <li>View/Status Bar
     <li>Context menu for images
     <li>Context cursors for image
-    <LI>DLOG:  goto
-    <LI>DLOG:  word count
     <li>switch to UTF-8 encoding for internal piece table storage (jeff@abisource.com, eric@abisource.com)
     <li>Cleanup mapping of Unicode encodings to font encodings, focusing on: bullets, dashes, fancy quotation marks, symbols, dingbats (eric@abisource.com)
     <LI>online help (in HTML?)
@@ -96,7 +89,6 @@ development tree for the 1.1/1.2 series releases.</p></td>
     <li>Tag by language so spell checker can use the right dictionary
     <li>Figure out whether to change dictionary file format (ispell file format is completely dependent upon compiler and platform)
     <LI>image resize.  Involves the addition of "handles" on the corners and edges of the image, when it's selected for resize.  Requires mouse interaction and drag code.  This should be possible to do entirely in XP code.
-    <LI>superscripts/subscripts 
     <LI>vertical keeps (partially done, in fb_ColumnBreaker.cpp)
     <LI>horizontal keeps 
 
@@ -109,9 +101,7 @@ development tree for the 1.1/1.2 series releases.</p></td>
 
     <li>Qt port, anyone?  <tt>:-)</tt>
     <li>MacOS port, anyone?  John Brewer (jbrewer@jera.com) has checked in a start on this.
-    <li>HTML import (michael@surfnetcity.com.au)
     <li>Inline marks for bookmarks, TOC, index, etc. (julian.morrison@virgin.net)
-    <LI>Word 97 export
     <LI>autosave 
     <LI>automatic switching to fancy quotation marks 
     <li>Experiment with <a href="http://www.dsmit.com/cons/">cons</a> as a replacement for our build system.  Would this get us faster, more accurate builds on more platforms?
