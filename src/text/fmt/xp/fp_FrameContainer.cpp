@@ -392,7 +392,7 @@ void fp_FrameContainer::draw(dg_DrawArgs* pDA)
 			pDA->bDirtyRunsOnly= false;
 		} 
 		UT_sint32 srcX,srcY;
-
+		getSectionLayout()->checkGraphicTick(pG);
 		srcX = -m_iXpad;
 		srcY = -m_iYpad;
 
