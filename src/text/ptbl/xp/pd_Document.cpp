@@ -618,6 +618,7 @@ UT_Error PD_Document::saveAs(const char * szFilename, int ieft, bool cpy,
 			return UT_SAVE_OTHERERROR;
 	    _setFilename(szFilenameCopy);
 	    _setClean(); // only mark as clean if we're saving under a new name
+		signalListeners(PD_SIGNAL_DOCNAME_CHANGED);	
 	}
 
 	//if (strstr(szFilename, "normal.awt") == NULL)
@@ -1252,6 +1253,49 @@ bool PD_Document::verifySectionID(const XML_Char * pszId)
 				 (pAP)->getAttribute("footer-even", pszIDName);
 				 if(pszIDName && strcmp(pszIDName,pszId) == 0)
 					 return true;
+
+				 // the id could also be hidden in a revision attribute ...
+				 const XML_Char * pszRevisionAttr;
+				 (pAP)->getAttribute("revision", pszRevisionAttr);
+				 if(pszRevisionAttr)
+				 {
+					 PP_RevisionAttr RA(pszRevisionAttr);
+
+					 for(UT_uint32 i = 0; i < RA.getRevisionsCount(); ++i)
+					 {
+						 const PP_Revision * pRev = RA.getNthRevision(i);
+						 if(!pRev)
+						 {
+							 UT_ASSERT_HARMLESS( UT_SHOULD_NOT_HAPPEN );
+							 continue;
+						 }
+
+						 (pRev)->getAttribute("header", pszIDName);
+						 if(pszIDName && strcmp(pszIDName,pszId) == 0)
+							 return true;
+						 (pRev)->getAttribute("header-first", pszIDName);
+						 if(pszIDName && strcmp(pszIDName,pszId) == 0)
+							 return true;
+						 (pRev)->getAttribute("header-last", pszIDName);
+						 if(pszIDName && strcmp(pszIDName,pszId) == 0)
+							 return true;
+						 (pRev)->getAttribute("header-even", pszIDName);
+						 if(pszIDName && strcmp(pszIDName,pszId) == 0)
+							 return true;
+						 (pRev)->getAttribute("footer", pszIDName);
+						 if(pszIDName && strcmp(pszIDName,pszId) == 0)
+							 return true;
+						 (pRev)->getAttribute("footer-first", pszIDName);
+						 if(pszIDName && strcmp(pszIDName,pszId) == 0)
+							 return true;
+						 (pRev)->getAttribute("footer-last", pszIDName);
+						 if(pszIDName && strcmp(pszIDName,pszId) == 0)
+							 return true;
+						 (pRev)->getAttribute("footer-even", pszIDName);
+						 if(pszIDName && strcmp(pszIDName,pszId) == 0)
+							 return true;
+					 }
+				 }
 		     }
 		}
 //
@@ -4535,7 +4579,7 @@ void PD_Document::forceDirty()
 	// now notify listeners ...
 	// this is necessary so that the save command is available after
 	// operations that only change m_bForcedDirty
-	signalListeners(PD_SIGNAL_DOCPROPS_CHANGED_NO_REBUILD);	
+	signalListeners(PD_SIGNAL_DOCDIRTY_CHANGED);	
 }
 
 
@@ -4608,6 +4652,9 @@ bool PD_Document::areDocumentStylesheetsEqual(const AD_Document &D) const
 /*!
     carries out the actual change in PieceTable; called by
     acceptRejectRevision() and rejectAllHigherRevisions()
+
+    this method operates on a fragment at a time, but if it
+    results in deletion from PT, more fragments might be deleted
 */
 bool PD_Document::_acceptRejectRevision(bool bReject, UT_uint32 iStart, UT_uint32 iEnd,
 										const PP_Revision * pRev,
@@ -4628,10 +4675,61 @@ bool PD_Document::_acceptRejectRevision(bool bReject, UT_uint32 iStart, UT_uint3
 	bool bDeletePRev = false;
 	bool bRet = true;
 	UT_uint32 i;
+
+	// if the fragment is a strux that has a corresponding end element
+	// and we will be deleting itwe have to expand the deletion to the
+	// end of that element
+	UT_uint32 iEndDelete = iEnd;
+	PP_RevisionType iRevType = pRev->getType();
+
+	if(pf->getType() == pf_Frag::PFT_Strux &&
+	   (   (bReject &&  (iRevType == PP_REVISION_ADDITION_AND_FMT || iRevType == PP_REVISION_ADDITION))
+		|| (!bReject && (iRevType == PP_REVISION_DELETION))))
+	{
+		pf_Frag_Strux * pfs = (pf_Frag_Strux*)pf;
+		PTStruxType pst = PTX_Block;
+		
+		switch(pfs->getStruxType())
+		{
+			case PTX_SectionEndnote:
+				pst = PTX_EndEndnote; break;
+			case PTX_SectionTable:
+				pst = PTX_EndTable; break;
+			case PTX_SectionCell:
+				pst = PTX_EndCell; break;
+			case PTX_SectionFootnote:
+				pst = PTX_EndFootnote; break;
+		    case PTX_SectionMarginnote:
+				pst = PTX_EndMarginnote; break;
+			case PTX_SectionFrame:
+				pst = PTX_EndFrame; break;
+			case PTX_SectionTOC:
+				pst = PTX_EndTOC; break;
+
+			default: ; // do nothing 
+		}
+
+		if(pst != PTX_Block)
+		{
+			pf_Frag * pf2 = pf->getNext();
+			while(pf2)
+			{
+				iEndDelete += pf2->getLength();
+				if(pf2->getType() == pf_Frag::PFT_Strux)
+				{
+					pf_Frag_Strux * pfs2 = (pf_Frag_Strux*)pf2;
+					if(pfs2->getStruxType() == pst)
+						break;
+				}
+
+				pf2 = pf2->getNext();
+			}
+		}
+	}
 	
 	if(bReject)
 	{
-		switch(pRev->getType())
+		switch(iRevType)
 		{
 			case PP_REVISION_ADDITION:
 			case PP_REVISION_ADDITION_AND_FMT:
@@ -4643,7 +4741,7 @@ bool PD_Document::_acceptRejectRevision(bool bReject, UT_uint32 iStart, UT_uint3
 					// of rev. marking mode for a moment ...
 					bool bMark = isMarkRevisions();
 					_setMarkRevisions(false);
-					bRet = deleteSpan(iStart,iEnd,NULL,iRealDeleteCount);
+					bRet = deleteSpan(iStart,iEndDelete,NULL,iRealDeleteCount);
 					_setMarkRevisions(bMark);
 
 					return bRet;
@@ -4652,7 +4750,13 @@ bool PD_Document::_acceptRejectRevision(bool bReject, UT_uint32 iStart, UT_uint3
 			case PP_REVISION_DELETION:
 			case PP_REVISION_FMT_CHANGE:
 				// remove the revision attribute
-				return changeSpanFmt(PTC_RemoveFmt,iStart,iEnd,ppAttr,NULL);
+				if(pf->getType() == pf_Frag::PFT_Strux)
+				{
+					pf_Frag_Strux * pfs = static_cast<pf_Frag_Strux *>(pf);					
+					return changeStruxFmt(PTC_RemoveFmt,iStart,iEnd,ppAttr,NULL, pfs->getStruxType());
+				}
+				else
+					return changeSpanFmt(PTC_RemoveFmt,iStart,iEnd,ppAttr,NULL);
 
 			default:
 				UT_ASSERT_HARMLESS( UT_SHOULD_NOT_HAPPEN );
@@ -4661,11 +4765,17 @@ bool PD_Document::_acceptRejectRevision(bool bReject, UT_uint32 iStart, UT_uint3
 	}
 	else
 	{
-		switch(pRev->getType())
+		switch(iRevType)
 		{
 			case PP_REVISION_ADDITION:
 				// simply remove the revision attribute
-				return changeSpanFmt(PTC_RemoveFmt,iStart,iEnd,ppAttr,NULL);
+				if(pf->getType() == pf_Frag::PFT_Strux)
+				{
+					pf_Frag_Strux * pfs = static_cast<pf_Frag_Strux *>(pf);					
+					return changeStruxFmt(PTC_RemoveFmt,iStart,iEnd,ppAttr,NULL, pfs->getStruxType());
+				}
+				else
+					return changeSpanFmt(PTC_RemoveFmt,iStart,iEnd,ppAttr,NULL);
 
 			case PP_REVISION_DELETION:
 				{
@@ -4676,7 +4786,7 @@ bool PD_Document::_acceptRejectRevision(bool bReject, UT_uint32 iStart, UT_uint3
 					// of rev. marking mode for a moment ...
 					bool bMark = isMarkRevisions();
 					_setMarkRevisions(false);
-					bRet = deleteSpan(iStart,iEnd,NULL,iRealDeleteCount);
+					bRet = deleteSpan(iStart,iEndDelete,NULL,iRealDeleteCount);
 					_setMarkRevisions(bMark);
 
 					return bRet;
@@ -4684,7 +4794,13 @@ bool PD_Document::_acceptRejectRevision(bool bReject, UT_uint32 iStart, UT_uint3
 					
 			case PP_REVISION_ADDITION_AND_FMT:
 				// overlay the formatting and remove the revision attribute
-				return changeSpanFmt(PTC_RemoveFmt,iStart,iEnd,ppAttr,NULL);
+				if(pf->getType() == pf_Frag::PFT_Strux)
+				{
+					pf_Frag_Strux * pfs = static_cast<pf_Frag_Strux *>(pf);					
+					return changeStruxFmt(PTC_RemoveFmt,iStart,iEnd,ppAttr,NULL, pfs->getStruxType());
+				}
+				else
+					return changeSpanFmt(PTC_RemoveFmt,iStart,iEnd,ppAttr,NULL);
 
 			case PP_REVISION_FMT_CHANGE:
 				// overlay the formatting and remove this revision
@@ -4742,12 +4858,24 @@ bool PD_Document::_acceptRejectRevision(bool bReject, UT_uint32 iStart, UT_uint3
 
 						// now we use the ppAttr set to remove the
 						// revision attribute
-						bRet &= changeSpanFmt(PTC_RemoveFmt,iStart,iEnd,ppAttr,NULL);
+						if(pf->getType() == pf_Frag::PFT_Strux)
+						{
+							pf_Frag_Strux * pfs = static_cast<pf_Frag_Strux *>(pf);					
+							bRet &= changeStruxFmt(PTC_RemoveFmt,iStart,iEnd,ppAttr,NULL, pfs->getStruxType());
+						}
+						else
+							bRet &= changeSpanFmt(PTC_RemoveFmt,iStart,iEnd,ppAttr,NULL);
 					}
 				}
 
 
-				bRet &= changeSpanFmt(PTC_AddFmt,iStart,iEnd,ppAttr2,ppProps);
+				if(pf->getType() == pf_Frag::PFT_Strux)
+				{
+					pf_Frag_Strux * pfs = static_cast<pf_Frag_Strux *>(pf);					
+					bRet &= changeStruxFmt(PTC_AddFmt,iStart,iEnd,ppAttr2,NULL, pfs->getStruxType());
+				}
+				else
+					bRet &= changeSpanFmt(PTC_AddFmt,iStart,iEnd,ppAttr2,ppProps);
 
 				delete ppProps;
 				delete ppAttr2;
