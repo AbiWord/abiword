@@ -337,9 +337,17 @@ UT_Bool AP_BeOSApp::ParseCommandLine(void)
 			{
 				// TODO: warn user that we couldn't open that file
 
+#if 1
+				// TODO we crash if we just delete this without putting something
+				// TODO in it, so let's go ahead and open an untitled document
+				// TODO for now.  this would cause us to get 2 untitled documents
+				// TODO if the user gave us 2 bogus pathnames....
+				kWindowsOpened++;
+				pFirstBeOSFrame->loadDocument(NULL, IEFT_Unknown);
+#else
 				delete pFirstBeOSFrame;
-
 				// TODO do we want to signal and error and exit.... if so, return false here
+#endif
 			}
 		}
 	}
