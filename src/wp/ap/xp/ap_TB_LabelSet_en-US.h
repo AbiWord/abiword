@@ -110,12 +110,14 @@ BeginSetEnc(en,US,true,"iso-8859-1")
 	ToolbarLabel(AP_TOOLBAR_ID_SCRIPT_PLAY,		"Ex. script",	tb_script_play_xpm,		NULL, "Execute script")
 #endif
 
-     // ... add others here ...
 #ifdef BIDI_ENABLED
 	ToolbarLabel(AP_TOOLBAR_ID_FMT_DIR_OVERRIDE_LTR,	"Force text LTR",		tb_text_direction_ltr_xpm,	NULL, "Force LTR direction of text")
 	ToolbarLabel(AP_TOOLBAR_ID_FMT_DIR_OVERRIDE_RTL,	"Force text RTL",		tb_text_direction_rtl_xpm,	NULL, "Force RTL direction of text")
 	ToolbarLabel(AP_TOOLBAR_ID_FMT_DOM_DIRECTION,		"Paragraph Direction",	tb_text_dom_direction_rtl_xpm,	NULL, "Change dominant direction of paragraph")
 #endif
+
+     // ... add others here ...
+
 	ToolbarLabel(AP_TOOLBAR_ID__BOGUS2__,		NULL,			NoIcon,			NULL,NULL)
 
 EndSet()

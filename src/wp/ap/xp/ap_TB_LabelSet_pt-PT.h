@@ -111,8 +111,8 @@ BeginSetEnc(pt,PT,true,"iso-8859-1")
 #endif
 
 #ifdef BIDI_ENABLED
-	ToolbarLabel(AP_TOOLBAR_ID_FMT_DIR_OVERRIDE_LTR,"Da Esquerda para a Direita", tb_text_direction_ltr_xpm,	NULL, "Forçar orientação do texto da Esquerda para a Direita")
-	ToolbarLabel(AP_TOOLBAR_ID_FMT_DIR_OVERRIDE_RTL,"Da Direita para a Esquerda", tb_text_direction_rtl_xpm,	NULL, "Forçar orientação do texto da Direita para a Esquerda")
+	ToolbarLabel(AP_TOOLBAR_ID_FMT_DIR_OVERRIDE_LTR,"Esquerda para a Direita", tb_text_direction_ltr_xpm,	NULL, "Forçar orientação da Esquerda para a Direita")
+	ToolbarLabel(AP_TOOLBAR_ID_FMT_DIR_OVERRIDE_RTL,"Direita para a Esquerda", tb_text_direction_rtl_xpm,	NULL, "Forçar orientação da Direita para a Esquerda")
 	ToolbarLabel(AP_TOOLBAR_ID_FMT_DOM_DIRECTION,	"Orientação do parágrafo",    tb_text_dom_direction_rtl_xpm,	NULL, "Forçar orientação normal do parágrafo")
 #endif
 	// ... add others here ...

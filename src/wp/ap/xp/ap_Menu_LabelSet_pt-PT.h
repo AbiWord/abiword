@@ -17,9 +17,6 @@
  * 02111-1307, USA.
  */
 
-/* Portuguese translations provided by:
- * 	Rui M. Silva Seabra <rms@greymalkin.yi.org>
- */
 
 /*****************************************************************
 ******************************************************************
@@ -66,7 +63,6 @@ BeginSetEnc(pt,PT,true,"iso-8859-1")
     MenuLabel(AP_MENU_ID_FILE_EXIT,		"&Sair",		"Fechar todas as janelas e sair")
 
     MenuLabel(AP_MENU_ID_EDIT,			"&Editar",		NULL)
-
     MenuLabel(AP_MENU_ID_EDIT_UNDO,		"&Desfazer",		"Cancelar última acção")
     MenuLabel(AP_MENU_ID_EDIT_REDO,		"&Refazer",		"Refazer última acção cancelada")
     MenuLabel(AP_MENU_ID_EDIT_CUT,		"Co&rtar",		"Cortar selecção")
@@ -104,7 +100,6 @@ BeginSetEnc(pt,PT,true,"iso-8859-1")
     MenuLabel(AP_MENU_ID_VIEW_ZOOM_50,		"Zoom to &50%",		"Zoom a 50%")
     MenuLabel(AP_MENU_ID_VIEW_ZOOM_WIDTH,	"Zoom to &Page Width",	"Zoom à largura da página")
     MenuLabel(AP_MENU_ID_VIEW_ZOOM_WHOLE,	"Zoom to &Whole Page",	"Zoom à página inteira")
-
 
     MenuLabel(AP_MENU_ID_INSERT,		"&Inserir",		NULL)
     MenuLabel(AP_MENU_ID_INSERT_BREAK,		"&Quebra",		"Inserir quebras de página, secção...")
@@ -144,7 +139,6 @@ BeginSetEnc(pt,PT,true,"iso-8859-1")
     MenuLabel(AP_MENU_ID_TOOLS_SPELL,		"Verificar agora",	"Verificar ortografia do documento agora")
     MenuLabel(AP_MENU_ID_TOOLS_AUTOSPELL,	"Verificação &Automática","Verificar ortografia do documento automaticamente")
     MenuLabel(AP_MENU_ID_TOOLS_SPELLPREFS,	"&Opções de Ortografia", "Definir opções de ortografia")
-
     MenuLabel(AP_MENU_ID_TOOLS_WORDCOUNT,	"&Contar palavras",	"Contar palavras no documento")
     MenuLabel(AP_MENU_ID_TOOLS_OPTIONS,		"&Opções",		"Configurar as opções")
     MenuLabel(AP_MENU_ID_TOOLS_LANGUAGE,	"&Língua",		"Mudar a língua da área seleccionada")
