@@ -31,6 +31,8 @@ RANLIB		= true
 # Includes
 OS_INCLUDES		=
 G++INCLUDES		=  # Commented prior, now we redefine NULL
+# Is that healthy?
+
 
 # Compiler flags
 PLATFORM_FLAGS		= -DIRIX

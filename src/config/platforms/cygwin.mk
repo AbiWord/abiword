@@ -45,6 +45,7 @@ OS_CFLAGS		= $(DSO_CFLAGS) $(PLATFORM_FLAGS) $(PORT_FLAGS)
 MKSHLIB			= $(LD) $(DSO_LDOPTS) -soname $(@:$(OBJDIR)/%.so=%.so)
 
 UNIX_CAN_BUILD_STATIC=1
+UNIX_CAN_BUILD_DYNAMIC=0
 
 # Compiler options for static and dynamic linkage
 DL_LIBS			= dl

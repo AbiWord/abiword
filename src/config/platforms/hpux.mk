@@ -32,10 +32,6 @@ include $(ABI_ROOT)/src/config/platforms/nix-common.mk
 ## compiler/loader options are used.  It will probably also be used
 ## in constructing the name object file destination directory.
 
-OS_ARCH		:= $(shell uname -m | sed -e s/i.86/i386/ -e s/sun4u/sparc64/ -e s/arm.*/arm/ -e s/sa110/arm/ | sed "s/\//-/")
-OS_ENDIAN	= BigEndian32
-
-
 DLL_SUFFIX	= sl
 
 ## nessecary changes for systems without snprintf() like hp-ux 10.20 from Martin Gansser mgansser@ngi.de
@@ -69,6 +65,7 @@ else
   PORT_FLAGS		= -DHAVE_STRERROR -D_HPUX_SOURCE -DSETENV_MISSING
 endif
 
+# !!! I'm almost done removing all the sys snprintf deps in abi, I'll get rid of this asap.
 ifeq ($(USE_EXTERNAL_SNPRINTF),1)
   OS_LIBS += -L/opt/libiconv/lib -liconv -L/opt/snprintf/lib -lsnprintf
 endif
