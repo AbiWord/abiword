@@ -3356,6 +3356,14 @@ bool IE_Imp_RTF::TranslateKeyword(unsigned char* pKeyword, long param, bool fPar
 							m_currentRTFState.m_destinationState = RTFStateStore::rdsSkip;
 							return true;
 						}
+						else if (strcmp((char*)keyword_star, "bkmkstart") == 0)
+						{
+							return HandleBookmark (RBT_START);
+						}
+						else if (strcmp((char*)keyword_star, "bkmkend") == 0)
+						{
+							return HandleBookmark (RBT_END);
+						}
 					}
 				}
 				UT_DEBUGMSG (("RTF: star keyword %s not handled\n", keyword_star));
@@ -6146,6 +6154,50 @@ IE_Imp_RTF::RTFTokenType IE_Imp_RTF::NextToken (unsigned char *pKeyword, long* p
 	return tokenType;
 }
 
+
+/*!
+  Handle a bookmark keyword
+ */
+bool IE_Imp_RTF::HandleBookmark (RTFBookmarkType type)
+{
+	UT_Byte ch = 0;
+	UT_String bookmarkName;
+
+	UT_DEBUGMSG(("hub: HandleBookmark of type %d\n", type));
+
+
+	while (ch != '}')
+	{
+		if (!ReadCharFromFile(&ch)) {
+			return false;
+		}
+		if (ch != '}') {
+			bookmarkName += ch;
+		}
+	}
+	SkipBackChar (ch);
+
+	const XML_Char * props [5];
+	props [0] = "type";
+	switch (type) {
+	case RBT_START:
+		props [1] = "start";
+		break;
+	case RBT_END:
+		props [1] = "end";
+		break;
+	default:
+		UT_ASSERT (UT_SHOULD_NOT_HAPPEN);
+		props [1] = NULL;
+		break;
+	}
+	props [2] = "name";
+	props [3] = bookmarkName.c_str();
+	props [4] = NULL;
+
+	getDoc()->appendObject(PTO_Bookmark, props);
+	return true;
+}
 
 
 void IE_Imp_RTF::_appendHdrFtr ()

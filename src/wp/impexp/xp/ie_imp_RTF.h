@@ -477,6 +477,11 @@ private:
 		picGIF
 	};
 
+	typedef enum {
+		RBT_START = 0,
+		RBT_END
+	} RTFBookmarkType;
+
 	bool AddChar(UT_UCSChar ch);
 	bool FlushStoredChars(bool forceInsertPara = false);
 	bool StartNewPara();
@@ -542,6 +547,7 @@ private:
 	bool HandleSubscript(bool state);
 	bool HandleSubscriptPosition(UT_uint32 pos);
 	bool HandleFontSize(long sizeInHalfPoints);
+	bool HandleBookmark (RTFBookmarkType type);
 	bool HandleListTag(long id);
 
 	// Generic handlers
@@ -576,7 +582,8 @@ private:
 	} RTFTokenType;
 	RTFTokenType NextToken (unsigned char *pKeyword, long* pParam, 
 							bool* pParamUsed, UT_uint32 len);
-	
+
+
 // import member vars
 private:
 	UT_GrowBuf m_gbBlock;
