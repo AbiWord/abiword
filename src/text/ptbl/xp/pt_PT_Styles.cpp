@@ -166,8 +166,11 @@ bool pt_PieceTable::appendStyle(const XML_Char ** attributes)
 		// this is a new name
 		pStyle = new PD_Style(this, indexAP);
 		UT_DEBUGMSG(("SEVIOR: Creating new style %s \n",szName));
+//
+//TODO: Learn how to use Dom's AbiObject instead of this hack.
+//
 		if (pStyle)
-			m_hashStyles.insert( (UT_HashTable::HashKeyType) szName,(UT_HashTable::HashValType)pStyle);
+			m_hashStyles.insert( (UT_HashTable::HashKeyType) UT_strdup(szName),(UT_HashTable::HashValType)pStyle);
 //
 // Diagonostic on Append...
 //
