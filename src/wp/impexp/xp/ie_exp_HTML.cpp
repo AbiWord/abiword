@@ -657,6 +657,7 @@ private:
 	UT_UTF8String	m_utf8_1; // intermediate
 
 	UT_UTF8String	m_utf8_span;     // span tag-string cache
+	UT_UTF8String	m_utf8_style;    // current block style
 
 	const PP_AttrProp * m_pAPStyles;
 
@@ -2186,6 +2187,8 @@ void s_HTML_Listener::_openTag (PT_AttrPropIndex api, PL_StruxDocHandle sdh)
 		}
 	m_bWroteText = false;
 
+	const XML_Char * szDefault = "Normal"; // TODO: should be/is a #define somewhere?
+
 	const PP_AttrProp * pAP = 0;
 	bool bHaveProp = m_pDocument->getAttrProp (api, &pAP);
 	
@@ -2196,6 +2199,8 @@ void s_HTML_Listener::_openTag (PT_AttrPropIndex api, PL_StruxDocHandle sdh)
 			m_utf8_1 = "p";
 			tagOpen (TT_P, m_utf8_1, ws_Pre);
 
+			m_utf8_style = szDefault;
+
 			m_iBlockType = BT_NORMAL;
 			m_bInBlock = true;
 			return;
@@ -2204,8 +2209,6 @@ void s_HTML_Listener::_openTag (PT_AttrPropIndex api, PL_StruxDocHandle sdh)
 	UT_uint16 tagID = TT_OTHER;
 
 	bool tagPending = false;
-
-	const XML_Char * szDefault = "Normal"; // TODO: should be/is a #define somewhere?
 
 	const XML_Char * szValue = 0;
 	const XML_Char * szLevel = 0;
@@ -2238,6 +2241,8 @@ void s_HTML_Listener::_openTag (PT_AttrPropIndex api, PL_StruxDocHandle sdh)
 	 * doesn't already have one.
 	 */
 	if (!have_style) szValue = szDefault;
+
+	m_utf8_style = szValue;
 
 	if (!zero_listID)
 		{
@@ -2672,6 +2677,17 @@ void s_HTML_Listener::_openSpan (PT_AttrPropIndex api)
 			return;
 		}
 
+	const XML_Char * szA_Style = 0;
+
+	bool have_style = pAP->getAttribute (PT_STYLE_ATTRIBUTE_NAME, szA_Style);
+	if (have_style)
+		if (m_utf8_style == szA_Style) // inline style is block style; ignore
+			have_style = false;
+
+	const s_StyleTree * tree = 0;
+	if (have_style)
+		tree = m_style_tree.find (szA_Style);
+
 	const XML_Char * szP_FontWeight = 0;
 	const XML_Char * szP_FontStyle = 0;
 	const XML_Char * szP_FontSize = 0;
@@ -2847,6 +2863,15 @@ void s_HTML_Listener::_openSpan (PT_AttrPropIndex api)
 			m_utf8_1 += "\"";
 			bInSpan = true;
 		}
+
+	if (tree)
+		if (tree->class_list().byteLength ())
+			{
+				m_utf8_1 += " class=\"";
+				m_utf8_1 += tree->class_list ();
+				m_utf8_1 += "\"";
+				bInSpan = true;
+			}
 
 	/* if the dir-override is set, or dir is 'rtl' or 'ltr', we will output
 	 * the dir property; however, this property cannot be within a style 

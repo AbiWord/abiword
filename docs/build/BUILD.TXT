@@ -6,15 +6,10 @@ AbiWord is a C++ application which has a cross-platform architecture consisting 
 Contents
 
 	Unix
-
 	Windows
-
 	QNX
-
 	BeOS
-
 	Mac OS X
-
 
 Unix:
 
@@ -95,7 +90,7 @@ If you have the big-bad source tar-ball, you can skip to the next section. If yo
 
 	abidistfiles (needed if you plan to make install)
 
-	wv (highly recommended) Note: you can also get wv release tar-balls from wvWare's official site on SourceForge, http://sourceforge.net/projects/wvware/. For building AbiWord, however, the version of wv can be critical and so it is usually bundled with abi; for cvs AbiWord use cvs wv. See also: configure --with-sys-wv.
+	wv (highly recommended) Note: you can also get wv release tar-balls from wvWare's official site on SourceForge, http://sourceforge.net/projects/wvware/. For building AbiWord, however, the version of wv can be critical and so it is usually bundled with abi; for CVS AbiWord use AbiWord's CVS wv. See also: configure --with-sys-wv.
 
 	abiword-plugins (optional, for extra importer/exporters, nifty tools, and other toys)
 
@@ -125,9 +120,7 @@ Because AbiWord uses the automake/autoconf build tools, you may already be famil
 If you enter the "abi" directory, you'll find a little (big) shell script there named "configure." This program will help you determine what features get built into AbiWord. If you're in a rush, uninterested, or clueless, you might just try:
 
 	./configure
-
 	make
-
 	make install
 
 which is also known as the "standard unix build practice." If you do this, more power to you. If you're interested in what you can play with, however, read on.
@@ -212,13 +205,14 @@ The password for the anoncvs user is anoncvs.
 
 From the command line version of CVS, a user would 
 
-cd c:\existing_dir_for_cvs_download
-set CVSROOT=:pserver:anoncvs@cvs.abisource.com:/cvsroot
-set HOME=c:\existing_dir_for_.cvspass_file
-set HOMEDRIVE=c:\
-set HOMEPATH=\existing_dir_for_.cvspass_file
-cvs login
-cvs checkout <modules listed below>
+	cd c:\existing_dir_for_cvs_download
+	set CVSROOT=:pserver:anoncvs@cvs.abisource.com:/cvsroot
+	set HOME=c:\existing_dir_for_.cvspass_file
+	set HOMEDRIVE=c:\
+	set HOMEPATH=\existing_dir_for_.cvspass_file
+	cvs login
+	cvs checkout <modules listed below>
+
 CVS modules required to check out are:
 
 	abi
@@ -279,13 +273,9 @@ Several build options are available and are detailed in the BUILD.txt file.  The
 The following are common for the Windows build:
 
 ABI_BUILD_VERSION=x.y.z  	Set the version number for the build
-
 ABI_OPT_DEBUG=1  		Builds a debug version of AbiWord
-
 ABI_OPT_PERL=1			Enables Perl scripting
-
 ABI_OPT_LIBJPEG=1		Enables you to view JPEG images
-
 ABI_OPT_CURL=1			Enables automatic dictionary downloading
 
 If attempting to use the MSVC6 project files, follow the instructions in its README.TXT file. 
@@ -344,9 +334,7 @@ Prerequisites (Cocoa):
 Currently fink (http://fink.sourceforge.net/), in particular the libiconv and glib2 packages, is required in order to build the Cocoa port. Other dependencies are covered by modules in AbiWord's CVS. To get the source do:
 
 	cvs -d:pserver:anoncvs@anoncvs.abisource.com:/cvsroot login
-
 	CVS password:	(anoncvs)
-
 	cvs -d:pserver:anoncvs@anoncvs.abisource.com:/cvsroot -z3 co abicocoa
 
 This will check out a number of modules, including several which end in "pbx" - these contain the Project Builder files.
