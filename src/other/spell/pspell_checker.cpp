@@ -143,9 +143,9 @@ PSpellChecker::checkWord (const UT_UCSChar * szWord,
 	switch (pspell_manager_check(spell_manager, (char*)word8))
 	{
 	case 0:
-		ret = SpellChecker::LOOKUP_SUCCEEDED; break;
-	case 1:
 		ret = SpellChecker::LOOKUP_FAILED; break;
+	case 1:
+		ret = SpellChecker::LOOKUP_SUCCEEDED; break;
 	default:
 		ret = SpellChecker::LOOKUP_ERROR; break;
 	}
