@@ -183,10 +183,6 @@ int pretty_group(PtWidget_t *w, const char *title) {
 			font = defaultfont;	
 		}
 
-		PfExtentText(&rect, NULL, font, title, 0);
-		//printf("Setting width to %d \n", rect.lr.x - rect.ul.x + 10);
-		//PtSetArg(&args[n++], Pt_ARG_WIDTH, rect.lr.x - rect.ul.x + 10, 0);
-
 		PtSetArg(&args[n++], Pt_ARG_TITLE, title, 0);
 		PtSetArg(&args[n++], Pt_ARG_CONTAINER_FLAGS, 
 			Pt_SHOW_TITLE | Pt_ETCH_TITLE_AREA, 

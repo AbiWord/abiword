@@ -438,6 +438,8 @@ PtWidget_t * XAP_QNXDialog_Insert_Symbol::_constructWindow(void)
 	PtSetArg(&args[n++], Pt_ARG_WINDOW_TITLE,_(XAP,DLG_Insert_SymbolTitle), 0);
 	PtSetArg(&args[n++], Pt_ARG_WINDOW_RENDER_FLAGS, 0, ABI_MODAL_WINDOW_RENDER_FLAGS);
 	PtSetArg(&args[n++], Pt_ARG_WINDOW_MANAGED_FLAGS, 0, ABI_MODAL_WINDOW_MANAGE_FLAGS);
+	PtSetArg(&args[n++],Pt_ARG_WIDTH,0,0);
+	PtSetArg(&args[n++],Pt_ARG_HEIGHT,0,0);
 	windowInsertS = PtCreateWidget(PtWindow, NULL, n, args);
 	PtAddCallback(windowInsertS, Pt_CB_WINDOW_CLOSING, s_delete_clicked, this);
 	//Create a vertical group to contain the font selector, 

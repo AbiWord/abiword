@@ -408,6 +408,8 @@ PtWidget_t * AP_QNXDialog_Lists::_constructWindow (void)
 	PtSetArg(&args[n++], Pt_ARG_WINDOW_TITLE, getWindowName(), 0);
 	PtSetArg(&args[n++], Pt_ARG_WINDOW_RENDER_FLAGS, 0, ABI_MODAL_WINDOW_RENDER_FLAGS);
 	PtSetArg(&args[n++], Pt_ARG_WINDOW_MANAGED_FLAGS, 0, ABI_MODAL_WINDOW_MANAGE_FLAGS);
+	PtSetArg(&args[n++],Pt_ARG_WIDTH,0,0);
+	PtSetArg(&args[n++],Pt_ARG_HEIGHT,0,0);
 	m_mainWindow = PtCreateWidget(PtWindow, NULL, n, args);
 	PtAddCallback(m_mainWindow, Pt_CB_WINDOW_CLOSING, s_deleteClicked, this);
 
