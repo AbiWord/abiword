@@ -58,7 +58,7 @@ AP_Win32Dialog_Break::~AP_Win32Dialog_Break(void)
 void AP_Win32Dialog_Break::runModal(XAP_Frame * pFrame)
 {
 	// raise the dialog
-	UT_return_if_fail (pFrame, m_id == AP_DIALOG_ID_BREAK);
+	UT_return_if_fail (m_id == AP_DIALOG_ID_BREAK);
 	XAP_Win32App * pWin32App = static_cast<XAP_Win32App *>(m_pApp);
 	XAP_Win32LabelledSeparator_RegisterClass(pWin32App);
 	setDialog(this);

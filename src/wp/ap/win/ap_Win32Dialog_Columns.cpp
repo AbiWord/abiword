@@ -64,7 +64,7 @@ AP_Win32Dialog_Columns::~AP_Win32Dialog_Columns(void)
 
 void AP_Win32Dialog_Columns::runModal(XAP_Frame * pFrame)
 {
-	UT_return_if_fail (pFrame, m_id == AP_DIALOG_ID_COLUMNS);
+	UT_return_if_fail (m_id == AP_DIALOG_ID_COLUMNS);
 	
 	// raise the dialog
 	setViewAndDoc(pFrame);
