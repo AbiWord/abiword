@@ -32,7 +32,7 @@ CPPSRCS=		ut_debugmsg.cpp		\
 			ut_sleep.cpp		\
 			ut_path.cpp
 
-ifneq($(ABI_OPT_PEER_EXPAT),1)
+ifneq ($(ABI_OPT_PEER_EXPAT),1)
 	CPPSRCS += ut_xml_msxml.cpp
 endif
 
