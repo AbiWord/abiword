@@ -33,7 +33,7 @@
 
 
 XAP_Dialog_WindowMore::XAP_Dialog_WindowMore(XAP_DialogFactory * pDlgFactory, XAP_Dialog_Id id)
-	: XAP_Dialog_NonPersistent(pDlgFactory,id)
+	: XAP_Dialog_NonPersistent(pDlgFactory,id, "interface/dialogviewdocument")
 {
 	m_answer = a_OK;
 	m_ndxSelFrame = -1;		// nothing selected
