@@ -666,8 +666,12 @@ bool PS_Graphics::_startDocument(void)
 	
 	if (m_szSoftwareNameAndVersion && *m_szSoftwareNameAndVersion)
 		m_ps->formatComment("Creator",&m_szSoftwareNameAndVersion,1);
+
+#if 0
 	if (m_szTitle && *m_szTitle)
-		m_ps->formatComment("Title",&m_szTitle,1);
+		m_ps->formatComment("Title",m_szTitle);
+#endif
+
 	m_ps->formatComment("Orientation", isPortrait() ? "Portrait" : "Landscape");
 
 	m_ps->formatComment("Pages",m_iPageCount);
