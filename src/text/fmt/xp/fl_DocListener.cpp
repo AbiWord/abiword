@@ -559,7 +559,8 @@ UT_Bool fl_DocListener::change(PL_StruxFmtHandle sfh,
 				/*
 				  This is just a temporary change at the insertion 
 				  point.  It won't take effect unless something's 
-				  typed. 
+				  typed -- but it will cause the toolbars and etc.
+				  to be updated.
 				*/
 
 				FV_View* pView = m_pLayout->m_pView;
@@ -573,7 +574,18 @@ UT_Bool fl_DocListener::change(PL_StruxFmtHandle sfh,
 			}
 			else
 			{
-				// TODO decide if we care....
+				// we have been asked to turn off the temporary change at the
+				// insertion point.  we need to update any toolbars.
+
+				FV_View* pView = m_pLayout->m_pView;
+				if (pView)
+				{
+					UT_ASSERT(pView->isSelectionEmpty());
+					// TODO decide if we need to call "pView->_setPoint(pcrTSF->getPosition());"
+					// TODO and if so, add AV_CHG_TYPING to the following notifyListeners().
+					pView->_clearPointAP(UT_FALSE);
+					pView->notifyListeners(AV_CHG_FMTCHAR);
+				}
 			}
 		}
 		break;

@@ -307,6 +307,21 @@ UT_Bool pt_PieceTable::undoCmd(void)
 
 	} while (m_history.getUndo(&pcr));
 
+	// if we undid a bunch of stuff and the next thing on the undo
+	// is a TempSpanFmt, we should tickle the view and renotify them
+	// of it -- even though we are not undoing it.  the view has logic
+	// (under the name {_is,_get,_set,_clear}PointAP()) which tries to
+	// track this value, but it may get confused or lost....
+
+	if (m_history.getUndo(&pcr) && pcr->getType()==PX_ChangeRecord::PXT_TempSpanFmt)
+	{
+		const PX_ChangeRecord_TempSpanFmt * pcrTSF = static_cast<const PX_ChangeRecord_TempSpanFmt *>(pcr);
+		pf_Frag_Strux * pfs;
+		UT_Bool bFound = _getStruxFromPosition(pcrTSF->getPosition(),&pfs);
+		UT_ASSERT(bFound);
+		m_pDocument->notifyListeners(pfs,pcr);
+	}
+	
 	return UT_TRUE;
 }
 

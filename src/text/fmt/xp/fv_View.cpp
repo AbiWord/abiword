@@ -957,6 +957,7 @@ UT_Bool FV_View::setBlockFormat(const XML_Char * properties[])
 {
 	UT_Bool bRet;
 
+	_clearPointAP(UT_TRUE);
 	_eraseInsertionPoint();
 
 	PT_DocPosition posStart = _getPoint();
@@ -2266,7 +2267,10 @@ UT_Bool FV_View::_clearPointAP(UT_Bool bNotify)
 
 		// notify document that insertion point format is obsolete
 		if (bNotify)
+		{
 			m_pDoc->clearTemporarySpanFmt();
+			notifyListeners(AV_CHG_FMTCHAR); // ensure that toolbar doesn't get stale...
+		}
 	}
 
 	return UT_TRUE;

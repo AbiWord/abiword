@@ -73,7 +73,6 @@ UT_Bool pt_PieceTable::_unlinkStrux_Block(pf_Frag_Strux * pfs,
 		// in to the previous one.
 
 		_unlinkFrag(pfs,ppfEnd,pfragOffsetEnd);
-		delete pfs;
 		return UT_TRUE;
 
 	case PTX_Section:
@@ -94,7 +93,6 @@ UT_Bool pt_PieceTable::_unlinkStrux_Block(pf_Frag_Strux * pfs,
 		// no content in this paragraph.
 		
 		_unlinkFrag(pfs,ppfEnd,pfragOffsetEnd);
-		delete pfs;
 		return UT_TRUE;
 
 	default:
