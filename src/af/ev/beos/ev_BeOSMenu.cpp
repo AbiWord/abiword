@@ -33,6 +33,9 @@
 #include "ev_Menu_Labels.h"
 #include "ev_EditEventMapper.h"
 
+#include "ut_string.h"
+
+#include <UTF8.h>
 #include <Menu.h>
 #include <MessageFilter.h>
 #include <String.h>
@@ -244,7 +247,8 @@ const char ** _ev_GetLabelName(XAP_BeOSApp * pBeOSApp,
 	return data;
 }
 
-UT_Bool EV_BeOSMenu::synthesize(void) {
+UT_Bool EV_BeOSMenu::synthesize(void)
+ {
 	BMenu 		*pMenu = NULL;
 	BMenuBar 	*pMenuBar = NULL;
 	be_Window 	*pBWin = NULL;
@@ -379,18 +383,41 @@ UT_Bool EV_BeOSMenu::synthesize(void) {
 				(szLabelName) ? szLabelName : "NULL", 
 				(szMnemonicName) ? szMnemonicName : "NULL")); 
 			if (szLabelName && *szLabelName) {
+			
+
+        
 				char buf[1024];
 				// convert label into proper version and get accelerators
-				accel = _ev_convert(buf, szLabelName);
+				
+				int32 iLength = strlen(szLabelName);
+				char* buffer = new char[2*(iLength+1)];
+			        
+        		memset(buffer, 0, 2*(iLength+1));
+
+				int32 destLength = 2*(iLength + 1);
+				int32 state =0;
+			
+				convert_to_utf8(B_ISO1_CONVERSION , szLabelName , &iLength ,  buffer , &destLength , &state);
+				
+				accel = _ev_convert(buf, buffer);
+				
+				
 				
 				pMenu = top(stack);
 				if (!pMenu)			//Skip bogus first item
+				{
+					delete [] buffer;
 					break;
+				}
+				
 				//UT_ASSERT(pMenu);
 				BMessage *newmesg = new BMessage(ABI_BEOS_MENU_EV);
 				newmesg->AddInt32(ABI_BEOS_MENU_EV_NAME, id);
+                
 				BMenuItem *pMenuItem = new BMenuItem(buf, newmesg, key,modifiers);
-				pMenu->AddItem(pMenuItem);	
+				pMenu->AddItem(pMenuItem);
+				
+				delete [] buffer;
 			}
 			else {
 				//We are reserving a spot in the menu for something
@@ -409,18 +436,31 @@ UT_Bool EV_BeOSMenu::synthesize(void) {
 				(szMnemonicName) ? szMnemonicName : "NULL")); 
 
 			if (szLabelName && *szLabelName) {
-				char buf[1024];
 				// convert label into underscored version
-				accel = _ev_convert(buf, szLabelName);
+				char buf[1024];
+				
+				int32 iLength = strlen(szLabelName);
+				char* buffer = new char[2*(iLength+1)];
+
+				int32 destLength = 2*(iLength + 1);
+				int32 state =0;
+			
+				convert_to_utf8(B_ISO1_CONVERSION , szLabelName , &iLength ,  buffer , &destLength , &state);
+
+				accel = _ev_convert(buf, buffer);
 
 				pMenu = new BMenu(buf);		//Accellerator ignored
 				if (!pMenu) 
+				{
+					delete [] buffer;
 					break;
+				}
 				//printf("----- Before push ---\n");
 				//print_stack(stack);
 				stack = push(stack, pMenu);
 				//printf("----- After push ---\n");
 				//print_stack(stack);
+				delete [] buffer;
 			}
 			break;
 		}
