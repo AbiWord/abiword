@@ -36,6 +36,15 @@ class ABI_EXPORT UT_RGBColor
 public:
 	UT_RGBColor();
 	UT_RGBColor(unsigned char, unsigned char, unsigned char);
+	bool operator != (const UT_RGBColor &op1)
+	{
+		return (op1.m_red != m_red || op1.m_grn != m_grn || op1.m_blu != m_blu);
+	}
+
+	bool operator == (const UT_RGBColor &op1)
+	{
+		return (op1.m_red == m_red && op1.m_grn == m_grn && op1.m_blu == m_blu);
+	}
 	
 	unsigned char m_red;
 	unsigned char m_grn;
