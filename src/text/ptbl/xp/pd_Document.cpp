@@ -1454,6 +1454,39 @@ bool PD_Document::isFootnoteAtPos(PT_DocPosition pos)
 
 
 /*!
+ * This method returns true if there is a TOC or endTOC strux at exactly this 
+ * position.
+ */
+bool PD_Document::isTOCAtPos(PT_DocPosition pos)
+{
+	PT_BlockOffset pOffset;
+	pf_Frag * pf = NULL;
+	m_pPieceTable->getFragFromPosition(pos,&pf,&pOffset);
+	while(pf->getLength() == 0)
+		pf = pf->getPrev();
+	bool b = m_pPieceTable->isFootnote(pf);
+	if(b)
+	{
+		pf_Frag_Strux * pfs = static_cast<pf_Frag_Strux *>(pf);
+		if(pfs->getStruxType() == PTX_SectionTOC)
+		{
+			return true;
+		}
+	}
+	b = m_pPieceTable->isEndFootnote(pf);
+	if(b)
+	{
+		pf_Frag_Strux * pfs = static_cast<pf_Frag_Strux *>(pf);
+		if(pfs->getStruxType() == PTX_EndTOC)
+		{
+			return true;
+		}
+	}
+	return false;
+}
+
+
+/*!
  * This method returns true if there is an EndFootnote strux at exactly this 
  * position.
  */

@@ -3015,6 +3015,15 @@ void FV_View::cmdCharDelete(bool bForward, UT_uint32 count)
 				fl_EndnoteLayout * pEL = getClosestEndnote(getPoint() + count +1);
 				count += pEL->getLength();
 			}
+			if(m_pDoc->isTOCAtPos(getPoint()))
+			{
+				if(m_pDoc->isTOCAtPos(getPoint()-1))
+				{
+					m_iInsPoint--;
+				}
+				count++;
+
+			}
 		}
 		else
 		{
@@ -3027,6 +3036,10 @@ void FV_View::cmdCharDelete(bool bForward, UT_uint32 count)
 			{
 				fl_EndnoteLayout * pEL = getClosestEndnote(getPoint());
 				count += pEL->getLength();
+			}
+			if(m_pDoc->isTOCAtPos(getPoint()-2))
+			{
+				count +=2;
 			}
 			if(isInFootnote() && !isInFootnote(getPoint() - count))
 			{

@@ -393,6 +393,9 @@ public:
 	bool                    isEndFootnoteAtPos(PT_DocPosition pos);
 	UT_sint32               getEmbeddedOffset(PL_StruxDocHandle sdh,PT_DocPosition posOff, PL_StruxDocHandle & sdhEmbedded);
 
+	// TOC functions
+	bool                    isTOCAtPos(PT_DocPosition pos);
+
 // Table functions
 
 	PL_StruxDocHandle       getEndTableStruxFromTableSDH(PL_StruxDocHandle tableSDH);
