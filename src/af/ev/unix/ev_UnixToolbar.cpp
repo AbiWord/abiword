@@ -1,5 +1,5 @@
 /* AbiSource Program Utilities
- * Copyright (C) 1998 AbiSource, Inc.
+ * Copyright (C) 1998-2002 AbiSource, Inc.
  * 
  * This program is free software; you can redistribute it and/or
  * modify it under the terms of the GNU General Public License
@@ -46,7 +46,7 @@
 /*****************************************************************/
 #define COMBO_BUF_LEN 256
 
-static GtkTargetEntry      s_AbiTBTargets[] = {{"abi-toolbars",0,0}};
+static const GtkTargetEntry      s_AbiTBTargets[] = {{"abi-toolbars",0,0}};
 
 
 /**
@@ -108,7 +108,6 @@ public:									// we create...
 		UT_ASSERT(wd);
 		GdkEvent * event = gtk_get_current_event();
 		wd->m_pUnixToolbar->setCurrentEvent(event);
-		UT_DEBUGMSG(("SEVIOR: in s_callback \n"));
 		if (!wd->m_blockSignal)
 			wd->m_pUnixToolbar->toolbarEvent(wd, 0, 0);
 	};
@@ -118,9 +117,8 @@ public:									// we create...
 							GdkDragContext     *context)
 	{
 		_wd * wd = (_wd *) g_object_get_data(G_OBJECT(widget),"wd_pointer");
-		UT_DEBUGMSG(("SEVIOR: Begin drag at icon id %d \n",wd->m_id));
 		XAP_Frame * pFrame = static_cast<XAP_Frame *>(wd->m_pUnixToolbar->getFrame());
-	    EV_Toolbar * pTBsrc = (EV_Toolbar *) wd->m_pUnixToolbar;
+		EV_Toolbar * pTBsrc = (EV_Toolbar *) wd->m_pUnixToolbar;
 		pFrame->dragBegin(wd->m_id,pTBsrc);
 	};
 
@@ -132,11 +130,10 @@ public:									// we create...
 		_wd * wd = (_wd *) g_object_get_data(G_OBJECT(widget),"wd_pointer");
 		GtkWidget * src = gtk_drag_get_source_widget(context);
 		_wd * wdSrc = (_wd *)  g_object_get_data(G_OBJECT(src),"wd_pointer");
-		UT_DEBUGMSG(("SEVIOR: Drop at icon id %d source icon %d \n",wd->m_id,wdSrc->m_id));
 		
 		XAP_Frame * pFrame = static_cast<XAP_Frame *>(wd->m_pUnixToolbar->getFrame());
-	    EV_Toolbar * pTBdest = (EV_Toolbar *) wd->m_pUnixToolbar;
-	    EV_Toolbar * pTBsrc = (EV_Toolbar *) wdSrc->m_pUnixToolbar;
+		EV_Toolbar * pTBdest = (EV_Toolbar *) wd->m_pUnixToolbar;
+		EV_Toolbar * pTBsrc = (EV_Toolbar *) wdSrc->m_pUnixToolbar;
 		pFrame->dragDropToIcon(wdSrc->m_id,wd->m_id,pTBsrc,pTBdest);
 	};
 
@@ -146,10 +143,10 @@ public:									// we create...
 	{
 		GtkWidget * src = gtk_drag_get_source_widget(context);
 		_wd * wdSrc = (_wd *)  g_object_get_data(G_OBJECT(src),"wd_pointer");
-		UT_DEBUGMSG(("SEVIOR: Drop  icon on toolbar source icon %d \n",wdSrc->m_id));
+
 		XAP_Frame * pFrame = static_cast<XAP_Frame *>(wdSrc->m_pUnixToolbar->getFrame());
-	    EV_Toolbar * pTBsrc = (EV_Toolbar *) wdSrc->m_pUnixToolbar;
-	    EV_Toolbar * pTBdest = (EV_Toolbar *) pTB;
+		EV_Toolbar * pTBsrc = (EV_Toolbar *) wdSrc->m_pUnixToolbar;
+		EV_Toolbar * pTBdest = (EV_Toolbar *) pTB;
 		pFrame->dragDropToTB(wdSrc->m_id,pTBsrc,pTBdest);
 	};
 
@@ -157,7 +154,7 @@ public:									// we create...
 							GdkDragContext     *context)
 	{
 		_wd * wd = (_wd *) g_object_get_data(G_OBJECT(widget),"wd_pointer");
-		UT_DEBUGMSG(("SEVIOR: End drag of icon id %d \n",wd->m_id));
+
 		XAP_Frame * pFrame = static_cast<XAP_Frame *>(wd->m_pUnixToolbar->getFrame());
 		pFrame->dragEnd(wd->m_id);
 	};
@@ -180,7 +177,7 @@ public:									// we create...
 			const EV_EditMethodContainer * pEMC = pUnixApp->getEditMethodContainer();
 			UT_ASSERT(pEMC);
 			EV_EditMethod * pEM = NULL;
-			UT_DEBUGMSG(("SEVIOR: toolbar ID %d forground ID number %d \n",id,EV_TBIT_ColorFore));
+
 			AV_View * pView = wd->m_pUnixToolbar->getFrame()->getCurrentView();
 
 			if(id ==  AP_TOOLBAR_ID_COLOR_FORE)
@@ -355,8 +352,7 @@ bool EV_UnixToolbar::toolbarEvent(_wd * wd,
 			bool wasBlocked = wd->m_blockSignal;
 			wd->m_blockSignal = true;
 			gtk_toggle_button_set_active(GTK_TOGGLE_BUTTON(wd->m_widget),
-										 !GTK_TOGGLE_BUTTON(wd->m_widget)->active);
-			//gtk_toggle_button_toggled(item);
+						     !GTK_TOGGLE_BUTTON(wd->m_widget)->active);
 			wd->m_blockSignal = wasBlocked;
 
 			// can safely ignore this event
@@ -441,7 +437,7 @@ void EV_UnixToolbar::rebuildToolbar(UT_sint32 oldpos)
 }
 
 bool EV_UnixToolbar::getPixmapForIcon(XAP_Toolbar_Id id, GdkWindow * window, GdkColor * background,
-									  const char * szIconName, GtkWidget ** pwPixmap)
+				      const char * szIconName, GtkWidget ** pwPixmap)
 {
 	const char * stock_id = NULL ;
 
@@ -492,26 +488,28 @@ bool EV_UnixToolbar::getPixmapForIcon(XAP_Toolbar_Id id, GdkWindow * window, Gdk
 
 static void setDragIcon(GtkWidget * wwd, GtkImage * img)
 {
-	if (GTK_IMAGE_PIXMAP == gtk_image_get_storage_type(img))
-	{
-		GdkColormap * ClrMap = gtk_widget_get_colormap (wwd);
-		GdkPixmap * pixmap = NULL ;
-		GdkBitmap * bitmap = NULL ;
-		gtk_image_get_pixmap ( img, &pixmap, &bitmap ) ;
-		gtk_drag_source_set_icon(wwd,ClrMap,pixmap,NULL);
-	}
-	else if (GTK_IMAGE_STOCK == gtk_image_get_storage_type(img))
-	{
-		gchar * stk = NULL ;
-		GtkIconSize icn_sz ;
-
-		// TODO: this doesn't quite work
-		
-		gtk_image_get_stock( img, &stk, &icn_sz ) ;
-		gtk_drag_source_set_icon_stock ( wwd, stk ) ;
-		xxx_UT_DEBUGMSG(("DOM: stock icon drag: %s\n", stk ));
-	}
-	// TODO: the rest, if/when applicable
+  if (GTK_IMAGE_PIXMAP == gtk_image_get_storage_type(img))
+    {
+      GdkPixmap * pixmap = NULL ;
+      GdkBitmap * bitmap = NULL ;
+      GdkColormap * clrmap = gtk_widget_get_colormap (wwd);
+      gtk_image_get_pixmap ( img, &pixmap, &bitmap ) ;
+      gtk_drag_source_set_icon(wwd,clrmap,pixmap,NULL);
+    }
+  else if (GTK_IMAGE_PIXBUF == gtk_image_get_storage_type(img))
+    {
+      GdkPixbuf * pixbuf = gtk_image_get_pixbuf ( img ) ;
+      gtk_drag_source_set_icon_pixbuf ( wwd, pixbuf ) ;
+    }
+  else if (GTK_IMAGE_STOCK == gtk_image_get_storage_type(img))
+    {
+      gchar * stk = NULL ;
+      GtkIconSize icn_sz ;
+      
+      // TODO: this doesn't work, possibly a GTK2 bug...
+      gtk_image_get_stock( img, &stk, &icn_sz ) ;
+      gtk_drag_source_set_icon_stock ( wwd, stk ) ;
+    }
 }
 
 bool EV_UnixToolbar::synthesize(void)
@@ -694,39 +692,12 @@ bool EV_UnixToolbar::synthesize(void)
 				// handle popup events, so we can block our signals until the popdown
 				GtkWidget * popwin = GTK_WIDGET(GTK_COMBO(comboBox)->popwin);
 				UT_ASSERT(popwin);
-// we don't use this
-#if 0
-				g_signal_connect(G_OBJECT(popwin),
-								   "show",
-								   G_CALLBACK(_wd::s_combo_show),
-								   wd);
-#endif
+
 				g_signal_connect(G_OBJECT(popwin),
 								   "hide",
 								   G_CALLBACK(_wd::s_combo_hide),
 								   wd);
 
-				// take away the ability to gain focus
-//				g_signal_connect(G_OBJECT(GTK_COMBO(comboBox)->entry),
-//								   "focus_in_event",
-//								   G_CALLBACK(_wd::s_combo_focus_in),
-//								   wd);
-//				g_signal_connect(G_OBJECT(comboBox),
-//								   "key_press_event",
-//								   G_CALLBACK(_wd::s_combo_key_press),
-//								   wd);
-//				g_signal_connect(G_OBJECT(GTK_COMBO(comboBox)->entry),
-//								   "key_press_event",
-//								   G_CALLBACK(_wd::s_combo_key_press),
-//								   wd);
-				
-				// handle changes in content
-			        //GtkEntry * blah = GTK_ENTRY(GTK_COMBO(comboBox)->entry);
-				//g_signal_connect(G_OBJECT(&blah->widget),
-				//		 "changed",
-				//		 G_CALLBACK(_wd::s_combo_changed),
-				//		 wd);
-			        // LACHANCE: I don't know what's going on with the above. Why not just
 				// connect to the ->entry directly? Cleaned up version below.
 			        g_signal_connect(G_OBJECT(GTK_COMBO(comboBox)->entry),
 						 "changed",
@@ -757,34 +728,12 @@ bool EV_UnixToolbar::synthesize(void)
 				gtk_widget_show(comboBox);
 
 				// stick it in the toolbar
-				//	gtk_toolbar_append_widget(GTK_TOOLBAR(m_wToolbar),
-				//						  comboBox,
-				//						  szToolTip,
-				//						  (const char *) NULL);
 				GtkWidget * evBox = toolbar_append_with_eventbox(GTK_TOOLBAR(m_wToolbar),
 									     comboBox,
 									     szToolTip,
 									     (const char *)NULL);
 				wd->m_widget = comboBox;
 
-#if 0
-				//
-				// Add in a right drag method
-				//
-				GtkWidget * wwd = wd->m_widget;
-				g_object_set_data(G_OBJECT(wwd),
-									"wd_pointer",
-									wd);
-				gtk_drag_source_set(evBox,GDK_BUTTON3_MASK,
-									s_AbiTBTargets,1,
-									GDK_ACTION_COPY);
-				gtk_drag_dest_set(evBox,(GtkDestDefaults) GTK_DEST_DEFAULT_ALL,
-									s_AbiTBTargets,1,
-									GDK_ACTION_COPY);
-				g_signal_connect(G_OBJECT(evBox),"drag_begin",G_CALLBACK(_wd::s_drag_begin), wd);
-				g_signal_connect(G_OBJECT(evBox),"drag_drop",G_CALLBACK(_wd::s_drag_drop), wd);
-				g_signal_connect(G_OBJECT(evBox),"drag_end",G_CALLBACK(_wd::s_drag_end), wd);
-#endif
 				// for now, we never repopulate, so can just toss it
 				DELETEP(pControl);
 			}
@@ -836,7 +785,6 @@ bool EV_UnixToolbar::synthesize(void)
 					
 			case EV_TBIT_BOGUS:
 			default:
-//				UT_ASSERT(0);
 				break;
 			}
 		// add item after bindings to catch widget returned to us
@@ -864,10 +812,6 @@ bool EV_UnixToolbar::synthesize(void)
 
 	// show the complete thing
 	gtk_widget_show(m_wToolbar);
-//	gtk_widget_add_events(m_wToolbar,GDK_ALL_EVENTS_MASK);
-
-	// an arbitrary padding to make our document not run into our buttons
-//	gtk_container_set_border_width(GTK_CONTAINER(m_wToolbar), 2);
 
 	// pack it in a handle box
 	gtk_container_add(GTK_CONTAINER(m_wHandleBox), m_wToolbar);
@@ -946,11 +890,7 @@ bool EV_UnixToolbar::refreshToolbar(AV_View * pView, AV_ChangeMask mask)
 					UT_ASSERT(item);
 						
 					// Disable/enable toolbar item
-					gtk_widget_set_sensitive(GTK_WIDGET(item), !bGrayed);
-     					
-					//UT_DEBUGMSG(("refreshToolbar: PushButton [%s] is %s\n",
-					//			 m_pToolbarLabelSet->getLabel(id)->getToolbarLabel(),
-					//			 ((bGrayed) ? "disabled" : "enabled")));
+					gtk_widget_set_sensitive(GTK_WIDGET(item), !bGrayed);     					
 				}
 				break;
 			
@@ -969,16 +909,10 @@ bool EV_UnixToolbar::refreshToolbar(AV_View * pView, AV_ChangeMask mask)
 					bool wasBlocked = wd->m_blockSignal;
 					wd->m_blockSignal = true;
 					gtk_toggle_button_set_active(item, bToggled);
-					//gtk_toggle_button_toggled(item);
 					wd->m_blockSignal = wasBlocked;
 						
 					// Disable/enable toolbar item
-					gtk_widget_set_sensitive(GTK_WIDGET(item), !bGrayed);
-						
-					//UT_DEBUGMSG(("refreshToolbar: ToggleButton [%s] is %s and %s\n",
-					//			 m_pToolbarLabelSet->getLabel(id)->getToolbarLabel(),
-					//			 ((bGrayed) ? "disabled" : "enabled"),
-					//			 ((bToggled) ? "pressed" : "not pressed")));
+					gtk_widget_set_sensitive(GTK_WIDGET(item), !bGrayed);						
 				}
 				break;
 
@@ -989,7 +923,6 @@ bool EV_UnixToolbar::refreshToolbar(AV_View * pView, AV_ChangeMask mask)
 				case EV_TBIT_ComboBox:
 				{
 					bool bGrayed = EV_TIS_ShouldBeGray(tis);
-					//bool bString = EV_TIS_ShouldUseString(tis);
 					
 					_wd * wd = (_wd *) m_vecToolbarWidgets.getNthItem(k);
 					UT_ASSERT(wd);
@@ -1017,12 +950,7 @@ bool EV_UnixToolbar::refreshToolbar(AV_View * pView, AV_ChangeMask mask)
 						gtk_entry_set_text(GTK_ENTRY(item->entry), "");
 					}					
 
-					wd->m_blockSignal = wasBlocked;
-					
-					//UT_DEBUGMSG(("refreshToolbar: ComboBox [%s] is %s and %s\n",
-					//			 m_pToolbarLabelSet->getLabel(id)->getToolbarLabel(),
-					//			 ((bGrayed) ? "disabled" : "enabled"),
-					//			 ((bString) ? szState : "no state")));
+					wd->m_blockSignal = wasBlocked;					
 				}
 				break;
 
