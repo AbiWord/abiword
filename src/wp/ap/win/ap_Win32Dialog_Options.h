@@ -80,6 +80,7 @@ public:
 	virtual void _setAutoSaveFilePeriod(const UT_String &stPeriod);
 	virtual void _gatherAutoSaveFileExt(UT_String &stRetVal);
 	virtual void _setAutoSaveFileExt(const UT_String &stExt);
+	void _initializeTransperentToggle(void);
 
  	SET_GATHER			(NotebookPageNum,	int );
 #undef SET_GATHER
@@ -100,7 +101,9 @@ public:
 	
 	// FIXME: replace this with *real* gui code */
 	fp_PageSize::Predefined		defaultPageSize;
-	
+
+private:
+	XAP_DialogFactory *			m_pDialogFactory;
 };
 
 #endif /* AP_WIN32DIALOG_OPTIONS_H */

@@ -75,6 +75,8 @@
 #define AP_RID_DIALOG_OPTIONS_LBL_DefaultPageSize		1310
 #define AP_RID_DIALOG_OPTIONS_COMBO_DefaultPageSize		1311
 #define AP_RID_DIALOG_OPTIONS_CHK_SmartQuotesEnable		1312
+#define AP_RID_DIALOG_OPTIONS_CHK_BGColorEnable			1313
+#define AP_RID_DIALOG_OPTIONS_BTN_BGColor				1314
 
 // sub-dialog for the "SCHEMES" tab
 #define AP_RID_DIALOG_OPTIONS_FRM_PreferenceScheme		1400
@@ -215,8 +217,10 @@ BEGIN
     COMBOBOX        AP_RID_DIALOG_OPTIONS_COMBO_DefaultPageSize,85,80,162,75,
                     CBS_DROPDOWNLIST | WS_VSCROLL | WS_TABSTOP
 	AUTOCHECKBOX    "Enable smart quotes",
-                    AP_RID_DIALOG_OPTIONS_CHK_SmartQuotesEnable, 15, 100, 75, 10
-
+                    AP_RID_DIALOG_OPTIONS_CHK_SmartQuotesEnable, 15, 95, 75, 10
+	AUTOCHECKBOX    "Allow screen colors other than white",
+                    AP_RID_DIALOG_OPTIONS_CHK_BGColorEnable, 15, 105, 135, 10
+    PUSHBUTTON      "Choose Screen Color",AP_RID_DIALOG_OPTIONS_BTN_BGColor,156,101,90,14
 END
 
 // The sub-dialog for the PREFERENCES tab of the Options dialog

@@ -21,6 +21,7 @@
 #include <commctrl.h>
 #include <stdio.h>
 
+#include "ut_misc.h"
 #include "ut_types.h"
 #include "ut_string.h"
 #include "ut_string_class.h"
@@ -42,6 +43,7 @@
 
 #include "ap_Win32Resources.rc2"
 #include "ap_Win32Dialog_Options.h"
+#include "ap_Win32Dialog_Background.h"
 
 /*****************************************************************/
 
@@ -59,7 +61,7 @@ XAP_Dialog * AP_Win32Dialog_Options::static_constructor(XAP_DialogFactory * pFac
 
 AP_Win32Dialog_Options::AP_Win32Dialog_Options(XAP_DialogFactory * pDlgFactory,
                                                XAP_Dialog_Id id)
-    : AP_Dialog_Options(pDlgFactory,id)
+    : AP_Dialog_Options(pDlgFactory,id),m_pDialogFactory(pDlgFactory)
 {
 }
 
@@ -309,7 +311,10 @@ BOOL AP_Win32Dialog_Options::_onInitDialog(HWND hWnd, WPARAM wParam, LPARAM lPar
 
 	// let XP code tell us what all of the values should be.
 	_populateWindowData();
-	
+
+	// This has to follow the call to _populateWindowData()
+	_initializeTransperentToggle();
+
 	// make sure first tab is selected.
 	ShowWindow((HWND)m_vecSubDlgHWnd.getNthItem(0), SW_SHOW);
 
@@ -410,6 +415,8 @@ BOOL AP_Win32Dialog_Options::_onInitTab(HWND hWnd, WPARAM wParam, LPARAM lParam)
 			_DS(OPTIONS_LBL_UNITS,					DLG_Options_Label_ViewUnits);
 			_DS(OPTIONS_LBL_DefaultPageSize,		DLG_Options_Label_DefaultPageSize);
 			_DS(OPTIONS_CHK_SmartQuotesEnable,		DLG_Options_Label_SmartQuotesEnable);
+			_DS(OPTIONS_CHK_BGColorEnable,			DLG_Options_Label_CheckWhiteForTransparent);
+			_DS(OPTIONS_BTN_BGColor,				DLG_Options_Label_ChooseForTransparent);
 /*			_CASX(hwndAlign, DLG_Unit_inch);
 			_CASX(hwndAlign, DLG_Unit_cm);
 			_CASX(hwndAlign, DLG_Unit_points);
@@ -488,6 +495,8 @@ BOOL AP_Win32Dialog_Options::_onCommandTab(HWND hWnd, WPARAM wParam, LPARAM lPar
 {
 	// This handles WM_COMMAND message for all of the sub-dialogs.
 	BOOL bChecked;
+	AP_Dialog_Background *pColorDialog;
+	UT_RGBColor rgbColor;
 	
 	WORD wNotifyCode = HIWORD(wParam);
 	WORD wId = LOWORD(wParam);
@@ -536,6 +545,28 @@ BOOL AP_Win32Dialog_Options::_onCommandTab(HWND hWnd, WPARAM wParam, LPARAM lPar
 	case AP_RID_DIALOG_OPTIONS_COMBO_UNITS:                                                                 return 0;
 	case AP_RID_DIALOG_OPTIONS_COMBO_DefaultPageSize:														return 0;																											
 	case AP_RID_DIALOG_OPTIONS_CHK_SmartQuotesEnable:	_enableDisableLogic(id_CHECK_SMART_QUOTES_ENABLE);	return 0;
+	case AP_RID_DIALOG_OPTIONS_CHK_BGColorEnable:
+		bChecked = (IsDlgButtonChecked( hWnd, AP_RID_DIALOG_OPTIONS_CHK_BGColorEnable ) == BST_CHECKED);
+		EnableWindow( GetDlgItem( hWnd, AP_RID_DIALOG_OPTIONS_BTN_BGColor), bChecked );
+		return 0;
+	case AP_RID_DIALOG_OPTIONS_BTN_BGColor:
+		pColorDialog = (AP_Dialog_Background *)(m_pDialogFactory->requestDialog(AP_DIALOG_ID_BACKGROUND));
+		UT_ASSERT(pColorDialog);
+
+		UT_parseColor( m_CurrentTransparentColor, rgbColor );
+
+		pColorDialog->setColor( rgbColor );
+
+		pColorDialog->runModal( m_pFrame );
+
+		if( pColorDialog->getAnswer() == AP_Dialog_Background::a_OK )
+		{
+		    rgbColor = pColorDialog->getColor();
+			sprintf( m_CurrentTransparentColor,"#%02x%02x%02x", rgbColor.m_red, rgbColor.m_grn, rgbColor.m_blu );
+		}
+		m_pDialogFactory->releaseDialog( pColorDialog );
+
+		return 0;
 														
 	// PREF TAB
 	case AP_RID_DIALOG_OPTIONS_CHK_PrefsAutoSave:		_enableDisableLogic(id_CHECK_PREFS_AUTO_SAVE);		return 0;
@@ -823,3 +854,19 @@ fp_PageSize::Predefined AP_Win32Dialog_Options::_gatherDefaultPageSize(void)
 	return defaultPageSize;
 }
 
+void AP_Win32Dialog_Options::_initializeTransperentToggle(void)
+{
+	HWND hWnd = (HWND)m_vecSubDlgHWnd.getNthItem(LAYOUT_INDEX);
+
+	// Initialize the "Allow screen colors" checkbox
+	if( UT_strcmp( m_CurrentTransparentColor, "ffffff" ) )
+	{
+		CheckDlgButton( hWnd, AP_RID_DIALOG_OPTIONS_CHK_BGColorEnable, true );
+		EnableWindow( GetDlgItem( hWnd, AP_RID_DIALOG_OPTIONS_BTN_BGColor), true );
+	}
+	else
+	{
+		CheckDlgButton( hWnd, AP_RID_DIALOG_OPTIONS_CHK_BGColorEnable, false );
+		EnableWindow( GetDlgItem( hWnd, AP_RID_DIALOG_OPTIONS_BTN_BGColor), false );
+	}
+}
