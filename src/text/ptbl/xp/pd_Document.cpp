@@ -480,7 +480,6 @@ bool PD_Document::appendFmt(const XML_Char ** attributes)
 	UT_ASSERT(m_pPieceTable);
 
 	// can only be used while loading the document
-
 	return m_pPieceTable->appendFmt(attributes);
 }
 
@@ -1335,6 +1334,17 @@ bool PD_Document::getSpanAttrProp(PL_StruxDocHandle sdh, UT_uint32 offset, bool 
 									 const PP_AttrProp ** ppAP) const
 {
 	return m_pPieceTable->getSpanAttrProp(sdh,offset,bLeftSide,ppAP);
+}
+
+/*!
+ * Return strux type of the StruxDocHandle
+ */
+PTStruxType PD_Document::getStruxType(PL_StruxDocHandle sdh) const
+{
+	pf_Frag * pf = (pf_Frag *)sdh;
+	UT_ASSERT(pf->getType() == pf_Frag::PFT_Strux);
+	pf_Frag_Strux * pfs = static_cast<pf_Frag_Strux *> (pf);
+	return pfs->getStruxType();
 }
 
 po_Bookmark * PD_Document::getBookmark(PL_StruxDocHandle sdh, UT_uint32 offset)

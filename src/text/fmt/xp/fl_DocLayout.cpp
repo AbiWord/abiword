@@ -328,6 +328,7 @@ GR_Font* FL_DocLayout::findFont(const PP_AttrProp * pSpanAP,
 	// TODO: speed things up with a smaller key (the three AP pointers?) 
 	UT_String key;
 	UT_String_sprintf(key,"%s;%s;%s;%s;%s;%s,%i",pszFamily, pszStyle, pszVariant, pszWeight, pszStretch, pszSize, iUseLayoutResolution);
+	xxx_UT_DEBUGMSG(("pszSize = %s \n",pszSize));
 	const void * pEntry = m_hashFontCache.pick(key.c_str());
 	if (!pEntry)
 	{

@@ -84,7 +84,7 @@ bool fl_DocListener::populate(PL_StruxFmtHandle sfh,
 							  const PX_ChangeRecord * pcr)
 {
 	UT_ASSERT(m_pLayout);
-	//UT_DEBUGMSG(("fl_DocListener::populate\n"));
+	xxx_UT_DEBUGMSG(("fl_DocListener::populate type %d \n",pcr->getType()));
 
 	bool bResult = false;
 
@@ -192,7 +192,7 @@ bool fl_DocListener::populateStrux(PL_StruxDocHandle sdh,
 	if(pFrame)
 	{
 		pFrame->nullUpdate();
-		UT_DEBUGMSG(("SEVIOR: Null Update in Populate Strux \n"));
+		xxx_UT_DEBUGMSG(("SEVIOR: Null Update in Populate Strux \n"));
 	}
 //
 // This piece of code detects if there is enough document to notify

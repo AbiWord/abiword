@@ -2538,7 +2538,6 @@ bool fl_BlockLayout::doclistener_populateSpan(const PX_ChangeRecord_Span * pcrs,
 		UT_DEBUGMSG(("getPrev = %d this = %d \n",getPrev(),this));
 		//			UT_ASSERT(UT_SHOULD_NOT_HAPPEN);
 	}
-
 	const UT_UCSChar* pChars = m_pDoc->getPointer(bi);
 
 	/*

@@ -151,6 +151,7 @@ public:
 	bool					getBlockBuf(PL_StruxDocHandle sdh, UT_GrowBuf * pgb) const;
 
 	bool					getBounds(bool bEnd, PT_DocPosition & docPos) const;
+	PTStruxType             getStruxType(PL_StruxDocHandle sdh) const;
 	PT_DocPosition			getStruxPosition(PL_StruxDocHandle sdh) const;
 	bool					getStruxFromPosition(PL_ListenerId listenerId,
 												 PT_DocPosition docPos,

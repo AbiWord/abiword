@@ -223,7 +223,6 @@ void IE_Imp_AbiWord_1::startElement(const XML_Char *name, const XML_Char **atts)
 	X_EatIfAlreadyError();	// xml parser keeps running until buffer consumed
 	
 	UT_uint32 tokenIndex = _mapNameToToken (name, s_Tokens, TokenTableSize);
-
 	switch (tokenIndex)
 	{
 	case TT_DOCUMENT:
@@ -283,6 +282,7 @@ void IE_Imp_AbiWord_1::startElement(const XML_Char *name, const XML_Char **atts)
 		m_parseState = _PS_Block;
 		m_bWroteParagraph = true;
 		X_CheckError(getDoc()->appendStrux(PTX_Block,atts));
+		m_iInlineStart = getOperationCount();
 		return;
 	}
 
@@ -292,7 +292,7 @@ void IE_Imp_AbiWord_1::startElement(const XML_Char *name, const XML_Char **atts)
 		X_VerifyParseState(_PS_Block);
 		X_CheckError(_pushInlineFmt(atts));
 		X_CheckError(getDoc()->appendFmt(&m_vecInlineFmt));
-		m_iInlineStart = getOperationCount();
+		m_iInlineStart++;
 		return;
 
 		// Images and Fields are not containers.  Therefore we don't
@@ -515,7 +515,7 @@ void IE_Imp_AbiWord_1::endElement(const XML_Char *name)
 		X_VerifyParseState(_PS_Block);
 		X_CheckDocument(_getInlineDepth()>0);
 		// Insert a FmtMark if nothing was inserted in the block.
-		if (m_iInlineStart+1 == getOperationCount())
+		if (m_iInlineStart == getOperationCount()+1)
 		{
 			X_CheckError(getDoc()->appendFmtMark());
 		}

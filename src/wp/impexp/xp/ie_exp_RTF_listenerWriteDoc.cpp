@@ -43,6 +43,7 @@
 #include "px_CR_Object.h"
 #include "px_CR_Span.h"
 #include "px_CR_Strux.h"
+#include "pt_Types.h"
 #include "fl_AutoNum.h"
 #include "fl_AutoLists.h"
 #include "fl_BlockLayout.h"
@@ -64,11 +65,13 @@ void s_RTF_ListenerWriteDoc::_closeBlock(void)
 //
 // Force the output of char properties for blank lines.
 //
-//  	if(!m_bInSpan)
-//  	{
-//  		_openSpan();
-//  		_closeSpan();
-//	}
+ 	if(!m_bInSpan && m_sdh && m_pDocument->getStruxType(m_sdh) == PTX_Block )
+  	{
+		const PP_AttrProp * pSpanAP = NULL;
+		m_pDocument->getSpanAttrProp(m_sdh,0,true,&pSpanAP);
+  		_openSpan(m_apiThisBlock,pSpanAP);
+  		_closeSpan();
+	}
 	m_apiThisBlock = 0;
 	m_sdh = NULL;
 	return;
@@ -84,7 +87,7 @@ void s_RTF_ListenerWriteDoc::_closeSpan(void)
 	return;
 }
 
-void s_RTF_ListenerWriteDoc::_openSpan(PT_AttrPropIndex apiSpan)
+void s_RTF_ListenerWriteDoc::_openSpan(PT_AttrPropIndex apiSpan,  const PP_AttrProp * pInSpanAP)
 {
 	if (m_bInSpan)
 	{
@@ -101,7 +104,14 @@ void s_RTF_ListenerWriteDoc::_openSpan(PT_AttrPropIndex apiSpan)
 
 	m_pDocument->getAttrProp(m_apiThisSection,&pSectionAP);
 	m_pDocument->getAttrProp(m_apiThisBlock,&pBlockAP);
-	m_pDocument->getAttrProp(apiSpan,&pSpanAP);
+	if(pInSpanAP == NULL)
+	{
+		m_pDocument->getAttrProp(apiSpan,&pSpanAP);
+	}
+	else
+	{
+		pSpanAP = pInSpanAP;
+	}
 
 	m_pie->_write_charfmt(s_RTF_AttrPropAdapter_AP(pSpanAP, pBlockAP, pSectionAP, m_pDocument));
 
@@ -389,6 +399,8 @@ bool s_RTF_ListenerWriteDoc::populate(PL_StruxFmtHandle /*sfh*/,
 				_writeBookmark(pcro);
 				return true;
 			case PTO_Hyperlink:
+				_closeSpan ();
+				_writeHyperlink(pcro);
 			    return true;
 
 			default:
@@ -1591,6 +1603,33 @@ void s_RTF_ListenerWriteDoc::_writeBookmark(const PX_ChangeRecord_Object * pcro)
 		m_pie->_rtf_chardata(szName, strlen(szName));
 		m_pie->_rtf_close_brace();
 	}
+}
+
+
+//////////////////////////////////////////////////////////////////
+//////////////////////////////////////////////////////////////////
+void s_RTF_ListenerWriteDoc::_writeHyperlink(const PX_ChangeRecord_Object * pcro)
+{
+	PT_AttrPropIndex api = pcro->getIndexAP();
+	const PP_AttrProp * pHyperlinkAP = NULL;
+	m_pDocument->getAttrProp(api,&pHyperlinkAP);
+	
+	const XML_Char * szHyper = NULL;
+	bool bFound = pHyperlinkAP->getAttribute("xlink:href", szHyper);
+	if (!bFound) 
+	{
+		UT_DEBUGMSG (("RTF_Export: cannot get address for hyperlink\n"));
+		return;
+	}
+	_writeFieldPreamble(pHyperlinkAP);
+	m_pie->write("HYPERLINK ");
+	m_pie->write("""");
+	m_pie->write(szHyper);
+	m_pie->write("""");
+	m_pie->_rtf_close_brace();
+	m_pie->_rtf_close_brace();
+	m_pie->_rtf_close_brace();
+	return;
 }
 
 

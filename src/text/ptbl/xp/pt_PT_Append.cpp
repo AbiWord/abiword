@@ -124,6 +124,7 @@ bool pt_PieceTable::appendFmt(const XML_Char ** attributes)
 	// create a Fragment or a ChangeRecord.  (Formatting changes
 	// are implicit at this point in time.)
 
+
 	if (!m_varset.storeAP(attributes,&loading.m_indexCurrentInlineAP))
 		return false;
 
@@ -140,6 +141,7 @@ bool pt_PieceTable::appendFmt(const UT_Vector * pVecAttributes)
 	if (!m_fragments.getFirst())
 		return false;
 
+	PT_AttrPropIndex indexAP;
 	if (!m_varset.storeAP(pVecAttributes,&loading.m_indexCurrentInlineAP))
 		return false;
 
@@ -233,7 +235,12 @@ bool pt_PieceTable::appendFmtMark(void)
 	pf_Frag_FmtMark * pff = new pf_Frag_FmtMark(this,loading.m_indexCurrentInlineAP);
 	if (!pff)
 		return false;
-
 	m_fragments.appendFrag(pff);
 	return true;
 }
+
+
+
+
+
+

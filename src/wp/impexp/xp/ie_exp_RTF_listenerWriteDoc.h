@@ -62,7 +62,7 @@ protected:
 	void				_closeSection(void);
 	void				_closeBlock(void);
 	void				_closeSpan(void);
-	void				_openSpan(PT_AttrPropIndex apiSpan);
+	void				_openSpan(PT_AttrPropIndex apiSpan,const PP_AttrProp * pSpanAP = NULL );
 	void				_openTag(const char * szPrefix, const char * szSuffix,
 								 bool bNewLineAfter, PT_AttrPropIndex api);
 	void				_outputData(const UT_UCSChar * p, UT_uint32 length);
@@ -77,6 +77,7 @@ protected:
 	void				_rtf_open_block(PT_AttrPropIndex api);
 	void				_writeImageInRTF(const PX_ChangeRecord_Object * pcro);
 	void                _writeBookmark(const PX_ChangeRecord_Object * pcro);
+	void                _writeHyperlink(const PX_ChangeRecord_Object * pcro);
     void                _writeFieldPreamble(const PP_AttrProp * pSpanAP);
 	const UT_UCSChar *  _getFieldValue(void);
 	void                _writeFieldTrailer(void);
