@@ -106,10 +106,10 @@ void IE_Exp::unregisterAllExporters ()
 /*****************************************************************/
 /*****************************************************************/
 
-IE_Exp::IE_Exp(PD_Document * pDocument)
+IE_Exp::IE_Exp(PD_Document * pDocument, UT_Confidence_t fidelity)
 	: m_error(false), m_pDocument(pDocument),
 	  m_pDocRange (0), m_pByteBuf(0),
-	  m_szFileName(0), m_fp(0)
+	  m_szFileName(0), m_fp(0), m_fidelity(fidelity)
 {
 	m_pDocument->invalidateCache();
 }

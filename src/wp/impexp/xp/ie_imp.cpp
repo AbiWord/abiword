@@ -46,12 +46,13 @@ IE_Imp_XML * abi_ie_imp_xml_instance = 0;
 /*****************************************************************/
 /*****************************************************************/
 
-IE_Imp::IE_Imp(PD_Document * pDocument)
+IE_Imp::IE_Imp(PD_Document * pDocument, UT_Confidence_t fidelity)
 	: m_pDocument(pDocument),
 	  m_isPaste (false),
 	  m_dpos(0),
 	  m_bStylesOnly(false),
-	  m_bDocProps(false)
+	  m_bDocProps(false), 
+	  m_fidelity(fidelity)
 {
   if (abi_ie_imp_xml_instance)
     {

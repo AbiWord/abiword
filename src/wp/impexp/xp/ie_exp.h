@@ -123,12 +123,17 @@ public:
 
 	virtual char *          getFileName(void) {return m_szFileName;}
 
+	UT_Confidence_t getFidelity () const {
+		return m_fidelity;
+	}
+
 	void setProps (const char * props) {
 		m_props = props;
 	}
 
 protected:
-	IE_Exp(PD_Document * pDocument);
+	// todo: remove the = 0 for 2.2
+	IE_Exp(PD_Document * pDocument, UT_Confidence_t fidelity = 0);
 	virtual UT_Error	_writeDocument(void) = 0;
 	
 	// derived classes should use these to open/close
@@ -161,6 +166,7 @@ protected:
 	bool				m_bCancelled;
 
 	UT_UTF8String m_props;
+	UT_Confidence_t m_fidelity;
 };
 
 
