@@ -54,12 +54,19 @@ BeginSet(sv,SE,true)
 	ToolbarLabel(AP_TOOLBAR_ID_FILE_SAVE,		"Spara", 		tb_save_xpm,				NULL, "Sparar dokumentet")
 	ToolbarLabel(AP_TOOLBAR_ID_FILE_SAVEAS,		"Spara...", 	tb_save_as_xpm, 				NULL, "Sparar dokumentet med ett nytt namn")
 	ToolbarLabel(AP_TOOLBAR_ID_FILE_PRINT,		"Skriv ut",		tb_print_xpm,				NULL, "Skriv ut dokumentet")
+        ToolbarLabel(AP_TOOLBAR_ID_FILE_PRINT_PREVIEW,  "Förhandsgranska", tb_print_preview_xpm, NULL, "Förhandsgranska dokumentet vid utskrift")
 
 	ToolbarLabel(AP_TOOLBAR_ID_EDIT_UNDO,		"Ångra",		tb_undo_xpm,				NULL, "Ångra inmatningen")
 	ToolbarLabel(AP_TOOLBAR_ID_EDIT_REDO,		"Upprepa",		tb_redo_xpm,				NULL, "Upprepa inmatningen")
 	ToolbarLabel(AP_TOOLBAR_ID_EDIT_CUT,		"Klipp ut",		tb_cut_xpm,					NULL, "Klipp ut")
 	ToolbarLabel(AP_TOOLBAR_ID_EDIT_COPY,		"Kopiera",		tb_copy_xpm,				NULL, "Kopiera")
 	ToolbarLabel(AP_TOOLBAR_ID_EDIT_PASTE,		"Klistra in", 	tb_paste_xpm,				NULL, "Klistra in")
+
+        ToolbarLabel(AP_TOOLBAR_ID_SPELLCHECK,          "Stavningskontroll", tb_spellcheck_xpm,              NULL, "Kontrollera stavningen i dokumentet")
+        ToolbarLabel(AP_TOOLBAR_ID_IMG,                         "Infoga bild",tb_insert_graphic_xpm,  NULL, "Infoga en bild till dokumentet")
+
+        ToolbarLabel(AP_TOOLBAR_ID_VIEW_SHOWPARA,       "Visa allt",        tb_view_showpara_xpm,           NULL, "Visa/dölj ¶")
+
 
 	ToolbarLabel(AP_TOOLBAR_ID_FMT_STYLE,		"Stil",		NoIcon,					NULL, "Stil")
 	ToolbarLabel(AP_TOOLBAR_ID_FMT_FONT,		"Teckensnitt",	NoIcon,					NULL, "Teckensnitt")
@@ -69,6 +76,7 @@ BeginSet(sv,SE,true)
 	ToolbarLabel(AP_TOOLBAR_ID_FMT_UNDERLINE,		"Under", 		tb_text_underline_xpm,			NULL, "Understruken")
 	ToolbarLabel(AP_TOOLBAR_ID_FMT_OVERLINE,		"Över",		tb_text_overline_xpm,			NULL, "Överstruken")
 	ToolbarLabel(AP_TOOLBAR_ID_FMT_STRIKE,		"Genom", 		tb_text_strikeout_G_xpm,		NULL, "Genomstruken")
+        ToolbarLabel(AP_TOOLBAR_ID_HELP,                        "Hjälp",         tb_help_xpm,                    NULL, "Hjälp")
 
 	ToolbarLabel(AP_TOOLBAR_ID_FMT_SUPERSCRIPT,	"Upphöjd",		tb_text_superscript_xpm,		NULL, "Upphöjd")
 	ToolbarLabel(AP_TOOLBAR_ID_FMT_SUBSCRIPT,		"Nedsänkt",		tb_text_subscript_xpm,			NULL, "Nedsänkt")
@@ -92,8 +100,17 @@ BeginSet(sv,SE,true)
 
 	ToolbarLabel(AP_TOOLBAR_ID_ZOOM,			"Zoom",		NoIcon,					NULL, "Zoom")
 	ToolbarLabel(AP_TOOLBAR_ID_LISTS_BULLETS,		"Punktlista",	tb_lists_bullets_xpm,			NULL,	"Start/Stopp punktlista")
-	ToolbarLabel(AP_TOOLBAR_ID_LISTS_NUMBERS,		"Numreradlista",	tb_lists_numbers_xpm,			NULL,	"Start/Stopp numreradlista")
+ 	ToolbarLabel(AP_TOOLBAR_ID_LISTS_NUMBERS,		"Numrerad lista",	tb_lists_numbers_xpm,			NULL,	"Start/Stopp numrerad lista")
+        ToolbarLabel(AP_TOOLBAR_ID_COLOR_FORE,          "Färg", tb_text_fgcolor_xpm,    NULL, "Ändra färg på text")
+        ToolbarLabel(AP_TOOLBAR_ID_COLOR_BACK,          "Textbakgrund", tb_text_bgcolor_xpm,    NULL, "Ändra bakgrundsfärg på text")
+        ToolbarLabel(AP_TOOLBAR_ID_INDENT,                      "Öka indrag",      tb_text_indent_xpm,     NULL, "Öka indrag")
+        ToolbarLabel(AP_TOOLBAR_ID_UNINDENT,            "Minska indrag", tb_text_unindent_xpm,   NULL, "Minska indrag")
 
+#ifdef BIDI_ENABLED
+        ToolbarLabel(AP_TOOLBAR_ID_FMT_DIR_OVERRIDE_LTR,        "Force text LTR",               tb_text_direction_ltr_xpm,      NULL, "Vänster till höger")
+        ToolbarLabel(AP_TOOLBAR_ID_FMT_DIR_OVERRIDE_RTL,        "Force text RTL",               tb_text_direction_rtl_xpm,      NULL, "Höger till vänster")
+        ToolbarLabel(AP_TOOLBAR_ID_FMT_DOM_DIRECTION, "Avsnittsriktning", tb_text_dom_direction_rtl_xpm,  NULL, "Ändra dominant riktning på avsnitt")
+#endif
 	// ... add others here ...
 
 	ToolbarLabel(AP_TOOLBAR_ID__BOGUS2__,		NULL,			NoIcon,						NULL, NULL)

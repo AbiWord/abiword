@@ -149,6 +149,7 @@ Michl Ladislav <xmichl03@stud.fee.vutbr.cz>     Czech
 Edouard Lafargue <Edouard.Lafargue@bigfoot.com> Norwegian (Bokmål)
 Birger Langkjer <birger.langkjer@image.dk>      Danish
 Linus G Larsson <linus@centrumntr.se>           Swedish
+Per Larsson <tucker@algonet.se>                 Swedish
 Kjartan Maraas <kmaraas@online.no>              Norwegian  (Bokmål)
 Jordi Mas <jmas@softcatala.org>                 Catalan
 Zbynek Miksa <xmiksa@informatics.muni.cz>       Czech
