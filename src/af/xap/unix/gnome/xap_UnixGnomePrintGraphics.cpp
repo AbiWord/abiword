@@ -138,10 +138,22 @@ GnomeFont * XAP_UnixGnomePrintGraphics::_allocGnomeFont(PSFont* pFont)
 	XAP_UnixFont::style style = uf->getStyle();
 	char *abi_name            = (char*)uf->getName();
 	
-	double size         = pFont->getSize() * _scale_factor_get ();
 	GnomeFontWeight gfw = getGnomeFontWeight(style);
 	UT_Bool italic      = isItalic(style);
 	
+	// ok, this is the ugliest hack of the year, so I'll take it one step
+	// at a time
+
+	// add 0.1 so 11.99 gets rounded up to 12
+	double size         = (double)pFont->getSize() * _scale_factor_get () + 0.1;
+	
+	// test for oddness, if odd, subtract 1
+	// why? abi allows odd point fonts for at least 
+	// 9 and 11 points. gnome print does not, so we
+	// scale it down. *ugly*
+	if((int)size % 2 != 0)
+			size -= 1.0;
+			
 	// first try to directly allocate abi's name
 	// this is good for fonts not in my table, and
 	// fonts installed by the user in both Abi and
@@ -191,7 +203,9 @@ GnomeFont * XAP_UnixGnomePrintGraphics::_allocGnomeFont(PSFont* pFont)
 
 XAP_UnixGnomePrintGraphics::~XAP_UnixGnomePrintGraphics()
 {
-        // nothing
+		// unref the resource
+		if(m_pCurrentFont != NULL && GNOME_IS_FONT(m_pCurrentFont))
+				gnome_font_unref(m_pCurrentFont);
 }
 
 XAP_UnixGnomePrintGraphics::XAP_UnixGnomePrintGraphics(GnomePrintMaster *gpm,
@@ -235,10 +249,13 @@ UT_uint32 XAP_UnixGnomePrintGraphics::measureUnRemappedChar(const UT_UCSChar c)
 	if (c >= 256)
 		return 0;
 
-	/* Use get glyph width intead ... Chema */
+#if 1
 	size = (int) ( _scale_factor_get_inverse () *
 		       gnome_font_get_width_string_n (m_pCurrentFont, (const char *)&c, 1) );
-		
+#else
+	size = (int) (_scale_factor_get_inverse () * gnome_font_get_glyph_width(m_pCurrentFont, (int)c));
+#endif
+	
 	return size;
 }
 
@@ -282,12 +299,12 @@ void XAP_UnixGnomePrintGraphics::drawLine(UT_sint32 x1, UT_sint32 y1,
 				  UT_sint32 x2, UT_sint32 y2)
 {
         gnome_print_setlinewidth(m_gpc, m_dLineWidth); 
-	gnome_print_moveto(m_gpc, _scale_x_dir(x1), _scale_y_dir(y1));
-	gnome_print_lineto(m_gpc, _scale_x_dir(x2), _scale_y_dir(y2));
-	gnome_print_stroke(m_gpc);
+		gnome_print_moveto(m_gpc, _scale_x_dir(x1), _scale_y_dir(y1));
+		gnome_print_lineto(m_gpc, _scale_x_dir(x2), _scale_y_dir(y2));
+		gnome_print_stroke(m_gpc);
 
-	/* Dom: you don't wanna close the path, you only need to
-	   stroke it [ hhhuu hhuiuuu hhuu. Hey beavis, yes said "stroke it" ]*/
+		/* Dom: you don't wanna close the path, you only need to
+		   stroke it [ hhhuu hhuiuuu hhuu. Hey beavis, yes said "stroke it" ]*/
 }
 
 void XAP_UnixGnomePrintGraphics::setFont(GR_Font* pFont)
@@ -295,13 +312,24 @@ void XAP_UnixGnomePrintGraphics::setFont(GR_Font* pFont)
 	UT_ASSERT(pFont);
 	PSFont * psFont = (static_cast<PSFont*> (pFont));
 
-	// don't eat up system resources
-	// TODO: be smarter about this, maybe a hash
+	// TODO: We *must* be smarter about this, maybe a hash
 	// TODO: of PSFonts -> GnomeFonts
+
 	if(m_pCurrentFont && GNOME_IS_FONT(m_pCurrentFont))
 			gnome_font_unref(m_pCurrentFont);
 
 	m_pCurrentFont = _allocGnomeFont(psFont);
+
+#if 0
+	XAP_UnixFont *uf          = static_cast<PSFont*>(pFont)->getUnixFont();
+	UT_DEBUGMSG(("Dom: setting font:\n"
+				 "\tsize returned: %f (requested %f)\n"
+				 "\tname returned: %s (requested %s)\n", 
+				 gnome_font_get_size(m_pCurrentFont),
+				 (double)static_cast<PSFont*>(pFont)->getSize() * _scale_factor_get(), 
+				 gnome_font_get_name(m_pCurrentFont), uf->getName()));
+#endif
+
 	gnome_print_setfont (m_gpc, m_pCurrentFont);
 }
 
@@ -397,20 +425,40 @@ void XAP_UnixGnomePrintGraphics::drawAnyImage (GR_Image* pImg,
 
 	PSFatmap * image = pPSImage->getData();
 
+#if 0
+	UT_DEBUGMSG(("DOM: image data:\n"
+				 "\tiDestWidth: %d\n"
+				 "\tiDestHeight: %d\n"
+				 "\twidth: %d\n"
+				 "\theight: %d\n"
+				 "\tRGB: %d\n"
+				 "\tTranslated: (%d, %d)\n"
+				 "\tScaled = (iDestWidth, iDestHeight)\n"
+				 "\tyDest: %d displayHeight: %d\n",
+				 (int)(iDestWidth*_scale_factor_get()), // iDestWidth
+				 (int)(iDestHeight*_scale_factor_get()), // iDestHeight
+				 image->width, // width
+				 image->height, // height
+				 rgb, // rgb
+				 (int)_scale_x_dir(xDest), // translated 1
+				 (int)_scale_y_dir(yDest + pImg->getDisplayHeight()), // translated 2
+				 yDest, pImg->getDisplayHeight()));
+#endif
+
 	UT_ASSERT(image && image->data);
 
 	gnome_print_gsave(m_gpc);
 	gnome_print_translate(m_gpc,
-			      _scale_x_dir(xDest),
-			      _scale_y_dir(yDest + pImg->getDisplayHeight()));
+						  _scale_x_dir(xDest),
+						  _scale_y_dir(yDest + pImg->getDisplayHeight()));
 	gnome_print_scale(m_gpc,
 			  ((double) iDestWidth)  * _scale_factor_get (),
 			  ((double) iDestHeight) * _scale_factor_get ());
-
-	/* TODO: we horribly crash (including the PS version) 
-	   TODO: if the image we try to print has alpha
-	   TODO: channels in it, like lots of pngs do. Detect 
-	   TODO: this and call gnome_print_rgbaimage instead */
+				 
+	/* 
+	 * TODO: one day support the alpha channel internally and then call
+	 * gnome_print_rgbaimage()
+	 */
 	if (rgb)
 		gnome_print_rgbimage(m_gpc, (const gchar*)image->data, image->width, 
 				     image->height, (UT_sint32) (image->width) * 3);
@@ -472,12 +520,15 @@ UT_Bool	XAP_UnixGnomePrintGraphics::_startDocument(void)
 
 UT_Bool XAP_UnixGnomePrintGraphics::_startPage(const char * szPageLabel)
 {
+		UT_DEBUGMSG(("DOM: startPage\n"));
         gnome_print_beginpage(m_gpc, szPageLabel);
 	return UT_TRUE;
 }
 
 UT_Bool XAP_UnixGnomePrintGraphics::_endPage(void)
 {
+		UT_DEBUGMSG(("DOM: endPage\n"));
+
 	if(m_bNeedStroked)
 	  gnome_print_stroke(m_gpc);
 
@@ -487,6 +538,8 @@ UT_Bool XAP_UnixGnomePrintGraphics::_endPage(void)
 
 UT_Bool XAP_UnixGnomePrintGraphics::_endDocument(void)
 {
+
+		UT_DEBUGMSG(("DOM: endDocument\n"));
 		// bonobo version, we'd don't own the context
 		// or the master, just return
 	if(!m_gpm)
@@ -702,13 +755,12 @@ UT_uint32 XAP_UnixGnomePrintGraphics::getFontHeight()
 }
 
 GR_Font* XAP_UnixGnomePrintGraphics::findFont(const char* pszFontFamily, 
-				      const char* pszFontStyle, 
-				      const char* pszFontVariant, 
-				      const char* pszFontWeight, 
-				      const char* pszFontStretch, 
-				      const char* pszFontSize)
+											  const char* pszFontStyle, 
+											  const char* /* pszFontVariant */,
+											  const char* pszFontWeight, 
+											  const char* /* pszFontStretch */,
+											  const char* pszFontSize)
 {
-//      UT_DEBUGMSG(("Dom: findFont\n"));
 	UT_ASSERT(pszFontFamily);
 	UT_ASSERT(pszFontStyle);
 	UT_ASSERT(pszFontWeight);
@@ -757,11 +809,12 @@ GR_Font* XAP_UnixGnomePrintGraphics::findFont(const char* pszFontFamily,
 		// Oops!  We don't have that font here.  substitute something
 		// we know we have (get smarter about this later)
 		g_print ("Get times new roman !!!!!!!!!!!!!!!!!!!!!!!!!!!!!\n"
-			 "!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!1\n");
+				 "!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!\n");
 		item = new XAP_UnixFont(*m_fm->getFont("Times New Roman", s));
 	}
 	
 	PSFont * pFont = new PSFont(item, convertDimension(pszFontSize));
+	UT_ASSERT(pFont);
 
 	return pFont;
 }
@@ -797,17 +850,26 @@ double XAP_UnixGnomePrintGraphics::_scale_y_dir (int y)
 	
 	if (m_paper)
 			{
-					page_length = _scale_factor_get_inverse() * gnome_paper_psheight (m_paper);
+					page_length = gnome_paper_psheight (m_paper);
 			}
 	else
 			{
 					/* FIXME: Hardcode US-Letter as a standby for now */
-					page_length = 11 * (double) GPG_RESOLUTION;      
+					page_length = 11;      
 			}
-	
-	d  =  page_length - (double) y;
-	d *= _scale_factor_get ();
 
-	UT_DEBUGMSG(("_scale_y_dir returning %f\n", d));
+	/* This one is obscure:
+	 * Our drawChars and drawLine functions recieve yDests relative to the
+	 * page that they're on. drawImg doesn't. We need to properly
+	 * correct for that
+	 */
+
+#if 0	
+	d  =  page_length - (double) y;
+	d *= _scale_factor_get();
+#else
+	d = page_length - (double)((int)(y * _scale_factor_get()) % (int)page_length);
+#endif
+
 	return d;
 }
