@@ -34,6 +34,7 @@ AP_Dialog_Insert_DateTime::AP_Dialog_Insert_DateTime(XAP_DialogFactory * pDlgFac
   : XAP_Dialog_NonPersistent(pDlgFactory,id)
 {
     m_answer = a_OK;
+    m_iFormatIndex = 0;
 }
 
 AP_Dialog_Insert_DateTime::tAnswer AP_Dialog_Insert_DateTime::getAnswer(void) const
