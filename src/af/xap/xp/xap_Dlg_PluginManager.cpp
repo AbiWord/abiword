@@ -36,7 +36,9 @@ XAP_Dialog_PluginManager::~XAP_Dialog_PluginManager ()
 bool XAP_Dialog_PluginManager::activatePlugin (const char * szName) const
 {
 	UT_ASSERT (szName);
-	return XAP_ModuleManager::instance ().loadModule (szName);
+	bool loaded = XAP_ModuleManager::instance ().loadModule (szName);
+	XAP_ModuleManager::instance ().registerPending (); // TODO: handle dependencies?
+	return loaded;
 }
 
 bool XAP_Dialog_PluginManager::deactivatePlugin (XAP_Module * which) const

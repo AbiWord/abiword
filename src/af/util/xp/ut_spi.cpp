@@ -191,6 +191,18 @@ UT_SPI_v1::UT_SPI_v1 (ABI_SPI_Register plugin_register, ABI_SPI_Unregister plugi
   m_version(1),
   m_plugin_unregister(plugin_unregister)
 {
+  m_spi.version = m_version;
+
+  m_spi.plugin_data = 0;
+
+  m_spi.plugin_name    = 0;
+  m_spi.plugin_desc    = 0;
+  m_spi.plugin_version = 0;
+  m_spi.plugin_author  = 0;
+  m_spi.plugin_usage   = 0;
+
+  m_spi.spi_field = 0;
+
   if ((plugin_register == 0) || (plugin_unregister == 0))
     {
       m_version = ABI_SPI_ERROR;

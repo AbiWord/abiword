@@ -181,6 +181,14 @@ UT_uint32 XAP_ModuleManager::registerPending ()
 
 	if (m_spider) count = m_spider->register_spies ();
 
+	/* The Spider does the plugin registration (see above)
+	 * but the module info has to be updated:
+	 */
+	for (UT_uint32 i = 0; i < m_modules->size (); i++)
+	{
+		XAP_Module * pModule = reinterpret_cast<XAP_Module *>(m_modules->getNthItem(i));
+		if (pModule) pModule->registerPending ();
+	}
 	unloadUnregistered ();
 
 	return count;

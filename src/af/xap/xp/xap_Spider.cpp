@@ -130,6 +130,8 @@ bool XAP_Spider::spi_registered (const char * name)
   if ( name == 0) return false;
   if (*name == 0) return false;
 
+  if (strcmp (name, "AbiWord-"ABI_BUILD_VERSION) == 0) return true;
+
   struct ABI_Foreign_SPI * spi = find_spi (name);
 
   return spi_registered (spi);
@@ -241,6 +243,22 @@ const char * XAP_Spider::add_spi (XAP_Module * module)
 
   if ( name == 0) return 0;
   if (*name == 0) return 0;
+
+  if (const char * const * dependency = dependencies)
+    {
+      bool version_conflict = false;
+      while (*dependency)
+	{
+	  if (strncmp (*dependency, "AbiWord-", 8) == 0)
+	    if (strcmp (*dependency, "AbiWord-"ABI_BUILD_VERSION) != 0)
+	      {
+		version_conflict = true;
+		break;
+	      }
+	  dependency++;
+	}
+      if (version_conflict) return 0;
+    }
 
   if (find_spi (name)) return 0;
 
