@@ -1026,6 +1026,7 @@ AP_Lists_preview::AP_Lists_preview(GR_Graphics * gc, AP_Dialog_Lists * pLists)
 
 AP_Lists_preview::~AP_Lists_preview()
 {
+delete font;
 }
 
 AP_Dialog_Lists * AP_Lists_preview::getLists(void)
@@ -1052,7 +1053,6 @@ void AP_Lists_preview::draw(void)
 	//
 	// we draw at 16 points in this preview
 	//
-	GR_Font * font;
 	if(strcmp(m_pszFont,"NULL")== 0)
 	{
 		font = m_gc->findFont("Times New Roman", "normal", "", "normal", "", "16pt");
@@ -1241,5 +1241,4 @@ void AP_Lists_preview::draw(void)
 		}
 	}
 
-	delete font;
 }
