@@ -5971,7 +5971,7 @@ void FV_View::getTopRulerInfo(PT_DocPosition pos,AP_TopRulerInfo * pInfo)
 	{
 		fp_CellContainer * pCell = static_cast<fp_CellContainer *>(pContainer);
 		fl_DocSectionLayout* pDSL = pSection->getDocSectionLayout();
-		fp_Column * pColumn = static_cast<fp_Column *>(pCell->getColumn());
+		fp_Column * pColumn = static_cast<fp_Column *>(pCell->getColumn(pLine));
 		UT_uint32 nCol=0;
 		fp_Column * pNthColumn=pColumn->getLeader();
 		while (pNthColumn && (pNthColumn != pColumn))
@@ -6458,7 +6458,7 @@ EV_EditMouseContext FV_View::getMouseContext(UT_sint32 xPos, UT_sint32 yPos)
 				UT_sint32 iBot = pCell->getStopY();
 				UT_sint32 offy =0;
 				UT_sint32 offx =0;
-				fp_Column * pCol = static_cast<fp_Column *>(pCell->getColumn());
+				fp_Column * pCol = static_cast<fp_Column *>(pCell->getColumn(pLine));
 				UT_sint32 col_x =0;
 				UT_sint32 col_y =0;
 				pPage->getScreenOffsets(pCol, col_x,col_y);

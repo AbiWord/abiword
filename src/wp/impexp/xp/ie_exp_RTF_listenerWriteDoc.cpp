@@ -2448,6 +2448,7 @@ bool s_RTF_ListenerWriteDoc::populateStrux(PL_StruxDocHandle sdh,
 			m_sdh = sdh;
 			m_pie->_rtf_open_brace();
 			m_pie->_rtf_keyword("footnote");
+			m_pie->_rtf_keyword("ftnalt");
 			UT_DEBUGMSG(("_rtf_listenerWriteDoc: Openned Endnote \n"));
 			return true;
 		}
@@ -2748,7 +2749,10 @@ void s_RTF_ListenerWriteDoc::_rtf_open_section(PT_AttrPropIndex api)
 		m_bStartedList = false;
 	}
 	if (m_bJustStartingDoc)			// 'sect' is a delimiter, rather than a plain start
+	{
+
 		m_bJustStartingDoc = false;
+	}
 	else
 		m_pie->_rtf_keyword("sect");							// begin a new section
 	m_bJustStartingSection = true;

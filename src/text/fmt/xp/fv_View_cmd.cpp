@@ -158,30 +158,11 @@ bool FV_View::cmdMergeCells(PT_DocPosition posSource, PT_DocPosition posDestinat
 	posTable = m_pDoc->getStruxPosition(tableSDH) + 1;
 
 //
-// Now find the number of rows and columns inthis table. This is easiest to
-// get from the table container
+// Now find the number of rows and columns inthis table. 
 //
-	fl_BlockLayout * pBL =	m_pLayout->findBlockAtPosition(posSource);
-	fp_Run * pRun;
-	UT_sint32 xPoint,yPoint,xPoint2,yPoint2,iPointHeight;
-	bool bDirection;
-	pRun = pBL->findPointCoords(posSource, false, xPoint,
-							    yPoint, xPoint2, yPoint2,
-							    iPointHeight, bDirection);
-
-	UT_return_val_if_fail(pRun, false);
-
-	fp_Line * pLine = pRun->getLine();
-	UT_return_val_if_fail(pLine, false);
-
-	fp_Container * pCon = pLine->getContainer();
-	UT_return_val_if_fail(pCon, false);
-
-	fp_TableContainer * pTab = static_cast<fp_TableContainer *>(pCon->getContainer());
-	UT_return_val_if_fail(pTab, false);
-
-	UT_sint32 numRows = pTab->getNumRows();
-	UT_sint32 numCols = pTab->getNumCols();
+	UT_sint32 numRows = 0;
+	UT_sint32 numCols = 0;
+	m_pDoc->getRowsColsFromTableSDH(tableSDH, &numRows, &numCols);
 	bool bChanged = false;
 	UT_sint32 iLineType = 0;
 

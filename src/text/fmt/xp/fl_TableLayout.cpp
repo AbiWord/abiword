@@ -1591,6 +1591,10 @@ void fl_CellLayout::redrawUpdate(void)
 
 		pBL = pBL->getNext();
 	}
+	//
+	//	fp_CellContainer * pCell = static_cast<fp_CellContainer *>(getFirstContainer());
+	//pCell->drawLines();
+	//pCell->drawLinesAdjacent();
 	m_bNeedsRedraw = false;
 }
 

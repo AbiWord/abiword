@@ -1288,6 +1288,10 @@ void AP_LeftRuler::_drawCellProperties(AP_LeftRulerInfo * pInfo)
 	PT_DocPosition pos = static_cast<FV_View *>(m_pView)->getPoint();
 	bool bStop = false;
 	fp_TableContainer *pBroke = pCurPage->getContainingTable(pos);
+	if(pBroke == NULL)
+	{
+		return;
+	}
 	for(i=pInfo->m_iCurrentRow;i <= nrows && !bStop; i++)
 	{
 		if(m_bValidMouseClick && (m_draggingWhat == DW_CELLMARK) && (i == m_draggingCell ))

@@ -962,9 +962,17 @@ void s_HTML_Listener::tagPop ()
 				tagClose (TT_DIV, m_utf8_1);
 			}
 			break;
+
+		case TT_P:
+			{
+				m_utf8_1 = "p";
+				tagClose(TT_P,m_utf8_1);
+			}
+			break;
 		default:
 			{
-				UT_DEBUGMSG(("tagPop: unhandled tag closure!\n"));
+				UT_DEBUGMSG(("tagPop: unhandled tag closure! %d\n",tagTop()));
+				m_utf8_1 ="error - not handled";
 			}
 			break;
 		}

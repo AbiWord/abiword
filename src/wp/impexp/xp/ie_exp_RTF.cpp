@@ -697,7 +697,210 @@ bool IE_Exp_RTF::_write_rtf_header(void)
 	_rtf_keyword("fet",2);				// Allow both footnotes and endnotes
 	_rtf_keyword("ftnstart",1);			// First footnote is one - later use
 	                                    // document properties
+	const XML_Char * pszFootnoteType = NULL;
+	const PP_AttrProp* pDocAP = getDoc()->getAttrProp();
+	UT_ASSERT(pDocAP);
+	pDocAP->getProperty("document-footnote-type", (const XML_Char *&)pszFootnoteType);
+	if (pszFootnoteType == NULL)
+	{
+		_rtf_keyword("ftnnar");			// Numeric Footnotes
+	}
+	else if(pszFootnoteType[0] == 0)
+	{
+		_rtf_keyword("ftnnar");			// Numeric Footnotes
+	}
+	else if(UT_XML_strcmp(pszFootnoteType,"numeric") == 0)
+	{
+		_rtf_keyword("ftnnar");			// Numeric Footnotes
+	}
+	else if(UT_XML_strcmp(pszFootnoteType,"numeric-square-brackets") == 0)
+	{
+		_rtf_keyword("ftnnar");			// Numeric Footnotes
+	}
+	else if(UT_XML_strcmp(pszFootnoteType,"numeric-paren") == 0)
+	{
+		_rtf_keyword("ftnnar");			// Numeric Footnotes
+	}
+	else if(UT_XML_strcmp(pszFootnoteType,"numeric-open-paren") == 0)
+	{
+		_rtf_keyword("ftnnar");			// Numeric Footnotes
+	}
+	else if(UT_XML_strcmp(pszFootnoteType,"upper") == 0)
+	{
+		_rtf_keyword("ftnnauc");			// Alphabetic Upper case
+	}
+	else if(UT_XML_strcmp(pszFootnoteType,"upper-paren") == 0)
+	{
+		_rtf_keyword("ftnnauc");			// Alphabetic Upper case
+	}
+	else if(UT_XML_strcmp(pszFootnoteType,"upper-paren-open") == 0)
+	{
+		_rtf_keyword("ftnnauc");			// Alphabetic Upper case
+	}
+	else if(UT_XML_strcmp(pszFootnoteType,"lower") == 0)
+	{
+		_rtf_keyword("ftnnalc");			// Alphabetic Lower case
+	}
+	else if(UT_XML_strcmp(pszFootnoteType,"lower-paren") == 0)
+	{
+		_rtf_keyword("ftnnalc");			// Alphabetic Lower case
+	}
+	else if(UT_XML_strcmp(pszFootnoteType,"lower-paren-open") == 0)
+	{
+		_rtf_keyword("ftnnalc");			// Alphabetic Lower case
+	}
+	else if(UT_XML_strcmp(pszFootnoteType,"lower-roman") == 0)
+	{
+		_rtf_keyword("ftnnrlc");			// Roman Lower case
+	}
+	else if(UT_XML_strcmp(pszFootnoteType,"lower-roman-paren") == 0)
+	{
+		_rtf_keyword("ftnnrlc");			// Roman Lower case
+	}
+	else if(UT_XML_strcmp(pszFootnoteType,"upper-roman") == 0)
+	{
+		_rtf_keyword("ftnnruc");			// Roman Upper case
+	}
+	else if(UT_XML_strcmp(pszFootnoteType,"upper-roman-paren") == 0)
+	{
+		_rtf_keyword("ftnnruc");			// Roman Upper case
+	}
+	else
+	{
+		_rtf_keyword("ftnnar");			// Numeric Footnotes
+	}
 
+	const XML_Char * pszEndnoteType = NULL;
+	pDocAP->getProperty("document-endnote-type", (const XML_Char *&)pszEndnoteType);
+	if (pszEndnoteType == NULL)
+	{
+		_rtf_keyword("aftnnar");			// Numeric Endnotes
+	}
+	else if(pszEndnoteType[0] == 0)
+	{
+		_rtf_keyword("aftnnar");			// Numeric Endnotes
+	}
+	else if(UT_XML_strcmp(pszEndnoteType,"numeric") == 0)
+	{
+		_rtf_keyword("aftnnar");			// Numeric Endnotes
+	}
+	else if(UT_XML_strcmp(pszEndnoteType,"numeric-square-brackets") == 0)
+	{
+		_rtf_keyword("aftnnar");			// Numeric Endnotes
+	}
+	else if(UT_XML_strcmp(pszEndnoteType,"numeric-paren") == 0)
+	{
+		_rtf_keyword("aftnnar");			// Numeric Endnotes
+	}
+	else if(UT_XML_strcmp(pszEndnoteType,"numeric-open-paren") == 0)
+	{
+		_rtf_keyword("aftnnar");			// Numeric Endnotes
+	}
+	else if(UT_XML_strcmp(pszEndnoteType,"upper") == 0)
+	{
+		_rtf_keyword("aftnnauc");			// Alphabetic Upper Endnotes
+	}
+	else if(UT_XML_strcmp(pszEndnoteType,"upper-paren") == 0)
+	{
+		_rtf_keyword("aftnnauc");			// Alphabetic Upper Endnotes
+	}
+	else if(UT_XML_strcmp(pszEndnoteType,"upper-paren-open") == 0)
+	{
+		_rtf_keyword("aftnnauc");			// Alphabetic Upper Endnotes
+	}
+	else if(UT_XML_strcmp(pszEndnoteType,"lower") == 0)
+	{
+		_rtf_keyword("aftnnalc");			// Alphabetic Lower Endnotes
+	}
+	else if(UT_XML_strcmp(pszEndnoteType,"lower-paren") == 0)
+	{
+		_rtf_keyword("aftnnalc");			// Alphabetic Lower Endnotes
+	}
+	else if(UT_XML_strcmp(pszEndnoteType,"lower-paren-open") == 0)
+	{
+		_rtf_keyword("aftnnalc");			// Alphabetic Lower Endnotes
+	}
+	else if(UT_XML_strcmp(pszEndnoteType,"lower-roman") == 0)
+	{
+		_rtf_keyword("aftnnrlc");			// Roman Lower Endnotes
+	}
+	else if(UT_XML_strcmp(pszEndnoteType,"lower-roman-paren") == 0)
+	{
+		_rtf_keyword("aftnnrlc");			// Roman Lower Endnotes
+	}
+	else if(UT_XML_strcmp(pszEndnoteType,"upper-roman") == 0)
+	{
+		_rtf_keyword("aftnnruc");			// Roman Upper Endnotes
+	}
+	else if(UT_XML_strcmp(pszEndnoteType,"upper-roman-paren") == 0)
+	{
+		_rtf_keyword("aftnnruc");			// Roman Upper Endnotes
+	}
+	else
+	{
+		_rtf_keyword("aftnnar");			// Numeric Endnotes
+	}
+
+	const XML_Char * pszTmp = NULL;
+	pDocAP->getProperty("document-footnote-initial", (const XML_Char *&)pszTmp);
+	if(pszTmp && pszTmp[0])
+	{
+		_rtf_keyword("ftnstart",atoi(pszTmp));			// First footnote
+	}
+	else
+	{
+		_rtf_keyword("ftnstart",1);			// First footnote
+	}
+
+	pDocAP->getProperty("document-footnote-restart-section", (const XML_Char *&)pszTmp);
+	if(pszTmp && pszTmp[0])
+	{
+		if(UT_XML_strcmp(pszTmp,"1") == 0)
+		{
+			_rtf_keyword("ftnrestart");			// footnote restarts each section
+		}
+	}
+
+	pDocAP->getProperty("document-footnote-restart-page", (const XML_Char *&)pszTmp);
+	if(pszTmp && pszTmp[0])
+	{
+		if(UT_XML_strcmp(pszTmp,"1") == 0)
+		{
+			_rtf_keyword("ftnrstpg");			// footnote restarts each page
+		}
+	}
+
+	pDocAP->getProperty("document-endnote-initial", (const XML_Char *&)pszTmp);
+	if(pszTmp && pszTmp[0])
+	{
+		_rtf_keyword("aftnstart", atoi(pszTmp)); // initial endnote value
+	}
+	pDocAP->getProperty("document-endnote-restart-section", (const XML_Char *&)pszTmp);
+	if(pszTmp && pszTmp[0])
+	{
+		if(UT_XML_strcmp(pszTmp,"1") == 0)
+		{
+			_rtf_keyword("aftnrestart"); // restart endnotes each section
+		}
+	}
+
+	pDocAP->getProperty("document-endnote-place-endsection", (const XML_Char *&)pszTmp);
+	if(pszTmp && pszTmp[0])
+	{
+		if(UT_XML_strcmp(pszTmp,"1") == 0)
+		{
+			_rtf_keyword("aendnotes"); // endnotes at end of section
+		}
+	}
+
+	pDocAP->getProperty("document-endnote-place-enddoc", (const XML_Char *&)pszTmp);
+	if(pszTmp && pszTmp[0])
+	{
+		if(UT_XML_strcmp(pszTmp,"1") == 0)
+		{
+			_rtf_keyword("aenddoc"); // endnotes at end of document
+		}
+	}
 	return (m_error == 0);
 }
 

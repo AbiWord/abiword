@@ -161,6 +161,58 @@ void fp_CellContainer::setHeight(UT_sint32 iHeight)
 	static_cast<fl_TableLayout *>(pSL)->setDirty();
 }
 
+/*!
+ * Return the broken table that contains this cell and the given line
+ */
+fp_TableContainer * fp_CellContainer::getBrokenTable(fp_Line * pLine)
+{
+	fp_TableContainer * pMaster = static_cast<fp_TableContainer *>(getContainer());
+	fp_TableContainer * pBroke = pMaster->getFirstBrokenTable();
+	while(pBroke != NULL)
+    {
+		if(doesOverlapBrokenTable(pBroke))
+		{
+			if(pBroke->isInBrokenTable(this,pLine))
+			{
+				return pBroke;
+			}
+		}
+		pBroke = static_cast<fp_TableContainer *>(pBroke->getNext());
+	}
+	return pMaster;
+}
+
+/*!
+ * This Method returns the column that embeds the line given.
+ */
+fp_Column * fp_CellContainer::getColumn(fp_Line * pLine)
+{
+	fp_TableContainer * pBroke = getBrokenTable(pLine);
+	bool bStop = false;
+	fp_Column * pCol = NULL;
+	//
+	// FIXME for nexted tables off first page
+	//
+	while(!pBroke->isThisBroken() && !bStop)
+	{
+		fp_Container * pCon = pBroke->getContainer();
+		if(pCon->getContainerType() == FP_CONTAINER_COLUMN)
+		{
+			pCol = static_cast<fp_Column *>(pCon);
+			bStop = true;
+		}
+		else
+		{
+			pBroke = static_cast<fp_TableContainer *>(pCon->getContainer());
+		}
+	}
+	if(!bStop)
+	{
+		pCol = static_cast<fp_Column *>(pBroke->getContainer());
+	}
+	return pCol;
+}
+
 void fp_CellContainer::_getBrokenRect(fp_TableContainer * pBroke, fp_Page * &pPage, UT_Rect &bRec)
 {
 	fl_TableLayout * pTab = static_cast<fl_TableLayout *>(getSectionLayout()->myContainingLayout());
@@ -242,7 +294,7 @@ void fp_CellContainer::_getBrokenRect(fp_TableContainer * pBroke, fp_Page * &pPa
 		pPage = getPage();
 		if(pPage)
 		{
-			pCol = static_cast<fp_Column *>(getColumn());
+			pCol = static_cast<fp_Column *>(fp_Container::getColumn());
 			pPage->getScreenOffsets(pCol,col_x,col_y);
 			fp_Container * pCon = static_cast<fp_Container *>(this);
 			while(!pCon->isColumnType())
@@ -1810,7 +1862,7 @@ void fp_CellContainer::sizeRequest(fp_Requisition * pRequest)
 		pRequest->height = height;
 	}
 
-	fp_Column * pCol = static_cast<fp_Column *>(getColumn());
+	fp_Column * pCol = static_cast<fp_Column *>(fp_Container::getColumn());
 	if(pCol && (width == 0))
 	{
 		width = pCol->getWidth();
@@ -3674,7 +3726,6 @@ void fp_TableContainer::_brokenDraw(dg_DrawArgs* pDA)
 		pCell = m_pFirstBrokenCell;
 		while(pCell)
 		{
-			fl_SectionLayout *pSL=pCell->getSectionLayout();
 			dg_DrawArgs da = *pDA;
 			da.yoff = da.yoff - getYBreak();
 			if(bDirtyOnly)

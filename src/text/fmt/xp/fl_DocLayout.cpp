@@ -2383,6 +2383,13 @@ void FL_DocLayout::_redrawUpdate(UT_Worker * pWorker)
 		return;
 	}
 //
+// Don't redraw while the selection is active
+//
+//	if(!pDocLayout->m_pView->isSelectionEmpty())
+//	{
+//		return;
+//	}
+//
 // Lock out PieceTable changes till we finished.
 //
 	pDoc->setRedrawHappenning(true);

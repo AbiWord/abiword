@@ -110,6 +110,10 @@ fp_TableContainer * fp_Page::getContainingTable(PT_DocPosition pos)
 	    return NULL;
 	}
 	fp_CellContainer * pCell = m_pView->getCellAtPos(pos);
+	if(pCell == NULL)
+	{
+		return NULL;
+	}
 	fp_TableContainer * pTab = static_cast<fp_TableContainer *>(pCell->getContainer());
 	UT_sint32 i = 0;
 	UT_sint32 j =0;

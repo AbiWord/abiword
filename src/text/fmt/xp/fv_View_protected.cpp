@@ -2860,9 +2860,30 @@ void FV_View::_extSelToPos(PT_DocPosition iNewPoint)
 */
 void FV_View::_drawBetweenPositions(PT_DocPosition iPos1, PT_DocPosition iPos2)
 {
+//
+// Handle little class for redrawing lines around cells
+//
+	class CellLine
+	{
+	public:
+		CellLine(void):
+			m_pCell(NULL),
+			m_pBrokenTable(NULL),
+			m_pLine(NULL)
+			{}
+		virtual ~CellLine(void)
+			{
+				m_pCell = NULL;
+				m_pBrokenTable = NULL;
+				m_pLine = NULL;
+			}
+		fp_CellContainer * m_pCell;
+		fp_TableContainer * m_pBrokenTable;
+		fp_Line * m_pLine;
+	};
 	UT_ASSERT(iPos1 < iPos2);
 //	CHECK_WINDOW_SIZE
-
+	xxx_UT_DEBUGMSG(("Draw between positions %d to %d \n",iPos1,iPos2));
 	fp_Run* pRun1;
 	fp_Run* pRun2;
 	UT_sint32 xoff;
@@ -2899,16 +2920,29 @@ void FV_View::_drawBetweenPositions(PT_DocPosition iPos1, PT_DocPosition iPos2)
 	bool bIsDirty = false;
 	fp_Run* pCurRun = pRun1;
 	bool bShowHidden = getShowPara();
-
+	fp_CellContainer * pCell = NULL;
+	fl_BlockLayout* pBlockEnd = pRun2->getBlock();
+	PT_DocPosition posEnd = pBlockEnd->getPosition() + pRun2->getBlockOffset();
 	while ((!bDone || bIsDirty) && pCurRun)
 	{
 
-		if (pCurRun == pRun2)
+		fl_BlockLayout* pBlock = pCurRun->getBlock();
+		fp_Line * pLine = pCurRun->getLine();
+		if(pLine == NULL || (pLine->getContainer()->getPage()== NULL))
+		{
+			UT_VECTOR_PURGEALL(CellLine *, vecTables);
+			return;
+		}
+		PT_DocPosition curpos = pBlock->getPosition() + pCurRun->getBlockOffset();
+		if (pCurRun == pRun2 || curpos >= posEnd)
 		{
 			bDone = true;
 		}
-
-		fl_BlockLayout* pBlock = pCurRun->getBlock();
+		if(curpos > posEnd)
+		{
+			break;
+		}
+		xxx_UT_DEBUGMSG(("draw_between positions pos is %d width is %d \n",curpos,pCurRun->getWidth()));
 		UT_ASSERT(pBlock);
 //
 // Look to see if the Block is in a table.
@@ -2917,20 +2951,19 @@ void FV_View::_drawBetweenPositions(PT_DocPosition iPos1, PT_DocPosition iPos2)
 		bool bCellSelected = false;
 		if(pCL->getContainerType() == FL_CONTAINER_CELL)
 		{
-			fp_Container * pCP = static_cast<fp_Container *>(pCL->getFirstContainer());
+			fp_Container * pCP = static_cast<fp_Container *>(pLine->getContainer());
 			if(pCP)
 			{
-				fp_TableContainer * pTab = static_cast<fp_TableContainer *>(pCP->getContainer());
+				pCell = static_cast<fp_CellContainer *>(pCP);
+				fp_TableContainer * pTab = pCell->getBrokenTable(pLine);
 				if(pTab)
 				{
-					if(vecTables.getItemCount() == 0)
-					{
-						vecTables.addItem(static_cast<void *>(pTab));
-					}
-					else if(vecTables.findItem(pTab) <0)
-					{
-						vecTables.addItem(static_cast<void *>(pTab));
-					}
+					CellLine * pCellLine = new CellLine();
+					pCellLine->m_pCell = pCell;
+					pCellLine->m_pBrokenTable = pTab;
+					pCellLine->m_pLine = pLine;
+					xxx_UT_DEBUGMSG(("cellLine %x cell %x Table %x Line %x \n",pCellLine,pCellLine->m_pCell,pCellLine->m_pBrokenTable,pCellLine->m_pLine));
+					vecTables.addItem(static_cast<void *>(pCellLine));
 				}
 			}
 			fl_CellLayout * pCellLayout = static_cast<fl_CellLayout *>(pCL);
@@ -2941,8 +2974,7 @@ void FV_View::_drawBetweenPositions(PT_DocPosition iPos1, PT_DocPosition iPos2)
 			fp_Container * pNextCon = NULL;
 			if(bCellSelected)
 			{
-				fp_CellContainer * pCellCon = static_cast<fp_CellContainer *>(pCP);
-				pNextCon = pCellCon->drawSelectedCell(pCurRun->getLine());
+				pNextCon = pCell->drawSelectedCell(pCurRun->getLine());
 				if(pNextCon == NULL)
 				{
 					fl_BlockLayout * pBlock = pCurRun->getBlock();
@@ -2969,12 +3001,11 @@ void FV_View::_drawBetweenPositions(PT_DocPosition iPos1, PT_DocPosition iPos2)
 			}
 			else
 			{
-				fp_CellContainer * pCellCon = static_cast<fp_CellContainer *>(pCP);
-				if(pCellCon->getSelectionColor() != NULL)
+				if(pCell->getSelectionColor() != NULL)
 				{
-					pCellCon->clearSelectionColor();
-					pCellCon->clearScreen();
-					pCellCon->draw(pCurRun->getLine());
+					pCell->clearSelectionColor();
+					pCell->clearScreen();
+					pCell->draw(pCurRun->getLine());
 				}
 			}
 		}
@@ -2983,10 +3014,9 @@ void FV_View::_drawBetweenPositions(PT_DocPosition iPos1, PT_DocPosition iPos2)
 		   || eHidden == FP_HIDDEN_REVISION
 		   || eHidden == FP_HIDDEN_REVISION_AND_TEXT))
 		{
-
-			fp_Line* pLine = pCurRun->getLine();
 			if(pLine == NULL || (pLine->getContainer()->getPage()== NULL))
 			{
+				UT_VECTOR_PURGEALL(CellLine *, vecTables);
 				return;
 			}
 			pLine->getScreenOffsets(pCurRun, xoff, yoff);
@@ -2996,7 +3026,6 @@ void FV_View::_drawBetweenPositions(PT_DocPosition iPos1, PT_DocPosition iPos2)
 			da.pG = m_pG;
 			da.xoff = xoff;
 			da.yoff = yoff + pLine->getAscent();
-			UT_DEBUGMSG(("draw_between positions width is %d \n",pCurRun->getWidth()));
 			pCurRun->draw(&da);
 		}
 
@@ -3024,12 +3053,16 @@ void FV_View::_drawBetweenPositions(PT_DocPosition iPos1, PT_DocPosition iPos2)
 //
 // Now redraw the lines in any table encountered.
 //
+	xxx_UT_DEBUGMSG(("Drawing lines in tables %d \n",vecTables.getItemCount()));
 	UT_sint32 i =0;
 	for(i=0; i< static_cast<UT_sint32>(vecTables.getItemCount()); i++)
 	{
-		fp_TableContainer * pTab = static_cast<fp_TableContainer *>(vecTables.getNthItem(i));
-		pTab->drawLines();
+ 		CellLine * pCellLine = static_cast<CellLine *>(vecTables.getNthItem(i));
+ 		pCellLine->m_pCell->drawLines(pCellLine->m_pBrokenTable); 	
+		pCellLine->m_pCell->drawLinesAdjacent(); 	
 	}
+	UT_VECTOR_PURGEALL(CellLine *, vecTables);
+	xxx_UT_DEBUGMSG(("Finished Drawing lines in tables \n"));
 }
 
 /*
