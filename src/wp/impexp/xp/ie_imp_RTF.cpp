@@ -7538,7 +7538,6 @@ bool IE_Imp_RTF::_appendField (const XML_Char *xmlField, const XML_Char ** pszAt
 		}
 		propsArray[4+isize] = NULL;
 	}
-	UT_uint32 k =0;
 	// TODO get text props to apply them to the field
 	ok = FlushStoredChars (true);
 	UT_return_val_if_fail (ok, false);
