@@ -272,6 +272,7 @@
 <datafile name="__CANONDIR__/AbiWord/strings/pt-PT.strings" relpath="AbiWord/strings" />
 <datafile name="__CANONDIR__/AbiWord/strings/ru-RU.strings" relpath="AbiWord/strings" />
 <datafile name="__CANONDIR__/AbiWord/strings/sv-SE.strings" relpath="AbiWord/strings" />
+<datafile name="__CANONDIR__/AbiWord/strings/zh-TW.strings" relpath="AbiWord/strings" />
 
 <datafile name="__CANONDIR__/AbiWord/system.profile" relpath="AbiWord" />
 
