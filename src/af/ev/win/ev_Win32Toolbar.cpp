@@ -1390,6 +1390,8 @@ void	EV_Win32Toolbar::onDropArrow(UINT cmd)
 
 			if (pAction->getItemType() == EV_TBIT_ColorFore)
 				fimpl->m_sColorFore = strColor;
+
+			toolbarEvent(id, NULL, 0);
 		}
 
 		pDialogFactory->releaseDialog(pDialog);
