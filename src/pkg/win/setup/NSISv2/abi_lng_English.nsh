@@ -2,9 +2,6 @@
 ;FileDesc       Language Strings, descriptions for Sections and SubSections
 ; English ${LANG_English}
 
-!undef LANG_X
-!define LANG_X ${LANG_English}
-
 ; Section titles, what user sees to select components for installation
 ${LSTR} TITLE_ssection_core                 "Primary components"
 ${LSTR} TITLE_section_abi                   "${PROGRAMEXE} (required)"

@@ -98,58 +98,18 @@ InstallDirRegKey HKLM SOFTWARE\${APPSET}\${PRODUCT}\v${VERSION_MAJOR} "Install_D
   ; specify where to get resources from for UI elements (default)
   !define MUI_UI "${NSISDIR}\Contrib\UIs\modern.exe"
 
-  ; put the description below choices
-  !define MUI_COMPONENTSPAGE_SMALLDESC
-
   ; include the Modern UI support
   !include "Mui.nsh"
-
-!ifdef 0
-  ; Languages
-  ; some are presently commented out as they lack some translations (hence fail to build)
-  !insertmacro MUI_LANGUAGE "Bulgarian"
-  !insertmacro MUI_LANGUAGE "Czech"
-  !insertmacro MUI_LANGUAGE "Dutch"
-  !insertmacro MUI_LANGUAGE "English"
-  !insertmacro MUI_LANGUAGE "French"
-  !insertmacro MUI_LANGUAGE "German"
-  !insertmacro MUI_LANGUAGE "Greek"
-  !insertmacro MUI_LANGUAGE "Italian"
-  !insertmacro MUI_LANGUAGE "Japanese"
-  !insertmacro MUI_LANGUAGE "Polish"
-  !insertmacro MUI_LANGUAGE "Russian"
-  !insertmacro MUI_LANGUAGE "PortugueseBR"
-  !insertmacro MUI_LANGUAGE "SimpChinese"
-  !insertmacro MUI_LANGUAGE "Spanish"
-  !insertmacro MUI_LANGUAGE "TradChinese"
-  !insertmacro MUI_LANGUAGE "Ukrainian"
-
-  ; Specify the license text to use (for multilang support, must come after above MUI_LANGUAGEs)
-  LicenseLangString LicenseTXT ${LANG_Bulgarian}    "..\AbiSuite\Copying"
-  LicenseLangString LicenseTXT ${LANG_Czech}        "..\AbiSuite\Copying"
-  LicenseLangString LicenseTXT ${LANG_Dutch}        "..\AbiSuite\Copying"
-  LicenseLangString LicenseTXT ${LANG_ENGLISH}      "..\AbiSuite\Copying"
-  LicenseLangString LicenseTXT ${LANG_French}       "..\AbiSuite\Copying"
-  LicenseLangString LicenseTXT ${LANG_German}       "..\AbiSuite\Copying"
-  LicenseLangString LicenseTXT ${LANG_Greek}        "..\AbiSuite\Copying"
-  LicenseLangString LicenseTXT ${LANG_Italian}      "..\AbiSuite\Copying"
-  LicenseLangString LicenseTXT ${LANG_Japanese}     "..\AbiSuite\Copying"
-  LicenseLangString LicenseTXT ${LANG_Polish}       "..\AbiSuite\Copying"
-  LicenseLangString LicenseTXT ${LANG_Russian}      "..\AbiSuite\Copying"
-  LicenseLangString LicenseTXT ${LANG_PortugueseBR} "..\AbiSuite\Copying"
-  LicenseLangString LicenseTXT ${LANG_SimpChinese}  "..\AbiSuite\Copying"
-  LicenseLangString LicenseTXT ${LANG_Spanish}      "..\AbiSuite\Copying"
-  LicenseLangString LicenseTXT ${LANG_TradChinese}  "..\AbiSuite\Copying"
-  LicenseLangString LicenseTXT ${LANG_Ukrainian}    "..\AbiSuite\Copying"
-!endif
 
   ; specify the pages and order to show to user
 
   ; introduce ourselves
   !insertmacro MUI_PAGE_WELCOME
   ; including the license of AbiWord  (license could be localized, but we lack translations)
-  !insertmacro MUI_PAGE_LICENSE "..\AbiSuite\Copying" ;$(LicenseTXT)
+  !insertmacro MUI_PAGE_LICENSE $(LicenseTXT)
   ; allow user to select what parts to install
+    ; put the description below choices
+    !define MUI_COMPONENTSPAGE_SMALLDESC
   !insertmacro MUI_PAGE_COMPONENTS
   ; and where to install to
   !insertmacro MUI_PAGE_DIRECTORY
@@ -188,29 +148,81 @@ InstallDirRegKey HKLM SOFTWARE\${APPSET}\${PRODUCT}\v${VERSION_MAJOR} "Install_D
   !insertmacro MUI_UNPAGE_INSTFILES
 
 
-  ; Languages
-  ; some are presently commented out as they lack some translations (hence fail to build)
-  !insertmacro MUI_LANGUAGE "Bulgarian"
-  !insertmacro MUI_LANGUAGE "Czech"
-  !insertmacro MUI_LANGUAGE "Dutch"
-  !insertmacro MUI_LANGUAGE "English"
-  !insertmacro MUI_LANGUAGE "French"
-  !insertmacro MUI_LANGUAGE "German"
-  !insertmacro MUI_LANGUAGE "Greek"
-  !insertmacro MUI_LANGUAGE "Italian"
-  !insertmacro MUI_LANGUAGE "Japanese"
-  !insertmacro MUI_LANGUAGE "Polish"
-  !insertmacro MUI_LANGUAGE "Russian"
-  !insertmacro MUI_LANGUAGE "PortugueseBR"
-  !insertmacro MUI_LANGUAGE "SimpChinese"
-  !insertmacro MUI_LANGUAGE "Spanish"
-  !insertmacro MUI_LANGUAGE "TradChinese"
-  !insertmacro MUI_LANGUAGE "Ukrainian"
+  ; Languages, include MUI & NSIS language support
+  ; then include app install specific language support
 
-  ;Remember the installer language
-  !define MUI_LANGDLL_REGISTRY_ROOT "HKLM"
-  !define MUI_LANGDLL_REGISTRY_KEY "Software\${APPSET}\${PRODUCT}\v${VERSION_MAJOR}"
-  !define MUI_LANGDLL_REGISTRY_VALUENAME "Installer Language"
+    ;Remember the installer language
+    !define MUI_LANGDLL_REGISTRY_ROOT "HKLM"
+    !define MUI_LANGDLL_REGISTRY_KEY "Software\${APPSET}\${PRODUCT}\v${VERSION_MAJOR}"
+    !define MUI_LANGDLL_REGISTRY_VALUENAME "Installer Language"
+
+    ; indicate default language definitions to use if a translation is missing a string
+    !define DEF_LANG "ENGLISH"
+
+    ; actually sets the LangString
+    !macro SETLSTR NAME VALUE	; e.g. English sectID sectDesc
+	!echo "${LANG} ( ${LANG_${LANG}} )"
+      !define "STRING_ISSET_${LANG}_${NAME}"
+      LangString "${NAME}" "${LANG_${LANG}}" "${VALUE}"
+    !macroend
+    !define SETLSTR "!insertmacro SETLSTR"
+
+    ; macro to set string, assumes LANG already defined (call within context of LANG_LOAD)
+    !macro LSTR NAME VALUE	; e.g. sectID sectDesc
+      !ifdef SETDEFLANG
+        ; if string is already set, we do nothing, otherwise we set to default value and warn user
+        !ifndef "STRING_ISSET_${LANG}_${NAME}"
+          !ifndef APPSET_LANGUAGEFILE_DEFAULT_USED     ; flag default value must be used
+            !define APPSET_LANGUAGEFILE_DEFAULT_USED
+          !endif
+          ${SETLSTR} "${NAME}" "${VALUE}"  ; set to default value
+        !endif
+      !else ; just set the value
+        ${SETLSTR} "${NAME}" "${VALUE}"
+      !endif
+    !macroend
+    !define LSTR "!insertmacro LSTR"
+
+    ; macro to include necessary language files
+    !macro LANG_LOAD LANG
+      !insertmacro MUI_LANGUAGE "${LANG}"
+      !echo "Loading language ${LANG} ( ${LANG_${LANG}} )"
+      ; Specify the license text to use (for multilang support, must come after MUI_LANGUAGE)
+      LicenseLangString LicenseTXT "${LANG_${LANG}}" "..\AbiSuite\Copying"
+      !verbose push
+      !verbose 3
+      !include "abi_lng_${LANG}.nsh"   ; Localized Installer Messages (Language Strings)
+      !define SETDEFLANG
+      !include "abi_lng_${DEF_LANG}.nsh"
+      !verbose pop
+      !ifdef APPSET_LANGUAGEFILE_DEFAULT_USED
+        !undef APPSET_LANGUAGEFILE_DEFAULT_USED
+        !warning "${LANG} Installation language file incomplete.  Using default texts for missing strings."
+      !endif
+      !undef SETDEFLANG
+      !echo "End loading language ${LANG}"
+      !undef LANG
+    !macroend
+    !define LANG_LOAD "!insertmacro LANG_LOAD"
+
+  ; load each supported language
+  ${LANG_LOAD} "Bulgarian"
+  ${LANG_LOAD} "Czech"
+  ${LANG_LOAD} "Dutch"
+  ${LANG_LOAD} "English"
+  ${LANG_LOAD} "French"
+  ${LANG_LOAD} "German"
+  ${LANG_LOAD} "Greek"
+  ${LANG_LOAD} "Italian"
+  ${LANG_LOAD} "Japanese"
+  ${LANG_LOAD} "Polish"
+  ${LANG_LOAD} "Russian"
+  ${LANG_LOAD} "PortugueseBR"
+  ${LANG_LOAD} "SimpChinese"
+  ${LANG_LOAD} "Spanish"
+  ${LANG_LOAD} "TradChinese"
+  ${LANG_LOAD} "Ukrainian"
+
 
 
 !ifdef RESERVE_PLUGINS
@@ -229,31 +241,6 @@ InstallDirRegKey HKLM SOFTWARE\${APPSET}\${PRODUCT}\v${VERSION_MAJOR} "Install_D
   !endif
 !endif ; RESERVE_PLUGINS
 
-
-
-; Localized Installer Messages (Language Strings)
-!macro LSTR sectID sectDesc
-  LangString "${sectID}" "${LANG_X}" "${sectDesc}"
-!macroend
-!define LSTR "!insertmacro LSTR"
-!define LANG_X					; used to prevent a warning about not being defined
-
-!include "abi_lng_Bulgarian.nsh"
-!include "abi_lng_Czech.nsh"
-!include "abi_lng_Dutch.nsh"
-!include "abi_lng_English.nsh"
-!include "abi_lng_French.nsh"
-!include "abi_lng_German.nsh"
-!include "abi_lng_Greek.nsh"
-!include "abi_lng_Italian.nsh"
-!include "abi_lng_Japanese.nsh"
-!include "abi_lng_Polish.nsh"
-!include "abi_lng_PortugueseBR.nsh"
-!include "abi_lng_Russian.nsh"
-!include "abi_lng_SimpChinese.nsh"
-!include "abi_lng_Spanish.nsh"
-!include "abi_lng_TradChinese.nsh"
-!include "abi_lng_Ukrainian.nsh"
 
 
 ; add a version resource to installer corresponding to version of app we're installing
