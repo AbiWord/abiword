@@ -152,6 +152,8 @@ private:
 	bool m_bInSect;
 	bool m_bInPara;
 	bool m_bPrevStrongCharRTL;
+	bool m_bLTRCharContext;
+	bool m_bLTROverrideIssued;
 	UT_uint32 m_iDocPosition;
 	bookmark * m_pBookmarks;
 	UT_uint32  m_iBookmarksCount;
@@ -169,7 +171,10 @@ private:
 	bool		m_bCellOpen;					// cell strux open ?
 	UT_Vector	m_vecColumnSpansForCurrentRow;	// placeholder for horizontal cell spans
 	UT_Vector	m_vecColumnWidths;
-	UT_Vector   m_vecEmObjects;               // Objects between cell struxes
+	UT_Vector   m_vecEmObjects;               // Objects between cell
+											  // struxes
+	UT_String   m_charProps;
+	UT_String   m_charRevs;
 };
 
 #endif /* IE_IMP_MSWORD_H */

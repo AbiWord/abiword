@@ -66,7 +66,7 @@
 // undef this to disable support for older images (<= Word95)
 #define SUPPORTS_OLD_IMAGES 1
 
-#include "fribidi/fribidi.h"
+#include <fribidi/fribidi.h>
 
 //
 // Forward decls. to wv's callbacks
@@ -352,6 +352,24 @@ s_fieldFontForListStyle (MSWordListIdType id)
 	}
 }
 
+// MS Word uses the langauge codes as explicit overrides when treating
+// weak characters; this function translates language id to the
+// overrided direction
+// TODO: list of RTL languages is incomplete (the values are found in winnt.h)
+#if 0
+#define PRIMARY_LANG_ID(lgid)    ((short int)(lgid) & 0x3ff)
+static FriBidiCharType s_LanguageToDirection(short unsigned int lid)
+{
+	switch(PRIMARY_LANG_ID(lid))
+	{
+		case 0x0d:
+	    case 0x01:
+			return FRIBIDI_TYPE_RTL;
+		default:
+		    return FRIBIDI_TYPE_LTR;
+	}
+}
+#endif
 /****************************************************************************/
 /****************************************************************************/
 
@@ -517,18 +535,20 @@ IE_Imp_MsWord_97::IE_Imp_MsWord_97(PD_Document * pDocument)
 	m_bInSect(false),
 	m_bInPara(false),
 	m_bPrevStrongCharRTL(false),
+	m_bLTRCharContext(true),
+	m_bLTROverrideIssued(false),
 	m_iDocPosition(0),
 	m_pBookmarks(NULL),
 	m_iBookmarksCount(0),
 	m_iMSWordListId(0),
-        m_bEncounteredRevision(false),
-        m_bInTable(false), 
+    m_bEncounteredRevision(false),
+    m_bInTable(false), 
 	m_iRowsRemaining(0), 
-        m_iCellsRemaining(0),
-        m_iCurrentRow(0),
-        m_iCurrentCell(0),
-        m_bRowOpen(false),
-        m_bCellOpen(false)
+    m_iCellsRemaining(0),
+    m_iCurrentRow(0),
+    m_iCurrentCell(0),
+    m_bRowOpen(false),
+    m_bCellOpen(false)
 {
   for(UT_uint32 i = 0; i < 9; i++)
 	  m_iListIdIncrement[i] = 0;
@@ -1124,13 +1144,74 @@ int IE_Imp_MsWord_97::_charProc (wvParseStruct *ps, U16 eachchar, U8 chartype, U
 			eachchar = (U16)mirror_char;
 	}
 
+
+	// if the character is a weak and we are in LTR context then we
+	// need to issue a direction override
+	FriBidiCharType cType = fribidi_get_type((FriBidiChar)eachchar);
+	if(!FRIBIDI_IS_STRONG(cType) && m_bLTRCharContext && !m_bLTROverrideIssued)
+	{
+		this->_flush();
+
+		const XML_Char * propsArray[5];
+		memset (propsArray, 0, sizeof(propsArray));
+
+		XML_Char prop[]="props";
+		XML_Char rev[] ="revision";
+
+		UT_String props = m_charProps;
+		
+		props +=";dir-override:ltr";
+		propsArray[0] = (const XML_Char*)&prop;
+		propsArray[1] = props.c_str();
+
+		if(m_charRevs.size())
+		{
+			propsArray[2] = (const XML_Char*)&rev;
+			propsArray[3] = m_charRevs.c_str();
+		}
+		
+		if (!getDoc()->appendFmt((const XML_Char **)propsArray))
+		{
+			UT_DEBUGMSG(("#TF: error appending LTR override\n"));
+		}
+		m_bLTROverrideIssued = true;
+	}
+	// if this is a strong character and we previously issued an LTR
+	// override, we need to cancel it.
+	else if(FRIBIDI_IS_STRONG(cType) && m_bLTROverrideIssued)
+	{
+		this->_flush();
+		
+		const XML_Char * propsArray[5];
+		memset (propsArray, 0, sizeof(propsArray));
+
+		XML_Char prop[]="props";
+		XML_Char rev[] ="revision";
+
+		propsArray[0] = (const XML_Char*)&prop;
+		propsArray[1] = m_charProps.c_str();
+
+		if(m_charRevs.size())
+		{
+			propsArray[2] = (const XML_Char*)&rev;
+			propsArray[3] = m_charRevs.c_str();
+		}
+		
+		if (!getDoc()->appendFmt((const XML_Char **)propsArray))
+		{
+			UT_DEBUGMSG(("#TF: error appending LTR override\n"));
+		}
+		m_bLTROverrideIssued = false;
+	}
+	
+	
 	//
 	// Append the character to our character buffer
 	//
+
 	this->_appendChar ((UT_UCSChar) eachchar);
 	m_iDocPosition++;
 
-	FriBidiCharType cType = fribidi_get_type((FriBidiChar)eachchar);
 	if(FRIBIDI_IS_STRONG(cType))
 	{
 		m_bPrevStrongCharRTL = FRIBIDI_IS_RTL(cType);
@@ -2202,10 +2283,11 @@ int IE_Imp_MsWord_97::_beginChar (wvParseStruct *ps, UT_uint32 tag,
 {
 	CHP *achp = static_cast <CHP *>(prop);
 
-	XML_Char * propsArray[5];
+	const XML_Char * propsArray[5];
 	UT_String propBuffer;
-	UT_String props;
 
+	m_charProps.clear();
+	
 	memset (propsArray, 0, sizeof(propsArray));
 
 	// set char tolower if fSmallCaps && fLowerCase
@@ -2218,15 +2300,15 @@ int IE_Imp_MsWord_97::_beginChar (wvParseStruct *ps, UT_uint32 tag,
 	this->_flush ();
 
 	// set language based the lid - TODO: do we want to handle -none- differently?
-	props += "lang:";
+	m_charProps += "lang:";
 
 	if (achp->fBidi)
-		props += wvLIDToLangConverter (achp->lidBidi);
+		m_charProps += wvLIDToLangConverter (achp->lidBidi);
 	else if (!ps->fib.fFarEast)
-		props += wvLIDToLangConverter (achp->lidDefault);
+		m_charProps += wvLIDToLangConverter (achp->lidDefault);
 	else
-		props += wvLIDToLangConverter (achp->lidFE);
-	props += ";";
+		m_charProps += wvLIDToLangConverter (achp->lidFE);
+	m_charProps += ";";
 
 	// decide best codepage based on the lid (as lang code above)
 	UT_String codepage;
@@ -2254,36 +2336,30 @@ int IE_Imp_MsWord_97::_beginChar (wvParseStruct *ps, UT_uint32 tag,
 	// effectively for 0 we should set dir-override to "ltr"
 	// but that is very uggly, since most of the time we will be
 	// applying this override to strong LTR characters that do not need
-	// it. Instead we will use special value "nobidi", which will be processed
-	// in our fp_TextRun, which will either remove it, or translate it to
-	// LTR override, depending on the text.
+	// it. So, instead we will do the processing in the character
+	// procedure; if the character is strong we will do nothing, but
+	// if it is weak, we will set the override
 
-	// unfortunately there were problems with the code in fp_TextRun, so
-	// at the moment we will simply set "ltr"
-
-	// if this segment of text is not bidi and it follows a segement that is
-	// not bidi either, we will do nothing, but if the previous segement was
-	// not bidi, we will set the nobidi value
-
-	xxx_UT_DEBUGMSG(("#TF: _beginChar: [0x%x] achp->fBidi %d, m_bPrevStrongCharRTL %d\n",achp,achp->fBidi,m_bPrevStrongCharRTL));
-	if (!achp->fBidi && m_bPrevStrongCharRTL)
-		props += "dir-override:ltr;";
-	// not entirely sure about this second branch, leave it out for now
-#if 0
-	else if (achp->fBidi && !m_bPrevStrongCharRTL)
-		props += "dir-override:rtl;";
-#endif
-
+	// first of all, cancel any leftover LTR override indicator
+	m_bLTROverrideIssued = false;
+	
+	if (!achp->fBidi)
+		m_bLTRCharContext = true;
+	else
+		m_bLTRCharContext = false;
+		
+	
+	
 	// bold text
 	bool fBold = (achp->fBidi ? achp->fBoldBidi : achp->fBold);
 	if (fBold) {
-		props += "font-weight:bold;";
+		m_charProps += "font-weight:bold;";
 	}
 
 	// italic text
 	bool fItalic = (achp->fBidi ? achp->fItalicBidi : achp->fItalic);
 	if (fItalic) {
-		props += "font-style:italic;";
+		m_charProps += "font-style:italic;";
 	}
 
 	// foreground color
@@ -2291,18 +2367,18 @@ int IE_Imp_MsWord_97::_beginChar (wvParseStruct *ps, UT_uint32 tag,
 	if (ico) {
 		UT_String_sprintf(propBuffer, "color:%s;",
 				  sMapIcoToColor(ico).c_str());
-		props += propBuffer;
+		m_charProps += propBuffer;
 	}
 
 	// underline and strike-through
 	if (achp->fStrike || achp->kul) {
-		props += "text-decoration:";
+		m_charProps += "text-decoration:";
 		if ((achp->fStrike || achp->fDStrike) && achp->kul) {
-			props += "underline line-through;";
+			m_charProps += "underline line-through;";
 		} else if (achp->kul) {
-			props += "underline;";
+			m_charProps += "underline;";
 		} else {
-			props += "line-through;";
+			m_charProps += "line-through;";
 		}
 	}
 
@@ -2310,19 +2386,19 @@ int IE_Imp_MsWord_97::_beginChar (wvParseStruct *ps, UT_uint32 tag,
 	if (achp->fHighlight) {
 		UT_String_sprintf(propBuffer,"bgcolor:%s;",
 				  sMapIcoToColor(achp->icoHighlight).c_str());
-		props += propBuffer;
+		m_charProps += propBuffer;
 	}
 
 	// superscript && subscript
 	if (achp->iss == 1) {
-		props += "text-position: superscript;";
+		m_charProps += "text-position: superscript;";
 	} else if (achp->iss == 2) {
-		props += "text-position: subscript;";
+		m_charProps += "text-position: subscript;";
 	}
 
 	if (achp->fVanish)
 	  {
-	    props += "display:none;";
+	    m_charProps += "display:none;";
 	  }
 
 	// font size (hps is half-points)
@@ -2330,7 +2406,7 @@ int IE_Imp_MsWord_97::_beginChar (wvParseStruct *ps, UT_uint32 tag,
 	U16 hps = (achp->fBidi &&  achp->hpsBidi ? achp->hpsBidi : achp->hps);
 	UT_String_sprintf(propBuffer,
 			"font-size:%dpt;", (int)(hps/2));
-	props += propBuffer;
+	m_charProps += propBuffer;
 
 	// font family
 	char *fname;
@@ -2368,37 +2444,41 @@ int IE_Imp_MsWord_97::_beginChar (wvParseStruct *ps, UT_uint32 tag,
 	UT_ASSERT_HARMLESS(fname != NULL);
 	xxx_UT_DEBUGMSG(("font-family = %s\n", fname));
 
-	props += "font-family:";
+	m_charProps += "font-family:";
 
 	if(fname)
-		props += fname;
+		m_charProps += fname;
 	else
-		props += "Times New Roman";
+		m_charProps += "Times New Roman";
 	FREEP(fname);
 
 	xxx_UT_DEBUGMSG(("DOM: character properties are: '%s'\n", props.c_str()));
 
 	propsArray[0] = (XML_Char *)"props";
-	propsArray[1] = (XML_Char *)props.c_str();
+	propsArray[1] = (XML_Char *)m_charProps.c_str();
 
 	if(!m_bEncounteredRevision && (achp->fRMark || achp->fRMarkDel))
-	  {
+	{
 		// revision "hack" - add a single revision for all revisioned text
 		UT_UCS4String revisionStr ("msword_revisioned_text");
 		getDoc()->addRevision(1, revisionStr.ucs4_str(), revisionStr.size());
 		m_bEncounteredRevision = true;
-	  }
+	}
 
 	if (achp->fRMark)
-	  {
+	{
 	    propsArray[2] = (XML_Char *)"revision";
-	    propsArray[3] = "1";
-	  }
+		m_charRevs = "1";
+	    propsArray[3] = m_charRevs.c_str();
+	}
 	else if (achp->fRMarkDel)
-	  {
+	{
 	    propsArray[2] = (XML_Char *)"revision";
-	    propsArray[3] = "-1";
-	  }
+		m_charRevs = "-1";
+	    propsArray[3] = m_charRevs.c_str();
+	}
+	else
+		m_charRevs.clear();
 		
 	// woah - major error here
 	if(!m_bInSect)
