@@ -94,7 +94,6 @@ void XAP_QNXDialog_FontChooser::runModal(XAP_Frame * pFrame)
 		//NOTE: I could use PfQueryFont for all this information
 		PfQueryFont(newfont, &finfo);
 
-		printf("Selected font [%s] \n", newfont);
 		//Split name[size][style] into pieces
 		s = p = newfont;
 		while (*p && (*p < '0' || *p > '9')) { p++; }
@@ -108,7 +107,6 @@ void XAP_QNXDialog_FontChooser::runModal(XAP_Frame * pFrame)
 		c = *p; *p = '\0';
 		//This is mental having to put the pt on the end
 		char tempsize[20]; sprintf(tempsize, "%spt", s);
-		printf("Set size to %spt \n", tempsize);
 		setFontSize(tempsize); m_bChangedFontSize = UT_TRUE;
 
 		setFontWeight("normal"); m_bChangedFontWeight = UT_TRUE;
@@ -116,11 +114,9 @@ void XAP_QNXDialog_FontChooser::runModal(XAP_Frame * pFrame)
 		while (*p) {
 			switch (*p) {
 			case 'b':
-				printf("Set weight to %s \n", s);
 				setFontWeight("bold");
 				break;
 			case 'i':
-				printf("Set style to %s \n", s);
 				setFontStyle("italic");
 				break;
 			default:
@@ -128,12 +124,10 @@ void XAP_QNXDialog_FontChooser::runModal(XAP_Frame * pFrame)
 			}
 		}
 		
-		printf("Finished \n");
 		m_answer = XAP_Dialog_FontChooser::a_OK;
 		//free(newfont);
 	}
 	else {
-		printf("Didn't select any font \n");
 		m_answer = XAP_Dialog_FontChooser::a_CANCEL;
 	}
 
