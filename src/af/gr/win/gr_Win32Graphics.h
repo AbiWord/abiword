@@ -37,16 +37,39 @@ public:
 	GR_Win32Font(HFONT hFont);
 	~GR_Win32Font();
 	
-	inline HFONT					getHFONT(void)		{ return m_hFont; };
-	inline GR_Win32CharWidths *		getCharWidths(void) { return &m_cw; };
-	inline UT_uint32				getAscent(void)		{ return m_tm.tmAscent; };
-	inline UT_uint32				getDescent(void)	{ return m_tm.tmDescent; };
-	inline UT_uint32				getFontHeight(void)	{ return m_tm.tmHeight; };
-	void							selectFontIntoDC(HDC hdc);
-	//UT_uint32						measureString(const UT_UCSChar* s, int iOffset, int num, unsigned short* pWidths);
-	UT_uint32						measureUnRemappedChar(const UT_UCSChar c);
+private:
+	void					setupFontInfo();
 
-protected:
+	// make GR_Win32Graphics an "aquaintance" of GR_Win32Font
+	class Acq
+	{
+		friend class GR_Win32Graphics;
+
+		static inline HFONT		getHFONT(GR_Win32Font& font)
+			{ return font.m_hFont; };
+#if 0
+		static UT_uint32	measureString(	GR_Win32Font& font,
+											const UT_UCSChar* s,
+											int iOffset,
+											int num,
+											unsigned short* pWidths);
+#endif
+		static UT_uint32	measureUnRemappedChar(	GR_Win32Font& font,
+													UT_UCSChar c);
+		static const GR_Win32CharWidths&
+		getCharWidths(const GR_Win32Font& font)
+			{ return font.m_cw; };
+		static UT_uint32	getAscent(const GR_Win32Font& font)
+			{ return font.m_tm.tmAscent; };
+		static UT_uint32	getDescent(const GR_Win32Font& font)
+			{ return font.m_tm.tmDescent; };
+		static UT_uint32	getFontHeight(const GR_Win32Font& font)
+			{ return font.m_tm.tmHeight; };
+
+		static void				selectFontIntoDC(GR_Win32Font& font, HDC hdc);
+	};
+	friend class Acq;
+
 	HDC						m_oldHDC;
 	HFONT					m_hFont;
 	UT_uint32				m_defaultCharWidth;
@@ -150,6 +173,9 @@ protected:
 
 private:
 	void 					_constructorCommonCode(HDC);
+
+	DWORD					m_clrXorPen;
+	HPEN					m_hXorPen;
 };
 
 #endif /* GR_WIN32GRAPHICS_H */
