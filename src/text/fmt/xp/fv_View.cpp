@@ -22,7 +22,6 @@
 #include <stdio.h>
 #include <ctype.h>
 #include <string.h>
-
 #include "ut_assert.h"
 #include "ut_debugmsg.h"
 #include "ut_growbuf.h"
@@ -1623,7 +1622,8 @@ void FV_View::findReset(void)
 
 	// set cursor to start
 	m_iFindCur = m_iFindPosStart;
-	
+
+	m_bDoneFind = UT_FALSE;
 }
 
 /*
@@ -1633,7 +1633,9 @@ void FV_View::findReset(void)
 UT_Bool FV_View::findNext(const UT_UCSChar * string, UT_Bool bSelect)
 {
 	UT_ASSERT(string);
-	UT_ASSERT(UT_UCS_strlen(string) > 0);
+
+	if (UT_UCS_strlen(string) <= 0)
+		return UT_TRUE;
 	
 	UT_GrowBuf buffer;
 	fl_BlockLayout * block;
@@ -1728,6 +1730,9 @@ UT_Bool FV_View::findNext(const UT_UCSChar * string, UT_Bool bSelect)
 
 				// wipe the old buffer, since we're done with it
 				buffer.truncate(0);//(0, buffer.getLength());
+
+				// we also have done something, so set the boolean
+				m_bDoneFind = UT_TRUE;
 				
 				return UT_TRUE;
 			}
@@ -1771,12 +1776,53 @@ UT_Bool FV_View::findNext(const UT_UCSChar * string, UT_Bool bSelect)
 
 	return UT_FALSE;
 }
-	
 
-UT_Bool	FV_View::findNextAndReplace(const UT_UCSChar * find, const UT_UCSChar * replace)
+/*
+  Returns UT_TRUE if it actually did a replace, UT_FALSE if it did nothing, or
+  simply did a search to mimic the behavior of popular find/replace dialogs.
+*/
+
+UT_Bool	FV_View::findReplace(const UT_UCSChar * find, const UT_UCSChar * replace)
 {
-	// TODO
-	return UT_TRUE;
+	
+	// if we have done a find, and there is a selection, then replace what's in the
+	// selection and move on to next find (batch run, the common case)
+	if (m_bDoneFind == UT_TRUE && isSelectionEmpty() == UT_FALSE)
+	{
+		_deleteSelection();
+
+		// we return the result of the replacement (the insert), not the
+		// subsequent move
+		UT_Bool result = cmdCharInsert((UT_UCSChar *) replace, UT_UCS_strlen(replace));
+
+		// we find the next occurance
+		findNext(find, UT_TRUE);
+		
+		return result;
+	}
+
+	// if we have done a find, but there is no selection, do a find for them
+	// but no replace
+	if (m_bDoneFind == UT_TRUE && isSelectionEmpty() == UT_TRUE)
+	{
+		findNext(find, UT_TRUE);
+		return UT_FALSE;
+	}
+	
+	// if we haven't done a find yet, do a find for them
+	if (m_bDoneFind == UT_FALSE)
+	{
+		findNext(find, UT_TRUE);
+		return UT_FALSE;
+	}
+
+	UT_ASSERT(UT_SHOULD_NOT_HAPPEN);
+	return UT_FALSE;
+}
+
+UT_Bool FV_View::findReplaceAll(const UT_UCSChar * find, const UT_UCSChar * replace)
+{
+	return UT_FALSE;
 }
 
 fl_BlockLayout * FV_View::_findGetCurrentBlock(void)

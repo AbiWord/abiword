@@ -86,7 +86,7 @@ void AP_Dialog_Replace::useEnd(void)
 		if (m_findString)
 			UT_UCS_cloneString(&_m_findString, m_findString);
 		
-		FREEP(m_replaceString);
+		FREEP(_m_replaceString);
 		if (m_replaceString)
 			UT_UCS_cloneString(&_m_replaceString, m_replaceString);
 
@@ -128,10 +128,17 @@ UT_Bool AP_Dialog_Replace::setFindString(const UT_UCSChar * string)
 UT_UCSChar * AP_Dialog_Replace::getFindString(void)
 {
 	UT_UCSChar * string = NULL;
-	if (UT_UCS_cloneString(&string, m_findString))
-		return string;
+	if (m_findString)
+	{
+		if (UT_UCS_cloneString(&string, m_findString))
+			return string;
+	}
 	else
-		return NULL;
+	{
+		if (UT_UCS_cloneString_char(&string, ""))
+			return string;
+	}
+	return NULL;
 }
 
 UT_Bool AP_Dialog_Replace::setReplaceString(const UT_UCSChar * string)
@@ -143,10 +150,18 @@ UT_Bool AP_Dialog_Replace::setReplaceString(const UT_UCSChar * string)
 UT_UCSChar * AP_Dialog_Replace::getReplaceString(void)
 {
 	UT_UCSChar * string = NULL;
-	if (UT_UCS_cloneString(&string, m_replaceString))
-		return string;
+	if (m_replaceString)
+	{
+		if (UT_UCS_cloneString(&string, m_replaceString))
+			return string;
+	}
 	else
-		return NULL;
+	{
+		if (UT_UCS_cloneString_char(&string, ""))
+			return string;
+	}
+
+	return NULL;
 }
 	
 UT_Bool AP_Dialog_Replace::setMatchCase(UT_Bool match)
@@ -167,7 +182,8 @@ UT_Bool AP_Dialog_Replace::findNext()
 	UT_ASSERT(m_pView);
 
 	UT_ASSERT(m_findString);
-
+	UT_ASSERT(m_replaceString);
+	
 	// so we save our attributes to persistent storage
 	m_didSomething = UT_TRUE;
 	
@@ -185,8 +201,8 @@ UT_Bool AP_Dialog_Replace::findReplace()
 	// so we save our attributes to persistent storage
 	m_didSomething = UT_TRUE;
 	
-	// TODO
-	return UT_TRUE;
+	// call view to do the work
+	return m_pView->findReplace(m_findString, m_replaceString);
 }
 
 UT_Bool AP_Dialog_Replace::findReplaceAll()
@@ -198,7 +214,8 @@ UT_Bool AP_Dialog_Replace::findReplaceAll()
 	
 	// so we save our attributes to persistent storage
 	m_didSomething = UT_TRUE;
+
 	
-	// TODO
-	return UT_TRUE;
+	// call view to do the work
+	return m_pView->findReplace(m_findString, m_replaceString);
 }

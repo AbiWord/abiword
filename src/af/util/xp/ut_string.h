@@ -36,11 +36,12 @@ UT_Bool UT_XML_cloneString(XML_Char *& rszDest, const XML_Char * szSource);
 UT_sint32 UT_XML_stricmp(const XML_Char * sz1, const XML_Char * sz2);
 
 // the naming convention has deviated from the above.  it's kind
-// of a mutant libc/C++ naming convention.
+// of a mutant libc/C++ naming convention.  
 UT_UCSChar * 	UT_UCS_strstr(const UT_UCSChar * phaystack, const UT_UCSChar * pneedle);
 UT_uint32 		UT_UCS_strlen(const UT_UCSChar * string);
 UT_UCSChar * 	UT_UCS_strcpy(UT_UCSChar * dest, const UT_UCSChar * src);
 UT_UCSChar * 	UT_UCS_strcpy_char(UT_UCSChar * dest, const char * src);
+char *			UT_UCS_strcpy_to_char(char * dest, const UT_UCSChar * src);
 UT_Bool			UT_UCS_cloneString(UT_UCSChar ** dest, const UT_UCSChar * src);
 UT_Bool			UT_UCS_cloneString_char(UT_UCSChar ** dest, const char * src);
 

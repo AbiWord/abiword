@@ -33,6 +33,7 @@
 #include "ap_UnixDialog_Replace.h"
 
 #define FREEP(p)	do { if (p) free(p); (p)=NULL; } while (0)
+#define DELETEP(p)	do { if (p) delete p; } while (0)
 
 /*****************************************************************/
 AP_Dialog * AP_UnixDialog_Replace::static_constructor(AP_DialogFactory * pFactory,
@@ -85,20 +86,31 @@ static void FindCallback(GtkWidget * widget, AP_UnixDialog_Replace * repDialog)
 }
 
 
-static void ReplaceCallback(GtkWidget * widget,
-							AP_UnixDialog_Replace * repDialog)
+static void ReplaceCallback(GtkWidget * widget, AP_UnixDialog_Replace * repDialog)
 {
-	gchar * replaceText;
+	UT_ASSERT(widget);
+	UT_ASSERT(repDialog);
 
-	/* TODO:  know who allocates and frees this memory returned from
-              gtk_entry_get_text()
-    */
-	UT_DEBUGMSG(("ReplaceCallback... called\n"));
+	char * findEntryText;
+	char * replaceEntryText;
 
-	UT_DEBUGMSG(("findEntry=%p\n", repDialog->findEntry));
+	findEntryText = (char *) gtk_entry_get_text(GTK_ENTRY(repDialog->findEntry));
+	replaceEntryText = (char *) gtk_entry_get_text(GTK_ENTRY(repDialog->replaceEntry));
+	
+	UT_DEBUGMSG(("Find entry contents: \"%s\"\n", ((findEntryText) ? findEntryText : "NULL")));
+	UT_DEBUGMSG(("Replace entry contents: \"%s\"\n", ((replaceEntryText) ? replaceEntryText : "NULL")));
 
-	replaceText = gtk_entry_get_text(GTK_ENTRY(repDialog->replaceEntry));
-	UT_DEBUGMSG(("replace contents: \"%s\"\n",((replaceText) ? replaceText : "NULL")));
+	UT_UCSChar * findString;
+	UT_UCSChar * replaceString;
+
+	UT_UCS_cloneString_char(&findString, findEntryText);
+	UT_UCS_cloneString_char(&replaceString, replaceEntryText);
+	
+	repDialog->setFindString(findString);
+	repDialog->setReplaceString(replaceString);
+	
+	repDialog->findReplace();
+	
 }
 
 static void ReplaceAllCallback(GtkWidget *widget, 
@@ -182,14 +194,17 @@ void AP_UnixDialog_Replace::runModal(AP_Frame * pFrame)
 
 	// this dialog is persistent, so we set our text to what
 	// it was last time
-/*
-	if (m_findString && strlen(m_findString))
 	{
-		gtk_entry_set_text(GTK_ENTRY(findEntry), m_findString);
-		gtk_entry_select_region(GTK_ENTRY(findEntry),
-								0, GTK_ENTRY(findEntry)->text_length);
+		UT_UCSChar * bufferUnicode = getFindString();
+		char * bufferNormal = new char [UT_UCS_strlen(bufferUnicode)];
+		UT_UCS_strcpy_to_char(bufferNormal, bufferUnicode);
+		FREEP(bufferUnicode);
+		
+		gtk_entry_set_text(GTK_ENTRY(findEntry), bufferNormal);
+		gtk_entry_select_region(GTK_ENTRY(findEntry), 0, GTK_ENTRY(findEntry)->text_length);
+
+		DELETEP(bufferNormal);
 	}
-*/
 
 	// create the find label
 	findLabel = gtk_label_new("Find: ");
@@ -221,17 +236,25 @@ void AP_UnixDialog_Replace::runModal(AP_Frame * pFrame)
 	gtk_widget_show(replaceBox);
 
 	replaceEntry = gtk_entry_new_with_max_length(50);
+	
+	{
+		UT_UCSChar * bufferUnicode = getReplaceString();
+		char * bufferNormal = new char [UT_UCS_strlen(bufferUnicode)];
+		UT_UCS_strcpy_to_char(bufferNormal, bufferUnicode);
+		FREEP(bufferUnicode);
+		
+		gtk_entry_set_text(GTK_ENTRY(replaceEntry), bufferNormal);
 
-//	if (m_replaceString && strlen(m_replaceString))
-//		gtk_entry_set_text(GTK_ENTRY(replaceEntry), m_replaceString);
-
+		DELETEP(bufferNormal);
+	}
+		
 	gtk_box_pack_end (GTK_BOX (replaceBox), replaceEntry, TRUE, TRUE, 10);
 	gtk_widget_show (replaceEntry);
 
 	gtk_signal_connect(GTK_OBJECT(replaceEntry),
 					   "activate",
 					   GTK_SIGNAL_FUNC(ReplaceCallback),
-					   (gpointer) this);
+					   this);
 	
 	replaceLabel = gtk_label_new("Replace With: ");
 	gtk_label_set_justify(GTK_LABEL(replaceLabel), GTK_JUSTIFY_RIGHT);
@@ -264,18 +287,18 @@ void AP_UnixDialog_Replace::runModal(AP_Frame * pFrame)
 	gtk_widget_show(replaceButton);
 
 	gtk_signal_connect(GTK_OBJECT(replaceButton),
-							  "clicked",
-							  GTK_SIGNAL_FUNC(ReplaceCallback),
-							  this);
+					   "clicked",
+					   GTK_SIGNAL_FUNC(ReplaceCallback),
+					   this);
 
 	replaceAllButton = gtk_button_new_with_label(" Replace All ");
 	gtk_box_pack_start(GTK_BOX(buttonBox), replaceAllButton, TRUE, FALSE, 0);
 	gtk_widget_show(replaceAllButton);
 
 	gtk_signal_connect(GTK_OBJECT(replaceButton),
-							  "clicked",
-							  GTK_SIGNAL_FUNC(ReplaceAllCallback),
-							  this);
+					   "clicked",
+					   GTK_SIGNAL_FUNC(ReplaceAllCallback),
+					   this);
 	
 	cancelButton = gtk_button_new_with_label(" Cancel ");
 	gtk_box_pack_start(GTK_BOX(buttonBox), cancelButton, TRUE, FALSE, 0);

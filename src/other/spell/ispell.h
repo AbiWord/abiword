@@ -42,9 +42,12 @@
 
 /*
  * $Log$
- * Revision 1.4  1999/01/07 01:07:48  paul
- * Fixed spell leaks.
+ * Revision 1.5  1999/01/07 05:02:25  sterwill
+ * Checking in half-broken to avoid tree lossage
  *
+ * of including C++ headers in C source files.
+ *
+ * Revision 1.5  1999/01/07 05:02:25  sterwill
  * Checking in half-broken to avoid tree lossage
  *
  * Revision 1.4  1999/01/07 01:07:48  paul
@@ -108,7 +111,8 @@
  * Add typecasts to the the 7-bit versions of ichar* routines
  *
  * Revision 1.57  1994/01/25  07:11:48  geoff
-#include "ut_types.h"	// to make malloc magic work on Win32
+#include "ut_types.h"
+// to make malloc magic work on Win32
  *
  */
 

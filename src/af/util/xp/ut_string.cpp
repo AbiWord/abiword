@@ -255,6 +255,21 @@ UT_UCSChar * UT_UCS_strcpy_char(UT_UCSChar * dest, const char * src)
 	return dest;
 }
 
+char * UT_UCS_strcpy_to_char(char * dest, const UT_UCSChar * src)
+{
+	UT_ASSERT(dest);
+	UT_ASSERT(src);
+
+	char * 			d = dest;
+	UT_UCSChar * 	s = (UT_UCSChar *) src;
+
+	while (*s != NULL)
+		*d++ = (char) *s++;
+	*d = NULL;
+	
+	return dest;
+}
+
 UT_Bool UT_UCS_cloneString(UT_UCSChar ** dest, const UT_UCSChar * src)
 {
 	UT_uint32 length = UT_UCS_strlen(src) + 1;

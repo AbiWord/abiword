@@ -128,7 +128,8 @@ public:
 	// find and replace 
 	void 			findReset(void);
 	UT_Bool 		findNext(const UT_UCSChar * string, UT_Bool bSelect = UT_TRUE);
-	UT_Bool			findNextAndReplace(const UT_UCSChar * find, const UT_UCSChar * replace);
+	UT_Bool			findReplace(const UT_UCSChar * find, const UT_UCSChar * replace);
+	UT_Bool			findReplaceAll(const UT_UCSChar * find, const UT_UCSChar * replace);	
 		
 // ----------------------
 
@@ -218,6 +219,8 @@ protected:
 
 	PT_DocPosition		m_iFindBufferOffset;
 
+	UT_Bool				m_bDoneFind;
+	
 	fl_BlockLayout * 	_findGetCurrentBlock(void);
 	fl_BlockLayout * 	_findGetNextBlock(UT_Bool * wrapped);
 
