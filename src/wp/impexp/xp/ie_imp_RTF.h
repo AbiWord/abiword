@@ -88,9 +88,9 @@ public:
 	ParaJustification	m_justification;
 	UT_uint32	m_spaceBefore;	// space above paragraph in twips
 	UT_uint32	m_spaceAfter;	// space above paragraph in twips
-    UT_uint32	m_indentLeft;	// left indent in twips
-    UT_uint32	m_indentRight;	// right indent in twips
-    UT_uint32	m_indentFirst;	// first line indent in twips
+    UT_sint32	m_indentLeft;	// left indent in twips
+    UT_sint32	m_indentRight;	// right indent in twips
+    UT_sint32	m_indentFirst;	// first line indent in twips
 	double	m_lineSpaceVal;		// line spaceing value
 	UT_Bool	m_lineSpaceExact;	// TRUE if m_lineSpaceVal is an exact value, FALSE if multiple
 	UT_Vector m_tabStops;
