@@ -5,6 +5,7 @@
 
 /* perl sux */
 #undef ref
+#undef list
 
 #include "../../af/xap/xp/xap_App.h"
 #include "../../af/xap/xp/xap_Frame.h"
