@@ -32,6 +32,7 @@
 #include "ev_Menu_Actions.h"
 #include "ev_Toolbar_Actions.h"
 #include "xap_App.h"
+#include "xap_AppImpl.h"
 #include "xap_Args.h"
 #include "gr_Image.h"
 #include "xap_Frame.h"
@@ -77,11 +78,14 @@ XAP_App::XAP_App(XAP_Args * pArgs, const char * szAppName)
 	  m_bBonoboRunning(false),
 	  m_bEnableSmoothScrolling(true),
 	  m_pKbdLang(NULL), // must not be deleted by destructor !!!
- 	  m_pUUIDGenerator(NULL)
+ 	  m_pUUIDGenerator(NULL),
+	  m_pImpl(NULL)
 {
 #ifdef DEBUG
 	_fundamentalAsserts(); // see the comments in the function itself
 #endif
+	
+	m_pImpl = XAP_AppImpl::static_constructor();
 	
 	UT_ASSERT(szAppName && *szAppName);
 	m_pApp = this;
@@ -132,6 +136,7 @@ XAP_App::~XAP_App()
 	GR_CharWidthsCache::destroyCharWidthsCache();
 
 	DELETEP(m_pUUIDGenerator);
+	DELETEP(m_pImpl);
 }
 
 const char* XAP_App::getBuildId ()

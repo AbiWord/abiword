@@ -252,18 +252,6 @@ bool XAP_BeOSFrame::show()
 	return true;
 }
 
-bool XAP_BeOSFrame::openURL(const char * szURL)
-{
-	char *url;
-	url = szURL;
-
-	printf("OpenURL= ");
-	printf(url);
-	printf("\n");
-
-	be_roster->Launch("text/html", 1, &url);
-	return true;
-}
 
 bool XAP_BeOSFrame::updateTitle()
 {

@@ -385,25 +385,12 @@ bool XAP_CocoaFrameImpl::_raise()
 
 bool XAP_CocoaFrameImpl::_show()
 {
-	UT_DEBUGMSG (("XAP_CocoaFrame::raise()\n"));
+	UT_DEBUGMSG (("XAP_CocoaFrame::show()\n"));
 	[[m_frameController window] makeKeyAndOrderFront:m_frameController];
 	[[NSNotificationCenter defaultCenter] postNotificationName:XAP_FrameNeedToolbar object:m_frameController];
 	return true;
 }
 
-bool XAP_CocoaFrameImpl::_openURL(const char * szURL)
-{  
-	NSString* str = [[NSString alloc] initWithUTF8String:szURL];
-	NSURL *URL = [[NSURL alloc] initWithString:str];		
-	
-	NSWorkspace * space = [NSWorkspace sharedWorkspace];
-	[space openURL:URL];
-
-	[URL release];
-	[str release];
-	
-	return true;
-}
 
 UT_RGBColor XAP_CocoaFrameImpl::getColorSelBackground () const
 {
@@ -580,12 +567,14 @@ void XAP_CocoaFrameImpl::setToolbarRect(const NSRect &r)
 
 - (void)windowDidBecomeKey:(NSNotification *)aNotification
 {
+	UT_DEBUGMSG(("windowDidBecomeKey:\n"));
 	[[NSNotificationCenter defaultCenter] postNotificationName:XAP_CocoaFrameImpl::XAP_FrameNeedToolbar 
 			object:self];
 }
 
 - (void)windowDidExpose:(NSNotification *)aNotification
 {
+	UT_DEBUGMSG(("windowDidExpose:\n"));
 //	[[NSNotificationCenter defaultCenter] postNotificationName:XAP_CocoaFrameImpl::XAP_FrameNeedToolbar 
 //			object:self];
 }

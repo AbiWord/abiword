@@ -27,6 +27,7 @@ DIRS=		$(ABI_GNOME_DIR)
 endif
 
 CPPSRCS=		xap_UnixApp.cpp				\
+			xap_UnixAppImpl.cpp                     \
 			xap_UnixClipboard.cpp			\
 			xap_UnixDialogHelper.cpp		\
 			xap_UnixDlg_ClipArt.cpp			\

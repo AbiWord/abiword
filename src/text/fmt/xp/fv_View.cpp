@@ -5192,9 +5192,7 @@ bool FV_View::gotoTarget(AP_JumpTarget type, UT_UCSChar *data)
 			UT_DEBUGMSG(("fv_View::gotoTarget: bookmark [%s]\n",numberString));
 			if(UT_isUrl(numberString))
 			{
-				XAP_Frame * pFrame = static_cast<XAP_Frame *>(getParentData());
-				UT_ASSERT((pFrame));
-				pFrame->openURL(numberString);
+				XAP_App::getApp()->openURL(numberString);
 				return false;
 			}
 			if(m_pDoc->isBookmarkUnique(static_cast<const XML_Char *>(numberString)))

@@ -85,7 +85,6 @@ protected:
 	virtual bool _runModalContextMenu(AV_View * pView, const char * szMenuName,
 									  UT_sint32 x, UT_sint32 y);
 	virtual void _setFullScreen(bool isFullScreen);
-	virtual bool _openURL(const char * szURL);
 	virtual void _nullUpdate (void) const;
 	virtual void _setCursor(GR_Graphics::Cursor cursor);
 

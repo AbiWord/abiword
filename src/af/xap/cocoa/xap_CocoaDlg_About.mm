@@ -80,7 +80,7 @@ void XAP_CocoaDialog_About::event_OK(void)
 
 void XAP_CocoaDialog_About::event_URL(void)
 {
-	m_pFrame->openURL("http://www.abisource.com/");
+	XAP_App::getApp()->openURL("http://www.abisource.com/");
 }
 
 /*****************************************************************/

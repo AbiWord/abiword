@@ -299,7 +299,13 @@ bool EV_CocoaMenu::menuEvent(XAP_Menu_Id menuid)
 	UT_ASSERT(pEM);						// make sure it's bound to something
 
 	UT_String script_name(pAction->getScriptName());
-	invokeMenuMethod(static_cast<XAP_CocoaApp*>(XAP_App::getApp())->_getFrontFrame()->getCurrentView(), pEM, script_name);
+	XAP_Frame* frame = NULL;
+	AV_View* view = NULL;
+	frame = static_cast<XAP_CocoaApp*>(XAP_App::getApp())->_getFrontFrame();
+	if (frame) {
+		view =  frame->getCurrentView();
+	}
+	invokeMenuMethod(view, pEM, script_name);
 	return true;
 }
 

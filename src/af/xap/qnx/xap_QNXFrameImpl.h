@@ -91,8 +91,6 @@ protected:
 	PtWidget_t * _getSunkenBox(void) {return m_wSunkenBox;}
 		static int resize(PtWidget_t *w, void *data, PtCallbackInfo_t *info) ;
 
-	virtual bool _openURL(const char * szURL);
-	virtual bool _openHelpURL(const char * szURL) { _openURL(szURL); return true; }
 	virtual void _setFullScreen(bool changeToFullScreen);
 	class _fe
         {

@@ -25,6 +25,7 @@ ABI_ROOT:=$(shell pwd)/../../../..
 include $(ABI_ROOT)/src/config/abi_defs_wp.mk
 
 CPPSRCS=		xap_QNXApp.cpp				\
+			xap_QNXAppImpl.cpp                      \
 			xap_QNXClipboard.cpp			\
 			xap_QNXDlg_About.cpp			\
 			xap_QNXDlg_Image.cpp			\

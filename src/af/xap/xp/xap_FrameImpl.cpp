@@ -82,76 +82,7 @@ UT_RGBColor XAP_FrameImpl::getColorSelForeground () const
 	return UT_RGBColor(255, 255, 255);
 }
 
-inline static void _catPath(UT_String& st, const char* st2)
-{
-	if (st.size() > 0)
-	{
-		if (st[st.size() - 1] != '/')
-			st += '/';
-	}
-	else
-		st += '/';
 
-	st += st2;
-}
-
-UT_String XAP_FrameImpl::_localizeHelpUrl (const char * pathBeforeLang, 
-										   const char * pathAfterLang,
-										   const char * remoteURLbase)
-{
-	XAP_App* pApp = m_pFrame->getApp();
-
-	UT_return_val_if_fail(pApp, "");
-	XAP_Prefs* pPrefs = pApp->getPrefs();
-	UT_return_val_if_fail(pPrefs, "");
-
-	const char* abiSuiteLibDir = pApp->getAbiSuiteLibDir();
-	const XML_Char* abiSuiteLocString = NULL;
-	UT_String url;
-
-	// evil...
-	pPrefs->getPrefsValue((XML_Char*)"StringSet", &abiSuiteLocString);
-
-	// 1st try file on user's computer (local file), if not exist try remote help
-	UT_String path(abiSuiteLibDir);
-	_catPath(path, pathBeforeLang);
-
-	UT_String localized_path(path);
-	_catPath(localized_path, abiSuiteLocString);
-
-	if (UT_directoryExists(localized_path.c_str()))
-	{
-		// the localised help exists, so use it
-		path = localized_path;
-	}
-	else
-	{
-		// the localised help directory does not exist, so fall back to the
-		// en-US help location, which is the default lang, so usually available
-		localized_path = path;
-		_catPath(localized_path, "en-US");
-	}
-
-	_catPath(localized_path, pathAfterLang);
-	localized_path += ".html";
-
-	if (remoteURLbase && !UT_isRegularFile(localized_path.c_str()))
-	{
-		// not found, so build localized path for remote URL (but we can't verify remote URL)
-		url = remoteURLbase;
-		//_catPath(url, pathBeforeLang);
-		_catPath(url, abiSuiteLocString);
-		_catPath(url, pathAfterLang);
-		url += ".html";
-	}
-	else
-	{
-		url = "file://";
-		url += localized_path;
-	}
-
-	return url;
-}
 
 #define MAX_TITLE_LENGTH 256
 bool XAP_FrameImpl::_updateTitle()

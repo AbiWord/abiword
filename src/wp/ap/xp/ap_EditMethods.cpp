@@ -675,6 +675,7 @@ public:
 /*****************************************************************/
 
 #define _D_ 			EV_EMT_REQUIREDATA
+#define _A_				EV_EMT_APP_METHOD
 
 #define F(fn)			ap_EditMethods::fn
 #define N(fn)			#fn
@@ -843,8 +844,8 @@ static EV_EditMethod s_arrayEditMethods[] =
 	EV_EditMethod(NF(fileImport), 0, ""),
 	EV_EditMethod(NF(fileInsertGraphic),	0,	""),
 	EV_EditMethod(NF(fileInsertPageBackgroundGraphic),	0,	""),
-	EV_EditMethod(NF(fileNew),				0,	""),
-	EV_EditMethod(NF(fileOpen), 			0,	""),
+	EV_EditMethod(NF(fileNew),				_A_,	""),
+	EV_EditMethod(NF(fileOpen), 			_A_,	""),
 	EV_EditMethod(NF(filePreviewWeb), 0, ""),
 	EV_EditMethod(NF(fileRevert), 0, ""),
 	EV_EditMethod(NF(fileSave), 			0,	""),
@@ -867,15 +868,15 @@ static EV_EditMethod s_arrayEditMethods[] =
 	EV_EditMethod(NF(go),					0,	""),
 
 	// h
-	EV_EditMethod(NF(helpAboutGnomeOffice), 0, ""),
-	EV_EditMethod(NF(helpAboutGnu), 0, ""),
-	EV_EditMethod(NF(helpAboutOS),			0,		""),
-	EV_EditMethod(NF(helpCheckVer), 		0,		""),
-	EV_EditMethod(NF(helpContents), 		0,		""),
-	EV_EditMethod(NF(helpCredits), 0, ""),
-	EV_EditMethod(NF(helpIndex),			0,		""),
-	EV_EditMethod(NF(helpReportBug), 0, ""),
-	EV_EditMethod(NF(helpSearch),			0,		""),
+	EV_EditMethod(NF(helpAboutGnomeOffice), _A_, ""),
+	EV_EditMethod(NF(helpAboutGnu), _A_, ""),
+	EV_EditMethod(NF(helpAboutOS),			_A_,		""),
+	EV_EditMethod(NF(helpCheckVer), 		_A_,		""),
+	EV_EditMethod(NF(helpContents), 		_A_,		""),
+	EV_EditMethod(NF(helpCredits), _A_, ""),
+	EV_EditMethod(NF(helpIndex),			_A_,		""),
+	EV_EditMethod(NF(helpReportBug), _A_, ""),
+	EV_EditMethod(NF(helpSearch),			_A_,		""),
 	EV_EditMethod(NF(history),	            0,      ""),
 	EV_EditMethod(NF(hyperlinkJump),		0,		""),
 	EV_EditMethod(NF(hyperlinkStatusBar),	0,		""),
@@ -1211,6 +1212,7 @@ EV_EditMethodContainer * AP_GetEditMethods(void)
 }
 
 #undef _D_
+#undef _A_
 #undef F
 #undef N
 #undef NF
@@ -1225,7 +1227,7 @@ EV_EditMethodContainer * AP_GetEditMethods(void)
 #define EX(fn)		F(fn)(pAV_View, pCallData)
 
 // forward declaration
-static bool _openURL(AV_View* pAV_View, const char* url);
+static bool _openURL(const char* url);
 
 static UT_Timer * s_pToUpdateCursor = NULL;
 static XAP_Frame * s_pLoadingFrame = NULL;
@@ -1708,10 +1710,12 @@ static bool s_AskForPathname(XAP_Frame * pFrame,
 	UT_ASSERT(ppPathname);
 	*ppPathname = NULL;
 
-	pFrame->raise();
-
+	if (pFrame) {
+		pFrame->raise();
+	}
+	
 	XAP_DialogFactory * pDialogFactory
-		= static_cast<XAP_DialogFactory *>(pFrame->getDialogFactory());
+		= static_cast<XAP_DialogFactory *>(XAP_App::getApp()->getDialogFactory());
 
 	XAP_Dialog_FileOpenSaveAs * pDialog
 		= static_cast<XAP_Dialog_FileOpenSaveAs *>(pDialogFactory->requestDialog(id));
@@ -1726,7 +1730,7 @@ static bool s_AskForPathname(XAP_Frame * pFrame,
 		pDialog->setCurrentPathname(pSuggestedName);
 		pDialog->setSuggestFilename(true);
 	}
-	else
+	else if (pFrame)
 	{
 		// if caller does not want to suggest a name, seed the dialog
 		// to the directory containing this document (if it has a
@@ -1741,6 +1745,11 @@ static bool s_AskForPathname(XAP_Frame * pFrame,
 			pDialog->setCurrentPathname(pFrame->getFilename());
 			pDialog->setSuggestFilename(false);
 		}
+	}
+	else {
+		// we don't have a frame. This is likely that we are going to open
+		// so don't need to suggest a name.
+		pDialog->setSuggestFilename(false);
 	}
 
 	// to fill the file types popup list, we need to convert
@@ -2147,11 +2156,14 @@ Defun1(importStyles)
 Defun1(fileOpen)
 {
 	CHECK_FRAME;
-	XAP_Frame * pFrame = static_cast<XAP_Frame *> (pAV_View->getParentData());
-	UT_ASSERT(pFrame);
-
+	XAP_Frame * pFrame = NULL;
+	IEFileType ieft = IEFT_Unknown;
+	if (pAV_View) {
+		static_cast<XAP_Frame *> (pAV_View->getParentData());
+		UT_ASSERT(pFrame);
+		ieft = static_cast<PD_Document *>(pFrame->getCurrentDoc())->getLastOpenedType();
+	}
 	char * pNewFile = NULL;
-	IEFileType ieft = static_cast<PD_Document *>(pFrame->getCurrentDoc())->getLastOpenedType();
 	bool bOK = s_AskForPathname(pFrame,false, XAP_DIALOG_ID_FILE_OPEN, NULL,&pNewFile,&ieft);
 
 	if (!bOK || !pNewFile)
@@ -2169,7 +2181,7 @@ static UT_Error
 s_importFile (XAP_Frame * pFrame, const char * pNewFile, IEFileType ieft)
 {
 	UT_DEBUGMSG(("fileOpen: loading [%s]\n",pNewFile));
-	XAP_App * pApp = pFrame->getApp();
+	XAP_App * pApp = XAP_App::getApp();
 	UT_ASSERT(pApp);
 	XAP_Frame * pNewFrame = NULL;
 	// not needed bool bRes = false;
@@ -2181,7 +2193,7 @@ s_importFile (XAP_Frame * pFrame, const char * pNewFile, IEFileType ieft)
 	// current frame if it's the only top-level view on an empty,
 	// untitled document.
 
-	if (pFrame->isDirty() || pFrame->getFilename() || (pFrame->getViewNumber() > 0))
+	if ((pFrame == NULL) || pFrame->isDirty() || pFrame->getFilename() || (pFrame->getViewNumber() > 0))
 	{
 		// open new document in a new frame.  if we fail,
 		// put up an error dialog on current frame (our
@@ -2524,7 +2536,7 @@ Defun1(filePreviewWeb)
   else
 	  tmpUrl = UT_catPathname("file:///", szTempFileName);
 
-  bool bOk = _openURL(pAV_View, tmpUrl);
+  bool bOk = _openURL(tmpUrl);
   FREEP(tmpUrl);
 
 #if 0
@@ -2939,18 +2951,21 @@ Defun(dlgMetaData)
 Defun(fileNew)
 {
 	CHECK_FRAME;
-	FV_View * pView = static_cast<FV_View *>(pAV_View);
-
-	XAP_Frame * pFrame = static_cast<XAP_Frame *>(pView->getParentData());
-	UT_ASSERT(pFrame);
-
-	XAP_App * pApp = pFrame->getApp();
+	XAP_Frame * pFrame = NULL;
+	if (pAV_View) {
+		FV_View * pView = static_cast<FV_View *>(pAV_View);
+	
+		pFrame = static_cast<XAP_Frame *>(pView->getParentData());
+		UT_ASSERT(pFrame);
+	
+	
+		pFrame->raise();
+	}
+	XAP_App * pApp = XAP_App::getApp();
 	UT_ASSERT(pApp);
 
-	pFrame->raise();
-
-	XAP_DialogFactory * pDialogFactory
-		= static_cast<XAP_DialogFactory *>(pFrame->getDialogFactory());
+ 	XAP_DialogFactory * pDialogFactory
+		= static_cast<XAP_DialogFactory *>(pApp->getDialogFactory());
 
 	AP_Dialog_New * pDialog
 		= static_cast<AP_Dialog_New *>(pDialogFactory->requestDialog(AP_DIALOG_ID_FILE_NEW));
@@ -3007,57 +3022,41 @@ Defun(fileNew)
 	return bOK;
 }
 
-static bool _helpOpenURL(XAP_Frame * pFrame, const char* helpURL)
+static bool _helpOpenURL(const char* helpURL)
 {
-	UT_return_val_if_fail(pFrame, false);
-	pFrame->openHelpURL(helpURL);
-	return true;
+	return XAP_App::getApp()->openHelpURL(helpURL);
 }
 
-static bool _openURL(AV_View* pAV_View, const char* url)
+static bool _openURL(const char* url)
 {
-	XAP_Frame* pFrame = static_cast<XAP_Frame*> (pAV_View->getParentData());
-	pFrame->openURL (url);
-	return true;
-}
-
-bool helpLocalizeAndOpenURL(XAP_Frame * pFrame, const char* pathBeforeLang, const char* pathAfterLang, const char* remoteURLbase)
-{	
-	UT_return_val_if_fail(pFrame, false);
-	UT_String url (pFrame->localizeHelpUrl (pathBeforeLang, pathAfterLang, remoteURLbase));
-	return _helpOpenURL(pFrame, url.c_str());
+	return XAP_App::getApp()->openURL(url);
 }
 	
-static bool _helpLocalizeAndOpenURL(AV_View* pAV_View, const char* pathBeforeLang, const char* pathAfterLang, const char *remoteURLbase)
+static bool _helpLocalizeAndOpenURL(const char* pathBeforeLang, const char* pathAfterLang, const char *remoteURLbase)
 {
-	XAP_Frame* pFrame = static_cast<XAP_Frame*> (pAV_View->getParentData());
-
-	return helpLocalizeAndOpenURL(pFrame, pathBeforeLang, pathAfterLang, remoteURLbase);
+	UT_String url (XAP_App::getApp()->localizeHelpUrl (pathBeforeLang, pathAfterLang, remoteURLbase));
+	return _helpOpenURL(url.c_str());
 }
 
-Defun1(helpContents)
+Defun0(helpContents)
 {
-	CHECK_FRAME;
-	return _helpLocalizeAndOpenURL(pAV_View, "AbiWord/help", "index", "http://www.abisource.com/help/");
+	return _helpLocalizeAndOpenURL("AbiWord/help", "index", "http://www.abisource.com/help/");
 }
 
-Defun1(helpIndex)
+Defun0(helpIndex)
 {
-	CHECK_FRAME;
-	return _helpLocalizeAndOpenURL(pAV_View, "AbiWord/help", "introduction", "http://www.abisource.com/help/");
+	return _helpLocalizeAndOpenURL("AbiWord/help", "introduction", "http://www.abisource.com/help/");
 }
 
-Defun1(helpCheckVer)
+Defun0(helpCheckVer)
 {
-	CHECK_FRAME;
 	UT_String versionURL ("http://www.abisource.com/users/check_version.phtml?version=");
 	versionURL += XAP_App::s_szBuild_Version;
-	return _openURL(pAV_View, versionURL.c_str());
+	return _openURL(versionURL.c_str());
 }
 
-Defun1(helpReportBug)
+Defun0(helpReportBug)
 {
-	CHECK_FRAME;
 	UT_String bugURL ("http://bugzilla.abisource.com/enter_bug.cgi?product=AbiWord");
 
   bugURL += "&version=";
@@ -3066,37 +3065,32 @@ Defun1(helpReportBug)
   bugURL += XAP_App::s_szBuild_Options;
   bugURL += ")%0d%0a%0d%0a";
 
-  return _openURL(pAV_View, bugURL.c_str());
+  return _openURL(bugURL.c_str());
 }
 
-Defun1(helpSearch)
+Defun0(helpSearch)
 {
-	CHECK_FRAME;
-	return _helpLocalizeAndOpenURL(pAV_View, "AbiWord/help", "search", "http://www.abisource.com/help/");
+	return _helpLocalizeAndOpenURL("AbiWord/help", "search", "http://www.abisource.com/help/");
 }
 
-Defun1(helpCredits)
+Defun0(helpCredits)
 {
-	CHECK_FRAME;
-	return _helpLocalizeAndOpenURL(pAV_View, "AbiWord/help", "credits", "http://www.abisource.com/help/");
+	return _helpLocalizeAndOpenURL("AbiWord/help", "credits", "http://www.abisource.com/help/");
 }
 
-Defun1(helpAboutGnu)
+Defun0(helpAboutGnu)
 {
-	CHECK_FRAME;
-	return _openURL(pAV_View, "http://www.gnu.org/philosophy/");
+	return _openURL("http://www.gnu.org/philosophy/");
 }
 
-Defun1(helpAboutGnomeOffice)
+Defun0(helpAboutGnomeOffice)
 {
-	CHECK_FRAME;
-	return _openURL(pAV_View, "http://www.gnome.org/gnome-office/");
+	return _openURL("http://www.gnome.org/gnome-office/");
 }
 
-Defun1(helpAboutOS)
+Defun0(helpAboutOS)
 {
-	CHECK_FRAME;
-	return _helpLocalizeAndOpenURL(pAV_View, "AbiWord/help", "aboutos", "http://www.abisource.com/help/");
+	return _helpLocalizeAndOpenURL("AbiWord/help", "aboutos", "http://www.abisource.com/help/");
 }
 
 Defun1(cycleWindows)
@@ -9419,7 +9413,6 @@ Defun1(dlgStyle)
 Defun1(dlgStylist)
 {
 	CHECK_FRAME;
-	ABIWORD_VIEW;
 
 	XAP_Frame * pFrame = static_cast<XAP_Frame *> (pAV_View->getParentData());
 	UT_ASSERT(pFrame);
@@ -12262,7 +12255,6 @@ Defun(deleteFrame)
 Defun(cutFrame)
 {
 	CHECK_FRAME;
-	ABIWORD_VIEW;
 	UT_DEBUGMSG(("Cut Frame \n"));
 	return true;
 }
@@ -12271,7 +12263,6 @@ Defun(cutFrame)
 Defun(copyFrame)
 {
 	CHECK_FRAME;
-	ABIWORD_VIEW;
 	UT_DEBUGMSG(("Copy Frame \n"));
 	return true;
 }
@@ -12280,7 +12271,6 @@ Defun(copyFrame)
 Defun(selectFrame)
 {
 	CHECK_FRAME;
-	ABIWORD_VIEW;
 	UT_DEBUGMSG(("Select Frame \n"));
 	return true;
 }

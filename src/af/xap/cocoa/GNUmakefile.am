@@ -25,6 +25,7 @@ noinst_LIBRARIES = libXap_cocoa.a
 
 libXap_cocoa_a_SOURCES =		\
 	xap_CocoaApp.mm			\
+	xap_CocoaAppImpl.mm		\
 	xap_CocoaAppController.mm	\
 	xap_CocoaAbiConversions.mm \
 	xap_CocoaAssert.mm \

@@ -70,6 +70,8 @@ class AV_View;
 typedef UT_uint32 EV_EditMethodType;
 #define EV_EMT_REQUIREDATA		(static_cast<EV_EditMethodType>(0x1))
 #define EV_EMT_REQUIRE_SCRIPT_NAME		(static_cast<EV_EditMethodType>(0x2))
+/* define a method that can be called without a frame. */
+#define EV_EMT_APP_METHOD		(static_cast<EV_EditMethodType>(0x4))
 
 /*****************************************************************/
 /*****************************************************************/

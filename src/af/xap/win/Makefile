@@ -23,6 +23,7 @@ ABI_ROOT:=$(shell pwd)/../../../..
 include $(ABI_ROOT)/src/config/abi_defs.mk
 
 CPPSRCS=		xap_Win32App.cpp			\
+			xap_Win32AppImpl.cpp                    \
 			xap_Win32Clipboard.cpp			\
 			xap_Win32DragAndDrop.cpp		\
 			xap_Win32Dlg_About.cpp			\

@@ -24,6 +24,7 @@ include $(ABI_ROOT)/src/config/abi_defs.mk
 
 CPPSRCS=	xad_Document.cpp		\
 		xap_App.cpp			\
+		xap_AppImpl.cpp                  \
 		xap_Args.cpp			\
 		xap_Clipboard.cpp		\
 		xap_Dialog.cpp			\

@@ -83,7 +83,6 @@ public:
 	virtual bool				_raise();
 	virtual bool				_show();
 	virtual void 				_setFullScreen(bool isFullScreen) {}
-	virtual bool				_openURL(const char * szURL);
 	virtual bool				_updateTitle();
 	virtual UT_sint32			_setInputMode(const char * szName);
 	virtual void                _nullUpdate () const;

@@ -31,6 +31,7 @@ noinst_LIBRARIES = libXap_xp.a
 libXap_xp_a_SOURCES=\
 	xad_Document.cpp		\
 	xap_App.cpp			\
+	xap_AppImpl.cpp                  \
 	xap_Args.cpp			\
 	xap_Clipboard.cpp		\
 	xap_Dialog.cpp			\

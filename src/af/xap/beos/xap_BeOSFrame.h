@@ -132,7 +132,6 @@ public:
 	virtual bool				raise(void);
 	virtual bool				show(void);
 	virtual void setFullScreen(bool isFullScreen) {}
-	virtual bool				openURL(const char * szURL);
 	virtual bool				updateTitle(void);
 	virtual void                            nullUpdate () const {}
 	virtual void                setCursor(GR_Graphics::Cursor c) {}

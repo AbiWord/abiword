@@ -33,6 +33,8 @@
 #include "ut_vector.h"
 #include "ut_hash.h"
 #include "ut_Language.h"
+#include "ut_string_class.h"
+#include "xap_AppImpl.h"
 
 #define NUM_MODELESSID 39
 
@@ -89,6 +91,9 @@ public:
 public:
 	XAP_App(XAP_Args * pArgs, const char * szAppName);
 	virtual ~XAP_App();
+
+	XAP_AppImpl* getImpl()
+			{ return m_pImpl; }
 
 	virtual const char * getDefaultEncoding () const = 0 ;
 
@@ -198,7 +203,15 @@ public:
 	void                                    setKbdLanguage(const char * pszLang);
 
 	UT_UUIDGenerator *                      getUUIDGenerator() const {return m_pUUIDGenerator;}
-	
+
+	bool 									openURL(const char * url) 
+							{ return m_pImpl->openURL(url); }
+	bool 									openHelpURL(const char * url) 
+							{ return m_pImpl->openHelpURL(url); }
+	UT_String 								localizeHelpUrl (const char * pathBeforeLang, 
+												const char * pathAfterLang, const char * remoteURLbase)
+							{ return m_pImpl->localizeHelpUrl(pathBeforeLang, pathAfterLang, remoteURLbase); }
+
 protected:
 	void									_setAbiSuiteLibDir(const char * sz);
 	virtual const char *                    _getKbdLanguage() {return NULL;}
@@ -244,6 +257,7 @@ private:
 #ifdef DEBUG
 	void _fundamentalAsserts() const;
 #endif
+	XAP_AppImpl* m_pImpl;
 };
 
 #endif /* XAP_APP_H */

@@ -24,6 +24,7 @@ noinst_LIBRARIES = libXap_qnx.a
 
 libXap_qnx_a_SOURCES=		\
 	xap_QNXApp.cpp                          \
+	xap_QNXAppImpl.cpp                      \
 	xap_QNXClipboard.cpp	\
 	xap_QNXDlg_About.cpp	\
 	xap_QNXDlg_ClipArt.cpp	\

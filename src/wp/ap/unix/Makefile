@@ -29,6 +29,7 @@ endif
 ABI_WP_INCS+=	/wp/ap/xp	/wp/ap/$(ABI_NATIVE)
 
 CPPSRCS=		ap_$(ABI_FE)App.cpp			\
+			ap_$(ABI_FE)AppImpl.cpp                     \
 			abiwidget.cpp					\
 			ap_$(ABI_FE)Clipboard.cpp		\
 			ap_$(ABI_FE)DialogFactory.cpp		\
