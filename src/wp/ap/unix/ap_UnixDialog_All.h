@@ -89,8 +89,6 @@
 #ifdef HAVE_GNOME
 #	include "xap_UnixGnomeDlg_About.h"
 #   include "xap_UnixGnomeDlg_ClipArt.h"
-#   include "xap_UnixGnomeDlg_Print.h"
-#   include "xap_UnixGnomeDlg_PrintPreview.h"
 #else
 #   include "xap_UnixDlg_ClipArt.h"
 #	include "xap_UnixDlg_About.h"
@@ -101,15 +99,13 @@
 #else
 
 #ifdef HAVE_GNOME
-	DeclareDialog(XAP_DIALOG_ID_ABOUT,			XAP_UnixGnomeDialog_About)
-	DeclareDialog(XAP_DIALOG_ID_CLIPART,        XAP_UnixGnomeDialog_ClipArt)
-	DeclareDialog(XAP_DIALOG_ID_PRINT,			XAP_UnixGnomeDialog_Print)
-    DeclareDialog(XAP_DIALOG_ID_PRINTPREVIEW,   XAP_UnixGnomeDialog_PrintPreview)
+	DeclareDialog(XAP_DIALOG_ID_ABOUT,		XAP_UnixGnomeDialog_About)
+	DeclareDialog(XAP_DIALOG_ID_CLIPART,		XAP_UnixGnomeDialog_ClipArt)
 #else
-	DeclareDialog(XAP_DIALOG_ID_ABOUT,			XAP_UnixDialog_About)
-	DeclareDialog(XAP_DIALOG_ID_CLIPART,        XAP_UnixDialog_ClipArt)
-	DeclareDialog(XAP_DIALOG_ID_PRINT,			XAP_UnixDialog_Print)
-    DeclareDialog(XAP_DIALOG_ID_PRINTPREVIEW,   XAP_UnixDialog_PrintPreview)
+	DeclareDialog(XAP_DIALOG_ID_ABOUT,		XAP_UnixDialog_About)
+	DeclareDialog(XAP_DIALOG_ID_CLIPART,		XAP_UnixDialog_ClipArt)
+	DeclareDialog(XAP_DIALOG_ID_PRINT,		XAP_UnixDialog_Print)
+	DeclareDialog(XAP_DIALOG_ID_PRINTPREVIEW,	XAP_UnixDialog_PrintPreview)
 #endif
 
 	DeclareDialog(XAP_DIALOG_ID_MESSAGE_BOX,	XAP_UnixDialog_MessageBox)
