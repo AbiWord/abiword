@@ -951,8 +951,15 @@ UT_Bool FV_View::setBlockFormat(const XML_Char * properties[])
 
 	bRet = m_pDoc->changeStruxFmt(PTC_AddFmt,posStart,posEnd,NULL,properties,PTX_Block);
 
-	_fixInsertionPointCoords();
-	_drawInsertionPoint();
+	if (isSelectionEmpty())
+	{
+		_fixInsertionPointCoords();
+		_drawInsertionPoint();
+	}
+	else
+	{
+		_drawSelection();
+	}
 
 	return bRet;
 }
