@@ -86,7 +86,7 @@ void DLGHandler::MessageReceived(BMessage *msg) {
 		BHandler::MessageReceived(msg);
 		return;
 	}
-    release_sem(sync_sem); 
+    	release_sem(sync_sem); 
 }
 
 /*****************************************************************/
@@ -112,6 +112,7 @@ XAP_BeOSDialog_FileOpenSaveAs::XAP_BeOSDialog_FileOpenSaveAs(XAP_DialogFactory *
 XAP_BeOSDialog_FileOpenSaveAs::~XAP_BeOSDialog_FileOpenSaveAs(void)
 {
 	delete m_pHandler;
+	m_pHandler = NULL;
 }
 
 void XAP_BeOSDialog_FileOpenSaveAs::runModal(XAP_Frame * pFrame)
@@ -180,8 +181,6 @@ void XAP_BeOSDialog_FileOpenSaveAs::runModal(XAP_Frame * pFrame)
 	
 	//Wait for the pannels to be finished
  	acquire_sem(sync_sem);
-	delete m_pHandler;
-	m_pHandler = NULL;
 	delete m_pSavePanel;
 	delete m_pOpenPanel;
 
