@@ -58,7 +58,7 @@ fp_Line         * fp_Line::s_pMapOwner = 0;
 #endif
 
 #define STATIC_BUFFER_INITIAL 150
-#define SCALE_TO_SCREEN (double)getGraphics()->getResolution() / UT_LAYOUT_UNITS
+#define SCALE_TO_SCREEN static_cast<double>(getGraphics()->getResolution()) / UT_LAYOUT_UNITS
 
 UT_sint32 * fp_Line::s_pOldXs = NULL;
 UT_uint32   fp_Line::s_iOldXsSize = 0;
@@ -201,7 +201,7 @@ bool fp_Line::assertLineListIntegrity(void)
  */
 UT_sint32  fp_Line::getColumnGap(void)
 {
-	return ((fp_Column *)getColumn())->getColumnGap();
+	return (static_cast<fp_Column *>(getColumn()))->getColumnGap();
 }
 
 /*!
@@ -219,8 +219,8 @@ fp_Container * fp_Line::getColumn(void)
 		return pCon->getColumn();
 	}
 
-	fp_CellContainer * pCell = (fp_CellContainer *) pCon;
-	fp_TableContainer * pTab = (fp_TableContainer *) pCell->getContainer();
+	fp_CellContainer * pCell = static_cast<fp_CellContainer *>(pCon);
+	fp_TableContainer * pTab = static_cast<fp_TableContainer *>(pCell->getContainer());
 	if(pTab == NULL)
 	{
 	  return NULL;
@@ -240,7 +240,7 @@ fp_Container * fp_Line::getColumn(void)
 			bFound = true;
 			break;
 		}
-		pBroke = (fp_TableContainer *) pBroke->getNext();
+		pBroke = static_cast<fp_TableContainer *>(pBroke->getNext());
 	}
 	if(bFound)
 	{
@@ -263,7 +263,7 @@ fp_Page * fp_Line::getPage(void)
  */
 bool fp_Line::isFirstLineInBlock(void) const
 {
-	return (m_pBlock->getFirstContainer() == (fp_Container *) this);
+	return (m_pBlock->getFirstContainer() == static_cast<const fp_Container *>(this));
 }
 
 /*!
@@ -271,7 +271,7 @@ bool fp_Line::isFirstLineInBlock(void) const
  */
 bool fp_Line::isLastLineInBlock(void) const
 {
-	return (m_pBlock->getLastContainer() == (fp_Container *) this);
+	return (m_pBlock->getLastContainer() == static_cast<const fp_Container *>(this));
 }
 
 void fp_Line::setMaxWidth(UT_sint32 iMaxWidth)
@@ -345,7 +345,7 @@ void fp_Line::insertRunBefore(fp_Run* pNewRun, fp_Run* pBefore)
 
 	if (pNewRun->getType() == FPRUN_FIELD)
 	{
-		fp_FieldRun * fr = (fp_FieldRun*) pNewRun;
+		fp_FieldRun * fr = static_cast<fp_FieldRun*>(pNewRun);
 		if (fr->getFieldType() == FPFIELD_endnote_ref)
 			m_bContainsFootnoteRef = true;
 	}
@@ -377,7 +377,7 @@ void fp_Line::addRun(fp_Run* pNewRun)
 	//UT_DEBUGMSG(("addRun (line 0x%x, run 0x%x, type %d)\n", this, pNewRun, pNewRun->getType()));
 	if (pNewRun->getType() == FPRUN_FIELD)
 	{
-		fp_FieldRun * fr = (fp_FieldRun*) pNewRun;
+		fp_FieldRun * fr = static_cast<fp_FieldRun*>(pNewRun);
 		if (fr->getFieldType() == FPFIELD_endnote_ref)
 			m_bContainsFootnoteRef = true;
 	}
@@ -396,7 +396,7 @@ void fp_Line::insertRunAfter(fp_Run* pNewRun, fp_Run* pAfter)
 	//UT_DEBUGMSG(("insertRunAfter (line 0x%x, run 0x%x, type %d)\n", this, pNewRun, pNewRun->getType()));
 	if (pNewRun->getType() == FPRUN_FIELD)
 	{
-		fp_FieldRun * fr = (fp_FieldRun*) pNewRun;
+		fp_FieldRun * fr = static_cast<fp_FieldRun*>(pNewRun);
 		if (fr->getFieldType() == FPFIELD_endnote_ref)
 			m_bContainsFootnoteRef = true;
 	}
@@ -432,7 +432,7 @@ void fp_Line::remove(void)
 		pPrev->setNext(pNext);
 	}
 
-	((fp_VerticalContainer *)getContainer())->removeContainer(this);
+	static_cast<fp_VerticalContainer *>(getContainer())->removeContainer(this);
 }
 
 void fp_Line::mapXYToPosition(UT_sint32 x, UT_sint32 y, PT_DocPosition& pos,
@@ -449,7 +449,7 @@ void fp_Line::mapXYToPosition(UT_sint32 x, UT_sint32 y, PT_DocPosition& pos,
 
 	do {
 
-		pFirstRun = (fp_Run*) m_vecRuns.getNthItem(_getRunLogIndx(i++)); //#TF retrieve first visual run
+		pFirstRun = static_cast<fp_Run*>(m_vecRuns.getNthItem(_getRunLogIndx(i++))); //#TF retrieve first visual run
 		UT_ASSERT(pFirstRun);
 
 		// if this tab is to be hidden, we must treated as if its
@@ -486,12 +486,12 @@ void fp_Line::mapXYToPosition(UT_sint32 x, UT_sint32 y, PT_DocPosition& pos,
 
 	for (i=0; i<count; i++)
 	{
-		fp_Run* pRun2 = (fp_Run*) m_vecRuns.getNthItem(_getRunLogIndx(i));	//#TF get i-th visual run
+		fp_Run* pRun2 = static_cast<fp_Run*>(m_vecRuns.getNthItem(_getRunLogIndx(i)));	//#TF get i-th visual run
 
 		if (pRun2->canContainPoint() || pRun2->isField())
 		{
 			UT_sint32 y2 = y - pRun2->getY() - m_iAscent + pRun2->getAscent();
-			if ((x >= (UT_sint32) pRun2->getX()) && (x < (UT_sint32) (pRun2->getX() + pRun2->getWidth())))
+			if ((x >= static_cast<UT_sint32>(pRun2->getX())) && (x < static_cast<UT_sint32>(pRun2->getX() + pRun2->getWidth())))
 			{
 				// when hit testing runs within a line, we ignore the Y coord
 //			if (((y2) >= 0) && ((y2) < (pRun2->getHeight())))
@@ -589,7 +589,7 @@ void fp_Line::getOffsets(fp_Run* pRun, UT_sint32& xoff, UT_sint32& yoff)
 	 //
 	UT_sint32 my_xoff = -31999;
 	UT_sint32 my_yoff = -31999;
-	fp_VerticalContainer * pVCon= ((fp_VerticalContainer *)getContainer());
+	fp_VerticalContainer * pVCon= (static_cast<fp_VerticalContainer *>(getContainer()));
 	pVCon->getOffsets(this, my_xoff, my_yoff);
 	xoff = my_xoff + pRun->getX();
 	yoff = my_yoff + pRun->getY() + m_iAscent - pRun->getAscent();
@@ -606,7 +606,7 @@ void fp_Line::getScreenOffsets(fp_Run* pRun,
 		This method returns the screen offsets of the given
 		run, referring to the UPPER-LEFT corner of the run.
 	*/
-	fp_VerticalContainer * pVCon= ((fp_VerticalContainer *)getContainer());
+	fp_VerticalContainer * pVCon= (static_cast<fp_VerticalContainer *>(getContainer()));
 	pVCon->getScreenOffsets(this, my_xoff, my_yoff);
 
 	xoff = my_xoff + pRun->getX();
@@ -684,7 +684,7 @@ void fp_Line::recalcHeight()
 		UT_sint32 iDescentLayoutUnits;
 #endif
 
-		fp_Run* pRun = (fp_Run*) m_vecRuns.getNthItem(i);
+		fp_Run* pRun = static_cast<fp_Run*>(m_vecRuns.getNthItem(i));
 
 		iAscent = pRun->getAscent();
 		iDescent = pRun->getDescent();
@@ -755,17 +755,17 @@ void fp_Line::recalcHeight()
 	if (eSpacing == fl_BlockLayout::spacing_EXACT)
 	{
 		xxx_UT_DEBUGMSG(("recalcHeight exact \n"));
-		iNewHeight = (UT_sint32) dLineSpace;
+		iNewHeight = static_cast<UT_sint32>(dLineSpace);
 #if !defined(WITH_PANGO) && defined(USE_LAYOUT_UNITS)
-		iNewHeightLayoutUnits = (UT_sint32) dLineSpaceLayout;
+		iNewHeightLayoutUnits = static_cast<UT_sint32>(dLineSpaceLayout);
 #endif
 	}
 	else if (eSpacing == fl_BlockLayout::spacing_ATLEAST)
 	{
 		xxx_UT_DEBUGMSG(("SEVIOR: recalcHeight at least \n"));
-		iNewHeight = UT_MAX(iNewHeight, (UT_sint32) dLineSpace);
+		iNewHeight = UT_MAX(iNewHeight, static_cast<UT_sint32>(dLineSpace));
 #if !defined(WITH_PANGO) && defined(USE_LAYOUT_UNITS)
-		iNewHeightLayoutUnits = UT_MAX(iNewHeightLayoutUnits, (UT_sint32) dLineSpaceLayout);
+		iNewHeightLayoutUnits = UT_MAX(iNewHeightLayoutUnits, static_cast<UT_sint32>(dLineSpaceLayout));
 #endif
 	}
 	else
@@ -773,17 +773,17 @@ void fp_Line::recalcHeight()
 		// multiple
 		if(!bSetByImage)
 		{
-			iNewHeight = (UT_sint32) (iNewHeight * dLineSpace +0.5);
+			iNewHeight = static_cast<UT_sint32>(iNewHeight * dLineSpace +0.5);
 #if !defined(WITH_PANGO) && defined(USE_LAYOUT_UNITS)
-			iNewHeightLayoutUnits = (UT_sint32) (iNewHeightLayoutUnits * dLineSpaceLayout +0.5);
+			iNewHeightLayoutUnits = static_cast<UT_sint32>(iNewHeightLayoutUnits * dLineSpaceLayout +0.5);
 #endif
 			xxx_UT_DEBUGMSG(("recalcHeight neither dLineSpace = %f newheight =%d m_iScreenHeight =%d m_iHeight= %d\n",dLineSpace,iNewHeight,m_iScreenHeight,m_iHeight));
 		}
 		else
 		{
-			iNewHeight = UT_MAX(iMaxAscent+(UT_sint32) (iMaxDescent*dLineSpace + 0.5), (UT_sint32) dLineSpace);
+			iNewHeight = UT_MAX(iMaxAscent+static_cast<UT_sint32>(iMaxDescent*dLineSpace + 0.5), static_cast<UT_sint32>(dLineSpace));
 #if !defined(WITH_PANGO) && defined(USE_LAYOUT_UNITS)
-			iNewHeightLayoutUnits = UT_MAX(iMaxAscentLayoutUnits+(UT_sint32 )(iMaxDescentLayoutUnits*dLineSpace +0.5), (UT_sint32) dLineSpaceLayout);
+			iNewHeightLayoutUnits = UT_MAX(iMaxAscentLayoutUnits+static_cast<UT_sint32>(iMaxDescentLayoutUnits*dLineSpace +0.5), static_cast<UT_sint32>(dLineSpaceLayout));
 #endif
 		}
 	}
@@ -822,9 +822,9 @@ fp_Run * fp_Line::getRunFromIndex(UT_uint32 runIndex)
 {
 	UT_sint32 count = m_vecRuns.getItemCount();
 	fp_Run * pRun = NULL;
-	if(count > 0 && (UT_sint32)runIndex < count)
+	if(count > 0 && static_cast<UT_sint32>(runIndex) < count)
 	{
-		pRun = (fp_Run *) m_vecRuns.getNthItem(runIndex);
+		pRun = static_cast<fp_Run *>(m_vecRuns.getNthItem(runIndex));
 	}
 	return pRun;
 }
@@ -843,13 +843,13 @@ void fp_Line::clearScreen(void)
 
 		UT_sint32 i;
 
-		pRun = (fp_Run*) m_vecRuns.getNthItem(0);
+		pRun = static_cast<fp_Run*>(m_vecRuns.getNthItem(0));
 		if(!pRun->getGraphics()->queryProperties(GR_Graphics::DGP_SCREEN))
 			return;
 
 		for (i = 0; i < count; i++)
 		{
-			pRun = (fp_Run*) m_vecRuns.getNthItem(i);
+			pRun = static_cast<fp_Run*>(m_vecRuns.getNthItem(i));
 
 			if(!pRun->isDirty())
 			{
@@ -861,10 +861,10 @@ void fp_Line::clearScreen(void)
 
 		if(bNeedsClearing)
 		{
-			pRun = (fp_Run*) m_vecRuns.getNthItem(0);
+			pRun = static_cast<fp_Run*>(m_vecRuns.getNthItem(0));
 
 			UT_sint32 xoffLine, yoffLine;
-			fp_VerticalContainer * pVCon= ((fp_VerticalContainer *)getContainer());
+			fp_VerticalContainer * pVCon= (static_cast<fp_VerticalContainer *>(getContainer()));
 			pVCon->getScreenOffsets(this, xoffLine, yoffLine);
 
 			// Note: we use getHeight here instead of m_iScreenHeight
@@ -885,7 +885,7 @@ void fp_Line::clearScreen(void)
 			UT_uint32 i;
 			for(i=0; i < m_vecRuns.getItemCount();i++)
 			{
-				pRun = (fp_Run*) m_vecRuns.getNthItem(i);
+				pRun = static_cast<fp_Run*>(m_vecRuns.getNthItem(i));
 				pRun->markAsDirty();
 			}
 		}
@@ -907,17 +907,17 @@ void fp_Line::clearScreenFromRunToEnd(fp_Run * ppRun)
 	UT_sint32 count =  m_vecRuns.getItemCount();
 	if(count > 0)
 	{
-		pRun = (fp_Run*) m_vecRuns.getNthItem(0);
+		pRun = static_cast<fp_Run*>(m_vecRuns.getNthItem(0));
 		if(!pRun->getGraphics()->queryProperties(GR_Graphics::DGP_SCREEN))
 			return;
 
-		UT_sint32 k = m_vecRuns.findItem((void *) ppRun);
+		UT_sint32 k = m_vecRuns.findItem(static_cast<void *>(ppRun));
 		if(k>=0)
 		{
-			UT_uint32 runIndex = (UT_uint32) k;
+			UT_uint32 runIndex = static_cast<UT_uint32>(k);
 			UT_sint32 xoff, yoff;
 
-			pRun = (fp_Run*) m_vecRuns.getNthItem(_getRunLogIndx(runIndex));
+			pRun = static_cast<fp_Run*>(m_vecRuns.getNthItem(_getRunLogIndx(runIndex)));
 
 			// Handle case where character extend behind the left side
 			// like italic Times New Roman f. Clear a litle bit before if
@@ -927,12 +927,12 @@ void fp_Line::clearScreenFromRunToEnd(fp_Run * ppRun)
 			fp_Run * pPrev = NULL;
 			if(j>=0)
 			{
-				pPrev = (fp_Run *) m_vecRuns.getNthItem(j);
+				pPrev = static_cast<fp_Run *>(m_vecRuns.getNthItem(j));
 			}
 			UT_sint32 leftClear = 0;
 			while(j >= 0 && pPrev != NULL && pPrev->getLength() == 0)
 			{
-				pPrev = (fp_Run *) m_vecRuns.getNthItem(j);
+				pPrev = static_cast<fp_Run *>(m_vecRuns.getNthItem(j));
 				j--;
 			}
 			leftClear = pRun->getDescent();
@@ -944,7 +944,7 @@ void fp_Line::clearScreenFromRunToEnd(fp_Run * ppRun)
 				leftClear = 0;
 			getScreenOffsets(pRun, xoff, yoff);
 			UT_sint32 xoffLine, yoffLine;
-			fp_VerticalContainer * pVCon= ((fp_VerticalContainer *)getContainer());
+			fp_VerticalContainer * pVCon= (static_cast<fp_VerticalContainer *>(getContainer()));
 			pVCon->getScreenOffsets(this, xoffLine, yoffLine);
 			if(xoff == xoffLine)
 				leftClear = pRun->getDescent();
@@ -964,7 +964,7 @@ void fp_Line::clearScreenFromRunToEnd(fp_Run * ppRun)
 			UT_sint32 i;
 			for (i = runIndex; i < count; i++)
 			{
-				pRun = (fp_Run*) m_vecRuns.getNthItem(_getRunLogIndx(i));
+				pRun = static_cast<fp_Run*>(m_vecRuns.getNthItem(_getRunLogIndx(i)));
 				pRun->markAsDirty();
 			}
 		}
@@ -985,10 +985,10 @@ void fp_Line::clearScreenFromRunToEnd(UT_uint32 runIndex)
 	{
 		return;
 	}
-	//fp_Run* pRun = (fp_Run*) m_vecRuns.getNthItem(runIndex);
+	//fp_Run* pRun = static_cast<fp_Run*>(m_vecRuns.getNthItem(runIndex));
 	fp_Run* pRun; //#TF initialization not needed
 	UT_sint32 count = m_vecRuns.getItemCount();
-	pRun = (fp_Run*) m_vecRuns.getNthItem(0);
+	pRun = static_cast<fp_Run*>(m_vecRuns.getNthItem(0));
 
 	fp_Run * pFRun = pRun;
 	bool bUseFirst = false;
@@ -1004,7 +1004,7 @@ void fp_Line::clearScreenFromRunToEnd(UT_uint32 runIndex)
 	UT_sint32 i;
 	for(i = runIndex; i < count; i++)
 	{
-		pRun = (fp_Run*) m_vecRuns.getNthItem(_getRunLogIndx(i));
+		pRun = static_cast<fp_Run*>(m_vecRuns.getNthItem(_getRunLogIndx(i)));
 
 		if(pRun->isDirty())
 		{
@@ -1016,11 +1016,11 @@ void fp_Line::clearScreenFromRunToEnd(UT_uint32 runIndex)
 		}
 	}
 
-	if((UT_sint32)runIndex < count)
+	if(static_cast<UT_sint32>(runIndex) < count)
 	{
 		UT_sint32 xoff, yoff;
 
-		pRun = (fp_Run*) m_vecRuns.getNthItem(_getRunLogIndx(runIndex));
+		pRun = static_cast<fp_Run*>(m_vecRuns.getNthItem(_getRunLogIndx(runIndex)));
 
 		//
 		// Handle case where character extend behind the left side
@@ -1032,7 +1032,7 @@ void fp_Line::clearScreenFromRunToEnd(UT_uint32 runIndex)
 		UT_sint32 leftClear = 0;
 		while(j >= 0 && pPrev != NULL && pPrev->getLength() == 0)
 		{
-			pPrev = (fp_Run *) m_vecRuns.getNthItem(j);
+			pPrev = static_cast<fp_Run *>(m_vecRuns.getNthItem(j));
 			j--;
 		}
 		leftClear = pRun->getDescent();
@@ -1054,15 +1054,17 @@ void fp_Line::clearScreenFromRunToEnd(UT_uint32 runIndex)
 			getScreenOffsets(pRun, xoff, yoff);
 		}
 		UT_sint32 xoffLine, yoffLine;
+#if !defined(NDEBUG)
 		UT_sint32 oldheight = getHeight();
+#endif
 		recalcHeight();
 		UT_ASSERT(oldheight == getHeight());
-		fp_VerticalContainer * pVCon= ((fp_VerticalContainer *)getContainer());
+		fp_VerticalContainer * pVCon= (static_cast<fp_VerticalContainer *>(getContainer()));
 		pVCon->getScreenOffsets(this, xoffLine, yoffLine);
 
 		UT_ASSERT(yoff == yoffLine);
 
-		fp_Line * pPrevLine = (fp_Line *) getPrevContainerInSection();
+		fp_Line * pPrevLine = static_cast<fp_Line *>(getPrevContainerInSection());
 		if(pPrevLine != NULL && (pPrevLine->getContainerType() == FP_CONTAINER_LINE))
 		{
 			UT_sint32 xPrev=0;
@@ -1097,7 +1099,7 @@ void fp_Line::clearScreenFromRunToEnd(UT_uint32 runIndex)
 		}
 		for (i = runIndex; i < count; i++)
 		{
-			pRun = (fp_Run*) m_vecRuns.getNthItem(_getRunLogIndx(i));
+			pRun = static_cast<fp_Run*>(m_vecRuns.getNthItem(_getRunLogIndx(i)));
 			pRun->markAsDirty();
 		}
 	}
@@ -1124,7 +1126,7 @@ bool fp_Line::redrawUpdate(void)
 	UT_sint32 count = m_vecRuns.getItemCount();
 	if(count)
 	{
-		draw(((fp_Run*) m_vecRuns.getNthItem(0))->getGraphics());
+		draw((static_cast<fp_Run*>(m_vecRuns.getNthItem(0)))->getGraphics());
 	}
 
 	m_bNeedsRedraw = false;
@@ -1142,7 +1144,7 @@ void fp_Line::draw(GR_Graphics* pG)
 		return;
 
 	UT_sint32 my_xoff = 0, my_yoff = 0;
-	fp_VerticalContainer * pVCon= ((fp_VerticalContainer *)getContainer());
+	fp_VerticalContainer * pVCon= (static_cast<fp_VerticalContainer *>(getContainer()));
 	pVCon->getScreenOffsets(this, my_xoff, my_yoff);
 	xxx_UT_DEBUGMSG(("SEVIOR: Drawing line in line pG, my_yoff=%d \n",my_yoff));
 
@@ -1169,7 +1171,7 @@ void fp_Line::draw(GR_Graphics* pG)
 	{
 		// NB !!! In the BiDi build drawing has to be done in the logical
 		// order, otherwise overstriking characters cannot be seen
-		fp_Run* pRun = (fp_Run*) m_vecRuns.getNthItem(i);
+		fp_Run* pRun = static_cast<fp_Run*>(m_vecRuns.getNthItem(i));
 
 		FPVisibility eHidden  = pRun->isHidden();
 		if((eHidden == FP_HIDDEN_TEXT && !bShowHidden)
@@ -1219,7 +1221,7 @@ void fp_Line::draw(GR_Graphics* pG)
 	fp_Container * pCon = getContainer();
 	if(pCon->getContainerType() == FP_CONTAINER_CELL)
 	{
-		fp_CellContainer * pCell = (fp_CellContainer *) pCon;
+		fp_CellContainer * pCell = static_cast<fp_CellContainer *>(pCon);
 		pCell->drawLinesAdjacent();
 	}
 #endif
@@ -1243,7 +1245,7 @@ void fp_Line::draw(dg_DrawArgs* pDA)
 	{
 		// NB !!! In the BiDi build drawing has to be done in the logical
 		// order, otherwise overstriking characters cannot be seen
-		fp_Run* pRun = (fp_Run*) m_vecRuns.getNthItem(i);
+		fp_Run* pRun = static_cast<fp_Run*>(m_vecRuns.getNthItem(i));
 
 		FPVisibility eHidden  = pRun->isHidden();
 		if((eHidden == FP_HIDDEN_TEXT && !bShowHidden)
@@ -1261,7 +1263,7 @@ void fp_Line::draw(dg_DrawArgs* pDA)
 			rType == FPRUN_FORCEDPAGEBREAK)
 		{
 			UT_sint32 my_xoff = 0, my_yoff = 0;
-			fp_VerticalContainer * pVCon= ((fp_VerticalContainer *)getContainer());
+			fp_VerticalContainer * pVCon= (static_cast<fp_VerticalContainer *>(getContainer()));
 			pVCon->getScreenOffsets(this, my_xoff, my_yoff);
 			da.xoff = my_xoff;
 		}
@@ -1286,7 +1288,7 @@ void fp_Line::draw(dg_DrawArgs* pDA)
 	fp_Container * pCon = getContainer();
 	if(pCon->getContainerType() == FP_CONTAINER_CELL)
 	{
-		fp_CellContainer * pCell = (fp_CellContainer *) pCon;
+		fp_CellContainer * pCell = static_cast<fp_CellContainer *>(pCon);
 		pCell->drawLinesAdjacent();
 	}
 #endif
@@ -1363,7 +1365,7 @@ void fp_Line::getWorkingDirectionAndTabstops(FL_WORKING_DIRECTION &eWorkingDirec
 fp_Run* fp_Line::calculateWidthOfRun(UT_sint32 &iWidthLayoutUnits, UT_uint32 iIndxVisual, FL_WORKING_DIRECTION eWorkingDirection, FL_WHICH_TABSTOP eUseTabStop)
 {
 	const UT_sint32 iCountRuns		  = m_vecRuns.getItemCount();
-	UT_ASSERT(iCountRuns > (UT_sint32)iIndxVisual);
+	UT_ASSERT(iCountRuns > static_cast<UT_sint32>(iIndxVisual));
 
 #if !defined(WITH_PANGO) && defined(USE_LAYOUT_UNITS)
 	UT_sint32 iXLreal;
@@ -1384,7 +1386,7 @@ fp_Run* fp_Line::calculateWidthOfRun(UT_sint32 &iWidthLayoutUnits, UT_uint32 iIn
 
 	// of course, the loop is running in visual order, but the vector is
 	// in logical order
-	fp_Run* pRun = (fp_Run*) m_vecRuns.getNthItem(_getRunLogIndx(iIndx));
+	fp_Run* pRun = static_cast<fp_Run*>(m_vecRuns.getNthItem(_getRunLogIndx(iIndx)));
 
 	// find out the direction of the paragraph
 	FriBidiCharType iDomDirection = m_pBlock->getDominantDirection();
@@ -1595,7 +1597,7 @@ inline void fp_Line::_calculateWidthOfRun(	UT_sint32 &iX,
 							UT_uint32 iJ;
 							iJ = eWorkingDirection == WORK_FORWARD ? j : iCountRuns - j - 1;
 
-							pScanRun = (fp_Run*) m_vecRuns.getNthItem(_getRunLogIndx(iJ));
+							pScanRun = static_cast<fp_Run*>(m_vecRuns.getNthItem(_getRunLogIndx(iJ)));
 							if(!pScanRun || pScanRun->getType() == FPRUN_TAB)
 								break;
 
@@ -1616,10 +1618,10 @@ inline void fp_Line::_calculateWidthOfRun(	UT_sint32 &iX,
 						else
 						{
 #if !defined(WITH_PANGO) && defined(USE_LAYOUT_UNITS)
-							iXLayoutUnits += iPosLayoutUnits - iXLayoutUnits - (UT_sint32)eWorkingDirection * iScanWidthLayoutUnits;
-							iX += iPosLayoutUnits * Screen_resolution / UT_LAYOUT_UNITS - iX - (UT_sint32)eWorkingDirection * iScanWidth;
+							iXLayoutUnits += iPosLayoutUnits - iXLayoutUnits - static_cast<UT_sint32>(eWorkingDirection)* iScanWidthLayoutUnits;
+							iX += iPosLayoutUnits * Screen_resolution / UT_LAYOUT_UNITS - iX - static_cast<UT_sint32>(eWorkingDirection) * iScanWidth;
 #else
-							iX += iPosLayoutUnits - iX - (UT_sint32)eWorkingDirection * iScanWidth;
+							iX += iPosLayoutUnits - iX - static_cast<UT_sint32>(eWorkingDirection) * iScanWidth;
 #endif
 							iWidth = abs(iX - iXprev);
 						}
@@ -1638,7 +1640,7 @@ inline void fp_Line::_calculateWidthOfRun(	UT_sint32 &iX,
 							UT_uint32 iJ;
 							iJ = eWorkingDirection == WORK_FORWARD ? j : iCountRuns - j - 1;
 
-							pScanRun = (fp_Run*) m_vecRuns.getNthItem(_getRunLogIndx(iJ));
+							pScanRun = static_cast<fp_Run*>(m_vecRuns.getNthItem(_getRunLogIndx(iJ)));
 
 							if(!pScanRun || pScanRun->getType() == FPRUN_TAB)
 								break;
@@ -1657,10 +1659,10 @@ inline void fp_Line::_calculateWidthOfRun(	UT_sint32 &iX,
 						else
 						{
 #if !defined(WITH_PANGO) && defined(USE_LAYOUT_UNITS)
-							iXLayoutUnits += iPosLayoutUnits - iXLayoutUnits - (UT_sint32)eWorkingDirection * iScanWidthLayoutUnits / 2;
-							iX += iPosLayoutUnits * Screen_resolution / UT_LAYOUT_UNITS - iX - (UT_sint32)eWorkingDirection * iScanWidth / 2;
+							iXLayoutUnits += iPosLayoutUnits - iXLayoutUnits - static_cast<UT_sint32>(eWorkingDirection) * iScanWidthLayoutUnits / 2;
+							iX += iPosLayoutUnits * Screen_resolution / UT_LAYOUT_UNITS - iX - static_cast<UT_sint32>(eWorkingDirection) * iScanWidth / 2;
 #else
-							iX += iPosLayoutUnits - iX - (UT_sint32)eWorkingDirection * iScanWidth / 2;
+							iX += iPosLayoutUnits - iX - static_cast<UT_sint32>(eWorkingDirection) * iScanWidth / 2;
 #endif
 							iWidth = abs(iX - iXprev);
 						}
@@ -1692,7 +1694,7 @@ inline void fp_Line::_calculateWidthOfRun(	UT_sint32 &iX,
 								iJ = eWorkingDirection == WORK_FORWARD ? j : iCountRuns - j - 1;
 								xxx_UT_DEBUGMSG(("iJ %d\n", iJ));
 
-								pScanRun = (fp_Run*) m_vecRuns.getNthItem(_getRunLogIndx(iJ));
+								pScanRun = static_cast<fp_Run*>(m_vecRuns.getNthItem(_getRunLogIndx(iJ)));
 
 								if(!pScanRun || pScanRun->getType() == FPRUN_TAB)
 									break;
@@ -1715,10 +1717,10 @@ inline void fp_Line::_calculateWidthOfRun(	UT_sint32 &iX,
 							else
 							{
 #if !defined(WITH_PANGO) && defined(USE_LAYOUT_UNITS)
-								iXLayoutUnits += iPosLayoutUnits - iXLayoutUnits - (UT_sint32)eWorkingDirection * iScanWidthLayoutUnits;
-								iX += iPosLayoutUnits * Screen_resolution / UT_LAYOUT_UNITS - iX - (UT_sint32)eWorkingDirection * iScanWidth;
+								iXLayoutUnits += iPosLayoutUnits - iXLayoutUnits - static_cast<UT_sint32>(eWorkingDirection) * iScanWidthLayoutUnits;
+								iX += iPosLayoutUnits * Screen_resolution / UT_LAYOUT_UNITS - iX - static_cast<UT_sint32>(eWorkingDirection) * iScanWidth;
 #else
-								iX += iPosLayoutUnits - iX - (UT_sint32)eWorkingDirection * iScanWidth;
+								iX += iPosLayoutUnits - iX - static_cast<UT_sint32>(eWorkingDirection) * iScanWidth;
 #endif
 								iWidth = abs(iX - iXprev);
 							}
@@ -1755,7 +1757,7 @@ inline void fp_Line::_calculateWidthOfRun(	UT_sint32 &iX,
 							UT_uint32 iJ;
 							iJ = eWorkingDirection == WORK_FORWARD ? j : iCountRuns - j - 1;
 
-							pScanRun = (fp_Run*) m_vecRuns.getNthItem(_getRunLogIndx(iJ));
+							pScanRun = static_cast<fp_Run*>(m_vecRuns.getNthItem(_getRunLogIndx(iJ)));
 
 							if(!pScanRun || pScanRun->getType() == FPRUN_TAB)
 								break;
@@ -1763,7 +1765,7 @@ inline void fp_Line::_calculateWidthOfRun(	UT_sint32 &iX,
 							bool foundDecimal = false;
 							if(pScanRun->getType() == FPRUN_TEXT)
 							{
-								UT_sint32 decimalBlockOffset = ((fp_TextRun *)pScanRun)->findCharacter(0, pDecimalStr[0]);
+								UT_sint32 decimalBlockOffset = (static_cast<fp_TextRun *>(pScanRun))->findCharacter(0, pDecimalStr[0]);
 								if(decimalBlockOffset != -1)
 								{
 									foundDecimal = true;
@@ -1779,10 +1781,10 @@ inline void fp_Line::_calculateWidthOfRun(	UT_sint32 &iX,
 							{
 								UT_ASSERT(pScanRun->getType() == FPRUN_TEXT);
 #if !defined(WITH_PANGO) && defined(USE_LAYOUT_UNITS)
-								iScanWidth += ((fp_TextRun *)pScanRun)->simpleRecalcWidth(fp_TextRun::Width_type_display, runLen);
-								iScanWidthLayoutUnits += ((fp_TextRun *)pScanRun)->simpleRecalcWidth(fp_TextRun::Width_type_layout_units, runLen);
+								iScanWidth += (static_cast<fp_TextRun *>(pScanRun))->simpleRecalcWidth(fp_TextRun::Width_type_display, runLen);
+								iScanWidthLayoutUnits += (static_cast<fp_TextRun *>(pScanRun))->simpleRecalcWidth(fp_TextRun::Width_type_layout_units, runLen);
 #else
-								iScanWidth += ((fp_TextRun *)pScanRun)->simpleRecalcWidth(runLen);
+								iScanWidth += (static_cast<fp_TextRun *>(pScanRun))->simpleRecalcWidth(runLen);
 #endif
 								break; // we found our decimal, don't search any further
 							}
@@ -1807,10 +1809,10 @@ inline void fp_Line::_calculateWidthOfRun(	UT_sint32 &iX,
 						}
 						else {
 #if !defined(WITH_PANGO) && defined(USE_LAYOUT_UNITS)
-							iXLayoutUnits = iPosLayoutUnits - (UT_sint32)eWorkingDirection * iScanWidthLayoutUnits;
-							iX = iPosLayoutUnits * Screen_resolution / UT_LAYOUT_UNITS - (UT_sint32)eWorkingDirection * iScanWidth;
+							iXLayoutUnits = iPosLayoutUnits - static_cast<UT_sint32>(eWorkingDirection) * iScanWidthLayoutUnits;
+							iX = iPosLayoutUnits * Screen_resolution / UT_LAYOUT_UNITS - static_cast<UT_sint32>(eWorkingDirection) * iScanWidth;
 #else
-							iX = iPosLayoutUnits - (UT_sint32)eWorkingDirection * iScanWidth;
+							iX = iPosLayoutUnits - static_cast<UT_sint32>(eWorkingDirection) * iScanWidth;
 #endif
 							iWidth = abs(iX - iXprev);
 						}
@@ -1937,7 +1939,7 @@ void fp_Line::layout(void)
 #ifdef DEBUG
 	UT_uint32 iRealocCount = 0;
 #endif
-	while((UT_sint32)s_iOldXsSize < iCountRuns + 1)
+	while(static_cast<UT_sint32>(s_iOldXsSize) < iCountRuns + 1)
 	{
 		// always make sure there is one space available past the last run
 		// we will set that to 0 and it will help us to handle the justified
@@ -2137,7 +2139,7 @@ void fp_Line::layout(void)
 
 		// of course, the loop is running in visual order, but the vector is
 		// in logical order
-		fp_Run* pRun = (fp_Run*) m_vecRuns.getNthItem(_getRunLogIndx(iIndx));
+		fp_Run* pRun = static_cast<fp_Run*>(m_vecRuns.getNthItem(_getRunLogIndx(iIndx)));
 
 
 		// if this tab is to be hidden, we must treat it as if its
@@ -2224,7 +2226,7 @@ void fp_Line::layout(void)
 			{
 				for (UT_sint32 k = 0; k < iCountRuns; k++)
 				{
-					fp_Run* pRun = (fp_Run*) m_vecRuns.getNthItem(_getRunLogIndx(k));
+					fp_Run* pRun = static_cast<fp_Run*>(m_vecRuns.getNthItem(_getRunLogIndx(k)));
 					UT_ASSERT(pRun);
 
 					// if this tab is to be hidden, we must treated as if its
@@ -2257,7 +2259,7 @@ void fp_Line::layout(void)
 				for (UT_sint32 k = 0; k < iCountRuns; k++)
 				{
 					UT_uint32 iK = (eWorkingDirection == WORK_FORWARD) ? k : iCountRuns - k - 1;
-					fp_Run* pRun = (fp_Run*) m_vecRuns.getNthItem(_getRunLogIndx(iK));
+					fp_Run* pRun = static_cast<fp_Run*>(m_vecRuns.getNthItem(_getRunLogIndx(iK)));
 					UT_ASSERT(pRun);
 
 					// if this tab is to be hidden, we must treated as if its
@@ -2305,7 +2307,7 @@ void fp_Line::layout(void)
 
 				for (UT_sint32 k = 0; k < iCountRuns; k++)
 				{
-					fp_Run* pRun = (fp_Run*) m_vecRuns.getNthItem(_getRunLogIndx(k));
+					fp_Run* pRun = static_cast<fp_Run*>(m_vecRuns.getNthItem(_getRunLogIndx(k)));
 					UT_ASSERT(pRun);
 
 					// if this tab is to be hidden, we must treated as if its
@@ -2351,10 +2353,10 @@ bool fp_Line::containsFootnoteReference(void)
 	bool bFound = false;
 	for(i=0; (i< countRuns()) && !bFound; i++)
 	{
-		pRun = getRunFromIndex((UT_uint32)i);
+		pRun = getRunFromIndex(static_cast<UT_uint32>(i));
 		if(pRun->getType() == FPRUN_FIELD)
 		{
-			fp_FieldRun * pFRun = (fp_FieldRun *) pRun;
+			fp_FieldRun * pFRun = static_cast<fp_FieldRun *>(pRun);
 			if(pFRun->getFieldType() == FPFIELD_footnote_ref)
 			{
 				bFound = true;
@@ -2374,24 +2376,24 @@ bool fp_Line::getFootnoteContainers(UT_Vector * pvecFoots)
 	PT_DocPosition posStart = getBlock()->getPosition();
 	PT_DocPosition posEnd = posStart + getLastRun()->getBlockOffset() + getLastRun()->getLength();
 	posStart += getFirstRun()->getBlockOffset();
-	for(i=0; (i< (UT_uint32) countRuns()); i++)
+	for(i=0; (i< static_cast<UT_uint32>(countRuns())); i++)
 	{
 		pRun = getRunFromIndex(i);
 		if(pRun->getType() == FPRUN_FIELD)
 		{
-			fp_FieldRun * pFRun = (fp_FieldRun *) pRun;
+			fp_FieldRun * pFRun = static_cast<fp_FieldRun *>(pRun);
 			if(pFRun->getFieldType() == FPFIELD_footnote_ref)
 			{
-				fp_FieldFootnoteRefRun * pFNRun = (fp_FieldFootnoteRefRun *) pFRun;
+				fp_FieldFootnoteRefRun * pFNRun = static_cast<fp_FieldFootnoteRefRun *>(pFRun);
 				fl_FootnoteLayout * pFL = getBlock()->getDocLayout()->findFootnoteLayout(pFNRun->getPID());
 				
 				UT_ASSERT(pFL);
 				xxx_UT_DEBUGMSG(("Pos of footnote %d start of run %d end of run %d \n",pFL->getDocPosition(),posStart,posEnd));
 				if(pFL && pFL->getDocPosition()>= posStart && pFL->getDocPosition() <= posEnd)
 				{
-					pFC = (fp_FootnoteContainer *) pFL->getFirstContainer();
+					pFC = reinterpret_cast<fp_FootnoteContainer *>(pFL->getFirstContainer());
 					bFound = true;
-					pvecFoots->addItem((void *) pFC);
+					pvecFoots->addItem(static_cast<void *>(pFC));
 				}
 			}
 		}
@@ -2441,7 +2443,7 @@ UT_sint32 fp_Line::getMarginBefore(void) const
 {
 	if (isFirstLineInBlock() && getBlock()->getPrev())
 	{
-		fp_Container* pPrevLine = (fp_Container *) getBlock()->getPrev()->getLastContainer();
+		fp_Container* pPrevLine = static_cast<fp_Container *>(getBlock()->getPrev()->getLastContainer());
 		UT_ASSERT(pPrevLine);
 		UT_sint32 iBottomMargin = 0;
 		if(pPrevLine->getContainerType() == FP_CONTAINER_LINE)
@@ -2471,14 +2473,14 @@ UT_sint32 fp_Line::getMarginAfter(void) const
 {
 	if (isLastLineInBlock() && getBlock()->getNext())
 	{
-		fp_Container * pNext = (fp_Container *) getBlock()->getNext()->getFirstContainer();
+		fp_Container * pNext = static_cast<fp_Container *>(getBlock()->getNext()->getFirstContainer());
 		if (!pNext)
 			return 0;
 		if(pNext->getContainerType() != FP_CONTAINER_LINE)
 		{
 			return getBlock()->getBottomMargin();
 		}
-		fp_Line * pNextLine = (fp_Line *) pNext;
+		fp_Line * pNextLine = static_cast<fp_Line *>(pNext);
 
 		UT_ASSERT(pNextLine->isFirstLineInBlock());
 
@@ -2499,14 +2501,14 @@ UT_sint32 fp_Line::getMarginAfterInLayoutUnits(void) const
 {
 	if (isLastLineInBlock() && getBlock()->getNext())
 	{
-		fp_Container * pNext = (fp_Container *) getBlock()->getNext()->getFirstContainer();
+		fp_Container * pNext = static_cast<fp_Container *>(getBlock()->getNext()->getFirstContainer());
 		if (!pNext)
 			return 0;
 		if(pNext->getContainerType() != FP_CONTAINER_LINE)
 		{
 			return getBlock()->getBottomMarginInLayoutUnits();
 		}
-		fp_Line * pNextLine = (fp_Line *) pNext;
+		fp_Line * pNextLine = static_cast<fp_Line *>(pNext);
 		UT_ASSERT(pNextLine->isFirstLineInBlock());
 
 		UT_sint32 iBottomMargin = getBlock()->getBottomMarginInLayoutUnits();
@@ -2529,11 +2531,11 @@ bool fp_Line::recalculateFields(UT_uint32 iUpdateCount)
 	UT_uint32 iNumRuns = m_vecRuns.getItemCount();
 	for (UT_uint32 i = 0; i < iNumRuns; i++)
 	{
-		fp_Run* pRun = (fp_Run*) m_vecRuns.getNthItem(i);
+		fp_Run* pRun = static_cast<fp_Run*>(m_vecRuns.getNthItem(i));
 
 		if (pRun->getType() == FPRUN_FIELD)
 		{
-			fp_FieldRun* pFieldRun = (fp_FieldRun*) pRun;
+			fp_FieldRun* pFieldRun = static_cast<fp_FieldRun*>(pRun);
 			if(iUpdateCount && (iUpdateCount % pFieldRun->needsFrequentUpdates()))
 				continue;
 			bool bSizeChanged = pFieldRun->calculateValue();
@@ -2555,7 +2557,7 @@ fp_Run* fp_Line::getLastRun(void) const
 	}
 	else
 	{
-		return ((fp_Run*) m_vecRuns.getLastItem());
+		return (static_cast<fp_Run*>(m_vecRuns.getLastItem()));
 	}
 }
 
@@ -2570,7 +2572,7 @@ fp_Run* fp_Line::getLastTextRun(void) const
 	}
 	else
 	{
-		pRun = (fp_Run*) m_vecRuns.getLastItem();
+		pRun = static_cast<fp_Run*>(m_vecRuns.getLastItem());
 		while(pRun != NULL && pRun->getType() != FPRUN_TEXT)
 		{
 			pRun = pRun->getPrev();
@@ -2589,7 +2591,10 @@ bool	fp_Line::findNextTabStop(UT_sint32 iStartX, UT_sint32& iPosition, eTabType 
 	eTabType	iTabStopType = FL_TAB_NONE;
 	eTabLeader	iTabStopLeader = FL_LEADER_NONE;
 
-	bool bRes = m_pBlock->findNextTabStop(iStartX + getX(), getX() + getMaxWidth(), iTabStopPosition, iTabStopType, iTabStopLeader);
+#if !defined(NDEBUG)
+	bool bRes =
+#endif
+		m_pBlock->findNextTabStop(iStartX + getX(), getX() + getMaxWidth(), iTabStopPosition, iTabStopType, iTabStopLeader);
 	UT_ASSERT(bRes);
 
 	iTabStopPosition -= getX();
@@ -2607,7 +2612,7 @@ bool	fp_Line::findNextTabStop(UT_sint32 iStartX, UT_sint32& iPosition, eTabType 
 	{
 		UT_DEBUGMSG(("fp_Line::findNextTabStop: iStartX %d, m_iMaxWidth %d\n"
 					 "			iPosition %d, iTabStopPosition %d, iType %d, iLeader %d\n",
-					 iStartX, m_iMaxWidth,iPosition, iTabStopPosition,(UT_sint32)iType, (UT_sint32)iLeader));
+					 iStartX, m_iMaxWidth,iPosition, iTabStopPosition,static_cast<UT_sint32>(iType), static_cast<UT_sint32>(iLeader)));
 		return false;
 	}
 }
@@ -2619,9 +2624,12 @@ bool	fp_Line::findNextTabStopInLayoutUnits(UT_sint32 iStartX, UT_sint32& iPositi
 	eTabType	iTabStopType = FL_TAB_NONE;
 	eTabLeader	iTabStopLeader = FL_LEADER_NONE;
 
-	bool bRes = m_pBlock->findNextTabStopInLayoutUnits(iStartX + getXInLayoutUnits(),
-														  getXInLayoutUnits() + getMaxWidthInLayoutUnits(),
-														  iTabStopPosition, iTabStopType, iTabStopLeader);
+#if !defined(NDEBUG)
+	bool bRes =
+#endif
+		m_pBlock->findNextTabStopInLayoutUnits(iStartX + getXInLayoutUnits(),
+											   getXInLayoutUnits() + getMaxWidthInLayoutUnits(),
+											   iTabStopPosition, iTabStopType, iTabStopLeader);
 	UT_ASSERT(bRes);
 
 	iTabStopPosition -= getXInLayoutUnits();
@@ -2638,7 +2646,7 @@ bool	fp_Line::findNextTabStopInLayoutUnits(UT_sint32 iStartX, UT_sint32& iPositi
 	{
 		UT_DEBUGMSG(("fp_Line::findNextTabStopLayout: iStartX %d, m_iMaxWidthLayoutUnits %d\n"
 					 "			 iPosition %d, iTabStopPosition %d,iType %d, iLeader %d\n",
-					 iStartX, m_iMaxWidthLayoutUnits,iPosition, iTabStopPosition,(UT_sint32)iType, (UT_sint32)iLeader));
+					 iStartX, m_iMaxWidthLayoutUnits,iPosition, iTabStopPosition,static_cast<UT_sint32>(iType), static_cast<UT_sint32>(iLeader)));
 		return false;
 	}
 }
@@ -2650,7 +2658,10 @@ bool	fp_Line::findPrevTabStop(UT_sint32 iStartX, UT_sint32& iPosition, eTabType 
 	eTabType	iTabStopType = FL_TAB_NONE;
 	eTabLeader	iTabStopLeader = FL_LEADER_NONE;
 
-	bool bRes = m_pBlock->findPrevTabStop(iStartX + getX(), getX() + getMaxWidth(), iTabStopPosition, iTabStopType, iTabStopLeader);
+#if !defined(NDEBUG)
+	bool bRes =
+#endif
+		m_pBlock->findPrevTabStop(iStartX + getX(), getX() + getMaxWidth(), iTabStopPosition, iTabStopType, iTabStopLeader);
 	UT_ASSERT(bRes);
 
 	iTabStopPosition -= getX();
@@ -2667,7 +2678,7 @@ bool	fp_Line::findPrevTabStop(UT_sint32 iStartX, UT_sint32& iPosition, eTabType 
 	{
 		UT_DEBUGMSG(("fp_Line::findPrevTabStop: iStartX %d, m_iMaxWidth %d\n"
 					 "			iPosition %d, iTabStopPosition %d, iType %d, iLeader %d\n",
-					 iStartX, m_iMaxWidth,iPosition, iTabStopPosition, (UT_sint32)iType, (UT_sint32)iLeader));
+					 iStartX, m_iMaxWidth,iPosition, iTabStopPosition, static_cast<UT_sint32>(iType), static_cast<UT_sint32>(iLeader)));
 		return false;
 	}
 }
@@ -2679,9 +2690,12 @@ bool	fp_Line::findPrevTabStopInLayoutUnits(UT_sint32 iStartX, UT_sint32& iPositi
 	eTabType	iTabStopType = FL_TAB_NONE;
 	eTabLeader	iTabStopLeader = FL_LEADER_NONE;
 
-	bool bRes = m_pBlock->findPrevTabStopInLayoutUnits(iStartX + getXInLayoutUnits(),
-														  getXInLayoutUnits() + getMaxWidthInLayoutUnits(),
-														  iTabStopPosition, iTabStopType, iTabStopLeader);
+#if !defined(NDEBUG)
+	bool bRes =
+#endif
+		m_pBlock->findPrevTabStopInLayoutUnits(iStartX + getXInLayoutUnits(),
+											   getXInLayoutUnits() + getMaxWidthInLayoutUnits(),
+											   iTabStopPosition, iTabStopType, iTabStopLeader);
 	UT_ASSERT(bRes);
 
 	iTabStopPosition -= getXInLayoutUnits();
@@ -2698,7 +2712,7 @@ bool	fp_Line::findPrevTabStopInLayoutUnits(UT_sint32 iStartX, UT_sint32& iPositi
 	{
 		UT_DEBUGMSG(("fp_Line::findPrevTabStopLayout: iStartX %d, m_iMaxWidthLayoutUnits %d\n"
 					 "		   iPosition %d, iTabStopPosition %d, iType %d, iLeader %d\n",
-					 iStartX, m_iMaxWidthLayoutUnits,iPosition, iTabStopPosition,(UT_sint32)iType, (UT_sint32)iLeader));
+					 iStartX, m_iMaxWidthLayoutUnits,iPosition, iTabStopPosition,static_cast<UT_sint32>(iType), static_cast<UT_sint32>(iLeader)));
 		return false;
 	}
 }
@@ -2735,8 +2749,8 @@ void fp_Line::recalcMaxWidth(bool bDontClearIfNeeded)
 		}
 		else if(getContainer()->getContainerType() == FP_CONTAINER_CELL)
 		{
-			fp_CellContainer * pCell = (fp_CellContainer *) getContainer();
-			m_iClearToPos = (UT_sint32)(iMaxWidth + pCell->getRightPad() * SCALE_TO_SCREEN);
+			fp_CellContainer * pCell = static_cast<fp_CellContainer *>(getContainer());
+			m_iClearToPos = static_cast<UT_sint32>(iMaxWidth + pCell->getRightPad() * SCALE_TO_SCREEN);
 //			m_iClearLeftOffset =  pCell->getCellX(this) - pCell->getLeftPos() - _UL(1);
 			m_iClearLeftOffset =  0;
 		}
@@ -2759,8 +2773,8 @@ void fp_Line::recalcMaxWidth(bool bDontClearIfNeeded)
 		}
 		else if(getContainer()->getContainerType() == FP_CONTAINER_CELL)
 		{
-			fp_CellContainer * pCell = (fp_CellContainer *) getContainer();
-			m_iClearToPos = (UT_sint32)(iMaxWidth + pCell->getRightPad() * SCALE_TO_SCREEN);
+			fp_CellContainer * pCell = static_cast<fp_CellContainer *>(getContainer());
+			m_iClearToPos = static_cast<UT_sint32>(iMaxWidth + pCell->getRightPad() * SCALE_TO_SCREEN);
 //			m_iClearLeftOffset =  pCell->getCellX(this) - pCell->getLeftPos() - _UL(1);
 			m_iClearLeftOffset =  0;
 		}
@@ -2819,13 +2833,13 @@ fp_Container*	fp_Line::getNextContainerInSection(void) const
 {
 	if (getNext())
 	{
-		return (fp_Container *)getNext();
+		return static_cast<fp_Container *>(getNext());
 	}
 
 	fl_ContainerLayout* pNextBlock = m_pBlock->getNext();
 	if (pNextBlock)
 	{
-		return (fp_Container *) pNextBlock->getFirstContainer();
+		return static_cast<fp_Container *>(pNextBlock->getFirstContainer());
 	}
 	return NULL;
 }
@@ -2834,27 +2848,27 @@ fp_Container*	fp_Line::getPrevContainerInSection(void) const
 {
 	if (getPrev())
 	{
-		return (fp_Container *) getPrev();
+		return static_cast<fp_Container *>(getPrev());
 	}
 
-	fl_ContainerLayout* pPrev =  (fl_ContainerLayout *) m_pBlock->getPrev();
+	fl_ContainerLayout* pPrev =  static_cast<fl_ContainerLayout *>(m_pBlock->getPrev());
 	if(pPrev)
 	{
-		fp_Container * pPrevCon = (fp_Container *) pPrev->getLastContainer();
+		fp_Container * pPrevCon = static_cast<fp_Container *>(pPrev->getLastContainer());
 //
 // Have to handle broken tables in the previous layout..
 //
 		if(pPrevCon->getContainerType() == FP_CONTAINER_TABLE)
 		{
-			fp_TableContainer * pTab = (fp_TableContainer *) pPrevCon;
+			fp_TableContainer * pTab = static_cast<fp_TableContainer *>(pPrevCon);
 			fp_TableContainer * pLLast = pTab;
-			fp_TableContainer * pNext = (fp_TableContainer *) pTab->getNext();
+			fp_TableContainer * pNext = static_cast<fp_TableContainer *>(pTab->getNext());
 			while(pNext)
 			{
 				pLLast = pNext;
-				pNext = (fp_TableContainer *) pNext->getNext();
+				pNext = static_cast<fp_TableContainer *>(pNext->getNext());
 			}
-			pPrevCon = (fp_Container *) pLLast;
+			pPrevCon = static_cast<fp_Container *>(pLLast);
 		}
 		return pPrevCon;
 	}
@@ -2894,9 +2908,9 @@ void fp_Line::coalesceRuns(void)
 {
 	//UT_DEBUGMSG(("coalesceRuns (line 0x%x)\n", this));
 	UT_uint32 count = m_vecRuns.getItemCount();
-	for (UT_sint32 i=0; i < (UT_sint32)(count-1); i++)
+	for (UT_sint32 i=0; i < static_cast<UT_sint32>(count-1); i++)
 	{
-		fp_Run* pRun = (fp_Run*) m_vecRuns.getNthItem((UT_uint32)i);
+		fp_Run* pRun = static_cast<fp_Run*>(m_vecRuns.getNthItem(static_cast<UT_uint32>(i)));
 
 		if (pRun->getType() == FPRUN_TEXT)
 		{
@@ -2922,7 +2936,7 @@ UT_sint32 fp_Line::calculateWidthOfLine(void)
 	// first calc the width of the line
 	for (UT_uint32 i = 0; i < iCountRuns; ++i)
 	{
-		fp_Run* pRun = (fp_Run*) m_vecRuns.getNthItem(i);
+		fp_Run* pRun = static_cast<fp_Run*>(m_vecRuns.getNthItem(i));
 
 		FPVisibility eHidden  = pRun->isHidden();
 		if((eHidden == FP_HIDDEN_TEXT && !bShowHidden)
@@ -2954,7 +2968,7 @@ UT_sint32 fp_Line::calculateWidthOfLineInLayoutUnits(void)
 	// first calc the width of the line
 	for (i=0; i<iCountRuns; i++)
 	{
-		fp_Run* pRun = (fp_Run*) m_vecRuns.getNthItem(i);
+		fp_Run* pRun = static_cast<fp_Run*>(m_vecRuns.getNthItem(i));
 
 		FPVisibility eHidden  = pRun->isHidden();
 		if((eHidden == FP_HIDDEN_TEXT && !bShowHidden)
@@ -2992,7 +3006,7 @@ UT_sint32 fp_Line::calculateWidthOfTrailingSpaces(void)
 	{
 		// work from the run on the visual end of the line
 		UT_sint32 k = iBlockDir == FRIBIDI_TYPE_LTR ? i : iCountRuns - i - 1;
-		fp_Run* pRun = (fp_Run*) m_vecRuns.getNthItem(_getRunLogIndx(k));
+		fp_Run* pRun = static_cast<fp_Run*>(m_vecRuns.getNthItem(_getRunLogIndx(k)));
 
 		FPVisibility eHidden  = pRun->isHidden();
 		if((eHidden == FP_HIDDEN_TEXT && !bShowHidden)
@@ -3035,7 +3049,7 @@ UT_sint32 fp_Line::calculateWidthOfTrailingSpacesInLayoutUnits(void)
 	{
 		// work from the run on the visual end of the line
 		UT_sint32 k = iBlockDir == FRIBIDI_TYPE_LTR ? i : iCountRuns - i - 1;
-		fp_Run* pRun = (fp_Run*) m_vecRuns.getNthItem(_getRunLogIndx(k));
+		fp_Run* pRun = static_cast<fp_Run*>(m_vecRuns.getNthItem(_getRunLogIndx(k)));
 
 		FPVisibility eHidden  = pRun->isHidden();
 		if((eHidden == FP_HIDDEN_TEXT && !bShowHidden)
@@ -3072,7 +3086,7 @@ UT_uint32 fp_Line::countJustificationPoints(void)
 	{
 		// work from the run on the visual end of the line
 		UT_sint32 k = iBlockDir == FRIBIDI_TYPE_LTR ? i : iCountRuns - i - 1;
-		fp_Run* pRun = (fp_Run*) m_vecRuns.getNthItem(_getRunLogIndx(k));
+		fp_Run* pRun = static_cast<fp_Run*>(m_vecRuns.getNthItem(_getRunLogIndx(k)));
 
 		if (pRun->getType() == FPRUN_TAB)
 		{
@@ -3130,7 +3144,7 @@ void fp_Line::resetJustification()
 	UT_uint32 count = m_vecRuns.getItemCount();
 	for (UT_uint32 i=0; i<count; i++)
 	{
-		fp_Run* pRun = (fp_Run*) m_vecRuns.getNthItem(i);
+		fp_Run* pRun = static_cast<fp_Run*>(m_vecRuns.getNthItem(i));
 
 		if (pRun->getType() == FPRUN_TEXT)
 		{
@@ -3181,7 +3195,7 @@ void fp_Line::distributeJustificationAmongstSpaces(UT_sint32 iAmount)
 			{
 				// work from the run on the visual end of the line
 				UT_sint32 k = iBlockDir == FRIBIDI_TYPE_LTR ? i : count  - i - 1;
-				fp_Run* pRun = (fp_Run*) m_vecRuns.getNthItem(_getRunLogIndx(k));
+				fp_Run* pRun = static_cast<fp_Run*>(m_vecRuns.getNthItem(_getRunLogIndx(k)));
 
 				if (pRun->getType() == FPRUN_TAB)
 				{
@@ -3201,7 +3215,7 @@ void fp_Line::distributeJustificationAmongstSpaces(UT_sint32 iAmount)
 					if(bFoundStart && iSpacesInText)
 					{
 						UT_uint32 iMySpaces = abs(iSpacesInText);
-						UT_sint32 iJustifyAmountForRun = (int)((double)iAmount / (iSpaceCount-1) * iMySpaces);
+						UT_sint32 iJustifyAmountForRun = static_cast<int>(static_cast<double>(iAmount) / (iSpaceCount-1) * iMySpaces);
 						if (iSpaceCount == 1) iJustifyAmountForRun = 0;
 						pTR->distributeJustificationAmongstSpaces(iJustifyAmountForRun, iMySpaces);
 
@@ -3237,17 +3251,17 @@ void fp_Line::_splitRunsAtSpaces(void)
 
 	for (UT_uint32 i = 0; i < count; i++)
 	{
-		fp_Run* pRun = (fp_Run*) m_vecRuns.getNthItem(i);
+		fp_Run* pRun = static_cast<fp_Run*>(m_vecRuns.getNthItem(i));
 
 		if (pRun->getType() == FPRUN_TEXT)
 		{
-			fp_TextRun* pTR = (fp_TextRun *)pRun;
+			fp_TextRun* pTR = static_cast<fp_TextRun *>(pRun);
 			UT_sint32 iSpacePosition;
 
 			iSpacePosition = pTR->findCharacter(0, UCS_SPACE);
 
 			if ((iSpacePosition > 0) &&
-				((UT_uint32) iSpacePosition < pTR->getBlockOffset() + pTR->getLength() - 1))
+				(static_cast<UT_uint32>(iSpacePosition) < pTR->getBlockOffset() + pTR->getLength() - 1))
 			{
 				addDirectionUsed(pRun->getDirection(),false);
 				pTR->split(iSpacePosition + 1);
@@ -3260,11 +3274,11 @@ void fp_Line::_splitRunsAtSpaces(void)
 
 	if (pRun->getType() == FPRUN_TEXT)
 	{
-		fp_TextRun* pTR = (fp_TextRun *)pRun;
+		fp_TextRun* pTR = static_cast<fp_TextRun *>(pRun);
 		UT_sint32 iSpacePosition = pTR->findCharacter(0, UCS_SPACE);
 
 		if ((iSpacePosition > 0) &&
-			((UT_uint32) iSpacePosition < pTR->getBlockOffset() + pTR->getLength() - 1))
+			(static_cast<UT_uint32>(iSpacePosition) < pTR->getBlockOffset() + pTR->getLength() - 1))
 		{
 			addDirectionUsed(pRun->getDirection(),false);
 			pTR->split(iSpacePosition + 1);
@@ -3356,7 +3370,7 @@ UT_sint32 fp_Line::_createMapOfRuns()
 				//the visual directions for all our runs to 0
 				//s_pMapOfRunsL2V[i] = i;
 				//s_pMapOfRunsV2L[i] = i;
-				((fp_Run*) m_vecRuns.getNthItem(i))->setVisDirection(FRIBIDI_TYPE_LTR);
+				(static_cast<fp_Run*>(m_vecRuns.getNthItem(i)))->setVisDirection(FRIBIDI_TYPE_LTR);
 			}
 			return UT_OK;
 		}
@@ -3373,14 +3387,14 @@ UT_sint32 fp_Line::_createMapOfRuns()
 				s_pMapOfRunsV2L[i]= count - i - 1;
 				s_pMapOfRunsL2V[count - i - 1] = i;
 				s_pMapOfRunsV2L[count - i - 1] = i;
-				((fp_Run*) m_vecRuns.getNthItem(i))->setVisDirection(FRIBIDI_TYPE_RTL);
+				(static_cast<fp_Run*>(m_vecRuns.getNthItem(i)))->setVisDirection(FRIBIDI_TYPE_RTL);
 			}
 
 			if(count % 2)	//the run in the middle
 			{
 				s_pMapOfRunsL2V[count/2] = count/2;
 				s_pMapOfRunsV2L[count/2] = count/2;
-				((fp_Run*) m_vecRuns.getNthItem(count/2))->setVisDirection(FRIBIDI_TYPE_RTL);
+				(static_cast<fp_Run*>(m_vecRuns.getNthItem(count/2)))->setVisDirection(FRIBIDI_TYPE_RTL);
 
 			}
 
@@ -3404,29 +3418,29 @@ UT_sint32 fp_Line::_createMapOfRuns()
 
 			for(i = 0; i < count; i++)
 			{
-				iRunDirection = ((fp_Run*) m_vecRuns.getNthItem(i))->getDirection();
+				iRunDirection = (static_cast<fp_Run*>(m_vecRuns.getNthItem(i)))->getDirection();
 				switch(iRunDirection)
 				{
-					case FRIBIDI_TYPE_LTR : s_pPseudoString[i] = (FriBidiChar) 'a'; break;
-					case FRIBIDI_TYPE_RTL : s_pPseudoString[i] = (FriBidiChar) 0x05d0; break;
+					case FRIBIDI_TYPE_LTR : s_pPseudoString[i] = static_cast<FriBidiChar>('a'); break;
+					case FRIBIDI_TYPE_RTL : s_pPseudoString[i] = static_cast<FriBidiChar>(0x05d0); break;
 					//case FRIBIDI_TYPE_WL
 					//case FRIBIDI_TYPE_WR
-					case FRIBIDI_TYPE_EN  : s_pPseudoString[i] = (FriBidiChar) '0'; break;
-					case FRIBIDI_TYPE_ES  : s_pPseudoString[i] = (FriBidiChar) '/'; break;
-					case FRIBIDI_TYPE_ET  : s_pPseudoString[i] = (FriBidiChar) '#'; break;
-					case FRIBIDI_TYPE_AN  : s_pPseudoString[i] = (FriBidiChar) 0x0660; break;
-					case FRIBIDI_TYPE_CS  : s_pPseudoString[i] = (FriBidiChar) ','; break;
-					case FRIBIDI_TYPE_BS  : s_pPseudoString[i] = (FriBidiChar) 0x000A; break;
-					case FRIBIDI_TYPE_SS  : s_pPseudoString[i] = (FriBidiChar) 0x000B; break;
-					case FRIBIDI_TYPE_WS  : s_pPseudoString[i] = (FriBidiChar) ' '; break;
-					case FRIBIDI_TYPE_AL  : s_pPseudoString[i] = (FriBidiChar) 0x062D; break;
-					case FRIBIDI_TYPE_NSM : s_pPseudoString[i] = (FriBidiChar) 0x0300; break;
-					case FRIBIDI_TYPE_LRE : s_pPseudoString[i] = (FriBidiChar) 0x202A; break;
-					case FRIBIDI_TYPE_RLE : s_pPseudoString[i] = (FriBidiChar) 0x202B; break;
-					case FRIBIDI_TYPE_LRO : s_pPseudoString[i] = (FriBidiChar) 0x202D; break;
-					case FRIBIDI_TYPE_RLO : s_pPseudoString[i] = (FriBidiChar) 0x202E; break;
-					case FRIBIDI_TYPE_PDF : s_pPseudoString[i] = (FriBidiChar) 0x202C; break;
-					case FRIBIDI_TYPE_ON  : s_pPseudoString[i] = (FriBidiChar) '!'; break;
+					case FRIBIDI_TYPE_EN  : s_pPseudoString[i] = static_cast<FriBidiChar>('0'); break;
+					case FRIBIDI_TYPE_ES  : s_pPseudoString[i] = static_cast<FriBidiChar>('/'); break;
+					case FRIBIDI_TYPE_ET  : s_pPseudoString[i] = static_cast<FriBidiChar>('#'); break;
+					case FRIBIDI_TYPE_AN  : s_pPseudoString[i] = static_cast<FriBidiChar>(0x0660); break;
+					case FRIBIDI_TYPE_CS  : s_pPseudoString[i] = static_cast<FriBidiChar>(','); break;
+					case FRIBIDI_TYPE_BS  : s_pPseudoString[i] = static_cast<FriBidiChar>(0x000A); break;
+					case FRIBIDI_TYPE_SS  : s_pPseudoString[i] = static_cast<FriBidiChar>(0x000B); break;
+					case FRIBIDI_TYPE_WS  : s_pPseudoString[i] = static_cast<FriBidiChar>(' '); break;
+					case FRIBIDI_TYPE_AL  : s_pPseudoString[i] = static_cast<FriBidiChar>(0x062D); break;
+					case FRIBIDI_TYPE_NSM : s_pPseudoString[i] = static_cast<FriBidiChar>(0x0300); break;
+					case FRIBIDI_TYPE_LRE : s_pPseudoString[i] = static_cast<FriBidiChar>(0x202A); break;
+					case FRIBIDI_TYPE_RLE : s_pPseudoString[i] = static_cast<FriBidiChar>(0x202B); break;
+					case FRIBIDI_TYPE_LRO : s_pPseudoString[i] = static_cast<FriBidiChar>(0x202D); break;
+					case FRIBIDI_TYPE_RLO : s_pPseudoString[i] = static_cast<FriBidiChar>(0x202E); break;
+					case FRIBIDI_TYPE_PDF : s_pPseudoString[i] = static_cast<FriBidiChar>(0x202C); break;
+					case FRIBIDI_TYPE_ON  : s_pPseudoString[i] = static_cast<FriBidiChar>('!'); break;
 
 				}
 				xxx_UT_DEBUGMSG(("fp_Line::_createMapOfRuns: pseudo char 0x%x\n",s_pPseudoString[i]));
@@ -3449,7 +3463,7 @@ UT_sint32 fp_Line::_createMapOfRuns()
 			 //directions down to the runs.
 			 for (i=0; i<count;i++)
 			 {
-				((fp_Run*) m_vecRuns.getNthItem(i))->setVisDirection(s_pEmbeddingLevels[i]%2 ? FRIBIDI_TYPE_RTL : FRIBIDI_TYPE_LTR);
+				(static_cast<fp_Run*>(m_vecRuns.getNthItem(i)))->setVisDirection(s_pEmbeddingLevels[i]%2 ? FRIBIDI_TYPE_RTL : FRIBIDI_TYPE_LTR);
 				xxx_UT_DEBUGMSG(("L2V %d, V2L %d, emb. %d [run 0x%x]\n", s_pMapOfRunsL2V[i],s_pMapOfRunsV2L[i],s_pEmbeddingLevels[i],m_vecRuns.getNthItem(i)));
 			 }
 		}//if/else only rtl
@@ -3491,16 +3505,16 @@ UT_uint32 fp_Line::_getRunVisIndx(UT_uint32 indx)
 
 UT_uint32	fp_Line::getVisIndx(fp_Run* pRun)
 {
-	UT_sint32 i = m_vecRuns.findItem((void *) pRun);
+	UT_sint32 i = m_vecRuns.findItem(static_cast<void *>(pRun));
 	UT_ASSERT(i >= 0);
-	return _getRunVisIndx((UT_uint32) i);
+	return _getRunVisIndx(static_cast<UT_uint32>(i));
 }
 
 fp_Run *	fp_Line::getRunAtVisPos(UT_uint32 i)
 {
 	if(i >= m_vecRuns.getItemCount())
 		return NULL;
-	return (fp_Run*) m_vecRuns.getNthItem(_getRunLogIndx(i));
+	return static_cast<fp_Run*>(m_vecRuns.getNthItem(_getRunLogIndx(i)));
 }
 
 fp_Run * fp_Line::getLastVisRun()
@@ -3511,7 +3525,7 @@ fp_Run * fp_Line::getLastVisRun()
 	_createMapOfRuns();
 	UT_uint32 count = m_vecRuns.getItemCount();
 	UT_ASSERT(count > 0);
-	return((fp_Run *) m_vecRuns.getNthItem(s_pMapOfRunsV2L[count - 1]));
+	return static_cast<fp_Run *>(m_vecRuns.getNthItem(s_pMapOfRunsV2L[count - 1]));
 }
 
 fp_Run * fp_Line::getFirstVisRun()
@@ -3520,7 +3534,7 @@ fp_Run * fp_Line::getFirstVisRun()
 		return(0);
 
 	_createMapOfRuns();
-	return((fp_Run *) m_vecRuns.getNthItem(s_pMapOfRunsV2L[0]));
+	return static_cast<fp_Run *>(m_vecRuns.getNthItem(s_pMapOfRunsV2L[0]));
 }
 
 
@@ -3624,10 +3638,10 @@ void fp_Line::_updateContainsFootnoteRef(void)
 	UT_uint32 count = m_vecRuns.getItemCount();
 	for (UT_uint32 i = 0; i < count; i++)
 	{
-		fp_Run * r = (fp_Run *)m_vecRuns.getNthItem(i);
+		fp_Run * r = static_cast<fp_Run *>(m_vecRuns.getNthItem(i));
 		if (r->getType() == FPRUN_FIELD)
 		{
-			fp_FieldRun * fr = (fp_FieldRun*) r;
+			fp_FieldRun * fr = static_cast<fp_FieldRun*>(r);
 			if (fr->getFieldType() == FPFIELD_endnote_ref)
 				m_bContainsFootnoteRef = true;
 		}
@@ -3640,7 +3654,7 @@ UT_sint32 fp_Line::getDrawingWidth() const
 	{
 		fp_Run * pRun = getLastRun();
 		UT_return_val_if_fail(pRun && pRun->getType() == FPRUN_ENDOFPARAGRAPH, m_iWidth);
-		return (m_iWidth + ((fp_EndOfParagraphRun*)pRun)->getDrawingWidth());
+		return (m_iWidth + (static_cast<fp_EndOfParagraphRun*>(pRun))->getDrawingWidth());
 	}
 	else
 	{

@@ -1181,7 +1181,7 @@ bool EV_UnixMenuPopup::synthesizeMenuPopup()
 	g_signal_connect(G_OBJECT(m_wMenuPopup), "unmap",
 					   G_CALLBACK(_wd::s_onDestroyPopupMenu), wd);
 	gtk_object_set_user_data(GTK_OBJECT(m_wMenuPopup),this);
-	m_vecCallbacks.addItem((void *) wd);
+	m_vecCallbacks.addItem(static_cast<void *>(wd));
 	synthesizeMenu(m_wMenuPopup);
 
 #if 0
@@ -1267,7 +1267,7 @@ GtkWidget * EV_UnixMenu::s_createNormalMenuEntry(int id, const bool isCheckable,
 	// create callback info data for action handling
 	_wd * wd = new _wd(this, id);
 	UT_ASSERT(wd);
-	m_vecCallbacks.addItem((void *) wd);
+	m_vecCallbacks.addItem(static_cast<void *>(wd));
 	// connect callbacks
 	g_signal_connect(G_OBJECT(w), "activate", G_CALLBACK(_wd::s_onActivate), wd);
 	g_signal_connect(G_OBJECT(w), "select", G_CALLBACK(_wd::s_onMenuItemSelect), wd);

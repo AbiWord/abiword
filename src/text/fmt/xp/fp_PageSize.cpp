@@ -177,7 +177,7 @@ void fp_PageSize::Set(Predefined preDef, UT_Dimension u)
 	m_iMarginLeft   = UT_convertDimensions(size.l, size.u, FUND);
 	m_iMarginRight  = UT_convertDimensions(size.r, size.u, FUND);
 
-	m_predefined = (char *)pagesizes [preDef].name;
+	m_predefined = static_cast<char *>(pagesizes [preDef].name);
 }
 
 /*!
@@ -193,14 +193,14 @@ void fp_PageSize::Set(double w, double h, UT_Dimension u)
 	// calculate which predefined this represents
 
 	for (i = _first_predefined_pagesize_; 
-		 i < (int)_last_predefined_pagesize_dont_use_; i++)
+		 i < static_cast<int>(_last_predefined_pagesize_dont_use_); i++)
 	{
 		if (pagesizes[i].u != u )  // Convert to local defined units and round off
 		{
 			converted_w = UT_convertDimensions(w, u, pagesizes[i].u);
-			converted_w = ((int)(converted_w*10.0+0.5))/(double)10.0;
+			converted_w = (static_cast<int>(converted_w*10.0+0.5))/static_cast<double>(10.0);
 			converted_h = UT_convertDimensions(h, u, pagesizes[i].u);
-			converted_h = ((int)(converted_h*10.0+0.5))/(double)10.0;
+			converted_h = (static_cast<int>(converted_h*10.0+0.5))/static_cast<double>(10.0);
 		}
 		else
 		{
@@ -224,7 +224,7 @@ void fp_PageSize::Set(double w, double h, UT_Dimension u)
 	}
 
 	// Force Custom Label if nothing else fits
-	if ( i == (int)_last_predefined_pagesize_dont_use_ )
+	if ( i == static_cast<int>(_last_predefined_pagesize_dont_use_) )
 	{
 		Set (static_cast<Predefined>(i-1), u);
 		m_iWidth  = UT_convertDimensions(w, u, FUND);
@@ -309,8 +309,8 @@ double fp_PageSize::MarginRight(UT_Dimension u) const
 
 bool fp_PageSize::IsPredefinedName(const char* szPageSizeName)
 {
-	for (int i = (int)_first_predefined_pagesize_;
-		 i < (int)_last_predefined_pagesize_dont_use_; ++i)
+	for (int i = static_cast<int>(_first_predefined_pagesize_);
+		 i < static_cast<int>(_last_predefined_pagesize_dont_use_); ++i)
 	{
 		if (!strcmp(pagesizes[i].name, szPageSizeName))
 		{
@@ -331,7 +331,7 @@ fp_PageSize::Predefined fp_PageSize::NameToPredefined(const char *name)
 	    return fp_PageSize::psLetter;
 	}
 
-	for(preDef = (int)_first_predefined_pagesize_;
+	for(preDef = static_cast<int>(_first_predefined_pagesize_);
 	    preDef < static_cast<int>(_last_predefined_pagesize_dont_use_);
 		preDef++)
 	{

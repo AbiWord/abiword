@@ -138,7 +138,10 @@ int EV_Menu_Layout::searchPos(const UT_Vector *names, const EV_Menu_LabelSet &la
 
 void EV_Menu_Layout::addFakeLayoutItem(UT_uint32 indexLayoutItem, EV_Menu_LayoutFlags flags)
 {
-	UT_uint32 err = m_layoutTable.insertItemAt(new EV_Menu_LayoutItem(0, flags), indexLayoutItem);
+#if !defined (NDEBUG)
+	UT_uint32 err =
+#endif
+		m_layoutTable.insertItemAt(new EV_Menu_LayoutItem(0, flags), indexLayoutItem);
 	UT_ASSERT(!err);
 }
 

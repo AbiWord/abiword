@@ -1125,7 +1125,7 @@ PL_StruxDocHandle PD_Document::getEndTableStruxFromTablePos(PT_DocPosition table
 bool PD_Document::getRowsColsFromTableSDH(PL_StruxDocHandle tableSDH, UT_sint32 * numRows,
 										  UT_sint32 * numCols)
 {
-	UT_sint32 Right,Bot;
+	UT_sint32 iRight, iBot;
 	const char * szRight = NULL;
 	const char * szBot = NULL;
 	PL_StruxDocHandle cellSDH;
@@ -1158,21 +1158,21 @@ bool PD_Document::getRowsColsFromTableSDH(PL_StruxDocHandle tableSDH, UT_sint32 
 				bool bres = getPropertyFromSDH(cellSDH,"right-attach",&szRight);
 				if(szRight && *szRight)
 				{
-					Right = atoi(szRight);
+					iRight = atoi(szRight);
 				}
 				bres = getPropertyFromSDH(cellSDH,"bot-attach",&szBot);
 				if(szBot && *szBot)
 				{
-					Bot = atoi(szBot);
+					iBot = atoi(szBot);
 				}
 
-				if(*numCols < Right)
+				if(*numCols < iRight)
 				{
-					*numCols = Right;
+					*numCols = iRight;
 				}
-				if(*numRows < Bot)
+				if(*numRows < iBot)
 				{
-					*numRows = Bot;
+					*numRows = iBot;
 				}
 			}
 			currentFrag = (pf_Frag *) pfSec;

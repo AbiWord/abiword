@@ -218,75 +218,75 @@ FV_View::FV_View(XAP_App * pApp, void* pParentData, FL_DocLayout* pLayout)
 	pApp->getPrefsValueBool(AP_PREF_KEY_CursorBlink, &m_bCursorBlink);
 
    	const XML_Char * pszTmpColor = NULL;
-	if (pApp->getPrefsValue((const XML_Char * ) XAP_PREF_KEY_ColorForShowPara, &pszTmpColor))
+	if (pApp->getPrefsValue(static_cast<const XML_Char *>(XAP_PREF_KEY_ColorForShowPara), &pszTmpColor))
 	{
 		UT_parseColor(pszTmpColor, m_colorShowPara);
 	}
-	if (pApp->getPrefsValue((const XML_Char * ) XAP_PREF_KEY_ColorForSquiggle, &pszTmpColor))
+	if (pApp->getPrefsValue(static_cast<const XML_Char *>(XAP_PREF_KEY_ColorForSquiggle), &pszTmpColor))
 	{
 		UT_parseColor(pszTmpColor, m_colorSquiggle);
 	}
-	if (pApp->getPrefsValue((const XML_Char * ) XAP_PREF_KEY_ColorForMargin, &pszTmpColor))
+	if (pApp->getPrefsValue(static_cast<const XML_Char *>(XAP_PREF_KEY_ColorForMargin), &pszTmpColor))
 	{
 		UT_parseColor(pszTmpColor, m_colorMargin);
 	}
-	if (pApp->getPrefsValue((const XML_Char * ) XAP_PREF_KEY_ColorForFieldOffset, &pszTmpColor))
+	if (pApp->getPrefsValue(static_cast<const XML_Char *>(XAP_PREF_KEY_ColorForFieldOffset), &pszTmpColor))
 	{
 		UT_parseColor(pszTmpColor, m_colorFieldOffset);
 	}
-	if (pApp->getPrefsValue((const XML_Char * ) XAP_PREF_KEY_ColorForImage, &pszTmpColor))
+	if (pApp->getPrefsValue(static_cast<const XML_Char *>(XAP_PREF_KEY_ColorForImage), &pszTmpColor))
 	{
 		UT_parseColor(pszTmpColor, m_colorImage);
 	}
-	if (pApp->getPrefsValue((const XML_Char * ) XAP_PREF_KEY_ColorForHyperLink, &pszTmpColor))
+	if (pApp->getPrefsValue(static_cast<const XML_Char *>(XAP_PREF_KEY_ColorForHyperLink), &pszTmpColor))
 	{
 		UT_parseColor(pszTmpColor, m_colorHyperLink);
 	}
-	if (pApp->getPrefsValue((const XML_Char * ) XAP_PREF_KEY_ColorForHdrFtr, &pszTmpColor))
+	if (pApp->getPrefsValue(static_cast<const XML_Char *>(XAP_PREF_KEY_ColorForHdrFtr), &pszTmpColor))
 	{
 		UT_parseColor(pszTmpColor, m_colorHdrFtr);
 	}
-	if (pApp->getPrefsValue((const XML_Char * ) XAP_PREF_KEY_ColorForColumnLine, &pszTmpColor))
+	if (pApp->getPrefsValue(static_cast<const XML_Char *>(XAP_PREF_KEY_ColorForColumnLine), &pszTmpColor))
 	{
 		UT_parseColor(pszTmpColor, m_colorColumnLine);
 	}
-	if (pApp->getPrefsValue((const XML_Char * ) XAP_PREF_KEY_ColorForRevision1, &pszTmpColor))
+	if (pApp->getPrefsValue(static_cast<const XML_Char *>(XAP_PREF_KEY_ColorForRevision1), &pszTmpColor))
 	{
 		UT_parseColor(pszTmpColor, m_colorRevisions[0]);
 	}
-	if (pApp->getPrefsValue((const XML_Char * ) XAP_PREF_KEY_ColorForRevision2, &pszTmpColor))
+	if (pApp->getPrefsValue(static_cast<const XML_Char *>(XAP_PREF_KEY_ColorForRevision2), &pszTmpColor))
 	{
 		UT_parseColor(pszTmpColor, m_colorRevisions[1]);
 	}
-	if (pApp->getPrefsValue((const XML_Char * ) XAP_PREF_KEY_ColorForRevision3, &pszTmpColor))
+	if (pApp->getPrefsValue(static_cast<const XML_Char *>(XAP_PREF_KEY_ColorForRevision3), &pszTmpColor))
 	{
 		UT_parseColor(pszTmpColor, m_colorRevisions[2]);
 	}
-	if (pApp->getPrefsValue((const XML_Char * ) XAP_PREF_KEY_ColorForRevision4, &pszTmpColor))
+	if (pApp->getPrefsValue(static_cast<const XML_Char *>(XAP_PREF_KEY_ColorForRevision4), &pszTmpColor))
 	{
 		UT_parseColor(pszTmpColor, m_colorRevisions[3]);
 	}
-	if (pApp->getPrefsValue((const XML_Char * ) XAP_PREF_KEY_ColorForRevision5, &pszTmpColor))
+	if (pApp->getPrefsValue(static_cast<const XML_Char *>(XAP_PREF_KEY_ColorForRevision5), &pszTmpColor))
 	{
 		UT_parseColor(pszTmpColor, m_colorRevisions[4]);
 	}
-	if (pApp->getPrefsValue((const XML_Char * ) XAP_PREF_KEY_ColorForRevision6, &pszTmpColor))
+	if (pApp->getPrefsValue(static_cast<const XML_Char *>(XAP_PREF_KEY_ColorForRevision6), &pszTmpColor))
 	{
 		UT_parseColor(pszTmpColor, m_colorRevisions[5]);
 	}
-	if (pApp->getPrefsValue((const XML_Char * ) XAP_PREF_KEY_ColorForRevision7, &pszTmpColor))
+	if (pApp->getPrefsValue(static_cast<const XML_Char *>(XAP_PREF_KEY_ColorForRevision7), &pszTmpColor))
 	{
 		UT_parseColor(pszTmpColor, m_colorRevisions[6]);
 	}
-	if (pApp->getPrefsValue((const XML_Char * ) XAP_PREF_KEY_ColorForRevision8, &pszTmpColor))
+	if (pApp->getPrefsValue(static_cast<const XML_Char *>(XAP_PREF_KEY_ColorForRevision8), &pszTmpColor))
 	{
 		UT_parseColor(pszTmpColor, m_colorRevisions[7]);
 	}
-	if (pApp->getPrefsValue((const XML_Char * ) XAP_PREF_KEY_ColorForRevision9, &pszTmpColor))
+	if (pApp->getPrefsValue(static_cast<const XML_Char *>(XAP_PREF_KEY_ColorForRevision9), &pszTmpColor))
 	{
 		UT_parseColor(pszTmpColor, m_colorRevisions[8]);
 	}
-	if (pApp->getPrefsValue((const XML_Char * ) XAP_PREF_KEY_ColorForRevision10, &pszTmpColor))
+	if (pApp->getPrefsValue(static_cast<const XML_Char *>(XAP_PREF_KEY_ColorForRevision10), &pszTmpColor))
 	{
 		UT_parseColor(pszTmpColor, m_colorRevisions[9]);
 	}
@@ -298,7 +298,7 @@ FV_View::FV_View(XAP_App * pApp, void* pParentData, FL_DocLayout* pLayout)
 	if(m_pG->queryProperties(GR_Graphics::DGP_SCREEN))
 	{
 		const char * szViewMode = NULL;
-		pApp->getPrefsValue((const char *) AP_PREF_KEY_LayoutMode,&szViewMode);
+		pApp->getPrefsValue(static_cast<const char *>(AP_PREF_KEY_LayoutMode),&szViewMode);
 		if(strcmp(szViewMode,"1") == 0)
 		{
 			setViewMode(VIEW_PRINT);
@@ -335,7 +335,7 @@ FV_View::FV_View(XAP_App * pApp, void* pParentData, FL_DocLayout* pLayout)
 
 		const XML_Char * bidi_props[5]= {/*bidi_dir_name, bidi_dir_value, */bidi_domdir_name, bidi_dir_value, bidi_align_name, bidi_align_value,0};
 
-		m_pDoc->addStyleProperties((const XML_Char*)"Normal", (const XML_Char**)bidi_props);
+		m_pDoc->addStyleProperties(static_cast<const XML_Char*>("Normal"), static_cast<const XML_Char**>(&bidi_props[0]));
 		PP_resetInitialBiDiValues("rtl");
 	}
 #else
@@ -349,7 +349,7 @@ FV_View::FV_View(XAP_App * pApp, void* pParentData, FL_DocLayout* pLayout)
 
 		const XML_Char * bidi_props[5]= {/*bidi_dir_name, bidi_dir_value, */bidi_domdir_name, bidi_dir_value, bidi_align_name, bidi_align_value,0};
 
-		m_pDoc->addStyleProperties((const XML_Char*)"Normal", (const XML_Char**)bidi_props);
+		m_pDoc->addStyleProperties(static_cast<const XML_Char*>("Normal"), static_cast<const XML_Char**>(bidi_props));
 		PP_resetInitialBiDiValues("ltr");
 	}
 #endif
@@ -441,7 +441,7 @@ UT_RGBColor FV_View::getColorSelBackground ()
   
   if (!m_bgColorInitted) {
     const XML_Char * pszTmpColor = NULL;
-    if (XAP_App::getApp()->getPrefsValue((const XML_Char * ) XAP_PREF_KEY_ColorForSelBackground, &pszTmpColor))
+    if (XAP_App::getApp()->getPrefsValue(static_cast<const XML_Char *>(XAP_PREF_KEY_ColorForSelBackground), &pszTmpColor))
       {
 	UT_parseColor(pszTmpColor, bgcolor);
       }
@@ -652,7 +652,7 @@ void FV_View::toggleCase (ToggleCase c)
 		if(c == CASE_ROTATE)
 		{
 			// workout the current case
-			UT_UCSChar * pT = (UT_UCSChar*)buffer.getPointer(offset);
+			UT_UCSChar * pT = reinterpret_cast<UT_UCSChar*>(buffer.getPointer(offset));
 			xxx_UT_DEBUGMSG(("pT 0x%x, pT + 1 0x%x\n", *pT, *(pT+1)));
 
 			if(pT && UT_UCS4_islower(*pT) && buffer.getLength() > 1 && UT_UCS4_islower (*(pT+1)))
@@ -761,7 +761,7 @@ void FV_View::toggleCase (ToggleCase c)
 						if(offset == 0)
 							prev = NULL;
 						else
-							prev = (UT_UCSChar*)buffer.getPointer(offset - 1);
+							prev = reinterpret_cast<UT_UCSChar*>(buffer.getPointer(offset - 1));
 						_toggleFirstCapital(pTemp,pTemp, iLen, prev);
 						break;
 
@@ -775,7 +775,7 @@ void FV_View::toggleCase (ToggleCase c)
 #endif
 				   {
 					   UT_uint32 iOffset = offset;
-					   UT_UCSChar * text = (UT_UCSChar*)buffer.getPointer(0);
+					   UT_UCSChar * text = reinterpret_cast<UT_UCSChar*>(buffer.getPointer(0));
 					   UT_uint32 i = 1;
 
 					   // examine what preceedes this chunk of text
@@ -880,7 +880,7 @@ void FV_View::toggleCase (ToggleCase c)
 				offset += iLen;
 			}
 		}
-		pBL = (fl_BlockLayout *) pBL->getNext();
+		pBL = static_cast<fl_BlockLayout *>(pBL->getNext());
 		if ( pBL )
 		  low = pBL->getPosition(false);
 		else
@@ -1230,7 +1230,7 @@ bool FV_View::notifyListeners(const AV_ChangeMask hint)
 		UT_ASSERT(pContainer);
 		if (pContainer && pContainer->getContainerType() == FP_CONTAINER_COLUMN)
 		{
-			fp_Column* pColumn = (fp_Column*) pContainer;
+			fp_Column* pColumn = static_cast<fp_Column*>(pContainer);
 
 			UT_uint32 nCol=0;
 			fp_Column * pNthColumn = pColumn->getLeader();
@@ -1307,7 +1307,7 @@ PT_DocPosition FV_View::saveSelectedImage (const UT_ByteBuf ** pBytes)
 			}
 			else
 			{
-				pBlock = (fl_BlockLayout *) vBlock.getNthItem(i);
+				pBlock = static_cast<fl_BlockLayout *>(vBlock.getNthItem(i));
 				pRun = pBlock->getFirstRun();
 			}
 
@@ -1399,8 +1399,8 @@ void FV_View::moveInsPtTo(PT_DocPosition dp)
 	  not do any scrolling.  Instead of the code below, we use the code which
 	  is already in the _ensureInsertionPointOnScreen() function.
 	  _fixInsertionPointCoords();
-	  cmdScroll(AV_SCROLLCMD_LINEDOWN, (UT_uint32) (m_yPoint + m_iPointHeight/2 - m_iWindowHeight/2));
-	  cmdScroll(AV_SCROLLCMD_LINERIGHT, (UT_uint32) (m_xPoint - m_iWindowWidth/2));
+	  cmdScroll(AV_SCROLLCMD_LINEDOWN, static_cast<UT_uint32>(m_yPoint + m_iPointHeight/2 - m_iWindowHeight/2));
+	  cmdScroll(AV_SCROLLCMD_LINERIGHT, static_cast<UT_uint32>(m_xPoint - m_iWindowWidth/2));
 	  notifyListeners(AV_CHG_MOTION);
 	*/
 	_ensureInsertionPointOnScreen();
@@ -1532,7 +1532,7 @@ bool FV_View::isCurrentListBlockEmpty(void)
 	// If the current block is a list and is otherwise empty return true
 	//
 	fl_BlockLayout * pBlock = getCurrentBlock();
-	fl_BlockLayout * nBlock = (fl_BlockLayout *) pBlock->getNext();
+	fl_BlockLayout * nBlock = static_cast<fl_BlockLayout *>(pBlock->getNext());
 	bool bEmpty = true;
 	if(pBlock->isListItem() == false || (nBlock!= NULL && nBlock->isListItem()==true))
 	{
@@ -1546,7 +1546,7 @@ bool FV_View::isCurrentListBlockEmpty(void)
 	UT_uint32 ifield =0;
 	while((bEmpty == true) && (pRun != NULL))
 	{
-		FP_RUN_TYPE runtype = (FP_RUN_TYPE) pRun->getType();
+		FP_RUN_TYPE runtype = static_cast<FP_RUN_TYPE>(pRun->getType());
 		if((runtype == FPRUN_TAB) ||
 		   ( runtype == FPRUN_FIELD)  ||
 		   (runtype == FPRUN_FMTMARK) ||
@@ -1601,7 +1601,7 @@ bool FV_View::isPointBeforeListLabel(void)
 	{
 		if(pRun->getType()== FPRUN_FIELD)
 		{
-			fp_FieldRun * pFRun = (fp_FieldRun *) pRun;
+			fp_FieldRun * pFRun = static_cast<fp_FieldRun *>(pRun);
 			if (pFRun->getFieldType() == FPFIELD_list_label)
 			{
 				bBefore = false;
@@ -1632,7 +1632,7 @@ bool FV_View::isNumberedHeadingHere(fl_BlockLayout * pBlock)
 		return false;
 	}
 	PD_Style * pCurStyle = NULL;
-	m_pDoc->getStyle((char*)pszCurStyle, &pCurStyle);
+	m_pDoc->getStyle(static_cast<const char*>(pszCurStyle), &pCurStyle);
 	UT_uint32 depth = 0;
 	while(pCurStyle && !bHasNumberedHeading && depth < 10)
 	{
@@ -1677,7 +1677,7 @@ void FV_View::processSelectedBlocks(List_Type listType)
 	for(i=0; i< vBlock.getItemCount(); i++)
 	{
 		UT_DEBUGMSG(("SEVIOR: Processing block %d \n",i));
-		fl_BlockLayout * pBlock =  (fl_BlockLayout *) vBlock.getNthItem(i);
+		fl_BlockLayout * pBlock =  static_cast<fl_BlockLayout *>(vBlock.getNthItem(i));
 		PL_StruxDocHandle sdh = pBlock->getStruxDocHandle();
 		if(pBlock->isListItem() == true)
 		{
@@ -1685,10 +1685,10 @@ void FV_View::processSelectedBlocks(List_Type listType)
 		}
 		else
 		{
-			fl_BlockLayout * pPrev = (fl_BlockLayout *) pBlock->getPrev();
+			fl_BlockLayout * pPrev = static_cast<fl_BlockLayout *>(pBlock->getPrev());
 			while(pPrev && (pPrev->getContainerType() != FL_CONTAINER_BLOCK))
 			{
-				pPrev = (fl_BlockLayout *) pPrev->getPrev();
+				pPrev = static_cast<fl_BlockLayout *>(pPrev->getPrev());
 			}
 //
 // Only attach block to previous list if the margin of the current block < the
@@ -1791,7 +1791,7 @@ void FV_View::getBlocksInSelection( UT_Vector * vBlock)
 		{
 			vBlock->addItem(pBlock);
 		}
-		pBlock = (fl_BlockLayout *) pBlock->getNext();
+		pBlock = static_cast<fl_BlockLayout *>(pBlock->getNext());
 	}
 	return;
 }
@@ -1860,7 +1860,7 @@ void FV_View::insertParagraphBreak(void)
 		m_pDoc->insertStrux(getPoint(), PTX_Block);
 	if(bBefore == true)
 	{
-		fl_BlockLayout * pPrev = (fl_BlockLayout *) getCurrentBlock()->getPrev();
+		fl_BlockLayout * pPrev = static_cast<fl_BlockLayout *>(getCurrentBlock()->getPrev());
 		sdh = pPrev->getStruxDocHandle();
 		m_pDoc->StopList(sdh);
 		_setPoint(getCurrentBlock()->getPosition());
@@ -1870,7 +1870,7 @@ void FV_View::insertParagraphBreak(void)
 	PD_Style* pStyle = NULL;
 	if(getStyle(&style) && bAtEnd)
 	{
-		m_pDoc->getStyle((char*) style, &pStyle);
+		m_pDoc->getStyle(static_cast<const char*>(style), &pStyle);
 		if(pStyle != NULL  && !bBefore)
 		{
 			const XML_Char* szFollow = NULL;
@@ -1888,7 +1888,7 @@ void FV_View::insertParagraphBreak(void)
 				pStyle->getAttribute(PT_NAME_ATTRIBUTE_NAME, szValue);
 
 				UT_ASSERT((szValue));
-				if (UT_strcmp((const char *) szValue, (const char *) style) != 0)
+				if (UT_strcmp(static_cast<const char *>(szValue), static_cast<const char *>(style)) != 0)
 				{
 					setStyle(szValue);
 //
@@ -1996,7 +1996,7 @@ bool FV_View::setStyleAtPos(const XML_Char * style, PT_DocPosition posStart1, PT
 
 	// lookup the current style
 	PD_Style * pStyle = NULL;
-	m_pDoc->getStyle((char*)style, &pStyle);
+	m_pDoc->getStyle(static_cast<const char*>(style), &pStyle);
 	if (!pStyle)
 	{
 		m_pDoc->enableListUpdates();
@@ -2070,7 +2070,7 @@ bool FV_View::setStyleAtPos(const XML_Char * style, PT_DocPosition posStart1, PT
 
 		for(i=0; i< vBlock.getItemCount(); i++)
 		{
-			pBL = (fl_BlockLayout *)  vBlock.getNthItem(i);
+			pBL = static_cast<fl_BlockLayout *>(vBlock.getNthItem(i));
 			curPos = pBL->getPosition();
 			if(pBL->isListItem())
 			{
@@ -2137,7 +2137,7 @@ bool FV_View::setStyleAtPos(const XML_Char * style, PT_DocPosition posStart1, PT
 		UT_uint32 i;
 		for(i=0; i< vBlock.getItemCount(); i++)
 		{
-			pBL = (fl_BlockLayout *)  vBlock.getNthItem(i);
+			pBL = static_cast<fl_BlockLayout *>(vBlock.getNthItem(i));
 			curPos = pBL->getPosition();
 			if(curPos < posStart)
 			{
@@ -2150,7 +2150,7 @@ bool FV_View::setStyleAtPos(const XML_Char * style, PT_DocPosition posStart1, PT
 			if(i == 0)
 				pBL->StartList(style);
 			else
-				pBL->resumeList((fl_BlockLayout *)pBL->getPrev());
+				pBL->resumeList(static_cast<fl_BlockLayout *>(pBL->getPrev()));
 		}
 	}
 //
@@ -2158,7 +2158,7 @@ bool FV_View::setStyleAtPos(const XML_Char * style, PT_DocPosition posStart1, PT
 //
 	else if(bHasNumberedHeading)
 	{
-		fl_BlockLayout*  currBlock = (fl_BlockLayout *) vBlock.getNthItem(0);
+		fl_BlockLayout*  currBlock = static_cast<fl_BlockLayout *>(vBlock.getNthItem(0));
 		PT_DocPosition pos = currBlock->getPosition(true) -1;
 		PL_StruxDocHandle curSdh = currBlock->getStruxDocHandle();
 		if(pos < 2 )
@@ -2208,7 +2208,7 @@ bool FV_View::setStyleAtPos(const XML_Char * style, PT_DocPosition posStart1, PT
 
 						for(i=0; i< vBlock.getItemCount(); i++)
 						{
-							pBL = (fl_BlockLayout *)  vBlock.getNthItem(i);
+							pBL = static_cast<fl_BlockLayout *>(vBlock.getNthItem(i));
 							curPos = pBL->getPosition();
 							if(curPos < posStart)
 							{
@@ -2231,7 +2231,7 @@ bool FV_View::setStyleAtPos(const XML_Char * style, PT_DocPosition posStart1, PT
 					{
 						for(i=0; i< vBlock.getItemCount(); i++)
 						{
-							pBL = (fl_BlockLayout *)  vBlock.getNthItem(i);
+							pBL = static_cast<fl_BlockLayout *>(vBlock.getNthItem(i));
 							curPos = pBL->getPosition();
 							if(curPos < posStart)
 							{
@@ -2244,7 +2244,7 @@ bool FV_View::setStyleAtPos(const XML_Char * style, PT_DocPosition posStart1, PT
 							if(i == 0)
 								pBL->StartList(style,prevSDH);
 							else
-								pBL->resumeList((fl_BlockLayout *) pBL->getPrev());
+								pBL->resumeList(static_cast<fl_BlockLayout *>(pBL->getPrev()));
 						}
 					}
 					bAttach = true;
@@ -2267,8 +2267,8 @@ bool FV_View::setStyleAtPos(const XML_Char * style, PT_DocPosition posStart1, PT
 //
 // Start looking from the block following and skip through to end of Doc.
 //
-				fl_BlockLayout * pNext = (fl_BlockLayout *) vBlock.getLastItem();
-				pNext = (fl_BlockLayout *) pNext->getNext();
+				fl_BlockLayout * pNext = static_cast<fl_BlockLayout *>(vBlock.getLastItem());
+				pNext = static_cast<fl_BlockLayout *>(pNext->getNext());
 				if(pNext)
 				{
 					PT_DocPosition nextPos = pNext->getPosition(false)+1;
@@ -2282,7 +2282,7 @@ bool FV_View::setStyleAtPos(const XML_Char * style, PT_DocPosition posStart1, PT
 			{
 				for(UT_uint32 i=0; i< vBlock.getItemCount(); i++)
 				{
-					pBL = (fl_BlockLayout *)  vBlock.getNthItem(i);
+					pBL = static_cast<fl_BlockLayout *>(vBlock.getNthItem(i));
 					curPos = pBL->getPosition();
 					if(curPos < posStart)
 					{
@@ -2295,7 +2295,7 @@ bool FV_View::setStyleAtPos(const XML_Char * style, PT_DocPosition posStart1, PT
 					if(i == 0)
 						pBL->StartList(style);
 					else
-						pBL->resumeList((fl_BlockLayout *) pBL->getPrev());
+						pBL->resumeList(static_cast<fl_BlockLayout *>(pBL->getPrev()));
 				}
 			}
 //
@@ -2310,7 +2310,7 @@ bool FV_View::setStyleAtPos(const XML_Char * style, PT_DocPosition posStart1, PT
 
 				for(UT_uint32 j = 0; j < vBlock.getItemCount(); ++j)
 				{
-					pBL = (fl_BlockLayout *)  vBlock.getNthItem(j);
+					pBL = static_cast<fl_BlockLayout *>(vBlock.getNthItem(j));
 					curPos = pBL->getPosition();
 					if(curPos < posStart)
 					{
@@ -2323,7 +2323,7 @@ bool FV_View::setStyleAtPos(const XML_Char * style, PT_DocPosition posStart1, PT
 					if(j == 0)
 						pBL->resumeList(pBlock);
 					else
-						pBL->resumeList((fl_BlockLayout *) pBL->getPrev());
+						pBL->resumeList(static_cast<fl_BlockLayout *>(pBL->getPrev()));
 				}
 			}
 //
@@ -2337,7 +2337,7 @@ bool FV_View::setStyleAtPos(const XML_Char * style, PT_DocPosition posStart1, PT
 					goto finish_up;
 				for(UT_uint32 j = 0; j < vBlock.getItemCount(); j++)
 				{
-					pBL = (fl_BlockLayout *)  vBlock.getNthItem(j);
+					pBL = static_cast<fl_BlockLayout *>(vBlock.getNthItem(j));
 					curPos = pBL->getPosition();
 					if(curPos < posStart)
 					{
@@ -2350,7 +2350,7 @@ bool FV_View::setStyleAtPos(const XML_Char * style, PT_DocPosition posStart1, PT
 					if (j == 0)
 						pBL->prependList(pBlock);
 					else
-						pBL->resumeList((fl_BlockLayout *) pBL->getPrev());
+						pBL->resumeList(static_cast<fl_BlockLayout *>(pBL->getPrev()));
 				}
 			}
 		}
@@ -2403,7 +2403,7 @@ fl_BlockLayout * FV_View::getBlockFromSDH(PL_StruxDocHandle sdh)
 		sfh = m_pDoc->getNthFmtHandle(sdh, i);
 		if(sfh != NULL)
 		{
-			pBlock = (fl_BlockLayout *) sfh;
+			pBlock = const_cast<fl_BlockLayout *>(static_cast<const fl_BlockLayout *>(sfh));
 			if(pBlock->getDocLayout() == m_pLayout)
 			{
 				bFound = true;
@@ -2822,7 +2822,7 @@ bool FV_View::getCharFormat(const XML_Char *** pProps, bool bExpandStyles, PT_Do
 		{
 			f = new _fmtPair(PP_getNthPropertyName(n),pSpanAP,pBlockAP,pSectionAP,m_pDoc,bExpandStyles);
 			if(f->m_val != NULL)
-				v.addItem((void *) f);
+				v.addItem(static_cast<void *>(f));
 			else
 				delete f;
 		}
@@ -2887,7 +2887,7 @@ bool FV_View::getCharFormat(const XML_Char *** pProps, bool bExpandStyles, PT_Do
 
 				while (i > 0)
 				{
-					f = (_fmtPair *)v.getNthItem(i-1);
+					f = static_cast<_fmtPair *>(v.getNthItem(i-1));
 
 					const XML_Char * value = PP_evalProperty(f->m_prop,pSpanAP,pBlockAP,pSectionAP,m_pDoc,bExpandStyles);
 
@@ -2915,7 +2915,7 @@ bool FV_View::getCharFormat(const XML_Char *** pProps, bool bExpandStyles, PT_Do
 	UT_uint32 count = v.getItemCount()*2 + 1;
 
 	// NOTE: caller must free this, but not the referenced contents
-	const XML_Char ** props = (const XML_Char **) UT_calloc(count, sizeof(XML_Char *));
+	const XML_Char ** props = static_cast<const XML_Char **>(UT_calloc(count, sizeof(XML_Char *)));
 	if (!props)
 		return false;
 
@@ -2925,7 +2925,7 @@ bool FV_View::getCharFormat(const XML_Char *** pProps, bool bExpandStyles, PT_Do
 
 	while (i > 0)
 	{
-		f = (_fmtPair *)v.getNthItem(i-1);
+		f = static_cast<_fmtPair *>(v.getNthItem(i-1));
 		i--;
 
 		p[0] = f->m_prop;
@@ -2958,7 +2958,7 @@ void FV_View::getAllBlocksInList(UT_Vector * v)
 	PL_StruxDocHandle pFirstSdh = pAuto->getFirstItem();
 	PL_StruxDocHandle pLastSdh = pAuto->getNthBlock(pAuto->getNumLabels()-1);
 	fl_SectionLayout * pSl = getCurrentBlock()->getSectionLayout();
-	pBlock = (fl_BlockLayout *)pSl->getFirstLayout();
+	pBlock = static_cast<fl_BlockLayout *>(pSl->getFirstLayout());
 	bool foundLast = false;
 	bool foundFirst = false;
 
@@ -2976,7 +2976,7 @@ void FV_View::getAllBlocksInList(UT_Vector * v)
 			v->addItem(pBlock);
 		if(pBlock->getStruxDocHandle() == pLastSdh)
 			foundLast = true;
-		pBlock = (fl_BlockLayout *) pBlock->getNext();
+		pBlock = static_cast<fl_BlockLayout *>(pBlock->getNext());
 	}
 }
 
@@ -3023,12 +3023,12 @@ bool FV_View::setBlockIndents(bool doLists, double indentChange, double page_siz
 	const XML_Char * props[] = {"margin-left","0.0in",NULL,NULL};
 	for(i = 0; i<v.getItemCount();i++)
 	{
-		pBlock = (fl_BlockLayout *)v.getNthItem(i);
+		pBlock = static_cast<fl_BlockLayout *>(v.getNthItem(i));
 		szAlign = pBlock->getProperty("margin-left");
 		dim = UT_determineDimension(szAlign.c_str());
-		fAlign = (double) UT_convertToInches(szAlign.c_str());
+		fAlign = static_cast<double>(UT_convertToInches(szAlign.c_str()));
 		szIndent = pBlock->getProperty("text-indent");
-		fIndent = (double) UT_convertToInches(szIndent.c_str());
+		fIndent = static_cast<double>(UT_convertToInches(szIndent.c_str()));
 		if(fAlign + fIndent + indentChange < 0.0)
 		{
 			fAlign = -fIndent + 0.0001;
@@ -3044,7 +3044,7 @@ bool FV_View::setBlockIndents(bool doLists, double indentChange, double page_siz
 		UT_String szNewAlign = UT_convertInchesToDimensionString (dim, fAlign);
 		PL_StruxDocHandle sdh = pBlock->getStruxDocHandle();
 		PT_DocPosition iPos = m_pDoc->getStruxPosition(sdh)+fl_BLOCK_STRUX_OFFSET;
-		props[1] = (XML_Char *) szNewAlign.c_str();
+		props[1] = static_cast<const XML_Char *>(szNewAlign.c_str());
 		bRet = m_pDoc->changeStruxFmt(PTC_AddFmt, iPos, iPos, NULL, props, PTX_Block);
 	}
 	//
@@ -3207,7 +3207,7 @@ bool FV_View::processPageNumber(HdrFtrType hfType, const XML_Char ** atts)
 //
 // Scan the layout for a pre-existing page number.
 //
-	fl_BlockLayout * pBL = (fl_BlockLayout *) pHFSL->getFirstLayout();
+	fl_BlockLayout * pBL = static_cast<fl_BlockLayout *>(pHFSL->getFirstLayout());
 	bool bFoundPageNumber = false;
 	while(pBL != NULL && !bFoundPageNumber)
 	{
@@ -3216,13 +3216,13 @@ bool FV_View::processPageNumber(HdrFtrType hfType, const XML_Char ** atts)
 		{
 			if(pRun->getType() == FPRUN_FIELD)
 			{
-				fp_FieldRun * pFRun = (fp_FieldRun *) pRun;
+				fp_FieldRun * pFRun = static_cast<fp_FieldRun *>(pRun);
 				bFoundPageNumber = (pFRun->getFieldType() == FPFIELD_page_number);
 			}
 			pRun = pRun->getNext();
 		}
 		if(!bFoundPageNumber)
-			pBL = (fl_BlockLayout *) pBL->getNext();
+			pBL = static_cast<fl_BlockLayout *>(pBL->getNext());
 	}
 
 	// Signal PieceTable Change
@@ -3259,7 +3259,7 @@ bool FV_View::processPageNumber(HdrFtrType hfType, const XML_Char ** atts)
 		"type", "page_number",
 		NULL, NULL
 	};
-	pBL = (fl_BlockLayout *) pHFSL->getFirstLayout();
+	pBL = static_cast<fl_BlockLayout *>(pHFSL->getFirstLayout());
 	pos = pBL->getPosition();
 
 	//Glob it all together so it can be undone with one
@@ -3325,13 +3325,13 @@ void FV_View::changeListStyle(	fl_AutoNum* pAuto,
 		sdh = pAuto->getNthBlock(i);
 		while(sdh != NULL)
 		{
-			vb.addItem((void *) sdh);
+			vb.addItem(sdh);
 			i++;
 			sdh = pAuto->getNthBlock(i);
 		}
 		for(i=0; i< vb.getItemCount(); ++i)
 		{
-			PL_StruxDocHandle sdh = (PL_StruxDocHandle) vb.getNthItem(i);
+			PL_StruxDocHandle sdh = static_cast<PL_StruxDocHandle>(vb.getNthItem(i));
 			m_pDoc->listUpdate(sdh);
 			m_pDoc->StopList(sdh);
 		}
@@ -3349,7 +3349,7 @@ void FV_View::changeListStyle(	fl_AutoNum* pAuto,
 	XML_Char * style = getCurrentBlock()->getListStyleString(lType);
 //
 // This is depeciated..
-	va.addItem( (void *) PT_STYLE_ATTRIBUTE_NAME);	va.addItem( (void *) style);
+	va.addItem( PT_STYLE_ATTRIBUTE_NAME);	va.addItem( style);
 
 	pAuto->setListType(lType);
 	sprintf(pszStart, "%i" , startv);
@@ -3361,55 +3361,55 @@ void FV_View::changeListStyle(	fl_AutoNum* pAuto,
 					sizeof(pszIndent),
 					UT_convertInchesToDimensionString(DIM_IN, Indent, 0));
 
-	vp.addItem( (void *) "start-value");	vp.addItem( (void *) pszStart);
-	vp.addItem( (void *) "margin-left");	vp.addItem( (void *) pszAlign);
-	vp.addItem( (void *) "text-indent");	vp.addItem( (void *) pszIndent);
-	vp.addItem( (void *) "list-style"); 	vp.addItem( (void *) style);
+	vp.addItem( "start-value");	vp.addItem( pszStart);
+	vp.addItem( "margin-left");	vp.addItem( pszAlign);
+	vp.addItem( "text-indent");	vp.addItem( pszIndent);
+	vp.addItem( "list-style"); 	vp.addItem( style);
 	pAuto->setStartValue(startv);
 	if(pszDelim != NULL)
 	{
-		vp.addItem( (void *) "list-delim"); vp.addItem( (void *) pszDelim);
+		vp.addItem( "list-delim"); vp.addItem( pszDelim);
 		pAuto->setDelim(pszDelim);
 	}
 	if(pszDecimal != NULL)
 	{
-		vp.addItem( (void *) "list-decimal"); vp.addItem( (void *) pszDecimal);
+		vp.addItem( "list-decimal"); vp.addItem( pszDecimal);
 		pAuto->setDecimal(pszDecimal);
 	}
 	if(pszFont != NULL)
 	{
-		vp.addItem( (void *) "field-font"); vp.addItem( (void *) pszFont);
+		vp.addItem( "field-font"); vp.addItem( pszFont);
 	}
 	//
 	// Assemble the List attributes
 	//
 	UT_uint32 counta = va.getItemCount() + 1;
-	const XML_Char ** attribs = (const XML_Char **) UT_calloc(counta, sizeof(XML_Char *));
+	const XML_Char ** attribs = static_cast<const XML_Char **>(UT_calloc(counta, sizeof(XML_Char *)));
 	for(i=0; i<va.getItemCount();i++)
 	{
-		attribs[i] = (XML_Char *) va.getNthItem(i);
+		attribs[i] = static_cast<XML_Char *>(va.getNthItem(i));
 	}
-	attribs[i] = (XML_Char *) NULL;
+	attribs[i] = static_cast<XML_Char *>(NULL);
 	//
 	// Now assemble the list properties
 	//
 	UT_uint32 countp = vp.getItemCount() + 1;
-	const XML_Char ** props = (const XML_Char **) UT_calloc(countp, sizeof(XML_Char *));
+	const XML_Char ** props = static_cast<const XML_Char **>(UT_calloc(countp, sizeof(XML_Char *)));
 	for(i=0; i<vp.getItemCount();i++)
 	{
-		props[i] = (XML_Char *) vp.getNthItem(i);
+		props[i] = static_cast<XML_Char *>(vp.getNthItem(i));
 	}
-	props[i] = (XML_Char *) NULL;
+	props[i] = static_cast<XML_Char *>(NULL);
 
 	i = 0;
-	sdh = (PL_StruxDocHandle) pAuto->getNthBlock(i);
+	sdh = static_cast<PL_StruxDocHandle>(pAuto->getNthBlock(i));
 	while(sdh != NULL)
 	{
 		PT_DocPosition iPos = m_pDoc->getStruxPosition(sdh)+fl_BLOCK_STRUX_OFFSET;
 //		bRet = m_pDoc->changeStruxFmt(PTC_AddFmt, iPos, iPos, attribs, props, PTX_Block);
 		bRet = m_pDoc->changeStruxFmt(PTC_AddFmt, iPos, iPos, NULL, props, PTX_Block);
 		i++;
-		sdh = (PL_StruxDocHandle) pAuto->getNthBlock(i);
+		sdh = static_cast<PL_StruxDocHandle>(pAuto->getNthBlock(i));
 		_generalUpdate();
 	}
 
@@ -3470,7 +3470,7 @@ bool FV_View::getSectionFormat(const XML_Char ***pProps)
 		{
 			f = new _fmtPair(PP_getNthPropertyName(n),NULL,pBlockAP,pSectionAP,m_pDoc,false);
 			if(f->m_val != NULL)
-				v.addItem((void *) f);
+				v.addItem(static_cast<void *>(f));
 			else
 				delete f;
 		}
@@ -3487,7 +3487,7 @@ bool FV_View::getSectionFormat(const XML_Char ***pProps)
 			const PP_AttrProp * pAP;
 			bool bCheck = false;
 
-			pSection = (fl_SectionLayout *) pSection->getNext();
+			pSection = static_cast<fl_SectionLayout *>(pSection->getNext());
 			if (!pSection)				// at EOD, so just bail
 				break;
 
@@ -3505,7 +3505,7 @@ bool FV_View::getSectionFormat(const XML_Char ***pProps)
 
 				while (i > 0)
 				{
-					f = (_fmtPair *)v.getNthItem(i-1);
+					f = static_cast<_fmtPair *>(v.getNthItem(i-1));
 
 					const XML_Char * value = PP_evalProperty(f->m_prop,NULL,pBlockAP,pSectionAP,m_pDoc,false);
 
@@ -3538,7 +3538,7 @@ bool FV_View::getSectionFormat(const XML_Char ***pProps)
 	UT_uint32 count = v.getItemCount()*2 + 1;
 
 	// NOTE: caller must free this, but not the referenced contents
-	const XML_Char ** props = (const XML_Char **) UT_calloc(count, sizeof(XML_Char *));
+	const XML_Char ** props = static_cast<const XML_Char **>(UT_calloc(count, sizeof(XML_Char *)));
 	if (!props)
 		return false;
 
@@ -3548,7 +3548,7 @@ bool FV_View::getSectionFormat(const XML_Char ***pProps)
 
 	while (i > 0)
 	{
-		f = (_fmtPair *)v.getNthItem(i-1);
+		f = static_cast<_fmtPair *>(v.getNthItem(i-1));
 		i--;
 
 		p[0] = f->m_prop;
@@ -3613,7 +3613,7 @@ bool FV_View::getBlockFormat(const XML_Char *** pProps,bool bExpandStyles)
 		{
 			f = new _fmtPair(PP_getNthPropertyName(n),NULL,pBlockAP,pSectionAP,m_pDoc,bExpandStyles);
 			if(f->m_val != NULL)
-				v.addItem((void *) f);
+				v.addItem(static_cast<void *>(f));
 			else
 				delete f;
 		}
@@ -3629,7 +3629,7 @@ bool FV_View::getBlockFormat(const XML_Char *** pProps,bool bExpandStyles)
 			const PP_AttrProp * pAP;
 			bool bCheck = false;
 
-			pBlock = (fl_BlockLayout *) pBlock->getNextBlockInDocument();
+			pBlock = static_cast<fl_BlockLayout *>(pBlock->getNextBlockInDocument());
 			if (!pBlock)				// at EOD, so just bail
 				break;
 
@@ -3647,7 +3647,7 @@ bool FV_View::getBlockFormat(const XML_Char *** pProps,bool bExpandStyles)
 
 				while (i > 0)
 				{
-					f = (_fmtPair *)v.getNthItem(i-1);
+					f = static_cast<_fmtPair *>(v.getNthItem(i-1));
 
 					const XML_Char * value = PP_evalProperty(f->m_prop,NULL,pBlockAP,pSectionAP,m_pDoc,bExpandStyles);
 					UT_ASSERT(value);
@@ -3676,7 +3676,7 @@ bool FV_View::getBlockFormat(const XML_Char *** pProps,bool bExpandStyles)
 	UT_uint32 count = v.getItemCount()*2 + 1;
 
 	// NOTE: caller must free this, but not the referenced contents
-	const XML_Char ** props = (const XML_Char **) UT_calloc(count, sizeof(XML_Char *));
+	const XML_Char ** props = static_cast<const XML_Char **>(UT_calloc(count, sizeof(XML_Char *)));
 	if (!props)
 		return false;
 
@@ -3686,7 +3686,7 @@ bool FV_View::getBlockFormat(const XML_Char *** pProps,bool bExpandStyles)
 
 	while (i > 0)
 	{
-		f = (_fmtPair *)v.getNthItem(i-1);
+		f = static_cast<_fmtPair *>(v.getNthItem(i-1));
 		i--;
 
 		p[0] = f->m_prop;
@@ -3773,7 +3773,7 @@ UT_UCSChar * FV_View::getSelectionText(void)
 			selLength = buffer.getLength() - offset;
 		// give us space for our new chunk of selected text, add 1 so it
 		// terminates itself
-		bufferSegment = (UT_UCSChar *) UT_calloc(selLength + 1, sizeof(UT_UCSChar));
+		bufferSegment = static_cast<UT_UCSChar *>(UT_calloc(selLength + 1, sizeof(UT_UCSChar)));
 
 		// copy it out
 		memmove(bufferSegment, buffer.getPointer(offset), selLength * sizeof(UT_UCSChar));
@@ -3822,7 +3822,7 @@ UT_UCSChar *	FV_View::getTextBetweenPos(PT_DocPosition pos1, PT_DocPosition pos2
 			curPos	 += iLenToCopy;
 		}
 
-		pBlock = (fl_BlockLayout *) pBlock->getNext();
+		pBlock = static_cast<fl_BlockLayout *>(pBlock->getNext());
 	}
 
 	UT_ASSERT(curPos == pos2);
@@ -3880,7 +3880,7 @@ bool FV_View::isTabListBehindPoint(void)
 	}
 	else
 	{
-		fp_FieldRun * pFRun = (fp_FieldRun *) pRun;
+		fp_FieldRun * pFRun = static_cast<fp_FieldRun *>(pRun);
 		if (pFRun->getFieldType() != FPFIELD_list_label)
 		{
 			return false;
@@ -3923,7 +3923,7 @@ bool FV_View::isTabListAheadPoint(void)
 		return false;
 	}
 
-	fp_FieldRun * pFRun = (fp_FieldRun *) pRun;
+	fp_FieldRun * pFRun = static_cast<fp_FieldRun *>(pRun);
 	if(pFRun->getFieldType() != FPFIELD_list_label)
 	{
 		return false;
@@ -4420,7 +4420,7 @@ bool FV_View::gotoTarget(AP_JumpTarget type, UT_UCSChar *data)
 	bool inc = false;
 	bool dec = false;
 
-	char * numberString = (char *) UT_calloc(UT_UCS4_strlen(data) + 1, sizeof(char));
+	char * numberString = static_cast<char *>(UT_calloc(UT_UCS4_strlen(data) + 1, sizeof(char)));
 	UT_ASSERT(numberString);
 	char * origNum = numberString;
 
@@ -4450,7 +4450,7 @@ bool FV_View::gotoTarget(AP_JumpTarget type, UT_UCSChar *data)
 		numberString--;
 
 	// check for range
-	//	if (number < 0 || number > (UT_uint32) m_pLayout->countPages())
+	//	if (number < 0 || number > static_cast<UT_uint32>(m_pLayout->countPages()))
 	//		return false;
 
 	switch (type)
@@ -4507,28 +4507,28 @@ bool FV_View::gotoTarget(AP_JumpTarget type, UT_UCSChar *data)
 		{
 			//UT_uint32 line = 0;
 			fl_SectionLayout * pSL = m_pLayout->getFirstSection();
-			fl_BlockLayout * pBL = (fl_BlockLayout *) pSL->getFirstLayout();
-			fp_Line* pLine = (fp_Line *) pBL->getFirstContainer();
+			fl_BlockLayout * pBL = static_cast<fl_BlockLayout *>(pSL->getFirstLayout());
+			fp_Line* pLine = static_cast<fp_Line *>(pBL->getFirstContainer());
 
 			for (UT_uint32 i = 1; i < number; i++)
 			{
 				fp_Line* pOldLine = pLine;
 
-				if ((pLine = (fp_Line *) pLine->getNext ()) == NULL)
+				if ((pLine = static_cast<fp_Line *>(pLine->getNext ())) == NULL)
 				{
-					if ((pBL = (fl_BlockLayout *) pBL->getNext ()) == NULL)
+					if ((pBL = static_cast<fl_BlockLayout *>(pBL->getNext ())) == NULL)
 					{
-						if ((pSL = (fl_SectionLayout *) pSL->getNext ()) == NULL)
+						if ((pSL = static_cast<fl_SectionLayout *>(pSL->getNext ())) == NULL)
 						{
 							pLine = pOldLine;
 							break;
 						}
 						else
-							pBL = (fl_BlockLayout *) pSL->getFirstLayout ();
+							pBL = static_cast<fl_BlockLayout *>(pSL->getFirstLayout ());
 					}
 					else
 					{
-						pLine = (fp_Line *) pBL->getFirstContainer();
+						pLine = static_cast<fp_Line *>(pBL->getFirstContainer());
 					}
 				}
 			}
@@ -4558,17 +4558,17 @@ bool FV_View::gotoTarget(AP_JumpTarget type, UT_UCSChar *data)
 			UT_DEBUGMSG(("fv_View::gotoTarget: bookmark [%s]\n",numberString));
 			if(UT_isUrl(numberString))
 			{
-				XAP_Frame * pFrame = (XAP_Frame *) getParentData();
+				XAP_Frame * pFrame = static_cast<XAP_Frame *>(getParentData());
 				UT_ASSERT((pFrame));
 				pFrame->openURL(numberString);
 				return false;
 			}
-			if(m_pDoc->isBookmarkUnique((const XML_Char *)numberString))
+			if(m_pDoc->isBookmarkUnique(static_cast<const XML_Char *>(numberString)))
 				goto book_mark_not_found; //bookmark does not exist
 
 			while(pSL)
 			{
-				pBL = (fl_BlockLayout *) pSL->getFirstLayout();
+				pBL = static_cast<fl_BlockLayout *>(pSL->getFirstLayout());
 
 				while(pBL)
 				{
@@ -4596,11 +4596,11 @@ bool FV_View::gotoTarget(AP_JumpTarget type, UT_UCSChar *data)
 					}
 					if(bFound)
 						break;
-					pBL = (fl_BlockLayout *) pBL->getNext();
+					pBL = static_cast<fl_BlockLayout *>(pBL->getNext());
 				}
 				if(bFound)
 					break;
-				pSL = (fl_SectionLayout *) pSL->getNext();
+				pSL = static_cast<fl_SectionLayout *>(pSL->getNext());
 			}
 
 			if(pB[0] && pB[1])
@@ -4626,7 +4626,7 @@ bool FV_View::gotoTarget(AP_JumpTarget type, UT_UCSChar *data)
 book_mark_not_found:
 			{
 				//bookmark not found
-				XAP_Frame * pFrame = (XAP_Frame *) getParentData();
+				XAP_Frame * pFrame = static_cast<XAP_Frame *>(getParentData());
 				UT_ASSERT((pFrame));
 
 				pFrame->showMessageBox(AP_STRING_ID_MSG_BookmarkNotFound, 
@@ -5588,22 +5588,22 @@ void FV_View::getTopRulerInfo(PT_DocPosition pos,AP_TopRulerInfo * pInfo)
 	UT_return_if_fail(pSection);
 	if(pInfo->m_vecTableColInfo)
 	{
-		UT_sint32 count = (UT_sint32) pInfo->m_vecTableColInfo->getItemCount();
+		UT_sint32 count = static_cast<UT_sint32>(pInfo->m_vecTableColInfo->getItemCount());
 		UT_sint32 i =0;
 		for(i=0; i< count; i++)
 		{
-			delete (AP_TopRulerTableInfo *) pInfo->m_vecTableColInfo->getNthItem(i);
+			delete static_cast<AP_TopRulerTableInfo *>(pInfo->m_vecTableColInfo->getNthItem(i));
 		}
 		delete pInfo->m_vecTableColInfo;
 		pInfo->m_vecTableColInfo =NULL;
 	}
 	if(pInfo->m_vecFullTable)
 	{
-		UT_sint32 count = (UT_sint32) pInfo->m_vecFullTable->getItemCount();
+		UT_sint32 count = static_cast<UT_sint32>(pInfo->m_vecFullTable->getItemCount());
 		UT_sint32 i =0;
 		for(i=0; i< count; i++)
 		{
-			delete (AP_TopRulerTableInfo *) pInfo->m_vecFullTable->getNthItem(i);
+			delete static_cast<AP_TopRulerTableInfo *>(pInfo->m_vecFullTable->getNthItem(i));
 		}
 		delete pInfo->m_vecFullTable;
 		pInfo->m_vecFullTable =NULL;
@@ -5619,8 +5619,8 @@ void FV_View::getTopRulerInfo(PT_DocPosition pos,AP_TopRulerInfo * pInfo)
 		
 		if(pSection->getType() == FL_SECTION_DOC)
 		{
-			pColumn = (fp_Column*) pContainer;
-			pDSL = (fl_DocSectionLayout*) pSection;
+			pColumn = static_cast<fp_Column*>(pContainer);
+			pDSL = static_cast<fl_DocSectionLayout*>(pSection);
 		}
 		else
 		{
@@ -5666,8 +5666,8 @@ void FV_View::getTopRulerInfo(PT_DocPosition pos,AP_TopRulerInfo * pInfo)
 	}
 	else if(isHdrFtrEdit())
 	{
-		fp_Column* pColumn = (fp_Column*) pContainer;
-		fl_DocSectionLayout* pDSL = (fl_DocSectionLayout*) pSection;
+		fp_Column* pColumn = static_cast<fp_Column*>(pContainer);
+		fl_DocSectionLayout* pDSL = static_cast<fl_DocSectionLayout*>(pSection);
 		pDSL = m_pEditShadow->getHdrFtrSectionLayout()->getDocSectionLayout();
 
 		pInfo->m_iCurrentColumn = 0;
@@ -5687,20 +5687,20 @@ void FV_View::getTopRulerInfo(PT_DocPosition pos,AP_TopRulerInfo * pInfo)
 	}
 	else if(pSection->getContainerType() == FL_CONTAINER_CELL)
 	{
-		fp_CellContainer * pCell = (fp_CellContainer *) pContainer;
+		fp_CellContainer * pCell = static_cast<fp_CellContainer *>(pContainer);
 		fl_ContainerLayout * pCL = pSection->myContainingLayout();
 		pInfo->m_mode = AP_TopRulerInfo::TRI_MODE_TABLE;
 		while(pCL && pCL->getContainerType() != FL_CONTAINER_DOCSECTION)
 		{
 			pCL = pCL->myContainingLayout();
 		}
-		fl_DocSectionLayout * pDSL = (fl_DocSectionLayout *) pCL;
+		fl_DocSectionLayout * pDSL = static_cast<fl_DocSectionLayout *>(pCL);
 		if(pDSL == NULL)
 		{
 			UT_ASSERT(UT_SHOULD_NOT_HAPPEN);
 			return;
 		}
-		fp_Column * pColumn = (fp_Column *) pContainer->getColumn();
+		fp_Column * pColumn = static_cast<fp_Column *>(pContainer->getColumn());
 
 		UT_uint32 nCol=0;
 		fp_Column * pNthColumn=pColumn->getLeader();
@@ -5721,7 +5721,7 @@ void FV_View::getTopRulerInfo(PT_DocPosition pos,AP_TopRulerInfo * pInfo)
 		pInfo->m_xrLeftIndent = m_pG->convertDimension(pBlock->getProperty("margin-left"));
 		pInfo->m_xrRightIndent = m_pG->convertDimension(pBlock->getProperty("margin-right"));
 		pInfo->m_xrFirstLineIndent = m_pG->convertDimension(pBlock->getProperty("text-indent"));
-		fp_TableContainer * pTab = (fp_TableContainer *) pCell->getContainer();
+		fp_TableContainer * pTab = static_cast<fp_TableContainer *>(pCell->getContainer());
 		UT_sint32 row = pCell->getTopAttach();
 		UT_sint32 numcols = pTab->getNumCols();
 		UT_sint32 numrows = pTab->getNumRows();
@@ -5737,11 +5737,11 @@ void FV_View::getTopRulerInfo(PT_DocPosition pos,AP_TopRulerInfo * pInfo)
 				pInfo->m_iCurCell = iCellCount;
 			}
 			UT_sint32 ioff_x = 0;
-			fp_Container * pCon = (fp_Container*) pTab->getContainer();
+			fp_Container * pCon = static_cast<fp_Container*>(pTab->getContainer());
 			while(!pCon->isColumnType())
 			{
 				ioff_x += pCon->getX();
-				pCon = (fp_Container *) pCon->getContainer();
+				pCon = static_cast<fp_Container *>(pCon->getContainer());
 			}
 			if(pCur)
 			{
@@ -5752,7 +5752,7 @@ void FV_View::getTopRulerInfo(PT_DocPosition pos,AP_TopRulerInfo * pInfo)
 				pTInfo->m_iLeftSpacing = (pCur->getX() - pCur->getLeftPos());
 				pTInfo->m_iRightSpacing = ( pCur->getRightPos() - pCur->getX()
 											- pCur->getWidth());
-				pInfo->m_vecTableColInfo->addItem((void *) pTInfo);
+				pInfo->m_vecTableColInfo->addItem(static_cast<void *>(pTInfo));
 				i = pCur->getRightAttach();
 				iCellCount++;
 			}
@@ -5779,11 +5779,11 @@ void FV_View::getTopRulerInfo(PT_DocPosition pos,AP_TopRulerInfo * pInfo)
 				}
 			}
 			UT_sint32 ioff_x = 0;
-			fp_Container * pCon = (fp_Container*) pTab->getContainer();
+			fp_Container * pCon = static_cast<fp_Container*>(pTab->getContainer());
 			while(!pCon->isColumnType())
 			{
 				ioff_x += pCon->getX();
-				pCon = (fp_Container *) pCon->getContainer();
+				pCon = static_cast<fp_Container *>(pCon->getContainer());
 			}
 			if(pCur)
 			{
@@ -5794,7 +5794,7 @@ void FV_View::getTopRulerInfo(PT_DocPosition pos,AP_TopRulerInfo * pInfo)
 				pTInfo->m_iLeftSpacing = (pCur->getX() - pCur->getLeftPos());
 				pTInfo->m_iRightSpacing = ( pCur->getRightPos() - pCur->getX()
 											- pCur->getWidth());
-				pInfo->m_vecFullTable->addItem((void *) pTInfo);
+				pInfo->m_vecFullTable->addItem(static_cast<void *>(pTInfo));
 			}
 		}
 
@@ -5814,8 +5814,8 @@ void FV_View::getTopRulerInfo(PT_DocPosition pos,AP_TopRulerInfo * pInfo)
 	pInfo->m_xPageViewMargin = getPageViewLeftMargin();
 
 	pInfo->m_pfnEnumTabStops = fl_BlockLayout::s_EnumTabStops;
-	pInfo->m_pVoidEnumTabStopsData = (void *)pBlock;
-	pInfo->m_iTabStops = (UT_sint32) pBlock->getTabsCount();
+	pInfo->m_pVoidEnumTabStopsData = static_cast<void *>(pBlock);
+	pInfo->m_iTabStops = static_cast<UT_sint32>(pBlock->getTabsCount());
 	pInfo->m_iDefaultTabInterval = pBlock->getDefaultTabInterval();
 	pInfo->m_pszTabStops = pBlock->getProperty("tabstops");
 
@@ -5841,11 +5841,11 @@ void FV_View::getLeftRulerInfo(PT_DocPosition pos, AP_LeftRulerInfo * pInfo)
 //
 	if(pInfo->m_vecTableRowInfo)
 	{
-		UT_sint32 count = (UT_sint32) pInfo->m_vecTableRowInfo->getItemCount();
+		UT_sint32 count = static_cast<UT_sint32>(pInfo->m_vecTableRowInfo->getItemCount());
 		UT_sint32 i =0;
 		for(i=0; i< count; i++)
 		{
-			delete (AP_LeftRulerTableInfo *) pInfo->m_vecTableRowInfo->getNthItem(i);
+			delete static_cast<AP_LeftRulerTableInfo *>(pInfo->m_vecTableRowInfo->getNthItem(i));
 		}
 		delete pInfo->m_vecTableRowInfo;
 		pInfo->m_vecTableRowInfo =NULL;
@@ -5922,14 +5922,14 @@ void FV_View::getLeftRulerInfo(PT_DocPosition pos, AP_LeftRulerInfo * pInfo)
 		if(pContainer->getContainerType() == FP_CONTAINER_FOOTNOTE)
 		{
 			pSection = pPage->getOwningSection();
-			pDSL = (fl_DocSectionLayout *) pSection;
+			pDSL = static_cast<fl_DocSectionLayout *>(pSection);
 			isFootnote = true;
 			xxx_UT_DEBUGMSG(("ap_LeftRulerInfo: Found footnote at point \n"));
 		}
 		else
 		{
 			pSection = pPage->getOwningSection();
-			pDSL = (fl_DocSectionLayout*) pSection;
+			pDSL = static_cast<fl_DocSectionLayout*>(pSection);
 		}
 		pInfo->m_yPoint = yCaret - pContainer->getY();
 
@@ -5937,7 +5937,7 @@ void FV_View::getLeftRulerInfo(PT_DocPosition pos, AP_LeftRulerInfo * pInfo)
 		{
 			UT_sint32 yoff = 0;
 			getPageYOffset(pPage, yoff);
-			pInfo->m_yPageStart = (UT_uint32)yoff;
+			pInfo->m_yPageStart = static_cast<UT_uint32>(yoff);
 			pInfo->m_yPageSize = pPage->getHeight();
 
 			pInfo->m_yTopMargin = pDSL->getTopMargin();
@@ -5949,7 +5949,7 @@ void FV_View::getLeftRulerInfo(PT_DocPosition pos, AP_LeftRulerInfo * pInfo)
 			pDSL = pHF->getDocSectionLayout();
 			UT_sint32 yoff = 0;
 			getPageYOffset(pPage, yoff);
-			pInfo->m_yPageStart = (UT_uint32)yoff;
+			pInfo->m_yPageStart = static_cast<UT_uint32>(yoff);
 			pInfo->m_yPageSize = pPage->getHeight();
 
 			if(pHF->getHFType() == FL_HDRFTR_FOOTER)
@@ -5966,14 +5966,14 @@ void FV_View::getLeftRulerInfo(PT_DocPosition pos, AP_LeftRulerInfo * pInfo)
 		}
 		else if(pContainer->getContainerType() == FP_CONTAINER_CELL)
 		{
-			fp_CellContainer * pCell = (fp_CellContainer *) pContainer;
+			fp_CellContainer * pCell = static_cast<fp_CellContainer *>(pContainer);
 			fl_ContainerLayout * pCL = pSection->myContainingLayout();
 			pInfo->m_mode = AP_LeftRulerInfo::TRI_MODE_TABLE;
 			while(pCL && pCL->getContainerType() != FL_CONTAINER_DOCSECTION)
 			{
 				pCL = pCL->myContainingLayout();
 			}
-			fl_DocSectionLayout * pDSL = (fl_DocSectionLayout *) pCL;
+			fl_DocSectionLayout * pDSL = static_cast<fl_DocSectionLayout *>(pCL);
 			if(pDSL == NULL)
 			{
 				UT_ASSERT(UT_SHOULD_NOT_HAPPEN);
@@ -5982,13 +5982,13 @@ void FV_View::getLeftRulerInfo(PT_DocPosition pos, AP_LeftRulerInfo * pInfo)
 
 			UT_sint32 yoff = 0;
 			getPageYOffset(pPage, yoff);
-			pInfo->m_yPageStart = (UT_uint32)yoff;
+			pInfo->m_yPageStart = static_cast<UT_uint32>(yoff);
 			pInfo->m_yPageSize = pPage->getHeight();
 			pDSL = pPage->getOwningSection();
 			pInfo->m_yTopMargin = pDSL->getTopMargin();
 			pInfo->m_yBottomMargin = pDSL->getBottomMargin();
 
-			fp_TableContainer * pTab = (fp_TableContainer *) pCell->getContainer();
+			fp_TableContainer * pTab = static_cast<fp_TableContainer *>(pCell->getContainer());
 			UT_sint32 col = pCell->getLeftAttach();
 			UT_sint32 numrows = pTab->getNumRows();
 			UT_sint32 i =0;
@@ -6009,7 +6009,7 @@ void FV_View::getLeftRulerInfo(PT_DocPosition pos, AP_LeftRulerInfo * pInfo)
 					pLInfo->m_iBotCellPos = pCur->getStopY();
 					pLInfo->m_iTopSpacing = pCur->getY() - pCur->getStartY();
 					pLInfo->m_iBotSpacing = pCur->getStopY() - (pCur->getY() + pCur->getHeight());
-					pInfo->m_vecTableRowInfo->addItem((void *) pLInfo);
+					pInfo->m_vecTableRowInfo->addItem(static_cast<void *>(pLInfo));
 					i = pCur->getBottomAttach();
 				}
 				else
@@ -6122,7 +6122,7 @@ EV_EditMouseContext FV_View::getMouseContext(UT_sint32 xPos, UT_sint32 yPos)
 		fp_Line * pLine = pRun->getLine();
 		if(pLine)
 		{
-			fp_CellContainer * pCell = (fp_CellContainer *) pLine->getContainer();
+			fp_CellContainer * pCell = static_cast<fp_CellContainer *>(pLine->getContainer());
 			if(pCell && pCell->getContainerType() == FP_CONTAINER_CELL)
 			{
 				xxx_UT_DEBUGMSG(("getcontext: Looking at Table \n"));
@@ -6132,14 +6132,14 @@ EV_EditMouseContext FV_View::getMouseContext(UT_sint32 xPos, UT_sint32 yPos)
 				UT_sint32 iBot = pCell->getStopY();
 				UT_sint32 offy =0;
 				UT_sint32 offx =0;
-				fp_Column * pCol = (fp_Column *) pCell->getColumn();
+				fp_Column * pCol = static_cast<fp_Column *>(pCell->getColumn());
 				UT_sint32 col_x =0;
 				UT_sint32 col_y =0;
 				pPage->getScreenOffsets(pCol, col_x,col_y);
 //
 // Now find the brokentable the line is in.
 //
-				fp_TableContainer * pTab = (fp_TableContainer *) pCell->getContainer();
+				fp_TableContainer * pTab = static_cast<fp_TableContainer *>(pCell->getContainer());
 				bool bNested = false;
 				if(pTab->getContainer()->getContainerType() == FP_CONTAINER_CELL)
 				{
@@ -6153,7 +6153,7 @@ EV_EditMouseContext FV_View::getMouseContext(UT_sint32 xPos, UT_sint32 yPos)
 					while(pBroke && !pBroke->isInBrokenTable(pCell,pLine))
 					{
 						i++;
-						pBroke = (fp_TableContainer *) pBroke->getNext();
+						pBroke = static_cast<fp_TableContainer *>(pBroke->getNext());
 					}
 					if(i==0)
 					{
@@ -6739,7 +6739,7 @@ FV_View::countWords(void)
 
 	// Selection may start inside first block
 	UT_sint32 iStartOffset = 0, iLineOffset = 0, iCount = 0;
-	fp_Line* pLine = (fp_Line *) pBL->getFirstContainer();
+	fp_Line* pLine = static_cast<fp_Line *>(pBL->getFirstContainer());
 	fp_Run* pRun = pLine->getFirstRun();
 	fp_Container * pColumn = pLine->getContainer();
 	if(pColumn == NULL)
@@ -6784,7 +6784,7 @@ FV_View::countWords(void)
 	{
 		UT_GrowBuf gb(1024);
 		pBL->getBlockBuf(&gb);
-		const UT_UCSChar * pSpan = (UT_UCSChar*)gb.getPointer(0);
+		const UT_UCSChar * pSpan = reinterpret_cast<UT_UCSChar*>(gb.getPointer(0));
 		UT_uint32 len = gb.getLength();
 
 		UT_uint32 i = iStartOffset;
@@ -6808,8 +6808,8 @@ FV_View::countWords(void)
 				iLineOffset += pRun->getLength();
 				pRun = pRun->getNext();
 			}
-			pLine = (fp_Line *) pLine->getNext();
-			UT_ASSERT((pLine && pRun) || ((void*)pLine == (void*)pRun));
+			pLine = static_cast<fp_Line *>(pLine->getNext());
+			UT_ASSERT((pLine && pRun) || (static_cast<void*>(pLine) == static_cast<void*>(pRun)));
 			UT_ASSERT(!pLine || pLine->getFirstRun() == pRun);
 		}
 
@@ -6867,10 +6867,10 @@ FV_View::countWords(void)
 		if (NULL == pNextBlock)
 		{
 			// If NULL, go to next section
-			fl_SectionLayout* pSL = (fl_SectionLayout *) pBL->getSectionLayout()->getNext();
+			fl_SectionLayout* pSL = static_cast<fl_SectionLayout *>(pBL->getSectionLayout()->getNext());
 			if (pSL && pSL->getContainerType() != FL_CONTAINER_TABLE)
 			{
-				pNextBlock = (fl_ContainerLayout *) pSL->getFirstLayout();
+				pNextBlock = static_cast<fl_ContainerLayout *>(pSL->getFirstLayout());
 				while(pNextBlock && (pNextBlock->getContainerType() != FL_CONTAINER_BLOCK))
 				{
 					pNextBlock = pNextBlock->getNext();
@@ -6878,7 +6878,7 @@ FV_View::countWords(void)
 			}
 			else if(pSL== NULL && (pBL->getSectionLayout()->getContainerType() == FL_CONTAINER_CELL))
 			{
-				pSL = (fl_SectionLayout *) pBL->getSectionLayout()->myContainingLayout();
+				pSL = static_cast<fl_SectionLayout *>(pBL->getSectionLayout()->myContainingLayout());
 				pNextBlock = pSL->getNext();
 				while(pNextBlock && (pNextBlock->getContainerType() != FL_CONTAINER_BLOCK))
 				{
@@ -6886,11 +6886,11 @@ FV_View::countWords(void)
 				}
 			}
 		}
-		pBL = (fl_BlockLayout *) pNextBlock;
+		pBL = static_cast<fl_BlockLayout *>(pNextBlock);
 		pLine = NULL;
 		pRun = NULL;
 		if (pBL)
-			pLine = (fp_Line *) pBL->getFirstContainer();
+			pLine = static_cast<fp_Line *>(pBL->getFirstContainer());
 		if (pLine)
 			pRun = pLine->getFirstRun();
 	}
@@ -6904,7 +6904,7 @@ void FV_View::setShowPara(bool bShowPara)
 	{
 		m_bShowPara = bShowPara;
 
-		m_pLayout->rebuildFromHere((fl_DocSectionLayout *) m_pLayout->getFirstSection());
+		m_pLayout->rebuildFromHere(static_cast<fl_DocSectionLayout *>(m_pLayout->getFirstSection()));
 		if(getPoint() > 0)
 		{
 			draw();
@@ -6977,7 +6977,7 @@ void FV_View::removeThisHdrFtr(HdrFtrType hfType, bool bSkipPTSaves)
 //
 	PT_DocPosition curPoint = getPoint();
 
-	fl_DocSectionLayout * pDSL = (fl_DocSectionLayout *) getCurrentBlock()->getDocSectionLayout();
+	fl_DocSectionLayout * pDSL = static_cast<fl_DocSectionLayout *>(getCurrentBlock()->getDocSectionLayout());
 
 	if(hfType == FL_HDRFTR_HEADER)
 	{
@@ -7120,7 +7120,7 @@ void FV_View::populateThisHdrFtr(HdrFtrType hfType, bool bSkipPTSaves)
 //
 	PT_DocPosition oldPos = getPoint();
 
-	fl_DocSectionLayout * pDSL = (fl_DocSectionLayout *) getCurrentBlock()->getSectionLayout();
+	fl_DocSectionLayout * pDSL = static_cast<fl_DocSectionLayout *>(getCurrentBlock()->getSectionLayout());
 	fl_HdrFtrSectionLayout * pHdrFtrSrc = NULL;
 	fl_HdrFtrSectionLayout * pHdrFtrDest = NULL;
 	if(hfType < FL_HDRFTR_FOOTER)
@@ -7281,7 +7281,7 @@ PT_DocPosition FV_View::getSavedPosition(void)
  */
 void FV_View::clearSavedPosition(void)
 {
-	m_iSavedPosition = (PT_DocPosition) 0;
+	m_iSavedPosition = static_cast<PT_DocPosition>(0);
 	m_bNeedSavedPosition = false;
 }
 
@@ -7337,7 +7337,7 @@ bool FV_View::getEditableBounds(bool isEnd, PT_DocPosition &posEOD, bool bOverid
 	}
 	if(!m_bEditHdrFtr || bOveride)
 	{
-		pSL = (fl_SectionLayout *)	m_pLayout->getLastSection();
+		pSL = static_cast<fl_SectionLayout *>(m_pLayout->getLastSection());
 
 		if(!pSL)
 		{
@@ -7351,7 +7351,7 @@ bool FV_View::getEditableBounds(bool isEnd, PT_DocPosition &posEOD, bool bOverid
 		while(pSL->getNext() != NULL && (pSL->getType() == FL_SECTION_DOC ||
 										 pSL->getType() == FL_SECTION_ENDNOTE))
 		{
-			pSL  = (fl_SectionLayout *) pSL->getNext();
+			pSL = static_cast<fl_SectionLayout *>(pSL->getNext());
 		}
 		if(pSL->getType() == FL_SECTION_DOC ||
 		   pSL->getType() == FL_SECTION_ENDNOTE)
@@ -7363,7 +7363,7 @@ bool FV_View::getEditableBounds(bool isEnd, PT_DocPosition &posEOD, bool bOverid
 // Now loop through all the HdrFtrSections, find the first in the doc and
 // use that to get the end of editttable region.
 //
-		fl_BlockLayout * pFirstBL = (fl_BlockLayout *) pSL->getFirstLayout();
+		fl_BlockLayout * pFirstBL = static_cast<fl_BlockLayout *>(pSL->getFirstLayout());
 		if(pFirstBL == NULL)
 		{
 			res = m_pDoc->getBounds(isEnd,posEOD);
@@ -7374,8 +7374,8 @@ bool FV_View::getEditableBounds(bool isEnd, PT_DocPosition &posEOD, bool bOverid
 		PT_DocPosition posNext;
 		while((pSL->getNext() != NULL) && (pSL->getFirstLayout() != NULL))
 		{
-			pSL = (fl_SectionLayout *) pSL->getNext();
-			pFirstBL = (fl_BlockLayout *) pSL->getFirstLayout();
+			pSL = static_cast<fl_SectionLayout *>(pSL->getNext());
+			pFirstBL = static_cast<fl_BlockLayout *>(pSL->getFirstLayout());
 			// Make sure the first fl_BlockLayout of this new
 			// fl_SectionLayout is valid.
 			if (pFirstBL)
@@ -7396,7 +7396,7 @@ bool FV_View::getEditableBounds(bool isEnd, PT_DocPosition &posEOD, bool bOverid
 		posEOD = m_pEditShadow->getFirstLayout()->getPosition();
 		return true;
 	}
-	pBL = (fl_BlockLayout *) m_pEditShadow->getLastLayout();
+	pBL = static_cast<fl_BlockLayout *>(m_pEditShadow->getLastLayout());
 	posEOD = pBL->getPosition(false);
 	fp_Run * pRun = pBL->getFirstRun();
 	while( pRun->getNext() != NULL)
@@ -7555,7 +7555,7 @@ bool FV_View::insertHeaderFooter(const XML_Char ** props, HdrFtrType hfType, fl_
 //
 // Now find the position of this section
 //
-	fl_BlockLayout * pBL = (fl_BlockLayout *) pDocL->getFirstLayout();
+	fl_BlockLayout * pBL = static_cast<fl_BlockLayout *>(pDocL->getFirstLayout());
 	PT_DocPosition posSec = pBL->getPosition();
 
 	// change the section to point to the footer which doesn't exist yet.
@@ -7589,7 +7589,7 @@ fl_FootnoteLayout * FV_View::getClosestFootnote(PT_DocPosition pos)
 	fl_FootnoteLayout * pFL = NULL;
 	fl_FootnoteLayout * pClosest = NULL;
 	UT_sint32 i = 0;
-	for(i = 0; i< (UT_sint32) m_pLayout->countFootnotes();i++)
+	for(i = 0; i< static_cast<UT_sint32>(m_pLayout->countFootnotes());i++)
 	{
 		pFL = m_pLayout->getNthFootnote(i);
 		if(pFL->getDocPosition() <= pos)
@@ -7686,6 +7686,7 @@ bool FV_View::insertFootnote()
 	_setPoint(dpBody);
 	FrefStart = dpBody;
 	UT_uint32 iFootpid = atoi(footpid);
+	// TODO pFootnoteSL is unused!
 	fl_FootnoteLayout * pFootnoteSL = pDSL->getFootnoteLayout(iFootpid);
 
 	if (cmdInsertField("footnote_ref", attrs)==false)
@@ -7783,7 +7784,7 @@ bool FV_View::insertFootnoteSection(const XML_Char * enpid)
 	_saveAndNotifyPieceTableChange();
 	m_pDoc->disableListUpdates();
 
-	bool e;
+	bool e = false;
 
 	/*
 	  This inserts a footnote at the current point
@@ -7904,9 +7905,9 @@ UT_uint32 FV_View::calculateZoomPercentForPageWidth()
 	if ( ( getWindowWidth() - 2 * getPageViewLeftMargin() ) <= 0 )
 		return temp_zoom;
 
-	double scale = (double)(getWindowWidth() - 2 * getPageViewLeftMargin()) /
-		(pageWidth * (double)resolution);
-	return (UT_uint32)(scale * 100.0);
+	double scale = static_cast<double>(getWindowWidth() - 2 * getPageViewLeftMargin()) /
+		(pageWidth * static_cast<double>(resolution));
+	return static_cast<UT_uint32>(scale * 100.0);
 }
 
 UT_uint32 FV_View::calculateZoomPercentForPageHeight()
@@ -7926,9 +7927,9 @@ UT_uint32 FV_View::calculateZoomPercentForPageHeight()
 	if ( ( getWindowHeight() - 2 * getPageViewTopMargin() ) <= 0 )
 		return temp_zoom;
 
-	double scale = (double)(getWindowHeight() - 2 * getPageViewTopMargin()) /
-		(pageHeight * (double)resolution);
-	return (UT_uint32)(scale * 100.0);
+	double scale = static_cast<double>(getWindowHeight() - 2 * getPageViewTopMargin()) /
+		(pageHeight * static_cast<double>(resolution));
+	return static_cast<UT_uint32>(scale * 100.0);
 }
 
 UT_uint32 FV_View::calculateZoomPercentForWholePage()
@@ -8137,7 +8138,7 @@ void FV_View:: getVisibleDocumentPagesAndRectangles(UT_Vector &vRect, UT_Vector 
 						 m_iWindowHeight));
 
 
-			vPages.addItem((void*)pPage);
+			vPages.addItem(static_cast<void*>(pPage));
 
 			// now create the rectangle
 			// NB the adjustedTop is relative to the screen, but we
@@ -8170,14 +8171,14 @@ void FV_View:: getVisibleDocumentPagesAndRectangles(UT_Vector &vRect, UT_Vector 
 			
 			
 			
-			UT_uint32 iPortWidth = UT_MIN((UT_uint32)iPageWidth, iWindowWidth);
+			UT_uint32 iPortWidth = UT_MIN(static_cast<UT_uint32>(iPageWidth), iWindowWidth);
 
 			UT_Rect * pRect = new UT_Rect(iPortLeft,
 										  iPortTop,
 										  iPortWidth,
 										  iPortHeight);
 
-			vRect.addItem((void*) pRect);
+			vRect.addItem(static_cast<void*>(pRect));
 		}
 
 		curY += iPageHeight + getPageViewSep();
@@ -8333,7 +8334,7 @@ void FV_View::startImageDrag(fp_Run * pRun, UT_sint32 xPos, UT_sint32 yPos)
 void FV_View::drawDraggedImage(UT_sint32 xPos, UT_sint32 yPos)
 {
 	UT_ASSERT(m_pDraggedImageRun);
-	GR_Image * pImage = ((fp_ImageRun *)m_pDraggedImageRun)->getImage();
+	GR_Image * pImage = (static_cast<fp_ImageRun *>(m_pDraggedImageRun))->getImage();
 	UT_ASSERT(pImage);
 
 	// calculate the new image boundaries

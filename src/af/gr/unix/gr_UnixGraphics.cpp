@@ -1176,7 +1176,10 @@ void GR_UnixGraphics::setColor(const UT_RGBColor& clr)
 
 void GR_UnixGraphics::_setColor(GdkColor & c)
 {
-	gint ret = gdk_color_alloc(m_pColormap, &c);
+#if !defined(NDEBUG)
+	gint ret =
+#endif
+		gdk_color_alloc(m_pColormap, &c);
 
 	UT_ASSERT(ret == TRUE);
 

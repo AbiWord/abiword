@@ -72,7 +72,7 @@ XML_Char* fd_Field::getValue(void) const
 	return m_szValue;
 }
 
-void fd_Field::setValue(XML_Char* szValue)
+void fd_Field::setValue(const XML_Char* szValue)
 {
         FREEP(m_szValue);
 	m_szValue = UT_strdup(szValue);
@@ -113,7 +113,7 @@ bool fd_Field::update(void)
 	      _throwChangeRec(dPos);
 	      dPos = m_pPieceTable->getFragPosition(&m_fragObject)
 		+ m_fragObject.getLength();
-	      dPos = dPos + ( PT_DocPosition ) (len + 1);
+	      dPos = dPos + static_cast<PT_DocPosition>(len + 1);
 	      //
 	      // Notify the view listners of this update so they can fix up
 	      // the formatting in the block with the field
@@ -160,7 +160,7 @@ bool fd_Field::update(void)
 	      _throwChangeRec(dPos);
 	      dPos = m_pPieceTable->getFragPosition(&m_fragObject)
 		+ m_fragObject.getLength();
-	      dPos = dPos + ( PT_DocPosition ) (len + 1);
+	      dPos = dPos + static_cast<PT_DocPosition>(len + 1);
 	      //
 	      // Notify the view listners of this update so they can fix up
 	      // the formatting in the block with the field
@@ -195,7 +195,7 @@ void  fd_Field::_throwChangeRec(  PT_DocPosition docPos)
        bool bret = m_pPieceTable->getStruxOfTypeFromPosition(docPos,PTX_Block, &sdh);
        if(bret == true)
        {    
-             pf_Frag_Strux * pfs = (pf_Frag_Strux *) sdh;
+             pf_Frag_Strux * pfs = const_cast<pf_Frag_Strux *>(static_cast<const pf_Frag_Strux *>(sdh));
 	     PT_AttrPropIndex pAppIndex = pfs->getIndexAP();
 #ifndef __MRC__
 	     const PX_ChangeRecord * pcr = new PX_ChangeRecord(PX_ChangeRecord::PXT_UpdateField,docPos,pAppIndex);

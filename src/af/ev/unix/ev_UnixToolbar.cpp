@@ -942,7 +942,10 @@ bool EV_UnixToolbar::bindListenerToView(AV_View * pView)
 		new EV_UnixToolbar_ViewListener(this,pView);
 	UT_ASSERT(m_pViewListener);
 
-	bool bResult = pView->addListener(static_cast<AV_Listener *>(m_pViewListener),&m_lid);
+#if !defined(NDEBUG)
+	bool bResult =
+#endif
+		pView->addListener(static_cast<AV_Listener *>(m_pViewListener),&m_lid);
 	UT_ASSERT(bResult);
 	m_pViewListener->setLID(m_lid);
 	if(pView->isDocumentPresent())

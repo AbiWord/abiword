@@ -364,9 +364,9 @@ bool fp_Run::updateHighlightColor(void)
 			{
 				// Check if we are in a table cell which has a NON-transparent background
 				// if it is, then use the cell backgound color
-				if(pCon->getContainerType() == FP_CONTAINER_CELL && (((fp_CellContainer *) pCon)->getBgStyle() != FS_OFF))
+				if(pCon->getContainerType() == FP_CONTAINER_CELL && ((static_cast<fp_CellContainer *>(pCon))->getBgStyle() != FS_OFF))
 				{
-					_setColorHL(((fp_CellContainer *) pCon)->getBgColor());
+					_setColorHL((static_cast<fp_CellContainer *>(pCon))->getBgColor());
 					return m_pColorHL != oldColor;
 				}
 				pPage = pCon->getPage();
@@ -417,9 +417,9 @@ bool fp_Run::updatePageColor(void)
 
 			// Check if we are in a table cell which has a NON-transparent background
 			// if it is, then use the cell backgound color
-			if(pCon->getContainerType() == FP_CONTAINER_CELL && (((fp_CellContainer *) pCon)->getBgStyle() != FS_OFF))
+			if(pCon->getContainerType() == FP_CONTAINER_CELL && ((static_cast<fp_CellContainer *>(pCon))->getBgStyle() != FS_OFF))
 			{
-				m_pColorPG = ((fp_CellContainer *) pCon)->getBgColor();
+				m_pColorPG = (static_cast<fp_CellContainer *>(pCon))->getBgColor();
 				return m_pColorPG != oldColor;
 			}
 			pPage = pCon->getPage();
@@ -1545,7 +1545,7 @@ void fp_TabRun::_drawArrow(UT_uint32 iLeft,UT_uint32 iTop,UT_uint32 iWidth, UT_u
 
     UT_sint32 cur_linewidth = 1 + (UT_MAX(10,getAscent()) - 10) / 8;
     UT_uint32 iyAxis = iTop + getLine()->getAscent() * 2 / 3;
-    UT_uint32 iMaxWidth = UT_MIN(iWidth / 10 * 6, (UT_uint32) cur_linewidth * 9);
+    UT_uint32 iMaxWidth = UT_MIN(iWidth / 10 * 6, static_cast<UT_uint32>(cur_linewidth) * 9);
     UT_uint32 ixGap = (iWidth - iMaxWidth) / 2;
 
 	//UT_DEBUGMSG(("iLeft %d, iWidth %d, visDir \"%s\"\n", iLeft,iWidth, getVisDirection() == FRIBIDI_TYPE_LTR ? "ltr":"rtl"));
@@ -1592,7 +1592,7 @@ void fp_TabRun::_drawArrow(UT_uint32 iLeft,UT_uint32 iTop,UT_uint32 iWidth, UT_u
 
     // only draw the rectangle if iMaxWidth - cur_linewidth * 4 > 0, otherwise
     // we get the rect running pass the end of the line and off the screen
-    if((UT_sint32)(iMaxWidth - cur_linewidth * 4) > 0)
+    if(static_cast<UT_sint32>(iMaxWidth - cur_linewidth * 4) > 0)
 	    if(getVisDirection() == FRIBIDI_TYPE_LTR)
 		{
 		    getGR()->fillRect(clrShowPara,iLeft + ixGap,iyAxis - cur_linewidth / 2,iMaxWidth - cur_linewidth * 4,cur_linewidth);
@@ -2715,25 +2715,25 @@ void fp_ImageRun::_lookupProperties(const PP_AttrProp * pSpanAP,
 	{
 		if(getLine()->getMaxWidth() - 1 < getWidth())
 		{
-			double dw = (double) getLine()->getMaxWidth();
+			double dw = static_cast<double>(getLine()->getMaxWidth());
 			double rat = (dw - 1.0)/dw;
 			_setWidth(getLine()->getMaxWidth()-1);
 #if !defined(WITH_PANGO) && defined(USE_LAYOUT_UNITS)
-			double dwL = (double) getLine()->getMaxWidthInLayoutUnits();
+			double dwL = static_cast<double>(getLine()->getMaxWidthInLayoutUnits());
 			double dnwL = dwL - dwL*rat;
-			_setWidthLayoutUnits((UT_sint32) dnwL);
+			_setWidthLayoutUnits(static_cast<UT_sint32>(dnwL));
 #endif
 		}
 		if(getLine()->getContainer() != NULL &&
 		   static_cast<fp_VerticalContainer *>(getLine()->getContainer())->getMaxHeight() - 1 < getHeight())
 		{
-			double dh = (double) static_cast<fp_VerticalContainer *>(getLine()->getContainer())->getMaxHeight();
+			double dh = static_cast<double>(static_cast<fp_VerticalContainer *>(getLine()->getContainer())->getMaxHeight());
 			_setHeight(static_cast<fp_VerticalContainer *>(getLine()->getContainer())->getMaxHeight() -1);
 			double rat = (dh - 1.0)/dh;
 #if !defined(WITH_PANGO) && defined(USE_LAYOUT_UNITS)
-			double dhL = (double) static_cast<fp_VerticalContainer *>(getLine()->getContainer())->getMaxHeightInLayoutUnits();
+			double dhL = static_cast<double>(static_cast<fp_VerticalContainer *>(getLine()->getContainer())->getMaxHeightInLayoutUnits());
 			double dnhL = dhL - dhL*rat;
-			_setHeightLayoutUnits((UT_sint32) dnhL);
+			_setHeightLayoutUnits(static_cast<UT_sint32>(dnhL));
 #endif
 		}
 	}
@@ -2978,7 +2978,10 @@ fp_FieldRun::fp_FieldRun(fl_BlockLayout* pBL, GR_Graphics* pG, UT_uint32 iOffset
 {
 	fd_Field * fd;
 	lookupProperties();
-	bool gotField = pBL->getField(iOffsetFirst,fd);
+#if !defined(NDEBUG)
+	bool gotField =
+#endif
+		pBL->getField(iOffsetFirst,fd);
 	_setField(fd);
 	UT_ASSERT(gotField);
 	m_sFieldValue[0] = 0;
@@ -3080,7 +3083,7 @@ bool fp_FieldRun::_setValue(UT_UCSChar *p_new_value)
 		     );
 
 			for(UT_uint32 j = 0; j < iLen; j++)
-				m_sFieldValue[j] = (UT_UCSChar)fVisStr[j];
+				m_sFieldValue[j] = static_cast<UT_UCSChar>(fVisStr[j]);
 
 			m_sFieldValue[iLen] = 0;
 
@@ -3554,7 +3557,7 @@ bool fp_FieldCharCountRun::calculateValue(void)
 	    UT_String_sprintf(szFieldValue, "%d", cnt.ch_sp);
 	}
 	if (getField())
-		getField()->setValue((XML_Char*) szFieldValue.c_str());
+		getField()->setValue(static_cast<const XML_Char*>(szFieldValue.c_str()));
 
 	UT_UCS4_strcpy_char(sz_ucs_FieldValue, szFieldValue.c_str());
 
@@ -3585,7 +3588,7 @@ bool fp_FieldNonBlankCharCountRun::calculateValue(void)
 	}
 
 	if (getField())
-		getField()->setValue((XML_Char*) szFieldValue);
+		getField()->setValue(static_cast<const XML_Char*>(szFieldValue));
 
 	UT_UCS4_strcpy_char(sz_ucs_FieldValue, szFieldValue);
 
@@ -3616,7 +3619,7 @@ bool fp_FieldLineCountRun::calculateValue(void)
 	}
 
 	if (getField())
-		getField()->setValue((XML_Char*) szFieldValue);
+		getField()->setValue(static_cast<const XML_Char*>(szFieldValue));
 
 	UT_UCS4_strcpy_char(sz_ucs_FieldValue, szFieldValue);
 
@@ -3648,7 +3651,7 @@ bool fp_FieldParaCountRun::calculateValue(void)
 	}
 
 	if (getField())
-		getField()->setValue((XML_Char*) szFieldValue);
+		getField()->setValue(static_cast<const XML_Char*>(szFieldValue));
 
 	UT_UCS4_strcpy_char(sz_ucs_FieldValue, szFieldValue);
 
@@ -3679,7 +3682,7 @@ bool fp_FieldWordCountRun::calculateValue(void)
 	}
 
 	if (getField())
-		getField()->setValue((XML_Char*) szFieldValue);
+		getField()->setValue(static_cast<const XML_Char*>(szFieldValue));
 
 	UT_UCS4_strcpy_char(sz_ucs_FieldValue, szFieldValue);
 
@@ -3703,7 +3706,7 @@ bool fp_FieldMMDDYYRun::calculateValue(void)
 
 	strftime(szFieldValue, FPFIELD_MAX_LENGTH, "%m/%d/%y", pTime);
 	if (getField())
-		getField()->setValue((XML_Char*) szFieldValue);
+		getField()->setValue(static_cast<const XML_Char*>(szFieldValue));
 
 	UT_UCS4_strcpy_char(sz_ucs_FieldValue, szFieldValue);
 
@@ -3727,7 +3730,7 @@ bool fp_FieldDDMMYYRun::calculateValue(void)
 
 	strftime(szFieldValue, FPFIELD_MAX_LENGTH, "%d/%m/%y", pTime);
 	if (getField())
-	  getField()->setValue((XML_Char*) szFieldValue);
+	  getField()->setValue(static_cast<const XML_Char*>(szFieldValue));
 
 	UT_UCS4_strcpy_char(sz_ucs_FieldValue, szFieldValue);
 
@@ -3751,7 +3754,7 @@ bool fp_FieldMonthDayYearRun::calculateValue(void)
 
 	strftime(szFieldValue, FPFIELD_MAX_LENGTH, "%B %d, %Y", pTime);
 	if (getField())
-		getField()->setValue((XML_Char*) szFieldValue);
+		getField()->setValue(static_cast<const XML_Char*>(szFieldValue));
 
 	UT_UCS4_strcpy_char(sz_ucs_FieldValue, szFieldValue);
 
@@ -3774,7 +3777,7 @@ bool fp_FieldMthDayYearRun::calculateValue(void)
 
 	strftime(szFieldValue, FPFIELD_MAX_LENGTH, "%b %d, %Y", pTime);
 	if (getField())
-		getField()->setValue((XML_Char*) szFieldValue);
+		getField()->setValue(static_cast<const XML_Char*>(szFieldValue));
 
 	UT_UCS4_strcpy_char(sz_ucs_FieldValue, szFieldValue);
 
@@ -3797,7 +3800,7 @@ bool fp_FieldDefaultDateRun::calculateValue(void)
 
 	strftime(szFieldValue, FPFIELD_MAX_LENGTH, "%c", pTime);
 	if (getField())
-		getField()->setValue((XML_Char*) szFieldValue);
+		getField()->setValue(static_cast<const XML_Char*>(szFieldValue));
 
 	UT_UCS4_strcpy_char(sz_ucs_FieldValue, szFieldValue);
 
@@ -3820,7 +3823,7 @@ bool fp_FieldDefaultDateNoTimeRun::calculateValue(void)
 
 	strftime(szFieldValue, FPFIELD_MAX_LENGTH, "%x", pTime);
 	if (getField())
-		getField()->setValue((XML_Char*) szFieldValue);
+		getField()->setValue(static_cast<const XML_Char*>(szFieldValue));
 
 	UT_UCS4_strcpy_char(sz_ucs_FieldValue, szFieldValue);
 
@@ -3843,7 +3846,7 @@ bool fp_FieldWkdayRun::calculateValue(void)
 
 	strftime(szFieldValue, FPFIELD_MAX_LENGTH, "%A", pTime);
 	if (getField())
-		getField()->setValue((XML_Char*) UT_strdup(szFieldValue));
+		getField()->setValue(static_cast<const XML_Char*>(UT_strdup(szFieldValue)));
 
 	UT_UCS4_strcpy_char(sz_ucs_FieldValue, szFieldValue);
 
@@ -3866,7 +3869,7 @@ bool fp_FieldDOYRun::calculateValue(void)
 
 	strftime(szFieldValue, FPFIELD_MAX_LENGTH, "%j", pTime);
 	if (getField())
-		getField()->setValue((XML_Char*) szFieldValue);
+		getField()->setValue(static_cast<const XML_Char*>(szFieldValue));
 
 	UT_UCS4_strcpy_char(sz_ucs_FieldValue, szFieldValue);
 
@@ -3889,7 +3892,7 @@ bool fp_FieldMilTimeRun::calculateValue(void)
 
 	strftime(szFieldValue, FPFIELD_MAX_LENGTH, "%H:%M:%S", pTime);
 	if (getField())
-		getField()->setValue((XML_Char*) szFieldValue);
+		getField()->setValue(static_cast<const XML_Char*>(szFieldValue));
 
 	UT_UCS4_strcpy_char(sz_ucs_FieldValue, szFieldValue);
 
@@ -3912,7 +3915,7 @@ bool fp_FieldAMPMRun::calculateValue(void)
 
 	strftime(szFieldValue, FPFIELD_MAX_LENGTH, "%p", pTime);
 	if (getField())
-		getField()->setValue((XML_Char*) szFieldValue);
+		getField()->setValue(static_cast<const XML_Char*>(szFieldValue));
 
 	UT_UCS4_strcpy_char(sz_ucs_FieldValue, szFieldValue);
 
@@ -3931,9 +3934,9 @@ bool fp_FieldTimeEpochRun::calculateValue(void)
 	char szFieldValue[FPFIELD_MAX_LENGTH + 1];
 
 	time_t	tim = time(NULL);
-	sprintf(szFieldValue, "%ld", (long)tim);
+	sprintf(szFieldValue, "%ld", static_cast<long>(tim));
 	if (getField())
-		getField()->setValue((XML_Char*) szFieldValue);
+		getField()->setValue(static_cast<const XML_Char*>(szFieldValue));
 
 	UT_UCS4_strcpy_char(sz_ucs_FieldValue, szFieldValue);
 
@@ -3956,7 +3959,7 @@ bool fp_FieldTimeZoneRun::calculateValue(void)
 
 	strftime(szFieldValue, FPFIELD_MAX_LENGTH, "%Z", pTime);
 	if (getField())
-		getField()->setValue((XML_Char*) szFieldValue);
+		getField()->setValue(static_cast<const XML_Char*>(szFieldValue));
 
 	UT_UCS4_strcpy_char(sz_ucs_FieldValue, szFieldValue);
 
@@ -3974,7 +3977,7 @@ bool fp_FieldBuildIdRun::calculateValue(void)
 
 	UT_UCS4_strcpy_char(sz_ucs_FieldValue, XAP_App::s_szBuild_ID);
 	if (getField())
-		getField()->setValue((XML_Char*) XAP_App::s_szBuild_ID);
+		getField()->setValue(static_cast<const XML_Char*>(XAP_App::s_szBuild_ID));
 	return _setValue(sz_ucs_FieldValue);
 }
 
@@ -3989,7 +3992,7 @@ bool fp_FieldBuildVersionRun::calculateValue(void)
 
 	UT_UCS4_strcpy_char(sz_ucs_FieldValue, XAP_App::s_szBuild_Version);
 	if (getField())
-		getField()->setValue((XML_Char*) XAP_App::s_szBuild_Version);
+		getField()->setValue(static_cast<const XML_Char*>(XAP_App::s_szBuild_Version));
 	return _setValue(sz_ucs_FieldValue);
 }
 
@@ -4004,7 +4007,7 @@ bool fp_FieldBuildOptionsRun::calculateValue(void)
 
 	UT_UCS4_strcpy_char(sz_ucs_FieldValue, XAP_App::s_szBuild_Options);
 	if (getField())
-		getField()->setValue((XML_Char*) XAP_App::s_szBuild_Options);
+		getField()->setValue(static_cast<const XML_Char*>(XAP_App::s_szBuild_Options));
 	return _setValue(sz_ucs_FieldValue);
 }
 
@@ -4019,7 +4022,7 @@ bool fp_FieldBuildTargetRun::calculateValue(void)
 
 	UT_UCS4_strcpy_char(sz_ucs_FieldValue, XAP_App::s_szBuild_Target);
 	if (getField())
-		getField()->setValue((XML_Char*) XAP_App::s_szBuild_Target);
+		getField()->setValue(static_cast<const XML_Char*>(XAP_App::s_szBuild_Target));
 	return _setValue(sz_ucs_FieldValue);
 }
 
@@ -4034,7 +4037,7 @@ bool fp_FieldBuildCompileDateRun::calculateValue(void)
 
 	UT_UCS4_strcpy_char(sz_ucs_FieldValue, XAP_App::s_szBuild_CompileDate);
 	if (getField())
-		getField()->setValue((XML_Char*) XAP_App::s_szBuild_CompileDate);
+		getField()->setValue(static_cast<const XML_Char*>(XAP_App::s_szBuild_CompileDate));
 	return _setValue(sz_ucs_FieldValue);
 }
 
@@ -4049,7 +4052,7 @@ bool fp_FieldBuildCompileTimeRun::calculateValue(void)
 
 	UT_UCS4_strcpy_char(sz_ucs_FieldValue, XAP_App::s_szBuild_CompileTime);
 	if (getField())
-		getField()->setValue((XML_Char*) XAP_App::s_szBuild_CompileTime);
+		getField()->setValue(static_cast<const XML_Char*>(XAP_App::s_szBuild_CompileTime));
 	return _setValue(sz_ucs_FieldValue);
 }
 
@@ -4066,7 +4069,7 @@ static UT_sint32 countFootnotesBefore(fp_Page *pPage,const XML_Char * footid)
 	for(i=0;i<noFootnotes;i++)
 	{
 		fp_FootnoteContainer * pFC = pPage->getNthFootnoteContainer(i);
-		fl_FootnoteLayout * pFL = (fl_FootnoteLayout *) pFC->getSectionLayout();
+		fl_FootnoteLayout * pFL = static_cast<fl_FootnoteLayout *>(pFC->getSectionLayout());
 		if(pFL->getFootnotePID() == iFootID)
 		{
 			iBefore = i;
@@ -4093,7 +4096,7 @@ static int countEndnotesBefore(fl_BlockLayout * pBL, const XML_Char * endid)
 		xxx_UT_DEBUGMSG(("countEndnotesBefore: endid [%s], someid [%s]\n",endid,someid));
 		if (someid && UT_strcmp(someid, endid)==0)
 			break;
-		pBL = (fl_BlockLayout *) pBL->getNext();
+		pBL = static_cast<fl_BlockLayout *>(pBL->getNext());
 
 		// HACK until we stop propagating endnote-ids.
 		// actually, we do want to propagate the endnote ids, it allows
@@ -4121,7 +4124,10 @@ fp_FieldFootnoteRefRun::fp_FieldFootnoteRefRun(fl_BlockLayout* pBL, GR_Graphics*
 {
 	const PP_AttrProp * pp = getAP();
 	const XML_Char * footid;
-	bool bRes = pp->getAttribute("footnote-id", footid);
+#if !defined(NDEBUG)
+	bool bRes =
+#endif
+		pp->getAttribute("footnote-id", footid);
 
 	UT_ASSERT(bRes);
 	m_iPID = atol(footid);
@@ -4132,7 +4138,10 @@ bool fp_FieldFootnoteRefRun::calculateValue(void)
 {
 	const PP_AttrProp * pp = getAP();
 	const XML_Char * footid = NULL;
-	bool bRes = pp->getAttribute("footnote-id", footid);
+#if !defined(NDEBUG)
+	bool bRes =
+#endif
+		pp->getAttribute("footnote-id", footid);
 
 	UT_ASSERT(bRes);
 	FV_View * pView = _getView();
@@ -4154,7 +4163,10 @@ fp_FieldFootnoteAnchorRun::fp_FieldFootnoteAnchorRun(fl_BlockLayout* pBL, GR_Gra
 {
 	const PP_AttrProp * pp = getAP();
 	const XML_Char * footid;
-	bool bRes = pp->getAttribute("footnote-id", footid);
+#if !defined(NDEBUG)
+	bool bRes =
+#endif
+		pp->getAttribute("footnote-id", footid);
 
 	UT_ASSERT(bRes);
 	m_iPID = atoi(footid);
@@ -4165,7 +4177,10 @@ bool fp_FieldFootnoteAnchorRun::calculateValue(void)
 {
 	const PP_AttrProp * pp = getAP();
 	const XML_Char * footid = NULL;
-	bool bRes = pp->getAttribute("footnote-id", footid);
+#if !defined(NDEBUG)
+	bool bRes =
+#endif
+		pp->getAttribute("footnote-id", footid);
 
 	UT_ASSERT(bRes);
 	UT_uint32 iPID = atoi(footid);
@@ -4189,7 +4204,10 @@ bool fp_FieldEndnoteAnchorRun::calculateValue(void)
 {
 	const PP_AttrProp * pp = getAP();
 	const XML_Char * endid;
-	bool bRes = pp->getAttribute("endnote-id", endid);
+#if !defined(NDEBUG)
+	bool bRes =
+#endif
+		pp->getAttribute("endnote-id", endid);
 
 	UT_ASSERT(bRes);
 
@@ -4205,7 +4223,7 @@ bool fp_FieldEndnoteAnchorRun::calculateValue(void)
 
 	// should this actually be refactored?
 
-	fl_BlockLayout * pBL = (fl_BlockLayout *) pEndSL->getFirstLayout();
+	fl_BlockLayout * pBL = static_cast<fl_BlockLayout *>(pEndSL->getFirstLayout());
 	int endnoteNo = countEndnotesBefore(pBL, endid);
 
 	UT_UCSChar sz_ucs_FieldValue[FPFIELD_MAX_LENGTH + 1];
@@ -4236,7 +4254,7 @@ bool fp_FieldTimeRun::calculateValue(void)
 
 	strftime(szFieldValue, FPFIELD_MAX_LENGTH, "%X", pTime);
 	if (getField())
-		getField()->setValue((XML_Char*) szFieldValue);
+		getField()->setValue(static_cast<const XML_Char*>(szFieldValue));
 
 	UT_UCS4_strcpy_char(sz_ucs_FieldValue, szFieldValue);
 
@@ -4259,7 +4277,7 @@ bool fp_FieldDateRun::calculateValue(void)
 
 	strftime(szFieldValue, FPFIELD_MAX_LENGTH, "%A %B %d, %Y", pTime);
 	if (getField())
-		getField()->setValue((XML_Char*) szFieldValue);
+		getField()->setValue(static_cast<const XML_Char*>(szFieldValue));
 
 	UT_UCS4_strcpy_char(sz_ucs_FieldValue, szFieldValue);
 
@@ -4288,7 +4306,7 @@ bool fp_FieldFileNameRun::calculateValue(void)
 	strcpy (szFieldValue, name);
 
 	if (getField())
-	  getField()->setValue((XML_Char*) szFieldValue);
+	  getField()->setValue(static_cast<const XML_Char*>(szFieldValue));
 
 	UT_UCS4_strcpy_char(sz_ucs_FieldValue, szFieldValue);
 
@@ -4310,7 +4328,7 @@ bool fp_FieldPageNumberRun::calculateValue(void)
 	{
 		fp_Page* pPage = getLine()->getContainer()->getPage();
 		FL_DocLayout* pDL = pPage->getDocLayout();
-		fl_DocSectionLayout * pDSL = (fl_DocSectionLayout *)  pPage->getOwningSection();
+		fl_DocSectionLayout * pDSL = static_cast<fl_DocSectionLayout *>(pPage->getOwningSection());
 		UT_sint32 iPageNum = 0;
 		UT_uint32 iNumPages = pDL->countPages();
 		for (UT_uint32 i=0; i<iNumPages; i++)
@@ -4338,7 +4356,7 @@ bool fp_FieldPageNumberRun::calculateValue(void)
 				pFirstPage = pCon->getPage();
 				while(pFirstPage && !bFound)
 				{
-					if(pDSL == (fl_DocSectionLayout *) pFirstPage->getOwningSection())
+					if(pDSL == static_cast<fl_DocSectionLayout *>(pFirstPage->getOwningSection()))
 					{
 						bFound = true;
 						break;
@@ -4372,7 +4390,7 @@ bool fp_FieldPageNumberRun::calculateValue(void)
 		strcpy(szFieldValue, "?");
 	}
 	if (getField())
-	  getField()->setValue((XML_Char*) szFieldValue);
+	  getField()->setValue(static_cast<const XML_Char*>(szFieldValue));
 
 	UT_UCS4_strcpy_char(sz_ucs_FieldValue, szFieldValue);
 
@@ -4409,7 +4427,7 @@ bool fp_FieldPageReferenceRun::calculateValue(void)
 
 	while (pSection)
 	{
-		pBlock = (fl_BlockLayout *) pSection->getFirstLayout();
+		pBlock = static_cast<fl_BlockLayout *>(pSection->getFirstLayout());
 
 		while (pBlock)
 		{
@@ -4431,11 +4449,11 @@ bool fp_FieldPageReferenceRun::calculateValue(void)
 			if(bFound)
 				break;
 
-			pBlock = (fl_BlockLayout *) pBlock->getNext();
+			pBlock = static_cast<fl_BlockLayout *>(pBlock->getNext());
 		}
 		if(bFound)
 			break;
-		pSection = (fl_SectionLayout *) pSection->getNext();
+		pSection = static_cast<fl_SectionLayout *>(pSection->getNext());
 	}
 
 	char szFieldValue[FPFIELD_MAX_LENGTH + 1];
@@ -4466,7 +4484,7 @@ bool fp_FieldPageReferenceRun::calculateValue(void)
 	{
 	  static XAP_App * pApp = XAP_App::getApp();
 		// did not find the bookmark, set the field to an error value
-		XAP_Frame * pFrame = (XAP_Frame *) pView->getParentData();
+		XAP_Frame * pFrame = static_cast<XAP_Frame *>(pView->getParentData());
 		UT_ASSERT((pFrame));
 
 		const XAP_StringSet * pSS = pFrame->getApp()->getStringSet();
@@ -4481,7 +4499,7 @@ bool fp_FieldPageReferenceRun::calculateValue(void)
 	}
 
 	if (getField())
-	  getField()->setValue((XML_Char*) szFieldValue);
+	  getField()->setValue(static_cast<const XML_Char*>(szFieldValue));
 
 	UT_UCS4_strcpy_char(sz_ucs_FieldValue, szFieldValue);
 
@@ -4515,7 +4533,7 @@ bool fp_FieldPageCountRun::calculateValue(void)
 		strcpy(szFieldValue, "?");
 	}
 	if (getField())
-	  getField()->setValue((XML_Char*) szFieldValue);
+	  getField()->setValue(static_cast<const XML_Char*>(szFieldValue));
 
 	UT_UCS4_strcpy_char(sz_ucs_FieldValue, szFieldValue);
 
@@ -4560,7 +4578,7 @@ bool fp_FieldMailMergeRun::calculateValue(void)
 	      value = pDoc->getMailMergeField(param);
 	    }
 
-	  fld->setValue((XML_Char*) value.utf8_str());
+	  fld->setValue(static_cast<const XML_Char*>(value.utf8_str()));
 	  UT_UCS4_strcpy(sz_ucs_FieldValue, value.ucs4_str().ucs4_str());
 
 	  return _setValue(sz_ucs_FieldValue);
@@ -4590,7 +4608,7 @@ bool fp_FieldMetaRun::calculateValue(void)
 	  value = " ";
 
 	if (getField())
-		getField()->setValue((XML_Char*) value.c_str());
+		getField()->setValue(static_cast<const XML_Char*>(value.c_str()));
 
 	UT_UCS4_strcpy_char(sz_ucs_FieldValue, value.c_str());
 
@@ -4981,7 +4999,7 @@ FriBidiCharType fp_Run::getVisDirection()
 		else
 		{
 			bool b;
-			XAP_App::getApp()->getPrefsValueBool((XML_Char*)AP_PREF_KEY_DefaultDirectionRtl, &b);
+			XAP_App::getApp()->getPrefsValueBool(static_cast<const XML_Char*>(AP_PREF_KEY_DefaultDirectionRtl), &b);
 			if(b)
 				return FRIBIDI_TYPE_RTL;
 			else
@@ -5008,12 +5026,12 @@ void fp_Run::setDirectionProperty(FriBidiCharType dir)
 	const XML_Char ltr[] = "ltr";
 	UT_String other;
 
-	prop[0] = (XML_Char*) &direction;
+	prop[0] = static_cast<const XML_Char*>(&direction);
 
 	switch(dir)
 	{
-		case FRIBIDI_TYPE_LTR:  prop[1] = (XML_Char*) &ltr;     break;
-		case FRIBIDI_TYPE_RTL:  prop[1] = (XML_Char*) &rtl;     break;
+		case FRIBIDI_TYPE_LTR:  prop[1] = static_cast<const XML_Char*>(&ltr);     break;
+		case FRIBIDI_TYPE_RTL:  prop[1] = static_cast<const XML_Char*>(&rtl);     break;
 		default:
 		 {
 		 	// for anything other we will print the FriBidiCharType value
@@ -5021,8 +5039,8 @@ void fp_Run::setDirectionProperty(FriBidiCharType dir)
 		 	// having to list here tons of possible strings
 		 	// (we could do this for rtl and ltr as well, but "rtl" and "ltr"
 		 	// are much more informative.)
-		 	UT_String_sprintf(other,"fbt%d",(UT_uint32)dir);
-		 	prop[1] = (XML_Char*) other.c_str(); break;
+		 	UT_String_sprintf(other,"fbt%d",static_cast<UT_uint32>(dir));
+		 	prop[1] = static_cast<const XML_Char*>(other.c_str()); break;
 		 }
 	};
 

@@ -59,7 +59,7 @@ void XAP_UnixDialog_MessageBox::runModal(XAP_Frame * pFrame)
 	XAP_UnixApp * pApp = (XAP_UnixApp *)pFrame->getApp();
 	UT_return_if_fail(pApp);
 
-	GtkWidget * message ;
+	GtkWidget * message = 0;	// initialize to prevent compiler warning
 	GtkWindow * toplevel = GTK_WINDOW(pUnixFrameImpl->getTopLevelWindow());
 	GtkWidget * label;
 	GtkWidget * hbox;
@@ -145,6 +145,8 @@ void XAP_UnixDialog_MessageBox::runModal(XAP_Frame * pFrame)
 
 	// set the title to '', as per GNOME HIG, Section 3, Alerts
 	gtk_window_set_title (GTK_WINDOW(message), "");
+
+	UT_ASSERT(message);
 
 	switch ( abiRunModalDialog ( GTK_DIALOG(message), pFrame,
 				     this, GTK_RESPONSE_OK, true ) )

@@ -87,25 +87,25 @@ bool fp_Page::isEmpty(void) const
 
 UT_sint32 fp_Page::getWidth(void) const
 {
-	return (UT_sint32)(m_iResolution * m_pageSize.Width(DIM_IN));
+	return static_cast<UT_sint32>(m_iResolution * m_pageSize.Width(DIM_IN));
 }
 
 #if !defined(WITH_PANGO) && defined(USE_LAYOUT_UNITS)
 UT_sint32 fp_Page::getWidthInLayoutUnits(void) const
 {
-	return (UT_sint32)UT_convertSizeToLayoutUnits(m_pageSize.Width(DIM_IN), DIM_IN);
+	return static_cast<UT_sint32>(UT_convertSizeToLayoutUnits(m_pageSize.Width(DIM_IN), DIM_IN));
 }
 #endif
 
 UT_sint32 fp_Page::getHeight(void) const
 {
-	return (UT_sint32)(m_iResolution * m_pageSize.Height(DIM_IN));
+	return static_cast<UT_sint32>(m_iResolution * m_pageSize.Height(DIM_IN));
 }
 
 #if !defined(WITH_PANGO) && defined(USE_LAYOUT_UNITS)
 UT_sint32 fp_Page::getHeightInLayoutUnits(void) const
 {
-	return (UT_sint32)UT_convertSizeToLayoutUnits(m_pageSize.Height(DIM_IN), DIM_IN);
+	return static_cast<UT_sint32>(UT_convertSizeToLayoutUnits(m_pageSize.Height(DIM_IN), DIM_IN));
 }
 #endif
 
@@ -124,7 +124,7 @@ UT_sint32 fp_Page::getAvailableHeightInLayoutUnits(void) const
 	fl_DocSectionLayout * pDSL = getNthColumnLeader(0)->getDocSectionLayout();
 	UT_sint32 avail = getHeightInLayoutUnits() - pDSL->getTopMarginInLayoutUnits() - pDSL->getBottomMarginInLayoutUnits();
 	UT_sint32 i =0;
-	for(i=0; i< (UT_sint32) countFootnoteContainers(); i++)
+	for(i=0; i< static_cast<UT_sint32>(countFootnoteContainers()); i++)
 	{
 		fp_FootnoteContainer * pFC = getNthFootnoteContainer(i);
 		avail -= pFC->getHeightInLayoutUnits();
@@ -139,7 +139,7 @@ UT_sint32 fp_Page::getAvailableHeight(void) const
 	fl_DocSectionLayout * pDSL = getNthColumnLeader(0)->getDocSectionLayout();
 	UT_sint32 avail = getHeight() - pDSL->getTopMargin() - pDSL->getBottomMargin();
 	UT_sint32 i =0;
-	for(i=0; i< (UT_sint32) countFootnoteContainers(); i++)
+	for(i=0; i< static_cast<UT_sint32>(countFootnoteContainers()); i++)
 	{
 		fp_FootnoteContainer * pFC = getNthFootnoteContainer(i);
 		avail -= pFC->getHeight();
@@ -167,12 +167,12 @@ UT_sint32 fp_Page::getFilledHeight(fp_Container * prevContainer) const
 	bool bstop = false;
 	if(prevContainer)
 	{
-		prevColumn = (fp_Column *) prevContainer->getContainer();
+		prevColumn = static_cast<fp_Column *>(prevContainer->getContainer());
 	}
 	for(i=0; !bstop && (i<  m_vecColumnLeaders.getItemCount()); i++)
 	{
 		maxHeight = 0;
-		pColumn = (fp_Column *) m_vecColumnLeaders.getNthItem(i);
+		pColumn = static_cast<fp_Column *>(m_vecColumnLeaders.getNthItem(i));
 #if !defined(WITH_PANGO) && defined(USE_LAYOUT_UNITS)
 		totalHeight += pColumn->getDocSectionLayout()->getSpaceAfterInLayoutUnits();
 #else
@@ -183,7 +183,7 @@ UT_sint32 fp_Page::getFilledHeight(fp_Container * prevContainer) const
 			if(prevColumn == pColumn)
 			{
 				bstop = true;
-				fp_Container * pCurContainer = (fp_Container *) pColumn->getFirstContainer();
+				fp_Container * pCurContainer = static_cast<fp_Container *>(pColumn->getFirstContainer());
 				UT_sint32 curHeight = 0;
 				while((pCurContainer != NULL) && (pCurContainer != prevContainer))
 				{
@@ -204,7 +204,7 @@ UT_sint32 fp_Page::getFilledHeight(fp_Container * prevContainer) const
 						curHeight += pCurContainer->getHeight();
 #endif
 					}
-					pCurContainer = (fp_Container *) pCurContainer->getNext();
+					pCurContainer = static_cast<fp_Container *>(pCurContainer->getNext());
 				}
 				if(pCurContainer == prevContainer)
 				{
@@ -365,14 +365,14 @@ void fp_Page::draw(dg_DrawArgs* pDA, bool bAlwaysUseWhiteBackground)
 		UT_RGBColor * pClr = getOwningSection()->getPaperColor();
 #if !defined(WITH_PANGO) && defined(USE_LAYOUT_UNITS)
 		double ScaleLayoutUnitsToScreen;
-		ScaleLayoutUnitsToScreen = (double)pDA->pG->getResolution() / UT_LAYOUT_UNITS;
+		ScaleLayoutUnitsToScreen = static_cast<double>(pDA->pG->getResolution()) / UT_LAYOUT_UNITS;
 #endif
  		UT_sint32 xmin = pDA->xoff;
   		UT_sint32 ymin = pDA->yoff;
 
 #if !defined(WITH_PANGO) && defined(USE_LAYOUT_UNITS)
-		UT_sint32 height = (UT_sint32) ((double)getHeightInLayoutUnits() * ScaleLayoutUnitsToScreen);
-		UT_sint32 width = (UT_sint32) ((double)getWidthInLayoutUnits() * ScaleLayoutUnitsToScreen);
+		UT_sint32 height = static_cast<UT_sint32>(static_cast<double>(getHeightInLayoutUnits()) * ScaleLayoutUnitsToScreen);
+		UT_sint32 width = static_cast<UT_sint32>(static_cast<double>(getWidthInLayoutUnits()) * ScaleLayoutUnitsToScreen);
 #else
 		UT_sint32 height =getHeight();
 		UT_sint32 width = getWidth();
@@ -386,7 +386,7 @@ void fp_Page::draw(dg_DrawArgs* pDA, bool bAlwaysUseWhiteBackground)
 	int count = m_vecColumnLeaders.getItemCount();
 	for (i=0; i<count; i++)
 	{
-		fp_Column* pCol = (fp_Column*) m_vecColumnLeaders.getNthItem(i);
+		fp_Column* pCol = static_cast<fp_Column*>(m_vecColumnLeaders.getNthItem(i));
 		while (pCol)
 		{
 			dg_DrawArgs da = *pDA;
@@ -434,7 +434,7 @@ void fp_Page::draw(dg_DrawArgs* pDA, bool bAlwaysUseWhiteBackground)
 	count = m_vecFootnotes.getItemCount();
 	for (i=0; i<count; i++)
 	{
-		fp_FootnoteContainer* pFC = (fp_FootnoteContainer*) m_vecFootnotes.getNthItem(i);
+		fp_FootnoteContainer* pFC = static_cast<fp_FootnoteContainer*>(m_vecFootnotes.getNthItem(i));
 		dg_DrawArgs da = *pDA;
 		da.xoff += pFC->getX();
 		da.yoff += pFC->getY();
@@ -456,7 +456,7 @@ UT_uint32 fp_Page::countColumnLeaders(void) const
 
 fp_Column* fp_Page::getNthColumnLeader(UT_sint32 n) const
 {
-	return (fp_Column*) m_vecColumnLeaders.getNthItem(n);
+	return static_cast<fp_Column*>(m_vecColumnLeaders.getNthItem(n));
 }
 
 /*!
@@ -566,7 +566,7 @@ bool fp_Page::breakPage(void)
 		while(pCol != NULL)
 		{
 			UT_sint32 countContainers = 0;
-			fp_Container * pContainer = (fp_Container *) pCol->getFirstContainer();
+			fp_Container * pContainer = static_cast<fp_Container *>(pCol->getFirstContainer());
 			while(pContainer != NULL && pContainer != static_cast<fp_Container *>(pCol->getLastContainer()))
 			{
 				countContainers++;
@@ -591,7 +591,7 @@ bool fp_Page::breakPage(void)
 					maxContainerHeight = UT_MAX(maxContainerHeight,pContainer->getHeight());
 				}
 #endif
-				pContainer = (fp_Container *) pContainer->getNext();
+				pContainer = static_cast<fp_Container *>(pContainer->getNext());
 			}
 			if(pContainer != NULL)
 			{
@@ -629,7 +629,7 @@ bool fp_Page::breakPage(void)
 //OK this is a candidate to clear off this page. Next test, is the column over
 //80% of the way down the page?
 //
-		double rat = (double) iYPrev / (double) availHeight;
+		double rat = static_cast<double>(iYPrev) / static_cast<double>(availHeight);
 		if(rat < 0.80)
 			return true;
 //
@@ -704,7 +704,7 @@ fp_Column * fp_Page::getPrevColOnPages(fp_Column * pCol, fp_Page * pPage)
 	fp_Column * pFound = NULL;
 	for(i=0; i< count: i++)
 	{
-		pFound = (fp_Column *) pPage->getNthColumn(i);
+		pFound = static_cast<fp_Column *>(pPage->getNthColumn(i));
 		if(pFound == pCol)
 		{
 			break;
@@ -889,7 +889,7 @@ void fp_Page::_reformatColumns(void)
 	fp_Page *pNext = getNext();
 	if(pNext && pLastCol)
 	{
-		fp_Container * pLastContainer = (fp_Container *) pLastCol->getLastContainer();
+		fp_Container * pLastContainer = static_cast<fp_Container *>(pLastCol->getLastContainer());
 		if(pLastContainer)
 		{
 			if(pLastContainer->getContainerType() == FP_CONTAINER_LINE
@@ -902,7 +902,7 @@ void fp_Page::_reformatColumns(void)
 			{
 				return;
 			}
-			fp_Container *pFirstNextContainer = (fp_Container *) pFirstOfNext->getFirstContainer();
+			fp_Container *pFirstNextContainer = static_cast<fp_Container *>(pFirstOfNext->getFirstContainer());
 			if(pFirstNextContainer == NULL)
 			{
 				return;
@@ -931,7 +931,7 @@ void fp_Page::_reformatColumns(void)
 void fp_Page::clearScreenFootnotes(void)
 {
 	UT_sint32 i =0;
-	for (i = 0; i < (UT_sint32) countFootnoteContainers(); i++)
+	for (i = 0; i < static_cast<UT_sint32>(countFootnoteContainers()); i++)
 	{
 		getNthFootnoteContainer(i)->clearScreen();
 	}
@@ -1163,7 +1163,10 @@ void fp_Page::columnHeightChanged(fp_Column* pCol)
 {
 	fp_Column* pLeader = pCol->getLeader();
 	xxx_UT_DEBUGMSG(("SEVIOR: Column height changed \n"));
-	UT_sint32 ndx = m_vecColumnLeaders.findItem(pLeader);
+#if !defined(NDEBUG)
+	UT_sint32 ndx =
+#endif
+		m_vecColumnLeaders.findItem(pLeader);
 	UT_ASSERT(ndx >= 0);
 	if(breakPage())
 	{
@@ -1187,7 +1190,7 @@ PT_DocPosition fp_Page::getFirstLastPos(bool bFirst) const
 	{
 		fp_Column* pColumn = getNthColumnLeader(0);
 		UT_ASSERT(pColumn);
-		fp_Container* pFirstContainer = (fp_Container *) pColumn->getFirstContainer();
+		fp_Container* pFirstContainer = static_cast<fp_Container *>(pColumn->getFirstContainer());
 		UT_ASSERT(pFirstContainer);
 
 		fp_Run* pFirstRun = static_cast<fp_Line *>(pFirstContainer)->getFirstRun();
@@ -1199,7 +1202,7 @@ PT_DocPosition fp_Page::getFirstLastPos(bool bFirst) const
 	{
 		fp_Column* pColumn = getNthColumnLeader(cols-1);
 		UT_ASSERT(pColumn);
-		fp_Container* pLastContainer = (fp_Container *) pColumn->getLastContainer();
+		fp_Container* pLastContainer = static_cast<fp_Container *>(pColumn->getLastContainer());
 		UT_ASSERT(pLastContainer);
 
 		fp_Run* pLastRun = static_cast<fp_Line *>(pLastContainer)->getLastRun();
@@ -1282,7 +1285,7 @@ void fp_Page::mapXYToPosition(UT_sint32 x, UT_sint32 y, PT_DocPosition& pos, boo
 	UT_sint32 i =0;
 	for (i=0; i<count; i++)
 	{
-		pLeader = (fp_Column*) m_vecColumnLeaders.getNthItem(i);
+		pLeader = static_cast<fp_Column*>(m_vecColumnLeaders.getNthItem(i));
 
 		pColumn = pLeader;
 		iMinXDist = 0xffffffff;
@@ -1306,7 +1309,7 @@ void fp_Page::mapXYToPosition(UT_sint32 x, UT_sint32 y, PT_DocPosition& pos, boo
 				if (iDist < iMinDist)
 				{
 					iMinDist = iDist;
-					pMinDist = (fp_VerticalContainer *)pColumn;
+					pMinDist = static_cast<fp_VerticalContainer *>(pColumn);
 				}
 
 				if (
@@ -1317,7 +1320,7 @@ void fp_Page::mapXYToPosition(UT_sint32 x, UT_sint32 y, PT_DocPosition& pos, boo
 					if (iDist < iMinXDist)
 					{
 						iMinXDist = iDist;
-						pMinXDist = (fp_VerticalContainer *)pColumn;
+						pMinXDist = static_cast<fp_VerticalContainer *>(pColumn);
 					}
 				}
 			}
@@ -1330,7 +1333,7 @@ void fp_Page::mapXYToPosition(UT_sint32 x, UT_sint32 y, PT_DocPosition& pos, boo
 // Now look in footnotes
 //
 	fp_FootnoteContainer * pFC = NULL;
-	for (i=0; i<(UT_sint32) countFootnoteContainers(); i++)
+	for (i=0; i<static_cast<UT_sint32>(countFootnoteContainers()); i++)
 	{
 		pFC = getNthFootnoteContainer(i);
 		if (pFC->getFirstContainer())
@@ -1349,7 +1352,7 @@ void fp_Page::mapXYToPosition(UT_sint32 x, UT_sint32 y, PT_DocPosition& pos, boo
 			if (iDist < iMinDist)
 			{
 				iMinDist = iDist;
-				pMinDist = (fp_VerticalContainer *) pFC;
+				pMinDist = static_cast<fp_VerticalContainer *>(pFC);
 			}
 
 			if ( (y >= pFC->getY())
@@ -1358,7 +1361,7 @@ void fp_Page::mapXYToPosition(UT_sint32 x, UT_sint32 y, PT_DocPosition& pos, boo
 				if (iDist < iMinXDist)
 				{
 					iMinXDist = iDist;
-					pMinXDist = (fp_VerticalContainer *) pFC;
+					pMinXDist = static_cast<fp_VerticalContainer *>(pFC);
 				}
 			}
 		}
@@ -1527,13 +1530,13 @@ UT_uint32 fp_Page::countFootnoteContainers(void) const
 
 UT_sint32 fp_Page::findFootnoteContainer(fp_FootnoteContainer * pFC)
 {
-	UT_sint32 i = m_vecFootnotes.findItem((void *) pFC);
+	UT_sint32 i = m_vecFootnotes.findItem(static_cast<void *>(pFC));
 	return i;
 }
 
 fp_FootnoteContainer* fp_Page::getNthFootnoteContainer(UT_sint32 n) const 
 {
-	return (fp_FootnoteContainer*)m_vecFootnotes.getNthItem(n);
+	return static_cast<fp_FootnoteContainer*>(m_vecFootnotes.getNthItem(n));
 } 
 
 bool fp_Page::insertFootnoteContainer(fp_FootnoteContainer * pFC)
@@ -1544,7 +1547,7 @@ bool fp_Page::insertFootnoteContainer(fp_FootnoteContainer * pFC)
 	fp_FootnoteContainer * pFTemp = NULL;
 	for(i=0; i< m_vecFootnotes.getItemCount();i++)
 	{
-		pFTemp = (fp_FootnoteContainer *) m_vecFootnotes.getNthItem(i);
+		pFTemp = static_cast<fp_FootnoteContainer *>(m_vecFootnotes.getNthItem(i));
 		if(fVal < pFTemp->getValue())
 		{
 			loc = i;
@@ -1553,11 +1556,11 @@ bool fp_Page::insertFootnoteContainer(fp_FootnoteContainer * pFC)
 	}
 	if(pFTemp == NULL)
 	{
-		m_vecFootnotes.addItem((void *) pFC);
+		m_vecFootnotes.addItem(static_cast<void *>(pFC));
 	}
 	else if( i>= m_vecFootnotes.getItemCount())
 	{
-		m_vecFootnotes.addItem((void *) pFC);
+		m_vecFootnotes.addItem(static_cast<void *>(pFC));
 	}
 	else
 	{
@@ -1577,10 +1580,10 @@ void fp_Page::removeFootnoteContainer(fp_FootnoteContainer * pFC)
 	if(ndx>=0)
 	{
 		m_vecFootnotes.deleteNthItem(ndx);
-		for(ndx=0; ndx < (UT_sint32) countFootnoteContainers();ndx++)
+		for(ndx=0; ndx < static_cast<UT_sint32>(countFootnoteContainers());ndx++)
 		{			
 			fp_FootnoteContainer * pFC = getNthFootnoteContainer(ndx);
-			fl_FootnoteLayout * pFL = (fl_FootnoteLayout *) pFC->getSectionLayout();
+			fl_FootnoteLayout * pFL = static_cast<fl_FootnoteLayout *>(pFC->getSectionLayout());
 			pFC->clearScreen();
 			pFL->markAllRunsDirty();
 		}

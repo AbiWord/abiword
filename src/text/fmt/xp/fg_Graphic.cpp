@@ -43,7 +43,7 @@ FG_Graphic* FG_Graphic::createFromChangeRecord(const fl_Layout* pFL,
 		if (bFoundDataID && pszDataID)
 		{
 			char * pszMimeType = NULL;
-			bFoundDataID = pFL->getDocument()->getDataItemDataByName((char*)pszDataID, NULL, (void**)&pszMimeType, NULL);
+			bFoundDataID = pFL->getDocument()->getDataItemDataByName(const_cast<char*>(pszDataID), NULL, reinterpret_cast<void**>(&pszMimeType), NULL);
 	   
 			// figure out what type to create
 	   

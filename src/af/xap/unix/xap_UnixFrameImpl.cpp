@@ -445,7 +445,10 @@ gint XAP_UnixFrameImpl::_fe::delete_event(GtkWidget * w, GdkEvent * /*event*/, g
 	XAP_App * pApp = pFrame->getApp();
 	UT_ASSERT(pApp);
 
-	const EV_Menu_ActionSet * pMenuActionSet = pApp->getMenuActionSet();
+#if !defined(NDEBUG)
+	const EV_Menu_ActionSet * pMenuActionSet =
+#endif
+		pApp->getMenuActionSet();
 	UT_ASSERT(pMenuActionSet);
 
 	const EV_EditMethodContainer * pEMC = pApp->getEditMethodContainer();
@@ -1078,7 +1081,10 @@ void XAP_UnixFrameImpl::_rebuildMenus(void)
 					 m_szMenuLayoutName,
 					 m_szMenuLabelSetName);
 	UT_ASSERT(m_pUnixMenu);
-	bool bResult = m_pUnixMenu->rebuildMenuBar();
+#if !defined(NDEBUG)
+	bool bResult =
+#endif
+		m_pUnixMenu->rebuildMenuBar();
 	UT_ASSERT(bResult);
 }
 

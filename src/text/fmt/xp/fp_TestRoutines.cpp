@@ -40,7 +40,7 @@
 void fp_Column::__dump(FILE * fp) const
 {
 	fprintf(fp, "Col: %p X=%d Y=%d W=%d H=%d E=%s\n",
-			(void*) this, getX(), getY(), getWidth(), getHeight(),
+			static_cast<const void*>(this), getX(), getY(), getWidth(), getHeight(),
 			(isEmpty() ? "Yes" : "No"));
 }
 
@@ -54,7 +54,7 @@ void fp_Page::__dump(FILE * fp) const
 {
 	int i, count;
 
-	fprintf(fp,"  Page: %p\n",(void*)this);
+	fprintf(fp,"  Page: %p\n",static_cast<const void*>(this));
 	
 	for (count = countColumnLeaders(), i = 0; i < count; i++)
 	{
@@ -103,7 +103,7 @@ void fp_Run::__dump(FILE * fp) const
 		fprintf(fp,"    ");
 
 	fprintf(fp,"Run: %p T=%s Off=%d Len=%d D=%c [x %d y %d w %d h %d]\n",
-			(void*)this, szName, m_iOffsetFirst, m_iLen, 
+			static_cast<const void*>(this), szName, m_iOffsetFirst, m_iLen, 
 			((m_bDirty) ? 'y' : 'n'),
 			m_iX, m_iY, m_iWidth, m_iHeight);
 
@@ -134,7 +134,7 @@ void fp_TextRun::__dump(FILE * fp) const
 			for (UT_uint32 k=0; k<kdraw; k++)
 			{
 				// a cheap unicode to ascii hack...
-				unsigned char c = (unsigned char)(pSpan[k] & 0x00ff);
+				unsigned char c = static_cast<unsigned char>(pSpan[k] & 0x00ff);
 				fprintf(fp,"%c",c);
 			}
 
@@ -153,7 +153,7 @@ void fp_TextRun::__dump(FILE * fp) const
 void fp_Line::__dump(FILE * fp) const
 {
 	fprintf(fp,"Line: %p Col=%p X=%d Y=%d H=%d W=%d\n",
-			(void*) this, (void*) getContainer(),
+			static_cast<const void*>(this), static_cast<void*>(getContainer()),
 			getX(), getY(), getHeight(), getMaxWidth());
 }
 

@@ -177,7 +177,7 @@ bool FV_View::cmdMergeCells(PT_DocPosition posSource, PT_DocPosition posDestinat
 	fp_Container * pCon = pLine->getContainer();
 	UT_return_val_if_fail(pCon, false);
 
-	fp_TableContainer * pTab = (fp_TableContainer *) pCon->getContainer();
+	fp_TableContainer * pTab = static_cast<fp_TableContainer *>(pCon->getContainer());
 	UT_return_val_if_fail(pTab, false);
 
 	UT_sint32 numRows = pTab->getNumRows();
@@ -575,7 +575,7 @@ bool FV_View::cmdInsertCol(PT_DocPosition posCol, bool bBefore)
 	fp_Container * pCon = pLine->getContainer();
 	UT_return_val_if_fail(pCon, false);
 
-	fp_TableContainer * pTab = (fp_TableContainer *) pCon->getContainer();
+	fp_TableContainer * pTab = static_cast<fp_TableContainer *>(pCon->getContainer());
 	UT_return_val_if_fail(pTab, false);
 
 	UT_sint32 numRows = pTab->getNumRows();
@@ -980,7 +980,7 @@ bool FV_View::cmdInsertRow(PT_DocPosition posRow, bool bBefore)
 	fp_Container * pCon = pLine->getContainer();
 	UT_return_val_if_fail(pCon, false);
   
-	fp_TableContainer * pTab = (fp_TableContainer *) pCon->getContainer();
+	fp_TableContainer * pTab = static_cast<fp_TableContainer *>(pCon->getContainer());
 	UT_return_val_if_fail(pTab, false);
   
 	UT_sint32 numCols = pTab->getNumCols();
@@ -1252,7 +1252,7 @@ bool FV_View::cmdDeleteCol(PT_DocPosition posCol)
 	fp_Container * pCon = pLine->getContainer();
 	UT_return_val_if_fail(pCon, false);
 
-	fp_TableContainer * pTab = (fp_TableContainer *) pCon->getContainer();
+	fp_TableContainer * pTab = static_cast<fp_TableContainer *>(pCon->getContainer());
 	UT_return_val_if_fail(pTab, false);
 
 	UT_sint32 numRows = pTab->getNumRows();
@@ -1517,7 +1517,7 @@ bool FV_View::cmdDeleteRow(PT_DocPosition posRow)
 	fp_Container * pCon = pLine->getContainer();
 	UT_return_val_if_fail(pCon, false);
 
-	fp_TableContainer * pTab = (fp_TableContainer *) pCon->getContainer();
+	fp_TableContainer * pTab = static_cast<fp_TableContainer *>(pCon->getContainer());
 	UT_return_val_if_fail(pTab, false);
 
 	UT_sint32 numCols = pTab->getNumCols();
@@ -1827,7 +1827,7 @@ UT_Error FV_View::cmdInsertTable(UT_sint32 numRows, UT_sint32 numCols, const XML
 		}
 	}
 	setPoint(pointBreak-1);
-	e |= (UT_sint32)(m_pDoc->insertStrux(getPoint(),PTX_SectionTable,NULL,pPropsArray));
+	e |= static_cast<UT_sint32>(m_pDoc->insertStrux(getPoint(),PTX_SectionTable,NULL,pPropsArray));
 //
 // stuff for cell insertion.
 //
@@ -1854,9 +1854,9 @@ UT_Error FV_View::cmdInsertTable(UT_sint32 numRows, UT_sint32 numCols, const XML
 			props[5] = sLeft.c_str();
 			props[6] = sColRight.c_str();
 			props[7] = sRight.c_str();
-			e |= (UT_sint32)(m_pDoc->insertStrux(getPoint(),PTX_SectionCell,NULL,props));
+			e |= static_cast<UT_sint32>(m_pDoc->insertStrux(getPoint(),PTX_SectionCell,NULL,props));
 			pointBreak = getPoint();
-			e |= (UT_sint32)(m_pDoc->insertStrux(getPoint(),PTX_Block));
+			e |= static_cast<UT_sint32>(m_pDoc->insertStrux(getPoint(),PTX_Block));
 			UT_DEBUGMSG(("SEVIOR: 4  cur point %d \n",getPoint()));
 			if(getPoint() == pointBreak)
 			{
@@ -1866,10 +1866,10 @@ UT_Error FV_View::cmdInsertTable(UT_sint32 numRows, UT_sint32 numCols, const XML
 			{
 				pointTable = getPoint();
 			}
-			e |= (UT_sint32)(m_pDoc->insertStrux(getPoint(),PTX_EndCell));
+			e |= static_cast<UT_sint32>(m_pDoc->insertStrux(getPoint(),PTX_EndCell));
 		}
 	}
-	e |= (UT_sint32)(m_pDoc->insertStrux(getPoint(),PTX_EndTable));
+	e |= static_cast<UT_sint32>(m_pDoc->insertStrux(getPoint(),PTX_EndTable));
 	m_pDoc->endUserAtomicGlob();
 	m_pDoc->setDontImmediatelyLayout(false);
 
@@ -1948,15 +1948,15 @@ bool FV_View::cmdCharInsert(UT_UCSChar * text, UT_uint32 count, bool bForce)
 					const XML_Char * pszAlign = pBlock->getProperty("margin-left",true);
 					const XML_Char * pszIndent = pBlock->getProperty("text-indent",true);
 					const XML_Char * pszFieldF = pBlock->getProperty("field-font",true);
-					float fAlign = (float)atof(pszAlign);
-					float fIndent = (float)atof(pszIndent);
+					float fAlign = static_cast<float>(atof(pszAlign));
+					float fIndent = static_cast<float>(atof(pszIndent));
 //
 // Convert pixels to inches.
 //
-					float maxWidthIN = (float)(((float) pBlock->getFirstContainer()->getContainer()->getWidth())/100. -0.6);
-					if(fAlign + (float) LIST_DEFAULT_INDENT < maxWidthIN)
+					float maxWidthIN = static_cast<float>((static_cast<float>(pBlock->getFirstContainer()->getContainer()->getWidth()))/100. -0.6);
+					if(fAlign + static_cast<float>(LIST_DEFAULT_INDENT) < maxWidthIN)
 					{
-						fAlign += (float) LIST_DEFAULT_INDENT;
+						fAlign += static_cast<float>(LIST_DEFAULT_INDENT);
 					}
 					pBlock->StartList(curType,pAuto->getStartValue32(),pAuto->getDelim(),pAuto->getDecimal(),pszFieldF,fAlign,fIndent, currID,curlevel);
 					doInsert = false;
@@ -2397,7 +2397,7 @@ void FV_View::cmdSelect(UT_sint32 xPos, UT_sint32 yPos, FV_DocPos dpBeg, FV_DocP
 		if(pRun)
 		{
 			fp_Line * pLine = pRun->getLine();
-			if(pLine == (fp_Line *) pBlock->getFirstContainer())
+			if(pLine == static_cast<fp_Line *>(pBlock->getFirstContainer()))
 			{
 				iPosLeft = pBlock->getPosition() -1;
 			}
@@ -2798,7 +2798,7 @@ UT_Error FV_View::cmdInsertHyperlink(const char * szName)
 	else
 	{
 		//No selection
-		XAP_Frame * pFrame = (XAP_Frame *) getParentData();
+		XAP_Frame * pFrame = static_cast<XAP_Frame *>(getParentData());
 		UT_ASSERT((pFrame));
 
 		pFrame->showMessageBox(AP_STRING_ID_MSG_HyperlinkNoSelection, XAP_Dialog_MessageBox::b_O, XAP_Dialog_MessageBox::a_OK);
@@ -2815,7 +2815,7 @@ UT_Error FV_View::cmdInsertHyperlink(const char * szName)
 	if(!UT_isUrl(szName) && m_pDoc->isBookmarkUnique(szName) && !relLink)
 	{
 		//No bookmark of that name in document, tell user.
-		XAP_Frame * pFrame = (XAP_Frame *) getParentData();
+		XAP_Frame * pFrame = static_cast<XAP_Frame *>(getParentData());
 		UT_ASSERT((pFrame));
 
 		pFrame->showMessageBox(AP_STRING_ID_MSG_HyperlinkNoBookmark, 
@@ -2836,7 +2836,7 @@ UT_Error FV_View::cmdInsertHyperlink(const char * szName)
 
 	if(pBl1 != pBl2)
 	{
-		XAP_Frame * pFrame = (XAP_Frame *) getParentData();
+		XAP_Frame * pFrame = static_cast<XAP_Frame *>(getParentData());
 		UT_ASSERT((pFrame));
 
 		pFrame->showMessageBox(AP_STRING_ID_MSG_HyperlinkCrossesBoundaries, XAP_Dialog_MessageBox::b_O, XAP_Dialog_MessageBox::a_OK);
@@ -2849,19 +2849,19 @@ UT_Error FV_View::cmdInsertHyperlink(const char * szName)
 		return false;
 
 	XML_Char * pAttr[4];
-	const XML_Char ** pAt = (const XML_Char **)&pAttr[0];
+	const XML_Char ** pAt = reinterpret_cast<const XML_Char **>(&pAttr[0]);
 
 	UT_uint32 target_len = UT_XML_strlen(szName);
 	XML_Char * target  = new XML_Char[ target_len+ 2];
 
 	if(UT_isUrl(szName) || relLink)
 	{
-		UT_XML_strncpy(target, target_len + 1, (XML_Char*)szName);
+		UT_XML_strncpy(target, target_len + 1, static_cast<const XML_Char*>(szName));
 	}
 	else
 	{
 		target[0] =  '#';
-		UT_XML_strncpy(target + 1, target_len + 1, (XML_Char*)szName);
+		UT_XML_strncpy(target + 1, target_len + 1, static_cast<const XML_Char*>(szName));
 	}
 
 	XML_Char target_l[]  = "xlink:href";
@@ -2929,20 +2929,20 @@ UT_Error FV_View::cmdInsertBookmark(const char * szName)
 
 	posEnd++;
 
-	if(!m_pDoc->isBookmarkUnique((XML_Char*)szName))
+	if(!m_pDoc->isBookmarkUnique(static_cast<const XML_Char*>(szName)))
 	{
 		//bookmark already exists -- remove it and then reinsert
 		UT_DEBUGMSG(("fv_View::cmdInsertBookmark: bookmark \"%s\" exists - removing\n", szName));
-		_deleteBookmark((XML_Char*)szName, false, &posStart, &posEnd);
+		_deleteBookmark(static_cast<const XML_Char*>(szName), false, &posStart, &posEnd);
 	}
 
 	XML_Char * pAttr[6];
-	const XML_Char ** pAt = (const XML_Char **)&pAttr[0];
+	const XML_Char ** pAt = reinterpret_cast<const XML_Char **>(&pAttr[0]);
 
 	XML_Char name_l [] = "name";
 	XML_Char type_l [] = "type";
 	XML_Char name[BOOKMARK_NAME_SIZE + 1];
-	UT_XML_strncpy(name, BOOKMARK_NAME_SIZE, (XML_Char*)szName);
+	UT_XML_strncpy(name, BOOKMARK_NAME_SIZE, static_cast<const XML_Char*>(szName));
 	name[BOOKMARK_NAME_SIZE] = 0;
 
 	XML_Char type[] = "start";
@@ -2960,7 +2960,7 @@ UT_Error FV_View::cmdInsertBookmark(const char * szName)
 
 	if(bRet)
 	{
-		UT_XML_strncpy(type, 3,(XML_Char*)"end");
+		UT_XML_strncpy(type, 3,static_cast<XML_Char*>("end"));
 		type[3] = 0;
 		bRet = m_pDoc->insertObject(posEnd, PTO_Bookmark, pAt, NULL);
 	}
@@ -3124,7 +3124,7 @@ void FV_View::cmdContextSuggest(UT_uint32 ndx, fl_BlockLayout * ppBL,
 	// make the change
 	UT_ASSERT(isSelectionEmpty());
 
-	moveInsPtTo((PT_DocPosition) (pBL->getPosition() + pPOB->getOffset()));
+	moveInsPtTo(static_cast<PT_DocPosition>(pBL->getPosition() + pPOB->getOffset()));
 	extSelHorizontal(true, pPOB->getLength());
 	cmdCharInsert(replace, UT_UCS4_strlen(replace));
 
@@ -3142,10 +3142,13 @@ void FV_View::cmdContextIgnoreAll(void)
 
 	// grab a copy of the word
 	UT_GrowBuf pgb(1024);
-	bool bRes = pBL->getBlockBuf(&pgb);
+#if !defined(NDEBUG)
+	bool bRes =
+#endif
+		pBL->getBlockBuf(&pgb);
 	UT_ASSERT(bRes);
 
-	const UT_UCSChar * pBuf = (UT_UCSChar*)pgb.getPointer(pPOB->getOffset());
+	const UT_UCSChar * pBuf = reinterpret_cast<UT_UCSChar*>(pgb.getPointer(pPOB->getOffset()));
 
 	// make the change
 	if (m_pDoc->appendIgnore(pBuf, pPOB->getLength()))
@@ -3154,15 +3157,15 @@ void FV_View::cmdContextIgnoreAll(void)
 		fl_DocSectionLayout * pSL = m_pLayout->getFirstSection();
 		while (pSL)
 		{
-			fl_BlockLayout* b = (fl_BlockLayout *) pSL->getFirstLayout();
+			fl_BlockLayout* b = static_cast<fl_BlockLayout *>(pSL->getFirstLayout());
 			while (b)
 			{
 				// TODO: just check and remove matching squiggles
 				// for now, destructively recheck the whole thing
 				m_pLayout->queueBlockForBackgroundCheck(FL_DocLayout::bgcrSpelling, b);
-				b = (fl_BlockLayout *) b->getNext();
+				b = static_cast<fl_BlockLayout *>(b->getNext());
 			}
-			pSL = (fl_DocSectionLayout *) pSL->getNext();
+			pSL = static_cast<fl_DocSectionLayout *>(pSL->getNext());
 		}
 	}
 }
@@ -3178,10 +3181,13 @@ void FV_View::cmdContextAdd(void)
 
 	// grab a copy of the word
 	UT_GrowBuf pgb(1024);
-	bool bRes = pBL->getBlockBuf(&pgb);
+#if !defined(NDEBUG)
+	bool bRes =
+#endif
+		pBL->getBlockBuf(&pgb);
 	UT_ASSERT(bRes);
 
-	const UT_UCSChar * pBuf = (UT_UCSChar*)pgb.getPointer(pPOB->getOffset());
+	const UT_UCSChar * pBuf = reinterpret_cast<UT_UCSChar*>(pgb.getPointer(pPOB->getOffset()));
 
 	// make the change
 	if (getDictForSelection ()->addToCustomDict (pBuf, pPOB->getLength()))
@@ -3190,7 +3196,7 @@ void FV_View::cmdContextAdd(void)
 		fl_DocSectionLayout * pSL = m_pLayout->getFirstSection();
 		while (pSL)
 		{
-			fl_BlockLayout* b = (fl_BlockLayout *) pSL->getFirstLayout();
+			fl_BlockLayout* b = static_cast<fl_BlockLayout *>(pSL->getFirstLayout());
 			while (b)
 			{
 				// TODO: just check and remove matching squiggles
@@ -3199,9 +3205,9 @@ void FV_View::cmdContextAdd(void)
 				{
 					m_pLayout->queueBlockForBackgroundCheck(FL_DocLayout::bgcrSpelling, b);
 				}
-				b = (fl_BlockLayout *) b->getNext();
+				b = static_cast<fl_BlockLayout *>(b->getNext());
 			}
-			pSL = (fl_DocSectionLayout *) pSL->getNext();
+			pSL = static_cast<fl_DocSectionLayout *>(pSL->getNext());
 		}
 	}
 }

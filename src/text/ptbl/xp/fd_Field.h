@@ -106,8 +106,8 @@ class ABI_EXPORT fd_Field
     fl_BlockLayout *				getBlock( void);
 	FieldType						getFieldType(void) const;
 	XML_Char *						getValue(void) const;
-	void							setValue(XML_Char * szValue);
-	const XML_Char * 				getParameter(void) const {return (const XML_Char *) m_pParameter;};
+	void							setValue(const XML_Char * szValue);
+	const XML_Char * 				getParameter(void) const {return static_cast<const XML_Char *>(m_pParameter);};
     // probably need different types of update
     // which are overridden in the appropriate subclass
     // eg positionChangeUpdate

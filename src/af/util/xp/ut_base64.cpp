@@ -272,7 +272,7 @@ bool ABI_EXPORT UT_UTF8_Base64Decode(char *& binptr, size_t & binlen, const char
 
 	int i = 0;
 
-	unsigned char byte1;
+	unsigned char byte1 = 0;	// initialize to prevent compiler warning
 	unsigned char byte2;
 
 	while (UT_UCS4Char ucs4 = UT_UCS4Stringbuf::UTF8_to_UCS4 (b64ptr, b64len))

@@ -61,13 +61,13 @@ fb_LineBreaker::breakParagraph(fl_BlockLayout* pBlock, fp_Line * pLineToStartAt)
 	//	 o If the block bounding box or layout properties change, it
 	//	   should force a full layout.
 	//	 o Also see fix me at end of loop
-	fp_Line* pLine = (fp_Line *) pBlock->getFirstContainer();
+	fp_Line* pLine = static_cast<fp_Line *>(pBlock->getFirstContainer());
 	UT_ASSERT(pLine);
 	if(pLineToStartAt)
 	{
 		while(pLine && pLine != pLineToStartAt)
 		{
-			pLine = (fp_Line *) pLine->getNext();
+			pLine = static_cast<fp_Line *>(pLine->getNext());
 #if DEBUG
 			pLine->assertLineListIntegrity();
 #endif
@@ -291,7 +291,7 @@ fb_LineBreaker::breakParagraph(fl_BlockLayout* pBlock, fp_Line * pLineToStartAt)
 			// we are guaranteed a full re-layout on block changes.
 			pLine->layout();
 
-			pLine = (fp_Line *) pLine->getNext();
+			pLine = static_cast<fp_Line *>(pLine->getNext());
 		} // if countruns > 0
 		else
 		{
@@ -302,7 +302,7 @@ fb_LineBreaker::breakParagraph(fl_BlockLayout* pBlock, fp_Line * pLineToStartAt)
 			// recalculated _before_ this loop proceeds (this is take care off by
 			// fl_BlockLayout::_removeLine()
 			fp_Line *pOldLine = pLine;
-			pLine = (fp_Line *) pLine->getNext();
+			pLine = static_cast<fp_Line *>(pLine->getNext());
 
 			pBlock->_removeLine(pOldLine);
 		}
@@ -362,7 +362,7 @@ bool fb_LineBreaker::_splitAtOrBeforeThisRun(fp_Run *pCurrentRun)
 	if (bFoundSplit)
 	{
 		UT_ASSERT(pOffendingRun->getType() == FPRUN_TEXT);
-		pRunToSplit = (fp_TextRun*) pOffendingRun;
+		pRunToSplit = static_cast<fp_TextRun*>(pOffendingRun);
 	}
 	else
 	{
@@ -415,7 +415,7 @@ bool fb_LineBreaker::_splitAtOrBeforeThisRun(fp_Run *pCurrentRun)
 
 					UT_ASSERT(pRunLookingBackwards->getType() == FPRUN_TEXT);
 
-					pRunToSplit = (fp_TextRun*) pRunLookingBackwards;
+					pRunToSplit = static_cast<fp_TextRun*>(pRunLookingBackwards);
 					break;
 				}
 			}
@@ -435,7 +435,7 @@ bool fb_LineBreaker::_splitAtOrBeforeThisRun(fp_Run *pCurrentRun)
 		if (bFoundSplit)
 		{
 			UT_ASSERT(pOffendingRun->getType() == FPRUN_TEXT);
-			pRunToSplit = (fp_TextRun*) pOffendingRun;
+			pRunToSplit = static_cast<fp_TextRun*>(pOffendingRun);
 		}
 		else
 		{
@@ -499,19 +499,19 @@ bool fb_LineBreaker::_splitAtNextNonBlank(fp_Run *pCurrentRun)
 void fb_LineBreaker::_splitRunAt(fp_Run *pCurrentRun, fp_RunSplitInfo &splitInfo)
 {
 	UT_ASSERT(pCurrentRun->getType() == FPRUN_TEXT);
-	fp_TextRun *pRunToSplit = (fp_TextRun*) pCurrentRun;
+	fp_TextRun *pRunToSplit = static_cast<fp_TextRun*>(pCurrentRun);
 
 	pRunToSplit->split(splitInfo.iOffset + 1);	// TODO err check this
 	UT_ASSERT(pRunToSplit->getNext());
 	UT_ASSERT(pRunToSplit->getNext()->getType() == FPRUN_TEXT);
 
 	fp_TextRun *pOtherHalfOfSplitRun;
-	pOtherHalfOfSplitRun = (fp_TextRun*) pRunToSplit->getNext();
+	pOtherHalfOfSplitRun = static_cast<fp_TextRun*>(pRunToSplit->getNext());
 
 // todo decide if we need to call recalcWidth() now on the 2 pieces.
 //							pRunToSplit->recalcWidth();
 //							pOtherHalfOfSplitRun->recalcWidth();
-	UT_ASSERT((UT_sint32)pRunToSplit->getWidth() == splitInfo.iLeftWidth);
+	UT_ASSERT(static_cast<UT_sint32>(pRunToSplit->getWidth()) == splitInfo.iLeftWidth);
 
 	UT_ASSERT(pOtherHalfOfSplitRun);
 	UT_ASSERT(pOtherHalfOfSplitRun->getLine() == pRunToSplit->getLine());
@@ -556,10 +556,10 @@ void fb_LineBreaker::_breakTheLineAtLastRunToKeep(fp_Line *pLine,
 		)
 	{
 		// make sure there is a next line
-		pNextLine = (fp_Line *) pLine->getNext();
+		pNextLine = static_cast<fp_Line *>(pLine->getNext());
 		if (!pNextLine)
 		{
-			fp_Line* pNewLine  = (fp_Line *) pBlock->getNewContainer();
+			fp_Line* pNewLine  = static_cast<fp_Line *>(pBlock->getNewContainer());
 			UT_ASSERT(pNewLine);	// TODO check for outofmem
 			pNextLine = pNewLine;
 			xxx_UT_DEBUGMSG(("!!!! Generated a new Line \n"));
@@ -569,7 +569,7 @@ void fb_LineBreaker::_breakTheLineAtLastRunToKeep(fp_Line *pLine,
 			UT_ASSERT(pNextLine->getContainerType() == FP_CONTAINER_LINE);
 			xxx_UT_DEBUGMSG(("fb_LineBreaker::_breakThe ... pLine 0x%x, pNextLine 0x%x, blocks last 0x%x\n",
 			pLine, pNextLine, pBlock->getLastContainer()));
-			if(pBlock->getLastContainer() == (fp_Container *) pLine)
+			if(pBlock->getLastContainer() == static_cast<fp_Container *>(pLine))
 				pBlock->setLastContainer(pNextLine);
 		}
 

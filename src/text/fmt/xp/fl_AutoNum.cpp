@@ -129,7 +129,7 @@ void fl_AutoNum::fixHierarchy(void)
 	UT_uint32 docParentID = 0;
 	if(m_pItems.getItemCount() >0)
 	{
-		PL_StruxDocHandle sdh = (PL_StruxDocHandle) m_pItems.getNthItem(0);
+		PL_StruxDocHandle sdh = static_cast<PL_StruxDocHandle>(m_pItems.getNthItem(0));
 		bool bFound = m_pDoc->getAttributeFromSDH(sdh,PT_PARENTID_ATTRIBUTE_NAME,&pszParentID);
 		if(bFound)
 		{
@@ -181,10 +181,10 @@ static int compareListItems(const void* p1, const void* p2)
 	//
 	// Fun with (void *) pointers!
 	//
-	//	pf_Frag * pf1 = (pf_Frag *) p1;
+	//	pf_Frag * pf1 = static_cast<pf_Frag *>(p1);
 	//	PD_Document * pDoc = pf1->getPieceTable()->getDocument();
-	PL_StruxDocHandle * sdh1 = (PL_StruxDocHandle *) p1;
-	PL_StruxDocHandle * sdh2 = (PL_StruxDocHandle *) p2;
+	PL_StruxDocHandle * sdh1 = reinterpret_cast<PL_StruxDocHandle *>(p1);
+	PL_StruxDocHandle * sdh2 = reinterpret_cast<PL_StruxDocHandle *>(p2);
 	PT_DocPosition pos1 = pCurDoc->getStruxPosition(*sdh1);
 	PT_DocPosition pos2 = pCurDoc->getStruxPosition(*sdh2);
 	if(pos1 < pos2)
@@ -238,7 +238,7 @@ void    fl_AutoNum::findAndSetParentItem(void)
 	{
 		return;
 	}
-	PL_StruxDocHandle pCurFirst =  (PL_StruxDocHandle) m_pItems.getFirstItem();
+	PL_StruxDocHandle pCurFirst =  static_cast<PL_StruxDocHandle>(m_pItems.getFirstItem());
 	if(pCurFirst == NULL)
 		return;
 	PT_DocPosition posCur = m_pDoc->getStruxPosition(pCurFirst);
@@ -338,17 +338,18 @@ void    fl_AutoNum::findAndSetParentItem(void)
 		update(0);
 }
 
+/*!
+ * This method recursively calculates a label based on the type of label
+ * of the AutoNum Class. This is output to the label string labelStr.
+ *
+ * insPoint is the position in the string where the new text goes. It starts
+ * Pointing to the byte == 0
+ * depth is the level of recursion
+ * pLayout is a pointer to the Layout item containing the current list item
+ */
 void    fl_AutoNum::_getLabelstr( UT_UCSChar labelStr[], UT_uint32 * insPoint,
 								  UT_uint32 depth, PL_StruxDocHandle pLayout) const
 {
-	// This method recursively calculates a label based on the type of label
-	// of the AutoNum Class. This is output to the label string labelStr.
-	//
-	// insPoint is the position in the string where the new text goes. It starts
-	// Pointing to the byte == 0
-	// depth is the level of recursion
-	// pLayout is a pointer to the Layout item containing the current list item
-	//
     char p[100], leftDelim[10], rightDelim[10];
 	UT_uint32 i,psz;
 	//
@@ -554,11 +555,11 @@ const UT_UCSChar * fl_AutoNum::getLabel(PL_StruxDocHandle pItem)  const
 	_getLabelstr( label, &insPoint, depth , pItem);
 	if(insPoint == 0 )
 	{
-		return (const UT_UCSChar *) NULL;
+		return static_cast<const UT_UCSChar *>(NULL);
 	}
 	else
 	{
-		return (const UT_UCSChar *) label;
+		return static_cast<const UT_UCSChar *>(label);
 	}
 }
 
@@ -617,7 +618,7 @@ void fl_AutoNum::setStartValue(UT_uint32 start)
 
 void fl_AutoNum::setAsciiOffset(UT_uint32 new_asciioffset)
 {
-	m_iAsciiOffset = (UT_uint16) new_asciioffset;
+	m_iAsciiOffset = static_cast<UT_uint16>(new_asciioffset);
 	m_bDirty = true;
 }
 
@@ -630,10 +631,10 @@ void fl_AutoNum::insertFirstItem(PL_StruxDocHandle pItem, PL_StruxDocHandle pLas
 {
 	UT_sint32 i = -1;
 	if(m_pItems.getItemCount() > 0)
-		i = m_pItems.findItem((void *) pItem);
+		i = m_pItems.findItem(const_cast<void *>(pItem));
 	if(i < 0)
 	{
-		m_pItems.insertItemAt((void *) pItem, 0);
+		m_pItems.insertItemAt(const_cast<void *>(pItem), 0);
 		m_bDirty = true;
 	}
 	if(bDoFix)
@@ -665,12 +666,12 @@ void fl_AutoNum::insertItem(PL_StruxDocHandle pItem, PL_StruxDocHandle pPrev, bo
 {
 	UT_sint32 ndx,i;
 	UT_ASSERT(pItem);
-	ndx = m_pItems.findItem((void *) pItem);
+	ndx = m_pItems.findItem(const_cast<void *>(pItem));
 	if(ndx >= 0)
 		return;
 	m_bDirty = true;
-	ndx = m_pItems.findItem((void *) pPrev) + 1;
-	m_pItems.insertItemAt((void *) pItem, ndx);
+	ndx = m_pItems.findItem(const_cast<void *>(pPrev)) + 1;
+	m_pItems.insertItemAt(const_cast<void *>(pItem), ndx);
 	if(bDoFix)
 	{
 		fixListOrder();
@@ -702,16 +703,16 @@ void fl_AutoNum::prependItem(PL_StruxDocHandle pItem, PL_StruxDocHandle pNext, b
 	UT_sint32 i;
 	UT_ASSERT(pItem);
 	PL_StruxDocHandle pPrev = NULL;
-	ndx = m_pItems.findItem((void *) pItem);
+	ndx = m_pItems.findItem(const_cast<void *>(pItem));
 	if(ndx >= 0)
 		return;
 	m_bDirty = true;
-	ndx = m_pItems.findItem((void *) pNext);
+	ndx = m_pItems.findItem(const_cast<void *>(pNext));
 	if(ndx > 0)
 	{
 		pPrev = m_pItems.getNthItem(ndx-1);
 	}
-	m_pItems.insertItemAt((void *) pItem, ndx);
+	m_pItems.insertItemAt(const_cast<void *>(pItem), ndx);
 	if(bDoFix)
 		fixListOrder(); // safety!!
 	if(m_pDoc->areListUpdatesAllowed() == false)
@@ -737,7 +738,7 @@ void fl_AutoNum::prependItem(PL_StruxDocHandle pItem, PL_StruxDocHandle pNext, b
 
 void fl_AutoNum::removeItem(PL_StruxDocHandle pItem)
 {
-	UT_sint32 ndx = m_pItems.findItem((void *)pItem);
+	UT_sint32 ndx = m_pItems.findItem(const_cast<void *>(pItem));
 	UT_sint32 i;
 	//
 	// For multi-views we might have already deleted pItem from the
@@ -754,7 +755,7 @@ void fl_AutoNum::removeItem(PL_StruxDocHandle pItem)
 	PL_StruxDocHandle ppItem = NULL;
 	if(ndx > 0)
 	{
-		ppItem =  ( PL_StruxDocHandle) m_pItems.getNthItem(ndx - 1);
+		ppItem =  static_cast<PL_StruxDocHandle>(m_pItems.getNthItem(ndx - 1));
 	}
 	m_pItems.deleteNthItem(ndx);
 	m_bDirty = true;
@@ -808,11 +809,11 @@ UT_sint32 fl_AutoNum::getPositionInList(PL_StruxDocHandle pItem, UT_uint32 depth
 
 	for (UT_uint32 i = 0; i < count; i++)
 	{
-		pTmp = (PL_StruxDocHandle) m_pItems.getNthItem(i);
+		pTmp = static_cast<PL_StruxDocHandle>(m_pItems.getNthItem(i));
 		//		bOnLevel = (depth == 0);
 		const fl_AutoNum* pAuto = getAutoNumFromSdh(pItem);
-		bOnLevel = (bool)( pAuto == this);
-		bFirstItem = (bool)(pTmp == m_pItems.getFirstItem());
+		bOnLevel = static_cast<bool>( pAuto == this);
+		bFirstItem = static_cast<bool>(pTmp == m_pItems.getFirstItem());
 		if (pTmp == pItem)
 		{
 			if (m_bWordMultiStyle && !bOnLevel && !bFirstItem)
@@ -837,7 +838,7 @@ fl_AutoNum * fl_AutoNum::getAutoNumFromSdh(PL_StruxDocHandle sdh)
 	{
 		if(isItem(sdh) == false)
 		{
-			return (fl_AutoNum *) NULL;
+			return static_cast<fl_AutoNum *>(NULL);
 		}
 		return this;
 	}
@@ -850,7 +851,7 @@ fl_AutoNum * fl_AutoNum::getAutoNumFromSdh(PL_StruxDocHandle sdh)
 	}
 	if(i>= numLists)
 	{
-		return (fl_AutoNum * ) NULL;
+		return static_cast<fl_AutoNum *>(NULL);
 	}
 	return pAuto;
 }
@@ -884,7 +885,7 @@ const fl_AutoNum* fl_AutoNum::getAutoNumFromSdh(PL_StruxDocHandle sdh) const
 
 const bool fl_AutoNum::isItem(PL_StruxDocHandle pItem) const
 {
-	if (m_pItems.findItem((void *)(pItem)) == -1)
+	if (m_pItems.findItem(const_cast<void *>(pItem)) == -1)
 		return false;
 	else
 		return true;
@@ -912,7 +913,7 @@ PL_StruxDocHandle fl_AutoNum::getLastItem()
 		return NULL;
 	else
 	{
-		return (PL_StruxDocHandle) m_pItems.getNthItem(i-1);
+		return static_cast<PL_StruxDocHandle>(m_pItems.getNthItem(i-1));
 	}
 }
 
@@ -924,7 +925,7 @@ bool fl_AutoNum::doesItemHaveLabel( fl_BlockLayout * pItem)
 	{
 		if(pRun->getType() == FPRUN_FIELD)
 		{
-			fp_FieldRun * pFRun = (fp_FieldRun *) pRun;
+			fp_FieldRun * pFRun = static_cast<fp_FieldRun *>(pRun);
 			if(pFRun->getFieldType() == FPFIELD_list_label)
 			{
 				bStop = true;
@@ -944,10 +945,10 @@ bool fl_AutoNum::doesItemHaveLabel( fl_BlockLayout * pItem)
 
 bool fl_AutoNum::isLastOnLevel(PL_StruxDocHandle pItem)
 {
-	UT_sint32 itemloc = m_pItems.findItem((void *) pItem);
+	UT_sint32 itemloc = m_pItems.findItem(const_cast<void *>(pItem));
 	if (itemloc == -1)
 		return false;
-	if(itemloc == (UT_sint32) (m_pItems.getItemCount() - 1))
+	if(itemloc == static_cast<UT_sint32>(m_pItems.getItemCount() - 1))
 		return true;
 	else
 		return false;
@@ -990,8 +991,8 @@ void fl_AutoNum::_setParent(fl_AutoNum * pParent)
 		UT_uint32 i = 0;
 		for(i=0; i < m_pItems.getItemCount() ; i++)
 		{
-			PL_StruxDocHandle sdh = (PL_StruxDocHandle) m_pItems.getNthItem(i);
-			m_pDoc->changeStruxForLists(sdh, (const char * )szParent);
+			PL_StruxDocHandle sdh = static_cast<PL_StruxDocHandle>(m_pItems.getNthItem(i));
+			m_pDoc->changeStruxForLists(sdh, static_cast<const char *>(szParent));
 		}
 	}
 }
@@ -1034,13 +1035,13 @@ void fl_AutoNum::_updateItems(UT_uint32 start, PL_StruxDocHandle notMe)
 		for (UT_uint32 i = start; i < m_pItems.getItemCount(); i++)
 		{
 			//       	 	UT_DEBUGMSG(("Entering _updateItems for loop\n"));
-			PL_StruxDocHandle pTmp = (PL_StruxDocHandle) m_pItems.getNthItem(i);
+			PL_StruxDocHandle pTmp = static_cast<PL_StruxDocHandle>(m_pItems.getNthItem(i));
 			UT_ASSERT(pTmp);
 			m_pDoc->listUpdate(pTmp);
 
 			// scan through all the lists and update child lists if connected to this item
 
-			PL_StruxDocHandle pItem =  (PL_StruxDocHandle) m_pItems.getNthItem(i);
+			PL_StruxDocHandle pItem = static_cast<PL_StruxDocHandle>(m_pItems.getNthItem(i));
 			for(j=0; j<numlists; j++)
 			{
 				fl_AutoNum * pAuto = m_pDoc->getNthList(j);
@@ -1067,12 +1068,12 @@ bool fl_AutoNum::isContainedByList(PL_StruxDocHandle pItem)
 	UT_uint32 no_items = m_pItems.getItemCount();
 	if(no_items == 0)
 		return false;
-	sdh = ( PL_StruxDocHandle) m_pItems.getFirstItem();
+	sdh = static_cast<PL_StruxDocHandle>(m_pItems.getFirstItem());
 	bret = m_pDoc->getPrevStruxOfType(sdh,PTX_Block, &sdh_prev);
 	if(bret == false)
 		sdh_prev = sdh;
 	pos_prev = m_pDoc->getStruxPosition(sdh_prev);
-	sdh = ( PL_StruxDocHandle) m_pItems.getNthItem(no_items-1);
+	sdh = static_cast<PL_StruxDocHandle>(m_pItems.getNthItem(no_items-1));
 	bret = m_pDoc->getNextStruxOfType(sdh,PTX_Block, &sdh_next);
 	if(bret == false)
 		sdh_next = sdh;
@@ -1087,17 +1088,17 @@ bool fl_AutoNum::isContainedByList(PL_StruxDocHandle pItem)
 PL_StruxDocHandle fl_AutoNum::getNthBlock( UT_uint32 list_num)
 {
 	if(list_num <0 || list_num >= m_pItems.getItemCount())
-		return (PL_StruxDocHandle) NULL;
+		return static_cast<PL_StruxDocHandle>(NULL);
 	else
-		return (PL_StruxDocHandle) m_pItems.getNthItem(list_num);
+		return static_cast<PL_StruxDocHandle>(m_pItems.getNthItem(list_num));
 }
 
 PL_StruxDocHandle fl_AutoNum::getPrevInList( PL_StruxDocHandle pItem)
 {
-	UT_sint32 itemloc = m_pItems.findItem((void *) pItem);
+	UT_sint32 itemloc = m_pItems.findItem(const_cast<void *>(pItem));
 	if (itemloc == -1 || itemloc == 0)
 		return NULL;
-	return (PL_StruxDocHandle) m_pItems.getNthItem( (UT_uint32) itemloc - 1);
+	return static_cast<PL_StruxDocHandle>(m_pItems.getNthItem( static_cast<UT_uint32>(itemloc) - 1));
 }
 
 inline UT_uint32 fl_AutoNum::_getLevelValue(fl_AutoNum * pAutoNum)
@@ -1199,10 +1200,10 @@ char *  fl_AutoNum::dec2roman(UT_sint32 value, bool lower)
 		len = roman.size();
 		while (--len >= 0)
 		{
-			UT_sint32 r = (UT_sint32) roman[len];
+			UT_sint32 r = static_cast<UT_sint32>(roman[len]);
 			if( (r >= (UT_sint32) 'A') && (r <= (UT_sint32) 'Z'))
 				r = r + 32;
-			rmn[len] = (char) r;
+			rmn[len] = static_cast<char>(r);
 		}
 	}
 
@@ -1221,7 +1222,7 @@ char * fl_AutoNum::dec2ascii(UT_sint32 value, UT_uint32 offset)
 	// For now, we do this like Word. A preference would be nice.
 	for (i = 0; i <= count; i++)
 	{
-		ascii[i] = (char)(ndx + offset);
+		ascii[i] = static_cast<char>(ndx + offset);
 	}
 	ascii[i] = '\0';
 
@@ -1298,30 +1299,30 @@ const char ** fl_AutoNum::getAttributes(void)
 	UT_Vector va;
 
 	sprintf(szID, "%i", m_iID);
-	va.addItem( (void *) "id"); va.addItem( (void *) szID);
+	va.addItem( static_cast<void *>("id")); va.addItem( static_cast<void *>(szID));
 
 	if (m_pParent)
 		sprintf(szPid, "%i", m_pParent->getID());
 	else
 		sprintf(szPid, "0");
-	va.addItem( (void *) "parentid"); va.addItem( (void *) szPid);
+	va.addItem( static_cast<void *>("parentid")); va.addItem( static_cast<void *>(szPid));
 
 	sprintf(szType, "%i", m_List_Type);
-	va.addItem( (void *) "type"); va.addItem(szType);
+	va.addItem( static_cast<void *>("type")); va.addItem(szType);
 
 	sprintf(szStart, "%i", m_iStartValue);
-	va.addItem( (void *) "start-value"); va.addItem(szStart);
+	va.addItem( static_cast<void *>("start-value")); va.addItem(szStart);
 
-	va.addItem( (void *) "list-delim"); va.addItem( (void *) m_pszDelim);
+	va.addItem( static_cast<void *>("list-delim")); va.addItem( static_cast<void *>(m_pszDelim));
 
-	va.addItem( (void *) "list-decimal"); va.addItem( (void *) m_pszDecimal);
+	va.addItem( static_cast<void *>("list-decimal")); va.addItem( static_cast<void *>(m_pszDecimal));
 
 	UT_uint32 counta = va.getItemCount() + 1;
 	UT_uint32 i;
-	const char ** attribs = (const char **) UT_calloc(counta, sizeof(char *));
+	const char ** attribs = static_cast<const char **>(UT_calloc(counta, sizeof(char *)));
 	for (i = 0; i < va.getItemCount(); i++)
 	{
-		attribs[i] = (const char *) va[i];
+		attribs[i] = static_cast<const char *>(va[i]);
 	}
 	return attribs;
 }

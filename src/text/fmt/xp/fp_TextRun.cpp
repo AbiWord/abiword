@@ -95,8 +95,8 @@ fp_TextRun::fp_TextRun(fl_BlockLayout* pBL,
 
 	if(!s_pPrefsTimer)
 	{
-		XAP_App::getApp()->getPrefsValueBool((XML_Char*)XAP_PREF_KEY_UseContextGlyphs, &s_bUseContextGlyphs);
-		XAP_App::getApp()->getPrefsValueBool((XML_Char*)XAP_PREF_KEY_SaveContextGlyphs, &s_bSaveContextGlyphs);
+		XAP_App::getApp()->getPrefsValueBool(static_cast<XML_Char*>(XAP_PREF_KEY_UseContextGlyphs), &s_bUseContextGlyphs);
+		XAP_App::getApp()->getPrefsValueBool(static_cast<XML_Char*>(XAP_PREF_KEY_SaveContextGlyphs), &s_bSaveContextGlyphs);
 		s_pPrefsTimer = UT_Timer::static_constructor(_refreshPrefs, NULL);
 		if(s_pPrefsTimer)
 			s_pPrefsTimer->set(PREFS_REFRESH_MSCS);
@@ -162,7 +162,7 @@ void fp_TextRun::_lookupProperties(const PP_AttrProp * pSpanAP,
 
 	PD_Document * pDoc = getBlock()->getDocument();
 
-	const PP_PropertyTypeColor *p_color = (const PP_PropertyTypeColor *)PP_evalPropertyType("color",pSpanAP,pBlockAP,pSectionAP, Property_type_color, pDoc, true);
+	const PP_PropertyTypeColor *p_color = static_cast<const PP_PropertyTypeColor *>(PP_evalPropertyType("color",pSpanAP,pBlockAP,pSectionAP, Property_type_color, pDoc, true));
 	UT_ASSERT(p_color);
 	_setColorFG(p_color->getColor());
 
@@ -170,7 +170,7 @@ void fp_TextRun::_lookupProperties(const PP_AttrProp * pSpanAP,
 	if(pSpanAP && pSpanAP->getAttribute(PT_STYLE_ATTRIBUTE_NAME, pszStyle))
 	{
 		PD_Style *pStyle = NULL;
-		pDoc->getStyle((const char*) pszStyle, &pStyle);
+		pDoc->getStyle(static_cast<const char*>(pszStyle), &pStyle);
 		if(pStyle) pStyle->used(1);
 	}
 
@@ -309,7 +309,7 @@ void fp_TextRun::_lookupProperties(const PP_AttrProp * pSpanAP,
 	if(pszOldLanguage && m_pLanguage != pszOldLanguage)
 	{
 
-		getBlock()->getDocLayout()->queueBlockForBackgroundCheck((UT_uint32) FL_DocLayout::bgcrSpelling, getBlock());
+		getBlock()->getDocLayout()->queueBlockForBackgroundCheck(static_cast<UT_uint32>(FL_DocLayout::bgcrSpelling), getBlock());
 		bChanged = true;
 	}
 
@@ -359,7 +359,7 @@ void fp_TextRun::_lookupProperties(const PP_AttrProp * pSpanAP,
 
 	if(bChanged)
 		clearScreen();
-	xxx_UT_DEBUGMSG(("fp_TextRun::lookupProperties: bChanged %d\n", (UT_uint32) bChanged));
+	xxx_UT_DEBUGMSG(("fp_TextRun::lookupProperties: bChanged %d\n", static_cast<UT_uint32>(bChanged)));
 }
 
 #if DEBUG
@@ -371,7 +371,7 @@ void fp_TextRun::printText(void)
 	UT_String sTmp;
 	for(i=0; i< len;i++)
 	{
-		sTmp += (char) m_pSpanBuff[i];
+		sTmp += static_cast<char>(m_pSpanBuff[i]);
 	}
 	UT_DEBUGMSG(("Run offset %d len %d Text |%s| \n",offset,len,sTmp.c_str()));
 }
@@ -862,7 +862,7 @@ void fp_TextRun::mergeWithNext(void)
 	UT_ASSERT(getLine());
 	UT_ASSERT(getNext()->getLine());
 
-	fp_TextRun* pNext = (fp_TextRun*) getNext();
+	fp_TextRun* pNext = static_cast<fp_TextRun*>(getNext());
 
 	UT_ASSERT(pNext->getBlockOffset() == (getBlockOffset() + getLength()));
 #if !defined(WITH_PANGO) && defined(USE_LAYOUT_UNITS)
@@ -1205,9 +1205,9 @@ UT_sint32 fp_TextRun::simpleRecalcWidth(UT_sint32 iLength)
 	}
 	UT_ASSERT(iLength >= 0);
 
-	UT_ASSERT((UT_uint32)iLength <= getLength());
-	if((UT_uint32)iLength > getLength())
-		iLength = (UT_sint32)getLength();
+	UT_ASSERT(static_cast<UT_uint32>(iLength) <= getLength());
+	if(static_cast<UT_uint32>(iLength) > getLength())
+		iLength = static_cast<UT_sint32>(getLength());
 
 	if (iLength == 0)
 		return 0;
@@ -1256,7 +1256,7 @@ UT_sint32 fp_TextRun::simpleRecalcWidth(UT_sint32 iLength)
 			// with PANGO this is taken care of by _refreshDrawBuffer()
 			if(s_bUseContextGlyphs)
 			{
-				getGR()->measureString(m_pSpanBuff + i, 0, 1, (UT_GrowBufElement*)pCharWidths + getBlockOffset() + i);
+				getGR()->measureString(m_pSpanBuff + i, 0, 1, static_cast<UT_GrowBufElement*>(pCharWidths) + getBlockOffset() + i);
 			}
 #endif
 			UT_uint32 iCW = pCharWidths[i + getBlockOffset()] > 0 ? pCharWidths[i + getBlockOffset()] : 0;
@@ -1344,7 +1344,7 @@ bool fp_TextRun::recalcWidth(void)
 
 			if(s_bUseContextGlyphs)
 			{
-				getGR()->measureString(m_pSpanBuff + j, 0, 1, (UT_GrowBufElement*)pCharWidthsLayout + k);
+				getGR()->measureString(m_pSpanBuff + j, 0, 1, static_cast<UT_GrowBufElement*>(pCharWidthsLayout) + k);
 			}
 			UT_uint32 iCW = pCharWidthsLayout[k] > 0 ? pCharWidthsLayout[k] : 0;
 			_setWidthLayoutUnits(getWidthInLayoutUnits() + iCW);
@@ -1364,7 +1364,7 @@ bool fp_TextRun::recalcWidth(void)
 
 			if(s_bUseContextGlyphs)
 			{
-				getGR()->measureString(m_pSpanBuff + j, 0, 1, (UT_GrowBufElement*)pCharWidthsDisplay + k);
+				getGR()->measureString(m_pSpanBuff + j, 0, 1, static_cast<UT_GrowBufElement*>(pCharWidthsDisplay) + k);
 			}
 			UT_uint32 iCW = pCharWidthsDisplay[k] > 0 ? pCharWidthsDisplay[k] : 0;
 			_setWidth(getWidth() + iCW);
@@ -2026,7 +2026,7 @@ inline UT_UCSChar fp_TextRun::_getContextGlyph(const UT_UCSChar * pSpan,
 										UT_UCSChar *prev,
 										UT_UCSChar *after) const
 {
-	UT_sint32 iStop2 = (UT_sint32) CONTEXT_BUFF_SIZE < (UT_sint32)(len - 1) ? CONTEXT_BUFF_SIZE : len - 1;
+	UT_sint32 iStop2 = static_cast<UT_sint32>(CONTEXT_BUFF_SIZE) < static_cast<UT_sint32>(len - 1) ? CONTEXT_BUFF_SIZE : len - 1;
 	UT_contextGlyph cg;
 	UT_UCSChar next[CONTEXT_BUFF_SIZE + 1];
 
@@ -2041,7 +2041,7 @@ inline UT_UCSChar fp_TextRun::_getContextGlyph(const UT_UCSChar * pSpan,
 	UT_sint32 i;
 	for(i=0; i < iStop2; i++)
 		next[i] = pSpan[i+offset+1];
-	for(UT_sint32 j = 0; after[j]!=0 && (UT_uint32)i < CONTEXT_BUFF_SIZE; i++,j++)
+	for(UT_sint32 j = 0; after[j]!=0 && static_cast<UT_uint32>(i) < CONTEXT_BUFF_SIZE; i++,j++)
 		next[i] = after[j];
 	next[i] = 0;
 
@@ -2100,7 +2100,7 @@ inline void fp_TextRun::_getContext(const UT_UCSChar *pSpan,
 				 prev[0],prev[1],getBlockOffset(),offset));
 
 	// how many characters at most can we retrieve?
-	UT_sint32 iStop = (UT_sint32) CONTEXT_BUFF_SIZE < (UT_sint32)(lenSpan - len) ? CONTEXT_BUFF_SIZE : lenSpan - len;
+	UT_sint32 iStop = static_cast<UT_sint32>(CONTEXT_BUFF_SIZE) < static_cast<UT_sint32>(lenSpan - len) ? CONTEXT_BUFF_SIZE : lenSpan - len;
 	UT_sint32 i;
 	// first, getting anything that might be in the span buffer
 	for(i=0; i< iStop;i++)
@@ -2111,7 +2111,7 @@ inline void fp_TextRun::_getContext(const UT_UCSChar *pSpan,
 
 	while(i < CONTEXT_BUFF_SIZE && getBlock()->getSpanPtr(offset + UT_MIN(len,lenSpan) + i, &pNext, &lenAfter))
 	{
-		for(UT_uint32 j = 0; j < lenAfter && (UT_uint32)i < CONTEXT_BUFF_SIZE; j++,i++)
+		for(UT_uint32 j = 0; j < lenAfter && static_cast<UT_uint32>(i) < CONTEXT_BUFF_SIZE; j++,i++)
 			after[i] = pNext[j];
 	}
 
@@ -2260,7 +2260,7 @@ void fp_TextRun::shape()
 
 		while(pListItem)
 		{
-			PangoItem * pItem = (PangoItem*) pListItem->data;
+			PangoItem * pItem = static_cast<PangoItem*>(pListItem->data);
 			PangoGlyphString * pGString = pango_glyph_string_new();
 
 			pango_shape(wholeStringUtf8.utf8_str(),
@@ -2269,7 +2269,7 @@ void fp_TextRun::shape()
 						&pItem->analysis,
 						pGString);
 
-			m_pGlyphString = g_list_append((gpointer) pGString);
+			m_pGlyphString = g_list_append(static_cast<gpointer>(pGString));
 			pListItem = pListItem->next;
 		}
 
@@ -2297,8 +2297,8 @@ void fp_TextRun::shape()
 		{
 			UT_ASSERT(pListItem);
 
-			PangoGlyphString * pGString = (PangoGlyphString *)pListGlyph->data;
-			PangoItem *        pItem    = (PangoItem *)pListItem->data;
+			PangoGlyphString * pGString = static_cast<PangoGlyphString *>(pListGlyph->data);
+			PangoItem *        pItem    = static_cast<PangoItem *>(pListItem->data);
 
 			pango_glyph_string_get_logical_widths(pGString,
 											  text,
@@ -2539,7 +2539,7 @@ void fp_TextRun::_drawSquiggle(UT_sint32 top, UT_sint32 left, UT_sint32 right)
 			structure.	They're all x, y but different widths.	Bummer.
 	*/
 	UT_Point * points, scratchpoints[100];
-	if ((unsigned)nPoints < (sizeof(scratchpoints)/sizeof(scratchpoints[0])))
+	if (static_cast<unsigned>(nPoints) < (sizeof(scratchpoints)/sizeof(scratchpoints[0])))
 	{
 		points = scratchpoints;
 	}
@@ -2723,10 +2723,10 @@ bool	fp_TextRun::doesContainNonBlankData(void) const
 			//	break; //no span found
 			if(lenSpan <= 0)
 			{
-				fp_Line * pLine = (fp_Line *) getBlock()->getFirstContainer();
+				fp_Line * pLine = static_cast<fp_Line *>(getBlock()->getFirstContainer());
 				while(pLine)
 				{
-					pLine = (fp_Line *) pLine->getNext();
+					pLine = static_cast<fp_Line *>(pLine->getNext());
 				}
 			}
 			//UT_ASSERT(lenSpan>0);
@@ -3099,7 +3099,7 @@ void fp_TextRun::setDirection(FriBidiCharType dir, FriBidiCharType dirOverride)
 			UT_UCSChar firstChar;
 			getCharacter(0, firstChar);
 
-			_setDirection(fribidi_get_type((FriBidiChar)firstChar));
+			_setDirection(fribidi_get_type(static_cast<FriBidiChar>(firstChar)));
 		}
 	}
 	else //meaningfull value received
@@ -3151,8 +3151,8 @@ void fp_TextRun::setDirection(FriBidiCharType dir, FriBidiCharType dirOverride)
 
 void fp_TextRun::_refreshPrefs(UT_Worker * /*pWorker*/)
 {
-	XAP_App::getApp()->getPrefsValueBool((XML_Char*)XAP_PREF_KEY_UseContextGlyphs, &s_bUseContextGlyphs);
-	XAP_App::getApp()->getPrefsValueBool((XML_Char*)XAP_PREF_KEY_SaveContextGlyphs, &s_bSaveContextGlyphs);
+	XAP_App::getApp()->getPrefsValueBool(static_cast<XML_Char*>(XAP_PREF_KEY_UseContextGlyphs), &s_bUseContextGlyphs);
+	XAP_App::getApp()->getPrefsValueBool(static_cast<XML_Char*>(XAP_PREF_KEY_SaveContextGlyphs), &s_bSaveContextGlyphs);
 	xxx_UT_DEBUGMSG(("fp_TextRun::_refreshPrefs: new values %d, %d\n", s_bUseContextGlyphs, s_bSaveContextGlyphs));
 }
 
@@ -3178,15 +3178,15 @@ void fp_TextRun::setDirOverride(FriBidiCharType dir)
 	const XML_Char rtl[] = "rtl";
 	const XML_Char ltr[] = "ltr";
 
-	prop[0] = (XML_Char*) &direction;
+	prop[0] = static_cast<const XML_Char*>(&direction[0]);
 
 	switch(dir)
 	{
 		case FRIBIDI_TYPE_LTR:
-			prop[1] = (XML_Char*) &ltr;
+			prop[1] = static_cast<const XML_Char*>(&ltr[0]);
 			break;
 		case FRIBIDI_TYPE_RTL:
-			prop[1] = (XML_Char*) &rtl;
+			prop[1] = static_cast<const XML_Char*>(&rtl[0]);
 			break;
 		default:
 			UT_ASSERT(UT_SHOULD_NOT_HAPPEN);
@@ -3221,17 +3221,17 @@ void fp_TextRun::breakNeighborsAtDirBoundaries()
 
 	while(pPrev)
 	{
-		getBlock()->getSpanPtr((UT_uint32) curOffset, &pSpan, &lenSpan);
-		if ( pSpan == (UT_UCSChar *)NULL || !lenSpan )
+		getBlock()->getSpanPtr(static_cast<UT_uint32>(curOffset), &pSpan, &lenSpan);
+		if ( pSpan == static_cast<UT_UCSChar *>(NULL) || !lenSpan )
 			break;
-		iPrevType = fribidi_get_type((FriBidiChar)pSpan[0]);
+		iPrevType = fribidi_get_type(static_cast<FriBidiChar>(pSpan[0]));
 		iType = iPrevType;
 
 		while(curOffset > pPrev->getBlockOffset() && !FRIBIDI_IS_STRONG(iType))
 		{
 			curOffset--;
-			getBlock()->getSpanPtr((UT_uint32) curOffset, &pSpan, &lenSpan);
-			iType = fribidi_get_type((FriBidiChar)pSpan[0]);
+			getBlock()->getSpanPtr(static_cast<UT_uint32>(curOffset), &pSpan, &lenSpan);
+			iType = fribidi_get_type(static_cast<FriBidiChar>(pSpan[0]));
 			if(iType != iPrevType)
 			{
 				pPrev->split(curOffset+1);
@@ -3275,10 +3275,10 @@ void fp_TextRun::breakNeighborsAtDirBoundaries()
 	iType = FRIBIDI_TYPE_UNSET;
 	while(pNext)
 	{
-		getBlock()->getSpanPtr((UT_uint32) curOffset, &pSpan, &lenSpan);
-		if ( pSpan == (UT_UCSChar *)NULL || !lenSpan )
+		getBlock()->getSpanPtr(static_cast<UT_uint32>(curOffset), &pSpan, &lenSpan);
+		if ( pSpan == static_cast<UT_UCSChar *>(NULL) || !lenSpan )
 			break;
-		iPrevType = fribidi_get_type((FriBidiChar)pSpan[0]);
+		iPrevType = fribidi_get_type(static_cast<FriBidiChar>(pSpan[0]));
 		bool bDirSet = false;
 		spanOffset = 0;
 		while(curOffset + spanOffset < pNext->getBlockOffset() + pNext->getLength() - 1 && !FRIBIDI_IS_STRONG(iType))
@@ -3288,9 +3288,9 @@ void fp_TextRun::breakNeighborsAtDirBoundaries()
 			{
 				curOffset += spanOffset;
 				spanOffset = 0;
-				getBlock()->getSpanPtr((UT_uint32) curOffset, &pSpan, &lenSpan);
+				getBlock()->getSpanPtr(static_cast<UT_uint32>(curOffset), &pSpan, &lenSpan);
 			}
-			iType = fribidi_get_type((FriBidiChar)pSpan[spanOffset]);
+			iType = fribidi_get_type(static_cast<FriBidiChar>(pSpan[spanOffset]));
 			if(iType != iPrevType)
 			{
 				pNext->split(curOffset + spanOffset);
@@ -3350,8 +3350,8 @@ void fp_TextRun::breakMeAtDirBoundaries(FriBidiCharType iNewOverride)
 	UT_uint32 lenSpan = 0;
 	UT_uint32 spanOffset = 0;
 	FriBidiCharType iPrevType, iType = FRIBIDI_TYPE_UNSET;
-	getBlock()->getSpanPtr((UT_uint32) currOffset, &pSpan, &lenSpan);
-	iPrevType = iType = fribidi_get_type((FriBidiChar)pSpan[spanOffset]);
+	getBlock()->getSpanPtr(static_cast<UT_uint32>(currOffset), &pSpan, &lenSpan);
+	iPrevType = iType = fribidi_get_type(static_cast<FriBidiChar>(pSpan[spanOffset]));
 
 	while((currOffset + spanOffset) < (getBlockOffset() + iLen))
 	{
@@ -3362,10 +3362,10 @@ void fp_TextRun::breakMeAtDirBoundaries(FriBidiCharType iNewOverride)
 			{
 				currOffset += spanOffset;
 				spanOffset = 0;
-				getBlock()->getSpanPtr((UT_uint32) currOffset, &pSpan, &lenSpan);
+				getBlock()->getSpanPtr(static_cast<UT_uint32>(currOffset), &pSpan, &lenSpan);
 			}
 
-			iType = fribidi_get_type((FriBidiChar)pSpan[spanOffset]);
+			iType = fribidi_get_type(static_cast<FriBidiChar>(pSpan[spanOffset]));
 		}
 
 		// if we reached the end of the origianl run, then stop

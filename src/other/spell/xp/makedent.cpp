@@ -38,7 +38,13 @@
 
 /*
  * $Log$
+ * Revision 1.3  2003/02/12 02:10:38  hippietrail
+ * C casts -> C++ casts
+ * Improved const-correctness due to changing casts
+ * Fixed some warnings
+ *
  * Revision 1.2  2003/01/29 05:50:12  hippietrail
+ *
  * Fixed my mess in EncodingManager.
  * Changed many C casts to C++ casts.
  *
@@ -520,7 +526,7 @@ ISpellChecker::stringcharlen (char *bufp, int canonical)
 		else
 			lowstringno = stringno + 1;
 	}
-    m_laststringch = -1;
+    m_laststringch = static_cast<unsigned int>(-1);
     return 0;			/* Not a string character */
 }
 

@@ -54,7 +54,7 @@ FG_Graphic* FG_GraphicVector::createFromChangeRecord(const fl_Layout* pFL,
 		bool bFoundDataID = pFG->m_pSpanAP->getAttribute("dataid", pFG->m_pszDataID);
 		if (bFoundDataID && pFG->m_pszDataID)
 		{
-			bFoundDataItem = pDoc->getDataItemDataByName((char*)pFG->m_pszDataID, (const UT_ByteBuf **)&pFG->m_pbbSVG, NULL, NULL);
+			bFoundDataItem = pDoc->getDataItemDataByName(static_cast<const char*>(pFG->m_pszDataID), reinterpret_cast<const UT_ByteBuf **>(&pFG->m_pbbSVG), NULL, NULL);
 		}
 	}
 
@@ -162,8 +162,8 @@ GR_Image* FG_GraphicVector::generateImage(GR_Graphics* pG,const PP_AttrProp * pS
 	//#endif
 	if (bFoundWidthProperty && bFoundHeightProperty && pszWidth && pszHeight && pszWidth[0] && pszHeight[0])
 	{
-		iDisplayWidth = pG->convertDimension((char*)pszWidth);
-		iDisplayHeight = pG->convertDimension((char*)pszHeight);
+		iDisplayWidth = pG->convertDimension(static_cast<const char*>(pszWidth));
+		iDisplayHeight = pG->convertDimension(static_cast<const char*>(pszHeight));
 #if !defined(WITH_PANGO) && defined(USE_LAYOUT_UNITS)
 		iLayoutWidth = UT_convertToLayoutUnits(pszWidth);
 		iLayoutHeight = UT_convertToLayoutUnits(pszHeight);
@@ -173,11 +173,11 @@ GR_Image* FG_GraphicVector::generateImage(GR_Graphics* pG,const PP_AttrProp * pS
 	{
 		UT_SVG_getDimensions(m_pbbSVG, pG, iDisplayWidth, iDisplayHeight, iLayoutWidth, iLayoutHeight);
 	}
-UT_DEBUGMSG(("SVG image: width = %d, height = %d\n",(int)iDisplayWidth,(int)iDisplayHeight));
+UT_DEBUGMSG(("SVG image: width = %d, height = %d\n",static_cast<int>(iDisplayWidth),static_cast<int>(iDisplayHeight)));
 	UT_ASSERT(iDisplayWidth > 0);
 	UT_ASSERT(iDisplayHeight > 0);
 
-	GR_Image *pImage = pG->createNewImage((char*)m_pszDataID, m_pbbSVG, iDisplayWidth, iDisplayHeight, GR_Image::GRT_Vector);
+	GR_Image *pImage = pG->createNewImage(static_cast<const char*>(m_pszDataID), m_pbbSVG, iDisplayWidth, iDisplayHeight, GR_Image::GRT_Vector);
 #if !defined(WITH_PANGO) && defined(USE_LAYOUT_UNITS)
 	//TF#TODO
 	pImage->setLayoutSize(iLayoutWidth, iLayoutHeight);
@@ -206,9 +206,9 @@ UT_Error FG_GraphicVector::insertIntoDocument(PD_Document* pDoc, double fDPI,
 	UT_String szProps;
 
 	szProps += "width:";
-	szProps += UT_convertInchesToDimensionString(DIM_IN, (double)m_iWidth/fDPI, "3.2");
+	szProps += UT_convertInchesToDimensionString(DIM_IN, static_cast<double>(m_iWidth)/fDPI, "3.2");
 	szProps += "; height:";
-	szProps += UT_convertInchesToDimensionString(DIM_IN, (double)m_iHeight/fDPI, "3.2");
+	szProps += UT_convertInchesToDimensionString(DIM_IN, static_cast<double>(m_iHeight)/fDPI, "3.2");
 
 #ifndef __MRC__
 	const XML_Char*	attributes[] = {

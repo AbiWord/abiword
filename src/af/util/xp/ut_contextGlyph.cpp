@@ -886,7 +886,7 @@ void UT_contextGlyph::renderString(const UT_UCSChar * src,
 
 	const UT_UCSChar * src_ptr = src;
 	const UT_UCSChar * next_ptr;
-	const UT_UCSChar * prev_ptr;
+	const UT_UCSChar * prev_ptr = 0;	// initialize to prevent compiler warning
 	UT_UCSChar       * dst_ptr = dest;
 	UT_UCSChar         prev_tmp[2] = {0,0};
 	UT_UCSChar         next_tmp[CONTEXT_BUFF_SIZE + 1] = {0,0,0,0,0,0};
