@@ -30,7 +30,7 @@
 #include "ut_unixTimer.h"
 
 UT_Mutex UT_UNIXTimer::s_timerMutex;
-UT_Map UT_UNIXTimer::s_timerIds;
+NSMutableDictionary* UT_UNIXTimer::s_timerIds = nil;;
 int UT_UNIXTimer::s_lastTimerId = 1;
 
 @interface XAP_TimerInvocation: NSInvocation {
@@ -48,7 +48,7 @@ int UT_UNIXTimer::s_lastTimerId = 1;
   XAP_TimerInvocation * obj = [XAP_TimerInvocation alloc];
   obj->proc = pr;
   obj->param = p; 
-  return obj;
+  return [obj autorelease];
 }
 
 -(void)invoke
@@ -80,11 +80,12 @@ UT_uint32 XAP_newCocoaTimer (UT_uint32 time, int (*proc)(void *), void *p)
 	{
 		UT_MutexAcquirer acq(UT_UNIXTimer::s_timerMutex);
 		tid = UT_UNIXTimer::s_lastTimerId;
-		UT_UNIXTimer::s_timerIds.insert((const void *)UT_UNIXTimer::s_lastTimerId++, 
-				  (const void *)timer);
+		if (UT_UNIXTimer::s_timerIds == nil) {
+			UT_UNIXTimer::s_timerIds = [[NSMutableDictionary alloc] init];
+		}
+		[UT_UNIXTimer::s_timerIds setObject:timer forKey:[NSNumber numberWithInt:UT_UNIXTimer::s_lastTimerId++]];
 	}
 
-	[timer retain];
 	return tid;
 }
 
@@ -95,14 +96,13 @@ void XAP_stopCocoaTimer (UT_uint32 timerId)
 	NSTimer *pTimer;
 	{
 		UT_MutexAcquirer acq (UT_UNIXTimer::s_timerMutex);
-		const void * p = (const void *)timerId;
-		UT_Pair *pr = (UT_Pair*)UT_UNIXTimer::s_timerIds.find(p).value();
-		pTimer = (NSTimer*)pr->second();
-		UT_UNIXTimer::s_timerIds.erase(pr);
+		NSNumber* key = [NSNumber numberWithInt:timerId];
+		pTimer = [[UT_UNIXTimer::s_timerIds objectForKey:key] retain];
+		[UT_UNIXTimer::s_timerIds removeObjectForKey:key];
 	}
 	
 	[pTimer invalidate];
-	[*pTimer release];
+	[pTimer release];
 }
 
 

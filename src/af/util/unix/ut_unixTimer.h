@@ -26,7 +26,9 @@
 
 #ifdef XP_TARGET_COCOA
 # include "ut_map.h"
+typedef struct NSMutableDictionary;
 #endif
+
 
 class UT_UNIXTimer : public UT_Timer
 {
@@ -43,7 +45,7 @@ private:
 #ifdef XP_TARGET_COCOA
 	/* these are here for Cocoa timer */
 	static UT_Mutex s_timerMutex;
-	static UT_Map s_timerIds;
+	static NSMutableDictionary* s_timerIds;
 	static int s_lastTimerId;
 
 	friend void XAP_stopCocoaTimer (UT_uint32 timerId);

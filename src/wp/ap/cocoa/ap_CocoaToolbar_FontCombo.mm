@@ -85,6 +85,9 @@ bool AP_CocoaToolbar_FontCombo::populate(void)
 		if (*fName != '.') {
 			m_vecContents.addItem((void *)(fName));
 		}
+		else {
+			FREEP(fName);
+		}
 	}
 	m_vecContents.qsort(compareStrings);
 	

@@ -237,14 +237,18 @@ bool EV_EditBindingMap::setBinding(EV_EditBits eb, EV_EditBinding * peb)
 		{
 			m_pebMT[n_emb] = new ev_EB_MouseTable();
 			p = m_pebMT[n_emb];
-			if (!p)
+			if (!p) {
+				delete peb;
 				return false;
+			}
 		}
 		UT_uint32 n_emo = EV_EMO_ToNumber(eb)-1;
 		UT_uint32 n_ems = EV_EMS_ToNumber(eb);
 		UT_uint32 n_emc = EV_EMC_ToNumber(eb)-1;
-		if (p->m_peb[n_emo][n_ems][n_emc])
+		if (p->m_peb[n_emo][n_ems][n_emc]) {
+			delete peb;
 			return false;
+		}
 		p->m_peb[n_emo][n_ems][n_emc] = peb;
 		return true;
 	}
@@ -255,13 +259,17 @@ bool EV_EditBindingMap::setBinding(EV_EditBits eb, EV_EditBinding * peb)
 			if (!m_pebNVK)
 			{
 				m_pebNVK = new ev_EB_NVK_Table();
-				if (!m_pebNVK)
+				if (!m_pebNVK) {
+					delete peb;
 					return false;
+				}
 			}
 			UT_uint32 n_nvk = EV_NVK_ToNumber(eb);
 			UT_uint32 n_ems = EV_EMS_ToNumber(eb);
-			if (m_pebNVK->m_peb[n_nvk][n_ems])
+			if (m_pebNVK->m_peb[n_nvk][n_ems]) {
+				delete peb;
 				return false;
+			}
 			m_pebNVK->m_peb[n_nvk][n_ems] = peb;
 			return true;
 		}
@@ -276,12 +284,15 @@ bool EV_EditBindingMap::setBinding(EV_EditBits eb, EV_EditBinding * peb)
 			UT_uint32 n_evk = EV_EVK_ToNumber(eb);
 			UT_ASSERT(n_evk < 256);		// TODO see note [1] above.
 			UT_uint32 n_ems = EV_EMS_ToNumberNoShift(eb);
-			if (m_pebChar->m_peb[n_evk][n_ems])
+			if (m_pebChar->m_peb[n_evk][n_ems]) {
+				delete peb;
 				return false;
+			}
 			m_pebChar->m_peb[n_evk][n_ems] = peb;
 			return true;
 		}
 	}
+	delete peb;
 	UT_ASSERT(0);
 	return 0;
 }

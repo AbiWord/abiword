@@ -471,6 +471,8 @@ void  XAP_CocoaEncodingManager::initialize()
 		char* lang,*terr,*cs,*mod;
 		int mask = explode_locale (locname,&lang,&terr,&cs,&mod);
 		LanguageISOName = lang;
+		g_free(mod);	// unneeded
+		mod = NULL;
 		if (mask & COMPONENT_TERRITORY)
 		{
 			LanguageISOTerritory = terr+1;/*yes, +1*/
@@ -519,7 +521,8 @@ void  XAP_CocoaEncodingManager::initialize()
 				
 	    		char* my_lang,*my_terr,*my_cs,*my_mod;
     			int my_mask = explode_locale (my_locname,&my_lang,&my_terr,&my_cs,&my_mod);
-				
+				g_free (my_mod);	// unneeded
+				my_mod = NULL;
 				if (my_mask & COMPONENT_CODESET)
 				{
 					Native8BitEncodingName = my_cs+1;

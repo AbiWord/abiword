@@ -703,8 +703,10 @@ void AP_CocoaApp::loadAllPlugins ()
 			struct dirent ** namelist = 0;
 			int n = scandir (support_dir[i].c_str(), &namelist, s_Abi_only, alphasort);
 			UT_DEBUGMSG(("DOM: found %d plug-ins in %s\n", n, support_dir[i].c_str()));
-			if (n == 0) continue;
-
+			if (n == 0) {
+				FREEP (namelist);
+				continue;
+			}
 			UT_String plugin_path;
 			while (n--)
 				{
