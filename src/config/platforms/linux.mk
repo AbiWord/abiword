@@ -42,13 +42,21 @@ DLL_SUFFIX	= so
 AR		= ar cr $@
 
 # Compiler flags
-# TODO evaluate the full set of compiler options.
+# NOTE:  Using both "-Wall" and "-W" turn on every single darn message
+# NOTE:  GCC can throw, and it turns quiet compiles into raging rivers of
+# NOTE:  warnings.  -Wall includes the very useful warnings, -W includes
+# NOTE:  more stylistic warnings.  -pedantic just gets really picky about
+# NOTE:  ANSI things.
 ifdef ABI_OPT_DEBUG
-OPTIMIZER	= -g -Wall -Wshadow
+OPTIMIZER	= -g -Wall -W -ansi -pedantic
 DEFINES		= -DDEBUG -UNDEBUG
 OBJ_DIR_SFX	= DBG
 else
-OPTIMIZER	= -O2 -Wall -Wshadow
+# NOTE:  In some instances, GCC can only know about truly unused variables
+# NOTE:  when optimizations are enabled in the compilation.  For this reason,
+# NOTE:  building with optimizations may reveal further warnings not 
+# NOTE:  visible without any -O[number] option.
+OPTIMIZER	= -O2 -Wall -W -ansi -pedantic
 DEFINES		=
 OBJ_DIR_SFX	= OBJ
 endif
@@ -58,7 +66,7 @@ OS_INCLUDES		=
 G++INCLUDES		= -I/usr/include/g++
 
 # Compiler flags
-PLATFORM_FLAGS		= -ansi -Wall -pipe -DLINUX -Dlinux
+PLATFORM_FLAGS		= -pipe -DLINUX -Dlinux
 PORT_FLAGS		= -D_POSIX_SOURCE -D_BSD_SOURCE -DHAVE_STRERROR -D_XOPEN_SOURCE -D__USE_XOPEN_EXTENDED
 OS_CFLAGS		= $(DSO_CFLAGS) $(PLATFORM_FLAGS) $(PORT_FLAGS)
 
