@@ -1,0 +1,28 @@
+<!-- =====================================================================  -->
+<!-- This file is an AbiWord document.                                      -->
+<!-- AbiWord is a free, Open Source word processor.                         -->
+<!-- You may obtain more information about AbiWord at www.abisource.com     -->
+<!-- You should not edit this file by hand.                                 -->
+<!-- =====================================================================  -->
+
+<!--         Build_ID          = (none) -->
+<!--         Build_Version     = unnumbered -->
+<!--         Build_Options     = LicensedTrademarks:Off Debug:Off -->
+<!--         Build_Target      = /fs/hd0-qnx4/home/thomasf/Ports/abiword/abi/src/wp/../../src/procnto_2.00_x86pc_OBJ/obj -->
+<!--         Build_CompileTime = 11:56:46 -->
+<!--         Build_CompileDate = Jan 10 2000 -->
+
+<abiword version="unnumbered">
+<section>
+<p><c props="font-weight:bold; text-decoration:underline">AbiWord ToDo List:</c></p>
+<p></p>
+<p><c props="font-style:normal; font-weight:normal; text-decoration:none">-Figure out why CNTR keys don't work</c></p>
+<p><c props="font-style:normal; font-weight:normal; text-decoration:none">-Right click menus</c></p>
+<p><c props="font-style:normal; font-weight:normal; text-decoration:none">-Dragging and general ruler events</c></p>
+<p><c props="font-style:normal; font-weight:normal; text-decoration:none">-Dialogs</c></p>
+<p><c props="font-style:normal; font-weight:normal; text-decoration:none">-Proper point sizes</c></p>
+<p><c props="font-style:normal; font-weight:normal; text-decoration:none">-Toolbar toggling proper updating</c></p>
+<p><c props="font-style:normal; font-weight:normal; text-decoration:none">-Toolbar proper ghosting of diaabled items</c></p>
+<p></p>
+</section>
+</abiword>
