@@ -21,6 +21,7 @@
 #define XAP_UNIXDIALOG_ABOUT_H
 
 #include "xap_Dlg_About.h"
+#include "xap_UnixFrame.h"
 #include "gr_UnixGraphics.h"
 #include "gr_UnixImage.h"
 
@@ -45,9 +46,14 @@ public:
 	
  protected:
 
-	GtkWidget * _constructWindow(void);
-	void		_populateWindowData(void);
-	void		_preparePicture(void);
+	GtkWidget *           _constructWindow(void);
+
+	// for easy Gnome overriding
+	virtual GtkWidget *   _constructButtonOK(void);
+	virtual GtkWidget *   _constructButtonURL(void);
+
+	void		      _populateWindowData(void);
+	void		      _preparePicture(void);
 	
 	GtkWidget * m_windowMain;
 	GtkWidget * m_buttonOK;

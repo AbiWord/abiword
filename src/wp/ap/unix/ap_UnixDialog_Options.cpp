@@ -180,22 +180,12 @@ void AP_UnixDialog_Options::event_WindowDelete(void)
                 GTK_SIGNAL_FUNC(s_menu_item_activate),		\
                 (gpointer) this);							\
         } while (0)
-GtkWidget* AP_UnixDialog_Options::_constructWindow ()
-{
-    //////////////////////////////////////////////////////////////////////
-	// BEGIN: glade stuff (interface.c)
 
-	// for the internationalization	
+GtkWidget* AP_UnixDialog_Options::_constructWindowContents ()
+{
 	const XAP_StringSet * pSS = m_pApp->getStringSet();
-	
+
 	GtkWidget *windowOptions;
-	GtkWidget *table2;
-	GtkWidget *hbuttonbox2;
-	GtkWidget *buttonSave;
-	GtkWidget *buttonDefaults;
-	GtkWidget *buttonApply;
-	GtkWidget *buttonOk;
-	GtkWidget *buttonCancel;
 	GtkWidget *notebook1;
 	GtkWidget *tableSpell;
 	GtkWidget *checkbuttonSpellHideErrors;
@@ -238,79 +228,12 @@ GtkWidget* AP_UnixDialog_Options::_constructWindow ()
 	GtkWidget *checkbuttonViewUnprintable;
 	GtkWidget *labelView;
 
-	windowOptions = gtk_window_new (GTK_WINDOW_TOPLEVEL);
-	gtk_object_set_data (GTK_OBJECT (windowOptions), "windowOptions", windowOptions);
-	gtk_window_set_title (GTK_WINDOW (windowOptions),
-		pSS->getValue(AP_STRING_ID_DLG_Options_OptionsTitle) );
-
-	table2 = gtk_table_new (2, 1, FALSE);
-	gtk_widget_ref (table2);
-	gtk_object_set_data_full (GTK_OBJECT (windowOptions), "table2", table2,
-	                          (GtkDestroyNotify) gtk_widget_unref);
-	gtk_widget_show (table2);
-	gtk_container_add (GTK_CONTAINER (windowOptions), table2);
-
-	hbuttonbox2 = gtk_hbutton_box_new ();
-	gtk_widget_ref (hbuttonbox2);
-	gtk_object_set_data_full (GTK_OBJECT (windowOptions), "hbuttonbox2", hbuttonbox2,
-	                          (GtkDestroyNotify) gtk_widget_unref);
-	gtk_widget_show (hbuttonbox2);
-	gtk_table_attach (GTK_TABLE (table2), hbuttonbox2, 0, 1, 1, 2,
-	                  (GtkAttachOptions) (GTK_FILL),
-	                  (GtkAttachOptions) (GTK_FILL), 0, 0);
-	gtk_button_box_set_layout (GTK_BUTTON_BOX (hbuttonbox2), GTK_BUTTONBOX_END);
-	gtk_button_box_set_spacing (GTK_BUTTON_BOX (hbuttonbox2), 10);
-
-	buttonSave = gtk_button_new_with_label ( pSS->getValue(AP_STRING_ID_DLG_Options_Btn_Save) );
-	gtk_widget_ref (buttonSave);
-	gtk_object_set_data_full (GTK_OBJECT (windowOptions), "buttonSave", buttonSave,
-	                          (GtkDestroyNotify) gtk_widget_unref);
-	gtk_widget_show (buttonSave);
-	gtk_container_add (GTK_CONTAINER (hbuttonbox2), buttonSave);
-	GTK_WIDGET_SET_FLAGS (buttonSave, GTK_CAN_DEFAULT);
-
-	buttonApply = gtk_button_new_with_label ( 
-							pSS->getValue(AP_STRING_ID_DLG_Options_Btn_Apply ));
-	gtk_widget_ref (buttonApply);
-	gtk_object_set_data_full (GTK_OBJECT (windowOptions), "buttonApply", buttonApply,
-	                          (GtkDestroyNotify) gtk_widget_unref);
-	gtk_widget_show (buttonApply);
-	gtk_container_add (GTK_CONTAINER (hbuttonbox2), buttonApply);
-	GTK_WIDGET_SET_FLAGS (buttonApply, GTK_CAN_DEFAULT);
-
-	buttonDefaults = gtk_button_new_with_label ( 
-							pSS->getValue(AP_STRING_ID_DLG_Options_Btn_Default ));
-	gtk_widget_ref (buttonDefaults);
-	gtk_object_set_data_full (GTK_OBJECT (windowOptions), "buttonDefaults", buttonDefaults,
-	                          (GtkDestroyNotify) gtk_widget_unref);
-	gtk_widget_show (buttonDefaults);
-	gtk_container_add (GTK_CONTAINER (hbuttonbox2), buttonDefaults);
-	GTK_WIDGET_SET_FLAGS (buttonDefaults, GTK_CAN_DEFAULT);
-
-	buttonOk = gtk_button_new_with_label (pSS->getValue(XAP_STRING_ID_DLG_OK));
-	gtk_widget_ref (buttonOk);
-	gtk_object_set_data_full (GTK_OBJECT (windowOptions), "buttonOk", buttonOk,
-	                          (GtkDestroyNotify) gtk_widget_unref);
-	gtk_widget_show (buttonOk);
-	gtk_container_add (GTK_CONTAINER (hbuttonbox2), buttonOk);
-	GTK_WIDGET_SET_FLAGS (buttonOk, GTK_CAN_DEFAULT);
-
-	buttonCancel = gtk_button_new_with_label (pSS->getValue(XAP_STRING_ID_DLG_Cancel));
-	gtk_widget_ref (buttonCancel);
-	gtk_object_set_data_full (GTK_OBJECT (windowOptions), "buttonCancel", buttonCancel,
-	                          (GtkDestroyNotify) gtk_widget_unref);
-	gtk_widget_show (buttonCancel);
-	gtk_container_add (GTK_CONTAINER (hbuttonbox2), buttonCancel);
-	GTK_WIDGET_SET_FLAGS (buttonCancel, GTK_CAN_DEFAULT);
-
+	windowOptions = m_windowMain;
 	notebook1 = gtk_notebook_new ();
 	gtk_widget_ref (notebook1);
 	gtk_object_set_data_full (GTK_OBJECT (windowOptions), "notebook1", notebook1,
 	                          (GtkDestroyNotify) gtk_widget_unref);
 	gtk_widget_show (notebook1);
-	gtk_table_attach (GTK_TABLE (table2), notebook1, 0, 1, 0, 1,
-	                  (GtkAttachOptions) (GTK_EXPAND | GTK_FILL),
-	                  (GtkAttachOptions) (GTK_EXPAND | GTK_FILL), 10, 7);
 
 	tableSpell = gtk_table_new (9, 3, FALSE);
 	gtk_widget_ref (tableSpell);
@@ -661,6 +584,140 @@ GtkWidget* AP_UnixDialog_Options::_constructWindow ()
     //////////////////////////////////////////////////////////////////////
 	// END: glade stuff
 
+	m_notebook = notebook1;
+
+    m_checkbuttonSpellCheckAsType	= checkbuttonSpellCheckAsType;
+    m_checkbuttonSpellHideErrors	= checkbuttonSpellHideErrors;
+    m_checkbuttonSpellSuggest		= checkbuttonSpellSuggest;
+    m_checkbuttonSpellMainOnly		= checkbuttonSpellMainOnly;
+    m_checkbuttonSpellUppercase		= checkbuttonSpellUppercase;
+    m_checkbuttonSpellNumbers		= checkbuttonSpellNumbers;
+    m_checkbuttonSpellInternet		= checkbuttonSpellInternet;
+	m_listSpellDicts				= listSpellDicts;
+	m_listSpellDicts_menu			= listSpellDicts_menu;
+	m_buttonSpellDictionary			= buttonSpellDictionary;
+	m_buttonSpellIgnoreEdit			= buttonSpellIgnoreEdit;
+	m_buttonSpellIgnoreReset		= buttonSpellIgnoreReset;
+
+    m_checkbuttonPrefsAutoSave		= checkbuttonPrefsAutoSave;
+	m_comboPrefsScheme				= comboPrefsSchemes;
+
+    m_checkbuttonViewShowRuler		= checkbuttonViewRuler;
+    m_listViewRulerUnits			= listViewRulerUnit;
+    m_checkbuttonViewCursorBlink	= checkbuttonViewCursorBlink;
+    m_checkbuttonViewShowToolbars	= checkbuttonViewToolbars;
+    m_checkbuttonViewAll			= checkbuttonViewAll;
+    m_checkbuttonViewHiddenText		= checkbuttonViewHidden;
+    m_checkbuttonViewUnprintable	= checkbuttonViewUnprintable;
+
+
+    gtk_signal_connect(GTK_OBJECT(buttonSpellIgnoreEdit),
+                       "clicked",
+                       GTK_SIGNAL_FUNC(s_ignore_edit_clicked),
+                       (gpointer) this);
+
+    gtk_signal_connect(GTK_OBJECT(buttonSpellIgnoreReset),
+                       "clicked",
+                       GTK_SIGNAL_FUNC(s_ignore_reset_clicked),
+                       (gpointer) this);
+
+    gtk_signal_connect(GTK_OBJECT(buttonSpellDictionary),
+                       "clicked",
+                       GTK_SIGNAL_FUNC(s_dict_edit_clicked),
+                       (gpointer) this);
+
+	// to enable/disable other controls (hide errors)
+	gtk_signal_connect(GTK_OBJECT(checkbuttonSpellCheckAsType),
+						"toggled",
+                       GTK_SIGNAL_FUNC(s_checkbutton_toggle),
+                       (gpointer) this);
+
+	return notebook1;
+}
+
+GtkWidget* AP_UnixDialog_Options::_constructWindow ()
+{
+    //////////////////////////////////////////////////////////////////////
+	// BEGIN: glade stuff (interface.c)
+
+	// for the internationalization	
+	const XAP_StringSet * pSS = m_pApp->getStringSet();
+	
+	GtkWidget *table2;
+	GtkWidget *windowOptions;
+	GtkWidget *hbuttonbox2;
+	GtkWidget *buttonSave;
+	GtkWidget *buttonDefaults;
+	GtkWidget *buttonApply;
+	GtkWidget *buttonOk;
+	GtkWidget *buttonCancel;
+
+	windowOptions = gtk_window_new (GTK_WINDOW_TOPLEVEL);
+	gtk_object_set_data (GTK_OBJECT (windowOptions), "windowOptions", windowOptions);
+	gtk_window_set_title (GTK_WINDOW (windowOptions),
+		pSS->getValue(AP_STRING_ID_DLG_Options_OptionsTitle) );
+
+	table2 = gtk_table_new (2, 1, FALSE);
+	gtk_widget_ref (table2);
+	gtk_object_set_data_full (GTK_OBJECT (windowOptions), "table2", table2,
+	                          (GtkDestroyNotify) gtk_widget_unref);
+	gtk_widget_show (table2);
+	gtk_container_add (GTK_CONTAINER (windowOptions), table2);
+
+	hbuttonbox2 = gtk_hbutton_box_new ();
+	gtk_widget_ref (hbuttonbox2);
+	gtk_object_set_data_full (GTK_OBJECT (windowOptions), "hbuttonbox2", hbuttonbox2,
+	                          (GtkDestroyNotify) gtk_widget_unref);
+	gtk_widget_show (hbuttonbox2);
+	gtk_table_attach (GTK_TABLE (table2), hbuttonbox2, 0, 1, 1, 2,
+	                  (GtkAttachOptions) (GTK_FILL),
+	                  (GtkAttachOptions) (GTK_FILL), 0, 0);
+	gtk_button_box_set_layout (GTK_BUTTON_BOX (hbuttonbox2), GTK_BUTTONBOX_END);
+	gtk_button_box_set_spacing (GTK_BUTTON_BOX (hbuttonbox2), 10);
+
+	buttonSave = gtk_button_new_with_label ( pSS->getValue(AP_STRING_ID_DLG_Options_Btn_Save) );
+	gtk_widget_ref (buttonSave);
+	gtk_object_set_data_full (GTK_OBJECT (windowOptions), "buttonSave", buttonSave,
+	                          (GtkDestroyNotify) gtk_widget_unref);
+	gtk_widget_show (buttonSave);
+	gtk_container_add (GTK_CONTAINER (hbuttonbox2), buttonSave);
+	GTK_WIDGET_SET_FLAGS (buttonSave, GTK_CAN_DEFAULT);
+
+	buttonApply = gtk_button_new_with_label ( 
+							pSS->getValue(AP_STRING_ID_DLG_Options_Btn_Apply ));
+	gtk_widget_ref (buttonApply);
+	gtk_object_set_data_full (GTK_OBJECT (windowOptions), "buttonApply", buttonApply,
+	                          (GtkDestroyNotify) gtk_widget_unref);
+	gtk_widget_show (buttonApply);
+	gtk_container_add (GTK_CONTAINER (hbuttonbox2), buttonApply);
+	GTK_WIDGET_SET_FLAGS (buttonApply, GTK_CAN_DEFAULT);
+
+	buttonDefaults = gtk_button_new_with_label ( 
+							pSS->getValue(AP_STRING_ID_DLG_Options_Btn_Default ));
+	gtk_widget_ref (buttonDefaults);
+	gtk_object_set_data_full (GTK_OBJECT (windowOptions), "buttonDefaults", buttonDefaults,
+	                          (GtkDestroyNotify) gtk_widget_unref);
+	gtk_widget_show (buttonDefaults);
+	gtk_container_add (GTK_CONTAINER (hbuttonbox2), buttonDefaults);
+	GTK_WIDGET_SET_FLAGS (buttonDefaults, GTK_CAN_DEFAULT);
+
+	buttonOk = gtk_button_new_with_label (pSS->getValue(XAP_STRING_ID_DLG_OK));
+	gtk_widget_ref (buttonOk);
+	gtk_object_set_data_full (GTK_OBJECT (windowOptions), "buttonOk", buttonOk,
+	                          (GtkDestroyNotify) gtk_widget_unref);
+	gtk_widget_show (buttonOk);
+	gtk_container_add (GTK_CONTAINER (hbuttonbox2), buttonOk);
+	GTK_WIDGET_SET_FLAGS (buttonOk, GTK_CAN_DEFAULT);
+
+	buttonCancel = gtk_button_new_with_label (pSS->getValue(XAP_STRING_ID_DLG_Cancel));
+	gtk_widget_ref (buttonCancel);
+	gtk_object_set_data_full (GTK_OBJECT (windowOptions), "buttonCancel", buttonCancel,
+	                          (GtkDestroyNotify) gtk_widget_unref);
+	gtk_widget_show (buttonCancel);
+	gtk_container_add (GTK_CONTAINER (hbuttonbox2), buttonCancel);
+	GTK_WIDGET_SET_FLAGS (buttonCancel, GTK_CAN_DEFAULT);
+
+
     // the catch-alls
     gtk_signal_connect_after(GTK_OBJECT(windowOptions),
                              "delete_event",
@@ -695,56 +752,16 @@ GtkWidget* AP_UnixDialog_Options::_constructWindow ()
                        GTK_SIGNAL_FUNC(s_apply_clicked),
                        (gpointer) this);
 
-    gtk_signal_connect(GTK_OBJECT(buttonSpellIgnoreEdit),
-                       "clicked",
-                       GTK_SIGNAL_FUNC(s_ignore_edit_clicked),
-                       (gpointer) this);
-
-    gtk_signal_connect(GTK_OBJECT(buttonSpellIgnoreReset),
-                       "clicked",
-                       GTK_SIGNAL_FUNC(s_ignore_reset_clicked),
-                       (gpointer) this);
-
-    gtk_signal_connect(GTK_OBJECT(buttonSpellDictionary),
-                       "clicked",
-                       GTK_SIGNAL_FUNC(s_dict_edit_clicked),
-                       (gpointer) this);
-
-	// to enable/disable other controls (hide errors)
-	gtk_signal_connect(GTK_OBJECT(checkbuttonSpellCheckAsType),
-						"toggled",
-                       GTK_SIGNAL_FUNC(s_checkbutton_toggle),
-                       (gpointer) this);
 
     // Update member variables with the important widgets that
     // might need to be queried or altered later.
 
     m_windowMain = windowOptions;
-	m_notebook = notebook1;
 
-    m_checkbuttonSpellCheckAsType	= checkbuttonSpellCheckAsType;
-    m_checkbuttonSpellHideErrors	= checkbuttonSpellHideErrors;
-    m_checkbuttonSpellSuggest		= checkbuttonSpellSuggest;
-    m_checkbuttonSpellMainOnly		= checkbuttonSpellMainOnly;
-    m_checkbuttonSpellUppercase		= checkbuttonSpellUppercase;
-    m_checkbuttonSpellNumbers		= checkbuttonSpellNumbers;
-    m_checkbuttonSpellInternet		= checkbuttonSpellInternet;
-	m_listSpellDicts				= listSpellDicts;
-	m_listSpellDicts_menu			= listSpellDicts_menu;
-	m_buttonSpellDictionary			= buttonSpellDictionary;
-	m_buttonSpellIgnoreEdit			= buttonSpellIgnoreEdit;
-	m_buttonSpellIgnoreReset		= buttonSpellIgnoreReset;
-
-    m_checkbuttonPrefsAutoSave		= checkbuttonPrefsAutoSave;
-	m_comboPrefsScheme				= comboPrefsSchemes;
-
-    m_checkbuttonViewShowRuler		= checkbuttonViewRuler;
-    m_listViewRulerUnits			= listViewRulerUnit;
-    m_checkbuttonViewCursorBlink	= checkbuttonViewCursorBlink;
-    m_checkbuttonViewShowToolbars	= checkbuttonViewToolbars;
-    m_checkbuttonViewAll			= checkbuttonViewAll;
-    m_checkbuttonViewHiddenText		= checkbuttonViewHidden;
-    m_checkbuttonViewUnprintable	= checkbuttonViewUnprintable;
+    _constructWindowContents();
+	gtk_table_attach (GTK_TABLE (table2), m_notebook, 0, 1, 0, 1,
+	                  (GtkAttachOptions) (GTK_EXPAND | GTK_FILL),
+	                  (GtkAttachOptions) (GTK_EXPAND | GTK_FILL), 10, 7);
 
     m_buttonSave					= buttonSave;
     m_buttonDefaults				= buttonDefaults;

@@ -177,6 +177,28 @@ void XAP_UnixDialog_About::event_DrawingAreaExpose(void)
 }
 
 /*****************************************************************/
+GtkWidget * XAP_UnixDialog_About::_constructButtonOK(void)
+{
+	GtkWidget *buttonOK;
+	const XAP_StringSet * pSS = m_pApp->getStringSet();
+
+	buttonOK = gtk_button_new_with_label (pSS->getValue(XAP_STRING_ID_DLG_OK));
+	gtk_widget_show (buttonOK);
+	gtk_widget_set_usize (buttonOK, 85, 24);
+
+	return buttonOK;
+}
+
+GtkWidget * XAP_UnixDialog_About::_constructButtonURL(void)
+{
+	GtkWidget *buttonURL;
+
+	buttonURL = gtk_button_new_with_label ("www.abisource.com");
+	gtk_widget_show (buttonURL);
+	gtk_widget_set_usize (buttonURL, 140, 24);
+
+	return buttonURL;
+}
 
 GtkWidget * XAP_UnixDialog_About::_constructWindow(void)
 {
@@ -268,17 +290,13 @@ GtkWidget * XAP_UnixDialog_About::_constructWindow(void)
 	gtk_widget_show (hbox2);
 	gtk_box_pack_start (GTK_BOX (vboxInfo), hbox2, FALSE, TRUE, 10);
 
-	buttonURL = gtk_button_new_with_label ("www.abisource.com");
+	buttonURL = _constructButtonURL();
 	gtk_object_set_data (GTK_OBJECT (windowAbout), "buttonURL", buttonURL);
-	gtk_widget_show (buttonURL);
 	gtk_box_pack_start (GTK_BOX (hbox2), buttonURL, FALSE, TRUE, 0);
-	gtk_widget_set_usize (buttonURL, 140, 24);
 
-	buttonOK = gtk_button_new_with_label (pSS->getValue(XAP_STRING_ID_DLG_OK));
+	buttonOK = _constructButtonOK();
 	gtk_object_set_data (GTK_OBJECT (windowAbout), "buttonOK", buttonOK);
-	gtk_widget_show (buttonOK);
 	gtk_box_pack_end (GTK_BOX (hbox2), buttonOK, FALSE, TRUE, 0);
-	gtk_widget_set_usize (buttonOK, 85, 24);
 
 	// Since we do drawing, we need a graphics context which can
 	// understand PNG data.

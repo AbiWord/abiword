@@ -1,4 +1,4 @@
-/* AbiSource Application Framework
+/* AbiWord
  * Copyright (C) 1998 AbiSource, Inc.
  * 
  * This program is free software; you can redistribute it and/or
@@ -17,24 +17,25 @@
  * 02111-1307, USA.
  */
 
-#ifndef XAP_UNIXGNOMEDIALOG_ABOUT_H
-#define XAP_UNIXGNOMEDIALOG_ABOUT_H
+#ifndef AP_UNIXGNOMEDIALOG_OPTIONS_H
+#define AP_UNIXGNOMEDIALOG_OPTIONS_H
 
-#include "xap_UnixDlg_About.h"
+#include "ap_UnixDialog_Options.h"
+
+class XAP_UnixFrame;
 
 /*****************************************************************/
-
-class XAP_UnixGnomeDialog_About: public XAP_UnixDialog_About
+class AP_UnixGnomeDialog_Options: public AP_UnixDialog_Options
 {
 public:
-	XAP_UnixGnomeDialog_About(XAP_DialogFactory * pDlgFactory, XAP_Dialog_Id id);
-	virtual ~XAP_UnixGnomeDialog_About(void);
+	AP_UnixGnomeDialog_Options(XAP_DialogFactory * pDlgFactory, XAP_Dialog_Id id);
+	virtual ~AP_UnixGnomeDialog_Options(void);
 
-	static XAP_Dialog *		static_constructor(XAP_DialogFactory *, XAP_Dialog_Id id);
+        static XAP_Dialog *             static_constructor(XAP_DialogFactory *, XAP_Dialog_Id id);
 
- protected:
-	virtual GtkWidget *   _constructButtonOK(void);
-	virtual GtkWidget *   _constructButtonURL(void);
+
+protected:
+	virtual GtkWidget * _constructWindow(void);
 };
 
-#endif /* XAP_UNIXGNOMEDIALOG_ABOUT_H */
+#endif /* AP_UNIXGNOMEDIALOG_OPTIONS_H */

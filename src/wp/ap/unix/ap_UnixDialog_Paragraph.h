@@ -69,23 +69,25 @@ public:
 	UT_Bool					m_bEditChanged;
 	
 	// private construction functions
-	GtkWidget * _constructWindow(void);
-	void 		_connectCallbackSignals(void);
+	virtual GtkWidget *  _constructWindow(void);
+	GtkWidget *          _constructWindowContents(GtkWidget *);
+	void                 _connectCallbackSignals(void);
 	
-	void		_populateWindowData(void);
+	void                 _populateWindowData(void);
 
-	virtual void	_syncControls(tControl changed, UT_Bool bAll = UT_FALSE);
+	virtual void         _syncControls(tControl changed, UT_Bool bAll = UT_FALSE);
 
 	// pointers to widgets we need to query/set
 	// there are a ton of them in this dialog
 	
 	GtkWidget * m_windowMain;
+	GtkWidget * m_windowContents;
 
 	GtkWidget * m_listAlignment;
-	 GtkWidget * m_menuitemLeft;
-	 GtkWidget * m_menuitemCentered;
-	 GtkWidget * m_menuitemRight;
-	 GtkWidget * m_menuitemJustified;
+	GtkWidget * m_menuitemLeft;
+	GtkWidget * m_menuitemCentered;
+	GtkWidget * m_menuitemRight;
+	GtkWidget * m_menuitemJustified;
 
 	GtkWidget * m_spinbuttonLeft;
 	GtkWidget * m_spinbuttonRight;
@@ -93,9 +95,9 @@ public:
 
 	GtkWidget * m_listSpecial;
 	GtkWidget * m_listSpecial_menu;
-	 GtkWidget * m_menuitemNone;
-	 GtkWidget * m_menuitemFirstLine;
-	 GtkWidget * m_menuitemHanging;	
+	GtkWidget * m_menuitemNone;
+	GtkWidget * m_menuitemFirstLine;
+	GtkWidget * m_menuitemHanging;	
 	
 	GtkWidget * m_spinbuttonBefore;
 	GtkWidget * m_spinbuttonAfter;
@@ -103,12 +105,12 @@ public:
 
 	GtkWidget * m_listLineSpacing;
 	GtkWidget * m_listLineSpacing_menu;
-	 GtkWidget * m_menuitemSingle;
-	 GtkWidget * m_menuitemOneAndHalf;
-	 GtkWidget * m_menuitemDouble;
-	 GtkWidget * m_menuitemAtLeast;
-	 GtkWidget * m_menuitemExactly;
-	 GtkWidget * m_menuitemMultiple;
+	GtkWidget * m_menuitemSingle;
+	GtkWidget * m_menuitemOneAndHalf;
+	GtkWidget * m_menuitemDouble;
+	GtkWidget * m_menuitemAtLeast;
+	GtkWidget * m_menuitemExactly;
+	GtkWidget * m_menuitemMultiple;
 
 	GtkWidget * m_drawingareaPreview;
 
@@ -122,7 +124,6 @@ public:
 	GtkWidget * m_buttonOK;
 	GtkWidget * m_buttonCancel;
 	GtkWidget * m_buttonTabs;
-
 };
 
 #endif /* XAP_UNIXDIALOG_PARAGRAPH_H */

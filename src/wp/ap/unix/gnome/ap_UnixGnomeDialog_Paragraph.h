@@ -17,105 +17,27 @@
  * 02111-1307, USA.
  */
 
-#ifndef AP_UNIXDIALOG_PARAGRAPH_H
-#define AP_UNIXDIALOG_PARAGRAPH_H
+#ifndef AP_UNIXGNOMEDIALOG_PARAGRAPH_H
+#define AP_UNIXGNOMEDIALOG_PARAGRAPH_H
 
 #include "xap_UnixFontManager.h"
 
-#include "ap_Dialog_Paragraph.h"
+#include "ap_UnixDialog_Paragraph.h"
 
 class XAP_UnixFrame;
 
 /*****************************************************************/
 
-class AP_UnixDialog_Paragraph: public AP_Dialog_Paragraph
+class AP_UnixGnomeDialog_Paragraph: public AP_UnixDialog_Paragraph
 {
 public:
-	AP_UnixDialog_Paragraph(XAP_DialogFactory * pDlgFactory, XAP_Dialog_Id id);
-	virtual ~AP_UnixDialog_Paragraph(void);
+	AP_UnixGnomeDialog_Paragraph(XAP_DialogFactory * pDlgFactory, XAP_Dialog_Id id);
+	virtual ~AP_UnixGnomeDialog_Paragraph(void);
 
-	virtual void			runModal(XAP_Frame * pFrame);
+	static XAP_Dialog *   static_constructor(XAP_DialogFactory *, XAP_Dialog_Id id);
 
-	static XAP_Dialog *		static_constructor(XAP_DialogFactory *, XAP_Dialog_Id id);
-
-	// callbacks can fire these events
-	virtual void event_OK(void);
-	virtual void event_Cancel(void);
-	virtual void event_Tabs(void);
-	virtual void event_WindowDelete(void);
-
-	// Indents and Spacing page
-	virtual void event_AlignmentChanged(void);
-
-	// actions for all indent-related spin-button changes are the same
-	virtual void event_UpdateEntry(GtkWidget * widget);
-//	virtual void event_IndentSpinButtonChanged(GtkWidget * spinbutton, GtkAdjustment * adj);
-//	virtual void event_SpecialIndentListChanged(void);
-
-	// actions for all spacing-related spin-button changes are the same
-//	virtual void event_SpacingSpinButtonChanged(GtkWidget * spinbutton, GtkAdjustment * adj);
-//	virtual void event_SpecialSpacingListChanged(void);
-
-	// Line and Page Breaks
-//	virtual void event_WidowOrphanControlToggled(void);
-//	virtual void event_KeepLinesTogetherToggled(void);
-//	virtual void event_KeepWithNextToggled(void);
-//	virtual void event_PageBreakBeforeToggled(void);
-
-//	virtual void event_SuppressLineNumbersToggled(void);
-//	virtual void event_NoHyphenateToggled(void);
-	
-	// Preview
-	virtual void event_PreviewAreaExposed(void);
-
- protected:
-
-	GR_UnixGraphics	* 		m_unixGraphics;
-	
-	// private construction functions
-	GtkWidget * _constructWindow(void);
-	void		_populateWindowData(void);
-	void		_enablePercentSpin(UT_Bool enable);
-	void 		_storeWindowData(void);
-
-	// pointers to widgets we need to query/set
-	// there are a ton of them in this dialog
-	
-	GtkWidget * m_windowMain;
-
-	GtkWidget * m_listAlignment;
-
-	GtkObject * m_spinbuttonLeft_adj;
-	GtkWidget * m_spinbuttonLeft;
-	
-	GtkObject * m_spinbuttonRight_adj;
-	GtkWidget * m_spinbuttonRight;
-	GtkWidget * m_listSpecial;
-	GtkWidget * m_listSpecial_menu;
-	GtkObject * m_spinbuttonBy_adj;
-	GtkWidget * m_spinbuttonBy;
-	GtkObject * m_spinbuttonBefore_adj;
-	GtkWidget * m_spinbuttonBefore;
-	GtkObject * m_spinbuttonAfter_adj;
-	GtkWidget * m_spinbuttonAfter;
-	GtkWidget * m_listLineSpacing;
-	GtkWidget * m_listLineSpacing_menu;
-	GtkObject * m_spinbuttonAt_adj;
-	GtkWidget * m_spinbuttonAt;
-
-	GtkWidget * m_drawingareaPreview;
-
-	GtkWidget * m_checkbuttonWidowOrphan;
-	GtkWidget * m_checkbuttonKeepLines;
-	GtkWidget * m_checkbuttonPageBreak;
-	GtkWidget * m_checkbuttonSuppress;
-	GtkWidget * m_checkbuttonHyphenate;
-	GtkWidget * m_checkbuttonKeepNext;
-
-	GtkWidget * m_buttonOK;
-	GtkWidget * m_buttonCancel;
-	GtkWidget * m_buttonTabs;
-
+protected:
+	virtual GtkWidget *   _constructWindow(void);
 };
 
-#endif /* XAP_UNIXDIALOG_PARAGRAPH_H */
+#endif /* XAP_UNIXGNOMEDIALOG_PARAGRAPH_H */

@@ -17,24 +17,24 @@
  * 02111-1307, USA.
  */
 
-#ifndef XAP_UNIXGNOMEDIALOG_ABOUT_H
-#define XAP_UNIXGNOMEDIALOG_ABOUT_H
+#ifndef XAP_UNIXGNOMEDIALOG_FONTCHOOSER_H
+#define XAP_UNIXGNOMEDIALOG_FONTCHOOSER_H
 
-#include "xap_UnixDlg_About.h"
+#include "xap_UnixDlg_FontChooser.h"
+
 
 /*****************************************************************/
 
-class XAP_UnixGnomeDialog_About: public XAP_UnixDialog_About
+class XAP_UnixGnomeDialog_FontChooser : public XAP_UnixDialog_FontChooser
 {
 public:
-	XAP_UnixGnomeDialog_About(XAP_DialogFactory * pDlgFactory, XAP_Dialog_Id id);
-	virtual ~XAP_UnixGnomeDialog_About(void);
+	XAP_UnixGnomeDialog_FontChooser(XAP_DialogFactory * pDlgFactory, XAP_Dialog_Id id);
+	virtual ~XAP_UnixGnomeDialog_FontChooser(void);
 
 	static XAP_Dialog *		static_constructor(XAP_DialogFactory *, XAP_Dialog_Id id);
 
- protected:
-	virtual GtkWidget *   _constructButtonOK(void);
-	virtual GtkWidget *   _constructButtonURL(void);
+protected:
+	virtual GtkWidget *             constructWindow(void);
 };
 
-#endif /* XAP_UNIXGNOMEDIALOG_ABOUT_H */
+#endif /* XAP_UNIXGNOMEDIALOG_FONTCHOOSER_H */

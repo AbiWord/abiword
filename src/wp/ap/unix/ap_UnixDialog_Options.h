@@ -71,7 +71,8 @@ public:
  protected:
 	
 	// private construction functions
-	GtkWidget * _constructWindow(void);
+	virtual GtkWidget * _constructWindow(void);
+	GtkWidget *         _constructWindowContents(void);
 
 	// pointers to widgets we need to query/set
 	// there are a ton of them in this dialog

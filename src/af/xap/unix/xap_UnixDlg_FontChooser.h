@@ -80,7 +80,8 @@ protected:
 	// these are Glade helper or Glade generated functions
 	GtkWidget * 			get_widget(GtkWidget * widget, gchar * widget_name);
 	void 					set_notebook_tab(GtkWidget * notebook, gint page_num, GtkWidget * widget);
-	GtkWidget * 			create_windowFontSelection(void);
+	virtual GtkWidget *             constructWindow(void);
+	GtkWidget *                     constructWindowContents(GtkObject *);
 
 	// a temporary font to hold dynamically allocated "rented"
 	// fonts between style changes
