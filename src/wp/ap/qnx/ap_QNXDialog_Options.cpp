@@ -313,7 +313,9 @@ PtWidget_t* AP_QNXDialog_Options::_constructWindow ()
 	PtWidget_t *listViewRulerUnit;
 	PtWidget_t *listViewRulerUnit_menu;
 	PtWidget_t *checkbuttonViewCursorBlink;
-	PtWidget_t *checkbuttonViewToolbars;
+	PtWidget_t *checkbuttonViewStandard;
+	PtWidget_t *checkbuttonViewFormat;
+	PtWidget_t *checkbuttonViewExtra;
 	PtWidget_t *frameViewStuff;
 	PtWidget_t *vbox6;
 	PtWidget_t *checkbuttonViewAll;
@@ -513,8 +515,16 @@ PtWidget_t* AP_QNXDialog_Options::_constructWindow ()
 	UT_QNXComboSetPos(listViewRulerUnit, 1);
 	
 	n = 0;
-	PtSetArg(&args[n++], Pt_ARG_TEXT_STRING, TR(pSS->getValue(AP_STRING_ID_DLG_Options_Label_ViewToolbars)), 0);
-	checkbuttonViewToolbars = PtCreateWidget(PtToggleButton, vshowgroup, n, args);
+	PtSetArg(&args[n++], Pt_ARG_TEXT_STRING, TR(pSS->getValue(AP_STRING_ID_DLG_Options_Label_ViewStandardTB)), 0);
+	checkbuttonViewStandard = PtCreateWidget(PtToggleButton, vshowgroup, n, args);
+
+	n = 0;
+	PtSetArg(&args[n++], Pt_ARG_TEXT_STRING, TR(pSS->getValue(AP_STRING_ID_DLG_Options_Label_ViewFormatTB)), 0);
+	checkbuttonViewFormat = PtCreateWidget(PtToggleButton, vshowgroup, n, args);
+
+	n = 0;
+	PtSetArg(&args[n++], Pt_ARG_TEXT_STRING, TR(pSS->getValue(AP_STRING_ID_DLG_Options_Label_ViewExtraTB)), 0);
+	checkbuttonViewExtra = PtCreateWidget(PtToggleButton, vshowgroup, n, args);
 
 	n = 0;
 	PtSetArg(&args[n++], Pt_ARG_TEXT_STRING, TR(pSS->getValue(AP_STRING_ID_DLG_Options_Label_ViewCursorBlink)), 0);
@@ -625,7 +635,9 @@ PtWidget_t* AP_QNXDialog_Options::_constructWindow ()
     m_checkbuttonViewShowRuler		= checkbuttonViewRuler;
     m_listViewRulerUnits			= listViewRulerUnit;
     m_checkbuttonViewCursorBlink	= checkbuttonViewCursorBlink;
-    m_checkbuttonViewShowToolbars	= checkbuttonViewToolbars;
+    m_checkbuttonViewShowStandardBar	= checkbuttonViewStandard;
+    m_checkbuttonViewShowFormatBar	= checkbuttonViewFormat;
+    m_checkbuttonViewShowExtraBar	= checkbuttonViewExtra;
     m_checkbuttonViewAll			= checkbuttonViewAll;
     m_checkbuttonViewHiddenText		= checkbuttonViewHidden;
     m_checkbuttonViewUnprintable	= checkbuttonViewUnprintable;
@@ -719,8 +731,16 @@ PtWidget_t *AP_QNXDialog_Options::_lookupWidget ( tControl id )
 		return m_checkbuttonViewCursorBlink;
 		break;
 
-	case id_CHECK_VIEW_SHOW_TOOLBARS:
-		return m_checkbuttonViewShowToolbars;
+	case id_CHECK_VIEW_SHOW_STANDARD_TOOLBAR:
+		return m_checkbuttonViewShowStandardBar;
+		break;
+
+	case id_CHECK_VIEW_SHOW_FORMAT_TOOLBAR:
+		return m_checkbuttonViewShowFormatBar;
+		break;
+
+	case id_CHECK_VIEW_SHOW_EXTRA_TOOLBAR:
+		return m_checkbuttonViewShowExtraBar;
 		break;
 
 	case id_CHECK_VIEW_ALL:
@@ -809,6 +829,9 @@ DEFINE_GET_SET_BOOL(SmartQuotesEnable);
 DEFINE_GET_SET_BOOL(PrefsAutoSave);
 
 DEFINE_GET_SET_BOOL	(ViewShowRuler);
+DEFINE_GET_SET_BOOL	(ViewShowStandardBar);
+DEFINE_GET_SET_BOOL	(ViewShowFormatBar);
+DEFINE_GET_SET_BOOL	(ViewShowExtraBar);
 
 UT_Dimension AP_QNXDialog_Options::_gatherViewRulerUnits(void) 
 {				
@@ -857,7 +880,6 @@ void    AP_QNXDialog_Options::_setViewRulerUnits(UT_Dimension dim)
 }
 
 DEFINE_GET_SET_BOOL	(ViewCursorBlink);
-DEFINE_GET_SET_BOOL	(ViewShowToolbars);
 
 DEFINE_GET_SET_BOOL	(ViewAll);
 DEFINE_GET_SET_BOOL	(ViewHiddenText);

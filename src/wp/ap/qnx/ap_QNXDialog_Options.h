@@ -59,13 +59,17 @@ public:
  	SET_GATHER			(SpellNumbers,		UT_Bool );
  	SET_GATHER			(SpellInternet,		UT_Bool );
  
-	SET_GATHER                      (SmartQuotesEnable,     UT_Bool );
+	SET_GATHER			(SmartQuotesEnable, UT_Bool );
  	SET_GATHER			(PrefsAutoSave,		UT_Bool );
- 
+
  	SET_GATHER			(ViewShowRuler,		UT_Bool );
+
+ 	SET_GATHER			(ViewShowStandardBar,	UT_Bool );
+ 	SET_GATHER			(ViewShowFormatBar,	UT_Bool );
+ 	SET_GATHER			(ViewShowExtraBar,	UT_Bool );
+ 
 	SET_GATHER			(ViewRulerUnits,	UT_Dimension);		
 	SET_GATHER			(ViewCursorBlink,	UT_Bool);
- 	SET_GATHER			(ViewShowToolbars,	UT_Bool );
  
  	SET_GATHER			(ViewAll,			UT_Bool );
  	SET_GATHER			(ViewHiddenText,	UT_Bool );
@@ -117,7 +121,9 @@ public:
 	PtWidget_t * m_listViewRulerUnits;
 	PtWidget_t * m_listViewRulerUnits_menu;
 	PtWidget_t * m_checkbuttonViewCursorBlink;
-	PtWidget_t * m_checkbuttonViewShowToolbars;
+    PtWidget_t * m_checkbuttonViewShowStandardBar;
+    PtWidget_t * m_checkbuttonViewShowFormatBar;
+    PtWidget_t * m_checkbuttonViewShowExtraBar;
 	PtWidget_t * m_checkbuttonViewAll;
 	PtWidget_t * m_checkbuttonViewHiddenText;
 	PtWidget_t * m_checkbuttonViewUnprintable;

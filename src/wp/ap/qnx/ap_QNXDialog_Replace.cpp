@@ -127,10 +127,10 @@ static int s_replace_entry_activate(PtWidget_t *w, void *data, PtCallbackInfo_t 
 
 void AP_QNXDialog_Replace::activate(void)
 {
-        UT_ASSERT(m_windowMain);
-        ConstructWindowName();
-//        gtk_window_set_title (GTK_WINDOW (m_windowMain), m_WindowName);
-//        gdk_window_raise(m_windowMain->window);
+	UT_ASSERT(m_windowMain);
+	ConstructWindowName();
+	PtSetResource(m_windowMain, Pt_ARG_WINDOW_TITLE, m_WindowName, 0);
+	PtWindowFocus(m_windowMain);
 }
 
 void AP_QNXDialog_Replace::destroy(void)
@@ -149,18 +149,12 @@ void AP_QNXDialog_Replace::destroy(void)
 
 void AP_QNXDialog_Replace::notifyActiveFrame(XAP_Frame *pFrame)
 {
-	UT_ASSERT(m_windowMain);
-	ConstructWindowName();
-//       gtk_window_set_title (GTK_WINDOW (m_windowMain), m_WindowName);
+	activate();
 }
 
 void AP_QNXDialog_Replace::notifyCloseFrame(XAP_Frame *pFrame)
 {
-	UT_ASSERT(m_windowMain);
-	ConstructWindowName();
-//       gtk_window_set_title (GTK_WINDOW (m_windowMain), m_WindowName);
 }
-
 
 
 void AP_QNXDialog_Replace::runModal(XAP_Frame * pFrame)
@@ -170,26 +164,27 @@ void AP_QNXDialog_Replace::runModal(XAP_Frame * pFrame)
 
 void AP_QNXDialog_Replace::runModeless(XAP_Frame * pFrame)
 {
-        // get the Dialog Id number
-        UT_sint32 sid =(UT_sint32)  getDialogId();
+	// get the Dialog Id number
+	UT_sint32 sid =(UT_sint32)  getDialogId();
 
-        // Build the window's widgets and arrange them
-        PtWidget_t * mainWindow = _constructWindow();
-        UT_ASSERT(mainWindow);
+	// Build the window's widgets and arrange them
+	PtWidget_t * mainWindow = _constructWindow();
+	UT_ASSERT(mainWindow);
 
-        // Save dialog the ID number and pointer to the Dialog
-        m_pApp->rememberModelessId( sid,  (XAP_Dialog_Modeless *) m_pDialog);
+	// Save dialog the ID number and pointer to the Dialog
+	m_pApp->rememberModelessId( sid,  (XAP_Dialog_Modeless *) m_pDialog);
 
-        // This magic command displays the frame where strings will be found
-        connectFocusModeless(mainWindow ,m_pApp);
+	// This magic command displays the frame where strings will be found
+	connectFocusModeless(mainWindow ,m_pApp);
 
-        // Populate the window's data items
-        _populateWindowData();
+	// Populate the window's data items
+	_populateWindowData();
 
-        // this dialog needs this
-        setView((FV_View *) (getActiveFrame()->getCurrentView()));
+	// this dialog needs this
+	setView((FV_View *) (getActiveFrame()->getCurrentView()));
 
-	//UT_QNXCenterWindow(parentWindow, m_windowMain);
+	UT_QNXCenterWindow(NULL, m_windowMain);
+
 	PtRealizeWidget(m_windowMain);
 }
 

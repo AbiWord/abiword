@@ -102,12 +102,13 @@ static int s_delete_clicked(PtWidget_t * widget, void *data, PtCallbackInfo_t *i
 void  AP_QNXDialog_WordCount::activate(void)
 {
 	UT_ASSERT (m_windowMain);
+
+	ConstructWindowName();
+	PtSetResource(m_windowMain, Pt_ARG_WINDOW_TITLE, m_WindowName, 0);
+	PtWindowFocus(m_windowMain);
         
-	//ConstructWindowName();
-	//gtk_window_set_title (GTK_WINDOW (m_windowMain), m_WindowName);
-	//setCountFromActiveFrame ();
+	setCountFromActiveFrame ();
 	_updateWindowData ();
-	//gdk_window_raise (m_windowMain->window);
 }
 
 void AP_QNXDialog_WordCount::destroy(void)
@@ -130,12 +131,7 @@ void AP_QNXDialog_WordCount::destroy(void)
 
 void AP_QNXDialog_WordCount::notifyActiveFrame(XAP_Frame *pFrame)
 {
-#if 0
-	UT_ASSERT(m_windowMain);
-	ConstructWindowName();
-	gtk_window_set_title (GTK_WINDOW (m_windowMain), m_WindowName);
-#endif
-	event_Update();
+	activate();
 }
 
 
@@ -182,24 +178,6 @@ void AP_QNXDialog_WordCount::runModeless(XAP_Frame * pFrame)
 	}
 
 	setUpdateCounter();
-
-#if 0
-	// Center our new dialog in its parent and make it a transient
-	// so it won't get lost underneath
-	UT_QNXCenterWindow(parentWindow, mainWindow);
-	UT_QNXBlockWidget(parentWindow, 1);
-
-	PtRealizeWidget(mainWindow);
-	int count = PtModalStart();
-	done = 0;
-	while(!done) {
-		PtProcessEvent();
-	}
-	PtModalEnd(MODAL_END_ARG(count));
-
-	UT_QNXBlockWidget(parentWindow, 0);
-	PtDestroyWidget(mainWindow);
-#endif
 }
 
 void    AP_QNXDialog_WordCount::setUpdateCounter( void )
