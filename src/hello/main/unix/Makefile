@@ -20,7 +20,7 @@
 
 ABI_DEPTH = ../../..
 
-include $(ABI_DEPTH)/config/abi_defs_he.mk
+include $(ABI_DEPTH)/config/abi_defs_hello.mk
 
 CPPSRCS=		UnixMain.cpp
 

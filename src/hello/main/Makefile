@@ -19,7 +19,8 @@
 ## 02111-1307, USA.
 
 ABI_DEPTH=../..
-include $(ABI_DEPTH)/config/abi_defs_he.mk
+
+include $(ABI_DEPTH)/config/abi_defs_hello.mk
 
 DIRS=		$(ABI_NATIVE)
 
