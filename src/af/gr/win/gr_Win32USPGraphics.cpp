@@ -25,6 +25,8 @@
 #include "xap_App.h"
 #include "xap_Prefs.h"
 
+extern "C"  UT_uint16 wvLangToLIDConverter ( const char * lang );
+
 HINSTANCE GR_Win32USPGraphics::s_hUniscribe = NULL;
 UT_uint32 GR_Win32USPGraphics::s_iInstanceCount = 0;
 UT_VersionInfo GR_Win32USPGraphics::s_Version;
@@ -71,7 +73,7 @@ class GR_Win32USPItem: public GR_Item
 	virtual ~GR_Win32USPItem(){};
 	
 	virtual GR_ScriptType getType() const {return (GR_ScriptType) m_si.a.eScript;}
-	virtual GR_Item *     makeCopy() {return new GR_Win32USPItem(m_si);} // make a copy of this item
+	virtual GR_Item *     makeCopy() const {return new GR_Win32USPItem(m_si);} // make a copy of this item
 	virtual GRRI_Type     getClassId() const {return GRRI_WIN32_UNISCRIBE;}
 	
 
@@ -97,13 +99,15 @@ class GR_Win32USPRenderInfo : public GR_RenderInfo
 		m_pGoffsets(NULL),
 	    m_pAdvances(NULL),
 		m_pJustify(NULL),
-		m_iZoom(100)
+		m_iZoom(100),
+		m_eJustification(SCRIPT_JUSTIFY_NONE)
 	{
 		s_iInstanceCount++;
 		if(s_iInstanceCount == 1)
 		{
 			s_pAdvances = new int [200];
-			UT_ASSERT(s_pAdvances);
+			s_pJustify  = new int [200];
+			UT_ASSERT(s_pAdvances && s_pJustify);
 			s_iAdvancesSize = 200;
 		}
 		
@@ -119,13 +123,16 @@ class GR_Win32USPRenderInfo : public GR_RenderInfo
 			if(!s_iInstanceCount)
 			{
 				delete [] s_pAdvances; s_pAdvances = NULL;
+				delete [] s_pJustify;  s_pJustify  = NULL;
 				s_iAdvancesSize = 0;
+
+				s_pOwner = NULL;
 			}
 		}
 
 	virtual GRRI_Type getType() const {return GRRI_WIN32_UNISCRIBE;}
 	virtual bool      append(GR_RenderInfo &ri, bool bReverse = false);
-	virtual bool      split (GR_RenderInfo *&pri, UT_uint32 offset, bool bReverse = false);
+	virtual bool      split (GR_RenderInfo *&pri, bool bReverse = false);
 	virtual bool      cut(UT_uint32 offset, UT_uint32 iLen, bool bReverse = false);
 	virtual bool isJustified() const;
 	
@@ -140,20 +147,27 @@ class GR_Win32USPRenderInfo : public GR_RenderInfo
 	UT_uint32        m_iIndicesCount;
 	UT_uint32        m_iCharCount;
 
-	GOFFSET *        m_pGoffsets;
+	GOFFSET *        m_pGoffsets;  // according to the docs this should be a single structure, but it needs to be an array
 	int *            m_pAdvances;
 	int *            m_pJustify;
 	ABC              m_ABC;
 	UT_uint32        m_iZoom;
 
+	SCRIPT_JUSTIFY   m_eJustification;
+	
 	static int *     s_pAdvances;
 	static UT_uint32 s_iInstanceCount;
 	static UT_uint32 s_iAdvancesSize;
+	static int *     s_pJustify;
+	
+	static GR_RenderInfo * s_pOwner;
 };
 
-int *     GR_Win32USPRenderInfo::s_pAdvances      = NULL;
-UT_uint32 GR_Win32USPRenderInfo::s_iInstanceCount = 0;
-UT_uint32 GR_Win32USPRenderInfo::s_iAdvancesSize  = 0;
+int *           GR_Win32USPRenderInfo::s_pAdvances      = NULL;
+int *           GR_Win32USPRenderInfo::s_pJustify       = NULL;
+UT_uint32       GR_Win32USPRenderInfo::s_iInstanceCount = 0;
+UT_uint32       GR_Win32USPRenderInfo::s_iAdvancesSize  = 0;
+GR_RenderInfo * GR_Win32USPRenderInfo::s_pOwner         = NULL;
 
 
 GR_Win32USPGraphics::GR_Win32USPGraphics(HDC hdc, HWND hwnd, XAP_App * pApp)
@@ -362,9 +376,10 @@ bool GR_Win32USPGraphics::itemize(UT_TextIterator & text, GR_Itemization & I)
 		pInChars[i] = (WCHAR)text.getChar();
 	}
 	
-	int iItemCount;
-	//SCRIPT_CONTROL sc;
-	SCRIPT_STATE   ss;
+	int       iItemCount;
+	UT_uint16 iLid = wvLangToLIDConverter(I.getLang());
+	
+	SCRIPT_STATE ss;
 	ss.uBidiLevel = I.getEmbedingLevel();
 	ss.fOverrideDirection = I.getDirOverride() == FRIBIDI_TYPE_UNSET ? 0 : 1;
 	ss.fInhibitSymSwap = 0;
@@ -376,8 +391,21 @@ bool GR_Win32USPGraphics::itemize(UT_TextIterator & text, GR_Itemization & I)
 	ss.fGcpClusters = 0;
 	ss.fReserved = 0;
 	ss.fEngineReserved = 0;
+
+	SCRIPT_CONTROL sc;
+	sc.uDefaultLanguage = iLid; 
+	sc.fContextDigits = 1; 
+	sc.fInvertPreBoundDir = 0; 
+	sc.fInvertPostBoundDir = 0; 
+	sc.fLinkStringBefore = 0; 
+	sc.fLinkStringAfter = 0; 
+	sc.fNeutralOverride = 0; 
+	sc.fNumericOverride = 0; 
+	sc.fLegacyBidiClass = 0; 
+	sc.fReserved = 0; 
+
 		
-	HRESULT hRes = ScriptItemize(pInChars, iLen, GRWIN32USP_ITEMBUFF_SIZE, /*sc*/NULL, &ss, pItems, &iItemCount);
+	HRESULT hRes = ScriptItemize(pInChars, iLen, GRWIN32USP_ITEMBUFF_SIZE, &sc, &ss, pItems, &iItemCount);
 	if(hRes)
 	{
 		UT_return_val_if_fail(hRes == E_OUTOFMEMORY, false);
@@ -635,7 +663,7 @@ UT_sint32 GR_Win32USPGraphics::getTextWidth(const GR_RenderInfo & ri) const
 	GR_Win32USPRenderInfo & RI = (GR_Win32USPRenderInfo &)ri;
 	//UT_uint32 iZoom = getZoomPercentage();
 	
-	if(ri.m_iOffset == 0 && ri.m_iLength == RI.m_iCharCount)
+	if(!RI.m_pJustify && ri.m_iOffset == 0 && ri.m_iLength == RI.m_iCharCount)
 		return (RI.m_ABC.abcA + RI.m_ABC.abcB + RI.m_ABC.abcC);
 
 	UT_return_val_if_fail(ri.m_iOffset + ri.m_iLength <= RI.m_iCharCount, 0);
@@ -649,7 +677,12 @@ UT_sint32 GR_Win32USPGraphics::getTextWidth(const GR_RenderInfo & ri) const
 			iMax = RI.m_pClust[i+1];
 
 		for(UT_uint32 j = RI.m_pClust[i]; j < iMax; ++j)
+		{
 			iWidth += RI.m_pAdvances[j];
+
+			if(RI.m_pJustify)
+				iWidth += RI.m_pJustify[j];
+		}
 	}
 
 	return iWidth;
@@ -661,11 +694,34 @@ void GR_Win32USPGraphics::prepareToRenderChars(GR_RenderInfo & ri)
 	// scale them down to device
 	UT_return_if_fail(ri.getType() == GRRI_WIN32_UNISCRIBE);
 	GR_Win32USPRenderInfo & RI = (GR_Win32USPRenderInfo &)ri;
+	UT_uint32 iZoom = getZoomPercentage();
+	
+	if(iZoom == RI.m_iZoom && RI.s_pOwner == & ri)
+	{
+		// the buffer is up-to-date
+		return;
+	}
+
+	if(RI.s_iAdvancesSize < RI.m_iIndicesCount)
+	{
+		delete [] RI.s_pAdvances; delete [] RI.s_pJustify;
+		RI.s_pAdvances = new int [RI.m_iIndicesCount];
+		RI.s_pJustify  = new int [RI.m_iIndicesCount];
+		RI.s_iAdvancesSize = RI.m_iIndicesCount;
+	}
 	
 	for(UT_uint32 i = 0; i < RI.m_iIndicesCount; ++i)
 	{
 		RI.s_pAdvances[i] = tdu(RI.m_pAdvances[i]);
+
+		if(RI.m_pJustify)
+		{
+			RI.s_pJustify[i] = tdu(RI.m_pJustify[i]);
+		}
 	}
+
+ 	RI.m_iZoom  = iZoom;
+	RI.s_pOwner = &ri;
 }
 
 void GR_Win32USPGraphics::renderChars(GR_RenderInfo & ri)
@@ -679,13 +735,58 @@ void GR_Win32USPGraphics::renderChars(GR_RenderInfo & ri)
 	UT_sint32 xoff = _tduX(RI.m_xoff);
 	UT_sint32 yoff = _tduY(RI.m_yoff);
 
+	if(RI.m_iLength == 0)
+		return;
+	
+	UT_return_if_fail(RI.m_iOffset + RI.m_iLength <= RI.m_iCharCount);
+
+	UT_uint32 iGlyphCount = RI.m_iIndicesCount;
+	UT_uint32 iGlyphOffset = 0;
+
+	if(RI.m_iOffset != 0)
+	{
+		// we need to work out glyph offset
+		iGlyphOffset = RI.m_pClust[RI.m_iOffset];
+	}
+
+	if(RI.m_iOffset + RI.m_iLength == RI.m_iCharCount)
+	{
+		// drawing from the offset to the end
+		iGlyphCount -= iGlyphOffset;
+	}
+	else
+	{
+		// work out glyph length
+		UT_uint32 iOffsetEnd = RI.m_pClust[RI.m_iOffset + RI.m_iLength];
+		iGlyphCount = iOffsetEnd - iGlyphOffset;
+	}
+
+	int * pJustify = RI.m_pJustify ? RI.s_pJustify + iGlyphOffset : NULL;
+
+	if(RI.m_bInvalidateFontCache)
+	{
+		ScriptFreeCache(pFont->getScriptCache());
+		*(pFont->getScriptCache()) = NULL;
+		RI.m_bInvalidateFontCache = false;
+	}
+
+	// not sure how expensive SetBkMode is, but GetBkMode() should not
+	// be ...
+	if(GetBkMode(m_hdc) != TRANSPARENT)
+	{
+		SetBkMode(m_hdc, TRANSPARENT); // this is necessary
+	}
+	
+	UINT dFlags = 0;
 	HRESULT hRes = ScriptTextOut(m_hdc, pFont->getScriptCache(), xoff, yoff,
-								 0, /*option flags*/
+								 dFlags, /*option flags*/
 								 NULL, /*not sure about this*/
 								 & pItem->m_si.a,
 								 NULL, 0, /*reserved*/
-								 RI.m_pIndices, RI.m_iIndicesCount,
-								 RI.s_pAdvances, RI.m_pJustify,
+								 RI.m_pIndices  + iGlyphOffset,
+								 iGlyphCount,
+								 RI.s_pAdvances + iGlyphOffset,
+								 pJustify,
 								 RI.m_pGoffsets);
 	UT_ASSERT( !hRes );
 }
@@ -701,8 +802,8 @@ void GR_Win32USPGraphics::measureRenderedCharWidths(GR_RenderInfo & ri)
 	if(!RI.m_pAdvances)
 		RI.m_pAdvances = new int[RI.m_iIndicesSize];
 
-	if(!RI.m_pGoffsets)
-		RI.m_pGoffsets = new GOFFSET[RI.m_iIndicesSize];
+		if(!RI.m_pGoffsets)
+			RI.m_pGoffsets = new GOFFSET[RI.m_iIndicesSize];
 
 	UT_uint32 iZoom = getZoomPercentage();
 	if(iZoom != RI.m_iZoom)
@@ -713,16 +814,20 @@ void GR_Win32USPGraphics::measureRenderedCharWidths(GR_RenderInfo & ri)
 			ScriptFreeCache(pFont->getScriptCache());
 			*(pFont->getScriptCache()) = NULL;
 		}
-		
 	}
 	
-
 	HRESULT hRes = ScriptPlace(m_hdc, pFont->getScriptCache(), RI.m_pIndices, RI.m_iIndicesCount,
 							   RI.m_pVisAttr, & pItem->m_si.a, RI.m_pAdvances, RI.m_pGoffsets, & RI.m_ABC);
 
 	// remember the zoom at which we calculated this ...
 	RI.m_iZoom = iZoom;
 
+	if(RI.s_pOwner == & ri)
+	{
+		// we currently own the static buffers; invalidate
+		RI.s_pOwner = NULL;
+	}
+	
 	// now convert the whole lot to layout units
 	for(UT_uint32 i = 0; i < RI.m_iIndicesCount; ++i)
 	{
@@ -741,12 +846,12 @@ void GR_Win32USPGraphics::appendRenderedCharsToBuff(GR_RenderInfo & ri, UT_GrowB
 	UT_return_if_fail( UT_NOT_IMPLEMENTED );
 }
 
-#if 0
 bool GR_Win32USPGraphics::canBreakAt(UT_UCS4Char c)
 {
-	UT_return_val_if_fail( UT_NOT_IMPLEMENTED, false );
+	// until I can find a better way of doing this, fall back on
+	// GR_Graphics
+	return GR_Graphics::canBreakAt(c);
 }
-#endif
 
 UT_sint32 GR_Win32USPGraphics::resetJustification(GR_RenderInfo & ri)
 {
@@ -772,7 +877,98 @@ UT_sint32 GR_Win32USPGraphics::resetJustification(GR_RenderInfo & ri)
 
 UT_sint32 GR_Win32USPGraphics::countJustificationPoints(const GR_RenderInfo & ri) const
 {
-	UT_return_val_if_fail( UT_NOT_IMPLEMENTED, 0 );
+	UT_return_val_if_fail(ri.getType() == GRRI_WIN32_UNISCRIBE, 0);
+	GR_Win32USPRenderInfo & RI = (GR_Win32USPRenderInfo &)ri;
+	UT_return_val_if_fail(RI.m_pVisAttr,0);
+	
+	UT_sint32 iCountSpace     = 0;
+	UT_sint32 iCountSpaceAR   = 0;
+	UT_sint32 iCountKashida   = 0;
+	UT_sint32 iCountInterChar = 0;
+	bool bBlank = true; // will change to false if we find anything
+						// that we do not have a counter for
+	
+	for(UT_uint32 i = 0; i < RI.m_iIndicesCount; ++i)
+	{
+		switch(RI.m_pVisAttr[i].uJustification)
+		{
+			case SCRIPT_JUSTIFY_ARABIC_BLANK:
+				iCountSpaceAR++;
+				break;
+				
+			case SCRIPT_JUSTIFY_CHARACTER:
+				iCountInterChar++;
+				break;
+				
+			case SCRIPT_JUSTIFY_BLANK:
+				iCountSpace++;
+				break;
+				
+			case SCRIPT_JUSTIFY_ARABIC_NORMAL:
+			case SCRIPT_JUSTIFY_ARABIC_KASHIDA:
+			case SCRIPT_JUSTIFY_ARABIC_ALEF:
+			case SCRIPT_JUSTIFY_ARABIC_HA:
+			case SCRIPT_JUSTIFY_ARABIC_RA:
+			case SCRIPT_JUSTIFY_ARABIC_BA:
+			case SCRIPT_JUSTIFY_ARABIC_BARA:
+			case SCRIPT_JUSTIFY_ARABIC_SEEN:
+			case SCRIPT_JUSTIFY_ARABIC_SEEN_M:
+				iCountKashida++;
+				break;
+				
+			case SCRIPT_JUSTIFY_NONE:
+			case SCRIPT_JUSTIFY_RESERVED1:
+			case SCRIPT_JUSTIFY_RESERVED2:
+			case SCRIPT_JUSTIFY_RESERVED3:
+			default:
+				bBlank = false;
+		}
+	}
+
+	// now we need to make sense of the stats
+	if(iCountKashida)
+	{
+		RI.m_eJustification = (SCRIPT_JUSTIFY)(
+			                  SCRIPT_JUSTIFY_ARABIC_NORMAL
+                			& SCRIPT_JUSTIFY_ARABIC_KASHIDA
+			                & SCRIPT_JUSTIFY_ARABIC_ALEF
+			                & SCRIPT_JUSTIFY_ARABIC_HA
+ 			                & SCRIPT_JUSTIFY_ARABIC_RA
+			                & SCRIPT_JUSTIFY_ARABIC_BA
+                			& SCRIPT_JUSTIFY_ARABIC_BARA
+			                & SCRIPT_JUSTIFY_ARABIC_SEEN
+			                & SCRIPT_JUSTIFY_ARABIC_SEEN_M
+			                & SCRIPT_JUSTIFY_BLANK );
+		
+		return iCountSpace + iCountKashida;
+	}
+	
+	if(iCountSpace)
+	{
+		RI.m_eJustification = SCRIPT_JUSTIFY_BLANK;
+		if(bBlank && !iCountInterChar)
+			return -iCountSpace;
+		else
+			return iCountSpace;
+	}
+
+	if(iCountSpaceAR)
+	{
+		RI.m_eJustification = SCRIPT_JUSTIFY_ARABIC_BLANK;
+		if(bBlank && !iCountInterChar)
+			return -iCountSpaceAR;
+		else
+			return iCountSpaceAR;
+	}
+	
+	if(iCountInterChar)
+	{
+		RI.m_eJustification = SCRIPT_JUSTIFY_CHARACTER;
+		return iCountInterChar;
+	}
+
+	RI.m_eJustification = SCRIPT_JUSTIFY_NONE;
+	return 0;
 }
 
 void GR_Win32USPGraphics::justify(GR_RenderInfo & ri)
@@ -780,16 +976,37 @@ void GR_Win32USPGraphics::justify(GR_RenderInfo & ri)
 	UT_return_if_fail(ri.getType() == GRRI_WIN32_UNISCRIBE);
 	GR_Win32USPRenderInfo & RI = (GR_Win32USPRenderInfo &)ri;
 
+	if(!RI.m_iJustificationPoints || !RI.m_iJustificationAmount)
+		return;
+	
 	if(!RI.m_pJustify)
 		RI.m_pJustify = new int[RI.m_iIndicesSize];
 
-	HRESULT hRes = ScriptJustify(RI.m_pVisAttr, RI.m_pAdvances, RI.m_iIndicesCount,
-								 RI.m_iJustificationAmount,/* this needs to be the
-															  complete width*/
-								 0 /*not sure about this*/,
-								 RI.m_pJustify);
+	// mark the static width caches dirty
+	RI.s_pOwner = NULL;
+	
+	UT_return_if_fail(RI.m_pJustify);
+	memset(RI.m_pJustify, 0, RI.m_iIndicesSize * sizeof(int));
+	
+	UT_uint32 iExtraSpace = RI.m_iJustificationAmount;
+	UT_uint32 iPoints     = RI.m_iJustificationPoints;
 
-	UT_ASSERT( !hRes );
+	for(UT_uint32 i = 0; i < RI.m_iIndicesSize; ++i)
+	{
+		if(RI.m_pVisAttr[i].uJustification & RI.m_eJustification)
+		{
+			UT_uint32 iSpace = iExtraSpace/iPoints;
+			iExtraSpace -= iSpace;
+			iPoints--;
+
+			RI.m_pJustify[i] = iSpace;
+
+			if(!iPoints)
+				break;
+		}
+	}
+
+	UT_ASSERT( !iExtraSpace );
 }
 
 UT_uint32 GR_Win32USPGraphics::XYToPosition(const GR_RenderInfo & ri, UT_sint32 x, UT_sint32 y) const
@@ -845,10 +1062,78 @@ bool GR_Win32USPRenderInfo::append(GR_RenderInfo &ri, bool bReverse)
 	return false;
 }
 
-bool GR_Win32USPRenderInfo::split (GR_RenderInfo *&pri, UT_uint32 offset, bool bReverse)
+bool GR_Win32USPRenderInfo::split (GR_RenderInfo *&pri, bool bReverse)
 {
-	//UT_return_val_if_fail( UT_NOT_IMPLEMENTED, false );
-	return false;
+	UT_return_val_if_fail(m_pGraphics && m_pFont, false);
+	if(!pri)
+	{
+		pri = new GR_Win32USPRenderInfo(m_eScriptType);
+	}
+	
+	UT_return_val_if_fail(pri,false);
+	
+	GR_Win32USPRenderInfo & RI = (GR_Win32USPRenderInfo &) *pri;
+
+	UT_uint32 iGlyphOffset = m_pClust[m_iOffset];
+	UT_uint32 iGlyphLen1 = iGlyphOffset;
+	UT_uint32 iGlyphLen2 = m_iIndicesCount - iGlyphLen1;
+
+	UT_uint32 iCharLen1 = m_iOffset;
+	UT_uint32 iCharLen2 = m_iCharCount - iCharLen1;
+
+	// this is an attempt to simply split the data, but I am not sure
+	// what to do about the ABC and GOFFSET, hence we recalculate the
+	// placements
+	if(RI.m_iIndicesSize < iGlyphLen2)
+	{
+		delete [] RI.m_pIndices;  RI.m_pIndices  = new WORD [iGlyphLen2];
+		delete [] RI.m_pAdvances; RI.m_pAdvances = new int  [iGlyphLen2];
+		delete [] RI.m_pVisAttr;  RI.m_pVisAttr  = new SCRIPT_VISATTR [iGlyphLen2];
+		delete [] RI.m_pGoffsets; RI.m_pGoffsets = new GOFFSET[iGlyphLen2];
+
+		UT_return_val_if_fail(RI.m_pIndices && RI.m_pAdvances && RI.m_pVisAttr, false);
+		
+		if(m_pJustify)
+		{
+			delete [] RI.m_pJustify; RI.m_pJustify = new int [iGlyphLen2];
+			UT_return_val_if_fail(RI.m_pJustify, false);
+		}
+		
+		RI.m_iIndicesSize = iGlyphLen2;
+	}
+
+	if(RI.m_iClustSize < iCharLen2)
+	{
+		delete [] RI.m_pClust; RI.m_pClust = new WORD [iCharLen2];
+		UT_return_val_if_fail(RI.m_pClust, false);
+		RI.m_iClustSize = iCharLen2;
+	}
+	
+	memcpy(RI.m_pIndices,  m_pIndices  + iGlyphOffset, sizeof(WORD)*iGlyphLen2);
+	memcpy(RI.m_pVisAttr,  m_pVisAttr  + iGlyphOffset, sizeof(SCRIPT_VISATTR)*iGlyphLen2);
+
+	// now we need to copy the cluster info (relative to the original start
+	// of the string)
+	for(UT_uint32 i = 0; i < iCharLen2; ++i)
+	{
+		RI.m_pClust[i] = m_pClust[i+m_iOffset] - m_iOffset;
+	}
+	
+	m_iIndicesCount = iGlyphLen1; RI.m_iIndicesCount = iGlyphLen2;
+	m_iCharCount    = iCharLen1;  RI.m_iCharCount    = iCharLen2;
+	RI.m_pGraphics = m_pGraphics;
+	RI.m_pFont = m_pFont;
+
+	RI.m_eShapingResult = m_eShapingResult;
+	RI.m_eState = m_eState;
+	RI.m_pItem = m_pItem; // needed for measuring
+
+	GR_Graphics * pG = const_cast<GR_Graphics*>(m_pGraphics);
+	
+	pG->measureRenderedCharWidths(*this);
+	pG->measureRenderedCharWidths(*pri);
+
+	return true;
 }
 
 bool GR_Win32USPRenderInfo::cut(UT_uint32 offset, UT_uint32 iLen, bool bReverse)

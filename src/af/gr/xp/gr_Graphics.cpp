@@ -925,6 +925,10 @@ bool GR_Graphics::shape(GR_ShapingInfo & si, GR_RenderInfo *& pri)
 	if(pRI->isJustified())
 		justify(*pRI);
 
+	// make sure that we invalidate the static buffers if we own them
+	if(pRI->s_pOwner == pRI)
+		pRI->s_pOwner = NULL;
+	
 	return true;
 }
 
@@ -977,6 +981,11 @@ void GR_Graphics::measureRenderedCharWidths(GR_RenderInfo & ri)
 										 static_cast<UT_GrowBufElement*>(RI.m_pWidths) + i);
 		}
 	}
+
+	// make sure that we invalidate the static buffers if we own them
+	if(RI.s_pOwner == &RI)
+		RI.s_pOwner = NULL;
+	
 }
 
 /*!

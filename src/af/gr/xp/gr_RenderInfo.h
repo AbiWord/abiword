@@ -75,7 +75,7 @@ class GR_Item
   public:
 	virtual ~GR_Item(){};
 	virtual GR_ScriptType getType() const = 0;
-	virtual GR_Item * makeCopy() = 0; // make a copy of this item
+	virtual GR_Item * makeCopy() const = 0; // make a copy of this item
 	virtual GRRI_Type getClassId() const = 0;
 
   protected:
@@ -91,7 +91,7 @@ class GR_XPItem : public GR_Item
 	virtual ~GR_XPItem(){};
 	
 	virtual GR_ScriptType getType() const {return m_eType;}
-	virtual GR_Item * makeCopy() {return new GR_XPItem(m_eType);}
+	virtual GR_Item * makeCopy() const {return new GR_XPItem(m_eType);}
 	virtual GRRI_Type getClassId() const {return GRRI_XP;}
 
   protected:
@@ -126,42 +126,46 @@ class GR_Itemization
 	GR_Itemization():
 		m_iEmbedingLevel(0),
 		m_iDirOverride(0),
-		m_bShowControlChars(false)
+		m_bShowControlChars(false),
+		m_pLang(NULL)
 	{};
 	
 	virtual ~GR_Itemization() {clear();} // do not delete the actual
 										 // items, they get passed on
 										 // to the runs
 
-	UT_uint32     getItemCount() const {return m_vOffsets.getItemCount();}
-	UT_uint32     getNthOffset(UT_uint32 i) const {return m_vOffsets.getNthItem(i);}
-	GR_ScriptType getNthType(UT_uint32 i) const
-	                  {return ((GR_Item*)m_vItems.getNthItem(i))->getType();}
+	UT_uint32       getItemCount() const {return m_vOffsets.getItemCount();}
+	UT_uint32       getNthOffset(UT_uint32 i) const {return m_vOffsets.getNthItem(i);}
+	GR_ScriptType   getNthType(UT_uint32 i) const
+	                   {return ((GR_Item*)m_vItems.getNthItem(i))->getType();}
 	
-	UT_uint32     getNthLength(UT_uint32 i)
-	                  {
+	UT_uint32       getNthLength(UT_uint32 i)
+	                   {
 						  UT_return_val_if_fail(i < m_vOffsets.getItemCount()-1, 0);
 						  return m_vOffsets.getNthItem(i+1) - m_vOffsets.getNthItem(i);
-					  }
+					   }
 	
-	GR_Item *     getNthItem(UT_uint32 i) const {return (GR_Item *)m_vItems.getNthItem(i);}
+	GR_Item *       getNthItem(UT_uint32 i) const {return (GR_Item *)m_vItems.getNthItem(i);}
 	
-	void addItem(UT_uint32 offset, const GR_Item *item)
-	         { m_vOffsets.addItem(offset); m_vItems.addItem(item);}
+	void            addItem(UT_uint32 offset, const GR_Item *item)
+	                    { m_vOffsets.addItem(offset); m_vItems.addItem(item);}
 
-	void insertItem(UT_uint32 indx, UT_uint32 offset, const GR_Item *item)
-	         { m_vOffsets.insertItemAt(offset, indx); m_vItems.insertItemAt(item,indx);}
+	void            insertItem(UT_uint32 indx, UT_uint32 offset, const GR_Item *item)
+	                    { m_vOffsets.insertItemAt(offset, indx); m_vItems.insertItemAt(item,indx);}
 	
-	void clear();
+	void            clear();
 
-	void      setEmbedingLevel(UT_uint32 l) {m_iEmbedingLevel = l;}
-	UT_uint32 getEmbedingLevel() const {return m_iEmbedingLevel;}
+	void            setEmbedingLevel(UT_uint32 l) {m_iEmbedingLevel = l;}
+	UT_uint32       getEmbedingLevel() const {return m_iEmbedingLevel;}
 
 	void            setDirOverride(FriBidiCharType o) {m_iDirOverride = o;}
 	FriBidiCharType getDirOverride() const {return m_iDirOverride;}
 
-	void setShowControlChars(bool s) {m_bShowControlChars = s;}
-	bool getShowControlChars() const {return m_bShowControlChars;}
+	void            setShowControlChars(bool s) {m_bShowControlChars = s;}
+	bool            getShowControlChars() const {return m_bShowControlChars;}
+
+	void            setLang(const char * l) {m_pLang = l;}
+	const char *    getLang()const {return m_pLang;}
 	
   private:
 	UT_NumberVector m_vOffsets;
@@ -170,6 +174,7 @@ class GR_Itemization
 	UT_uint32       m_iEmbedingLevel;
 	FriBidiCharType m_iDirOverride;
 	bool            m_bShowControlChars;
+	const char *    m_pLang;
 };
 
 /*
@@ -210,7 +215,8 @@ class GR_RenderInfo
 		  m_iJustificationPoints(0),
 		  m_iJustificationAmount(0),
 		  m_bLastOnLine(false),
-	      m_pItem(NULL){};
+		  m_pItem(NULL),
+		  m_bInvalidateFontCache(false){};
 	
 	
 	virtual ~GR_RenderInfo(){};
@@ -218,8 +224,8 @@ class GR_RenderInfo
 	virtual GRRI_Type getType() const = 0;
 	
 	virtual bool append(GR_RenderInfo &ri, bool bReverse = false) = 0;
-	virtual bool split (GR_RenderInfo *&pri, UT_uint32 offset, bool bReverse = false) = 0;
-	virtual bool cut(UT_uint32 offset, UT_uint32 iLen, bool bReverse = false) = 0;
+	virtual bool split (GR_RenderInfo *&pri, bool bReverse = false) = 0;
+	virtual bool cut(UT_uint32 offset, UT_uint32 len, bool bReverse = false) = 0;
 
 	virtual bool canAppend(GR_RenderInfo &ri) const
 	              {return (m_eScriptType == ri.m_eScriptType);}
@@ -244,7 +250,7 @@ class GR_RenderInfo
 	UT_sint32           m_iJustificationAmount;
 	bool                m_bLastOnLine;
 	const GR_Item *     m_pItem;
-	
+	bool                m_bInvalidateFontCache;
 
  private:
 	// never to be implemented (constructor always has to set
@@ -261,22 +267,13 @@ class GR_XPRenderInfo : public GR_RenderInfo
   public:
 	GR_XPRenderInfo(GR_ScriptType type);
 	
-#if 0
-	GR_XPRenderInfo(UT_UCS4Char *pChar,
-				  UT_sint32 * pAdv,
-				  UT_uint32 offset,
-				  UT_uint32 len,
-				  UT_uint32 iBufferSize,
-				  GR_ScriptType type);
-#endif
-	
 	virtual ~GR_XPRenderInfo();
 
 	virtual GRRI_Type getType() const {return GRRI_XP;}
 	
 	virtual bool append(GR_RenderInfo &ri, bool bReverse = false);
-	virtual bool split (GR_RenderInfo *&pri, UT_uint32 offset, bool bReverse = false);
-	virtual bool cut(UT_uint32 offset, UT_uint32 iLen, bool bReverse = false);
+	virtual bool split (GR_RenderInfo *&pri, bool bReverse = false);
+	virtual bool cut(UT_uint32 offset, UT_uint32 len, bool bReverse = false);
 
 	virtual bool isJustified() const {return (m_iSpaceWidthBeforeJustification >= 0);}
 	
@@ -296,7 +293,7 @@ class GR_XPRenderInfo : public GR_RenderInfo
 	static UT_sint32 *      s_pWidthBuff;
 	static UT_uint32        s_iBuffSize;
 	static UT_sint32 *      s_pAdvances;
-
+	static GR_RenderInfo *  s_pOwner;
   private:
 	void                   _constructorCommonCode();
 	inline void            _stripLigaturePlaceHolders();

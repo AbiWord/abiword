@@ -45,11 +45,12 @@ void GR_Itemization::clear()
 
 #define GRIXP_STATIC_BUFFER_SIZE 256
 
-UT_uint32     GR_XPRenderInfo::s_iClassInstanceCount = 0;
-UT_UCS4Char * GR_XPRenderInfo::s_pCharBuff  = NULL;
-UT_sint32 *   GR_XPRenderInfo::s_pWidthBuff = NULL;
-UT_uint32     GR_XPRenderInfo::s_iBuffSize  = 0;
-UT_sint32 *   GR_XPRenderInfo::s_pAdvances = NULL;
+UT_uint32       GR_XPRenderInfo::s_iClassInstanceCount = 0;
+UT_UCS4Char *   GR_XPRenderInfo::s_pCharBuff           = NULL;
+UT_sint32 *     GR_XPRenderInfo::s_pWidthBuff          = NULL;
+UT_uint32       GR_XPRenderInfo::s_iBuffSize           = 0;
+UT_sint32 *     GR_XPRenderInfo::s_pAdvances           = NULL;
+GR_RenderInfo * GR_XPRenderInfo::s_pOwner              = NULL;
 
 GR_XPRenderInfo::GR_XPRenderInfo(GR_ScriptType type)
 		:GR_RenderInfo(type),
@@ -111,6 +112,8 @@ GR_XPRenderInfo::~GR_XPRenderInfo()
 		delete [] s_pCharBuff;    s_pCharBuff = NULL;
 		delete [] s_pWidthBuff;   s_pWidthBuff = NULL;
 		delete [] s_pAdvances;    s_pAdvances = NULL;
+
+		s_pOwner = NULL;
 	}
 
     delete [] m_pChars;
@@ -209,7 +212,7 @@ bool GR_XPRenderInfo::append(GR_RenderInfo &ri, bool bReverse)
 
     we also calculate justification info for the two parts
 */
-bool  GR_XPRenderInfo::split (GR_RenderInfo *&pri, UT_uint32 offset, bool bReverse)
+bool  GR_XPRenderInfo::split (GR_RenderInfo *&pri, bool bReverse)
 {
 	UT_ASSERT( !pri );
 	pri = new GR_XPRenderInfo(m_eScriptType);
@@ -217,7 +220,7 @@ bool  GR_XPRenderInfo::split (GR_RenderInfo *&pri, UT_uint32 offset, bool bRever
 
 	GR_XPRenderInfo * pRI = (GR_XPRenderInfo *)pri;
 	
-	UT_uint32 iPart2Len = m_iLength - offset;
+	UT_uint32 iPart2Len = m_iLength - m_iOffset;
 	UT_uint32 iPart1Len = m_iLength - iPart2Len;
 
 	m_iLength = iPart1Len;
@@ -450,6 +453,13 @@ bool GR_XPRenderInfo::cut(UT_uint32 offset, UT_uint32 iLen, bool bReverse)
 
 void GR_XPRenderInfo::prepareToRenderChars()
 {
+	if(s_pOwner == this)
+	{
+		// we currently own the static buffers, so we do not need to
+		// do anything
+		return;
+	}
+	
 	// make sure that the static buffers where we temporarily store
 	// information are big enough
 	UT_return_if_fail(_checkAndFixStaticBuffers());
@@ -459,6 +469,8 @@ void GR_XPRenderInfo::prepareToRenderChars()
 
 	// calculate advances from the pre-processed buffer
 	_calculateCharAdvances();
+
+	s_pOwner = this;
 }
 
 
