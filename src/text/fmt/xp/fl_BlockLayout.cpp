@@ -827,7 +827,7 @@ void fl_BlockLayout::_lookupProperties(void)
 			m_bStartList = true;
 		}
 
-		UT_DEBUGMSG(("Added Item to List\n"));
+		xxx_UT_DEBUGMSG(("Added Item to List\n"));
 	}
 
 	// Add this in for loading - see if better way to fix.
@@ -972,13 +972,13 @@ UT_sint32 fl_BlockLayout::getEmbeddedOffset(UT_sint32 offset, fl_ContainerLayout
  */
 void fl_BlockLayout::updateOffsets(PT_DocPosition posEmbedded, UT_uint32 iEmbeddedSize)
 {
-	UT_DEBUGMSG(("In update Offsets posEmbedded %d EmbeddedSize %d \n",posEmbedded,iEmbeddedSize));
+	xxx_UT_DEBUGMSG(("In update Offsets posEmbedded %d EmbeddedSize %d \n",posEmbedded,iEmbeddedSize));
 	fp_Run * pRun = getFirstRun();
 	PT_DocPosition posInBlock = getPosition(true);
 	fp_Run * pPrev = NULL;
 	while(pRun && (posInBlock + pRun->getBlockOffset() < posEmbedded))
 	{
-		UT_DEBUGMSG(("Look at run %x runType %d posindoc %d \n",pRun,pRun->getType(),posInBlock+pRun->getBlockOffset()));
+		xxx_UT_DEBUGMSG(("Look at run %x runType %d posindoc %d \n",pRun,pRun->getType(),posInBlock+pRun->getBlockOffset()));
 		pPrev = pRun;
 		pRun = pRun->getNextRun();
 	}
@@ -1018,7 +1018,7 @@ void fl_BlockLayout::updateOffsets(PT_DocPosition posEmbedded, UT_uint32 iEmbedd
 		if(!bHandleOne && (posRun + pPrev->getLength() <= posEmbedded))
 		{
 			iDiff = static_cast<UT_sint32>((pRun->getBlockOffset() - pPrev->getBlockOffset() - pPrev->getLength()));
-			UT_DEBUGMSG(("updateOffsets: after BlockOffset %d or pos %d \n",pRun->getBlockOffset(),posInBlock+pRun->getBlockOffset())); 
+			xxx_UT_DEBUGMSG(("updateOffsets: after BlockOffset %d or pos %d \n",pRun->getBlockOffset(),posInBlock+pRun->getBlockOffset())); 
 		}
 		else if(!bHandleOne && (posRun == posEmbedded) && pRun->getNextRun())
 		{
@@ -1040,7 +1040,7 @@ void fl_BlockLayout::updateOffsets(PT_DocPosition posEmbedded, UT_uint32 iEmbedd
 				// We're here if the first run of the block is the footnote
 				// field and we've just deleted the footnote
 				//
-				UT_DEBUGMSG(("posEmbedded %d posInBlock %d prev pos %d next pos %d \n",posEmbedded,posInBlock,posInBlock+pRun->getBlockOffset(),posInBlock+pRun->getNextRun()->getBlockOffset()));
+				xxx_UT_DEBUGMSG(("posEmbedded %d posInBlock %d prev pos %d next pos %d \n",posEmbedded,posInBlock,posInBlock+pRun->getBlockOffset(),posInBlock+pRun->getNextRun()->getBlockOffset()));
 				iDiff = pRun->getNextRun()->getBlockOffset() - pRun->getBlockOffset();
 				if((iDiff == 1) && bHandleOne)
 				{
@@ -1061,13 +1061,13 @@ void fl_BlockLayout::updateOffsets(PT_DocPosition posEmbedded, UT_uint32 iEmbedd
 				UT_uint32 splitOffset = posEmbedded - posInBlock -1;
 				if(splitOffset > pTRun->getBlockOffset())
 				{
-					UT_DEBUGMSG(("updateOffsets: Split at offset %d \n",splitOffset));
+					xxx_UT_DEBUGMSG(("updateOffsets: Split at offset %d \n",splitOffset));
 					bool bres = pTRun->split(splitOffset);
 					UT_ASSERT(bres);
 					pRun = pTRun->getNextRun();
 					pPrev = pTRun;
-					UT_DEBUGMSG(("New Run %x created offset %d \n",pRun,pRun->getBlockOffset()));
-					UT_DEBUGMSG(("Old Run %x offset %d length\n",pPrev,pPrev->getBlockOffset(),pPrev->getLength()));
+					xxx_UT_DEBUGMSG(("New Run %x created offset %d \n",pRun,pRun->getBlockOffset()));
+					xxx_UT_DEBUGMSG(("Old Run %x offset %d length\n",pPrev,pPrev->getBlockOffset(),pPrev->getLength()));
 					iDiff = 0;
 				}
 				else
@@ -1082,7 +1082,7 @@ void fl_BlockLayout::updateOffsets(PT_DocPosition posEmbedded, UT_uint32 iEmbedd
 		}
 	}
 	UT_ASSERT(iDiff >= 0);
-	UT_DEBUGMSG(("Updating block %x with orig shift %d new shift %d \n",this,iDiff,iEmbeddedSize));
+	xxx_UT_DEBUGMSG(("Updating block %x with orig shift %d new shift %d \n",this,iDiff,iEmbeddedSize));
 	if(iDiff != static_cast<UT_sint32>(iEmbeddedSize))
 	{
 //
@@ -1094,7 +1094,7 @@ void fl_BlockLayout::updateOffsets(PT_DocPosition posEmbedded, UT_uint32 iEmbedd
 		{
 			UT_uint32 iNew = pRun->getBlockOffset() + iDiff;
 			UT_ASSERT(iNew >= 0);
-			UT_DEBUGMSG(("Run %x Old offset %d New Offset %d \n",pRun,pRun->getBlockOffset(),iNew));
+			xxx_UT_DEBUGMSG(("Run %x Old offset %d New Offset %d \n",pRun,pRun->getBlockOffset(),iNew));
 			pRun->setBlockOffset(static_cast<UT_uint32>(iNew));
 			pRun = pRun->getNextRun();
 		}
@@ -3765,7 +3765,8 @@ bool	fl_BlockLayout::_doInsertTabRun(PT_BlockOffset blockOffset)
 	}
 	else
 	{
-		pNewRun = new fp_DummyRun(this,blockOffset);
+		UT_DEBUGMSG(("Insert dummy in place of TAB at %d \n",blockOffset));
+		pNewRun = new fp_DummyRun(this,0);
 	}
 	UT_ASSERT(pNewRun); // TODO check for outofmem
 
@@ -3845,22 +3846,7 @@ bool	fl_BlockLayout::_doInsertFieldRun(PT_BlockOffset blockOffset, const PX_Chan
 		else
 		{
 			fp_Run * pDumRun = new fp_DummyRun(this,blockOffset);
-			fp_Run * pRun = m_pFirstRun;
-			while(pRun && (pRun->getLength() == 0))
-			{
-				pRun = pRun->getNextRun();
-			}
-			if(pRun)
-			{
-				pRun->insertIntoRunListBeforeThis(*pDumRun);
-				pDumRun->markWidthDirty();
-				if(pRun->getLine())
-				{
-					pRun->getLine()->insertRunBefore(pDumRun, pRun);
-				}
-				recalculateFields(0);
-				return true;				
-			}
+			xxx_UT_DEBUGMSG(("Inserting a dummy run instead of listlabel at %d \n",blockOffset));
 			_doInsertRun(pDumRun);
 			recalculateFields(0);
 			return true;
@@ -4093,11 +4079,13 @@ bool	fl_BlockLayout::_doInsertFieldTOCRun(PT_BlockOffset blockOffset)
 	return true;
 }
 
-
+/*!
+ * TOC List label run. It has zero length since it's not in the document.
+ */
 bool	fl_BlockLayout::_doInsertTOCListLabelRun(PT_BlockOffset blockOffset)
 {
 	fp_FieldRun* pNewRun;
-	pNewRun = new fp_FieldTOCListLabelRun(this,   blockOffset, 1);
+	pNewRun = new fp_FieldTOCListLabelRun(this,   blockOffset, 0);
 	fp_Run * pRun = m_pFirstRun;
 	pRun->insertIntoRunListBeforeThis(*pNewRun);
 	m_pFirstRun = pNewRun;
@@ -5389,6 +5377,14 @@ fl_BlockLayout::doclistener_deleteStrux(const PX_ChangeRecord_Strux* pcrx)
 		// if necessary
 		m_pSquiggles->join(offset, pPrevBL);
 		pPrevBL->setNeedsReformat();
+		//
+		// Update if it's TOC entry by removing then restoring
+		//
+		if(m_pLayout->isBlockInTOC(pPrevBL))
+		{
+			m_pLayout->removeBlockFromTOC(pPrevBL);
+			m_pLayout->addOrRemoveBlockFromTOC(pPrevBL);
+		}
 	}
 	else
 	{
@@ -5614,7 +5610,7 @@ bool fl_BlockLayout::doclistener_insertBlock(const PX_ChangeRecord_Strux * pcrx,
 	fp_Run* pFirstNewRun = NULL;
 	fp_Run* pLastRun = NULL;
 	fp_Run* pRun;
-	UT_DEBUGMSG(("BlockOffset %d \n",blockOffset));
+	xxx_UT_DEBUGMSG(("BlockOffset %d \n",blockOffset));
 	for (pRun=m_pFirstRun; (pRun && !pFirstNewRun);
 		 pLastRun=pRun, pRun=pRun->getNextRun())
 	{
@@ -5774,7 +5770,7 @@ bool fl_BlockLayout::doclistener_insertBlock(const PX_ChangeRecord_Strux * pcrx,
 		pView->_setPoint(pView->getPoint() + fl_BLOCK_STRUX_OFFSET);
 
 	_assertRunListIntegrity();
-	UT_DEBUGMSG(("Prev Block = %x type %d Next block = %x type %d \n",pNewBL->getPrev(),pNewBL->getContainerType(),pNewBL->getNext(),pNewBL->getContainerType()));
+	xxx_UT_DEBUGMSG(("Prev Block = %x type %d Next block = %x type %d \n",pNewBL->getPrev(),pNewBL->getContainerType(),pNewBL->getNext(),pNewBL->getContainerType()));
 	return true;
 }
 
@@ -6970,7 +6966,7 @@ bool	fl_BlockLayout::findPrevTabStop( UT_sint32 iStartX, UT_sint32 iMaxX, UT_sin
 	// but there is something before it
 	if(iCountTabs > 0 && i == iCountTabs)
 	{
-			UT_DEBUGMSG(("found tabstop indx=%d\n", iCountTabs - 1));
+			xxx_UT_DEBUGMSG(("found tabstop indx=%d\n", iCountTabs - 1));
 			fl_TabStop* pTab = static_cast<fl_TabStop*>(m_vecTabs.getNthItem(iCountTabs - 1));
 			UT_ASSERT(pTab);
 
@@ -8392,7 +8388,7 @@ void fl_BlockLayout::_createListLabel(void)
 		return;
 	}
 	UT_ASSERT(m_pAutoNum);
-
+	xxx_UT_DEBUGMSG(("Doing create list label \n"));
 	FV_View* pView = getView();
 	PT_DocPosition offset =0;
 	if(pView)
