@@ -70,12 +70,12 @@ dnl Define here ABI_FE, PLATFORM_CFLAGS, PLATFORM_LIBS
 if test "$PLATFORM" = "unix"; then
 	ABI_FE="Unix"
 	AM_CONDITIONAL(WITH_UNIX, true)
-	echo "defined WITH_UNIX"
+	dnl locate glib and gtk
+	ABI_GLIB_GTK
 elif test "$PLATFORM" = "mac" ; then
 
 	ABI_FE="Mac"
 	AM_CONDITIONAL(WITH_MACOSX, true)
-	echo "defined WITH_MACOSX"
 fi
 
 dnl These are the flags required and defined above
@@ -89,8 +89,6 @@ else
 fi
 AC_SUBST(ICONV_INCLUDES)
 
-dnl locate glib and gtk
-ABI_GLIB_GTK
 
 ABIWORD_APP_NAME="AbiWord"
 AC_SUBST(ABIWORD_APP_NAME)
