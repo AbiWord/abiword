@@ -213,10 +213,10 @@ struct {
 
 // the order of the tabs
 
-#define SPELL_INDEX		0
-#define PREF_INDEX		1
-#define VIEW_INDEX		2
-#define OTHER_INDEX 3
+#define TOOLBARS_INDEX		0
+#define SPELL_INDEX			1
+#define LAYOUT_INDEX		2
+#define PREF_INDEX 			3
 
 BOOL AP_Win32Dialog_Options::_onInitDialog(HWND hWnd, WPARAM wParam, LPARAM lParam)
 {
@@ -254,25 +254,25 @@ BOOL AP_Win32Dialog_Options::_onInitDialog(HWND hWnd, WPARAM wParam, LPARAM lPar
 		tie.mask = TCIF_TEXT | TCIF_IMAGE | TCIF_PARAM; 
 		tie.iImage = -1; 
 
+		tie.pszText = (LPSTR) _GV(DLG_Options_Label_Toolbars); 
+		tie.lParam = AP_RID_DIALOG_OPT_TOOLBARS;
+		TabCtrl_InsertItem(m_hwndTab, TOOLBARS_INDEX, &tie); 
+
 		tie.pszText = (LPSTR) _GV(DLG_Options_TabLabel_Spelling); 
-		tie.lParam = AP_RID_DIALOG_OPT_SPL;
+		tie.lParam = AP_RID_DIALOG_OPT_SPELL;
 		TabCtrl_InsertItem(m_hwndTab, SPELL_INDEX, &tie); 
+
+		tie.pszText = (LPSTR) _GV(DLG_Options_Label_Layout); 
+		tie.lParam = AP_RID_DIALOG_OPT_LAYOUT;
+		TabCtrl_InsertItem(m_hwndTab, LAYOUT_INDEX, &tie); 
 
 		tie.pszText = (LPSTR) _GV(DLG_Options_TabLabel_Preferences); 
 		tie.lParam = AP_RID_DIALOG_OPT_PREF;
 		TabCtrl_InsertItem(m_hwndTab, PREF_INDEX, &tie); 
 
-		tie.pszText = (LPSTR) _GV(DLG_Options_TabLabel_View); 
-		tie.lParam = AP_RID_DIALOG_OPT_VIEW;
-		TabCtrl_InsertItem(m_hwndTab, VIEW_INDEX, &tie); 
-
-		tie.pszText = (LPSTR) _GV(DLG_Options_TabLabel_Other); 
-		tie.lParam = AP_RID_DIALOG_OPT_OTHER;
-		TabCtrl_InsertItem(m_hwndTab, OTHER_INDEX, &tie); 
-
 		// finally, create the (modeless) child dialogs
 		
-		tp.which = AP_RID_DIALOG_OPT_SPL;
+		tp.which = AP_RID_DIALOG_OPT_TOOLBARS;
 		pTemplate = UT_LockDlgRes(hinst, MAKEINTRESOURCE(tp.which));
 		w = CreateDialogIndirectParam(hinst, pTemplate, m_hwndTab, 
 										(DLGPROC)s_tabProc, (LPARAM)&tp);
@@ -280,7 +280,7 @@ BOOL AP_Win32Dialog_Options::_onInitDialog(HWND hWnd, WPARAM wParam, LPARAM lPar
 				   && (m_vecSubDlgHWnd.getItemCount()>0)
 				   && (w == m_vecSubDlgHWnd.getLastItem())));
 
-		tp.which = AP_RID_DIALOG_OPT_PREF;
+		tp.which = AP_RID_DIALOG_OPT_SPELL;
 		pTemplate = UT_LockDlgRes(hinst, MAKEINTRESOURCE(tp.which));
 		w = CreateDialogIndirectParam(hinst, pTemplate, m_hwndTab, 
 										(DLGPROC)s_tabProc, (LPARAM)&tp); 
@@ -288,7 +288,7 @@ BOOL AP_Win32Dialog_Options::_onInitDialog(HWND hWnd, WPARAM wParam, LPARAM lPar
 				   && (m_vecSubDlgHWnd.getItemCount()>0)
 				   && (w == m_vecSubDlgHWnd.getLastItem())));
 
-		tp.which = AP_RID_DIALOG_OPT_VIEW;
+		tp.which = AP_RID_DIALOG_OPT_LAYOUT;
 		pTemplate = UT_LockDlgRes(hinst, MAKEINTRESOURCE(tp.which));
 		w = CreateDialogIndirectParam(hinst, pTemplate, m_hwndTab, 
 										(DLGPROC)s_tabProc, (LPARAM)&tp); 
@@ -296,7 +296,7 @@ BOOL AP_Win32Dialog_Options::_onInitDialog(HWND hWnd, WPARAM wParam, LPARAM lPar
 				   && (m_vecSubDlgHWnd.getItemCount()>0)
 				   && (w == m_vecSubDlgHWnd.getLastItem())));
 		
-		tp.which = AP_RID_DIALOG_OPT_OTHER;
+		tp.which = AP_RID_DIALOG_OPT_PREF;
 		pTemplate = UT_LockDlgRes(hinst, MAKEINTRESOURCE(tp.which));
 		w = CreateDialogIndirectParam(hinst, pTemplate, m_hwndTab, 
 										(DLGPROC)s_tabProc, (LPARAM)&tp); 
@@ -339,13 +339,36 @@ BOOL AP_Win32Dialog_Options::_onInitTab(HWND hWnd, WPARAM wParam, LPARAM lParam)
 	TabParam * pTP = (TabParam *) lParam;
 	switch (pTP->which)
 	{
-	case AP_RID_DIALOG_OPT_SPL:
+	case AP_RID_DIALOG_OPT_TOOLBARS:
+		{
+			_DS(OPTIONS_FRM_Toolbars,				DLG_Options_Label_Toolbars);
+			_DS(OPTIONS_CHK_ViewShowStandardBar,	DLG_Options_Label_ViewStandardTB);
+			_DS(OPTIONS_CHK_ViewShowFormatBar,		DLG_Options_Label_ViewFormatTB);
+			_DS(OPTIONS_CHK_ViewShowExtraBar,		DLG_Options_Label_ViewExtraTB);
+			_DS(OPTIONS_FRM_ButtonStyle,			DLG_Options_Label_Look);
+			_DS(OPTIONS_RDO_Icons,					DLG_Options_Label_Icons);
+			_DS(OPTIONS_RDO_Text,					DLG_Options_Label_Text);
+			_DS(OPTIONS_RDO_IconsAndText,			DLG_Options_Label_Both);
+			_DS(OPTIONS_CHK_ViewToolTips,			DLG_Options_Label_ViewTooltips);
+
+			// TODO:  make the following 4 controls usable
+			EnableWindow( GetDlgItem(hWnd, AP_RID_DIALOG_OPTIONS_RDO_Icons),		false );
+			EnableWindow( GetDlgItem(hWnd, AP_RID_DIALOG_OPTIONS_RDO_Text),			false );
+			EnableWindow( GetDlgItem(hWnd, AP_RID_DIALOG_OPTIONS_RDO_IconsAndText),	false );
+			EnableWindow( GetDlgItem(hWnd, AP_RID_DIALOG_OPTIONS_CHK_ViewToolTips),	false );
+			
+		}
+		break;
+			
+	case AP_RID_DIALOG_OPT_SPELL:
 		{
 			// localize controls
+			_DS(OPTIONS_FRM_SpellGeneral,			DLG_Options_Label_General);
 			_DS(OPTIONS_CHK_SpellCheckAsType,		DLG_Options_Label_SpellCheckAsType);
 			_DS(OPTIONS_CHK_SpellHideErrors,		DLG_Options_Label_SpellHideErrors);
 			_DS(OPTIONS_CHK_SpellSuggest,			DLG_Options_Label_SpellSuggest);
 			_DS(OPTIONS_CHK_SpellMainOnly,			DLG_Options_Label_SpellMainOnly);
+			_DS(OPTIONS_FRM_SpellIgnore,			DLG_Options_Label_Ignore);
 			_DS(OPTIONS_CHK_SpellUppercase,			DLG_Options_Label_SpellUppercase);
 			_DS(OPTIONS_CHK_SpellNumbers,			DLG_Options_Label_SpellNumbers);
 			_DS(OPTIONS_CHK_SpellInternet,			DLG_Options_Label_SpellInternet);
@@ -371,45 +394,31 @@ BOOL AP_Win32Dialog_Options::_onInitTab(HWND hWnd, WPARAM wParam, LPARAM lParam)
 		}
 		break;
 
-	case AP_RID_DIALOG_OPT_PREF:
+	case AP_RID_DIALOG_OPT_LAYOUT:
 		{
 			// localize controls
-			_DS(OPTIONS_CHK_PrefsAutoSave,			DLG_Options_Label_PrefsAutoSave);
-			_DS(OPTIONS_LBL_CURRENTSCHEME,			DLG_Options_Label_PrefsCurrentScheme);
-
-			// TODO need to populate values in the _COMBO_CURRENTSCHEME
-//			HWND hwndScheme = GetDlgItem(hWnd, AP_RID_DIALOG_OPTIONS_COMBO_CURRENTSCHEME);
-
-//			_CDB(OPTIONS_CHK_PrefsAutoSave,			id_CHECK_PREFS_AUTO_SAVE);
-		}
-		break;
-
-	case AP_RID_DIALOG_OPT_VIEW:
-		{
-			// localize controls
+			_DS(OPTIONS_FRM_SHOWHIDE,				DLG_Options_Label_ViewShowHide);
 			_DS(OPTIONS_CHK_ViewShowRuler,			DLG_Options_Label_ViewRuler);
-            _DS(OPTIONS_CHK_ViewUnprintable,        DLG_Options_Label_ViewUnprintable);
 			_DS(OPTIONS_CHK_ViewCursorBlink,		DLG_Options_Label_ViewCursorBlink);
-			_DS(OPTIONS_CHK_ViewShowStandardBar,	DLG_Options_Label_ViewStandardTB);
-			_DS(OPTIONS_CHK_ViewShowFormatBar,		DLG_Options_Label_ViewFormatTB);
-			_DS(OPTIONS_CHK_ViewShowExtraBar,		DLG_Options_Label_ViewExtraTB);
 			_DS(OPTIONS_CHK_ViewShowStatusBar,		DLG_Options_Label_ViewStatusBar);
+			_DS(OPTIONS_FRM_VIEWFRAME,				DLG_Options_Label_ViewViewFrame);
 			_DS(OPTIONS_CHK_ViewAll,				DLG_Options_Label_ViewAll);
 			_DS(OPTIONS_CHK_ViewHiddenText,			DLG_Options_Label_ViewHiddenText);
 			_DS(OPTIONS_CHK_ViewUnprintable,		DLG_Options_Label_ViewUnprintable);
 			_DS(OPTIONS_LBL_UNITS,					DLG_Options_Label_ViewUnits);
-			_DS(OPTIONS_LBL_SHOWHIDE,				DLG_Options_Label_ViewShowHide);
-			_DS(OPTIONS_LBL_VIEWFRAME,				DLG_Options_Label_ViewViewFrame);
-
-			// TODO need to populate values in the _COMBO_UNITS
-			HWND hwndAlign = GetDlgItem(hWnd, AP_RID_DIALOG_OPTIONS_COMBO_UNITS);
+			_DS(OPTIONS_LBL_DefaultPageSize,		DLG_Options_Label_DefaultPageSize);
+			_DS(OPTIONS_CHK_SmartQuotesEnable,		DLG_Options_Label_SmartQuotesEnable);
 /*			_CASX(hwndAlign, DLG_Unit_inch);
 			_CASX(hwndAlign, DLG_Unit_cm);
 			_CASX(hwndAlign, DLG_Unit_points);
 			_CASX(hwndAlign, DLG_Unit_pico);
 */
+			// Populate values in the _COMBO_UNITS
+			HWND hwndAlign = GetDlgItem(hWnd, AP_RID_DIALOG_OPTIONS_COMBO_UNITS);
 			for( int n1 = 0; n1 < SIZE_aAlignUnit; n1++ ) 
+			{
 				SendMessage(hwndAlign, CB_ADDSTRING, 0, (LPARAM)pSS->getValue(s_aAlignUnit[n1].id));
+			}
 			SendMessage(hwndAlign, CB_SETCURSEL, (WPARAM) 0, 0);
 
 //			_CDB(OPTIONS_CHK_ViewShowRuler,			id_CHECK_VIEW_SHOW_RULER);
@@ -421,20 +430,29 @@ BOOL AP_Win32Dialog_Options::_onInitTab(HWND hWnd, WPARAM wParam, LPARAM lParam)
 		}
 		break;
 	
-	case AP_RID_DIALOG_OPT_OTHER:
+	case AP_RID_DIALOG_OPT_PREF:
 		{
+			// localize controls
+			_DS(OPTIONS_FRM_PreferenceScheme,		DLG_Options_Label_Schemes);
+			_DS(OPTIONS_CHK_PrefsAutoSave,			DLG_Options_Label_PrefsAutoSave);
+			_DS(OPTIONS_LBL_CURRENTSCHEME,			DLG_Options_Label_PrefsCurrentScheme);
+			
 			// Hidi Bidi Controls
-			HWND hwndBidiBox = GetDlgItem(hWnd, AP_RID_DIALOG_OPTIONS_LBL_BidiOptions);
+			HWND hwndBidiBox = GetDlgItem(hWnd, AP_RID_DIALOG_OPTIONS_FRM_BidiOptions);
 			HWND hwndBidiChk = GetDlgItem(hWnd, AP_RID_DIALOG_OPTIONS_CHK_OtherDirectionRtl);
 			ShowWindow( hwndBidiBox, SW_HIDE);
 			ShowWindow( hwndBidiChk, SW_HIDE);
 #ifdef BIDI_ENABLED
 			ShowWindow( hwndBidiBox, SW_SHOW);
-			ShowWindow( hwndBidiChk, SW_SHOW);
-			_DS(OPTIONS_LBL_BidiOptions,			DLG_Options_Label_BiDiOptions);
+			ShowWindow( hwndBid2iChk, SW_SHOW);
+			_DS(OPTIONS_FRM_BidiOptions,			DLG_Options_Label_BiDiOptions);
 			_DS(OPTIONS_CHK_OtherDirectionRtl,		DLG_Options_Label_DirectionRtl);
 #endif					
-			_DS(OPTIONS_CHK_SmartQuotesEnable,		DLG_Options_Label_SmartQuotesEnable);
+
+			// TODO need to populate values in the _COMBO_CURRENTSCHEME
+//			HWND hwndScheme = GetDlgItem(hWnd, AP_RID_DIALOG_OPTIONS_COMBO_CURRENTSCHEME);
+//			_CDB(OPTIONS_CHK_PrefsAutoSave,			id_CHECK_PREFS_AUTO_SAVE);
+
 		}
 		break;
 
@@ -459,6 +477,17 @@ BOOL AP_Win32Dialog_Options::_onCommandTab(HWND hWnd, WPARAM wParam, LPARAM lPar
 
 	switch (wId)
 	{
+	// TOOLBARS TAB
+	case AP_RID_DIALOG_OPTIONS_CHK_ViewShowStandardBar:	_enableDisableLogic(id_CHECK_VIEW_SHOW_STANDARD_TOOLBAR);	return 0;
+	case AP_RID_DIALOG_OPTIONS_CHK_ViewShowFormatBar:	_enableDisableLogic(id_CHECK_VIEW_SHOW_FORMAT_TOOLBAR);		return 0;
+	case AP_RID_DIALOG_OPTIONS_CHK_ViewShowExtraBar:	_enableDisableLogic(id_CHECK_VIEW_SHOW_EXTRA_TOOLBAR);		return 0;
+	// TODO:  Enable the following 4 contrils														
+//	case AP_RID_DIALOG_OPTIONS_RDO_Icons:				_enableDisableLogic(id_XXXX);								retrun 0;											
+//	case AP_RID_DIALOG_OPTIONS_RDO_Text:				_enableDisableLogic(id_XXXX);								retrun 0;											
+//	case AP_RID_DIALOG_OPTIONS_RDO_IconAndTexts:		_enableDisableLogic(id_XXXX);								retrun 0;											
+//	case AP_RID_DIALOG_OPTIONS_CHK_ViewToolTips:		_enableDisableLogic(id_XXXX);								return 0;
+
+	// SPELL TAB														
 	case AP_RID_DIALOG_OPTIONS_CHK_SpellCheckAsType:	_enableDisableLogic(id_CHECK_SPELL_CHECK_AS_TYPE); 	return 0;
 	case AP_RID_DIALOG_OPTIONS_CHK_SpellHideErrors:		_enableDisableLogic(id_CHECK_SPELL_HIDE_ERRORS);	return 0;
 	case AP_RID_DIALOG_OPTIONS_CHK_SpellSuggest:		_enableDisableLogic(id_CHECK_SPELL_SUGGEST);		return 0;
@@ -466,43 +495,34 @@ BOOL AP_Win32Dialog_Options::_onCommandTab(HWND hWnd, WPARAM wParam, LPARAM lPar
 	case AP_RID_DIALOG_OPTIONS_CHK_SpellUppercase:		_enableDisableLogic(id_CHECK_SPELL_UPPERCASE);		return 0;
 	case AP_RID_DIALOG_OPTIONS_CHK_SpellNumbers:		_enableDisableLogic(id_CHECK_SPELL_NUMBERS);		return 0;
 	case AP_RID_DIALOG_OPTIONS_CHK_SpellInternet:		_enableDisableLogic(id_CHECK_SPELL_INTERNET);		return 0;
-
 	case AP_RID_DIALOG_OPTIONS_COMBO_CUSTOMDICT:
 		return 0;
-
 	case AP_RID_DIALOG_OPTIONS_BTN_CUSTOMDICT:
 		UT_DEBUGMSG(("WM_Command for BtnCustomDict\n"));
 		return 0;
-
 	case AP_RID_DIALOG_OPTIONS_BTN_IGNOREDRESET:
 		//_event_IgnoreReset(); 
 		UT_DEBUGMSG(("WM_Command for BtnIgnoreReset\n"));
 		return 0;
-
 	case AP_RID_DIALOG_OPTIONS_BTN_IGNOREDEDIT:
 		UT_DEBUGMSG(("WM_Command for BtnIgnoreEdit\n"));
 		return 0;
 
-	case AP_RID_DIALOG_OPTIONS_CHK_PrefsAutoSave:		_enableDisableLogic(id_CHECK_PREFS_AUTO_SAVE);		return 0;
-
-	case AP_RID_DIALOG_OPTIONS_CHK_SmartQuotesEnable:	_enableDisableLogic(id_CHECK_SMART_QUOTES_ENABLE);	return 0;
-
-	case AP_RID_DIALOG_OPTIONS_COMBO_CURRENTSCHEME:
-		return 0;
-
+	// LAYOUT TAB
 	case AP_RID_DIALOG_OPTIONS_CHK_ViewShowRuler:		_enableDisableLogic(id_CHECK_VIEW_SHOW_RULER);		return 0;
 	case AP_RID_DIALOG_OPTIONS_CHK_ViewCursorBlink:		_enableDisableLogic(id_CHECK_VIEW_CURSOR_BLINK);	return 0;
-	case AP_RID_DIALOG_OPTIONS_CHK_ViewShowStandardBar:	_enableDisableLogic(id_CHECK_VIEW_SHOW_STANDARD_TOOLBAR);	return 0;
-	case AP_RID_DIALOG_OPTIONS_CHK_ViewShowFormatBar:	_enableDisableLogic(id_CHECK_VIEW_SHOW_FORMAT_TOOLBAR);		return 0;
-	case AP_RID_DIALOG_OPTIONS_CHK_ViewShowExtraBar:	_enableDisableLogic(id_CHECK_VIEW_SHOW_EXTRA_TOOLBAR);		return 0;
 	case AP_RID_DIALOG_OPTIONS_CHK_ViewShowStatusBar:	_enableDisableLogic(id_CHECK_VIEW_SHOW_STATUS_BAR);	return 0;
 	case AP_RID_DIALOG_OPTIONS_CHK_ViewAll:				_enableDisableLogic(id_CHECK_VIEW_ALL);				return 0;
 	case AP_RID_DIALOG_OPTIONS_CHK_ViewHiddenText:		_enableDisableLogic(id_CHECK_VIEW_HIDDEN_TEXT);		return 0;
 	case AP_RID_DIALOG_OPTIONS_CHK_ViewUnprintable:		_enableDisableLogic(id_CHECK_VIEW_UNPRINTABLE);		return 0;
-
-	case AP_RID_DIALOG_OPTIONS_COMBO_UNITS:
+	case AP_RID_DIALOG_OPTIONS_COMBO_UNITS:                                                                 return 0;
+	case AP_RID_DIALOG_OPTIONS_COMBO_DefaultPageSize:														return 0;																											
+	case AP_RID_DIALOG_OPTIONS_CHK_SmartQuotesEnable:	_enableDisableLogic(id_CHECK_SMART_QUOTES_ENABLE);	return 0;
+														
+	// PREF TAB
+	case AP_RID_DIALOG_OPTIONS_CHK_PrefsAutoSave:		_enableDisableLogic(id_CHECK_PREFS_AUTO_SAVE);		return 0;
+	case AP_RID_DIALOG_OPTIONS_COMBO_CURRENTSCHEME:
 		return 0;
-
 #ifdef BIDI_ENABLED
 	case AP_RID_DIALOG_OPTIONS_CHK_OtherDirectionRtl:	_enableDisableLogic(id_CHECK_OTHER_DEFAULT_DIRECTION_RTL);	return 0;
 #endif
@@ -558,6 +578,18 @@ void AP_Win32Dialog_Options::_controlEnable( tControl id, bool value )
 	
 	switch (id)
 	{
+	case id_CHECK_VIEW_SHOW_STANDARD_TOOLBAR:
+		EnableWindow(GetDlgItem((HWND)m_vecSubDlgHWnd.getNthItem(TOOLBARS_INDEX),AP_RID_DIALOG_OPTIONS_CHK_ViewShowStandardBar),value);
+		return;
+		
+	case id_CHECK_VIEW_SHOW_FORMAT_TOOLBAR:
+		EnableWindow(GetDlgItem((HWND)m_vecSubDlgHWnd.getNthItem(TOOLBARS_INDEX),AP_RID_DIALOG_OPTIONS_CHK_ViewShowFormatBar),value);
+		return;
+	
+	case id_CHECK_VIEW_SHOW_EXTRA_TOOLBAR:
+		EnableWindow(GetDlgItem((HWND)m_vecSubDlgHWnd.getNthItem(TOOLBARS_INDEX),AP_RID_DIALOG_OPTIONS_CHK_ViewShowExtraBar),value);
+		return;
+		
 	case id_CHECK_SPELL_CHECK_AS_TYPE:
 		EnableWindow(GetDlgItem((HWND)m_vecSubDlgHWnd.getNthItem(SPELL_INDEX),AP_RID_DIALOG_OPTIONS_CHK_SpellCheckAsType),value);
 		return;
@@ -586,53 +618,41 @@ void AP_Win32Dialog_Options::_controlEnable( tControl id, bool value )
 		EnableWindow(GetDlgItem((HWND)m_vecSubDlgHWnd.getNthItem(SPELL_INDEX),AP_RID_DIALOG_OPTIONS_CHK_SpellInternet),value);
 		return;
 		
+	case id_CHECK_VIEW_SHOW_RULER:
+		EnableWindow(GetDlgItem((HWND)m_vecSubDlgHWnd.getNthItem(LAYOUT_INDEX),AP_RID_DIALOG_OPTIONS_CHK_ViewShowRuler),value);
+		return;
+		
+	case id_CHECK_VIEW_CURSOR_BLINK:
+		EnableWindow(GetDlgItem((HWND)m_vecSubDlgHWnd.getNthItem(LAYOUT_INDEX),AP_RID_DIALOG_OPTIONS_CHK_ViewCursorBlink),value);
+		return;
+		
+	case id_CHECK_VIEW_SHOW_STATUS_BAR:
+		EnableWindow(GetDlgItem((HWND)m_vecSubDlgHWnd.getNthItem(LAYOUT_INDEX),AP_RID_DIALOG_OPTIONS_CHK_ViewShowStatusBar),value);
+		return;
+
+	case id_CHECK_VIEW_ALL:
+		EnableWindow(GetDlgItem((HWND)m_vecSubDlgHWnd.getNthItem(LAYOUT_INDEX),AP_RID_DIALOG_OPTIONS_CHK_ViewAll),value);
+		return;
+		
+	case id_CHECK_VIEW_HIDDEN_TEXT:
+		EnableWindow(GetDlgItem((HWND)m_vecSubDlgHWnd.getNthItem(LAYOUT_INDEX),AP_RID_DIALOG_OPTIONS_CHK_ViewHiddenText),value);
+		return;
+		
+	case id_CHECK_VIEW_UNPRINTABLE:
+		EnableWindow(GetDlgItem((HWND)m_vecSubDlgHWnd.getNthItem(LAYOUT_INDEX),AP_RID_DIALOG_OPTIONS_CHK_ViewUnprintable),value);
+		return;
+		
 	case id_CHECK_PREFS_AUTO_SAVE:
 		EnableWindow(GetDlgItem((HWND)m_vecSubDlgHWnd.getNthItem(PREF_INDEX),AP_RID_DIALOG_OPTIONS_CHK_PrefsAutoSave),value);
 		return;
 		
-	case id_CHECK_VIEW_SHOW_RULER:
-		EnableWindow(GetDlgItem((HWND)m_vecSubDlgHWnd.getNthItem(VIEW_INDEX),AP_RID_DIALOG_OPTIONS_CHK_ViewShowRuler),value);
-		return;
-		
-	case id_CHECK_VIEW_CURSOR_BLINK:
-		EnableWindow(GetDlgItem((HWND)m_vecSubDlgHWnd.getNthItem(VIEW_INDEX),AP_RID_DIALOG_OPTIONS_CHK_ViewCursorBlink),value);
-		return;
-		
-	case id_CHECK_VIEW_SHOW_STANDARD_TOOLBAR:
-		EnableWindow(GetDlgItem((HWND)m_vecSubDlgHWnd.getNthItem(VIEW_INDEX),AP_RID_DIALOG_OPTIONS_CHK_ViewShowStandardBar),value);
-		return;
-		
-	case id_CHECK_VIEW_SHOW_FORMAT_TOOLBAR:
-		EnableWindow(GetDlgItem((HWND)m_vecSubDlgHWnd.getNthItem(VIEW_INDEX),AP_RID_DIALOG_OPTIONS_CHK_ViewShowFormatBar),value);
-		return;
-	
-	case id_CHECK_VIEW_SHOW_EXTRA_TOOLBAR:
-		EnableWindow(GetDlgItem((HWND)m_vecSubDlgHWnd.getNthItem(VIEW_INDEX),AP_RID_DIALOG_OPTIONS_CHK_ViewShowExtraBar),value);
-		return;
-
-	case id_CHECK_VIEW_SHOW_STATUS_BAR:
-		EnableWindow(GetDlgItem((HWND)m_vecSubDlgHWnd.getNthItem(VIEW_INDEX),AP_RID_DIALOG_OPTIONS_CHK_ViewShowStatusBar),value);
-		return;
-
-	case id_CHECK_VIEW_ALL:
-		EnableWindow(GetDlgItem((HWND)m_vecSubDlgHWnd.getNthItem(VIEW_INDEX),AP_RID_DIALOG_OPTIONS_CHK_ViewAll),value);
-		return;
-		
-	case id_CHECK_VIEW_HIDDEN_TEXT:
-		EnableWindow(GetDlgItem((HWND)m_vecSubDlgHWnd.getNthItem(VIEW_INDEX),AP_RID_DIALOG_OPTIONS_CHK_ViewHiddenText),value);
-		return;
-		
-	case id_CHECK_VIEW_UNPRINTABLE:
-		EnableWindow(GetDlgItem((HWND)m_vecSubDlgHWnd.getNthItem(VIEW_INDEX),AP_RID_DIALOG_OPTIONS_CHK_ViewUnprintable),value);
-		return;
-		
 	case id_CHECK_SMART_QUOTES_ENABLE:
-		EnableWindow(GetDlgItem((HWND)m_vecSubDlgHWnd.getNthItem(OTHER_INDEX),id_CHECK_SMART_QUOTES_ENABLE),value);
+		EnableWindow(GetDlgItem((HWND)m_vecSubDlgHWnd.getNthItem(LAYOUT_INDEX),id_CHECK_SMART_QUOTES_ENABLE),value);
 		return;
 
 #ifdef BIDI_ENABLED
 	case id_CHECK_OTHER_DEFAULT_DIRECTION_RTL:
-		EnableWindow(GetDlgItem((HWND)m_vecSubDlgHWnd.getNthItem(OTHER_INDEX),id_CHECK_OTHER_DEFAULT_DIRECTION_RTL),value);
+		EnableWindow(GetDlgItem((HWND)m_vecSubDlgHWnd.getNthItem(PREF_INDEX),id_CHECK_OTHER_DEFAULT_DIRECTION_RTL),value);
 		return;
 #endif
 
@@ -655,6 +675,10 @@ void AP_Win32Dialog_Options::_controlEnable( tControl id, bool value )
 	void AP_Win32Dialog_Options::_set##button(const bool b)													\
 	{ CheckDlgButton((HWND)m_vecSubDlgHWnd.getNthItem(index),AP_RID_DIALOG_OPTIONS_CHK_##button,b); }
 
+DEFINE_GET_SET_BOOL(TOOLBARS_INDEX,ViewShowStandardBar);                                       
+DEFINE_GET_SET_BOOL(TOOLBARS_INDEX,ViewShowFormatBar);                                         
+DEFINE_GET_SET_BOOL(TOOLBARS_INDEX,ViewShowExtraBar);
+
 DEFINE_GET_SET_BOOL(SPELL_INDEX,SpellCheckAsType);
 DEFINE_GET_SET_BOOL(SPELL_INDEX,SpellHideErrors);
 DEFINE_GET_SET_BOOL(SPELL_INDEX,SpellSuggest);
@@ -663,29 +687,25 @@ DEFINE_GET_SET_BOOL(SPELL_INDEX,SpellUppercase);
 DEFINE_GET_SET_BOOL(SPELL_INDEX,SpellNumbers);
 DEFINE_GET_SET_BOOL(SPELL_INDEX,SpellInternet);
 
-DEFINE_GET_SET_BOOL(OTHER_INDEX,SmartQuotesEnable);
-#ifdef BIDI_ENABLED
-DEFINE_GET_SET_BOOL(OTHER_INDEX,OtherDirectionRtl);
-#endif
+
+DEFINE_GET_SET_BOOL(LAYOUT_INDEX,ViewShowRuler);
+DEFINE_GET_SET_BOOL(LAYOUT_INDEX,ViewShowStatusBar);
+DEFINE_GET_SET_BOOL(LAYOUT_INDEX,ViewCursorBlink);
+DEFINE_GET_SET_BOOL(LAYOUT_INDEX,ViewAll);
+DEFINE_GET_SET_BOOL(LAYOUT_INDEX,ViewHiddenText);
+DEFINE_GET_SET_BOOL(LAYOUT_INDEX,ViewUnprintable);
+DEFINE_GET_SET_BOOL(LAYOUT_INDEX,SmartQuotesEnable);
 
 DEFINE_GET_SET_BOOL(PREF_INDEX,PrefsAutoSave);
-
-DEFINE_GET_SET_BOOL(VIEW_INDEX,ViewShowRuler);
-DEFINE_GET_SET_BOOL(VIEW_INDEX,ViewShowStandardBar);                                       
-DEFINE_GET_SET_BOOL(VIEW_INDEX,ViewShowFormatBar);                                         
-DEFINE_GET_SET_BOOL(VIEW_INDEX,ViewShowExtraBar);
-DEFINE_GET_SET_BOOL(VIEW_INDEX,ViewShowStatusBar);
-DEFINE_GET_SET_BOOL(VIEW_INDEX,ViewCursorBlink);
-
-DEFINE_GET_SET_BOOL(VIEW_INDEX,ViewAll);
-DEFINE_GET_SET_BOOL(VIEW_INDEX,ViewHiddenText);
-DEFINE_GET_SET_BOOL(VIEW_INDEX,ViewUnprintable);
+#ifdef BIDI_ENABLED
+DEFINE_GET_SET_BOOL(PREF_INDEX,OtherDirectionRtl);
+#endif
 
 #undef DEFINE_GET_SET_BOOL
 
 UT_Dimension AP_Win32Dialog_Options::_gatherViewRulerUnits(void) 
 {
-	HWND hwndAlign = GetDlgItem((HWND)m_vecSubDlgHWnd.getNthItem(VIEW_INDEX), AP_RID_DIALOG_OPTIONS_COMBO_UNITS);
+	HWND hwndAlign = GetDlgItem((HWND)m_vecSubDlgHWnd.getNthItem(LAYOUT_INDEX), AP_RID_DIALOG_OPTIONS_COMBO_UNITS);
 	int nSel = SendMessage(hwndAlign, CB_GETCURSEL, 0, 0);
 
 	if( nSel != CB_ERR )
@@ -702,7 +722,7 @@ void  AP_Win32Dialog_Options::_setViewRulerUnits(UT_Dimension dim)
 	if( n1 == SIZE_aAlignUnit )
 		n1 = 0;
 
-	HWND hwndAlign = GetDlgItem((HWND)m_vecSubDlgHWnd.getNthItem(VIEW_INDEX), AP_RID_DIALOG_OPTIONS_COMBO_UNITS);
+	HWND hwndAlign = GetDlgItem((HWND)m_vecSubDlgHWnd.getNthItem(LAYOUT_INDEX), AP_RID_DIALOG_OPTIONS_COMBO_UNITS);
 	SendMessage(hwndAlign, CB_SETCURSEL, (WPARAM)n1, 0);
 }
 
