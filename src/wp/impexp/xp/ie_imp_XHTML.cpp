@@ -423,18 +423,18 @@ static void convertFontSize(char *szDest, const char *szFrom)
 	sprintf(szDest, "%2d", sz);
 }
 
-static void convertFontColor(char *szDest, const char *szFrom)
+static void convertColor(char *szDest, const char *szFrom, int dfl = 0x000000)
 {
 
   // if it starts with a #, send it through
   // if it starts with a number, send it through
   // else convert color from values in XHTML DTD
 
-	int col = 0; // black
+	int col = dfl;
 	
 	if(szFrom == NULL)
     {
-		col = 0;
+		col = dfl;
     }
 	if(*szFrom == '#')
     {
@@ -624,19 +624,25 @@ void IE_Imp_XHTML::_startElement(const XML_Char *name, const XML_Char **atts)
 		UT_DEBUGMSG(("Font tag encountered\n"));
 		{
 			const XML_Char *p_val;
-			char color[7], size[3], face[64];
+			char color[7], bgcolor[7], size[3], face[64];
 			XML_Char output[128];
 			
 			p_val = _getXMLPropValue((const XML_Char *)"color", atts);
-			convertFontColor(color, p_val);
-			
+			convertColor(color, p_val, 0x000000);
+
+			p_val = _getXMLPropValue((const XML_Char *)"background", atts);
+			if ( p_val )
+			  convertColor(bgcolor, p_val, 0xFFFFFF);
+			else
+			  strcpy ( bgcolor, "none" );
+
 			p_val = _getXMLPropValue((const XML_Char *)"size", atts);
 			convertFontSize(size, p_val);
 			
 			p_val = _getXMLPropValue((const XML_Char *)"face", atts);
 			convertFontFace(face, p_val);
 			
-			sprintf(output, "color:%s; font-family:%s; size:%spt", color, face, size);
+			sprintf(output, "color:%s; bgcolor: %s; font-family:%s; size:%spt", color, bgcolor, face, size);
 			UT_DEBUGMSG(("Font properties: %s\n", output));
 			
 			UT_XML_cloneString(sz, PT_PROPS_ATTRIBUTE_NAME);
