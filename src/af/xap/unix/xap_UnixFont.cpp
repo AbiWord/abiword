@@ -756,7 +756,7 @@ bool XAP_UnixFont::openPFA(void)
 	bool  delete_pfa = false;
 	if(is_TTF_font())
 	{
-		pfafile = new char[strlen(m_fontfile)];
+		pfafile = new char[strlen(m_fontfile)+1];
 		strcpy(pfafile, m_fontfile);
 		delete_pfa = true;
 		char* dot = strrchr(pfafile, '.');
