@@ -245,11 +245,11 @@ UT_Bool AP_Dialog_Replace::findReplaceAll()
 	UT_Bool bWrapped = UT_FALSE;
 	
 	// call view to do the work
-	UT_Bool result = m_pView->findReplace(m_findString, m_replaceString, &bWrapped);
+	UT_Bool result = m_pView->findReplaceAll(m_findString, m_replaceString, &bWrapped);
 
 	// Do we want "you got wrapped" dialogs for a "replace all?"
-//	if (bWrapped == UT_TRUE)
-//		_messageBoxWrapped();
+	if (bWrapped == UT_TRUE)
+		_messageBoxWrapped();
 
 	return result;
 }

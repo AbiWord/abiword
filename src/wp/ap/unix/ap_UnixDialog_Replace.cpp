@@ -80,11 +80,6 @@ static void FindCallback(GtkWidget * widget, AP_UnixDialog_Replace * repDialog)
 
 	UT_UCS_cloneString_char(&findString, findEntryText);
 	UT_UCS_cloneString_char(&replaceString, replaceEntryText);
-
-	// do we need to free this?
-	
-//	FREEP(findEntryText);
-//	FREEP(replaceEntryText);
 	
 	repDialog->setFindString(findString);
 	repDialog->setReplaceString(replaceString);
@@ -115,11 +110,6 @@ static void ReplaceCallback(GtkWidget * widget, AP_UnixDialog_Replace * repDialo
 
 	UT_UCS_cloneString_char(&findString, findEntryText);
 	UT_UCS_cloneString_char(&replaceString, replaceEntryText);
-
-	// do we need to free this?
-	
-//	FREEP(findEntryText);
-//	FREEP(replaceEntryText);
 	
 	repDialog->setFindString(findString);
 	repDialog->setReplaceString(replaceString);
@@ -133,14 +123,31 @@ static void ReplaceCallback(GtkWidget * widget, AP_UnixDialog_Replace * repDialo
 static void ReplaceAllCallback(GtkWidget *widget, 
 							AP_UnixDialog_Replace  *repDialog)
 {
-	gchar * replaceText;
+	UT_ASSERT(widget);
+	UT_ASSERT(repDialog);
 
-	/* TODO:  know who allocates and frees this memory returned from
-              gtk_entry_get_text()
-    */
-	UT_DEBUGMSG(("ReplaceCallback... called\n"));
-	replaceText = gtk_entry_get_text(GTK_ENTRY(repDialog->replaceEntry));
-	UT_DEBUGMSG(("replace contents: \"%s\"\n", replaceText));
+	char * findEntryText;
+	char * replaceEntryText;
+
+	findEntryText = (char *) gtk_entry_get_text(GTK_ENTRY(repDialog->findEntry));
+	replaceEntryText = (char *) gtk_entry_get_text(GTK_ENTRY(repDialog->replaceEntry));
+	
+	UT_DEBUGMSG(("Find entry contents: \"%s\"\n", ((findEntryText) ? findEntryText : "NULL")));
+	UT_DEBUGMSG(("Replace entry contents: \"%s\"\n", ((replaceEntryText) ? replaceEntryText : "NULL")));
+
+	UT_UCSChar * findString;
+	UT_UCSChar * replaceString;
+
+	UT_UCS_cloneString_char(&findString, findEntryText);
+	UT_UCS_cloneString_char(&replaceString, replaceEntryText);
+	
+	repDialog->setFindString(findString);
+	repDialog->setReplaceString(replaceString);
+	
+	repDialog->findReplaceAll();
+
+	FREEP(findString);
+	FREEP(replaceString);
 }
 
 static void MatchCaseCallback(GtkWidget * checkbutton, GtkWidget * entry)
@@ -320,7 +327,7 @@ void AP_UnixDialog_Replace::runModal(AP_Frame * pFrame)
 	gtk_box_pack_start(GTK_BOX(buttonBox), replaceAllButton, FALSE, FALSE, 0);
 	gtk_widget_show(replaceAllButton);
 
-	gtk_signal_connect(GTK_OBJECT(replaceButton),
+	gtk_signal_connect(GTK_OBJECT(replaceAllButton),
 					   "clicked",
 					   GTK_SIGNAL_FUNC(ReplaceAllCallback),
 					   this);

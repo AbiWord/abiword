@@ -1940,7 +1940,9 @@ UT_Bool	FV_View::findReplace(const UT_UCSChar * find, const UT_UCSChar * replace
 
 		// we return the result of the replacement (the insert), not the
 		// subsequent move
-		UT_Bool result = cmdCharInsert((UT_UCSChar *) replace, UT_UCS_strlen(replace));
+		UT_Bool result = UT_TRUE;	// by default we didn't have to insert
+		if (*replace)	// only insert if string isn't empty
+			result = cmdCharInsert((UT_UCSChar *) replace, UT_UCS_strlen(replace));
 
 		// we must move the find cursor past the insertion
 		// we just did, so that we don't get caught in a loop while doing
@@ -1974,7 +1976,11 @@ UT_Bool	FV_View::findReplace(const UT_UCSChar * find, const UT_UCSChar * replace
 
 UT_Bool FV_View::findReplaceAll(const UT_UCSChar * find, const UT_UCSChar * replace, UT_Bool * bWrapped)
 {
-	return UT_FALSE;
+	// while we've still got buffer
+	while (*bWrapped == UT_FALSE)
+		findReplace(find, replace, bWrapped);
+
+	return UT_TRUE;
 }
 
 fl_BlockLayout * FV_View::_findGetCurrentBlock(void)
@@ -2055,7 +2061,7 @@ UT_sint32 FV_View::_findBlockSearchDumb(const UT_UCSChar * haystack, const UT_UC
 */
 UT_sint32 FV_View::_findBlockSearchRegexp(const UT_UCSChar * haystack, const UT_UCSChar * needle)
 {
-	UT_ASSERT(UT_SHOULD_NOT_HAPPEN);
+	UT_ASSERT(UT_NOT_IMPLEMENTED);
 
 	return -1;
 }
