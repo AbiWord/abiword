@@ -228,7 +228,8 @@ void AP_UnixFrame::setXScrollRange(void)
 	else if (newvalue > newmax)
 		newvalue = newmax;
 
-	UT_Bool bDifferent = (newvalue != (int)m_pHadj->value);
+	UT_Bool bDifferentPosition = (newvalue != (int)m_pHadj->value);
+	UT_Bool bDifferentLimits = ((width-windowWidth) != (m_pHadj->upper-m_pHadj->page_size));
 	
 	m_pHadj->value = newvalue;
 	m_pHadj->lower = 0.0;
@@ -238,8 +239,8 @@ void AP_UnixFrame::setXScrollRange(void)
 	m_pHadj->page_size = (gfloat) windowWidth;
 	gtk_signal_emit_by_name(GTK_OBJECT(m_pHadj), "changed");
 
-	if (m_pView && bDifferent)
-		m_pView->sendHorizontalScrollEvent(newvalue);
+	if (m_pView && (bDifferentPosition || bDifferentLimits))
+		m_pView->sendHorizontalScrollEvent(newvalue,m_pHadj->upper-m_pHadj->page_size);
 }
 
 void AP_UnixFrame::setYScrollRange(void)
@@ -254,7 +255,8 @@ void AP_UnixFrame::setYScrollRange(void)
 	else if (newvalue > newmax)
 		newvalue = newmax;
 
-	UT_Bool bDifferent = (newvalue != (int)m_pVadj->value);
+	UT_Bool bDifferentPosition = (newvalue != (int)m_pVadj->value);
+	UT_Bool bDifferentLimits ((height-windowHeight) != (m_pVadj->upper-m_pVadj->page_size));
 	
 	m_pVadj->value = newvalue;
 	m_pVadj->lower = 0.0;
@@ -264,8 +266,8 @@ void AP_UnixFrame::setYScrollRange(void)
 	m_pVadj->page_size = (gfloat) windowHeight;
 	gtk_signal_emit_by_name(GTK_OBJECT(m_pVadj), "changed");
 
-	if (m_pView && bDifferent)
-		m_pView->sendVerticalScrollEvent(newvalue);
+	if (m_pView && (bDifferentPosition || bDifferentLimits))
+		m_pView->sendVerticalScrollEvent(newvalue,m_pVadj->upper-m_pVadj->page_size);
 }
 
 
@@ -392,7 +394,7 @@ UT_Bool AP_UnixFrame::loadDocument(const char * szFilename)
 	return _showDocument();
 }
 
-void AP_UnixFrame::_scrollFuncY(void * pData, UT_sint32 yoff)
+void AP_UnixFrame::_scrollFuncY(void * pData, UT_sint32 yoff, UT_sint32 /*yrange*/)
 {
 	// this is a static callback function and doesn't have a 'this' pointer.
 	
@@ -413,7 +415,7 @@ void AP_UnixFrame::_scrollFuncY(void * pData, UT_sint32 yoff)
 	pView->setYScrollOffset((UT_sint32)yoffNew);
 }
 
-void AP_UnixFrame::_scrollFuncX(void * pData, UT_sint32 xoff)
+void AP_UnixFrame::_scrollFuncX(void * pData, UT_sint32 xoff, UT_sint32 /*xrange*/)
 {
 	// this is a static callback function and doesn't have a 'this' pointer.
 	

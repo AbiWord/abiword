@@ -1710,6 +1710,8 @@ UT_Bool FV_View::_ensureThatInsertionPointIsOnScreen(void)
 	
 	_fixInsertionPointCoords();
 
+	//UT_DEBUGMSG(("_ensure: [xp %ld][yp %ld][ph %ld] [w %ld][h %ld]\n",m_xPoint,m_yPoint,m_iPointHeight,m_iWindowWidth,m_iWindowHeight));
+
 	if (m_yPoint < 0)
 	{
 		cmdScroll(AV_SCROLLCMD_LINEUP, (UT_uint32) (-(m_yPoint)));
@@ -1908,6 +1910,15 @@ void FV_View::_autoScroll(UT_Timer * pTimer)
 		if (!bOnScreen) 
 		{
 			// yep, do it manually 
+ 
+			// TODO currently we blindly send these auto scroll events without regard
+			// TODO to whether the window can scroll any further in that direction.
+			// TODO we could optimize this a bit and check the scroll range before we
+			// TODO fire them, but that knowledge is only stored in the frame and we
+			// TODO don't have a backpointer to it.
+			// UT_DEBUGMSG(("_auto: [xp %ld][yp %ld] [w %ld][h %ld]\n",
+			//			 xPos,yPos,pView->m_iWindowWidth,pView->m_iWindowHeight));
+ 
 			if (yPos < 0)
 			{
 				pView->cmdScroll(AV_SCROLLCMD_LINEUP, (UT_uint32) (-(yPos)));

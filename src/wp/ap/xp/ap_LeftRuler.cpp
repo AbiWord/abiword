@@ -47,7 +47,8 @@ AP_LeftRuler::AP_LeftRuler(XAP_Frame * pFrame)
 	m_iWidth = 0;
 	m_iPageViewTopMargin = 0;
 	m_yScrollOffset = 0;
-
+	m_yScrollLimit = 0;
+	
 	// i wanted these to be "static const x = 32;" in the
 	// class declaration, but MSVC5 can't handle it....
 	// (GCC can :-)
@@ -141,14 +142,14 @@ UT_Bool AP_LeftRuler::notify(AV_View * pView, const AV_ChangeMask mask)
 
 /*****************************************************************/
 
-void AP_LeftRuler::_scrollFuncX(void * pData, UT_sint32 xoff)
+void AP_LeftRuler::_scrollFuncX(void * pData, UT_sint32 xoff, UT_sint32 xlimit)
 {
 	// static callback referenced by an AV_ScrollObj() for the ruler
 	// we don't care about horizontal scrolling.
 	return;
 }
 
-void AP_LeftRuler::_scrollFuncY(void * pData, UT_sint32 yoff)
+void AP_LeftRuler::_scrollFuncY(void * pData, UT_sint32 yoff, UT_sint32 ylimit)
 {
 	// static callback referenced by an AV_ScrollObj() for the ruler
 	UT_ASSERT(pData);
@@ -157,16 +158,22 @@ void AP_LeftRuler::_scrollFuncY(void * pData, UT_sint32 yoff)
 
 	// let non-static member function do all the work.
 	
-	pLeftRuler->scrollRuler(yoff);
+	pLeftRuler->scrollRuler(yoff,ylimit);
 	return;
 }
 
 /*****************************************************************/
 
-void AP_LeftRuler::scrollRuler(UT_sint32 yoff)
+void AP_LeftRuler::scrollRuler(UT_sint32 yoff, UT_sint32 ylimit)
 {
 	UT_DEBUGMSG(("LeftRuler:: scroll [y %d]\n",yoff));
 
+	if (ylimit > 0)
+		m_yScrollLimit = ylimit;
+
+	if (yoff > m_yScrollLimit)
+		yoff = m_yScrollLimit;
+	
 	UT_sint32 dy = yoff - m_yScrollOffset;
 	if (!dy)
 		return;

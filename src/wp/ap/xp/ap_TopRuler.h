@@ -98,7 +98,7 @@ public:
 	void				setWidth(UT_uint32 iWidth);
 	UT_uint32			getWidth(void) const;
 	void				draw(const UT_Rect * pClipRect);
-	void				scrollRuler(UT_sint32 xoff);
+	void				scrollRuler(UT_sint32 xoff, UT_sint32 xlimit);
 
 	void				mouseMotion(EV_EditModifierState ems, UT_uint32 x, UT_uint32 y);
 	void				mousePress(EV_EditModifierState ems, EV_EditMouseButton emb, UT_uint32 x, UT_uint32 y);
@@ -108,8 +108,8 @@ public:
 	virtual UT_Bool		notify(AV_View * pView, const AV_ChangeMask mask);
 
 	/* used with AV_ScrollObj */
-	static void			_scrollFuncX(void * pData, UT_sint32 xoff);
-	static void			_scrollFuncY(void * pData, UT_sint32 yoff);
+	static void			_scrollFuncX(void * pData, UT_sint32 xoff, UT_sint32 xlimit);
+	static void			_scrollFuncY(void * pData, UT_sint32 yoff, UT_sint32 ylimit);
 	
 protected:
 	void				_draw(void);
@@ -143,6 +143,7 @@ protected:
 	UT_uint32			m_iWidth;		/* size of window */
 	UT_uint32			m_iLeftRulerWidth;
 	UT_sint32			m_xScrollOffset;
+	UT_sint32			m_xScrollLimit;
 
 	AP_TopRulerInfo		m_infoCache;
 	UT_Bool				m_bValidMouseClick;

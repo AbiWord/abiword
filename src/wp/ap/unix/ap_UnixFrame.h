@@ -44,8 +44,8 @@ protected:
 	virtual GtkWidget *			_createDocumentWindow(void);
 	UT_Bool						_loadDocument(const char * szFilename);
 	UT_Bool						_showDocument(void);
-	static void					_scrollFuncX(void * pData, UT_sint32 xoff);
-	static void					_scrollFuncY(void * pData, UT_sint32 yoff);
+	static void					_scrollFuncX(void * pData, UT_sint32 xoff, UT_sint32 xlimit);
+	static void					_scrollFuncY(void * pData, UT_sint32 yoff, UT_sint32 ylimit);
 
 	GtkAdjustment *				m_pVadj;
 	GtkAdjustment *				m_pHadj;

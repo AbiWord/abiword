@@ -46,14 +46,14 @@ public:
 	void				setWidth(UT_uint32 iWidth);
 	UT_uint32			getWidth(void) const;
 	void				draw(const UT_Rect * pClipRect);
-	void				scrollRuler(UT_sint32 yoff);
+	void				scrollRuler(UT_sint32 yoff, UT_sint32 ylimit);
 
 	/* used with AV_Listener */
 	virtual UT_Bool		notify(AV_View * pView, const AV_ChangeMask mask);
 
 	/* used with AV_ScrollObj */
-	static void			_scrollFuncX(void * pData, UT_sint32 xoff);
-	static void			_scrollFuncY(void * pData, UT_sint32 yoff);
+	static void			_scrollFuncX(void * pData, UT_sint32 xoff, UT_sint32 xlimit);
+	static void			_scrollFuncY(void * pData, UT_sint32 yoff, UT_sint32 ylimit);
 	
 protected:
 	XAP_Frame *			m_pFrame;
@@ -64,6 +64,7 @@ protected:
 	UT_uint32			m_iWidth;		/* size of window */
 	UT_uint32			m_iPageViewTopMargin;
 	UT_sint32			m_yScrollOffset;
+	UT_sint32			m_yScrollLimit;
 
 	/* static const*/ UT_uint32	s_iFixedWidth  /* =32 */;	/* width we draw stuff regardless of window width */
 };

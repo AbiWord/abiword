@@ -47,6 +47,7 @@ AP_TopRuler::AP_TopRuler(XAP_Frame * pFrame)
 	m_iWidth = 0;
 	m_iLeftRulerWidth = 0;
 	m_xScrollOffset = 0;
+	m_xScrollLimit = 0;
 	m_bValidMouseClick = UT_FALSE;
 	
 	// i wanted these to be "static const x = 32;" in the
@@ -150,7 +151,7 @@ UT_Bool AP_TopRuler::notify(AV_View * pView, const AV_ChangeMask mask)
 
 /*****************************************************************/
 
-void AP_TopRuler::_scrollFuncX(void * pData, UT_sint32 xoff)
+void AP_TopRuler::_scrollFuncX(void * pData, UT_sint32 xoff, UT_sint32 xlimit)
 {
 	// static callback referenced by an AV_ScrollObj() for the ruler
 	UT_ASSERT(pData);
@@ -159,11 +160,11 @@ void AP_TopRuler::_scrollFuncX(void * pData, UT_sint32 xoff)
 
 	// let non-static member function do all the work.
 	
-	pTopRuler->scrollRuler(xoff);
+	pTopRuler->scrollRuler(xoff,xlimit);
 	return;
 }
 
-void AP_TopRuler::_scrollFuncY(void * pData, UT_sint32 yoff)
+void AP_TopRuler::_scrollFuncY(void * /*pData*/, UT_sint32 /*yoff*/, UT_sint32 /*ylimit*/)
 {
 	// static callback referenced by an AV_ScrollObj() for the ruler
 	// we don't care about vertical scrolling.
@@ -172,10 +173,16 @@ void AP_TopRuler::_scrollFuncY(void * pData, UT_sint32 yoff)
 
 /*****************************************************************/
 
-void AP_TopRuler::scrollRuler(UT_sint32 xoff)
+void AP_TopRuler::scrollRuler(UT_sint32 xoff, UT_sint32 xlimit)
 {
 	// scroll the window while excluding the portion
 	// lining up with the LeftRuler.
+
+	if (xlimit > 0)
+		m_xScrollLimit = xlimit;
+
+	if (xoff > m_xScrollLimit)
+		xoff = m_xScrollLimit;
 	
 	UT_sint32 dx = xoff - m_xScrollOffset;
 	if (!dx)

@@ -46,13 +46,13 @@ class AV_ScrollObj
 {
  public:
 	AV_ScrollObj(void * pData,
-				 void (*pfnX)(void *,UT_sint32),
-				 void (*pfnY)(void *,UT_sint32))
+				 void (*pfnX)(void *,UT_sint32,UT_sint32),
+				 void (*pfnY)(void *,UT_sint32,UT_sint32))
 		{ m_pData=pData; m_pfnX=pfnX; m_pfnY=pfnY; };
 	
 	void* m_pData;
-	void (*m_pfnX)(void *, UT_sint32);
-	void (*m_pfnY)(void *, UT_sint32);
+	void (*m_pfnX)(void *, UT_sint32 xoff, UT_sint32 xlimit);
+	void (*m_pfnY)(void *, UT_sint32 yoff, UT_sint32 ylimit);
 };
 
 class AV_View
@@ -76,8 +76,8 @@ public:
 	virtual void	cmdScroll(AV_ScrollCmd cmd, UT_uint32 iPos = 0) = 0;
 	void			addScrollListener(AV_ScrollObj*);
 	void			removeScrollListener(AV_ScrollObj*);
-	void			sendVerticalScrollEvent(UT_sint32 yoff);
-	void			sendHorizontalScrollEvent(UT_sint32 xoff);
+	void			sendVerticalScrollEvent(UT_sint32 yoff, UT_sint32 ylimit = -1);
+	void			sendHorizontalScrollEvent(UT_sint32 xoff, UT_sint32 xlimit = -1);
 
 	UT_Bool			addListener(AV_Listener * pListener, AV_ListenerId * pListenerId);
 	UT_Bool			removeListener(AV_ListenerId listenerId);

@@ -230,6 +230,8 @@ void AP_Win32Frame::setXScrollRange(void)
 	si.nPos = ((m_pView) ? m_pView->getXScrollOffset() : 0);
 	si.nPage = iWindowWidth;
 	SetScrollInfo(m_hwndHScroll, SB_CTL, &si, TRUE);
+
+	m_pView->sendHorizontalScrollEvent(si.nPos,si.nMax-si.nPage);
 }
 
 void AP_Win32Frame::setYScrollRange(void)
@@ -252,6 +254,8 @@ void AP_Win32Frame::setYScrollRange(void)
 	si.nPos = ((m_pView) ? m_pView->getYScrollOffset() : 0);
 	si.nPage = iWindowHeight;
 	SetScrollInfo(m_hwndVScroll, SB_CTL, &si, TRUE);
+
+	m_pView->sendVerticalScrollEvent(si.nPos,si.nMax-si.nPage);
 }
 
 UT_Bool AP_Win32Frame::RegisterClass(AP_Win32App * app)
@@ -477,7 +481,7 @@ UT_Bool AP_Win32Frame::loadDocument(const char * szFilename)
 	return _showDocument();
 }
 	
-void AP_Win32Frame::_scrollFuncY(void* pData, UT_sint32 yoff)
+void AP_Win32Frame::_scrollFuncY(void* pData, UT_sint32 yoff, UT_sint32 /*ylimit*/)
 {
 	// this is a static callback function and doesn't have a 'this' pointer.
 
@@ -503,7 +507,7 @@ void AP_Win32Frame::_scrollFuncY(void* pData, UT_sint32 yoff)
 	pWin32Frame->m_pView->setYScrollOffset(si.nPos);
 }
 
-void AP_Win32Frame::_scrollFuncX(void* pData, UT_sint32 xoff)
+void AP_Win32Frame::_scrollFuncX(void* pData, UT_sint32 xoff, UT_sint32 /*xlimit*/)
 {
 	// this is a static callback function and doesn't have a 'this' pointer.
 
@@ -750,16 +754,20 @@ LRESULT CALLBACK AP_Win32Frame::_DocumentWndProc(HWND hwnd, UINT iMsg, WPARAM wP
 
 			// may need to scroll to keep everything in sync
 
+			// TODO decide if all of the following is necessary
+			// TODO the above call to setWindowSize() causes alot
+			// TODO of this to happen already.
+			
 			SCROLLINFO si;
 			memset(&si, 0, sizeof(si));
 			si.cbSize = sizeof(si);
 			si.fMask = SIF_ALL;
 
 			GetScrollInfo(f->m_hwndVScroll, SB_CTL, &si);
-			pView->sendVerticalScrollEvent(si.nPos);
+			pView->sendVerticalScrollEvent(si.nPos,si.nMax-si.nPage);
 
 			GetScrollInfo(f->m_hwndHScroll, SB_CTL, &si);
-			pView->sendHorizontalScrollEvent(si.nPos);
+			pView->sendHorizontalScrollEvent(si.nPos,si.nMax-si.nPage);
 		}
 		return 0;
 	}

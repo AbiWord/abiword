@@ -153,7 +153,7 @@ void AV_View::removeScrollListener(AV_ScrollObj* pObj)
 	}
 }
 
-void AV_View::sendVerticalScrollEvent(UT_sint32 yoff)
+void AV_View::sendVerticalScrollEvent(UT_sint32 yoff, UT_sint32 ylimit)
 {
 	UT_sint32 count = m_scrollListeners.getItemCount();
 
@@ -161,11 +161,11 @@ void AV_View::sendVerticalScrollEvent(UT_sint32 yoff)
 	{
 		AV_ScrollObj* pObj = (AV_ScrollObj*) m_scrollListeners.getNthItem(i);
 
-		pObj->m_pfnY(pObj->m_pData, yoff);
+		pObj->m_pfnY(pObj->m_pData, yoff, ylimit);
 	}
 }
 
-void AV_View::sendHorizontalScrollEvent(UT_sint32 xoff)
+void AV_View::sendHorizontalScrollEvent(UT_sint32 xoff, UT_sint32 xlimit)
 {
 	UT_sint32 count = m_scrollListeners.getItemCount();
 
@@ -173,7 +173,7 @@ void AV_View::sendHorizontalScrollEvent(UT_sint32 xoff)
 	{
 		AV_ScrollObj* pObj = (AV_ScrollObj*) m_scrollListeners.getNthItem(i);
 
-		pObj->m_pfnX(pObj->m_pData, xoff);
+		pObj->m_pfnX(pObj->m_pData, xoff, xlimit);
 	}
 }
 
