@@ -39,6 +39,16 @@ UT_sint32 GR_Graphics::convertDimension(const char * s) const
 	return (UT_sint32) (dInches * dResolution);
 }
 
+const char * GR_Graphics::invertDimension(UT_Dimension dim, double dValue) const
+{
+	// return pointer to static buffer -- use it quickly.
+	
+	double dResolution = getResolution();		// NOTE: assumes square pixels/dpi/etc.
+	double dInches = dValue / dResolution;
+
+	return UT_convertToDimensionString(dim, dInches);
+}
+
 UT_Bool GR_Graphics::scaleDimensions(const char * szLeftIn, const char * szWidthIn,
 									 UT_uint32 iWidthAvail,
 									 UT_sint32 * piLeft, UT_uint32 * piWidth) const

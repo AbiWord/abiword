@@ -34,6 +34,10 @@ double UT_convertToPoints(const char* s);
 UT_sint32 UT_paperUnits(const char * sz);
 UT_sint32 UT_docUnitsFromPaperUnits(GR_Graphics * pG, UT_sint32 iPaperUnits);
 
+typedef enum _ut_dimension { DIM_IN, DIM_CM, DIM_PI, DIM_PT } UT_Dimension;
+
+const char * UT_convertToDimensionString(UT_Dimension, double value);
+
 UT_END_EXTERN_C
 
 #endif /* UT_UNITS_H */

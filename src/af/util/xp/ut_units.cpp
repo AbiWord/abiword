@@ -21,6 +21,7 @@
 
 // TODO change this file to not reference GR_Graphics.
 
+#include <stdio.h>
 #include <string.h>
 #include <stdlib.h>
 #include <math.h>
@@ -32,6 +33,40 @@
 #include "ut_string.h"
 #include "ut_units.h"
 #include "gr_Graphics.h"
+
+const char * UT_convertToDimensionString(UT_Dimension dim, double value)
+{
+	// return pointer to static buffer -- use it quickly.
+
+	// TODO what should the decimal precision of each different
+	// TODO unit of measurement be ??
+	
+	static char buf[100];
+	switch (dim)
+	{
+	case DIM_IN:
+		sprintf(buf,"%.3fin",value);
+		break;
+
+	case DIM_CM:
+		sprintf(buf,"%.1fcm",(value * 2.54));
+		break;
+
+	case DIM_PI:
+		sprintf(buf,"%.0fpi",(value * 6));
+		break;
+
+	case DIM_PT:
+		sprintf(buf,"%.0fpt",(value * 72));
+		break;
+
+	default:
+		UT_ASSERT(UT_NOT_IMPLEMENTED);
+		break;
+	}
+	
+	return buf;
+}
 
 
 double UT_convertToInches(const char* s)

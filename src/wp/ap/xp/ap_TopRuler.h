@@ -130,6 +130,10 @@ protected:
 
 	void				_getMarginMarkerRects(AP_TopRulerInfo &info, UT_Rect &rLeft, UT_Rect &rRight);
 	void				_drawMarginProperties(AP_TopRulerInfo &info, UT_RGBColor &clr);
+
+	UT_sint32			_mapLeftIndentToColumnRelative(AP_TopRulerInfo &info, UT_uint32 x);
+	UT_sint32			_mapRightIndentToColumnRelative(AP_TopRulerInfo &info, UT_uint32 x);
+	void				_ignoreEvent(void);
 	
 	XAP_Frame *			m_pFrame;
 	AV_View *			m_pView;
@@ -143,14 +147,16 @@ protected:
 	AP_TopRulerInfo		m_infoCache;
 	UT_Bool				m_bValidMouseClick;
 
-	enum _draggingWhat { DW_NOTHING,
-						 DW_LEFTMARGIN,
-						 DW_RIGHTMARGIN,
-						 DW_COLUMNGAP,
-						 DW_LEFTINDENT,
-						 DW_RIGHTINDENT,
-						 DW_FIRSTLINEINDENT 
+	typedef enum _draggingWhat { DW_NOTHING,
+								 DW_LEFTMARGIN,
+								 DW_RIGHTMARGIN,
+								 DW_COLUMNGAP,
+								 DW_LEFTINDENT,
+								 DW_RIGHTINDENT,
+								 DW_FIRSTLINEINDENT 
 	} DraggingWhat;
+
+	DraggingWhat		m_draggingWhat;
 	
 	/* static const*/ UT_uint32	s_iFixedHeight /* =32 */;	/* size we draw stuff w/o regard to window size */
 	/* static const*/ UT_uint32	s_iFixedWidth  /* =32 */;	/* minimum width of non-scrolling area on left */

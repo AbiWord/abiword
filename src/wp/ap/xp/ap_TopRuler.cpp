@@ -29,6 +29,7 @@
 #include "gr_Graphics.h"
 #include "ap_Ruler.h"
 class XAP_Frame;
+#include "fv_View.h"					// TODO remove this
 
 #define NrElements(a)	((sizeof(a)/sizeof(a[0])))
 #define MyMax(a,b)		(((a)>(b)) ? (a) : (b))
@@ -368,6 +369,8 @@ void AP_TopRuler::_drawTicks(AP_TopRulerInfo &info, ap_RulerTicks &tick,
 	}
 }
 
+/*****************************************************************/
+	
 void AP_TopRuler::_getParagraphMarkerRects(AP_TopRulerInfo &info, UT_sint32 xOrigin,
 										   UT_Rect &rLeftIndent, UT_Rect &rRightIndent, UT_Rect &rFirstLineIndent)
 {
@@ -400,6 +403,8 @@ void AP_TopRuler::_drawParagraphProperties(AP_TopRulerInfo &info, UT_RGBColor &c
 	m_pG->fillRect(clr, rFirstLineIndent);
 }
 
+/*****************************************************************/
+
 void AP_TopRuler::_getColumnMarkerRect(AP_TopRulerInfo &info, UT_uint32 kCol, UT_Rect &rCol)
 {
 	UT_uint32 yTop = s_iFixedHeight/4;
@@ -422,6 +427,8 @@ void AP_TopRuler::_drawColumnProperties(AP_TopRulerInfo &info, UT_RGBColor &clr,
 	_getColumnMarkerRect(info,kCol,rCol);
 	m_pG->fillRect(clr,rCol);
 }
+
+/*****************************************************************/
 
 void AP_TopRuler::_getMarginMarkerRects(AP_TopRulerInfo &info, UT_Rect &rLeft, UT_Rect &rRight)
 {
@@ -465,6 +472,8 @@ void AP_TopRuler::_drawMarginProperties(AP_TopRulerInfo &info, UT_RGBColor &clr)
 	m_pG->fillRect(clr,rLeft);
 	m_pG->fillRect(clr,rRight);
 }
+
+/*****************************************************************/
 
 void AP_TopRuler::_draw(void)
 {
@@ -584,6 +593,8 @@ void AP_TopRuler::mousePress(EV_EditModifierState ems, EV_EditMouseButton emb, U
 	// change it.
 
 	m_bValidMouseClick = UT_FALSE;
+	m_draggingWhat = DW_NOTHING;
+	
 	m_pView->getTopRulerInfo(&m_infoCache);
 
 	UT_Rect rLeftMargin, rRightMargin, rCol, rLeftIndent, rRightIndent, rFirstLineIndent;
@@ -593,12 +604,14 @@ void AP_TopRuler::mousePress(EV_EditModifierState ems, EV_EditMouseButton emb, U
 	{
 		UT_DEBUGMSG(("hit left margin block\n"));
 		m_bValidMouseClick = UT_TRUE;
+		m_draggingWhat = DW_LEFTMARGIN;
 		return;
 	}
 	if (rRightMargin.containsPoint(x,y))
 	{
 		UT_DEBUGMSG(("hit right margin block\n"));
 		m_bValidMouseClick = UT_TRUE;
+		m_draggingWhat = DW_RIGHTMARGIN;
 		return;
 	}
 
@@ -609,6 +622,7 @@ void AP_TopRuler::mousePress(EV_EditModifierState ems, EV_EditMouseButton emb, U
 		{
 			UT_DEBUGMSG(("hit in column gap block\n"));
 			m_bValidMouseClick = UT_TRUE;
+			m_draggingWhat = DW_COLUMNGAP;
 			return;
 		}
 	}
@@ -622,23 +636,28 @@ void AP_TopRuler::mousePress(EV_EditModifierState ems, EV_EditMouseButton emb, U
 	{
 		UT_DEBUGMSG(("hit left indent block\n"));
 		m_bValidMouseClick = UT_TRUE;
+		m_draggingWhat = DW_LEFTINDENT;
 		return;
 	}
 	if (rRightIndent.containsPoint(x,y))
 	{
 		UT_DEBUGMSG(("hit right indent block\n"));
 		m_bValidMouseClick = UT_TRUE;
+		m_draggingWhat = DW_RIGHTINDENT;
 		return;
 	}
 	if (rFirstLineIndent.containsPoint(x,y))
 	{
 		UT_DEBUGMSG(("hit first-line-indent block\n"));
 		m_bValidMouseClick = UT_TRUE;
+		m_draggingWhat = DW_FIRSTLINEINDENT;
 		return;
 	}
 
 	return;
 }
+
+/*****************************************************************/
 
 void AP_TopRuler::mouseRelease(EV_EditModifierState ems, EV_EditMouseButton emb, UT_uint32 x, UT_uint32 y)
 {
@@ -646,8 +665,84 @@ void AP_TopRuler::mouseRelease(EV_EditModifierState ems, EV_EditMouseButton emb,
 		return;
 
 	m_bValidMouseClick = UT_FALSE;
+
+	// if they drag vertically off the ruler, we ignore the whole thing.
+
+	if ((y < 0) || (y > m_iHeight))
+	{
+		_ignoreEvent();
+		return;
+	}
+
+	// if they drag horizontall off the ruler, we probably want to ignore
+	// the whole thing.  but this may interact with the current scroll.
+
+	UT_uint32 xFixed = (UT_sint32)MyMax(m_iLeftRulerWidth,s_iFixedWidth);
+	if ((x < xFixed) || (x > m_iWidth))
+	{
+		_ignoreEvent();
+		return;
+	}
+
+	// mouse up was in the ruler portion of the window, we cannot ignore it.
+	
 	UT_DEBUGMSG(("mouseRelease: [ems 0x%08lx][emb 0x%08lx][x %ld][y %ld]\n",ems,emb,x,y));
+
+	ap_RulerTicks tick(m_pG);
+
+	switch (m_draggingWhat)
+	{
+	case DW_NOTHING:
+		UT_ASSERT(UT_SHOULD_NOT_HAPPEN);
+		return;
+		
+	case DW_LEFTMARGIN:
+	case DW_RIGHTMARGIN:
+	case DW_COLUMNGAP:
+		return;
+		
+	case DW_LEFTINDENT:
+		{
+			UT_sint32 xrel = _mapLeftIndentToColumnRelative(m_infoCache,x);
+			if (xrel > 0)
+				xrel = ((xrel * tick.tickUnitScale + (tick.dragDelta/2) - 1) / tick.dragDelta) * tick.dragDelta;
+			else
+				xrel = ((xrel * tick.tickUnitScale - (tick.dragDelta/2) + 1) / tick.dragDelta) * tick.dragDelta;
+			double dxrel = ((double)xrel) / ((double)tick.tickUnitScale);
+			const XML_Char * properties[3];
+			properties[0] = "margin-left";
+			properties[1] = m_pG->invertDimension(tick.dimType,dxrel);
+			properties[2] = 0;
+			UT_DEBUGMSG(("TopRuler: LeftIndent [%s]\n",properties[1]));
+			(static_cast<FV_View *>(m_pView))->setBlockFormat(properties);
+		}
+		return;
+		
+	case DW_RIGHTINDENT:
+		{
+			UT_sint32 xrel = _mapRightIndentToColumnRelative(m_infoCache,x);
+			if (xrel > 0)
+				xrel = ((xrel * tick.tickUnitScale + (tick.dragDelta/2) - 1) / tick.dragDelta) * tick.dragDelta;
+			else
+				xrel = ((xrel * tick.tickUnitScale - (tick.dragDelta/2) + 1) / tick.dragDelta) * tick.dragDelta;
+			double dxrel = ((double)xrel) / ((double)tick.tickUnitScale);
+			const XML_Char * properties[3];
+			properties[0] = "margin-right";
+			properties[1] = m_pG->invertDimension(tick.dimType,dxrel);
+			properties[2] = 0;
+			UT_DEBUGMSG(("TopRuler: RightIndent [%s]\n",properties[1]));
+			(static_cast<FV_View *>(m_pView))->setBlockFormat(properties);
+		}
+		return;
+
+	case DW_FIRSTLINEINDENT:
+	default:
+		UT_ASSERT(UT_SHOULD_NOT_HAPPEN);
+		return;
+	}
 }
+
+/*****************************************************************/
 
 void AP_TopRuler::mouseMotion(EV_EditModifierState ems, UT_uint32 x, UT_uint32 y)
 {
@@ -657,3 +752,46 @@ void AP_TopRuler::mouseMotion(EV_EditModifierState ems, UT_uint32 x, UT_uint32 y
 	UT_DEBUGMSG(("mouseMotion: [ems 0x%08lx][x %ld][y %ld]\n",ems,x,y));
 }
 
+/*****************************************************************/
+
+
+UT_sint32 AP_TopRuler::_mapLeftIndentToColumnRelative(AP_TopRulerInfo &info, UT_uint32 x)
+{
+	// compute page-relative coordinate of the left edge of this column
+	
+	UT_sint32 xTickOrigin = m_infoCache.u.c.m_xaLeftMargin;
+	if (m_infoCache.m_iCurrentColumn > 0)
+		xTickOrigin += m_infoCache.m_iCurrentColumn * (m_infoCache.u.c.m_xColumnWidth + m_infoCache.u.c.m_xColumnGap);
+
+	// map page-relative to window absolute
+	
+	UT_sint32 xFixed = (UT_sint32)MyMax(m_iLeftRulerWidth,s_iFixedWidth);
+	UT_sint32 xAbsLeft = xFixed + info.m_xPageViewMargin + xTickOrigin - m_xScrollOffset;
+
+	// return distance from left edge of column
+	
+	return (x - xAbsLeft);
+}
+
+UT_sint32 AP_TopRuler::_mapRightIndentToColumnRelative(AP_TopRulerInfo &info, UT_uint32 x)
+{
+	// compute page-relative coordinate of the right edge of this column
+	
+	UT_sint32 xTickOrigin = m_infoCache.u.c.m_xaLeftMargin;
+	if (m_infoCache.m_iCurrentColumn > 0)
+		xTickOrigin += m_infoCache.m_iCurrentColumn * (m_infoCache.u.c.m_xColumnWidth + m_infoCache.u.c.m_xColumnGap);
+
+	// map page-relative to window absolute
+	
+	UT_sint32 xFixed = (UT_sint32)MyMax(m_iLeftRulerWidth,s_iFixedWidth);
+	UT_sint32 xAbsLeft = xFixed + info.m_xPageViewMargin + xTickOrigin - m_xScrollOffset;
+	UT_sint32 xAbsRight = xAbsLeft + info.u.c.m_xColumnWidth;
+
+	// return distance from right edge of column
+	
+	return (xAbsRight - x);
+}
+
+void AP_TopRuler::_ignoreEvent(void)
+{
+}

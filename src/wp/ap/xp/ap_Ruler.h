@@ -37,6 +37,10 @@ public:
 	UT_uint32		tickLong;
 	UT_uint32		tickLabel;
 	UT_uint32		tickScale;
+
+	UT_uint32		dragDelta;
+	UT_Dimension	dimType;
+	
 };
 
 #endif /* AP_RULER_H */

@@ -21,6 +21,7 @@
 #define GR_GRAPHICS_H
 
 #include "ut_types.h"
+#include "ut_units.h"
 #include "ut_misc.h"
 #include "gr_Image.h"
 
@@ -67,6 +68,7 @@ public:
 		const char* pszFontStretch, 
 		const char* pszFontSize) = 0;
 	UT_sint32 convertDimension(const char*) const;
+	const char * invertDimension(UT_Dimension, double) const;
 	UT_Bool scaleDimensions(const char * szLeftIn, const char * szWidthIn,
 				UT_uint32 iWidthAvail,
 				UT_sint32 * piLeft,
