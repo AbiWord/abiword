@@ -3254,7 +3254,7 @@ UT_Error FV_View::cmdInsertBookmark(const char * szName)
 /*****************************************************************/
 UT_Error FV_View::cmdInsertField(const char* szName, const XML_Char ** extra_attrs, const XML_Char ** extra_props)
 {
-	bool bResult;
+	bool bResult = true;
 
 	int attrCount = 0;
 	while (extra_attrs && extra_attrs[attrCount] != NULL)
