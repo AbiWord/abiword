@@ -90,6 +90,11 @@ elif test "$PLATFORM" = "cocoa" ; then
 	OBJCXX="c++"
 	OBJCXXFLAGS=""
 	OBJCXXDEPMODE="depmode=gcc3"
+elif test "$PLATFORM" = "qnx" ; then
+	ABI_FE="QNX"
+	with_qnx=true
+	ABI_THREAD
+
 else
 	ABI_THREAD
 fi
