@@ -993,7 +993,10 @@ UT_Bool IE_Imp_RTF::TranslateKeyword(unsigned char* pKeyword, long param, UT_Boo
 		ParseChar(UCS_NBSP);
 		break;
 	case '-':
+		// TODO handle optional hyphen. Currently simply ignore them.
+		break;
 	case '_':
+		// currently simply make a standard hyphen
 		ParseChar('-');	// TODO - make these optional and nonbreaking
 		break;
 	}
