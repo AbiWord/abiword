@@ -330,7 +330,7 @@ static void init_values(const XAP_EncodingManager* that)
 	const char * ucs4i = ucs4Internal ();
 	const char * naten = that->getNativeEncodingName ();
 
-	char lcbuf[11];
+	char lcbuf[12];
 
 	/* this should probably be in getNativeEncodingName (); [TODO: ??]
 	 */
