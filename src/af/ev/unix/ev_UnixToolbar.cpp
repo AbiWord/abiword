@@ -50,6 +50,7 @@ public:									// we create...
 		m_id = id;
 		m_widget = widget;
 		m_blockSignal = false;
+		m_comboEntryBuffer[0] = NULL;
 	};
 	
 	~_wd(void)
@@ -88,19 +89,19 @@ public:									// we create...
 					UT_uint32 length = strlen(buffer);
 					UT_ASSERT(length > 0);
 					UT_ASSERT(length < 1024);
-					strcpy(wd->comboEntryBuffer, buffer);
+					strcpy(wd->m_comboEntryBuffer, buffer);
 				}
 			}
 			else // widget has no ->parent, so use the buffer's results
 			{
-				UT_uint32 size = strlen(wd->comboEntryBuffer);
+				UT_uint32 size = strlen(wd->m_comboEntryBuffer);
 
 				// TODO : do a real conversion to UT_UCSChar or figure out the casting
 
 				// don't do changes for empty combo texts
-				if (UT_stricmp(wd->comboEntryBuffer, ""))
+				if (UT_stricmp(wd->m_comboEntryBuffer, ""))
 				{
-					UT_UCSChar * text = (UT_UCSChar *) wd->comboEntryBuffer;
+					UT_UCSChar * text = (UT_UCSChar *) wd->m_comboEntryBuffer;
 					UT_ASSERT(text);
 
 					wd->m_pUnixToolbar->toolbarEvent(wd->m_id, text, size);
@@ -133,7 +134,7 @@ public:									// we create...
 	GtkWidget *			m_widget;
 	bool				m_blockSignal;
 
-	char comboEntryBuffer[1024];
+	char 				m_comboEntryBuffer[1024];
 };
 
 /*****************************************************************/
