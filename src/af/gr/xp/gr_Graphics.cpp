@@ -127,7 +127,8 @@ GR_Graphics::GR_Graphics()
 	  m_bDontRedraw(false),
 	  m_bDoMerge(false),
 	  m_iPrevYOffset(0),
-	  m_iPrevXOffset(0)
+	  m_iPrevXOffset(0),
+	  m_hashFontCache(19)
 {
 
 #ifdef WITH_PANGO
@@ -140,6 +141,39 @@ GR_Graphics::GR_Graphics()
 
 }
 
+GR_Font* GR_Graphics::findFont(const char* pszFontFamily,
+							   const char* pszFontStyle,
+							   const char* pszFontVariant,
+							   const char* pszFontWeight,
+							   const char* pszFontStretch,
+							   const char* pszFontSize)
+{
+	GR_Font * pFont = NULL;
+
+	// NOTE: we currently favor a readable hash key to make debugging easier
+	// TODO: speed things up with a smaller key (the three AP pointers?)
+	UT_String key;
+
+	UT_String_sprintf(key,"%s;%s;%s;%s;%s;%s",pszFontFamily, pszFontStyle, pszFontVariant, pszFontWeight, pszFontStretch, pszFontSize);
+	const void *pEntry = m_hashFontCache.pick(key.c_str());
+	if (!pEntry)
+	{
+		// TODO -- note that we currently assume font-family to be a single name,
+		// TODO -- not a list.  This is broken.
+
+		pFont = _findFont(pszFontFamily, pszFontStyle, pszFontVariant, pszFontWeight, pszFontStretch, pszFontSize);
+		UT_ASSERT(pFont);
+
+		// add it to the cache
+		m_hashFontCache.insert(key.c_str(),
+							   const_cast<void *>(static_cast<const void *>(pFont)));
+	}
+	else
+	{
+		pFont = (GR_Font*)(pEntry);
+	}
+	return pFont;
+}
 
 GR_Graphics::~GR_Graphics()
 {
@@ -154,6 +188,8 @@ GR_Graphics::~GR_Graphics()
 		g_free(s_pPangoContext); // not sure about the g_free here
 	}
 #endif
+
+	UT_HASH_PURGEDATA(GR_Font *, &m_hashFontCache, delete);
 }
 
 UT_sint32 GR_Graphics::tdu(UT_sint32 layoutUnits) const
@@ -787,12 +823,12 @@ UT_uint32 GR_Graphics::getFontHeight(PangoFont * pFont)
 	return iHeight;
 }
 
-PangoFont* GR_Graphics::findFont(const char* pszFontFamily,
-								 const char* pszFontStyle,
-								 const char* pszFontVariant,
-								 const char* pszFontWeight,
-								 const char* pszFontStretch,
-								 const char* pszFontSize)
+PangoFont* GR_Graphics::_findFont(const char* pszFontFamily,
+								  const char* pszFontStyle,
+								  const char* pszFontVariant,
+								  const char* pszFontWeight,
+								  const char* pszFontStretch,
+								  const char* pszFontSize)
 {
 	return s_pPangoFontManager->findFont(pszFontFamily, pszFontStyle, pszFontVariant,
 										 pszFontWeight, pszFontStretch, pszFontSize);

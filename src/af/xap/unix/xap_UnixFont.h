@@ -129,6 +129,10 @@ class ABI_EXPORT XAP_UnixFont
 	bool doesGlyphExist(UT_UCS4Char g);
 
 private:
+
+	XAP_UnixFont ();
+	XAP_UnixFont & operator= (const XAP_UnixFont & rhs);
+
 	bool					_createTtfSupportFiles();
 	bool					_createPsSupportFiles();
 	struct allocFont
@@ -200,6 +204,8 @@ class XAP_UnixFontHandle : public GR_Font
 
 	XAP_UnixFontHandle(XAP_UnixFont * font, UT_uint32 size);	
  
+	virtual ~XAP_UnixFontHandle () {}
+
 	XftFont * 					getLayoutXftFont(void);
 	XftFont * 					getDeviceXftFont(UT_uint32 zoomPercentage);
 
@@ -217,6 +223,9 @@ class XAP_UnixFontHandle : public GR_Font
 
 private:
  	XAP_UnixFontHandle();
+ 	XAP_UnixFontHandle(const XAP_UnixFontHandle & rhs);
+ 	XAP_UnixFontHandle & operator=(const XAP_UnixFontHandle & rhs);
+
 	XAP_UnixFont*				m_font;
 	UT_uint32					m_size;
 };

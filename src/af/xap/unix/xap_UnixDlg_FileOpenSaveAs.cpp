@@ -950,7 +950,6 @@ gint XAP_UnixDialog_FileOpenSaveAs::previewPicture (void)
  Cleanup:
 	DELETEP(pImage);
 	DELETEP(pGr);
-	DELETEP(fnt);
 	DELETEP(pIEG);
 	DELETEP(pGraphic);
 

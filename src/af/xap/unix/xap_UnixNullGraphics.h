@@ -62,12 +62,7 @@ public:
 	virtual void setColor(const UT_RGBColor& clr);
 	virtual void getColor(UT_RGBColor& clr);
 	virtual GR_Font* getGUIFont();
-	virtual GR_Font* findFont(const char* pszFontFamily, 
-							  const char* pszFontStyle, 
-							  const char* pszFontVariant, 
-							  const char* pszFontWeight, 
-							  const char* pszFontStretch, 
-							  const char* pszFontSize);
+
 	virtual void drawLine(UT_sint32 x1, UT_sint32 y1, UT_sint32 x2, UT_sint32 y2);
 	virtual void setLineWidth(UT_sint32);
 	virtual void xorLine(UT_sint32, UT_sint32, UT_sint32, UT_sint32);
@@ -115,6 +110,13 @@ private:
 #endif	
 
 protected:
+	virtual GR_Font* _findFont(const char* pszFontFamily, 
+							   const char* pszFontStyle, 
+							   const char* pszFontVariant, 
+							   const char* pszFontWeight, 
+							   const char* pszFontStretch, 
+							   const char* pszFontSize);
+
 	virtual UT_uint32 getDeviceResolution(void) const;	
 	PSFont *		m_pCurrentFont;
 	UT_RGBColor		m_currentColor;

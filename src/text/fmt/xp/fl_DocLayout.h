@@ -275,9 +275,7 @@ private:
 
 	UT_Vector			m_vecPages;
 	fl_DocSectionLayout*m_pFirstSection;
-	fl_DocSectionLayout*m_pLastSection;
-	
-	UT_StringPtrMap		m_hashFontCache;
+	fl_DocSectionLayout*m_pLastSection;   
 
 	// spell check stuff
 	UT_Vector			m_vecUncheckedBlocks;

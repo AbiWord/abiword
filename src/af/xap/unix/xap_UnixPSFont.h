@@ -33,8 +33,8 @@
 class PSFont : public GR_Font
 {
 public:
-	PSFont(XAP_UnixFont * hFont, UT_uint32 size);
-	~PSFont(void);
+	explicit PSFont(XAP_UnixFont * hFont, UT_uint32 size);
+	virtual ~PSFont(void);
 
 	XAP_UnixFont * 		getUnixFont(void);
 	UT_uint32			getSize(void) { return m_pointSize; };
@@ -47,7 +47,11 @@ public:
 
 	virtual bool doesGlyphExist(UT_UCS4Char g);
 
-protected:
+private:
+	PSFont();
+	PSFont (const PSFont & other);
+	PSFont & operator= (const PSFont & other);
+
 	XAP_UnixFont * 		m_hFont;
 	UT_uint32			m_pointSize;
 	UT_uint32			m_index;

@@ -29,6 +29,7 @@
 #include "gr_Caret.h"
 #include "gr_Transform.h"
 #include "gr_CharWidthsCache.h"
+#include "ut_hash.h"
 
 class UT_RGBColor;
 class XAP_App;
@@ -226,12 +227,12 @@ class ABI_EXPORT GR_Graphics
 	virtual void      getColor(UT_RGBColor& clr) = 0;
 	virtual GR_Font*  getGUIFont() = 0;
 
-	virtual GR_Font*  findFont(const char* pszFontFamily,
-							   const char* pszFontStyle,
-							   const char* pszFontVariant,
-							   const char* pszFontWeight,
-							   const char* pszFontStretch,
-							   const char* pszFontSize) PURE_VIRTUAL_IF_NOT_PANGO;
+	GR_Font*  findFont(const char* pszFontFamily,
+					   const char* pszFontStyle,
+					   const char* pszFontVariant,
+					   const char* pszFontWeight,
+					   const char* pszFontStretch,
+					   const char* pszFontSize);
 	static const char* findNearestFont(const char* pszFontFamily,
 									   const char* pszFontStyle,
 									   const char* pszFontVariant,
@@ -450,6 +451,13 @@ class ABI_EXPORT GR_Graphics
 	void              setPrevXOffset(UT_sint32 x) { m_iPrevXOffset = x;}
  protected:
 
+	virtual GR_Font*  _findFont(const char* pszFontFamily,
+								const char* pszFontStyle,
+								const char* pszFontVariant,
+								const char* pszFontWeight,
+								const char* pszFontStretch,
+								const char* pszFontSize) PURE_VIRTUAL_IF_NOT_PANGO;
+
  private:
 	virtual bool       _setTransform(const GR_Transform & tr)
 		                  {
@@ -529,6 +537,8 @@ class ABI_EXPORT GR_Graphics
 	static UT_uint32 m_instanceCount;
 #endif
 	GR_Transform     m_Transform;
+
+	UT_StringPtrMap		m_hashFontCache;
 };
 
 void xorRect(GR_Graphics* pG, UT_sint32 x, UT_sint32 y, UT_sint32 w, UT_sint32 h);

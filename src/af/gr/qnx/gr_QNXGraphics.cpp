@@ -512,7 +512,7 @@ GR_Font * GR_QNXGraphics::getGUIFont(void)
 }
 
 
-GR_Font * GR_QNXGraphics::findFont(const char* pszFontFamily,
+GR_Font * GR_QNXGraphics::_findFont(const char* pszFontFamily,
 									const char* pszFontStyle,
 									const char* /*pszFontVariant*/,
 									const char* pszFontWeight,

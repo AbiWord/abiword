@@ -56,7 +56,6 @@ void XAP_Preview_Zoom::_freeGlyphString()
 XAP_Preview_Zoom::~XAP_Preview_Zoom()
 {
 	FREEP(m_string);
-	DELETEP(m_pFont);
 #ifdef WITH_PANGO
 	_freeGlyphString();
 #endif
@@ -86,7 +85,7 @@ void XAP_Preview_Zoom::setFont(XAP_Preview_Zoom::tFont f)
 		if (found)
 		{
 			m_gc->setFont(found);
-			REPLACEP(m_pFont, found);
+			m_pFont = found;
 		}
 		else {
 			UT_ASSERT(UT_SHOULD_NOT_HAPPEN);

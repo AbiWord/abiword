@@ -200,12 +200,12 @@ GR_Font* UnixNull_Graphics::getGUIFont()
 	return NULL;
 }
 
-GR_Font* UnixNull_Graphics::findFont(const char* pszFontFamily, 
-									 const char* pszFontStyle, 
-									 const char* /* pszFontVariant */,
-									 const char* pszFontWeight, 
-									 const char* /* pszFontStretch */,
-									 const char* pszFontSize)
+GR_Font* UnixNull_Graphics::_findFont(const char* pszFontFamily, 
+									  const char* pszFontStyle, 
+									  const char* /* pszFontVariant */,
+									  const char* pszFontWeight, 
+									  const char* /* pszFontStretch */,
+									  const char* pszFontSize)
 {
 	UT_ASSERT(pszFontFamily);
 	UT_ASSERT(pszFontStyle);

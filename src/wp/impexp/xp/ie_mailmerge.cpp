@@ -301,15 +301,16 @@ UT_Error IE_MailMerge::constructMerger(const char * szFilename,
 	// Give precedence to the file contents
 	if (ieft == IEMT_Unknown && szFilename && *szFilename)
 	{
-		char szBuf[4096] = "";  // 4096 ought to be enough
+		char szBuf[4097] = "";  // 4096 ought to be enough
 		UT_uint32 iNumbytes = 0;
 		FILE *f = NULL;
 		
 		// we must open in binary mode for UCS-2 compatibility
 		if ( ( f = fopen( szFilename, "rb" ) ) != static_cast<FILE *>(0) )
 		{
-			iNumbytes = fread(szBuf, 1, sizeof(szBuf), f);
+			iNumbytes = fread(szBuf, 1, sizeof(szBuf)-1, f);
 			fclose(f);
+			szBuf[iNumbytes] = '\0';
 		}
 		
 		UT_Confidence_t   best_confidence = UT_CONFIDENCE_ZILCH;

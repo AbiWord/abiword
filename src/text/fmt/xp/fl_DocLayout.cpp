@@ -70,7 +70,6 @@ const char * s_FootnoteTypeDesc[] = {
 
 
 FL_DocLayout::FL_DocLayout(PD_Document* doc, GR_Graphics* pG)
-	:	m_hashFontCache(19)
 {
 	m_pDoc = doc;
 	m_pG = pG;
@@ -192,8 +191,6 @@ FL_DocLayout::~FL_DocLayout()
 		delete m_pFirstSection;
 		m_pFirstSection = pNext;
 	}
-
-	UT_HASH_PURGEDATA(GR_Font *, &m_hashFontCache, delete);
 }
 
 /*!
@@ -1051,8 +1048,6 @@ const GR_Font* FL_DocLayout::findFont(const PP_AttrProp * pSpanAP,
 									  const PP_AttrProp * pSectionAP,
 									  bool isField)
 {
-	const GR_Font* pFont = NULL;
-
 	const char* pszFamily	= PP_evalProperty("font-family",pSpanAP,pBlockAP,pSectionAP, m_pDoc, true);
 	const char* pszField	= PP_evalProperty("field-font",NULL,pBlockAP,NULL, m_pDoc, true);
 	const char* pszStyle	= PP_evalProperty("font-style",pSpanAP,pBlockAP,pSectionAP, m_pDoc, true);
@@ -1062,6 +1057,9 @@ const GR_Font* FL_DocLayout::findFont(const PP_AttrProp * pSpanAP,
 	const char* pszSize		= PP_evalProperty("font-size",pSpanAP,pBlockAP,pSectionAP, m_pDoc, true);
 	const char* pszPosition = PP_evalProperty("text-position",pSpanAP,pBlockAP,pSectionAP, m_pDoc, true);
 
+	if (pszField != NULL && isField && UT_strcmp(pszField, "NULL"))
+		pszFamily = pszField;
+
 	// for superscripts and subscripts, we'll automatically shrink the font size
 	if ((0 == UT_strcmp(pszPosition, "superscript")) ||
 		(0 == UT_strcmp(pszPosition, "subscript")))
@@ -1069,31 +1067,8 @@ const GR_Font* FL_DocLayout::findFont(const PP_AttrProp * pSpanAP,
 		double newSize = UT_convertToPoints(pszSize) * 2.0 / 3.0;
 		pszSize = UT_formatDimensionedValue(newSize,"pt",".0");
 	}
-	// NOTE: we currently favor a readable hash key to make debugging easier
-	// TODO: speed things up with a smaller key (the three AP pointers?)
-	UT_String key;
-	if (pszField != NULL && isField && UT_strcmp(pszField, "NULL"))
-		pszFamily = pszField;
 
-	UT_String_sprintf(key,"%s;%s;%s;%s;%s;%s",pszFamily, pszStyle, pszVariant, pszWeight, pszStretch, pszSize);
-	const void *pEntry = m_hashFontCache.pick(key.c_str());
-	if (!pEntry)
-	{
-		// TODO -- note that we currently assume font-family to be a single name,
-		// TODO -- not a list.  This is broken.
-
-		pFont = m_pG->findFont(pszFamily, pszStyle, pszVariant, pszWeight, pszStretch, pszSize);
-		UT_ASSERT(pFont);
-
-		// add it to the cache
-		m_hashFontCache.insert(key.c_str(),
-				       const_cast<void *>(static_cast<const void *>(pFont)));
-	}
-	else
-	{
-		pFont = static_cast<const GR_Font*>(pEntry);
-	}
-	return pFont;
+	return m_pG->findFont(pszFamily, pszStyle, pszVariant, pszWeight, pszStretch, pszSize);
 }
 
 void FL_DocLayout::changeDocSections(const PX_ChangeRecord_StruxChange * pcrx, fl_DocSectionLayout * pDSL)

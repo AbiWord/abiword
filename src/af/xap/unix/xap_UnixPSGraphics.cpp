@@ -159,7 +159,6 @@ UT_uint32 PS_Graphics::getFontDescent()
   return getFontDescent(m_pCurrentFont);
 }
 
-
 void PS_Graphics::getCoverage(UT_Vector& coverage)
 {
 	UT_ASSERT(UT_SHOULD_NOT_HAPPEN);
@@ -218,12 +217,12 @@ GR_Font* PS_Graphics::getGUIFont()
  * asked.  It will do a fuzzy match to find the font (using the aliases
  * found in fonts.conf
  */
-GR_Font * PS_Graphics::findFont(const char* pszFontFamily,
-								const char* pszFontStyle,
-								const char* pszFontVariant,
-								const char* pszFontWeight,
-								const char* pszFontStretch,
-								const char* pszFontSize)
+GR_Font * PS_Graphics::_findFont(const char* pszFontFamily,
+								 const char* pszFontStyle,
+								 const char* pszFontVariant,
+								 const char* pszFontWeight,
+								 const char* pszFontStretch,
+								 const char* pszFontSize)
 {
 	XAP_UnixFont* pUnixFont = XAP_UnixFontManager::pFontManager->findNearestFont(pszFontFamily, pszFontStyle, pszFontVariant, pszFontWeight,
 																				 pszFontStretch, pszFontSize);

@@ -575,12 +575,12 @@ GR_Font * GR_CocoaGraphics::getGUIFont(void)
 	return m_pFontGUI;
 }
 
-GR_Font * GR_CocoaGraphics::findFont(const char* pszFontFamily,
-									const char* pszFontStyle,
-									const char* pszFontVariant,
-									const char* pszFontWeight,
-									const char* pszFontStretch,
-									const char* pszFontSize)
+GR_Font * GR_CocoaGraphics::_findFont(const char* pszFontFamily,
+										const char* pszFontStyle,
+										const char* pszFontVariant,
+										const char* pszFontWeight,
+											const char* pszFontStretch,
+										const char* pszFontSize)
 {
 	UT_DEBUGMSG (("GR_CocoaGraphics::findFont(%s, %s, %s)\n", pszFontFamily, pszFontStyle, pszFontSize));
 

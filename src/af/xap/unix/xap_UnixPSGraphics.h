@@ -70,12 +70,7 @@ public:
 	virtual void setColor(const UT_RGBColor& clr);
       virtual void getColor(UT_RGBColor& clr);
 	virtual GR_Font* getGUIFont();
-	virtual GR_Font* findFont(const char* pszFontFamily, 
-							  const char* pszFontStyle, 
-							  const char* pszFontVariant, 
-							  const char* pszFontWeight, 
-							  const char* pszFontStretch, 
-							  const char* pszFontSize);
+
 	virtual void drawLine(UT_sint32 x1, UT_sint32 y1, UT_sint32 x2, UT_sint32 y2);
 	virtual void setLineWidth(UT_sint32);
 	virtual void setLineProperties ( double inWidthPixels,
@@ -123,6 +118,13 @@ public:
 
 
 protected:
+	virtual GR_Font* _findFont(const char* pszFontFamily, 
+							   const char* pszFontStyle, 
+							   const char* pszFontVariant, 
+							   const char* pszFontWeight, 
+							   const char* pszFontStretch, 
+							   const char* pszFontSize);
+
 	bool			_startDocument(void);
 	bool			_startPage(const char * szPageLabel, UT_uint32 pageNumber,
 							   bool bPortrait, UT_uint32 iWidth, UT_uint32 iHeight);

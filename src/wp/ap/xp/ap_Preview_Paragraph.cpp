@@ -478,8 +478,6 @@ AP_Preview_Paragraph::AP_Preview_Paragraph(GR_Graphics * gc,
 
 AP_Preview_Paragraph::~AP_Preview_Paragraph()
 {
-	DELETEP(m_font);
-
 	DELETEP(m_clrWhite);
 	DELETEP(m_clrBlack);
 	DELETEP(m_clrGray);
@@ -534,7 +532,7 @@ bool AP_Preview_Paragraph::_loadDrawFont(void)
 
 	if (font)
 	{
-		REPLACEP(m_font, font);
+		m_font = font;
 		m_gc->setFont(m_font);
 		m_fontHeight = m_gc->getFontHeight();
 		return true;

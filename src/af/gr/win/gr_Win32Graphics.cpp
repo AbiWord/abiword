@@ -212,14 +212,13 @@ win32Internal_fontEnumProcedure(ENUMLOGFONT* pLogFont,
 	return 0;
 }
 
-GR_Font* GR_Win32Graphics::findFont(const char* pszFontFamily,
-									const char* pszFontStyle,
-									const char* pszFontVariant,
-									const char* pszFontWeight,
-									const char* pszFontStretch,
-									const char* pszFontSize)
-{
-	
+GR_Font* GR_Win32Graphics::_findFont(const char* pszFontFamily,
+									 const char* pszFontStyle,
+									 const char* pszFontVariant,
+									 const char* pszFontWeight,
+									 const char* pszFontStretch,
+									 const char* pszFontSize)
+{	
 	#ifdef GR_GRAPHICS_DEBUG
 	UT_DEBUGMSG(("GR_Win32Graphics::findFont %s %s %s\n", pszFontFamily, pszFontStyle, pszFontSize));	
 	#endif

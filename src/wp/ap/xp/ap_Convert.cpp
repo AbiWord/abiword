@@ -147,8 +147,9 @@ public:
 			}
 #endif
 				
-			if (m_pGraphics->startPrint())
-				m_bPrintedFirstPage = true;
+			if (!m_bPrintedFirstPage)
+				if (m_pGraphics->startPrint())
+					m_bPrintedFirstPage = true;
 			
 
 			if (m_bPrintedFirstPage) {

@@ -66,7 +66,6 @@ const UT_String & PSFont::hashKey(void) const
 	return m_hashKey;
 }
 
-
 UT_sint32 PSFont::measureUnremappedCharForCache(UT_UCSChar cChar) const
 {
 	UT_sint32 width;
@@ -86,7 +85,6 @@ UT_sint32 PSFont::measureUnremappedCharForCache(UT_UCSChar cChar) const
 	width = pFace->glyph->linearHoriAdvance;
 	return width;
 }
-
 
 float PSFont::measureUnRemappedChar(const UT_UCSChar c, UT_uint32 iSize) const
 {

@@ -63,12 +63,6 @@ class GR_QNXGraphics : public GR_Graphics
 	virtual void 		setColor(const UT_RGBColor& clr);
 
 	virtual GR_Font* 	getGUIFont();
-	virtual GR_Font* 	findFont(const char* pszFontFamily, 
-								 const char* pszFontStyle, 
-								 const char* pszFontVariant, 
-								 const char* pszFontWeight, 
-								 const char* pszFontStretch, 
-								 const char* pszFontSize);
 	virtual UT_uint32 	getFontAscent();
 	virtual UT_uint32 	getFontDescent();
 	virtual UT_uint32 	getFontHeight();
@@ -131,6 +125,13 @@ class GR_QNXGraphics : public GR_Graphics
 	QNXFont *getCurrentQNXFont() { return m_pFont; };
 	PhGC_t	*getCurrentGC() { return m_pGC; };
  protected:
+	virtual GR_Font* 	_findFont(const char* pszFontFamily, 
+								  const char* pszFontStyle, 
+								  const char* pszFontVariant, 
+								  const char* pszFontWeight, 
+								  const char* pszFontStretch, 
+								  const char* pszFontSize);
+
 	virtual UT_uint32 	getDeviceResolution(void) const;
 	int 				DrawSetup();
 	int 				DrawTeardown();

@@ -1035,12 +1035,12 @@ GR_Font * GR_UnixGraphics::getGUIFont(void)
  * asked.  It will do a fuzzy match to find the font (using the aliases
  * found in fonts.conf
  */
-GR_Font * GR_UnixGraphics::findFont(const char* pszFontFamily,
-									const char* pszFontStyle,
-									const char* pszFontVariant,
-									const char* pszFontWeight,
-									const char* pszFontStretch,
-									const char* pszFontSize)
+GR_Font * GR_UnixGraphics::_findFont(const char* pszFontFamily,
+									 const char* pszFontStyle,
+									 const char* pszFontVariant,
+									 const char* pszFontWeight,
+									 const char* pszFontStretch,
+									 const char* pszFontSize)
 {
 	XAP_UnixFont* pUnixFont = m_pFontManager->findNearestFont(pszFontFamily, pszFontStyle, pszFontVariant, pszFontWeight,
 															  pszFontStretch, pszFontSize);

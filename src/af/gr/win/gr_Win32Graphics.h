@@ -116,12 +116,7 @@ public:
 	virtual void			setColor(const UT_RGBColor& clr);
 	virtual void            getColor(UT_RGBColor& clr);
 	virtual GR_Font*		getGUIFont();
-	virtual GR_Font*		findFont(const char* pszFontFamily,
-									 const char* pszFontStyle,
-									 const char* pszFontVariant,
-									 const char* pszFontWeight,
-									 const char* pszFontStretch,
-									 const char* pszFontSize);
+
 	virtual UT_uint32		getFontAscent();
 	virtual UT_uint32		getFontDescent();
 	virtual void			getCoverage(UT_Vector& coverage);
@@ -183,6 +178,13 @@ public:
 	
 	
 protected:
+	virtual GR_Font*		_findFont(const char* pszFontFamily,
+									  const char* pszFontStyle,
+									  const char* pszFontVariant,
+									  const char* pszFontWeight,
+									  const char* pszFontStretch,
+									  const char* pszFontSize);
+
 	virtual UT_uint32 	getDeviceResolution(void) const;
 	void					_setColor(DWORD clrRef);
 

@@ -1312,8 +1312,10 @@ int AP_UnixApp::main(const char * szAppName, int argc, const char ** argv)
 	
     // Step 2: Handle all non-window args.
     
-    if (!Args.doWindowlessArgs())
-      return false;
+    if (!Args.doWindowlessArgs()) {
+		delete pMyUnixApp;
+		return -1;
+	}
 
 	if (have_display) {
 
@@ -1340,7 +1342,7 @@ int AP_UnixApp::main(const char * szAppName, int argc, const char ** argv)
 #endif
 			pMyUnixApp->shutdown();
 			delete pMyUnixApp;
-		  return rtn;
+			return rtn;
 		}
 #endif
 		
@@ -1370,7 +1372,8 @@ int AP_UnixApp::main(const char * szAppName, int argc, const char ** argv)
 		{
 			UT_DEBUGMSG(("DOM: not parsing command line or showing app\n"));
 		}
-	}		
+	}
+
 	// Step 4: Destroy the App.  It should take care of deleting all frames.
 	pMyUnixApp->shutdown();
 	delete pMyUnixApp;
@@ -1388,7 +1391,7 @@ XAP_Frame * AP_UnixApp::newFrame(AP_App * app)
 
 void AP_UnixApp::errorMsgBadArg(AP_Args * Args, int nextopt)
 {
-  printf ("Error on option %s: %s.\nRun '%s --help' to see a full list of available command line options.\n",
+  fprintf (stderr, "Error on option %s: %s.\nRun '%s --help' to see a full list of available command line options.\n",
 	  poptBadOption (Args->poptcon, 0),
 	  poptStrerror (nextopt),
 	  Args->XArgs->m_argv[0]);

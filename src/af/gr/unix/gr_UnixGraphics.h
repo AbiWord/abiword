@@ -66,12 +66,6 @@ class GR_UnixGraphics : public GR_Graphics
 	virtual GR_Font*	getGUIFont();
 
 #ifndef WITH_PANGO 	
-	virtual GR_Font*	findFont(const char* pszFontFamily, 
-								 const char* pszFontStyle, 
-								 const char* pszFontVariant, 
-								 const char* pszFontWeight, 
-								 const char* pszFontStretch, 
-								 const char* pszFontSize);
 	virtual GR_Font*	getDefaultFont(UT_String& fontFamily);
 
 	virtual UT_uint32	getFontAscent();
@@ -148,6 +142,16 @@ class GR_UnixGraphics : public GR_Graphics
 	virtual UT_uint32 	getDeviceResolution(void) const;
 
  protected:
+
+#ifndef WITH_PANGO	
+	virtual GR_Font*	_findFont(const char* pszFontFamily, 
+								  const char* pszFontStyle, 
+								  const char* pszFontVariant, 
+								  const char* pszFontWeight, 
+								  const char* pszFontStretch, 
+								  const char* pszFontSize);
+#endif
+
 	void				_setColor(GdkColor & c);
 #ifndef WITH_PANGO
 	XAP_UnixFontManager * 	m_pFontManager;

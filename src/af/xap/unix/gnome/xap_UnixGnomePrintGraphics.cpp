@@ -736,12 +736,12 @@ UT_uint32 XAP_UnixGnomePrintGraphics::getFontHeight(GR_Font *fnt)
 	return (getFontAscent(fnt) + getFontDescent(fnt));
 }
 
-GR_Font* XAP_UnixGnomePrintGraphics::findFont(const char* pszFontFamily, 
-											  const char* pszFontStyle, 
-											  const char* pszFontVariant,
-											  const char* pszFontWeight, 
-											  const char* pszFontStretch,
-											  const char* pszFontSize)
+GR_Font* XAP_UnixGnomePrintGraphics::_findFont(const char* pszFontFamily, 
+											   const char* pszFontStyle, 
+											   const char* pszFontVariant,
+											   const char* pszFontWeight, 
+											   const char* pszFontStretch,
+											   const char* pszFontSize)
 {
 	XAP_UnixFont* pUnixFont = m_fm->findNearestFont(pszFontFamily, pszFontStyle, 
 													pszFontVariant, pszFontWeight,
