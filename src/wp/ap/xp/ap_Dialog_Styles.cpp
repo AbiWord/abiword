@@ -139,11 +139,12 @@ void AP_Dialog_Styles::addOrReplaceVecAttribs(const XML_Char * pszProp,
 	return;
 }
 
-void AP_Dialog_Styles::fillVecWithProps(const XML_Char * szStyle)
+void AP_Dialog_Styles::fillVecWithProps(const XML_Char * szStyle, bool bReplaceAttributes = true)
 {
 	PD_Style * pStyle = NULL;
 	m_vecAllProps.clear();
-	m_vecAllAttribs.clear();
+	if( bReplaceAttributes)
+		m_vecAllAttribs.clear();
 	if(szStyle == NULL || ! getDoc()->getStyle(szStyle,&pStyle))
 	{
 		return;
@@ -155,12 +156,12 @@ void AP_Dialog_Styles::fillVecWithProps(const XML_Char * szStyle)
 
 	const static XML_Char * charFields[] = 
 	{"bgcolor","color","font-family","font-size","font-stretch","font-style", 
-	 "font-variant", "font-weight","text-decoration"};
+	 "font-variant", "font-weight","text-decoration","lang"};
 
 	const size_t nCharFlds = sizeof(charFields)/sizeof(charFields[0]);
 
 	const static XML_Char * attribs[] = 
-	{"followedby","basedon","listid","parentid","level","style"};
+	{"followedby","basedon","listid","parentid","level","style","type"};
 
 	const size_t nattribs = sizeof(attribs)/sizeof(attribs[0]);
 	UT_uint32 i;
@@ -172,8 +173,6 @@ void AP_Dialog_Styles::fillVecWithProps(const XML_Char * szStyle)
 		const XML_Char * szName = paraFields[i];
 		const XML_Char * szValue = NULL;		
 		pStyle->getProperty(szName,szValue);
-		if(!szValue)
-			pStyle->getAttribute(szName,szValue);
 		if(szValue)
 			addOrReplaceVecProp(szName, szValue);
 	}
@@ -185,23 +184,23 @@ void AP_Dialog_Styles::fillVecWithProps(const XML_Char * szStyle)
 		const XML_Char * szName = charFields[i];
 		const XML_Char * szValue = NULL;		
 		pStyle->getProperty(szName,szValue);
-		if(!szValue)
-			pStyle->getAttribute(szName,szValue);
 		if(szValue)
 			addOrReplaceVecProp(szName, szValue);
 	}
 //
 // Loop through all the attributes and add those with non-null values
 //
-	for(i = 0; i < nattribs; i++)
+	if(bReplaceAttributes)
 	{
-		const XML_Char * szName = attribs[i];
-		const XML_Char * szValue = NULL;		
-		pStyle->getProperty(szName,szValue);
-		if(!szValue)
+		for(i = 0; i < nattribs; i++)
+		{
+			const XML_Char * szName = attribs[i];
+			const XML_Char * szValue = NULL;		
 			pStyle->getAttribute(szName,szValue);
-		if(szValue)
-			addOrReplaceVecAttribs(szName, szValue);
+			UT_DEBUGMSG(("SEVIOR: For attribute: %s value = %s \n",szName,szValue));
+			if(szValue)
+				addOrReplaceVecAttribs(szName, szValue);
+		}
 	}
 }
 
@@ -285,12 +284,12 @@ void AP_Dialog_Styles::ModifyLang(void)
 
 	if (bOK)
 	{
+		static XML_Char lang[50];
 		const XML_Char * s;
 
-		if (pDialog->getChangedLangProperty(&s))
-		{
-			addOrReplaceVecProp("lang", s);
-		}
+		pDialog->getChangedLangProperty(&s);
+		sprintf(lang,"%s",s);
+		addOrReplaceVecProp("lang", lang);
 	}
 
 	pDialogFactory->releaseDialog(pDialog);
@@ -555,13 +554,13 @@ void AP_Dialog_Styles::ModifyParagraph(void)
 
 	const static XML_Char * paraFields[] = {"text-align", "text-indent", "margin-left", "margin-right", "margin-top", "margin-bottom", "line-height","tabstops","start-value","list-delim", "list-decimal","field-font","field-color"};
 
-//	const size_t nParaFlds = sizeof(paraFields)/sizeof(paraFields[0]);
+//	const size_t num_paraFlds = sizeof(paraFields)/sizeof(paraFields[0]);
 //
 // Count the number paragraph properties
 //
 #define NUM_PARAPROPS  13
 
-	static XML_Char paraVals[NUM_PARAPROPS][30];
+	static XML_Char paraVals[NUM_PARAPROPS][60];
 	const XML_Char ** props = NULL;
 
 	UT_uint32 i = 0;
@@ -908,6 +907,7 @@ void  AP_Dialog_Styles::drawLocal(void)
 {
 	m_pAbiPreview->draw();
 }
+
 
 void AP_Dialog_Styles::_populateAbiPreview(bool isNew)
 {

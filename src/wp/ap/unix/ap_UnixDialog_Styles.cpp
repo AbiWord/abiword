@@ -71,6 +71,8 @@ AP_UnixDialog_Styles::AP_UnixDialog_Styles(XAP_DialogFactory * pDlgFactory,
 	m_wBasedOnEntry = NULL;
 	m_wFollowingCombo = NULL;
 	m_wFollowingEntry = NULL;
+	m_wStyleTypeCombo = NULL;
+	m_wStyleTypeEntry = NULL;
 	m_wLabDescription = NULL;
 
 	m_pAbiPreviewWidget = NULL;
@@ -88,6 +90,8 @@ AP_UnixDialog_Styles::AP_UnixDialog_Styles(XAP_DialogFactory * pDlgFactory,
 	m_wModifyLanguage = NULL;
 	m_gbasedOnStyles = NULL;
 	m_gfollowedByStyles = NULL;
+	m_gStyleType = NULL;
+	m_bBlockModifySignal = false;
 
 }
 
@@ -146,6 +150,8 @@ static void s_style_name(GtkWidget * widget, AP_UnixDialog_Styles * me)
 static void s_basedon(GtkWidget * widget, AP_UnixDialog_Styles * me)
 {
 	UT_ASSERT(widget && me);
+	if(me->isModifySignalBlocked())
+		return;
 	me->event_basedOn();
 }
 
@@ -153,7 +159,18 @@ static void s_basedon(GtkWidget * widget, AP_UnixDialog_Styles * me)
 static void s_followedby(GtkWidget * widget, AP_UnixDialog_Styles * me)
 {
 	UT_ASSERT(widget && me);
+	if(me->isModifySignalBlocked())
+		return;
 	me->event_followedBy();
+}
+
+
+static void s_styletype(GtkWidget * widget, AP_UnixDialog_Styles * me)
+{
+	UT_ASSERT(widget && me);
+	if(me->isModifySignalBlocked())
+		return;
+	me->event_styleType();
 }
 
 static void s_ok_clicked(GtkWidget * widget, AP_UnixDialog_Styles * me)
@@ -383,7 +400,6 @@ void AP_UnixDialog_Styles::runModal(XAP_Frame * pFrame)
 	event_charPreviewExposed();
 	gtk_main();
 
-	UT_DEBUGMSG(("SEVIOR: Finished Main window \n"));
 	DELETEP (m_pParaPreviewWidget);
 	DELETEP (m_pCharPreviewWidget);
 	
@@ -869,23 +885,29 @@ GtkWidget *  AP_UnixDialog_Styles::_constructModifyDialog(void)
 void  AP_UnixDialog_Styles::_constructModifyDialogContents(GtkWidget * modifyDialog)
 {
 
-	GtkWidget *dialog_vbox1;
-	GtkWidget *OverallVbox;
-	GtkWidget *comboTable;
-	GtkWidget *nameLabel;
-	GtkWidget *basedOnLabel;
-	GtkWidget *followingLabel;
-	GtkWidget *styleNameEntry;
-	GtkWidget *basedOnCombo;
-	GtkWidget *basedOnEntry;
-	GtkWidget *followingCombo;
-	GtkWidget *followingEntry;
-	GtkWidget *previewFrame;
-	GtkWidget *modifyDrawingArea;
-	GtkWidget *DescriptionText;
-	GtkWidget *checkBoxRow;
-	GtkWidget *checkAddTo;
-	GtkWidget *checkAutoUpdate;
+	GtkWidget *dialog_vbox1 = NULL;
+	GtkWidget *OverallVbox = NULL;
+	GtkWidget *comboTable  = NULL;
+	GtkWidget *nameLabel  = NULL;
+	GtkWidget *basedOnLabel  = NULL;
+	GtkWidget *followingLabel = NULL;
+	GtkWidget *styleTypeLabel = NULL;
+	GtkWidget *styleNameEntry = NULL;
+	GtkWidget *basedOnCombo = NULL;
+	GtkWidget *basedOnEntry = NULL;
+	GtkWidget *followingCombo = NULL;
+	GtkWidget *followingEntry = NULL;
+	GtkWidget *styleTypeCombo = NULL;
+	GtkWidget *styleTypeEntry = NULL;
+	GtkWidget *previewFrame = NULL;
+	GtkWidget *modifyDrawingArea = NULL;
+	GtkWidget *DescriptionText = NULL;
+	GtkWidget *checkBoxRow = NULL;
+	GtkWidget *checkAddTo = NULL;
+	GtkWidget *checkAutoUpdate = NULL;
+	GtkWidget *deletePropCombo = NULL;
+	GtkWidget *deletePropEntry = NULL;
+	GtkWidget *deletePropButton = NULL;
 	const XAP_StringSet * pSS = m_pApp->getStringSet();
 
 	dialog_vbox1 = GTK_DIALOG (modifyDialog)->vbox;
@@ -896,7 +918,7 @@ void  AP_UnixDialog_Styles::_constructModifyDialogContents(GtkWidget * modifyDia
 	gtk_box_pack_start (GTK_BOX (dialog_vbox1), OverallVbox, TRUE, TRUE, 0);
 	gtk_container_set_border_width (GTK_CONTAINER (OverallVbox), 5);
 
-	comboTable = gtk_table_new (3, 2, TRUE);
+	comboTable = gtk_table_new (4,2, TRUE);
 	gtk_widget_show (comboTable);
 	gtk_box_pack_start (GTK_BOX (OverallVbox), comboTable, TRUE, TRUE, 2);
 	gtk_container_set_border_width (GTK_CONTAINER (comboTable), 2);
@@ -912,9 +934,18 @@ void  AP_UnixDialog_Styles::_constructModifyDialogContents(GtkWidget * modifyDia
 	gtk_label_set_justify (GTK_LABEL (nameLabel), GTK_JUSTIFY_LEFT);
 	gtk_misc_set_padding (GTK_MISC (nameLabel), 2, 2);
 
+	styleTypeLabel = gtk_label_new ( "Style Type");
+	gtk_widget_show (styleTypeLabel);
+	gtk_table_attach (GTK_TABLE (comboTable), styleTypeLabel, 1, 2, 0, 1,
+					  (GtkAttachOptions) (GTK_FILL),
+					  (GtkAttachOptions) (0), 0, 0);
+	gtk_misc_set_alignment (GTK_MISC (styleTypeLabel), 0, 0.5);
+	gtk_label_set_justify (GTK_LABEL (styleTypeLabel), GTK_JUSTIFY_LEFT);
+	gtk_misc_set_padding (GTK_MISC (styleTypeLabel), 2, 2);
+
 	basedOnLabel = gtk_label_new (pSS->getValue(AP_STRING_ID_DLG_Styles_ModifyBasedOn) );
 	gtk_widget_show (basedOnLabel);
-	gtk_table_attach (GTK_TABLE (comboTable), basedOnLabel, 0, 1, 1, 2,
+	gtk_table_attach (GTK_TABLE (comboTable), basedOnLabel, 0, 1, 2, 3,
 					  (GtkAttachOptions) (GTK_FILL),
 					  (GtkAttachOptions) (0), 0, 0);
 	gtk_misc_set_alignment (GTK_MISC (basedOnLabel), 0, 0.5);
@@ -923,7 +954,7 @@ void  AP_UnixDialog_Styles::_constructModifyDialogContents(GtkWidget * modifyDia
 
 	followingLabel = gtk_label_new (pSS->getValue(AP_STRING_ID_DLG_Styles_ModifyFollowing));
 	gtk_widget_show (followingLabel);
-	gtk_table_attach (GTK_TABLE (comboTable), followingLabel, 0, 1, 2, 3,
+	gtk_table_attach (GTK_TABLE (comboTable), followingLabel, 1, 2, 2, 3,
 					  (GtkAttachOptions) (GTK_FILL),
 					  (GtkAttachOptions) (0), 0, 0);
 	gtk_misc_set_alignment (GTK_MISC (followingLabel), 0, 0.5);
@@ -931,30 +962,85 @@ void  AP_UnixDialog_Styles::_constructModifyDialogContents(GtkWidget * modifyDia
 
 	styleNameEntry = gtk_entry_new ();
 	gtk_widget_show (styleNameEntry);
-	gtk_table_attach (GTK_TABLE (comboTable), styleNameEntry, 1, 2, 0, 1,
+	gtk_table_attach (GTK_TABLE (comboTable), styleNameEntry, 0, 1, 1, 2,
 					  (GtkAttachOptions) (GTK_EXPAND | GTK_FILL),
 					  (GtkAttachOptions) (0), 0, 0);
 	gtk_widget_set_usize (styleNameEntry, 158, -2);
 
-	basedOnCombo = gtk_combo_new ();
-	gtk_widget_show (basedOnCombo);
-	gtk_table_attach (GTK_TABLE (comboTable), basedOnCombo, 1, 2, 1, 2,
-					  (GtkAttachOptions) (GTK_EXPAND | GTK_FILL),
-					  (GtkAttachOptions) (0), 0, 0);
+//
+// Cannot modify basedon attribute
+//	
+	if(isNew())
+	{
+		basedOnCombo = gtk_combo_new ();
+		gtk_widget_show (basedOnCombo);
+		gtk_table_attach (GTK_TABLE (comboTable), basedOnCombo, 0, 1, 3, 4,
+						  (GtkAttachOptions) (GTK_EXPAND | GTK_FILL),
+						  (GtkAttachOptions) (0), 0, 0);
+		
+		basedOnEntry = GTK_COMBO (basedOnCombo)->entry;
+		gtk_widget_show (basedOnEntry);
+		gtk_widget_set_usize (basedOnEntry, 158, -2);
+	}
+	else
+	{
+		basedOnEntry = gtk_entry_new();
+		gtk_widget_show (basedOnEntry);
+		gtk_table_attach (GTK_TABLE (comboTable), basedOnEntry, 0, 1, 3, 4,
+						  (GtkAttachOptions) (GTK_EXPAND | GTK_FILL),
+						  (GtkAttachOptions) (0), 0, 0);
+		gtk_widget_set_usize (basedOnEntry, 158, -2);
+	}		
 
-	basedOnEntry = GTK_COMBO (basedOnCombo)->entry;
-	gtk_widget_show (basedOnEntry);
-	gtk_widget_set_usize (basedOnEntry, 158, -2);
-	
-	followingCombo = gtk_combo_new ();
-	gtk_widget_show (followingCombo);
-	gtk_table_attach (GTK_TABLE (comboTable), followingCombo, 1, 2, 2, 3,
-					  (GtkAttachOptions) (GTK_EXPAND | GTK_FILL),
-					  (GtkAttachOptions) (0), 0, 0);
+//
+// Cannot modify following attribute
+//	
+	if(isNew())
+	{
+		followingCombo = gtk_combo_new ();
+		gtk_widget_show (followingCombo);
+		gtk_table_attach (GTK_TABLE (comboTable), followingCombo, 1, 2, 3, 4,
+						  (GtkAttachOptions) (GTK_EXPAND | GTK_FILL),
+						  (GtkAttachOptions) (0), 0, 0);
 
-	followingEntry = GTK_COMBO (followingCombo)->entry;
-	gtk_widget_show (followingEntry);
-	gtk_widget_set_usize (followingEntry, 158, -2);
+		followingEntry = GTK_COMBO (followingCombo)->entry;
+		gtk_widget_show (followingEntry);
+		gtk_widget_set_usize (followingEntry, 158, -2);
+	}
+	else
+	{
+		followingEntry = gtk_entry_new();
+		gtk_widget_show (followingEntry);
+		gtk_table_attach (GTK_TABLE (comboTable), followingEntry, 1, 2, 3, 4,
+						  (GtkAttachOptions) (GTK_EXPAND | GTK_FILL),
+						  (GtkAttachOptions) (0), 0, 0);
+		gtk_widget_set_usize (followingEntry, 158, -2);
+	}
+
+//
+// Cannot modify style type attribute
+//	
+	if(isNew())
+	{
+		styleTypeCombo = gtk_combo_new ();
+		gtk_widget_show (styleTypeCombo);
+		gtk_table_attach (GTK_TABLE (comboTable), styleTypeCombo, 1, 2, 1, 2,
+						  (GtkAttachOptions) (GTK_EXPAND | GTK_FILL),
+						  (GtkAttachOptions) (0), 0, 0);
+
+		styleTypeEntry = GTK_COMBO (styleTypeCombo)->entry;
+		gtk_widget_show (styleTypeEntry);
+		gtk_widget_set_usize (styleTypeEntry, 158, -2);
+	}
+	else
+	{
+		styleTypeEntry = gtk_entry_new ();
+		gtk_widget_show (styleTypeEntry);
+		gtk_table_attach (GTK_TABLE (comboTable), styleTypeEntry, 1, 2, 1, 2,
+						  (GtkAttachOptions) (GTK_EXPAND | GTK_FILL),
+						  (GtkAttachOptions) (0), 0, 0);
+		gtk_widget_set_usize (styleTypeEntry, 158, -2);
+	}
 
 	previewFrame = gtk_frame_new (pSS->getValue(AP_STRING_ID_DLG_Styles_ModifyPreview));
 	gtk_widget_show (previewFrame);
@@ -980,6 +1066,30 @@ void  AP_UnixDialog_Styles::_constructModifyDialogContents(GtkWidget * modifyDia
 //	gtk_widget_set_usize(DescriptionText, 300, 100);
 	gtk_label_set_justify (GTK_LABEL (DescriptionText), GTK_JUSTIFY_LEFT);
 	gtk_label_set_line_wrap (GTK_LABEL (DescriptionText), TRUE);
+//
+// Code to choose properties to be removed from the current style.
+//
+	GtkWidget * deleteRow = gtk_hbox_new(FALSE,2);
+	gtk_widget_show (deleteRow);
+	gtk_box_pack_start (GTK_BOX (OverallVbox), deleteRow, TRUE, TRUE, 0);
+	gtk_container_set_border_width (GTK_CONTAINER (deleteRow), 2);
+
+	GtkWidget * deleteLabel = gtk_label_new("Remove Property from Style");
+	gtk_widget_show (deleteLabel);
+	gtk_box_pack_start (GTK_BOX (deleteRow), deleteLabel, TRUE, TRUE, 0);
+
+	deletePropCombo = gtk_combo_new ();
+	gtk_widget_show (deletePropCombo);
+	gtk_box_pack_start (GTK_BOX (deleteRow), deletePropCombo, TRUE, TRUE, 0);
+
+    deletePropEntry = GTK_COMBO (deletePropCombo)->entry;
+	gtk_widget_show (deletePropEntry);
+	gtk_widget_set_usize (deletePropEntry, 158, -2);
+	
+	deletePropButton = gtk_button_new_with_label("Remove");
+	gtk_widget_show(deletePropButton);
+	gtk_box_pack_start (GTK_BOX (deleteRow), deletePropButton, TRUE, TRUE, 0);
+		
 
 	checkBoxRow = gtk_hbox_new (FALSE, 3);
 	gtk_box_pack_start (GTK_BOX (OverallVbox), checkBoxRow, TRUE, TRUE, 0);
@@ -1001,6 +1111,8 @@ void  AP_UnixDialog_Styles::_constructModifyDialogContents(GtkWidget * modifyDia
 	m_wBasedOnEntry = basedOnEntry;
     m_wFollowingCombo = followingCombo;
 	m_wFollowingEntry = followingEntry;
+	m_wStyleTypeCombo = styleTypeCombo;
+	m_wStyleTypeEntry = styleTypeEntry;
 	m_wModifyDrawingArea = modifyDrawingArea;
 	m_wLabDescription = DescriptionText;
 	m_wModifyDialog = modifyDialog;
@@ -1146,6 +1258,11 @@ void AP_UnixDialog_Styles::_connectModifySignals(void)
 					   GTK_SIGNAL_FUNC(s_followedby),
 					   (gpointer) this);
 
+	gtk_signal_connect(GTK_OBJECT(m_wStyleTypeEntry), 
+					   "changed",
+					   GTK_SIGNAL_FUNC(s_styletype),
+					   (gpointer) this);
+
 	
 	gtk_signal_connect_after(GTK_OBJECT(m_wModifyDialog),
 							 "expose_event",
@@ -1193,8 +1310,11 @@ void AP_UnixDialog_Styles::event_basedOn(void)
 	UT_DEBUGMSG(("SEVIOR: New basedon name %s \n",psz));
 	g_snprintf((gchar *) m_basedonName,40,"%s",psz);
 	addOrReplaceVecAttribs("basedon",getBasedonName());
-	fillVecWithProps(getBasedonName());
+	UT_DEBUGMSG(("SEVIOR: Readback basedon name 1 = %s \n",getAttsVal("basedon")));
+	fillVecWithProps(getBasedonName(),false);
+	UT_DEBUGMSG(("SEVIOR: Readback basedon name 2 = %s \n",getAttsVal("basedon")));
 	updateCurrentStyle();
+	UT_DEBUGMSG(("SEVIOR: Readback basedon name 3 = %s \n",getAttsVal("basedon")));
 }
 
 
@@ -1207,6 +1327,24 @@ void AP_UnixDialog_Styles::event_followedBy(void)
 	UT_DEBUGMSG(("SEVIOR: New followedby name %s \n",psz));
 	g_snprintf((gchar *) m_followedbyName,40,"%s",psz);
 	addOrReplaceVecAttribs("followedby",getFollowedbyName());
+}
+
+
+/*!
+ * Update the Attributes vector given the new Style Type
+ */
+void AP_UnixDialog_Styles::event_styleType(void)
+{
+	const XAP_StringSet * pSS = m_pApp->getStringSet();
+	gchar * psz = gtk_entry_get_text( GTK_ENTRY(m_wStyleTypeEntry));
+	UT_DEBUGMSG(("SEVIOR: New Style Type %s \n",psz));
+	g_snprintf((gchar *) m_styleType,40,"%s",psz);
+	const XML_Char * pszSt = "P";
+	if(strstr(m_styleType, pSS->getValue(AP_STRING_ID_DLG_Styles_ModifyCharacter)) != 0)
+		pszSt = "C";
+	addOrReplaceVecAttribs("type",pszSt);
+	UT_DEBUGMSG(("SEVIOR: Setting style type = %s \n",pszSt));
+	UT_DEBUGMSG(("SEVIOR: Readback style type = %s \n",getAttsVal("type")));
 }
 
 void AP_UnixDialog_Styles::event_Modify_Cancel(void)
@@ -1284,6 +1422,13 @@ void  AP_UnixDialog_Styles::modifyRunModal(void)
 		{
 			g_list_free (m_gfollowedByStyles);
 			m_gfollowedByStyles = NULL;
+		}
+
+
+		if(m_gStyleType != NULL)
+		{
+			g_list_free (m_gStyleType);
+			m_gStyleType = NULL;
 		}
 	    gtk_widget_destroy(m_wModifyDialog);
 	}
@@ -1368,6 +1513,10 @@ void  AP_UnixDialog_Styles::setModifyDescription( const char * desc)
 
 bool  AP_UnixDialog_Styles::_populateModify(void)
 {
+//
+// Don't do any callback while setting up stuff here.
+//
+	setModifySignalBlocked(true);
 	setModifyDescription( m_curStyleDesc.c_str());
 //
 // Get Style name and put in in the text entry
@@ -1388,7 +1537,6 @@ bool  AP_UnixDialog_Styles::_populateModify(void)
 	}
 	else
 	{
-		gtk_entry_set_text (GTK_ENTRY(m_wStyleNameEntry), "");
 		gtk_entry_set_editable( GTK_ENTRY(m_wStyleNameEntry),TRUE );
 	}
 //
@@ -1428,8 +1576,10 @@ bool  AP_UnixDialog_Styles::_populateModify(void)
 	    getDoc()->enumStyles(i, &name, &pcStyle);
 
 		if(pcStyle == pBasedOnStyle)
+		{
+			UT_DEBUGMSG(("SEVIOR: Found basedon style = %s \n",name));
 			szBasedOn = name;
-
+		}
 		if(pcStyle == pFollowedByStyle)
 			szFollowedBy = name;
 		if(szCurrentStyle && strcmp(name,szCurrentStyle) != 0)
@@ -1439,23 +1589,57 @@ bool  AP_UnixDialog_Styles::_populateModify(void)
 
 		m_gfollowedByStyles = g_list_append (m_gfollowedByStyles, (gpointer) name);
 	}
-
+	const XAP_StringSet * pSS = m_pApp->getStringSet();
+	m_gStyleType = g_list_append(m_gStyleType, (gpointer) pSS->getValue(AP_STRING_ID_DLG_Styles_ModifyParagraph) );
+	m_gStyleType = g_list_append(m_gStyleType, (gpointer) pSS->getValue(AP_STRING_ID_DLG_Styles_ModifyCharacter));
+ 
 //
 // Set the popdown list
 //
-	gtk_combo_set_popdown_strings( GTK_COMBO(m_wBasedOnCombo),m_gbasedOnStyles);
-	gtk_combo_set_popdown_strings( GTK_COMBO(m_wFollowingCombo),m_gfollowedByStyles);
-
+	if(isNew())
+	{
+		gtk_combo_set_popdown_strings( GTK_COMBO(m_wBasedOnCombo),m_gbasedOnStyles);
+		gtk_combo_set_popdown_strings( GTK_COMBO(m_wFollowingCombo),m_gfollowedByStyles);
+		gtk_combo_set_popdown_strings( GTK_COMBO(m_wStyleTypeCombo),m_gStyleType);
+	}
 //
 // OK here we set intial values for the basedOn and followedBy
 //
 	if(!isNew())
 	{
-		gtk_entry_set_text (GTK_ENTRY(GTK_COMBO(m_wBasedOnCombo)->entry),szBasedOn);
-		gtk_entry_set_text (GTK_ENTRY(GTK_COMBO(m_wFollowingCombo)->entry),szFollowedBy);
+		gtk_entry_set_text (GTK_ENTRY(m_wBasedOnEntry),szBasedOn);
+		gtk_entry_set_text (GTK_ENTRY(m_wFollowingEntry),szFollowedBy);
+		if(strstr(getAttsVal("type"),"P") != 0)
+		{
+			gtk_entry_set_text (GTK_ENTRY(m_wStyleTypeEntry),
+								pSS->getValue(AP_STRING_ID_DLG_Styles_ModifyParagraph));
+		}
+		else
+		{
+			gtk_entry_set_text (GTK_ENTRY(m_wStyleTypeEntry),
+								pSS->getValue(AP_STRING_ID_DLG_Styles_ModifyCharacter));
+		}
 	}
-	gtk_entry_set_editable(GTK_ENTRY(GTK_COMBO(m_wFollowingCombo)->entry),FALSE );
-	gtk_entry_set_editable(GTK_ENTRY(GTK_COMBO(m_wBasedOnCombo)->entry),FALSE );
+	else
+	{
+//
+// Hardwire defaults for "new"
+//
+		gtk_entry_set_text (GTK_ENTRY(m_wBasedOnEntry),"Normal");
+		event_basedOn();
+		gtk_entry_set_text (GTK_ENTRY(m_wFollowingEntry),"Normal");
+		event_followedBy();
+		gtk_entry_set_text (GTK_ENTRY(m_wStyleTypeEntry),
+							pSS->getValue(AP_STRING_ID_DLG_Styles_ModifyParagraph));
+		event_styleType();
+	}
+	gtk_entry_set_editable(GTK_ENTRY(m_wFollowingEntry),FALSE );
+	gtk_entry_set_editable(GTK_ENTRY(m_wBasedOnEntry),FALSE );
+	gtk_entry_set_editable(GTK_ENTRY(m_wStyleTypeEntry),FALSE );
+//
+// Allow callback's now.
+//
+	setModifySignalBlocked(false);
 	return true;
 }
 
@@ -1583,4 +1767,15 @@ void   AP_UnixDialog_Styles::event_ModifyTabs()
 //
 	updateCurrentStyle();
 }
+
+bool  AP_UnixDialog_Styles::isModifySignalBlocked(void) const
+{
+	return m_bBlockModifySignal;
+}
+
+void  AP_UnixDialog_Styles::setModifySignalBlocked( bool val)
+{
+	m_bBlockModifySignal = val;
+}
+
 

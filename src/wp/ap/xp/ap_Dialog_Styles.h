@@ -67,7 +67,7 @@ class AP_Dialog_Styles : public XAP_Dialog_NonPersistent
 	void destroyAbiPreview(void);
 	void addOrReplaceVecProp(const XML_Char * pszProp,  const XML_Char * pszVal);
 	void addOrReplaceVecAttribs(const XML_Char * pszProp,  const XML_Char * pszVal);
-	void fillVecWithProps(const XML_Char * szStyle);
+	void fillVecWithProps(const XML_Char * szStyle, bool bReplaceAttributes);
 	const XML_Char * getAttsVal(const XML_Char * szProp) const;
 	const XML_Char * getPropsVal(const XML_Char * szProp) const;
 	void ModifyLists(void);

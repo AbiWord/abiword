@@ -77,13 +77,16 @@ public:
 	void         event_ModifyPreviewExposed();
 	void         event_basedOn(void);
 	void         event_followedBy(void);
+	void         event_styleType(void);
 	void         modifyRunModal(void);
-
+	void         setModifySignalBlocked( bool val);
+	bool         isModifySignalBlocked(void) const;         
 	void         setIsNew(bool isNew) {m_bIsNew = isNew;}
 	const bool   isNew(void) const { return m_bIsNew;}
 	XML_Char *   getNewStyleName(void) const {return (XML_Char *) m_newStyleName;}
 	XML_Char *   getBasedonName(void) const {return (XML_Char *) m_basedonName;}
 	XML_Char *   getFollowedbyName(void) const {return (XML_Char *) m_followedbyName;}
+	XML_Char *   getStyleType(void) const {return (XML_Char *) m_styleType;}
 protected:
 
 	// private construction functions
@@ -138,9 +141,13 @@ protected:
 	GtkWidget *	m_wBasedOnEntry;
 	GtkWidget * m_wFollowingCombo;
 	GtkWidget *	m_wFollowingEntry;
+	GtkWidget * m_wStyleTypeCombo;
+	GtkWidget *	m_wStyleTypeEntry;
 	GtkWidget *	m_wModifyDrawingArea;
 	GtkWidget *	m_wLabDescription;
-
+	GtkWidget * m_wDeletePropCombo;
+	GtkWidget * m_wDeletePropEntry;
+	GtkWidget * m_wDeletePropButton;
 	GtkWidget *	m_wModifyOk;
 	GtkWidget *	m_wModifyCancel;
 	GtkWidget *	m_wFormatMenu;
@@ -155,11 +162,14 @@ protected:
 
 	GList *     m_gbasedOnStyles;
 	GList *     m_gfollowedByStyles;
-	const XML_Char * m_newStyleName[40];
-	const XML_Char * m_basedonName[40];
-	const XML_Char * m_followedbyName[40];
+	GList *     m_gStyleType;
+	XML_Char    m_newStyleName[40];
+	XML_Char    m_basedonName[40];
+	XML_Char    m_followedbyName[40];
+	XML_Char    m_styleType[40];
 private:
 	bool m_bIsNew;
+	bool m_bBlockModifySignal;
 };
 
 #endif /* AP_UnixDialog_Styles_H */

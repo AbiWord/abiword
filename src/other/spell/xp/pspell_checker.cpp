@@ -87,7 +87,7 @@ PSpellChecker::requestDictionary (const char * szLang)
 {
 	PspellConfig *spell_config;
 	PspellCanHaveError *spell_error;
-
+	UT_ASSERT(szLang);
 	// Done: convert the language tag from en-US to en_US form
 	char * lang = UT_strdup (szLang);
 	char * hyphen = strchr (lang, '-');
@@ -101,7 +101,8 @@ PSpellChecker::requestDictionary (const char * szLang)
 
 	spell_error = new_pspell_manager(spell_config);
 	delete_pspell_config(spell_config);
-
+	UT_DEBUGMSG(("Attempting to load %s \n",lang));
+		
 	FREEP(lang);
 
 	if(pspell_error_number(spell_error) != 0)

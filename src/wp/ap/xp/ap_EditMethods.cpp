@@ -3831,13 +3831,14 @@ static bool s_doLangDlg(FV_View * pView)
 		UT_uint16 k = 0;
 		const XML_Char * props_out[3];
 		const XML_Char * s;
+		static XML_Char szLang[50];
 
 		if (pDialog->getChangedLangProperty(&s))
 		{
 			//UT_DEBUGMSG(("some change\n"));
-			
+			sprintf(szLang,"%s",s);
 			props_out[k++] = "lang";
-			props_out[k++] = s;
+			props_out[k++] = (const XML_Char *) szLang;
 		}
 
 		props_out[k] = 0;						// put null after last pair.
