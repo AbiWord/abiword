@@ -1117,6 +1117,8 @@ void s_HTML_Listener::_outputBegin(PT_AttrPropIndex api)
 			m_pie->write("background-color: ");
 			char color[16];
 			_convertColor(color, szValue);
+			if (*szValue != '#')
+			  m_pie->write("#");
 			m_pie->write(color);
 
 		szValue = PP_evalProperty("page-margin-top",
