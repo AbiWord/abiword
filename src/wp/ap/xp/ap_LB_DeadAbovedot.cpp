@@ -69,7 +69,7 @@ static struct ap_bs_Char s_CharTable[] =
 	{0x63, /* c      */ { "insertAbovedotData",		"",		"",		""		}},
 	{0x67, /* g      */ { "insertAbovedotData",		"",		"",		""		}},
 #else
-	0
+	{ 0 }
 #endif
 };
 

@@ -65,7 +65,7 @@ static struct ap_bs_Char s_CharTable[] =
 	{0x69, /* i      */ { "insertOgonekData",		"",		"",		""		}},
 	{0x75, /* u      */ { "insertOgonekData",		"",		"",		""		}},
 #else
-	0
+	{ 0 }
 #endif
 };
 
