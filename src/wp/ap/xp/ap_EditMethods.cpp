@@ -2768,7 +2768,7 @@ Defun(fontSize)
 
 	if (sz && *sz)
 	{
-		int len = strlen(sz) + 2;
+		int len = strlen(sz) + 2 + 1;
 		XML_Char * buf = (XML_Char *) calloc(len, sizeof(XML_Char *));
 
 		sprintf(buf, "%spt", sz);
@@ -3076,6 +3076,37 @@ Defun1(zoom)
 	UT_ASSERT(pFrame);
 
 	s_TellNotImplemented(pFrame, "Zoom dialog", __LINE__);
+
+	// For now, we hack some zoom changes, until the dialog is done
+
+	switch (pFrame->getZoomPercentage())
+	{
+	case 100:
+		pFrame->setZoomPercentage(75);
+		break;
+		
+	case 75:
+		pFrame->setZoomPercentage(25);
+		break;
+		
+	case 25:
+		pFrame->setZoomPercentage(125);
+		break;
+		
+	case 125:
+		pFrame->setZoomPercentage(200);
+		break;
+		
+	case 200:
+		pFrame->setZoomPercentage(100);
+		break;
+		
+	default:
+		pFrame->setZoomPercentage(100);
+		break;
+	}
+	
+	
 	return UT_TRUE;
 }
 
@@ -3188,7 +3219,7 @@ Defun1(dlgTabs)
 
 Defun1(noop)
 {
-	// this is a no-op, so unbound menus don't assert at Linux World
+	// this is a no-op, so unbound menus don't assert at trade shows
 	return UT_TRUE;
 }
 

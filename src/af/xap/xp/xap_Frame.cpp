@@ -353,3 +353,14 @@ UT_Bool XAP_Frame::updateTitle()
 
 	return UT_TRUE;
 }
+
+void XAP_Frame::setZoomPercentage(UT_uint32 iZoom)
+{
+	// default does nothing.  see subclasses for override
+}
+
+UT_uint32 XAP_Frame::getZoomPercentage(void)
+{
+	return 100;	// default implementation
+}
+

@@ -26,9 +26,29 @@
 #include "ut_string.h"
 #include "ut_units.h"
 
+GR_Graphics::GR_Graphics()
+{
+	m_iZoomPercentage = 100;
+}
+
 GR_Graphics::~GR_Graphics()
 {
 	// need this so children can clean up
+}
+
+void GR_Graphics::setZoomPercentage(UT_uint32 iZoom)
+{
+	m_iZoomPercentage = iZoom;
+}
+
+UT_uint32 GR_Graphics::getZoomPercentage(void) const
+{
+	return m_iZoomPercentage;
+}
+
+UT_uint32 GR_Graphics::getResolution(void) const
+{
+	return _getResolution() * m_iZoomPercentage / 100;
 }
 
 UT_sint32 GR_Graphics::convertDimension(const char * s) const

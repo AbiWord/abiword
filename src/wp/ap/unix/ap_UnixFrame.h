@@ -20,6 +20,8 @@
 #ifndef AP_UNIXFRAME_H
 #define AP_UNIXFRAME_H
 
+class GR_Graphics;
+
 #include "xap_UnixFrame.h"
 
 /*****************************************************************/
@@ -40,11 +42,13 @@ public:
 	virtual void				setXScrollRange(void);
 	virtual void				setYScrollRange(void);
 	virtual void				translateDocumentToScreen(UT_sint32 &x, UT_sint32 &y);
+	virtual void				setZoomPercentage(UT_uint32 iZoom);
+	virtual UT_uint32			getZoomPercentage(void);
 
 protected:
 	virtual GtkWidget *			_createDocumentWindow(void);
 	UT_Bool						_loadDocument(const char * szFilename);
-	UT_Bool						_showDocument(void);
+	UT_Bool						_showDocument(UT_uint32 iZoom=100);
 	static void					_scrollFuncX(void * pData, UT_sint32 xoff, UT_sint32 xlimit);
 	static void					_scrollFuncY(void * pData, UT_sint32 yoff, UT_sint32 ylimit);
 

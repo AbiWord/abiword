@@ -73,7 +73,6 @@ public:
   virtual UT_uint32 getFontHeight();
   virtual UT_uint32 measureString(const UT_UCSChar*s, int iOffset, int num,
 				  unsigned short* pWidths);
-  virtual UT_uint32 getResolution() const;
   virtual void setColor(UT_RGBColor& clr);
   virtual GR_Font* getGUIFont();
   virtual GR_Font* findFont(
@@ -130,6 +129,8 @@ protected:
   int          			m_iWindowHeight, m_iWindowWidth;
   UT_sint32				m_iLineWidth;
   GR_Graphics::Cursor	m_cursor;
+  
+  virtual UT_uint32 	_getResolution(void) const;
 };
 
 #endif /* GR_UNIXGRAPHICS_H */

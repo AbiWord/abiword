@@ -52,7 +52,6 @@ public:
 	
 	virtual UT_uint32 measureString(const UT_UCSChar*s, int iOffset, int num, unsigned short* pWidths);
 	
-	virtual UT_uint32 getResolution() const;
 	virtual void setColor(UT_RGBColor& clr);
 	virtual GR_Font* getGUIFont();
 	virtual GR_Font* findFont(
@@ -93,6 +92,10 @@ public:
 	virtual UT_Bool startPage(const char * szPageLabel, UT_uint32 pageNumber,
 							  UT_Bool bPortrait, UT_uint32 iWidth, UT_uint32 iHeight);
 	virtual UT_Bool endPrint(void);
+	
+protected:
+	virtual UT_uint32 _getResolution(void) const;
+	
 };
 
 #endif /* MAC_TT_h */

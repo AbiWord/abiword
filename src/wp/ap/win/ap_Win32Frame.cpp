@@ -102,7 +102,7 @@ void AP_Win32Frame::_getVerticalScrollInfo(SCROLLINFO * psi)
 
 /*****************************************************************/
 	
-UT_Bool AP_Win32Frame::_showDocument(void)
+UT_Bool AP_Win32Frame::_showDocument(UT_uint32 iZoom)
 {
 	if (!m_pDoc)
 	{
@@ -131,6 +131,8 @@ UT_Bool AP_Win32Frame::_showDocument(void)
 
 	pG = new GR_Win32Graphics(GetDC(hwnd), hwnd);
 	ENSUREP(pG);
+	pG->setZoomPercentage(iZoom);
+	
 	pDocLayout = new FL_DocLayout(static_cast<PD_Document *>(m_pDoc), pG);
 	ENSUREP(pDocLayout);
   

@@ -253,14 +253,12 @@ UT_uint32 GR_UnixGraphics::measureString(const UT_UCSChar* s, int iOffset,
 	return charWidth;
 }
 
-UT_uint32 GR_UnixGraphics::getResolution() const
+UT_uint32 GR_UnixGraphics::_getResolution(void) const
 {
 	// this is hard-coded at 100 for X now, since 75 (which
 	// most X servers return when queried for a resolution)
 	// makes for tiny fonts on modern resolutions.
 
-	// we'll implement a zoom around this factor soon enough
-	// so that it's a true option for people
 	return 100;
 }
 

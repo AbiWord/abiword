@@ -248,19 +248,21 @@ UT_sint32 fb_ColumnBreaker::breakSection(fl_SectionLayout* pSL)
 
 		fp_Column* pNextColumn = NULL;
 		
-		if (
-			pLastLineToKeep
-			&& (pCurColumn->getLastLine() != pLastLineToKeep)
-			)
+		if (pLastLineToKeep)
 		{
-			// make sure there is a next column
-			pNextColumn = pCurColumn->getNext();
-			if (!pNextColumn)
+			UT_ASSERT(pLastLineToKeep->getColumn() == pCurColumn);
+			
+			if (pCurColumn->getLastLine() != pLastLineToKeep)
 			{
-				pNextColumn = pSL->getNewColumn();
-			}
+				// make sure there is a next column
+				pNextColumn = pCurColumn->getNext();
+				if (!pNextColumn)
+				{
+					pNextColumn = pSL->getNewColumn();
+				}
 
-			pCurColumn->bumpLines(pLastLineToKeep);
+				pCurColumn->bumpLines(pLastLineToKeep);
+			}
 		}
 
 		UT_ASSERT((!pLastLineToKeep) || (pCurColumn->getLastLine() == pLastLineToKeep));

@@ -170,7 +170,7 @@ UT_uint32 PS_Graphics::measureString(const UT_UCSChar* s, int iOffset,
 	return iCharWidth;
 }
 	
-UT_uint32 PS_Graphics::getResolution() const
+UT_uint32 PS_Graphics::_getResolution(void) const
 {
 	return PS_RESOLUTION;
 }

@@ -57,7 +57,6 @@ public:
 	
 	virtual UT_uint32 measureString(const UT_UCSChar*s, int iOffset, int num, unsigned short* pWidths);
 	
-	virtual UT_uint32 getResolution() const;
 	virtual void setColor(UT_RGBColor& clr);
 	virtual GR_Font* getGUIFont();
 	virtual GR_Font* findFont(const char* pszFontFamily, 
@@ -106,6 +105,7 @@ protected:
 	void			_emit_FontMacros(void);
 	void			_emit_SetFont(void);
 	void 			_emit_SetColor(void);
+	virtual UT_uint32 _getResolution(void) const;
 	
 	UT_Vector		m_vecFontList;
 	PSFont *		m_pCurrentFont;

@@ -83,6 +83,9 @@ public:
 
 	virtual UT_Bool				runModalContextMenu(AV_View * pView, const char * szMenuName,
 													UT_sint32 x, UT_sint32 y) = 0;
+
+	virtual void				setZoomPercentage(UT_uint32 iZoom);
+	virtual UT_uint32			getZoomPercentage(void);
 	
 protected:
 	XAP_App *					m_app;			/* handle to application-specific data */

@@ -45,6 +45,7 @@ class GR_Font
 class GR_Graphics
 {
 public:
+	GR_Graphics();
 	virtual ~GR_Graphics();
 
 	virtual void drawChars(const UT_UCSChar* pChars, 
@@ -57,7 +58,6 @@ public:
 	
 	virtual UT_uint32 measureString(const UT_UCSChar*s, int iOffset, int num, unsigned short* pWidths) = 0;
 	
-	virtual UT_uint32 getResolution() const = 0;
 	virtual void setColor(UT_RGBColor& clr) = 0;
 	virtual GR_Font* getGUIFont() = 0;
 	virtual GR_Font* findFont(
@@ -128,6 +128,15 @@ public:
 
 	virtual void setCursor(GR_Graphics::Cursor c) = 0;
 	virtual GR_Graphics::Cursor getCursor(void) const = 0;
+
+	void setZoomPercentage(UT_uint32 iZoom);
+	UT_uint32 getZoomPercentage(void) const;
+	UT_uint32 getResolution(void) const;
+	
+protected:
+	virtual UT_uint32 _getResolution(void) const = 0;
+	
+	UT_uint32	m_iZoomPercentage;
 	
 };
 

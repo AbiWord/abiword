@@ -4384,3 +4384,4 @@ EV_EditMouseContext FV_View::getInsertionPointContext(UT_sint32 * pxPos, UT_sint
 		*pyPos = m_yPoint + m_iPointHeight;
 	return emc;
 }
+

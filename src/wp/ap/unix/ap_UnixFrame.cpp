@@ -47,7 +47,17 @@
 
 /*****************************************************************/
 
-UT_Bool AP_UnixFrame::_showDocument(void)
+void AP_UnixFrame::setZoomPercentage(UT_uint32 iZoom)
+{
+	_showDocument(iZoom);
+}
+
+UT_uint32 AP_UnixFrame::getZoomPercentage(void)
+{
+	return m_pData->m_pG->getZoomPercentage();
+}
+
+UT_Bool AP_UnixFrame::_showDocument(UT_uint32 iZoom)
 {
 	if (!m_pDoc)
 	{
@@ -76,6 +86,8 @@ UT_Bool AP_UnixFrame::_showDocument(void)
 	
 	pG = new GR_UnixGraphics(m_dArea->window, fontManager);
 	ENSUREP(pG);
+	pG->setZoomPercentage(iZoom);
+	
 	pDocLayout = new FL_DocLayout(static_cast<PD_Document *>(m_pDoc), pG);
 	ENSUREP(pDocLayout);
   
@@ -155,7 +167,10 @@ UT_Bool AP_UnixFrame::_showDocument(void)
 
 	REPLACEP(m_pData->m_pG, pG);
 	REPLACEP(m_pData->m_pDocLayout, pDocLayout);
-	DELETEP(pOldDoc);
+	if (pOldDoc != m_pDoc)
+	{
+		DELETEP(pOldDoc);
+	}
 	REPLACEP(m_pView, pView);
 	REPLACEP(m_pScrollObj, pScrollObj);
 	REPLACEP(m_pViewListener, pViewListener);

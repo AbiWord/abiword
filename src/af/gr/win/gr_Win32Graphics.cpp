@@ -354,7 +354,7 @@ UT_uint32 GR_Win32Graphics::measureString(const UT_UCSChar* s, int iOffset, int 
 	return iCharWidth;
 }
 
-UT_uint32 GR_Win32Graphics::getResolution() const
+UT_uint32 GR_Win32Graphics::_getResolution(void) const
 {
 	int result = GetDeviceCaps(m_hdc, LOGPIXELSY); // NOTE: assumes square pixels
 
