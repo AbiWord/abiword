@@ -69,6 +69,10 @@ fp_Run::fp_Run(fl_BlockLayout* pBL,
 	m_iDescent = 0;
 }
 
+fp_Run::~fp_Run()
+{
+}
+
 void	fp_Run::setX(UT_sint32 iX)
 {
 	if (iX == m_iX)
@@ -145,6 +149,13 @@ UT_Bool fp_Run::isOnlyRunOnLine(void) const
 
 void fp_Run::setLength(UT_uint32 iLen)
 {
+	if (iLen == m_iLen)
+	{
+		return;
+	}
+
+	clearScreen();
+	
 	m_iLen = iLen;
 }
 
@@ -217,6 +228,15 @@ fp_TextRun::fp_TextRun(fl_BlockLayout* pBL, GR_Graphics* pG, UT_uint32 iOffsetFi
 	}
 }
 
+const PP_AttrProp* fp_Run::getAP(void) const
+{
+	const PP_AttrProp * pSpanAP = NULL;
+	
+	m_pBL->getSpanAttrProp(m_iOffsetFirst+fl_BLOCK_STRUX_OFFSET,&pSpanAP);
+
+	return pSpanAP;
+}
+
 void fp_TextRun::lookupProperties(void)
 {
 	const PP_AttrProp * pSpanAP = NULL;
@@ -234,6 +254,11 @@ void fp_TextRun::lookupProperties(void)
 
 	const XML_Char *pszDecor = PP_evalProperty("text-decoration",pSpanAP,pBlockAP,pSectionAP);
 
+	/*
+	  TODO map line width to a property, not a hard-coded value
+	*/
+	m_iLineWidth = m_pG->convertDimension("0.8pt");
+	
 	m_fDecorations = 0;
 
 	XML_Char*	p = strdup(pszDecor);
@@ -332,12 +357,49 @@ UT_Bool fp_TextRun::canBreakBefore(void) const
 	else
 	{
 		if (m_pNext)
+		{
 			return m_pNext->canBreakBefore();
+		}
 		else
+		{
 			return UT_TRUE;
+		}
 	}
 
 	return UT_FALSE;
+}
+
+UT_Bool fp_TextRun::alwaysFits(void) const
+{
+	const UT_UCSChar* pSpan;
+	UT_uint32 lenSpan;
+
+	if (m_iLen > 0)
+	{
+		if (m_pBL->getSpanPtr(m_iOffsetFirst, &pSpan, &lenSpan))
+		{
+			UT_ASSERT(lenSpan>0);
+
+			for (UT_uint32 i=0; i<lenSpan; i++)
+			{
+				if (pSpan[i] != 32)
+				{
+					return UT_FALSE;
+				}
+			}
+
+			return UT_TRUE;
+		}
+
+		return UT_FALSE;
+	}
+	else
+	{
+		// could assert here -- this should never happen, I think
+		return UT_TRUE;
+	}
+
+	return UT_TRUE;
 }
 
 int fp_TextRun::split(fp_RunSplitInfo& si)
@@ -442,6 +504,64 @@ UT_Bool fp_TextRun::split(UT_uint32 splitOffset, UT_Bool bInsertBlock)
 	{
 		pNew->m_iOffsetFirst -= fl_BLOCK_STRUX_OFFSET;
 	}
+
+	return UT_TRUE;
+}
+
+UT_Bool fp_TextRun::splitSimple(UT_uint32 splitOffset)
+{
+	UT_ASSERT(splitOffset >= m_iOffsetFirst);
+	UT_ASSERT(splitOffset < (m_iOffsetFirst + m_iLen));
+	UT_GrowBuf * pgbCharWidths = m_pBL->getCharWidths();
+	
+	/*
+		NOTE: When inserting a block between these two runs, we need to 
+		temporarily "fix" its offset so that the calcwidths calculation
+		will work in place within the old block's charwidths buffer. 
+	*/
+	UT_uint32 offsetNew = splitOffset;
+
+	fp_TextRun* pNew = new fp_TextRun(m_pBL, m_pG, offsetNew, m_iLen - (splitOffset - m_iOffsetFirst), UT_FALSE);
+	UT_ASSERT(pNew);
+	pNew->m_pFont = this->m_pFont;
+	pNew->m_fDecorations = this->m_fDecorations;
+	pNew->m_colorFG = this->m_colorFG;
+	pNew->m_iAscent = this->m_iAscent;
+	pNew->m_iDescent = this->m_iDescent;
+	pNew->m_iHeight = this->m_iHeight;
+	
+	pNew->m_bDirty = UT_TRUE;
+	
+	pNew->m_pPrev = this;
+	pNew->m_pNext = this->m_pNext;
+	if (m_pNext)
+	{
+		m_pNext->setPrev(pNew);
+	}
+	m_pNext = pNew;
+
+	m_iLen = splitOffset - m_iOffsetFirst;
+
+	/*
+		The ordering of the next three lines gets everything 
+		positioned properly using the existing primitives, albeit 
+		at the cost of more flicker than is theoretically needed. 
+
+		1.  Fix the width of the left run.  This usually shrinks the 
+		line, which erases all subsequent runs and moves them left.
+		
+		2. Insert the new run into the line, creating a properly 
+		positioned RunInfo for it.  
+
+		3.  Fix the width of the new run.  This usually kicks 
+		subsequent runs to the right.  They've already been erased,
+		so it doesn't matter.
+
+		I don't like it, but it seems to work.  PCR
+	*/
+	calcWidths(pgbCharWidths);
+	m_pLine->insertRunAfter(pNew, this);
+//	pNew->calcWidths(pgbCharWidths);
 
 	return UT_TRUE;
 }
@@ -574,7 +694,7 @@ void fp_TextRun::mapXYToPosition(UT_sint32 x, UT_sint32 /*y*/, PT_DocPosition& p
 	UT_ASSERT(UT_SHOULD_NOT_HAPPEN);
 }
 
-void fp_TextRun::findPointCoords(UT_uint32 iOffset, UT_uint32& x, UT_uint32& y, UT_uint32& height)
+void fp_TextRun::findPointCoords(UT_uint32 iOffset, UT_sint32& x, UT_sint32& y, UT_sint32& height)
 {
 	UT_ASSERT(FP_RUN_NOT != containsOffset(iOffset));
 	
@@ -644,6 +764,7 @@ void fp_TextRun::_calcWidths(UT_GrowBuf * pgbCharWidths)
 
 void fp_TextRun::_clearScreen(void)
 {
+#if 1
 	UT_ASSERT(!m_bDirty);
 	UT_ASSERT(m_pG->queryProperties(GR_Graphics::DGP_SCREEN));
 
@@ -653,6 +774,29 @@ void fp_TextRun::_clearScreen(void)
 	m_pLine->getScreenOffsets(this, xoff, yoff);
 	
 	m_pG->clearArea(xoff, yoff, m_iWidth, m_pLine->getHeight());
+#else
+	/*
+	  The following code is an attempt to fix bug 7, but
+	  drawing the chars doesn't work, since the piece table
+	  has already been updated, so the chars are no longer
+	  available for drawing.  :-(
+	*/
+	
+	UT_ASSERT(!m_bDirty);
+	UT_ASSERT(m_pG->queryProperties(GR_Graphics::DGP_SCREEN));
+
+	m_pG->setFont(m_pFont);
+	
+	UT_RGBColor clrNormalBackground(255,255,255);
+	m_pG->setColor(clrNormalBackground);
+	
+	UT_sint32 xoff = 0, yoff = 0;
+	m_pLine->getScreenOffsets(this, xoff, yoff);
+	yoff += m_pLine->getAscent();
+	
+	const UT_GrowBuf * pgbCharWidths = m_pBL->getCharWidths();
+	_drawPartWithBackground(clrNormalBackground, xoff, yoff, m_iOffsetFirst, m_iLen, pgbCharWidths);
+#endif	
 }
 
 void fp_TextRun::_draw(dg_DrawArgs* pDA)
@@ -837,14 +981,15 @@ void fp_TextRun::_drawPart(UT_sint32 xoff, UT_sint32 yoff, UT_uint32 iStart, UT_
 void fp_TextRun::_drawDecors(UT_sint32 xoff, UT_sint32 yoff)
 {
 	/*
-		TODO these decorations have problems.  They're getting drawn
-		as hairlines on the printer.  Plus, the underline and strike
-		features could be done in the font, at least on Windows they
-		can.
+	  TODO I *think* this line width should be proportional
+	  to the size of the font.
 	*/
+	m_pG->setLineWidth(m_iLineWidth);
+	
 	if (m_fDecorations & TEXT_DECOR_UNDERLINE)
 	{
-		m_pG->drawLine(xoff, yoff, xoff+getWidth(), yoff);
+		UT_sint32 iDrop = (m_pLine->getDescent() / 3);
+		m_pG->drawLine(xoff, yoff + iDrop, xoff+getWidth(), yoff + iDrop);
 	}
 
 	if (m_fDecorations & TEXT_DECOR_OVERLINE)
@@ -987,7 +1132,7 @@ void fp_TabRun::mapXYToPosition(UT_sint32 x, UT_sint32 /*y*/, PT_DocPosition& po
 	bEOL = UT_FALSE;
 }
 
-void fp_TabRun::findPointCoords(UT_uint32 iOffset, UT_uint32& x, UT_uint32& y, UT_uint32& height)
+void fp_TabRun::findPointCoords(UT_uint32 iOffset, UT_sint32& x, UT_sint32& y, UT_sint32& height)
 {
 	UT_ASSERT(FP_RUN_NOT != containsOffset(iOffset));
 	UT_sint32 xoff;
@@ -1108,7 +1253,7 @@ void fp_ForcedLineBreakRun::mapXYToPosition(UT_sint32 x, UT_sint32 /*y*/, PT_Doc
 	bEOL = UT_FALSE;
 }
 
-void fp_ForcedLineBreakRun::findPointCoords(UT_uint32 iOffset, UT_uint32& x, UT_uint32& y, UT_uint32& height)
+void fp_ForcedLineBreakRun::findPointCoords(UT_uint32 iOffset, UT_sint32& x, UT_sint32& y, UT_sint32& height)
 {
 	UT_ASSERT(FP_RUN_NOT != containsOffset(iOffset));
 	UT_sint32 xoff;
@@ -1148,6 +1293,14 @@ fp_ImageRun::fp_ImageRun(fl_BlockLayout* pBL, GR_Graphics* pG, UT_uint32 iOffset
 
 	m_iAscent = m_iHeight;
 	m_iDescent = 0;
+}
+
+fp_ImageRun::~fp_ImageRun()
+{
+	if (m_pImage)
+	{
+		delete m_pImage;
+	}
 }
 
 void fp_ImageRun::lookupProperties(void)
@@ -1253,7 +1406,7 @@ void fp_ImageRun::mapXYToPosition(UT_sint32 x, UT_sint32 /*y*/, PT_DocPosition& 
 	bEOL = UT_FALSE;
 }
 
-void fp_ImageRun::findPointCoords(UT_uint32 iOffset, UT_uint32& x, UT_uint32& y, UT_uint32& height)
+void fp_ImageRun::findPointCoords(UT_uint32 iOffset, UT_sint32& x, UT_sint32& y, UT_sint32& height)
 {
 	UT_ASSERT(FP_RUN_NOT != containsOffset(iOffset));
 	UT_sint32 xoff;
@@ -1425,7 +1578,7 @@ void fp_FieldRun::mapXYToPosition(UT_sint32 x, UT_sint32 /*y*/, PT_DocPosition& 
 	bEOL = UT_FALSE;
 }
 
-void fp_FieldRun::findPointCoords(UT_uint32 iOffset, UT_uint32& x, UT_uint32& y, UT_uint32& height)
+void fp_FieldRun::findPointCoords(UT_uint32 iOffset, UT_sint32& x, UT_sint32& y, UT_sint32& height)
 {
 	UT_ASSERT(FP_RUN_NOT != containsOffset(iOffset));
 	UT_sint32 xoff;
@@ -1548,7 +1701,7 @@ void fp_ForcedColumnBreakRun::mapXYToPosition(UT_sint32 x, UT_sint32 /*y*/, PT_D
 	bEOL = UT_FALSE;
 }
 
-void fp_ForcedColumnBreakRun::findPointCoords(UT_uint32 iOffset, UT_uint32& x, UT_uint32& y, UT_uint32& height)
+void fp_ForcedColumnBreakRun::findPointCoords(UT_uint32 iOffset, UT_sint32& x, UT_sint32& y, UT_sint32& height)
 {
 	UT_ASSERT(FP_RUN_NOT != containsOffset(iOffset));
 	UT_sint32 xoff;
@@ -1626,7 +1779,7 @@ void fp_ForcedPageBreakRun::mapXYToPosition(UT_sint32 x, UT_sint32 /*y*/, PT_Doc
 	bEOL = UT_FALSE;
 }
 
-void fp_ForcedPageBreakRun::findPointCoords(UT_uint32 iOffset, UT_uint32& x, UT_uint32& y, UT_uint32& height)
+void fp_ForcedPageBreakRun::findPointCoords(UT_uint32 iOffset, UT_sint32& x, UT_sint32& y, UT_sint32& height)
 {
 	UT_ASSERT(FP_RUN_NOT != containsOffset(iOffset));
 	UT_sint32 xoff;

@@ -38,6 +38,7 @@ class fp_Page;
 class fp_Run;
 class PD_Document;
 class GR_Graphics;
+class GR_Image;
 class UT_Timer;
 
 typedef enum _FVDocPos
@@ -230,6 +231,7 @@ protected:
 	void				_setPointAP(PT_AttrPropIndex indexAP);
 	UT_Bool				_clearPointAP(UT_Bool bNotify);
 	void				_doPaste(void);
+	void				_doInsertImage(GR_Image*);
 	
 	PT_DocPosition		m_iInsPoint;
 	UT_sint32			m_xPoint;

@@ -249,7 +249,7 @@ GR_Image*	AP_Win32Clipboard::getImage(void)
 		
 		GlobalUnlock(hData);
 
-		return new GR_Win32Image(pDIB);
+		return new GR_Win32Image(pDIB, "clipboard");
 	}
 	else
 	{

@@ -360,7 +360,7 @@ void IE_Imp_AbiWord_1::_endElement(const XML_Char *name)
 	case TT_DATAITEM:
 		X_VerifyParseState(_PS_DataItem);
 		m_parseState = _PS_DataSec;
-		X_CheckError(m_pDocument->createDataItem(m_currentDataItemName,UT_TRUE,&m_currentDataItem,NULL));
+		X_CheckError(m_pDocument->createDataItem(m_currentDataItemName,UT_TRUE,&m_currentDataItem,NULL,NULL));
 		FREEP(m_currentDataItemName);
 		return;
 		

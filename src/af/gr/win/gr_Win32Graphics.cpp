@@ -54,6 +54,7 @@ void GR_Win32Graphics::_constructorCommonCode(HDC hdc)
 
 	m_hdc = hdc;
 	m_hwnd = 0;
+	m_iLineWidth = 0;	// default to a hairline
 	m_bPrint = UT_FALSE;
 	m_bStartPrint = UT_FALSE;
 	m_bStartPage = UT_FALSE;
@@ -336,8 +337,7 @@ void GR_Win32Graphics::setColor(UT_RGBColor& clr)
 
 void GR_Win32Graphics::drawLine(UT_sint32 x1, UT_sint32 y1, UT_sint32 x2, UT_sint32 y2)
 {
-	// TODO do we really want the line width to ALWAYS be 1?
-	HPEN hPen = CreatePen(PS_SOLID, 1, RGB(m_clr.m_red, m_clr.m_grn, m_clr.m_blu));
+	HPEN hPen = CreatePen(PS_SOLID, m_iLineWidth, RGB(m_clr.m_red, m_clr.m_grn, m_clr.m_blu));
 	HPEN hOldPen = (HPEN) SelectObject(m_hdc, hPen);
 
 	MoveToEx(m_hdc, x1, y1, NULL);
@@ -347,9 +347,17 @@ void GR_Win32Graphics::drawLine(UT_sint32 x1, UT_sint32 y1, UT_sint32 x2, UT_sin
 	DeleteObject(hPen);
 }
 
+void GR_Win32Graphics::setLineWidth(UT_sint32 iLineWidth)
+{
+	m_iLineWidth = iLineWidth;
+}
+
 void GR_Win32Graphics::xorLine(UT_sint32 x1, UT_sint32 y1, UT_sint32 x2, UT_sint32 y2)
 {
-	// TODO do we really want the line width to ALWAYS be 1?
+	/*
+	  Note that we always use a pixel width of 1 for xorLine, since
+	  this should always be done to the screen.
+	*/
 	HPEN hPen = CreatePen(PS_SOLID, 1, RGB(m_clr.m_red, m_clr.m_grn, m_clr.m_blu));
 	int iROP = SetROP2(m_hdc, R2_XORPEN);
 	HPEN hOldPen = (HPEN) SelectObject(m_hdc, hPen);

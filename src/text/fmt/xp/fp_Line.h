@@ -59,6 +59,7 @@ public:
 //	inline UT_sint32 			getWidth(void) const	 	{ return m_iWidth; }
 	inline UT_sint32			getMaxWidth(void) const 	{ return m_iMaxWidth; }
 	inline UT_sint32			getAscent(void) const 		{ return m_iAscent; }
+	inline UT_sint32			getDescent(void) const 		{ return m_iDescent; }
 	
 	void		setMaxWidth(UT_sint32);
 	void		setX(UT_sint32);
@@ -107,6 +108,7 @@ protected:
 	UT_sint32	 	m_iMaxWidth;
 	UT_sint32 		m_iHeight;
 	UT_sint32 		m_iAscent;
+	UT_sint32		m_iDescent;
 
 	UT_sint32		m_iX;
 	UT_sint32		m_iY;

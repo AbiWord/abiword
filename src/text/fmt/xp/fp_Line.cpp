@@ -33,6 +33,7 @@
 fp_Line::fp_Line() 
 {
 	m_iAscent = 0;
+	m_iDescent = 0;
 	m_iMaxWidth = 0;
 	m_iWidth = 0;
 	m_iHeight = 0;
@@ -162,18 +163,24 @@ void fp_Line::remove(void)
 
 void fp_Line::mapXYToPosition(UT_sint32 x, UT_sint32 y, PT_DocPosition& pos, UT_Bool& bBOL, UT_Bool& bEOL)
 {
-	bBOL = UT_FALSE;
+	int count = m_vecRuns.getItemCount();
+	UT_ASSERT(count > 0);
 
-	if (x < getX())
+	fp_Run* pFirstRun = (fp_Run*) m_vecRuns.getNthItem(0);
+	UT_ASSERT(pFirstRun);
+
+	bBOL = UT_FALSE;
+	if (x < pFirstRun->getX())
 	{
-		x = getX();
 		bBOL = UT_TRUE;
+
+		UT_sint32 y2 = y - pFirstRun->getY() - m_iAscent + pFirstRun->getAscent();
+		pFirstRun->mapXYToPosition(0, y2, pos, bBOL, bEOL);
+
+		return;
 	}
 
 	// check all of the runs.
-	int count = m_vecRuns.getItemCount();
-
-	UT_ASSERT(count > 0);
 	
 	fp_Run* pClosestRun = NULL;
 	UT_sint32 iClosestDistance = 0;
@@ -303,6 +310,7 @@ void fp_Line::recalcHeight()
 	
 	UT_sint32 iNewHeight = iMaxAscent + iMaxDescent;
 	UT_sint32 iNewAscent = iMaxAscent;
+	UT_sint32 iNewDescent = iMaxDescent;
 
 	{
 		// adjust line height to include leading
@@ -325,6 +333,7 @@ void fp_Line::recalcHeight()
 
 		m_iHeight = iNewHeight;
 		m_iAscent = iNewAscent;
+		m_iDescent = iNewDescent;
 
 		if (m_pColumn)
 		{
@@ -365,7 +374,7 @@ void fp_Line::draw(GR_Graphics* pG)
 	
 	int count = m_vecRuns.getItemCount();
 
-	my_yoff += m_iAscent;
+//	my_yoff += m_iAscent;
 
 	for (int i=0; i < count; i++)
 	{
@@ -403,10 +412,11 @@ void fp_Line::layout(void)
 	UT_uint32 iCountRuns = m_vecRuns.getItemCount();
 	UT_sint32 iX = 0;
 	UT_uint32 i;
+
+	// first calc the width of the line
 	for (i=0; i<iCountRuns; i++)
 	{
 		fp_Run* pRun = (fp_Run*) m_vecRuns.getNthItem(i);
-		pRun->setX(iX);
 		
 		if (pRun->getType() == FPRUN_TAB)
 		{
@@ -429,13 +439,6 @@ void fp_Line::layout(void)
 	}
 
 	m_iWidth = iX;
-
-	/*
-	  the following assert is incorrect, since it
-	  may fire if there is,
-	  for example, an image which is too wide for the line.
-	*/
-//	UT_ASSERT(m_iWidth <= m_iMaxWidth);
 
 	UT_sint32 iExtraWidth = getMaxWidth() - m_iWidth;
 	UT_uint32 iAlignCmd = getBlock()->getAlignment();
@@ -461,13 +464,30 @@ void fp_Line::layout(void)
 		break;
 	}
 
-	if (iMoveOver != 0)
+	iX = 0 + iMoveOver;
+	
+	for (i=0; i<iCountRuns; i++)
 	{
-		for (i=0; i<iCountRuns; i++)
+		fp_Run* pRun = (fp_Run*) m_vecRuns.getNthItem(i);
+		pRun->setX(iX);
+		
+		if (pRun->getType() == FPRUN_TAB)
 		{
-			fp_Run* pRun = (fp_Run*) m_vecRuns.getNthItem(i);
+			UT_sint32 iPos;
+			unsigned char iTabType;
 
-			pRun->setX(pRun->getX() + iMoveOver);
+			UT_Bool bRes = findNextTabStop(iX, iPos, iTabType);
+			UT_ASSERT(bRes);
+			UT_ASSERT(iTabType == FL_TAB_LEFT);
+
+			fp_TabRun* pTabRun = static_cast<fp_TabRun*>(pRun);
+			pTabRun->setWidth(iPos - iX);
+			
+			iX = iPos;
+		}
+		else
+		{
+			iX += pRun->getWidth();
 		}
 	}
 }
@@ -572,7 +592,7 @@ UT_Bool	fp_Line::findNextTabStop(UT_sint32 iStartX, UT_sint32& iPosition, unsign
 	UT_sint32		iTabStopPosition = 0;
 	unsigned char	iTabStopType;
 
-	UT_Bool bRes = m_pBlock->findNextTabStop(iStartX + getX(), iTabStopPosition, iTabStopType);
+	UT_Bool bRes = m_pBlock->findNextTabStop(iStartX + getX(), getX() + getMaxWidth(), iTabStopPosition, iTabStopType);
 	UT_ASSERT(bRes);
 
 	iTabStopPosition -= getX();

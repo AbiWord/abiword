@@ -28,6 +28,10 @@ public:
 	GR_UnixImage();
 	~GR_UnixImage();
 
+	virtual UT_sint32	getWidth(void) const;
+	virtual UT_sint32	getHeight(void) const;
+	virtual void		getByteBuf(UT_ByteBuf** ppBB) const;
+	
 protected:
 
 };

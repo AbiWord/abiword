@@ -27,3 +27,18 @@ GR_UnixImage::~GR_UnixImage()
 {
 }
 
+UT_sint32	GR_UnixImage::getWidth(void) const
+{
+	return m_pDIB->bmiHeader.biWidth;
+}
+
+UT_sint32	GR_UnixImage::getHeight(void) const
+{
+	return m_pDIB->bmiHeader.biHeight;
+}
+
+void		GR_UnixImage::getByteBuf(UT_ByteBuf** ppBB) const
+{
+	// TODO convert to PNG and copy to the byte buf
+}
+

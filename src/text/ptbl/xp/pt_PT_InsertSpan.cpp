@@ -423,7 +423,7 @@ PT_AttrPropIndex pt_PieceTable::_chooseIndexAP(pf_Frag * pf, PT_BlockOffset frag
 			// the text to the right of the image).  for a field, it may
 			// be a valid to use the A/P of the object.
 
-			pf_Frag_Object * pfo = static_cast<pf_Frag_Object *>(pf);
+			pf_Frag_Object * pfo = static_cast<pf_Frag_Object *>(pfPrev);
 			switch (pfo->getObjectType())
 			{
 			case PTO_Image:

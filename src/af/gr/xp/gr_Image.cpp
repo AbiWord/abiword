@@ -17,13 +17,24 @@
  * 02111-1307, USA.
  */
 
+#include <string.h>
+
 #include "gr_Image.h"
+
+#include "ut_assert.h"
 
 GR_Image::GR_Image()
 {
+	m_szName[0] = 0;
 }
 
 GR_Image::~GR_Image()
 {
+}
 
+void GR_Image::getName(char* p) const
+{
+	UT_ASSERT(p);
+	
+	strcpy(p, m_szName);
 }

@@ -82,6 +82,7 @@ public:
 	*/
 	virtual void drawLine(UT_sint32, UT_sint32, UT_sint32, UT_sint32) = 0;
 	virtual void xorLine(UT_sint32, UT_sint32, UT_sint32, UT_sint32) = 0;
+	virtual void setLineWidth(UT_sint32) = 0;
 
 	virtual void polyLine(UT_Point * pts, UT_uint32 nPoints) = 0;
 

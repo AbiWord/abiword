@@ -67,6 +67,7 @@ public:
 							  const char* pszFontStretch, 
 							  const char* pszFontSize);
 	virtual void drawLine(UT_sint32 x1, UT_sint32 y1, UT_sint32 x2, UT_sint32 y2);
+	virtual void setLineWidth(UT_sint32);
 	virtual void xorLine(UT_sint32, UT_sint32, UT_sint32, UT_sint32);
 	virtual void polyLine(UT_Point * pts, UT_uint32 nPoints);
 	virtual void fillRect(UT_RGBColor& c, UT_sint32 x, UT_sint32 y, UT_sint32 w, UT_sint32 h);
@@ -112,6 +113,7 @@ protected:
 	UT_Bool			m_bStartPage;
 	UT_Bool			m_bNeedStroked;
 	UT_Bool			m_bIsFile;
+	UT_sint32		m_iLineWidth;
 
 	AP_UnixFontManager *	m_fm;
 	

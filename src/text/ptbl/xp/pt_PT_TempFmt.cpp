@@ -141,6 +141,24 @@ void pt_PieceTable::clearTemporarySpanFmt(void)
 
 UT_Bool pt_PieceTable::_haveTempSpanFmt(PT_DocPosition * pdpos, PT_AttrPropIndex * papi) const
 {
+	/*
+	  TODO I (EWS) think this routine is a little bit busted.
+	  It checks the top item in the Undo history to see if it's
+	  a TempSpanFmt.  However, if the top item is a GlobMarker,
+	  and the second-from-the-top item is indeed a TempSpanFmt,
+	  then this routine misses it.  This particular scenario
+	  occurs on a paste operation.
+
+	  I'd fix it myself now, but:
+
+	  1.  I don't know this code well enough to be sure I'm
+	  doing it right.
+
+	  2.  px_ChangeHistory doesn't have any way of getting
+	  anything but the current/top level of undo, so I'd
+	  have to change that too.  See reason #1.
+	*/
+	
 	PX_ChangeRecord * pcr;
 	UT_Bool bResult = (m_history.getUndo(&pcr) && (pcr->getType() == PX_ChangeRecord::PXT_TempSpanFmt));
 	if (bResult && papi)

@@ -27,11 +27,12 @@
 class GR_Win32Image : public GR_Image
 {
 public:
-	GR_Win32Image(BITMAPINFO* pDIB);
+	GR_Win32Image(BITMAPINFO* pDIB, char* szName);
 	~GR_Win32Image();
 
 	virtual UT_sint32	getWidth(void) const;
 	virtual UT_sint32	getHeight(void) const;
+	virtual void		getByteBuf(UT_ByteBuf** ppBB) const;
 	
 	inline BITMAPINFO*	getDIB(void) const { return m_pDIB; }
 

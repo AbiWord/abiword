@@ -19,9 +19,20 @@
 
 #include "gr_Win32Image.h"
 
-GR_Win32Image::GR_Win32Image(BITMAPINFO* pDIB)
+#include "ut_bytebuf.h"
+
+GR_Win32Image::GR_Win32Image(BITMAPINFO* pDIB, char* szName)
 {
 	m_pDIB = pDIB;
+
+	if (szName)
+	{
+		strcpy(m_szName, szName);
+	}
+	else
+	{
+		strcpy(m_szName, "Win32Image");
+	}
 }
 
 GR_Win32Image::~GR_Win32Image()
@@ -39,4 +50,20 @@ UT_sint32	GR_Win32Image::getHeight(void) const
 	return m_pDIB->bmiHeader.biHeight;
 }
 
+void		GR_Win32Image::getByteBuf(UT_ByteBuf** ppBB) const
+{
+	UT_ByteBuf* pBB = new UT_ByteBuf();
+
+#if 0
+	// TODO convert to PNG and copy to the byte buf
+#else
+// ---- hack hack hack ----	
+#define HACK_BYTES		"TODO convert this thing to PNG and store it here"
 	
+	pBB->ins(0, (const UT_Byte*) HACK_BYTES, sizeof(HACK_BYTES));
+// ---- hack hack hack ----	
+#endif
+	
+	*ppBB = pBB;
+}
+

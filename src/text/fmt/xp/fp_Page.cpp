@@ -90,7 +90,7 @@ UT_sint32 fp_Page::getBottom(void) const
 	UT_sint32 iTopMargin = pFirstSectionLayout->getTopMargin();
 	UT_sint32 iBottomMargin = pFirstSectionLayout->getBottomMargin();
 	
-	return m_iHeight - iBottomMargin - iTopMargin;
+	return m_iHeight - iBottomMargin;
 }	
 
 void fp_Page::getScreenOffsets(fp_Column* pCol, UT_sint32& xoff, UT_sint32& yoff)

@@ -69,6 +69,11 @@ public:
 	void					beginUserAtomicGlob(void);
 	void					endUserAtomicGlob(void);
 	
+	UT_Bool					insertObject(PT_DocPosition dpos,
+										 PTObjectType pto,
+										 const XML_Char ** attributes,
+										 const XML_Char ** properties);
+
 	UT_Bool					insertSpan(PT_DocPosition dpos,
 									   const UT_UCSChar * p,
 									   UT_uint32 length);
@@ -128,13 +133,14 @@ public:
 	void					clearTemporarySpanFmt(void);
 
 	UT_Bool					createDataItem(const char * szName, UT_Bool bBase64, const UT_ByteBuf * pByteBuf,
-										   void ** ppHandle);
+										   void* pToken, void ** ppHandle);
 	UT_Bool					getDataItemDataByName(const char * szName,
-												  const UT_ByteBuf ** ppByteBuf, void ** ppHandle) const;
+												  const UT_ByteBuf ** ppByteBuf, void** ppToken, void ** ppHandle) const;
+	UT_Bool					setDataItemToken(void* pHandle, void* pToken);
 	UT_Bool					getDataItemData(void * pHandle,
-											const char ** pszName, const UT_ByteBuf ** ppByteBuf) const;
+											const char ** pszName, const UT_ByteBuf ** ppByteBuf, void** ppToken) const;
 	UT_Bool					enumDataItems(UT_uint32 k,
-										  void ** ppHandle, const char ** pszName, const UT_ByteBuf ** ppByteBuf) const;
+										  void ** ppHandle, const char ** pszName, const UT_ByteBuf ** ppByteBuf, void** ppToken) const;
 	
 #ifdef PT_TEST
 	void					__dump(FILE * fp) const;

@@ -27,6 +27,7 @@
 #include "ut_growbuf.h"
 #include "ut_misc.h"
 #include "ut_string.h"
+#include "ut_bytebuf.h"
 #include "ut_timer.h"
 
 #include "xav_View.h"
@@ -494,9 +495,9 @@ UT_Bool FV_View::isSelectionEmpty()
 
 PT_DocPosition FV_View::_getDocPos(FV_DocPos dp, UT_Bool bKeepLooking)
 {
-	UT_uint32 xPoint;
-	UT_uint32 yPoint;
-	UT_uint32 iPointHeight;
+	UT_sint32 xPoint;
+	UT_sint32 yPoint;
+	UT_sint32 iPointHeight;
 
 	PT_DocPosition iPos;
 
@@ -947,9 +948,9 @@ UT_Bool FV_View::getCharFormat(const XML_Char *** pProps)
 	}
 
 	// 1. assemble complete set at insertion point
-	UT_uint32 xPoint;
-	UT_uint32 yPoint;
-	UT_uint32 iPointHeight;
+	UT_sint32 xPoint;
+	UT_sint32 yPoint;
+	UT_sint32 iPointHeight;
 
 	fl_BlockLayout* pBlock = _findBlockAtPosition(posStart);
 	fp_Run* pRun = pBlock->findPointCoords(posStart, UT_FALSE,
@@ -965,7 +966,17 @@ UT_Bool FV_View::getCharFormat(const XML_Char *** pProps)
 	}
 	else
 	{
-		if (!bSelEmpty)
+		if (bSelEmpty)
+		{
+			if (
+				(posStart == pBlock->getPosition())
+				&& (pRun->getLength() > 0)
+				)
+			{
+				posStart++;
+			}
+		}
+		else
 		{
 			/*
 				NOTE: getSpanAttrProp is optimized for insertions, so it 
@@ -1541,9 +1552,9 @@ void FV_View::cmdCharDelete(UT_Bool bForward, UT_uint32 count)
 
 void FV_View::_moveInsPtNextPrevLine(UT_Bool bNext)
 {
-	UT_uint32 xPoint;
-	UT_uint32 yPoint;
-	UT_uint32 iPointHeight, iLineHeight;
+	UT_sint32 xPoint;
+	UT_sint32 yPoint;
+	UT_sint32 iPointHeight, iLineHeight;
 
 	/*
 		This function moves the IP up or down one line, attempting to get 
@@ -1794,6 +1805,7 @@ void FV_View::extSelHorizontal(UT_Bool bForward, UT_uint32 count)
 {
 	if (isSelectionEmpty())
 	{
+		_eraseInsertionPoint();
 		_setSelectionAnchor();
 		_charMotion(bForward, count);
 
@@ -2790,9 +2802,9 @@ void FV_View::_findPositionCoords(PT_DocPosition pos,
 										fl_BlockLayout** ppBlock,
 										fp_Run** ppRun)
 {
-	UT_uint32 xPoint;
-	UT_uint32 yPoint;
-	UT_uint32 iPointHeight;
+	UT_sint32 xPoint;
+	UT_sint32 yPoint;
+	UT_sint32 iPointHeight;
 
 	fl_BlockLayout* pBlock = _findBlockAtPosition(pos);
 	UT_ASSERT(pBlock);
@@ -3237,7 +3249,9 @@ void FV_View::cmdScroll(AV_ScrollCmd cmd, UT_uint32 iPos)
 	docHeight = m_pLayout->getHeight();
 	
 	if (lineHeight == 0)
+	{
 		lineHeight = HACK_LINE_HEIGHT;
+	}
 	
 	UT_sint32 yoff = m_yScrollOffset;
 	UT_sint32 xoff = m_xScrollOffset;
@@ -3296,19 +3310,33 @@ void FV_View::cmdScroll(AV_ScrollCmd cmd, UT_uint32 iPos)
 		break;
 	}
 
-	if (bVertical)
+	if (yoff < 0)
 	{
-		if (yoff < 0)
-			yoff = 0;
-				
-		sendVerticalScrollEvent(yoff);
+		yoff = 0;
 	}
 
-	if (bHorizontal)
+	UT_Bool bRedrawPoint = UT_TRUE;
+	
+	if (bVertical && (yoff != m_yScrollOffset))
 	{
-		if (xoff < 0)
-			xoff = 0;
+		sendVerticalScrollEvent(yoff);
+		bRedrawPoint = UT_FALSE;
+	}
+
+	if (xoff < 0)
+	{
+		xoff = 0;
+	}
+		
+	if (bHorizontal && (xoff != m_xScrollOffset))
+	{
 		sendHorizontalScrollEvent(xoff);
+		bRedrawPoint = UT_FALSE;
+	}
+
+	if (bRedrawPoint)
+	{
+		_drawInsertionPoint();
 	}
 }
 
@@ -3553,6 +3581,8 @@ void FV_View::cmdCut(void)
 
 	m_pLayout->deleteEmptyColumnsAndPages();
 		
+	_updateScreen();
+	
 	_fixInsertionPointCoords();
 	_drawInsertionPoint();
 }
@@ -3745,6 +3775,83 @@ void FV_View::cmdPaste(void)
 	m_pDoc->endUserAtomicGlob();
 }
 
+void FV_View::_doInsertImage(GR_Image* pImg)
+{
+	// just the insert, no selection or screen updating needed here
+	
+	/*
+	  1.  create a data item on the doc (give it a unique name)
+	  2.  store the name of that data item in an attribute
+	  3.  setup the properties for this image properly
+	  4.  call to insert it.
+	*/
+
+	/*
+	  First, find a unique name for the data item.
+	*/
+	char szName[GR_IMAGE_MAX_NAME_LEN + 10 + 1];
+	UT_uint32 ndx = 0;
+	for (;;)
+	{
+		pImg->getName(szName);
+		sprintf(szName + strlen(szName), "%d", ndx);
+		if (!m_pDoc->getDataItemDataByName(szName, NULL, NULL, NULL))
+		{
+			break;
+		}
+		ndx++;
+	}
+
+	/*
+	  Get the byte buffer for this image.
+	*/
+	UT_ByteBuf* pBB = NULL;
+	pImg->getByteBuf(&pBB);
+
+	/*
+	  There's some ugliness here.  Full disclosure:
+	  
+	  When we get an image from the clipboard, we get it as
+	  a GR_Image object.  However, the document's data item
+	  list only includes binary data arrays.  So, we extended
+	  the notion of a data item to allow us to pass a token,
+	  which we use to store the GR_Image pointer.  When the
+	  insertion of the image object eventually reaches the layout
+	  code (see fl_BlockLayout.cpp) we check to see if the dataItem
+	  has a token.  If so, we use the GR_Image stored therein, AND
+	  we remove the token from the dataItem.
+
+	  Ugly.
+
+	  The alternative is to simply convert the image to the byte buf,
+	  (which we are already doing), punt the GR_Image, and then reconstruct
+	  the GR_Image from scratch when things bubble back up to the layout
+	  code.
+
+	  Also Ugly.
+
+	  TODO TODO TODO
+	*/
+
+	/*
+	  Create the data item
+	*/
+	m_pDoc->createDataItem(szName, UT_FALSE, pBB, pImg, NULL);
+
+	delete pBB;
+
+	/*
+	  Insert the object into the document.
+	*/
+	const XML_Char*	attributes[] = {
+		"dataid", szName,
+		NULL, NULL
+	};
+	
+	const XML_Char**	properties = NULL;
+	m_pDoc->insertObject(_getPoint(), PTO_Image, attributes, properties);
+}
+
 void FV_View::_doPaste(void)
 {
 	// internal portion of paste operation.
@@ -3762,8 +3869,18 @@ void FV_View::_doPaste(void)
 	if (pClip->open())
 	{
 		// TODO support paste of RTF
-		
-		if (pClip->hasFormat(AP_CLIPBOARD_TEXTPLAIN_8BIT))
+
+		/*
+		  TODO Should we prefer the insert of an image over text?
+		*/
+		if (pClip->hasFormat(AP_CLIPBOARD_IMAGE))
+		{
+			GR_Image* pImg = pClip->getImage();
+			UT_ASSERT(pImg);
+
+			_doInsertImage(pImg);
+		}
+		else if (pClip->hasFormat(AP_CLIPBOARD_TEXTPLAIN_8BIT))
 		{
 			UT_sint32 iLen = pClip->getDataLen(AP_CLIPBOARD_TEXTPLAIN_8BIT);
 

@@ -22,6 +22,10 @@
 
 #include "ut_types.h"
 
+#define	GR_IMAGE_MAX_NAME_LEN	63
+
+class UT_ByteBuf;
+
 class GR_Image
 {
 public:
@@ -30,8 +34,12 @@ public:
 	
 	virtual UT_sint32	getWidth(void) const = 0;
 	virtual UT_sint32	getHeight(void) const = 0;
+	virtual void		getByteBuf(UT_ByteBuf** ppBB) const = 0;
 
+	void				getName(char* szName) const;
+	
 protected:
+	char				m_szName[GR_IMAGE_MAX_NAME_LEN+1];
 };
 
 #endif /* GR_IMAGE */

@@ -35,6 +35,12 @@
 #include "ie_exp.h"
 #include "pf_Frag_Strux.h"
 
+struct _dataItemPair
+{
+	UT_ByteBuf* pBuf;
+	void*		pToken;
+};
+
 PD_Document::PD_Document()
 	: AD_Document(), m_hashDataItems(11)
 {
@@ -193,6 +199,14 @@ UT_Bool PD_Document::isDirty(void) const
 void PD_Document::_setClean(void)
 {
 	m_pPieceTable->setClean();
+}
+
+UT_Bool	PD_Document::insertObject(PT_DocPosition dpos,
+										 PTObjectType pto,
+										 const XML_Char ** attributes,
+										 const XML_Char ** properties)
+{
+	return m_pPieceTable->insertObject(dpos, pto, attributes, properties);
 }
 
 UT_Bool PD_Document::insertSpan(PT_DocPosition dpos,
@@ -494,11 +508,12 @@ UT_Bool PD_Document::redoCmd(UT_uint32 repeatCount)
 // a reference to a DataItem.
 
 UT_Bool PD_Document::createDataItem(const char * szName, UT_Bool bBase64, const UT_ByteBuf * pByteBuf,
+									void* pToken,
 									void ** ppHandle)
 {
 	// verify unique name
 
-	if (getDataItemDataByName(szName,NULL,NULL) == UT_TRUE)
+	if (getDataItemDataByName(szName,NULL,NULL,NULL) == UT_TRUE)
 		return UT_FALSE;				// invalid or duplicate name
 
 	// set the actual DataItem's data using the contents of the ByteBuf.
@@ -506,6 +521,8 @@ UT_Bool PD_Document::createDataItem(const char * szName, UT_Bool bBase64, const 
 	// data is Base64 encoded.
 
 	UT_ASSERT(pByteBuf);
+	
+	struct _dataItemPair* pPair = NULL;
 	
 	UT_ByteBuf * pNew = new UT_ByteBuf();
 	if (!pNew)
@@ -522,7 +539,16 @@ UT_Bool PD_Document::createDataItem(const char * szName, UT_Bool bBase64, const 
 			goto Failed;
 	}
 
-	if (m_hashDataItems.addEntry(szName,NULL,(void *)pNew) == -1)
+	pPair = new _dataItemPair();
+	if (!pPair)
+	{
+		goto Failed;
+	}
+	
+	pPair->pBuf = pNew;
+	pPair->pToken = pToken;
+	
+	if (m_hashDataItems.addEntry(szName,NULL,(void *)pPair) == -1)
 		goto Failed;
 
 	// give them back a handle if they want one
@@ -544,6 +570,7 @@ Failed:
 
 UT_Bool PD_Document::getDataItemDataByName(const char * szName,
 										   const UT_ByteBuf ** ppByteBuf,
+										   void** ppToken,
 										   void ** ppHandle) const
 {
 	UT_ASSERT(szName && *szName);
@@ -552,34 +579,74 @@ UT_Bool PD_Document::getDataItemDataByName(const char * szName,
 	if (!pHashEntry)
 		return UT_FALSE;
 
+	struct _dataItemPair* pPair = (struct _dataItemPair*) pHashEntry->pData;
+	UT_ASSERT(pPair);
+	
 	if (ppByteBuf)
-		*ppByteBuf = (const UT_ByteBuf *)pHashEntry->pData;
+	{
+		*ppByteBuf = pPair->pBuf;
+	}
+
+	if (ppToken)
+	{
+		*ppToken = pPair->pToken;
+	}
 
 	if (ppHandle)
+	{
 		*ppHandle = (void *)pHashEntry;
+	}
+	
+	return UT_TRUE;
+}
+
+UT_Bool PD_Document::setDataItemToken(void * pHandle,
+									  void* pToken)
+{
+	UT_ASSERT(pHandle);
+	
+	UT_AlphaHashTable::UT_HashEntry * pHashEntry = (UT_AlphaHashTable::UT_HashEntry *)pHandle;
+
+	struct _dataItemPair* pPair = (struct _dataItemPair*) pHashEntry->pData;
+	UT_ASSERT(pPair);
+
+	pPair->pToken = pToken;
 	
 	return UT_TRUE;
 }
 
 UT_Bool PD_Document::getDataItemData(void * pHandle,
 									 const char ** pszName,
-									 const UT_ByteBuf ** ppByteBuf) const
+									 const UT_ByteBuf ** ppByteBuf,
+									 void** ppToken) const
 {
 	UT_ASSERT(pHandle);
 	
 	UT_AlphaHashTable::UT_HashEntry * pHashEntry = (UT_AlphaHashTable::UT_HashEntry *)pHandle;
 
+	struct _dataItemPair* pPair = (struct _dataItemPair*) pHashEntry->pData;
+	UT_ASSERT(pPair);
+	
 	if (ppByteBuf)
-		*ppByteBuf = (const UT_ByteBuf *)pHashEntry->pData;
+	{
+		*ppByteBuf = pPair->pBuf;
+	}
+
+	if (ppToken)
+	{
+		*ppToken = pPair->pToken;
+	}
 
 	if (pszName)
+	{
 		*pszName = pHashEntry->pszLeft;
+	}
 	
 	return UT_TRUE;
 }
 
 UT_Bool PD_Document::enumDataItems(UT_uint32 k,
-								   void ** ppHandle, const char ** pszName, const UT_ByteBuf ** ppByteBuf) const
+								   void ** ppHandle, const char ** pszName, const UT_ByteBuf ** ppByteBuf, void** ppToken) const
 {
 	// return the kth data item.
 
@@ -593,15 +660,26 @@ UT_Bool PD_Document::enumDataItems(UT_uint32 k,
 	if (ppHandle)
 		*ppHandle = (void *)pHashEntry;
 
+	struct _dataItemPair* pPair = (struct _dataItemPair*) pHashEntry->pData;
+	UT_ASSERT(pPair);
+	
 	if (ppByteBuf)
-		*ppByteBuf = (const UT_ByteBuf *)pHashEntry->pData;
+	{
+		*ppByteBuf = pPair->pBuf;
+	}
 
+	if (ppToken)
+	{
+		*ppToken = pPair->pToken;
+	}
+	
 	if (pszName)
+	{
 		*pszName = pHashEntry->pszLeft;
+	}
 	
 	return UT_TRUE;
 }
-
 
 void PD_Document::_destroyDataItemData(void)
 {
@@ -610,10 +688,13 @@ void PD_Document::_destroyDataItemData(void)
 	for (UT_uint32 k=0; (k<kLimit); k++)
 	{
 		UT_HashTable::UT_HashEntry * pHE = m_hashDataItems.getNthEntry(k);
-		UT_ByteBuf * pBB = (UT_ByteBuf *)pHE->pData;
-		delete pBB;
+		
+		struct _dataItemPair* pPair = (struct _dataItemPair*) pHE->pData;
+		UT_ASSERT(pPair);
+
+		delete pPair->pBuf;
+		delete pPair;
+
 		pHE->pData = NULL;
 	}
 }
-
-

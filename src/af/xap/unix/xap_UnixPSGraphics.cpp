@@ -330,10 +330,17 @@ void PS_Graphics::drawLine(UT_sint32 x1, UT_sint32 y1, UT_sint32 x2, UT_sint32 y
 	// TODO and strikes.
 	m_bNeedStroked = UT_TRUE;
 
+	// TODO set the line width to m_iLineWidth
+	
 	char buf[OUR_LINE_LIMIT*2];
 	UT_sint32 nA = getFontAscent();
 	sprintf(buf,"%ld %ld %ld %ld ML\n", x2, y2-nA, x1, y1-nA);
 	m_ps->writeBytes(buf);
+}
+
+void PS_Graphics::setLineWidth(UT_sint32 iLineWidth)
+{
+	m_iLineWidth = iLineWidth;
 }
 
 void PS_Graphics::xorLine(UT_sint32, UT_sint32, UT_sint32, UT_sint32)

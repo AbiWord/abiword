@@ -31,6 +31,7 @@
 #include "fp_Run.h"
 #include "pd_Document.h"
 #include "pp_Property.h"
+#include "pp_AttrProp.h"
 #include "gr_Graphics.h"
 #include "sp_spell.h"
 #include "px_ChangeRecord_Object.h"
@@ -317,6 +318,126 @@ void fl_BlockLayout::clearScreen(GR_Graphics* pG)
 	}
 }
 
+void fl_BlockLayout::_mergeRuns(fp_Run* pFirstRunToMerge, fp_Run* pLastRunToMerge)
+{
+	/*
+	  TODO I'm not completely happy with this code.  It *should* be
+	  possible to merge runs without any screen activity at all.
+	*/
+	
+	UT_ASSERT(pFirstRunToMerge);
+	UT_ASSERT(pLastRunToMerge);
+
+	UT_sint32 iTotalWidth = 0;
+	UT_sint32 iTotalLength = 0;
+
+	fp_Run* pRun = pFirstRunToMerge;
+	for (;;)
+	{
+		UT_ASSERT(pRun->getType() == FPRUN_TEXT);
+
+		iTotalWidth += pRun->getWidth();
+		iTotalLength += pRun->getLength();
+		
+		if (pRun == pLastRunToMerge)
+		{
+			break;
+		}
+
+		pRun = pRun->getNext();
+	}
+
+	pFirstRunToMerge->setLength(iTotalLength);
+
+	fp_Run* pFirstRunToNuke = pFirstRunToMerge->getNext();
+	pFirstRunToMerge->setNext(pLastRunToMerge->getNext());
+	if (pLastRunToMerge->getNext())
+	{
+		pLastRunToMerge->getNext()->setPrev(pFirstRunToMerge);
+	}
+
+	pRun = pFirstRunToNuke;
+	for (;;)
+	{
+		fp_Run* pNext = pRun->getNext();
+
+		pRun->getLine()->removeRun(pRun);
+		delete pRun;
+
+		if (pRun == pLastRunToMerge)
+		{
+			break;
+		}
+		pRun = pNext;
+	}
+
+	pFirstRunToMerge->calcWidths(&m_gbCharWidths);
+}
+
+void fl_BlockLayout::coalesceRuns(void)
+{
+	fp_Run* pFirstRunInChain = NULL;
+	UT_uint32 iNumRunsInChain = 0;
+	
+	fp_Run* pCurrentRun = m_pFirstRun;
+	fp_Run* pLastRun = NULL;
+
+	while (pCurrentRun)
+	{
+		if (pCurrentRun->getType() == FPRUN_TEXT)
+		{
+			if (pFirstRunInChain)
+			{
+				if (
+					(pCurrentRun->getLine() == pFirstRunInChain->getLine())
+					&& (pCurrentRun->getAP() == pFirstRunInChain->getAP())
+					&& ((!pLastRun)
+						|| (
+							(pCurrentRun->getBlockOffset() == (pLastRun->getBlockOffset() + pLastRun->getLength()))
+							)
+						)
+					)
+				{
+					iNumRunsInChain++;
+				}
+				else
+				{
+					if (iNumRunsInChain > 1)
+					{
+						_mergeRuns(pFirstRunInChain, pLastRun);
+					}
+
+					pFirstRunInChain = pCurrentRun;
+					iNumRunsInChain = 1;
+				}
+			}
+			else
+			{
+				pFirstRunInChain = pCurrentRun;
+				iNumRunsInChain = 1;
+			}
+		}
+		else
+		{
+			if (iNumRunsInChain > 1)
+			{
+				_mergeRuns(pFirstRunInChain, pLastRun);
+			}
+
+			iNumRunsInChain = 0;
+			pFirstRunInChain = NULL;
+		}
+		
+		pLastRun = pCurrentRun;
+		pCurrentRun = pCurrentRun->getNext();
+	}
+
+	if (iNumRunsInChain > 1)
+	{
+		_mergeRuns(pFirstRunInChain, pLastRun);
+	}
+}
+
 void fl_BlockLayout::collapse(void)
 {
 	fp_Run* pRun = m_pFirstRun;
@@ -576,6 +697,11 @@ fp_Line* fl_BlockLayout::getNewLine(UT_sint32 iHeight)
 		{
 			pCol = m_pNext->getFirstLine()->getColumn();
 		}
+		else if (m_pSectionLayout->getFirstColumn())
+		{
+			// TODO assert something here about what's in that column
+			pCol = m_pSectionLayout->getFirstColumn();
+		}
 		else
 		{
 			pCol = m_pSectionLayout->getNewColumn();
@@ -652,7 +778,7 @@ UT_Bool	fl_BlockLayout::getBlockBuf(UT_GrowBuf * pgb) const
 	return m_pDoc->getBlockBuf(m_sdh, pgb);
 }
 
-fp_Run* fl_BlockLayout::findPointCoords(PT_DocPosition iPos, UT_Bool bEOL, UT_uint32& x, UT_uint32& y, UT_uint32& height)
+fp_Run* fl_BlockLayout::findPointCoords(PT_DocPosition iPos, UT_Bool bEOL, UT_sint32& x, UT_sint32& y, UT_sint32& height)
 {
 	// find the run which has this position inside it.
 	UT_ASSERT(iPos >= getPosition());
@@ -1429,18 +1555,38 @@ UT_Bool	fl_BlockLayout::_doInsertImageRun(PT_BlockOffset blockOffset, const PX_C
 	GR_Image* pImage = NULL;
 
 	/*
-	  TODO this is a hack.  Images now work by just pulling one off
-	  the clipbard.
+	  Get the attribute list for this offset, lookup the dataid
+	  for the image, and get the dataItem.  Inside that data
+	  item there may already be a GR_Image.  If so, use it.
+	  If not, take the data stream and create one from it.
 	*/
-	AP_Clipboard* pClip = AP_App::getClipboard();
-	if (pClip->open())
+	
+	const PP_AttrProp * pSpanAP = NULL;
+	UT_Bool bFoundSpanAP = getSpanAttrProp(blockOffset + fl_BLOCK_STRUX_OFFSET,&pSpanAP);
+	if (bFoundSpanAP && pSpanAP)
 	{
-		if (pClip->hasFormat(AP_CLIPBOARD_IMAGE))
+		const XML_Char* pszDataID = NULL;
+		UT_Bool bFoundDataID = pSpanAP->getAttribute("dataid", pszDataID);
+		if (bFoundDataID && pszDataID)
 		{
-			pImage = pClip->getImage();
+			const UT_ByteBuf* pBB = NULL;
+			void* pToken = NULL;
+
+			void* pHandle = NULL;
+			UT_Bool bFoundDataItem = m_pDoc->getDataItemDataByName(pszDataID, &pBB, &pToken, &pHandle);
+			if (bFoundDataItem && pBB)
+			{
+				if (pToken)
+				{
+					pImage = (GR_Image*) pToken;
+					m_pDoc->setDataItemToken(pHandle, NULL);
+				}
+				else
+				{
+					// TODO convert the bytebuf into a GR_Image
+				}
+			}
 		}
-		
-		pClip->close();
 	}
 	
 	fp_ImageRun* pNewRun = new fp_ImageRun(this, m_pLayout->getGraphics(), blockOffset, 1, pImage);
@@ -1548,7 +1694,10 @@ UT_Bool	fl_BlockLayout::_doInsertRun(fp_Run* pNewRun)
 			  the case above will hit, and the new run will be inserted
 			  right between the two halves of the split.
 			*/
-			pRun->split(blockOffset);
+
+			fp_TextRun* pTextRun = static_cast<fp_TextRun*>(pRun);
+			pTextRun->splitSimple(blockOffset);
+			
 			UT_ASSERT(pRun->getNext());
 			UT_ASSERT(pRun->getNext()->getBlockOffset() == blockOffset);
 					
@@ -1697,9 +1846,8 @@ UT_Bool fl_BlockLayout::doclistener_insertSpan(const PX_ChangeRecord_Span * pcrs
 		}
 			
 		pView->_setPoint(pcrs->getPosition()+len);
+		pView->notifyListeners(mask);
 	}
-
-	pView->notifyListeners(mask);
 
 /***************************************************************************************/
 
@@ -2382,7 +2530,11 @@ UT_Bool fl_BlockLayout::doclistener_insertStrux(const PX_ChangeRecord_Strux * pc
 	}
 
 	pNewBL->format();
+	
 	checkForWidowsAndOrphans();
+
+	coalesceRuns();
+	
 	format();
 	
 	_destroySpellCheckLists();
@@ -2705,7 +2857,7 @@ UT_Bool fl_BlockLayout::doclistener_insertObject(const PX_ChangeRecord_Object * 
 	if (pView)
 	{
 		pView->_resetSelection();
-		pView->_setPoint(pcro->getPosition());
+		pView->_setPoint(pcro->getPosition() + 1);
 		pView->notifyListeners(AV_CHG_TYPING | AV_CHG_FMTCHAR);
 	}
 
@@ -2825,7 +2977,7 @@ UT_Bool fl_BlockLayout::recalculateFields(void)
 	return bResult;
 }
 
-UT_Bool	fl_BlockLayout::findNextTabStop(UT_sint32 iStartX, UT_sint32& iPosition, unsigned char& iType)
+UT_Bool	fl_BlockLayout::findNextTabStop(UT_sint32 iStartX, UT_sint32 iMaxX, UT_sint32& iPosition, unsigned char& iType)
 {
 	UT_uint32 iCountTabs = m_vecTabs.getItemCount();
 	UT_uint32 i;
@@ -2833,6 +2985,11 @@ UT_Bool	fl_BlockLayout::findNextTabStop(UT_sint32 iStartX, UT_sint32& iPosition,
 	{
 		fl_TabStop* pTab = (fl_TabStop*) m_vecTabs.getNthItem(i);
 
+		if (pTab->iPosition > iMaxX)
+		{
+			break;
+		}
+		
 		if (pTab->iPosition > iStartX)
 		{
 			iPosition = pTab->iPosition;

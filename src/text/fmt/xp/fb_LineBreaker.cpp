@@ -112,7 +112,9 @@ UT_sint32 fb_LineBreaker::breakParagraph(fl_BlockLayout* pBlock)
 				case FPRUN_TEXT:
 				{
 					/* if this run doesn't fit on the line... */
-					if ((iWorkingLineWidth + pCurrentRun->getWidth()) > iMaxLineWidth)
+					if (
+						((iWorkingLineWidth + pCurrentRun->getWidth()) > iMaxLineWidth)
+						)
 					{
 						// This is the first run which doesn't fit on the line
 						pOffendingRun = pCurrentRun;

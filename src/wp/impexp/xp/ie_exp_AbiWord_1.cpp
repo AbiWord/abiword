@@ -465,7 +465,7 @@ void ie_Exp_Listener::_handleDataItems(void)
 
 	UT_ByteBuf bb64(1024);
 
-	for (UT_uint32 k=0; (m_pDocument->enumDataItems(k,NULL,&szName,&pByteBuf)); k++)
+	for (UT_uint32 k=0; (m_pDocument->enumDataItems(k,NULL,&szName,&pByteBuf,NULL)); k++)
 	{
 		if (!bWroteOpenDataSection)
 		{

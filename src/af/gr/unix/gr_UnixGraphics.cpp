@@ -374,7 +374,13 @@ UT_uint32 GR_UNIXGraphics::getFontDescent()
 void GR_UNIXGraphics::drawLine(UT_sint32 x1, UT_sint32 y1, UT_sint32 x2,
 							UT_sint32 y2)
 {
+	// TODO set the line width according to m_iLineWidth
 	gdk_draw_line(m_pWin, m_pGC, x1, y1, x2, y2);
+}
+
+void GR_UNIXGraphics::setLineWidth(UT_sint32 iLineWidth)
+{
+	m_iLineWidth = iLineWidth;
 }
 
 void GR_UNIXGraphics::xorLine(UT_sint32 x1, UT_sint32 y1, UT_sint32 x2,

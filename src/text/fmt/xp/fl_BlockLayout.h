@@ -85,8 +85,7 @@ public:
 	UT_GrowBuf * getCharWidths(void);
 
 	PT_DocPosition getPosition(UT_Bool bActualBlockPos=UT_FALSE) const;
-	fp_Run* findPointCoords(PT_DocPosition position, UT_Bool bEOL, UT_uint32& x, UT_uint32& y, UT_uint32& height);
-
+	fp_Run* findPointCoords(PT_DocPosition position, UT_Bool bEOL, UT_sint32& x, UT_sint32& y, UT_sint32& height);
 
 	UT_Bool getSpanPtr(UT_uint32 offset, const UT_UCSChar ** ppSpan, UT_uint32 * pLength) const;
 	UT_Bool	getBlockBuf(UT_GrowBuf * pgb) const;
@@ -111,7 +110,7 @@ public:
 	void checkForWidowsAndOrphans(void);
 
 	void checkSpelling(void);
-	UT_Bool	findNextTabStop(UT_sint32 iStartX, UT_sint32& iPosition, unsigned char& iType);
+	UT_Bool	findNextTabStop(UT_sint32 iStartX, UT_sint32 iMaxX, UT_sint32& iPosition, unsigned char& iType);
 
 	UT_Bool doclistener_populateSpan(const PX_ChangeRecord_Span * pcrs, PT_BlockOffset blockOffset, UT_uint32 len);
 	UT_Bool doclistener_populateObject(PT_BlockOffset blockOffset, const PX_ChangeRecord_Object * pcro);
@@ -138,12 +137,15 @@ public:
 
 	void					purgeLayout(void);
 	void					collapse(void);
+	void					coalesceRuns(void);
 	
 protected:
 
 #ifndef NDEBUG
 	void					_assertRunListIntegrity(void);
 #endif
+	
+	void 					_mergeRuns(fp_Run* pFirstRunToMerge, fp_Run* pLastRunToMerge);
 	
 	UT_Bool					_doInsertRun(fp_Run* pNewRun);
 	UT_Bool					_delete(PT_BlockOffset blockOffset, UT_uint32 len);
