@@ -137,8 +137,30 @@ UT_Bool PD_Document::newDocument(void)
 
 UT_Bool PD_Document::saveAs(const char * szFilename, IEFileType ieft)
 {
-	// TODO do this.
-	return UT_FALSE;
+	if (!szFilename)
+		return UT_FALSE;
+	
+	IE_Exp * pie = NULL;
+	IEStatus ies;
+
+	ies = IE_Exp::constructExporter(this,szFilename,ieft,&pie);
+	if (ies != IES_OK)
+	{
+		UT_DEBUGMSG(("PD_Document::Save -- could not construct exporter\n"));
+		return UT_FALSE;
+	}
+
+	ies = pie->writeFile(szFilename);
+	delete pie;
+
+	if (ies != IES_OK)
+	{
+		UT_DEBUGMSG(("PD_Document::Save -- could not write file\n"));
+		return UT_FALSE;
+	}
+
+	setClean();
+	return UT_TRUE;
 }
 
 UT_Bool PD_Document::save(IEFileType ieft)
