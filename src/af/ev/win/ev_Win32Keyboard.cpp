@@ -548,6 +548,7 @@ void ev_Win32Keyboard::_emitChar(AV_View * pView,
 	//			 (ems&EV_EMS_ALT)?"alt":""));
 
 	UT_uint16 charData[2];
+	size_t ret;
 	if( m_iconv != (UT_iconv_t)-1 )
 	{
 		// convert to 8bit string and null terminate
