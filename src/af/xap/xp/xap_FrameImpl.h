@@ -56,6 +56,8 @@ public:
 	const UT_GenericVector<EV_Toolbar*> & _getToolbars() const
 					{ return m_vecToolbars; };
 
+	virtual void                notifyViewChanged(AV_View * pView); // default dows nothing
+
 protected:
 	XAP_FrameImpl(XAP_Frame *pFrame);
 	virtual ~XAP_FrameImpl(void);

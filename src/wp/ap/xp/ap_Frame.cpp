@@ -649,7 +649,9 @@ void AP_Frame::_replaceView(GR_Graphics * pG, FL_DocLayout *pDocLayout,
 		bSameDocument = true;
 	}
 
-	REPLACEP(m_pView, pView);
+	AV_View * pReplacedView = m_pView;
+	m_pView = pView;
+
 	if(getApp()->getViewSelection() == m_pView)
 		getApp()->setViewSelection(NULL);
 
@@ -700,4 +702,10 @@ void AP_Frame::_replaceView(GR_Graphics * pG, FL_DocLayout *pDocLayout,
 		else if (hadView)
 			pFV_View->moveInsPtTo(inspt);
 	}
+
+	if (XAP_FrameImpl * pFrameImpl = getFrameImpl())
+	{
+		pFrameImpl->notifyViewChanged(m_pView);
+	}
+	DELETEP(pReplacedView);
 }

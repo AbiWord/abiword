@@ -78,6 +78,7 @@ public:
 										   const char * szToolbarLabelSetKey, const char * szToolbarLabelSetDefaultValue);
 */
 	virtual void _initialize();
+	virtual void                notifyViewChanged(AV_View * pView);
 //	virtual	XAP_Frame *			cloneFrame() = 0;
 //	virtual UT_Error   			loadDocument(const char * szFilename, int ieft) = 0;
 //	virtual UT_Error                        loadDocument(const char * szFilename, int ieft, bool createNew) = 0;

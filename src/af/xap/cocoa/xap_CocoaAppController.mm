@@ -685,6 +685,20 @@ static XAP_CocoaAppController * XAP_AppController_Instance = nil;
 		}
 }
 
+- (void)resetCurrentView:(AV_View *)view inFrame:(XAP_Frame *)frame
+{
+	UT_DEBUGMSG(("XAP_CocoaAppController - (void)resetCurrentView:(AV_View *)view inFrame:(XAP_Frame *)frame\n"));
+	if (m_pFrameCurrent == frame)
+		{
+			m_pViewCurrent = view;
+
+			if ([XAP_CocoaToolPalette instantiated])
+				{
+					[[XAP_CocoaToolPalette instance:self] setCurrentView:view inFrame:frame];
+				}
+		}
+}
+
 - (void)unsetCurrentView:(AV_View *)view inFrame:(XAP_Frame *)frame
 {
 	XAP_App * pApp = XAP_App::getApp();

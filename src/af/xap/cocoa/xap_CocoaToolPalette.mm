@@ -1855,12 +1855,14 @@ static XAP_CocoaToolPalette * s_instance = 0;
 	m_pViewPrevious  = m_pViewCurrent;
 	m_pFramePrevious = m_pFrameCurrent;
 
+	bool bSync = false;
+
 	if (frame && view)
 		{
 			m_pViewCurrent  = view;
 			m_pFrameCurrent = frame;
 
-			[self sync];
+			bSync = true;
 		}
 	else if (!frame && !view)
 		{
@@ -1876,9 +1878,13 @@ static XAP_CocoaToolPalette * s_instance = 0;
 			m_pViewCurrent  = 0;
 			m_pFrameCurrent = 0;
 
-			[self sync];
+			bSync = true;
 		}
+
 	m_Listener->setCurrentView(m_pViewCurrent);
+
+	if (bSync)
+		[self sync];
 }
 
 @end

@@ -72,6 +72,11 @@ XAP_FrameImpl::~XAP_FrameImpl(void)
 	UT_VECTOR_PURGEALL(EV_Toolbar *, m_vecToolbars);
 }
 
+void XAP_FrameImpl::notifyViewChanged(AV_View * pView)
+{
+	// called from XAP_Frame::setView(pView)
+}
+
 UT_RGBColor XAP_FrameImpl::getColorSelBackground () const
 {
 	return UT_RGBColor(192, 192, 192);
@@ -81,8 +86,6 @@ UT_RGBColor XAP_FrameImpl::getColorSelForeground () const
 {
 	return UT_RGBColor(255, 255, 255);
 }
-
-
 
 bool XAP_FrameImpl::_updateTitle()
 {

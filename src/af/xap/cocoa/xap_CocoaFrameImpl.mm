@@ -197,6 +197,15 @@ void XAP_CocoaFrameImpl::_initialize()
 	}
 }
 
+void XAP_CocoaFrameImpl::notifyViewChanged(AV_View * pView) // called from XAP_Frame::setView(pView)
+{
+	if (XAP_Frame * pFrame = getFrame())
+		{
+			XAP_CocoaAppController * pController = (XAP_CocoaAppController *) [NSApp delegate];
+			[pController resetCurrentView:pView inFrame:pFrame];
+		}
+}
+
 UT_sint32 XAP_CocoaFrameImpl::_setInputMode(const char * szName)
 {
 	UT_sint32 result = XAP_App::getApp()->setInputMode(szName);

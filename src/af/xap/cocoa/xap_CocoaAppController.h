@@ -148,6 +148,7 @@ enum XAP_CocoaAppMenu_Id
 /* Do we need this? getLastFocussedFrame() should be tracking this now... [TODO!!]
  */
 - (void)setCurrentView:(AV_View *)view inFrame:(XAP_Frame *)frame;
+- (void)resetCurrentView:(AV_View *)view inFrame:(XAP_Frame *)frame;
 - (void)unsetCurrentView:(AV_View *)view inFrame:(XAP_Frame *)frame;
 
 - (AV_View *)currentView;
