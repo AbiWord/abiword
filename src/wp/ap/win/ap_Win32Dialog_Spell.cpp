@@ -217,7 +217,7 @@ void AP_Win32Dialog_Spell::_showMisspelledWord(void)
 	FREEP(p);
 
 	// insert suggestions
-	if (!m_Suggestions.count) 
+	if (!m_Suggestions->getItemCount())
 	{
 		const XAP_StringSet * pSS = m_pApp->getStringSet();
 		SendMessage(m_hwndSuggest, LB_ADDSTRING, 0, (LPARAM) pSS->getValue(AP_STRING_ID_DLG_Spell_NoSuggestions));
@@ -227,9 +227,9 @@ void AP_Win32Dialog_Spell::_showMisspelledWord(void)
 	} 
 	else 
 	{
-		for (int i = 0; i < m_Suggestions.count; i++)
+		for (UT_uint32 i = 0; i < m_Suggestions->getItemCount(); i++)
 		{
-			p = (UT_UCSChar *) m_Suggestions.word[i];
+			p = (UT_UCSChar *) m_Suggestions->getNthItem(i);
 			len = UT_UCS_strlen(p);
 			if (len)
 			{
@@ -258,7 +258,7 @@ void AP_Win32Dialog_Spell::_suggestChange(void)
 	// should be safe here, because there just aren't that many suggestions 
 	m_iSelectedRow = (short) SendMessage(m_hwndSuggest, LB_GETCURSEL, 0, 0);
 
-	if (!m_Suggestions.count) 
+	if (!m_Suggestions->getItemCount()) 
 	{
 		// no change to suggest, ignore it
 		if (m_iSelectedRow != -1)
@@ -313,7 +313,7 @@ void AP_Win32Dialog_Spell::_change(void)
 
 	if (m_iSelectedRow != -1)
 	{
-		replace = (UT_UCSChar*) m_Suggestions.word[m_iSelectedRow];
+		replace = (UT_UCSChar*) m_Suggestions->getNthItem(m_iSelectedRow);
 		changeWordWith(replace);
 	}
 	else
@@ -336,7 +336,7 @@ void AP_Win32Dialog_Spell::_changeAll(void)
 	UT_UCSChar * replace = NULL;
 	if (m_iSelectedRow != -1)
 	{
-		replace = (UT_UCSChar*) m_Suggestions.word[m_iSelectedRow];
+		replace = (UT_UCSChar*) m_Suggestions->getNthItem(m_iSelectedRow);
 		addChangeAll(replace);
 		changeWordWith(replace);
 	}
