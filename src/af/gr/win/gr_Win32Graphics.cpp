@@ -195,7 +195,9 @@ GR_Font* GR_Win32Graphics::findFont(const char* pszFontFamily,
 	// we need to get the size in logpixels for the current DC, which
 	// simply means to divide points by 72 and multiply by device Y resolution
 	UT_sint32 iHeight = (UT_sint32)UT_convertToPoints(pszFontSize);
-	lf.lfHeight = -MulDiv(/*UT_LOG_UNITS*/(iHeight), GetDeviceCaps(m_hdc, LOGPIXELSY), 72);
+	float fScale = (float)(((float)getZoomPercentage()) / (float)100);			
+	lf.lfHeight = (-MulDiv(/*UT_LOG_UNITS*/iHeight, GetDeviceCaps(m_hdc, LOGPIXELSY), 72));		
+	lf.lfHeight = lf.lfHeight* fScale;	
 
 	// TODO note that we don't support all those other ways of expressing weight.
 	if (0 == UT_stricmp(pszFontWeight, "bold"))
@@ -544,7 +546,7 @@ void GR_Win32Graphics::_setColor(DWORD dwColor)
 }
 
 void GR_Win32Graphics::drawLine(UT_sint32 x1, UT_sint32 y1, UT_sint32 x2, UT_sint32 y2)
-{		
+{							   	
 	
 	if (m_eLineStyle == LINE_SOLID &&
 		((x1 == x2 && y1 != y2) || (y1 == y2 && x1 != x2))
