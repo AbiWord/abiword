@@ -1003,7 +1003,7 @@ void FV_VisualInlineImage::setDragType(UT_sint32 x,UT_sint32 y, bool bDrawImage)
 
 void FV_VisualInlineImage::mouseCopy(UT_sint32 x, UT_sint32 y)
 {
-        if(!m_pView->isSelectionEmpty())
+        if(m_pView->isSelectionEmpty())
 	{
 	  PT_DocPosition pos = m_pView->getDocPositionFromXY(x, y);
 	  fl_BlockLayout * pBlock = m_pView->getBlockAtPosition(pos);
@@ -1051,13 +1051,14 @@ void FV_VisualInlineImage::mouseCopy(UT_sint32 x, UT_sint32 y)
 	//
 	// Get a copy of the image data
 	//
-	const UT_ByteBuf * pBytes = new UT_ByteBuf();
+	const UT_ByteBuf * pBytes = NULL;
 	const char * dataId = NULL;
 	m_pView->getSelectedImage(&dataId);
 	if(dataId == NULL)
 	{
 	  UT_ASSERT(UT_SHOULD_NOT_HAPPEN);
 	  cleanUP();
+	  return;
 	}
 	getDoc()->getDataItemDataByName ( dataId, &pBytes, NULL, NULL );
 	//
@@ -1069,6 +1070,9 @@ void FV_VisualInlineImage::mouseCopy(UT_sint32 x, UT_sint32 y)
 	UT_UTF8String_sprintf(sUID, "%d",uid);
 	sDataID += sUID;
 	_beginGlob();
+	//
+	// Make a copy of it and save it under a new name.
+	//
 	getDoc()->createDataItem(sDataID.utf8_str(), false, pBytes, NULL,NULL);
 	m_sCopyName = sDataID;
 	m_pView->_resetSelection();
