@@ -3746,7 +3746,7 @@ bool IE_Imp_MsWord_97::_insertTOC(field *f)
 		// style-based toc, the params have the format
 		// \t "style,level,style,level ..."
 		bSupported = true;
-		t1 = strchr(params, '\"');
+		t1 = strchr(t, '\"');
 		if(!t1)
 		{
 			bRet = false;
