@@ -86,6 +86,8 @@ AP_Frame::AP_Frame(AP_Frame * f)
 	m_pScrollbarViewListener = NULL;
 	
 	m_app->rememberFrame(this, f);
+	memset(m_szTitle,0,sizeof(m_szTitle));
+	memset(m_szNonDecoratedTitle,0,sizeof(m_szNonDecoratedTitle));
 }
 
 AP_Frame::~AP_Frame(void)

@@ -42,12 +42,14 @@ PLATFORM_OBJS=	$(ABI_NATIVE)/$(OBJDIR)/ut_debugmsg.$(OBJ_SUFFIX)	\
 		$(ABI_NATIVE)/$(OBJDIR)/ut_Xpm2Bmp.$(OBJ_SUFFIX)
 endif
 
+### add this to the OBJS when we need it for calc.
+###		xp/$(OBJDIR)/ut_regex.$(OBJ_SUFFIX)			\
+
 OBJS=		$(PLATFORM_OBJS)					\
 		xp/$(OBJDIR)/ut_growbuf.$(OBJ_SUFFIX)			\
 		xp/$(OBJDIR)/ut_hash.$(OBJ_SUFFIX)			\
 		xp/$(OBJDIR)/ut_misc.$(OBJ_SUFFIX)			\
 		xp/$(OBJDIR)/ut_pool.$(OBJ_SUFFIX)			\
-		xp/$(OBJDIR)/ut_regex.$(OBJ_SUFFIX)			\
 		xp/$(OBJDIR)/ut_stack.$(OBJ_SUFFIX)			\
 		xp/$(OBJDIR)/ut_string.$(OBJ_SUFFIX)			\
 		xp/$(OBJDIR)/ut_test.$(OBJ_SUFFIX)			\

@@ -34,7 +34,8 @@ CPPSRCS=	ut_growbuf.cpp		\
 		ut_units.cpp		\
 		ut_vector.cpp
 
-CSRCS=		ut_regex.c
+### regex is only used by calc.
+###CSRCS=		ut_regex.c
 
 TARGETS=		$(OBJS)
 
