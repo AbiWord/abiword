@@ -7,7 +7,7 @@ msgid ""
 msgstr ""
 "Project-Id-Version: Abiword 1.0.1\n"
 "POT-Creation-Date: 2002-11-22 19:35-0500\n"
-"PO-Revision-Date: 2002-11-29 18:45+EDT\n"
+"PO-Revision-Date: 2003-01-14 11:02+EDT\n"
 "Last-Translator: Ge'ez Frontier Foundation <locales@geez.org>\n"
 "Language-Team: Amharic <locales@geez.org>\n"
 "MIME-Version: 1.0\n"
@@ -159,7 +159,7 @@ msgstr "ወደ &አስተካክል፦"
 #. MENU_LABEL_ALIGN
 #: po/tmp/ap_String_Id.h.h:53
 msgid "&Align"
-msgstr "በስርዓት ኰልኩል"
+msgstr "ቀጥ &አድርግ"
 
 #. DLG_Options_Label_ViewAll
 #: po/tmp/ap_String_Id.h.h:55
@@ -634,7 +634,7 @@ msgstr "&መረጃውን አስስ"
 #. MENU_LABEL_TABLE_SELECT
 #: po/tmp/ap_String_Id.h.h:243
 msgid "&Select"
-msgstr "&ምረጥ"
+msgstr "&ምርጡ"
 
 #. MENU_LABEL_TOOLS_REVISIONS_SET_VIEW_LEVEL
 #: po/tmp/ap_String_Id.h.h:245
@@ -944,7 +944,7 @@ msgstr "&በኋላ፦"
 #. DLG_Para_LabelAlignment
 #: po/tmp/ap_String_Id.h.h:363
 msgid "Ali&gnment:"
-msgstr "ኩልኩል"
+msgstr "&ኩልኩል፦"
 
 #. DLG_Tab_Label_Alignment
 #: po/tmp/ap_String_Id.h.h:365
@@ -1009,7 +1009,7 @@ msgstr "በትንሹ"
 #. DLG_Lists_Resume
 #: po/tmp/ap_String_Id.h.h:389
 msgid "Attach to Previous List"
-msgstr "ከበፊቱ ዝርዝር ጋር አያይዝ"
+msgstr "ከበፊቱ ዝርዝር ጋር አያያዝ"
 
 #. MENU_LABEL_AUTOTEXT_ATTN
 #: po/tmp/ap_String_Id.h.h:391
@@ -1039,7 +1039,7 @@ msgstr "በትክክል ያልተፃፉትን ቃላቶች በራሱ ተኪ"
 #. DLG_InsertTable_AutoFit
 #: po/tmp/ap_String_Id.h.h:401
 msgid "AutoFit behavior"
-msgstr "በራሱ ልክ የመሆን ፀባይ"
+msgstr "በራሱ ልክ የመሆን ጠባይ"
 
 #. MENU_STATUSLINE_TABLE_AUTOFIT
 #: po/tmp/ap_String_Id.h.h:403
@@ -1385,7 +1385,7 @@ msgstr "የአኃዝ ቆጠራ (ያለ ክፍተቶች)"
 #. DLG_Styles_CharPrev
 #: po/tmp/ap_String_Id.h.h:537
 msgid "Character Preview"
-msgstr "የአኃዝ ቅድመ እይታ"
+msgstr "የአኃዝ ቅድመ ዕይታ"
 
 #. DLG_WordCount_Characters_No
 #: po/tmp/ap_String_Id.h.h:539
@@ -1857,7 +1857,7 @@ msgstr "መግለጫ፦"
 #. DLG_Options_Label_UseContextGlyphs
 #: po/tmp/ap_String_Id.h.h:721
 msgid "Determine correct glyph shapes from context"
-msgstr "ከአገባቡ ትክክለኛውን የሷሿቦቆሸ ቅርጾችን ወስኑ"
+msgstr "ከአገባቡ ትክክለኛውን የglyph ቅርጾችን ወስኑ"
 
 #. DLG_Lists_Diamond_List
 #: po/tmp/ap_String_Id.h.h:723 po/tmp/xap_String_Id.h.h:187
@@ -2724,7 +2724,7 @@ msgstr "የግራ ማስረጊያ"
 #. TOOLBAR_TOOLTIP_ALIGN_LEFT
 #: po/tmp/ap_String_Id.h.h:1059
 msgid "Left alignment"
-msgstr "በግራ ኩልኩል"
+msgstr "በግራ ኰልኩል"
 
 #. MENU_STATUSLINE_ALIGN_LEFT
 #: po/tmp/ap_String_Id.h.h:1061
@@ -3016,7 +3016,7 @@ msgstr "በፊት ምንም የለም"
 #. MENU_STATUSLINE_VIEW_NORMAL
 #: po/tmp/ap_String_Id.h.h:1171
 msgid "Normal View"
-msgstr "የተለመደ እይታ"
+msgstr "የተለመደ ዕይታ"
 
 #. DLG_Spell_UnknownWord
 #: po/tmp/ap_String_Id.h.h:1173
@@ -3081,7 +3081,7 @@ msgstr "አንድ"
 #. MENU_LABEL_FILE_IMPORT
 #: po/tmp/ap_String_Id.h.h:1197
 msgid "Op&en Copy"
-msgstr "መቅጃውን ክፈት"
+msgstr "ግልባጭን ክፈት"
 
 #. TOOLBAR_LABEL_FILE_OPEN
 #: po/tmp/ap_String_Id.h.h:1199
@@ -3303,12 +3303,12 @@ msgstr "ቅድመ ዕይታ"
 #. MENU_STATUSLINE_WEB_SAVEASWEB
 #: po/tmp/ap_String_Id.h.h:1285
 msgid "Preview the document as a web page"
-msgstr "ሰንዱን እንደ ድረ ገጽ ቅድመ እይታውን አሳይ "
+msgstr "ሰንዱን እንደ ድረ ገጽ ቅድመ ዕይታውን አሳይ "
 
 #. TOOLBAR_TOOLTIP_FILE_PRINT_PREVIEW
 #: po/tmp/ap_String_Id.h.h:1287
 msgid "Preview the document before printing"
-msgstr "ከሕትመት በፊት የሰነዱን ቅድመ እይታ አሳይ "
+msgstr "ከሕትመት በፊት የሰነዱን ቅድመ ዕይታ አሳይ "
 
 #. DLG_Para_PreviewPrevParagraph
 #: po/tmp/ap_String_Id.h.h:1289
@@ -3559,7 +3559,7 @@ msgstr "ሰነዱ መጨረሻ በተጠቀመጠው ሁኔታ ይመለስ?"
 #: po/tmp/ap_String_Id.h.h:1385
 #, c-format
 msgid "Revert to saved copy of %s?"
-msgstr "ወደ ተቀመጠው የ%s ቅጂ ይመለስ?"
+msgstr "ወደ ተቀመጠው የ%s ግልባጭ ይመለስ?"
 
 #. DLG_ListRevisions_Column1Label
 #: po/tmp/ap_String_Id.h.h:1387
@@ -3591,7 +3591,7 @@ msgstr "የቀኝ ማስረጊያ"
 #. TOOLBAR_TOOLTIP_ALIGN_RIGHT
 #: po/tmp/ap_String_Id.h.h:1397
 msgid "Right alignment"
-msgstr "በቀኝ በኩል እኩል አስተካክል"
+msgstr "በቀኝ ኰልኩል"
 
 #. MENU_STATUSLINE_ALIGN_RIGHT
 #: po/tmp/ap_String_Id.h.h:1399
@@ -3631,7 +3631,7 @@ msgstr "&አስቀምጥ"
 #. MENU_LABEL_FILE_EXPORT
 #: po/tmp/ap_String_Id.h.h:1413
 msgid "Sa&ve Copy"
-msgstr "ቅጂውን አስቀምጥ"
+msgstr "ግልባጭን አስቀምጥ"
 
 #. MENU_LABEL_AUTOTEXT_SALUTATION
 #: po/tmp/ap_String_Id.h.h:1415
@@ -3692,7 +3692,7 @@ msgstr "የተመረጠውን ምስል ወደ ፋይል አስቀምጥ"
 #. DLG_Options_Label_SaveContextGlyphs
 #: po/tmp/ap_String_Id.h.h:1437
 msgid "Save visual glyph shapes"
-msgstr "የሚታየውን የሷሿቦቆሸ ቅርጾች አስቀምጥ"
+msgstr "የሚታየውን የglyph ቅርጾች አስቀምጥ"
 
 #. DLG_PageSetup_Scale
 #: po/tmp/ap_String_Id.h.h:1439
@@ -3722,7 +3722,7 @@ msgstr "የክፍል መክፈያዎች"
 #. MENU_STATUSLINE_TABLE_SELECT
 #: po/tmp/ap_String_Id.h.h:1449
 msgid "Select"
-msgstr "ምረጥ"
+msgstr "ምርጡ"
 
 #. MENU_LABEL_TABLE_SELECT_CELL
 #: po/tmp/ap_String_Id.h.h:1451
@@ -4663,7 +4663,7 @@ msgstr "በተሰጠው ፓዝስም ውስጥ ማውጫ የለም።"
 #. DLG_PLUGIN_MANAGER_TITLE
 #: po/tmp/xap_String_Id.h.h:27
 msgid "AbiWord Plugin Manager"
-msgstr "የአቢወርድ የተጨማሪ ፕሮግራም አስተዳደር"
+msgstr "የአቢወርድ የተጨማሪ ፕሮግራም መቆጣጠሪያ"
 
 #. MSG_ShowUnixFontWarning
 #: po/tmp/xap_String_Id.h.h:29
@@ -4945,7 +4945,7 @@ msgstr "ቀለም፦"
 #. DLG_UP_Copies
 #: po/tmp/xap_String_Id.h.h:149
 msgid "Copies: "
-msgstr "ቅጂዎች፦"
+msgstr "ግልባጮች፦"
 
 #. LANG_KW_GB
 #: po/tmp/xap_String_Id.h.h:151
@@ -5660,7 +5660,7 @@ msgstr "የሥዕሉ ቅድመ ዕይታ"
 #. DLG_FOSA_PrintToFileTitle
 #: po/tmp/xap_String_Id.h.h:465
 msgid "Print To File"
-msgstr "ፋይሉን አትም"
+msgstr "ወደ ፋይል አትም"
 
 #. DLG_FOSA_FilePrintTypeLabel
 #: po/tmp/xap_String_Id.h.h:467
