@@ -315,13 +315,10 @@ BOOL AP_Win32Dialog_Replace::_onCommand(HWND hWnd, WPARAM wParam, LPARAM lParam)
 		if (!m_pView->isSelectionEmpty()) 
 		{
 		// if there's a selection, clear it
-			UT_UCS4Char * pSelection;
-			m_pView->getSelectionText(pSelection);
-			
-			if ( pSelection != NULL) 
+			if (m_pView->getSelectionText() != NULL) 
 			{
 				PT_DocPosition pt = m_pView->getSelectionAnchor();
-				PT_DocPosition ln = UT_UCS4_strlen (pSelection);
+				PT_DocPosition ln = UT_UCS4_strlen (m_pView->getSelectionText());
 				if (currentVal)
 				{
 					m_pView->moveInsPtTo(pt);
@@ -332,8 +329,6 @@ BOOL AP_Win32Dialog_Replace::_onCommand(HWND hWnd, WPARAM wParam, LPARAM lParam)
 				}
 				m_pView->cmdUnselectSelection();
 			}
-
-			FREEP(pSelection);
 		}
 
 		m_pView->findSetStartAtInsPoint();
@@ -529,10 +524,8 @@ void AP_Win32Dialog_Replace::_updateList(HWND hWnd, UT_Vector* list)
 		
 		// add it to the list
 		UT_DEBUGMSG(("FODDEX: find/replace list: %d = '%s'\n", i, utf8s));   
-				
-    	SendMessage(hWnd, CB_ADDSTRING, 0, (LPARAM)(AP_Win32App::s_fromUTF8ToAnsi(utf8s)).c_str());    		
-
-		free(utf8s);
+    	
+    	SendMessage(hWnd, CB_ADDSTRING, 0, (LPARAM)utf8s);    		
 	}		
 	
 	SendMessage(hWnd, CB_SETCURSEL, 0,0);		

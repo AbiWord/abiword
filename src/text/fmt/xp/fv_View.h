@@ -182,7 +182,6 @@ public:
 	virtual inline GR_Graphics*    getGraphics(void) const { return m_pG; }
 	virtual inline UT_uint32	  getPoint(void) const { return m_iInsPoint; }
 	inline UT_uint32		getSelectionAnchor(void) const { return m_bSelection? m_iSelectionAnchor : m_iInsPoint; }
- 	UT_uint32       getSelectionLength(void) const;
 
 	virtual void focusChange(AV_Focus focus);
 
@@ -320,9 +319,10 @@ public:
 	bool			cmdCharInsert(const UT_UCSChar * text, UT_uint32 count, bool bForce = false);
 	void			cmdCharDelete(bool bForward, UT_uint32 count);
 	void			delTo(FV_DocPos dp);
-	void            getSelectionText(UT_UCS4Char *& text);
-
+	UT_UCSChar *	getSelectionText(void);
+#if 0
 	UT_UCSChar *	getTextBetweenPos(PT_DocPosition pos1, PT_DocPosition pos2);
+#endif
 	inline PT_DocPosition  getInsPoint () const { return m_iInsPoint; }
 	void			warpInsPtToXY(UT_sint32 xPos, UT_sint32 yPos, bool bClick);
 	void			moveInsPtTo(FV_DocPos dp, bool bClearSelection = true);
@@ -471,7 +471,6 @@ public:
 
 	bool				insertPageNum(const XML_Char ** props, HdrFtrType hfType);
 	void				setPoint(PT_DocPosition pt);
-	void                ensureInsertionPointOnScreen(void);
 
 // -----------------------
 	void                killBlink(void);
