@@ -31,7 +31,7 @@
 #include "fv_View.h"
 #include "gr_Painter.h"
 
-#define MIN_DRAG_PIXELS 4
+#define MIN_DRAG_PIXELS 8
 
 FV_VisualDragText::FV_VisualDragText (FV_View * pView)
 	: m_pView (pView), 
