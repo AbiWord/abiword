@@ -399,7 +399,7 @@ void XAP_Prefs::_startElement(const XML_Char *name, const XML_Char **atts)
 
 			if (UT_XML_stricmp(a[0], "scheme") == 0)
 			{
-				DELETEP(m_parserState.m_szSelectedSchemeName);
+				FREEP(m_parserState.m_szSelectedSchemeName);
 				if (!UT_cloneString(m_parserState.m_szSelectedSchemeName,a[1]))
 					goto MemoryError;
 			}
@@ -634,7 +634,7 @@ UT_Bool XAP_Prefs::loadPrefsFile(void)
 	bResult = UT_TRUE;
 
 Cleanup:
-	DELETEP(m_parserState.m_szSelectedSchemeName);
+	FREEP(m_parserState.m_szSelectedSchemeName);
 	if (parser)
 		XML_ParserFree(parser);
 	if (fp)
