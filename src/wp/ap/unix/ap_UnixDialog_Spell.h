@@ -46,7 +46,7 @@ class AP_UnixDialog_Spell: public AP_Dialog_Spell
    virtual void event_SuggestionSelected(gint row, gint column);
    virtual void event_ReplacementChanged(void);
    
-   char *mbword;
+//   char *mbword;
  protected:
 
    // private construction functions
