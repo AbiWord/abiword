@@ -44,6 +44,10 @@ PLATFORM_OBJS=	$(ABI_NATIVE)/$(OBJDIR)/xap_$(ABI_FE)App.$(OBJ_SUFFIX)				\
 		$(ABI_NATIVE)/$(OBJDIR)/xap_$(ABI_FE)Toolbar_Icons.$(OBJ_SUFFIX)
 
 # Note that we might later want to include the FakeClipboard code only for certain platforms.
+ifeq ($(ABI_FE), BeOS)
+PLATFORM_OBJS += $(ABI_NATIVE)/$(OBJDIR)/be_GRDrawView.$(OBJ_SUFFIX)
+endif
+
 ifeq ($(ABI_FE), Unix)
 PLATFORM_OBJS += 	$(ABI_NATIVE)/$(OBJDIR)/xap_$(ABI_FE)Font.$(OBJ_SUFFIX)			\
 			$(ABI_NATIVE)/$(OBJDIR)/xap_$(ABI_FE)FontManager.$(OBJ_SUFFIX)		\
