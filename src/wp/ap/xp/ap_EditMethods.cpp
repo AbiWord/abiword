@@ -2983,6 +2983,12 @@ s_closeWindow (AV_View * pAV_View, EV_EditMethodCallData * pCallData,
 
 		pApp->clearLastFocussedFrame();
 	}
+	if (1 >= pApp->getFrameCount())
+	{
+		// Delete all the open modeless dialogs
+
+		pApp->closeModelessDlgs();
+	}
 
 	// is this the last view on a dirty document?
 	if ((pFrame->getViewNumber() == 0) &&

@@ -139,6 +139,7 @@ void AP_Dialog_MergeCells::autoUpdateMC(UT_Worker * pTimer)
 void AP_Dialog_MergeCells::setAllSensitivities(void)
 {
     FV_View * pView = (FV_View *) m_pApp->getLastFocussedFrame()->getCurrentView();
+	m_iCellSource = pView->getPoint();
 	if(!pView->isInTable())
 	{
 		setSensitivity(radio_above,false);
@@ -237,29 +238,26 @@ void AP_Dialog_MergeCells::_generateSrcDest(void)
 	if(m_mergeType == radio_left)
 	{
 		m_iCellDestination = pView->findCellPosAt(m_iCellSource,m_iTop,m_iLeft-1)+1;
-		swap = m_iCellSource;
-		m_iCellSource = m_iCellDestination;
-		m_iCellSource = swap;
-		return;
 	}
 	if(m_mergeType == radio_right)
 	{
 		m_iCellDestination = pView->findCellPosAt(m_iCellSource,m_iTop,m_iRight)+1;
-		return;
 	}
 	if(m_mergeType == radio_above)
 	{
 		m_iCellDestination = pView->findCellPosAt(m_iCellSource,m_iTop-1,m_iLeft)+1;
-		swap = m_iCellSource;
-		m_iCellSource = m_iCellDestination;
-		m_iCellSource = swap;
-		return;
 	}
 	if(m_mergeType == radio_below)
 	{
 		m_iCellDestination = pView->findCellPosAt(m_iCellSource,m_iBot,m_iLeft)+1;
-		return;
 	}
+	if(m_iCellDestination > m_iCellSource)
+	{
+		swap = m_iCellDestination;
+		m_iCellDestination = m_iCellSource;
+		m_iCellSource = swap;
+	}
+	return;
 }
 
 /*!
