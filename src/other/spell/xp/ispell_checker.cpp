@@ -305,22 +305,32 @@ typedef struct {
 
 // please try to keep this ordered alphabetically by country-code
 static const Ispell2Lang_t m_mapping[] = {
+  { "catalan.hash",    "ca-ES" },
+  { "czech.hash",      "cs-CZ" },
   { "dansk.hash",      "da-DK" },
-  { "german.hash",     "de-DE" },
-  { "australian.hash", "en-AU" },
-  { "canadian.hash",   "en-CA" },
+  { "deutsch.hash",    "de-CH" },
+  { "deutsch.hash",    "de-DE" },
+  { "deutsch.hash",    "de-AT" },
+  { "ellhnika.hash",   "el-GR" },
+  { "british.hash",    "en-AU" },
+  { "american.hash",   "en-CA" },
   { "british.hash",    "en-GB" },
+  { "british.hash",    "en-IE" },
   { "american.hash",   "en-US" },
-  { "spanish.hash",    "es-ES" },
+  { "espanol.hash",    "es-ES" },
+  { "francias.hash",   "fr-BE" },
+  { "francias.hash",   "fr-CA" },
+  { "francias.hash",   "fr-CH" },
+  { "francias.hash",   "fr-FR" },
   { "italian.hash",    "it-IT" },
   { "lietuviu.hash",   "lt-LT" },
   { "dutch96.hash",    "nl-NL" },
-  { "nynorsk.hash",    "nn-NO" },
-  { "french.hash",     "fr-FR" },
-  { "lietuviu.hash",   "lt-LT" },
-  { "portugal.hash",   "pt-PT" },
+  { "norsk.hash",      "nn-NO" },
+  { "polish.hash",     "pl-PL" },
+  { "portugues.hash",  "pt-PT" },
+  { "portugues.hash",  "pt-BR" },
   { "russian.hash",    "ru-RU" },
-  { "swedish.hash",    "sv-SE" }
+  { "svenska.hash",    "sv-SE" }
 };
 
 bool
