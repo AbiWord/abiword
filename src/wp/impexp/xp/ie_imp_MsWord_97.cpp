@@ -3024,7 +3024,7 @@ void IE_Imp_MsWord_97::_table_close (const wvParseStruct *ps, const PAP *apap)
     for (UT_uint32 i = 0; i < m_vecColumnWidths.size(); i++) {
       UT_String_sprintf(propBuffer,
 			"%s/",
-			UT_convertInchesToDimensionString(DIM_IN, ((static_cast<float>(reinterpret_cast<int>(m_vecColumnWidths.getNthItem(i)) / 1440))), "1.4")
+			UT_convertInchesToDimensionString(DIM_IN, ((float)((int)m_vecColumnWidths.getNthItem(i)))/1440.0, "1.4")
 			);
       props += propBuffer;
     }
