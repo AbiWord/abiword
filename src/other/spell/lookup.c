@@ -47,11 +47,15 @@ static char Rcs_Id[] =
 
 /*
  * $Log$
- * Revision 1.4  1998/12/29 14:55:33  eric
- * I've doctored the ispell code pretty extensively here.  It is now
- * warning-free on Win32.  It also *works* on Win32 now, since I
- * replaced all the I/O calls with ANSI standard ones.
+ * Revision 1.5  1999/01/07 01:07:48  paul
+ * Fixed spell leaks.
  *
+ * Revision 1.5  1999/01/07 01:07:48  paul
+ * Fixed spell leaks.
+ *
+ * Revision 1.4  1998/12/29 14:55:33  eric
+ *
+ * I've doctored the ispell code pretty extensively here.  It is now
  * warning-free on Win32.  It also *works* on Win32 now, since I
  * replaced all the I/O calls with ANSI standard ones.
  *
@@ -111,6 +115,7 @@ static char Rcs_Id[] =
 #include "msgs.h"
 
 int		linit P ((char *));
+#ifdef INDEXDUMP
 static void	dumpindex P ((struct flagptr * indexp, int depth));
 #endif /* INDEXDUMP */
 static void	clearindex P ((struct flagptr * indexp));
@@ -446,6 +451,33 @@ char *hashname; /* name of the hash file (dictionary) */
 	    }
 	}
     inited = 1;
+    return (0);
+    }
+
+#define FREEP(p)	do { if (p) free(p); } while (0)
+
+void lcleanup(void)
+{
+	clearindex (pflagindex);
+	clearindex (sflagindex);
+
+	FREEP(hashtbl);
+	FREEP(hashstrings);
+	FREEP(sflaglist);
+	FREEP(chartypes);
+}
+
+static void clearindex (indexp)
+    register struct flagptr *	indexp;
+{
+    register int		i;
+    for (i = 0;  i < SET_SIZE + hashheader.nstrchars;  i++, indexp++)
+	{
+		if (indexp->numents == 0 && indexp->pu.fp != NULL)
+		{
+		    clearindex(indexp->pu.fp);
+			free(indexp->pu.fp);
+		}
 	}
 }
 	

@@ -18,23 +18,8 @@
  */
 
 #include "xap_UnixApp.h"
-#include "sp_spell.h"
 
 int main(int argc, char ** argv)
 {
-	/*
-	  The following call initializes the spell checker.
-	  It does NOT belong here.  However, right now, it's
-	  not clear where it does belong.
-	  HACK TODO fix this
-
-	  Furthermore, it currently initializes the dictionary
-	  to a hard-coded path which happens to be correct on
-	  Red Hat systems which already have ispell installed.
-	  TODO fix this
-	*/
-
-	SpellCheckInit("/usr/lib/ispell/american.hash");
-	
 	return AP_UnixApp::main("AbiWord", argc, argv);
 }

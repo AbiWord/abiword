@@ -42,9 +42,13 @@
 
 /*
  * $Log$
- * Revision 1.3  1998/12/29 15:03:54  eric
- * minor fix to ispell.h to get things to compile on Linux again.
+ * Revision 1.4  1999/01/07 01:07:48  paul
+ * Fixed spell leaks.
  *
+ * Checking in half-broken to avoid tree lossage
+ *
+ * Revision 1.4  1999/01/07 01:07:48  paul
+ * Fixed spell leaks.
  *
  * Revision 1.3  1998/12/29 15:03:54  eric
  *
@@ -104,6 +108,7 @@
  * Add typecasts to the the 7-bit versions of ichar* routines
  *
  * Revision 1.57  1994/01/25  07:11:48  geoff
+#include "ut_types.h"	// to make malloc magic work on Win32
  *
  */
 
@@ -337,6 +342,7 @@ int icharlen (ichar_t* in);
 int icharcmp (ichar_t* s1, ichar_t* s2);
 int icharncmp (ichar_t* s1, ichar_t* s2, int n);
 int ichartostr (char* out, ichar_t* in, int outlen, int canonical);
+char * ichartosstr (ichar_t* in, int canonical);
 int strtoichar (ichar_t* out, char* in, int outlen, int canonical);
 struct dent * ispell_lookup (ichar_t* s, int dotree);
 int good (ichar_t* w, int ignoreflagbits, int allhits, int pfxopts, int sfxopts);

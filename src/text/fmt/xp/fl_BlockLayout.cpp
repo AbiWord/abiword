@@ -82,6 +82,7 @@ fl_BlockLayout::fl_BlockLayout(PL_StruxDocHandle sdh,
 
 fl_BlockLayout::~fl_BlockLayout()
 {
+	_destroySpellCheckLists();
 	_purgeLayout(UT_FALSE);
 }
 

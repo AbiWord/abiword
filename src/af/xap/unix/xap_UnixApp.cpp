@@ -24,6 +24,7 @@
 #include "xap_UnixFrame.h"
 #include "xap_UnixToolbar_Icons.h"
 #include "xap_UnixToolbar_ControlFactory.h"
+#include "sp_spell.h"
 
 #define DELETEP(p)	do { if (p) delete p; } while (0)
 
@@ -37,6 +38,8 @@ AP_UnixApp::AP_UnixApp(AP_Args * pArgs, const char * szAppName)
 
 AP_UnixApp::~AP_UnixApp(void)
 {
+	SpellCheckCleanup();
+
 	DELETEP(m_pUnixToolbarIcons);
 	DELETEP(_pClipboard);
 }
@@ -59,6 +62,20 @@ UT_Bool AP_UnixApp::initialize(void)
 	// do any thing we need here...
 
 	_pClipboard = new AP_FakeClipboard();
+	
+	/*
+	  The following call initializes the spell checker.
+	  It does NOT belong here.  However, right now, it's
+	  not clear where it does belong.
+	  HACK TODO fix this
+
+	  Furthermore, it currently initializes the dictionary
+	  to a hard-coded path which happens to be correct on
+	  Red Hat systems which already have ispell installed.
+	  TODO fix this
+	*/
+
+	SpellCheckInit("/usr/lib/ispell/american.hash");
 	
 	return UT_TRUE;
 }

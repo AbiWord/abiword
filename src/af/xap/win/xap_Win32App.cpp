@@ -26,6 +26,7 @@
 #include "xap_Win32Frame.h"
 #include "xap_Win32Toolbar_Icons.h"
 #include "xap_Win32Toolbar_ControlFactory.h"
+#include "sp_spell.h"
 
 #define DELETEP(p)	do { if (p) delete p; } while (0)
 
@@ -42,6 +43,8 @@ AP_Win32App::AP_Win32App(HINSTANCE hInstance, AP_Args * pArgs, const char * szAp
 
 AP_Win32App::~AP_Win32App(void)
 {
+	SpellCheckCleanup();
+
 	DELETEP(m_pWin32ToolbarIcons);
 	DELETEP(_pClipboard);
 }
@@ -72,6 +75,20 @@ UT_Bool AP_Win32App::initialize(void)
 	// do anything else we need here...
 
 	_pClipboard = new AP_Win32Clipboard();
+	
+	/*
+	  The following call initializes the spell checker.
+	  It does NOT belong here.  However, right now, it's
+	  not clear where it does belong.
+	  HACK TODO fix this
+
+	  Furthermore, it currently initializes the dictionary
+	  to a hard-coded path -- the dictionary must be in the
+	  same directory as the one you started the app in.
+	  TODO fix this
+	*/
+
+	SpellCheckInit("c:/american.hash");		// NB: yes, the slash should be backwards
 	
 	return UT_TRUE;
 }

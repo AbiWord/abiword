@@ -47,6 +47,11 @@ int SpellCheckInit(char *hashname)
 	return 1;
 }
 
+void SpellCheckCleanup(void)
+{
+	lcleanup();
+}
+
 
 int SpellCheckWord16(unsigned short  *word16)
 {

@@ -15,6 +15,7 @@ extern "C"
 #endif
 	
 int SpellCheckInit(char *hashname);
+void SpellCheckCleanup(void);
 int SpellCheckNWord16(const unsigned short *word16, int length);
 int SpellCheckWord16(unsigned short  *word16);
 int SpellCheckWord(char *word);
