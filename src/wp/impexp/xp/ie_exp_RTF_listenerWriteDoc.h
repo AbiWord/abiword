@@ -135,6 +135,7 @@ protected:
 	PP_PropertyMap::TypeLineStyle    m_LastLinestyle;
 	UT_String           m_sLastColor;
 	UT_sint32           m_iFirstTop;
+	bool                m_bHyperLinkOpen;
 };
 
 #endif /* IE_EXP_RTF_LISTENERWRITEDOC */

@@ -423,6 +423,7 @@ s_RTF_ListenerWriteDoc::s_RTF_ListenerWriteDoc(PD_Document * pDocument,
 	m_sdhSavedBlock = NULL;
 	m_bOpennedFootnote = false;
 	m_iFirstTop = 0;
+	m_bHyperLinkOpen = false;
 	// <section>+ will be handled by the populate code.
 }
 
@@ -494,10 +495,36 @@ bool s_RTF_ListenerWriteDoc::populate(PL_StruxFmtHandle /*sfh*/,
 				_writeBookmark(pcro);
 				return true;
 			case PTO_Hyperlink:
+			{
 				_closeSpan ();
-				_writeHyperlink(pcro);
+				const PP_AttrProp * pAP = NULL;
+				m_pDocument->getAttrProp(api,&pAP);
+				const XML_Char * pName;
+				const XML_Char * pValue;
+				bool bFound = false;
+				UT_uint32 k = 0;
+				while(pAP->getNthAttribute(k++, pName, pValue))
+				{
+					bFound = (0 == UT_XML_strnicmp(pName,"xlink:href",10));
+					if(bFound)
+						break;
+				}
+				if(bFound)
+				{
+					//this is the start of the hyperlink
+					_writeHyperlink(pcro);
+				}
+				else
+				{
+//
+// This is the end of hyperlink marker, signified by no xlink::href tag
+//
+					m_bHyperLinkOpen = false;
+					m_pie->_rtf_close_brace();
+					m_pie->_rtf_close_brace();
+				}
 			    return true;
-
+			}
 			default:
 				return false;
 			}
@@ -3546,9 +3573,17 @@ void s_RTF_ListenerWriteDoc::_writeHyperlink(const PX_ChangeRecord_Object * pcro
 	m_pie->write("\"");
 	m_pie->write(szHyper);
 	m_pie->write("\"");
+#if 0
 	m_pie->_rtf_close_brace();
 	m_pie->_rtf_close_brace();
 	m_pie->_rtf_close_brace();
+#endif
+	m_bHyperLinkOpen = true;
+	m_pie->_rtf_close_brace();
+	m_pie->_rtf_close_brace();
+	m_pie->_rtf_open_brace();
+	m_pie->_rtf_keyword("*");
+	m_pie->_rtf_keyword("fldrslt");
 }
 
 
