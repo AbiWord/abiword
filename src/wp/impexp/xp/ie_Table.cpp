@@ -974,10 +974,25 @@ void ie_imp_table::_buildCellXVector(void)
  */
 UT_sint32 ie_imp_table::getColNumber(ie_imp_cell * pImpCell)
 {
+	_buildCellXVector();
 	UT_sint32 cellx = pImpCell->getCellX();
-	UT_sint32 col = m_vecCellX.findItem((void *) cellx);
-	UT_return_val_if_fail((col>=0), -1)
-	return col + 1;
+	UT_sint32 i =0;
+	bool bFound = false;
+	for(i=0; !bFound && (i< (UT_sint32) m_vecCellX.getItemCount()); i++)
+	{
+		UT_sint32 icellx = (UT_sint32) m_vecCellX.getNthItem(i);
+		UT_DEBUGMSG(("SEVIOR: Look at item %d found cellx %d \n",i,icellx));
+		if(icellx == cellx)
+		{
+			bFound = true;
+		}
+	}
+	if(bFound)
+	{
+		UT_DEBUGMSG(("SEVIOR: looking for cellx %d found at %d \n",cellx,i));
+		return i+1;
+	}
+	return -1;
 }
 
 ie_imp_cell *  ie_imp_table::getCellAtRowColX(UT_sint32 iRow,UT_sint32 cellX)
@@ -1082,7 +1097,7 @@ void ie_imp_table::buildTableStructure(void)
 			pCell->setRight(iRight);
 			pCell->setTop(iTop);
 			pCell->setBot(iBot);
-			UT_DEBUGMSG(("SEVIOR: Left %d Right %d top %d bot %d \n",iLeft,iRight,iTop,iBot));
+			UT_DEBUGMSG(("SEVIOR: cellx %d Left %d Right %d top %d bot %d \n",pCell->getCellX(),iLeft,iRight,iTop,iBot));
 		}
 //
 // Advance left attach to the right most cell.

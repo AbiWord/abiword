@@ -844,12 +844,20 @@ void s_RTF_ListenerWriteDoc::_open_cell(PT_AttrPropIndex api)
 		{
 			m_pie->_rtf_open_brace();
 			_newRow();
+			if(m_Table.getNestDepth() > 1)
+			{
+				m_pie->_rtf_close_brace();
+			}
 		}
 		else
 		{
 			bNewRow = true;
 			m_pie->_rtf_keyword("row");
 			_newRow();
+			if(m_Table.getNestDepth() > 1)
+			{
+				m_pie->_rtf_close_brace();
+			}
 		}
 	}
 //
@@ -912,8 +920,9 @@ void s_RTF_ListenerWriteDoc::_newRow(void)
 {
 	UT_sint32 i;
 	m_pie->_rtf_nl();
-	if((m_Table.getNestDepth() > 1) && m_bNewTable)
+	if(m_Table.getNestDepth() > 1)
 	{
+		m_pie->_rtf_keyword("itap",m_Table.getNestDepth());
 		m_pie->_rtf_open_brace();
 		m_pie->_rtf_keyword("*");
 		m_pie->_rtf_keyword("nesttableprops");
@@ -1172,15 +1181,17 @@ double s_RTF_ListenerWriteDoc::_getColumnWidthInches(void)
 
 void s_RTF_ListenerWriteDoc::_open_table(PT_AttrPropIndex api)
 {
-	if(m_Table.getNestDepth() > 1)
-	{
-	}
 	m_Table.OpenTable(m_sdh,api);
 	m_bNewTable = true;
 	m_iLeft = -1;
 	m_iRight = -1;
 	m_iTop = -1;
 	m_iBot = -1;
+	if(m_Table.getNestDepth() > 1)
+	{
+		m_pie->_rtf_open_brace();
+	}
+
 }
 
 void s_RTF_ListenerWriteDoc::_close_cell(void)
@@ -1353,6 +1364,7 @@ bool s_RTF_ListenerWriteDoc::populateStrux(PL_StruxDocHandle sdh,
 			_setTabEaten(false);
 			m_sdh = sdh;
 			_open_table(pcr->getIndexAP());
+			UT_DEBUGMSG(("SEVIOR: openned table \n"));
 			return true;
 		}
 	case PTX_SectionCell:
@@ -1391,8 +1403,9 @@ bool s_RTF_ListenerWriteDoc::populateStrux(PL_StruxDocHandle sdh,
 			_setTabEaten(false);
 			m_sdh = sdh;
 			_rtf_open_block(pcr->getIndexAP());
-			m_bBlankLine = true;
-			return true;
+			m_bBlankLine = true;	
+			UT_DEBUGMSG(("SEVIOR: openned block \n"));
+		return true;
 		}
 
 	default:

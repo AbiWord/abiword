@@ -1492,6 +1492,7 @@ void IE_Imp_RTF::HandleCell(void)
 	if(!getCell()->isMergedAbove())
 	{
 		getCell()->setCellSDH(sdh);
+		UT_DEBUGMSG(("SEVIOR: At posOnRow %d cellx %d \n",getTable()->getPosOnRow(),getCell()->getCellX()));
 		getTable()->incPosOnRow();
 		FlushStoredChars();		
 		UT_DEBUGMSG(("SEVIOR: Non posonrow %d \n",getTable()->getPosOnRow()));
