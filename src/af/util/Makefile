@@ -112,6 +112,7 @@ OBJS=		$(PLATFORM_OBJS)						\
 		$(OBJDIR)/ut_pair.$(OBJ_SUFFIX)			\
 		$(OBJDIR)/ut_bijection.$(OBJ_SUFFIX)		\
 		$(OBJDIR)/ut_vector.$(OBJ_SUFFIX)		\
+		$(OBJDIR)/ut_PropVector.$(OBJ_SUFFIX)		\
 		$(OBJDIR)/ut_wctomb.$(OBJ_SUFFIX)       \
 		$(OBJDIR)/ut_AdobeEncoding.$(OBJ_SUFFIX) \
 		$(OBJDIR)/ut_OverstrikingChars.$(OBJ_SUFFIX) \

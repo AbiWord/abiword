@@ -22,6 +22,7 @@
 
 #include "ut_types.h"
 #include "ut_misc.h"
+#include "ut_PropVector.h"
 #include "xap_Frame.h"
 #include "xap_Dialog.h"
 #include "xav_View.h"
@@ -93,13 +94,6 @@ public:
 	void                                event_update(void);
 	void                                finalize(void);
 	
-	void								addOrReplaceVecProp(UT_Vector &vec,
-															const XML_Char * pszProp,
-															const XML_Char * pszVal);
-	void								getVecProp(UT_Vector &vec,
-												   const XML_Char * pszProp,
-												   const XML_Char * &pszVal);
-	void								removeVecProp(UT_Vector &vec, const XML_Char * pszProp);
 	void                                setBorderThickness(UT_UTF8String & sThick);
 	virtual void                        setBorderThicknessInGUI(UT_UTF8String & sThick) = 0;
 	
@@ -115,6 +109,7 @@ public:
 	void								_createPreviewFromGC(GR_Graphics * gc,
 															 UT_uint32 width,
 															 UT_uint32 height);
+	UT_PropVector &						getPropVector() { return m_vecProps; }
 
 	/* We use this in Win32 to know the status of line and to set the push button using this value*/
 	bool								getTopToggled();
@@ -127,7 +122,7 @@ public:
 	UT_RGBColor							m_borderColor;
 	UT_sint32							m_lineStyle;
 	XML_Char *							m_bgFillStyle;
-	UT_Vector                           m_vecProps;									
+	UT_PropVector                           m_vecProps;									
 	UT_UTF8String                       m_sBorderThickness;
 					 
 protected:
@@ -140,8 +135,8 @@ private:
 
 	bool								m_bSettingsChanged;
 
-	UT_Vector                           m_vecPropsAdjRight;
-	UT_Vector                           m_vecPropsAdjBottom;
+	UT_PropVector                           m_vecPropsAdjRight;
+	UT_PropVector                           m_vecPropsAdjBottom;
 
 	UT_Timer *                          m_pAutoUpdaterMC;
 	

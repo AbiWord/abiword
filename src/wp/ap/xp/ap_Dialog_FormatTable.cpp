@@ -323,108 +323,6 @@ void AP_Dialog_FormatTable::ShowErrorBox(UT_String & sFile, UT_Error errorCode)
 }
 
 
-
-void AP_Dialog_FormatTable::addOrReplaceVecProp(UT_Vector &vec,
-												const XML_Char * pszProp,
-												const XML_Char * pszVal)
-{
-	UT_sint32 iCount = vec.getItemCount();
-	const char * pszV = NULL;
-	if(iCount <= 0)
-	{
-		char * prop = NULL;
-		char * val = NULL;
-		CLONEP(prop, pszProp);
-		CLONEP(val, pszVal);
-		vec.addItem(static_cast<void *>(prop));
-		vec.addItem(static_cast<void *>(val));
-		return;
-	}
-	UT_sint32 i = 0;
-	for(i=0; i < iCount ; i += 2)
-	{
-		pszV = reinterpret_cast<const XML_Char *>(vec.getNthItem(i));
-		if( (pszV != NULL) && (strcmp( pszV,pszProp) == 0))
-			break;
-	}
-	if(i < iCount)
-	{
-		char * pVal = static_cast<char *>(vec.getNthItem(i+1));
-		FREEP(pVal);
-		char * val = NULL;
-		CLONEP(val, pszVal);
-		vec.setNthItem(i+1, static_cast<void *>(val), NULL);
-	}
-	else
-	{
-		char * prop = NULL;
-		char * val = NULL;
-		CLONEP(prop, pszProp);
-		CLONEP(val, pszVal);
-		vec.addItem(static_cast<void *>(prop));
-		vec.addItem(static_cast<void *>(val));
-	}
-	return;
-}
-
-void AP_Dialog_FormatTable::getVecProp(UT_Vector &vec,
-									   const XML_Char * pszProp,
-									   const XML_Char * &pszVal)
-{
-	UT_sint32 iCount = vec.getItemCount();
-	const char * pszV = NULL;
-	if(iCount <= 0)
-	{
-		return;
-	}
-	UT_sint32 i = 0;
-	for(i=0; i < iCount ; i += 2)
-	{
-		pszV = reinterpret_cast<const XML_Char *>(vec.getNthItem(i));
-		if( (pszV != NULL) && (strcmp( pszV,pszProp) == 0))
-			break;
-	}
-	if(i < iCount)
-	{
-		pszVal = reinterpret_cast<const XML_Char *>(vec.getNthItem(i+1));
-	}
-	return;
-}
-
-/*!
- Removes the key,value pair  (pszProp,pszVal) given by pszProp
- from the Vector of all properties of the current format.
- If the Property does not exists nothing happens
- \param UT_Vector &vec the vector to remove the pair from
- \param const XML_Char * pszProp the property name
-*/
-void AP_Dialog_FormatTable::removeVecProp(UT_Vector &vec, const XML_Char * pszProp)
-{
-	UT_sint32 iCount = vec.getItemCount();
-	const char * pszV = NULL;
-	if(iCount <= 0)
-	{
-		return;
-	}
-	UT_sint32 i = 0;
-	for(i=0; i < iCount ; i += 2)
-	{
-		pszV = reinterpret_cast<const XML_Char *>(vec.getNthItem(i));
-		if( (pszV != NULL) && (strcmp( pszV,pszProp) == 0))
-			break;
-	}
-	if(i < iCount)
-	{
-		char * pSP = static_cast<char *>(vec.getNthItem(i));
-		char * pSV = static_cast<char *>(vec.getNthItem(i+1));
-		FREEP(pSP);
-		FREEP(pSV);
-		vec.deleteNthItem(i+1);
-		vec.deleteNthItem(i);
-	}
-	return;
-}
-
 /*! 
  Sets the sensitivity of the radio buttons to top/bottom/left/right line buttons
  Call this right after contructing the widget and before dropping into the main loop.
@@ -448,11 +346,11 @@ void AP_Dialog_FormatTable::setCurCellProps(void)
 	XML_Char * bgColor = NULL;
 	if (pView->getCellBGColor (bgColor))
 	{
-		addOrReplaceVecProp(m_vecProps, "background-color", bgColor);
+		m_vecProps.addOrReplaceProp("background-color", bgColor);
 	}
 	else
 	{
-		removeVecProp(m_vecProps, "background-color");
+		m_vecProps.removeProp("background-color");
 	}
 	if(pView->isImageAtStrux(m_iOldPos,PTX_SectionCell))
 	{
@@ -518,7 +416,7 @@ void AP_Dialog_FormatTable::setCurCellProps(void)
 	}
 
 	UT_String bstmp = UT_String_sprintf("%d", FS_FILL);
-    addOrReplaceVecProp(m_vecProps, "bg-style", bstmp.c_str());
+    m_vecProps.addOrReplaceProp("bg-style", bstmp.c_str());
 	
 	// draw the preview with the changed properties
 	if(m_pFormatTablePreview)
@@ -571,30 +469,30 @@ void AP_Dialog_FormatTable::toggleLineType(toggle_button btn, bool enabled)
 	{
 		case toggle_left:
 		{
-			addOrReplaceVecProp(m_vecProps, "left-style", sTmp.c_str());
-			addOrReplaceVecProp(m_vecProps, "left-color", cTmp.c_str());
-			addOrReplaceVecProp(m_vecProps, "left-thickness",m_sBorderThickness.utf8_str());
+			m_vecProps.addOrReplaceProp("left-style", sTmp.c_str());
+			m_vecProps.addOrReplaceProp("left-color", cTmp.c_str());
+			m_vecProps.addOrReplaceProp("left-thickness",m_sBorderThickness.utf8_str());
 		}
 		break;
 		case toggle_right:
 		{	
-			addOrReplaceVecProp(m_vecProps, "right-style", sTmp.c_str());
-			addOrReplaceVecProp(m_vecProps, "right-color", cTmp.c_str());
-			addOrReplaceVecProp(m_vecProps, "right-thickness",m_sBorderThickness.utf8_str());
+			m_vecProps.addOrReplaceProp("right-style", sTmp.c_str());
+			m_vecProps.addOrReplaceProp("right-color", cTmp.c_str());
+			m_vecProps.addOrReplaceProp("right-thickness",m_sBorderThickness.utf8_str());
 		}
 		break;
 		case toggle_top:
 		{			
-			addOrReplaceVecProp(m_vecProps, "top-style", sTmp.c_str());
-			addOrReplaceVecProp(m_vecProps, "top-color", cTmp.c_str());
-			addOrReplaceVecProp(m_vecProps, "top-thickness",m_sBorderThickness.utf8_str());
+			m_vecProps.addOrReplaceProp("top-style", sTmp.c_str());
+			m_vecProps.addOrReplaceProp("top-color", cTmp.c_str());
+			m_vecProps.addOrReplaceProp("top-thickness",m_sBorderThickness.utf8_str());
 		}
 		break;
 		case toggle_bottom:
 		{			
-			addOrReplaceVecProp(m_vecProps, "bot-style", sTmp.c_str());
-			addOrReplaceVecProp(m_vecProps, "bot-color", cTmp.c_str());
-			addOrReplaceVecProp(m_vecProps, "bot-thickness",m_sBorderThickness.utf8_str());
+			m_vecProps.addOrReplaceProp("bot-style", sTmp.c_str());
+			m_vecProps.addOrReplaceProp("bot-color", cTmp.c_str());
+			m_vecProps.addOrReplaceProp("bot-thickness",m_sBorderThickness.utf8_str());
 		}
 		break;
 	}
@@ -608,10 +506,10 @@ void AP_Dialog_FormatTable::setBorderThickness(UT_UTF8String & sThick)
 	m_sBorderThickness = sThick;
 	if(m_borderToggled)
 		return;
-	addOrReplaceVecProp(m_vecProps, "left-thickness", m_sBorderThickness.utf8_str());
-	addOrReplaceVecProp(m_vecProps, "right-thickness",m_sBorderThickness.utf8_str());
-	addOrReplaceVecProp(m_vecProps, "top-thickness",m_sBorderThickness.utf8_str());
-	addOrReplaceVecProp(m_vecProps, "bot-thickness",m_sBorderThickness.utf8_str());
+	m_vecProps.addOrReplaceProp("left-thickness", m_sBorderThickness.utf8_str());
+	m_vecProps.addOrReplaceProp("right-thickness",m_sBorderThickness.utf8_str());
+	m_vecProps.addOrReplaceProp("top-thickness",m_sBorderThickness.utf8_str());
+	m_vecProps.addOrReplaceProp("bot-thickness",m_sBorderThickness.utf8_str());
 	
 	m_bSettingsChanged = true;
 
@@ -626,13 +524,13 @@ void AP_Dialog_FormatTable::setBorderColor(UT_RGBColor clr)
 
 	UT_String s = UT_String_sprintf("%02x%02x%02x", clr.m_red, clr.m_grn, clr.m_blu);	
 
-	addOrReplaceVecProp(m_vecProps, "left-color", s.c_str());
-	addOrReplaceVecProp(m_vecProps, "right-color", s.c_str());
-	addOrReplaceVecProp(m_vecProps, "top-color", s.c_str());
-	addOrReplaceVecProp(m_vecProps, "bot-color", s.c_str());
+	m_vecProps.addOrReplaceProp("left-color", s.c_str());
+	m_vecProps.addOrReplaceProp("right-color", s.c_str());
+	m_vecProps.addOrReplaceProp("top-color", s.c_str());
+	m_vecProps.addOrReplaceProp("bot-color", s.c_str());
 	
-	addOrReplaceVecProp(m_vecPropsAdjRight, "left-color", s.c_str());
-	addOrReplaceVecProp(m_vecPropsAdjBottom, "top-color", s.c_str());
+	m_vecPropsAdjRight.addOrReplaceProp("left-color", s.c_str());
+	m_vecPropsAdjBottom.addOrReplaceProp("top-color", s.c_str());
 	
 	m_bSettingsChanged = true;
 }
@@ -652,13 +550,13 @@ void AP_Dialog_FormatTable::setBGColor(UT_RGBColor clr)
 {
 	UT_String bgcol = UT_String_sprintf("%02x%02x%02x", clr.m_red, clr.m_grn, clr.m_blu);
 
-	removeVecProp (m_vecProps, "bg-style");
-	removeVecProp (m_vecProps, "bgcolor");
+	m_vecProps.removeProp ("bg-style");
+	m_vecProps.removeProp ("bgcolor");
 
 	if (clr.isTransparent ())
-		removeVecProp (m_vecProps, "background-color");
+		m_vecProps.removeProp ("background-color");
 	else
-		addOrReplaceVecProp (m_vecProps, "background-color", bgcol.c_str ());
+		m_vecProps.addOrReplaceProp ("background-color", bgcol.c_str ());
 
 	m_bSettingsChanged = true;
 }
@@ -680,7 +578,7 @@ bool AP_Dialog_FormatTable::_getToggleButtonStatus(const char * lineStyle)
 	const XML_Char * pszStyle = NULL;
 	UT_String lsOff = UT_String_sprintf("%d", LS_OFF);	
 
-	getVecProp(m_vecProps, lineStyle, pszStyle);
+	m_vecProps.getProp(lineStyle, pszStyle);
 
 	if ((pszStyle && strcmp(pszStyle, lsOff.c_str())) || 
 		!pszStyle)
@@ -779,8 +677,7 @@ void AP_FormatTable_preview::draw(void)
 	}
 	else
 	{
-		m_pFormatTable->getVecProp (m_pFormatTable->m_vecProps,
-				    static_cast<const XML_Char *>("background-color"), pszBGCol);
+		m_pFormatTable->getPropVector().getProp(static_cast<const XML_Char *>("background-color"), pszBGCol);
 		if (pszBGCol && *pszBGCol)
 		{
 			UT_parseColor(pszBGCol, tmpCol);
@@ -826,7 +723,7 @@ void AP_FormatTable_preview::draw(void)
 	if (m_pFormatTable->getTopToggled())
 	{
 		const XML_Char * pszTopColor = NULL;
-		m_pFormatTable->getVecProp(m_pFormatTable->m_vecProps, "top-color", pszTopColor);
+		m_pFormatTable->getPropVector().getProp("top-color", pszTopColor);
 		if (pszTopColor)
 		{
 			UT_parseColor(pszTopColor, tmpCol);
@@ -835,7 +732,7 @@ void AP_FormatTable_preview::draw(void)
 		else
 			m_gc->setColor(black);
 		const XML_Char * pszTopThickness = NULL;
-		m_pFormatTable->getVecProp(m_pFormatTable->m_vecProps, "top-thickness", pszTopThickness);
+		m_pFormatTable->getPropVector().getProp("top-thickness", pszTopThickness);
 		if(pszTopThickness)
 		{
 			UT_sint32 iTopThickness = UT_convertToLogicalUnits(pszTopThickness);
@@ -854,7 +751,7 @@ void AP_FormatTable_preview::draw(void)
 	if (m_pFormatTable->getLeftToggled())
 	{
 		const XML_Char * pszLeftColor = NULL;
-		m_pFormatTable->getVecProp(m_pFormatTable->m_vecProps, "left-color", pszLeftColor);
+		m_pFormatTable->getPropVector().getProp("left-color", pszLeftColor);
 		if (pszLeftColor)
 		{
 			UT_parseColor(pszLeftColor, tmpCol);
@@ -863,7 +760,7 @@ void AP_FormatTable_preview::draw(void)
 		else
 			m_gc->setColor(black);
 		const XML_Char * pszLeftThickness = NULL;
-		m_pFormatTable->getVecProp(m_pFormatTable->m_vecProps, "left-thickness", pszLeftThickness);
+		m_pFormatTable->getPropVector().getProp("left-thickness", pszLeftThickness);
 		if(pszLeftThickness)
 		{
 			UT_sint32 iLeftThickness = UT_convertToLogicalUnits(pszLeftThickness);
@@ -881,7 +778,7 @@ void AP_FormatTable_preview::draw(void)
 	if (m_pFormatTable->getRightToggled())
 	{
 		const XML_Char * pszRightColor = NULL;
-		m_pFormatTable->getVecProp(m_pFormatTable->m_vecProps, "right-color", pszRightColor);
+		m_pFormatTable->getPropVector().getProp("right-color", pszRightColor);
 		if (pszRightColor)
 		{
 			UT_parseColor(pszRightColor, tmpCol);
@@ -890,7 +787,7 @@ void AP_FormatTable_preview::draw(void)
 		else
 			m_gc->setColor(black);
 		const XML_Char * pszRightThickness = NULL;
-		m_pFormatTable->getVecProp(m_pFormatTable->m_vecProps, "right-thickness", pszRightThickness);
+		m_pFormatTable->getPropVector().getProp("right-thickness", pszRightThickness);
 		if(pszRightThickness)
 		{
 			UT_sint32 iRightThickness = UT_convertToLogicalUnits(pszRightThickness);
@@ -908,7 +805,7 @@ void AP_FormatTable_preview::draw(void)
 	if (m_pFormatTable->getBottomToggled())
 	{
 		const XML_Char * pszBottomColor = NULL;
-		m_pFormatTable->getVecProp(m_pFormatTable->m_vecProps, "bot-color", pszBottomColor);
+		m_pFormatTable->getPropVector().getProp("bot-color", pszBottomColor);
 		if (pszBottomColor)
 		{
 			UT_parseColor(pszBottomColor, tmpCol);
@@ -917,7 +814,7 @@ void AP_FormatTable_preview::draw(void)
 		else
 			m_gc->setColor(black);
 		const XML_Char * pszBotThickness = NULL;
-		m_pFormatTable->getVecProp(m_pFormatTable->m_vecProps, "bot-thickness", pszBotThickness);
+		m_pFormatTable->getPropVector().getProp("bot-thickness", pszBotThickness);
 		if(pszBotThickness)
 		{
 			UT_sint32 iBotThickness = UT_convertToLogicalUnits(pszBotThickness);
