@@ -53,7 +53,8 @@ void AP_UnixFrameImpl::_bindToolbars(AV_View * pView)
 // and thus we have to manually call this function at startup.
 void AP_UnixFrameImpl::_showOrHideToolbars()
 {
-	bool *bShowBar = static_cast<AP_FrameData*>(m_pFrame->getFrameData())->m_bShowBar;
+	XAP_Frame* pFrame = getFrame();
+	bool *bShowBar = static_cast<AP_FrameData*>(pFrame->getFrameData())->m_bShowBar;
 	UT_uint32 cnt = m_vecToolbarLayoutNames.getItemCount();
 
 	for (UT_uint32 i = 0; i < cnt; i++)
@@ -61,8 +62,8 @@ void AP_UnixFrameImpl::_showOrHideToolbars()
 		// TODO: The two next lines are here to bind the EV_Toolbar to the
 		// AP_FrameData, but their correct place are next to the toolbar creation (JCA)
 		EV_UnixToolbar * pUnixToolbar = static_cast<EV_UnixToolbar *> (m_vecToolbars.getNthItem(i));
-		static_cast<AP_FrameData*> (m_pFrame->getFrameData())->m_pToolbar[i] = pUnixToolbar;
-		static_cast<AP_UnixFrame *>(m_pFrame)->toggleBar(i, bShowBar[i]);
+		static_cast<AP_FrameData*> (pFrame->getFrameData())->m_pToolbar[i] = pUnixToolbar;
+		static_cast<AP_UnixFrame *>(pFrame)->toggleBar(i, bShowBar[i]);
 	}
 }
 
@@ -77,7 +78,7 @@ void AP_UnixFrameImpl::_refillToolbarsInFrameData()
 	for (UT_uint32 i = 0; i < cnt; i++)
 	{
 		EV_UnixToolbar * pUnixToolbar = static_cast<EV_UnixToolbar *> (m_vecToolbars.getNthItem(i));
-		static_cast<AP_FrameData*>(m_pFrame->getFrameData())->m_pToolbar[i] = pUnixToolbar;
+		static_cast<AP_FrameData*>(getFrame()->getFrameData())->m_pToolbar[i] = pUnixToolbar;
 	}
 }
 
@@ -85,13 +86,15 @@ void AP_UnixFrameImpl::_refillToolbarsInFrameData()
 // Idem.
 void AP_UnixFrameImpl::_showOrHideStatusbar()
 {
-	bool bShowStatusBar = static_cast<AP_FrameData*> (m_pFrame->getFrameData())->m_bShowStatusBar;
-	static_cast<AP_UnixFrame *>(m_pFrame)->toggleStatusBar(bShowStatusBar);
+	XAP_Frame* pFrame = getFrame();
+	bool bShowStatusBar = static_cast<AP_FrameData*> (pFrame->getFrameData())->m_bShowStatusBar;
+	static_cast<AP_UnixFrame *>(pFrame)->toggleStatusBar(bShowStatusBar);
 }
 
 GtkWidget * AP_UnixFrameImpl::_createDocumentWindow()
 {
-	bool bShowRulers = static_cast<AP_FrameData*>(m_pFrame->getFrameData())->m_bShowRuler;
+	XAP_Frame* pFrame = getFrame();
+	bool bShowRulers = static_cast<AP_FrameData*>(pFrame->getFrameData())->m_bShowRuler;
 
 	// create the rulers
 	AP_UnixTopRuler * pUnixTopRuler = NULL;
@@ -99,13 +102,13 @@ GtkWidget * AP_UnixFrameImpl::_createDocumentWindow()
 
 	if ( bShowRulers )
 	{
-		pUnixTopRuler = new AP_UnixTopRuler(this->m_pFrame);
+		pUnixTopRuler = new AP_UnixTopRuler(pFrame);
 		UT_ASSERT(pUnixTopRuler);
 		m_topRuler = pUnixTopRuler->createWidget();
 		
-		if (static_cast<AP_FrameData*>(m_pFrame->getFrameData())->m_pViewMode == VIEW_PRINT)
+		if (static_cast<AP_FrameData*>(pFrame->getFrameData())->m_pViewMode == VIEW_PRINT)
 		  {
-		    pUnixLeftRuler = new AP_UnixLeftRuler(m_pFrame);
+		    pUnixLeftRuler = new AP_UnixLeftRuler(pFrame);
 		    UT_ASSERT(pUnixLeftRuler);
 		    m_leftRuler = pUnixLeftRuler->createWidget();
 
@@ -124,8 +127,8 @@ GtkWidget * AP_UnixFrameImpl::_createDocumentWindow()
 		m_leftRuler = NULL;
 	}
 
-	((AP_FrameData*)m_pFrame->getFrameData())->m_pTopRuler = pUnixTopRuler;
-	((AP_FrameData*)m_pFrame->getFrameData())->m_pLeftRuler = pUnixLeftRuler;
+	((AP_FrameData*)pFrame->getFrameData())->m_pTopRuler = pUnixTopRuler;
+	((AP_FrameData*)pFrame->getFrameData())->m_pLeftRuler = pUnixLeftRuler;
 
 	// set up for scroll bars.
 	m_pHadj = (GtkAdjustment*) gtk_adjustment_new(0.0, 0.0, 0.0, 0.0, 0.0, 0.0);
@@ -268,7 +271,7 @@ void AP_UnixFrameImpl::_createWindow()
 {
 	createTopLevelWindow();
 	gtk_widget_show(getTopLevelWindow());
-	if(m_pFrame->getFrameMode() == XAP_NormalFrame)
+	if(getFrame()->getFrameMode() == XAP_NormalFrame)
 	{
 		// needs to be shown so that the following functions work
 		// TODO: get rid of cursed flicker caused by initially
@@ -281,10 +284,11 @@ void AP_UnixFrameImpl::_createWindow()
 
 GtkWidget * AP_UnixFrameImpl::_createStatusBarWindow()
 {
-	AP_UnixStatusBar * pUnixStatusBar = new AP_UnixStatusBar(m_pFrame);
+	XAP_Frame* pFrame = getFrame();
+	AP_UnixStatusBar * pUnixStatusBar = new AP_UnixStatusBar(pFrame);
 	UT_ASSERT(pUnixStatusBar);
 
-	((AP_FrameData *)m_pFrame->getFrameData())->m_pStatusBar = pUnixStatusBar;
+	((AP_FrameData *)pFrame->getFrameData())->m_pStatusBar = pUnixStatusBar;
 	
 	GtkWidget * w = pUnixStatusBar->createWidget();
 

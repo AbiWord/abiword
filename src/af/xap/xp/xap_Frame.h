@@ -237,7 +237,6 @@ public:
 
 protected:
 	friend class XAP_FrameImpl;
-	XAP_FrameImpl *           m_pFrameImpl; /* set by platform specific code */
 
 	XAP_App *					m_pApp;			/* handle to application-specific data */
 	AD_Document *				m_pDoc;			/* to our in-memory representation of a document */
@@ -282,6 +281,7 @@ private:
 	bool                        m_bShowStatusbar;
 	bool                        m_bShowMenubar;
 
+	XAP_FrameImpl *           m_pFrameImpl; /* set by platform specific code */
 };
 #else
 typedef enum _FrameModes

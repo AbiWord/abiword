@@ -102,9 +102,8 @@ protected:
 	const char * m_szMenuLayoutName;
 	const char * m_szMenuLabelSetName;		/* language for menus */
 
-	XAP_Frame * m_pFrame;
-
 private:
+	XAP_Frame * m_pFrame;
 };
 
 #endif
