@@ -105,10 +105,10 @@ public:
 	void                sizeAllocate(fp_Allocation * pAllocate);
 	void				layout(void);
 	fp_Container *      drawSelectedCell(fp_Line * pLine);
-	UT_RGBColor *       getSelectionColor(void) const
-	{ return m_cClrSelection; }
-	void                clearSelectionColor(void) 
-	{ m_cClrSelection = NULL; 
+	bool			    isSelected(void) const
+	{ return m_bIsSelected; }
+	void                clearSelection(void) 
+	{ m_bIsSelected = false; 
 	  m_bLinesDrawn = true;
 	}
 	bool                doesOverlapBrokenTable(fp_TableContainer * pBroke);
@@ -316,8 +316,10 @@ private:
 	PP_PropertyMap::Line   m_lineRight;
 	PP_PropertyMap::Line   m_lineTop;
 
-// Pointer to selection Colour
-	UT_RGBColor *          m_cClrSelection;
+// Flag to see if this cell is drawn "selected"
+	bool		           m_bIsSelected;
+	
+	
 	bool                   m_bDirty;
 };
 

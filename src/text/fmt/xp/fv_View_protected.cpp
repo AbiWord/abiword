@@ -3013,9 +3013,9 @@ bool FV_View::_drawOrClearBetweenPositions(PT_DocPosition iPos1, PT_DocPosition 
 			}
 			else
 			{
-				if(pCell->getSelectionColor() != NULL)
+				if(pCell->isSelected() != NULL)
 				{
-					pCell->clearSelectionColor();
+					pCell->clearSelection();
 					pCell->clearScreen();
 					pCell->draw(pCurRun->getLine());
 				}
@@ -3161,9 +3161,9 @@ bool FV_View::_clearBetweenPositions(PT_DocPosition iPos1, PT_DocPosition iPos2,
 		if(pCL->getContainerType() == FL_CONTAINER_CELL)
 		{
 			fp_CellContainer * pCell = static_cast<fp_CellContainer *>(pCL->getFirstContainer());
-			if(pCell->getSelectionColor())
+			if(pCell->isSelected())
 			{
-				pCell->clearSelectionColor();
+				pCell->clearSelection();
 				pCell->clearScreen();
 			
 				fl_BlockLayout * pBlock = NULL;

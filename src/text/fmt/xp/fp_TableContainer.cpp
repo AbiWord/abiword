@@ -114,7 +114,7 @@ fp_CellContainer::fp_CellContainer(fl_SectionLayout* pSectionLayout)
 	  m_bDrawRight(false),
 	  m_bLinesDrawn(false),
 	  m_bBgDirty(true),
-	  m_cClrSelection(NULL),
+	  m_bIsSelected(false),
 	  m_bDirty(true)
 {
 }
@@ -1387,7 +1387,6 @@ fp_Container * fp_CellContainer::drawSelectedCell(fp_Line * pLine)
 	}
 	m_bDirty = false;
 	FV_View * pView = getPage()->getDocLayout()->getView();
-	UT_RGBColor clrSelBackground = pView->getColorSelBackground();
 	fp_TableContainer * pTab = static_cast<fp_TableContainer *>(getContainer());
 	if(pTab == NULL)
 	{
@@ -1408,9 +1407,9 @@ fp_Container * fp_CellContainer::drawSelectedCell(fp_Line * pLine)
 		{
 			bFound = true;
 			//
-			// Set the colour to be drawn in the selected cell.
+			// Set a flag to indicate the cell is selected
 			//
-			m_cClrSelection = &clrSelBackground;
+			m_bIsSelected = true;
 			//
 			// Now get a rectangle to calculate draw arguments
 			//
@@ -1550,7 +1549,7 @@ void fp_CellContainer::drawBroken(dg_DrawArgs* pDA,
 // Now draw the cell background.
 //
 
-	if ((m_cClrSelection == NULL) && (m_bBgDirty || !pDA->bDirtyRunsOnly))
+	if ((m_bIsSelected == false) && (m_bBgDirty || !pDA->bDirtyRunsOnly))
 	{
 		fp_Page * pPage;
 		UT_Rect bRec;
@@ -1581,14 +1580,15 @@ void fp_CellContainer::drawBroken(dg_DrawArgs* pDA,
 	//
 	// This cell is selected, fill it with colour
 	//
-	else if(m_cClrSelection != NULL)
+	else if(m_bIsSelected)
 	{
 		UT_Rect bRec;
 		fp_Page * pPage;
 		_getBrokenRect(pBroke, pPage, bRec);
 		xxx_UT_DEBUGMSG(("drawBroke: fill rect: Final top %d bot %d  pBroke %x \n",bRec.top,bRec.top + bRec.height,pBroke));
 			UT_ASSERT((bRec.left + bRec.width) < getPage()->getWidth());
-		getGraphics()->fillRect(*m_cClrSelection,bRec.left,bRec.top,bRec.width,bRec.height);
+		FV_View * pView = getPage()->getDocLayout()->getView();
+		getGraphics()->fillRect(pView->getColorSelBackground(),bRec.left,bRec.top,bRec.width,bRec.height);
 	}
 
 //
