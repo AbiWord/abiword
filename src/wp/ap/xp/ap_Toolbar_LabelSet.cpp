@@ -43,6 +43,8 @@ EV_Toolbar_LabelSet * AP_CreateToolbarLabelSet(const char * szLanguage_)
 	const XAP_StringSet * pSS = XAP_App::getApp()->getStringSet();
 	
 	EV_Toolbar_LabelSet * pLabelSet = new EV_Toolbar_LabelSet(szLanguage,AP_TOOLBAR_ID__BOGUS1__,AP_TOOLBAR_ID__BOGUS2__);
+	pLabelSet->setLabel(0 /*AP_TOOLBAR_ID_BOGUS1__*/, NULL, "NoIcon", NULL, NULL);
+
 	UT_String iconname;
 	
 	#define toolbaritem(id) \
@@ -50,8 +52,8 @@ EV_Toolbar_LabelSet * AP_CreateToolbarLabelSet(const char * szLanguage_)
 		iconname += "_"; \
 		iconname += szLanguage; \
 		pLabelSet->setLabel(	(AP_TOOLBAR_ID_##id), \
-								iconname.c_str(), \
 								pSS->getValue(AP_STRING_ID_TOOLBAR_LABEL_##id), \
+								iconname.c_str(), \
 								pSS->getValue(AP_STRING_ID_TOOLBAR_TOOLTIP_##id), \
 								pSS->getValue(AP_STRING_ID_TOOLBAR_STATUSLINE_##id) );
 		#include "ap_Toolbar_Id_List.h"

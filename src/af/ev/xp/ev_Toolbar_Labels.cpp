@@ -207,10 +207,10 @@ EV_Toolbar_LabelSet::~EV_Toolbar_LabelSet(void)
 }
 
 bool EV_Toolbar_LabelSet::setLabel(XAP_Toolbar_Id id,
-									  const char * szToolbarLabel,
-									  const char * szIconName,
-									  const char * szToolTip,
-									  const char * szStatusMsg)
+				   const char * szToolbarLabel,
+				   const char * szIconName,
+				   const char * szToolTip,
+				   const char * szStatusMsg)
 {
 	if ((id < m_first) || (id > m_last))
 		return false;
@@ -229,21 +229,6 @@ EV_Toolbar_Label * EV_Toolbar_LabelSet::getLabel(XAP_Toolbar_Id id)
 	UT_uint32 index = (id - m_first);
 
 	EV_Toolbar_Label * pLabel = m_labelTable[index];
-
-#if 0
-	// IDEA: some labelsets are sparse because their translation is behind
-	// HACK: if no label, create a fallback JIT so we don't fail downstream
-	// TODO: fall back to English instead like strings do (but not here)
-	if (!pLabel)
-	{
-		UT_ASSERT(
-		UT_DEBUGMSG(("WARNING: %s translation for Toolbar id [%d] not found.\n",m_szLanguage,id));
-		// NOTE: only translators should see the following strings
-		// NOTE: do *not* translate them
-		pLabel = new EV_Toolbar_Label(id,"TODO","tb_todo_xpm","to do","untranslated toolbar item");
-		m_labelTable[index] = pLabel;
-	}
-#endif
 	UT_ASSERT(pLabel && (pLabel->getToolbarId()==id));
 	return pLabel;
 }
