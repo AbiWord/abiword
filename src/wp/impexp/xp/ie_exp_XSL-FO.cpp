@@ -32,6 +32,7 @@
 #include "px_CR_Object.h"
 #include "px_CR_Span.h"
 #include "px_CR_Strux.h"
+#include "pp_Property.h"
 #include "xap_App.h"
 #include "ap_Prefs.h"
 #include "pd_Style.h"
@@ -231,6 +232,7 @@ bool s_XSL_FO_Listener::populate(PL_StruxFmtHandle /*sfh*/,
 			{
 			case PTO_Image:
 			{
+				// TODO: <fo:external-graphic src="uri">
 				return true;
 			}
 
@@ -351,6 +353,22 @@ bool s_XSL_FO_Listener::insertStrux(PL_StruxFmtHandle /*sfh*/,
 /*****************************************************************/
 /*****************************************************************/
 
+static const char *
+docUnitToString(fp_PageSize::Unit docUnit)
+{
+	if(docUnit == fp_PageSize::cm)
+		return "cm";
+	else if(docUnit == fp_PageSize::mm)
+		return "mm";
+	else if(docUnit == fp_PageSize::inch)
+		return "in";
+	else
+	{
+		UT_ASSERT(UT_SHOULD_NOT_HAPPEN);
+		return "";
+	}
+}
+
 void s_XSL_FO_Listener::_handlePageSize(PT_AttrPropIndex api)
 {
   //
@@ -360,14 +378,60 @@ void s_XSL_FO_Listener::_handlePageSize(PT_AttrPropIndex api)
 
 	char buf[20];
 
+	const PP_AttrProp * pAP = NULL;
+	bool bHaveProp = m_pDocument->getAttrProp(api,&pAP);
+
 	old_locale = setlocale (LC_NUMERIC, "C");
 
 	m_pie->write("<fo:layout-master-set>\n");
 	m_pie->write("<fo:simple-page-master");
 
-	// TODO:
-	// margin-right, margin-left
-	// margin-bottom, margin-top
+	// query and output properties
+	// todo - validate these and make sure they all make sense
+	if (bHaveProp && pAP)
+	{
+		const XML_Char * szValue;
+
+		szValue = PP_evalProperty("page-margin-top",
+								  NULL, NULL, pAP, m_pDocument, true);
+		m_pie->write(" margin-top=\"");
+		m_pie->write(szValue);
+		m_pie->write("\"");
+
+		szValue = PP_evalProperty("page-margin-bottom",
+								  NULL, NULL, pAP, m_pDocument, true);
+		m_pie->write(" margin-bottom=\"");
+		m_pie->write(szValue);
+		m_pie->write("\"");
+
+		szValue = PP_evalProperty("page-margin-left",
+								  NULL, NULL, pAP, m_pDocument, true);
+		m_pie->write(" margin-left=\"");
+		m_pie->write(szValue);
+		m_pie->write("\"");
+
+		szValue = PP_evalProperty("page-margin-right",
+								  NULL, NULL, pAP, m_pDocument, true);
+		m_pie->write(" margin-right=\"");
+		m_pie->write(szValue);
+		m_pie->write("\"");
+		
+		fp_PageSize::Unit  docUnit = m_pDocument->m_docPageSize.getUnit(); 
+		char buf[20];
+
+		m_pie->write( " page-width=\"");
+		sprintf((char *) buf,"%f",m_pDocument->m_docPageSize.Width(docUnit));
+		m_pie->write((char *)buf);
+		m_pie->write(docUnitToString(docUnit));
+		m_pie->write("\"");
+
+		m_pie->write(" page-height=\"");
+		sprintf((char *) buf,"%f",m_pDocument->m_docPageSize.Height(docUnit));
+		m_pie->write((char *)buf);
+		m_pie->write(docUnitToString(docUnit));
+		m_pie->write("\"");
+		
+	}
 	// page-width, page-height
 
 	m_pie->write(" master-name=\"first\"");
@@ -377,6 +441,8 @@ void s_XSL_FO_Listener::_handlePageSize(PT_AttrPropIndex api)
 	m_pie->write("</fo:simple-page-master>\n\n");
 
 	setlocale (LC_NUMERIC, old_locale);
+
+	m_bFirstWrite = false;
 	return;
 }
 
@@ -424,21 +490,296 @@ void s_XSL_FO_Listener::_openSection(PT_AttrPropIndex api)
 		_handlePageSize(api);
 	}
 
+	m_bInSection = true;
+
 	m_pie->write("<fo:page-sequence master-name=\"first\">\n");
 	m_pie->write("<fo:flow>\n");
 }
 
+#define BLOCK() do {if(block) m_pie->write(" "); else m_pie->write(" "); block = true;} while (0)
+
 void s_XSL_FO_Listener::_openBlock(PT_AttrPropIndex api)
 {
-	// TODO!!
+	if (!m_bInSection)
+	{
+		return;
+	}
+
+	const PP_AttrProp * pAP = NULL;
+	bool bHaveProp = m_pDocument->getAttrProp(api,&pAP);
+
 	m_bInBlock = true;
-	m_pie->write("<fo:block>\n");
+	m_pie->write("<fo:block");
+
+	// keep track of whether we have we written anything
+	bool block = false;
+
+	// query and output properties
+	// todo - validate these and make sure they all make sense
+	if (bHaveProp && pAP)
+	{
+		const XML_Char * szValue;
+
+		if (pAP->getProperty("bgcolor", szValue))
+		{
+			BLOCK();
+			m_pie->write("background-color=\"#");
+			m_pie->write((const char *)szValue);
+			m_pie->write("\"");
+		}
+
+		if (pAP->getProperty("color", szValue))
+		{
+			BLOCK();
+			m_pie->write("color=\"#");
+			m_pie->write((const char *)szValue);
+			m_pie->write("\"");
+		}
+
+		if (pAP->getProperty("lang", szValue))
+		{
+			BLOCK();
+			m_pie->write("language=\"");
+			m_pie->write((const char *)szValue);
+			m_pie->write("\"");
+		}
+		
+		if (pAP->getProperty("font-size", szValue))
+		{
+			BLOCK();
+			m_pie->write("font-size=\"");
+			m_pie->write((const char *)szValue);
+			m_pie->write("\"");
+		}		
+
+		if (pAP->getProperty("font-family", szValue))
+		{
+			BLOCK();
+			m_pie->write("font-family=\"");
+			m_pie->write((const char *)szValue);
+			m_pie->write("\"");
+		}
+
+		if (pAP->getProperty("font-weight", szValue))
+		{
+			BLOCK();
+			m_pie->write("font-weight=\"");
+			m_pie->write((const char *)szValue);
+			m_pie->write("\"");
+		}
+
+		if (pAP->getProperty("font-style", szValue))
+		{
+			BLOCK();
+			m_pie->write("font-style=\"");
+			m_pie->write((const char *)szValue);
+			m_pie->write("\"");
+		}
+
+		if (pAP->getProperty("font-stretch", szValue))
+		{
+			BLOCK();
+			m_pie->write("font-stretch=\"");
+			m_pie->write((const char *)szValue);
+			m_pie->write("\"");
+		}
+
+		if (pAP->getProperty("keep-together", szValue))
+		{
+			BLOCK();
+			m_pie->write("keep-together=\"");
+			m_pie->write((const char *)szValue);
+			m_pie->write("\"");
+		}
+
+		if (pAP->getProperty("keep-with-next", szValue))
+		{
+			BLOCK();
+			m_pie->write("keep-with-next=\"");
+			m_pie->write((const char *)szValue);
+			m_pie->write("\"");
+		}
+
+		if (pAP->getProperty("line-height", szValue))
+		{
+			BLOCK();
+			m_pie->write("line-height=\"");
+			m_pie->write((const char *)szValue);
+			m_pie->write("\"");
+		}
+
+		if (pAP->getProperty("margin-bottom", szValue))
+		{
+			BLOCK();
+			m_pie->write("margin-bottom=\"");
+			m_pie->write((const char *)szValue);
+			m_pie->write("\"");
+		}
+
+		if (pAP->getProperty("margin-top", szValue))
+		{
+			BLOCK();
+			m_pie->write("margin-top=\"");
+			m_pie->write((const char *)szValue);
+			m_pie->write("\"");
+		}
+
+		if (pAP->getProperty("margin-left", szValue))
+		{
+			BLOCK();
+			m_pie->write("margin-left=\"");
+			m_pie->write((const char *)szValue);
+			m_pie->write("\"");
+		}
+
+		if (pAP->getProperty("margin-right", szValue))
+		{
+			BLOCK();
+			m_pie->write("margin-right=\"");
+			m_pie->write((const char *)szValue);
+			m_pie->write("\"");
+		}
+
+		if (pAP->getProperty("windows", szValue))
+		{
+			BLOCK();
+			m_pie->write("windows=\"");
+			m_pie->write((const char *)szValue);
+			m_pie->write("\"");
+		}
+	}
+
+	m_pie->write(">\n");
 }
+
+#undef BLOCK
+
+#define SPAN() do {if(span) m_pie->write(" "); else m_pie->write(" "); span = true;} while (0)
 
 void s_XSL_FO_Listener::_openSpan(PT_AttrPropIndex api)
 {
+	if (!m_bInBlock)
+	{
+		return;
+	}
 
+	m_bInSpan = true;
+
+	const PP_AttrProp * pAP = NULL;
+	bool bHaveProp = m_pDocument->getAttrProp(api,&pAP);
+
+	// keep track of whether we've written out anything
+	bool span = false;
+
+	m_pie->write("<fo:character");
+
+	// query and output properties
+	if (bHaveProp && pAP)
+	{
+		const XML_Char * szValue;
+
+		if (pAP->getProperty("bgcolor", szValue))
+		{
+			SPAN();
+			m_pie->write("background-color=\"#");
+			m_pie->write((const char *)szValue);
+			m_pie->write("\"");
+		}
+
+		if (pAP->getProperty("color", szValue))
+		{
+			SPAN();
+			m_pie->write("color=\"#");
+			m_pie->write((const char *)szValue);
+			m_pie->write("\"");
+		}
+
+		if (pAP->getProperty("lang", szValue))
+		{
+			SPAN();
+			m_pie->write("language=\"");
+			m_pie->write((const char *)szValue);
+			m_pie->write("\"");
+		}
+		
+		if (pAP->getProperty("font-size", szValue))
+		{
+			SPAN();
+			m_pie->write("font-size=\"");
+			m_pie->write((const char *)szValue);
+			m_pie->write("\"");
+		}		
+
+		if (pAP->getProperty("font-family", szValue))
+		{
+			SPAN();
+			m_pie->write("font-family=\"");
+			m_pie->write((const char *)szValue);
+			m_pie->write("\"");
+		}
+
+		if (pAP->getProperty("font-weight", szValue))
+		{
+			SPAN();
+			m_pie->write("font-weight=\"");
+			m_pie->write((const char *)szValue);
+			m_pie->write("\"");
+		}
+
+		if (pAP->getProperty("font-style", szValue))
+		{
+			SPAN();
+			m_pie->write("font-style=\"");
+			m_pie->write((const char *)szValue);
+			m_pie->write("\"");
+		}
+
+		if (pAP->getProperty("font-stretch", szValue))
+		{
+			SPAN();
+			m_pie->write("font-stretch=\"");
+			m_pie->write((const char *)szValue);
+			m_pie->write("\"");
+		}
+
+		if (pAP->getProperty("keep-together", szValue))
+		{
+			SPAN();
+			m_pie->write("keep-together=\"");
+			m_pie->write((const char *)szValue);
+			m_pie->write("\"");
+		}
+
+		if (pAP->getProperty("keep-with-next", szValue))
+		{
+			SPAN();
+			m_pie->write("keep-with-next=\"");
+			m_pie->write((const char *)szValue);
+			m_pie->write("\"");
+		}
+
+		if (pAP->getProperty("lang", szValue))
+		{
+			SPAN();
+			m_pie->write("language=\"");
+			m_pie->write((const char *)szValue);
+			m_pie->write("\"");
+		}
+
+		if (pAP->getProperty("text-decoration", szValue))
+		{
+			SPAN();
+			m_pie->write("text-decoration=\"");
+			m_pie->write((const char *)szValue);
+			m_pie->write("\"");
+		}
+
+	}
+
+	m_pie->write(">");
 }
+
+#undef SPAN
 
 void s_XSL_FO_Listener::_closeBlock(void)
 {
@@ -447,7 +788,6 @@ void s_XSL_FO_Listener::_closeBlock(void)
 		return;
 	}
 
-	// TODO
 	m_bInBlock = false;
 	m_pie->write("\n</fo:block>\n");
 }
@@ -459,14 +799,22 @@ void s_XSL_FO_Listener::_closeSection(void)
 		return;
 	}
 	
+	m_bInSection = false;
+
 	m_pie->write("</fo:flow>\n");
 	m_pie->write("</fo:page-sequence>\n");
-	m_bInSection = false;
 }
 
 void s_XSL_FO_Listener::_closeSpan(void)
 {
+	if (!m_bInSpan)
+	{
+		return;
+	}
 
+	m_bInSpan = false;
+
+	m_pie->write("</fo:character>");
 }
 
 /*****************************************************************/
