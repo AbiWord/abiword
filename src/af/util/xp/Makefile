@@ -64,9 +64,7 @@ CPPSRCS=	ut_base64.cpp		\
 ifeq ($(ABI_OPT_PEER_EXPAT),1)
  CPPSRCS += ut_xml_expat.cpp
 else
-	ifeq ($(OS_NAME),WIN32)
-		CPPSRCS += ut_xml_msxml.cpp
-	else
+	ifneq ($(OS_NAME),WIN32)
 		CPPSRCS += ut_xml_libxml2.cpp
 	endif
 endif
