@@ -4208,7 +4208,7 @@ void s_HTML_Listener::_handleImage (PT_AttrPropIndex api)
 		percent = 100.0;
 	}
 	UT_UTF8String tmp;
-	UT_DEBUGMSG(("Width of Image %s \n",szWidth));
+	UT_DEBUGMSG(("Width of Image %s \n",szWidth ? szWidth : "(null)"));
 	if (szWidth)
 	{
 		m_utf8_1 += " width=\"";

@@ -521,6 +521,7 @@ PtWidget_t	*gTimerWidget = NULL;
 int AP_QNXApp::main(const char * szAppName, int argc, const char ** argv)
 {
 	// This is a static function.
+	PtWidget_t *spwin;
 		   
 	UT_DEBUGMSG(("Build ID:\t%s\n", XAP_App::s_szBuild_ID));
 	UT_DEBUGMSG(("Version:\t%s\n", XAP_App::s_szBuild_Version));
@@ -533,10 +534,41 @@ int AP_QNXApp::main(const char * szAppName, int argc, const char ** argv)
 
 	XAP_Args XArgs = XAP_Args(argc,argv);
 
+	AP_QNXApp * pMyQNXApp = new AP_QNXApp(&XArgs, szAppName);
+	AP_Args Args = AP_Args(&XArgs,szAppName,pMyQNXApp);
+	Args.parsePoptOpts();
 
-	//TODO: Do a PtAppInit() here with the main window being the splash screen
-	PtWidget_t *spwin;
-	spwin = PtAppInit(NULL, NULL /* XArgs.m_argc */, NULL /* XArgs.m_argv */, 0, NULL);
+	// if the initialize fails, we don't have icons, fonts, etc.
+	if (!pMyQNXApp->initialize())
+	{
+		delete pMyQNXApp;
+		return -1;	// make this something standard?
+	}
+
+  // Setup signal handlers, primarily for segfault
+  // If we segfaulted before here, we *really* blew it
+
+  struct sigaction sa;
+
+  sa.sa_handler = signalWrapper;
+
+  sigfillset(&sa.sa_mask);  // We don't want to hear about other signals
+  sigdelset(&sa.sa_mask, SIGABRT); // But we will call abort(), so we can't ignore that
+
+  sa.sa_flags = SA_NODEFER | SA_RESETHAND; // Don't handle nested signals
+
+  sigaction(SIGSEGV, &sa, NULL);
+  sigaction(SIGBUS, &sa, NULL);
+  sigaction(SIGILL, &sa, NULL);
+  sigaction(SIGQUIT, &sa, NULL);
+  sigaction(SIGFPE, &sa, NULL);
+
+  if (!Args.doWindowlessArgs()) {
+		delete pMyQNXApp;
+		return 0;
+	}
+
+	spwin = PtAppInit(NULL, &XArgs.m_argc,(char **)XArgs.m_argv, 0, NULL);
 
 	/* Add all PhAB widgets we'll use */
 	ApAddClass("PtWindow",&PtWindow);
@@ -556,16 +588,8 @@ int AP_QNXApp::main(const char * szAppName, int argc, const char ** argv)
 	ApAddClass("PtDivider",&PtDivider);
 	ApAddClass("PtRaw",&PtRaw);
 
-	AP_QNXApp * pMyQNXApp = new AP_QNXApp(&XArgs, szAppName);
-	AP_Args Args = AP_Args(&XArgs,szAppName,pMyQNXApp);
-	Args.parsePoptOpts();
 
-	// if the initialize fails, we don't have icons, fonts, etc.
-	if (!pMyQNXApp->initialize())
-	{
-		delete pMyQNXApp;
-		return -1;	// make this something standard?
-	}
+
 
 	//This is used by all the timer classes, and should probably be in the XAP contructor
 	PtArg_t args[2];
@@ -582,40 +606,17 @@ int AP_QNXApp::main(const char * szAppName, int argc, const char ** argv)
  const XAP_Prefs * pPrefs = pMyQNXApp->getPrefs();
  UT_ASSERT(pPrefs);
  bool bSplashPref = true;
- if (pPrefs && 
-	pPrefs->getPrefsValueBool (AP_PREF_KEY_ShowSplash, &bSplashPref))
+ if (pPrefs && pPrefs->getPrefsValueBool (AP_PREF_KEY_ShowSplash, &bSplashPref))
   {
   	bShowSplash = bShowSplash && bSplashPref;
   }
 	if (bShowSplash) {
-		_showSplash(spwin, 2000);
+		_showSplash(spwin, 1500);
 	}
 	else {
 		PtDestroyWidget(spwin);
-
-  if (!Args.doWindowlessArgs())
-    return false;
-	
-    // Setup signal handlers, primarily for segfault
-    // If we segfaulted before here, we *really* blew it
-
-    struct sigaction sa;
-
-    sa.sa_handler = signalWrapper;
-
-    sigfillset(&sa.sa_mask);  // We don't want to hear about other signals
-    sigdelset(&sa.sa_mask, SIGABRT); // But we will call abort(), so we can't ignore that
-
-    sa.sa_flags = SA_NODEFER | SA_RESETHAND; // Don't handle nested signals
-
-    sigaction(SIGSEGV, &sa, NULL);
-    sigaction(SIGBUS, &sa, NULL);
-    sigaction(SIGILL, &sa, NULL);
-    sigaction(SIGQUIT, &sa, NULL);
-    sigaction(SIGFPE, &sa, NULL);
-    // TODO: handle SIGABRT
-
 	}
+
 	// this function takes care of all the command line args.
 	// if some args are botched, it returns false and we should
 	// continue out the door.
@@ -788,7 +789,7 @@ void AP_QNXApp::errorMsgBadFile(XAP_Frame * pFrame, const char * file,
 bool AP_QNXApp::doWindowlessArgs(const AP_Args *Args)
 {
 
-return false;
+return true;
 }
 
 XAP_Frame * AP_QNXApp::newFrame(AP_App * app)
