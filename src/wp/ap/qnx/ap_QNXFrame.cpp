@@ -261,8 +261,7 @@ UT_Error AP_QNXFrame::_showDocument(UT_uint32 iZoom)
 	}
 
 	if(PtWidgetIsRealized(m_wStatusBar) != 0) {
-//XXX: New statusbar code...
-//		((AP_FrameData*)m_pData)->m_pStatusBar->draw();
+		((AP_FrameData*)m_pData)->m_pStatusBar->notify(m_pView,AV_CHG_ALL);
 	}
 
 	PtContainerGiveFocus(m_dArea, NULL);
