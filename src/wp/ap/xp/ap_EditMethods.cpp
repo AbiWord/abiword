@@ -2955,7 +2955,6 @@ Defun(pasteSelection)
 
 /*****************************************************************/
 
-#ifdef UT_DEBUG
 static UT_Bool s_doGotoDlg(FV_View * pView, XAP_Dialog_Id id)
 {
 	XAP_Frame * pFrame = (XAP_Frame *) pView->getParentData();
@@ -2981,22 +2980,13 @@ static UT_Bool s_doGotoDlg(FV_View * pView, XAP_Dialog_Id id)
 	}
 	return UT_TRUE;
 }
-#endif
 
 Defun1(go)
 {
-#ifdef UT_DEBUG
 	ABIWORD_VIEW;
 	XAP_Dialog_Id id = AP_DIALOG_ID_GOTO;
 
 	return s_doGotoDlg(pView, id);
-#else
-	XAP_Frame * pFrame = (XAP_Frame *) pAV_View->getParentData();
-	UT_ASSERT(pFrame);
-
-	s_TellNotImplemented(pFrame, "Go to dialog", __LINE__);
-	return UT_TRUE;
-#endif
 }
 
 /*****************************************************************/
