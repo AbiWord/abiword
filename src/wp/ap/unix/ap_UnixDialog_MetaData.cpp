@@ -159,20 +159,17 @@ GtkWidget * AP_UnixDialog_MetaData::_constructWindow ()
 	abiDialogSetTitle(window, pSS->getValueUTF8(AP_STRING_ID_DLG_MetaData_Title).utf8_str());	
 	
 	// localize the strings in our dialog, and set some userdata for some widgets
-	localizeLabelMarkup(glade_xml_get_widget(xml, "lbGeneral"), pSS, AP_STRING_ID_DLG_MetaData_TAB_General);
 	localizeLabel(glade_xml_get_widget(xml, "lbTitle"), pSS, AP_STRING_ID_DLG_MetaData_Title_LBL);
 	localizeLabel(glade_xml_get_widget(xml, "lbSubject"), pSS, AP_STRING_ID_DLG_MetaData_Subject_LBL);
 	localizeLabel(glade_xml_get_widget(xml, "lbAuthor"), pSS, AP_STRING_ID_DLG_MetaData_Author_LBL);
 	localizeLabel(glade_xml_get_widget(xml, "lbPublisher"), pSS, AP_STRING_ID_DLG_MetaData_Publisher_LBL);
 	localizeLabel(glade_xml_get_widget(xml, "lbContributors"), pSS, AP_STRING_ID_DLG_MetaData_CoAuthor_LBL);
 
-	localizeLabelMarkup(glade_xml_get_widget(xml, "lbSummary"), pSS, AP_STRING_ID_DLG_MetaData_TAB_Summary);
 	localizeLabel(glade_xml_get_widget(xml, "lbCategory"), pSS, AP_STRING_ID_DLG_MetaData_Category_LBL);
 	localizeLabel(glade_xml_get_widget(xml, "lbKeywords"), pSS, AP_STRING_ID_DLG_MetaData_Keywords_LBL);
 	localizeLabel(glade_xml_get_widget(xml, "lbLanguages"), pSS, AP_STRING_ID_DLG_MetaData_Languages_LBL);
 	localizeLabel(glade_xml_get_widget(xml, "lbDescription"), pSS, AP_STRING_ID_DLG_MetaData_Description_LBL);
 
-	localizeLabelMarkup(glade_xml_get_widget(xml, "lbPermissions"), pSS, AP_STRING_ID_DLG_MetaData_TAB_Permission);
 	localizeLabel(glade_xml_get_widget(xml, "lbSource"), pSS, AP_STRING_ID_DLG_MetaData_Source_LBL);
 	localizeLabel(glade_xml_get_widget(xml, "lbRelation"), pSS, AP_STRING_ID_DLG_MetaData_Relation_LBL);
 	localizeLabel(glade_xml_get_widget(xml, "lbCoverage"), pSS, AP_STRING_ID_DLG_MetaData_Coverage_LBL);
