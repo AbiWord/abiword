@@ -92,8 +92,6 @@ UT_Error UT_XML::parse (const char * szFilename)
   UT_ASSERT (m_pListener);
   UT_ASSERT (szFilename);
 
-  if (m_ParseMode == pm_HTML) return html (szFilename);
-
   UT_Error ret = UT_OK;
 
   DefaultReader defaultReader;
@@ -111,7 +109,7 @@ UT_Error UT_XML::parse (const char * szFilename)
   m_bStopped = false;
 
   xmlSAXHandler hdl;
-  xmlParserCtxtPtr ctxt;
+  xmlParserCtxtPtr ctxt = 0;
 
   memset(&hdl, 0, sizeof(hdl));
 
@@ -170,8 +168,6 @@ UT_Error UT_XML::parse (const char * buffer, UT_uint32 length)
   if (!m_bSniffing) UT_ASSERT (m_pListener);
   UT_ASSERT (buffer);
 
-  if (m_ParseMode == pm_HTML) return html (buffer, length);
-
   UT_Error ret = UT_OK;
 
   xmlSAXHandler hdl;
@@ -202,137 +198,6 @@ UT_Error UT_XML::parse (const char * buffer, UT_uint32 length)
   ctxt->sax = NULL;
   xmlFreeParserCtxt (ctxt);
 
-  return ret;
-}
-
-UT_Error UT_XML::html (const char * szFilename)
-{
-  UT_ASSERT (m_pListener);
-  UT_ASSERT (szFilename);
-
-  UT_Error ret = UT_OK;
-
-  DefaultReader defaultReader;
-  Reader * reader = &defaultReader;
-  if (m_pReader) reader = m_pReader;
-
-  if (!reader->openFile (szFilename))
-    {
-      UT_DEBUGMSG (("Could not open file %s\n", szFilename));
-      return UT_errnoToUTError ();
-    }
-
-  char buffer[2048];
-
-  m_bStopped = false;
-
-  xmlSAXHandler hdl;
-  xmlParserCtxtPtr ctxt;
-
-  memset(&hdl, 0, sizeof(hdl));
-
-  hdl.getEntity    = _getEntity;
-  hdl.startElement = _startElement;
-  hdl.endElement   = _endElement;
-  hdl.characters   = _charData;
-
-  size_t length = reader->readBytes (buffer, sizeof (buffer));
-  int done = (length < sizeof (buffer));
-
-  if (length)
-    {
-      ctxt = xmlCreatePushParserCtxt (&hdl, (void *) this, buffer, (int) length, szFilename, XML_CHAR_ENCODING_NONE);
-      if (ctxt == NULL)
-	{
-	  UT_DEBUGMSG (("Unable to create libxml2 (HTML) push-parser context!\n"));
-	  reader->closeFile ();
-	  return UT_ERROR;
-	}
-      xmlSubstituteEntitiesDefault (1);
-    }
-  while (!done && !m_bStopped)
-    {
-      length = reader->readBytes (buffer, sizeof (buffer));
-      done = (length < sizeof (buffer));
-
-      if (xmlParseChunk (ctxt, buffer, (int) length, 0))
-	{
-	  UT_DEBUGMSG (("Error parsing '%s'\n",szFilename));
-	  ret = UT_IE_IMPORTERROR;
-	  break;
-	}
-    }
-  if (ret == UT_OK)
-    if (!m_bStopped)
-      if (xmlParseChunk (ctxt, buffer, 0, 1))
-	{
-	  UT_DEBUGMSG (("Error parsing '%s'\n",szFilename));
-	  ret = UT_IE_IMPORTERROR;
-	}
-
-  ctxt->sax = NULL;
-  xmlFreeParserCtxt (ctxt);
-
-  reader->closeFile ();
-
-  return ret;
-}
-
-UT_Error UT_XML::html (const char * buffer, UT_uint32 length)
-{
-  if (!m_bSniffing) UT_ASSERT (m_pListener);
-  UT_ASSERT (buffer);
-
-  UT_Error ret = UT_OK;
-
-  m_bStopped = false;
-
-  xmlSAXHandler hdl;
-  xmlParserCtxtPtr ctxt;
-
-  memset (&hdl, 0, sizeof(hdl));
-
-  hdl.getEntity = _getEntity;
-  hdl.startElement = _startElement;
-  hdl.endElement = _endElement;
-  hdl.characters = _charData;
-
-  if (length)
-    {
-      ctxt = xmlCreatePushParserCtxt (&hdl, (void *) this, buffer, (int) length, 0, XML_CHAR_ENCODING_NONE);
-      if (ctxt == NULL)
-	{
-	  UT_DEBUGMSG (("Unable to create libxml2 (HTML) push-parser context!\n"));
-	  return UT_ERROR;
-	}
-      xmlSubstituteEntitiesDefault (1);
-    }
-  if (!m_bStopped)
-    if (xmlParseChunk (ctxt, buffer, 0, 1))
-      {
-	UT_DEBUGMSG (("Error parsing buffer\n"));
-	ret = UT_IE_IMPORTERROR;
-      }
-
-  ctxt->sax = NULL;
-  xmlFreeParserCtxt (ctxt);
-
-  return ret;
-}
-
-bool UT_XML::setParseMode (ParseMode pm) // returns false if the mode isn't supported.
-{
-  bool ret = true;
-  switch (pm)
-    {
-    case pm_XML:
-      m_ParseMode = pm_XML;
-      break;
-
-    case pm_HTML:
-      m_ParseMode = pm_HTML;
-      break;
-    }
   return ret;
 }
 

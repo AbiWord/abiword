@@ -61,22 +61,6 @@ class ABI_EXPORT UT_XML
   UT_Error parse (const UT_ByteBuf * pBB);
   UT_Error parse (const char * buffer, UT_uint32 length);
 
- private:
-  UT_Error html (const char * szFilename);
-  UT_Error html (const char * buffer, UT_uint32 length);
-
- public:
-  enum ParseMode
-  {
-    pm_XML,
-    pm_HTML // supported only via libxml2, but expat is AbiWord's default XML parser
-  };
-
-  bool setParseMode (ParseMode pm); // returns false if the mode isn't supported.
-
- private:
-  ParseMode m_ParseMode;
-
  public:
   void stop () { m_bStopped = true; } // call this to stop callbacks and to stop the feed to the parser
 

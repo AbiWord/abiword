@@ -65,7 +65,6 @@ UT_XML::UT_XML () :
   m_bSniffing(false),
   m_bValid(false),
   m_xml_type(0),
-  m_ParseMode(pm_XML),
   m_bStopped(false),
   m_pListener(0),
   m_pReader(0),
