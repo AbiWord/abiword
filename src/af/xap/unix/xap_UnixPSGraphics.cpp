@@ -25,6 +25,7 @@
 #include "ut_debugmsg.h"
 #include "ut_string.h"
 #include "ut_misc.h"
+#include "ut_dialogHelper.h"
 
 #include "xap_UnixPSGenerate.h"
 #include "xap_UnixPSGraphics.h"
@@ -610,11 +611,28 @@ void PS_Graphics::_emit_IncludeResource(void)
 		// into the document.  This looks really slow... perhaps buffer line
 		// by line or in larger chunks the font data.
 		XAP_UnixFont * unixfont = psf->getUnixFont();
-		unixfont->openPFA();
+
+		// Make sure the font file will open, maybe it disappeared...
+		if(!unixfont->openPFA())
+		{
+			char message[1024];
+			g_snprintf(message, 2048,
+					   "Font data file [%s] cannot be opened for reading!\n"
+					   "Did it disappear on us?  AbiWord can't print without\n"
+					   "this file; your PostScript might be missing this resource.",
+					   unixfont->getFontfile());
+
+			// we don't have any frame info, so we use the non-parented dialog box
+			messageBoxOK(message);
+			return;
+		}
+		
 		char ch = 0;
 		while ((ch = unixfont->getPFAChar()) != EOF)
 			m_ps->writeBytes((UT_Byte *) &ch, 1);
+
 		unixfont->closePFA();
+
 		// after each font, change the encoding vector to ISO Latin1
 		g_snprintf(buf, 128, "/%s findfont\n"
 				 "LAT\n"

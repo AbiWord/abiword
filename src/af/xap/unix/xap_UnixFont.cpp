@@ -248,7 +248,7 @@ FontInfo * XAP_UnixFont::getMetricsData(void)
 
 	char message[1024];
 
-	if (!fp)
+	if (fp == NULL)
 	{
 		g_snprintf(message, 1024,
 				   "The font metrics file [%s] could\n"
@@ -257,7 +257,6 @@ FontInfo * XAP_UnixFont::getMetricsData(void)
 				   "darn fatal error.",
 				   m_metricfile);
 		messageBoxOK(message);
-		fclose(fp);
 		return NULL;
 	}
 
@@ -331,6 +330,7 @@ UT_Bool XAP_UnixFont::closePFA(void)
 
 char XAP_UnixFont::getPFAChar(void)
 {
+	UT_ASSERT(m_PFAFile);
 	return fgetc(m_PFAFile);
 }
 
