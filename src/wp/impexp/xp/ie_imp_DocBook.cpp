@@ -358,6 +358,7 @@ void IE_Imp_DocBook::_endElement(const XML_Char *name)
 		m_parseState = _PS_Init;
 		return;
 
+	case TT_CHAPTER:
 	case TT_SECTION:
 		X_VerifyParseState(_PS_Sec);
 		m_parseState = _PS_Doc;
