@@ -8,8 +8,8 @@
 <!--         Build_ID          = KLEE- -->
 <!--         Build_Options     = JavaScript:Off Debug:On -->
 <!--         Build_Target      = WIN32_4.0_i386_DBG -->
-<!--         Build_CompileTime = 09:55:39 -->
-<!--         Build_CompileDate = Apr  1 1999 -->
+<!--         Build_CompileTime = 14:00:12 -->
+<!--         Build_CompileDate = Apr  6 1999 -->
 
 <abiword>
 <styles>
@@ -33,7 +33,7 @@
 <p style="Heading 1" props="margin-top:12pt">Customization</p>
 <p style="Custom" props="margin-top:12pt">Most of the styles demonstrated in this document come from the current built-in set of styles.  Until we hook up the Format/Styles menu, these are the only styles you'll be able to use.  However, for testing purposes, this document redefines the <c style="Highlight">Heading 2 </c>style to also be right-aligned and strike-through.  Likewise, <c style="Highlight">Heading 3 </c>is redefined to be <c props="font-family:Courier New">basedon</c> <c style="Highlight">Heading 2</c>, plus underline.  In addition, this document has one <c style="Highlight">Custom </c>paragraph style which is used for this paragraph.  The document also defines an <c style="Highlight">Unused </c>style, mostly to demonstrate that user-defined styles persist, whether they're referenced or not.  Finally, there's a character-level <c style="Highlight">Highlight </c>style, which is used for all the style names in this document.</p>
 <p style="Heading 1" props="margin-top:12pt">TODO</p>
-<p props="margin-left:0.1875in; margin-top:12pt; text-indent:-0.1875in">1.	When the user sets a style "over" existing explicit formatting, do the Right Thing.  If it's a different style, nuke the explicit formatting.  (NB:  For block styles, this will mean walking over fragments and clearing those props, too.)  If it's the same, pop up a dialog and ask whether to update the style to include those properties, or just revert to the existing definition. </p>
+<p props="margin-left:0.1875in; margin-top:12pt; text-indent:-0.1875in">1.	When the user sets a style "over" existing explicit formatting, do the Right Thing.  If it's a different style, nuke the explicit formatting.  If it's the same, pop up a dialog and ask whether to update the style to include those properties, or just revert to the existing definition. </p>
 <p props="margin-left:0.1875in; margin-top:12pt; text-indent:-0.1875in">2.	Likewise, we may want logic to avoid setting explicit properties which duplicate the underlying style. </p>
 <p props="margin-left:0.1875in; margin-top:12pt; text-indent:-0.1875in">4.	Honor the <c props="font-family:Courier New">followedby</c><c props="font-family:Times New Roman"> </c>attribute.  </p>
 <p props="margin-left:0.1875in; margin-top:12pt; text-indent:-0.1875in">5.	Allow style definitions to be added and edited.  This is more significant work because, not only does it require a few rich dialogs, but we also need to efficiently reformat the document to use the new style definitions.  </p>
