@@ -340,7 +340,7 @@ gint XAP_UnixFrameImpl::_fe::configure_event(GtkWidget* w, GdkEventConfigure *e)
 		// Dynamic Zoom Implimentation
 		if(!pUnixFrameImpl->m_bDoZoomUpdate && (pUnixFrameImpl->m_iZoomUpdateID == 0))
 		{
-			pUnixFrameImpl->m_iZoomUpdateID = gtk_idle_add((GtkFunction) do_ZoomUpdate, (gpointer) pUnixFrameImpl);
+			pUnixFrameImpl->m_iZoomUpdateID = g_idle_add((GSourceFunc) do_ZoomUpdate, (gpointer) pUnixFrameImpl);
 		}
 	}
 	return 1;

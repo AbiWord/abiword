@@ -119,7 +119,7 @@ static gint s_preview_exposed(GtkWidget * /* widget */,
 							  AP_UnixDialog_Paragraph * dlg)
 {
 	UT_ASSERT(dlg);
-	gtk_idle_add((GtkFunction) do_update,(gpointer) dlg);
+	g_idle_add((GSourceFunc) do_update,(gpointer) dlg);
 	return TRUE;
 }
 

@@ -119,7 +119,7 @@ static gboolean s_sym_SymbolMap_exposed(GtkWidget * widget, GdkEvent * e, XAP_Un
 	UT_ASSERT( dlg);
 	
 //	do_Map_Update((gpointer) dlg);
-	gtk_idle_add((GtkFunction) do_Map_Update, (gpointer) dlg);
+	g_idle_add((GSourceFunc) do_Map_Update, (gpointer) dlg);
 	return FALSE;
 }
 
