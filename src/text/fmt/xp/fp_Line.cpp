@@ -574,7 +574,7 @@ fp_Run * fp_Line::getRunFromIndex(UT_uint32 runIndex)
 {
 	UT_sint32 count = m_vecRuns.getItemCount();
 	fp_Run * pRun = NULL;
-	if(count > 0 && runIndex < count)
+	if(count > 0 && (UT_sint32)runIndex < count)
 	{
 		pRun = (fp_Run *) m_vecRuns.getNthItem(runIndex);
 	}
@@ -589,7 +589,7 @@ void fp_Line::clearScreen(void)
 		fp_Run* pRun;
 		bool bNeedsClearing = false;
 
-		UT_uint32 i;
+		UT_sint32 i;
 		
 		pRun = (fp_Run*) m_vecRuns.getNthItem(0);
 		if(!pRun->getGraphics()->queryProperties(GR_Graphics::DGP_SCREEN))
@@ -696,7 +696,7 @@ void fp_Line::clearScreenFromRunToEnd(fp_Run * ppRun)
 //
 			getBlock()->setNeedsRedraw();
 			setNeedsRedraw();
-			UT_uint32 i;
+			UT_sint32 i;
 			for (i = runIndex; i < count; i++)
 			{
 #ifdef BIDI_ENABLED
@@ -725,12 +725,12 @@ void fp_Line::clearScreenFromRunToEnd(UT_uint32 runIndex)
 	UT_sint32 count = m_vecRuns.getItemCount();
 
 	pRun = (fp_Run*) m_vecRuns.getNthItem(0);
-	if(count && !pRun->getGraphics()->queryProperties(GR_Graphics::DGP_SCREEN))
+	if(count > 0 && !pRun->getGraphics()->queryProperties(GR_Graphics::DGP_SCREEN))
 		return;
 	
 	// Find the first none dirty run.
 
-	UT_uint32 i;
+	UT_sint32 i;
 	for(i = runIndex; i < count; i++)
 	{
 #ifdef BIDI_ENABLED
@@ -749,7 +749,7 @@ void fp_Line::clearScreenFromRunToEnd(UT_uint32 runIndex)
 		}
 	}
 
-	if(runIndex < count)
+	if((UT_sint32)runIndex < count)
 	{
 		UT_sint32 xoff, yoff;
 
@@ -846,6 +846,10 @@ void fp_Line::draw(GR_Graphics* pG)
 {
 	//line can be wider than the max width due to trailing spaces
 	//UT_ASSERT(m_iWidth <= m_iMaxWidth);
+
+	UT_sint32 count = m_vecRuns.getItemCount();
+	if(count <= 0)
+		return;
 	
 	UT_sint32 my_xoff = 0, my_yoff = 0;
 	
@@ -864,7 +868,6 @@ void fp_Line::draw(GR_Graphics* pG)
 	da.xoff = my_xoff;
 	da.pG = pG;
 
-	UT_sint32 count = m_vecRuns.getItemCount();
 	
 	for (int i=0; i < count; i++)
 	{
@@ -900,6 +903,8 @@ void fp_Line::draw(GR_Graphics* pG)
 void fp_Line::draw(dg_DrawArgs* pDA)
 {
 	UT_sint32 count = m_vecRuns.getItemCount();
+	if(count <= 0)
+		return;
 	
 	xxx_UT_DEBUGMSG(("SEVIOR: Drawing line in line pDA \n"));
 
@@ -1010,6 +1015,8 @@ void fp_Line::getWorkingDirectionAndTabstops(FL_WORKING_DIRECTION &eWorkingDirec
 fp_Run* fp_Line::calculateWidthOfRun(UT_sint32 &iWidthLayoutUnits, UT_uint32 iIndxVisual, FL_WORKING_DIRECTION eWorkingDirection, FL_WHICH_TABSTOP eUseTabStop)
 {
 	const UT_sint32 iCountRuns		  = m_vecRuns.getItemCount();
+	UT_ASSERT(iCountRuns > (UT_sint32)iIndxVisual);
+
 	UT_sint32 iXLreal, iXreal;
 	const UT_sint32 Screen_resolution =
 		m_pBlock->getDocLayout()->getGraphics()->getResolution();
@@ -1459,6 +1466,14 @@ void fp_Line::layout(void)
 	// first of all, work out the height
 	recalcHeight();
 	
+	UT_sint32 iCountRuns		  = m_vecRuns.getItemCount();
+	// I think we cannot return before the call to recalcHeight above, since we 
+	// could be called in response to all runs being removed, and that potentially
+	// changes the line height; anything from here down has to do with runs though
+	// so if we have none, we can return
+	if(iCountRuns <= 0)
+		return;
+
 	// get current alignment; note that we cannot initialize the alignment
 	// at this stage, (and chances are we will not need to anyway), because
 	// we have to first calculate the widths of our tabs
@@ -1466,9 +1481,7 @@ void fp_Line::layout(void)
 	UT_ASSERT(pAlignment);
 	FB_AlignmentType eAlignment 	  = pAlignment->getType();
 
-	UT_sint32 iCountRuns		  = m_vecRuns.getItemCount();
-	
-	//we have to remember the old X coordinances of these runs
+	//we have to remember the old X coordinances of our runs
 	//to be able to decide latter whether and where from to erase
 	//(this is a real nuisance, but since it takes two passes to do the layout
 	//I do not see a way to avoid this)
@@ -1480,7 +1493,7 @@ void fp_Line::layout(void)
 	#define STATIC_BUFFER_INCREMENT 30
 	#define STATIC_BUFFER_INITIAL 5 * STATIC_BUFFER_INCREMENT
 	static UT_sint32 *pOldXs = new UT_sint32[STATIC_BUFFER_INITIAL];
-	static UT_uint32 iOldXsSize = STATIC_BUFFER_INITIAL;
+	static UT_sint32 iOldXsSize = STATIC_BUFFER_INITIAL;
 
 #ifdef DEBUG
 	UT_uint32 iRealocCount = 0;
@@ -1672,7 +1685,7 @@ void fp_Line::layout(void)
 	// now we work our way through the runs on this line
 	xxx_UT_DEBUGMSG(("fp_Line::layout ------------------- \n"));
 	
-	UT_uint32 ii = 0;
+	UT_sint32 ii = 0;
 	for (; ii<iCountRuns; ++ii)
 	{
 		//work out the real index based on working direction
@@ -1749,7 +1762,7 @@ void fp_Line::layout(void)
 		case FB_ALIGNMENT_LEFT:
 		case FB_ALIGNMENT_RIGHT:
 			{
-				for (UT_uint32 k = 0; k < iCountRuns; k++)
+				for (UT_sint32 k = 0; k < iCountRuns; k++)
 				{
 #ifdef BIDI_ENABLED
 					fp_Run* pRun = (fp_Run*) m_vecRuns.getNthItem(_getRunLogIndx(k));
@@ -1775,7 +1788,7 @@ void fp_Line::layout(void)
 			{
 				// now we need to shift the x-coordinances to reflect the new widths
 				// of the spaces
-				for (UT_uint32 k = 0; k < iCountRuns; k++)
+				for (UT_sint32 k = 0; k < iCountRuns; k++)
 				{
 					UT_uint32 iK = (eWorkingDirection == WORK_FORWARD) ? k : iCountRuns - k - 1;
 #ifdef BIDI_ENABLED
@@ -1820,7 +1833,7 @@ void fp_Line::layout(void)
 				//only now are we in the position to enquire of the alignment what
 				//the real starting position should be
 		
-				for (UT_uint32 k = 0; k < iCountRuns; k++)
+				for (UT_sint32 k = 0; k < iCountRuns; k++)
 				{
 #ifdef BIDI_ENABLED
 					fp_Run* pRun = (fp_Run*) m_vecRuns.getNthItem(_getRunLogIndx(k));
@@ -2982,6 +2995,7 @@ void fp_Line::distributeJustificationAmongstSpaces(UT_sint32 iAmount)
 #endif
 
 			UT_sint32 count = m_vecRuns.getItemCount();
+			UT_ASSERT(count);
 			for (UT_sint32 i=count - 1; i >= 0 && iSpaceCount > 0; i--)
 			{
 #ifdef BIDI_ENABLED
@@ -3037,6 +3051,9 @@ void fp_Line::distributeJustificationAmongstSpaces(UT_sint32 iAmount)
 void fp_Line::_splitRunsAtSpaces(void)
 {
 	UT_uint32 count = m_vecRuns.getItemCount();
+	if(!count)
+		return;
+
 #ifdef BIDI_ENABLED
 	UT_uint32 countOrig = count;
 #endif
