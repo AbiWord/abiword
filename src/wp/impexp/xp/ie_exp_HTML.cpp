@@ -142,10 +142,9 @@ bool IE_Exp_HTML_Sniffer::getDlgLabels(const char ** pszDesc,
 /*****************************************************************/
 
 IE_Exp_HTML::IE_Exp_HTML(PD_Document * pDocument)
-	: IE_Exp(pDocument)
+	: IE_Exp(pDocument), m_pListener(0)
 {
 	m_error = 0;
-	m_pListener = NULL;
 }
 
 IE_Exp_HTML::~IE_Exp_HTML()
@@ -217,7 +216,6 @@ protected:
 	bool				m_bWroteText;
 	bool				m_bFirstWrite;
 	const PP_AttrProp*	m_pAP_Span;
-	UT_HashTable*		m_pStylesHash;
 
 	// Need to look up proper type, and place to stick #defines...
   
@@ -407,7 +405,6 @@ void s_HTML_Listener::_openTag(PT_AttrPropIndex api)
 				}
 				m_pie->write("<li");
 				wasWritten = true;	
-				DELETEPV(value);			
 			}
 			else 
 			{
@@ -506,6 +503,7 @@ void s_HTML_Listener::_openTag(PT_AttrPropIndex api)
 					wasWritten = true;
 				}	
 			}
+			FREEP(value);
 		}
 		else 
 		{
@@ -979,7 +977,7 @@ void s_HTML_Listener::_openSpan(PT_AttrPropIndex api)
 		{
 			m_pie->write("<span>");
 		}
-		DELETEPV(szStyle);
+		FREEP(szStyle);
 		
 		m_bInSpan = true;
 		m_pAP_Span = pAP;
@@ -1189,24 +1187,24 @@ void s_HTML_Listener::_outputData(const UT_UCSChar * data, UT_uint32 length)
 bool s_HTML_Listener::_inherits(const char* style, const char* from)
 {
 	bool bret = false;
-	UT_HashTable::HashValType p_uthe = m_pStylesHash->pick((UT_HashTable::HashKeyType)style);
-	if(p_uthe)
-	{
-		PD_Style* pStyle = static_cast<PD_Style*>(p_uthe);
-		char* szName = NULL;
-		const XML_Char * pName = NULL;
 
+	PD_Style* pStyle = NULL;
+	char* szName = NULL;
+	const XML_Char * pName = NULL;
+	
+	if (m_pDocument->getStyle (style, &pStyle)) {
+		
 		if(pStyle && pStyle->getBasedOn())
 		{
 			pStyle = pStyle->getBasedOn();
 			pStyle->getAttribute(PT_NAME_ATTRIBUTE_NAME, 
 								 pName);
 			szName = removeWhiteSpace(pName);
-
+			
 			if(UT_strcmp(from, szName) == 0)
 				bret = true;
-
-			DELETEPV(szName);
+			
+			FREEP(szName);
 		}
 	}
 
@@ -1215,27 +1213,24 @@ bool s_HTML_Listener::_inherits(const char* style, const char* from)
 
 void s_HTML_Listener::_outputInheritanceLine(const char* ClassName)
 {
-	UT_HashTable::HashValType p_uthe = m_pStylesHash->pick((UT_HashTable::HashKeyType)ClassName);
 	PD_Style* pStyle = NULL;
 	PD_Style* pBasedOn = NULL;
 	const XML_Char* szName = NULL;
 
-	if(p_uthe)
-	{
-		pStyle = static_cast<PD_Style*>(p_uthe);
-	}
-	if(pStyle)
-	{
-		pBasedOn = pStyle->getBasedOn();
-		if(pBasedOn)
+	if (m_pDocument->getStyle (ClassName, &pStyle)) {
+		if(pStyle)
 		{
-			pBasedOn->getAttribute(PT_NAME_ATTRIBUTE_NAME, szName);
-
-			UT_ASSERT((szName));
-			char * pName = removeWhiteSpace((const char*) szName);
-			_outputInheritanceLine(pName);
-			DELETEPV(pName);
-			m_pie->write(" ");
+			pBasedOn = pStyle->getBasedOn();
+			if(pBasedOn)
+			{
+				pBasedOn->getAttribute(PT_NAME_ATTRIBUTE_NAME, szName);
+				
+				UT_ASSERT((szName));
+				char * pName = removeWhiteSpace((const char*) szName);
+				_outputInheritanceLine(pName);
+				FREEP(pName);
+				m_pie->write(" ");
+			}
 		}
 	}
 
@@ -1315,21 +1310,15 @@ void s_HTML_Listener::_outputBegin(PT_AttrPropIndex api)
 	m_pie->write("<style type=\"text/css\">\n");
 	m_pie->write("<!--\n");
 
-	_storeStyles();
-
-	PD_Style* p_pds;
+	const PD_Style* p_pds;
 	const XML_Char* szName;
 	const XML_Char* szValue;
 	const PP_AttrProp * pAP_style = NULL;
 
-    UT_HashTable::UT_HashCursor c(m_pStylesHash);
-	UT_HashTable::HashValType entry = c.first();
+	const XML_Char * szStyleName = NULL;
 
-	while (true)
+	for (size_t nthStyle = 0; m_pDocument->enumStyles (nthStyle, &szStyleName, &p_pds); nthStyle++)
 	{
-		p_pds = static_cast<PD_Style*>(entry);
-		UT_ASSERT((p_pds));
-
 		PT_AttrPropIndex api = p_pds->getIndexAP();
 		bool bHaveProp = m_pDocument->getAttrProp(api,&pAP_style);
 
@@ -1340,22 +1329,27 @@ void s_HTML_Listener::_outputBegin(PT_AttrPropIndex api)
 			 *	it gets fixed, but all the functionality remains,
 			 *	regardless.
 			 */
-			if(UT_strcmp(c.key(), "Heading1") == 0)
+
+			char * myStyleName = removeWhiteSpace ((const char *)szStyleName);
+
+			if(UT_strcmp(myStyleName, "Heading1") == 0)
 				m_pie->write("h1, ");
-			else if(UT_strcmp(c.key(), "Heading2") == 0)
+			else if(UT_strcmp(myStyleName, "Heading2") == 0)
 				m_pie->write("h2, ");
-			else if(UT_strcmp(c.key(), "Heading3") == 0)
+			else if(UT_strcmp(myStyleName, "Heading3") == 0)
 				m_pie->write("h3, ");
-			else if(UT_strcmp(c.key(), "BlockText") == 0)
+			else if(UT_strcmp(myStyleName, "BlockText") == 0)
 				m_pie->write("blockquote, ");
-			else if(UT_strcmp(c.key(), "PlainText") == 0)
+			else if(UT_strcmp(myStyleName, "PlainText") == 0)
 				m_pie->write("pre, ");
-			else if(UT_strcmp(c.key(), "Normal") == 0)
+			else if(UT_strcmp(myStyleName, "Normal") == 0)
 				m_pie->write("p, ");
 
 			m_pie->write(".");			// generic class qualifier, CSS
-			m_pie->write(c.key());
+			m_pie->write(myStyleName);
 			m_pie->write("\n{");
+
+			FREEP(myStyleName);
 
 			UT_uint32 i = 0, j = 0;
 			while(pAP_style->getNthAttribute(i++, szName, szValue))
@@ -1400,10 +1394,6 @@ void s_HTML_Listener::_outputBegin(PT_AttrPropIndex api)
 
 			m_pie->write("\n}\n\n");
 		}
-
-		if (!c.more())
-			break;
-		entry = (UT_HashTable::HashValType)c.next();
 	}
 		
 	m_pie->write("-->\n</style>\n");
@@ -1413,38 +1403,38 @@ void s_HTML_Listener::_outputBegin(PT_AttrPropIndex api)
 	{								// global page styles go in the <body> tag
 		const XML_Char * szValue;
 
-			m_pie->write(" style=\"");
+		m_pie->write(" style=\"");
 
 		szValue = PP_evalProperty("background-color",
-			NULL, NULL, pAP, m_pDocument, true);
-			m_pie->write("background-color: ");
-			char color[16];
-			_convertColor(color, szValue);
-			if (*szValue != '#')
-			  m_pie->write("#");
-			m_pie->write(color);
-
+								  NULL, NULL, pAP, m_pDocument, true);
+		m_pie->write("background-color: ");
+		char color[16];
+		_convertColor(color, szValue);
+		if (*szValue != '#')
+			m_pie->write("#");
+		m_pie->write(color);
+		
 		szValue = PP_evalProperty("page-margin-top",
-			NULL, NULL, pAP, m_pDocument, true);
-			m_pie->write(";\n    margin-top: ");
-			m_pie->write(szValue);
+								  NULL, NULL, pAP, m_pDocument, true);
+		m_pie->write(";\n    margin-top: ");
+		m_pie->write(szValue);
 
 		szValue = PP_evalProperty("page-margin-bottom",
-			NULL, NULL, pAP, m_pDocument, true);
-			m_pie->write("; margin-bottom: ");
-			m_pie->write(szValue);
-
+								  NULL, NULL, pAP, m_pDocument, true);
+		m_pie->write("; margin-bottom: ");
+		m_pie->write(szValue);
+		
 		szValue = PP_evalProperty("page-margin-left",
-			NULL, NULL, pAP, m_pDocument, true);
-			m_pie->write("; margin-left: ");
-			m_pie->write(szValue);
+								  NULL, NULL, pAP, m_pDocument, true);
+		m_pie->write("; margin-left: ");
+		m_pie->write(szValue);
 
 		szValue = PP_evalProperty("page-margin-right",
-			NULL, NULL, pAP, m_pDocument, true);
-			m_pie->write("; margin-right: ");
-			m_pie->write(szValue);
-
-			m_pie->write("\"");
+								  NULL, NULL, pAP, m_pDocument, true);
+		m_pie->write("; margin-right: ");
+		m_pie->write(szValue);
+		
+		m_pie->write("\"");
 	}
 	m_pie->write(">\n");
 
@@ -1452,7 +1442,7 @@ void s_HTML_Listener::_outputBegin(PT_AttrPropIndex api)
 }
 
 s_HTML_Listener::s_HTML_Listener(PD_Document * pDocument,
-										 IE_Exp_HTML * pie)
+								 IE_Exp_HTML * pie)
 {
 	m_pDocument = pDocument;
 	m_pie = pie;
@@ -1465,7 +1455,6 @@ s_HTML_Listener::s_HTML_Listener(PD_Document * pDocument,
 	m_bFirstWrite = true;
 	m_iListDepth = 0;
 	m_iImgCnt = 0;
-	m_pStylesHash = NULL;
 }
 
 s_HTML_Listener::~s_HTML_Listener()
@@ -1483,8 +1472,6 @@ s_HTML_Listener::~s_HTML_Listener()
 	_closeSection();
 	_handleDataItems();
 	
-	DELETEP(m_pStylesHash);
-
 	m_pie->write("</body>\n");
 	m_pie->write("</html>\n");
 }
@@ -1744,31 +1731,3 @@ void s_HTML_Listener::_handleDataItems(void)
 	return;
 }
 
-/*!	This function gets a listing of all the styles from
- *	the document and stores them by their compressed name (without spaces)
- *	in the hash table m_pStylesHash.  This function allocates
- *	the hash table if it is NULL.
- */
-
-void s_HTML_Listener::_storeStyles(void)
-{
-	const char* pszName;
-	const PD_Style* pStyle;
-	void* pData;
-	size_t count = m_pDocument->getStyleCount();
-
-	if(m_pStylesHash == NULL)
-	{
-		m_pStylesHash = new UT_HashTable(count);
-	}
-
-	for(int i = 0; m_pDocument->enumStyles(i, &pszName, &pStyle); i++)
-	{
-		pData = reinterpret_cast<void*>(const_cast<PD_Style*>(pStyle));
-		char * szName = removeWhiteSpace(pszName);
-		m_pStylesHash->insert(szName, pData);
-		DELETEPV(szName);
-	}
-
-	return;
-}

@@ -765,6 +765,8 @@ void AP_Dialog_Styles::updateCurrentStyle(void)
  */
 bool AP_Dialog_Styles::createNewStyle(const XML_Char * szName)
 {
+	UT_DEBUGMSG(("DOM: new style %s\n", szName));
+
 	const XML_Char ** props = NULL;
 	UT_uint32 i = 0;
 	if(m_vecAllProps.getItemCount() <= 0)
