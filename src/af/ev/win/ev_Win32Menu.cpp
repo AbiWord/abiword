@@ -22,10 +22,10 @@
 #include <string.h>
 #include "ut_types.h"
 #include "ut_stack.h"
-#include "ap_Types.h"
+#include "xap_Types.h"
 #include "ev_Win32Menu.h"
-#include "ap_Win32App.h"
-#include "ap_Win32Frame.h"
+#include "xap_Win32App.h"
+#include "xap_Win32Frame.h"
 #include "ev_Menu_Layouts.h"
 #include "ev_Menu_Actions.h"
 #include "ev_Menu_Labels.h"

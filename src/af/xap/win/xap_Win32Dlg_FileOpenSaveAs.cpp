@@ -22,9 +22,9 @@
 #include "ut_string.h"
 #include "ut_assert.h"
 #include "xap_Dialog_Id.h"
-#include "ap_Win32Dialog_FileOpenSaveAs.h"
-#include "ap_Win32App.h"
-#include "ap_Win32Frame.h"
+#include "xap_Win32Dialog_FileOpenSaveAs.h"
+#include "xap_Win32App.h"
+#include "xap_Win32Frame.h"
 
 /*****************************************************************/
 AP_Dialog * AP_Win32Dialog_FileOpenSaveAs::static_constructor(AP_DialogFactory * pFactory,

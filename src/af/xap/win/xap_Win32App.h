@@ -22,9 +22,9 @@
 #define AP_WIN32APP_H
 
 #include <windows.h>
-#include "ap_App.h"
-#include "ap_Win32DialogFactory.h"
-#include "ap_Win32Toolbar_ControlFactory.h"
+#include "xap_App.h"
+#include "xap_Win32DialogFactory.h"
+#include "xap_Win32Toolbar_ControlFactory.h"
 class AP_Args;
 class AP_Win32Toolbar_Icons;
 

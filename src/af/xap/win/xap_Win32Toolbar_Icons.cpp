@@ -21,7 +21,7 @@
 #include "ut_types.h"
 #include "ut_assert.h"
 #include "ut_Xpm2Bmp.h"
-#include "ap_Win32Toolbar_Icons.h"
+#include "xap_Win32Toolbar_Icons.h"
 
 AP_Win32Toolbar_Icons::AP_Win32Toolbar_Icons(void)
 {

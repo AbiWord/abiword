@@ -23,16 +23,16 @@
 #include "ut_assert.h"
 #include "ut_debugmsg.h"
 #include "ev_Win32Toolbar.h"
-#include "ap_Win32App.h"
-#include "ap_Win32Frame.h"
+#include "xap_Win32App.h"
+#include "xap_Win32Frame.h"
 #include "ev_Toolbar_Actions.h"
 #include "ev_Toolbar_Layouts.h"
 #include "ev_Toolbar_Labels.h"
 #include "ev_Toolbar_Control.h"
 #include "ev_EditEventMapper.h"
-#include "ap_Win32Toolbar_Icons.h"
+#include "xap_Win32Toolbar_Icons.h"
 #include "ev_Win32Toolbar_ViewListener.h"
-#include "av_View.h"
+#include "xav_View.h"
 
 #define DELETEP(p)	do { if (p) delete p; } while (0)
 

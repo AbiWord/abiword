@@ -20,7 +20,7 @@
 #ifndef AP_WIN32DIALOGFACTORY_H
 #define AP_WIN32DIALOGFACTORY_H
 
-#include "ap_DialogFactory.h"
+#include "xap_DialogFactory.h"
 
 class AP_Win32DialogFactory : public AP_DialogFactory
 {

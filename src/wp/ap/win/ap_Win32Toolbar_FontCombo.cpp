@@ -25,7 +25,7 @@
 #include "ut_string.h"
 #include "ap_Win32Toolbar_FontCombo.h"
 #include "ap_Toolbar_Id.h"
-#include "ap_Frame.h"
+#include "xap_Frame.h"
 
 #define FREEP(p)	do { if (p) free(p); (p)=NULL; } while (0)
 

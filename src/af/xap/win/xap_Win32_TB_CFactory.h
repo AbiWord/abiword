@@ -20,7 +20,7 @@
 #ifndef AP_WIN32TOOLBAR_CONTROLFACTORY_H
 #define AP_WIN32TOOLBAR_CONTROLFACTORY_H
 
-#include "ap_Toolbar_ControlFactory.h"
+#include "xap_Toolbar_ControlFactory.h"
 
 class AP_Win32Toolbar_ControlFactory : public AP_Toolbar_ControlFactory
 {

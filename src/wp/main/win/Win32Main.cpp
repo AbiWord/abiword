@@ -18,7 +18,7 @@
  */
 
 #include <windows.h>
-#include "ap_Win32App.h"
+#include "xap_Win32App.h"
 
 int WINAPI WinMain (HINSTANCE hInstance, HINSTANCE hPrevInstance,
                     PSTR szCmdLine, int iCmdShow)

@@ -20,7 +20,7 @@
 #ifndef AP_WIN32DIALOG_PRINT_H
 #define AP_WIN32DIALOG_PRINT_H
 
-#include "ap_Dialog_Print.h"
+#include "xap_Dialog_Print.h"
 class AP_Win32Frame;
 
 /*****************************************************************/

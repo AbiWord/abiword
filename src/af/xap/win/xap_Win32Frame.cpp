@@ -24,16 +24,16 @@
 #include "ut_types.h"
 #include "ut_assert.h"
 #include "ut_debugmsg.h"
-#include "ap_ViewListener.h"
-#include "ap_Win32App.h"
-#include "ap_Win32Frame.h"
+#include "xap_ViewListener.h"
+#include "xap_Win32App.h"
+#include "xap_Win32Frame.h"
 #include "ev_Win32Keyboard.h"
 #include "ev_Win32Mouse.h"
 #include "ev_Win32Menu.h"
 #include "ev_Win32Toolbar.h"
 #include "ev_EditMethod.h"
-#include "av_View.h"
-#include "ad_Document.h"
+#include "xav_View.h"
+#include "xad_Document.h"
 
 #define DELETEP(p)		do { if (p) delete p; } while (0)
 #define REPLACEP(p,q)	do { if (p) delete p; p = q; } while (0)

@@ -27,9 +27,9 @@
 #include <js.h>
 #endif /* ABI_OPT_JS */
 
-#include "ap_Args.h"
-#include "ap_Win32App.h"
-#include "ap_Win32Frame.h"
+#include "xap_Args.h"
+#include "xap_Win32App.h"
+#include "xap_Win32Frame.h"
 
 #ifdef   _DEBUG
 #define  SET_CRT_DEBUG_FIELD(a) \

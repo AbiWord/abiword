@@ -23,9 +23,9 @@
 #include "ut_debugmsg.h"
 #include "ut_string.h"
 #include "ut_misc.h"
-#include "ap_Win32Dialog_FontChooser.h"
-#include "ap_Win32App.h"
-#include "ap_Win32Frame.h"
+#include "xap_Win32Dialog_FontChooser.h"
+#include "xap_Win32App.h"
+#include "xap_Win32Frame.h"
 #include "gr_Graphics.h"
 
 /*****************************************************************/

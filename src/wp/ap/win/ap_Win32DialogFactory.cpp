@@ -21,7 +21,7 @@
 
 #include <windows.h>
 #include "ap_Dialog_Id.h"
-#include "ap_Win32DialogFactory.h"
+#include "xap_Win32DialogFactory.h"
 
 /*****************************************************************/
 /*****************************************************************/

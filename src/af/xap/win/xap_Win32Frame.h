@@ -22,9 +22,9 @@
 #define AP_WIN32FRAME_H
 
 #include <windows.h>
-#include "ap_Frame.h"
+#include "xap_Frame.h"
 #include "ut_vector.h"
-#include "ap_Win32DialogFactory.h"
+#include "xap_Win32DialogFactory.h"
 class AP_Win32App;
 class ev_Win32Keyboard;
 class EV_Win32Mouse;
