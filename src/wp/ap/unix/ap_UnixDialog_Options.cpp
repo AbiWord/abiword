@@ -131,8 +131,8 @@ void AP_UnixDialog_Options::event_clistClicked (int row, int col)
   gdouble cur [4];
 
   gtk_color_selection_get_color (w, cur);
-  sprintf(color,"#%02x%02x%02x",CTI(cur, 1), CTI(cur, 2), CTI(cur, 3));
-
+  sprintf(color,"#%02x%02x%02x",CTI(cur, 0), CTI(cur, 1), CTI(cur, 2));
+	
   strncpy(dlg->m_CurrentTransparentColor,static_cast<const XML_Char *>(color),9);
 }
 
@@ -154,10 +154,9 @@ void AP_UnixDialog_Options::event_ChooseTransparentColor(void)
   GtkWidget *colorsel;
 
   colorsel = gtk_color_selection_new();
+  gtk_color_selection_set_has_opacity_control(GTK_COLOR_SELECTION(colorsel), false);
   gtk_widget_show (colorsel);
-  UT_DEBUGMSG(("SEVIOR: About to add color selector to dialog window \n"));
   gtk_container_add (GTK_CONTAINER(GTK_DIALOG(dlg)->vbox), colorsel);
-  UT_DEBUGMSG(("SEVIOR: Added color selector to dialog window \n"));
   UT_RGBColor c;
   UT_parseColor(m_CurrentTransparentColor,c);
 
