@@ -22,7 +22,7 @@ There are several ways to build and run AbiWord:
 
 [2] End-User Style:  just cd into the abi directory and type
     'make distribution ABI_BUILD_VERSION=x.y.z ABI_DIST_TARGET=<fmt>'
-    where <fmt> is one or more of 'tgz', 'rpm', 'deb', 'slp', 'pkg'.
+    where <fmt> is one or more of 'tgz', 'rpm', 'deb', 'slp', 'pkg', 'depot'.
     This will create one or more archive files in abi/dist.  These
     may then be installed in the normal manner.
 
