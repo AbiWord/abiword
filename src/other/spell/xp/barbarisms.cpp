@@ -200,13 +200,18 @@ void	Barbarisms::startElement(const XML_Char *name, const XML_Char **atts)
 	if (strcmp(name, "barbarism")==0)
 	{				
 		m_pCurVector =  new UT_Vector();	
-		m_map.insert (UT_strdup(UT_getAttribute (a[0], atts)), m_pCurVector);
+		const char * word = UT_getAttribute ("word", atts);
+		if (word != NULL)
+		  m_map.insert (UT_strdup(word), m_pCurVector);
 	}
 	else if (strcmp(name, "suggestion")==0)
 	  {	
 	    if (m_pCurVector)
 	      {
-		const char*	pUTF8 = UT_getAttribute (a[0], atts);
+		const char*	pUTF8 = UT_getAttribute ("word", atts);
+		if (pUTF8 == NULL)
+		  return;
+
 		size_t	length = strlen (pUTF8);
 		int		nUSC4Len = 0;
 		UT_UCS4String	usc4;
