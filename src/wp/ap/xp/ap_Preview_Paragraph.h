@@ -27,7 +27,9 @@
 
 #include "xap_Preview.h"
 #include "ap_Dialog_Paragraph.h"
-#include "ap_Dialog_Lists.h"
+
+// fwd decl.
+class AP_Dialog_Lists;
 
 class GR_Font;
 
