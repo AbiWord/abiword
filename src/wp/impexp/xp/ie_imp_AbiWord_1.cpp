@@ -235,6 +235,7 @@ UT_Error IE_Imp_AbiWord_1::importFile(const char * szFilename)
 #define TT_HISTORYSECTION  32 //<history>
 #define TT_VERSION         33 //<version>
 #define TT_TOC             34 //<toc> (Table of Contents
+#define TT_MATH            35 //<math> Math Run
 
 
 /*
@@ -279,6 +280,7 @@ static struct xmlToIdMapping s_Tokens[] =
 	{	"lists",		TT_LISTSECTION	},
 	{       "m",        TT_META         },
 	{	"margin",		TT_MARGINNOTE	},
+	{	"math",		    TT_MATH     	},
 	{       "metadata", TT_METADATA     },
 	{	"p",			TT_BLOCK		},
 	{   "pagesize",     TT_PAGESIZE     },
@@ -478,17 +480,14 @@ void IE_Imp_AbiWord_1::startElement(const XML_Char *name, const XML_Char **atts)
 	case TT_IMAGE:
 	{
 		X_VerifyParseState(_PS_Block);
-#ifdef ENABLE_RESOURCE_MANAGER
-		X_CheckError(_handleImage (atts));
-#else
-		//const XML_Char * pszId = _getXMLPropValue("dataid", atts);
-
-		//
-		// Remove this assert because the image object MUST have already
-		// defined the correct ID.
-		//
 		X_CheckError(appendObject(PTO_Image,atts));
-#endif
+		return;
+	}
+
+	case TT_MATH:
+	{
+		X_VerifyParseState(_PS_Block);
+		X_CheckError(appendObject(PTO_Math,atts));
 		return;
 	}
 	case TT_BOOKMARK:
@@ -580,14 +579,10 @@ void IE_Imp_AbiWord_1::startElement(const XML_Char *name, const XML_Char **atts)
 	case TT_DATAITEM:
 		X_VerifyParseState(_PS_DataSec);
 		m_parseState = _PS_DataItem;
-#ifdef ENABLE_RESOURCE_MANAGER
-		_handleResource (atts, false);
-#else
 		m_currentDataItem.truncate(0);
 		X_CheckError(UT_XML_cloneString(m_currentDataItemName,_getDataItemName(atts)));
 		X_CheckError(UT_XML_cloneString(m_currentDataItemMimeType,_getDataItemMimeType(atts)));
 		m_currentDataItemEncoded = _getDataItemEncoded(atts);
-#endif
 		return;
 
 	case TT_RESOURCE:
@@ -939,6 +934,11 @@ void IE_Imp_AbiWord_1::endElement(const XML_Char *name)
 		X_VerifyParseState(_PS_Block);
 		return;
 
+	case TT_MATH:						// not a container, so we don't pop stack
+		UT_ASSERT_HARMLESS(m_lenCharDataSeen==0);
+		X_VerifyParseState(_PS_Block);
+		return;
+
 	case TT_BOOKMARK:						// not a container, so we don't pop stack
 		UT_ASSERT_HARMLESS(m_lenCharDataSeen==0);
 		X_VerifyParseState(_PS_Block);
@@ -1135,263 +1135,11 @@ bool IE_Imp_AbiWord_1::_getDataItemEncoded(const XML_Char ** atts)
 
 bool IE_Imp_AbiWord_1::_handleImage (const XML_Char ** atts)
 {
-#ifdef ENABLE_RESOURCE_MANAGER
-	static const char * psz_href = "href"; // could make this xlink:href, but is #ID valid in XLINK?
-
-	XAP_ResourceManager & RM = getDoc()->resourceManager ();
-
-	/* old: <image dataid="ID" props="height:HH; width:WW" />
-	 * new: <image href="#ID" props="height:HH; width:WW" />
-	 * 
-	 * we need to re-map resource IDs so that we can allocate new IDs
-	 * sensibly later on
-	 */
-	const char * old_id = 0;
-
-	/* going to assume the document is one or the other, not a mixture...
-	 */
-	bool is_data = false;
-	bool is_href = false;
-
-	UT_uint32 natts = 0;
-	const char ** attr = atts;
-	while (*attr)
-		{
-			if ((strcmp (*attr, "href") == 0) || (strcmp (*attr, "xlink:href") == 0))
-				{
-					attr++;
-					old_id = *attr;
-					is_href = true;
-				}
-			else if (strcmp (*attr, "dataid") == 0)
-				{
-					attr++;
-					old_id = *attr;
-					is_data = true;
-				}
-			else attr++;
-			attr++;
-			natts += 2;
-		}
-	if (is_href && is_data) return false; // huh?
-
-	if ( old_id == 0) return false; // huh?
-	if (*old_id == 0) return false; // huh?
-
-	UT_UTF8String re_id;
-
-	const UT_UTF8String * new_id = 0;
-
-	if (is_href && (*old_id != '#'))
-		{
-			/* this is a hyperlink; we don't map these
-			 */
-			re_id = RM.new_id (false); // external resource id, "/re_abc123"
-
-			new_id = &re_id;
-		}
-	else if ((new_id = m_refMap->pick (old_id)) == 0)
-		{
-			/* first occurence of this href/dataid; add to map
-			 */
-			UT_UTF8String * ri_id = new UT_UTF8String(RM.new_id());
-			if (ri_id)
-				{
-					m_refMap->insert (old_id, ri_id);
-					if ((new_id = m_refMap->pick (old_id)) == 0)
-						{
-							delete ri_id;
-						}
-				}
-		}
-	if (new_id == 0) return false; // hmm
-
-	/* it is necessary to reference a resource before you can set URL or data
-	 */
-	if (!RM.ref (new_id->utf8_str ())) return false; // reference the object
-
-	/* for external resources (i.e., hyperlinks) we set the URL now; data comes *much* later...
-	 */
-	if (is_href && (*old_id != '#'))
-		{
-			XAP_ExternalResource * re = dynamic_cast<XAP_ExternalResource *>(RM.resource (re_id.utf8_str (), false));
-			if (re == 0) return false; // huh?
-
-			re->URL (UT_UTF8String(old_id));
-		}
-
-	/* copy attribute list; replace dataid/href value with new ID
-	 */
-	const char ** new_atts = static_cast<const char **>(malloc ((natts + 2) * sizeof (char *)));
-	if (new_atts == 0) return false; // hmm
-
-	const char ** new_attr = new_atts;
-	attr = atts;
-	while (*attr)
-		{
-			if ((strcmp (*attr, "href") == 0) || (strcmp (*attr, "xlink:href") == 0) || (strcmp (*attr, "dataid") == 0))
-				{
-					*new_attr++ = psz_href; // href="#ID"
-					*new_attr++ = new_id->utf8_str ();
-				}
-			else
-				{
-					*new_attr++ = *attr++;
-					*new_attr++ = *attr++;
-				}
-		}
-	*new_attr++ = 0;
-	*new_attr++ = 0;
-
-	bool success = appendObject (PTO_Image, new_atts);
-
-	free (new_atts);
-
-	return success;
-#else
 	return false;
-#endif
 }
+
 
 bool IE_Imp_AbiWord_1::_handleResource (const XML_Char ** atts, bool isResource)
 {
-#ifdef ENABLE_RESOURCE_MANAGER
-	if (atts == 0) return false;
-
-	XAP_ResourceManager & RM = getDoc()->resourceManager ();
-
-	if (isResource)
-		{
-			// <resource id="ID" type="" desc=""> ... </resource>
-
-			const XML_Char * r_id = 0;
-			const XML_Char * r_mt = 0;
-			const XML_Char * r_ds = 0;
-
-			const XML_Char ** attr = atts;
-			while (*attr)
-				{
-					if (strcmp (*attr, "id") == 0)
-						{
-							attr++;
-							r_id = *attr++;
-						}
-					else if (strcmp (*attr, "type") == 0)
-						{
-							attr++;
-							r_mt = *attr++;
-						}
-					else if (strcmp (*attr, "desc") == 0)
-						{
-							attr++;
-							r_ds = *attr++;
-						}
-					else
-						{
-							attr++;
-							attr++;
-						}
-				}
-			if (r_id == 0) return false;
-
-			XAP_InternalResource * ri = dynamic_cast<XAP_InternalResource *>(RM.resource (r_id, true));
-			if (ri == 0) return false;
-
-			if (r_mt) ri->type (r_mt);
-			if (r_ds) ri->Description = r_ds;
-
-			m_currentDataItemEncoded = true;
-
-			return true;
-		}
-	else
-		{
-			// <d name="ID" mime-type="image/png" base64="yes"> ... </d>
-			// <d name="ID" mime-type="image/svg-xml | text/mathml" base64="no"> <![CDATA[ ... ]]> </d>
-
-			const XML_Char * r_id = 0;
-			const XML_Char * r_64 = 0;
-
-			enum { mt_unknown, mt_png, mt_svg, mt_mathml } mt = mt_unknown;
-
-			const XML_Char ** attr = atts;
-			while (*attr)
-				{
-					if (strcmp (*attr, "name") == 0)
-						{
-							attr++;
-							r_id = *attr++;
-						}
-					else if (strcmp (*attr, "mime-type") == 0)
-						{
-							attr++;
-
-							if (strcmp (*attr, "image/png") == 0)
-								mt = mt_png;
-							else if (strcmp (*attr, "image/svg-xml") == 0)
-								mt = mt_svg;
-							else if (strcmp (*attr, "text/mathml") == 0)
-								mt = mt_mathml;
-
-							attr++;
-						}
-					else if (strcmp (*attr, "base64") == 0)
-						{
-							attr++;
-							r_64 = *attr++;
-						}
-					else
-						{
-							attr++;
-							attr++;
-						}
-				}
-			if (r_id == 0) return false;
-			if (r_64 == 0) return false;
-
-			/* map dataid to new resource ID
-			 */
-			const UT_UTF8String * new_id = m_refMap->pick (r_id);
-			if (new_id == 0) return false;
-
-			XAP_InternalResource * ri = dynamic_cast<XAP_InternalResource *>(RM.resource (new_id->utf8_str (), true));
-			if (ri == 0) return false;
-
-			bool add_resource = false;
-			switch (mt)
-				{
-				case mt_png:
-					if (strcmp (r_64, "yes") == 0)
-						{
-							ri->type ("image/png");
-							m_currentDataItemEncoded = true;
-							add_resource = true;
-						}
-					break;
-				case mt_svg:
-					if (strcmp (r_64, "no") == 0) // hmm, CDATA fun
-						{
-							ri->type ("image/svg+xml"); // image/svg & image/svg-xml are possible but not recommended
-							m_currentDataItemEncoded = false;
-							add_resource = true;
-						}
-					break;
-				case mt_mathml:
-					if (strcmp (r_64, "no") == 0) // hmm, CDATA fun
-						{
-							ri->type ("application/mathml+xml"); // preferred by MathML 2.0
-							m_currentDataItemEncoded = false;
-							add_resource = true;
-						}
-					break;
-				default:
-					break;
-				}
-			if (!add_resource) RM.clear_current (); // not going to add the data :-(
-
-			return add_resource;
-		}
-#else
 	return false;
-#endif
 }

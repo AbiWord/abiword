@@ -660,6 +660,18 @@ bool s_AbiWord_1_Listener::populate(PL_StruxFmtHandle /*sfh*/,
                     UT_ASSERT_HARMLESS(m_pCurrentField);
                     return true;
                 }
+			case PTO_Math:
+                {
+                    _closeSpan();
+                    _closeField();
+                    _openTag("math","/",false,api);
+#ifndef ENABLE_RESOURCE_MANAGER
+				const XML_Char* image_name = getObjectKey(api, static_cast<const XML_Char*>("dataid"));
+				if (image_name)
+					m_pUsedImages.insert(image_name);
+#endif
+                    return true;
+                }
    			case PTO_Bookmark:
    				{
    					_closeSpan();
@@ -1168,9 +1180,7 @@ void s_AbiWord_1_Listener::_handlePageSize(void)
 
 void s_AbiWord_1_Listener::_handleDataItems(void)
 {
-#ifdef ENABLE_RESOURCE_MANAGER
-	m_pDocument->resourceManager().write_xml (0, *this);
-#else
+
 	bool bWroteOpenDataSection = false;
 
 	const char * szName;
@@ -1275,7 +1285,6 @@ void s_AbiWord_1_Listener::_handleDataItems(void)
 
 	if (bWroteOpenDataSection)
 		m_pie->write("</data>\n");
-#endif
 }
 
 void s_AbiWord_1_Listener::_handleRevisions(void)

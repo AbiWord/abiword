@@ -23,14 +23,13 @@
 
 
 GR_Abi_RenderingContext::GR_Abi_RenderingContext(GR_Graphics* pGr)
-  : m_pGraphics(pGr), m_pPainter(new GR_Painter(pGr))
+  : m_pGraphics(pGr)
 {
   UT_ASSERT(m_pGraphics);
 }
 
 GR_Abi_RenderingContext::~GR_Abi_RenderingContext()
 {
-  DELETEP(m_pPainter);
 }
 
 void
@@ -56,7 +55,8 @@ GR_Abi_RenderingContext::fill(const UT_RGBColor& color, const scaled& x, const s
 		   color.m_red, color.m_grn, color.m_blu,
 		   toAbiLayoutUnits(x), toAbiLayoutUnits(y),
 		   toAbiLayoutUnits(box.width), toAbiLayoutUnits(box.height), toAbiLayoutUnits(box.depth)));
-  m_pPainter->fillRect(color,
+  GR_Painter Painter(m_pGraphics);
+  Painter.fillRect(color,
 		       GR_Abi_RenderingContext::toAbiX(x),
 		       GR_Abi_RenderingContext::toAbiY(y + box.height),
 		       GR_Abi_RenderingContext::toAbiLayoutUnits(box.horizontalExtent()),
@@ -75,7 +75,8 @@ void
 GR_Abi_RenderingContext::drawGlyph(const scaled& x, const scaled& y, GR_Font* f, UT_uint32 glyph) const
 {
   m_pGraphics->setFont(f);
-  m_pPainter->drawGlyph(glyph,
+  GR_Painter Painter(m_pGraphics);
+  Painter.drawGlyph(glyph,
 			GR_Abi_RenderingContext::toAbiX(x),
 			GR_Abi_RenderingContext::toAbiY(y));
 }
@@ -84,7 +85,8 @@ void
 GR_Abi_RenderingContext::drawChar(const scaled& x, const scaled& y, GR_Font* f, UT_UCS4Char c) const
 {
   m_pGraphics->setFont(f);
-  m_pPainter->drawChars(&c, 0, 1,
+  GR_Painter Painter(m_pGraphics);
+  Painter.drawChars(&c, 0, 1,
 			GR_Abi_RenderingContext::toAbiX(x),
 			GR_Abi_RenderingContext::toAbiY(y));
 }
@@ -97,9 +99,10 @@ GR_Abi_RenderingContext::drawBox(const scaled& x, const scaled& y, const Boundin
   const UT_sint32 y0 = toAbiY(y);
   const UT_sint32 y1 = toAbiY(y + box.height);
   const UT_sint32 y2 = toAbiY(y - box.depth);
-  m_pPainter->drawLine(x0, y0, x1, y0);
-  m_pPainter->drawLine(x0, y1, x0, y2);
-  m_pPainter->drawLine(x1, y1, x1, y2);
-  m_pPainter->drawLine(x0, y1, x1, y1);
-  m_pPainter->drawLine(x0, y2, x1, y2);
+  GR_Painter Painter(m_pGraphics);
+  Painter.drawLine(x0, y0, x1, y0);
+  Painter.drawLine(x0, y1, x0, y2);
+  Painter.drawLine(x1, y1, x1, y2);
+  Painter.drawLine(x0, y1, x1, y1);
+  Painter.drawLine(x0, y2, x1, y2);
 }

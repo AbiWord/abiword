@@ -80,7 +80,6 @@ public:
 
 private:
   class GR_Graphics* m_pGraphics;
-  class GR_Painter* m_pPainter;
 };
 
 #endif // __gr_Abi_RenderingContext_h__
