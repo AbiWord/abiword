@@ -34,6 +34,7 @@
 class pf_Frag_Text;
 class pf_Frag_Strux;
 class pf_Frag_Strux_Block;
+class PX_ChangeRecord_Span;
 
 #ifdef PT_TEST
 #include "ut_test.h"
@@ -132,6 +133,7 @@ protected:
 
 	void					_captureActiveSpan(pf_Frag_Strux_Block * pfsBlock);
 	PT_AttrPropIndex		_chooseIndexAP(pf_Frag * pf, PT_BlockOffset fragOffset);
+	UT_Bool					_canCoalesceInsertSpan(PX_ChangeRecord_Span * pcrSpan) const;
 
 	UT_Bool					_createStrux(PTStruxType pts,
 										 PT_AttrPropIndex indexAP,
@@ -169,6 +171,8 @@ protected:
 												  UT_uint32 length,
 												  pf_Frag_Strux * pfs,
 												  pf_Frag ** ppfEnd, UT_uint32 * pfragOffsetEnd);
+	UT_Bool					_canCoalesceDeleteSpan(PX_ChangeRecord_Span * pcrSpan) const;
+	
 	UT_Bool					_deleteStruxWithNotify(PT_DocPosition dpos,
 												   pf_Frag_Strux * pfs,
 												   pf_Frag ** ppfEnd, UT_uint32 * pfragOffsetEnd);

@@ -73,11 +73,13 @@ UT_Bool pt_PieceTable::_fmtChangeStruxWithNotify(PTChangeFmt ptc,
 	if (_haveTempSpanFmt(NULL,NULL))
 		clearTemporarySpanFmt();
 
-	m_history.addChangeRecord(pcr);
 	UT_Bool bResult = _fmtChangeStrux(pfs,indexNewAP);
 	UT_ASSERT(bResult);
 
 	m_pDocument->notifyListeners(pfs,pcr);
+
+	// add record to history.  we do not attempt to coalesce these.
+	m_history.addChangeRecord(pcr);
 
 	return UT_TRUE;
 }

@@ -142,11 +142,47 @@ UT_Bool pt_PieceTable::_deleteSpanWithNotify(PT_DocPosition dpos,
 								   m_varset.getBufIndex(pft->getBufIndex(),fragOffset),
 								   length,isDifferentFmt);
 	UT_ASSERT(pcr);
-	m_history.addChangeRecord(pcr);
 	UT_Bool bResult = _deleteSpan(pft,fragOffset,pft->getBufIndex(),length,ppfEnd,pfragOffsetEnd);
 	m_pDocument->notifyListeners(pfs,pcr);
 
+	if (_canCoalesceDeleteSpan(pcr))
+	{
+		m_history.coalesceHistory(pcr);
+		delete pcr;
+	}
+	else
+		m_history.addChangeRecord(pcr);
+
 	return bResult;
+}
+
+UT_Bool pt_PieceTable::_canCoalesceDeleteSpan(PX_ChangeRecord_Span * pcrSpan) const
+{
+	// see if this record can be coalesced with the most recent undo record.
+
+	UT_ASSERT(pcrSpan->getType() == PX_ChangeRecord::PXT_DeleteSpan);
+
+	PX_ChangeRecord * pcrUndo;
+	if (!m_history.getUndo(&pcrUndo))
+		return UT_FALSE;
+	if (pcrSpan->getType() != pcrUndo->getType())
+		return UT_FALSE;
+	if (pcrSpan->getIndexAP() != pcrUndo->getIndexAP())
+		return UT_FALSE;
+	if (pcrSpan->getPosition() != pcrUndo->getPosition())
+		return UT_FALSE;
+
+	PX_ChangeRecord_Span * pcrUndoSpan = static_cast<PX_ChangeRecord_Span *>(pcrUndo);
+	UT_uint32 lengthUndo = pcrUndoSpan->getLength();
+	PT_BufIndex biUndo = pcrUndoSpan->getBufIndex();
+	PT_BufIndex biSpan = pcrSpan->getBufIndex();
+
+	if (m_varset.getBufIndex(biUndo,lengthUndo) != biSpan)
+		return UT_FALSE;
+
+	// TODO decide if we need to test isDifferentFmt bit in the two ChangeRecords.
+
+	return UT_TRUE;
 }
 
 UT_Bool pt_PieceTable::deleteSpan(PT_DocPosition dpos1,

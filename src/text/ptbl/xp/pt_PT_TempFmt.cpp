@@ -121,14 +121,14 @@ UT_Bool pt_PieceTable::_setTemporarySpanFmtWithNotify(PTChangeFmt ptc,
 		= new PX_ChangeRecord_TempSpanFmt(PX_ChangeRecord::PXT_TempSpanFmt,
 										  dpos,indexNewAP,UT_TRUE);
 	UT_ASSERT(pcr);
-	m_history.addChangeRecord(pcr);
 
 	pf_Frag_Strux * pfs = NULL;
 	UT_Bool bFoundStrux = _getStruxFromPosition(dpos,&pfs);
 	UT_ASSERT(bFoundStrux);
 
 	m_pDocument->notifyListeners(pfs,pcr);
-	
+	m_history.addChangeRecord(pcr);
+
 	return UT_TRUE;
 }
 

@@ -67,3 +67,17 @@ PT_Differences PX_ChangeRecord_Span::isDifferentFmt(void) const
 {
 	return m_DifferentFmt;
 }
+
+void PX_ChangeRecord_Span::coalesce(const PX_ChangeRecord_Span * pcr)
+{
+	// append the effect of the given pcr onto the end of us.
+
+	// some quick sanity checks.  our caller is supposed to have already verified this
+	
+	UT_ASSERT(getType() == pcr->getType());
+	UT_ASSERT(getIndexAP() == pcr->getIndexAP());
+
+	m_length += pcr->getLength();
+	return;
+}
+

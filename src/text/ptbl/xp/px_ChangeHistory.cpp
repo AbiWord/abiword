@@ -24,6 +24,8 @@
 #include "ut_vector.h"
 #include "px_ChangeRecord.h"
 #include "px_ChangeHistory.h"
+#include "px_ChangeRecord_Span.h"
+
 
 // m_undoPosition is the position of the undo pointer.
 // a value of zero means no undo history.
@@ -33,7 +35,6 @@
 px_ChangeHistory::px_ChangeHistory()
 {
 	m_undoPosition = 0;
-	m_historyOn = UT_TRUE;
 }
 
 px_ChangeHistory::~px_ChangeHistory()
@@ -41,19 +42,8 @@ px_ChangeHistory::~px_ChangeHistory()
 	UT_VECTOR_PURGEALL(PX_ChangeRecord,m_vecChangeRecords);
 }
 
-void px_ChangeHistory::enableHistory(UT_Bool bOn)
+void px_ChangeHistory::_invalidateRedo(void)
 {
-	m_historyOn = bOn;
-}
-
-UT_Bool px_ChangeHistory::addChangeRecord(PX_ChangeRecord * pcr)
-{
-	if (!m_historyOn)
-		return UT_TRUE;
-	
-	// add a change record to the history.
-	// blow away any redo, since it is now invalid.
-
 	UT_uint32 kLimit = m_vecChangeRecords.getItemCount();
 	UT_ASSERT(m_undoPosition <= kLimit);
 	UT_uint32 k;
@@ -70,6 +60,14 @@ UT_Bool px_ChangeHistory::addChangeRecord(PX_ChangeRecord * pcr)
 		delete pcrTemp;
 		m_vecChangeRecords.deleteNthItem(k-1);
 	}
+}
+
+UT_Bool px_ChangeHistory::addChangeRecord(PX_ChangeRecord * pcr)
+{
+	// add a change record to the history.
+	// blow away any redo, since it is now invalid.
+
+	_invalidateRedo();
 	
 	UT_Bool bResult = (m_vecChangeRecords.insertItemAt(pcr,m_undoPosition++) == 0);
 	UT_ASSERT(bResult);
@@ -112,5 +110,33 @@ UT_Bool px_ChangeHistory::didRedo(void)
 		return UT_FALSE;
 	m_undoPosition++;
 	return UT_TRUE;
+}
+
+void px_ChangeHistory::coalesceHistory(const PX_ChangeRecord * pcr)
+{
+	// coalesce this record with the current undo record.
+
+	PX_ChangeRecord * pcrUndo;
+	UT_Bool bResult = getUndo(&pcrUndo);
+	UT_ASSERT(bResult);
+	UT_ASSERT(pcr->getType() == pcrUndo->getType());
+
+	switch (pcr->getType())
+	{
+	default:
+		UT_ASSERT(0);
+		return;
+		
+	case PX_ChangeRecord::PXT_InsertSpan:
+	case PX_ChangeRecord::PXT_DeleteSpan:
+		{
+			const PX_ChangeRecord_Span * pcrSpan = static_cast<const PX_ChangeRecord_Span *>(pcr);
+			PX_ChangeRecord_Span * pcrSpanUndo = static_cast<PX_ChangeRecord_Span *>(pcrUndo);
+
+			_invalidateRedo();
+			pcrSpanUndo->coalesce(pcrSpan);
+		}
+		return;
+	}
 }
 

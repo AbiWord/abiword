@@ -60,6 +60,7 @@ public:
 	UT_uint32				getLength(void) const;
 	PT_BufIndex				getBufIndex(void) const;
 	PT_Differences			isDifferentFmt(void) const;
+	void					coalesce(const PX_ChangeRecord_Span * pcr);
 	
 protected:
 	PT_BufIndex				m_bufIndex;	/* bufIndex to our text */

@@ -343,7 +343,6 @@ UT_Bool pt_PieceTable::insertSpan(PT_DocPosition dpos,
 		= new PX_ChangeRecord_Span(PX_ChangeRecord::PXT_InsertSpan,
 								   dpos,indexAP,bi,length,isDifferentFmt);
 	UT_ASSERT(pcr);
-	m_history.addChangeRecord(pcr);
 
 	pf_Frag_Strux * pfs = NULL;
 	UT_Bool bFoundStrux = _getStruxFromPosition(pcr->getPosition(),&pfs);
@@ -351,6 +350,45 @@ UT_Bool pt_PieceTable::insertSpan(PT_DocPosition dpos,
 
 	m_pDocument->notifyListeners(pfs,pcr);
 
+	if (_canCoalesceInsertSpan(pcr))
+	{
+		m_history.coalesceHistory(pcr);
+		delete pcr;
+	}
+	else
+		m_history.addChangeRecord(pcr);
+
+	return UT_TRUE;
+}
+
+UT_Bool pt_PieceTable::_canCoalesceInsertSpan(PX_ChangeRecord_Span * pcrSpan) const
+{
+	// see if this record can be coalesced with the most recent undo record.
+
+	UT_ASSERT(pcrSpan->getType() == PX_ChangeRecord::PXT_InsertSpan);
+
+	PX_ChangeRecord * pcrUndo;
+	if (!m_history.getUndo(&pcrUndo))
+		return UT_FALSE;
+	if (pcrSpan->getType() != pcrUndo->getType())
+		return UT_FALSE;
+	if (pcrSpan->getIndexAP() != pcrUndo->getIndexAP())
+		return UT_FALSE;
+
+	PX_ChangeRecord_Span * pcrUndoSpan = static_cast<PX_ChangeRecord_Span *>(pcrUndo);
+	UT_uint32 lengthUndo = pcrUndoSpan->getLength();
+
+	if ((pcrUndo->getPosition() + lengthUndo) != pcrSpan->getPosition())
+		return UT_FALSE;
+
+	PT_BufIndex biUndo = pcrUndoSpan->getBufIndex();
+	PT_BufIndex biSpan = pcrSpan->getBufIndex();
+
+	if (m_varset.getBufIndex(biUndo,lengthUndo) != biSpan)
+		return UT_FALSE;
+
+	// TODO decide if we need to test isDifferentFmt bit in the two ChangeRecords.
+	
 	return UT_TRUE;
 }
 
