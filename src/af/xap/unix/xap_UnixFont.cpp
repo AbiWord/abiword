@@ -383,6 +383,13 @@ GdkFont * XAP_UnixFont::getGdkFont(UT_uint32 pixelsize)
 
 	if (!gdkfont)
 	{
+		free(newxlfd);
+		newxlfd = myXLFD.getFallbackXLFD();
+	    gdkfont = gdk_font_load(newxlfd);
+	}
+
+	if (!gdkfont)
+	{
 		char message[1024];
 		g_snprintf(message, 1024,
 				   "Could not load X font:\n\n"

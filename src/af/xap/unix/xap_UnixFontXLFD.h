@@ -48,6 +48,7 @@ public:
 	// pass and receive full XLFDs to set/get contents
 	void				setXLFD(const char * xlfd);
 	char * 				getXLFD(void);	// caller must free result
+	char *				getFallbackXLFD(void);  	// caller must free result
 	
 	// pass individual fields to set contents
 	void				setFoundry(const char * foundry) { UT_replaceString(m_foundry, foundry); };

@@ -162,6 +162,37 @@ char * XAP_UnixFontXLFD::getXLFD(void)
 	return result;
 }
 
+//
+//  Find some fallback font with only the family weight and slant specified
+//  if we can't find the particular font we are looking for.
+//
+char * XAP_UnixFontXLFD::getFallbackXLFD(void)
+{
+	GString * xlfd = g_string_new("-*-");
+	UT_ASSERT(xlfd);
+
+	gchar numberBuffer[10];
+	
+	g_string_append(xlfd, m_family); g_string_append(xlfd, "-");
+	g_string_append(xlfd, m_weight); g_string_append(xlfd, "-");
+	g_string_append(xlfd, m_slant);
+
+	g_string_append(xlfd, "-*-*-*-");
+
+	g_snprintf(numberBuffer, 10, "%d", m_deciPointSize);
+	g_string_append(xlfd, numberBuffer);
+
+	g_string_append(xlfd, "-*-*-*-*-*-*");
+
+	char * result;
+	UT_cloneString(result, xlfd->str);
+
+	// wipe up the old GString
+	g_string_free(xlfd, 1);
+	
+	return result;
+}
+
 /********************************************************************/
 
 void XAP_UnixFontXLFD::_blankMembers(void)
