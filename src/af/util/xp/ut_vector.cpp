@@ -202,7 +202,7 @@ void UT_Vector::deleteNthItem(UT_uint32 n)
 	return;
 }
 
-UT_sint32 UT_Vector::findItem(void* p)
+UT_sint32 UT_Vector::findItem(void* p) const
 {
 	for (UT_uint32 i=0; i<m_iCount; i++)
 	{

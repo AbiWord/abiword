@@ -47,7 +47,7 @@ public:
 	void*		getFirstItem() const;
 	void*		getLastItem() const;
 	UT_uint32	getItemCount() const;
-	UT_sint32	findItem(void*);
+	UT_sint32	findItem(void*) const;
 
 	UT_sint32	insertItemAt(void*, UT_uint32 ndx);
 	void		deleteNthItem(UT_uint32 n);
