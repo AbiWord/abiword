@@ -63,7 +63,7 @@ TARGETS=		$(LIBRARY)
 ifeq ($(OS_NAME), WIN32) 
 INCLUDES= -I$(ABI_XX_ROOT)/../wv -I$(ABI_XX_ROOT)/../zlib -I$(ABI_XX_ROOT)/../wv/libole2 -I$(ABI_XX_ROOT)/../libpng -I$(ABI_XX_ROOT)/../libiconv/include -I$(ABI_XX_ROOT)/../psiconv
 else 
-INCLUDES= -I$(ABI_ROOT)/../wv -I$(ABI_ROOT)/../wv/libole2 -I$(ABI_ROOT)/../libpng -I$(ABI_ROOT)/../psiconv
+INCLUDES= -I$(ABI_ROOT)/../wv -I$(ABI_ROOT)/../wv/exporter -I$(ABI_ROOT)/../wv/libole2 -I$(ABI_ROOT)/../libpng -I$(ABI_ROOT)/../psiconv
 endif 
 
 ifdef GLIB_CONFIG 
