@@ -1,5 +1,5 @@
 /* AbiSource Program Utilities
- * Copyright (C) 1998 AbiSource, Inc.
+ * Copyright (C) 1998-2000 AbiSource, Inc.
  * 
  * This program is free software; you can redistribute it and/or
  * modify it under the terms of the GNU General Public License
@@ -20,6 +20,8 @@
 #ifndef EV_UNIXGNOMEMENU_H
 #define EV_UNIXGNOMEMENU_H
 
+#include <gnome.h>
+
 #include "ev_UnixMenu.h"
 #include "ut_types.h"
 #include "ut_vector.h"
@@ -31,16 +33,35 @@ class XAP_UnixGnomeFrame;
 
 /*****************************************************************/
 
-class EV_UnixGnomeMenuBar : public EV_UnixMenuBar
+class EV_UnixGnomeMenu : public EV_UnixMenu
 {
 public:
-	EV_UnixGnomeMenuBar(XAP_UnixApp * pUnixApp,
+	EV_UnixGnomeMenu(XAP_UnixApp * pUnixApp,
 						XAP_UnixFrame * pUnixFrame,
 						const char * szMenuLayoutName,
 						const char * szMenuLabelSetName);
-	~EV_UnixGnomeMenuBar(void);
+	virtual ~EV_UnixGnomeMenu(void);
 
-	UT_Bool				synthesizeMenuBar(void);
+	virtual UT_Bool		refreshMenu(AV_View * pView) = 0;
+	UT_Bool				synthesizeMenu(GtkWidget * wMenuRoot);
+	static void			menuEvent(GtkWidget *w, gpointer);
+
+protected:
+	GnomeUIInfo *       _convertMenu2UIInfo (int &pos);
+	void                _destroyUIInfo (GnomeUIInfo *uiinfo);
+	void                _attachWidgetsAndSignals(GtkWidget * wMenuRoot, GnomeUIInfo * uiinfo);
+	UT_Bool             _refreshMenu(AV_View * pView, GtkWidget * wMenuRoot);
+	void                _convertString2Accel(const char *s, guint &accel_key, GdkModifierType &ac_mods);
+
+	// static functions
+	static void         s_getStockPixmapFromName (const char *name, char *pixmap_name, int n);
+	static void         s_onMenuItemSelect(GtkWidget * widget, gpointer data);
+	static void         s_onMenuItemDeselect(GtkWidget * widget, gpointer data);
+	static void         s_onInitMenu(GtkMenuItem * menuItem, gpointer data);
+	static void         s_onDestroyMenu(GtkMenuItem * menuItem, gpointer data);
+	static void         s_onDestroyPopupMenu(GtkMenuItem * menuItem, gpointer callback_data);
+
+	GnomeUIInfo *       m_pUIInfo;
 };
 
 #endif /* EV_UNIXGNOMEMENU_H */

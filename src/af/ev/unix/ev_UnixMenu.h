@@ -1,5 +1,5 @@
 /* AbiSource Program Utilities
- * Copyright (C) 1998 AbiSource, Inc.
+ * Copyright (C) 1998-2000 AbiSource, Inc.
  * 
  * This program is free software; you can redistribute it and/or
  * modify it under the terms of the GNU General Public License
@@ -60,25 +60,6 @@ protected:
 	
 	// actual GTK menu widgets
 	UT_Vector			m_vecMenuWidgets;
-};
-
-/*****************************************************************/
-
-class EV_UnixMenuBar : public EV_UnixMenu
-{
-public:
-	EV_UnixMenuBar(XAP_UnixApp * pUnixApp,
-				   XAP_UnixFrame * pUnixFrame,
-				   const char * szMenuLayoutName,
-				   const char * szMenuLabelSetName);
-	virtual ~EV_UnixMenuBar(void);
-
-	virtual UT_Bool     synthesizeMenuBar(void);
-	virtual UT_Bool		refreshMenu(AV_View * pView);
-
-protected:
-	GtkWidget *			m_wMenuBar;
-	GtkWidget * 		m_wHandleBox;
 };
 
 /*****************************************************************/

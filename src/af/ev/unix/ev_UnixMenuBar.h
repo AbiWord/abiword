@@ -17,33 +17,40 @@
  * 02111-1307, USA.
  */
 
-#ifndef EV_UNIXGNOMETOOLBAR_H
-#define EV_UNIXGNOMETOOLBAR_H
+#ifndef EV_UNIXMENUBAR_H
+#define EV_UNIXMENUBAR_H
 
-#include <gnome.h>
-#include "ut_types.h"
-#include "ut_vector.h"
-#include "xap_Types.h"
-#include "ev_UnixToolbar.h"
-#include "xav_Listener.h"
-#include "xap_UnixGnomeApp.h"
-#include "xap_UnixGnomeFrame.h"
+#include "ev_UnixMenu.h"
 
-class AP_UnixToolbar_Icons;
-class EV_UnixToolbar_ViewListener;
+#ifdef HAVE_GNOME
+#include "gnome/ev_UnixGnomeMenu.h"
+#define EV_UNIXBASEMENU EV_UnixGnomeMenu
+#else
+#define EV_UNIXBASEMENU EV_UnixMenu
+#endif
 
-class _wd;
+class AV_View;
+class XAP_UnixApp;
+class XAP_UnixFrame;
 
-class EV_UnixGnomeToolbar : public EV_UnixToolbar
+
+/*****************************************************************/
+
+class EV_UnixMenuBar : public EV_UNIXBASEMENU
 {
 public:
-	EV_UnixGnomeToolbar(XAP_UnixGnomeApp * pUnixApp, XAP_UnixGnomeFrame * pUnixFrame,
-						const char * szToolbarLayoutName,
-						const char * szToolbarLabelSetName);
-	
-	virtual ~EV_UnixGnomeToolbar(void);
+	EV_UnixMenuBar(XAP_UnixApp * pUnixApp,
+				   XAP_UnixFrame * pUnixFrame,
+				   const char * szMenuLayoutName,
+				   const char * szMenuLabelSetName);
+	virtual ~EV_UnixMenuBar(void);
 
-	virtual UT_Bool synthesize(void);
+	virtual UT_Bool     synthesizeMenuBar(void);
+	virtual UT_Bool		refreshMenu(AV_View * pView);
+
+protected:
+	GtkWidget *			m_wMenuBar;
+	GtkWidget * 		m_wHandleBox;
 };
 
-#endif /* EV_UNIXGNOMETOOLBAR_H */
+#endif /* EV_UNIXMENUBAR_H */

@@ -1,5 +1,5 @@
 /* AbiSource Program Utilities
- * Copyright (C) 1998 AbiSource, Inc.
+ * Copyright (C) 1998-2000 AbiSource, Inc.
  * 
  * This program is free software; you can redistribute it and/or
  * modify it under the terms of the GNU General Public License
@@ -19,8 +19,8 @@
 
 #include <gnome.h>
 #ifdef HAVE_BONOBO
-#include <libgnorba/gnorba.h>
-#include <bonobo/gnome-bonobo.h>
+//#include <libgnorba/gnorba.h>
+#include <bonobo.h>
 #endif
 
 #include <string.h>
@@ -30,8 +30,8 @@
 #include "ut_string.h"
 #include "ev_UnixToolbar.h"
 #include "xap_Types.h"
-#include "xap_UnixApp.h"
-#include "xap_UnixFrame.h"
+#include "xap_UnixGnomeApp.h"
+#include "xap_UnixGnomeFrame.h"
 #include "ev_Toolbar_Actions.h"
 #include "ev_Toolbar_Layouts.h"
 #include "ev_Toolbar_Labels.h"
@@ -138,10 +138,10 @@ public:									// we create...
 
 /*****************************************************************/
 
-EV_UnixGnomeToolbar::EV_UnixGnomeToolbar(XAP_UnixApp * pUnixApp, XAP_UnixFrame * pUnixFrame,
+EV_UnixGnomeToolbar::EV_UnixGnomeToolbar(XAP_UnixGnomeApp * pUnixApp, XAP_UnixGnomeFrame * pUnixFrame,
 										 const char * szToolbarLayoutName,
 										 const char * szToolbarLabelSetName)
-	: EV_UnixToolbar(pUnixApp, pUnixFrame,
+	: EV_UnixToolbar(static_cast<XAP_UnixApp *> (pUnixApp), static_cast<XAP_UnixFrame *> (pUnixFrame),
 					 szToolbarLayoutName,
 					 szToolbarLabelSetName)
 {

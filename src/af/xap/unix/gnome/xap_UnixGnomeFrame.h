@@ -1,5 +1,5 @@
 /* AbiSource Application Framework
- * Copyright (C) 1998 AbiSource, Inc.
+ * Copyright (C) 1998-2000 AbiSource, Inc.
  * 
  * This program is free software; you can redistribute it and/or
  * modify it under the terms of the GNU General Public License
@@ -32,6 +32,8 @@ extern "C" {
 #include "xap_UnixFrame.h"
 #include "xap_UnixApp.h"
 
+class XAP_UnixGnomeApp;
+
 /*****************************************************************
 ******************************************************************
 ** This file defines the unix-platform-specific class for the
@@ -44,10 +46,10 @@ extern "C" {
 class XAP_UnixGnomeFrame : public XAP_UnixFrame
 {
 public:
-	// Yes, I know that it's to be XAP_UnixGnomeApp, but I'm having
-    // some problems with that, so temporaly...
-	XAP_UnixGnomeFrame(XAP_UnixApp * app);
+	XAP_UnixGnomeFrame(XAP_UnixGnomeApp * app);
 	XAP_UnixGnomeFrame(XAP_UnixGnomeFrame * f);
+	XAP_UnixGnomeFrame(XAP_UnixApp * app);
+	XAP_UnixGnomeFrame(XAP_UnixFrame * f);
 	virtual ~XAP_UnixGnomeFrame(void);
 
 	virtual UT_Bool				openURL(const char * szURL);

@@ -1,5 +1,5 @@
 /* AbiSource Application Framework
- * Copyright (C) 1998 AbiSource, Inc.
+ * Copyright (C) 1998-2000 AbiSource, Inc.
  * 
  * This program is free software; you can redistribute it and/or
  * modify it under the terms of the GNU General Public License
@@ -29,7 +29,7 @@
 #include "xap_UnixFrame.h"
 #include "ev_UnixKeyboard.h"
 #include "ev_UnixMouse.h"
-#include "ev_UnixMenu.h"
+#include "ev_UnixMenuBar.h"
 #include "ev_UnixToolbar.h"
 #include "ev_EditMethod.h"
 #include "xav_View.h"

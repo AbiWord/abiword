@@ -1,5 +1,5 @@
 /* AbiSource Program Utilities
- * Copyright (C) 1998 AbiSource, Inc.
+ * Copyright (C) 1998-2000 AbiSource, Inc.
  * 
  * This program is free software; you can redistribute it and/or
  * modify it under the terms of the GNU General Public License
@@ -30,6 +30,7 @@
 #include "ut_debugmsg.h"
 #include "xap_Types.h"
 #include "ev_UnixMenu.h"
+#include "ev_UnixMenuBar.h"
 #include "xap_UnixApp.h"
 #include "xap_UnixFrame.h"
 #include "ev_UnixKeyboard.h"
@@ -37,7 +38,6 @@
 #include "ev_Menu_Actions.h"
 #include "ev_Menu_Labels.h"
 #include "ev_EditEventMapper.h"
-
 
 /*****************************************************************/
 
@@ -389,6 +389,7 @@ static void _ev_convert(char * bufResult,
 
 UT_Bool EV_UnixMenu::synthesizeMenu(GtkWidget * wMenuRoot)
 {
+	UT_DEBUGMSG(("EV_UnixMenu::synthesizeMenu\n"));
     // create a GTK menu from the info provided.
 	const EV_Menu_ActionSet * pMenuActionSet = m_pUnixApp->getMenuActionSet();
 	UT_ASSERT(pMenuActionSet);
@@ -1046,7 +1047,7 @@ EV_UnixMenuBar::EV_UnixMenuBar(XAP_UnixApp * pUnixApp,
 							   XAP_UnixFrame * pUnixFrame,
 							   const char * szMenuLayoutName,
 							   const char * szMenuLabelSetName)
-	: EV_UnixMenu(pUnixApp,pUnixFrame,szMenuLayoutName,szMenuLabelSetName)
+	: EV_UNIXBASEMENU(pUnixApp,pUnixFrame,szMenuLayoutName,szMenuLabelSetName)
 {
 }
 

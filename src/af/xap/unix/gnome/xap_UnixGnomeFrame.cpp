@@ -1,5 +1,5 @@
 /* AbiSource Application Framework
- * Copyright (C) 1998 AbiSource, Inc.
+ * Copyright (C) 1998-2000 AbiSource, Inc.
  * 
  * This program is free software; you can redistribute it and/or
  * modify it under the terms of the GNU General Public License
@@ -25,10 +25,11 @@
 #include "xap_ViewListener.h"
 #include "xap_UnixApp.h"
 #include "xap_UnixFrame.h"
+#include "xap_UnixGnomeApp.h"
 #include "xap_UnixGnomeFrame.h"
 #include "ev_UnixKeyboard.h"
 #include "ev_UnixMouse.h"
-#include "ev_UnixGnomeMenu.h"
+#include "ev_UnixGnomeMenuBar.h"
 #include "ev_UnixGnomeToolbar.h"
 #include "ev_EditMethod.h"
 #include "xav_View.h"
@@ -109,13 +110,23 @@ void XAP_UnixGnomeFrame::_dnd_drop_event(GtkWidget        *widget,
 
 /*****************************************************************/
 
+XAP_UnixGnomeFrame::XAP_UnixGnomeFrame(XAP_UnixGnomeApp * app)
+	: XAP_UnixFrame(static_cast<XAP_UnixApp *> (app))
+{
+}
+
 XAP_UnixGnomeFrame::XAP_UnixGnomeFrame(XAP_UnixApp * app)
 	: XAP_UnixFrame(app)
 {
 }
 
 XAP_UnixGnomeFrame::XAP_UnixGnomeFrame(XAP_UnixGnomeFrame * f)
-	: XAP_UnixFrame(static_cast<XAP_UnixFrame *>(f))
+	: XAP_UnixFrame(static_cast<XAP_UnixFrame *> (f))
+{
+}
+
+XAP_UnixGnomeFrame::XAP_UnixGnomeFrame(XAP_UnixFrame * f)
+	: XAP_UnixFrame(f)
 {
 }
 
@@ -172,8 +183,13 @@ void XAP_UnixGnomeFrame::_createTopLevelWindow(void)
 										  m_szMenuLayoutName,
 										  m_szMenuLabelSetName);
 	UT_ASSERT(m_pUnixMenu);
-	bResult = m_pUnixMenu->synthesizeMenuBar();
+	bResult = ((EV_UnixGnomeMenuBar *) m_pUnixMenu)->synthesizeMenuBar();
 	UT_ASSERT(bResult);
+
+
+	UT_ASSERT(m_pUnixMenu);
+
+
 
 	// create a toolbar instance for each toolbar listed in our base class.
 	// TODO for some reason, the toolbar functions require the TLW to be
@@ -237,6 +253,11 @@ void XAP_UnixGnomeFrame::_createTopLevelWindow(void)
 									 y);
 
 	// we let our caller decide when to show m_wTopLevelWindow.
+
+
+	UT_ASSERT(m_pUnixMenu);
+
+
 	return;
 }
 
