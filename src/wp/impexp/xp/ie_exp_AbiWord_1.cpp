@@ -633,12 +633,27 @@ void s_AbiWord_1_Listener::_handleStyles(void)
 {
 	bool bWroteOpenStyleSection = false;
 
-	const char * szName;
-	const PD_Style * pStyle;
-
-	for (UT_uint32 k=0; (m_pDocument->enumStyles(k,&szName,&pStyle)); k++)
+	const char * szName = NULL;
+	const PD_Style * pStyle=NULL;
+	UT_Vector vecStyles;
+	m_pDocument->getAllUsedStyles(&vecStyles);
+	UT_uint32 k = 0;
+	for (k=0; k < vecStyles.getItemCount(); k++)
 	{
-		if (!pStyle->isUsed() || !pStyle->isUserDefined())
+		pStyle = (PD_Style *) vecStyles.getNthItem(k);
+		if (!bWroteOpenStyleSection)
+		{
+			m_pie->write("<styles>\n");
+			bWroteOpenStyleSection = true;
+		}
+
+		PT_AttrPropIndex api = pStyle->getIndexAP();
+		_openTag("s","/",true,api);
+	}
+
+	for (k=0; m_pDocument->enumStyles(k, &szName, &pStyle); k++)
+	{
+		if (!pStyle->isUserDefined() || (vecStyles.findItem((void *) pStyle) >= 0))
 			continue;
 
 		if (!bWroteOpenStyleSection)

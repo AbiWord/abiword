@@ -124,7 +124,7 @@ public:
 	bool					appendObject(PTObjectType pto, const XML_Char ** attributes);
 	bool					appendFmtMark(void);
 	bool					appendStyle(const XML_Char ** attributes);
-	bool                                    removeStyle(const XML_Char * name);
+	bool                    removeStyle(const XML_Char * name);
 	bool					tellListener(PL_Listener * pListener);
 	bool					tellListenerSubset(PL_Listener * pListener,
 											   PD_DocumentRange * pDocRange);
@@ -173,6 +173,7 @@ public:
 										  void ** ppHandle, const char ** pszName, const UT_ByteBuf ** ppByteBuf, void** ppToken) const;
 	
 	// styles
+	void                    getAllUsedStyles(UT_Vector * pVecStyles);
 	PL_StruxFmtHandle       getNthFmtHandle(PL_StruxDocHandle sdh, UT_uint32 n);
 	bool					getStyle(const char * szName, PD_Style ** ppStyle) const;
 	size_t                                  getStyleCount(void);

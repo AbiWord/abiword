@@ -5838,7 +5838,8 @@ bool IE_Imp_RTF::HandleStyleDefinition(void)
 		{
 		case '\\':
             status = ReadKeyword(keyword, &parameter, &parameterUsed, MAX_KEYWORD_LEN);
-			if (!status) {
+			if (!status) 
+			{
 				return status;
 			}
 			else if (strcmp((char *)keyword, "sbasedon") == 0)
@@ -5872,8 +5873,8 @@ bool IE_Imp_RTF::HandleStyleDefinition(void)
 				if (parameter != styleNumber)
 				{
 //
-// Have to deal with out of sequence styles. ie A style maybe basedon a style that 
-// has not yet been seen.
+// Have to deal with out of sequence styles. ie A style may have a followed-by style 
+// that has not yet been seen.
 //
 // So remember it and fill it later..
 //
@@ -5901,7 +5902,10 @@ bool IE_Imp_RTF::HandleStyleDefinition(void)
 			}
 			else if (strcmp((char *)keyword, "*") == 0)
 			{
-				break;
+//
+// Get next keyword
+//
+
 			}
 			else 
 			{

@@ -462,6 +462,95 @@ bool PD_Document::appendFmtMark(void)
 	return m_pPieceTable->appendFmtMark();
 }
 
+/*!
+ * This method scans the document for all styles used in the document, including
+ * styles in the basedon heiracy and the followedby list
+ * 
+ */
+void PD_Document::getAllUsedStyles(UT_Vector * pVecStyles)
+{
+	UT_sint32 i = 0;
+	pf_Frag * currentFrag = m_pPieceTable->getFragments().getFirst();
+	PD_Style * pStyle = NULL;
+	while (currentFrag!=m_pPieceTable->getFragments().getLast())
+	{
+		UT_ASSERT(currentFrag);
+//
+// get indexAP
+// get PT_STYLE_ATTRIBUTE_NAME
+// if it matches style name or is contained in a basedon name or followedby
+// 
+//
+// All this code is used to find if this frag has a style in it.
+//
+		PT_AttrPropIndex indexAP = 0;
+		if(currentFrag->getType()  == pf_Frag::PFT_Strux)
+		{
+			indexAP = static_cast<pf_Frag_Strux *>(currentFrag)->getIndexAP();
+		}
+		else if(currentFrag->getType()  == pf_Frag::PFT_Text)
+		{
+			indexAP = static_cast<pf_Frag_Text *>(currentFrag)->getIndexAP();
+		}
+		else if(currentFrag->getType()  == pf_Frag::PFT_Object)
+		{
+			indexAP = static_cast<pf_Frag_Object *>(currentFrag)->getIndexAP();
+		}
+		else if(currentFrag->getType()  == pf_Frag::PFT_FmtMark)
+		{
+			indexAP = static_cast<pf_Frag_FmtMark *>(currentFrag)->getIndexAP();
+		}
+		const PP_AttrProp * pAP = NULL;
+		m_pPieceTable->getAttrProp(indexAP,&pAP);
+		UT_ASSERT(pAP);
+		const XML_Char * pszStyleName = NULL;
+		(pAP)->getAttribute(PT_STYLE_ATTRIBUTE_NAME, pszStyleName);
+//
+// We've found a style...
+//
+		if(pszStyleName != NULL)
+		{
+			m_pPieceTable->getStyle(pszStyleName,&pStyle);
+			UT_ASSERT(pStyle);
+			if(pStyle)
+			{
+				if(pVecStyles->findItem((void *) pStyle) < 0)
+				{
+					pVecStyles->addItem((void *) pStyle);
+				}
+				PD_Style * pBasedOn = pStyle->getBasedOn();
+				i = 0;
+				while(pBasedOn != NULL && i <  pp_BASEDON_DEPTH_LIMIT)
+				{
+					if(pVecStyles->findItem((void *) pBasedOn) < 0)
+					{
+						pVecStyles->addItem((void *) pBasedOn);
+					}
+					i++;
+					pBasedOn = pBasedOn->getBasedOn();
+				}
+				PD_Style * pFollowedBy = pStyle->getFollowedBy();
+				if(pFollowedBy && (pVecStyles->findItem((void *) pFollowedBy) < 0))
+				{
+					pVecStyles->addItem((void *) pFollowedBy);
+				}
+			}
+		}
+//
+// Get Next frag in the table.
+//
+		currentFrag = currentFrag->getNext();
+	}
+//
+// Done!
+//
+}		
+					
+/*!
+ * This method removes the style of name pszName from the styles definition and removes
+ * all instances of it from the document including the basedon heiracy and the 
+ * followed-by sequences.
+ */
 bool PD_Document::removeStyle(const XML_Char * pszName)
 {
 	UT_ASSERT(m_pPieceTable);
