@@ -370,6 +370,9 @@ void ie_Table::OpenCell(PT_AttrPropIndex iApi)
 {
 	ie_PartTable * pPT = NULL;
 	m_sLastTable.viewTop(reinterpret_cast<void **>(&pPT));
+
+	UT_return_if_fail(pPT != NULL);
+
 	UT_sint32 iOldTop = pPT->getTop();
 	pPT->setCellApi(iApi);
 	pPT->setCellJustOpenned(true);
@@ -459,6 +462,9 @@ UT_sint32 ie_Table::getCurRow(void)
 {
 	ie_PartTable * pPT = NULL;
 	m_sLastTable.viewTop(reinterpret_cast<void **>(&pPT));
+
+	UT_return_val_if_fail(pPT != NULL, 0);
+
 	return pPT->getCurRow();
 }
 

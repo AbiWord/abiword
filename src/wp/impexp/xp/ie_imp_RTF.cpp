@@ -2002,8 +2002,11 @@ void IE_Imp_RTF::HandleRow(void)
 	{
 		UT_DEBUGMSG(("One of those stupid rows without cells found. \n"));
 		UT_DEBUGMSG(("Handle it now. RTF totally sucks. \n"));
-		getTable()->removeCurrentRow();
-		getDoc()->miniDump(m_lastCellSDH,8);
+		if(getTable()) {
+			getTable()->removeCurrentRow();
+			getDoc()->miniDump(m_lastCellSDH,8);
+		}
+
 		m_bCellBlank = true;
 		UT_ASSERT_HARMLESS(0);
 	}
@@ -4295,7 +4298,7 @@ bool IE_Imp_RTF::TranslateKeywordID(RTF_KEYWORD_ID keywordID,
 				OpenTable();
 			}
 		}
-		else if(m_currentRTFState.m_paraProps.m_tableLevel < m_TableControl.getNestDepth())
+		else if((m_currentRTFState.m_paraProps.m_tableLevel >= 0) && m_currentRTFState.m_paraProps.m_tableLevel < m_TableControl.getNestDepth())
 		{
 			while(m_currentRTFState.m_paraProps.m_tableLevel < m_TableControl.getNestDepth())
 			{
@@ -4688,7 +4691,7 @@ bool IE_Imp_RTF::TranslateKeywordID(RTF_KEYWORD_ID keywordID,
 			}
 			xxx_UT_DEBUGMSG(("After trowd m_tableLevel %d nestDepth %d \n",m_currentRTFState.m_paraProps.m_tableLevel,m_TableControl.getNestDepth()));
 		}
-		else if(m_currentRTFState.m_paraProps.m_tableLevel < m_TableControl.getNestDepth())
+		else if((m_currentRTFState.m_paraProps.m_tableLevel >= 0) && m_currentRTFState.m_paraProps.m_tableLevel < m_TableControl.getNestDepth())
 		{
 			xxx_UT_DEBUGMSG(("At trowd m_tableLevel %d nestDepth %d \n",m_currentRTFState.m_paraProps.m_tableLevel,m_TableControl.getNestDepth()));
 			while(m_currentRTFState.m_paraProps.m_tableLevel < m_TableControl.getNestDepth())
@@ -5895,7 +5898,7 @@ bool IE_Imp_RTF::ApplyParagraphAttributes()
 				xxx_UT_DEBUGMSG(("After Apply Paragraph m_tableLevel %d nestDepth %d \n",m_currentRTFState.m_paraProps.m_tableLevel,m_TableControl.getNestDepth()));
 			}
 		}
-		else if(m_currentRTFState.m_paraProps.m_tableLevel < m_TableControl.getNestDepth())
+		else if((m_currentRTFState.m_paraProps.m_tableLevel >= 0) && m_currentRTFState.m_paraProps.m_tableLevel < m_TableControl.getNestDepth())
 		{
 			xxx_UT_DEBUGMSG(("At Apply Paragraph m_tableLevel %d nestDepth %d \n",m_currentRTFState.m_paraProps.m_tableLevel,m_TableControl.getNestDepth()));
 			while(m_currentRTFState.m_paraProps.m_tableLevel < m_TableControl.getNestDepth())

@@ -2007,6 +2007,9 @@ PL_StruxDocHandle PD_Document::getCellSDHFromRowCol(PL_StruxDocHandle tableSDH,
 // Do the scan
 //
 	const pf_Frag * currentFrag = static_cast<const pf_Frag *>(tableSDH);
+
+	UT_return_val_if_fail(currentFrag != NULL, NULL);
+
 	currentFrag = currentFrag->getNext();
 	while (currentFrag && currentFrag!=m_pPieceTable->getFragments().getLast())
 	{
