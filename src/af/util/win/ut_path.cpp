@@ -21,6 +21,7 @@
 #include "ut_path.h"
 #include "ut_assert.h"
 #include <string.h>
+#include <sys/types.h>
 #include <sys/stat.h>
 
 /*!	This function takes a char* representing a path to a file and returns
@@ -65,6 +66,13 @@ bool UT_isRegularFile(const char* filename)
 
 time_t UT_mTime(const char* path)
 {
-	UT_ASSERT(UT_NOT_IMPLEMENTED);
+	struct _stat buf;
+
+	if( _stat( path , &buf ) != -1 ) 
+	{
+		return buf.st_mtime;
+	}
+
+	UT_ASSERT_HARMLESS(1);
 	return((time_t)-1);
 }
