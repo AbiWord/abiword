@@ -26,6 +26,7 @@
 #include "ut_misc.h"
 #include "ut_hash.h"
 #include "ut_string.h"
+#include "ut_string_class.h"
 
 #define _RoundUp(x,y) ((((x)+((y)-1))/(y))*(y))
 
@@ -98,10 +99,14 @@ bool UT_Xpm2Bmp(UT_uint32 maxWidth,
 	
 	// walk thru the palette
 
+	// use a local UT_String, else every call to hash.insert and hash.pick
+	// creates and destroys its own UT_String
+	UT_String sTmp;
+
 	const char ** pIconDataPalette = &pIconData[1];
 	for (UT_uint32 k=0; (k < nrColors); k++)
 	{
-		char bufSymbol[10];
+		char bufSymbol[10] = { 0 };
 		char bufKey[10];
 		char bufColorValue[100];
 
@@ -109,7 +114,6 @@ bool UT_Xpm2Bmp(UT_uint32 maxWidth,
 		// but we allow a space as a character in the symbol, so we
 		// get the first field the hard way.
 
-		memset(bufSymbol,0,sizeof(bufSymbol));
 		for (UT_uint32 kPx=0; (kPx < charsPerPixel); kPx++)
 			bufSymbol[kPx] = pIconDataPalette[k][kPx];
 		UT_ASSERT(strlen(bufSymbol) == charsPerPixel);
@@ -120,8 +124,8 @@ bool UT_Xpm2Bmp(UT_uint32 maxWidth,
 
 		// make the ".." a hash key and store our color index as the data.
 		// we add k+1 because the hash code does not like null pointers...
-		
-		hash.insert(bufSymbol, (void *)(k+1));
+		sTmp = bufSymbol;
+		hash.insert(sTmp, (void *)(k+1));
 
 		// store the actual color value in the rgb quad array with our color index.
 
@@ -155,12 +159,12 @@ bool UT_Xpm2Bmp(UT_uint32 maxWidth,
 		p += cut_left * charsPerPixel;
 		for (UT_uint32 kCol=0; (kCol < width); kCol++)
 		{
-			char bufPixel[10];
-			memset(bufPixel,0,sizeof(bufPixel));
+			char bufPixel[10] = { 0 };
 			for (UT_uint32 kPx=0; (kPx < charsPerPixel); kPx++)
 				bufPixel[kPx] = *p++;
 
-			const void * pEntry = hash.pick(bufPixel);
+			sTmp = bufPixel;
+			const void * pEntry = hash.pick(sTmp);
 			*pPixel++ = ((UT_Byte)(pEntry)) - 1;
 		}
 
