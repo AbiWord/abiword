@@ -29,6 +29,7 @@
 #include "xav_View.h"
 #include "ev_NamedVirtualKey.h"
 #include "ev_UnixKeyboard.h"
+#include "ev_UnixKeysym2ucs.cpp"
 
 #include"ut_mbtowc.h"
 
@@ -79,7 +80,7 @@ UT_Bool ev_UnixKeyboard::keyPressEvent(AV_View* pView,
 	if (e->state & (s_alt_mask))
 		state |= EV_EMS_ALT;
 
-	//UT_DEBUGMSG(("KeyPressEvent: keyval=%04lx state=%04lx\n",e->keyval,state));
+	//UT_DEBUGMSG(("KeyPressEvent: keyval=%x state=%x\n",e->keyval,state));
 	
 	if (s_isVirtualKeyCode(e->keyval))
 	{
@@ -124,6 +125,7 @@ UT_Bool ev_UnixKeyboard::keyPressEvent(AV_View* pView,
 	else
 	{
 		UT_uint16 charData = e->keyval;
+		//UT_DEBUGMSG(("UnixKeyboard::pressKeyEvent: key value %x\n", charData));
 		UT_Mbtowc m;
 		wchar_t wc;
 	  	UT_UCSChar *ucs;
@@ -156,12 +158,38 @@ UT_Bool ev_UnixKeyboard::keyPressEvent(AV_View* pView,
 			UT_ASSERT(pEM);
 
 			uLength=0;
-			ucs=new UT_UCSChar[mLength];
-			for(int i=0;i<mLength;++i)
-			  {
-				if(m.mbtowc(wc,mbs[i]))
-				  ucs[uLength++]=wc;
-			  }					
+			/*
+				if gdk fails to translate, then we will try to do this
+				ourselves by calling kesym2ucs
+			*/
+			
+			if(mLength == 0)
+			{
+				UT_sint32 u = keysym2ucs(e->keyval);
+				
+				if(u == -1 || u > 0xFFFF) //conversion failed, or more than 16 bit requied
+				{
+					mLength = 0;
+				}
+				else
+				{
+					mLength = 1;
+					ucs = new UT_UCSChar[1];
+					ucs[0] = u;
+				}
+				
+				uLength = mLength;
+				//UT_DEBUGMSG(("#TF: keyval=%x, ucs=%x\n", ucs[0]));
+			}
+			else
+			{
+				ucs=new UT_UCSChar[mLength];
+				for(int i=0;i<mLength;++i)
+			  	{
+					if(m.mbtowc(wc,mbs[i]))
+				  	ucs[uLength++]=wc;
+			  	}					
+			 }
 			invokeKeyboardMethod(pView,pEM,ucs,uLength); // no char data to offer
 			delete ucs;
  			return UT_TRUE;
