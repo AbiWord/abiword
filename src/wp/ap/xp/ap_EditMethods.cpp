@@ -4029,6 +4029,9 @@ static UT_Bool s_doPageSetupDlg (FV_View * pView)
 	fp_PageSize::Predefined orig_def,final_def;
 	fp_PageSize pSize(pDoc->m_docPageSize.getPredefinedName());
 	orig_def = pSize.NameToPredefined(pSize.getPredefinedName());
+	//
+	// Set first page of the dialog properties.
+	//
 	pDialog->setPageSize(pSize);
 	pDialog->setPageSize(orig_def);
 	AP_Dialog_PageSetup::Orientation orig_ori,final_ori;
@@ -4036,72 +4039,243 @@ static UT_Bool s_doPageSetupDlg (FV_View * pView)
 	if(pDoc->m_docPageSize.isPortrait() == UT_FALSE)
 	       orig_ori = AP_Dialog_PageSetup::LANDSCAPE;
 	pDialog->setPageOrientation(orig_ori);
-	fp_PageSize::Unit orig_unit,final_unit;
+	fp_PageSize::Unit orig_unit,final_unit,orig_margu,final_margu;
 	double orig_scale,final_scale;
 	orig_unit = pDoc->m_docPageSize.getUnit();
 	orig_scale = pDoc->m_docPageSize.getScale();
 
 	pDialog->setPageUnits(orig_unit);
 	pDialog->setPageScale(100.0*orig_scale);
-	// TODO: properly set up dialog with AbiWord's current data
+
+	//
+	// Set the second page of info
+	// All the page and header/footer margins
+	//
+	const XML_Char ** props_in = NULL;
+	const char* pszLeftMargin = NULL;
+	const char* pszTopMargin = NULL;
+	const char* pszRightMargin = NULL;
+	const char* pszBottomMargin = NULL;
+	const char* pszFooterMargin = NULL;
+	const char* pszHeaderMargin = NULL;
+	double dLeftMargin = 1.0;
+	double dRightMargin=1.0; 
+	double dTopMargin = 1.0;
+	double dBottomMargin = 1.0;
+	double dFooterMargin= 0.0;
+	double dHeaderMargin = 0.0;
+	UT_Dimension docMargUnits = DIM_IN;
+
+	UT_Bool bResult = pView->getSectionFormat(&props_in);
+	if (!bResult)
+	{
+		UT_ASSERT(UT_SHOULD_NOT_HAPPEN);
+	}
+	if(props_in && props_in[0])
+	{
+	        pszLeftMargin = UT_getAttribute("page-margin-left", props_in);
+		if(pszLeftMargin)
+		{
+		       dLeftMargin = UT_convertToInches(pszLeftMargin);
+		       docMargUnits = UT_determineDimension(pszLeftMargin);
+		}
+
+	        pszRightMargin = UT_getAttribute("page-margin-right", props_in);
+		if(pszRightMargin)
+		{
+		       dRightMargin = UT_convertToInches(pszRightMargin);
+		       docMargUnits = UT_determineDimension(pszRightMargin);
+		}
+
+	        pszTopMargin = UT_getAttribute("page-margin-top", props_in);
+		if(pszTopMargin)
+		{
+		       dTopMargin = UT_convertToInches(pszTopMargin);
+		       docMargUnits = UT_determineDimension(pszTopMargin);
+		}
+
+	        pszBottomMargin = UT_getAttribute("page-margin-bottom", props_in);
+		if(pszBottomMargin)
+		{
+		       dBottomMargin = UT_convertToInches(pszBottomMargin);
+		       docMargUnits = UT_determineDimension(pszBottomMargin);
+		}
+
+	        pszFooterMargin = UT_getAttribute("page-margin-footer", props_in);
+		if(pszFooterMargin)
+		       dFooterMargin = UT_convertToInches(pszFooterMargin);
+
+	        pszHeaderMargin = UT_getAttribute("page-margin-header", props_in);
+		if(pszHeaderMargin)
+		       dHeaderMargin = UT_convertToInches(pszHeaderMargin);
+	}
+	FREEP(props_in);
+	orig_margu = fp_PageSize::inch;
+	if(docMargUnits == DIM_MM)
+	{
+	        dLeftMargin = dLeftMargin * 25.4;
+	        dRightMargin = dRightMargin * 25.4;
+	        dTopMargin = dTopMargin * 25.4;
+	        dBottomMargin = dBottomMargin * 25.4;
+	        dFooterMargin = dFooterMargin * 25.4;
+	        dHeaderMargin = dHeaderMargin * 25.4;
+		orig_margu = fp_PageSize::mm;
+	}
+	else if(docMargUnits == DIM_CM)
+	{
+	        dLeftMargin = dLeftMargin * 2.54;
+	        dRightMargin = dRightMargin * 2.54;
+	        dTopMargin = dTopMargin * 2.54;
+	        dBottomMargin = dBottomMargin * 2.54;
+	        dFooterMargin = dFooterMargin * 2.54;
+	        dHeaderMargin = dHeaderMargin * 2.54;
+		orig_margu = fp_PageSize::cm;
+	}
+	//
+	// OK set all page two stuff
+	//
+	pDialog->setMarginUnits(orig_margu);
+	pDialog->setMarginTop((float) dTopMargin);
+	pDialog->setMarginBottom((float) dBottomMargin);
+	pDialog->setMarginLeft((float) dLeftMargin);
+	pDialog->setMarginRight((float) dRightMargin);
+	pDialog->setMarginHeader((float) dHeaderMargin);
+	pDialog->setMarginFooter((float) dFooterMargin);
 
 	pDialog->runModal (pFrame);
 
 	AP_Dialog_PageSetup::tAnswer ans = pDialog->getAnswer();
 	UT_Bool bOK = (ans == AP_Dialog_PageSetup::a_OK);
 
-	if (bOK)
+	if(bOK == UT_FALSE)
+	       return UT_TRUE;
+
+	final_def = pSize.NameToPredefined(pDialog->getPageSize().getPredefinedName());
+	final_ori = pDialog->getPageOrientation();
+	final_unit = pDialog->getPageUnits();
+	final_scale = pDialog->getPageScale()/100.0;
+	if((final_def != orig_def) || (final_ori != orig_ori) || (final_unit != orig_unit) || ((final_scale-orig_scale) > 0.001) || ((final_scale-orig_scale) < -0.001) )
 	{
-	       final_def = pSize.NameToPredefined(pDialog->getPageSize().getPredefinedName());
-	       final_ori = pDialog->getPageOrientation();
-	       UT_DEBUGMSG(("SEVIOR: orig_ori =%d final_ori = %d \n",orig_ori,final_ori));
-	       final_unit = pDialog->getPageUnits();
-	       final_scale = pDialog->getPageScale()/100.0;
-	       if((final_def != orig_def) || (final_ori != orig_ori) || (final_unit != orig_unit) || ((final_scale-orig_scale) > 0.001) || ((final_scale-orig_scale) < -0.001) )
+	  //
+	  // Set the new Page Stuff
+	  //
+	       pDoc->m_docPageSize.Set(pSize.PredefinedToName(final_def));
+	       pDoc->m_docPageSize.Set(final_unit);
+	       UT_Bool p = (final_ori == AP_Dialog_PageSetup::PORTRAIT);
+	       if( p == UT_TRUE)
+	       { 
+		      pDoc->m_docPageSize.setPortrait();
+	       }
+	       else
+	       { 
+		      pDoc->m_docPageSize.setLandscape();
+	       }
+	       pDoc->m_docPageSize.setScale(final_scale);
+
+	       //
+	       // Get all clones of this frame and set the new page dimensions
+	       //
+
+	       UT_Vector vClones;
+	       if(pFrame->getViewNumber() > 0)
 	       {
-		 //
-		 // Set the new Page Stuff
-		 //
-		      pDoc->m_docPageSize.Set(pSize.PredefinedToName(final_def));
- 		      pDoc->m_docPageSize.Set(final_unit);
-		      UT_Bool p = (final_ori == AP_Dialog_PageSetup::PORTRAIT);
-		      if( p == UT_TRUE)
-		      { 
-		             pDoc->m_docPageSize.setPortrait();
-		      }
-		      else
-		      { 
-		             pDoc->m_docPageSize.setLandscape();
-		      }
-		      UT_DEBUGMSG(("SEVIOR: scaled to %f \n",final_scale));
- 		      pDoc->m_docPageSize.setScale(final_scale);
-
-		      //
-		      // Get all clones of this frame and set the new page dimensions
-	              //
-
-		      UT_Vector vClones;
-		      if(pFrame->getViewNumber() > 0)
+		      pApp->getClones(&vClones,pFrame);
+		      for (UT_uint32 i = 0; i < vClones.getItemCount(); i++)
 		      {
-		             pApp->getClones(&vClones,pFrame);
-		             for (UT_uint32 i = 0; i < vClones.getItemCount(); i++)
-	                     {
-	      		             XAP_Frame * f = (XAP_Frame *) vClones.getNthItem(i);
-				     UT_uint32 izoom = f->getZoomPercentage();
-			             f->setZoomPercentage(izoom);
-			     }
-		      }
-		      else
-		      {
-			     UT_uint32 izoom = pFrame->getZoomPercentage();
-			     pFrame->setZoomPercentage(izoom);
+			     XAP_Frame * f = (XAP_Frame *) vClones.getNthItem(i);
+			     UT_uint32 izoom = f->getZoomPercentage();
+			     f->setZoomPercentage(izoom);
 		      }
 	       }
-	  
-	    // TODO: properly gather info from dialog
-	    // TODO: and set AbiWord's values appropriately
-	  }
+	       else
+	       {
+		      UT_uint32 izoom = pFrame->getZoomPercentage();
+		      pFrame->setZoomPercentage(izoom);
+	       }
+	}
+	//
+	// Recover ppView
+	//
+	FV_View * ppView = (FV_View *) pFrame->getCurrentView();
+	//
+	// Now gather all the margin properties...
+	//
+	
+	static char szLeftMargin[20];
+	static char szTopMargin[20];
+	static char szRightMargin[20];
+	static char szBottomMargin[20];
+	static char szFooterMargin[20];
+	static char szHeaderMargin[20];
+	final_margu = pDialog->getMarginUnits();
+	dTopMargin = (double) pDialog->getMarginTop();
+	dBottomMargin = (double) pDialog->getMarginBottom();
+	dLeftMargin = (double) pDialog->getMarginLeft();
+	dRightMargin = (double) pDialog->getMarginRight();
+	dHeaderMargin = (double) pDialog->getMarginHeader();
+	dFooterMargin = (double) pDialog->getMarginFooter();
 
+	if(final_margu == fp_PageSize::cm)
+	{
+	       docMargUnits = DIM_CM;
+	       dLeftMargin = dLeftMargin / 2.54;
+	       dRightMargin = dRightMargin / 2.54;
+	       dTopMargin = dTopMargin / 2.54;
+	       dBottomMargin = dBottomMargin / 2.54;
+	       dFooterMargin = dFooterMargin / 2.54;
+	       dHeaderMargin = dHeaderMargin / 2.54;
+	}
+	else if (final_margu == fp_PageSize::mm)
+	{
+	       docMargUnits = DIM_MM;
+	       dLeftMargin = dLeftMargin / 25.4;
+	       dRightMargin = dRightMargin / 25.4;
+	       dTopMargin = dTopMargin / 25.4;
+	       dBottomMargin = dBottomMargin / 25.4;
+	       dFooterMargin = dFooterMargin / 25.4;
+	       dHeaderMargin = dHeaderMargin / 25.4;
+	}
+	//
+	// Convert them into const char strings and change the section format
+	//
+	UT_Vector v;
+	sprintf(szLeftMargin,"%s", UT_convertInchesToDimensionString(docMargUnits,dLeftMargin));
+	v.addItem((void *)"page-margin-left");
+	v.addItem((void *) szLeftMargin);
+
+	sprintf(szRightMargin,"%s", UT_convertInchesToDimensionString(docMargUnits,dRightMargin));
+	v.addItem((void *)"page-margin-right");
+	v.addItem((void *) szRightMargin);
+
+	sprintf(szTopMargin,"%s", UT_convertInchesToDimensionString(docMargUnits,dTopMargin));
+	v.addItem((void *)"page-margin-top");
+	v.addItem((void *) szTopMargin);
+
+	sprintf(szBottomMargin,"%s", UT_convertInchesToDimensionString(docMargUnits,dBottomMargin));
+	v.addItem((void *)"page-margin-bottom");
+	v.addItem((void *) szBottomMargin);
+
+	sprintf(szFooterMargin,"%s", UT_convertInchesToDimensionString(docMargUnits,dFooterMargin));
+	v.addItem((void *)"page-margin-footer");
+	v.addItem((void *) szFooterMargin);
+
+	sprintf(szHeaderMargin,"%s", UT_convertInchesToDimensionString(docMargUnits,dHeaderMargin));
+	v.addItem((void *)"page-margin-header");
+	v.addItem((void *) szHeaderMargin);
+
+	UT_uint32 countv = v.getItemCount() + 1;
+	const XML_Char ** props = (const XML_Char **) calloc(countv, sizeof(XML_Char *));
+	UT_uint32 i;
+	for(i=0; i<v.getItemCount();i++)
+	{
+		props[i] = (XML_Char *) v.getNthItem(i);
+	}
+	props[i] = (XML_Char *) NULL;
+	//
+	// Finally we've got it all in place, Make the change!
+	//
+	ppView->setSectionFormat(props);
+	FREEP(props);
 	return UT_TRUE;
 }
 

@@ -733,9 +733,9 @@ UT_Bool fl_DocSectionLayout::doclistener_changeStrux(const PX_ChangeRecord_Strux
 	  should probably just set a flag, indicating the need to reformat this section.  Then,
 	  when it's time to update everything, we'll actually do the format.
 	*/
-	
+
 	format();
-	
+
 	FV_View* pView = m_pLayout->getView();
 	if (pView)
 	{
@@ -837,7 +837,7 @@ void fl_DocSectionLayout::_lookupProperties(void)
 		break;
 
 	case DIM_CM:
-		strcpy(defaultMargin, "2.5cm");
+		strcpy(defaultMargin, "2.54cm");
 		break;
 
 	case DIM_PI:
@@ -848,11 +848,14 @@ void fl_DocSectionLayout::_lookupProperties(void)
 		strcpy(defaultMargin, "72.0pt");
 		break;
 
-		// TODO: MM, PX, and PERCENT
+	case DIM_MM:
+		strcpy(defaultMargin, "25.4mm");
+		break;
+
+		// TODO: PX, and PERCENT
 		// let them fall through to the default now
 		// and we don't use them anyway
 #if 0
-	case DIM_MM:
 	case DIM_PX:
 	case DIM_PERCENT:
 #endif
@@ -868,6 +871,7 @@ void fl_DocSectionLayout::_lookupProperties(void)
 		m_iLeftMargin = m_pLayout->getGraphics()->convertDimension(pszLeftMargin);
 		m_iLeftMarginLayoutUnits = UT_convertToLayoutUnits(pszLeftMargin);
 		m_dLeftMarginUserUnits = UT_convertDimensionless(pszLeftMargin);
+		UT_DEBUGMSG(("SEVIOR leftmargin = %s \n",pszLeftMargin));
 	}
 	else
 	{
@@ -881,6 +885,7 @@ void fl_DocSectionLayout::_lookupProperties(void)
 		m_iTopMargin = m_pLayout->getGraphics()->convertDimension(pszTopMargin);
 		m_iTopMarginLayoutUnits = UT_convertToLayoutUnits(pszTopMargin);
 		m_dTopMarginUserUnits = UT_convertDimensionless(pszTopMargin);
+		UT_DEBUGMSG(("SEVIOR topmargin = %s \n",pszTopMargin));
 	}
 	else
 	{
@@ -894,6 +899,7 @@ void fl_DocSectionLayout::_lookupProperties(void)
 		m_iRightMargin = m_pLayout->getGraphics()->convertDimension(pszRightMargin);
 		m_iRightMarginLayoutUnits = UT_convertToLayoutUnits(pszRightMargin);
 		m_dRightMarginUserUnits = UT_convertDimensionless(pszRightMargin);
+		UT_DEBUGMSG(("SEVIOR rightmargin = %s \n",pszRightMargin));
 	}
 	else
 	{
@@ -907,19 +913,7 @@ void fl_DocSectionLayout::_lookupProperties(void)
 		m_iBottomMargin = m_pLayout->getGraphics()->convertDimension(pszBottomMargin);
 		m_iBottomMarginLayoutUnits = UT_convertToLayoutUnits(pszBottomMargin);
 		m_dBottomMarginUserUnits = UT_convertDimensionless(pszBottomMargin);
-	}
-	else
-	{
-		m_iBottomMargin = m_pLayout->getGraphics()->convertDimension(defaultMargin);
-		m_iBottomMarginLayoutUnits = UT_convertToLayoutUnits(defaultMargin);
-		m_dBottomMarginUserUnits = UT_convertDimensionless(defaultMargin);
-	}
-
-	if(pszBottomMargin && pszBottomMargin[0])
-	{
-		m_iBottomMargin = m_pLayout->getGraphics()->convertDimension(pszBottomMargin);
-		m_iBottomMarginLayoutUnits = UT_convertToLayoutUnits(pszBottomMargin);
-		m_dBottomMarginUserUnits = UT_convertDimensionless(pszBottomMargin);
+		UT_DEBUGMSG(("SEVIOR bottommargin = %s \n",pszBottomMargin));
 	}
 	else
 	{

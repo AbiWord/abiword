@@ -128,7 +128,7 @@ create_entry (float v)
 /*********************************************************************************/
 
 // some static variables
-static fp_PageSize::Predefined last_page_size = fp_PageSize::Letter;
+static fp_PageSize::Predefined last_page_size = fp_PageSize::Custom;
 static fp_PageSize::Unit last_page_unit = fp_PageSize::inch;
 static fp_PageSize::Unit last_margin_unit = fp_PageSize::inch;
 
