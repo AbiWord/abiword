@@ -254,7 +254,6 @@ void fp_TextRun::_lookupProperties(const PP_AttrProp * pSpanAP,
 		_setHeight(getGR()->getFontHeight(pFont));
 		bChanged = true;
 	}
-
 #else
 	PangoFont * pFont;
 	pFont = pLayout->findFont(pSpanAP,pBlockAP,pSectionAP);

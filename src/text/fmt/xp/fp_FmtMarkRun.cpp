@@ -57,7 +57,6 @@ void fp_FmtMarkRun::_lookupProperties(const PP_AttrProp * pSpanAP,
 {
 	// look for fonts in this DocLayout's font cache
 	FL_DocLayout * pLayout = getBlock()->getDocLayout();
-
 	GR_Font * pFont = const_cast<GR_Font *>(pLayout->findFont(pSpanAP,
 									   pBlockAP,
 									   pSectionAP));
@@ -65,7 +64,7 @@ void fp_FmtMarkRun::_lookupProperties(const PP_AttrProp * pSpanAP,
 	_setAscent(getGR()->getFontAscent(pFont));
 	_setDescent(getGR()->getFontDescent(pFont));
 	_setHeight(getGR()->getFontHeight(pFont));
-
+	xxx_UT_DEBUGMSG(("fmtmark lookup properties: Font Ascent %d  Font Descent %d Font %x Span %x \n",getAscent(),getDescent(),pFont,pSpanAP));
 	PD_Document * pDoc = getBlock()->getDocument();
 
 	_setDirection(FRIBIDI_TYPE_WS);
@@ -87,6 +86,17 @@ void fp_FmtMarkRun::_lookupProperties(const PP_AttrProp * pSpanAP,
 	}
 	else m_fPosition = TEXT_POSITION_NORMAL;
 
+}
+
+bool fp_FmtMarkRun::isSuperscript(void) const
+{
+	return (m_fPosition == TEXT_POSITION_SUPERSCRIPT);
+}
+
+
+bool fp_FmtMarkRun::isSubscript(void) const
+{
+	return (m_fPosition == TEXT_POSITION_SUBSCRIPT);
 }
 
 bool fp_FmtMarkRun::canBreakAfter(void) const
@@ -133,6 +143,7 @@ void fp_FmtMarkRun::findPointCoords(UT_uint32 /*iOffset*/, UT_sint32& x, UT_sint
 	x2 = x;
 	y2 = y;
 	bDirection = (getVisDirection() != 0);
+	xxx_UT_DEBUGMSG(("findpoint coords fmtmarkRun height %d \n",height));
 }
 
 void fp_FmtMarkRun::_clearScreen(bool /* bFullLineHeightRect */)

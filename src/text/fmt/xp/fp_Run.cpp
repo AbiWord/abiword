@@ -167,7 +167,7 @@ void fp_Run::lookupProperties()
 	// NB this call will recreate m_pRevisions for us
 	getSpanAP(pSpanAP,bDelete);
 
-
+	xxx_UT_DEBUGMSG(("fp_Run: pSpanAP %x \n",pSpanAP));
 	//evaluate the "display" property
 
 	const XML_Char *pszDisplay = PP_evalProperty("display",pSpanAP,pBlockAP,pSectionAP, pDoc, true);
@@ -513,8 +513,14 @@ void	fp_Run::setHyperlink(fp_HyperlinkRun * pH)
 void fp_Run::getSpanAP(const PP_AttrProp * &pSpanAP, bool &bDeleteAfter)
 {
 	PP_AttrProp * pMySpanAP;
-
-	getBlock()->getSpanAttrProp(getBlockOffset(),false,&pSpanAP);
+	if(getType() != FPRUN_FMTMARK)
+	{
+		getBlock()->getSpanAttrProp(getBlockOffset(),false,&pSpanAP);
+	}
+	else
+	{
+		getBlock()->getSpanAttrProp(getBlockOffset(),true,&pSpanAP);
+	}
 
 	/**************************************************************************
 	 * revision handling

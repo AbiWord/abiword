@@ -1346,8 +1346,9 @@ public:
 	virtual bool			canBreakBefore(void) const;
 	virtual bool			letPointPass(void) const;
 	virtual const PP_AttrProp* getAP(void) const;
-	virtual bool			isSuperscript(void) const { return false; }
-	virtual bool			isSubscript(void)  const { return false; }
+	virtual bool			isSuperscript(void) const ;
+	virtual bool			isSubscript(void)  const;
+	virtual bool 			hasLayoutProperties(void) const {return true;}
 
 protected:
 	virtual void			_lookupProperties(const PP_AttrProp * pSpanAP,
