@@ -197,6 +197,7 @@ dcl(DLG_ABOUT_Title,					"About %s")
      dcl(DLG_Image_Height, "Height:")
 
 dcl(DLG_Options_Label_UnixFontWarning, "Show font warning at start up")
+dcl(DLG_Options_Label_ModifyUnixFontPath, "Modify Unix Font Path")
 
 /* Language property in different languages; alphabetical except English first */
 dcl(LANG_0,								"no proofing")

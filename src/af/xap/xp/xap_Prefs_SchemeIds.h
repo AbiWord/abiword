@@ -111,6 +111,8 @@
 #define XAP_PREF_KEY_ShowUnixFontWarning "ShowUnixFontWarning"
 #define XAP_PREF_DEFAULT_ShowUnixFontWarning "1"
 
+#define XAP_PREF_KEY_ModifyUnixFontPath	 "ModifyUnixFontPath"
+#define XAP_PREF_DEFAULT_ModifyUnixFontPath "1"
 
 #else /* XAP_PREFS_SCHEMEID_H */
 #ifdef dcl
@@ -144,6 +146,7 @@ dcl(DocumentLocale)
 dcl(ZoomType)
 
 dcl(ShowUnixFontWarning)
+dcl(ModifyUnixFontPath)
 
 #endif /* dcl */
 #endif /* XAP_PREFS_SCHEMEID_H */

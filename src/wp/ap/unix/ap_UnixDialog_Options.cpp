@@ -421,7 +421,8 @@ GtkWidget* AP_UnixDialog_Options::_constructWindowContents (GtkWidget * vbox)
 	GtkWidget *save_context_glyphs;
 #endif
 	GtkWidget *fontWarning;
-	
+	GtkWidget *fontPath;
+		
 	mainWindow = m_windowMain;
 	dialog_vbox1 = vbox;
 	gtk_widget_show (dialog_vbox1);
@@ -948,6 +949,10 @@ GtkWidget* AP_UnixDialog_Options::_constructWindowContents (GtkWidget * vbox)
 	gtk_widget_show (fontWarning);
 	gtk_box_pack_start (GTK_BOX (vbox29), fontWarning, FALSE, FALSE, 0);
 
+	fontPath = gtk_check_button_new_with_label (pSS->getValue(XAP_STRING_ID_DLG_Options_Label_ModifyUnixFontPath));
+	gtk_widget_show (fontPath);
+	gtk_box_pack_start (GTK_BOX (vbox29), fontPath, FALSE, FALSE, 0);
+	
 	label10 = gtk_label_new (pSS->getValue(AP_STRING_ID_DLG_Options_TabLabel_Preferences));
 	gtk_widget_show (label10);
 	gtk_notebook_set_tab_label (GTK_NOTEBOOK (notebook1), gtk_notebook_get_nth_page (GTK_NOTEBOOK (notebook1), 3), label10);
@@ -990,16 +995,18 @@ GtkWidget* AP_UnixDialog_Options::_constructWindowContents (GtkWidget * vbox)
 		
 	m_checkbuttonViewShowRuler		= show_ruler;
 	m_listViewRulerUnits			= ruler_units;
-	m_checkbuttonViewCursorBlink	        = blink_cursor;
+	m_checkbuttonViewCursorBlink	= blink_cursor;
 
-	m_checkbuttonViewShowStatusBar	        = show_statusbar;
+	m_checkbuttonViewShowStatusBar	= show_statusbar;
 	m_checkbuttonViewAll			= view_all;
 	m_checkbuttonViewHiddenText		= view_hidden;
-	m_checkbuttonViewUnprintable	        = view_invis;
+	m_checkbuttonViewUnprintable	= view_invis;
 	m_checkbuttonFontWarning		= fontWarning;
+	m_checkbuttonFontPath		    = fontPath;
+	
 	// TODO: rulers
-	m_checkbuttonViewShowTB	= show_toolbar;
-	m_checkbuttonViewHideTB = hide_toolbar;
+	m_checkbuttonViewShowTB	        = show_toolbar;
+	m_checkbuttonViewHideTB         = hide_toolbar;
 	m_toolbarClist = toolbar_clist;
 
 	
@@ -1643,6 +1650,10 @@ void AP_UnixDialog_Options::_initUnixOnlyPrefs()
 	bool bRet = m_pApp->getPrefsValueBool(XAP_PREF_KEY_ShowUnixFontWarning, &bFontWarning);
     UT_DEBUGMSG(("bRet %d, bFontWarning %d\n",bRet,bFontWarning));
 	gtk_toggle_button_set_active (GTK_TOGGLE_BUTTON(m_checkbuttonFontWarning), bFontWarning);
+
+	bRet = m_pApp->getPrefsValueBool(XAP_PREF_KEY_ModifyUnixFontPath, &bFontWarning);
+    UT_DEBUGMSG(("bRet %d, FontPath %d\n",bRet,bFontWarning));
+	gtk_toggle_button_set_active (GTK_TOGGLE_BUTTON(m_checkbuttonFontPath), bFontWarning);
 }
 
 void AP_UnixDialog_Options::_saveUnixOnlyPrefs()
@@ -1656,6 +1667,10 @@ void AP_UnixDialog_Options::_saveUnixOnlyPrefs()
 	bool bRet = pPrefsScheme->setValueBool(XAP_PREF_KEY_ShowUnixFontWarning,
 			       gtk_toggle_button_get_active(GTK_TOGGLE_BUTTON(m_checkbuttonFontWarning)));
 	UT_DEBUGMSG(("bRet %d, Font warning %d\n",bRet,gtk_toggle_button_get_active(GTK_TOGGLE_BUTTON(m_checkbuttonFontWarning))));
+	
+	bRet = pPrefsScheme->setValueBool(XAP_PREF_KEY_ModifyUnixFontPath,
+			       gtk_toggle_button_get_active(GTK_TOGGLE_BUTTON(m_checkbuttonFontPath)));
+	UT_DEBUGMSG(("bRet %d, Font path %d\n",bRet,gtk_toggle_button_get_active(GTK_TOGGLE_BUTTON(m_checkbuttonFontPath))));
 }
 
 void AP_UnixDialog_Options::_storeWindowData(void)

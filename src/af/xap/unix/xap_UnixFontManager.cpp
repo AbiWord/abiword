@@ -200,98 +200,105 @@ bool XAP_UnixFontManager::scavengeFonts(void)
 	const char** subdirs = localeinfo_combinations("","","");
 
 #if 0
-    const char** subdir = subdirs;
-    UT_uint32 subdircount  = 0;
-	
-	while(*subdir++)
-		subdircount++;
-	
-	Display *dsp  = XOpenDisplay(gdk_get_display());
-	UT_uint32 fontPathDirCount, realFontPathDirCount = 0;
-	
-	if(m_pExtraXFontPath)
+	bool bModifyPath = true;
+	XAP_App * pApp = XAP_App::getApp();
+	UT_ASSERT(pApp);
+	pApp->getPrefsValueBool(XAP_PREF_KEY_ModifyUnixFontPath, &bModifyPath);
+
+	if(bModifyPath)
 	{
-		// this should not happen, if it does, we will not be able to restore
-		// font path when we exit
-		UT_ASSERT(UT_SHOULD_NOT_HAPPEN);
-		UT_ASSERT(m_iExtraXFontPathCount >= 0);
+	    const char** subdir = subdirs;
+    	UT_uint32 subdircount  = 0;
+	
+		while(*subdir++)
+			subdircount++;
+	
+		Display *dsp  = XOpenDisplay(gdk_get_display());
+		UT_uint32 fontPathDirCount, realFontPathDirCount = 0;
+	
+		if(m_pExtraXFontPath)
+		{
+			// this should not happen, if it does, we will not be able to restore
+			// font path when we exit
+			UT_ASSERT(UT_SHOULD_NOT_HAPPEN);
+			UT_ASSERT(m_iExtraXFontPathCount >= 0);
 		
-	    for(i = 0; i < (UT_uint32)m_iExtraXFontPathCount; i++)
-	    	FREEP(m_pExtraXFontPath[i]);
-	    delete [] m_pExtraXFontPath;
-	}
+		    for(i = 0; i < (UT_uint32)m_iExtraXFontPathCount; i++)
+		    	FREEP(m_pExtraXFontPath[i]);
+	    	delete [] m_pExtraXFontPath;
+		}
 		
-	char ** oldFontPath = XGetFontPath(dsp,(int*)&fontPathDirCount);
+		char ** oldFontPath = XGetFontPath(dsp,(int*)&fontPathDirCount);
 	
-	// set stuff for our error handler
-	s_oldFontPath = oldFontPath;
-	s_oldFontPathCount = fontPathDirCount;
+		// set stuff for our error handler
+		s_oldFontPath = oldFontPath;
+		s_oldFontPathCount = fontPathDirCount;
 	
-	realFontPathDirCount = fontPathDirCount;
-	m_iExtraXFontPathCount = -fontPathDirCount;
+		realFontPathDirCount = fontPathDirCount;
+		m_iExtraXFontPathCount = -fontPathDirCount;
 	
-	fontPathDirCount += count*subdircount;
-	UT_DEBUGMSG(("XDisplay [%s], current X font path count %d, AW path count %d, subdircount %d\n",
+		fontPathDirCount += count*subdircount;
+		UT_DEBUGMSG(("XDisplay [%s], current X font path count %d, AW path count %d, subdircount %d\n",
 				gdk_get_display(),realFontPathDirCount,count, subdircount));
 				
-	char ** newFontPath = new char*[fontPathDirCount];
-	UT_ASSERT(newFontPath);
-	char ** newFontPath_ptr = newFontPath;
-	char ** oldFontPath_ptr	= oldFontPath;
-	for(i = 0; i < realFontPathDirCount; i++)
-		*newFontPath_ptr++ = UT_strdup(*oldFontPath_ptr++);
+		char ** newFontPath = new char*[fontPathDirCount];
+		UT_ASSERT(newFontPath);
+		char ** newFontPath_ptr = newFontPath;
+		char ** oldFontPath_ptr	= oldFontPath;
+		for(i = 0; i < realFontPathDirCount; i++)
+			*newFontPath_ptr++ = UT_strdup(*oldFontPath_ptr++);
 		
-	for(i = 0; i < count; i++)
-	{
-		UT_String str;
-	    UT_ASSERT(m_searchPaths.getNthItem(i));	
-	    char* basedirname = (char *) m_searchPaths.getNthItem(i);
+		for(i = 0; i < count; i++)
+		{
+			UT_String str;
+		    UT_ASSERT(m_searchPaths.getNthItem(i));	
+		    char* basedirname = (char *) m_searchPaths.getNthItem(i);
 	
-	    for(subdir = subdirs;*subdir;++subdir)
-	    {
-	    	str = basedirname;
-	    	str += "/";
-	    	str += *subdir;
-	    	struct stat stat_data;
-	    	if(!stat(str.c_str(),&stat_data))
-	    	{
-	    		if(S_ISDIR(stat_data.st_mode))
+	    	for(subdir = subdirs;*subdir;++subdir)
+		    {
+		    	str = basedirname;
+	    		str += "/";
+	    		str += *subdir;
+		    	struct stat stat_data;
+		    	if(!stat(str.c_str(),&stat_data))
 	    		{
-	    			bool bFound = false;
-	    			// only add this if it is not already in the path
-	    			for(UT_uint32 j = 0; j < realFontPathDirCount; j++)
+	    			if(S_ISDIR(stat_data.st_mode))
 	    			{
-	    				if(!UT_strcmp(newFontPath[j], str.c_str()))
+	    				bool bFound = false;
+		    			// only add this if it is not already in the path
+		    			for(UT_uint32 j = 0; j < realFontPathDirCount; j++)
 	    				{
-	    					UT_DEBUGMSG(("directory [%s] already in the X font path\n", str.c_str()));
-	    					bFound = true;
-	    					break;
-	    				}
-	    			}
+	    					if(!UT_strcmp(newFontPath[j], str.c_str()))
+	    					{
+	    						UT_DEBUGMSG(("directory [%s] already in the X font path\n", str.c_str()));
+	    						bFound = true;
+	    						break;
+		    				}
+		    			}
 	    			
-	    			if(!bFound)
-	    			{
-	    				//str+= "rubbish"; // to force error while testing
-	    				*newFontPath_ptr++ = UT_strdup(str.c_str());
-		    			UT_DEBUGMSG(("adding \"%s\" to font path\n", str.c_str()));
-		    			realFontPathDirCount++;
-		    		}
+	    				if(!bFound)
+	    				{
+	    					//str+= "rubbish"; // to force error while testing
+	    					*newFontPath_ptr++ = UT_strdup(str.c_str());
+		    				UT_DEBUGMSG(("adding \"%s\" to font path\n", str.c_str()));
+			    			realFontPathDirCount++;
+			    		}
+	    			}
 	    		}
-	    	}
+			}
 		}
-	}
 	
-	m_iExtraXFontPathCount += realFontPathDirCount;
-	UT_ASSERT(m_iExtraXFontPathCount >= 0);
-    xxx_UT_DEBUGMSG(("m_iExtraXFontPathCount %d\n", m_iExtraXFontPathCount));
+		m_iExtraXFontPathCount += realFontPathDirCount;
+		UT_ASSERT(m_iExtraXFontPathCount >= 0);
+	    xxx_UT_DEBUGMSG(("m_iExtraXFontPathCount %d\n", m_iExtraXFontPathCount));
 		
-	m_pExtraXFontPath = new char *[m_iExtraXFontPathCount];
-	UT_ASSERT(m_pExtraXFontPath);
+		m_pExtraXFontPath = new char *[m_iExtraXFontPathCount];
+		UT_ASSERT(m_pExtraXFontPath);
 	
-	char ** pExtraXFontPath = m_pExtraXFontPath;
+		char ** pExtraXFontPath = m_pExtraXFontPath;
 	
-	for(i = realFontPathDirCount - m_iExtraXFontPathCount; i < realFontPathDirCount; i++)
-		*pExtraXFontPath++ = newFontPath[i];
+		for(i = realFontPathDirCount - m_iExtraXFontPathCount; i < realFontPathDirCount; i++)
+			*pExtraXFontPath++ = newFontPath[i];
 	
 #ifdef DEBUG		
 		UT_DEBUGMSG(("--- setting X font path (%d items)\n", realFontPathDirCount));
@@ -300,29 +307,29 @@ bool XAP_UnixFontManager::scavengeFonts(void)
 		UT_DEBUGMSG(("-------------------------------------------------\n\n"));
 #endif
 
-	s_oldErrorHandler = XSetErrorHandler(s_xerror_handler);
-	// force synchronic behaviour, so that any error is caught
-	// immediately
-	XSynchronize(dsp,1);
-	XSetFontPath(dsp, newFontPath, (int)realFontPathDirCount);
+		s_oldErrorHandler = XSetErrorHandler(s_xerror_handler);
+		// force synchronic behaviour, so that any error is caught
+		// immediately
+		XSynchronize(dsp,1);
+		XSetFontPath(dsp, newFontPath, (int)realFontPathDirCount);
 	
-	// now if we failed, our handler should have been called and if we are
-	// here, we have things under control, co clean up
-	XSynchronize(dsp,0);
-	XSetErrorHandler(s_oldErrorHandler);
-	s_oldErrorHandler = NULL;
-	s_oldFontPath = 0;
+		// now if we failed, our handler should have been called and if we are
+		// here, we have things under control, co clean up
+		XSynchronize(dsp,0);
+		XSetErrorHandler(s_oldErrorHandler);
+		s_oldErrorHandler = NULL;
+		s_oldFontPath = 0;
 	
-	// now free what we do not need	
-	XFreeFontPath(oldFontPath);
-	XCloseDisplay(dsp);
+		// now free what we do not need	
+		XFreeFontPath(oldFontPath);
+		XCloseDisplay(dsp);
 	
-	// free the directories that we got from the X server, not the bit
-	// we appended
-	for(i = 0; i < realFontPathDirCount - m_iExtraXFontPathCount; i++)
-		FREEP(newFontPath[i]);
-	delete [] newFontPath;
-	
+		// free the directories that we got from the X server, not the bit
+		// we appended
+		for(i = 0; i < realFontPathDirCount - m_iExtraXFontPathCount; i++)
+			FREEP(newFontPath[i]);
+		delete [] newFontPath;
+	}
 #endif
 	for (i = 0; i < count; i++)
 	{
