@@ -35,6 +35,8 @@ public:
 									   UT_UCSChar * p,
 									   UT_uint32 length);
 	UT_Bool					deleteSpan(PT_DocPosition dpos,
+									   UT_Bool bLeftSide1,
+									   UT_Bool bLeftSide2,
 									   UT_uint32 length);
 #if 0
 	UT_Bool					insertFmt(PT_DocPosition dpos1,
@@ -51,7 +53,7 @@ public:
 										UT_Bool bLeftSide,
 										PTStruxType pts);
 
-	UT_Bool					deleteStrux(PT_DocPosition dpos);
+	UT_Bool					deleteStrux(PL_StruxDocHandle sdh);
 	
 	// the append- methods are only available while importing
 	// the document.
@@ -108,11 +110,27 @@ protected:
 										UT_uint32 length);
 
 	UT_Bool					_deleteSpan(pf_Frag_Text * pft, UT_uint32 fragOffset,
-										PT_BufIndex bi, UT_uint32 length);
-	void					_deleteTextFrag(pf_Frag_Text * pft);
+										PT_BufIndex bi, UT_uint32 length,
+										pf_Frag ** ppfEnd, UT_uint32 * pfragOffsetEnd);
+	void					_unlinkFrag(pf_Frag * pf,
+										pf_Frag ** ppfEnd, UT_uint32 * pfragOffsetEnd);
 	UT_Bool					_getStruxFromPosition(PT_DocPosition docPos,
 												  pf_Frag_Strux ** ppfs) const;
 	UT_Bool					_doTheDo(const PX_ChangeRecord * pcr);
+	UT_Bool					_struxHasContent(pf_Frag_Strux * pfs) const;
+	UT_Bool					_unlinkStrux_Block(pf_Frag_Strux * pfs,
+											   pf_Frag ** ppfEnd, UT_uint32 * pfragOffsetEnd);
+
+	UT_Bool					_deleteSpanWithNotify(PT_DocPosition dpos, UT_Bool bLeftSide,
+												  pf_Frag_Text * pft, UT_uint32 fragOffset,
+												  UT_uint32 length,
+												  UT_Byte changeFlags,
+												  pf_Frag_Strux * pfs,
+												  pf_Frag ** ppfEnd, UT_uint32 * pfragOffsetEnd);
+	UT_Bool					_deleteStruxWithNotify(PT_DocPosition dpos, UT_Bool bLeftSide,
+												   pf_Frag_Strux * pfs,
+												   UT_Byte changeFlags,
+												   pf_Frag ** ppfEnd, UT_uint32 * pfragOffsetEnd);
 
 	PTState					m_pts;		/* are we loading or editing */
 	pt_VarSet				m_varset;

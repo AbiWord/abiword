@@ -70,6 +70,11 @@ UT_Bool pt_PieceTable::_insertSpan(pf_Frag_Text * pft,
 			// new text is contiguous, we just update the length of this fragment.
 
 			pft->changeLength(fragLen+length);
+
+			// TODO see if we are now contiguous with the next one and try
+			// TODO to coalesce them (this will happen on after a delete
+			// TODO char followed by undo).
+
 			return UT_TRUE;
 		}
 	}
@@ -91,6 +96,11 @@ UT_Bool pt_PieceTable::_insertSpan(pf_Frag_Text * pft,
 			// of this fragment.
 
 			pft->adjustOffsetLength(bi,length+fragLen);
+
+			// TODO see if we are now contiguous with the next one and try
+			// TODO to coalesce them (this will happen on after a delete
+			// TODO char followed by undo).
+			
 			return UT_TRUE;
 		}
 
@@ -202,15 +212,23 @@ UT_Bool pt_PieceTable::insertSpan(PT_DocPosition dpos,
 	return UT_TRUE;
 }
 
-void pt_PieceTable::_deleteTextFrag(pf_Frag_Text * pft)
+void pt_PieceTable::_unlinkFrag(pf_Frag * pf,
+								pf_Frag ** ppfEnd, UT_uint32 * pfragOffsetEnd)
 {
-	// delete the given fragment from the fragment list.
+	// unlink the given fragment from the fragment list.
 	// also, see if the adjacent fragments can be coalesced.
+	// in (ppfEnd,pfragOffsetEnd) we return the position
+	// immediately past the frag we're deleting.
+	// the caller is responsible for deleting pf.
 
-	pf_Frag * pp = pft->getPrev();
+	if (ppfEnd)
+		*ppfEnd = pf->getNext();
+	if (pfragOffsetEnd)
+		*pfragOffsetEnd = 0;
+	
+	pf_Frag * pp = pf->getPrev();
 
-	m_fragments.unlinkFrag(pft);
-	delete pft;
+	m_fragments.unlinkFrag(pf);
 
 	if (   pp
 		&& pp->getType()==pf_Frag::PFT_Text
@@ -223,6 +241,11 @@ void pt_PieceTable::_deleteTextFrag(pf_Frag_Text * pft)
 		if (   ppt->getIndexAP() == pnt->getIndexAP()
 			&& m_varset.isContiguous(ppt->getBufIndex(),prevLength,pnt->getBufIndex()))
 		{
+			if (ppfEnd)
+				*ppfEnd = pp;
+			if (pfragOffsetEnd)
+				*pfragOffsetEnd = prevLength;
+
 			ppt->changeLength(prevLength+pnt->getLength());
 			m_fragments.unlinkFrag(pnt);
 			delete pnt;
@@ -231,13 +254,19 @@ void pt_PieceTable::_deleteTextFrag(pf_Frag_Text * pft)
 }
 
 UT_Bool pt_PieceTable::_deleteSpan(pf_Frag_Text * pft, UT_uint32 fragOffset,
-								   PT_BufIndex bi, UT_uint32 length)
+								   PT_BufIndex bi, UT_uint32 length,
+								   pf_Frag ** ppfEnd, UT_uint32 * pfragOffsetEnd)
 {
 	// perform simple delete of a span of text.
 	// we assume that it is completely contained within this fragment.
 
 	UT_ASSERT(fragOffset+length <= pft->getLength());
 
+	if (ppfEnd)
+		*ppfEnd = pft;
+	if (pfragOffsetEnd)
+		*pfragOffsetEnd = fragOffset;
+	
 	if (fragOffset == 0)
 	{
 		// the change is at the beginning of the fragment,
@@ -247,7 +276,8 @@ UT_Bool pt_PieceTable::_deleteSpan(pf_Frag_Text * pft, UT_uint32 fragOffset,
 			// the change exactly matches the fragment, just delete the fragment.
 			// as we delete it, see if the fragments around it can be coalesced.
 
-			_deleteTextFrag(pft);
+			_unlinkFrag(pft,ppfEnd,pfragOffsetEnd);
+			delete pft;
 			return UT_TRUE;
 		}
 
@@ -264,6 +294,12 @@ UT_Bool pt_PieceTable::_deleteSpan(pf_Frag_Text * pft, UT_uint32 fragOffset,
 		// do a right-truncate on it.
 
 		pft->changeLength(fragOffset);
+
+		if (ppfEnd)
+			*ppfEnd = pft->getNext();
+		if (pfragOffsetEnd)
+			*pfragOffsetEnd = 0;
+		
 		return UT_TRUE;
 	}
 
@@ -279,15 +315,47 @@ UT_Bool pt_PieceTable::_deleteSpan(pf_Frag_Text * pft, UT_uint32 fragOffset,
 	UT_ASSERT(pftTail);
 	pft->changeLength(fragOffset);
 	m_fragments.insertFrag(pft,pftTail);
+
+	if (ppfEnd)
+		*ppfEnd = pftTail;
+	if (pfragOffsetEnd)
+		*pfragOffsetEnd = 0;
 	
 	return UT_TRUE;
 }
 
+UT_Bool pt_PieceTable::_deleteSpanWithNotify(PT_DocPosition dpos, UT_Bool bLeftSide,
+											 pf_Frag_Text * pft, UT_uint32 fragOffset,
+											 UT_uint32 length,
+											 UT_Byte changeFlags,
+											 pf_Frag_Strux * pfs,
+											 pf_Frag ** ppfEnd, UT_uint32 * pfragOffsetEnd)
+{
+	// create a change record for this change and put it in the history.
+	// we do this before the actual change because various fields that
+	// we need are blown away during the delete.  we then notify all
+	// listeners of the change.
+		
+	PX_ChangeRecord_Span * pcr
+		= new PX_ChangeRecord_Span(PX_ChangeRecord::PXT_DeleteSpan,changeFlags,
+								   dpos,bLeftSide,pfs->getIndexAP(),pft->getBufIndex(),length);
+	UT_ASSERT(pcr);
+	m_history.addChangeRecord(pcr);
+	UT_Bool bResult = _deleteSpan(pft,fragOffset,pft->getBufIndex(),length,ppfEnd,pfragOffsetEnd);
+	m_pDocument->notifyListeners(pfs,pcr);
+
+	return bResult;
+}
+
 UT_Bool pt_PieceTable::deleteSpan(PT_DocPosition dpos,
+								  UT_Bool bLeftSide1,
+								  UT_Bool bLeftSide2,
 								  UT_uint32 length)
 {
 	// remove length characters from the document at the given position.
-
+	// we interpret the bLeftSide1 flag at the (dpos) and bLeftSide2 at
+	// (dpos+length).
+	
 	UT_ASSERT(m_pts==PTS_Editing);
 
 	struct _x
@@ -296,160 +364,182 @@ UT_Bool pt_PieceTable::deleteSpan(PT_DocPosition dpos,
 		pf_Frag_Strux *		x_pfs;
 		pf_Frag_Text *		x_pft;
 		PT_BlockOffset		x_fragOffset;
-		PT_BufIndex			x_bi;
-		pf_Frag *			x_pfPrev;
-		UT_Bool				x_prevIsText;
-		UT_uint32			x_prevLength;
 	};
 
-	struct _x f = { UT_FALSE, NULL, NULL, 0, 0, NULL, UT_FALSE, 0 };
+	struct _x f = { bLeftSide1, NULL, NULL, 0 }; // first
+	struct _x e = { bLeftSide2, NULL, NULL, 0 }; // end
 
-	if (!getTextFragFromPosition(dpos,f.x_bLeftSide,&f.x_pfs,&f.x_pft,&f.x_fragOffset))
+	if (   !getTextFragFromPosition(dpos,       f.x_bLeftSide,&f.x_pfs,&f.x_pft,&f.x_fragOffset)
+		|| !getTextFragFromPosition(dpos+length,e.x_bLeftSide,&e.x_pfs,&e.x_pft,&e.x_fragOffset))
 	{
 		// could not find a text fragment containing the given
 		// absolute document position ???
 		return UT_FALSE;
 	}
-	f.x_bi = m_varset.getBufIndex(f.x_pft->getBufIndex(),f.x_fragOffset);
-	f.x_pfPrev = f.x_pft->getPrev();
-	f.x_prevIsText = (f.x_pfPrev->getType()==pf_Frag::PFT_Text);
-	if (f.x_prevIsText)
-		f.x_prevLength = (static_cast<pf_Frag_Text *>(f.x_pfPrev))->getLength();
 	
 	// see if the amount of text to be deleted is completely
 	// contained withing the fragment found.  if so, we have
 	// a simple delete.  otherwise, we need to set up a multi-step
 	// delete.
-
+	//
+	// we are in a simple change if:
+	// [1] beginning and end are within the same fragment.
+	// [2] we are at the end of the first fragment and the end fragment
+	//     immediately follows the first (would have been case [1] but
+	//     bLeftSide1 probably switched).
+	// [3] we are at the beginning of the end fragment and the end
+	//     fragment immediately follows the first (would have been 
+	//     case [1] but bLeftSide2 probably switched).
+	// [4] we are at the end of the first fragment and the beginning
+	//     of end fragment and there's only one fragment between them
+	//     (like case [1] but both bLeftSides switched).
+	//
+	// cases [2,3,4] are likely if you delete the current selection
+	// and it is on the edge of a paragraph break.
+	
+	UT_Bool bSimple = (   (f.x_pft == e.x_pft)								// case [1]
+					   || (f.x_fragOffset==f.x_pft->getLength()
+						   && f.x_pft->getNext() == e.x_pft)				// case [2]
+					   || (e.x_fragOffset==0
+						   && f.x_pft->getNext() == e.x_pft)				// case [3]
+					   || (f.x_fragOffset==f.x_pft->getLength()
+						   && e.x_fragOffset==0
+						   && f.x_pft->getNext() == e.x_pft->getPrev()));	// case [4]
+	
 	PX_ChangeRecord::PXFlags fMultiStepStart = PX_ChangeRecord::PXF_Null;
 	PX_ChangeRecord::PXFlags fMultiStepEnd = PX_ChangeRecord::PXF_Null;
-	UT_Bool bInMultiStep = UT_FALSE;
 
-	if (f.x_fragOffset+length > f.x_pft->getLength())
-	{
+	if (!bSimple)
 		fMultiStepStart = PX_ChangeRecord::PXF_MultiStepStart;
-		bInMultiStep = UT_TRUE;
-	}
 
 	// loop to delete the amount requested, one text fragment at a time.
 	// if we encounter any non-text fragments along the way, we delete
 	// them too.  that is, we implicitly delete paragraphs here.
-	
-	while (length)
+
+	pf_Frag * pfNewEnd;
+	UT_uint32 fragOffsetNewEnd;
+
+	UT_Bool bFinished = UT_FALSE;
+	while (!bFinished)
 	{
-		UT_ASSERT(f.x_pft->getType()==pf_Frag::PFT_Text);
+		// TODO we need to fix pf_Frag_Strux's so that they take up a position
+		// TODO (have length 1) so that we can index them using a PT_DocPosition.
+		// TODO until then, there are some kinds of selections that we cannot
+		// TODO correctly represent and delete (such as at the edges of
+		// TODO paragraphs).  for now, we will try as best as we can.  therefore,
+		// TODO we need to change getTextFragFromPosition() to be getFragFromPosition()
+		// TODO and change the x_pft to be x_pf.  the logic above the loop will always
+		// TODO start us at a text fragment, but the correct behavior is that we
+		// TODO can start at any type of fragment.  logic at the bottom of this
+		// TODO loop has been changed to advance us by one frag.  so for now,
+		// TODO we do a little back casting.
 
-		// figure out how much to consume during this iteration.
-		// set the multi-step end flag, if this will be the last iteration.
-		
-		UT_uint32 lengthThisStep = f.x_pft->getLength() - f.x_fragOffset;
-		if (length <= lengthThisStep)
+		switch (f.x_pft->getType())
 		{
-			lengthThisStep = length;
-			if (bInMultiStep)
-				fMultiStepEnd = PX_ChangeRecord::PXF_MultiStepEnd;
+		default:
+			UT_ASSERT(0);
+			return UT_FALSE;
+			
+		case pf_Frag::PFT_Strux:
+			{
+				pf_Frag * pf = f.x_pft;
+				pf_Frag_Strux * pfs = static_cast<pf_Frag_Strux *> (pf);
+
+				// TODO when strux have length, we will need to decrement 'length'.
+				// TODO also, we probably won't need this complicated stuff to
+				// TODO determine whether to set the end- flag.  we should be
+				// TODO able to just set it at the bottom of the loop.
+				// set the end- type for our last trip thru the loop.
+				if (!bSimple)
+				{
+					if (!f.x_pft->getNext())
+						fMultiStepEnd = PX_ChangeRecord::PXF_MultiStepEnd;
+					else if (   (length==0)
+							 && (f.x_pft->getNext()->getType() == pf_Frag::PFT_Text))
+						fMultiStepEnd = PX_ChangeRecord::PXF_MultiStepEnd;
+				}
+				
+				// TODO decide if we need to send f.x_bLeftSide or if it matters.
+				UT_Bool bResult = _deleteStruxWithNotify(dpos,f.x_bLeftSide,pfs,
+														 fMultiStepStart | fMultiStepEnd,
+														 &pfNewEnd,&fragOffsetNewEnd);
+				UT_ASSERT(bResult);
+			}
+			break;
+
+		case pf_Frag::PFT_Text:
+			{
+				// figure out how much to consume during this iteration.  This can
+				// be zero if we have a strux within the sequence and they gave us
+				// bLeftSide1==TRUE, for example.
+		
+				UT_uint32 lengthThisStep = f.x_pft->getLength() - f.x_fragOffset;
+				if (length <= lengthThisStep)
+					lengthThisStep = length;
+				length -= lengthThisStep;
+
+				// TODO when strux have length, we probably won't need this complicated
+				// TODO stuff to determine whether to set the end flag.  we should be
+				// TODO able to just set it at the bottom of the loop.
+				// set the end- type for our last trip thru the loop.
+				if (!bSimple)
+				{
+					if (!f.x_pft->getNext())
+						fMultiStepEnd = PX_ChangeRecord::PXF_MultiStepEnd;
+					else if ((length==0) && (bLeftSide2))
+						fMultiStepEnd = PX_ChangeRecord::PXF_MultiStepEnd;
+					else if ((length==0) && (f.x_pft->getNext()->getType() == pf_Frag::PFT_Text))
+						fMultiStepEnd = PX_ChangeRecord::PXF_MultiStepEnd;
+				}
+				
+				UT_Bool bResult = _deleteSpanWithNotify(dpos,UT_FALSE,f.x_pft,f.x_fragOffset,
+														lengthThisStep,(fMultiStepStart | fMultiStepEnd),
+														f.x_pfs,&pfNewEnd,&fragOffsetNewEnd);
+				UT_ASSERT(bResult);
+			}
+			break;
 		}
-		
-		// create a change record for this change and put it in the history.
-		// we do this before the actual change because various fields that
-		// we need are blown away during the delete.  we then notify all
-		// listeners of the change.
-		
-		PX_ChangeRecord_Span * pcr
-			= new PX_ChangeRecord_Span(PX_ChangeRecord::PXT_DeleteSpan,
-									   fMultiStepStart | fMultiStepEnd,
-									   dpos,UT_FALSE,
-									   f.x_pft->getIndexAP(),
-									   f.x_bi,lengthThisStep);
-		UT_ASSERT(pcr);
-		m_history.addChangeRecord(pcr);
-		_deleteSpan(f.x_pft,f.x_fragOffset,f.x_bi,lengthThisStep);
-		m_pDocument->notifyListeners(f.x_pfs,pcr);
 
-		// we decrement length by the amount that we processed
-		// in this iteration of the loop.  if there is more to
-		// do, then we need to jump thru some hoops....
+		// since _delete{*}WithNotify(), can delete f.x_pft, mess with the
+		// fragment list, and does some aggressive coalescing of
+		// fragments, we cannot just do a f.x_pft->getNext() here.
+		// to advance to the next fragment, we use the *NewEnd variables
+		// that each of the _delete routines gave us.
+
+		// TODO when strux have length and we change f.x_pft to be f.x_pf,
+		// TODO we can remove this static cast.
+		f.x_pft = static_cast<pf_Frag_Text *> (pfNewEnd);
+		f.x_fragOffset = fragOffsetNewEnd;
 		
-		length -= lengthThisStep;
-		if (length)
+		if (   (bSimple && (length==0))
+			|| (!bSimple && (fMultiStepEnd == PX_ChangeRecord::PXF_MultiStepEnd)))
 		{
+			// TODO when we change strux to have a length, we probably don't
+			// TODO need this complexity -- just set bFinished when length==0.
+			// TODO we keep looping until we have deleted the requested amount.
+			// TODO when length reaches zero, we still may have to loop, to
+			// TODO make sure that we get any strux on the trailing edge.
+
+			bFinished = UT_TRUE;
+		}
+
+		if (!bSimple)
+		{
+			// make sure that we only indicate a start- type once.
+
 			fMultiStepStart = PX_ChangeRecord::PXF_Null;
 
-			// since _deleteSpan(), can delete f.x_pft, messes with the
-			// fragment list, and does some aggressive coalescing of
-			// fragments, we cannot just do a f.x_pft->getNext() here.
-			// instead, we look at the previous fragment and look
-			// forward from it and try to figure out what happened to
-			// the list.
-
-			if (f.x_pfPrev->getNext() == f.x_pft)
-			{
-				// the current fragment was not unlinked.  we must have
-				// just truncated it.  use this fragment as the 'prev'
-				// in the next iteration and advance pft.
-				UT_ASSERT(f.x_fragOffset > 0);
-
-				f.x_pfPrev = f.x_pft;
-				f.x_prevIsText = UT_TRUE;
-				f.x_prevLength = f.x_pft->getLength();
-				// we fall thru for the advance.
-			}
-			else
-			{
-				// our pft was deleted (and unlinked from the fragment list).
-				// if in deleting our pft, the prev and next we coalesced,
-				// we want to backup -- making our prev the current pft
-				// (with an offset) for the next iteration.
-				// if our pft was deleted, but there was no coalescing around
-				// us, we keep 'prev' the same for the next iteration and
-				// advance pft.
-				
-				if (f.x_prevIsText)
-				{
-					pf_Frag_Text * pftPrev = static_cast<pf_Frag_Text *>(f.x_pfPrev);
-					if (f.x_prevLength != pftPrev->getLength())
-					{
-						// our pft was deleted and our previous was coalesced
-						// with our next, so we backup and start in prev with
-						// an offset.
-						
-						UT_ASSERT(f.x_fragOffset==0); // could not have coalesced prev if we were in middle of ours
-
-						f.x_pft = pftPrev;
-						f.x_fragOffset = f.x_prevLength;
-						f.x_bi = m_varset.getBufIndex(f.x_pft->getBufIndex(),f.x_fragOffset);
-						f.x_pfPrev = f.x_pft->getPrev();
-						f.x_prevIsText = (f.x_pfPrev->getType()==pf_Frag::PFT_Text);
-						if (f.x_prevIsText)
-							f.x_prevLength = (static_cast<pf_Frag_Text *>(f.x_pfPrev))->getLength();
-						goto NextIteration;				// a 'continue'
-					}
-				}
-
-				// our pft was deleted, but no coalescing was done.
-				// keep our prev the same and advance pft.
-				// we fall thru for the advance.
-			}
-			
-			pf_Frag * pfNext = f.x_pfPrev->getNext();
-			UT_ASSERT(pfNext);			// delete beyond the end of the document
-			switch (pfNext->getType())
-			{
-			case pf_Frag::PFT_Text:
-				f.x_pft = static_cast<pf_Frag_Text *>(pfNext);
-				f.x_fragOffset = 0;
-				f.x_bi = m_varset.getBufIndex(f.x_pft->getBufIndex(),f.x_fragOffset);
-				// we leave all of the prev-related vars unchanged.
-				goto NextIteration;
-
-			default:
-				UT_ASSERT(0);			// TODO
-			}
+			// TODO when we change strux to have a length, do something
+			// TODO like:
+			// TODO   if (length==0) // set the end- type for our last trip thru the loop.
+			// TODO       fMultiStepEnd = PX_ChangeRecord::PXF_MultiStepEnd;
+			// TODO and delete the code to do this in the switch above.
 		}
-	NextIteration:
-		;
-	} // end while (length)
+	}
 
+	UT_ASSERT(bSimple || (fMultiStepStart == PX_ChangeRecord::PXF_Null));
+	UT_ASSERT(bSimple || (fMultiStepEnd == PX_ChangeRecord::PXF_MultiStepEnd));
+		
 	return UT_TRUE;
 }
 
@@ -672,8 +762,107 @@ UT_Bool pt_PieceTable::insertStrux(PT_DocPosition dpos,
 	return UT_TRUE;
 }
 
-UT_Bool pt_PieceTable::deleteStrux(PT_DocPosition dpos)
+UT_Bool pt_PieceTable::_struxHasContent(pf_Frag_Strux * pfs) const
 {
+	// return true iff the paragraph has content (text).
+
+	return (pfs->getNext() && (pfs->getNext()->getType() == pf_Frag::PFT_Text));
+}
+
+UT_Bool pt_PieceTable::_unlinkStrux_Block(pf_Frag_Strux * pfs,
+										  pf_Frag ** ppfEnd, UT_uint32 * pfragOffsetEnd)
+{
+	// unlink this strux from the document.
+	// the caller is responsible for deleting pfs.
+
+	if (ppfEnd)
+		*ppfEnd = pfs->getNext();
+	if (pfragOffsetEnd)
+		*pfragOffsetEnd = 0;
+	
+	// find the previous strux (either a paragraph or something else).
+
+	pf_Frag_Strux * pfsPrev = NULL;
+	pf_Frag * pf = pfs->getPrev();
+	while (pf && !pfsPrev)
+	{
+		if (pf->getType() == pf_Frag::PFT_Strux)
+			pfsPrev = static_cast<pf_Frag_Strux *> (pf);
+		pf = pf->getPrev();
+	}
+	UT_ASSERT(pfsPrev);			// we have a block that's not in a section ??
+
+	switch (pfsPrev->getStruxType())
+	{
+	case PTX_Block:
+		// if there is a paragraph before us, we can delete this
+		// paragraph knowing that our content will be assimilated
+		// in to the previous one.
+
+		_unlinkFrag(pfs,ppfEnd,pfragOffsetEnd);
+		return UT_TRUE;
+
+	case PTX_Section:
+	case PTX_ColumnSet:
+	case PTX_Column:
+		// we are the first paragraph in this section.  if we have
+		// content, we cannot be deleted, since there is no one to
+		// inherit our content.
+
+		if (_struxHasContent(pfs))
+		{
+			// TODO decide if this should assert or just fail...
+			UT_DEBUGMSG(("Cannot delete first paragraph with content.\n"));
+			UT_ASSERT(0);
+			return UT_FALSE;
+		}
+
+		// no content in this paragraph.
+		
+		_unlinkFrag(pfs,ppfEnd,pfragOffsetEnd);
+		return UT_TRUE;
+
+	default:
+		UT_ASSERT(0);
+		return UT_FALSE;
+	}
+}
+			
+UT_Bool pt_PieceTable::_deleteStruxWithNotify(PT_DocPosition dpos, UT_Bool bLeftSide,
+											  pf_Frag_Strux * pfs,
+											  UT_Byte changeFlags,
+											  pf_Frag ** ppfEnd, UT_uint32 * pfragOffsetEnd)
+{
+	switch (pfs->getStruxType())
+	{
+	case PTX_Section:
+	case PTX_ColumnSet:
+	case PTX_Column:
+		UT_ASSERT(0);					// TODO
+		break;
+		
+	case PTX_Block:
+		if (!_unlinkStrux_Block(pfs,ppfEnd,pfragOffsetEnd))
+			return UT_FALSE;
+		break;
+		
+	default:
+		UT_ASSERT(0);
+		return UT_FALSE;
+	}
+
+	// create a change record to describe the change, add
+	// it to the history, and let our listeners know about it.
+	
+	PX_ChangeRecord_Strux * pcrs
+		= new PX_ChangeRecord_Strux(PX_ChangeRecord::PXT_DeleteStrux,changeFlags,
+									dpos,bLeftSide,pfs->getIndexAP(),pfs->getStruxType());
+	UT_ASSERT(pcrs);
+	m_history.addChangeRecord(pcrs);
+	m_pDocument->notifyListeners(pfs,pcrs);
+
+	delete pfs;
+
 	return UT_TRUE;
 }
 
@@ -1103,7 +1292,7 @@ UT_Bool pt_PieceTable::_doTheDo(const PX_ChangeRecord * pcr)
 			if (!getTextFragFromPosition(pcrSpan->getPosition(),UT_FALSE,&pfs,&pft,&fragOffset))
 				return UT_FALSE;
 			UT_ASSERT(pft->getIndexAP() == pcrSpan->getIndexAP());
-			_deleteSpan(pft,fragOffset,pcrSpan->getBufIndex(),pcrSpan->getLength());
+			_deleteSpan(pft,fragOffset,pcrSpan->getBufIndex(),pcrSpan->getLength(),NULL,NULL);
 			m_pDocument->notifyListeners(pfs,pcr);
 		}
 		return UT_TRUE;

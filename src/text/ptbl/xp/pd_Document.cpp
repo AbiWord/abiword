@@ -189,9 +189,11 @@ UT_Bool PD_Document::insertSpan(PT_DocPosition dpos,
 }
 
 UT_Bool PD_Document::deleteSpan(PT_DocPosition dpos,
-								  UT_uint32 length)
+								UT_Bool bLeftSide1,
+								UT_Bool bLeftSide2,
+								UT_uint32 length)
 {
-	return m_pPieceTable->deleteSpan(dpos,length);
+	return m_pPieceTable->deleteSpan(dpos,bLeftSide1,bLeftSide2,length);
 }
 
 UT_Bool PD_Document::insertFmt(PT_DocPosition dpos1,
@@ -217,9 +219,12 @@ UT_Bool PD_Document::insertStrux(PT_DocPosition dpos,
 	return m_pPieceTable->insertStrux(dpos,bLeftSide,pts);
 }
 
-UT_Bool PD_Document::deleteStrux(PT_DocPosition dpos)
+UT_Bool PD_Document::deleteStrux(PL_StruxDocHandle sdh)
 {
-	return UT_TRUE;
+#if 0
+	return m_pPieceTable->deleteStrux(sdh);
+#endif
+	return UT_FALSE;
 }
 
 UT_Bool PD_Document::appendStrux(PTStruxType pts, const XML_Char ** attributes)

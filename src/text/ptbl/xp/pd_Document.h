@@ -42,6 +42,8 @@ public:
 									   UT_UCSChar * p,
 									   UT_uint32 length);
 	UT_Bool					deleteSpan(PT_DocPosition dpos,
+									   UT_Bool bLeftSide1,
+									   UT_Bool bLeftSide2,
 									   UT_uint32 length);
 
 	UT_Bool					insertFmt(PT_DocPosition dpos1,
@@ -57,7 +59,7 @@ public:
 										UT_Bool bLeftSide,
 										PTStruxType pts);
 
-	UT_Bool					deleteStrux(PT_DocPosition dpos);
+	UT_Bool					deleteStrux(PL_StruxDocHandle sdh);
 
 	// the append- methods are only available while importing
 	// the document.
