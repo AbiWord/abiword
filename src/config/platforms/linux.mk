@@ -131,6 +131,8 @@ ifeq ($(ABI_OPT_WAY_TOO_MANY_WARNINGS),1)
 	OPTIMIZER 	+= -Weffc++
 endif #/* WAY_TOO_MANY_WARNINGS */
 
+OPTIMIZER	+= -pipe
+
 # Includes
 OS_INCLUDES		=
 ifeq ($(ABI_REQUIRE_PEER_ICONV),1)
