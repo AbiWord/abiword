@@ -119,9 +119,9 @@ void ev_BeOSMouse::mouseUp(AV_View* pView, BMessage *msg)
 
 	if (buttons & B_PRIMARY_MOUSE_BUTTON)
 		emb = EV_EMB_BUTTON1;
-	else if (buttons & B_PRIMARY_MOUSE_BUTTON)
+	else if (buttons & B_SECONDARY_MOUSE_BUTTON)
 		emb = EV_EMB_BUTTON2;
-	else if (buttons & B_PRIMARY_MOUSE_BUTTON)
+	else if (buttons & B_TERTIARY_MOUSE_BUTTON)
 		emb = EV_EMB_BUTTON3;
 	
 	//This seems to only crash when I do this detection ...
@@ -175,9 +175,9 @@ void ev_BeOSMouse::mouseClick(AV_View* pView, BMessage *msg)
 
 	if (buttons & B_PRIMARY_MOUSE_BUTTON)
 		emb = EV_EMB_BUTTON1;
-	else if (buttons & B_PRIMARY_MOUSE_BUTTON)
+	else if (buttons & B_SECONDARY_MOUSE_BUTTON)
 		emb = EV_EMB_BUTTON2;
-	else if (buttons & B_PRIMARY_MOUSE_BUTTON)
+	else if (buttons & B_TERTIARY_MOUSE_BUTTON)
 		emb = EV_EMB_BUTTON3;
 
 	if (mod & B_SHIFT_KEY)
@@ -191,10 +191,18 @@ void ev_BeOSMouse::mouseClick(AV_View* pView, BMessage *msg)
 		mop = EV_EMO_SINGLECLICK;
 	else if (clicks == 2)
 		mop = EV_EMO_DOUBLECLICK;
-/*
-	else if (msg->what == B_MOUSE_UP)
-		mop = EV_EMO_RELEASE;
-*/
+
+	if (msg->what==B_MOUSE_UP)
+	{
+		if (m_clickState==EV_EMO_SINGLECLICK)
+		{
+			mop=EV_EMO_RELEASE;
+		}
+		else if (m_clickState==EV_EMO_DOUBLECLICK)
+		{
+			mop=EV_EMO_DOUBLERELEASE;
+		}
+	}
 	
 	emc = pView->getMouseContext((UT_sint32)pt.x,(UT_sint32)pt.y);
 	m_clickState = mop;		//Remember the click type
