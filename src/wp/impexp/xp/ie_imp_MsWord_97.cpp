@@ -614,8 +614,12 @@ UT_Error IE_Imp_MsWord_97::importFile(const char * szFilename)
 	wvSetSpecialCharHandler(&ps, specCharProc);
 	wvSetDocumentHandler (&ps, docProc);
 	
-	wvText(&ps);	
+	wvText(&ps);
 	wvOLEFree();
+
+	// We can't be in a good state if we didn't add any sections!
+	if (m_nSections == 0)
+		return UT_IE_BOGUSDOCUMENT;
 
 	return UT_OK;
 }
@@ -633,6 +637,7 @@ void IE_Imp_MsWord_97::_flush ()
 	  UT_DEBUGMSG(("#TF: _flush: appending default section\n"));
 	  getDoc()->appendStrux(PTX_Section, NULL);
 	  m_bInSect = true;
+	  m_nSections++;
 	}
 
   if(!m_bInPara)
@@ -1456,6 +1461,8 @@ int IE_Imp_MsWord_97::_beginPara (wvParseStruct *ps, UT_uint32 tag,
 		// TODO: this should really set a property in
 		// TODO: in the paragraph, instead; but this
 		// TODO: gives a similar effect for now.
+		UT_DEBUGMSG(("_beginPara: appending default block\n"));
+		getDoc()->appendStrux(PTX_Block, NULL);
 		UT_UCSChar ucs = UCS_FF;
 		getDoc()->appendSpan(&ucs,1);
 	}
