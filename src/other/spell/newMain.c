@@ -259,7 +259,10 @@ int SpellCheckSuggestNWord16(const unsigned short *word16, int length, sp_sugges
         else
         {
             /* convert to 16bit string and null terminate */
-            unsigned int len_in, len_out;
+			/* TF CHANGE: Use the right types
+			unsigned int len_in, len_out; 
+			*/
+			size_t len_in, len_out; 
             const char *In = possibilities[c];
             char *Out = (char *)sg->word[c];
 
