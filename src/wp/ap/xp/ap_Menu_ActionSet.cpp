@@ -155,6 +155,8 @@ EV_Menu_ActionSet * AP_CreateMenuActionSet(void)
 #else
 	_s(AP_MENU_ID_INSERT_PICTURE,   0,1,0,0,  "fileInsertGraphic",NULL,                   NULL);
 #endif
+	_s(AP_MENU_ID_INSERT_INSERTHEADER,		0,0,0,0,	"editHeader",	ap_GetState_Changes,					NULL);
+	_s(AP_MENU_ID_INSERT_INSERTFOOTER,		0,0,0,0,	"editFooter",	ap_GetState_Changes,					NULL);
 	_s(AP_MENU_ID_INSERT_CLIPART,   0,1,0,0,  "insertClipart",    NULL,                   NULL);
 	_s(AP_MENU_ID_INSERT_GRAPHIC,	0,1,0,0,	"fileInsertGraphic",NULL,					NULL);
 	_s(AP_MENU_ID_FORMAT,			1,0,0,0,	NULL,				NULL,					NULL);

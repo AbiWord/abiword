@@ -564,13 +564,23 @@ Defun_EV_GetMenuItemState_Fn(ap_GetState_Changes)
 		break;
 
 	case AP_MENU_ID_EDIT_EDITHEADER:
-//	  if (pFrameData->m_pViewMode == VIEW_NORMAL)
-//	    s = EV_MIS_Gray;
+		if (!pView->isHeaderOnPage())
+			s = EV_MIS_Gray;
 	  break;
 
 	case AP_MENU_ID_EDIT_EDITFOOTER:
-//	  if (pFrameData->m_pViewMode == VIEW_NORMAL)
-//	    s = EV_MIS_Gray;
+		if (!pView->isFooterOnPage())
+			s = EV_MIS_Gray;
+	  break;
+
+	case AP_MENU_ID_INSERT_INSERTHEADER:
+		if (pView->isHeaderOnPage())
+			s = EV_MIS_Gray;
+	  break;
+
+	case AP_MENU_ID_INSERT_INSERTFOOTER:
+		if (pView->isFooterOnPage())
+			s = EV_MIS_Gray;
 	  break;
 
 	case AP_MENU_ID_EDIT_REMOVEHEADER:
