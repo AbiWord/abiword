@@ -10,6 +10,12 @@
 
 set -e
 
+if autoconf --version | head -1 | grep '2\.50' > /dev/null 2>&1; then
+  cp configure.in-v2.50 configure.in
+else
+  cp configure.in-v2.13 configure.in
+fi
+
 automake --version | perl -ne 'if (/\(GNU automake\) ([0-9].[0-9])/) {print;  if ($1 < 1.4) {exit 1;}}'
 
 if [ $? -ne 0 ]; then
