@@ -2354,10 +2354,10 @@ static UT_Bool s_doPrint(FV_View * pView, UT_Bool bTryToSuppressDialog)
 		UT_uint32 nFromPage, nToPage;
 		(void)pDialog->getDoPrintRange(&nFromPage,&nToPage);
 
-		// nFromPage and nToPage are range checked in the platform
-		// dialog code, so we can freely assert this here.
-		
-		UT_ASSERT((UT_sint32) nToPage <= pDocLayout->countPages());
+		if (nToPage > pDocLayout->countPages())
+		{
+			nToPage = pDocLayout->countPages();
+		}
 		
 		// TODO add code to handle getDoPrintSelection()
 
@@ -2373,7 +2373,7 @@ static UT_Bool s_doPrint(FV_View * pView, UT_Bool bTryToSuppressDialog)
 		// TODO these are here temporarily to make printing work.  We'll fix the hack later.
 		// BUGBUG assumes all pages are same size and orientation
 		//da.width;
-		da.height /= pLayout->countPages();
+		da.height /= pDocLayout->countPages();
 
 		UT_uint32 j,k;
 
