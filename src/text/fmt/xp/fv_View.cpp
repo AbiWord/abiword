@@ -9175,8 +9175,7 @@ void FV_View::getLeftRulerInfo(AP_LeftRulerInfo * pInfo)
 
 UT_Error FV_View::cmdDeleteBookmark(const char* szName)
 {
-	PT_DocPosition i,j;
-	return _deleteBookmark(szName,true,i,j);
+	return _deleteBookmark(szName, true, NULL, NULL);
 }
 
 UT_Error FV_View::cmdDeleteHyperlink()
@@ -9186,8 +9185,11 @@ UT_Error FV_View::cmdDeleteHyperlink()
 	return _deleteHyperlink(pos,true);
 }
 
-
-UT_Error FV_View::_deleteBookmark(const char* szName, bool bSignal, PT_DocPosition &pos1, PT_DocPosition &pos2)
+/* If we delete a bookmark before posStart or posEnd, then decrement
+ * them as appropriate. */
+UT_Error FV_View::_deleteBookmark(const char* szName, bool bSignal,
+								  PT_DocPosition * posStart, 
+								  PT_DocPosition * posEnd)
 {
 	if(!m_pDoc->isBookmarkUnique((const XML_Char *)szName))
 	{
@@ -9196,6 +9198,8 @@ UT_Error FV_View::_deleteBookmark(const char* szName, bool bSignal, PT_DocPositi
 		// document, so that the caller can adjust any stored doc positions
 		// if necessary
 		
+		PT_DocPosition pos1, pos2;
+
 		fp_BookmarkRun * pB1;
 		UT_uint32 bmBlockOffset[2];
 		fl_BlockLayout * pBlock[2];
@@ -9258,6 +9262,16 @@ UT_Error FV_View::_deleteBookmark(const char* szName, bool bSignal, PT_DocPositi
 					
 		pos1 = pBlock[0]->getPosition(false) + bmBlockOffset[0];
 		pos2 = pBlock[1]->getPosition(false) + bmBlockOffset[1];
+
+		if (posStart && *posStart > pos1)
+			(*posStart)--;
+		if (posStart && *posStart > pos2)
+			(*posStart)--;
+
+		if (posEnd && *posEnd > pos1)
+			(*posEnd)--;
+		if (posEnd && *posEnd > pos1)
+			(*posEnd)--;
 
 		m_pDoc->deleteSpan(pos1,pos1 + 1);
 		
@@ -9572,7 +9586,6 @@ UT_Error FV_View::cmdInsertBookmark(const char * szName)
 
 	PT_DocPosition posStart = getPoint();
 	PT_DocPosition posEnd = posStart;
-	PT_DocPosition pos1 = 0xFFFFFFFF,pos2 = 0xFFFFFFFF;
 	
 	if (!isSelectionEmpty())
 	{
@@ -9592,20 +9605,8 @@ UT_Error FV_View::cmdInsertBookmark(const char * szName)
 	{
 		//bookmark already exists -- remove it and then reinsert
 		UT_DEBUGMSG(("fv_View::cmdInsertBookmark: bookmark \"%s\" exists - removing\n", szName));
-		_deleteBookmark((XML_Char*)szName, false,pos1,pos2);
+		_deleteBookmark((XML_Char*)szName, false, &posStart, &posEnd);
 	}
-
-
-	// if the bookmark we just deleted was before the current insertion
-	// position we have to adjust our positions correspondingly
-	if(posStart > pos1)
-		posStart--;
-	if(posStart > pos2)
-		posStart--;
-	if(posEnd > pos1)
-		posEnd--;
-	if(posEnd > pos2)
-		posEnd--;
 	
 	XML_Char * pAttr[6];
 	const XML_Char ** pAt = (const XML_Char **)&pAttr[0];
