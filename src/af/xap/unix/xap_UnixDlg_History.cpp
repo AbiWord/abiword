@@ -40,7 +40,7 @@
 
 /*****************************************************************/
 
-#if 0
+#if 1
 static void s_history_selected(GtkTreeView *treeview,
                             XAP_UnixDialog_History * dlg)
 {
@@ -54,7 +54,7 @@ static void s_history_selected(GtkTreeView *treeview,
 	if (!selection || !gtk_tree_selection_get_selected (selection, &model, &iter)) {
 		return;
 	}
-
+	UT_DEBUGMSG(("In s_history_selected \n"));
 	// Get the row and col number
 	GValue value = {0,};
 	gtk_tree_model_get_value (model, &iter,3,&value);
@@ -137,7 +137,7 @@ GtkWidget * XAP_UnixDialog_History::_constructWindow(void)
 	// set the single selection mode for the TreeView
     gtk_tree_selection_set_mode (gtk_tree_view_get_selection (GTK_TREE_VIEW (m_wTreeView)), GTK_SELECTION_SINGLE);	
 	gtk_container_add (GTK_CONTAINER (m_wListWindow), m_wTreeView);
-#if 0
+#if 1
 	g_signal_connect_after(G_OBJECT(m_wTreeView),
 						   "cursor-changed",
 						   G_CALLBACK(s_history_selected),
@@ -154,7 +154,7 @@ void XAP_UnixDialog_History::_fillHistoryTree(void)
 	
 	GtkTreeIter iter;
 
-	GtkTreeStore * model = gtk_tree_store_new (3, // Total number of columns
+	GtkTreeStore * model = gtk_tree_store_new (4, // Total number of columns
                                           G_TYPE_STRING,   //Version number
 										  G_TYPE_STRING, //           
 										  G_TYPE_STRING,
