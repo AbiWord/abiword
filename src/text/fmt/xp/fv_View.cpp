@@ -395,34 +395,30 @@ void FV_View::_moveToSelectionEnd(UT_Bool bForward)
 
 void FV_View::_clearSelection(void)
 {
-	UT_uint32 iPos1, iPos2;
-	UT_Bool bRedrawOldSelection;
-
-	if (m_bSelection)
+	if (!m_bSelection)
 	{
-		if (m_iSelectionAnchor < getPoint())
-		{
-			iPos1 = m_iSelectionAnchor;
-			iPos2 = getPoint();
-		}
-		else
-		{
-			iPos1 = getPoint();
-			iPos2 = m_iSelectionAnchor;
-		}
-		bRedrawOldSelection = UT_TRUE;
+		_resetSelection();
+		return;
+	}
+	
+	UT_uint32 iPos1, iPos2;
+
+	if (m_iSelectionAnchor < getPoint())
+	{
+		iPos1 = m_iSelectionAnchor;
+		iPos2 = getPoint();
 	}
 	else
 	{
-		bRedrawOldSelection = UT_FALSE;
+		iPos1 = getPoint();
+		iPos2 = m_iSelectionAnchor;
 	}
 
+	_clearBetweenPositions(iPos1, iPos2);
+	
 	_resetSelection();
 
-	if (bRedrawOldSelection)
-	{
-		_drawBetweenPositions(iPos1, iPos2);
-	}
+	_drawBetweenPositions(iPos1, iPos2);
 }
 
 void FV_View::_resetSelection(void)
@@ -2689,7 +2685,7 @@ UT_uint32 FV_View::getPageViewTopMargin(void) const
 
 /*
   This method simply iterates over every run between two doc positions
-  and draws each one.  The current selection information is heeded.
+  and draws each one.
 */
 void FV_View::_drawBetweenPositions(PT_DocPosition iPos1, PT_DocPosition iPos2)
 {
@@ -2754,13 +2750,68 @@ void FV_View::_drawBetweenPositions(PT_DocPosition iPos1, PT_DocPosition iPos2)
 	}
 }
 
+/*
+  This method simply iterates over every run between two doc positions
+  and draws each one.
+*/
+void FV_View::_clearBetweenPositions(PT_DocPosition iPos1, PT_DocPosition iPos2)
+{
+	UT_ASSERT(iPos1 < iPos2);
+	
+	fp_Run* pRun1;
+	fp_Run* pRun2;
+	UT_uint32 uheight;
+
+	{
+		UT_sint32 x;
+		UT_sint32 y;
+		fl_BlockLayout* pBlock1;
+		fl_BlockLayout* pBlock2;
+
+		/*
+		  we don't really care about the coords.  We're calling these
+		  to get the Run pointer
+		*/
+		_findPositionCoords(iPos1, UT_FALSE, x, y, uheight, &pBlock1, &pRun1);
+		_findPositionCoords(iPos2, UT_FALSE, x, y, uheight, &pBlock2, &pRun2);
+	}
+
+	UT_Bool bDone = UT_FALSE;
+	fp_Run* pCurRun = pRun1;
+
+	while (!bDone)
+	{
+		if (pCurRun == pRun2)
+		{
+			bDone = UT_TRUE;
+		}
+		
+		fl_BlockLayout* pBlock = pCurRun->getBlock();
+		UT_ASSERT(pBlock);
+
+		pCurRun->clearScreen();
+		
+		pCurRun = pCurRun->getNext();
+		if (!pCurRun)
+		{
+			fl_BlockLayout* pNextBlock;
+			
+			pNextBlock = pBlock->getNext(UT_TRUE);
+			if (pNextBlock)
+			{
+				pCurRun = pNextBlock->getFirstRun();
+			}
+		}
+	}
+}
+
 void FV_View::_findPositionCoords(PT_DocPosition pos,
-										UT_Bool bEOL,
-										UT_sint32& x,
-										UT_sint32& y,
-										UT_uint32& height,
-										fl_BlockLayout** ppBlock,
-										fp_Run** ppRun)
+								  UT_Bool bEOL,
+								  UT_sint32& x,
+								  UT_sint32& y,
+								  UT_uint32& height,
+								  fl_BlockLayout** ppBlock,
+								  fp_Run** ppRun)
 {
 	UT_sint32 xPoint;
 	UT_sint32 yPoint;

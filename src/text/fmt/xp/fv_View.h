@@ -191,6 +191,8 @@ protected:
 	void				_updateScreen(void);
 	
 	void				_drawBetweenPositions(PT_DocPosition left, PT_DocPosition right);
+	void				_clearBetweenPositions(PT_DocPosition left, PT_DocPosition right);
+	
 	UT_Bool				_ensureThatInsertionPointIsOnScreen(void);
 	void			    _moveInsPtNextPrevLine(UT_Bool bNext);
 
