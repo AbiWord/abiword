@@ -37,9 +37,21 @@ install:
 
 ########################################################################
 
-# Native Solaris pkg format
-pkg:
-	@echo TODO
+# Native Solaris pkg format; first does an install, then packages,
+# then uninstalls.
+pkg: install
+	@echo "Producing Solaris PKG..."
+	@find /usr/local/AbiSuite /usr/local/bin/AbiWord /usr/local/bin/abiword -print \
+		| pkgproto > $(DIST)/Prototype
+
+pkgproto /usr/local/AbiSuite > $(DIST)/abisuite-$(ABI_BUILD_VERSION)-RELEASE_NUMBER).$(OS_ARCH).rpm
+	@echo "/usr/local/bin/AbiWord" | pkgproto
+	@echo "/usr/local/bin/abiword" | pkgproto
+	@echo "Removing installation..."
+	@rm -rf /usr/local/AbiSuite
+	@rm -f /usr/local/bin/AbiWord
+	@rm -f /usr/local/bin/abiword
+
 ########################################################################
 
 # Tgz target is provided by a common Unix makefile
