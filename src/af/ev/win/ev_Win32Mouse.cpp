@@ -31,18 +31,18 @@
 #include "ev_EditBinding.h"
 #include "ev_EditEventMapper.h"
 
-ev_Win32Mouse::ev_Win32Mouse(EV_EditEventMapper * pEEM)
+EV_Win32Mouse::EV_Win32Mouse(EV_EditEventMapper * pEEM)
 	: EV_Mouse(pEEM)
 {
 	reset();
 }
 
-void ev_Win32Mouse::reset(void)
+void EV_Win32Mouse::reset(void)
 {
 	m_iCaptureCount = 0;
 }
 
-void ev_Win32Mouse::onButtonDown(FV_View * pView,
+void EV_Win32Mouse::onButtonDown(FV_View * pView,
 								 HWND hWnd, EV_EditMouseButton emb, WPARAM fwKeys, WPARAM xPos, WPARAM yPos)
 {
 	EV_EditMethod * pEM;
@@ -87,7 +87,7 @@ void ev_Win32Mouse::onButtonDown(FV_View * pView,
 	}
 }
 
-void ev_Win32Mouse::onButtonMove(FV_View * pView,
+void EV_Win32Mouse::onButtonMove(FV_View * pView,
 								 HWND hWnd, WPARAM fwKeys, WPARAM xPos, WPARAM yPos)
 {
 	EV_EditMethod * pEM;
@@ -130,7 +130,7 @@ void ev_Win32Mouse::onButtonMove(FV_View * pView,
 	}
 }
 
-void ev_Win32Mouse::onButtonUp(FV_View * pView,
+void EV_Win32Mouse::onButtonUp(FV_View * pView,
 							   HWND hWnd, EV_EditMouseButton emb, WPARAM fwKeys, WPARAM xPos, WPARAM yPos)
 {
 	EV_EditMethod * pEM;
@@ -176,7 +176,7 @@ void ev_Win32Mouse::onButtonUp(FV_View * pView,
 	}
 }
 
-void ev_Win32Mouse::onDoubleClick(FV_View * pView,
+void EV_Win32Mouse::onDoubleClick(FV_View * pView,
 								 HWND hWnd, EV_EditMouseButton emb, WPARAM fwKeys, WPARAM xPos, WPARAM yPos)
 {
 	EV_EditMethod * pEM;

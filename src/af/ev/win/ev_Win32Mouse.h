@@ -36,10 +36,10 @@
 class FV_View;
 
 
-class ev_Win32Mouse : public EV_Mouse
+class EV_Win32Mouse : public EV_Mouse
 {
 public:
-	ev_Win32Mouse(EV_EditEventMapper * pEEM);
+	EV_Win32Mouse(EV_EditEventMapper * pEEM);
 
 	void reset(void);
 
