@@ -23,22 +23,23 @@ INCLUDES= @GLIB_CFLAGS@ $(AF_INCLUDES) $(WP_INCLUDES) $(TEXT_INCLUDES) $(ICONV_I
 
 noinst_LIBRARIES = libXap_cocoa.a
 
-libXap_cocoa_a_SOURCES=		\
-	xap_CocoaApp.mm                          \
+libXap_cocoa_a_SOURCES =		\
+	xap_CocoaApp.mm			\
+	xap_CocoaClipboard.mm		\
+	xap_CocoaDialog_Utilities.mm	\
 	xap_CocoaDlg_PrintPreview.mm	\
-	xap_CocoaClipboard.mm	\
-	xap_CocoaDlg_About.mm	\
+	xap_CocoaDlg_About.mm		\
 	xap_CocoaDlg_FileOpenSaveAs.mm	\
 	xap_CocoaDlg_MessageBox.mm	\
 	xap_CocoaEncodingManager.mm	\
 	xap_CocoaFont.mm		\
-	xap_CocoaFontManager.mm	\
+	xap_CocoaFontManager.mm		\
 	xap_CocoaFrame.mm		\
 	xap_CocoaModule.mm		\
 	xap_CocoaTimer.mm		\
 	xap_CocoaToolbarWindow.mm	\
 	xap_CocoaToolbar_Icons.mm	\
-	xap_CocoaDialog_Utilities.mm	\
+	xap_CocoaWindow.mm		\
 	xap_GenericListChooser_Controller.mm
 
 EXTRA_DIST = \

@@ -52,6 +52,7 @@ CPPSRCS=	xad_Document.cpp		\
 		xap_Preview_Zoom.cpp		\
 		xap_Draw_Symbol.cpp		\
 		xap_Scrollbar_ViewListener.cpp	\
+		xap_StatusBar.cpp		\
 		xap_Strings.cpp			\
 		xap_Toolbar_ControlFactory.cpp	\
 		xap_ViewListener.cpp		\

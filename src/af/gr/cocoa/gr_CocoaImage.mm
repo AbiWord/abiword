@@ -1,6 +1,8 @@
+/* -*- mode: C++; tab-width: 4; c-basic-offset: 4; -*- */
+
 /* AbiWord
- * Copyright (C) 1998 AbiSource, Inc.
  * Copyright (C) 2001-2002 Hubert Figuiere
+ * Copyright (C) 1998 AbiSource, Inc.
  * 
  * This program is free software; you can redistribute it and/or
  * modify it under the terms of the GNU General Public License
@@ -19,12 +21,18 @@
  */
 
 #include <stdlib.h>
+#include <string.h>
+
 #include <png.h>
 
-#include "gr_CocoaImage.h"
+#include "ut_png.h"
 #include "ut_assert.h"
 #include "ut_bytebuf.h"
 #include "ut_debugmsg.h"
+#include "ut_exception.h"
+
+#include "gr_CocoaImage.h"
+
 Fatmap::Fatmap ()
   : width (0), height(0), data(0)
 {
@@ -461,29 +469,127 @@ UT_DEBUGMSG(("Choosing not to render what can't be a raster image!\n"));
 	return false;
 }
 
+/* This is necessary in order to divorce the NSImage created by GR_CocoaImage::getNSImage()
+ * from the data stored in the Fatmap which gets free()ed when the GR_CocoaImage object is
+ * deleted.
+ */
+@interface GR_CocoaBitmapWrapper : NSBitmapImageRep
+{
+	int m_count;
+	unsigned char * m_plane[5];
+}
+- (id)initWithRGBPlane:(const unsigned char *)plane pixelsWide:(int)width pixelsHigh:(int)height;
+- (id)retain;
+- (oneway void)release;
+@end
+
+@implementation GR_CocoaBitmapWrapper
+
+- (id)initWithRGBPlane:(const unsigned char *)plane pixelsWide:(int)width pixelsHigh:(int)height
+{
+	m_count = 0;
+
+	m_plane[0] = 0;
+	m_plane[1] = 0;
+	m_plane[2] = 0;
+	m_plane[3] = 0;
+	m_plane[4] = 0;
+
+	UT_uint32 length = static_cast<UT_uint32>(width) * static_cast<UT_uint32>(height) * 3;
+	UT_TRY
+		{
+			m_plane[0] = new unsigned char[length];
+		}
+	UT_CATCH (...)
+		{
+			m_plane[0] = 0;
+		}
+	if (m_plane[0] == 0) return nil;
+
+	m_count++;
+	memcpy (m_plane[0], plane, length);
+
+	[super initWithBitmapDataPlanes:m_plane pixelsWide:width pixelsHigh:height bitsPerSample:8 samplesPerPixel:3
+		   hasAlpha:NO isPlanar:NO colorSpaceName:NSDeviceRGBColorSpace bytesPerRow:0 bitsPerPixel:0];
+
+	return self;
+}
+
+- (id)retain
+{
+	if (m_count > 0) m_count++;
+	return [super retain];
+}
+
+- (oneway void)release
+{
+	if (--m_count == 0)
+		if (m_plane[0])
+			{
+				delete [] m_plane[0];
+				m_plane[0] = 0;
+			}
+	[super release];
+}
+
+@end
+
 /*!
 	Returns an autoreleased NSImage
  */
 NSImage * GR_CocoaImage::getNSImage ()
 {
-	unsigned char *planes [5];
-	planes[0] = m_image->data;
-	planes[1] = NULL;
-	planes[2] = NULL;
-	planes[3] = NULL;
-	planes[4] = NULL;
-	NSBitmapImageRep *bitmap = [[NSBitmapImageRep alloc] initWithBitmapDataPlanes:planes
-							pixelsWide:m_image->width pixelsHigh:m_image->height bitsPerSample:8 samplesPerPixel:3
-							hasAlpha:NO isPlanar:NO 
-							colorSpaceName:NSDeviceRGBColorSpace bytesPerRow:0 
-							bitsPerPixel:0];
+	GR_CocoaBitmapWrapper * bmp_wrapper = [GR_CocoaBitmapWrapper alloc];
+	if (bmp_wrapper == 0) return 0;
+	if ([bmp_wrapper initWithRGBPlane:m_image->data pixelsWide:m_image->width pixelsHigh:m_image->height] == nil)
+		{
+			[bmp_wrapper release];
+			return 0;
+		}
 
-	NSImage *pixmap = [[NSImage alloc] initWithSize:NSMakeSize(0.0, 0.0)];
-	[pixmap addRepresentation:bitmap];
-	[bitmap release];
+	NSImage * pixmap = [[NSImage alloc] initWithSize:NSMakeSize(0.0, 0.0)];
+
+	[pixmap addRepresentation:bmp_wrapper];
+	[bmp_wrapper release];
+
 	return [pixmap autorelease];
 }
 
+NSImage * GR_CocoaImage::imageFromPNG (const UT_ByteBuf * pBB_PNG, UT_uint32 & image_width, UT_uint32 & image_height)
+{
+	image_width  = 0;
+	image_height = 0;
 
+	UT_sint32 width = 0;
+	UT_sint32 height = 0;
 
+	if (!UT_PNG_getDimensions (pBB_PNG, width, height)) return 0;
 
+	if ((width <= 0) || (height <= 0)) return 0;
+
+	GR_CocoaImage * pCI_Image = 0;
+	UT_TRY
+		{
+			pCI_Image = new GR_CocoaImage(0);
+		}
+	UT_CATCH (...)
+		{
+			pCI_Image = 0;
+		}
+	if (pCI_Image == 0) return 0;
+
+	pCI_Image->convertFromBuffer (pBB_PNG, width, height);
+
+	NSImage * image = pCI_Image->getNSImage ();
+	if (image)
+		{
+			image_width  = static_cast<UT_uint32>(width);
+			image_height = static_cast<UT_uint32>(height);
+
+			unsigned char * image_data = pCI_Image->m_image->data;
+			pCI_Image->m_image->data = 0;
+		}
+	delete pCI_Image;
+
+	return image;
+}

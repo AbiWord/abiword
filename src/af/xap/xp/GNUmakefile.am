@@ -70,6 +70,7 @@ libXap_xp_a_SOURCES=\
 	xap_Preview_Zoom.cpp		\
 	xap_Draw_Symbol.cpp		\
 	xap_Scrollbar_ViewListener.cpp	\
+	xap_StatusBar.cpp		\
 	xap_Strings.cpp			\
 	xap_Toolbar_ControlFactory.cpp	\
 	xap_ViewListener.cpp		\

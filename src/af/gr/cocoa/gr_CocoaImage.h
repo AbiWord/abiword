@@ -1,3 +1,5 @@
+/* -*- mode: C++; tab-width: 4; c-basic-offset: 4; -*- */
+
 /* AbiWord
  * Copyright (C) 1998 AbiSource, Inc.
  * Copyright (C) 2001-2002 Hubert Figuiere 
@@ -53,6 +55,9 @@ public:
    	virtual bool		render(GR_Graphics *pGR, UT_sint32 iDisplayWidth, UT_sint32 iDisplayHeight);
 	
 	NSImage * getNSImage ();
+
+	static NSImage * imageFromPNG (const UT_ByteBuf * pBB_PNG, UT_uint32 & image_width, UT_uint32 & image_height);
+
 private:
 	Fatmap * m_image;
 

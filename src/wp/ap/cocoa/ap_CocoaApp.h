@@ -91,8 +91,6 @@ public:
 	virtual XAP_Frame * newFrame(AP_App *);
 
 private:	// JCA: Why in the hell we have so many (any) protected variables?
-	static GR_Image*		_showSplash(UT_uint32);
-
 	XAP_StringSet *			m_pStringSet;
 	AP_CocoaClipboard *		m_pClipboard;
 
@@ -111,12 +109,5 @@ private:	// JCA: Why in the hell we have so many (any) protected variables?
 // however, what the C++ FAQ reccommends.
 
 void signalWrapper(int);
-
-@interface AP_SplashController : NSWindowController
-{
-    IBOutlet id imageView;
-}
--(NSImageView*) getImageView;
-@end
 
 #endif /* AP_COCOAAPP_H */

@@ -144,6 +144,7 @@ OBJS=		$(PLATFORM_OBJS)						\
 		$(OBJDIR)/xap_Preview_Zoom.$(OBJ_SUFFIX)			\
 		$(OBJDIR)/xap_Draw_Symbol.$(OBJ_SUFFIX)				\
 		$(OBJDIR)/xap_Scrollbar_ViewListener.$(OBJ_SUFFIX)		\
+		$(OBJDIR)/xap_StatusBar.$(OBJ_SUFFIX)				\
 		$(OBJDIR)/xap_Strings.$(OBJ_SUFFIX)				\
 		$(OBJDIR)/xap_Toolbar_ControlFactory.$(OBJ_SUFFIX)		\
 		$(OBJDIR)/xap_ViewListener.$(OBJ_SUFFIX)			\
