@@ -110,10 +110,10 @@ BOOL AP_Win32Dialog_Insert_Symbol::_onInitDialog(HWND hWnd, WPARAM wParam, LPARA
 {
 	const XAP_StringSet * pSS = m_pApp->getStringSet();
 	
-//	SetWindowText(hWnd, pSS->getValue(AP_STRING_ID_DLG_InsertSymbol_InsertSymbolTitle));
 	// localize controls
-
-
+	SetWindowText(hWnd, pSS->getValue(XAP_STRING_ID_DLG_Insert_SymbolTitle));
+	_DSX(INSERTSYMBOL_INSERT_BUTTON,DLG_Insert);
+	_DSX(INSERTSYMBOL_CLOSE_BUTTON,DLG_Close);
 
 	m_hDlg = hWnd;
 

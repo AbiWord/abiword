@@ -28,9 +28,10 @@
 dcl(UntitledDocument,		"Untitled%d")
 
 /* Common to many dialogs */
-dcl(DLG_OK,					"OK")
-dcl(DLG_Cancel,				"Cancel")
-dcl(DLG_Close,				"Close")
+dcl(DLG_OK,						"OK")
+dcl(DLG_Cancel,					"Cancel")
+dcl(DLG_Close,					"Close")
+dcl(DLG_Insert,					"&Insert")
 
 /* Units */
 dcl(DLG_Unit_inch,				"inch")
@@ -50,8 +51,8 @@ dcl(DLG_QNXMB_Yes,				"Yes")
 dcl(DLG_QNXMB_No,				"No")
 	
 /* More Windows dialog */
-dcl(DLG_MW_MoreWindows,		"Activate Window")
-dcl(DLG_MW_Activate,		"Activate:")
+dcl(DLG_MW_MoreWindows,			"Activate Window")
+dcl(DLG_MW_Activate,			"Activate:")
 
 /* Unix Font Selector dialog */
 dcl(DLG_UFS_FontTitle,			"Font")
