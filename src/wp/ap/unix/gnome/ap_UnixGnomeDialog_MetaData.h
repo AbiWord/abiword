@@ -16,8 +16,8 @@
  * Foundation, Inc., 59 Temple Place - Suite 330, Boston, MA  
  * 02111-1307, USA.
  */
-#ifndef AP_UNIXGNOMEDIALOG_STYLES_H
-#define AP_UNIXGNOMEDIALOG_STYLES_H
+#ifndef AP_UNIXGNOMEDIALOG_METADATA_H
+#define AP_UNIXGNOMEDIALOG_METADATA_H
 
 #include <gnome.h>
 #include "ap_UnixDialog_MetaData.h"
