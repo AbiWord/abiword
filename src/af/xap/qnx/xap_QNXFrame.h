@@ -104,8 +104,10 @@ protected:
 	PtWidget_t *				m_wTopLevelWindow;
 
 	PtWidget_t *				m_wTBGroup;	 /* The menu/toolbar group */
-	PtWidget_t *				m_wVBox;
+	PtWidget_t *				m_wSBGroup;	 /* The status bar group */
+
 	PtWidget_t *				m_wStatusBar;
+	PtWidget_t *				m_wVBox;
 
 	AP_QNXDialogFactory			m_dialogFactory;
 	int							m_PopupDone;

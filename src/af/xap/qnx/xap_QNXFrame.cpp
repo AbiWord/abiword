@@ -124,7 +124,7 @@ int XAP_QNXFrame::_fe::resize(PtWidget_t * w, void *data, PtCallbackInfo_t *info
 
 	XAP_QNXFrame * pQNXFrame = (XAP_QNXFrame *)data;
 	AV_View * pView = pQNXFrame->getCurrentView();
-	FV_View * pfView = static_cast<FV_View*>(pView);
+	//FV_View * pfView = static_cast<FV_View*>(pView);
 
 	if (pView) {
 		UT_DEBUGMSG(("Document Area Resizing to %d,%d %d,%d (%d,%d) ",
@@ -170,9 +170,6 @@ int XAP_QNXFrame::_fe::window_delete(PtWidget_t *w, void *data, PtCallbackInfo_t
 	XAP_App * pApp = pQNXFrame->getApp();
 	UT_ASSERT(pApp);
 
-	const EV_Menu_ActionSet * pMenuActionSet = pApp->getMenuActionSet();
-	UT_ASSERT(pMenuActionSet);
-
 	const EV_EditMethodContainer * pEMC = pApp->getEditMethodContainer();
 	UT_ASSERT(pEMC);
 	
@@ -196,12 +193,12 @@ int XAP_QNXFrame::_fe::expose(PtWidget_t * w, PhTile_t * damage)
 {
 	PtArg_t args[1];
 	UT_Rect rClip;
+	PhRect_t rect;
 
-   PhRect_t rect;
-   PhPoint_t pnt;
-   PtSuperClassDraw(PtBasic, w, damage);
-   PtBasicWidgetCanvas(w, &rect);
-   PtWidgetOffset(w, &pnt);
+   	PhPoint_t pnt;
+   	PtSuperClassDraw(PtBasic, w, damage);
+   	PtBasicWidgetCanvas(w, &rect);
+   	PtWidgetOffset(w, &pnt);
 /*
 	UT_DEBUGMSG(("-----\nWidget Rect is %d,%d  %d,%d (@ %d,%d)",
 			rect.ul.x, rect.ul.y, rect.lr.x, rect.lr.y, pnt.x, pnt.y));
@@ -463,32 +460,31 @@ void XAP_QNXFrame::_createTopLevelWindow(void)
 	PtAddCallback(m_wTopLevelWindow, Pt_CB_WINDOW, _fe::window_delete, this);
 
 	/* TODO: Menu and the Toolbars all go into the same Toolbar "group" */
-#if 0
 	n = 0;
-#define _MNU_GRP_ANCHOR_ (Pt_LEFT_ANCHORED_LEFT | Pt_RIGHT_ANCHORED_RIGHT | Pt_TOP_ANCHORED_TOP)
-    PtSetArg(&args[n++], Pt_ARG_ANCHOR_FLAGS, _MNU_GRP_ANCHOR_, _MNU_GRP_ANCHOR_);
+#define _A_TBGRP (Pt_LEFT_ANCHORED_LEFT | Pt_RIGHT_ANCHORED_RIGHT | Pt_TOP_ANCHORED_TOP)
+    PtSetArg(&args[n++], Pt_ARG_ANCHOR_FLAGS, _A_TBGRP, _A_TBGRP);
     PtSetArg(&args[n++], Pt_ARG_RESIZE_FLAGS, 0, Pt_RESIZE_X_BITS);
     PtSetArg(&args[n++], Pt_ARG_WIDTH, area.size.w, 0); 
 	m_wTBGroup = PtCreateWidget(PtToolbarGroup, m_wTopLevelWindow, n, args);
-#endif
 
 	/*** Create the menu bars ***/
-	UT_DEBUGMSG(("QNXFrame: creating menu bars \n"));
 	m_pQNXMenu = new EV_QNXMenuBar(m_pQNXApp, this, m_szMenuLayoutName, m_szMenuLabelSetName);
 	UT_ASSERT(m_pQNXMenu);
 	bResult = m_pQNXMenu->synthesizeMenuBar();
 	UT_ASSERT(bResult);
 
-#if 1
-	m_AvailableArea.pos.y += 30 + 3;
-	m_AvailableArea.size.h -= 30 + 3;
-#else
-	m_AvailableArea.pos.y += m_pQNXMenu->getMenuHeight() + 3;
-	m_AvailableArea.size.h -= m_pQNXMenu->getMenuHeight() + 3;
-#endif
-	
 	/*** Create the tool bars ***/
 	_createToolbars();
+
+	/*** Figure out the height to adjust by ***/
+	unsigned short tbheight;	
+	UT_QNXGetWidgetArea(m_wTBGroup, NULL, NULL, NULL, &tbheight);
+#define PHOTON_TOOLBAR_EXTENT_WEIRDNESS
+#if defined(PHOTON_TOOLBAR_EXTENT_WEIRDNESS)
+	tbheight += 4; 	
+#endif
+	m_AvailableArea.pos.y += tbheight;
+	m_AvailableArea.size.h -= tbheight;
 
 	// Let the app-specific frame code create the contents of
 	// the child area of the window (between the toolbars and
