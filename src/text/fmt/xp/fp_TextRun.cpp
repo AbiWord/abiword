@@ -2355,7 +2355,10 @@ void fp_TextRun::drawSquiggle(UT_uint32 iOffset, UT_uint32 iLen,FL_SQUIGGLE_TYPE
 
 	UT_Rect r;
 	_getPartRect( &r, xoff, yoff, iOffset, iLen);
-
+	if(r.width > getWidth())
+	{
+	  r.width = getWidth();
+	}
 	_drawSquiggle(r.top + iAscent + iGap + getGraphics()->tlu(1), r.left, r.left + r.width,iSquiggle);
 	xxx_UT_DEBUGMSG(("Done draw sqiggle for run in block %x \n",getBlock()));
 }

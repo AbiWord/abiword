@@ -7470,7 +7470,7 @@ fl_BlockLayout::findGrammarSquigglesForRun(fp_Run* pRun)
 			// Only draw if there's more than one POB. If there's only
 			// one POB, it may also need clipping at the end (let the
 			// code below handle it).
-			if (iFirst != iLast)
+			//			if (iFirst != iLast)
 			{
 				pTextRun->drawSquiggle(iStart, iEnd - iStart,FL_SQUIGGLE_GRAMMAR);
 			}

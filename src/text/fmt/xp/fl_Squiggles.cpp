@@ -247,10 +247,10 @@ void fl_Squiggles::updatePOBs(UT_sint32 iFirstOffset, UT_sint32 iShift)
 void
 fl_Squiggles::add(fl_PartOfBlock* pPOB)
 {
-	xxx_UT_DEBUGMSG(("fl_Squiggles::add(%p) [%d:%d]\n", pPOB,
+	UT_DEBUGMSG(("fl_Squiggles::add(%p) [%d:%d]\n", pPOB,
 					 pPOB->getOffset(), 
 					 pPOB->getOffset() + pPOB->getLength()));
-
+	UT_ASSERT(pPOB->getOffset() >= 0);
 	UT_sint32 iIndex;
 
 	if (_findFirstAfter(pPOB->getOffset(), iIndex))
@@ -266,7 +266,7 @@ fl_Squiggles::add(fl_PartOfBlock* pPOB)
 	{
 		fl_PartOfBlock* pPrev = getNth(iIndex-1);
 
-		if (pPOB->getOffset() == pPrev->getOffset())
+		if (pPOB->getOffset() == pPrev->getOffset() && (getSquiggleType() == FL_SQUIGGLE_SPELL))
 		{
 			// Handle extension of existing squiggles. This happens
 			// because ' changes from being a word separator to not
@@ -277,7 +277,7 @@ fl_Squiggles::add(fl_PartOfBlock* pPOB)
 			_deleteNth(iIndex--);
 			markForRedraw(pPrev);
 		}
-		else if (pPOB->getOffset() == pPrev->getOffset() + pPrev->getLength())
+		else if ((pPOB->getOffset() == pPrev->getOffset() + pPrev->getLength()) && (getSquiggleType() == FL_SQUIGGLE_SPELL))
 		{
 			// Handle merging of two squiggles - this happens e.g. in
 			// overwrite mode when two misspelled words are joined by
