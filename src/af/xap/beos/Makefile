@@ -45,7 +45,9 @@ CPPSRCS=		xap_BeOSApp.cpp			\
 			xap_BeOSToolbar_Icons.cpp		\
 			xap_BeOSDlg_Encoding.cpp		\
 			xap_BeOSDlg_HTMLOptions.cpp	\
-			xap_BeOSFontPreview.cpp
+			xap_BeOSFontPreview.cpp \
+			xap_BeOSDlg_ListDocuments.cpp
+
 
 CPPSRCS+=		be_GRDrawView.cpp
 

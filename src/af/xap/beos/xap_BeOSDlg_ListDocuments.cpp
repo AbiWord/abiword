@@ -17,46 +17,41 @@
  * 02111-1307, USA.
  */
 
-#include <stdlib.h>
-#include <time.h>
-
 #include "ut_string.h"
 #include "ut_assert.h"
 #include "ut_debugmsg.h"
 
-// This header defines some functions for Unix dialogs,
-// like centering them, measuring them, etc.
-#include "xap_UnixDialogHelper.h"
-
 #include "xap_App.h"
-#include "xap_UnixApp.h"
-#include "xap_Frame.h"
+#include "xap_BeOSApp.h"
+#include "xap_BeOSFrame.h"
 
 #include "xap_Strings.h"
 #include "xap_Dialog_Id.h"
 #include "xap_Dlg_ListDocuments.h"
-#include "xap_UnixDlg_ListDocuments.h"
+#include "xap_BeOSDlg_ListDocuments.h"
+
+#include "ut_Rehydrate.h"
 
 /*****************************************************************/
 
-XAP_Dialog * XAP_UnixDialog_ListDocuments::static_constructor(XAP_DialogFactory * pFactory,
+XAP_Dialog * XAP_BeOSDialog_ListDocuments::static_constructor(XAP_DialogFactory * pFactory,
 													 XAP_Dialog_Id id)
 {
-	XAP_UnixDialog_ListDocuments * p = new XAP_UnixDialog_ListDocuments(pFactory,id);
+	XAP_BeOSDialog_ListDocuments * p = new XAP_BeOSDialog_ListDocuments(pFactory,id);
 	return p;
 }
 
-XAP_UnixDialog_ListDocuments::XAP_UnixDialog_ListDocuments(XAP_DialogFactory * pDlgFactory,
-										 XAP_Dialog_Id id)
+XAP_BeOSDialog_ListDocuments::XAP_BeOSDialog_ListDocuments(XAP_DialogFactory * pDlgFactory,
+												 XAP_Dialog_Id id)
 	: XAP_Dialog_Stub(pDlgFactory,id)
 {
 }
 
-XAP_UnixDialog_ListDocuments::~XAP_UnixDialog_ListDocuments(void)
+XAP_BeOSDialog_ListDocuments::~XAP_BeOSDialog_ListDocuments(void)
 {
 }
 
-void XAP_UnixDialog_ListDocuments::runModal(XAP_Frame * pFrame)
+void XAP_BeOSDialog_ListDocuments::runModal(XAP_Frame * pFrame)
 {
 	UT_ASSERT(pFrame);
 
