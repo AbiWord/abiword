@@ -39,6 +39,7 @@ CPPSRCS=		xap_UnixApp.cpp				\
 			xap_UnixPSGraphics.cpp
 
 TARGETS=		$(OBJS)
+INCLUDES=		-I/usr/X11R6/include
 
 include $(ABI_DEPTH)/config/abi_rules.mk
 
