@@ -41,6 +41,8 @@ TARGETS=		$(PROGRAM)
 
 INCLUDES=		-I$(ABI_DEPTH)/ask/lib/xp
 
+CFLAGS +=		-Zm1000
+
 include $(ABI_DEPTH)/config/abi_rules.mk
 
 ##################################################################

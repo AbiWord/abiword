@@ -20,7 +20,7 @@
 <datafile name="__CANONDIR__/AbiWord/strings/DaDK.strings" relpath="AbiWord/strings" />
 <datafile name="__CANONDIR__/AbiWord/strings/DeDE.strings" relpath="AbiWord/strings" />
 <datafile name="__CANONDIR__/AbiWord/strings/FiFI.strings" relpath="AbiWord/strings" />
-<datafile name="__CANONDIR__/AbiWord/strings/NlNL.strings" relpath="AbiWord/strings" />
+<datafile name="__CANONDIR__/AbiWord/strings/DuNL.strings" relpath="AbiWord/strings" />
 
 <datafile name="setup.png" graphic="true" nocopy="true" />
 
