@@ -72,60 +72,79 @@ const char * AP_Dialog_ListRevisions::getColumn2Label() const
 UT_uint32 AP_Dialog_ListRevisions::getItemCount() const
 {
 	UT_return_val_if_fail(m_pDoc,0);
-	return (m_pDoc->getRevisions()).getItemCount();
+	return (m_pDoc->getRevisions()).getItemCount() + 1;
 }
 
 UT_uint32 AP_Dialog_ListRevisions::getNthItemId(UT_uint32 n) const
 {
 	UT_return_val_if_fail(m_pDoc,0);
-	return ((PD_Revision *)(m_pDoc->getRevisions()).getNthItem(n))->getId();
+
+	if(n == 0)
+		return 0;
+	
+	return ((PD_Revision *)(m_pDoc->getRevisions()).getNthItem(n-1))->getId();
 }
 
 char * AP_Dialog_ListRevisions::getNthItemText(UT_uint32 n) const
 {
 	bool bFree = false;
 
-	const UT_UCS4Char * pC = ((PD_Revision *)(m_pDoc->getRevisions()).getNthItem(n))->getDescription();
-	if(!pC)
-		return NULL;
-
-	// now we run this string through fribidi
-	if(XAP_App::getApp()->theOSHasBidiSupport() == XAP_App::BIDI_SUPPORT_NONE)
+	if(n == 0)
 	{
-		FriBidiChar *fbdStr = (FriBidiChar *)pC;
-		FriBidiChar *fbdStr2 = 0;
-		UT_uint32 iLen = UT_UCS4_strlen(pC);
-
-		fbdStr2  = (FriBidiChar *)UT_calloc( iLen + 1, sizeof(FriBidiChar));
-		UT_return_val_if_fail(fbdStr2,NULL);
-		bFree = true;
-
-		FriBidiCharType fbdDomDir = fribidi_get_type(fbdStr[0]);
-
-		fribidi_log2vis (		/* input */
-						 fbdStr,
-						 iLen,
-						 &fbdDomDir,
-						 /* output */
-						 fbdStr2,
-						 NULL,
-						 NULL,
-						 NULL);
-		pC = (const UT_UCS4Char *) fbdStr2;
-
+		// the zero entry represents the normal view without a
+		// selection, we get the comment from our stringset
+		
+		UT_return_val_if_fail(m_pSS,NULL);
+		char * pComment = UT_strdup(m_pSS->getValue(AP_STRING_ID_DLG_ListRevisions_LevelZero));
+		return pComment;
 	}
-
-	char * pComment = (char *)UT_calloc(UT_UCS4_strlen(pC) + 1, sizeof(char));
-	UT_return_val_if_fail(pComment,NULL);
-
-	UT_UCS4_strcpy_to_char(pComment,pC);
-
-	if(bFree)
+	else
 	{
-		FREEP(pC);
-	}
+		
+		const UT_UCS4Char * pC
+			= ((PD_Revision *)(m_pDoc->getRevisions()).getNthItem(n-1))->getDescription();
+	
+		if(!pC)
+			return NULL;
 
-	return pComment;
+		// now we run this string through fribidi
+		if(XAP_App::getApp()->theOSHasBidiSupport() == XAP_App::BIDI_SUPPORT_NONE)
+		{
+			FriBidiChar *fbdStr = (FriBidiChar *)pC;
+			FriBidiChar *fbdStr2 = 0;
+			UT_uint32 iLen = UT_UCS4_strlen(pC);
+
+			fbdStr2  = (FriBidiChar *)UT_calloc( iLen + 1, sizeof(FriBidiChar));
+			UT_return_val_if_fail(fbdStr2,NULL);
+			bFree = true;
+
+			FriBidiCharType fbdDomDir = fribidi_get_type(fbdStr[0]);
+
+			fribidi_log2vis (		/* input */
+							 fbdStr,
+							 iLen,
+							 &fbdDomDir,
+							 /* output */
+							 fbdStr2,
+							 NULL,
+							 NULL,
+							 NULL);
+			pC = (const UT_UCS4Char *) fbdStr2;
+
+		}
+
+		char * pComment = (char *)UT_calloc(UT_UCS4_strlen(pC) + 1, sizeof(char));
+		UT_return_val_if_fail(pComment,NULL);
+
+		UT_UCS4_strcpy_to_char(pComment,pC);
+
+		if(bFree)
+		{
+			FREEP(pC);
+		}
+
+		return pComment;
+	}
 }
 
 AP_Dialog_ListRevisions::tAnswer AP_Dialog_ListRevisions::getAnswer(void) const

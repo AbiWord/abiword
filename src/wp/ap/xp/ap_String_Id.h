@@ -680,6 +680,7 @@ dcl(DLG_ListRevisions_Title, "Select Revision")
 dcl(DLG_ListRevisions_Column1Label, "Revision ID")
 dcl(DLG_ListRevisions_Column2Label, "Comment")
 dcl(DLG_ListRevisions_Label1, "Existing revisions:")
+dcl(DLG_ListRevisions_LevelZero, "(All revisions visible)")
 
 
 dcl(WORD_PassRequired, "Password required, this is an encrypted document")

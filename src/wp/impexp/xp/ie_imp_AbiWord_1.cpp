@@ -863,6 +863,15 @@ void IE_Imp_AbiWord_1::endElement(const XML_Char *name)
 
 	case TT_REVISION:
 		X_VerifyParseState(_PS_Revision);
+
+		if(m_currentRevisionId != 0)
+		{
+			// the revision had no comment associated, so it was not
+			// added to the doc by the xml paraser
+			X_CheckError(getDoc()->addRevision(m_currentRevisionId, NULL, 0));
+			m_currentRevisionId = 0;
+		}
+		
 		m_parseState = _PS_RevisionSec;
 		return;
 

@@ -250,7 +250,21 @@ void IE_Imp_XML::charData(const XML_Char *s, int len)
 							return;
 						}
 					case _PS_Revision:
-						X_CheckError(getDoc()->addRevision(m_currentRevisionId, buf.ucs4_str(), buf.size()));
+
+						// 0 is not a valid revision Id
+						if(m_currentRevisionId)
+						{
+							X_CheckError(getDoc()->addRevision(m_currentRevisionId,
+															   buf.ucs4_str(),
+															   buf.size()));
+
+							// we need to reset the revision Id in order
+							// to be able to handle the case when there is
+							// no character data present in our
+							// endofelement handler
+							m_currentRevisionId = 0;
+						}
+						
 						return;			
 						
 					default:
