@@ -441,13 +441,14 @@ gint XAP_UnixFrameImpl::_fe::focusOut(GtkWidget * /* w*/, GdkEvent * /*e*/,gpoin
 void XAP_UnixFrameImpl::focusIMIn ()
 {
 	need_im_reset = true;
-	gtk_im_context_focus_in(getIMContext()); 
+	gtk_im_context_focus_in(getIMContext());
+	gtk_im_context_reset (getIMContext());
 }
 
 void XAP_UnixFrameImpl::focusIMOut ()
 {
 	need_im_reset = true;
-	gtk_im_context_focus_in(getIMContext());
+	gtk_im_context_focus_out(getIMContext());
 }
 
 void XAP_UnixFrameImpl::resetIMContext()
@@ -505,8 +506,7 @@ gint XAP_UnixFrameImpl::_fe::button_press_event(GtkWidget * w, GdkEventButton * 
 
 	gtk_grab_add(w);
 
-	if (e->state & GDK_SHIFT_MASK)
-		pUnixFrameImpl->resetIMContext ();
+	pUnixFrameImpl->resetIMContext ();
 
 	if (pView)
 		pUnixMouse->mouseClick(pView,e);
