@@ -72,6 +72,7 @@ char *encoding = NULL;
 extern struct enc_vector * known_encodings[];
 struct enc_vector * curr_encoding = NULL;
 
+int broken_cmap = 0;
 int verbosity = 0;
 
 void usage()
@@ -87,6 +88,8 @@ void usage()
         "    -e encoding:   encoding, for instance ISO-8859-2; use `ttftool -e print'\n"
         "                   for list of known encodings; without the -e parameter\n"
         "                   Adobe StandardEncoding will be used.\n"
+        "    -b             broken cmap table (try this switch if you are getting\n"
+        "                   unexpected EOF error)\n"
         );
     exit(-1);
 }
@@ -152,6 +155,13 @@ process the command line
    		continue;
 	   }
 
+   	if(!strcmp(argv[i], "-b"))
+	{
+		broken_cmap = 1;
+		i++;
+		continue;
+	}
+	
    	if(!strncmp(argv[i], "-v",2))
 	   {
 		   char * p = argv[i] + 1;
@@ -159,6 +169,8 @@ process the command line
 			   verbosity++;
 		   continue;
 	   }
+	
+	
 
 		usage();
     }

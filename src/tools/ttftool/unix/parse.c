@@ -114,9 +114,11 @@ void read_font()
     long cmap_offset;
     TTF_USHORT *glyphId, format, segCount;
 
+    msg(3, "Reading font");
     ttf_skip(TTF_FIXED_L_SIZE);
     ntabs = get_ushort();
     ttf_skip(3*TTF_USHORT_SIZE);
+    msg(3, "Reading directory table [%d entries]", ntabs);
     dir_tab = ttf_alloc(ntabs, dirtab_entry);
     for (pd = dir_tab; pd - dir_tab < ntabs; pd++) {
         pd->tag[0] = get_char();
@@ -127,6 +129,8 @@ void read_font()
         pd->offset = get_ulong();
         pd->length = get_ulong();
     }
+
+    msg(3, "Reading head table");
     seek_tab("head", 2*TTF_FIXED_L_SIZE + 2*TTF_ULONG_SIZE + TTF_USHORT_SIZE);
     upem = get_ushort();
     ttf_skip(16);
@@ -137,9 +141,13 @@ void read_font()
     ttf_skip(TTF_USHORT_SIZE);
     ttf_skip(TTF_USHORT_SIZE + TTF_SHORT_SIZE);
     loca_format = get_short();
+    msg(3, "loca table format %d", loca_format);
+
+    msg(3,"Reading maxp table");
     seek_tab("maxp", TTF_FIXED_L_SIZE);
     nglyphs = get_ushort();
-    mtx_tab = ttf_alloc(nglyphs, mtx_entry);
+    msg(3, "%d entries", nglyphs);
+    mtx_tab = ttf_alloc(nglyphs + 1, mtx_entry); /*need 1 for the loca table*/
     /* set initially to 0, so that we can test whether an entry was used
        by testing for 0
     memset(mtx_tab, 0, nglyphs*sizeof(mtx_entry)); */
@@ -148,11 +156,14 @@ void read_font()
         pm->name = 0; /* notdef */
         pm->found = 0;
     }
+    msg(3, "Reading hhea table");
     seek_tab("hhea", TTF_FIXED_L_SIZE);
     Ascender = get_fword();
     Descender = get_fword();
     ttf_skip(TTF_FWORD_SIZE + TTF_UFWORD_SIZE + 3*TTF_FWORD_SIZE + 8*TTF_SHORT_SIZE);
     nhmtx = get_ushort();
+
+    msg(3, "Reading hmtx table");
     seek_tab("hmtx", 0);
     for (pm = mtx_tab; pm - mtx_tab < nhmtx; pm++) {
         pm->wx = get_ufword();
@@ -161,8 +172,11 @@ void read_font()
     i = pm[-1].wx;
     for (; pm - mtx_tab < nglyphs; pm++)
         pm->wx = i;
+
+    msg(3, "Reading post table");
     seek_tab("post", 0);
     post_format = get_fixed();
+    msg(3, "post format %d", post_format);
     ItalicAngle = get_fixed();
     UnderlinePosition = get_fword();
     UnderlineThickness = get_fword();
@@ -180,6 +194,7 @@ void read_font()
         break;
     case 0x00020000:
         l = get_ushort(); /* some fonts have this value different from nglyphs */
+	msg(3, "post table contains %d entries", l);
 
         for (pm = mtx_tab; pm - mtx_tab < l; pm++)
             pm->index = get_ushort();
@@ -216,8 +231,11 @@ void read_font()
 
 
 		/*here comes the ucs->uni hack*/
+	msg(3, "Reading cmap table");
         seek_tab("cmap", TTF_USHORT_SIZE); /* skip the table vesrion number (0) */
         netabs = get_ushort();
+	msg(3, "%d entries", netabs);
+
         cmap_offset = ftell(fontfile) - 2*TTF_USHORT_SIZE;
         cmap_tab = ttf_alloc(netabs, cmap_entry);
         for (e = cmap_tab; e - cmap_tab < netabs; e++) {
@@ -229,31 +247,56 @@ void read_font()
             seek_off("cmap", cmap_offset + e->offset);
             format = get_ushort();
             if (format != 4) {
+            	msg(4, "found table in unsupported format %d, skipping.", format);
                 continue;
             }
+
+	msg(3, "format=%d (should be 4)", format);
 
         /*uni_to_glyph = 1;*/
         length = get_ushort(); /* length of subtable */
         get_ushort(); /* skip the version number */
         segCount = get_ushort();
         segCount /= 2;
+	msg(3, "segment count %d, length %d", segCount, length);
+
         get_ushort(); /* skip searchRange */
         get_ushort(); /* skip entrySelector */
         get_ushort(); /* skip rangeShift */
         seg_tab = ttf_alloc(segCount, seg_entry);
         for (s = seg_tab; s - seg_tab < segCount; s++)
+        {
             s->endCode = get_ushort();
+            msg(4, "segment end 0x%04x", s->endCode);
+        }
         get_ushort(); /* skip reversedPad */
         for (s = seg_tab; s - seg_tab < segCount; s++)
+        {
             s->startCode = get_ushort();
+            msg(4, "segment start 0x%04x", s->startCode);
+        }
         for (s = seg_tab; s - seg_tab < segCount; s++)
+        {
             s->idDelta = get_ushort();
+            msg(4, "segment delta 0x%04x", s->idDelta);
+        }
         for (s = seg_tab; s - seg_tab < segCount; s++)
+        {
             s->idRangeOffset = get_ushort();
+            msg(4, "segment range offset 0x%04x", s->idRangeOffset);
+        }
         length -= 8*TTF_USHORT_SIZE + 4*segCount*TTF_USHORT_SIZE;
+	msg(3, "should contain %d glyphs", length);
+
         glyphId = ttf_alloc(length, TTF_USHORT);
         for (i = 0; i < length; i++)
-            glyphId[i] = get_ushort();
+        {
+        	msg(5, "i=%d", i);
+            glyphId[i] = broken_cmap ? get_byte() : get_ushort();
+        }
+
+	msg(3, "retrieved glyphs");
+
         /* set uni_map to 0, so that we can test for duplicate usage */
         for (i = 0; i <= MAX_CHAR_CODE; i++)
         {
@@ -306,19 +349,29 @@ void read_font()
     default:
         ttf_fail("unsupported format (%.8X) of `post' table", post_format);
     }
+    msg(3, "Reading loca table");
     seek_tab("loca", 0);
-    for (pm = mtx_tab; pm - mtx_tab < nglyphs; pm++)
+    for (pm = mtx_tab; pm - mtx_tab <= nglyphs; pm++) /*loca table contains nglyphs+1 entries*/
         pm->offset = (loca_format == 1 ? get_ulong() : get_ushort() << 1);
+
+    msg(3, "Reading glyf table");
+
     if ((pd = name_lookup("glyf")) == 0)
         ttf_fail("can't find table `glyf'");
     for (n = pd->offset, pm = mtx_tab; pm - mtx_tab < nglyphs; pm++)
+    {
+    	msg(5, "indx %d of %d [off 0x%04x, next off 0x%04x]", pm - mtx_tab, nglyphs-1,n + pm->offset, n + (pm+1)->offset);
         if (pm->offset != (pm + 1)->offset) {
             seek_off("glyf", n + pm->offset);
             ttf_skip(TTF_SHORT_SIZE);
             pm->bbox[0] = get_fword();
+            msg(6, "got bbox[0]");
             pm->bbox[1] = get_fword();
+            msg(6, "got bbox[1]");
             pm->bbox[2] = get_fword();
+            msg(6, "got bbox[2]");
             pm->bbox[3] = get_fword();
+            msg(6, "got bbox[3]");
         }
         else { /* get the BBox from .notdef */
             pm->bbox[0] = mtx_tab[0].bbox[0];
@@ -326,6 +379,8 @@ void read_font()
             pm->bbox[2] = mtx_tab[0].bbox[2];
             pm->bbox[3] = mtx_tab[0].bbox[3];
         }
+    }
+    msg(3, "Reading name table");
     seek_tab("name", TTF_USHORT_SIZE);
     i = ftell(fontfile);
     n = get_ushort();
@@ -356,12 +411,15 @@ void read_font()
         }
         i += 6*TTF_USHORT_SIZE;
     }
+    
+    msg(3, "Reading PCLT table");
     if ((pd = name_lookup("PCLT")) != 0) {
         seek_off("PCLT", pd->offset + TTF_FIXED_L_SIZE + TTF_ULONG_SIZE + TTF_USHORT_SIZE);
         XHeight = get_ushort();
         ttf_skip(2*TTF_USHORT_SIZE);
         CapHeight = get_ushort();
     }
+    msg(3, "Reading kern table");
     if ((pd = name_lookup("kern")) == 0)
         return;
     kern_tab = ttf_alloc(nglyphs, kern_entry);
