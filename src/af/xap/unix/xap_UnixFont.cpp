@@ -21,7 +21,7 @@
 #include <stdarg.h>
 #include <stdlib.h>
 #include <string.h>
-#include <fstream.h>
+#include <sys/stat.h>
 
 #include "ut_string.h"
 #include "ut_types.h"
@@ -99,25 +99,25 @@ UT_Bool AP_UnixFont::openFileAs(const char * fontfile,
 		return UT_FALSE;
 	if (!xlfd)
 		return UT_FALSE;
+
+	struct stat buf;
+	int err;
 	
-	ifstream font;
-	ifstream metric;
-	
-	font.open(fontfile);
-	if (!font)
+	err = stat(fontfile, &buf);
+	UT_ASSERT(err == 0 || err == -1);
+
+	if (! (err == 0 || S_ISREG(buf.st_mode)) )
 	{
-		goto CloseFilesExit;
+		return UT_FALSE;
 	}
-	font.close();
 	
-	metric.open(metricfile);
-	if (!metric)
+	err = stat(metricfile, &buf);
+	UT_ASSERT(err == 0 || err == -1);
+
+	if (! (err == 0 || S_ISREG(buf.st_mode)) )
 	{
-		goto CloseFilesExit;
+		return UT_FALSE;
 	}
-	// TODO use the metric file for something (like parsing it
-	// and holding some information)
-	metric.close();
 
 	// strip our proper face name out of the XLFD
 	char * newxlfd;
@@ -144,14 +144,6 @@ UT_Bool AP_UnixFont::openFileAs(const char * fontfile,
 	_makeFontKey();
 
 	return UT_TRUE;
-
- CloseFilesExit:
-	if (font)
-		font.close();
-	if (metric)
-		metric.close();
-
-	return UT_FALSE;
 }
 
 void AP_UnixFont::setName(const char * name)

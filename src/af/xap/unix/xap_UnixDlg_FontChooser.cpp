@@ -810,8 +810,8 @@ void AP_UnixDialog_FontChooser::updatePreview(void)
 			(unsigned int) (currentColor[BLUE] 	* (gdouble) 255.0));
 
 	// what will we do with these?
-	UT_Bool bStrikeOut = gtk_toggle_button_get_active(GTK_TOGGLE_BUTTON(m_checkStrikeOut));
-	UT_Bool bUnderline = gtk_toggle_button_get_active(GTK_TOGGLE_BUTTON(m_checkUnderline));
+//	UT_Bool bStrikeOut = gtk_toggle_button_get_active(GTK_TOGGLE_BUTTON(m_checkStrikeOut));
+//	UT_Bool bUnderline = gtk_toggle_button_get_active(GTK_TOGGLE_BUTTON(m_checkUnderline));
 
 	AP_UnixFont * tempUnixFont = m_fontManager->getFont((const char *) fontText[0], styleNumber);
 	UT_ASSERT(tempUnixFont);
