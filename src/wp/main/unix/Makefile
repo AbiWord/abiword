@@ -74,6 +74,7 @@ ifdef __OpenBSD__
 STATIC_LDFLAGS += -lintl
 endif
 EXTRA_LIBS += 
+#EXTRA_LIBS += -lefence
 # we override the $(PROGRAM) rule.
 
 $(PROGRAM): $(OBJS) $(EXTRA_LIBDEP)
