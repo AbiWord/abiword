@@ -40,26 +40,29 @@ LIB_SUFFIX = lib
 DLL_SUFFIX = dll
 EXE_SUFFIX = .exe
 
-# Compiler flags (do we really need -GT?)
-# TODO go thru the compiler manual and see which ones we really need
-# TODO and should be using.  especially w/r/t debug vs. production.
+# Compiler and shared library flags 
 
 ifdef ABI_OPT_DEBUG
+
 OPTIMIZER 	= -Od -Z7
 DEFINES 	= -DDEBUG -D_DEBUG -UNDEBUG -D_CRTDBG_MAP_ALLOC -DREBAR
 OBJ_DIR_SFX	= DBG
-else
-OPTIMIZER	= -Od -Z7
-DEFINES		= -DDEBUG -D_DEBUG -UNDEBUG -D_CRTDBG_MAP_ALLOC
-OBJ_DIR_SFX	= OBJ
-endif
-
-OS_CFLAGS 	= -W3 -nologo -GF -Gy -MDd -GT -DWIN32 -D_X86_
-
-# Shared library flags
+OS_CFLAGS 	= -W3 -nologo -GF -Gy -MDd -DWIN32 -D_X86_
 DLLFLAGS 	= -DEBUG -DEBUGTYPE:CV -OUT:"$@"
 LDFLAGS 	= -DEBUG -DEBUGTYPE:CV
 OS_DLLFLAGS 	= -nologo -DLL -SUBSYSTEM:WINDOWS -PDB:NONE
+
+else
+
+OPTIMIZER	= -O2
+DEFINES		= -UDEBUG -U_DEBUG -DNDEBUG -DREBAR
+OBJ_DIR_SFX	= OBJ
+OS_CFLAGS 	= -W3 -nologo -GF -Gy -MD -DWIN32 -D_X86_
+DLLFLAGS 	= -OUT:"$@"
+LDFLAGS 	=
+OS_DLLFLAGS 	= -nologo -DLL -SUBSYSTEM:WINDOWS -PDB:NONE
+
+endif
 
 ABI_NATIVE	= win
 ABI_FE		= Win32
