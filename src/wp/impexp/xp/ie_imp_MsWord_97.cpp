@@ -548,7 +548,6 @@ IE_Imp_MsWord_97::IE_Imp_MsWord_97(PD_Document * pDocument)
 	m_bLTRParaContext(true),
 	m_iOverrideIssued(FRIBIDI_TYPE_UNSET),
 	m_bBidiDocument(false),
-	m_iDocPosition(0),
 	m_pBookmarks(NULL),
 	m_iBookmarksCount(0),
 	m_pFootnotes(NULL),
@@ -1185,15 +1184,15 @@ bool IE_Imp_MsWord_97::_insertBookmark(bookmark * bm)
 	return error;
 }
 
-bool IE_Imp_MsWord_97::_insertBookmarkIfAppropriate()
+bool IE_Imp_MsWord_97::_insertBookmarkIfAppropriate(UT_uint32 iDocPosition)
 {
-	//now search for position m_iDocPosition in our bookmark list;
+	//now search for position iDocPosition in our bookmark list;
 	bookmark * bm;
 	if (m_iBookmarksCount == 0) {
 		bm = static_cast<bookmark*>(NULL);
 	}
 	else {
-		bm = static_cast<bookmark*>( bsearch(static_cast<const void *>(&m_iDocPosition),
+		bm = static_cast<bookmark*>( bsearch(static_cast<const void *>(&iDocPosition),
 				m_pBookmarks, m_iBookmarksCount, sizeof(bookmark),
 				s_cmp_bookmarks_bsearch));
 	}
@@ -1202,10 +1201,10 @@ bool IE_Imp_MsWord_97::_insertBookmarkIfAppropriate()
 	{
 	   // there is a bookmark at the current position
 	   // first make sure the returned bookmark is the first one at this position
-	   while(bm > m_pBookmarks && (bm - 1)->pos == m_iDocPosition)
+	   while(bm > m_pBookmarks && (bm - 1)->pos == iDocPosition)
 		   bm--;
 
-	   while(bm->pos == m_iDocPosition)
+	   while(bm->pos == iDocPosition)
 		  error |= _insertBookmark(bm++);
 	}
 	return error;
@@ -1213,17 +1212,17 @@ bool IE_Imp_MsWord_97::_insertBookmarkIfAppropriate()
 
 int IE_Imp_MsWord_97::_charProc (wvParseStruct *ps, U16 eachchar, U8 chartype, U16 lid)
 {
-	if(m_iDocPosition > m_iFootnotesStart - 8 && m_iDocPosition < m_iFootnotesStart + 8)
+	if(ps->currentcp == m_iFootnotesStart)
 	{
-		UT_DEBUGMSG(("Start of footnotes: pos %d, char 0x%04x\n", m_iDocPosition, eachchar));
+		UT_DEBUGMSG(("Start of footnotes: pos %d, char 0x%02x\n", ps->currentcp, eachchar));
 	}
 	
-	if(m_iDocPosition > m_iEndnotesStart - 8 && m_iDocPosition < m_iEndnotesStart + 8)
+	if(ps->currentcp ==  m_iEndnotesStart)
 	{
-		UT_DEBUGMSG(("Start of endnotes: pos %d, char 0x%04x\n", m_iDocPosition, eachchar));
+		UT_DEBUGMSG(("Start of endnotes: pos %d, char 0x%02x\n", ps->currentcp, eachchar));
 	}
 	
-	_insertBookmarkIfAppropriate();
+	_insertBookmarkIfAppropriate(ps->currentcp);
 
 	// convert incoming character to unicode
 	if (chartype)
@@ -1242,7 +1241,6 @@ int IE_Imp_MsWord_97::_charProc (wvParseStruct *ps, U16 eachchar, U8 chartype, U
 		break;
 
 	case 13: // end of paragraph
-		m_iDocPosition++;
 		return 0;
 
 	case 14: // column break
@@ -1285,7 +1283,6 @@ int IE_Imp_MsWord_97::_charProc (wvParseStruct *ps, U16 eachchar, U8 chartype, U
 		eachchar = 39; // apostrophe
 
 	this->_appendChar (static_cast<UT_UCSChar>(eachchar));
-	m_iDocPosition++;
 
 	return 0;
 }
@@ -1301,6 +1298,16 @@ int IE_Imp_MsWord_97::_specCharProc (wvParseStruct *ps, U16 eachchar, CHP *achp)
 	PICF picf;
 #endif
 
+	if(ps->currentcp == m_iFootnotesStart)
+	{
+		UT_DEBUGMSG(("Start of footnotes: pos %d, char 0x%02x\n", ps->currentcp, eachchar));
+	}
+	
+	if(ps->currentcp ==  m_iEndnotesStart)
+	{
+		UT_DEBUGMSG(("Start of endnotes: pos %d, char 0x%02x\n", ps->currentcp, eachchar));
+	}
+	
 	//
 	// This next bit of code is to handle fields
 	//
@@ -1348,8 +1355,6 @@ int IE_Imp_MsWord_97::_specCharProc (wvParseStruct *ps, U16 eachchar, CHP *achp)
 	switch (eachchar)
 	{
 	case 0x01: // Older ( < Word97) image, currently not handled very well
-		m_iDocPosition++; // char swallowed ...
-
 		if (achp->fOle2) {
 			UT_DEBUGMSG(("embedded OLE2 component. currently unsupported"));
 			return 0;
@@ -1388,8 +1393,6 @@ int IE_Imp_MsWord_97::_specCharProc (wvParseStruct *ps, U16 eachchar, CHP *achp)
 			return 0;
 		  }
 	case 0x08: // Word 97, 2000, XP image
-		m_iDocPosition++; // char swallowed ...
-
 		if (wvQuerySupported(&ps->fib, NULL) >= WORD8) // sanity check
 		{
 			if (ps->nooffspa > 0)
@@ -1434,7 +1437,6 @@ int IE_Imp_MsWord_97::_specCharProc (wvParseStruct *ps, U16 eachchar, CHP *achp)
 
 	// for any character that we did not handle, we need to increase
 	// doc position
-	m_iDocPosition++;
 	return 0;
 }
 
@@ -2229,21 +2231,14 @@ int IE_Imp_MsWord_97::_fieldProc (wvParseStruct *ps, U16 eachchar,
 			m_fieldI = 0;
 		}
 		m_fieldDepth++;
-		m_iDocPosition++; // for the 0x13
 	}
 	else if (eachchar == 0x14) // field trigger
 	{
 		if (m_fieldDepth == 1)
 		{
 			m_command[m_fieldI] = 0;
-
-			// TODO is this really UCS-2 or UTF-16?
-			// TODO and are we using strlen for the number of 16-bit words
-			// TODO or the number of characters?
-			// TODO Because UTF-16 characters are sometimes expressed as 2 words
-			m_iDocPosition += UT_UCS2_strlen(m_command); 
-
 			m_fieldC = wvWideStrToMB (m_command);
+
 			if (this->_handleCommandField(m_fieldC))
 				m_fieldRet = 1;
 			else
@@ -2253,7 +2248,6 @@ int IE_Imp_MsWord_97::_fieldProc (wvParseStruct *ps, U16 eachchar,
 			m_fieldWhich = m_argument;
 			m_fieldI = 0;
 		}
-		m_iDocPosition++; //for the 0x14
 	}
 
 	if (m_fieldI >= FLD_SIZE)
@@ -2288,15 +2282,14 @@ int IE_Imp_MsWord_97::_fieldProc (wvParseStruct *ps, U16 eachchar,
 			//the text to which the link is tied
 			//m_fieldA = wvWideStrToMB (m_argument);
 			m_fieldC = wvWideStrToMB (m_command);
-			_handleFieldEnd (m_fieldC);
+			_handleFieldEnd (m_fieldC, ps->currentcp);
 			wvFree (m_fieldC);
 		}
-		m_iDocPosition++; // for the 0x15
 	}
 	return m_fieldRet;
 }
 
-bool IE_Imp_MsWord_97::_handleFieldEnd (char *command)
+bool IE_Imp_MsWord_97::_handleFieldEnd (char *command, UT_uint32 iDocPosition)
 {
   Doc_Field_t tokenIndex = F_OTHER;
 	char *token;
@@ -2321,8 +2314,7 @@ bool IE_Imp_MsWord_97::_handleFieldEnd (char *command)
 			while(*a)
 			{
 				this->_appendChar(*a++);
-				m_iDocPosition++;
-				_insertBookmarkIfAppropriate();
+				_insertBookmarkIfAppropriate(iDocPosition);
 			}
 			this->_flush();
 
@@ -2333,8 +2325,6 @@ bool IE_Imp_MsWord_97::_handleFieldEnd (char *command)
 			}
 
 			getDoc()->appendObject(PTO_Hyperlink,NULL);
-			// increase doc position for the 0x15
-			m_iDocPosition++;
 			break;
 		}
 		default:

@@ -129,11 +129,11 @@ private:
 	int 	   _endComment (wvParseStruct *ps, UT_uint32 tag,
 						 void *props, int dirty);
 	XML_Char * _getBookmarkName(const wvParseStruct * ps, UT_uint32 pos);
-	bool	   _insertBookmarkIfAppropriate();
+	bool	   _insertBookmarkIfAppropriate(UT_uint32 iPos);
 	bool	   _insertBookmark(bookmark * bm);
 	UT_Error   _handleImage (Blip *, long width, long height);
 	bool	   _handleCommandField (char *command);
-	bool	   _handleFieldEnd (char * command);
+	bool	   _handleFieldEnd (char * command, UT_uint32 iPos);
 	int 	   _fieldProc (wvParseStruct *ps, UT_uint16 eachchar,
 						   UT_Byte chartype, UT_uint16 lid);
 	void	   _appendChar (UT_UCSChar ch);
@@ -171,7 +171,6 @@ private:
 	bool m_bLTRParaContext;
 	FriBidiCharType  m_iOverrideIssued;
 	bool m_bBidiDocument;
-	UT_uint32  m_iDocPosition;
 	bookmark * m_pBookmarks;
 	UT_uint32  m_iBookmarksCount;
 	footnote * m_pFootnotes;
