@@ -98,7 +98,7 @@ void AppendLocalizedMenuItem (NSPopUpButton* menu, const XAP_StringSet * pSS, XA
 	\param bufSize the allocated size for buf
 	\param label the label to convert as an UT_String
  */
-void _convertLabelToMac (char * buf, size_t bufSize, const UT_String& label)
+void _convertLabelToMac (char * buf, size_t bufSize, const UT_UTF8String& label)
 {
 	UT_ASSERT(buf);
 	UT_ASSERT(label.length() < bufSize);

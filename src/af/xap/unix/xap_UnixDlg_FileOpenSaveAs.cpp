@@ -508,8 +508,8 @@ void XAP_UnixDialog_FileOpenSaveAs::runModal(XAP_Frame * pFrame)
 
 	bool bCheckWritePermission = false;
 
-	UT_String szTitle = NULL;
-        UT_String szFileTypeLabel = NULL;
+	UT_UTF8String szTitle;
+	UT_UTF8String szFileTypeLabel;
 	switch (m_id)
 	{
 		case XAP_DIALOG_ID_INSERT_PICTURE:
@@ -572,7 +572,7 @@ void XAP_UnixDialog_FileOpenSaveAs::runModal(XAP_Frame * pFrame)
 	// NOTE: let GTK take care of the localization of the actual
 	// NOTE: buttons and labels on the FileSelection dialog.
 	
-	GtkFileSelection *pFS = GTK_FILE_SELECTION(gtk_file_selection_new(szTitle.c_str()));
+	GtkFileSelection *pFS = GTK_FILE_SELECTION(gtk_file_selection_new(szTitle.utf8_str()));
 	m_FS = pFS;
 
 	abiSetupModalDialog(GTK_DIALOG(pFS), pFrame, this, GTK_RESPONSE_CANCEL);
@@ -600,7 +600,7 @@ void XAP_UnixDialog_FileOpenSaveAs::runModal(XAP_Frame * pFrame)
 		    gtk_widget_show (preview);
 		    m_preview = preview;
 
-		    GtkWidget * frame = gtk_frame_new (pSS->getValueUTF8(XAP_STRING_ID_DLG_IP_Activate_Label).c_str());
+		    GtkWidget * frame = gtk_frame_new (pSS->getValueUTF8(XAP_STRING_ID_DLG_IP_Activate_Label).utf8_str());
 			gtk_frame_set_shadow_type(GTK_FRAME(frame), GTK_SHADOW_NONE);
 		    gtk_widget_show (frame);
 		    gtk_container_add (GTK_CONTAINER(frame), preview);
@@ -619,7 +619,7 @@ void XAP_UnixDialog_FileOpenSaveAs::runModal(XAP_Frame * pFrame)
 		  }
 
 		// pulldown label
-		GtkWidget * filetypes_label = gtk_label_new(szFileTypeLabel.c_str());
+		GtkWidget * filetypes_label = gtk_label_new(szFileTypeLabel.utf8_str());
 		gtk_label_set_justify(GTK_LABEL(filetypes_label), GTK_JUSTIFY_RIGHT);
 		gtk_misc_set_alignment(GTK_MISC(filetypes_label), 1.0, 0.5);
 		gtk_widget_show(filetypes_label);
@@ -658,7 +658,7 @@ void XAP_UnixDialog_FileOpenSaveAs::runModal(XAP_Frame * pFrame)
 			// Auto-detect is always an option, but a special one, so we use
 			// a pre-defined constant for the type, and don't use the user-supplied
 			// types yet.
-			g_snprintf(buffer, 1024, "%s", pSS->getValueUTF8(XAP_STRING_ID_DLG_FOSA_FileTypeAutoDetect).c_str());
+			g_snprintf(buffer, 1024, "%s", pSS->getValueUTF8(XAP_STRING_ID_DLG_FOSA_FileTypeAutoDetect).utf8_str());
 			thismenuitem = gtk_menu_item_new_with_label(buffer);
 			g_object_set_data(G_OBJECT(thismenuitem), "user_data", GINT_TO_POINTER(XAP_DIALOG_FILEOPENSAVEAS_FILE_TYPE_AUTO));
 			gtk_widget_show(thismenuitem);
@@ -844,7 +844,7 @@ gint XAP_UnixDialog_FileOpenSaveAs::previewPicture (void)
 	GR_Font * fnt = pGr->findFont("Times New Roman", "normal", "", "normal", "", "12pt");
 	pGr->setFont(fnt);
 
-	UT_UTF8String str(pSS->getValueUTF8(XAP_STRING_ID_DLG_IP_No_Picture_Label).c_str());
+	UT_UTF8String str(pSS->getValueUTF8(XAP_STRING_ID_DLG_IP_No_Picture_Label).utf8_str());
 
 	int answer = 0;
 

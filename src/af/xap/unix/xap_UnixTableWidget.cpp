@@ -206,7 +206,7 @@ abi_table_embed_on_toolbar (AbiTable* abi_table, GtkToolbar* toolbar)
 		gtk_widget_hide(abi_table->label);
 #endif
 	const XAP_StringSet * pSS = XAP_App::getApp()->getStringSet();
-	gtk_toolbar_append_widget (toolbar, GTK_WIDGET(abi_table), pSS->getValueUTF8(XAP_STRING_ID_TB_InsertNewTable).c_str(), NULL);
+	gtk_toolbar_append_widget (toolbar, GTK_WIDGET(abi_table), pSS->getValueUTF8(XAP_STRING_ID_TB_InsertNewTable).utf8_str(), NULL);
 }
 
 static gboolean
@@ -651,9 +651,9 @@ static void
 abi_table_init (AbiTable* table)
 {
 	const XAP_StringSet * pSS = XAP_App::getApp()->getStringSet();
-	UT_String prText =  "%d x %d ";
+	UT_UTF8String prText =  "%d x %d ";
 	prText += pSS->getValueUTF8(XAP_STRING_ID_TB_Table);
-	char* text = g_strdup_printf(prText.c_str(), init_rows, init_cols);
+	char* text = g_strdup_printf(prText.utf8_str(), init_rows, init_cols);
 
 	register_stock_icon();
 	

@@ -294,13 +294,13 @@ GtkWidget * XAP_UnixDialog_Image::_constructWindow ()
 	gtk_widget_set_size_request(m_wWidthSpin,13,-1);  
 	gtk_spin_button_set_adjustment (GTK_SPIN_BUTTON(m_wWidthSpin), GTK_ADJUSTMENT(m_oWidthSpin_adj));
 	
-	abiDialogSetTitle(mMainWindow, pSS->getValueUTF8(XAP_STRING_ID_DLG_Image_Title).c_str());
+	abiDialogSetTitle(mMainWindow, pSS->getValueUTF8(XAP_STRING_ID_DLG_Image_Title).utf8_str());
 	
 	localizeLabel(glade_xml_get_widget(xml,"lblHeight"), pSS, XAP_STRING_ID_DLG_Image_Height);
 	localizeLabel(glade_xml_get_widget(xml,"lblWidth"), pSS, XAP_STRING_ID_DLG_Image_Width);
 	localizeLabel(glade_xml_get_widget(xml,"lblTitle"), pSS, XAP_STRING_ID_DLG_Image_LblTitle);
 	localizeLabel(glade_xml_get_widget(xml,"lblAlt"), pSS, XAP_STRING_ID_DLG_Image_LblAlt);
-	gtk_button_set_label(GTK_BUTTON(m_wAspectCheck), pSS->getValueUTF8 (XAP_STRING_ID_DLG_Image_Aspect).c_str());
+	gtk_button_set_label(GTK_BUTTON(m_wAspectCheck), pSS->getValueUTF8 (XAP_STRING_ID_DLG_Image_Aspect).utf8_str());
 
 	m_iWidth = gtk_spin_button_get_value_as_int( GTK_SPIN_BUTTON(m_wWidthSpin));
 	m_iHeight = gtk_spin_button_get_value_as_int( GTK_SPIN_BUTTON(m_wHeightSpin));
