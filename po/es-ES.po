@@ -7,8 +7,8 @@ msgid ""
 msgstr ""
 "Project-Id-Version: abiword\n"
 "Report-Msgid-Bugs-To: \n"
-"POT-Creation-Date: 2003-07-27 13:58+0200\n"
-"PO-Revision-Date: 2003-07-27 14:10+0200\n"
+"POT-Creation-Date: 2003-08-03 21:13+0200\n"
+"PO-Revision-Date: 2003-08-03 21:14+0200\n"
 "Last-Translator: Francisco Javier F. Serrador <serrador@arrakis.es>\n"
 "Language-Team: Spanish <traductores@es.gnome.org>\n"
 "MIME-Version: 1.0\n"
@@ -1282,7 +1282,7 @@ msgid "Attention:"
 msgstr "Atención:"
 
 #. DLG_MetaData_Author_LBL
-#: po/tmp/ap_String_Id.h.h:567
+#: po/tmp/ap_String_Id.h.h:567 po/tmp/xap_String_Id.h.h:75
 msgid "Author:"
 msgstr "Autor:"
 
@@ -2207,12 +2207,12 @@ msgstr "Borrar esta fila de su tabla"
 #. DLG_Styles_Description
 #. DLG_Styles_ModifyDescription
 #. FIELD_Document_Description
-#: po/tmp/ap_String_Id.h.h:950 po/tmp/xap_String_Id.h.h:201
+#: po/tmp/ap_String_Id.h.h:950
 msgid "Description"
 msgstr "Descripción"
 
 #. DLG_MetaData_Description_LBL
-#: po/tmp/ap_String_Id.h.h:952
+#: po/tmp/ap_String_Id.h.h:952 po/tmp/xap_String_Id.h.h:201
 msgid "Description:"
 msgstr "Descripción:"
 
@@ -5154,7 +5154,7 @@ msgid "VIA OVERNIGHT MAIL"
 msgstr "POR CORREO NOCTURNO"
 
 #. FIELD_Application_Version
-#: po/tmp/ap_String_Id.h.h:2179 po/tmp/xap_String_Id.h.h:652
+#: po/tmp/ap_String_Id.h.h:2179
 msgid "Version"
 msgstr "Versión"
 
@@ -5526,11 +5526,6 @@ msgstr "Armenio, ARMSCII-8"
 #: po/tmp/xap_String_Id.h.h:73
 msgid "Assamese"
 msgstr "Assamese"
-
-#. DLG_PLUGIN_MANAGER_AUTHOR
-#: po/tmp/xap_String_Id.h.h:75
-msgid "Author"
-msgstr "Autor"
 
 #. DLG_Options_Label_DirMarkerAfterClosingParenthesis
 #: po/tmp/xap_String_Id.h.h:77
@@ -6341,8 +6336,8 @@ msgstr "Marshalés (Nauru)"
 
 #. DLG_PLUGIN_MANAGER_NAME
 #: po/tmp/xap_String_Id.h.h:427
-msgid "Name"
-msgstr "Nombre"
+msgid "Name:"
+msgstr "Nombre:"
 
 #. DLG_HashDownloader_Dlg_Title
 #: po/tmp/xap_String_Id.h.h:429
@@ -6451,8 +6446,8 @@ msgstr "Texto plano"
 
 #. DLG_PLUGIN_MANAGER_DETAILS
 #: po/tmp/xap_String_Id.h.h:475
-msgid "Plugin Details"
-msgstr "Detalles del complemento"
+msgid "Plugin Details:"
+msgstr "Detalles del complemento:"
 
 #. DLG_PLUGIN_MANAGER_LIST
 #: po/tmp/xap_String_Id.h.h:477
@@ -6817,6 +6812,11 @@ msgstr "Actualizar"
 msgid "Urdu"
 msgstr "Urdu"
 
+#. DLG_PLUGIN_MANAGER_VERSION
+#: po/tmp/xap_String_Id.h.h:652
+msgid "Version:"
+msgstr "Versión:"
+
 #. LANG_VI_VN
 #: po/tmp/xap_String_Id.h.h:654
 msgid "Vietnamese"
@@ -6963,6 +6963,12 @@ msgstr "el diccionario"
 #: po/tmp/xap_String_Id.h.h:710
 msgid "the dictionary-list"
 msgstr "la lista de diccionarios"
+
+#~ msgid "Author"
+#~ msgstr "Autor"
+
+#~ msgid "Name"
+#~ msgstr "Nombre"
 
 #~ msgid "Choose a Template"
 #~ msgstr "Elija una plantilla"
