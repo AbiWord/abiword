@@ -835,7 +835,7 @@ void fp_Line::draw(GR_Graphics* pG)
 	UT_sint32 my_xoff = 0, my_yoff = 0;
 	
 	m_pContainer->getScreenOffsets(this, my_xoff, my_yoff);
-	UT_DEBUGMSG(("SEVIOR: Drawing line in line pG, my_yoff=%d \n",my_yoff));
+	xxx_UT_DEBUGMSG(("SEVIOR: Drawing line in line pG, my_yoff=%d \n",my_yoff));
 	if(((my_yoff < -32000) || (my_yoff > 32000)) && pG->queryProperties(GR_Graphics::DGP_SCREEN))
 	{
 //
@@ -883,7 +883,7 @@ void fp_Line::draw(dg_DrawArgs* pDA)
 {
 	int count = m_vecRuns.getItemCount();
 	
-	UT_DEBUGMSG(("SEVIOR: Drawing line in line pDA \n"));
+	xxx_UT_DEBUGMSG(("SEVIOR: Drawing line in line pDA \n"));
 
 	pDA->yoff += m_iAscent;
 
@@ -2944,7 +2944,7 @@ UT_sint32 fp_Line::_createMapOfRuns()
 					case FRIBIDI_TYPE_BS  : s_pPseudoString[i] = (FriBidiChar) 0x000A; break;
 					case FRIBIDI_TYPE_SS  : s_pPseudoString[i] = (FriBidiChar) 0x000B; break;
 					case FRIBIDI_TYPE_WS  : s_pPseudoString[i] = (FriBidiChar) ' '; break;
-					case FRIBIDI_TYPE_AL  : s_pPseudoString[i] = (FriBidiChar) 0x061B; break;
+					case FRIBIDI_TYPE_AL  : s_pPseudoString[i] = (FriBidiChar) 0x062D; break;
 					case FRIBIDI_TYPE_NSM : s_pPseudoString[i] = (FriBidiChar) 0x0300; break;
 					case FRIBIDI_TYPE_LRE : s_pPseudoString[i] = (FriBidiChar) 0x202A; break;
 					case FRIBIDI_TYPE_RLE : s_pPseudoString[i] = (FriBidiChar) 0x202B; break;
@@ -3058,6 +3058,7 @@ void fp_Line::addDirectionUsed(FriBidiCharType dir, bool bRefreshMap)
 			break;
 			
 		case FRIBIDI_TYPE_RTL:
+		case FRIBIDI_TYPE_AL:
 			m_iRunsRTLcount++;
 			//UT_DEBUGMSG(("increased RTL run count [%d, this=0x%x]\n", m_iRunsRTLcount, this));
 			break;
@@ -3084,6 +3085,7 @@ void fp_Line::removeDirectionUsed(FriBidiCharType dir, bool bRefreshMap)
 			break;
 			
 		case FRIBIDI_TYPE_RTL:
+		case FRIBIDI_TYPE_AL:
 			m_iRunsRTLcount--;
 			//UT_DEBUGMSG(("decreased RTL run count (fp_Line::removeDirectionUsed) [%d, this=0x%x]\n", m_iRunsRTLcount, this));
 			
@@ -3113,6 +3115,7 @@ void fp_Line::changeDirectionUsed(FriBidiCharType oldDir, FriBidiCharType newDir
 			break;
 			
 		case FRIBIDI_TYPE_RTL:
+		case FRIBIDI_TYPE_AL:
 			m_iRunsRTLcount++;
 			//UT_DEBUGMSG(("increased RTL run count [%d, this=0x%x]\n", m_iRunsRTLcount, this));
 			break;
@@ -3131,6 +3134,7 @@ void fp_Line::changeDirectionUsed(FriBidiCharType oldDir, FriBidiCharType newDir
 			break;
 			
 		case FRIBIDI_TYPE_RTL:
+		case FRIBIDI_TYPE_AL:
 			m_iRunsRTLcount--;
 			//UT_DEBUGMSG(("decreased RTL run count (fp_Line::removeDirectionUsed) [%d, this=0x%x]\n", m_iRunsRTLcount, this));
 			
