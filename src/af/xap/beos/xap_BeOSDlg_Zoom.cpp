@@ -125,7 +125,7 @@ void ZoomWin::MessageReceived(BMessage *msg)
 			m_CustomText->SetEnabled(false);
 			m_DlgZoom->_updatePreviewZoomPercent(200);
 			m_CurrentPercent=200;
-			m_CurrentType=XAP_BeOSDialog_Zoom::z_200;
+			m_CurrentType=XAP_Frame::z_200;
 		}
 		break;
 		case '100p':
@@ -133,14 +133,14 @@ void ZoomWin::MessageReceived(BMessage *msg)
 			m_CustomText->SetEnabled(false);
 			m_DlgZoom->_updatePreviewZoomPercent(100);
 			m_CurrentPercent=100;
-			m_CurrentType=XAP_BeOSDialog_Zoom::z_100;
+			m_CurrentType=XAP_Frame::z_100;
 		}
 		break;
 		case '075p':
 		{
 			m_CustomText->SetEnabled(false);
 			m_DlgZoom->_updatePreviewZoomPercent(75);
-			m_CurrentType=XAP_BeOSDialog_Zoom::z_75;
+			m_CurrentType=XAP_Frame::z_75;
 			m_CurrentPercent=75;
 		}
 		break;
@@ -153,21 +153,21 @@ void ZoomWin::MessageReceived(BMessage *msg)
 		{
 			m_CustomText->SetEnabled(false);
 			//Might want to figure out the page width
-			m_CurrentType=XAP_BeOSDialog_Zoom::z_PAGEWIDTH;
+			m_CurrentType=XAP_Frame::z_PAGEWIDTH;
 			m_CurrentPercent=100;
 		}
 		break;
 		case 'whpg':
 		{
 			m_CustomText->SetEnabled(false);
-			m_CurrentType=XAP_BeOSDialog_Zoom::z_WHOLEPAGE;
+			m_CurrentType=XAP_Frame::z_WHOLEPAGE;
 			m_CurrentPercent=100;
 		}	
 		break;
 		case 'perc':
 		{
 			m_DlgZoom->_updatePreviewZoomPercent(atoi(m_CustomText->Text()));
-			m_CurrentType=XAP_BeOSDialog_Zoom::z_PERCENT;
+			m_CurrentType=XAP_Frame::z_PERCENT;
 			m_CurrentPercent=atoi(m_CustomText->Text());
 		}
 		case 'appl':

@@ -36,6 +36,8 @@
 #include "xav_View.h"
 #include "xad_Document.h"
 
+#include "fv_View.h"
+
 #pragma warning(disable:4355)
 
 /*****************************************************************/
@@ -351,6 +353,8 @@ LRESULT CALLBACK XAP_Win32Frame::_FrameWndProc(HWND hwnd, UINT iMsg, WPARAM wPar
 
 	pView = f->m_pView;
 
+	FV_View* pfView = static_cast<FV_View*>(pView);
+
 	if(iMsg == f->m_mouseWheelMessage)
 	{
 		wParam = MAKEWPARAM(0, (short)(int)wParam);
@@ -541,6 +545,25 @@ LRESULT CALLBACK XAP_Win32Frame::_FrameWndProc(HWND hwnd, UINT iMsg, WPARAM wPar
 			
 		f->m_iSizeWidth = nWidth;
 		f->m_iSizeHeight = nHeight;
+
+
+		UT_uint32 newZoom = 0;
+
+		switch(f->getZoomType())
+		{
+//		// special cases
+		case XAP_Frame::z_PAGEWIDTH:
+			newZoom = pfView->calculateZoomPercentForPageWidth();
+			f->setZoomPercentage(newZoom);
+
+			break;
+		case XAP_Frame::z_WHOLEPAGE:
+			newZoom = pfView->calculateZoomPercentForWholePage();
+			f->setZoomPercentage(newZoom);
+			break;
+		default:
+			;
+		}
 		
 		return 0;
 	}

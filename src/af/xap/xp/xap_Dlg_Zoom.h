@@ -40,15 +40,16 @@ public:
 	virtual void					runModal(XAP_Frame * pFrame) = 0;
 
 	typedef enum { a_OK, a_CANCEL } tAnswer;
-	typedef enum { z_200, z_100, z_75, z_PAGEWIDTH, z_WHOLEPAGE, z_PERCENT } zoomType;	
+//	typedef enum { z_200, z_100, z_75, z_PAGEWIDTH, z_WHOLEPAGE, z_PERCENT } zoomType;	
 
 	XAP_Dialog_Zoom::tAnswer		getAnswer(void) const;
 
 	// supply this on run
 	void							setZoomPercent(UT_uint32 zoom);
+	void							setZoomType(XAP_Frame::tZoomType zoomType) { m_zoomType = zoomType; }
 
 	// read these back
-	XAP_Dialog_Zoom::zoomType		getZoomType(void);
+	XAP_Frame::tZoomType			getZoomType(void);
 	UT_uint32						getZoomPercent(void);
 	
 protected:
@@ -63,7 +64,7 @@ protected:
 
 	XAP_Preview_Zoom * 				m_zoomPreview;
 	
-	XAP_Dialog_Zoom::zoomType		m_zoomType;
+	XAP_Frame::tZoomType			m_zoomType;
 	UT_uint32						m_zoomPercent;
 
 	XAP_Dialog_Zoom::tAnswer		m_answer;

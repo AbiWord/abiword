@@ -63,24 +63,24 @@ void XAP_Dialog_Zoom::setZoomPercent(UT_uint32 zoom)
 	switch(zoom)
 	{
 	case 200:
-		m_zoomType = XAP_Dialog_Zoom::z_200;
+		m_zoomType = XAP_Frame::z_200;
 		break;
 	case 100:
-		m_zoomType = XAP_Dialog_Zoom::z_100;
+		m_zoomType = XAP_Frame::z_100;
 		break;
 	case 75:
-		m_zoomType = XAP_Dialog_Zoom::z_75;
+		m_zoomType = XAP_Frame::z_75;
 		break;
 	// can't detect PageWidth and WholePage
 	default:
-		m_zoomType = XAP_Dialog_Zoom::z_PERCENT;
+		m_zoomType = XAP_Frame::z_PERCENT;
 	}
 
 	// store the percentage
 	m_zoomPercent = zoom;
 }	
 
-XAP_Dialog_Zoom::zoomType XAP_Dialog_Zoom::getZoomType(void)
+XAP_Frame::tZoomType XAP_Dialog_Zoom::getZoomType(void)
 {
 	return m_zoomType;
 }
@@ -90,20 +90,18 @@ UT_uint32 XAP_Dialog_Zoom::getZoomPercent(void)
 	// we deliver based on special cases first, then the custom percentage
 	switch(m_zoomType)
 	{
-	case XAP_Dialog_Zoom::z_200:
+	case XAP_Frame::z_200:
 		return 200;
-	case XAP_Dialog_Zoom::z_100:
+	case XAP_Frame::z_100:
 		return 100;
-	case XAP_Dialog_Zoom::z_75:
+	case XAP_Frame::z_75:
 		return 75;
     // we can't really do anything with these,
 	// since it's up to the application to query for these two
 	// types and do something special with them
-	case XAP_Dialog_Zoom::z_PAGEWIDTH:
-		return 0;
-	case XAP_Dialog_Zoom::z_WHOLEPAGE:
-		return 0;
-	case XAP_Dialog_Zoom::z_PERCENT:
+	case XAP_Frame::z_PAGEWIDTH:
+	case XAP_Frame::z_WHOLEPAGE:
+	case XAP_Frame::z_PERCENT:
 		// fall through
 	default:
 		if (m_zoomPercent > 1)

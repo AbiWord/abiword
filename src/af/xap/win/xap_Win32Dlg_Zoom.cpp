@@ -277,7 +277,7 @@ BOOL XAP_Win32Dialog_Zoom::_onCommand(HWND hWnd, WPARAM wParam, LPARAM lParam)
 		n = _getRBOffset(hWnd, XAP_RID_DIALOG_ZOOM_RADIO_200, XAP_RID_DIALOG_ZOOM_RADIO_PCT);
 		UT_ASSERT(n >= 0);
 
-		m_zoomType = (XAP_Dialog_Zoom::zoomType) n;
+		m_zoomType = (XAP_Frame::tZoomType) n;
 		if (_getValueFromEditPct(hWnd,&newValue))
 			m_zoomPercent = newValue;
  

@@ -3753,6 +3753,7 @@ static UT_Bool s_doZoomDlg(FV_View * pView)
 	UT_ASSERT(pDialog);
 
 	pDialog->setZoomPercent(pFrame->getZoomPercentage());
+	pDialog->setZoomType(pFrame->getZoomType());
 	
 	pDialog->runModal(pFrame);
 
@@ -3762,13 +3763,14 @@ static UT_Bool s_doZoomDlg(FV_View * pView)
 	if (bOK)
 	{
 		UT_uint32 newZoom = pFrame->getZoomPercentage();
+		pFrame->setZoomType(pDialog->getZoomType());
 		switch(pDialog->getZoomType())
 		{
 		// special cases
-		case XAP_Dialog_Zoom::z_PAGEWIDTH:
+		case XAP_Frame::z_PAGEWIDTH:
 			newZoom = pView->calculateZoomPercentForPageWidth();
 			break;
-		case XAP_Dialog_Zoom::z_WHOLEPAGE:
+		case XAP_Frame::z_WHOLEPAGE:
 			newZoom = pView->calculateZoomPercentForWholePage();
 			break;
 		default:
@@ -4118,14 +4120,17 @@ Defun(zoom)
 	
 	if(strcmp(p_zoom, pSS->getValue(XAP_STRING_ID_TB_Zoom_PageWidth)) == 0)
 	{
+		pFrame->setZoomType(XAP_Frame::z_PAGEWIDTH);
 		iZoom = pView->calculateZoomPercentForPageWidth();
 	}
 	else if(strcmp(p_zoom, pSS->getValue(XAP_STRING_ID_TB_Zoom_WholePage)) == 0)
 	{
+		pFrame->setZoomType(XAP_Frame::z_WHOLEPAGE);
 		iZoom = pView->calculateZoomPercentForWholePage();
 	}
 	else
 	{
+		pFrame->setZoomType(XAP_Frame::z_PERCENT);
 		iZoom = atoi(p_zoom);
 	}
 

@@ -38,6 +38,9 @@
 #include "xav_View.h"
 #include "xad_Document.h"
 
+/* This is required for dynamic zoom implimentation */
+#include "fv_View.h"
+
 
 /*****************************************************************/
 
@@ -210,6 +213,7 @@ gint XAP_UnixFrame::_fe::button_release_event(GtkWidget * w, GdkEventButton * e)
 	XAP_UnixFrame * pUnixFrame = (XAP_UnixFrame *)gtk_object_get_user_data(GTK_OBJECT(w));
 	pUnixFrame->setTimeOfLastEvent(e->time);
 	AV_View * pView = pUnixFrame->getCurrentView();
+
 	EV_UnixMouse * pUnixMouse = static_cast<EV_UnixMouse *>(pUnixFrame->getMouse());
 
 	//UT_DEBUGMSG(("Ungrabbing mouse.\n"));
@@ -227,9 +231,26 @@ gint XAP_UnixFrame::_fe::configure_event(GtkWidget* w, GdkEventConfigure *e)
 		
 	XAP_UnixFrame * pUnixFrame = (XAP_UnixFrame *)gtk_object_get_user_data(GTK_OBJECT(w));
 	AV_View * pView = pUnixFrame->getCurrentView();
+	FV_View * pfView = static_cast<FV_View*>(pView);
 
 	if (pView)
 		pView->setWindowSize(e->width, e->height);
+
+	// Dynamic Zoom Implimentation
+	UT_uint32 newZoom = 100;
+	switch(pUnixFrame->getZoomType())
+	{
+	case XAP_Frame::z_PAGEWIDTH:
+		newZoom = pfView->calculateZoomPercentForPageWidth();
+		pUnixFrame->setZoomPercentage(newZoom);
+		break;
+	case XAP_Frame::z_WHOLEPAGE:
+		newZoom = pfView->calculateZoomPercentForWholePage();
+		pUnixFrame->setZoomPercentage(newZoom);
+		break;
+	default:
+		;
+	}
 
 	return 1;
 }

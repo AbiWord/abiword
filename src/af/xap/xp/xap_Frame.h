@@ -18,8 +18,8 @@
  */
 
 
-#ifndef XAP_FRAME_H
-#define XAP_FRAME_H
+#ifndef XAP_Frame_H
+#define XAP_Frame_H
 
 #include "ut_types.h"
 #include "ut_vector.h"
@@ -122,8 +122,13 @@ public:
 	virtual UT_Bool				runModalContextMenu(AV_View * pView, const char * szMenuName,
 													UT_sint32 x, UT_sint32 y) = 0;
 
+	typedef enum { z_200, z_100, z_75, z_PAGEWIDTH, z_WHOLEPAGE, z_PERCENT } tZoomType;
 	virtual void				setZoomPercentage(UT_uint32 iZoom);
 	virtual UT_uint32			getZoomPercentage(void);
+	void						setZoomType(XAP_Frame::tZoomType z_Type){ m_zoomType = z_Type; } 
+	XAP_Frame::tZoomType		getZoomType(void) { return m_zoomType; }
+
+
 
 	virtual void				setStatusMessage(const char * szMsg) = 0;
 
@@ -173,6 +178,7 @@ protected:
 	EV_Keyboard *				m_pKeyboard;
 	ap_Scrollbar_ViewListener * m_pScrollbarViewListener;
 	AV_ListenerId				m_lidScrollbarViewListener;
+	XAP_Frame::tZoomType		m_zoomType;
 	
 	void *						m_pData;		/* app-specific frame data */
 
@@ -187,4 +193,4 @@ private:
 	static int					s_iUntitled;	
 };
 
-#endif /* XAP_FRAME_H */
+#endif /* XAP_Frame_H */

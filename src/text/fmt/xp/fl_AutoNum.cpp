@@ -58,7 +58,9 @@ fl_AutoNum::fl_AutoNum(UT_uint32 id, UT_uint32 start,  PL_StruxDocHandle pFirst,
         m_List_Type = lType;
 	m_pDoc = pDoc;
 	m_pDoc->addList(this);
-	m_pParentItem = NULL;
+	// New 6/11/200. m_pParentItem is the item in the parent list
+	// that the new list points
+	m_pParentItem = NULL; // set it later 
         m_bUpdate = UT_TRUE;
 	
 	UT_DEBUGMSG(("JORDAN: Creating fl_AutoNum\n"));

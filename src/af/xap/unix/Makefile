@@ -49,8 +49,13 @@ CPPSRCS=		xap_UnixApp.cpp				\
 			xap_UnixEncodingManager.cpp
 
 TARGETS=		$(OBJS)
-INCLUDES=		-I/usr/X11R6/include
+INCLUDES=		-I/usr/X11R6/include \
+			-I$(ABI_ROOT)/src/text/fmt/xp \
+		  	-I$(ABI_ROOT)/src/text/ptbl/xp \
+		  	-I$(ABI_ROOT)/src/wp/impexp/xp \
+	  		-I$(ABI_ROOT)/src/wp/ap/xp 
 
+ 
 include $(ABI_ROOT)/src/config/abi_rules.mk
 
 build:: $(TARGETS)

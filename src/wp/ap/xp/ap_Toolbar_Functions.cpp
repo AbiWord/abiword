@@ -478,6 +478,9 @@ Defun_EV_GetToolbarItemState_Fn(ap_ToolbarGetState_Zoom)
 	ABIWORD_VIEW;
 	UT_ASSERT(pView);
 
+	XAP_Frame * pFrame = static_cast<XAP_Frame *> ( pView->getParentData());
+	const XAP_StringSet * pSS = XAP_App::getApp()->getStringSet();
+	
 	EV_Toolbar_ItemState s = EV_TIS_UseString;
 
 	static char buf[10];
@@ -485,6 +488,19 @@ Defun_EV_GetToolbarItemState_Fn(ap_ToolbarGetState_Zoom)
 	UT_uint32 iZoom = pView->getGraphics()->getZoomPercentage();
 	
 	sprintf(buf, "%d%%", iZoom);
+	switch(pFrame->getZoomType())
+	{
+	// special cases
+	case XAP_Frame::z_PAGEWIDTH:
+		sprintf(buf, "%s", pSS->getValue(XAP_STRING_ID_TB_Zoom_PageWidth));
+		break;
+	case XAP_Frame::z_WHOLEPAGE:
+		sprintf(buf, "%s", pSS->getValue(XAP_STRING_ID_TB_Zoom_WholePage));
+		break;	
+	default:
+		;
+	}
+
 	*pszState = buf;
 
 	return s;

@@ -240,7 +240,7 @@ void XAP_QNXDialog_Zoom::event_WindowDelete(void)
 void XAP_QNXDialog_Zoom::event_Radio200Clicked(void)
 {
 	//m_zoomType = XAP_Dialog_Zoom::zoomType::z_200;
-	m_zoomType = z_200;
+	m_zoomType = XAP_Frame::z_200;
 	_enablePercentSpin(UT_FALSE);
 	_updatePreviewZoomPercent(200);
 	PtDamageWidget(m_previewArea);
@@ -249,7 +249,7 @@ void XAP_QNXDialog_Zoom::event_Radio200Clicked(void)
 void XAP_QNXDialog_Zoom::event_Radio100Clicked(void)
 {
 	//m_zoomType = XAP_Dialog_Zoom::zoomType::z_100;
-	m_zoomType = z_100;
+	m_zoomType = XAP_Frame::z_100;
 	_enablePercentSpin(UT_FALSE);
 	_updatePreviewZoomPercent(100);
 	PtDamageWidget(m_previewArea);
@@ -257,7 +257,7 @@ void XAP_QNXDialog_Zoom::event_Radio100Clicked(void)
 
 void XAP_QNXDialog_Zoom::event_Radio75Clicked(void)
 {
-	m_zoomType = z_75;
+	m_zoomType = XAP_Frame::z_75;
 	_enablePercentSpin(UT_FALSE);
 	_updatePreviewZoomPercent(75);
 	PtDamageWidget(m_previewArea);
@@ -265,7 +265,7 @@ void XAP_QNXDialog_Zoom::event_Radio75Clicked(void)
 
 void XAP_QNXDialog_Zoom::event_RadioPageWidthClicked(void)
 {
-	m_zoomType = z_PAGEWIDTH;
+	m_zoomType = XAP_Frame::z_PAGEWIDTH;
 	_enablePercentSpin(UT_FALSE);
 	// TODO : figure out the dimensions
 	PtDamageWidget(m_previewArea);
@@ -273,7 +273,7 @@ void XAP_QNXDialog_Zoom::event_RadioPageWidthClicked(void)
 
 void XAP_QNXDialog_Zoom::event_RadioWholePageClicked(void)
 {
-	m_zoomType = z_WHOLEPAGE;
+	m_zoomType = XAP_Frame::z_WHOLEPAGE;
 	_enablePercentSpin(UT_FALSE);
 	// TODO : figure out the dimensions
 	PtDamageWidget(m_previewArea);
@@ -281,7 +281,7 @@ void XAP_QNXDialog_Zoom::event_RadioWholePageClicked(void)
 
 void XAP_QNXDialog_Zoom::event_RadioPercentClicked(void)
 {
-	m_zoomType = z_PERCENT;
+	m_zoomType = XAP_Frame::z_PERCENT;
 	_enablePercentSpin(UT_TRUE);
 	// call event_SpinPercentChanged() to do the fetch and update work
 	event_SpinPercentChanged();
@@ -549,25 +549,25 @@ void XAP_QNXDialog_Zoom::_populateWindowData(void)
 	_enablePercentSpin(UT_FALSE);	// default
 	switch(getZoomType())
 	{
-	case XAP_QNXDialog_Zoom::z_200:
+	case XAP_Frame::z_200:
 		set_toggle_button(m_radio200, UT_TRUE);
 		_updatePreviewZoomPercent(200);
 		break;
-	case XAP_QNXDialog_Zoom::z_100:
+	case XAP_Frame::z_100:
 		set_toggle_button(m_radio100, UT_TRUE);
 		_updatePreviewZoomPercent(100);		
 		break;
-	case XAP_QNXDialog_Zoom::z_75:
+	case XAP_Frame::z_75:
 		set_toggle_button(m_radio75, UT_TRUE);
 		_updatePreviewZoomPercent(75);
 		break;
-	case XAP_QNXDialog_Zoom::z_PAGEWIDTH:
+	case XAP_Frame::z_PAGEWIDTH:
 		set_toggle_button(m_radioPageWidth, UT_TRUE);
 		break;
-	case XAP_QNXDialog_Zoom::z_WHOLEPAGE:
+	case XAP_Frame::z_WHOLEPAGE:
 		set_toggle_button(m_radioWholePage, UT_TRUE);
 		break;
-	case XAP_QNXDialog_Zoom::z_PERCENT:
+	case XAP_Frame::z_PERCENT:
 		set_toggle_button(m_radioPercent, UT_TRUE);
 		_enablePercentSpin(UT_TRUE);	// override
 		_updatePreviewZoomPercent(getZoomPercent());
@@ -587,7 +587,7 @@ void XAP_QNXDialog_Zoom::_storeWindowData(void)
 	{
 		if (gtk_toggle_button_get_active(GTK_TOGGLE_BUTTON(item->data)))
 		{
-			m_zoomType = (XAP_Dialog_Zoom::zoomType)
+			m_zoomType = (XAP_Frame::tZoomType)
 				GPOINTER_TO_INT(gtk_object_get_data(GTK_OBJECT(item->data), WIDGET_ID_TAG_KEY));
 			break;
 		}
