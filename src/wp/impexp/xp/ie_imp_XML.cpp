@@ -246,8 +246,7 @@ void IE_Imp_XML::_charData(const XML_Char *s, int len)
 	// TODO XML_Char is defined in the xml parser
 	// TODO as a 'char' not as a 'unsigned char'.
 	// TODO does this cause any problems ??
-	// TODO Needs to handle preformatted text
-	
+
 	X_EatIfAlreadyError();	// xml parser keeps running until buffer consumed
 
 	switch (m_parseState)
@@ -294,8 +293,7 @@ void IE_Imp_XML::_charData(const XML_Char *s, int len)
 				// multi-byte sequence.  puke.
 				X_CheckError(0);
 			}
-			
-			// TODO Needs to handle preformatted text
+
 			if (currentChar == UCS_CR)
 			{
 				if (!m_bWhiteSignificant)
@@ -312,7 +310,6 @@ void IE_Imp_XML::_charData(const XML_Char *s, int len)
 			// (ABW)
 			if (!m_bWhiteSignificant)
 			{
-				// TODO Needs to handle preformatted text
 				if(UT_UCS_isspace(currentChar))
 				{
 					if(!m_bWasSpace)
@@ -327,8 +324,7 @@ void IE_Imp_XML::_charData(const XML_Char *s, int len)
 					m_bWasSpace = false;
 				}
 			}
-			
-			// TODO Needs to handle preformatted text
+
 			if (currentChar == UCS_LF)	// LF
 			{
 				if (!m_bSeenCR)		// if not immediately after a CR,
