@@ -25,6 +25,7 @@
 #include "ut_assert.h"
 #include "ut_debugmsg.h"
 #include "ut_unixDirent.h"
+#include "ut_path.h"
 
 // This header defines some functions for Unix dialogs,
 // like centering them, measuring them, etc.
@@ -386,22 +387,23 @@ void AP_UnixDialog_New::_constructWindowContents (GtkWidget * container)
 	gtk_clist_freeze (GTK_CLIST (choicesList));
 	gtk_clist_clear (GTK_CLIST (choicesList));
 
-	for ( int i = 0; i < (sizeof(templateList)/sizeof(templateList[0])); i++ )
+	for ( unsigned int i = 0; i < (sizeof(templateList)/sizeof(templateList[0])); i++ )
 	  {
 	    struct dirent **namelist = NULL;
 	    UT_sint32 n = 0;
 	    templateDir = templateList[i];
 
 	    n = scandir(templateDir.c_str(), &namelist, awt_only, alphasort);
-	    UT_DEBUGMSG(("DOM: found %d templates in %s\n", n, templateDir.c_str()));
+	    xxx_UT_DEBUGMSG(("DOM: found %d templates in %s\n", n, templateDir.c_str()));
 
 	    if (n > 0)
 	      {
 		while(n-- > 0) 
 		  {
 			  UT_String myTemplate (templateDir + namelist[n]->d_name);
+			  myTemplate = myTemplate.substr ( 0, myTemplate.size() - 4 ) ;
 			  gchar * txt[2];
-			  txt[0] = (gchar*)myTemplate.c_str();
+			  txt[0] = (gchar*) UT_basename ( myTemplate.c_str() );
 			  txt[1] = NULL;
 
 			  gtk_clist_append ( GTK_CLIST(choicesList), txt ) ;

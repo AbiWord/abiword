@@ -24,6 +24,7 @@
 #include "ut_string.h"
 #include "ut_assert.h"
 #include "ut_debugmsg.h"
+#include "ut_path.h"
 
 #include "xap_App.h"
 #include "xap_Frame.h"
@@ -117,7 +118,8 @@ BOOL AP_Win32Dialog_New::_onInitDialog(HWND hWnd, WPARAM wParam, LPARAM lParam)
 			templateName = XAP_App::getApp()->getUserPrivateDirectory();
 			templateName += "\\templates\\";
 			templateName += cfile.name;
-			_win32Dialog.addItemToList( AP_RID_DIALOG_NEW_LBX_TEMPLATE, templateName.c_str() );
+			templateName = templateName.substr ( 0, templateName.size () - 4 ) ;
+			_win32Dialog.addItemToList( AP_RID_DIALOG_NEW_LBX_TEMPLATE, UT_basename ( templateName.c_str() ) );
 		} while( _findnext( findtag, &cfile ) == 0 );
 	}
 	_findclose( findtag );
@@ -133,7 +135,10 @@ BOOL AP_Win32Dialog_New::_onInitDialog(HWND hWnd, WPARAM wParam, LPARAM lParam)
 			templateName = XAP_App::getApp()->getAbiSuiteLibDir();
 			templateName += "\\templates\\";
 			templateName += cfile.name;
-			_win32Dialog.addItemToList( AP_RID_DIALOG_NEW_LBX_TEMPLATE, templateName.c_str() );
+
+			templateName = templateName.substr ( 0, templateName.size () - 4 ) ;
+
+			_win32Dialog.addItemToList( AP_RID_DIALOG_NEW_LBX_TEMPLATE, UT_basename ( templateName.c_str() ) );
 		} while( _findnext( findtag, &cfile ) == 0 );
 	}
 	_findclose( findtag );
