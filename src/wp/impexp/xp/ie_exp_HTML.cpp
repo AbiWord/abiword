@@ -2565,19 +2565,19 @@ void s_HTML_Listener::_openSpan (PT_AttrPropIndex api)
 		{
 			if (UT_strcmp (szP_TextPosition, "superscript") == 0)
 			{
-				if (!compareStyle ("vertical-align", "superscript"))
+				if (!compareStyle ("vertical-align", "super"))
 				{
 					if (!first) m_utf8_1 += ";";
-					m_utf8_1 += "vertical-align:superscript";
+					m_utf8_1 += "vertical-align:super";
 					first = false;
 				}
 			}
 			else if (UT_strcmp (szP_TextPosition, "subscript") == 0)
 			{
-				if (!compareStyle ("vertical-align", "subscript"))
+				if (!compareStyle ("vertical-align", "sub"))
 				{
 					if (!first) m_utf8_1 += ";";
-					m_utf8_1 += "vertical-align:subscript";
+					m_utf8_1 += "vertical-align:sub";
 					first = false;
 				}
 			}
@@ -4136,14 +4136,6 @@ void s_HTML_Listener::_handleField (const PX_ChangeRecord_Object * pcro,
 
 	if (UT_strcmp (szType, "list_label") != 0)
 	{
-		m_utf8_1 = "span";
-
-		// TODO: Fix this to play nice with the styletree and use consistent styles btwn the two
-		//       Checkout _openSpan
-		m_utf8_1 += " class=\"ABI_FIELD_";
-		m_utf8_1 += szType;
-		m_utf8_1 += "\"";
-		
 		// TODO: Condense/generalize this, it looks absurd.
 		// TODO: Respect the document settings for style of footnote/endnote.
 		//	      That way, we don't have to worry about that by default, they look the same.
@@ -4158,6 +4150,58 @@ void s_HTML_Listener::_handleField (const PX_ChangeRecord_Object * pcro,
 		// TODO: Print media header/footer (Ditto)
 		// TODO: Embedded target for footnote linking (frame adjusts on the footnotes when ref clicked).
 		
+		m_utf8_1 = "span";
+		if ((UT_strcmp (szType, "footnote_anchor") == 0) ||
+			(UT_strcmp (szType, "endnote_anchor") == 0) ||
+			(UT_strcmp (szType, "footnote_ref") == 0) ||
+			(UT_strcmp (szType, "endnote_ref") == 0))
+		{
+			const XML_Char * szA_Style = 0;
+			bool have_style = pAP->getAttribute (PT_STYLE_ATTRIBUTE_NAME, szA_Style);
+			if (have_style)
+			{
+				const s_StyleTree * tree = 0;
+				tree = m_style_tree->find (szA_Style);
+				if (tree)
+				{
+					if (tree->class_list().byteLength ())
+					{
+						m_utf8_1 += " class=\"";
+						m_utf8_1 += tree->class_name ();
+						m_utf8_1 += "\"";
+					}
+				}
+			}
+			else
+			{
+				m_utf8_1 += " class=\"ABI_FIELD_";
+				m_utf8_1 += szType;
+				m_utf8_1 += "\"";
+			}
+			const XML_Char * szA_Props = 0;
+			bool have_props = pAP->getAttribute (PT_PROPS_ATTRIBUTE_NAME, szA_Props);
+			if(have_props)
+			{
+				m_utf8_1 += " style=\"";
+				m_utf8_1 += szA_Props;
+				m_utf8_1 += "\"";
+			}
+		}
+		else
+		{
+			m_utf8_1 = "span";
+
+			// TODO: Fix this to play nice with the styletree and use consistent styles btwn the two
+			//       Checkout _openSpan
+			// TODO: Find out if we can change this back to just getting the style from the document,
+			//       which is what I'll do with the notes.
+			m_utf8_1 += " class=\"ABI_FIELD_";
+			m_utf8_1 += szType;
+			m_utf8_1 += "\"";
+			tagOpen (TT_SPAN, m_utf8_1, ws_None);
+			textUntrusted (field->getValue ());
+		}
+		
 		
 		if (UT_strcmp (szType, "footnote_anchor") == 0)
 		{
@@ -4166,17 +4210,17 @@ void s_HTML_Listener::_handleField (const PX_ChangeRecord_Object * pcro,
 			UT_uint32 ID = atoi(szID);
 			
 			UT_UTF8String footnoteAIDString;
-			UT_UTF8String_sprintf(footnoteAIDString, " id=\"fnA%d\"", (ID));
+			UT_UTF8String_sprintf(footnoteAIDString, " id=\"fnA%d\"", (ID + 1));
 			m_utf8_1 += footnoteAIDString;
 			tagOpen (TT_SPAN, m_utf8_1, ws_None);
 			// --- //
 			UT_UTF8String footnoteANString;
 			UT_UTF8String footnoteALString;
 			m_utf8_1 = "a";
-			UT_UTF8String_sprintf(footnoteALString, " href=\"#fnR%d\"", (ID));
+			UT_UTF8String_sprintf(footnoteALString, " href=\"#fnR%d\"", (ID + 1));
 			m_utf8_1 += footnoteALString;
 			tagOpen (TT_A, m_utf8_1, ws_None);
-			UT_UTF8String_sprintf(footnoteANString, "[%d]", (ID));
+			UT_UTF8String_sprintf(footnoteANString, "[%d]", (ID + 1));
 			m_pie->write (footnoteANString.utf8_str (), footnoteANString.byteLength ());
 			textUntrusted (field->getValue ());
 			m_utf8_1 = "a";
@@ -4189,17 +4233,17 @@ void s_HTML_Listener::_handleField (const PX_ChangeRecord_Object * pcro,
 			UT_uint32 ID = atoi(szID);
 			
 			UT_UTF8String endnoteAIDString;
-			UT_UTF8String_sprintf(endnoteAIDString, " id=\"enA%d\"", (ID));
+			UT_UTF8String_sprintf(endnoteAIDString, " id=\"enA%d\"", (ID + 1));
 			m_utf8_1 += endnoteAIDString;
 			tagOpen (TT_SPAN, m_utf8_1, ws_None);
 			// --- //
 			UT_UTF8String endnoteANString;
 			UT_UTF8String endnoteALString;
 			m_utf8_1 = "a";
-			UT_UTF8String_sprintf(endnoteALString, " href=\"#enR%d\"", (ID));
+			UT_UTF8String_sprintf(endnoteALString, " href=\"#enR%d\"", (ID + 1));
 			m_utf8_1 += endnoteALString;
 			tagOpen (TT_A, m_utf8_1, ws_None);
-			UT_UTF8String_sprintf(endnoteANString, "%d", (ID));
+			UT_UTF8String_sprintf(endnoteANString, "%d", (ID + 1));
 			m_pie->write (endnoteANString.utf8_str (), endnoteANString.byteLength ());
 			textUntrusted (field->getValue ());
 			m_utf8_1 = "a";
@@ -4212,17 +4256,17 @@ void s_HTML_Listener::_handleField (const PX_ChangeRecord_Object * pcro,
 			UT_uint32 ID = atoi(szID);
 			
 			UT_UTF8String footnoteRIDString;
-			UT_UTF8String_sprintf(footnoteRIDString, " id=\"fnR%d\"", (ID));
+			UT_UTF8String_sprintf(footnoteRIDString, " id=\"fnR%d\"", (ID + 1));
 			m_utf8_1 += footnoteRIDString;
 			tagOpen (TT_SPAN, m_utf8_1, ws_None);
 			// --- //
 			UT_UTF8String footnoteRLString;
 			UT_UTF8String footnoteRNString;
 			m_utf8_1 = "a";
-			UT_UTF8String_sprintf(footnoteRLString, " href=\"#fnA%d\"", (ID));
+			UT_UTF8String_sprintf(footnoteRLString, " href=\"#fnA%d\"", (ID + 1));
 			m_utf8_1 += footnoteRLString;
 			tagOpen (TT_A, m_utf8_1, ws_None);
-			UT_UTF8String_sprintf(footnoteRNString, "%d", (ID));
+			UT_UTF8String_sprintf(footnoteRNString, "%d", (ID + 1));
 			m_pie->write (footnoteRNString.utf8_str (), footnoteRNString.byteLength ());
 			textUntrusted (field->getValue ());
 			m_utf8_1 = "a";
@@ -4235,27 +4279,23 @@ void s_HTML_Listener::_handleField (const PX_ChangeRecord_Object * pcro,
 			UT_uint32 ID = atoi(szID);
 			
 			UT_UTF8String endnoteRIDString;
-			UT_UTF8String_sprintf(endnoteRIDString, " id=\"enR%d\"", (ID));
+			UT_UTF8String_sprintf(endnoteRIDString, " id=\"enR%d\"", (ID + 1));
 			m_utf8_1 += endnoteRIDString;
 			tagOpen (TT_SPAN, m_utf8_1, ws_None);
 			// --- //
 			UT_UTF8String endnoteRLString;
 			UT_UTF8String endnoteRNString;
 			m_utf8_1 = "a";
-			UT_UTF8String_sprintf(endnoteRLString, " href=\"#enA%d\"", (ID));
+			UT_UTF8String_sprintf(endnoteRLString, " href=\"#enA%d\"", (ID + 1));
 			m_utf8_1 += endnoteRLString;
 			tagOpen (TT_A, m_utf8_1, ws_None);
-			UT_UTF8String_sprintf(endnoteRNString, "%d", (ID));
+			UT_UTF8String_sprintf(endnoteRNString, "%d", (ID + 1));
 			m_pie->write (endnoteRNString.utf8_str (), endnoteRNString.byteLength ());
 			textUntrusted (field->getValue ());
 			m_utf8_1 = "a";
 			tagClose (TT_A, m_utf8_1, ws_None);
 		}
-		else
-		{
-			tagOpen (TT_SPAN, m_utf8_1, ws_None);
-			textUntrusted (field->getValue ());
-		}
+
 		
 		m_utf8_1 = "span";
 		tagClose (TT_SPAN, m_utf8_1, ws_None);
