@@ -384,30 +384,28 @@ void GR_Win32Graphics::drawChars(const UT_UCSChar* pChars,
 	else
 	{
 		int duCharWidths [256];
-		int *pCharAdvances = 0;
-
-		if (iLengthOrig > sizeof(duCharWidths))
-			pCharAdvances = new int [iLengthOrig];
-		else
-			pCharAdvances = duCharWidths;
+		int *pCharAdvances;
 
 		if (pCharWidths)
 		{
+			if (iLengthOrig > (sizeof(duCharWidths)/sizeof(int)) )
+				pCharAdvances = new int [iLengthOrig];
+			else
+				pCharAdvances = duCharWidths;
+			UT_ASSERT(pCharAdvances != NULL);
+
 			// convert width into display units; since we have removed
 			// all 0x200B and 0xFEFF characters, we also have to
 			// remove their entires from the advances
 			UT_sint32 i,j;
 			
-			for (i = 0, j = 0; i < iLengthOrig; i++,j++)
+			for (i = 0, j = 0; i < iLengthOrig; i++)
 			{
-				if(pChars[iCharOffset+i] == 0x200B || pChars[iCharOffset+i] == 0xFEFF
-				   /*|| pChars[iCharOffset+i] == UCS_LIGATURE_PLACEHOLDER*/)
-				{
-					j--;
-				}
-				else
+				if(! (pChars[iCharOffset+i] == 0x200B || pChars[iCharOffset+i] == 0xFEFF
+				   /*|| pChars[iCharOffset+i] == UCS_LIGATURE_PLACEHOLDER*/ ) )
 				{
 					pCharAdvances[j] = tdu (pCharWidths[i]);
+                    j++;
 				}
 			}
 		}
@@ -468,7 +466,7 @@ simple_exttextout:
 			ExtTextOutW(m_hdc, xoff, yoff, 0, NULL, (LPCWSTR) currentChars, iLength, pCharAdvances);
 		}
 
-		if (iLengthOrig > sizeof(duCharWidths))
+		if (pCharAdvances && (iLengthOrig > (sizeof(duCharWidths)/sizeof(int))) )
 			delete[] pCharAdvances;
 	}
 
