@@ -102,8 +102,10 @@ void XAP_QNXDialog_Print::releasePrinterGraphicsContext(GR_Graphics * pContext)
 
 	GR_QNXGraphics *gr = (GR_QNXGraphics *)m_pQNXFrame->getGraphics();
 	gr->setPrintContext(NULL);
+/*
 	PpPrintReleasePC(m_pPrintContext);
 	m_pPrintContext = NULL;
+*/
 }
 
 /*****************************************************************/
@@ -214,7 +216,7 @@ void XAP_QNXDialog_Print::_raisePrintDialog(XAP_Frame * pFrame)
 		size.h = 792;
 #endif
 		
-		printf("PRINT: Setting source size %d/%d ", size.w, size.h);
+		UT_DEBUGMSG(("PRINT: Setting source size %d/%d ", size.w, size.h));
 		PpSetPC(m_pPrintContext, Pp_PC_SOURCE_SIZE, &size, 0);
 
 		PpPageRange_t *range = NULL;
