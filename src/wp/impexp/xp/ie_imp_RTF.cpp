@@ -1201,10 +1201,10 @@ RTFProps_SectionProps::RTFProps_SectionProps()
 	m_breakType = sbkNone;
 	m_pageNumFormat = pgDecimal;
 	m_bColumnLine = false;
-	m_leftMargTwips = 0;     
-	m_rightMargTwips = 0;     
-	m_topMargTwips = 0;     
-	m_bottomMargTwips = 0;     
+	m_leftMargTwips = 1800;     
+	m_rightMargTwips = 1800;     
+	m_topMargTwips = 1440;     
+	m_bottomMargTwips = 1440;     
 	m_headerYTwips = 0;     
 	m_footerYTwips = 0; 
      m_colSpaceTwips = 0;
@@ -3255,27 +3255,30 @@ bool IE_Imp_RTF::TranslateKeyword(unsigned char* pKeyword, long param, bool fPar
 			getDoc()->setEncodingName("MacRoman");
 			return true;
 		}
-		if( strcmp((char *)pKeyword, "marglsxn") == 0)
+		if( strcmp((char *)pKeyword, "marglsxn") == 0 || strcmp((char *)pKeyword, "margl") == 0)
 		{
 			// Left margin of section
-			UT_DEBUGMSG(("SEVIOR: left page margin %d \n",param));
 			m_currentRTFState.m_sectionProps.m_leftMargTwips = param;
 		}
-		else if( strcmp((char *)pKeyword, "margrsxn") == 0)
+		else if( strcmp((char *)pKeyword, "margrsxn") == 0 || strcmp((char *)pKeyword, "margr") == 0)
 		{
 			// Right margin of section
 			m_currentRTFState.m_sectionProps.m_rightMargTwips = param;
 		}
-		else if( strcmp((char *)pKeyword, "margtsxn") == 0)
+		else if( strcmp((char *)pKeyword, "margtsxn") == 0 || strcmp((char *)pKeyword, "margt") == 0)
 		{
 			// top margin of section
 			m_currentRTFState.m_sectionProps.m_topMargTwips = param;
 		}
-		else if( strcmp((char *)pKeyword, "margbsxn") == 0)
+		else if( strcmp((char *)pKeyword, "margbsxn") == 0 || strcmp((char *)pKeyword, "margb") == 0)
 		{
 			// bottom margin of section
 			m_currentRTFState.m_sectionProps.m_bottomMargTwips = param;
 		}
+		else if ( strcmp((char *)pKeyword, "margl") == 0)
+			{
+
+			}
 		break;
 	case 'o': 
 		if (strcmp((char*)pKeyword,"ol") == 0)
@@ -3350,6 +3353,7 @@ bool IE_Imp_RTF::TranslateKeyword(unsigned char* pKeyword, long param, bool fPar
 			double height = ((double) param)/1440.0;
 			getDoc()->m_docPageSize.Set(width,height,DIM_IN);
 		}
+		break;
 	case 'q':
 		if (strcmp((char*)pKeyword, "ql") == 0)
 		{
@@ -4613,6 +4617,11 @@ bool IE_Imp_RTF::ResetParagraphAttributes()
 bool IE_Imp_RTF::ResetSectionAttributes()
 {
 	bool ok = FlushStoredChars();
+
+	// not quite correct. a sectd will reset the section defaults
+	// to the previously acquired page defaults
+	
+	// margr, margl, margt, margb, paperh, gutter
 
 	m_currentRTFState.m_sectionProps = RTFProps_SectionProps();
 
