@@ -2351,7 +2351,7 @@ UT_sint32 fp_TextRun::findTrailingSpaceDistance(void) const
 
 void fp_TextRun::resetJustification(bool bPermanent)
 {
-	if(!m_pRenderInfo || _getRefreshDrawBuffer() == GRSR_Unknown)
+	if(!m_pRenderInfo || (_getRefreshDrawBuffer() == GRSR_Unknown) || bPermanent)
 	{
 		_refreshDrawBuffer();
 	}

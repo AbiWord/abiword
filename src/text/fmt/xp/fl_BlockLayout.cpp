@@ -2702,7 +2702,7 @@ void fl_BlockLayout::format()
 		fp_Line* pLine = static_cast<fp_Line *>(getFirstContainer());
 		while(pLine && 	bJustifyStuff)
 		{
-			pLine->resetJustification(!bJustifyStuff); // temporary reset
+		    pLine->resetJustification(!bJustifyStuff); // temporary reset
 			pLine = static_cast<fp_Line *>(pLine->getNext());
 		}
 
@@ -2740,6 +2740,8 @@ void fl_BlockLayout::format()
 		if (!getFirstContainer())
 		{
 			_stuffAllRunsOnALine();
+			fp_Line * pLine = static_cast<fp_Line *>(getFirstContainer());
+			pLine->resetJustification(true);
 		}
 		recalculateFields(0);
 
