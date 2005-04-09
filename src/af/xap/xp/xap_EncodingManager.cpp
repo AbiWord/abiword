@@ -1003,6 +1003,14 @@ struct SCatRange UniCharCats[] = {
 	{0x7d, 0x7d, PUNCNOSTART}, // }
 	{0x7e, 0x7e, NONATOMIC},   // ~ 
 
+	/* 
+	  Korean Hangul Jamo 
+	  Korean line breaking is similar to English. However, I'm not
+	  sure if these phonetic elements can occur on their own and, if
+	  they can, what the breaking rules should be.
+	*/
+	{0x1100, 0x11ff, NONATOMIC},     // Korean phonetic elements.
+
 	/* General punctuation */
 	{0x2002, 0x2003, PUNCFORCE},     // en-space, em-space
 	{0x2010, 0x2010, PUNCNOSTART},   // Hyphen
@@ -1039,10 +1047,18 @@ struct SCatRange UniCharCats[] = {
 	{0x301d, 0x301d, PUNCNOEND},     //  CJK ``
 	{0x301e, 0x301e, PUNCNOSTART},   //  CJK ''
 	{0x301b, 0x301b, PUNCNOSTART},   //  CJK |[
+
+	/* Hangul Compatibility Jamo */
+	{0x3130, 0x318f, NONATOMIC},
+
+	/* More CJK blocks */
 	{0x3200, 0x32ff, ATOMIC},        // Enclosed CJK Letters and Months
 	{0x3300, 0x33ff, ATOMIC},        // CJK Compatibility
 	{0x3400, 0x34ff, ATOMIC},        // CJK Unified Ideographs Ext. A
 	{0x4e00, 0x9faf, ATOMIC},        // CJK Unified Ideographs 
+
+	/* Hangul Syllabuls */
+	{0xac00, 0xd7af, NONATOMIC},
 
 	/* Halfwidth and Fullwidth Forms. */
 	{0xff01, 0xff01, PUNCNOSTART},   // !
@@ -1511,7 +1527,6 @@ static int s_compare_unichar_cats(const void * pC, const void *puc)
 }
 
 static enum EUniCat categoriseUniChar(UT_UCS4Char c) {
-	UT_uint32 i=0;
 	enum EUniCat cat=UNKNOWN;
 
 	// use linear search for the bottom (western part of the table, and bsearch for the
