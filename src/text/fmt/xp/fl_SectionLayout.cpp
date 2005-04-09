@@ -2472,10 +2472,14 @@ void fl_DocSectionLayout::collapse(void)
 		if(pBL->getContainerType() == FL_CONTAINER_ENDNOTE)
 		{
 			fp_Container * pCon = pBL->getFirstContainer();
-			fp_Column * pCol = static_cast<fp_Column *>(pCon->getColumn());
-			UT_DEBUGMSG(("Got and endnote in this section!! \n"));
-			UT_DEBUGMSG(("Remove Endnote con %x from col %x \n",pCon,pCol));
-			pCol->removeContainer(pCon);
+			UT_ASSERT_HARMLESS( pCon );
+			if(pCon)
+			{
+				fp_Column * pCol = static_cast<fp_Column *>(pCon->getColumn());
+				UT_DEBUGMSG(("Got and endnote in this section!! \n"));
+				UT_DEBUGMSG(("Remove Endnote con %x from col %x \n",pCon,pCol));
+				pCol->removeContainer(pCon);
+			}
 		}
 		pBL->collapse();
 		pBL = pBL->getNext();
