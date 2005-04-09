@@ -498,7 +498,12 @@ void FV_View::_deleteSelection(PP_AttrProp *p_AttrProp_Before, bool bNoUpdate)
 	if(isMarkRevisions())
 	{
 		UT_ASSERT( iRealDeleteCount <= iHigh - iLow + 1 );
-		_charMotion(true,iHigh - iLow - iRealDeleteCount);
+
+		// if the point was on the left of the original selection, we must adjust the
+		// point so that it is on the left edge of the text to the right of what we
+		// deleted; if it is on the right edge, we do nothing
+		if(iPoint == iLow)
+			_charMotion(true,iHigh - iLow - iRealDeleteCount);
 	}
 //
 // Make sure the insertion point is in a legal position
