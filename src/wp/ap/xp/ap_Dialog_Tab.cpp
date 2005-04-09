@@ -335,7 +335,8 @@ void AP_Dialog_Tab::_event_Update(void)
 	}
 
 	// do we have the tab already.
-	for (UT_uint32 i = 0; i < m_tabInfo.getItemCount(); i++ )
+	UT_uint32 i;
+	for (i = 0; i < m_tabInfo.getItemCount(); i++ )
 	{
 		pTabInfo = (fl_TabStop *)m_tabInfo.getNthItem(i);
 		UT_return_if_fail (pTabInfo);
@@ -372,7 +373,7 @@ void AP_Dialog_Tab::_event_Update(void)
 
 	// Select the new or changed tab in the list.
 
-	for (UT_uint32 i = 0; i < m_tabInfo.getItemCount(); i++ )
+	for (i = 0; i < m_tabInfo.getItemCount(); i++ )
 	{
 		fl_TabStop *pTabInfo = m_tabInfo.getNthItem(i);
 		UT_return_if_fail (pTabInfo);
