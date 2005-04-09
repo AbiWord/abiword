@@ -1118,7 +1118,7 @@ bool GR_Graphics::canBreak(GR_RenderInfo & ri, UT_sint32 &iNext, bool bAfter)
 		c[1] = ri.m_pText->getChar();
 		// Check for end of document.
 		if (c[1] == UT_IT_ERROR) 
-			return true;
+			return false;
 
 		return getApp()->getEncodingManager()->canBreakBetween(c);
 	}
