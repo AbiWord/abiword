@@ -126,10 +126,14 @@ GtkWidget * XAP_UnixDialog_Language::constructWindow(void)
 	pSS->getValueUTF8(XAP_STRING_ID_DLG_ULANG_LangTitle,s);
 	gtk_window_set_title (GTK_WINDOW(m_windowMain), s.utf8_str());
 	localizeLabelMarkup (glade_xml_get_widget(xml, "lbAvailableLanguages"), pSS, XAP_STRING_ID_DLG_ULANG_AvailableLanguages);
-	getDocDefaultLangDescription(s);
-	gtk_label_set_text (GTK_LABEL(m_lbDefaultLanguage), s.utf8_str());
-	getDocDefaultLangCheckboxLabel(s);
-	gtk_button_set_label (GTK_BUTTON(m_cbDefaultLanguage), s.utf8_str());
+	UT_String s1;
+	UT_String s2;
+	getDocDefaultLangDescription(s1);
+	s2 = abiLocaleToUTF8(s1);
+	gtk_label_set_text (GTK_LABEL(m_lbDefaultLanguage), s2.c_str());
+	getDocDefaultLangCheckboxLabel(s1);
+	s2 = abiLocaleToUTF8(s1);
+	gtk_button_set_label (GTK_BUTTON(m_cbDefaultLanguage), s2.c_str());
 	gtk_toggle_button_set_active (GTK_TOGGLE_BUTTON(m_cbDefaultLanguage), isMakeDocumentDefault());
 
 	// add a column to our TreeViews

@@ -171,7 +171,7 @@ UT_Vector* XAP_Dialog_Language::getAvailableDictionaries()
 /*!
     Fills s with the string to be used as a label for the the default language checkbox
 */
-void XAP_Dialog_Language::getDocDefaultLangCheckboxLabel(UT_UTF8String &s)
+void XAP_Dialog_Language::getDocDefaultLangCheckboxLabel(UT_String &s)
 {
 	s.clear();
 	const XAP_StringSet * pSS = XAP_App::getApp()->getStringSet();
@@ -183,7 +183,7 @@ void XAP_Dialog_Language::getDocDefaultLangCheckboxLabel(UT_UTF8String &s)
 /*!
     Fills s with the string to be displayed in the default language static control
 */
-void XAP_Dialog_Language::getDocDefaultLangDescription(UT_UTF8String & s)
+void XAP_Dialog_Language::getDocDefaultLangDescription(UT_String & s)
 {
 	s.clear();
 	const XAP_StringSet * pSS = XAP_App::getApp()->getStringSet();
