@@ -112,6 +112,7 @@ public:
 	virtual GR_Graphics * getGraphics(void) const = 0;
     virtual void          updateLayout(void) = 0;
 	virtual void          rebuildLayout(void) = 0;
+	virtual void          remeasureCharsWithoutRebuild() = 0;
 	virtual void	cmdScroll(AV_ScrollCmd cmd, UT_uint32 iPos = 0) = 0;
 	void			addScrollListener(AV_ScrollObj*);
 	void			removeScrollListener(AV_ScrollObj*);

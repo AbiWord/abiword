@@ -90,6 +90,8 @@ public:
 	virtual UT_uint32		getFontAscent(GR_Font *);
 	virtual UT_uint32		getFontDescent(GR_Font *);
 	virtual UT_uint32		getFontHeight(GR_Font *);
+
+	virtual void      setZoomPercentage(UT_uint32 iZoom);
 	
 	///////////////////////////////////////////////////////////////////
 	// complex script processing

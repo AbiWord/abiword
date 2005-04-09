@@ -235,6 +235,7 @@ public:
 	virtual EV_EditMouseContext getInsertionPointContext(UT_sint32 * pxPos, UT_sint32 * pyPos);
 	virtual void        updateLayout(void);
 	virtual void        rebuildLayout(void);
+	virtual void        remeasureCharsWithoutRebuild();
 	virtual bool		isSelectionEmpty(void) const;
 	virtual void		cmdUnselectSelection(void);
 	void				getDocumentRangeOfCurrentSelection(PD_DocumentRange * pdr);

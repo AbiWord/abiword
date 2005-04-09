@@ -12422,3 +12422,35 @@ void fv_PropCache::clearProps(void)
 	m_iNumProps = 0;
 	xxx_UT_DEBUGMSG(("clearing props numProps %d \n",m_iNumProps));
 }
+
+/*!
+    This method forces remeasuring of widths for all characters in the document.
+    It is called on zoom to allow us to adjust positioning of individual chars in response
+    to changes to metrics of screen font.
+
+    NB: this function does not force rebuild; on the zoom the actual character sizes
+    remain the same, and so does the overall layout.
+*/
+void FV_View::remeasureCharsWithoutRebuild()                                                  
+{                                                                               
+    fl_BlockLayout * pBL = getBlockAtPosition(2);
+
+    while(pBL)
+    {
+        fp_Run * pRun = pBL->getFirstRun();
+
+		while(pRun)
+        {
+			if(pRun->getType() == FPRUN_TEXT)
+			{
+				fp_TextRun * pTR = (fp_TextRun*) pRun;
+				pTR->measureCharWidths();
+			}
+			
+            pRun = pRun->getNextRun();
+        }
+        pBL = pBL->getNextBlockInDocument();
+    }
+
+	updateLayout();
+}

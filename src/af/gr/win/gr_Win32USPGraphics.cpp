@@ -1501,9 +1501,53 @@ void GR_Win32USPGraphics::measureRenderedCharWidths(GR_RenderInfo & ri)
 		hRes = fScriptPlace(hdc, pFont->getScriptCache(), RI.m_pIndices,
 							RI.m_iIndicesCount, RI.m_pVisAttr,
 							& pItem->m_si.a, RI.m_pAdvances, RI.m_pGoffsets, & RI.m_ABC);
-	}
-	
 
+		UT_ASSERT_HARMLESS( !hRes );
+	}
+
+	const UT_uint32 iAdvSize = 80;
+	int iAdvances[iAdvSize];
+	GOFFSET stGoffsets[iAdvSize];
+	UT_uint32 iCount = iAdvSize;
+	ABC stABC;
+
+	int * pAdvances = &iAdvances[0];
+	GOFFSET * pGoffsets = &stGoffsets[0];
+
+	bool bAdjustAdvances = false;
+	
+#if 1
+	if(!m_bPrint)
+	{
+		// This is a trick to avoid unseemly gaps between letters on screen due to
+		// discrepancies between font metrics of screen and printer. We measure the font
+		// also on screen and distribute the difference to the left and right of each
+		// character by adjusting each character's m_pGoffsets.du. This improves things,
+		// but does not completely remove the problem; whether it is worth the extra
+		// is to be seen. Tomas, Apr 9, 2005
+		_setupFontOnDC(pFont, true);
+		
+		if(iCount <= RI.m_iIndicesCount)
+		{
+			iCount = RI.m_iIndicesCount + 1;
+			pAdvances = new int[iCount];
+			pGoffsets = new GOFFSET[iCount];
+		}
+		
+		
+		SCRIPT_CACHE sc = NULL;
+		HRESULT hRes = fScriptPlace(m_hdc, &sc, RI.m_pIndices, RI.m_iIndicesCount, RI.m_pVisAttr,
+									& pItem->m_si.a, pAdvances, pGoffsets, & stABC);
+
+		UT_ASSERT_HARMLESS( !hRes );
+		if(!hRes)
+			bAdjustAdvances = true;
+
+		if(sc)
+			fScriptFreeCache(&sc);			
+	}
+#endif
+	
 	pItem->m_si.a.eScript = eScript;
 
 	// remember the zoom at which we calculated this ...
@@ -1525,6 +1569,7 @@ void GR_Win32USPGraphics::measureRenderedCharWidths(GR_RenderInfo & ri)
 	double dWidth = 0;
 	double dDeviceWidth = 0;
 	double dPrevDeviceWidth = 0;
+	double dAdjustment = 0;
 	
 	if(getPrintDC())
 	{
@@ -1532,22 +1577,25 @@ void GR_Win32USPGraphics::measureRenderedCharWidths(GR_RenderInfo & ri)
 
 		for(UT_uint32 i = 0; i < RI.m_iIndicesCount; ++i)
 		{
-			// RI.m_pAdvances[i] = tlu(RI.m_pAdvances[i]);
 			dWidth += (double)RI.m_pAdvances[i];
-			dDeviceWidth = dWidth*(double)getResolution()
-									   /((double)m_nPrintLogPixelsY*fXYRatio);
-			RI.m_pAdvances[i] = (UT_sint32)(dDeviceWidth - dPrevDeviceWidth + 0.5);
-			dPrevDeviceWidth = dDeviceWidth;
+			dDeviceWidth = dWidth*(double)getResolution() / ((double)m_nPrintLogPixelsY*fXYRatio);
 
+			if(bAdjustAdvances)
+			{
+				dAdjustment = (((double)RI.m_pAdvances[i]*(double)getResolution()
+								/((double)m_nPrintLogPixelsY*fXYRatio))
+							   - (double)pAdvances[i]*(double)getResolution()*100.
+							   /((double)getDeviceResolution()*(double)iZoom * m_fXYRatio))/2.;
+			}
+			RI.m_pAdvances[i]   = (UT_sint32)(dDeviceWidth - dPrevDeviceWidth + 0.5);
 			RI.m_pGoffsets[i].du = (UT_sint32)((double)RI.m_pGoffsets[i].du*(double)getResolution()
-											/((double)m_nPrintLogPixelsY*fXYRatio) + 0.5);
+											/((double)m_nPrintLogPixelsY*fXYRatio) + 2*dAdjustment + 0.5);
 			RI.m_pGoffsets[i].dv = (UT_sint32)((double)RI.m_pGoffsets[i].dv*(double)getResolution()
 											/((double)m_nPrintLogPixelsY) + 0.5);
+
+			dPrevDeviceWidth = dDeviceWidth;
 		}
 
-		//RI.m_ABC.abcA = tlu(RI.m_ABC.abcA);
-		//RI.m_ABC.abcB = tlu(RI.m_ABC.abcB);
-		//RI.m_ABC.abcC = tlu(RI.m_ABC.abcC);
 		RI.m_ABC.abcA = (UT_sint32)((double) RI.m_ABC.abcA * (double)getResolution()
 									/((double)m_nPrintLogPixelsY*fXYRatio) + 0.5);
 		RI.m_ABC.abcB = (UT_sint32)((double) RI.m_ABC.abcB * (double)getResolution()
@@ -1559,7 +1607,6 @@ void GR_Win32USPGraphics::measureRenderedCharWidths(GR_RenderInfo & ri)
 	{
 		for(UT_uint32 i = 0; i < RI.m_iIndicesCount; ++i)
 		{
-			// RI.m_pAdvances[i] = tlu(RI.m_pAdvances[i]);
 			dWidth += (double)RI.m_pAdvances[i];
 			dDeviceWidth = dWidth*(double)getResolution()/
 									   ((double)getDeviceResolution()*m_fXYRatio);
@@ -1573,9 +1620,6 @@ void GR_Win32USPGraphics::measureRenderedCharWidths(GR_RenderInfo & ri)
 											((double)getDeviceResolution()) + 0.5);
 		}
 
-		//RI.m_ABC.abcA = tlu(RI.m_ABC.abcA);
-		//RI.m_ABC.abcB = tlu(RI.m_ABC.abcB);
-		//RI.m_ABC.abcC = tlu(RI.m_ABC.abcC);
 		RI.m_ABC.abcA = (UT_sint32)((double) RI.m_ABC.abcA * (double)getResolution() /
 									((double)getDeviceResolution()*m_fXYRatio) + 0.5);
 		RI.m_ABC.abcB = (UT_sint32)((double) RI.m_ABC.abcB * (double)getResolution() /
@@ -1585,25 +1629,35 @@ void GR_Win32USPGraphics::measureRenderedCharWidths(GR_RenderInfo & ri)
 	}
 	else
 	{
+		// handle the first char outside the loop
+		dWidth = (double)RI.m_pAdvances[0];
+
 		for(UT_uint32 i = 0; i < RI.m_iIndicesCount; ++i)
 		{
-			// RI.m_pAdvances[i] = tlu(RI.m_pAdvances[i]);
 			dWidth += (double)RI.m_pAdvances[i];
 			dDeviceWidth = dWidth*(double)getResolution()/
 									   ((double)getDeviceResolution()*(double)GR_WIN32_USP_FONT_SCALING*m_fXYRatio);
+
+			if(bAdjustAdvances)
+			{
+				dAdjustment = (((double)RI.m_pAdvances[i]*(double)getResolution()
+								/((double)getDeviceResolution()*(double)GR_WIN32_USP_FONT_SCALING*m_fXYRatio))
+							   - (double)pAdvances[i]*(double)getResolution()*100.
+							   /((double)getDeviceResolution()*(double)iZoom * m_fXYRatio))/2.;
+			}
 			
-			RI.m_pAdvances[i] = (UT_sint32)(dDeviceWidth - dPrevDeviceWidth + 0.5);
-			dPrevDeviceWidth = dDeviceWidth;
+			RI.m_pAdvances[i]   = (UT_sint32)(dDeviceWidth - dPrevDeviceWidth + 0.5);
 
 			RI.m_pGoffsets[i].du = (UT_sint32)((double)RI.m_pGoffsets[i].du*(double)getResolution()/
-											((double)getDeviceResolution()*(double)GR_WIN32_USP_FONT_SCALING*m_fXYRatio) + 0.5);
+											((double)getDeviceResolution()*(double)GR_WIN32_USP_FONT_SCALING*m_fXYRatio)
+											   + dAdjustment + 0.5);
+			
 			RI.m_pGoffsets[i].dv = (UT_sint32)((double)RI.m_pGoffsets[i].dv*(double)getResolution()/
 											((double)getDeviceResolution()*(double)GR_WIN32_USP_FONT_SCALING) + 0.5);
+			dPrevDeviceWidth = dDeviceWidth;
+
 		}
 
-		//RI.m_ABC.abcA = tlu(RI.m_ABC.abcA);
-		//RI.m_ABC.abcB = tlu(RI.m_ABC.abcB);
-		//RI.m_ABC.abcC = tlu(RI.m_ABC.abcC);
 		RI.m_ABC.abcA = (UT_sint32)((double) RI.m_ABC.abcA * (double)getResolution() /
 									((double)getDeviceResolution() * (double)GR_WIN32_USP_FONT_SCALING*m_fXYRatio) + 0.5);
 		RI.m_ABC.abcB = (UT_sint32)((double) RI.m_ABC.abcB * (double)getResolution() /
@@ -1613,8 +1667,13 @@ void GR_Win32USPGraphics::measureRenderedCharWidths(GR_RenderInfo & ri)
 	}
 	
 	RI.m_bRejustify = true;
-	
 
+	if(iCount != iAdvSize)
+	{
+		delete[] pAdvances;
+		delete[] pGoffsets;
+	}
+	
 	if(hRes)
 	{
 		UT_ASSERT_HARMLESS( UT_SHOULD_NOT_HAPPEN );
@@ -2234,6 +2293,37 @@ void GR_Win32USPGraphics::drawChars(const UT_UCSChar* pChars,
 
 	if(bDelete)
 		delete [] pwChars;
+}
+
+void GR_Win32USPGraphics::setZoomPercentage(UT_uint32 iZoom)
+{
+	if(getZoomPercentage() != iZoom)
+	{
+		
+		GR_Graphics::setZoomPercentage(iZoom);
+
+		// now force remeasuring of character widths in any views that are associated with
+		// this graphics
+		XAP_App * pApp = XAP_App::getApp();
+		UT_return_if_fail( pApp );
+
+		UT_uint32 iFrameCount = pApp->getFrameCount();
+		for(UT_uint32 i = 0; i < iFrameCount; i++)
+		{
+			XAP_Frame * pFrame = pApp->getFrame(i);
+			if(!pFrame)
+				continue;
+
+			AV_View * pView = pFrame->getCurrentView();
+			if(pView)
+			{
+				GR_Graphics * pG = pView->getGraphics();
+
+				if(pG == this)
+					pView->remeasureCharsWithoutRebuild();
+			}
+		}
+	}
 }
 
 
