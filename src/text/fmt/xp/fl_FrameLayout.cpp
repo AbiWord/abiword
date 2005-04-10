@@ -574,8 +574,10 @@ void fl_FrameLayout::_createFrameContainer(void)
 	// Now do Frame image
 
 	const PP_AttrProp* pSectionAP = NULL;
-	m_pLayout->getDocument()->getAttrProp(m_apIndex, &pSectionAP);
-
+	// This is a real NO-NO: must *always* call getAP()
+	// m_pLayout->getDocument()->getAttrProp(m_apIndex, &pSectionAP);
+	getAP(pSectionAP);
+	
 	const XML_Char * pszDataID = NULL;
 	pSectionAP->getAttribute(PT_STRUX_IMAGE_DATAID, (const XML_Char *&)pszDataID);
 	DELETEP(m_pGraphicImage);

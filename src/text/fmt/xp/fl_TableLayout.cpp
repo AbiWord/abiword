@@ -805,8 +805,9 @@ void fl_TableLayout::updateTable(void)
 {
 
 	const PP_AttrProp* pAP = NULL;
-	bool bres = m_pDoc->getAttrProp(m_apIndex, &pAP);
-	UT_ASSERT(bres);
+	// This is a real NO-NO: must *always* call getAP()
+	// bool bres = m_pDoc->getAttrProp(m_apIndex, &pAP);
+	getAP(pAP);
 
 	lookupProperties();
 
@@ -1752,7 +1753,9 @@ void fl_CellLayout::createCellContainer(void)
 	// Now do cell image
 
 	const PP_AttrProp* pSectionAP = NULL;
-	m_pLayout->getDocument()->getAttrProp(m_apIndex, &pSectionAP);
+	// This is a real NO-NO: must *always* call getAP()
+	// m_pLayout->getDocument()->getAttrProp(m_apIndex, &pSectionAP);
+	getAP(pSectionAP);
 
 	const XML_Char * pszDataID = NULL;
 	pSectionAP->getAttribute(PT_STRUX_IMAGE_DATAID, (const XML_Char *&)pszDataID);
@@ -2177,9 +2180,10 @@ void fl_CellLayout::_updateCell(void)
 {
 
 	const PP_AttrProp* pAP = NULL;
-	bool bres = m_pDoc->getAttrProp(m_apIndex, &pAP);
-	UT_ASSERT(bres);
-
+	// This is a real NO-NO: must *always* call getAP()
+	// bool bres = m_pDoc->getAttrProp(m_apIndex, &pAP);
+	getAP(pAP);
+	
 	lookupProperties();
 
 	// clear all the columns
