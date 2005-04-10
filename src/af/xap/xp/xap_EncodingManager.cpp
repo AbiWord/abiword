@@ -1084,7 +1084,7 @@ struct SCatRange UniCharCats[] = {
 	{0xff3c, 0xff3c, ATOMIC},        // "\" 
 	{0xff3d, 0xff3d, PUNCNOSTART},   // ]
 	{0xff3e, 0xff5a, ATOMIC},        // ^_`a-z
-	{0xff5b, 0xff4b, PUNCNOEND},     // {
+	{0xff5b, 0xff5b, PUNCNOEND},     // {
 	{0xff5c, 0xff5c, ATOMIC},        // |
 	{0xff5d, 0xff5d, PUNCNOSTART},   // }
 	{0xff5e, 0xff5e, ATOMIC},        // ~
