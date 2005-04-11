@@ -237,7 +237,12 @@ static void s_radiobutton_clicked (GtkWidget * w, AP_UnixDialog_New * dlg)
 extern "C" {
 
 	// return > 0 for directory entries ending in ".awt" and ".dot"
-	static int awt_only (ABI_SCANDIR_SELECT_QUALIFIER struct dirent *d)
+#if defined (__APPLE__) || defined (__FreeBSD__) || defined (__OpenBSD__) \
+	|| defined(_AIX) || defined(__sgi)
+	static int awt_only (struct dirent *d)
+#else
+	static int awt_only (const struct dirent *d)
+#endif
 	{
 		const char * name = d->d_name;
 		
