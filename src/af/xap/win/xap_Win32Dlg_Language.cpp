@@ -248,11 +248,11 @@ BOOL XAP_Win32Dialog_Language::_onInitDialog(HWND hWnd, WPARAM wParam, LPARAM lP
 	UT_UTF8String s;
 	getDocDefaultLangDescription(s);
 	SetDlgItemText(hWnd, XAP_RID_DIALOG_LANGUAGE_DOCLANG_STATIC,
-				   AP_Win32App::s_fromUTF8ToWinLocale(s.utf8_str())).c_str());
+				   AP_Win32App::s_fromUTF8ToWinLocale(s.utf8_str()).c_str());
 
 	getDocDefaultLangCheckboxLabel(s);
 	SetDlgItemText(hWnd, XAP_RID_DIALOG_LANGUAGE_DOCLANG_CHKBOX,
-				   AP_Win32App::s_fromUTF8ToWinLocale(s.utf8_str())).c_str());
+				   AP_Win32App::s_fromUTF8ToWinLocale(s.utf8_str()).c_str());
 	
 	XAP_Win32DialogHelper::s_centerDialog(hWnd);	
 			
