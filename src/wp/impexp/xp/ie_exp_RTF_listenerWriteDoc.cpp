@@ -4336,7 +4336,7 @@ void s_RTF_ListenerWriteDoc::_rtf_docfmt(void)
 	bool landscape = !m_pDocument->m_docPageSize.isPortrait();
 
 	{
-		UT_LocaleTransactor(LC_NUMERIC, "C");
+		UT_LocaleTransactor t(LC_NUMERIC, "C");
 		
 		double width = m_pDocument->m_docPageSize.Width(DIM_IN);
 		double height = m_pDocument->m_docPageSize.Height(DIM_IN);
@@ -4475,7 +4475,7 @@ void s_RTF_ListenerWriteDoc::_rtf_open_section(PT_AttrPropIndex api)
 	m_pie->_rtf_keyword_ifnotdefault_twips("colsx",static_cast<const char*>(szColumnGap),720);
 
 	{
-		UT_LocaleTransactor(LC_NUMERIC, "C");
+		UT_LocaleTransactor t(LC_NUMERIC, "C");
 		
 		if (bColLine)
 		{

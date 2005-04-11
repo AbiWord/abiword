@@ -37,7 +37,7 @@ TFTEST_MAIN("UT_LocaleTransactor")
 	TFPASS(strcmp(setlocale(LC_NUMERIC, NULL), "fr_FR") == 0);
 
 	{
-		UT_LocaleTransactor(LC_NUMERIC, "C");
+		UT_LocaleTransactor t(LC_NUMERIC, "C");
 		TFFAIL(strcmp(setlocale(LC_NUMERIC, NULL), "fr_FR") == 0);
 		sprintf(msg, "%f", 1.0f);
 		TFPASS(strstr(msg, "1.0") == msg);

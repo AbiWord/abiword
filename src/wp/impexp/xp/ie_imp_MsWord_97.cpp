@@ -4131,7 +4131,7 @@ UT_Error IE_Imp_MsWord_97::_handleImage (Blip * b, long width, long height, long
   //
 
   {
-	  UT_LocaleTransactor(LC_NUMERIC, "C");
+	  UT_LocaleTransactor t(LC_NUMERIC, "C");
 	  UT_String_sprintf(propBuffer, "width:%fin; height:%fin; cropt:%fin; cropb:%fin; cropl:%fin; cropr:%fin",
 						static_cast<double>(width) / static_cast<double>(1440),
 			    static_cast<double>(height) / static_cast<double>(1440),
@@ -4785,7 +4785,7 @@ void IE_Imp_MsWord_97::_cell_open (const wvParseStruct *ps, const PAP *apap)
     propBuffer += "bg-style:1;";
 
   {
-	  UT_LocaleTransactor(LC_NUMERIC, "C");
+	  UT_LocaleTransactor t(LC_NUMERIC, "C");
 	  propBuffer += UT_String_sprintf("top-color:%s; top-thickness:%fpt; top-style:%d;",
 									  sMapIcoToColor(apap->ptap.rgtc[m_iCurrentCell].brcTop.ico, true).c_str(),
 									  brc_to_pixel(apap->ptap.rgtc[m_iCurrentCell].brcTop.dptLineWidth),

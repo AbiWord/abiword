@@ -1289,7 +1289,7 @@ void FV_VisualInlineImage::mouseRelease(UT_sint32 x, UT_sint32 y)
 	    const XML_Char * properties[] = {"width", NULL, "height", NULL, 0};
 
 	    {
-	      UT_LocaleTransactor(LC_NUMERIC, "C");
+	      UT_LocaleTransactor t(LC_NUMERIC, "C");
 	      UT_UTF8String_sprintf(sWidth, "%fin", UT_convertDimToInches(newImgBounds.width, DIM_PX));
 	      UT_UTF8String_sprintf(sHeight, "%fin", UT_convertDimToInches(newImgBounds.height, DIM_PX));
 	    }
