@@ -36,6 +36,7 @@
 #include "xap_Win32DialogHelper.h"
 #include "xap_Win32Resources.rc2"
 #include "xap_Win32Toolbar_Icons.h"
+#include "ap_Win32App.h"
 
 #ifdef STRICT   
 #define WHICHPROC	WNDPROC
@@ -244,12 +245,14 @@ BOOL XAP_Win32Dialog_Language::_onInitDialog(HWND hWnd, WPARAM wParam, LPARAM lP
 	
 	CheckDlgButton(hWnd, XAP_RID_DIALOG_LANGUAGE_DOCLANG_CHKBOX, BST_UNCHECKED );
 
-	UT_String s;
+	UT_UTF8String s;
 	getDocDefaultLangDescription(s);
-	SetDlgItemText(hWnd, XAP_RID_DIALOG_LANGUAGE_DOCLANG_STATIC,s.c_str());
+	SetDlgItemText(hWnd, XAP_RID_DIALOG_LANGUAGE_DOCLANG_STATIC,
+				   AP_Win32App::s_fromUTF8ToWinLocale(s.utf8_str())).c_str());
 
 	getDocDefaultLangCheckboxLabel(s);
-	SetDlgItemText(hWnd, XAP_RID_DIALOG_LANGUAGE_DOCLANG_CHKBOX,s.c_str());
+	SetDlgItemText(hWnd, XAP_RID_DIALOG_LANGUAGE_DOCLANG_CHKBOX,
+				   AP_Win32App::s_fromUTF8ToWinLocale(s.utf8_str())).c_str());
 	
 	XAP_Win32DialogHelper::s_centerDialog(hWnd);	
 			

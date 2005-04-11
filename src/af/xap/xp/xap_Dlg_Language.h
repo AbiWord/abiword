@@ -66,8 +66,8 @@ public:
 	bool                            isMakeDocumentDefault() const {return m_bDocDefault;}
 	void                            setMakeDocumentDefault(bool b) {m_bDocDefault = b;}
 
-	void                            getDocDefaultLangDescription(UT_String &s);
-	void                            getDocDefaultLangCheckboxLabel(UT_String &s);
+	void                            getDocDefaultLangDescription(UT_UTF8String &s);
+	void                            getDocDefaultLangCheckboxLabel(UT_UTF8String &s);
 	void                            setDocumentLanguage(const XML_Char * pLang);
 	
 	XAP_Dialog_Language::tAnswer	getAnswer(void) const;
