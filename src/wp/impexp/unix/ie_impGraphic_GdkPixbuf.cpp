@@ -479,6 +479,7 @@ UT_Confidence_t IE_ImpGraphicGdkPixbuf_Sniffer::recognizeContents(const char * s
 	//  Handle xpm differently coz the standard gdk-pixbuf loader scheme doesn't
 	// work for these!
 	//
+	xxx_UT_DEBUGMSG(("gdk-pixbuf sniff happenning data %s \n",szBuf));
 	if((iNum > 9) && (strncmp (szBuf, "/* XPM */", 9) == 0))
 	{
 		return UT_CONFIDENCE_PERFECT;
@@ -490,6 +491,7 @@ UT_Confidence_t IE_ImpGraphicGdkPixbuf_Sniffer::recognizeContents(const char * s
 	GError * err = NULL;
 	if ( FALSE == gdk_pixbuf_loader_write (ldr, reinterpret_cast<const guchar *>(szBuf),static_cast<gsize>(iNum), &err) )
 		{
+			UT_DEBUGMSG(("No pixbuf loader created \n"));
 			gdk_pixbuf_loader_close (ldr, NULL);
 			return UT_CONFIDENCE_ZILCH;
 		}
@@ -504,6 +506,7 @@ UT_Confidence_t IE_ImpGraphicGdkPixbuf_Sniffer::recognizeContents(const char * s
 	}
 	else
 	{
+		UT_DEBUGMSG(("No pixbuf created \n"));
 		// never need to ref the pixbuf
 		return UT_CONFIDENCE_ZILCH;
 	}

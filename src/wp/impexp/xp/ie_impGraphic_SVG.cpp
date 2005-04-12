@@ -32,8 +32,12 @@ UT_Confidence_t IE_ImpGraphicSVG_Sniffer::recognizeSuffix(const char * szSuffix)
 
 UT_Confidence_t IE_ImpGraphicSVG_Sniffer::recognizeContents(const char * szBuf, UT_uint32 iNumbytes)
 {
+  UT_DEBUGMSG(("SVG SNIFF happenning \n"));
   if ( UT_SVG_recognizeContent(szBuf,iNumbytes) )
+  {
+    UT_DEBUGMSG(("NOT SVG \n"));
     return UT_CONFIDENCE_PERFECT;
+  }
   return UT_CONFIDENCE_ZILCH;
 }
 

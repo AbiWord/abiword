@@ -66,7 +66,8 @@
 #ifdef HAVE_GNOME
 
 enum {
-	TARGET_IMAGE,
+	TARGET_DOCUMENT,
+ 	TARGET_IMAGE,
 	TARGET_URI_LIST,
 	TARGET_URL,
 	TARGET_UNKNOWN
@@ -78,20 +79,22 @@ enum {
 // loaded importers.
 static const GtkTargetEntry drag_types[] =
 	{
-		{"application/rtf", 0, TARGET_URI_LIST},
-		{"text/richtext", 0, TARGET_URI_LIST},
-		{"text/rtf", 0, TARGET_URI_LIST},
-		{"application/msword", 0, TARGET_URI_LIST},
-		{"application/vnd.ms-word", 0, TARGET_URI_LIST},
-		{"application/vnd.sun.xml.writer", 0, TARGET_URI_LIST},
-		{"application/x-applix-word", 0, TARGET_URI_LIST},
-		{"application/x-palm-database", 0, TARGET_URI_LIST},
-		{"application/vnd.palm", 0, TARGET_URI_LIST},
-		{"text/plain", 0, TARGET_URI_LIST},
-		{"text/abiword", 0, TARGET_URI_LIST},
-		{"application/x-abiword", 0, TARGET_URI_LIST},
-		{"text/xml", 0, TARGET_URI_LIST},
-		{"text/vnd.wap.wml", 0, TARGET_URI_LIST},
+ 		{"text/uri-list", 0, TARGET_URI_LIST},
+ 		{"application/rtf", 0, TARGET_DOCUMENT},
+ 		{"text/richtext", 0, TARGET_DOCUMENT},
+ 		{"text/rtf", 0, TARGET_DOCUMENT},
+ 		{"application/msword", 0, TARGET_DOCUMENT},
+ 		{"application/vnd.ms-word", 0, TARGET_DOCUMENT},
+ 		{"application/vnd.sun.xml.writer", 0, TARGET_DOCUMENT},
+ 		{"application/x-applix-word", 0, TARGET_DOCUMENT},
+ 		{"application/x-palm-database", 0, TARGET_DOCUMENT},
+ 		{"application/vnd.palm", 0, TARGET_DOCUMENT},
+ // 		{"text/plain", 0, TARGET_DOCUMENT},
+ 		{"text/abiword", 0, TARGET_DOCUMENT},
+ 		{"application/x-abiword", 0, TARGET_DOCUMENT},
+ 		{"text/xml", 0, TARGET_DOCUMENT},
+ 		{"text/vnd.wap.wml", 0, TARGET_DOCUMENT},
+ 		{"image/jpeg", 0, TARGET_IMAGE},
 		{"image/png", 0, TARGET_IMAGE},
 		{"image/jpeg", 0, TARGET_IMAGE},
 		{"image/gif", 0, TARGET_IMAGE},
@@ -103,8 +106,7 @@ static const GtkTargetEntry drag_types[] =
 		{"image/svg+xml", 0, TARGET_IMAGE},
 		{"text/html", 0, TARGET_URL}, // hack
 		{"text/html+xml", 0, TARGET_URL}, // hack
-		{"_NETSCAPE_URL", 0, TARGET_URL},
-		{"text/uri-list", 0, TARGET_URI_LIST}
+		{"_NETSCAPE_URL", 0, TARGET_URL}
 	};
 
 static int
@@ -114,7 +116,7 @@ s_mapMimeToUriType (const char * uri)
 		return TARGET_UNKNOWN;
 
 	char * mime = gnome_vfs_get_mime_type (uri);
-	xxx_UT_DEBUGMSG(("DOM: mime %s dropped into AbiWord(%s)\n", mime, uri));
+	UT_DEBUGMSG(("DOM: mime %s dropped into AbiWord(%s)\n", mime, uri));
 
 	int target = TARGET_UNKNOWN;
 
@@ -140,7 +142,7 @@ s_ensure_uri_on_disk (const gchar * uri, UT_UTF8String & outName)
 	hndl = gnome_vfs_uri_new (uri);
 	if (hndl == NULL) 
 		{
-			xxx_UT_DEBUGMSG(("DOM: Invalid uri was %s \n", uri));
+			UT_DEBUGMSG(("DOM: Invalid uri was %s \n", uri));
 			return false;
 		}
 
@@ -180,7 +182,7 @@ s_ensure_uri_on_disk (const gchar * uri, UT_UTF8String & outName)
 	char * outCName;
 	int fd = g_file_open_tmp ("XXXXXX", &outCName, NULL);
 	if (fd == -1) {
-		xxx_UT_DEBUGMSG(("DOM: no temp dir\n"));
+		UT_DEBUGMSG(("DOM: no temp dir\n"));
 		gnome_vfs_uri_unref (hndl);
 		return false;
 	}
@@ -215,7 +217,7 @@ s_ensure_uri_on_disk (const gchar * uri, UT_UTF8String & outName)
 	
 	if(result != GNOME_VFS_OK)
 		{
-			xxx_UT_DEBUGMSG(("DOM: couldn't open handle\n"));
+			UT_DEBUGMSG(("DOM: couldn't open handle\n"));
 			gnome_vfs_uri_unref (hndl);
 			fclose (onDisk);
 			return false;
@@ -263,6 +265,32 @@ s_load_image (const UT_UTF8String & file, XAP_Frame * pFrame, FV_View * pView)
 }
 
 static void
+s_load_image (UT_ByteBuf * bytes, XAP_Frame * pFrame, FV_View * pView)
+{
+	IE_ImpGraphic * pIEG = 0;
+	FG_Graphic    * pFG  = 0;
+	UT_Error error = IE_ImpGraphic::constructImporter(bytes, 0, &pIEG);
+	if (error != UT_OK || !pIEG)
+		{
+			UT_DEBUGMSG(("Couldn't construct importer for data buffer\n"));
+			return;
+		}
+
+	error = pIEG->importGraphic(bytes, &pFG);
+
+	DELETEP(pIEG);
+
+	if (error != UT_OK || !pFG)
+		{
+			UT_DEBUGMSG(("JK: could not import graphic from data buffer\n"));
+			return;
+		}
+
+	pView->cmdInsertGraphic(pFG);
+	DELETEP(pFG);
+}
+
+static void
 s_load_document (const UT_UTF8String & file, XAP_Frame * pFrame)
 {
 	XAP_Frame * pNewFrame = 0;
@@ -279,7 +307,7 @@ s_load_document (const UT_UTF8String & file, XAP_Frame * pFrame)
 			// TODO: we crash if we just delete this without putting something
 			// TODO: in it, so let's go ahead and open an untitled document
 			// TODO: for now.
-			xxx_UT_DEBUGMSG(("DOM: couldn't load document %s\n", file.utf8_str()));
+			UT_DEBUGMSG(("DOM: couldn't load document %s\n", file.utf8_str()));
 			pNewFrame->loadDocument(NULL, 0 /* IEFT_Unknown */);
 		}
 }
@@ -292,24 +320,18 @@ s_load_uri (XAP_Frame * pFrame, const char * uri)
 	int type = s_mapMimeToUriType (uri);
 	if (type == TARGET_UNKNOWN)
 		{
-			xxx_UT_DEBUGMSG(("DOM: unknown uri type: %s\n", uri));
-			return;
-		}
-	else if (type == TARGET_URL)
-		{
-			xxx_UT_DEBUGMSG(("DOM: hyperlink: %s\n", uri));
-			pView->cmdInsertHyperlink(uri);
+			UT_DEBUGMSG(("DOM: unknown uri type: %s\n", uri));
 			return;
 		}
 
 	UT_UTF8String onDisk;
 	if (!s_ensure_uri_on_disk (uri, onDisk))
 		{
-			xxx_UT_DEBUGMSG(("DOM: couldn't ensure %s on disk\n", uri));
+			UT_DEBUGMSG(("DOM: couldn't ensure %s on disk\n", uri));
 			return;
 		}
 
-	xxx_UT_DEBUGMSG(("DOM: %s on disk\n", onDisk.utf8_str()));
+	UT_DEBUGMSG(("DOM: %s on disk\n", onDisk.utf8_str()));
 
 	if (type == TARGET_IMAGE)
 		{
@@ -323,9 +345,26 @@ s_load_uri (XAP_Frame * pFrame, const char * uri)
 		}
 }
 
+static void
+s_load_uri_list (XAP_Frame * pFrame, const char * uriList)
+{
+	GList * names = gnome_vfs_uri_list_parse (uriList);
+
+	// multiple URIs
+	for ( ; names != NULL; names = names->next) 
+		{
+			GnomeVFSURI * hndl = static_cast<GnomeVFSURI *>(names->data);
+			char * uri = gnome_vfs_uri_to_string (hndl, GNOME_VFS_URI_HIDE_NONE);
+			s_load_uri (pFrame, uri);
+			g_free (uri);
+		}
+
+	gnome_vfs_uri_list_free (names);
+}
+
 static void 
 s_dnd_drop_event(GtkWidget        *widget,
-				 GdkDragContext   * /*context*/,
+				 GdkDragContext   *context,
 				 gint              /*x*/,
 				 gint              /*y*/,
 				 GtkSelectionData *selection_data,
@@ -333,38 +372,52 @@ s_dnd_drop_event(GtkWidget        *widget,
 				 guint             /*time*/,
 				 XAP_UnixFrameImpl * pFrameImpl)
 {
-	xxx_UT_DEBUGMSG(("DOM: dnd_drop_event being handled\n"));
+	UT_DEBUGMSG(("DOM: dnd_drop_event being handled\n"));
 
 	g_return_if_fail(widget != NULL);
 
 	XAP_Frame * pFrame = pFrameImpl->getFrame ();
+	FV_View   * pView  = static_cast<FV_View*>(pFrame->getCurrentView ());
 
-	const char * rawChar = reinterpret_cast<const char *>(selection_data->data);
-	xxx_UT_DEBUGMSG(("DOM: text in selection = %s \n", rawChar));
-	GList * names = gnome_vfs_uri_list_parse (rawChar);
+	char *targetName = gdk_atom_name(selection_data->target);
+	UT_DEBUGMSG(("JK: target in selection = %s \n", targetName));
+	g_free (targetName);
 
-	// single URI
-	if (!names)
-		s_load_uri (pFrame, rawChar);
-	else {
-		// multiple URIs
-		for ( ; names != NULL; names = names->next) 
-			{
-				GnomeVFSURI * hndl = static_cast<GnomeVFSURI *>(names->data);
-				char * uri = gnome_vfs_uri_to_string (hndl, GNOME_VFS_URI_HIDE_NONE);
-				s_load_uri (pFrame, uri);
-				g_free (uri);
-			}
-	}
-
-	gnome_vfs_uri_list_free (names);
+	if (info == TARGET_URI_LIST) 
+		{
+			const char * rawChar = reinterpret_cast<const char *>(selection_data->data);
+			UT_DEBUGMSG(("DOM: text in selection = %s \n", rawChar));
+			s_load_uri_list (pFrame, rawChar);
+		} 
+	else if (info == TARGET_DOCUMENT) 
+		{
+			UT_DEBUGMSG(("JK: Document target as data buffer\n"));
+		}
+	else if (info == TARGET_IMAGE) 
+		{
+			UT_ByteBuf * bytes = new UT_ByteBuf( selection_data->length );
+		  
+			UT_DEBUGMSG(("JK: Image target\n"));
+			bytes->append (selection_data->data, selection_data->length);
+			s_load_image (bytes, pFrame, pView);
+		}
+	else if (info == TARGET_URL)
+		{
+			const char * uri = reinterpret_cast<const char *>(selection_data->data);
+			UT_DEBUGMSG(("DOM: hyperlink: %s\n", uri));
+			pView->cmdInsertHyperlink(uri);
+		}
+	else if (info == TARGET_URI_LIST) 
+		{
+			UT_DEBUGMSG(("JK: 'URI List' target\n"));
+		}
 }
 
 static void
 s_dnd_real_drop_event (GtkWidget *widget, GdkDragContext * context, 
 					   gint x, gint y, guint time, gpointer ppFrame)
 {
-	xxx_UT_DEBUGMSG(("DOM: dnd drop event\n"));
+	UT_DEBUGMSG(("DOM: dnd drop event\n"));
 	GdkAtom selection = gdk_drag_get_selection(context);
 	gtk_drag_get_data (widget,context,selection,time);
 }
@@ -372,7 +425,7 @@ s_dnd_real_drop_event (GtkWidget *widget, GdkDragContext * context,
 static void
 s_dnd_drag_end (GtkWidget  *widget, GdkDragContext *context, gpointer ppFrame)
 {
-	xxx_UT_DEBUGMSG(("DOM: dnd end event\n"));
+	UT_DEBUGMSG(("DOM: dnd end event\n"));
 }
 
 #endif // HAVE_GNOME
