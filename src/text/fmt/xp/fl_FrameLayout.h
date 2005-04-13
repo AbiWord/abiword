@@ -95,7 +95,7 @@ public:
 
 	void                     miniFormat(void);
 	virtual void		     format(void);
-	virtual void		     updateLayout(void);
+	virtual void		     updateLayout(bool bDoFull);
 	virtual void             collapse(void);
 	void                     localCollapse();
 	virtual void             markAllRunsDirty(void);

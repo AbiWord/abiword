@@ -55,7 +55,8 @@ pt_PieceTable::pt_PieceTable(PD_Document * pDocument)
     m_atomicGlobCount(0),
 	m_bDoingTheDo(false),
 	m_bDoNotTweakPosition(false),
-	m_iXID(0)
+	m_iXID(0),
+	m_iCurCRNumber(0)
 {
 
 	setPieceTableState(PTS_Create);

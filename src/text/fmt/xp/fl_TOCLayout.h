@@ -110,7 +110,7 @@ public:
 																		PL_StruxFmtHandle sfhNew));
 
 	virtual void		     format(void);
-	virtual void		     updateLayout(void);
+	virtual void		     updateLayout(bool bDoFull);
 	virtual void             collapse(void);
 	virtual void             markAllRunsDirty(void);
 	virtual fl_SectionLayout *  getSectionLayout(void)  const;

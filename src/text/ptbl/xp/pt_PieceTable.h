@@ -54,6 +54,7 @@ class PD_Style;
 
 class ABI_EXPORT pt_PieceTable
 {
+	friend class PX_ChangeRecord;
 public:
 	pt_PieceTable(PD_Document * pDocument);
 	~pt_PieceTable();
@@ -336,7 +337,8 @@ public:
 	UT_uint32               getTopXID() const {return m_iXID;}
 	void                    setXIDThreshold(UT_uint32 i){m_iXID = i;}
 	void                    fixMissingXIDs();
-	
+	void                    setCRNumber(UT_sint32 iCRNumber)
+	{ m_iCurCRNumber = iCRNumber;}
 #ifdef PT_TEST
 	UT_TestStatus			__test_VerifyCoalescedFrags(FILE * fp) const;
 	void					__dump(FILE * fp) const;
@@ -554,7 +556,8 @@ protected:
 										pf_Frag_Object * &pfo);
 	bool					_makeFmtMark(pf_Frag_FmtMark * &pff);
 	bool                    _makeFmtMark(pf_Frag_FmtMark * &pff, const XML_Char ** attributes);
-
+	UT_sint32               _getNextChangeRecordNumber(void)
+	{ return m_iCurCRNumber++;}
 	// implemented in pt_PT_InsertStrux.cpp
 	bool                    _translateRevisionAttribute(PP_RevisionAttr & Revisions, PT_AttrPropIndex indexAP,
 														PP_RevisionType eType,
@@ -581,6 +584,7 @@ protected:
 	bool                    m_bDoNotTweakPosition;
 
 	UT_uint32               m_iXID;
+	UT_sint32               m_iCurCRNumber;
 };
 
 #endif /* PT_PIECETABLE_H */

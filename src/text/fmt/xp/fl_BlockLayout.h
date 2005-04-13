@@ -141,7 +141,7 @@ public:
 	virtual bool		recalculateFields(UT_uint32 iUpdateCount);
 
 	virtual void		redrawUpdate();
-	virtual void        updateLayout(void) {}
+	virtual void        updateLayout(bool bDoAll) {}
 	virtual fp_Container * getNewContainer(fp_Container * pCon = NULL);
 	FV_View *		getView(void) const { UT_return_val_if_fail( m_pLayout, NULL ); return m_pLayout->getView(); }
 
@@ -317,7 +317,7 @@ public:
 	virtual bool			isCollapsed(void) const
 		{return m_bIsCollapsed;}
 	void					coalesceRuns(void);
-	virtual void			setNeedsReformat(UT_uint32 offset = 0);
+	virtual void			setNeedsReformat(fl_ContainerLayout * pCL, UT_uint32 offset = 0);
 	inline bool 		    needsReformat(void) const
 		{ return (m_iNeedsReformat >= 0); }
 	virtual void			setNeedsRedraw(void);

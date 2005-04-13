@@ -11347,7 +11347,7 @@ bool FV_View::insertFootnote(bool bFootnote)
 
 	bool bWidthChange = pRun->recalcWidth();
 	xxx_UT_DEBUGMSG(("run type %d, width change %d\n", pRun->getType(),bWidthChange));
-	pBL->setNeedsReformat();
+	pBL->setNeedsReformat(pBL);
 
 	pBL = _findBlockAtPosition(FanchStart);
 	UT_ASSERT(pBL != 0);
@@ -11356,7 +11356,7 @@ bool FV_View::insertFootnote(bool bFootnote)
 	{
 		bWidthChange = pBL->getFirstRun()->getNextRun()->recalcWidth();
 		xxx_UT_DEBUGMSG(("run type %d, width change %d\n", pBL->getFirstRun()->getNextRun()->getType(),bWidthChange));
-		pBL->setNeedsReformat();
+		pBL->setNeedsReformat(pBL);
 	}
 //
 // This does a rebuild of the affected paragraph

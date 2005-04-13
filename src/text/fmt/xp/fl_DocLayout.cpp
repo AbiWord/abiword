@@ -2014,7 +2014,7 @@ void FL_DocLayout::updateLayout()
 	fl_SectionLayout* pSL = m_pFirstSection;
 	while (pSL)
 	{
-		pSL->updateLayout();
+		pSL->updateLayout(false);
 		if(pSL->getType() == FL_SECTION_DOC)
 		{
 			if(static_cast<fl_DocSectionLayout *>(pSL)->needsRebuild())

@@ -599,7 +599,7 @@ void fp_TOCContainer::setY(UT_sint32 i)
 // automatically?
 //
 	xxx_UT_DEBUGMSG(("Set Reformat 1 now from TOC %x in TOCLayout %x \n",this,getSectionLayout()));
-	getSectionLayout()->setNeedsReformat();
+	getSectionLayout()->setNeedsReformat(getSectionLayout());
 	fp_VerticalContainer::setY(i);
 	adjustBrokenTOCs();
 }

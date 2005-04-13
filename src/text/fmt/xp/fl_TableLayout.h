@@ -156,7 +156,7 @@ public:
 	void                        attachCell(fl_ContainerLayout * pCell);
 	void                        createTableContainer(void);
 	void                        insertTableContainer(fp_TableContainer * pNewTab);
-	virtual void		        updateLayout(void);
+	virtual void		        updateLayout(bool bDoFull);
 	void		                updateTable(void);
 	virtual void                collapse(void);
 	virtual void                markAllRunsDirty(void);
@@ -289,7 +289,7 @@ public:
 	void                     setCellContainerProperties(fp_CellContainer * pCell);
 	void                     createCellContainer(void);
 	virtual void		     format(void);
-	virtual void		     updateLayout(void);
+	virtual void		     updateLayout(bool bDoFull);
 	virtual void             collapse(void);
 	bool                     isLayedOut(void) const;
 	bool                     isDoingFormat(void) const;

@@ -52,6 +52,8 @@ public:
 				   fl_ContainerType myType,
 				   PTStruxType myStruxType);
 	virtual ~fl_EmbedLayout();
+	virtual void		   setNeedsReformat(fl_ContainerLayout * pCL, UT_uint32 offset = 0);
+	virtual void		updateLayout(bool bDoAll);
 
 	virtual bool 	doclistener_changeStrux(const PX_ChangeRecord_StruxChange * pcrxc);
 	virtual bool    doclistener_deleteStrux(const PX_ChangeRecord_Strux * pcrx);

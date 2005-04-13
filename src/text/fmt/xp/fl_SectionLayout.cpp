@@ -140,17 +140,18 @@ void fl_SectionLayout::_purgeLayout()
 	return;
 }
 
-void fl_SectionLayout::setNeedsReformat(UT_uint32 /*offset*/)
+void fl_SectionLayout::setNeedsReformat(fl_ContainerLayout * pCL, UT_uint32 /*offset*/)
 {
+        m_vecFormatLayout.addItem(pCL);
 	m_bNeedsReformat = true;
 	if(myContainingLayout() != NULL && static_cast<fl_SectionLayout *>(myContainingLayout()) != this)
 	{
-		static_cast<fl_SectionLayout *>(myContainingLayout())->setNeedsReformat();
+		static_cast<fl_SectionLayout *>(myContainingLayout())->setNeedsReformat(this);
 	}
 	if(getContainerType() == FL_CONTAINER_SHADOW)
 	{
 		fl_HdrFtrShadow * pShad = static_cast<fl_HdrFtrShadow *>(this);
-		pShad->getHdrFtrSectionLayout()->setNeedsReformat(0);
+		pShad->getHdrFtrSectionLayout()->setNeedsReformat(this,0);
 	}
 }
 
@@ -555,7 +556,7 @@ bool fl_SectionLayout::bl_doclistener_insertSection(fl_ContainerLayout* pPrevL,
 			if(pBL)
 			{
 				pBL->setSectionLayout( pSL);
-				pBL->setNeedsReformat(0);
+				pBL->setNeedsReformat(pBL,0);
 			}
 			pCL = pNext;
 		}
@@ -1742,37 +1743,75 @@ void fl_DocSectionLayout::markAllRunsDirty(void)
 	}
 }
 
-void fl_DocSectionLayout::updateLayout(void)
+void fl_DocSectionLayout::updateLayout(bool bDoFull)
 {
 	fl_ContainerLayout*	pBL = getFirstLayout();
 	FV_View * pView = m_pLayout->getView();
 	bool bShowHidden = pView && pView->getShowPara();
 	FPVisibility eHidden;
 	bool bHidden;
+	bDoFull = true;
 	xxx_UT_DEBUGMSG(("Doing Update layout \n"));
-	while (pBL)
+	if(bDoFull)
 	{
-		eHidden  = pBL->isHidden();
-		bHidden = ((eHidden == FP_HIDDEN_TEXT && !bShowHidden)
-		              || eHidden == FP_HIDDEN_REVISION
-		              || eHidden == FP_HIDDEN_REVISION_AND_TEXT);
+		m_vecFormatLayout.clear();
+	        while (pBL)
+		{
+		        eHidden  = pBL->isHidden();
+			bHidden = ((eHidden == FP_HIDDEN_TEXT && !bShowHidden)
+				   || eHidden == FP_HIDDEN_REVISION
+				   || eHidden == FP_HIDDEN_REVISION_AND_TEXT);
 
- 		if(!bHidden)
- 		{
- 			if (pBL->needsReformat())
+			if(!bHidden)
 			{
-			  if(!(m_pLayout->isLayoutFilling() && pBL->getContainerType() == FL_CONTAINER_TOC))
-			  {
-				pBL->format();
-			  }
+			     if (pBL->needsReformat())
+			     {
+			          if(!(m_pLayout->isLayoutFilling() && pBL->getContainerType() == FL_CONTAINER_TOC))
+				  {
+				       pBL->format();
+				  }
+			     }
+			     if (pBL->getContainerType() != FL_CONTAINER_BLOCK && !getDocument()->isDontImmediateLayout())
+			     {
+			          pBL->updateLayout(false);
+			     }
 			}
-			if (pBL->getContainerType() != FL_CONTAINER_BLOCK && !getDocument()->isDontImmediateLayout())
-			{
-				pBL->updateLayout();
-			}
+
+			pBL = pBL->getNext();
 		}
+	}
+	else if (!bDoFull || (m_vecFormatLayout.getItemCount() > 0))
+	{
+	        UT_sint32 i =0;
+		UT_sint32 j = 0;
+		UT_sint32 count = static_cast<UT_sint32>(m_vecFormatLayout.getItemCount());
+		for(i=0; i<count; i++)
+		{  
+		        pBL = m_vecFormatLayout.getNthItem(0);
+			j++;
+		        eHidden  = pBL->isHidden();
+			bHidden = ((eHidden == FP_HIDDEN_TEXT && !bShowHidden)
+				   || eHidden == FP_HIDDEN_REVISION
+				   || eHidden == FP_HIDDEN_REVISION_AND_TEXT);
 
-		pBL = pBL->getNext();
+			if(!bHidden)
+			{
+			     if (pBL->needsReformat())
+			     {
+			          if(!(m_pLayout->isLayoutFilling() && pBL->getContainerType() == FL_CONTAINER_TOC))
+				  {
+				       pBL->format();
+				       j--;
+				       m_vecFormatLayout.deleteNthItem(j);
+				  }
+			     }
+			     if (pBL->getContainerType() != FL_CONTAINER_BLOCK && !getDocument()->isDontImmediateLayout())
+			     {
+			          pBL->updateLayout(false);
+			     }
+			}
+			
+		}
 	}
 	if(needsSectionBreak() && !getDocument()->isDontImmediateLayout() )
 	{
@@ -3727,7 +3766,7 @@ void fl_HdrFtrSectionLayout::format(void)
 	layout();
 }
 
-void fl_HdrFtrSectionLayout::updateLayout(void)
+void fl_HdrFtrSectionLayout::updateLayout(bool bDoFull)
 {
 	bool bredraw = false;
 	fl_ContainerLayout*	pBL = getFirstLayout();
@@ -3756,11 +3795,14 @@ void fl_HdrFtrSectionLayout::updateLayout(void)
 	// update Just the  blocks in the shadowlayouts
 	//
   	UT_uint32 iCount = m_vecPages.getItemCount();
-	for (UT_uint32 i=0; i<iCount; i++)
+	if(bredraw)
 	{
+	      for (UT_uint32 i=0; i<iCount; i++)
+	      {
 		_PageHdrFtrShadowPair* pPair = m_vecPages.getNthItem(i);
 
-		pPair->getShadow()->updateLayout();
+		pPair->getShadow()->updateLayout(false);
+	      }
 	}
 }
 
@@ -4476,7 +4518,7 @@ bool fl_HdrFtrSectionLayout::bl_doclistener_insertBlock(fl_ContainerLayout* pBL,
 //
 		  static_cast<fl_BlockLayout *>(ppBL->getNext())->setHdrFtr();
 		}
-		setNeedsReformat();
+		setNeedsReformat(this);
 	}
 	else
 //
@@ -4492,7 +4534,7 @@ bool fl_HdrFtrSectionLayout::bl_doclistener_insertBlock(fl_ContainerLayout* pBL,
 		bResult = bResult && static_cast<fl_BlockLayout *>(pNewBL)->doclistener_insertFirstBlock(pcrx, sdh,
 													lid, pfnBindHandles);
 		static_cast<fl_BlockLayout *>(pNewBL)->setHdrFtr();
-		setNeedsReformat();
+		setNeedsReformat(this);
 	}
 	return bResult;
 }
@@ -4961,7 +5003,7 @@ fl_ContainerLayout * fl_HdrFtrShadow::findBlockAtPosition(PT_DocPosition pos)
 	return NULL;
 }
 
-void fl_HdrFtrShadow::updateLayout(void)
+void fl_HdrFtrShadow::updateLayout(bool bDoAll)
 {
 	bool bredraw = false;
 	xxx_UT_DEBUGMSG(("Doing Update layout in shadow %x \n",this));

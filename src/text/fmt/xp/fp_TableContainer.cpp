@@ -870,7 +870,7 @@ void fp_CellContainer::setWidth(UT_sint32 iWidth)
 	static_cast<fl_TableLayout *>(pSL)->setDirty();
 	fl_CellLayout * pCellL = static_cast<fl_CellLayout *>(getSectionLayout());
 	xxx_UT_DEBUGMSG(("Set Reformat 2 now from table %x in TableLayout %x \n",this,getSectionLayout()));
-	pCellL->setNeedsReformat();
+	pCellL->setNeedsReformat(pCellL);
 	pCellL->_localCollapse();
 	pCellL->format();
 	UT_sint32 i = 0;

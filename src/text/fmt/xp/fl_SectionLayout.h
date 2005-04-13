@@ -107,12 +107,11 @@ public:
 	virtual bool		recalculateFields(UT_uint32 iUpdateCount);
 	fl_BlockLayout *        getFirstBlock(void) const; 
 	virtual fp_Container*		getNewContainer(fp_Container * pFirstContainer = NULL) = 0;
-    virtual void                updateLayout(void) = 0;
 	virtual FL_DocLayout*		getDocLayout(void) const;
 	virtual void                markAllRunsDirty(void) =0;
 	virtual bool                isCollapsed(void) const
 		{return m_bIsCollapsed;}
-	virtual void                setNeedsReformat(UT_uint32 offset = 0);
+	virtual void                setNeedsReformat(fl_ContainerLayout * pCL, UT_uint32 offset = 0);
 	virtual void                setNeedsRedraw(void);
 	virtual bool                needsReformat(void) const
 		{return m_bNeedsReformat;}
@@ -181,7 +180,7 @@ public:
 	virtual void         setImageHeight(UT_sint32 iHeight);
 	GR_Image *           getBackgroundImage(void)
 	  {	return m_pImageImage;}
-
+	
 #ifdef FMT_TEST
 	virtual void		__dump(FILE * fp) const;
 #endif
@@ -201,6 +200,7 @@ protected:
 	UT_uint32           m_iGraphicTick;
 	UT_sint32           m_iDocImageWidth;
 	UT_sint32           m_iDocImageHeight;
+	UT_GenericVector<fl_ContainerLayout *> m_vecFormatLayout;
 };
 
 class ABI_EXPORT fl_DocSectionLayout : public fl_SectionLayout
@@ -215,7 +215,7 @@ public:
 	fl_DocSectionLayout* getPrevDocSection(void) const;
 
 	virtual void		format(void);
-	virtual void		updateLayout(void);
+	virtual void		updateLayout(bool bDoFull);
 	void                updateDocSection(void);
 	virtual void        collapse(void);
 	virtual fp_Container * getFirstContainer(void) const;
@@ -397,7 +397,7 @@ public:
 	virtual void				format(void);
 	virtual fl_SectionLayout *  getSectionLayout(void) const
 		{ return static_cast<fl_SectionLayout *>(m_pDocSL);}
-	virtual void				updateLayout(void);
+	virtual void				updateLayout(bool bDoFull);
 	void                        layout(void);
 	fl_ContainerLayout *        findMatchingContainer( fl_ContainerLayout * pBL);
 	virtual void				redrawUpdate(void);
@@ -490,7 +490,7 @@ virtual	fl_HdrFtrSectionLayout*	getHdrFtrSectionLayout(void) const { return m_pH
 	fl_ContainerLayout *		findMatchingContainer(fl_ContainerLayout * pBL);
 	fl_ContainerLayout *		findBlockAtPosition(PT_DocPosition pos);
 	virtual void				format(void);
-	virtual void				updateLayout(void);
+	virtual void				updateLayout(bool bDoFull);
 	virtual void				redrawUpdate(void);
 	fp_Page *                       getPage(void) { return m_pPage;}
 	virtual fp_Container*		getNewContainer(fp_Container *pFirstContainer = NULL);

@@ -95,11 +95,11 @@ public:
 	virtual FL_DocLayout *      getDocLayout(void) const;
 	virtual void		format(void) = 0;
 	virtual void        appendTextToBuf(UT_GrowBuf & buf);
-	virtual void		updateLayout(void) = 0;
+	virtual void		updateLayout(bool bDoAll) = 0;
 	virtual void        markAllRunsDirty(void) =0;
 	virtual void        collapse(void) = 0;
 	virtual void		redrawUpdate(void) = 0;
-	virtual void        setNeedsReformat(UT_uint32 offset = 0) = 0;
+	virtual void        setNeedsReformat(fl_ContainerLayout * pCL, UT_uint32 offset = 0) = 0;
 	virtual void        setNeedsRedraw(void) = 0;
 	virtual bool        isCollapsed(void) const = 0;
 	virtual bool        needsReformat(void) const = 0;

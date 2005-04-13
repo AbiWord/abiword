@@ -396,7 +396,7 @@ void fl_FrameLayout::markAllRunsDirty(void)
 	}
 }
 
-void fl_FrameLayout::updateLayout(void)
+void fl_FrameLayout::updateLayout(bool bDoAll)
 {
 	if(needsReformat())
 	{
@@ -637,7 +637,7 @@ void fl_FrameLayout::format(void)
 		getNewContainer();
 	}
 	fl_ContainerLayout*	pBL = getFirstLayout();
-	
+	bool bOnPage = false;
 	while (pBL)
 	{
 		pBL->format();
@@ -710,11 +710,23 @@ void fl_FrameLayout::format(void)
 		}
 		if(!pBL->isCollapsed())
 		{
-		  pBL->setFramesOnPage(NULL);
+		  bOnPage = pBL->setFramesOnPage(NULL);
+		  if(!bOnPage)
+		  {
+		    pBL->setNeedsReformat(this);
+		  }
 		}
 	}
-	m_bNeedsFormat = false;
-	m_bNeedsReformat = false;
+	m_bNeedsFormat = bOnPage;
+	m_bNeedsReformat = bOnPage;
+	if(!bOnPage)
+	{
+	  getSectionLayout()->setNeedsReformat(this);
+	}
+	if(!bOnPage)
+	{
+	  return;
+	}
 	fl_DocSectionLayout * pDSL = getDocSectionLayout();
 	fp_FrameContainer * pFC = static_cast<fp_FrameContainer *>(getFirstContainer());
 	if(pFC)

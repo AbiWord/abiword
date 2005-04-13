@@ -1168,7 +1168,7 @@ void fl_BlockLayout::updateOffsets(PT_DocPosition posEmbedded, UT_uint32 iEmbedd
 	}
 #endif
 #endif
-	setNeedsReformat();
+	setNeedsReformat(this);
 	updateEnclosingBlockIfNeeded();
 }
 
@@ -1980,7 +1980,7 @@ bool fl_BlockLayout::setFramesOnPage(fp_Line * pLastLine)
 			//
 			fp_Page * pPage = pCon->getPage();
 			UT_sint32 Xref = pCon->getX();
-			if(pPage == NULL)
+			if(pPage == NULL || pCon->getY() <= -9999999)
 			{
 				return false;
 			}
@@ -3051,7 +3051,7 @@ void fl_BlockLayout::format()
 	{
 		if(getSectionLayout()->getContainerType() != FL_CONTAINER_DOCSECTION)
 		{
-			getSectionLayout()->setNeedsReformat();
+			getSectionLayout()->setNeedsReformat(this);
 			if(getSectionLayout()->getContainerType() == FL_CONTAINER_CELL)
 			{
 				//
@@ -3337,12 +3337,12 @@ fp_Container* fl_BlockLayout::getNewContainer(fp_Container * /* pCon*/)
 	return static_cast<fp_Container *>(pLine);
 }
 
-void fl_BlockLayout::setNeedsReformat(UT_uint32 offset)
+void fl_BlockLayout::setNeedsReformat(fl_ContainerLayout * pCL,UT_uint32 offset)
 {
 	// _lesser_ value is the one that matter here, Tomas, Nov 28, 2003
 	if(m_iNeedsReformat < 0 || static_cast<UT_sint32>(offset) < m_iNeedsReformat)
 		m_iNeedsReformat = offset;
-  	getSectionLayout()->setNeedsReformat();
+  	getSectionLayout()->setNeedsReformat(this);
 	setNeedsRedraw();
 }
 
@@ -4400,7 +4400,7 @@ bool fl_BlockLayout::doclistener_populateSpan(const PX_ChangeRecord_Span * pcrs,
 	// while populating (for example storing sdh in a static member on populateStrux)
 	// but calling setNeedsReformat() costs us little and will do OK for now.
 	// Tomas, Apr 23, 2004
-	setNeedsReformat(blockOffset);
+	setNeedsReformat(this,blockOffset);
 	updateEnclosingBlockIfNeeded();
 	if(isHidden() == FP_HIDDEN_FOLDED)
 	{
@@ -6207,7 +6207,12 @@ fl_BlockLayout::doclistener_deleteStrux(const PX_ChangeRecord_Strux* pcrx)
 	{
 		getDocSectionLayout()->setNeedsSectionBreak(true,NULL);
 	}
-	setNeedsReformat();
+	if(getPrev())
+	{
+		getPrev()->setNeedsReformat(this);
+		getPrev()->setNeedsRedraw();
+	}
+	setNeedsReformat(this);
 	// Erase the old version.  Or this what I added when adding the
 	// EOP stuff. Only, I don't remember why I did it, and it's wrong:
 	// the strux is deleted only after its content has been deleted -
@@ -6453,7 +6458,7 @@ fl_BlockLayout::doclistener_deleteStrux(const PX_ChangeRecord_Strux* pcrx)
 		// if necessary
 		m_pSpellSquiggles->join(offset, pPrevBL);
 		m_pGrammarSquiggles->join(offset, pPrevBL);
-		pPrevBL->setNeedsReformat();
+		pPrevBL->setNeedsReformat(pPrevBL);
 		//
 		// Update if it's TOC entry by removing then restoring
 		//
@@ -6502,7 +6507,10 @@ bool fl_BlockLayout::doclistener_changeStrux(const PX_ChangeRecord_StruxChange *
 	{
 		clearScreen(m_pLayout->getGraphics());
 	}
-
+	if(getPrev())
+	{
+		getPrev()->setNeedsReformat(getPrev());
+	}
 	collapse();
 	setAttrPropIndex(pcrxc->getIndexAP());
 	xxx_UT_DEBUGMSG(("SEVIOR: In changeStrux in fl_BlockLayout %x \n",this));
@@ -6564,7 +6572,7 @@ bool fl_BlockLayout::doclistener_changeStrux(const PX_ChangeRecord_StruxChange *
 	if(bWasOnScreen)
 		format();
 	else
-		setNeedsReformat();
+		setNeedsReformat(this);
 #endif
 	updateEnclosingBlockIfNeeded();
 	//
@@ -6603,7 +6611,7 @@ bool fl_BlockLayout::doclistener_insertFirstBlock(const PX_ChangeRecord_Strux * 
 	{
 		pfnBindHandles(sdh,lid,sfhNew);
 	}
-	setNeedsReformat();
+	setNeedsReformat(this);
 	updateEnclosingBlockIfNeeded();
 
 	FV_View* pView = getView();
@@ -6825,7 +6833,7 @@ bool fl_BlockLayout::doclistener_insertBlock(const PX_ChangeRecord_Strux * pcrx,
 	{
 		_insertEndOfParagraphRun();
 	}
-	setNeedsReformat();
+	setNeedsReformat(this);
 	pNewBL->collapse(); // remove all previous lines
 	// Throw all the runs onto one jumbo line in the new block
 	pNewBL->_stuffAllRunsOnALine();
@@ -6833,7 +6841,7 @@ bool fl_BlockLayout::doclistener_insertBlock(const PX_ChangeRecord_Strux * pcrx,
 		pNewBL->coalesceRuns();
 	else
 		pNewBL->_insertEndOfParagraphRun();
-	pNewBL->setNeedsReformat();
+	pNewBL->setNeedsReformat(pNewBL);
 	updateEnclosingBlockIfNeeded();
 
 	// Split squiggles between this and the new block

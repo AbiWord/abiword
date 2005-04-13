@@ -24,9 +24,11 @@
 #include "ut_types.h"
 #include "pt_Types.h"
 #include "pd_Document.h"
+#include "pt_PieceTable.h"
 
 class ABI_EXPORT PX_ChangeRecord
 {
+  friend class pt_PieceTable;
 public:
 	typedef enum _PXType { 
 		PXT__FIRST__=-1,
@@ -73,7 +75,8 @@ public:
 
 	virtual PX_ChangeRecord* reverse(void) const;
 	PXType					getRevType(void) const;
-
+	UT_sint32               getCRNumber(void)
+	  { return m_iCRNumber;}
 	UT_uint32               getXID() const {return m_iXID;}
 #ifdef PT_TEST
 	virtual void			__dump(FILE * fp) const;
@@ -92,5 +95,6 @@ protected:
 
 	// the XID attribute of the frag
 	UT_uint32               m_iXID;
+	UT_sint32               m_iCRNumber;
 };
 #endif /* PX_CHANGERECORD_H */

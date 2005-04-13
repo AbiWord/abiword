@@ -8703,7 +8703,7 @@ bool IE_Imp_RTF::HandleAbiTable(void)
 //
 // insert a block to terminate the text before this if needed,
 //
-		if(getDoc()->isBlockAtPos(m_dposPaste) || getDoc()->isTableAtPos(m_dposPaste) || getDoc()->isEndFrameAtPos(m_dposPaste) ||getDoc()->isFrameAtPos(m_dposPaste) || getDoc()->isHdrFtrAtPos(m_dposPaste))
+		if(getDoc()->isBlockAtPos(m_dposPaste) || getDoc()->isTableAtPos(m_dposPaste) || getDoc()->isEndFrameAtPos(m_dposPaste) ||getDoc()->isFrameAtPos(m_dposPaste) || getDoc()->isHdrFtrAtPos(m_dposPaste) || getDoc()->isCellAtPos(m_dposPaste))
 		{
 			FlushStoredChars(false);
 		}

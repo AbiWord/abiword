@@ -52,7 +52,8 @@ PX_ChangeRecord::PX_ChangeRecord(PXType type,
 	m_position(position),
 	m_indexAP(indexNewAP),
 	m_persistant(true),
-	m_iXID(iXID)
+	m_iXID(iXID),
+	m_iCRNumber(0)
 {
 }
 

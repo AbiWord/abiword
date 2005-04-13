@@ -241,6 +241,22 @@ void fl_EmbedLayout::redrawUpdate(void)
 	}
 }
 
+void fl_EmbedLayout::setNeedsReformat(fl_ContainerLayout * pCL, UT_uint32 offset)
+{
+  m_bNeedsReformat = true;
+  if(getSectionLayout())
+    getSectionLayout()->setNeedsReformat(this);
+}
+
+void fl_EmbedLayout::updateLayout(bool bDoAll)
+{
+  fl_ContainerLayout * pBL = getFirstLayout();
+  while(pBL)
+  {
+    pBL->format();
+    pBL = pBL->getNext();
+  }
+}
 
 bool fl_EmbedLayout::doclistener_deleteStrux(const PX_ChangeRecord_Strux * pcrx)
 {
@@ -248,6 +264,10 @@ bool fl_EmbedLayout::doclistener_deleteStrux(const PX_ChangeRecord_Strux * pcrx)
 //
 // Remove all remaining structures
 //
+	if(getPrev())
+	{
+	  getPrev()->setNeedsReformat(getPrev());
+	}
 	collapse();
 //	UT_ASSERT(pcrx->getStruxType()== PTX_SectionFootnote);
 //

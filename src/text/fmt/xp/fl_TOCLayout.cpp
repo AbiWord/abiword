@@ -1245,7 +1245,7 @@ void fl_TOCLayout::markAllRunsDirty(void)
 	}
 }
 
-void fl_TOCLayout::updateLayout(void)
+void fl_TOCLayout::updateLayout(bool bDoAll)
 {
 	if(needsReformat())
 	{

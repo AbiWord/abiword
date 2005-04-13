@@ -568,7 +568,6 @@ void fl_TableLayout::format(void)
 		m_iHeightChanged = 0;
 		m_pNewHeightCell = NULL;
 	}
-
 	if((!bSim && isDirty()) || bRebuild)
 	{
 		while (pCell)
@@ -668,8 +667,8 @@ void fl_TableLayout::format(void)
 	{
 		m_iHeightChanged = 0;
 		m_pNewHeightCell = NULL;
-		m_bNeedsReformat = false;
 		m_bIsDirty = false;
+		m_bNeedsReformat = false;
 	}
 }
 
@@ -690,7 +689,7 @@ void fl_TableLayout::markAllRunsDirty(void)
 	}
 }
 
-void fl_TableLayout::updateLayout(void)
+void fl_TableLayout::updateLayout(bool bDoAll)
 {			
 	xxx_UT_DEBUGMSG(("updateTableLayout  \n"));
 	if(getDocument()->isDontImmediateLayout())
@@ -705,7 +704,7 @@ void fl_TableLayout::updateLayout(void)
 	{
 		if (pBL->needsReformat())
 		{
-			pBL->updateLayout();
+			pBL->updateLayout(false);
 			bNeedsFormat = true;
 		}
 
@@ -1013,7 +1012,7 @@ bool fl_TableLayout::bl_doclistener_insertEndTable(fl_ContainerLayout*,
 	{
 		pView->setPoint(pView->getPoint() +  fl_BLOCK_STRUX_OFFSET);
 	}
-	setNeedsReformat(0);
+	setNeedsReformat(this,0);
 	m_bIsEndTableIn = true;
 	//
 	// Look to see if we're in a HfrFtr section
@@ -1531,7 +1530,7 @@ void fl_TableLayout::collapse(void)
 	}
 	setFirstContainer(NULL);
 	setLastContainer(NULL);
-	setNeedsReformat();
+	setNeedsReformat(this);
 }
 
 bool fl_TableLayout::doclistener_deleteStrux(const PX_ChangeRecord_Strux * pcrx)
@@ -2028,7 +2027,7 @@ void fl_CellLayout::format(void)
 		xxx_UT_DEBUGMSG(("Formatting Block in Cell %x \n",pBL));
 		if(iOldHeight <= 0)
 		{
-			pBL->setNeedsReformat(0);
+			pBL->setNeedsReformat(pBL,0);
 		}
 		pBL->format();
 		UT_sint32 count = 0;
@@ -2099,7 +2098,7 @@ bool fl_CellLayout::isLayedOut(void) const
 	return true;
 }
 
-void fl_CellLayout::updateLayout(void)
+void fl_CellLayout::updateLayout(bool bDoAll)
 {
 	fl_ContainerLayout*	pBL = getFirstLayout();
 	bool bNeedsFormat = false;
@@ -2564,7 +2563,7 @@ void fl_CellLayout::collapse(void)
 	}
 	setFirstContainer(NULL);
 	setLastContainer(NULL);
-	setNeedsReformat();
+	setNeedsReformat(this);
 }
 
 bool fl_CellLayout::doclistener_deleteStrux(const PX_ChangeRecord_Strux * pcrx)
