@@ -972,10 +972,34 @@ struct SCatRange {
 };
 
 /* 
- * This table catagorises all known Unicode characters.
+ * This table categorises all known Unicode characters.
  * The entries are inclusive ranges which must be in numerical order.
  *
  * Defaults should be provided by access functions for unknown characters.
+ *
+ * Description of categories:
+ *
+ * NONATOMIC    - The character does not form an atomic (i.e. non-breakable)
+ *                unit. For example, English characters are of this type, 
+ *                since several are needed to make a word.
+ *
+ * ATOMIC       - The character does form an atomic unit. For example, Chinese
+ *                characters are of this type; although several characters
+ *                combine to make a word, it is legal to break between any two
+ *                Chinese characters.
+ *
+ * PUNCNOEND    - This is punctuation which must not be allow to end a line
+ *                (unless forced by PUNCFORCE); for example, an open bracket.
+ *                In both English and Chinese you cannot break before the
+ *                '(' in "(word)".
+ *
+ * PUNCNOSTART  - Like PUNCNOSTART, but for punctuation which cannot start a
+ *                line, e.g: ) , :
+ *
+ * PUNCFORCE    - Punctuation which it is always possible to break before and
+ *                after regardless of what the surrounding characters are. This
+ *                is for punctuation that acts like a space.
+ * 
  */
 struct SCatRange UniCharCats[] = {
 	{0x20, 0x20, PUNCFORCE},   // Space
@@ -1040,13 +1064,13 @@ struct SCatRange UniCharCats[] = {
 	{0x3014, 0x3014, PUNCNOEND},     //  CJK [
 	{0x3015, 0x3015, PUNCNOSTART},   //  CJK ]
 	{0x3016, 0x3016, PUNCNOEND},     //  CJK [(
-	{0x3015, 0x3017, PUNCNOSTART},   //  CJK )]
+	{0x3017, 0x3017, PUNCNOSTART},   //  CJK )]
 	{0x3018, 0x3018, PUNCNOEND},     //  CJK [[
 	{0x3019, 0x3019, PUNCNOSTART},   //  CJK ]]
 	{0x301a, 0x301a, PUNCNOEND},     //  CJK ]|
+	{0x301b, 0x301b, PUNCNOSTART},   //  CJK |[
 	{0x301d, 0x301d, PUNCNOEND},     //  CJK ``
 	{0x301e, 0x301e, PUNCNOSTART},   //  CJK ''
-	{0x301b, 0x301b, PUNCNOSTART},   //  CJK |[
 
 	/* Hangul Compatibility Jamo */
 	{0x3130, 0x318f, NONATOMIC},
@@ -1059,6 +1083,9 @@ struct SCatRange UniCharCats[] = {
 
 	/* Hangul Syllabuls */
 	{0xac00, 0xd7af, NONATOMIC},
+	
+	/* Another CJK block */
+	{0xf900,  0xfaff, ATOMIC},       // CJK Compatibility Ideographs
 
 	/* Halfwidth and Fullwidth Forms. */
 	{0xff01, 0xff01, PUNCNOSTART},   // !
@@ -1098,7 +1125,6 @@ struct SCatRange UniCharCats[] = {
 
     /* More CJK blocks. */
 	
-	{0xf900,  0xfaff, ATOMIC},       // CJK Compatibility Ideographs
 	{0x20000, 0x2a6df, ATOMIC},      // CJK Unified Ideographs Ext. B
 	{0x2f800, 0x2fa1f, ATOMIC},      // CJK Compatibility Ideographs Sup.
 	{0,0,ATOMIC}
@@ -1108,12 +1134,14 @@ struct SCatRange UniCharCats[] = {
  * Boolean rules for whether a line break is allowed between all possible
  * combinations of two categories.
  */
-static bool blineBreakRules[] = {false, true,  false, false, true,
-                                 true,  true,  true,  false, true,
-                                 false, false, false, false, true,
-                                 true,  true,  true,  false, true,
-                                 true,  true,  true,  true,  true};
-
+static bool blineBreakRules[] = {
+	// 2nd char:   NONATOMIC, ATOMIC, PUNCNOEND, PUNCNOSTART, PUNCFORCE
+/* 1st char    */
+/* NONATOMIC   */  false,     true,   false,     false,       true,
+/* ATOMIC      */  true,      true,   true,      false,       true,
+/* PUNCNOEND   */  false,     false,  false,     false,       true,
+/* PUNCNOSTART */  true,      true,   true,      false,       true,
+/* PUNCFORCE   */  true,      true,   true,      true,        true}; 
 
 /* ************************* here end tables *************************/
 
