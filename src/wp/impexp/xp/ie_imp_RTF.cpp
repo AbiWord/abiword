@@ -1013,7 +1013,7 @@ RTFFontTableItem::RTFFontTableItem(FontFamilyEnum fontFamily, int charSet, int c
 			m_szEncoding = XAP_EncodingManager::get_instance()->charsetFromCodepage(m_codepage);
 		}
 	}
-	else if (m_charSet)
+	else if (m_charSet != -1)  // -1 indicated "not defined".
 	{
 		switch (m_charSet)
 		{
@@ -7794,7 +7794,7 @@ bool IE_Imp_RTF::ReadOneFontFromTable(bool bNested)
 	RTFFontTableItem::FontFamilyEnum fontFamily = RTFFontTableItem::ffNone;
 	RTFFontTableItem::FontPitch pitch = RTFFontTableItem::fpDefault;
 	UT_uint16 fontIndex = 0;
-	int charSet = 0;
+	int charSet = -1;   // Set charSet to -1 to indicate "none defined".
 	int codepage = 0;
 	unsigned char panose[10];
 	memset(panose, 0, sizeof(unsigned char));
@@ -7911,6 +7911,11 @@ bool IE_Imp_RTF::ReadOneFontFromTable(bool bNested)
 					}
 					panose[i] = ch;
 				}
+			}
+			// Deal with fcharset keyword 
+			if (strcmp(reinterpret_cast<char*>(&keyword[0]),"fcharset") == 0)
+			{
+				charSet = parameter;
 			}
 			break;
 		default:
