@@ -61,6 +61,12 @@
 
 #define _WIN32KEY_DEBUG 1
 
+// I really hate doing this, but this constant is only defined with _WIN32_WINNT >=
+// 0x0501, i.e., winXP, and I do want to enable the lot
+#ifndef WM_UNICHAR
+#define WM_UNICHAR 0x109
+#endif
+
 static EV_EditBits s_mapVirtualKeyCodeToNVK(WPARAM nVirtKey);
 
 /*****************************************************************/
@@ -241,7 +247,7 @@ bool ev_Win32Keyboard::onIMEChar(AV_View * pView,
 
 void ev_Win32Keyboard::_emitChar(AV_View * pView,
 								 HWND hWnd, UINT iMsg, WPARAM nVirtKey, LPARAM keyData,
-								 WCHAR b, EV_EditModifierState ems)
+								 UT_uint32 b, EV_EditModifierState ems)
 {
 	// do the dirty work of pumping this character thru the state machine.
 
@@ -255,7 +261,14 @@ void ev_Win32Keyboard::_emitChar(AV_View * pView,
 		char *Out = (char *)&charData;
 
 		// 2 bytes for Unicode and MBCS
-		len_in = (m_bIsUnicodeInput || (nVirtKey & 0xff00)) ? 2 : 1;
+		// 4 bytes for UNICHAR msg
+		if(iMsg == WM_UNICHAR)
+			len_in = 4;
+		else if(m_bIsUnicodeInput || (nVirtKey & 0xff00))
+			len_in = 2;
+		else
+			len_in = 1;
+		
 		len_out = sizeof(charData);
 
 		if ((ret = UT_iconv( m_iconv, &In, &len_in, &Out, &len_out )) == -1)
@@ -327,6 +340,50 @@ bool ev_Win32Keyboard::onChar(AV_View * pView,
 	
 	// Process the key
 	_emitChar(pView,hWnd,iMsg,nVirtKey,keyData,nVirtKey,0);
+	return true;
+
+}
+
+/*	
+
+	Processes WM_UNICHAR messages
+	The nVirtKey already contains utf-32 char, so we do not need to do any iconv translation
+*/
+bool ev_Win32Keyboard::onUniChar(AV_View * pView,
+								 HWND hWnd, UINT iMsg, WPARAM nVirtKey, LPARAM keyData)
+{
+	// as WM_UNICHAR is not proceeded by WM_KEYDOWN message, we need to reset this flag here.
+	m_bWasAnAbiCommand = false;
+	
+	EV_EditModifierState ems = _getModifierState(); 		
+
+	EV_EditMethod * pEM;
+	EV_EditEventMapperResult result = m_pEEM->Keystroke(EV_EKP_PRESS|ems|nVirtKey,&pEM);
+
+	switch (result)
+	{
+		case EV_EEMR_BOGUS_START:
+			//UT_DEBUGMSG(("    Unbound StartChar: %c\n",b));
+			break;
+
+		case EV_EEMR_BOGUS_CONT:
+			//UT_DEBUGMSG(("    Unbound ContChar: %c\n",b));
+			break;
+
+		case EV_EEMR_COMPLETE:
+			UT_ASSERT(pEM);
+			invokeKeyboardMethod(pView,pEM,(UT_UCS4Char*)&nVirtKey,1);
+			break;
+
+		case EV_EEMR_INCOMPLETE:
+			//MSG(keyData,(("    Non-Terminal-Char: %c\n",b)));
+			break;
+
+		default:
+			UT_ASSERT(UT_SHOULD_NOT_HAPPEN);
+			break;
+	}
+
 	return true;
 
 }

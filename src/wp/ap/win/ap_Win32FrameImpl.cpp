@@ -45,6 +45,10 @@
 #define WM_UNICHAR 0x109
 #endif
 
+#ifndef UNICODE_NOCHAR
+#define UNICODE_NOCHAR 0xFFFF
+#endif
+
 #define GWL(hwnd)		reinterpret_cast<AP_Win32Frame *>(GetWindowLong((hwnd), GWL_USERDATA))
 #define SWL(hwnd, f)	reinterpret_cast<AP_Win32Frame *>(SetWindowLong((hwnd), GWL_USERDATA,(LONG)(f)))
 
@@ -1221,16 +1225,21 @@ LRESULT CALLBACK AP_Win32FrameImpl::_DocumentWndProc(HWND hwnd, UINT iMsg, WPARA
 			pWin32Keyboard->onChar(pView,hwnd,iMsg,wParam,lParam);		
 			return DefWindowProc(hwnd,iMsg,wParam,lParam);
 		}
-#if 0
+
 		case WM_UNICHAR:
 		{
 			UT_DEBUGMSG(("WM_CHAR %d  - %d\n",wParam, lParam));
+
+			// UNICODE_NOCHAR is sent to test if we can handle this message
+			if(wParam == UNICODE_NOCHAR)
+				return 1;
+			
 			ev_Win32Keyboard *pWin32Keyboard = static_cast<ev_Win32Keyboard *>(fImpl->m_pKeyboard);
 	    
 			pWin32Keyboard->onUniChar(pView,hwnd,iMsg,wParam,lParam);		
 			return DefWindowProc(hwnd,iMsg,wParam,lParam);
 		}
-#endif
+
 		case WM_IME_CHAR:
 		{
 			ev_Win32Keyboard *pWin32Keyboard = static_cast<ev_Win32Keyboard *>(fImpl->m_pKeyboard);

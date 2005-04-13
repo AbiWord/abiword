@@ -44,11 +44,14 @@ public:
 	bool onChar(AV_View * pView,
 				   HWND hWnd, UINT iMsg, WPARAM nVirtKey, LPARAM keyData);
 
+	bool onUniChar(AV_View * pView,
+				   HWND hWnd, UINT iMsg, WPARAM nVirtKey, LPARAM keyData);
+	
 protected:
 	EV_EditBits			_getModifierState(void);	
 	void				_emitChar(AV_View * pView,
 								  HWND hWnd, UINT iMsg, WPARAM nVirtKey, LPARAM keyData,
-								  WCHAR b, EV_EditModifierState ems);
+								  UT_uint32 b, EV_EditModifierState ems);
 	int					_scanCodeToChars(UINT nVirtKey, UINT wScanCode,
 										 CONST PBYTE lpKeyState, LPWSTR pwszBuff, int cchBuff);
 
