@@ -461,6 +461,15 @@ void  fp_FrameContainer::drawBoundaries(dg_DrawArgs * pDA)
  */
 void  fp_FrameContainer::drawHandles(dg_DrawArgs * pDA)
 {
+        if(getView() == NULL)
+	{
+	     getSectionLayout()->format();
+	     getSectionLayout()->setNeedsReformat(getSectionLayout());
+	}
+        if(getView() == NULL)
+	{
+	     return;
+	}
 	UT_sint32 iXlow = pDA->xoff - m_iXpad;
 	UT_sint32 iYlow = pDA->yoff - m_iYpad;
 
@@ -477,7 +486,12 @@ void fp_FrameContainer::draw(dg_DrawArgs* pDA)
 	xxx_UT_DEBUGMSG(("FrameContainer %x called, page %x \n",this,getPage()));
 	if(getPage() == NULL)
 	{
+	     getSectionLayout()->format();
+	     getSectionLayout()->setNeedsReformat(getSectionLayout());
+	     if(getPage() == NULL)
+	     {
 		return;
+	     }
 	}
 	if(getView())
 	{

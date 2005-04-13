@@ -735,6 +735,11 @@ void fl_FrameLayout::format(void)
 	}
 }
 
+void fl_FrameLayout::setNeedsReformat(fl_ContainerLayout * pCL,UT_uint32 offset)
+{
+        m_bNeedsReformat = true;
+        getDocSectionLayout()->setNeedsReformat(this);
+}
 /*!
     this function is only to be called by fl_ContainerLayout::lookupProperties()
     all other code must call lookupProperties() instead

@@ -90,6 +90,23 @@ void fp_VerticalContainer::setWidth(UT_sint32 iWidth)
 }
 
 /*!
+ * return a pointer to the current view.
+ */
+FV_View * fp_VerticalContainer::getView(void) const
+{
+  fp_Page * pPage = getPage();
+  if(pPage == NULL)
+  {
+    return NULL;
+  }
+  FL_DocLayout * pDL = pPage->getDocLayout();
+  if(pDL == NULL)
+  {
+    return NULL;
+  }
+  return pDL->getView();
+}
+/*!
  Set height
  \param iHeight Height of container
  */

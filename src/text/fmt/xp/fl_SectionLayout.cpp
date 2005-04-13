@@ -1752,35 +1752,7 @@ void fl_DocSectionLayout::updateLayout(bool bDoFull)
 	bool bHidden;
 	bDoFull = true;
 	xxx_UT_DEBUGMSG(("Doing Update layout \n"));
-	if(bDoFull)
-	{
-		m_vecFormatLayout.clear();
-	        while (pBL)
-		{
-		        eHidden  = pBL->isHidden();
-			bHidden = ((eHidden == FP_HIDDEN_TEXT && !bShowHidden)
-				   || eHidden == FP_HIDDEN_REVISION
-				   || eHidden == FP_HIDDEN_REVISION_AND_TEXT);
-
-			if(!bHidden)
-			{
-			     if (pBL->needsReformat())
-			     {
-			          if(!(m_pLayout->isLayoutFilling() && pBL->getContainerType() == FL_CONTAINER_TOC))
-				  {
-				       pBL->format();
-				  }
-			     }
-			     if (pBL->getContainerType() != FL_CONTAINER_BLOCK && !getDocument()->isDontImmediateLayout())
-			     {
-			          pBL->updateLayout(false);
-			     }
-			}
-
-			pBL = pBL->getNext();
-		}
-	}
-	else if (!bDoFull || (m_vecFormatLayout.getItemCount() > 0))
+	if (!bDoFull || (m_vecFormatLayout.getItemCount() > 0))
 	{
 	        UT_sint32 i =0;
 		UT_sint32 j = 0;
@@ -1813,6 +1785,34 @@ void fl_DocSectionLayout::updateLayout(bool bDoFull)
 			
 		}
 	}
+	else if(bDoFull)
+	{
+	        while (pBL)
+		{
+		        eHidden  = pBL->isHidden();
+			bHidden = ((eHidden == FP_HIDDEN_TEXT && !bShowHidden)
+				   || eHidden == FP_HIDDEN_REVISION
+				   || eHidden == FP_HIDDEN_REVISION_AND_TEXT);
+
+			if(!bHidden)
+			{
+			     if (pBL->needsReformat())
+			     {
+			          if(!(m_pLayout->isLayoutFilling() && pBL->getContainerType() == FL_CONTAINER_TOC))
+				  {
+				       pBL->format();
+				  }
+			     }
+			     if (pBL->getContainerType() != FL_CONTAINER_BLOCK && !getDocument()->isDontImmediateLayout())
+			     {
+			          pBL->updateLayout(false);
+			     }
+			}
+
+			pBL = pBL->getNext();
+		}
+	}
+	m_vecFormatLayout.clear();
 	if(needsSectionBreak() && !getDocument()->isDontImmediateLayout() )
 	{
 		m_ColumnBreaker.breakSection(this);

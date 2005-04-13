@@ -150,8 +150,7 @@ public:
 	virtual fp_Container * getPrevContainerInSection(void) const
 		{return NULL;}
 	bool                validate(void);
-	FV_View*			getView(void) const
-		{ return getPage()->getDocLayout()->getView(); }
+	FV_View*			getView(void) const;
 	UT_sint32           getNumWrapped(void) const
 		{ return m_vecWrappedLines.getItemCount();}
 	void                addWrappedLine(fp_Line * pLine)

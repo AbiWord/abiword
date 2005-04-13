@@ -106,6 +106,7 @@ public:
 	fl_DocSectionLayout*	 getDocSectionLayout(void) const { return m_pDocSL; }
 	PT_DocPosition           getDocPosition(void);
 	UT_uint32                getLength(void);
+	virtual void             setNeedsReformat(fl_ContainerLayout * pCL, UT_uint32 offset = 0);
 	void                     setContainerProperties(void);
 	UT_sint32                getBoundingSpace(void) const;
 	FL_FrameType             getFrameType(void) const 
