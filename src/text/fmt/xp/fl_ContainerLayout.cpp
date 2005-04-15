@@ -871,7 +871,11 @@ void fl_ContainerLayout::remove(fl_ContainerLayout * pL)
 			m_pFirstL = NULL;
 		}
 	}
-
+	if(getContainerType() != FL_CONTAINER_BLOCK)
+	{
+	  fl_SectionLayout * pSL = static_cast<fl_SectionLayout *>(this);
+	  pSL->removeFromUpdate(pL);
+	}
 	pL->setNext(NULL);
 	pL->setPrev(NULL);
 	pL->setContainingLayout(NULL);

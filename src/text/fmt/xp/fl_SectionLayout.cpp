@@ -140,6 +140,15 @@ void fl_SectionLayout::_purgeLayout()
 	return;
 }
 
+void fl_SectionLayout::removeFromUpdate(fl_ContainerLayout * pCL)
+{
+  while((m_vecFormatLayout.getItemCount() > 0) && (m_vecFormatLayout.findItem(pCL) >= 0))
+  {
+    UT_sint32 i = m_vecFormatLayout.findItem(pCL);
+    m_vecFormatLayout.deleteNthItem(i);
+  }
+}
+
 void fl_SectionLayout::setNeedsReformat(fl_ContainerLayout * pCL, UT_uint32 /*offset*/)
 {
         m_vecFormatLayout.addItem(pCL);
@@ -3776,6 +3785,7 @@ void fl_HdrFtrSectionLayout::updateLayout(bool bDoFull)
 		bredraw = true;
 		m_bNeedsReformat = false;
 	}
+	m_vecFormatLayout.clear();
 	while (pBL)
 	{
 		if (pBL->needsReformat())
@@ -5008,6 +5018,7 @@ void fl_HdrFtrShadow::updateLayout(bool bDoAll)
 	bool bredraw = false;
 	xxx_UT_DEBUGMSG(("Doing Update layout in shadow %x \n",this));
 	fl_ContainerLayout*	pBL = getFirstLayout();
+	m_vecFormatLayout.clear();
 	while (pBL)
 	{
 		if (pBL->needsReformat())

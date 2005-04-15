@@ -700,6 +700,7 @@ void fl_TableLayout::updateLayout(bool bDoAll)
 	xxx_UT_DEBUGMSG(("updateTableLayout Doing updates  \n"));
 	fl_ContainerLayout*	pBL = getFirstLayout();
 	bool bNeedsFormat = false;
+	m_vecFormatLayout.clear();
 	while (pBL)
 	{
 		if (pBL->needsReformat())
@@ -2103,6 +2104,7 @@ void fl_CellLayout::updateLayout(bool bDoAll)
 	fl_ContainerLayout*	pBL = getFirstLayout();
 	bool bNeedsFormat = false;
 	xxx_UT_DEBUGMSG(("updateCellLayout \n"));
+	m_vecFormatLayout.clear();
 	while (pBL)
 	{
 		if (pBL->needsReformat())

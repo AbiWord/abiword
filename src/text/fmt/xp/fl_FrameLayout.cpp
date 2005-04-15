@@ -402,6 +402,7 @@ void fl_FrameLayout::updateLayout(bool bDoAll)
 	{
 		format();
 	}
+	m_vecFormatLayout.clear();
 	fl_ContainerLayout*	pBL = getFirstLayout();
 	while (pBL)
 	{
@@ -738,7 +739,7 @@ void fl_FrameLayout::format(void)
 void fl_FrameLayout::setNeedsReformat(fl_ContainerLayout * pCL,UT_uint32 offset)
 {
         m_bNeedsReformat = true;
-        getDocSectionLayout()->setNeedsReformat(this);
+        myContainingLayout()->setNeedsReformat(this);
 }
 /*!
     this function is only to be called by fl_ContainerLayout::lookupProperties()

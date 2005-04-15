@@ -1251,6 +1251,7 @@ void fl_TOCLayout::updateLayout(bool bDoAll)
 	{
 		format();
 	}
+	m_vecFormatLayout.clear();
 	fl_ContainerLayout*	pBL = getFirstLayout();
 	while (pBL)
 	{
