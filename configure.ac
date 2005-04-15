@@ -494,6 +494,8 @@ AC_CONFIG_FILES([GNUmakefile
 ])
 AC_OUTPUT
 
+chmod a+x src/wp/test/unix/testwrap.sh
+
 echo " "
 
 case "$PLATFORM" in
