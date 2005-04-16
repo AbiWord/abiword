@@ -242,7 +242,7 @@ bool IE_Imp_RTF::InsertImage (const UT_ByteBuf * buf, const char * image_name,
 	  
 		if (resize) 
 		{
-			UT_LocaleTransactor(LC_NUMERIC, "C");
+			UT_LocaleTransactor t(LC_NUMERIC, "C");
 			UT_DEBUGMSG (("resizing...\n"));
 			UT_String_sprintf(propBuffer, "width:%fin; height:%fin; cropt:%fin; cropb:%fin; cropl:%fin; cropr:%fin",
 							  wInch, hInch, cropt, cropb, cropl, cropr);
@@ -360,7 +360,7 @@ bool IE_Imp_RTF::InsertImage (const UT_ByteBuf * buf, const char * image_name,
 
 		if (resize)
 		{
-			UT_LocaleTransactor(LC_NUMERIC, "C");
+			UT_LocaleTransactor t(LC_NUMERIC, "C");
 			UT_DEBUGMSG (("resizing...\n"));
 			UT_String_sprintf(propBuffer, "width:%fin; height:%fin",
 							  wInch, hInch);
@@ -1103,7 +1103,7 @@ void IE_Imp_RTF::addFrame(RTFProps_FrameProps & frame)
 	UT_UTF8String_setProperty(sPropString,sP,sV); // fixme make other types
 
 	{
-		UT_LocaleTransactor(LC_NUMERIC, "C");
+		UT_LocaleTransactor t(LC_NUMERIC, "C");
 
 		//
 		// Shift positions a little for pasted frames so they don't

@@ -2542,7 +2542,7 @@ void s_HTML_Listener::_openSpan (PT_AttrPropIndex api)
 			char buf[16];
 
 			{
-				UT_LocaleTransactor(LC_NUMERIC, "C");
+				UT_LocaleTransactor t(LC_NUMERIC, "C");
 				sprintf (buf, "%g", UT_convertToPoints (szP_FontSize));
 			}
 
@@ -3217,7 +3217,7 @@ void s_HTML_Listener::_openTable (PT_AttrPropIndex api)
 			double percent = 100.0*(*pDWidth/totWidth);
 
 			{
-				UT_LocaleTransactor(LC_NUMERIC, "C");
+				UT_LocaleTransactor t(LC_NUMERIC, "C");
 				/*m_utf8_1  = "colgroup";   // methinks zat colgaroup ist incoddect hier, this can be deleted when well tested below
 
 				if(get_Abs_Units())
@@ -3263,7 +3263,7 @@ void s_HTML_Listener::_openTable (PT_AttrPropIndex api)
 		tagOpen (TT_TABLE, m_utf8_1);
 
 		{
-			UT_LocaleTransactor(LC_NUMERIC, "C");
+			UT_LocaleTransactor t(LC_NUMERIC, "C");
 			// colgroup correct here in a sense
 			// TODO: distinction might be made for AbsUnits and sans width for default
 			m_utf8_1  = "colgroup width=\"";
