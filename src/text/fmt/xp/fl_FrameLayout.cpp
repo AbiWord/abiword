@@ -398,6 +398,7 @@ void fl_FrameLayout::markAllRunsDirty(void)
 
 void fl_FrameLayout::updateLayout(bool bDoAll)
 {
+        xxx_UT_DEBUGMSG(("UpdsateLayout in in framelayout \n"));
 	if(needsReformat())
 	{
 		format();
@@ -714,7 +715,7 @@ void fl_FrameLayout::format(void)
 		  bOnPage = pBL->setFramesOnPage(NULL);
 		  if(!bOnPage)
 		  {
-		    pBL->setNeedsReformat(this);
+		    setNeedsReformat(this);
 		  }
 		}
 	}
@@ -722,7 +723,7 @@ void fl_FrameLayout::format(void)
 	m_bNeedsReformat = bOnPage;
 	if(!bOnPage)
 	{
-	  getSectionLayout()->setNeedsReformat(this);
+	  setNeedsReformat(this);
 	}
 	if(!bOnPage)
 	{

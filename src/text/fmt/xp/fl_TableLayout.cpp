@@ -691,10 +691,10 @@ void fl_TableLayout::markAllRunsDirty(void)
 
 void fl_TableLayout::updateLayout(bool bDoAll)
 {			
-	xxx_UT_DEBUGMSG(("updateTableLayout  \n"));
+	xxx_UT_DEBUGMSG(("updateTableLayout  in TableLayout\n"));
 	if(getDocument()->isDontImmediateLayout())
 	{
-		xxx_UT_DEBUGMSG(("updateTableLayout not allowed updates  \n"));
+		UT_DEBUGMSG(("updateTableLayout not allowed updates  \n"));
 		return;
 	}
 	xxx_UT_DEBUGMSG(("updateTableLayout Doing updates  \n"));
@@ -2013,6 +2013,7 @@ void fl_CellLayout::format(void)
 	UT_sint32 iOldHeight = getFirstContainer()->getHeight();
 	fl_ContainerLayout * pPrevCL = myContainingLayout()->getPrev();
 	fp_Page * pPrevP = NULL;
+	m_vecFormatLayout.clear(); // Later we'll use this.
 	if(pPrevCL)
 	{
 		fp_Container * pPrevCon = pPrevCL->getFirstContainer();
@@ -2057,7 +2058,7 @@ void fl_CellLayout::format(void)
 			getDocSectionLayout()->setNeedsSectionBreak(true,pPrevP);
 		}
 	}
-	m_bNeedsReformat = false;
+	m_bNeedsReformat = (m_vecFormatLayout.getItemCount() > 0);
 	checkAndAdjustCellSize();
 	m_bDoingFormat = false;
 }
@@ -2103,7 +2104,7 @@ void fl_CellLayout::updateLayout(bool bDoAll)
 {
 	fl_ContainerLayout*	pBL = getFirstLayout();
 	bool bNeedsFormat = false;
-	xxx_UT_DEBUGMSG(("updateCellLayout \n"));
+    xxx_UT_DEBUGMSG(("updateCellLayout \n"));
 	m_vecFormatLayout.clear();
 	while (pBL)
 	{

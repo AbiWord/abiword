@@ -3342,7 +3342,7 @@ void fl_BlockLayout::setNeedsReformat(fl_ContainerLayout * pCL,UT_uint32 offset)
 	// _lesser_ value is the one that matter here, Tomas, Nov 28, 2003
 	if(m_iNeedsReformat < 0 || static_cast<UT_sint32>(offset) < m_iNeedsReformat)
 		m_iNeedsReformat = offset;
-  	getSectionLayout()->setNeedsReformat(this);
+  	getSectionLayout()->setNeedsReformat(pCL);
 	setNeedsRedraw();
 }
 
