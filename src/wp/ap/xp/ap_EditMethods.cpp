@@ -323,6 +323,12 @@ public:
 	static EV_EditMethod_Fn formatTable;
 	static EV_EditMethod_Fn autoFitTable;
 
+        static EV_EditMethod_Fn repeatThisRow;
+        static EV_EditMethod_Fn removeThisRowRepeat;
+        static EV_EditMethod_Fn tableToTextCommas;
+        static EV_EditMethod_Fn tableToTextTabs;
+        static EV_EditMethod_Fn tableToTextCommasTabs;
+
 	static EV_EditMethod_Fn replaceChar;
 
 	static EV_EditMethod_Fn cutVisualText;
@@ -1055,6 +1061,8 @@ static EV_EditMethod s_arrayEditMethods[] =
 	EV_EditMethod(NF(releaseInlineImage), 		0,	""),
 	EV_EditMethod(NF(removeFooter), 		0,	""),
 	EV_EditMethod(NF(removeHeader), 		0,	""),
+	EV_EditMethod(NF(removeThisRowRepeat), 		0,	""),
+	EV_EditMethod(NF(repeatThisRow),		0,	""),
 	EV_EditMethod(NF(replace),				0,	""),
 	EV_EditMethod(NF(replaceChar),			_D_,""),
 	EV_EditMethod(NF(revisionAccept),		0,  ""),
@@ -1122,6 +1130,9 @@ static EV_EditMethod s_arrayEditMethods[] =
 	EV_EditMethod(NF(style),				_D_,""),
 
 	// t
+	EV_EditMethod(NF(tableToTextCommas),	0,		""),
+	EV_EditMethod(NF(tableToTextCommasTabs),    0,		""),
+	EV_EditMethod(NF(tableToTextTabs),    0,		""),
 	EV_EditMethod(NF(textToTable),			0,		""),
 	EV_EditMethod(NF(textToTableNoSpaces),		0,		""),
 	EV_EditMethod(NF(toggleAutoRevision),  0,  ""),
@@ -13680,4 +13691,35 @@ Defun(btn0VisualText)
 	xxx_UT_DEBUGMSG(("In Visual Text \n"));
 	pView->btn0VisualDrag(pCallData->m_xPos,pCallData->m_yPos);
 	return true;
+}
+
+Defun(repeatThisRow)
+{
+	CHECK_FRAME;
+	ABIWORD_VIEW;
+}
+
+Defun(removeThisRowRepeat)
+{
+	CHECK_FRAME;
+	ABIWORD_VIEW;
+}
+
+Defun(tableToTextCommas)
+{
+	CHECK_FRAME;
+	ABIWORD_VIEW;
+}
+
+
+Defun(tableToTextCommasTabs)
+{
+	CHECK_FRAME;
+	ABIWORD_VIEW;
+}
+
+Defun(tableToTextTabs)
+{
+	CHECK_FRAME;
+	ABIWORD_VIEW;
 }

@@ -233,6 +233,7 @@ public:
 	bool                doesIntersectClip(fp_TableContainer * pBroke, UT_Rect * rClip);
 	bool                isInNestedTable(void);
 	bool                containsNestedTables(void);
+	bool                isRepeated(void) const;
 #ifdef FMT_TEST
 	void				__dump(FILE * fp) const;
 #endif
@@ -324,9 +325,9 @@ private:
 
 // Flag to see if this cell is drawn "selected"
 	bool		           m_bIsSelected;
-	
-	
 	bool                   m_bDirty;
+
+	bool                   m_bIsRepeated;
 };
 
 class ABI_EXPORT fp_TableContainer : public fp_VerticalContainer

@@ -350,7 +350,7 @@ BeginLayout(Main,0)
 			MenuItem(AP_MENU_ID_TABLE_INSERT_SUMCOLS)
 			MenuItem(AP_MENU_ID_TABLE_INSERT_SUMROWS)
 #if 0
-// Not for 2.2
+// Not for 2.4
 			MenuItem(AP_MENU_ID_TABLE_INSERT_CELLS)
 #endif
 		EndSubMenu()
@@ -360,7 +360,7 @@ BeginLayout(Main,0)
 			MenuItem(AP_MENU_ID_TABLE_DELETE_COLUMNS)
 			MenuItem(AP_MENU_ID_TABLE_DELETE_ROWS)
 #if 0
-// Not for 2.2
+// Not for 2.4
 			MenuItem(AP_MENU_ID_TABLE_DELETE_CELLS)
 #endif
 		EndSubMenu()
@@ -376,7 +376,7 @@ BeginLayout(Main,0)
 		MenuItem(AP_MENU_ID_TABLE_MERGE_CELLS)
 		MenuItem(AP_MENU_ID_TABLE_SPLIT_CELLS)
 #if 0
-// Not for 2.2
+// Not for 2.4
 		MenuItem(AP_MENU_ID_TABLE_SPLIT_TABLE)
 #endif
 		MenuItem(AP_MENU_ID_TABLE_FORMAT)
@@ -384,20 +384,23 @@ BeginLayout(Main,0)
 		   MenuItem(AP_MENU_ID_TABLE_TEXTTOTABLE_ALL)
 		   MenuItem(AP_MENU_ID_TABLE_TEXTTOTABLE_NOSPACES)
                 EndSubMenu()
-#if DEBUG
 	    BeginSubMenu(AP_MENU_ID_TABLE_SORT)
 	       MenuItem(AP_MENU_ID_TABLE_SORTROWSASCEND)
 	       MenuItem(AP_MENU_ID_TABLE_SORTROWSDESCEND)
 	       MenuItem(AP_MENU_ID_TABLE_SORTCOLSASCEND)
 	       MenuItem(AP_MENU_ID_TABLE_SORTCOLSDESCEND)
 	    EndSubMenu()
-#endif
+	    BeginSubMenu(AP_MENU_ID_TABLE_TABLETOTEXT)
+	       MenuItem(AP_MENU_ID_TABLE_TABLETOTEXTCOMMAS)
+	       MenuItem(AP_MENU_ID_TABLE_TABLETOTEXTTABS)
+	       MenuItem(AP_MENU_ID_TABLE_TABLETOTEXTCOMMASTABS)
+	    EndSubMenu()
 		MenuItem(AP_MENU_ID_TABLE_AUTOFIT)
+	    BeginSubMenu(AP_MENU_ID_TABLE_HEADING_ROWS_REPEAT)
+                MenuItem(AP_MENU_ID_TABLE_HEADING_ROWS_REPEAT_THIS)
+                MenuItem(AP_MENU_ID_TABLE_HEADING_ROWS_REPEAT_REMOVE)
+	    EndSubMenu()
 
-#if 0
-// Not for 2.2
-		MenuItem(AP_MENU_ID_TABLE_HEADING_ROWS_REPEAT)
-#endif
 	EndSubMenu()
 
 	BeginSubMenu(AP_MENU_ID_WINDOW)

@@ -119,7 +119,8 @@ fp_CellContainer::fp_CellContainer(fl_SectionLayout* pSectionLayout)
 	  m_bLinesDrawn(false),
 	  m_bBgDirty(true),
 	  m_bIsSelected(false),
-	  m_bDirty(true)
+	  m_bDirty(true),
+	  m_bIsRepeated(false)
 {
 }
 
@@ -135,6 +136,11 @@ fp_CellContainer::~fp_CellContainer()
 	xxx_UT_DEBUGMSG(("Deleting Cell container %x \n",this));
 	setNext(NULL);
 	setPrev(NULL);
+}
+
+bool fp_CellContainer::isRepeated(void) const
+{
+	return m_bIsRepeated;
 }
 
 void fp_CellContainer::setHeight(UT_sint32 iHeight)
@@ -4928,6 +4934,10 @@ void fp_TableContainer::_brokenDraw(dg_DrawArgs* pDA)
 			pPrev = static_cast<fp_TableContainer *>(pPrev->getPrev());
 		}
 	xxx_UT_DEBUGMSG(("Drawing %d table in broken chain \n",iCount));
+	if(iCount > 0)
+	{
+		UT_DEBUGMSG(("Draw the repeated Row here \n"));
+	}
 	if(getContainer()->getContainerType() == FP_CONTAINER_CELL)
 	{
 		xxx_UT_DEBUGMSG(("Draw broken nested Table %x yBreak %d \n",this,getYBreak()));
