@@ -1551,23 +1551,7 @@ bool fl_TableLayout::doclistener_deleteStrux(const PX_ChangeRecord_Strux * pcrx)
 	fl_ContainerLayout * pNext = getNext();
 	
 	collapse();
-
-	if(pPrev != NULL)
-	{
-		pPrev->setNext(pNext);
-	}
-	else
-	{
-		myContainingLayout()->setFirstLayout(pNext);
-	}
-	if(pNext != NULL)
-	{
-		pNext->setPrev(pPrev);
-	}
-	else
-	{
-		myContainingLayout()->setLastLayout(pPrev);
-	}
+	myContainingLayout()->remove(this);
 	//
 	// Look to see if we're in a HdrFtr
 	//
@@ -2579,24 +2563,7 @@ bool fl_CellLayout::doclistener_deleteStrux(const PX_ChangeRecord_Strux * pcrx)
 	fl_ContainerLayout * pNext = getNext();
 
 	collapse();
-//	fl_TableLayout * pTL = static_cast<fl_TableLayout *>(myContainingLayout());
-//	pTL->collapse();
-	if(pPrev != NULL)
-	{
-		pPrev->setNext(pNext);
-	}
-	else
-	{
-		myContainingLayout()->setFirstLayout(pNext);
-	}
-	if(pNext != NULL)
-	{
-		pNext->setPrev(pPrev);
-	}
-	else
-	{
-		myContainingLayout()->setLastLayout(pPrev);
-	}
+	myContainingLayout()->remove(this);
 	//
 	// Look to see if we're in a HdrFtr
 	//

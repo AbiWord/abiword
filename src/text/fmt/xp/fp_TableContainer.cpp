@@ -4936,7 +4936,7 @@ void fp_TableContainer::_brokenDraw(dg_DrawArgs* pDA)
 	xxx_UT_DEBUGMSG(("Drawing %d table in broken chain \n",iCount));
 	if(iCount > 0)
 	{
-		UT_DEBUGMSG(("Draw the repeated Row here \n"));
+		xxx_UT_DEBUGMSG(("Draw the repeated Row here \n"));
 	}
 	if(getContainer()->getContainerType() == FP_CONTAINER_CELL)
 	{

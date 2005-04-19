@@ -621,6 +621,8 @@ public:
 	bool                cmdSelectColumn(PT_DocPosition posOfColumn);
 	bool                cmdAutoFitTable(void);
 	bool                cmdMergeCells(PT_DocPosition posSource, PT_DocPosition posDestination);
+	bool                cmdTableToText(PT_DocPosition posSource,UT_sint32 iSepType);
+
 	bool                _MergeCells( PT_DocPosition posDestination,PT_DocPosition posSource, bool bBefore);
 	bool                getCellParams(PT_DocPosition posCol, UT_sint32 *iLeft, 
 									  UT_sint32 *iRight,UT_sint32 *iTop, UT_sint32 *iBot);

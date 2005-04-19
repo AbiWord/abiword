@@ -13709,17 +13709,20 @@ Defun(tableToTextCommas)
 {
 	CHECK_FRAME;
 	ABIWORD_VIEW;
+	pView->cmdTableToText(pView->getPoint(),0);
 }
 
-
-Defun(tableToTextCommasTabs)
-{
-	CHECK_FRAME;
-	ABIWORD_VIEW;
-}
 
 Defun(tableToTextTabs)
 {
 	CHECK_FRAME;
 	ABIWORD_VIEW;
+	pView->cmdTableToText(pView->getPoint(),1);
+}
+
+Defun(tableToTextCommasTabs)
+{
+	CHECK_FRAME;
+	ABIWORD_VIEW;
+	pView->cmdTableToText(pView->getPoint(),2);
 }

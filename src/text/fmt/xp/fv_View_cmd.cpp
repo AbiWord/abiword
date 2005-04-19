@@ -780,6 +780,107 @@ bool FV_View::cmdSelectColumn(PT_DocPosition posOfColumn)
 	return true;
 }
 
+/*!
+ * Convert a table to Text with each cell separated by commas, Tabs, 
+ * or tabs and commas as follows:
+ * iSepType == 0 Use Commas
+ * iSepType == 1 Use Tabs
+ * iSepType == 2 Use Tabs and Commas
+ * We place a paragraph break at the end of of each row but otherwise we simply
+ * extract just the text from each cell.
+ */ 
+bool FV_View::cmdTableToText(PT_DocPosition posSource,UT_sint32 iSepType)
+{
+        fl_TableLayout * pTL = getTableAtPos(posSource);
+	if(pTL == NULL)
+	{
+	    return false;
+	}
+  	PL_StruxDocHandle tableSDH;
+	bool bRes = m_pDoc->getStruxOfTypeFromPosition(posSource,PTX_SectionTable,&tableSDH);
+	UT_return_val_if_fail(bRes, false);
+	PT_DocPosition posTable = m_pDoc->getStruxPosition(tableSDH) + 1;
+
+//
+// Now find the number of rows and columns inthis table. 
+//
+	UT_sint32 numRows = 0;
+	UT_sint32 numCols = 0;
+	m_pDoc->getRowsColsFromTableSDH(tableSDH, isShowRevisions(), getRevisionLevel(), &numRows, &numCols);
+	PT_DocPosition posInsert = pTL->getPosition(true);
+
+	// Signal PieceTable Changes
+	_saveAndNotifyPieceTableChange();
+
+	// Turn off list updates
+
+	m_pDoc->disableListUpdates();
+	m_pDoc->beginUserAtomicGlob();
+	setPoint(posInsert);
+	insertParagraphBreak();
+
+	UT_sint32 i,j =0;
+	fp_TableContainer * pTAB = static_cast<fp_TableContainer *>(pTL->getFirstContainer());
+	fp_CellContainer * pCCell = NULL;
+	fl_CellLayout * pCellL = NULL;
+	UT_GrowBufElement iComma = static_cast<UT_GrowBufElement>(',');
+	UT_GrowBufElement iTab = static_cast<UT_GrowBufElement>(UCS_TAB);
+	for(i=0;i<numRows;i++)
+	{
+	  for(j=0; j< numCols;j++)
+	  {
+	    pCCell = pTAB->getCellAtRowColumn(i,j);
+	    if(pCCell == NULL)
+	    {
+	         continue;
+	    }
+	    pCellL = static_cast<fl_CellLayout *>(pCCell->getSectionLayout());
+	    if(pCellL == NULL)
+	    {
+	         continue;
+	    }
+	    UT_GrowBuf buf;
+	    buf.truncate(0);
+	    pCellL->appendTextToBuf(buf);
+	    if(iSepType == 0)
+	    {
+	        buf.append(&iComma,1);
+	    }
+	    else if(iSepType == 1)
+	    {
+		buf.append(&iTab,1);
+	    }
+	    else if(iSepType == 2)
+	    {
+		buf.append(&iTab,1);
+		buf.append(&iComma,1);
+	    }
+	    else
+	    {
+		buf.append(&iTab,1);
+		buf.append(&iComma,1);
+	    }
+	    cmdCharInsert(reinterpret_cast<UT_UCSChar *>(buf.getPointer(0)),buf.getLength());
+	  }
+	  insertParagraphBreak();
+	}
+	posTable = pTL->getPosition(true) + 2;
+	cmdDeleteTable(posTable);
+
+	// Signal PieceTable Changes have finished
+	_restorePieceTableState();
+	_generalUpdate();
+	m_pDoc->endUserAtomicGlob();
+
+
+	// restore updates and clean up dirty lists
+	m_pDoc->enableListUpdates();
+	m_pDoc->updateDirtyLists();
+	_fixInsertionPointCoords();
+	_ensureInsertionPointOnScreen();
+	notifyListeners(AV_CHG_MOTION);
+	return true;
+}
 
 /*!
  * Merge the cells located at posSource with posDestination by copying the data from 

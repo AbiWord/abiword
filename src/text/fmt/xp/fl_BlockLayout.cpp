@@ -6423,18 +6423,6 @@ fl_BlockLayout::doclistener_deleteStrux(const PX_ChangeRecord_Strux* pcrx)
 		{
 			xxx_UT_DEBUGMSG(("Next container is TOC \n"));
 		}
-	//
-	// Use actual getPrev() to preserve the structure of the document.
-	//
-	if (getPrev())
-	{
-		getPrev()->setNext(getNext());
-	}
-	if (getNext())
-	{
-		getNext()->setPrev(getPrev());
-	}
-
 	fl_SectionLayout* pSL = static_cast<fl_SectionLayout *>(myContainingLayout());
 	UT_ASSERT(pSL);
 	if(pSL)

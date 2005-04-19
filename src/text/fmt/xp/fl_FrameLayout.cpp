@@ -458,30 +458,12 @@ bool fl_FrameLayout::doclistener_deleteStrux(const PX_ChangeRecord_Strux * pcrx)
 	collapse();
 //	UT_ASSERT(pcrx->getStruxType()== PTX_SectionFrame);
 //
+	fl_ContainerLayout * pCL = getPrev();
+	myContainingLayout()->remove(this);
 	UT_DEBUGMSG(("Unlinking frame Layout %x \n",this));
-	fl_ContainerLayout * pPrev = getPrev();
-	fl_ContainerLayout * pNext = getNext();
-
-	if(pPrev != NULL)
-	{
-		pPrev->setNext(pNext);
-	}
-	else
-	{
-		myContainingLayout()->setFirstLayout(pNext);
-	}
-	if(pNext != NULL)
-	{
-		pNext->setPrev(pPrev);
-	}
-	else
-	{
-		myContainingLayout()->setLastLayout(pPrev);
-	}
 //
 // Remove from the list of frames in the previous block
 //
-	fl_ContainerLayout * pCL = getPrev();
 	while(pCL && pCL->getContainerType() != FL_CONTAINER_BLOCK)
 	{
 		pCL = pCL->getPrev();

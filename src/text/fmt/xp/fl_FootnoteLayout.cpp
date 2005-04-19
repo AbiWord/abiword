@@ -281,26 +281,7 @@ bool fl_EmbedLayout::doclistener_deleteStrux(const PX_ChangeRecord_Strux * pcrx)
 //
 	m_bHasEndFootnote = false;
 	pEncBlock->updateOffsets(prevPos,0,-getOldSize());
-
-	fl_ContainerLayout * pPrev = getPrev();
-	fl_ContainerLayout * pNext = getNext();
-
-	if(pPrev != NULL)
-	{
-		pPrev->setNext(pNext);
-	}
-	else
-	{
-		myContainingLayout()->setFirstLayout(pNext);
-	}
-	if(pNext != NULL)
-	{
-		pNext->setPrev(pPrev);
-	}
-	else
-	{
-		myContainingLayout()->setLastLayout(pPrev);
-	}
+	getSectionLayout()->remove(this);	
 	delete this;			// TODO whoa!  this construct is VERY dangerous.
 
 	return true;
