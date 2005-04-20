@@ -609,7 +609,11 @@ Defun_EV_GetMenuItemState_Fn(ap_GetState_HyperlinkOK)
 	    s = EV_MIS_Gray ;
 		return s;
 	}
-
+	if(pBL1->getLength() == 1)
+	{
+	    s = EV_MIS_Gray ;
+	    return s;
+	}
 	return s ;
 }
 

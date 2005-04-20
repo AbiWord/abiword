@@ -149,6 +149,11 @@ Defun_EV_GetToolbarItemState_Fn(ap_ToolbarGetState_HyperlinkOK)
 	    s = EV_TIS_Gray ;
 		return s;
 	}
+	if(pBL1->getLength() == 1)
+	{
+	    s = EV_TIS_Gray ;
+	    return s;
+	}
 
 	return s ;
 }
