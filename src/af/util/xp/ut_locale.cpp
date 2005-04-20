@@ -20,19 +20,13 @@
 #include <stdlib.h>
 #include <stdio.h>
 
-#include "ut_string.h";
+#include "ut_string.h"
 #include "ut_locale.h"
 
 // don't like XAP in UT, but oh well...
 #include "xap_EncodingManager.h"
 
 /********************************************/
-
-static char *
-explicit_setlocale (int category, const char * locale)
-{
-  return setlocale (category, locale);
-}
 
 /**
  * Class serves to make rolling back exceptions simple, automatic,
@@ -50,15 +44,15 @@ explicit_setlocale (int category, const char * locale)
 UT_LocaleTransactor::UT_LocaleTransactor (int category, const char * locale)
   : mCategory (category), mOldLocale (0)
 {
-	char * old_locale = explicit_setlocale (category, locale);
-	mOldLocale = UT_strdup(old_locale);
+	mOldLocale = UT_strdup(setlocale(category, NULL));
+	setlocale (category, locale)
 
 	// TODO: win32 may need to free old_locale
 }
 
 UT_LocaleTransactor::~UT_LocaleTransactor ()
 {
-	static_cast<void>(explicit_setlocale (mCategory, mOldLocale));
+	setlocale (mCategory, mOldLocale);
 	FREEP(mOldLocale);
 }
 
