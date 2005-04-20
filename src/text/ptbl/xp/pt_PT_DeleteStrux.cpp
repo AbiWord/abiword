@@ -372,6 +372,14 @@ bool pt_PieceTable::_unlinkStrux_Section(pf_Frag_Strux * pfs,
 
 
 	case PTX_Section:
+	  //
+	  // We can delete Tables provided there is a block to take it's place later
+	  //
+	        if((pfs->getStruxType() == PTX_SectionTable) || (pfs->getStruxType() == PTX_EndTable))
+		{
+		    _unlinkFrag(pfs,ppfEnd,pfragOffsetEnd);
+		    return true;
+		}
 		// there are no blocks (paragraphs) between this section
 		// and the previous section.  this is not possible.
 		// TODO decide if this should assert or just fail...
@@ -381,6 +389,11 @@ bool pt_PieceTable::_unlinkStrux_Section(pf_Frag_Strux * pfs,
 
 
 	case PTX_SectionHdrFtr:
+	        if((pfs->getStruxType() == PTX_SectionTable) || (pfs->getStruxType() == PTX_EndTable))
+		{
+		    _unlinkFrag(pfs,ppfEnd,pfragOffsetEnd);
+		    return true;
+		}
 		// there are no blocks (paragraphs) between this section
 		// and the previous section.  this is not possible.
 		// TODO decide if this should assert or just fail...

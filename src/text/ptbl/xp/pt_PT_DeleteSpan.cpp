@@ -574,10 +574,18 @@ bool pt_PieceTable::_tweakDeleteSpanOnce(PT_DocPosition & dpos1,
 #endif
 	case PTX_SectionHdrFtr:
 		// if the previous container is a Header/Footersection, then pf_First
-		// must be the first block in the section.
+		// must be the first block or the first Table in the section.
 		UT_return_val_if_fail ((pf_First->getPrev() == pfsContainer),false);
 		UT_return_val_if_fail ((pf_First->getType() == pf_Frag::PFT_Strux),false);
-		UT_return_val_if_fail (((static_cast<pf_Frag_Strux *>(pf_First))->getStruxType() == PTX_Block),false);
+		UT_return_val_if_fail ((((static_cast<pf_Frag_Strux *>(pf_First))->getStruxType() == PTX_Block) || (static_cast<pf_Frag_Strux *>(pf_First))->getStruxType() == PTX_SectionTable),false);
+
+		//
+		// This allows us to delete the first Table in a section
+		//
+		if(static_cast<pf_Frag_Strux *>(pf_First)->getStruxType() == PTX_SectionTable)
+		{
+		     return true;
+		}
 		// since, we cannot delete the first block in a section, we
 		// secretly translate this into a request to delete the section;
 		// the block we have will then be slurped into the previous
