@@ -39,5 +39,5 @@ TFTEST_MAIN("xap_UnixWidget-toggle_button")
 	TFPASS(w->getValueInt() == 1);
 
 	delete w;
-	gtk_widget_destroy(gtkw);
+	gtk_object_sink(GTK_OBJECT(gtkw));
 }
