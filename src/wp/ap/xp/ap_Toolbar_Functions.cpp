@@ -154,6 +154,19 @@ Defun_EV_GetToolbarItemState_Fn(ap_ToolbarGetState_HyperlinkOK)
 	    s = EV_TIS_Gray ;
 	    return s;
 	}
+	PT_DocPosition posTemp =0;
+	if(posStart > posEnd)
+	{
+	  posTemp = posStart;
+	  posStart = posEnd;
+	  posEnd = posStart;
+	}
+	if(posStart < pBL1->getPosition(true))
+	{
+	    s = EV_TIS_Gray ;
+	    return s;
+	}
+
 
 	return s ;
 }
