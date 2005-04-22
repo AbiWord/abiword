@@ -903,8 +903,12 @@ bool fl_TableLayout::bl_doclistener_insertTable( const PX_ChangeRecord_Strux * p
 	m_pDoc->getBounds(true,pos1);
 
 	fl_SectionLayout* pSL = NULL;
-
-	pSL = static_cast<fl_SectionLayout *>(static_cast<fl_ContainerLayout *>(getSectionLayout())->insert(sdh,this,pcrx->getIndexAP(), FL_CONTAINER_TABLE));
+	fl_ContainerLayout * pMyCL = static_cast<fl_ContainerLayout *>(getSectionLayout());
+	if(pMyCL == NULL)
+	{
+		pMyCL = myContainingLayout();
+	}
+	pSL = static_cast<fl_SectionLayout *>(pMyCL->insert(sdh,this,pcrx->getIndexAP(), FL_CONTAINER_TABLE));
 
 		// Must call the bind function to complete the exchange of handles
 		// with the document (piece table) *** before *** anything tries
@@ -1547,9 +1551,6 @@ bool fl_TableLayout::doclistener_deleteStrux(const PX_ChangeRecord_Strux * pcrx)
 		pTab->decNumNestedTables();
 	}
 	xxx_UT_DEBUGMSG(("SEVIOR: !!!!!!!! Doing table delete strux!! \n"));
-	fl_ContainerLayout * pPrev = getPrev();
-	fl_ContainerLayout * pNext = getNext();
-	
 	collapse();
 	myContainingLayout()->remove(this);
 	//
@@ -2557,10 +2558,6 @@ bool fl_CellLayout::doclistener_deleteStrux(const PX_ChangeRecord_Strux * pcrx)
 {
 	UT_ASSERT(pcrx->getType()==PX_ChangeRecord::PXT_DeleteStrux);
 	UT_ASSERT(pcrx->getStruxType()== PTX_SectionCell);
-
-
-	fl_ContainerLayout * pPrev = getPrev();
-	fl_ContainerLayout * pNext = getNext();
 
 	collapse();
 	myContainingLayout()->remove(this);

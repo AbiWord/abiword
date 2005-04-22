@@ -4537,7 +4537,15 @@ bool FV_View::_charMotion(bool bForward,UT_uint32 countChars, bool bSkipCannotCo
     }
 	else
 	{
-		_setPoint(m_iInsPoint - countChars);
+		UT_sint32 iPos = static_cast<UT_sint32>(m_iInsPoint) - static_cast<UT_sint32>(countChars);
+		if(iPos > 0 && iPos >= static_cast<UT_sint32>(posBOD))
+		{
+			_setPoint(m_iInsPoint - countChars);
+		}
+		else
+		{
+			_setPoint(posBOD);
+		}
 //
 // Scan past any strux boundaries (like table controls
 //
