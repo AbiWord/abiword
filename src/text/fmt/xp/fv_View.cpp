@@ -844,9 +844,25 @@ bool FV_View::convertPositionedToInLine(fl_FrameLayout * pFrame)
 	{
 		pos -= 2;
 	}
+	PT_DocPosition posEnd = 0;
+	getEditableBounds(true,posEnd);
+	while(!isPointLegal(pos) && pos <= posEnd)
+	{
+		pos++;
+	}
+	bool bMakeItLegal = false;
+	if(pos > posEnd)
+	{
+		bMakeItLegal = true;
+	}
 	m_pDoc->beginUserAtomicGlob();
 	m_FrameEdit.deleteFrame(pFrame);
 	_saveAndNotifyPieceTableChange();
+	if(bMakeItLegal)
+	{
+		setPoint(pos);
+		pos = getPoint();
+	}
 	m_pDoc->insertObject(pos, PTO_Image, attributes, NULL);
 	_restorePieceTableState();
 	m_pDoc->endUserAtomicGlob();
