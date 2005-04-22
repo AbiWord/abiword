@@ -59,6 +59,7 @@ public:
 	void                  drawCursor(PT_DocPosition newPos);
 	static void 		  _autoScroll(UT_Worker * pTimer);
 	void                  clearCursor(void);
+	void                  abortDrag(void);
 	bool                  isNotdraggingImage(void)
 	  { return m_bNotDraggingImage;}
 	bool                  isDoingCopy(void)

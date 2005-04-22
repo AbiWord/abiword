@@ -276,6 +276,7 @@ public:
 	static EV_EditMethod_Fn deleteHyperlink;
 	static EV_EditMethod_Fn deleteRows;
 	static EV_EditMethod_Fn deleteTable;
+	static EV_EditMethod_Fn doEscape;
 
 
 	static EV_EditMethod_Fn insertBookmark;
@@ -835,6 +836,7 @@ static EV_EditMethod s_arrayEditMethods[] =
 	EV_EditMethod(NF(dlgWordCount), 		0,	""),
 	EV_EditMethod(NF(dlgZoom),				0,	""),
 	EV_EditMethod(NF(doBullets),			0,	""),
+	EV_EditMethod(NF(doEscape),			0,	""),
 	EV_EditMethod(NF(doNumbers),			0,	""),
 	EV_EditMethod(NF(doubleSpace),			0,	""),
 	EV_EditMethod(NF(dragFrame), 			0,	""),
@@ -13684,6 +13686,7 @@ Defun(pasteVisualText)
 }
 
 
+
 Defun(btn0VisualText)
 {
 	CHECK_FRAME;
@@ -13725,4 +13728,19 @@ Defun(tableToTextCommasTabs)
 	CHECK_FRAME;
 	ABIWORD_VIEW;
 	pView->cmdTableToText(pView->getPoint(),2);
+}
+
+Defun(doEscape)
+{
+	CHECK_FRAME;
+	ABIWORD_VIEW;
+	UT_DEBUGMSG(("Escape Pressed. \n"));
+	FV_VisualDragText * pVis = pView->getVisualText();
+	if(pVis->isActive())
+	{
+	    pVis->abortDrag();
+	    sEndVisualDrag = false;
+	    return true;
+	}
+	return true;
 }

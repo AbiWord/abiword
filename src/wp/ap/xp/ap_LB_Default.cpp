@@ -307,8 +307,8 @@ ap_bs_NVK NVKTable[] =
 						  DO_NOT_USE,			"",					"",				""					}},
 	{EV_NVK_RETURN,		{ "insertParagraphBreak", "insertLineBreak", "insertPageBreak", "insertColumnBreak",
 						  "insertSectionBreak",	"",					"",				""					}},
-//	{EV_NVK_ESCAPE,		{ "",					"",					"",				"",
-//						  "",					"",					"",				""					}},
+	{EV_NVK_ESCAPE,		{ "doEscape", "doEscape", "doEscape",  "doEscape","doEscape", "doEscape",  "doEscape", "doEscape" }},
+
 	{EV_NVK_PAGEUP,		{ "warpInsPtPrevScreen","extSelScreenUp",   "warpInsPtPrevPage",	"extSelPageUp",
 						  "",					"",					"warpInsPtBOP",	""					}},
 	{EV_NVK_PAGEDOWN,	{ "warpInsPtNextScreen","extSelScreenDown",	"warpInsPtNextPage",	"extSelPageDown",

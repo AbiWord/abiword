@@ -697,6 +697,38 @@ PT_DocPosition FV_VisualDragText::getPosFromXY(UT_sint32 x, UT_sint32 y)
 }
 
 /*!
+ * This method oborts the current visual drag.
+ */
+void   FV_VisualDragText::abortDrag(void)
+{
+        if(m_pAutoScrollTimer != NULL)
+	{
+		m_pAutoScrollTimer->stop();
+		DELETEP(m_pAutoScrollTimer);
+	}
+	bool bDidCopy = m_bDoingCopy;
+	m_bDoingCopy = false;
+	m_bNotDraggingImage = false;
+	clearCursor();
+	if(m_iVisualDragMode != FV_VisualDrag_DRAGGING)
+	{
+//
+// we didn't actually drag anything. Just release the selection.
+//
+	        setMode(FV_VisualDrag_NOT_ACTIVE);
+		return;
+	}
+	getGraphics()->setClipRect(&m_recCurFrame);
+	m_pView->updateScreen(false);
+	getGraphics()->setClipRect(NULL);
+	setMode(FV_VisualDrag_NOT_ACTIVE);
+	if(!bDidCopy)
+	{
+	  m_pView->cmdUndo(1);
+	}
+	return;
+}
+/*!
  * x and y is the location in the document windows of the mouse in logical
  * units.
  */
