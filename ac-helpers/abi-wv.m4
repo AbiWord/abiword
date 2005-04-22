@@ -72,7 +72,15 @@ else
 	else
 		AC_MSG_ERROR([* * * wv was not found - I looked for it in "$1" * * *])
 	fi
-	WV_CFLAGS="-I$abi_wv_path"
+        PKG_CHECK_MODULES(GSF,[
+              libgsf-1
+        ],[    abi_sysgsf=yes
+        ],[    abi_sysgsf=no
+        ])
+        if test $abi_sysgsf = no; then
+		AC_MSG_ERROR([$GSF_PKG_ERRORS])
+	fi
+	WV_CFLAGS="-I$abi_wv_path $GSF_CFLAGS"
 
 	if test "x$abi_epath" = "xyes"; then
 		WV_LIBS="-L\$(top_builddir)/../wv -lwv"
