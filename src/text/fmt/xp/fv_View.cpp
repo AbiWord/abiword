@@ -11187,6 +11187,7 @@ bool FV_View::insertFootnote(bool bFootnote)
 		}
 		setPoint(getPoint()-1);
 	}
+	_makePointLegal();
 	const XML_Char ** props_in = NULL;
 	getCharFormat(&props_in);
 
