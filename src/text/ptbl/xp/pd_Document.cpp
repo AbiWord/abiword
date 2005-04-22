@@ -3953,7 +3953,7 @@ PL_StruxDocHandle PD_Document::findPreviousStyleStrux(const XML_Char * szStyle, 
 	const pf_Frag_Strux * pfs = NULL;
 	const pf_Frag * currentFrag = static_cast<const pf_Frag *>(sdh);
 	bool bFound = false;
-    while (currentFrag != m_pPieceTable->getFragments().getFirst() && !bFound)
+    while (currentFrag && currentFrag != m_pPieceTable->getFragments().getFirst() && !bFound)
 	{
 		if (currentFrag->getType()==pf_Frag::PFT_Strux)
 		{
