@@ -5045,7 +5045,10 @@ bool FV_View::cmdInsertMathML(const char * szFileName,PT_DocPosition pos)
 {
 
 	const XML_Char * atts[5]={"dataid",NULL,NULL,NULL,NULL};
-	atts[1] = static_cast<const XML_Char *>(szFileName);
+	UT_uint32 uid = m_pDoc->getUID(UT_UniqueId::Image);
+	UT_UTF8String sUID;
+	UT_UTF8String_sprintf(sUID,"%d",uid);
+	atts[1] = sUID.utf8_str();
 	const XML_Char *cur_style = NULL;
 	getStyle(&cur_style);
 	if((cur_style != NULL) && (*cur_style) && (strcmp(cur_style,"None") != 0))
@@ -5089,7 +5092,10 @@ bool FV_View::cmdInsertEmbed(const char * szFileName,PT_DocPosition pos,UT_UTF8S
 {
 
 	const XML_Char * atts[7]={"dataid",NULL,"props",NULL,NULL,NULL,NULL};
-	atts[1] = static_cast<const XML_Char *>(szFileName);
+	UT_uint32 uid = m_pDoc->getUID(UT_UniqueId::Image);
+	UT_UTF8String sUID;
+	UT_UTF8String_sprintf(sUID,"%d",uid);
+	atts[1] = sUID.utf8_str();
 	const XML_Char *cur_style = NULL;
 	getStyle(&cur_style);
 	if((cur_style != NULL) && (*cur_style) && (strcmp(cur_style,"None") != 0))

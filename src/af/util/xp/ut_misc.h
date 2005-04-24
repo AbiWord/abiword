@@ -196,6 +196,8 @@ class ABI_EXPORT UT_UniqueId
 		Endnote,
 		HeaderFtr,
 		Image,
+		Math,
+		Embed,
 
 		/* must be last; for internal use only !*/
 		_Last

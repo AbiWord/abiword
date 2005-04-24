@@ -8531,7 +8531,7 @@ void FV_View::getTopRulerInfo(PT_DocPosition pos,AP_TopRulerInfo * pInfo)
 				if(i== (numcols -1))
 				{
 					//					pTInfo->m_iRightCellPos -= pTab->getBorderWidth()/2;
-					pTInfo->m_iRightCellPos -= (pTInfo->m_iRightSpacing);
+					pTInfo->m_iRightCellPos -= pTInfo->m_iRightSpacing;
 					xxx_UT_DEBUGMSG(("FullTable RightPos %d Spacing %d \n", pTInfo->m_iRightCellPos,pTInfo->m_iRightSpacing));
 				}
 				pInfo->m_vecFullTable->addItem(pTInfo);
