@@ -2491,7 +2491,7 @@ void FV_View::moveInsPtTo(FV_DocPos dp, bool bClearSelection)
 	}
 
 	_setPoint(iPos, (dp == FV_DOCPOS_EOL));
-
+	_makePointLegal();
 //
 // Check we have a layout defined first. On startup we don't
 //
@@ -2508,6 +2508,7 @@ void FV_View::moveInsPtTo(PT_DocPosition dp)
 		_clearIfAtFmtMark(getPoint());
 
 	_setPoint(dp, /* (dp == FV_DOCPOS_EOL) */ false);	// is this bool correct?
+	_makePointLegal();
 	/*TF CHANGE: Why do we automatically scroll?  We should only scroll the window
 	  if the point to be displayed is not already on the screen.  If it
 	  is already on the screen then we should just leave it in place and

@@ -4885,7 +4885,6 @@ UT_Error FV_View::cmdInsertField(const char* szName, const XML_Char ** extra_att
 
 	// Signal PieceTable Change
 	_saveAndNotifyPieceTableChange();
-
 	_insertField(szName,  extra_attrs,extra_props);
 
 
