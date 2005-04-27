@@ -153,7 +153,7 @@ void fl_SectionLayout::setNeedsReformat(fl_ContainerLayout * pCL, UT_uint32 /*of
 {
         m_vecFormatLayout.addItem(pCL);
 	m_bNeedsReformat = true;
-	if(myContainingLayout() != NULL && static_cast<fl_SectionLayout *>(myContainingLayout()) != this)
+	if(myContainingLayout() != NULL && (static_cast<fl_SectionLayout *>(myContainingLayout()) != this) && (getContainerType() != FL_CONTAINER_SHADOW))
 	{
 		static_cast<fl_SectionLayout *>(myContainingLayout())->setNeedsReformat(this);
 	}
