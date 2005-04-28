@@ -3942,13 +3942,53 @@ void FV_View::_fixInsertionPointCoords()
 {
 	if (m_pG->getCaret() == NULL)
 		return;
-
+	
 	fp_Page * pPage = NULL;
 	fl_BlockLayout * pBlock = NULL;
 	fp_Run * pRun = NULL;
-	if ((getPoint() > 0) && !isLayoutFilling())
+	if(m_bInsertAtTablePending)
 	{
-		_findPositionCoords(getPoint(), m_bPointEOL, m_xPoint, m_yPoint, m_xPoint2, m_yPoint2, m_iPointHeight, m_bPointDirection, &pBlock, &pRun);
+		//
+		// Position the caret just before the table
+		//
+		fl_TableLayout * pTL = getTableAtPos(m_iPosAtTable+2);
+		if(pTL == NULL)
+		{
+			m_bInsertAtTablePending = false;
+			return;
+		}
+		pBlock = pTL->getNextBlockInDocument();
+		if(pBlock == NULL)
+		{
+			m_bInsertAtTablePending = false;
+			return;
+		}
+		UT_sint32 height= 0;
+		pRun = pBlock->findPointCoords(pBlock->getPosition(false), false, m_xPoint, m_yPoint, m_xPoint2, m_yPoint2, height, m_bPointDirection);
+		m_iPointHeight = static_cast<UT_uint32>(height);
+		fp_TableContainer * pTab = static_cast<fp_TableContainer *>(pTL->getFirstContainer());
+		fp_TableContainer * pBroke = pTab->getFirstBrokenTable();
+		fp_CellContainer * pCell = static_cast<fp_CellContainer *>(pTab->getFirstContainer());
+		UT_sint32 iLeft,iRight,iTop,iBot,col_y =0;
+		bool bDoClear= true;
+		fp_Column * pCol = NULL;
+		fp_ShadowContainer * pShadow = NULL;
+		pCell->getScreenPositions(pBroke,getGraphics(),iLeft,iRight,iTop,iBot,col_y,pCol,pShadow,bDoClear);
+		m_xPoint = iLeft - getGraphics()->tlu(2);
+		m_xPoint2 = iLeft - getGraphics()->tlu(2);
+		m_yPoint = iTop;
+		m_yPoint2 = iTop;
+		pPage = getCurrentPage();
+		UT_RGBColor * pClr = NULL;
+		if (pPage)
+			pClr = pPage->getFillType()->getColor();
+		m_pG->getCaret()->setCoords(m_xPoint, m_yPoint, m_iPointHeight,
+									m_xPoint2, m_yPoint2, m_iPointHeight, 
+									m_bPointDirection, pClr);
+	}
+	else if ((getPoint() > 0) && !isLayoutFilling())
+	{
+		_findPositionCoords(getPoint(), false, m_xPoint, m_yPoint, m_xPoint2, m_yPoint2, m_iPointHeight, m_bPointDirection, &pBlock, &pRun);
 		pPage = getCurrentPage();
 		UT_RGBColor * pClr = NULL;
 		if (pPage)
@@ -4355,6 +4395,8 @@ void FV_View::_setPoint(PT_DocPosition pt, bool bEOL)
 		}		
 	}
 	m_iInsPoint = pt;
+	m_bInsertAtTablePending = false;
+	m_iPosAtTable = 0;
 	xxx_UT_DEBUGMSG(("Point set to %d in View %x \n",pt,this));
 	m_bPointEOL = bEOL;
 	if(!m_pDoc->isPieceTableChanging())
@@ -4446,7 +4488,7 @@ bool FV_View::_charMotion(bool bForward,UT_uint32 countChars, bool bSkipCannotCo
 {
 	// advance(backup) the current insertion point by count characters.
 	// return false if we ran into an end (or had an error).
-
+	bool bInsertAtTable = false;
 	PT_DocPosition posOld = m_iInsPoint;
 	fp_Run* pRun = NULL;
 	fl_BlockLayout* pBlock = NULL;
@@ -4554,6 +4596,10 @@ bool FV_View::_charMotion(bool bForward,UT_uint32 countChars, bool bSkipCannotCo
 		{
 			_setPoint(m_iInsPoint - 1);
 			UT_DEBUGMSG(("Backward scan past illegal point pos %d \n",m_iInsPoint));
+		}
+		if(getPoint() == posBOD)
+		{
+			bInsertAtTable = true;
 		}
 		_findPositionCoords(m_iInsPoint, false, x, y, x2,y2,uheight, bDirection, &pBlock, &pRun);
 
@@ -4809,7 +4855,12 @@ bool FV_View::_charMotion(bool bForward,UT_uint32 countChars, bool bSkipCannotCo
 		_setPoint(posEOD);
 		bRes = false;
 	}
-
+	_makePointLegal();
+	if(bInsertAtTable && (getPoint() != posBOD))
+	{
+		m_bInsertAtTablePending = true;
+		m_iPosAtTable =posBOD;
+	}
 	if (m_iInsPoint != posOld)
 	{
 		m_pLayout->considerPendingSmartQuoteCandidate();

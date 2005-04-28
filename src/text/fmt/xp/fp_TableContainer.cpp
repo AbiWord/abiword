@@ -1114,9 +1114,10 @@ void fp_CellContainer::setBackground (const PP_PropertyMap::Background & style)
 }
 
 /*!
- * Draw background and lines around a cell in a broken table.
+ * Given the broken table that contains this cell, calculate the positions
+ * of the left,right,top and bottom edges of the cell.
  */
-void fp_CellContainer::drawLines(fp_TableContainer * pBroke,GR_Graphics * pG)
+void fp_CellContainer::getScreenPositions(fp_TableContainer * pBroke,GR_Graphics * pG, UT_sint32 & iLeft, UT_sint32 & iRight,UT_sint32 & iTop,UT_sint32 & iBot, UT_sint32 & col_y, fp_Column *& pCol, fp_ShadowContainer *& pShadow, bool & bDoClear )
 {
 	UT_ASSERT(getPage());
 	if(getPage() == NULL)
@@ -1139,24 +1140,10 @@ void fp_CellContainer::drawLines(fp_TableContainer * pBroke,GR_Graphics * pG)
 			return;
 		}
 	}
-// Lookup table properties to get the line thickness, etc.
-
-	fl_ContainerLayout * pLayout = getSectionLayout()->myContainingLayout ();
-	UT_ASSERT(pLayout->getContainerType () == FL_CONTAINER_TABLE);
-	if (pLayout->getContainerType () != FL_CONTAINER_TABLE) return;
-	fl_TableLayout * pTableLayout = static_cast<fl_TableLayout *>(pLayout);
-
-	PP_PropertyMap::Line lineBottom = getBottomStyle (pTableLayout);
-	PP_PropertyMap::Line lineLeft   = getLeftStyle   (pTableLayout);
-	PP_PropertyMap::Line lineRight  = getRightStyle  (pTableLayout);
-	PP_PropertyMap::Line lineTop    = getTopStyle    (pTableLayout);
-
 //
 // Now correct if iTop or iBot is off the page.
 //
-	UT_sint32 col_x,col_y;
-	bool bDrawTop = true;
-	bool bDrawBot = true;
+	UT_sint32 col_x;
 	UT_sint32 offy =0;
 	UT_sint32 offx =0;
 	fp_Page * pPage = pBroke->getPage(); 
@@ -1167,8 +1154,8 @@ void fp_CellContainer::drawLines(fp_TableContainer * pBroke,GR_Graphics * pG)
 //
 		return;
 	}
-	fp_Column * pCol = NULL;
-	fp_ShadowContainer * pShadow = NULL;
+
+	pPage = pBroke->getPage(); 
 	if(getContainer()->getContainerType() == FP_CONTAINER_FRAME)
 	{
 		fp_FrameContainer * pFC = static_cast<fp_FrameContainer *>(getContainer());
@@ -1215,7 +1202,7 @@ void fp_CellContainer::drawLines(fp_TableContainer * pBroke,GR_Graphics * pG)
 			pPage->getScreenOffsets(pCol, col_x,col_y);
 		}
 	}
-	bool bDoClear = true;
+	bDoClear = true;
 	if(pPage->getDocLayout()->getView() && pG->queryProperties(GR_Graphics::DGP_PAPER))
 	{
 //
@@ -1279,13 +1266,66 @@ void fp_CellContainer::drawLines(fp_TableContainer * pBroke,GR_Graphics * pG)
 			pCon = pCon->getContainer();
 		}
 	}
-	UT_sint32 iLeft = col_x + m_iLeft + offx;
-	UT_sint32 iRight = col_x + m_iRight + offx;
-	UT_sint32 iTop = col_y + m_iTopY + offy;
-	UT_sint32 iBot = col_y + m_iBotY + offy;
+	iLeft = col_x + m_iLeft + offx;
+	iRight = col_x + m_iRight + offx;
+	iTop = col_y + m_iTopY + offy;
+	iBot = col_y + m_iBotY + offy;
+}
+/*!
+ * Draw background and lines around a cell in a broken table.
+ */
+void fp_CellContainer::drawLines(fp_TableContainer * pBroke,GR_Graphics * pG)
+{
+	UT_ASSERT(getPage());
+	if(getPage() == NULL)
+	{
+		return;
+	}
+	bool bNested = false;
+	if(pBroke == NULL)
+	{
+		pBroke = static_cast<fp_TableContainer *>(getContainer());
+	}
+	if(isInNestedTable())
+	{ 
+		bNested = true;
+	}
+	if(pBroke && pBroke->getPage())
+	{
+		if(pG->queryProperties(GR_Graphics::DGP_SCREEN) && !pBroke->getPage()->isOnScreen())
+		{
+			return;
+		}
+	}
+// Lookup table properties to get the line thickness, etc.
+
+	fl_ContainerLayout * pLayout = getSectionLayout()->myContainingLayout ();
+	UT_ASSERT(pLayout->getContainerType () == FL_CONTAINER_TABLE);
+	if (pLayout->getContainerType () != FL_CONTAINER_TABLE) return;
+	fl_TableLayout * pTableLayout = static_cast<fl_TableLayout *>(pLayout);
+
+	PP_PropertyMap::Line lineBottom = getBottomStyle (pTableLayout);
+	PP_PropertyMap::Line lineLeft   = getLeftStyle   (pTableLayout);
+	PP_PropertyMap::Line lineRight  = getRightStyle  (pTableLayout);
+	PP_PropertyMap::Line lineTop    = getTopStyle    (pTableLayout);
+	fp_Page * pPage = pBroke->getPage();
+	if(pPage == NULL)
+	{
+//
+// Can happen while loading.
+//
+		return;
+	}
+	bool bDrawTop = true;
+	bool bDrawBot = true;
 	xxx_UT_DEBUGMSG(("m_iBotY %d \n",m_iBotY));
 	m_bLinesDrawn = true;
-
+	UT_sint32 iLeft,iRight,iTop,iBot = 0;
+	UT_sint32 col_y = 0;
+	fp_Column * pCol = NULL;
+	fp_ShadowContainer * pShadow = NULL;
+	bool bDoClear = true;
+	getScreenPositions(pBroke,pG,iLeft,iRight,iTop,iBot,col_y,pCol,pShadow,bDoClear );
 	if(pBroke != NULL)
 	{
 		if(m_iBotY < pBroke->getYBreak())

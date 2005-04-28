@@ -222,7 +222,9 @@ FV_View::FV_View(XAP_App * pApp, void* pParentData, FL_DocLayout* pLayout)
 		m_bDontNotifyListeners(false),
 		m_pLocalBuf(NULL),
 		m_iGrabCell(0),
-		m_InlineImage(this)
+		m_InlineImage(this),
+		m_bInsertAtTablePending(false),
+		m_iPosAtTable(0)
 {
 	m_colorRevisions[0] = UT_RGBColor(171,4,254);
 	m_colorRevisions[1] = UT_RGBColor(171,20,119);

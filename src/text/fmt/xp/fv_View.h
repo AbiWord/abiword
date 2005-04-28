@@ -931,6 +931,8 @@ private:
 	UT_ByteBuf *        m_pLocalBuf;
 	UT_sint32           m_iGrabCell;
 	FV_VisualInlineImage  m_InlineImage;
+	bool                m_bInsertAtTablePending;
+	PT_DocPosition      m_iPosAtTable;
 };
 
 #endif /* FV_VIEW_H */

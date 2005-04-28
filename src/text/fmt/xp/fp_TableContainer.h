@@ -115,6 +115,7 @@ public:
 	void		        drawBroken(dg_DrawArgs* pDa, fp_TableContainer * pTab);
 	virtual void		clearScreen(void);
 	void		        clearScreen(bool bNoRecursive);
+	void                getScreenPositions(fp_TableContainer * pBroke,GR_Graphics * pG,UT_sint32 & iLeft, UT_sint32 & iRight,UT_sint32 & iTop,UT_sint32 & iBot,UT_sint32 & col_y, fp_Column *& pCol, fp_ShadowContainer *& pShadow, bool & bDoClear );
 	void                drawLines(fp_TableContainer * pBroke,GR_Graphics * pG);
 	void                drawLinesAdjacent(void);
 	void                draw(fp_Line * pLine);

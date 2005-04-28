@@ -3247,6 +3247,38 @@ UT_Error FV_View::cmdInsertTable(UT_sint32 numRows, UT_sint32 numCols, const XML
 
 bool FV_View::cmdCharInsert(const UT_UCSChar * text, UT_uint32 count, bool bForce)
 {
+  //
+  // Look if we should insert a pargraph before the table
+  //
+        if(m_bInsertAtTablePending && (count==1) && (text[0] != UCS_FF) && (text[0] != UCS_VTAB))
+	{
+
+	        m_pDoc->beginUserAtomicGlob();
+
+	// Prevent access to Piecetable for things like spellchecks until
+	// paragraphs have stablized
+	//
+		_saveAndNotifyPieceTableChange();
+		m_pDoc->disableListUpdates();
+	        m_pDoc->insertStrux( m_iPosAtTable-1,PTX_Block);
+		m_bInsertAtTablePending = false;
+
+	// Signal piceTable is stable again
+		_restorePieceTableState();
+
+	// Signal piceTable is stable again
+	// Signal PieceTable Changes have finished
+		_generalUpdate();
+	// restore updates and clean up dirty lists
+		m_pDoc->enableListUpdates();
+		m_pDoc->updateDirtyLists();
+		setPoint(m_iPosAtTable+1);
+		m_iPosAtTable = 0;
+		_generalUpdate();
+		bool res = _charInsert(text, count, bForce);
+		m_pDoc->endUserAtomicGlob();
+		return res;
+	}
 	// the code below inserts a direction marker before a space if the automatic insertion of such
 	// markers is indicated by user's preferences and if the current keyboard language direction is
 	// inconsistent with the dominant direction of the paragraph (this makes phone numbers and similar
@@ -5040,14 +5072,11 @@ bool FV_View::cmdInsertLatexMath(UT_UTF8String & sLatex,
  * It assumes that a data item with a name of the supplied filename has
  * already been inserted.
  */
-bool FV_View::cmdInsertMathML(const char * szFileName,PT_DocPosition pos)
+bool FV_View::cmdInsertMathML(const char * szUID,PT_DocPosition pos)
 {
-
+  UT_DEBUGMSG(("Insert Math Object at %d name %s \n",pos,szUID));
 	const XML_Char * atts[5]={"dataid",NULL,NULL,NULL,NULL};
-	UT_uint32 uid = m_pDoc->getUID(UT_UniqueId::Image);
-	UT_UTF8String sUID;
-	UT_UTF8String_sprintf(sUID,"%d",uid);
-	atts[1] = sUID.utf8_str();
+	atts[1] = szUID;
 	const XML_Char *cur_style = NULL;
 	getStyle(&cur_style);
 	if((cur_style != NULL) && (*cur_style) && (strcmp(cur_style,"None") != 0))
@@ -5067,9 +5096,9 @@ bool FV_View::cmdInsertMathML(const char * szFileName,PT_DocPosition pos)
 		m_pDoc->beginUserAtomicGlob();
 		_deleteSelection();
 	}
-	getCharFormat(&props,false,pos);
-
-	m_pDoc->insertObject(pos,PTO_Math,atts,props);
+	_makePointLegal();
+	getCharFormat(&props,false,getPoint());
+	m_pDoc->insertObject(getPoint(),PTO_Math,atts,props);
 
 	if (bDidGlob)
 		m_pDoc->endUserAtomicGlob();
