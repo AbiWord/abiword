@@ -1698,7 +1698,15 @@ fl_BlockLayout* FL_DocLayout::findBlockAtPosition(PT_DocPosition pos) const
 		return NULL;
 	}
 
-	if(pBL->getSectionLayout()->getType() == FL_SECTION_HDRFTR)
+	fl_ContainerLayout * pMyC = pBL->myContainingLayout();
+	while(pMyC && (pMyC->getContainerType() != FL_CONTAINER_DOCSECTION)
+	      && (pMyC->getContainerType() != FL_CONTAINER_HDRFTR)
+	      && (pMyC->getContainerType() != FL_CONTAINER_SHADOW))
+	{
+	  pMyC = pMyC->myContainingLayout();
+	}
+	if((pMyC->getContainerType() == FL_CONTAINER_HDRFTR)
+	      || (pMyC->getContainerType() == FL_CONTAINER_SHADOW))
 	{
 		fl_HdrFtrShadow * pShadow = NULL;
 		FV_View * pView = getView();
@@ -1736,13 +1744,19 @@ fl_BlockLayout* FL_DocLayout::findBlockAtPosition(PT_DocPosition pos) const
 			}
 
 		}
+		else if(pMyC->getContainerType() == FL_CONTAINER_SHADOW)
+		{
+		        pShadow = static_cast<fl_HdrFtrShadow *>(pMyC);
+		}
 		else
 		{
-			pShadow = static_cast<fl_HdrFtrSectionLayout *>(pBL->getSectionLayout())->getFirstShadow();
+			pShadow = static_cast<fl_HdrFtrSectionLayout *>(pMyC)->getFirstShadow();
 		}
 		fl_BlockLayout * ppBL = NULL;
 		if(pShadow != NULL)
+		{
 			ppBL = static_cast<fl_BlockLayout *>(pShadow->findMatchingContainer(pBL));
+		}
 		else
 		{
 			UT_DEBUGMSG(("No Shadow! But there should be ! \n"));

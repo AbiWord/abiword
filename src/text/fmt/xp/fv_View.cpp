@@ -3140,7 +3140,27 @@ void FV_View::insertParagraphBreak(void)
 	{
 	       m_FrameEdit.setPointInside();
 	}
+	if(m_bInsertAtTablePending)
+	{
+		m_pDoc->disableListUpdates();
+		PT_DocPosition pos =  m_iPosAtTable;
+		m_pDoc->insertStrux( m_iPosAtTable,PTX_Block);
+		m_bInsertAtTablePending = false;
+	// Signal piceTable is stable again
+		_restorePieceTableState();
 
+	// Signal piceTable is stable again
+	// Signal PieceTable Changes have finished
+		_generalUpdate();
+	// restore updates and clean up dirty lists
+		m_pDoc->enableListUpdates();
+		m_pDoc->updateDirtyLists();
+		setPoint(pos+1);
+		m_iPosAtTable = 0;
+		_generalUpdate();
+		m_pDoc->endUserAtomicGlob();
+		return;
+	}
 	// insert a new paragraph with the same attributes/properties
 	// as the previous (or none if the first paragraph in the section).
 	//

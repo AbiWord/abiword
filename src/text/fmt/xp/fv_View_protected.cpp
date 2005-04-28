@@ -3951,7 +3951,7 @@ void FV_View::_fixInsertionPointCoords()
 		//
 		// Position the caret just before the table
 		//
-		fl_TableLayout * pTL = getTableAtPos(m_iPosAtTable+2);
+		fl_TableLayout * pTL = getTableAtPos(m_iPosAtTable+3);
 		if(pTL == NULL)
 		{
 			m_bInsertAtTablePending = false;
@@ -4489,6 +4489,7 @@ bool FV_View::_charMotion(bool bForward,UT_uint32 countChars, bool bSkipCannotCo
 	// advance(backup) the current insertion point by count characters.
 	// return false if we ran into an end (or had an error).
 	bool bInsertAtTable = false;
+	PT_DocPosition posTable = 0;
 	PT_DocPosition posOld = m_iInsPoint;
 	fp_Run* pRun = NULL;
 	fl_BlockLayout* pBlock = NULL;
@@ -4580,7 +4581,20 @@ bool FV_View::_charMotion(bool bForward,UT_uint32 countChars, bool bSkipCannotCo
 	else
 	{
 		UT_sint32 iPos = static_cast<UT_sint32>(m_iInsPoint) - static_cast<UT_sint32>(countChars);
-		if(iPos > 0 && iPos >= static_cast<UT_sint32>(posBOD))
+		PT_DocPosition realBOD =0;
+		if(posBOD == 2)
+	    {
+			realBOD = 0;
+		}
+		else
+		{
+			realBOD = posBOD;
+			while(!m_pDoc->isHdrFtrAtPos(realBOD) && (realBOD > 0))
+			{
+				realBOD--;
+			}
+		}
+		if(iPos > 0 && iPos > static_cast<UT_sint32>(realBOD))
 		{
 			_setPoint(m_iInsPoint - countChars);
 		}
@@ -4592,14 +4606,37 @@ bool FV_View::_charMotion(bool bForward,UT_uint32 countChars, bool bSkipCannotCo
 // Scan past any strux boundaries (like table controls
 //
 // when moving backwards, we need to also skip over the EndOfFootnote struxes
-		while(getPoint() > posBOD && !isPointLegal())
+//
+		bool bGotTableStrux = false;
+		bool bGotOtherStrux = false;
+		while(getPoint() > realBOD && !isPointLegal() && !bGotOtherStrux)
 		{
 			_setPoint(m_iInsPoint - 1);
 			UT_DEBUGMSG(("Backward scan past illegal point pos %d \n",m_iInsPoint));
+			if(!bGotOtherStrux && m_pDoc->isTableAtPos(getPoint()))
+			{
+				bGotTableStrux = true;
+				posTable = getPoint();
+			}
+			else if(!bGotOtherStrux && bGotTableStrux)
+			{
+				if(m_pDoc->isEndTableAtPos(getPoint()) ||
+				   m_pDoc->isCellAtPos(getPoint()) ||
+				   m_pDoc->isSectionAtPos(getPoint()) ||
+				   m_pDoc->isHdrFtrAtPos(getPoint()) ||
+				   m_pDoc->isFrameAtPos(getPoint()))
+				{
+					  bGotOtherStrux = true;
+				}
+			}
 		}
-		if(getPoint() == posBOD)
+		if(bGotOtherStrux && bGotTableStrux)
 		{
 			bInsertAtTable = true;
+		}
+		if(getPoint() < posBOD)
+		{
+			_setPoint(posBOD);
 		}
 		_findPositionCoords(m_iInsPoint, false, x, y, x2,y2,uheight, bDirection, &pBlock, &pRun);
 
@@ -4856,10 +4893,10 @@ bool FV_View::_charMotion(bool bForward,UT_uint32 countChars, bool bSkipCannotCo
 		bRes = false;
 	}
 	_makePointLegal();
-	if(bInsertAtTable && (getPoint() != posBOD))
+	if(bInsertAtTable)
 	{
 		m_bInsertAtTablePending = true;
-		m_iPosAtTable =posBOD;
+		m_iPosAtTable =posTable;
 	}
 	if (m_iInsPoint != posOld)
 	{

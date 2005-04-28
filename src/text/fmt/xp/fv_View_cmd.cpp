@@ -3260,7 +3260,8 @@ bool FV_View::cmdCharInsert(const UT_UCSChar * text, UT_uint32 count, bool bForc
 	//
 		_saveAndNotifyPieceTableChange();
 		m_pDoc->disableListUpdates();
-	        m_pDoc->insertStrux( m_iPosAtTable-1,PTX_Block);
+		PT_DocPosition pos = m_iPosAtTable;
+	        m_pDoc->insertStrux( m_iPosAtTable,PTX_Block);
 		m_bInsertAtTablePending = false;
 
 	// Signal piceTable is stable again
@@ -3272,7 +3273,7 @@ bool FV_View::cmdCharInsert(const UT_UCSChar * text, UT_uint32 count, bool bForc
 	// restore updates and clean up dirty lists
 		m_pDoc->enableListUpdates();
 		m_pDoc->updateDirtyLists();
-		setPoint(m_iPosAtTable+1);
+		setPoint(pos+1);
 		m_iPosAtTable = 0;
 		_generalUpdate();
 		bool res = _charInsert(text, count, bForce);
