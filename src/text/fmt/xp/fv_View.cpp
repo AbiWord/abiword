@@ -10914,8 +10914,8 @@ bool FV_View::insertHeaderFooter(const XML_Char ** props, HdrFtrType hfType, fl_
 
 	m_pDoc->changeStruxFmt(PTC_AddFmt, posSec, posSec, sec_attributes2, NULL, PTX_Section);
 
-
-	moveInsPtTo(FV_DOCPOS_EOD); // Move to the end, where we will create the header/footer
+	PT_DocPosition iPos = _getDocPos(FV_DOCPOS_EOD);
+	_setPoint(iPos); // Move to the end, where we will create the header/footer
 
 
 // insert the Header/Footer

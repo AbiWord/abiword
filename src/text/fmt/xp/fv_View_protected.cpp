@@ -4609,7 +4609,7 @@ bool FV_View::_charMotion(bool bForward,UT_uint32 countChars, bool bSkipCannotCo
 //
 		bool bGotTableStrux = false;
 		bool bGotOtherStrux = false;
-		while(getPoint() > realBOD && !isPointLegal() && !bGotOtherStrux)
+		while(getPoint() > realBOD && !isPointLegal())
 		{
 			_setPoint(m_iInsPoint - 1);
 			UT_DEBUGMSG(("Backward scan past illegal point pos %d \n",m_iInsPoint));
@@ -4892,7 +4892,10 @@ bool FV_View::_charMotion(bool bForward,UT_uint32 countChars, bool bSkipCannotCo
 		_setPoint(posEOD);
 		bRes = false;
 	}
-	_makePointLegal();
+	if(m_iInsPoint < posBOD)
+	{
+		_setPoint(posBOD);
+	}
 	if(bInsertAtTable)
 	{
 		m_bInsertAtTablePending = true;

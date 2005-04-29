@@ -1557,7 +1557,23 @@ void AP_LeftRuler::_drawCellProperties(AP_LeftRulerInfo * pInfo)
 	fp_TableContainer *pBroke = pCurPage->getContainingTable(pos);
 	if(pBroke == NULL)
 	{
-		return;
+	  AP_LeftRulerTableInfo * pTInfo =  NULL;
+	  pTInfo = pInfo->m_vecTableRowInfo->getNthItem(0);
+	  fp_CellContainer * pCell = pTInfo->m_pCell;
+	  fp_Container * pHdr = pCell->getContainer();
+	  while(pHdr && !pHdr->isColumnType())
+	  {
+	    pHdr = pHdr->getContainer();
+	  }
+	  if(pHdr == NULL || pHdr->getContainerType() == FP_CONTAINER_COLUMN)
+	  {
+	        return;
+	  }
+	  pBroke = static_cast<fp_TableContainer *>(pCell->getContainer());
+	  if(pBroke == NULL) 
+	    return;
+	  if(pBroke->getPage() == NULL)
+	    return;
 	}
 	for(i=pInfo->m_iCurrentRow;i <= nrows && !bStop; i++)
 	{

@@ -936,11 +936,13 @@ fp_Run * fl_ContainerLayout::getFirstRun(void) const
 UT_uint32 fl_ContainerLayout::getPosition(bool bActualBlockPos) const
 {
 	const fl_ContainerLayout * pL = this;
-    if(!bActualBlockPos && (getContainerType() != FL_CONTAINER_TOC))
+	if(!bActualBlockPos && (getContainerType() != FL_CONTAINER_TOC))
 	{
-		while(pL->getContainerType() != FL_CONTAINER_BLOCK && pL->getFirstLayout())
+		pL = static_cast<fl_ContainerLayout *>(getNextBlockInDocument());
+		if(pL == NULL)
 		{
-			pL = pL->getFirstLayout();
+		  PT_DocPosition pos = getDocLayout()->getDocument()->getStruxPosition(getStruxDocHandle());
+		  return pos;
 		}
 		if(pL->getContainerType() == FL_CONTAINER_BLOCK)
 		{
