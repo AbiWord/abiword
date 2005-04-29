@@ -3713,7 +3713,6 @@ void FV_View::cmdCharDelete(bool bForward, UT_uint32 count)
 
 		// Signal PieceTable Change
 		_saveAndNotifyPieceTableChange();
-
 		if (amt > 0)
 		{
 			m_pDoc->disableListUpdates();
@@ -3757,6 +3756,7 @@ void FV_View::cmdCharDelete(bool bForward, UT_uint32 count)
 
 			if(fontFlag)
 			{
+			        _makePointLegal();
 				setCharFormat(properties);
 			}
 		}
