@@ -22,6 +22,7 @@
 
 #include "ap_Win32Frame.h"
 #include "ut_Win32Timer.h"
+#include "ut_Win32OS.h"
 #include "gr_Win32Graphics.h"
 #include "ap_Win32TopRuler.h"
 #include "ap_Win32LeftRuler.h"
@@ -186,12 +187,27 @@ HWND AP_Win32FrameImpl::_createDocumentWindow(XAP_Frame *pFrame, HWND hwndParent
 	}
 
 	// create a child window for us.
-	m_hwndDocument = CreateWindowEx(0, s_DocumentWndClassName, NULL,
-									WS_CHILD | WS_VISIBLE,
-									xLeftRulerWidth, yTopRulerHeight,
-									r.right - xLeftRulerWidth - cxVScroll,
-									r.bottom - yTopRulerHeight - cyHScroll,
-									m_hwndContainer, NULL, static_cast<XAP_Win32App *>(XAP_App::getApp())->getInstance(), NULL);
+	if(UT_IsWinNT())
+	{
+		m_hwndDocument = CreateWindowExW(0, (const unsigned short *)s_DocumentWndClassName, NULL,
+										WS_CHILD | WS_VISIBLE,
+										xLeftRulerWidth, yTopRulerHeight,
+										r.right - xLeftRulerWidth - cxVScroll,
+										r.bottom - yTopRulerHeight - cyHScroll,
+										m_hwndContainer, NULL,
+										static_cast<XAP_Win32App *>(XAP_App::getApp())->getInstance(), NULL);
+	}
+	else
+	{
+		m_hwndDocument = CreateWindowExA(0, s_DocumentWndClassName, NULL,
+										WS_CHILD | WS_VISIBLE,
+										xLeftRulerWidth, yTopRulerHeight,
+										r.right - xLeftRulerWidth - cxVScroll,
+										r.bottom - yTopRulerHeight - cyHScroll,
+										m_hwndContainer, NULL,
+										static_cast<XAP_Win32App *>(XAP_App::getApp())->getInstance(), NULL);
+	}
+	
 	UT_return_val_if_fail (m_hwndDocument, 0);
 	// WARNING!!! many places expact an XAP_Frame or descendant!!!
 	//SWL(m_hwndDocument, this);
@@ -614,21 +630,46 @@ bool AP_Win32FrameImpl::_RegisterClass(XAP_Win32App * app)
 	// register class for the actual document window
 	_snprintf(s_DocumentWndClassName, MAXDOCWNDCLSNMSIZE, "%sDocument", app->getApplicationName());
 
-	memset(&wndclass, 0, sizeof(wndclass));
-	wndclass.cbSize        = sizeof(wndclass);
-	wndclass.style         = CS_DBLCLKS | CS_OWNDC;
-	wndclass.lpfnWndProc   = AP_Win32FrameImpl::_DocumentWndProc;
-	wndclass.cbClsExtra    = 0;
-	wndclass.cbWndExtra    = 0;
-	wndclass.hInstance     = app->getInstance();
-	wndclass.hIcon         = NULL;
-	wndclass.hCursor       = NULL;
-	wndclass.hbrBackground = NULL;
-	wndclass.lpszMenuName  = NULL;
-	wndclass.lpszClassName = s_DocumentWndClassName;
-	wndclass.hIconSm       = NULL;
+	if(UT_IsWinNT())
+	{
+		WNDCLASSEXW  wndclass;
+		memset(&wndclass, 0, sizeof(wndclass));
+		wndclass.cbSize        = sizeof(wndclass);
+		wndclass.style         = CS_DBLCLKS | CS_OWNDC;
+		wndclass.lpfnWndProc   = AP_Win32FrameImpl::_DocumentWndProc;
+		wndclass.cbClsExtra    = 0;
+		wndclass.cbWndExtra    = 0;
+		wndclass.hInstance     = app->getInstance();
+		wndclass.hIcon         = NULL;
+		wndclass.hCursor       = NULL;
+		wndclass.hbrBackground = NULL;
+		wndclass.lpszMenuName  = NULL;
+		wndclass.lpszClassName = (const unsigned short *)s_DocumentWndClassName;
+		wndclass.hIconSm       = NULL;
+		
+		a = RegisterClassExW(&wndclass);
+	}
+	else
+	{
+		WNDCLASSEXA  wndclass;
+		memset(&wndclass, 0, sizeof(wndclass));
+		wndclass.cbSize        = sizeof(wndclass);
+		wndclass.style         = CS_DBLCLKS | CS_OWNDC;
+		wndclass.lpfnWndProc   = AP_Win32FrameImpl::_DocumentWndProc;
+		wndclass.cbClsExtra    = 0;
+		wndclass.cbWndExtra    = 0;
+		wndclass.hInstance     = app->getInstance();
+		wndclass.hIcon         = NULL;
+		wndclass.hCursor       = NULL;
+		wndclass.hbrBackground = NULL;
+		wndclass.lpszMenuName  = NULL;
+		wndclass.lpszClassName = s_DocumentWndClassName;
+		wndclass.hIconSm       = NULL;
+		
+		a = RegisterClassExA(&wndclass);
+	}
+	
 
-	a = RegisterClassEx(&wndclass);
 	UT_return_val_if_fail(a, false);
 
 	if (!AP_Win32TopRuler::RegisterClass(app) ||
