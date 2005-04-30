@@ -34,4 +34,15 @@ DLGTEMPLATE * WINAPI UT_LockDlgRes(HINSTANCE hinst, LPCTSTR lpszResName);
 char * UT_GetDefaultPrinterName();
 
 HDC  UT_GetDefaultPrinterDC();
+
+ATOM UT_RegisterClassEx(UINT style, WNDPROC wndproc, HINSTANCE hInstance,
+						HICON hIcon, HCURSOR hCursor, HBRUSH hbrBackground, HICON hIconSm,
+						const char * menu, const char * name, bool bForceANSI = false);
+
+HWND UT_CreateWindowEx(DWORD dwExStyle, LPCTSTR lpClassName, LPCTSTR lpWindowName, DWORD dwStyle,
+					   int x, int y, int nWidth, int nHeight,
+					   HWND hWndParent, HMENU hMenu, HINSTANCE hInstance, LPVOID lpParam, bool bForceANSI = true);
+
+LRESULT UT_DefWindowProc(HWND hWnd, UINT Msg, WPARAM wParam,LPARAM lParam, bool bForceANSI = false);
+
 #endif /* UT_Win32OS_H */

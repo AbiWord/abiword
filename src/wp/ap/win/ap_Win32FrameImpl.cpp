@@ -112,7 +112,7 @@ HWND AP_Win32FrameImpl::_createDocumentWindow(XAP_Frame *pFrame, HWND hwndParent
 	// the 'container' will in turn contain the document window, the
 	// rulers, and the variousscroll bars and other dead space.
 
-	m_hwndContainer = CreateWindowEx(WS_EX_CLIENTEDGE, s_ContainerWndClassName, NULL,
+	m_hwndContainer = UT_CreateWindowEx(WS_EX_CLIENTEDGE, s_ContainerWndClassName, NULL,
 									 WS_CHILD | WS_VISIBLE,
 									 iLeft, iTop, iWidth, iHeight,
 									 hwndParent, NULL, static_cast<XAP_Win32App *>(XAP_App::getApp())->getInstance(), NULL);
@@ -128,7 +128,7 @@ HWND AP_Win32FrameImpl::_createDocumentWindow(XAP_Frame *pFrame, HWND hwndParent
 	const int cyHScroll = GetSystemMetrics(SM_CYHSCROLL);
 	const int cxVScroll = GetSystemMetrics(SM_CXVSCROLL);
 
-	m_hWndHScroll = CreateWindowEx(0, "ScrollBar", 0, WS_CHILD | WS_VISIBLE | SBS_HORZ,
+	m_hWndHScroll = UT_CreateWindowEx(0, "ScrollBar", 0, WS_CHILD | WS_VISIBLE | SBS_HORZ,
 									0, r.bottom - cyHScroll,
 									r.right - cxVScroll, cyHScroll,
 									m_hwndContainer,
@@ -138,7 +138,7 @@ HWND AP_Win32FrameImpl::_createDocumentWindow(XAP_Frame *pFrame, HWND hwndParent
 	//SWL(m_hWndHScroll, this);
 	SWL(m_hWndHScroll, pFrame);
 
-	m_hWndVScroll = CreateWindowEx(0, "ScrollBar", 0, WS_CHILD | WS_VISIBLE | SBS_VERT,
+	m_hWndVScroll = UT_CreateWindowEx(0, "ScrollBar", 0, WS_CHILD | WS_VISIBLE | SBS_VERT,
 									r.right - cxVScroll, 0,
 									cxVScroll, r.bottom - cyHScroll,
 									m_hwndContainer,
@@ -154,7 +154,7 @@ HWND AP_Win32FrameImpl::_createDocumentWindow(XAP_Frame *pFrame, HWND hwndParent
 #  define XX_StyleBits          (SBS_SIZEGRIP)
 #endif
 
-	m_hWndGripperHack = CreateWindowEx(0,"ScrollBar", 0,
+	m_hWndGripperHack = UT_CreateWindowEx(0,"ScrollBar", 0,
 										WS_CHILD | WS_VISIBLE | XX_StyleBits,
 										r.right-cxVScroll, r.bottom-cyHScroll, cxVScroll, cyHScroll,
 										m_hwndContainer, NULL, static_cast<XAP_Win32App *>(XAP_App::getApp())->getInstance(), NULL);
@@ -187,26 +187,13 @@ HWND AP_Win32FrameImpl::_createDocumentWindow(XAP_Frame *pFrame, HWND hwndParent
 	}
 
 	// create a child window for us.
-	if(UT_IsWinNT())
-	{
-		m_hwndDocument = CreateWindowExW(0, (const unsigned short *)s_DocumentWndClassName, NULL,
-										WS_CHILD | WS_VISIBLE,
-										xLeftRulerWidth, yTopRulerHeight,
-										r.right - xLeftRulerWidth - cxVScroll,
-										r.bottom - yTopRulerHeight - cyHScroll,
-										m_hwndContainer, NULL,
-										static_cast<XAP_Win32App *>(XAP_App::getApp())->getInstance(), NULL);
-	}
-	else
-	{
-		m_hwndDocument = CreateWindowExA(0, s_DocumentWndClassName, NULL,
-										WS_CHILD | WS_VISIBLE,
-										xLeftRulerWidth, yTopRulerHeight,
-										r.right - xLeftRulerWidth - cxVScroll,
-										r.bottom - yTopRulerHeight - cyHScroll,
-										m_hwndContainer, NULL,
-										static_cast<XAP_Win32App *>(XAP_App::getApp())->getInstance(), NULL);
-	}
+	m_hwndDocument = UT_CreateWindowEx(0, s_DocumentWndClassName, NULL,
+									   WS_CHILD | WS_VISIBLE,
+									   xLeftRulerWidth, yTopRulerHeight,
+									   r.right - xLeftRulerWidth - cxVScroll,
+									   r.bottom - yTopRulerHeight - cyHScroll,
+									   m_hwndContainer, NULL,
+									   static_cast<XAP_Win32App *>(XAP_App::getApp())->getInstance(), NULL);
 	
 	UT_return_val_if_fail (m_hwndDocument, 0);
 	// WARNING!!! many places expact an XAP_Frame or descendant!!!
@@ -602,7 +589,6 @@ bool AP_Win32FrameImpl::_RegisterClass(XAP_Win32App * app)
 	if (!XAP_Win32FrameImpl::_RegisterClass(app))
 		return false;
 
-	WNDCLASSEX  wndclass;
 	ATOM a;
 
 	// register class for the container window (this will contain the document
@@ -610,65 +596,18 @@ bool AP_Win32FrameImpl::_RegisterClass(XAP_Win32App * app)
 
 	_snprintf(s_ContainerWndClassName, MAXCNTWNDCLSNMSIZE, "%sContainer", app->getApplicationName());
 
-	memset(&wndclass, 0, sizeof(wndclass));
-	wndclass.cbSize        = sizeof(wndclass);
-	wndclass.style         = CS_DBLCLKS | CS_OWNDC;
-	wndclass.lpfnWndProc   = AP_Win32FrameImpl::_ContainerWndProc;
-	wndclass.cbClsExtra    = 0;
-	wndclass.cbWndExtra    = 0;
-	wndclass.hInstance     = app->getInstance();
-	wndclass.hIcon         = NULL;
-	wndclass.hCursor       = LoadCursor(NULL, IDC_ARROW);
-	wndclass.hbrBackground = NULL;
-	wndclass.lpszMenuName  = NULL;
-	wndclass.lpszClassName = s_ContainerWndClassName;
-	wndclass.hIconSm       = NULL;
-
-	a = RegisterClassEx(&wndclass);
+	a = UT_RegisterClassEx(CS_DBLCLKS | CS_OWNDC, AP_Win32FrameImpl::_ContainerWndProc, app->getInstance(),
+						   NULL, LoadCursor(NULL, IDC_ARROW), NULL, NULL,
+						   NULL, s_ContainerWndClassName);
+	
 	UT_return_val_if_fail(a, false);
 
 	// register class for the actual document window
 	_snprintf(s_DocumentWndClassName, MAXDOCWNDCLSNMSIZE, "%sDocument", app->getApplicationName());
 
-	if(UT_IsWinNT())
-	{
-		WNDCLASSEXW  wndclass;
-		memset(&wndclass, 0, sizeof(wndclass));
-		wndclass.cbSize        = sizeof(wndclass);
-		wndclass.style         = CS_DBLCLKS | CS_OWNDC;
-		wndclass.lpfnWndProc   = AP_Win32FrameImpl::_DocumentWndProc;
-		wndclass.cbClsExtra    = 0;
-		wndclass.cbWndExtra    = 0;
-		wndclass.hInstance     = app->getInstance();
-		wndclass.hIcon         = NULL;
-		wndclass.hCursor       = NULL;
-		wndclass.hbrBackground = NULL;
-		wndclass.lpszMenuName  = NULL;
-		wndclass.lpszClassName = (const unsigned short *)s_DocumentWndClassName;
-		wndclass.hIconSm       = NULL;
-		
-		a = RegisterClassExW(&wndclass);
-	}
-	else
-	{
-		WNDCLASSEXA  wndclass;
-		memset(&wndclass, 0, sizeof(wndclass));
-		wndclass.cbSize        = sizeof(wndclass);
-		wndclass.style         = CS_DBLCLKS | CS_OWNDC;
-		wndclass.lpfnWndProc   = AP_Win32FrameImpl::_DocumentWndProc;
-		wndclass.cbClsExtra    = 0;
-		wndclass.cbWndExtra    = 0;
-		wndclass.hInstance     = app->getInstance();
-		wndclass.hIcon         = NULL;
-		wndclass.hCursor       = NULL;
-		wndclass.hbrBackground = NULL;
-		wndclass.lpszMenuName  = NULL;
-		wndclass.lpszClassName = s_DocumentWndClassName;
-		wndclass.hIconSm       = NULL;
-		
-		a = RegisterClassExA(&wndclass);
-	}
-	
+	a = UT_RegisterClassEx(CS_DBLCLKS | CS_OWNDC, AP_Win32FrameImpl::_DocumentWndProc, app->getInstance(),
+						   NULL, NULL, NULL, NULL,
+						   NULL, s_DocumentWndClassName);
 
 	UT_return_val_if_fail(a, false);
 
@@ -868,11 +807,11 @@ LRESULT CALLBACK AP_Win32FrameImpl::_ContainerWndProc(HWND hwnd, UINT iMsg, WPAR
 
 	if (!f)
 	{
-		return DefWindowProc(hwnd, iMsg, wParam, lParam);
+		return UT_DefWindowProc(hwnd, iMsg, wParam, lParam);
 	}
 
 	AP_Win32FrameImpl *fImpl = f->getAPWin32FrameImpl();
-	UT_return_val_if_fail(fImpl, DefWindowProc(hwnd, iMsg, wParam, lParam));
+	UT_return_val_if_fail(fImpl, UT_DefWindowProc(hwnd, iMsg, wParam, lParam));
 
 	AV_View* pView = f->getCurrentView();
 	//UT_ASSERT(pView);		/* only fatal for some messages */
@@ -1001,7 +940,7 @@ LRESULT CALLBACK AP_Win32FrameImpl::_ContainerWndProc(HWND hwnd, UINT iMsg, WPAR
 			SendMessage(fImpl->m_hwndTopRuler,WM_SYSCOLORCHANGE,0,0);
 			SendMessage(fImpl->m_hwndLeftRuler,WM_SYSCOLORCHANGE,0,0);
 			SendMessage(fImpl->m_hwndDocument,WM_SYSCOLORCHANGE,0,0);
-			return DefWindowProc(hwnd, iMsg, wParam, lParam);
+			return UT_DefWindowProc(hwnd, iMsg, wParam, lParam);
 		}
 
 	 	case WM_MOUSEWHEEL:
@@ -1062,8 +1001,10 @@ LRESULT CALLBACK AP_Win32FrameImpl::_ContainerWndProc(HWND hwnd, UINT iMsg, WPAR
 		}
 
 		default:
-			return DefWindowProc(hwnd, iMsg, wParam, lParam);
+			return UT_DefWindowProc(hwnd, iMsg, wParam, lParam);
 	}
+
+	return 0; // to silence the compiler
 }
 
 LRESULT CALLBACK AP_Win32FrameImpl::_DocumentWndProc(HWND hwnd, UINT iMsg, WPARAM wParam, LPARAM lParam)
@@ -1072,11 +1013,11 @@ LRESULT CALLBACK AP_Win32FrameImpl::_DocumentWndProc(HWND hwnd, UINT iMsg, WPARA
 
 	if (!f)
 	{
-		return DefWindowProc(hwnd, iMsg, wParam, lParam);
+		return UT_DefWindowProc(hwnd, iMsg, wParam, lParam);
 	}
 
 	AP_Win32FrameImpl *fImpl = static_cast<AP_Win32FrameImpl *>(f->getFrameImpl());
-	UT_return_val_if_fail(fImpl, DefWindowProc(hwnd, iMsg, wParam, lParam));
+	UT_return_val_if_fail(fImpl, UT_DefWindowProc(hwnd, iMsg, wParam, lParam));
 
 	AV_View* 		pView = f->getCurrentView();
 	EV_Win32Mouse*	pMouse = (EV_Win32Mouse *) fImpl->m_pMouse;
@@ -1177,7 +1118,7 @@ LRESULT CALLBACK AP_Win32FrameImpl::_DocumentWndProc(HWND hwnd, UINT iMsg, WPARA
 
 	    
 	     	if (pWin32Keyboard->onKeyDown(pView,hwnd,iMsg,wParam,lParam))
-    			return DefWindowProc(hwnd,iMsg,wParam,lParam);
+    			return UT_DefWindowProc(hwnd,iMsg,wParam,lParam);
 	 		else
  				return false;	    				 	     			
 		
@@ -1245,7 +1186,7 @@ LRESULT CALLBACK AP_Win32FrameImpl::_DocumentWndProc(HWND hwnd, UINT iMsg, WPARA
 
 	    
 		     	if (pWin32Keyboard->onKeyDown(pView,hwnd,iMsg,wParam,lParam))
-     				return DefWindowProc(hwnd,iMsg,wParam,lParam);
+     				return UT_DefWindowProc(hwnd,iMsg,wParam,lParam);
 	 		else
  				return false;	    				 	     			
     		
@@ -1255,7 +1196,7 @@ LRESULT CALLBACK AP_Win32FrameImpl::_DocumentWndProc(HWND hwnd, UINT iMsg, WPARA
 		{
 			UT_DEBUGMSG(("WM_SYSCHAR %d  - %d\n",wParam, lParam));
 			ev_Win32Keyboard *pWin32Keyboard = static_cast<ev_Win32Keyboard *>(fImpl->m_pKeyboard);	    
-			return DefWindowProc(hwnd,iMsg,wParam,lParam);
+			return UT_DefWindowProc(hwnd,iMsg,wParam,lParam);
 		}
 
 		case WM_CHAR:
@@ -1264,7 +1205,7 @@ LRESULT CALLBACK AP_Win32FrameImpl::_DocumentWndProc(HWND hwnd, UINT iMsg, WPARA
 			ev_Win32Keyboard *pWin32Keyboard = static_cast<ev_Win32Keyboard *>(fImpl->m_pKeyboard);
 	    
 			pWin32Keyboard->onChar(pView,hwnd,iMsg,wParam,lParam);		
-			return DefWindowProc(hwnd,iMsg,wParam,lParam);
+			return UT_DefWindowProc(hwnd,iMsg,wParam,lParam);
 		}
 
 		case WM_UNICHAR:
@@ -1278,7 +1219,7 @@ LRESULT CALLBACK AP_Win32FrameImpl::_DocumentWndProc(HWND hwnd, UINT iMsg, WPARA
 			ev_Win32Keyboard *pWin32Keyboard = static_cast<ev_Win32Keyboard *>(fImpl->m_pKeyboard);
 	    
 			pWin32Keyboard->onUniChar(pView,hwnd,iMsg,wParam,lParam);		
-			return DefWindowProc(hwnd,iMsg,wParam,lParam);
+			return UT_DefWindowProc(hwnd,iMsg,wParam,lParam);
 		}
 
 		case WM_IME_CHAR:
@@ -1286,7 +1227,7 @@ LRESULT CALLBACK AP_Win32FrameImpl::_DocumentWndProc(HWND hwnd, UINT iMsg, WPARA
 			ev_Win32Keyboard *pWin32Keyboard = static_cast<ev_Win32Keyboard *>(fImpl->m_pKeyboard);
 			if (pWin32Keyboard->onIMEChar(pView,hwnd,iMsg,wParam,lParam))
 				return 0;
-			return DefWindowProc(hwnd,iMsg,wParam,lParam);
+			return UT_DefWindowProc(hwnd,iMsg,wParam,lParam);
 		}
 
 		case WM_MOUSEMOVE:
@@ -1408,7 +1349,7 @@ LRESULT CALLBACK AP_Win32FrameImpl::_DocumentWndProc(HWND hwnd, UINT iMsg, WPARA
 #endif
 	} /* switch (iMsg) */
 
-	return DefWindowProc(hwnd, iMsg, wParam, lParam);
+	return UT_DefWindowProc(hwnd, iMsg, wParam, lParam);
 }
 
 UT_RGBColor AP_Win32FrameImpl::getColorSelBackground () const

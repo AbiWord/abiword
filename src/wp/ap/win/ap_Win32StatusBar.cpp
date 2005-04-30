@@ -23,6 +23,7 @@
 #include "ut_types.h"
 #include "ut_assert.h"
 #include "ut_debugmsg.h"
+#include "ut_Win32OS.h"
 #include "ap_Win32StatusBar.h"
 #include "xap_Win32App.h"
 #include "ap_Win32Frame.h"
@@ -179,10 +180,10 @@ HWND AP_Win32StatusBar::createWindow(HWND hwndFrame,
 		specified in the CreateWindowEx function.	
 	
 	*/
-	m_hwndStatusBar = CreateWindowEx(0, STATUSCLASSNAME, NULL,
-									WS_CHILD | WS_VISIBLE | SBS_SIZEGRIP,
-									0, 0, 0, 0,
-									hwndFrame, NULL, app->getInstance(), NULL);
+	m_hwndStatusBar = UT_CreateWindowEx(0, STATUSCLASSNAME, NULL,
+										WS_CHILD | WS_VISIBLE | SBS_SIZEGRIP,
+										0, 0, 0, 0,
+										hwndFrame, NULL, app->getInstance(), NULL);
 	UT_return_val_if_fail (m_hwndStatusBar,0);	
 
 	// route messages through our handler first (to size the status panels).

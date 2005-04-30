@@ -20,6 +20,8 @@
 #include <windows.h>
 #include <winspool.h>
 #include "ut_assert.h"
+#include "ut_locale.h"
+#include "ut_iconv.h"
 #include "ut_Win32OS.h"
 
 /*!
@@ -242,5 +244,126 @@ HDC  UT_GetDefaultPrinterDC()
 	HDC hdc = CreateDC(NULL, pPrinterName, NULL, NULL);
 	free(pPrinterName);
 	return hdc;
+}
+
+ATOM UT_RegisterClassEx(UINT style, WNDPROC wndproc, HINSTANCE hInstance,
+						HICON hIcon, HCURSOR hCursor, HBRUSH hbrBackground, HICON hIconSm,
+						const char * menu, const char * name,
+						bool bForceANSI)
+{
+	if(!bForceANSI && UT_IsWinNT())
+	{
+		// first, transfer the menu and class name into wchar array
+		// this code assumes that these are ASCII strings; this is true both for the win32
+		// system names and our own
+		WCHAR buff1[100];
+		WCHAR buff2[100];
+		
+		const char * p = name;
+		UT_uint32 i = 0;
+		
+		while(p && *p && i < 100)
+		{
+			buff1[i] = *p;
+			++p;
+			++i;
+		}
+		buff1[i] = 0;
+		
+		p = menu;
+		i = 0;
+		
+		while(p && *p && i < 100)
+		{
+			buff2[i] = *p;
+			++p;
+			++i;
+		}
+		buff2[i] = 0;
+		
+		WNDCLASSEXW  wndclass;
+		memset(&wndclass, 0, sizeof(wndclass));
+		wndclass.cbSize        = sizeof(wndclass);
+		wndclass.style         = style;
+		wndclass.lpfnWndProc   = wndproc;
+		wndclass.cbClsExtra    = 0;
+		wndclass.cbWndExtra    = 0;
+		wndclass.hInstance     = hInstance;
+		wndclass.hIcon         = hIcon;
+		wndclass.hCursor       = hCursor;
+		wndclass.hbrBackground = hbrBackground;
+		wndclass.lpszMenuName  = buff2;
+		wndclass.lpszClassName = buff1;
+		wndclass.hIconSm       = hIconSm;
+		
+		return RegisterClassExW(&wndclass);
+	}
+	else
+	{
+		WNDCLASSEXA  wndclass;
+		memset(&wndclass, 0, sizeof(wndclass));
+		wndclass.cbSize        = sizeof(wndclass);
+		wndclass.style         = style;
+		wndclass.lpfnWndProc   = wndproc;
+		wndclass.cbClsExtra    = 0;
+		wndclass.cbWndExtra    = 0;
+		wndclass.hInstance     = hInstance;
+		wndclass.hIcon         = hIcon;
+		wndclass.hCursor       = hCursor;
+		wndclass.hbrBackground = hbrBackground;
+		wndclass.lpszMenuName  = menu;
+		wndclass.lpszClassName = name;
+		wndclass.hIconSm       = hIconSm;
+		
+		return RegisterClassExA(&wndclass);
+	}
+}
+
+HWND UT_CreateWindowEx(DWORD dwExStyle, const char * pszClassName, const char * pszWindowName, DWORD dwStyle,
+					   int x, int y, int nWidth, int nHeight,
+					   HWND hWndParent, HMENU hMenu, HINSTANCE hInstance, LPVOID lpParam,
+					   bool bForceANSI)
+{
+	if(!bForceANSI && UT_IsWinNT())
+	{
+		WCHAR buff1[100];
+
+		// see comments in UT_RegisterClassEx
+		const char * p = pszClassName;
+		UT_uint32 i = 0;
+		
+		while(p && *p && i < 100)
+		{
+			buff1[i] = *p;
+			++p;
+			++i;
+		}
+		buff1[i] = 0;
+
+		// we need to use iconv here, because the name of the window might be localised
+		// (in practice this matters very little, because this only sets the initial name
+		// for the frame, which we immediately change once the windows is created)
+		auto_iconv aic (UT_LocaleInfo::system().getEncoding().utf8_str(), ucs2Internal());
+		WCHAR * ucs2str = (WCHAR*) UT_convert_cd(pszWindowName, -1, aic, NULL, NULL);
+		
+		HWND hwnd = CreateWindowExW(dwExStyle, buff1, ucs2str, dwStyle,
+									x, y, nWidth, nHeight, hWndParent, hMenu, hInstance, lpParam);
+		free(ucs2str);
+		return hwnd;
+	}
+	else
+	{
+		return CreateWindowExA(dwExStyle, pszClassName, pszWindowName,
+							   dwStyle, x, y, nWidth, nHeight, hWndParent, hMenu, hInstance, lpParam);
+	}
+	
+}
+
+LRESULT UT_DefWindowProc(HWND hWnd, UINT Msg, WPARAM wParam,LPARAM lParam, bool bForceANSI)
+{
+	if(!bForceANSI&& UT_IsWinNT())
+		return DefWindowProcW(hWnd, Msg, wParam, lParam);
+	else
+		return DefWindowProcA(hWnd, Msg, wParam, lParam);
 }
 

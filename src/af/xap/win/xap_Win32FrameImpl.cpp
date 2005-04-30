@@ -29,6 +29,7 @@
 #endif
 
 #include "ut_debugmsg.h"
+#include "ut_Win32OS.h"
 #include "xap_ViewListener.h"
 #include "ev_EditMethod.h"
 #include "xav_View.h"
@@ -161,8 +162,21 @@ bool XAP_Win32FrameImpl::_updateTitle(void)
 	UT_String sTmp = pFrame->getTitle(INT_MAX);
 	sTmp += " - ";
 	sTmp += XAP_App::getApp()->getApplicationTitleForTitleBar();
-	
-	SetWindowText(m_hwndFrame, (AP_Win32App::s_fromUTF8ToWinLocale(sTmp.c_str())).c_str());
+#if 1
+	if(UT_IsWinNT())
+	{
+		auto_iconv aic("UTF-8", ucs2Internal());
+		WCHAR * ucs2 = (WCHAR*)UT_convert_cd(sTmp.c_str(), -1, aic, NULL, NULL);
+		SetWindowTextW(m_hwndFrame, ucs2);
+		free(ucs2);
+	}
+	else
+	{
+		SetWindowTextA(m_hwndFrame, (AP_Win32App::s_fromUTF8ToWinLocale(sTmp.c_str())).c_str());
+	}
+#else
+		SetWindowText(m_hwndFrame, (AP_Win32App::s_fromUTF8ToWinLocale(sTmp.c_str())).c_str());
+#endif
 
 	return true;
 }
@@ -222,11 +236,10 @@ void XAP_Win32FrameImpl::_createTopLevelWindow(void)
 
 	XAP_Win32App *pWin32App = static_cast<XAP_Win32App *>(XAP_App::getApp());
 
-	m_hwndFrame = CreateWindow(pWin32App->getApplicationName(),
-							   pWin32App->getApplicationTitleForTitleBar(),
-							   WS_OVERLAPPEDWINDOW | WS_CLIPCHILDREN,
-							   iPosX, iPosY, iWidth, iHeight,
-							   NULL, NULL, pWin32App->getInstance(), NULL);
+	m_hwndFrame = UT_CreateWindowEx(0L, pWin32App->getApplicationName(), pWin32App->getApplicationTitleForTitleBar(),
+									WS_OVERLAPPEDWINDOW | WS_CLIPCHILDREN,
+									iPosX, iPosY, iWidth, iHeight,
+									NULL, NULL, pWin32App->getInstance(), NULL);
 	UT_ASSERT(m_hwndFrame);
 
 
@@ -532,23 +545,10 @@ UT_RGBColor XAP_Win32FrameImpl::getColorSelForeground () const
 #define MAXAPPNAME 256
 bool XAP_Win32FrameImpl::_RegisterClass(XAP_Win32App * app)
 {
-	WNDCLASSEX wndclass;
-
-	// register class for the frame window
-	wndclass.cbSize			= sizeof(wndclass);
-	wndclass.style			= CS_DBLCLKS;
-	wndclass.lpfnWndProc		= XAP_Win32FrameImpl::_FrameWndProc;
-	wndclass.cbClsExtra		= 0;
-	wndclass.cbWndExtra		= 0;
-	wndclass.hInstance		= app->getInstance();
-	wndclass.hIcon			= app->getIcon();
-	wndclass.hCursor			= LoadCursor(NULL, IDC_ARROW);
-	wndclass.hbrBackground		= (HBRUSH)(COLOR_BTNFACE+1);
-	wndclass.lpszMenuName		= NULL;
-	wndclass.lpszClassName		= app->getApplicationName();;
-	wndclass.hIconSm			= app->getSmallIcon();
-
-	ATOM a = RegisterClassEx(&wndclass);
+	ATOM a = UT_RegisterClassEx(CS_DBLCLKS, XAP_Win32FrameImpl::_FrameWndProc, app->getInstance(),
+								app->getIcon(), LoadCursor(NULL,IDC_ARROW), (HBRUSH)(COLOR_BTNFACE+1), app->getSmallIcon(),
+								NULL, app->getApplicationName());
+	
 	UT_return_val_if_fail(a, false);
 
 	return true;
@@ -563,11 +563,11 @@ LRESULT CALLBACK XAP_Win32FrameImpl::_FrameWndProc(HWND hwnd, UINT iMsg, WPARAM 
 
 	if (!f)
 	{
-		return DefWindowProc(hwnd,iMsg,wParam,lParam);
+		return UT_DefWindowProc(hwnd,iMsg,wParam,lParam);
 	}
 	
 	XAP_Win32FrameImpl * fimpl = static_cast<XAP_Win32FrameImpl *>(f->getFrameImpl());
-	UT_return_val_if_fail(fimpl, DefWindowProc(hwnd,iMsg,wParam,lParam));
+	UT_return_val_if_fail(fimpl, UT_DefWindowProc(hwnd,iMsg,wParam,lParam));
 
 	AV_View * pView = NULL;
 
@@ -647,7 +647,7 @@ LRESULT CALLBACK XAP_Win32FrameImpl::_FrameWndProc(HWND hwnd, UINT iMsg, WPARAM 
 					return 0;
 			}
 		}
-		return DefWindowProc(hwnd,iMsg,wParam,lParam);
+		return UT_DefWindowProc(hwnd,iMsg,wParam,lParam);
 
 	case WM_INITMENU:
 		if (fimpl->m_pWin32Popup)
@@ -657,7 +657,7 @@ LRESULT CALLBACK XAP_Win32FrameImpl::_FrameWndProc(HWND hwnd, UINT iMsg, WPARAM 
 		}
 		else if (fimpl->m_pWin32Menu->onInitMenu(f,pView,hwnd,(HMENU)wParam))
 			return 0;
-		return DefWindowProc(hwnd,iMsg,wParam,lParam);
+		return UT_DefWindowProc(hwnd,iMsg,wParam,lParam);
 		
 	case WM_MEASUREITEM: 
 	{	
@@ -1017,5 +1017,5 @@ LRESULT CALLBACK XAP_Win32FrameImpl::_FrameWndProc(HWND hwnd, UINT iMsg, WPARAM 
 
 	} /* switch (iMsg) */
 
-	return DefWindowProc(hwnd, iMsg, wParam, lParam);
+	return UT_DefWindowProc(hwnd, iMsg, wParam, lParam);
 }

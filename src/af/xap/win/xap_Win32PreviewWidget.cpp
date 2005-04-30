@@ -22,6 +22,7 @@
 
 #include "ut_types.h"
 #include "ut_assert.h"
+#include "ut_Win32OS.h"
 #include "gr_Win32Graphics.h"
 #include "xap_Win32PreviewWidget.h"
 
@@ -48,31 +49,22 @@ XAP_Win32PreviewWidget::XAP_Win32PreviewWidget(XAP_Win32App * pWin32App, HWND hw
 	m_pInsertSymbol = NULL;
 
 	if(!m_atomPreviewWidgetClass)
-		{
+	{
 		sprintf(m_bufClassName,"PreviewWidget");
 
-		WNDCLASS wndclass;
-		wndclass.style         = CS_OWNDC | CS_HREDRAW | CS_VREDRAW | CS_DBLCLKS | style;
-		wndclass.lpfnWndProc   = _wndProc;
-		wndclass.cbClsExtra    = 0;
-		wndclass.cbWndExtra    = 0;
-		wndclass.hInstance     = m_pWin32App->getInstance();
-		wndclass.hIcon         = NULL;
-		wndclass.hCursor       = LoadCursor(NULL, IDC_ARROW);
-		wndclass.hbrBackground = (HBRUSH)(COLOR_BTNFACE+1);
-		wndclass.lpszMenuName  = NULL;
-		wndclass.lpszClassName = (LPCTSTR)m_bufClassName;
-
-		m_atomPreviewWidgetClass = RegisterClass(&wndclass);
+		m_atomPreviewWidgetClass = UT_RegisterClassEx(CS_OWNDC | CS_HREDRAW | CS_VREDRAW | CS_DBLCLKS | style,
+													  _wndProc, m_pWin32App->getInstance(),
+													  NULL, LoadCursor(NULL, IDC_ARROW), (HBRUSH)(COLOR_BTNFACE+1), NULL,
+													  NULL, m_bufClassName);
 		UT_ASSERT(m_atomPreviewWidgetClass);
 		if (!m_atomPreviewWidgetClass)
 			return;
-		}
+	}
 
 	RECT rParent;
 	GetClientRect(hwndParent,&rParent);
 	
-	m_hwndPreview = CreateWindow((LPCTSTR)m_atomPreviewWidgetClass,NULL,
+	m_hwndPreview = UT_CreateWindowEx(0L, m_bufClassName, NULL,
 								 WS_CHILD|WS_VISIBLE,
 								 0,0,(rParent.right-rParent.left),(rParent.bottom-rParent.top),
 								 hwndParent,NULL,m_pWin32App->getInstance(),NULL);
@@ -129,7 +121,7 @@ LRESULT CALLBACK XAP_Win32PreviewWidget::_wndProc(HWND hwnd, UINT iMsg, WPARAM w
 	// static callback
 	XAP_Win32PreviewWidget * pThis = GWL(hwnd);
 	if (!pThis)							// SWL() not yet called in constructor
-		return DefWindowProc(hwnd,iMsg,wParam,lParam);
+		return UT_DefWindowProc(hwnd,iMsg,wParam,lParam);
 
 	// We handle all the windows messages here.  in the simplest type of
 	// preview widget, all the platform & xp logic does is draw into it
@@ -164,7 +156,7 @@ LRESULT CALLBACK XAP_Win32PreviewWidget::_wndProc(HWND hwnd, UINT iMsg, WPARAM w
 		break;
 	}
 	
-	return DefWindowProc(hwnd,iMsg,wParam,lParam);
+	return UT_DefWindowProc(hwnd,iMsg,wParam,lParam);
 }
 
 //////////////////////////////////////////////////////////////////

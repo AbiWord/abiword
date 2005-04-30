@@ -1116,7 +1116,7 @@ static LRESULT CALLBACK _SplashWndProc(HWND hWnd, UINT message, WPARAM wParam, L
         break;
         
     default:
-        return (DefWindowProc(hWnd, message, wParam, lParam));
+        return (UT_DefWindowProc(hWnd, message, wParam, lParam));
     }
     return (0);
 }
@@ -1139,26 +1139,15 @@ static GR_Image * _showSplash(HINSTANCE hInstance, const char * szAppName)
 		)
 	{
 		// NB: can't access 'this' members from a static member function
-		WNDCLASSEX  wndclass;
 		ATOM a;
 	
 		sprintf(s_SplashWndClassName, "%sSplash", szAppName /* app->getApplicationName() */);
 
-		// register class for the splash window
-		wndclass.cbSize        = sizeof(wndclass);
-		wndclass.style         = 0;
-		wndclass.lpfnWndProc   = _SplashWndProc;
-		wndclass.cbClsExtra    = 0;
-		wndclass.cbWndExtra    = 0;
-		wndclass.hInstance     = hInstance /* app->getInstance() */;
-		wndclass.hIcon         = LoadIcon(hInstance, MAKEINTRESOURCE(AP_RID_ICON_APPLICATION_32)) /* app->getIcon() */;
-		wndclass.hCursor       = LoadCursor(NULL, IDC_ARROW);
-		wndclass.hbrBackground = (HBRUSH) GetStockObject(NULL_BRUSH);
-		wndclass.lpszMenuName  = NULL;
-		wndclass.lpszClassName = s_SplashWndClassName;
-		wndclass.hIconSm       = LoadIcon(hInstance, MAKEINTRESOURCE(AP_RID_ICON_APPLICATION_16)) /* app->getSmallIcon() */;
-
-		a = RegisterClassEx(&wndclass);
+		a = UT_RegisterClassEx(0L, _SplashWndProc, hInstance,
+							   LoadIcon(hInstance, MAKEINTRESOURCE(AP_RID_ICON_APPLICATION_32)),
+							   LoadCursor(NULL, IDC_ARROW), (HBRUSH) GetStockObject(NULL_BRUSH),
+							   LoadIcon(hInstance, MAKEINTRESOURCE(AP_RID_ICON_APPLICATION_16)),
+							   NULL, s_SplashWndClassName);
 		UT_ASSERT_HARMLESS(a);
 
 		// get the extents of the desktop window
@@ -1171,7 +1160,7 @@ static GR_Image * _showSplash(HINSTANCE hInstance, const char * szAppName)
 		UT_PNG_getDimensions(pBB, iSplashWidth, iSplashHeight);
 
 		// create a centered window the size of our bitmap
-		hwndSplash = CreateWindowEx(WS_EX_TOOLWINDOW | WS_EX_TOPMOST,s_SplashWndClassName, 
+		hwndSplash = UT_CreateWindowEx(WS_EX_TOOLWINDOW | WS_EX_TOPMOST,s_SplashWndClassName, 
 								  NULL, WS_POPUP | WS_BORDER,
 								  (rect.right  / 2) - (iSplashWidth  / 2) - 1, // subtract 1 pixel to account for WS_BORDER
 								  (rect.bottom / 2) - (iSplashHeight / 2) - 1, // subtract 1 pixel to account for WS_BORDER

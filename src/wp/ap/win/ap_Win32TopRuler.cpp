@@ -23,6 +23,7 @@
 #include "ut_misc.h"
 #include "ut_assert.h"
 #include "ut_debugmsg.h"
+#include "ut_Win32OS.h"
 #include "ap_Win32TopRuler.h"
 #include "gr_Win32Graphics.h"
 #include "xap_Win32App.h"
@@ -80,27 +81,14 @@ void AP_Win32TopRuler::setView(AV_View * pView)
 
 bool AP_Win32TopRuler::RegisterClass(XAP_Win32App * app)
 {
-	WNDCLASSEX  wndclass;
 	ATOM a;
 	
 	// register class for the top ruler
 	sprintf(s_TopRulerWndClassName, "%sTopRuler", app->getApplicationName());
 
-	memset(&wndclass, 0, sizeof(wndclass));
-	wndclass.cbSize        = sizeof(wndclass);
-	wndclass.style         = CS_OWNDC;
-	wndclass.lpfnWndProc   = AP_Win32TopRuler::_TopRulerWndProc;
-	wndclass.cbClsExtra    = 0;
-	wndclass.cbWndExtra    = 0;
-	wndclass.hInstance     = app->getInstance();
-	wndclass.hIcon         = NULL;
-	wndclass.hCursor       = LoadCursor(NULL, IDC_ARROW);
-	wndclass.hbrBackground = GetSysColorBrush(COLOR_BTNFACE);
-	wndclass.lpszMenuName  = NULL;
-	wndclass.lpszClassName = s_TopRulerWndClassName;
-	wndclass.hIconSm       = NULL;
-
-	a = RegisterClassEx(&wndclass);
+	a = UT_RegisterClassEx(CS_OWNDC, AP_Win32TopRuler::_TopRulerWndProc, app->getInstance(),
+						   NULL, LoadCursor(NULL, IDC_ARROW), GetSysColorBrush(COLOR_BTNFACE), NULL,
+						   NULL, s_TopRulerWndClassName);
 	UT_ASSERT_HARMLESS(a);
 
 	return true;
@@ -116,7 +104,7 @@ HWND AP_Win32TopRuler::createWindow(HWND hwndContainer,
 	
 
 	XAP_Win32App * app = static_cast<XAP_Win32App *>(m_pFrame->getApp());
-	m_hwndTopRuler = CreateWindowEx(0, s_TopRulerWndClassName, NULL,
+	m_hwndTopRuler = UT_CreateWindowEx(0, s_TopRulerWndClassName, NULL,
 									WS_CHILD | WS_VISIBLE,
 									left, top, width, s_iFixedHeight,
 									hwndContainer, NULL, app->getInstance(), NULL);
@@ -160,7 +148,7 @@ LRESULT CALLBACK AP_Win32TopRuler::_TopRulerWndProc(HWND hwnd, UINT iMsg, WPARAM
 	AP_Win32TopRuler * pRuler = GWL(hwnd);
 
 	if (!pRuler)
-		return DefWindowProc(hwnd, iMsg, wParam, lParam);
+		return UT_DefWindowProc(hwnd, iMsg, wParam, lParam);
 
 	GR_Win32Graphics * pG = static_cast<GR_Win32Graphics *>(pRuler->m_pG);
 		
@@ -257,5 +245,5 @@ LRESULT CALLBACK AP_Win32TopRuler::_TopRulerWndProc(HWND hwnd, UINT iMsg, WPARAM
 		break;
 	}
 
-	return DefWindowProc(hwnd, iMsg, wParam, lParam);
+	return UT_DefWindowProc(hwnd, iMsg, wParam, lParam);
 }

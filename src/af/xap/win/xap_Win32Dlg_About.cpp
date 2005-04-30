@@ -23,6 +23,7 @@
 #include "ut_string.h"
 #include "ut_assert.h"
 #include "ut_debugmsg.h"
+#include "ut_Win32OS.h"
 
 #include "xap_App.h"
 #include "xap_Dialog_Id.h"
@@ -99,23 +100,12 @@ void XAP_Win32Dialog_About::runModal(XAP_Frame * pFrame)
 	m_pGrImageSidebar->convertFromBuffer(pBB, iImageWidth, iImageHeight);
 
 	DELETEP(pBB);
-
-	WNDCLASSEX	wndclassAbout;
-
-	wndclassAbout.cbSize		= sizeof(WNDCLASSEX);
-	wndclassAbout.style			= CS_HREDRAW | CS_VREDRAW;
-	wndclassAbout.lpfnWndProc = (WNDPROC) s_dlgProc;
-	wndclassAbout.cbClsExtra	= 0;
-	wndclassAbout.cbWndExtra	= 0;
-	wndclassAbout.hInstance		= pWin32App->getInstance();
-	wndclassAbout.hIcon			= NULL;
-	wndclassAbout.hCursor		= LoadCursor(NULL, IDC_ARROW);
-	wndclassAbout.hbrBackground	= GetSysColorBrush(COLOR_BTNFACE);
-	wndclassAbout.lpszMenuName	= NULL;
-	wndclassAbout.lpszClassName	= "AbiSource_About";
-	wndclassAbout.hIconSm		= NULL;
+	const char * pClassName = "AbiSource_About";
 	
-	if (!RegisterClassEx(&wndclassAbout))
+	ATOM a = UT_RegisterClassEx(CS_HREDRAW | CS_VREDRAW, (WNDPROC) s_dlgProc, pWin32App->getInstance(),
+								NULL, LoadCursor(NULL, IDC_ARROW), GetSysColorBrush(COLOR_BTNFACE), NULL,
+								NULL, pClassName);
+	if (!a)
 	{
 		::MessageBeep(MB_ICONEXCLAMATION);
 		return;
@@ -134,20 +124,20 @@ void XAP_Win32Dialog_About::runModal(XAP_Frame * pFrame)
 	sprintf(buf, pSS->getValue(XAP_STRING_ID_DLG_ABOUT_Title), 
 			m_pApp->getApplicationName());
 
-	HWND hwndAbout = CreateWindow(	wndclassAbout.lpszClassName,
-									buf,
-									WS_OVERLAPPED | WS_VISIBLE,
-									(iScreenWidth - ABOUT_WIDTH) / 2,
-									(iScreenHeight - ABOUT_HEIGHT) /2,
-									ABOUT_WIDTH,
-									ABOUT_HEIGHT,
-									hWndFrame,
-									NULL,
-									pWin32App->getInstance(),
-									NULL);
+	HWND hwndAbout = UT_CreateWindowEx(	0L, pClassName,
+										buf,
+										WS_OVERLAPPED | WS_VISIBLE,
+										(iScreenWidth - ABOUT_WIDTH) / 2,
+										(iScreenHeight - ABOUT_HEIGHT) /2,
+										ABOUT_WIDTH,
+										ABOUT_HEIGHT,
+										hWndFrame,
+										NULL,
+										pWin32App->getInstance(),
+										NULL);
 	if (!hwndAbout)
 	{
-		UnregisterClass(wndclassAbout.lpszClassName, pWin32App->getInstance());
+		UnregisterClass(pClassName, pWin32App->getInstance());
 		::MessageBeep(MB_ICONEXCLAMATION);
 		return;
 	}
@@ -311,7 +301,7 @@ void XAP_Win32Dialog_About::runModal(XAP_Frame * pFrame)
 
 	DestroyWindow(hwndAbout);
 
-	UnregisterClass(wndclassAbout.lpszClassName, pWin32App->getInstance());
+	UnregisterClass(pClassName, pWin32App->getInstance());
 
 	pWin32App->enableAllTopLevelWindows(true);
 

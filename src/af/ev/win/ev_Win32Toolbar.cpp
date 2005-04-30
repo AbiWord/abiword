@@ -25,6 +25,7 @@
 #include "ut_assert.h"
 #include "ut_debugmsg.h"
 #include "ut_vector.h"
+#include "ut_Win32OS.h"
 #include "ev_Win32Toolbar.h"
 #include "xap_Win32App.h"
 #include "xap_Frame.h"
@@ -514,7 +515,7 @@ bool EV_Win32Toolbar::synthesize(void)
 
 	// NOTE: this toolbar will get placed later, by frame or rebar
 
-	m_hwnd = CreateWindowEx(0, 
+	m_hwnd = UT_CreateWindowEx(0, 
 				TOOLBARCLASSNAME,		// window class name
 				(LPSTR) NULL,			// window caption
 				WS_CHILD | WS_VISIBLE 
