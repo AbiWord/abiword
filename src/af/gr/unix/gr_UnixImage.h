@@ -29,6 +29,7 @@ class GR_UnixImage : public GR_RasterImage
 	friend class GR_UnixGraphics;
 public:
 	GR_UnixImage(const char* pszName);
+	GR_UnixImage(const char* pszName, GdkPixbuf * pPixbif);
 	GR_UnixImage(const char* pszName, GRType imageType);
 	virtual ~GR_UnixImage();
 

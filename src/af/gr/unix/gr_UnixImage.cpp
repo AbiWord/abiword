@@ -51,6 +51,20 @@ GR_UnixImage::GR_UnixImage(const char* szName)
   m_ImageType = GR_Image::GRT_Raster;
 }
 
+GR_UnixImage::GR_UnixImage(const char* szName,GdkPixbuf * pPixbuf )
+  : m_image(pPixbuf)
+{
+  if (szName)
+  {
+    setName ( szName );
+  }
+  else
+  {
+    setName ( "GdkPixbufImage" );
+  }
+  m_ImageType = GR_Image::GRT_Raster;
+}
+
 
 GR_UnixImage::GR_UnixImage(const char* szName, GR_Image::GRType imageType)
   : m_image(NULL)
