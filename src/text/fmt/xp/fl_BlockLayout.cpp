@@ -10035,7 +10035,11 @@ bool fl_BlockLayout::getNextTableElement(UT_GrowBuf * buf,
 			{
 				continue;
 			}
-			break;
+			if(curChar==',' || curChar== UCS_TAB || curChar== UCS_SPACE)
+			{
+				break;
+			}
+			continue; // ignore all other punctuation marks
 		}
 	}
 	if(i< iMax)

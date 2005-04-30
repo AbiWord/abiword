@@ -1719,8 +1719,21 @@ fl_BlockLayout* FL_DocLayout::findBlockAtPosition(PT_DocPosition pos) const
 //
 			if(!pShadow->getHdrFtrSectionLayout()->isPointInHere(pos))
 			{
-				fl_HdrFtrSectionLayout * pHF = static_cast<fl_HdrFtrSectionLayout *>(pBL->getSectionLayout());
-				if(pHF->isPointInHere(pos))
+			        fl_ContainerLayout * pCL = static_cast<fl_ContainerLayout *>(pBL->getSectionLayout());
+				while(pCL && pCL->getContainerType() != FL_CONTAINER_HDRFTR && pCL->getContainerType() != FL_CONTAINER_DOCSECTION)
+				{
+				  if(pCL == pCL->myContainingLayout())
+				  {
+				    break;
+				  }
+				  pCL = pCL->myContainingLayout();
+				}
+				fl_HdrFtrSectionLayout * pHF = NULL;
+				if(pCL && pCL->getContainerType() == FL_CONTAINER_HDRFTR)
+				{ 
+				     pHF = static_cast<fl_HdrFtrSectionLayout *>(pCL);
+				}
+				if(pHF && pHF->isPointInHere(pos))
 				{
 					pShadow = pHF->getFirstShadow();
 					if(pShadow)
@@ -1737,7 +1750,7 @@ fl_BlockLayout* FL_DocLayout::findBlockAtPosition(PT_DocPosition pos) const
 				}
 				// Ok, we're really confused now, point is nowhere to be found.
 				// It might be OK if pos-1 is in here, though...
-				if (!pShadow->getHdrFtrSectionLayout()->isPointInHere(pos-1))
+				if (pShadow && !pShadow->getHdrFtrSectionLayout()->isPointInHere(pos-1))
 				{
 					//			UT_ASSERT(UT_SHOULD_NOT_HAPPEN);
 				}

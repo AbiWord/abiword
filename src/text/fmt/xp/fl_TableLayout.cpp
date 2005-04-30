@@ -669,6 +669,8 @@ void fl_TableLayout::format(void)
 		m_pNewHeightCell = NULL;
 		m_bIsDirty = false;
 		m_bNeedsReformat = false;
+		m_vecFormatLayout.clear();
+		xxx_UT_DEBUGMSG(("TableLayout format cleared %x \n"));
 	}
 }
 

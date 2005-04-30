@@ -1459,12 +1459,7 @@ bool FV_View::cmdTextToTable(bool bIgnoreSpaces)
 	bool bGetNext = true;
 	while(bGetNext)
 	{
-		bGetNext = pBL->getNextTableElement(pBuf,
-											posStart,
-											begPos,
-											endPos,
-											sWords,
-											bIgnoreSpaces);
+		bGetNext = pBL->getNextTableElement(pBuf,posStart,begPos,endPos,						sWords,	bIgnoreSpaces);
 		if(begPos != 0)
 		{
 			numCols++;
@@ -1517,7 +1512,8 @@ bool FV_View::cmdTextToTable(bool bIgnoreSpaces)
 	if(secSDH != NULL)
 	{
 		PT_DocPosition secPos = m_pDoc->getStruxPosition(secSDH);
-		UT_DEBUGMSG(("SEVIOR: Cell Pos %d pointBreak %d \n",secPos,pointBreak));	}
+		UT_DEBUGMSG(("SEVIOR: Cell Pos %d pointBreak %d \n",secPos,pointBreak));	
+	}
 	setPoint(pointBreak);
 	e |= static_cast<UT_sint32>(m_pDoc->insertStrux(getPoint(),PTX_SectionTable,NULL,NULL));
 //
@@ -1585,12 +1581,7 @@ bool FV_View::cmdTextToTable(bool bIgnoreSpaces)
 			sdhCell = m_pDoc->getCellSDHFromRowCol(sdhTable,isShowRevisions(),PD_MAX_REVISION,i,j);
 			posCell = m_pDoc->getStruxPosition(sdhCell)+1; // Points at block
 			sWords.clear();
-			bEnd = !pBL->getNextTableElement(pBuf,
-											posStart,
-											begPos,
-											endPos,
-											sWords,
-											bIgnoreSpaces);
+			bEnd = !pBL->getNextTableElement(pBuf,posStart,	begPos,	endPos,	sWords,	bIgnoreSpaces);
 			if(((j < numCols-1) && (begPos > 0)) || ((j == numCols-1) && (endPos - pBL->getPosition(false)) >= pBuf->getLength()))
 			{
 				copyToLocal(begPos, endPos);
@@ -1617,15 +1608,21 @@ bool FV_View::cmdTextToTable(bool bIgnoreSpaces)
 	
 
 	// Signal PieceTable Changes have finished
+	while(m_iPieceTableState > 0)
+	  _restorePieceTableState();
+
 	_restorePieceTableState();
+	m_pDoc->clearDoingPaste();
+	m_pDoc->setDontImmediatelyLayout(false);
+
+	// restore updates and clean up dirty lists
+	m_pDoc->enableListUpdates();
+	m_pDoc->updateDirtyLists();
 
 	_generalUpdate();
 
 	m_pDoc->endUserAtomicGlob();
 
-	// restore updates and clean up dirty lists
-	m_pDoc->enableListUpdates();
-	m_pDoc->updateDirtyLists();
 
 	setPoint(posTableStart);
 	PT_DocPosition posEOD;
@@ -4141,12 +4138,14 @@ void FV_View::cmdUndo(UT_uint32 count)
 //
 	notifyListeners(AV_CHG_ALL);
 	PT_DocPosition posEnd = 0;
+	PT_DocPosition posBOD = 0;
 	getEditableBounds(true, posEnd);
+	getEditableBounds(true, posBOD);
 	while(!isPointLegal() && (getPoint() < posEnd))
 	{
 		_charMotion(true,1);
 	}
-	while(!isPointLegal() && (getPoint() > 2))
+	while(!isPointLegal() && (getPoint() > posBOD))
 	{
 		_charMotion(false,1);
 	}

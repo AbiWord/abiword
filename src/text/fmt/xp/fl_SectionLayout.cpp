@@ -151,9 +151,13 @@ void fl_SectionLayout::removeFromUpdate(fl_ContainerLayout * pCL)
 
 void fl_SectionLayout::setNeedsReformat(fl_ContainerLayout * pCL, UT_uint32 /*offset*/)
 {
-        m_vecFormatLayout.addItem(pCL);
+        UT_sint32 i = m_vecFormatLayout.findItem(pCL);
+	if(i< 0)
+	{
+	  m_vecFormatLayout.addItem(pCL);
+	}
 	m_bNeedsReformat = true;
-	if(myContainingLayout() != NULL && (static_cast<fl_SectionLayout *>(myContainingLayout()) != this) && (getContainerType() != FL_CONTAINER_SHADOW))
+	xxx_UT_DEBUGMSG(("SetNeedsReformat in %s from %s number to format %d\n",getContainerString(),pCL->getContainerString(),m_vecFormatLayout.getItemCount()));	if(myContainingLayout() != NULL && (static_cast<fl_SectionLayout *>(myContainingLayout()) != this) && (getContainerType() != FL_CONTAINER_SHADOW))
 	{
 		static_cast<fl_SectionLayout *>(myContainingLayout())->setNeedsReformat(this);
 	}
@@ -1760,7 +1764,7 @@ void fl_DocSectionLayout::updateLayout(bool bDoFull)
 	FPVisibility eHidden;
 	bool bHidden;
 	bDoFull = true;
-	xxx_UT_DEBUGMSG(("Doing Update layout \n"));
+	xxx_UT_DEBUGMSG(("Doing DocSection Update layout \n"));
 	if (!bDoFull || (m_vecFormatLayout.getItemCount() > 0))
 	{
 	        UT_sint32 i =0;
@@ -1768,7 +1772,7 @@ void fl_DocSectionLayout::updateLayout(bool bDoFull)
 		UT_sint32 count = static_cast<UT_sint32>(m_vecFormatLayout.getItemCount());
 		for(i=0; i<count; i++)
 		{  
-		        pBL = m_vecFormatLayout.getNthItem(0);
+		        pBL = m_vecFormatLayout.getNthItem(j);
 			j++;
 		        eHidden  = pBL->isHidden();
 			bHidden = ((eHidden == FP_HIDDEN_TEXT && !bShowHidden)
@@ -1777,6 +1781,7 @@ void fl_DocSectionLayout::updateLayout(bool bDoFull)
 
 			if(!bHidden)
 			{
+			  xxx_UT_DEBUGMSG(("container %x type %s needformat %d \n",pBL,pBL->getContainerString(),pBL->needsReformat()));
 			     if (pBL->needsReformat())
 			     {
 			          if(!(m_pLayout->isLayoutFilling() && pBL->getContainerType() == FL_CONTAINER_TOC))
