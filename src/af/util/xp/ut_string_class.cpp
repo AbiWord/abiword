@@ -930,6 +930,14 @@ const UT_UTF8String & UT_UTF8String::escapeMIME ()
 	return *this;
 }
 
+/* makes string conform to RFC 1738
+ */
+const UT_UTF8String & UT_UTF8String::escapeURL ()
+{
+	pimpl->escapeURL ();
+	return *this;
+}
+
 const UT_UTF8String & UT_UTF8String::lowerCase ()
 {
 	if(!byteLength())

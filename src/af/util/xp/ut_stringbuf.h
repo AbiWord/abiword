@@ -118,6 +118,7 @@ public:
 	void		escapeXML ();  // escapes '<', '>' & '&' in the current string
 	void		escapeMIME (); // translates the current string to
 							   // MIME "quoted-printable" format
+	void        escapeURL ();  // makes string conform to RFC 1738
 	
 	UT_UTF8Stringbuf * lowerCase ();
 	
