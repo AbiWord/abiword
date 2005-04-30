@@ -1554,7 +1554,6 @@ bool fl_TableLayout::doclistener_deleteStrux(const PX_ChangeRecord_Strux * pcrx)
 	}
 	xxx_UT_DEBUGMSG(("SEVIOR: !!!!!!!! Doing table delete strux!! \n"));
 	collapse();
-	myContainingLayout()->remove(this);
 	//
 	// Look to see if we're in a HdrFtr
 	//
@@ -1564,6 +1563,7 @@ bool fl_TableLayout::doclistener_deleteStrux(const PX_ChangeRecord_Strux * pcrx)
 		fl_HdrFtrSectionLayout * pHFSL = static_cast<fl_HdrFtrSectionLayout *>(pMyCL);
 		pHFSL->bl_doclistener_deleteTableStrux(this,pcrx);
 	}
+	myContainingLayout()->remove(this);
 
 	delete this;			// TODO whoa!  this construct is VERY dangerous.
 
@@ -2562,7 +2562,6 @@ bool fl_CellLayout::doclistener_deleteStrux(const PX_ChangeRecord_Strux * pcrx)
 	UT_ASSERT(pcrx->getStruxType()== PTX_SectionCell);
 
 	collapse();
-	myContainingLayout()->remove(this);
 	//
 	// Look to see if we're in a HdrFtr
 	//
@@ -2576,6 +2575,7 @@ bool fl_CellLayout::doclistener_deleteStrux(const PX_ChangeRecord_Strux * pcrx)
 		fl_HdrFtrSectionLayout * pHFSL = static_cast<fl_HdrFtrSectionLayout *>(pMyCL);
 		pHFSL->bl_doclistener_deleteCellStrux(this,pcrx);
 	}
+	myContainingLayout()->remove(this);
 
 //	pTL->updateTable(); // may not need this. FIXME check if we do!
 	delete this;			// TODO whoa!  this construct is VERY dangerous.
