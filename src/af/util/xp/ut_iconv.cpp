@@ -445,7 +445,7 @@ char * UT_convert_cd(const char *str,
 	/* Due to a GLIBC bug, round outbuf_size up to a multiple of 4 */
 	/* + 1 for nul in case len == 1 */
 	size_t outbuf_size = ((len + 3) & ~3) + 15;
-	size_t outbytes_remaining = outbuf_size - 1; /* -1 for nul */
+	size_t outbytes_remaining = outbuf_size - 4; /* -4 for null (allow for ucs4 0) */
 
 	char* pDest = static_cast<char*>(malloc(outbuf_size));
 	char* outp = pDest;
@@ -483,7 +483,7 @@ char * UT_convert_cd(const char *str,
 		          pDest = static_cast<char*>(realloc(pDest, outbuf_size));
 
 		          outp = pDest + used;
-		          outbytes_remaining = outbuf_size - used - 1; /* -1 for nul */
+		          outbytes_remaining = outbuf_size - used - 4; /* -1 for nul */
 		        }
 
 		      bAgain = true;
@@ -501,7 +501,9 @@ char * UT_convert_cd(const char *str,
 	      }
 	  }
 
-	*outp = '\0';
+	// append 4 0s as a string terminator (so that even ucs4 string will be correctly terminated)
+	for(UT_uint32 i = 0; i < 4; ++i)
+		*outp++ = '\0';
 
 	const UT_sint32 nNewLen = p - str;
 
