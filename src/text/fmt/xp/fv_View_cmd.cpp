@@ -1582,6 +1582,11 @@ bool FV_View::cmdTextToTable(bool bIgnoreSpaces)
 			posCell = m_pDoc->getStruxPosition(sdhCell)+1; // Points at block
 			sWords.clear();
 			bEnd = !pBL->getNextTableElement(pBuf,posStart,	begPos,	endPos,	sWords,	bIgnoreSpaces);
+			if(begPos == endPos)
+			{
+			    posStart = endPos+1;
+			    continue;
+			}
 			if(((j < numCols-1) && (begPos > 0)) || ((j == numCols-1) && (endPos - pBL->getPosition(false)) >= pBuf->getLength()))
 			{
 				copyToLocal(begPos, endPos);

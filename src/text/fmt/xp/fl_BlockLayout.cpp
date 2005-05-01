@@ -9967,7 +9967,7 @@ bool fl_BlockLayout::getNextTableElement(UT_GrowBuf * buf,
 	UT_uint32 iMax = buf->getLength() - offset;
 	bool bFoundFootnote = false;
 	//
-	// skip initial punctuation marks
+	// skip initial spaces
 	for(i= 0; i < iMax; i++)
 	{
 		curChar = static_cast<UT_UCS4Char>(*buf->getPointer(offset+i));
@@ -9983,7 +9983,7 @@ bool fl_BlockLayout::getNextTableElement(UT_GrowBuf * buf,
 	    {
 			break;
 		}
-		if(!UT_isWordDelimiter(curChar,UCS_UNKPUNK,UCS_UNKPUNK))
+		if(!(curChar == UCS_SPACE))
 		{
 			break;
 		}
