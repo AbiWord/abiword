@@ -281,7 +281,7 @@ bool AP_Win32App::initialize(void)
 	// Check for necessary DLLs now that we can do localized error messages
 	//////////////////////////////////////////////////////////////////
 
-#if 1 /* re-enable once we use unicows again */
+#if 0 /* re-enable once we use unicows again */
 	// Ensure that we have Unicows dll
 	if (!UT_IsWinNT())
 	{
