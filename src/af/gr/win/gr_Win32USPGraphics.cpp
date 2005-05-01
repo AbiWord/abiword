@@ -1517,7 +1517,7 @@ void GR_Win32USPGraphics::measureRenderedCharWidths(GR_RenderInfo & ri)
 	bool bAdjustAdvances = false;
 	
 #if 1
-	if(!m_bPrint)
+	if(!m_bPrint && getPrintDC())
 	{
 		// This is a trick to avoid unseemly gaps between letters on screen due to
 		// discrepancies between font metrics of screen and printer. We measure the font
@@ -1638,19 +1638,11 @@ void GR_Win32USPGraphics::measureRenderedCharWidths(GR_RenderInfo & ri)
 			dDeviceWidth = dWidth*(double)getResolution()/
 									   ((double)getDeviceResolution()*(double)GR_WIN32_USP_FONT_SCALING*m_fXYRatio);
 
-			if(bAdjustAdvances)
-			{
-				dAdjustment = (((double)RI.m_pAdvances[i]*(double)getResolution()
-								/((double)getDeviceResolution()*(double)GR_WIN32_USP_FONT_SCALING*m_fXYRatio))
-							   - (double)pAdvances[i]*(double)getResolution()*100.
-							   /((double)getDeviceResolution()*(double)iZoom * m_fXYRatio))/2.;
-			}
-			
 			RI.m_pAdvances[i]   = (UT_sint32)(dDeviceWidth - dPrevDeviceWidth + 0.5);
 
 			RI.m_pGoffsets[i].du = (UT_sint32)((double)RI.m_pGoffsets[i].du*(double)getResolution()/
 											((double)getDeviceResolution()*(double)GR_WIN32_USP_FONT_SCALING*m_fXYRatio)
-											   + dAdjustment + 0.5);
+											   + 0.5);
 			
 			RI.m_pGoffsets[i].dv = (UT_sint32)((double)RI.m_pGoffsets[i].dv*(double)getResolution()/
 											((double)getDeviceResolution()*(double)GR_WIN32_USP_FONT_SCALING) + 0.5);
