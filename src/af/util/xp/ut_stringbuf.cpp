@@ -640,7 +640,11 @@ void UT_UTF8Stringbuf::escapeURL ()
 
 	for(c = charCode(I.current()); c != 0; c = charCode(I.advance()))
 	{
-		if(c <= 0x20 || c > 0x7e || (!isalnum(c) && !strchr("$-_.+!*'(),", c)))
+		UT_sint32 iByteLen = UT_UCS4Stringbuf::UTF8_ByteLength(c);
+
+		if(iByteLen > 1)
+			iIncrease += iByteLen;
+		else if(c <= 0x20 || c > 0x7e || (!isalnum(c) && !strchr("$-_.+!*'(),", c)))
 			iIncrease += 2;
 	}
 
@@ -726,8 +730,37 @@ void UT_UTF8Stringbuf::escapeURL ()
 	for(c = charCode(J.current()); c != 0; c = charCode(J.advance()))
 	{
 		char * p = (char*) J.current();
-		   
-		if(// all chars that always have to be encoded
+		UT_sint32 iByteLen = UT_UCS4Stringbuf::UTF8_ByteLength(c);
+		
+		if (iByteLen > 1) // mutlibyte in utf-8; each byte is to be encoded
+		{
+			char bytes[20]; bytes[0] = 0;
+			UT_sint32 j;
+			for(j = 0; j < iByteLen; ++j)
+			{
+				UT_uint32 v = (unsigned char)p[j];
+				snprintf(buff, 30, "%%%02x", v);
+				strcat(bytes,buff);
+			}
+
+			char * b = bytes;
+			for(j = 0; j < iByteLen; ++j)
+			{
+				*p++ = *b++;
+			}
+			
+			insert(p, b, strlen(b));
+
+			for(j = 0; j < iByteLen; ++j)
+			{
+				J.advance();
+				J.advance();
+				J.advance();
+			}
+
+			J.retreat();
+		}
+		else if(// all single byte chars that always have to be encoded
 		   (c <= 0x20 || c > 0x7e || (!isalnum(c) && !strchr("$-_.+!*'(),;/?:@=&#", c)))
 		   
 		   // between the path element and the scheme marker all reserved chars other than @ and : also need to
@@ -787,12 +820,79 @@ void UT_UTF8Stringbuf::escapeURL ()
 
 /* decode %xx encoded characters
  */
+
+static UT_uint32 s_charCode_to_hexval(UT_UCS4Char c)
+{
+	if(c >= 0x30 && c <= 0x39)
+		return c - 0x30;
+	else if(c >= 0x41 && c <= 0x46)
+		return c - 0x41 + 10;
+	else if(c >= 0x61 && c <= 0x66)
+		return c - 0x61 + 10;
+
+	UT_return_val_if_fail( UT_SHOULD_NOT_HAPPEN, 0 );
+}
+
 void UT_UTF8Stringbuf::decodeURL()
 {
 	if(!m_psz || !*m_psz)
 		return;
 
+	char * buff = (char*)malloc(byteLength());
+	UT_return_if_fail( buff );
+	buff[0] = 0;
+
+	UTF8Iterator J(this);
+	const char * ptr = J.current();
+	UT_UCS4Char c = charCode(J.current());;
+
+	while (c != 0)
+	{
+		if(c == '%')
+		{
+			J.advance();
+			UT_UCS4Char b1 = charCode(J.current());
+			J.advance();
+			UT_UCS4Char b2 = charCode(J.current());
+			J.advance();
+
+			if(isalnum(b1) && isalnum(b2))
+			{
+				b1 = s_charCode_to_hexval(b1);
+				b2 = s_charCode_to_hexval(b2);
+					
+				UT_UCS4Char code = ((b1 << 4)& 0xf0) | (b2 & 0x0f);
+				UT_uint32 iLenBuff = strlen(buff);
+				UT_uint32 iLenLeft = byteLength() - iLenBuff;
+					
+				char * p = buff + iLenBuff;
+				UT_UCS4Stringbuf::UCS4_to_UTF8(p, iLenLeft, code);
+
+				// we need to null-terminate
+				*p = 0;
+			}
+			else
+			{
+				// this should not happen in encoded url, but we will simly append the
+				// % and the two chars that follow it
+				const char *p = J.current();
+				UT_uint32 iLen = p ? p - ptr : strlen(ptr);
+				strncat(buff, ptr, iLen);
+			}
+		}
+		else
+		{
+			J.advance();
+			const char * p = J.current();
+			UT_uint32 iLen = p ? p - ptr : strlen(ptr);
+			strncat(buff, ptr, iLen);
+		}
+
+		ptr = J.current();
+		c = charCode(J.current());
+	}
 	
+	assign(buff);
 }
 
 /* translates the current string to MIME "quoted-printable" format
