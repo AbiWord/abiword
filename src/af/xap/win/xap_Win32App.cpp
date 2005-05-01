@@ -65,6 +65,50 @@ XAP_Win32App::XAP_Win32App(HINSTANCE hInstance, XAP_Args * pArgs, const char * s
 {
 	UT_return_if_fail(hInstance);
 
+	UT_UTF8String s1 = "http://www.mydom.com:8080/i ndex?&.php?v=1&b=2";
+	UT_UTF8String s2 = "http://www.mydom.com:8080/ind#ex.html#mark";
+	UT_UTF8String s3 = "ind#ex.html#mark";
+	UT_UTF8String s4 = "ftp://me:p@d@www.mydom.com:122/ind#ex.html#mark";
+	UT_UTF8String s5 = "mailto:me@whoknow.com";
+
+	UT_DEBUGMSG(("URL: %s\n", s1.utf8_str()));
+	UT_DEBUGMSG(("URL: %s\n", s2.utf8_str()));
+	UT_DEBUGMSG(("URL: %s\n", s3.utf8_str()));
+	UT_DEBUGMSG(("URL: %s\n", s4.utf8_str()));
+	UT_DEBUGMSG(("URL: %s\n", s5.utf8_str()));
+
+	s1.escapeURL();
+	s2.escapeURL();
+	s3.escapeURL();
+	s4.escapeURL();
+	s5.escapeURL();
+
+	UT_DEBUGMSG(("escapeURL: %s\n", s1.utf8_str()));
+	UT_DEBUGMSG(("escapeURL: %s\n", s2.utf8_str()));
+	UT_DEBUGMSG(("escapeURL: %s\n", s3.utf8_str()));
+	UT_DEBUGMSG(("escapeURL: %s\n", s4.utf8_str()));
+	UT_DEBUGMSG(("escapeURL: %s\n", s5.utf8_str()));
+
+	s1.decodeURL();
+	s2.decodeURL();
+	s3.decodeURL();
+	s4.decodeURL();
+	s5.decodeURL();
+
+	UT_DEBUGMSG(("URL: %s\n", s1.utf8_str()));
+	UT_DEBUGMSG(("URL: %s\n", s2.utf8_str()));
+	UT_DEBUGMSG(("URL: %s\n", s3.utf8_str()));
+	UT_DEBUGMSG(("URL: %s\n", s4.utf8_str()));
+	UT_DEBUGMSG(("URL: %s\n", s5.utf8_str()));
+
+	UT_UTF8String s6 = "a%A5b";
+	s6.decodeURL();
+	UT_DEBUGMSG(("URL: %s\n", s6.utf8_str()));
+	s6.escapeURL();
+	UT_DEBUGMSG(("URL: %s\n", s6.utf8_str()));
+	s6.decodeURL();
+	UT_DEBUGMSG(("URL: %s\n", s6.utf8_str()));
+	
 	_setAbiSuiteLibDir();
 	_setBidiOS();
 

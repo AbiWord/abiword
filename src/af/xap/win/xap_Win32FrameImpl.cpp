@@ -162,21 +162,7 @@ bool XAP_Win32FrameImpl::_updateTitle(void)
 	UT_String sTmp = pFrame->getTitle(INT_MAX);
 	sTmp += " - ";
 	sTmp += XAP_App::getApp()->getApplicationTitleForTitleBar();
-#if 1
-	if(UT_IsWinNT())
-	{
-		auto_iconv aic("UTF-8", ucs2Internal());
-		WCHAR * ucs2 = (WCHAR*)UT_convert_cd(sTmp.c_str(), -1, aic, NULL, NULL);
-		SetWindowTextW(m_hwndFrame, ucs2);
-		free(ucs2);
-	}
-	else
-	{
-		SetWindowTextA(m_hwndFrame, (AP_Win32App::s_fromUTF8ToWinLocale(sTmp.c_str())).c_str());
-	}
-#else
-		SetWindowText(m_hwndFrame, (AP_Win32App::s_fromUTF8ToWinLocale(sTmp.c_str())).c_str());
-#endif
+	UT_SetWindowText(m_hwndFrame, sTmp.c_str());
 
 	return true;
 }

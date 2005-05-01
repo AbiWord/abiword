@@ -45,4 +45,9 @@ HWND UT_CreateWindowEx(DWORD dwExStyle, LPCTSTR lpClassName, LPCTSTR lpWindowNam
 
 LRESULT UT_DefWindowProc(HWND hWnd, UINT Msg, WPARAM wParam,LPARAM lParam, bool bForceANSI = false);
 
+BOOL UT_SetWindowText(HWND hWnd, const char * lpString, bool bForceANSI = false);
+
+BOOL UT_GetMessage(LPMSG lpMsg,HWND hWnd,UINT wMsgFilterMin,UINT wMsgFilterMax, bool bForceANSI = false);
+
+LRESULT UT_DispatchMessage(const MSG *lpmsg, bool bForceANSI = false);
 #endif /* UT_Win32OS_H */

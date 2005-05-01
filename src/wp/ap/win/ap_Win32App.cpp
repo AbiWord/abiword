@@ -1317,7 +1317,7 @@ try
 		}	
 
 		// do dispatch loop
-		while( UT_IsWinNT() ? GetMessageW(&msg, NULL, 0, 0):GetMessageA(&msg, NULL, 0, 0) )
+		while(UT_GetMessage(&msg, NULL, 0, 0))
 	    {
    	      	// TranslateMessage is not called because AbiWord
 	      	// has its own way of decoding keyboard accelerators
@@ -1325,11 +1325,7 @@ try
 				continue;
 				
 			TranslateMessage(&msg);	
-			if(UT_IsWinNT())
-				DispatchMessageW(&msg);
-			else
-				DispatchMessageA(&msg);
-				
+			UT_DispatchMessage(&msg);
 	    	
 			// Check for idle condition
 			while( !UT_Win32Idle::_isEmpty() &&

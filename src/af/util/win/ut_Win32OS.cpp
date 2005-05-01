@@ -367,3 +367,35 @@ LRESULT UT_DefWindowProc(HWND hWnd, UINT Msg, WPARAM wParam,LPARAM lParam, bool 
 		return DefWindowProcA(hWnd, Msg, wParam, lParam);
 }
 
+BOOL UT_SetWindowText(HWND hWnd, const char * lpString, bool bForceANSI)
+{
+	if(!bForceANSI&& UT_IsWinNT())
+	{
+		auto_iconv aic("UTF-8", ucs2Internal());
+		WCHAR * ucs2 = (WCHAR*)UT_convert_cd(lpString, -1, aic, NULL, NULL);
+		BOOL bRet = SetWindowTextW(hWnd, ucs2);
+		free(ucs2);
+		return bRet;
+	}
+	else
+	{
+		return SetWindowTextA(hWnd, lpString);
+	}
+}
+
+BOOL UT_GetMessage(LPMSG lpMsg,HWND hWnd,UINT wMsgFilterMin,UINT wMsgFilterMax, bool bForceANSI)
+{
+	if(!bForceANSI&& UT_IsWinNT())
+		return GetMessageW(lpMsg, hWnd, wMsgFilterMin, wMsgFilterMax);
+	else
+		return GetMessageA(lpMsg, hWnd, wMsgFilterMin, wMsgFilterMax);
+}
+
+LRESULT UT_DispatchMessage(const MSG *lpmsg, bool bForceANSI)
+{
+	if(!bForceANSI&& UT_IsWinNT())
+		return DispatchMessageW(lpmsg);
+	else
+		return DispatchMessageA(lpmsg);
+}
+
