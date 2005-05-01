@@ -4026,7 +4026,15 @@ bool FV_View::setCharFormat(const XML_Char * properties[], const XML_Char * attr
 	}
 
 	m_pDoc->beginUserAtomicGlob();
-
+	if(m_bInsertAtTablePending)
+	{
+		PT_DocPosition pos = m_iPosAtTable;
+		m_pDoc->insertStrux( m_iPosAtTable,PTX_Block);
+		m_bInsertAtTablePending = false;
+		posStart = pos+1;
+		posEnd = posStart;
+		m_iPosAtTable = 0;
+	}
 	// Here the selection used to be cleared, but that prevented users
 	// from making multiple changes to the same region.
 

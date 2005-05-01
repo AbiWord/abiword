@@ -4881,10 +4881,17 @@ bool FV_View::_charMotion(bool bForward,UT_uint32 countChars, bool bSkipCannotCo
 			}
 		}
 	}
-	if (static_cast<UT_sint32>(m_iInsPoint) < static_cast<UT_sint32>(posBOD))
+	PT_DocPosition legalBOD = posBOD;
+	if(!isHdrFtrEdit())
 	{
-		_setPoint(posBOD);
-		bRes = false;
+		fl_DocSectionLayout * pDSL = m_pLayout->getFirstSection();
+		fl_BlockLayout * pBL = pDSL->getFirstBlock();
+		legalBOD = pBL->getPosition(false);
+	}
+	if (static_cast<UT_sint32>(m_iInsPoint) < static_cast<UT_sint32>(legalBOD))
+	{
+		_setPoint(legalBOD);
+		bRes = true;
 	}
 	else if (static_cast<UT_sint32>(m_iInsPoint) > static_cast<UT_sint32>(posEOD))
 	{
@@ -4892,9 +4899,10 @@ bool FV_View::_charMotion(bool bForward,UT_uint32 countChars, bool bSkipCannotCo
 		_setPoint(posEOD);
 		bRes = false;
 	}
-	if(m_iInsPoint < posBOD)
+	if(m_iInsPoint < legalBOD)
 	{
-		_setPoint(posBOD);
+		_setPoint(legalBOD);
+		bRes = true;
 	}
 	if(bInsertAtTable)
 	{
