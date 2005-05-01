@@ -298,9 +298,10 @@ bool	PP_AttrProp::setAttribute(const XML_Char * szName, const XML_Char * szValue
 	}
 	else // not "PROPS" -- add to attribute list
 	{
+		UT_UTF8String url;
 		if (*szValue && 0 == strcmp(szName, "xlink:href") && 0 == strcmp(szName, "href"))
 		{
-			UT_UTF8String url = szValue;
+			url = szValue;
 			url.decodeURL();
 			szValue = url.utf8_str();
 		}
