@@ -218,6 +218,7 @@ public:
 	const UT_UTF8String & escapeMIME (); // translates the current string to MIME "quoted-printable" format
 	const UT_UTF8String & lowerCase ();  // forces current string to lowercase
 	const UT_UTF8String & escapeURL ();  // make URL confirm to RFC 1738
+	const UT_UTF8String & decodeURL ();  
 	
 	/* UTF8String - NOTES
 	 * 

@@ -20,7 +20,8 @@
 // 02111-1307, USA.
 //
 #include <stdlib.h>
-#include <string.h>	// memcpy
+#include <ctype.h>
+#include "ut_string.h"
 #include "ut_stringbuf.h"
 #include "ut_string_class.h"
 #include "ut_assert.h"
@@ -628,6 +629,9 @@ void UT_UTF8Stringbuf::escapeXML ()
 */
 void UT_UTF8Stringbuf::escapeURL ()
 {
+	if(!m_psz || !*m_psz)
+		return;
+	
 	// now work out how many exra characters we will need
 	// need to do this first of all, since growing the string will invalidate all pointers
 	UTF8Iterator I(this);
@@ -715,8 +719,10 @@ void UT_UTF8Stringbuf::escapeURL ()
 	last_hash = strrchr(urlpath, '#');
 
 	if(last_quest < last_slash) last_quest = NULL; // this is not a query questionmark
-	if(last_hash < last_slash)  last_hash  = NULL;	char buff[30];
+	if(last_hash < last_slash)  last_hash  = NULL;
+	char buff[30];
 	UTF8Iterator J(this);
+	
 	for(c = charCode(J.current()); c != 0; c = charCode(J.advance()))
 	{
 		char * p = (char*) J.current();
@@ -767,7 +773,7 @@ void UT_UTF8Stringbuf::escapeURL ()
 
 			UT_uint32 v = *p;
 			
-			sprintf(buff, "%02x", v);
+			snprintf(buff, 30, "%02x", v);
 			*p++ = '%';
 			insert(p, buff, strlen(buff));
 
@@ -777,6 +783,16 @@ void UT_UTF8Stringbuf::escapeURL ()
 
 		}
 	}
+}
+
+/* decode %xx encoded characters
+ */
+void UT_UTF8Stringbuf::decodeURL()
+{
+	if(!m_psz || !*m_psz)
+		return;
+
+	
 }
 
 /* translates the current string to MIME "quoted-printable" format

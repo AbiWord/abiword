@@ -938,6 +938,14 @@ const UT_UTF8String & UT_UTF8String::escapeURL ()
 	return *this;
 }
 
+/* decodes %xx tokens in string
+ */
+const UT_UTF8String & UT_UTF8String::decodeURL ()
+{
+	pimpl->decodeURL ();
+	return *this;
+}
+
 const UT_UTF8String & UT_UTF8String::lowerCase ()
 {
 	if(!byteLength())
