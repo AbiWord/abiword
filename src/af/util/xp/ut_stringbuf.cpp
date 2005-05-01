@@ -619,14 +619,9 @@ void UT_UTF8Stringbuf::escapeXML ()
 		}
 }
 
-/* this function escapes the string to provide for conformity with RFC 1738
-
-   In fact the RFC is rather complicated and whether particular character should be
-   escaped or not depends on the particular protocol.
-
-   We will: (a) treat the user/pasword section correctly
-            (b) try to work out if ?, & and # should are used in their restricted sense in http
-            (c) escape all unsafe and restricted chars in everyting else
+/*
+   this function escapes the string to provide for conformity with
+   http://www.w3.org/TR/xlink/#link-locators, section 5.4
 */
 void UT_UTF8Stringbuf::escapeURL ()
 {
@@ -947,6 +942,7 @@ void UT_UTF8Stringbuf::decodeURL()
 	}
 	
 	assign(buff);
+	free(buff);
 }
 
 /* translates the current string to MIME "quoted-printable" format

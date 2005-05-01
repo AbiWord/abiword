@@ -314,6 +314,7 @@ void s_AbiWord_1_Listener::_openTag(const char * szPrefix, const char * szSuffix
 	UT_ASSERT_HARMLESS (!m_bOpenChar);
 
 	UT_UTF8String tag("<");
+	UT_UTF8String url;
 	tag += szPrefix;
 
 	const PP_AttrProp * pAP = NULL;
@@ -330,13 +331,31 @@ void s_AbiWord_1_Listener::_openTag(const char * szPrefix, const char * szSuffix
 			tag += szName;
 			tag += "=\"";
 
-			if ((*szValue == '/') && ((strcmp (szName, "href") == 0) || (strcmp (szName, "xlink:href") == 0)))
+			if ((strcmp (szName, "href") == 0) || (strcmp (szName, "xlink:href") == 0))
 			{
-				XAP_ResourceManager & RM = m_pDocument->resourceManager ();
-				XAP_ExternalResource * re = dynamic_cast<XAP_ExternalResource *>(RM.resource (szValue, false));
-				if (re) tag += re->URL ();
+				if(*szValue == '/')
+				{
+					XAP_ResourceManager & RM = m_pDocument->resourceManager ();
+					XAP_ExternalResource * re = dynamic_cast<XAP_ExternalResource *>(RM.resource (szValue, false));
+					if (re)
+					{
+						url = re->URL ();
+						url.escapeURL();
+						tag += url;
+					}
+				}
+				else
+				{
+					url = szValue;
+					url.escapeURL();
+					tag += url;
+				}
 			}
-			else _outputXMLChar (szValue, strlen (szValue));
+			else
+			{
+				tag += szValue;
+			}
+			
 
 			tag += "\"";
 		}
@@ -395,6 +414,7 @@ void s_AbiWord_1_Listener::_openTag(const char * szPrefix, const char * szSuffix
 	m_pie->write(szPrefix);
 	if (bHaveProp && pAP)
 	{
+		UT_UTF8String url;
 		const XML_Char * szName;
 		const XML_Char * szValue;
 		UT_uint32 k = 0;
@@ -409,7 +429,16 @@ void s_AbiWord_1_Listener::_openTag(const char * szPrefix, const char * szSuffix
 			m_pie->write(" ");
 			m_pie->write(static_cast<const char*>(szName));
 			m_pie->write("=\"");
-			_outputXMLChar(szValue, strlen(szValue));
+
+			if ((strcmp (szName, "href") == 0) || (strcmp (szName, "xlink:href") == 0))
+			{
+				url = szValue;
+				url.escapeURL();
+				_outputXMLChar(url.utf8_str(), url.byteLength());
+			}
+			else
+				_outputXMLChar(szValue, strlen(szValue));
+			
 			m_pie->write("\"");
 		}
 		if(iXID != 0)

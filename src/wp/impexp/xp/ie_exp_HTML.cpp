@@ -4333,8 +4333,11 @@ void s_HTML_Listener::_handleHyperlink (PT_AttrPropIndex api)
 
 	if (szHRef) // trust this to be a valid URL??
 	{
+		UT_UTF8String url = szHRef;
+		url.escapeURL();
+		
 		m_utf8_1 += " href=\"";
-		m_utf8_1 += szHRef;
+		m_utf8_1 += url;
 		m_utf8_1 += "\"";
 
 		tagOpen (TT_A, m_utf8_1, ws_None);

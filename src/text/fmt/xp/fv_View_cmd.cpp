@@ -4484,7 +4484,9 @@ UT_Error FV_View::cmdHyperlinkStatusBar(UT_sint32 xPos, UT_sint32 yPos)
 		return false;
 	xxx_UT_DEBUGMSG(("fv_View::cmdHyperlinkStatusBar: msg [%s]\n",pH1->getTarget()));
 	XAP_Frame * pFrame = static_cast<XAP_Frame *> (getParentData());
-	pFrame->setStatusMessage(pH1->getTarget());
+	UT_UTF8String url = pH1->getTarget();
+	url.decodeURL();
+	pFrame->setStatusMessage(url.utf8_str());
 	return true;
 }
 
