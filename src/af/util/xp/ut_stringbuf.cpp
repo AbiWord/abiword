@@ -21,6 +21,7 @@
 //
 #include <stdlib.h>
 #include <ctype.h>
+#include <stdio.h>
 #include "ut_string.h"
 #include "ut_stringbuf.h"
 #include "ut_string_class.h"
@@ -844,7 +845,12 @@ void UT_UTF8Stringbuf::decodeURL()
 
 	UTF8Iterator J(this);
 	const char * ptr = J.current();
-	UT_UCS4Char c = charCode(J.current());;
+	UT_UCS4Char c = charCode(J.current());
+
+	char utf8cache[7]; utf8cache[6] = 0;
+	UT_uint32 iCachePos = 0;
+	UT_uint32 iCacheNeeded = 0;
+	
 
 	while (c != 0)
 	{
@@ -862,30 +868,78 @@ void UT_UTF8Stringbuf::decodeURL()
 				b2 = s_charCode_to_hexval(b2);
 					
 				UT_UCS4Char code = ((b1 << 4)& 0xf0) | (b2 & 0x0f);
-				UT_uint32 iLenBuff = strlen(buff);
-				UT_uint32 iLenLeft = byteLength() - iLenBuff;
-					
-				char * p = buff + iLenBuff;
-				UT_UCS4Stringbuf::UCS4_to_UTF8(p, iLenLeft, code);
 
-				// we need to null-terminate
-				*p = 0;
+				if(iCacheNeeded == 0)
+				{
+					// we start new utf8 sequence in the cache
+					if ((code & 0x80) == 0)         iCacheNeeded = 1;
+					else if ((code & 0xe0) == 0xc0) iCacheNeeded = 2;
+					else if ((code & 0xf0) == 0xe0) iCacheNeeded = 3;
+					else if ((code & 0xf8) == 0xf0) iCacheNeeded = 4;
+					else if ((code & 0xfc) == 0xf8) iCacheNeeded = 5;
+					else if ((code & 0xfe) == 0xfc) iCacheNeeded = 6;
+
+					utf8cache[0] = (char) code;
+					utf8cache[iCacheNeeded] = 0; // make sure the sequence will be terminated
+					iCachePos++;
+				}
+				else
+				{
+					// append to our cache
+					utf8cache[iCachePos++] = (char) code;
+				}
+
+				if(iCacheNeeded == 0 && (code >= 0x7f && code <= 0xff))
+				{
+					// the present character is not a valid start of utf8 sequence --
+					// this is almost certainly a character from the extended ASCII set
+					// which was encoded directly according to the RFC 1738 scheme, we
+					// just append it
+					
+					UT_uint32 iLenBuff = strlen(buff);
+					UT_uint32 iLenLeft = byteLength() - iLenBuff;
+					
+					char * p = buff + iLenBuff;
+					UT_UCS4Stringbuf::UCS4_to_UTF8(p, iLenLeft, code);
+ 
+					// we need to null-terminate
+					*p = 0;
+				}
+				
+				if(iCacheNeeded && iCacheNeeded <= iCachePos)
+				{
+					UT_ASSERT_HARMLESS( iCacheNeeded == iCachePos );
+					
+					// append the cache to our buffer
+					UT_uint32 iLenBuff = strlen(buff);
+					char * p = buff + iLenBuff;
+					strcat(p, utf8cache);
+
+					iCacheNeeded = iCachePos = 0;
+				}
 			}
 			else
 			{
-				// this should not happen in encoded url, but we will simly append the
-				// % and the two chars that follow it
-				const char *p = J.current();
-				UT_uint32 iLen = p ? p - ptr : strlen(ptr);
-				strncat(buff, ptr, iLen);
+				// this should not happen in encoded url and so we will ignore this token;
+				// if we are in the middle of utf8 sequence; we will reset it
+				iCacheNeeded = iCachePos = 0;
 			}
 		}
 		else
 		{
-			J.advance();
-			const char * p = J.current();
-			UT_uint32 iLen = p ? p - ptr : strlen(ptr);
-			strncat(buff, ptr, iLen);
+			J.advance(); // advance here, for the sake of the else clause below
+			
+			if(iCacheNeeded > iCachePos)
+			{
+				// we are processing a utf sequence, so just append this byte to our cache
+				utf8cache[iCachePos++] = (char) c;
+			}
+			else
+			{
+				const char * p = J.current();
+				UT_uint32 iLen = p ? p - ptr : strlen(ptr);
+				strncat(buff, ptr, iLen);
+			}
 		}
 
 		ptr = J.current();
