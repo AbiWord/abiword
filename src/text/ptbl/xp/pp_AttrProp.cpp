@@ -296,8 +296,15 @@ bool	PP_AttrProp::setAttribute(const XML_Char * szName, const XML_Char * szValue
 		// comparing/merging documents and we do not want it in the AP
 		return true;
 	}
-	else								// not "PROPS" -- add to attribute list
+	else // not "PROPS" -- add to attribute list
 	{
+		if (*szValue && 0 == strcmp(szName, "xlink:href") && 0 == strcmp(szName, "href"))
+		{
+			UT_UTF8String url = szValue;
+			url.decodeURL();
+			szValue = url.utf8_str();
+		}
+		
 		if (!m_pAttributes)
 		{
 			m_pAttributes = new UT_GenericStringMap<XML_Char*>(5);
