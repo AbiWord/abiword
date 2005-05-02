@@ -5120,10 +5120,14 @@ bool FV_View::cmdInsertMathML(const char * szUID,PT_DocPosition pos)
 
 /*!
  * This method inserts a Embed object at the point presented.
- * It assumes that a data item with a name of the supplied filename has
- * already been inserted.
+ * The calling routine should pass in a pointer to bytebuf that represents the
+ * object.
+ * Also needed are strings for the Mime-type and the type of Embeded object.
+ *
+ * eg for a GNOME-Office chart we'll have MIME-TYPE "application/chart+xml"
+ * and sProps="embed-type: GOChart";
  */
-bool FV_View::cmdInsertEmbed(const char * szFileName,PT_DocPosition pos,UT_UTF8String & sProps)
+bool FV_View::cmdInsertEmbed(UT_ByteBuf * pBuf,PT_DocPosition pos,const char * szMime,const char * szProps)
 {
 
 	const XML_Char * atts[7]={"dataid",NULL,"props",NULL,NULL,NULL,NULL};
@@ -5132,6 +5136,12 @@ bool FV_View::cmdInsertEmbed(const char * szFileName,PT_DocPosition pos,UT_UTF8S
 	UT_UTF8String_sprintf(sUID,"%d",uid);
 	atts[1] = sUID.utf8_str();
 	const XML_Char *cur_style = NULL;
+	const char * mimetypeGOChart = UT_strdup(szMime);
+	bool result = m_pDoc->createDataItem(sUID.utf8_str(),false,pBuf,static_cast<void *>(const_cast<char *>(mimetypeGOChart)), NULL);
+	if(!result)
+	{
+	    return result;
+	}
 	getStyle(&cur_style);
 	if((cur_style != NULL) && (*cur_style) && (strcmp(cur_style,"None") != 0))
 	{
@@ -5153,6 +5163,8 @@ bool FV_View::cmdInsertEmbed(const char * szFileName,PT_DocPosition pos,UT_UTF8S
 	getCharFormat(&props,false,pos);
 	UT_UTF8String sFullProps;
 	UT_UTF8String sProp,sVal;
+	UT_UTF8String sProps;
+	sProps = szProps;
 	UT_UTF8String_addPropertyString(sFullProps,sProps);
 	UT_sint32 i = 0;
 	if(props)
@@ -5166,7 +5178,6 @@ bool FV_View::cmdInsertEmbed(const char * szFileName,PT_DocPosition pos,UT_UTF8S
 	}
 	atts[3]=sFullProps.utf8_str();
 	m_pDoc->insertObject(pos,PTO_Embed,atts,NULL);
-
 	if (bDidGlob)
 		m_pDoc->endUserAtomicGlob();
 
@@ -5174,7 +5185,69 @@ bool FV_View::cmdInsertEmbed(const char * szFileName,PT_DocPosition pos,UT_UTF8S
 
 	_restorePieceTableState();
 	_updateInsertionPoint();
+	cmdSelect(pos,pos+1);
 	return true;
+}
+
+/*!
+ * This method updates the Embedded object currently selected with a new
+ * object defined with the supplied bytebuffer, as well as strings to represent
+ * the MIME/Type and Object type.
+ * 
+ * eg for a GNOME-Office chart we'll have MIME-TYPE "application/chart+xml"
+ * and sProps="embed-type: GOChart";
+ */
+bool FV_View::cmdUpdateEmbed(UT_ByteBuf * pBuf, const char * szMime, const char * szProps)
+{
+	if (!isSelectionEmpty())
+	{
+	     return false;
+	}
+	const XML_Char * atts[7]={"dataid",NULL,"props",NULL,NULL,NULL,NULL};
+	UT_uint32 uid = m_pDoc->getUID(UT_UniqueId::Image);
+	UT_UTF8String sUID;
+	UT_UTF8String_sprintf(sUID,"%d",uid);
+	atts[1] = sUID.utf8_str();
+	bool bres = m_pDoc->createDataItem(sUID.utf8_str(),false,pBuf,static_cast<void *>(const_cast<char *>(szMime)), NULL);
+	const XML_Char *cur_style = NULL;
+	getStyle(&cur_style);
+	if((cur_style != NULL) && (*cur_style) && (strcmp(cur_style,"None") != 0))
+	{
+		atts[4] = PT_STYLE_ATTRIBUTE_NAME;
+		atts[5] = cur_style;
+	}
+	bool bDidGlob = false;
+	const XML_Char ** props = NULL;
+
+	// Signal PieceTable Change
+	_saveAndNotifyPieceTableChange();
+	m_pDoc->beginUserAtomicGlob();
+	PT_DocPosition pos = getPoint();
+	getCharFormat(&props,false,pos);
+	UT_UTF8String sFullProps;
+	UT_UTF8String sProp,sVal;
+	UT_UTF8String sProps;
+	sProps = szProps;
+	UT_UTF8String_addPropertyString(sFullProps,sProps);
+	UT_sint32 i = 0;
+	if(props)
+	{
+	  for(i=0;props[i] != NULL;i+=2)
+	  {
+	    sProp = props[i];
+	    sVal = props[i+1];
+	    UT_UTF8String_setProperty(sFullProps,sProp,sVal);
+	  }
+	}
+	atts[3]=sFullProps.utf8_str();
+	_deleteSelection();
+	m_pDoc->insertObject(pos,PTO_Embed,atts,NULL);
+	m_pDoc->endUserAtomicGlob();
+
+	_generalUpdate();
+	_restorePieceTableState();
+	_updateInsertionPoint();
+	cmdSelect(pos,pos+1);
 }
 
 /*!

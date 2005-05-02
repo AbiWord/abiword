@@ -199,9 +199,9 @@ public:
 	UT_Error		cmdDeleteHyperlink();
 	bool                    cmdInsertMathML(const char * szFileName,
 						PT_DocPosition pos);
-	bool                    cmdInsertEmbed(const char * szFileName,
-						PT_DocPosition pos,
-					       UT_UTF8String & sProps);
+	bool                    cmdInsertEmbed(UT_ByteBuf * pBuf,PT_DocPosition pos,const char * szMime,const char * szProps);
+	bool                    cmdUpdateEmbed(UT_ByteBuf * pBuf, const char * szMime, const char * szProps);
+
 	bool                    cmdInsertLatexMath(UT_UTF8String & sLatex,
 						   UT_UTF8String & sMath);
 
