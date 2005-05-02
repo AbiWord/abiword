@@ -891,11 +891,11 @@ void UT_UTF8Stringbuf::decodeURL()
 					// which was encoded directly according to the RFC 1738 scheme, we
 					// just append it
 					
-					UT_uint32 iLenBuff = strlen(buff);
-					UT_uint32 iLenLeft = byteLength() - iLenBuff;
+					size_t iLenBuff = strlen(buff);
+					size_t iLenLeft = byteLength() - iLenBuff;
 					
 					char * p = buff + iLenBuff;
-					UT_UCS4Stringbuf::UCS4_to_UTF8(p, (size_t)iLenLeft, code);
+					UT_UCS4Stringbuf::UCS4_to_UTF8(p, iLenLeft, code);
  
 					// we need to null-terminate
 					*p = 0;
