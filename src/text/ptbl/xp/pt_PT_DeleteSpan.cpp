@@ -155,6 +155,7 @@ bool pt_PieceTable::deleteSpan(PT_DocPosition dpos1,
 					case PTX_SectionEndnote:
 					case PTX_SectionFootnote:
 					case PTX_SectionFrame:
+					case PTX_SectionTOC:
 						bHasEndStrux = true;
 						// fall through ...
 					case PTX_Section:
@@ -162,6 +163,7 @@ bool pt_PieceTable::deleteSpan(PT_DocPosition dpos1,
 				    case PTX_EndFootnote:
 				    case PTX_EndEndnote:
 				    case PTX_EndFrame:
+					case PTX_EndTOC:
 						iLen = pf_FRAG_STRUX_SECTION_LENGTH;
 						break;
 
@@ -266,6 +268,10 @@ bool pt_PieceTable::deleteSpan(PT_DocPosition dpos1,
 									break;
 								case PTX_SectionFrame:
 									if(eStrux2Type != PTX_EndFrame)
+										continue;
+									break;
+								case PTX_SectionTOC:
+									if(eStrux2Type != PTX_EndTOC)
 										continue;
 									break;
 							    default:

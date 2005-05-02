@@ -1759,7 +1759,9 @@ void fp_Column::layout(void)
 		{
 			pTOC = static_cast<fp_TOCContainer *>(pContainer);
 			iHeight = pTOC->getHeight();
-			UT_ASSERT(iHeight > 0);
+			// This is incorrect; if the TOC has been delete in revisions mode, is will
+			// have 0 height
+			// UT_ASSERT(iHeight > 0);
 		}
 		else if(pContainer->getContainerType() == FP_CONTAINER_LINE)
 		{
