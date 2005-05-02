@@ -895,7 +895,7 @@ void UT_UTF8Stringbuf::decodeURL()
 					UT_uint32 iLenLeft = byteLength() - iLenBuff;
 					
 					char * p = buff + iLenBuff;
-					UT_UCS4Stringbuf::UCS4_to_UTF8(p, iLenLeft, code);
+					UT_UCS4Stringbuf::UCS4_to_UTF8(p, (size_t)iLenLeft, code);
  
 					// we need to null-terminate
 					*p = 0;
