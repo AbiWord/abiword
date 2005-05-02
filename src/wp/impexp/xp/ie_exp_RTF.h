@@ -160,6 +160,13 @@ protected:
 	void                            _write_prop_ifyes(const PD_Style * pStyle, const XML_Char * szPropName, const char * szRTFName);
 	void                            _write_tabdef(const char * szTabStops);
 	void                            _write_charfmt(const s_RTF_AttrPropAdapter &);
+	
+	void                            _write_parafmt(const PP_AttrProp * pSpanAP,
+												   const PP_AttrProp * pBlockAP,
+												   const PP_AttrProp * pSectionAP,
+												   bool & bStartedList, PL_StruxDocHandle sdh, UT_uint32 &iCurrID,
+												   bool &bIsListBlock, UT_sint32 iNestLevel);
+	
 	void                            _write_style_fmt(const PD_Style *);
 	void                            _write_stylesheets(void);
 	void                            _write_listtable(void);
@@ -171,7 +178,9 @@ protected:
 	void                            _get_LeftRight_Side(UT_String & LeftSide, UT_String & RightSide);
 	void                            _generate_level_Text(fl_AutoNum * pAuto,UT_String & LevelText,UT_String &LevelNumbers, UT_uint32 & lenText, UT_uint32 & ifoundLevel);
 
-	void                            _output_revision(const s_RTF_AttrPropAdapter & apa, bool bPara);
+	void                            _output_revision(const s_RTF_AttrPropAdapter & apa, bool bPara,PL_StruxDocHandle sdh,
+													 UT_sint32 iNestLevel, bool & bStartedList,  bool &bIsListBlock,
+													 UT_uint32 &iCurrID);
 	
 	UT_sint32			_findFont(const s_RTF_AttrPropAdapter * apa) const;
 	UT_sint32			_findFont(const _rtf_font_info * pfi) const;

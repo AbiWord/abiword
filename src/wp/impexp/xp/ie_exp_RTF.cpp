@@ -1182,7 +1182,459 @@ const XML_Char * IE_Exp_RTF::_getStyleProp(
 	}
 	return szVal;
 }
-							   
+
+/*!
+ * Write out paragraphs-specific fmt. This
+ * does not print opening and closing braces.
+ */
+void IE_Exp_RTF::_write_parafmt(const PP_AttrProp * pSpanAP, const PP_AttrProp * pBlockAP, const PP_AttrProp * pSectionAP,
+								bool & bStartedList, PL_StruxDocHandle sdh, UT_uint32 & iCurrID, bool &bIsListBlock,
+								UT_sint32 iNestLevel)
+{
+	const XML_Char * szTextAlign = PP_evalProperty("text-align",pSpanAP,pBlockAP,pSectionAP,getDoc(),true);
+	const XML_Char * szFirstLineIndent = PP_evalProperty("text-indent",pSpanAP,pBlockAP,pSectionAP,getDoc(),true);
+	const XML_Char * szLeftIndent = PP_evalProperty("margin-left",pSpanAP,pBlockAP,pSectionAP,getDoc(),true);
+	const XML_Char * szRightIndent = PP_evalProperty("margin-right",pSpanAP,pBlockAP,pSectionAP,getDoc(),true);
+	const XML_Char * szTopMargin = PP_evalProperty("margin-top",pSpanAP,pBlockAP,pSectionAP,getDoc(),true);
+	const XML_Char * szBottomMargin = PP_evalProperty("margin-bottom",pSpanAP,pBlockAP,pSectionAP,getDoc(),true);
+	const XML_Char * szLineHeight = PP_evalProperty("line-height",pSpanAP,pBlockAP,pSectionAP,getDoc(),true);
+	const XML_Char * szKeepTogether = PP_evalProperty("keep-together",pSpanAP,pBlockAP,pSectionAP,getDoc(),true);
+	const XML_Char * szKeepWithNext = PP_evalProperty("keep-with-next",pSpanAP,pBlockAP,pSectionAP,getDoc(),true);
+	const XML_Char * szTabStops = PP_evalProperty("tabstops",pSpanAP,pBlockAP,pSectionAP,getDoc(),true);
+
+	// TODO add other properties here
+
+	// Do abi specific list information.
+
+	const XML_Char * szListid=NULL;
+	const XML_Char * szParentid=NULL;
+	const XML_Char * szListStyle=NULL;
+
+	if (!pBlockAP || !pBlockAP->getAttribute(static_cast<const XML_Char*>("listid"), szListid))		szListid = NULL;
+	if (!pBlockAP || !pBlockAP->getAttribute(static_cast<const XML_Char*>("parentid"), szParentid))
+		szParentid = NULL;
+	UT_uint32 listid = 0;
+	const XML_Char * szAbiListDelim = NULL;
+	const XML_Char * szAbiListDecimal = NULL;
+	static UT_String szAbiStartValue;
+	static UT_String szLevel;
+	if(szListid!=NULL)
+	{
+		listid = atoi(szListid);
+		if(listid != 0)
+		{
+			fl_AutoNum * pAuto = getDoc()->getListByID(listid);
+			if(pAuto)
+			{
+				szAbiListDelim = pAuto->getDelim();
+				szAbiListDecimal = pAuto->getDecimal();
+				UT_String_sprintf(szAbiStartValue,"%i",pAuto->getStartValue32());
+				UT_String_sprintf(szLevel,"%i",pAuto->getLevel());
+			}
+		}
+	}
+	szListStyle = PP_evalProperty("list-style",pSpanAP,pBlockAP,pSectionAP,getDoc(),true);
+	const XML_Char * szAbiFieldFont = PP_evalProperty("field-font",pSpanAP,pBlockAP,pSectionAP,getDoc(),true);
+
+		
+	UT_uint32 id = 0;
+	if(szListid != NULL)
+		id = atoi(szListid);
+	if(id == 0)
+	{
+		_rtf_keyword("pard");		// begin a new paragraph
+		_rtf_keyword("plain");		// begin a new paragraph
+	}
+	else
+	{
+		bStartedList = true;
+	}
+	///
+	/// Output fallback numbered/bulleted label for rtf readers that don't
+	/// know /*/pn
+	///
+	if(id != 0 )
+	{
+		_rtf_open_brace();
+		_rtf_keyword("listtext");
+		// if string is "left" use "ql", but that is the default, so we don't need to write it out.
+		_rtf_keyword("pard");		// restore all defaults for this paragraph
+		if (UT_strcmp(szTextAlign,"right")==0)		// output one of q{lrcj} depending upon paragraph alignment
+			_rtf_keyword("qr");
+		else if (UT_strcmp(szTextAlign,"center")==0)
+			_rtf_keyword("qc");
+		else if (UT_strcmp(szTextAlign,"justify")==0)
+			_rtf_keyword("qj");
+		_rtf_keyword_ifnotdefault_twips("fi",static_cast<const char*>(szFirstLineIndent),0);
+		_rtf_keyword_ifnotdefault_twips("li",static_cast<const char*>(szLeftIndent),0);
+		_rtf_keyword_ifnotdefault_twips("ri",static_cast<const char*>(szRightIndent),0);
+		_rtf_keyword_ifnotdefault_twips("sb",static_cast<const char*>(szTopMargin),0);
+		_rtf_keyword_ifnotdefault_twips("sa",static_cast<const char*>(szBottomMargin),0);
+
+		fl_AutoNum * pAuto = getDoc()->getListByID(id);
+		UT_return_if_fail(pAuto);
+		if(pAuto->getType()==BULLETED_LIST)
+		{
+			_rtf_keyword("bullet");
+		}
+		else
+		{
+			const UT_UCSChar * lab = pAuto->getLabel(sdh);
+            //
+			// TODO Handle all our interesting symbols properly
+            // In the meantime convert to char *
+			static char tmp[100];
+			if(lab != NULL)
+			{
+				UT_uint32 len = UT_MIN(UT_UCS4_strlen(lab),100);
+				UT_uint32 i;
+				for(i=0; i<=len; i++)
+					tmp[i] = (char ) (unsigned char)  *lab++;
+				_rtf_chardata(tmp,len);
+			}
+			else
+			{
+			    UT_DEBUGMSG(("SEVIOR: We should not be here! id = %d \n",id));
+				_rtf_chardata(" ",1);
+			}
+		}
+		//
+        // Put in Tab for braindead RTF importers (like Ted) that can't
+        // do numbering.
+		//
+		char tab = static_cast<char>(9);
+		_rtf_chardata(&tab,1);
+		_rtf_close_brace();
+		_rtf_keyword("pard");		// restore all defaults for this paragraph
+		_rtf_keyword("plain");		// restore all defaults for this paragraph
+	}
+	if(bStartedList)
+	{
+		_rtf_open_brace();
+	}
+
+	// it is essential that the \rtlpar and \ltrpar tokens are issued
+	// before any formatting, otherwise it can cause difficulties
+	const XML_Char * szBidiDir = PP_evalProperty("dom-dir",
+												 pSpanAP,
+												 pBlockAP,
+												 pSectionAP,
+												 getDoc(),
+												 true);
+
+	xxx_UT_DEBUGMSG(("bidi paragraph: pSectionAp 0x%x, pBlockAP 0x%x, dom-dir\"%s\"\n",pSectionAP,pBlockAP,szBidiDir));
+	if (szBidiDir)
+	{
+		if (!UT_strcmp (szBidiDir, "ltr"))
+			_rtf_keyword ("ltrpar");
+		else
+			_rtf_keyword ("rtlpar");
+	}
+
+	// if string is "left" use "ql", but that is the default, so we
+	// don't need to write it out.
+	// Except that if the alignment overrides one prescribed by a
+	// style, we probably need to issue this (Tomas, Apr 12, 2003)
+
+	// output q{lrcj depending upon paragraph alignment
+	if (UT_strcmp(szTextAlign,"left")==0)	
+		_rtf_keyword("ql");
+	else if (UT_strcmp(szTextAlign,"justify")==0)
+		_rtf_keyword("qj");
+	else if (UT_strcmp(szTextAlign,"right")==0)	
+		_rtf_keyword("qr");
+	else if (UT_strcmp(szTextAlign,"center")==0)
+		_rtf_keyword("qc");
+
+
+
+	_rtf_keyword_ifnotdefault_twips("fi",static_cast<const char*>(szFirstLineIndent),0);
+	_rtf_keyword_ifnotdefault_twips("li",static_cast<const char*>(szLeftIndent),0);
+	_rtf_keyword_ifnotdefault_twips("ri",static_cast<const char*>(szRightIndent),0);
+	_rtf_keyword_ifnotdefault_twips("sb",static_cast<const char*>(szTopMargin),0);
+	_rtf_keyword_ifnotdefault_twips("sa",static_cast<const char*>(szBottomMargin),0);
+
+	const XML_Char * szStyle = NULL;
+	if (pBlockAP->getAttribute("style", szStyle))
+	{
+	    _rtf_keyword("s", _getStyleNumber(szStyle));
+	}
+///
+/// OK we need to output the char props if there is a list here
+	// no, we must not output character properties here, because the properties that are
+	// output here will apply to everyting that will follow in this paragraph: see bug 5693
+	// -- I am really not sure what the rationale for the char props output here was, so
+	// if commenting this out creates some other problem, please let me know. Tomas, Sep
+	// 2, 2004
+#if 0 //#TF
+	if(id != 0)
+	{
+		const PP_AttrProp * pSpanAP = NULL;
+		const PP_AttrProp * pBlockAP = NULL;
+		const PP_AttrProp * pSectionAP = NULL;
+
+		getDoc()->getAttrProp(m_apiThisSection,&pSectionAP);
+		getDoc()->getAttrProp(m_apiThisBlock,&pBlockAP);
+		_write_charfmt(s_RTF_AttrPropAdapter_AP(pSpanAP, pBlockAP, pSectionAP, getDoc()));
+	}
+#endif
+	///
+	/// OK if there is list info in this paragraph we encase it inside
+	/// the {\*\abilist..} extension
+	///
+	if(id != 0 )
+	{
+		bIsListBlock = true;
+
+		_rtf_open_brace();
+		_rtf_keyword("*");
+		_rtf_keyword("abilist");
+		_rtf_keyword_ifnotdefault("abilistid",static_cast<const char *>(szListid),-1);
+		_rtf_keyword_ifnotdefault("abilistparentid",static_cast<const char *>(szParentid),-1);
+		_rtf_keyword_ifnotdefault("abilistlevel",szLevel.c_str(),-1);
+		_rtf_keyword_ifnotdefault("abistartat",szAbiStartValue.c_str(),-1);
+		/// field font
+
+		_rtf_open_brace();
+		_rtf_keyword("abifieldfont");
+		_rtf_chardata( static_cast<const char *>(szAbiFieldFont) ,strlen(szAbiFieldFont));
+		_rtf_close_brace();
+
+		/// list decimal
+
+		_rtf_open_brace();
+		_rtf_keyword("abilistdecimal");
+		_rtf_chardata(static_cast<const char *>(szAbiListDecimal) ,strlen(szAbiListDecimal));
+		_rtf_close_brace();
+
+		/// list delim
+
+		_rtf_open_brace();
+		_rtf_keyword("abilistdelim");
+		_rtf_chardata(static_cast<const char *>(szAbiListDelim) ,strlen( szAbiListDelim));
+		_rtf_close_brace();
+
+		/// list style
+
+		_rtf_open_brace();
+		_rtf_keyword("abiliststyle");
+		_rtf_chardata(static_cast<const char *>(szListStyle) ,strlen( szListStyle));
+		_rtf_close_brace();
+
+		/// Finished!
+
+		_rtf_close_brace();
+
+	}
+
+	///
+	/// OK Now output word-95 style lists
+	///
+
+	if(id != 0 )
+	{
+		_rtf_open_brace();
+		_rtf_keyword("*");
+		_rtf_keyword("pn");
+		fl_AutoNum * pAuto = getDoc()->getListByID(id);
+		UT_return_if_fail(pAuto);
+		_rtf_keyword("pnql");
+		_rtf_keyword("pnstart",pAuto->getStartValue32());
+		FL_ListType lType = pAuto->getType();
+
+		///
+		/// extract text before and after numbering symbol
+		///
+		static XML_Char p[80],leftDelim[80],rightDelim[80];
+		sprintf(p, "%s",pAuto->getDelim());
+		UT_uint32 rTmp;
+
+		UT_uint32 i = 0;
+
+		while (p[i] && p[i] != '%' && p[i+1] != 'L')
+		{
+			leftDelim[i] = p[i];
+			i++;
+		}
+		leftDelim[i] = '\0';
+		i += 2;
+		rTmp = i;
+		while (p[i] || p[i] != '\0')
+		{
+			rightDelim[i - rTmp] = p[i];
+			i++;
+		}
+		rightDelim[i - rTmp] = '\0';
+
+		fl_AutoNum * pParent = pAuto->getParent();
+		if(pParent == NULL && (lType < BULLETED_LIST))
+		{
+			_rtf_keyword("pnlvlbody");
+		}
+		else if(lType >= BULLETED_LIST && (lType != NOT_A_LIST))
+		{
+			_rtf_keyword("pnlvlblt");
+		}
+		else
+		{
+			_rtf_keyword("pnprev");
+			_rtf_keyword("pnlvl",9);
+		}
+		if(lType == NUMBERED_LIST)
+		{
+			_rtf_keyword("pndec");
+		}
+		else if(lType == LOWERCASE_LIST)
+		{
+			_rtf_keyword("pnlcltr");
+		}
+		else if(lType == UPPERCASE_LIST)
+		{
+			_rtf_keyword("pnucltr");
+		}
+		else if(lType == LOWERROMAN_LIST)
+		{
+			_rtf_keyword("pnlcrm");
+		}
+		else if(lType == UPPERROMAN_LIST)
+		{
+			_rtf_keyword("pnucrm");
+		}
+		else if(lType == NOT_A_LIST)
+		{
+			_rtf_keyword("pnucrm");
+		}
+		if(lType < BULLETED_LIST)
+		{
+			_rtf_open_brace();
+			_rtf_keyword("pntxtb");
+			_rtf_chardata(static_cast<const char *>(leftDelim),strlen(static_cast<const char *>(leftDelim)));
+			_rtf_close_brace();
+			_rtf_open_brace();
+			_rtf_keyword("pntxta");
+			_rtf_chardata(static_cast<const char *>(rightDelim),strlen(static_cast<const char *>(rightDelim)));
+			_rtf_close_brace();
+		}
+		else if(lType == BULLETED_LIST)
+		{
+			_rtf_open_brace();
+			_rtf_keyword("pntxtb");
+			_rtf_keyword("bullet");
+			_rtf_close_brace();
+		}
+		else if(lType > BULLETED_LIST)
+		{
+			_rtf_open_brace();
+			_rtf_keyword("pntxtb");
+			const UT_UCSChar * tmp = pAuto->getLabel(sdh);
+			UT_ASSERT_HARMLESS(tmp);
+
+			if(!tmp) // Should not happen, if it does attempt to recover
+			{
+				_rtf_chardata(" ",1);
+			}
+			else
+			{
+				UT_uint32 i,len;
+				len = UT_UCS4_strlen(tmp);
+				for(i=0;i<=len;i++)
+					p[i] = (char) (unsigned char) *tmp++;
+				_rtf_chardata(p,len);
+			}
+			_rtf_close_brace();
+		}
+		_rtf_close_brace();
+	}
+
+
+
+	///
+	/// OK Now output word-97 style lists. First detect if we've moved to
+    /// a new list list structure. We need m_currID to track the previous list
+    /// we were in.
+	///
+	xxx_UT_DEBUGMSG(("SEVIOR: Doing output of list structure id = %d\n",id));
+	if(id != 0 )
+	{
+		UT_uint32 iOver = getMatchingOverideNum(id);
+		UT_uint32 iLevel = 0;
+		fl_AutoNum * pAuto = getDoc()->getListByID(id);
+
+//		if(id != m_currID)
+		{
+			UT_return_if_fail(iOver);
+			fl_AutoNum * pAuto = getDoc()->getListByID(id);
+			UT_return_if_fail(pAuto);
+			while(pAuto->getParent() != NULL)
+			{
+				pAuto = pAuto->getParent();
+				iLevel++;
+			}
+			if(iLevel > 8)
+			{
+				UT_ASSERT_HARMLESS(0);
+				iLevel = 8;
+			}
+			iCurrID = id;
+		}
+		/* This is changed so that Word97 can see the numbers in
+		   numbered lists */
+		if(pAuto->getType() < BULLETED_LIST)
+		{
+	        	_rtf_keyword_ifnotdefault_twips("fn",static_cast<const char*>(szFirstLineIndent),0);
+	        	_rtf_keyword_ifnotdefault_twips("li",static_cast<const char*>(szLeftIndent),0);
+		}
+		_rtf_keyword("ls",iOver);
+		_rtf_keyword("ilvl",iLevel);
+	}
+
+	if (strcmp(szLineHeight,"1.0") != 0)
+	{
+		double f = UT_convertDimensionless(szLineHeight);
+
+
+		if (f > 0.000001) 
+		{                                   // we get zero on bogus strings....
+		        const char * pPlusFound = strrchr(szLineHeight, '+');
+		        if (pPlusFound && *(pPlusFound + 1) == 0)             //  "+" means "at least" line spacing
+			{
+				UT_sint32 dSpacing = (UT_sint32)(f * 20.0);
+				_rtf_keyword("sl",dSpacing);
+				_rtf_keyword("slmult",0);
+			}
+			else if (UT_hasDimensionComponent(szLineHeight)) //  use exact line spacing
+			{
+			        UT_sint32 dSpacing = (UT_sint32)(f * 20.0);
+			        _rtf_keyword("sl",-dSpacing);
+			        _rtf_keyword("slmult",0);
+		        }
+			else // multiple line spacing
+			{
+			        UT_sint32 dSpacing = (UT_sint32)(f * 240.0);
+			        _rtf_keyword("sl",dSpacing);
+			        _rtf_keyword("slmult",1);
+		        }
+		}
+	}
+//
+// Output Paragraph Cell nesting level.
+//
+	if(iNestLevel > 0)
+	{
+		_rtf_keyword("intbl");
+	}
+	_rtf_keyword("itap",iNestLevel);
+
+	if (UT_strcmp(szKeepTogether,"yes")==0)
+		_rtf_keyword("keep");
+	if (UT_strcmp(szKeepWithNext,"yes")==0)
+		_rtf_keyword("keepn");
+
+	_write_tabdef(szTabStops);
+
+}
+
+
 /*!
  * Write out the <charfmt> paragraph or character formatting. This
  * does not print opening and closing braces.
@@ -1349,10 +1801,13 @@ void IE_Exp_RTF::_write_charfmt(const s_RTF_AttrPropAdapter & apa)
 	// note: we assume that kerning has been turned off at global scope.
 
 	// MUST BE LAST after all other props have been processed
-	_output_revision(apa, false);
+	bool b1,b2; UT_uint32 u1; // these are only used if the bPara parameter is true
+	_output_revision(apa, false, NULL, 0, b1, b2, u1);
 }
 
-void IE_Exp_RTF::_output_revision(const s_RTF_AttrPropAdapter & apa, bool bPara)
+void IE_Exp_RTF::_output_revision(const s_RTF_AttrPropAdapter & apa, bool bPara,
+								  PL_StruxDocHandle sdh, UT_sint32 iNestLevel,
+								  bool & bStartedList,  bool &bIsListBlock, UT_uint32 &iCurrID)
 {
 	const XML_Char *szRevisions = apa.getAttribute("revision");
 	if (szRevisions && *szRevisions)
@@ -1506,6 +1961,19 @@ void IE_Exp_RTF::_output_revision(const s_RTF_AttrPropAdapter & apa, bool bPara)
 				const PP_AttrProp * pSectionAP = NULL;
 				
 				_write_charfmt(s_RTF_AttrPropAdapter_AP(pSpanAP, pBlockAP, pSectionAP, getDoc()));
+
+				if(bPara)
+				{
+					if(!sdh)
+					{
+						UT_ASSERT_HARMLESS( UT_SHOULD_NOT_HAPPEN );
+						continue;
+					}
+					
+					_write_parafmt(NULL, pRev, NULL,
+								   bStartedList, sdh, iCurrID, bIsListBlock, iNestLevel);
+				}
+				
 			}
 		} // for
 		
