@@ -650,7 +650,7 @@ private:
 	bool ReadListOverrideTable(void);
 	bool HandleTableListOverride(void);
 
-	bool buildAllProps( char * propBuffer,  RTFProps_ParaProps * pParas,
+	bool buildAllProps( UT_String & s,  RTFProps_ParaProps * pParas,
 					   RTFProps_CharProps * pChars,
 					   RTFProps_bParaProps * pbParas,
 					   RTFProps_bCharProps * pbChars);
