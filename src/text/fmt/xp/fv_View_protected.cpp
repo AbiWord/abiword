@@ -3826,14 +3826,26 @@ void FV_View::_findPositionCoords(PT_DocPosition pos,
 	if(!pBlock)
 	{
 		// no blocks that can take point in this document !!!
-		UT_ASSERT_HARMLESS( UT_SHOULD_NOT_HAPPEN );
-		x = x2 = 0;
-		y = y2 = 0;
+		// one of the scenarios in which this happens is when the user did ctrl+a -> del
+		// in revisions mode or marked everything hidden while fmt marks are not showing
+		// If there is a block and it is not visible, we return that block
+		// Note that it is difficult to prevent this from happening on the PT level, since
+		// just because text is marked as hidden or deleted does not mean it is not
+		// visible in a given view.
+		fl_DocSectionLayout * pDSL = m_pLayout->getFirstSection();
+		pBlock = pDSL->getFirstBlock();
 
-		height = 0;
-		if(ppBlock)
-			*ppBlock = 0;
-		return;
+		if(!pBlock)
+		{
+			UT_ASSERT_HARMLESS( UT_SHOULD_NOT_HAPPEN );
+			x = x2 = 0;
+			y = y2 = 0;
+
+			height = 0;
+			if(ppBlock)
+				*ppBlock = 0;
+			return;
+		}
 	}
 	
 	// If block is actually to the right of the requested position

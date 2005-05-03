@@ -44,7 +44,7 @@
   \param iType Container type
   \param pSectionLayout Section layout type used for this container
  */
-fp_VerticalContainer::fp_VerticalContainer(FP_ContainerType iType, fl_SectionLayout* pSectionLayout) : 
+fp_VerticalContainer::fp_VerticalContainer(FP_ContainerType iType, fl_SectionLayout* pSectionLayout) :
 	fp_Container(iType, pSectionLayout),
 	m_iWidth(0),
 	m_iHeight(0),
@@ -341,7 +341,7 @@ fp_TOCContainer * fp_VerticalContainer::getCorrectBrokenTOC(fp_Container * pCon)
  */
 void fp_VerticalContainer::getOffsets(fp_ContainerObject* pContainer, UT_sint32& xoff, UT_sint32& yoff)
 {
-	fp_ContainerObject * pOrig = pContainer; 
+	fp_ContainerObject * pOrig = pContainer;
 	UT_sint32 my_xoff = 0;
 	UT_sint32 my_yoff = 0;
 	fp_Container * pCon = static_cast<fp_Container *>(this);
@@ -368,13 +368,13 @@ void fp_VerticalContainer::getOffsets(fp_ContainerObject* pContainer, UT_sint32&
 // Them print on the right pages broken tables are created which
 // sit in different columns. Here we hijack the recursive search and
 // move it up the correct broken table line when we come across a cell
-// 
+//
 			pVCon = getCorrectBrokenTable(static_cast<fp_Container *>(pContainer));
 			if(pPrev && pPrev->getContainerType() == FP_CONTAINER_CELL)
 			{
 				UT_sint32 iTable =  getYoffsetFromTable(pCon,pPrev,pContainer);
 				my_yoff += iTable;
-				pTab = static_cast<fp_TableContainer *>(pVCon); 
+				pTab = static_cast<fp_TableContainer *>(pVCon);
 				if(pTab->isThisBroken() && (pTab != pTab->getMasterTable()->getFirstBrokenTable()))
 				{
 					my_yoff = my_yoff + pVCon->getY() -iycon;
@@ -394,7 +394,7 @@ void fp_VerticalContainer::getOffsets(fp_ContainerObject* pContainer, UT_sint32&
 // Them print on the right pages broken tables are created which
 // sit in different columns. Here we hijack the recursive search and
 // move it up the correct broken table line when we come across a cell
-// 
+//
 			pVCon = getCorrectBrokenTOC(static_cast<fp_Container *>(pContainer));
 			pCon = static_cast<fp_Container *>(pVCon);
 		}
@@ -561,7 +561,7 @@ UT_Rect * fp_VerticalContainer::getScreenRect(void)
 {
 	UT_sint32 xoff = 0;
 	UT_sint32 yoff = 0;
-	UT_Rect * pRec = NULL; 
+	UT_Rect * pRec = NULL;
 	if(getContainerType() == FP_CONTAINER_FRAME)
 	{
 		fp_Page * pPage = getPage();
@@ -587,7 +587,7 @@ UT_Rect * fp_VerticalContainer::getScreenRect(void)
 	pRec= new UT_Rect(xoff,yoff,getWidth(),getHeight());
 	return pRec;
 }
-	
+
 /*!
  * Marks Dirty any runs that overlap the supplied rectangle. This rectangle
  * is relative to the screen.
@@ -614,7 +614,7 @@ void fp_VerticalContainer::markDirtyOverlappingRuns(UT_Rect & recScreen)
 
 /*!
   Get Containers' offsets relative to the screen
- \param  pContainer Container which we want to find the absolute 
+ \param  pContainer Container which we want to find the absolute
                     position of.
  \retval xoff Container's X offset relative the screen
  \retval yoff Container's Y offset relative the screen
@@ -656,7 +656,7 @@ void fp_VerticalContainer::getScreenOffsets(fp_ContainerObject* pContainer,
 // Them print on the right pages broken tables are created which
 // sit in different columns. Here we put in a recursive search find
 // the correct broken table line when we come across a cell
-// 
+//
 // Then we have to get all the offsets right for the broken table.
 //
 
@@ -673,7 +673,7 @@ void fp_VerticalContainer::getScreenOffsets(fp_ContainerObject* pContainer,
 			if(pPrev && pPrev->getContainerType() == FP_CONTAINER_CELL)
 			{
 				my_yoff += getYoffsetFromTable(pCon,pPrev,pContainer);
-				pTab = static_cast<fp_TableContainer *>(pVCon); 
+				pTab = static_cast<fp_TableContainer *>(pVCon);
 				if(pTab->isThisBroken() && pTab != pTab->getMasterTable()->getFirstBrokenTable())
 				{
 					my_yoff = my_yoff + pVCon->getY() -iycon;
@@ -698,7 +698,7 @@ void fp_VerticalContainer::getScreenOffsets(fp_ContainerObject* pContainer,
 // Them print on the right pages broken tables are created which
 // sit in different columns. Here we put in a recursive search find
 // the correct broken table line when we come across a cell
-// 
+//
 // Then we have to get all the offsets right for the broken table.
 //
 
@@ -1017,7 +1017,7 @@ void fp_VerticalContainer::draw(dg_DrawArgs* pDA)
 	if(pClipRect)
 	{
 		ytop = pClipRect->top;
-		ybot = UT_MAX(pClipRect->height,_getMaxContainerHeight()) 
+		ybot = UT_MAX(pClipRect->height,_getMaxContainerHeight())
 			+ ytop + pDA->pG->tlu(1);
 		xxx_UT_DEBUGMSG(("clipRect height %d \n",pClipRect->height));
 	}
@@ -1141,7 +1141,7 @@ void fp_VerticalContainer::mapXYToPosition(UT_sint32 x, UT_sint32 y, PT_DocPosit
 	// Find first container that contains the point. First has its lower level below the desired Y
 	// position. Note that X-positions are completely ignored here.
 	UT_sint32 iHeight = 0;
-	do 
+	do
 	{
 		pContainer = static_cast<fp_ContainerObject*>(getNthCon(i++));
 		iHeight = pContainer->getHeight();
@@ -1174,7 +1174,7 @@ void fp_VerticalContainer::mapXYToPosition(UT_sint32 x, UT_sint32 y, PT_DocPosit
 		fp_TableContainer * pTab = static_cast<fp_TableContainer *>(pContainer);
 		xxx_UT_DEBUGMSG(("SEVIOR: do map to position for %x \n",pContainer));
 		pTab->mapXYToPosition(x - pContainer->getX(),
-								y - pContainer->getY() , 
+								y - pContainer->getY() ,
 								pos, bBOL, bEOL,isTOC);
 	}
 	else if(pContainer->getContainerType() == FP_CONTAINER_FRAME)
@@ -1189,7 +1189,7 @@ void fp_VerticalContainer::mapXYToPosition(UT_sint32 x, UT_sint32 y, PT_DocPosit
 		else
 		{
 			pContainer->mapXYToPosition(x - pContainer->getX(),
-										y - pContainer->getY() , 
+										y - pContainer->getY() ,
 										pos, bBOL, bEOL,isTOC);
 		}
 
@@ -1212,7 +1212,7 @@ void fp_VerticalContainer::mapXYToPosition(UT_sint32 x, UT_sint32 y, PT_DocPosit
 					if((pNext->getX() < x) && (x < pNext->getX() + pNext->getMaxWidth()))
 					{
 						pNext->mapXYToPosition(x - pNext->getX(),
-											   y - pNext->getY() , 
+											   y - pNext->getY() ,
 											   pos, bBOL, bEOL,isTOC);
 						return;
 					}
@@ -1225,14 +1225,14 @@ void fp_VerticalContainer::mapXYToPosition(UT_sint32 x, UT_sint32 y, PT_DocPosit
 					pNext = static_cast<fp_Line *>(pNext->getNext());
 				}
 				pBest->mapXYToPosition(x - pContainer->getX(),
-									   y - pContainer->getY() , 
+									   y - pContainer->getY() ,
 									   pos, bBOL, bEOL,isTOC);
 				return;
 			}
 			else
 			{
 				pContainer->mapXYToPosition(x - pContainer->getX(),
-											y - pContainer->getY() , 
+											y - pContainer->getY() ,
 											pos, bBOL, bEOL,isTOC);
 			}
 		}
@@ -1245,7 +1245,7 @@ void fp_VerticalContainer::mapXYToPosition(UT_sint32 x, UT_sint32 y, PT_DocPosit
 			UT_return_if_fail( pBlock );
 
 			pBlock = pBlock->getNextBlockInDocument();
-			
+
 			while(pBlock && !pBlock->canContainPoint())
 			{
 				pBlock = pBlock->getNextBlockInDocument();
@@ -1262,13 +1262,46 @@ void fp_VerticalContainer::mapXYToPosition(UT_sint32 x, UT_sint32 y, PT_DocPosit
 				{
 					pBlock = pBlock->getPrevBlockInDocument();
 				}
-				
+
 			}
 
 			if(!pBlock)
 			{
 				// we are in trouble
-				UT_ASSERT_HARMLESS( UT_SHOULD_NOT_HAPPEN );
+				// no blocks that can take point in this document !!!
+				// one of the scenarios in which this happens is when the user did ctrl+a -> del
+				// in revisions mode or marked everything hidden while fmt marks are not showing
+				// If there is a block and it is not visible, we return that block
+				// Note that it is difficult to prevent this from happening on the PT level, since
+				// just because text is marked as hidden or deleted does not mean it is not
+				// visible in a given view.
+				FL_DocLayout * pDL = NULL;
+				fp_Page * pPage = getPage();
+				if(getPage() && getPage()->getDocLayout() && getPage()->getDocLayout()->getFirstSection())
+				{
+					pBlock = getPage()->getDocLayout()->getFirstSection()->getFirstBlock();
+				}
+
+				if(!pBlock)
+				{
+					UT_ASSERT_HARMLESS( UT_SHOULD_NOT_HAPPEN );
+				}
+				else
+				{
+					fp_Run * pFirstRun = pBlock->getFirstRun();
+
+					if(pFirstRun)
+					{
+						fp_Line * pLine = pFirstRun->getLine();
+						if(pLine)
+						{
+							pLine->mapXYToPosition(x - pLine->getX(),
+												   y - pLine->getY() ,
+												   pos, bBOL, bEOL,isTOC);
+						}
+
+					}
+				}
 			}
 			else
 			{
@@ -1285,19 +1318,19 @@ void fp_VerticalContainer::mapXYToPosition(UT_sint32 x, UT_sint32 y, PT_DocPosit
 						// get the container that holds this line, so we deal with wrapped
 						// lines, etc.
 						fp_Container * pVisibleContainer = pVisibleLine->getContainer();
-						
+
 						pVisibleContainer->mapXYToPosition(x - pContainer->getX(),
-													  y - pContainer->getY() , 
+													  y - pContainer->getY() ,
 													  pos, bBOL, bEOL,isTOC);
 
 #else
 						pVisibleLine->mapXYToPosition(x - pVisibleLine->getX(),
-													  y - pVisibleLine->getY() , 
+													  y - pVisibleLine->getY() ,
 													  pos, bBOL, bEOL,isTOC);
 #endif
 						return;
 					}
-					
+
 					UT_ASSERT_HARMLESS( UT_SHOULD_NOT_HAPPEN );;
 				}
 				else
@@ -1308,14 +1341,14 @@ void fp_VerticalContainer::mapXYToPosition(UT_sint32 x, UT_sint32 y, PT_DocPosit
 		}
 
 		pContainer->mapXYToPosition(x - pContainer->getX(),
-								y - pContainer->getY() , 
+								y - pContainer->getY() ,
 									pos, bBOL, bEOL,isTOC);
 	}
 	else
 	{
 		xxx_UT_DEBUGMSG(("SEVIOR: do map to position for %x \n",pContainer));
 		pContainer->mapXYToPosition(x - pContainer->getX(),
-								y - pContainer->getY() , 
+								y - pContainer->getY() ,
 									pos, bBOL, bEOL,isTOC);
 		xxx_UT_DEBUGMSG(("SEVIOR: Found pos %d in column \n",pos));
 	}
@@ -1470,7 +1503,7 @@ void fp_VerticalContainer::bumpContainers(fp_ContainerObject* pLastContainerToKe
 			fp_Container* pContainer = static_cast<fp_Container*>(getNthCon(i));
 			pContainer->clearScreen();
 //
-// Experimental code: FIXME: Might remove after a while - check 
+// Experimental code: FIXME: Might remove after a while - check
 // that large tables broken over many pages work fine.
 //
 #if 1
@@ -1505,7 +1538,7 @@ void fp_VerticalContainer::bumpContainers(fp_ContainerObject* pLastContainerToKe
 			xxx_UT_DEBUGMSG(("clearScreen on %x in bumpContainers \n",pContainer));
 			pContainer->clearScreen();
 //
-// Experimental code: FIXME: Might remove after a while - check 
+// Experimental code: FIXME: Might remove after a while - check
 // that large tables broken over many pages work fine.
 //
 #if 1
@@ -1701,7 +1734,7 @@ void fp_Column::layout(void)
 		// ignore footnotes
 		if (pContainer->getContainerType() == FP_CONTAINER_FOOTNOTE)
 			continue;
-		
+
 		xxx_UT_DEBUGMSG(("Column Layout: Container %d Container %x Type %d \n",i,pContainer,pContainer->getContainerType()));
 //
 // Set the location first so the height of a table can be calculated
@@ -1984,7 +2017,7 @@ void fp_ShadowContainer::layout(bool bForceLayout)
 		iY += iContainerHeight;
 		iY += iContainerMarginAfter;
 	}
-	
+
 	UT_sint32 iNewHeight = iY;
 	if (getHeight() == iNewHeight)
 	{
@@ -2089,7 +2122,7 @@ void fp_ShadowContainer::draw(dg_DrawArgs* pDA)
 		dg_DrawArgs da = *pDA;
 		da.xoff += pContainer->getX();
 		da.yoff += pContainer->getY();
-		
+
 		UT_sint32 iContainerHeight = pContainer->getHeight();
 		UT_sint32 iContainerMarginAfter = pContainer->getMarginAfter();
 		iY += iContainerHeight;
