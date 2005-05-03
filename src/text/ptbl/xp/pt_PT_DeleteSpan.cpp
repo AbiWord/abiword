@@ -86,6 +86,13 @@ bool pt_PieceTable::deleteSpan(PT_DocPosition dpos1,
 {
 	if(m_pDocument->isMarkRevisions())
 	{
+		// if the user selected the whole document for deletion, we will not delete the
+		// first block (we need always a visible block in any document)
+		// NB: it is possible that the user might delete all contents in several separate
+		// steps; there is no easy way to protect against that
+		pf_Frag * pLast = getFragments().getLast();
+		bool bWholeDoc = (dpos1 <= 2 && pLast->getPos() == dpos2);
+		
 		iRealDeleteCount = 0;
 
 		const XML_Char name[] = "revision";
@@ -135,6 +142,12 @@ bool pt_PieceTable::deleteSpan(PT_DocPosition dpos1,
 				{
 					case PTX_Block:
 						iLen = pf_FRAG_STRUX_BLOCK_LENGTH;
+						if(bWholeDoc && dpos1 == 2)
+						{
+							dpos1 += iLen;
+							continue;
+						}
+						
 						break;
 						
 					case PTX_SectionTable:
