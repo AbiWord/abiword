@@ -79,6 +79,7 @@ if test "$PLATFORM" = "unix"; then
 	with_unix=true
 	dnl locate glib and gtk
 	ABI_GTK2
+	AM_BINRELOC
 elif test "$PLATFORM" = "cocoa" ; then
 	ABI_GLIB2
 	ABI_FE="Cocoa"
@@ -103,6 +104,7 @@ AM_CONDITIONAL(WITH_UNIX,$with_unix)
 AM_CONDITIONAL(WITH_MACOSX,$with_macosx)
 AM_CONDITIONAL(WITH_COCOA,$with_cocoa)
 AM_CONDITIONAL(WITH_QNX,$with_qnx)
+AM_CONDITIONAL(WITH_BINRELOC, test "x$br_cv_binreloc" = "xyes")
 AC_SUBST(OBJCXX)
 AC_SUBST(OBJCXXFLAGS)
 AC_SUBST(OBJCXXDEPMODE)
@@ -442,6 +444,9 @@ AC_CONFIG_FILES([GNUmakefile
  src/other/spell/xp/GNUmakefile
  src/other/ttftool/GNUmakefile
  src/other/ttftool/unix/GNUmakefile
+ src/pkg/GNUmakefile
+ src/pkg/linux/GNUmakefile
+ src/pkg/linux/apkg/GNUmakefile
  src/text/GNUmakefile
  src/text/fmt/GNUmakefile
  src/text/fmt/xp/GNUmakefile
@@ -491,6 +496,8 @@ AC_CONFIG_FILES([GNUmakefile
  src/tools/scripts/unix/GNUmakefile
  src/bindings/GNUmakefile
  src/bindings/perl/GNUmakefile
+ src/pkg/linux/apkg/abiword-gnome.apspec
+ src/pkg/linux/apkg/abiword-gtk.apspec
 ])
 AC_OUTPUT
 

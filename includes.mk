@@ -55,11 +55,13 @@ WP_INCLUDES+=-I'$(top_srcdir)/src/wp/impexp/xp'
 WP_INCLUDES+=-I'$(top_srcdir)/src/wp/ap/@PLATFORM@'
 WP_INCLUDES+=-I'$(top_srcdir)/src/wp/ap/xp/ToolbarIcons'
 WP_INCLUDES+=-I'$(top_srcdir)/src/wp/ap/@PLATFORM@/gnome'
+WP_INCLUDES+=-I'$(top_srcdir)/src/pkg/linux/apkg'
 else
 WP_INCLUDES=-I'$(top_srcdir)/src/wp/ap/xp'
 WP_INCLUDES+=-I'$(top_srcdir)/src/wp/impexp/xp'
 WP_INCLUDES+=-I'$(top_srcdir)/src/wp/ap/@PLATFORM@'
 WP_INCLUDES+=-I'$(top_srcdir)/src/wp/ap/xp/ToolbarIcons'
+WP_INCLUDES+=-I'$(top_srcdir)/src/pkg/linux/apkg'
 endif
 
 OTHER_INCLUDES=-I'$(top_srcdir)/src/other/spell/xp'
@@ -121,6 +123,7 @@ ABI_LIBS+=$(top_builddir)/src/af/gr/libGr.a
 ABI_LIBS+=$(top_builddir)/src/af/ev/libEv.a
 ABI_LIBS+=$(top_builddir)/src/other/spell/xp/libSpell.a
 ABI_LIBS+=$(top_builddir)/src/other/ttftool/unix/libTtfTool.a
+ABI_LIBS+=$(top_builddir)/src/pkg/linux/apkg/libApkg.a
 ABI_LIBS+=$(top_builddir)/src/text/fmt/xp/libFmt.a
 ABI_LIBS+=$(top_builddir)/src/text/ptbl/xp/libPtbl.a
 else 
@@ -131,6 +134,7 @@ ABI_LIBS+=$(top_builddir)/src/af/util/libUtil.a
 ABI_LIBS+=$(top_builddir)/src/af/gr/libGr.a
 ABI_LIBS+=$(top_builddir)/src/af/ev/libEv.a
 ABI_LIBS+=$(top_builddir)/src/other/spell/xp/libSpell.a
+ABI_LIBS+=$(top_builddir)/src/pkg/linux/apkg/libApkg.a
 ABI_LIBS+=$(top_builddir)/src/text/fmt/xp/libFmt.a
 ABI_LIBS+=$(top_builddir)/src/text/ptbl/xp/libPtbl.a
 endif
