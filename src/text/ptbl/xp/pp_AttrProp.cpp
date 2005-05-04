@@ -573,13 +573,28 @@ bool PP_AttrProp::areAlreadyPresent(const XML_Char ** attributes, const XML_Char
 			    It seems that we also want empty strings for attributes,
 				at least for the 'param' attribute which goes with fields.
 				Is this bogus too? -PL
+
+				Yes. 
+				We use empty strings and NULL in values to indicate that the
+				attribute/property should be absent. Sometimes these values filter down
+				here, so we need to handle this. TF
 			*/
-			UT_return_val_if_fail (p[1] /* && *p[1]*/, false);	// require value for each name
+			// UT_return_val_if_fail (p[1] /* && *p[1]*/, false);	// require value for each name
+
+			// first deal with the case where the value is set to NULL or "" -- we want
+			// that attribute to be absent, not present
 			const XML_Char * szValue = NULL;
-			if (!getAttribute(p[0],szValue))
-				return false;		// item not present
-			if (strcmp(p[1],szValue)!=0)
-				return false;		// item has different value
+
+			if((!p[1] || !*p[1]) && getAttribute(p[0],szValue) && szValue && *szValue)
+				return false;
+			else if(p[1] && *p[1])
+			{
+				if (!getAttribute(p[0],szValue))
+					return false;		// item not present
+				if (strcmp(p[1],szValue)!=0)
+					return false;		// item has different value
+			}
+					
 			p += 2;
 		}
 	}
@@ -593,13 +608,27 @@ bool PP_AttrProp::areAlreadyPresent(const XML_Char ** attributes, const XML_Char
 				Jeff, I weakened the following assert because we
 				*want* to represent no tabstops as an empty string.
 				If this isn't safe, let me know.   -- PCR
+
+				We use empty strings and NULL in values to indicate that the
+				attribute/property should be absent. Sometimes these values filter down
+				here, so we need to handle this. TF
 			*/
-			UT_return_val_if_fail (p[1] /* && *p[1] */, false);	// require value for each name
+			// UT_return_val_if_fail (p[1] /* && *p[1]*/, false);	// require value for each name
+
+			// first deal with the case where the value is set to NULL or "" -- we want
+			// that attribute to be absent, not present
 			const XML_Char * szValue = NULL;
-			if (!getProperty(p[0],szValue))
-				return false;		// item not present
-			if (strcmp(p[1],szValue)!=0)
-				return false;		// item has different value
+
+			if((!p[1] || !*p[1]) && getProperty(p[0],szValue) && szValue && *szValue)
+				return false;
+			else if(p[1] && p[1])
+			{
+				if (!getProperty(p[0],szValue))
+					return false;		// item not present
+				if (strcmp(p[1],szValue)!=0)
+					return false;		// item has different value
+			}
+			
 			p += 2;
 		}
 	}
@@ -701,7 +730,7 @@ bool PP_AttrProp::isExactMatch(const PP_AttrProp * pMatch) const
 
 			v1 = ca1.next();
 			v2 = ca2.next();
-		} while (ca1.is_valid());
+		} while (ca1.is_valid() && ca2.is_valid());
 	}
 
 	if (countMyProps > 0)
@@ -728,7 +757,7 @@ bool PP_AttrProp::isExactMatch(const PP_AttrProp * pMatch) const
 
 			v1 = cp1.next();
 			v2 = cp2.next();
-		} while (cp1.is_valid());
+		} while (cp1.is_valid() && cp2.is_valid());
 
 	#ifdef PT_TEST
 		s_Matches++;
