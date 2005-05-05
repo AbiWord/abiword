@@ -3840,6 +3840,16 @@ bool IE_Imp_RTF::TranslateKeywordID(RTF_KEYWORD_ID keywordID,
 			getDoc()->setEncodingName(szEncoding);
 		return true;
 	}
+	case RTF_KW_abirtl:
+	{
+		m_currentRTFState.m_charProps.m_dirOverride = UT_BIDI_RTL;
+		return true;
+	}
+	case RTF_KW_abiltr:
+	{
+		m_currentRTFState.m_charProps.m_dirOverride = UT_BIDI_LTR;
+		return true;
+	}
 	case RTF_KW_aendnotes:
 		if(!getLoadStylesOnly())
 		{

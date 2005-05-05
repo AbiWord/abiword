@@ -1760,12 +1760,14 @@ void IE_Exp_RTF::_write_charfmt(const s_RTF_AttrPropAdapter & apa)
 		if (!UT_strcmp (szDirOvrr, "ltr"))
 		{
 			_rtf_keyword ("ltrch");
+			_rtf_keyword ("abiltr");
 			m_CharRTL = UT_BIDI_LTR;
 			bProceed = false;
 		}
 		else if (!UT_strcmp (szDirOvrr, "rtl"))
 		{
 			_rtf_keyword ("rtlch");
+			_rtf_keyword ("abirtl");
 			m_CharRTL = UT_BIDI_RTL;
 			bProceed  = false;
 		}
