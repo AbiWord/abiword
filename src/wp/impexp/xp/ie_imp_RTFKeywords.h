@@ -17,6 +17,7 @@ _rtf_keyword rtfKeywords[] = {
 	{"abilist", false, false, NO_CONTEXT, RTF_KW_abilist }, 
 	{"abimathml",false,false,NO_CONTEXT,RTF_KW_abimathml },
 	{"abinodiroverride", false, false, NO_CONTEXT, RTF_KW_abinodiroverride }, 
+	{"abirevision", false, false, NO_CONTEXT, RTF_KW_abirevision }, 
 	{"abitableprops", false, false, NO_CONTEXT, RTF_KW_abitableprops }, 
 	{"abitopline", false, false, NO_CONTEXT, RTF_KW_abitopline }, 
 	{"absh", false, false, NO_CONTEXT, RTF_KW_absh }, 

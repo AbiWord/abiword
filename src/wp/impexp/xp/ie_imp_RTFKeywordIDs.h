@@ -23,6 +23,7 @@ typedef enum {
 	RTF_KW_abilist,
 	RTF_KW_abimathml,
 	RTF_KW_abinodiroverride,
+	RTF_KW_abirevision,
 	RTF_KW_abitableprops,
 	RTF_KW_abitopline,
 	RTF_KW_absh,

@@ -1339,6 +1339,7 @@ RTFStateStore * RTFStateStore::clone(void)
 	pNew->m_tableProps = m_tableProps;
 	pNew->m_unicodeAlternateSkipCount = m_unicodeAlternateSkipCount;
 	pNew->m_unicodeInAlternate = m_unicodeInAlternate;
+	pNew->m_revAttr = m_revAttr;
 	return pNew;
 }
 
@@ -4563,16 +4564,28 @@ bool IE_Imp_RTF::TranslateKeywordID(RTF_KEYWORD_ID keywordID,
 		return true;
 		
 	case RTF_KW_revauthdel:
-		return HandleRevisedText(PP_REVISION_DELETION, param);
+		if(m_currentRTFState.m_revAttr.size())
+			return true; // ignore this
+		else
+			return HandleRevisedText(PP_REVISION_DELETION, param);
 	case RTF_KW_revauth:
-		return HandleRevisedText(PP_REVISION_ADDITION, param);
+		if(m_currentRTFState.m_revAttr.size())
+			return true; // ignore this
+		else
+			return HandleRevisedText(PP_REVISION_ADDITION, param);
 	case RTF_KW_crauth:
-		return HandleRevisedText(PP_REVISION_FMT_CHANGE, param);
+		if(m_currentRTFState.m_revAttr.size())
+			return true; // ignore this
+		else
+			return HandleRevisedText(PP_REVISION_FMT_CHANGE, param);
 		
 	case RTF_KW_crdate:
 	case RTF_KW_revdttmdel:
 	case RTF_KW_revdttm:
-		return HandleRevisedTextTimestamp(param);
+		if(m_currentRTFState.m_revAttr.size())
+			return true; // ignore this
+		else
+			return HandleRevisedTextTimestamp(param);
 		
 		
 	case RTF_KW_ri:
@@ -4953,6 +4966,40 @@ bool IE_Imp_RTF::HandleStarKeyword()
 					}
 					return HandleAbiCell();
 					break;
+				case RTF_KW_abirevision:
+					{
+						// the abirevision keyword is enclosed in {}, having its own
+						// stack; we however need to set the m_abiRevision parameter of
+						// the parent stack
+						RTFStateStore * pState = NULL;
+						bool bSuccess = PopRTFState();
+
+						UT_return_val_if_fail( bSuccess, false );
+						
+						// OK scan through the text until a closing delimeter is
+						// found
+						UT_uint32 count = 0;
+						unsigned char ch;
+								
+								
+						while(ReadCharFromFile(&ch))
+						{
+							if(ch == '}')
+								break;
+									
+							if(ch == '\\')
+							{
+								if (!ReadCharFromFile(&ch))
+									return false;
+							}
+
+								
+							m_currentRTFState.m_revAttr += ch;
+						}
+
+						return true;
+					}
+						
 				case RTF_KW_abitableprops:
 					if(!bUseInsertNotAppend())
 					{
@@ -5366,10 +5413,11 @@ bool IE_Imp_RTF::_appendSpan()
 	UT_String prop_rtl;
 
 	UT_uint32 iPropOffset = 0;
-	
-	bool bRevised = m_currentRTFState.m_charProps.m_eRevision != PP_REVISION_NONE;
 
-	propsArray[0] = bRevised ? pRevs : pProps;
+	bool bRevisedABI = (m_currentRTFState.m_revAttr.size() != 0);
+	bool bRevisedRTF = !bRevisedABI && (m_currentRTFState.m_charProps.m_eRevision != PP_REVISION_NONE);
+
+	propsArray[0] = bRevisedABI || bRevisedRTF ? pRevs : pProps;
 	propsArray[1] = prop_basic.c_str();
 
 	if(m_currentRTFState.m_charProps.m_styleNumber >= 0
@@ -5379,12 +5427,20 @@ bool IE_Imp_RTF::_appendSpan()
 		propsArray[3] = static_cast<const char *>(m_styleTable[m_currentRTFState.m_charProps.m_styleNumber]);
 	}
 
-	if(bRevised)
+	if(bRevisedRTF)
 	{
 		_formRevisionAttr(revision, prop_basic, propsArray[3]);
 
 		// the style attribute is inside the revision, clear it out of the props array
 		propsArray[1] = revision.c_str();
+		propsArray[2] = NULL;
+		propsArray[3] = NULL;
+
+		iPropOffset = 2;
+	}
+	else if(bRevisedABI)
+	{
+		propsArray[1] = m_currentRTFState.m_revAttr.utf8_str();
 		propsArray[2] = NULL;
 		propsArray[3] = NULL;
 
@@ -5483,7 +5539,7 @@ bool IE_Imp_RTF::_appendSpan()
 					}
 					m_iAutoBidiOverride = UT_BIDI_UNSET;
 
-					if(bRevised)
+					if(bRevisedABI || bRevisedRTF)
 					{
 						propsArray[iPropOffset] = NULL;
 						propsArray[iPropOffset + 1] = NULL;
@@ -5757,18 +5813,27 @@ bool IE_Imp_RTF::ApplyCharacterAttributes()
 		UT_String propBuffer;
 		buildCharacterProps(propBuffer);
 
-		const XML_Char* propsArray[5];
+		const XML_Char* propsArray[7];
 		propsArray[0] = pProps;
 		propsArray[1] = propBuffer.c_str();
 		propsArray[2] = NULL;
 		propsArray[3] = NULL;
 		propsArray[4] = NULL;
+		propsArray[5] = NULL;
+		propsArray[6] = NULL;
+		UT_uint32 iPos = 2;
 
 		if(m_currentRTFState.m_charProps.m_styleNumber >= 0
 		   && (UT_uint32)m_currentRTFState.m_charProps.m_styleNumber < m_styleTable.size())
 		{
-			propsArray[2] = pStyle;
-			propsArray[3] = static_cast<const char *>(m_styleTable[m_currentRTFState.m_charProps.m_styleNumber]);
+			propsArray[iPos++] = pStyle;
+			propsArray[iPos++] = static_cast<const char *>(m_styleTable[m_currentRTFState.m_charProps.m_styleNumber]);
+		}
+
+		if(m_currentRTFState.m_revAttr.size())
+		{
+			propsArray[iPos++] = "revision";
+			propsArray[iPos++] = m_currentRTFState.m_revAttr.utf8_str();
 		}
 		
 		if (!bUseInsertNotAppend())	// if we are reading from a file or parsing headers and footers
@@ -6447,8 +6512,15 @@ bool IE_Imp_RTF::ApplyParagraphAttributes(bool bDontInsert)
 		xxx_UT_DEBUGMSG(("SEVIOR: propBuffer = %s \n",propBuffer.c_str()));
 	}
 	attribs[attribsCount++] = propBuffer.c_str();
-	attribs[attribsCount++] = NULL;
+	attribs[attribsCount] = NULL;
 
+	if(m_currentRTFState.m_revAttr.size())
+	{
+		attribs[attribsCount++] = "revision";
+		attribs[attribsCount++] = m_currentRTFState.m_revAttr.utf8_str();
+		attribs[attribsCount] = NULL;
+	}
+	
 	if (!bUseInsertNotAppend()) // if we are reading a file or parsing header and footers
 	{
 		if(bAbiList || bWord97List )
@@ -6886,6 +6958,12 @@ bool IE_Imp_RTF::ApplySectionAttributes()
 		propsArray [paramIndex] = szFtrLastID.c_str();
 		paramIndex++;
 	}
+	if(m_currentRTFState.m_revAttr.size())
+	{
+		propsArray[paramIndex++] = "revision";
+		propsArray[paramIndex++] = m_currentRTFState.m_revAttr.utf8_str();
+	}
+
 	UT_ASSERT_HARMLESS (paramIndex < 15);
 	propsArray [paramIndex] = NULL;
 

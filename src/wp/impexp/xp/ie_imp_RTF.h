@@ -448,7 +448,7 @@ struct ABI_EXPORT RTFStateStore
 {
 	RTFStateStore();
     RTFStateStore * clone();
-//	RTFStateStore& operator=(const RTFStateStore&);
+	// RTFStateStore& operator=(const RTFStateStore& s)
 
 	enum DestinationStateTypes { rdsNorm, rdsSkip, rdsFootnote, rdsHeader, rdsFooter, rdsField };
 	enum InternalStateTypes { risNorm, risBin, risHex };
@@ -462,6 +462,7 @@ struct ABI_EXPORT RTFStateStore
     RTFProps_TableProps     m_tableProps;           // Table properties
 	UT_uint32				m_unicodeAlternateSkipCount;	// value of N in "\ucN"
 	UT_uint32				m_unicodeInAlternate;			// chars left in alternate "\u<u><A>"
+	UT_UTF8String           m_revAttr;              // the revision attribute stored in abirevision
 };
 
 
@@ -897,7 +898,6 @@ private:
 	UT_BidiCharType       m_iAutoBidiOverride;
 	UT_BidiCharType       m_iBidiLastType;
 	UT_BidiCharType       m_iBidiNextType;
-
 };
 
 #endif /* IE_IMP_RTF_H */

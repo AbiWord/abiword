@@ -1819,6 +1819,30 @@ void IE_Exp_RTF::_output_revision(const s_RTF_AttrPropAdapter & apa, bool bPara,
 			UT_return_if_fail( UT_SHOULD_NOT_HAPPEN );
 		}
 
+		// we dump the revision attribute directly using our extended keyword
+		// 'abirevision' (I do this only reluctantly)
+		
+		_rtf_open_brace();
+		_rtf_keyword("*");
+		_rtf_keyword("abirevision");
+
+		UT_UTF8String s;
+		const char * p = szRevisions;
+
+		// have to escape \, {, }
+		while(p && *p)
+		{
+			if(*p == '\\' || *p == '{' || *p == '}')
+				s += '\\';
+
+			s += *p++;
+		}
+		
+		
+		_rtf_chardata(s.utf8_str(), s.byteLength());
+		_rtf_close_brace();
+		
+
 		// for now, we will just dump the lot; later we need to figure out how to deal
 		// with revision conflicts ...
 		for(UT_uint32 i = 0; i < RA.getRevisionsCount(); ++i)
@@ -1975,8 +1999,8 @@ void IE_Exp_RTF::_output_revision(const s_RTF_AttrPropAdapter & apa, bool bPara,
 				}
 				
 			}
+			
 		} // for
-		
 	} // if(pRevisions)
 }
 
