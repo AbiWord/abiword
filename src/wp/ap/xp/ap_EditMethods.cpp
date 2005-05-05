@@ -3707,7 +3707,7 @@ Defun(selectObject)
 		{
 			pRun = pRun->getNextRun();
 		}
-		if(pRun && (pRun->getType() == FPRUN_IMAGE) || ((pRun->getType() == FPRUN_EMBED)))
+		if(pRun && ((pRun->getType() == FPRUN_IMAGE) || ((pRun->getType() == FPRUN_EMBED))))
 		{
 			// we've found an image: do not move the view, just select the image and exit
 			pView->cmdSelect(pos,pos+1);
