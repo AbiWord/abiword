@@ -5401,7 +5401,8 @@ static bool s_doHyperlinkDlg(FV_View * pView)
 			{
 				pRun = pRun->getNextRun();
 			}
-			pos2 = pBL->getPosition(true) + pRun->getBlockOffset();
+			UT_ASSERT_HARMLESS(pRun); // no FPRUN_HYPERLINK found?
+			pos2 = pBL->getPosition(true) + ( pRun ? pRun->getBlockOffset() : 0 );
 		}
 		else
 		{
