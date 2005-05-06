@@ -71,7 +71,7 @@ XAP_Dialog * XAP_UnixDialog_FileOpenSaveAs::static_constructor(XAP_DialogFactory
 
 XAP_UnixDialog_FileOpenSaveAs::XAP_UnixDialog_FileOpenSaveAs(XAP_DialogFactory * pDlgFactory,
 														   XAP_Dialog_Id id)
-  : XAP_Dialog_FileOpenSaveAs(pDlgFactory,id), m_FC(0), m_preview(0), m_bExport(true)
+  : XAP_Dialog_FileOpenSaveAs(pDlgFactory,id), m_FC(0), m_preview(0), m_bSave(true)
 {
 	m_szFinalPathnameCandidate = NULL;
 }
@@ -155,7 +155,6 @@ static void file_selection_changed  (GtkTreeSelection  *selection,
 }
 
 bool XAP_UnixDialog_FileOpenSaveAs::_run_gtk_main(XAP_Frame * pFrame,
-													 bool bCheckWritePermission,
 													 GtkWidget * filetypes_pulldown)
 {
 	/*
@@ -183,9 +182,9 @@ bool XAP_UnixDialog_FileOpenSaveAs::_run_gtk_main(XAP_Frame * pFrame,
 	struct stat buf;
 	int err;
 
-	// if bCheckWritePermission is not set, we're looking to OPEN a file.
-	
-	if (!bCheckWritePermission)
+	// if m_bSave is not set, we're looking to OPEN a file.
+	// otherwise we are looking to SAVE a file.
+	if (!m_bSave)
 	{
 		while (1)
 		{
@@ -193,236 +192,183 @@ bool XAP_UnixDialog_FileOpenSaveAs::_run_gtk_main(XAP_Frame * pFrame,
 			if (m_answer == a_CANCEL)			// The easy way out
 				return false;
 
-			// TODO  check for symlinks, because even symlinks to dirs won't
-			// TODO  show up with S_ISDIR().
-
-			// TODO  check to make sure a file exists before we close off the
-			// TODO  loop
-			
-			// We can't just return, because we might have some dialog work to
-			// do.  For example, the user might have typed in a directory, not
-			// a file, so we have to catch it, change the dialog, and not return
-			// any filename yet.
-
-			UT_cloneString(szDialogFilename, gtk_file_chooser_get_filename(m_FC));
-			UT_ASSERT(szDialogFilename);
-
-			err = stat(szDialogFilename, &buf);
-			UT_ASSERT(err == 0 || err == -1);
-			
-			// Check for a directory entered as filename.  When true,
-			// set the filter properly and continue in the selection
-			if (err == 0 && S_ISDIR(buf.st_mode))
-			{
-				GString * s = g_string_new(szDialogFilename);
-				if (s->str[s->len - 1] != '/')
-				{
-					g_string_append_c(s, '/');
-				}
-				gtk_file_chooser_set_filename(m_FC, s->str);
-				g_string_free(s, TRUE);
-
-				// free the string and continue along
-				FREEP(szDialogFilename);
-				continue;
-			}
-
-			UT_cloneString(m_szFinalPathnameCandidate, szDialogFilename);
-			if(szDialogFilename) FREEP(szDialogFilename);
-			// if we got here, the text wasn't a directory, so it's a file,
-			// and life is good
+			UT_cloneString(m_szFinalPathnameCandidate, gtk_file_chooser_get_filename(m_FC));
+			UT_ASSERT(m_szFinalPathnameCandidate);
 			return (m_answer == a_OK);
 		}
 	}		
-		
-	// if bCheckWritePermission is set, we're looking to SAVE a file.
-
-	while(1)
-	{
-		gtk_main();
-		if (m_answer == a_CANCEL)			// The easy way out
-			return false;
-
-		// Give us a filename we can mangle
-
-		UT_cloneString(szDialogFilename, gtk_file_chooser_get_filename(m_FC));
-		if (!szDialogFilename)
-			continue;
-
-		// We append the suffix of the default type, so the user doesn't
-	        // have to.  This is adapted from the Windows front-end code
-		// (xap_Win32Dlg_FileOpenSaveAs.cpp), since it should act the same.
-		// If, however, the user doesn't want suffixes, they don't have to have them.  
-
+	else
+	{		
+		while(1)
 		{
-			//UT_uint32 end = UT_pointerArrayLength(static_cast<void **>(m_szSuffixes));
-
-			GtkWidget * activeItem = gtk_menu_get_active(GTK_MENU(
-				gtk_option_menu_get_menu(GTK_OPTION_MENU(filetypes_pulldown))));
-			UT_ASSERT(activeItem);
-
-			UT_sint32 nFileType = GPOINTER_TO_INT(g_object_get_data(
-				G_OBJECT(activeItem), "user_data"));
-
-			// set to first item, which should probably be auto detect
-			// TODO : "probably" isn't very good.
-			UT_uint32 nIndex = 0;
-			
-			// the index in the types table will match the index in the suffix
-			// table.  nFileType is the data we are searching for.
-			for (UT_uint32 i = 0; m_nTypeList[i]; i++)
+			gtk_main();
+			if (m_answer == a_CANCEL)			// The easy way out
+				return false;
+	
+			// Give us a filename we can mangle
+	
+			UT_cloneString(szDialogFilename, gtk_file_chooser_get_filename(m_FC));
+			if (!szDialogFilename)
+				continue;
+	
+			// We append the suffix of the default type, so the user doesn't
+				// have to.  This is adapted from the Windows front-end code
+			// (xap_Win32Dlg_FileOpenSaveAs.cpp), since it should act the same.
+			// If, however, the user doesn't want suffixes, they don't have to have them.  
+	
 			{
-				if (m_nTypeList[i] == nFileType)
+				//UT_uint32 end = UT_pointerArrayLength(static_cast<void **>(m_szSuffixes));
+	
+				GtkWidget * activeItem = gtk_menu_get_active(GTK_MENU(
+					gtk_option_menu_get_menu(GTK_OPTION_MENU(filetypes_pulldown))));
+				UT_ASSERT(activeItem);
+	
+				UT_sint32 nFileType = GPOINTER_TO_INT(g_object_get_data(
+					G_OBJECT(activeItem), "user_data"));
+	
+				// set to first item, which should probably be auto detect
+				// TODO : "probably" isn't very good.
+				UT_uint32 nIndex = 0;
+				
+				// the index in the types table will match the index in the suffix
+				// table.  nFileType is the data we are searching for.
+				for (UT_uint32 i = 0; m_nTypeList[i]; i++)
 				{
-					nIndex = i;
-					break;
+					if (m_nTypeList[i] == nFileType)
+					{
+						nIndex = i;
+						break;
+					}
 				}
+				bool wantSuffix = true;
+				
+				XAP_Prefs *pPrefs= pFrame->getApp()->getPrefs();
+	
+				pPrefs->getPrefsValueBool(static_cast<const XML_Char *>(XAP_PREF_KEY_UseSuffix), &wantSuffix);
+	
+				UT_DEBUGMSG(("UseSuffix: %d\n", wantSuffix));
+	
+				// do not want suffix for directory names
+				err = stat(szDialogFilename, &buf);
+				if (S_ISDIR(buf.st_mode))
+					wantSuffix = false;
+	
+				// if the file doesn't have a suffix already, and the file type
+				// is normal (special types are negative, like auto detect),
+				// and the user wants extensions, slap a suffix on it.   
+				if ((!UT_pathSuffix(szDialogFilename)) && 
+					(nFileType > 0) && wantSuffix)                                
+					{                                                       
+						// add suffix based on selected file type       
+						const char * szSuffix = UT_pathSuffix(m_szSuffixes[nIndex]);
+						UT_ASSERT(szSuffix);                            
+						UT_uint32 length = strlen(szDialogFilename) + strlen(szSuffix) + 1;
+						
+						szFinalPathname = static_cast<char *>(UT_calloc(length,sizeof(char)));
+						
+						if (szFinalPathname)                            						
+							{                                               
+								char * p = szFinalPathname;             
+								strcpy(p,szDialogFilename);             
+								strcat(p,szSuffix);                     
+							}                                               
+						
+					}                                                       
+				else                                                    
+					{                                                       
+						// the file type is special (auto detect)       
+						// set to plain name, and let the auto detector in the
+						// exporter figure it out                       
+						UT_cloneString(szFinalPathname,szDialogFilename);
+					}                                                       
+				// free szDialogFilename since it's been put into szFinalPathname (with
+				// or without changes) and it's invalid (missing an extension which
+				// might have been appended)                            
+				
+				FREEP(szDialogFilename);
 			}
-			bool wantSuffix = true;
 			
-			XAP_Prefs *pPrefs= pFrame->getApp()->getPrefs();
-
-			pPrefs->getPrefsValueBool(static_cast<const XML_Char *>(XAP_PREF_KEY_UseSuffix), &wantSuffix);
-
-			UT_DEBUGMSG(("UseSuffix: %d\n", wantSuffix));
-
-			// do not want suffix for directory names
-			err = stat(szDialogFilename, &buf);
-			if (S_ISDIR(buf.st_mode))
-				wantSuffix = false;
-
-			// if the file doesn't have a suffix already, and the file type
-			// is normal (special types are negative, like auto detect),
-			// and the user wants extensions, slap a suffix on it.   
-			if ((!UT_pathSuffix(szDialogFilename)) && 
-			    (nFileType > 0) && wantSuffix)                                
-				{                                                       
-					// add suffix based on selected file type       
-					const char * szSuffix = UT_pathSuffix(m_szSuffixes[nIndex]);
-					UT_ASSERT(szSuffix);                            
-					UT_uint32 length = strlen(szDialogFilename) + strlen(szSuffix) + 1;
-					
-					szFinalPathname = static_cast<char *>(UT_calloc(length,sizeof(char)));
-					
-					if (szFinalPathname)                            						
-						{                                               
-							char * p = szFinalPathname;             
-							strcpy(p,szDialogFilename);             
-							strcat(p,szSuffix);                     
-						}                                               
-					
-				}                                                       
-			else                                                    
-				{                                                       
-					// the file type is special (auto detect)       
-					// set to plain name, and let the auto detector in the
-					// exporter figure it out                       
-					UT_cloneString(szFinalPathname,szDialogFilename);
-				}                                                       
-			// free szDialogFilename since it's been put into szFinalPathname (with
-			// or without changes) and it's invalid (missing an extension which
-			// might have been appended)                            
+			UT_cloneString(szFinalPathnameCopy, szFinalPathname);
 			
-			FREEP(szDialogFilename);   
-
-			
-		}
-		
-		UT_cloneString(szFinalPathnameCopy, szFinalPathname);
-		
-		err = stat(szFinalPathnameCopy, &buf);
-		UT_ASSERT(err == 0 || err == -1);
-			
-		// Does the filename already exist?
-
-		if (err == 0 && S_ISREG(buf.st_mode))
-		{
-			// we have an existing file, ask to overwrite
-
-			if (_askOverwrite_YesNo(pFrame, szFinalPathname))
+			err = stat(szFinalPathnameCopy, &buf);
+			UT_ASSERT(err == 0 || err == -1);
+				
+			// Does the filename already exist?
+	
+			if (err == 0 && S_ISREG(buf.st_mode))
 			{
+				// we have an existing file, ask to overwrite
+	
+				if (_askOverwrite_YesNo(pFrame, szFinalPathname))
+				{
+					UT_cloneString(m_szFinalPathnameCandidate, szFinalPathname);
+					goto ReturnTrue;
+				}
+	
+				goto ContinueLoop;
+			}
+				
+			// We have a string that may contain a path, and may have a file
+			// at the end.  First, strip off a file (if it exists), and test
+			// for a matching directory.  We can then proceed with the file
+			// if another stat of that dir passes.
+	
+			if (szFinalPathnameCopy && strlen(szFinalPathnameCopy))
+				pLastSlash = strrchr(szFinalPathnameCopy,'/');
+			else
+				pLastSlash = NULL;
+	
+			if (!pLastSlash)
+			{
+				_notifyError_OKOnly(pFrame,XAP_STRING_ID_DLG_InvalidPathname);
+				goto ContinueLoop;
+			}
+	
+			// Trim the pathname at beginning of the filename
+			// keeping the trailing slash.
+				
+			pLastSlash[1] = 0;
+	
+			// Stat the directory left over
+	
+			err = stat(szFinalPathnameCopy, &buf);
+			UT_ASSERT(err == 0 || err == -1);
+	
+			// If this directory doesn't exist, we have been feed garbage
+			// at some point.  Throw an error and continue with the selection.
+	
+			if (err == -1)
+			{
+				_notifyError_OKOnly(pFrame,XAP_STRING_ID_DLG_NoSaveFile_DirNotExist);
+				goto ContinueLoop;
+			}
+	
+			// Since the stat passed the last test, we will make sure the
+			// directory is suitable for writing, since we know it exists.
+	
+			UT_ASSERT(S_ISDIR(buf.st_mode));
+	
+			if (!access(szFinalPathnameCopy, W_OK))
+			{
+				// we've got what we need, save it to the candidate
 				UT_cloneString(m_szFinalPathnameCandidate, szFinalPathname);
 				goto ReturnTrue;
 			}
-
-			goto ContinueLoop;
+	
+			// complain about write permission on the directory.
+			// lop off ugly trailing slash only if we don't have
+			// the root dir ('/') for a path
+	
+			if (pLastSlash > szFinalPathnameCopy)
+				*pLastSlash = 0;
+	
+			_notifyError_OKOnly(pFrame,XAP_STRING_ID_DLG_NoSaveFile_DirNotWriteable,
+								szFinalPathname);
+		ContinueLoop:
+			FREEP(szFinalPathnameCopy);
 		}
-			
-		// Check for a directory entered as filename.  When true,
-		// set the filter properly and continue in the selection
-
-		if (err == 0 && S_ISDIR(buf.st_mode))
-		{
-			GString * s = g_string_new(szFinalPathnameCopy);
-			if (s->str[s->len - 1] != '/')
-			{
-				g_string_append_c(s, '/');
-			}
-			gtk_file_chooser_set_filename(m_FC, s->str);
-			g_string_free(s, TRUE);
-			goto ContinueLoop;
-		}
-
-		// We have a string that may contain a path, and may have a file
-		// at the end.  First, strip off a file (if it exists), and test
-		// for a matching directory.  We can then proceed with the file
-		// if another stat of that dir passes.
-
-		if (szFinalPathnameCopy && strlen(szFinalPathnameCopy))
-			pLastSlash = strrchr(szFinalPathnameCopy,'/');
-		else
-			pLastSlash = NULL;
-
-		if (!pLastSlash)
-		{
-			_notifyError_OKOnly(pFrame,XAP_STRING_ID_DLG_InvalidPathname);
-			goto ContinueLoop;
-		}
-
-		// Trim the pathname at beginning of the filename
-		// keeping the trailing slash.
-			
-		pLastSlash[1] = 0;
-
-		// Stat the directory left over
-
-		err = stat(szFinalPathnameCopy, &buf);
-		UT_ASSERT(err == 0 || err == -1);
-
-		// If this directory doesn't exist, we have been feed garbage
-		// at some point.  Throw an error and continue with the selection.
-
-		if (err == -1)
-		{
-			_notifyError_OKOnly(pFrame,XAP_STRING_ID_DLG_NoSaveFile_DirNotExist);
-			goto ContinueLoop;
-		}
-
-		// Since the stat passed the last test, we will make sure the
-		// directory is suitable for writing, since we know it exists.
-
-		UT_ASSERT(S_ISDIR(buf.st_mode));
-
-		if (!access(szFinalPathnameCopy, W_OK))
-		{
-			// we've got what we need, save it to the candidate
-			UT_cloneString(m_szFinalPathnameCandidate, szFinalPathname);
-			goto ReturnTrue;
-		}
-
-		// complain about write permission on the directory.
-		// lop off ugly trailing slash only if we don't have
-		// the root dir ('/') for a path
-
-		if (pLastSlash > szFinalPathnameCopy)
-			*pLastSlash = 0;
-
-		_notifyError_OKOnly(pFrame,XAP_STRING_ID_DLG_NoSaveFile_DirNotWriteable,
-							szFinalPathname);
-	ContinueLoop:
-		FREEP(szFinalPathnameCopy);
-	}
-
+	} /* if m_bSave */
+	
 	/*NOTREACHED*/
 
 ReturnTrue:
@@ -460,7 +406,7 @@ void XAP_UnixDialog_FileOpenSaveAs::_notifyError_OKOnly(XAP_Frame * pFrame,
 
 void XAP_UnixDialog_FileOpenSaveAs::fileTypeChanged(GtkWidget * w)
 {
-	if (!m_bExport)
+	if (!m_bSave)
 		return;
 
 	UT_sint32 nFileType = GPOINTER_TO_INT(g_object_get_data(
@@ -521,85 +467,79 @@ void XAP_UnixDialog_FileOpenSaveAs::fileTypeChanged(GtkWidget * w)
 void XAP_UnixDialog_FileOpenSaveAs::runModal(XAP_Frame * pFrame)
 {
 	const XAP_StringSet * pSS = m_pApp->getStringSet();
-
-	// do we want to let this function handle stating the Unix
-	// directory for writability?  Save/Export operations will want
-	// this, open/import will not.
-
-	bool bCheckWritePermission = false;
-
 	UT_UTF8String szTitle;
 	UT_UTF8String szFileTypeLabel;
+	
 	switch (m_id)
 	{
 		case XAP_DIALOG_ID_INSERT_PICTURE:
 			{
 				pSS->getValueUTF8(XAP_STRING_ID_DLG_IP_Title, szTitle);
 				pSS->getValueUTF8(XAP_STRING_ID_DLG_FOSA_FileOpenTypeLabel, szFileTypeLabel);
-				bCheckWritePermission = false;    
+				m_bSave = false;    
 				break;
 			}
 		case XAP_DIALOG_ID_FILE_OPEN:
 			{
 				pSS->getValueUTF8(XAP_STRING_ID_DLG_FOSA_OpenTitle,szTitle);
 				pSS->getValueUTF8(XAP_STRING_ID_DLG_FOSA_FileOpenTypeLabel,szFileTypeLabel);
-				bCheckWritePermission = false;
+				m_bSave = false;
 				break;
 			}
 		case XAP_DIALOG_ID_FILE_IMPORT:
 			{
 				pSS->getValueUTF8(XAP_STRING_ID_DLG_FOSA_ImportTitle,szTitle);
 				pSS->getValueUTF8(XAP_STRING_ID_DLG_FOSA_FileOpenTypeLabel,szFileTypeLabel);
-				bCheckWritePermission = false;
+				m_bSave = false;
 				break;
 			}
 		case XAP_DIALOG_ID_INSERTMATHML:
 			{
 				pSS->getValueUTF8(XAP_STRING_ID_DLG_FOSA_InsertMath,szTitle);
 				pSS->getValueUTF8(XAP_STRING_ID_DLG_FOSA_FileInsertMath,szFileTypeLabel);
-				bCheckWritePermission = false;
+				m_bSave = false;
 				break;
 			}
 		case XAP_DIALOG_ID_INSERTOBJECT:
 			{
 				pSS->getValueUTF8(XAP_STRING_ID_DLG_FOSA_InsertObject,szTitle);
 				pSS->getValueUTF8(XAP_STRING_ID_DLG_FOSA_FileInsertObject,szFileTypeLabel);
-				bCheckWritePermission = false;
+				m_bSave = false;
 				break;
 			}
 		case XAP_DIALOG_ID_INSERT_FILE:
 			{
 				pSS->getValueUTF8(XAP_STRING_ID_DLG_FOSA_InsertTitle,szTitle);
 				pSS->getValueUTF8(XAP_STRING_ID_DLG_FOSA_FileOpenTypeLabel,szFileTypeLabel);
-				bCheckWritePermission = false;
+				m_bSave = false;
 				break;
 			}
 		case XAP_DIALOG_ID_FILE_SAVEAS:
 			{
 				pSS->getValueUTF8(XAP_STRING_ID_DLG_FOSA_SaveAsTitle,szTitle);
 				pSS->getValueUTF8(XAP_STRING_ID_DLG_FOSA_FileSaveTypeLabel,szFileTypeLabel);
-				bCheckWritePermission = true;
+				m_bSave = true;
 				break;
 			}
 		case XAP_DIALOG_ID_FILE_EXPORT:
 			{
 				pSS->getValueUTF8(XAP_STRING_ID_DLG_FOSA_ExportTitle,szTitle);
 				pSS->getValueUTF8(XAP_STRING_ID_DLG_FOSA_FileSaveTypeLabel,szFileTypeLabel);
-				bCheckWritePermission = true;
+				m_bSave = true;
 				break;
 			}
 		case XAP_DIALOG_ID_PRINTTOFILE:
 			{
 				pSS->getValueUTF8(XAP_STRING_ID_DLG_FOSA_PrintToFileTitle,szTitle);
 				pSS->getValueUTF8(XAP_STRING_ID_DLG_FOSA_FilePrintTypeLabel,szFileTypeLabel);
-				bCheckWritePermission = true;
+				m_bSave = true;
 				break;
 			}
 		default:
 			UT_ASSERT(UT_SHOULD_NOT_HAPPEN);
+			m_bSave = false;
 			break;
 	}
-	m_bExport = bCheckWritePermission;
 
 	// NOTE: we use our string mechanism to localize the dialog's
 	// NOTE: title and the error/confirmation message boxes.  we
@@ -624,134 +564,128 @@ void XAP_UnixDialog_FileOpenSaveAs::runModal(XAP_Frame * pFrame)
 	UT_UTF8String s;
 	
 	/*
-	  To facilitate a file-types selection, we dig around (only for GTK < 2.4)
-	  in some private data for the dialog layout, and add a drop-down list
-	  of known types.  We store an indexer in the user data
-	  for each menu item in the popup, so we can read the type
-	  we need to return.
+	  Add a drop-down list of known types to facilitate a file-types selection. 
+	  We store an indexer in the user data for each menu item in the popup, so 
+	  we can read the type we need to return.
 	*/
+
+	// hbox for our pulldown menu (GTK does its pulldown this way */
+	GtkWidget * pulldown_hbox = gtk_hbox_new(FALSE, 15);
+	gtk_widget_show(pulldown_hbox);
+	gtk_file_chooser_set_extra_widget (GTK_FILE_CHOOSER(m_FC), pulldown_hbox);
+
+	if (m_id == XAP_DIALOG_ID_INSERT_PICTURE)
 	{
-		// hbox for our pulldown menu (GTK does its pulldown this way */
-		GtkWidget * pulldown_hbox = gtk_hbox_new(FALSE, 15);
-		gtk_widget_show(pulldown_hbox);
-		gtk_file_chooser_set_extra_widget (GTK_FILE_CHOOSER(m_FC), pulldown_hbox);
+		GtkWidget * preview = createDrawingArea ();
+		gtk_widget_show (preview);
+		m_preview = preview;			  
+		gtk_widget_set_size_request (preview, PREVIEW_WIDTH, PREVIEW_HEIGHT);
+		
+		// place the preview area inside a container to get a nice border
+		GtkWidget * preview_hbox = gtk_hbox_new(FALSE, 0);
+		gtk_container_set_border_width  (GTK_CONTAINER(preview_hbox), 4);
+		gtk_box_pack_start(GTK_BOX(preview_hbox), preview, TRUE, TRUE, 0);
+		
+		// attach the preview area to the dialog
+		gtk_file_chooser_set_preview_widget (m_FC, preview_hbox);
+		gtk_file_chooser_set_preview_widget_active (m_FC, true);
+		
+		// connect some signals
+		g_signal_connect (m_FC, "update_preview",
+								G_CALLBACK (file_selection_changed), static_cast<gpointer>(this));
+		
+		g_signal_connect (preview, "expose_event",
+								G_CALLBACK (s_preview_exposed), static_cast<gpointer>(this));
+	}
 
-		if (m_id == XAP_DIALOG_ID_INSERT_PICTURE)
-		  {
-			  GtkWidget * preview = createDrawingArea ();
-		    gtk_widget_show (preview);
-			m_preview = preview;			  
-			gtk_widget_set_size_request (preview, PREVIEW_WIDTH, PREVIEW_HEIGHT);
+	// pulldown label
+	GtkWidget * filetypes_label = gtk_label_new(szFileTypeLabel.utf8_str());
+	gtk_label_set_justify(GTK_LABEL(filetypes_label), GTK_JUSTIFY_RIGHT);
+	gtk_misc_set_alignment(GTK_MISC(filetypes_label), 1.0, 0.5);
+	gtk_widget_show(filetypes_label);
 
-			// place the preview area inside a container to get a nice border
-			GtkWidget * preview_hbox = gtk_hbox_new(FALSE, 0);
-			gtk_container_set_border_width  (GTK_CONTAINER(preview_hbox), 4);
-			gtk_box_pack_start(GTK_BOX(preview_hbox), preview, TRUE, TRUE, 0);
+	int VOFFSET = 0;
+	if (m_id == XAP_DIALOG_ID_INSERT_PICTURE)
+	  VOFFSET = 40;
 
-			// attach the preview area to the dialog
-			gtk_file_chooser_set_preview_widget (m_FC, preview_hbox);
-			gtk_file_chooser_set_preview_widget_active (m_FC, true);
+	GtkWidget * vboxTmp = gtk_vbox_new (FALSE, 0);
+	gtk_widget_show (vboxTmp);
+	gtk_box_pack_start (GTK_BOX(vboxTmp), filetypes_label, FALSE, FALSE, VOFFSET);
+	gtk_box_pack_start(GTK_BOX(pulldown_hbox), vboxTmp, FALSE, TRUE, 0);		
 
-			// connect some signals
-			g_signal_connect (m_FC, "update_preview",
-									G_CALLBACK (file_selection_changed), static_cast<gpointer>(this));
+	// pulldown menu
+	filetypes_pulldown = gtk_option_menu_new();
+	gtk_widget_show(filetypes_pulldown);
 
-			g_signal_connect (preview, "expose_event",
-									G_CALLBACK (s_preview_exposed), static_cast<gpointer>(this));
-		  }
+	// hack so that i can make this widget small vertically
+	vboxTmp = gtk_vbox_new (FALSE, 0);
+	gtk_widget_show (vboxTmp);
+	gtk_box_pack_start (GTK_BOX(vboxTmp), filetypes_pulldown, FALSE, FALSE, VOFFSET);
+	gtk_box_pack_end(GTK_BOX(pulldown_hbox), vboxTmp, FALSE, TRUE, 0);
 
-		// pulldown label
-		GtkWidget * filetypes_label = gtk_label_new(szFileTypeLabel.utf8_str());
-		gtk_label_set_justify(GTK_LABEL(filetypes_label), GTK_JUSTIFY_RIGHT);
-		gtk_misc_set_alignment(GTK_MISC(filetypes_label), 1.0, 0.5);
-		gtk_widget_show(filetypes_label);
+	//
+	// add the filters to the dropdown list
+	//
+	GtkWidget * menu = gtk_menu_new();
+	UT_ASSERT(menu);
 
-		int VOFFSET = 0;
-		if (m_id == XAP_DIALOG_ID_INSERT_PICTURE)
-		  VOFFSET = 40;
+	GtkWidget * thismenuitem = NULL;
 
-		GtkWidget * vboxTmp = gtk_vbox_new (FALSE, 0);
-		gtk_widget_show (vboxTmp);
-		gtk_box_pack_start (GTK_BOX(vboxTmp), filetypes_label, FALSE, FALSE, VOFFSET);
-		gtk_box_pack_start(GTK_BOX(pulldown_hbox), vboxTmp, FALSE, TRUE, 0);		
+	char buffer[1024];
 
-		// pulldown menu
-		filetypes_pulldown = gtk_option_menu_new();
-		gtk_widget_show(filetypes_pulldown);
+	// Auto-detect is always an option, but a special one, so we use
+	// a pre-defined constant for the type, and don't use the user-supplied
+	// types yet.
+	pSS->getValueUTF8(XAP_STRING_ID_DLG_FOSA_FileTypeAutoDetect,s);
+	g_snprintf(buffer, 1024, "%s", s.utf8_str());
+	thismenuitem = gtk_menu_item_new_with_label(buffer);
+	g_object_set_data(G_OBJECT(thismenuitem), "user_data", GINT_TO_POINTER(XAP_DIALOG_FILEOPENSAVEAS_FILE_TYPE_AUTO));
+	gtk_widget_show(thismenuitem);
+	gtk_menu_shell_append(GTK_MENU_SHELL(menu), thismenuitem);
 
-		// hack so that i can make this widget small vertically
-		vboxTmp = gtk_vbox_new (FALSE, 0);
-		gtk_widget_show (vboxTmp);
-		gtk_box_pack_start (GTK_BOX(vboxTmp), filetypes_pulldown, FALSE, FALSE, VOFFSET);
-		gtk_box_pack_end(GTK_BOX(pulldown_hbox), vboxTmp, FALSE, TRUE, 0);
-
-		// put it in the right spot.
-		//gtk_box_reorder_child(GTK_BOX(main_vbox), pulldown_hbox, 3);
-
-		// do filters
+	UT_uint32 activeItemIndex = 0;
+	
+	// add list items
+	{
+		UT_ASSERT(UT_pointerArrayLength(reinterpret_cast<void **>(const_cast<char **>(m_szSuffixes))) ==
+				  UT_pointerArrayLength(reinterpret_cast<void **>(const_cast<char **>(m_szDescriptions))));
+		
+		// measure one list, they should all be the same length
+		UT_uint32 end = UT_pointerArrayLength(reinterpret_cast<void **>(const_cast<char **>(m_szDescriptions)));
+	  
+		for (UT_uint32 i = 0; i < end; i++)
 		{
-			GtkWidget * menu = gtk_menu_new();
-			UT_ASSERT(menu);
-
-			GtkWidget * thismenuitem = NULL;
-
-			char buffer[1024];
-
-			// Auto-detect is always an option, but a special one, so we use
-			// a pre-defined constant for the type, and don't use the user-supplied
-			// types yet.
-			pSS->getValueUTF8(XAP_STRING_ID_DLG_FOSA_FileTypeAutoDetect,s);
-			g_snprintf(buffer, 1024, "%s", s.utf8_str());
+			// If this type is default, save its index (i) for later use
+			if (m_nTypeList[i] == m_nDefaultFileType)
+				activeItemIndex = i;
+			
+			g_snprintf(buffer, 1024, "%s", m_szDescriptions[i]);
 			thismenuitem = gtk_menu_item_new_with_label(buffer);
-			g_object_set_data(G_OBJECT(thismenuitem), "user_data", GINT_TO_POINTER(XAP_DIALOG_FILEOPENSAVEAS_FILE_TYPE_AUTO));
+			g_object_set_data(G_OBJECT(thismenuitem), "user_data", GINT_TO_POINTER(m_nTypeList[i]));
 			gtk_widget_show(thismenuitem);
 			gtk_menu_shell_append(GTK_MENU_SHELL(menu), thismenuitem);
-
-			UT_uint32 activeItemIndex = 0;
-			
-			// add list items
-			{
-				UT_ASSERT(UT_pointerArrayLength(reinterpret_cast<void **>(const_cast<char **>(m_szSuffixes))) ==
-						  UT_pointerArrayLength(reinterpret_cast<void **>(const_cast<char **>(m_szDescriptions))));
-				
-				// measure one list, they should all be the same length
-				UT_uint32 end = UT_pointerArrayLength(reinterpret_cast<void **>(const_cast<char **>(m_szDescriptions)));
-			  
-				for (UT_uint32 i = 0; i < end; i++)
-				{
-					// If this type is default, save its index (i) for later use
-					if (m_nTypeList[i] == m_nDefaultFileType)
-						activeItemIndex = i;
-					
-					g_snprintf(buffer, 1024, "%s", m_szDescriptions[i]);
-					thismenuitem = gtk_menu_item_new_with_label(buffer);
-					g_object_set_data(G_OBJECT(thismenuitem), "user_data", GINT_TO_POINTER(m_nTypeList[i]));
-					gtk_widget_show(thismenuitem);
-					gtk_menu_shell_append(GTK_MENU_SHELL(menu), thismenuitem);
 //
 // Attach a callback when it is activated to change the file suffix
 //
-					g_signal_connect(G_OBJECT(thismenuitem), "activate",
-									 G_CALLBACK(s_filetypechanged),	
-									 reinterpret_cast<gpointer>(this));
-				}
-			}
-
-			// Set menu item to default type from index (i) above if we're a SAVEAS
-				
-			gtk_widget_show(menu);
-			
-			// add menu to the option menu widget
-			gtk_option_menu_set_menu(GTK_OPTION_MENU(filetypes_pulldown), menu);
-			m_wFileTypes_PullDown = filetypes_pulldown;
-			// dialog; open dialog always does auto-detect
-			// TODO: should this also apply to the open dialog?
-			if (m_id == XAP_DIALOG_ID_FILE_SAVEAS)
-			  {
-				gtk_menu_set_active(GTK_MENU(menu), activeItemIndex + 1);
-				gtk_option_menu_set_history (GTK_OPTION_MENU(filetypes_pulldown), activeItemIndex + 1);
-			  }
+			g_signal_connect(G_OBJECT(thismenuitem), "activate",
+							 G_CALLBACK(s_filetypechanged),	
+							 reinterpret_cast<gpointer>(this));
 		}
+	}
+
+	// Set menu item to default type from index (i) above if we're a SAVEAS
+		
+	gtk_widget_show(menu);
+	
+	// add menu to the option menu widget
+	gtk_option_menu_set_menu(GTK_OPTION_MENU(filetypes_pulldown), menu);
+	m_wFileTypes_PullDown = filetypes_pulldown;
+	// dialog; open dialog always does auto-detect
+	// TODO: should this also apply to the open dialog?
+	if (m_id == XAP_DIALOG_ID_FILE_SAVEAS)
+	{
+		gtk_menu_set_active(GTK_MENU(menu), activeItemIndex + 1);
+		gtk_option_menu_set_history (GTK_OPTION_MENU(filetypes_pulldown), activeItemIndex + 1);
 	}
 	
 	// connect the signals for OK and CANCEL and the requisite clean-close signals
@@ -835,7 +769,7 @@ void XAP_UnixDialog_FileOpenSaveAs::runModal(XAP_Frame * pFrame)
 	gtk_widget_show(GTK_WIDGET(m_FC));
 	gtk_grab_add(GTK_WIDGET(m_FC));
 	
-	bool bResult = _run_gtk_main(pFrame,bCheckWritePermission,filetypes_pulldown);
+	bool bResult = _run_gtk_main(pFrame,filetypes_pulldown);
 	
 	if (bResult)
 	{
