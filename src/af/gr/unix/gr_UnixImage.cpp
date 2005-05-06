@@ -180,7 +180,7 @@ void GR_UnixImage::scaleImageTo(GR_Graphics * pG, const UT_Rect & rec)
 		return;
 	}
 	scale(width,height);
-	UT_ASSERT(G_OBJECT(m_image)->ref_count == 1);
+	//	UT_ASSERT(G_OBJECT(m_image)->ref_count == 1);
 }
 
 UT_sint32  GR_UnixImage::getDisplayHeight(void) const
@@ -235,7 +235,7 @@ bool  GR_UnixImage::convertToBuffer(UT_ByteBuf** ppBB) const
   }
   
   *ppBB = pBB;
-  UT_ASSERT(G_OBJECT(m_image)->ref_count == 1);
+  // UT_ASSERT(G_OBJECT(m_image)->ref_count == 1);
   return true;
 }
 
@@ -310,10 +310,10 @@ void GR_UnixImage::scale (UT_sint32 iDisplayWidth,
 
 	image = gdk_pixbuf_scale_simple (m_image, iDisplayWidth, 
 					 iDisplayHeight, GDK_INTERP_BILINEAR);
-	UT_ASSERT(G_OBJECT(m_image)->ref_count == 1);
+	//	UT_ASSERT(G_OBJECT(m_image)->ref_count == 1);
 	g_object_unref(G_OBJECT(m_image));
 	m_image = image;
-	UT_ASSERT(G_OBJECT(m_image)->ref_count == 1);
+	// UT_ASSERT(G_OBJECT(m_image)->ref_count == 1);
 }
 
 // note that this does take device units, unlike everything else.
