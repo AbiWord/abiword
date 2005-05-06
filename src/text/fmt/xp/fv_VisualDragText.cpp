@@ -169,9 +169,9 @@ void FV_VisualDragText::mouseDrag(UT_sint32 x, UT_sint32 y)
 	}
 	if(m_iVisualDragMode == FV_VisualDrag_WAIT_FOR_MOUSE_DRAG)
 	{
-          float diff = sqrt((static_cast<float>(x) - static_cast<float>(m_iInitialOffX))*(static_cast<float>(x) - static_cast<float>(m_iInitialOffX)) +
-                              (static_cast<float>(y) - static_cast<float>(m_iInitialOffY))*(static_cast<float>(y) - static_cast<float>(m_iInitialOffY)));
-          if(diff < static_cast<float>(getGraphics()->tlu(MIN_DRAG_PIXELS)))
+          double diff = sqrt((static_cast<double>(x) - static_cast<double>(m_iInitialOffX))*(static_cast<double>(x) - static_cast<double>(m_iInitialOffX)) +
+                              (static_cast<double>(y) - static_cast<double>(m_iInitialOffY))*(static_cast<double>(y) - static_cast<double>(m_iInitialOffY)));
+          if(diff < static_cast<double>(getGraphics()->tlu(MIN_DRAG_PIXELS)))
           {
 	    UT_DEBUGMSG(("Not yet dragged enough.%f \n", diff));
             //
@@ -528,8 +528,8 @@ void FV_VisualDragText::getImageFromSelection(UT_sint32 x, UT_sint32 y)
 		m_pView->_findPositionCoords(posLow, bEOL, xLow, yLow, xCaret2, yCaret2, heightCaret, bDirection, NULL, &pRunLow2);
 		UT_sint32 xx,yy;
 		pLineLow->getScreenOffsets(pRunLow,xx,yy);
-		m_recCurFrame.left = xLow;
-		m_recCurFrame.width = xHigh - xLow;
+		m_recCurFrame.left = xLow < xHigh ? xLow : xHigh;
+		m_recCurFrame.width = xHigh > xLow ? xHigh - xLow : xLow - xHigh;
 		m_recCurFrame.top = yy;
 		m_recCurFrame.height = pLineLow->getHeight();
 		m_recOrigLeft.width = 0;
@@ -552,11 +552,11 @@ void FV_VisualDragText::getImageFromSelection(UT_sint32 x, UT_sint32 y)
 		pLineLow->getScreenOffsets(pRun,xx,yy);
 		xx -= pRun->getX();
 		xx -= pLineLow->getX();
-		m_recOrigLeft.left = xx;
-		m_recOrigLeft.width = xLow - xx;
+		m_recOrigLeft.left = xx < xLow ? xx : xLow;
+		m_recOrigLeft.width = xLow > xx ? xLow - xx : xx - xLow;
 		m_recOrigLeft.top = yy;
 		m_recOrigLeft.height = pLineLow->getHeight();
-		m_recCurFrame.left = xx;
+		m_recCurFrame.left = xx < xLow ? xx : xLow;
 		m_recCurFrame.top = yy;
 		fp_Line * pNext = pLineLow;
 		UT_sint32 width = 0;
@@ -597,7 +597,7 @@ void FV_VisualDragText::getImageFromSelection(UT_sint32 x, UT_sint32 y)
 		pRun = pLineHigh->getFirstRun();
 		pLineHigh->getScreenOffsets(pRun,xx,yy);
 		yy += pLineHigh->getHeight();
-		m_recCurFrame.width = width - m_recCurFrame.left;
+		m_recCurFrame.width = width > m_recCurFrame.left ? width - m_recCurFrame.left : m_recCurFrame.left - width;
 		m_recCurFrame.height = yy - m_recCurFrame.top;
 		if(m_recCurFrame.top + m_recCurFrame.height > m_pView->getWindowHeight())
 		{
@@ -615,8 +615,9 @@ void FV_VisualDragText::getImageFromSelection(UT_sint32 x, UT_sint32 y)
 		{
 			m_recCurFrame.width = pDSL->getActualColumnWidth();
 		}
-		m_recOrigRight.left = xHigh;
-		m_recOrigRight.width = m_recCurFrame.left + m_recCurFrame.width - xHigh;
+		m_recOrigRight.left = xHigh > xLow ? xHigh : xLow;
+		m_recOrigRight.width = m_recCurFrame.left + m_recCurFrame.width > xHigh ?
+			m_recCurFrame.left + m_recCurFrame.width - xHigh : xHigh - (m_recCurFrame.left + m_recCurFrame.width);
 		m_recOrigRight.top = yy - pLineHigh->getHeight();
 		m_recOrigRight.height = pLineHigh->getHeight();
 
