@@ -5199,9 +5199,42 @@ bool FV_View::cmdInsertEmbed(UT_ByteBuf * pBuf,PT_DocPosition pos,const char * s
  */
 bool FV_View::cmdUpdateEmbed(UT_ByteBuf * pBuf, const char * szMime, const char * szProps)
 {
-	if (!isSelectionEmpty())
+	if (isSelectionEmpty())
 	{
 	     return false;
+	}
+	PT_DocPosition pos1 = getPoint();
+	PT_DocPosition pos2 = getSelectionAnchor();
+	PT_DocPosition posTemp = 0;
+	if(pos2 < pos1)
+	{
+	  posTemp = pos2;
+	  pos2 = pos1;
+	  pos1 = posTemp;
+	}
+	fl_BlockLayout * pBL =	getCurrentBlock();
+	if(!pBL)
+		return false;
+	fp_Run * pRun;
+	UT_sint32 xPoint,yPoint,xPoint2,yPoint2,iPointHeight;
+	bool bDirection;
+	pRun = pBL->findPointCoords(pos1, false, xPoint,
+								yPoint, xPoint2, yPoint2,
+								iPointHeight, bDirection);
+	if(pRun && (pRun->getType() != FPRUN_EMBED) )
+	{
+	  pos1 = pos2;
+	}
+	pRun = pBL->findPointCoords(pos1, false, xPoint,
+								yPoint, xPoint2, yPoint2,
+								iPointHeight, bDirection);
+	if(pRun == NULL)
+	{
+	  return false;
+	}
+	if(pRun->getType() != FPRUN_EMBED)
+	{
+	  return false;
 	}
 	const XML_Char * atts[7]={"dataid",NULL,"props",NULL,NULL,NULL,NULL};
 	UT_uint32 uid = m_pDoc->getUID(UT_UniqueId::Image);
@@ -5209,6 +5242,7 @@ bool FV_View::cmdUpdateEmbed(UT_ByteBuf * pBuf, const char * szMime, const char 
 	UT_UTF8String_sprintf(sUID,"%d",uid);
 	atts[1] = sUID.utf8_str();
 	bool bres = m_pDoc->createDataItem(sUID.utf8_str(),false,pBuf,static_cast<void *>(const_cast<char *>(szMime)), NULL);
+	UT_return_val_if_fail(bres,false)
 	const XML_Char *cur_style = NULL;
 	getStyle(&cur_style);
 	if((cur_style != NULL) && (*cur_style) && (strcmp(cur_style,"None") != 0))
@@ -5216,14 +5250,12 @@ bool FV_View::cmdUpdateEmbed(UT_ByteBuf * pBuf, const char * szMime, const char 
 		atts[4] = PT_STYLE_ATTRIBUTE_NAME;
 		atts[5] = cur_style;
 	}
-	bool bDidGlob = false;
 	const XML_Char ** props = NULL;
 
 	// Signal PieceTable Change
 	_saveAndNotifyPieceTableChange();
 	m_pDoc->beginUserAtomicGlob();
-	PT_DocPosition pos = getPoint();
-	getCharFormat(&props,false,pos);
+	getCharFormat(&props,false,pos1);
 	UT_UTF8String sFullProps;
 	UT_UTF8String sProp,sVal;
 	UT_UTF8String sProps;
@@ -5241,13 +5273,14 @@ bool FV_View::cmdUpdateEmbed(UT_ByteBuf * pBuf, const char * szMime, const char 
 	}
 	atts[3]=sFullProps.utf8_str();
 	_deleteSelection();
-	m_pDoc->insertObject(pos,PTO_Embed,atts,NULL);
+	m_pDoc->insertObject(pos1,PTO_Embed,atts,NULL);
 	m_pDoc->endUserAtomicGlob();
 
 	_generalUpdate();
 	_restorePieceTableState();
 	_updateInsertionPoint();
-	cmdSelect(pos,pos+1);
+	cmdSelect(pos1,pos1+1);
+	return true;
 }
 
 /*!

@@ -106,7 +106,7 @@ void fp_EmbedRun::_lookupProperties(const PP_AttrProp * pSpanAP,
 	{
 	  PD_Document * pDoc = getBlock()->getDocument();
 	  m_iEmbedUID = getEmbedManager()->makeEmbedView(pDoc,m_iIndexAP,m_pszDataID);
-	  UT_DEBUGMSG((" EmbedRun %x UID is %d \n",m_iEmbedUID));
+	  UT_DEBUGMSG((" EmbedRun %x UID is %d \n",this,m_iEmbedUID));
 	  getEmbedManager()->initializeEmbedView(m_iEmbedUID);
 	  getEmbedManager()->loadEmbedData(m_iEmbedUID);
 	}
