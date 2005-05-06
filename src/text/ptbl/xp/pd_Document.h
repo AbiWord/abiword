@@ -634,6 +634,9 @@ PT_AttrPropIndex            getAPIFromSOH(PL_ObjectHandle odh);
 	bool                    purgeFmtMarks();
 
 	void                    tellPTDoNotTweakPosition(bool b);
+
+	void                    setVDNDinProgress(bool b) {m_bVDND = b;}
+	bool                    isVDNDinProgress() const {return m_bVDND;}
 	
 protected:
 	~PD_Document();
@@ -705,6 +708,8 @@ private:
 	UT_sint32               m_iNewFtrHeight;
 	bool                    m_bMarginChangeOnly;
 	UT_GenericVector<pf_Frag *> m_vecSuspectFrags;
+
+	bool                    m_bVDND;
 
 };
 

@@ -635,6 +635,12 @@ void FV_VisualDragText::mouseCut(UT_sint32 x, UT_sint32 y)
 {
 	getImageFromSelection(x,y);
 	bool bPasteTableCol = (m_pView->getSelectionMode() == FV_SelectionMode_TableColumn);
+
+	// flag up on the document level that we are dragging with the mouse
+	// (in revisions mode the PT needs to be able to make a distinction between normal
+	// cut/delete and the mouse cut)
+	m_pView->getDocument()->setVDNDinProgress(true);
+	
 	if(bPasteTableCol)
 	{
 		m_pView->cmdCut();
@@ -651,6 +657,9 @@ void FV_VisualDragText::mouseCut(UT_sint32 x, UT_sint32 y)
 		m_pView->copyToLocal(pos1,pos2);
 		m_pView->cmdCharDelete(true,1);
 	}
+
+	m_pView->getDocument()->setVDNDinProgress(false);
+	
 	m_pView->updateScreen(false);
 	drawImage();
 }

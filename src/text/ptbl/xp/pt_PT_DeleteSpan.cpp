@@ -87,11 +87,18 @@ bool pt_PieceTable::deleteSpan(PT_DocPosition dpos1,
 	if(m_pDocument->isMarkRevisions())
 	{
 		// if the user selected the whole document for deletion, we will not delete the
-		// first block (we need always a visible block in any document)
+		// first block (we need always a visible block in any document); we make an
+		// exception to this in VDND, because in that case the original block is
+		// guaranteed to come back
+		// 
 		// NB: it is possible that the user might delete all contents in several separate
 		// steps; there is no easy way to protect against that
-		pf_Frag * pLast = getFragments().getLast();
-		bool bWholeDoc = (dpos1 <= 2 && pLast->getPos() == dpos2);
+		bool bWholeDoc = false;
+		if(!m_pDocument->isVDNDinProgress())
+		{
+			pf_Frag * pLast = getFragments().getLast();
+			bWholeDoc = (dpos1 <= 2 && pLast->getPos() == dpos2);
+		}
 		
 		iRealDeleteCount = 0;
 

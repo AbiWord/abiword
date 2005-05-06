@@ -107,7 +107,8 @@ PD_Document::PD_Document(XAP_App *pApp)
 	  m_iVDLastPos(0xffffffff),
 	  m_iNewHdrHeight(0), 
 	  m_iNewFtrHeight(0),
-	  m_bMarginChangeOnly(false)
+	  m_bMarginChangeOnly(false),
+	  m_bVDND(false)
 {
 	m_pApp = pApp;
 	
