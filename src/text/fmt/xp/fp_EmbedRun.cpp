@@ -119,8 +119,34 @@ void fp_EmbedRun::_lookupProperties(const PP_AttrProp * pSpanAP,
 	}
 	else
 	{
-	  iWidth = getEmbedManager()->getWidth(m_iEmbedUID);
-	  iAscent = getEmbedManager()->getAscent(m_iEmbedUID);
+	  const char * pszHeight = NULL;
+	  bool bFoundHeight = pSpanAP->getProperty("height", pszHeight);
+	  const char * pszWidth = NULL;
+	  bool bFoundWidth = pSpanAP->getProperty("width", pszWidth);
+	  if(!bFoundWidth || pszWidth == NULL)
+	  {
+	      iWidth = getEmbedManager()->getWidth(m_iEmbedUID);
+	  }
+	  else
+	  {
+	      iWidth = UT_convertToLogicalUnits(pszWidth);
+	      if(iWidth <= 0)
+	      {
+		  iWidth = getEmbedManager()->getWidth(m_iEmbedUID);
+	      }
+	  }
+	  if(!bFoundHeight || pszHeight == NULL)
+	  {
+	      iAscent = getEmbedManager()->getAscent(m_iEmbedUID);
+	  }
+	  else
+	  {
+	      iAscent = UT_convertToLogicalUnits(pszHeight);
+	      if(iAscent <= 0)
+	      {
+		  iAscent = getEmbedManager()->getAscent(m_iEmbedUID);
+	      }
+	  }
 	  iDescent = getEmbedManager()->getDescent(m_iEmbedUID);
 	}
 	UT_DEBUGMSG(("Width = %d Ascent = %d Descent = %d \n",iWidth,iAscent,iDescent)); 
@@ -346,7 +372,7 @@ UT_sint32  fp_EmbedRun::_getLayoutPropFromObject(const char * szProp)
       bool bFound = pAP->getProperty(szProp, szPropVal);
       if(bFound)
 	{
-	  return atoi(szPropVal);
+	  return UT_convertToLogicalUnits(szPropVal);
 	}
     }
   return -1;
@@ -371,7 +397,7 @@ bool fp_EmbedRun::_updatePropValuesIfNeeded(void)
   bool bDoUpdate = false;
   if(bFound)
     {
-      iVal = atoi(szPropVal);
+      iVal = UT_convertToLogicalUnits(szPropVal);
       bDoUpdate = (iVal != getHeight());
     }
   else
@@ -381,7 +407,7 @@ bool fp_EmbedRun::_updatePropValuesIfNeeded(void)
   bFound = pAP->getProperty("width", szPropVal);
   if(bFound && !bDoUpdate)
     {
-      iVal = atoi(szPropVal);
+      iVal = UT_convertToLogicalUnits(szPropVal);
       bDoUpdate = (iVal != getWidth());
     }
   else
@@ -391,7 +417,7 @@ bool fp_EmbedRun::_updatePropValuesIfNeeded(void)
   bFound = pAP->getProperty("ascent", szPropVal);
   if(bFound && !bDoUpdate)
     {
-      iVal = atoi(szPropVal);
+      iVal = UT_convertToLogicalUnits(szPropVal);
       bDoUpdate = (iVal != static_cast<UT_sint32>(getAscent()));
     }
   else
@@ -401,7 +427,7 @@ bool fp_EmbedRun::_updatePropValuesIfNeeded(void)
   bFound = pAP->getProperty("descent", szPropVal);
   if(bFound && !bDoUpdate)
     {
-      iVal = atoi(szPropVal);
+      iVal = UT_convertToLogicalUnits(szPropVal);
       bDoUpdate = (iVal != static_cast<UT_sint32>(getDescent()));
     }
   else
@@ -412,16 +438,16 @@ bool fp_EmbedRun::_updatePropValuesIfNeeded(void)
     {
       const char * pProps[10] = {NULL,NULL,NULL,NULL,NULL,NULL,NULL,NULL};
       UT_UTF8String sHeight,sWidth,sAscent,sDescent;
-      UT_UTF8String_sprintf(sHeight,"%d",getHeight());
+      UT_UTF8String_sprintf(sHeight,"%fin",static_cast<double>(getHeight())/1440.);
       pProps[0] = "height";
       pProps[1] = sHeight.utf8_str();
-      UT_UTF8String_sprintf(sWidth,"%d",getWidth());
+      UT_UTF8String_sprintf(sWidth,"%fin",static_cast<double>(getWidth())/1440.);
       pProps[2] = "width";
       pProps[3] = sWidth.utf8_str();
-      UT_UTF8String_sprintf(sAscent,"%d",getAscent());
+      UT_UTF8String_sprintf(sAscent,"%fin",static_cast<double>(getAscent())/1440.);
       pProps[4] = "ascent";
       pProps[5] = sAscent.utf8_str();
-      UT_UTF8String_sprintf(sDescent,"%d",getDescent());
+      UT_UTF8String_sprintf(sDescent,"%fin",static_cast<double>(getDescent())/1440.);
       pProps[6] = "descent";
       pProps[7] = sDescent.utf8_str();
       getBlock()->getDocument()->changeObjectFormatNoUpdate(PTC_AddFmt,m_OH,

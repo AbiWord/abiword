@@ -5164,8 +5164,6 @@ bool FV_View::cmdInsertEmbed(UT_ByteBuf * pBuf,PT_DocPosition pos,const char * s
 	UT_UTF8String sFullProps;
 	UT_UTF8String sProp,sVal;
 	UT_UTF8String sProps;
-	sProps = szProps;
-	UT_UTF8String_addPropertyString(sFullProps,sProps);
 	UT_sint32 i = 0;
 	if(props)
 	{
@@ -5176,6 +5174,10 @@ bool FV_View::cmdInsertEmbed(UT_ByteBuf * pBuf,PT_DocPosition pos,const char * s
 	    UT_UTF8String_setProperty(sFullProps,sProp,sVal);
 	  }
 	}
+	sProps = szProps;
+	UT_DEBUGMSG(("Supplied props %s \n",sProps.utf8_str()));
+	UT_UTF8String_addPropertyString(sFullProps,sProps);
+	UT_DEBUGMSG(("Property String at Update Object is %s \n",sFullProps.utf8_str()));
 	atts[3]=sFullProps.utf8_str();
 	m_pDoc->insertObject(pos,PTO_Embed,atts,NULL);
 	if (bDidGlob)
@@ -5260,7 +5262,6 @@ bool FV_View::cmdUpdateEmbed(UT_ByteBuf * pBuf, const char * szMime, const char 
 	UT_UTF8String sProp,sVal;
 	UT_UTF8String sProps;
 	sProps = szProps;
-	UT_UTF8String_addPropertyString(sFullProps,sProps);
 	UT_sint32 i = 0;
 	if(props)
 	{
@@ -5268,10 +5269,14 @@ bool FV_View::cmdUpdateEmbed(UT_ByteBuf * pBuf, const char * szMime, const char 
 	  {
 	    sProp = props[i];
 	    sVal = props[i+1];
+	    UT_DEBUGMSG(("Update Embed Prop %s val %s \n",props[i],props[i+1]));
 	    UT_UTF8String_setProperty(sFullProps,sProp,sVal);
 	  }
-	}
+	}	
+	UT_DEBUGMSG(("Supplied props %s \n",sProps.utf8_str()));
+	UT_UTF8String_addPropertyString(sFullProps,sProps);
 	atts[3]=sFullProps.utf8_str();
+	UT_DEBUGMSG(("Property String at Update Object is %s \n",atts[3]));
 	_deleteSelection();
 	m_pDoc->insertObject(pos1,PTO_Embed,atts,NULL);
 	m_pDoc->endUserAtomicGlob();

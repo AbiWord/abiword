@@ -1070,9 +1070,16 @@ void UT_UTF8String_addPropertyString(UT_UTF8String & sPropertyString, const UT_U
 		sSubStr = sNewProp.substr(iBase, iSize-iBase);
 		szWork = sSubStr.utf8_str();
 		szLoc = strstr(szWork,":");
+		UT_sint32 iextra = 0;
 		if(szLoc)
 		{
-			sProp = sNewProp.substr(iBase,szLoc - szWork);
+		        UT_sint32 k = iBase;
+			while(*sNewProp.substr(k,k).utf8_str() == ' ')
+			{
+			  k++;
+			  iextra++;
+			}
+			sProp = sNewProp.substr(k,szLoc - szWork-iextra);
 		}
 		else
 		{
