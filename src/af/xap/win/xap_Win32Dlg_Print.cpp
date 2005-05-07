@@ -140,20 +140,20 @@ void XAP_Win32Dialog_Print::runModal(XAP_Frame * pFrame)
 
 	HWND hwnd = static_cast<XAP_Win32FrameImpl*>(pFrame->getFrameImpl())->getTopLevelWindow();
 
-	m_pPersistPrintDlg->hwndOwner		= hwnd;
-	m_pPersistPrintDlg->nFromPage		= (WORD)m_nFirstPage;
+	m_pPersistPrintDlg->hwndOwner	= hwnd;
+	m_pPersistPrintDlg->nFromPage	= (WORD)m_nFirstPage;
 	m_pPersistPrintDlg->nToPage		= (WORD)m_nLastPage;
-	m_pPersistPrintDlg->nMinPage		= (WORD)m_nFirstPage;
-	m_pPersistPrintDlg->nMaxPage		= (WORD)m_nLastPage;
+	m_pPersistPrintDlg->nMinPage	= (WORD)m_nFirstPage;
+	m_pPersistPrintDlg->nMaxPage	= (WORD)m_nLastPage;
 	m_pPersistPrintDlg->Flags		= PD_ALLPAGES | PD_RETURNDC /*| PD_ENABLEPRINTHOOK*/;
 	//m_pPersistPrintDlg->lpfnPrintHook   = s_PrintHookProc;
 	// we do not need this at the moment, but one day it will come handy in the hook procedure
 	m_pPersistPrintDlg->lCustData       = (DWORD)this;
 		
 	if (!m_bEnablePageRange)
-		m_pPersistPrintDlg->Flags		|= PD_NOPAGENUMS;
+		m_pPersistPrintDlg->Flags	|= PD_NOPAGENUMS;
 	if (!m_bEnablePrintSelection)
-		m_pPersistPrintDlg->Flags		|= PD_NOSELECTION;
+		m_pPersistPrintDlg->Flags	|= PD_NOSELECTION;
 	if (m_bEnablePrintToFile)
 	{
 		if (m_bDoPrintToFile)
@@ -161,7 +161,7 @@ void XAP_Win32Dialog_Print::runModal(XAP_Frame * pFrame)
 	}
 	else
 	{
-		m_pPersistPrintDlg->Flags		|= PD_HIDEPRINTTOFILE;
+		m_pPersistPrintDlg->Flags	|= PD_HIDEPRINTTOFILE;
 	}
 	
 	if (!m_bPersistValid)				// first time
@@ -198,11 +198,21 @@ void XAP_Win32Dialog_Print::runModal(XAP_Frame * pFrame)
 			
 			GlobalUnlock(m_pPersistPrintDlg->hDevMode);
 			GlobalUnlock(m_pPersistPrintDlg->hDevNames);
+
+			// notify layout of printer (this results in redoing doc layout !!!)
+			GR_Win32Graphics* pG=(GR_Win32Graphics*)XAP_App::getApp()->getLastFocussedFrame()->getCurrentView()->getGraphics();
+			UT_return_if_fail( pG );
+			pG->setPrintDC(m_pPersistPrintDlg->hDC);
 		}
 	}
 	else if (PrintDlg(m_pPersistPrintDlg))		// raise the actual dialog.
 	{
 		_extractResults(pFrame);
+
+		// notify layout of printer (this results in redoing doc layout !!!)
+		GR_Win32Graphics* pG=(GR_Win32Graphics*)XAP_App::getApp()->getLastFocussedFrame()->getCurrentView()->getGraphics();
+		UT_return_if_fail( pG );
+		pG->setPrintDC(m_pPersistPrintDlg->hDC);
 	}
 	else
 	{
@@ -230,6 +240,7 @@ void XAP_Win32Dialog_Print::_extractResults(XAP_Frame *pFrame)
 	m_bCollate	= ((pDevMode->dmCollate  & DMCOLLATE_TRUE) != 0);		
 	pDevMode->dmCopies = 1;
 	pDevMode->dmCollate = DMCOLLATE_FALSE;
+	pDevMode->dmFields = DM_COPIES | DM_COLLATE;
 	GlobalUnlock(m_pPersistPrintDlg->hDevMode);
 
 	// any changes to the DEVMODE structure must be followed by this call before the
@@ -256,12 +267,6 @@ void XAP_Win32Dialog_Print::_extractResults(XAP_Frame *pFrame)
 	}
 
 	m_answer = a_OK;
-	{
-		// notify layout of printer (this results in redoing doc layout !!!)
-		GR_Win32Graphics* pG=(GR_Win32Graphics*)XAP_App::getApp()->getLastFocussedFrame()->getCurrentView()->getGraphics();
-		UT_return_if_fail( pG );
-		pG->setPrintDC(m_pPersistPrintDlg->hDC);
-	}
 	return;
 
 Fail:
