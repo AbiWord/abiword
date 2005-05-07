@@ -118,7 +118,8 @@ char * UT_GetDefaultPrinterName()
 			free(pPrinterName);
 		
 		pPrinterName = (char *) UT_calloc(sizeof(char),iBufferSize);
-
+		UT_return_val_if_fail( pPrinterName, NULL );
+		
 		// the method of obtaining the name is version specific ...
 		OSVERSIONINFO osvi;
 		DWORD iNeeded, iReturned, iBuffSize;
