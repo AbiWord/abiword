@@ -4127,7 +4127,7 @@ fl_BlockLayout::_checkMultiWord(UT_sint32 iStart,
 	{
 		// When past the provided end position, break out
 		if (eor > 0 && iBlockPos > eor) break;
-		
+
 		fl_PartOfBlock* pPOB = new fl_PartOfBlock(iBlockPos, iLength);
 		UT_ASSERT(pPOB);
 
@@ -4178,6 +4178,14 @@ fl_BlockLayout::_checkMultiWord(UT_sint32 iStart,
 
  If the word bounded by pPOB is not squiggled, the pPOB is deleted.
  */
+
+typedef struct 
+{
+	UT_uint32 iStart;
+	UT_uint32 iEnd;
+	bool      bIgnore;
+} _spell_type;
+
 bool
 fl_BlockLayout::_doCheckWord(fl_PartOfBlock* pPOB,
 							 const UT_UCSChar* pWord,
@@ -4187,10 +4195,72 @@ fl_BlockLayout::_doCheckWord(fl_PartOfBlock* pPOB,
 
 	UT_sint32 iLength = pPOB->getLength();
 	UT_sint32 iBlockPos = pPOB->getOffset();
+	UT_GenericVector<_spell_type *> vWordLimits;
+	UT_UCS4Char * pAdjustedWord = new UT_UCS4Char [pPOB->getLength() + 1];
+	UT_uint32 iAdjustedLength = 0;
 
 	do {
+		// we need to deal with revisions
+		// if the word is contained in multiple runs and some of these are deleted through
+		// revisions and visible, the revised text should be disregarded
+		fp_Run * pRun = findRunAtOffset(iBlockPos);
+
+		while(pRun && pRun->getBlockOffset() + pRun->getLength() <= (UT_uint32)(iBlockPos + iLength))
+		{
+			bool bDeletedVisible =
+				pRun->getVisibility() == FP_VISIBLE &&
+				pRun->containsRevisions() &&
+				pRun->getRevisions()->getLastRevision()->getType() == PP_REVISION_DELETION;
+
+			bool bNotVisible = pRun->getVisibility() != FP_VISIBLE;
+			bool bIgnore = bNotVisible || bDeletedVisible;
+			
+			_spell_type * st = NULL;
+			
+			if(vWordLimits.getItemCount())
+				st = vWordLimits.getLastItem();
+			
+			if(st && st->bIgnore == bIgnore)
+			{
+				// this run continues the last ignore section, just adjust the end
+				st->iEnd = pRun->getBlockOffset() - iBlockPos + pRun->getLength();
+			}
+			else
+			{
+				_spell_type * st = new _spell_type;
+				UT_return_val_if_fail( st, false );
+
+				st->bIgnore = bIgnore;
+				st->iStart = pRun->getBlockOffset() - iBlockPos;
+				st->iEnd = pRun->getBlockOffset() - iBlockPos + pRun->getLength();
+
+				vWordLimits.addItem(st);
+			}
+
+			pRun = pRun->getNextRun();
+		}
+
+		UT_UCS4Char * p = pAdjustedWord;
+		
+		for(UT_uint32 i = 0; i < vWordLimits.getItemCount(); ++i)
+		{
+			_spell_type * st = vWordLimits.getNthItem(i);
+			UT_return_val_if_fail( st, false );
+
+			if(!st->bIgnore)
+			{
+				for(UT_uint32 j = st->iStart; j < st->iEnd; ++j)
+				{
+					*p++ = pWord[j];
+					iAdjustedLength++;
+				}
+				*p = 0;
+			}
+		}
+		
+		
 		// Spell check the word, return if correct
-		if (_spellCheckWord(pWord, iLength, iBlockPos))
+		if (_spellCheckWord(pAdjustedWord, iAdjustedLength, iBlockPos))
 			break;
 
 		// Find out if the word is in the document's list of ignored
@@ -4208,6 +4278,9 @@ fl_BlockLayout::_doCheckWord(fl_PartOfBlock* pPOB,
 			m_pSpellSquiggles->clear(pPOB);
 		}
 
+		UT_VECTOR_PURGEALL(_spell_type *, vWordLimits);
+		delete [] pAdjustedWord; pAdjustedWord = NULL;
+		
 		// Display was updated
 		return true;
 
@@ -4215,6 +4288,9 @@ fl_BlockLayout::_doCheckWord(fl_PartOfBlock* pPOB,
 
 	// Delete the POB which is not longer needed
 	delete pPOB;
+	UT_VECTOR_PURGEALL(_spell_type *, vWordLimits);
+	delete [] pAdjustedWord;
+	
 	return false;
 }
 
