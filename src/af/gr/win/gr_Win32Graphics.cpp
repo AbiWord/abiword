@@ -933,6 +933,10 @@ bool GR_Win32Graphics::startPage(const char * szPageLabel, UT_uint32 pageNumber,
 		pDevMode->dmFields = DM_ORIENTATION;
 		pDevMode->dmOrientation = (bPortrait) ? DMORIENT_PORTRAIT : DMORIENT_LANDSCAPE;
 		GlobalUnlock(m_hDevMode);
+
+		// call DocumentProperties() on the DEVMODE to ensure changes propagate down into
+		// the private part
+		fixDevMode(m_hDevMode);
 		
 		pDevMode = (DEVMODE*) GlobalLock(m_hDevMode);
 		ResetDC(m_hdc, pDevMode);
@@ -2256,7 +2260,7 @@ bool GR_Win32Graphics::fixDevMode(HGLOBAL hDevMode)
 	}
 	
 	// now get the printer driver to merge the data in the public section into its private part
-	dwRet = DocumentProperties(NULL,hPrinter, (char*)& pDM->dmDeviceName, pDM, pDM, DM_IN_BUFFER | DM_OUT_BUFFER);
+	dwRet = DocumentProperties(NULL,hPrinter, (char*)& pDM->dmDeviceName, pDM, pDM, DM_OUT_BUFFER | DM_IN_BUFFER);
 
 	// free what needs be ...
 	ClosePrinter(hPrinter);
