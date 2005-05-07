@@ -1473,7 +1473,8 @@ void GR_Win32USPGraphics::measureRenderedCharWidths(GR_RenderInfo & ri)
 	}
 	else
 	{
-		RI.m_hdc = pFont->getPrintDC();
+		hdc = pFont->getPrintDC() ? pFont->getPrintDC() : m_hdc;
+		RI.m_hdc = hdc;
 	}
 	
 
@@ -1629,9 +1630,6 @@ void GR_Win32USPGraphics::measureRenderedCharWidths(GR_RenderInfo & ri)
 	}
 	else
 	{
-		// handle the first char outside the loop
-		dWidth = (double)RI.m_pAdvances[0];
-
 		for(UT_uint32 i = 0; i < RI.m_iIndicesCount; ++i)
 		{
 			dWidth += (double)RI.m_pAdvances[i];
