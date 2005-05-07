@@ -242,7 +242,8 @@ HDC  UT_GetDefaultPrinterDC()
 	//	if(!OpenPrinter(pPrinterName, &hPrinter, NULL))
 	//		return NULL;
 
-	HDC hdc = CreateDC(NULL, pPrinterName, NULL, NULL);
+	const char * pDriver = UT_IsWinNT() ? "WINSPOOL" : NULL;
+	HDC hdc = CreateDC(pDriver, pPrinterName, NULL, NULL);
 	free(pPrinterName);
 	return hdc;
 }
