@@ -3938,12 +3938,12 @@ fl_BlockLayout::_recalcPendingWord(UT_uint32 iOffset, UT_sint32 chg)
 
 	// First, look towards the start of the buffer
 	while ((iFirst > 1)
-		   && !UT_isWordDelimiter(pBlockText[iFirst-1], pBlockText[iFirst] ,pBlockText[iFirst-2]))
+		   && !isWordDelimiter(pBlockText[iFirst-1], pBlockText[iFirst] ,pBlockText[iFirst-2], iFirst-1))
 	{
 		iFirst--;
 	}
 
-	if(iFirst == 1 && !UT_isWordDelimiter(pBlockText[0], pBlockText[1], UCS_UNKPUNK))
+	if(iFirst == 1 && !isWordDelimiter(pBlockText[0], pBlockText[1], UCS_UNKPUNK, iFirst))
 	{
 		iFirst--;
 	}
@@ -3959,7 +3959,7 @@ fl_BlockLayout::_recalcPendingWord(UT_uint32 iOffset, UT_sint32 chg)
 		followChar = ((iFirst + iLen + 1) < iBlockSize)  ?	pBlockText[iFirst + iLen + 1]  : UCS_UNKPUNK;
 		prevChar = (iFirst == 0) ? UCS_UNKPUNK : pBlockText[iFirst + iLen - 1];
 
-		if (UT_isWordDelimiter(pBlockText[iFirst + iLen], followChar, prevChar)) break;
+		if (isWordDelimiter(pBlockText[iFirst + iLen], followChar, prevChar, iFirst+iLen)) break;
 		iLen++;
 	}
 
@@ -3974,7 +3974,7 @@ fl_BlockLayout::_recalcPendingWord(UT_uint32 iOffset, UT_sint32 chg)
 		{
 			currentChar = pBlockText[--iLast];
 			prevChar = iLast > 0 ? pBlockText[iLast - 1] : UCS_UNKPUNK;
-			if (UT_isWordDelimiter(currentChar, followChar,prevChar)) break;
+			if (isWordDelimiter(currentChar, followChar,prevChar,iLast)) break;
 			followChar = currentChar;
 		}
 
@@ -4008,7 +4008,7 @@ fl_BlockLayout::_recalcPendingWord(UT_uint32 iOffset, UT_sint32 chg)
 								 pBlockText[iFirst + + 1]  : UCS_UNKPUNK);
 		UT_UCSChar prevChar = iFirst > 0 ? pBlockText[iFirst - 1] : UCS_UNKPUNK;
 
-		if (!UT_isWordDelimiter(currentChar, followChar, prevChar)) break;
+		if (!isWordDelimiter(currentChar, followChar, prevChar,iFirst)) break;
 		iFirst++;
 		iLen--;
 	}
@@ -4179,13 +4179,6 @@ fl_BlockLayout::_checkMultiWord(UT_sint32 iStart,
  If the word bounded by pPOB is not squiggled, the pPOB is deleted.
  */
 
-typedef struct 
-{
-	UT_uint32 iStart;
-	UT_uint32 iEnd;
-	bool      bIgnore;
-} _spell_type;
-
 bool
 fl_BlockLayout::_doCheckWord(fl_PartOfBlock* pPOB,
 							 const UT_UCSChar* pWord,
@@ -4195,72 +4188,10 @@ fl_BlockLayout::_doCheckWord(fl_PartOfBlock* pPOB,
 
 	UT_sint32 iLength = pPOB->getLength();
 	UT_sint32 iBlockPos = pPOB->getOffset();
-	UT_GenericVector<_spell_type *> vWordLimits;
-	UT_UCS4Char * pAdjustedWord = new UT_UCS4Char [pPOB->getLength() + 1];
-	UT_uint32 iAdjustedLength = 0;
 
 	do {
-		// we need to deal with revisions
-		// if the word is contained in multiple runs and some of these are deleted through
-		// revisions and visible, the revised text should be disregarded
-		fp_Run * pRun = findRunAtOffset(iBlockPos);
-
-		while(pRun && pRun->getBlockOffset() + pRun->getLength() <= (UT_uint32)(iBlockPos + iLength))
-		{
-			bool bDeletedVisible =
-				pRun->getVisibility() == FP_VISIBLE &&
-				pRun->containsRevisions() &&
-				pRun->getRevisions()->getLastRevision()->getType() == PP_REVISION_DELETION;
-
-			bool bNotVisible = pRun->getVisibility() != FP_VISIBLE;
-			bool bIgnore = bNotVisible || bDeletedVisible;
-			
-			_spell_type * st = NULL;
-			
-			if(vWordLimits.getItemCount())
-				st = vWordLimits.getLastItem();
-			
-			if(st && st->bIgnore == bIgnore)
-			{
-				// this run continues the last ignore section, just adjust the end
-				st->iEnd = pRun->getBlockOffset() - iBlockPos + pRun->getLength();
-			}
-			else
-			{
-				_spell_type * st = new _spell_type;
-				UT_return_val_if_fail( st, false );
-
-				st->bIgnore = bIgnore;
-				st->iStart = pRun->getBlockOffset() - iBlockPos;
-				st->iEnd = pRun->getBlockOffset() - iBlockPos + pRun->getLength();
-
-				vWordLimits.addItem(st);
-			}
-
-			pRun = pRun->getNextRun();
-		}
-
-		UT_UCS4Char * p = pAdjustedWord;
-		
-		for(UT_uint32 i = 0; i < vWordLimits.getItemCount(); ++i)
-		{
-			_spell_type * st = vWordLimits.getNthItem(i);
-			UT_return_val_if_fail( st, false );
-
-			if(!st->bIgnore)
-			{
-				for(UT_uint32 j = st->iStart; j < st->iEnd; ++j)
-				{
-					*p++ = pWord[j];
-					iAdjustedLength++;
-				}
-				*p = 0;
-			}
-		}
-		
-		
 		// Spell check the word, return if correct
-		if (_spellCheckWord(pAdjustedWord, iAdjustedLength, iBlockPos))
+		if (_spellCheckWord(pWord, iLength, iBlockPos))
 			break;
 
 		// Find out if the word is in the document's list of ignored
@@ -4278,9 +4209,6 @@ fl_BlockLayout::_doCheckWord(fl_PartOfBlock* pPOB,
 			m_pSpellSquiggles->clear(pPOB);
 		}
 
-		UT_VECTOR_PURGEALL(_spell_type *, vWordLimits);
-		delete [] pAdjustedWord; pAdjustedWord = NULL;
-		
 		// Display was updated
 		return true;
 
@@ -4288,8 +4216,6 @@ fl_BlockLayout::_doCheckWord(fl_PartOfBlock* pPOB,
 
 	// Delete the POB which is not longer needed
 	delete pPOB;
-	UT_VECTOR_PURGEALL(_spell_type *, vWordLimits);
-	delete [] pAdjustedWord;
 	
 	return false;
 }
@@ -4754,7 +4680,7 @@ bool	fl_BlockLayout::_doInsertFieldEndRun(PT_BlockOffset blockOffset)
  */
 bool fl_BlockLayout::isLastRunInBlock(fp_Run * pRun)
 {
-	if((pRun->getBlockOffset()+2) == getLength())
+	if(((UT_sint32)pRun->getBlockOffset()+2) == getLength())
 	{
 		return true;
 	}
@@ -7691,7 +7617,7 @@ fl_BlockLayout::findGrammarSquigglesForRun(fp_Run* pRun)
 			// one.
 			if (iFirst != iLast)
 				iStart = pPOB->getOffset();
-			if(iStart < pTextRun->getBlockOffset())
+			if(iStart < (UT_sint32)pTextRun->getBlockOffset())
 				iStart = pTextRun->getBlockOffset();
 			iEnd =	pPOB->getOffset() + pPOB->getLength();
 			if (iEnd > runBlockEnd) iEnd = runBlockEnd;
@@ -10228,6 +10154,56 @@ bool fl_BlockLayout::_canContainPoint() const
 }
 
 /*!
+    this function decides if character c is a word-delimiter, taking on board revisions
+    markup
+ */
+
+bool fl_BlockLayout::isWordDelimiter(UT_UCS4Char c, UT_UCS4Char next, UT_UCS4Char prev, UT_uint32 iBlockPos)
+{
+	if(!UT_isWordDelimiter(c, next, prev))
+		return false;
+
+	// see if this character has not been deleted in revisions mode ...
+	fp_Run * pRun = findRunAtOffset(iBlockPos);
+	UT_return_val_if_fail( pRun, false );
+
+	// ignore hidden runs
+	if(pRun->getVisibility() != FP_VISIBLE)
+		return false;
+	
+	if(!pRun->containsRevisions())
+		return true;
+
+	if(pRun->getRevisions()->getLastRevision()->getType() == PP_REVISION_DELETION)
+		return false;
+	
+	return true;
+}
+
+bool fl_BlockLayout::isSentenceSeparator(UT_UCS4Char c, UT_uint32 iBlockPos)
+{
+	if(!UT_UCS4_isSentenceSeparator(c))
+		return false;
+
+	// see if this character has not been deleted in revisions mode ...
+	fp_Run * pRun = findRunAtOffset(iBlockPos);
+	UT_return_val_if_fail( pRun, false );
+
+	// ignore hidden runs
+	if(pRun->getVisibility() != FP_VISIBLE)
+		return false;
+	
+	if(!pRun->containsRevisions())
+		return true;
+
+	if(pRun->getRevisions()->getLastRevision()->getType() == PP_REVISION_DELETION)
+		return false;
+	
+	return true;
+}
+
+
+/*!
   Constructor for iterator
   
   Use the iterator to find words for spell-checking in the block.
@@ -10311,12 +10287,22 @@ fl_BlockSpellIterator::updateBlock(void)
   \result iBlockPost The word's position in the block
   \return True if word was found, false otherwise.
 */
+
+typedef struct 
+{
+	UT_uint32 iStart;
+	UT_uint32 iEnd;
+	bool      bIgnore;
+} _spell_type;
+
+
 bool
 fl_BlockSpellIterator::nextWordForSpellChecking(const UT_UCSChar*& pWord, UT_sint32& iLength,
 												UT_sint32& iBlockPos)
 {
 	// For empty blocks, there will be no buffer
 	if (NULL == m_pText) return false;
+	UT_return_val_if_fail( m_pBL, false );
 
 	for (;;) {
 
@@ -10330,7 +10316,7 @@ fl_BlockSpellIterator::nextWordForSpellChecking(const UT_UCSChar*& pWord, UT_sin
 		{
 			UT_UCSChar followChar = (((m_iWordOffset + 1) < m_iLength)  
 									 ?  m_pText[m_iWordOffset+1] : UCS_UNKPUNK);
-			if (!UT_isWordDelimiter( m_pText[m_iWordOffset], followChar, UCS_UNKPUNK))
+			if (!m_pBL->isWordDelimiter( m_pText[m_iWordOffset], followChar, UCS_UNKPUNK, m_iWordOffset))
 			{
 				bWordStartFound = true;
 			}
@@ -10346,9 +10332,10 @@ fl_BlockSpellIterator::nextWordForSpellChecking(const UT_UCSChar*& pWord, UT_sin
 		if (!bWordStartFound) {
 			while (m_iWordOffset < (m_iLength-1))
 			{
-				if (!UT_isWordDelimiter( m_pText[m_iWordOffset], 
-										 m_pText[m_iWordOffset+1],
-										 m_pText[m_iWordOffset-1]))
+				if (!m_pBL->isWordDelimiter( m_pText[m_iWordOffset], 
+											 m_pText[m_iWordOffset+1],
+											 m_pText[m_iWordOffset-1],
+											 m_iWordOffset))
 				{
 					bWordStartFound = true;
 					break;
@@ -10401,9 +10388,10 @@ fl_BlockSpellIterator::nextWordForSpellChecking(const UT_UCSChar*& pWord, UT_sin
 
 		while (!bFound && (iWordEnd < (m_iLength-1)))
 		{
-			if (UT_isWordDelimiter( m_pText[iWordEnd], 
-									m_pText[iWordEnd+1],
-									m_pText[iWordEnd-1]))
+			if (m_pBL->isWordDelimiter( m_pText[iWordEnd], 
+										m_pText[iWordEnd+1],
+										m_pText[iWordEnd-1],
+										iWordEnd))
 			{
 				bFound = true;
 			}
@@ -10431,9 +10419,10 @@ fl_BlockSpellIterator::nextWordForSpellChecking(const UT_UCSChar*& pWord, UT_sin
 		{
 			UT_ASSERT(iWordEnd == (m_iLength-1));
 			
-			if (UT_isWordDelimiter(m_pText[iWordEnd], 
-								   UCS_UNKPUNK,
-								   m_pText[iWordEnd-1]))
+			if (m_pBL->isWordDelimiter(m_pText[iWordEnd], 
+										  UCS_UNKPUNK,
+										  m_pText[iWordEnd-1],
+										  iWordEnd))
 			{
 				bFound = true;
 			} 
@@ -10510,25 +10499,122 @@ fl_BlockSpellIterator::nextWordForSpellChecking(const UT_UCSChar*& pWord, UT_sin
 			}
 		}
 
-		if (bNeedsMutation)
+		// handle revisions and hidden text correctly
+		// hidden text is to be ignored (i.e., hidden from the spellcheker)
+		// delete revisions that are visible are also to be ignored
+		fp_Run * pRun = m_pBL->findRunAtOffset(m_iWordOffset);
+		UT_return_val_if_fail( pRun, false );
+		bool bRevised = false;
+
+		while(pRun && (UT_sint32)pRun->getBlockOffset() < m_iWordOffset + iWordLength)
+		{
+			if(pRun->getVisibility() != FP_VISIBLE ||
+			   (pRun->containsRevisions() && pRun->getRevisions()->getLastRevision()->getType() == PP_REVISION_DELETION))
+			{
+				bRevised = true;
+				break;
+			}
+
+			pRun = pRun->getNextRun();
+		}
+		
+		if (bNeedsMutation || bRevised)
 		{
 			// Generate the mutated word in a new buffer pointed to by m_pMutatedString
 			m_pMutatedString = static_cast<UT_UCSChar*>(UT_calloc(iWordLength, sizeof(UT_UCSChar)));
 			UT_ASSERT(m_pMutatedString);
 			pWord = m_pMutatedString;
 			iNewLength = 0;
-			for (UT_uint32 i=0; i < static_cast<UT_uint32>(iWordLength); i++)
+
+			if(bNeedsMutation && !bRevised)
 			{
-				UT_UCSChar currentChar = m_pText[m_iWordOffset + i];
+				for (UT_uint32 i=0; i < static_cast<UT_uint32>(iWordLength); i++)
+				{
+					UT_UCSChar currentChar = m_pText[m_iWordOffset + i];
 			
-				// Remove UCS_ABI_OBJECT from the word
-				if (currentChar == UCS_ABI_OBJECT) continue;
+					// Remove UCS_ABI_OBJECT from the word
+					if (currentChar == UCS_ABI_OBJECT) continue;
 
-				// Convert smart quote apostrophe to ASCII single quote to
-				// be compatible with ispell
-				if (currentChar == UCS_RQUOTE) currentChar = '\'';
+					// Convert smart quote apostrophe to ASCII single quote to
+					// be compatible with ispell
+					if (currentChar == UCS_RQUOTE) currentChar = '\'';
 
-				m_pMutatedString[iNewLength++] = currentChar;
+					m_pMutatedString[iNewLength++] = currentChar;
+				}
+			}
+			else if(bRevised && !bNeedsMutation)
+			{
+				// we need to deal with revision
+				// if the word is contained in multiple runs and some of these are deleted through
+				// revisions and visible, the revised text should be disregarded
+				UT_GenericVector<_spell_type *> vWordLimits;
+				fp_Run * pRun = m_pBL->findRunAtOffset(m_iWordOffset);
+
+				while(pRun && pRun->getBlockOffset() + pRun->getLength() <= (UT_uint32)(m_iWordOffset + iWordLength))
+				{
+					bool bDeletedVisible =
+						pRun->getVisibility() == FP_VISIBLE &&
+						pRun->containsRevisions() &&
+						pRun->getRevisions()->getLastRevision()->getType() == PP_REVISION_DELETION;
+
+					bool bNotVisible = pRun->getVisibility() != FP_VISIBLE;
+					bool bIgnore = bNotVisible || bDeletedVisible;
+			
+					_spell_type * st = NULL;
+			
+					if(vWordLimits.getItemCount())
+						st = vWordLimits.getLastItem();
+			
+					if(st && st->bIgnore == bIgnore)
+					{
+						// this run continues the last ignore section, just adjust the end
+						st->iEnd = pRun->getBlockOffset() - m_iWordOffset + pRun->getLength();
+					}
+					else
+					{
+						_spell_type * st = new _spell_type;
+						UT_return_val_if_fail( st, false );
+
+						st->bIgnore = bIgnore;
+						st->iStart = pRun->getBlockOffset() - m_iWordOffset;
+						st->iEnd = pRun->getBlockOffset() - m_iWordOffset + pRun->getLength();
+
+						vWordLimits.addItem(st);
+					}
+
+					pRun = pRun->getNextRun();
+				}
+
+				UT_UCS4Char * p = m_pMutatedString;
+		
+				for(UT_uint32 i = 0; i < vWordLimits.getItemCount(); ++i)
+				{
+					_spell_type * st = vWordLimits.getNthItem(i);
+					UT_return_val_if_fail( st, false );
+
+					if(!st->bIgnore)
+					{
+						for(UT_uint32 j = st->iStart; j < st->iEnd; ++j)
+						{
+							UT_UCS4Char c = pWord[j];
+							
+							// Remove UCS_ABI_OBJECT from the word
+							if (c == UCS_ABI_OBJECT)
+								continue;
+
+							// Convert smart quote apostrophe to ASCII single quote to
+							// be compatible with ispell
+							if (c == UCS_RQUOTE)
+								c = '\'';
+
+							*p++ = c;
+							iNewLength++;
+						}
+						*p = 0;
+					}
+				}
+		
+				UT_VECTOR_PURGEALL(_spell_type*, vWordLimits);
 			}
 		}
 
@@ -10562,6 +10648,7 @@ fl_BlockSpellIterator::nextWordForSpellChecking(const UT_UCSChar*& pWord, UT_sin
 	}
 }
 
+
 // TODO  This function finds the beginning and end of a sentence enclosing
 // TODO  the current misspelled word. Right now, it starts from the word
 // TODO  and works forward/backward until finding [.!?] or EOB
@@ -10582,6 +10669,7 @@ fl_BlockSpellIterator::nextWordForSpellChecking(const UT_UCSChar*& pWord, UT_sin
 void
 fl_BlockSpellIterator::updateSentenceBoundaries(void)
 {
+	UT_return_if_fail( m_pBL );
 	UT_sint32 iBlockLength = m_pgb->getLength();
 
 	// If the block is small, don't bother looking for
@@ -10596,7 +10684,7 @@ fl_BlockSpellIterator::updateSentenceBoundaries(void)
 	// Go back from the current word start until a period is found
 	m_iSentenceStart = m_iWordOffset;
 	while (m_iSentenceStart > 0) {
-		if (UT_UCS4_isSentenceSeparator(m_pText[m_iSentenceStart]))
+		if (m_pBL->isSentenceSeparator(m_pText[m_iSentenceStart], m_iSentenceStart))
 			break;
 		m_iSentenceStart--;
 	}
@@ -10613,9 +10701,10 @@ fl_BlockSpellIterator::updateSentenceBoundaries(void)
 		UT_ASSERT(m_iWordLength > 1);
 
 		while (++m_iSentenceStart < m_iWordOffset
-			   && UT_isWordDelimiter(m_pText[m_iSentenceStart], 
-									 m_pText[m_iSentenceStart+1],
-									 m_pText[m_iSentenceStart-1]))
+			   && m_pBL->isWordDelimiter(m_pText[m_iSentenceStart], 
+											m_pText[m_iSentenceStart+1],
+											m_pText[m_iSentenceStart-1],
+											m_iSentenceStart))
 		{
 			// Nothing to do... just iterating...
 		};
@@ -10628,7 +10717,7 @@ fl_BlockSpellIterator::updateSentenceBoundaries(void)
 	// and go with that as the end....
 	m_iSentenceEnd = m_iWordOffset + m_iWordLength;
 	while (m_iSentenceEnd < (iBlockLength - 10)) {
-		if (UT_UCS4_isSentenceSeparator(m_pText[m_iSentenceEnd++]))
+		if (m_pBL->isSentenceSeparator(m_pText[m_iSentenceEnd], m_iSentenceEnd++))
 			break;
 	}
 	if (m_iSentenceEnd == (iBlockLength-10)) m_iSentenceEnd = iBlockLength-1;

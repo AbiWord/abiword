@@ -325,6 +325,9 @@ public:
 		{ return m_bNeedsRedraw; }
 	virtual void			markAllRunsDirty(void);
 	UT_sint32               findLineInBlock(fp_Line * pLine);
+	
+	bool                    isWordDelimiter(UT_UCS4Char c, UT_UCS4Char next, UT_UCS4Char prev, UT_uint32 iBlockPos);
+	bool                    isSentenceSeparator(UT_UCS4Char c, UT_uint32 iBlockPos);
 	bool					checkWord(fl_PartOfBlock* pPOB);
 	void					recheckIgnoredWords();
 	void                    setStyleInTOC(bool b)
@@ -509,6 +512,7 @@ public:
 	{ return m_bIsInvisible;}
 	void             setGrammarMessage(UT_UTF8String & sMsg);
 	void             getGrammarMessage(UT_UTF8String & sMsg);
+	
 private:
 	UT_sint32	m_iOffset;
 	UT_sint32	m_iLength;
