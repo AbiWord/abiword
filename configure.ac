@@ -553,7 +553,7 @@ cat <<EOF
   WV Library:      ${abi_wv_message}
   iconv:           ${abi_iconv_message}
   spelling:        ${abi_spell_message}
-
+  binreloc:        ${br_cv_binreloc}
 EOF
 
 if test "x$_abi_wv_warning" = "xyes"; then
