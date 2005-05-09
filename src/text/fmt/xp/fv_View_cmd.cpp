@@ -5243,7 +5243,8 @@ bool FV_View::cmdUpdateEmbed(UT_ByteBuf * pBuf, const char * szMime, const char 
 	UT_UTF8String sUID;
 	UT_UTF8String_sprintf(sUID,"%d",uid);
 	atts[1] = sUID.utf8_str();
-	bool bres = m_pDoc->createDataItem(sUID.utf8_str(),false,pBuf,static_cast<void *>(const_cast<char *>(szMime)), NULL);
+	const char * mimetypeGOChart = UT_strdup(szMime);
+	bool bres = m_pDoc->createDataItem(sUID.utf8_str(),false,pBuf,static_cast<void *>(const_cast<char *>(mimetypeGOChart)), NULL);
 	UT_return_val_if_fail(bres,false)
 	const XML_Char *cur_style = NULL;
 	getStyle(&cur_style);
