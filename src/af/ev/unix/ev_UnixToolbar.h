@@ -60,7 +60,6 @@ public:
 	virtual void show(void);
 	virtual void hide(void);
 	
-	XAP_FontPreview *				m_pFontPreview;	
 protected:
 	void							_releaseListener(void);
 

@@ -17,9 +17,6 @@
  * 02111-1307, USA.
  */
 
-//for GtkCombo->GtkList
-#undef GTK_DISABLE_DEPRECATED
-
 #include <gtk/gtk.h>
 #include <string.h>
 #include <stdlib.h>
@@ -68,6 +65,19 @@
 #define COMBO_BUF_LEN 256
 
 static const GtkTargetEntry      s_AbiTBTargets[] = {{"abi-toolbars",0,0}};
+
+class _wd;
+
+enum {
+	COLUMN_STRING = 0,
+	COLUMN_FONTNAME,
+	COLUMN_FONTSIZE,
+	NUM_COLUMNS
+};
+
+void 		 abi_gtk_combo_box_fill_from_string_vector (_wd *wd, GtkComboBox *combo, const UT_GenericVector<const char*> *strings);
+void 		 abi_gtk_combo_box_text_select_entry(_wd *wd, GtkComboBox *combo, const gchar *text);
+const gchar *abi_gtk_combo_box_get_active_text	(GtkComboBox *combo);
 
 
 /**
@@ -225,11 +235,6 @@ public:									// we create...
 			wd->m_pUnixToolbar->invokeToolbarMethod(pView,pEM,NULL,0);
 		}				
 	};
-
-	static void s_combo_list_changed(GtkWidget* list, GtkWidget * widget, gpointer user_data)
-	{
-		s_combo_changed(widget, user_data);
-	}
 	
 	// TODO: should this move out of wd?  It's convenient here; maybe I'll make
 	// a microclass for combo boxes.
@@ -248,136 +253,18 @@ public:									// we create...
 				if (!wd->m_blockSignal)
 				{
 					const gchar * buffer = NULL;
-					if (GTK_IS_ENTRY(widget))
-						buffer = gtk_entry_get_text(GTK_ENTRY(widget));
-					else if (GTK_IS_LIST_ITEM(widget))
-					{
-						GtkWidget* label = gtk_bin_get_child(GTK_BIN(widget));
-						buffer = gtk_label_get_text(GTK_LABEL(label));
-					}
-					else {
-						UT_ASSERT( UT_SHOULD_NOT_HAPPEN );
-						return;
-					}
-
-					// check if something actually _is_ changed... yeah yeah, another hack.. gtk sux sometimes
-					if (!strcmp(wd->m_comboEntryBuffer, buffer))
-						return;
+					buffer = abi_gtk_combo_box_get_active_text(GTK_COMBO_BOX(widget));
 					
 					UT_uint32 length = strlen(buffer);
-					xxx_UT_DEBUGMSG(("LACHANCE: comboChanged, length: %d \n", length));
-				        // LACHANCE: in gtk2, it seems as if the gtk_entry's text buffer length is set to 0
-				        // when we move through combo elements/new combo elements are added. in this case, we 
-				        // have to ignore the signal-- things will be set correctly momentarily. this seems
-					// to work correctly, but it would be nice to find a more elegant solution
-					// (P.S.: GtkCombo SUCKS, and will hopefully soon be deprecated. We should really be 
-					// using GtkOptionMenu for non-changeable drop-down toolbar menus)
 					if (length > 0) 
-					{					
-						UT_ASSERT(length < 1024);				       
-						strcpy(wd->m_comboEntryBuffer, buffer);
-
-						if (wd->m_id == AP_TOOLBAR_ID_FMT_FONT && wd->m_pUnixToolbar->m_pFontPreview)
-						  {
-						    wd->m_pUnixToolbar->m_pFontPreview->setFontFamily(buffer);
-						    wd->m_pUnixToolbar->m_pFontPreview->setText(buffer);
-						    wd->m_pUnixToolbar->m_pFontPreview->draw();
-						  }
+					{						
+						UT_UCS4String ucsText(buffer);
+						wd->m_pUnixToolbar->toolbarEvent(wd, ucsText.ucs4_str(), ucsText.length());
 					}
 				}
 			}
-			else // widget has no ->parent, so use the buffer's results
-			{
-				// Don't do changes for empty combo texts, or when the
-				// combo box selection has been aborted (by pressing
-				// outside the box - this appears to be recognizable
-				// by the HAS_GRAB flag being set: I don't know if
-				// that's the correct way to detect this case. 
-				// jskov 2001.12.09)
-				if (UT_strcmp(wd->m_comboEntryBuffer, "") 
-					&& !(GTK_OBJECT_FLAGS(widget) & GTK_HAS_GRAB))
-				{ 
-					const char * text = 
-					    (wd->m_id == AP_TOOLBAR_ID_FMT_SIZE ? 
-					    XAP_EncodingManager::fontsizes_mapping.lookupByTarget(wd->m_comboEntryBuffer) :
-					    wd->m_comboEntryBuffer);
-					UT_ASSERT(text);					
-					
-					UT_UCS4String ucsText(text);
-					wd->m_pUnixToolbar->toolbarEvent(wd, ucsText.ucs4_str(), ucsText.length());
-				}				
-			}
 		}
 	}
-
-	// unblock when the menu goes away
-	static void s_combo_hide(GtkWidget * widget, gpointer user_data)
-	{
-		_wd * wd = static_cast<_wd *>(user_data);
-		UT_ASSERT(wd);
-
-		// manually force an update
-		s_combo_changed(widget, user_data);
-
-		// destroy the font preview window
-		if (
-		    (wd->m_id == AP_TOOLBAR_ID_FMT_FONT) && // this first check isn't needed, but I put it here anyway for the general understanding of the public :)
-		    (wd->m_pUnixToolbar->m_pFontPreview != NULL)
-		    )
-		{
-			UT_DEBUGMSG(("ev_UnixToolbar - deleting FontPreview %x \n",wd->m_pUnixToolbar));
-		    delete wd->m_pUnixToolbar->m_pFontPreview;
-			wd->m_pUnixToolbar->m_pFontPreview = NULL;
-		}
-	}
-
-	// unblock when the menu goes away
-	static void s_combo_show(GtkWidget * widget, gpointer user_data)
-	{
-		_wd * wd = static_cast<_wd *>(user_data);
-		UT_ASSERT(wd);
-
-		GtkWidget * entry = static_cast<GtkWidget*>(g_object_get_data(G_OBJECT(widget), "entry"));
-
-		// only act if the widget has been shown and embedded in the toolbar
-		if (wd->m_widget && entry && wd->m_id == AP_TOOLBAR_ID_FMT_FONT)
-		{
-		    // if the popwin is still shown, this is a copy run and widget has a ->parent
-		    if (entry->parent)
-			{
-			// block is only honored here
-				if (!wd->m_blockSignal)
-				{
-					const gchar * buffer = gtk_entry_get_text(GTK_ENTRY(entry));
-					UT_uint32 length = strlen(buffer);
-					
-					if (length > 0) 
-					{					
-						UT_ASSERT(length < 1024);				       
-						
-						if (wd->m_pUnixToolbar->m_pFontPreview == NULL)
-						{
-							int x,y;
-				    
-				    // this combo widget should have a parent widget which contains this combo widget _and_ the dropdown arrow
-							GtkWidget * parent = gtk_widget_get_parent(entry);
-							UT_ASSERT(parent);
-							gdk_window_get_origin(parent->window, &x,&y);
-							x += parent->allocation.x + parent->allocation.width;
-							y += parent->allocation.y + parent->allocation.height;
-							XAP_Frame * pFrame = static_cast<XAP_Frame *>(wd->m_pUnixToolbar->getFrame());
-							wd->m_pUnixToolbar->m_pFontPreview = new XAP_UnixFontPreview(pFrame, x, y);
-							UT_DEBUGMSG(("ev_UnixToolbar - building new FontPreview %x \n",wd->m_pUnixToolbar));
-						}
-						wd->m_pUnixToolbar->m_pFontPreview->setFontFamily(buffer);
-						wd->m_pUnixToolbar->m_pFontPreview->setText(buffer);
-						wd->m_pUnixToolbar->m_pFontPreview->draw();
-					}
-				}				   
-			}
-		}
-	}
-
 
 	EV_UnixToolbar *	m_pUnixToolbar;
 	XAP_Toolbar_Id		m_id;
@@ -413,7 +300,6 @@ EV_UnixToolbar::EV_UnixToolbar(XAP_UnixApp * pUnixApp,
 		     szToolbarLayoutName,
 		     szToolbarLabelSetName)
 {
-	m_pFontPreview = NULL;
 	m_pUnixApp = pUnixApp;
 	m_pFrame = pFrame;
 	m_pViewListener = 0;
@@ -820,43 +706,58 @@ bool EV_UnixToolbar::synthesize(void)
 					iWidth = pControl->getPixelWidth();
 				}
 
-				GtkWidget * comboBox = gtk_combo_new();
-				UT_ASSERT(comboBox);
+				GtkWidget *align = NULL;
+				GtkWidget *combo = gtk_combo_box_new();
+				GtkCellRenderer *renderer = gtk_cell_renderer_text_new();
+				gtk_cell_layout_pack_start (GTK_CELL_LAYOUT (combo), renderer, TRUE);
 
-				// Combo boxes flash on 8-bit displays unless you set its colormap
-				// to agree with what we're using elsewhere (gdk_rgb's version)
-				gtk_widget_set_colormap(comboBox, gdk_rgb_get_colormap());
+				if (wd->m_id == AP_TOOLBAR_ID_ZOOM) {
+					// padding
+					align = gtk_alignment_new(0, 0, 1, 1);
+					gtk_alignment_set_padding(GTK_ALIGNMENT(align), 0, 0, 5, 0);
+					gtk_container_add(GTK_CONTAINER(align), combo);
+					gtk_widget_show(align);
+					// zoom
+					gtk_cell_layout_set_attributes(GTK_CELL_LAYOUT(combo), renderer, "text", COLUMN_STRING, NULL); 
+				}
+				else if (wd->m_id == AP_TOOLBAR_ID_FMT_STYLE) {
+					// padding
+					align = gtk_alignment_new(0, 0, 1, 1);
+					gtk_alignment_set_padding(GTK_ALIGNMENT(align), 0, 0, 0, 5);
+					gtk_container_add(GTK_CONTAINER(align), combo);
+					gtk_widget_show(align);
+					// style preview
+					gtk_cell_layout_set_attributes(GTK_CELL_LAYOUT(combo), renderer, "text", COLUMN_STRING, NULL); 
+				}
+				else if (wd->m_id == AP_TOOLBAR_ID_FMT_FONT) {
+					// padding
+					align = gtk_alignment_new(0, 0, 1, 1);
+					gtk_alignment_set_padding(GTK_ALIGNMENT(align), 0, 0, 0, 5);
+					gtk_container_add(GTK_CONTAINER(align), combo);
+					gtk_widget_show(align);
+					// font preview
+					gtk_cell_layout_set_attributes(GTK_CELL_LAYOUT(combo), renderer, 
+													"text", COLUMN_STRING, 
+													"font", COLUMN_FONTNAME,
+													"size", COLUMN_FONTSIZE,
+													NULL); 				
+				}
+				else {
+					gtk_cell_layout_set_attributes(GTK_CELL_LAYOUT(combo), renderer, "text", COLUMN_STRING, NULL); 
+				}
+
+				GtkListStore *store = gtk_list_store_new(NUM_COLUMNS, G_TYPE_STRING, G_TYPE_STRING, G_TYPE_INT);
+				gtk_combo_box_set_model(GTK_COMBO_BOX(combo), GTK_TREE_MODEL(store));
+				g_object_unref(store);
 				
 				// set the size of the entry to set the total combo size
-				gtk_widget_set_size_request(GTK_COMBO(comboBox)->entry, iWidth, -1);
+				gtk_widget_set_size_request(combo, iWidth, -1);
 
-				// the entry is read-only for now
-				gtk_editable_set_editable(GTK_EDITABLE(GTK_COMBO(comboBox)->entry), FALSE);
-										 
-				// handle popup events, so we can block our signals until the popdown
-				GtkWidget * popwin = GTK_WIDGET(GTK_COMBO(comboBox)->popwin);
-				UT_ASSERT(popwin);
+		        g_signal_connect(G_OBJECT(GTK_COMBO_BOX(combo)),
+					 "changed",
+					 G_CALLBACK(_wd::s_combo_changed),
+					 wd);
 
-				g_object_set_data(G_OBJECT(popwin), "entry", GTK_COMBO(comboBox)->entry);
-
-				g_signal_connect(G_OBJECT(popwin),
-						 "hide",
-						 G_CALLBACK(_wd::s_combo_hide),
-						 wd);
-				g_signal_connect(G_OBJECT(popwin),
-						 "show",
-						 G_CALLBACK(_wd::s_combo_show),
-						 wd);
-
-				// connect to the ->entry directly? Cleaned up version below.
-			        g_signal_connect(G_OBJECT(GTK_COMBO(comboBox)->entry),
-						 "changed",
-						 G_CALLBACK(_wd::s_combo_changed),
-						 wd);
-			        g_signal_connect(G_OBJECT(GTK_COMBO(comboBox)->list),
-						 "select-child",
-						 G_CALLBACK(_wd::s_combo_list_changed),
-						 wd);						 
 				// populate it
 				if (pControl)
 				{
@@ -864,29 +765,21 @@ bool EV_UnixToolbar::synthesize(void)
 
 					const UT_GenericVector<const char*> * v = pControl->getContents();
 					UT_ASSERT(v);
-
-					if (v)
-					{
-						UT_uint32 items = v->getItemCount();
-						for (UT_uint32 m=0; m < items; m++)
-						{
-							const char * sz = v->getNthItem(m);
-							GtkWidget * li = gtk_list_item_new_with_label(sz);
-							gtk_widget_show(li);
-							gtk_container_add (GTK_CONTAINER(GTK_COMBO(comboBox)->list), li);
-						}
-					}
+					abi_gtk_combo_box_fill_from_string_vector (wd, GTK_COMBO_BOX(combo), v);
 				}
  
-			        // give a final show
-				gtk_widget_show(comboBox);
-
 				// stick it in the toolbar
+				GtkWidget *widget = NULL;
+				if (align != NULL)
+					widget = align;
+				else
+					widget = combo;
 				toolbar_append_with_eventbox(GTK_TOOLBAR(m_wToolbar),
-							     comboBox,
+							     widget,
 							     szToolTip,
 							     static_cast<const char *>(NULL));
-				wd->m_widget = comboBox;
+				gtk_widget_show(combo);
+				wd->m_widget = combo;
 
 				// for now, we never repopulate, so can just toss it
 				DELETEP(pControl);
@@ -1093,7 +986,7 @@ bool EV_UnixToolbar::refreshToolbar(AV_View * pView, AV_ChangeMask mask)
 					
 					_wd * wd = m_vecToolbarWidgets.getNthItem(k);
 					UT_ASSERT(wd);
-					GtkCombo * item = GTK_COMBO(wd->m_widget);
+					GtkComboBox * item = GTK_COMBO_BOX(wd->m_widget);
 					UT_ASSERT(item);
 					// Disable/enable toolbar item
 					gtk_widget_set_sensitive(GTK_WIDGET(item), !bGrayed);
@@ -1106,15 +999,17 @@ bool EV_UnixToolbar::refreshToolbar(AV_View * pView, AV_ChangeMask mask)
 					    {
 					      const char * fsz = XAP_EncodingManager::fontsizes_mapping.lookupBySource(szState);
 					      if ( fsz )
-						gtk_entry_set_text(GTK_ENTRY(item->entry), fsz);
-					      else
-						gtk_entry_set_text(GTK_ENTRY(item->entry), "");
+							abi_gtk_combo_box_text_select_entry(wd, item, fsz);
+					      else {
+							// TODO ROB: set default size
+							abi_gtk_combo_box_text_select_entry(wd, item, "12");
+						  }
 					    }
 					  else
-					    gtk_entry_set_text(GTK_ENTRY(item->entry), szState);
+					    abi_gtk_combo_box_text_select_entry(wd, item, szState);
 					} 
 					else {
-						gtk_entry_set_text(GTK_ENTRY(item->entry), "");
+						abi_gtk_combo_box_text_select_entry(wd, item, "");
 					}					
 
 					wd->m_blockSignal = wasBlocked;					
@@ -1216,7 +1111,7 @@ bool EV_UnixToolbar::repopulateStyles(void)
 	EV_Toolbar_Control * pControl = pFactory->getControl(this, id);
 	AP_UnixToolbar_StyleCombo * pStyleC = static_cast<AP_UnixToolbar_StyleCombo *>(pControl);
 	pStyleC->repopulate();
-	GtkCombo * item = GTK_COMBO(wd->m_widget);
+	GtkComboBox * item = GTK_COMBO_BOX(wd->m_widget);
 //
 // Now the combo box has to be refilled from this
 //						
@@ -1231,21 +1126,12 @@ bool EV_UnixToolbar::repopulateStyles(void)
 	bool wasBlocked = wd->m_blockSignal;
 	wd->m_blockSignal = true; // block the signal, so we don't try to read the text entry while this is happening..
     
-	GtkList * oldlist = GTK_LIST(item->list);
-	gtk_list_clear_items(oldlist,0,-1);
 //
 // Now make a new one.
 //
-	UT_uint32 items = v->getItemCount();
-	for (UT_uint32 m=0; m < items; m++)
-	{
-		const char * sz = v->getNthItem(m);
-		GtkWidget * li = gtk_list_item_new_with_label(sz);
-		gtk_widget_show(li);
-		gtk_container_add (GTK_CONTAINER(GTK_COMBO(item)->list), li);
-	}
+	abi_gtk_combo_box_fill_from_string_vector (wd, item, v);
 
-        wd->m_blockSignal = wasBlocked;
+    wd->m_blockSignal = wasBlocked;
 
 //
 // Don't need this anymore and we don't like memory leaks in abi
@@ -1255,4 +1141,99 @@ bool EV_UnixToolbar::repopulateStyles(void)
 // I think we've finished!
 //
 	return true;
+}
+
+/*!
+* Refill a combo box (list model, one string column) from a string vector.
+*/
+void 
+abi_gtk_combo_box_fill_from_string_vector (_wd *wd,
+										   GtkComboBox *combo, 
+										   const UT_GenericVector<const char*> *strings) {
+	static gint size = 0;
+	if (size == 0) {
+		PangoContext *context = gtk_widget_get_pango_context (GTK_WIDGET (combo));
+		PangoFontDescription *desc = pango_context_get_font_description (context);
+		size = pango_font_description_get_size (desc);
+		// we show the font a bit larget than the default font size in the widgets
+		size = (size / PANGO_SCALE + 2) * PANGO_SCALE;
+	}
+
+	GtkListStore *store = GTK_LIST_STORE (gtk_combo_box_get_model (combo));
+	gtk_list_store_clear (store);
+
+	int count = strings->size ();
+	for (int i = 0; i < count; i++) {
+
+		GtkTreeIter iter;
+		gtk_list_store_append (store, &iter);
+		
+		// font preview
+		if (wd->m_id == AP_TOOLBAR_ID_FMT_FONT) {
+			gtk_list_store_set (store, &iter, 
+								COLUMN_STRING, strings->getNthItem (i), 
+								COLUMN_FONTNAME, strings->getNthItem (i), 
+								COLUMN_FONTSIZE, size, 
+								-1);
+		}
+		else {
+			gtk_list_store_set (store, &iter, COLUMN_STRING, strings->getNthItem (i), -1);
+		}
+	}
+}
+
+/*!
+* Select a combo box entry by its label.
+*/
+void 
+abi_gtk_combo_box_text_select_entry (_wd *wd,
+									 GtkComboBox *combo, 
+									 const gchar *text) {
+
+	GtkTreeModel *model = gtk_combo_box_get_model (combo);
+	GtkTreeIter iter;
+	guint idx = 0;
+	if (gtk_tree_model_get_iter_first (model, &iter)) {
+		do {
+			gchar *value;
+			gtk_tree_model_get (model, &iter, COLUMN_STRING, &value, -1);
+
+			if (wd->m_id == AP_TOOLBAR_ID_FMT_SIZE) {
+				// font size, compare numbers
+				if (atoi (text) == atoi (value)) {
+					gtk_combo_box_set_active (combo, idx);
+					return;
+				}				
+			}
+			else {
+				// compare strings
+				if (!UT_strcmp (text, value)) {
+					gtk_combo_box_set_active (combo, idx);
+					return;
+				}
+			}
+			idx++;
+		}
+		while (gtk_tree_model_iter_next (model, &iter));
+	}
+}
+
+/**
+* Get currently active combo box text.
+*/
+const gchar *
+abi_gtk_combo_box_get_active_text (GtkComboBox *combo) {
+
+	GtkTreeModel *model = gtk_combo_box_get_model (combo);
+	gint idx = gtk_combo_box_get_active (combo);
+	GtkTreePath *path = gtk_tree_path_new_from_indices (idx, -1);
+
+	GtkTreeIter iter;
+	gtk_tree_model_get_iter (model, &iter, path);
+	gtk_tree_path_free (path);
+
+	const gchar *value;
+	gtk_tree_model_get (model, &iter, COLUMN_STRING, &value, -1);
+
+	return value;
 }
