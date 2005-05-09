@@ -51,7 +51,9 @@ public:
 							   PT_AttrPropIndex indexNewAP,
 							   PT_BufIndex bufIndex,
 							   UT_uint32 length,
-							   PT_BlockOffset blockOffset);
+							   PT_BlockOffset blockOffset,
+							   bool isRevisionDelete);
+	
 	~PX_ChangeRecord_SpanChange();
 
 	virtual PX_ChangeRecord * reverse(void) const;
@@ -60,6 +62,8 @@ public:
 	PT_BufIndex				getBufIndex(void) const;
 	PT_AttrPropIndex		getOldIndexAP(void) const;
 	PT_BlockOffset			getBlockOffset(void) const;
+
+	bool                    isRevisionDelete() const {return m_bRevisionDelete;}
 	
 #ifdef PT_TEST
 	virtual void			__dump(FILE * fp) const;
@@ -70,6 +74,9 @@ protected:
 	UT_uint32				m_length;	/* length of our text */
 	PT_AttrPropIndex		m_indexOldAP;
 	PT_BlockOffset			m_blockOffset; /* offset of span from beginning of paragraph */
+
+	// used in revisions mode to indicate if fmt change record represents deletion
+	bool                    m_bRevisionDelete;
 };
 
 #endif /* PX_CHANGERECORD_SPANCHANGE_H */

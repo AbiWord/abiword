@@ -56,14 +56,15 @@ bool pt_PieceTable::changeObjectFormatNoUpdate(PTChangeFmt ptc ,pf_Frag_Object *
 }
 
 bool pt_PieceTable::_fmtChangeObjectWithNotify(PTChangeFmt ptc,
-												  pf_Frag_Object * pfo, UT_uint32 fragOffset,
-												  PT_DocPosition dpos,
-												  UT_uint32 length,
-												  const XML_Char ** attributes,
-												  const XML_Char ** properties,
-												  pf_Frag_Strux * pfs,
-												  pf_Frag ** ppfNewEnd,
-												  UT_uint32 * pfragOffsetNewEnd)
+											   pf_Frag_Object * pfo, UT_uint32 fragOffset,
+											   PT_DocPosition dpos,
+											   UT_uint32 length,
+											   const XML_Char ** attributes,
+											   const XML_Char ** properties,
+											   pf_Frag_Strux * pfs,
+											   pf_Frag ** ppfNewEnd,
+											   UT_uint32 * pfragOffsetNewEnd,
+											   bool bRevisionDelete)
 {
 	// apply a span-level change to the given object.
 	// create a change record for this change and put it in the history.
@@ -92,7 +93,7 @@ bool pt_PieceTable::_fmtChangeObjectWithNotify(PTChangeFmt ptc,
 	PX_ChangeRecord_ObjectChange * pcr
 		= new PX_ChangeRecord_ObjectChange(PX_ChangeRecord::PXT_ChangeObject,
 										   dpos, indexOldAP,indexNewAP,
-										   pfo->getObjectType(),blockOffset);
+										   pfo->getObjectType(),blockOffset,bRevisionDelete);
 	UT_return_val_if_fail (pcr, false);
 
 	// apply the change to this fragment

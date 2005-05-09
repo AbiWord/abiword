@@ -54,6 +54,7 @@ public:
 						 UT_uint32 length,
 						 PT_BlockOffset blockOffset,
                          fd_Field * pField);
+	
 	~PX_ChangeRecord_Span();
 
 	virtual PX_ChangeRecord * reverse(void) const;
@@ -62,7 +63,7 @@ public:
 	PT_BufIndex				getBufIndex(void) const;
 	void					coalesce(const PX_ChangeRecord_Span * pcr);
 	PT_BlockOffset			getBlockOffset(void) const;
-	fd_Field *                 getField(void) const {return m_pField;};
+	fd_Field *              getField(void) const {return m_pField;};
 
 #ifdef PT_TEST
 	virtual void			__dump(FILE * fp) const;

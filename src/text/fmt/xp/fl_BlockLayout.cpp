@@ -3832,18 +3832,18 @@ fp_Line* fl_BlockLayout::findNextLineInDocument(fp_Line* pLine)
 fl_PartOfBlock::fl_PartOfBlock(void)
 {
 	m_iOffset = 0;
-	m_iLength = 0;
+	m_iPTLength = 0;
 	m_bIsIgnored = false;
 	m_bIsInvisible = false;
 }
 
-fl_PartOfBlock::fl_PartOfBlock(UT_sint32 iOffset, UT_sint32 iLength,
-							   bool bIsIgnored /* = false */)
+fl_PartOfBlock::fl_PartOfBlock(UT_sint32 iOffset, UT_sint32 iPTLength,
+							   bool bIsIgnored /* = false */):
+	m_iOffset(iOffset),
+	m_iPTLength(iPTLength),
+	m_bIsIgnored(bIsIgnored),
+	m_bIsInvisible(false)
 {
-	m_iOffset = iOffset;
-	m_iLength = iLength;
-	m_bIsIgnored = bIsIgnored;
-	m_bIsInvisible = false;
 }
 
 void fl_PartOfBlock::setGrammarMessage(UT_UTF8String & sMsg)
@@ -3870,7 +3870,7 @@ fl_PartOfBlock::doesTouch(UT_sint32 iOffset, UT_sint32 iLength) const
 	xxx_UT_DEBUGMSG(("fl_PartOfBlock::doesTouch(%d, %d)\n", iOffset, iLength));
 
 	start1 = m_iOffset;
-	end1 = m_iOffset + m_iLength;
+	end1 = m_iOffset + m_iPTLength;
 
 	start2 = iOffset;
 	end2 =	 iOffset + iLength;
@@ -4035,7 +4035,7 @@ fl_BlockLayout::_recalcPendingWord(UT_uint32 iOffset, UT_sint32 chg)
 		if (pPending)
 		{
 			pPending->setOffset(iFirst);
-			pPending->setLength(iLen);
+			pPending->setPTLength(iLen); // not sure about this ...
 			m_pLayout->setPendingWordForSpell(this, pPending);
 		}
 	}
@@ -4121,14 +4121,14 @@ fl_BlockLayout::_checkMultiWord(UT_sint32 iStart,
 	fl_BlockSpellIterator wordIterator(this, iStart);
 
 	const UT_UCSChar* pWord;
-	UT_sint32 iLength, iBlockPos;
+	UT_sint32 iLength, iBlockPos, iPTLength;
 
-	while (wordIterator.nextWordForSpellChecking(pWord, iLength, iBlockPos))
+	while (wordIterator.nextWordForSpellChecking(pWord, iLength, iBlockPos, iPTLength))
 	{
 		// When past the provided end position, break out
 		if (eor > 0 && iBlockPos > eor) break;
 
-		fl_PartOfBlock* pPOB = new fl_PartOfBlock(iBlockPos, iLength);
+		fl_PartOfBlock* pPOB = new fl_PartOfBlock(iBlockPos, iPTLength);
 		UT_ASSERT(pPOB);
 
 #if 0 // TODO: turn this code on someday
@@ -4155,7 +4155,7 @@ fl_BlockLayout::_checkMultiWord(UT_sint32 iStart,
 		if (pPOB)
 		{
 			bool bwrong = false;
-			bwrong = _doCheckWord(pPOB, pWord, true, bToggleIP);
+			bwrong = _doCheckWord(pPOB, pWord, iLength, true, bToggleIP);
 #if 0
 			if(bwrong)
 			{
@@ -4172,21 +4172,25 @@ fl_BlockLayout::_checkMultiWord(UT_sint32 iStart,
 /*!
  Validate a word and spell-check it
  \param pPOB Block region to squiggle if appropriate
- \param pBlockText Pointer to block's text
+ \param pWord Pointer to the word
+ \param iLength length of the word in pWord
  \param bAddSquiggle True if pPOB should be added to squiggle list
  \return True if display was updated, otherwise false
 
  If the word bounded by pPOB is not squiggled, the pPOB is deleted.
+
+ I added the iLength parameter, because we need to store the PieceTable length in pPOB and
+ as this is about the only function that need to know the word length, there is no point
+ to store it in the POB (which gets queued in the layout). Tomas, May 9, 2005
  */
 
 bool
 fl_BlockLayout::_doCheckWord(fl_PartOfBlock* pPOB,
 							 const UT_UCSChar* pWord,
+							 UT_sint32 iLength,
 							 bool bAddSquiggle /* = true */,
 							 bool bClearScreen /* = true */)
 {
-
-	UT_sint32 iLength = pPOB->getLength();
 	UT_sint32 iBlockPos = pPOB->getOffset();
 
 	do {
@@ -4245,21 +4249,21 @@ fl_BlockLayout::checkWord(fl_PartOfBlock* pPOB)
     fl_BlockSpellIterator wordIterator(this, pPOB->getOffset());
 
 	const UT_UCSChar* pWord;
-	UT_sint32 iLength, iBlockPos;
+	UT_sint32 iLength, iBlockPos, iPTLength;
 
     // The word iterator may be unable to find a word within the
     // editing limits provided by the pPOB - so check that before
     // continuing.
     if (wordIterator.nextWordForSpellChecking(pWord,
-                                              iLength, iBlockPos)
-        && (iBlockPos+iLength <= pPOB->getOffset()+pPOB->getLength()))
+                                              iLength, iBlockPos, iPTLength)
+        && (iBlockPos+iLength <= pPOB->getOffset()+pPOB->getPTLength()))
     {
         delete pPOB;
 
-        fl_PartOfBlock* pNewPOB = new fl_PartOfBlock(iBlockPos, iLength);
+        fl_PartOfBlock* pNewPOB = new fl_PartOfBlock(iBlockPos, iPTLength);
         UT_ASSERT(pNewPOB);
             
-        return _doCheckWord(pNewPOB, pWord );
+        return _doCheckWord(pNewPOB, pWord, iLength );
     }
 
 	// Delete the POB which is not longer needed
@@ -6166,6 +6170,13 @@ bool fl_BlockLayout::doclistener_changeSpan(const PX_ChangeRecord_SpanChange * p
 	updateEnclosingBlockIfNeeded();
 	_assertRunListIntegrity();
 
+	// need to handle the case where we have a revisions based delete
+	if(pcrsc->isRevisionDelete())
+	{
+		m_pSpellSquiggles->textRevised(blockOffset, 0);
+		m_pGrammarSquiggles->textRevised(blockOffset, 0);
+	}
+	
 	return true;
 }
 
@@ -7504,7 +7515,7 @@ fl_BlockLayout::findSpellSquigglesForRun(fp_Run* pRun)
 		if (!pPOB->getIsIgnored())
 		{
 			iStart = pPOB->getOffset();
-			iEnd =	iStart + pPOB->getLength();
+			iEnd =	iStart + pPOB->getPTLength();
 			if (iStart < runBlockOffset) iStart = runBlockOffset;
 
 			// Only draw if there's more than one POB. If there's only
@@ -7522,7 +7533,7 @@ fl_BlockLayout::findSpellSquigglesForRun(fp_Run* pRun)
 			if (pPOB->getIsIgnored()) continue;
 
 			iStart = pPOB->getOffset();
-			iEnd =	iStart + pPOB->getLength();
+			iEnd =	iStart + pPOB->getPTLength();
 			pTextRun->drawSquiggle(iStart, iEnd - iStart,FL_SQUIGGLE_SPELL);
 		}
 		// The last POB may only be partially within the region. Clip
@@ -7534,7 +7545,7 @@ fl_BlockLayout::findSpellSquigglesForRun(fp_Run* pRun)
 			// one.
 			if (iFirst != iLast)
 				iStart = pPOB->getOffset();
-			iEnd =	pPOB->getOffset() + pPOB->getLength();
+			iEnd =	pPOB->getOffset() + pPOB->getPTLength();
 			if (iEnd > runBlockEnd) iEnd = runBlockEnd;
 			pTextRun->drawSquiggle(iStart, iEnd - iStart,FL_SQUIGGLE_SPELL);
 		}
@@ -7587,7 +7598,7 @@ fl_BlockLayout::findGrammarSquigglesForRun(fp_Run* pRun)
 		if (!pPOB->getIsIgnored() && !pPOB->isInvisible())
 		{
 			iStart = pPOB->getOffset();
-			iEnd =	iStart + pPOB->getLength();
+			iEnd =	iStart + pPOB->getPTLength();
 			if (iStart < runBlockOffset) iStart = runBlockOffset;
 
 			// Only draw if there's more than one POB. If there's only
@@ -7605,7 +7616,7 @@ fl_BlockLayout::findGrammarSquigglesForRun(fp_Run* pRun)
 			if (pPOB->getIsIgnored() || pPOB->isInvisible()) continue;
 
 			iStart = pPOB->getOffset();
-			iEnd =	iStart + pPOB->getLength();
+			iEnd =	iStart + pPOB->getPTLength();
 			pTextRun->drawSquiggle(iStart, iEnd - iStart,FL_SQUIGGLE_GRAMMAR);
 		}
 		// The last POB may only be partially within the region. Clip
@@ -7619,7 +7630,7 @@ fl_BlockLayout::findGrammarSquigglesForRun(fp_Run* pRun)
 				iStart = pPOB->getOffset();
 			if(iStart < (UT_sint32)pTextRun->getBlockOffset())
 				iStart = pTextRun->getBlockOffset();
-			iEnd =	pPOB->getOffset() + pPOB->getLength();
+			iEnd =	pPOB->getOffset() + pPOB->getPTLength();
 			if (iEnd > runBlockEnd) iEnd = runBlockEnd;
 			pTextRun->drawSquiggle(iStart, iEnd - iStart,FL_SQUIGGLE_GRAMMAR);
 		}
@@ -10296,9 +10307,15 @@ typedef struct
 } _spell_type;
 
 
+/*!
+    pWord -- pointer to next word
+    iLength -- length of the word in the pWord buffer
+    iBlockPos -- block offset of the word
+    iPTLenth -- the lenth of the word in the Piece Table (can be > iLength)
+*/
 bool
 fl_BlockSpellIterator::nextWordForSpellChecking(const UT_UCSChar*& pWord, UT_sint32& iLength,
-												UT_sint32& iBlockPos)
+												UT_sint32& iBlockPos, UT_sint32& iPTLength)
 {
 	// For empty blocks, there will be no buffer
 	if (NULL == m_pText) return false;
@@ -10479,6 +10496,7 @@ fl_BlockSpellIterator::nextWordForSpellChecking(const UT_UCSChar*& pWord, UT_sin
 
 		// These are the current word details
 		UT_uint32 iNewLength = iWordLength;
+		iPTLength = iWordLength;
 		pWord = &m_pText[m_iWordOffset];
 
 		// Now make any necessary mutations to the word before it is
@@ -10542,7 +10560,7 @@ fl_BlockSpellIterator::nextWordForSpellChecking(const UT_UCSChar*& pWord, UT_sin
 					m_pMutatedString[iNewLength++] = currentChar;
 				}
 			}
-			else if(bRevised && !bNeedsMutation)
+			else if(bRevised)
 			{
 				// we need to deal with revision
 				// if the word is contained in multiple runs and some of these are deleted through
@@ -10550,8 +10568,15 @@ fl_BlockSpellIterator::nextWordForSpellChecking(const UT_UCSChar*& pWord, UT_sin
 				UT_GenericVector<_spell_type *> vWordLimits;
 				fp_Run * pRun = m_pBL->findRunAtOffset(m_iWordOffset);
 
-				while(pRun && pRun->getBlockOffset() + pRun->getLength() <= (UT_uint32)(m_iWordOffset + iWordLength))
+				while(pRun && pRun->getBlockOffset() < (UT_uint32)(m_iWordOffset + iWordLength))
 				{
+					if(pRun->getLength() == 0)
+					{
+						pRun = pRun->getNextRun();
+						continue;
+					}
+					
+						
 					bool bDeletedVisible =
 						pRun->getVisibility() == FP_VISIBLE &&
 						pRun->containsRevisions() &&
@@ -10568,7 +10593,7 @@ fl_BlockSpellIterator::nextWordForSpellChecking(const UT_UCSChar*& pWord, UT_sin
 					if(st && st->bIgnore == bIgnore)
 					{
 						// this run continues the last ignore section, just adjust the end
-						st->iEnd = pRun->getBlockOffset() - m_iWordOffset + pRun->getLength();
+						st->iEnd += pRun->getBlockOffset() - m_iWordOffset + pRun->getLength();
 					}
 					else
 					{
@@ -10596,7 +10621,13 @@ fl_BlockSpellIterator::nextWordForSpellChecking(const UT_UCSChar*& pWord, UT_sin
 					{
 						for(UT_uint32 j = st->iStart; j < st->iEnd; ++j)
 						{
-							UT_UCS4Char c = pWord[j];
+							if(m_iWordOffset + iWordLength == j)
+							{
+								// we are done (past the last char of the word)
+								break;
+							}
+							
+							UT_UCS4Char c = m_pText[m_iWordOffset + j];
 							
 							// Remove UCS_ABI_OBJECT from the word
 							if (c == UCS_ABI_OBJECT)
@@ -10610,7 +10641,6 @@ fl_BlockSpellIterator::nextWordForSpellChecking(const UT_UCSChar*& pWord, UT_sin
 							*p++ = c;
 							iNewLength++;
 						}
-						*p = 0;
 					}
 				}
 		

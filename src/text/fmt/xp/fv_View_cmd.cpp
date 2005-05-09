@@ -5354,7 +5354,7 @@ void FV_View::cmdContextSuggest(UT_uint32 ndx, fl_BlockLayout * ppBL,
 	UT_ASSERT(isSelectionEmpty());
 
 	moveInsPtTo(static_cast<PT_DocPosition>(pBL->getPosition() + pPOB->getOffset()));
-	extSelHorizontal(true, pPOB->getLength());
+	extSelHorizontal(true, pPOB->getPTLength());
 
 	UT_UCSChar * selection;
 	getSelectionText(selection);
@@ -5379,10 +5379,14 @@ void FV_View::cmdContextIgnoreAll(void)
 	bool bRes = pBL->getBlockBuf(&pgb);
 	UT_ASSERT(bRes);
 
-	const UT_UCSChar * pBuf = reinterpret_cast<UT_UCSChar*>(pgb.getPointer(pPOB->getOffset()));
+	const UT_UCSChar * pBuf;
+	UT_sint32 iLength, iPTLength, iBlockPos;
 
+	fl_BlockSpellIterator BSI(pBL, pPOB->getOffset());
+	BSI.nextWordForSpellChecking(pBuf, iLength, iBlockPos, iPTLength);
+	
 	// make the change
-	getDictForSelection ()->ignoreWord ((const UT_UCSChar *)pBuf, (size_t)pPOB->getLength());
+	getDictForSelection ()->ignoreWord ((const UT_UCSChar *)pBuf, (size_t)iLength);
 	{
 		// remove the squiggles, too
 		fl_DocSectionLayout * pSL = m_pLayout->getFirstSection();
@@ -5414,10 +5418,14 @@ void FV_View::cmdContextAdd(void)
 	bool bRes = pBL->getBlockBuf(&pgb);
 	UT_ASSERT(bRes);
 
-	const UT_UCSChar * pBuf = reinterpret_cast<UT_UCSChar*>(pgb.getPointer(pPOB->getOffset()));
+	const UT_UCSChar * pBuf;
+	UT_sint32 iLength, iPTLength, iBlockPos;
+
+	fl_BlockSpellIterator BSI(pBL, pPOB->getOffset());
+	BSI.nextWordForSpellChecking(pBuf, iLength, iBlockPos, iPTLength);
 
 	// make the change
-	if (getDictForSelection ()->addToCustomDict (pBuf, pPOB->getLength()))
+	if (getDictForSelection ()->addToCustomDict (pBuf, iLength))
 	{
 		// remove the squiggles, too
 		fl_DocSectionLayout * pSL = m_pLayout->getFirstSection();

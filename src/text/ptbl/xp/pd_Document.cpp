@@ -4157,7 +4157,7 @@ bool   PD_Document::updateDocForStyleChange(const XML_Char * szStyle,
 																					  pos,indexAP,indexAP,
 																					  m_pPieceTable->getVarSet().getBufIndex(pft->getBufIndex(),0) ,
 																					  currentFrag->getLength(),
-																					  blockoffset);
+																					  blockoffset, false);
 					notifyListeners(pfs, pcr);
 					delete pcr;
 				}

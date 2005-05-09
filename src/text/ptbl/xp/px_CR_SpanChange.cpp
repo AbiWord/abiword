@@ -29,8 +29,10 @@ PX_ChangeRecord_SpanChange::PX_ChangeRecord_SpanChange(PXType type,
 													   PT_AttrPropIndex indexNewAP,
 													   PT_BufIndex bufIndex,
 													   UT_uint32 length,
-													   PT_BlockOffset blockOffset)
-	: PX_ChangeRecord(type, position, indexNewAP, 0)
+													   PT_BlockOffset blockOffset,
+													   bool bRevisionDelete)
+	: PX_ChangeRecord(type, position, indexNewAP, 0),
+	  m_bRevisionDelete(bRevisionDelete)
 {
 	m_bufIndex = bufIndex;
 	m_length = length;
@@ -48,7 +50,7 @@ PX_ChangeRecord * PX_ChangeRecord_SpanChange::reverse(void) const
 		= new PX_ChangeRecord_SpanChange(getRevType(),
 										 m_position,
 										 m_indexAP,m_indexOldAP,
-										 m_bufIndex,m_length,m_blockOffset);
+										 m_bufIndex,m_length,m_blockOffset,m_bRevisionDelete);
 	UT_ASSERT_HARMLESS(pcr);
 	return pcr;
 }

@@ -78,6 +78,7 @@ public:
 	UT_sint32               getCRNumber(void)
 	  { return m_iCRNumber;}
 	UT_uint32               getXID() const {return m_iXID;}
+
 #ifdef PT_TEST
 	virtual void			__dump(FILE * fp) const;
 	void					__dump_type(FILE * fp) const;

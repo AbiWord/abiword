@@ -91,7 +91,7 @@ void __dump_sq(void)
 	{
 		fl_PartOfBlock* pPOB = FL_DocLayout::m_pDocLayout->getPendingWordForSpell();
 		fprintf(stdout, "Pending word: %p [%d:%d]\n", (void*)pPOB,
-				pPOB->getOffset(), pPOB->getOffset()+pPOB->getLength());
+				pPOB->getOffset(), pPOB->getOffset()+pPOB->getPTLength());
 	}
 	else
 	{
@@ -244,7 +244,7 @@ void fl_Squiggles::__dump(FILE * fp) const
 	{
 		pPOB = getNth(j);
 		fprintf(fp, "  %d: [%d:%d]\n", j, pPOB->getOffset(),
-				pPOB->getOffset() + pPOB->getLength());
+				pPOB->getOffset() + pPOB->getPTLength());
 	}
 }
 #endif

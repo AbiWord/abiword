@@ -45,7 +45,7 @@
 bool pt_PieceTable::changeStruxForLists(PL_StruxDocHandle sdh,
 										const char * pszParentID)
 {
-	return _realChangeStruxForLists(sdh, pszParentID);
+	return _realChangeStruxForLists(sdh, pszParentID, false);
 }
 
 bool pt_PieceTable::changeSectionAttsNoUpdate(pf_Frag_Strux * pfs,
@@ -88,7 +88,7 @@ bool pt_PieceTable::changeStruxFmtNoUndo(PTChangeFmt ptc,
 	PX_ChangeRecord_StruxChange * pcr
 		= new PX_ChangeRecord_StruxChange(PX_ChangeRecord::PXT_ChangeStrux,
 										  dpos,
-										  indexOldAP,indexNewAP,pts);
+										  indexOldAP,indexNewAP,pts,false);
 	UT_return_val_if_fail (pcr,false);
 
 	bool bResult;
@@ -100,10 +100,10 @@ bool pt_PieceTable::changeStruxFmtNoUndo(PTChangeFmt ptc,
 }
 
 bool pt_PieceTable::changeStruxFmt(PTChangeFmt ptc,
-									  PT_DocPosition dpos1,
-									  PT_DocPosition dpos2,
-									  const XML_Char ** attributes,
-									  const XML_Char ** properties,
+								   PT_DocPosition dpos1,
+								   PT_DocPosition dpos2,
+								   const XML_Char ** attributes,
+								   const XML_Char ** properties,
 								   PTStruxType pts)
 {
 	bool bDoAll = (pts == PTX_StruxDummy);
@@ -216,7 +216,7 @@ bool pt_PieceTable::changeStruxFmt(PTChangeFmt ptc,
 		return true;
 	}
 	else
-		return _realChangeStruxFmt(ptc, dpos1, dpos2, attributes, properties, pts);
+		return _realChangeStruxFmt(ptc, dpos1, dpos2, attributes, properties, pts, false);
 }
 
 bool pt_PieceTable::changeStruxFormatNoUpdate(PTChangeFmt ptc ,pf_Frag_Strux * pfs, const XML_Char ** attributes)
@@ -246,9 +246,10 @@ bool pt_PieceTable::_fmtChangeStrux(pf_Frag_Strux * pfs,
 }
 
 bool pt_PieceTable::_fmtChangeStruxWithNotify(PTChangeFmt ptc,
-												 pf_Frag_Strux * pfs,
-												 const XML_Char ** attributes,
-												 const XML_Char ** properties)
+											  pf_Frag_Strux * pfs,
+											  const XML_Char ** attributes,
+											  const XML_Char ** properties,
+											  bool bRevisionDelete)
 {
 	PT_AttrPropIndex indexNewAP;
 	PTStruxType pts = pfs->getStruxType();
@@ -272,7 +273,7 @@ bool pt_PieceTable::_fmtChangeStruxWithNotify(PTChangeFmt ptc,
 	PX_ChangeRecord_StruxChange * pcr
 		= new PX_ChangeRecord_StruxChange(PX_ChangeRecord::PXT_ChangeStrux,
 										  dpos,
-										  indexOldAP,indexNewAP,pts);
+										  indexOldAP,indexNewAP,pts,bRevisionDelete);
 	UT_return_val_if_fail (pcr,false);
 
 	bool bResult;
@@ -291,10 +292,11 @@ bool pt_PieceTable::_fmtChangeStruxWithNotify(PTChangeFmt ptc,
  * the properties of the layout since they linked to the layout.
  */
 bool pt_PieceTable::_fmtChangeStruxWithNotify(PTChangeFmt ptc,
-												 pf_Frag_Strux * pfs,
-												 const XML_Char ** attributes,
-												 const XML_Char ** properties,
-											  bool bDoAll)
+											  pf_Frag_Strux * pfs,
+											  const XML_Char ** attributes,
+											  const XML_Char ** properties,
+											  bool bDoAll,
+											  bool bRevisionDelete)
 {
 	PT_AttrPropIndex indexNewAP;
 	PTStruxType pts = pfs->getStruxType();
@@ -318,7 +320,7 @@ bool pt_PieceTable::_fmtChangeStruxWithNotify(PTChangeFmt ptc,
 	PX_ChangeRecord_StruxChange * pcr
 		= new PX_ChangeRecord_StruxChange(PX_ChangeRecord::PXT_ChangeStrux,
 										  dpos,
-										  indexOldAP,indexNewAP,pts);
+										  indexOldAP,indexNewAP,pts,bRevisionDelete);
 	UT_return_val_if_fail (pcr,false);
 
 	bool bResult;
@@ -341,7 +343,8 @@ bool pt_PieceTable::_fmtChangeStruxWithNotify(PTChangeFmt ptc,
  * This Method implements the change strux we need to reparent lists.
  */
 bool pt_PieceTable::_realChangeStruxForLists(PL_StruxDocHandle sdh,
-									   const char * pszParentID)
+											 const char * pszParentID,
+											 bool bRevisionDelete)
 {
 	pf_Frag_Strux * pfs = (pf_Frag_Strux *) sdh;
 	PTStruxType pts = pfs->getStruxType();
@@ -368,7 +371,7 @@ bool pt_PieceTable::_realChangeStruxForLists(PL_StruxDocHandle sdh,
 	PX_ChangeRecord_StruxChange * pcr
 		= new PX_ChangeRecord_StruxChange(PX_ChangeRecord::PXT_ChangeStrux,
 										  dpos,
-										  indexOldAP,indexNewAP,pts);
+										  indexOldAP,indexNewAP,pts,bRevisionDelete);
 	UT_return_val_if_fail (pcr,false);
 
 	bool bResult;
@@ -411,11 +414,12 @@ bool pt_PieceTable::_realChangeSectionAttsNoUpdate(pf_Frag_Strux * pfs,
 }
 
 bool pt_PieceTable::_realChangeStruxFmt(PTChangeFmt ptc,
-									  PT_DocPosition dpos1,
-									  PT_DocPosition dpos2,
-									  const XML_Char ** attributes,
-									  const XML_Char ** properties,
-									  PTStruxType pts)
+										PT_DocPosition dpos1,
+										PT_DocPosition dpos2,
+										const XML_Char ** attributes,
+										const XML_Char ** properties,
+										PTStruxType pts,
+										bool bRevisionDelete)
 {
 	UT_return_val_if_fail (m_pts==PTS_Editing,false);
 	bool bDoAll = (pts == PTX_StruxDummy);
@@ -491,7 +495,7 @@ bool pt_PieceTable::_realChangeStruxFmt(PTChangeFmt ptc,
 					if (bDoAll || (pfs->getStruxType() == pts))
 					{
 						bool bResult;
-						bResult = _fmtChangeStruxWithNotify(ptc,pfs,attributes,properties,bDoAll);
+						bResult = _fmtChangeStruxWithNotify(ptc,pfs,attributes,properties,bDoAll,bRevisionDelete);
 						UT_return_val_if_fail (bResult,false);
 					}
 					if (pfs == pfs_End)
@@ -587,7 +591,7 @@ bool pt_PieceTable::_realChangeStruxFmt(PTChangeFmt ptc,
 					if (!bEndSeen && (bDoAll || (pfsContainer->getStruxType() == pts)))
 					{
 						bool bResult;
-						bResult = _fmtChangeStruxWithNotify(ptc,pfsContainer,attributes,sProps,false);
+						bResult = _fmtChangeStruxWithNotify(ptc,pfsContainer,attributes,sProps,bRevisionDelete);
 						UT_return_val_if_fail (bResult,false);
 					}
 					if(!bEndSeen && isEndFootnote(static_cast<pf_Frag *>(pfsContainer)))
@@ -607,7 +611,7 @@ bool pt_PieceTable::_realChangeStruxFmt(PTChangeFmt ptc,
 					bResult = _fmtChangeSpanWithNotify(ptcs,static_cast<pf_Frag_Text *>(pf),
 												   0,dpos,lengthThisStep,
 													   attributes,sProps,
-												   pfsContainer,&pfNewEnd,&fragOffsetNewEnd);
+												   pfsContainer,&pfNewEnd,&fragOffsetNewEnd,bRevisionDelete);
 					UT_return_val_if_fail (bResult, false);
 					if (fragOffsetNewEnd > 0)
 					{
@@ -627,7 +631,7 @@ bool pt_PieceTable::_realChangeStruxFmt(PTChangeFmt ptc,
 					bResult = _fmtChangeObjectWithNotify(ptcs,static_cast<pf_Frag_Object *>(pf),
 													 0,dpos,lengthThisStep,
 														 attributes,sProps,
-													 pfsContainer,&pfNewEnd,&fragOffsetNewEnd);
+													 pfsContainer,&pfNewEnd,&fragOffsetNewEnd,bRevisionDelete);
 					UT_return_val_if_fail (bResult, false);
 					UT_return_val_if_fail (fragOffsetNewEnd == 0,false);
 				}

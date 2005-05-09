@@ -27,8 +27,10 @@ PX_ChangeRecord_StruxChange::PX_ChangeRecord_StruxChange(PXType type,
 														 PT_DocPosition position,
 														 PT_AttrPropIndex indexOldAP,
 														 PT_AttrPropIndex indexNewAP,
-														 PTStruxType pts)
-	: PX_ChangeRecord(type, position, indexNewAP, 0)
+														 PTStruxType pts,
+														 bool bRevisionDelete)
+	: PX_ChangeRecord(type, position, indexNewAP, 0),
+	  m_bRevisionDelete(bRevisionDelete)
 {
 	m_indexOldAP = indexOldAP;
 	m_pts = pts;
@@ -43,7 +45,7 @@ PX_ChangeRecord * PX_ChangeRecord_StruxChange::reverse(void) const
 	PX_ChangeRecord_StruxChange * pcr
 		= new PX_ChangeRecord_StruxChange(getRevType(),
 										  m_position,
-										  m_indexAP,m_indexOldAP,m_pts);
+										  m_indexAP,m_indexOldAP,m_pts,m_bRevisionDelete);
 	UT_ASSERT_HARMLESS(pcr);
 	return pcr;
 }

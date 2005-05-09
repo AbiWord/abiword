@@ -371,6 +371,7 @@ protected:
 	void					_recalcPendingWord(UT_uint32 iOffset, UT_sint32 chg);
 	bool					_doCheckWord(fl_PartOfBlock* pPOB,
 										 const UT_UCSChar* pBlockText,
+										 UT_sint32 iLength,
 										 bool bAddSquiggle = true,
 										 bool bClearScreen = true);
 
@@ -494,17 +495,16 @@ class ABI_EXPORT fl_PartOfBlock
 {
 public:
 	fl_PartOfBlock();
-	fl_PartOfBlock(UT_sint32 iOffset, UT_sint32 iLength,
+	fl_PartOfBlock(UT_sint32 iOffset, UT_sint32 iPTLength,
 				   bool bIsIgnored = false);
 
-	bool doesTouch(UT_sint32 iOffset, UT_sint32 iLength) const;
-
+	bool             doesTouch(UT_sint32 iOffset, UT_sint32 iLength) const;
 	inline UT_sint32 getOffset(void) const { return m_iOffset; }
-	inline UT_sint32 getLength(void) const { return m_iLength; }
+	inline UT_sint32 getPTLength(void)const{ return m_iPTLength; }
 	inline bool 	 getIsIgnored(void) const { return m_bIsIgnored; }
 
 	inline void 	 setOffset(UT_sint32 iOffset) { m_iOffset = iOffset; }
-	inline void 	 setLength(UT_sint32 iLength) { m_iLength = iLength; }
+	inline void 	 setPTLength(UT_sint32 iLength) { m_iPTLength = iLength; }
 	inline void 	 setIsIgnored(bool bIsIgnored) { m_bIsIgnored = bIsIgnored; }
 	void             setInvisible(void)
 	{m_bIsInvisible = true;}
@@ -515,7 +515,7 @@ public:
 	
 private:
 	UT_sint32	m_iOffset;
-	UT_sint32	m_iLength;
+	UT_sint32   m_iPTLength;
 
 	bool		m_bIsIgnored;
 	bool        m_bIsInvisible;
@@ -585,7 +585,8 @@ public:
 
 	bool            nextWordForSpellChecking(const UT_UCSChar*& pWord,
 											 UT_sint32& iLength,
-											 UT_sint32& iBlockPos);
+											 UT_sint32& iBlockPos,
+											 UT_sint32& iPTLength);
 	void              updateBlock(void);
 	void              updateSentenceBoundaries(void);
 

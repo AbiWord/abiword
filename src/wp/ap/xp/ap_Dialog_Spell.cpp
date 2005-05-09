@@ -192,10 +192,11 @@ bool AP_Dialog_Spell::nextMisspelledWord(void)
 	   m_pWordIterator->revertToPreviousWord();
    m_bSkipWord = false;
 
+   UT_sint32 iPTLength;
    // loop until a misspelled word or end of document is hit
    for (;;) 
    {
-	   while (m_pWordIterator->nextWordForSpellChecking(m_pWord, m_iWordLength, m_iWordOffset))
+	   while (m_pWordIterator->nextWordForSpellChecking(m_pWord, m_iWordLength, m_iWordOffset, iPTLength))
 	   {
 		   // We have found a word, but if there was a selection, make
 		   // sure the word lies inside the selection (this check is

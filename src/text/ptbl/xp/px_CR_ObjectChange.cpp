@@ -28,8 +28,10 @@ PX_ChangeRecord_ObjectChange::PX_ChangeRecord_ObjectChange(PXType type,
 														   PT_AttrPropIndex indexOldAP,
 														   PT_AttrPropIndex indexNewAP,
 														   PTObjectType pto,
-														   PT_BlockOffset blockOffset)
-	: PX_ChangeRecord(type, position, indexNewAP, 0)
+														   PT_BlockOffset blockOffset,
+														   bool bRevisionDelete)
+	: PX_ChangeRecord(type, position, indexNewAP, 0),
+	  m_bRevisionDelete(bRevisionDelete)
 {
 	m_indexOldAP = indexOldAP;
 	m_objectType = pto;
@@ -47,7 +49,8 @@ PX_ChangeRecord * PX_ChangeRecord_ObjectChange::reverse(void) const
 										   m_position,
 										   m_indexAP,m_indexOldAP,
 										   m_objectType,
-										   m_blockOffset);
+										   m_blockOffset,
+										   m_bRevisionDelete);
 	UT_ASSERT_HARMLESS(pcr);
 	return pcr;
 }

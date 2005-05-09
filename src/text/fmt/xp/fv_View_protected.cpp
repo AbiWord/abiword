@@ -5234,8 +5234,13 @@ UT_UCSChar * FV_View::_lookupSuggestion(fl_BlockLayout* pBL,
 		UT_UCS4String stMisspelledWord;
 		// convert smart quote apostrophe to ASCII single quote to be
 		// compatible with ispell
-		const UT_UCSChar * pWord = reinterpret_cast<UT_UCSChar*>(pgb.getPointer(pPOB->getOffset()));
-		UT_uint32 len = pPOB->getLength();
+		const UT_UCSChar * pWord;
+		UT_sint32 iLength, iPTLength, iBlockPos;
+
+		fl_BlockSpellIterator BSI(pBL, pPOB->getOffset());
+		BSI.nextWordForSpellChecking(pWord, iLength, iBlockPos, iPTLength);
+		
+		UT_uint32 len = iLength;
 		for (UT_uint32 ldex=0; ldex < len && ldex < INPUTWORDLEN; ldex++)
 		{
 			stMisspelledWord += *pWord == UCS_RQUOTE ? '\'' : *pWord;
@@ -5277,12 +5282,12 @@ UT_UCSChar * FV_View::_lookupSuggestion(fl_BlockLayout* pBL,
 		pvFreshSuggestions = new UT_GenericVector<UT_UCSChar*>();
 		UT_ASSERT(pvFreshSuggestions);
 
-		if (checker->checkWord(stMisspelledWord.ucs4_str(), pPOB->getLength()) == SpellChecker::LOOKUP_FAILED)
+		if (checker->checkWord(stMisspelledWord.ucs4_str(), iLength) == SpellChecker::LOOKUP_FAILED)
 		{
 			// get suggestions from spelling engine
 			const UT_GenericVector<UT_UCSChar*>* cpvEngineSuggestions;
 
-			cpvEngineSuggestions = checker->suggestWord (stMisspelledWord.ucs4_str(), pPOB->getLength());
+			cpvEngineSuggestions = checker->suggestWord (stMisspelledWord.ucs4_str(), iLength);
 
 			for (UT_uint32 i = 0; i < cpvEngineSuggestions->getItemCount(); ++i)
 			{
@@ -5292,7 +5297,7 @@ UT_UCSChar * FV_View::_lookupSuggestion(fl_BlockLayout* pBL,
 			}
 
 			// add suggestions from user's AbiWord file
-			 m_pApp->suggestWord(pvFreshSuggestions,stMisspelledWord.ucs4_str(), pPOB->getLength());
+			 m_pApp->suggestWord(pvFreshSuggestions,stMisspelledWord.ucs4_str(), iLength);
 		}
 
 		// update static vars for next call

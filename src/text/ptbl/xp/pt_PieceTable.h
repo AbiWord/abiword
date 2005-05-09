@@ -115,10 +115,11 @@ protected:
 	void                	_realDeleteHdrFtrStrux(pf_Frag_Strux * pfs);
 
 	bool					_realChangeSpanFmt(PTChangeFmt ptc,
-										  PT_DocPosition dpos1,
-										  PT_DocPosition dpos2,
-										  const XML_Char ** attributes,
-										  const XML_Char ** properties);
+											   PT_DocPosition dpos1,
+											   PT_DocPosition dpos2,
+											   const XML_Char ** attributes,
+											   const XML_Char ** properties,
+											   bool bRevisionDelete);
 
 	bool					_realInsertStrux(PT_DocPosition dpos,
 											 PTStruxType pts,
@@ -127,14 +128,17 @@ protected:
 											 pf_Frag_Strux ** ppfs_ret);
 
 	bool					_realChangeStruxFmt(PTChangeFmt ptc,
-										   PT_DocPosition dpos1,
-										   PT_DocPosition dpos2,
-										   const XML_Char ** attributes,
-										   const XML_Char ** properties,
-										   PTStruxType pts);
+												PT_DocPosition dpos1,
+												PT_DocPosition dpos2,
+												const XML_Char ** attributes,
+												const XML_Char ** properties,
+												PTStruxType pts,
+												bool bRevisionDelete);
 
 	bool                    _realChangeStruxForLists(PL_StruxDocHandle sdh,
-												const char * pszParentID);
+													 const char * pszParentID,
+													 bool bRevisionDelete);
+	
     bool                    _realChangeSectionAttsNoUpdate(pf_Frag_Strux * pfStrux, const char * attr, const char * attvalue);
 
 	/******************************************************************
@@ -468,12 +472,15 @@ protected:
 	bool					_fmtChangeStruxWithNotify(PTChangeFmt ptc,
 													  pf_Frag_Strux * pfs,
 													  const XML_Char ** attributes,
-													  const XML_Char ** properties);
+													  const XML_Char ** properties,
+													  bool bRevisionDelete);
+	
 	bool					_fmtChangeStruxWithNotify(PTChangeFmt ptc,
 													  pf_Frag_Strux * pfs,
 													  const XML_Char ** attributes,
 													  const XML_Char ** properties,
-													  bool bDoAll);
+													  bool bDoAll,
+													  bool bRevisionDelete);
 
 	bool					_fmtChangeSpan(pf_Frag_Text * pft, UT_uint32 fragOffset, UT_uint32 length,
 										   PT_AttrPropIndex indexNewAP,
@@ -487,7 +494,9 @@ protected:
 													 const XML_Char ** properties,
 													 pf_Frag_Strux * pfs,
 													 pf_Frag ** ppfNewEnd,
-													 UT_uint32 * pfragOffsetNewEnd);
+													 UT_uint32 * pfragOffsetNewEnd,
+													 bool bRevisionDelete);
+	
 	bool					_fmtChangeObject(pf_Frag_Object * pfo,
 											 PT_AttrPropIndex indexNewAP,
 											 pf_Frag ** ppfNewEnd,
@@ -501,7 +510,8 @@ protected:
 													   const XML_Char ** properties,
 													   pf_Frag_Strux * pfs,
 													   pf_Frag ** ppfNewEnd,
-													   UT_uint32 * pfragOffsetNewEnd);
+													   UT_uint32 * pfragOffsetNewEnd,
+													   bool bRevisionDelete);
 
 	bool					_getStruxFromFrag(pf_Frag * pfStart, pf_Frag_Strux ** ppfs) const;
 	bool					_getStruxFromFragSkip(pf_Frag * pfStart, pf_Frag_Strux ** ppfs) const;

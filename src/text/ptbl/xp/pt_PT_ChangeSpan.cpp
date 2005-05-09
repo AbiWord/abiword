@@ -119,7 +119,7 @@ bool pt_PieceTable::changeSpanFmt(PTChangeFmt ptc,
 
 			PT_DocPosition dposEnd = UT_MIN(dpos2,dpos1 + pf1->getLength());
 
-			if(!_realChangeSpanFmt(PTC_AddFmt, dpos1, dposEnd, ppRevAttrib,NULL))
+			if(!_realChangeSpanFmt(PTC_AddFmt, dpos1, dposEnd, ppRevAttrib,NULL, false))
 				return false;
 
 			dpos1 = dposEnd;
@@ -129,7 +129,7 @@ bool pt_PieceTable::changeSpanFmt(PTChangeFmt ptc,
 	}
 	else
 	{
-		return _realChangeSpanFmt(ptc, dpos1, dpos2, attributes, properties);
+		return _realChangeSpanFmt(ptc, dpos1, dpos2, attributes, properties, false);
 	}
 }
 
@@ -326,14 +326,15 @@ bool pt_PieceTable::_fmtChangeSpan(pf_Frag_Text * pft, UT_uint32 fragOffset, UT_
 }
 
 bool pt_PieceTable::_fmtChangeSpanWithNotify(PTChangeFmt ptc,
-												pf_Frag_Text * pft, UT_uint32 fragOffset,
-												PT_DocPosition dpos,
-												UT_uint32 length,
-												const XML_Char ** attributes,
-												const XML_Char ** properties,
-												pf_Frag_Strux * pfs,
-												pf_Frag ** ppfNewEnd,
-												UT_uint32 * pfragOffsetNewEnd)
+											 pf_Frag_Text * pft, UT_uint32 fragOffset,
+											 PT_DocPosition dpos,
+											 UT_uint32 length,
+											 const XML_Char ** attributes,
+											 const XML_Char ** properties,
+											 pf_Frag_Strux * pfs,
+											 pf_Frag ** ppfNewEnd,
+											 UT_uint32 * pfragOffsetNewEnd,
+											 bool bRevisionDelete)
 {
 	// create a change record for this change and put it in the history.
 
@@ -380,7 +381,7 @@ bool pt_PieceTable::_fmtChangeSpanWithNotify(PTChangeFmt ptc,
 		= new PX_ChangeRecord_SpanChange(PX_ChangeRecord::PXT_ChangeSpan,
 										 dpos, indexOldAP,indexNewAP,
 										 m_varset.getBufIndex(pft->getBufIndex(),fragOffset),
-										 length,blockOffset);
+										 length,blockOffset,bRevisionDelete);
 	UT_return_val_if_fail (pcr,false);
 	bool bResult = _fmtChangeSpan(pft,fragOffset,length,indexNewAP,ppfNewEnd,pfragOffsetNewEnd);
 
@@ -392,10 +393,11 @@ bool pt_PieceTable::_fmtChangeSpanWithNotify(PTChangeFmt ptc,
 }
 
 bool pt_PieceTable::_realChangeSpanFmt(PTChangeFmt ptc,
-									 PT_DocPosition dpos1,
-									 PT_DocPosition dpos2,
-									 const XML_Char ** attributes,
-									 const XML_Char ** properties)
+									   PT_DocPosition dpos1,
+									   PT_DocPosition dpos2,
+									   const XML_Char ** attributes,
+									   const XML_Char ** properties,
+									   bool bRevisionDelete)
 {
 	// apply a span-level formatting change to the given region.
 
@@ -584,7 +586,7 @@ bool pt_PieceTable::_realChangeSpanFmt(PTChangeFmt ptc,
 				bResult	= _fmtChangeSpanWithNotify(ptc,static_cast<pf_Frag_Text *>(pf_First),
 											   fragOffset_First,dpos1,lengthThisStep,
 											   attributes,lProps,
-											   pfsContainer,&pfNewEnd,&fragOffsetNewEnd);
+											   pfsContainer,&pfNewEnd,&fragOffsetNewEnd,bRevisionDelete);
 				UT_return_val_if_fail (bResult,false);
 			}
 			break;
@@ -607,7 +609,7 @@ bool pt_PieceTable::_realChangeSpanFmt(PTChangeFmt ptc,
 				bResult	= _fmtChangeObjectWithNotify(ptc,static_cast<pf_Frag_Object *>(pf_First),
 												 fragOffset_First,dpos1,lengthThisStep,
 												 attributes,lProps,
-												 pfsContainer,&pfNewEnd,&fragOffsetNewEnd);
+												 pfsContainer,&pfNewEnd,&fragOffsetNewEnd,false);
 				UT_return_val_if_fail (bResult,false);
 			}
 			break;

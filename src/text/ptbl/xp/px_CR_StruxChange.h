@@ -48,16 +48,24 @@ public:
 								PT_DocPosition position,
 								PT_AttrPropIndex indexOldAP,
 								PT_AttrPropIndex indexNewAP,
-									PTStruxType pts);
+								PTStruxType pts,
+								bool bRevisionDelete);
+	
 	~PX_ChangeRecord_StruxChange();
 
 	virtual PX_ChangeRecord * reverse(void) const;
 	PT_AttrPropIndex		getOldIndexAP(void) const;
 	PTStruxType             getStruxType(void) const
 		{ return m_pts;}
+
+	bool                    isRevisionDelete() const {return m_bRevisionDelete;}
+
 protected:
 	PT_AttrPropIndex		m_indexOldAP;
 	PTStruxType             m_pts;
+
+	// used in revisions mode to indicate if fmt change record represents deletion
+	bool                    m_bRevisionDelete;
 };
 
 #endif /* PX_CHANGERECORD_STRUXCHANGE_H */

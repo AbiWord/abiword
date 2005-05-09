@@ -49,6 +49,10 @@ virtual	~fl_Squiggles(void);
 										 UT_sint32 iLength);
 	void					textDeleted(UT_sint32 iOffset,
 										UT_sint32 iLength);
+
+	void                    textRevised(UT_sint32 iOffset,
+										UT_sint32 iLength);
+	
 	FL_SQUIGGLE_TYPE        getSquiggleType(void) const
 	  { return m_iSquiggleType;}
 
