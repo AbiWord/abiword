@@ -265,10 +265,10 @@ void fp_EmbedRun::_clearScreen(bool  bFullLineHeightRect )
 	UT_ASSERT(getGraphics()->queryProperties(GR_Graphics::DGP_SCREEN));
 
 	UT_sint32 xoff = 0, yoff = 0;
-
 	// need to clear full height of line, in case we had a selection
 	getLine()->getScreenOffsets(this, xoff, yoff);
 	UT_sint32 iLineHeight = getLine()->getHeight();
+	UT_DEBUGMSG(("Clear screen embed top %d \n",yoff));
 	Fill(getGraphics(),xoff, yoff, getWidth(), iLineHeight);
 	markAsDirty();
 	setCleared();
@@ -338,20 +338,23 @@ void fp_EmbedRun::_draw(dg_DrawArgs* pDA)
 	{
 	  rec.top -= getAscent();
 	}
+	UT_DEBUGMSG(("Draw Embed object top %d \n",rec.top));
 	getEmbedManager()->render(m_iEmbedUID,rec);
 	if(m_bNeedsSnapshot && !getEmbedManager()->isDefault() && getGraphics()->queryProperties(GR_Graphics::DGP_SCREEN)  )
 	{
-	  rec.top -= getAscent();
+	  UT_Rect myrec = rec;
+	  myrec.top -= getAscent();
 	  if(!bIsSelected)
 	  {
-	    getEmbedManager()->makeSnapShot(m_iEmbedUID,rec);
+	    getEmbedManager()->makeSnapShot(m_iEmbedUID,myrec);
 	    m_bNeedsSnapshot = false;
 	  }
 	}
 	if(bIsSelected)
 	{
-	  rec.top -= getAscent();
-	  _drawResizeBox(rec);
+	  UT_Rect myrec = rec;
+	  myrec.top -= getAscent();
+	  _drawResizeBox(myrec);
 	}
 }
 

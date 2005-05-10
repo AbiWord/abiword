@@ -1113,12 +1113,36 @@ void FV_VisualInlineImage::mouseRelease(UT_sint32 x, UT_sint32 y)
 	clearCursor();
 	if(((m_iInlineDragMode != FV_InlineDrag_DRAGGING) && (m_iInlineDragMode != FV_InlineDrag_RESIZE) ) || !m_bFirstDragDone)
 	{
+	     PT_DocPosition pos = m_pView->getDocPositionFromXY(x,y);
+	     fl_BlockLayout * pBlock = m_pView->getBlockAtPosition(pos);
+	     if(pBlock)
+	     {
+		   UT_sint32 x1,x2,y1,y2,iHeight;
+		   bool bEOL = false;
+		   bool bDir = false;
+		
+		   fp_Run * pRun = NULL;
+		   
+		   pRun = pBlock->findPointCoords(pos,bEOL,x1,y1,x2,y2,iHeight,bDir);
+		   while(pRun && ((pRun->getType() != FPRUN_IMAGE) && (pRun->getType() != FPRUN_EMBED)))
+		   {
+			pRun = pRun->getNextRun();
+		   }
+		   if(pRun && ((pRun->getType() == FPRUN_IMAGE) || ((pRun->getType() == FPRUN_EMBED))))
+		   {
+			m_bFirstDragDone = false;
+			return;
+		   }
+		   else
+		   {
 //
 // we didn't actually drag anything. Just release the selection.
 //
-	        cleanUP();
-		m_pView->warpInsPtToXY(x, y,true);
-		return;
+		        cleanUP();
+			m_pView->warpInsPtToXY(x, y,true);
+			return;
+		   }
+	     }
 	}
 	m_bFirstDragDone = false;
 	if(FV_Inline_DragWholeImage == m_iDraggingWhat)

@@ -7551,7 +7551,7 @@ void FV_View::drawSelectionBox(UT_Rect & box, bool drawHandles)
 	UT_sint32 top = box.top;
 	UT_sint32 right = box.left + box.width;
 	UT_sint32 bottom = box.top + box.height;
-
+	UT_DEBUGMSG(("Draw selection box Top %d \n",top));
 	// draw a line around the image
 	pG->setLineProperties(pG->tluD(1.0),
 						  GR_Graphics::JOIN_MITER,
