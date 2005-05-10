@@ -2130,6 +2130,7 @@ GR_Graphics * GR_Win32Graphics::getPrinterGraphics(const char * pPrinterName,
 	// we will use '-' as a shortcut for default printer (the --print command has to have
 	// a parameter)
 	char * pPN = UT_strcmp("-", pPrinterName) == 0 ? NULL : (char *) pPrinterName;
+	const char * pDriver = UT_IsWinNT() ? "WINSPOOL" : NULL;
 	
 	if(!pPN)
 	{
@@ -2139,7 +2140,7 @@ GR_Graphics * GR_Win32Graphics::getPrinterGraphics(const char * pPrinterName,
 
 	_test_and_cleanup(pPN);
 
-	hPDC = CreateDC(NULL, pPN, NULL, NULL);
+	hPDC = CreateDC(pDriver, pPN, NULL, NULL);
 
 	_test_and_cleanup(hPDC);
 	
