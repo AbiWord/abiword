@@ -1344,7 +1344,7 @@ dcl(MENU_STATUSLINE_TOOLS_REVISIONS_FIND_NEXT,"Find next visible revision in the
 dcl(MENU_STATUSLINE_TOOLS_REVISIONS_FIND_PREV,"Find previous visible revision in the document")
 dcl(MENU_STATUSLINE_TOOLS_REVISIONS_COMPARE_DOCUMENTS,"Compare active document to another document")
 dcl(MENU_STATUSLINE_TOOLS_REVISIONS_MERGE_DOCUMENTS,"Merge another document into the active document using revision marks")
-dcl(MENU_STATUSLINE_TOOLS_REVISIONS_NEW_REVISION,"Start revision disctinct from the current one")
+dcl(MENU_STATUSLINE_TOOLS_REVISIONS_NEW_REVISION,"Start revision distinct from the current one")
 dcl(MENU_STATUSLINE_TOOLS_REVISIONS_PURGE,"Remove all revision information from the document")
 dcl(MENU_STATUSLINE_TOOLS_REVISIONS_AUTO,"Retain all document changes")
 dcl(MENU_STATUSLINE_TABLE, "Table")
