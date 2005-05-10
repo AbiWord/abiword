@@ -335,6 +335,9 @@ bool ev_Win32Keyboard::onChar(AV_View * pView,
 		#ifdef  _WIN32KEY_DEBUG
 		UT_DEBUGMSG(("WIN32KEY_DEBUG->onChar return\n"));
 		#endif
+
+		// reset the command flag; see bug 8928
+		m_bWasAnAbiCommand = false;
 		return true;
 	} 
 	
