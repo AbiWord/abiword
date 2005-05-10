@@ -38,7 +38,7 @@ explicit_setlocale (int category, const char * locale)
  * and transparent
  *
  * USAGE:
- * UT_LocaleTransactor (LC_NUMERIC, "C");
+ * UT_LocaleTransactor t(LC_NUMERIC, "C");
  * sprintf();
  * sprintf();
  * return; // <-- old locale gets reset transparently for you at the end of
