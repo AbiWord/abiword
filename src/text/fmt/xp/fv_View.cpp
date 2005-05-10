@@ -8061,6 +8061,7 @@ void FV_View::getTopRulerInfo(PT_DocPosition pos,AP_TopRulerInfo * pInfo)
 				pTInfo->m_iRightSpacing = ( pCur->getRightPos() - pCur->getX()
 											- pCur->getWidth());
 				pInfo->m_vecTableColInfo->addItem(pTInfo);
+				xxx_UT_DEBUGMSG(("TableColInfo RightPos %d LeftPos %d \n", pTInfo->m_iRightCellPos,pTInfo->m_iLeftCellPos));
 				i = pCur->getRightAttach();
 				iCellCount++;
 			}
@@ -8083,11 +8084,11 @@ void FV_View::getTopRulerInfo(PT_DocPosition pos,AP_TopRulerInfo * pInfo)
 			ioff_x += pCon->getX();
 			pCon = static_cast<fp_Container *>(pCon->getContainer());
 		}
-		ioff_x += pTab->getX();
+		xxx_UT_DEBUGMSG(("Initial X %d \n",ioff_x));
 		pCur = pTab->getCellAtRowColumn(0,0);
 		ioff_x += pCur->getLeftPos();
 		pRC = pTab->getNthCol(0);
-		ioff_x -= pRC->spacing/2;
+		xxx_UT_DEBUGMSG(("Tab X %d LeftPos %d Spacing %d \n",pTab->getX(),pCur->getLeftPos(),pRC->spacing));
 		for( i=0;i < numcols;i++)
 		{
 			pCur = pTab->getCellAtRowColumn(0,i);
@@ -8099,14 +8100,16 @@ void FV_View::getTopRulerInfo(PT_DocPosition pos,AP_TopRulerInfo * pInfo)
 				pTInfo->m_pCell = pCur;
 				pTInfo->m_iLeftCellPos = iCum +ioff_x;
 				pTInfo->m_iRightCellPos = iCum + width +ioff_x;
-				pTInfo->m_iRightCellPos -= getGraphics()->tlu(1);
 				pTInfo->m_iLeftSpacing = pRC->spacing/2;
 				pTInfo->m_iRightSpacing = pRC->spacing/2;
 				if(i== (numcols -1))
 				{
-					pTInfo->m_iRightCellPos -= pTab->getBorderWidth()/2;
+					//					pTInfo->m_iRightCellPos -= pTab->getBorderWidth()/2;
+					pTInfo->m_iRightCellPos -= (pTInfo->m_iRightSpacing);
+					xxx_UT_DEBUGMSG(("FullTable RightPos %d Spacing %d \n", pTInfo->m_iRightCellPos,pTInfo->m_iRightSpacing));
 				}
 				pInfo->m_vecFullTable->addItem(pTInfo);
+				xxx_UT_DEBUGMSG(("FullTable RightPos %d LeftPos %d \n", pTInfo->m_iRightCellPos,pTInfo->m_iLeftCellPos));
 			}
 			iCum += width;
 		}
