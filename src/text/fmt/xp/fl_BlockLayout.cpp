@@ -9794,6 +9794,11 @@ fp_Run* fl_BlockLayout::findRunAtOffset(UT_uint32 offset) const
 	return pRunResult;
 }
 
+bool fl_BlockLayout::_canContainPoint() const
+{
+	return isContainedByTOC() == false;
+}
+
 /*!
   Constructor for iterator
   
@@ -10298,3 +10303,4 @@ fl_BlockSpellIterator::_ignoreLastWordCharacter(const UT_UCSChar c) const
         return false;
     }
 }
+
