@@ -1171,6 +1171,29 @@ UT_Error AD_Document::save(void)
 	return e;
 }
 
+bool AD_Document::purgeAllRevisions(AV_View * pView)
+{
+	UT_return_val_if_fail( pView, false );
+	
+	XAP_Frame * pFrame = static_cast<XAP_Frame *> ( pView->getParentData());	
+	UT_return_val_if_fail( pFrame, false );
+	
+	if(pFrame->showMessageBox(XAP_STRING_ID_MSG_NoUndo, 
+							  XAP_Dialog_MessageBox::b_YN, 
+							  XAP_Dialog_MessageBox::a_YES, getFilename())
+	   == XAP_Dialog_MessageBox::a_NO)
+	{
+		return false;
+	}
+	
+	setMarkRevisions(false);
+	bool bRet = acceptAllRevisions();
+	purgeRevisionTable(true);
+	_clearUndo();
+	return bRet;
+}
+
+
 ///////////////////////////////////////////////////
 // AD_VersionData
 //

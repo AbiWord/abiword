@@ -265,6 +265,9 @@ public:
 	virtual bool        rejectAllHigherRevisions(UT_uint32 iLevel) = 0;
 
 	virtual bool        acceptAllRevisions() = 0;
+
+	bool                purgeAllRevisions(AV_View * pView);
+	
 	
 	virtual UT_uint32   getXID() = 0;
 	virtual UT_uint32   getTopXID() const = 0;

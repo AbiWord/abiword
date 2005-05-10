@@ -12740,12 +12740,7 @@ Defun1(purgeAllRevisions)
 	UT_return_val_if_fail(pDoc,false);
 
 	//  turn revisions off
-	pDoc->setMarkRevisions(false);
-	
-	bool bRet = pDoc->acceptAllRevisions();
-	pDoc->purgeRevisionTable(true);
-
-	return bRet;
+	return pDoc->purgeAllRevisions(pView);
 }
 
 Defun1(toggleAutoRevision)

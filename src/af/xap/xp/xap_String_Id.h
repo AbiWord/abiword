@@ -36,6 +36,8 @@ dcl(MSG_HistoryPartRestore4, "To quit the restoration attempt, press Cancel.")
 dcl(MSG_HistoryNoRestore, "AbiWord cannot restore version %d of the document because the version information is missing.")
 dcl(MSG_HistoryConfirmSave, "You have to save changes to document %s before proceeding. Save now?")
 
+dcl(MSG_NoUndo, "This operation cannot be undone. Are you sure you want to proceed?")
+
 /* Default name for new, untitled document */
 dcl(UntitledDocument,			"Untitled%d")
 
