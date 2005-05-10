@@ -5370,7 +5370,7 @@ bool PD_Document::_acceptRejectRevision(bool bReject, UT_uint32 iStart, UT_uint3
 										PP_RevisionAttr &RevAttr, pf_Frag * pf,
 										bool & bDeleted)
 {
-	UT_return_val_if_fail(pf, false);
+	UT_return_val_if_fail(pf && pRev, false);
 	bDeleted = false;
 
 	UT_uint32 iRealDeleteCount;
@@ -5669,7 +5669,7 @@ bool PD_Document::acceptAllRevisions()
 		
 		if(!pRev)
 		{
-			// no revisions
+			// no revisions after pruning ???
 			t += pf->getLength();
 			continue;
 		}
@@ -5888,44 +5888,47 @@ bool PD_Document::acceptRejectRevision(bool bReject, UT_uint32 iPos1,
 /*!
   Clears out the revisions table if no revisions are left in the document
 */
-void PD_Document::purgeRevisionTable()
+void PD_Document::purgeRevisionTable(bool bUnconditional /* = false */)
 {
 	if(getRevisions().getItemCount() == 0)
 		return;
 
-	UT_String sAPI;
-	UT_StringPtrMap hAPI;
-	
-	PD_DocIterator t(*this);
-
-	// work our way thought the document looking for frags with
-	// revisions attributes ...
-	while(t.getStatus() == UTIter_OK)
+	if(!bUnconditional)
 	{
-		const pf_Frag * pf = t.getFrag();
-		UT_return_if_fail(pf);
+		UT_String sAPI;
+		UT_StringPtrMap hAPI;
+	
+		PD_DocIterator t(*this);
 
-		PT_AttrPropIndex api = pf->getIndexAP();
-
-		UT_String_sprintf(sAPI, "%08x", api);
-
-		if(!hAPI.contains(sAPI, NULL))
+		// work our way thought the document looking for frags with
+		// revisions attributes ...
+		while(t.getStatus() == UTIter_OK)
 		{
-			const PP_AttrProp * pAP;
-			UT_return_if_fail(getAttrProp(api, &pAP));
-			UT_return_if_fail(pAP);
+			const pf_Frag * pf = t.getFrag();
+			UT_return_if_fail(pf);
 
-			const XML_Char * pVal;
+			PT_AttrPropIndex api = pf->getIndexAP();
 
-			if(pAP->getAttribute(PT_REVISION_ATTRIBUTE_NAME, pVal))
-				return;
+			UT_String_sprintf(sAPI, "%08x", api);
 
-			// cache this api so we do not need to do this again if we
-			// come across it
-			hAPI.insert(sAPI,NULL);
+			if(!hAPI.contains(sAPI, NULL))
+			{
+				const PP_AttrProp * pAP;
+				UT_return_if_fail(getAttrProp(api, &pAP));
+				UT_return_if_fail(pAP);
+
+				const XML_Char * pVal;
+
+				if(pAP->getAttribute(PT_REVISION_ATTRIBUTE_NAME, pVal))
+					return;
+
+				// cache this api so we do not need to do this again if we
+				// come across it
+				hAPI.insert(sAPI,NULL);
+			}
+
+			t += pf->getLength();
 		}
-
-		t += pf->getLength();
 	}
 	
 

@@ -526,8 +526,12 @@ void PP_RevisionAttr::pruneForCumulativeResult(PD_Document * pDoc)
 	{
 		PP_Revision * r = (PP_Revision *)m_vRev.getNthItem(i);
 		
-		if(r->getType() == PP_REVISION_DELETION)
+		if(!bDelete && r->getType() == PP_REVISION_DELETION)
+		{
 			bDelete = true;
+			continue; // we do not want the top revision deleted
+		}
+		
 
 		if(bDelete)
 		{

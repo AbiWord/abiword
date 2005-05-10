@@ -29,7 +29,7 @@
 AP_Dialog_MarkRevisions::AP_Dialog_MarkRevisions(XAP_DialogFactory * pDlgFactory,
 					   XAP_Dialog_Id id)
   : XAP_Dialog_NonPersistent(pDlgFactory,id, "interface/dialogmarkrevisions"), m_answer(a_CANCEL),
-		m_pDoc(NULL), m_pComment2(NULL),m_pRev(NULL)
+		m_pDoc(NULL), m_pComment2(NULL),m_pRev(NULL),m_bForceNew(false)
 {
 	m_pSS = XAP_App::getApp()->getStringSet();
 }
@@ -70,7 +70,7 @@ char * AP_Dialog_MarkRevisions::getRadio1Label()
 {
 	_initRevision();
 
-	if(!m_pRev)
+	if(!m_pRev || m_bForceNew)
 		return NULL;
 
 	UT_return_val_if_fail(m_pSS,NULL);
@@ -95,7 +95,7 @@ char * AP_Dialog_MarkRevisions::getComment1()
 {
 	_initRevision();
 
-	if(!m_pRev)
+	if(!m_pRev || m_bForceNew)
 		return NULL;
 
 	bool bFree = false;

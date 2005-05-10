@@ -679,7 +679,9 @@ public:
 	static EV_EditMethod_Fn toggleShowRevisionsAfterPrevious;
 	static EV_EditMethod_Fn revisionCompareDocuments;
 	static EV_EditMethod_Fn revisionMergeDocuments;
-
+	static EV_EditMethod_Fn purgeAllRevisions;
+	static EV_EditMethod_Fn startNewRevision;
+	
 	static EV_EditMethod_Fn sortColsAscend;
 	static EV_EditMethod_Fn sortColsDescend;
 	static EV_EditMethod_Fn sortRowsAscend;
@@ -1053,6 +1055,7 @@ static EV_EditMethod s_arrayEditMethods[] =
 	EV_EditMethod(NF(printDirectly), 0, ""),
 	EV_EditMethod(NF(printPreview), 0, ""),
 	EV_EditMethod(NF(printTB),				0,	""),
+	EV_EditMethod(NF(purgeAllRevisions),	0,	""),
 
 	// q
 	EV_EditMethod(NF(querySaveAndExit), 	_A_,	""),
@@ -1129,6 +1132,7 @@ static EV_EditMethod s_arrayEditMethods[] =
 	EV_EditMethod(NF(spellSuggest_8),		0,	""),
 	EV_EditMethod(NF(spellSuggest_9),		0,	""),
 	EV_EditMethod(NF(splitCells),           0,  ""),
+	EV_EditMethod(NF(startNewRevision),     0,  ""),
 	EV_EditMethod(NF(style),				_D_,""),
 
 	// t
@@ -12676,7 +12680,8 @@ Defun(hyperlinkStatusBar)
 	return true;
 }
 
-static bool s_doMarkRevisions(XAP_Frame * pFrame, PD_Document * pDoc, FV_View * pView)
+static bool s_doMarkRevisions(XAP_Frame * pFrame, PD_Document * pDoc, FV_View * pView,
+							  bool bToggleMark, bool bForceNew)
 {
 	UT_return_val_if_fail(pFrame, false);
 
@@ -12689,10 +12694,14 @@ static bool s_doMarkRevisions(XAP_Frame * pFrame, PD_Document * pDoc, FV_View * 
 		= static_cast<AP_Dialog_MarkRevisions *>(pDialogFactory->requestDialog(AP_DIALOG_ID_MARK_REVISIONS));
 UT_return_val_if_fail(pDialog, false);
 	pDialog->setDocument(pDoc);
+
+	if(bForceNew)
+		pDialog->forceNew();
+	
 	pDialog->runModal(pFrame);
 	bool bOK = (pDialog->getAnswer() == AP_Dialog_MarkRevisions::a_OK);
 
-	if (!bOK)
+	if (!bOK && bToggleMark)
 	{
 		// we have already turned this on, so turn it off again
 		pView->toggleMarkRevisions();
@@ -12700,21 +12709,43 @@ UT_return_val_if_fail(pDialog, false);
 	else
 	{
 		pDialog->addRevision();
+#if 0
+		// cannot remember at all why I thought this was needed and it has been marked as
+		// bug 7700, so I am going to disable this. Tomas, May 10, 2005
+		
 		// we also want to have paragraph marks and etc visible
 		AP_FrameData *pFrameData = static_cast<AP_FrameData *>(pFrame->getFrameData());
-	UT_return_val_if_fail(pFrameData, false);
+		UT_return_val_if_fail(pFrameData, false);
 		if(!pFrameData->m_bShowPara)
 		{
 			pFrameData->m_bShowPara = true;
 			pView->setShowPara(true);
 			pView->notifyListeners(AV_CHG_FRAMEDATA);	// to update toolbar
 		}
+#endif
 	}
 
 
 	pDialogFactory->releaseDialog(pDialog);
 
 	return bOK;
+}
+
+Defun1(purgeAllRevisions)
+{
+	CHECK_FRAME;
+	ABIWORD_VIEW;
+
+	PD_Document * pDoc = pView->getDocument();
+	UT_return_val_if_fail(pDoc,false);
+
+	//  turn revisions off
+	pDoc->setMarkRevisions(false);
+	
+	bool bRet = pDoc->acceptAllRevisions();
+	pDoc->purgeRevisionTable(true);
+
+	return bRet;
 }
 
 Defun1(toggleAutoRevision)
@@ -12775,9 +12806,30 @@ Defun1(toggleMarkRevisions)
 	{
 		PD_Document * pDoc = pView->getDocument();
 		XAP_Frame * pFrame = static_cast<XAP_Frame *> ( pAV_View->getParentData());
-		s_doMarkRevisions(pFrame, pDoc, pView);
+		UT_return_val_if_fail( pFrame && pDoc, false );
+		
+		s_doMarkRevisions(pFrame, pDoc, pView, true, false);
 	}
 
+	return true;
+}
+
+Defun1(startNewRevision)
+{
+	CHECK_FRAME;
+	ABIWORD_VIEW;
+
+	if(!pView->isMarkRevisions())
+	{
+		// only do this when marking revisions is on
+		return false;
+	}
+
+	PD_Document * pDoc = pView->getDocument();
+	XAP_Frame * pFrame = static_cast<XAP_Frame *> ( pAV_View->getParentData());
+	UT_return_val_if_fail( pDoc && pFrame, false );
+	
+	s_doMarkRevisions(pFrame, pDoc, pView, false, true);
 	return true;
 }
 
@@ -13701,12 +13753,14 @@ Defun(repeatThisRow)
 {
 	CHECK_FRAME;
 	ABIWORD_VIEW;
+	return true;
 }
 
 Defun(removeThisRowRepeat)
 {
 	CHECK_FRAME;
 	ABIWORD_VIEW;
+	return true;
 }
 
 Defun(tableToTextCommas)
@@ -13714,6 +13768,7 @@ Defun(tableToTextCommas)
 	CHECK_FRAME;
 	ABIWORD_VIEW;
 	pView->cmdTableToText(pView->getPoint(),0);
+	return true;
 }
 
 
@@ -13722,6 +13777,7 @@ Defun(tableToTextTabs)
 	CHECK_FRAME;
 	ABIWORD_VIEW;
 	pView->cmdTableToText(pView->getPoint(),1);
+	return true;
 }
 
 Defun(tableToTextCommasTabs)
@@ -13729,6 +13785,7 @@ Defun(tableToTextCommasTabs)
 	CHECK_FRAME;
 	ABIWORD_VIEW;
 	pView->cmdTableToText(pView->getPoint(),2);
+	return true;
 }
 
 Defun(doEscape)

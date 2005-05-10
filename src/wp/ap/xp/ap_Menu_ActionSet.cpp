@@ -236,7 +236,8 @@ EV_Menu_ActionSet * AP_CreateMenuActionSet(void)
 	_s(AP_MENU_ID_TOOLS_SCRIPTS,	0,1,0,0,	"scriptPlay", ap_GetState_ScriptsActive, NULL);
 	_s(AP_MENU_ID_TOOLS_MAILMERGE,	0,1,0,0,	"mailMerge", ap_GetState_MailMerge, NULL);
 	_s(AP_MENU_ID_TOOLS_REVISIONS,  1,0,0,0,  NULL,               NULL,                   NULL);
-	_s(AP_MENU_ID_TOOLS_REVISIONS_MARK, 0,0,1,0, "toggleMarkRevisions", ap_GetState_MarkRevisions,NULL);
+	_s(AP_MENU_ID_TOOLS_REVISIONS_MARK, 0,0,1,0, "toggleMarkRevisions", ap_GetState_MarkRevisionsCheck,NULL);
+	_s(AP_MENU_ID_TOOLS_REVISIONS_NEW_REVISION, 0,0,0,0, "startNewRevision", ap_GetState_MarkRevisions,NULL);
 	_s(AP_MENU_ID_TOOLS_REVISIONS_SHOW, 0,0,1,0, "toggleShowRevisions", ap_GetState_ShowRevisions,NULL);
 	_s(AP_MENU_ID_TOOLS_REVISIONS_SHOW_AFTERPREV, 0,0,1,0, "toggleShowRevisionsAfterPrevious", ap_GetState_ShowRevisionsAfterPrev,NULL);
 	_s(AP_MENU_ID_TOOLS_REVISIONS_SHOW_AFTER, 0,0,1,0, "toggleShowRevisionsAfter", ap_GetState_ShowRevisionsAfter,NULL);
@@ -244,6 +245,7 @@ EV_Menu_ActionSet * AP_CreateMenuActionSet(void)
 	
 	_s(AP_MENU_ID_TOOLS_REVISIONS_ACCEPT_REVISION, 0,0,0,0, "revisionAccept", ap_GetState_RevisionPresent,NULL);
 	_s(AP_MENU_ID_TOOLS_REVISIONS_REJECT_REVISION, 0,0,0,0, "revisionReject", ap_GetState_RevisionPresent,NULL);
+	_s(AP_MENU_ID_TOOLS_REVISIONS_PURGE, 0,0,0,0, "purgeAllRevisions", ap_GetState_HasRevisions,NULL);
 	_s(AP_MENU_ID_TOOLS_REVISIONS_COMPARE_DOCUMENTS, 0,1,0,0, "revisionCompareDocuments",NULL,NULL);
 	_s(AP_MENU_ID_TOOLS_REVISIONS_MERGE_DOCUMENTS, 0,1,0,0, "revisionMergeDocuments",NULL,NULL);
 	_s(AP_MENU_ID_TOOLS_REVISIONS_AUTO, 0,0,1,0, "toggleAutoRevision",ap_GetState_AutoRevision,NULL);
@@ -305,6 +307,7 @@ EV_Menu_ActionSet * AP_CreateMenuActionSet(void)
 	_s(AP_MENU_ID_TOOLS_REVISIONS_SET_VIEW_LEVEL, 0,1,0,0, "revisionSetViewLevel", ap_GetState_RevisionsSelectLevel, NULL);
 	_s(AP_MENU_ID_TOOLS_HISTORY,  1,0,0,0,  NULL,               NULL,                   NULL);
 	_s(AP_MENU_ID_TOOLS_HISTORY_SHOW, 0,1,0,0, "history", ap_GetState_History, NULL);
+	_s(AP_MENU_ID_TOOLS_HISTORY_PURGE, 0,0,0,0, "purgeAllRevisions", ap_GetState_History, NULL);
 
 	_s(AP_MENU_ID_WINDOW,			1,0,0,0,	NULL,				NULL,					NULL);
 	_s(AP_MENU_ID_WINDOW_NEW,		0,0,0,0,	"newWindow",		NULL,					NULL);

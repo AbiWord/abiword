@@ -41,6 +41,7 @@ public:
 	void          setAnswer(tAnswer a);
 
 	void          setDocument(PD_Document * pDoc) {m_pDoc = pDoc;}
+	void          forceNew() {m_bForceNew = true;}
 
 	const char *        getTitle();
 	const char *        getRadio2Label();
@@ -67,6 +68,7 @@ private:
 	UT_UCS4Char *                       m_pComment2;
 	const XAP_StringSet *               m_pSS;
 	const AD_Revision *                 m_pRev;
+	bool                                m_bForceNew;
 };
 
 #endif /* AP_DIALOG_MARKREVISIONS_H */

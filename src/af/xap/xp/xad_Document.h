@@ -255,7 +255,7 @@ public:
 	bool                isAutoRevisioning()const {return m_bAutoRevisioning;}
 	virtual void        setAutoRevisioning(bool autorev);
 	
-	virtual void        purgeRevisionTable() = 0;
+	virtual void        purgeRevisionTable(bool bUnconditional = false) = 0;
 
 	virtual bool        acceptRejectRevision(bool bReject,
 											 UT_uint32 iStart,

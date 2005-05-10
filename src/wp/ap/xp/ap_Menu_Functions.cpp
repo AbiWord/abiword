@@ -1249,7 +1249,7 @@ Defun_EV_GetMenuItemState_Fn(ap_GetState_History)
     return EV_MIS_ZERO;
 }
 
-Defun_EV_GetMenuItemState_Fn(ap_GetState_MarkRevisions)
+Defun_EV_GetMenuItemState_Fn(ap_GetState_MarkRevisionsCheck)
 {
 	ABIWORD_VIEW;
 	UT_return_val_if_fail (pView, EV_MIS_Gray);
@@ -1265,6 +1265,24 @@ Defun_EV_GetMenuItemState_Fn(ap_GetState_MarkRevisions)
 	}
 
     return EV_MIS_ZERO;
+}
+
+Defun_EV_GetMenuItemState_Fn(ap_GetState_MarkRevisions)
+{
+	ABIWORD_VIEW;
+	UT_return_val_if_fail (pView, EV_MIS_Gray);
+
+	if(pView->getDocument()->isAutoRevisioning())
+	{
+		return EV_MIS_Gray;
+	}
+
+	if(pView->isMarkRevisions())
+	{
+		return EV_MIS_ZERO;
+	}
+
+    return EV_MIS_Gray;
 }
 
 Defun_EV_GetMenuItemState_Fn(ap_GetState_RevisionsSelectLevel)
