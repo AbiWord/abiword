@@ -7040,7 +7040,7 @@ bool fl_BlockLayout::doclistener_insertSection(const PX_ChangeRecord_Strux * pcr
 		  UT_DEBUGMSG(("new id: tell plam if you see this message\n"));
 //		  UT_ASSERT(0);
 			fl_DocSectionLayout* pDocSL = m_pLayout->findSectionForHdrFtr(static_cast<const char*>(pszNewID));
-			UT_ASSERT(pDocSL);
+			UT_return_val_if_fail( pDocSL, false );
 //
 // Determine if this is a header or a footer.
 //
@@ -10621,7 +10621,7 @@ fl_BlockSpellIterator::nextWordForSpellChecking(const UT_UCSChar*& pWord, UT_sin
 					{
 						for(UT_uint32 j = st->iStart; j < st->iEnd; ++j)
 						{
-							if(m_iWordOffset + iWordLength == j)
+							if(m_iWordOffset + iWordLength == (UT_sint32)j)
 							{
 								// we are done (past the last char of the word)
 								break;
