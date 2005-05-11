@@ -699,61 +699,73 @@ void GR_CocoaGraphics::drawChars(const UT_UCSChar* pChars, int iCharOffset,
 		if (iLength) {
 			unichar * cBuf = (unichar *) malloc((iLength + 1) * sizeof(unichar));
 			if (cBuf) {
+				bool knownDir = false;
 				bool rtl = false;
 				int i;
 				for (i = 0; i < iLength; i++) {
-					if (UT_BIDI_IS_RTL(UT_bidiGetCharType(begin[i]))) {
-						rtl = true;
+					if (!knownDir) {
+						UT_BidiCharType charType = UT_bidiGetCharType(begin[i]);
+						if (UT_BIDI_IS_STRONG(charType)) {
+							rtl = UT_BIDI_IS_RTL(charType);
+							knownDir = true;
+							NSLog(@"direction is %d (1 == RTL %x)) set at idx %d with chartype = %x, char %x", rtl, 
+							                           UT_BIDI_RTL, i, charType, begin[i]); 
+						}
 					}
 					cBuf[i] = (unichar) (m_pFont ? m_pFont->remapChar(begin[i]) : begin[i]);
 				}
 				cBuf[iLength] = 0;
 
-				if (!rtl || (iLength > countTrailingNeutral)) {
-					float x = rtl ? (xoff + widthWhiteSpace + widthTrailingNeutral) : xoff;
-					int len = (rtl ? (iLength - countTrailingNeutral) : iLength);
-					int rangeLength = 0;
-					int rangeBegin = 0;
-					int j;
-					float currentRunLen = 0;
-					//NSLog (@"start at x = %d", TDUX(x));
-					for (j = 0; j < len; j++) {
-						if (UT_UCS4_isspace(cBuf[j])) {
-							if (rangeLength > 0) {
-								//NSLog (@"x = %d, currentRunLen = %d", TDUX(x), TDUX(currentRunLen));
-								_realDrawChars(cBuf + rangeBegin, iLength - rangeBegin, m_fontProps, TDUX(x),
-											   yoff, 0, rangeLength);
+				if(!knownDir) {
+					NSLog(@"direction is UNKNOWN");
+				}
+
+				float x = xoff;
+				int len = iLength;
+				int rangeLength = 0;
+				int rangeBegin = 0;
+				int j;
+				float currentRunLen = 0;
+				NSLog (@"start at x = %d", TDUX(x));
+				for (j = 0; j < len; j++) {
+					if (UT_UCS4_isspace(cBuf[j])) {
+						if (rangeLength > 0) {
+							NSLog (@"x = %d, currentRunLen = %d", TDUX(x), TDUX(currentRunLen));
+							_realDrawChars(cBuf + rangeBegin, iLength - rangeBegin, m_fontProps, TDUX(x),
+										   yoff, 0, rangeLength);
+							// from here currentRunLen is signed... so just add it
+							if (!rtl) {
 								x += currentRunLen;
 							}
-							if (j < len - 1) {
-								x += pCharWidths[iCharOffset+j];
-								//NSLog (@"moved to (space) x = %d", TDUX(x));
+							NSLog(@"x is now %d", TDUX(x));
+						}
+						if (j < len - 1) {
+							if (rtl) {
+								x -= pCharWidths[iCharOffset+j];
 							}
-							rangeBegin = j + 1;
-							rangeLength = 0;
-							currentRunLen = 0;
+							else{
+								x += pCharWidths[iCharOffset+j];
+							}
+							NSLog (@"moved to (space) x = %d charwidth was %d", TDUX(x), TDUX(pCharWidths[iCharOffset+j]));
+						}
+						rangeBegin = j + 1;
+						rangeLength = 0;
+						currentRunLen = 0;
+					}
+					else {
+						rangeLength++;
+						if (rtl) {
+							currentRunLen -= pCharWidths[iCharOffset+j];
 						}
 						else {
-							rangeLength++;
 							currentRunLen += pCharWidths[iCharOffset+j];
 						}
 					}
-					if (rangeLength > 0) {
-						_realDrawChars(cBuf + rangeBegin, iLength - rangeBegin, m_fontProps, TDUX(x),
-									   yoff, 0, rangeLength);
-					}
 				}
-				if (rtl && countTrailingNeutral) {
-					UT_ASSERT(UT_NOT_IMPLEMENTED);
-					for (int i = 0; i < countTrailingNeutral; i++) {
-						cBuf[i] = (unichar) (m_pFont ? m_pFont->remapChar(begin[iLength-i-1]) : begin[iLength-i-1]);
-					}
-					cBuf[countTrailingNeutral] = 0;
-
-					_realDrawChars(cBuf, countTrailingNeutral, m_fontProps, TDUX(xoff + widthWhiteSpace), yoff,
-								   0, countTrailingNeutral);
+				if (rangeLength > 0) {
+					_realDrawChars(cBuf + rangeBegin, iLength - rangeBegin, m_fontProps, TDUX(x),
+								   yoff, 0, rangeLength);
 				}
-				free(cBuf);
 			}
 		}
 	}
@@ -790,6 +802,7 @@ void GR_CocoaGraphics::_initMetricsLayouts(void)
 
 	m_fontMetricsLayoutManager = [[NSLayoutManager alloc] init];
 	[m_fontMetricsTextStorage addLayoutManager:m_fontMetricsLayoutManager];
+	[m_fontMetricsLayoutManager setTypesetterBehavior:NSTypesetterBehavior_10_2];
 
 	m_fontMetricsTextContainer = [[NSTextContainer alloc] initWithContainerSize:NSMakeSize(10000, 1000)];
 	[m_fontMetricsTextContainer setLineFragmentPadding:0];
