@@ -598,6 +598,28 @@ void GR_CocoaGraphics::_setLineStyle (LineStyle inLineStyle, CGContextRef * cont
 	}
 }
 
+void GR_CocoaGraphics::_realDrawChars(const unichar* cBuf, int len, NSDictionary *fontProps, 
+									  float x, float y, int begin, int rangelen)
+{
+	NSString *string;
+	string = [[NSString alloc] initWithCharacters:cBuf length:len];
+	if (string) {
+		NSLog (@"drawChar(%@) x = %f, y = %f (%d,%d)", string, x, y, begin, rangelen);
+		NSAttributedString * attributedString = [[NSAttributedString alloc] initWithString:string 
+												 attributes:fontProps];
+		if (attributedString) {
+			[m_fontMetricsTextStorage setAttributedString:attributedString];
+			[attributedString release];
+		}
+		[string release];
+		
+		NSPoint point = NSMakePoint(x, y);
+		
+		[m_fontMetricsLayoutManager drawGlyphsForGlyphRange:NSMakeRange(begin, rangelen) atPoint:point];
+	}
+}
+
+
 void GR_CocoaGraphics::drawChars(const UT_UCSChar* pChars, int iCharOffset,
 								 int iLength, UT_sint32 xoffLU, UT_sint32 yoffLU,
 								 int * pCharWidths)
@@ -606,8 +628,6 @@ void GR_CocoaGraphics::drawChars(const UT_UCSChar* pChars, int iCharOffset,
 	UT_sint32 yoff = _tduY(yoffLU); // - m_pFont->getDescent();
 	UT_sint32 xoff = xoffLU;	// layout Unit !
 
-	NSString * string = nil;
-
     if (!m_fontMetricsTextStorage) {
 		_initMetricsLayouts();
     }
@@ -615,23 +635,31 @@ void GR_CocoaGraphics::drawChars(const UT_UCSChar* pChars, int iCharOffset,
 	::CGContextSetShouldAntialias (m_CGContext, true);
 
 	if (!pCharWidths) {
-		NSPoint point = NSMakePoint (TDUX(xoff), yoff);
+		/*
+		  We don't have char widths because we don't care. Just draw the text.
+		  CAUTION BiDi is handled by Cocoa in that case.
+		 */
 		unichar * uniString = (unichar*)malloc((iLength + 1) * sizeof (unichar));
 		for (int i = 0; i < iLength; i++) {
 			uniString[i] = m_pFont ? m_pFont->remapChar(pChars[i + iCharOffset]) : pChars[i + iCharOffset];
 		}
-		string =  [[NSString alloc] initWithCharacters:uniString length:iLength];
-		NSAttributedString* attributedString = [[NSAttributedString alloc] initWithString:string attributes:m_fontProps];
-		[m_fontMetricsTextStorage setAttributedString:attributedString];
-		[string release];
-		[attributedString release];
-		FREEP(uniString);
-
 		LOCK_CONTEXT__;
-		[m_fontMetricsLayoutManager drawGlyphsForGlyphRange:NSMakeRange(0, iLength) atPoint:point];
+		_realDrawChars(uniString, iLength, m_fontProps, TDUX(xoff), yoff, 0, iLength);
+		FREEP(uniString);
 	}
 	else {
 		LOCK_CONTEXT__;
+
+		/*
+		  Here we have charWidth. that means WE HAVE TO USE THEM
+		  Changes in revision 1.78 BROKE THAT.
+
+		  That said, we should be done is that we must split the text run into words 
+		  and draw run by run, cumulating the xoff with the char width.
+
+		  Given the implication, a word is defined by either a blank (see UT_UCS4_isspace())
+		  or a change of direction. -- Hub
+		 */
 
 		const UT_UCSChar * begin = pChars + iCharOffset;
 		const UT_UCSChar * end = begin + iLength;
@@ -641,10 +669,12 @@ void GR_CocoaGraphics::drawChars(const UT_UCSChar* pChars, int iCharOffset,
 		UT_sint32 widthWhiteSpace = 0;
 
 		while (end > begin) {
-			if (!UT_UCS4_isspace(*(end - 1)))
+			if (!UT_UCS4_isspace(*(end - 1))) {
 				break;
+			}
 			--end;
-			widthWhiteSpace += *--endWidth;
+			--endWidth;
+			widthWhiteSpace += *endWidth;
 		}
 		iLength = end - begin;
 
@@ -657,17 +687,21 @@ void GR_CocoaGraphics::drawChars(const UT_UCSChar* pChars, int iCharOffset,
 
 		while (end > begin) {
 			unichar uc = (unichar) (*(end - 1));
-			if ([punctuation characterIsMember:uc] == NO)
+			if ([punctuation characterIsMember:uc] == NO) {
 				break;
+			}
 			--end;
-			widthTrailingNeutral += *--endWidth;
+			--endWidth;
+			widthTrailingNeutral += *endWidth;
 			countTrailingNeutral++;
 		}
 
-		if (iLength)
-			if (unichar * cBuf = (unichar *) malloc((iLength + 1) * sizeof(unichar))) {
+		if (iLength) {
+			unichar * cBuf = (unichar *) malloc((iLength + 1) * sizeof(unichar));
+			if (cBuf) {
 				bool rtl = false;
-				for (int i = 0; i < iLength; i++) {
+				int i;
+				for (i = 0; i < iLength; i++) {
 					if (UT_BIDI_IS_RTL(UT_bidiGetCharType(begin[i]))) {
 						rtl = true;
 					}
@@ -675,38 +709,53 @@ void GR_CocoaGraphics::drawChars(const UT_UCSChar* pChars, int iCharOffset,
 				}
 				cBuf[iLength] = 0;
 
-				if (!rtl || (iLength > countTrailingNeutral))
-					if (string = [[NSString alloc] initWithCharacters:cBuf length:(rtl ? (iLength - countTrailingNeutral) : iLength)]) {
-						if (NSAttributedString * attributedString = [[NSAttributedString alloc] initWithString:string attributes:m_fontProps]) {
-							[m_fontMetricsTextStorage setAttributedString:attributedString];
-							[attributedString release];
+				if (!rtl || (iLength > countTrailingNeutral)) {
+					float x = rtl ? (xoff + widthWhiteSpace + widthTrailingNeutral) : xoff;
+					int len = (rtl ? (iLength - countTrailingNeutral) : iLength);
+					int rangeLength = 0;
+					int rangeBegin = 0;
+					int j;
+					float currentRunLen = 0;
+					//NSLog (@"start at x = %d", TDUX(x));
+					for (j = 0; j < len; j++) {
+						if (UT_UCS4_isspace(cBuf[j])) {
+							if (rangeLength > 0) {
+								//NSLog (@"x = %d, currentRunLen = %d", TDUX(x), TDUX(currentRunLen));
+								_realDrawChars(cBuf + rangeBegin, iLength - rangeBegin, m_fontProps, TDUX(x),
+											   yoff, 0, rangeLength);
+								x += currentRunLen;
+							}
+							if (j < len - 1) {
+								x += pCharWidths[iCharOffset+j];
+								//NSLog (@"moved to (space) x = %d", TDUX(x));
+							}
+							rangeBegin = j + 1;
+							rangeLength = 0;
+							currentRunLen = 0;
 						}
-						[string release];
-
-						NSPoint point = NSMakePoint(TDUX(rtl ? (xoff + widthWhiteSpace + widthTrailingNeutral) : xoff), yoff);
-		
-						[m_fontMetricsLayoutManager drawGlyphsForGlyphRange:NSMakeRange(0, (rtl ? (iLength - countTrailingNeutral) : iLength)) atPoint:point];
+						else {
+							rangeLength++;
+							currentRunLen += pCharWidths[iCharOffset+j];
+						}
 					}
+					if (rangeLength > 0) {
+						_realDrawChars(cBuf + rangeBegin, iLength - rangeBegin, m_fontProps, TDUX(x),
+									   yoff, 0, rangeLength);
+					}
+				}
 				if (rtl && countTrailingNeutral) {
+					UT_ASSERT(UT_NOT_IMPLEMENTED);
 					for (int i = 0; i < countTrailingNeutral; i++) {
 						cBuf[i] = (unichar) (m_pFont ? m_pFont->remapChar(begin[iLength-i-1]) : begin[iLength-i-1]);
 					}
 					cBuf[countTrailingNeutral] = 0;
 
-					if (string = [[NSString alloc] initWithCharacters:cBuf length:countTrailingNeutral]) {
-						if (NSAttributedString * attributedString = [[NSAttributedString alloc] initWithString:string attributes:m_fontProps]) {
-							[m_fontMetricsTextStorage setAttributedString:attributedString];
-							[attributedString release];
-						}
-						[string release];
-
-						NSPoint point = NSMakePoint(TDUX(xoff + widthWhiteSpace), yoff);
-		
-						[m_fontMetricsLayoutManager drawGlyphsForGlyphRange:NSMakeRange(0, countTrailingNeutral) atPoint:point];
-					}
+					_realDrawChars(cBuf, countTrailingNeutral, m_fontProps, TDUX(xoff + widthWhiteSpace), yoff,
+								   0, countTrailingNeutral);
 				}
 				free(cBuf);
 			}
+		}
 	}
 	::CGContextSetShouldAntialias (m_CGContext, false);
 }

@@ -268,6 +268,22 @@ private:
 	void _setLineStyle (LineStyle inLineStyle, CGContextRef * context = 0);
 	void _restartPaint(void);
 	//
+	/*!
+	  Wrapper to draw the char.
+
+	  \param cBuf the unichar buffer for the string
+	  \param len the length of the buffer
+	  \param fontProps the properties for the NSAttributedString
+	  \param x X position
+	  \param y Y position
+	  \param begin the start of the range to draw
+	  \param rangelen the length of the range
+
+	  \note the NSView must be focused prior this call
+	 */
+	void _realDrawChars(const unichar* cBuf, int len, NSDictionary *fontProps, 
+						float x, float y, int begin, int rangelen);
+	//
 	StNSViewLocker* m_viewLocker;
 	//private font metrics objects
 	NSTextStorage *m_fontMetricsTextStorage;
