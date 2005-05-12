@@ -104,9 +104,12 @@ static void s_dialog_response(GtkWidget * /* widget */,
 	}
 }
 
-static void s_delete_clicked(GtkWidget * /* widget*/, gpointer /* data */, XAP_Dialog_FileOpenSaveAs::tAnswer * answer)
+static void s_delete_clicked(GtkWidget 	*widget, 
+							 GdkEvent 	*event, 
+							 gpointer 	 data)
 {
-	*answer = XAP_Dialog_FileOpenSaveAs::a_CANCEL;
+	XAP_UnixDialog_FileOpenSaveAs *dlg = static_cast<XAP_UnixDialog_FileOpenSaveAs *>(data);
+	dlg->onDeleteCancel();
 	gtk_main_quit();
 }
 
@@ -462,6 +465,15 @@ void XAP_UnixDialog_FileOpenSaveAs::fileTypeChanged(GtkWidget * w)
 	}
 }
 
+void XAP_UnixDialog_FileOpenSaveAs::onDeleteCancel() 
+{
+	if (GTK_HAS_GRAB) {
+		gtk_grab_remove (GTK_WIDGET (m_FC));
+	}
+	m_FC = NULL;
+	m_answer = a_CANCEL;
+}
+
 /*****************************************************************/
 
 void XAP_UnixDialog_FileOpenSaveAs::runModal(XAP_Frame * pFrame)
@@ -690,9 +702,9 @@ void XAP_UnixDialog_FileOpenSaveAs::runModal(XAP_Frame * pFrame)
 	
 	// connect the signals for OK and CANCEL and the requisite clean-close signals
 	g_signal_connect(G_OBJECT(m_FC),
-							 "delete_event",
+							 "delete-event",
 							 G_CALLBACK(s_delete_clicked),
-							 &m_answer);
+							 this);
 
 	g_signal_connect(G_OBJECT(m_FC),
 			    "key_press_event",
@@ -786,9 +798,12 @@ void XAP_UnixDialog_FileOpenSaveAs::runModal(XAP_Frame * pFrame)
 		m_nFileType = GPOINTER_TO_INT(g_object_get_data(G_OBJECT(activeItem), "user_data"));
 	}
 
-	gtk_grab_remove (GTK_WIDGET(m_FC));
-	gtk_widget_destroy (GTK_WIDGET(m_FC));
-	FREEP(szPersistDirectory);
+	if (m_FC != NULL) {
+		gtk_grab_remove (GTK_WIDGET(m_FC));
+		gtk_widget_destroy (GTK_WIDGET(m_FC));
+		m_FC = NULL;
+		FREEP(szPersistDirectory);
+	}
 
 	return;
 }

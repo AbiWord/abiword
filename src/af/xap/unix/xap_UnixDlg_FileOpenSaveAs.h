@@ -41,7 +41,8 @@ public:
 	static XAP_Dialog *		static_constructor(XAP_DialogFactory *, XAP_Dialog_Id id);
 	gint previewPicture (void);
 
-	void                    fileTypeChanged(GtkWidget * w);
+	void fileTypeChanged(GtkWidget * w);
+	void onDeleteCancel (void);
 
 protected:
 
