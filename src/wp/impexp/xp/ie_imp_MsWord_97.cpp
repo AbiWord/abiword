@@ -6602,7 +6602,13 @@ void IE_Imp_MsWord_97::_handleHeaders(const wvParseStruct *ps)
 						{
 							// did not find any meaningful headers, set the type to unsupported, so
 							// that it does not get referenced
-							m_pHeaders[i].type = HF_Unsupported;
+							// 
+							// we do not want to do this to the first page hdr/ftr,
+							// because in this case len == 0 can mean the header should be
+							// empty but present (this is determined by asep->fTitlePage
+							if(m_pHeaders[i].type != HF_HeaderFirst && m_pHeaders[i].type != HF_FooterFirst)
+								m_pHeaders[i].type = HF_Unsupported;
+							
 							continue;
 						}
 
@@ -6619,6 +6625,175 @@ void IE_Imp_MsWord_97::_handleHeaders(const wvParseStruct *ps)
 			wvFree(pPLCF_txt);
 		}
 	}
+}
+
+/*!
+    A helper function that inserts the header/ftr section
+*/
+bool IE_Imp_MsWord_97::_insertHeaderSection(bool bDoBlockIns)
+{
+	// need to insert our header/footer section, preserving
+	// any existing formatting ...
+
+	// we need to be able to insert some 0-length headers
+	if(m_pHeaders[m_iCurrentHeader].type != HF_Unsupported /*&& m_pHeaders[m_iCurrentHeader].len > 2*/)
+	{
+		UT_uint32 iOff = 0;
+		const XML_Char * attribsB[] = {NULL, NULL,
+									   NULL, NULL,
+									   NULL};
+					
+		if(m_paraProps.size())
+		{
+			attribsB[iOff++] = "props";
+			attribsB[iOff++] = m_paraProps.c_str();
+		}
+					
+		if(m_paraStyle.size())
+		{
+			attribsB[iOff++] = "style";
+			attribsB[iOff++] = m_paraStyle.c_str();
+		}
+					
+		const XML_Char * attribsC[] = {NULL, NULL,
+									   NULL, NULL,
+									   NULL};
+		iOff = 0;
+		if(m_charProps.size())
+		{
+			attribsC[iOff++] = "props";
+			attribsC[iOff++] = m_charProps.c_str();
+		}
+					
+		if(m_charStyle.size())
+		{
+			attribsC[iOff++] = "style";
+			attribsC[iOff++] = m_charStyle.c_str();
+		}
+					
+		const XML_Char * attribsS[] = {"type", NULL,
+									   "id",   NULL,
+									   NULL};
+					
+		UT_String id;
+		UT_String_sprintf(id,"%d",m_pHeaders[m_iCurrentHeader].pid);
+		attribsS[3] = id.c_str();
+					
+		switch(m_pHeaders[m_iCurrentHeader].type)
+		{
+			case HF_HeaderEven:
+				attribsS[1] = "header-even";
+				break;
+			case HF_FooterEven:
+				attribsS[1] = "footer-even";
+				break;
+			case HF_HeaderOdd:
+				attribsS[1] = "header";
+				break;
+			case HF_FooterOdd:
+				attribsS[1] = "footer";
+				break;
+			case HF_HeaderFirst:
+				attribsS[1] = "header-first";
+				break;
+			case HF_FooterFirst:
+				attribsS[1] = "footer-first";
+				break;
+			default:
+				UT_ASSERT_HARMLESS(UT_NOT_REACHED);
+		}
+					
+		// we use the document methods, not the importer methods intentionally 
+		UT_DEBUGMSG(("Direct Appending HdrFtr in MSWord_import \n"));
+		if(!m_bInPara)
+		{
+			getDoc()->appendStrux(PTX_Block, NULL);
+			m_bInPara = true;
+		}
+		getDoc()->appendStrux(PTX_SectionHdrFtr, attribsS);
+		m_bInSect = true;
+		m_bInHeaders = true;
+
+		if(bDoBlockIns)
+		{
+			getDoc()->appendStrux(PTX_Block, attribsB);
+			m_bInPara = true;
+			_appendFmt(attribsC);
+		}
+					
+		// now we insert the same for any derivative headers
+		// ...
+		for (UT_uint32 i = 0; i < m_pHeaders[m_iCurrentHeader].d.hdr.getItemCount(); i++)
+		{
+			header * pH = (header*)m_pHeaders[m_iCurrentHeader].d.hdr.getNthItem(i);
+			UT_return_val_if_fail(pH, true);
+
+			// skip any unsupported headers (we set the type to unsupported when we find
+			// out that it is not used by the section to which it belongs)
+						
+			if(pH->type == HF_Unsupported)
+			{
+				continue;
+			}
+						
+			UT_String_sprintf(id,"%d",pH->pid);
+			attribsS[3] = id.c_str();
+						
+			switch(pH->type)
+			{
+				case HF_HeaderEven:
+					attribsS[1] = "header-even";
+					break;
+				case HF_FooterEven:
+					attribsS[1] = "footer-even";
+					break;
+				case HF_HeaderOdd:
+					attribsS[1] = "header";
+					break;
+				case HF_FooterOdd:
+					attribsS[1] = "footer";
+					break;
+				case HF_HeaderFirst:
+					attribsS[1] = "header-first";
+					break;
+				case HF_FooterFirst:
+					attribsS[1] = "footer-first";
+					break;
+				default:
+					UT_ASSERT_HARMLESS(UT_NOT_REACHED);
+			}
+			UT_DEBUGMSG(("Appending Dirivative HdrFtr in MSWord_import \n"));
+					
+			getDoc()->appendStrux(PTX_SectionHdrFtr, attribsS);
+			m_bInHeaders = true;
+
+			// we need to remember the HdrFtr fragment for
+			// later ...
+			pf_Frag * pF = getDoc()->getLastFrag();
+			UT_return_val_if_fail(pF && pF->getType() == pf_Frag::PFT_Strux, true);
+						
+			pf_Frag_Strux * pFS = (pf_Frag_Strux*)pF;
+			UT_return_val_if_fail(pFS->getStruxType() == PTX_SectionHdrFtr, true);
+						
+			m_pHeaders[m_iCurrentHeader].d.frag.addItem((void*)pF);
+						
+			if(bDoBlockIns)
+			{
+				getDoc()->appendStrux(PTX_Block, attribsB);
+				getDoc()->appendFmt(attribsC);
+			}						
+		}
+					
+		return true;
+	}
+	else
+	{
+		// just gobble the character ...
+		m_bInHeaders = true;
+		return false;
+	}
+
+	return false;
 }
 
 
@@ -6638,6 +6813,25 @@ bool IE_Imp_MsWord_97::_handleHeadersText(UT_uint32 iDocPosition,bool bDoBlockIn
 	{
 		return true;
 	}
+
+	if(iDocPosition == m_iHeadersEnd)
+	{
+		m_iCurrentHeader++;
+
+		if(m_iCurrentHeader < m_iHeadersCount)
+		{
+			// this is the case where we reached the end of the header segment, but still have
+			// some headers in our header array left.
+			// if we have any headers other than unsupported, we have to insert them as empty
+		
+			for(; m_iCurrentHeader < m_iHeadersCount; m_iCurrentHeader++)
+			{
+				if(m_pHeaders[m_iCurrentHeader].type != HF_Unsupported)
+					_insertHeaderSection(bDoBlockIns);
+			}
+		}
+	}
+	
 	if(iDocPosition >= m_iHeadersStart && iDocPosition < m_iHeadersEnd)
 	{
 		m_iPrevHeaderPosition = iDocPosition;
@@ -6681,7 +6875,10 @@ bool IE_Imp_MsWord_97::_handleHeadersText(UT_uint32 iDocPosition,bool bDoBlockIn
 				m_iCurrentHeader++;
 
 				// some headers can be 0-length, skip them ... (0-length:  len <=2)
-				while(m_iCurrentHeader < m_iHeadersCount && m_pHeaders[m_iCurrentHeader].len <= 2)
+				// some 0-length headers we are actually interested in; the 0-length
+				// headers we do not care about should already be marked as HF_Unsupported
+				while(m_iCurrentHeader < m_iHeadersCount && m_pHeaders[m_iCurrentHeader].type == HF_Unsupported
+					  /*m_pHeaders[m_iCurrentHeader].len <= 2*/)
 				{
 					m_iCurrentHeader++;
 				}
@@ -6700,168 +6897,11 @@ bool IE_Imp_MsWord_97::_handleHeadersText(UT_uint32 iDocPosition,bool bDoBlockIn
 			xxx_UT_DEBUGMSG(("iDocPosition %d m_pHeaders[m_iCurrentHeader].pos %d \n",iDocPosition,m_pHeaders[m_iCurrentHeader].pos));
 			if(iDocPosition == m_pHeaders[m_iCurrentHeader].pos)
 			{
-				// need to insert our header/footer section, preserving
-				// any existing formatting ...
-				if(m_pHeaders[m_iCurrentHeader].type != HF_Unsupported &&
-				   m_pHeaders[m_iCurrentHeader].len > 2)
-				{
-					UT_uint32 iOff = 0;
-					const XML_Char * attribsB[] = {NULL, NULL,
-												   NULL, NULL,
-												   NULL};
-					
-					if(m_paraProps.size())
-					{
-						attribsB[iOff++] = "props";
-						attribsB[iOff++] = m_paraProps.c_str();
-					}
-					
-					if(m_paraStyle.size())
-					{
-						attribsB[iOff++] = "style";
-						attribsB[iOff++] = m_paraStyle.c_str();
-					}
-					
-					const XML_Char * attribsC[] = {NULL, NULL,
-												   NULL, NULL,
-												   NULL};
-					iOff = 0;
-					if(m_charProps.size())
-					{
-						attribsC[iOff++] = "props";
-						attribsC[iOff++] = m_charProps.c_str();
-					}
-					
-					if(m_charStyle.size())
-					{
-						attribsC[iOff++] = "style";
-						attribsC[iOff++] = m_charStyle.c_str();
-					}
-					
-					const XML_Char * attribsS[] = {"type", NULL,
-												   "id",   NULL,
-												   NULL};
-					
-					UT_String id;
-					UT_String_sprintf(id,"%d",m_pHeaders[m_iCurrentHeader].pid);
-					attribsS[3] = id.c_str();
-					
-					switch(m_pHeaders[m_iCurrentHeader].type)
-					{
-					case HF_HeaderEven:
-						attribsS[1] = "header-even";
-						break;
-					case HF_FooterEven:
-						attribsS[1] = "footer-even";
-						break;
-					case HF_HeaderOdd:
-						attribsS[1] = "header";
-						break;
-					case HF_FooterOdd:
-						attribsS[1] = "footer";
-						break;
-					case HF_HeaderFirst:
-						attribsS[1] = "header-first";
-						break;
-					case HF_FooterFirst:
-						attribsS[1] = "footer-first";
-						break;
-					default:
-						UT_ASSERT_HARMLESS(UT_NOT_REACHED);
-					}
-					
-					// we use the document methods, not the importer methods intentionally 
-					UT_DEBUGMSG(("Direct Appending HdrFtr in MSWord_import \n"));
-					if(!m_bInPara)
-					{
-						getDoc()->appendStrux(PTX_Block, NULL);
-						m_bInPara = true;
-					}
-					getDoc()->appendStrux(PTX_SectionHdrFtr, attribsS);
-					m_bInSect = true;
-					m_bInHeaders = true;
-
-					if(bDoBlockIns)
-					{
-						getDoc()->appendStrux(PTX_Block, attribsB);
-						m_bInPara = true;
-						_appendFmt(attribsC);
-					}
-					
-					// now we insert the same for any derivative headers
-					// ...
-					for (UT_uint32 i = 0; i < m_pHeaders[m_iCurrentHeader].d.hdr.getItemCount(); i++)
-					{
-						header * pH = (header*)m_pHeaders[m_iCurrentHeader].d.hdr.getNthItem(i);
-						UT_return_val_if_fail(pH, true);
-
-						// skip any unsupported headers (we set the type to unsupported when we find
-						// out that it is not used by the section to which it belongs)
-						
-						if(pH->type == HF_Unsupported)
-						{
-							continue;
-						}
-						
-						UT_String_sprintf(id,"%d",pH->pid);
-						attribsS[3] = id.c_str();
-						
-						switch(pH->type)
-						{
-						case HF_HeaderEven:
-							attribsS[1] = "header-even";
-							break;
-						case HF_FooterEven:
-							attribsS[1] = "footer-even";
-							break;
-						case HF_HeaderOdd:
-							attribsS[1] = "header";
-							break;
-						case HF_FooterOdd:
-							attribsS[1] = "footer";
-							break;
-						case HF_HeaderFirst:
-							attribsS[1] = "header-first";
-							break;
-						case HF_FooterFirst:
-							attribsS[1] = "footer-first";
-							break;
-						default:
-							UT_ASSERT_HARMLESS(UT_NOT_REACHED);
-						}
-						UT_DEBUGMSG(("Appending Dirivative HdrFtr in MSWord_import \n"));
-					
-						getDoc()->appendStrux(PTX_SectionHdrFtr, attribsS);
-						m_bInHeaders = true;
-
-						// we need to remember the HdrFtr fragment for
-						// later ...
-						pf_Frag * pF = getDoc()->getLastFrag();
-						UT_return_val_if_fail(pF && pF->getType() == pf_Frag::PFT_Strux, true);
-						
-						pf_Frag_Strux * pFS = (pf_Frag_Strux*)pF;
-						UT_return_val_if_fail(pFS->getStruxType() == PTX_SectionHdrFtr, true);
-						
-						m_pHeaders[m_iCurrentHeader].d.frag.addItem((void*)pF);
-						
-						if(bDoBlockIns)
-						{
-							getDoc()->appendStrux(PTX_Block, attribsB);
-							getDoc()->appendFmt(attribsC);
-						}						
-					}
-					
-					return true;
-				}
-				else
-				{
-					// just gobble the character ...
-					m_bInHeaders = true;
-					return false;
-				}
+				return _insertHeaderSection(bDoBlockIns);
 			}
-			
-		} else {
+		}
+		else
+		{
 			UT_DEBUGMSG(("DOM: bad header joo joo\n"));
 			return false;
 		}

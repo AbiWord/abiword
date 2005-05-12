@@ -233,6 +233,7 @@ private:
 	bool		_appendFmt(const XML_Char ** attributes);
 	void        _handleHeaders(const wvParseStruct *ps);
 	bool        _handleHeadersText(UT_uint32 iPos, bool bDoBlockIns);
+	bool        _insertHeaderSection(bool bDoBlockIns);
 	bool        _build_ColumnWidths(UT_NumberVector & colWidths);
 	bool        _isVectorFull(UT_NumberVector & vec);
 	void        setNumberVector(UT_NumberVector & vec, UT_sint32 i, UT_sint32 val);
