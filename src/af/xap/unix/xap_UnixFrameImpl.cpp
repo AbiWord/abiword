@@ -35,6 +35,7 @@
 #include "xap_ViewListener.h"
 #include "xap_UnixApp.h"
 #include "xap_UnixFrameImpl.h"
+#include "xap_Frame.h"
 #include "ev_UnixKeyboard.h"
 #include "ev_UnixMouse.h"
 #include "ev_UnixMenuBar.h"

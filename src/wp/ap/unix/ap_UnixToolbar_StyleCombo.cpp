@@ -19,9 +19,12 @@
 
 #include "ut_assert.h"
 #include "ut_vector.h"
+#include "ut_locale.h"
 #include "ap_UnixToolbar_StyleCombo.h"
 #include "ap_Toolbar_Id.h"
 #include "xap_Frame.h"
+#include "xap_UnixFontManager.h"
+#include "xap_UnixFont.h"
 #include "pd_Style.h"
 #include "xad_Document.h"
 #include "xap_App.h"
@@ -39,7 +42,8 @@ EV_Toolbar_Control * AP_UnixToolbar_StyleCombo::static_constructor(EV_Toolbar * 
 
 AP_UnixToolbar_StyleCombo::AP_UnixToolbar_StyleCombo(EV_Toolbar * pToolbar,
 													 XAP_Toolbar_Id id)
-	: EV_Toolbar_Control(pToolbar/*,id*/)
+	: EV_Toolbar_Control(pToolbar/*,id*/), 
+	  m_pDefaultDesc(NULL)
 {
 	UT_ASSERT(id==AP_TOOLBAR_ID_FMT_STYLE);
 
@@ -50,6 +54,8 @@ AP_UnixToolbar_StyleCombo::AP_UnixToolbar_StyleCombo(EV_Toolbar * pToolbar,
 
 AP_UnixToolbar_StyleCombo::~AP_UnixToolbar_StyleCombo(void)
 {
+	freeStyles();
+	pango_font_description_free(m_pDefaultDesc);
 }
 
 /*****************************************************************/
@@ -72,13 +78,21 @@ bool AP_UnixToolbar_StyleCombo::populate(void)
 	m_vecContents.addItem("Plain Text");
 	m_vecContents.addItem("Block Text");
 #else
+
+	AD_Document * pAD_Doc = m_pFrame->getCurrentDoc();
+	if(!pAD_Doc)
+	{
+		return false;
+	}
+	PD_Document *pDocument = static_cast<PD_Document *>(pAD_Doc);
+
 	// TODO: need a view/doc pointer to get this right
 	// ALSO: will need to repopulate as new styles added
 	// HYP:  only call this method from shared code? 
 	const char * szName;
 	const PD_Style * pStyle;
 
-	for (UT_uint32 k=0; (m_pDocument->enumStyles(k,&szName,&pStyle)); k++)
+	for (UT_uint32 k=0; (pDocument->enumStyles(k,&szName,&pStyle)); k++)
 	{
 		m_vecContents.addItem(szName);
 	}
@@ -98,20 +112,96 @@ bool AP_UnixToolbar_StyleCombo::repopulate(void)
 	{
 		return false;
 	}
+	PD_Document *pDocument = static_cast<PD_Document *>(pAD_Doc);
+
 
 	// clear anything that's already there
 	m_vecContents.clear();
+	freeStyles();
 
-	m_pDocument = static_cast<PD_Document *>(pAD_Doc);
+	// defaults for style combo
+	if (m_pDefaultDesc == NULL) {
+		XAP_UnixFont *pDefaultFont = XAP_UnixFontManager::pFontManager->getDefaultFont ();
+		m_pDefaultDesc = pango_font_description_new ();
+		pango_font_description_set_family (m_pDefaultDesc, pDefaultFont->getName ());
+		// TODO hardcoded default size
+		pango_font_description_set_size (m_pDefaultDesc, 12 * PANGO_SCALE);
+		pango_font_description_set_style (m_pDefaultDesc, pDefaultFont->getPangoStyle ());
+		pango_font_description_set_weight (m_pDefaultDesc, pDefaultFont->getPangoWeight ());
+	}
+
 	const char * szName;
-	const PD_Style * pStyle;
+	PD_Style * pStyle;
 
-	for (UT_uint32 k=0; (m_pDocument->enumStyles(k,&szName,&pStyle)); k++)
+	for (UT_uint32 k=0; (pDocument->enumStyles(k,&szName,const_cast<const PD_Style**>(&pStyle))); k++)
 	{
+		if (!pStyle) {
+			UT_DEBUGMSG(("no style instance for '%s'\n", szName));
+		}
+
+		if (pStyle->isList())
+			continue;
+
 		m_vecContents.addItem(szName);
+		PangoFontDescription *desc = pango_font_description_copy (m_pDefaultDesc);
+		getPangoAttrs(pStyle, desc);
+		m_mapStyles.insert(szName, desc);
 	}
 	return true;
 }
 
+const PangoFontDescription* 
+AP_UnixToolbar_StyleCombo::getStyle (const gchar *name) {
 
+	const PangoFontDescription *desc = m_mapStyles.pick(name);
+	if (desc == NULL) {
+		repopulate();
+		desc = m_mapStyles.pick(name);
+	}
+	return desc;
+}
 
+/*!
+* \todo ROB parse more attributes like font-color, background-color
+*/
+void 		 
+AP_UnixToolbar_StyleCombo::getPangoAttrs (PD_Style *pStyle, 
+										  PangoFontDescription *desc) {
+
+	UT_return_if_fail (pStyle);
+	UT_LocaleTransactor t (LC_NUMERIC, "C");
+
+	const XML_Char *value = NULL;
+
+	if (pStyle->getPropertyExpand ("font-family", value)) {
+		pango_font_description_set_family (desc, value);
+	}
+
+	if (pStyle->getPropertyExpand ("font-size", value)) {
+		pango_font_description_set_size (desc, UT_convertToDimension (value, DIM_PT) * PANGO_SCALE);
+	}
+
+	if (pStyle->getPropertyExpand ("font-style", value)) {
+		PangoStyle style = PANGO_STYLE_NORMAL;
+		if (!UT_strcmp (value, "italic"))
+			style = PANGO_STYLE_ITALIC;
+		pango_font_description_set_style (desc, style);
+	}
+
+	if (pStyle->getPropertyExpand ("font-weight", value)) {
+		PangoWeight weight = PANGO_WEIGHT_NORMAL;
+		if (!UT_strcmp (value, "bold"))
+			weight = PANGO_WEIGHT_BOLD;
+		pango_font_description_set_weight (desc, weight);
+	}
+}
+
+void 
+AP_UnixToolbar_StyleCombo::freeStyles() {
+
+	UT_GenericVector<PangoFontDescription*> *pVec = m_mapStyles.enumerate();
+	for (UT_uint32 i = 0; i < pVec->size(); i++) {
+		pango_font_description_free(pVec->getNthItem(i));
+	}
+	delete pVec;
+}

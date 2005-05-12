@@ -397,6 +397,24 @@ XAP_UnixFont::style XAP_UnixFont::getStyle(void) const
 	return m_style;
 }
 
+PangoStyle XAP_UnixFont::getPangoStyle(void) const
+{
+	PangoStyle ret = PANGO_STYLE_NORMAL;
+	if (m_style == STYLE_ITALIC || m_style == STYLE_BOLD_ITALIC) {
+		ret = PANGO_STYLE_ITALIC;
+	}
+	return ret;
+}
+
+PangoWeight XAP_UnixFont::getPangoWeight(void) const
+{
+	PangoWeight ret = PANGO_WEIGHT_NORMAL;
+	if (m_style == STYLE_BOLD || m_style == STYLE_BOLD_ITALIC || m_style == STYLE_BOLD_OUTLINE) {
+		ret = PANGO_WEIGHT_BOLD;
+	}
+	return ret;
+}
+
 const char *XAP_UnixFont::getFontfile(void) const
 {
 	return m_fontfile;

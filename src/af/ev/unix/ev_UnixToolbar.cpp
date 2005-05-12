@@ -23,6 +23,7 @@
 #include "ut_assert.h"
 #include "ut_debugmsg.h"
 #include "ut_string.h"
+#include "ut_locale.h"
 #include "ev_UnixToolbar.h"
 #include "xap_Types.h"
 #include "xap_UnixApp.h"
@@ -38,6 +39,7 @@
 #include "xav_View.h"
 #include "xap_Prefs.h"
 #include "fv_View.h"
+#include "pd_Style.h"
 #include "xap_EncodingManager.h"
 #include "xap_UnixDialogHelper.h"
 #include "xap_UnixFontPreview.h"
@@ -62,7 +64,6 @@
 #endif // HAVE_GNOME
 
 /*****************************************************************/
-#define COMBO_BUF_LEN 256
 
 static const GtkTargetEntry      s_AbiTBTargets[] = {{"abi-toolbars",0,0}};
 
@@ -70,14 +71,14 @@ class _wd;
 
 enum {
 	COLUMN_STRING = 0,
-	COLUMN_FONTNAME,
-	COLUMN_FONTSIZE,
+	COLUMN_FONT,
 	NUM_COLUMNS
 };
 
-void 		 abi_gtk_combo_box_fill_from_string_vector (_wd *wd, GtkComboBox *combo, const UT_GenericVector<const char*> *strings);
-void 		 abi_gtk_combo_box_text_select_entry(_wd *wd, GtkComboBox *combo, const gchar *text);
-const gchar *abi_gtk_combo_box_get_active_text	(GtkComboBox *combo);
+void 		 abi_gtk_combo_box_fill_from_string_vector (_wd 				*wd, 
+														EV_Toolbar_Control 	*pControl, 
+														const UT_GenericVector<const char*> *strings);
+const gchar *abi_gtk_combo_box_get_active_text		   (GtkComboBox 		*combo);
 
 
 /**
@@ -123,7 +124,6 @@ public:									// we create...
 		m_id = id;
 		m_widget = widget;
 		m_blockSignal = false;
-		m_comboEntryBuffer[0] = 0;
 	};
 	
 	~_wd(void)
@@ -243,6 +243,43 @@ public:									// we create...
 		_wd * wd = static_cast<_wd *>(user_data);
 		UT_ASSERT(wd);
 
+		if (wd->m_id == AP_TOOLBAR_ID_FMT_STYLE) {
+
+			// handle style combo, always system font in selected entry
+
+			const gchar *FONT_DESC_KEY = "font-desc-key";
+			const gchar *PATH_KEY = "path-key";
+			GtkTreeModel *model = gtk_combo_box_get_model (GTK_COMBO_BOX (widget));
+			GtkTreeIter iter;
+			gpointer path = NULL;
+			gpointer desc = NULL;
+
+			// restore prev
+			if (NULL != (desc = g_object_get_data (G_OBJECT (widget), FONT_DESC_KEY)) && 
+				NULL != (path = g_object_get_data (G_OBJECT (widget), PATH_KEY))) {
+				
+				gtk_tree_model_get_iter (model, &iter, (GtkTreePath*)path);
+				gtk_list_store_set (GTK_LIST_STORE (model), &iter,
+									COLUMN_FONT, (PangoFontDescription*)desc,
+									-1);
+			}
+
+			// backup current
+			gtk_combo_box_get_active_iter (GTK_COMBO_BOX (widget), &iter);
+			path = gtk_tree_model_get_path (model, &iter);
+			g_object_set_data (G_OBJECT (widget), PATH_KEY, path);
+			gtk_tree_model_get (model, &iter, COLUMN_FONT, &desc, -1);
+			g_object_set_data (G_OBJECT (widget), FONT_DESC_KEY, desc);
+			
+			// set system font on current
+			gtk_combo_box_get_active_iter (GTK_COMBO_BOX (widget), &iter);
+			PangoContext *context = gtk_widget_get_pango_context (GTK_WIDGET (widget));
+			desc = pango_context_get_font_description (context);
+			gtk_list_store_set (GTK_LIST_STORE (model), &iter,
+								COLUMN_FONT, (PangoFontDescription*)desc,
+								-1);
+		}	
+
 		// only act if the widget has been shown and embedded in the toolbar
 		if (wd->m_widget)
 		{
@@ -270,7 +307,6 @@ public:									// we create...
 	XAP_Toolbar_Id		m_id;
 	GtkWidget *			m_widget;
 	bool				m_blockSignal;
-	char 				m_comboEntryBuffer[1024];
 };
 
 #ifdef HAVE_GNOME
@@ -706,47 +742,42 @@ bool EV_UnixToolbar::synthesize(void)
 					iWidth = pControl->getPixelWidth();
 				}
 
-				GtkWidget *align = NULL;
 				GtkWidget *combo = gtk_combo_box_new();
 				GtkCellRenderer *renderer = gtk_cell_renderer_text_new();
 				gtk_cell_layout_pack_start (GTK_CELL_LAYOUT (combo), renderer, TRUE);
+				GtkListStore *store = NULL;
+				wd->m_widget = combo;
+
+				GtkWidget *align = gtk_hbox_new (FALSE, 0);
+				gtk_box_pack_start (GTK_BOX (align), combo, TRUE, FALSE, 5);
+				gtk_widget_show (align);
 
 				if (wd->m_id == AP_TOOLBAR_ID_ZOOM) {
-					// padding
-					align = gtk_alignment_new(0, 0, 1, 1);
-					gtk_alignment_set_padding(GTK_ALIGNMENT(align), 0, 0, 5, 0);
-					gtk_container_add(GTK_CONTAINER(align), combo);
-					gtk_widget_show(align);
 					// zoom
 					gtk_cell_layout_set_attributes(GTK_CELL_LAYOUT(combo), renderer, "text", COLUMN_STRING, NULL); 
+					store = gtk_list_store_new(1, G_TYPE_STRING);
 				}
 				else if (wd->m_id == AP_TOOLBAR_ID_FMT_STYLE) {
-					// padding
-					align = gtk_alignment_new(0, 0, 1, 1);
-					gtk_alignment_set_padding(GTK_ALIGNMENT(align), 0, 0, 0, 5);
-					gtk_container_add(GTK_CONTAINER(align), combo);
-					gtk_widget_show(align);
 					// style preview
-					gtk_cell_layout_set_attributes(GTK_CELL_LAYOUT(combo), renderer, "text", COLUMN_STRING, NULL); 
+					gtk_cell_layout_set_attributes(GTK_CELL_LAYOUT(combo), renderer, 
+													"text", COLUMN_STRING, 
+													"font-desc", COLUMN_FONT,
+													NULL); 				
+					store = gtk_list_store_new(2, G_TYPE_STRING, PANGO_TYPE_FONT_DESCRIPTION);
 				}
 				else if (wd->m_id == AP_TOOLBAR_ID_FMT_FONT) {
-					// padding
-					align = gtk_alignment_new(0, 0, 1, 1);
-					gtk_alignment_set_padding(GTK_ALIGNMENT(align), 0, 0, 0, 5);
-					gtk_container_add(GTK_CONTAINER(align), combo);
-					gtk_widget_show(align);
 					// font preview
 					gtk_cell_layout_set_attributes(GTK_CELL_LAYOUT(combo), renderer, 
 													"text", COLUMN_STRING, 
-													"font", COLUMN_FONTNAME,
-													"size", COLUMN_FONTSIZE,
-													NULL); 				
+													"font", COLUMN_FONT, 
+													NULL);					
+					store = gtk_list_store_new(NUM_COLUMNS, G_TYPE_STRING, G_TYPE_STRING, G_TYPE_INT);
 				}
 				else {
 					gtk_cell_layout_set_attributes(GTK_CELL_LAYOUT(combo), renderer, "text", COLUMN_STRING, NULL); 
+					store = gtk_list_store_new(1, G_TYPE_STRING);
 				}
 
-				GtkListStore *store = gtk_list_store_new(NUM_COLUMNS, G_TYPE_STRING, G_TYPE_STRING, G_TYPE_INT);
 				gtk_combo_box_set_model(GTK_COMBO_BOX(combo), GTK_TREE_MODEL(store));
 				g_object_unref(store);
 				
@@ -754,9 +785,9 @@ bool EV_UnixToolbar::synthesize(void)
 				gtk_widget_set_size_request(combo, iWidth, -1);
 
 		        g_signal_connect(G_OBJECT(GTK_COMBO_BOX(combo)),
-					 "changed",
-					 G_CALLBACK(_wd::s_combo_changed),
-					 wd);
+								 "changed",
+								 G_CALLBACK(_wd::s_combo_changed),
+								 wd);
 
 				// populate it
 				if (pControl)
@@ -765,7 +796,7 @@ bool EV_UnixToolbar::synthesize(void)
 
 					const UT_GenericVector<const char*> * v = pControl->getContents();
 					UT_ASSERT(v);
-					abi_gtk_combo_box_fill_from_string_vector (wd, GTK_COMBO_BOX(combo), v);
+					abi_gtk_combo_box_fill_from_string_vector (wd, pControl, v);
 				}
  
 				// stick it in the toolbar
@@ -774,12 +805,8 @@ bool EV_UnixToolbar::synthesize(void)
 					widget = align;
 				else
 					widget = combo;
-				toolbar_append_with_eventbox(GTK_TOOLBAR(m_wToolbar),
-							     widget,
-							     szToolTip,
-							     static_cast<const char *>(NULL));
+				gtk_toolbar_append_widget (GTK_TOOLBAR (m_wToolbar), widget, szToolTip, NULL);
 				gtk_widget_show(combo);
-				wd->m_widget = combo;
 
 				// for now, we never repopulate, so can just toss it
 				DELETEP(pControl);
@@ -999,17 +1026,17 @@ bool EV_UnixToolbar::refreshToolbar(AV_View * pView, AV_ChangeMask mask)
 					    {
 					      const char * fsz = XAP_EncodingManager::fontsizes_mapping.lookupBySource(szState);
 					      if ( fsz )
-							abi_gtk_combo_box_text_select_entry(wd, item, fsz);
+							selectComboEntry(wd, fsz);
 					      else {
 							// TODO ROB: set default size
-							abi_gtk_combo_box_text_select_entry(wd, item, "12");
+							selectComboEntry(wd, "");
 						  }
 					    }
 					  else
-					    abi_gtk_combo_box_text_select_entry(wd, item, szState);
+					    selectComboEntry(wd, szState);
 					} 
 					else {
-						abi_gtk_combo_box_text_select_entry(wd, item, "");
+						selectComboEntry(wd, "");
 					}					
 
 					wd->m_blockSignal = wasBlocked;					
@@ -1111,7 +1138,6 @@ bool EV_UnixToolbar::repopulateStyles(void)
 	EV_Toolbar_Control * pControl = pFactory->getControl(this, id);
 	AP_UnixToolbar_StyleCombo * pStyleC = static_cast<AP_UnixToolbar_StyleCombo *>(pControl);
 	pStyleC->repopulate();
-	GtkComboBox * item = GTK_COMBO_BOX(wd->m_widget);
 //
 // Now the combo box has to be refilled from this
 //						
@@ -1129,7 +1155,7 @@ bool EV_UnixToolbar::repopulateStyles(void)
 //
 // Now make a new one.
 //
-	abi_gtk_combo_box_fill_from_string_vector (wd, item, v);
+	abi_gtk_combo_box_fill_from_string_vector (wd, pStyleC, v);
 
     wd->m_blockSignal = wasBlocked;
 
@@ -1144,52 +1170,13 @@ bool EV_UnixToolbar::repopulateStyles(void)
 }
 
 /*!
-* Refill a combo box (list model, one string column) from a string vector.
-*/
-void 
-abi_gtk_combo_box_fill_from_string_vector (_wd *wd,
-										   GtkComboBox *combo, 
-										   const UT_GenericVector<const char*> *strings) {
-	static gint size = 0;
-	if (size == 0) {
-		PangoContext *context = gtk_widget_get_pango_context (GTK_WIDGET (combo));
-		PangoFontDescription *desc = pango_context_get_font_description (context);
-		size = pango_font_description_get_size (desc);
-		// we show the font a bit larget than the default font size in the widgets
-		size = (size / PANGO_SCALE + 2) * PANGO_SCALE;
-	}
-
-	GtkListStore *store = GTK_LIST_STORE (gtk_combo_box_get_model (combo));
-	gtk_list_store_clear (store);
-
-	int count = strings->size ();
-	for (int i = 0; i < count; i++) {
-
-		GtkTreeIter iter;
-		gtk_list_store_append (store, &iter);
-		
-		// font preview
-		if (wd->m_id == AP_TOOLBAR_ID_FMT_FONT) {
-			gtk_list_store_set (store, &iter, 
-								COLUMN_STRING, strings->getNthItem (i), 
-								COLUMN_FONTNAME, strings->getNthItem (i), 
-								COLUMN_FONTSIZE, size, 
-								-1);
-		}
-		else {
-			gtk_list_store_set (store, &iter, COLUMN_STRING, strings->getNthItem (i), -1);
-		}
-	}
-}
-
-/*!
 * Select a combo box entry by its label.
 */
 void 
-abi_gtk_combo_box_text_select_entry (_wd *wd,
-									 GtkComboBox *combo, 
-									 const gchar *text) {
+EV_UnixToolbar::selectComboEntry (_wd 		  *wd,
+								  const gchar *text) {
 
+	GtkComboBox *combo = GTK_COMBO_BOX (wd->m_widget);
 	GtkTreeModel *model = gtk_combo_box_get_model (combo);
 	GtkTreeIter iter;
 	guint idx = 0;
@@ -1208,6 +1195,7 @@ abi_gtk_combo_box_text_select_entry (_wd *wd,
 			else {
 				// compare strings
 				if (!UT_strcmp (text, value)) {
+					
 					gtk_combo_box_set_active (combo, idx);
 					return;
 				}
@@ -1215,6 +1203,88 @@ abi_gtk_combo_box_text_select_entry (_wd *wd,
 			idx++;
 		}
 		while (gtk_tree_model_iter_next (model, &iter));
+
+		// item not found
+		if (wd->m_id == AP_TOOLBAR_ID_FMT_SIZE) {
+			gtk_combo_box_set_active (combo, -1);
+		}
+
+		// todo rob debug
+		if (wd->m_id == AP_TOOLBAR_ID_FMT_STYLE) {
+
+			XAP_Toolbar_ControlFactory * pFactory = m_pUnixApp->getControlFactory();
+			UT_ASSERT(pFactory);
+			EV_Toolbar_Control * pControl = pFactory->getControl(this, wd->m_id );
+			AP_UnixToolbar_StyleCombo * pStyleCombo = static_cast<AP_UnixToolbar_StyleCombo *>(pControl);
+			
+			const PangoFontDescription *desc = pStyleCombo->getStyle(text);
+			//UT_return_if_fail(desc);
+
+			gtk_list_store_append (GTK_LIST_STORE (model), &iter);
+			gtk_list_store_set (GTK_LIST_STORE (model), &iter, 
+								COLUMN_STRING, text, 
+								COLUMN_FONT, desc, 
+								-1);
+		}
+	}
+}
+
+/*!
+* Refill a combo box (list model, one string column) from a string vector.
+* \todo this should probably refactored into the combo classes
+*/
+void 
+abi_gtk_combo_box_fill_from_string_vector (_wd *wd,
+										   EV_Toolbar_Control *pControl,
+										   const UT_GenericVector<const char*> *strings) {
+
+	GtkComboBox *combo = GTK_COMBO_BOX (wd->m_widget); 
+
+	AP_UnixToolbar_StyleCombo * pStyleCombo = NULL;
+	if (wd->m_id == AP_TOOLBAR_ID_FMT_STYLE) {
+		pStyleCombo = reinterpret_cast<AP_UnixToolbar_StyleCombo*>(pControl);
+	}
+
+	GtkListStore *store = GTK_LIST_STORE (gtk_combo_box_get_model (combo));
+	gtk_list_store_clear (store);
+
+	int count = strings->size ();
+	for (int i = 0; i < count; i++) {
+	
+		if (wd->m_id == AP_TOOLBAR_ID_FMT_STYLE) {
+			// style preview
+			const gchar * style = strings->getNthItem(i);
+			GtkTreeIter iter;
+			gtk_list_store_append (store, &iter);
+			gtk_list_store_set (store, &iter, 
+								COLUMN_STRING, style, 
+								COLUMN_FONT, pStyleCombo->getStyle(style), 
+								-1);
+		}
+		else if (wd->m_id == AP_TOOLBAR_ID_FMT_FONT) {
+			// font preview
+			const gchar *name = strings->getNthItem(i);
+			XAP_UnixFont *pFont = XAP_UnixFontManager::pFontManager->getFont (name, XAP_UnixFont::STYLE_NORMAL);
+			if (pFont && (pFont->isSymbol() || pFont->isDingbat())) {
+				// "$fontname (Symbols)"
+				const XAP_StringSet * pSS = XAP_App::getApp()->getStringSet();
+				static UT_UTF8String tmpName;
+				tmpName = UT_UTF8String_sprintf ("%s (%s)", name, pSS->getValue(XAP_STRING_ID_TB_Font_Symbol));
+				name = tmpName.utf8_str();
+			}
+
+			GtkTreeIter iter;
+			gtk_list_store_append (store, &iter);
+			gtk_list_store_set (store, &iter, 
+								COLUMN_STRING, name, 
+								COLUMN_FONT, strings->getNthItem(i), 
+								-1);
+		}
+		else {
+			GtkTreeIter iter;
+			gtk_list_store_append (store, &iter);
+			gtk_list_store_set (store, &iter, COLUMN_STRING, strings->getNthItem(i), -1);
+		}
 	}
 }
 

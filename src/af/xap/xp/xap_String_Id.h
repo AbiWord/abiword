@@ -192,6 +192,9 @@ dcl(TB_Zoom_PageWidth,					"Page Width")
 dcl(TB_Zoom_WholePage,					"Whole Page")
 dcl(TB_Zoom_Percent, "Other...")
 
+/* Font tool bar*/
+dcl(TB_Font_Symbol,						"Symbols")
+
 /* Unix Print dialog */
 dcl(DLG_UP_PrintTitle,					"Print")
 dcl(DLG_UP_PrintPreviewTitle,					   "AbiWord: Print Preview")

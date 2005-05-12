@@ -68,6 +68,10 @@ class ABI_EXPORT XAP_UnixFont
 {
  public:
 
+	/*! 
+	* \todo ROB: we maybe could move to using pango attributes exclusively here 
+	* since this is unix only.
+	*/
 	enum style
 	{
 		STYLE_NORMAL = 0,
@@ -95,6 +99,9 @@ class ABI_EXPORT XAP_UnixFont
 
 	void					setStyle(XAP_UnixFont::style s);
 	XAP_UnixFont::style		getStyle(void) const;
+
+	PangoStyle				getPangoStyle(void) const;
+	PangoWeight				getPangoWeight(void) const;
 
 	const char * 			getFontfile(void) const;
 	const char * 			getMetricfile(void) const;
@@ -130,6 +137,7 @@ class ABI_EXPORT XAP_UnixFont
 	bool doesGlyphExist(UT_UCS4Char g);
 	bool                    isSymbol(void) const;
 	bool                    isDingbat(void) const;
+
 private:
 
 	XAP_UnixFont ();

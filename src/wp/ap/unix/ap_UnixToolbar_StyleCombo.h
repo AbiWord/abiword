@@ -20,12 +20,15 @@
 #ifndef AP_UNIXTOOLBAR_STYLECOMBO_H
 #define AP_UNIXTOOLBAR_STYLECOMBO_H
 
+#include <gtk/gtk.h>
+#include "ut_hash.h"
 #include "xap_Types.h"
 #include "ev_Toolbar_Control.h"
 #include "pd_Document.h"
 #include "ap_UnixFrame.h"
 
 class EV_Toolbar;
+class PD_Style;
 
 /*****************************************************************/
 
@@ -37,11 +40,19 @@ public:
 
 	virtual bool		populate(void);
 	bool                repopulate(void);
+	const PangoFontDescription* getStyle (const gchar *name);
 	static EV_Toolbar_Control *		static_constructor(EV_Toolbar *, XAP_Toolbar_Id id);
 
 protected:
-    PD_Document * m_pDocument;
-    AP_UnixFrame * m_pFrame;
+    AP_UnixFrame 								* m_pFrame;
+
+private: 
+	void getPangoAttrs(PD_Style 			*pStyle, 
+					   PangoFontDescription *desc);
+	void freeStyles	  (void);
+
+	UT_GenericStringMap<PangoFontDescription*> 	m_mapStyles;
+	PangoFontDescription *m_pDefaultDesc;
 };
 
 #endif /* AP_UNIXTOOLBAR_STYLECOMBO_H */
