@@ -522,7 +522,7 @@ UT_Error PD_Document::readFromFile(const char * szFilename, int ieft,
 	XAP_Frame * pFrame = XAP_App::getApp()->getLastFocussedFrame();
 
 	bool bHidden = (isMarkRevisions() && (getHighestRevisionId() <= getShowRevisionId()));
-	bHidden |= (!isMarkRevisions() && !isShowRevisions());
+	bHidden |= (!isMarkRevisions() && !isShowRevisions() && getRevisions().getItemCount());
 
 	if(pFrame && bHidden)
 	{
