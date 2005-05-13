@@ -6843,6 +6843,11 @@ bool IE_Imp_MsWord_97::_handleHeadersText(UT_uint32 iDocPosition,bool bDoBlockIn
 		// the end of the header; then we need to search for the next
 		// doc section, etc.
 
+		// when we scroll through 0-length headers, we need to remember where we started,
+		// so we can insert the hdr section later
+		bool bScrolledHeader = false;
+		UT_uint32 iOrigHeader = 0;
+
 		if(!m_bInHeaders)
 		{
 			UT_DEBUGMSG(("In headers territory: pos %d\n", iDocPosition));
@@ -6860,6 +6865,7 @@ bool IE_Imp_MsWord_97::_handleHeadersText(UT_uint32 iDocPosition,bool bDoBlockIn
 			// some headers can be 0-length, skip them ... (0-length:  len <=2)
 			while(m_iCurrentHeader < m_iHeadersCount && m_pHeaders[m_iCurrentHeader].len <= 2)
 			{
+				bScrolledHeader = true;
 				m_iCurrentHeader++;
 			}
 
@@ -6867,12 +6873,12 @@ bool IE_Imp_MsWord_97::_handleHeadersText(UT_uint32 iDocPosition,bool bDoBlockIn
 		}
 		xxx_UT_DEBUGMSG(("CurrentHeader %d HeaderCount %d \n",m_iCurrentHeader,m_iHeadersCount));
 		if (m_iCurrentHeader < m_iHeadersCount) {
-
 			if(iDocPosition == m_pHeaders[m_iCurrentHeader].pos +
 			   m_pHeaders[m_iCurrentHeader].len)
 			{
 				// new header, time to move on ...
 				m_iCurrentHeader++;
+				iOrigHeader = m_iCurrentHeader;
 
 				// some headers can be 0-length, skip them ... (0-length:  len <=2)
 				// some 0-length headers we are actually interested in; the 0-length
@@ -6880,6 +6886,7 @@ bool IE_Imp_MsWord_97::_handleHeadersText(UT_uint32 iDocPosition,bool bDoBlockIn
 				while(m_iCurrentHeader < m_iHeadersCount && m_pHeaders[m_iCurrentHeader].type == HF_Unsupported
 					  /*m_pHeaders[m_iCurrentHeader].len <= 2*/)
 				{
+					bScrolledHeader = true;
 					m_iCurrentHeader++;
 				}
 
@@ -6895,7 +6902,8 @@ bool IE_Imp_MsWord_97::_handleHeadersText(UT_uint32 iDocPosition,bool bDoBlockIn
 				// do not return, processing needs to continue ...
 			}
 			xxx_UT_DEBUGMSG(("iDocPosition %d m_pHeaders[m_iCurrentHeader].pos %d \n",iDocPosition,m_pHeaders[m_iCurrentHeader].pos));
-			if(iDocPosition == m_pHeaders[m_iCurrentHeader].pos)
+			if((bScrolledHeader && m_pHeaders[iOrigHeader].pos == iDocPosition) ||
+			   (!bScrolledHeader && iDocPosition == m_pHeaders[m_iCurrentHeader].pos))
 			{
 				return _insertHeaderSection(bDoBlockIns);
 			}
