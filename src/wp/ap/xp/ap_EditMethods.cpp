@@ -206,6 +206,7 @@ public:
 	static EV_EditMethod_Fn contextRevision;
 	static EV_EditMethod_Fn contextText;
 	static EV_EditMethod_Fn contextMisspellText;
+	static EV_EditMethod_Fn contextEmbedLayout;
 
 	static EV_EditMethod_Fn spellSuggest_1;
 	static EV_EditMethod_Fn spellSuggest_2;
@@ -225,6 +226,7 @@ public:
 	static EV_EditMethod_Fn endDrag;
 
 	static EV_EditMethod_Fn editLatexEquation;
+	static EV_EditMethod_Fn editEmbed;
 
 	static EV_EditMethod_Fn extSelToXY;
 	static EV_EditMethod_Fn extSelLeft;
@@ -376,6 +378,7 @@ public:
 	static EV_EditMethod_Fn fileSave;
 	static EV_EditMethod_Fn fileSaveAs;
 	static EV_EditMethod_Fn fileSaveImage;
+	static EV_EditMethod_Fn fileSaveEmbed;
 	static EV_EditMethod_Fn fileExport;
 	static EV_EditMethod_Fn fileImport;
 	static EV_EditMethod_Fn importStyles;
@@ -761,6 +764,7 @@ static EV_EditMethod s_arrayEditMethods[] =
 	EV_EditMethod(NF(closeWindowX), 0, ""),
 	EV_EditMethod(NF(colorBackTB), _D_, ""),
 	EV_EditMethod(NF(colorForeTB), _D_, ""),
+	EV_EditMethod(NF(contextEmbedLayout), 		0,	""),
 	EV_EditMethod(NF(contextFrame), 		0,	""),
 	EV_EditMethod(NF(contextHyperlink), 		0,	""),
 	EV_EditMethod(NF(contextImage), 0, ""),
@@ -852,6 +856,7 @@ static EV_EditMethod s_arrayEditMethods[] =
 
 	// e
 
+	EV_EditMethod(NF(editEmbed),			0,	""),
 	EV_EditMethod(NF(editFooter),			0,	""),
 	EV_EditMethod(NF(editHeader),			0,	""),
 	EV_EditMethod(NF(editLatexEquation),			0,	""),
@@ -892,6 +897,7 @@ static EV_EditMethod s_arrayEditMethods[] =
 	EV_EditMethod(NF(fileSave), 			0,	""),
 	EV_EditMethod(NF(fileSaveAs),			0,	""),
 	EV_EditMethod(NF(fileSaveAsWeb),				0, ""),
+	EV_EditMethod(NF(fileSaveEmbed),		0,	""),
 	EV_EditMethod(NF(fileSaveImage),		0,	""),
 	EV_EditMethod(NF(fileSaveTemplate), 0, ""),
 	EV_EditMethod(NF(find), 				0,	""),
@@ -2645,6 +2651,59 @@ Defun1(fileSaveImage)
 	return true;
 }
 
+
+Defun1(fileSaveEmbed)
+{
+	CHECK_FRAME;
+	XAP_Frame * pFrame = static_cast<XAP_Frame *> ( pAV_View->getParentData());
+	UT_return_val_if_fail(pFrame, false);
+
+	XAP_DialogFactory * pDialogFactory
+		= static_cast<XAP_DialogFactory *>(pFrame->getDialogFactory());
+
+	XAP_Dialog_FileOpenSaveAs * pDialog
+		= static_cast<XAP_Dialog_FileOpenSaveAs *>(pDialogFactory->requestDialog(XAP_DIALOG_ID_FILE_SAVEAS));
+	UT_return_val_if_fail (pDialog, false);
+
+	UT_uint32 filterCount = 1;
+	const char ** szDescList = static_cast<const char **>(UT_calloc(filterCount + 1, sizeof(char *)));
+	const char ** szSuffixList = static_cast<const char **>(UT_calloc(filterCount + 1, sizeof(char *)));
+	IEFileType * nTypeList = static_cast<IEFileType *>(UT_calloc(filterCount + 1, sizeof(IEFileType)));
+
+	// we only support saving images in png format for now
+	szDescList[0] = "Gnome Office Chart (.xml)";
+	szSuffixList[0] = "*.xml";
+	nTypeList[0] = static_cast<IEFileType>(1);
+
+	pDialog->setFileTypeList(szDescList, szSuffixList,
+							 static_cast<const UT_sint32 *>(nTypeList));
+
+	pDialog->setDefaultFileType(static_cast<IEFileType>(1));
+
+	pDialog->runModal(pFrame);
+
+	XAP_Dialog_FileOpenSaveAs::tAnswer ans = pDialog->getAnswer();
+	bool bOK = (ans == XAP_Dialog_FileOpenSaveAs::a_OK);
+
+	if (bOK)
+	{
+		const char * szResultPathname = pDialog->getPathname();
+		if (szResultPathname && *szResultPathname)
+		{
+			FV_View * pView = static_cast<FV_View *>(pAV_View);
+			pView->saveSelectedImage (szResultPathname); // FIXME write saveSelectedObject
+		}
+	}
+
+	FREEP(szDescList);
+	FREEP(szSuffixList);
+	FREEP(nTypeList);
+
+	pDialogFactory->releaseDialog(pDialog);
+
+	return true;
+}
+
 Defun1(filePreviewWeb)
 {
 	CHECK_FRAME;
@@ -4329,7 +4388,40 @@ Defun(contextImage)
 		pView->warpInsPtToXY(pCallData->m_xPos, pCallData->m_yPos, true);
 		pView->extSelHorizontal (true, 1);
 	  }
-	return s_doContextMenu(EV_EMC_IMAGE,pCallData->m_xPos, pCallData->m_yPos,pView,pFrame);
+	PT_DocPosition pos = pView->getDocPositionFromXY(pCallData->m_xPos, pCallData->m_yPos);
+	fl_BlockLayout * pBlock = pView->getBlockAtPosition(pos);
+	bool bDoEmbed = false;
+	if(pBlock)
+	{
+		UT_sint32 x1,x2,y1,y2,iHeight;
+		bool bEOL = false;
+		bool bDir = false;
+		
+		fp_Run * pRun = NULL;
+		
+		pRun = pBlock->findPointCoords(pos,bEOL,x1,y1,x2,y2,iHeight,bDir);
+		while(pRun && ((pRun->getType() != FPRUN_IMAGE) && (pRun->getType() != FPRUN_EMBED)))
+		{
+			pRun = pRun->getNextRun();
+		}
+		if(pRun && ((pRun->getType() == FPRUN_IMAGE) || ((pRun->getType() == FPRUN_EMBED))))
+		{
+			// Set the cursor context to image selected.
+			if(pRun->getType() == FPRUN_EMBED)
+			{
+			      bDoEmbed = true;
+			}
+		}
+		else
+		{
+			// do nothing...
+		}
+	}
+	if(!bDoEmbed)
+	{
+	     return s_doContextMenu(EV_EMC_IMAGE,pCallData->m_xPos, pCallData->m_yPos,pView,pFrame);
+	}
+	return s_doContextMenu(EV_EMC_EMBED,pCallData->m_xPos, pCallData->m_yPos,pView,pFrame);
 }
 
 
@@ -4340,6 +4432,16 @@ Defun(contextPosObject)
 	XAP_Frame * pFrame = static_cast<XAP_Frame *> (pView->getParentData());
 	UT_return_val_if_fail(pFrame, false);
 	return s_doContextMenu_no_move(EV_EMC_POSOBJECT,pCallData->m_xPos, pCallData->m_yPos,pView,pFrame);
+}
+
+
+Defun(contextEmbedLayout)
+{
+	CHECK_FRAME;
+	ABIWORD_VIEW;
+	XAP_Frame * pFrame = static_cast<XAP_Frame *> (pView->getParentData());
+	UT_return_val_if_fail(pFrame, false);
+	return s_doContextMenu(EV_EMC_EMBED,pCallData->m_xPos, pCallData->m_yPos,pView,pFrame);
 }
 
 Defun(contextHyperlink)
@@ -4841,6 +4943,18 @@ Defun(editLatexEquation)
 	PT_DocPosition posH = posL+1;
 	pView->cmdSelect(posL,posH);
         return dlgEditLatexEquation(pAV_View, pCallData, true);
+}
+
+
+Defun(editEmbed)
+{
+	CHECK_FRAME;
+	ABIWORD_VIEW;
+	UT_DEBUGMSG(("Select and Edit an Embedded Object \n"));
+        PT_DocPosition posL = pView->getDocPositionFromXY(pCallData->m_xPos, pCallData->m_yPos);
+	PT_DocPosition posH = posL+1;
+	pView->cmdSelect(posL,posH);
+	return true;
 }
 
 Defun(selectMath)

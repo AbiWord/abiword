@@ -204,6 +204,7 @@ ap_bs_Mouse MouseTable[] =
 	{_CZ _B3,	{ "contextImage",		"",			"",		"",			"",			""				}},
 	{_CTF _B3,	{ "contextFrame",		"",			"",		"",			"",			""				}},
 	{_CPO _B3,	{ "contextPosObject",		"",			"",		"",			"",			""				}},
+	{_CEM _B3,	{ "contextEmbedLayout",		"",			"",		"",			"",			""				}},
 	//{_CZ _B3,	{ "contextImageSize",	"",			"",		"",			"",			""				}},
 	//{_CF _B3,	{ "contextField",		"",			"",		"",			"",			""				}},
 

@@ -286,6 +286,7 @@ const char * XAP_Menu_Factory::FindContextMenu(EV_EditMouseContext emc)
 	for (UT_uint32 k=0; k< m_vecTT.getItemCount(); k++)
 	{
 		_vectt * pVectt = (_vectt *) m_vecTT.getNthItem(k);
+		UT_DEBUGMSG(("Look menu %s id %x requested %x  \n",pVectt->m_name,pVectt->m_emc,emc));
 		if (emc == pVectt->m_emc)
 		{
 			return pVectt->m_name;

@@ -9032,6 +9032,7 @@ EV_EditMouseContext FV_View::getMouseContext(UT_sint32 xPos, UT_sint32 yPos)
 	}
 	if(m_InlineImage.isActive())
 	{
+		UT_DEBUGMSG(("getMouseContext emc set to IMAGESIZE \n"));
 			m_prevMouseContext = EV_EMC_IMAGESIZE;
 			return EV_EMC_IMAGESIZE;
 	}
@@ -9294,6 +9295,8 @@ EV_EditMouseContext FV_View::getMouseContext(UT_sint32 xPos, UT_sint32 yPos)
 				// Set the image size in the image selection rect
 				m_selImageRect = UT_Rect(xoff,yoff,pRun->getWidth(),pRun->getHeight());
 			}
+			UT_DEBUGMSG(("Set ImageSize Context \n"));
+
 			m_prevMouseContext = EV_EMC_IMAGESIZE;
 			//			m_InlineImage.mouseLeftPress(xPos, yPos);
 			return EV_EMC_IMAGESIZE;
@@ -9361,11 +9364,13 @@ EV_EditMouseContext FV_View::getMouseContext(UT_sint32 xPos, UT_sint32 yPos)
 			if (isOverImageResizeBox(m_imageSelCursor, xPos, yPos))
 			{
 				m_prevMouseContext = EV_EMC_IMAGESIZE;
+				UT_DEBUGMSG(("Set ImageSize Context  \n"));
 				return EV_EMC_IMAGESIZE;
 			}
 			else
 			{
 				m_prevMouseContext = EV_EMC_IMAGE;
+				UT_DEBUGMSG(("Set Image Context \n"));
 				return EV_EMC_IMAGE;
 			}
 		}
@@ -9765,6 +9770,7 @@ EV_EditMouseContext FV_View::getInsertionPointContext(UT_sint32 * pxPos, UT_sint
 				// Set the image size in the image selection rect
 				m_selImageRect = UT_Rect(xoff,yoff,pRun->getWidth(),pRun->getHeight());
 			}
+			UT_DEBUGMSG(("Insertion Point Context IMAGE \n"));
 			return EV_EMC_IMAGE;
 		}			
 	case FPRUN_TAB:
