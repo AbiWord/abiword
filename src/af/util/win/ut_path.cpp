@@ -67,6 +67,19 @@ bool UT_isRegularFile(const char* filename)
 	return false;
 }
 
+size_t UT_fileSize(const char * filename)
+{
+	struct _stat buf;
+
+	if( _stat( filename , &buf ) != -1 ) 
+	{
+		return buf.st_size & _S_IFREG;
+	}
+
+	return 0;
+}
+
+
 time_t UT_mTime(const char* path)
 {
 	struct _stat buf;

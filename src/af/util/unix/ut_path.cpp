@@ -71,6 +71,19 @@ bool UT_isRegularFile(const char* filename)
     return false;
 }
 
+size_t UT_fileSize(const char * filename)
+{
+    struct stat buf;
+    
+    if (stat(filename, &buf) != -1)
+    {
+		return buf.st_size;
+    }
+    
+    return 0;
+}
+
+
 
 /*!
 	If the directory/file 'path' exist its mtime (modification time) is returned

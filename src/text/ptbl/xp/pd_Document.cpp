@@ -429,6 +429,12 @@ UT_Error PD_Document::readFromFile(const char * szFilename, int ieft,
 	  return UT_INVALIDFILENAME;
 	}
 
+	if (!UT_fileSize(szFilename))
+	{
+		UT_DEBUGMSG(("PD_Document::readFromFile -- file (%s) is empty\n",szFilename));
+		return UT_IE_BOGUSDOCUMENT;
+	}
+	
 	m_pPieceTable = new pt_PieceTable(this);
 	if (!m_pPieceTable)
 	{

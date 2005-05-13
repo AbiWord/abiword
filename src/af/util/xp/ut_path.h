@@ -36,6 +36,8 @@ ABI_EXPORT bool UT_directoryExists(const char* dir);
 
 ABI_EXPORT bool UT_isRegularFile(const char* filename);
 
+ABI_EXPORT size_t UT_fileSize(const char * filename);
+
 ABI_EXPORT time_t UT_mTime(const char* path);
 
 #endif /* UT_PATH_H */
