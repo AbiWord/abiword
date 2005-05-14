@@ -1,4 +1,4 @@
-/* AbiSource Application Framework
+ /* AbiSource Application Framework
  * Copyright (C) 1998-2000 AbiSource, Inc.
  * 
  * This program is free software; you can redistribute it and/or
@@ -49,8 +49,7 @@
 XAP_Dialog * XAP_UnixDialog_Zoom::static_constructor(XAP_DialogFactory * pFactory,
 						     XAP_Dialog_Id id)
 {
-  XAP_UnixDialog_Zoom * p = new XAP_UnixDialog_Zoom(pFactory,id);
-  return p;
+  return new XAP_UnixDialog_Zoom(pFactory,id);
 }
 
 XAP_UnixDialog_Zoom::XAP_UnixDialog_Zoom(XAP_DialogFactory * pDlgFactory,
@@ -58,10 +57,7 @@ XAP_UnixDialog_Zoom::XAP_UnixDialog_Zoom(XAP_DialogFactory * pDlgFactory,
   : XAP_Dialog_Zoom(pDlgFactory,id)
 {
   m_windowMain = NULL;
-  
-  m_unixGraphics = NULL;
-  m_previewArea = 	NULL;
-  
+    
   m_radio200 = 		NULL;
   m_radio100 = 		NULL;
   m_radio75 = 		NULL;
@@ -76,7 +72,6 @@ XAP_UnixDialog_Zoom::XAP_UnixDialog_Zoom(XAP_DialogFactory * pDlgFactory,
 
 XAP_UnixDialog_Zoom::~XAP_UnixDialog_Zoom(void)
 {
-  DELETEP(m_unixGraphics);
 }
 
 /*****************************************************************/
@@ -122,15 +117,6 @@ void XAP_UnixDialog_Zoom::s_spin_Percent_changed(GtkWidget * widget, XAP_UnixDia
   dlg->event_SpinPercentChanged();
 }
 
-gint XAP_UnixDialog_Zoom::s_preview_exposed(GtkWidget * /* widget */,
-					    GdkEventExpose * /* pExposeEvent */,
-					    XAP_UnixDialog_Zoom * dlg)
-{
-  UT_return_val_if_fail(dlg, false);
-  dlg->event_PreviewAreaExposed();
-  return FALSE;
-}
-
 /*****************************************************************/
 
 void XAP_UnixDialog_Zoom::runModal(XAP_Frame * pFrame)
@@ -148,23 +134,6 @@ void XAP_UnixDialog_Zoom::runModal(XAP_Frame * pFrame)
     XAP_UnixApp * unixapp = static_cast<XAP_UnixApp *> (m_pApp);
     UT_ASSERT(unixapp);
     
-    UT_ASSERT(m_previewArea && m_previewArea->window);
-    
-    // make a new Unix GC
-    //m_unixGraphics = new GR_UnixGraphics(m_previewArea->window, unixapp->getFontManager(), m_pApp);
-	GR_UnixAllocInfo ai(m_previewArea->window, unixapp->getFontManager(), m_pApp);
-	m_unixGraphics = (GR_UnixGraphics*) XAP_App::getApp()->newGraphics(ai);
-    
-    // let the widget materialize
-    _createPreviewFromGC(m_unixGraphics,
-			 static_cast<UT_uint32>(m_previewArea->allocation.width),
-			 static_cast<UT_uint32>(m_previewArea->allocation.height));
-
-	// Todo: we need a good widget to query with a probable
-	// Todo: non-white (i.e. gray, or a similar bgcolor as our parent widget)
-	// Todo: background. This should be fine
-	m_unixGraphics->init3dColors(m_previewArea->style);
-
 	// HACK : we call this TWICE so it generates an update on the buttons to
 	// HACK : trigger a preview
 	_populateWindowData();
@@ -229,14 +198,6 @@ void XAP_UnixDialog_Zoom::event_SpinPercentChanged(void)
 									 GTK_SPIN_BUTTON(m_spinPercent))));
 }
 
-void XAP_UnixDialog_Zoom::event_PreviewAreaExposed(void)
-{
-  UT_return_if_fail(m_zoomPreview);
-  
-  // trigger a draw on the preview area in the base class
-  m_zoomPreview->draw();
-}
-
 /*****************************************************************/
 
 GtkWidget * XAP_UnixDialog_Zoom::_constructWindow(void)
@@ -257,7 +218,6 @@ GtkWidget * XAP_UnixDialog_Zoom::_constructWindow(void)
 	// Update our member variables with the important widgets that 
 	// might need to be queried or altered later
 	window = glade_xml_get_widget(xml, "xap_UnixDlg_Zoom");
-	m_previewArea = glade_xml_get_widget(xml, "daPreview");
 	m_radioGroup = gtk_radio_button_get_group (GTK_RADIO_BUTTON ( glade_xml_get_widget(xml, "rbPercent200") ));
 	m_radio200 = glade_xml_get_widget(xml, "rbPercent200");
 	m_radio100 = glade_xml_get_widget(xml, "rbPercent100");
@@ -272,9 +232,6 @@ GtkWidget * XAP_UnixDialog_Zoom::_constructWindow(void)
 	UT_UTF8String s;
 	pSS->getValueUTF8(XAP_STRING_ID_DLG_Zoom_ZoomTitle,s);
 	abiDialogSetTitle(window, s.utf8_str());
-
-	// disable double buffering on our preview
-	gtk_widget_set_double_buffered(m_previewArea, FALSE);  
 
 	// localize the strings in our dialog, and set tags for some widgets
 	
@@ -298,8 +255,6 @@ GtkWidget * XAP_UnixDialog_Zoom::_constructWindow(void)
 	localizeButton(m_radioPercent, pSS, XAP_STRING_ID_DLG_Zoom_Percent);
 	g_object_set_data (G_OBJECT (m_radioPercent), WIDGET_ID_TAG_KEY, GINT_TO_POINTER(XAP_Frame::z_PERCENT));
 	
-	localizeLabelMarkup(glade_xml_get_widget(xml, "lbPreview"), pSS, XAP_STRING_ID_DLG_Zoom_PreviewFrame);
-
 	// Connect clicked signals so that our callbacks get called.
 	g_signal_connect(G_OBJECT(m_radio200),       "clicked", G_CALLBACK(s_radio_200_clicked),       static_cast<gpointer>(this));
 	g_signal_connect(G_OBJECT(m_radio100),       "clicked", G_CALLBACK(s_radio_100_clicked),       static_cast<gpointer>(this));
@@ -310,9 +265,6 @@ GtkWidget * XAP_UnixDialog_Zoom::_constructWindow(void)
 
 	// the zoom spin button
 	g_signal_connect(G_OBJECT(m_spinAdj), "value_changed", G_CALLBACK(s_spin_Percent_changed), static_cast<gpointer>(this));
-
-	// the expose event off the preview
-	g_signal_connect(G_OBJECT(m_previewArea), "expose_event", G_CALLBACK(s_preview_exposed),   static_cast<gpointer>(this));
 
 	return window;
 }

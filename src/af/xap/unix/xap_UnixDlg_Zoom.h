@@ -49,8 +49,6 @@ protected:
 	virtual void			event_RadioPercentClicked(void);
 	virtual void			event_SpinPercentChanged(void);
 
-	virtual void			event_PreviewAreaExposed(void);
-
 	static void s_radio_200_clicked(GtkWidget * widget, XAP_UnixDialog_Zoom * dlg) ;
 
 	static void s_radio_100_clicked(GtkWidget * widget, XAP_UnixDialog_Zoom * dlg) ;
@@ -64,12 +62,6 @@ protected:
 	static void s_radio_Percent_clicked(GtkWidget * widget, XAP_UnixDialog_Zoom * dlg) ;
 
 	static void s_spin_Percent_changed(GtkWidget * widget, XAP_UnixDialog_Zoom * dlg) ;
-
-	static gint s_preview_exposed(GtkWidget * /* widget */,
-				      GdkEventExpose * /* pExposeEvent */,
-				      XAP_UnixDialog_Zoom * dlg)  ;
-
-	GR_UnixGraphics	* 		m_unixGraphics;
 	
 	// private construction functions
 	GtkWidget * _constructWindow(void);
@@ -79,8 +71,6 @@ protected:
 
 	// pointers to widgets we need to query/set
 	GtkWidget * m_windowMain;
-
-	GtkWidget * m_previewArea;
 	
 	GtkWidget * m_radio200;
 	GtkWidget * m_radio100;
