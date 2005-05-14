@@ -519,9 +519,12 @@ XAP_UnixFont* XAP_UnixFontManager::findNearestFont(const char* pszFontFamily,
 				      NULL, pszFontSize,pG);
 	    } else {
 	      UT_DEBUGMSG(("No Such Font!\n"));
-	      pFont = findNearestFont("Times", "normal",
-				      NULL, "normal",
-				      NULL, pszFontSize,pG);    
+	      pFont = getFont("Times", XAP_UnixFont::STYLE_NORMAL);
+		  if (!pFont) {
+			UT_GenericVector<XAP_UnixFont*> *pFontList = m_fontHash.enumerate();
+			pFont = pFontList->getNthItem(0);
+			delete pFontList;
+		  }
 	    }
 	  }
   
