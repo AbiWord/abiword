@@ -265,20 +265,22 @@ public:									// we create...
 			}
 
 			// backup current
-			gtk_combo_box_get_active_iter (GTK_COMBO_BOX (widget), &iter);
-			path = gtk_tree_model_get_path (model, &iter);
-			g_object_set_data (G_OBJECT (widget), PATH_KEY, path);
-			gtk_tree_model_get (model, &iter, COLUMN_FONT, &desc, -1);
-			g_object_set_data (G_OBJECT (widget), FONT_DESC_KEY, desc);
-			
+			if (gtk_combo_box_get_active_iter (GTK_COMBO_BOX (widget), &iter)) {
+			  path = gtk_tree_model_get_path (model, &iter);
+			  g_object_set_data (G_OBJECT (widget), PATH_KEY, path);
+			  gtk_tree_model_get (model, &iter, COLUMN_FONT, &desc, -1);
+			  g_object_set_data (G_OBJECT (widget), FONT_DESC_KEY, desc);
+			}
+
 			// set system font on current
-			gtk_combo_box_get_active_iter (GTK_COMBO_BOX (widget), &iter);
-			PangoContext *context = gtk_widget_get_pango_context (GTK_WIDGET (widget));
-			desc = pango_context_get_font_description (context);
-			gtk_list_store_set (GTK_LIST_STORE (model), &iter,
-								COLUMN_FONT, (PangoFontDescription*)desc,
-								-1);
-		}	
+			if (gtk_combo_box_get_active_iter (GTK_COMBO_BOX (widget), &iter)) {
+			  PangoContext *context = gtk_widget_get_pango_context (GTK_WIDGET (widget));
+			  desc = pango_context_get_font_description (context);
+			  gtk_list_store_set (GTK_LIST_STORE (model), &iter,
+					      COLUMN_FONT, (PangoFontDescription*)desc,
+					      -1);
+			}	
+		}
 
 		// only act if the widget has been shown and embedded in the toolbar
 		if (wd->m_widget)
