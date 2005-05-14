@@ -39,7 +39,7 @@ if test "$_abi_peer" = "wv"; then
 		else		
 	    config_flags="$config_flags --with-glib=glib2 $abi_wv_xml $abi_wv_iconv $abi_wv_png $abi_wv_zlib"
 		fi
-    (cd $_abi_bdir && CPPFLAGS="$CPPFLAGS $abi_wv_cppflags" LDFLAGS="$LDFLAGS" $_abi_pdir/configure $config_flags)
+    (cd $_abi_bdir && if ! test -f $_abi_pdir/configure; then (cd $_abi_pdir && ./autogen.sh && cd $_abi_bdir); fi && CPPFLAGS="$CPPFLAGS $abi_wv_cppflags" LDFLAGS="$LDFLAGS" $_abi_pdir/configure $config_flags)
 
 elif test "$_abi_peer" = "expat"; then
     _expat_cppflags="-I`cd $_abi_bdir; pwd`/lib"
