@@ -1190,11 +1190,11 @@ bool PP_AttrProp::isEquivalent(const PP_AttrProp * pAP2) const
 			return false;
 
 		// ignore property attribute
-		if(0 != UT_strcmp(pValue, PT_PROPS_ATTRIBUTE_NAME))
+		if(0 == UT_strcmp(pValue, PT_PROPS_ATTRIBUTE_NAME))
 			continue;
 
 		// handle revision attribute correctly
-		if(0 != UT_strcmp(pValue, PT_REVISION_ATTRIBUTE_NAME))
+		if(0 == UT_strcmp(pValue, PT_REVISION_ATTRIBUTE_NAME))
 		{
 			// requires special treatment
 			PP_RevisionAttr r1(pValue);
@@ -1261,11 +1261,11 @@ bool PP_AttrProp::isEquivalent(const XML_Char ** attrs, const XML_Char ** props)
 			return false;
 
 		// ignore property attribute
-		if(0 != UT_strcmp(pValue, PT_PROPS_ATTRIBUTE_NAME))
+		if(0 == UT_strcmp(pValue, PT_PROPS_ATTRIBUTE_NAME))
 			continue;
 
 		// handle revision attribute correctly
-		if(0 != UT_strcmp(pValue, PT_REVISION_ATTRIBUTE_NAME))
+		if(0 == UT_strcmp(pValue, PT_REVISION_ATTRIBUTE_NAME))
 		{
 			// requires special treatment
 			PP_RevisionAttr r1(pValue);
