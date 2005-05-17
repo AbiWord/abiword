@@ -75,7 +75,7 @@ EV_Menu_Layout::~EV_Menu_Layout()
 /*!
  * It adds a new item to the menu bar.
  * \param path says where should appear the new item
- * (syntax: "/File/Send by email", "/Insert/Autotext/Insert automatically", etc.
+ * (syntax: "/File/Send by email", "/Insert/Insert automatically", etc.
  * you got it.)
  *
  * \todo This operation is a slow dog.  I should use ut_list, but it doesn't exists yet.

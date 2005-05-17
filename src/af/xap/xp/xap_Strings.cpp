@@ -406,8 +406,8 @@ void XAP_DiskStringSet::startElement(const XML_Char *name, const XML_Char **atts
 		const XML_Char ** a;
 		for (a = atts; (*a); a += 2)
 		{
-			// require a value for each attribute keyword except autotexts
-			UT_ASSERT((a[1] && *a[1]) || !strncmp(a[0], "AUTOTEXT", 8));
+			// require a value for each attribute keyword
+			UT_ASSERT((a[1] && *a[1]));
 
 			if (strcmp(const_cast<char*>(a[0]), "class") == 0)
 				continue;
