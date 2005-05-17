@@ -65,6 +65,8 @@
 
 /*****************************************************************/
 
+#define COMBO_KEY_MODEL "combo-key-model"
+
 static const GtkTargetEntry      s_AbiTBTargets[] = {{"abi-toolbars",0,0}};
 
 class _wd;
@@ -747,17 +749,13 @@ bool EV_UnixToolbar::synthesize(void)
 				GtkWidget *combo = gtk_combo_box_new();
 				GtkCellRenderer *renderer = gtk_cell_renderer_text_new();
 				gtk_cell_layout_pack_start (GTK_CELL_LAYOUT (combo), renderer, TRUE);
-				GtkListStore *store = NULL;
+				GtkTreeModel *model = NULL;
 				wd->m_widget = combo;
-
-				GtkWidget *align = gtk_hbox_new (FALSE, 0);
-				gtk_box_pack_start (GTK_BOX (align), combo, TRUE, FALSE, 5);
-				gtk_widget_show (align);
 
 				if (wd->m_id == AP_TOOLBAR_ID_ZOOM) {
 					// zoom
 					gtk_cell_layout_set_attributes(GTK_CELL_LAYOUT(combo), renderer, "text", COLUMN_STRING, NULL); 
-					store = gtk_list_store_new(1, G_TYPE_STRING);
+					model = GTK_TREE_MODEL (gtk_list_store_new(1, G_TYPE_STRING));
 				}
 				else if (wd->m_id == AP_TOOLBAR_ID_FMT_STYLE) {
 					// style preview
@@ -765,7 +763,7 @@ bool EV_UnixToolbar::synthesize(void)
 													"text", COLUMN_STRING, 
 													"font-desc", COLUMN_FONT,
 													NULL); 				
-					store = gtk_list_store_new(2, G_TYPE_STRING, PANGO_TYPE_FONT_DESCRIPTION);
+					model = GTK_TREE_MODEL (gtk_list_store_new(2, G_TYPE_STRING, PANGO_TYPE_FONT_DESCRIPTION));
 				}
 				else if (wd->m_id == AP_TOOLBAR_ID_FMT_FONT) {
 					// font preview
@@ -773,15 +771,43 @@ bool EV_UnixToolbar::synthesize(void)
 													"text", COLUMN_STRING, 
 													"font", COLUMN_FONT, 
 													NULL);					
-					store = gtk_list_store_new(NUM_COLUMNS, G_TYPE_STRING, G_TYPE_STRING, G_TYPE_INT);
+
+					GtkListStore *store = gtk_list_store_new(NUM_COLUMNS, G_TYPE_STRING, G_TYPE_STRING, G_TYPE_INT);
+					g_object_set_data(G_OBJECT(combo), COMBO_KEY_MODEL, store);
+
+					model = gtk_tree_model_sort_new_with_model (GTK_TREE_MODEL (store));
+					gtk_tree_sortable_set_sort_column_id (GTK_TREE_SORTABLE (model), COLUMN_STRING, GTK_SORT_ASCENDING);					
+
+				}
+				else if (wd->m_id == AP_TOOLBAR_ID_FMT_SIZE) {
+
+					/* hack, using a GtkComboBoxEntry here, need to destroy the default combo
+					gtk_widget_destroy (combo);
+
+					combo = gtk_combo_box_entry_new();
+					GtkCellRenderer *renderer = gtk_cell_renderer_text_new();
+					gtk_cell_layout_pack_start (GTK_CELL_LAYOUT (combo), renderer, TRUE);
+					wd->m_widget = combo;
+					*/
+					gtk_cell_layout_set_attributes(GTK_CELL_LAYOUT(combo), renderer, "text", COLUMN_STRING, NULL); 
+					model = GTK_TREE_MODEL (gtk_list_store_new(1, G_TYPE_STRING));
+
+					/* hack continued
+					gtk_combo_box_set_model(GTK_COMBO_BOX(combo), model);
+					gtk_combo_box_entry_set_text_column (GTK_COMBO_BOX_ENTRY (combo), COLUMN_STRING);
+					*/
 				}
 				else {
 					gtk_cell_layout_set_attributes(GTK_CELL_LAYOUT(combo), renderer, "text", COLUMN_STRING, NULL); 
-					store = gtk_list_store_new(1, G_TYPE_STRING);
+					model = GTK_TREE_MODEL (gtk_list_store_new(1, G_TYPE_STRING));
 				}
 
-				gtk_combo_box_set_model(GTK_COMBO_BOX(combo), GTK_TREE_MODEL(store));
-				g_object_unref(store);
+				GtkWidget *align = gtk_hbox_new (FALSE, 0);
+				gtk_box_pack_start (GTK_BOX (align), combo, TRUE, FALSE, 5);
+				gtk_widget_show (align);
+
+				gtk_combo_box_set_model(GTK_COMBO_BOX(combo), model);
+				g_object_unref(model);
 				
 				// set the size of the entry to set the total combo size
 				gtk_widget_set_size_request(combo, iWidth, -1);
@@ -1247,8 +1273,17 @@ abi_gtk_combo_box_fill_from_string_vector (_wd *wd,
 		pStyleCombo = reinterpret_cast<AP_UnixToolbar_StyleCombo*>(pControl);
 	}
 
-	GtkListStore *store = GTK_LIST_STORE (gtk_combo_box_get_model (combo));
+	gpointer data = NULL;
+	GtkListStore *store = NULL;
+	if (NULL != (data = g_object_get_data(G_OBJECT(combo), COMBO_KEY_MODEL))) {
+		// the model returned by ..._get_model is only a sorted view
+		store = GTK_LIST_STORE(data);
+	}
+	else {
+		store = GTK_LIST_STORE(gtk_combo_box_get_model(combo));
+	}
 	gtk_list_store_clear (store);
+
 
 	int count = strings->size ();
 	for (int i = 0; i < count; i++) {
@@ -1265,6 +1300,7 @@ abi_gtk_combo_box_fill_from_string_vector (_wd *wd,
 		}
 		else if (wd->m_id == AP_TOOLBAR_ID_FMT_FONT) {
 			// font preview
+
 			const gchar *name = strings->getNthItem(i);
 			XAP_UnixFont *pFont = XAP_UnixFontManager::pFontManager->getFont (name, XAP_UnixFont::STYLE_NORMAL);
 			if (pFont && (pFont->isSymbol() || pFont->isDingbat())) {
