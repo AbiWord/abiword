@@ -117,9 +117,10 @@ class XAP_UnixGnomePrintGraphics : public GR_Graphics
 	virtual void	  restoreRectangle(UT_uint32 iIndx) {}
 
 	virtual UT_uint32 getDeviceResolution(void) const;
-
+	GnomePrintContext *  getGnomePrintContext(void)
+	  { return m_gpc;}
 	static GnomePrintConfig * s_setup_config (XAP_Frame * pFrame);
-
+	
 protected:
 
 	virtual GR_Font* _findFont(const char* pszFontFamily, 
