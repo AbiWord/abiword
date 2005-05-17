@@ -321,7 +321,6 @@ cd ../abi
 %{ABIPREFIX}/plugins/libAbiCAPI.so
 %{ABIPREFIX}/plugins/libAbiDash.so
 %{?_with_gda:%{ABIPREFIX}/plugins/libAbiGDA.so}
-#%{ABIPREFIX}/plugins/libAbiGypsython.so
 %endif
 
 %if %{enable_impexp}
