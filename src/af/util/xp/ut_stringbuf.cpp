@@ -834,7 +834,7 @@ void UT_UTF8Stringbuf::decodeURL()
 	if(!m_psz || !*m_psz)
 		return;
 
-	char * buff = (char*)malloc(byteLength());
+	char * buff = (char*)malloc(byteLength() + 1);
 	UT_return_if_fail( buff );
 	buff[0] = 0;
 
