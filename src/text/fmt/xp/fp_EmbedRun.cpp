@@ -279,6 +279,14 @@ const char * fp_EmbedRun::getDataID(void) const
 	return m_pszDataID;
 }
 
+/*!
+ * Returns true if the embedable plugin is editable.
+ */
+bool fp_EmbedRun::isEdittable(void)
+{
+  return getEmbedManager()->isEdittable();
+}
+
 void fp_EmbedRun::_draw(dg_DrawArgs* pDA)
 {
 	GR_Graphics *pG = pDA->pG;

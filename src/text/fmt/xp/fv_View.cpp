@@ -9032,7 +9032,7 @@ EV_EditMouseContext FV_View::getMouseContext(UT_sint32 xPos, UT_sint32 yPos)
 	}
 	if(m_InlineImage.isActive())
 	{
-		UT_DEBUGMSG(("getMouseContext emc set to IMAGESIZE \n"));
+		xxx_UT_DEBUGMSG(("getMouseContext emc set to IMAGESIZE \n"));
 			m_prevMouseContext = EV_EMC_IMAGESIZE;
 			return EV_EMC_IMAGESIZE;
 	}

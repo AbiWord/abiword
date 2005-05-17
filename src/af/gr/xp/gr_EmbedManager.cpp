@@ -442,3 +442,12 @@ void GR_EmbedManager::releaseEmbedView(UT_sint32 uid)
   DELETEP(pEView);
   m_vecSnapshots.setNthItem(uid,NULL,NULL);
 }
+
+/*!
+ * Returns true if the plugin can be editted via the modify method.
+ * The default implementation cannot be editted so we return false.
+ */
+bool GR_EmbedManager::isEdittable(void)
+{
+  return false;
+}

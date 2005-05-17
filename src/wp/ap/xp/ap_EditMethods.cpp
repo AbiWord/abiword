@@ -96,6 +96,7 @@
 #include "gr_EmbedManager.h"
 #include "fp_MathRun.h"
 #include "ut_mbtowc.h"
+#include "fp_EmbedRun.h"
 
 #include "xad_Document.h"
 #include "xap_App.h"
@@ -4954,6 +4955,37 @@ Defun(editEmbed)
         PT_DocPosition posL = pView->getDocPositionFromXY(pCallData->m_xPos, pCallData->m_yPos);
 	PT_DocPosition posH = posL+1;
 	pView->cmdSelect(posL,posH);
+	fl_BlockLayout * pBlock = pView->getBlockAtPosition(posL);
+	bool bDoEmbed = false;
+	if(pBlock)
+	{
+		UT_sint32 x1,x2,y1,y2,iHeight;
+		bool bEOL = false;
+		bool bDir = false;
+		
+		fp_Run * pRun = NULL;
+		
+		pRun = pBlock->findPointCoords(posL,bEOL,x1,y1,x2,y2,iHeight,bDir);
+		while(pRun && ((pRun->getType() != FPRUN_IMAGE) && (pRun->getType() != FPRUN_EMBED)))
+		{
+			pRun = pRun->getNextRun();
+		}
+		if(pRun && ((pRun->getType() == FPRUN_IMAGE) || ((pRun->getType() == FPRUN_EMBED))))
+		{
+			// Set the cursor context to image selected.
+		  UT_DEBUGMSG(("Found and embedded Object \n"));
+			if(pRun->getType() == FPRUN_EMBED)
+			{
+			      bDoEmbed = true;
+			      fp_EmbedRun * pEmbedRun = static_cast<fp_EmbedRun *>(pRun);
+			      UT_DEBUGMSG(("About to edit the object \n"));
+			      GR_EmbedManager * pEmbed = pEmbedRun->getEmbedManager();
+			      UT_sint32 uid = pEmbedRun->getUID();
+			      pEmbed->modify(uid);
+			}
+		}
+	}
+
 	return true;
 }
 
