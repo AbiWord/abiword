@@ -34,18 +34,11 @@
 #include "ap_UnixDialog_Latex.h"
 #include "xap_Dlg_MessageBox.h"
 
-static void s_destroy_clicked(GtkWidget * /* widget */,
-							  AP_UnixDialog_Latex * dlg)
+static gboolean s_delete_clicked(GtkWidget * widget, GdkEvent *event, AP_UnixDialog_Latex * dlg)
 {
 	UT_ASSERT(dlg);
-	dlg->destroy();
-}
-
-static void s_delete_clicked(GtkWidget * widget,AP_UnixDialog_Latex * dlg)
-{
-	UT_ASSERT(dlg);
-	dlg->destroy();
-
+	dlg->event_WindowDelete();
+	return TRUE;
 }
 
 static void s_close_clicked(GtkWidget * widget,AP_UnixDialog_Latex * dlg)
@@ -107,7 +100,11 @@ void AP_UnixDialog_Latex::event_Insert(void)
 
 void AP_UnixDialog_Latex::event_Close(void)
 {
-	m_answer = AP_Dialog_Latex::a_CANCEL;	
+	destroy();
+}
+
+void AP_UnixDialog_Latex::event_WindowDelete(void)
+{
 	destroy();
 }
 
@@ -123,8 +120,10 @@ void AP_UnixDialog_Latex::destroy(void)
 {
 	m_answer = AP_Dialog_Latex::a_CANCEL;	
 	modeless_cleanup();
-	gtk_widget_destroy(m_windowMain);
-	m_windowMain = NULL;
+	if (m_windowMain != NULL) {
+		gtk_widget_destroy(m_windowMain);
+		m_windowMain = NULL;
+	}
 }
 
 void AP_UnixDialog_Latex::setLatexInGUI(void)
@@ -183,9 +182,6 @@ void AP_UnixDialog_Latex::constructDialog(void)
 	ConstructWindowName();
 	gtk_window_set_title (GTK_WINDOW(m_windowMain), m_sWindowName.utf8_str());
 
-	g_signal_connect(G_OBJECT(m_windowMain), "destroy",
-					   G_CALLBACK(s_destroy_clicked),
-					   reinterpret_cast<gpointer>(this));
 	g_signal_connect(G_OBJECT(m_windowMain), "delete_event",
 					   G_CALLBACK(s_delete_clicked),
 					   reinterpret_cast<gpointer>(this));
