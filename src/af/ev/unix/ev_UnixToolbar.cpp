@@ -80,7 +80,7 @@ enum {
 void 		 abi_gtk_combo_box_fill_from_string_vector (_wd 				*wd, 
 														EV_Toolbar_Control 	*pControl, 
 														const UT_GenericVector<const char*> *strings);
-const gchar *abi_gtk_combo_box_get_active_text		   (GtkComboBox 		*combo);
+const gchar *abi_gtk_combo_box_get_active_text		   (_wd					*wd);
 
 
 /**
@@ -294,7 +294,7 @@ public:									// we create...
 				if (!wd->m_blockSignal)
 				{
 					const gchar * buffer = NULL;
-					buffer = abi_gtk_combo_box_get_active_text(GTK_COMBO_BOX(widget));
+					buffer = abi_gtk_combo_box_get_active_text(wd);
 					
 					UT_uint32 length = strlen(buffer);
 					if (length > 0) 
@@ -781,21 +781,18 @@ bool EV_UnixToolbar::synthesize(void)
 				}
 				else if (wd->m_id == AP_TOOLBAR_ID_FMT_SIZE) {
 
-					/* hack, using a GtkComboBoxEntry here, need to destroy the default combo
+					// hack, using a GtkComboBoxEntry here, need to destroy the default combo
 					gtk_widget_destroy (combo);
-
+					combo = NULL;
+	
 					combo = gtk_combo_box_entry_new();
-					GtkCellRenderer *renderer = gtk_cell_renderer_text_new();
-					gtk_cell_layout_pack_start (GTK_CELL_LAYOUT (combo), renderer, TRUE);
 					wd->m_widget = combo;
-					*/
-					gtk_cell_layout_set_attributes(GTK_CELL_LAYOUT(combo), renderer, "text", COLUMN_STRING, NULL); 
+
 					model = GTK_TREE_MODEL (gtk_list_store_new(1, G_TYPE_STRING));
 
-					/* hack continued
+					// hack continued
 					gtk_combo_box_set_model(GTK_COMBO_BOX(combo), model);
 					gtk_combo_box_entry_set_text_column (GTK_COMBO_BOX_ENTRY (combo), COLUMN_STRING);
-					*/
 				}
 				else {
 					gtk_cell_layout_set_attributes(GTK_CELL_LAYOUT(combo), renderer, "text", COLUMN_STRING, NULL); 
@@ -1050,17 +1047,6 @@ bool EV_UnixToolbar::refreshToolbar(AV_View * pView, AV_ChangeMask mask)
 					bool wasBlocked = wd->m_blockSignal;
 					wd->m_blockSignal = true;
 					if (szState) {
-					  if ( wd->m_id==AP_TOOLBAR_ID_FMT_SIZE )
-					    {
-					      const char * fsz = XAP_EncodingManager::fontsizes_mapping.lookupBySource(szState);
-					      if ( fsz )
-							selectComboEntry(wd, fsz);
-					      else {
-							// TODO ROB: set default size
-							selectComboEntry(wd, "");
-						  }
-					    }
-					  else
 					    selectComboEntry(wd, szState);
 					} 
 					else {
@@ -1234,11 +1220,10 @@ EV_UnixToolbar::selectComboEntry (_wd 		  *wd,
 
 		// item not found
 		if (wd->m_id == AP_TOOLBAR_ID_FMT_SIZE) {
-			gtk_combo_box_set_active (combo, -1);
+			GtkWidget *entry = gtk_bin_get_child(GTK_BIN(combo));
+			gtk_entry_set_text(GTK_ENTRY(entry), text);
 		}
-
-		// todo rob debug
-		if (wd->m_id == AP_TOOLBAR_ID_FMT_STYLE) {
+		else if (wd->m_id == AP_TOOLBAR_ID_FMT_STYLE) {
 
 			XAP_Toolbar_ControlFactory * pFactory = m_pUnixApp->getControlFactory();
 			UT_ASSERT(pFactory);
@@ -1330,18 +1315,23 @@ abi_gtk_combo_box_fill_from_string_vector (_wd *wd,
 * Get currently active combo box text.
 */
 const gchar *
-abi_gtk_combo_box_get_active_text (GtkComboBox *combo) {
+abi_gtk_combo_box_get_active_text (_wd *wd) {
 
+	GtkComboBox *combo = GTK_COMBO_BOX(wd->m_widget);
 	GtkTreeModel *model = gtk_combo_box_get_model (combo);
 	gint idx = gtk_combo_box_get_active (combo);
+	if (idx < 0 && wd->m_id == AP_TOOLBAR_ID_FMT_SIZE) {
+		GtkWidget *entry = gtk_bin_get_child(GTK_BIN(combo));
+		return gtk_entry_get_text(GTK_ENTRY(entry));
+	}
 	GtkTreePath *path = gtk_tree_path_new_from_indices (idx, -1);
 
 	GtkTreeIter iter;
-	gtk_tree_model_get_iter (model, &iter, path);
+	const gchar *value = NULL;
+	if (gtk_tree_model_get_iter (model, &iter, path)) {
+		gtk_tree_model_get (model, &iter, COLUMN_STRING, &value, -1);
+	}
+
 	gtk_tree_path_free (path);
-
-	const gchar *value;
-	gtk_tree_model_get (model, &iter, COLUMN_STRING, &value, -1);
-
 	return value;
 }
