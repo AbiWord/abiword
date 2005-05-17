@@ -73,7 +73,7 @@ size_t UT_fileSize(const char * filename)
 
 	if( _stat( filename , &buf ) != -1 ) 
 	{
-		return buf.st_size & _S_IFREG;
+		return buf.st_size;
 	}
 
 	return 0;
