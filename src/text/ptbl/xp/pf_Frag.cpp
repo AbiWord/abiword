@@ -30,6 +30,7 @@ pf_Frag::pf_Frag(pt_PieceTable * pPT, PFType type, UT_uint32 length):
 	m_prev(NULL),
 	m_pField(NULL),
 	m_pPieceTable(pPT),
+	m_indexAP(0),
 	m_docPos(0),
 	m_iXID(0)
 {
