@@ -396,6 +396,7 @@ void AP_UnixDialog_Styles::event_DeleteClicked(void)
 {
 	if (m_selectedStyle)
     {
+		m_sNewStyleName = "";
         gchar * style = NULL;
 		
 		GtkTreeModel *model = gtk_tree_view_get_model(GTK_TREE_VIEW(m_tvStyles));
@@ -435,7 +436,8 @@ void AP_UnixDialog_Styles::event_NewClicked(void)
 	modifyRunModal();
 	if(m_answer == AP_Dialog_Styles::a_OK)
 	{
-		createNewStyle(getNewStyleName());
+		m_sNewStyleName = getNewStyleName();
+		createNewStyle(m_sNewStyleName.utf8_str());
 		_populateCList();
 	}
 }
@@ -625,6 +627,7 @@ void AP_UnixDialog_Styles::_populateCList(void) const
 	}
 
 	GtkTreeIter iter;
+	GtkTreeIter *pHighlightIter = NULL;
 	for (UT_uint32 i = 0; i < nStyles; i++)
 	{
 		getDoc()->enumStyles(static_cast<UT_uint32>(i), &name, &pStyle);
@@ -635,18 +638,30 @@ void AP_UnixDialog_Styles::_populateCList(void) const
 
 		if ((m_whichType == ALL_STYLES) || 
 			(m_whichType == USED_STYLES && pStyle->isUsed()) ||
-			(m_whichType == USER_STYLES && pStyle->isUserDefined()))
+			(m_whichType == USER_STYLES && pStyle->isUserDefined()) ||
+			(!UT_strcmp(m_sNewStyleName.utf8_str(), pStyle->getName()))) /* show newly created style anyways */
 		{
 			gtk_list_store_append(model, &iter);
 			gtk_list_store_set(model, &iter, 0, name, -1);
+			
+			if (!UT_strcmp(m_sNewStyleName.utf8_str(), pStyle->getName())) {
+				pHighlightIter = gtk_tree_iter_copy(&iter);
+			}
 		}
 	}
 
-	// select first
 	GtkTreeSelection *selection = gtk_tree_view_get_selection(GTK_TREE_VIEW(m_tvStyles));
-	GtkTreePath *path = gtk_tree_path_new_from_string("0");
-	gtk_tree_selection_select_path(selection, path);
-	g_free(path);
+	if (pHighlightIter) {
+		// select new/modified
+		gtk_tree_selection_select_iter(selection, pHighlightIter);
+		gtk_tree_iter_free(pHighlightIter);
+	}
+	else {
+		// select first
+		GtkTreePath *path = gtk_tree_path_new_from_string("0");
+		gtk_tree_selection_select_path(selection, path);
+		g_free(path);
+	}
 	
 	// selection "changed" doesn't fire here, so hack manually
 	s_tvStyles_selection_changed (selection, (gpointer)(this));
@@ -1307,7 +1322,8 @@ void AP_UnixDialog_Styles::event_ModifyClicked(void)
 {
 	PD_Style * pStyle = NULL;
 	const char * szCurrentStyle = getCurrentStyle ();
-	
+	m_sNewStyleName = szCurrentStyle;
+
 	if(szCurrentStyle)
 		getDoc()->getStyle(szCurrentStyle, &pStyle);
 	

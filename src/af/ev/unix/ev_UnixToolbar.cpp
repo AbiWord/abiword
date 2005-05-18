@@ -1169,7 +1169,11 @@ bool EV_UnixToolbar::repopulateStyles(void)
 //
 // Now make a new one.
 //
+	const gchar *style = abi_gtk_combo_box_get_active_text(wd);
 	abi_gtk_combo_box_fill_from_string_vector (wd, pStyleC, v);
+	if (style && *style) {
+		selectComboEntry(wd, style);
+	}
 
     wd->m_blockSignal = wasBlocked;
 
@@ -1320,11 +1324,17 @@ abi_gtk_combo_box_get_active_text (_wd *wd) {
 	GtkComboBox *combo = GTK_COMBO_BOX(wd->m_widget);
 	GtkTreeModel *model = gtk_combo_box_get_model (combo);
 	gint idx = gtk_combo_box_get_active (combo);
+	GtkTreePath *path = NULL;
 	if (idx < 0 && wd->m_id == AP_TOOLBAR_ID_FMT_SIZE) {
 		GtkWidget *entry = gtk_bin_get_child(GTK_BIN(combo));
 		return gtk_entry_get_text(GTK_ENTRY(entry));
 	}
-	GtkTreePath *path = gtk_tree_path_new_from_indices (idx, -1);
+	else if (idx >= 0) {
+		path = gtk_tree_path_new_from_indices (idx, -1);
+	}
+	else {
+		return NULL;
+	}
 
 	GtkTreeIter iter;
 	const gchar *value = NULL;
