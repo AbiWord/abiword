@@ -258,6 +258,7 @@ bool	PP_AttrProp::setAttribute(const XML_Char * szName, const XML_Char * szValue
 			if (!*q)
 			{
 				free(pOrig);
+				UT_DEBUGMSG(("props: %s\n", szValue));
 				return false;
 			}
 
