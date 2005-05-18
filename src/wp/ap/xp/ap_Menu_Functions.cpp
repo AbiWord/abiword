@@ -186,24 +186,6 @@ Defun_EV_GetMenuItemComputedLabel_Fn(ap_GetLabel_Search)
 	return buf;
 }
 
-Defun_EV_GetMenuItemComputedLabel_Fn(ap_GetLabel_AboutOS)
-{
-	// Compute the menu label for the about OS help item.
-
-	XAP_App * pApp = XAP_App::getApp();
-	UT_return_val_if_fail (pApp && pLabel, NULL);
-
-	UT_ASSERT_HARMLESS(id == AP_MENU_ID_HELP_ABOUTOS);
-
-	const char * szFormat = pLabel->getMenuLabel();
-	static char buf[128];
-
-	const char * szAppName = pApp->getApplicationName();
-
-	sprintf(buf,szFormat,szAppName);
-	return buf;
-}
-
 Defun_EV_GetMenuItemComputedLabel_Fn(ap_GetLabel_Checkver)
 {
 	// Compute the menu label for the about the check version item.

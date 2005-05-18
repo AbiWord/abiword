@@ -555,8 +555,6 @@ public:
 	static EV_EditMethod_Fn helpIndex;
 	static EV_EditMethod_Fn helpSearch;
 	static EV_EditMethod_Fn helpCheckVer;
-	static EV_EditMethod_Fn helpAboutOS;
-	static EV_EditMethod_Fn helpAboutGnu;
 	static EV_EditMethod_Fn helpAboutGnomeOffice;
 	static EV_EditMethod_Fn helpCredits;
 	static EV_EditMethod_Fn helpReportBug;
@@ -874,8 +872,6 @@ static EV_EditMethod s_arrayEditMethods[] =
 
 	// h
 	EV_EditMethod(NF(helpAboutGnomeOffice), _A_, ""),
-	EV_EditMethod(NF(helpAboutGnu), _A_, ""),
-	EV_EditMethod(NF(helpAboutOS),			_A_,		""),
 	EV_EditMethod(NF(helpCheckVer), 		_A_,		""),
 	EV_EditMethod(NF(helpContents), 		_A_,		""),
 	EV_EditMethod(NF(helpCredits), _A_, ""),
@@ -3207,19 +3203,9 @@ Defun0(helpCredits)
 	return helpLocalizeAndOpenURL("AbiWord/help", "credits", "http://www.abisource.com/help/");
 }
 
-Defun0(helpAboutGnu)
-{
-	return _openURL("http://www.gnu.org/philosophy/");
-}
-
 Defun0(helpAboutGnomeOffice)
 {
 	return _openURL("http://www.gnome.org/gnome-office/");
-}
-
-Defun0(helpAboutOS)
-{
-	return helpLocalizeAndOpenURL("AbiWord/help", "aboutos", "http://www.abisource.com/help/");
 }
 
 Defun1(cycleWindows)

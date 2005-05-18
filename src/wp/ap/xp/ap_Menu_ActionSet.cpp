@@ -336,8 +336,6 @@ EV_Menu_ActionSet * AP_CreateMenuActionSet(void)
 	_s(AP_MENU_ID_HELP_CHECKVER,		0,0,0,0,	"helpCheckVer",			NULL,					ap_GetLabel_Checkver);
 	_s(AP_MENU_ID_HELP_SEARCH,		0,0,0,0,	"helpSearch",			NULL,					ap_GetLabel_Search);
 	_s(AP_MENU_ID_HELP_ABOUT,		0,1,0,0,	"dlgAbout",			NULL,					ap_GetLabel_About);
-	_s(AP_MENU_ID_HELP_ABOUTOS,		0,0,0,0,	"helpAboutOS",			NULL,					ap_GetLabel_AboutOS);
-	_s(AP_MENU_ID_HELP_ABOUT_GNU, 0,0,0,0, "helpAboutGnu", NULL, NULL);
 	_s(AP_MENU_ID_HELP_ABOUT_GNOMEOFFICE, 0,0,0,0, "helpAboutGnomeOffice", NULL, NULL);
 	_s(AP_MENU_ID_HELP_CREDITS, 0,0,0,0, "helpCredits", NULL, NULL);
 	_s(AP_MENU_ID_HELP_REPORT_BUG, 0,0,0,0, "helpReportBug", NULL, NULL);

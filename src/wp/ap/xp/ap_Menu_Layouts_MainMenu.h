@@ -369,12 +369,9 @@ BeginLayout(Main,0)
 		MenuItem(AP_MENU_ID_HELP_CHECKVER)
 		MenuItem(AP_MENU_ID_HELP_REPORT_BUG)
 		Separator()
-		MenuItem(AP_MENU_ID_HELP_ABOUTOS)
-		MenuItem(AP_MENU_ID_HELP_ABOUT_GNU)
 #ifdef HAVE_GNOME
 		MenuItem(AP_MENU_ID_HELP_ABOUT_GNOMEOFFICE)
 #endif
-		Separator()
 #ifndef HAVE_GNOME
 		MenuItem(AP_MENU_ID_HELP_CREDITS)
 #ifndef XP_MAC_TARGET_MACOSX

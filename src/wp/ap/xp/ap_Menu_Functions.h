@@ -85,7 +85,6 @@ Defun_EV_GetMenuItemComputedLabel_Fn(ap_GetLabel_About);
 Defun_EV_GetMenuItemComputedLabel_Fn(ap_GetLabel_Contents);
 Defun_EV_GetMenuItemComputedLabel_Fn(ap_GetLabel_Checkver);
 Defun_EV_GetMenuItemComputedLabel_Fn(ap_GetLabel_Search);
-Defun_EV_GetMenuItemComputedLabel_Fn(ap_GetLabel_AboutOS);
 Defun_EV_GetMenuItemComputedLabel_Fn(ap_GetLabel_Index);
 Defun_EV_GetMenuItemComputedLabel_Fn(ap_GetLabel_Suggest);
 

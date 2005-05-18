@@ -304,8 +304,6 @@ menuitem(HELP_INDEX)
 menuitem(HELP_CHECKVER)
 menuitem(HELP_SEARCH)
 menuitem(HELP_ABOUT)
-menuitem(HELP_ABOUTOS)
-menuitem(HELP_ABOUT_GNU)
 menuitem(HELP_ABOUT_GNOMEOFFICE)
 menuitem(HELP_REPORT_BUG)
 
