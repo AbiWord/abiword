@@ -587,6 +587,10 @@ bool PP_AttrProp::areAlreadyPresent(const XML_Char ** attributes, const XML_Char
 
 			if((!p[1] || !*p[1]) && getAttribute(p[0],szValue) && szValue && *szValue)
 				return false;
+			// the 'props' attribute has to be handled separatedly, since it is not
+			// returned using getAttribute() (it is not stored as attribute)
+			else if((!p[1] || !*p[1]) && !strcmp(p[0],"props") && hasProperties())
+				return false;
 			else if(p[1] && *p[1])
 			{
 				if (!getAttribute(p[0],szValue))
