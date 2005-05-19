@@ -65,22 +65,37 @@
 
 /*****************************************************************/
 
+//! Some combos have a sort-model attached which cannot be altered. They have the original model in their gobject bucket.
 #define COMBO_KEY_MODEL "combo-key-model"
+//! Each combo knows about its changed signal id
+#define COMBO_KEY_CHANGED_SIGNAL "combo-key-changed-signal"
+//! Fonts are loaded lazily, we need to remember what to set after we're ready.
+#define FONTCOMBO_KEY_ACTIVE_FONT "fontcombo-key-active-font"
 
 static const GtkTargetEntry      s_AbiTBTargets[] = {{"abi-toolbars",0,0}};
 
 class _wd;
 
+//! list-store columns
 enum {
 	COLUMN_STRING = 0,
 	COLUMN_FONT,
 	NUM_COLUMNS
 };
 
+//! container for the idle handler (for loading fonts)
+typedef struct {
+	_wd 				*wd;
+	EV_Toolbar_Control  *pControl;
+	UT_GenericVector<gchar*> *strings;
+	guint 				 idx;
+} FontComboIdleData;
+
 void 		 abi_gtk_combo_box_fill_from_string_vector (_wd 				*wd, 
 														EV_Toolbar_Control 	*pControl, 
 														const UT_GenericVector<const char*> *strings);
 const gchar *abi_gtk_combo_box_get_active_text		   (_wd					*wd);
+gboolean     font_combo_idle_fill					   (gpointer data);
 
 
 /**
@@ -249,9 +264,16 @@ public:									// we create...
 
 			// handle style combo, always system font in selected entry
 
+			//GtkTreeModel *model = gtk_combo_box_get_model (GTK_COMBO_BOX (widget));
+			gpointer data;
+			GtkTreeModel *model = NULL;
+			if (NULL != (data = g_object_get_data(G_OBJECT(widget), COMBO_KEY_MODEL))) {
+				// the model returned by ..._get_model is only a sorted view
+				model = GTK_TREE_MODEL(data);
+			}
+
 			const gchar *FONT_DESC_KEY = "font-desc-key";
 			const gchar *PATH_KEY = "path-key";
-			GtkTreeModel *model = gtk_combo_box_get_model (GTK_COMBO_BOX (widget));
 			GtkTreeIter iter;
 			gpointer path = NULL;
 			gpointer desc = NULL;
@@ -266,22 +288,34 @@ public:									// we create...
 									-1);
 			}
 
+			// get current
+			GtkTreeIter currentIter;
+			const gchar *current = NULL;
+			GtkTreeModel *sort_model = gtk_combo_box_get_model (GTK_COMBO_BOX(widget));
+			gtk_combo_box_get_active_iter (GTK_COMBO_BOX (widget), &iter);
+			gtk_tree_model_get (sort_model, &iter, COLUMN_STRING, &current, -1);
+			gtk_tree_model_get_iter_first (model, &currentIter);
+			
 			// backup current
-			if (gtk_combo_box_get_active_iter (GTK_COMBO_BOX (widget), &iter)) {
-			  path = gtk_tree_model_get_path (model, &iter);
-			  g_object_set_data (G_OBJECT (widget), PATH_KEY, path);
-			  gtk_tree_model_get (model, &iter, COLUMN_FONT, &desc, -1);
-			  g_object_set_data (G_OBJECT (widget), FONT_DESC_KEY, desc);
+			do {
+				gchar *value;
+				gtk_tree_model_get (model, &currentIter, COLUMN_STRING, &value, -1);
+				if (!UT_strcmp (current, value)) {
+					path = gtk_tree_model_get_path (model, &currentIter);
+					g_object_set_data (G_OBJECT (widget), PATH_KEY, path);
+					gtk_tree_model_get (model, &currentIter, COLUMN_FONT, &desc, -1);
+					g_object_set_data (G_OBJECT (widget), FONT_DESC_KEY, desc);
+					break;	
+				}
 			}
+			while (gtk_tree_model_iter_next (model, &currentIter));
 
 			// set system font on current
-			if (gtk_combo_box_get_active_iter (GTK_COMBO_BOX (widget), &iter)) {
-			  PangoContext *context = gtk_widget_get_pango_context (GTK_WIDGET (widget));
-			  desc = pango_context_get_font_description (context);
-			  gtk_list_store_set (GTK_LIST_STORE (model), &iter,
-					      COLUMN_FONT, (PangoFontDescription*)desc,
-					      -1);
-			}	
+			PangoContext *context = gtk_widget_get_pango_context (GTK_WIDGET (widget));
+			desc = pango_context_get_font_description (context);
+			gtk_list_store_set (GTK_LIST_STORE (model), &currentIter,
+				      COLUMN_FONT, (PangoFontDescription*)desc,
+				      -1);
 		}
 
 		// only act if the widget has been shown and embedded in the toolbar
@@ -763,7 +797,11 @@ bool EV_UnixToolbar::synthesize(void)
 													"text", COLUMN_STRING, 
 													"font-desc", COLUMN_FONT,
 													NULL); 				
-					model = GTK_TREE_MODEL (gtk_list_store_new(2, G_TYPE_STRING, PANGO_TYPE_FONT_DESCRIPTION));
+					GtkListStore *store = gtk_list_store_new(2, G_TYPE_STRING, PANGO_TYPE_FONT_DESCRIPTION);
+					g_object_set_data(G_OBJECT(combo), COMBO_KEY_MODEL, store);
+
+					model = gtk_tree_model_sort_new_with_model (GTK_TREE_MODEL (store));
+					gtk_tree_sortable_set_sort_column_id (GTK_TREE_SORTABLE (model), COLUMN_STRING, GTK_SORT_ASCENDING);					
 				}
 				else if (wd->m_id == AP_TOOLBAR_ID_FMT_FONT) {
 					// font preview
@@ -777,7 +815,6 @@ bool EV_UnixToolbar::synthesize(void)
 
 					model = gtk_tree_model_sort_new_with_model (GTK_TREE_MODEL (store));
 					gtk_tree_sortable_set_sort_column_id (GTK_TREE_SORTABLE (model), COLUMN_STRING, GTK_SORT_ASCENDING);					
-
 				}
 				else if (wd->m_id == AP_TOOLBAR_ID_FMT_SIZE) {
 
@@ -809,10 +846,11 @@ bool EV_UnixToolbar::synthesize(void)
 				// set the size of the entry to set the total combo size
 				gtk_widget_set_size_request(combo, iWidth, -1);
 
-		        g_signal_connect(G_OBJECT(GTK_COMBO_BOX(combo)),
+		        gulong sig = g_signal_connect(G_OBJECT(GTK_COMBO_BOX(combo)),
 								 "changed",
 								 G_CALLBACK(_wd::s_combo_changed),
 								 wd);
+				g_object_set_data (G_OBJECT(combo), COMBO_KEY_CHANGED_SIGNAL, (gpointer)sig);
 
 				// populate it
 				if (pControl)
@@ -1213,7 +1251,6 @@ EV_UnixToolbar::selectComboEntry (_wd 		  *wd,
 			else {
 				// compare strings
 				if (!UT_strcmp (text, value)) {
-					
 					gtk_combo_box_set_active (combo, idx);
 					return;
 				}
@@ -1223,11 +1260,22 @@ EV_UnixToolbar::selectComboEntry (_wd 		  *wd,
 		while (gtk_tree_model_iter_next (model, &iter));
 
 		// item not found
-		if (wd->m_id == AP_TOOLBAR_ID_FMT_SIZE) {
+		if (wd->m_id == AP_TOOLBAR_ID_FMT_FONT) {
+			// remember to set after lazy loading
+			g_object_set_data (G_OBJECT(combo), FONTCOMBO_KEY_ACTIVE_FONT, (gpointer)text);
+		}
+		else if (wd->m_id == AP_TOOLBAR_ID_FMT_SIZE) {
 			GtkWidget *entry = gtk_bin_get_child(GTK_BIN(combo));
 			gtk_entry_set_text(GTK_ENTRY(entry), text);
 		}
 		else if (wd->m_id == AP_TOOLBAR_ID_FMT_STYLE) {
+
+			GtkListStore *store = NULL;
+			gpointer data;
+			if (NULL != (data = g_object_get_data(G_OBJECT(combo), COMBO_KEY_MODEL))) {
+				store = GTK_LIST_STORE(data);
+			}
+			UT_return_if_fail(store != NULL);
 
 			XAP_Toolbar_ControlFactory * pFactory = m_pUnixApp->getControlFactory();
 			UT_ASSERT(pFactory);
@@ -1237,8 +1285,8 @@ EV_UnixToolbar::selectComboEntry (_wd 		  *wd,
 			const PangoFontDescription *desc = pStyleCombo->getStyle(text);
 			//UT_return_if_fail(desc);
 
-			gtk_list_store_append (GTK_LIST_STORE (model), &iter);
-			gtk_list_store_set (GTK_LIST_STORE (model), &iter, 
+			gtk_list_store_append (store, &iter);
+			gtk_list_store_set (store, &iter, 
 								COLUMN_STRING, text, 
 								COLUMN_FONT, desc, 
 								-1);
@@ -1248,20 +1296,13 @@ EV_UnixToolbar::selectComboEntry (_wd 		  *wd,
 
 /*!
 * Refill a combo box (list model, one string column) from a string vector.
-* \todo this should probably refactored into the combo classes
 */
 void 
 abi_gtk_combo_box_fill_from_string_vector (_wd *wd,
 										   EV_Toolbar_Control *pControl,
 										   const UT_GenericVector<const char*> *strings) {
 
-	GtkComboBox *combo = GTK_COMBO_BOX (wd->m_widget); 
-
-	AP_UnixToolbar_StyleCombo * pStyleCombo = NULL;
-	if (wd->m_id == AP_TOOLBAR_ID_FMT_STYLE) {
-		pStyleCombo = reinterpret_cast<AP_UnixToolbar_StyleCombo*>(pControl);
-	}
-
+	GtkComboBox *combo = GTK_COMBO_BOX (wd->m_widget);
 	gpointer data = NULL;
 	GtkListStore *store = NULL;
 	if (NULL != (data = g_object_get_data(G_OBJECT(combo), COMBO_KEY_MODEL))) {
@@ -1271,9 +1312,31 @@ abi_gtk_combo_box_fill_from_string_vector (_wd *wd,
 	else {
 		store = GTK_LIST_STORE(gtk_combo_box_get_model(combo));
 	}
+
+	AP_UnixToolbar_StyleCombo * pStyleCombo = NULL;
+	if (wd->m_id == AP_TOOLBAR_ID_FMT_STYLE) {
+		pStyleCombo = reinterpret_cast<AP_UnixToolbar_StyleCombo*>(pControl);
+	}
+	else if (wd->m_id == AP_TOOLBAR_ID_FMT_FONT) {
+
+		// load using an idle handler
+
+		UT_GenericVector<gchar*> *fonts = new UT_GenericVector<gchar*>();
+		for (guint i = 0; i < strings->size(); i++) {
+			fonts->addItem(g_strdup(strings->getNthItem(i)));
+		}
+
+		FontComboIdleData *pData = new FontComboIdleData();
+		pData->wd = wd;
+		pData->pControl = pControl;
+		pData->strings = fonts;
+		pData->idx = 0;
+		g_idle_add (font_combo_idle_fill, pData);
+		return;
+	}
+
+
 	gtk_list_store_clear (store);
-
-
 	int count = strings->size ();
 	for (int i = 0; i < count; i++) {
 	
@@ -1285,26 +1348,6 @@ abi_gtk_combo_box_fill_from_string_vector (_wd *wd,
 			gtk_list_store_set (store, &iter, 
 								COLUMN_STRING, style, 
 								COLUMN_FONT, pStyleCombo->getStyle(style), 
-								-1);
-		}
-		else if (wd->m_id == AP_TOOLBAR_ID_FMT_FONT) {
-			// font preview
-
-			const gchar *name = strings->getNthItem(i);
-			XAP_UnixFont *pFont = XAP_UnixFontManager::pFontManager->getFont (name, XAP_UnixFont::STYLE_NORMAL);
-			if (pFont && (pFont->isSymbol() || pFont->isDingbat())) {
-				// "$fontname (Symbols)"
-				const XAP_StringSet * pSS = XAP_App::getApp()->getStringSet();
-				static UT_UTF8String tmpName;
-				tmpName = UT_UTF8String_sprintf ("%s (%s)", name, pSS->getValue(XAP_STRING_ID_TB_Font_Symbol));
-				name = tmpName.utf8_str();
-			}
-
-			GtkTreeIter iter;
-			gtk_list_store_append (store, &iter);
-			gtk_list_store_set (store, &iter, 
-								COLUMN_STRING, name, 
-								COLUMN_FONT, strings->getNthItem(i), 
 								-1);
 		}
 		else {
@@ -1344,4 +1387,70 @@ abi_gtk_combo_box_get_active_text (_wd *wd) {
 
 	gtk_tree_path_free (path);
 	return value;
+}
+
+/*!
+* Idle handler for filling the font combo.
+*/
+gboolean     
+font_combo_idle_fill (gpointer data) {
+
+	FontComboIdleData *pData = static_cast<FontComboIdleData*>(data);
+	GtkComboBox *combo = GTK_COMBO_BOX(pData->wd->m_widget);
+	GtkListStore *store = NULL;
+	if (NULL != (data = g_object_get_data(G_OBJECT(combo), COMBO_KEY_MODEL))) {
+		// the model returned by ..._get_model is only a sorted view
+		store = GTK_LIST_STORE(data);
+	}
+
+	GtkTreeIter iter;
+	for (guint i = pData->idx; i < pData->strings->size(); i++) {
+	
+		const gchar *name = pData->strings->getNthItem(i);
+		XAP_UnixFont *pFont = XAP_UnixFontManager::pFontManager->getFont (name, XAP_UnixFont::STYLE_NORMAL);
+		if (pFont && (pFont->isSymbol() || pFont->isDingbat())) {
+			// "$fontname (Symbols)"
+			const XAP_StringSet * pSS = XAP_App::getApp()->getStringSet();
+			static UT_UTF8String tmpName;
+			tmpName = UT_UTF8String_sprintf ("%s (%s)", name, pSS->getValue(XAP_STRING_ID_TB_Font_Symbol));
+			name = tmpName.utf8_str();
+		}
+
+		gtk_list_store_append (store, &iter);
+		gtk_list_store_set (store, &iter, 
+							COLUMN_STRING, name, 
+							COLUMN_FONT, pData->strings->getNthItem(i), 
+							-1);
+
+		if (i >= (pData->idx + 5)) {
+			pData->idx = i + 1;
+			return TRUE;
+		}
+	}
+
+	// highlight font
+	gchar *font = NULL;
+	GtkTreeModel *model = gtk_combo_box_get_model(combo);
+	if (NULL != (font = (gchar*)g_object_get_data(G_OBJECT(combo), FONTCOMBO_KEY_ACTIVE_FONT))) {
+		gtk_tree_model_get_iter_first (model, &iter);
+		do {
+			gchar *value;
+			gtk_tree_model_get (model, &iter, COLUMN_STRING, &value, -1);
+			if (!UT_strcmp (font, value)) {
+				gulong sig = (gulong)g_object_get_data (G_OBJECT(combo), COMBO_KEY_CHANGED_SIGNAL);
+				g_signal_handler_block (combo, sig);
+				gtk_combo_box_set_active_iter (combo, &iter);
+				g_signal_handler_unblock (combo, sig);
+				break;
+			}
+		}
+		while (gtk_tree_model_iter_next (model, &iter));
+	}
+
+	for (guint i = 0; i < pData->strings->size(); i++) {
+		free(pData->strings->getNthItem(i));
+	}
+	delete pData->strings;
+	delete pData;
+	return FALSE;
 }
