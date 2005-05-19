@@ -39,7 +39,49 @@
 #include "pd_Document.h"
 
 
+/*!
+    XML cannot contain any control characters except \t, \n, \r, see bug 8565
+    (http://www.w3.org/TR/REC-xml/#charsets)
+    
+    This function replaces any illegal characters with '~'
+    (That choice is arbitrary, it needs to be some character that does not have a special
+    meaning in xml, xlink, etc. We could, of course, remove the character altoghether, but
+    that means moving data around.)
+*/
+static inline void s_validXML(char * s)
+{
+	if(!s)
+		return;
+	
+	while(*s)
+	{
+		if(*s < ' ' && *s != '\t' && *s != '\n' && *s != '\r')
+		{
+			*s = '~';
+		}
+		
+		++s;
+	}
+}
 
+static inline bool s_isValidXML(const char *s)
+{
+	if(!s)
+		return true;
+	
+	while(*s)
+	{
+		if(*s < ' ' && *s != '\t' && *s != '\n' && *s != '\r')
+		{
+			return false;
+		}
+		
+		++s;
+	}
+
+	return true;
+}
+	
 /****************************************************************/
 PP_AttrProp::PP_AttrProp()
 {
@@ -330,6 +372,10 @@ bool	PP_AttrProp::setAttribute(const XML_Char * szName, const XML_Char * szValue
 		UT_lowerString(copy);
 		char * szDupValue = szValue ? UT_strdup(szValue) : NULL;
 
+		// get rid of any illegal chars we might have been given
+		s_validXML(copy);
+		s_validXML(szDupValue);
+
 		const char * pEntry = m_pAttributes->pick(copy);
 
 		if(pEntry)
@@ -356,6 +402,8 @@ bool	PP_AttrProp::setAttribute(const XML_Char * szName, const XML_Char * szValue
 
 bool	PP_AttrProp::setProperty(const XML_Char * szName, const XML_Char * szValue)
 {
+	UT_return_val_if_fail( szName, false );
+	
 	if (!m_pProperties)
 	{
 		m_pProperties = new UT_GenericStringMap<PropertyPair*>(5);
@@ -372,6 +420,24 @@ bool	PP_AttrProp::setProperty(const XML_Char * szName, const XML_Char * szValue)
 	// be present
 	// 
 	//bool bRemove = (!szValue || !*szValue);
+
+	// get rid of any chars invalid in xml
+	char * szName2 = NULL;
+	if(!s_isValidXML(szName))
+	{
+		szName2 = UT_strdup(szName);
+
+		// get rid of any illegal chars we were passed
+		s_validXML(szName2);
+
+		szName = szName2;
+	}
+	
+	char * szValue2 = szValue ? UT_strdup(szValue) : NULL;
+	UT_return_val_if_fail( szName && (szValue2 || !szValue), false);
+
+	// get rid of any illegal chars we might have been given in the value
+	s_validXML(szValue2);
 	
 	const PropertyPair * pEntry = m_pProperties->pick(szName);
 	if (pEntry)
@@ -390,12 +456,16 @@ bool	PP_AttrProp::setProperty(const XML_Char * szName, const XML_Char * szValue)
 		if (p->second())
 			delete p->second();
 		delete p;
-		m_pProperties->set(szName, new PropertyPair(szValue ? UT_strdup(szValue) : NULL, NULL));
+		m_pProperties->set(szName, new PropertyPair(szValue2, NULL));
 	}
 	else
 	{
-		m_pProperties->insert(szName, new PropertyPair(szValue ? UT_strdup(szValue) : NULL, NULL));
+		m_pProperties->insert(szName, new PropertyPair(szValue2, NULL));
 	}
+
+	// free the name duplicate if necessary
+	FREEP(szName2);
+	
 	return true;
 }
 
