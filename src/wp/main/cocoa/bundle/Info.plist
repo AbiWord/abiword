@@ -335,7 +335,7 @@
 	<key>CFBundleSignature</key>
 	<string>ABIW</string>
 	<key>CFBundleVersion</key>
-	<string>2.2.7</string>
+	<string>2.2.8</string>
 	<key>NSMainNibFile</key>
 	<string>MainMenu</string>
 	<key>NSPrincipalClass</key>
