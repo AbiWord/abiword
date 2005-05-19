@@ -31,11 +31,8 @@
 #include "xap_Strings.h"
 #include "xap_Dialog_Id.h"
 #include "xap_Dlg_Zoom.h"
-#include "xap_Preview_Zoom.h"
 #include "xap_Win32Dlg_Zoom.h"
-#include "xap_Win32PreviewWidget.h"
 
-#include "gr_Win32Graphics.h"
 #include "xap_Win32Resources.rc2"
 
 /*****************************************************************/
@@ -51,13 +48,12 @@ XAP_Win32Dialog_Zoom::XAP_Win32Dialog_Zoom(XAP_DialogFactory * pDlgFactory,
 											   XAP_Dialog_Id id)
 	: XAP_Dialog_Zoom(pDlgFactory,id)
 {
-	m_pPreviewWidget = NULL;
 	m_bEditPctEnabled = false;
 }
 
 XAP_Win32Dialog_Zoom::~XAP_Win32Dialog_Zoom(void)
 {
-	DELETEP(m_pPreviewWidget);
+
 }
 
 /*****************************************************************/
@@ -84,9 +80,6 @@ void XAP_Win32Dialog_Zoom::runModal(XAP_Frame * pFrame)
 	  - Save the zoom type to "m_zoomType".
 	  
 	  - Save the value in the Percent spin button box to "m_zoomPercent".
-
-	  On "Cancel" the dialog should:
-	  FIXME: remove the Cancel button from HEAD, since we have Quick Zoom now
 
 	  - Just quit, the data items will be ignored by the caller.
 
@@ -128,7 +121,6 @@ BOOL XAP_Win32Dialog_Zoom::_onInitDialog(HWND hWnd, WPARAM wParam, LPARAM lParam
 	localizeControlText(XAP_RID_DIALOG_ZOOM_RADIO_WIDTH,	XAP_STRING_ID_DLG_Zoom_PageWidth);
 	localizeControlText(XAP_RID_DIALOG_ZOOM_RADIO_WHOLE,	XAP_STRING_ID_DLG_Zoom_WholePage);
 	localizeControlText(XAP_RID_DIALOG_ZOOM_RADIO_PCT,		XAP_STRING_ID_DLG_Zoom_Percent);
-	localizeControlText(XAP_RID_DIALOG_ZOOM_TEXT_PREVIEW,	XAP_STRING_ID_DLG_Zoom_PreviewFrame);
 	localizeControlText(XAP_RID_DIALOG_ZOOM_BTN_CLOSE,		XAP_STRING_ID_DLG_Close);
 
 	// set initial state
@@ -140,22 +132,6 @@ BOOL XAP_Win32Dialog_Zoom::_onInitDialog(HWND hWnd, WPARAM wParam, LPARAM lParam
 	SendMessage(GetDlgItem(hWnd,XAP_RID_DIALOG_ZOOM_SPIN_PCT),UDM_SETRANGE,
 				(WPARAM)0,(LPARAM)MAKELONG(XAP_DLG_ZOOM_MAXIMUM_ZOOM,XAP_DLG_ZOOM_MINIMUM_ZOOM));
 		
-	// use the owner-draw-control dialog-item (aka window) specified in the
-	// dialog resource file as a parent to the window/widget that we create
-	// here and thus have complete control of.
-	m_pPreviewWidget = new XAP_Win32PreviewWidget(static_cast<XAP_Win32App *>(m_pApp),
-												  GetDlgItem(hWnd, XAP_RID_DIALOG_ZOOM_PREVIEW),
-												  0);
-
-	// instantiate the XP preview object using the win32 preview widget (window)
-	// we just created.  we seem to have a mish-mash of terms here, sorry.
-	
-	UT_uint32 w,h;
-	m_pPreviewWidget->getWindowSize(&w,&h);
-	
-	_createPreviewFromGC(m_pPreviewWidget->getGraphics(),w,h);
-	m_pPreviewWidget->getGraphics()->init3dColors();
-	m_pPreviewWidget->setPreview(m_zoomPreview); // we need this to call draw() on WM_PAINTs
 	_updatePreviewZoomPercent(getZoomPercent());
 	
 	centerDialog();	

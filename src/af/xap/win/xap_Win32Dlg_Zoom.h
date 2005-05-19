@@ -22,7 +22,6 @@
 
 #include <commctrl.h>
 #include "xap_Dlg_Zoom.h"
-#include "xap_Win32PreviewWidget.h"
 #include "xap_Win32DialogBase.h"
 
 class XAP_Frame;
@@ -47,7 +46,6 @@ protected:
 
 	BOOL _getValueFromEditPct(int * pNewValue);
 
-	XAP_Win32PreviewWidget *		m_pPreviewWidget;
 	bool							m_bEditPctEnabled;		// is edit-pct-box enabled (true iff radio_pct)
 };
 
