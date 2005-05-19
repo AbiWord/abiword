@@ -44,7 +44,9 @@ BeginLayout(Main,0)
 
 		Separator()
 		MenuItem(AP_MENU_ID_FILE_PAGESETUP)
+#ifdef XP_UNIX_TARGET_GTK
 		MenuItem(AP_MENU_ID_FILE_PRINT_PREVIEW)
+#endif
 		MenuItem(AP_MENU_ID_FILE_PRINT)
 		Separator()
 		MenuItem(AP_MENU_ID_FILE_PROPERTIES)
@@ -374,10 +376,6 @@ BeginLayout(Main,0)
 #endif
 #ifndef HAVE_GNOME
 		MenuItem(AP_MENU_ID_HELP_CREDITS)
-#ifndef XP_MAC_TARGET_MACOSX
-		// On MacOS X don't put a separator as the "About" menu item is moved away at run time
-		Separator()
-#endif
 #endif
 		MenuItem(AP_MENU_ID_HELP_ABOUT)
 	EndSubMenu()

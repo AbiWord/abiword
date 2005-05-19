@@ -34,7 +34,9 @@ BeginLayout(FileEditOps, AP_STRING_ID_TB_Standard, AP_PREF_KEY_StandardBarVisibl
 
 	Spacer()
 	ToolbarItem(AP_TOOLBAR_ID_FILE_PRINT)
+#ifdef XP_UNIX_TARGET_GTK
 	ToolbarItem(AP_TOOLBAR_ID_FILE_PRINT_PREVIEW)
+#endif
 	ToolbarItem(AP_TOOLBAR_ID_SPELLCHECK)
 
 	Spacer()
