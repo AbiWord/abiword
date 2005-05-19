@@ -4,6 +4,7 @@
 ; and modified by Michael D. Pritchett <mpritchett@attglobal.net>
 ; modified by Kenneth J Davis <jeremyd@computer.org>
 
+!include Sections.nsH
 
 ; Uncomment the following define to include plugins that
 ; either lack functionality, are unstable, or otherwise
@@ -63,6 +64,13 @@ DirText "Choose the AbiSuite directory where you previously installed Abiword:"
 
 ; For NSIS 2.xx
 CheckBitmap ..\..\pkg\win\setup\modern.bmp
+
+; Remember if we already enabled Glib or not
+var GLIB_ENABLED 
+
+Function .onInit
+	strcpy $GLIB_ENABLED "no"
+FunctionEnd
 
 ; The stuff that must be installed
 ; binary, license, or whatever
@@ -610,7 +618,7 @@ SubSectionEnd
 ;SectionDivider
 
 
-SubSection /e "Glib/GSF based I/E importer and exporter plugins"
+SubSection /e "Glib based Importers/Exporters"
 
 !macro dlFileMacro remoteFname localFname errMsg
 	!define retryDLlbl retryDL_${__FILE__}${__LINE__}
@@ -651,9 +659,8 @@ SubSection /e "Glib/GSF based I/E importer and exporter plugins"
 !macroend
 !define unzipFile "!insertmacro unzipFileMacro"
 
-
 ; Not required if Glib is already available, otherwise is required
-Section "Download glib 2.4"
+Section "Download glib 2.4" GLIB_IDX
 	SectionIn 2
 
 	;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;
@@ -739,7 +746,7 @@ SubSectionEnd
 
 SubSection /e "File Format Importers/Exporters"
 
-Section "OpenWriter (*.sxw) Plugin"
+Section "OpenWriter (*.sxw) Plugin" SXW_IDX
 	SectionIn 2
 
 	; Testing clause to Overwrite Existing Version - if exists
@@ -758,7 +765,7 @@ SectionEnd
 
 ;SectionDivider
 
-Section "AbiSDW (*.sdw) Plugin"
+Section "AbiSDW (*.sdw) Plugin" SDW_IDX
 	SectionIn 2
 
 	; Testing clause to Overwrite Existing Version - if exists
@@ -777,7 +784,7 @@ SectionEnd
 
 ;SectionDivider
 
-Section "AbiWordPerfect (*.wpd) Plugin"
+Section "AbiWordPerfect (*.wpd) Plugin" WP_IDX
 	SectionIn 2
 
 	; Testing clause to Overwrite Existing Version - if exists
@@ -924,5 +931,26 @@ Section "Uninstall"
 	Delete /REBOOTOK "$INSTDIR\UninstallAbiWordIEPlugins.exe"
 
 SectionEnd
+
+; Selection Change Handler 
+Function .onSelChange
+	; Make sure glib is selected when seleting one of the plugins that need it
+	strcmp $GLIB_ENABLED "yes" end_l
+		  
+	!insertmacro SectionFlagIsSet ${SXW_IDX} ${SF_SELECTED} "" sdw_l 
+		!insertmacro SelectSection ${GLIB_IDX}
+		strcpy $GLIB_ENABLED "yes"
+		goto end_l 
+sdw_l:
+	!insertmacro SectionFlagIsSet ${SDW_IDX} ${SF_SELECTED} "" wpd_l 
+		!insertmacro SelectSection ${GLIB_IDX}
+		strcpy $GLIB_ENABLED "yes"
+		goto end_l
+wpd_l: 
+	!insertmacro SectionFlagIsSet ${WP_IDX} ${SF_SELECTED} "" end_l
+		!insertmacro SelectSection ${GLIB_IDX}
+		strcpy $GLIB_ENABLED "yes"
+end_l:
+FunctionEnd
 
 ; eof
