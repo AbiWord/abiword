@@ -269,14 +269,17 @@ void XAP_Draw_Symbol::drawarea(UT_UCSChar c, UT_UCSChar p)
 	// Note: That's bogus.  measureString will give us the horizontal advance of "c",
 	// but we need the bounding box of "c" instead.  To get it, we should use with FreeType face->bbox,
 	// in windows we should use the (FIXME: find the right name, it was something as getCharABC(...)
-	unsigned short w1 = m_areagc->measureUnRemappedChar(c);
-
-	x = (m_drawareaWidth - w1) / 2;
-	y = (m_drawareaHeight - m_areagc->getFontHeight()) / 2;
+	UT_sint32 w1 = m_areagc->measureUnRemappedChar(c);
 
 	areaPainter.clearArea(0, 0, wwidth, wheight);
-	areaPainter.drawChars(&c, 0, 1, x, y);
 
+	if(w1 != GR_CW_ABSENT)
+	{
+		x = (m_drawareaWidth - w1) / 2;
+		y = (m_drawareaHeight - m_areagc->getFontHeight()) / 2;
+		areaPainter.drawChars(&c, 0, 1, x, y);
+	}
+			
 	//
 	// Calculate the cordinates of the current and previous symbol
 	// along with the widths of the appropriate boxes.
@@ -286,7 +289,7 @@ void XAP_Draw_Symbol::drawarea(UT_UCSChar c, UT_UCSChar p)
 	UT_uint32 tmph = m_drawHeight / 7;
 
 	calculatePosition(c, cx, cy);
-	unsigned short wc = m_gc->measureUnRemappedChar(c);
+	UT_sint32 wc = m_gc->measureUnRemappedChar(c);
 
 	cx *= tmpw;
 	cy *= tmph;
@@ -295,7 +298,7 @@ void XAP_Draw_Symbol::drawarea(UT_UCSChar c, UT_UCSChar p)
 	cy1 = cy + tmph;
 
 	calculatePosition(p, px, py);
-	unsigned short wp = m_gc->measureUnRemappedChar(p);
+	UT_sint32 wp = m_gc->measureUnRemappedChar(p);
 
 	px *= tmpw;
 	py *= tmph;
@@ -305,12 +308,19 @@ void XAP_Draw_Symbol::drawarea(UT_UCSChar c, UT_UCSChar p)
 
 	// Redraw the Previous Character in black on White
 	painter.clearArea(px + m_areagc->tlu(1), py + m_areagc->tlu(1), tmpw - m_areagc->tlu(1), tmph - m_areagc->tlu(1));
-	painter.drawChars(&p, 0, 1, px + (tmpw - wp) / 2, py);
 
+	if(wp != GR_CW_ABSENT)
+	{
+		painter.drawChars(&p, 0, 1, px + (tmpw - wp) / 2, py);
+	}
+	
 	// Redraw the Current Character in black on Blue
 	UT_RGBColor colour(128, 128, 192);
 	painter.fillRect(colour, cx + m_areagc->tlu(1), cy + m_areagc->tlu(1), tmpw - m_areagc->tlu(1), tmph - m_areagc->tlu(1));
-	painter.drawChars(&c, 0, 1, cx + (tmpw - wc) / 2, cy);
+	if(wc != GR_CW_ABSENT)
+	{
+		painter.drawChars(&c, 0, 1, cx + (tmpw - wc) / 2, cy);
+	}
 }
 
 void XAP_Draw_Symbol::onLeftButtonDown(UT_sint32 x, UT_sint32 y)
