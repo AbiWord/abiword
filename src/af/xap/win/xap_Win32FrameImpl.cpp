@@ -101,8 +101,12 @@ LRESULT CALLBACK s_rebarWndProc( HWND hWnd, UINT uMessage, WPARAM wParam, LPARAM
 		
 		default:
 			break;		
-	}	
-	return CallWindowProc(s_oldRedBar, hWnd, uMessage, wParam, lParam);
+	}
+
+	if(UT_IsWinNT())
+		return CallWindowProcW(s_oldRedBar, hWnd, uMessage, wParam, lParam);
+	else
+		return CallWindowProc(s_oldRedBar, hWnd, uMessage, wParam, lParam);
 }
 
 
@@ -255,12 +259,12 @@ void XAP_Win32FrameImpl::_createTopLevelWindow(void)
 	}
 
 	// create a rebar container for all the toolbars
-	m_hwndRebar = CreateWindowEx(0L, REBARCLASSNAME, NULL,
-								 WS_VISIBLE | WS_BORDER | WS_CHILD | WS_CLIPCHILDREN |
-								 WS_CLIPSIBLINGS | CCS_NODIVIDER | CCS_NOPARENTALIGN |
-								 RBS_VARHEIGHT | RBS_BANDBORDERS,
-								 0, 0, 0, 0,
-								 m_hwndFrame, NULL, pWin32App->getInstance(), NULL);
+	m_hwndRebar = UT_CreateWindowEx(0L, REBARCLASSNAME, NULL,
+									WS_VISIBLE | WS_BORDER | WS_CHILD | WS_CLIPCHILDREN |
+									WS_CLIPSIBLINGS | CCS_NODIVIDER | CCS_NOPARENTALIGN |
+									RBS_VARHEIGHT | RBS_BANDBORDERS,
+									0, 0, 0, 0,
+									m_hwndFrame, NULL, pWin32App->getInstance(), NULL);
 	UT_ASSERT(m_hwndRebar);
 	
 	/* override the window procedure*/
