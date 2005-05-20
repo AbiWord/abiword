@@ -191,6 +191,7 @@ IE_Imp_AbiWord_1::IE_Imp_AbiWord_1(PD_Document * pDocument)
 	m_refMap(new UT_GenericStringMap<UT_UTF8String*>),
 	m_bAutoRevisioning(false),
 	m_bInMath(false),
+	m_bInEmbed(false),
 	m_iImageId(0)
 {
 }
@@ -492,6 +493,11 @@ void IE_Imp_AbiWord_1::startElement(const XML_Char *name, const XML_Char **atts)
 			UT_DEBUGMSG(("Ignore image in math-tag \n"));
 			return;
 		}
+		if(m_bInEmbed)
+		{
+			UT_DEBUGMSG(("Ignore image in embed-tag \n"));
+			return;
+		}
 		X_VerifyParseState(_PS_Block);
 #ifdef ENABLE_RESOURCE_MANAGER
 		X_CheckError(_handleImage (atts));
@@ -519,8 +525,10 @@ void IE_Imp_AbiWord_1::startElement(const XML_Char *name, const XML_Char **atts)
 	{
 		X_VerifyParseState(_PS_Block);
 		X_CheckError(appendObject(PTO_Embed,atts));
+		
 		m_iImageId++;
 		getDoc()->setMinUID(UT_UniqueId::Image, m_iImageId);
+		m_bInEmbed = true;
 		return;
 	}
 	case TT_BOOKMARK:
@@ -986,6 +994,7 @@ void IE_Imp_AbiWord_1::endElement(const XML_Char *name)
 		return;
 	case TT_EMBED:						// not a container, so we don't pop stack
 		UT_ASSERT_HARMLESS(m_lenCharDataSeen==0);
+		m_bInEmbed = false;
 		X_VerifyParseState(_PS_Block);
 		return;
 
@@ -1183,7 +1192,7 @@ bool IE_Imp_AbiWord_1::_getDataItemEncoded(const XML_Char ** atts)
 	return false;
 }
 
-bool IE_Imp_AbiWord_1::_handleImage (const XML_Char ** atts)
+bool IE_Imp_AbiWord_1::_handleImage(const XML_Char ** atts)
 {
 #ifdef ENABLE_RESOURCE_MANAGER
 	static const char * psz_href = "href"; // could make this xlink:href, but is #ID valid in XLINK?
