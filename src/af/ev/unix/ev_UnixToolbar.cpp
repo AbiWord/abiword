@@ -795,7 +795,7 @@ bool EV_UnixToolbar::synthesize(void)
 					// style preview
 					gtk_cell_layout_set_attributes(GTK_CELL_LAYOUT(combo), renderer, 
 													"text", COLUMN_STRING, 
-													"font-desc", COLUMN_FONT,
+													"font-desc", COLUMN_FONT, 
 													NULL); 				
 					GtkListStore *store = gtk_list_store_new(2, G_TYPE_STRING, PANGO_TYPE_FONT_DESCRIPTION);
 					g_object_set_data(G_OBJECT(combo), COMBO_KEY_MODEL, store);
@@ -806,8 +806,8 @@ bool EV_UnixToolbar::synthesize(void)
 				else if (wd->m_id == AP_TOOLBAR_ID_FMT_FONT) {
 					// font preview
 					gtk_cell_layout_set_attributes(GTK_CELL_LAYOUT(combo), renderer, 
-													"text", COLUMN_STRING, 
-													"font", COLUMN_FONT, 
+													"text", COLUMN_STRING, /* TODO uncomment for WYSIWYG font combo
+													"font", COLUMN_FONT, */
 													NULL);					
 
 					GtkListStore *store = gtk_list_store_new(NUM_COLUMNS, G_TYPE_STRING, G_TYPE_STRING, G_TYPE_INT);
@@ -1283,7 +1283,6 @@ EV_UnixToolbar::selectComboEntry (_wd 		  *wd,
 			AP_UnixToolbar_StyleCombo * pStyleCombo = static_cast<AP_UnixToolbar_StyleCombo *>(pControl);
 			
 			const PangoFontDescription *desc = pStyleCombo->getStyle(text);
-			//UT_return_if_fail(desc);
 
 			gtk_list_store_append (store, &iter);
 			gtk_list_store_set (store, &iter, 
@@ -1418,8 +1417,8 @@ font_combo_idle_fill (gpointer data) {
 
 		gtk_list_store_append (store, &iter);
 		gtk_list_store_set (store, &iter, 
-							COLUMN_STRING, name, 
-							COLUMN_FONT, pData->strings->getNthItem(i), 
+							COLUMN_STRING, name, /* TODO uncomment for WYSIWYG font combo
+							COLUMN_FONT, pData->strings->getNthItem(i), */
 							-1);
 
 		if (i >= (pData->idx + 5)) {
