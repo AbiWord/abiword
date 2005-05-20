@@ -110,6 +110,7 @@ foo_Bitmap_container::~foo_Bitmap_container()
 	}
 }
 
+
 /*****************************************************************/
 
 
@@ -516,30 +517,30 @@ bool EV_Win32Toolbar::synthesize(void)
 	// NOTE: this toolbar will get placed later, by frame or rebar
 
 	m_hwnd = UT_CreateWindowEx(0, 
-				TOOLBARCLASSNAME,		// window class name
-				(LPSTR) NULL,			// window caption
-				WS_CHILD | WS_VISIBLE 
-				| WS_CLIPCHILDREN | WS_CLIPSIBLINGS 
-				| TBSTYLE_TOOLTIPS | TBSTYLE_FLAT
-				| ( bText && !bIcons ? TBSTYLE_LIST : 0 )
-				| TBSTYLE_CUSTOMERASE
-				| CCS_NOPARENTALIGN | CCS_NODIVIDER
-				| CCS_NORESIZE
-				,						// window style
-				0,						// initial x position
-				0,						// initial y position
-				0,						// initial x size
-				0,						// initial y size
-				hwndParent,				// parent window handle
-				NULL,					// window menu handle
-				m_pWin32App->getInstance(),		// program instance handle
-				NULL);					// creation parameters
+							   TOOLBARCLASSNAME, // window class name
+							   (LPSTR) NULL,			// window caption
+							   WS_CHILD | WS_VISIBLE 
+							   | WS_CLIPCHILDREN | WS_CLIPSIBLINGS 
+							   | TBSTYLE_TOOLTIPS | TBSTYLE_FLAT
+							   | ( bText && !bIcons ? TBSTYLE_LIST : 0 )
+							   | TBSTYLE_CUSTOMERASE
+							   | CCS_NOPARENTALIGN | CCS_NODIVIDER
+							   | CCS_NORESIZE
+							   ,						// window style
+							   0,						// initial x position
+							   0,						// initial y position
+							   0,						// initial x size
+							   0,						// initial y size
+							   hwndParent,				// parent window handle
+							   NULL,					// window menu handle
+							   m_pWin32App->getInstance(),		// program instance handle
+							   NULL);  // creation parameters
+							   					
 
 	UT_ASSERT(m_hwnd);
 
 	// override the window procedure 	
 	SetWindowLong(m_hwnd, GWL_USERDATA, (LONG)this);
-
 
 	SendMessage(m_hwnd, TB_BUTTONSTRUCTSIZE, (WPARAM) sizeof(TBBUTTON), 0);  
 
@@ -654,7 +655,7 @@ bool EV_Win32Toolbar::synthesize(void)
 						if (id==AP_TOOLBAR_ID_FMT_FONT)
 							dwStyle |= CBS_OWNERDRAWFIXED;
 
-						HWND hwndCombo = CreateWindowEx ( 0L,   // No extended styles.
+						HWND hwndCombo = UT_CreateWindowEx ( 0L,   // No extended styles.
 							"COMBOBOX",						// Class name.
 							"",								// Default text.
 							dwStyle,						// Styles and defaults.
@@ -710,9 +711,9 @@ bool EV_Win32Toolbar::synthesize(void)
 								szToolTip = pLabel->getStatusMsg();
 							}
 
+
 							// Fill in the TOOLINFO structure.
 							TOOLINFO ti;
-
 							ti.cbSize = sizeof(ti);
 							ti.uFlags = TTF_IDISHWND | TTF_CENTERTIP;
 							ti.lpszText = (char *) szToolTip;
@@ -788,7 +789,8 @@ bool EV_Win32Toolbar::synthesize(void)
 					if (bText)
 					{
 						const char * szLabel = pLabel->getToolbarLabel();
-						// As long as translators don't cut the text short, we need to autosize just to squize anything insize 1280 :)
+						// As long as translators don't cut the text short,
+						// we need to autosize just to squize anything insize 1280 :)
 						tbb.fsStyle |= TBSTYLE_AUTOSIZE;
 						tbb.iString = SendMessage(m_hwnd, TB_ADDSTRING, (WPARAM) 0, (LPARAM) (LPSTR) szLabel);
 					}
