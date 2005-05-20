@@ -442,8 +442,12 @@ bool XAP_App::removeListener(AV_ListenerId listenerId)
 {
 	if (listenerId == (AV_ListenerId) -1)
 		return false;
-		
-	return (m_vecPluginListeners.setNthItem(listenerId,NULL,NULL) == 0);
+	
+	if (m_vecPluginListeners.getNthItem(listenerId)) {
+		m_vecPluginListeners.deleteNthItem(listenerId);
+		return true;
+	}
+	return false;
 }
 
 /*!
