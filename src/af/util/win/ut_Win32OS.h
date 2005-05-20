@@ -39,9 +39,11 @@ ATOM UT_RegisterClassEx(UINT style, WNDPROC wndproc, HINSTANCE hInstance,
 						HICON hIcon, HCURSOR hCursor, HBRUSH hbrBackground, HICON hIconSm,
 						const char * menu, const char * name, bool bForceANSI = false);
 
+// NB: the default value for bForceANSI is intentionally set to true, otherwise the
+// tooltips do not work, see bug 8976
 HWND UT_CreateWindowEx(DWORD dwExStyle, LPCTSTR lpClassName, LPCTSTR lpWindowName, DWORD dwStyle,
 					   int x, int y, int nWidth, int nHeight,
-					   HWND hWndParent, HMENU hMenu, HINSTANCE hInstance, LPVOID lpParam, bool bForceANSI = false);
+					   HWND hWndParent, HMENU hMenu, HINSTANCE hInstance, LPVOID lpParam, bool bForceANSI = true);
 
 LRESULT UT_DefWindowProc(HWND hWnd, UINT Msg, WPARAM wParam,LPARAM lParam, bool bForceANSI = false);
 
