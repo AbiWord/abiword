@@ -404,7 +404,7 @@ void s_AbiWord_1_Listener::_openTag(const char * szPrefix, const char * szSuffix
 #else /* ENABLE_RESOURCE_MANAGER */
 	const PP_AttrProp * pAP = NULL;
 	bool bHaveProp = m_pDocument->getAttrProp(api,&pAP);
-	xxx_UT_DEBUGMSG(("_openTag: api %d, bHaveProp %d\n",api, bHaveProp));
+	UT_DEBUGMSG(("_openTag: api %d, bHaveProp %d\n",api, bHaveProp));
 	m_pie->write("<");
 
 	UT_return_if_fail(szPrefix && *szPrefix);
@@ -517,6 +517,59 @@ void s_AbiWord_1_Listener::_openTag(const char * szPrefix, const char * szSuffix
 			tag += "/";
 			tag += ">";
 			tag += "</math";
+			tag += ">";
+		}
+		else
+		{
+			if (szSuffix)
+				if (*szSuffix == '/')
+					tag += "/";
+			tag += ">";
+			if (bNewLineAfter) tag += "\n";
+		}
+		m_pie->write (tag.utf8_str (), tag.byteLength());
+	}
+	else if(UT_strcmp(szPrefix,"embed") == 0)
+	{
+		UT_UTF8String tag;
+		const char * szPropVal = NULL;
+		pAP->getAttribute("dataid",szPropVal);
+		if(szPropVal != NULL)
+		{
+			tag = ">";
+			if (bNewLineAfter) tag += "\n";
+			m_pie->write (tag.utf8_str (), tag.byteLength());
+			tag.clear();
+			tag = "<image dataid=";
+			tag += "\"";
+			tag += "snapshot-png-";
+			tag += szPropVal;
+			tag += "\"";
+			tag += " ";
+			tag += PT_PROPS_ATTRIBUTE_NAME;
+			tag += "=\"";
+			bool bFound = pAP->getProperty("height", szPropVal);
+			UT_UTF8String sVal;
+			if(bFound)
+			{
+				double dInch = static_cast<double>(atoi(szPropVal))/UT_LAYOUT_RESOLUTION;
+				UT_UTF8String_sprintf(sVal,"%fin",dInch);
+				tag += "height:";
+				tag += sVal;
+				tag += "; ";
+			}
+			bFound = pAP->getProperty("width", szPropVal);
+			if(bFound)
+			{
+				double dInch = static_cast<double>(atoi(szPropVal))/UT_LAYOUT_RESOLUTION;
+				UT_UTF8String_sprintf(sVal,"%fin",dInch);
+				tag += "width:";
+				tag += sVal;
+				tag += "\"";
+			}
+			tag += "/";
+			tag += ">";
+			tag += "</embed";
 			tag += ">";
 		}
 		else

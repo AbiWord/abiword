@@ -5131,9 +5131,18 @@ bool FV_View::cmdInsertEmbed(UT_ByteBuf * pBuf,PT_DocPosition pos,const char * s
 {
 
 	const XML_Char * atts[7]={"dataid",NULL,"props",NULL,NULL,NULL,NULL};
-	UT_uint32 uid = m_pDoc->getUID(UT_UniqueId::Image);
+	bool bRepeat = true;
 	UT_UTF8String sUID;
-	UT_UTF8String_sprintf(sUID,"%d",uid);
+	UT_uint32 uid = 0;
+	while(bRepeat)
+	{
+	  uid = m_pDoc->getUID(UT_UniqueId::Image);
+	  UT_UTF8String_sprintf(sUID,"%d",uid);
+	  //
+	  // Make sure data item is unique!
+	  //
+	  bRepeat = m_pDoc->getDataItemDataByName(sUID.utf8_str(),NULL,NULL,NULL);
+	}
 	atts[1] = sUID.utf8_str();
 	const XML_Char *cur_style = NULL;
 	const char * mimetypeGOChart = UT_strdup(szMime);
@@ -5239,9 +5248,18 @@ bool FV_View::cmdUpdateEmbed(UT_ByteBuf * pBuf, const char * szMime, const char 
 	  return false;
 	}
 	const XML_Char * atts[7]={"dataid",NULL,"props",NULL,NULL,NULL,NULL};
-	UT_uint32 uid = m_pDoc->getUID(UT_UniqueId::Image);
+	bool bRepeat = true;
 	UT_UTF8String sUID;
-	UT_UTF8String_sprintf(sUID,"%d",uid);
+	UT_uint32 uid = 0;
+	while(bRepeat)
+	{
+	  uid = m_pDoc->getUID(UT_UniqueId::Image);
+	  UT_UTF8String_sprintf(sUID,"%d",uid);
+	  //
+	  // Make sure data item is unique!
+	  //
+	  bRepeat = m_pDoc->getDataItemDataByName(sUID.utf8_str(),NULL,NULL,NULL);
+	}
 	atts[1] = sUID.utf8_str();
 	const char * mimetypeGOChart = UT_strdup(szMime);
 	bool bres = m_pDoc->createDataItem(sUID.utf8_str(),false,pBuf,static_cast<void *>(const_cast<char *>(mimetypeGOChart)), NULL);

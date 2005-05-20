@@ -4859,9 +4859,20 @@ Defun(editEmbed)
 	CHECK_FRAME;
 	ABIWORD_VIEW;
 	UT_DEBUGMSG(("Select and Edit an Embedded Object \n"));
-        PT_DocPosition posL = pView->getDocPositionFromXY(pCallData->m_xPos, pCallData->m_yPos);
-	PT_DocPosition posH = posL+1;
-	pView->cmdSelect(posL,posH);
+        PT_DocPosition posL = pView->getPoint();
+	PT_DocPosition posH = pView->getSelectionAnchor();
+	PT_DocPosition posTemp = 0;
+	if(posH < posL)
+	{
+	     posTemp = posL;
+	     posL = posH;
+	     posH = posTemp;
+	}
+	if(posL == posH)
+	{
+	     posH = posL+1;
+	     pView->cmdSelect(posL,posH);
+	}
 	fl_BlockLayout * pBlock = pView->getBlockAtPosition(posL);
 	bool bDoEmbed = false;
 	if(pBlock)
