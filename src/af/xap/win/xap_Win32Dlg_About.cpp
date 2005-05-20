@@ -324,7 +324,7 @@ BOOL CALLBACK XAP_Win32Dialog_About::s_dlgProc(HWND hWnd,UINT msg,WPARAM wParam,
 
 	if (!pThis)
 	{
-		return DefWindowProc(hWnd, msg, wParam, lParam);
+		return UT_DefWindowProc(hWnd, msg, wParam, lParam);
 	}
 	
 	switch (msg)
@@ -376,7 +376,7 @@ BOOL CALLBACK XAP_Win32Dialog_About::s_dlgProc(HWND hWnd,UINT msg,WPARAM wParam,
 		return 0;
 	}
 
-	return DefWindowProc(hWnd, msg, wParam, lParam);
+	return UT_DefWindowProc(hWnd, msg, wParam, lParam);
 }
 
 BOOL XAP_Win32Dialog_About::_onCommand(HWND hWnd, WPARAM wParam, LPARAM lParam)
