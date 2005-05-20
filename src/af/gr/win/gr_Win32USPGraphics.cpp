@@ -1505,6 +1505,14 @@ void GR_Win32USPGraphics::measureRenderedCharWidths(GR_RenderInfo & ri)
 
 		UT_ASSERT_HARMLESS( !hRes );
 	}
+	else if(hRes)
+	{
+		// some other error, at least set the advances and offsets to 0
+		memset(RI.m_pAdvances, 0, sizeof(int) * RI.m_iIndicesCount);
+		memset(RI.m_pGoffsets, 0, sizeof(GOFFSET) * RI.m_iIndicesCount);
+		memset(&RI.m_ABC, 0, sizeof(ABC));
+	}
+	
 
 	const UT_uint32 iAdvSize = 80;
 	int iAdvances[iAdvSize];
