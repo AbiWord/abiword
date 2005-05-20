@@ -26,6 +26,7 @@
 #include "ut_types.h"
 #include "ut_string.h"
 #include "gr_Graphics.h"
+#include "gr_CharWidths.h"
 #include "gr_Painter.h"
 
 #include "xap_Draw_Symbol.h"
@@ -154,10 +155,16 @@ void XAP_Draw_Symbol::draw(void)
 
 		for (UT_UCSChar j = base; j < base + nb_chars; ++j)
 		{
-			unsigned short w = m_gc->measureUnRemappedChar(j);
-			UT_uint32 x = (pos % 32) * tmpw + (tmpw - w) / 2;
-			UT_uint32 y = pos / 32 * tmph;
-			painter.drawChars(&j, 0, 1, x, y);
+			UT_sint32 w = m_gc->measureUnRemappedChar(j);
+
+			if(w != GR_CW_ABSENT)
+			{
+				UT_uint32 x = (pos % 32) * tmpw + (tmpw - w) / 2;
+				UT_uint32 y = pos / 32 * tmph;
+			
+				painter.drawChars(&j, 0, 1, x, y);
+			}
+			
 			++pos;
 		}
 	}
