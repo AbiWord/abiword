@@ -320,7 +320,6 @@ void fp_EmbedRun::_draw(dg_DrawArgs* pDA)
 	// Fill with background, then redraw.
 
 	UT_sint32 iLineHeight = getLine()->getHeight();
-	GR_Painter painter(pG);
 	bool bIsSelected = false;
 	if ( isInSelectedTOC() ||
 	    /* pView->getFocus()!=AV_FOCUS_NONE && */
@@ -328,6 +327,8 @@ void fp_EmbedRun::_draw(dg_DrawArgs* pDA)
 		&& (iSel2 > iRunBase)
 		)
 	{
+	  // Need the painter lock to be released at the end of this block
+	        GR_Painter painter(pG);
 		painter.fillRect(_getView()->getColorSelBackground(), /*pDA->xoff*/DA_xoff, iFillTop, getWidth(), iFillHeight);
 		bIsSelected = true;
 

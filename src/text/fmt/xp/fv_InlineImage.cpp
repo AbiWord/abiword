@@ -811,7 +811,7 @@ void FV_VisualInlineImage::mouseLeftPress(UT_sint32 x, UT_sint32 y)
 	   (FV_InlineDrag_WAIT_FOR_MOUSE_DRAG ==  m_iInlineDragMode))
 	{
 	        m_iInlineDragMode = FV_InlineDrag_WAIT_FOR_MOUSE_DRAG;
-		setDragType(x,y,true);
+		setDragType(x,y,false); // was true
 		if(FV_Inline_DragNothing == m_iDraggingWhat)
 		{
 		  cleanUP();
@@ -1332,5 +1332,6 @@ void FV_VisualInlineImage::drawImage(void)
 		return;
 	}
 	GR_Painter painter(getGraphics());
+	UT_DEBUGMSG(("Draw Inline image \n"));
 	painter.drawImage(m_pDragImage,m_recCurFrame.left,m_recCurFrame.top);
 }

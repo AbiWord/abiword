@@ -7541,16 +7541,15 @@ void FV_View::updateScreen(bool bDirtyRunsOnly)
 * \param box Where to draw.
 * \param drawHandles If handles are to be drawn.
 */
-void FV_View::drawSelectionBox(UT_Rect & box, bool drawHandles) 
+void FV_View::drawSelectionBox(UT_Rect & inBox, bool drawHandles) 
 {
 	GR_Graphics *pG = getGraphics();
-	GR_Painter painter(pG);
 	UT_sint32 boxSize = getImageSelInfo();
 
-	UT_sint32 left = box.left;
-	UT_sint32 top = box.top;
-	UT_sint32 right = box.left + box.width;
-	UT_sint32 bottom = box.top + box.height;
+	UT_sint32 left = inBox.left;
+	UT_sint32 top = inBox.top;
+	UT_sint32 right = inBox.left + inBox.width;
+	UT_sint32 bottom = inBox.top + inBox.height;
 	UT_DEBUGMSG(("Draw selection box Top %d \n",top));
 	// draw a line around the image
 	pG->setLineProperties(pG->tluD(1.0),
@@ -7560,23 +7559,34 @@ void FV_View::drawSelectionBox(UT_Rect & box, bool drawHandles)
 
 	UT_RGBColor color = getColorSelBackground();
 	pG->setColor(color);
+	{
+		// Need the painter lock to be released at the end of these draws
 
-	painter.drawLine(left, top, right, top);
-	painter.drawLine(left, top, left, bottom);
-	painter.drawLine(right, top, right, bottom);
-	painter.drawLine(left, bottom, right, bottom);				
-
+		GR_Painter painter(pG);
+		painter.drawLine(left, top, right, top);
+		painter.drawLine(left, top, left, bottom);
+		painter.drawLine(right, top, right, bottom);
+		painter.drawLine(left, bottom, right, bottom);				
+	}
 	// now, draw the resize boxes around the image
 	if (drawHandles) {
 		UT_Rect box;
-		box = UT_Rect(left, top, boxSize, boxSize); 															_drawResizeHandle(box);
-		box = UT_Rect(left + (right - left)/2 - boxSize/2, top, boxSize, boxSize); 								_drawResizeHandle(box); // North
-		box = UT_Rect(right-boxSize+pG->tlu(1), top, boxSize, boxSize); 										_drawResizeHandle(box); // North East
-		box = UT_Rect(right-boxSize+pG->tlu(1), top + ((bottom - top) / 2) - boxSize/2, boxSize, boxSize); 		_drawResizeHandle(box); // East
-		box = UT_Rect(right-boxSize+pG->tlu(1), bottom - boxSize + pG->tlu(1), boxSize, boxSize); 				_drawResizeHandle(box); // South East
-		box = UT_Rect(left + (right - left)/2 - boxSize/2, bottom - boxSize + pG->tlu(1), boxSize, boxSize); 	_drawResizeHandle(box); // South
-		box = UT_Rect(left, bottom - boxSize + pG->tlu(1), boxSize, boxSize); 									_drawResizeHandle(box); // South West
-		box = UT_Rect(left, top + ((bottom - top) / 2) - boxSize/2, boxSize, boxSize); 							_drawResizeHandle(box); // West
+		box = UT_Rect(left, top, boxSize, boxSize);
+		_drawResizeHandle(box);
+		box = UT_Rect(left + (right - left)/2 - boxSize/2, top, boxSize, boxSize);
+		_drawResizeHandle(box); // North
+		box = UT_Rect(right-boxSize+pG->tlu(1), top, boxSize, boxSize);
+		_drawResizeHandle(box); // North East
+		box = UT_Rect(right-boxSize+pG->tlu(1), top + ((bottom - top) / 2) - boxSize/2, boxSize, boxSize);
+		_drawResizeHandle(box); // East
+		box = UT_Rect(right-boxSize+pG->tlu(1), bottom - boxSize + pG->tlu(1), boxSize, boxSize);
+		_drawResizeHandle(box); // South East
+		box = UT_Rect(left + (right - left)/2 - boxSize/2, bottom - boxSize + pG->tlu(1), boxSize, boxSize);
+		_drawResizeHandle(box); // South
+		box = UT_Rect(left, bottom - boxSize + pG->tlu(1), boxSize, boxSize);
+		_drawResizeHandle(box); // South West
+		box = UT_Rect(left, top + ((bottom - top) / 2) - boxSize/2, boxSize, boxSize);
+		_drawResizeHandle(box); // West
 	}
 }
 
@@ -7591,7 +7601,7 @@ inline void FV_View::_drawResizeHandle(UT_Rect & box)
 	UT_sint32 top = box.top;
 	UT_sint32 right = box.left + box.width - pG->tlu(1);
 	UT_sint32 bottom = box.top + box.height - pG->tlu(1);
-	
+
 	GR_Painter painter(pG);
 	
 	pG->setLineProperties(pG->tluD(1.0),
@@ -9395,7 +9405,7 @@ EV_EditMouseContext FV_View::getMouseContext(UT_sint32 xPos, UT_sint32 yPos)
 		m_prevMouseContext = EV_EMC_MATH;
 		return EV_EMC_MATH;
 	case FPRUN_EMBED:
-		UT_DEBUGMSG(("fv_View::getMouseContext: EMBED \n"));
+		xxx_UT_DEBUGMSG(("fv_View::getMouseContext: EMBED \n"));
 		m_prevMouseContext = EV_EMC_EMBED;
 		return EV_EMC_EMBED;
 	default:
