@@ -1444,7 +1444,7 @@ Defun_EV_GetMenuItemState_Fn(ap_GetState_InImage)
 	if(pView->getFrameEdit()->isActive())
 	{
 	        fl_FrameLayout * pFL = pView->getFrameLayout();
-		if(pFL->getFrameType() == FL_FRAME_TEXTBOX_TYPE)
+		if(pFL && pFL->getFrameType() == FL_FRAME_TEXTBOX_TYPE)
 		{
 		        return EV_MIS_Gray;
 		}
