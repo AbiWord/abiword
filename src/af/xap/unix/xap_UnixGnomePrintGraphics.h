@@ -120,6 +120,8 @@ class XAP_UnixGnomePrintGraphics : public GR_Graphics
 	GnomePrintContext *  getGnomePrintContext(void)
 	  { return m_gpc;}
 	static GnomePrintConfig * s_setup_config (XAP_Frame * pFrame);
+	UT_sint32 scale_ydir (UT_sint32 in);
+	UT_sint32 scale_xdir (UT_sint32 in);
 	
 protected:
 
@@ -134,8 +136,6 @@ protected:
 
 private:
 
-	UT_sint32 scale_ydir (UT_sint32 in);
-	UT_sint32 scale_xdir (UT_sint32 in);
 
 	GnomeFont * _allocGnomeFont(PSFont* pFont);
 	void _drawAnyImage (GR_Image* pImg, 
