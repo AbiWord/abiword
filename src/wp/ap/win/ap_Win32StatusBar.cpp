@@ -130,7 +130,7 @@ private:
 };
 
 void ap_usb_TextListener::notify()
-{							
+{
 
 	UT_return_if_fail (m_hWnd);	
 	AP_StatusBarField_TextInfo * textInfo = ((AP_StatusBarField_TextInfo *)m_pStatusBarField);
