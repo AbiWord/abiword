@@ -77,6 +77,12 @@ protected:
 	GtkWidget * 					m_wHandleBox;
 	AP_UnixToolbar_Icons 			m_pUnixToolbarIcons;
 	UT_GenericVector<_wd*>			m_vecToolbarWidgets;
+
+private:
+	void fillCombo (_wd *wd,
+				    EV_Toolbar_Control *pControl,
+				    const UT_GenericVector<const char*> *strings);
+
 };
 
 #endif /* EV_UNIXTOOLBAR_H */

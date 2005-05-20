@@ -69,8 +69,6 @@
 #define COMBO_KEY_MODEL "combo-key-model"
 //! Each combo knows about its changed signal id
 #define COMBO_KEY_CHANGED_SIGNAL "combo-key-changed-signal"
-//! Fonts are loaded lazily, we need to remember what to set after we're ready.
-#define FONTCOMBO_KEY_ACTIVE_FONT "fontcombo-key-active-font"
 
 static const GtkTargetEntry      s_AbiTBTargets[] = {{"abi-toolbars",0,0}};
 
@@ -91,11 +89,9 @@ typedef struct {
 	guint 				 idx;
 } FontComboIdleData;
 
-void 		 abi_gtk_combo_box_fill_from_string_vector (_wd 				*wd, 
-														EV_Toolbar_Control 	*pControl, 
-														const UT_GenericVector<const char*> *strings);
-const gchar *abi_gtk_combo_box_get_active_text		   (_wd					*wd);
-gboolean     font_combo_idle_fill					   (gpointer data);
+
+const gchar* abi_gtk_combo_box_get_active_text (_wd *wd);
+gboolean     font_combo_idle_fill			   (gpointer data);
 
 
 /**
@@ -860,7 +856,7 @@ bool EV_UnixToolbar::synthesize(void)
 
 					const UT_GenericVector<const char*> * v = pControl->getContents();
 					UT_ASSERT(v);
-					abi_gtk_combo_box_fill_from_string_vector (wd, pControl, v);
+					fillCombo(wd, pControl, v);
 				}
  
 				// stick it in the toolbar
@@ -1209,7 +1205,7 @@ bool EV_UnixToolbar::repopulateStyles(void)
 // Now make a new one.
 //
 	const gchar *style = abi_gtk_combo_box_get_active_text(wd);
-	abi_gtk_combo_box_fill_from_string_vector (wd, pStyleC, v);
+	fillCombo(wd, pStyleC, v);
 	if (style && *style) {
 		selectComboEntry(wd, style);
 	}
@@ -1260,37 +1256,10 @@ EV_UnixToolbar::selectComboEntry (_wd 		  *wd,
 		}
 		while (gtk_tree_model_iter_next (model, &iter));
 
-		// item not found
-		if (wd->m_id == AP_TOOLBAR_ID_FMT_FONT) {
-			// remember to set after lazy loading
-			g_object_set_data (G_OBJECT(combo), FONTCOMBO_KEY_ACTIVE_FONT, (gpointer)text);
-		}
-		else if (wd->m_id == AP_TOOLBAR_ID_FMT_SIZE) {
+		// display custom size
+		if (wd->m_id == AP_TOOLBAR_ID_FMT_SIZE) {
 			GtkWidget *entry = gtk_bin_get_child(GTK_BIN(combo));
 			gtk_entry_set_text(GTK_ENTRY(entry), text);
-		}
-		else if (wd->m_id == AP_TOOLBAR_ID_FMT_STYLE) {
-
-// TODO rob: this can be removed after the PD_Style::isList() patch is in
-			GtkListStore *store = NULL;
-			gpointer data;
-			if (NULL != (data = g_object_get_data(G_OBJECT(combo), COMBO_KEY_MODEL))) {
-				store = GTK_LIST_STORE(data);
-			}
-			UT_return_if_fail(store != NULL);
-
-			XAP_Toolbar_ControlFactory * pFactory = m_pUnixApp->getControlFactory();
-			UT_ASSERT(pFactory);
-			EV_Toolbar_Control * pControl = pFactory->getControl(this, wd->m_id );
-			AP_UnixToolbar_StyleCombo * pStyleCombo = static_cast<AP_UnixToolbar_StyleCombo *>(pControl);
-			
-			const PangoFontDescription *desc = pStyleCombo->getStyle(text);
-
-			gtk_list_store_append (store, &iter);
-			gtk_list_store_set (store, &iter, 
-								COLUMN_STRING, text, 
-								COLUMN_FONT, desc, 
-								-1);
 		}
 	}
 }
@@ -1299,9 +1268,9 @@ EV_UnixToolbar::selectComboEntry (_wd 		  *wd,
 * Refill a combo box (list model, one string column) from a string vector.
 */
 void 
-abi_gtk_combo_box_fill_from_string_vector (_wd *wd,
-										   EV_Toolbar_Control *pControl,
-										   const UT_GenericVector<const char*> *strings) {
+EV_UnixToolbar::fillCombo (_wd *wd,
+						   EV_Toolbar_Control *pControl,
+						   const UT_GenericVector<const char*> *strings) {
 
 	GtkComboBox *combo = GTK_COMBO_BOX (wd->m_widget);
 	gpointer data = NULL;
@@ -1408,7 +1377,7 @@ font_combo_idle_fill (gpointer data) {
 	GtkTreeIter iter;
 	GtkTreePath *path = gtk_tree_path_new_from_indices(pData->idx, -1);
 	if (gtk_tree_model_get_iter (GTK_TREE_MODEL(store), &iter, path)) {
-		guint i = 0;
+		//guint i = 0;
 		while (gtk_tree_model_iter_next(GTK_TREE_MODEL(store), &iter)) {
 
 			gtk_list_store_set (store, &iter, 

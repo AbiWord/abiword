@@ -26,7 +26,7 @@
 
 PD_Style::PD_Style(pt_PieceTable * pPT, PT_AttrPropIndex indexAP, const char * szName) :
   m_pPT(pPT), m_indexAP(indexAP), m_szName(NULL), m_iUsed(0),
-  m_pBasedOn(NULL), m_pFollowedBy(NULL), m_iIsList(-1)
+  m_pBasedOn(NULL), m_pFollowedBy(NULL)
 {
   if (szName)
     m_szName = UT_strdup (szName);
@@ -246,27 +246,13 @@ bool PD_Style::isCharStyle(void) const
 
 bool PD_Style::isList(void)
 {
-	if(m_iIsList == -1)
-	{
-		m_iIsList = 0;
-		UT_Vector vProp;
-		
-		getAllProperties(&vProp, 0);
-		
-		UT_ASSERT_HARMLESS(vProp.getItemCount()%2 == 0);
-		
-		for(UT_uint32 i = 0; i < vProp.getItemCount(); i += 2)
-		{
-			const XML_Char * szProp  = (const XML_Char *) vProp.getNthItem(i);
-			if(!UT_strcmp(szProp, "list-style"))
-			{
-				m_iIsList = 1;
-				break;
-			}
-		}
+	const char *szListStyle = NULL;
+	if (getPropertyExpand("list-style", szListStyle)) {
+		return UT_stricmp(szListStyle, "None") != NULL;
 	}
-	
-    return m_iIsList != 0;
+	else {
+		return FALSE;
+	}
 }
 
 PD_Style * PD_Style::getBasedOn(void)

@@ -83,9 +83,6 @@ protected:
 	// lazily-bound attribute caches to speed lookups
 	PD_Style *				m_pBasedOn;
 	PD_Style *				m_pFollowedBy;
-
-private:
-	UT_sint32				m_iIsList;
 };
 
 
