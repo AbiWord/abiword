@@ -1631,7 +1631,7 @@ bool UT_bidiReorderString(const UT_UCS4Char * pStrIn, UT_uint32 len, UT_BidiChar
 
 		pFBDC[i] = 0;
 
-		int iRet = fribidi_log2vis (pFBDC, len, &baseDir, pFBDC2, NULL, NULL, NULL));
+		int iRet = fribidi_log2vis (pFBDC, len, &baseDir, pFBDC2, NULL, NULL, NULL);
 
 		for(i = 0; i < len; ++i)
 		{
