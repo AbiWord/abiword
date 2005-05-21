@@ -1596,10 +1596,52 @@ UT_BidiCharType UT_bidiGetCharType(UT_UCS4Char c)
 bool UT_bidiReorderString(const UT_UCS4Char * pStrIn, UT_uint32 len, UT_BidiCharType baseDir,
 						  UT_UCS4Char * pStrOut)
 {
+	UT_return_val_if_fail( pStrIn && pStrOut, false );
+	
 #ifndef NO_BIDI_SUPPORT
-	// if this assert fails, we have a serious problem ...
-	UT_ASSERT_HARMLESS( sizeof(UT_UCS4Char) == sizeof(FriBidiChar) );
-	return (0 != fribidi_log2vis ((FriBidiChar *)pStrIn, len, &baseDir, (FriBidiChar*)pStrOut, NULL, NULL, NULL));
+	// this works around 8685; this should be left here, in fact any decent optimising
+	// compiler should remove this code if the bug does not exist
+	if(sizeof(FriBidiChar) > sizeof(UT_UCS4Char))
+	{
+		static FriBidiChar* pFBDC = NULL;
+		static FriBidiChar* pFBDC2 = NULL;
+		static iFBDlen = 0;
+
+		if(iFBDlen < len)
+		{
+			delete [] pFBDC; delete [] pFBDC2;
+			iFBDlen = 0;
+			
+			pFBDC = new FriBidiChar [len + 1];
+			pFBDC2 = new FriBidiChar [len + 1];
+
+			UT_return_val_if_fail( pFBDC && pFBDC2, false );
+		}
+
+		UT_uint32 i;
+		for(i = 0; i < len; ++i)
+		{
+			pFBDC[i] = (FriBidiChar) pStrIn[i];
+		}
+
+		pFBDC[i] = 0;
+
+		int iRet = fribidi_log2vis (pFBDC, len, &baseDir, pFBDC2, NULL, NULL, NULL));
+
+		for(i = 0; i < len; ++i)
+		{
+			pStrOut[i] = (UT_UCS4Char) pFBDC2[i];
+		}
+
+		pStrOut[i] = 0;
+
+		return iRet;
+	}
+	else
+	{
+		return (0 != fribidi_log2vis ((FriBidiChar *)pStrIn, len, &baseDir, (FriBidiChar*)pStrOut, NULL, NULL, NULL));
+	}
+	
 #else
 	if(!pStrIn || !*pStrIn)
 		return true;
