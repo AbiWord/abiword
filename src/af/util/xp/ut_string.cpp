@@ -1593,6 +1593,9 @@ UT_BidiCharType UT_bidiGetCharType(UT_UCS4Char c)
 #endif
 }
 
+/*!
+    pStrOut needs to contain space for len characters + terminating 0
+*/
 bool UT_bidiReorderString(const UT_UCS4Char * pStrIn, UT_uint32 len, UT_BidiCharType baseDir,
 						  UT_UCS4Char * pStrOut)
 {
@@ -1605,9 +1608,9 @@ bool UT_bidiReorderString(const UT_UCS4Char * pStrIn, UT_uint32 len, UT_BidiChar
 	{
 		static FriBidiChar* pFBDC = NULL;
 		static FriBidiChar* pFBDC2 = NULL;
-		static iFBDlen = 0;
+		static UT_uint32 iFBDlen = 0;
 
-		if(iFBDlen < len)
+		if(iFBDlen < len + 1)
 		{
 			delete [] pFBDC; delete [] pFBDC2;
 			iFBDlen = 0;
@@ -1616,6 +1619,8 @@ bool UT_bidiReorderString(const UT_UCS4Char * pStrIn, UT_uint32 len, UT_BidiChar
 			pFBDC2 = new FriBidiChar [len + 1];
 
 			UT_return_val_if_fail( pFBDC && pFBDC2, false );
+
+			iFBDlen = len + 1;
 		}
 
 		UT_uint32 i;
