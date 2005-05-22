@@ -55,24 +55,28 @@ AP_Dialog_Latex::tAnswer AP_Dialog_Latex::getAnswer(void) const
  */
 bool AP_Dialog_Latex::convertLatexToMathML(void)
 {
-  UT_ByteBuf From,To;
-  From.ins(0,reinterpret_cast<const UT_Byte *>(m_sLatex.utf8_str()),static_cast<UT_uint32>(m_sLatex.size()));
-  XAP_Frame * pFrame = getActiveFrame();
-  FV_View * pView = static_cast<FV_View *>(pFrame->getCurrentView());
-  FL_DocLayout * pLayout = pView->getLayout();
-  GR_EmbedManager * pEmbed = pLayout->getEmbedManager("mathml");
-  if(pEmbed->isDefault())
-  {
-    return false;
-  }
-  if(pEmbed->convert(0,From,To))
-  {
-    m_sMathML.clear();
-    UT_UCS4_mbtowc myWC;
-    m_sMathML.appendBuf(To, myWC);
-    return true;
-  }
-  return false;
+	UT_ByteBuf From,To;
+
+	From.ins(0,reinterpret_cast<const UT_Byte *>(m_sLatex.utf8_str()),static_cast<UT_uint32>(m_sLatex.size()));
+	XAP_Frame * pFrame = getActiveFrame();
+	FV_View * pView = static_cast<FV_View *>(pFrame->getCurrentView());
+	FL_DocLayout * pLayout = pView->getLayout();
+	GR_EmbedManager * pEmbed = pLayout->getEmbedManager("mathml");
+	
+	if (pEmbed->isDefault())
+	{
+		return false;
+	}
+
+	if (pEmbed->convert(0,From,To))
+	{
+		m_sMathML.clear();
+		UT_UCS4_mbtowc myWC;
+		m_sMathML.appendBuf(To, myWC);
+		return true;
+	}
+
+	return false;
 }
 
 void AP_Dialog_Latex::ConstructWindowName(void)
@@ -101,7 +105,7 @@ void  AP_Dialog_Latex::fillLatex(UT_UTF8String & sLatex)
 
 void AP_Dialog_Latex::insertIntoDoc(void)
 {
-  XAP_Frame * pFrame = getActiveFrame();
-   FV_View * pView = static_cast<FV_View *>(pFrame->getCurrentView());
-  pView->cmdInsertLatexMath(m_sLatex,m_sMathML);
+	XAP_Frame * pFrame = getActiveFrame();
+	FV_View * pView = static_cast<FV_View *>(pFrame->getCurrentView());
+	pView->cmdInsertLatexMath(m_sLatex,m_sMathML);
 }
