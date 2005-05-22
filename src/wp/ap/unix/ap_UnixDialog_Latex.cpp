@@ -58,8 +58,7 @@ XAP_Dialog * AP_UnixDialog_Latex::static_constructor(XAP_DialogFactory * pFactor
 	return new AP_UnixDialog_Latex(pFactory,id);
 }
 
-AP_UnixDialog_Latex::AP_UnixDialog_Latex(XAP_DialogFactory * pDlgFactory,
-												 XAP_Dialog_Id id)
+AP_UnixDialog_Latex::AP_UnixDialog_Latex(XAP_DialogFactory * pDlgFactory, XAP_Dialog_Id id)
 	: AP_Dialog_Latex(pDlgFactory,id)
 {
 }
@@ -128,30 +127,31 @@ void AP_UnixDialog_Latex::destroy(void)
 
 void AP_UnixDialog_Latex::setLatexInGUI(void)
 {
-  UT_UTF8String sLatex;
-  getLatex(sLatex);
-  GtkTextBuffer * buffer = gtk_text_view_get_buffer (GTK_TEXT_VIEW (m_wText));
-  gtk_text_buffer_set_text (buffer, sLatex.utf8_str(), -1);
-
+	UT_UTF8String sLatex;
+	getLatex(sLatex);
+	GtkTextBuffer * buffer = gtk_text_view_get_buffer (GTK_TEXT_VIEW (m_wText));
+	gtk_text_buffer_set_text (buffer, sLatex.utf8_str(), -1);
 }
 
 bool AP_UnixDialog_Latex::getLatexFromGUI(void)
 {
-  UT_UTF8String sLatex;
-  //
-  // Get the chars from the widget
-  //
-  gchar * sz = NULL;
-  GtkTextBuffer * buffer = gtk_text_view_get_buffer (GTK_TEXT_VIEW (m_wText));
-  GtkTextIter startIter,endIter;
-  gtk_text_buffer_get_start_iter  (buffer,&startIter);
-  gtk_text_buffer_get_end_iter    (buffer,&endIter);
-  sz = gtk_text_buffer_get_text   (buffer,&startIter,&endIter,TRUE);
-  sLatex = sz;
-  g_free(sz);
-  UT_DEBUGMSG(("LAtex from widget is %s \n",sLatex.utf8_str()));
-  setLatex(sLatex);
-  return true;
+	UT_UTF8String sLatex;
+
+	//
+	// Get the chars from the widget
+	//
+	gchar * sz = NULL;
+	GtkTextBuffer * buffer = gtk_text_view_get_buffer (GTK_TEXT_VIEW (m_wText));
+	GtkTextIter startIter,endIter;
+	gtk_text_buffer_get_start_iter  (buffer,&startIter);
+	gtk_text_buffer_get_end_iter    (buffer,&endIter);
+	sz = gtk_text_buffer_get_text   (buffer,&startIter,&endIter,TRUE);
+	sLatex = sz;
+	g_free(sz);
+	UT_DEBUGMSG(("LAtex from widget is %s \n",sLatex.utf8_str()));
+	setLatex(sLatex);
+
+	return true;
 }
 
 
@@ -172,12 +172,20 @@ void AP_UnixDialog_Latex::constructDialog(void)
 		return;
 	}
 
-	m_windowMain   = glade_xml_get_widget(xml, "wLatexEquation");
+        // Update our member variables with the important widgets that
+        // might need to be queried or altered later
+	m_windowMain   = glade_xml_get_widget(xml, "ap_UnixDialog_Latex");
 	m_wClose = glade_xml_get_widget(xml, "wClose");
 	m_wInsert =  glade_xml_get_widget(xml, "wInsert");
+	m_wText = glade_xml_get_widget(xml, "wTextView");
+
+	// localize the strings in our dialog, and set tags for some widgets
+
 	localizeButtonUnderline(m_wInsert, pSS, AP_STRING_ID_DLG_InsertButton);
 
-	m_wText = glade_xml_get_widget(xml, "wTextView");
+	localizeLabelMarkup(glade_xml_get_widget(xml, "lbLatexEquation"), pSS, AP_STRING_ID_DLG_Latex_LatexEquation);
+	
+	localizeLabel(glade_xml_get_widget(xml, "lbExample"), pSS, AP_STRING_ID_DLG_Latex_Example);
 
 	ConstructWindowName();
 	gtk_window_set_title (GTK_WINDOW(m_windowMain), m_sWindowName.utf8_str());

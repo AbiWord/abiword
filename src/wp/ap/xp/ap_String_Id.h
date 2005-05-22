@@ -185,15 +185,17 @@ dcl(DLG_FormatTOC_Level3,                 "Level 3")
 dcl(DLG_FormatTOC_Level4,                 "Level 4")
 
 /* Latex dialog */
-dcl(DLG_Latex_LatexTitle,	"Latex Equation")
+dcl(DLG_Latex_LatexTitle,	"LaTeX Equation")
+dcl(DLG_Latex_LatexEquation,	"LaTeX Equation")
+dcl(DLG_Latex_Example,		"Example:")
 
 /*Equation Menus */
 dcl(MENU_LABEL_INSERT_EQUATION,"Equation")
 dcl(MENU_LABEL_TOOLTIP_INSERT_EQUATION,"Insert Equation")
 dcl(MENU_LABEL_INSERT_EQUATION_FILE,"From File")
 dcl(MENU_LABEL_TOOLTIP_INSERT_EQUATION_FILE,"Insert MathML from a file")
-dcl(MENU_LABEL_INSERT_EQUATION_LATEX,"From Latex")
-dcl(MENU_LABEL_TOOLTIP_INSERT_EQUATION_LATEX,"Insert Equation from a Latex expression")
+dcl(MENU_LABEL_INSERT_EQUATION_LATEX,"From LaTeX")
+dcl(MENU_LABEL_TOOLTIP_INSERT_EQUATION_LATEX,"Insert Equation from a LaTeX expression")
 
 /* Word Count dialog */
 dcl(DLG_WordCount_WordCountTitle,	"Word Count")
