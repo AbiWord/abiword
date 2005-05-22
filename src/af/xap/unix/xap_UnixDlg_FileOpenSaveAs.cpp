@@ -871,8 +871,8 @@ void XAP_UnixDialog_FileOpenSaveAs::runModal(XAP_Frame * pFrame)
 	// use the persistence info and/or the suggested filename
 	// to properly seed the dialog.
 	
-	char * szPersistDirectory = NULL;	// we must free this
-	
+	gchar * szPersistDirectory = NULL;	// we must free this
+
 	if (!m_szInitialPathname || !*m_szInitialPathname)
 	{
 		// the caller did not supply initial pathname
@@ -886,13 +886,14 @@ void XAP_UnixDialog_FileOpenSaveAs::runModal(XAP_Frame * pFrame)
 			// extract the directory portion and start
 			// the dialog there (but without a filename).
 
+#if GTK_CHECK_VERSION(2,4,0)
+			szPersistDirectory = g_path_get_dirname(m_szPersistPathname);
+			gtk_file_chooser_set_current_folder(m_FC, szPersistDirectory);
+#else
 			UT_cloneString(szPersistDirectory,m_szPersistPathname);
 			char * pLastSlash = strrchr(szPersistDirectory, '/');
 			if (pLastSlash)
 				pLastSlash[1] = 0;
-#if GTK_CHECK_VERSION(2,4,0)
-			gtk_file_chooser_set_filename(m_FC,szPersistDirectory);
-#else
 			gtk_file_selection_set_filename(m_FS,szPersistDirectory);
 #endif
 		}
@@ -923,14 +924,14 @@ void XAP_UnixDialog_FileOpenSaveAs::runModal(XAP_Frame * pFrame)
 		else
 		{
 			// use directory(m_szInitialPathname)
-			
+#if GTK_CHECK_VERSION(2,4,0)	
+			szPersistDirectory = g_path_get_dirname(m_szInitialPathname);
+			gtk_file_chooser_set_current_folder(m_FC, szPersistDirectory);
+#else
 			UT_cloneString(szPersistDirectory,m_szInitialPathname);
 			char * pLastSlash = strrchr(szPersistDirectory, '/');
 			if (pLastSlash)
 				pLastSlash[1] = 0;
-#if GTK_CHECK_VERSION(2,4,0)	
-			gtk_file_chooser_set_filename(m_FC,szPersistDirectory);
-#else
 			gtk_file_selection_set_filename(m_FS,szPersistDirectory);
 #endif
 		}
