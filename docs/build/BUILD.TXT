@@ -95,7 +95,7 @@ If you have the big-bad source tar-ball, you can skip to the next section. If yo
 
 	abidistfiles (needed if you plan to make install)
 
-	wv (highly recommended) Note: you can also get wv release tar-balls from wvWare's official site on SourceForge, http://sourceforge.net/projects/wvware/. For building AbiWord, however, the version of wv can be critical and so it is usually bundled with abi; for CVS AbiWord use AbiWord's CVS wv. See also: configure --with-sys-wv.
+	wv (highly recommended) Note: you can also get wv release tar-balls from wvWare's official site on SourceForge, http://sourceforge.net/projects/wvware/. For building AbiWord, however, the version of wv can be critical and so it is usually bundled with abi; for CVS AbiWord use AbiWord's CVS wv (use cvs co -r wv-1-0-0-STABLE wv). See also: configure --with-sys-wv.
 
 	abiword-plugins (optional, for extra importer/exporters, nifty tools, and other toys)
 
@@ -234,7 +234,7 @@ CVS modules required to check out are:
 
 	popt
 
-	wv
+	wv (use cvs co -r wv-1-0-0-STABLE wv)
 
 The following modules may optionally be checked out as well:
 
@@ -301,7 +301,7 @@ Prerequisites:
 
 	abidistfiles
 
-	wv
+	wv (use cvs co -r wv-1-0-0-STABLE wv)
 
 You also need to have libpng, libiconv, libfribidi and libxml2. All except libfribidi are available from the QNX 3rd party CD. FriBiDi can be downloaded from http://www.qnxzone.com/~travis/packages/fribidi_x86-0.10.4-x86-public.qpr
 
