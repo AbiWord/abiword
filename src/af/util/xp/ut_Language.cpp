@@ -41,8 +41,9 @@ static UT_LangRecord s_Table[] =
 	//language code, localised language name, numerical id, text
 	//direction
 	{"-none-",		NULL, XAP_STRING_ID_LANG_0,     UTLANG_LTR},
-	{"am-ET",		NULL, XAP_STRING_ID_LANG_AM_ET, UTLANG_LTR},
 	{"af-ZA",		NULL, XAP_STRING_ID_LANG_AF_ZA, UTLANG_LTR},
+	{"ak-GH",		NULL, XAP_STRING_ID_LANG_AK_GH, UTLANG_LTR},
+	{"am-ET",		NULL, XAP_STRING_ID_LANG_AM_ET, UTLANG_LTR},
 	{"ar-EG",		NULL, XAP_STRING_ID_LANG_AR_EG, UTLANG_RTL},
 	{"ar-SA",		NULL, XAP_STRING_ID_LANG_AR_SA, UTLANG_RTL},
 	{"as-IN",		NULL, XAP_STRING_ID_LANG_AS_IN, UTLANG_LTR},
