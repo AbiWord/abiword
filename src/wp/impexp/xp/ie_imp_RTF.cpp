@@ -3140,7 +3140,7 @@ bool IE_Imp_RTF::HandleField()
 		}
 		else
 		{
-			UT_DEBUGMSG (("RTF: Invalid keyword '%s' in field\n"));
+			UT_DEBUGMSG (("RTF: Invalid keyword '%s' in field\n", keyword));
 			// don't return as we simply skip it
 		}
 
@@ -3250,7 +3250,7 @@ bool IE_Imp_RTF::HandleField()
 			// here we expect fldrslt keyword, nothing else
 			if (strcmp (reinterpret_cast<char*>(&keyword[0]), "fldrslt") != 0)
 			{
-				UT_DEBUGMSG (("RTF: Invalid keyword '%s' in field\n"));
+				UT_DEBUGMSG (("RTF: Invalid keyword '%s' in field\n", keyword));
 				// don't return as we simply skip it
 			}
 			else
