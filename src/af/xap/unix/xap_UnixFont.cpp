@@ -789,12 +789,13 @@ XftFont *XAP_UnixFont::getLayoutXftFont(UT_uint32 pixelsize) const
 // returns different fonts depending on the zoom percentage
 XftFont *XAP_UnixFont::getDeviceXftFont(UT_uint32 pixelsize, UT_uint32 zoomPercentage) const
 {
-	XftFont *pXftFont = getFontFromCache(pixelsize*zoomPercentage/100, false, zoomPercentage);
+#define extra_font_size 1.5
+	XftFont *pXftFont = getFontFromCache(static_cast<UT_sint32>(extra_font_size + static_cast<double>(pixelsize*zoomPercentage)/static_cast<double>(100.)) , false, zoomPercentage);
 	if (pXftFont)
 		return pXftFont;
 
-	fetchXftFont(pixelsize*zoomPercentage/100);
-	return getFontFromCache(pixelsize*zoomPercentage/100, false, zoomPercentage);
+	fetchXftFont(static_cast<UT_sint32>(extra_font_size + static_cast<double>(pixelsize*zoomPercentage)/static_cast<double>(100.)));
+	return getFontFromCache(static_cast<UT_sint32>(extra_font_size + static_cast<double>(pixelsize*zoomPercentage)/static_cast<double>(100.)), false, zoomPercentage);
 }
 
 XftFont *XAP_UnixFont::getFontFromCache(UT_uint32 pixelsize, bool /*bIsLayout*/, UT_uint32 /*zoomPercentage*/) const
