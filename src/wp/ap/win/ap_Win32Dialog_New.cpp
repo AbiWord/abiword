@@ -119,7 +119,8 @@ BOOL AP_Win32Dialog_New::_onInitDialog(HWND hWnd, WPARAM wParam, LPARAM lParam)
 			templateName = XAP_App::getApp()->getUserPrivateDirectory();
 			templateName += "\\templates\\";
 			templateName += cfile.name;
-			templateName = templateName.substr ( 0, templateName.size () - 4 ) ;
+			if(!strstr(templateName.c_str(), "normal.awt-")) // don't truncate localized template names
+				templateName = templateName.substr ( 0, templateName.size () - 4 ) ;
 			UT_sint32 nIndex = SendMessage( hControl, LB_ADDSTRING, 0, (LPARAM) UT_basename( templateName.c_str() ) );
 			SendMessage( hControl, LB_SETITEMDATA, (WPARAM) nIndex, (LPARAM) 0 );
 		} while( _findnext( findtag, &cfile ) == 0 );
@@ -137,7 +138,8 @@ BOOL AP_Win32Dialog_New::_onInitDialog(HWND hWnd, WPARAM wParam, LPARAM lParam)
 			templateName = XAP_App::getApp()->getAbiSuiteLibDir();
 			templateName += "\\templates\\";
 			templateName += cfile.name;
-			templateName = templateName.substr ( 0, templateName.size () - 4 ) ;
+			if(!strstr(templateName.c_str(), "normal.awt-"))  // don't truncate localized template names
+				templateName = templateName.substr ( 0, templateName.size () - 4 ) ;
 			UT_sint32 nIndex = SendMessage( hControl, LB_ADDSTRING, 0, (LPARAM) UT_basename( templateName.c_str() ) );
 			SendMessage( hControl, LB_SETITEMDATA, (WPARAM) nIndex, (LPARAM) 1 );
 		} while( _findnext( findtag, &cfile ) == 0 );
