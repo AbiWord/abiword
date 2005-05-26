@@ -883,7 +883,18 @@ UT_sint32 fb_ColumnBreaker::breakSection(fl_DocSectionLayout * pSL)
 				}
 				if(!bDoneTabTOC && isTOCTABLE)
 				{
-				        pOuterContainer = _getNext(pCon);
+				        if(pCon)
+					{
+					      pOuterContainer = _getNext(pCon);
+					}
+					else
+					{
+					      pOuterContainer = NULL;
+					      pPrevColumn = pCurColumn;
+					      pCurColumn = NULL;
+					      pLastContainerToKeep = NULL;
+					      break;
+					}
 				}
 //				pCurColumn->validate();
 				pPrevColumn = pCurColumn;
@@ -1292,6 +1303,7 @@ bool fb_ColumnBreaker::_breakTOC(fp_Container*& pOffendingContainer,
 
 fp_Container * fb_ColumnBreaker::_getNext(fp_Container * pCon)
 {
+        UT_return_val_if_fail(pCon,NULL);
 	fp_Container * pNext = NULL;
 	if(pCon->getContainerType() != FP_CONTAINER_ENDNOTE)
 	{
