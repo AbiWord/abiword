@@ -34,7 +34,7 @@
 class XAP_UnixApp;
 class XAP_Frame;
 class EV_UnixToolbar_ViewListener;
-class EV_Toolbar_Control;
+
 class _wd;
 
 class EV_UnixToolbar : public EV_Toolbar
@@ -59,8 +59,8 @@ public:
 	void setCurrentEvent(GdkEvent * event) {m_eEvent = event;}
 	virtual void show(void);
 	virtual void hide(void);
-	void selectComboEntry(_wd *wd, const gchar *text);
 	
+	XAP_FontPreview *				m_pFontPreview;	
 protected:
 	void							_releaseListener(void);
 
@@ -77,12 +77,6 @@ protected:
 	GtkWidget * 					m_wHandleBox;
 	AP_UnixToolbar_Icons 			m_pUnixToolbarIcons;
 	UT_GenericVector<_wd*>			m_vecToolbarWidgets;
-
-private:
-	void fillCombo (_wd *wd,
-				    EV_Toolbar_Control *pControl,
-				    const UT_GenericVector<const char*> *strings);
-
 };
 
 #endif /* EV_UNIXTOOLBAR_H */
