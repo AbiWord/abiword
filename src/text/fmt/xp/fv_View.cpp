@@ -4003,7 +4003,7 @@ bool FV_View::setCharFormat(const XML_Char * properties[], const XML_Char * attr
 				{
 					posStart++;
 				}
-				while(!isPointLegal(posEnd))
+				while(!isPointLegal(posEnd) && (posEnd > posStart) )
 				{
 					posEnd--;
 				}
