@@ -5095,6 +5095,18 @@ bool PD_Document::insertStruxBeforeFrag(pf_Frag * pF, PTStruxType pts,
 bool PD_Document::insertSpanBeforeFrag(pf_Frag * pF, const UT_UCSChar * pbuf, UT_uint32 length)
 {
 	UT_return_val_if_fail (m_pPieceTable, false);
+	if(pF->getType() == pf_Frag::PFT_Strux)
+	{
+		pf_Frag_Strux * pfs = static_cast<pf_Frag_Strux *>(pF);
+		if((pfs->getStruxType() != PTX_Block) && (pfs->getStruxType() != PTX_EndFootnote) && (pfs->getStruxType() != PTX_EndEndnote) )
+		{
+			//
+			// Append a block!
+			//
+			m_vecSuspectFrags.addItem(pF);
+			return true;
+		}
+	}
 
 	// can only be used while loading the document
 
@@ -5170,6 +5182,18 @@ bool PD_Document::insertObjectBeforeFrag(pf_Frag * pF, PTObjectType pto,
 										 const XML_Char ** attributes)
 {
 	UT_return_val_if_fail (m_pPieceTable, false);
+	if(pF->getType() == pf_Frag::PFT_Strux)
+	{
+		pf_Frag_Strux * pfs = static_cast<pf_Frag_Strux *>(pF);
+		if((pfs->getStruxType() != PTX_Block) && (pfs->getStruxType() != PTX_EndFootnote) && (pfs->getStruxType() != PTX_EndEndnote) )
+		{
+			//
+			// Append a block!
+			//
+			m_vecSuspectFrags.addItem(pF);
+			return true;
+		}
+	}
 
 	// can only be used while loading the document
 
@@ -5179,6 +5203,18 @@ bool PD_Document::insertObjectBeforeFrag(pf_Frag * pF, PTObjectType pto,
 bool PD_Document::insertFmtMarkBeforeFrag(pf_Frag * pF)
 {
 	UT_return_val_if_fail (m_pPieceTable, false);
+	if(pF->getType() == pf_Frag::PFT_Strux)
+	{
+		pf_Frag_Strux * pfs = static_cast<pf_Frag_Strux *>(pF);
+		if((pfs->getStruxType() != PTX_Block) && (pfs->getStruxType() != PTX_EndFootnote) && (pfs->getStruxType() != PTX_EndEndnote) )
+		{
+			//
+			// Append a block!
+			//
+			m_vecSuspectFrags.addItem(pF);
+			return true;
+		}
+	}
 
 	// can only be used while loading the document
 
