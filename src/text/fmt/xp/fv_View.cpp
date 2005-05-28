@@ -1173,6 +1173,17 @@ fl_FrameLayout * FV_View::getFrameLayout(PT_DocPosition pos)
 	
 	if(pBlock)
 	{
+		fl_ContainerLayout * pCL = pBlock->myContainingLayout();
+		while(pCL && (pCL->getContainerType() != FL_CONTAINER_FRAME) && (pCL->getContainerType() != FL_CONTAINER_DOCSECTION))
+		{
+			if(pCL == pCL->myContainingLayout())
+				break;
+			pCL = pCL->myContainingLayout();
+		}
+		if(pCL && pCL->getContainerType() == FL_CONTAINER_FRAME)
+		{
+			return static_cast<fl_FrameLayout *>(pCL);
+		}
 		if((pBlock->getPosition(true) < pos) && (pBlock->getPosition(true) + pBlock->getLength() + 1 < pos))
 		{
 			pBlock = pBlock->getNextBlockInDocument();
@@ -1185,7 +1196,7 @@ fl_FrameLayout * FV_View::getFrameLayout(PT_DocPosition pos)
 		{
 			return NULL;
 		}
-		fl_ContainerLayout * pCL = pBlock->myContainingLayout();
+		pCL = pBlock->myContainingLayout();
 		while(pCL && (pCL->getContainerType() != FL_CONTAINER_FRAME) && (pCL->getContainerType() != FL_CONTAINER_DOCSECTION))
 		{
 			pCL = pCL->myContainingLayout();
