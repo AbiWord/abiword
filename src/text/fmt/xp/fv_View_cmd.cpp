@@ -865,7 +865,7 @@ bool FV_View::cmdTableToText(PT_DocPosition posSource,UT_sint32 iSepType)
 	  insertParagraphBreak();
 	}
 	posTable = pTL->getPosition(true) + 2;
-	cmdDeleteTable(posTable);
+	cmdDeleteTable(posTable, true);
 
 	// Signal PieceTable Changes have finished
 	_restorePieceTableState();
@@ -2733,7 +2733,7 @@ bool FV_View::cmdDeleteCol(PT_DocPosition posCol)
 /*!
  * Delete the table containing the position posRow
  */
-bool FV_View::cmdDeleteTable(PT_DocPosition posTable)
+bool FV_View::cmdDeleteTable(PT_DocPosition posTable, bool bDontNotify)
 {
 	PL_StruxDocHandle tableSDH,endTableSDH;
 	PT_DocPosition posStartTable,posEndTable;
@@ -2781,10 +2781,16 @@ bool FV_View::cmdDeleteTable(PT_DocPosition posTable)
 	m_pDoc->enableListUpdates();
 	m_pDoc->updateDirtyLists();
 	setPoint(getPoint());
-    notifyListeners(AV_CHG_ALL);
-	_fixInsertionPointCoords();
-	_ensureInsertionPointOnScreen();
-
+	//
+	// This method could be called from text to tablein which case
+	// we don't want to do this.
+	//
+	if(!bDontNotify)
+	{
+	     notifyListeners(AV_CHG_ALL);
+	     _fixInsertionPointCoords();
+	     _ensureInsertionPointOnScreen();
+	}
 	return true;
 }
 

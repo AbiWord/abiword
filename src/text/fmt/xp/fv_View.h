@@ -614,7 +614,7 @@ public:
 	bool                cmdDeleteCell(PT_DocPosition pos);
 	bool                cmdDeleteCol(PT_DocPosition pos);
 	bool                cmdDeleteRow(PT_DocPosition pos);
-	bool                cmdDeleteTable(PT_DocPosition pos);
+	bool                cmdDeleteTable(PT_DocPosition pos, bool bDontNotify=false);
 	bool                cmdInsertRow(PT_DocPosition posTable, bool bBfore);
 	bool                cmdInsertCol(PT_DocPosition posTable, bool bBefore);
 	bool                cmdSplitCells(AP_CellSplitType iSplitType);
