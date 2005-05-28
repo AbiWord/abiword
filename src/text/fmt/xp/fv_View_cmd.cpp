@@ -5416,7 +5416,7 @@ void FV_View::cmdContextIgnoreAll(void)
 		fl_DocSectionLayout * pSL = m_pLayout->getFirstSection();
 		if(pSL)
 		{
-			fl_BlockLayout* b = static_cast<fl_BlockLayout *>(pSL->getFirstLayout());
+			fl_BlockLayout* b = pSL->getNextBlockInDocument();
 			while (b)
 			{
 				// TODO: just check and remove matching squiggles
@@ -5455,7 +5455,7 @@ void FV_View::cmdContextAdd(void)
 		fl_DocSectionLayout * pSL = m_pLayout->getFirstSection();
 		if(pSL)
 		{
-			fl_BlockLayout* b = static_cast<fl_BlockLayout *>(pSL->getFirstLayout());
+			fl_BlockLayout* b = pSL->getNextBlockInDocument();
 			while (b)
 			{
 				// TODO: just check and remove matching squiggles

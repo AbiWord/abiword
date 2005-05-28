@@ -5222,7 +5222,7 @@ bool FV_View::processPageNumber(HdrFtrType hfType, const XML_Char ** atts)
 //
 // Scan the layout for a pre-existing page number.
 //
-	fl_BlockLayout * pBL = static_cast<fl_BlockLayout *>(pHFSL->getFirstLayout());
+	fl_BlockLayout * pBL = pHFSL->getNextBlockInDocument();
 	bool bFoundPageNumber = false;
 	while(pBL != NULL && !bFoundPageNumber)
 	{
@@ -5274,7 +5274,7 @@ bool FV_View::processPageNumber(HdrFtrType hfType, const XML_Char ** atts)
 		"type", "page_number",
 		NULL, NULL
 	};
-	pBL = static_cast<fl_BlockLayout *>(pHFSL->getFirstLayout());
+	pBL = pHFSL->getNextBlockInDocument();
 	pos = pBL->getPosition();
 
 	//Glob it all together so it can be undone with one
@@ -6666,7 +6666,7 @@ bool FV_View::gotoTarget(AP_JumpTarget type, UT_UCSChar *data)
 		{
 			//UT_uint32 line = 0;
 			fl_SectionLayout * pSL = m_pLayout->getFirstSection();
-			fl_BlockLayout * pBL = static_cast<fl_BlockLayout *>(pSL->getFirstLayout());
+			fl_BlockLayout * pBL = pSL->getNextBlockInDocument();
 			fp_Line* pLine = static_cast<fp_Line *>(pBL->getFirstContainer());
 
 			for (UT_uint32 i = 1; i < number; i++)
@@ -6683,7 +6683,7 @@ bool FV_View::gotoTarget(AP_JumpTarget type, UT_UCSChar *data)
 							break;
 						}
 						else
-							pBL = static_cast<fl_BlockLayout *>(pSL->getFirstLayout ());
+							pBL = pSL->getNextBlockInDocument();
 					}
 					else
 					{
@@ -6725,7 +6725,7 @@ bool FV_View::gotoTarget(AP_JumpTarget type, UT_UCSChar *data)
 
 			while(pSL)
 			{
-				pBL = static_cast<fl_BlockLayout *>(pSL->getFirstLayout());
+				pBL = pSL->getNextBlockInDocument();
 
 				while(pBL)
 				{
@@ -10745,7 +10745,7 @@ bool FV_View::getEditableBounds(bool isEnd, PT_DocPosition &posEOD, bool bOverid
 // Now loop through all the HdrFtrSections, find the first in the doc and
 // use that to get the end of editttable region.
 //
-		fl_BlockLayout * pFirstBL = static_cast<fl_BlockLayout *>(pSL->getFirstLayout());
+		fl_BlockLayout * pFirstBL = pSL->getNextBlockInDocument();
 		if(pFirstBL == NULL)
 		{
 			res = m_pDoc->getBounds(isEnd,posEOD);
@@ -10754,10 +10754,10 @@ bool FV_View::getEditableBounds(bool isEnd, PT_DocPosition &posEOD, bool bOverid
 
 		PT_DocPosition posFirst = pFirstBL->getPosition(true) - 1;
 		PT_DocPosition posNext;
-		while((pSL->getNext() != NULL) && (pSL->getFirstLayout() != NULL))
+		while((pSL->getNext() != NULL) && (pSL->getNextBlockInDocument() != NULL))
 		{
 			pSL = static_cast<fl_SectionLayout *>(pSL->getNext());
-			pFirstBL = static_cast<fl_BlockLayout *>(pSL->getFirstLayout());
+			pFirstBL = pSL->getNextBlockInDocument();
 			// Make sure the first fl_BlockLayout of this new
 			// fl_SectionLayout is valid.
 			if (pFirstBL)
@@ -10943,7 +10943,7 @@ bool FV_View::insertHeaderFooter(const XML_Char ** props, HdrFtrType hfType, fl_
 //
 // Now find the position of this section
 //
-	fl_BlockLayout * pBL = static_cast<fl_BlockLayout *>(pDocL->getFirstLayout());
+	fl_BlockLayout * pBL = pDocL->getNextBlockInDocument();
 	PT_DocPosition posSec = pBL->getPosition();
 
 	// change the section to point to the footer which doesn't exist yet.

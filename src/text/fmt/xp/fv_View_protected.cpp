@@ -4994,7 +4994,7 @@ UT_Error FV_View::_deleteBookmark(const char* szName, bool bSignal, PT_DocPositi
 		//find the first of the two bookmarks
 		while(pSL)
 		{
-			pBL = static_cast<fl_BlockLayout *>(pSL->getFirstLayout());
+			pBL = pSL->getNextBlockInDocument();
 
 			while(pBL)
 			{
@@ -5528,7 +5528,7 @@ void FV_View::_cmdEditHdrFtr(HdrFtrType hfType)
 //
 // Put the insertion point at the beginning of the header
 //
-	fl_BlockLayout * pBL = static_cast<fl_BlockLayout *>(pShadow->getFirstLayout());
+	fl_BlockLayout * pBL = pShadow->getNextBlockInDocument();
 	if (!isSelectionEmpty())
 		_clearSelection();
 
