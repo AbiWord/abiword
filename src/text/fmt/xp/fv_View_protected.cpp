@@ -420,6 +420,12 @@ void FV_View::_deleteSelection(PP_AttrProp *p_AttrProp_Before, bool bNoUpdate)
 			}
 			bDeleteTables = true;
 		}
+		if(!bDeleteTables && (m_pDoc->isTableAtPos(iLow-1) && m_pDoc->isEndTableAtPos(iHigh-1)))
+		{
+			bDeleteTables = true;
+			iLow--;
+			iHigh;
+		}
 	}
 	if(!isInFrame(iLow) && isInFrame(iHigh))
 	{
