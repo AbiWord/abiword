@@ -4880,7 +4880,7 @@ void FV_View::getAllBlocksInList(UT_GenericVector<fl_BlockLayout *> * v)
 	PL_StruxDocHandle pFirstSdh = pAuto->getFirstItem();
 	PL_StruxDocHandle pLastSdh = pAuto->getNthBlock(pAuto->getNumLabels()-1);
 	fl_SectionLayout * pSl = getCurrentBlock()->getSectionLayout();
-	pBlock = static_cast<fl_BlockLayout *>(pSl->getFirstLayout());
+	pBlock = pSl->getNextBlockInDocument();
 	bool foundLast = false;
 	bool foundFirst = false;
 
@@ -4894,11 +4894,11 @@ void FV_View::getAllBlocksInList(UT_GenericVector<fl_BlockLayout *> * v)
 		{
 			foundFirst = true;
 		}
-		if(foundFirst == true)
+		if(foundFirst == true && (pBlock->getContainerType() == FL_CONTAINER_BLOCK))
 			v->addItem(pBlock);
 		if(pBlock->getStruxDocHandle() == pLastSdh)
 			foundLast = true;
-		pBlock = static_cast<fl_BlockLayout *>(pBlock->getNext());
+		pBlock = static_cast<fl_BlockLayout *>(pBlock->getNextBlockInDocument());
 	}
 }
 
