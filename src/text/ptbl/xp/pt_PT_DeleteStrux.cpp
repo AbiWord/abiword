@@ -602,13 +602,18 @@ void pt_PieceTable::_deleteHdrFtrStruxWithNotify( pf_Frag_Strux * pfFragStruxHdr
 // Now find the first Non-strux frag within this hdrftr
 //
 	bool bStop = false;
+	bool bIsTable = false;
 	PT_DocPosition posLastStrux = 0;
 	while((pfFrag->getType() == pf_Frag::PFT_Strux) && (pfFrag != getFragments().getLast()) && !bStop)
 	{
 		const pf_Frag_Strux * pfs = static_cast<const pf_Frag_Strux *>(pfFrag);
-		if(pfs != pfFragStruxHdrFtr && pfs->getStruxType() != PTX_Block)
+		if(pfs != pfFragStruxHdrFtr && (pfs->getStruxType() != PTX_Block))
 		{
 			bStop = true;
+			if(pfs->getStruxType() == PTX_SectionTable)
+			{
+			       bIsTable = true;
+			}
 		}
 		else
 		{
@@ -619,7 +624,7 @@ void pt_PieceTable::_deleteHdrFtrStruxWithNotify( pf_Frag_Strux * pfFragStruxHdr
 		}
 	}
 	PT_DocPosition TextStartPos = getFragPosition(pfFrag);
-	if(TextStartPos == posLastStrux)
+	if(TextStartPos == posLastStrux && !bIsTable)
 	{
 		TextStartPos++;
 	}
@@ -666,7 +671,7 @@ void pt_PieceTable::_deleteHdrFtrStruxWithNotify( pf_Frag_Strux * pfFragStruxHdr
 //
 //
 	UT_uint32 count = vecFragStrux.getItemCount();
-	UT_return_if_fail (count > 1);
+	UT_return_if_fail (count > 0);
 	UT_uint32 i=0;
 	bool bres = false;
 //
