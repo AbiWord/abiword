@@ -6675,7 +6675,7 @@ bool FV_View::gotoTarget(AP_JumpTarget type, UT_UCSChar *data)
 
 				if ((pLine = static_cast<fp_Line *>(pLine->getNext ())) == NULL)
 				{
-					if ((pBL = static_cast<fl_BlockLayout *>(pBL->getNext ())) == NULL)
+					if ((pBL = static_cast<fl_BlockLayout *>(pBL->getNextBlockInDocument())) == NULL)
 					{
 						if ((pSL = static_cast<fl_SectionLayout *>(pSL->getNext ())) == NULL)
 						{
