@@ -6691,7 +6691,10 @@ bool FV_View::gotoTarget(AP_JumpTarget type, UT_UCSChar *data)
 					}
 				}
 			}
-
+			if(pLine == NULL)
+			{
+				return false;
+			}
 			fp_Run* frun = pLine->getFirstRun ();
 			fl_BlockLayout* fblock = pLine->getBlock ();
 			PT_DocPosition dp = frun->getBlockOffset () + fblock->getPosition ();
