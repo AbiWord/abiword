@@ -1045,6 +1045,14 @@ bool pt_PieceTable::_deleteComplexSpan(PT_DocPosition & origPos1,
 	if(pfsContainer->getStruxType() == PTX_SectionFrame)
 	{
 		bPrevWasFrame = true;
+	        if(pf_First->getType() == pf_Frag::PFT_Strux)
+		{
+		     pf_Frag_Strux * pfs = static_cast<pf_Frag_Strux *>(pf_First);
+		     if(pfs->getStruxType() == PTX_SectionTable)
+		     {
+		          bPrevWasFrame = false;
+		     }
+		}
 	}
 	if(pfsContainer->getStruxType() == PTX_SectionCell)
 	{

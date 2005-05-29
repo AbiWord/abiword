@@ -2744,7 +2744,7 @@ bool FV_View::cmdDeleteTable(PT_DocPosition posTable, bool bDontNotify)
 	}
 	posStartTable = m_pDoc->getStruxPosition(tableSDH);
 	endTableSDH = m_pDoc->getEndTableStruxFromTableSDH(tableSDH);
-	posEndTable = m_pDoc->getStruxPosition(endTableSDH)+1;
+	posEndTable = m_pDoc->getStruxPosition(endTableSDH)+1; 
 //
 // Got all we need, now set things up to do the delete nicely
 //
@@ -2765,6 +2765,8 @@ bool FV_View::cmdDeleteTable(PT_DocPosition posTable, bool bDontNotify)
 // OK do the delete
 //
 	UT_uint32 iRealDeleteCount;
+	//	if(m_pDoc->isFrameAtPos(posStartTable-1))
+	//   posStartTable--;
 	m_pDoc->deleteSpan( posStartTable, posEndTable, NULL,iRealDeleteCount,true);
 //
 // OK finish everything off with the various parameters which allow the formatter to
