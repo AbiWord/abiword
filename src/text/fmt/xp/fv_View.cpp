@@ -7945,7 +7945,21 @@ bool FV_View::setCellFormat(const XML_Char * properties[], FormatTable applyTo, 
 		return false;
 	}
 	posTable = m_pDoc->getStruxPosition(tableSDH)+1;
-
+	if(posTable > posStart)
+	{
+		bRet = m_pDoc->getStruxOfTypeFromPosition(posStart,PTX_SectionTable,&tableSDH);
+		if(!bRet)
+			{
+				// Allow table updates
+				m_pDoc->setDontImmediatelyLayout(false);
+				
+				// Signal PieceTable Changes have finished
+				_restorePieceTableState();
+				clearCursorWait();
+				return false;
+			}
+		posTable = m_pDoc->getStruxPosition(tableSDH)+1;
+	}
 	// Need this to trigger a table update!
 	UT_sint32 iLineType = _changeCellParams(posTable, tableSDH);
 	
