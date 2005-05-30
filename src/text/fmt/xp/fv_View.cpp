@@ -6667,23 +6667,27 @@ bool FV_View::gotoTarget(AP_JumpTarget type, UT_UCSChar *data)
 			//UT_uint32 line = 0;
 			fl_SectionLayout * pSL = m_pLayout->getFirstSection();
 			fl_BlockLayout * pBL = pSL->getNextBlockInDocument();
+			if(pBL == NULL)
+			{
+				return false;
+			}
 			fp_Line* pLine = static_cast<fp_Line *>(pBL->getFirstContainer());
-
+			fp_Line * pOldLine = pLine;
 			for (UT_uint32 i = 1; i < number; i++)
 			{
-				fp_Line* pOldLine = pLine;
-
-				if ((pLine = static_cast<fp_Line *>(pLine->getNext ())) == NULL)
+				if(pLine == NULL)
 				{
-					if ((pBL = static_cast<fl_BlockLayout *>(pBL->getNextBlockInDocument())) == NULL)
+					pLine = pOldLine;
+					break;
+				}
+				pOldLine = pLine;
+				pLine = static_cast<fp_Line *>(pLine->getNext ());
+				if (pLine == NULL)
+				{
+					pBL = pBL->getNextBlockInDocument();
+					if (pBL == NULL)
 					{
-						if ((pSL = static_cast<fl_SectionLayout *>(pSL->getNext ())) == NULL)
-						{
-							pLine = pOldLine;
-							break;
-						}
-						else
-							pBL = pSL->getNextBlockInDocument();
+						return false;
 					}
 					else
 					{
