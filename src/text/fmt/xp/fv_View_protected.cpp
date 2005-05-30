@@ -2953,6 +2953,10 @@ bool FV_View::_insertField(const char* szName,
 		_deleteSelection();
 
 		insertParaBreakIfNeededAtPos(getPoint());
+		if(!isPointLegal(getPoint()))
+		{
+			_makePointLegal();
+		}
 		bResult = m_pDoc->insertObject(getPoint(), PTO_Field, attributes, extra_props,&pField);
 		if(pField != NULL)
 		{
@@ -2967,6 +2971,10 @@ bool FV_View::_insertField(const char* szName,
 	else
 	{
 		insertParaBreakIfNeededAtPos(getPoint());
+		if(!isPointLegal(getPoint()))
+		{
+			_makePointLegal();
+		}
 		bResult = m_pDoc->insertObject(getPoint(), PTO_Field, attributes, extra_props, &pField);
 		if(pField != NULL)
 		{
