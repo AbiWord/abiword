@@ -5185,7 +5185,10 @@ UT_Error FV_View::_insertGraphic(FG_Graphic* pFG, const char* szName)
 
 	if (!pFG)
 	  return UT_ERROR;
-
+	if(!isPointLegal(getPoint()))
+	{
+		_makePointLegal();
+	}
 	return pFG->insertIntoDocument(m_pDoc, m_pG->getDeviceResolution(), getPoint(), szName);
 }
 
