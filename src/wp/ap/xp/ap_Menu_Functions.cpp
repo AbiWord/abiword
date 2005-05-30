@@ -669,17 +669,17 @@ Defun_EV_GetMenuItemState_Fn(ap_GetState_Changes)
 		break;
 
 	case AP_MENU_ID_TABLE_INSERT:
-		if (pView->isHdrFtrEdit() || pView->isInHdrFtr(pView->getPoint()))
+		if (pView->isHdrFtrEdit() || pView->isInHdrFtr(pView->getPoint()) || pView->isInHdrFtr(pView->getSelectionAnchor()) )
 			s = EV_MIS_Gray;
 		break;
 
 	case AP_MENU_ID_TABLE_INSERT_TABLE:
-		if (pView->isHdrFtrEdit() || pView->isInHdrFtr(pView->getPoint()))
+		if (pView->isHdrFtrEdit() || pView->isInHdrFtr(pView->getPoint()) || pView->isInHdrFtr(pView->getSelectionAnchor()) )
 			s = EV_MIS_Gray;
 		break;
 
 	case AP_MENU_ID_TABLE_INSERTTABLE:
-		if (pView->isHdrFtrEdit()  || pView->isInHdrFtr(pView->getPoint()))
+		if (pView->isHdrFtrEdit()  || pView->isInHdrFtr(pView->getPoint()) || pView->isInHdrFtr(pView->getSelectionAnchor()) )
 			s = EV_MIS_Gray;
 		break;
 
@@ -1365,6 +1365,10 @@ Defun_EV_GetMenuItemState_Fn(ap_GetState_TableOK)
 	UT_return_val_if_fail (pView, EV_MIS_Gray);
 
 	if(pView->isInTable() && (pView->isHdrFtrEdit() || pView->isInHdrFtr(pView->getPoint())))
+	{
+		return EV_MIS_Gray;
+	}
+	else if( !pView->isSelectionEmpty() &&  pView->isInTable(pView->getPoint()) && pView->isHdrFtrEdit() )
 	{
 		return EV_MIS_Gray;
 	}
