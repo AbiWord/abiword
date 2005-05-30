@@ -5464,13 +5464,12 @@ static bool s_doHyperlinkDlg(FV_View * pView)
 		{
 			pos1 = pBL->getPosition(true) + pHRun->getBlockOffset()+1;
 			pRun = pHRun->getNextRun();
-			pos2 = pBL->getPosition(true) + pHRun->getBlockOffset();
+			pos2 = pBL->getPosition(true) + pHRun->getBlockOffset() + 1;
 			while(pRun && (pRun->getType() != FPRUN_HYPERLINK))
 			{
+			        pos2 += pRun->getLength();
 				pRun = pRun->getNextRun();
 			}
-			UT_ASSERT_HARMLESS(pRun); // no FPRUN_HYPERLINK found?
-			pos2 = pBL->getPosition(true) + ( pRun ? pRun->getBlockOffset() : 0 );
 		}
 		else
 		{
