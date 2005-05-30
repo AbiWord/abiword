@@ -4046,6 +4046,12 @@ bool FV_View::setCharFormat(const XML_Char * properties[], const XML_Char * attr
 		posEnd = posStart;
 		m_iPosAtTable = 0;
 	}
+	if((posStart == posEnd) && !isPointLegal(posStart))
+	{
+		_makePointLegal();
+		posStart = getPoint();
+		posEnd = posStart;
+	}
 	// Here the selection used to be cleared, but that prevented users
 	// from making multiple changes to the same region.
 
