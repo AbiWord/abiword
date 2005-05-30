@@ -1132,8 +1132,8 @@ void fp_Run::draw(dg_DrawArgs* pDA)
 	if (pLine)
 		pLine->setScreenCleared(false);
 
-//	UT_usleep(100000); // 0.1 seconds useful for debugging
-	xxx_UT_DEBUGMSG(("SEVIOR: draw Run this %x \n",this));
+	//UT_usleep(100000); // 0.1 seconds useful for debugging
+	xxx_UT_DEBUGMSG(("SEVIOR: draw Run this %x line %x \n",this, getLine()));
 	GR_Graphics * pG = pDA->pG;
 	// shortcircuit drawing if we're way off base.
 	long imax = (1 << 15) - 1;
