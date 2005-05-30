@@ -17,6 +17,10 @@
  * 02111-1307, USA.
  */
 
+#include "ap_Features.h"
+#ifdef APF_MENU_LAYOUTS_MAIN_MENU
+#  include APF_MENU_LAYOUTS_MAIN_MENU
+#else
 
 /*****************************************************************
 ******************************************************************
@@ -381,3 +385,5 @@ BeginLayout(Main,0)
 	EndSubMenu()
 
 EndLayout()
+	
+#endif
