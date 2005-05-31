@@ -1493,7 +1493,15 @@ bool    AP_UnixDialog_Lists::dontUpdate(void)
  */
 void AP_UnixDialog_Lists::_gatherData(void)
 {
-	UT_sint32 maxWidth = getBlock()->getFirstContainer()->getContainer()->getWidth();
+	UT_sint32 maxWidth = getBlock()->getDocSectionLayout()->getActualColumnWidth();
+	if(getBlock()->getFirstContainer())
+	{
+	  if(getBlock()->getFirstContainer()->getContainer())
+	  {
+	    maxWidth = getBlock()->getFirstContainer()->getContainer()->getWidth();
+	  }
+	}
+
 //
 // screen resolution is 100 pixels/inch
 //
