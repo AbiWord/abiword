@@ -932,7 +932,8 @@ fl_DocSectionLayout::~fl_DocSectionLayout()
 		m_pHdrFtrChangeTimer->stop();
 		DELETEP(m_pHdrFtrChangeTimer);
 	}
-
+	// Don't delete broken tables since their pages have been removed
+	
 	// NB: be careful about the order of these
 	_purgeLayout();
 
@@ -2419,6 +2420,10 @@ void fl_DocSectionLayout::deleteBrokenTablesFromHere(fl_ContainerLayout * pTL)
 	if(m_bDeleteingBrokenContainers)
 	{
 		return;
+	}
+	if(getDocLayout()->isLayoutDeleting())
+	{
+	        return;
 	}
 	m_bDeleteingBrokenContainers = true;
 	if(pTL == NULL)

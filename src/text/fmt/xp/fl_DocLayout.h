@@ -279,7 +279,6 @@ public:
 	UT_uint32       getLID(void) const
 		{ return m_lid;}
 	void            notifyListeners(AV_ChangeMask mask);
-
 #ifdef FMT_TEST
 	//! Pointer to last instatiated FL_DocLayout. Used for debugging.
 	static		FL_DocLayout* m_pDocLayout;

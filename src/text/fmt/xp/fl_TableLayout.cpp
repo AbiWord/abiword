@@ -25,7 +25,7 @@
 
 #include "ut_types.h"
 #include "ut_string.h"
-
+#include "fp_FrameContainer.h"
 #include "ap_Prefs.h"
 #include "fl_TableLayout.h"
 #include "fl_SectionLayout.h"
@@ -905,10 +905,10 @@ bool fl_TableLayout::bl_doclistener_insertTable( const PX_ChangeRecord_Strux * p
 	m_pDoc->getBounds(true,pos1);
 
 	fl_SectionLayout* pSL = NULL;
-	fl_ContainerLayout * pMyCL = static_cast<fl_ContainerLayout *>(getSectionLayout());
+	fl_ContainerLayout * pMyCL = static_cast<fl_ContainerLayout *>(myContainingLayout());
 	if(pMyCL == NULL)
 	{
-		pMyCL = myContainingLayout();
+		pMyCL = static_cast<fl_ContainerLayout *>(getSectionLayout());
 	}
 	pSL = static_cast<fl_SectionLayout *>(pMyCL->insert(sdh,this,pcrx->getIndexAP(), FL_CONTAINER_TABLE));
 

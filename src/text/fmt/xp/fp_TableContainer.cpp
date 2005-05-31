@@ -4619,6 +4619,13 @@ void  fp_TableContainer::clearScreen(void)
 	// If table is nested, do a clear screen on the topmost cell that 
 	// contains it
 	// This should be fixed later.
+	if(getSectionLayout() && getSectionLayout()->getDocLayout())
+	{
+		if(getSectionLayout()->getDocLayout()->isLayoutDeleting())
+		{
+			return;
+		}
+	}
 	fp_Container *pUp = getContainer();
 	bool bIsNested = (pUp && (pUp->getContainerType() == FP_CONTAINER_CELL));
 	if(isThisBroken()  && !bIsNested)
