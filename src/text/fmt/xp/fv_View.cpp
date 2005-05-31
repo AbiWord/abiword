@@ -10401,6 +10401,10 @@ void FV_View::createThisHdrFtr(HdrFtrType hfType, bool bSkipPTSaves)
 		"text-align", "left",
 		NULL, NULL
 	};
+	if(!isSelectionEmpty())
+	{
+		_clearSelection();
+	}
 	PT_DocPosition oldPos = getPoint();
 	fp_Page * pPage = getCurrentPage();
 	if(pPage == NULL)
@@ -10826,6 +10830,10 @@ void FV_View::insertHeaderFooter(HdrFtrType hfType)
 		"text-align", "left",
 		NULL, NULL
 	};
+	if(!isSelectionEmpty())
+	{
+		_clearSelection();
+	}
 //
 // insert the header/footer and leave the cursor in there. Set us in header/footer
 //	edit mode.
