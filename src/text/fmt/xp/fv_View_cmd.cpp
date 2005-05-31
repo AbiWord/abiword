@@ -5618,6 +5618,7 @@ void FV_View::cmdRemoveHdrFtr( bool isHeader)
 	_updateInsertionPoint();
 	m_pDoc->endUserAtomicGlob();
 	clearCursorWait();
+	notifyListeners (AV_CHG_HDRFTR | AV_CHG_FMTSECTION);
 }
 
 /*!
