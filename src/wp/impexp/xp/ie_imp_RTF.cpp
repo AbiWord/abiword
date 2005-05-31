@@ -31,6 +31,7 @@
 #include <ctype.h>
 #include <math.h>
 
+#include "fl_TableLayout.h"
 #include "ut_locale.h"
 #include "ut_iconv.h"
 #include "ut_types.h"
@@ -9051,6 +9052,15 @@ bool IE_Imp_RTF::insertStrux(PTStruxType pts , const XML_Char ** attrs, const XM
 		//
 		// No nested tables in header/footers
 		//
+		if(pView->isInTable(m_dposPaste))
+		{ 
+			fl_TableLayout * pTL =pView->getTableAtPos(m_dposPaste);
+			if(pTL && pTL->isEndTableIn() && ((pts == PTX_SectionTable)|| (pts == PTX_SectionCell) || (pts == PTX_EndTable) || (pts == PTX_EndCell)))
+			{
+				m_currentRTFState.m_destinationState = RTFStateStore::rdsSkip;
+				return true;
+			}
+		}
 		if((m_pasteTableStack.getDepth() > 2) && 
 		   ((pts == PTX_SectionTable) || (pts == PTX_SectionCell) || (pts == PTX_EndTable) || (pts == PTX_EndCell)))
 		{

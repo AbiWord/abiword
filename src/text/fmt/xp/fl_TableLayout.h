@@ -207,6 +207,8 @@ UT_sint32                    getBottomOffset(void) const;
 
 	void                     setEndTableIn(void)
 		{ m_bIsEndTableIn = true;}
+	bool                     isEndTableIn(void)
+	  { return m_bIsEndTableIn;}
 
 protected:
 	virtual void		        _lookupProperties(const PP_AttrProp* pSectionAP);
