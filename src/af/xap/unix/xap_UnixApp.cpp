@@ -59,7 +59,11 @@ UnixNull_Graphics * abi_unixnullgraphics_instance = 0;
 XAP_UnixApp::XAP_UnixApp(XAP_Args * pArgs, const char * szAppName)
 	: XAP_App(pArgs, szAppName), m_dialogFactory(this), m_controlFactory()
 {
+#if FC_MINOR > 2
+	FcInit();
+#else
 	XftInit(NULL);
+#endif
 
 	m_pUnixToolbarIcons = 0;
 
@@ -122,6 +126,9 @@ XAP_UnixApp::XAP_UnixApp(XAP_Args * pArgs, const char * szAppName)
 XAP_UnixApp::~XAP_UnixApp()
 {
 	DELETEP(m_pUnixToolbarIcons);
+#if FC_MINOR > 2
+	FcFini();
+#endif
 	delete m_fontManager;
 }
 
