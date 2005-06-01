@@ -2052,16 +2052,7 @@ UT_sint32 GR_Win32USPGraphics::countJustificationPoints(const GR_RenderInfo & ri
 	// now we need to make sense of the stats
 	if(iCountKashida)
 	{
-		RI.m_eJustification = (SCRIPT_JUSTIFY)(
-			                  SCRIPT_JUSTIFY_ARABIC_NORMAL
-                			& SCRIPT_JUSTIFY_ARABIC_KASHIDA
-			                & SCRIPT_JUSTIFY_ARABIC_ALEF
-			                & SCRIPT_JUSTIFY_ARABIC_HA
- 			                & SCRIPT_JUSTIFY_ARABIC_RA
-			                & SCRIPT_JUSTIFY_ARABIC_BA
-                			& SCRIPT_JUSTIFY_ARABIC_BARA
-			                & SCRIPT_JUSTIFY_ARABIC_SEEN
-			                & SCRIPT_JUSTIFY_BLANK );
+		RI.m_eJustification = SCRIPT_JUSTIFY_ARABIC_KASHIDA;
 		
 		return iCountSpace + iCountKashida;
 	}
@@ -2123,7 +2114,9 @@ void GR_Win32USPGraphics::justify(GR_RenderInfo & ri)
 	for(UT_uint32 i = 0; i < RI.m_iIndicesCount; ++i)
 	{
 		UT_uint32 k = pItem->m_si.a.fRTL ? RI.m_iIndicesCount - i - 1: i;
-		if(RI.m_pVisAttr[k].uJustification & RI.m_eJustification)
+		if(RI.m_pVisAttr[k].uJustification == RI.m_eJustification ||
+		   (RI.m_eJustification == SCRIPT_JUSTIFY_ARABIC_KASHIDA &&
+			RI.m_pVisAttr[k].uJustification >= SCRIPT_JUSTIFY_ARABIC_KASHIDA))
 		{
 			UT_uint32 iSpace = iExtraSpace/iPoints;
 			iExtraSpace -= iSpace;
