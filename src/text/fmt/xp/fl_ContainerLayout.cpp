@@ -97,7 +97,7 @@ void fl_ContainerLayout::lookupProperties(void)
 	
 	//  Find the folded Level of the strux
 	lookupFoldedLevel();
-	if((isHidden() == FP_VISIBLE) && (getFoldedLevel() > 0) && (getLevelInList() >= getFoldedLevel()) )
+	if((isHidden() == FP_VISIBLE) && (getFoldedLevel() > 0) && (getLevelInList() > getFoldedLevel()) )
 	{
 		xxx_UT_DEBUGMSG(("Table set to hidden folded \n"));
 		setVisibility(FP_HIDDEN_FOLDED);
@@ -267,6 +267,12 @@ UT_sint32 fl_ContainerLayout::getLevelInList(void)
 	  fl_AutoNum * pAuto = pDoc->getListByID( id);
 	  if(pAuto->getLastItem() == pBList->getStruxDocHandle())
 	  {
+	        if(pAuto->getLastItem() == getStruxDocHandle())
+		{
+		     iLevel = pAuto->getLevel();
+		     bLoop = false;
+		     break;
+		}
 	        iLevel = pAuto->getLevel() -1;
 		if(iLevel < 0)
 		{
@@ -275,7 +281,14 @@ UT_sint32 fl_ContainerLayout::getLevelInList(void)
 	  }
 	  else
 	  {
-	        iLevel = pAuto->getLevel();
+	        if(pBList == this)
+	        { 
+		      iLevel = pAuto->getLevel();
+		}
+		else
+		{
+		      iLevel = pAuto->getLevel() + 1;
+		}
 	  }
 	  bLoop = false;
 	  break;
