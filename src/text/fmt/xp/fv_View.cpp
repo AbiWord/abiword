@@ -11820,7 +11820,8 @@ bool FV_View::isInTable()
 	}
 	else
 	{
-		pos = (m_iInsPoint < m_Selection.getSelectionAnchor() ? m_iInsPoint : m_Selection.getSelectionAnchor());
+  		PT_DocPosition posA = getSelectionAnchor();
+		return (isInTableForSure(posA) && isInTableForSure(getPoint()));
 	}
 	return isInTableForSure(pos);
 }

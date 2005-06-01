@@ -66,6 +66,8 @@ Defun_EV_GetMenuItemState_Fn(ap_GetState_TableOK);
 Defun_EV_GetMenuItemState_Fn(ap_GetState_TextToTableOK);
 Defun_EV_GetMenuItemState_Fn(ap_GetState_InTOC);
 Defun_EV_GetMenuItemState_Fn(ap_GetState_InTable);
+Defun_EV_GetMenuItemState_Fn(ap_GetState_PointInTable);
+Defun_EV_GetMenuItemState_Fn(ap_GetState_PointOrAnchorInTable);
 Defun_EV_GetMenuItemState_Fn(ap_GetState_InTableIsRepeat);
 Defun_EV_GetMenuItemState_Fn(ap_GetState_InTableMerged);
 Defun_EV_GetMenuItemState_Fn(ap_GetState_InFootnote);

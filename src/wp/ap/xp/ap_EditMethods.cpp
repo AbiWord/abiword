@@ -5892,7 +5892,11 @@ static bool s_doFormatTableDlg(FV_View * pView)
 
 	AP_Dialog_FormatTable * pDialog
 		= static_cast<AP_Dialog_FormatTable *>(pDialogFactory->requestDialog(AP_DIALOG_ID_FORMAT_TABLE));
-UT_return_val_if_fail(pDialog, false);
+	UT_return_val_if_fail(pDialog, false);
+	if(!pView->isInTable(pView->getPoint()))
+	{
+	  pView->setPoint(pView->getSelectionAnchor());
+	}
 	if(pDialog->isRunning() == true)
 	{
 		pDialog->activate();
@@ -5979,8 +5983,19 @@ Defun1(deleteTable)
 {
 	CHECK_FRAME;
 	ABIWORD_VIEW;
-
-	pView->cmdDeleteTable(pView->getPoint());
+	PT_DocPosition pos = pView->getPoint();
+	if(!pView->isInTable(pos))
+	{
+	  if(pos > pView->getSelectionAnchor())
+	  {
+	    pos--;
+	  }
+	  else
+	  {
+	    pos++;
+	  }
+	}
+	pView->cmdDeleteTable(pos);
 	return true;
 }
 

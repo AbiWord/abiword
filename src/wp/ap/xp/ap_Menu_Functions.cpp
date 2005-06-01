@@ -1340,6 +1340,29 @@ Defun_EV_GetMenuItemState_Fn(ap_GetState_InTable)
     return EV_MIS_Gray;
 }
 
+Defun_EV_GetMenuItemState_Fn(ap_GetState_PointInTable)
+{
+	ABIWORD_VIEW;
+	UT_return_val_if_fail (pView, EV_MIS_Gray);
+
+	if(pView->isInTable(pView->getPoint()))
+		return EV_MIS_ZERO;
+
+    return EV_MIS_Gray;
+}
+
+Defun_EV_GetMenuItemState_Fn(ap_GetState_PointOrAnchorInTable)
+{
+	ABIWORD_VIEW;
+	UT_return_val_if_fail (pView, EV_MIS_Gray);
+	bool bP = pView->isInTable(pView->getPoint());
+	bool bA = pView->isInTable(pView->getSelectionAnchor());
+	if(bP || bA)
+		return EV_MIS_ZERO;
+
+    return EV_MIS_Gray;
+}
+
 
 Defun_EV_GetMenuItemState_Fn(ap_GetState_InTableIsRepeat)
 {
