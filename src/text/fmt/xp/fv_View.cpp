@@ -10776,24 +10776,24 @@ bool FV_View::getEditableBounds(bool isEnd, PT_DocPosition &posEOD, bool bOverid
 // Now loop through all the HdrFtrSections, find the first in the doc and
 // use that to get the end of editttable region.
 //
-		fl_BlockLayout * pFirstBL = pSL->getNextBlockInDocument();
-		if(pFirstBL == NULL)
+		fl_ContainerLayout * pFirstCL = pSL->getFirstLayout();
+		if(pFirstCL == NULL)
 		{
 			res = m_pDoc->getBounds(isEnd,posEOD);
 			return res;
 		}
 
-		PT_DocPosition posFirst = pFirstBL->getPosition(true) - 1;
+		PT_DocPosition posFirst = pFirstCL->getPosition(true) - 1;
 		PT_DocPosition posNext;
 		while((pSL->getNext() != NULL) && (pSL->getNextBlockInDocument() != NULL))
 		{
 			pSL = static_cast<fl_SectionLayout *>(pSL->getNext());
-			pFirstBL = pSL->getNextBlockInDocument();
+			pFirstCL = pSL->getFirstLayout();
 			// Make sure the first fl_BlockLayout of this new
 			// fl_SectionLayout is valid.
-			if (pFirstBL)
+			if (pFirstCL)
 			{
-				posNext = pFirstBL->getPosition(true) - 1;
+				posNext = pFirstCL->getPosition(true) - 1;
 				if(posNext < posFirst)
 					posFirst = posNext;
 			}
@@ -10984,7 +10984,6 @@ bool FV_View::insertHeaderFooter(const XML_Char ** props, HdrFtrType hfType, fl_
 	// change the section to point to the footer which doesn't exist yet.
 
 	m_pDoc->changeStruxFmt(PTC_AddFmt, posSec, posSec, sec_attributes2, NULL, PTX_Section);
-
 	PT_DocPosition iPos = _getDocPos(FV_DOCPOS_EOD);
 	_setPoint(iPos); // Move to the end, where we will create the header/footer
 
