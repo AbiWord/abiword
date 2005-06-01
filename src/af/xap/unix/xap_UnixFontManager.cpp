@@ -53,11 +53,13 @@ XAP_UnixFontManager::~XAP_UnixFontManager(void)
 {
 	m_fontHash.purgeData();
 	UT_VECTOR_PURGEALL(XAP_UnixFont *,m_vecDeallocatedFonts);
+#if FC_MINOR < 3
 	if (m_pFontSet)
 		FcFontSetDestroy (m_pFontSet);
 
 	if (m_pConfig)
 		FcConfigDestroy (m_pConfig);
+#endif
 
 }
 
