@@ -613,6 +613,7 @@ private:
 	bool ReadFontTable();
 	bool ReadOneFontFromTable(bool bNested);
 	bool ReadRevisionTable();
+	void setEncoding();  
 public:
 	bool HandlePicture();
 	void clearImageName(void)
@@ -898,6 +899,9 @@ private:
 	UT_BidiCharType       m_iAutoBidiOverride;
 	UT_BidiCharType       m_iBidiLastType;
 	UT_BidiCharType       m_iBidiNextType;
+
+	const char* m_szDefaultEncoding; // Document default char encoding.
+	int m_iDefaultFontNumber;        // Document default font.
 };
 
 #endif /* IE_IMP_RTF_H */

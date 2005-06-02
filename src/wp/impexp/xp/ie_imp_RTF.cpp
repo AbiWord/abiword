@@ -1403,7 +1403,9 @@ IE_Imp_RTF::IE_Imp_RTF(PD_Document * pDocument)
 	m_bFrameStruxIn(false),
 	m_iAutoBidiOverride(UT_BIDI_UNSET),
 	m_iBidiLastType(UT_BIDI_UNSET),
-	m_iBidiNextType(UT_BIDI_UNSET)
+	m_iBidiNextType(UT_BIDI_UNSET),
+	m_szDefaultEncoding(NULL),
+	m_iDefaultFontNumber(-1) 
 {
 	m_sImageName.clear();
 	if (!IE_Imp_RTF::keywordSorted) {
@@ -2284,6 +2286,7 @@ UT_Error IE_Imp_RTF::_parseText()
 					return UT_OK; // try to finish the import anyway
 #endif
 				}
+				setEncoding(); // Reset encoding from current state.
 			}
 				break;
 			case '\\':
@@ -2741,6 +2744,7 @@ bool IE_Imp_RTF::ParseChar(UT_UCSChar ch,bool no_convert)
 			// Toss this character.
 			return true;
 		case RTFStateStore::rdsNorm:
+			
 			if (m_currentRTFState.m_unicodeInAlternate > 0)
 			{
 				m_currentRTFState.m_unicodeInAlternate--;
@@ -3797,7 +3801,9 @@ bool IE_Imp_RTF::TranslateKeywordID(RTF_KEYWORD_ID keywordID,
 			szEncoding = XAP_EncodingManager::get_instance()->charsetFromCodepage(static_cast<UT_uint32>(param));
 		}
 		
-		m_mbtowc.setInCharset(szEncoding);
+		// Store the default encoding and activate it.
+		m_szDefaultEncoding = szEncoding; 
+		setEncoding();
 		
 		if(!getLoadStylesOnly()) {
 			getDoc()->setEncodingName(szEncoding);
@@ -4115,6 +4121,13 @@ bool IE_Imp_RTF::TranslateKeywordID(RTF_KEYWORD_ID keywordID,
 		xxx_UT_DEBUGMSG(("Writing background color %s to properties \n",sColor.c_str()));
 		_setStringProperty(m_currentRTFState.m_cellProps.m_sCellProps,"background-color",sColor.c_str());
 	}
+	// KAY: TODO Should there be a break here?
+	case RTF_KW_deff: 
+		if (fParam) {
+			m_iDefaultFontNumber = param;
+			m_currentRTFState.m_charProps.m_fontNumber = m_iDefaultFontNumber;	
+		}
+		break;
 	case RTF_KW_dn:
 		// subscript with position. Default is 6.
 		// superscript: see up keyword
@@ -4147,7 +4160,7 @@ bool IE_Imp_RTF::TranslateKeywordID(RTF_KEYWORD_ID keywordID,
 	case RTF_KW_fs:
 		return HandleFontSize(fParam ? param : 24);
 	case RTF_KW_f:
-		return HandleFace(fParam ? param : 0); // TODO read the deff prop and use that instead of 0
+		return HandleFace(fParam ? param : m_iDefaultFontNumber); 
 	case RTF_KW_fi:
 		m_currentRTFState.m_paraProps.m_indentFirst = param;
 		return true;
@@ -9501,13 +9514,15 @@ bool IE_Imp_RTF::HandleListTag(long id)
 	return HandleU32CharacterProp(sid, &m_currentRTFState.m_charProps.m_listTag);
 }
 
+
 bool IE_Imp_RTF::HandleFace(UT_uint32 fontNumber)
 {
+	bool retval;
 	RTFFontTableItem* pFont = GetNthTableFont(fontNumber);
-	if (pFont != NULL && pFont->m_szEncoding)
-		m_mbtowc.setInCharset(pFont->m_szEncoding);
 
-	return HandleU32CharacterProp(fontNumber, &m_currentRTFState.m_charProps.m_fontNumber);
+	retval = HandleU32CharacterProp(fontNumber, &m_currentRTFState.m_charProps.m_fontNumber);
+	setEncoding();  // Activate character encoding
+	return retval;
 }
 
 bool IE_Imp_RTF::HandleColour(UT_uint32 colourNumber)
@@ -9973,6 +9988,7 @@ bool IE_Imp_RTF::pasteFromBuffer(PD_DocumentRange * pDocRange,
 	m_lenPasteBuffer = lenData;
 	m_pCurrentCharInPasteBuffer = pData;
 	m_dposPaste = pDocRange->m_pos1;
+	setClipboard(m_dposPaste);  
 	m_dOrigPos = m_dposPaste;
 	// some values to start with -- most often we are somewhere in the middle of doc,
 	// i.e., in section and in block
@@ -10972,4 +10988,21 @@ bool IE_Imp_RTF::HandlePCData(UT_UTF8String & str)
 	}
 
 	return true;
+}
+
+/*
+ * Activates the appropriate encoding. This will be the document default, set by
+ * \ansicpg, unless overridden by the current font.
+ */
+void IE_Imp_RTF::setEncoding() { 
+	RTFFontTableItem *pFont; 
+
+	// Activate the current encoding.
+	pFont = GetNthTableFont(m_currentRTFState.m_charProps.m_fontNumber);
+	if (pFont != NULL && pFont->m_szEncoding) {
+		m_mbtowc.setInCharset(pFont->m_szEncoding);
+	}
+	else if (m_szDefaultEncoding != NULL) {
+		m_mbtowc.setInCharset(m_szDefaultEncoding);
+	}
 }
