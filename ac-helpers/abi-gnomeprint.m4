@@ -1,6 +1,6 @@
-# start: abi/ac-helpers/abi-fribidi.m4
+# start: abi/ac-helpers/abi-gnomeprint.m4
 # 
-# Copyright (C) 2003 Francis James Franklin
+# Copyright (C) 2005 Marc Maurer <uwog@uwog.net>
 # Copyright (C) 2003 AbiSource, Inc
 # 
 # This file is free software; you may copy and/or distribute it with
@@ -14,7 +14,7 @@
 # itself may be copied and distributed under the terms of the GNU
 # GPL, see COPYING for more details
 #
-# Usage: ABI_FRIBIDI
+# Usage: ABI_GNOMEPRINT
 
 AC_DEFUN([ABI_GNOMEPRINT],[
 
