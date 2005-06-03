@@ -3924,7 +3924,7 @@ fl_BlockLayout::_recalcPendingWord(UT_uint32 iOffset, UT_sint32 chg)
 	// each side.
 
 	// First, look towards the start of the buffer
-	while ((iFirst > 1)
+	while ((iFirst > 1) 
 		   && !isWordDelimiter(pBlockText[iFirst-1], pBlockText[iFirst] ,pBlockText[iFirst-2], iFirst-1))
 	{
 		iFirst--;
@@ -10158,11 +10158,17 @@ bool fl_BlockLayout::_canContainPoint() const
 
 bool fl_BlockLayout::isWordDelimiter(UT_UCS4Char c, UT_UCS4Char next, UT_UCS4Char prev, UT_uint32 iBlockPos)
 {
+	if(c == 0)
+		return true;
 	if(!UT_isWordDelimiter(c, next, prev))
 		return false;
-
 	// see if this character has not been deleted in revisions mode ...
 	fp_Run * pRun = findRunAtOffset(iBlockPos);
+
+	if(pRun== NULL && (next == 0))
+	{
+		return true;
+	}
 	UT_return_val_if_fail( pRun, false );
 
 	// ignore hidden runs

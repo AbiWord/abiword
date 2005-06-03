@@ -3166,7 +3166,7 @@ UT_Error FV_View::cmdInsertTable(UT_sint32 numRows, UT_sint32 numCols, const XML
 	{
 	         e = m_pDoc->insertStrux(getPoint(),PTX_Block);
 	}
-	else
+	else if(!m_pDoc->isEndFootnoteAtPos(getPoint()-1) && !m_pDoc->isEndFootnoteAtPos(getPoint()-1))
 	{
 	         pointBreak--;
 	}
