@@ -73,12 +73,14 @@ with_unix=false
 with_macosx=false
 with_cocoa=false
 with_qnx=false
+with_win32=false
 if test "$PLATFORM" = "unix"; then
 	ABI_FE="Unix"
 	ABI_BE="$ABI_FE"
 	with_unix=true
 	dnl locate glib and gtk
 	ABI_GTK2
+	ABI_GNOMEPRINT
 	AM_BINRELOC
 elif test "$PLATFORM" = "cocoa" ; then
 	ABI_GLIB2
@@ -92,6 +94,11 @@ elif test "$PLATFORM" = "cocoa" ; then
 	OBJCXX="c++"
 	OBJCXXFLAGS=""
 	OBJCXXDEPMODE="depmode=gcc3"
+elif test "$PLATFORM" = "win" ; then
+	with_win32=true
+	ABI_FE="Win32"
+	ABI_BE="$ABI_FE"
+	ABI_THREAD
 elif test "$PLATFORM" = "qnx" ; then
 	ABI_FE="QNX"
 	with_qnx=true
@@ -104,6 +111,7 @@ AM_CONDITIONAL(WITH_UNIX,$with_unix)
 AM_CONDITIONAL(WITH_MACOSX,$with_macosx)
 AM_CONDITIONAL(WITH_COCOA,$with_cocoa)
 AM_CONDITIONAL(WITH_QNX,$with_qnx)
+AM_CONDITIONAL(WITH_WIN32,$with_win32)
 AM_CONDITIONAL(WITH_BINRELOC, test "x$br_cv_binreloc" = "xyes")
 AC_SUBST(OBJCXX)
 AC_SUBST(OBJCXXFLAGS)
@@ -135,9 +143,8 @@ dnl some other places
 
 ABI_GNOME_QUICK
 ABI_GUCHARMAP
-
 ABI_XFT_QUICK
-
+	
 abi_build_shared=yes
 abi_build_static=no
 
@@ -167,8 +174,6 @@ ABI_SPELL
 AC_LANG_C
 
 ABI_FRIBIDI
-
-ABI_GNOMEPRINT
 
 ABI_PLUGINS
 
@@ -404,10 +409,10 @@ dnl Check for valgrind for the UniTest
 AC_CHECK_PROG(VALGRIND, valgrind, valgrind)
 AC_CHECK_HEADERS(valgrind/memcheck.h)
 if test "$VALGRIND" = ""; then
-    AC_MSG_WARN([Valgrind is missing. UnitTesting will run without])
+	AC_MSG_WARN([Valgrind is missing. UnitTesting will run without])
 fi
 if test "$VALGRIND" != ""; then
-    VALGRIND="valgrind --tool=memcheck --leak-check=yes --num-callers=10 --logfile-fd=-1 "
+	VALGRIND="valgrind --tool=memcheck --leak-check=yes --num-callers=10 --logfile-fd=-1 "
 fi
 AC_SUBST(VALGRIND)
 
@@ -421,11 +426,13 @@ AC_CONFIG_FILES([GNUmakefile
  src/af/ev/cocoa/GNUmakefile
  src/af/ev/qnx/GNUmakefile
  src/af/ev/unix/GNUmakefile
+ src/af/ev/win/GNUmakefile
  src/af/gr/GNUmakefile
  src/af/gr/xp/GNUmakefile
  src/af/gr/cocoa/GNUmakefile
  src/af/gr/unix/GNUmakefile
  src/af/gr/qnx/GNUmakefile
+ src/af/gr/win/GNUmakefile
  src/af/util/GNUmakefile
  src/af/util/xp/GNUmakefile
  src/af/util/xp/t/GNUmakefile
@@ -501,14 +508,16 @@ AC_CONFIG_FILES([GNUmakefile
 ])
 AC_OUTPUT
 
-chmod a+x src/wp/test/unix/testwrap.sh
+if test "$PLATFORM" = "unix" ; then
+	chmod a+x src/wp/test/unix/testwrap.sh
+fi
 
 echo " "
 
 case "$PLATFORM" in
      "unix" )
        AC_MSG_RESULT([Configured to build on a Unix/Linux platform.]) ;;
-     "win" )
+     "win32" )
        AC_MSG_RESULT([Configured to build on a Windows platform.]) ;;
      "beos" )
        AC_MSG_RESULT([Configured to build on a BeOS platform.]) ;;
