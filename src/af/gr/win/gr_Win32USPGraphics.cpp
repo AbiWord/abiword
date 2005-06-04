@@ -2522,7 +2522,7 @@ GR_Win32USPFont::GR_Win32USPFont(LOGFONT & lf, double fPoints, HDC hdc, HDC prin
 	  m_printHDC(NULL),
 	  m_iScreenAscent(0)
 {
-};
+}
 
 void GR_Win32USPFont::_clearAnyCachedInfo()
 {
