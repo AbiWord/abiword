@@ -413,7 +413,7 @@ int ev_Win32Keyboard::_scanCodeToChars(UINT nVirtKey, UINT wScanCode, CONST PBYT
 {
 	UT_ASSERT(m_pToUnicodeEx);
 	return (*m_pToUnicodeEx)(nVirtKey,wScanCode,lpKeyState,pwszBuff,cchBuff,0,m_hKeyboardLayout);
-};
+}
 
 /*****************************************************************/
 /*****************************************************************/
