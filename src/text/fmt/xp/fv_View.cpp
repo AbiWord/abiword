@@ -11145,6 +11145,13 @@ bool FV_View::isPointLegal(PT_DocPosition pos)
 	{
 	  return false;
 	}
+
+ // another corner case
+
+	if(m_pDoc->isEndTableAtPos(pos-1) && m_pDoc->isEndFrameAtPos(pos))	
+	{
+		return false;
+	}
 	if(m_pDoc->isEndFrameAtPos(pos) &&  !m_pDoc->isFrameAtPos(pos-1))
 	{
 	  return true; // This is how we insert into frames

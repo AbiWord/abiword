@@ -4387,7 +4387,7 @@ void FV_View::cmdPaste(bool bHonorFormatting)
 	// Move insertion point out of field run if it is in one
 	//
 	_charMotion(true, 0);
-
+	_makePointLegal();
 //
 // Do a complete update coz who knows what happened in the paste!
 //
