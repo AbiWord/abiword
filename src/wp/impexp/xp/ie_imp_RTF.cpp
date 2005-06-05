@@ -5001,14 +5001,12 @@ bool IE_Imp_RTF::HandleStarKeyword()
 						// the abirevision keyword is enclosed in {}, having its own
 						// stack; we however need to set the m_abiRevision parameter of
 						// the parent stack
-						RTFStateStore * pState = NULL;
 						bool bSuccess = PopRTFState();
 
 						UT_return_val_if_fail( bSuccess, false );
 						
 						// OK scan through the text until a closing delimeter is
 						// found
-						UT_uint32 count = 0;
 						unsigned char ch;
 								
 								
@@ -9524,7 +9522,6 @@ bool IE_Imp_RTF::HandleListTag(long id)
 bool IE_Imp_RTF::HandleFace(UT_uint32 fontNumber)
 {
 	bool retval;
-	RTFFontTableItem* pFont = GetNthTableFont(fontNumber);
 
 	retval = HandleU32CharacterProp(fontNumber, &m_currentRTFState.m_charProps.m_fontNumber);
 	setEncoding();  // Activate character encoding
