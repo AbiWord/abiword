@@ -1075,7 +1075,7 @@ void fp_Line::clearScreen(void)
 			UT_ASSERT(m_iClearToPos + m_iClearLeftOffset < getPage()->getWidth());
 //			pRun->Fill(getGraphics(),xoffLine - m_iClearLeftOffset, yoffLine, m_iClearToPos + m_iClearLeftOffset+iExtra, height);
 			pRun->Fill(getGraphics(),xoffLine - m_iClearLeftOffset, yoffLine, getMaxWidth() + m_iClearLeftOffset +iExtra, height);
-
+			xxx_UT_DEBUGMSG(("Clear pLine %x xoffline %d width %d \n",this,xoffLine,getMaxWidth() + m_iClearLeftOffset +iExtra));
 //
 // Sevior: I added this for robustness.
 //
@@ -1233,7 +1233,7 @@ void fp_Line::_doClearScreenFromRunToEnd(UT_sint32 runIndex)
 		
 		fp_VerticalContainer * pVCon= (static_cast<fp_VerticalContainer *>(getContainer()));
 		pVCon->getScreenOffsets(this, xoffLine, yoffLine);
-
+		UT_sint32 diff = xoff - xoffLine;
 		UT_ASSERT(yoff == yoffLine);
 
 		fp_Line * pPrevLine = static_cast<fp_Line *>(getPrevContainerInSection());
@@ -1259,6 +1259,20 @@ void fp_Line::_doClearScreenFromRunToEnd(UT_sint32 runIndex)
 			xxx_UT_DEBUGMSG(("pl_Line _doClear no Page \n"));
 			return;
 		}
+		fl_DocSectionLayout * pSL =  getBlock()->getDocSectionLayout();
+		UT_sint32 iExtra = getGraphics()->tlu(2);
+		if(getContainer() && (getContainer()->getContainerType() != FP_CONTAINER_CELL) && (getContainer()->getContainerType() != FP_CONTAINER_FRAME))
+		  
+		{
+		    if(pSL->getNumColumns() >1)
+		    {
+		         iExtra = pSL->getColumnGap()/2;
+		    }
+		    else
+		    {
+		         iExtra = pSL->getRightMargin()/2;
+		    }
+		}
 //		UT_ASSERT((m_iClearToPos + leftClear - (xoff-xoffLine)) <= getPage()->getWidth());
 		xxx_UT_DEBUGMSG(("Clear from runindex to end height %d \n",getHeight()));
 		xxx_UT_DEBUGMSG(("Width of clear %d \n",m_iClearToPos + leftClear - xoff));
@@ -1270,7 +1284,7 @@ void fp_Line::_doClearScreenFromRunToEnd(UT_sint32 runIndex)
 			// to the end of the line
 			pRun->Fill(getGraphics(), xoff - leftClear,
 					   yoff,
-					   m_iClearToPos + leftClear - xoff,
+					   getMaxWidth() + leftClear + iExtra -diff,
 					   getHeight());
 		}
 		else
