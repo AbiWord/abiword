@@ -847,20 +847,7 @@ void fl_BlockLayout::_lookupProperties(const PP_AttrProp* pBlockAP)
 	//	_createListLabel();
 
 	xxx_UT_DEBUGMSG(("BlockLayout %x Folded Level %d sdh %x \n",this,getFoldedLevel(),getStruxDocHandle()));
-	if(getFoldedLevel()>0)
-	{ 
-		if(m_pAutoNum == NULL)
-		{
-			UT_DEBUGMSG(("BlockLayout %x Set Hidden \n",this));
-			setVisibility(FP_HIDDEN_FOLDED);
-		}
-		else if(!m_pAutoNum->isIDSomeWhere(getFoldedID()) || (static_cast<UT_sint32 >(m_pAutoNum->getLevel()) >  getFoldedLevel()))
-		{
-			UT_DEBUGMSG(("BlockLayout %x Set Hidden \n",this));
-			setVisibility(FP_HIDDEN_FOLDED);
-		}
 
-	}
 	//
 	// Look after TOC handling now.
 	//
