@@ -373,6 +373,8 @@ bool PD_Style::addAttributes(const XML_Char ** pAtts)
 			return true;
 		}
 		PP_AttrProp * pNewAP = pAP->cloneWithReplacements(pAtts, NULL, false);
+		UT_return_val_if_fail( pNewAP, false );
+		
 		pNewAP->markReadOnly();
 		bres =	m_pPT->getVarSet().addIfUniqueAP(pNewAP, &m_indexAP);
 	}
