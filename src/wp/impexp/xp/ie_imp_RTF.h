@@ -902,6 +902,8 @@ private:
 
 	const char* m_szDefaultEncoding; // Document default char encoding.
 	int m_iDefaultFontNumber;        // Document default font.
+	PT_DocPosition        m_dPosBeforeFootnote;
+	bool                  m_bMovedPos;
 };
 
 #endif /* IE_IMP_RTF_H */

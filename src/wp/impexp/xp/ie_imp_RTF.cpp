@@ -1405,7 +1405,9 @@ IE_Imp_RTF::IE_Imp_RTF(PD_Document * pDocument)
 	m_iBidiLastType(UT_BIDI_UNSET),
 	m_iBidiNextType(UT_BIDI_UNSET),
 	m_szDefaultEncoding(NULL),
-	m_iDefaultFontNumber(-1) 
+	m_iDefaultFontNumber(-1),
+	m_dPosBeforeFootnote(0),
+	m_bMovedPos(true)
 {
 	m_sImageName.clear();
 	if (!IE_Imp_RTF::keywordSorted) {
@@ -2675,7 +2677,11 @@ bool IE_Imp_RTF::FlushStoredChars(bool forceInsertPara)
 				ok = insertStrux(PTX_EndFootnote);
 			else
 				ok = insertStrux(PTX_EndEndnote);
-				
+			if(	m_bMovedPos)
+			{
+				m_bMovedPos = false;
+				m_dposPaste += m_dPosBeforeFootnote; // restore old position
+			}
 		}
 		m_bInFootnote = false;
 		m_iDepthAtFootnote = 0;
@@ -9965,6 +9971,8 @@ bool IE_Imp_RTF::_appendField (const XML_Char *xmlField, const XML_Char ** pszAt
 					newPos = pFL->getPosition(true);
 				}
 			}
+			m_dPosBeforeFootnote = m_dposPaste - newPos;
+			m_bMovedPos = true;
 			m_dposPaste = newPos;
 		}
 		getDoc()->insertObject(m_dposPaste, PTO_Field, propsArray, NULL);
