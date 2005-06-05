@@ -3108,6 +3108,7 @@ fl_HdrFtrSectionLayout::~fl_HdrFtrSectionLayout()
 // Take this section layout out of the linked list
 //
 	m_pLayout->removeHdrFtrSection(static_cast<fl_SectionLayout *>(this));
+	m_pDocSL->removeFromUpdate(this);
 //
 // Null out pointer to this HdrFtrSection in the attached DocLayoutSection
 //
