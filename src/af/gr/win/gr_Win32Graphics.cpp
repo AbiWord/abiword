@@ -897,14 +897,14 @@ void GR_Win32Graphics::fillRect(const UT_RGBColor& c, UT_sint32 x, UT_sint32 y, 
 	RECT r;
 	r.left = (UT_sint32)((double)_tduX(x) * m_fXYRatio);
 	r.top = _tduY(y);
-	r.right = _tduX(x + w);
-	r.bottom =(UT_sint32)((double) _tduY(y + h) * m_fXYRatio);
-	w=(UT_sint32)((double)_tduR(w) * m_fXYRatio);
-	h=_tduR(h);
+	r.right = (UT_sint32)(_tduR(x + w) * m_fXYRatio);
+	r.bottom =(UT_sint32)((double) _tduR(y + h) * m_fXYRatio);
 
 	COLORREF clr = RGB(c.m_red, c.m_grn, c.m_blu);
 
 	#ifdef GR_GRAPHICS_DEBUG
+	w=(UT_sint32)((double)_tduR(w) * m_fXYRatio);
+	h=_tduR(h);
 	UT_DEBUGMSG(("GR_Win32Graphics::fillRect %x %u %u %u %u\n",  clr, r.left, r.top, w, h));	
 	#endif
 		
@@ -1045,7 +1045,11 @@ void GR_Win32Graphics::clearArea(UT_sint32 x, UT_sint32 y, UT_sint32 width, UT_s
 	r.right = r.left + width;
 	r.bottom = r.top + height;
 
+#if 1
 	FillRect(m_hdc, &r, m_hClearBrush);
+#else
+	// we should be using the same method as the fillRect() does ...
+#endif
 }
 
 void GR_Win32Graphics::invertRect(const UT_Rect* pRect)
@@ -1314,7 +1318,6 @@ void GR_Win32Graphics::init3dColors(void)
 void GR_Win32Graphics::fillRect(GR_Color3D c, UT_sint32 x, UT_sint32 y, UT_sint32 w, UT_sint32 h)
 {
 	UT_ASSERT(c < COUNT_3D_COLORS);
-	HBRUSH hBrush = CreateSolidBrush(m_3dColors[c]); 
 
 	#ifdef GR_GRAPHICS_DEBUG
 	UT_DEBUGMSG(("GR_Win32Graphics::fillRect GR_Color3D  %x %u %u %u %u\n",  c, x, y, w, h));	
@@ -1323,11 +1326,17 @@ void GR_Win32Graphics::fillRect(GR_Color3D c, UT_sint32 x, UT_sint32 y, UT_sint3
 	RECT r;
 	r.left = (UT_sint32)((double)_tduX(x) * m_fXYRatio);
 	r.top = _tduY(y);
-	r.right = (UT_sint32)((double)_tduX(x + w) * m_fXYRatio);
-	r.bottom = _tduY(y + h);
+	r.right = (UT_sint32)((double)_tduR(x + w) * m_fXYRatio);
+	r.bottom = _tduR(y + h);
 
-	FillRect(m_hdc, &r, hBrush);
-	DeleteObject(hBrush);
+	// This might look wierd (and I think it is), but it's MUCH faster.
+	// CreateSolidBrush is dog slow.
+	HDC hdc = m_hdc;
+	COLORREF clr = RGB(GetRValue(m_3dColors[c]), GetGValue(m_3dColors[c]), GetBValue(m_3dColors[c]));
+	
+	const COLORREF cr = ::SetBkColor(hdc,  clr);
+	::ExtTextOut(hdc, 0, 0, ETO_OPAQUE, &r, NULL, 0, NULL);
+	::SetBkColor(hdc, cr);
 	setExposePending(false);
 }
 
