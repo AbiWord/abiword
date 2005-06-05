@@ -2356,7 +2356,7 @@ FV_View::_computeFindPrefix(const UT_UCSChar* pFind)
 {
 	UT_uint32 m = UT_UCS4_strlen(pFind);
 	UT_uint32 k = 0, q = 1;
-	UT_uint32 *pPrefix = (UT_uint32*) UT_calloc(m, sizeof(UT_uint32));
+	UT_uint32 *pPrefix = (UT_uint32*) UT_calloc(m + 1, sizeof(UT_uint32));
 	UT_ASSERT(pPrefix);
 
 	pPrefix[0] = 0; // Must be this regardless of the string
