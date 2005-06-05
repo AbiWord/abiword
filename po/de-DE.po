@@ -4146,7 +4146,7 @@ msgstr "Spaltenanzahl"
 #. DLG_InsertTable_NumCols
 #: po/tmp/ap_String_Id.h.h:1762
 msgid "Number of columns:"
-msgstr "Zeilenanzahl:"
+msgstr "Spaltenanzahl:"
 
 #. DLG_InsertTable_NumRows
 #: po/tmp/ap_String_Id.h.h:1764
