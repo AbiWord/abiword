@@ -1473,7 +1473,8 @@ void GR_Win32USPGraphics::measureRenderedCharWidths(GR_RenderInfo & ri)
 	}
 	else
 	{
-		RI.m_hdc = pFont->getPrintDC();
+		hdc = pFont->getPrintDC() ? pFont->getPrintDC() : m_hdc;
+		RI.m_hdc = hdc;
 	}
 	
 
