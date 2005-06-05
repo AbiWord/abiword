@@ -10394,7 +10394,6 @@ bool IE_Imp_RTF::buildAllProps(UT_String &s,  RTFProps_ParaProps * pParas,
 			    s += "left; ";
 			    break;
 		}
-		s += tempBuffer;
 	}
 
 //
