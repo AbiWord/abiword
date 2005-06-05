@@ -55,7 +55,7 @@ static inline void s_validXML(char * s)
 	
 	while(*s)
 	{
-		if(*s < ' ' && *s != '\t' && *s != '\n' && *s != '\r')
+		if(*s < ' ' && *s >= 0 && *s != '\t' && *s != '\n' && *s != '\r')
 		{
 			*s = '~';
 		}
