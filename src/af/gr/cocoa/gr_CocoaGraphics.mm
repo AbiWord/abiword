@@ -719,7 +719,7 @@ void GR_CocoaGraphics::drawChars(const UT_UCSChar* pChars, int iCharOffset,
 							rtl = UT_BIDI_IS_RTL(charType);
 							knownDir = true;
 							//NSLog(@"direction is %d (1 == RTL %x)) set at idx %d with chartype = %x, char %x", rtl, 
-							                           UT_BIDI_RTL, i, charType, begin[i]); 
+							                           //UT_BIDI_RTL, i, charType, begin[i]); 
 						}
 					}
 					cBuf[i] = (unichar) (m_pFont ? m_pFont->remapChar(begin[i]) : begin[i]);
