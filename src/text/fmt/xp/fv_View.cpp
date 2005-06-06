@@ -10322,6 +10322,10 @@ bool FV_View::isParaBreakNeededAtPos(PT_DocPosition pos)
 
   PT_DocPosition posEOD = 0;
   getEditableBounds(true, posEOD);
+  if(m_pDoc->isEndFrameAtPos(pos) && m_pDoc->isEndTableAtPos(pos-1))
+  {
+	  return true;
+  }
   if(!m_pDoc->isSectionAtPos(pos) && !m_pDoc->isHdrFtrAtPos(pos) &&
      (pos < posEOD))
   {

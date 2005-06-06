@@ -4371,7 +4371,6 @@ void FV_View::cmdPaste(bool bHonorFormatting)
 	setCursorWait();
 	m_pDoc->setDontImmediatelyLayout(true);
 	_doPaste(true, bHonorFormatting);
-
 	// restore updates and clean up dirty lists
 	m_pDoc->enableListUpdates();
 	m_pDoc->updateDirtyLists();
