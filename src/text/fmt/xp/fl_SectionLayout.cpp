@@ -1685,6 +1685,7 @@ void fl_DocSectionLayout::updateLayout(void)
 	bool bShowHidden = pView && pView->getShowPara();
 	FPVisibility eHidden;
 	bool bHidden;
+	xxx_UT_DEBUGMSG(("Doing Update layout \n"));
 	while (pBL)
 	{
 		eHidden  = pBL->isHidden();
@@ -1696,7 +1697,10 @@ void fl_DocSectionLayout::updateLayout(void)
  		{
  			if (pBL->needsReformat())
 			{
+			  if(!(m_pLayout->isLayoutFilling() && pBL->getContainerType() == FL_CONTAINER_TOC))
+			  {
 				pBL->format();
+			  }
 			}
 			if (pBL->getContainerType() != FL_CONTAINER_BLOCK && !getDocument()->isDontImmediateLayout())
 			{
@@ -2401,13 +2405,17 @@ void fl_DocSectionLayout::collapse(void)
 	fl_ContainerLayout*	pBL = getFirstLayout();
 	while (pBL)
 	{
-		if(pBL->getContainerType() == FL_SECTION_ENDNOTE)
+		if(pBL->getContainerType() == FL_CONTAINER_ENDNOTE)
 		{
 			fp_Container * pCon = pBL->getFirstContainer();
-			fp_Column * pCol = static_cast<fp_Column *>(pCon->getColumn());
-			UT_DEBUGMSG(("Got and endnote in this section!! \n"));
-			UT_DEBUGMSG(("Remove Endnote con %x from col %x \n",pCon,pCol));
-			pCol->removeContainer(pCon);
+			UT_ASSERT_HARMLESS( pCon );
+			if(pCon)
+			{
+				fp_Column * pCol = static_cast<fp_Column *>(pCon->getColumn());
+				UT_DEBUGMSG(("Got and endnote in this section!! \n"));
+				UT_DEBUGMSG(("Remove Endnote con %x from col %x \n",pCon,pCol));
+				pCol->removeContainer(pCon);
+			}
 		}
 		pBL->collapse();
 		pBL = pBL->getNext();

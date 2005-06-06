@@ -203,10 +203,10 @@ bool pt_PieceTable::insertStrux(PT_DocPosition dpos,
 
 		// count original attributes and the revision-inherited attributes and add them to the revision attribute
 		UT_uint32 iAttrCount = 0;
-		for (; attributes && attributes[iAttrCount]; iAttrCount++){}
+		for (; attributes && attributes[iAttrCount+1]; iAttrCount+=2){}
 
 		UT_uint32 iRevAttrCount = 0;
-		for (; ppRevAttrs && ppRevAttrs[iRevAttrCount]; iRevAttrCount++){}
+		for (; ppRevAttrs && ppRevAttrs[iRevAttrCount+1]; iRevAttrCount+=2){}
 
 		const XML_Char ** ppRevAttrib = NULL;
 		if(iAttrCount + iRevAttrCount > 0)

@@ -64,8 +64,10 @@
 
 #include "fl_AutoNum.h"
 
+#include "ie_TOC.h"
 #include "ie_impexp_HTML.h"
 #include "ie_exp_HTML.h"
+#include "ap_Strings.h"
 
 #ifdef HTML_DIALOG_OPTIONS
 #include "xap_Dialog_Id.h"
@@ -471,7 +473,8 @@ class s_HTML_Listener : public PL_Listener
 public:
 	s_HTML_Listener (PD_Document * pDocument, IE_Exp_HTML * pie, bool bClipBoard,
 					 bool bTemplateBody, const XAP_Exp_HTMLOptions * exp_opt,
-					 s_StyleTree * style_tree, UT_UTF8String & linkCSS,
+					 s_StyleTree * style_tree, IE_TOCHelper * toc_helper,
+					 UT_UTF8String & linkCSS,
 					 UT_UTF8String & title);
 
 	~s_HTML_Listener ();
@@ -543,6 +546,7 @@ private:
 
 	void	_doEndnotes ();
 	void	_doFootnotes ();
+	void    _emitTOC ();
 
 	PD_Document *				m_pDocument;
 	IE_Exp_HTML *				m_pie;
@@ -688,6 +692,9 @@ private:
 	bool            m_bCellHasData;
 	UT_GenericVector<PD_DocumentRange *> m_vecFootnotes;
 	UT_GenericVector<PD_DocumentRange *> m_vecEndnotes;
+
+	IE_TOCHelper *  m_toc;
+	int m_heading_count;
 };
 
 /*****************************************************************/
@@ -898,75 +905,62 @@ void s_HTML_Listener::tagPop ()
 	{
 		case TT_TD:
 			{
-				m_utf8_1 = "td";
-				tagClose (TT_TD, m_utf8_1);
+				tagClose (TT_TD, "td");
 			}
 			break;
 		case TT_TR:
 			{
-				m_utf8_1 = "tr";
-				tagClose (TT_TR, m_utf8_1);
+				tagClose (TT_TR, "tr");
 			}
 			break;
 		case TT_TBODY:
 			{
-				m_utf8_1 = "tbody";
-				tagClose (TT_TBODY, m_utf8_1);
+				tagClose (TT_TBODY, "tbody");
 			}
 			break;
 		case TT_TABLE:
 			{
-				m_utf8_1 = "table";
-				tagClose (TT_TABLE, m_utf8_1);
+				tagClose (TT_TABLE, "table");
 			}
 			break;
 		case TT_DIV:
 			{
-				m_utf8_1 = "div";
-				tagClose (TT_DIV, m_utf8_1);
+				tagClose (TT_DIV, "div");
 			}
 			break;
-
 		case TT_P:
 			{
-				m_utf8_1 = "p";
-				tagClose(TT_P,m_utf8_1);
+				tagClose(TT_P, "p");
 			}
 			break;
 		case TT_H1:
 			{
-				m_utf8_1 = "h1";
-				tagClose(TT_H1,m_utf8_1);
+				tagClose(TT_H1, "h1");
 			}
 			break;
 		case TT_H2:
 			{
-				m_utf8_1 = "h2";
-				tagClose(TT_H2,m_utf8_1);
+				tagClose(TT_H2, "h2");
 			}
 			break;
 		case TT_H3:
 			{
-				m_utf8_1 = "h3";
-				tagClose(TT_H3,m_utf8_1);
+				tagClose(TT_H3, "h3");
 			}
 			break;
 		case TT_H4:
 			{
-				m_utf8_1 = "h4";
-				tagClose(TT_H4,m_utf8_1);
+				tagClose(TT_H4, "h4");
 			}
 			break;
 		case TT_SPAN:
 			{
-				m_utf8_1 = "span";
-				tagClose (TT_SPAN, m_utf8_1);
+				tagClose (TT_SPAN, "span");
 			}
 			break;
 		case TT_BDO:
 			{
-				m_utf8_1 = "bdo";
-				tagClose (TT_BDO, m_utf8_1);
+				tagClose (TT_BDO, "bdo");
 			}
 			break;
 
@@ -1286,7 +1280,7 @@ void s_HTML_Listener::_outputBegin (PT_AttrPropIndex api)
 	{
 		if (get_Declare_XML ())
 		{
-			m_utf8_1 = "version=\"1.0\"";
+			m_utf8_1 = "version=\"1.0\" encoding=\"UTF-8\"";
 			tagPI ("xml", m_utf8_1);
 		}
 		if (get_Allow_AWML ())
@@ -1538,7 +1532,7 @@ void s_HTML_Listener::_outputStyles (const PP_AttrProp * pAP)
 		 */
 		m_utf8_1 = "@charset \"UTF-8\";";
 		if(!get_Compact())
-		m_utf8_0 += MYEOL MYEOL;
+			m_utf8_0 += MYEOL MYEOL;
 		
 		styleText (m_utf8_1);
 	}
@@ -1976,8 +1970,14 @@ void s_HTML_Listener::_openTag (PT_AttrPropIndex api, PL_StruxDocHandle sdh)
 		/* Find out how deeply nested this list item is.
 		 */
 		pAP->getAttribute ("level", szLevel);
-		m_iListDepth = atoi (static_cast<const char *>(szLevel));
-
+		if(szLevel)
+		{
+			m_iListDepth = atoi (static_cast<const char *>(szLevel));
+		}
+		else
+		{
+			m_iListDepth = 0;
+		}
 		/* TODO: why can m_iListDepth be zero sometimes ?? (numbered headings?)
 		 */
 		if (m_iListDepth == 0) m_iListDepth = 1;
@@ -2040,7 +2040,14 @@ void s_HTML_Listener::_openTag (PT_AttrPropIndex api, PL_StruxDocHandle sdh)
 			tagID = TT_H1;
 			tagPending = true;
 			bClassAsTag = true;
-			m_utf8_1 = "h1";
+
+			if (m_toc) {
+				m_utf8_1 = UT_UTF8String_sprintf("h1 id=\"__AbiTOC%d__\"", m_heading_count);
+				m_heading_count++;
+			}
+			else
+				m_utf8_1 = "h1";
+
 			if (UT_stricmp (static_cast<const char *>(szValue), "Heading 1") == 0)
 				bAddAWMLStyle = false;
 		}
@@ -2051,7 +2058,14 @@ void s_HTML_Listener::_openTag (PT_AttrPropIndex api, PL_StruxDocHandle sdh)
 			tagID = TT_H2;
 			tagPending = true;
 			bClassAsTag = true;
-			m_utf8_1 = "h2";
+
+			if (m_toc) {
+				m_utf8_1 = UT_UTF8String_sprintf("h2 id=\"__AbiTOC%d__\"", m_heading_count);
+				m_heading_count++;
+			}
+			else
+				m_utf8_1 = "h2";
+
 			if (UT_stricmp (static_cast<const char *>(szValue), "Heading 2") == 0)
 				bAddAWMLStyle = false;
 		}
@@ -2062,7 +2076,14 @@ void s_HTML_Listener::_openTag (PT_AttrPropIndex api, PL_StruxDocHandle sdh)
 			tagID = TT_H3;
 			tagPending = true;
 			bClassAsTag = true;
-			m_utf8_1 = "h3";
+
+			if (m_toc) {
+				m_utf8_1 = UT_UTF8String_sprintf("h3 id=\"__AbiTOC%d__\"", m_heading_count);
+				m_heading_count++;
+			}
+			else
+				m_utf8_1 = "h3";
+
 			if (UT_stricmp (static_cast<const char *>(szValue), "Heading 3") == 0)
 				bAddAWMLStyle = false;
 		}
@@ -2077,11 +2098,11 @@ void s_HTML_Listener::_openTag (PT_AttrPropIndex api, PL_StruxDocHandle sdh)
 		}
 		else if (UT_stricmp (static_cast<const char *>(szValue), "Plain Text") == 0)
 		{
-			m_iBlockType = BT_PLAINTEXT;
-			tagID = TT_PRE;
+			m_iBlockType = BT_NORMAL;
+			tagID = TT_P;
 			tagPending = true;
 			bClassAsTag = true;
-			m_utf8_1 = "pre";
+			m_utf8_1 = "p class=\"plain_text\"";
 			bAddAWMLStyle = false;
 		}
 		else if (UT_stricmp (static_cast<const char *>(szValue), "Normal") == 0)
@@ -2116,7 +2137,13 @@ void s_HTML_Listener::_openTag (PT_AttrPropIndex api, PL_StruxDocHandle sdh)
 			tagID = TT_H1;
 			tagPending = true;
 			bClassAsTag = true;
-			m_utf8_1 = "h1";
+
+			if (m_toc) {
+				m_utf8_1 = UT_UTF8String_sprintf("h1 id=\"__AbiTOC%d__\"", m_heading_count);
+				m_heading_count++;
+			} else {
+				m_utf8_1 = "h1";
+			}
 		}
 		else if (tree->descends ("Heading 2"))
 		{
@@ -2124,7 +2151,13 @@ void s_HTML_Listener::_openTag (PT_AttrPropIndex api, PL_StruxDocHandle sdh)
 			tagID = TT_H2;
 			tagPending = true;
 			bClassAsTag = true;
-			m_utf8_1 = "h2";
+
+			if (m_toc) {
+				m_utf8_1 = UT_UTF8String_sprintf("h2 id=\"__AbiTOC%d__\"", m_heading_count);
+				m_heading_count++;
+			} else {
+				m_utf8_1 = "h2";
+			}
 		}
 		else if (tree->descends ("Heading 3"))
 		{
@@ -2132,7 +2165,13 @@ void s_HTML_Listener::_openTag (PT_AttrPropIndex api, PL_StruxDocHandle sdh)
 			tagID = TT_H3;
 			tagPending = true;
 			bClassAsTag = true;
-			m_utf8_1 = "h3";
+
+			if (m_toc) {
+				m_utf8_1 = UT_UTF8String_sprintf("h3 id=\"__AbiTOC%d__\"", m_heading_count);
+				m_heading_count++;
+			} else {
+				m_utf8_1 = "h3";
+			}
 		}
 		else if (tree->descends ("Block Text"))
 		{
@@ -2144,25 +2183,37 @@ void s_HTML_Listener::_openTag (PT_AttrPropIndex api, PL_StruxDocHandle sdh)
 		}
 		else if (tree->descends ("Plain Text"))
 		{
-			m_iBlockType = BT_PLAINTEXT;
-			tagID = TT_PRE;
+			m_iBlockType = BT_NORMAL;
+			tagID = TT_P;
 			tagPending = true;
 			bClassAsTag = true;
-			m_utf8_1 = "pre";
+			m_utf8_1 = "p class=\"plain_text\"";
 		}
 		else if (tree->descends ("Normal"))
 		{
 			m_iBlockType = BT_NORMAL;
 			tagID = TT_P;
 			tagPending = true;
-			m_utf8_1 = "p";
+
+			if (m_toc && m_toc->isTOCStyle(szValue)) {
+				m_utf8_1 = UT_UTF8String_sprintf("p id=\"__AbiTOC%d__\"", m_heading_count);
+				m_heading_count++;
+			} else {
+				m_utf8_1 = "p";
+			}
 		}
 		else
 		{
 			m_iBlockType = BT_NORMAL;
 			tagID = TT_P;
 			tagPending = true;
-			m_utf8_1 = "p";
+
+			if (m_toc && m_toc->isTOCStyle(szValue)) {
+				m_utf8_1 = UT_UTF8String_sprintf("p id=\"__AbiTOC%d__\"", m_heading_count);
+				m_heading_count++;
+			} else {
+				m_utf8_1 = "p";
+			}
 		}
 
 		if (tree && !bClassAsTag)
@@ -2444,7 +2495,6 @@ void s_HTML_Listener::_openSpan (PT_AttrPropIndex api)
 		}
 	
 	{
-		
 		const XML_Char * szP_FontWeight = 0;
 		const XML_Char * szP_FontStyle = 0;
 		const XML_Char * szP_FontSize = 0;
@@ -2466,8 +2516,7 @@ void s_HTML_Listener::_openSpan (PT_AttrPropIndex api)
 		if(first)
 			m_utf8_1 = "span style=\"";
 		else
-			m_utf8_1 += " style=\"";
-	
+			m_utf8_1 += " style=\"";	
 
 		/* TODO: this bold/italic check needs re-thought
 		 */
@@ -2493,7 +2542,7 @@ void s_HTML_Listener::_openSpan (PT_AttrPropIndex api)
 			char buf[16];
 
 			{
-				UT_LocaleTransactor(LC_NUMERIC, "C");
+				UT_LocaleTransactor t(LC_NUMERIC, "C");
 				sprintf (buf, "%g", UT_convertToPoints (szP_FontSize));
 			}
 
@@ -2687,18 +2736,15 @@ void s_HTML_Listener::_closeSpan ()
 {
 	if (tagTop () == TT_A)
 	{
-		m_utf8_1 = "a";
-		tagClose (TT_A, m_utf8_1, ws_None);
+		tagClose (TT_A, "a", ws_None);
 	}
 	if (tagTop () == TT_BDO)
 	{
-		m_utf8_1 = "bdo";
-		tagClose (TT_BDO, m_utf8_1, ws_None);
+		tagClose (TT_BDO, "bdo", ws_None);
 	}
 	if (tagTop () == TT_SPAN)
 	{
-		m_utf8_1 = "span";
-		tagClose (TT_SPAN, m_utf8_1, ws_None);
+		tagClose (TT_SPAN, "span", ws_None);
 	}
 	m_bInSpan = false;
 }
@@ -2846,7 +2892,12 @@ void s_HTML_Listener::_openTable (PT_AttrPropIndex api)
 			UT_UTF8String_sprintf(t, "%d%%", dPCT);
 			styles += t;
 		}
-	} // Else do nothing, viva la box model!
+	} 
+	else {
+		// this should match abi because tables always cover width by default
+		if (styles.byteLength ()) styles += ";";
+		styles += "width:100%";
+	}
 
 	const char * pszBgColor = m_TableHelper.getTableProp ("bgcolor");
 	if (pszBgColor == NULL)
@@ -3157,13 +3208,16 @@ void s_HTML_Listener::_openTable (PT_AttrPropIndex api)
 	i = 0;
 	if(m_vecDWidths.getItemCount() > 0)
 	{
-		for(i = 0; i< static_cast<UT_sint32>(m_vecDWidths.getItemCount());i++)
+		m_utf8_1 = "colgroup";
+		tagOpen(TT_COLGROUP, m_utf8_1);
+
+		for(i = 0; i< nCols;i++)
 		{
 			double * pDWidth = m_vecDWidths.getNthItem(i);
 			double percent = 100.0*(*pDWidth/totWidth);
 
 			{
-				UT_LocaleTransactor(LC_NUMERIC, "C");
+				UT_LocaleTransactor t(LC_NUMERIC, "C");
 				/*m_utf8_1  = "colgroup";   // methinks zat colgaroup ist incoddect hier, this can be deleted when well tested below
 
 				if(get_Abs_Units())
@@ -3200,13 +3254,16 @@ void s_HTML_Listener::_openTable (PT_AttrPropIndex api)
 			tagOpenClose (m_utf8_1, false);
 			m_utf8_1.clear();		
 		}
+
+		m_utf8_1 = "colgroup";
+		tagClose(TT_COLGROUP, m_utf8_1);
  	}
 	else
 	{
 		tagOpen (TT_TABLE, m_utf8_1);
 
 		{
-			UT_LocaleTransactor(LC_NUMERIC, "C");
+			UT_LocaleTransactor t(LC_NUMERIC, "C");
 			// colgroup correct here in a sense
 			// TODO: distinction might be made for AbsUnits and sans width for default
 			m_utf8_1  = "colgroup width=\"";
@@ -3803,7 +3860,8 @@ void s_HTML_Listener::_outputData (const UT_UCSChar * data, UT_uint32 length)
 
 s_HTML_Listener::s_HTML_Listener (PD_Document * pDocument, IE_Exp_HTML * pie, bool bClipBoard,
 								  bool bTemplateBody, const XAP_Exp_HTMLOptions * exp_opt,
-								  s_StyleTree * style_tree, UT_UTF8String & linkCSS,
+								  s_StyleTree * style_tree, IE_TOCHelper * toc_helper,
+								  UT_UTF8String & linkCSS,
 								  UT_UTF8String & title) :
 	m_pDocument (pDocument),
 		m_pie(pie),
@@ -3840,8 +3898,9 @@ s_HTML_Listener::s_HTML_Listener (PD_Document * pDocument, IE_Exp_HTML * pie, bo
 		m_sLinkCSS(linkCSS),
 		m_sTitle(title),
 		m_iOutputLen(0),
-		m_bCellHasData(true)  // we are not in cell to start with, set
-							  // to true
+		m_bCellHasData(true),  // we are not in cell to start with, set to true
+	m_toc(toc_helper),
+	m_heading_count(0)
 {
 	m_StyleTreeBody = m_style_tree->find ("Normal");
 }
@@ -4598,11 +4657,20 @@ bool s_HTML_Listener::populateStrux (PL_StruxDocHandle sdh,
 		case PTX_SectionHdrFtr:
 			m_bIgnoreTillNextSection = true;
 			return true;
-		case PTX_SectionTOC:
+		case PTX_SectionTOC: 
+			{
+				_emitTOC ();
+				return true;
+			}
+
 		case PTX_SectionFrame:
 			m_bIgnoreTillEnd = true;
 			return true;
 		case PTX_EndTOC:
+			{
+				return true;
+			}
+
 		case PTX_EndFrame:
 			m_bIgnoreTillEnd = false;
 			return true;
@@ -4623,6 +4691,40 @@ bool s_HTML_Listener::endOfDocument () {
 	_doFootnotes();
 	
 	return true;
+}
+
+void s_HTML_Listener::_emitTOC () {
+	if (m_toc) {
+
+		const XAP_StringSet * pSS = XAP_App::getApp()->getStringSet();
+
+		UT_UTF8String tocHeadingUTF8;
+		pSS->getValueUTF8(AP_STRING_ID_TOC_TocHeading, tocHeadingUTF8);
+		
+		UT_UCS4String tocHeading(tocHeadingUTF8.utf8_str());
+		m_utf8_1 = "h1 style=\"text-align:center\"";
+		tagOpen (TT_H1, m_utf8_1);
+		m_bInBlock = true;
+		_outputData (tocHeading.ucs4_str(), tocHeading.length());
+		m_bInBlock = false;
+		tagClose (TT_H1, "h1");
+
+		for (int i = 0; i < m_toc->getNumTOCEntries(); i++) {
+			int tocLevel = 0;			
+			
+			UT_UCS4String tocText(m_toc->getNthTOCEntry(i, &tocLevel).utf8_str());
+
+			if (tocText.length()) {
+				UT_UTF8String tocLink(UT_UTF8String_sprintf("<a href=\"#__AbiTOC%d__\">", i));
+				
+				_openTag (TT_P, NULL);
+				m_pie->write(tocLink.utf8_str(), tocLink.length());
+				_outputData (tocText.ucs4_str(), tocText.length());
+				m_pie->write("</a>", 4);
+				_closeTag ();
+			}
+		}
+	}
 }
 
 void s_HTML_Listener::_doEndnotes () {
@@ -4876,7 +4978,10 @@ bool s_StyleTree::add (const char * style_name, PD_Document * pDoc)
 
 	PD_Style * basis = style->getBasedOn ();
 
-	if (basis)
+	const XML_Char * parent_name = NULL;
+	if (basis && 
+		basis->getAttribute (PT_NAME_ATTRIBUTE_NAME, parent_name) &&
+		UT_XML_strcmp(style_name, parent_name) != 0)
 	{
 		parent = const_cast<s_StyleTree *>(find (basis));
 		if (parent == 0)
@@ -5593,8 +5698,9 @@ void s_TemplateHandler::Default (const XML_Char * buffer, int length)
 
 IE_Exp_HTML::IE_Exp_HTML (PD_Document * pDocument)
 	: IE_Exp(pDocument),
-		  m_style_tree(new s_StyleTree(pDocument)),
-		  m_bSuppressDialog(false)
+	  m_style_tree(new s_StyleTree(pDocument)),
+	  m_bSuppressDialog(false),
+	  m_toc_helper(0)
 {
 	m_exp_opt.bIs4         = false;
 	m_exp_opt.bIsAbiWebDoc = false;
@@ -5618,6 +5724,7 @@ IE_Exp_HTML::IE_Exp_HTML (PD_Document * pDocument)
 IE_Exp_HTML::~IE_Exp_HTML ()
 {
 	DELETEP(m_style_tree);
+	DELETEP(m_toc_helper);
 
 	// 
 }
@@ -5648,9 +5755,16 @@ void IE_Exp_HTML::_buildStyleTree ()
 		getDoc()->tellListener (m_style_tree);
 }
 
+void IE_Exp_HTML::_buildTOC()
+{
+	if (!m_toc_helper)
+		m_toc_helper = new IE_TOCHelper (getDoc());
+}
+
 UT_Error IE_Exp_HTML::_writeDocument ()
 {
 	_buildStyleTree ();
+	_buildTOC ();
 
 	if (isCopying ()) // ClipBoard
 	{
@@ -5817,7 +5931,7 @@ UT_Error IE_Exp_HTML::_writeDocument ()
 	UT_UTF8String declaration;
 
 	if (m_exp_opt.bDeclareXML)
-		declaration += "<?xml version=\"1.0\" encoding=\"utf-8\"?>" MYEOL;
+		declaration += "<?xml version=\"1.0\" encoding=\"UTF-8\"?>" MYEOL;
 
 	declaration += "<";
 	declaration += s_DTD_XHTML;
@@ -5838,8 +5952,8 @@ UT_Error IE_Exp_HTML::_writeDocument ()
 UT_Error IE_Exp_HTML::_writeDocument (bool bClipBoard, bool bTemplateBody)
 {
 	s_HTML_Listener * pListener = new s_HTML_Listener(getDoc(),this,bClipBoard,bTemplateBody,
-													  &m_exp_opt,m_style_tree, m_sLinkCSS,
-													  m_sTitle);
+													  &m_exp_opt,m_style_tree, m_toc_helper,
+													  m_sLinkCSS, m_sTitle);
 	if (pListener == 0) return UT_IE_NOMEMORY;
 
 	PL_Listener * pL = static_cast<PL_Listener *>(pListener);

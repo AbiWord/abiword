@@ -72,7 +72,7 @@ UT_Dimension UT_determineDimension(const char * sz, UT_Dimension fallback)
   char * p = NULL ;
 
   {
-	  UT_LocaleTransactor(LC_NUMERIC, "C");
+	  UT_LocaleTransactor t(LC_NUMERIC, "C");
 	  strtod(sz, &p);
   }
 
@@ -212,7 +212,7 @@ const char * UT_convertInchesToDimensionString(UT_Dimension dim, double valueInI
 	}
 
 	{
-		UT_LocaleTransactor(LC_NUMERIC, "C");
+		UT_LocaleTransactor t(LC_NUMERIC, "C");
 		sprintf(buf,bufFormat,valueScaled);
 	}
 
@@ -277,7 +277,7 @@ const char * UT_formatDimensionString(UT_Dimension dim, double value, const char
 	}
 
 	{
-		UT_LocaleTransactor(LC_NUMERIC, "C");
+		UT_LocaleTransactor t(LC_NUMERIC, "C");
 		sprintf(buf,bufFormat,value);
 	}
 
@@ -429,7 +429,7 @@ double UT_convertDimensionless(const char * sz)
 
 	double f;
 	{
-		UT_LocaleTransactor(LC_NUMERIC, "C");
+		UT_LocaleTransactor t(LC_NUMERIC, "C");
 		f = atof(sz);
 	}
 
@@ -449,7 +449,7 @@ const char * UT_convertToDimensionlessString(double value, const char * szPrecis
 	sprintf(bufFormat,"%%%sf",((szPrecision && *szPrecision) ? szPrecision : ""));
 
 	{
-		UT_LocaleTransactor(LC_NUMERIC, "C");
+		UT_LocaleTransactor t(LC_NUMERIC, "C");
 		sprintf(buf,bufFormat,value);
 	}
 
@@ -467,7 +467,7 @@ bool UT_hasDimensionComponent(const char * sz)
 	char *p = NULL;
 
 	{
-		UT_LocaleTransactor(LC_NUMERIC, "C");
+		UT_LocaleTransactor t(LC_NUMERIC, "C");
 		strtod(sz, &p);
 	}
 
@@ -593,7 +593,7 @@ bool UT_isValidDimensionString(const char * sz, UT_sint32 max_length)
 	
 	// FIXME: other locales might want to use another character as a decimal seperator.
 	//        we should be able to handle that too.	
-	UT_LocaleTransactor (LC_NUMERIC, "C");
+	UT_LocaleTransactor t(LC_NUMERIC, "C");
 	
 	if (max_length > 0 && (strlen(sz) > max_length))
 		return false;

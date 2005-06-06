@@ -2591,7 +2591,9 @@ void AP_TopRuler::mouseRelease(EV_EditModifierState ems, EV_EditMouseButton /* e
 			}
 			notify(pView, AV_CHG_HDRFTR);
 			if(m_pG)
-				m_pG->setCursor(GR_Graphics::GR_CURSOR_LEFTRIGHT);
+			{
+				m_pG->setCursor(GR_Graphics::GR_CURSOR_DEFAULT);
+			}
 			return;
 		}
 	case DW_RIGHTMARGIN:
@@ -2664,7 +2666,9 @@ void AP_TopRuler::mouseRelease(EV_EditModifierState ems, EV_EditMouseButton /* e
 			m_draggingWhat = DW_NOTHING;
 			notify(pView, AV_CHG_HDRFTR);
 			if(m_pG)
-				m_pG->setCursor(GR_Graphics::GR_CURSOR_LEFTRIGHT);
+			{
+				m_pG->setCursor(GR_Graphics::GR_CURSOR_DEFAULT);
+			}
 			return;
 		}
 
@@ -2685,7 +2689,7 @@ void AP_TopRuler::mouseRelease(EV_EditModifierState ems, EV_EditMouseButton /* e
 			notify(pView, AV_CHG_HDRFTR);
 			if(m_pG)
 			{
-				m_pG->setCursor(GR_Graphics::GR_CURSOR_LEFTRIGHT);
+				m_pG->setCursor(GR_Graphics::GR_CURSOR_DEFAULT);
 			}
 		}
 		return;
@@ -2748,7 +2752,7 @@ void AP_TopRuler::mouseRelease(EV_EditModifierState ems, EV_EditMouseButton /* e
 			notify(pView, AV_CHG_HDRFTR);
 			if(m_pG)
 			{
-				m_pG->setCursor(GR_Graphics::GR_CURSOR_LEFTRIGHT);
+				m_pG->setCursor(GR_Graphics::GR_CURSOR_DEFAULT);
 			}
 		}
 		return;
@@ -2785,7 +2789,7 @@ void AP_TopRuler::mouseRelease(EV_EditModifierState ems, EV_EditMouseButton /* e
 			notify(pView, AV_CHG_HDRFTR);
 			if(m_pG)
 			{
-				m_pG->setCursor(GR_Graphics::GR_CURSOR_LEFTRIGHT);
+				m_pG->setCursor(GR_Graphics::GR_CURSOR_DEFAULT);
 			}
 		}
 		return;
@@ -2824,7 +2828,9 @@ void AP_TopRuler::mouseRelease(EV_EditModifierState ems, EV_EditMouseButton /* e
 			pView->setBlockFormat(properties);
 			notify(pView, AV_CHG_HDRFTR);
 			if(m_pG)
-				m_pG->setCursor(GR_Graphics::GR_CURSOR_LEFTRIGHT);
+			{
+				m_pG->setCursor(GR_Graphics::GR_CURSOR_DEFAULT);
+			}
 		}
 		return;
 
@@ -2849,7 +2855,9 @@ void AP_TopRuler::mouseRelease(EV_EditModifierState ems, EV_EditMouseButton /* e
 			pView->setBlockFormat(properties);
 			notify(pView, AV_CHG_HDRFTR);
 			if(m_pG)
-				m_pG->setCursor(GR_Graphics::GR_CURSOR_LEFTRIGHT);
+			{
+				m_pG->setCursor(GR_Graphics::GR_CURSOR_DEFAULT);
+			}
 		}
 		return;
 
@@ -2891,7 +2899,7 @@ void AP_TopRuler::mouseRelease(EV_EditModifierState ems, EV_EditMouseButton /* e
 			notify(pView, AV_CHG_HDRFTR);
 			if(m_pG)
 			{
-				m_pG->setCursor(GR_Graphics::GR_CURSOR_LEFTRIGHT);
+				m_pG->setCursor(GR_Graphics::GR_CURSOR_DEFAULT);
 			}
 			return;
 		}
@@ -2915,7 +2923,9 @@ void AP_TopRuler::mouseRelease(EV_EditModifierState ems, EV_EditMouseButton /* e
 				FV_View * pView = static_cast<FV_View *>(m_pView);
 				notify(pView, AV_CHG_HDRFTR);
 				if(m_pG)
-					m_pG->setCursor(GR_Graphics::GR_CURSOR_LEFTRIGHT);
+				{
+					m_pG->setCursor(GR_Graphics::GR_CURSOR_DEFAULT);
+				}
 				return;
 			}				
 			xAbsLeft = _getFirstPixelInColumn(&m_infoCache,m_infoCache.m_iCurrentColumn); 
@@ -2953,7 +2963,7 @@ void AP_TopRuler::mouseRelease(EV_EditModifierState ems, EV_EditMouseButton /* e
 				//
 					pTInfo = static_cast<AP_TopRulerTableInfo *>(m_infoCache.m_vecFullTable->getNthItem(i-1));
 					bool bOnDraggingRight = false;
-					UT_DEBUGMSG(("ap_TopRuler: leftDrag %d i %d pTInfo->m_iLeftCellPos %d \n",leftDrag,i,pTInfo->m_iLeftCellPos));
+					xxx_UT_DEBUGMSG(("ap_TopRuler: leftDrag FullTable %d i %d pTInfo->m_iLeftCellPos %d \n",leftDrag,i,pTInfo->m_iLeftCellPos));
 					if(leftDrag != pTInfo->m_iLeftCellPos)
 						left = pTInfo->m_iLeftCellPos + xAbsLeft + pTInfo->m_iLeftSpacing;
 					else
@@ -3015,7 +3025,7 @@ void AP_TopRuler::mouseRelease(EV_EditModifierState ems, EV_EditMouseButton /* e
 					bDragRightMost = true;
 					pTInfo = static_cast<AP_TopRulerTableInfo *>(m_infoCache.m_vecTableColInfo->getNthItem(m_draggingCell-1));
 					rightDrag = pTInfo->m_iRightCellPos;
-					UT_DEBUGMSG(("rightDrag %d \n",rightDrag));
+					xxx_UT_DEBUGMSG(("rightDrag %d \n",rightDrag));
 				}
 				else
 				{
@@ -3031,7 +3041,7 @@ void AP_TopRuler::mouseRelease(EV_EditModifierState ems, EV_EditMouseButton /* e
 						UT_sint32 width = 0;
 				//
 						pTInfo = static_cast<AP_TopRulerTableInfo *>(m_infoCache.m_vecFullTable->getNthItem(i-1));
-						UT_DEBUGMSG(("ap_TopRuler: rightDrag %d i %d pTInfo->m_iRightCellPos %d \n",rightDrag,i,pTInfo->m_iRightCellPos));
+						xxx_UT_DEBUGMSG(("ap_TopRuler: FullTable rightDrag %d i %d pTInfo->m_iRightCellPos %d \n",rightDrag,i,pTInfo->m_iRightCellPos));
 						if(abs(rightDrag - pTInfo->m_iRightCellPos) >10)
 						{
 							left = pTInfo->m_iLeftCellPos + xAbsLeft + pTInfo->m_iLeftSpacing;
@@ -3110,7 +3120,9 @@ void AP_TopRuler::mouseRelease(EV_EditModifierState ems, EV_EditMouseButton /* e
 			}
 			notify(pView, AV_CHG_HDRFTR);
 			if(m_pG)
-				m_pG->setCursor(GR_Graphics::GR_CURSOR_LEFTRIGHT);
+			{
+				m_pG->setCursor(GR_Graphics::GR_CURSOR_DEFAULT);
+			}
 			return;
 		}
 	default:

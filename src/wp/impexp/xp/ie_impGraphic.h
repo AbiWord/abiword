@@ -95,6 +95,8 @@ public:
   static void unregisterImporter (IE_ImpGraphicSniffer * sniffer);
   static void unregisterAllImporters ();  
 
+  static UT_Error               constructImporterWithDescription(const char * szDesc, IE_ImpGraphic ** ppieg);
+
   static UT_Error               constructImporter(const UT_ByteBuf * bytes,
 						  IEGraphicFileType ft,
 						  IE_ImpGraphic **ppieg);

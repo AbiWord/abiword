@@ -387,6 +387,11 @@ struct ABI_EXPORT RTFProps_ImageProps
 	UT_uint16 scaleY;
 	UT_uint32 width;
 	UT_uint32 height;
+	bool bCrop;
+	UT_sint32 cropt;
+	UT_sint32 cropb;
+	UT_sint32 cropl;
+	UT_sint32 cropr;
 };
 
 // Section properties
@@ -645,7 +650,7 @@ private:
 	bool ReadListOverrideTable(void);
 	bool HandleTableListOverride(void);
 
-	bool buildAllProps( char * propBuffer,  RTFProps_ParaProps * pParas,
+	bool buildAllProps( UT_String & s,  RTFProps_ParaProps * pParas,
 					   RTFProps_CharProps * pChars,
 					   RTFProps_bParaProps * pbParas,
 					   RTFProps_bCharProps * pbChars);
@@ -685,7 +690,7 @@ private:
 
 	// Paragraph property handlers
 	bool ResetParagraphAttributes();
-	bool ApplyParagraphAttributes();
+	bool ApplyParagraphAttributes(bool bDontInsert = false);
 	bool SetParaJustification(RTFProps_ParaProps::ParaJustification just);
 	bool AddTabstop(UT_sint32 stopDist, eTabType tabType, eTabLeader tableader);
 	bool AddTabstop(UT_sint32 stopDist, eTabType tabType, 
@@ -839,6 +844,7 @@ private:
 	UT_uint32 			m_lenPasteBuffer;
 	const unsigned char *		m_pCurrentCharInPasteBuffer;
 	PT_DocPosition		m_dposPaste;
+	PT_DocPosition		m_dOrigPos;
 	UT_uint32		    deflangid;
 	UT_UCS4_mbtowc		m_mbtowc;
 	bool                m_parsingHdrFtr;

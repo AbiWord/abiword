@@ -17,6 +17,7 @@
  * 02111-1307, USA.
  */
 
+#include <math.h>
 #include "fv_VisualDragText.h"
 #include "fl_DocLayout.h"
 #include "pd_Document.h"
@@ -29,6 +30,8 @@
 #include "fp_TableContainer.h"
 #include "fv_View.h"
 #include "gr_Painter.h"
+
+#define MIN_DRAG_PIXELS 8
 
 FV_VisualDragText::FV_VisualDragText (FV_View * pView)
 	: m_pView (pView), 
@@ -47,7 +50,8 @@ FV_VisualDragText::FV_VisualDragText (FV_View * pView)
 	  m_recCursor(0,0,0,0),
 	  m_pAutoScrollTimer(NULL),
 	  m_xLastMouse(1),
-	  m_yLastMouse(1)
+	  m_yLastMouse(1),
+	  m_bDoingCopy(false)
 {
 	UT_ASSERT (pView);
 }
@@ -147,13 +151,46 @@ void FV_VisualDragText::_autoScroll(UT_Worker * pWorker)
 
 void FV_VisualDragText::mouseDrag(UT_sint32 x, UT_sint32 y)
 {
-	if((m_iVisualDragMode != FV_VisualDrag_DRAGGING) && (m_iVisualDragMode != FV_VisualDrag_WAIT_FOR_MOUSE_DRAG) )
+        if(m_iVisualDragMode == FV_VisualDrag_NOT_ACTIVE)
+        {
+	  m_iInitialOffX = x;
+	  m_iInitialOffY = y;
+	  m_iVisualDragMode = FV_VisualDrag_WAIT_FOR_MOUSE_DRAG;
+	  UT_DEBUGMSG(("Initial call for drag -1\n"));
+	  return;
+	}
+	if((m_iInitialOffX == 0) && (m_iInitialOffY == 0))
+	{
+	  m_iInitialOffX = x;
+	  m_iInitialOffY = y;
+	  m_iVisualDragMode = FV_VisualDrag_WAIT_FOR_MOUSE_DRAG;
+	  UT_DEBUGMSG(("Initial call for drag -2 \n"));
+	}
+	if(m_iVisualDragMode == FV_VisualDrag_WAIT_FOR_MOUSE_DRAG)
+	{
+          double diff = sqrt((static_cast<double>(x) - static_cast<double>(m_iInitialOffX))*(static_cast<double>(x) - static_cast<double>(m_iInitialOffX)) +
+                              (static_cast<double>(y) - static_cast<double>(m_iInitialOffY))*(static_cast<double>(y) - static_cast<double>(m_iInitialOffY)));
+          if(diff < static_cast<double>(getGraphics()->tlu(MIN_DRAG_PIXELS)))
+          {
+	    UT_DEBUGMSG(("Not yet dragged enough.%f \n", diff));
+            //
+            // Have to drag 4 pixels before initiating the drag
+            //
+            return;
+          }
+	  else
+	  {
+	    m_iVisualDragMode = FV_VisualDrag_START_DRAGGING;	    
+	  }
+        }
+	if((m_iVisualDragMode != FV_VisualDrag_DRAGGING) && (m_iVisualDragMode != FV_VisualDrag_WAIT_FOR_MOUSE_DRAG) && !m_bDoingCopy)
 	{
 //
 // Haven't started the drag yet so create our image and cut the text.
 //
+
 		m_pView->getDocument()->beginUserAtomicGlob();
-		mouseCut(x,y);
+		mouseCut(m_iInitialOffX,m_iInitialOffY);
 		m_bTextCut = true;
 
 	}
@@ -443,8 +480,8 @@ void FV_VisualDragText::getImageFromSelection(UT_sint32 x, UT_sint32 y)
 		m_pView->_findPositionCoords(posLow, bEOL, xLow, yLow, xCaret2, yCaret2, heightCaret, bDirection, NULL, &pRunLow2);
 		UT_sint32 xx,yy;
 		pLineLow->getScreenOffsets(pRunLow,xx,yy);
-		m_recCurFrame.left = xLow;
-		m_recCurFrame.width = xHigh - xLow;
+		m_recCurFrame.left = xLow < xHigh ? xLow : xHigh;
+		m_recCurFrame.width = xHigh > xLow ? xHigh - xLow : xLow - xHigh;
 		m_recCurFrame.top = yy;
 		m_recCurFrame.height = pLineLow->getHeight();
 		m_recOrigLeft.width = 0;
@@ -467,11 +504,11 @@ void FV_VisualDragText::getImageFromSelection(UT_sint32 x, UT_sint32 y)
 		pLineLow->getScreenOffsets(pRun,xx,yy);
 		xx -= pRun->getX();
 		xx -= pLineLow->getX();
-		m_recOrigLeft.left = xx;
-		m_recOrigLeft.width = xLow - xx;
+		m_recOrigLeft.left = xx < xLow ? xx : xLow;
+		m_recOrigLeft.width = xLow > xx ? xLow - xx : xx - xLow;
 		m_recOrigLeft.top = yy;
 		m_recOrigLeft.height = pLineLow->getHeight();
-		m_recCurFrame.left = xx;
+		m_recCurFrame.left = xx < xLow ? xx : xLow;
 		m_recCurFrame.top = yy;
 		fp_Line * pNext = pLineLow;
 		UT_sint32 width = 0;
@@ -513,7 +550,7 @@ void FV_VisualDragText::getImageFromSelection(UT_sint32 x, UT_sint32 y)
 		pRun = pLineHigh->getFirstRun();
 		pLineHigh->getScreenOffsets(pRun,xx,yy);
 		yy += pLineHigh->getHeight();
-		m_recCurFrame.width = width - m_recCurFrame.left;
+		m_recCurFrame.width = width > m_recCurFrame.left ? width - m_recCurFrame.left : m_recCurFrame.left - width;
 		m_recCurFrame.height = yy - m_recCurFrame.top;
 		if(m_recCurFrame.top + m_recCurFrame.height > m_pView->getWindowHeight())
 		{
@@ -531,8 +568,9 @@ void FV_VisualDragText::getImageFromSelection(UT_sint32 x, UT_sint32 y)
 		{
 			m_recCurFrame.width = pDSL->getActualColumnWidth();
 		}
-		m_recOrigRight.left = xHigh;
-		m_recOrigRight.width = m_recCurFrame.left + m_recCurFrame.width - xHigh;
+		m_recOrigRight.left = xHigh > xLow ? xHigh : xLow;
+		m_recOrigRight.width = m_recCurFrame.left + m_recCurFrame.width > xHigh ?
+			m_recCurFrame.left + m_recCurFrame.width - xHigh : xHigh - (m_recCurFrame.left + m_recCurFrame.width);
 		m_recOrigRight.top = yy - pLineHigh->getHeight();
 		m_recOrigRight.height = pLineHigh->getHeight();
 
@@ -550,7 +588,7 @@ void FV_VisualDragText::getImageFromSelection(UT_sint32 x, UT_sint32 y)
 void FV_VisualDragText::mouseCut(UT_sint32 x, UT_sint32 y)
 {
 	getImageFromSelection(x,y);
-	bool bPasteTableCol = (m_pView->getPrevSelectionMode() == FV_SelectionMode_TableColumn);
+	bool bPasteTableCol = (m_pView->getSelectionMode() == FV_SelectionMode_TableColumn);
 	if(bPasteTableCol)
 	{
 		m_pView->cmdCut();
@@ -593,8 +631,9 @@ void FV_VisualDragText::mouseCopy(UT_sint32 x, UT_sint32 y)
 	}
 	m_pView->updateScreen(false);
 	drawImage();
-	m_iVisualDragMode= FV_VisualDrag_WAIT_FOR_MOUSE_DRAG;
+	m_iVisualDragMode= FV_VisualDrag_START_DRAGGING;
 	m_bTextCut = false;
+	m_bDoingCopy = true;
 	m_pView->_resetSelection();
 }
 
@@ -617,11 +656,12 @@ PT_DocPosition FV_VisualDragText::getPosFromXY(UT_sint32 x, UT_sint32 y)
  */
 void FV_VisualDragText::mouseRelease(UT_sint32 x, UT_sint32 y)
 {
-	if(m_pAutoScrollTimer != NULL)
+        if(m_pAutoScrollTimer != NULL)
 	{
 		m_pAutoScrollTimer->stop();
 		DELETEP(m_pAutoScrollTimer);
 	}
+	m_bDoingCopy = false;
 	clearCursor();
 	if(m_iVisualDragMode != FV_VisualDrag_DRAGGING)
 	{
@@ -633,6 +673,15 @@ void FV_VisualDragText::mouseRelease(UT_sint32 x, UT_sint32 y)
 	}
 	PT_DocPosition posAtXY = getPosFromXY(x,y);
 	m_pView->setPoint(posAtXY);
+	fl_BlockLayout * pCurB = m_pView->getCurrentBlock();
+	if(pCurB)
+	{
+	    fl_ContainerLayout * pCL = pCurB->myContainingLayout();
+	    if(pCL && pCL->getContainerType() == FL_CONTAINER_SHADOW)
+	    {
+	         m_pView->setHdrFtrEdit(static_cast<fl_HdrFtrShadow *>(pCL));
+	    }
+	}
 	getGraphics()->setClipRect(&m_recCurFrame);
 	m_pView->updateScreen(false);
 	getGraphics()->setClipRect(NULL);

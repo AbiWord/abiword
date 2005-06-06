@@ -157,6 +157,7 @@ AP_UnixApp::AP_UnixApp(XAP_Args * pArgs, const char * szAppName)
 	  m_bSelectionInFlux(false),
 	  m_pViewSelection(0),
 	  m_cacheSelectionView(0),
+	  m_cacheDeferClear(0),
 	  m_pFrameSelection(0)
 {
 #ifndef HAVE_GNOME

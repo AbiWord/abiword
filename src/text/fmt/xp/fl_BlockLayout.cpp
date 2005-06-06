@@ -847,20 +847,7 @@ void fl_BlockLayout::_lookupProperties(const PP_AttrProp* pBlockAP)
 	//	_createListLabel();
 
 	xxx_UT_DEBUGMSG(("BlockLayout %x Folded Level %d sdh %x \n",this,getFoldedLevel(),getStruxDocHandle()));
-	if(getFoldedLevel()>0)
-	{ 
-		if(m_pAutoNum == NULL)
-		{
-			UT_DEBUGMSG(("BlockLayout %x Set Hidden \n",this));
-			setVisibility(FP_HIDDEN_FOLDED);
-		}
-		else if(!m_pAutoNum->isIDSomeWhere(getFoldedID()) || (static_cast<UT_sint32 >(m_pAutoNum->getLevel()) >  getFoldedLevel()))
-		{
-			UT_DEBUGMSG(("BlockLayout %x Set Hidden \n",this));
-			setVisibility(FP_HIDDEN_FOLDED);
-		}
 
-	}
 	//
 	// Look after TOC handling now.
 	//
@@ -3823,6 +3810,10 @@ fl_BlockLayout::_recalcPendingWord(UT_uint32 iOffset, UT_sint32 chg)
 	}
 
 	UT_uint32 iFirst = iOffset;
+
+	if (iFirst > pgb.getLength() - 1)
+		iFirst = pgb.getLength() - 1;
+
 	UT_uint32 iAbs = static_cast<UT_uint32>((chg >= 0) ? chg : -chg);
 	UT_sint32 iLen = ((chg > 0) ? iAbs : 0);
 
@@ -4332,20 +4323,31 @@ bool	fl_BlockLayout::_doInsertTextSpan(PT_BlockOffset blockOffset, UT_uint32 len
 
 	for(UT_uint32 i = 0; i < I.getItemCount() - 1; ++i)
 	{
-		fp_TextRun* pNewRun = new fp_TextRun(this,
-											 blockOffset + I.getNthOffset(i),
-											 I.getNthLength(i));
-		
-		UT_return_val_if_fail(pNewRun && pNewRun->getType() == FPRUN_TEXT, false);
-		pNewRun->setDirOverride(m_iDirOverride);
+		UT_uint32 iRunOffset = I.getNthOffset(i);
+		UT_uint32 iRunLength = I.getNthLength(i);
 
-		GR_Item * pItem = I.getNthItem(i)->makeCopy();
-		UT_ASSERT( pItem );
-		pNewRun->setItem(pItem);
-		
-		if(!_doInsertRun(pNewRun))
-			return false;
+		// because of bug 8542 we do not allow runs longer than 32000 chars, so if it is
+		// longer, just split it (we do not care where we split it, this is a contingency
+		// measure only)
+		while(iRunLength)
+		{
+			UT_uint32 iRunSegment = UT_MIN(iRunLength, 32000);
+			
+			fp_TextRun* pNewRun = new fp_TextRun(this, blockOffset + iRunOffset, iRunSegment);
+			iRunOffset += iRunSegment;
+			iRunLength -= iRunSegment;
+			
+			UT_return_val_if_fail(pNewRun && pNewRun->getType() == FPRUN_TEXT, false);
+			pNewRun->setDirOverride(m_iDirOverride);
 
+			GR_Item * pItem = I.getNthItem(i)->makeCopy();
+			UT_ASSERT( pItem );
+			pNewRun->setItem(pItem);
+		
+			if(!_doInsertRun(pNewRun))
+				return false;
+		}
+		
 	}
 
 	return true;
@@ -9299,9 +9301,12 @@ void fl_BlockLayout::listUpdate(void)
 
 	if ((m_bListLabelCreated == false) && (m_bStopList == false))
 		_createListLabel();
-
+	//
+	// Need to recalculate the line location.
+	//
+	m_bForceSectionBreak = true;
 	format();
-	
+
 }
 
 void fl_BlockLayout::transferListFlags(void)
@@ -9599,11 +9604,24 @@ bool fl_BlockLayout::getNextTableElement(UT_GrowBuf * buf,
 		return false;
 	}
 	UT_uint32 iMax = buf->getLength() - offset;
+	bool bFoundFootnote = false;
 	//
 	// skip initial punctuation marks
 	for(i= 0; i < iMax; i++)
 	{
 		curChar = static_cast<UT_UCS4Char>(*buf->getPointer(offset+i));
+		xxx_UT_DEBUGMSG(("Pre CurChar %c pos %d \n",curChar,offset+i+begPos));
+		if(curChar == 7)
+		{
+			break; // don't split on fields
+		}
+		//
+		// Don't split on numbers
+		//
+		if(curChar >= static_cast<UT_uint32>('0') && curChar <= static_cast<UT_uint32>('9'))
+	    {
+			break;
+		}
 		if(!UT_isWordDelimiter(curChar,UCS_UNKPUNK,UCS_UNKPUNK))
 		{
 			break;
@@ -9616,11 +9634,10 @@ bool fl_BlockLayout::getNextTableElement(UT_GrowBuf * buf,
 		return false;
 	}
 	begPos = getPosition(false) + offset + i;
-	bool bFoundFootnote = false;
 	for(; i< iMax; i++)
 	{
 		curChar = static_cast<UT_UCS4Char>(*buf->getPointer(offset+i));
-		xxx_UT_DEBUGMSG(("CurChar %d pos %d \n",curChar,offset+i+begPos));
+		xxx_UT_DEBUGMSG(("CurChar %c pos %d \n",curChar,offset+i+begPos));
 		if(curChar == 0)
 		{
 			PT_DocPosition pos = offset+i+begPos;
@@ -9644,6 +9661,13 @@ bool fl_BlockLayout::getNextTableElement(UT_GrowBuf * buf,
 		{
 			continue; // don't split on fields
 		}
+		//
+		// Don't split on numbers
+		//
+		if(curChar >= static_cast<UT_uint32>('0') && curChar <= static_cast<UT_uint32>('9'))
+	    {
+			continue;
+		}
 		if(UT_isWordDelimiter(curChar,UCS_UNKPUNK,UCS_UNKPUNK))
 		{
 			if( bIgnoreSpace && (curChar == UCS_SPACE))
@@ -9661,6 +9685,7 @@ bool fl_BlockLayout::getNextTableElement(UT_GrowBuf * buf,
 	{
 		endPos = getPosition(false) + offset + i;
 	}
+	xxx_UT_DEBUGMSG(("Split at %d \n",endPos));
 	return true;
 }
 
@@ -9754,6 +9779,11 @@ fp_Run* fl_BlockLayout::findRunAtOffset(UT_uint32 offset) const
 	}
 
 	return pRunResult;
+}
+
+bool fl_BlockLayout::_canContainPoint() const
+{
+	return isContainedByTOC() == false;
 }
 
 /*!
@@ -10260,3 +10290,4 @@ fl_BlockSpellIterator::_ignoreLastWordCharacter(const UT_UCSChar c) const
         return false;
     }
 }
+

@@ -109,7 +109,7 @@ void AP_Win32Dialog_Insert_DateTime::SetFormatsList(void)
 #endif
 
 	UT_LocaleInfo localeInfo;                                               
-	UT_LocaleTransactor (LC_ALL, localeInfo.getLanguage().utf8_str());
+	UT_LocaleTransactor t(LC_ALL, localeInfo.getLanguage().utf8_str());
 
     for (i = 0;InsertDateTimeFmts[i] != NULL;i++) {
         strftime(szCurrentDateTime, CURRENT_DATE_TIME_SIZE, InsertDateTimeFmts[i], pTime);

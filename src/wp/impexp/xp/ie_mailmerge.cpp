@@ -584,12 +584,10 @@ public:
 		}
 	
 	virtual UT_Error mergeFile(const char * szFilename) {
-		// TODO: this isn't utf-8 correct by a long shot
 
-		UT_UTF8String item;
+		UT_ByteBuf item;
 
-		char ch[2];
-		ch[1] = '\0';
+		UT_Byte ch;
 
 		UT_uint32 lineno = 0;
 		bool cont = true;
@@ -598,26 +596,31 @@ public:
 		if (!fp)
 			return UT_ERROR;
 
+		UT_VECTOR_PURGEALL(UT_UTF8String *, m_headers);
+		m_headers.clear();
+		UT_VECTOR_PURGEALL(UT_UTF8String *, m_items);
+		m_items.clear();
+
 		// line 1 == Headings/titles
 		// line 2..n == Data
 
-		while (cont && (1 == fread (ch, 1, 1, fp))){
-			if (ch[0] == '\r')
+		while (cont && (1 == fread (&ch, 1, 1, fp))){
+			if (ch == '\r')
 				continue;
-			else if (ch[0] == '\n') {
+			else if (ch == '\n') {
 				defineItem (item, lineno == 0);
 				if (lineno != 0)
 					cont = fire ();
 				lineno++;
-				item.clear ();
+				item.truncate (0);
 				continue;
 			}
-			else if (ch[0] == m_delim) {
+			else if (ch == m_delim) {
 				defineItem (item, lineno == 0);
-				item.clear ();
+				item.truncate (0);
 			}
 			else
-				item += ch;
+				item.append(&ch, 1);
 		}
 
 		fclose (fp);
@@ -626,33 +629,34 @@ public:
 	}
 
 	virtual UT_Error getHeaders (const char * szFilename, UT_Vector & out_vec) {
-		// TODO: this isn't utf-8 correct by a long shot
 
-		UT_UTF8String item;
+		UT_ByteBuf item;
 
-		char ch[2];
-		ch[1] = '\0';
+		UT_Byte ch;
 
 		FILE * fp = fopen(szFilename, "rb");
 		if (!fp)
 			return UT_ERROR;
 
+		UT_VECTOR_PURGEALL(UT_UTF8String *, m_headers);
+		m_headers.clear();
+
 		// line 1 == Headings/titles
 		// line 2..n == Data
 
-		while ((1 == fread (ch, 1, 1, fp))){
-			if (ch[0] == '\r')
+		while ((1 == fread (&ch, 1, 1, fp))){
+			if (ch == '\r')
 				continue;
-			else if (ch[0] == '\n') {
+			else if (ch == '\n') {
 				defineItem (item, true);
 				break;
 			}
-			else if (ch[0] == m_delim) {
+			else if (ch == m_delim) {
 				defineItem (item, true);
-				item.clear ();
+				item.truncate (0);
 			}
 			else
-				item += ch;
+			  item.append (&ch, 1);
 		}
 		
 		fclose (fp);
@@ -667,9 +671,9 @@ public:
 	
 private:
 	
-	void defineItem (const UT_UTF8String & item, bool isHeader)
+	void defineItem (const UT_ByteBuf & item, bool isHeader)
 		{
-			UT_UTF8String * dup = new UT_UTF8String (item);
+			UT_UTF8String * dup = new UT_UTF8String ((const char *)item.getPointer(0), item.getLength());
 			if (isHeader)
 				m_headers.addItem (dup);
 			else
@@ -762,7 +766,7 @@ void IE_MailMerge_RegisterXP ()
 {
 	IE_MailMerge::registerMerger (new IE_XMLMerge_Sniffer ());
 	IE_MailMerge::registerMerger (new IE_Delimiter_Sniffer ("Comma Separated Values (*.csv)", "*.csv", ','));
-	IE_MailMerge::registerMerger (new IE_Delimiter_Sniffer ("Tabbed Text (*.tdt)", "*.tdt", '\t'));
+	IE_MailMerge::registerMerger (new IE_Delimiter_Sniffer ("Tab Separated Values (*.tsv)", "*.tsv", '\t'));
 }
 
 void IE_MailMerge_UnRegisterXP ()

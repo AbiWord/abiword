@@ -1,3 +1,5 @@
+/* -*- mode: C++; tab-width: 4; c-basic-offset: 4; -*- */
+
 /* AbiWord
  * Copyright (C) 2000 AbiSource, Inc.
  * Copyright (C) 2001, 2003 Hubert Figuiere
@@ -127,30 +129,20 @@ void AP_CocoaDialog_ToggleCase::runModal(XAP_Frame * pFrame)
 {
 	const XAP_StringSet * pSS = XAP_App::getApp()->getStringSet();
 	
-	LocalizeControl([self window], pSS, AP_STRING_ID_DLG_ToggleCase_Title);
-	LocalizeControl(_sentenceBtn, pSS, AP_STRING_ID_DLG_ToggleCase_SentenceCase);
-	LocalizeControl(_lowerBtn, pSS, AP_STRING_ID_DLG_ToggleCase_LowerCase);
-	LocalizeControl(_upperBtn, pSS, AP_STRING_ID_DLG_ToggleCase_UpperCase);
-	LocalizeControl(_titleBtn, pSS, AP_STRING_ID_DLG_ToggleCase_TitleCase);
-	LocalizeControl(_initialBtn, pSS, AP_STRING_ID_DLG_ToggleCase_FirstUpperCase);
-	LocalizeControl(_toggleBtn, pSS, AP_STRING_ID_DLG_ToggleCase_ToggleCase);
-	LocalizeControl (_okBtn, pSS, XAP_STRING_ID_DLG_OK);
-	LocalizeControl (_cancelBtn, pSS, XAP_STRING_ID_DLG_Cancel);
+	LocalizeControl([self window],	pSS, AP_STRING_ID_DLG_ToggleCase_Title);
+
+	LocalizeControl (_okBtn,		pSS, XAP_STRING_ID_DLG_OK);
+	LocalizeControl (_cancelBtn,	pSS, XAP_STRING_ID_DLG_Cancel);
+
+	LocalizeControl(_sentenceBtn,	pSS, AP_STRING_ID_DLG_ToggleCase_SentenceCase);
+	LocalizeControl(_lowerBtn,		pSS, AP_STRING_ID_DLG_ToggleCase_LowerCase);
+	LocalizeControl(_upperBtn,		pSS, AP_STRING_ID_DLG_ToggleCase_UpperCase);
+//	LocalizeControl(_titleBtn,		pSS, AP_STRING_ID_DLG_ToggleCase_TitleCase);
+	LocalizeControl(_initialBtn,	pSS, AP_STRING_ID_DLG_ToggleCase_FirstUpperCase);
+	LocalizeControl(_toggleBtn,		pSS, AP_STRING_ID_DLG_ToggleCase_ToggleCase);
 }
 
 - (IBAction)okAction:(id)sender
-{
-	_xap->setAnswer(_xap->a_OK);
-    [NSApp stopModal];
-}
-
-- (IBAction)cancelAction:(id)sender
-{
-	_xap->setAnswer(_xap->a_CANCEL);
-    [NSApp stopModal];
-}
-
-- (IBAction)setAction:(id)sender
 {
 	switch ([[_caseMatrix selectedCell] tag]) {
 	case 0:
@@ -172,9 +164,14 @@ void AP_CocoaDialog_ToggleCase::runModal(XAP_Frame * pFrame)
 		UT_ASSERT(UT_SHOULD_NOT_HAPPEN);
 		break;
 	}
+	_xap->setAnswer(_xap->a_OK);
+    [NSApp stopModal];
+}
+
+- (IBAction)cancelAction:(id)sender
+{
+	_xap->setAnswer(_xap->a_CANCEL);
+    [NSApp stopModal];
 }
 
 @end
-
-
-

@@ -65,4 +65,5 @@ private:
 	static bool	s_Init;
 };
 
+ABI_EXPORT void UT_Language_updateLanguageNames(); 
 #endif

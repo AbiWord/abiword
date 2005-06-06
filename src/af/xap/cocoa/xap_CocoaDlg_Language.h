@@ -1,6 +1,9 @@
+/* -*- mode: C++; tab-width: 4; c-basic-offset: 4; -*- */
+
 /* AbiSource Application Framework
  * Copyright (C) 1998 AbiSource, Inc.
  * Copyright (C) 2001 Hubert Figuiere
+ * Copyright (c) 2005 Francis James Franklin
  * 
  * This program is free software; you can redistribute it and/or
  * modify it under the terms of the GNU General Public License
@@ -21,34 +24,81 @@
 #ifndef XAP_COCOADIALOG_LANGUAGE_H
 #define XAP_COCOADIALOG_LANGUAGE_H
 
+#import <Cocoa/Cocoa.h>
 
-#include "xap_App.h"
 #include "xap_Dlg_Language.h"
 
-#import "xap_Cocoa_NSTableUtils.h"
-#import "xap_GenericListChooser_Controller.h"
-
-
-class XAP_CocoaFrame;
+@class XAP_CocoaDialog_Language_Controller;
 
 /*****************************************************************/
 
 class XAP_CocoaDialog_Language : public XAP_Dialog_Language
 {
 public:
-	XAP_CocoaDialog_Language(XAP_DialogFactory * pDlgFactory, XAP_Dialog_Id id);
+	static XAP_Dialog *		static_constructor(XAP_DialogFactory *, XAP_Dialog_Id dlgid);
+
+	XAP_CocoaDialog_Language(XAP_DialogFactory * pDlgFactory, XAP_Dialog_Id dlgid);
+
 	virtual ~XAP_CocoaDialog_Language(void);
 
 	virtual void			runModal(XAP_Frame * pFrame);
 
-	void					okAction(void);
-	void					cancelAction(void);
+	const char * getNthLanguage (UT_uint32 n) const
+	{
+		return (n < m_iLangCount) ? ((const char *) m_ppLanguages[n]) : 0;
+	}
+	UT_uint32				getLanguageCount() const { return m_iLangCount; }
 
-	static XAP_Dialog *		static_constructor(XAP_DialogFactory *, XAP_Dialog_Id id);
+	const char *			getCurrentLanguage() const { return (const char *) m_pLanguage; }
+
 private:
-	XAP_StringListDataSource*			m_dataSource;
-	XAP_GenericListChooser_Controller*	m_dlg;
+	XAP_CocoaDialog_Language_Controller *	m_dlg;
 };
 
-#endif /* XAP_COCOADIALOG_LANGUAGE_H */
+@interface XAP_CocoaDialog_Language_Controller : NSWindowController <XAP_CocoaDialogProtocol>
+{
+	IBOutlet NSButton *		oCancel;
+	IBOutlet NSButton *		oOK;
+	IBOutlet NSButton *		oDocumentDefault;
 
+	IBOutlet NSTextField *	oDocumentCurrent;
+
+	IBOutlet NSTableView *	oLanguageTable;
+
+	NSMutableArray *		m_Languages;
+
+	NSString *				m_Selection;
+	int						m_SelectionIndex;
+
+	BOOL					m_bApplyToDocument;
+
+	XAP_CocoaDialog_Language *	_xap;
+}
+
+- (id)initFromNib;
+- (void)dealloc;
+- (void)setXAPOwner:(XAP_Dialog *)owner;
+- (void)discardXAP;
+- (void)windowDidLoad;
+
+- (NSString *)selectedLanguage;
+- (int)indexOfSelectedLanguage;
+- (BOOL)applyToDocument;
+
+- (IBAction)aCancel:(id)sender;
+- (IBAction)aOK:(id)sender;
+- (IBAction)aLanguageTable:(id)sender;
+
+/* NSTableViewDataSource methods
+ */
+- (int)numberOfRowsInTableView:(NSTableView *)aTableView;
+- (id)tableView:(NSTableView *)aTableView objectValueForTableColumn:(NSTableColumn *)aTableColumn row:(int)rowIndex;
+
+/* NSTableView delegate methods
+ */
+- (void)tableView:(NSTableView *)aTableView willDisplayCell:(id)aCell forTableColumn:(NSTableColumn *)aTableColumn row:(int)rowIndex;
+- (BOOL)tableView:(NSTableView *)aTableView shouldSelectRow:(int)rowIndex;
+
+@end
+
+#endif /* XAP_COCOADIALOG_LANGUAGE_H */

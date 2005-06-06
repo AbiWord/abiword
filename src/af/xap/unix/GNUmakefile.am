@@ -27,7 +27,7 @@ INCLUDES= -UVERSION @GTK_CFLAGS@ @GMODULE_CFLAGS@ \
 
 noinst_LIBRARIES = libXap_unix.a
 
-gladedir=$(pkgdatadir)/AbiWord/glade
+gladedir=$(datadir)/$(PACKAGE)/AbiWord/glade
 
 glade_DATA = \
 	xap_UnixDlg_About.glade \

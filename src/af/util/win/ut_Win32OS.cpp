@@ -116,7 +116,8 @@ char * UT_GetDefaultPrinterName()
 			free(pPrinterName);
 		
 		pPrinterName = (char *) UT_calloc(sizeof(char),iBufferSize);
-
+		UT_return_val_if_fail( pPrinterName, NULL );
+		
 		// the method of obtaining the name is version specific ...
 		OSVERSIONINFO osvi;
 		DWORD iNeeded, iReturned, iBuffSize;
@@ -239,7 +240,8 @@ HDC  UT_GetDefaultPrinterDC()
 	//	if(!OpenPrinter(pPrinterName, &hPrinter, NULL))
 	//		return NULL;
 
-	HDC hdc = CreateDC(NULL, pPrinterName, NULL, NULL);
+	const char * pDriver = UT_IsWinNT() ? "WINSPOOL" : NULL;
+	HDC hdc = CreateDC(pDriver, pPrinterName, NULL, NULL);
 	free(pPrinterName);
 	return hdc;
 }

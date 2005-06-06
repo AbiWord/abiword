@@ -40,8 +40,7 @@ static int s_compareQ(const void * a, const void * b)
 
 XAP_Dialog_Language::XAP_Dialog_Language(XAP_DialogFactory * pDlgFactory, XAP_Dialog_Id id)
 	: XAP_Dialog_NonPersistent(pDlgFactory,id, "interface/dialoglanguage"),
-	  m_bDocDefault(false),
-	  m_pDocLang(NULL)
+	  m_bDocDefault(false)
 {
 	UT_uint32 nDontSort = 0, nSort = 0;
 	UT_uint32 i;	
@@ -177,7 +176,7 @@ void XAP_Dialog_Language::getDocDefaultLangCheckboxLabel(UT_UTF8String &s)
 	const XAP_StringSet * pSS = XAP_App::getApp()->getStringSet();
 	UT_return_if_fail(pSS);
 
-	s = pSS->getValue(XAP_STRING_ID_DLG_ULANG_DefaultLangChkbox);
+	pSS->getValueUTF8(XAP_STRING_ID_DLG_ULANG_DefaultLangChkbox, s);
 }
 
 /*!
@@ -189,11 +188,9 @@ void XAP_Dialog_Language::getDocDefaultLangDescription(UT_UTF8String & s)
 	const XAP_StringSet * pSS = XAP_App::getApp()->getStringSet();
 	UT_return_if_fail(pSS);
 
-	s = pSS->getValue(XAP_STRING_ID_DLG_ULANG_DefaultLangLabel);
+	pSS->getValueUTF8(XAP_STRING_ID_DLG_ULANG_DefaultLangLabel, s);
 
-	UT_return_if_fail( m_pDocLang );
-	
-	s += m_pDocLang;
+	s += m_docLang;
 }
 
 /*!
@@ -205,10 +202,10 @@ void XAP_Dialog_Language::setDocumentLanguage(const XML_Char * pLang)
 	UT_return_if_fail( pLang );
 	UT_return_if_fail(m_pLangTable);
 	
-	UT_uint32 indx = m_pLangTable->getIndxFromCode(pLang);
+	UT_uint32 indx = m_pLangTable->getIdFromCode(pLang);
 
-	// NB: m_pDocLang holds the translated language name, not the tag
-	m_pDocLang	    = m_pLangTable->getNthLangName(indx);
+	// NB: m_docLang holds the translated language name, not the tag
+	XAP_App::getApp()->getStringSet()->getValueUTF8(indx, m_docLang);
 }
 
 

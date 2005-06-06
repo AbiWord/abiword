@@ -53,10 +53,9 @@ static UT_sint32 compareAP(const void * vX1, const void * vX2)
 static UT_sint32 compareAPBinary(const void * vX1, const void * vX2)
 {
 //
-// vX1 is actually the key value (a UT_uint32 checkSum) cast into a
-// void * pointer so this cast is correct even on a 64 bit machine
+// vX1 is actually a pointer to a UT_uint32 key value (a checkSum)
 //
-	UT_uint32 u1 = ((UT_uint32) (vX1));
+	UT_uint32 u1 = *((UT_uint32*) (vX1));
 	PP_AttrProp *x2 = *(PP_AttrProp **)(vX2);
 	UT_uint32 u2 = x2->getCheckSum();
 
@@ -176,7 +175,8 @@ bool pp_TableAttrProp::findMatch(const PP_AttrProp * pMatch,
  	// VC6 complains about not being able to convert from
  	// 'const class UT_Vector *' to 'class UT_Vector &'
  	// so I put in the cast to shut it up
- 	k = ((UT_Vector &)m_vecTableSorted).binarysearch(reinterpret_cast<void *>(pMatch->getCheckSum()), compareAPBinary);
+	UT_uint32 checksum = pMatch->getCheckSum();
+ 	k = ((UT_Vector &)m_vecTableSorted).binarysearch(reinterpret_cast<void *>(&checksum), compareAPBinary);
  	UT_uint32 cksum = pMatch->getCheckSum();
  
  	if (k == -1)

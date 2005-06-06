@@ -1,3 +1,5 @@
+/* -*- mode: C++; tab-width: 4; c-basic-offset: 4; -*- */
+
 /* Abiword
  * Copyright (C) 1998 AbiSource, Inc.
  * Copyright (C) 2001-2004 Hubert Figuiere
@@ -21,13 +23,18 @@
 #ifndef GR_COCOAGRAPHICS_H
 #define GR_COCOAGRAPHICS_H
 
+#import <Cocoa/Cocoa.h>
+
 #include "xap_CocoaApp.h"
-#include "xap_CocoaFont.h"
 #include "xap_Frame.h"
 #include "gr_Graphics.h"
 
 class UT_ByteBuf;
+
 class GR_CocoaGraphics;
+
+class XAP_CocoaFont;
+
 class StNSViewLocker;
 
 @class XAP_CocoaNSView, XAP_CocoaNSScrollView;
@@ -128,6 +135,8 @@ class GR_CocoaGraphics : public GR_Graphics
 	virtual void		setCursor(GR_Graphics::Cursor c);
 	virtual GR_Graphics::Cursor getCursor(void) const;
 
+	void			setGrabCursor(GR_Graphics::Cursor c) { m_GrabCursor = c; }
+
 	virtual void		setColor3D(GR_Color3D c);
 	void				init3dColors();
 	virtual void		fillRect(GR_Color3D c,
@@ -219,7 +228,28 @@ private:
 	CapStyle m_capStyle;
 	LineStyle m_lineStyle;
 
+	NSCursor *	m_Cursor_E;
+	NSCursor *	m_Cursor_N;
+	NSCursor *	m_Cursor_NE;
+	NSCursor *	m_Cursor_NW;
+	NSCursor *	m_Cursor_S;
+	NSCursor *	m_Cursor_SE;
+	NSCursor *	m_Cursor_SW;
+	NSCursor *	m_Cursor_W;
+
+	NSCursor *	m_Cursor_Wait;
+	NSCursor *	m_Cursor_LeftArrow;
+	NSCursor *	m_Cursor_RightArrow;
+	NSCursor *	m_Cursor_Compass;
+	NSCursor *	m_Cursor_Exchange;
+	NSCursor *	m_Cursor_LeftRight;
+	NSCursor *	m_Cursor_UpDown;
+	NSCursor *	m_Cursor_Crosshair;
+	NSCursor *	m_Cursor_HandPointer;
+	NSCursor *	m_Cursor_DownArrow;
+
 	GR_Graphics::Cursor		m_cursor;
+	GR_Graphics::Cursor		m_GrabCursor;
 
 	GR_Graphics::ColorSpace	m_cs;
 	
@@ -237,6 +267,22 @@ private:
 	void _setJoinStyle(JoinStyle inJoinStyle, CGContextRef * context = 0);
 	void _setLineStyle (LineStyle inLineStyle, CGContextRef * context = 0);
 	void _restartPaint(void);
+	//
+	/*!
+	  Wrapper to draw the char.
+
+	  \param cBuf the unichar buffer for the string
+	  \param len the length of the buffer
+	  \param fontProps the properties for the NSAttributedString
+	  \param x X position
+	  \param y Y position
+	  \param begin the start of the range to draw
+	  \param rangelen the length of the range
+
+	  \note the NSView must be focused prior this call
+	 */
+	void _realDrawChars(const unichar* cBuf, int len, NSDictionary *fontProps, 
+						float x, float y, int begin, int rangelen);
 	//
 	StNSViewLocker* m_viewLocker;
 	//private font metrics objects

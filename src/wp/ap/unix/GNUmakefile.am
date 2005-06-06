@@ -34,7 +34,7 @@ INCLUDES= \
 
 noinst_LIBRARIES = libWpAp_unix.a
 
-gladedir=$(pkgdatadir)/AbiWord/glade
+gladedir=$(datadir)/$(PACKAGE)/AbiWord/glade
 
 glade_DATA = \
 	ap_UnixDialog_Break.glade \
@@ -54,6 +54,7 @@ glade_DATA = \
 	ap_UnixDialog_PageSetup.glade		\
 	ap_UnixDialog_Replace.glade		\
 	ap_UnixDialog_New.glade		\
+	ap_UnixDialog_Spell.glade		\
 	ap_UnixDialog_Styles.glade	\
 	ap_UnixDialog_Stylist.glade	\
 	ap_UnixDialog_Stylist_modal.glade	\

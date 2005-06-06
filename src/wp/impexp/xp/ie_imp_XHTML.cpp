@@ -953,7 +953,7 @@ void IE_Imp_XHTML::startElement(const XML_Char *name, const XML_Char **atts)
 			UT_String_sprintf(szLevel, "%u", m_utsParents.getDepth());
 
 			{
-				UT_LocaleTransactor(LC_NUMERIC, "C");
+				UT_LocaleTransactor t(LC_NUMERIC, "C");
 				UT_String_sprintf(szMarginLeft, " margin-left: %.2fin", 
 								  m_utsParents.getDepth() * 0.5);
 			}
@@ -1155,7 +1155,7 @@ void IE_Imp_XHTML::startElement(const XML_Char *name, const XML_Char **atts)
 				UT_String tmp;
 
 				{
-					UT_LocaleTransactor(LC_NUMERIC, "C");
+					UT_LocaleTransactor t(LC_NUMERIC, "C");
 					UT_String_sprintf (tmp, "%gin", width);
 				}
 
@@ -1174,7 +1174,7 @@ void IE_Imp_XHTML::startElement(const XML_Char *name, const XML_Char **atts)
 				UT_String tmp;
 
 				{
-					UT_LocaleTransactor(LC_NUMERIC, "C");
+					UT_LocaleTransactor t(LC_NUMERIC, "C");
 					UT_String_sprintf (tmp, "%gin", height);
 				}
 
@@ -1201,7 +1201,7 @@ void IE_Imp_XHTML::startElement(const XML_Char *name, const XML_Char **atts)
 					height = rat*fwidth;
 					UT_String tmp;
 					{
-						UT_LocaleTransactor(LC_NUMERIC, "C");
+						UT_LocaleTransactor t(LC_NUMERIC, "C");
 						UT_String_sprintf (tmp, "%gin", height);
 					}
 					if (utf8val.byteLength ()) 
@@ -1228,7 +1228,7 @@ void IE_Imp_XHTML::startElement(const XML_Char *name, const XML_Char **atts)
 				}
 			UT_String tmp;
 			{
-				UT_LocaleTransactor(LC_NUMERIC, "C");
+				UT_LocaleTransactor t(LC_NUMERIC, "C");
 				UT_String_sprintf (tmp, "width:%gin; height:%gin", width, height);
 			}
 
@@ -2463,7 +2463,7 @@ static void s_props_append (UT_UTF8String & props, UT_uint32 css_mask,
 					UT_String tmp;
 
 					{
-						UT_LocaleTransactor(LC_NUMERIC, "C");
+						UT_LocaleTransactor t(LC_NUMERIC, "C");
 						UT_String_sprintf (tmp, "%gin", dim);
 					}
 

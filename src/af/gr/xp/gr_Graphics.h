@@ -247,6 +247,8 @@ enum GR_Capability
 class GR_AllocInfo
 {
   public:
+	virtual ~GR_AllocInfo() {}
+
 	virtual GR_GraphicsId getType() const {UT_ASSERT_HARMLESS(UT_NOT_IMPLEMENTED); return GRID_UNKNOWN;}
 	virtual bool isPrinterGraphics()const {UT_ASSERT_HARMLESS(UT_NOT_IMPLEMENTED); return false;}
 };

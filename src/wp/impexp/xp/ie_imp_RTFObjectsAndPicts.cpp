@@ -193,6 +193,10 @@ bool IE_Imp_RTF::InsertImage (const UT_ByteBuf * buf, const char * image_name,
 	UT_String propBuffer;
 	double wInch = 0.0f;
 	double hInch = 0.0f;
+    double cropt = 0.0f;
+	double cropb = 0.0f;
+	double cropl = 0.0f;
+	double cropr = 0.0f;
 	bool resize = false;
 	if (!bUseInsertNotAppend())
 	{
@@ -227,13 +231,22 @@ bool IE_Imp_RTF::InsertImage (const UT_ByteBuf * buf, const char * image_name,
 			break;
 		}
 
+		if ( imgProps.bCrop )
+		{
+			cropt = imgProps.cropt / 1440.0f;
+			cropb = imgProps.cropb / 1440.0f;
+			cropl = imgProps.cropl / 1440.0f;
+			cropr = imgProps.cropr / 1440.0f;
+			resize = true;
+		}
+	  
 		if (resize) 
 		{
-			UT_LocaleTransactor(LC_NUMERIC, "C");
+			UT_LocaleTransactor t(LC_NUMERIC, "C");
 			UT_DEBUGMSG (("resizing...\n"));
-			UT_String_sprintf(propBuffer, "width:%fin; height:%fin",
-							  wInch, hInch);
-			xxx_UT_DEBUGMSG (("props are %s\n", propBuffer.c_str()));
+			UT_String_sprintf(propBuffer, "width:%fin; height:%fin; cropt:%fin; cropb:%fin; cropl:%fin; cropr:%fin",
+							  wInch, hInch, cropt, cropb, cropl, cropr);
+			UT_DEBUGMSG (("props are %s\n", propBuffer.c_str()));
 		}
 
 		const XML_Char* propsArray[5];
@@ -347,7 +360,7 @@ bool IE_Imp_RTF::InsertImage (const UT_ByteBuf * buf, const char * image_name,
 
 		if (resize)
 		{
-			UT_LocaleTransactor(LC_NUMERIC, "C");
+			UT_LocaleTransactor t(LC_NUMERIC, "C");
 			UT_DEBUGMSG (("resizing...\n"));
 			UT_String_sprintf(propBuffer, "width:%fin; height:%fin",
 							  wInch, hInch);
@@ -469,6 +482,22 @@ bool IE_Imp_RTF::HandlePicture()
 						imageProps.scaleY = static_cast<unsigned short>(parameter);
 					}
 				}
+				break;
+			case RTF_KW_piccropt:
+				imageProps.cropt = parameter;
+				imageProps.bCrop = true;
+				break;
+			case RTF_KW_piccropb:
+				imageProps.cropb = parameter;
+				imageProps.bCrop = true;
+				break;
+			case RTF_KW_piccropl:
+				imageProps.cropl = parameter;
+				imageProps.bCrop = true;
+				break;
+			case RTF_KW_piccropr:
+				imageProps.cropr = parameter;
+				imageProps.bCrop = true;
 				break;
 			case RTF_KW_bin:
 				/* this code is completely broken. 
@@ -1074,7 +1103,7 @@ void IE_Imp_RTF::addFrame(RTFProps_FrameProps & frame)
 	UT_UTF8String_setProperty(sPropString,sP,sV); // fixme make other types
 
 	{
-		UT_LocaleTransactor(LC_NUMERIC, "C");
+		UT_LocaleTransactor t(LC_NUMERIC, "C");
 
 		//
 		// Shift positions a little for pasted frames so they don't

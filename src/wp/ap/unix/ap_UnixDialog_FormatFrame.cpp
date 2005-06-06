@@ -298,7 +298,7 @@ void AP_UnixDialog_FormatFrame::event_BorderThicknessChanged(void)
 
 		UT_UTF8String sThickness;
 		{
-			UT_LocaleTransactor(LC_NUMERIC, "C");
+			UT_LocaleTransactor t(LC_NUMERIC, "C");
 			sThickness = UT_UTF8String_sprintf("%fin",thickness);
 		}
 

@@ -97,6 +97,7 @@ private:
 - (IBAction)preserveAction:(id)sender;
 - (IBAction)widthChanged:(id)sender;
 - (IBAction)widthNumStepperChanged:(id)sender;
+- (IBAction)wrapAction:(id)sender;
 
 - (NSString*)titleEntry;
 - (NSString*)altEntry;
