@@ -2254,6 +2254,29 @@ bool fl_DocListener::insertStrux(PL_StruxFmtHandle sfh,
 			   return pSL->bl_doclistener_insertTable(FL_SECTION_TABLE, pcrx,sdh,lid,pfnBindHandles);
 
 		  }
+		case PTX_EndCell:	  
+		  // we are inserting an endcell 
+		  // following an endframe. This is valid if the frame is
+		  // contained within the cell.
+		  {
+
+			   UT_DEBUGMSG(("Insert endCell after EndFrame \n"));
+			   fl_ContainerLayout * pCL = static_cast<fl_ContainerLayout *>(pL);
+			   UT_DEBUGMSG(("Doing Insert Strux EndCell after endFrame \n"));
+//
+// This gets us a fl_SectionCell.
+//
+			   UT_ASSERT(pCL->getContainerType() == FL_CONTAINER_FRAME);
+			   fl_CellLayout* pCLSL = static_cast<fl_CellLayout *>( pCL->myContainingLayout());
+			   if(pCLSL->getContainerType() != FL_CONTAINER_CELL)
+			   {
+				   m_pDoc->miniDump(pL->getStruxDocHandle(),6);
+			   }
+			   UT_return_val_if_fail(pCLSL->getContainerType() == FL_CONTAINER_CELL,false);
+			   bool bResult = pCLSL->bl_doclistener_insertEndCell(pCL, pcrx,sdh,lid,pfnBindHandles);
+			   return bResult;
+		  }
+
 		default:
 		   {
 			   UT_DEBUGMSG(("Illegal strux type after frame %d \n",pcrx->getStruxType()));

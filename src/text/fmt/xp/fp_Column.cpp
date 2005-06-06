@@ -240,10 +240,19 @@ fp_TableContainer * fp_VerticalContainer::getCorrectBrokenTable(fp_Container * p
 {
 	xxx_UT_DEBUGMSG(("VerticalContainer: In get Correct proken table \n"));
 	bool bFound = false;
-	fp_CellContainer * pCell = static_cast<fp_CellContainer *>(pCon->getContainer());
-	if(!pCell)
+	fp_CellContainer * pCell = NULL;
+	if(pCon->getContainerType() == FP_CONTAINER_CELL)
 	{
-		return NULL;
+	     pCell = static_cast<fp_CellContainer *>(pCon);
+	     pCon = pCell->getFirstContainer();
+	}
+	else
+	{ 
+	     pCell = static_cast<fp_CellContainer *>(pCon->getContainer());
+	     if(!pCell)
+	     {
+		   return NULL;
+	     }
 	}
 	UT_return_val_if_fail(pCell->getContainerType() == FP_CONTAINER_CELL,NULL);
 //
@@ -634,9 +643,31 @@ void fp_VerticalContainer::getScreenOffsets(fp_ContainerObject* pContainer,
 	}
 
 	fp_Container * pCon = static_cast<fp_Container *>(this);
+	bool bCell = false;
+	bool bTable = false;
+	UT_sint32 xcell,ycell = 0;
+	if((getContainerType() == FP_CONTAINER_TABLE) && (pContainer->getContainerType() == FP_CONTAINER_CELL))
+	{
+	        pCon =  static_cast<fp_Container *>(pContainer);
+	        pContainer = static_cast<fp_CellContainer *>(pContainer)->getNthCon(0);
+		if(pContainer != NULL)
+		{
+		  bCell = true;
+		  xcell = pContainer->getX();
+		  ycell = pContainer->getY();
+		}
+		else
+		{
+		  bTable = true;
+		  pContainer = pCon;
+		  fp_Container * pCon = static_cast<fp_Container *>(this);
+		  my_yoff = getY();
+		  my_xoff = getX();
+		}
+	}
 	fp_Container * pPrev = NULL;
 	fp_TableContainer * pTab = NULL;
-	while(!pCon->isColumnType())
+	while(!pCon->isColumnType() && !bTable)
 	{
 		my_xoff += pCon->getX();
 		xxx_UT_DEBUGMSG(("Screen offsets my_xoff %d pCon %x type %s \n",my_xoff,pCon,pCon->getContainerString()));
@@ -680,6 +711,10 @@ void fp_VerticalContainer::getScreenOffsets(fp_ContainerObject* pContainer,
 				}
 				pCon = static_cast<fp_Container *>(pVCon);
 			}
+			else if(pPrev == NULL)
+			{
+			        my_yoff = 0;
+			}
 			else
 			{
 				UT_ASSERT(UT_SHOULD_NOT_HAPPEN);
@@ -712,7 +747,11 @@ void fp_VerticalContainer::getScreenOffsets(fp_ContainerObject* pContainer,
 	UT_sint32 col_y =0;
 	xoff = my_xoff + pOrig->getX();
 	yoff = my_yoff + pOrig->getY();
-
+	if(bCell)
+	{
+	        xoff -= xcell;
+		yoff -= ycell;
+	}
 	if (pCon->getContainerType() == FP_CONTAINER_COLUMN)
 	{
 		fp_Column * pCol = static_cast<fp_Column *>(pCon);

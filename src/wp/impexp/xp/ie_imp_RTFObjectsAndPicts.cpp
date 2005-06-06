@@ -904,12 +904,14 @@ public:
 private:
 	IE_Imp_RTF * m_ieRTF;
 	RTFProps_FrameProps m_currentFrame;	
+	UT_sint32    m_iOrigTableDepth;
 };
 
 
 IE_Imp_ShpGroupParser::IE_Imp_ShpGroupParser(IE_Imp_RTF * ie) : m_ieRTF(ie) 
 {
 	m_currentFrame.clear();
+	m_iOrigTableDepth = m_ieRTF->getPasteDepth();
 }
 
 
@@ -922,7 +924,7 @@ IE_Imp_ShpGroupParser::~IE_Imp_ShpGroupParser()
 	//
 	// Close off any open tables
 	//
-	if(	m_ieRTF->getPasteDepth() > 0)
+	if(	(m_ieRTF->getPasteDepth() > 0) && (m_iOrigTableDepth < m_ieRTF->getPasteDepth()) )
 	{
 		m_ieRTF->closePastedTableIfNeeded();
 		if(m_ieRTF->bUseInsertNotAppend())
