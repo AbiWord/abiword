@@ -355,11 +355,16 @@ void AP_Convert::convertToPNG ( const char * szSourceFileName )
 }
 
 
-void AP_Convert::print(const char * szFile, GR_Graphics * pGraphics)
+void AP_Convert::print(const char * szFile, GR_Graphics * pGraphics, const char * szFileExtension)
 {
 	// get the current document
 	PD_Document *pDoc = new PD_Document(XAP_App::getApp());
-	UT_Error err= pDoc->readFromFile(szFile, IEFT_Unknown, m_impProps.utf8_str());
+	UT_Error err;
+	if( !szFileExtension )
+		err = pDoc->readFromFile(szFile, IEFT_Unknown, m_impProps.utf8_str());
+	else
+		err = pDoc->readFromFile(szFile, IE_Imp::fileTypeForSuffix(szFileExtension), m_impProps.utf8_str());
+
 	if( err != UT_OK)
 	{
 		fprintf(stderr, "AbiWord: Error importing file. [%s]  Could not print \n", szFile);

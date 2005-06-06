@@ -1634,7 +1634,7 @@ bool AP_UnixApp::doWindowlessArgs(const AP_Args *Args)
 			PS_Graphics * pGraphics = (PS_Graphics*) XAP_App::getApp()->newGraphics(ai);
 			
 			conv.setVerbose(Args->m_iVerbose);
-			conv.print (Args->m_sFile, pGraphics);
+			conv.print (Args->m_sFile, pGraphics, Args->m_sFileExtension);
 
 			delete pGraphics;
 	    }

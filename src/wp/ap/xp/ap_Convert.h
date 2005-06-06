@@ -47,7 +47,7 @@ class ABI_EXPORT AP_Convert
 	void setVerbose(int level);
 	void setMergeSource (const char * source);
 
-	void print(const char * file, GR_Graphics * pGraphics);
+	void print(const char * file, GR_Graphics * pGraphics, const char * szFileExtension);
 	void printFirstPage(GR_Graphics * pGraphics, PD_Document * pDoc);
 
 	void setImpProps (const char * props) {

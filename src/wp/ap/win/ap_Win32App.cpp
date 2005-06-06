@@ -1556,7 +1556,7 @@ bool AP_Win32App::doWindowlessArgs(const AP_Args *Args)
 			}
 			
 			conv.setVerbose(Args->m_iVerbose);
-			conv.print (Args->m_sFile, pG);
+			conv.print (Args->m_sFile, pG, Args->m_sFileExtension);
 	      
 			delete pG;
 		}

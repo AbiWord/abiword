@@ -62,6 +62,8 @@ const char * AP_Args::m_expProps=NULL;
 
 const char * AP_Args::m_sUserProfile = NULL;
 
+const char * AP_Args::m_sFileExtension = NULL;
+
 int AP_Args::m_iToThumb = 0;
 const char * AP_Args::m_sThumb = NULL; // name of output pn
 const char *  AP_Args::m_sThumbXY = "100x120"; // number of pixels in thumbnail by default
@@ -218,6 +220,7 @@ const struct poptOption AP_Args::const_opts[] =
 	 {"thumb",'\0',POPT_ARG_INT,&m_iToThumb,0,"Make a thumb nail of the first page",""},
 	 {"sizeXY",'S',POPT_ARG_STRING,&m_sThumbXY,0,"Size of PNG thumb nail in pixels","VALxVAL"},
 	 {"name",'o',POPT_ARG_STRING,&m_sThumb,0,"Name of PNG thumb nail file","Output png file name"},
+	 {"import-extension", '\0', POPT_ARG_STRING, &m_sFileExtension, 0, "Override document type detection by specifying a file extension", NULL},
 	 // GNOME build kills everything after "version"
 	 {"version", '\0', POPT_ARG_NONE, &m_iVersion, 0, "Print AbiWord version", NULL},
  	 {"help", '?', POPT_ARG_NONE, &m_iHelp, 0, "Display help", NULL},
