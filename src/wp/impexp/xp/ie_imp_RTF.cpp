@@ -9126,6 +9126,13 @@ bool IE_Imp_RTF::insertStrux(PTStruxType pts , const XML_Char ** attrs, const XM
 		m_dposPaste = pfs->getPos()+1;
 		return res;
 	}
+	if((pts == PTX_EndFrame) && (getDoc()->isFrameAtPos(m_dposPaste)))
+	{
+		res = getDoc()->insertStrux(m_dposPaste,PTX_Block);
+		m_dposPaste++;
+		res = getDoc()->insertStrux(m_dposPaste,pts,attrs,props);
+		m_dposPaste++;
+	}
 	//
 	// Can't  paste sections in Footnotes/Endnotes
 	//

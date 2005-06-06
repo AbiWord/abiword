@@ -35,7 +35,7 @@
 #include "ie_types.h"
 #include "ie_impGraphic.h"
 #include "fl_FrameLayout.h"
-
+#include "ut_rand.h"
 #include "fg_Graphic.h"
 #include "fg_GraphicRaster.h"
 #include "fg_GraphicVector.h"
@@ -1114,7 +1114,8 @@ void IE_Imp_RTF::addFrame(RTFProps_FrameProps & frame)
 		double dOff = 0.0;
 		if(bUseInsertNotAppend())
 		{
-			dOff = 0.1; // 0.1 inches
+			dOff = 0.05; // 0.1 inches
+			dOff += 0.2*static_cast<double>(UT_rand())/static_cast<double>(RAND_MAX);
 		}
 		double dV = dOff + static_cast<double>(frame.m_iLeftPos)/1440.0;
 		sV= UT_UTF8String_sprintf("%fin",dV);
