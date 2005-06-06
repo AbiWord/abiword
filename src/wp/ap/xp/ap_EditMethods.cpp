@@ -8263,6 +8263,9 @@ static bool s_doBreakDlg(FV_View * pView)
 	XAP_Frame * pFrame = static_cast<XAP_Frame *> ( pView->getParentData());
 	UT_return_val_if_fail(pFrame, false);
 
+	if(pView->isHdrFtrEdit())
+		return false;
+
 	pFrame->raise();
 
 	XAP_DialogFactory * pDialogFactory
@@ -8275,9 +8278,6 @@ static bool s_doBreakDlg(FV_View * pView)
 
 	AP_Dialog_Break::tAnswer ans = pDialog->getAnswer();
 	bool bOK = (ans == AP_Dialog_Break::a_OK);
-
-	if(pView->isHdrFtrEdit())
-		return false;
 
 	if (bOK)
 	{
