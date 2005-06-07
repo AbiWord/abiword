@@ -1906,6 +1906,10 @@ bool fl_BlockLayout::setFramesOnPage(fp_Line * pLastLine)
 	for(i=0; i< getNumFrames();i++)
 	{
 		fl_FrameLayout * pFrame = getNthFrameLayout(i);
+
+		if(pFrame->isHidden() > FP_VISIBLE)
+			continue;
+		
 		if(pFrame->getContainerType() != FL_CONTAINER_FRAME)
 		{
 			UT_ASSERT(UT_SHOULD_NOT_HAPPEN);

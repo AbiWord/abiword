@@ -616,6 +616,12 @@ void fl_FrameLayout::miniFormat(void)
 void fl_FrameLayout::format(void)
 {
 	xxx_UT_DEBUGMSG(("SEVIOR: Formatting first container is %x \n",getFirstContainer()));
+	if(isHidden() > FP_VISIBLE)
+	{
+		xxx_UT_DEBUGMSG(("Don't format FRAME coz I'm hidden! \n"));
+		return;
+	}
+
 	if(getFirstContainer() == NULL)
 	{
 		getNewContainer();
