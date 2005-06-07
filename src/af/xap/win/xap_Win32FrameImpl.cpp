@@ -932,7 +932,7 @@ LRESULT CALLBACK XAP_Win32FrameImpl::_FrameWndProc(HWND hwnd, UINT iMsg, WPARAM 
 					IEGraphicFileType iegft = IEGFT_Unknown;					
 					IE_ImpGraphic *pIEG;
 					FG_Graphic* pFG;
-					UT_Error errorCode;
+					UT_Error errorCode = UT_ERROR;
 
 					/*
 						The user may be dropping any kind of file
@@ -944,26 +944,16 @@ LRESULT CALLBACK XAP_Win32FrameImpl::_FrameWndProc(HWND hwnd, UINT iMsg, WPARAM 
 					if(errorCode == UT_OK)
 					{						
 						errorCode = pIEG->importGraphic(szFileName, &pFG);
-						if(errorCode != UT_OK || !pFG)
-						{
-							s_CouldNotLoadFileMessage(f, szFileName, errorCode);							
-							DELETEP(pIEG);
-							return 0;
-						}
 
-						DELETEP(pIEG);					
-
-						errorCode = pView->cmdInsertGraphic(pFG);
-						if (errorCode != UT_OK)
+						DELETEP(pIEG);
+						if(errorCode == UT_OK && pFG)
 						{
-							s_CouldNotLoadFileMessage(f, szFileName, errorCode);							
-							DELETEP(pFG);
-							return 0;
+						  errorCode = pView->cmdInsertGraphic(pFG);
+						  DELETEP(pFG);
 						}
-						
-						DELETEP(pFG);
 					  }
-					else
+
+					if (errorCode != UT_OK)
 					{	
 						// Check if the current document is empty.
 						if (f->isDirty() || f->getFilename() ||
@@ -972,8 +962,9 @@ LRESULT CALLBACK XAP_Win32FrameImpl::_FrameWndProc(HWND hwnd, UINT iMsg, WPARAM 
 							pNewFrame = pApp->newFrame();
 							if (pNewFrame == NULL)
 							{
-								f->setStatusMessage("Could not open another window");
-								return 0;
+							  errorCode = UT_ERROR;
+							  f->setStatusMessage("Could not open another window");
+							  return 0;
 							}
 						}
 						else
@@ -981,17 +972,21 @@ LRESULT CALLBACK XAP_Win32FrameImpl::_FrameWndProc(HWND hwnd, UINT iMsg, WPARAM 
 							pNewFrame = f;
 						}
 
-						UT_Error error = pNewFrame->loadDocument(szFileName, IEFT_Unknown);
-						if (error != UT_OK)
+						errorCode = pNewFrame->loadDocument(szFileName, IEFT_Unknown);
+						if (errorCode != UT_OK)
 						{
 							if (f != pNewFrame)
 								pNewFrame->close();
-							s_CouldNotLoadFileMessage(f, szFileName, error);
 						}
 						else
 						{
 							pNewFrame->show();
 						}
+					  }
+
+					if (errorCode != UT_OK)
+					  {
+					    s_CouldNotLoadFileMessage(f, szFileName, errorCode);
 					  }
 				}
 				else
