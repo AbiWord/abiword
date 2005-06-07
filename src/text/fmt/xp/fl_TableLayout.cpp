@@ -501,7 +501,7 @@ void fl_TableLayout::format(void)
 	{
 		return;
 	}
-	if(isHidden() >= FP_HIDDEN_FOLDED)
+	if(isHidden() > FP_VISIBLE)
 	{
 		xxx_UT_DEBUGMSG(("Don't format TABLE coz I'm hidden! \n"));
 		return;
