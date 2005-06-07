@@ -75,7 +75,9 @@ AP_Dialog_Lists::AP_Dialog_Lists(XAP_DialogFactory * pDlgFactory, XAP_Dialog_Id 
 	m_pFakeAuto(0),
 	m_pFakeDoc(0),
 	m_bDirty(false),
-    m_bIsModal(false)
+	m_bIsModal(false),
+	m_iCurrentLevel(0),
+	m_bFoldingLevelChanged(false)
 {
 	for(UT_uint32 i=0; i<4; i++)
 	{
@@ -223,11 +225,12 @@ void AP_Dialog_Lists::setTick(UT_uint32 iTick)
 void AP_Dialog_Lists::Apply(void)
 {
 	XML_Char szStart[20];
-	if(!isModal() && !isPageLists())
+	if(!isModal() && (!isPageLists() || m_bFoldingLevelChanged))
 	{
 //
 // OK fold up the text according the level specified.
 //
+	        m_bFoldingLevelChanged = false;
 		fl_AutoNum * pAuto = getBlock()->getAutoNum();
 		const XML_Char * props[5] = {"text-folded",NULL,"text-folded-id",NULL,NULL};
 		UT_UTF8String sStr = UT_UTF8String_sprintf("%d",getCurrentFold());

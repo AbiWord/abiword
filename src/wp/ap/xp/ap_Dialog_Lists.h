@@ -156,6 +156,8 @@ protected:
 		{ return m_iCurrentLevel;}
 	virtual void      setFoldLevelInGUI(void) = 0;
 	virtual bool      isPageLists(void) = 0;
+	void              setFoldingLevelChanged(bool b)
+	  { m_bFoldingLevelChanged = b;}
 private:
 
 
@@ -213,6 +215,7 @@ private:
 	UT_sint32               m_iCurrentLevel;
 	UT_Vector				m_OutProps;
 	UT_String				m_Output[5];
+	bool                                    m_bFoldingLevelChanged;
 };
 
 
