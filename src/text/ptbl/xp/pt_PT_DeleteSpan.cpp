@@ -617,7 +617,11 @@ bool pt_PieceTable::_tweakDeleteSpanOnce(PT_DocPosition & dpos1,
 		// secretly translate this into a request to delete the section;
 		// the block we have will then be slurped into the previous
 		// section.
-		dpos1 -= pfsContainer->getLength();
+		// We can only do this if this is not the first section in our document
+		// Tomas, June 7, 2005
+		if(pfsContainer->getPrev())
+			dpos1 -= pfsContainer->getLength();
+		
 		return true;
 
 	case PTX_SectionTable:
