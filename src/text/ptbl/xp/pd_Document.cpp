@@ -5499,7 +5499,6 @@ bool PD_Document::_acceptRejectRevision(bool bReject, UT_uint32 iStart, UT_uint3
 				}
 					
 			case PP_REVISION_DELETION:
-			case PP_REVISION_FMT_CHANGE:
 				// remove the revision attribute
 				if(pf->getType() == pf_Frag::PFT_Strux)
 				{
@@ -5512,6 +5511,36 @@ bool PD_Document::_acceptRejectRevision(bool bReject, UT_uint32 iStart, UT_uint3
 				}
 				else
 					return changeSpanFmt(PTC_RemoveFmt,iStart,iEnd,ppAttr,NULL);
+
+			case PP_REVISION_FMT_CHANGE:
+				// overaly formatting from previous revisions and remove this revision
+				// from the revision attribute
+
+				// need to set a new revision attribute
+				// first remove current revision from pRevAttr
+				RevAttr.removeRevision(pRev);
+				bDeletePRev = true;
+
+				ppAttr[0] = rev;
+				ppAttr[1] = RevAttr.getXMLstring();
+				ppAttr[2] = NULL;
+
+				if(pf->getType() == pf_Frag::PFT_Strux)
+				{
+					pf_Frag_Strux * pfs = static_cast<pf_Frag_Strux *>(pf);					
+					// the changeStrux function tries to locate the strux which _contains_ the
+					// position we pass into it; however, iStart is the doc position of the actual
+					// strux, so we have to skip over the strux
+					bRet &= changeStruxFmt(PTC_AddFmt,iStart+1,iEnd,ppAttr,ppProps, pfs->getStruxType());
+				}
+				else
+					bRet &= changeSpanFmt(PTC_AddFmt,iStart,iEnd,ppAttr,ppProps);
+
+				if(bDeletePRev)
+					delete pRev;
+				
+				return bRet;
+
 
 			default:
 				UT_ASSERT_HARMLESS( UT_SHOULD_NOT_HAPPEN );
