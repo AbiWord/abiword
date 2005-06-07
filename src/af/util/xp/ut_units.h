@@ -34,6 +34,10 @@ UT_BEGIN_EXTERN_C
 /* Units of UT_LAYOUT_RESOLUTION = dots per inch */
 #define UT_LAYOUT_RESOLUTION				1440
 
+/* 2^31 -1 */
+
+#define UT_INT_MAX 2147483647
+
 typedef enum _ut_dimension { DIM_IN, DIM_CM, DIM_MM, DIM_PI, DIM_PT, DIM_PX, DIM_PERCENT, DIM_none } UT_Dimension;
 
 /*

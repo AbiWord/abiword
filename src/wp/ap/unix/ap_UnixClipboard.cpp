@@ -57,6 +57,7 @@
 #define AP_CLIPBOARD_IMAGE_WMF                  "image/x-wmf"
 #define AP_CLIPBOARD_IMAGE_SVG                  "image/svg"
 #define AP_CLIPBOARD_IMAGE_SVG_XML              "image/svg+xml"
+#define AP_CLIPBOARD_IMAGE_GOChart              "application/x-goffice-chart"
 
 // Text: cut and paste
 #define AP_CLIPBOARD_TEXT_UTF8_STRING           "UTF8_STRING"
@@ -91,6 +92,7 @@ static const char * imgszFormatsAccepted[] = {
   AP_CLIPBOARD_IMAGE_WMF,
   AP_CLIPBOARD_IMAGE_SVG,
   AP_CLIPBOARD_IMAGE_SVG_XML,
+  AP_CLIPBOARD_IMAGE_GOChart,
   0 } ;
 
 AP_UnixClipboard::AP_UnixClipboard(AP_UnixApp * pApp)
@@ -118,6 +120,7 @@ AP_UnixClipboard::AP_UnixClipboard(AP_UnixApp * pApp)
   AddFmt ( AP_CLIPBOARD_IMAGE_WMF ) ;
   AddFmt ( AP_CLIPBOARD_IMAGE_SVG ) ;
   AddFmt ( AP_CLIPBOARD_IMAGE_SVG_XML ) ;
+  AddFmt ( AP_CLIPBOARD_IMAGE_GOChart ) ;
 
   // plain text types
   AddFmt(AP_CLIPBOARD_TEXT_UTF8_STRING);
@@ -244,6 +247,9 @@ bool AP_UnixClipboard::isImageTag ( const char * tag )
     return false ;
 
   if ( !strncmp ( tag, "image/", 6 ) )
+    return true ;
+
+  if ( !strncmp ( tag, "application/x-goffice", 21 ) )
     return true ;
   return false ;
 }
