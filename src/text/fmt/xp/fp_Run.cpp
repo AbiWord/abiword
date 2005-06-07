@@ -1212,7 +1212,7 @@ void fp_Run::draw(dg_DrawArgs* pDA)
 	UT_return_if_fail(pView);
 	bool bShowRevs = pView->isShowRevisions();
 
-	UT_uint32 i2Du = pDA->pG->tlu(2);
+	UT_uint32 i2Du = pDA->pG->tlu(1); // changed this to 1 to fix various pixel dirt
 	
 	if(m_pRevisions && bShowRevs)
 	{
