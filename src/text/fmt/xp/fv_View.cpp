@@ -11130,6 +11130,12 @@ bool FV_View::isPointLegal(PT_DocPosition pos)
 	{
 	        return false;
 	}
+
+	if(!pBL->canContainPoint())
+	{
+		return false;
+	}
+	
 	bool bres = m_pDoc->getStruxOfTypeFromPosition(pos,PTX_Block,&prevSDH);
 	if(!bres)
 	{
