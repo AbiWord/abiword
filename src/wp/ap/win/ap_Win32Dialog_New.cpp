@@ -316,7 +316,8 @@ void AP_Win32Dialog_New::_setFileName( UT_sint32 nIndex )
 		}
 		templateName += "\\templates\\";
 		templateName += buf;
-		templateName += ".awt";
+		if(!strstr(buf, "normal.awt-")) // don't append awt to localized templates
+			templateName += ".awt";
 		setFileName(templateName.c_str());
 	}
 }
