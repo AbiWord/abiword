@@ -1115,7 +1115,7 @@ void IE_Imp_RTF::addFrame(RTFProps_FrameProps & frame)
 		if(bUseInsertNotAppend())
 		{
 			dOff = 0.05; // 0.1 inches
-			dOff += 0.2*static_cast<double>(UT_rand())/static_cast<double>(RAND_MAX);
+			dOff += 0.2*static_cast<double>(UT_rand())/static_cast<double>(UT_RAND_MAX);
 		}
 		double dV = dOff + static_cast<double>(frame.m_iLeftPos)/1440.0;
 		sV= UT_UTF8String_sprintf("%fin",dV);
