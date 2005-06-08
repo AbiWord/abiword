@@ -5272,6 +5272,8 @@ bool fl_ShadowListener::populateStrux(PL_StruxDocHandle sdh,
 				if(pNewAP)
 					pAP = pNewAP;
 			}
+
+			delete pRevisions;
 		}
 		
 		if (pAP)
@@ -5350,6 +5352,8 @@ bool fl_ShadowListener::populateStrux(PL_StruxDocHandle sdh,
 				if(pNewAP)
 					pAP = pNewAP;
 			}
+
+			delete pRevisions;
 		}
 		
 		if (pAP)

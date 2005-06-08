@@ -827,6 +827,7 @@ void PP_RevisionAttr::addRevision(UT_uint32 iId, PP_RevisionType eType,
 				// id, so if queried later we can work out if this
 				// whole fragment should in fact go
 
+				delete r;
 				m_vRev.deleteNthItem(i);
 
 				m_iSuperfluous = iId;
@@ -844,6 +845,7 @@ void PP_RevisionAttr::addRevision(UT_uint32 iId, PP_RevisionType eType,
 				// the case we need to reset m_iSuperfluous, since
 				// this fragment can no more be superfluous
 
+				delete r;
 				m_vRev.deleteNthItem(i);
 
 				if(m_iSuperfluous == iId)
@@ -860,6 +862,7 @@ void PP_RevisionAttr::addRevision(UT_uint32 iId, PP_RevisionType eType,
 				// the new, since the original action did not result
 				// in inserting new text
 
+				delete r;
 				m_vRev.deleteNthItem(i);
 
 				const PP_Revision * pRevision = new PP_Revision(iId, eType, (XML_Char*)0, (XML_Char*)0);
@@ -871,6 +874,7 @@ void PP_RevisionAttr::addRevision(UT_uint32 iId, PP_RevisionType eType,
 				// but now he just wants a format change, in this case
 				// we just replace the old revision with the new
 
+				delete r;
 				m_vRev.deleteNthItem(i);
 
 				const PP_Revision * pRevision = new PP_Revision(iId, eType, pProps, pAttrs);
@@ -933,6 +937,7 @@ void PP_RevisionAttr::removeRevisionIdWithType(UT_uint32 iId, PP_RevisionType eT
 
 		if((iId == r->getId()) && (eType == r->getType()))
 		{
+			delete r;
 			m_vRev.deleteNthItem(i);
 			m_bDirty = true;
 			m_pLastRevision = NULL;
@@ -952,6 +957,7 @@ void PP_RevisionAttr::removeRevisionIdTypeless(UT_uint32 iId)
 
 		if(iId == r->getId())
 		{
+			delete r;
 			m_vRev.deleteNthItem(i);
 			m_bDirty = true;
 			m_pLastRevision = NULL;
@@ -970,6 +976,7 @@ void PP_RevisionAttr::removeRevision(const PP_Revision * pRev)
 
 		if(r == pRev)
 		{
+			delete r;
 			m_vRev.deleteNthItem(i);
 			m_bDirty = true;
 			m_pLastRevision = NULL;
@@ -984,13 +991,36 @@ void PP_RevisionAttr::removeRevision(const PP_Revision * pRev)
 */
 void PP_RevisionAttr::removeAllLesserOrEqualIds(UT_uint32 iId)
 {
-	for(UT_uint32 i = 0; i < m_vRev.getItemCount(); i++)
+	for(UT_sint32 i = 0; i < (UT_sint32)m_vRev.getItemCount(); i++)
 	{
 		PP_Revision * r = (PP_Revision *)m_vRev.getNthItem(i);
 
 		if(iId >= r->getId())
 		{
+			delete r;
 			m_vRev.deleteNthItem(i);
+			--i; // the vector just shrunk
+		}
+	}
+
+	m_bDirty = true;
+	m_pLastRevision = NULL;
+}
+
+/*! removes all IDs from the attribute whose value is higher or
+    equal the given id
+*/
+void PP_RevisionAttr::removeAllHigherOrEqualIds(UT_uint32 iId)
+{
+	for(UT_sint32 i = 0; i < (UT_sint32)m_vRev.getItemCount(); i++)
+	{
+		PP_Revision * r = (PP_Revision *)m_vRev.getNthItem(i);
+
+		if(iId <= r->getId())
+		{
+			delete r;
+			m_vRev.deleteNthItem(i);
+			--i; // the vector just shrunk
 		}
 	}
 

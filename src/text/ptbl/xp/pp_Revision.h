@@ -140,6 +140,7 @@ class PP_RevisionAttr
 	void                  removeRevisionIdWithType(UT_uint32 iId, PP_RevisionType eType);
 	void                  removeRevisionIdTypeless(UT_uint32 iId);
 	void                  removeAllLesserOrEqualIds(UT_uint32 id);
+	void                  removeAllHigherOrEqualIds(UT_uint32 id);
 	void                  removeRevision(const PP_Revision * pRev);
 
 	const PP_Revision *   getGreatestLesserOrEqualRevision(UT_uint32 id,

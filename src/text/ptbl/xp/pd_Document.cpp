@@ -5423,7 +5423,6 @@ bool PD_Document::_acceptRejectRevision(bool bReject, UT_uint32 iStart, UT_uint3
 	ppAttr[2] = NULL;
 
 	const XML_Char ** ppProps = NULL, ** ppAttr2 = NULL;
-	bool bDeletePRev = false;
 	bool bRet = true;
 	UT_uint32 i;
 
@@ -5518,9 +5517,9 @@ bool PD_Document::_acceptRejectRevision(bool bReject, UT_uint32 iStart, UT_uint3
 
 				// need to set a new revision attribute
 				// first remove current revision from pRevAttr
-				RevAttr.removeRevision(pRev);
-				bDeletePRev = true;
-
+				RevAttr.removeAllHigherOrEqualIds(pRev->getId());
+				pRev = NULL;
+				
 				ppAttr[0] = rev;
 				ppAttr[1] = RevAttr.getXMLstring();
 				ppAttr[2] = NULL;
@@ -5536,9 +5535,6 @@ bool PD_Document::_acceptRejectRevision(bool bReject, UT_uint32 iStart, UT_uint3
 				else
 					bRet &= changeSpanFmt(PTC_AddFmt,iStart,iEnd,ppAttr,ppProps);
 
-				if(bDeletePRev)
-					delete pRev;
-				
 				return bRet;
 
 
@@ -5618,9 +5614,9 @@ bool PD_Document::_acceptRejectRevision(bool bReject, UT_uint32 iStart, UT_uint3
 				{
 					// need to set a new revision attribute
 					// first remove current revision from pRevAttr
-					RevAttr.removeRevision(pRev);
-					bDeletePRev = true;
-
+					RevAttr.removeAllHigherOrEqualIds(pRev->getId());
+					pRev = NULL;
+					
 					ppAttr2[2*i] = rev;
 					ppAttr2[2*i + 1] = RevAttr.getXMLstring();
 					ppAttr2[2*i + 2] = NULL;
@@ -5677,9 +5673,6 @@ bool PD_Document::_acceptRejectRevision(bool bReject, UT_uint32 iStart, UT_uint3
 				delete ppProps;
 				delete ppAttr2;
 
-				if(bDeletePRev)
-					delete pRev;
-				
 				return bRet;
 
 			default:
