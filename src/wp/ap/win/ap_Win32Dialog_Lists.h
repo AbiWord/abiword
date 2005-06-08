@@ -60,16 +60,20 @@ private:
 	// current selection of the drop-list combo boxes
 	int						_getTypeComboCurSel() const;
 	int						_getStyleComboCurSel() const;
+	int						_getFoldingComboCurSel() const;
 	void					_setTypeComboCurSel(int iSel);
 	void					_setStyleComboCurSel(int iSel);
+	void					_setFoldingComboCurSel(int iSel);
 
 	bool					_isNewListChecked() const;
 	bool					_isApplyToCurrentChecked() const;
 	bool					_isResumeListChecked() const;
 	void					_fillTypeList();
 	void					_fillStyleList(int iType);
+	void					_fillFoldingList();
 	void					_typeChanged();
 	void					_styleChanged();
+	void					_foldingChanged();
 	void					_resetCustomValues();
 	void					_enableCustomControls(bool bEnable = true);
 	void					_updateCaption();

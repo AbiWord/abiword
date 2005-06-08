@@ -166,7 +166,8 @@ BOOL AP_Win32Dialog_Lists::_onInitDialog(HWND hWnd, WPARAM wParam, LPARAM lParam
 		AP_RID_DIALOG_LIST_STATIC_PREVIEW		, AP_STRING_ID_DLG_Lists_Preview,
 		AP_RID_DIALOG_LIST_RADIO_START_NEW_LIST	, AP_STRING_ID_DLG_Lists_Start_New,
 		AP_RID_DIALOG_LIST_RADIO_APPLY_TO_CURRENT_LIST, AP_STRING_ID_DLG_Lists_Apply_Current,
-		AP_RID_DIALOG_LIST_RADIO_RESUME_PREV_LIST, AP_STRING_ID_DLG_Lists_Resume
+		AP_RID_DIALOG_LIST_RADIO_RESUME_PREV_LIST, AP_STRING_ID_DLG_Lists_Resume,
+		AP_RID_DIALOG_LIST_STATIC_FOLDING, AP_STRING_ID_DLG_Lists_FoldingLevelexp
 	};
 
 	for (i = 0; i < NrElements(rgMapping); ++i)
@@ -207,6 +208,8 @@ BOOL AP_Win32Dialog_Lists::_onInitDialog(HWND hWnd, WPARAM wParam, LPARAM lParam
 	m_pPreviewWidget->setPreview(getListsPreview());
 
 	_fillTypeList();
+	_fillFoldingList();
+	setFoldLevelInGUI();
 
 	// Creation and basic init done.
 	// Continue with loading up the state it should display.
@@ -225,13 +228,17 @@ BOOL AP_Win32Dialog_Lists::_onInitDialog(HWND hWnd, WPARAM wParam, LPARAM lParam
 
 void AP_Win32Dialog_Lists::setFoldLevelInGUI(void)
 {
-	UT_ASSERT_HARMLESS(0);
+	_setFoldingComboCurSel(getCurrentFold());
 }
 
 bool AP_Win32Dialog_Lists::isPageLists(void)
 {
-	UT_ASSERT_HARMLESS(0);
-	return true;
+	if(isModal())
+	{
+		return true;
+	}
+
+	return true;  //not optimal, but just return true for now to make list folding work
 }
 
 BOOL AP_Win32Dialog_Lists::_onCommand(HWND hWnd, WPARAM wParam, LPARAM lParam)
@@ -294,6 +301,14 @@ BOOL AP_Win32Dialog_Lists::_onCommand(HWND hWnd, WPARAM wParam, LPARAM lParam)
 		if (wNotifyCode == LBN_SELCHANGE)
 		{
 			_styleChanged();
+			return 1;
+		}
+		return 0;
+
+	case AP_RID_DIALOG_LIST_COMBO_FOLDING:
+		if (wNotifyCode == LBN_SELCHANGE)
+		{
+			_foldingChanged();
 			return 1;
 		}
 		return 0;
@@ -492,6 +507,7 @@ void AP_Win32Dialog_Lists::_enableControls(void)
 	// The "Set Default Values" button should only be enabled if
 	// we have a Type selected.
 	_win32Dialog.enableControl(AP_RID_DIALOG_LIST_BUTTON_DEFAULT, iType != 0);
+	_win32Dialog.enableControl(AP_RID_DIALOG_LIST_COMBO_FOLDING, iType != 0);
 }
 
 void AP_Win32Dialog_Lists::_onApply()
@@ -506,6 +522,7 @@ void AP_Win32Dialog_Lists::_onApply()
 	setbStartNewList(bStartNewList);
 	setbApplyToCurrent(bApplyToCurrent);
 	setbResumeList(bResumeList);
+	setCurrentFold(_getFoldingComboCurSel());
 
 	_getDisplayedData();
 	_previewExposed();
@@ -550,6 +567,11 @@ int AP_Win32Dialog_Lists::_getStyleComboCurSel() const
 	return _win32Dialog.getComboSelectedIndex(AP_RID_DIALOG_LIST_COMBO_STYLE);
 }
 
+int AP_Win32Dialog_Lists::_getFoldingComboCurSel() const
+{
+	return _win32Dialog.getComboSelectedIndex(AP_RID_DIALOG_LIST_COMBO_FOLDING);
+}
+
 void AP_Win32Dialog_Lists::_setTypeComboCurSel(int iSel)
 {
 	_win32Dialog.selectComboItem(AP_RID_DIALOG_LIST_COMBO_TYPE, iSel);
@@ -558,6 +580,11 @@ void AP_Win32Dialog_Lists::_setTypeComboCurSel(int iSel)
 void AP_Win32Dialog_Lists::_setStyleComboCurSel(int iSel)
 {
 	_win32Dialog.selectComboItem(AP_RID_DIALOG_LIST_COMBO_STYLE, iSel);
+}
+
+void AP_Win32Dialog_Lists::_setFoldingComboCurSel(int iSel)
+{
+	_win32Dialog.selectComboItem(AP_RID_DIALOG_LIST_COMBO_FOLDING, iSel);
 }
 
 bool AP_Win32Dialog_Lists::_isNewListChecked() const
@@ -693,6 +720,28 @@ void AP_Win32Dialog_Lists::_fillStyleList(int iType)
 	}
 }
 
+void AP_Win32Dialog_Lists::_fillFoldingList()
+{
+	const XAP_StringSet * pSS = m_pApp->getStringSet();
+
+	UT_return_if_fail (pSS);	// TODO: Would an error handler be more appropriate here?
+
+	static const XAP_String_Id rgIDs[] =
+	{
+		AP_STRING_ID_DLG_Lists_FoldingLevel0,
+		AP_STRING_ID_DLG_Lists_FoldingLevel1,
+		AP_STRING_ID_DLG_Lists_FoldingLevel2,
+		AP_STRING_ID_DLG_Lists_FoldingLevel3,
+		AP_STRING_ID_DLG_Lists_FoldingLevel4
+	};
+
+	for (int i = 0; i < NrElements(rgIDs); ++i)
+	{
+		_win32Dialog.addItemToCombo(AP_RID_DIALOG_LIST_COMBO_FOLDING,
+									pSS->getValue(rgIDs[i]));
+	}
+}
+
 void AP_Win32Dialog_Lists::_typeChanged()
 {
 	const int iType = _getTypeComboCurSel();
@@ -725,6 +774,12 @@ void AP_Win32Dialog_Lists::_styleChanged()
 	_enableControls();
 }
 
+void AP_Win32Dialog_Lists::_foldingChanged()
+{
+  	setDirty();
+	setFoldingLevelChanged(true);
+	_enableControls();
+}
 
 //
 // array of control IDs to enable/disable
