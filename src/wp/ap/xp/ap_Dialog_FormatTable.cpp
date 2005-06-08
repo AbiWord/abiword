@@ -612,6 +612,7 @@ void AP_Dialog_FormatTable::_createPreviewFromGC(GR_Graphics * gc,
 {
 	UT_return_if_fail (gc);
 
+	delete m_pFormatTablePreview;
 	m_pFormatTablePreview = new AP_FormatTable_preview(gc,this);
 	UT_return_if_fail (m_pFormatTablePreview);
 

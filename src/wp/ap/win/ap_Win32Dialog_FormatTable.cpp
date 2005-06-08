@@ -194,6 +194,7 @@ BOOL AP_Win32Dialog_FormatTable::_onInitDialog(HWND hWnd, WPARAM wParam, LPARAM 
 	HWND hwndChild = GetDlgItem(hWnd, AP_RID_DIALOG_FORMATTABLE_STATIC_PREVIEW);	
 	UT_return_val_if_fail (hwndChild,0);
 
+	delete m_pPreviewWidget;
 	m_pPreviewWidget = new XAP_Win32PreviewWidget(static_cast<XAP_Win32App *>(m_pApp),  hwndChild, 0);	
 	m_pPreviewWidget->getGraphics()->init3dColors();
 	m_pPreviewWidget->getWindowSize(&w,&h);
