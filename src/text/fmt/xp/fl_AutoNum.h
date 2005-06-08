@@ -120,7 +120,7 @@ public:
 	static char *				dec2ascii(UT_sint32 value, UT_uint32 offset);
 	static void					dec2hebrew(UT_UCSChar labelStr[], UT_uint32 * insPoint, UT_sint32 value);
 	const char **				getAttributes(void) ;
-
+	PL_StruxDocHandle                       getLastItemInHeiracy(void);
 protected:
 	void                        _setParent(fl_AutoNum * pParent);
 	void                        _setParentID(UT_uint32 iParentID);

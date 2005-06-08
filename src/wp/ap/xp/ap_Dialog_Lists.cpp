@@ -251,7 +251,7 @@ void AP_Dialog_Lists::Apply(void)
 		if(getView()->isSelectionEmpty() && pAuto)
 		{
 		      PL_StruxDocHandle sdhLow = pAuto->getFirstItem();
-		      PL_StruxDocHandle sdhHigh = pAuto->getLastItem();
+		      PL_StruxDocHandle sdhHigh = pAuto->getLastItemInHeiracy();
 		      posLow = getView()->getDocument()->getStruxPosition(sdhLow)+1;
 		      posHigh = getView()->getDocument()->getStruxPosition(sdhHigh)+1;
 		}

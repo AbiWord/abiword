@@ -910,6 +910,34 @@ const fl_AutoNum* fl_AutoNum::getAutoNumFromSdh(PL_StruxDocHandle sdh) const
 	return pAuto;
 }
 
+PL_StruxDocHandle fl_AutoNum::getLastItemInHeiracy(void)
+{
+       fl_AutoNum * pAuto = this;
+       PL_StruxDocHandle  pLastItem = NULL;
+       bool bLoop = true;
+       fl_AutoNum * pNext = NULL;
+       UT_uint32 numLists = m_pDoc->getListsCount();
+       UT_uint32 i=0;
+       while(bLoop)
+       {
+	     pLastItem = pAuto->getLastItem();
+	     for(i=0; i<numLists; i++)
+	     {
+	          pNext = m_pDoc->getNthList(i);
+		  if(pNext->isItem(pLastItem) && pNext->getLevel() > pAuto->getLevel())
+		  {
+		       pAuto = pNext;
+		       break;
+		  }
+	     }
+	     if(i >= numLists)
+	     {
+	           bLoop = false;
+	     }
+       }
+       return pLastItem;
+}
+
 const bool fl_AutoNum::isItem(PL_StruxDocHandle pItem) const
 {
 	if (m_pItems.findItem(const_cast<void *>(pItem)) == -1)
