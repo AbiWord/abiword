@@ -4221,7 +4221,7 @@ bool IE_Imp_RTF::TranslateKeywordID(RTF_KEYWORD_ID keywordID,
 		break;
 	case RTF_KW_footnote:
 		// can be both footnote and endnote ...
-// No pasting footnotes/endnotes in HdrFtrs
+// No pasting footnotes/endnotes in HdrFtrs or footnotes/endnotes
 		if(bUseInsertNotAppend())
 		{
 			XAP_Frame * pFrame = XAP_App::getApp()->getLastFocussedFrame();
@@ -4238,6 +4238,11 @@ bool IE_Imp_RTF::TranslateKeywordID(RTF_KEYWORD_ID keywordID,
 			}
 			if(pView->isHdrFtrEdit())
 			{
+				m_currentRTFState.m_destinationState = RTFStateStore::rdsSkip;
+				return true;
+			}
+			if(pView->isInFootnote(m_dposPaste) || pView->isInEndnote(m_dposPaste) )
+		    {
 				m_currentRTFState.m_destinationState = RTFStateStore::rdsSkip;
 				return true;
 			}
@@ -5163,6 +5168,11 @@ bool IE_Imp_RTF::HandleStarKeyword()
 							return true;
 						}
 						if(pView->isHdrFtrEdit())
+						{
+							m_currentRTFState.m_destinationState = RTFStateStore::rdsSkip;
+							return true;
+						}
+						if(pView->isInFootnote(m_dposPaste) || pView->isInEndnote(m_dposPaste) )
 						{
 							m_currentRTFState.m_destinationState = RTFStateStore::rdsSkip;
 							return true;

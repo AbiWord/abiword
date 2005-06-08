@@ -807,9 +807,11 @@ void fp_Page::getScreenOffsets(fp_Container* pContainer, UT_sint32& xoff, UT_sin
 	    return;
 	}
 	m_pView->getPageScreenOffsets(this, xoff, yoff);
-
-	xoff += pContainer->getX();
-	yoff += pContainer->getY();
+	if(pContainer)
+        {
+	    xoff += pContainer->getX();
+	    yoff += pContainer->getY();
+	}
 }
 
 fp_Page* fp_Page::getNext(void) const
