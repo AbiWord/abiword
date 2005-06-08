@@ -919,8 +919,10 @@ RTFProps_bParaProps::~RTFProps_bParaProps(void)
 
 
 // Font table items
-RTFFontTableItem::RTFFontTableItem(FontFamilyEnum fontFamily, int charSet, int codepage, FontPitch pitch,
-									unsigned char* panose, char* pFontName, char* pAlternativeFontName)
+RTFFontTableItem::RTFFontTableItem(FontFamilyEnum fontFamily, int charSet, 
+                                   int codepage, FontPitch pitch,
+                                   unsigned char* panose, char*
+                                   pFontName, char* pAlternativeFontName)
 {
 	m_family = fontFamily;
 	m_charSet = charSet;
@@ -7925,7 +7927,7 @@ bool IE_Imp_RTF::ReadOneFontFromTable(bool bNested)
 {
 	unsigned char keyword[MAX_KEYWORD_LEN];
 	unsigned char ch;
-    UT_sint32 parameter = 0;
+	UT_sint32 parameter = 0;
 	bool paramUsed = false;
 
 	int nesting = 0;
@@ -7938,8 +7940,7 @@ bool IE_Imp_RTF::ReadOneFontFromTable(bool bNested)
 	int codepage = 0;
 	unsigned char panose[10];
 	memset(panose, 0, sizeof(unsigned char));
-	char* pFontName = NULL;
-	char* pAlternativeFontName = NULL;
+	UT_String sFontNames[2]; // Font name and alternative font name
 	RTFTokenType tokenType;
 
 	//TODO - this should be intialized once for the whole RTF reader.
@@ -7993,8 +7994,12 @@ bool IE_Imp_RTF::ReadOneFontFromTable(bool bNested)
 			fontFamily = RTFFontTableItem::ffNone;
 		}
 	}
-	// Now (possibly) comes some optional keyword before the fontname
-	while (tokenType != RTF_TOKEN_DATA || nesting > 0)
+
+	
+	// Loop through the rest of the font definition, calling out to
+	// ReadFontName() to read the font names.
+	nesting=1; // We should have had a "{" at the start of the font definition.
+	while (nesting > 0)
 	{
     	tokenType = NextToken(keyword,&parameter,&paramUsed,MAX_KEYWORD_LEN,true);
 		switch (tokenType)
@@ -8005,7 +8010,11 @@ bool IE_Imp_RTF::ReadOneFontFromTable(bool bNested)
 		case RTF_TOKEN_CLOSE_BRACE:
 			nesting --;
 			break;
+		// Data indicates the start of the font name.
 		case RTF_TOKEN_DATA:
+			SkipBackChar(keyword[0]);  // Data can only be one byte, right?
+			if (!ReadFontName(sFontNames))
+				return false;
 			break;
 		case RTF_TOKEN_KEYWORD:
 			pValue = const_cast<int*>(static_cast<const int*>(keywordMap.pick(reinterpret_cast<char*>(&keyword[0]))));
@@ -8057,81 +8066,66 @@ bool IE_Imp_RTF::ReadOneFontFromTable(bool bNested)
 			{
 				charSet = parameter;
 			}
+			// Escaped hex is really data, so this should be the start of the
+			// font name.
+			if (strcmp(reinterpret_cast<char*>(&keyword[0]),"'") == 0) {
+				SkipBackChar('\'');
+				SkipBackChar('\\');
+				if (!ReadFontName(sFontNames))
+					return false;
+			}
 			break;
 		default:
 			//TODO: handle errors
 			break;
 		}
 	}
-	if (nesting == -1)
-	{
-		UT_DEBUGMSG(("RTF: Font name not found in font definition %d",fontIndex));
-	}
-	// Now comes the font name, terminated by either a close brace or a slash or a semi-colon
-	ch = keyword[0];
-	int count = 0;
-	/*
-	    FIXME: CJK font names come in form \'aa\'cd\'ef - so we have to
-	    parse \'HH correctly (currently we ignore them!) - VH
-	*/
-	while ( ch != '}'  &&  ch != '\\'  &&  ch != ';' && ch!= '{')
-	{
-		keyword[count++] = ch;
-		if (!ReadCharFromFile(&ch))
-		{
-			return false;
-		}
-	}
-	if (ch=='{')
-	{
-		++nesting;
-	}
 
-	keyword[count] = 0;
 #ifndef XP_TARGET_COCOA
 	/*work around "helvetica" font name -replace it with "Helvetic"*/
-	if (!UT_stricmp(reinterpret_cast<char*>(&keyword[0]),"helvetica"))
+	if (sFontNames[0] == "helvetica")
 	{
-		strcpy(reinterpret_cast<char*>(&keyword[0]),"Helvetic");
+		sFontNames[0] = "Helvetica";
 	}
 #endif /* ! XP_TARGET_COCOA */
 
-	if (!UT_cloneString(pFontName, reinterpret_cast<char*>(&keyword[0])))
+	// Clone/convert the font name and the alternative font name. If none was
+	// specified in the font entry then we want to pass NULL to
+	// RTFFontTableItem() below, rather than a zero length string.
+	char *fn[2];
+	for (UT_sint32 i=0; i<2; i++) 
 	{
-		// TODO outofmem
-	}
-	for (int i=0; i <= nesting; ++i)
-	{
-		// Munch the remaining control words down to the close brace
-		while (ch != '}')
+		fn[i] = NULL;
+		if (sFontNames[i].length()) 
 		{
-			if (ch == ';' && !bNested && (i == nesting))
+			// If the document specified a character encoding then convert to UTF8.
+			// If not then we just have to hope it was in ASCII/UTF8.
+			if (m_szDefaultEncoding) 
 			{
-				break; // Cocoa RTF: {\fonttbl\f0\fnil\fcharset78 HiraKakuPro-W3;\f1\fnil\fcharset102 STXihei;}
+				fn[i] = UT_convert(sFontNames[i].c_str(),sFontNames[i].length(),
+				                   m_szDefaultEncoding, "UTF-8", NULL, NULL);
 			}
-			if (!ReadCharFromFile(&ch))
+			else 
 			{
+				// UT_cloneString returns NULL in fn if the 2nd argument is zero
+				// length or we ran out of memory. However, we known that
+				// sFontName is not zero length so fn==NULL indicates OOM.
+				UT_cloneString(fn[i], sFontNames[i].c_str());
+			}
+			// Catch errors.
+			if (!fn[i]) 
+			{
+				UT_DEBUGMSG(("RTF: Out of memory or charset conversion error "
+				             "parsing font table.\n"));
 				return false;
-			}
-			if (ch=='{')
-			{
-				++nesting;
-			}
-		}
-		if (nesting>0 && i!=nesting) //we need to skip '}' we've just seen.
-		{
-			if (!ReadCharFromFile(&ch))
-			{
-				return false;
-			}
+			} 
 		}
 	}
-
+	
 	// Create the font entry and put it into the font table
 	RTFFontTableItem* pNewFont = new RTFFontTableItem(fontFamily, charSet,
-													  codepage, pitch,
-													  panose, pFontName,
-													  pAlternativeFontName);
+													  codepage, pitch, panose,
+	                                                  fn[0], fn[1]);
 	if (pNewFont == NULL)
 	{
 		return false;
@@ -8153,7 +8147,8 @@ bool IE_Imp_RTF::ReadOneFontFromTable(bool bNested)
 	}
 	else
 	{
-		UT_DEBUGMSG (("RTF: font %d (named %s) already defined. Ignoring\n", fontIndex, pFontName));
+		UT_DEBUGMSG (("RTF: font %d (named %s) already defined. Ignoring\n",
+		              fontIndex, sFontNames[0].c_str()));
 		DELETEP (pNewFont);
 	}
 
@@ -8161,6 +8156,157 @@ bool IE_Imp_RTF::ReadOneFontFromTable(bool bNested)
 }
 
 
+/*
+ * Read the font name of the current font from the input stream.
+ * If present, also read the alternative font name. This should
+ * deal correctly with any commands embedded in the font name.
+
+ * Eg:
+ *     {\f18\fnil\fcharset134\fprq2{\*\panose 02010600030101010101}
+ *     \'cb\'ce\'cc\'e5{\*\falt SimSun};}
+ *
+ * or even:
+ *	   {\f20\froman Times New {\*\unknowncommand Fibble!}Roman;}
+ * 
+ * Returns: 
+ * 	The main font name is returned in sFontNames[0] and the alternative
+ *      font name in sFontNames[1].
+ */
+
+/* The state used while reading in the font name.
+ * iFontNum is the index of the font name that we are currently writing.
+ * Initially it's set to FontName. We switch it to point to AltFontName when we
+ * see a \falt command. When the group containing the \falt ends we pop the
+ * state of the stack and so this index reverts back to FontName.
+ */
+struct SFontNameState {
+	enum FontNum { MainFontName=0, AltFontName=1};
+	enum FontNum iFontNum;  // Are we reading main name or the alt name?
+	bool bSkipping;         // Are we skipping an unknown destination?
+};
+
+bool IE_Imp_RTF::ReadFontName(UT_String sFontNames[2])
+{
+	unsigned char keyword[MAX_KEYWORD_LEN];
+	RTFTokenType tokenType;
+	UT_sint32 parameter = 0;
+	bool paramUsed = false;
+	bool bSeenStar = false;  // Was the last keyword "\*"?	
+	UT_Stack stateStack;
+	// Allocate the initial state on the functions stack so that it gets
+	// automatically freed when the function returns. (If we used a "new"
+	// command then we'd need a delete before every return).
+	SFontNameState baseState; 
+	struct SFontNameState *currentState = &baseState;
+	struct SFontNameState *oldState;
+
+	// Initialise the current state.
+	currentState->iFontNum = SFontNameState::MainFontName; 
+	currentState->bSkipping = false; 
+
+	while (true)
+	{
+		// NB: This doesn't ignore whitespace.
+		tokenType = NextToken(keyword,&parameter,&paramUsed,MAX_KEYWORD_LEN,false);
+		switch (tokenType)
+		{
+		case RTF_TOKEN_OPEN_BRACE:
+			oldState = currentState;
+			// Push the current state onto the stack...
+			stateStack.push(reinterpret_cast<void*>(currentState));
+			// ...allocate a new one...
+			currentState = new SFontNameState;
+			if (!currentState) {
+				UT_DEBUGMSG(("RTF: Out of memory.\n"));
+				return false;
+			}
+			// ...and initialise it as a copy of the old one.
+			currentState->iFontNum = oldState->iFontNum;
+			currentState->bSkipping = oldState->bSkipping;
+			break;
+		case RTF_TOKEN_CLOSE_BRACE:
+			// Throw away the current state.
+			delete currentState;
+			// Pop an old state off the stack .
+			if (!stateStack.pop(reinterpret_cast<void**>(&currentState))) 
+			{
+				UT_DEBUGMSG(("RTF: Too many closing parenthesises in font table.\n"));
+				return false;
+			}
+			break;
+		case RTF_TOKEN_DATA:
+			// Are we skipping?
+			if (currentState->bSkipping)
+				break;
+			// We found the font name terminator.
+			if (keyword[0] == ';')
+			{
+				if (stateStack.getDepth()==0) 
+					return true;
+				else 
+				{
+					UT_DEBUGMSG(("RTF: Too many opening parenthesises in font table.\n"));
+					// Memory clean up: loop freeing everything left on the
+					// stack.
+					while (stateStack.getDepth() > 0)
+					{
+						stateStack.pop(reinterpret_cast<void**>(&currentState));
+						if (currentState)
+							delete currentState;	
+					}
+					return false;
+				}
+			}
+			// Other data must be one of the font names, so write it to the
+			// current font name pointer.
+			sFontNames[currentState->iFontNum] += keyword[0];	
+			break;
+		case RTF_TOKEN_KEYWORD:
+			// Are we skipping?
+			if (currentState->bSkipping)
+				break;
+
+			// Handle hex escaped data.
+			if (strcmp(reinterpret_cast<char*>(&keyword[0]),"'") == 0)
+			{
+				UT_Byte ch;
+				// TODO: ReadHexChar() doesn't do any validation of the input
+				// file. Also, escaped hex can only be one byte so the
+				// UT_UCS4Char return type doesn't make much sense.
+				ch = static_cast<UT_Byte>(ReadHexChar());
+				sFontNames[currentState->iFontNum] += ch;	
+				break;  // Break out after handling keyword.
+			}
+			// Handle the "*" keyword.
+			if (strcmp(reinterpret_cast<char*>(&keyword[0]),"*") == 0)
+			{
+				bSeenStar = true;
+				break;  // Break out after handling keyword.
+			}
+			// Handle "\falt" keyword.
+			if (strcmp(reinterpret_cast<char*>(&keyword[0]),"falt") == 0)
+			{
+				// Change the font name index so that data will be written to
+				// the alternative fontname.
+				currentState->iFontNum = SFontNameState::AltFontName;
+				break;
+			}
+
+			// If we get here then this is an unknown keyword.
+			if (bSeenStar) 
+			{
+				bSeenStar = false;
+				currentState->bSkipping = true;
+			}
+			break;
+		case RTF_TOKEN_NONE:
+			UT_DEBUGMSG(("Premature end of file reading font table.\n"));
+			return false;
+		default:
+			break;
+		} // switch
+	}; // while
+}
 
 
 //////////////////////////////////////////////////////////////////////////////
@@ -11031,3 +11177,5 @@ void IE_Imp_RTF::setEncoding() {
 		m_mbtowc.setInCharset(m_szDefaultEncoding);
 	}
 }
+
+

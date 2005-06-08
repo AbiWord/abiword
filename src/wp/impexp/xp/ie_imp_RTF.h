@@ -612,6 +612,7 @@ private:
 	bool ReadColourTable();
 	bool ReadFontTable();
 	bool ReadOneFontFromTable(bool bNested);
+	bool ReadFontName(UT_String sFontNames[2]);
 	bool ReadRevisionTable();
 	void setEncoding();  
 public:
