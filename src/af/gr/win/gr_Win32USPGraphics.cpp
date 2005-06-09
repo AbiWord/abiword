@@ -1158,7 +1158,7 @@ void GR_Win32USPGraphics::prepareToRenderChars(GR_RenderInfo & ri)
 	UT_uint32 iPoints = (UT_uint32)pFont->getPointSize();
 #endif
 	
-	if(iZoom == RI.m_iZoom && RI.s_pOwnerDraw == & ri && pFont->getPrintDC() != getPrintDC())
+	if(iZoom == RI.m_iZoom && RI.s_pOwnerDraw == & ri && pFont->getPrintDC() == getPrintDC())
 	{
 		// the buffer is up-to-date
 		return;
@@ -1455,7 +1455,8 @@ void GR_Win32USPGraphics::measureRenderedCharWidths(GR_RenderInfo & ri)
 	// store the print DC used to measure the font in the font ...
 	pFont->setPrintDC(getPrintDC());
 	
-	HDC hdc = 0;
+	HDC hdc = 0; // this is the hdc to use if all fails
+	HDC hdc1 = 0; // this is the hdc to use in the first pass (null if we have script cache)
 	if(*(pFont->getScriptCache()) == NULL)
 	{
 		// need to make sure that the HDC has the correct font set
@@ -1470,10 +1471,12 @@ void GR_Win32USPGraphics::measureRenderedCharWidths(GR_RenderInfo & ri)
 
 		// we remember the hdc for which we measured so we can remeasure when hdc changes
 		RI.m_hdc = hdc;
+		hdc1 = hdc;
 	}
 	else
 	{
 		hdc = pFont->getPrintDC() ? pFont->getPrintDC() : m_hdc;
+		hdc1 = 0;
 		RI.m_hdc = hdc;
 	}
 	
@@ -1484,13 +1487,12 @@ void GR_Win32USPGraphics::measureRenderedCharWidths(GR_RenderInfo & ri)
 	if(RI.m_bShapingFailed)
 		pItem->m_si.a.eScript = GRScriptType_Undefined;
 	
-	HRESULT hRes = fScriptPlace(hdc, pFont->getScriptCache(), RI.m_pIndices,
+	HRESULT hRes = fScriptPlace(hdc1, pFont->getScriptCache(), RI.m_pIndices,
 								RI.m_iIndicesCount, RI.m_pVisAttr,
 								& pItem->m_si.a, RI.m_pAdvances, RI.m_pGoffsets, & RI.m_ABC);
 
 	if( hRes == E_PENDING)
 	{
-		UT_ASSERT_HARMLESS( hdc == 0 );
 		_setupFontOnDC(pFont, false);
 		bFontSetUpOnDC = true;
 		
