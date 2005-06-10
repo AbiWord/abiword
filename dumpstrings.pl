@@ -97,7 +97,7 @@ my $dlg_count = keys %dlgs;
 foreach my $lang (@lang) {
   warn("$lang: $missing{$lang}\n");
   my $percent = sprintf("%3d%", 100 - ($missing{$lang} / $dlg_count) * 100, $missing{$lang}, $dlg_count);
-  push ( @td, td( [ b($lang) , $percent ]),"\n");
+  push ( @td, td( [ b( ($lang =~ "en-US" ? $lang : a({href=>"http://www.abisource.com/dev/strings/".$lang.".po"},$lang))) , $percent ]),"\n");
 }
 print
   table({ border => 1, cellspacing => 0 }, Tr( [ th(['Language', 'Percent Complete']), @td ] )),"\n";
