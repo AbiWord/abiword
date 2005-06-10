@@ -18,7 +18,7 @@ echo ""
 ./abi-extract.pl -N it-IT      
 ./abi-extract.pl -N pt-BR 
 ./abi-extract.pl -N zh-TW 
-./abi-extract.pl -N cy-CY 
+./abi-extract.pl -N cy-GB 
 ./abi-extract.pl -N fi-FI 
 ./abi-extract.pl -N lt-LT 
 ./abi-extract.pl -N pt-PT 
@@ -50,7 +50,7 @@ echo ""
 ./update.pl it-IT      
 ./update.pl pt-BR 
 ./update.pl zh-TW 
-./update.pl cy-CY 
+./update.pl cy-GB 
 ./update.pl fi-FI 
 ./update.pl lt-LT 
 ./update.pl pt-PT 
