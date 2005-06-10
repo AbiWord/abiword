@@ -100,10 +100,10 @@ foreach my $lang (@lang) {
   push ( @td, td( [ b($lang) , $percent ]),"\n");
 }
 print
-  table({ border => 1, cellspacing => 0 }, Tr( [ th(['Lang', 'Percent Complete']), @td ] )),"\n";
+  table({ border => 1, cellspacing => 0 }, Tr( [ th(['Language', 'Percent Complete']), @td ] )),"\n";
 
 print "<p/>\n";
-print "<p>This table was last generated at ";
+print "<p>This table was last generated <br/>at ";
 &PrintTime;
 print "</p>\n";
 
