@@ -28,6 +28,8 @@
 typedef UT_sint32 IEMergeType;
 #define IEMT_Unknown ((IEMergeType)-1)
 
+class IE_MailMerge;
+
 class ABI_EXPORT IE_MergeSniffer : public UT_AbiObject
 {
   friend class IE_MailMerge;
