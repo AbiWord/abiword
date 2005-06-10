@@ -6,7 +6,7 @@ msgid ""
 msgstr ""
 "Project-Id-Version: abiword\n"
 "Report-Msgid-Bugs-To: \n"
-"POT-Creation-Date: 2005-06-06 20:08+0200\n"
+"POT-Creation-Date: 2005-06-10 22:24+0200\n"
 "PO-Revision-Date: 2001-03-04 23:50+0100\n"
 "Last-Translator: Görkem Çetin <gorkem@gelecek.com.tr>\n"
 "Language-Team: Turkish <gnome-turk@gnome.org>\n"
@@ -44,7 +44,7 @@ msgstr " "
 msgid ""
 " - Reserved. \n"
 " You cannot use this name. Choose Another \n"
-msgstr " - kullanýlamaz. x0a; Lütfen baþka ad seçin x0a;"
+msgstr ""
 
 #. DLG_WordCount_Auto_Update
 #: po/tmp/ap_String_Id.h.h:27
