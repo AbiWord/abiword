@@ -103,7 +103,7 @@ print
   table({ border => 1, cellspacing => 0 }, Tr( [ th(['Language', 'Status']), @td ] )),"\n";
 
 print "<p/>\n";
-print "<p>This table was last generated <br/>at ";
+print "Last generated at<br/>";
 &PrintTime;
-print "</p>\n";
+print "\n";
 
