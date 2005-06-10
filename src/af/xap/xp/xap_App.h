@@ -232,7 +232,7 @@ public:
 	GR_Graphics *              newGraphics(GR_AllocInfo &ai) const;
 	                           /*secondary graphics allocator; use only in special cases */
 	GR_Graphics *              newGraphics(UT_uint32 iClassId, GR_AllocInfo &ai) const;
-	virtual GR_Graphics *      newDefaultScreenGraphics() const {UT_ASSERT_HARMLESS( UT_NOT_IMPLEMENTED ); return NULL;}
+	virtual GR_Graphics *      newDefaultScreenGraphics() const = 0;
 	
 	virtual UT_sint32			setInputMode(const char * szName);
 	const char *				getInputMode() const;
