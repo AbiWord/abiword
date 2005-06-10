@@ -100,7 +100,7 @@ foreach my $lang (@lang) {
   push ( @td, td( [ b( ($lang =~ "en-US" ? $lang : a({href=>"http://www.abisource.com/dev/strings/".$lang.".po"},$lang))) , $percent ]),"\n");
 }
 print
-  table({ border => 1, cellspacing => 0 }, Tr( [ th(['Language', 'Percent Complete']), @td ] )),"\n";
+  table({ border => 1, cellspacing => 0 }, Tr( [ th(['Language', 'Status']), @td ] )),"\n";
 
 print "<p/>\n";
 print "<p>This table was last generated <br/>at ";
