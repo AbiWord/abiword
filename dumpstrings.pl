@@ -103,5 +103,7 @@ print
   table({ border => 1, cellspacing => 0 }, Tr( [ th(['Lang', 'Percent Complete']), @td ] )),"\n";
 
 print "<p/>\n";
-print "This table was last generated at ";
+print "<p>This table was last generated at ";
 &PrintTime;
+print "</p>\n";
+
