@@ -65,5 +65,6 @@ typedef UT_sint32 IEGraphicFileType;
 #define IE_IMPEXPNAME_PHTML		"AbiWord::HTML (XHTML+PHP)"
 #define IE_IMPEXPNAME_MHTML		"AbiWord::HTML/multipart"
 #define IE_IMPEXPNAME_MATHML    "AbiWord::MathML"
+#define IE_IMPEXPNAME_GOCHART   "AbiWord::GNOME Office Chart"
 
 #endif /* IE_TYPES_H */
