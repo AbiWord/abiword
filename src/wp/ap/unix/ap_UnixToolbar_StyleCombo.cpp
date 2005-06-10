@@ -31,7 +31,13 @@
 #include "ev_UnixToolbar.h"
 #include "ut_debugmsg.h"
 
+
 /*****************************************************************/
+
+int sort_cb(gconstpointer a, gconstpointer b)
+{
+	return UT_XML_strcmp((const XML_Char*)a, (const XML_Char*)b);
+}
 
 EV_Toolbar_Control * AP_UnixToolbar_StyleCombo::static_constructor(EV_Toolbar * pToolbar,
 														  XAP_Toolbar_Id id)
@@ -132,6 +138,7 @@ bool AP_UnixToolbar_StyleCombo::repopulate(void)
 
 	const char * szName;
 	PD_Style * pStyle;
+	GSList *list = NULL;
 
 	for (UT_uint32 k=0; (pDocument->enumStyles(k,&szName,const_cast<const PD_Style**>(&pStyle))); k++)
 	{
@@ -142,11 +149,27 @@ bool AP_UnixToolbar_StyleCombo::repopulate(void)
 		if (pStyle->isList())
 			continue;
 
-		m_vecContents.addItem(szName);
+		list = g_slist_prepend (list, (char *)szName);
+
+		/* wysiwyg styles are disabled for now 
 		PangoFontDescription *desc = pango_font_description_copy (m_pDefaultDesc);
 		getPangoAttrs(pStyle, desc);
 		m_mapStyles.insert(szName, desc);
+		*/
 	}
+
+	// Ok, it's a bit hackish to put them in a list for sorting first
+	// but somehow the vector's qsort totally failed for me
+	if (list) 
+	{
+		list = g_slist_sort(list, (GCompareFunc)sort_cb);		
+		do 
+		{
+			m_vecContents.addItem((const char *)list->data);
+
+		} while (NULL != (list = g_slist_next(list)));
+	}		
+
 	return true;
 }
 
