@@ -5494,6 +5494,9 @@ bool PD_Document::_acceptRejectRevision(bool bReject, UT_uint32 iStart, UT_uint3
 					bRet = deleteSpan(iStart,iEndDelete,NULL,iRealDeleteCount);
 					_setMarkRevisions(bMark);
 
+					if(!bRet)
+						bDeleted = false;
+					
 					return bRet;
 				}
 					
@@ -5572,6 +5575,9 @@ bool PD_Document::_acceptRejectRevision(bool bReject, UT_uint32 iStart, UT_uint3
 					bRet = deleteSpan(iStart,iEndDelete,NULL,iRealDeleteCount);
 					_setMarkRevisions(bMark);
 
+					if(!bRet)
+						bDeleted = false;
+					
 					return bRet;
 				}
 					
