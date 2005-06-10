@@ -102,7 +102,7 @@ foreach my $lang (@lang) {
 print
   table({ border => 1, cellspacing => 0 }, Tr( [ th(['Language', 'Status']), @td ] )),"\n";
 
-print "<p/>\n";
+print "<br/>\n";
 print "Last generated at<br/>";
 &PrintTime;
 print "\n";
