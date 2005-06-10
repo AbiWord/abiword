@@ -1159,7 +1159,6 @@ const XAP_LangInfo* XAP_EncodingManager::findLangInfo(const char* key,XAP_LangIn
 bool XAP_EncodingManager::swap_utos = false;
 bool XAP_EncodingManager::swap_stou = false;
 
-UT_Bijection XAP_EncodingManager::cjk_word_fontname_mapping;
 UT_Bijection XAP_EncodingManager::fontsizes_mapping;
 
 void XAP_EncodingManager::initialize()
@@ -1310,13 +1309,6 @@ void XAP_EncodingManager::initialize()
 		TexPrologue = len ? UT_strdup(buf)  : " ";
 	    };
 	}
-	if (cjk_locale()) {
-	    /* load fontname mapping */
-	    UT_Bijection::pair_data* data = (UT_Bijection::pair_data* )search_rmap_with_opt_suffix(
-		    cjk_word_fontname_mapping_data,SEARCH_PARAMS);
-	    if (data)
-			cjk_word_fontname_mapping.add(data);
-	};
 	{
 	    fontsizes_mapping.clear();
 	    const char** fontsizes = cjk_locale() ? cjk_fontsizes : non_cjk_fontsizes;

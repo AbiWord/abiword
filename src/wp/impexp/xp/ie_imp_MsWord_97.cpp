@@ -4977,22 +4977,6 @@ void IE_Imp_MsWord_97::_generateCharProps(UT_String &s, const CHP * achp, wvPars
 	else
 	{
 		fname = wvGetFontnameFromCode(&ps->fonts, achp->ftcFE);
-
-		if (strlen (fname) > 6)
-			fname[6] = '\0';
-
-		const char *f=XAP_EncodingManager::cjk_word_fontname_mapping.lookupByTarget(fname);
-
-		if (f == fname)
-		{
-			FREEP (fname);
-			fname = UT_strdup ("song");
-		}
-		else
-		{
-			FREEP (fname);
-			fname = UT_strdup (f ? f : "helvetic");
-		}
 	}
 
 	// there are times when we should use the third, Other font,
