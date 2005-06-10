@@ -221,10 +221,6 @@ msgstr "接續本頁(&T)"
 msgid "&Even page"
 msgstr "自下個偶數頁起(&E)"
 
-#: DLG_Break_Insert
-msgid "Insert"
-msgstr "插入"
-
 #: DLG_Break_NextPage
 msgid "&Next page"
 msgstr "下一頁(&N)"
@@ -657,10 +653,6 @@ msgstr "新清單 \n類型"
 msgid "Numbered List"
 msgstr "項目編號清單"
 
-#: DLG_Lists_Preview
-msgid "Preview"
-msgstr "預覽"
-
 #: DLG_Lists_Resume
 msgid "Attach to Previous List"
 msgstr "連結至上一個清單"
@@ -686,10 +678,6 @@ msgid "Start At:"
 msgstr "起始編號:"
 
 #: DLG_Lists_Start_New
-msgid "Start New List"
-msgstr "開始新清單"
-
-#: DLG_Lists_Start_New_List
 msgid "Start New List"
 msgstr "開始新清單"
 
@@ -800,10 +788,6 @@ msgstr "目錄 '%s' 有防寫保護。"
 #: DLG_OK
 msgid "OK"
 msgstr "確定"
-
-#: DLG_Options_Btn_Apply
-msgid "Apply"
-msgstr "套用"
 
 #: DLG_Options_Btn_CustomDict
 msgid "&Dictionary..."
@@ -1069,10 +1053,6 @@ msgstr "雜項"
 msgid "Other"
 msgstr "其他"
 
-#: DLG_Options_TabLabel_Preferences
-msgid "Preference Schemes"
-msgstr "偏好設定方案"
- 
 #: DLG_Options_TabLabel_Spelling
 msgid "Spelling"
 msgstr "拼字檢查"
@@ -1165,10 +1145,6 @@ msgstr "靠左"
 msgid "Position:"
 msgstr "位置:"
 
-#: DLG_PageNumbers_Preview
-msgid "Preview"
-msgstr "預覽"
-
 #: DLG_PageNumbers_Right
 msgid "Right"
 msgstr "靠右"
@@ -1213,10 +1189,6 @@ msgstr "邊界(&M)"
 msgid "Orientation..."
 msgstr "列印方向..."
 
-#: DLG_PageSetup_Page
-msgid "Page"
-msgstr "紙張"
-
 #: DLG_PageSetup_Paper
 msgid "Paper..."
 msgstr "紙張..."
@@ -1249,10 +1221,6 @@ msgstr "版面設定"
 msgid "&Top:"
 msgstr "上(&T):"
 
-#: DLG_PageSetup_Units
-msgid "&Units:"
-msgstr "單位(&U):"
-
 #: DLG_PageSetup_Width
 msgid "&Width:"
 msgstr "頁寬(&W):"
@@ -1264,14 +1232,6 @@ msgstr "置中對齊"
 #: DLG_Para_AlignJustified
 msgid "Justified"
 msgstr "左右對齊"
-
-#: DLG_Para_AlignLeft
-msgid "Left"
-msgstr "靠左對齊"
-
-#: DLG_Para_AlignRight
-msgid "Right"
-msgstr "靠右對齊"
 
 #: DLG_Para_ButtonTabs
 msgid "&Tabs..."
@@ -1305,10 +1265,6 @@ msgstr "位移點數(&Y):"
 msgid "Indentation"
 msgstr "縮排"
 
-#: DLG_Para_LabelLeft
-msgid "&Left:"
-msgstr "左(&L):"
-
 #: DLG_Para_LabelLineSpacing
 msgid "Li&ne spacing:"
 msgstr "行距(&N):"
@@ -1316,14 +1272,6 @@ msgstr "行距(&N):"
 #: DLG_Para_LabelPagination
 msgid "Pagination"
 msgstr "分頁"
-
-#: DLG_Para_LabelPreview
-msgid "Preview"
-msgstr "預覽"
-
-#: DLG_Para_LabelRight
-msgid "&Right:"
-msgstr "右(&R):"
 
 #: DLG_Para_LabelSpacing
 msgid "Spacing"
@@ -1465,10 +1413,6 @@ msgstr "全部略過(&G)"
 msgid "(no spelling suggestions)"
 msgstr "(無拼字建議)"
 
-#: DLG_Spell_SpellTitle
-msgid "Spelling"
-msgstr "拼字檢查"
-
 #: DLG_Spell_Suggestions
 msgid "Sugg&estions:"
 msgstr "建議(&E)"
@@ -1489,17 +1433,9 @@ msgstr "字元預覽"
 msgid "Current Settings"
 msgstr "目前設定"
 
-#: DLG_Styles_DefNone
-msgid "None"
-msgstr "無"
-
 #: DLG_Styles_Delete
 msgid "Delete"
 msgstr "刪除"
-
-#: DLG_Styles_Description
-msgid "Description"
-msgstr "描述"
 
 #: DLG_Styles_ErrBlankName
 msgid "Style name cannot be left blank"
@@ -1565,10 +1501,6 @@ msgstr "根據樣式:"
 msgid "Character"
 msgstr "字元"
 
-#: DLG_Styles_ModifyDescription
-msgid "Description"
-msgstr "敘述"
-
 #: DLG_Styles_ModifyFollowing
 msgid "Style for following paragraph"
 msgstr "下一段的樣式"
@@ -1592,10 +1524,6 @@ msgstr "樣式名稱:"
 #: DLG_Styles_ModifyNumbering
 msgid "Numbering"
 msgstr "項目編號"
-
-#: DLG_Styles_ModifyParagraph
-msgid "Paragraph"
-msgstr "段落"
 
 #: DLG_Styles_ModifyPreview
 msgid "Preview"

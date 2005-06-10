@@ -8,7 +8,7 @@ msgid ""
 msgstr ""
 "Project-Id-Version: AbiWord 2.0\n"
 "Report-Msgid-Bugs-To: \n"
-"POT-Creation-Date: 2005-06-10 22:22+0200\n"
+"POT-Creation-Date: 2005-06-10 22:42+0200\n"
 "PO-Revision-Date: 2003-09-13 00:30+0300\n"
 "Last-Translator: Mantas Kriaučiūnas <mantas@akl.lt>\n"
 "Language-Team: Lithuanian <komp_lt@konferencijos.lt>\n"
@@ -5834,61 +5834,64 @@ msgid ""
 "see text from your document used in this preview, position your cursor in a "
 "document paragraph with some text in it and open this dialog."
 msgstr ""
-"Ši pastraipa vaizduoja žodžius, kaip jie galėtų atrodyti tavo dokumente.  "
-"Kad šioje peržiūroje pamatytum tekstą iš savo dokumento, nuvesk žymeklį į "
-"dokumento pastraipa su tekstu, ir tada atidaryk šį dialogą."
 
 #. DLG_Styles_ErrStyleNot
 #: po/tmp/ap_String_Id.h.h:2395
+#, fuzzy
 msgid ""
 "This style does not exist \n"
 " so it cannot be modified"
 msgstr ""
-"Šis stilius neegzistuoja \n"
-"taigi jis negali būti modifikuojamas"
+"Nepasirinktas joks stilius, \n"
+"todėl jis negali būti modifikuojamas"
 
 #. DLG_Column_Three
 #: po/tmp/ap_String_Id.h.h:2397
 msgid "Three"
-msgstr "Trys"
+msgstr ""
 
 #. DLG_Lists_Tick_List
 #. STYLE_TICKLIST
 #: po/tmp/ap_String_Id.h.h:2399 po/tmp/xap_String_Id.h.h:718
+#, fuzzy
 msgid "Tick List"
-msgstr "Varnelių sąrašas"
+msgstr "Arabiškas sąrašas"
 
 #. FIELD_DateTime_TimeZone
 #: po/tmp/ap_String_Id.h.h:2401
 msgid "Time Zone"
-msgstr "Laiko juosta"
+msgstr ""
 
 #. FIELD_Document_Title
 #: po/tmp/ap_String_Id.h.h:2403
+#, fuzzy
 msgid "Title"
-msgstr "Pavadinimas"
+msgstr "Lentelė"
 
 #. DLG_ToggleCase_TitleCase
 #: po/tmp/ap_String_Id.h.h:2405
+#, fuzzy
 msgid "Title Case"
-msgstr "Antraštinė"
+msgstr "Žodžio Pirma Didžioji"
 
 #. DLG_MetaData_Title_LBL
 #. DLG_Image_LblTitle
 #: po/tmp/ap_String_Id.h.h:2407 po/tmp/xap_String_Id.h.h:722
+#, fuzzy
 msgid "Title:"
-msgstr "Pavadinimas:"
+msgstr "Stilius:"
 
 #. DLG_Options_Label_Toolbars
 #: po/tmp/ap_String_Id.h.h:2409
+#, fuzzy
 msgid "Toolbars"
-msgstr "Įrankių juostos"
+msgstr "Mygtukų &juostas"
 
 #. TopMarginStatus
 #: po/tmp/ap_String_Id.h.h:2411
-#, c-format
+#, fuzzy, c-format
 msgid "Top Margin [%s]"
-msgstr "Viršutinė paraštė [%s]"
+msgstr "Apatinė paraštė [%s]"
 
 #. MENU_LABEL_FMT_TOPLINE
 #. TOOLBAR_LABEL_FMT_TOPLINE
@@ -5897,132 +5900,147 @@ msgstr "Viršutinė paraštė [%s]"
 #. DLG_UFS_ToplineCheck
 #: po/tmp/ap_String_Id.h.h:2416 po/tmp/xap_String_Id.h.h:728
 msgid "Topline"
-msgstr "Viršutinė linija"
+msgstr ""
 
 #. DLG_Lists_Triangle_List
 #. STYLE_TRIANGLELIST
 #: po/tmp/ap_String_Id.h.h:2418 po/tmp/xap_String_Id.h.h:730
+#, fuzzy
 msgid "Triangle List"
-msgstr "Trikampių sąrašas"
+msgstr "Rombų sąrašas"
 
 #. DLG_Column_Two
 #: po/tmp/ap_String_Id.h.h:2420
 msgid "Two"
-msgstr "Dvi"
+msgstr ""
 
 #. FIELD_Document_Type
 #: po/tmp/ap_String_Id.h.h:2422
+#, fuzzy
 msgid "Type"
-msgstr "Tipas"
+msgstr "&Tipai"
 
 #. DLG_InsertBookmark_Msg
 #: po/tmp/ap_String_Id.h.h:2424
 msgid "Type a name for the bookmark, or select an existing from the list."
-msgstr "Įvesk žymelės pavadinimą, arba pasirink iš sąrašo."
+msgstr ""
 
 #. DLG_Lists_Type
 #: po/tmp/ap_String_Id.h.h:2426
+#, fuzzy
 msgid "Type:"
-msgstr "Tipas:"
+msgstr "&Tipai:"
 
 #. DLG_ToggleCase_UpperCase
 #: po/tmp/ap_String_Id.h.h:2428
 msgid "UPPERCASE"
-msgstr "DIDŽIOSIOMIS"
+msgstr ""
 
 #. TOOLBAR_LABEL_FMT_UNDERLINE
 #. TOOLBAR_STATUSLINE_FMT_UNDERLINE
 #. TOOLBAR_TOOLTIP_FMT_UNDERLINE
 #. DLG_UFS_UnderlineCheck
 #: po/tmp/ap_String_Id.h.h:2432 po/tmp/xap_String_Id.h.h:750
+#, fuzzy
 msgid "Underline"
-msgstr "Pabrauktas"
+msgstr "Pabra&uktas"
 
 #. MENU_STATUSLINE_FMT_UNDERLINE
 #: po/tmp/ap_String_Id.h.h:2434
+#, fuzzy
 msgid "Underline the selection (toggle)"
-msgstr "Pabraukti pažymėjimą (perjungti)"
+msgstr "Pabraukti liniją virš pažymėto fragmento (perjungti)"
 
 #. TOOLBAR_LABEL_EDIT_UNDO
 #: po/tmp/ap_String_Id.h.h:2436
+#, fuzzy
 msgid "Undo"
-msgstr "Atšaukti"
+msgstr "&Atšaukti"
 
 #. MENU_STATUSLINE_EDIT_UNDO
 #. TOOLBAR_STATUSLINE_EDIT_UNDO
 #. TOOLBAR_TOOLTIP_EDIT_UNDO
 #: po/tmp/ap_String_Id.h.h:2440
+#, fuzzy
 msgid "Undo editing"
-msgstr "Atšaukti taisymą"
+msgstr "Pakartoti taisymą"
 
 #. DLG_Lists_Upper_Case_List
 #. STYLE_UPPERCASTELIST
 #: po/tmp/ap_String_Id.h.h:2442 po/tmp/xap_String_Id.h.h:784
+#, fuzzy
 msgid "Upper Case List"
-msgstr "Didžiųjų raidžių sąrašas"
+msgstr "Mažųjų raidžių sąrašas"
 
 #. DLG_Lists_Upper_Roman_List
 #. STYLE_UPPERROMANLIST
 #: po/tmp/ap_String_Id.h.h:2444 po/tmp/xap_String_Id.h.h:786
+#, fuzzy
 msgid "Upper Roman List"
-msgstr "Didžiųjų romėniškų sąrašas"
+msgstr "Mažųjų romėniškų sąrašas"
 
 #. DLG_Column_RtlOrder
 #: po/tmp/ap_String_Id.h.h:2446
 msgid "Use RTL Order"
-msgstr "Naudoti tvarką iš dešinės į kairę"
+msgstr ""
 
 #. DLG_Options_Label_HebrewContextGlyphs
 #: po/tmp/ap_String_Id.h.h:2448
 msgid "Use glyph shaping for Hebrew"
-msgstr "Naudoti ženklų formas hebrajų kalbai"
+msgstr ""
 
 #. DLG_Options_Label_UI
 #: po/tmp/ap_String_Id.h.h:2450
 msgid "User Interface"
-msgstr "Vartotojo Sąsaja"
+msgstr ""
 
 #. DLG_Options_Label_UILang
 #: po/tmp/ap_String_Id.h.h:2452
+#, fuzzy
 msgid "User Interface Language"
-msgstr "Vartotojo Sąsajos Kalba"
+msgstr "Nurodyti &kalbą"
 
 #. DLG_Stylist_UserStyles
 #: po/tmp/ap_String_Id.h.h:2454
+#, fuzzy
 msgid "User defined Styles"
-msgstr "Varotojo apibrėžti stiliai"
+msgstr "Antraščių Stiliai"
 
 #. DLG_Tab_Label_Existing
 #: po/tmp/ap_String_Id.h.h:2456
-#, fuzzy
 msgid "User-defined Tabs"
-msgstr "Vartotojo apibrėžti stiliai"
+msgstr ""
 
 #. DLG_Styles_LBL_UserDefined
 #: po/tmp/ap_String_Id.h.h:2458
+#, fuzzy
 msgid "User-defined styles"
-msgstr "Vartotojo apibrėžti stiliai"
+msgstr "Antraščių Stiliai"
 
 #. FIELD_Application_Version
 #. DLG_History_Version_Version
 #: po/tmp/ap_String_Id.h.h:2460 po/tmp/xap_String_Id.h.h:792
+#, fuzzy
 msgid "Version"
-msgstr "Versija"
+msgstr "Leidimai"
 
 #. DLG_Options_TabLabel_View
 #: po/tmp/ap_String_Id.h.h:2462
+#, fuzzy
 msgid "View"
-msgstr "Vaizdas"
+msgstr "&Rodyti"
 
 #. MENU_STATUSLINE_TOOLS_HISTORY_SHOW
 #: po/tmp/ap_String_Id.h.h:2464
+#, fuzzy
 msgid "View document history"
-msgstr "Peržvelgti dokumento istoriją"
+msgstr "D&okumento Istorija"
 
 #. MENU_STATUSLINE_VIEW_FULLSCREEN
 #: po/tmp/ap_String_Id.h.h:2466
+#, fuzzy
 msgid "View the document in full screen mode"
-msgstr "Rodyti dokumentą visame ekrane"
+msgstr "Išsaugoti dokumentą kitu pavadinimu"
 
 #. MENU_STATUSLINE_WINDOW_1
 #. MENU_STATUSLINE_WINDOW_2
@@ -6034,34 +6052,37 @@ msgstr "Rodyti dokumentą visame ekrane"
 #. MENU_STATUSLINE_WINDOW_8
 #. MENU_STATUSLINE_WINDOW_9
 #: po/tmp/ap_String_Id.h.h:2476
+#, fuzzy
 msgid "View this document"
-msgstr "Žiūrėti šį dokumentą"
+msgstr "Atidaryti šį dokumentą"
 
 #. DLG_Options_Label_ViewTooltips
 #: po/tmp/ap_String_Id.h.h:2478
 msgid "View tooltips"
-msgstr "Rodyti patarimus"
+msgstr ""
 
 #. DLG_Options_Label_ViewViewFrame
 #: po/tmp/ap_String_Id.h.h:2480
+#, fuzzy
 msgid "View..."
-msgstr "Rodyti..."
+msgstr "Naujas..."
 
 #. DLG_Options_Label_Visible
 #: po/tmp/ap_String_Id.h.h:2482
 msgid "Visible"
-msgstr "Matoma"
+msgstr ""
 
 #. MSG_HyperlinkNoBookmark
 #: po/tmp/ap_String_Id.h.h:2484
 #, c-format
 msgid "Warning: the bookmark you provided [%s] does not exist."
-msgstr "Įspėjimas: Jūsų nurodyta [%s] žymelė neegzistuoja."
+msgstr ""
 
 #. MENU_STATUSLINE_VIEW_WEB
 #: po/tmp/ap_String_Id.h.h:2486
+#, fuzzy
 msgid "Web Layout"
-msgstr "Web išdėstymas"
+msgstr "&Web išdėstymas"
 
 #. DLG_Styles_LBL_TxtMsg
 #: po/tmp/ap_String_Id.h.h:2488
@@ -6070,158 +6091,164 @@ msgstr ""
 
 #. DLG_Options_Label_WithExtension
 #: po/tmp/ap_String_Id.h.h:2490
+#, fuzzy
 msgid "With extension:"
-msgstr "Su plėtiniu:"
+msgstr "&Bylos plėtinys:"
 
 #. DLG_WordCount_WordCountTitle
 #. FIELD_Numbers_WordCount
 #: po/tmp/ap_String_Id.h.h:2493
+#, fuzzy
 msgid "Word Count"
-msgstr "Žodžių skaičius (statistika)"
+msgstr "Ž&odžių skaičius"
 
 #. DLG_NEW_Tab1
 #: po/tmp/ap_String_Id.h.h:2495
 msgid "Wordprocessing"
-msgstr "Tekstų redagavimas"
+msgstr ""
 
 #. DLG_WordCount_Words_No_Notes
 #: po/tmp/ap_String_Id.h.h:2497
+#, fuzzy
 msgid "Words (no footnotes/endnotes):"
-msgstr ""
+msgstr "Tvarkyti išnašas ir paaiškinimus"
 
 #. DLG_Options_Label_SpellUppercase
 #: po/tmp/ap_String_Id.h.h:2499
 msgid "Words in &UPPERCASE"
-msgstr "Žodžiai &DIDŽIOSIOMIS RAIDĖMIS"
+msgstr ""
 
 #. DLG_Options_Label_SpellNumbers
 #: po/tmp/ap_String_Id.h.h:2501
 msgid "Words with num&bers"
-msgstr "Žodžiai su skai&čiais"
+msgstr ""
 
 #. DLG_WordCount_Words
 #: po/tmp/ap_String_Id.h.h:2503
+#, fuzzy
 msgid "Words:"
-msgstr "Žodžiai:"
+msgstr "Raktažodžiai:"
 
 #. MSG_SaveFailedWrite
 #: po/tmp/ap_String_Id.h.h:2505
-#, c-format
+#, fuzzy, c-format
 msgid "Writing error when attempting to save %s"
-msgstr "Nepavyko įrašyti bylos %s."
+msgstr "Klaida bandant išsaugoti %s: blogas pavadinimas"
 
 #. MSG_DefaultDirectionChg
 #: po/tmp/ap_String_Id.h.h:2507
 msgid "You have changed the default direction."
-msgstr "Jūs pakeitėte įprastą kryptį."
+msgstr ""
 
 #. MSG_DirectionModeChg
 #: po/tmp/ap_String_Id.h.h:2509
 msgid "You have changed the direction mode."
-msgstr "Jūs pakeitėte krypties režimą."
+msgstr ""
 
 #. MSG_HyperlinkNoSelection
 #: po/tmp/ap_String_Id.h.h:2511
 msgid "You must select a portion of the document before inserting a hyperlink."
-msgstr "Prieš įterpiant nuorodą, reikia pažymėti tą dokumento dalį."
+msgstr ""
 
 #. DLG_Options_Label_InvalidRangeForAutoSave
 #: po/tmp/ap_String_Id.h.h:2513
 msgid "You should choose a range from 1 to 120 for the auto save frequency"
-msgstr "Automatiniam išsaugojimui pasirinkite 1 - 120 ribose "
+msgstr ""
 
 #. MSG_ConfirmSaveSecondary
 #: po/tmp/ap_String_Id.h.h:2515
 msgid "Your changes will be lost if you don't save them."
-msgstr "Prarasite savo pakeitimus, jei neišsaugosite."
+msgstr ""
 
 #. TOOLBAR_LABEL_ZOOM
 #. TOOLBAR_STATUSLINE_ZOOM
 #. TOOLBAR_TOOLTIP_ZOOM
 #. DLG_Zoom_ZoomTitle
 #: po/tmp/ap_String_Id.h.h:2519 po/tmp/xap_String_Id.h.h:839
+#, fuzzy
 msgid "Zoom"
-msgstr "Mastelis"
+msgstr "&Mastelis"
 
 #. MENU_LABEL_VIEW_ZOOM_100
 #: po/tmp/ap_String_Id.h.h:2521
 msgid "Zoom to &100%"
-msgstr "Rodyti &100% masteliu"
+msgstr ""
 
 #. MENU_LABEL_VIEW_ZOOM_200
 #: po/tmp/ap_String_Id.h.h:2523
 msgid "Zoom to &200%"
-msgstr "Rodyti &200% masteliu"
+msgstr ""
 
 #. MENU_LABEL_VIEW_ZOOM_50
 #: po/tmp/ap_String_Id.h.h:2525
 msgid "Zoom to &50%"
-msgstr "Rodyti &50% masteliu"
+msgstr ""
 
 #. MENU_LABEL_VIEW_ZOOM_75
 #: po/tmp/ap_String_Id.h.h:2527
 msgid "Zoom to &75%"
-msgstr "Rodyti &75% masteliu"
+msgstr ""
 
 #. MENU_STATUSLINE_VIEW_ZOOM_100
 #: po/tmp/ap_String_Id.h.h:2529
 msgid "Zoom to 100%"
-msgstr "Rodyti 100% masteliu"
+msgstr ""
 
 #. MENU_STATUSLINE_VIEW_ZOOM_200
 #: po/tmp/ap_String_Id.h.h:2531
 msgid "Zoom to 200%"
-msgstr "Rodyti 200% masteliu"
+msgstr ""
 
 #. MENU_STATUSLINE_VIEW_ZOOM_50
 #: po/tmp/ap_String_Id.h.h:2533
 msgid "Zoom to 50%"
-msgstr "Rodyti 50% masteliu"
+msgstr ""
 
 #. MENU_STATUSLINE_VIEW_ZOOM_75
 #: po/tmp/ap_String_Id.h.h:2535
 msgid "Zoom to 75%"
-msgstr "Rodyti 75% masteliu"
+msgstr ""
 
 #. MENU_STATUSLINE_VIEW_ZOOM_WIDTH
 #: po/tmp/ap_String_Id.h.h:2537
 msgid "Zoom to page width"
-msgstr "Rodyti, kad tilptų puslapio plotis"
+msgstr ""
 
 #. MENU_STATUSLINE_VIEW_ZOOM_WHOLE
 #: po/tmp/ap_String_Id.h.h:2539
 msgid "Zoom to whole page"
-msgstr "Rodyti, kad tilptų visas puslapis"
+msgstr ""
 
 #. DLG_Options_Label_CustomDict
 #: po/tmp/ap_String_Id.h.h:2541
 msgid "custom.dic"
-msgstr "nuosavas.dic"
+msgstr ""
 
 #. FIELD_DateTime_DDMMYY
 #: po/tmp/ap_String_Id.h.h:2543
 msgid "dd/mm/yy"
-msgstr "dd/mm/MM"
+msgstr ""
 
 #. DLG_ToggleCase_LowerCase
 #: po/tmp/ap_String_Id.h.h:2545
 msgid "lowercase"
-msgstr "mažosiomis"
+msgstr ""
 
 #. DLG_Options_Label_Minutes
 #: po/tmp/ap_String_Id.h.h:2547
+#, fuzzy
 msgid "minutes"
-msgstr "minutės"
+msgstr "Eilutės:"
 
 #. FIELD_DateTime_MMDDYY
 #: po/tmp/ap_String_Id.h.h:2549
 msgid "mm/dd/yy"
-msgstr "mm/dd/MM"
+msgstr ""
 
 #. DLG_ToggleCase_ToggleCase
 #: po/tmp/ap_String_Id.h.h:2551
 msgid "tOGGLE cASE"
-msgstr "sUKEISTI rEGISTRĄ"
+msgstr ""
 
 #.
 #. * Translatable strings file generated by extract-ui.
@@ -6230,57 +6257,63 @@ msgstr "sUKEISTI rEGISTRĄ"
 #. DLG_UP_To
 #: po/tmp/xap_String_Id.h.h:7
 msgid " to "
-msgstr " iki "
+msgstr ""
 
 #. DLG_Zoom_100
 #: po/tmp/xap_String_Id.h.h:9
+#, fuzzy
 msgid "&100%"
-msgstr "&100%"
+msgstr "&1 %s"
 
 #. DLG_Zoom_200
 #: po/tmp/xap_String_Id.h.h:11
+#, fuzzy
 msgid "&200%"
-msgstr "&200%"
+msgstr "&2 %s"
 
 #. DLG_Zoom_75
 #: po/tmp/xap_String_Id.h.h:13
+#, fuzzy
 msgid "&75%"
-msgstr "&75%"
+msgstr "&7 %s"
 
 #. DLG_Zoom_PageWidth
 #: po/tmp/xap_String_Id.h.h:17
+#, fuzzy
 msgid "&Page width"
-msgstr "&Puslapio plotis"
+msgstr "&Puslapio Plotis"
 
 #. DLG_ULANG_SetLangButton
 #: po/tmp/xap_String_Id.h.h:19
+#, fuzzy
 msgid "&Set Language"
-msgstr "&Nurodyti Kalbą"
+msgstr "Nurodyti &kalbą"
 
 #. DLG_Zoom_WholePage
 #: po/tmp/xap_String_Id.h.h:23
+#, fuzzy
 msgid "&Whole page"
-msgstr "&Visas puslapis"
+msgstr "&Visas Puslapis"
 
 #. LANG_0
 #: po/tmp/xap_String_Id.h.h:25
 msgid "(no proofing)"
-msgstr "(netikrinti)"
+msgstr ""
 
 #. DLG_DocComparison_TestSkipped
 #: po/tmp/xap_String_Id.h.h:27
 msgid "(test skipped)"
-msgstr "(testas praleistas)"
+msgstr ""
 
 #. DLG_NoSaveFile_DirNotExist
 #: po/tmp/xap_String_Id.h.h:29
 msgid "A directory in the given pathname does not exist."
-msgstr "Nėra tokio katalogo duotame kelyje."
+msgstr ""
 
 #. DLG_PLUGIN_MANAGER_TITLE
 #: po/tmp/xap_String_Id.h.h:31
 msgid "AbiWord Plugin Manager"
-msgstr "AbiWord priedų tvarkyklė"
+msgstr ""
 
 #. SPELL_CANTLOAD_DLL
 #: po/tmp/xap_String_Id.h.h:33
@@ -6289,8 +6322,6 @@ msgid ""
 "AbiWord cannot find the spelling file %s.dll\n"
 "Please download and install Aspell from http://aspell.net/win32/"
 msgstr ""
-"AbiWord'ui nepavyksta rasti rašybos tikrinimo bylos %s.dll\n"
-"Prašau atsisiųsti ir įsidiegti Aspell iš http://aspell.net/win32/"
 
 #. MSG_HistoryPartRestore1
 #: po/tmp/xap_String_Id.h.h:35
@@ -6299,8 +6330,6 @@ msgid ""
 "AbiWord cannot fully restore version %d of the document because the version "
 "information is incomplete."
 msgstr ""
-"AbiWord'as nesugėjo pilnai atstatyti %d-osios dokumento versions, nes "
-"versijos informacija tėra dalinė."
 
 #. MSG_HistoryNoRestore
 #: po/tmp/xap_String_Id.h.h:37
@@ -6309,60 +6338,60 @@ msgid ""
 "AbiWord cannot restore version %d of the document because the version "
 "information is missing."
 msgstr ""
-"AbiWord'as negali atstatyti %d-osios dokumento versijos, nes trūksta "
-"informacijos apie tą versiją."
 
 #. DLG_UP_PrintPreviewTitle
 #: po/tmp/xap_String_Id.h.h:39
+#, fuzzy
 msgid "AbiWord: Print Preview"
-msgstr "AbiWord: Spaudinio peržiūra"
+msgstr "Spaudinio peržiūra"
 
 #. DLG_ABOUT_Title
 #: po/tmp/xap_String_Id.h.h:41
-#, c-format
+#, fuzzy, c-format
 msgid "About %s"
-msgstr "Apie %s"
+msgstr "&Apie %s"
 
 #. DLG_PLUGIN_MANAGER_ACTIVE
 #: po/tmp/xap_String_Id.h.h:43
+#, fuzzy
 msgid "Active Plugins"
-msgstr "Aktyvūs priedai"
+msgstr "&Priedai"
 
 #. LANG_AF_ZA
 #: po/tmp/xap_String_Id.h.h:45
 msgid "Afrikaans"
-msgstr "Afrikiečių"
+msgstr ""
 
 #. LANG_AK_GH
 #: po/tmp/xap_String_Id.h.h:47
-#, fuzzy
 msgid "Akan"
-msgstr "Afrikiečių"
+msgstr ""
 
 #. LANG_SQ_AL
 #: po/tmp/xap_String_Id.h.h:49
 msgid "Albanian"
-msgstr "Albanų"
+msgstr ""
 
 #. DLG_FOSA_ALL
 #: po/tmp/xap_String_Id.h.h:53
 msgid "All (*.*)"
-msgstr "Visi paveikslėlių dokumentai"
+msgstr ""
 
 #. DLG_FOSA_ALLDOCS
 #: po/tmp/xap_String_Id.h.h:55
+#, fuzzy
 msgid "All Documents"
-msgstr "Visi dokumentai"
+msgstr "Dokumentai"
 
 #. DLG_FOSA_ALLIMAGES
 #: po/tmp/xap_String_Id.h.h:57
 msgid "All Image Files"
-msgstr "Visi paveikslėlių dokumentai"
+msgstr ""
 
 #. DLG_HTMLOPT_ExpAllowAWML
 #: po/tmp/xap_String_Id.h.h:59
 msgid "Allow extra markup in AWML namespace"
-msgstr "Lesti papildomas AWML vardų erdvės žymas"
+msgstr ""
 
 #. LANG_AM_ET
 #: po/tmp/xap_String_Id.h.h:61
@@ -6371,38 +6400,40 @@ msgstr ""
 
 #. LANG_AR_EG
 #: po/tmp/xap_String_Id.h.h:65
+#, fuzzy
 msgid "Arabic (Egypt)"
-msgstr "Arabų (Egiptas)"
+msgstr "Arabiškas sąrašas"
 
 #. LANG_AR_SA
 #: po/tmp/xap_String_Id.h.h:67
 msgid "Arabic (Saudi Arabia)"
-msgstr "Arabų (Saudo Arabija)"
+msgstr ""
 
 #. ENC_ARAB_ISO
 #: po/tmp/xap_String_Id.h.h:69
 msgid "Arabic, ISO-8859-6"
-msgstr "Arabų, ISO-8859-6"
+msgstr ""
 
 #. ENC_ARAB_MAC
 #: po/tmp/xap_String_Id.h.h:71
+#, fuzzy
 msgid "Arabic, Macintosh"
-msgstr "Arabų, Macintosh"
+msgstr "Arabiškas sąrašas"
 
 #. ENC_ARAB_WIN
 #: po/tmp/xap_String_Id.h.h:73
 msgid "Arabic, Windows Code Page 1256"
-msgstr "Arabų, Windows Code Page 1256"
+msgstr ""
 
 #. LANG_HY_AM
 #: po/tmp/xap_String_Id.h.h:75
 msgid "Armenian"
-msgstr "Armėnų"
+msgstr ""
 
 #. ENC_ARME_ARMSCII
 #: po/tmp/xap_String_Id.h.h:77
 msgid "Armenian, ARMSCII-8"
-msgstr "Armėnų, ARMSCII-8"
+msgstr ""
 
 #. LANG_AS_IN
 #: po/tmp/xap_String_Id.h.h:79
@@ -6416,63 +6447,69 @@ msgstr ""
 
 #. DLG_Options_Label_DirMarkerAfterClosingParenthesis
 #: po/tmp/xap_String_Id.h.h:85
+#, fuzzy
 msgid "Auto-insert direction markers"
-msgstr "Automatiškai įterpti krypties žymeklius"
+msgstr "Įterpti iš-Kairės-į-Dešinę teksto krypties žymę (KDŽ)"
 
 #. DLG_History_Version_AutoRevisioned
 #: po/tmp/xap_String_Id.h.h:87
+#, fuzzy
 msgid "Auto-revision"
-msgstr "Automatiškai peržiūrėta"
+msgstr "&Priimti pakeitimus"
 
 #. DLG_FOSA_FileTypeAutoDetect
 #: po/tmp/xap_String_Id.h.h:89
+#, fuzzy
 msgid "Automatically Detected"
-msgstr "Automatiškai atpažįstamas"
+msgstr "Savaime atnaujinti"
 
 #. MSG_AutoRevision
 #: po/tmp/xap_String_Id.h.h:91
+#, fuzzy
 msgid "Autorevision"
-msgstr "Automatinė peržiūra"
+msgstr "&Priimti pakeitimus"
 
 #. DLG_MW_AvailableDocuments
 #: po/tmp/xap_String_Id.h.h:93
+#, fuzzy
 msgid "Available Documents"
-msgstr "Prieinami Dokumentai"
+msgstr "Galimi Formatai"
 
 #. DLG_ULANG_AvailableLanguages
 #: po/tmp/xap_String_Id.h.h:95
+#, fuzzy
 msgid "Available Languages"
-msgstr "Galimos Kalbos"
+msgstr "Galimi Laukai"
 
 #. ENC_BALT_ISO
 #: po/tmp/xap_String_Id.h.h:97
 msgid "Baltic, ISO-8859-4"
-msgstr "Baltų, ISO-8859-4"
+msgstr ""
 
 #. ENC_BALT_WIN
 #: po/tmp/xap_String_Id.h.h:99
 msgid "Baltic, Windows Code Page 1257"
-msgstr "Baltų, Windows Code Page 1257"
+msgstr ""
 
 #. LANG_EU_ES
 #: po/tmp/xap_String_Id.h.h:101
 msgid "Basque"
-msgstr "Baskų"
+msgstr ""
 
 #. LANG_BE_BY
 #: po/tmp/xap_String_Id.h.h:103
 msgid "Belarusian"
-msgstr "Baltarusų"
+msgstr ""
 
 #. LANG_BN_IN
 #: po/tmp/xap_String_Id.h.h:105
 msgid "Bengali"
-msgstr "Bengalų"
+msgstr ""
 
 #. DLG_UP_BlackWhite
 #: po/tmp/xap_String_Id.h.h:107
 msgid "Black & White"
-msgstr "Juodai baltai"
+msgstr ""
 
 #. STYLE_BLOCKTEXT
 #: po/tmp/xap_String_Id.h.h:109
@@ -6481,284 +6518,307 @@ msgstr ""
 
 #. DLG_UFS_StyleBoldItalic
 #: po/tmp/xap_String_Id.h.h:113
+#, fuzzy
 msgid "Bold Italic"
-msgstr "Storas pasviręs"
+msgstr "Pasviręs"
 
 #. LANG_BR_FR
 #: po/tmp/xap_String_Id.h.h:119
+#, fuzzy
 msgid "Breton"
-msgstr "Bretonų"
+msgstr "Kūrėjas"
 
 #. MSG_BuildingDoc
 #: po/tmp/xap_String_Id.h.h:121
+#, fuzzy
 msgid "Building Document:"
-msgstr "Kuriamas dokumentas.."
+msgstr "Dokumentas spausdinamas..."
 
 #. LANG_BG_BG
 #: po/tmp/xap_String_Id.h.h:123
 msgid "Bulgarian"
-msgstr "Bulgarų"
+msgstr ""
 
 #. DLG_Cancel
 #: po/tmp/xap_String_Id.h.h:127
+#, fuzzy
 msgid "Cancel"
-msgstr "Atšaukti"
+msgstr "Pa&keisti į:"
 
 #. LANG_CA_ES
 #: po/tmp/xap_String_Id.h.h:129
 msgid "Catalan"
-msgstr "Katalonų"
+msgstr ""
 
 #. ENC_CENT_ISO
 #: po/tmp/xap_String_Id.h.h:131
 msgid "Central European, ISO-8859-2"
-msgstr "Centrinės Europos, ISO-8859-2"
+msgstr ""
 
 #. ENC_CENT_MAC
 #: po/tmp/xap_String_Id.h.h:133
 msgid "Central European, Macintosh"
-msgstr "Centrinės Europos, Macintosh"
+msgstr ""
 
 #. ENC_CENT_WIN
 #: po/tmp/xap_String_Id.h.h:135
 msgid "Central European, Windows Code Page 1250"
-msgstr "Centrinės Europos,Windows Code Page 1250"
+msgstr ""
 
 #. DLG_Options_Label_LangWithKeyboard
 #: po/tmp/xap_String_Id.h.h:137
 msgid "Change Language when changing keyboard"
-msgstr "Pakeisti kalbą perjungiant klaviatūros kalbą"
+msgstr ""
 
 #. STYLE_CHAPHEADING
 #: po/tmp/xap_String_Id.h.h:139
+#, fuzzy
 msgid "Chapter Heading"
-msgstr "Skyriaus antraštė"
+msgstr "Turi &Antraštę"
 
 #. LANG_ZH_HK
 #: po/tmp/xap_String_Id.h.h:141
 msgid "Chinese (Hong Kong)"
-msgstr "Kinų (Honkongas)"
+msgstr ""
 
 #. LANG_ZH_CN
 #: po/tmp/xap_String_Id.h.h:143
 msgid "Chinese (PRC)"
-msgstr "Kinų (PRC)"
+msgstr ""
 
 #. LANG_ZH_SG
 #: po/tmp/xap_String_Id.h.h:145
 msgid "Chinese (Singapore)"
-msgstr "Kinų (Singapūras)"
+msgstr ""
 
 #. LANG_ZH_TW
 #: po/tmp/xap_String_Id.h.h:147
 msgid "Chinese (Taiwan)"
-msgstr "Kinų (Taivanis)"
+msgstr ""
 
 #. ENC_CHSI_EUC
 #: po/tmp/xap_String_Id.h.h:149
 msgid "Chinese Simplified, EUC-CN (GB2312)"
-msgstr "Kinų supaprastinta, EUC-CN (GB2312)"
+msgstr ""
 
 #. ENC_CHSI_GB
 #: po/tmp/xap_String_Id.h.h:151
 msgid "Chinese Simplified, GB_2312-80"
-msgstr "Kinų supaprastinta, GB_2312-80"
+msgstr ""
 
 #. ENC_CHSI_HZ
 #: po/tmp/xap_String_Id.h.h:153
 msgid "Chinese Simplified, HZ"
-msgstr "Kinų supaprastinta, HZ"
+msgstr ""
 
 #. ENC_CHSI_WIN
 #: po/tmp/xap_String_Id.h.h:155
 msgid "Chinese Simplified, Windows Code Page 936"
-msgstr "Kinų supaprastinta, Windows Code Page 936"
+msgstr ""
 
 #. ENC_CHTR_BIG5
 #: po/tmp/xap_String_Id.h.h:157
 msgid "Chinese Traditional, BIG5"
-msgstr "Kinų tradicinė, BIG5"
+msgstr ""
 
 #. ENC_CHTR_BIG5HKSCS
 #: po/tmp/xap_String_Id.h.h:159
 msgid "Chinese Traditional, BIG5-HKSCS"
-msgstr "Kinų tradicinė, BIG5-HKSCS"
+msgstr ""
 
 #. ENC_CHTR_EUC
 #: po/tmp/xap_String_Id.h.h:161
 msgid "Chinese Traditional, EUC-TW"
-msgstr "Kinų tradicinė, EUC-TW"
+msgstr ""
 
 #. ENC_CHTR_WIN
 #: po/tmp/xap_String_Id.h.h:163
 msgid "Chinese Traditional, Windows Code Page 950"
-msgstr "Kinų tradicinė, Windows Code Page 950"
+msgstr ""
 
 #. DLG_LISTDOCS_Heading1
 #: po/tmp/xap_String_Id.h.h:165
+#, fuzzy
 msgid "Choose document from the list:"
-msgstr "Pasirink dokumentą iš sąrašo:"
+msgstr "Sukurti naują dokumentą pagal šabloną"
 
 #. DLG_CLIPART_Title
 #: po/tmp/xap_String_Id.h.h:167
+#, fuzzy
 msgid "Clip Art"
-msgstr "Piešiniai"
+msgstr "&Piešinį"
 
 #. DLG_Close
 #: po/tmp/xap_String_Id.h.h:169
+#, fuzzy
 msgid "Close"
-msgstr "Uždaryti"
+msgstr "&Uždaryti"
 
 #. DLG_Exit_CloseWithoutSaving
 #: po/tmp/xap_String_Id.h.h:171
 msgid "Close &Without Saving"
-msgstr "Išeiti &neišsaugant"
+msgstr ""
 
 #. DLG_UP_Collate
 #: po/tmp/xap_String_Id.h.h:173
+#, fuzzy
 msgid "Collate"
-msgstr "Paeiliui"
+msgstr "Kompiliavimo data"
 
 #. DLG_UP_Color
 #: po/tmp/xap_String_Id.h.h:175
+#, fuzzy
 msgid "Color"
-msgstr "Spalvotai"
+msgstr "Spalva:"
 
 #. DLG_Compare
 #: po/tmp/xap_String_Id.h.h:179
+#, fuzzy
 msgid "Compare"
-msgstr "Palyginti"
+msgstr "Kompiliavimo data"
 
 #. DLG_DocComparison_Content
 #: po/tmp/xap_String_Id.h.h:181
+#, fuzzy
 msgid "Content:"
-msgstr "Turinys:"
+msgstr "Komentaras"
 
 #. STYLE_TOCHEADING1
 #: po/tmp/xap_String_Id.h.h:183
+#, fuzzy
 msgid "Contents 1"
-msgstr "Turinys 1"
+msgstr "Pagalbos &turinys"
 
 #. STYLE_TOCHEADING2
 #: po/tmp/xap_String_Id.h.h:185
+#, fuzzy
 msgid "Contents 2"
-msgstr "Turinys 2"
+msgstr "Pagalbos &turinys"
 
 #. STYLE_TOCHEADING3
 #: po/tmp/xap_String_Id.h.h:187
+#, fuzzy
 msgid "Contents 3"
-msgstr "Turinys 3"
+msgstr "Pagalbos &turinys"
 
 #. STYLE_TOCHEADING4
 #: po/tmp/xap_String_Id.h.h:189
+#, fuzzy
 msgid "Contents 4"
-msgstr "Turinys 4"
+msgstr "Pagalbos &turinys"
 
 #. STYLE_TOCHEADING
 #: po/tmp/xap_String_Id.h.h:191
+#, fuzzy
 msgid "Contents Header"
-msgstr "Turinio antraštė"
+msgstr "Pašalinti antraštę"
 
 #. DLG_UP_Copies
 #: po/tmp/xap_String_Id.h.h:193
+#, fuzzy
 msgid "Copies: "
-msgstr "Kopijos: "
+msgstr "Kompiliavimo laikas"
 
 #. LANG_KW_GB
 #: po/tmp/xap_String_Id.h.h:195
 msgid "Cornish"
-msgstr "Kornų"
+msgstr ""
 
 #. LANG_CO_FR
 #: po/tmp/xap_String_Id.h.h:197
 msgid "Corsican"
-msgstr "Korsikiečių"
+msgstr ""
 
 #. DLG_PLUGIN_MANAGER_COULDNT_LOAD
 #: po/tmp/xap_String_Id.h.h:199
 msgid "Could not activate/load plugin"
-msgstr "Negalėjau aktyvuoti/įkelti priedo"
+msgstr ""
 
 #. DLG_PLUGIN_MANAGER_COULDNT_UNLOAD
 #: po/tmp/xap_String_Id.h.h:201
 msgid "Could not deactivate plugin"
-msgstr "Nepavyko dezaktyvuoti (išjungti) priedo"
+msgstr ""
 
 #. SPELL_CANTLOAD_DICT
 #: po/tmp/xap_String_Id.h.h:203
 #, c-format
 msgid "Could not load the dictionary for the %s language"
-msgstr "Negalėjau įkelti žodyno %s kalbai"
+msgstr ""
 
 #. DLG_History_Version_Started
 #: po/tmp/xap_String_Id.h.h:205
+#, fuzzy
 msgid "Created"
-msgstr "Sukurta"
+msgstr "Kūrėjas"
 
 #. DLG_History_Created
 #: po/tmp/xap_String_Id.h.h:207
+#, fuzzy
 msgid "Created:"
-msgstr "Sukurtas:"
+msgstr "Kūrėjas"
 
 #. LANG_HR
 #: po/tmp/xap_String_Id.h.h:209
 msgid "Croatian"
-msgstr "Kroatų"
+msgstr ""
 
 #. ENC_CROA_MAC
 #: po/tmp/xap_String_Id.h.h:211
 msgid "Croatian, Macintosh"
-msgstr "Kroatų, Macintosh"
+msgstr ""
 
 #. ENC_CYRL_ISO
 #: po/tmp/xap_String_Id.h.h:213
 msgid "Cyrillic, ISO-8859-5"
-msgstr "Kirilica, ISO-8859-5"
+msgstr ""
 
 #. ENC_CYRL_KOI
 #: po/tmp/xap_String_Id.h.h:215
 msgid "Cyrillic, KOI8-R"
-msgstr "Kirilica, KOI8-R"
+msgstr ""
 
 #. ENC_CYRL_MAC
 #: po/tmp/xap_String_Id.h.h:217
 msgid "Cyrillic, Macintosh"
-msgstr "Kirilica, Macintosh"
+msgstr ""
 
 #. ENC_CYRL_WIN
 #: po/tmp/xap_String_Id.h.h:219
 msgid "Cyrillic, Windows Code Page 1251"
-msgstr "Kirilica, Windows Code Page 1251"
+msgstr ""
 
 #. LANG_CS_CZ
 #: po/tmp/xap_String_Id.h.h:221
 msgid "Czech"
-msgstr "Čekų"
+msgstr ""
 
 #. LANG_DA_DK
 #: po/tmp/xap_String_Id.h.h:223
 msgid "Danish"
-msgstr "Danų"
+msgstr ""
 
 #. DLG_PLUGIN_MANAGER_DEACTIVATE_ALL
 #: po/tmp/xap_String_Id.h.h:227
+#, fuzzy
 msgid "Deactivate all plugins"
-msgstr "Išjungti visus priedus"
+msgstr "Tvarkyti priedus"
 
 #. DLG_PLUGIN_MANAGER_DEACTIVATE
 #: po/tmp/xap_String_Id.h.h:229
+#, fuzzy
 msgid "Deactivate plugin"
-msgstr "išjungti priedą"
+msgstr "Tvarkyti priedus"
 
 #. DLG_HTMLOPT_ExpDeclareXML
 #: po/tmp/xap_String_Id.h.h:231
 msgid "Declare as XML (version 1.0)"
-msgstr "Deklaruoti kaip XML (1.0 versija)"
+msgstr ""
 
 #. DLG_ULANG_DefaultLangLabel
 #: po/tmp/xap_String_Id.h.h:233
+#, fuzzy
 msgid "Default language: "
-msgstr ""
+msgstr "Įprastas puslapio dydis"
 
 #. DLG_Image_Placement
 #: po/tmp/xap_String_Id.h.h:235
@@ -6767,219 +6827,234 @@ msgstr ""
 
 #. DLG_Image_TextWrapping
 #: po/tmp/xap_String_Id.h.h:237
+#, fuzzy
 msgid "Define Text Wrapping"
-msgstr ""
+msgstr "Nustatyti teksto laužymą"
 
 #. DLG_Remove_Icon
 #: po/tmp/xap_String_Id.h.h:246
+#, fuzzy
 msgid "Do you want to remove this icon from the toolbar?"
-msgstr "Ar nori pašalinti šią piktogramą iš įrankių juostos?"
+msgstr "Ar nori pamiršti ignoruojamus žodžius visuose dokumentuose?"
 
 #. DLG_DocComparison_WindowLabel
 #: po/tmp/xap_String_Id.h.h:248
+#, fuzzy
 msgid "Document Comparison"
-msgstr "Dokumentų palyginimas"
+msgstr "Dokumento Savybės"
 
 #. DLG_History_DocumentDetails
 #: po/tmp/xap_String_Id.h.h:250
+#, fuzzy
 msgid "Document Details"
-msgstr "Dokumento aprašas"
+msgstr "Dokumento Savybės"
 
 #. DLG_History_WindowLabel
 #: po/tmp/xap_String_Id.h.h:252
+#, fuzzy
 msgid "Document History"
-msgstr "Dokumento istorija"
+msgstr "D&okumento Istorija"
 
 #. DLG_History_Path
 #: po/tmp/xap_String_Id.h.h:254
+#, fuzzy
 msgid "Document name:"
-msgstr "Pavadinimas:"
+msgstr "Dokumentas"
 
 #. DLG_DocComparison_DocsCompared
 #: po/tmp/xap_String_Id.h.h:256
+#, fuzzy
 msgid "Documents compared"
-msgstr "Dokumentai aplyginti"
+msgstr "Dokumento Savybės"
 
 #. LANG_NL_NL
 #: po/tmp/xap_String_Id.h.h:258
 msgid "Dutch (Netherlands)"
-msgstr "Olandų (Olandija)"
+msgstr ""
 
 #. DLG_History_EditTime
 #: po/tmp/xap_String_Id.h.h:260
 msgid "Editing time:"
-msgstr "Redagavimo laikas:"
+msgstr ""
 
 #. DLG_UFS_EffectsFrameLabel
 #: po/tmp/xap_String_Id.h.h:262
 msgid "Effects"
-msgstr "Efektai"
+msgstr ""
 
 #. DLG_HTMLOPT_ExpEmbedCSS
 #: po/tmp/xap_String_Id.h.h:264
 msgid "Embed (CSS) style sheet"
-msgstr "Įdėti stilių (CSS) informaciją"
+msgstr ""
 
 #. DLG_UP_EmbedFonts
 #: po/tmp/xap_String_Id.h.h:266
 msgid "Embed Fonts"
-msgstr "Įdėti šriftus"
+msgstr ""
 
 #. DLG_HTMLOPT_ExpEmbedImages
 #: po/tmp/xap_String_Id.h.h:268
 msgid "Embed images in URLs (Base64-encoded)"
-msgstr "Įdėti paveiksliukus į URL žymas (užkodavus Base64)"
+msgstr ""
 
 #. DLG_UENC_EncTitle
 #: po/tmp/xap_String_Id.h.h:270
 msgid "Encoding"
-msgstr "Koduotė"
+msgstr ""
 
 #. DLG_UFS_EncodingLabel
 #: po/tmp/xap_String_Id.h.h:272
 msgid "Encoding:"
-msgstr "Koduotė:"
+msgstr ""
 
 #. STYLE_ENDREFERENCE
 #: po/tmp/xap_String_Id.h.h:274
+#, fuzzy
 msgid "Endnote Reference"
 msgstr "Paaiškinimo nuoroda"
 
 #. STYLE_ENDTEXT
 #: po/tmp/xap_String_Id.h.h:276
+#, fuzzy
 msgid "Endnote Text"
-msgstr "Paaiškinimas gale"
+msgstr "Paaiškinimo gale stilius"
 
 #. LANG_EN_AU
 #: po/tmp/xap_String_Id.h.h:278
 msgid "English (Australia)"
-msgstr "Anglų (Australija)"
+msgstr ""
 
 #. LANG_EN_CA
 #: po/tmp/xap_String_Id.h.h:280
 msgid "English (Canada)"
-msgstr "Anglų (Kanada)"
+msgstr ""
 
 #. LANG_EN_IE
 #: po/tmp/xap_String_Id.h.h:282
 msgid "English (Ireland)"
-msgstr "Anglų (Airija)"
+msgstr ""
 
 #. LANG_EN_NZ
 #: po/tmp/xap_String_Id.h.h:284
 msgid "English (New Zealand)"
-msgstr "Anglų (Naujoji Zelandija)"
+msgstr ""
 
 #. LANG_EN_ZA
 #: po/tmp/xap_String_Id.h.h:286
 msgid "English (South Africa)"
-msgstr "Anglų (Pietų Afrika)"
+msgstr ""
 
 #. LANG_EN_GB
 #: po/tmp/xap_String_Id.h.h:288
 msgid "English (UK)"
-msgstr "Anglų (Jungtinė Karalystė)"
+msgstr ""
 
 #. LANG_EN_US
 #: po/tmp/xap_String_Id.h.h:290
 msgid "English (US)"
-msgstr "Anglų (JAV)"
+msgstr ""
 
 #. DLG_Password_Title
 #: po/tmp/xap_String_Id.h.h:292
+#, fuzzy
 msgid "Enter Password"
-msgstr "Įveskite slaptažodį"
+msgstr "Neteisingas slaptažodis"
 
 #. LANG_EO
 #: po/tmp/xap_String_Id.h.h:294
 msgid "Esperanto"
-msgstr "Esperanto"
+msgstr ""
 
 #. LANG_ET
 #: po/tmp/xap_String_Id.h.h:296
 msgid "Estonian"
-msgstr "Estų"
+msgstr ""
 
 #. DLG_FOSA_ExportTitle
 #: po/tmp/xap_String_Id.h.h:298
+#, fuzzy
 msgid "Export File"
-msgstr "Eksportuoti bylą"
+msgstr "Nėra bylos"
 
 #. DLG_HTMLOPT_ExpIs4
 #: po/tmp/xap_String_Id.h.h:300
 msgid "Export as HTML 4.01"
-msgstr "Eksportuoti kaip HTML 4.01"
+msgstr ""
 
 #. DLG_HTMLOPT_ExpAbiWebDoc
 #: po/tmp/xap_String_Id.h.h:302
 msgid "Export with PHP instructions"
-msgstr "Eksportas su PHP instrukcijomis"
+msgstr ""
 
 #. LANG_FA_IR
 #: po/tmp/xap_String_Id.h.h:304
 msgid "Farsi"
-msgstr "Farsi"
+msgstr ""
 
 #. DLG_UP_File
 #: po/tmp/xap_String_Id.h.h:306
+#, fuzzy
 msgid "File"
-msgstr "Bylą"
+msgstr "Įterpt&i bylą"
 
 #. DLG_OverwriteFile
 #: po/tmp/xap_String_Id.h.h:308
 #, c-format
 msgid "File already exists.  Overwrite file '%s'?"
-msgstr "Jau yra byla tokiu vardu. Užrašyti %s ant viršaus?"
+msgstr ""
 
 #. LANG_FI_FI
 #: po/tmp/xap_String_Id.h.h:310
 msgid "Finnish"
-msgstr "Suomių"
+msgstr ""
 
 #. LANG_NL_BE
 #: po/tmp/xap_String_Id.h.h:312
 msgid "Flemish (Belgium)"
-msgstr "Flamandų (Belgija)"
+msgstr ""
 
 #. STYLE_FOOTREFERENCE
 #: po/tmp/xap_String_Id.h.h:319
+#, fuzzy
 msgid "Footnote Reference"
 msgstr "Išnašos nuoroda"
 
 #. STYLE_FOOTTEXT
 #: po/tmp/xap_String_Id.h.h:321
+#, fuzzy
 msgid "Footnote Text"
-msgstr "Išnašos tekstas"
+msgstr "Išnašų stilius"
 
 #. LANG_FR_BE
 #: po/tmp/xap_String_Id.h.h:325
 msgid "French (Belgium)"
-msgstr "Prancūzų (Belgija)"
+msgstr ""
 
 #. LANG_FR_CA
 #: po/tmp/xap_String_Id.h.h:327
 msgid "French (Canada)"
-msgstr "Prancūzų (Kanada)"
+msgstr ""
 
 #. LANG_FR_FR
 #: po/tmp/xap_String_Id.h.h:329
 msgid "French (France)"
-msgstr "Prancūzų (Prancūzija)"
+msgstr ""
 
 #. LANG_FR_CH
 #: po/tmp/xap_String_Id.h.h:331
 msgid "French (Switzerland)"
-msgstr "Prancūzų (Šveicarija)"
+msgstr ""
 
 #. LANG_FY_NL
 #: po/tmp/xap_String_Id.h.h:333
 msgid "Frisian"
-msgstr "Fryzų"
+msgstr ""
 
 #. DLG_UP_From
 #: po/tmp/xap_String_Id.h.h:335
+#, fuzzy
 msgid "From: "
-msgstr "Nuo: "
+msgstr "&Iš bylos"
 
 #. LANG_GL_ES
 #: po/tmp/xap_String_Id.h.h:337
@@ -6989,62 +7064,62 @@ msgstr ""
 #. LANG_KA_GE
 #: po/tmp/xap_String_Id.h.h:339
 msgid "Georgian"
-msgstr "Gruzinų"
+msgstr ""
 
 #. ENC_GEOR_ACADEMY
 #: po/tmp/xap_String_Id.h.h:341
 msgid "Georgian, Academy"
-msgstr "Gruzinų, Academy"
+msgstr ""
 
 #. ENC_GEOR_PS
 #: po/tmp/xap_String_Id.h.h:343
 msgid "Georgian, PS"
-msgstr "Gruzinų, PS"
+msgstr ""
 
 #. LANG_DE_AT
 #: po/tmp/xap_String_Id.h.h:345
 msgid "German (Austria)"
-msgstr "Vokiečių (Austrija)"
+msgstr ""
 
 #. LANG_DE_DE
 #: po/tmp/xap_String_Id.h.h:347
 msgid "German (Germany)"
-msgstr "Vokiečių (Vokietija)"
+msgstr ""
 
 #. LANG_DE_CH
 #: po/tmp/xap_String_Id.h.h:349
 msgid "German (Switzerland)"
-msgstr "Vokiečių (Šveicarija)"
+msgstr ""
 
 #. DLG_UP_Grayscale
 #: po/tmp/xap_String_Id.h.h:351
 msgid "Grayscale"
-msgstr "Pilkos atspalviais"
+msgstr ""
 
 #. LANG_EL_GR
 #: po/tmp/xap_String_Id.h.h:353
 msgid "Greek"
-msgstr "Graikų"
+msgstr ""
 
 #. ENC_GREE_ISO
 #: po/tmp/xap_String_Id.h.h:355
 msgid "Greek, ISO-8859-7"
-msgstr "Graikų, ISO-8859-7"
+msgstr ""
 
 #. ENC_GREE_MAC
 #: po/tmp/xap_String_Id.h.h:357
 msgid "Greek, Macintosh"
-msgstr "Graikų, Macintosh"
+msgstr ""
 
 #. ENC_GREE_WIN
 #: po/tmp/xap_String_Id.h.h:359
 msgid "Greek, Windows Code Page 1253"
-msgstr "Graikų, Windows Code Page 1253"
+msgstr ""
 
 #. DLG_HTMLOPT_ExpTitle
 #: po/tmp/xap_String_Id.h.h:361
 msgid "HTML Export Options"
-msgstr "HTML eksporto parinktys"
+msgstr ""
 
 #. LANG_HA_NE
 #: po/tmp/xap_String_Id.h.h:365
@@ -7054,102 +7129,116 @@ msgstr ""
 #. LANG_HA_NG
 #: po/tmp/xap_String_Id.h.h:367
 msgid "Hausa (Nigeria)"
-msgstr "Hausa (Nigerija)"
+msgstr ""
 
 #. LANG_HAW_US
 #: po/tmp/xap_String_Id.h.h:369
 msgid "Hawaiian"
-msgstr "Havajiečių"
+msgstr ""
 
 #. STYLE_HEADING1
 #: po/tmp/xap_String_Id.h.h:371
+#, fuzzy
 msgid "Heading 1"
-msgstr "Antraštė 1"
+msgstr "Antraštės stilius:"
 
 #. STYLE_HEADING2
 #: po/tmp/xap_String_Id.h.h:373
+#, fuzzy
 msgid "Heading 2"
-msgstr "Antraštė 2"
+msgstr "Antraštės stilius:"
 
 #. STYLE_HEADING3
 #: po/tmp/xap_String_Id.h.h:375
+#, fuzzy
 msgid "Heading 3"
-msgstr "Antraštė 3"
+msgstr "Antraštės stilius:"
 
 #. STYLE_HEADING4
 #: po/tmp/xap_String_Id.h.h:377
+#, fuzzy
 msgid "Heading 4"
-msgstr "Antraštė 4"
+msgstr "Antraštės stilius:"
 
 #. LANG_HE_IL
 #: po/tmp/xap_String_Id.h.h:381
+#, fuzzy
 msgid "Hebrew"
-msgstr "Hebrajų"
+msgstr "Hebraiškas sąrašas"
 
 #. ENC_HEBR_ISO
 #: po/tmp/xap_String_Id.h.h:383
 msgid "Hebrew, ISO-8859-8"
-msgstr "Hebrajų, ISO-8859-8"
+msgstr ""
 
 #. ENC_HEBR_MAC
 #: po/tmp/xap_String_Id.h.h:385
+#, fuzzy
 msgid "Hebrew, Macintosh"
-msgstr "Hebrajų, Macintosh"
+msgstr "Hebraiškas sąrašas"
 
 #. ENC_HEBR_WIN
 #: po/tmp/xap_String_Id.h.h:387
 msgid "Hebrew, Windows Code Page 1255"
-msgstr "Hebrajų, Windows Code Page 1255"
+msgstr ""
 
 #. DLG_Image_Height
 #: po/tmp/xap_String_Id.h.h:389
+#, fuzzy
 msgid "Height:"
-msgstr "Aukštis:"
+msgstr "&Aukštis:"
 
 #. DLG_IP_Height_Label
 #: po/tmp/xap_String_Id.h.h:391
+#, fuzzy
 msgid "Height: "
-msgstr "Aukštis: "
+msgstr "&Aukštis:"
 
 #. DLG_UFS_HiddenCheck
 #: po/tmp/xap_String_Id.h.h:393
+#, fuzzy
 msgid "Hidden"
-msgstr "Paslėptas"
+msgstr "Paslėpti"
 
 #. DLG_UFS_BGColorTab
 #: po/tmp/xap_String_Id.h.h:395
+#, fuzzy
 msgid "HighLight Color"
-msgstr "Pažymėjimas spalva"
+msgstr "Atsisakyti pažymėjimo spalva"
 
 #. LANG_HI_IN
 #: po/tmp/xap_String_Id.h.h:397
+#, fuzzy
 msgid "Hindi"
-msgstr "Hindi"
+msgstr "Paslėpti"
 
 #. LANG_HU_HU
 #: po/tmp/xap_String_Id.h.h:399
+#, fuzzy
 msgid "Hungarian"
-msgstr "Vengrų"
+msgstr "Išsikišusi"
 
 #. LANG_IS_IS
 #: po/tmp/xap_String_Id.h.h:401
 msgid "Icelandic"
-msgstr "Islandų"
+msgstr ""
 
 #. ENC_ICEL_MAC
 #: po/tmp/xap_String_Id.h.h:403
 msgid "Icelandic, Macintosh"
-msgstr "Islandų, Macintosh"
+msgstr ""
 
 #. DLG_History_Id
 #: po/tmp/xap_String_Id.h.h:405
+#, fuzzy
 msgid "Identifier:"
-msgstr "Identifikatorius:"
+msgstr "Įtrau&ka:"
 
 #. DLG_Image_Title
 #: po/tmp/xap_String_Id.h.h:407
+#, fuzzy
 msgid "Image Properties"
-msgstr "Paveikslėlio savybės"
+msgstr "Antraštės savybės"
 
 #. DLG_Image_WrappedNone
 #: po/tmp/xap_String_Id.h.h:409
@@ -7163,23 +7252,25 @@ msgstr ""
 
 #. DLG_FOSA_ImportTitle
 #: po/tmp/xap_String_Id.h.h:415
+#, fuzzy
 msgid "Import File"
-msgstr "Importuoti bylą"
+msgstr "Nėra bylos"
 
 #. MSG_ImportingDoc
 #: po/tmp/xap_String_Id.h.h:417
+#, fuzzy
 msgid "Importing Document.."
-msgstr "Importuojamas dokumentas.."
+msgstr "Dokumentas spausdinamas..."
 
 #. LANG_ID_ID
 #: po/tmp/xap_String_Id.h.h:419
 msgid "Indonesian"
-msgstr "Indoneziečių"
+msgstr ""
 
 #. XIM_Methods
 #: po/tmp/xap_String_Id.h.h:421
 msgid "Input Methods"
-msgstr "Įvesties Metodai"
+msgstr ""
 
 #. DLG_FOSA_InsertObject
 #: po/tmp/xap_String_Id.h.h:425
@@ -7194,38 +7285,45 @@ msgstr ""
 
 #. DLG_FOSA_InsertTitle
 #: po/tmp/xap_String_Id.h.h:429
+#, fuzzy
 msgid "Insert File"
-msgstr "Įterpti bylą"
+msgstr "Įterpti Lauką"
 
 #. DLG_FOSA_InsertMath
 #: po/tmp/xap_String_Id.h.h:431
+#, fuzzy
 msgid "Insert Math File"
-msgstr ""
+msgstr "Įterpti Lauką"
 
 #. DLG_FOSA_FileInsertMath
 #: po/tmp/xap_String_Id.h.h:433
+#, fuzzy
 msgid "Insert MathML file:"
-msgstr ""
+msgstr "Įterpti lentelę"
 
 #. TB_InsertNewTable
 #: po/tmp/xap_String_Id.h.h:435
+#, fuzzy
 msgid "Insert New Table"
-msgstr "Įterpti Naują Lentelę"
+msgstr "Įterpti Lentelę"
 
 #. DLG_IP_Title
 #: po/tmp/xap_String_Id.h.h:437
+#, fuzzy
 msgid "Insert Picture"
 msgstr "Įterpti paveikslėlį"
 
 #. DLG_Insert_SymbolTitle
 #: po/tmp/xap_String_Id.h.h:439
+#, fuzzy
 msgid "Insert Symbol"
 msgstr "Įterpti simbolį"
 
 #. DLG_PLUGIN_MANAGER_INSTALL
 #: po/tmp/xap_String_Id.h.h:441
+#, fuzzy
 msgid "Install new plugin"
-msgstr "Įdiegti naują priedą"
+msgstr "Tvarkyti priedus"
 
 #. LANG_IA
 #: po/tmp/xap_String_Id.h.h:443
@@ -7240,42 +7338,42 @@ msgstr ""
 #. DLG_InvalidPathname
 #: po/tmp/xap_String_Id.h.h:447
 msgid "Invalid pathname."
-msgstr "Blogas kelias."
+msgstr ""
 
 #. LANG_GA_IE
 #: po/tmp/xap_String_Id.h.h:449
 msgid "Irish"
-msgstr "Airių"
+msgstr ""
 
 #. LANG_IT_IT
 #: po/tmp/xap_String_Id.h.h:451
 msgid "Italian (Italy)"
-msgstr "Italų (Italija)"
+msgstr ""
 
 #. LANG_JA_JP
 #: po/tmp/xap_String_Id.h.h:455
 msgid "Japanese"
-msgstr "Japonų"
+msgstr ""
 
 #. ENC_JAPN_EUC
 #: po/tmp/xap_String_Id.h.h:457
 msgid "Japanese, EUC-JP"
-msgstr "Japonų, EUC-JP"
+msgstr ""
 
 #. ENC_JAPN_ISO
 #: po/tmp/xap_String_Id.h.h:459
 msgid "Japanese, ISO-2022-JP"
-msgstr "Japonų, ISO-2022-JP"
+msgstr ""
 
 #. ENC_JAPN_SJIS
 #: po/tmp/xap_String_Id.h.h:461
 msgid "Japanese, Shift-JIS"
-msgstr "Japonų, Shift-JIS"
+msgstr ""
 
 #. ENC_JAPN_WIN
 #: po/tmp/xap_String_Id.h.h:463
 msgid "Japanese, Windows Code Page 932"
-msgstr "Japonų, Windows Code Page 932"
+msgstr ""
 
 #. LANG_KN_IN
 #: po/tmp/xap_String_Id.h.h:465
@@ -7285,158 +7383,170 @@ msgstr ""
 #. LANG_KO_KR
 #: po/tmp/xap_String_Id.h.h:467
 msgid "Korean"
-msgstr "Korėjiečių"
+msgstr ""
 
 #. ENC_KORE_EUC
 #: po/tmp/xap_String_Id.h.h:469
 msgid "Korean, EUC-KR"
-msgstr "Korėjiečių, EUC-KR"
+msgstr ""
 
 #. ENC_KORE_JOHAB
 #: po/tmp/xap_String_Id.h.h:471
 msgid "Korean, Johab"
-msgstr "Korėjiečių, Johab"
+msgstr ""
 
 #. ENC_KORE_KSC
 #: po/tmp/xap_String_Id.h.h:473
 msgid "Korean, KSC_5601"
-msgstr "Korėjiečių, KSC_5601"
+msgstr ""
 
 #. ENC_KORE_WIN
 #: po/tmp/xap_String_Id.h.h:475
 msgid "Korean, Windows Code Page 949"
-msgstr "Korėjiečių, Windows Code Page 949"
+msgstr ""
 
 #. LANG_KU
 #: po/tmp/xap_String_Id.h.h:477
-#, fuzzy
 msgid "Kurdish"
-msgstr "Turkų"
+msgstr ""
 
 #. LANG_LO_LA
 #: po/tmp/xap_String_Id.h.h:479
+#, fuzzy
 msgid "Lao"
-msgstr ""
+msgstr "Išdėstymas"
 
 #. DLG_History_LastSaved
 #: po/tmp/xap_String_Id.h.h:481
 msgid "Last saved:"
-msgstr "Paskutinįkart saugotas:"
+msgstr ""
 
 #. LANG_LA_IT
 #: po/tmp/xap_String_Id.h.h:483
 msgid "Latin (Renaissance)"
-msgstr "Lotynų (renesanco)"
+msgstr ""
 
 #. LANG_LV_LV
 #: po/tmp/xap_String_Id.h.h:485
 msgid "Latvian"
-msgstr "Latvių"
+msgstr ""
 
 #. LANG_LT_LT
 #: po/tmp/xap_String_Id.h.h:487
 msgid "Lithuanian"
-msgstr "Lietuvių"
+msgstr ""
 
 #. LANG_MK
 #: po/tmp/xap_String_Id.h.h:493
 msgid "Macedonian"
-msgstr "Makedonų"
+msgstr ""
 
 #. DLG_ULANG_DefaultLangChkbox
 #: po/tmp/xap_String_Id.h.h:495
+#, fuzzy
 msgid "Make default for document"
-msgstr ""
+msgstr "Padėti dokumento gale"
 
 #. LANG_MI_NZ
 #: po/tmp/xap_String_Id.h.h:497
+#, fuzzy
 msgid "Maori"
-msgstr ""
+msgstr "&Paraštė"
 
 #. LANG_MR_IN
 #: po/tmp/xap_String_Id.h.h:499
+#, fuzzy
 msgid "Marathi"
-msgstr ""
+msgstr "&Paraštė"
 
 #. LANG_MH_MH
 #: po/tmp/xap_String_Id.h.h:501
 msgid "Marshallese (Marshall Islands)"
-msgstr "Maršaliečių (Maršalo Salos)"
+msgstr ""
 
 #. LANG_MH_NR
 #: po/tmp/xap_String_Id.h.h:503
 msgid "Marshallese (Nauru)"
-msgstr "Maršaliečių (Nauru)"
+msgstr ""
 
 #. DLG_Merge
 #: po/tmp/xap_String_Id.h.h:505
+#, fuzzy
 msgid "Merge"
-msgstr "Sujungti"
+msgstr "Sujungti kairėn"
 
 #. LANG_MN_MN
 #: po/tmp/xap_String_Id.h.h:507
 msgid "Mongolian"
-msgstr "Mongolų"
+msgstr ""
 
 #. DLG_PLUGIN_MANAGER_NAME
 #: po/tmp/xap_String_Id.h.h:509
+#, fuzzy
 msgid "Name:"
-msgstr "Pavadinimas:"
+msgstr "&Pavadinimas:"
 
 #. DLG_QNXMB_No
 #: po/tmp/xap_String_Id.h.h:511
+#, fuzzy
 msgid "No"
-msgstr "Ne"
+msgstr "Nieko"
 
 #. DLG_IP_No_Picture_Label
 #: po/tmp/xap_String_Id.h.h:513
+#, fuzzy
 msgid "No Picture"
-msgstr "Jokio paveikslėlio"
+msgstr "Paveikslėlį"
 
 #. DLG_PLUGIN_MANAGER_NONE_SELECTED
 #: po/tmp/xap_String_Id.h.h:515
 msgid "No plugin selected"
-msgstr "Nepažymėtas joks priedas"
+msgstr ""
 
 #. STYLE_NORMAL
 #: po/tmp/xap_String_Id.h.h:517
+#, fuzzy
 msgid "Normal"
-msgstr "Normalus"
+msgstr "Normalus išdėstymas"
 
 #. LANG_NB_NO
 #: po/tmp/xap_String_Id.h.h:519
 msgid "Norwegian Bokmal"
-msgstr "Norvegų Bokmal"
+msgstr ""
 
 #. LANG_NN_NO
 #: po/tmp/xap_String_Id.h.h:521
 msgid "Norwegian Nynorsk"
-msgstr "Norvegų Nynorsk"
+msgstr ""
 
 #. DLG_PLUGIN_MANAGER_NOT_AVAILABLE
 #: po/tmp/xap_String_Id.h.h:523
+#, fuzzy
 msgid "Not available"
-msgstr "Nėra"
+msgstr "Surūšiuoti lentelę"
 
 #. STYLE_NUMHEAD1
 #: po/tmp/xap_String_Id.h.h:525
+#, fuzzy
 msgid "Numbered Heading 1"
-msgstr "Sunumeruota antraštė 1"
+msgstr "Numeravimas"
 
 #. STYLE_NUMHEAD2
 #: po/tmp/xap_String_Id.h.h:527
+#, fuzzy
 msgid "Numbered Heading 2"
-msgstr "Sunumeruota antraštė 2"
+msgstr "Numeravimas"
 
 #. STYLE_NUMHEAD3
 #: po/tmp/xap_String_Id.h.h:529
+#, fuzzy
 msgid "Numbered Heading 3"
-msgstr "Sunumeruota antraštė 3"
+msgstr "Numeravimas"
 
 #. DLG_OK
 #: po/tmp/xap_String_Id.h.h:533
 msgid "OK"
-msgstr "Gerai"
+msgstr ""
 
 #. LANG_OC_FR
 #: po/tmp/xap_String_Id.h.h:535
@@ -7445,73 +7555,82 @@ msgstr ""
 
 #. DLG_FOSA_OpenTitle
 #: po/tmp/xap_String_Id.h.h:537
+#, fuzzy
 msgid "Open File"
-msgstr "Atidaryti bylą"
+msgstr "&Atidaryti Bylą"
 
 #. DLG_FOSA_FileOpenTypeLabel
 #: po/tmp/xap_String_Id.h.h:539
 msgid "Open file as type:"
-msgstr "Atidaromos bylos tipas:"
+msgstr ""
 
 #. DLG_LISTDOCS_Title
 #: po/tmp/xap_String_Id.h.h:541
+#, fuzzy
 msgid "Opened Documents"
-msgstr "Atverti dokumentai"
+msgstr "Dokumentai"
 
 #. TB_Zoom_Percent
 #: po/tmp/xap_String_Id.h.h:543
+#, fuzzy
 msgid "Other..."
-msgstr "Kita..."
+msgstr "Kita"
 
 #. DLG_Zoom_Percent
 #: po/tmp/xap_String_Id.h.h:547
 msgid "P&ercent:"
-msgstr "&Procentais:"
+msgstr ""
 
 #. TB_Zoom_PageWidth
 #: po/tmp/xap_String_Id.h.h:549
+#, fuzzy
 msgid "Page Width"
-msgstr "Puslapio Plotis"
+msgstr "&Puslapio Plotis"
 
 #. DLG_UP_PageRanges
 #: po/tmp/xap_String_Id.h.h:551
+#, fuzzy
 msgid "Page ranges:"
-msgstr "Puslapių rėžiai:"
+msgstr "Foninis Paveiksliukas"
 
 #. DLG_Password_Password
 #: po/tmp/xap_String_Id.h.h:553
 msgid "Password:"
-msgstr "Slaptažodis:"
+msgstr ""
 
 #. STYLE_PLAIN_TEXT
 #: po/tmp/xap_String_Id.h.h:555
+#, fuzzy
 msgid "Plain Text"
-msgstr "Grynas Tekstas"
+msgstr "Martino testas"
 
 #. DLG_PLUGIN_MANAGER_DETAILS
 #: po/tmp/xap_String_Id.h.h:557
+#, fuzzy
 msgid "Plugin Details:"
-msgstr "Priedo informacija:"
+msgstr "Išdėstymo detalės"
 
 #. DLG_PLUGIN_MANAGER_LIST
 #: po/tmp/xap_String_Id.h.h:559
+#, fuzzy
 msgid "Plugin List"
-msgstr "Priedų sąrašas"
+msgstr "&Priedai"
 
 #. LANG_PL_PL
 #: po/tmp/xap_String_Id.h.h:561
+#, fuzzy
 msgid "Polish"
-msgstr "Lenkų"
+msgstr "Leidėjas"
 
 #. LANG_PT_BR
 #: po/tmp/xap_String_Id.h.h:563
 msgid "Portuguese (Brazil)"
-msgstr "Portugalų (Brazilija)"
+msgstr ""
 
 #. LANG_PT_PT
 #: po/tmp/xap_String_Id.h.h:565
 msgid "Portuguese (Portugal)"
-msgstr "Portugalų (Portugalija)"
+msgstr ""
 
 #. DLG_Image_PlaceColumn
 #: po/tmp/xap_String_Id.h.h:567
@@ -7531,42 +7650,47 @@ msgstr ""
 #. DLG_Image_Aspect
 #: po/tmp/xap_String_Id.h.h:573
 msgid "Preserve aspect ratio"
-msgstr "Išlaikyti proporcijas"
+msgstr ""
 
 #. DLG_IP_Activate_Label
 #: po/tmp/xap_String_Id.h.h:577
+#, fuzzy
 msgid "Preview Picture"
-msgstr "Peržiūrėti paveikslėlį"
+msgstr "Peržiūra"
 
 #. DLG_FOSA_PrintToFileTitle
 #: po/tmp/xap_String_Id.h.h:582
+#, fuzzy
 msgid "Print To File"
-msgstr "Spausdinti į bylą"
+msgstr "Spaudinio peržiūra"
 
 #. DLG_FOSA_FilePrintTypeLabel
 #: po/tmp/xap_String_Id.h.h:584
 msgid "Print file as type:"
-msgstr "Spausdinti bylą tokio tipo:"
+msgstr ""
 
 #. DLG_UP_PrintIn
 #: po/tmp/xap_String_Id.h.h:586
+#, fuzzy
 msgid "Print in: "
-msgstr "Spausdinti kaip: "
+msgstr "Spausdinti"
 
 #. DLG_UP_PrintTo
 #: po/tmp/xap_String_Id.h.h:588
+#, fuzzy
 msgid "Print to: "
-msgstr "Spausdinti į: "
+msgstr "Spausdinti"
 
 #. DLG_UP_Printer
 #: po/tmp/xap_String_Id.h.h:590
+#, fuzzy
 msgid "Printer"
-msgstr "Spausdintuvą"
+msgstr "Spausdinti"
 
 #. DLG_UP_PrinterCommand
 #: po/tmp/xap_String_Id.h.h:592
 msgid "Printer command: "
-msgstr "Spausdintuvo komanda: "
+msgstr ""
 
 #. LANG_PA_IN
 #: po/tmp/xap_String_Id.h.h:594
@@ -7585,153 +7709,173 @@ msgstr ""
 
 #. DLG_UFS_StyleRegular
 #: po/tmp/xap_String_Id.h.h:600
+#, fuzzy
 msgid "Regular"
-msgstr "Paprastas"
+msgstr "&Liniuotę"
 
 #. DLG_DocComparison_Relationship
 #: po/tmp/xap_String_Id.h.h:602
+#, fuzzy
 msgid "Relationship:"
-msgstr "Giminystė:"
+msgstr "Sąsaja:"
 
 #. DLG_Restore
 #: po/tmp/xap_String_Id.h.h:604
+#, fuzzy
 msgid "Restore"
-msgstr "Atstatyti"
+msgstr "Pa&miršti"
 
 #. DLG_HTMLOPT_ExpRestore
 #: po/tmp/xap_String_Id.h.h:606
+#, fuzzy
 msgid "Restore Settings"
-msgstr "Grąžinti Nuostatas"
+msgstr "Esamos nuostatos"
 
 #. DLG_DocComparison_Results
 #: po/tmp/xap_String_Id.h.h:608
+#, fuzzy
 msgid "Results"
-msgstr "Rezultatai"
+msgstr "Įp&rastos"
 
 #. LANG_RO_RO
 #: po/tmp/xap_String_Id.h.h:610
 msgid "Romanian"
-msgstr "Rumunų"
+msgstr ""
 
 #. ENC_ROMA_MAC
 #: po/tmp/xap_String_Id.h.h:612
 msgid "Romanian, Macintosh"
-msgstr "Rumunų, Macintosh"
+msgstr ""
 
 #. LANG_RU_RU
 #: po/tmp/xap_String_Id.h.h:614
 msgid "Russian (Russia)"
-msgstr "Rusų (Rusija)"
+msgstr ""
 
 #. DLG_UFS_SampleFrameLabel
 #: po/tmp/xap_String_Id.h.h:616
+#, fuzzy
 msgid "Sample"
 msgstr "Pavyzdys"
 
 #. LANG_SC_IT
 #: po/tmp/xap_String_Id.h.h:618
 msgid "Sardinian"
-msgstr "Sardiniečių"
+msgstr ""
 
 #. DLG_FOSA_SaveAsTitle
 #: po/tmp/xap_String_Id.h.h:620
+#, fuzzy
 msgid "Save File As"
-msgstr "Išsaugoti bylą kaip"
+msgstr "Išsaugoti kaip"
 
 #. DLG_HTMLOPT_ExpSave
 #: po/tmp/xap_String_Id.h.h:622
+#, fuzzy
 msgid "Save Settings"
-msgstr "Išsaugoti Nuostatas"
+msgstr "Esamos nuostatos"
 
 #. DLG_FOSA_FileSaveTypeLabel
 #: po/tmp/xap_String_Id.h.h:624
+#, fuzzy
 msgid "Save file as type:"
-msgstr "Išsaugoti bylą tokio tipo:"
+msgstr "Išsaugoti bylą kaip"
 
 #. DLG_UFS_ScriptLabel
 #: po/tmp/xap_String_Id.h.h:626
+#, fuzzy
 msgid "Script:"
-msgstr "Skriptas:"
+msgstr "S&kriptai"
 
 #. STYLE_SECTHEADING
 #: po/tmp/xap_String_Id.h.h:628
+#, fuzzy
 msgid "Section Heading"
-msgstr "Skyriaus antraštė"
+msgstr "Skyriaus Trūkis"
 
 #. DLG_UENC_EncLabel
 #: po/tmp/xap_String_Id.h.h:632
+#, fuzzy
 msgid "Select Encoding:"
-msgstr "Pasirink koduotę:"
+msgstr "Pažymėjimas"
 
 #. DLG_HTMLOPT_ExpLabel
 #: po/tmp/xap_String_Id.h.h:634
+#, fuzzy
 msgid "Select HTML export options:"
-msgstr "Pasirinkite, kaip eksportuosite į HTML:"
+msgstr "Pažymėti teksto dėžutę"
 
 #. DLG_ULANG_LangLabel
 #: po/tmp/xap_String_Id.h.h:636
+#, fuzzy
 msgid "Select Language:"
-msgstr "Pasirink kalbą:"
+msgstr "Nurodyti &kalbą"
 
 #. LANG_SR
 #: po/tmp/xap_String_Id.h.h:640
 msgid "Serbian"
-msgstr "Serbų"
+msgstr ""
 
 #. DLG_Image_ImageDesc
 #: po/tmp/xap_String_Id.h.h:642
+#, fuzzy
 msgid "Set Image Name"
-msgstr ""
+msgstr "Foninis paveiksliukas"
 
 #. DLG_Image_ImageSize
 #: po/tmp/xap_String_Id.h.h:644
+#, fuzzy
 msgid "Set Image Size"
-msgstr ""
+msgstr "Foninis paveiksliukas"
 
 #. DLG_ULANG_LangTitle
 #: po/tmp/xap_String_Id.h.h:646
+#, fuzzy
 msgid "Set Language"
-msgstr "Nustatyti Kalbą"
+msgstr "Nurodyti &kalbą"
 
 #. DLG_UFS_TransparencyCheck
 #: po/tmp/xap_String_Id.h.h:648
+#, fuzzy
 msgid "Set no Highlight Color"
-msgstr "Nenaudoti pažymėjimo spalvos"
+msgstr "Atsisakyti pažymėjimo spalva"
 
 #. DLG_UFS_SizeLabel
 #: po/tmp/xap_String_Id.h.h:652
 msgid "Size:"
-msgstr "Dydis:"
+msgstr ""
 
 #. LANG_SK_SK
 #: po/tmp/xap_String_Id.h.h:654
 msgid "Slovak"
-msgstr "Slovakų"
+msgstr ""
 
 #. LANG_SL_SI
 #: po/tmp/xap_String_Id.h.h:656
 msgid "Slovenian"
-msgstr "Slovėnų"
+msgstr ""
 
 #. LANG_ES_MX
 #: po/tmp/xap_String_Id.h.h:658
 msgid "Spanish (Mexico)"
-msgstr "Ispanų (Meksika)"
+msgstr ""
 
 #. LANG_ES_ES
 #: po/tmp/xap_String_Id.h.h:660
 msgid "Spanish (Spain)"
-msgstr "Ispanų (Ispanija)"
+msgstr ""
 
 #. DLG_Image_SquareWrap
 #: po/tmp/xap_String_Id.h.h:664
+#, fuzzy
 msgid "Square text wrapping"
-msgstr ""
+msgstr "Nustatyti teksto laužymą"
 
 #. DLG_DocComparison_Styles
 #: po/tmp/xap_String_Id.h.h:672
+#, fuzzy
 msgid "Styles:"
-msgstr "Stiliai:"
+msgstr "Stilius:"
 
 #. LANG_SW
 #: po/tmp/xap_String_Id.h.h:678
@@ -7741,7 +7885,7 @@ msgstr ""
 #. LANG_SV_SE
 #: po/tmp/xap_String_Id.h.h:680
 msgid "Swedish"
-msgstr "Švedų"
+msgstr ""
 
 #. TB_Font_Symbol
 #: po/tmp/xap_String_Id.h.h:682
@@ -7757,22 +7901,24 @@ msgstr ""
 #. LANG_TL_PH
 #: po/tmp/xap_String_Id.h.h:688
 msgid "Tagalog"
-msgstr "Tagalog"
+msgstr ""
 
 #. LANG_TA_IN
 #: po/tmp/xap_String_Id.h.h:690
+#, fuzzy
 msgid "Tamil"
-msgstr "Tamil"
+msgstr "Lentelė"
 
 #. LANG_TE_IN
 #: po/tmp/xap_String_Id.h.h:692
 msgid "Telugu"
-msgstr "Telugu"
+msgstr ""
 
 #. DLG_UFS_ColorTab
 #: po/tmp/xap_String_Id.h.h:694
+#, fuzzy
 msgid "Text Color"
-msgstr "Teksto spalva"
+msgstr "Keisti teksto spalvą"
 
 #. DLG_Image_WrappedBoth
 #: po/tmp/xap_String_Id.h.h:696
@@ -7792,28 +7938,28 @@ msgstr ""
 #. LANG_TH_TH
 #: po/tmp/xap_String_Id.h.h:702
 msgid "Thai"
-msgstr "Tajų"
+msgstr ""
 
 #. ENC_THAI_MAC
 #: po/tmp/xap_String_Id.h.h:704
 msgid "Thai, Macintosh"
-msgstr "Tajų, Macintosh"
+msgstr ""
 
 #. ENC_THAI_TIS
 #: po/tmp/xap_String_Id.h.h:706
 msgid "Thai, TIS-620"
-msgstr "Tajų, TIS-620"
+msgstr ""
 
 #. ENC_THAI_WIN
 #: po/tmp/xap_String_Id.h.h:708
 msgid "Thai, Windows Code Page 874"
-msgstr "Tajų, Windows Code Page 874"
+msgstr ""
 
 #. DLG_NoSaveFile_DirNotWriteable
 #: po/tmp/xap_String_Id.h.h:710
 #, c-format
 msgid "The directory '%s' is write-protected."
-msgstr "Uždrausta rašyti į katalogą '%s'."
+msgstr ""
 
 #. MSG_HistoryPartRestore2
 #: po/tmp/xap_String_Id.h.h:712
@@ -7822,13 +7968,11 @@ msgid ""
 "The nearest version that can be restored fully is %d. Would you like to "
 "restore this version instead? To partially restore version %d press No."
 msgstr ""
-"Artimiausia pilnai atsatoma yra %d-oji versija. Ar norite atstatyti siūlomą "
-"versiją? Norėdami dalinai atstatyti %d-ąją dokumento versiją, spauskite Ne."
 
 #. DLG_UP_InvalidPrintString
 #: po/tmp/xap_String_Id.h.h:714
 msgid "The print command string is not valid."
-msgstr "Spausdinimo komandos eilutė klaidinga."
+msgstr ""
 
 #. MSG_NoUndo
 #: po/tmp/xap_String_Id.h.h:716
@@ -7837,63 +7981,65 @@ msgstr ""
 
 #. DLG_Image_TightWrap
 #: po/tmp/xap_String_Id.h.h:720
+#, fuzzy
 msgid "Tight text wrapping"
-msgstr ""
+msgstr "Teksto laužymas"
 
 #. MSG_HistoryPartRestore3
 #: po/tmp/xap_String_Id.h.h:724
 msgid "To continue anyway, press OK."
-msgstr "Norėdami tęsti bet kuriuo atveju, spauskite Gerai."
+msgstr ""
 
 #. MSG_HistoryPartRestore4
 #: po/tmp/xap_String_Id.h.h:726
 msgid "To quit the restoration attempt, press Cancel."
-msgstr "Norėdami nutraukti bandymą atstatyti, spauskite Atšaukti."
+msgstr ""
 
 #. LANG_TR_TR
 #: po/tmp/xap_String_Id.h.h:732
 msgid "Turkish"
-msgstr "Turkų"
+msgstr ""
 
 #. ENC_TURK_ISO
 #: po/tmp/xap_String_Id.h.h:734
 msgid "Turkish, ISO-8859-9"
-msgstr "Turkų, ISO-8859-9"
+msgstr ""
 
 #. ENC_TURK_MAC
 #: po/tmp/xap_String_Id.h.h:736
 msgid "Turkish, Macintosh"
-msgstr "Turkų, Macintosh"
+msgstr ""
 
 #. ENC_TURK_WIN
 #: po/tmp/xap_String_Id.h.h:738
 msgid "Turkish, Windows Code Page 1254"
-msgstr "Turkų, Windows Code Page 1254"
+msgstr ""
 
 #. DLG_Image_WrapType
 #: po/tmp/xap_String_Id.h.h:740
+#, fuzzy
 msgid "Type of text wrapping"
-msgstr ""
+msgstr "Teksto laužymas"
 
 #. ENC_WEST_ASCII
 #: po/tmp/xap_String_Id.h.h:742
 msgid "US-ASCII"
-msgstr "US-ASCII"
+msgstr ""
 
 #. LANG_UK_UA
 #: po/tmp/xap_String_Id.h.h:744
 msgid "Ukrainian"
-msgstr "Ukrainiečių"
+msgstr ""
 
 #. ENC_UKRA_KOI
 #: po/tmp/xap_String_Id.h.h:746
 msgid "Ukrainian, KOI8-U"
-msgstr "Ukrainiečių, KOI8-U"
+msgstr ""
 
 #. ENC_UKRA_MAC
 #: po/tmp/xap_String_Id.h.h:748
 msgid "Ukrainian, Macintosh"
-msgstr "Ukrainiečių, Macintosh"
+msgstr ""
 
 #. ENC_UNIC_UCS2
 #: po/tmp/xap_String_Id.h.h:752
@@ -7903,12 +8049,12 @@ msgstr ""
 #. ENC_UNIC_UCS_2BE
 #: po/tmp/xap_String_Id.h.h:754
 msgid "Unicode UCS-2 Big Endian"
-msgstr "Unikodas UCS-2 Vyriausiojo Baito"
+msgstr ""
 
 #. ENC_UNIC_UCS_2LE
 #: po/tmp/xap_String_Id.h.h:756
 msgid "Unicode UCS-2 Little Endian"
-msgstr "Unikodas UCS-2 Jauniausiojo Baito"
+msgstr ""
 
 #. ENC_UNIC_UCS4
 #: po/tmp/xap_String_Id.h.h:758
@@ -7918,68 +8064,69 @@ msgstr ""
 #. ENC_UNIC_UCS_4BE
 #: po/tmp/xap_String_Id.h.h:760
 msgid "Unicode UCS-4 Big Endian"
-msgstr "Unikodas UCS-4 Vyriausiojo Baito"
+msgstr ""
 
 #. ENC_UNIC_UCS_4LE
 #: po/tmp/xap_String_Id.h.h:762
 msgid "Unicode UCS-4 Little Endian"
-msgstr "Unikodas UCS-4 Jauniausiojo Baito"
+msgstr ""
 
 #. ENC_UNIC_UTF_16
 #: po/tmp/xap_String_Id.h.h:764
 msgid "Unicode UTF-16"
-msgstr "Unikodas UTF-16 Vyriausiojo Baito"
+msgstr ""
 
 #. ENC_UNIC_UTF_16BE
 #: po/tmp/xap_String_Id.h.h:766
 msgid "Unicode UTF-16 Big Endian"
-msgstr "Unikodas UTF-16 Vyriausiojo Baito"
+msgstr ""
 
 #. ENC_UNIC_UTF_16LE
 #: po/tmp/xap_String_Id.h.h:768
 msgid "Unicode UTF-16 Little Endian"
-msgstr "Unikodas UTF-16 Jauniausiojo Baito"
+msgstr ""
 
 #. ENC_UNIC_UTF_32
 #: po/tmp/xap_String_Id.h.h:770
 msgid "Unicode UTF-32"
-msgstr "Unikodas UTF-32 Vyriausiojo Baito"
+msgstr ""
 
 #. ENC_UNIC_UTF_32BE
 #: po/tmp/xap_String_Id.h.h:772
 msgid "Unicode UTF-32 Big Endian"
-msgstr "Unikodas UTF-32 Vyriausiojo Baito"
+msgstr ""
 
 #. ENC_UNIC_UTF_32LE
 #: po/tmp/xap_String_Id.h.h:774
 msgid "Unicode UTF-32 Little Endian"
-msgstr "Unikodas UTF-32 Jauniausiojo Baito"
+msgstr ""
 
 #. ENC_UNIC_UTF_7
 #: po/tmp/xap_String_Id.h.h:776
 msgid "Unicode UTF-7"
-msgstr "Unikodas UTF-7"
+msgstr ""
 
 #. ENC_UNIC_UTF_8
 #: po/tmp/xap_String_Id.h.h:778
 msgid "Unicode UTF-8"
-msgstr "Unikodas UTF-8"
+msgstr ""
 
 #. UntitledDocument
 #: po/tmp/xap_String_Id.h.h:780
 #, c-format
 msgid "Untitled%d"
-msgstr "Bevardis%d"
+msgstr ""
 
 #. DLG_Update
 #: po/tmp/xap_String_Id.h.h:782
+#, fuzzy
 msgid "Update"
-msgstr "Atnaujinti"
+msgstr " Savaime atnaujinti"
 
 #. LANG_UR_PK
 #: po/tmp/xap_String_Id.h.h:788
 msgid "Urdu"
-msgstr "Urdų"
+msgstr ""
 
 #. LANG_UZ_UZ
 #: po/tmp/xap_String_Id.h.h:790
@@ -7989,177 +8136,184 @@ msgstr ""
 #. DLG_History_List_Title
 #: po/tmp/xap_String_Id.h.h:794
 msgid "Version history"
-msgstr "Versijos istorija"
+msgstr ""
 
 #. DLG_PLUGIN_MANAGER_VERSION
 #. DLG_History_Version
 #: po/tmp/xap_String_Id.h.h:797
+#, fuzzy
 msgid "Version:"
-msgstr "Versija:"
+msgstr "Leidimai"
 
 #. LANG_VI_VN
 #: po/tmp/xap_String_Id.h.h:799
 msgid "Vietnamese"
-msgstr "Vietnamiečių"
+msgstr ""
 
 #. ENC_VIET_TCVN
 #: po/tmp/xap_String_Id.h.h:801
 msgid "Vietnamese, TCVN"
-msgstr "Vietnamiečių, TCVN"
+msgstr ""
 
 #. ENC_VIET_VISCII
 #: po/tmp/xap_String_Id.h.h:803
 msgid "Vietnamese, VISCII"
-msgstr "Vietnamiečių, VISCII"
+msgstr ""
 
 #. ENC_VIET_WIN
 #: po/tmp/xap_String_Id.h.h:805
 msgid "Vietnamese, Windows Code Page 1258"
-msgstr "Vietnamiečių, Windows Code Page 1258"
+msgstr ""
 
 #. DLG_MW_MoreWindows
 #: po/tmp/xap_String_Id.h.h:807
+#, fuzzy
 msgid "View Document"
-msgstr "Rodyti dokumentą"
+msgstr "Naujas Dokumentas"
 
 #. DLG_MW_Activate
 #: po/tmp/xap_String_Id.h.h:809
+#, fuzzy
 msgid "View:"
-msgstr "Rodyti:"
+msgstr "&Rodyti"
 
 #. LANG_CY_GB
 #: po/tmp/xap_String_Id.h.h:811
 msgid "Welsh"
-msgstr "Valų"
+msgstr ""
 
 #. ENC_US_DOS
 #: po/tmp/xap_String_Id.h.h:813
 msgid "Western European, DOS/Windows Code Page 437"
-msgstr "Vakarų Europos, DOS/Windows Code Page 437"
+msgstr ""
 
 #. ENC_MLNG_DOS
 #: po/tmp/xap_String_Id.h.h:815
 msgid "Western European, DOS/Windows Code Page 850"
-msgstr "Vakarų Europos, DOS/Windows Code Page 850"
+msgstr ""
 
 #. ENC_WEST_HP
 #: po/tmp/xap_String_Id.h.h:817
 msgid "Western European, HP"
-msgstr "Vakarų Europos, HP"
+msgstr ""
 
 #. ENC_WEST_ISO
 #: po/tmp/xap_String_Id.h.h:819
 msgid "Western European, ISO-8859-1"
-msgstr "Vakarų Europos, ISO-8859-1"
+msgstr ""
 
 #. ENC_WEST_MAC
 #: po/tmp/xap_String_Id.h.h:821
 msgid "Western European, Macintosh"
-msgstr "Vakarų Europos, Macintosh"
+msgstr ""
 
 #. ENC_WEST_NXT
 #: po/tmp/xap_String_Id.h.h:823
 msgid "Western European, NeXT"
-msgstr "Vakarų Europos, NeXT"
+msgstr ""
 
 #. ENC_WEST_WIN
 #: po/tmp/xap_String_Id.h.h:825
 msgid "Western European, Windows Code Page 1252"
-msgstr "Vakarų Europos, Windows Code Page 1252"
+msgstr ""
 
 #. TB_Zoom_WholePage
 #: po/tmp/xap_String_Id.h.h:827
+#, fuzzy
 msgid "Whole Page"
-msgstr "Visas Puslapis"
+msgstr "&Visas Puslapis"
 
 #. DLG_Image_Width
 #: po/tmp/xap_String_Id.h.h:829
+#, fuzzy
 msgid "Width:"
-msgstr "Plotis:"
+msgstr "&Plotis:"
 
 #. DLG_IP_Width_Label
 #: po/tmp/xap_String_Id.h.h:831
+#, fuzzy
 msgid "Width:  "
-msgstr "Plotis:  "
+msgstr "&Plotis:"
 
 #. DLG_QNXMB_Yes
 #: po/tmp/xap_String_Id.h.h:833
 msgid "Yes"
-msgstr "Taip"
+msgstr ""
 
 #. LANG_YI
 #: po/tmp/xap_String_Id.h.h:835
 msgid "Yiddish"
-msgstr "Jjidiš"
+msgstr ""
 
 #. MSG_HistoryConfirmSave
 #: po/tmp/xap_String_Id.h.h:837
-#, c-format
+#, fuzzy, c-format
 msgid "You have to save changes to document %s before proceeding. Save now?"
-msgstr ""
-"Norėdami tęsti, turite iš pradžių išsaugoti dokumntą %s. Ar išsaugoti dabar?"
+msgstr "Ar išsaugoti %s dokumento pakeitimus prieš išeinant?"
 
 #. DLG_Zoom_RadioFrameCaption
 #: po/tmp/xap_String_Id.h.h:841
+#, fuzzy
 msgid "Zoom to"
-msgstr "Rodyti masteliu"
+msgstr "&Mastelis"
 
 #. DLG_UnixMB_No
 #: po/tmp/xap_String_Id.h.h:843
 msgid "_No"
-msgstr "_Ne"
+msgstr ""
 
 #. DLG_UnixMB_Yes
 #: po/tmp/xap_String_Id.h.h:845
 msgid "_Yes"
-msgstr "_Taip"
+msgstr ""
 
 #. DLG_Unit_cm
 #: po/tmp/xap_String_Id.h.h:847
 msgid "cm"
-msgstr "cm"
+msgstr ""
 
 #. DLG_DocComparison_Different
 #: po/tmp/xap_String_Id.h.h:849
 msgid "different"
-msgstr "skirtingi"
+msgstr ""
 
 #. DLG_DocComparison_DivergingPos
 #: po/tmp/xap_String_Id.h.h:851
 #, c-format
 msgid "diverging after document position %d"
-msgstr "skiriasi nuo pozicijos %d dokumente"
+msgstr ""
 
 #. DLG_DocComparison_Diverging
 #: po/tmp/xap_String_Id.h.h:853
 #, c-format
 msgid "diverging after version %d of %s"
-msgstr "Nukrypsta nuo version %d dokumento %s"
+msgstr ""
 
 #. DLG_DocComparison_Identical
 #: po/tmp/xap_String_Id.h.h:855
 msgid "identical"
-msgstr "identiški"
+msgstr ""
 
 #. DLG_Unit_inch
 #: po/tmp/xap_String_Id.h.h:857
 msgid "inch"
-msgstr "coliai"
+msgstr ""
 
 #. DLG_Unit_mm
 #: po/tmp/xap_String_Id.h.h:859
 msgid "mm"
-msgstr "mm"
+msgstr ""
 
 #. DLG_Unit_pica
 #: po/tmp/xap_String_Id.h.h:861
 msgid "pica"
-msgstr "pica"
+msgstr ""
 
 #. DLG_Unit_points
 #: po/tmp/xap_String_Id.h.h:863
+#, fuzzy
 msgid "points"
-msgstr "taškai"
+msgstr "Šriftas"
 
 #. DLG_DocComparison_Siblings
 #: po/tmp/xap_String_Id.h.h:865
@@ -8169,136 +8323,4 @@ msgstr ""
 #. DLG_DocComparison_Unrelated
 #: po/tmp/xap_String_Id.h.h:867
 msgid "unrelated"
-msgstr "nesusiję"
-
-#~ msgid "&Autotext"
-#~ msgstr "&Autotekstą"
-
-#~ msgid "About &GNU Free Software"
-#~ msgstr "Apie &GNU Free Software"
-
-#~ msgid "About &Open Source"
-#~ msgstr "Apie &Open Source"
-
-#~ msgid "About the GNU project"
-#~ msgstr "Apie GNU projektą"
-
-#~ msgid "Attention:"
-#~ msgstr "Dėmesio:"
-
-#~ msgid "BCC:"
-#~ msgstr "BCC:"
-
-#~ msgid "Best regards,"
-#~ msgstr "Geriausi linkėjimai,"
-
-#~ msgid "Best wishes,"
-#~ msgstr "Visa ko geriausio,"
-
-#~ msgid "CC:"
-#~ msgstr "CC:"
-
-#~ msgid "CERTIFIED MAIL"
-#~ msgstr "PATVIRTINTAS LAIŠKAS"
-
-#~ msgid "CONFIDENTIAL"
-#~ msgstr "KONFIDENCIALU"
-
-#~ msgid "Check &Version"
-#~ msgstr "Patikrinti &versiją"
-
-#~ msgid "Closing:"
-#~ msgstr "Pabaigai:"
-
-#~ msgid "Cordially,"
-#~ msgstr "Širdingai,"
-
-#~ msgid "Dear Mom and Dad,"
-#~ msgstr "Brangūs mamyte ir tėveli,"
-
-#~ msgid "Dear Sir or Madam:"
-#~ msgstr "Brangus pone arba ponia:"
-
-#~ msgid "Display information about Open Source"
-#~ msgstr "Rodyti informaciją apie Open Source"
-
-#~ msgid "Display program version number"
-#~ msgstr "Parodyti programos versijos numerį"
-
-#~ msgid "Email:"
-#~ msgstr "El. paštas:"
-
-#~ msgid "From:"
-#~ msgstr "Nuo:"
-
-#~ msgid "In reply to:"
-#~ msgstr "Atsakyti:"
-
-#~ msgid "Ladies and Gentlemen:"
-#~ msgstr "Ponai ir ponios:"
-
-#~ msgid "Love,"
-#~ msgstr "Myliu,"
-
-#~ msgid "Mail Instructions:"
-#~ msgstr "Pašto instrukcijos:"
-
-#~ msgid "PERSONAL"
-#~ msgstr "ASMENIŠKA"
-
-#~ msgid "RE:"
-#~ msgstr "RE:"
-
-#~ msgid "REGISTERED MAIL"
-#~ msgstr "REGISTRUOTAS LAIŠKAS"
-
-#~ msgid "Reference:"
-#~ msgstr "Nuoroda:"
-
-#~ msgid "Regards,"
-#~ msgstr "Linkėjimai,"
-
-#~ msgid "Respectfully yours,"
-#~ msgstr "Pagarbiai Jūsų,"
-
-#~ msgid "Respectfully,"
-#~ msgstr "Pagarbiai,"
-
-#~ msgid "SPECIAL DELIVERY"
-#~ msgstr "SPECIALUS PRISTATYMAS"
-
-#~ msgid "Salutation:"
-#~ msgstr "Pasveikinimas:"
-
-#~ msgid "Sincerely yours,"
-#~ msgstr "Nuoširdžiai jūsų,"
-
-#~ msgid "Take care,"
-#~ msgstr "Rūpinkis,"
-
-#~ msgid "Thank you,"
-#~ msgstr "Ačiū Jums,"
-
-#~ msgid "Thanks,"
-#~ msgstr "Ačiū,"
-
-#~ msgid "To Whom It May Concern:"
-#~ msgstr "Tiems, kuriuos tai liečia:"
-
-#~ msgid "To:"
-#~ msgstr "Kam:"
-
-#~ msgid "VIA AIRMAIL"
-#~ msgstr "ORO PAŠTU"
-
-#~ msgid "VIA FACSIMILE"
-#~ msgstr "FAKSIMILĖ"
-
-#~ msgid "VIA OVERNIGHT MAIL"
-#~ msgstr "SKUBIU PAŠTU"
-
-#~ msgid "Yours truly,"
-#~ msgstr "Jus gerbiantis,"
-
-#~ msgid "\tFont   "
-#~ msgstr "  Šriftas  "
+msgstr ""
