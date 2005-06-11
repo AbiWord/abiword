@@ -1224,7 +1224,7 @@ void FV_FrameEdit::mouseRelease(UT_sint32 x, UT_sint32 y)
 		// WARNING: Will need to change this to accomodate variable styles without constantly resetting to solid.
 		//				 Recommend to do whatever is done for thickness, which must also have a default set but not
 		//				 reverted to on every change.
-		const XML_Char * props[36] = {"frame-type","textbox",
+		const XML_Char * props[38] = {"frame-type","textbox",
 					      "wrap-mode","wrapped-both",
 					      "position-to","column-above-text",
 					      "xpos",sXpos.c_str(),
@@ -1240,6 +1240,7 @@ void FV_FrameEdit::mouseRelease(UT_sint32 x, UT_sint32 y)
 						  "right-style","1",
 						  "top-style","1",
 						  "bot-style","1",
+						  "bg-style","1",
 					      "tight-wrap","0",
 					      NULL,NULL};
 //
