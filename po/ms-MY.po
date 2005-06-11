@@ -7,7 +7,7 @@ msgid ""
 msgstr ""
 "Project-Id-Version: abiword\n"
 "Report-Msgid-Bugs-To: \n"
-"POT-Creation-Date: 2005-05-29 19:44+0800\n"
+"POT-Creation-Date: 2005-06-11 02:27+0200\n"
 "PO-Revision-Date: 2005-06-09 00:19+0800\n"
 "Last-Translator: Sharuzzaman Ahmat Raslan <sharuzzaman@myrealbox.com>\n"
 "Language-Team: Malay <translation-team-ms@lists.sourceforge.net>\n"
@@ -601,8 +601,7 @@ msgstr "War&isi label"
 #. MENU_LABEL_INSERT
 #. MENU_LABEL_TABLE_INSERT
 #. DLG_Insert
-#: po/tmp/ap_String_Id.h.h:226
-#: po/tmp/xap_String_Id.h.h:15
+#: po/tmp/ap_String_Id.h.h:226 po/tmp/xap_String_Id.h.h:15
 msgid "&Insert"
 msgstr "Sel&it"
 
@@ -1020,8 +1019,7 @@ msgstr "&Unit:"
 
 #. MENU_LABEL_VIEW
 #. DLG_MW_ViewButton
-#: po/tmp/ap_String_Id.h.h:396
-#: po/tmp/xap_String_Id.h.h:21
+#: po/tmp/ap_String_Id.h.h:396 po/tmp/xap_String_Id.h.h:21
 msgid "&View"
 msgstr "&Lihat"
 
@@ -1156,8 +1154,10 @@ msgstr "AbiWord telah selesai memeriksa pilihan."
 #. DLG_FR_FinishedReplace
 #: po/tmp/ap_String_Id.h.h:452
 #, c-format
-msgid "AbiWord has finished its search of the document and has made %d replacements."
-msgstr "Abiword telah selesai mencari dalam dokumen dan telah melakukan %d perubahan."
+msgid ""
+"AbiWord has finished its search of the document and has made %d replacements."
+msgstr ""
+"Abiword telah selesai mencari dalam dokumen dan telah melakukan %d perubahan."
 
 #. DLG_FR_FinishedFind
 #: po/tmp/ap_String_Id.h.h:454
@@ -1169,15 +1169,18 @@ msgstr "Abiword telah selesai mencari dalam dokumen."
 msgid ""
 "AbiWord is designed for a newer version of the system file COMCTL32.DLL\n"
 "than the one currently on your system. (COMCTL32.DLL version 4.72 or newer)\n"
-"A solution to this problem is explained in the FAQ on the AbiSource web site\n"
+"A solution to this problem is explained in the FAQ on the AbiSource web "
+"site\n"
 "\n"
 "\thttp://www.abisource.com\n"
 "\n"
 "You can use the program, but the toolbar may be missing."
 msgstr ""
 "AbiWord direka untuk versi terbaru fail sistem COMCTL32.DLL\n"
-"berbanding dengan yang sedia ada pada sistem anda. (COMCTL32.DLL versi 4.72 atau terbaru)\n"
-"Penyelesaian kepada masalah ini diterangkan didalam FAQ di laman web AbiSource\n"
+"berbanding dengan yang sedia ada pada sistem anda. (COMCTL32.DLL versi 4.72 "
+"atau terbaru)\n"
+"Penyelesaian kepada masalah ini diterangkan didalam FAQ di laman web "
+"AbiSource\n"
 "\n"
 "\thttp://www.abisource.com\n"
 "\n"
@@ -1188,10 +1191,12 @@ msgstr ""
 #, c-format
 msgid ""
 "AbiWord needs the file %s.dll\n"
-"Please download and install it from http://www.microsoft.com/msdownload/platformsdk/sdkupdate/psdkredist.htm"
+"Please download and install it from http://www.microsoft.com/msdownload/"
+"platformsdk/sdkupdate/psdkredist.htm"
 msgstr ""
 "AbiWord memerlukan fail %s.dll\n"
-"Sila muatturun dan pasang dari http://www.microsoft.com/msdownload/platformsdk/sdkupdate/psdkredist.htm"
+"Sila muatturun dan pasang dari http://www.microsoft.com/msdownload/"
+"platformsdk/sdkupdate/psdkredist.htm"
 
 #. MENU_LABEL_HELP_ABOUT_GNOMEOFFICE
 #: po/tmp/ap_String_Id.h.h:460
@@ -1273,8 +1278,7 @@ msgstr "Jajaran:"
 
 #. DLG_Styles_LBL_All
 #. DLG_UP_All
-#: po/tmp/ap_String_Id.h.h:493
-#: po/tmp/xap_String_Id.h.h:51
+#: po/tmp/ap_String_Id.h.h:493 po/tmp/xap_String_Id.h.h:51
 msgid "All"
 msgstr "Semua"
 
@@ -1306,8 +1310,7 @@ msgstr "Permulaan Aplikasi"
 
 #. DLG_Options_Btn_Apply
 #. DLG_Apply
-#: po/tmp/ap_String_Id.h.h:505
-#: po/tmp/xap_String_Id.h.h:63
+#: po/tmp/ap_String_Id.h.h:505 po/tmp/xap_String_Id.h.h:63
 msgid "Apply"
 msgstr "Terap"
 
@@ -1334,8 +1337,12 @@ msgstr "Senarai Arab"
 
 #. MSG_AutoRevisionOffWarning
 #: po/tmp/ap_String_Id.h.h:516
-msgid "Are you sure you do not want to maintain full history record? If you proceed, you will not be able to restore earlier versions of this document."
-msgstr "Adakah anda pasti anda tidak mahu mengekalkan rekod penuh sejarah? Jika anda meneruskan, anda mungkin tidak boleh mengembalikan versi awal dokumen ini."
+msgid ""
+"Are you sure you do not want to maintain full history record? If you "
+"proceed, you will not be able to restore earlier versions of this document."
+msgstr ""
+"Adakah anda pasti anda tidak mahu mengekalkan rekod penuh sejarah? Jika anda "
+"meneruskan, anda mungkin tidak boleh mengembalikan versi awal dokumen ini."
 
 #. DLG_Para_SpacingAtLeast
 #: po/tmp/ap_String_Id.h.h:518
@@ -1349,8 +1356,7 @@ msgstr "Kepil kepada Senarai Terdahulu"
 
 #. DLG_MetaData_Author_LBL
 #. DLG_PLUGIN_MANAGER_AUTHOR
-#: po/tmp/ap_String_Id.h.h:522
-#: po/tmp/xap_String_Id.h.h:83
+#: po/tmp/ap_String_Id.h.h:522 po/tmp/xap_String_Id.h.h:83
 msgid "Author:"
 msgstr "Penulis:"
 
@@ -1476,8 +1482,7 @@ msgstr "Pilihan Dua-Arah"
 #. TOOLBAR_STATUSLINE_FMT_BOLD
 #. TOOLBAR_TOOLTIP_FMT_BOLD
 #. DLG_UFS_StyleBold
-#: po/tmp/ap_String_Id.h.h:574
-#: po/tmp/xap_String_Id.h.h:111
+#: po/tmp/ap_String_Id.h.h:574 po/tmp/xap_String_Id.h.h:111
 msgid "Bold"
 msgstr "Tebal"
 
@@ -1525,15 +1530,13 @@ msgstr "Margin Bawah [%s]"
 #. TOOLBAR_STATUSLINE_FMT_BOTTOMLINE
 #. TOOLBAR_TOOLTIP_FMT_BOTTOMLINE
 #. DLG_UFS_BottomlineCheck
-#: po/tmp/ap_String_Id.h.h:595
-#: po/tmp/xap_String_Id.h.h:115
+#: po/tmp/ap_String_Id.h.h:595 po/tmp/xap_String_Id.h.h:115
 msgid "Bottomline"
 msgstr "Barisbawah"
 
 #. DLG_Lists_Box_List
 #. STYLE_BOXLIST
-#: po/tmp/ap_String_Id.h.h:597
-#: po/tmp/xap_String_Id.h.h:117
+#: po/tmp/ap_String_Id.h.h:597 po/tmp/xap_String_Id.h.h:117
 msgid "Box List"
 msgstr "Kotak Senarai"
 
@@ -1559,8 +1562,7 @@ msgstr "Bullet"
 
 #. DLG_Lists_Bullet_List
 #. STYLE_BULLETLIST
-#: po/tmp/ap_String_Id.h.h:607
-#: po/tmp/xap_String_Id.h.h:125
+#: po/tmp/ap_String_Id.h.h:607 po/tmp/xap_String_Id.h.h:125
 msgid "Bullet List"
 msgstr "Senarai Bullet"
 
@@ -1852,10 +1854,16 @@ msgstr "Pilih semakan mana yang anda hendak lihat"
 #: po/tmp/ap_String_Id.h.h:730
 msgid ""
 "Choose your target in the left side.\n"
-"If you want to use the \"Go To\" button, just fill the Number Entry with the desired number.  You can use + and - to perform relative movement.\tI.e., if you write \"+2\" and you select \"Line\", the \"Go To\" will go 2 lines below your current position."
+"If you want to use the \"Go To\" button, just fill the Number Entry with the "
+"desired number.  You can use + and - to perform relative movement.\tI.e., if "
+"you write \"+2\" and you select \"Line\", the \"Go To\" will go 2 lines "
+"below your current position."
 msgstr ""
 "Pilih sasaran anda di bahagian kiri.\n"
-"Jika anda hendak menggunakan butang \"Go To\", hanya isi Number Entry dengan nombor pilihan.  Anda boleh menggunakan + dan - untuk melakukan gerakan relatif.\tI.e., jika anda tulis \"+2\" dan anda pilih \"Baris\", \"Go To\" akan pergi ke 2 baris dibawah kedudukan semasa."
+"Jika anda hendak menggunakan butang \"Go To\", hanya isi Number Entry dengan "
+"nombor pilihan.  Anda boleh menggunakan + dan - untuk melakukan gerakan "
+"relatif.\tI.e., jika anda tulis \"+2\" dan anda pilih \"Baris\", \"Go To\" "
+"akan pergi ke 2 baris dibawah kedudukan semasa."
 
 #. MENU_LABEL_EDIT_CLEAR
 #: po/tmp/ap_String_Id.h.h:732
@@ -1905,8 +1913,7 @@ msgstr "&Lajur"
 #. DLG_FormatFrame_Color
 #. DLG_FormatTable_Color
 #. DLG_UFS_ColorLabel
-#: po/tmp/ap_String_Id.h.h:751
-#: po/tmp/xap_String_Id.h.h:177
+#: po/tmp/ap_String_Id.h.h:751 po/tmp/xap_String_Id.h.h:177
 msgid "Color:"
 msgstr "Warna:"
 
@@ -2230,8 +2237,7 @@ msgstr "Arah"
 
 #. DLG_Lists_Dashed_List
 #. STYLE_DASHEDLIST
-#: po/tmp/ap_String_Id.h.h:881
-#: po/tmp/xap_String_Id.h.h:225
+#: po/tmp/ap_String_Id.h.h:881 po/tmp/xap_String_Id.h.h:225
 msgid "Dashed List"
 msgstr "Senarai Dash"
 
@@ -2317,8 +2323,7 @@ msgstr "Takrif atau guna gaya untuk pilihan"
 #. DLG_Styles_Delete
 #. MENU_STATUSLINE_TABLE_DELETE
 #. DLG_Delete
-#: po/tmp/ap_String_Id.h.h:918
-#: po/tmp/xap_String_Id.h.h:239
+#: po/tmp/ap_String_Id.h.h:918 po/tmp/xap_String_Id.h.h:239
 msgid "Delete"
 msgstr "Padam"
 
@@ -2422,15 +2427,13 @@ msgstr "Huraian"
 #. DLG_MetaData_Description_LBL
 #. DLG_PLUGIN_MANAGER_DESC
 #. DLG_Image_LblDescription
-#: po/tmp/ap_String_Id.h.h:963
-#: po/tmp/xap_String_Id.h.h:242
+#: po/tmp/ap_String_Id.h.h:963 po/tmp/xap_String_Id.h.h:242
 msgid "Description:"
 msgstr "Huraian:"
 
 #. DLG_Lists_Diamond_List
 #. STYLE_DIAMONLIST
-#: po/tmp/ap_String_Id.h.h:965
-#: po/tmp/xap_String_Id.h.h:244
+#: po/tmp/ap_String_Id.h.h:965 po/tmp/xap_String_Id.h.h:244
 msgid "Diamond List"
 msgstr "Senarai Berlian"
 
@@ -2830,8 +2833,12 @@ msgstr "Gulung dibawah tahap 4"
 
 #. DLG_Para_PreviewFollowParagraph
 #: po/tmp/ap_String_Id.h.h:1125
-msgid "Following Paragraph Following Paragraph Following Paragraph Following Paragraph Following Paragraph Following Paragraph Following Paragraph"
-msgstr "Perenggan Berikut Perenggan Berikut Perenggan Berikut Perenggan Berikut Perenggan Berikut Perenggan Berikut Perenggan Berikut Perenggan Berikut "
+msgid ""
+"Following Paragraph Following Paragraph Following Paragraph Following "
+"Paragraph Following Paragraph Following Paragraph Following Paragraph"
+msgstr ""
+"Perenggan Berikut Perenggan Berikut Perenggan Berikut Perenggan Berikut "
+"Perenggan Berikut Perenggan Berikut Perenggan Berikut Perenggan Berikut "
 
 #. DLG_Styles_ModifyFont
 #. TOOLBAR_LABEL_FMT_FONT
@@ -2839,8 +2846,7 @@ msgstr "Perenggan Berikut Perenggan Berikut Perenggan Berikut Perenggan Berikut 
 #. TOOLBAR_TOOLTIP_FMT_FONT
 #. DLG_UFS_FontTitle
 #. DLG_UFS_FontTab
-#: po/tmp/ap_String_Id.h.h:1130
-#: po/tmp/xap_String_Id.h.h:315
+#: po/tmp/ap_String_Id.h.h:1130 po/tmp/xap_String_Id.h.h:315
 msgid "Font"
 msgstr "Font"
 
@@ -2865,8 +2871,7 @@ msgstr "Font..."
 
 #. DLG_Lists_Font
 #. DLG_UFS_FontLabel
-#: po/tmp/ap_String_Id.h.h:1142
-#: po/tmp/xap_String_Id.h.h:317
+#: po/tmp/ap_String_Id.h.h:1142 po/tmp/xap_String_Id.h.h:317
 msgid "Font:"
 msgstr "Font:"
 
@@ -3018,8 +3023,7 @@ msgstr "Format dokumen anda menggunakan gaya"
 
 #. DLG_Lists_Format
 #. DLG_DocComparison_Fmt
-#: po/tmp/ap_String_Id.h.h:1205
-#: po/tmp/xap_String_Id.h.h:323
+#: po/tmp/ap_String_Id.h.h:1205 po/tmp/xap_String_Id.h.h:323
 msgid "Format:"
 msgstr "Format:"
 
@@ -3067,8 +3071,7 @@ msgstr "T&eks heading:"
 
 #. DLG_Lists_Hand_List
 #. STYLE_HANDLIST
-#: po/tmp/ap_String_Id.h.h:1225
-#: po/tmp/xap_String_Id.h.h:363
+#: po/tmp/ap_String_Id.h.h:1225 po/tmp/xap_String_Id.h.h:363
 msgid "Hand List"
 msgstr "Senarai Tangan"
 
@@ -3102,12 +3105,15 @@ msgstr "Header/Footer"
 #. MSG_CHECK_PRINT_MODE
 #: po/tmp/ap_String_Id.h.h:1238
 msgid ""
-"Headers and Footers can only be created and edited while in Print View Mode. \n"
+"Headers and Footers can only be created and edited while in Print View "
+"Mode. \n"
 " To enter this mode choose View then Print Layout from the Menus. \n"
 " Would you like to enter Print Layout mode right now?"
 msgstr ""
-"Pengepala dan Footer hanya boleh dicipta dan disunting ketika didalam Mod Lihat Cetakan.\n"
-" Untuk memasuki mod ini pilih Lihat kemudian Susunatur Cetakan daripada Menu. \n"
+"Pengepala dan Footer hanya boleh dicipta dan disunting ketika didalam Mod "
+"Lihat Cetakan.\n"
+" Untuk memasuki mod ini pilih Lihat kemudian Susunatur Cetakan daripada "
+"Menu. \n"
 " Adakah anda hendak memasuki mod Susunatur Cetakan sekarang?"
 
 #. DLG_Stylist_HeadingStyles
@@ -3122,8 +3128,7 @@ msgstr "Gaya heading:"
 
 #. DLG_Lists_Heart_List
 #. STYLE_HEARTLIST
-#: po/tmp/ap_String_Id.h.h:1244
-#: po/tmp/xap_String_Id.h.h:379
+#: po/tmp/ap_String_Id.h.h:1244 po/tmp/xap_String_Id.h.h:379
 msgid "Heart List"
 msgstr "Senarai Hati"
 
@@ -3220,8 +3225,7 @@ msgstr "Imej Untuk Latarbelakang"
 
 #. DLG_Lists_Implies_List
 #. STYLE_IMPLIES_LIST
-#: po/tmp/ap_String_Id.h.h:1285
-#: po/tmp/xap_String_Id.h.h:413
+#: po/tmp/ap_String_Id.h.h:1285 po/tmp/xap_String_Id.h.h:413
 msgid "Implies List"
 msgstr "Senarai Sifat"
 
@@ -3275,8 +3279,7 @@ msgstr "Nilai Notakaki permulaan"
 #. DLG_Break_Insert
 #. MENU_STATUSLINE_TABLE_INSERT
 #. DLG_IP_Button_Label
-#: po/tmp/ap_String_Id.h.h:1308
-#: po/tmp/xap_String_Id.h.h:423
+#: po/tmp/ap_String_Id.h.h:1308 po/tmp/xap_String_Id.h.h:423
 msgid "Insert"
 msgstr "Selit"
 
@@ -3560,8 +3563,7 @@ msgstr "Tanda Susunatur Tidak Ke&lihatan"
 #. TOOLBAR_STATUSLINE_FMT_ITALIC
 #. TOOLBAR_TOOLTIP_FMT_ITALIC
 #. DLG_UFS_StyleItalic
-#: po/tmp/ap_String_Id.h.h:1429
-#: po/tmp/xap_String_Id.h.h:453
+#: po/tmp/ap_String_Id.h.h:1429 po/tmp/xap_String_Id.h.h:453
 msgid "Italic"
 msgstr "Italik"
 
@@ -3803,15 +3805,13 @@ msgstr "Kunci susunatur bar alat semasa"
 
 #. DLG_Lists_Lower_Case_List
 #. STYLE_LOWERCASELIST
-#: po/tmp/ap_String_Id.h.h:1529
-#: po/tmp/xap_String_Id.h.h:489
+#: po/tmp/ap_String_Id.h.h:1529 po/tmp/xap_String_Id.h.h:489
 msgid "Lower Case List"
 msgstr "Senarai Huruf Kecil"
 
 #. DLG_Lists_Lower_Roman_List
 #. STYLE_LOWERROMANLIST
-#: po/tmp/ap_String_Id.h.h:1531
-#: po/tmp/xap_String_Id.h.h:491
+#: po/tmp/ap_String_Id.h.h:1531 po/tmp/xap_String_Id.h.h:491
 msgid "Lower Roman List"
 msgstr "Senarai Roman Kecil"
 
@@ -4141,8 +4141,7 @@ msgstr "Bernombor"
 
 #. DLG_Lists_Numbered_List
 #. STYLE_NUMBER_LIST
-#: po/tmp/ap_String_Id.h.h:1665
-#: po/tmp/xap_String_Id.h.h:531
+#: po/tmp/ap_String_Id.h.h:1665 po/tmp/xap_String_Id.h.h:531
 msgid "Numbered List"
 msgstr "Senarai Bernombor"
 
@@ -4241,8 +4240,7 @@ msgstr "Kehabisan memori ketika mencuba membuka %s"
 #. TOOLBAR_STATUSLINE_FMT_OVERLINE
 #. TOOLBAR_TOOLTIP_FMT_OVERLINE
 #. DLG_UFS_OverlineCheck
-#: po/tmp/ap_String_Id.h.h:1714
-#: po/tmp/xap_String_Id.h.h:545
+#: po/tmp/ap_String_Id.h.h:1714 po/tmp/xap_String_Id.h.h:545
 msgid "Overline"
 msgstr "Barisatas"
 
@@ -4476,8 +4474,7 @@ msgstr "Keutamaan"
 #. DLG_Lists_Preview
 #. DLG_PageNumbers_Preview
 #. DLG_Zoom_PreviewFrame
-#: po/tmp/ap_String_Id.h.h:1814
-#: po/tmp/xap_String_Id.h.h:575
+#: po/tmp/ap_String_Id.h.h:1814 po/tmp/xap_String_Id.h.h:575
 msgid "Preview"
 msgstr "Pralihat"
 
@@ -4496,14 +4493,17 @@ msgstr "Pralihat dokumen sebelum mencetak"
 
 #. DLG_Para_PreviewPrevParagraph
 #: po/tmp/ap_String_Id.h.h:1823
-msgid "Previous Paragraph Previous Paragraph Previous Paragraph Previous Paragraph Previous Paragraph Previous Paragraph Previous Paragraph"
-msgstr "Perenggan Terdahulu Perenggan Terdahulu Perenggan Terdahulu Perenggan Terdahulu Perenggan Terdahulu Perenggan Terdahulu Perenggan Terdahulu"
+msgid ""
+"Previous Paragraph Previous Paragraph Previous Paragraph Previous Paragraph "
+"Previous Paragraph Previous Paragraph Previous Paragraph"
+msgstr ""
+"Perenggan Terdahulu Perenggan Terdahulu Perenggan Terdahulu Perenggan "
+"Terdahulu Perenggan Terdahulu Perenggan Terdahulu Perenggan Terdahulu"
 
 #. TOOLBAR_LABEL_FILE_PRINT
 #. DLG_UP_PrintTitle
 #. DLG_UP_PrintButton
-#: po/tmp/ap_String_Id.h.h:1825
-#: po/tmp/xap_String_Id.h.h:580
+#: po/tmp/ap_String_Id.h.h:1825 po/tmp/xap_String_Id.h.h:580
 msgid "Print"
 msgstr "Cetak"
 
@@ -4992,8 +4992,7 @@ msgstr "Lihat sejarah dokumen semasa"
 
 #. MENU_STATUSLINE_TABLE_SELECT
 #. DLG_Select
-#: po/tmp/ap_String_Id.h.h:2029
-#: po/tmp/xap_String_Id.h.h:630
+#: po/tmp/ap_String_Id.h.h:2029 po/tmp/xap_String_Id.h.h:630
 msgid "Select"
 msgstr "Pilih"
 
@@ -5055,8 +5054,7 @@ msgstr "Pilih seluruh dokumen"
 
 #. DLG_FormatTable_Apply_To_Selection
 #. DLG_UP_Selection
-#: po/tmp/ap_String_Id.h.h:2054
-#: po/tmp/xap_String_Id.h.h:638
+#: po/tmp/ap_String_Id.h.h:2054 po/tmp/xap_String_Id.h.h:638
 msgid "Selection"
 msgstr "Pilihan"
 
@@ -5199,8 +5197,7 @@ msgstr "Kekunci Pintasan"
 
 #. DLG_Options_Label_Show
 #. DLG_Show
-#: po/tmp/ap_String_Id.h.h:2112
-#: po/tmp/xap_String_Id.h.h:650
+#: po/tmp/ap_String_Id.h.h:2112 po/tmp/xap_String_Id.h.h:650
 msgid "Show"
 msgstr "Papar"
 
@@ -5490,8 +5487,7 @@ msgstr "Pisah sel ini"
 
 #. DLG_Lists_Square_List
 #. STYLE_SQUARELIST
-#: po/tmp/ap_String_Id.h.h:2235
-#: po/tmp/xap_String_Id.h.h:662
+#: po/tmp/ap_String_Id.h.h:2235 po/tmp/xap_String_Id.h.h:662
 msgid "Square List"
 msgstr "Senarai Petak"
 
@@ -5512,8 +5508,7 @@ msgstr "Bar Alat Piawai"
 
 #. DLG_Lists_Star_List
 #. STYLE_STARLIST
-#: po/tmp/ap_String_Id.h.h:2243
-#: po/tmp/xap_String_Id.h.h:666
+#: po/tmp/ap_String_Id.h.h:2243 po/tmp/xap_String_Id.h.h:666
 msgid "Star List"
 msgstr "Senarai Bintang"
 
@@ -5567,8 +5562,7 @@ msgstr "&Potong"
 #. TOOLBAR_STATUSLINE_FMT_STRIKE
 #. TOOLBAR_TOOLTIP_FMT_STRIKE
 #. DLG_UFS_StrikeoutCheck
-#: po/tmp/ap_String_Id.h.h:2266
-#: po/tmp/xap_String_Id.h.h:668
+#: po/tmp/ap_String_Id.h.h:2266 po/tmp/xap_String_Id.h.h:668
 msgid "Strike"
 msgstr "Potong"
 
@@ -5616,8 +5610,7 @@ msgstr "Nama gaya tidak boleh dibiarkan kosong"
 
 #. DLG_Lists_Style
 #. DLG_UFS_StyleLabel
-#: po/tmp/ap_String_Id.h.h:2286
-#: po/tmp/xap_String_Id.h.h:670
+#: po/tmp/ap_String_Id.h.h:2286 po/tmp/xap_String_Id.h.h:670
 msgid "Style:"
 msgstr "Gaya:"
 
@@ -5646,8 +5639,7 @@ msgstr "Tajuk:"
 #. TOOLBAR_STATUSLINE_FMT_SUBSCRIPT
 #. TOOLBAR_TOOLTIP_FMT_SUBSCRIPT
 #. DLG_UFS_SubScript
-#: po/tmp/ap_String_Id.h.h:2299
-#: po/tmp/xap_String_Id.h.h:674
+#: po/tmp/ap_String_Id.h.h:2299 po/tmp/xap_String_Id.h.h:674
 msgid "Subscript"
 msgstr "Subskrip"
 
@@ -5695,8 +5687,7 @@ msgstr "Supe&rskrip"
 #. TOOLBAR_STATUSLINE_FMT_SUPERSCRIPT
 #. TOOLBAR_TOOLTIP_FMT_SUPERSCRIPT
 #. DLG_UFS_SuperScript
-#: po/tmp/ap_String_Id.h.h:2319
-#: po/tmp/xap_String_Id.h.h:676
+#: po/tmp/ap_String_Id.h.h:2319 po/tmp/xap_String_Id.h.h:676
 msgid "Superscript"
 msgstr "Superskrip"
 
@@ -5734,8 +5725,7 @@ msgstr "Hentian tab yang perlu dibuang:"
 #. DLG_FormatTable_Apply_To_Table
 #. MENU_STATUSLINE_TABLE
 #. TB_Table
-#: po/tmp/ap_String_Id.h.h:2335
-#: po/tmp/xap_String_Id.h.h:686
+#: po/tmp/ap_String_Id.h.h:2335 po/tmp/xap_String_Id.h.h:686
 msgid "Table"
 msgstr "Jadual"
 
@@ -5830,8 +5820,12 @@ msgstr "Teks dan Ikon"
 
 #. MSG_MergeDocsNotRelated
 #: po/tmp/ap_String_Id.h.h:2375
-msgid "The documents you are trying to merge are unrelated. AbiWord will attempt to merge them, but the result might be meaningless."
-msgstr "Dokumen yang anda cuba hendak gabung tidak berkait. AbiWord akan cuba untuk menggabungkan mereka, tetapi hasilnya mungkin tidak bermakna."
+msgid ""
+"The documents you are trying to merge are unrelated. AbiWord will attempt to "
+"merge them, but the result might be meaningless."
+msgstr ""
+"Dokumen yang anda cuba hendak gabung tidak berkait. AbiWord akan cuba untuk "
+"menggabungkan mereka, tetapi hasilnya mungkin tidak bermakna."
 
 #. DLG_PageSetup_ErrBigMargins
 #: po/tmp/ap_String_Id.h.h:2377
@@ -5841,8 +5835,12 @@ msgstr "Margin yang dipilih terlalu besar untuk dimuatkan pada halaman."
 #  DLG_Options_Prompt_YouMustRestart
 #. DLG_Options_Prompt_YouMustRestart
 #: po/tmp/ap_String_Id.h.h:2379
-msgid "The new user interface language will take effect the next time that you start the application"
-msgstr "Bahasa baru antaramuka pengguna akan berfungsi ketika anda memulakan aplikasi pada masa akan datang"
+msgid ""
+"The new user interface language will take effect the next time that you "
+"start the application"
+msgstr ""
+"Bahasa baru antaramuka pengguna akan berfungsi ketika anda memulakan "
+"aplikasi pada masa akan datang"
 
 #. MSG_SpellDone
 #: po/tmp/ap_String_Id.h.h:2381
@@ -5851,7 +5849,9 @@ msgstr "Semakan ejaan selesai."
 
 #. MSG_HyperlinkCrossesBoundaries
 #: po/tmp/ap_String_Id.h.h:2383
-msgid "The text to which the hyperlink is to be attached must be within a single paragraph."
+msgid ""
+"The text to which the hyperlink is to be attached must be within a single "
+"paragraph."
 msgstr "Teks dimana hiperlink hendak disertakan mesti didalam satu perenggan."
 
 #. FIELD_DateTime_Wkday
@@ -5866,18 +5866,34 @@ msgstr "Ketebalan:"
 
 #. MSG_AfterRestartNew
 #: po/tmp/ap_String_Id.h.h:2389
-msgid "This change will only take effect when you restart AbiWord or create a new document."
-msgstr "Perubahan ini hanya akan berkesan apabila anda memulakan kembali Abiword atau mencipta dokumen baru."
+msgid ""
+"This change will only take effect when you restart AbiWord or create a new "
+"document."
+msgstr ""
+"Perubahan ini hanya akan berkesan apabila anda memulakan kembali Abiword "
+"atau mencipta dokumen baru."
 
 #. MSG_HiddenRevisions
 #: po/tmp/ap_String_Id.h.h:2391
-msgid "This document contains revisions which are currently hidden from view. Please see AbiWord documentation for information on working with revisions."
-msgstr "Dokumen ini mengandungi semakan yang sekarang ini disorok dari pandangan. Sila lihat dokumentasi AbiWord untuk maklumat bagaimana bekerja dengan semakan."
+msgid ""
+"This document contains revisions which are currently hidden from view. "
+"Please see AbiWord documentation for information on working with revisions."
+msgstr ""
+"Dokumen ini mengandungi semakan yang sekarang ini disorok dari pandangan. "
+"Sila lihat dokumentasi AbiWord untuk maklumat bagaimana bekerja dengan "
+"semakan."
 
 #. DLG_Para_PreviewSampleFallback
 #: po/tmp/ap_String_Id.h.h:2393
-msgid "This paragraph represents words as they might appear in your document.  To see text from your document used in this preview, position your cursor in a document paragraph with some text in it and open this dialog."
-msgstr "Perenggan ini menggambarkan perkataan seperti yang mungkin kelihatan didalam dokumen anda.  Untuk melihat teks daripada dokumen anda digunakan didalam pralihat ini, letakkan kursor anda didalam perenggan dokumen dengan beberapa teks didalamnya dan buka dialog ini."
+msgid ""
+"This paragraph represents words as they might appear in your document.  To "
+"see text from your document used in this preview, position your cursor in a "
+"document paragraph with some text in it and open this dialog."
+msgstr ""
+"Perenggan ini menggambarkan perkataan seperti yang mungkin kelihatan didalam "
+"dokumen anda.  Untuk melihat teks daripada dokumen anda digunakan didalam "
+"pralihat ini, letakkan kursor anda didalam perenggan dokumen dengan beberapa "
+"teks didalamnya dan buka dialog ini."
 
 #. DLG_Styles_ErrStyleNot
 #: po/tmp/ap_String_Id.h.h:2395
@@ -5895,8 +5911,7 @@ msgstr "Tiga"
 
 #. DLG_Lists_Tick_List
 #. STYLE_TICKLIST
-#: po/tmp/ap_String_Id.h.h:2399
-#: po/tmp/xap_String_Id.h.h:718
+#: po/tmp/ap_String_Id.h.h:2399 po/tmp/xap_String_Id.h.h:718
 msgid "Tick List"
 msgstr "Senarai Tick"
 
@@ -5917,8 +5932,7 @@ msgstr "Case Tajuk"
 
 #. DLG_MetaData_Title_LBL
 #. DLG_Image_LblTitle
-#: po/tmp/ap_String_Id.h.h:2407
-#: po/tmp/xap_String_Id.h.h:722
+#: po/tmp/ap_String_Id.h.h:2407 po/tmp/xap_String_Id.h.h:722
 msgid "Title:"
 msgstr "Tajuk:"
 
@@ -5938,15 +5952,13 @@ msgstr "Margin Atas [%s]"
 #. TOOLBAR_STATUSLINE_FMT_TOPLINE
 #. TOOLBAR_TOOLTIP_FMT_TOPLINE
 #. DLG_UFS_ToplineCheck
-#: po/tmp/ap_String_Id.h.h:2416
-#: po/tmp/xap_String_Id.h.h:728
+#: po/tmp/ap_String_Id.h.h:2416 po/tmp/xap_String_Id.h.h:728
 msgid "Topline"
 msgstr "Garisatas"
 
 #. DLG_Lists_Triangle_List
 #. STYLE_TRIANGLELIST
-#: po/tmp/ap_String_Id.h.h:2418
-#: po/tmp/xap_String_Id.h.h:730
+#: po/tmp/ap_String_Id.h.h:2418 po/tmp/xap_String_Id.h.h:730
 msgid "Triangle List"
 msgstr "Senarai"
 
@@ -5979,8 +5991,7 @@ msgstr "HURUFBESAR"
 #. TOOLBAR_STATUSLINE_FMT_UNDERLINE
 #. TOOLBAR_TOOLTIP_FMT_UNDERLINE
 #. DLG_UFS_UnderlineCheck
-#: po/tmp/ap_String_Id.h.h:2432
-#: po/tmp/xap_String_Id.h.h:750
+#: po/tmp/ap_String_Id.h.h:2432 po/tmp/xap_String_Id.h.h:750
 msgid "Underline"
 msgstr "Garisbawah"
 
@@ -6003,15 +6014,13 @@ msgstr "Nyahbuat suntingan"
 
 #. DLG_Lists_Upper_Case_List
 #. STYLE_UPPERCASTELIST
-#: po/tmp/ap_String_Id.h.h:2442
-#: po/tmp/xap_String_Id.h.h:784
+#: po/tmp/ap_String_Id.h.h:2442 po/tmp/xap_String_Id.h.h:784
 msgid "Upper Case List"
 msgstr "Senarai Huruf Besar"
 
 #. DLG_Lists_Upper_Roman_List
 #. STYLE_UPPERROMANLIST
-#: po/tmp/ap_String_Id.h.h:2444
-#: po/tmp/xap_String_Id.h.h:786
+#: po/tmp/ap_String_Id.h.h:2444 po/tmp/xap_String_Id.h.h:786
 msgid "Upper Roman List"
 msgstr "Senarai Roman Besar"
 
@@ -6053,8 +6062,7 @@ msgstr "Gaya takrifan-pengguna"
 
 #. FIELD_Application_Version
 #. DLG_History_Version_Version
-#: po/tmp/ap_String_Id.h.h:2460
-#: po/tmp/xap_String_Id.h.h:792
+#: po/tmp/ap_String_Id.h.h:2460 po/tmp/xap_String_Id.h.h:792
 msgid "Version"
 msgstr "Versi"
 
@@ -6172,12 +6180,14 @@ msgstr "Anda telah mengubah mod arah."
 #. MSG_HyperlinkNoSelection
 #: po/tmp/ap_String_Id.h.h:2511
 msgid "You must select a portion of the document before inserting a hyperlink."
-msgstr "Anda mesti memilih sebahagian daripada dokumen sebelum memasukkan hiperlink."
+msgstr ""
+"Anda mesti memilih sebahagian daripada dokumen sebelum memasukkan hiperlink."
 
 #. DLG_Options_Label_InvalidRangeForAutoSave
 #: po/tmp/ap_String_Id.h.h:2513
 msgid "You should choose a range from 1 to 120 for the auto save frequency"
-msgstr "Anda seharusnya memilih julat dari 1 ke 120 untuk kekerapan simpanan auto"
+msgstr ""
+"Anda seharusnya memilih julat dari 1 ke 120 untuk kekerapan simpanan auto"
 
 #. MSG_ConfirmSaveSecondary
 #: po/tmp/ap_String_Id.h.h:2515
@@ -6188,8 +6198,7 @@ msgstr "Perubahan anda akan hilang jika anda tidak menyimpannya."
 #. TOOLBAR_STATUSLINE_ZOOM
 #. TOOLBAR_TOOLTIP_ZOOM
 #. DLG_Zoom_ZoomTitle
-#: po/tmp/ap_String_Id.h.h:2519
-#: po/tmp/xap_String_Id.h.h:839
+#: po/tmp/ap_String_Id.h.h:2519 po/tmp/xap_String_Id.h.h:839
 msgid "Zoom"
 msgstr "Zoom"
 
@@ -6345,14 +6354,22 @@ msgstr ""
 #. MSG_HistoryPartRestore1
 #: po/tmp/xap_String_Id.h.h:35
 #, c-format
-msgid "AbiWord cannot fully restore version %d of the document because the version information is incomplete."
-msgstr "Abiword tidak dapat mengembalikan sepenuhnya versi %d dokumen kerana maklumat versi tidak lengkap."
+msgid ""
+"AbiWord cannot fully restore version %d of the document because the version "
+"information is incomplete."
+msgstr ""
+"Abiword tidak dapat mengembalikan sepenuhnya versi %d dokumen kerana "
+"maklumat versi tidak lengkap."
 
 #. MSG_HistoryNoRestore
 #: po/tmp/xap_String_Id.h.h:37
 #, c-format
-msgid "AbiWord cannot restore version %d of the document because the version information is missing."
-msgstr "Abiword tidak dapat mengembalikan sepenuhnya versi %d dokumen kerana maklumat versi tiada."
+msgid ""
+"AbiWord cannot restore version %d of the document because the version "
+"information is missing."
+msgstr ""
+"Abiword tidak dapat mengembalikan sepenuhnya versi %d dokumen kerana "
+"maklumat versi tiada."
 
 #. DLG_UP_PrintPreviewTitle
 #: po/tmp/xap_String_Id.h.h:39
@@ -7862,8 +7879,13 @@ msgstr "Direktori '%s' adalah dihalang-tulis."
 #. MSG_HistoryPartRestore2
 #: po/tmp/xap_String_Id.h.h:712
 #, c-format
-msgid "The nearest version that can be restored fully is %d. Would you like to restore this version instead? To partially restore version %d press No."
-msgstr "Versi terdekat yang boleh dikembalikan sepenuhnya adalah %d. Adakah anda hendak mengembalikan versi ini? Untuk mengembalikan sebahagian versi %d tekan Tidak."
+msgid ""
+"The nearest version that can be restored fully is %d. Would you like to "
+"restore this version instead? To partially restore version %d press No."
+msgstr ""
+"Versi terdekat yang boleh dikembalikan sepenuhnya adalah %d. Adakah anda "
+"hendak mengembalikan versi ini? Untuk mengembalikan sebahagian versi %d "
+"tekan Tidak."
 
 #. DLG_UP_InvalidPrintString
 #: po/tmp/xap_String_Id.h.h:714
@@ -8136,7 +8158,9 @@ msgstr "Yiddish"
 #: po/tmp/xap_String_Id.h.h:837
 #, c-format
 msgid "You have to save changes to document %s before proceeding. Save now?"
-msgstr "Anda perlu menyimpan perubahan ke dokumen %s sebelum meneruskan. Simpan sekarang?"
+msgstr ""
+"Anda perlu menyimpan perubahan ke dokumen %s sebelum meneruskan. Simpan "
+"sekarang?"
 
 #. DLG_Zoom_RadioFrameCaption
 #: po/tmp/xap_String_Id.h.h:841
@@ -8209,4 +8233,3 @@ msgstr "bersaudara"
 #: po/tmp/xap_String_Id.h.h:867
 msgid "unrelated"
 msgstr "tidak berkaitan"
-
