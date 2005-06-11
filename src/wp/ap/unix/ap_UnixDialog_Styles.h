@@ -66,7 +66,7 @@ public:
 // Modify window
 /////////////////////////////////////////////////////////////////////////
 
-	void         event_Modify_OK(void);
+	bool         event_Modify_OK(void);
 	void         event_Modify_Cancel(void);
 	void         event_ModifyDelete(void);
 	void         event_ModifyParagraph();
@@ -186,10 +186,3 @@ private:
 };
 
 #endif /* AP_UnixDialog_Styles_H */
-
-
-
-
-
-
-

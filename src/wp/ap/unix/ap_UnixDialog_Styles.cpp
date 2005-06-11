@@ -1093,7 +1093,7 @@ void AP_UnixDialog_Styles::_connectModifySignals(void)
 }
 
 
-void AP_UnixDialog_Styles::event_Modify_OK(void)
+bool AP_UnixDialog_Styles::event_Modify_OK(void)
 {
   const char * text = gtk_entry_get_text (GTK_ENTRY (m_wStyleNameEntry));
 
@@ -1110,11 +1110,12 @@ void AP_UnixDialog_Styles::event_Modify_OK(void)
 				  XAP_Dialog_MessageBox::b_O,
 				  XAP_Dialog_MessageBox::a_OK);
 
-      return;
+      return false;
     }
 
 	// TODO save out state of radio items
 	m_answer = AP_Dialog_Styles::a_OK;
+	return true;
 }
 
 /*!
@@ -1274,14 +1275,21 @@ void  AP_UnixDialog_Styles::modifyRunModal(void)
 	
 	_populateAbiPreview(isNew());
 
-	switch(abiRunModalDialog(GTK_DIALOG(m_wModifyDialog), false))
-	  {
-	  case BUTTON_MODIFY_OK:
-	    event_Modify_OK(); break;
-	  default:
-	    event_Modify_Cancel(); break ;
-	  }
-
+	bool inputValid;
+	do 
+	{
+		switch(abiRunModalDialog(GTK_DIALOG(m_wModifyDialog), false))
+		{
+			case BUTTON_MODIFY_OK:
+				inputValid = event_Modify_OK(); 
+				break;
+			default:
+				event_Modify_Cancel(); 
+				inputValid = true;
+				break ;
+		}		
+	} while (!inputValid);
+	
 	if(m_wModifyDialog && GTK_IS_WIDGET(m_wModifyDialog)) 
 	{
 //
