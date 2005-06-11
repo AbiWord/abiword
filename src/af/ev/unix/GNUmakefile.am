@@ -34,8 +34,6 @@ libEv_unix_a_SOURCES=		\
 	 ev_UnixToolbar.cpp		\
 	 ev_UnixToolbar_ViewListener.cpp
 
-libEv_unix_a_LIBADD = $(ev_gnome_objects)
-
 if WITH_GNOME
 all: libEv_unix.a
 	cd gnome && $(MAKE)
