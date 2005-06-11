@@ -33,9 +33,3 @@ libEv_unix_a_SOURCES=		\
 	 ev_UnixMouse.cpp		\
 	 ev_UnixToolbar.cpp		\
 	 ev_UnixToolbar_ViewListener.cpp
-
-if WITH_GNOME
-all: libEv_unix.a
-	cd gnome && $(MAKE)
-	cp gnome/*.o .
-endif
