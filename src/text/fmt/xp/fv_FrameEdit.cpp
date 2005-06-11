@@ -1221,7 +1221,10 @@ void FV_FrameEdit::mouseRelease(UT_sint32 x, UT_sint32 y)
 		fl_BlockLayout * pCloseBL = NULL;
 		getFrameStrings(m_recCurFrame.left,m_recCurFrame.top,sXpos,sYpos,sWidth,sHeight,sColXpos,sColYpos,sPageXpos,sPageYpos,&pCloseBL);
 		pf_Frag_Strux * pfFrame = NULL;
-		const XML_Char * props[28] = {"frame-type","textbox",
+		// WARNING: Will need to change this to accomodate variable styles without constantly resetting to solid.
+		//				 Recommend to do whatever is done for thickness, which must also have a default set but not
+		//				 reverted to on every change.
+		const XML_Char * props[36] = {"frame-type","textbox",
 					      "wrap-mode","wrapped-both",
 					      "position-to","column-above-text",
 					      "xpos",sXpos.c_str(),
@@ -1233,6 +1236,10 @@ void FV_FrameEdit::mouseRelease(UT_sint32 x, UT_sint32 y)
 					      "frame-page-xpos",sPageXpos.c_str(),
 					      "frame-page-ypos",sPageYpos.c_str(),
 					      "background-color", "ffffff",
+						  "left-style","1",
+						  "right-style","1",
+						  "top-style","1",
+						  "bot-style","1",
 					      "tight-wrap","0",
 					      NULL,NULL};
 //

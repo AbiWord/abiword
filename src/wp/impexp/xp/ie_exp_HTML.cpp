@@ -4789,7 +4789,7 @@ void s_HTML_Listener::_doEndnotes () {
 		m_bInAFENote = true;
 		m_pDocument->tellListenerSubset(this,pDocRange);
 		m_bInAFENote = false;
-		// Some combined bug fixes make tagpops no longer necessary, afaict.
+		// Some combined bug fixes make tagpops no longer necessary, afaict. -MG
 	}
 	UT_VECTOR_PURGEALL(PD_DocumentRange *,m_vecEndnotes);
 }

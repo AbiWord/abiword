@@ -4841,8 +4841,22 @@ bool PD_Document::setAttrProp(const XML_Char ** ppAttr)
 		
 		// Yes, we have to set default properties for all document-level items, because
 		// some piece of code (exporter, plugin) may want to get the value of that default,
-		// not unitialized memory.
+		// not unitialized memory.  When a hashing solution is factored out of the PT,
+		// it may be tempting to return NULLs.  Not good enough either.
 		// I'm going to ask Dom the preferred way to make this rather more concise. -MG
+		// Update: Surely there is a way to make the getProperty mechanisms smarter, to
+		//				provide valid and accurate information on request (lazy-evaluation/late-binding),
+		//				because this superfluous storage sucks, and actually (in concept) adds ambiguity
+		//				by virtue of the fact that the means by which these were set is not known or
+		//				stored, and hence other pieces of code while capable of following
+		//				WYSIWYG, are not able to do otherwise with knowledge of whether the user
+		//				explicitly requested these properties to be set to these values or they're
+		//				just this way by virtue of AbiWord insisting on setting the default
+		//				upon initialization of any and every pd_Document.  This is bad for
+		//				external document storage and processing solutions, not to mention plugins
+		//				that AbiWord may ship.  Keep in mind, this is NOT the only place we have
+		//				to do this.  Even individual struxes within the document have to have their
+		//				properties initialized as it stands now. -MG
 
 			// Endnotes
 		props[0] = "document-endnote-type";
