@@ -9,8 +9,8 @@ msgid ""
 msgstr ""
 "Project-Id-Version: ku\n"
 "Report-Msgid-Bugs-To: \n"
-"POT-Creation-Date: 2005-06-11 02:27+0200\n"
-"PO-Revision-Date: 2005-04-30 01:41+0200\n"
+"POT-Creation-Date: 2005-06-11 14:32+0200\n"
+"PO-Revision-Date: 2005-06-08 16:52+0200\n"
 "Last-Translator: Erdal Ronahi <erdal.ronahi@gmail.com>\n"
 "Language-Team: Kurdish <ku@li.org>\n"
 "MIME-Version: 1.0\n"
@@ -1332,7 +1332,7 @@ msgstr "Bicihkirina Bixweber"
 #. DLG_Options_Label_Grammar
 #: po/tmp/ap_String_Id.h.h:538
 msgid "Automatic Grammar Checking"
-msgstr ""
+msgstr "Kontrola Rêzimana Bixweser"
 
 #. DLG_InsertTable_AutoColSize
 #: po/tmp/ap_String_Id.h.h:540
@@ -1753,7 +1753,7 @@ msgstr "Rojanekirina Bixweber"
 #. MENU_STATUSLINE_HELP_CHECKVER
 #: po/tmp/ap_String_Id.h.h:716
 msgid "Check online for newer versions of AbiWord"
-msgstr ""
+msgstr "Di înternetê de li versyoên nûtir ên AbiWord bigere"
 
 #. DLG_Options_Label_SpellCheckAsType
 #: po/tmp/ap_String_Id.h.h:718
@@ -1971,7 +1971,7 @@ msgstr "Wêne belî bike"
 #. MENU_LABEL_EDIT_COPYEMBED
 #: po/tmp/ap_String_Id.h.h:799
 msgid "Copy Object"
-msgstr ""
+msgstr "Tiştî ji ber bigire"
 
 #. MENU_LABEL_EDIT_COPY_FRAME
 #: po/tmp/ap_String_Id.h.h:801
@@ -6311,9 +6311,8 @@ msgid ""
 "AbiWord cannot find the spelling file %s.dll\n"
 "Please download and install Aspell from http://aspell.net/win32/"
 msgstr ""
-"AbiWord nikare nivîsa dosiyê bibîne, ji kerema xwe re ji vê navnîşanê daxîne "
-"http://aspell.net/win32/Dosiya nîşanan %s.dll nehate dîtin.&#x0a;Pakêta "
-"Aspell ji http://aspell/win32/ daxe û saz bike."
+"AbiWord nikare nivîsa dosiya %s.dll bibîne.\n"
+"Ji kerema xwe re ji navnîşanahttp://aspell.net/win32/ daxe û saz bike."
 
 #. MSG_HistoryPartRestore1
 #: po/tmp/xap_String_Id.h.h:35
@@ -7332,9 +7331,8 @@ msgstr "Koneyî, Windows Code Page 949"
 
 #. LANG_KU
 #: po/tmp/xap_String_Id.h.h:477
-#, fuzzy
 msgid "Kurdish"
-msgstr "Tirkî"
+msgstr "Kurdî"
 
 #. LANG_LO_LA
 #: po/tmp/xap_String_Id.h.h:479
@@ -7859,7 +7857,7 @@ msgstr "Çapgir ne çalake."
 #. MSG_NoUndo
 #: po/tmp/xap_String_Id.h.h:716
 msgid "This operation cannot be undone. Are you sure you want to proceed?"
-msgstr ""
+msgstr "Ev çalakî nayê betal kirin. Tu mîsoger dixwazî bidomînî?"
 
 #. DLG_Image_TightWrap
 #: po/tmp/xap_String_Id.h.h:720
@@ -8012,7 +8010,7 @@ msgstr "Urdu"
 #. LANG_UZ_UZ
 #: po/tmp/xap_String_Id.h.h:790
 msgid "Uzbek"
-msgstr ""
+msgstr "Ozbek"
 
 #. DLG_History_List_Title
 #: po/tmp/xap_String_Id.h.h:794
@@ -8197,121 +8195,3 @@ msgstr "bira"
 #: po/tmp/xap_String_Id.h.h:867
 msgid "unrelated"
 msgstr "ne girêdayî"
-
-#~ msgid "&Autotext"
-#~ msgstr "&Nivîsa Amade"
-
-#~ msgid "ATTN:"
-#~ msgstr "Hişyarî"
-
-#~ msgid "About &GNU Free Software"
-#~ msgstr "Der barê &GNU û Nivîsbariya Azad de"
-
-#~ msgid "About &Open Source"
-#~ msgstr "Der barê &Open Source'ê de"
-
-#~ msgid "About the GNU project"
-#~ msgstr "Derbarê projeya GNU de"
-
-#~ msgid "Attention:"
-#~ msgstr "Hişyarî:"
-
-#~ msgid "BCC:"
-#~ msgstr "BCC:"
-
-#~ msgid "Best regards,"
-#~ msgstr "Silav û rêz"
-
-#~ msgid "Best wishes,"
-#~ msgstr "Bi silavên germ,"
-
-#~ msgid "CC:"
-#~ msgstr "CC:"
-
-#~ msgid "CERTIFIED MAIL"
-#~ msgstr "Peyamên erêkirî"
-
-#~ msgid "CONFIDENTIAL"
-#~ msgstr "Ewlekarî"
-
-#~ msgid "Check &Version"
-#~ msgstr "&Guharto"
-
-#~ msgid "Closing:"
-#~ msgstr "Girtin:"
-
-#~ msgid "Cordially,"
-#~ msgstr "Bi silavên germ,"
-
-#~ msgid "Dear Mom and Dad,"
-#~ msgstr "Dayik an Bavê Birêz,"
-
-#~ msgid "Dear Sir or Madam:"
-#~ msgstr "Mîrze an Stiya Birêz:"
-
-#~ msgid "Display information about Open Source"
-#~ msgstr "Der barê (çavkanî) Open Source de agahiyan bide"
-
-#~ msgid "Display program version number"
-#~ msgstr "Hejmara firotina programê nîşan bide"
-
-#~ msgid "Email:"
-#~ msgstr "Epeyam:"
-
-#~ msgid "From:"
-#~ msgstr "Ji:  "
-
-#~ msgid "Fwd:"
-#~ msgstr "Berêvekirin:"
-
-#~ msgid "In reply to:"
-#~ msgstr "Wekî bersîva:"
-
-#, fuzzy
-#~ msgid "Ladies and Gentlemen:"
-#~ msgstr "Birêz ...:"
-
-#, fuzzy
-#~ msgid "Love,"
-#~ msgstr "Hurmet,"
-
-#~ msgid "Mail Instructions:"
-#~ msgstr "Fermonên Postê:"
-
-#~ msgid "PERSONAL"
-#~ msgstr "ŞEXSî"
-
-#~ msgid "RE:"
-#~ msgstr "Bersîv:"
-
-#, fuzzy
-#~ msgid "REGISTERED MAIL"
-#~ msgstr "MAIL A TOMARKIRÎ"
-
-#~ msgid "Reference:"
-#~ msgstr "Baldarî:"
-
-#~ msgid "Regards,"
-#~ msgstr "Dûz"
-
-#, fuzzy
-#~ msgid "Respectfully yours,"
-#~ msgstr "Bi hurmetê"
-
-#~ msgid "Respectfully,"
-#~ msgstr "Bi rêz,"
-
-#~ msgid "Thank you,"
-#~ msgstr "Spas dikim,"
-
-#~ msgid "Thanks,"
-#~ msgstr "Spas,"
-
-#~ msgid "To:"
-#~ msgstr "Du"
-
-#~ msgid "VIA FACSIMILE"
-#~ msgstr "BI FAKSÊ"
-
-#~ msgid "\tFont   "
-#~ msgstr "tFont"
