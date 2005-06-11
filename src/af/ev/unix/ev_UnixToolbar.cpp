@@ -411,7 +411,8 @@ EV_UnixToolbar::EV_UnixToolbar(XAP_UnixApp * pUnixApp,
 			       const char * szToolbarLabelSetName)
 	: EV_Toolbar(pUnixApp->getEditMethodContainer(),
 		     szToolbarLayoutName,
-		     szToolbarLabelSetName)
+		     szToolbarLabelSetName), 
+	  m_wHandleBox(NULL)
 {
 	m_pFontPreview = NULL;
 	m_pUnixApp = pUnixApp;
@@ -543,7 +544,7 @@ void EV_UnixToolbar::rebuildToolbar(UT_sint32 oldpos)
   //
     synthesize();
 	GtkWidget * wVBox = static_cast<XAP_UnixFrameImpl *>(m_pFrame->getFrameImpl())->getVBoxWidget();
-	gtk_box_reorder_child(GTK_BOX(wVBox), m_wHandleBox,oldpos);
+	gtk_box_reorder_child(GTK_BOX(wVBox), m_wHandleBox, oldpos);
 //
 // bind  view listener
 //
@@ -639,6 +640,24 @@ static void setDragIcon(GtkWidget * wwd, GtkImage * img)
     }
 }
 
+/*
+* get toolbar button appearance from the preferences
+*/
+GtkToolbarStyle EV_UnixToolbar::getStyle(void)
+{
+	const XML_Char * szValue = NULL;
+	m_pUnixApp->getPrefsValue(XAP_PREF_KEY_ToolbarAppearance,&szValue);
+	UT_ASSERT((szValue) && (*szValue));
+	
+	GtkToolbarStyle style = GTK_TOOLBAR_ICONS;
+	if (UT_XML_stricmp(szValue,"text")==0)
+		style = GTK_TOOLBAR_TEXT;
+	else if (UT_XML_stricmp(szValue,"both")==0)
+		style = GTK_TOOLBAR_BOTH;
+
+	return style;	
+}
+
 bool EV_UnixToolbar::synthesize(void)
 {
 	// create a GTK toolbar from the info provided.
@@ -655,23 +674,9 @@ bool EV_UnixToolbar::synthesize(void)
 	GtkWidget * wTLW = static_cast<XAP_UnixFrameImpl *>(m_pFrame->getFrameImpl())->getTopLevelWindow();
 	GtkWidget * wVBox = static_cast<XAP_UnixFrameImpl *>(m_pFrame->getFrameImpl())->getVBoxWidget();
 
-	m_wHandleBox = gtk_handle_box_new();
-	gtk_handle_box_set_shadow_type (GTK_HANDLE_BOX(m_wHandleBox), GTK_SHADOW_NONE);
-	UT_ASSERT(m_wHandleBox);
-
-	////////////////////////////////////////////////////////////////
-	// get toolbar button appearance from the preferences
-	////////////////////////////////////////////////////////////////
+	m_wHandleBox = gtk_alignment_new(0, 0, 1, 1);
 	
-	const XML_Char * szValue = NULL;
-	m_pUnixApp->getPrefsValue(XAP_PREF_KEY_ToolbarAppearance,&szValue);
-	UT_ASSERT((szValue) && (*szValue));
-	
-	GtkToolbarStyle style = GTK_TOOLBAR_ICONS;
-	if (UT_XML_stricmp(szValue,"text")==0)
-		style = GTK_TOOLBAR_TEXT;
-	else if (UT_XML_stricmp(szValue,"both")==0)
-		style = GTK_TOOLBAR_BOTH;
+	GtkToolbarStyle style = getStyle();
 
 	m_wToolbar = gtk_toolbar_new();
 	UT_ASSERT(m_wToolbar);
@@ -982,10 +987,10 @@ bool EV_UnixToolbar::synthesize(void)
 	// pack it in a handle box
 	gtk_container_add(GTK_CONTAINER(m_wHandleBox), m_wToolbar);
 	gtk_widget_show(m_wHandleBox);
-	
-	// put it in the vbox
 	gtk_box_pack_start(GTK_BOX(wVBox), m_wHandleBox, FALSE, FALSE, 0);
 
+	setDetachable(getDetachable());
+	
 	return true;
 }
 
@@ -1170,15 +1175,27 @@ XAP_Frame * EV_UnixToolbar::getFrame(void)
 
 void EV_UnixToolbar::show(void)
 {
-	if (m_wToolbar)
-		gtk_widget_show (m_wToolbar->parent);
+	GtkWidget *widget = gtk_bin_get_child(GTK_BIN(m_wHandleBox));
+	if (m_wToolbar) {
+		gtk_widget_show(m_wHandleBox);
+		gtk_widget_show(m_wToolbar);
+		if (getDetachable()) {
+			gtk_widget_show(widget);
+		}		
+	}
 	EV_Toolbar::show();
 }
 
 void EV_UnixToolbar::hide(void)
 {
-	if (m_wToolbar)
-		gtk_widget_hide (m_wToolbar->parent);
+	GtkWidget *widget = gtk_bin_get_child(GTK_BIN(m_wHandleBox));
+	if (m_wToolbar) {
+		gtk_widget_hide(m_wHandleBox);
+		gtk_widget_hide(m_wToolbar);
+		if (getDetachable()) {
+			gtk_widget_hide(widget);
+		}		
+	}
 	EV_Toolbar::hide();
 }
 

@@ -62,11 +62,15 @@ public:
 	
 	XAP_FontPreview *				m_pFontPreview;	
 protected:
+	virtual GtkToolbarStyle 		getStyle(void);
+	virtual bool 					getDetachable(void) { return true; }
+	virtual void 					setDetachable(gboolean detachable) { /* only the GNOME version does that ATM */ }
+
 	void							_releaseListener(void);
 
 	bool getPixmapForIcon(XAP_Toolbar_Id id, GdkWindow * window, GdkColor * background,
 						  const char * szIconName, GtkWidget ** pwPixmap) ;
-	
+
 	XAP_UnixApp *					m_pUnixApp;
 	XAP_Frame *					m_pFrame;
 	EV_UnixToolbar_ViewListener *	m_pViewListener;
@@ -80,12 +84,3 @@ protected:
 };
 
 #endif /* EV_UNIXTOOLBAR_H */
-
-
-
-
-
-
-
-
-

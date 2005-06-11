@@ -62,6 +62,8 @@
 #include <gnome.h>
 #include <libgnomevfs/gnome-vfs.h>
 #include <libgnomevfs/gnome-vfs-mime-utils.h>
+
+#include "ev_GnomeToolbar.h"
 #endif
 
 #ifdef HAVE_GNOME
@@ -962,6 +964,8 @@ void XAP_UnixFrameImpl::_nullUpdate() const
 
 void XAP_UnixFrameImpl::_initialize()
 {
+	UT_DEBUGMSG (("XAP_UnixFrameImpl::_initialize()\n"));
+
     	// get a handle to our keyboard binding mechanism
  	// and to our mouse binding mechanism.
  	EV_EditEventMapper * pEEM = XAP_App::getApp()->getEditEventMapper();
@@ -1698,5 +1702,11 @@ EV_Toolbar * XAP_UnixFrameImpl::_newToolbar(XAP_App *pApp, XAP_Frame *pFrame,
 					      const char *szLayout,
 					      const char *szLanguage)
 {
-	return (new EV_UnixToolbar(static_cast<XAP_UnixApp *>(pApp), pFrame, szLayout, szLanguage));
+	EV_UnixToolbar *pToolbar = NULL;
+#ifdef HAVE_GNOME
+	pToolbar = new EV_GnomeToolbar(static_cast<XAP_UnixApp *>(pApp), pFrame, szLayout, szLanguage);
+#else
+	pToolbar = new EV_UnixToolbar(static_cast<XAP_UnixApp *>(pApp), pFrame, szLayout, szLanguage);
+#endif
+	return pToolbar;
 }
