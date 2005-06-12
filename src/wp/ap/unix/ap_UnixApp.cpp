@@ -735,12 +735,7 @@ bool AP_UnixApp::canPasteFromClipboard(void)
 extern "C" {
 
 	// return > 0 for directory entries ending in ".so" ".sl" and the like
-#if defined (__APPLE__) || defined (__FreeBSD__) || defined (__OpenBSD__) \
-	|| defined(_AIX) || defined(__sgi)
-	static int so_only (struct dirent *d)
-#else
-	static int so_only (const struct dirent *d)
-#endif
+	static int so_only (ABI_SCANDIR_SELECT_QUALIFIER struct dirent *d)
 	{
 		const char * name = d->d_name;
 		

@@ -32,6 +32,11 @@ AC_COMPILE_IFELSE([
 #include <sys/types.h>
 #include <dirent.h>
 
+// desperately looking for NULL
+#include <stdio.h>
+#include <stdlib.h>
+#include <unistd.h>
+
 extern "C" {
 	int abi_select_test(const struct dirent *d) { return 0; }
 }
@@ -59,4 +64,4 @@ AC_SUBST(ABI_SCANDIR_SELECT_QUALIFIER)
 ])
 # 
 # end: abi/ac-helpers/abi-scandir-select.m4
-# 
+#

@@ -402,6 +402,11 @@ if test $peerconfig = "true"; then
 	done
 fi
 
+# Check whether the scandir() select/filter function requires that its
+# argument is const-qualified.
+# uses the C++ compiler.
+ABI_FUNC_SCANDIR_SELECT_CHECK
+
 AC_SUBST(PEERDIRS)
 AC_SUBST(PEERS)
 
