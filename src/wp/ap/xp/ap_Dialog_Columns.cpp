@@ -410,6 +410,7 @@ void AP_Columns_preview::draw(void)
 					pageRect.height);
 
 	m_gc->setLineWidth(m_gc->tlu(1));
+	m_gc->setColor3D(GR_Graphics::CLR3D_Foreground);
 	painter.drawLine(pageRect.left, pageRect.top,
 		       pageRect.left + pageRect.width, pageRect.top);
 	painter.drawLine(pageRect.left, pageRect.top,

@@ -1732,7 +1732,7 @@ void GR_UnixGraphics::setColor3D(GR_Color3D c)
 
 void GR_UnixGraphics::init3dColors(GtkStyle * pStyle)
 {
-	m_3dColors[CLR3D_Foreground] = pStyle->fg[GTK_STATE_NORMAL];
+	m_3dColors[CLR3D_Foreground] = pStyle->text[GTK_STATE_NORMAL];
 	m_3dColors[CLR3D_Background] = pStyle->bg[GTK_STATE_NORMAL];
 	m_3dColors[CLR3D_BevelUp]    = pStyle->light[GTK_STATE_NORMAL];
 	m_3dColors[CLR3D_BevelDown]  = pStyle->dark[GTK_STATE_NORMAL];
