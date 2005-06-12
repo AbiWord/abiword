@@ -25,6 +25,17 @@
 #include "pt_VarSet.h"
 #include "pd_Style.h"
 
+/*!
+ * This class is used to store and manipulate collections of Attributes
+ * /Properties.
+ *
+ * Amongst it purposes this class:
+ * 1. Provides a integer index to every unique Attribute/Property collection.
+ * 2. (addFmt) Merges additional Attributes and properties into an existing
+ * collection of attributes/properties.
+ * 3. (removeFmt) Removes attributes/properties from an existing collection
+ * of Attributes properties.
+ */ 
 pt_VarSet::pt_VarSet()
 {
 	m_currentVarSet = 0;
