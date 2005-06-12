@@ -5159,6 +5159,8 @@ bool FV_View::cmdInsertEmbed(UT_ByteBuf * pBuf,PT_DocPosition pos,const char * s
 	atts[1] = sUID.utf8_str();
 	const XML_Char *cur_style = NULL;
 	const char * mimetypeGOChart = UT_strdup(szMime);
+	UT_String sBuf(reinterpret_cast<const char *>(pBuf->getPointer(0)),pBuf->getLength());
+	UT_DEBUGMSG(("Chart text is... \n %s \n",sBuf.c_str()));
 	bool result = m_pDoc->createDataItem(sUID.utf8_str(),false,pBuf,static_cast<void *>(const_cast<char *>(mimetypeGOChart)), NULL);
 	if(!result)
 	{

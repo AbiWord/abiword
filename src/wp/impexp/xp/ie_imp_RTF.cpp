@@ -1272,6 +1272,10 @@ RTFProps_CellProps::RTFProps_CellProps()
 	m_bHorizontalMergedFirst = false;
 	m_sCellProps.clear();
 	m_iCurBorder = rtfCellBorderTop;
+	m_bLeftBorder = false;
+	m_bRightBorder = false;
+	m_bTopBorder = false;
+	m_bBotBorder= false;
 	m_iCellx = 0;
 }
 
@@ -1285,7 +1289,12 @@ RTFProps_CellProps& RTFProps_CellProps::operator=(const RTFProps_CellProps& othe
 		 m_bHorizontalMergedFirst = other. m_bHorizontalMergedFirst;
 		 m_sCellProps = other.m_sCellProps;
 		 m_iCurBorder = other.m_iCurBorder;
+		 m_bLeftBorder = other.m_bLeftBorder;
+		 m_bRightBorder = other.m_bRightBorder;
+		 m_bTopBorder = other.m_bTopBorder;
+		 m_bBotBorder= other.m_bBotBorder;
 		 m_iCellx = other.m_iCellx;
+		 
 	}
 	return *this;
 }
@@ -1960,6 +1969,32 @@ void IE_Imp_RTF::FlushCellProps(void)
 	getCell()->setFirstVerticalMerge( m_currentRTFState.m_cellProps.m_bVerticalMergedFirst );
 	getCell()->setFirstHorizontalMerge( m_currentRTFState.m_cellProps.m_bHorizontalMergedFirst );
 	getCell()->setMergeLeft( m_currentRTFState.m_cellProps.m_bHorizontalMerged );
+	UT_String sProp;
+	UT_String sVal;
+	if(!m_currentRTFState.m_cellProps.m_bBotBorder)
+	{
+		sProp = "bot-style";
+		sVal = "none";
+		UT_String_setProperty(m_currentRTFState.m_cellProps.m_sCellProps,sProp,sVal);
+	}
+	if(!m_currentRTFState.m_cellProps.m_bTopBorder)
+	{
+		sProp = "top-style";
+		sVal = "none";
+		UT_String_setProperty(m_currentRTFState.m_cellProps.m_sCellProps,sProp,sVal);
+	}
+	if(!m_currentRTFState.m_cellProps.m_bLeftBorder)
+	{
+		sProp = "left-style";
+		sVal = "none";
+		UT_String_setProperty(m_currentRTFState.m_cellProps.m_sCellProps,sProp,sVal);
+	}
+	if(!m_currentRTFState.m_cellProps.m_bRightBorder)
+	{
+		sProp = "right-style";
+		sVal = "none";
+		UT_String_setProperty(m_currentRTFState.m_cellProps.m_sCellProps,sProp,sVal);
+	}
 	getCell()->addPropString( m_currentRTFState.m_cellProps.m_sCellProps );
 	
 }
@@ -4112,16 +4147,34 @@ bool IE_Imp_RTF::TranslateKeywordID(RTF_KEYWORD_ID keywordID,
 		m_currentRTFState.m_cellProps.m_bHorizontalMergedFirst = true;
 		return true;
 	case RTF_KW_clbrdrt:
+		xxx_UT_DEBUGMSG(("Border Top set \n"));
 		m_currentRTFState.m_cellProps.m_iCurBorder = rtfCellBorderTop;
+		m_currentRTFState.m_cellProps.m_bTopBorder = true;
 		return true;
 	case RTF_KW_clbrdrl:
+		xxx_UT_DEBUGMSG(("Border left set \n"));
 		m_currentRTFState.m_cellProps.m_iCurBorder = rtfCellBorderLeft;
+		m_currentRTFState.m_cellProps.m_bLeftBorder = true;
 		return true;
 	case RTF_KW_clbrdrb:
+		xxx_UT_DEBUGMSG(("Border Bot set \n"));
 		m_currentRTFState.m_cellProps.m_iCurBorder = rtfCellBorderBot;
+		m_currentRTFState.m_cellProps.m_bBotBorder = true;
 		return true;
 	case RTF_KW_clbrdrr:
+		xxx_UT_DEBUGMSG(("Border Right set \n"));
 		m_currentRTFState.m_cellProps.m_iCurBorder = rtfCellBorderRight;
+		m_currentRTFState.m_cellProps.m_bRightBorder = true;
+		return true;
+	case RTF_KW_brdrnone:
+		if(m_currentRTFState.m_cellProps.m_iCurBorder == rtfCellBorderRight)
+			m_currentRTFState.m_cellProps.m_bRightBorder = false;
+		else if(m_currentRTFState.m_cellProps.m_iCurBorder == rtfCellBorderBot)
+			m_currentRTFState.m_cellProps.m_bBotBorder = false;
+		else if(m_currentRTFState.m_cellProps.m_iCurBorder == rtfCellBorderLeft)
+			m_currentRTFState.m_cellProps.m_bLeftBorder = false;
+		else if(m_currentRTFState.m_cellProps.m_iCurBorder == rtfCellBorderTop)
+			m_currentRTFState.m_cellProps.m_bTopBorder = false;
 		return true;
 	case RTF_KW_clcbpat:
 	{
@@ -6744,7 +6797,7 @@ bool IE_Imp_RTF::ResetParagraphAttributes()
 	// the \pard keyword always implies we are already in a paragraph
 	bool ok = FlushStoredChars();
 	m_currentRTFState.m_paraProps = RTFProps_ParaProps();
-
+	m_currentRTFState.m_cellProps = RTFProps_CellProps();
 	return ok;
 }
 

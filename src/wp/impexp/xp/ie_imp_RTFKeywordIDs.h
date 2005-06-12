@@ -162,6 +162,7 @@ typedef enum {
 	RTF_KW_brdrinset,
 	RTF_KW_brdrl,
 	RTF_KW_brdrnil,
+	RTF_KW_brdrnone,
 	RTF_KW_brdroutset,
 	RTF_KW_brdrr,
 	RTF_KW_brdrs,

@@ -179,6 +179,10 @@ struct ABI_EXPORT RTFProps_CellProps
 	bool      m_bHorizontalMergedFirst;
 	UT_String m_sCellProps;
 	rtfCellBorder  m_iCurBorder;
+	bool      m_bLeftBorder;
+	bool      m_bRightBorder;
+	bool      m_bTopBorder;
+	bool      m_bBotBorder;
 	UT_sint32 m_iCellx;
 };
 

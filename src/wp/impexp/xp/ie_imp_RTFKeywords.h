@@ -156,6 +156,7 @@ _rtf_keyword rtfKeywords[] = {
 	{"brdrinset", false, false, NO_CONTEXT, RTF_KW_brdrinset }, /* 2000 */ 
 	{"brdrl", false, false, NO_CONTEXT, RTF_KW_brdrl }, 
 	{"brdrnil", false, false, NO_CONTEXT, RTF_KW_brdrnil }, /* 2002 */ 
+	{"brdrnone", false, false, NO_CONTEXT, RTF_KW_brdrnone }, /* 2002 */ 
 	{"brdroutset", false, false, NO_CONTEXT, RTF_KW_brdroutset }, /* 2000 */ 
 	{"brdrr", false, false, NO_CONTEXT, RTF_KW_brdrr }, 
 	{"brdrs", false, false, NO_CONTEXT, RTF_KW_brdrs }, 
