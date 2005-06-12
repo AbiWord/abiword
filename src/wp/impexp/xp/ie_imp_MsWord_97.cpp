@@ -245,6 +245,12 @@ static char * s_stripDangerousChars(const char *s)
 	
 	for(j = 0, k = 0; j < strlen(s); )
 	{
+	    if(s[j] < ' ' && s[j] >= 0 && s[j] != '\t' && s[j] != '\n' && s[j] != '\r')
+	    {
+	        j++;
+	    }
+	    else
+	    {
 		switch(s[j])
 		{
 			default:
@@ -262,12 +268,14 @@ static char * s_stripDangerousChars(const char *s)
 				j++;
 				break;
 		}
+	     }
 	}
 	
 	t[k] = 0;
 	
 	return t;
 }
+
 
 //
 // DOC uses an unsigned int color index
@@ -2917,7 +2925,7 @@ int IE_Imp_MsWord_97::_beginPara (wvParseStruct *ps, UT_uint32 tag,
 		UT_UTF8String sDelim;
 		s_mapDocToAbiListDelim (apap->linfo.numberstr,apap->linfo.numberstr_size,sDelim);
 		list_atts[iOffset++] = "list-delim";
-		list_atts[iOffset++] = sDelim.utf8_str();
+		list_atts[iOffset++] = s_stripDangerousChars(sDelim.utf8_str());
 
 		list_atts[iOffset++] = "level";
 		UT_String_sprintf(propBuffer, "%d", apap->ilvl + 1); // Word level starts at 0, Abi's at 1
