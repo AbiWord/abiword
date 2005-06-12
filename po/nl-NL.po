@@ -2,14 +2,14 @@
 # Copyright (C) 2001 Free Software Foundation, Inc.
 # Copyright (C) 2001 Albi <albi@linuxfan.com> <onderste@casema.net>
 # Copyright (C) 2002-2004 Marc Maurer <j.m.maurer@student.utwente.nl>
-# Reinout van Schouwen <reinout@cs.vu.nl>, 2004 (herzien)
+# Reinout van Schouwen <reinout@cs.vu.nl>, 2004-2005
 # 
 msgid ""
 msgstr ""
-"Project-Id-Version: AbiWord 2.2.x\n"
+"Project-Id-Version: AbiWord 2.3.x\n"
 "Report-Msgid-Bugs-To: \n"
-"POT-Creation-Date: 2005-06-11 02:27+0200\n"
-"PO-Revision-Date: 2005-02-13 16:16+0200\n"
+"POT-Creation-Date: 2005-06-12 05:15+0200\n"
+"PO-Revision-Date: 2005-06-13 0:16+0200\n"
 "Last-Translator: Reinout van Schouwen <reinout@cs.vu.nl>\n"
 "Language-Team: Dutch <vertaling@vrijschrift.org>\n"
 "MIME-Version: 1.0\n"
@@ -57,7 +57,7 @@ msgstr " Automatisch verversen"
 
 #. DLG_PageSetup_Percent
 #: po/tmp/ap_String_Id.h.h:29
-#, fuzzy, c-format
+#, c-format
 msgid "% of normal size"
 msgstr "% van normale grootte"
 
@@ -326,9 +326,8 @@ msgstr "&Kopiëren"
 
 #. MENU_LABEL_FMT_STYLE_DEFINE
 #: po/tmp/ap_String_Id.h.h:139
-#, fuzzy
 msgid "&Create and Modify Styles"
-msgstr "&Maken en wijzigen"
+msgstr "Stijlen &maken en wijzigen"
 
 #. DLG_Options_Label_PrefsCurrentScheme
 #: po/tmp/ap_String_Id.h.h:141
@@ -749,9 +748,8 @@ msgstr "&Afdrukweergave"
 
 #. MENU_LABEL_TOOLS_HISTORY_PURGE
 #: po/tmp/ap_String_Id.h.h:311
-#, fuzzy
 msgid "&Purge History"
-msgstr "&Documentgeschiedenis"
+msgstr "&Geschiedenis opschonen"
 
 #. MENU_LABEL_FILE_EXIT
 #: po/tmp/ap_String_Id.h.h:313
@@ -1745,19 +1743,16 @@ msgstr "&Spellingscontrole"
 
 #. DLG_Options_Label_GrammarCheck
 #: po/tmp/ap_String_Id.h.h:712
-#, fuzzy
 msgid "Check &grammar as you type"
-msgstr "Controleer de s&pelling tijdens het typen"
+msgstr "Controleer de &grammatica tijdens het typen"
 
 #. MENU_LABEL_HELP_CHECKVER
 #: po/tmp/ap_String_Id.h.h:714
-#, fuzzy
 msgid "Check for &Updates"
-msgstr "Zoeken naar &updates"
+msgstr "Her&zieningen nagaan"
 
 #. MENU_STATUSLINE_HELP_CHECKVER
 #: po/tmp/ap_String_Id.h.h:716
-#, fuzzy
 msgid "Check online for newer versions of AbiWord"
 msgstr "On-line nagaan of er nieuwe versies van AbiWord beschikbaar zijn"
 
@@ -1953,7 +1948,6 @@ msgstr "Tekst omzetten naar tabel"
 
 #. MENU_STATUSLINE_TABLE_TABLETOTEXT
 #: po/tmp/ap_String_Id.h.h:789
-#, fuzzy
 msgid "Convert from a Table to Text"
 msgstr "Een tabel omzetten naar tekst"
 
@@ -2970,15 +2964,13 @@ msgstr "Opmaak:"
 
 #. MENU_LABEL_INSERT_EQUATION_FILE
 #: po/tmp/ap_String_Id.h.h:1207
-#, fuzzy
 msgid "From File"
 msgstr "Uit bestand"
 
 #. MENU_LABEL_INSERT_EQUATION_LATEX
 #: po/tmp/ap_String_Id.h.h:1209
-#, fuzzy
 msgid "From LaTeX"
-msgstr "Met LaTeX"
+msgstr "Uit LaTeX"
 
 #. DLG_FormatTOC_General
 #. DLG_Options_Label_General
@@ -3200,7 +3192,6 @@ msgstr "Inspringen"
 
 #. DLG_Para_TabLabelIndentsAndSpacing
 #: po/tmp/ap_String_Id.h.h:1299
-#, fuzzy
 msgid "Indents and Spacing"
 msgstr "Inspringen en regelafstand"
 
@@ -3328,7 +3319,7 @@ msgstr "Koptekst invoegen"
 #. MENU_STATUSLINE_INSERT_TABLEOFCONTENTS
 #: po/tmp/ap_String_Id.h.h:1352
 msgid "Insert a Table of Contents based on Headings"
-msgstr "Een inhoudsopgave toevoegne gebaseerd op koppen"
+msgstr "Een inhoudsopgave toevoegen gebaseerd op koppen"
 
 #. MENU_STATUSLINE_INSERT_TEXTBOX
 #: po/tmp/ap_String_Id.h.h:1354
@@ -3698,7 +3689,6 @@ msgstr "Lijn boven de selectie (omschakelen)"
 
 #. DLG_Para_TabLabelLineAndPageBreaks
 #: po/tmp/ap_String_Id.h.h:1509
-#, fuzzy
 msgid "Line and Page Breaks"
 msgstr "Regel- en pagina-einden"
 
@@ -4202,9 +4192,8 @@ msgstr "Ei&genschappen"
 
 #. MENU_LABEL_TOOLS_REVISIONS_PURGE
 #: po/tmp/ap_String_Id.h.h:1720
-#, fuzzy
 msgid "P&urge revisions"
-msgstr "Revi&sies verwijderen"
+msgstr "Revi&sies opschonen"
 
 #. MENU_LABEL_EDIT_PASTE_SPECIAL
 #: po/tmp/ap_String_Id.h.h:1722
@@ -4596,27 +4585,23 @@ msgstr "Eigenschap van stijl verwijderen"
 
 #. MENU_LABEL_TABLE_HEADING_ROWS_REPEAT_REMOVE
 #: po/tmp/ap_String_Id.h.h:1888
-#, fuzzy
 msgid "Remove Row as Heading"
-msgstr "Verwijder rij als kop"
+msgstr "Rij verwijderen als kop"
 
 #. MENU_STATUSLINE_TABLE_HEADING_ROWS_REPEAT_REMOVE
 #: po/tmp/ap_String_Id.h.h:1890
-#, fuzzy
 msgid "Remove Row as the page Heading"
-msgstr "Verwijder rij als paginakop"
+msgstr "Rij verwijderen als paginakop"
 
 #. MENU_STATUSLINE_TOOLS_REVISIONS_PURGE
 #: po/tmp/ap_String_Id.h.h:1892
-#, fuzzy
 msgid "Remove all revision information from the document"
-msgstr "Alle revisie informatatie verwijderen uit het document"
+msgstr "Alle revisie-informatatie verwijderen uit het document"
 
 #. MENU_STATUSLINE_TOOLS_HISTORY_PURGE
 #: po/tmp/ap_String_Id.h.h:1894
-#, fuzzy
 msgid "Remove full document history from the document"
-msgstr "Verwijder de volledige document geschiedenis uit het document"
+msgstr "De volledige documentgeschiedenis verwijderen uit het document"
 
 #. MENU_STATUSLINE_EDIT_REMOVEFOOTER
 #: po/tmp/ap_String_Id.h.h:1896
@@ -4626,19 +4611,17 @@ msgstr "De voettekst op deze pagina uit het document verwijderen"
 #. MENU_STATUSLINE_EDIT_REMOVEHEADER
 #: po/tmp/ap_String_Id.h.h:1898
 msgid "Remove the Header on this page from the Document"
-msgstr "Verwijder de koptekst op deze pagina uit het document"
+msgstr "De koptekst op deze pagina uit het document verwijderen"
 
 #. MENU_STATUSLINE_EDIT_CUTIMAGE
 #: po/tmp/ap_String_Id.h.h:1900
-#, fuzzy
 msgid "Remove the Image and save a copy on the clipboard"
-msgstr "De selectie kopiëren en op het klembord plaatsen"
+msgstr "De afbeelding weghalen en een exemplaar op het klembord opslaan"
 
 #. MENU_STATUSLINE_EDIT_DELETEIMAGE
 #: po/tmp/ap_String_Id.h.h:1902
-#, fuzzy
 msgid "Remove the Image from the Document"
-msgstr "Tekstkader uit het document verwijderen"
+msgstr "De afbeelding uit het document verwijderen"
 
 #. MENU_STATUSLINE_EDIT_DELETEFRAME
 #: po/tmp/ap_String_Id.h.h:1904
@@ -4657,9 +4640,8 @@ msgstr "Rij herhalen als kop"
 
 #. MENU_STATUSLINE_TABLE_HEADING_ROWS_REPEAT
 #: po/tmp/ap_String_Id.h.h:1910
-#, fuzzy
 msgid "Repeat Row as Heading on each new page"
-msgstr "Rij herhalen als kop"
+msgstr "Rij herhalen als kop op elke nieuwe pagina"
 
 #. DLG_FR_ReplaceTitle
 #: po/tmp/ap_String_Id.h.h:1912
@@ -4729,9 +4711,8 @@ msgstr "Alle veranderingen in het document bijhouden"
 
 #. MSG_RevertFile
 #: po/tmp/ap_String_Id.h.h:1939
-#, fuzzy
 msgid "Revert file to last saved state?"
-msgstr "Document terugdraaien naar laatste opgeslagen toestand?"
+msgstr "Bestand terugdraaien naar laatste opgeslagen toestand?"
 
 #. MENU_STATUSLINE_FILE_REVERT
 #: po/tmp/ap_String_Id.h.h:1941
@@ -4862,9 +4843,8 @@ msgstr "Opslaan als"
 
 #. MENU_STATUSLINE_EDIT_COPYIMAGE
 #: po/tmp/ap_String_Id.h.h:1993
-#, fuzzy
 msgid "Save a copy of the image on the clipboard"
-msgstr "Het tekstvak kopiëren naar het klembord"
+msgstr "Een kopie van de afbeeldig op het klembord opslaan"
 
 #. MSG_ConfirmSave
 #: po/tmp/ap_String_Id.h.h:1995
@@ -4908,9 +4888,8 @@ msgstr "De geselecteerde afbeelding opslaan naar een bestand"
 
 #. MENU_LABEL_FILE_SAVEEMBED
 #: po/tmp/ap_String_Id.h.h:2013
-#, fuzzy
 msgid "Save to file"
-msgstr "Bestand opslaan als"
+msgstr "Opslaan naar bestand"
 
 #. DLG_PageSetup_Scale
 #: po/tmp/ap_String_Id.h.h:2015
@@ -5093,9 +5072,8 @@ msgstr "Stel de eigenschappen van het document in"
 
 #. DLG_Tab_Label_New
 #: po/tmp/ap_String_Id.h.h:2087
-#, fuzzy
 msgid "Set new Tab"
-msgstr "Nieuwe tabel invoegen"
+msgstr "Nieuwe tabstop instellen"
 
 #. DLG_FormatFrame_NoImageBackground
 #. DLG_FormatTable_NoImageBackground
@@ -5111,7 +5089,7 @@ msgstr "Voorkeuren instellen"
 #. MENU_STATUSLINE_FMT_TABS
 #: po/tmp/ap_String_Id.h.h:2094
 msgid "Set tab stops"
-msgstr "Tabs instellen"
+msgstr "Tabstops instellen"
 
 #. MENU_STATUSLINE_FMT_TABLEOFCONTENTS
 #: po/tmp/ap_String_Id.h.h:2096
@@ -5130,9 +5108,8 @@ msgstr "De types kop- en voetteksten instellen"
 
 #. MENU_LABEL_TABLE_HEADING_ROWS_REPEAT_THIS
 #: po/tmp/ap_String_Id.h.h:2102
-#, fuzzy
 msgid "Set this Row as Heading"
-msgstr "Rij herhalen als kop"
+msgstr "Deze rij instellen als kop"
 
 #. MENU_STATUSLINE_TABLE_HEADING_ROWS_REPEAT_THIS
 #: po/tmp/ap_String_Id.h.h:2104
@@ -5430,9 +5407,8 @@ msgstr "Splitsen op alle scheidingstekens behalve spaties"
 
 #. MENU_STATUSLINE_TABLE_TEXTTOTABLE_ALL
 #: po/tmp/ap_String_Id.h.h:2226
-#, fuzzy
 msgid "Split on all word delimiters including spaces"
-msgstr "Splitsen op alle scheidingstekens inclusief spaties"
+msgstr "Splitsen op alle woordscheidingstekens inclusief spaties"
 
 #. MENU_LABEL_TABLE_TEXTTOTABLE_NOSPACES
 #: po/tmp/ap_String_Id.h.h:2228
@@ -5454,7 +5430,7 @@ msgstr "Deze cel splitsen"
 #. STYLE_SQUARELIST
 #: po/tmp/ap_String_Id.h.h:2235 po/tmp/xap_String_Id.h.h:662
 msgid "Square List"
-msgstr "Vierkant lijst"
+msgstr "Vierkantjeslijst"
 
 #. MENU_LABEL_FMT_STYLE
 #: po/tmp/ap_String_Id.h.h:2237
@@ -6017,9 +5993,8 @@ msgstr "Eigen stijlen"
 
 #. DLG_Tab_Label_Existing
 #: po/tmp/ap_String_Id.h.h:2456
-#, fuzzy
 msgid "User-defined Tabs"
-msgstr "Eigen stijlen"
+msgstr "Gebruikersgedefiniëerde tabstops"
 
 #. DLG_Styles_LBL_UserDefined
 #: po/tmp/ap_String_Id.h.h:2458
@@ -6109,9 +6084,8 @@ msgstr "Tekstverwerking"
 
 #. DLG_WordCount_Words_No_Notes
 #: po/tmp/ap_String_Id.h.h:2497
-#, fuzzy
 msgid "Words (no footnotes/endnotes):"
-msgstr "Voet- en eindnoten opmaken"
+msgstr "Woorden (geen voet- en eindnoten):"
 
 #. DLG_Options_Label_SpellUppercase
 #: po/tmp/ap_String_Id.h.h:2499
@@ -6348,7 +6322,7 @@ msgstr "AbiWord: afdrukvoorbeeld"
 #: po/tmp/xap_String_Id.h.h:41
 #, c-format
 msgid "About %s"
-msgstr "Over %s"
+msgstr "Info over %s"
 
 #. DLG_PLUGIN_MANAGER_ACTIVE
 #: po/tmp/xap_String_Id.h.h:43
@@ -6362,9 +6336,8 @@ msgstr "Afrikaans"
 
 #. LANG_AK_GH
 #: po/tmp/xap_String_Id.h.h:47
-#, fuzzy
 msgid "Akan"
-msgstr "Afrikaans"
+msgstr "Akan"
 
 #. LANG_SQ_AL
 #: po/tmp/xap_String_Id.h.h:49
@@ -7180,7 +7153,6 @@ msgstr "Afbeeldingseigenschappen"
 
 #. DLG_Image_WrappedNone
 #: po/tmp/xap_String_Id.h.h:409
-#, fuzzy
 msgid "Image floats above text"
 msgstr "Afbeelding zweeft boven de tekst"
 
@@ -7211,15 +7183,13 @@ msgstr "Invoermethoden"
 
 #. DLG_FOSA_InsertObject
 #: po/tmp/xap_String_Id.h.h:425
-#, fuzzy
 msgid "Insert Embeddable Object"
-msgstr "Tabel invoegen"
+msgstr "Inbedbaar object invoegen"
 
 #. DLG_FOSA_FileInsertObject
 #: po/tmp/xap_String_Id.h.h:427
-#, fuzzy
 msgid "Insert Embeddable Object file:"
-msgstr "Ingebed object bestand invoegen:"
+msgstr "Inbedbaar object-bestand invoegen:"
 
 #. DLG_FOSA_InsertTitle
 #: po/tmp/xap_String_Id.h.h:429
@@ -7228,15 +7198,13 @@ msgstr "Bestand invoegen"
 
 #. DLG_FOSA_InsertMath
 #: po/tmp/xap_String_Id.h.h:431
-#, fuzzy
 msgid "Insert Math File"
-msgstr "Bestand invoegen"
+msgstr "Math-bestand invoegen"
 
 #. DLG_FOSA_FileInsertMath
 #: po/tmp/xap_String_Id.h.h:433
-#, fuzzy
 msgid "Insert MathML file:"
-msgstr "Bestand invoegen"
+msgstr "MathML-bestand invoegen:"
 
 #. TB_InsertNewTable
 #: po/tmp/xap_String_Id.h.h:435
@@ -7340,9 +7308,8 @@ msgstr "Koreaans, Windows code pagina 949"
 
 #. LANG_KU
 #: po/tmp/xap_String_Id.h.h:477
-#, fuzzy
 msgid "Kurdish"
-msgstr "Turks"
+msgstr "Koerdisch"
 
 #. LANG_LO_LA
 #: po/tmp/xap_String_Id.h.h:479
@@ -7756,9 +7723,8 @@ msgstr "Spaans (Spanje)"
 
 #. DLG_Image_SquareWrap
 #: po/tmp/xap_String_Id.h.h:664
-#, fuzzy
 msgid "Square text wrapping"
-msgstr "Te&kstomloop instellen"
+msgstr "Vierkante tekstomloop"
 
 #. DLG_DocComparison_Styles
 #: po/tmp/xap_String_Id.h.h:672
@@ -7777,9 +7743,8 @@ msgstr "Zweeds"
 
 #. TB_Font_Symbol
 #: po/tmp/xap_String_Id.h.h:682
-#, fuzzy
 msgid "Symbols"
-msgstr "Speciaal teken"
+msgstr "Symbolen"
 
 #. LANG_SYR
 #: po/tmp/xap_String_Id.h.h:684
@@ -7871,9 +7836,8 @@ msgstr ""
 
 #. DLG_Image_TightWrap
 #: po/tmp/xap_String_Id.h.h:720
-#, fuzzy
 msgid "Tight text wrapping"
-msgstr "Niet-rechthoekige tekstomloop"
+msgstr "Strakke tekstomloop"
 
 #. MSG_HistoryPartRestore3
 #: po/tmp/xap_String_Id.h.h:724
@@ -7907,9 +7871,8 @@ msgstr "Turks, Windows code pagina 1254"
 
 #. DLG_Image_WrapType
 #: po/tmp/xap_String_Id.h.h:740
-#, fuzzy
 msgid "Type of text wrapping"
-msgstr "Tekstomloop"
+msgstr "Type tekstomloop"
 
 #. ENC_WEST_ASCII
 #: po/tmp/xap_String_Id.h.h:742
