@@ -64,6 +64,10 @@ static inline void s_validXML(char * s)
 	}
 }
 
+/*! \fn static inline bool s_isValidXML(const char *s)
+	 \param s The string of characters which is to be checked for XML-validity.
+	 \retval TRUE if the characters are all valid for XML, FALSE if any one of them is not.
+*/
 static inline bool s_isValidXML(const char *s)
 {
 	if(!s)
@@ -83,6 +87,8 @@ static inline bool s_isValidXML(const char *s)
 }
 	
 /****************************************************************/
+
+/// This is the sole explicit constructor of class PP_AttrProp.
 PP_AttrProp::PP_AttrProp()
 {
 	m_pAttributes = NULL;
@@ -96,6 +102,7 @@ PP_AttrProp::PP_AttrProp()
 	m_bRevisionHidden = false;
 }
 
+/// This is the sole explicit destructor of class PP_AttrProp.
 PP_AttrProp::~PP_AttrProp()
 {
 	xxx_UT_DEBUGMSG(("deleting pp_AttrProp %x \n",this));
@@ -400,6 +407,13 @@ bool	PP_AttrProp::setAttribute(const XML_Char * szName, const XML_Char * szValue
 	}
 }
 
+/*! This method inserts a new pair of property name and value into [this] APs set of
+	 properties, creating "props" if it does not already exist and overwriting the value
+	 of any property of the same name with the newly passed value.
+	 (?)It appears as though we replace the entire pair, rather than only the value.
+		 (?)Is there a reason for this?
+	 \return Whether or not the operation succeeded.
+*/
 bool	PP_AttrProp::setProperty(const XML_Char * szName, const XML_Char * szValue)
 {
 	UT_return_val_if_fail( szName, false );
@@ -469,8 +483,15 @@ bool	PP_AttrProp::setProperty(const XML_Char * szName, const XML_Char * szValue)
 	return true;
 }
 
-/*!
-    Always check the return value before trying to work with szValue !!!
+/*! This method finds the Nth attribute where N is
+	 \param ndx The number in order of the attribute to be found
+	 and assigns that attribute's name and value to
+	 \param szName The name of the attribute found
+	 \param szValue The value of the attribute found
+	 respectively.  The method returns
+	 \return whether or not the operation succeeded.
+
+    WARNING: Always check the return value before trying to work with szValue!
 */
 bool	PP_AttrProp::getNthAttribute(int ndx, const XML_Char *& szName, const XML_Char *& szValue) const
 {
@@ -501,8 +522,15 @@ bool	PP_AttrProp::getNthAttribute(int ndx, const XML_Char *& szName, const XML_C
 	return false;
 }
 
-/*!
-    Always check the return value before trying to work with szValue !!!
+/*! This method finds the Nth property where N is
+	 \param ndx The number in order of the property to be found
+	 and assigns that property's name and value to
+	 \param szName The name of the property found
+	 \param szValue The value of the property found
+	 respectively.  The method returns
+	 \return whether or not the operation succeeded.
+
+    WARNING: Always check the return value before trying to work with szValue!
 */
 bool	PP_AttrProp::getNthProperty(int ndx, const XML_Char *& szName, const XML_Char *& szValue) const
 {
@@ -534,6 +562,16 @@ bool	PP_AttrProp::getNthProperty(int ndx, const XML_Char *& szName, const XML_Ch
 	return false;
 }
 
+/*! This method finds the property indicated by name
+	 \param szName (the name of the property the value of which to find)
+	 and assigns its value to
+	 \param szValue (the value found of the property requested)
+	 or returns false if the properties as a whole or the property requested are not found.
+	 It returns
+	 \return whether or not the operation succeeded.
+
+	 WARNING: Be sure to check the return value before trying to work with szValue.
+*/
 bool PP_AttrProp::getProperty(const XML_Char * szName, const XML_Char *& szValue) const
 {
 	if (!m_pProperties)
@@ -546,9 +584,11 @@ bool PP_AttrProp::getProperty(const XML_Char * szName, const XML_Char *& szValue
 	szValue = pEntry->first();
 	return true;
 }
-/*!
- * Do not free this memory. It's cached here.
- */
+/*! This method retrieves the entirety of [this] AP's "props", and returns it as an array of
+	 XML_Char * pairs (name and value).
+
+    WARNING: Do not free this memory. It's cached here.
+*/
 const XML_Char ** PP_AttrProp::getProperties () const
 {
 	if(!m_pProperties)
@@ -576,7 +616,8 @@ const XML_Char ** PP_AttrProp::getProperties () const
 	return m_szProperties;
 }
 
-
+/*! (?)TODO: PLEASE DOCUMENT ME!
+*/
 const PP_PropertyType *PP_AttrProp::getPropertyType(const XML_Char * szName, tProperty_type Type) const
 {
 	if (!m_pProperties)
@@ -597,6 +638,16 @@ const PP_PropertyType *PP_AttrProp::getPropertyType(const XML_Char * szName, tPr
 	return pEntry->second();
 }
 
+/*! This method finds the attribute indicated by name
+	 \param szName (the name of the attribute the value of which to find)
+	 and assigns its value to
+	 \param szValue (the value found of the attribute requested)
+	 or returns false if the attributes as a whole or the attribute requested are not found.
+	 It returns
+	 \return whether or not the operation succeeded.
+
+	 WARNING: Be sure to check the return value before trying to work with szValue.
+*/
 bool PP_AttrProp::getAttribute(const XML_Char * szName, const XML_Char *& szValue) const
 {
 	if (!m_pAttributes)
@@ -614,6 +665,17 @@ bool PP_AttrProp::getAttribute(const XML_Char * szName, const XML_Char *& szValu
 	return true;
 }
 
+/// Returns whether or not the AP has any properties.
+/*! This method checks [this] AP for the "props" attribute.
+	 The "props" attribute is a special attribute that contains
+	 properties.  If the "props" attribute is absent, the
+	 method returns false.  If the "props" attribute is present
+	 but empty (m_pProperties->size() == 0), it returns false.
+	 If the "props" attribute is present and has something in it,
+	 (m_pProperties->size() > 0), it returns true, but beware that
+	 no sanity checking is done to make sure that whatever is in
+	 there is anything more legible than uninitialized memory.
+*/
 bool PP_AttrProp::hasProperties(void) const
 {
 	if (!m_pProperties)
@@ -622,6 +684,15 @@ bool PP_AttrProp::hasProperties(void) const
 	return (m_pProperties->size() > 0);
 }
 
+/// Returns whether or not the AP has any attributes.
+/*! This method checks [this] AP for the presence of any attribute.
+	 If there is any attribute at all in the AP, m_pAttributes->size()
+	 returns positive and so does this method.  Otherwise, this method
+	 returns false.
+	 Beware that no sanity checking is done to make sure that whatever
+	 is in there (being counted by size()) is anything more legible
+	 than uninitialized memory.
+*/
 bool PP_AttrProp::hasAttributes(void) const
 {
 	if (!m_pAttributes)
@@ -630,11 +701,15 @@ bool PP_AttrProp::hasAttributes(void) const
 	return (m_pAttributes->size() > 0);
 }
 
+/// Returns whether or not the given attributes and properties are identically present in [this] AP.
+/*! This method compares the given attributes and properties with those already present.
+	 It compares the given items as inseparable pairs - if the attribute or property is
+	 present in name but contains a different value, that does not count and false is
+	 returned.
+	 \return A bool indicating (directly) both presence and equality.
+*/
 bool PP_AttrProp::areAlreadyPresent(const XML_Char ** attributes, const XML_Char ** properties) const
 {
-	// return TRUE if each attribute and property is already present
-	// and has the same value as what we have.
-
 	if (attributes && *attributes)
 	{
 		const XML_Char ** p = attributes;
@@ -711,12 +786,14 @@ bool PP_AttrProp::areAlreadyPresent(const XML_Char ** attributes, const XML_Char
 	return true;						// everything matched
 }
 
+/*! Find out if any attribute- or property-name is present.
+	 This is like areAlreadyPresent(), but we don't care about
+	 the values, and it returns true after the first discovery
+	 regardless of whether or not any other of the given names are present.
+	 \return A bool that's TRUE if any of the given attr. or prop. names is present, false otherwise.
+*/
 bool PP_AttrProp::areAnyOfTheseNamesPresent(const XML_Char ** attributes, const XML_Char ** properties) const
 {
-	// return TRUE if any attribute- or property-name is present.
-	// this is like areAlreadyPresent() but we don't care about
-	// the values.
-
 	// TODO consider using the fact that we are now (Dec 12 1998) using
 	// TODO alpha-hash-table rather than just a hash-table to optimize
 	// TODO these loops somewhat.
@@ -748,16 +825,20 @@ bool PP_AttrProp::areAnyOfTheseNamesPresent(const XML_Char ** attributes, const 
 	return false;					// didn't find any
 }
 
+/*! Checks to see if the given AP is identical to itself ([this]).  It also contains
+	 some useful points of instrumentation for benchmarking table and usage characteristics.
+	 \return TRUE, if and only if we match the AP given, false otherwise.
+*/
 bool PP_AttrProp::isExactMatch(const PP_AttrProp * pMatch) const
 {
+	// The counters below are used in testing to profile call and chksum characteristics,
+	// including collision rates.
+	// NB: I'm not sure this initialization block is in the correct place.
 #ifdef PT_TEST
 	static UT_uint32 s_Calls = 0;
 	static UT_uint32 s_PassedCheckSum = 0;
 	static UT_uint32 s_Matches = 0;
 #endif
-
-	// return TRUE iff we exactly match the AP given.
-
 #ifdef PT_TEST
 	s_Calls++;
 #endif
@@ -842,15 +923,14 @@ bool PP_AttrProp::isExactMatch(const PP_AttrProp * pMatch) const
 	return true;
 }
 
+/*! Create a new AttrProp based upon the given one, adding or replacing the items given.
+	 \return NULL on failure, the newly-created PP_AttrProp clone otherwise.
+*/
 PP_AttrProp * PP_AttrProp::cloneWithReplacements(const XML_Char ** attributes,
 												 const XML_Char ** properties,
 												 bool bClearProps) const
 {
 	bool bIgnoreProps = false; // see below
-	
-	// create a new AttrProp based upon the given one
-	// and adding or replacing the items given.
-	// return NULL on failure.
 
 	// first, create a new AttrProp using just the values given.
 
@@ -916,9 +996,7 @@ Failed:
 	return NULL;
 }
 
-/*
-  This function will remove all properties that are set to ""
-*/
+/// This function will remove all properties that are set to ""
 void PP_AttrProp::_clearEmptyProperties()
 {
 	if(!m_pProperties)
@@ -950,13 +1028,14 @@ void PP_AttrProp::_clearEmptyProperties()
 	}
 }
 
+/// This method clears both empty attributes and empty properties from [this] AP.
 void PP_AttrProp::prune()
 {
 	_clearEmptyAttributes();
 	_clearEmptyProperties();
 }
 
-
+/// This function will remove all attributes that are equal to "" (*<XML_Char *> == NULL)
 void PP_AttrProp::_clearEmptyAttributes()
 {
 	if(!m_pAttributes)
@@ -976,15 +1055,17 @@ void PP_AttrProp::_clearEmptyAttributes()
 	}
 }
 
+/*! Create a new AttrProp based upon the given one, removing the items given
+	 regardless of their value.  See also PP_AttrProp::cloneWithEliminationIfEqual,
+	 which does similarly but only removes the items given if their value is equal
+	 to the value given.
+	 \return NULL on failure, the newly-created PP_AttrProp clone otherwise.
+*/
 PP_AttrProp * PP_AttrProp::cloneWithElimination(const XML_Char ** attributes,
 												const XML_Char ** properties) const
 {
-	// create a new AttrProp based upon the given one
-	// and removing the items given.
-	// return FALSE on failure.
 
 	// first, create an empty AttrProp.
-
 	PP_AttrProp * papNew = new PP_AttrProp();
 	if (!papNew)
 		goto Failed;
@@ -1053,6 +1134,11 @@ Failed:
 	return NULL;
 }
 
+/*! After the construction of a new AP, use this method to mark it read-only.
+	 It returns if the AP is already read-only; otherwise it marks [this] AP
+	 as read-only and then computes its checksum in order to speed subsequent
+	 equivalence testing.  There is no return value.
+*/
 void PP_AttrProp::markReadOnly(void)
 {
 	UT_return_if_fail (!m_bIsReadOnly);
@@ -1060,15 +1146,16 @@ void PP_AttrProp::markReadOnly(void)
 	_computeCheckSum();
 }
 
+/*! Create a new AttrProp based upon the given one, removing the items given
+	 if their value is equal to that given.  See also PP_AttrProp::cloneWithElimination,
+	 which does similarly but removes the items given regardless of whether or not
+	 their value is equal to the value given.
+	 \return NULL on failure, the newly-created PP_AttrProp clone otherwise.
+*/
 PP_AttrProp * PP_AttrProp::cloneWithEliminationIfEqual(const XML_Char ** attributes,
 												const XML_Char ** properties) const
 {
-	// create a new AttrProp based upon the given one
-	// and removing the items given.
-	// return FALSE on failure.
-
 	// first, create an empty AttrProp.
-
 	PP_AttrProp * papNew = new PP_AttrProp();
 	if (!papNew)
 		goto Failed;
@@ -1138,7 +1225,8 @@ Failed:
 	return NULL;
 }
 
-  
+/*! (?)TODO: PLEASE DOCUMENT ME!
+*/
 static UT_uint32 hashcodeBytesAP(UT_uint32 init, const void * pv, UT_uint32 cb)
 {
  	// modified from ut_string_class.cpp's hashcode() which got it from glib
@@ -1159,7 +1247,10 @@ static UT_uint32 hashcodeBytesAP(UT_uint32 init, const void * pv, UT_uint32 cb)
  	return h;
 }
 
-
+/*! Compute the checksum by which we speed AP equivalence testing.  (?)To the best of my knowledge,
+	 collision is still possible.  (?)TODO: Document the algorithm/process here, and
+	 answer remaining questions about this chunk of code.
+*/
 void PP_AttrProp::_computeCheckSum(void)
 {
 	m_checkSum = 0;
@@ -1233,6 +1324,13 @@ void PP_AttrProp::_computeCheckSum(void)
 	return;
 }
 
+/*! This is an accessor method that gets the checksum of [this] AP, by which we speed
+	 equivalence testing.  The speedup occurs when we bypass full-testing
+	 in the case of checksum mismatch when we know for sure that the APs are not
+	 equivalent.  Because collisions still occur, we do the full-testing if the
+	 checksums do match.
+	 \retval m_checkSum The unsigned 32-bit integer which serves as the AP's checksum.
+*/
 UT_uint32 PP_AttrProp::getCheckSum(void) const
 {
 	UT_ASSERT_HARMLESS(m_bIsReadOnly);
@@ -1283,10 +1381,15 @@ void PP_AttrProp::setIndex(UT_uint32 i)
 	m_szProperties = NULL;
 }
 
-/*!
-    in contrast to is isExactMatch this function will return true if
+/*! This method checks if [this] AP and the given AP are functionally equivalent.
+    In contrast to is isExactMatch this function will return true if
     the attrs and props are same even if they are in different order;
-    it is computationally much more involved than isExactMatch()
+    it is computationally much more involved than isExactMatch().
+	 On that note, it may be worth looking into putting some more explicit collision
+	 guarantees into the checksum computation algorithm, such to take advantage of
+	 those checksums here.  IOW, make it such to be trusted that if checksums match,
+	 APs are equivalent (but not necessarily exact matches).
+	 \retval TRUE if equivalent to given AP (regardless of order), FALSE otherwise.
 */
 bool PP_AttrProp::isEquivalent(const PP_AttrProp * pAP2) const
 {
@@ -1341,6 +1444,11 @@ bool PP_AttrProp::isEquivalent(const PP_AttrProp * pAP2) const
 	return true;
 }
 
+/*! This method does the same as PP_AttrProp::isEquivalent(const PP_AttrProp *) except
+	 that instead of being passed another AP to be compared to, it is passed sets of
+	 attributes and properties which only virtually comprise another AP.
+	 \retval TRUE if equivalent (regardless of order) to given Attrs and Props, FALSE otherwise.
+*/
 bool PP_AttrProp::isEquivalent(const XML_Char ** attrs, const XML_Char ** props) const
 {
 	UT_uint32 iAttrsCount  = 0;
@@ -1413,11 +1521,10 @@ bool PP_AttrProp::isEquivalent(const XML_Char ** attrs, const XML_Char ** props)
 	return true;
 }
 
-/*!
-    This function transfers attributes and properties defined in style into the AP
-
-    bOverwrite indicates what happens if the property/attribute is already present. If false
-    (default) the style definition is ignored; if true the style value overrides the present value
+/*! \fn bool PP_AttrProp::explodeStyle(const PD_Document * pDoc, bool bOverwrite)
+	 \brief This function transfers attributes and properties defined in style into the AP.
+    \param bOverwrite indicates what happens if the property/attribute is already present. If false \
+     (default) the style definition is ignored; if true the style value overrides the present value.
 */
 bool PP_AttrProp::explodeStyle(const PD_Document * pDoc, bool bOverwrite)
 {
@@ -1479,6 +1586,9 @@ bool PP_AttrProp::explodeStyle(const PD_Document * pDoc, bool bOverwrite)
 	return true;
 }
 
+/*! This is a debugging tool which serves to dump in readable form (as UT_DEBUGMSGs)
+	 the contents of [this] AP.
+*/
 void PP_AttrProp::miniDump(const PD_Document * pDoc) const
 {
 #ifdef DEBUG
