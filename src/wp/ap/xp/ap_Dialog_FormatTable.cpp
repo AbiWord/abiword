@@ -595,7 +595,7 @@ void AP_Dialog_FormatTable::setBackgroundColor(UT_RGBColor clr)
 {
 	UT_String bgcol = UT_String_sprintf("%02x%02x%02x", clr.m_red, clr.m_grn, clr.m_blu);
 
-	m_vecProps.removeProp ("bg-style");
+	m_vecProps.removeProp ("bg-style"); // Why do we remove this property?  We still use it in frames. -MG
 	m_vecProps.removeProp ("bgcolor"); // this is only here for backward compatibility with AbiWord < 2.0. Could be removed as far as I can see - MARCM
 
 	if (clr.isTransparent ())
