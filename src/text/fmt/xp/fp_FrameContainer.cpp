@@ -506,6 +506,17 @@ void fp_FrameContainer::draw(dg_DrawArgs* pDA)
 //
 // Only draw the lines in the clipping region.
 //
+/*
+	[Somewhere down here is where the logic to only draw the region of the frame which
+	is within the complement of the union of all higher frames needs to be. We need to
+	draw the applicable region of the rectangle we're on, then unify it with (if
+	applicable) the higher union.] <-- Possibly obsolete comment, not sure.
+	I think I might have landed on an alternative solution involving more rearranging
+	of the storage of the FrameContainers, based on their z-index.  Not sure how far
+	I got with that or if it worked either.  See also abi bug 7664 and the original
+	discussions about defining the undefinedness of layered frame behaviour.
+*/
+
 	if(m_bOverWrote)
 	{
 		pDA->bDirtyRunsOnly = false;
