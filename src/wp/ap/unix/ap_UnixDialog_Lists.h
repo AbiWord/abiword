@@ -88,7 +88,8 @@ class AP_UnixDialog_Lists: public AP_Dialog_Lists
 		BUTTON_OK,
 		BUTTON_CANCEL,
 		BUTTON_CLOSE,
-		BUTTON_APPLY
+		BUTTON_APPLY, 
+		BUTTON_RESET
 	} ResponseId ;	
 	
 	GList *					m_glFonts;
