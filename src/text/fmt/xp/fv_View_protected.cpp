@@ -2765,6 +2765,14 @@ FV_View::_findGetNextBlockBuffer(fl_BlockLayout** pBlock,
 		newOffset = *pOffset;
 	}
 
+	if(newBlock == *pBlock
+	   && (newBlock->getPosition(false) + pBuffer.getLength()) < m_startPosition)
+	{
+		// this happens if the document shrinks in the process of replacement
+		// we get the same block, but it is shorter than the stored m_startPosition
+		return NULL;
+	}
+			
 	// Are we going to run into the start position in this buffer?	If
 	// so, we need to size our length accordingly
 	if (m_wrappedEnd && _BlockOffsetToPos(newBlock, newOffset) + pBuffer.getLength() >= m_startPosition)
