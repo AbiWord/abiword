@@ -937,6 +937,7 @@ void fp_Page::draw(dg_DrawArgs* pDA, bool bAlwaysUseWhiteBackground)
 		{
 			pFC->setOverWrote();
 		}
+		
 		dg_DrawArgs da = *pDA;
 		if(m_pView && (m_pView->getViewMode() != VIEW_PRINT) && !pDA->pG->queryProperties(GR_Graphics::DGP_PAPER))
 		{
@@ -1926,7 +1927,7 @@ void fp_Page::mapXYToPosition(bool bNotFrames,UT_sint32 x, UT_sint32 y, PT_DocPo
 // change to show you can select the text box.
 //
 // If we're outside this distance make sure all other options are excluded
-// before placing hte point inside th text box
+// before placing the point inside the text box
 //
 
 				if(static_cast<UT_sint32>(iDist) > m_pLayout->getGraphics()->tlu(3))
