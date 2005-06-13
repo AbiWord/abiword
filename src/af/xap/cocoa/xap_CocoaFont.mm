@@ -404,7 +404,7 @@ UT_UCS4Char XAP_CocoaFont::remapChar(UT_UCS4Char charCode, RemapFont rf)
 
 							NSFont * font = [NSFont fontWithName:fontName size:[NSFont smallSystemFontSize]];
 
-							NSDictionary * attr = [NSDictionary dictionaryWithObject:font forKey:NSFontAttributeName];
+							NSDictionary * attr = font ? [NSDictionary dictionaryWithObject:font forKey:NSFontAttributeName] : [NSDictionary dictionary];
 
 							[m_FontNames             addObject:fontName];
 							[m_FontMembers           addObject:memberName];
@@ -441,7 +441,7 @@ UT_UCS4Char XAP_CocoaFont::remapChar(UT_UCS4Char charCode, RemapFont rf)
 
 					NSFont * font = [NSFont fontWithName:fontName size:[NSFont systemFontSize]];
 
-					NSDictionary * attr = [NSDictionary dictionaryWithObject:font forKey:NSFontAttributeName];
+					NSDictionary * attr = font ? [NSDictionary dictionaryWithObject:font forKey:NSFontAttributeName] : [NSDictionary dictionary];
 
 					m_AttributedFontFamilyName = [[NSAttributedString alloc] initWithString:m_FontFamilyName attributes:attr];
 				}
