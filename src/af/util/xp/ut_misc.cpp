@@ -666,7 +666,7 @@ bool UT_isWordDelimiter(UT_UCSChar currentChar, UT_UCSChar followChar, UT_UCSCha
 	
     switch(currentChar)
 	{
-		case 0xb7:	// Catalan middledot, like instal·lació
+		case 0xb7:	// Catalan middledot, like instalÂ·laciÃ³
 			return false;
 		case '"': //in some languages this can be in the middle of a word (Hebrew)
 		case '\'':	// we want quotes inside words for contractions
