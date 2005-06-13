@@ -1,7 +1,7 @@
 /* -*- mode: C++; tab-width: 4; c-basic-offset: 4; -*- */
 
 /* AbiWord
- * Copyright (C) 2003-2004 Mark Gilbert <mg_abimail@yahoo.com>
+ * Copyright (C) 2003-2005 Mark Gilbert <mg_abimail@yahoo.com>
  * Copyright (C) 2002,2004 Francis James Franklin <fjf@alinameridon.com>
  * Copyright (C) 2001-2002 AbiSource, Inc.
  * 
@@ -527,6 +527,9 @@ private:
 	void	_closeCell ();
 #endif
 
+	void	_openTextBox (PT_AttrPropIndex api);
+	void	_closeTextBox ();
+	
 	void	_outputData (const UT_UCSChar * p, UT_uint32 length);
 	bool	_inherits (const char * style, const char * from);
 	void	_storeStyles (void);
@@ -3761,6 +3764,90 @@ void s_HTML_Listener::_closeCell ()
 
 #endif /* HTML_TABLES_SUPPORTED */
 
+void s_HTML_Listener::_openTextBox (PT_AttrPropIndex api)
+{
+	const PP_AttrProp * pAP = NULL;
+	bool bHaveProp = m_pDocument->getAttrProp (api, &pAP);
+	if (!bHaveProp || (pAP == 0)) return;
+	const XML_Char * tempProp = 0;
+	
+	//tagPop();
+	tagPop();
+	tagClose(TT_DIV, "div"); // Close the leading section
+	m_utf8_1 = "div style=\""; // We represent the box with a div (block)
+	
+	// TODO: Enum frame properties (and in any case where props equal their css counterparts) separately
+	// TODO: so here (and places like here) you can just iterate through it getting the prop and setting it.
+	// TODO: Actually, you wouldn't have to limit it to where the props were identical, just have
+	// TODO: { abiprop, cssprop }.  It would still require that the units used for both specs be compatible.
+	//
+	//	TODO: Take care of padding as well.
+	const XML_Char * propNames[10] = {"bot-thickness","border-bottom-width",
+									"top-thickness","border-top-width",
+									"right-thickness","border-right-width",
+									"left-thickness","border-left-width",
+									NULL,NULL}; // [AbiWord property name, CSS21 property name]
+	for(unsigned short int propIdx = 0; propIdx < 8; propIdx += 2)
+	{
+		if(pAP->getProperty(propNames[propIdx], tempProp))			// If we successfully retrieve a value (IOW, it's defined)
+		{
+			m_utf8_1 += propNames[propIdx + 1]; // Add the property name of the CSS equivalent
+			m_utf8_1 += ": "; // Don't ask (:
+			m_utf8_1 += tempProp; // Add the value
+			m_utf8_1 += ";"; // Terminate the property
+		}
+	}
+	#if 0
+	pAP->getProperty("bot-thickness", tempProp); // Get the bottom border thickness
+		m_utf8_1 += "border-bottom-width: ";
+		m_utf8_1 += tempProp;
+		m_utf8_1 += ";";
+	pAP->getProperty("top-thickness", tempProp); // Get the bottom border thickness
+		m_utf8_1 += " border-top-width: ";
+		m_utf8_1 += tempProp;
+		m_utf8_1 += ";";
+	pAP->getProperty("right-thickness", tempProp); // Get the bottom border thickness
+		m_utf8_1 += " border-right-width: ";
+		m_utf8_1 += tempProp;
+		m_utf8_1 += ";";
+	pAP->getProperty("left-thickness", tempProp); // Get the bottom border thickness
+		m_utf8_1 += " border-left-width: ";
+		m_utf8_1 += tempProp;
+		m_utf8_1 += ";";
+	#endif
+	//pAP->getProperty("bot-style", tempProp); // Get the bottom border style
+	//<...>
+	// We don't do this right now because we don't support multiple styles right now.
+	// See bug 7935
+	m_utf8_1 += " border: solid;";
+	
+	//pAP->getProperty("<color>", tempProp); // Get the various borders' colors
+	//<...>
+	
+	// This might need to be updated for textbox (and wrapped-image?) changes that
+	// occured in 2.3. 
+	pAP->getProperty("wrap-mode", tempProp); // Get the wrap mode
+	if(!UT_strcmp(tempProp, "wrapped-both"))
+		m_utf8_1 += " clear: none;";
+	else if(!UT_strcmp(tempProp, "wrapped-left"))
+		m_utf8_1 += " clear: right;";
+	else if(!UT_strcmp(tempProp, "wrapped-right"))
+		m_utf8_1 += " clear: left;";
+	else if(!UT_strcmp(tempProp, "above-text"))
+		m_utf8_1 += " clear: none; z-index: 999;";
+	
+	m_utf8_1 += "\"";
+	
+	tagOpen(TT_DIV, m_utf8_1);
+	return;
+}
+
+void s_HTML_Listener::_closeTextBox ()
+{
+	m_utf8_1 = "div";
+	tagClose(TT_DIV, m_utf8_1);
+}
+
 void s_HTML_Listener::_outputData (const UT_UCSChar * data, UT_uint32 length)
 {
 	if (!m_bInBlock) return;
@@ -4701,35 +4788,58 @@ bool s_HTML_Listener::populateStrux (PL_StruxDocHandle sdh,
 				m_bIgnoreTillEnd = false;
 				return true;
 			}
-#if 0
-		case PTX_EndFrame:
-			// _handleFrame checks the properties and applies them to a new span or cell or something
-		case PTX_EndMarginnote:
 		case PTX_SectionFrame:
-			// Record the position for a docrange later.
+			{
+				if(m_bIgnoreTillEnd || m_bIgnoreTillNextSection)
+				{
+					return true;
+				}
+				// Set up to get and get the type of frame (a property thereof)
+				const PP_AttrProp * pAP = 0;
+				bool bHaveProp = m_pDocument->getAttrProp (api, &pAP);
+				if (!bHaveProp || (pAP == 0)) return true;
+				const XML_Char * szType = 0;
+				pAP->getProperty ("frame-type", szType);
+				if (szType == 0) return true;
+				// ---
+				if (!UT_strcmp(szType, "textbox"))
+				{
+					_openTextBox(pcr->getIndexAP()); // Open a new text box
+					return true;
+				}
+				return true;
+			}
+		case PTX_EndFrame:
+		{
+			_closeTextBox();
+			return true;
+		}
+#if 0
+		case PTX_EndMarginnote:
 		case PTX_SectionMarginnote:
 #endif
 			// Ignore HdrFtr for now
 		case PTX_SectionHdrFtr:
-			m_bIgnoreTillNextSection = true;
+			{
+			m_bIgnoreTillNextSection = true; // This is incorrect, HdrFtrs are one-per-document.  I wonder who put this here...
 			return true;
+			}
 		case PTX_SectionTOC: 
 			{
 				_emitTOC ();
 				return true;
 			}
 
-		case PTX_SectionFrame:
-			m_bIgnoreTillEnd = true;
-			return true;
+		//case PTX_SectionFrame:
+		//m_bIgnoreTillEnd = true;
+		//	return true;
 		case PTX_EndTOC:
 			{
 				return true;
 			}
-
-		case PTX_EndFrame:
-			m_bIgnoreTillEnd = false;
-			return true;
+		//case PTX_EndFrame:
+		//	m_bIgnoreTillEnd = false;
+		//	return true;
 		default:
 			UT_DEBUGMSG(("WARNING: ie_exp_HTML.cpp: unhandled strux type: %d!\n", pcrx->getStruxType ()));
 			UT_ASSERT(UT_TODO);
