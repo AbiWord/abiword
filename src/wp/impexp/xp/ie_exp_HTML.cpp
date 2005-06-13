@@ -4582,14 +4582,19 @@ bool s_HTML_Listener::populateStrux (PL_StruxDocHandle sdh,
 				{
 					return true;  // Nested sections could be the sign of a severe problem, even if caused by import
 				}
+				
+				// This block prepares us for getting document-level properties (namely, the endnote-place-endsection one stored in doEndnotes)
 				PT_AttrPropIndex docApi = m_pDocument->getAttrPropIndex();
 				const XML_Char * doEndnotes = NULL;
 				const PP_AttrProp * pDAP = NULL;
 				m_pDocument->getAttrProp (docApi, &pDAP);
-				pDAP->getProperty("document-endnote-place-endsection", doEndnotes);
-				if(atoi(doEndnotes)) _doEndnotes();
+				
+				// If the d-e-p-e.s. prop is defined	(getProp call succeeds and returns TRUE), and it is 1 (TRUE), we're supposed to spit out the endnotes every section.
+				if(pDAP->getProperty("document-endnote-place-endsection", doEndnotes) && atoi(doEndnotes))
+					{ _doEndnotes(); } // Spit out the endnotes that have accumulated for this past section.
+				
 				if (m_bInBlock) _closeTag (); // possible problem with lists??
-				_openSection (api);
+				_openSection (api); // Actually start the next section, which is why we're here.
 				return true;
 			}
 
