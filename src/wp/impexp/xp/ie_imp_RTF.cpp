@@ -8138,7 +8138,7 @@ bool IE_Imp_RTF::ReadOneFontFromTable(bool bNested)
 	/*work around "helvetica" font name -replace it with "Helvetic"*/
 	if (sFontNames[0] == "helvetica")
 	{
-		sFontNames[0] = "Helvetica";
+		sFontNames[0] = "Helvetic";
 	}
 #endif /* ! XP_TARGET_COCOA */
 
