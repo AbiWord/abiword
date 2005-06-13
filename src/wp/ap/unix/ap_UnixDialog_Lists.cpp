@@ -208,7 +208,10 @@ void AP_UnixDialog_Lists::runModal( XAP_Frame * pFrame)
 	// Restore our value
 	setNewListType(savedListType);
 	
-	abiRunModalDialog ( GTK_DIALOG(mainWindow), pFrame, this, BUTTON_CANCEL, false );
+	gint response;
+	do {
+		response = abiRunModalDialog (GTK_DIALOG(mainWindow), pFrame, this, BUTTON_CANCEL, false);		
+	} while (response == BUTTON_RESET);
 	AP_Dialog_Lists::tAnswer res = getAnswer();
 	g_list_free( m_glFonts);
 	abiDestroyWidget ( mainWindow ) ;
@@ -431,6 +434,10 @@ void  AP_UnixDialog_Lists::styleChanged(gint type)
 		gtk_option_menu_set_history (GTK_OPTION_MENU(m_wListTypeBox),
 								  0);
 		setNewListType(NOT_A_LIST);
+		gtk_widget_set_sensitive(m_wFontOptions, false);
+		gtk_widget_set_sensitive(m_wStartSpin, false);
+		gtk_widget_set_sensitive(m_wDelimEntry, false);
+		gtk_widget_set_sensitive(m_wDecimalEntry, false);		
 	}
 	else if(type == 1)
 	{
@@ -450,6 +457,10 @@ void  AP_UnixDialog_Lists::styleChanged(gint type)
 		gtk_option_menu_set_history (GTK_OPTION_MENU(m_wListTypeBox),
 								  1);
 		setNewListType(BULLETED_LIST);
+		gtk_widget_set_sensitive(m_wFontOptions, false);
+		gtk_widget_set_sensitive(m_wStartSpin, false);
+		gtk_widget_set_sensitive(m_wDelimEntry, false);
+		gtk_widget_set_sensitive(m_wDecimalEntry, false);		
 	}
 	else if(type == 2)
 	{
@@ -467,6 +478,10 @@ void  AP_UnixDialog_Lists::styleChanged(gint type)
 		gtk_option_menu_set_history (GTK_OPTION_MENU(m_wListTypeBox),
 								  2);
 		setNewListType(NUMBERED_LIST);
+		gtk_widget_set_sensitive(m_wFontOptions, true);
+		gtk_widget_set_sensitive(m_wStartSpin, true);
+		gtk_widget_set_sensitive(m_wDelimEntry, true);
+		gtk_widget_set_sensitive(m_wDecimalEntry, true);		
 	}
 //
 // This methods needs to be called from loadXPDataIntoLocal to set the correct
@@ -576,13 +591,13 @@ void AP_UnixDialog_Lists::setAllSensitivity(void)
 	}
 }
 
-GtkWidget * AP_UnixDialog_Lists::_constructWindow (void)
+GtkWidget * AP_UnixDialog_Lists::_constructWindow(void)
 {
 	GtkWidget *contents;
 	GtkWidget *vbox1;
 
 	ConstructWindowName();
-	m_wMainWindow = abiDialogNew ( "list dialog", TRUE, getWindowName() );
+	m_wMainWindow = abiDialogNew ( "list dialog", TRUE, getWindowName() );	
 	vbox1 = GTK_DIALOG(m_wMainWindow)->vbox ;
 
 	contents = _constructWindowContents();
@@ -885,13 +900,17 @@ GtkWidget *AP_UnixDialog_Lists::_constructWindowContents (void)
 					  (GtkAttachOptions) (GTK_EXPAND | GTK_FILL),
 					  (GtkAttachOptions) (0), 0, 0);
 	gtk_misc_set_alignment (GTK_MISC (style_lb), 0, 0.5);
+	
 	pSS->getValueUTF8(AP_STRING_ID_DLG_Lists_SetDefault,s);
-	customized_cb = gtk_button_new_with_label (s.utf8_str());
+	customized_cb = gtk_dialog_add_button (GTK_DIALOG(m_wMainWindow), s.utf8_str(), BUTTON_RESET);
 	gtk_widget_show (customized_cb);
+
+	/* todo
 	gtk_table_attach (GTK_TABLE (table1), customized_cb, 0, 2, 2, 3,
 					  (GtkAttachOptions) (GTK_SHRINK),
 					  (GtkAttachOptions) (0), 0, 0);
-
+	*/
+	
 	frame1 = gtk_frame_new (NULL);
 	gtk_frame_set_shadow_type(GTK_FRAME(frame1), GTK_SHADOW_NONE);
 	//gtk_widget_show (frame1);
