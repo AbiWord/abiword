@@ -125,6 +125,7 @@ GR_Graphics::GR_Graphics()
 	  m_iZoomPercentage(100),
 	  m_iFontAllocNo(0),
 	  m_pRect(NULL),
+	  m_bHave3DColors(false),
 	  m_pCaret(NULL),
 	  m_bIsPortrait(true),
 	  m_bSpawnedRedraw(false),

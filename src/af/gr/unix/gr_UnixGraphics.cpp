@@ -1730,6 +1730,17 @@ void GR_UnixGraphics::setColor3D(GR_Color3D c)
 	_setColor(m_3dColors[c]);
 }
 
+bool GR_UnixGraphics::getColor3D(GR_Color3D name, UT_RGBColor &color)
+{
+	if (m_bHave3DColors) {
+		color.m_red = m_3dColors[name].red >> 8;
+		color.m_grn = m_3dColors[name].green >> 8;
+		color.m_blu =m_3dColors[name].blue >> 8;
+		return true;
+	}
+	return false;
+}
+
 void GR_UnixGraphics::init3dColors(GtkStyle * pStyle)
 {
 	m_3dColors[CLR3D_Foreground] = pStyle->text[GTK_STATE_NORMAL];
@@ -1737,6 +1748,8 @@ void GR_UnixGraphics::init3dColors(GtkStyle * pStyle)
 	m_3dColors[CLR3D_BevelUp]    = pStyle->light[GTK_STATE_NORMAL];
 	m_3dColors[CLR3D_BevelDown]  = pStyle->dark[GTK_STATE_NORMAL];
 	m_3dColors[CLR3D_Highlight]  = pStyle->bg[GTK_STATE_PRELIGHT];
+
+	m_bHave3DColors = true;
 }
 
 void GR_UnixGraphics::fillRect(GR_Color3D c, UT_sint32 x, UT_sint32 y, UT_sint32 w, UT_sint32 h)

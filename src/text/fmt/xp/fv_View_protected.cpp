@@ -4107,7 +4107,10 @@ void FV_View::_draw(UT_sint32 x, UT_sint32 y,
 	  page with its decorations.
 	*/
 
-	UT_RGBColor clrMargin = getColorMargin();
+	UT_RGBColor clrMargin;
+	if (!m_pG->getColor3D(GR_Graphics::CLR3D_BevelDown, clrMargin)) {
+		UT_RGBColor clrMargin = getColorMargin();
+	}
 
 	if (!bDirtyRunsOnly)
 	{

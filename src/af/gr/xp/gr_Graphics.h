@@ -519,6 +519,7 @@ class ABI_EXPORT GR_Graphics
 #define COUNT_3D_COLORS 5
 
 	virtual void      setColor3D(GR_Color3D c) = 0;
+	virtual bool      getColor3D(GR_Color3D name, UT_RGBColor &color) { return false; }
 
 	//
 	// Methods to deal with background repainting as used in the Unix FE. These
@@ -750,6 +751,8 @@ class ABI_EXPORT GR_Graphics
 	static UT_uint32 m_uTick;
 
 	const UT_Rect *  m_pRect;
+
+	bool m_bHave3DColors;
 
  private:
 	GR_Caret *		 m_pCaret;

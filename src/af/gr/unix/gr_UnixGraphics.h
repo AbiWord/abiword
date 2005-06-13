@@ -133,6 +133,7 @@ class GR_UnixGraphics : public GR_Graphics
 	virtual GR_Graphics::Cursor getCursor(void) const;
 
 	virtual void		setColor3D(GR_Color3D c);
+	virtual bool		getColor3D(GR_Color3D name, UT_RGBColor &color);
 	void				init3dColors(GtkStyle * pStyle);
 
 	void                createPixmapFromXPM( char ** pXPM,GdkPixmap *source,
