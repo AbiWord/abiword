@@ -35,8 +35,8 @@
 #include "xap_Frame.h"
 
 #include "ap_Dialog_Id.h"
-
 #include "ap_Strings.h"
+#include "ap_EditMethods.h"
 
 #include "ap_Preview_Paragraph.h"
 #include "ap_UnixDialog_Paragraph.h"
@@ -168,17 +168,25 @@ void AP_UnixDialog_Paragraph::runModal(XAP_Frame * pFrame)
 	// HACK: the first arg gets ignored
 	_syncControls(id_MENU_ALIGNMENT, true);
 
-
-	switch(abiRunModalDialog(GTK_DIALOG(mainWindow), pFrame, this, BUTTON_CANCEL, false))
-	{
-	case BUTTON_OK:
-	  event_OK(); break;
-	case BUTTON_TABS:
-	  event_Tabs (); break;
-	default:
-	  event_Cancel(); break;
-	}
-
+	bool tabs;
+	do {
+		switch(abiRunModalDialog(GTK_DIALOG(mainWindow), pFrame, this, BUTTON_CANCEL, false))
+		{
+		case BUTTON_OK:
+		  event_OK(); 
+		  tabs = false;
+		  break;
+		case BUTTON_TABS:
+		  event_Tabs ();
+		  tabs = true;
+		  break;
+		default:
+		  event_Cancel();
+		  tabs = false;
+		  break;
+		}
+	} while (tabs);
+	
 	abiDestroyWidget(mainWindow);
 }
 
@@ -196,6 +204,8 @@ void AP_UnixDialog_Paragraph::event_Cancel(void)
 
 void AP_UnixDialog_Paragraph::event_Tabs(void)
 {
+	AV_View *pView = m_pFrame->getCurrentView();
+	s_doTabDlg(static_cast<FV_View*>(pView));
 	m_answer = AP_Dialog_Paragraph::a_TABS;
 }
 

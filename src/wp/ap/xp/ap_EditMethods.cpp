@@ -7261,7 +7261,8 @@ s_TabSaveCallBack (AP_Dialog_Tab * pDlg, FV_View * pView,
 	pView->setBlockFormat(properties);
 }
 
-static bool s_doTabDlg(FV_View * pView)
+// non static, so it can be called from the paragraph dialog
+bool s_doTabDlg(FV_View * pView)
 {
 
 
