@@ -604,7 +604,7 @@ void GR_CocoaGraphics::_realDrawChars(const unichar* cBuf, int len, NSDictionary
 	NSString *string;
 	string = [[NSString alloc] initWithCharacters:cBuf length:len];
 	if (string) {
-		NSLog (@"drawChar(%@) x = %f, y = %f (%d,%d)", string, x, y, begin, rangelen);
+		//NSLog (@"drawChar(%@) x = %f, y = %f (%d,%d)", string, x, y, begin, rangelen);
 		NSAttributedString * attributedString = [[NSAttributedString alloc] initWithString:string 
 												 attributes:fontProps];
 		if (attributedString) {
@@ -708,17 +708,17 @@ void GR_CocoaGraphics::drawChars(const UT_UCSChar* pChars, int iCharOffset,
 						if (UT_BIDI_IS_STRONG(charType)) {
 							rtl = UT_BIDI_IS_RTL(charType);
 							knownDir = true;
-							NSLog(@"direction is %d (1 == RTL %x)) set at idx %d with chartype = %x, char %x", rtl, 
-							                           UT_BIDI_RTL, i, charType, begin[i]); 
+							//NSLog(@"direction is %d (1 == RTL %x)) set at idx %d with chartype = %x, char %x", rtl, 
+							                           //UT_BIDI_RTL, i, charType, begin[i]); 
 						}
 					}
 					cBuf[i] = (unichar) (m_pFont ? m_pFont->remapChar(begin[i]) : begin[i]);
 				}
 				cBuf[iLength] = 0;
 
-				if(!knownDir) {
-					NSLog(@"direction is UNKNOWN");
-				}
+				//if(!knownDir) {
+				//	NSLog(@"direction is UNKNOWN");
+				//}
 
 				float x = xoff;
 				int len = iLength;
@@ -726,18 +726,18 @@ void GR_CocoaGraphics::drawChars(const UT_UCSChar* pChars, int iCharOffset,
 				int rangeBegin = 0;
 				int j;
 				float currentRunLen = 0;
-				NSLog (@"start at x = %d", TDUX(x));
+				//NSLog (@"start at x = %d", TDUX(x));
 				for (j = 0; j < len; j++) {
 					if (UT_UCS4_isspace(cBuf[j])) {
 						if (rangeLength > 0) {
-							NSLog (@"x = %d, currentRunLen = %d", TDUX(x), TDUX(currentRunLen));
+							//NSLog (@"x = %d, currentRunLen = %d", TDUX(x), TDUX(currentRunLen));
 							_realDrawChars(cBuf + rangeBegin, iLength - rangeBegin, m_fontProps, TDUX(x),
 										   yoff, 0, rangeLength);
 							// from here currentRunLen is signed... so just add it
 							if (!rtl) {
 								x += currentRunLen;
 							}
-							NSLog(@"x is now %d", TDUX(x));
+							//NSLog(@"x is now %d", TDUX(x));
 						}
 						if (j < len - 1) {
 							if (rtl) {
@@ -746,7 +746,7 @@ void GR_CocoaGraphics::drawChars(const UT_UCSChar* pChars, int iCharOffset,
 							else{
 								x += pCharWidths[iCharOffset+j];
 							}
-							NSLog (@"moved to (space) x = %d charwidth was %d", TDUX(x), TDUX(pCharWidths[iCharOffset+j]));
+							//NSLog (@"moved to (space) x = %d charwidth was %d", TDUX(x), TDUX(pCharWidths[iCharOffset+j]));
 						}
 						rangeBegin = j + 1;
 						rangeLength = 0;
