@@ -183,7 +183,7 @@ void  AP_Dialog_FormatFootnotes::setInitialValues(void)
 	m_bRestartFootPage = m_pDocLayout->getRestartFootOnPage();
 	m_bRestartEndSection = m_pDocLayout->getRestartEndOnSection();
 	m_bPlaceAtDocEnd = m_pDocLayout->getPlaceEndAtDocEnd();
-	m_bPlaceAtSecEnd = m_pDocLayout->getPlaceEndAtDocEnd();
+	m_bPlaceAtSecEnd = m_pDocLayout->getPlaceEndAtSecEnd();
 	recalcTextValues();
 }
 
