@@ -253,6 +253,13 @@ public:
 												const char* pszFontSize);
 
 protected:
+	virtual const char*          _findNearestFont(const char* pszFontFamily,
+												const char* pszFontStyle,
+												const char* pszFontVariant,
+												const char* pszFontWeight,
+												const char* pszFontStretch,
+												const char* pszFontSize);
+	
 	void									_setAbiSuiteLibDir(const char * sz);
 	virtual const char *                    _getKbdLanguage() {return NULL;}
 	void                                    _setUUIDGenerator(UT_UUIDGenerator * pG)

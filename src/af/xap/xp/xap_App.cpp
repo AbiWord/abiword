@@ -1397,6 +1397,23 @@ void XAP_App::setDefaultGraphicsId(UT_uint32 i)
 	}
 }
 
+const char*         XAP_App::_findNearestFont(const char* pszFontFamily,
+												const char* pszFontStyle,
+												const char* pszFontVariant,
+												const char* pszFontWeight,
+												const char* pszFontStretch,
+												const char* pszFontSize)
+{
+	GR_Graphics * pG = newDefaultScreenGraphics();
+	UT_return_val_if_fail( pG, pszFontFamily );
+
+	const char * pf = pG->findNearestFont(pszFontFamily, pszFontStyle, pszFontVariant,
+										   pszFontWeight, pszFontStretch, pszFontSize);
+
+	delete pG;
+	return pf;
+}
+
 /*!
     Find the nearest matching font based on the provided parameters
 
@@ -1415,14 +1432,8 @@ const char* XAP_App::findNearestFont(const char* pszFontFamily,
 	XAP_App * pApp = XAP_App::getApp();
 	UT_return_val_if_fail( pApp, pszFontFamily );
 	
-	GR_Graphics * pG = pApp->newDefaultScreenGraphics();
-	UT_return_val_if_fail( pG, pszFontFamily );
-
-	const char * pf = pG->findNearestFont(pszFontFamily, pszFontStyle, pszFontVariant,
-										   pszFontWeight, pszFontStretch, pszFontSize);
-
-	delete pG;
-	return pf;
+	return pApp->_findNearestFont(pszFontFamily, pszFontStyle, pszFontVariant,
+		pszFontWeight, pszFontStretch, pszFontSize);
 }
 
 #ifdef DEBUG

@@ -2,7 +2,7 @@
 
 /* AbiWord
  * Copyright (C) 1998-2000 AbiSource, Inc.
- * Copyright (C) 2001-2004 Hubert Figuiere
+ * Copyright (C) 2001-2005 Hubert Figuiere
  * Copyright (C) 2002-2004 Francis James Franklin
  * 
  * This program is free software; you can redistribute it and/or
@@ -53,6 +53,7 @@
 
 #include "xap_Args.h"
 #include "xap_CocoaAppController.h"
+#include "xap_CocoaFrame.h"
 #include "xap_DialogFactory.h"
 #include "xap_Dialog_Id.h"
 #include "xap_Dlg_MessageBox.h"
@@ -81,6 +82,7 @@
 #include "ap_CocoaApp.h"
 #include "ap_CocoaClipboard.h"
 #include "ap_CocoaFrame.h"
+#include "ap_CocoaFrameImpl.h"
 #include "ap_CocoaPrefs.h"
 #include "ap_CocoaSplash.h"
 #include "ap_Convert.h"

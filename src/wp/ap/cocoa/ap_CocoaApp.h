@@ -93,6 +93,8 @@ public:
 	virtual void errorMsgBadFile(XAP_Frame * pFrame, const char * file, 
 								 UT_Error error);
 	virtual bool doWindowlessArgs (const AP_Args *);
+	virtual GR_Graphics * newDefaultScreenGraphics() const 
+		{ UT_ASSERT(UT_NOT_IMPLEMENTED); return NULL; };
 
 private:	// JCA: Why in the hell we have so many (any) protected variables?
 	XAP_StringSet *			m_pStringSet;

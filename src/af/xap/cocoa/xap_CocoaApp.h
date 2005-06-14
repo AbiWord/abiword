@@ -102,6 +102,12 @@ public:
 	XAP_Frame * 					_getFrontFrame(void);
 	AP_CocoaToolbar_Icons *			getToolbarIcons () const { return m_pCocoaToolbarIcons; }
 protected:
+	virtual const char*          _findNearestFont(const char* pszFontFamily,
+												const char* pszFontStyle,
+												const char* pszFontVariant,
+												const char* pszFontWeight,
+												const char* pszFontStretch,
+												const char* pszFontSize);
 	bool							_loadFonts();
 	void							_setAbiSuiteLibDir();
 private:
