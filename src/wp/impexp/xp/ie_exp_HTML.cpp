@@ -4359,24 +4359,36 @@ void s_HTML_Listener::_handleField (const PX_ChangeRecord_Object * pcro,
 			UT_XML_strncpy(idAttr, UT_XML_strlen(noteToken)+1, noteToken);
 			const XML_Char * partToken = (XML_Char *)strtok(NULL, "_");
 			const XML_Char * szID = 0;
+			const XML_Char * szNoteNumInit = 0;
+			UT_uint32 noteNumInit = 1;
 
-			pAP->getAttribute (strcat(idAttr, "-id"), szID);
-			UT_uint32 ID = atoi(szID);
-			
 			UT_UTF8String notePNString;
 			UT_UTF8String notePLString;
 			UT_UTF8String notePIDString;
-			UT_UTF8String_sprintf(notePIDString, " id=\"%s_%s-%d\"", noteToken, partToken, (ID + 1));
+			
+			// Take into account document-*note-initial
+				// This block preps for getting a document-level property.
+				PT_AttrPropIndex docApi = m_pDocument->getAttrPropIndex();
+				const PP_AttrProp * pDAP = NULL;
+				m_pDocument->getAttrProp (docApi, &pDAP);
+				if(!UT_strcmp(noteToken, "footnote") && pDAP->getProperty("document-footnote-initial", szNoteNumInit))
+					noteNumInit = atoi(szNoteNumInit);
+				else if(!UT_strcmp(noteToken, "endnote") && pDAP->getProperty("document-endnote-initial", szNoteNumInit))
+					noteNumInit = atoi(szNoteNumInit);
+			pAP->getAttribute (strcat(idAttr, "-id"), szID);
+			UT_uint32 ID = atoi(szID);
+			
+			UT_UTF8String_sprintf(notePIDString, " id=\"%s_%s-%d\"", noteToken, partToken, (ID + noteNumInit));
 			m_utf8_1 += notePIDString;
 			tagOpen (TT_SPAN, m_utf8_1, ws_None);
 			m_utf8_1 = "a";
 			
 			const char *hrefPartAtom = (strcmp(partToken, "anchor") ? "anchor" : "ref");
 			
-			UT_UTF8String_sprintf(notePLString, " href=\"#%s_%s-%d\"", noteToken, hrefPartAtom, (ID + 1));
+			UT_UTF8String_sprintf(notePLString, " href=\"#%s_%s-%d\"", noteToken, hrefPartAtom, (ID + noteNumInit));
 			m_utf8_1 += notePLString;
 			tagOpen (TT_A, m_utf8_1, ws_None);
-			UT_UTF8String_sprintf(notePNString, "%d", (ID + 1));
+			UT_UTF8String_sprintf(notePNString, "%d", (ID + noteNumInit));
 			m_pie->write (notePNString.utf8_str (), notePNString.byteLength ());
 			textUntrusted (field->getValue ());
 			m_utf8_1 = "a";
