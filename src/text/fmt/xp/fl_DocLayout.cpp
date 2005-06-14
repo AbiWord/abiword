@@ -1683,6 +1683,11 @@ fl_BlockLayout* FL_DocLayout::findBlockAtPosition(PT_DocPosition pos) const
 		{
 		case PTX_Block:
 			pBL = static_cast<fl_BlockLayout *>(pL);
+			while(pBL && !pBL->canContainPoint())
+			{
+				pBL = pBL->getPrevBlockInDocument();
+			}
+				  
 			break;
 
 		case PTX_Section:
@@ -1698,6 +1703,8 @@ fl_BlockLayout* FL_DocLayout::findBlockAtPosition(PT_DocPosition pos) const
 		return NULL;
 	}
 
+	UT_return_val_if_fail( pBL, NULL );
+	
 	fl_ContainerLayout * pMyC = pBL->myContainingLayout();
 	while(pMyC && (pMyC->getContainerType() != FL_CONTAINER_DOCSECTION)
 	      && (pMyC->getContainerType() != FL_CONTAINER_HDRFTR)

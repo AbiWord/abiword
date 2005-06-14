@@ -68,7 +68,7 @@ fl_SectionLayout::fl_SectionLayout(FL_DocLayout* pLayout, PL_StruxDocHandle sdh,
 	: fl_ContainerLayout(pMyContainerLayout, sdh, indexAP,iStrux, iCType),
 	  m_iType(iType),
 	  m_pLayout(pLayout),
-	  m_bIsCollapsed(true),
+	  m_bIsCollapsed(false), // collapsed layouts cannot contain point, and this value never changes
 	  m_bNeedsReformat(true),
 	  m_bNeedsRedraw(true),	
 	  m_pGraphicImage(NULL),

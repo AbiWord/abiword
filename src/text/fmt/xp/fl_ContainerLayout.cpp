@@ -1060,8 +1060,17 @@ bool fl_ContainerLayout::canContainPoint() const
 
 	if(bHidden)
 		return false;
-	else
-		return _canContainPoint();
+	
+	if(!_canContainPoint())
+		return false;
+
+	// see if we are not inside a containing layout that cannot contain point
+	fl_ContainerLayout * pMyLayout = myContainingLayout();
+
+	if(!pMyLayout || pMyLayout->getContainerType() == FL_CONTAINER_DOCSECTION)
+		return true;
+	
+	return pMyLayout->canContainPoint();
 }
 
 bool fl_ContainerLayout::isOnScreen() const
