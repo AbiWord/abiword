@@ -8,7 +8,7 @@ msgid ""
 msgstr ""
 "Project-Id-Version: Abiword 2.3.0\n"
 "Report-Msgid-Bugs-To: \n"
-"POT-Creation-Date: 2005-06-11 02:27+0200\n"
+"POT-Creation-Date: 2005-06-14 20:12+0200\n"
 "PO-Revision-Date: 2005-03-21 11:28/-0600\n"
 "Last-Translator: unknown <email@address>\n"
 "Language-Team: unknown <email@address>\n"
@@ -46,7 +46,7 @@ msgstr " "
 msgid ""
 " - Reserved. \n"
 " You cannot use this name. Choose Another \n"
-msgstr " - Rezervat . x0a; Nu puteþi folosi acest nume. Alegeþi altul x0a;"
+msgstr ""
 
 #. DLG_WordCount_Auto_Update
 #: po/tmp/ap_String_Id.h.h:27
