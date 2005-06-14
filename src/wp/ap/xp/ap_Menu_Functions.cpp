@@ -621,11 +621,11 @@ Defun_EV_GetMenuItemState_Fn(ap_GetState_Changes)
 	switch(id)
 	{
 	case AP_MENU_ID_FILE_SAVE:
-	  if (!pView->getDocument()->isDirty() || !pView->canDo(true))
+		if (!pView->getDocument()->isDirty() /*|| !pView->canDo(true)*/) // this caused bug 7580
 	    s = EV_MIS_Gray;
 	  break;
 	case AP_MENU_ID_FILE_REVERT:
-	  if (!pView->getDocument()->isDirty() || !pView->canDo(true))
+		if (!pView->getDocument()->isDirty() /*|| !pView->canDo(true)*/) // this cause bug 7580
 	    s = EV_MIS_Gray;
 	  break;
 	case AP_MENU_ID_EDIT_UNDO:
