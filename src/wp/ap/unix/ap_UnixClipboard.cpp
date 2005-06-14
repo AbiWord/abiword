@@ -105,6 +105,7 @@ AP_UnixClipboard::AP_UnixClipboard(AP_UnixApp * pApp)
   AddFmt(AP_CLIPBOARD_APPLICATION_RTF);
   
   // image types
+  AddFmt ( AP_CLIPBOARD_IMAGE_GOChart ) ;
   AddFmt ( AP_CLIPBOARD_IMAGE_PNG ) ;
   AddFmt ( AP_CLIPBOARD_IMAGE_JPEG ) ;
   AddFmt ( AP_CLIPBOARD_IMAGE_TIFF ) ;
@@ -120,7 +121,6 @@ AP_UnixClipboard::AP_UnixClipboard(AP_UnixApp * pApp)
   AddFmt ( AP_CLIPBOARD_IMAGE_WMF ) ;
   AddFmt ( AP_CLIPBOARD_IMAGE_SVG ) ;
   AddFmt ( AP_CLIPBOARD_IMAGE_SVG_XML ) ;
-  AddFmt ( AP_CLIPBOARD_IMAGE_GOChart ) ;
 
   // plain text types
   AddFmt(AP_CLIPBOARD_TEXT_UTF8_STRING);
