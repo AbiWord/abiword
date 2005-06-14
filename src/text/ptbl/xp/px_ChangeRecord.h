@@ -22,6 +22,7 @@
 #define PX_CHANGERECORD_H
 
 #include "ut_types.h"
+#include "ut_uuid.h"
 #include "pt_Types.h"
 #include "pd_Document.h"
 #include "pt_PieceTable.h"
@@ -79,6 +80,9 @@ public:
 	  { return m_iCRNumber;}
 	UT_uint32               getXID() const {return m_iXID;}
 
+	const char *            getDocUUID() const;
+	const char *            getMyUUID() const;
+	
 #ifdef PT_TEST
 	virtual void			__dump(FILE * fp) const;
 	void					__dump_type(FILE * fp) const;
@@ -97,5 +101,8 @@ protected:
 	// the XID attribute of the frag
 	UT_uint32               m_iXID;
 	UT_sint32               m_iCRNumber;
+
+private:
+	struct uuid             m_MyUUID;
 };
 #endif /* PX_CHANGERECORD_H */

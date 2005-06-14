@@ -38,6 +38,10 @@
 #include "pt_Types.h"
 #include "px_ChangeRecord.h"
 
+// after 2.5 this should be changed to #include pd_Document.h
+#include "xap_App.h"
+#include "ut_uuid.h"
+
 /*!
   Create change record
   \param type Change record type
@@ -55,6 +59,18 @@ PX_ChangeRecord::PX_ChangeRecord(PXType type,
 	m_iXID(iXID),
 	m_iCRNumber(0)
 {
+	// bulletproofing
+	memset(&m_MyUUID, 0, sizeof(m_MyUUID));
+
+	// after 2.5 branch this should be changed to use AD_Document::getNewUID()
+	UT_return_if_fail(XAP_App::getApp() && XAP_App::getApp()->getUUIDGenerator());
+	UT_UUID * pUUID = XAP_App::getApp()->getUUIDGenerator()->createUUID();
+
+	UT_return_if_fail(pUUID);
+	UT_ASSERT(pUUID->isValid());
+
+	pUUID->toBinary(m_MyUUID);
+	delete pUUID;
 }
 
 /*!
@@ -63,6 +79,28 @@ PX_ChangeRecord::PX_ChangeRecord(PXType type,
 PX_ChangeRecord::~PX_ChangeRecord()
 {
 }
+
+const char * PX_ChangeRecord::getDocUUID() const
+{
+	static char s[37];
+
+	// this is dummy code to be replaced with proper impl. once the PD_Document pointer is
+	// available after 2.5
+	strncpy(s, "00000000-0000-0000-0000-000000000000", 36);
+	s[36] = 0;
+	return s;
+}
+
+const char * PX_ChangeRecord::getMyUUID() const
+{
+	static char s[37];
+
+	if(!UT_UUID::toStringFromBinary(s, sizeof(s), m_MyUUID))
+		return NULL;
+	
+	return s;
+}
+
 
 /*!
   Get type of change record

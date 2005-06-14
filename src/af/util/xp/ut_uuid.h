@@ -99,10 +99,17 @@ class ABI_EXPORT UT_UUID
 	/* these set m_uuid to given UUID, i.e., force internal state change */ 
 	bool            setUUID(const UT_UTF8String &s);
 	bool            setUUID(const char *s);
+	bool            setUUID(const struct uuid &u);
 
 	/* translate internal state into string representation; do not change
 	   internal state */
 	bool            toString(UT_UTF8String & to) const;
+
+	/* get the binary representation of the uuid */
+	bool            toBinary(struct uuid &u) const;
+
+	/* convert binary uuid representaiton to a string */
+	static bool     toStringFromBinary(char * s, UT_uint32 len, const struct uuid &u);
 
 	/* create FNV hash of the uuid -- use UT_UUIDGenerator::getUUID*()
 	   instead of these; it provides collision correction*/
@@ -141,7 +148,7 @@ class ABI_EXPORT UT_UUID
 
 	/* reset internal state to NULL uuid */
 	void            clear();
-	
+
   protected:
 	friend class UT_UUIDGenerator;
 	
@@ -150,9 +157,10 @@ class ABI_EXPORT UT_UUID
 	UT_UUID(); // constructs NULL uuid; subsequent call to makeUUID() needed to initialise
 	UT_UUID(const UT_UTF8String &s); // initialises from string
 	UT_UUID(const char *s);      // initialises from string
+	UT_UUID(const struct uuid&u);   // initialise from binary representation
 	UT_UUID(const UT_UUID &u);   // copy constructor
 
-	/* the following funciton can be ovewritten when a better source
+	/* the following function can be ovewritten when a better source
 	   of randomness than UT_rand() is available on given platform
 	   (see ut_Win32Uuid.h/cpp for an example) */
 	virtual bool    _getRandomBytes(void *buf, int nbytes);
@@ -206,6 +214,7 @@ class ABI_EXPORT UT_UUIDGenerator
 	virtual UT_UUID * createUUID(const UT_UTF8String &s){return new UT_UUID(s);}
 	virtual UT_UUID * createUUID(const char *s){return new UT_UUID(s);}
 	virtual UT_UUID * createUUID(const UT_UUID &u){return new UT_UUID(u);}
+	virtual UT_UUID * createUUID(const struct uuid &u){return new UT_UUID(u);}
 
 	UT_uint32 getNewUUID32();
 	UT_uint64 getNewUUID64();

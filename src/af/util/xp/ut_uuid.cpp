@@ -78,6 +78,12 @@ UT_UUID::UT_UUID(const char * in)
 		makeUUID();
 }
 
+UT_UUID::UT_UUID(const struct uuid &u)
+{
+    memcpy(&m_uuid, &u, sizeof(u));
+	m_bIsValid = !isNull();
+}
+
 /*! copy constructor */
 UT_UUID::UT_UUID(const UT_UUID &u)
 {
@@ -158,6 +164,34 @@ bool UT_UUID::toString(UT_UTF8String & s) const
 	return _toString(m_uuid, s);
 }
 
+bool UT_UUID::toStringFromBinary(char * s, UT_uint32 len, const struct uuid &uu)
+{
+	if(len < 37)
+		return false;
+
+    sprintf(s,"%08x-%04x-%04x-%02x%02x-%02x%02x%02x%02x%02x%02x",
+        uu.time_low, uu.time_mid, uu.time_high_and_version,
+        uu.clock_seq >> 8, uu.clock_seq & 0xFF,
+        uu.node[0], uu.node[1], uu.node[2],
+        uu.node[3], uu.node[4], uu.node[5]);
+
+	s[36] = 0;
+
+	return true;
+}
+
+
+/* get the binary representation of the uuid */
+bool UT_UUID::toBinary(struct uuid &u) const
+{
+	memset(&u, 0, sizeof(u));
+	if(m_bIsValid)
+	    memcpy(&u, &m_uuid, sizeof(u));
+
+	return m_bIsValid;
+}
+
+
 /*!
     Set internal state to the given value represented by string
 */
@@ -181,6 +215,14 @@ bool UT_UUID::setUUID(const char *s)
 	}
 	
 	return false;
+}
+
+bool UT_UUID::setUUID(const struct uuid &u)
+{
+    memcpy(&m_uuid, &u, sizeof(u));
+	m_bIsValid = !isNull();
+
+	return m_bIsValid;
 }
 
 /*!
