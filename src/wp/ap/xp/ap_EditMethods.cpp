@@ -12521,7 +12521,7 @@ UT_return_val_if_fail(pDialog, false);
 		// we have already turned this on, so turn it off again
 		pView->toggleMarkRevisions();
 	}
-	else
+	else if(bOK)
 	{
 		pDialog->addRevision();
 #if 0
@@ -12610,17 +12610,23 @@ Defun1(toggleMarkRevisions)
 		pView->setRevisionLevel(0);
 	}
 	
-	pView->toggleMarkRevisions();
-
-	if(pView->isMarkRevisions())
+	if(!pView->isMarkRevisions())
 	{
 		PD_Document * pDoc = pView->getDocument();
 		XAP_Frame * pFrame = static_cast<XAP_Frame *> ( pAV_View->getParentData());
 		UT_return_val_if_fail( pFrame && pDoc, false );
 		
-		s_doMarkRevisions(pFrame, pDoc, pView, true, false);
+		if(s_doMarkRevisions(pFrame, pDoc, pView, false, false))
+			pView->toggleMarkRevisions();
 	}
+	else
+	{
+		pView->toggleMarkRevisions();
+	}
+	
 
+
+	
 	return true;
 }
 
