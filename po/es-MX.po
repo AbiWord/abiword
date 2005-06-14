@@ -1,15 +1,13 @@
 # po file for Abiword
 # Copyright (C) 2005 AbiWord
 # This file is distributed under the GPL license.
-# FIRST AUTHOR <EMAIL@ADDRESS>, YEAR.
+# unknown <email@address>, 2005.
 #
-#, fuzzy
 msgid ""
 msgstr ""
 "Project-Id-Version: Abiword 2.3.0\n"
-"Report-Msgid-Bugs-To: \n"
-"POT-Creation-Date: 2005-06-11 02:26+0200\n"
-"PO-Revision-Date: 2005-03-21 11:28/-0600\n"
+"POT-Creation-Date: 2005-06-13 00:33+0200\n"
+"PO-Revision-Date: 2005-06-12 18:22-0500\n"
 "Last-Translator: unknown <email@address>\n"
 "Language-Team: unknown <email@address>\n"
 "MIME-Version: 1.0\n"
@@ -194,7 +192,7 @@ msgstr "&Acerca de %s"
 #. MENU_LABEL_TOOLS_REVISIONS_ACCEPT_REVISION
 #: po/tmp/ap_String_Id.h.h:84
 msgid "&Accept revision"
-msgstr ""
+msgstr "&Aceptar cambio"
 
 #. DLG_Spell_AddToDict
 #. MENU_LABEL_SPELL_ADD
@@ -220,7 +218,7 @@ msgstr "&Todo"
 #. DLG_ApplyButton
 #: po/tmp/ap_String_Id.h.h:95
 msgid "&Apply"
-msgstr ""
+msgstr "&Aplicar"
 
 #. DLG_Para_LabelAt
 #: po/tmp/ap_String_Id.h.h:97
@@ -270,13 +268,13 @@ msgstr "&Salto"
 #. MENU_LABEL_TABLE_SELECT_CELL
 #: po/tmp/ap_String_Id.h.h:115
 msgid "&Cell"
-msgstr ""
+msgstr "Cel&da"
 
 #. MENU_LABEL_TABLE_INSERT_CELLS
 #. MENU_LABEL_TABLE_DELETE_CELLS
 #: po/tmp/ap_String_Id.h.h:118
 msgid "&Cells"
-msgstr ""
+msgstr "Cel&das"
 
 #. MENU_LABEL_ALIGN_CENTER
 #: po/tmp/ap_String_Id.h.h:120
@@ -302,7 +300,7 @@ msgstr "&Cerrar"
 #. MENU_LABEL_TABLE_DELETE_COLUMNS
 #: po/tmp/ap_String_Id.h.h:129
 msgid "&Column"
-msgstr ""
+msgstr "&Columna"
 
 #. DLG_Break_ColumnBreak
 #: po/tmp/ap_String_Id.h.h:131
@@ -317,7 +315,7 @@ msgstr "&Columnas"
 #. MENU_LABEL_TOOLS_REVISIONS_COMPARE_DOCUMENTS
 #: po/tmp/ap_String_Id.h.h:135
 msgid "&Compare documents"
-msgstr ""
+msgstr "&Comparar documentos"
 
 #. MENU_LABEL_EDIT_COPY
 #: po/tmp/ap_String_Id.h.h:137
@@ -327,7 +325,7 @@ msgstr "&Copiar"
 #. MENU_LABEL_FMT_STYLE_DEFINE
 #: po/tmp/ap_String_Id.h.h:139
 msgid "&Create and Modify Styles"
-msgstr ""
+msgstr "&Crear y modificar Estilos"
 
 #. DLG_Options_Label_PrefsCurrentScheme
 #: po/tmp/ap_String_Id.h.h:141
@@ -337,7 +335,7 @@ msgstr "Esquema actual de preferencias"
 #. MENU_LABEL_TABLE_DELETE
 #: po/tmp/ap_String_Id.h.h:143
 msgid "&Delete"
-msgstr ""
+msgstr "&Borrar"
 
 #. MENU_LABEL_INSERT_DELETE_HYPERLINK
 #: po/tmp/ap_String_Id.h.h:145
@@ -362,7 +360,7 @@ msgstr "&Documento"
 #. MENU_LABEL_TOOLS_HISTORY
 #: po/tmp/ap_String_Id.h.h:153
 msgid "&Document History"
-msgstr ""
+msgstr "&Historial del documento"
 
 #. MENU_LABEL_WINDOW
 #: po/tmp/ap_String_Id.h.h:155
@@ -383,7 +381,7 @@ msgstr "&Editar"
 #. MENU_LABEL_INSERT_EDIT_HYPERLINK
 #: po/tmp/ap_String_Id.h.h:162
 msgid "&Edit hyperlink"
-msgstr ""
+msgstr "E&ditar hiper-vinculo"
 
 #. DLG_Options_Label_SmartQuotesEnable
 #: po/tmp/ap_String_Id.h.h:164
@@ -423,7 +421,7 @@ msgstr "&Archivo"
 #. DLG_Options_Label_FileExtension
 #: po/tmp/ap_String_Id.h.h:178
 msgid "&File extension:"
-msgstr ""
+msgstr "&Extensión del archivo"
 
 #. MENU_LABEL_EDIT_FIND
 #: po/tmp/ap_String_Id.h.h:180
@@ -448,7 +446,7 @@ msgstr "&Pie de página:"
 #. MENU_LABEL_TABLE_FORMAT
 #: po/tmp/ap_String_Id.h.h:188
 msgid "&Format Table"
-msgstr ""
+msgstr "&Formato de la tabla"
 
 #. MENU_LABEL_INSERT_GRAPHIC
 #: po/tmp/ap_String_Id.h.h:190
@@ -520,7 +518,7 @@ msgstr "Formato de &Imagen"
 #. MENU_LABEL_FILE_IMPORTSTYLES
 #: po/tmp/ap_String_Id.h.h:218
 msgid "&Import Styles"
-msgstr ""
+msgstr "&Importar Estilos"
 
 #. MENU_LABEL_WEB_WEBPREVIEW
 #: po/tmp/ap_String_Id.h.h:220
@@ -629,7 +627,7 @@ msgstr "&Diferenciar mayúsculas/minúsculas"
 #. MENU_LABEL_TABLE_MERGE_CELLS
 #: po/tmp/ap_String_Id.h.h:263
 msgid "&Merge Cells"
-msgstr ""
+msgstr "&Unir celdas"
 
 #. MENU_LABEL_WINDOW_MORE
 #: po/tmp/ap_String_Id.h.h:265
@@ -654,7 +652,7 @@ msgstr "&Nueva ventana"
 #. MENU_LABEL_FILE_NEW_USING_TEMPLATE
 #: po/tmp/ap_String_Id.h.h:273
 msgid "&New using Template"
-msgstr ""
+msgstr "&Nuevo a partir de plantilla"
 
 #. DLG_Break_NextPage
 #: po/tmp/ap_String_Id.h.h:275
@@ -811,7 +809,7 @@ msgstr "&Derecha:"
 #. MENU_LABEL_TABLE_SELECT_ROW
 #: po/tmp/ap_String_Id.h.h:337
 msgid "&Row"
-msgstr ""
+msgstr "&Renglón"
 
 #. DLG_Options_Label_ViewRuler
 #: po/tmp/ap_String_Id.h.h:339
@@ -841,7 +839,7 @@ msgstr "&Buscar ayuda"
 #. MENU_LABEL_TABLE_SELECT
 #: po/tmp/ap_String_Id.h.h:349
 msgid "&Select"
-msgstr ""
+msgstr "&Seleccionar"
 
 #. MENU_LABEL_TOOLS_REVISIONS_SET_VIEW_LEVEL
 #: po/tmp/ap_String_Id.h.h:351
@@ -851,7 +849,7 @@ msgstr ""
 #. MENU_LABEL_TOOLS_HISTORY_SHOW
 #: po/tmp/ap_String_Id.h.h:353
 msgid "&Show History"
-msgstr ""
+msgstr "&Mostrar Historial"
 
 #. MENU_LABEL_VIEW_STATUSBAR
 #: po/tmp/ap_String_Id.h.h:355
@@ -898,7 +896,7 @@ msgstr ""
 #. MENU_LABEL_TABLE_SELECT_TABLE
 #: po/tmp/ap_String_Id.h.h:373
 msgid "&Table"
-msgstr ""
+msgstr "&Tabla"
 
 #. MENU_LABEL_FMT_TABS
 #: po/tmp/ap_String_Id.h.h:375
@@ -1013,12 +1011,12 @@ msgstr "(ninguno)"
 #. TOOLBAR_TOOLTIP_1COLUMN
 #: po/tmp/ap_String_Id.h.h:421
 msgid "1 Column"
-msgstr ""
+msgstr "1 Columna"
 
 #. TOOLBAR_LABEL_MIDDLE_SPACE
 #: po/tmp/ap_String_Id.h.h:423
 msgid "1.5 Spacing"
-msgstr ""
+msgstr "Interlineado de 1.5"
 
 #. DLG_Para_SpacingHalf
 #: po/tmp/ap_String_Id.h.h:425
@@ -1029,7 +1027,7 @@ msgstr "1.5 líneas"
 #. TOOLBAR_TOOLTIP_MIDDLE_SPACE
 #: po/tmp/ap_String_Id.h.h:428
 msgid "1.5 spacing"
-msgstr ""
+msgstr "Espaciado de 1.5"
 
 #. TOOLBAR_LABEL_PARA_12BEFORE
 #: po/tmp/ap_String_Id.h.h:430
@@ -1041,14 +1039,14 @@ msgstr ""
 #. TOOLBAR_TOOLTIP_2COLUMN
 #: po/tmp/ap_String_Id.h.h:434
 msgid "2 Columns"
-msgstr ""
+msgstr "2 Columnas"
 
 #. TOOLBAR_LABEL_3COLUMN
 #. TOOLBAR_STATUSLINE_3COLUMN
 #. TOOLBAR_TOOLTIP_3COLUMN
 #: po/tmp/ap_String_Id.h.h:438
 msgid "3 Columns"
-msgstr ""
+msgstr "3 Columnas"
 
 #. DLG_Goto_Btn_Prev
 #: po/tmp/ap_String_Id.h.h:440
@@ -1061,6 +1059,8 @@ msgid ""
 "A fatal error has just occurred. Abiword is going to shutdown.\n"
 "The current document has been saved to disc with a \".saved\" extension."
 msgstr ""
+"Ha ocurrido un error fatal y AbiWord se va a cerrar.\n"
+"El documento actual se ha guardado con extensión \".saved\""
 
 #. DLG_Options_Label_SpellSuggest
 #: po/tmp/ap_String_Id.h.h:444
@@ -1081,7 +1081,7 @@ msgstr "Abiword no puede abrir el archivo %s. Podría estar estropeado."
 #. MSG_SpellSelectionDone
 #: po/tmp/ap_String_Id.h.h:450
 msgid "AbiWord finished checking the selection."
-msgstr ""
+msgstr "AbiWord ha terminado de revisar la selección."
 
 #. DLG_FR_FinishedReplace
 #: po/tmp/ap_String_Id.h.h:452
@@ -1100,22 +1100,34 @@ msgstr "AbiWord ha terminado de buscar en el documento."
 msgid ""
 "AbiWord is designed for a newer version of the system file COMCTL32.DLL\n"
 "than the one currently on your system. (COMCTL32.DLL version 4.72 or newer)\n"
-"A solution to this problem is explained in the FAQ on the AbiSource web "
-"site\n"
+"A solution to this problem is explained in the FAQ on the AbiSource web site\n"
 "\n"
 "\thttp://www.abisource.com\n"
 "\n"
 "You can use the program, but the toolbar may be missing."
 msgstr ""
+"AbiWord está diseñado para una versión más nueva del archivo de sistema "
+"COMCTL32.DLL\n"
+"(COMCTL32.DLL versión 4.72 o más nueva) que la que tiene su sistema "
+"actualmente.\n"
+"En la FAQ del sitio de AbiSource se explica una solución a este problema\n"
+"\n"
+"\thttp://www.abisource.com\n"
+"\n"
+"Puede usar el programa, pero podría ser que la barra de herramientas no esté "
+"presente"
 
 #. WINDOWS_NEED_UNICOWS
 #: po/tmp/ap_String_Id.h.h:458
 #, c-format
 msgid ""
 "AbiWord needs the file %s.dll\n"
-"Please download and install it from http://www.microsoft.com/msdownload/"
-"platformsdk/sdkupdate/psdkredist.htm"
+"Please download and install it from "
+"http://www.microsoft.com/msdownload/platformsdk/sdkupdate/psdkredist.htm"
 msgstr ""
+"AbiWord necesita el archivo %s.dll\n"
+"Por favor descarguelo e instalelo desde "
+"http://www.microsoft.com/msdownload/platformsdk/sdkupdate/psdkredist.htm"
 
 #. MENU_LABEL_HELP_ABOUT_GNOMEOFFICE
 #: po/tmp/ap_String_Id.h.h:460
@@ -1136,13 +1148,13 @@ msgstr ""
 #. TOOLBAR_TOOLTIP_ADD_COLUMN
 #: po/tmp/ap_String_Id.h.h:467
 msgid "Add a column to this table after the current column"
-msgstr ""
+msgstr "Añade una columna a esta tabla despues de la columna actual"
 
 #. TOOLBAR_STATUSLINE_ADD_ROW
 #. TOOLBAR_TOOLTIP_ADD_ROW
 #: po/tmp/ap_String_Id.h.h:470
 msgid "Add a row to this table after the current row"
-msgstr ""
+msgstr "Añade un renglón a esta tabla despues del renglón actual"
 
 #. MENU_STATUSLINE_FMT_BORDERS
 #: po/tmp/ap_String_Id.h.h:472
@@ -1235,8 +1247,9 @@ msgstr "Aplicar"
 #. TOOLBAR_STATUSLINE_FMTPAINTER
 #. TOOLBAR_TOOLTIP_FMTPAINTER
 #: po/tmp/ap_String_Id.h.h:508
-msgid "Apply the previously copied paragraph formatting onto the selected text"
-msgstr ""
+msgid ""
+"Apply the previously copied paragraph formatting onto the selected text"
+msgstr "Aplicar el formato de párrafo copiado antes al texto seleccionado"
 
 #. DLG_Lists_Apply_Current
 #: po/tmp/ap_String_Id.h.h:510
@@ -1246,7 +1259,7 @@ msgstr "Aplicar a la lista actual"
 #. DLG_FormatTable_Apply_To
 #: po/tmp/ap_String_Id.h.h:512
 msgid "Apply to:"
-msgstr ""
+msgstr "Aplicar a:"
 
 #. DLG_Lists_Arabic_List
 #: po/tmp/ap_String_Id.h.h:514
@@ -1256,8 +1269,8 @@ msgstr "Lista Arabiga"
 #. MSG_AutoRevisionOffWarning
 #: po/tmp/ap_String_Id.h.h:516
 msgid ""
-"Are you sure you do not want to maintain full history record? If you "
-"proceed, you will not be able to restore earlier versions of this document."
+"Are you sure you do not want to maintain full history record? If you proceed, "
+"you will not be able to restore earlier versions of this document."
 msgstr ""
 
 #. DLG_Para_SpacingAtLeast
@@ -1274,7 +1287,7 @@ msgstr "Continuar la lista anterior"
 #. DLG_PLUGIN_MANAGER_AUTHOR
 #: po/tmp/ap_String_Id.h.h:522 po/tmp/xap_String_Id.h.h:83
 msgid "Author:"
-msgstr ""
+msgstr "Autor:"
 
 #. DLG_Options_Label_AutoSaveUnderline
 #: po/tmp/ap_String_Id.h.h:524
@@ -1319,7 +1332,7 @@ msgstr ""
 #. DLG_InsertTable_AutoColSize
 #: po/tmp/ap_String_Id.h.h:540
 msgid "Automatic column size"
-msgstr ""
+msgstr "Tamaño de columna automático"
 
 #. DLG_Options_Label_CheckAutoLoadPlugins
 #: po/tmp/ap_String_Id.h.h:542
@@ -1399,7 +1412,7 @@ msgstr "Configuración bidireccional "
 #. DLG_UFS_StyleBold
 #: po/tmp/ap_String_Id.h.h:574 po/tmp/xap_String_Id.h.h:111
 msgid "Bold"
-msgstr ""
+msgstr "Negrita"
 
 #. MENU_LABEL_INSERT_BOOKMARK
 #: po/tmp/ap_String_Id.h.h:576
@@ -1541,7 +1554,7 @@ msgstr ""
 #. DLG_MetaData_Category_LBL
 #: po/tmp/ap_String_Id.h.h:633
 msgid "Category:"
-msgstr ""
+msgstr "Categoría:"
 
 #. DLG_Tab_Radio_Center
 #. DLG_PageNumbers_Center
@@ -1771,8 +1784,8 @@ msgid ""
 "Choose your target in the left side.\n"
 "If you want to use the \"Go To\" button, just fill the Number Entry with the "
 "desired number.  You can use + and - to perform relative movement.\tI.e., if "
-"you write \"+2\" and you select \"Line\", the \"Go To\" will go 2 lines "
-"below your current position."
+"you write \"+2\" and you select \"Line\", the \"Go To\" will go 2 lines below "
+"your current position."
 msgstr ""
 "Escoja el objetivo en la parte izquierda.\n"
 "Si quiere utilizar el botón \"Ir a\", solo tiene que rellenar el espacio en "
@@ -1823,19 +1836,19 @@ msgstr "Cerrar el documento"
 #. MENU_LABEL_TABLE_SELECT_COLUMN
 #: po/tmp/ap_String_Id.h.h:748
 msgid "Co&lumn"
-msgstr ""
+msgstr "&Columna"
 
 #. DLG_FormatFrame_Color
 #. DLG_FormatTable_Color
 #. DLG_UFS_ColorLabel
 #: po/tmp/ap_String_Id.h.h:751 po/tmp/xap_String_Id.h.h:177
 msgid "Color:"
-msgstr ""
+msgstr "Color:"
 
 #. DLG_FormatTable_Apply_To_Column
 #: po/tmp/ap_String_Id.h.h:753
 msgid "Column"
-msgstr ""
+msgstr "Columna"
 
 #. ColumnGapStatus
 #: po/tmp/ap_String_Id.h.h:755
@@ -1857,12 +1870,12 @@ msgstr "Columnas"
 #. MENU_LABEL_TABLE_INSERT_COLUMNS_BEFORE
 #: po/tmp/ap_String_Id.h.h:761
 msgid "Columns &Left"
-msgstr ""
+msgstr "Columna a la i&zquierda"
 
 #. MENU_LABEL_TABLE_INSERT_COLUMNS_AFTER
 #: po/tmp/ap_String_Id.h.h:763
 msgid "Columns &Right"
-msgstr ""
+msgstr "Columna a la &derecha"
 
 #. DLG_ListRevisions_Column3Label
 #: po/tmp/ap_String_Id.h.h:765
@@ -1913,17 +1926,17 @@ msgstr ""
 #. MENU_STATUSLINE_TABLE_TEXTTOTABLE
 #: po/tmp/ap_String_Id.h.h:783
 msgid "Convert Selected Text to a Table"
-msgstr ""
+msgstr "Convertir el texto seleccionado a una tabla"
 
 #. MENU_LABEL_TABLE_TABLETOTEXT
 #: po/tmp/ap_String_Id.h.h:785
 msgid "Convert Table to Text"
-msgstr ""
+msgstr "Convertir tabla a texto"
 
 #. MENU_LABEL_TABLE_TEXTTOTABLE
 #: po/tmp/ap_String_Id.h.h:787
 msgid "Convert Text to Table"
-msgstr ""
+msgstr "Convertir texto a tabla"
 
 #. MENU_STATUSLINE_TABLE_TABLETOTEXT
 #: po/tmp/ap_String_Id.h.h:789
@@ -1935,7 +1948,7 @@ msgstr ""
 #. TOOLBAR_TOOLTIP_EDIT_COPY
 #: po/tmp/ap_String_Id.h.h:793
 msgid "Copy"
-msgstr ""
+msgstr "Copiar"
 
 #. MENU_STATUSLINE_EDIT_COPYEMBED
 #: po/tmp/ap_String_Id.h.h:795
@@ -1945,12 +1958,12 @@ msgstr ""
 #. MENU_LABEL_EDIT_COPYIMAGE
 #: po/tmp/ap_String_Id.h.h:797
 msgid "Copy Image"
-msgstr ""
+msgstr "Copiar imagen"
 
 #. MENU_LABEL_EDIT_COPYEMBED
 #: po/tmp/ap_String_Id.h.h:799
 msgid "Copy Object"
-msgstr ""
+msgstr "Copiar objeto"
 
 #. MENU_LABEL_EDIT_COPY_FRAME
 #: po/tmp/ap_String_Id.h.h:801
@@ -2041,7 +2054,7 @@ msgstr "Crear un nuevo documento desde una Plantilla"
 #. MENU_STATUSLINE_FILE_NEW_USING_TEMPLATE
 #: po/tmp/ap_String_Id.h.h:835
 msgid "Create a new document using a template"
-msgstr ""
+msgstr "Crear un archivo nuevo a partir de una plantilla"
 
 #. DLG_NEW_StartEmpty
 #: po/tmp/ap_String_Id.h.h:837
@@ -2051,7 +2064,7 @@ msgstr "Empezar con un documento vacío"
 #. FIELD_Document_Creator
 #: po/tmp/ap_String_Id.h.h:839
 msgid "Creator"
-msgstr ""
+msgstr "Creador"
 
 #. MENU_LABEL_EDIT_CUT
 #: po/tmp/ap_String_Id.h.h:841
@@ -2118,7 +2131,7 @@ msgstr "Personalizar"
 #. TOOLBAR_TOOLTIP_EDIT_CUT
 #: po/tmp/ap_String_Id.h.h:867
 msgid "Cut"
-msgstr ""
+msgstr "Cortar"
 
 #. MENU_STATUSLINE_EDIT_CUTEMBED
 #: po/tmp/ap_String_Id.h.h:869
@@ -2128,7 +2141,7 @@ msgstr ""
 #. MENU_LABEL_EDIT_CUTIMAGE
 #: po/tmp/ap_String_Id.h.h:871
 msgid "Cut Image"
-msgstr ""
+msgstr "Cortar imagen"
 
 #. MENU_LABEL_EDIT_CUTEMBED
 #: po/tmp/ap_String_Id.h.h:873
@@ -2161,7 +2174,7 @@ msgstr "Lista con guiones"
 #. DLG_ListRevisions_Column2Label
 #: po/tmp/ap_String_Id.h.h:884
 msgid "Date"
-msgstr ""
+msgstr "Fecha"
 
 #. MENU_LABEL_INSERT_DATETIME
 #: po/tmp/ap_String_Id.h.h:886
@@ -2198,7 +2211,7 @@ msgstr "Decimal Tab"
 #. TOOLBAR_TOOLTIP_UNINDENT
 #: po/tmp/ap_String_Id.h.h:900
 msgid "Decrease indent"
-msgstr ""
+msgstr "Reducir indentación"
 
 #. FIELD_DateTime_DefaultDateNoTime
 #: po/tmp/ap_String_Id.h.h:902
@@ -2246,12 +2259,12 @@ msgstr "Borrar"
 #. MENU_STATUSLINE_TABLE_DELETE_CELLS
 #: po/tmp/ap_String_Id.h.h:920
 msgid "Delete Cells"
-msgstr ""
+msgstr "Borrar celdas"
 
 #. MENU_LABEL_TABLE_DELETECOLUMN
 #: po/tmp/ap_String_Id.h.h:922
 msgid "Delete Co&lumn"
-msgstr ""
+msgstr "Borrar &Columna"
 
 #. MENU_STATUSLINE_TABLE_DELETE_COLUMNS
 #. MENU_STATUSLINE_TABLE_DELETECOLUMN
@@ -3023,9 +3036,8 @@ msgstr "Formatea Cabecera/Pie de Página"
 #. MSG_CHECK_PRINT_MODE
 #: po/tmp/ap_String_Id.h.h:1238
 msgid ""
-"Headers and Footers can only be created and edited while in Print View "
-"Mode. \n"
-" To enter this mode choose View then Print Layout from the Menus. \n"
+"Headers and Footers can only be created and edited while in Print View Mode. "
+"\n To enter this mode choose View then Print Layout from the Menus. \n"
 " Would you like to enter Print Layout mode right now?"
 msgstr ""
 "Las Cabeceras y los Pies de Pagina solo pueden ser creados o editados "
@@ -5111,8 +5123,8 @@ msgstr "Establece las preferencias de ortografía"
 #: po/tmp/ap_String_Id.h.h:2108
 msgid "Setup your document's page properties such as page size and margins"
 msgstr ""
-"Configura las propiedades de página del documento, como el tamaño de página "
-"y los márgenes"
+"Configura las propiedades de página del documento, como el tamaño de página y "
+"los márgenes"
 
 #. DLG_Styles_ModifyShortCut
 #: po/tmp/ap_String_Id.h.h:2110
@@ -5760,8 +5772,8 @@ msgstr ""
 #. DLG_Options_Prompt_YouMustRestart
 #: po/tmp/ap_String_Id.h.h:2379
 msgid ""
-"The new user interface language will take effect the next time that you "
-"start the application"
+"The new user interface language will take effect the next time that you start "
+"the application"
 msgstr ""
 
 #. MSG_SpellDone
@@ -5800,8 +5812,8 @@ msgstr ""
 #. MSG_HiddenRevisions
 #: po/tmp/ap_String_Id.h.h:2391
 msgid ""
-"This document contains revisions which are currently hidden from view. "
-"Please see AbiWord documentation for information on working with revisions."
+"This document contains revisions which are currently hidden from view. Please "
+"see AbiWord documentation for information on working with revisions."
 msgstr ""
 
 #. DLG_Para_PreviewSampleFallback
@@ -5811,9 +5823,9 @@ msgid ""
 "see text from your document used in this preview, position your cursor in a "
 "document paragraph with some text in it and open this dialog."
 msgstr ""
-"Este párrafo representa un texto tal y como puede aparecer en sus "
-"documentos.  Si quiere que se utilice el texto de su documento en esta "
-"previsualización, lleve el cursor a un párrafo y abra este cuadro de diálogo."
+"Este párrafo representa un texto tal y como puede aparecer en sus documentos. "
+" Si quiere que se utilice el texto de su documento en esta previsualización, "
+"lleve el cursor a un párrafo y abra este cuadro de diálogo."
 
 #. DLG_Styles_ErrStyleNot
 #: po/tmp/ap_String_Id.h.h:2395
@@ -6100,10 +6112,11 @@ msgstr "Ha cambiado la dirección de escritura."
 
 #. MSG_HyperlinkNoSelection
 #: po/tmp/ap_String_Id.h.h:2511
-msgid "You must select a portion of the document before inserting a hyperlink."
+msgid ""
+"You must select a portion of the document before inserting a hyperlink."
 msgstr ""
-"Debes seleccionar una porción del documento antes de insertar un hiper-"
-"vinculo."
+"Debes seleccionar una porción del documento antes de insertar un "
+"hiper-vinculo."
 
 #. DLG_Options_Label_InvalidRangeForAutoSave
 #: po/tmp/ap_String_Id.h.h:2513
