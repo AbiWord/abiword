@@ -5339,12 +5339,15 @@ pf_Frag * PD_Document::getLastFrag() const
 */
 void PD_Document::forceDirty()
 {
-	_setForceDirty(true);
+	if(!isDirty())
+	{
+		_setForceDirty(true);
 
-	// now notify listeners ...
-	// this is necessary so that the save command is available after
-	// operations that only change m_bForcedDirty
-	signalListeners(PD_SIGNAL_DOCDIRTY_CHANGED);	
+		// now notify listeners ...
+		// this is necessary so that the save command is available after
+		// operations that only change m_bForcedDirty
+		signalListeners(PD_SIGNAL_DOCDIRTY_CHANGED);
+	}
 }
 
 
