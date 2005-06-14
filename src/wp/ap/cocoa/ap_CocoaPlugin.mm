@@ -926,7 +926,7 @@ static void s_updateMailMergeFields(XAP_Frame * pFrame, PD_Document * pDoc)
 													}
 												pRun = pRun->getNextRun();
 											}
-										pBlock->setNeedsReformat();
+										pBlock->setNeedsReformat(pBlock);
 										pBlock->redrawUpdate();
 									}
 
