@@ -18,9 +18,7 @@
 
 include $(top_srcdir)/includes.mk
 
-if WITH_GNOME
-	SUBDIRS = gnome
-endif
+SUBDIRS = gnome
 
 INCLUDES= @GTK_CFLAGS@ @GMODULE_CFLAGS@ \
 	$(AF_INCLUDES) $(WP_INCLUDES) $(TEXT_INCLUDES) $(ICONV_INCLUDES)
