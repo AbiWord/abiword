@@ -107,6 +107,8 @@ void AP_Win32Dialog_Lists::runModeless(XAP_Frame * pFrame)
 
 BOOL AP_Win32Dialog_Lists::_onInitDialog(HWND hWnd, WPARAM wParam, LPARAM lParam)
 {
+	delete m_pPreviewWidget; m_pPreviewWidget = NULL;
+
 	register int i;
 
 	m_hThisDlg = hWnd;
@@ -396,6 +398,7 @@ void AP_Win32Dialog_Lists::destroy(void)
 	{
 		setAnswer(AP_Dialog_Lists::a_QUIT);
 		EndDialog(m_hThisDlg, 0);
+		m_hThisDlg = 0;
 		return;
 	}
 
@@ -409,6 +412,8 @@ void AP_Win32Dialog_Lists::destroy(void)
 	{
 		_win32Dialog.destroyWindow();
 	}
+
+	m_hThisDlg = 0;
 }
 
 void AP_Win32Dialog_Lists::activate(void)
@@ -533,6 +538,7 @@ void AP_Win32Dialog_Lists::_onApply()
 	{
 		setAnswer(AP_Dialog_Lists::a_OK);
 		EndDialog(m_hThisDlg, 0);
+		m_hThisDlg = 0;
 		return;
 	}
 
