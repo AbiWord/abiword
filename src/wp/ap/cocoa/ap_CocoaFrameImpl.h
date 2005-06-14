@@ -1,6 +1,6 @@
 /* AbiWord
  * Copyright (C) 1998 AbiSource, Inc.
- * Copyright (C) 2001-2003 Hubert Figuiere
+ * Copyright (C) 2001-2003, 2005 Hubert Figuiere
  * 
  * This program is free software; you can redistribute it and/or
  * modify it under the terms of the GNU General Public License
@@ -77,6 +77,8 @@ class AP_CocoaFrameImpl : public XAP_CocoaFrameImpl
 	void _hideTopRulerNSView(void);
 	void _showLeftRulerNSView(void);
 	void _hideLeftRulerNSView(void);
+	XAP_CocoaNSView *_getDocAreaGRView(void)
+		{ return m_docAreaGRView; }
  protected:
 	void _showOrHideStatusbar(void);
 
