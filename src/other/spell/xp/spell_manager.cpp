@@ -59,21 +59,64 @@ bool SpellChecker::requestDictionary (const char * szLang)
 
 SpellChecker::SpellCheckResult SpellChecker::checkWord(const UT_UCSChar* word, size_t len)
 {
-	SpellChecker::SpellCheckResult ret;
+	UT_return_val_if_fail( word, SpellChecker::LOOKUP_SUCCEEDED );
+	
+	SpellChecker::SpellCheckResult ret = SpellChecker::LOOKUP_FAILED;
 
 	m_bIsBarbarism = false;
 	m_bIsDictionaryWord = false;
 	
     if (m_BarbarismChecker.checkWord (word, len))
 	{
-		UT_DEBUGMSG(("SPELL:  spell %lx %s barb \"%s\"\n", this, getLanguage().c_str(), UT_UTF8String (word, len).utf8_str()));
+		UT_DEBUGMSG(("SPELL:  spell %lx %s barb \"%s\"\n",
+					 this, getLanguage().c_str(), UT_UTF8String (word, len).utf8_str()));
 		m_bIsBarbarism = true;
+		return SpellChecker::LOOKUP_FAILED;
 	}
 
-	ret = _checkWord(word, len);
+	// handle hyphenated constructions
+	// we split each construction into the constituent words and check each word
+	// individually -- if they all pass, we consider the whole phrase good, if any fails,
+	// we try the entire hyphenated phrase
+	
+	const UT_uint32 iMaxWords = 10;
+	const UT_UCS4Char * pWords[iMaxWords];
+	size_t iWordLengths[iMaxWords];
+	UT_uint32 iWordCount = 0;
+	const UT_UCS4Char * p;
+	UT_uint32 i;
 
-	if (ret == SpellChecker::LOOKUP_SUCCEEDED && m_bIsBarbarism)
-		ret = SpellChecker::LOOKUP_FAILED;
+	// initialise the first word to the start of the string we were given
+	pWords[0] = word;
+	
+	for(i = 0, p = word; i < len; ++i, ++p)
+	{
+		if(*p == '-')
+		{
+			// calculate langth of this word
+			iWordLengths[iWordCount] = p - pWords[iWordCount];
+
+			// store the start of next word
+			iWordCount++;
+			pWords[iWordCount] = p+1;
+		}
+
+		if(iWordCount >= iMaxWords - 1)
+			break;
+	}
+	
+	for(i = 0; i < iWordCount; ++i)
+	{
+		ret = _checkWord(pWords[i], iWordLengths[i]);
+		if(ret == SpellChecker::LOOKUP_FAILED)
+			break;
+	}
+
+	if(ret == SpellChecker::LOOKUP_SUCCEEDED)
+		return ret;
+
+	// try the whole hyphenated phrase ...
+	ret = _checkWord(word, len);
 
 	return ret;
 }
