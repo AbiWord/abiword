@@ -472,10 +472,18 @@ void FV_View::_deleteSelection(PP_AttrProp *p_AttrProp_Before, bool bNoUpdate)
 // Stop any lists remaining if we've deleted their list fields
 //
 	PT_DocPosition origPos = getPoint();
-	if(getCurrentBlock()->getPosition() == iLow)
+	pBL = getCurrentBlock();
+	if(!pBL)
+	{
+		// the user delete the entire document; we need to insert a new block
+		// at origPos() (note that with revisions enabled / document history, this
+		// position could be > 2).
+		m_pDoc->insertStrux(origPos, PTX_Block);
+	}
+	else if(pBL->getPosition() == iLow)
 	{
 		PL_StruxDocHandle sdh = getCurrentBlock()->getStruxDocHandle();
-		while(getCurrentBlock()->isListItem())
+		while(pBL->isListItem())
 		{
 			m_pDoc->StopList(sdh);
 		}
