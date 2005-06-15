@@ -181,19 +181,47 @@
 		<dict>
 			<key>CFBundleTypeExtensions</key>
 			<array>
+				<string>odt</string>
+				<string>ODT</string>
+			</array>
+			<key>CFBundleTypeIconFile</key>
+			<string>ODTDocument.icns</string>
+			<key>CFBundleTypeMIMETypes</key>
+			<array>
+				<string>vnd.oasis.opendocument.text</string>
+			</array>
+			<key>CFBundleTypeName</key>
+			<string>OpenDocument Text</string>
+			<key>CFBundleTypeRole</key>
+			<string>Editor</string>
+			<key>LSIsAppleDefaultForType</key>
+			<false/>
+			<key>LSTypeIsPackage</key>
+			<false/>
+		</dict>
+		<dict>
+			<key>CFBundleTypeExtensions</key>
+			<array>
 				<string>html</string>
 				<string>HTML</string>
 				<string>htm</string>
 				<string>HTM</string>
+				<string>xhtml</string>
+				<string>XHTML</string>
+				<string>xhtm</string>
+				<string>XHTM</string>
 			</array>
 			<key>CFBundleTypeIconFile</key>
 			<string>HTMDocument.icns</string>
 			<key>CFBundleTypeMIMETypes</key>
 			<array>
 				<string>text/html</string>
+				<string>application/xhtml+xml</string>
+				<string>application/xml</string>
+				<string>text/xml</string>
 			</array>
 			<key>CFBundleTypeName</key>
-			<string>HTML Document</string>
+			<string>(X)HTML Document</string>
 			<key>CFBundleTypeOSTypes</key>
 			<array>
 				<string>TEXT</string>
@@ -326,12 +354,16 @@
 	</array>
 	<key>CFBundleExecutable</key>
 	<string>AbiWord</string>
+	<key>CFBundleGetInfoString</key>
+	<string>AbiWord 2.3.2</string>
 	<key>CFBundleIconFile</key>
 	<string>AbiWord.icns</string>
 	<key>CFBundleIdentifier</key>
 	<string>com.AbiSource.AbiWord</string>
 	<key>CFBundlePackageType</key>
 	<string>APPL</string>
+	<key>CFBundleShortVersionString</key>
+	<string>2.3.2</string>
 	<key>CFBundleSignature</key>
 	<string>ABIW</string>
 	<key>CFBundleVersion</key>
