@@ -5,8 +5,8 @@ msgid ""
 msgstr ""
 "Project-Id-Version: abiword\n"
 "Report-Msgid-Bugs-To: \n"
-"POT-Creation-Date: 2005-06-11 02:28+0200\n"
-"PO-Revision-Date: 2003-09-19 22:27+0400\n"
+"POT-Creation-Date: 2005-06-11 05:15+0200\n"
+"PO-Revision-Date: 2005-06-11 22:27+0400\n"
 "Last-Translator: Shmyrev N.V.  <nshmyrev@yandex.ru>\n"
 "Language-Team: RU <gnome-cyr@gnome.org>\n"
 "MIME-Version: 1.0\n"
@@ -75,7 +75,7 @@ msgstr " Авто обновление каждые"
 #: po/tmp/ap_String_Id.h.h:29
 #, c-format
 msgid "% of normal size"
-msgstr "% от нормального размера"
+msgstr "% oт нормального размера"
 
 #. MENU_LABEL_SPELL_SUGGEST_1
 #. MENU_LABEL_SPELL_SUGGEST_2
@@ -232,9 +232,8 @@ msgstr "&Все"
 
 #. DLG_ApplyButton
 #: po/tmp/ap_String_Id.h.h:95
-#, fuzzy
 msgid "&Apply"
-msgstr "Применить"
+msgstr "&Применить"
 
 #. DLG_Para_LabelAt
 #: po/tmp/ap_String_Id.h.h:97
@@ -330,9 +329,8 @@ msgstr "К&олонки"
 
 #. MENU_LABEL_TOOLS_REVISIONS_COMPARE_DOCUMENTS
 #: po/tmp/ap_String_Id.h.h:135
-#, fuzzy
 msgid "&Compare documents"
-msgstr "&Следующие документы"
+msgstr "&Сравнить документы"
 
 #. MENU_LABEL_EDIT_COPY
 #: po/tmp/ap_String_Id.h.h:137
@@ -341,9 +339,8 @@ msgstr "&Копировать"
 
 #. MENU_LABEL_FMT_STYLE_DEFINE
 #: po/tmp/ap_String_Id.h.h:139
-#, fuzzy
 msgid "&Create and Modify Styles"
-msgstr "Создать или изменить"
+msgstr "&Создать или изменить стили"
 
 #. DLG_Options_Label_PrefsCurrentScheme
 #: po/tmp/ap_String_Id.h.h:141
@@ -367,9 +364,8 @@ msgstr "&Словари..."
 
 #. MENU_LABEL_INSERT_DIRECTIONMARKER
 #: po/tmp/ap_String_Id.h.h:149
-#, fuzzy
 msgid "&Direction Marker"
-msgstr "&Словари..."
+msgstr "&Указатель направления текста"
 
 #. MENU_LABEL_FMT_DOCUMENT
 #: po/tmp/ap_String_Id.h.h:151
@@ -378,9 +374,8 @@ msgstr "&Документ"
 
 #. MENU_LABEL_TOOLS_HISTORY
 #: po/tmp/ap_String_Id.h.h:153
-#, fuzzy
 msgid "&Document History"
-msgstr "Д&окументы"
+msgstr "&История изменений"
 
 #. MENU_LABEL_WINDOW
 #: po/tmp/ap_String_Id.h.h:155
@@ -400,9 +395,8 @@ msgstr "&Редактировать"
 
 #. MENU_LABEL_INSERT_EDIT_HYPERLINK
 #: po/tmp/ap_String_Id.h.h:162
-#, fuzzy
 msgid "&Edit hyperlink"
-msgstr "&Удалить ссылку"
+msgstr "&Правка ссылки"
 
 #. DLG_Options_Label_SmartQuotesEnable
 #: po/tmp/ap_String_Id.h.h:164
@@ -441,9 +435,8 @@ msgstr "&Файл"
 
 #. DLG_Options_Label_FileExtension
 #: po/tmp/ap_String_Id.h.h:178
-#, fuzzy
 msgid "&File extension:"
-msgstr "С расширением:"
+msgstr "С &расширением:"
 
 #. MENU_LABEL_EDIT_FIND
 #: po/tmp/ap_String_Id.h.h:180
@@ -482,9 +475,8 @@ msgstr "Пе&рейти к"
 
 #. DLG_FormatTOC_HasHeading
 #: po/tmp/ap_String_Id.h.h:194
-#, fuzzy
 msgid "&Has Heading"
-msgstr "Заголовок 3"
+msgstr "Есть &верхний колонтитул"
 
 #. MENU_LABEL_VIEW_HEADFOOT
 #: po/tmp/ap_String_Id.h.h:196
@@ -505,7 +497,7 @@ msgstr "Высота:"
 #. MENU_LABEL_HELP
 #: po/tmp/ap_String_Id.h.h:203
 msgid "&Help"
-msgstr "&Помощь"
+msgstr "&Справка"
 
 #. DLG_Options_Label_ViewHiddenText
 #: po/tmp/ap_String_Id.h.h:205
@@ -514,9 +506,8 @@ msgstr "&Скрытый текст"
 
 #. DLG_Options_Label_SpellHighlightMisspelledWords
 #: po/tmp/ap_String_Id.h.h:207
-#, fuzzy
 msgid "&Highlight misspelled words"
-msgstr "Автоматически заменять неизвестные слова"
+msgstr "&Подчеркивать неизвестные слова слова"
 
 #. MENU_LABEL_INSERT_HYPERLINK
 #: po/tmp/ap_String_Id.h.h:209
@@ -536,9 +527,8 @@ msgstr "&Игнорировать"
 #. MENU_LABEL_FMT_IMAGE
 #. MENU_LABEL_FMT_POSIMAGE
 #: po/tmp/ap_String_Id.h.h:216
-#, fuzzy
 msgid "&Image"
-msgstr "Размер &изображения"
+msgstr "&Изображение"
 
 #. MENU_LABEL_FILE_IMPORTSTYLES
 #: po/tmp/ap_String_Id.h.h:218
@@ -548,13 +538,12 @@ msgstr "&Включить стили"
 #. MENU_LABEL_WEB_WEBPREVIEW
 #: po/tmp/ap_String_Id.h.h:220
 msgid "&In web browser"
-msgstr ""
+msgstr "В &браузере"
 
 #. DLG_FormatTOC_InheritLabel
 #: po/tmp/ap_String_Id.h.h:222
-#, fuzzy
 msgid "&Inherit label"
-msgstr "Вставить таблицу"
+msgstr "&Наследовать метку"
 
 #. DLG_InsertButton
 #. MENU_LABEL_INSERT
@@ -567,7 +556,7 @@ msgstr "&Вставить"
 #. DLG_Options_Label_AutoSaveInterval
 #: po/tmp/ap_String_Id.h.h:228
 msgid "&Interval:"
-msgstr ""
+msgstr "&Интервал:"
 
 #. MENU_LABEL_FMT_ITALIC
 #: po/tmp/ap_String_Id.h.h:230
@@ -576,9 +565,8 @@ msgstr "&Курсив"
 
 #. MENU_LABEL_INSERT_GOTO_HYPERLINK
 #: po/tmp/ap_String_Id.h.h:232
-#, fuzzy
 msgid "&Jump to hyperlink"
-msgstr "&Удалить ссылку"
+msgstr "&Перейти к ссылке"
 
 #. MENU_LABEL_ALIGN_JUSTIFY
 #: po/tmp/ap_String_Id.h.h:234
@@ -593,7 +581,7 @@ msgstr "&Не разрывать абзац"
 #. MENU_LABEL_INSERT_DIRECTIONMARKER_LRM
 #: po/tmp/ap_String_Id.h.h:238
 msgid "&LRM"
-msgstr ""
+msgstr "Маркер с&лева-направо"
 
 #. DLG_PageSetup_Landscape
 #: po/tmp/ap_String_Id.h.h:240
@@ -613,7 +601,7 @@ msgstr "По &левому краю"
 #. MENU_LABEL_FMT_DIRECTION_DO_LTR
 #: po/tmp/ap_String_Id.h.h:246
 msgid "&Left-to-right text"
-msgstr ""
+msgstr "Текст с&лева-направо"
 
 #. DLG_Para_LabelLeft
 #. DLG_PageSetup_Left
@@ -639,7 +627,7 @@ msgstr "&Поле вставки почты"
 #. MENU_LABEL_TOOLS_REVISIONS_AUTO
 #: po/tmp/ap_String_Id.h.h:257
 msgid "&Maintain Full History"
-msgstr ""
+msgstr "&Сохранять всю историю"
 
 #. MENU_LABEL_TOOLS_REVISIONS_MARK
 #: po/tmp/ap_String_Id.h.h:259
@@ -678,9 +666,8 @@ msgstr "&Новое окно"
 
 #. MENU_LABEL_FILE_NEW_USING_TEMPLATE
 #: po/tmp/ap_String_Id.h.h:273
-#, fuzzy
 msgid "&New using Template"
-msgstr "Открыть шаблон"
+msgstr "&Создать с использование шаблона"
 
 #. DLG_Break_NextPage
 #: po/tmp/ap_String_Id.h.h:275
@@ -699,9 +686,8 @@ msgstr "&Число:"
 
 #. DLG_FormatTOC_NumberingType
 #: po/tmp/ap_String_Id.h.h:281
-#, fuzzy
 msgid "&Numbering type:"
-msgstr "Нумерация"
+msgstr "Тип &нумерации"
 
 #. DLG_Break_OddPage
 #: po/tmp/ap_String_Id.h.h:283
@@ -735,9 +721,8 @@ msgstr "&Новую страницу"
 
 #. DLG_FormatTOC_PageNumbering
 #: po/tmp/ap_String_Id.h.h:295
-#, fuzzy
 msgid "&Page numbering:"
-msgstr "Номер страницы"
+msgstr "Нумерация &страниц"
 
 #. MENU_LABEL_FMT_PARAGRAPH
 #: po/tmp/ap_String_Id.h.h:297
@@ -777,7 +762,7 @@ msgstr "&Разметка страницы"
 #. MENU_LABEL_TOOLS_HISTORY_PURGE
 #: po/tmp/ap_String_Id.h.h:311
 msgid "&Purge History"
-msgstr ""
+msgstr "&Забыть историю"
 
 #. MENU_LABEL_FILE_EXIT
 #: po/tmp/ap_String_Id.h.h:313
@@ -787,7 +772,7 @@ msgstr "&Выход"
 #. MENU_LABEL_INSERT_DIRECTIONMARKER_RLM
 #: po/tmp/ap_String_Id.h.h:315
 msgid "&RLM"
-msgstr ""
+msgstr "Маркер с&права-налево"
 
 #. MENU_LABEL_EDIT_REDO
 #: po/tmp/ap_String_Id.h.h:317
@@ -817,7 +802,7 @@ msgstr "&Сбосить к положению по умолчанию"
 #. MENU_LABEL_TOOLS_REVISIONS
 #: po/tmp/ap_String_Id.h.h:327
 msgid "&Revisions"
-msgstr "В&ерсии:"
+msgstr "В&ерсии"
 
 #. MENU_LABEL_ALIGN_RIGHT
 #: po/tmp/ap_String_Id.h.h:329
@@ -826,9 +811,8 @@ msgstr "По &правому краю"
 
 #. MENU_LABEL_FMT_DIRECTION_DO_RTL
 #: po/tmp/ap_String_Id.h.h:331
-#, fuzzy
 msgid "&Right-to-left text"
-msgstr "В основном справа-налево"
+msgstr "Текст с&права-налево"
 
 #. DLG_Para_LabelRight
 #. DLG_PageSetup_Right
@@ -880,7 +864,7 @@ msgstr "&Выбрать версию"
 #. MENU_LABEL_TOOLS_HISTORY_SHOW
 #: po/tmp/ap_String_Id.h.h:353
 msgid "&Show History"
-msgstr ""
+msgstr "Показать &историю"
 
 #. MENU_LABEL_VIEW_STATUSBAR
 #: po/tmp/ap_String_Id.h.h:355
@@ -899,9 +883,8 @@ msgstr "&Правописание"
 
 #. DLG_FormatTOC_StartAt
 #: po/tmp/ap_String_Id.h.h:361
-#, fuzzy
 msgid "&Start at:"
-msgstr "Начать с:"
+msgstr "&Начать с:"
 
 #. DLG_Options_Label_ViewStatusBar
 #: po/tmp/ap_String_Id.h.h:363
@@ -920,9 +903,8 @@ msgstr "&Запретить нумерацию строк"
 
 #. DLG_FormatTOC_TabLeader
 #: po/tmp/ap_String_Id.h.h:369
-#, fuzzy
 msgid "&Tab leader:"
-msgstr "Верхний колонтитул:"
+msgstr "&Табуляция начала:"
 
 #. MENU_LABEL_TABLE_INSERT_TABLE
 #. MENU_LABEL_TABLE_DELETE_TABLE
@@ -1027,7 +1009,7 @@ msgstr "&Масштаб"
 #. DLG_ListRevisions_LevelZero
 #: po/tmp/ap_String_Id.h.h:413
 msgid "(All revisions visible)"
-msgstr ""
+msgstr "(Показывать все версии)"
 
 #. DLG_Spell_NoSuggestions
 #: po/tmp/ap_String_Id.h.h:415
@@ -1092,6 +1074,8 @@ msgid ""
 "A fatal error has just occurred. Abiword is going to shutdown.\n"
 "The current document has been saved to disc with a \".saved\" extension."
 msgstr ""
+"Возникла неисправимая ошибка. Abiword будет закрыт.\n"
+"Текущий документ будет сохранен на носитель с расширением \".saved\"."
 
 #. DLG_Options_Label_SpellSuggest
 #: po/tmp/ap_String_Id.h.h:444
@@ -1265,9 +1249,8 @@ msgstr "Приложение"
 
 #. DLG_Options_Label_AppStartup
 #: po/tmp/ap_String_Id.h.h:503
-#, fuzzy
 msgid "Application Startup"
-msgstr "Приложение"
+msgstr "Запуск приложения"
 
 #. DLG_Options_Btn_Apply
 #. DLG_Apply
@@ -1304,6 +1287,8 @@ msgid ""
 "Are you sure you do not want to maintain full history record? If you "
 "proceed, you will not be able to restore earlier versions of this document."
 msgstr ""
+"Вы уверены в том, что не хотите сохранять всю историю изменений? В этом"
+"случае вы не сможете восстановить ранние версии этого документа."
 
 #. DLG_Para_SpacingAtLeast
 #: po/tmp/ap_String_Id.h.h:518
@@ -1323,9 +1308,8 @@ msgstr "Автор:"
 
 #. DLG_Options_Label_AutoSaveUnderline
 #: po/tmp/ap_String_Id.h.h:524
-#, fuzzy
 msgid "Auto &Save"
-msgstr "Авто обновление каждые"
+msgstr "Авто &сохранение"
 
 #. DLG_Options_Label_AutoSaveCurrent
 #: po/tmp/ap_String_Id.h.h:526
@@ -1360,7 +1344,7 @@ msgstr "Авторастяжение таблицы"
 #. DLG_Options_Label_Grammar
 #: po/tmp/ap_String_Id.h.h:538
 msgid "Automatic Grammar Checking"
-msgstr ""
+msgstr "Автоматическая проверка грамматики"
 
 #. DLG_InsertTable_AutoColSize
 #: po/tmp/ap_String_Id.h.h:540
@@ -1384,9 +1368,8 @@ msgstr "Автоматичски обновлять"
 
 #. MSG_AutoMerge
 #: po/tmp/ap_String_Id.h.h:548
-#, fuzzy
 msgid "Automerge"
-msgstr "Автор:"
+msgstr "Автоматическое включение"
 
 #. DLG_MailMerge_AvailableFields
 #: po/tmp/ap_String_Id.h.h:550
@@ -1553,7 +1536,7 @@ msgstr "И&зменить регистр"
 #. MENU_LABEL_EDIT_COPY_HYPERLINK_LOCATION
 #: po/tmp/ap_String_Id.h.h:619
 msgid "C&opy hyperlink location"
-msgstr ""
+msgstr "&Копировать адрес ссылки"
 
 #. MENU_LABEL_HELP_CREDITS
 #: po/tmp/ap_String_Id.h.h:621
@@ -1567,9 +1550,8 @@ msgstr "Вы не можете вставить разрыв внутри таб
 
 #. MSG_NoBreakInsideFrame
 #: po/tmp/ap_String_Id.h.h:625
-#, fuzzy
 msgid "Can not insert a Break inside a text box"
-msgstr "Вы не можете вставить разрыв внутри таблицы"
+msgstr "Невозможно вставить разрыв внутри текстовой области"
 
 #. DLG_Styles_ErrStyleCantDelete
 #: po/tmp/ap_String_Id.h.h:627
@@ -1655,9 +1637,8 @@ msgstr "Изменить цвет подсветки"
 
 #. DLG_FormatTOC_ChangeStyle
 #: po/tmp/ap_String_Id.h.h:660
-#, fuzzy
 msgid "Change Style"
-msgstr "Изменить регистр"
+msgstr "Изменить стиль"
 
 #. DLG_Background_TitleFore
 #: po/tmp/ap_String_Id.h.h:662
@@ -1667,7 +1648,7 @@ msgstr "Изменить цвет текста"
 #. MENU_STATUSLINE_FMT_DIRECTION
 #: po/tmp/ap_String_Id.h.h:664
 msgid "Change directional properties of text"
-msgstr ""
+msgstr "Изменить направление текста"
 
 #. TOOLBAR_STATUSLINE_FMT_DOM_DIRECTION
 #. TOOLBAR_TOOLTIP_FMT_DOM_DIRECTION
@@ -1708,9 +1689,8 @@ msgstr "Изменить параметры печати"
 
 #. MENU_STATUSLINE_FMT_FRAME
 #: po/tmp/ap_String_Id.h.h:682
-#, fuzzy
 msgid "Change the properties of the Text Box"
-msgstr "Изменить шрифт выделенного текста"
+msgstr "Изменить свойства текстовой области"
 
 #. MENU_STATUSLINE_SPELL_SUGGEST_1
 #. MENU_STATUSLINE_SPELL_SUGGEST_2
@@ -1727,15 +1707,13 @@ msgstr "Заменить этим вариантом написания"
 
 #. MENU_STATUSLINE_FMT_BACKGROUND
 #: po/tmp/ap_String_Id.h.h:694
-#, fuzzy
 msgid "Change your document's page background"
-msgstr "Изменить цвет фона"
+msgstr "Изменить фон страницы"
 
 #. MENU_STATUSLINE_FMT_BACKGROUND_PAGE_COLOR
 #: po/tmp/ap_String_Id.h.h:696
-#, fuzzy
 msgid "Change your document's page color"
-msgstr "Изменить цвет фона"
+msgstr "Изменить цвет страницы"
 
 #. DLG_Styles_ModifyCharacter
 #: po/tmp/ap_String_Id.h.h:698
@@ -1774,20 +1752,18 @@ msgstr "&Правописание"
 
 #. DLG_Options_Label_GrammarCheck
 #: po/tmp/ap_String_Id.h.h:712
-#, fuzzy
 msgid "Check &grammar as you type"
-msgstr "Автоматически проверять орфографию"
+msgstr "Автоматически проверять грамматику"
 
 #. MENU_LABEL_HELP_CHECKVER
 #: po/tmp/ap_String_Id.h.h:714
-#, fuzzy
 msgid "Check for &Updates"
-msgstr " Авто обновление каждые"
+msgstr "Проверять обновления"
 
 #. MENU_STATUSLINE_HELP_CHECKVER
 #: po/tmp/ap_String_Id.h.h:716
 msgid "Check online for newer versions of AbiWord"
-msgstr ""
+msgstr "Проверять наличие в сети новых версий AbiWord"
 
 #. DLG_Options_Label_SpellCheckAsType
 #: po/tmp/ap_String_Id.h.h:718
@@ -1931,9 +1907,8 @@ msgstr "Комментарий будет связан с версией:"
 
 #. MENU_STATUSLINE_TOOLS_REVISIONS_COMPARE_DOCUMENTS
 #: po/tmp/ap_String_Id.h.h:769
-#, fuzzy
 msgid "Compare active document to another document"
-msgstr "Сохранить документ без изменения текущего имени"
+msgstr "Сравнить текущий документ с другим"
 
 #. FIELD_Application_CompileDate
 #: po/tmp/ap_String_Id.h.h:771
@@ -1968,26 +1943,23 @@ msgstr "Распространител(и):"
 
 #. MENU_STATUSLINE_TABLE_TEXTTOTABLE
 #: po/tmp/ap_String_Id.h.h:783
-#, fuzzy
 msgid "Convert Selected Text to a Table"
-msgstr "Сделать выделенное изображение в файл"
+msgstr "Преобразовать выделенный текст в таблицу"
 
 #. MENU_LABEL_TABLE_TABLETOTEXT
 #: po/tmp/ap_String_Id.h.h:785
-#, fuzzy
 msgid "Convert Table to Text"
-msgstr "Вставить таблицу"
+msgstr "Преобразовать таблицу в текст"
 
 #. MENU_LABEL_TABLE_TEXTTOTABLE
 #: po/tmp/ap_String_Id.h.h:787
-#, fuzzy
 msgid "Convert Text to Table"
-msgstr "Вставить таблицу"
+msgstr "Преобразовать текст в таблицу"
 
 #. MENU_STATUSLINE_TABLE_TABLETOTEXT
 #: po/tmp/ap_String_Id.h.h:789
 msgid "Convert from a Table to Text"
-msgstr ""
+msgstr "Преобразовать теблицу в текст"
 
 #. TOOLBAR_LABEL_EDIT_COPY
 #. TOOLBAR_STATUSLINE_EDIT_COPY
@@ -1999,43 +1971,42 @@ msgstr "Копировать"
 #. MENU_STATUSLINE_EDIT_COPYEMBED
 #: po/tmp/ap_String_Id.h.h:795
 msgid "Copy Embedded Object"
-msgstr ""
+msgstr "Копировать встроенный объект"
 
 #. MENU_LABEL_EDIT_COPYIMAGE
 #: po/tmp/ap_String_Id.h.h:797
 msgid "Copy Image"
-msgstr ""
+msgstr "Копировать изображение"
 
 #. MENU_LABEL_EDIT_COPYEMBED
 #: po/tmp/ap_String_Id.h.h:799
 msgid "Copy Object"
-msgstr ""
+msgstr "Копировать объект"
 
 #. MENU_LABEL_EDIT_COPY_FRAME
 #: po/tmp/ap_String_Id.h.h:801
 msgid "Copy Text Box"
-msgstr ""
+msgstr "Копировать область текста"
 
 #. MENU_STATUSLINE_EDIT_COPY_HYPERLINK_LOCATION
 #: po/tmp/ap_String_Id.h.h:803
 msgid "Copy hyperlink location"
-msgstr ""
+msgstr "Копировать адрес ссылки"
 
 #. MENU_STATUSLINE_EDIT_COPY_FRAME
 #: po/tmp/ap_String_Id.h.h:805
-#, fuzzy
 msgid "Copy the Text Box to the clipboard"
-msgstr "Скопировать выделение и поместить его в буфер обмена"
+msgstr "Копировать содержимое текстовой области в буфер обмена"
 
 #. MENU_STATUSLINE_EDIT_CUT_FRAME
 #: po/tmp/ap_String_Id.h.h:807
 msgid "Copy the Text Box to the clipboard then remove it"
-msgstr ""
+msgstr "Копировать содержимое текстовой области в буфер обмена и удалить её."
 
 #. MENU_STATUSLINE_EDIT_COPY
 #: po/tmp/ap_String_Id.h.h:809
 msgid "Copy the selection and put it on the Clipboard"
-msgstr "Скопировать выделение и поместить его в буфер обмена"
+msgstr "Копировать выделение и поместить его в буфер обмена"
 
 #. MSG_IE_CouldNotOpen
 #: po/tmp/ap_String_Id.h.h:811
@@ -2100,7 +2071,6 @@ msgstr "Создать новый документ по шаблону"
 
 #. MENU_STATUSLINE_FILE_NEW_USING_TEMPLATE
 #: po/tmp/ap_String_Id.h.h:835
-#, fuzzy
 msgid "Create a new document using a template"
 msgstr "Создать новый документ по шаблону"
 
@@ -2184,24 +2154,22 @@ msgstr "Вырезать"
 #. MENU_STATUSLINE_EDIT_CUTEMBED
 #: po/tmp/ap_String_Id.h.h:869
 msgid "Cut Embedded Object"
-msgstr ""
+msgstr "Вырезать встроенный объект"
 
 #. MENU_LABEL_EDIT_CUTIMAGE
 #: po/tmp/ap_String_Id.h.h:871
-#, fuzzy
 msgid "Cut Image"
-msgstr "Вставить изображение"
+msgstr "Вырезать изображение"
 
 #. MENU_LABEL_EDIT_CUTEMBED
 #: po/tmp/ap_String_Id.h.h:873
-#, fuzzy
 msgid "Cut Object"
-msgstr "Тема"
+msgstr "Вырезать объект"
 
 #. MENU_LABEL_EDIT_CUT_FRAME
 #: po/tmp/ap_String_Id.h.h:875
 msgid "Cut Text Box"
-msgstr ""
+msgstr "Вырезать область текста"
 
 #. MENU_STATUSLINE_EDIT_CUT
 #: po/tmp/ap_String_Id.h.h:877
@@ -2210,9 +2178,8 @@ msgstr "Вырезать выделение и поместить его в бу
 
 #. MENU_LABEL_FMT_DIRECTION
 #: po/tmp/ap_String_Id.h.h:879
-#, fuzzy
 msgid "D&irectional"
-msgstr "Опции двунаправленного текста"
+msgstr "Н&аправление"
 
 #. DLG_Lists_Dashed_List
 #. STYLE_DASHEDLIST
@@ -2290,9 +2257,8 @@ msgstr "Направление текста по умолчанию"
 
 #. DLG_FormatTOC_LevelDefs
 #: po/tmp/ap_String_Id.h.h:912
-#, fuzzy
 msgid "Define Main Properties"
-msgstr "Свойства документа"
+msgstr "Определить главные свойства"
 
 #. MENU_STATUSLINE_FMT_STYLE
 #. MENU_STATUSLINE_FMT_STYLE_DEFINE
@@ -2326,19 +2292,17 @@ msgstr "Удалить столбец"
 #. MENU_STATUSLINE_EDIT_DELETEEMBED
 #: po/tmp/ap_String_Id.h.h:927
 msgid "Delete Embedded Object"
-msgstr ""
+msgstr "Удалить встроенный объект"
 
 #. MENU_LABEL_EDIT_DELETEIMAGE
 #: po/tmp/ap_String_Id.h.h:929
-#, fuzzy
 msgid "Delete Image"
-msgstr "Удалить таблицу"
+msgstr "Удалить изображение"
 
 #. MENU_LABEL_EDIT_DELETEEMBED
 #: po/tmp/ap_String_Id.h.h:931
-#, fuzzy
 msgid "Delete Object"
-msgstr "Удалить таблицу"
+msgstr "Удалить объект"
 
 #. MENU_LABEL_TABLE_DELETEROW
 #: po/tmp/ap_String_Id.h.h:933
@@ -2364,9 +2328,8 @@ msgstr "Удалить таблицу"
 
 #. MENU_LABEL_EDIT_DELETEFRAME
 #: po/tmp/ap_String_Id.h.h:943
-#, fuzzy
 msgid "Delete Text Box"
-msgstr "Удалить таблицу"
+msgstr "Удалить область текста"
 
 #. TOOLBAR_LABEL_DELETE_COLUMN
 #: po/tmp/ap_String_Id.h.h:945
@@ -2422,9 +2385,8 @@ msgstr "Ромбы"
 
 #. DLG_Options_Label_SpellDictionaries
 #: po/tmp/ap_String_Id.h.h:967
-#, fuzzy
 msgid "Dictionaries"
-msgstr "&Словари..."
+msgstr "Словари"
 
 #. DLG_HdrFtr_FooterEven
 #: po/tmp/ap_String_Id.h.h:969
@@ -2488,9 +2450,8 @@ msgstr "Показать версию, статус и т. д."
 
 #. DLG_FormatTOC_DispStyle
 #: po/tmp/ap_String_Id.h.h:993
-#, fuzzy
 msgid "Display style:"
-msgstr "Вызвать оглавление помощи"
+msgstr "Стиль отображения:"
 
 #. DLG_Options_Prompt_IgnoreResetAll
 #: po/tmp/ap_String_Id.h.h:995
@@ -2516,9 +2477,8 @@ msgstr "Свойства документа"
 
 #. DLG_Options_Label_Documents
 #: po/tmp/ap_String_Id.h.h:1003
-#, fuzzy
 msgid "Documents"
-msgstr "Д&окументы"
+msgstr "Документы"
 
 #. DLG_FormatFootnotes_FootRestartNone
 #: po/tmp/ap_String_Id.h.h:1005
@@ -2559,9 +2519,8 @@ msgstr "Верхний колонтитул"
 
 #. MENU_STATUSLINE_INSERT_EDIT_HYPERLINK
 #: po/tmp/ap_String_Id.h.h:1024
-#, fuzzy
 msgid "Edit hyperlink"
-msgstr "Вставить гиперссылку"
+msgstr "Правка гиперссылки"
 
 #. MENU_STATUSLINE_VIEW_HEADFOOT
 #: po/tmp/ap_String_Id.h.h:1026
@@ -2605,9 +2564,8 @@ msgstr "&Стиль ссылок"
 
 #. MENU_LABEL_INSERT_EQUATION
 #: po/tmp/ap_String_Id.h.h:1042
-#, fuzzy
 msgid "Equation"
-msgstr "Приветствие:"
+msgstr "Уравнение"
 
 #. FIELD_Error
 #: po/tmp/ap_String_Id.h.h:1044
@@ -2650,9 +2608,8 @@ msgstr "Точно"
 
 #. DLG_Latex_Example
 #: po/tmp/ap_String_Id.h.h:1058
-#, fuzzy
 msgid "Example:"
-msgstr "Пример"
+msgstr "Пример:"
 
 #. MENU_STATUSLINE_TOOLS_SCRIPTS
 #: po/tmp/ap_String_Id.h.h:1060
@@ -2672,9 +2629,8 @@ msgstr "Существующие версии:"
 
 #. TB_Extra
 #: po/tmp/ap_String_Id.h.h:1067
-#, fuzzy
 msgid "Extra"
-msgstr "&Дополнительная"
+msgstr "Дополнительно"
 
 #. DLG_Field_Parameters_Capital
 #: po/tmp/ap_String_Id.h.h:1069
@@ -2693,9 +2649,8 @@ msgstr "Дополнительные параметры:"
 
 #. MENU_LABEL_INSERT_FILE
 #: po/tmp/ap_String_Id.h.h:1075
-#, fuzzy
 msgid "F&ile"
-msgstr "В файл"
+msgstr "&Файл"
 
 #. MENU_LABEL_FORMAT
 #: po/tmp/ap_String_Id.h.h:1077
@@ -2754,7 +2709,7 @@ msgstr "Файл"
 #. DLG_FormatTOC_FillStyle
 #: po/tmp/ap_String_Id.h.h:1097
 msgid "Fill style:"
-msgstr ""
+msgstr "Стиль заполнения:"
 
 #. DLG_FR_FindTitle
 #: po/tmp/ap_String_Id.h.h:1099
@@ -2763,27 +2718,23 @@ msgstr "Найти"
 
 #. MENU_LABEL_TOOLS_REVISIONS_FIND_NEXT
 #: po/tmp/ap_String_Id.h.h:1101
-#, fuzzy
 msgid "Find &next revision"
-msgstr "Принять &версию"
+msgstr "Найти &следующую версию"
 
 #. MENU_LABEL_TOOLS_REVISIONS_FIND_PREV
 #: po/tmp/ap_String_Id.h.h:1103
-#, fuzzy
 msgid "Find &previous revision"
-msgstr "Продолжить предыдущую версию (номер %d)"
+msgstr "Найти &предыдущую версию"
 
 #. MENU_STATUSLINE_TOOLS_REVISIONS_FIND_NEXT
 #: po/tmp/ap_String_Id.h.h:1105
-#, fuzzy
 msgid "Find next visible revision in the document"
-msgstr "Не выделять слова с ошибками"
+msgstr "Найти следующую доступную версию документа"
 
 #. MENU_STATUSLINE_TOOLS_REVISIONS_FIND_PREV
 #: po/tmp/ap_String_Id.h.h:1107
-#, fuzzy
 msgid "Find previous visible revision in the document"
-msgstr "Не выделять слова с ошибками"
+msgstr "Найти предыдущую доступную версию документа"
 
 #. MENU_STATUSLINE_EDIT_FIND
 #: po/tmp/ap_String_Id.h.h:1109
@@ -2809,22 +2760,22 @@ msgstr "Фиксированный размер столбцов:"
 #. DLG_Lists_FoldingLevel1
 #: po/tmp/ap_String_Id.h.h:1117
 msgid "Fold below level 1"
-msgstr ""
+msgstr "Сжимать после первого уровня"
 
 #. DLG_Lists_FoldingLevel2
 #: po/tmp/ap_String_Id.h.h:1119
 msgid "Fold below level 2"
-msgstr ""
+msgstr "Сжимать после второго уровня"
 
 #. DLG_Lists_FoldingLevel3
 #: po/tmp/ap_String_Id.h.h:1121
 msgid "Fold below level 3"
-msgstr ""
+msgstr "Сжимать после третьего уровня"
 
 #. DLG_Lists_FoldingLevel4
 #: po/tmp/ap_String_Id.h.h:1123
 msgid "Fold below level 4"
-msgstr ""
+msgstr "Сжимать после четвертого уровня"
 
 #. DLG_Para_PreviewFollowParagraph
 #: po/tmp/ap_String_Id.h.h:1125
@@ -2928,15 +2879,13 @@ msgstr "Направление текста по умолчанию справа
 
 #. MENU_STATUSLINE_FMT_DIRECTION_DO_LTR
 #: po/tmp/ap_String_Id.h.h:1167
-#, fuzzy
 msgid "Force left-to-right direction of text"
 msgstr "Направление текста по умолчанию слева направо"
 
 #. MENU_STATUSLINE_FMT_DIRECTION_DO_RTL
 #: po/tmp/ap_String_Id.h.h:1169
-#, fuzzy
 msgid "Force right-to-left direction of text"
-msgstr "Направление текста по умолчанию"
+msgstr "Направление текста по умолчанию справа налево"
 
 #. TOOLBAR_LABEL_FMT_DIR_OVERRIDE_LTR
 #: po/tmp/ap_String_Id.h.h:1171
@@ -2957,7 +2906,7 @@ msgstr "Формат"
 #. MENU_STATUSLINE_FMT_EMBED
 #: po/tmp/ap_String_Id.h.h:1178
 msgid "Format Embedded Object"
-msgstr ""
+msgstr "Форматирование встроенных объектов"
 
 #. DLG_FormatFootnotes_Endnotes
 #: po/tmp/ap_String_Id.h.h:1180
@@ -2981,9 +2930,8 @@ msgstr "Формат верхнего и нижнего колонтитулы"
 
 #. MENU_LABEL_FMT_EMBED
 #: po/tmp/ap_String_Id.h.h:1188
-#, fuzzy
 msgid "Format Object"
-msgstr "Формат таблицы:"
+msgstr "Формат объекта"
 
 #. TOOLBAR_LABEL_FMTPAINTER
 #: po/tmp/ap_String_Id.h.h:1190
@@ -2998,15 +2946,13 @@ msgstr "Формат таблицы:"
 
 #. DLG_FormatTOC_Title
 #: po/tmp/ap_String_Id.h.h:1195
-#, fuzzy
 msgid "Format Table of Contents"
-msgstr "Формат таблицы:"
+msgstr "Формат содержания"
 
 #. DLG_FormatFrameTitle
 #: po/tmp/ap_String_Id.h.h:1197
-#, fuzzy
 msgid "Format Text Box"
-msgstr "Формат таблицы:"
+msgstr "Формат текстовой области"
 
 #. DLG_Options_Label_ViewFormatTB
 #: po/tmp/ap_String_Id.h.h:1199
@@ -3015,14 +2961,13 @@ msgstr "Панель инструментов"
 
 #. MENU_STATUSLINE_FMT_POSIMAGE
 #: po/tmp/ap_String_Id.h.h:1201
-#, fuzzy
 msgid "Format this image"
-msgstr "Изменить размер изображения"
+msgstr "Форматирование этого изображения"
 
 #. MENU_STATUSLINE_FMT_STYLIST
 #: po/tmp/ap_String_Id.h.h:1203
 msgid "Format your document using styles"
-msgstr ""
+msgstr "Форматирование документа с использованием стилей"
 
 #. DLG_Lists_Format
 #. DLG_DocComparison_Fmt
@@ -3032,15 +2977,13 @@ msgstr "Формат:"
 
 #. MENU_LABEL_INSERT_EQUATION_FILE
 #: po/tmp/ap_String_Id.h.h:1207
-#, fuzzy
 msgid "From File"
 msgstr "&Из файла"
 
 #. MENU_LABEL_INSERT_EQUATION_LATEX
 #: po/tmp/ap_String_Id.h.h:1209
-#, fuzzy
 msgid "From LaTeX"
-msgstr "От: "
+msgstr "Из документа &LaTeX"
 
 #. DLG_FormatTOC_General
 #. DLG_Options_Label_General
@@ -3066,15 +3009,13 @@ msgstr "Перейти..."
 
 #. DLG_FormatTOC_HasLabel
 #: po/tmp/ap_String_Id.h.h:1221
-#, fuzzy
 msgid "H&as label"
-msgstr "Список"
+msgstr "Имеет &метку"
 
 #. DLG_FormatTOC_HeadingText
 #: po/tmp/ap_String_Id.h.h:1223
-#, fuzzy
 msgid "H&eading text:"
-msgstr "Заголовок 3"
+msgstr "Текст &заголовка"
 
 #. DLG_Lists_Hand_List
 #. STYLE_HANDLIST
@@ -3125,15 +3066,13 @@ msgstr ""
 
 #. DLG_Stylist_HeadingStyles
 #: po/tmp/ap_String_Id.h.h:1240
-#, fuzzy
 msgid "Heading Styles"
-msgstr "Заголовок 3"
+msgstr "Стиль"
 
 #. DLG_FormatTOC_HeadingStyle
 #: po/tmp/ap_String_Id.h.h:1242
-#, fuzzy
 msgid "Heading style:"
-msgstr "Заголовок 3"
+msgstr "Стиль заголовка:"
 
 #. DLG_Lists_Heart_List
 #. STYLE_HEARTLIST
@@ -3151,7 +3090,7 @@ msgstr "Список"
 #. TOOLBAR_TOOLTIP_HELP
 #: po/tmp/ap_String_Id.h.h:1250
 msgid "Help"
-msgstr "Помощь"
+msgstr "Справка"
 
 #. MENU_LABEL_HELP_CONTENTS
 #: po/tmp/ap_String_Id.h.h:1252
@@ -3176,7 +3115,7 @@ msgstr "Не выделять слова с ошибками"
 #. DLG_Lists_FoldingLevelexp
 #: po/tmp/ap_String_Id.h.h:1260
 msgid "Hide text below List Levels"
-msgstr ""
+msgstr "Скрывать текст ниже уровня списка"
 
 #. TOOLBAR_LABEL_COLOR_BACK
 #. TOOLBAR_STATUSLINE_COLOR_BACK
@@ -3192,9 +3131,8 @@ msgstr "П&ропустить все"
 
 #. DLG_FormatTOC_Indent
 #: po/tmp/ap_String_Id.h.h:1268
-#, fuzzy
 msgid "I&ndent:"
-msgstr "Отступ"
+msgstr "&Отступ:"
 
 #. InsertModeFieldINS
 #: po/tmp/ap_String_Id.h.h:1270
@@ -3213,9 +3151,8 @@ msgstr "Игнорировать"
 
 #. DLG_Options_Label_SpellIgnoreWords
 #: po/tmp/ap_String_Id.h.h:1276
-#, fuzzy
 msgid "Ignore Words"
-msgstr "Пропущенные слова:"
+msgstr "Игнорировать слова"
 
 #. MENU_STATUSLINE_SPELL_IGNOREALL
 #: po/tmp/ap_String_Id.h.h:1278
@@ -3230,9 +3167,8 @@ msgstr "Пропущенные слова:"
 #. DLG_FormatFrame_SetImageBackground
 #. DLG_FormatTable_SetImageBackground
 #: po/tmp/ap_String_Id.h.h:1283
-#, fuzzy
 msgid "Image For Background"
-msgstr "Изменить цвет фона"
+msgstr "Фоновое изображение"
 
 #. DLG_Lists_Implies_List
 #. STYLE_IMPLIES_LIST
@@ -3269,9 +3205,8 @@ msgstr "Отступ"
 
 #. DLG_Para_TabLabelIndentsAndSpacing
 #: po/tmp/ap_String_Id.h.h:1299
-#, fuzzy
 msgid "Indents and Spacing"
-msgstr "&Отступы и интервалы"
+msgstr "Отступы и интервалы"
 
 #. DLG_ToggleCase_FirstUpperCase
 #: po/tmp/ap_String_Id.h.h:1301
@@ -3338,14 +3273,13 @@ msgstr "Вставить дату/время"
 
 #. MENU_LABEL_TOOLTIP_INSERT_EQUATION
 #: po/tmp/ap_String_Id.h.h:1327
-#, fuzzy
 msgid "Insert Equation"
-msgstr "Отступ"
+msgstr "Вставить уравнение"
 
 #. MENU_LABEL_TOOLTIP_INSERT_EQUATION_LATEX
 #: po/tmp/ap_String_Id.h.h:1329
 msgid "Insert Equation from a LaTeX expression"
-msgstr ""
+msgstr "Вставить уравнение из выражения LaTeX"
 
 #. DLG_Field_FieldTitle_Capital
 #: po/tmp/ap_String_Id.h.h:1331
@@ -3370,9 +3304,8 @@ msgstr "Вставить поле почты"
 
 #. MENU_LABEL_TOOLTIP_INSERT_EQUATION_FILE
 #: po/tmp/ap_String_Id.h.h:1340
-#, fuzzy
 msgid "Insert MathML from a file"
-msgstr "Вставить строку над"
+msgstr "Вставить уравнение в формате MathML из файла"
 
 #. DLG_InsertTable_TableTitle
 #. MENU_STATUSLINE_TABLE_INSERT_TABLE
@@ -3383,9 +3316,8 @@ msgstr "Вставить таблицу"
 
 #. MENU_STATUSLINE_INSERT_DIRECTIONMARKER
 #: po/tmp/ap_String_Id.h.h:1346
-#, fuzzy
 msgid "Insert Unicode direction marker into the document"
-msgstr "Вставить изображение в документ"
+msgstr "Вставить символ Юникода - указатель направления текста"
 
 #. MENU_STATUSLINE_INSERT_FOOTER
 #: po/tmp/ap_String_Id.h.h:1348
@@ -3400,13 +3332,12 @@ msgstr "Вставить верхний колонтитул"
 #. MENU_STATUSLINE_INSERT_TABLEOFCONTENTS
 #: po/tmp/ap_String_Id.h.h:1352
 msgid "Insert a Table of Contents based on Headings"
-msgstr ""
+msgstr "Вставить содержание, составленное из заголовков"
 
 #. MENU_STATUSLINE_INSERT_TEXTBOX
 #: po/tmp/ap_String_Id.h.h:1354
-#, fuzzy
 msgid "Insert a Text Box"
-msgstr "Вставить сноску"
+msgstr "Вставить область текста"
 
 #. TOOLBAR_STATUSLINE_FMT_BOOKMARK
 #. TOOLBAR_TOOLTIP_FMT_BOOKMARK
@@ -3526,15 +3457,13 @@ msgstr "Вставить гиперссылку"
 
 #. MENU_STATUSLINE_INSERT_DIRECTIONMARKER_LRM
 #: po/tmp/ap_String_Id.h.h:1406
-#, fuzzy
 msgid "Insert left-to-right direction marker (LRM)"
-msgstr "Автоустановка отметок направления"
+msgstr "Вставить указатель направления текста слева направо"
 
 #. MENU_STATUSLINE_INSERT_DIRECTIONMARKER_RLM
 #: po/tmp/ap_String_Id.h.h:1408
-#, fuzzy
 msgid "Insert right-to-left direction marker (RLM)"
-msgstr "Направление текста по умолчанию"
+msgstr "Вставить указатель направления текста справа нелево"
 
 #. TOOLBAR_STATUSLINE_INSERT_SYMBOL
 #. TOOLBAR_TOOLTIP_INSERT_SYMBOL
@@ -3549,15 +3478,13 @@ msgstr "Вставить таблицу"
 
 #. MENU_STATUSLINE_TABLE_INSERT_SUMROWS
 #: po/tmp/ap_String_Id.h.h:1415
-#, fuzzy
 msgid "Insert the Sum of a Table Column"
-msgstr "Изменить количество колонок"
+msgstr "Вставить сумму колонки таблицы"
 
 #. MENU_STATUSLINE_TABLE_INSERT_SUMCOLS
 #: po/tmp/ap_String_Id.h.h:1417
-#, fuzzy
 msgid "Insert the Sum of a Table Row"
-msgstr "Вставить таблицу"
+msgstr "Вставить сумму строки таблицы"
 
 #. MENU_STATUSLINE_INSERT_FILE
 #: po/tmp/ap_String_Id.h.h:1419
@@ -3589,9 +3516,8 @@ msgstr "Курсивный"
 
 #. MENU_STATUSLINE_INSERT_GOTO_HYPERLINK
 #: po/tmp/ap_String_Id.h.h:1431
-#, fuzzy
 msgid "Jump to hyperlink"
-msgstr "Вставить гиперссылку"
+msgstr "Перейти по гиперссылке"
 
 #. DLG_Para_AlignJustified
 #: po/tmp/ap_String_Id.h.h:1433
@@ -3638,7 +3564,7 @@ msgstr "Ключевые слова:"
 #. DLG_Latex_LatexEquation
 #: po/tmp/ap_String_Id.h.h:1451
 msgid "LaTeX Equation"
-msgstr ""
+msgstr "Уравнение LaTeX"
 
 #. DLG_Lists_Indent
 #: po/tmp/ap_String_Id.h.h:1453
@@ -3648,7 +3574,7 @@ msgstr "Выравнивание символа:"
 #. DLG_FormatTOC_DetailsTop
 #: po/tmp/ap_String_Id.h.h:1455
 msgid "Label Definitions"
-msgstr ""
+msgstr "Определение метки"
 
 #. DLG_Styles_ModifyLanguage
 #. DLG_Options_Label_Language
@@ -3674,9 +3600,8 @@ msgstr "Макет"
 
 #. DLG_FormatTOC_LayoutDetails
 #: po/tmp/ap_String_Id.h.h:1467
-#, fuzzy
 msgid "Layout Details"
-msgstr "Детали дополнения:"
+msgstr "Детали расположения"
 
 #. DLG_Tab_Label_Leader
 #: po/tmp/ap_String_Id.h.h:1469
@@ -3727,27 +3652,23 @@ msgstr "Выровнять абзац по левому краю"
 
 #. DLG_FormatTOC_Level1
 #: po/tmp/ap_String_Id.h.h:1489
-#, fuzzy
 msgid "Level 1"
-msgstr "Ограничитель уровня:"
+msgstr "Уровень 1"
 
 #. DLG_FormatTOC_Level2
 #: po/tmp/ap_String_Id.h.h:1491
-#, fuzzy
 msgid "Level 2"
-msgstr "Ограничитель уровня:"
+msgstr "Уровень 2"
 
 #. DLG_FormatTOC_Level3
 #: po/tmp/ap_String_Id.h.h:1493
-#, fuzzy
 msgid "Level 3"
-msgstr "Ограничитель уровня:"
+msgstr "Уровень 3"
 
 #. DLG_FormatTOC_Level4
 #: po/tmp/ap_String_Id.h.h:1495
-#, fuzzy
 msgid "Level 4"
-msgstr "Ограничитель уровня:"
+msgstr "Уровень 4"
 
 #. DLG_Lists_DelimiterString
 #: po/tmp/ap_String_Id.h.h:1497
@@ -3781,9 +3702,8 @@ msgstr "Надчеркнуть выделение"
 
 #. DLG_Para_TabLabelLineAndPageBreaks
 #: po/tmp/ap_String_Id.h.h:1509
-#, fuzzy
 msgid "Line and Page Breaks"
-msgstr "&Положение на странице"
+msgstr "Линии и разрывы страниц"
 
 #. MENU_STATUSLINE_FMT_BOTTOMLINE
 #: po/tmp/ap_String_Id.h.h:1511
@@ -3812,15 +3732,13 @@ msgstr "Список"
 
 #. DLG_Lists_PageProperties
 #: po/tmp/ap_String_Id.h.h:1521
-#, fuzzy
 msgid "List Properties"
-msgstr "&Свойства"
+msgstr "Параметры списков"
 
 #. DLG_Stylist_ListStyles
 #: po/tmp/ap_String_Id.h.h:1523
-#, fuzzy
 msgid "List Styles"
-msgstr "Стили"
+msgstr "Стили списков"
 
 #. DLG_Lists_Title
 #: po/tmp/ap_String_Id.h.h:1525
@@ -3846,9 +3764,8 @@ msgstr "Малые римские"
 
 #. MENU_LABEL_TOOLS_REVISIONS_MERGE_DOCUMENTS
 #: po/tmp/ap_String_Id.h.h:1533
-#, fuzzy
 msgid "M&erge documents"
-msgstr "&Следующие документы"
+msgstr "&Объединить документы"
 
 #. FIELD_Application_MailMerge
 #. MENU_STATUSLINE_TOOLS_MAILMERGE
@@ -3888,9 +3805,8 @@ msgstr "Управление дополнениями"
 
 #. DLG_PageSetup_Margin
 #: po/tmp/ap_String_Id.h.h:1550
-#, fuzzy
 msgid "Margin"
-msgstr "&Поля"
+msgstr "Поля"
 
 #. DLG_MarkRevisions_Title
 #: po/tmp/ap_String_Id.h.h:1552
@@ -3947,7 +3863,7 @@ msgstr "Включить перед"
 #. MENU_STATUSLINE_TOOLS_REVISIONS_MERGE_DOCUMENTS
 #: po/tmp/ap_String_Id.h.h:1574
 msgid "Merge another document into the active document using revision marks"
-msgstr ""
+msgstr "Объединить текущий документ с другим используя отметки о версиях"
 
 #. TOOLBAR_LABEL_MERGEBELOW
 #: po/tmp/ap_String_Id.h.h:1576
@@ -4007,9 +3923,8 @@ msgstr "Разное"
 
 #. DLG_Stylist_MiscStyles
 #: po/tmp/ap_String_Id.h.h:1602
-#, fuzzy
 msgid "Miscellaneous Styles"
-msgstr "&Доступные стили:"
+msgstr "Различные стили"
 
 #. DLG_Styles_ModifyTitle
 #: po/tmp/ap_String_Id.h.h:1604
@@ -4093,7 +4008,7 @@ msgstr "Нет файла"
 #. DLG_Lists_FoldingLevel0
 #: po/tmp/ap_String_Id.h.h:1634
 msgid "No Folding"
-msgstr ""
+msgstr "Без сворачивания"
 
 #. DLG_Styles_ErrNoStyle
 #: po/tmp/ap_String_Id.h.h:1636
@@ -4134,9 +4049,8 @@ msgstr "Нет в словаре&:"
 
 #. DLG_Stylist_FootnoteStyles
 #: po/tmp/ap_String_Id.h.h:1651
-#, fuzzy
 msgid "Note Styles"
-msgstr "Новый тип"
+msgstr "Стиль сносок"
 
 #. DLG_Column_Number_Cols
 #: po/tmp/ap_String_Id.h.h:1653
@@ -4285,9 +4199,8 @@ msgstr "&Свойства"
 
 #. MENU_LABEL_TOOLS_REVISIONS_PURGE
 #: po/tmp/ap_String_Id.h.h:1720
-#, fuzzy
 msgid "P&urge revisions"
-msgstr "В&ерсии:"
+msgstr "От&бросить версии"
 
 #. MENU_LABEL_EDIT_PASTE_SPECIAL
 #: po/tmp/ap_String_Id.h.h:1722
@@ -4307,21 +4220,18 @@ msgstr "&С новой страницы"
 
 #. MENU_LABEL_FMT_BACKGROUND
 #: po/tmp/ap_String_Id.h.h:1729
-#, fuzzy
 msgid "Page Background"
-msgstr "Изменить цвет фона"
+msgstr "Фон страницы"
 
 #. MENU_LABEL_FMT_BACKGROUND_PAGE_COLOR
 #: po/tmp/ap_String_Id.h.h:1731
-#, fuzzy
 msgid "Page C&olor"
-msgstr " Цвет "
+msgstr "Цвет &фона"
 
 #. MENU_LABEL_FMT_BACKGROUND_PAGE_IMAGE
 #: po/tmp/ap_String_Id.h.h:1733
-#, fuzzy
 msgid "Page Image"
-msgstr "Диапазон страниц:"
+msgstr "Изображение страницы"
 
 #. MENU_LABEL_INSERT_PAGENO
 #: po/tmp/ap_String_Id.h.h:1735
@@ -4460,27 +4370,23 @@ msgstr "Положение"
 
 #. DLG_FormatFrame_PositionTo
 #: po/tmp/ap_String_Id.h.h:1791
-#, fuzzy
 msgid "Position Text Box"
-msgstr "Положение"
+msgstr "Положение области текста"
 
 #. DLG_FormatFrame_SetToColumn
 #: po/tmp/ap_String_Id.h.h:1793
-#, fuzzy
 msgid "Position to Column"
-msgstr "Положение"
+msgstr "Положение относительно колонки"
 
 #. DLG_FormatFrame_SetToPage
 #: po/tmp/ap_String_Id.h.h:1795
-#, fuzzy
 msgid "Position to Page"
-msgstr "Положение"
+msgstr "Положение относительно страницы"
 
 #. DLG_FormatFrame_SetToParagraph
 #: po/tmp/ap_String_Id.h.h:1797
-#, fuzzy
 msgid "Position to Paragraph"
-msgstr "Выровнять абзац по ширине листа"
+msgstr "Положение относительно параграфа"
 
 #. DLG_PageNumbers_Position
 #: po/tmp/ap_String_Id.h.h:1799
@@ -4611,9 +4517,8 @@ msgstr "&Заменить"
 
 #. MENU_LABEL_FMT_DIRECTION_DD_RTL
 #: po/tmp/ap_String_Id.h.h:1852
-#, fuzzy
 msgid "RTL &Paragraph"
-msgstr "&Абзац"
+msgstr "Абзац справа &налево"
 
 #. DLG_FR_ReplaceWithLabel
 #: po/tmp/ap_String_Id.h.h:1854
@@ -4690,27 +4595,23 @@ msgstr "Удалить свойство из стиля"
 
 #. MENU_LABEL_TABLE_HEADING_ROWS_REPEAT_REMOVE
 #: po/tmp/ap_String_Id.h.h:1888
-#, fuzzy
 msgid "Remove Row as Heading"
-msgstr "Повторить строку в верхнем колонтитуле"
+msgstr "Переместить строку в верхний колонтитул"
 
 #. MENU_STATUSLINE_TABLE_HEADING_ROWS_REPEAT_REMOVE
 #: po/tmp/ap_String_Id.h.h:1890
-#, fuzzy
 msgid "Remove Row as the page Heading"
-msgstr "Повторить строку в верхнем колонтитуле"
+msgstr "Удалить строку, поместив ее в верхнем колонтитуле страницы"
 
 #. MENU_STATUSLINE_TOOLS_REVISIONS_PURGE
 #: po/tmp/ap_String_Id.h.h:1892
-#, fuzzy
 msgid "Remove all revision information from the document"
-msgstr "Удалить верхний колонтитутл с этой страницы из документа"
+msgstr "Удалить всю информацию и версиях из документа"
 
 #. MENU_STATUSLINE_TOOLS_HISTORY_PURGE
 #: po/tmp/ap_String_Id.h.h:1894
-#, fuzzy
 msgid "Remove full document history from the document"
-msgstr "Удалить верхний колонтитутл с этой страницы из документа"
+msgstr "Удалить всю историю изменений из документа"
 
 #. MENU_STATUSLINE_EDIT_REMOVEFOOTER
 #: po/tmp/ap_String_Id.h.h:1896
@@ -4724,21 +4625,18 @@ msgstr "Удалить верхний колонтитутл с этой стр�
 
 #. MENU_STATUSLINE_EDIT_CUTIMAGE
 #: po/tmp/ap_String_Id.h.h:1900
-#, fuzzy
 msgid "Remove the Image and save a copy on the clipboard"
-msgstr "Скопировать выделение и поместить его в буфер обмена"
+msgstr "Удилить изображение и поместить его копию в буфер обмена"
 
 #. MENU_STATUSLINE_EDIT_DELETEIMAGE
 #: po/tmp/ap_String_Id.h.h:1902
-#, fuzzy
 msgid "Remove the Image from the Document"
-msgstr "Удалить нижний колонтитул с этой страницы из документа"
+msgstr "Удалить изображение из документа"
 
 #. MENU_STATUSLINE_EDIT_DELETEFRAME
 #: po/tmp/ap_String_Id.h.h:1904
-#, fuzzy
 msgid "Remove the Text Box from the Document"
-msgstr "Удалить верхний колонтитутл с этой страницы из документа"
+msgstr "Удалить область текста из документа"
 
 #. MENU_STATUSLINE_TOOLS_REVISIONS_REJECT_REVISION
 #: po/tmp/ap_String_Id.h.h:1906
@@ -4752,9 +4650,8 @@ msgstr "Повторить строку в верхнем колонтитуле
 
 #. MENU_STATUSLINE_TABLE_HEADING_ROWS_REPEAT
 #: po/tmp/ap_String_Id.h.h:1910
-#, fuzzy
 msgid "Repeat Row as Heading on each new page"
-msgstr "Повторить строку в верхнем колонтитуле"
+msgstr "Повторить строку в верхнем колонтитуле на каждой странице"
 
 #. DLG_FR_ReplaceTitle
 #: po/tmp/ap_String_Id.h.h:1912
@@ -4820,13 +4717,12 @@ msgstr "Возобновить список"
 #. MENU_STATUSLINE_TOOLS_REVISIONS_AUTO
 #: po/tmp/ap_String_Id.h.h:1937
 msgid "Retain all document changes"
-msgstr ""
+msgstr "Запомнить все изменения документа"
 
 #. MSG_RevertFile
 #: po/tmp/ap_String_Id.h.h:1939
-#, fuzzy
 msgid "Revert file to last saved state?"
-msgstr "Вернуть к последнему несохраненному состоянию?"
+msgstr "Вернуть документа к последнему сохраненному состоянию?"
 
 #. MENU_STATUSLINE_FILE_REVERT
 #: po/tmp/ap_String_Id.h.h:1941
@@ -4917,9 +4813,8 @@ msgstr "С&ценарии"
 
 #. MENU_LABEL_TOOLS_REVISIONS_SHOW
 #: po/tmp/ap_String_Id.h.h:1977
-#, fuzzy
 msgid "S&how revisions"
-msgstr "В&ерсии:"
+msgstr "Показать в&ерсии"
 
 #. MENU_LABEL_TABLE_SPLIT_CELLS
 #: po/tmp/ap_String_Id.h.h:1979
@@ -4959,7 +4854,7 @@ msgstr "Сохранить как"
 #. MENU_STATUSLINE_EDIT_COPYIMAGE
 #: po/tmp/ap_String_Id.h.h:1993
 msgid "Save a copy of the image on the clipboard"
-msgstr ""
+msgstr "Сохранить копию изображения в буфере"
 
 #. MSG_ConfirmSave
 #: po/tmp/ap_String_Id.h.h:1995
@@ -4970,7 +4865,7 @@ msgstr "Сохранить изменения документа %s перед �
 #. MENU_STATUSLINE_FILE_SAVEEMBED
 #: po/tmp/ap_String_Id.h.h:1997
 msgid "Save the Embedded Object"
-msgstr ""
+msgstr "Сохранить встроенный объект"
 
 #. MENU_STATUSLINE_FILE_SAVE
 #. TOOLBAR_STATUSLINE_FILE_SAVE
@@ -5003,9 +4898,8 @@ msgstr "Сделать выделенное изображение в файл"
 
 #. MENU_LABEL_FILE_SAVEEMBED
 #: po/tmp/ap_String_Id.h.h:2013
-#, fuzzy
 msgid "Save to file"
-msgstr "Сохранить как"
+msgstr "Сохранить в файл"
 
 #. DLG_PageSetup_Scale
 #: po/tmp/ap_String_Id.h.h:2015
@@ -5015,7 +4909,7 @@ msgstr "Масштаб..."
 #. MENU_STATUSLINE_HELP_SEARCH
 #: po/tmp/ap_String_Id.h.h:2017
 msgid "Search for help about..."
-msgstr "Искать помощь о..."
+msgstr "Искать справку по..."
 
 #. DLG_WordCount_Update_Rate
 #: po/tmp/ap_String_Id.h.h:2019
@@ -5039,9 +4933,8 @@ msgstr "Разрывы между секциями"
 
 #. MENU_STATUSLINE_TOOLS_HISTORY
 #: po/tmp/ap_String_Id.h.h:2027
-#, fuzzy
 msgid "See history of the current document"
-msgstr "Выделить весь документ"
+msgstr "Просмотреть историю изменений документа"
 
 #. MENU_STATUSLINE_TABLE_SELECT
 #. DLG_Select
@@ -5081,9 +4974,8 @@ msgstr "Выделить таблицу"
 
 #. MENU_LABEL_EDIT_SELECT_FRAME
 #: po/tmp/ap_String_Id.h.h:2043
-#, fuzzy
 msgid "Select Text Box"
-msgstr "Выделить таблицу"
+msgstr "Выделить область текста"
 
 #. DLG_InsertHyperlink_Msg
 #: po/tmp/ap_String_Id.h.h:2045
@@ -5093,15 +4985,13 @@ msgstr "Выберите закладку из списка"
 #. DLG_FormatFrame_SelectImage
 #. DLG_FormatTable_SelectImage
 #: po/tmp/ap_String_Id.h.h:2048
-#, fuzzy
 msgid "Select image from File"
-msgstr "Сделать выделенное изображение в файл"
+msgstr "Выбрать изображение из файла"
 
 #. MENU_STATUSLINE_EDIT_SELECT_FRAME
 #: po/tmp/ap_String_Id.h.h:2050
-#, fuzzy
 msgid "Select the Text Box"
-msgstr "Выделить весь документ"
+msgstr "Выделить текстовую область"
 
 #. MENU_STATUSLINE_EDIT_SELECTALL
 #: po/tmp/ap_String_Id.h.h:2052
@@ -5122,33 +5012,32 @@ msgstr "Как в предложениях"
 #. MENU_STATUSLINE_TABLE_TABLETOTEXTCOMMAS
 #: po/tmp/ap_String_Id.h.h:2058
 msgid "Separate table items with commas"
-msgstr ""
+msgstr "Разделять элементы таблицы запятыми"
 
 #. MENU_STATUSLINE_TABLE_TABLETOTEXTCOMMASTABS
 #: po/tmp/ap_String_Id.h.h:2060
 msgid "Separate table items with commas and tabs"
-msgstr ""
+msgstr "Разделять элементы таблицы запятыми и символами табуляции"
 
 #. MENU_STATUSLINE_TABLE_TABLETOTEXTTABS
 #: po/tmp/ap_String_Id.h.h:2062
 msgid "Separate table items with tabs"
-msgstr ""
+msgstr "Разделять элементы таблицы символами табуляции"
 
 #. MENU_LABEL_TABLE_TABLETOTEXTCOMMAS
 #: po/tmp/ap_String_Id.h.h:2064
 msgid "Separate with commas"
-msgstr ""
+msgstr "Разделять запятыми"
 
 #. MENU_LABEL_TABLE_TABLETOTEXTCOMMASTABS
 #: po/tmp/ap_String_Id.h.h:2066
 msgid "Separate with commas and tabs"
-msgstr ""
+msgstr "Разделять запятыми и табуляцей"
 
 #. MENU_LABEL_TABLE_TABLETOTEXTTABS
 #: po/tmp/ap_String_Id.h.h:2068
-#, fuzzy
 msgid "Separate with tabs"
-msgstr "Символов (с пробелами)"
+msgstr "Разделять табуляций"
 
 #. DLG_Tab_Button_Set
 #: po/tmp/ap_String_Id.h.h:2070
@@ -5158,7 +5047,7 @@ msgstr "Установить"
 #. MENU_LABEL_FMT_LANGUAGE
 #: po/tmp/ap_String_Id.h.h:2072
 msgid "Set &Language"
-msgstr "Выберите язык:"
+msgstr "Язык"
 
 #. DLG_Lists_SetDefault
 #: po/tmp/ap_String_Id.h.h:2074
@@ -5168,26 +5057,23 @@ msgstr "Значения по умолчанию"
 #. DLG_FormatFrame_SetImage
 #. DLG_FormatTable_SetImage
 #: po/tmp/ap_String_Id.h.h:2077
-#, fuzzy
 msgid "Set Image"
-msgstr "Вставить изображение"
+msgstr "Задать изображение"
 
 #. DLG_FormatFrame_SetTextWrapping
 #: po/tmp/ap_String_Id.h.h:2079
-#, fuzzy
 msgid "Set Text Wrapping"
-msgstr "&Форматирование"
+msgstr "Задать обтекание текста"
 
 #. MENU_STATUSLINE_FMT_BACKGROUND_PAGE_IMAGE
 #: po/tmp/ap_String_Id.h.h:2081
 msgid "Set an image as a background for your page"
-msgstr ""
+msgstr "Установить фон страницы из изображения"
 
 #. MENU_STATUSLINE_FMT_DIRECTION_DD_RTL
 #: po/tmp/ap_String_Id.h.h:2083
-#, fuzzy
 msgid "Set dominant direction of paragraph to RTL"
-msgstr "Изменить предпочтительное направление  абзаца"
+msgstr "Изменить предпочтительное направление абзаца справа-налево"
 
 #. MENU_STATUSLINE_FILE_PROPERTIES
 #: po/tmp/ap_String_Id.h.h:2085
@@ -5196,16 +5082,14 @@ msgstr "Установить свойства метаданных"
 
 #. DLG_Tab_Label_New
 #: po/tmp/ap_String_Id.h.h:2087
-#, fuzzy
 msgid "Set new Tab"
-msgstr "Вставить таблицу"
+msgstr "Вставить табуляцию"
 
 #. DLG_FormatFrame_NoImageBackground
 #. DLG_FormatTable_NoImageBackground
 #: po/tmp/ap_String_Id.h.h:2090
-#, fuzzy
 msgid "Set no image"
-msgstr "Выбрать язык:"
+msgstr "Удалить фоновое изображение"
 
 #. MENU_STATUSLINE_TOOLS_OPTIONS
 #: po/tmp/ap_String_Id.h.h:2092
@@ -5219,9 +5103,8 @@ msgstr "Установить позиции табуляции"
 
 #. MENU_STATUSLINE_FMT_TABLEOFCONTENTS
 #: po/tmp/ap_String_Id.h.h:2096
-#, fuzzy
 msgid "Set the type and styles of the Table of Contents"
-msgstr "Установить типы верхних и нижних колонтитулов"
+msgstr "Установить тип и стиль содержания"
 
 #. MENU_STATUSLINE_FMT_FOOTNOTES
 #: po/tmp/ap_String_Id.h.h:2098
@@ -5235,14 +5118,13 @@ msgstr "Установить типы верхних и нижних колон�
 
 #. MENU_LABEL_TABLE_HEADING_ROWS_REPEAT_THIS
 #: po/tmp/ap_String_Id.h.h:2102
-#, fuzzy
 msgid "Set this Row as Heading"
 msgstr "Повторить строку в верхнем колонтитуле"
 
 #. MENU_STATUSLINE_TABLE_HEADING_ROWS_REPEAT_THIS
 #: po/tmp/ap_String_Id.h.h:2104
 msgid "Set this Row as the Heading on each page"
-msgstr ""
+msgstr "Установить строку в верхнем колонтитуле на каждой странице"
 
 #. MENU_STATUSLINE_TOOLS_SPELLPREFS
 #: po/tmp/ap_String_Id.h.h:2106
@@ -5282,19 +5164,18 @@ msgstr "Показать отметки &форматирования"
 
 #. MENU_LABEL_TOOLS_REVISIONS_SHOW_BEFORE
 #: po/tmp/ap_String_Id.h.h:2120
-#, fuzzy
 msgid "Show document &before revisions"
-msgstr "Просмотреть документ перед печатью"
+msgstr "Показать документ &до изменений"
 
 #. MENU_LABEL_TOOLS_REVISIONS_SHOW_AFTER
 #: po/tmp/ap_String_Id.h.h:2122
 msgid "Show document a&fter revisions"
-msgstr ""
+msgstr "Показать документ &после изменений"
 
 #. MENU_LABEL_TOOLS_REVISIONS_SHOW_AFTERPREV
 #: po/tmp/ap_String_Id.h.h:2124
 msgid "Show document after &previous revisions"
-msgstr ""
+msgstr "Показать документ после п&редыдущего изменения"
 
 #. MENU_STATUSLINE_WINDOW_MORE
 #: po/tmp/ap_String_Id.h.h:2126
@@ -5316,14 +5197,13 @@ msgstr "Показать/спрятать строку статуса"
 #. MENU_STATUSLINE_VIEW_TB_3
 #. MENU_STATUSLINE_VIEW_TB_4
 #: po/tmp/ap_String_Id.h.h:2135
-#, fuzzy
 msgid "Show or hide the toolbar"
-msgstr "Показать/спрятать панель таблицы"
+msgstr "Показать/спрятать панель инструментов"
 
 #. MENU_STATUSLINE_TOOLS_REVISIONS_SHOW
 #: po/tmp/ap_String_Id.h.h:2137
 msgid "Show revisions that are present in document"
-msgstr ""
+msgstr "Показать все версии документа"
 
 #. DLG_Options_Label_ShowSplash
 #: po/tmp/ap_String_Id.h.h:2139
@@ -5333,18 +5213,17 @@ msgstr "Показывать заставку при запуске прилож
 #. MENU_STATUSLINE_TOOLS_REVISIONS_SHOW_AFTERPREV
 #: po/tmp/ap_String_Id.h.h:2141
 msgid "Show what the document looks like after previous revisions"
-msgstr ""
+msgstr "Показать как документ выглядел после предыдущего сеанса редактирования"
 
 #. MENU_STATUSLINE_TOOLS_REVISIONS_SHOW_AFTER
 #: po/tmp/ap_String_Id.h.h:2143
 msgid "Show what the document looks like after revisions"
-msgstr ""
+msgstr "Показать как документ выглядел после сеанса редактирования"
 
 #. MENU_STATUSLINE_TOOLS_REVISIONS_SHOW_BEFORE
 #: po/tmp/ap_String_Id.h.h:2145
-#, fuzzy
 msgid "Show what the document looks like before revisions"
-msgstr "Просмотреть документ перед печатью"
+msgstr "Показать вид документа перед редактированием"
 
 #. DLG_Options_Label_ViewShowHide
 #: po/tmp/ap_String_Id.h.h:2147
@@ -5381,42 +5260,42 @@ msgstr "&Упорядочить таблицу"
 #. MENU_LABEL_TABLE_SORTCOLSASCEND
 #: po/tmp/ap_String_Id.h.h:2161
 msgid "Sort Columns in Ascending Order"
-msgstr ""
+msgstr "Упорядочить колонки по возрастанию"
 
 #. MENU_STATUSLINE_TABLE_SORTCOLSASCEND
 #: po/tmp/ap_String_Id.h.h:2163
 msgid "Sort Columns in Ascending Order based on Selected Row"
-msgstr ""
+msgstr "Упорядочить колонки по возрастанию по выделенной строке"
 
 #. MENU_LABEL_TABLE_SORTCOLSDESCEND
 #: po/tmp/ap_String_Id.h.h:2165
 msgid "Sort Columns in Descending Order"
-msgstr ""
+msgstr "Упорядочить колонки по убыванию"
 
 #. MENU_STATUSLINE_TABLE_SORTCOLSDESCEND
 #: po/tmp/ap_String_Id.h.h:2167
 msgid "Sort Columns in Descending Order based on Selected Row"
-msgstr ""
+msgstr "Упорядочть колонки по убыванию по выделенной строке"
 
 #. MENU_LABEL_TABLE_SORTROWSASCEND
 #: po/tmp/ap_String_Id.h.h:2169
 msgid "Sort Rows in Ascending Order"
-msgstr ""
+msgstr "Упорядочить строки по возрастанию"
 
 #. MENU_STATUSLINE_TABLE_SORTROWSASCEND
 #: po/tmp/ap_String_Id.h.h:2171
 msgid "Sort Rows in Ascending Order based on selected Column"
-msgstr ""
+msgstr "Упорядочить строки по возрастанию по выделенной колонке"
 
 #. MENU_LABEL_TABLE_SORTROWSDESCEND
 #: po/tmp/ap_String_Id.h.h:2173
 msgid "Sort Rows in Descending Order"
-msgstr ""
+msgstr "Упорядочить строки по убыванию"
 
 #. MENU_STATUSLINE_TABLE_SORTROWSDESCEND
 #: po/tmp/ap_String_Id.h.h:2175
 msgid "Sort Rows in Descending Order based on Selected Column"
-msgstr ""
+msgstr "Упорядочить строки по убыванию по выделенной колонке"
 
 #. MENU_STATUSLINE_TABLE_SORT
 #: po/tmp/ap_String_Id.h.h:2177
@@ -5452,7 +5331,6 @@ msgstr "Интервал"
 
 #. DLG_Options_SpellCheckingTitle
 #: po/tmp/ap_String_Id.h.h:2191
-#, fuzzy
 msgid "Spell Checking"
 msgstr "Правописание"
 
@@ -5503,49 +5381,48 @@ msgstr "Разделить ячейки"
 #. DLG_SplitCells_HoriMid
 #. DLG_SplitCells_VertMid
 #: po/tmp/ap_String_Id.h.h:2214
-#, fuzzy
 msgid "Split in Middle"
-msgstr "Разделить таблицу"
+msgstr "Разделить посередине"
 
 #. DLG_SplitCells_Below
 #: po/tmp/ap_String_Id.h.h:2216
 msgid "Split on Bottom Side"
-msgstr ""
+msgstr "Разделить снизу"
 
 #. DLG_SplitCells_Left
 #: po/tmp/ap_String_Id.h.h:2218
 msgid "Split on Left Side"
-msgstr ""
+msgstr "Разделить слева"
 
 #. DLG_SplitCells_Right
 #: po/tmp/ap_String_Id.h.h:2220
 msgid "Split on Right Side"
-msgstr ""
+msgstr "Разделить справа"
 
 #. DLG_SplitCells_Above
 #: po/tmp/ap_String_Id.h.h:2222
 msgid "Split on Top Side"
-msgstr ""
+msgstr "Разделить сверху"
 
 #. MENU_STATUSLINE_TABLE_TEXTTOTABLE_NOSPACES
 #: po/tmp/ap_String_Id.h.h:2224
 msgid "Split on all delimiters except spaces"
-msgstr ""
+msgstr "Разделять по между любыми словами, исключая разделение по пробелам"
 
 #. MENU_STATUSLINE_TABLE_TEXTTOTABLE_ALL
 #: po/tmp/ap_String_Id.h.h:2226
 msgid "Split on all word delimiters including spaces"
-msgstr ""
+msgstr "Разделять между любыми словами, включая разделение по пробелам"
 
 #. MENU_LABEL_TABLE_TEXTTOTABLE_NOSPACES
 #: po/tmp/ap_String_Id.h.h:2228
 msgid "Split text at commas or tabs"
-msgstr ""
+msgstr "Разделять текст по запятым или символям табуляции"
 
 #. MENU_LABEL_TABLE_TEXTTOTABLE_ALL
 #: po/tmp/ap_String_Id.h.h:2230
 msgid "Split text at spaces, commas, or tabs"
-msgstr ""
+msgstr "Разделять текст по пробелам, запятым и символам табуляции"
 
 #. TOOLBAR_STATUSLINE_SPLIT_CELLS
 #. TOOLBAR_TOOLTIP_SPLIT_CELLS
@@ -5566,9 +5443,8 @@ msgstr "Ст&иль"
 
 #. TB_Standard
 #: po/tmp/ap_String_Id.h.h:2239
-#, fuzzy
 msgid "Standard"
-msgstr "&Стандартная"
+msgstr "Стандартная"
 
 #. DLG_Options_Label_ViewStandardTB
 #: po/tmp/ap_String_Id.h.h:2241
@@ -5604,14 +5480,13 @@ msgstr "Начать новую версию"
 
 #. MENU_LABEL_TOOLS_REVISIONS_NEW_REVISION
 #: po/tmp/ap_String_Id.h.h:2254
-#, fuzzy
 msgid "Start ne&w revision"
-msgstr "Начать новую версию"
+msgstr "Начать &новую версию"
 
 #. MENU_STATUSLINE_TOOLS_REVISIONS_NEW_REVISION
 #: po/tmp/ap_String_Id.h.h:2256
 msgid "Start revision distinct from the current one"
-msgstr ""
+msgstr "Начать версию, отличающуюся от текущей"
 
 #. DLG_WordCount_Statistics
 #: po/tmp/ap_String_Id.h.h:2258
@@ -5643,9 +5518,8 @@ msgstr "Перечеркнуть выделение"
 
 #. MENU_LABEL_FMT_STYLIST
 #: po/tmp/ap_String_Id.h.h:2270
-#, fuzzy
 msgid "Sty&list"
-msgstr "Стили"
+msgstr "&Стилист"
 
 #. TOOLBAR_LABEL_FMT_STYLE
 #. TOOLBAR_STATUSLINE_FMT_STYLE
@@ -5693,9 +5567,8 @@ msgstr "Стили"
 
 #. DLG_Stylist_Title
 #: po/tmp/ap_String_Id.h.h:2291
-#, fuzzy
 msgid "Stylist"
-msgstr "Стили"
+msgstr "Стилист"
 
 #. FIELD_Document_Subject
 #: po/tmp/ap_String_Id.h.h:2293
@@ -5727,25 +5600,23 @@ msgstr "Предлагать только из основного словаря
 
 #. MENU_LABEL_TABLE_INSERT_SUMROWS
 #: po/tmp/ap_String_Id.h.h:2305
-#, fuzzy
 msgid "Sum a Column"
-msgstr "1 Колонка"
+msgstr "Сумма колонки"
 
 #. MENU_LABEL_TABLE_INSERT_SUMCOLS
 #: po/tmp/ap_String_Id.h.h:2307
 msgid "Sum a Row"
-msgstr ""
+msgstr "Сумма строки"
 
 #. FIELD_Numbers_TableSumRows
 #: po/tmp/ap_String_Id.h.h:2309
-#, fuzzy
 msgid "Sum a Table Column"
-msgstr "Пробел после колонки"
+msgstr "Сумма элементов колонки таблицы"
 
 #. FIELD_Numbers_TableSumCols
 #: po/tmp/ap_String_Id.h.h:2311
 msgid "Sum a Table Row"
-msgstr ""
+msgstr "Сумма элементов строки таблицы"
 
 #. DLG_MetaData_TAB_Summary
 #: po/tmp/ap_String_Id.h.h:2313
@@ -5810,28 +5681,25 @@ msgstr "Размер таблицы"
 
 #. DLG_Options_Label_ViewTableTB
 #: po/tmp/ap_String_Id.h.h:2339
-#, fuzzy
 msgid "Table Toolbar"
-msgstr "Дополнительная панель инструментов"
+msgstr "Панель инструментов для работы с таблицами"
 
 #. TOC_TocHeading
 #. MENU_LABEL_INSERT_TABLEOFCONTENTS
 #. MENU_LABEL_FMT_TABLEOFCONTENTS
 #: po/tmp/ap_String_Id.h.h:2343
-#, fuzzy
 msgid "Table of Contents"
-msgstr "&Содержание"
+msgstr "Содержание"
 
 #. FIELD_Numbers_TOCListLabel
 #: po/tmp/ap_String_Id.h.h:2345
-#, fuzzy
 msgid "Table of Contents List Label"
-msgstr "Текущее значение"
+msgstr "Метка списка содержания"
 
 #. FIELD_Numbers_TOCPageNumber
 #: po/tmp/ap_String_Id.h.h:2347
 msgid "Table of Contents Page"
-msgstr ""
+msgstr "Страница содержания"
 
 #. DLG_InsertTable_TableSize
 #: po/tmp/ap_String_Id.h.h:2349
@@ -5846,9 +5714,8 @@ msgstr "Табуляция"
 
 #. DLG_FormatTOC_DetailsTabPage
 #: po/tmp/ap_String_Id.h.h:2354
-#, fuzzy
 msgid "Tabs and Page Numbering"
-msgstr "Маркеры и &нумерация"
+msgstr "Табуляция и нумерация страниц"
 
 #. MENU_LABEL_FMT
 #: po/tmp/ap_String_Id.h.h:2356
@@ -5863,13 +5730,12 @@ msgstr "Текст"
 #. DLG_FormatTOC_TextAfter
 #: po/tmp/ap_String_Id.h.h:2360
 msgid "Text &after:"
-msgstr ""
+msgstr "Текст &после:"
 
 #. DLG_FormatTOC_TextBefore
 #: po/tmp/ap_String_Id.h.h:2362
-#, fuzzy
 msgid "Text &before:"
-msgstr "Нет перед"
+msgstr "Текст &до:"
 
 #. DLG_Lists_Align
 #: po/tmp/ap_String_Id.h.h:2364
@@ -5879,21 +5745,18 @@ msgstr "Выравнивание текста:"
 #. MENU_LABEL_INSERT_TEXTBOX
 #. MENU_LABEL_FMT_FRAME
 #: po/tmp/ap_String_Id.h.h:2367
-#, fuzzy
 msgid "Text Box"
-msgstr " Цвет "
+msgstr "Текстовая область"
 
 #. DLG_Lists_PageFolding
 #: po/tmp/ap_String_Id.h.h:2369
-#, fuzzy
 msgid "Text Folding"
-msgstr "&Форматирование"
+msgstr "Сворачивание текста"
 
 #. DLG_FormatFrame_TextWrapping
 #: po/tmp/ap_String_Id.h.h:2371
-#, fuzzy
 msgid "Text Wrapping"
-msgstr "&Форматирование"
+msgstr "Перенос текста"
 
 #. DLG_Options_Label_Both
 #: po/tmp/ap_String_Id.h.h:2373
@@ -5906,6 +5769,8 @@ msgid ""
 "The documents you are trying to merge are unrelated. AbiWord will attempt to "
 "merge them, but the result might be meaningless."
 msgstr ""
+"Документы, которые вы пытаетесь соеденить не связаны. AbiWord попытается"
+"соединить их, но результат может быть бессмысленным."
 
 #. DLG_PageSetup_ErrBigMargins
 #: po/tmp/ap_String_Id.h.h:2377
@@ -5918,6 +5783,8 @@ msgid ""
 "The new user interface language will take effect the next time that you "
 "start the application"
 msgstr ""
+"Установка нового языка пользовательского интерфейса вступит в сили тольк"
+"при следующем запуске приложения"
 
 #. MSG_SpellDone
 #: po/tmp/ap_String_Id.h.h:2381
@@ -5939,9 +5806,8 @@ msgstr "День недели"
 
 #. DLG_FormatTable_Thickness
 #: po/tmp/ap_String_Id.h.h:2387
-#, fuzzy
 msgid "Thickness:"
-msgstr "Строк:"
+msgstr "Толщина:"
 
 #. MSG_AfterRestartNew
 #: po/tmp/ap_String_Id.h.h:2389
@@ -5958,6 +5824,8 @@ msgid ""
 "This document contains revisions which are currently hidden from view. "
 "Please see AbiWord documentation for information on working with revisions."
 msgstr ""
+"Этот документ содержит скрытые версии. Для получения дальнейшей информации"
+"ознакомьтесь с документаций по AbiWord"
 
 #. DLG_Para_PreviewSampleFallback
 #: po/tmp/ap_String_Id.h.h:2393
@@ -6112,9 +5980,8 @@ msgstr "Использовать символы для еврейского ал
 
 #. DLG_Options_Label_UI
 #: po/tmp/ap_String_Id.h.h:2450
-#, fuzzy
 msgid "User Interface"
-msgstr "Выберите язык пользовательского интерфейса:"
+msgstr "Пользовательский интерфейс"
 
 #. DLG_Options_Label_UILang
 #: po/tmp/ap_String_Id.h.h:2452
@@ -6123,15 +5990,13 @@ msgstr "Выберите язык пользовательского интер�
 
 #. DLG_Stylist_UserStyles
 #: po/tmp/ap_String_Id.h.h:2454
-#, fuzzy
 msgid "User defined Styles"
-msgstr "Стили Пользователя"
+msgstr "Стили, определенные пользователем"
 
 #. DLG_Tab_Label_Existing
 #: po/tmp/ap_String_Id.h.h:2456
-#, fuzzy
 msgid "User-defined Tabs"
-msgstr "Стили Пользователя"
+msgstr "Табуляция определенная пользовавателем"
 
 #. DLG_Styles_LBL_UserDefined
 #: po/tmp/ap_String_Id.h.h:2458
@@ -6151,9 +6016,8 @@ msgstr "Вид"
 
 #. MENU_STATUSLINE_TOOLS_HISTORY_SHOW
 #: po/tmp/ap_String_Id.h.h:2464
-#, fuzzy
 msgid "View document history"
-msgstr "Просмотр документа"
+msgstr "Просмотр истории изменений документа"
 
 #. MENU_STATUSLINE_VIEW_FULLSCREEN
 #: po/tmp/ap_String_Id.h.h:2466
@@ -6222,9 +6086,8 @@ msgstr "Обработка текста"
 
 #. DLG_WordCount_Words_No_Notes
 #: po/tmp/ap_String_Id.h.h:2497
-#, fuzzy
 msgid "Words (no footnotes/endnotes):"
-msgstr "Формат сносок и ссылок"
+msgstr "Слов (без сносок/заметок):"
 
 #. DLG_Options_Label_SpellUppercase
 #: po/tmp/ap_String_Id.h.h:2499
@@ -6409,7 +6272,7 @@ msgstr "не известен"
 #. DLG_DocComparison_TestSkipped
 #: po/tmp/xap_String_Id.h.h:27
 msgid "(test skipped)"
-msgstr ""
+msgstr "(текст пропущен)"
 
 #. DLG_NoSaveFile_DirNotExist
 #: po/tmp/xap_String_Id.h.h:29
@@ -6438,6 +6301,8 @@ msgid ""
 "AbiWord cannot fully restore version %d of the document because the version "
 "information is incomplete."
 msgstr ""
+"Невозможно полностью восстановить версию %d документа, потому что"
+"информация о версиях неполна"
 
 #. MSG_HistoryNoRestore
 #: po/tmp/xap_String_Id.h.h:37
@@ -6446,6 +6311,8 @@ msgid ""
 "AbiWord cannot restore version %d of the document because the version "
 "information is missing."
 msgstr ""
+"Не удалось восстановить версию %d документа, потому что информация о "
+"версиях была потеряна"
 
 #. DLG_UP_PrintPreviewTitle
 #: po/tmp/xap_String_Id.h.h:39
@@ -6470,9 +6337,8 @@ msgstr "Африканские"
 
 #. LANG_AK_GH
 #: po/tmp/xap_String_Id.h.h:47
-#, fuzzy
 msgid "Akan"
-msgstr "Африканские"
+msgstr "Акан"
 
 #. LANG_SQ_AL
 #: po/tmp/xap_String_Id.h.h:49
@@ -6546,9 +6412,8 @@ msgstr "Ассами"
 
 #. LANG_AST_ES
 #: po/tmp/xap_String_Id.h.h:81
-#, fuzzy
 msgid "Asturian (Spain)"
-msgstr "Испанский (Испания)"
+msgstr "Астурийский (Испания)"
 
 #. DLG_Options_Label_DirMarkerAfterClosingParenthesis
 #: po/tmp/xap_String_Id.h.h:85
@@ -6557,9 +6422,8 @@ msgstr "Автоустановка отметок направления"
 
 #. DLG_History_Version_AutoRevisioned
 #: po/tmp/xap_String_Id.h.h:87
-#, fuzzy
 msgid "Auto-revision"
-msgstr "Принять &версию"
+msgstr "Автоматически пронумерованная"
 
 #. DLG_FOSA_FileTypeAutoDetect
 #: po/tmp/xap_String_Id.h.h:89
@@ -6568,9 +6432,8 @@ msgstr "Автоопределение типа"
 
 #. MSG_AutoRevision
 #: po/tmp/xap_String_Id.h.h:91
-#, fuzzy
 msgid "Autorevision"
-msgstr "Принять &версию"
+msgstr "Автонумерация версий"
 
 #. DLG_MW_AvailableDocuments
 #: po/tmp/xap_String_Id.h.h:93
@@ -6605,7 +6468,7 @@ msgstr "Беларусский"
 #. LANG_BN_IN
 #: po/tmp/xap_String_Id.h.h:105
 msgid "Bengali"
-msgstr ""
+msgstr "Бенгальский"
 
 #. DLG_UP_BlackWhite
 #: po/tmp/xap_String_Id.h.h:107
@@ -6629,9 +6492,8 @@ msgstr "Бретонский"
 
 #. MSG_BuildingDoc
 #: po/tmp/xap_String_Id.h.h:121
-#, fuzzy
 msgid "Building Document:"
-msgstr "Создание документа..."
+msgstr "Создание документа:"
 
 #. LANG_BG_BG
 #: po/tmp/xap_String_Id.h.h:123
@@ -6735,9 +6597,8 @@ msgstr "Традиционный Китайский, Windows Code Page 950"
 
 #. DLG_LISTDOCS_Heading1
 #: po/tmp/xap_String_Id.h.h:165
-#, fuzzy
 msgid "Choose document from the list:"
-msgstr "Создать новый документ по шаблону"
+msgstr "Выберите документ из списка:"
 
 #. DLG_CLIPART_Title
 #: po/tmp/xap_String_Id.h.h:167
@@ -6766,45 +6627,38 @@ msgstr "В цвете"
 
 #. DLG_Compare
 #: po/tmp/xap_String_Id.h.h:179
-#, fuzzy
 msgid "Compare"
-msgstr "Дата сборки"
+msgstr "Сравнение"
 
 #. DLG_DocComparison_Content
 #: po/tmp/xap_String_Id.h.h:181
-#, fuzzy
 msgid "Content:"
-msgstr "Комментарий"
+msgstr "Содержимое:"
 
 #. STYLE_TOCHEADING1
 #: po/tmp/xap_String_Id.h.h:183
-#, fuzzy
 msgid "Contents 1"
-msgstr "&Содержание"
+msgstr "Содержание 1"
 
 #. STYLE_TOCHEADING2
 #: po/tmp/xap_String_Id.h.h:185
-#, fuzzy
 msgid "Contents 2"
-msgstr "&Содержание"
+msgstr "Содержание 2"
 
 #. STYLE_TOCHEADING3
 #: po/tmp/xap_String_Id.h.h:187
-#, fuzzy
 msgid "Contents 3"
-msgstr "&Содержание"
+msgstr "Содержание 3"
 
 #. STYLE_TOCHEADING4
 #: po/tmp/xap_String_Id.h.h:189
-#, fuzzy
 msgid "Contents 4"
-msgstr "&Содержание"
+msgstr "Содержание 4"
 
 #. STYLE_TOCHEADING
 #: po/tmp/xap_String_Id.h.h:191
-#, fuzzy
 msgid "Contents Header"
-msgstr "Верхний колонтитул"
+msgstr "Заголовок содежания"
 
 #. DLG_UP_Copies
 #: po/tmp/xap_String_Id.h.h:193
@@ -6839,15 +6693,13 @@ msgstr "Невозможно загрузить словарь для %s язы�
 
 #. DLG_History_Version_Started
 #: po/tmp/xap_String_Id.h.h:205
-#, fuzzy
 msgid "Created"
-msgstr "Создатель"
+msgstr "Создано"
 
 #. DLG_History_Created
 #: po/tmp/xap_String_Id.h.h:207
-#, fuzzy
 msgid "Created:"
-msgstr "Создатель"
+msgstr "Создано:"
 
 #. LANG_HR
 #: po/tmp/xap_String_Id.h.h:209
@@ -6906,19 +6758,18 @@ msgstr "Декларировать как XML (version 1.0)"
 
 #. DLG_ULANG_DefaultLangLabel
 #: po/tmp/xap_String_Id.h.h:233
-#, fuzzy
 msgid "Default language: "
-msgstr "Выберите язык:"
+msgstr "Язык по умолчанию: "
 
 #. DLG_Image_Placement
 #: po/tmp/xap_String_Id.h.h:235
 msgid "Define Image Placement"
-msgstr ""
+msgstr "Определить разположение изображения"
 
 #. DLG_Image_TextWrapping
 #: po/tmp/xap_String_Id.h.h:237
 msgid "Define Text Wrapping"
-msgstr ""
+msgstr "Определить обтекание текста"
 
 #. DLG_Remove_Icon
 #: po/tmp/xap_String_Id.h.h:246
@@ -6927,33 +6778,28 @@ msgstr "Вы действительно хотите удалить этот з�
 
 #. DLG_DocComparison_WindowLabel
 #: po/tmp/xap_String_Id.h.h:248
-#, fuzzy
 msgid "Document Comparison"
-msgstr "Свойства документа"
+msgstr "Сравнение документов"
 
 #. DLG_History_DocumentDetails
 #: po/tmp/xap_String_Id.h.h:250
-#, fuzzy
 msgid "Document Details"
 msgstr "Свойства документа"
 
 #. DLG_History_WindowLabel
 #: po/tmp/xap_String_Id.h.h:252
-#, fuzzy
 msgid "Document History"
-msgstr "Д&окументы"
+msgstr "История версий документа"
 
 #. DLG_History_Path
 #: po/tmp/xap_String_Id.h.h:254
-#, fuzzy
 msgid "Document name:"
-msgstr "Документ"
+msgstr "Имя документа:"
 
 #. DLG_DocComparison_DocsCompared
 #: po/tmp/xap_String_Id.h.h:256
-#, fuzzy
 msgid "Documents compared"
-msgstr "Свойства документа"
+msgstr "Документы сравнены"
 
 #. LANG_NL_NL
 #: po/tmp/xap_String_Id.h.h:258
@@ -6963,7 +6809,7 @@ msgstr "Голландский"
 #. DLG_History_EditTime
 #: po/tmp/xap_String_Id.h.h:260
 msgid "Editing time:"
-msgstr ""
+msgstr "Время редактирования:"
 
 #. DLG_UFS_EffectsFrameLabel
 #: po/tmp/xap_String_Id.h.h:262
@@ -7213,9 +7059,8 @@ msgstr "Гауза (Нигерия)"
 
 #. LANG_HAW_US
 #: po/tmp/xap_String_Id.h.h:369
-#, fuzzy
 msgid "Hawaiian"
-msgstr "Гальский"
+msgstr "Гавайский"
 
 #. STYLE_HEADING1
 #: po/tmp/xap_String_Id.h.h:371
@@ -7234,9 +7079,8 @@ msgstr "Заголовок 3"
 
 #. STYLE_HEADING4
 #: po/tmp/xap_String_Id.h.h:377
-#, fuzzy
 msgid "Heading 4"
-msgstr "Заголовок 3"
+msgstr "Заголовок 4"
 
 #. LANG_HE_IL
 #: po/tmp/xap_String_Id.h.h:381
@@ -7301,7 +7145,7 @@ msgstr "Исландский, Macintosh"
 #. DLG_History_Id
 #: po/tmp/xap_String_Id.h.h:405
 msgid "Identifier:"
-msgstr ""
+msgstr "Идентификатор:"
 
 #. DLG_Image_Title
 #: po/tmp/xap_String_Id.h.h:407
@@ -7311,12 +7155,12 @@ msgstr "Свойства изображения"
 #. DLG_Image_WrappedNone
 #: po/tmp/xap_String_Id.h.h:409
 msgid "Image floats above text"
-msgstr ""
+msgstr "Изображения перемещаются по тексту"
 
 #. DLG_Image_InLine
 #: po/tmp/xap_String_Id.h.h:411
 msgid "Image placed in-line (no text wrapping)"
-msgstr ""
+msgstr "Изображения помещаются на строку (нет обтекания текста)"
 
 #. DLG_FOSA_ImportTitle
 #: po/tmp/xap_String_Id.h.h:415
@@ -7340,14 +7184,13 @@ msgstr "Метод ввода"
 
 #. DLG_FOSA_InsertObject
 #: po/tmp/xap_String_Id.h.h:425
-#, fuzzy
 msgid "Insert Embeddable Object"
-msgstr "Вставить таблицу"
+msgstr "Вставить встраеваемый объект"
 
 #. DLG_FOSA_FileInsertObject
 #: po/tmp/xap_String_Id.h.h:427
 msgid "Insert Embeddable Object file:"
-msgstr ""
+msgstr "Вставить файл встраиваемого объекта:"
 
 #. DLG_FOSA_InsertTitle
 #: po/tmp/xap_String_Id.h.h:429
@@ -7356,15 +7199,13 @@ msgstr "Вставить файл"
 
 #. DLG_FOSA_InsertMath
 #: po/tmp/xap_String_Id.h.h:431
-#, fuzzy
 msgid "Insert Math File"
-msgstr "Вставить файл"
+msgstr "Вставить математический файл"
 
 #. DLG_FOSA_FileInsertMath
 #: po/tmp/xap_String_Id.h.h:433
-#, fuzzy
 msgid "Insert MathML file:"
-msgstr "Вставить файл"
+msgstr "Вставить файл формата MathML:"
 
 #. TB_InsertNewTable
 #: po/tmp/xap_String_Id.h.h:435
@@ -7394,7 +7235,7 @@ msgstr "Интерлингва"
 #. LANG_IU_CA
 #: po/tmp/xap_String_Id.h.h:445
 msgid "Inuktitut"
-msgstr ""
+msgstr "Инуктитут"
 
 #. DLG_InvalidPathname
 #: po/tmp/xap_String_Id.h.h:447
@@ -7439,7 +7280,7 @@ msgstr "Японский, Windows Code Page 932"
 #. LANG_KN_IN
 #: po/tmp/xap_String_Id.h.h:465
 msgid "Kannada"
-msgstr ""
+msgstr "Каннада"
 
 #. LANG_KO_KR
 #: po/tmp/xap_String_Id.h.h:467
@@ -7468,20 +7309,18 @@ msgstr "Корейский, Windows Code Page 949"
 
 #. LANG_KU
 #: po/tmp/xap_String_Id.h.h:477
-#, fuzzy
 msgid "Kurdish"
-msgstr "Турецкий"
+msgstr "Курдский"
 
 #. LANG_LO_LA
 #: po/tmp/xap_String_Id.h.h:479
-#, fuzzy
 msgid "Lao"
-msgstr "Макет"
+msgstr "Лаосский"
 
 #. DLG_History_LastSaved
 #: po/tmp/xap_String_Id.h.h:481
 msgid "Last saved:"
-msgstr ""
+msgstr "Последний раз сохранено:"
 
 #. LANG_LA_IT
 #: po/tmp/xap_String_Id.h.h:483
@@ -7505,20 +7344,18 @@ msgstr "Македонский"
 
 #. DLG_ULANG_DefaultLangChkbox
 #: po/tmp/xap_String_Id.h.h:495
-#, fuzzy
 msgid "Make default for document"
-msgstr "Поместить в конец документа"
+msgstr "Сделать значением по умолчанию"
 
 #. LANG_MI_NZ
 #: po/tmp/xap_String_Id.h.h:497
-#, fuzzy
 msgid "Maori"
-msgstr "&Поля"
+msgstr "Маори"
 
 #. LANG_MR_IN
 #: po/tmp/xap_String_Id.h.h:499
 msgid "Marathi"
-msgstr ""
+msgstr "Маратхи"
 
 #. LANG_MH_MH
 #: po/tmp/xap_String_Id.h.h:501
@@ -7532,15 +7369,13 @@ msgstr "Язык Маршалловых Островов (Науру)"
 
 #. DLG_Merge
 #: po/tmp/xap_String_Id.h.h:505
-#, fuzzy
 msgid "Merge"
-msgstr "Включить слева"
+msgstr "Включить"
 
 #. LANG_MN_MN
 #: po/tmp/xap_String_Id.h.h:507
-#, fuzzy
 msgid "Mongolian"
-msgstr "Македонский"
+msgstr "Монгольский"
 
 #. DLG_PLUGIN_MANAGER_NAME
 #: po/tmp/xap_String_Id.h.h:509
@@ -7619,9 +7454,8 @@ msgstr "Открыть как:"
 
 #. DLG_LISTDOCS_Title
 #: po/tmp/xap_String_Id.h.h:541
-#, fuzzy
 msgid "Opened Documents"
-msgstr "Новый документ"
+msgstr "Открытый документ"
 
 #. TB_Zoom_Percent
 #: po/tmp/xap_String_Id.h.h:543
@@ -7681,17 +7515,17 @@ msgstr "Португальский (Португалия)"
 #. DLG_Image_PlaceColumn
 #: po/tmp/xap_String_Id.h.h:567
 msgid "Position relative to its Column"
-msgstr ""
+msgstr "Позиция относительно столбца"
 
 #. DLG_Image_PlacePage
 #: po/tmp/xap_String_Id.h.h:569
 msgid "Position relative to its Page"
-msgstr ""
+msgstr "Позиция относительно начала страницы"
 
 #. DLG_Image_PlaceParagraph
 #: po/tmp/xap_String_Id.h.h:571
 msgid "Position relative to nearest paragraph"
-msgstr ""
+msgstr "Позиция относительно ближайшего абзаца"
 
 #. DLG_Image_Aspect
 #: po/tmp/xap_String_Id.h.h:573
@@ -7736,17 +7570,17 @@ msgstr "Команда печати: "
 #. LANG_PA_IN
 #: po/tmp/xap_String_Id.h.h:594
 msgid "Punjabi (Gurmukhi)"
-msgstr ""
+msgstr "Пунаби (Гурмикхи)"
 
 #. LANG_PA_PK
 #: po/tmp/xap_String_Id.h.h:596
 msgid "Punjabi (Shahmukhi)"
-msgstr ""
+msgstr "Пунаби (Шахмикхи)"
 
 #. LANG_QU_BO
 #: po/tmp/xap_String_Id.h.h:598
 msgid "Quechua"
-msgstr ""
+msgstr "Куечуя"
 
 #. DLG_UFS_StyleRegular
 #: po/tmp/xap_String_Id.h.h:600
@@ -7755,15 +7589,13 @@ msgstr "Обычное"
 
 #. DLG_DocComparison_Relationship
 #: po/tmp/xap_String_Id.h.h:602
-#, fuzzy
 msgid "Relationship:"
 msgstr "Отношение:"
 
 #. DLG_Restore
 #: po/tmp/xap_String_Id.h.h:604
-#, fuzzy
 msgid "Restore"
-msgstr "&Сброс"
+msgstr "Восстановить"
 
 #. DLG_HTMLOPT_ExpRestore
 #: po/tmp/xap_String_Id.h.h:606
@@ -7772,9 +7604,8 @@ msgstr "Восстановить параметры"
 
 #. DLG_DocComparison_Results
 #: po/tmp/xap_String_Id.h.h:608
-#, fuzzy
 msgid "Results"
-msgstr "&По умолчанию"
+msgstr "Результаты"
 
 #. LANG_RO_RO
 #: po/tmp/xap_String_Id.h.h:610
@@ -7848,15 +7679,13 @@ msgstr "Сербский"
 
 #. DLG_Image_ImageDesc
 #: po/tmp/xap_String_Id.h.h:642
-#, fuzzy
 msgid "Set Image Name"
-msgstr "Сохранить &изображение как"
+msgstr "Установить имя изображения"
 
 #. DLG_Image_ImageSize
 #: po/tmp/xap_String_Id.h.h:644
-#, fuzzy
 msgid "Set Image Size"
-msgstr "Размер страницы по умолчанию"
+msgstr "Установить размер изображение"
 
 #. DLG_ULANG_LangTitle
 #: po/tmp/xap_String_Id.h.h:646
@@ -7896,18 +7725,17 @@ msgstr "Испанский (Испания)"
 #. DLG_Image_SquareWrap
 #: po/tmp/xap_String_Id.h.h:664
 msgid "Square text wrapping"
-msgstr ""
+msgstr "Квадратное обтекание текста"
 
 #. DLG_DocComparison_Styles
 #: po/tmp/xap_String_Id.h.h:672
-#, fuzzy
 msgid "Styles:"
-msgstr "Стиль:"
+msgstr "Стили:"
 
 #. LANG_SW
 #: po/tmp/xap_String_Id.h.h:678
 msgid "Swahili"
-msgstr ""
+msgstr "Суахили"
 
 #. LANG_SV_SE
 #: po/tmp/xap_String_Id.h.h:680
@@ -7916,31 +7744,28 @@ msgstr "Шведский"
 
 #. TB_Font_Symbol
 #: po/tmp/xap_String_Id.h.h:682
-#, fuzzy
 msgid "Symbols"
-msgstr "Символ"
+msgstr "Символы"
 
 #. LANG_SYR
 #: po/tmp/xap_String_Id.h.h:684
-#, fuzzy
 msgid "Syriac"
-msgstr "Сербский"
+msgstr "Сирийский"
 
 #. LANG_TL_PH
 #: po/tmp/xap_String_Id.h.h:688
 msgid "Tagalog"
-msgstr ""
+msgstr "Тагалогский"
 
 #. LANG_TA_IN
 #: po/tmp/xap_String_Id.h.h:690
-#, fuzzy
 msgid "Tamil"
-msgstr "Тайский"
+msgstr "Тамилский"
 
 #. LANG_TE_IN
 #: po/tmp/xap_String_Id.h.h:692
 msgid "Telugu"
-msgstr ""
+msgstr "Телугу"
 
 #. DLG_UFS_ColorTab
 #: po/tmp/xap_String_Id.h.h:694
@@ -7950,17 +7775,17 @@ msgstr " Цвет "
 #. DLG_Image_WrappedBoth
 #: po/tmp/xap_String_Id.h.h:696
 msgid "Text wrapped on both sides of the Image"
-msgstr ""
+msgstr "Текст обтекает изображение с двух сторон"
 
 #. DLG_Image_WrappedLeft
 #: po/tmp/xap_String_Id.h.h:698
 msgid "Text wrapped to the Left of the Image"
-msgstr ""
+msgstr "Текст обтекает изображение слева"
 
 #. DLG_Image_WrappedRight
 #: po/tmp/xap_String_Id.h.h:700
 msgid "Text wrapped to the Right of the Image"
-msgstr ""
+msgstr "Текст обтекает изображение справа"
 
 #. LANG_TH_TH
 #: po/tmp/xap_String_Id.h.h:702
@@ -7995,6 +7820,8 @@ msgid ""
 "The nearest version that can be restored fully is %d. Would you like to "
 "restore this version instead? To partially restore version %d press No."
 msgstr ""
+"%d - последняя версия, которая может быть полностью восстановлена. Восстановить"
+"эту версию? Для того, чтобы частично восстановить версию %d нажмите \"Отмена\""
 
 #. DLG_UP_InvalidPrintString
 #: po/tmp/xap_String_Id.h.h:714
@@ -8004,22 +7831,22 @@ msgstr "Команда печати некорректна."
 #. MSG_NoUndo
 #: po/tmp/xap_String_Id.h.h:716
 msgid "This operation cannot be undone. Are you sure you want to proceed?"
-msgstr ""
+msgstr "Эта операция не может быть отменена. Продолжить в любом случае?"
 
 #. DLG_Image_TightWrap
 #: po/tmp/xap_String_Id.h.h:720
 msgid "Tight text wrapping"
-msgstr ""
+msgstr "Аккуратный перенос текста"
 
 #. MSG_HistoryPartRestore3
 #: po/tmp/xap_String_Id.h.h:724
 msgid "To continue anyway, press OK."
-msgstr ""
+msgstr "Для продолжения нажмите \"Да\""
 
 #. MSG_HistoryPartRestore4
 #: po/tmp/xap_String_Id.h.h:726
 msgid "To quit the restoration attempt, press Cancel."
-msgstr ""
+msgstr "Для того, чтобы закончить попытку восстановления, нажмите \"Отмена\""
 
 #. LANG_TR_TR
 #: po/tmp/xap_String_Id.h.h:732
@@ -8044,7 +7871,7 @@ msgstr "Турецкий, Windows Code Page 1254"
 #. DLG_Image_WrapType
 #: po/tmp/xap_String_Id.h.h:740
 msgid "Type of text wrapping"
-msgstr ""
+msgstr "Тип переноса текста"
 
 #. ENC_WEST_ASCII
 #: po/tmp/xap_String_Id.h.h:742
@@ -8155,13 +7982,12 @@ msgstr "Урду"
 #. LANG_UZ_UZ
 #: po/tmp/xap_String_Id.h.h:790
 msgid "Uzbek"
-msgstr ""
+msgstr "Узбекский"
 
 #. DLG_History_List_Title
 #: po/tmp/xap_String_Id.h.h:794
-#, fuzzy
 msgid "Version history"
-msgstr "Версия"
+msgstr "История изменений"
 
 #. DLG_PLUGIN_MANAGER_VERSION
 #. DLG_History_Version
@@ -8206,15 +8032,13 @@ msgstr "Уэльский"
 
 #. ENC_US_DOS
 #: po/tmp/xap_String_Id.h.h:813
-#, fuzzy
 msgid "Western European, DOS/Windows Code Page 437"
-msgstr "Западно-европейский, Windows Code Page 1252"
+msgstr "Западно-европейский, DOS/Windows Code Page 437"
 
 #. ENC_MLNG_DOS
 #: po/tmp/xap_String_Id.h.h:815
-#, fuzzy
 msgid "Western European, DOS/Windows Code Page 850"
-msgstr "Западно-европейский, Windows Code Page 1252"
+msgstr "Западно-европейский, DOS/Windows Code Page 850"
 
 #. ENC_WEST_HP
 #: po/tmp/xap_String_Id.h.h:817
@@ -8268,9 +8092,9 @@ msgstr "Идиш"
 
 #. MSG_HistoryConfirmSave
 #: po/tmp/xap_String_Id.h.h:837
-#, fuzzy, c-format
+#, c-format
 msgid "You have to save changes to document %s before proceeding. Save now?"
-msgstr "Сохранить изменения документа %s перед закрытием?"
+msgstr "Необходимо сохранить изменения документа %s перед обработкой. Сохранить сейчас?"
 
 #. DLG_Zoom_RadioFrameCaption
 #: po/tmp/xap_String_Id.h.h:841
@@ -8295,24 +8119,24 @@ msgstr "см"
 #. DLG_DocComparison_Different
 #: po/tmp/xap_String_Id.h.h:849
 msgid "different"
-msgstr ""
+msgstr "различные"
 
 #. DLG_DocComparison_DivergingPos
 #: po/tmp/xap_String_Id.h.h:851
 #, c-format
 msgid "diverging after document position %d"
-msgstr ""
+msgstr "Расходимость после позиции %d"
 
 #. DLG_DocComparison_Diverging
 #: po/tmp/xap_String_Id.h.h:853
 #, c-format
 msgid "diverging after version %d of %s"
-msgstr ""
+msgstr "Расходимость после версии %d документа %s"
 
 #. DLG_DocComparison_Identical
 #: po/tmp/xap_String_Id.h.h:855
 msgid "identical"
-msgstr ""
+msgstr "Идентичные"
 
 #. DLG_Unit_inch
 #: po/tmp/xap_String_Id.h.h:857
@@ -8337,246 +8161,10 @@ msgstr "points"
 #. DLG_DocComparison_Siblings
 #: po/tmp/xap_String_Id.h.h:865
 msgid "siblings"
-msgstr ""
+msgstr "потомки"
 
 #. DLG_DocComparison_Unrelated
 #: po/tmp/xap_String_Id.h.h:867
 msgid "unrelated"
-msgstr ""
+msgstr "несвязанные"
 
-#~ msgid "&As web page"
-#~ msgstr "&Как веб-страницу"
-
-#~ msgid "&Autotext"
-#~ msgstr "&Автотекст"
-
-#~ msgid "&Formatting"
-#~ msgstr "&Форматирование"
-
-#~ msgid "&Insert File"
-#~ msgstr "&Файл"
-
-#~ msgid "ATTN:"
-#~ msgstr "ВНИМАНИЕ:"
-
-#~ msgid "About &GNU Free Software"
-#~ msgstr "О &Свободном программном обеспечении"
-
-#~ msgid "About &Open Source"
-#~ msgstr "О &Движении за открытость исходного кода"
-
-#~ msgid "About the GNU project"
-#~ msgstr "О проекте GNU"
-
-#~ msgid "Attention:"
-#~ msgstr "Внимание:"
-
-#~ msgid "BCC:"
-#~ msgstr "Слепая копия:"
-
-#~ msgid "Back&ground"
-#~ msgstr "Фон"
-
-#~ msgid "Best regards,"
-#~ msgstr "Всего наилучшего,"
-
-#~ msgid "Best wishes,"
-#~ msgstr "Наилучшие пожелания,"
-
-#~ msgid "CC:"
-#~ msgstr "Копия:"
-
-#~ msgid "CERTIFIED MAIL"
-#~ msgstr "СЕРТИФИЦИРОВАННАЯ ПОЧТА"
-
-#~ msgid "CONFIDENTIAL"
-#~ msgstr "СЕКРЕТНО"
-
-#~ msgid "Check &Version"
-#~ msgstr "&Версия"
-
-#~ msgid "Closing:"
-#~ msgstr "Закрывается:"
-
-#~ msgid "Cordially,"
-#~ msgstr "От всего сердца,"
-
-#~ msgid "Dear Mom and Dad,"
-#~ msgstr "Дорогие Мама и Папа,"
-
-#~ msgid "Dear Sir or Madam:"
-#~ msgstr "Здравствуйте!"
-
-#~ msgid "Display information about Open Source"
-#~ msgstr "Показать информацию об Open Source"
-
-#~ msgid "Display program version number"
-#~ msgstr "Показать версию программы"
-
-#~ msgid "Email:"
-#~ msgstr "Почта:"
-
-#~ msgid "From:"
-#~ msgstr "От:"
-
-#~ msgid "Fwd:"
-#~ msgstr "Переслано:"
-
-#~ msgid "In reply to:"
-#~ msgstr "В ответ на:"
-
-#~ msgid "Insert Footer"
-#~ msgstr "Нижний колонтитул"
-
-#~ msgid "Internet and &file addresses"
-#~ msgstr "Пропускать адреса интернета и имена файлов"
-
-#~ msgid "Ladies and Gentlemen:"
-#~ msgstr "Леди и Джентельмены"
-
-#~ msgid "Love,"
-#~ msgstr "Люблю,"
-
-#~ msgid "Mail Instructions:"
-#~ msgstr "Инструкции почтой:"
-
-#~ msgid "PERSONAL"
-#~ msgstr "ЛИЧНОЕ"
-
-#~ msgid "RE:"
-#~ msgstr "На:"
-
-#~ msgid "REGISTERED MAIL"
-#~ msgstr "ЗАРЕГИСТРИРОВАННАЯ ПОЧТА"
-
-#~ msgid "Reference:"
-#~ msgstr "Ссылка:"
-
-#~ msgid "Regards,"
-#~ msgstr "С уважением,"
-
-#~ msgid "Respectfully yours,"
-#~ msgstr "С уважением,"
-
-#~ msgid "Respectfully,"
-#~ msgstr "Благодарю,"
-
-#~ msgid "SPECIAL DELIVERY"
-#~ msgstr "СПЕЦИАЛЬНАЯ ДОСТАВКА"
-
-#~ msgid "Save visual glyph shapes"
-#~ msgstr "Сохранить видимое затенение"
-
-#~ msgid "Show or hide the extra toolbar"
-#~ msgstr "Показать/спрятать дополнительную панель"
-
-#~ msgid "Show or hide the formatting toolbar"
-#~ msgstr "Показать/спрятать панель форматирования"
-
-#~ msgid "Show or hide the standard toolbar"
-#~ msgstr "Показать/спрятать стандартную панель"
-
-#~ msgid "Sincerely yours,"
-#~ msgstr "Искренне Ваш(а),"
-
-#~ msgid "Take care,"
-#~ msgstr "Берегите себя,"
-
-#~ msgid "Thank you,"
-#~ msgstr "Спасибо Вам,"
-
-#~ msgid "Thanks,"
-#~ msgstr "Спасибо,"
-
-#~ msgid "To Whom It May Concern:"
-#~ msgstr "Всем кому может быть интересно:"
-
-#~ msgid "To:"
-#~ msgstr "Кому:"
-
-#~ msgid "VIA AIRMAIL"
-#~ msgstr "АВИАПОЧТОЙ"
-
-#~ msgid "VIA FACSIMILE"
-#~ msgstr "ПО ФАКСУ"
-
-#~ msgid "VIA OVERNIGHT MAIL"
-#~ msgstr "НОЧНОЙ ПОЧТОЙ"
-
-#~ msgid "Yours truly,"
-#~ msgstr "Искренне Ваш(а),"
-
-#~ msgid "\tFont   "
-#~ msgstr " Шрифт "
-
-#~ msgid ""
-#~ "Abiword is now downloading %s from:\n"
-#~ "%s"
-#~ msgstr ""
-#~ "Abiword скачивает %s с :\n"
-#~ "%s"
-
-#~ msgid "Downloading file..."
-#~ msgstr "Скачивается файл..."
-
-#~ msgid ""
-#~ "Download failed!\n"
-#~ "Would you like me to try again?\n"
-#~ "If yes, please make sure you are connected to the internet."
-#~ msgstr ""
-#~ "Ошибка загрузки!Вы хотите попробовать еще раз?\n"
-#~ "Если хотите, пожалуйста, проверьте ваше соединение с Internet"
-
-#~ msgid ""
-#~ "I could not find a dictionary for %s.\n"
-#~ "Would you like me to try downloading it from the internet?"
-#~ msgstr ""
-#~ "Невозможно найти словарь для %s\n"
-#~ "Хотите ли Вы скачать словарь из Интернета?"
-
-#~ msgid "I'm sorry. The wanted dictionary is not available for download."
-#~ msgstr "Извините, словарь не доступен"
-
-#~ msgid ""
-#~ "I'm sorry. The wanted dictionary is not available for this release.\n"
-#~ "Please consider upgrading AbiWord."
-#~ msgstr ""
-#~ "Извините. Требуемый словарь не доступен в этой версии. \n"
-#~ "Пожалуйста рассмотрите возможность обновления AbiWord."
-
-#~ msgid ""
-#~ "I'm sorry. This feature is disabled for this release.\n"
-#~ "Please consider upgrading AbiWord."
-#~ msgstr ""
-#~ "Извините, эта возможность отсутствуте в этой версии. \n"
-#~ "Пожалуйста рассмотрите возможность обновления AbiWord."
-
-#~ msgid "I'm sorry. This feature is not available anymore."
-#~ msgstr "Извините, эта возможность болше недоступна."
-
-#~ msgid "New dictionary installation"
-#~ msgstr "Установка нового словаря"
-
-#~ msgid "Sorry! I seem unable to download the dictionary-list."
-#~ msgstr "Извините! Невозможно скачать список словарей."
-
-#~ msgid "Sorry! I seem unable to download the dictionary."
-#~ msgstr "Извините! Невозможно скачать словарь."
-
-#~ msgid "Sorry! I seem unable to install the dictionary."
-#~ msgstr "Извините! Невозможно установить словарь."
-
-#~ msgid ""
-#~ "You seem to have permission to install the dictionary system-wide.\n"
-#~ "Would you like to do that?\n"
-#~ "If yes, I will install the dictionary in %s"
-#~ msgstr ""
-#~ "У вас не хватает прав, чтобы установить словарь в систему. \n"
-#~ "Вы все еще хотите установить словарь?\n"
-#~ "В таком случае, я установлю словарь в %s"
-
-#~ msgid "the dictionary"
-#~ msgstr "словарь"
-
-#~ msgid "the dictionary-list"
-#~ msgstr "список словарей"
