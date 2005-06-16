@@ -57,7 +57,7 @@
 #define AP_CLIPBOARD_IMAGE_WMF                  "image/x-wmf"
 #define AP_CLIPBOARD_IMAGE_SVG                  "image/svg"
 #define AP_CLIPBOARD_IMAGE_SVG_XML              "image/svg+xml"
-#define AP_CLIPBOARD_IMAGE_GOChart              "application/x-goffice-chart"
+#define AP_CLIPBOARD_IMAGE_GOChart              "application/x-goffice-graph"
 
 // Text: cut and paste
 #define AP_CLIPBOARD_TEXT_UTF8_STRING           "UTF8_STRING"
@@ -77,6 +77,7 @@ static const char * htmlszFormatsAccepted[] = {
   0 } ;
 
 static const char * imgszFormatsAccepted[] = {
+  AP_CLIPBOARD_IMAGE_GOChart,
   AP_CLIPBOARD_IMAGE_PNG,
   AP_CLIPBOARD_IMAGE_JPEG,
   AP_CLIPBOARD_IMAGE_TIFF,
@@ -92,7 +93,6 @@ static const char * imgszFormatsAccepted[] = {
   AP_CLIPBOARD_IMAGE_WMF,
   AP_CLIPBOARD_IMAGE_SVG,
   AP_CLIPBOARD_IMAGE_SVG_XML,
-  AP_CLIPBOARD_IMAGE_GOChart,
   0 } ;
 
 AP_UnixClipboard::AP_UnixClipboard(AP_UnixApp * pApp)
