@@ -4,22 +4,22 @@
  * Based on libuuid
  * Copyright (C) 1996, 1997, 1998 Theodore Ts'o.
  *
- * The hash functions use Fowler/Noll/Vo (FNV) public domain algorithm;
+ * The hash functions can be compile to use Fowler/Noll/Vo (FNV) public domain algorithm;
  * see http://www.isthe.com/chongo/tech/comp/fnv/index.html
- * 
+ *
  * This program is free software; you can redistribute it and/or
  * modify it under the terms of the GNU General Public License
  * as published by the Free Software Foundation; either version 2
  * of the License, or (at your option) any later version.
- * 
+ *
  * This program is distributed in the hope that it will be useful,
  * but WITHOUT ANY WARRANTY; without even the implied warranty of
  * MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
  * GNU General Public License for more details.
- * 
+ *
  * You should have received a copy of the GNU General Public License
  * along with this program; if not, write to the Free Software
- * Foundation, Inc., 59 Temple Place - Suite 330, Boston, MA  
+ * Foundation, Inc., 59 Temple Place - Suite 330, Boston, MA
  * 02111-1307, USA.
  */
 
@@ -81,7 +81,7 @@ class ABI_EXPORT UT_UUID
 	   All constructors are protected; instances of UT_UUID will be
 	   created through UT_UUIDGenerator declared below.
 	*/
-	
+
 	/* virtual destructor */
 	virtual ~UT_UUID (){};
 
@@ -91,12 +91,12 @@ class ABI_EXPORT UT_UUID
 	   below) DO NOT modifiy internal state of the class, and return
 	   value of 'true' indicates success.
 	*/
-	
+
 	/* These generate new UUIDs */
 	bool            makeUUID();                // changes internal state
 	bool            makeUUID(UT_UTF8String & out); // does not change internal state !!!
 
-	/* these set m_uuid to given UUID, i.e., force internal state change */ 
+	/* these set m_uuid to given UUID, i.e., force internal state change */
 	bool            setUUID(const UT_UTF8String &s);
 	bool            setUUID(const char *s);
 	bool            setUUID(const struct uuid &u);
@@ -111,8 +111,8 @@ class ABI_EXPORT UT_UUID
 	/* convert binary uuid representaiton to a string */
 	static bool     toStringFromBinary(char * s, UT_uint32 len, const struct uuid &u);
 
-	/* create FNV hash of the uuid -- use UT_UUIDGenerator::getUUID*()
-	   instead of these; it provides collision correction*/
+	/* create hash of the uuid -- if all you need is the hash, use
+	   UT_UUIDGenerator::getUUID*() instead of these; it provides collision correction */
 	UT_uint32       hash32() const;
 	UT_uint64       hash64() const;
 
@@ -122,12 +122,12 @@ class ABI_EXPORT UT_UUID
 
 	/* these retrieve various information from UUID; internal and
 	   external variants */
-	time_t          getTime() const;
+	time_t          getTime() const; // NB: time_t has only 1s granularity !!!
 	UT_sint32       getType() const;
 	UT_UUIDVariant  getVariant() const;
 
 	bool            resetTime(); // sets the time of UUID to now
-	
+
 
 	/* NB: these are operators over the UUID space, not temporal
 	   operators !!! */
@@ -137,7 +137,7 @@ class ABI_EXPORT UT_UUID
 	bool            operator > (const UT_UUID &u) const;
 
 	UT_UUID &       operator = (const UT_UUID &u);
-	
+
 	/* temporal comparisons */
 	bool            isOlder(const UT_UUID &u) const;
 	bool            isYounger(const UT_UUID &u) const;
@@ -151,9 +151,9 @@ class ABI_EXPORT UT_UUID
 
   protected:
 	friend class UT_UUIDGenerator;
-	
+
 	/* various protected constructors */
-	
+
 	UT_UUID(); // constructs NULL uuid; subsequent call to makeUUID() needed to initialise
 	UT_UUID(const UT_UTF8String &s); // initialises from string
 	UT_UUID(const char *s);      // initialises from string
@@ -163,21 +163,24 @@ class ABI_EXPORT UT_UUID
 	/* the following function can be ovewritten when a better source
 	   of randomness than UT_rand() is available on given platform
 	   (see ut_Win32Uuid.h/cpp for an example) */
-	virtual bool    _getRandomBytes(void *buf, int nbytes);
-	
+	virtual bool    _getRandomBytes(void *buf, int nbytes) const;
+
   private:
 	bool            _parse(const char * in, struct uuid &u) const;
-	
+
 	bool            _makeUUID(struct uuid & u);
 	bool            _toString(const struct uuid &uu, UT_UTF8String & s) const;
 
-	time_t          _getTime(const struct uuid & uu) const;
-	UT_sint32       _getType(const struct uuid &uu) const;
-	UT_UUIDVariant  _getVariant(const struct uuid &uu) const;
-	
-	bool            _getClock(UT_uint32 &iHigh, UT_uint32 &iLow, UT_uint16 &iSeq);
+	// these three functions could be made public, but I think it better not to
+	// encourage operations on the struct -- create an instance of UT_UUID if you need to
+	// do any operations with it
+	static time_t         _getTime(const struct uuid & uu);//NB: time_t has only 1s granularity !!!
+	static UT_sint32      _getType(const struct uuid &uu);
+	static UT_UUIDVariant _getVariant(const struct uuid &uu);
 
-  private:	
+	bool           _getClock(UT_uint32 &iHigh, UT_uint32 &iLow, UT_uint16 &iSeq) const;
+
+  private:
 	uuid                   m_uuid;
 	bool                   m_bIsValid;
 	static bool            s_bInitDone;
@@ -187,7 +190,7 @@ class ABI_EXPORT UT_UUID
 
 /*
     This class mediates creation of UT_UUID instances.
-    
+
     We create an instance of UT_UUIDGeneratr (or derived) class in
     XAP_App() and have XAP_App::getUUIDGenerator() to gain access to
     it.  This allows us to create platform specific instances in place
@@ -204,7 +207,7 @@ class ABI_EXPORT UT_UUIDGenerator
 		__test();
 #endif
 	};
-	
+
 	virtual ~UT_UUIDGenerator(){if(m_pUUID) delete m_pUUID;};
 
 	// because the default constructor creates NULL uuid, we also need
@@ -223,7 +226,7 @@ class ABI_EXPORT UT_UUIDGenerator
   public:
 void	                __test();
 #endif
-	
+
   private:
 
 	UT_UUID * m_pUUID;

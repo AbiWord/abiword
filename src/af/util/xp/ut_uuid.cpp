@@ -254,7 +254,7 @@ time_t UT_UUID::getTime() const
 	return _getTime(m_uuid);
 }
 
-time_t UT_UUID::_getTime(const struct uuid & uuid) const
+time_t UT_UUID::_getTime(const struct uuid & uuid)
 {
 	UT_uint32 iHigh;
     UT_uint64 iClockReg;
@@ -279,7 +279,7 @@ UT_sint32 UT_UUID::getType() const
 	return _getType(m_uuid);
 }
 
-UT_sint32 UT_UUID::_getType(const struct uuid &uuid) const
+UT_sint32 UT_UUID::_getType(const struct uuid &uuid)
 {
     return ((uuid.time_high_and_version >> 12) & 0xF);
 }
@@ -294,7 +294,7 @@ UT_UUIDVariant UT_UUID::getVariant() const
 	return _getVariant(m_uuid);
 }
 
-UT_UUIDVariant UT_UUID::_getVariant(const struct uuid &uuid) const
+UT_UUIDVariant UT_UUID::_getVariant(const struct uuid &uuid)
 {
 	
     UT_sint32 var = uuid.clock_seq;
@@ -311,7 +311,7 @@ UT_UUIDVariant UT_UUID::_getVariant(const struct uuid &uuid) const
 /*!
     Generate a series of random bytes. 
  */
-bool UT_UUID::_getRandomBytes(void *buf, UT_sint32 nbytes)
+bool UT_UUID::_getRandomBytes(void *buf, UT_sint32 nbytes) const
 {
     UT_sint32 i;
     unsigned char *cp = (unsigned char *) buf;
@@ -329,7 +329,7 @@ bool UT_UUID::_getRandomBytes(void *buf, UT_sint32 nbytes)
 /* Assume that the gettimeofday() has microsecond granularity */
 #define MAX_ADJUSTMENT 10
 
-bool UT_UUID::_getClock(UT_uint32 &iHigh, UT_uint32 &iLow, UT_uint16 &iSeq)
+bool UT_UUID::_getClock(UT_uint32 &iHigh, UT_uint32 &iLow, UT_uint16 &iSeq) const
 {
     static UT_sint32          iAdjustment = 0;
     static struct timeval     last = {0, 0};
