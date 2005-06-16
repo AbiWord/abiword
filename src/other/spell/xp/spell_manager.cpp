@@ -104,8 +104,12 @@ SpellChecker::SpellCheckResult SpellChecker::checkWord(const UT_UCSChar* word, s
 		if(iWordCount >= iMaxWords - 1)
 			break;
 	}
+
+	// compute the length of the last word
+	iWordLengths[iWordCount] = len - (pWords[iWordCount] - word);
 	
-	for(i = 0; i < iWordCount; ++i)
+	// NB iWordCount is really 'word count' - 1 after the loop above, hence the <=
+	for(i = 0; i <= iWordCount; ++i)
 	{
 		ret = _checkWord(pWords[i], iWordLengths[i]);
 		if(ret == SpellChecker::LOOKUP_FAILED)
