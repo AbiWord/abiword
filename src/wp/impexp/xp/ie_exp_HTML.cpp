@@ -384,6 +384,7 @@ static char * s_removeWhiteSpace (const char * text, UT_UTF8String & utf8str,
 #define BT_BULLETLIST	8
 
 class s_HTML_Listener;
+class s_HTML_HdrFtr_Listener;
 
 bool m_bSecondPass = false;
 bool m_bInAFENote = false;
@@ -471,6 +472,7 @@ public:
 
 class s_HTML_Listener : public PL_Listener
 {
+	friend class s_HTML_HdrFtr_Listener;
 public:
 	s_HTML_Listener (PD_Document * pDocument, IE_Exp_HTML * pie, bool bClipBoard,
 					 bool bTemplateBody, const XAP_Exp_HTMLOptions * exp_opt,
@@ -487,8 +489,7 @@ public:
 						   const PX_ChangeRecord * pcr,
 						   PL_StruxFmtHandle * psfh);
 
-	//See note in _writeDocument
-	//bool 	startOfDocument ();
+	//bool 	startOfDocument ();  // Unused
 	bool 	endOfDocument ();
 
 	bool	change (PL_StruxFmtHandle sfh,
@@ -511,7 +512,7 @@ private:
 	bool 	_openStyleSheet (UT_UTF8String & css_path);
 	void 	_closeStyleSheet ();
 	void	_outputStyles (const PP_AttrProp * pAP);
-	void	_openSection (PT_AttrPropIndex api);
+	void	_openSection (PT_AttrPropIndex api, UT_uint16 iSectionSpecialType);
 	void	_closeSection (void);
 
 	void	_openTag (PT_AttrPropIndex api, PL_StruxDocHandle sdh);
@@ -533,7 +534,9 @@ private:
 	void	_outputData (const UT_UCSChar * p, UT_uint32 length);
 	bool	_inherits (const char * style, const char * from);
 	void	_storeStyles (void);
-	
+ 	void	_populateHeaderStyle ();
+ 	void	_populateFooterStyle ();
+
 	void	_writeImage (const UT_ByteBuf * pByteBuf,
 						 const UT_String & imagedir, const UT_String & filename);
 	void	_writeImageBase64 (const UT_ByteBuf * pByteBuf);
@@ -580,6 +583,8 @@ private:
 	bool			m_bWroteText;
 	bool			m_bFirstWrite;
 	bool			m_bQuotedPrintable;
+	bool			m_bHaveHeader;
+	bool			m_bHaveFooter;
 
 #ifdef HTML_TABLES_SUPPORTED
 	ie_Table		m_TableHelper;
@@ -630,6 +635,8 @@ public:
 	void			styleOpen (const UT_UTF8String & rule);
 	void			styleClose ();
 	void			styleNameValue (const char * name, const UT_UTF8String & value);
+	void			setHaveHeader();
+	void			setHaveFooter();
 private:
 	void			styleText (const UT_UTF8String & content);
 	void			textTrusted (const UT_UTF8String & text);
@@ -700,6 +707,45 @@ private:
 
 	IE_TOCHelper *  m_toc;
 	int m_heading_count;
+};
+
+class s_HTML_HdrFtr_Listener : public PL_Listener
+{
+	friend class s_HTML_Listener;
+public:
+	s_HTML_HdrFtr_Listener (PD_Document * pDocument, IE_Exp_HTML * pie, PL_Listener * pHTML_Listener);
+
+	~s_HTML_HdrFtr_Listener ();
+
+	bool	populate (PL_StruxFmtHandle sfh,
+					  const PX_ChangeRecord * pcr);
+
+	bool	populateStrux (PL_StruxDocHandle sdh,
+						   const PX_ChangeRecord * pcr,
+						   PL_StruxFmtHandle * psfh);
+
+	//See note in _writeDocument
+	//bool 	startOfDocument ();
+	bool 	endOfDocument ();
+
+	bool	change (PL_StruxFmtHandle sfh,
+					const PX_ChangeRecord * pcr);
+
+	bool	insertStrux (PL_StruxFmtHandle sfh,
+						 const PX_ChangeRecord * pcr,
+						 PL_StruxDocHandle sdh,
+						 PL_ListenerId lid,
+						 void (*pfnBindHandles) (PL_StruxDocHandle sdhNew,
+												 PL_ListenerId lid,
+												 PL_StruxFmtHandle sfhNew));
+
+	bool	signal (UT_uint32 iSignal);
+	void	doHdrFtr(bool bHeader);
+private:
+			PD_DocumentRange * 	m_pHdrDocRange;
+			PD_DocumentRange * 	m_pFtrDocRange;
+			PD_Document 	 *	m_pDocument;
+			PL_Listener 	 *	m_pHTML_Listener;
 };
 
 /*****************************************************************/
@@ -1488,6 +1534,33 @@ void s_HTML_Listener::_closeStyleSheet ()
 	m_fdCSS = 0;
 }
 
+// TODO: Use the styleIndent code to clean up this output
+void s_HTML_Listener::_populateHeaderStyle() {
+	const XML_Char * staticCSSHeaderProps [9] = {"position: relative;","width: 100%;","height: auto;",
+		"top: 0;","bottom: auto;","right: 0;","left: 0;","}",NULL}; // Static properties for headers
+	m_utf8_1 = "#header {"; // Reinitialize the variable, now to deal with the header-identified div
+	m_utf8_1 += MYEOL;	
+	for(unsigned short int propIdx = 0; propIdx < 8; propIdx += 1)
+	{
+		m_utf8_1 += staticCSSHeaderProps[propIdx];
+		m_utf8_1 += MYEOL;
+	}
+	styleText(m_utf8_1);
+}
+// TODO: Use the styleIndent code to clean up this output
+void s_HTML_Listener::_populateFooterStyle() {
+	const XML_Char * staticCSSFooterProps [9] = {"position: relative;","width: 100%;","height: auto;",
+		"top: auto;","bottom: 0;","right: 0;","left: 0;","}",NULL}; // Static properties for footers
+	m_utf8_1 = "#footer {"; // Reinitialize the variable, now to deal with the footer-identified div
+	m_utf8_1 += MYEOL;
+	for(unsigned short int propIdx = 0; propIdx < 8; propIdx += 1)
+	{
+		m_utf8_1 += staticCSSFooterProps[propIdx];
+		m_utf8_1 += MYEOL;
+	}
+	styleText(m_utf8_1);
+}
+
 void s_HTML_Listener::_outputStyles (const PP_AttrProp * pAP)
 {
 	/* some cascading style rules
@@ -1553,31 +1626,32 @@ void s_HTML_Listener::_outputStyles (const PP_AttrProp * pAP)
 		 * 
 		 * (I think @ rules are supposed to precede non-@ rules)
 		 */
-		m_utf8_1 = "@media print";
+		m_utf8_1 = "@media print, projection, embossed";
 		styleOpen (m_utf8_1);
 
 		m_utf8_1 = "body";
 		styleOpen (m_utf8_1);
-
-		szValue = PP_evalProperty ("page-margin-top", 0, 0, pAP, m_pDocument, true);
-		m_utf8_1 = static_cast<const char *>(szValue);
-		styleNameValue ("padding-top", m_utf8_1);
-
-		szValue = PP_evalProperty ("page-margin-bottom", 0, 0, pAP, m_pDocument, true);
-		m_utf8_1 = static_cast<const char *>(szValue);
-		styleNameValue ("padding-bottom", m_utf8_1);
-
-		szValue = PP_evalProperty ("page-margin-left", 0, 0, pAP, m_pDocument, true);
-		m_utf8_1 = static_cast<const char *>(szValue);
-		styleNameValue ("padding-left", m_utf8_1);
-
-		szValue = PP_evalProperty ("page-margin-right", 0, 0, pAP, m_pDocument, true);
-		m_utf8_1 = static_cast<const char *>(szValue);
-		styleNameValue ("padding-right", m_utf8_1);
+		
+		// Set margins for paged media to match those set in AbiWord
+		// TODO: consolidate all places of awml-css21 matching into one UT/PP function
+		const XML_Char * marginProps [10] = {"page-margin-top","padding-top",
+			"page-margin-bottom","padding-bottom",
+			"page-margin-left","padding-left",
+			"page-margin-right","padding-right",
+			NULL, NULL};
+		for (unsigned short int propIdx = 0; propIdx < 8; propIdx += 2)
+		{
+			szValue = PP_evalProperty (marginProps[propIdx], 0, 0, pAP, m_pDocument, true);
+			m_utf8_1 = static_cast<const char *>(szValue);
+			styleNameValue (marginProps[propIdx + 1], m_utf8_1);
+		}
 
 		styleClose (); // end of: body { }
 		styleClose (); // end of: @media print { }
-
+		
+		if(m_bHaveHeader) _populateHeaderStyle();
+		if(m_bHaveFooter) _populateFooterStyle();
+		
 		m_utf8_1 = "body";
 		styleOpen (m_utf8_1);
 
@@ -1689,18 +1763,44 @@ void s_HTML_Listener::startEmbeddedStrux(void)
 	m_bInSection = true;
 }
 
-void s_HTML_Listener::_openSection (PT_AttrPropIndex api)
+void s_HTML_Listener::_openSection (PT_AttrPropIndex api, UT_uint16 iSectionSpecialType)
 {
 	if (m_bFirstWrite) _outputBegin (api);
 
 	if (m_bInSection) _closeSection ();
 
+	const PP_AttrProp* pSectionAP = NULL;
+	m_pDocument->getAttrProp(api, &pSectionAP);
+	
 	m_utf8_1 = "div";
+	
+	switch (iSectionSpecialType)
+	{
+		case 1:
+		{
+			m_utf8_1 += " id=\"header\"";
+			m_bInSection = true;
+			break;
+		}
+		case 2:
+		{
+			m_utf8_1 += " id=\"footer\"";
+			m_bInSection = true;
+			break;
+		}
+		case 3:
+		{
+			m_utf8_1 += " id=\"main\"";
+			break;
+		}
+		default:
+			m_bInSection = true;
+			break;
+	}
+
 	tagOpen (TT_DIV, m_utf8_1);
 	m_dPageWidthInches = m_pDocument->m_docPageSize.Width(DIM_IN);
 
-	const PP_AttrProp* pSectionAP = NULL;
-	m_pDocument->getAttrProp(api, &pSectionAP);
 	const char* pszLeftMargin = NULL;
 	const char* pszRightMargin = NULL;
 	const char* pszTopMargin = NULL;
@@ -1746,7 +1846,6 @@ void s_HTML_Listener::_openSection (PT_AttrPropIndex api)
 		m_dSecBottomMarginInches = 1.0;
 	}
 	
-	m_bInSection = true;
 }
 
 void s_HTML_Listener::_closeSection (void)
@@ -1879,7 +1978,7 @@ void s_HTML_Listener::listPopToDepth (UT_uint32 depth)
 
 void s_HTML_Listener::_openTag (PT_AttrPropIndex api, PL_StruxDocHandle sdh)
 {
-	if (m_bFirstWrite) _openSection (api);
+	if (m_bFirstWrite) _openSection (api, 0);
 
 	if (!m_bInSection) return;
 
@@ -2833,7 +2932,7 @@ void s_HTML_Listener::_fillColWidthsVector(void)
 
 void s_HTML_Listener::_openTable (PT_AttrPropIndex api)
 {
-	if (m_bFirstWrite) _openSection (api);
+	if (m_bFirstWrite) _openSection (api, 0);
 
 	if (!m_bInSection) return;
 
@@ -3367,7 +3466,7 @@ void s_HTML_Listener::_openCell (PT_AttrPropIndex api)
 {
 	m_bCellHasData = false;
 	
-	if (m_bFirstWrite) _openSection (api);
+	if (m_bFirstWrite) _openSection (api, 0);
 
 	if (!m_bInSection) return;
 
@@ -3782,47 +3881,33 @@ void s_HTML_Listener::_openTextBox (PT_AttrPropIndex api)
 	// TODO: { abiprop, cssprop }.  It would still require that the units used for both specs be compatible.
 	//
 	//	TODO: Take care of padding as well.
-	const XML_Char * propNames[10] = {"bot-thickness","border-bottom-width",
+	const XML_Char * propNames[20] = {"bot-thickness","border-bottom-width",
 									"top-thickness","border-top-width",
 									"right-thickness","border-right-width",
 									"left-thickness","border-left-width",
+									"bot-color","border-bottom-color",
+									"top-color","border-top-color",
+									"right-color","border-right-color",
+									"left-color","border-left-color",
+									"background-color","background-color",
 									NULL,NULL}; // [AbiWord property name, CSS21 property name]
-	for(unsigned short int propIdx = 0; propIdx < 8; propIdx += 2)
+	for(unsigned short int propIdx = 0; propIdx < 18; propIdx += 2)
 	{
 		if(pAP->getProperty(propNames[propIdx], tempProp))			// If we successfully retrieve a value (IOW, it's defined)
 		{
 			m_utf8_1 += propNames[propIdx + 1]; // Add the property name of the CSS equivalent
 			m_utf8_1 += ": "; // Don't ask (:
+			if(strstr(propNames[propIdx + 1], "color")) m_utf8_1 += "#"; // AbiWord tends to store colors as hex, which must be prefixed by # in CSS
 			m_utf8_1 += tempProp; // Add the value
-			m_utf8_1 += ";"; // Terminate the property
+			m_utf8_1 += "; "; // Terminate the property
 		}
 	}
-	#if 0
-	pAP->getProperty("bot-thickness", tempProp); // Get the bottom border thickness
-		m_utf8_1 += "border-bottom-width: ";
-		m_utf8_1 += tempProp;
-		m_utf8_1 += ";";
-	pAP->getProperty("top-thickness", tempProp); // Get the bottom border thickness
-		m_utf8_1 += " border-top-width: ";
-		m_utf8_1 += tempProp;
-		m_utf8_1 += ";";
-	pAP->getProperty("right-thickness", tempProp); // Get the bottom border thickness
-		m_utf8_1 += " border-right-width: ";
-		m_utf8_1 += tempProp;
-		m_utf8_1 += ";";
-	pAP->getProperty("left-thickness", tempProp); // Get the bottom border thickness
-		m_utf8_1 += " border-left-width: ";
-		m_utf8_1 += tempProp;
-		m_utf8_1 += ";";
-	#endif
+	
 	//pAP->getProperty("bot-style", tempProp); // Get the bottom border style
 	//<...>
 	// We don't do this right now because we don't support multiple styles right now.
-	// See bug 7935
+	// See bug 7935.  Until we support multiple styles, it is sufficient to set all solid.
 	m_utf8_1 += " border: solid;";
-	
-	//pAP->getProperty("<color>", tempProp); // Get the various borders' colors
-	//<...>
 	
 	// This might need to be updated for textbox (and wrapped-image?) changes that
 	// occured in 2.3. 
@@ -3965,6 +4050,8 @@ s_HTML_Listener::s_HTML_Listener (PD_Document * pDocument, IE_Exp_HTML * pie, bo
 		m_bWroteText(false),
 		m_bFirstWrite(true),
 		m_bQuotedPrintable(false),
+		m_bHaveHeader(false),
+		m_bHaveFooter(false),
 #ifdef HTML_TABLES_SUPPORTED
 		m_TableHelper(pDocument),
 #endif /* HTML_TABLES_SUPPORTED */
@@ -3988,8 +4075,8 @@ s_HTML_Listener::s_HTML_Listener (PD_Document * pDocument, IE_Exp_HTML * pie, bo
 		m_sTitle(title),
 		m_iOutputLen(0),
 		m_bCellHasData(true),  // we are not in cell to start with, set to true
-	m_toc(toc_helper),
-	m_heading_count(0)
+		m_toc(toc_helper),
+		m_heading_count(0)
 {
 	m_StyleTreeBody = m_style_tree->find ("Normal");
 }
@@ -4578,7 +4665,7 @@ bool s_HTML_Listener::populate (PL_StruxFmtHandle /*sfh*/, const PX_ChangeRecord
 	if (!m_bSecondPass || (m_bSecondPass && m_bInAFENote)) {
 		if (m_bFirstWrite && m_bClipBoard)
 		{
-			_openSection (0);
+			_openSection (0, 0);
 			_openTag (0, 0);
 		}
 		if(m_bIgnoreTillEnd || m_bIgnoreTillNextSection)
@@ -4693,7 +4780,7 @@ bool s_HTML_Listener::populateStrux (PL_StruxDocHandle sdh,
 					{ _doEndnotes(); } // Spit out the endnotes that have accumulated for this past section.
 				
 				if (m_bInBlock) _closeTag (); // possible problem with lists??
-				_openSection (api); // Actually start the next section, which is why we're here.
+				_openSection (api, 0); // Actually start the next section, which is why we're here.
 				return true;
 			}
 
@@ -4703,7 +4790,7 @@ bool s_HTML_Listener::populateStrux (PL_StruxDocHandle sdh,
 				{
 					return true;
 				}
-				if (m_bFirstWrite && m_bClipBoard) _openSection (0);
+				if (m_bFirstWrite && m_bClipBoard) _openSection (0, 0);
 				_openTag (api, sdh);
 				return true;
 			}
@@ -4715,7 +4802,7 @@ bool s_HTML_Listener::populateStrux (PL_StruxDocHandle sdh,
 				{
 					return true;
 				}
-				if (m_bFirstWrite && m_bClipBoard) _openSection (0);
+				if (m_bFirstWrite && m_bClipBoard) _openSection (0, 0);
 
 				m_TableHelper.OpenTable(sdh,pcr->getIndexAP()) ;
 				_closeSpan();
@@ -4833,7 +4920,7 @@ bool s_HTML_Listener::populateStrux (PL_StruxDocHandle sdh,
 			// Ignore HdrFtr for now
 		case PTX_SectionHdrFtr:
 			{
-			m_bIgnoreTillNextSection = true; // This is incorrect, HdrFtrs are one-per-document.  I wonder who put this here...
+			m_bIgnoreTillNextSection = true;
 			return true;
 			}
 		case PTX_SectionTOC: 
@@ -4841,17 +4928,10 @@ bool s_HTML_Listener::populateStrux (PL_StruxDocHandle sdh,
 				_emitTOC ();
 				return true;
 			}
-
-		//case PTX_SectionFrame:
-		//m_bIgnoreTillEnd = true;
-		//	return true;
 		case PTX_EndTOC:
 			{
 				return true;
 			}
-		//case PTX_EndFrame:
-		//	m_bIgnoreTillEnd = false;
-		//	return true;
 		default:
 			UT_DEBUGMSG(("WARNING: ie_exp_HTML.cpp: unhandled strux type: %d!\n", pcrx->getStruxType ()));
 			UT_ASSERT(UT_TODO);
@@ -4971,6 +5051,123 @@ bool s_HTML_Listener::signal (UT_uint32 /* iSignal */)
 /*****************************************************************/
 /*****************************************************************/
 
+s_HTML_HdrFtr_Listener::s_HTML_HdrFtr_Listener (PD_Document * pDocument, IE_Exp_HTML * pie, PL_Listener * pHTML_Listener) :
+	m_pHdrDocRange(NULL),
+	m_pFtrDocRange(NULL),
+	m_pDocument(pDocument),
+	m_pHTML_Listener(pHTML_Listener)
+{
+}
+
+s_HTML_HdrFtr_Listener::~s_HTML_HdrFtr_Listener ()
+{
+}
+
+void s_HTML_HdrFtr_Listener::doHdrFtr (bool bHeader)
+{
+	s_HTML_Listener * pHL = (s_HTML_Listener *)m_pHTML_Listener;
+	if(bHeader && pHL->m_bHaveHeader) {
+	pHL->_openSection(0, 1);
+	m_pDocument->tellListenerSubset(m_pHTML_Listener, m_pHdrDocRange);
+	pHL->_closeSection(); }
+	if(!bHeader && pHL->m_bHaveFooter) {
+	pHL->_openSection(0, 2);
+	m_pDocument->tellListenerSubset(m_pHTML_Listener, m_pFtrDocRange);
+	pHL->_closeSection(); }
+	if(bHeader && pHL->m_bHaveHeader) {
+	pHL->_openSection(0, 3); }
+	if(bHeader)
+		DELETEP(m_pHdrDocRange);
+	else
+		DELETEP(m_pFtrDocRange);
+}
+
+bool s_HTML_HdrFtr_Listener::populateStrux (PL_StruxDocHandle sdh,
+					const PX_ChangeRecord * pcr,
+					PL_StruxFmtHandle * psfh)
+{
+	/* Housekeeping and prep */
+	UT_return_val_if_fail (pcr->getType() == PX_ChangeRecord::PXT_InsertStrux, false);
+	*psfh = 0; // we don't need it.
+	const PX_ChangeRecord_Strux * pcrx = static_cast<const PX_ChangeRecord_Strux *>(pcr);
+	PT_AttrPropIndex api = pcr->getIndexAP ();
+	switch (pcrx->getStruxType ())
+	{
+		case PTX_SectionHdrFtr:
+		{
+			const PP_AttrProp * pAP = 0;
+			bool bHaveProp = m_pDocument->getAttrProp (api, &pAP);
+		
+			if (!bHaveProp || (pAP == 0)) return true;
+		
+			const XML_Char * szType = 0;
+			pAP->getAttribute ("type", szType);
+			/* // */
+			
+			PT_DocPosition m_iHdrFtrStartPos = m_pDocument->getStruxPosition(sdh) + 1;
+			PT_DocPosition m_iHdrFtrStopPos = 0;
+			PL_StruxDocHandle * nextSDH = NULL;
+			bool bHaveNextSection = m_pDocument->getNextStruxOfType(sdh, PTX_Section, nextSDH);
+			if (bHaveNextSection)
+			{
+				m_iHdrFtrStopPos  = m_pDocument->getStruxPosition(nextSDH);
+			} else
+			{
+				m_pDocument->getBounds(true, m_iHdrFtrStopPos);
+			}
+			PD_DocumentRange * pDocRange = new PD_DocumentRange(m_pDocument, m_iHdrFtrStartPos, m_iHdrFtrStopPos);
+			if(!UT_strcmp(szType, "header"))
+			{
+				m_pHdrDocRange = pDocRange;
+				s_HTML_Listener * pHL = (s_HTML_Listener *)m_pHTML_Listener;
+				pHL->setHaveHeader();
+			}
+			else
+			{
+				m_pFtrDocRange = pDocRange;
+				s_HTML_Listener * pHL = (s_HTML_Listener *)m_pHTML_Listener;
+				pHL->setHaveFooter();
+			}
+			return true;
+		}
+		default:
+			return true;
+	}
+}
+
+bool s_HTML_HdrFtr_Listener::populate (PL_StruxFmtHandle /*sfh*/, const PX_ChangeRecord * pcr)
+{
+	return true;
+}
+
+bool s_HTML_HdrFtr_Listener::change (PL_StruxFmtHandle /*sfh*/,
+							  const PX_ChangeRecord * /*pcr*/)
+{
+	UT_ASSERT_HARMLESS(0);						// this function is not used.
+	return false;
+}
+
+bool s_HTML_HdrFtr_Listener::insertStrux (PL_StruxFmtHandle /*sfh*/,
+								   const PX_ChangeRecord * /*pcr*/,
+								   PL_StruxDocHandle /*sdh*/,
+								   PL_ListenerId /* lid */,
+								   void (* /*pfnBindHandles*/)(PL_StruxDocHandle /* sdhNew */,
+															   PL_ListenerId /* lid */,
+															   PL_StruxFmtHandle /* sfhNew */))
+{
+	UT_ASSERT_HARMLESS(0);						// this function is not used.
+	return false;
+}
+
+bool s_HTML_HdrFtr_Listener::signal (UT_uint32 /* iSignal */)
+{
+	UT_ASSERT_HARMLESS(UT_SHOULD_NOT_HAPPEN);
+	return false;
+}
+
+/*****************************************************************/
+/*****************************************************************/
+
 s_StyleTree::s_StyleTree (s_StyleTree * parent, const char * style_name, PD_Style * style) :
 	m_pDocument(0),
 	m_parent(parent),
@@ -5073,6 +5270,14 @@ s_StyleTree::s_StyleTree (s_StyleTree * parent, const char * style_name, PD_Styl
 				continue;
 
 		m_map.ins (name, value);
+	}
+	if ((m_style_name == "Heading 1") ||
+		(m_style_name == "Heading 2") ||
+		(m_style_name == "Heading 3") ||
+		(m_style_name == "Section Heading") ||
+		(m_style_name == "Chapter Heading"))
+	{
+		m_map.ins ("page-break-after", "avoid");
 	}
 }
 
@@ -6136,17 +6341,29 @@ UT_Error IE_Exp_HTML::_writeDocument (bool bClipBoard, bool bTemplateBody)
 	PL_Listener * pL = static_cast<PL_Listener *>(pListener);
 
 	bool okay = true;
+
+ 	s_HTML_HdrFtr_Listener * pHdrFtrListener = new s_HTML_HdrFtr_Listener(getDoc(),this, pL);
+ 	if (pHdrFtrListener == 0) return UT_IE_NOMEMORY;
+ 	PL_Listener * pHFL = static_cast<PL_Listener *>(pHdrFtrListener);
+
+ 	if(!bClipBoard)
+ 	{
+ 		okay = getDoc()->tellListener (pHFL);
+ 		pHdrFtrListener->doHdrFtr(1);
+ 	}
+ 	
 	if (bClipBoard)
 	{
 		okay = getDoc()->tellListenerSubset (pL, getDocRange ());
 	}
-	else {
-		//This may benefit from a pass system, since we havent been populated such to store yet.
-		//if(okay) okay = pListener->startOfDocument();
+	else if (okay) {
 		okay = getDoc()->tellListener (pL);
 		if(okay) okay = pListener->endOfDocument();
 	}
 	
+	if(!bClipBoard)
+ 		pHdrFtrListener->doHdrFtr(0); // Emit footer
+ 	
 	DELETEP(pListener);
 	
 	if ((m_error == UT_OK) && (okay == true)) return UT_OK;
@@ -6207,8 +6424,17 @@ UT_uint32 s_HTML_Listener::getNumFootnotes(void)
 	return m_vecFootnotes.getItemCount();
 }
 
-
 UT_uint32 s_HTML_Listener::getNumEndnotes(void)
 {
 	return m_vecEndnotes.getItemCount();
+}
+
+void s_HTML_Listener::setHaveHeader()
+{
+	m_bHaveHeader = true;
+}
+
+void s_HTML_Listener::setHaveFooter()
+{
+	m_bHaveFooter = true;
 }
