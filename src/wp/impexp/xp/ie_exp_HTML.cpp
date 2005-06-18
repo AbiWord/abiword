@@ -3929,8 +3929,8 @@ void s_HTML_Listener::_openTextBox (PT_AttrPropIndex api)
 
 void s_HTML_Listener::_closeTextBox ()
 {
-	m_utf8_1 = "div";
-	tagClose(TT_DIV, m_utf8_1);
+	// We don't need to close the block ourselves because _closeSection does it for us.
+	_closeSection();
 }
 
 void s_HTML_Listener::_outputData (const UT_UCSChar * data, UT_uint32 length)
