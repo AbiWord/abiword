@@ -3869,10 +3869,9 @@ void s_HTML_Listener::_openTextBox (PT_AttrPropIndex api)
 	bool bHaveProp = m_pDocument->getAttrProp (api, &pAP);
 	if (!bHaveProp || (pAP == 0)) return;
 	const XML_Char * tempProp = 0;
-	
-	//tagPop();
+
 	tagPop();
-	tagClose(TT_DIV, "div"); // Close the leading section
+	_closeSection();
 	m_utf8_1 = "div style=\""; // We represent the box with a div (block)
 	
 	// TODO: Enum frame properties (and in any case where props equal their css counterparts) separately
