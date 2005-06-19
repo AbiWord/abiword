@@ -607,6 +607,9 @@ private:
 		};
 
 	/* low-level; these may use m_utf8_0 but not m_utf8_1
+	 * WARNING: Use of purely tag-operative methods (tagOpen,tagClose,etc..) may circumvent
+	 * important checks and preparations done in strux-operative methods (_open*,_close*,etc...)
+	 * and thus these should only be used by likewise low-level code.
 	 */
 	void			tagRaw (UT_UTF8String & content);
 	UT_uint32		tagIndent ();
