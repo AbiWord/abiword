@@ -668,6 +668,13 @@ bool UT_isWordDelimiter(UT_UCSChar currentChar, UT_UCSChar followChar, UT_UCSCha
 	{
 		case 0xb7:	// Catalan middledot, like instal·lació
 			return false;
+		case ',':
+		case '.':
+			if(UT_UCS4_isdigit(followChar) && UT_UCS4_isdigit(prevChar))
+				return false;
+			else
+				return true;
+			
 		case '"': //in some languages this can be in the middle of a word (Hebrew)
 		case '\'':	// we want quotes inside words for contractions
 		case UCS_LDBLQUOTE:    // smart quote, open double /* wjc */
