@@ -19,6 +19,8 @@
 
 #include <gtk/gtk.h>
 
+#include "ap_Features.h"
+
 #include "ut_types.h"
 #include "ut_debugmsg.h"
 #include "ut_assert.h"

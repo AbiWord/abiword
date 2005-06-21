@@ -142,6 +142,7 @@ dnl The defined values are used mostly in includes.mk, but also in
 dnl some other places
 
 ABI_GNOME_QUICK
+ABI_HILDON_QUICK
 ABI_GUCHARMAP
 ABI_XFT_QUICK
 	
@@ -297,6 +298,12 @@ if test "$PLATFORM" = "unix"; then
 		PLATFORM_CFLAGS="$GTK_CFLAGS $GMODULE_CFLAGS $GUCHARMAP_CFLAGS $GNOMEPRINT_CFLAGS -DSUPPORTS_UT_IDLE=1"
 		PLATFORM_LIBS="$GTK_LIBS $GMODULE_LIBS $GUCHARMAP_LIBS $GNOMEPRINT_LIBS"
 	fi
+	
+	if test "$hildon" = "true"; then
+		PLATFORM_CFLAGS="$PLATFORM_CFLAGS $HILDON_CFLAGS"
+		PLATFORM_LIBS="$PLATFORM_LIBS $HILDON_LIBS"
+	fi
+		
 fi
 dnl AUTOCONF SUCKS
 if test "$PLATFORM" = "cocoa"; then
@@ -452,6 +459,7 @@ AC_CONFIG_FILES([GNUmakefile
  src/af/xap/unix/GNUmakefile
  src/af/xap/unix/t/GNUmakefile
  src/af/xap/unix/gnome/GNUmakefile
+ src/af/xap/unix/hildon/GNUmakefile
  src/other/GNUmakefile
  src/other/spell/GNUmakefile
  src/other/spell/xp/GNUmakefile

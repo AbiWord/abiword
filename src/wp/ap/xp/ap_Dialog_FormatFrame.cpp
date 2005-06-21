@@ -23,6 +23,8 @@
 #include <stdio.h>
 #include <string.h>
 
+#include "ap_Features.h"
+
 #include "ut_assert.h"
 #include "ut_string.h"
 #include "ut_debugmsg.h"

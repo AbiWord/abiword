@@ -17,6 +17,11 @@
  * 02111-1307, USA.
  */
 
+/*
+ * Port to Maemo Development Platform 
+ * Author: INdT - Renato Araujo <renato.filho@indt.org.br>
+ */
+
 #include <glib.h>
 #include <gtk/gtkwidget.h>
 #include <gtk/gtkmain.h>
@@ -29,6 +34,10 @@
 #include <unistd.h>
 
 #include <sys/stat.h>
+
+#ifdef HAVE_HILDON
+#include "xap_UnixHildonApp.h"
+#endif
 
 #include "ut_debugmsg.h"
 #include "xap_UnixDialogHelper.h"
@@ -121,14 +130,24 @@ XAP_UnixApp::XAP_UnixApp(XAP_Args * pArgs, const char * szAppName)
 		XAP_UnixNullGraphicsAllocInfo ai(NULL, NULL);
 		abi_unixnullgraphics_instance = (UnixNull_Graphics*) XAP_App::getApp()->newGraphics(GRID_UNIX_NULL, ai);
 	  }
+	  
+#ifdef HAVE_HILDON /* create the hildonApp */
+	m_pUnixHildonApp = new XAP_UnixHildonApp();  
+#endif	 
 }
 
 XAP_UnixApp::~XAP_UnixApp()
 {
 	DELETEP(m_pUnixToolbarIcons);
+	
+#ifdef HAVE_HILDON	/* delete the hildonApp */
+	delete m_pUnixHildonApp;
+#endif	
+	
 #if FC_MINOR > 2
 	FcFini();
 #endif
+	
 	delete m_fontManager;
 }
 
@@ -136,6 +155,11 @@ bool XAP_UnixApp::initialize(const char * szKeyBindingsKey, const char * szKeyBi
 {
 	if (!g_thread_supported ()) g_thread_init (NULL);
 
+#ifdef HAVE_HILDON /* Initialize hildon environment */
+	if (!m_pUnixHildonApp->initialize())
+		return false;
+#endif
+	
 	// let our base class do it's thing.
 	
 	XAP_App::initialize(szKeyBindingsKey, szKeyBindingsDefaultValue);
@@ -161,6 +185,11 @@ bool XAP_UnixApp::initialize(const char * szKeyBindingsKey, const char * szKeyBi
 
 void XAP_UnixApp::reallyExit()
 {
+	
+#ifdef HAVE_HILDON /* terminate hildon variables */
+	m_pUnixHildonApp->terminate();
+#endif	
+	
 	gtk_main_quit();
 }
 

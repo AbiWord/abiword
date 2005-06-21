@@ -17,6 +17,12 @@
  * 02111-1307, USA.
  */
 
+/*
+ * Port to Maemo Development Platform
+ * Author: INdT - Renato Araujo <renato.filho@indt.org.br>
+ */
+
+
 #undef GTK_DISABLE_DEPRECATED
 
 #include <stdlib.h>
@@ -111,8 +117,10 @@ static gboolean do_update(gpointer p)
 // FIXME!!! Could get nasty crash if the dlg is destroyed while 
 // a redraw is pending....
 //
+#ifndef HAVE_HILDON
 	AP_UnixDialog_Paragraph * dlg = (AP_UnixDialog_Paragraph *) p;
 	dlg->event_PreviewAreaExposed();
+#endif
 	return FALSE;
 }
 
@@ -145,6 +153,7 @@ void AP_UnixDialog_Paragraph::runModal(XAP_Frame * pFrame)
 	// Show the top level dialog,
 	gtk_widget_show(mainWindow);
 
+#ifndef HAVE_HILDON
 	// *** this is how we add the gc ***
 	{
 		// attach a new graphics context to the drawing area
@@ -167,6 +176,7 @@ void AP_UnixDialog_Paragraph::runModal(XAP_Frame * pFrame)
 	// sync all controls once to get started
 	// HACK: the first arg gets ignored
 	_syncControls(id_MENU_ALIGNMENT, true);
+#endif
 
 	bool tabs;
 	do {
@@ -281,8 +291,10 @@ void AP_UnixDialog_Paragraph::event_CheckToggled(GtkWidget * widget)
 
 void AP_UnixDialog_Paragraph::event_PreviewAreaExposed(void)
 {
+#ifndef HAVE_HILDON
 	if (m_paragraphPreview)
 		m_paragraphPreview->draw();
+#endif	
 }
 
 /*****************************************************************/
@@ -399,7 +411,11 @@ GtkWidget * AP_UnixDialog_Paragraph::_constructWindowContents(GtkWidget *windowM
 
 
 	// "Indents and Spacing" page
+#ifdef HAVE_HILDON
+	boxSpacing = gtk_table_new (3, 4, FALSE);
+#else	
 	boxSpacing = gtk_table_new (7, 4, FALSE);
+#endif
 	gtk_widget_show (boxSpacing);
 	gtk_table_set_row_spacings (GTK_TABLE(boxSpacing), 5);
 	gtk_table_set_col_spacings (GTK_TABLE(boxSpacing), 5);
@@ -560,15 +576,27 @@ GtkWidget * AP_UnixDialog_Paragraph::_constructWindowContents(GtkWidget *windowM
 	gtk_table_attach ( GTK_TABLE(boxSpacing), labelSpecial, 2,3, 2,3,
                     (GtkAttachOptions) (GTK_FILL),
                     (GtkAttachOptions) (GTK_FILL), 0, 0);
+#ifdef HAVE_HILDON
+	gtk_label_set_justify (GTK_LABEL (labelSpecial), GTK_JUSTIFY_RIGHT);
+	gtk_misc_set_alignment (GTK_MISC (labelSpecial), 1, 0.5);
+#else
 	gtk_label_set_justify (GTK_LABEL (labelSpecial), GTK_JUSTIFY_LEFT);
 	gtk_misc_set_alignment (GTK_MISC (labelSpecial), 0, 0.5);
+#endif
 
 	listSpecial = gtk_option_menu_new ();
 	/**/ g_object_set_data(G_OBJECT(listSpecial), WIDGET_ID_TAG, (gpointer) id_MENU_SPECIAL_INDENT);
 	gtk_widget_show (listSpecial);
+#ifdef HAVE_HILDON
+	gtk_table_attach ( GTK_TABLE(boxSpacing), listSpecial, 3, 4, 2, 3,
+                    (GtkAttachOptions) (GTK_SHRINK),
+                    (GtkAttachOptions) (GTK_FILL), 0, 0);
+#else
 	gtk_table_attach ( GTK_TABLE(boxSpacing), listSpecial, 2,3, 3,4,
                     (GtkAttachOptions) (GTK_FILL),
                     (GtkAttachOptions) (GTK_FILL), 0, 0);
+
+#endif
 	listSpecial_menu = gtk_menu_new ();
 
 	glade_menuitem = gtk_menu_item_new_with_label(" "); // add an empty menu option to fix bug 594
@@ -609,19 +637,30 @@ GtkWidget * AP_UnixDialog_Paragraph::_constructWindowContents(GtkWidget *windowM
 	labelBy = gtk_label_new (unixstr);
 	FREEP(unixstr);
 	gtk_widget_show (labelBy);
+#ifdef HAVE_HILDON	
+	gtk_table_attach ( GTK_TABLE(boxSpacing), labelBy, 2, 3, 3, 4,
+                    (GtkAttachOptions) (GTK_FILL),
+                    (GtkAttachOptions) (GTK_FILL), 0, 0);
+	gtk_label_set_justify (GTK_LABEL (labelBy), GTK_JUSTIFY_RIGHT);
+	gtk_misc_set_alignment (GTK_MISC (labelBy), 1, 0.5);
+#else
 	gtk_table_attach ( GTK_TABLE(boxSpacing), labelBy, 3,4, 2,3,
                     (GtkAttachOptions) (GTK_FILL),
                     (GtkAttachOptions) (GTK_FILL), 0, 0);
 	gtk_label_set_justify (GTK_LABEL (labelBy), GTK_JUSTIFY_LEFT);
 	gtk_misc_set_alignment (GTK_MISC (labelBy), 0, 0.5);
-
+#endif
 //	spinbuttonBy_adj = gtk_adjustment_new (0.5, 0, 100, 0.1, 10, 10);
 //	spinbuttonBy = gtk_spin_button_new (NULL, 1, 1);
 	spinbuttonBy = gtk_entry_new();
 	/**/ g_object_set_data(G_OBJECT(spinbuttonBy), WIDGET_ID_TAG, (gpointer) id_SPIN_SPECIAL_INDENT);
 	gtk_widget_show (spinbuttonBy);
 	gtk_table_attach ( GTK_TABLE(boxSpacing), spinbuttonBy, 3,4, 3,4,
+#ifdef HAVE_HILDON
+                    (GtkAttachOptions) (GTK_SHRINK|GTK_EXPAND),
+#else
                     (GtkAttachOptions) (GTK_FILL|GTK_EXPAND),
+#endif
                     (GtkAttachOptions) (GTK_FILL), 0, 0);
 
 
@@ -632,13 +671,11 @@ GtkWidget * AP_UnixDialog_Paragraph::_constructWindowContents(GtkWidget *windowM
 	UT_XML_cloneNoAmpersands(unixstr, s.utf8_str());
 	labelSpacing = gtk_label_new (unixstr);
 	FREEP(unixstr);
-	gtk_widget_show (labelSpacing);
 	gtk_box_pack_start (GTK_BOX (hboxSpacing), labelSpacing, FALSE, FALSE, 0);
 	gtk_label_set_justify (GTK_LABEL (labelSpacing), GTK_JUSTIFY_LEFT);
 	gtk_misc_set_alignment (GTK_MISC (labelSpacing), 0, 0.5);
 
 	hseparator1 = gtk_hseparator_new ();
-	gtk_widget_show (hseparator1);
 	gtk_box_pack_start (GTK_BOX (hboxSpacing), hseparator1, TRUE, TRUE, 0);
 	gtk_table_attach ( GTK_TABLE(boxSpacing), hboxSpacing, 0,4, 4,5,
                     (GtkAttachOptions) (GTK_FILL|GTK_EXPAND),
@@ -648,7 +685,6 @@ GtkWidget * AP_UnixDialog_Paragraph::_constructWindowContents(GtkWidget *windowM
 	UT_XML_cloneNoAmpersands(unixstr, s.utf8_str());
 	labelBefore = gtk_label_new (unixstr);
 	FREEP(unixstr);
-	gtk_widget_show (labelBefore);
 	gtk_table_attach ( GTK_TABLE(boxSpacing), labelBefore, 0,1, 5,6,
                     (GtkAttachOptions) (GTK_FILL),
                     (GtkAttachOptions) (GTK_FILL), 0, 0);
@@ -659,7 +695,6 @@ GtkWidget * AP_UnixDialog_Paragraph::_constructWindowContents(GtkWidget *windowM
 //	spinbuttonBefore = gtk_spin_button_new (NULL, 1, 1);
 	spinbuttonBefore = gtk_entry_new();
 	/**/ g_object_set_data(G_OBJECT(spinbuttonBefore), WIDGET_ID_TAG, (gpointer) id_SPIN_BEFORE_SPACING);
-	gtk_widget_show (spinbuttonBefore);
 	gtk_table_attach ( GTK_TABLE(boxSpacing), spinbuttonBefore, 1,2, 5,6,
                     (GtkAttachOptions) (GTK_FILL|GTK_EXPAND),
                     (GtkAttachOptions) (GTK_FILL), 0, 0);
@@ -668,7 +703,6 @@ GtkWidget * AP_UnixDialog_Paragraph::_constructWindowContents(GtkWidget *windowM
 	UT_XML_cloneNoAmpersands(unixstr, s.utf8_str());
 	labelAfter = gtk_label_new (unixstr);
 	FREEP(unixstr);
-	gtk_widget_show (labelAfter);
 	gtk_table_attach ( GTK_TABLE(boxSpacing), labelAfter, 0,1, 6,7,
                     (GtkAttachOptions) (GTK_FILL),
                     (GtkAttachOptions) (GTK_FILL), 0, 0);
@@ -679,7 +713,6 @@ GtkWidget * AP_UnixDialog_Paragraph::_constructWindowContents(GtkWidget *windowM
 //	spinbuttonAfter = gtk_spin_button_new (NULL, 1, 1);
 	spinbuttonAfter = gtk_entry_new();
 	/**/ g_object_set_data(G_OBJECT(spinbuttonAfter), WIDGET_ID_TAG, (gpointer) id_SPIN_AFTER_SPACING);
-	gtk_widget_show (spinbuttonAfter);
 	gtk_table_attach ( GTK_TABLE(boxSpacing), spinbuttonAfter, 1,2, 6,7,
                     (GtkAttachOptions) (GTK_FILL|GTK_EXPAND),
                     (GtkAttachOptions) (GTK_FILL), 0, 0);
@@ -688,7 +721,6 @@ GtkWidget * AP_UnixDialog_Paragraph::_constructWindowContents(GtkWidget *windowM
 	UT_XML_cloneNoAmpersands(unixstr, s.utf8_str());
 	labelLineSpacing = gtk_label_new (unixstr);
 	FREEP(unixstr);
-	gtk_widget_show (labelLineSpacing);
 	gtk_table_attach ( GTK_TABLE(boxSpacing), labelLineSpacing, 2,3, 5,6,
                     (GtkAttachOptions) (GTK_FILL),
                     (GtkAttachOptions) (GTK_FILL), 0, 0);
@@ -697,7 +729,6 @@ GtkWidget * AP_UnixDialog_Paragraph::_constructWindowContents(GtkWidget *windowM
 
 	listLineSpacing = gtk_option_menu_new ();
 	/**/ g_object_set_data(G_OBJECT(listLineSpacing), WIDGET_ID_TAG, (gpointer) id_MENU_SPECIAL_SPACING);
-	gtk_widget_show (listLineSpacing);
 	gtk_table_attach ( GTK_TABLE(boxSpacing), listLineSpacing, 2,3, 6,7,
                     (GtkAttachOptions) (GTK_FILL),
                     (GtkAttachOptions) (GTK_FILL), 0, 0);
@@ -767,7 +798,6 @@ GtkWidget * AP_UnixDialog_Paragraph::_constructWindowContents(GtkWidget *windowM
 	UT_XML_cloneNoAmpersands(unixstr, s.utf8_str());
 	labelAt = gtk_label_new (unixstr);
 	FREEP(unixstr);
-	gtk_widget_show (labelAt);
 	gtk_table_attach ( GTK_TABLE(boxSpacing), labelAt, 3,4, 5,6,
                     (GtkAttachOptions) (GTK_FILL),
                     (GtkAttachOptions) (GTK_FILL), 0, 0);
@@ -778,12 +808,23 @@ GtkWidget * AP_UnixDialog_Paragraph::_constructWindowContents(GtkWidget *windowM
 //	spinbuttonAt = gtk_spin_button_new (NULL, 1, 1);
 	spinbuttonAt = gtk_entry_new();
 	/**/ g_object_set_data(G_OBJECT(spinbuttonAt), WIDGET_ID_TAG, (gpointer) id_SPIN_SPECIAL_SPACING);
-	gtk_widget_show (spinbuttonAt);
 	gtk_table_attach ( GTK_TABLE(boxSpacing), spinbuttonAt, 3,4, 6,7,
                     (GtkAttachOptions) (GTK_FILL|GTK_EXPAND),
                     (GtkAttachOptions) (GTK_FILL), 0, 0);
 
-
+//TODO: In hildon only hide components for future features
+#ifndef HAVE_HILDON					
+	gtk_widget_show (labelSpacing);
+	gtk_widget_show (hseparator1);
+	gtk_widget_show (labelBefore);
+	gtk_widget_show (spinbuttonBefore);
+	gtk_widget_show (labelAfter);
+	gtk_widget_show (spinbuttonAfter);
+	gtk_widget_show (labelLineSpacing);
+	gtk_widget_show (listLineSpacing);
+	gtk_widget_show (labelAt);	
+	gtk_widget_show (spinbuttonAt);
+#endif /* HAVE_HILDON */ 	
 
 	// The "Line and Page Breaks" page
 	boxBreaks = gtk_table_new (6, 2, FALSE);
@@ -889,8 +930,8 @@ GtkWidget * AP_UnixDialog_Paragraph::_constructWindowContents(GtkWidget *windowM
                     (GtkAttachOptions) (GTK_FILL),
                     (GtkAttachOptions) (GTK_FILL), 0, 0 );
 
-
 	// End of notebook. Next comes the preview area.
+#ifndef HAVE_HILDON
 	hboxPreview = gtk_hbox_new (FALSE, 5);
 	gtk_widget_show (hboxPreview);
 
@@ -923,7 +964,7 @@ GtkWidget * AP_UnixDialog_Paragraph::_constructWindowContents(GtkWidget *windowM
 	drawingareaPreview = createDrawingArea ();
 	gtk_widget_show (drawingareaPreview);
 	gtk_container_add (GTK_CONTAINER (framePreview), drawingareaPreview);
-
+#endif
 
 	// Update member variables with the important widgets that
 	// might need to be queried or altered later.
@@ -950,7 +991,11 @@ GtkWidget * AP_UnixDialog_Paragraph::_constructWindowContents(GtkWidget *windowM
 //	m_spinbuttonAt_adj = spinbuttonAt_adj;
 	m_spinbuttonAt = spinbuttonAt;
 
+#ifdef HAVE_HILDON
+	m_drawingareaPreview = NULL;
+#else
 	m_drawingareaPreview = drawingareaPreview;
+#endif 
 
 	m_checkbuttonWidowOrphan = checkbuttonWidowOrphan;
 	m_checkbuttonKeepLines = checkbuttonKeepLines;
@@ -1035,11 +1080,13 @@ void AP_UnixDialog_Paragraph::_connectCallbackSignals(void)
 	g_signal_connect(G_OBJECT(m_checkbuttonDomDirection), "toggled",
 					   G_CALLBACK(s_check_toggled), (gpointer) this);
 
+#ifndef HAVE_HILDON
 	// the expose event off the preview
 	g_signal_connect(G_OBJECT(m_drawingareaPreview),
 					   "expose_event",
 					   G_CALLBACK(s_preview_exposed),
 					   (gpointer) this);
+#endif
 }
 
 void AP_UnixDialog_Paragraph::_populateWindowData(void)

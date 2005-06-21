@@ -20,6 +20,9 @@
 #include <gdk/gdk.h>
 #include <gdk/gdkx.h>
 #include <gtk/gtk.h>
+
+#include "ap_Features.h"
+
 #include "ut_assert.h"
 #include "ut_vector.h"
 #include "ut_hash.h"

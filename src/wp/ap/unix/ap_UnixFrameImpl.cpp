@@ -106,11 +106,17 @@ static void
 focus_in_event (GtkWidget * drawing_area, GdkEventCrossing *event, AP_UnixFrameImpl * me)
 {
   gtk_widget_grab_focus (drawing_area);
+#ifdef HAVE_HILDON
+  me->focusIMIn ();
+#endif
 }
 
 static void
 focus_out_event (GtkWidget * drawing_area, GdkEventCrossing * event, AP_UnixFrameImpl * me)
 {
+#ifdef HAVE_HILDON
+  me->focusIMOut ();
+#endif
 }
 
 GtkWidget * AP_UnixFrameImpl::_createDocumentWindow()
@@ -205,8 +211,15 @@ GtkWidget * AP_UnixFrameImpl::_createDocumentWindow()
 					   G_CALLBACK(XAP_UnixFrameImpl::_fe::configure_event), NULL);
 
 	// focus and XIM related
+#ifdef HAVE_HILDON
+	const char focus_out_event_name[] = "focus-out-event";
+#else
+	const char focus_out_event_name[] = "leave_notify_event";
+#endif
 	g_signal_connect(G_OBJECT(m_dArea), "enter_notify_event", G_CALLBACK(focus_in_event), this);
-	g_signal_connect(G_OBJECT(m_dArea), "leave_notify_event", G_CALLBACK(focus_out_event), this);
+
+
+	g_signal_connect(G_OBJECT(m_dArea), focus_out_event_name, G_CALLBACK(focus_out_event), this);
 
 	// create a table for scroll bars, rulers, and drawing area
 
@@ -294,7 +307,13 @@ void AP_UnixFrameImpl::_setWindowIcon()
 void AP_UnixFrameImpl::_createWindow()
 {
 	createTopLevelWindow();
+	
+#ifdef HAVE_HILDON	
+	gtk_widget_show_all(gtk_widget_get_parent(getTopLevelWindow()));
+#else
 	gtk_widget_show(getTopLevelWindow());
+#endif
+
 	if(getFrame()->getFrameMode() == XAP_NormalFrame)
 	{
 		// needs to be shown so that the following functions work

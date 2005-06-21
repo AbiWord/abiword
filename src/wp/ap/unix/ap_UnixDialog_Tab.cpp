@@ -18,6 +18,8 @@
  * 02111-1307, USA.
  */
 
+#include "ap_Features.h"
+
 #include "ut_types.h"
 #include "ut_string.h"
 #include "ut_units.h"

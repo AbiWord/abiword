@@ -21,6 +21,7 @@
  */
 
 
+#include "ap_Features.h"
 #include "ut_types.h"
 #include "ut_string.h"
 #include "ut_assert.h"
@@ -311,6 +312,7 @@ EV_Toolbar_Layout * XAP_Toolbar_Factory::CreateToolbarLayout(const char * szName
 	UT_uint32 i = 0;
 	bool bFound = false;
 	EV_Toolbar_Layout * pLayout = NULL;
+
 	for (i=0; !bFound && (i < count); i++)
 	{
 		XAP_Toolbar_Factory_vec * pVec = (XAP_Toolbar_Factory_vec *) m_vecTT.getNthItem(i);

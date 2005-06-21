@@ -17,6 +17,8 @@
  * 02111-1307, USA.
  */
 
+#include "ap_Features.h"
+
 #include "ap_Dialog_New.h"
 #include "ut_types.h"
 #include "ap_Strings.h"

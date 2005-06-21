@@ -17,6 +17,12 @@
  * 02111-1307, USA.
  */
 
+/*
+ * Port to Maemo Development Platform 
+ * Author: INdT - Renato Araujo <renato.filho@indt.org.br>
+ */
+
+
 // for gtk_label_parse_uline - nothing we can do about this...
 #undef GTK_DISABLE_DEPRECATED
 
@@ -601,7 +607,11 @@ void abiSetupModalDialog(GtkDialog * me, XAP_Frame *pFrame, XAP_Dialog * pDlg, g
 	XAP_UnixFrameImpl * pUnixFrameImpl = static_cast<XAP_UnixFrameImpl *>(pFrame->getFrameImpl());
 	
 	// Get the GtkWindow of the parent frame
+#ifdef HAVE_HILDON 
+	GtkWidget * parentWindow = gtk_widget_get_parent(pUnixFrameImpl->getTopLevelWindow());
+#else	
 	GtkWidget * parentWindow = pUnixFrameImpl->getTopLevelWindow();
+#endif	
 	
 	// connect focus to our parent frame
 	connectFocus(GTK_WIDGET(me),pFrame);
@@ -615,8 +625,9 @@ void abiSetupModalDialog(GtkDialog * me, XAP_Frame *pFrame, XAP_Dialog * pDlg, g
 	
 	// set the default response
 	gtk_dialog_set_default_response ( me, dfl_response ) ;
-	
+#ifndef HAVE_HILDON
 	sAddHelpButton (me, pDlg);
+#endif
 
 	// and make it modal
 	gtk_window_set_modal ( GTK_WINDOW(me), TRUE ) ;
@@ -693,7 +704,9 @@ void abiSetupModelessDialog(GtkDialog * me, XAP_Frame * pFrame, XAP_Dialog * pDl
 	// set the default response
 	gtk_dialog_set_default_response ( me, dfl_response ) ;
 
+#ifndef HAVE_HILDON	
 	sAddHelpButton (me, pDlg);
+#endif
 
 	// and mark it as modeless
 	gtk_window_set_modal ( GTK_WINDOW(me), FALSE ) ;

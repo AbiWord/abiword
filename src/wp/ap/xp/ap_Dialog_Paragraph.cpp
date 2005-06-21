@@ -22,6 +22,9 @@
 #include <stdlib.h>
 #include <stdio.h>
 #include <string.h>
+
+#include "ap_Features.h"
+
 #include "ut_assert.h"
 #include "ut_exception.h"
 #include "ut_string.h"

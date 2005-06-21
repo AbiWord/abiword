@@ -19,6 +19,12 @@
  * 02111-1307, USA.
  */
 
+/*
+ * Port to Maemo Development Platform 
+ * Author: INdT - Renato Araujo <renato.filho@indt.org.br>
+ */
+
+
 #include <gtk/gtk.h>
 #include <stdio.h>
 #include <stdlib.h>
@@ -61,6 +67,12 @@
 #define PREVIEW_WIDTH  100
 #define PREVIEW_HEIGHT 100
 
+
+#ifdef HAVE_HILDON
+#include <hildon-widgets/hildon-file-chooser-dialog.h>
+#include "xap_UnixHildonApp.h" 
+#endif
+
 /*****************************************************************/
 XAP_Dialog * XAP_UnixDialog_FileOpenSaveAs::static_constructor(XAP_DialogFactory * pFactory,
 															 XAP_Dialog_Id id)
@@ -91,7 +103,7 @@ static void s_dialog_response(GtkWidget * /* widget */,
 	{
 		case GTK_RESPONSE_CANCEL:
 		case GTK_RESPONSE_ACCEPT:
-
+		case GTK_RESPONSE_OK:
 			if (answer == GTK_RESPONSE_CANCEL)
 				*ptr = XAP_Dialog_FileOpenSaveAs::a_CANCEL;
 			else
@@ -562,6 +574,13 @@ void XAP_UnixDialog_FileOpenSaveAs::runModal(XAP_Frame * pFrame)
 	XAP_UnixFrameImpl * pUnixFrameImpl = static_cast<XAP_UnixFrameImpl *>(pFrame->getFrameImpl());
 	GtkWidget * parent = pUnixFrameImpl->getTopLevelWindow();
 
+#ifdef HAVE_HILDON
+	m_FC = GTK_FILE_CHOOSER( hildon_file_chooser_dialog_new(GTK_WINDOW(XAP_UnixHildonApp::getApp()),
+							(m_id == XAP_DIALOG_ID_FILE_OPEN || m_id == XAP_DIALOG_ID_INSERT_PICTURE || m_id == XAP_DIALOG_ID_INSERT_FILE ? GTK_FILE_CHOOSER_ACTION_OPEN : GTK_FILE_CHOOSER_ACTION_SAVE))
+							);
+	
+#else	
+
 	m_FC = GTK_FILE_CHOOSER( gtk_file_chooser_dialog_new (szTitle.utf8_str(),
 									GTK_WINDOW(parent),
 									(m_id == XAP_DIALOG_ID_FILE_OPEN || m_id == XAP_DIALOG_ID_INSERT_PICTURE || m_id == XAP_DIALOG_ID_INSERT_FILE ? GTK_FILE_CHOOSER_ACTION_OPEN : GTK_FILE_CHOOSER_ACTION_SAVE),
@@ -569,6 +588,7 @@ void XAP_UnixDialog_FileOpenSaveAs::runModal(XAP_Frame * pFrame)
 									GTK_STOCK_OK, GTK_RESPONSE_ACCEPT,
 									NULL)
 							);
+#endif	
 
 	abiSetupModalDialog(GTK_DIALOG(m_FC), pFrame, this, GTK_RESPONSE_ACCEPT);
 	GtkWidget * filetypes_pulldown = NULL;

@@ -18,6 +18,9 @@
  */
 
 #include <string.h>
+
+#include "ap_Features.h"
+
 #include "ut_types.h"
 #include "ut_string.h"
 #include "ut_assert.h"

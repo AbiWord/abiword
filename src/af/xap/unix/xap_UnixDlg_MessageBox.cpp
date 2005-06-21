@@ -17,6 +17,12 @@
  * 02111-1307, USA.
  */
 
+/*
+ * Port to Maemo Development Platform 
+ * Author: INdT - Renato Araujo <renato.filho@indt.org.br>
+ */
+
+
 #include <gtk/gtk.h>
 #include <gdk/gdkkeysyms.h>
 #include <glib.h>
@@ -60,9 +66,15 @@ void XAP_UnixDialog_MessageBox::runModal(XAP_Frame * pFrame)
 	UT_return_if_fail(pApp);
 
 	GtkWidget * message = 0;	// initialize to prevent compiler warning
-	GtkWindow * toplevel = GTK_WINDOW(pUnixFrameImpl->getTopLevelWindow());
+	GtkWindow * toplevel;
 	GtkWidget * label;
 	GtkWidget * hbox;
+
+#ifdef HAVE_HILDON
+	toplevel = GTK_WINDOW(gtk_widget_get_parent (pUnixFrameImpl->getTopLevelWindow()));
+#else
+	toplevel = GTK_WINDOW(pUnixFrameImpl->getTopLevelWindow());
+#endif	
 
 	UT_String labelText, separator;
 	

@@ -156,6 +156,9 @@ protected:
 	EV_UnixMenuBar *			m_pUnixMenu;
 	EV_UnixMenuPopup *			m_pUnixPopup; /* only valid while a context popup is up */
 	AP_UnixDialogFactory		        m_dialogFactory;
+#ifdef HAVE_HILDON
+	GtkWidget * 			m_pHildonApp;
+#endif
 };
 #endif /* XAP_UNIXFRAME_H */
 

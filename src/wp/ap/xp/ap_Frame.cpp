@@ -20,6 +20,8 @@
 #include "ut_types.h"
 #include "ap_Frame.h"
 
+#include "ap_Features.h"
+
 #include "ap_FrameData.h"
 #include "fv_View.h"
 #include "xav_View.h"

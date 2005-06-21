@@ -61,6 +61,7 @@
 #include "xap_App.h"
 #include "xap_Frame.h"
 #include "xap_Clipboard.h"
+#include "ap_Features.h"
 #include "ap_TopRuler.h"
 #include "ap_LeftRuler.h"
 #include "ap_Prefs.h"
@@ -7417,7 +7418,11 @@ UT_sint32 FV_View::getPageViewSep(void) const
 		return m_pG->tlu(1);
 	}
 	else
+#ifdef EMBEDDED_TARGET
+		return (int ) (0.2 * fl_PAGEVIEW_PAGE_SEP);
+#else		
 		return fl_PAGEVIEW_PAGE_SEP;
+#endif
 }
 
 
@@ -7429,7 +7434,11 @@ UT_sint32 FV_View::getPageViewLeftMargin(void) const
 	if (isPreview() || m_pG->queryProperties(GR_Graphics::DGP_PAPER) || (getViewMode() != VIEW_PRINT))
 		return 0;
 	else
+#ifdef EMBEDDED_TARGET
+		return (int) (0.2 * fl_PAGEVIEW_MARGIN_X);
+#else	
 		return fl_PAGEVIEW_MARGIN_X;
+#endif		
 }
 
 UT_sint32 FV_View::getPageViewTopMargin(void) const
@@ -7440,7 +7449,12 @@ UT_sint32 FV_View::getPageViewTopMargin(void) const
 	if (isPreview() || m_pG->queryProperties(GR_Graphics::DGP_PAPER) || (getViewMode() != VIEW_PRINT))
 		return 0;
 	else
+#ifdef EMBEDDED_TARGET
+		return (int ) (0.2 * fl_PAGEVIEW_MARGIN_Y);
+#else	
 		return fl_PAGEVIEW_MARGIN_Y;
+#endif
+
 }
 
 void FV_View::setXScrollOffset(UT_sint32 v)

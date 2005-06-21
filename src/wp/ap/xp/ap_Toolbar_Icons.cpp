@@ -20,6 +20,7 @@
 
 
 #include "xap_Features.h"
+#include "ap_Features.h"
 #include "ut_types.h"
 #include "ut_string.h"
 #include "xap_Toolbar_Icons.h"

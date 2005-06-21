@@ -33,4 +33,17 @@
    #endif
 */
 
+#ifdef EMBEDDED_TARGET 
+#  include "xp_EmbeddedFeatures.h"
+#endif
+
+
+#ifndef XP_SIMPLE_MENU
+#  define XP_SIMPLE_MENU 0
+#endif
+
+#ifndef XP_SIMPLE_TOOLBAR
+#  define XP_SIMPLE_TOOLBAR 0
+#endif
+
 #endif

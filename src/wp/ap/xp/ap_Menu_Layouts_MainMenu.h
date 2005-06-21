@@ -35,7 +35,10 @@ BeginLayout(Main,0)
 		MenuItem(AP_MENU_ID_FILE_NEW)
 		MenuItem(AP_MENU_ID_FILE_NEW_USING_TEMPLATE)
 		MenuItem(AP_MENU_ID_FILE_OPEN)
+	
+#if !XP_SIMPLE_MENU	
 		MenuItem(AP_MENU_ID_FILE_IMPORTSTYLES)
+#endif	
 
 		Separator()
 
@@ -46,6 +49,7 @@ BeginLayout(Main,0)
 		MenuItem(AP_MENU_ID_FILE_EXPORT)
 		MenuItem(AP_MENU_ID_FILE_REVERT)
 
+#if !XP_SIMPLE_MENU
 		Separator()
 		MenuItem(AP_MENU_ID_FILE_PAGESETUP)
 #ifdef XP_UNIX_TARGET_GTK
@@ -74,8 +78,11 @@ BeginLayout(Main,0)
 			MenuItem(AP_MENU_ID_FILE_RECENT_9)
 		EndSubMenu()
 #endif
+#endif
 		Separator()
+#if  !XP_SIMPLE_MENU
 		MenuItem(AP_MENU_ID_FILE_CLOSE)
+#endif
 		MenuItem(AP_MENU_ID_FILE_EXIT)
 	EndSubMenu()
 
@@ -86,23 +93,32 @@ BeginLayout(Main,0)
 		MenuItem(AP_MENU_ID_EDIT_CUT)
 		MenuItem(AP_MENU_ID_EDIT_COPY)
 		MenuItem(AP_MENU_ID_EDIT_PASTE)
+#if !XP_SIMPLE_MENU	
 		MenuItem(AP_MENU_ID_EDIT_PASTE_SPECIAL)
+#endif	
 		Separator()
+#if !XP_SIMPLE_MENU	
 		MenuItem(AP_MENU_ID_EDIT_CLEAR)
+#endif	
 		MenuItem(AP_MENU_ID_EDIT_SELECTALL)
 		Separator()
+#if !XP_SIMPLE_MENU	
 		MenuItem(AP_MENU_ID_EDIT_REMOVEHEADER)
 		MenuItem(AP_MENU_ID_EDIT_REMOVEFOOTER)
 		Separator()
+#endif	
 		MenuItem(AP_MENU_ID_EDIT_FIND)
 		MenuItem(AP_MENU_ID_EDIT_REPLACE)
+#if !XP_SIMPLE_MENU	
 		MenuItem(AP_MENU_ID_EDIT_GOTO)
-#if !(XAP_PREFSMENU_UNDER_TOOLS)
+#endif	
+#if !(XP_PREFSMENU_UNDER_TOOLS)
 		Separator()
 		MenuItem(AP_MENU_ID_TOOLS_OPTIONS)
 #endif
 	EndSubMenu()
 
+#if !XP_SIMPLE_MENU
 	BeginSubMenu(AP_MENU_ID_VIEW)
 		MenuItem(AP_MENU_ID_VIEW_NORMAL)
 		MenuItem(AP_MENU_ID_VIEW_WEB)
@@ -142,7 +158,7 @@ BeginLayout(Main,0)
 		EndSubMenu()
 
 	EndSubMenu()
-
+#endif
 	BeginSubMenu(AP_MENU_ID_INSERT)
 		MenuItem(AP_MENU_ID_INSERT_BREAK)
 		MenuItem(AP_MENU_ID_INSERT_PAGENO)
@@ -191,7 +207,9 @@ BeginLayout(Main,0)
 #endif
 		Separator()
 		MenuItem(AP_MENU_ID_FMT_COLUMNS)
+#if !XP_SIMPLE_MENU	
 		MenuItem(AP_MENU_ID_FMT_TABS)
+#endif	
 		MenuItem(AP_MENU_ID_FMT_HDRFTR)
 		MenuItem(AP_MENU_ID_FMT_FOOTNOTES)
 		MenuItem(AP_MENU_ID_FMT_TABLEOFCONTENTS)
@@ -229,9 +247,11 @@ BeginLayout(Main,0)
         	MenuItem(AP_MENU_ID_FMT_DIRECTION_DO_RTL)
     	EndSubMenu()
 
+#if !XP_SIMPLE_MENU
 		Separator()
 
 		MenuItem(AP_MENU_ID_FMT_STYLE_DEFINE)
+#endif	
 
 	EndSubMenu()
 
@@ -240,7 +260,9 @@ BeginLayout(Main,0)
 		MenuItem(AP_MENU_ID_TOOLS_SPELL)
 		MenuItem(AP_MENU_ID_FMT_LANGUAGE)
 		MenuItem(AP_MENU_ID_TOOLS_WORDCOUNT)
+#if !XP_SIMPLE_MENU	
         MenuItem(AP_MENU_ID_FMT_STYLIST)
+#endif	
 
 		Separator()
 
@@ -248,12 +270,16 @@ BeginLayout(Main,0)
 	        MenuItem(AP_MENU_ID_TOOLS_HISTORY_SHOW)
 	        MenuItem(AP_MENU_ID_TOOLS_REVISIONS_COMPARE_DOCUMENTS)
 		    MenuItem(AP_MENU_ID_TOOLS_REVISIONS_AUTO)
+#if !XP_SIMPLE_MENU	
 		    MenuItem(AP_MENU_ID_TOOLS_HISTORY_PURGE)
+#endif	
 		EndSubMenu()
 	
 		BeginSubMenu(AP_MENU_ID_TOOLS_REVISIONS)
 			MenuItem(AP_MENU_ID_TOOLS_REVISIONS_MARK)
+#if !XP_SIMPLE_MENU	
 			MenuItem(AP_MENU_ID_TOOLS_REVISIONS_NEW_REVISION)
+#endif	
 		    Separator()
 	        MenuItem(AP_MENU_ID_TOOLS_REVISIONS_SHOW)
 			MenuItem(AP_MENU_ID_TOOLS_REVISIONS_SHOW_AFTER)
@@ -266,7 +292,9 @@ BeginLayout(Main,0)
 	        Separator()
 			MenuItem(AP_MENU_ID_TOOLS_REVISIONS_ACCEPT_REVISION)
 			MenuItem(AP_MENU_ID_TOOLS_REVISIONS_REJECT_REVISION)
+#if !XP_SIMPLE_MENU	
 			MenuItem(AP_MENU_ID_TOOLS_REVISIONS_PURGE)
+#endif	
 #ifdef DEBUG
 	        Separator()
 		    MenuItem(AP_MENU_ID_TOOLS_REVISIONS_MERGE_DOCUMENTS)
@@ -275,16 +303,18 @@ BeginLayout(Main,0)
 	
 	    Separator()
 
+#if !XP_SIMPLE_MENU
 		MenuItem(AP_MENU_ID_TOOLS_PLUGINS)
 		MenuItem(AP_MENU_ID_TOOLS_SCRIPTS)
 		MenuItem(AP_MENU_ID_TOOLS_MAILMERGE)
 #ifndef XP_MAC_TARGET_MACOSX
 		// On MacOS X don't put a separator as the "Option" menu item is moved away at run time
 #endif
-#if XAP_PREFSMENU_UNDER_TOOLS
+#if XP_PREFSMENU_UNDER_TOOLS
 		Separator()
 		MenuItem(AP_MENU_ID_TOOLS_OPTIONS)
 #endif
+#endif	
 	EndSubMenu()
 
 	BeginSubMenu(AP_MENU_ID_TABLE)
@@ -340,11 +370,13 @@ BeginLayout(Main,0)
 	       MenuItem(AP_MENU_ID_TABLE_SORTCOLSDESCEND)
 	    EndSubMenu()
 #endif
+#if !XP_SIMPLE_MENU
 	    BeginSubMenu(AP_MENU_ID_TABLE_TABLETOTEXT)
 	       MenuItem(AP_MENU_ID_TABLE_TABLETOTEXTCOMMAS)
 	       MenuItem(AP_MENU_ID_TABLE_TABLETOTEXTTABS)
 	       MenuItem(AP_MENU_ID_TABLE_TABLETOTEXTCOMMASTABS)
 	    EndSubMenu()
+#endif
 		MenuItem(AP_MENU_ID_TABLE_AUTOFIT)
 #if DEBUG
 	    BeginSubMenu(AP_MENU_ID_TABLE_HEADING_ROWS_REPEAT)
@@ -354,6 +386,7 @@ BeginLayout(Main,0)
 #endif
 	EndSubMenu()
 
+#if !XP_SIMPLE_MENU
 	BeginSubMenu(AP_MENU_ID_WINDOW)
 		MenuItem(AP_MENU_ID_WINDOW_NEW)
 		Separator()
@@ -384,6 +417,7 @@ BeginLayout(Main,0)
 #endif
 		MenuItem(AP_MENU_ID_HELP_ABOUT)
 	EndSubMenu()
+#endif
 
 EndLayout()
 	

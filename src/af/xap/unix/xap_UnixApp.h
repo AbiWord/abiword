@@ -17,6 +17,11 @@
  * 02111-1307, USA.
  */
 
+/*
+ * Port to Maemo Development Platform 
+ * Author: INdT - Renato Araujo <renato.filho@indt.org.br>
+ */
+
 
 #ifndef XAP_UNIXAPP_H
 #define XAP_UNIXAPP_H
@@ -109,6 +114,10 @@ protected:
 	UT_uint32					m_eventTime; // e->time field of a recent X event
 										 // (we use this to sync clipboard
 										 // operations with the server).
+
+#ifdef HAVE_HILDON
+	class XAP_UnixHildonApp * 		m_pUnixHildonApp;
+#endif
 	
 };
 

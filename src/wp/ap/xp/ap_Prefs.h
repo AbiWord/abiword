@@ -20,6 +20,7 @@
 #ifndef AP_PREFS_H
 #define AP_PREFS_H
 
+#include "ap_Features.h"
 #include "xap_Prefs.h"
 #include "ap_Prefs_SchemeIds.h"
 

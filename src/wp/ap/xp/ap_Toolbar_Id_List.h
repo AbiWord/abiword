@@ -62,6 +62,10 @@ toolbaritem(EDIT_REMOVEFOOTER)
 toolbaritem(SPELLCHECK)
 toolbaritem(IMG)
 toolbaritem(FMT_STYLE)
+#if XP_SIMPLE_TOOLBAR
+toolbaritem(FMT_CHOOSE)	
+#else
+#endif
 toolbaritem(FMT_FONT)
 toolbaritem(FMT_HYPERLINK)
 toolbaritem(FMT_BOOKMARK)

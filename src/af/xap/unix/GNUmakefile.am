@@ -22,7 +22,11 @@ include $(top_srcdir)/includes.mk
 if WITH_GNOME
 SUBDIRS = gnome t
 else
+if WITH_HILDON
+SUBDIRS = hildon t
+else
 SUBDIRS = t
+endif
 endif
 
 INCLUDES= -UVERSION @GTK_CFLAGS@ @GMODULE_CFLAGS@ \

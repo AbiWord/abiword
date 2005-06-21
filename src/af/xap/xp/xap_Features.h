@@ -17,6 +17,11 @@
  * 02111-1307, USA.
  */
 
+/*
+ * Port to Maemo Development Platform 
+ * Author: INdT - Renato Araujo <renato.filho@indt.org.br>
+ */
+
 
 #ifndef __XAP_FEATURES_H__
 #define __XAP_FEATURES_H__
@@ -26,7 +31,10 @@
 # include "xap_CocoaFeatures.h"
 #elif defined(WIN32)
 # include "xap_Win32Features.h"
+#elif defined(HAVE_HILDON)
+# include "xap_EmbeddedFeatures.h"
 #endif
+
 
 
 /*

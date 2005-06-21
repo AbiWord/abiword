@@ -17,12 +17,19 @@
  * 02111-1307, USA.
  */
 
+/*
+ * Port to Maemo Development Platform
+ * Author: INdT - Renato Araujo <renato.filho@indt.org.br>
+ */
+
+
 //for GtkCombo->GtkList
 #undef GTK_DISABLE_DEPRECATED
 
 #include <gtk/gtk.h>
 #include <string.h>
 #include <stdlib.h>
+#include "ap_Features.h"
 #include "ut_assert.h"
 #include "ut_debugmsg.h"
 #include "ut_string.h"
@@ -63,6 +70,11 @@
 #include "../../../wp/ap/xp/ToolbarIcons/tb_text_fgcolor.xpm"
 #include "../../../wp/ap/xp/ToolbarIcons/tb_text_bgcolor.xpm"
 #endif // HAVE_GNOME
+
+#ifdef HAVE_HILDON
+#include "xap_UnixHildonApp.h"
+#endif
+
 
 /*****************************************************************/
 #define COMBO_BUF_LEN 256
@@ -543,6 +555,7 @@ void EV_UnixToolbar::rebuildToolbar(UT_sint32 oldpos)
   // the frame.
   //
     synthesize();
+#ifdef HAVE_HILDON
 	GtkWidget * wVBox = static_cast<XAP_UnixFrameImpl *>(m_pFrame->getFrameImpl())->getVBoxWidget();
 	gtk_box_reorder_child(GTK_BOX(wVBox), m_wHandleBox, oldpos);
 //
@@ -550,6 +563,7 @@ void EV_UnixToolbar::rebuildToolbar(UT_sint32 oldpos)
 //
 	AV_View * pView = getFrame()->getCurrentView();
 	bindListenerToView(pView);
+#endif	
 }
 
 bool EV_UnixToolbar::getPixmapForIcon(XAP_Toolbar_Id id, GdkWindow * window, GdkColor * background,
@@ -684,6 +698,8 @@ bool EV_UnixToolbar::synthesize(void)
 	gtk_toolbar_set_tooltips(GTK_TOOLBAR(m_wToolbar), TRUE);
 	gtk_toolbar_set_style(GTK_TOOLBAR( m_wToolbar), style );
 
+
+#ifndef HAVE_HILDON /* In Hildon its not posible */
 //
 // Make the toolbar a destination for drops
 //
@@ -691,6 +707,7 @@ bool EV_UnixToolbar::synthesize(void)
 					  s_AbiTBTargets,1,
 					  GDK_ACTION_COPY);
 	g_signal_connect(G_OBJECT(m_wToolbar),"drag_drop",G_CALLBACK(_wd::s_drag_drop_toolbar),this);
+#endif 
 
 	for (UT_uint32 k=0; (k < nrLabelItemsInLayout); k++)
 	{
@@ -755,6 +772,7 @@ bool EV_UnixToolbar::synthesize(void)
 				g_object_set_data(G_OBJECT(wwd),
 									"wd_pointer",
 									wd);
+#ifndef HAVE_HILDON /* not drag toolbar in hildon */
 				gtk_drag_source_set(wwd,GDK_BUTTON3_MASK,
 									s_AbiTBTargets,1,
 									GDK_ACTION_COPY);
@@ -765,6 +783,7 @@ bool EV_UnixToolbar::synthesize(void)
 				g_signal_connect(G_OBJECT(wd->m_widget),"drag_begin",G_CALLBACK(_wd::s_drag_begin), wd);
 				g_signal_connect(G_OBJECT(wd->m_widget),"drag_drop",G_CALLBACK(_wd::s_drag_drop), wd);
 				g_signal_connect(G_OBJECT(wd->m_widget),"drag_end",G_CALLBACK(_wd::s_drag_end), wd);
+#endif				
 			}
 			break;
 
@@ -981,13 +1000,24 @@ bool EV_UnixToolbar::synthesize(void)
 		}
 	}
 
+#ifdef HAVE_HILDON	
+	GtkWidget *wToolbarR = m_wToolbar;
+	
+	hildon_appview_set_toolbar(HILDON_APPVIEW(wTLW),
+					GTK_TOOLBAR(wToolbarR));
+	gtk_widget_show_all(wToolbarR);	
+	gtk_widget_show_all(wTLW);			
+	
+#else
 	// show the complete thing
 	gtk_widget_show(m_wToolbar);
 
 	// pack it in a handle box
 	gtk_container_add(GTK_CONTAINER(m_wHandleBox), m_wToolbar);
+	// put it in the vbox
 	gtk_widget_show(m_wHandleBox);
 	gtk_box_pack_start(GTK_BOX(wVBox), m_wHandleBox, FALSE, FALSE, 0);
+#endif /* HAVE_HILDON */
 
 	setDetachable(getDetachable());
 	
@@ -1177,24 +1207,34 @@ void EV_UnixToolbar::show(void)
 {
 	GtkWidget *widget = gtk_bin_get_child(GTK_BIN(m_wHandleBox));
 	if (m_wToolbar) {
+#ifdef HAVE_HILDON		
+		gtk_widget_show (m_wToolbar);
+#else
 		gtk_widget_show(m_wHandleBox);
-		gtk_widget_show(m_wToolbar);
+		gtk_widget_show (m_wToolbar->parent);
 		if (getDetachable()) {
 			gtk_widget_show(widget);
+
 		}		
+#endif	
 	}
-	EV_Toolbar::show();
 }
 
 void EV_UnixToolbar::hide(void)
 {
+
 	GtkWidget *widget = gtk_bin_get_child(GTK_BIN(m_wHandleBox));
 	if (m_wToolbar) {
+#ifdef HAVE_HILDON		
+		gtk_widget_hide (m_wToolbar);
+#else
 		gtk_widget_hide(m_wHandleBox);
-		gtk_widget_hide(m_wToolbar);
+		gtk_widget_hide (m_wToolbar->parent);
 		if (getDetachable()) {
 			gtk_widget_hide(widget);
 		}		
+#endif 	
+
 	}
 	EV_Toolbar::hide();
 }

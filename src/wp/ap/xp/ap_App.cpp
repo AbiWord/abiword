@@ -18,6 +18,7 @@
  * 02111-1307, USA.
  */
 
+#include "ap_Features.h"
 #include "ap_App.h"
 #include "ap_Args.h"
 #include "ap_Prefs_SchemeIds.h"

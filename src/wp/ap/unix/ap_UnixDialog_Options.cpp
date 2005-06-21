@@ -18,6 +18,8 @@
  * 02111-1307, USA.
  */
 
+#include "ap_Features.h"
+
 #include "ut_types.h"
 #include "ut_string.h"
 #include "ut_string_class.h"
@@ -447,7 +449,11 @@ GtkWidget* AP_UnixDialog_Options::_constructWindow ()
 	// get the path where our glade file is located
 	XAP_UnixApp * pApp = static_cast<XAP_UnixApp*>(m_pApp);
 	UT_String glade_path( pApp->getAbiSuiteAppGladeDir() );
+#ifdef HAVE_HILDON
+	glade_path += "/ap_UnixHildonDialog_Options.glade";
+#else
 	glade_path += "/ap_UnixDialog_Options.glade";
+#endif	
 
 	// Update member variables with the important widgets that
 	// might need to be queried or altered later.

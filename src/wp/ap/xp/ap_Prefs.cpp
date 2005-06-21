@@ -18,6 +18,8 @@
  */
 
 #include <stdio.h>
+
+#include "ap_Features.h"
 #include "ap_Prefs.h"
 #include "xap_App.h"
 #include "ut_types.h"

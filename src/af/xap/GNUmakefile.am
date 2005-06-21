@@ -27,7 +27,11 @@ check_LIBRARIES = libTestXap.a
 if WITH_GNOME
 objects = $(ABI_OBJECTS) $(ABI_GNOME_OBJECTS)
 else
+if WITH_HILDON
+objects = $(ABI_OBJECTS) $(ABI_HILDON_OBJECTS)
+else
 objects = $(ABI_OBJECTS)
+endif
 endif
 
 libXap_a_SOURCES = 

@@ -25,6 +25,7 @@
 #include <time.h>
 
 #include "xap_Features.h"
+#include "ap_Features.h"
 
 #include "ut_locale.h"
 #include "ut_debugmsg.h"
@@ -1452,8 +1453,24 @@ Defun1(fileNew)
 	CHECK_FRAME;
 	XAP_App * pApp = XAP_App::getApp();
 	UT_return_val_if_fail (pApp, false);
-
+	
+#ifdef HAVE_HILDON	
+	
+	XAP_Frame * pNewFrame;
+	if (pApp->getFrameCount() == 0)
+		pNewFrame = pApp->newFrame();
+	else
+	{		
+		//fileSave(NULL, NULL);		
+		pNewFrame = pApp->getFrame(0);
+		if (pNewFrame->isDirty())
+		{
+			fileSave(pAV_View, NULL);
+		}
+	}
+#else
 	XAP_Frame * pNewFrame = pApp->newFrame();
+#endif
 
 	// the IEFileType here doesn't really matter, since the name is NULL
 	UT_Error error = pNewFrame->loadDocument(NULL, IEFT_Unknown);
@@ -8863,10 +8880,14 @@ Defun1(dlgSpellPrefs)
 
 /* the array below is a HACK. FIXME */
 static XML_Char* s_TBPrefsKeys [] = {
+#if XP_SIMPLE_TOOLBAR
+	AP_PREF_KEY_SimpleBarVisible,
+#else	
 	AP_PREF_KEY_StandardBarVisible,
 	AP_PREF_KEY_FormatBarVisible,
 	AP_PREF_KEY_TableBarVisible,
 	AP_PREF_KEY_ExtraBarVisible
+#endif		
 };
 
 static bool
@@ -8928,9 +8949,10 @@ Defun1(viewTB4)
 }
 
 
-
 Defun1(viewStd)
 {
+
+#if !XP_SIMPLE_TOOLBAR
 	CHECK_FRAME;
 // TODO: Share this function with viewFormat & viewExtra
 	XAP_Frame * pFrame = static_cast<XAP_Frame *> ( pAV_View->getParentData());
@@ -8958,12 +8980,14 @@ Defun1(viewStd)
 	UT_return_val_if_fail (pScheme, false);
 
 	pScheme->setValueBool(static_cast<const XML_Char *>(AP_PREF_KEY_StandardBarVisible), pFrameData->m_bShowBar[0]);
-
+#endif
 	return true;
 }
 
 Defun1(viewFormat)
 {
+
+#if !XP_SIMPLE_TOOLBAR
 	CHECK_FRAME;
 	XAP_Frame * pFrame = static_cast<XAP_Frame *> ( pAV_View->getParentData());
 	UT_return_val_if_fail(pFrame, false);
@@ -8990,13 +9014,14 @@ Defun1(viewFormat)
 	UT_return_val_if_fail (pScheme, false);
 
 	pScheme->setValueBool(static_cast<const XML_Char *>(AP_PREF_KEY_FormatBarVisible), pFrameData->m_bShowBar[1]);
-
+#endif
 	return true;
 }
 
 
 Defun1(viewTable)
 {
+#if !XP_SIMPLE_TOOLBAR
 	CHECK_FRAME;
 	XAP_Frame * pFrame = static_cast<XAP_Frame *> ( pAV_View->getParentData());
 	UT_return_val_if_fail(pFrame, false);
@@ -9022,12 +9047,13 @@ UT_return_val_if_fail(pFrameData, false);
 	UT_return_val_if_fail (pScheme, false);
 
 	pScheme->setValueBool(static_cast<const XML_Char *>(AP_PREF_KEY_TableBarVisible), pFrameData->m_bShowBar[2]);
-
+#endif
 	return true;
 }
 
 Defun1(viewExtra)
 {
+#if !XP_SIMPLE_TOOLBAR
 	CHECK_FRAME;
 	XAP_Frame * pFrame = static_cast<XAP_Frame *> ( pAV_View->getParentData());
 	UT_return_val_if_fail(pFrame, false);
@@ -9051,8 +9077,10 @@ UT_return_val_if_fail(pFrameData, false);
 	UT_return_val_if_fail(pPrefs, false);
 	XAP_PrefsScheme * pScheme = pPrefs->getCurrentScheme(true);
 UT_return_val_if_fail(pScheme, false);
-	pScheme->setValueBool(static_cast<const XML_Char *>(AP_PREF_KEY_ExtraBarVisible), pFrameData->m_bShowBar[3]);
 
+	pScheme->setValueBool(static_cast<const XML_Char *>(AP_PREF_KEY_ExtraBarVisible), pFrameData->m_bShowBar[3]);
+	
+#endif
 	return true;
 }
 

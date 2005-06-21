@@ -17,6 +17,7 @@
  * 02111-1307, USA.
  */
 
+#include "ap_Features.h"
 
 #include "ut_types.h"
 #include "ut_assert.h"
@@ -97,6 +98,11 @@ EV_Toolbar_ActionSet * AP_CreateToolbarActionSet(void)
 
 	_s(AP_TOOLBAR_ID_FMT_STYLE,		EV_TBIT_ComboBox,		"style",		AV_CHG_FMTSTYLE | AV_CHG_MOTION,	ap_ToolbarGetState_Style);
 	_s(AP_TOOLBAR_ID_FMT_FONT,		EV_TBIT_ComboBox,		"fontFamily",	AV_CHG_FMTCHAR | AV_CHG_MOTION,		ap_ToolbarGetState_CharFmt);
+	
+#if XP_SIMPLE_TOOLBAR
+	_s(AP_TOOLBAR_ID_FMT_CHOOSE,	EV_TBIT_PushButton,		"dlgFont",		AV_CHG_NONE,		NULL);	
+#endif	
+	
 	_s(AP_TOOLBAR_ID_FMT_SIZE,		EV_TBIT_ComboBox,		"fontSize",		AV_CHG_FMTCHAR | AV_CHG_MOTION,		ap_ToolbarGetState_CharFmt);
 	_s(AP_TOOLBAR_ID_FMT_BOLD,		EV_TBIT_ToggleButton,	"toggleBold",	AV_CHG_FMTCHAR | AV_CHG_MOTION,		ap_ToolbarGetState_CharFmt);
 	_s(AP_TOOLBAR_ID_FMT_ITALIC,	EV_TBIT_ToggleButton,	"toggleItalic",	AV_CHG_FMTCHAR | AV_CHG_MOTION,		ap_ToolbarGetState_CharFmt);

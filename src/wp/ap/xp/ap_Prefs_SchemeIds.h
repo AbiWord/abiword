@@ -68,19 +68,36 @@
 #define AP_PREF_DEFAULT_RulerUnits					"in"
 
 #define AP_PREF_KEY_RulerVisible					"RulerVisible"				/* are the rulers visible? {0,1} */
+#ifdef EMBEDDED_TARGET
+#define AP_PREF_DEFAULT_RulerVisible				"0"
+#else
 #define AP_PREF_DEFAULT_RulerVisible				"1"
+#endif
 
-#define AP_PREF_KEY_StandardBarVisible				"StandardBarVisible"		/* is the standard toolbar visible? {0,1} */
-#define AP_PREF_DEFAULT_StandardBarVisible			"1"
-#define AP_PREF_KEY_FormatBarVisible				"FormatBarVisible"			/* is the format toolbar visible? {0,1} */
-#define AP_PREF_DEFAULT_FormatBarVisible			"1"
-#define AP_PREF_KEY_ExtraBarVisible					"ExtraBarVisible"			/* is the extra toolbar visible? {0,1} */
-#define AP_PREF_DEFAULT_ExtraBarVisible				"0"
-#define AP_PREF_KEY_TableBarVisible					"TableBarVisible"			/* is the table toolbar visible? {0,1} */
-#define AP_PREF_DEFAULT_TableBarVisible				"0"
+#	define AP_PREF_KEY_SimpleBarVisible					"SimpleBarVisible"			/* is the extra toolbar visible? {0,1} */
+#	define AP_PREF_KEY_StandardBarVisible				"StandardBarVisible"		/* is the standard toolbar visible? {0,1} */
+#	define AP_PREF_KEY_FormatBarVisible				"FormatBarVisible"			/* is the format toolbar visible? {0,1} */
+#	define AP_PREF_KEY_ExtraBarVisible					"ExtraBarVisible"			/* is the extra toolbar visible? {0,1} */
+#	define AP_PREF_KEY_TableBarVisible					"TableBarVisible"			/* is the table toolbar visible? {0,1} */
+#	define AP_PREF_DEFAULT_SimpleBarVisible				"0"
+#if XP_SIMPLE_TOOLBAR
+#	define AP_PREF_DEFAULT_StandardBarVisible			"0"
+#	define AP_PREF_DEFAULT_FormatBarVisible			"0"
+#else
+#	define AP_PREF_DEFAULT_StandardBarVisible			"1"
+#	define AP_PREF_DEFAULT_FormatBarVisible			"1"
+#endif
+#	define AP_PREF_DEFAULT_ExtraBarVisible				"0"
+#	define AP_PREF_DEFAULT_TableBarVisible				"0"
+
 
 #define AP_PREF_KEY_StatusBarVisible				"StatusBarVisible"			/* is the status bar visible? {0,1} */
+#ifdef EMBEDDED_TARGET
+#define AP_PREF_DEFAULT_StatusBarVisible			"0"
+#else
 #define AP_PREF_DEFAULT_StatusBarVisible			"1"
+#endif
+
 
 #define AP_PREF_KEY_ParaVisible                     "ParaVisible"               /* are the paragraphs/spaces/tats/etc. visible? {0,1} */
 #define AP_PREF_DEFAULT_ParaVisible                 "0"
@@ -106,7 +123,11 @@
 
 
 #define AP_PREF_KEY_ToolbarLayouts					"ToolbarLayouts"
-#define AP_PREF_DEFAULT_ToolbarLayouts				"FileEditOps FormatOps TableOps ExtraOps"		/* values in BeginLayout() */
+#if XP_SIMPLE_TOOLBAR
+#	define AP_PREF_DEFAULT_ToolbarLayouts				"SimpleOps"		/* values in BeginLayout() */
+#else
+#	define AP_PREF_DEFAULT_ToolbarLayouts				"FileEditOps FormatOps TableOps ExtraOps"		/* values in BeginLayout() */
+#endif
 
 #define AP_PREF_KEY_SpellDirectory					"SpellCheckDirectory"		/* where we find hash files */
 #define AP_PREF_DEFAULT_SpellDirectory				"dictionary" 				/* if relative, use prefix "getAbiSuiteLibDir()" */
@@ -128,7 +149,11 @@
 #endif
 
 #define AP_PREF_KEY_ShowSplash     "ShowSplash"
+#ifdef EMBEDDED_TARGET
+#define AP_PREF_DEFAULT_ShowSplash "0"
+#else
 #define AP_PREF_DEFAULT_ShowSplash "1"
+#endif
 
 #define AP_PREF_KEY_DefaultSaveFormat "DefaultSaveFormat"
 #define AP_PREF_DEFAULT_DefaultSaveFormat ".abw"
@@ -153,6 +178,7 @@ dcl(SpellAutoReplace)
 dcl(OptionsTabNumber)
 dcl(RulerUnits)
 dcl(RulerVisible)
+dcl(SimpleBarVisible)
 dcl(StandardBarVisible)
 dcl(FormatBarVisible)
 dcl(ExtraBarVisible)

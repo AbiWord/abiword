@@ -19,6 +19,8 @@
 
 /*****************************************************************/
 
+#include "ap_Features.h"
+
 #include "ap_Toolbar_Id.h"
 #include "xap_Unix_TB_CFactory.h"
 

@@ -22,6 +22,8 @@
 #include <stdio.h>
 #include <limits.h>
 
+#include "ap_Features.h"
+
 #include "ut_debugmsg.h"
 #include "ut_assert.h"
 #include "ap_StatusBar.h"

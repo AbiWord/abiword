@@ -20,6 +20,8 @@
 #include <stdlib.h>
 #include <stdio.h>
 
+#include "ap_Features.h"
+
 #include "ut_debugmsg.h"
 #include "ut_assert.h"
 #include "ut_types.h"

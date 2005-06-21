@@ -190,3 +190,7 @@ toolbariconmap(_BOGUS2__,NoIcon)
 // SAMPLE: toolbariconmap(LISTS_BULLETS_fi-FI,tb_lists_xpm)
 
 // Add new overloaded icons here		
+#if XP_SIMPLE_TOOLBAR
+toolbariconmap(FMT_CHOOSE,tb_stock_font_xpm)
+#endif
+

@@ -18,6 +18,12 @@
  * Foundation, Inc., 59 Temple Place - Suite 330, Boston, MA  
  * 02111-1307, USA.
  */
+ 
+/*
+ * Port to Maemo Development Platform
+ * Author: INdT - Renato Araujo <renato.filho@indt.org.br>
+ */
+
 
 #include <gtk/gtk.h>
 #include <gdk/gdk.h>
@@ -46,6 +52,10 @@
 #include "ut_string_class.h"
 #include "xap_UnixDialogHelper.h"
 #include "ap_Menu_Id.h"
+#ifdef HAVE_HILDON
+#include <hildon-widgets/hildon-appview.h>
+#endif
+
 
 // set up these replacement icons
 #include "stock/menu_about.xpm"
@@ -736,8 +746,13 @@ bool EV_UnixMenu::synthesizeMenu(GtkWidget * wMenuRoot)
 				// but instead make a label with no underlines (and no accelerators).
 				
 				// get the underlined value from the candidate label
-				guint keyCode = _ev_get_underlined_char(buf);
-
+				guint keyCode;
+#ifdef HAVE_HILDON
+				keyCode = GDK_VoidSymbol;
+#else
+				keyCode = _ev_get_underlined_char(buf);
+#endif
+				
 				// GTK triggers the menu accelerators off of MOD1 ***without
 				// regard to what XK_ keysym is bound to it.  therefore, if
 				// MOD1 is bound to XK_Alt_{L,R}, we do the following.
@@ -868,6 +883,8 @@ bool EV_UnixMenu::synthesizeMenu(GtkWidget * wMenuRoot)
 		}
 	}
 
+#ifndef HAVE_HILDON	 /* don't use accelerators in Hildon -- not enough screen space */
+
 	// make sure our last item on the stack is the one we started with
 	GtkWidget * wDbg = NULL;
 	bResult = stack.pop(reinterpret_cast<void **>(&wDbg));
@@ -880,6 +897,8 @@ bool EV_UnixMenu::synthesizeMenu(GtkWidget * wMenuRoot)
 	gtk_window_add_accel_group(GTK_WINDOW(static_cast<XAP_UnixFrameImpl *>(m_pFrame->getFrameImpl())->getTopLevelWindow()), m_accelGroup);
 	gtk_accel_group_lock(m_accelGroup);
 	
+#endif
+
 	return true;
 }
 
@@ -1163,14 +1182,22 @@ void  EV_UnixMenuBar::destroy(void)
 
 bool EV_UnixMenuBar::synthesizeMenuBar()
 {
-	GtkWidget * wVBox = static_cast<XAP_UnixFrameImpl *>(m_pFrame->getFrameImpl())->getVBoxWidget();
 
 	// Just create, don't show the menu bar yet.  It is later added and shown
+#ifdef HAVE_HILDON /* in hildon sdk you have get menu_bar from mainWidonw */
+	GtkWidget * wWidget = static_cast<XAP_UnixFrameImpl *>(m_pFrame->getFrameImpl())->getTopLevelWindow();
+	m_wMenuBar = GTK_WIDGET(hildon_appview_get_menu(HILDON_APPVIEW(wWidget)));
+#else
+	GtkWidget * wVBox = static_cast<XAP_UnixFrameImpl *>(m_pFrame->getFrameImpl())->getVBoxWidget();
 	m_wMenuBar = gtk_menu_bar_new();
-	synthesizeMenu(m_wMenuBar);
-	gtk_widget_show(m_wMenuBar);
+#endif
 
+	synthesizeMenu(m_wMenuBar);
+	gtk_widget_show_all(m_wMenuBar);
+
+#ifndef HAVE_HILDON	 /* in hildon no need */
 	gtk_box_pack_start(GTK_BOX(wVBox), m_wMenuBar, FALSE, TRUE, 0);
+#endif	
 
 	return true;
 }
@@ -1289,6 +1316,7 @@ GtkWidget * EV_UnixMenu::s_createNormalMenuEntry(int id, const bool isCheckable,
 			w = gtk_radio_menu_item_new_with_mnemonic (NULL, buf);
 		}
 	
+#ifndef HAVE_HILDON /* not necessary in hildon */		
 	if (szMnemonicName && *szMnemonicName)
 	  {
 		  guint accelKey = 0;
@@ -1298,6 +1326,7 @@ GtkWidget * EV_UnixMenu::s_createNormalMenuEntry(int id, const bool isCheckable,
 		  // are handled at a lower level (we just get an accel label)
 		  gtk_widget_add_accelerator (w, "activate", m_accelGroup, accelKey, acMods, GTK_ACCEL_VISIBLE);
 	  }
+#endif	  
 	
 	gtk_widget_show(w);
 	

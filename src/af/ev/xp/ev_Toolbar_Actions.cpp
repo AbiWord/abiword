@@ -20,6 +20,7 @@
 
 
 #include <stdlib.h>
+#include <stdio.h>
 
 #include "ev_Toolbar_Actions.h"
 #include "ut_types.h"

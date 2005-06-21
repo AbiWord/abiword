@@ -18,6 +18,7 @@
  */
  
 #include <stdlib.h> // for atoi()
+#include "ap_Features.h"
 #include "ap_FrameData.h"
 #include "gr_Graphics.h"
 #include "fl_DocLayout.h"
@@ -60,6 +61,9 @@ AP_FrameData::AP_FrameData(XAP_App * pApp)
 		if (pApp->getPrefsValueBool(AP_PREF_KEY_RulerVisible, &b))
 			m_bShowRuler = b;
 
+#if XP_SIMPLE_TOOLBAR		
+		m_bShowBar[0] = true;
+#else		
 		if (pApp->getPrefsValueBool(AP_PREF_KEY_StandardBarVisible, &b))
 			m_bShowBar[0] = b;
 
@@ -71,6 +75,7 @@ AP_FrameData::AP_FrameData(XAP_App * pApp)
 
 		if (pApp->getPrefsValueBool(AP_PREF_KEY_ExtraBarVisible, &b))
 			m_bShowBar[3] = b;
+#endif		
 
 		if (pApp->getPrefsValueBool(AP_PREF_KEY_StatusBarVisible, &b))
 			m_bShowStatusBar = b;

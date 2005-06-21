@@ -177,7 +177,11 @@ GtkWidget * AP_UnixDialog_HdrFtr::_constructWindow (void)
 	// get the path where our glade file is located
 	XAP_UnixApp * pApp = static_cast<XAP_UnixApp*>(m_pApp);
 	UT_String glade_path( pApp->getAbiSuiteAppGladeDir() );
+#ifdef HAVE_HILDON
+	glade_path += "/ap_UnixHildonDialog_HdrFtr.glade";
+#else
 	glade_path += "/ap_UnixDialog_HdrFtr.glade";
+#endif
 	
 	// load the dialog from the glade file
 	GladeXML *xml = abiDialogNewFromXML( glade_path.c_str() );

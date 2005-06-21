@@ -22,6 +22,7 @@
 
 #include "xap_Dlg_Insert_Symbol.h"
 #include "xap_UnixFontManager.h"
+#include "gr_UnixGraphics.h"
 #include <gdk/gdkkeysyms.h>
 
 #define DEFAULT_UNIX_SYMBOL_FONT "Symbol"

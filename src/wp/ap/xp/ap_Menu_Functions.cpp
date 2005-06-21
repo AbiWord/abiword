@@ -20,6 +20,7 @@
 #include <string.h>
 #include <stdlib.h>
 #include <stdio.h>
+#include "ap_Features.h"
 #include "ut_types.h"
 #include "ut_assert.h"
 #include "ut_string.h"

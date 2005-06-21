@@ -47,7 +47,11 @@ AF_INCLUDES+=-I'$(top_srcdir)/src/af/util/@BE_PLATFORM@'
 AF_INCLUDES+=-I'$(top_srcdir)/src/af/ev/@PLATFORM@'
 AF_INCLUDES+=-I'$(top_srcdir)/src/af/gr/@PLATFORM@'
 AF_INCLUDES+=-I'$(top_srcdir)/src/af/xap/@PLATFORM@'
+if WITH_HILDON
+AF_INCLUDES+=-I'$(top_srcdir)/src/af/xap/@PLATFORM@/hildon'
 endif
+endif
+
 
 if WITH_GNOME
 WP_INCLUDES=-I'$(top_srcdir)/src/wp/ap/xp'
@@ -62,6 +66,9 @@ WP_INCLUDES+=-I'$(top_srcdir)/src/wp/impexp/xp'
 WP_INCLUDES+=-I'$(top_srcdir)/src/wp/ap/@PLATFORM@'
 WP_INCLUDES+=-I'$(top_srcdir)/src/wp/ap/xp/ToolbarIcons'
 WP_INCLUDES+=-I'$(top_srcdir)/src/pkg/linux/apkg'
+if WITH_HILDON
+AF_INCLUDES+=-I'$(top_srcdir)/src/wp/ap/@PLATFORM@/hildon'
+endif
 endif
 
 OTHER_INCLUDES=-I'$(top_srcdir)/src/other/spell/xp'
@@ -149,6 +156,10 @@ ABI_TEST_LIBS+=$(top_builddir)/src/af/xap/libTestXap.a
 if WITH_GNOME
 ABI_GNOME_OBJECTS=xp/*.o @PLATFORM@/*.o @PLATFORM@/gnome/*.o
 endif 
+
+if WITH_HILDON
+ABI_HILDON_OBJECTS=xp/*.o @PLATFORM@/*.o @PLATFORM@/hildon/*.o
+endif
 
 ABI_OBJECTS=xp/*.o @PLATFORM@/*.o 
 ABI_TEST_OBJECTS=xp/t/*.o 
