@@ -108,6 +108,10 @@
 #include "xap_UnixDialogHelper.h"
 //#include <gtk/gtk.h>
 
+#ifdef ENABLE_BINRELOC
+#include "prefix.h"
+#endif // ENABLE_BINRELOC
+
 
 #ifdef GTK_WIN_POS_CENTER_ALWAYS
 #define WIN_POS GTK_WIN_POS_CENTER_ALWAYS
@@ -772,7 +776,19 @@ void AP_UnixApp::loadAllPlugins ()
   UT_String pluginDir;
 
   // the global plugin directory
-  pluginDir = ABIWORD_PLUGINDIR;
+#ifdef ENABLE_BINRELOC
+  pluginDir = LIBDIR;
+#else
+  pluginDir = ABIWORD_LIBDIR;
+#endif
+  pluginDir += "/";
+  pluginDir += ABIWORD_APP_NAME;
+  pluginDir += "-";
+  pluginDir += PACKAGE_VERSION;
+  pluginDir += "/plugins/";
+
+  UT_DEBUGMSG(("pluginDir: '%s'\n", pluginDir.c_str ()));
+
   pluginList[0] = pluginDir;
 
   // the user-local plugin directory

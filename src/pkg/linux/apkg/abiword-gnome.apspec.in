@@ -9,7 +9,7 @@ Packager: Robert Staudinger <robsta@stereolyzer.net>
 Summary: AbiWord is a lightweight word processing application.
 SoftwareVersion: @VERSION@
 AutopackageTarget: 1.0
-#PackageVersion: 1
+PackageVersion: 5
 
 # Only uncomment InterfaceVersion if your package exposes interfaces to other software,
 # for instance if it includes DSOs or python/perl modules. See the developer guide for more info,
@@ -21,13 +21,20 @@ AutopackageTarget: 1.0
 AbiWord is a multi-platform word processor with a GTK+ interface on the UNIX platform. For extended functionality and integration this version is compiled with GNOME support. Abiword with the GNOME front-end is part of the GNOME Office Suite. AbiWord is made available under the GNU GPL license.
 
 [BuildPrepare]
+orig_build_root="$build_root"
+#abiword
 echo '#!/bin/bash' > configure
 echo '../abi/configure $@' >> configure
 chmod +x configure
-prepareBuild --prefix=/bail/if/binreloc/fails --enable-binreloc --enable-gnome --enable-gucharmap --disable-debug --disable-symbols
+prepareBuild --enable-binreloc --enable-gnome --enable-gucharmap --disable-debug --disable-symbols
+#plugins
+build_root="$orig_build_root"
+cd ../abiword-plugins
+prepareBuild --disable-debug --disable-all --enable-abigrammar
 
 [BuildUnprepare]
 unprepareBuild
+# TODO maybe "make clean" the plugins
 
 [Imports]
 echo '*' | import
@@ -51,12 +58,20 @@ require @gnome.org/libgnomeprintui-2-2 0.0
 # actually 10.4 but the so seems not to be versioned properly
 require @freedesktop.org/fribidi 0.0	
 require @freedesktop.org/enchant 1.1
+require @abisource.com/link-grammar 0.0
 
 [Install]
+# abiword
 installExe ./bin/AbiWord-@PACKAGE_VERSION@
 ln -s "$PREFIX/bin/AbiWord-@PACKAGE_VERSION@" "$PREFIX/bin/abiword"
 installData ./share/AbiSuite-@PACKAGE_VERSION@
 installDesktop "Word Processing" share/applications/abiword.desktop
+# plugins
+PLUGINPREFIX="lib/AbiWord-@PACKAGE_VERSION@/plugins"
+if [ ! -e "$PREFIX/$PLUGINPREFIX" ] ; then
+  mkdir -p "$PREFIX/$PLUGINPREFIX"
+fi
+copyFiles ./$PLUGINPREFIX/*.so "$PREFIX/$PLUGINPREFIX"
 
 [Uninstall]
 rm "$PREFIX/bin/abiword"
