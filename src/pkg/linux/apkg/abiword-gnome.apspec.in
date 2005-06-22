@@ -9,7 +9,7 @@ Packager: Robert Staudinger <robsta@stereolyzer.net>
 Summary: AbiWord is a lightweight word processing application.
 SoftwareVersion: @VERSION@
 AutopackageTarget: 1.0
-PackageVersion: 7
+#PackageVersion: 8
 
 # Only uncomment InterfaceVersion if your package exposes interfaces to other software,
 # for instance if it includes DSOs or python/perl modules. See the developer guide for more info,
@@ -30,7 +30,7 @@ prepareBuild --enable-binreloc --enable-gnome --enable-gucharmap --disable-debug
 #plugins
 build_root="$orig_build_root"
 cd ../abiword-plugins
-prepareBuild --disable-debug --disable-all --enable-abigrammar
+prepareBuild --disable-debug --disable-all --enable-abigrammar --enable-wordperfect
 
 [BuildUnprepare]
 unprepareBuild
@@ -46,11 +46,11 @@ require @libpng.org/libpng 3
 require @gtk.org/gtk 2.2
 require @xmlsoft.org/libxml2 2.0
 require @glade.gnome.org/libglade 2.0
-# working on removing this one
+require @gnome.org/gconf2 4
 require @gnome.org/libbonobo2 0.0
-# working on removing this one
 require @gnome.org/libgnomeui 2.0
-### my skels, use with care!
+### self written skeletons, maybe they have to be copied to the system
+### skeleton location to work
 require @jig.org/libjpeg 62
 require @gnome.org/gucharmap 4
 require @gnome.org/libgnomeprint-2-2 0.0
@@ -58,7 +58,9 @@ require @gnome.org/libgnomeprintui-2-2 0.0
 # actually 10.4 but the so seems not to be versioned properly
 require @freedesktop.org/fribidi 0.0	
 require @freedesktop.org/enchant 1.1
+### plugin dependencies
 require @abisource.com/link-grammar 4.1
+require @libwpd.sourceforge.net/libwpd 8.0
 
 [Install]
 # abiword
