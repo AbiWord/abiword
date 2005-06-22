@@ -688,7 +688,7 @@ gint XAP_UnixFrameImpl::_fe::configure_event(GtkWidget* w, GdkEventConfigure *e)
 // -- MES
 //
 
-#ifdef HAVE_HILDON
+#ifndef HAVE_HILDON
         GtkWindow * pWin = NULL;
 		if(pFrame->getFrameMode() == XAP_NormalFrame)
 			pWin = GTK_WINDOW(pUnixFrameImpl->m_wTopLevelWindow);
