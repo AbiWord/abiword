@@ -9,7 +9,7 @@ Packager: Robert Staudinger <robsta@stereolyzer.net>
 Summary: AbiWord is a lightweight word processing application.
 SoftwareVersion: @VERSION@
 AutopackageTarget: 1.0
-PackageVersion: 5
+PackageVersion: 7
 
 # Only uncomment InterfaceVersion if your package exposes interfaces to other software,
 # for instance if it includes DSOs or python/perl modules. See the developer guide for more info,
@@ -58,7 +58,7 @@ require @gnome.org/libgnomeprintui-2-2 0.0
 # actually 10.4 but the so seems not to be versioned properly
 require @freedesktop.org/fribidi 0.0	
 require @freedesktop.org/enchant 1.1
-require @abisource.com/link-grammar 0.0
+require @abisource.com/link-grammar 4.1
 
 [Install]
 # abiword
