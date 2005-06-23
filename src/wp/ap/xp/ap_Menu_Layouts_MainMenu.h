@@ -112,7 +112,7 @@ BeginLayout(Main,0)
 #if !XP_SIMPLE_MENU	
 		MenuItem(AP_MENU_ID_EDIT_GOTO)
 #endif	
-#if !(XP_PREFSMENU_UNDER_TOOLS)
+#if !(XAP_PREFSMENU_UNDER_TOOLS)
 		Separator()
 		MenuItem(AP_MENU_ID_TOOLS_OPTIONS)
 #endif
@@ -310,7 +310,7 @@ BeginLayout(Main,0)
 #ifndef XP_MAC_TARGET_MACOSX
 		// On MacOS X don't put a separator as the "Option" menu item is moved away at run time
 #endif
-#if XP_PREFSMENU_UNDER_TOOLS
+#if XAP_PREFSMENU_UNDER_TOOLS
 		Separator()
 		MenuItem(AP_MENU_ID_TOOLS_OPTIONS)
 #endif
