@@ -86,6 +86,8 @@ bool pt_PieceTable::deleteSpan(PT_DocPosition dpos1,
 {
 	if(m_pDocument->isMarkRevisions())
 	{
+		
+		bool bHdrFtr = false;
 		// if the user selected the whole document for deletion, we will not delete the
 		// first block (we need always a visible block in any document); we make an
 		// exception to this in VDND, because in that case the original block is
@@ -178,8 +180,10 @@ bool pt_PieceTable::deleteSpan(PT_DocPosition dpos1,
 					case PTX_SectionTOC:
 						bHasEndStrux = true;
 						// fall through ...
-					case PTX_Section:
 					case PTX_SectionHdrFtr:
+						bHdrFtr = true;
+						// fall through
+					case PTX_Section:
 				    case PTX_EndFootnote:
 				    case PTX_EndEndnote:
 				    case PTX_EndFrame:
@@ -249,7 +253,7 @@ bool pt_PieceTable::deleteSpan(PT_DocPosition dpos1,
 				{
 					// if this fragment is one of the struxes that is paired with an end-strux, we
 					// need to delete both struxes and everything in between
-					if(bHasEndStrux)
+					if(bHasEndStrux || bHdrFtr)
 					{
 						PT_DocPosition posEnd = dposEnd;
 						for(pf_Frag * pf = pf1->getNext(); pf != NULL; pf = pf->getNext())
@@ -294,6 +298,10 @@ bool pt_PieceTable::deleteSpan(PT_DocPosition dpos1,
 									if(eStrux2Type != PTX_EndTOC)
 										continue;
 									break;
+								case PTX_SectionHdrFtr:
+									if(eStrux2Type != PTX_SectionHdrFtr)
+										continue;
+									break;
 							    default:
 									break;
 							}
@@ -305,11 +313,21 @@ bool pt_PieceTable::deleteSpan(PT_DocPosition dpos1,
 						
 						dposEnd = posEnd;
 					}
-					
-					if(!_realDeleteSpan(dpos1, dposEnd, p_AttrProp_Before,bDeleteTableStruxes,
-										bDontGlob))
-						return false;
 
+					if(bHdrFtr)
+					{
+						bHdrFtr = false; // only do this once
+						_fixHdrFtrReferences(dpos1);
+						_realDeleteHdrFtrStrux(static_cast<pf_Frag_Strux*>(pf1));
+
+					}
+					else
+					{
+						if(!_realDeleteSpan(dpos1, dposEnd, p_AttrProp_Before,bDeleteTableStruxes,
+											bDontGlob))
+							return false;
+					}
+					
 					UT_uint32 iDeleteThisStep = dposEnd - dpos1;
 					
 					iRealDeleteCount += iDeleteThisStep;
@@ -363,6 +381,118 @@ bool pt_PieceTable::deleteSpan(PT_DocPosition dpos1,
 							   bDontGlob);
 }
 
+/*!
+    scan piecetable and remove any references to the hdr/ftr located at pos dpos
+*/
+bool pt_PieceTable::_fixHdrFtrReferences(pf_Frag_Strux *pfs)
+{
+	UT_return_val_if_fail(pfs &&
+						  pfs->getType() == pf_Frag::PFT_Strux &&
+						  static_cast<pf_Frag_Strux*>(pfs)->getStruxType()==PTX_SectionHdrFtr,
+						  false);
+
+	bool bRet = true;
+
+	// now we have to scan the entire PT and remove any references to
+	// the hdr we are about to remove
+	pf_Frag_Strux_SectionHdrFtr * pfHdr = static_cast<pf_Frag_Strux_SectionHdrFtr *>(pfs);
+	const PP_AttrProp * pAP = NULL;
+
+	if(!getAttrProp(pfHdr->getIndexAP(),&pAP) || !pAP)
+		return false;
+
+	const XML_Char * pszHdrId;
+	if(!pAP->getAttribute("id", pszHdrId) || !pszHdrId)
+		return false;
+
+	const XML_Char * pszHdrType;
+	if(!pAP->getAttribute("type", pszHdrType) || !pszHdrType)
+		return false;
+						
+	// now look for any doc sections that referrence this header type
+	// and id
+	const pf_Frag * pFrag = m_fragments.getFirst();
+	while(pFrag)
+	{
+		if(pFrag->getType() == pf_Frag::PFT_Strux &&
+		   static_cast<const pf_Frag_Strux*>(pFrag)->getStruxType()==PTX_Section)
+		{
+			if(!getAttrProp(pFrag->getIndexAP(),&pAP) || !pAP)
+				continue;
+
+			// check for normal attribute
+			const XML_Char * pszMyHdrId = NULL;
+			if(pAP->getAttribute(pszHdrType, pszMyHdrId) && pszMyHdrId)
+			{
+				if(0 == strcmp(pszMyHdrId, pszHdrId))
+				{
+					const XML_Char* pAttrs [3];
+					pAttrs[0] = pszHdrType;
+					pAttrs[1] = "";
+					pAttrs[2] = NULL;
+
+					bRet &= _fmtChangeStruxWithNotify(PTC_SetFmt, (pf_Frag_Strux*)pFrag,
+													  pAttrs, NULL, false);
+				}
+			}
+
+			// now check for revision attribute ...
+			const XML_Char * pszRevision;
+			if(pAP->getAttribute("revision", pszRevision) && pszRevision)
+			{
+				bool bFound = false;
+				PP_RevisionAttr Revisions(pszRevision);
+				for(UT_uint32 i = 0; i < Revisions.getRevisionsCount(); ++i)
+				{
+					const PP_Revision * pRev = Revisions.getNthRevision(i);
+					UT_return_val_if_fail( pRev, false );
+
+					const XML_Char * pszMyHdrId = NULL;
+					if(pRev->getAttribute(pszHdrType, pszMyHdrId) && pszMyHdrId)
+					{
+						if(0 != strcmp(pszHdrId, pszMyHdrId))
+							continue;
+
+						const_cast<PP_Revision*>(pRev)->setAttribute(pszHdrType, "");
+						Revisions.forceDirty();
+						bFound = true;
+					}
+										
+				}
+
+				if(bFound)
+				{
+					const XML_Char* pAttrs [3];
+					pAttrs[0] = "revision";
+					pAttrs[1] = Revisions.getXMLstring();
+					pAttrs[2] = NULL;
+
+					bRet &= _fmtChangeStruxWithNotify(PTC_SetFmt, (pf_Frag_Strux*)pFrag,
+													  pAttrs, NULL, false);
+				}
+			}
+								
+								
+		}
+							
+		pFrag = pFrag->getNext();
+	}
+
+
+	return bRet;
+}
+
+bool pt_PieceTable::_fixHdrFtrReferences(PT_DocPosition dpos)
+{
+	pf_Frag* pf1;
+	pf_Frag* pf2;
+	PT_BlockOffset Offset1, Offset2;
+
+	if(!getFragsFromPositions(dpos,dpos, &pf1, &Offset1, &pf2, &Offset2))
+		return false;
+
+	return _fixHdrFtrReferences((pf_Frag_Strux*)pf1);
+}
 
 
 bool pt_PieceTable::_deleteSpan(pf_Frag_Text * pft, UT_uint32 fragOffset,

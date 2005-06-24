@@ -560,7 +560,42 @@ PT_DocPosition pt_PieceTable::getStruxPosition(PL_StruxDocHandle sdh) const
 
 void pt_PieceTable::deleteHdrFtrStrux(pf_Frag_Strux * pfs)
 {
-	_realDeleteHdrFtrStrux(pfs);
+	UT_return_if_fail( pfs );
+	
+	if(m_pDocument->isMarkRevisions())
+	{
+		const pf_Frag * pfFrag = NULL;
+		pfFrag = static_cast<const pf_Frag *>(pfs);
+		PT_DocPosition dpos1 = getFragPosition(pfFrag);
+
+		pfFrag = pfFrag->getNext();
+
+		while(pfFrag)
+		{
+			if((pfFrag->getType() == pf_Frag::PFT_EndOfDoc) ||
+			   (pfFrag->getType() == pf_Frag::PFT_Strux &&
+				static_cast<const pf_Frag_Strux*>(pfFrag)->getStruxType() == PTX_SectionHdrFtr))
+			{
+				break;
+			}
+
+			pfFrag = pfFrag->getNext();
+		}
+
+		// there should always be at least EndOfDoc fragment !!!
+		UT_return_if_fail( pfFrag );
+		
+		PT_DocPosition dpos2 = getFragPosition(pfFrag);
+
+		UT_uint32 iRealDelete = 0;
+		deleteSpan(dpos1, dpos2, NULL, iRealDelete, true /*delete table struxes*/, false /* don't glob */);
+	}
+	else
+	{
+		_fixHdrFtrReferences(pfs);
+		_realDeleteHdrFtrStrux(pfs);
+	}
+	
 }
 
 void pt_PieceTable::_realDeleteHdrFtrStrux(pf_Frag_Strux * pfs)

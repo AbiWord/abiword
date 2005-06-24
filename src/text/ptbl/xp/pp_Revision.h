@@ -170,6 +170,7 @@ class PP_RevisionAttr
 	const UT_Vector *     getProps();
 #endif
 	const XML_Char *      getXMLstring();
+	void                  forceDirty() {m_bDirty = true;}
 	bool                  isFragmentSuperfluous() const;
 
 	bool operator == (const PP_RevisionAttr &op2) const;
