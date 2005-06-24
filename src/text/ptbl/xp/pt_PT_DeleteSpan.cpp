@@ -317,9 +317,24 @@ bool pt_PieceTable::deleteSpan(PT_DocPosition dpos1,
 					if(bHdrFtr)
 					{
 						bHdrFtr = false; // only do this once
-						_fixHdrFtrReferences(dpos1);
-						_realDeleteHdrFtrStrux(static_cast<pf_Frag_Strux*>(pf1));
+						pf_Frag_Strux_SectionHdrFtr * pfHdr = static_cast<pf_Frag_Strux_SectionHdrFtr *>(pf1);
 
+						const PP_AttrProp * pAP = NULL;
+
+						if(!getAttrProp(pfHdr->getIndexAP(),&pAP) || !pAP)
+							return false;
+
+						const XML_Char * pszHdrId;
+						if(!pAP->getAttribute("id", pszHdrId) || !pszHdrId)
+							return false;
+
+						const XML_Char * pszHdrType;
+						if(!pAP->getAttribute("type", pszHdrType) || !pszHdrType)
+							return false;
+
+						// needs to be in this order because of undo
+						_realDeleteHdrFtrStrux(static_cast<pf_Frag_Strux*>(pf1));
+						_fixHdrFtrReferences(pszHdrType, pszHdrId);
 					}
 					else
 					{
@@ -384,33 +399,14 @@ bool pt_PieceTable::deleteSpan(PT_DocPosition dpos1,
 /*!
     scan piecetable and remove any references to the hdr/ftr located at pos dpos
 */
-bool pt_PieceTable::_fixHdrFtrReferences(pf_Frag_Strux *pfs)
+bool pt_PieceTable::_fixHdrFtrReferences(const XML_Char * pszHdrType, const XML_Char * pszHdrId)
 {
-	UT_return_val_if_fail(pfs &&
-						  pfs->getType() == pf_Frag::PFT_Strux &&
-						  static_cast<pf_Frag_Strux*>(pfs)->getStruxType()==PTX_SectionHdrFtr,
-						  false);
-
+	UT_return_val_if_fail( pszHdrType && pszHdrId, false );
+	
 	bool bRet = true;
-
-	// now we have to scan the entire PT and remove any references to
-	// the hdr we are about to remove
-	pf_Frag_Strux_SectionHdrFtr * pfHdr = static_cast<pf_Frag_Strux_SectionHdrFtr *>(pfs);
 	const PP_AttrProp * pAP = NULL;
 
-	if(!getAttrProp(pfHdr->getIndexAP(),&pAP) || !pAP)
-		return false;
-
-	const XML_Char * pszHdrId;
-	if(!pAP->getAttribute("id", pszHdrId) || !pszHdrId)
-		return false;
-
-	const XML_Char * pszHdrType;
-	if(!pAP->getAttribute("type", pszHdrType) || !pszHdrType)
-		return false;
-						
-	// now look for any doc sections that referrence this header type
-	// and id
+	// look for any doc sections that referrence this header type and id
 	const pf_Frag * pFrag = m_fragments.getFirst();
 	while(pFrag)
 	{
@@ -481,19 +477,6 @@ bool pt_PieceTable::_fixHdrFtrReferences(pf_Frag_Strux *pfs)
 
 	return bRet;
 }
-
-bool pt_PieceTable::_fixHdrFtrReferences(PT_DocPosition dpos)
-{
-	pf_Frag* pf1;
-	pf_Frag* pf2;
-	PT_BlockOffset Offset1, Offset2;
-
-	if(!getFragsFromPositions(dpos,dpos, &pf1, &Offset1, &pf2, &Offset2))
-		return false;
-
-	return _fixHdrFtrReferences((pf_Frag_Strux*)pf1);
-}
-
 
 bool pt_PieceTable::_deleteSpan(pf_Frag_Text * pft, UT_uint32 fragOffset,
 								PT_BufIndex bi, UT_uint32 length,

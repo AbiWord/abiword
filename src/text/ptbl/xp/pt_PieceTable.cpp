@@ -592,8 +592,23 @@ void pt_PieceTable::deleteHdrFtrStrux(pf_Frag_Strux * pfs)
 	}
 	else
 	{
-		_fixHdrFtrReferences(pfs);
+		const PP_AttrProp * pAP = NULL;
+		UT_return_if_fail(pfs->getStruxType()==PTX_SectionHdrFtr);
+		pf_Frag_Strux_SectionHdrFtr * pfHdr = static_cast<pf_Frag_Strux_SectionHdrFtr *>(pfs);
+
+		if(!getAttrProp(pfHdr->getIndexAP(),&pAP) || !pAP)
+			return;
+
+		const XML_Char * pszHdrId;
+		if(!pAP->getAttribute("id", pszHdrId) || !pszHdrId)
+			return;
+
+		const XML_Char * pszHdrType;
+		if(!pAP->getAttribute("type", pszHdrType) || !pszHdrType)
+			return;
+
 		_realDeleteHdrFtrStrux(pfs);
+		_fixHdrFtrReferences(pszHdrType, pszHdrId);
 	}
 	
 }
