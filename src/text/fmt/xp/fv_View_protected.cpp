@@ -1359,7 +1359,7 @@ fl_BlockLayout* FV_View::_findBlockAtPosition(PT_DocPosition pos) const
 	// This assert makes debugging virtually impossible; this is a hack to make it assert only once ...
 	//UT_ASSERT(pBL);
 #ifdef DEBUG
-	bool bAss = false;
+	static bool bAss = false;
 	if(!pBL && !bAss)
 	{
 		UT_ASSERT_HARMLESS( pBL );
