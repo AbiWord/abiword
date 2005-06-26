@@ -2780,7 +2780,8 @@ fp_TableContainer::fp_TableContainer(fl_SectionLayout* pSectionLayout, fp_TableC
 	  m_iLastWantedVBreak(-1),
 	  m_pFirstBrokenCell(NULL),
 	  m_pLastBrokenCell(NULL),
-	  m_bRecursiveClear(false)
+	  m_bRecursiveClear(false),
+	  m_iAdditionalMarginAfter(0)
 {
 }
 
@@ -3771,7 +3772,7 @@ UT_sint32 fp_TableContainer::getMarginAfter(void) const
 	fl_ContainerLayout * pCL = pTL->getNext();
 	if(pCL && pCL->getContainerType() == FL_CONTAINER_BLOCK)
 	{
-		return static_cast<fl_BlockLayout *>(pCL)->getTopMargin();
+		return static_cast<fl_BlockLayout *>(pCL)->getTopMargin()+ 0;
 	}
 	return 0;
 }

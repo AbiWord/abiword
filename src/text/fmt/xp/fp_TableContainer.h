@@ -355,7 +355,9 @@ public:
 	virtual void		draw(GR_Graphics*) {}
 	virtual UT_sint32   getMarginBefore(void) const;
 	virtual UT_sint32   getMarginAfter(void) const;
-	fp_Column *         getBrokenColumn(void);
+	void                setAdditionalMargin(UT_sint32 iMarg)
+	{m_iAdditionalMarginAfter = iMarg;}
+fp_Column *         getBrokenColumn(void);
 	void                drawLines();
 	bool                containsFootnoteReference(void);
 	bool                getFootnoteContainers(UT_GenericVector<fp_FootnoteContainer*>* pvecFoots);
@@ -525,6 +527,7 @@ private:
 	fp_CellContainer *  m_pFirstBrokenCell;
 	fp_CellContainer *  m_pLastBrokenCell;
 	bool                m_bRecursiveClear;
+	UT_sint32           m_iAdditionalMarginAfter;
  };
 
 #endif /* TABLECONTAINER_H */

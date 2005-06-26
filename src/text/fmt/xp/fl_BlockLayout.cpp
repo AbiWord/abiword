@@ -40,6 +40,7 @@
 #include "fb_Alignment.h"
 #include "fp_Column.h"
 #include "fp_FootnoteContainer.h"
+#include "fp_TableContainer.h"
 #include "fp_Line.h"
 #include "fp_Run.h"
 #include "fp_TextRun.h"
@@ -188,7 +189,8 @@ fl_BlockLayout::fl_BlockLayout(PL_StruxDocHandle sdh,
 	  m_iLinePosInContainer(0),
 	  m_bForceSectionBreak(false),
 	  m_bPrevListLabel(false),
-	  m_pGrammarSquiggles(NULL)
+	  m_pGrammarSquiggles(NULL),
+	  m_iAdditionalMarginAfter(0)
 {
 	UT_DEBUGMSG(("BlockLayout %x created sdh %x \n",this,getStruxDocHandle()));
 	setPrev(pPrev);
@@ -2178,6 +2180,14 @@ void fl_BlockLayout::forceSectionBreak(void)
 }
 
 /*!
+ * Minimum width of a line we'll try to fit a wrapped line within
+ */
+UT_sint32 fl_BlockLayout::getMinWrapWidth(void)
+{
+	return 4*20*4;
+}
+
+/*!
  * Reformat a block from the line given.
  */
 void fl_BlockLayout::formatWrappedFromHere(fp_Line * pLine, fp_Page * pPage)
@@ -2215,6 +2225,7 @@ void fl_BlockLayout::formatWrappedFromHere(fp_Line * pLine, fp_Page * pPage)
 	}
 	UT_Rect * pRec = pLine->getScreenRect();
 	m_iAccumulatedHeight = pRec->top;
+	m_iAdditionalMarginAfter = 0;
 	UT_Rect rec;
 	rec.height = pRec->height;
 	rec.width = pRec->width;
@@ -2292,7 +2303,7 @@ void fl_BlockLayout::formatWrappedFromHere(fp_Line * pLine, fp_Page * pPage)
 		pLine->setSameYAsPrevious(false);
 	}
 	UT_sint32 xoff = rec.left - pLine->getX();
-	if(iWidth < 20*4)
+	if(iWidth < getMinWrapWidth())
 	{
 		xxx_UT_DEBUGMSG(("!!!!!!! ttttOOOO NAAARRRROOOWWWW iMaxX %d iX %d \n",iMaxX,iX));
 		//
@@ -2300,6 +2311,17 @@ void fl_BlockLayout::formatWrappedFromHere(fp_Line * pLine, fp_Page * pPage)
 		// transfer to new wrapped line and delete the old one
 		//
 		m_iAccumulatedHeight += iHeight;
+		iX = getLeftMargin();
+		bool bFirst = false;
+		if(pLine == static_cast<fp_Line *>(getFirstContainer()))
+		{
+			bFirst = true;
+			UT_BidiCharType iBlockDir = getDominantDirection();
+			if(iBlockDir == UT_BIDI_LTR)
+			{
+				iX += getTextIndent();
+			}
+		}
 		m_bSameYAsPrevious = false;
 		fp_Line * pNew = getNextWrappedLine(iX,iHeight,pPage);
 		while(pNew && (pNew->getPrev() != pLine))
@@ -2311,6 +2333,15 @@ void fl_BlockLayout::formatWrappedFromHere(fp_Line * pLine, fp_Page * pPage)
 		{
 			pNew->addRun(pRun);
 			pRun= pRun->getNextRun();
+		}
+		fp_Container * pPrevLine = pLine->getPrevContainerInSection();
+		if(pPrevLine && pPrevLine->getContainerType() == FP_CONTAINER_LINE)
+		{
+			static_cast<fp_Line *>(pPrevLine)->setAdditionalMargin(m_iAdditionalMarginAfter);
+		}
+		if(pPrevLine && pPrevLine->getContainerType() == FP_CONTAINER_TABLE )
+		{
+			static_cast<fp_TableContainer *>(pPrevLine)->setAdditionalMargin(m_iAdditionalMarginAfter);
 		}
 		_removeLine(pLine,true,false);
 		pLine = pNew;
@@ -2327,7 +2358,7 @@ void fl_BlockLayout::formatWrappedFromHere(fp_Line * pLine, fp_Page * pPage)
 		getLeftRightForWrapping(iX, rec.height,iMinLeft,iMinRight,iMinWidth);
 		iX = iMinLeft - xoff;
 		pLine->setX(iX);
-		if(iMinWidth < 20*4)
+		if(iMinWidth < getMinWrapWidth())
 		{
 			//
 			// Can't fit on this line.
@@ -2357,6 +2388,15 @@ void fl_BlockLayout::formatWrappedFromHere(fp_Line * pLine, fp_Page * pPage)
 			{
 				pNew->addRun(pRun);
 				pRun= pRun->getNextRun();
+			}
+			fp_Container * pPrevLine = pLine->getPrevContainerInSection();
+			if(pPrevLine && pPrevLine->getContainerType() == FP_CONTAINER_LINE )
+			{
+				static_cast<fp_Line *>(pPrevLine)->setAdditionalMargin(m_iAdditionalMarginAfter);
+			}
+			if(pPrevLine && pPrevLine->getContainerType() == FP_CONTAINER_TABLE )
+			{
+				static_cast<fp_TableContainer *>(pPrevLine)->setAdditionalMargin(m_iAdditionalMarginAfter);
 			}
 			_removeLine(pLine,true,false);
 			pLine = pNew;
@@ -2406,7 +2446,21 @@ void fl_BlockLayout::formatWrappedFromHere(fp_Line * pLine, fp_Page * pPage)
 	return;
 }
 
-
+/*!
+ * Given the x-position (iX) and the height of the line (iHeight) this
+ * Method returns the width of the line that fits at the current screen
+ * position.
+ *
+ * The dimensions of all the parameters are logical units.
+ *
+ * (input) (iX)The position relative the container holding the line of the left
+ *         edge of the line.
+ * (input) (iHeight) The assumed height of the line.
+ *
+ * (output) The width of the line that fits between the image is iMinWidth
+ * (output) iMinLeft is the left-most edge of the line that fits
+ * (output) iMinRight is the right-most edge of the line that fits
+ */
 void fl_BlockLayout::getLeftRightForWrapping(UT_sint32 iX, UT_sint32 iHeight,
 											  UT_sint32 & iMinLeft,
 											  UT_sint32 & iMinRight,
@@ -2449,6 +2503,9 @@ void fl_BlockLayout::getLeftRightForWrapping(UT_sint32 iX, UT_sint32 iHeight,
 	UT_sint32 iScreenX = iX + xoff;
 	UT_Rect projRec;
 	bool bIsTight = false;
+	bool bIsTopBot = false;
+	bool bIsLeft = false;
+	bool bIsRight = false;
 	iMinLeft = BIG_NUM_BLOCKBL;
 	iMinWidth = BIG_NUM_BLOCKBL;
 	iMinRight = BIG_NUM_BLOCKBL;
@@ -2458,6 +2515,7 @@ void fl_BlockLayout::getLeftRightForWrapping(UT_sint32 iX, UT_sint32 iHeight,
 		projRec.height = iHeight;
 		projRec.width = iMaxW;
 		projRec.top = m_iAccumulatedHeight;
+		m_iAdditionalMarginAfter = 0;
 		pFC = pPage->getNthAboveFrameContainer(i);
 		if(!pFC->isWrappingSet())
 		{
@@ -2465,6 +2523,7 @@ void fl_BlockLayout::getLeftRightForWrapping(UT_sint32 iX, UT_sint32 iHeight,
 		}
 		bIsTight = pFC->isTightWrapped();
 		UT_Rect * pRec = pFC->getScreenRect();
+		xxx_UT_DEBUGMSG(("Frame Left %d Line Left %d \n",pRec->left,iScreenX));
 		fl_FrameLayout * pFL = static_cast<fl_FrameLayout *>(pFC->getSectionLayout());
 		iExpand = pFL->getBoundingSpace() + 2;
 		pRec->height += 2*iExpand;
@@ -2478,7 +2537,7 @@ void fl_BlockLayout::getLeftRightForWrapping(UT_sint32 iX, UT_sint32 iHeight,
 				delete pRec;
 				continue;
 			}
-			if((pRec->left <= projRec.left +pG->tlu(1)) && (pRec->left + pRec->width) > projRec.left)
+			if((!pFC->isLeftWrapped() && ((pRec->left - getMinWrapWidth() <= projRec.left +pG->tlu(1)) && (pRec->left + pRec->width) > projRec.left)) || pFC->isRightWrapped())
 			{
 				UT_sint32 iRightP = 0;
 				if(bIsTight)
@@ -2496,7 +2555,7 @@ void fl_BlockLayout::getLeftRightForWrapping(UT_sint32 iX, UT_sint32 iHeight,
 				}
 
 			}
-			else if((pRec->left >= (projRec.left -iExpand -pG->tlu(1))) && (projRec.left + projRec.width > (pRec->left -iExpand - pG->tlu(1))))
+			else if(((pRec->left >= (projRec.left -iExpand -pG->tlu(1))) && (projRec.left + projRec.width + getMinWrapWidth() > (pRec->left -iExpand - pG->tlu(1)))) || pFC->isLeftWrapped())
 			{
 				UT_sint32 iLeftP = 0;
 				if(bIsTight)
@@ -2531,7 +2590,7 @@ void fl_BlockLayout::getLeftRightForWrapping(UT_sint32 iX, UT_sint32 iHeight,
 		// Look to see if there is some space between iMinLeft and the right
 		// margin
 		//
-		if(iMinR + xoff - iMinLeft > 20*4)
+		if(iMinR + xoff - iMinLeft > getMinWrapWidth())
 	   	{
 			// 
 			// OK we have some overlapping images. We'll take the right-most
@@ -2545,6 +2604,7 @@ void fl_BlockLayout::getLeftRightForWrapping(UT_sint32 iX, UT_sint32 iHeight,
 				projRec.height = iHeight;
 				projRec.width = iMaxW;
 				projRec.top = m_iAccumulatedHeight;
+				m_iAdditionalMarginAfter = 0;
 				pFC = pPage->getNthAboveFrameContainer(i);
 				if(!pFC->isWrappingSet())
 				{
@@ -2620,6 +2680,7 @@ fp_Line *  fl_BlockLayout::getNextWrappedLine(UT_sint32 iX,
 	UT_sint32 iMaxW = m_pVertContainer->getWidth();
 	iMaxW -=  getLeftMargin();
 	iMaxW -= getRightMargin();
+	fp_Line * pPrevLine = static_cast<fp_Line *>(getLastContainer());
 	if (getFirstContainer() == NULL)
 	{
 		UT_BidiCharType iBlockDir = getDominantDirection();
@@ -2630,17 +2691,18 @@ fp_Line *  fl_BlockLayout::getNextWrappedLine(UT_sint32 iX,
 		}
 	}
 	fp_Line * pLine = NULL;
-	if((iMinR - iX -xoff) < 20*4)
+	if((iMinR - iX -xoff) < getMinWrapWidth())
 	{
 		xxx_UT_DEBUGMSG(("!!!!!!! ttttOOOO NAAARRRROOOWWWW iMaxW %d iX %d \n",iMaxW,iX));
 		iX = iXDiff;
 		m_iAccumulatedHeight += iHeight;
+		m_iAdditionalMarginAfter += iHeight;
 		m_bSameYAsPrevious = false;
 	}
 	else
 	{
 		getLeftRightForWrapping(iX, iHeight,iMinLeft,iMinRight,iMinWidth);
-		if(iMinWidth <  20*4)
+		if(iMinWidth <  getMinWrapWidth())
 		{
 			iX = getLeftMargin();
 			if (getFirstContainer() == NULL)
@@ -2650,6 +2712,7 @@ fp_Line *  fl_BlockLayout::getNextWrappedLine(UT_sint32 iX,
 					iX += getTextIndent();
 			}
 			m_iAccumulatedHeight += iHeight;
+			m_iAdditionalMarginAfter += iHeight;
 			m_bSameYAsPrevious = false;
 		}
 		else
@@ -2702,6 +2765,7 @@ fp_Line *  fl_BlockLayout::getNextWrappedLine(UT_sint32 iX,
 			}
 #endif
 			UT_ASSERT(findLineInBlock(pLine) >= 0);
+			pPrevLine->setAdditionalMargin(m_iAdditionalMarginAfter);
 			return pLine;
 		}
 	}
@@ -2711,7 +2775,7 @@ fp_Line *  fl_BlockLayout::getNextWrappedLine(UT_sint32 iX,
 		getLeftRightForWrapping(iX, iHeight,iMinLeft,iMinRight,iMinWidth);
 		fp_Line* pLine = new fp_Line(getSectionLayout());
 		fp_Line* pOldLastLine = static_cast<fp_Line *>(getLastContainer());
-		if(iMinWidth >  20*4)
+		if(iMinWidth >  getMinWrapWidth())
 		{
 			if(pOldLastLine == NULL)
 			{
@@ -2753,9 +2817,11 @@ fp_Line *  fl_BlockLayout::getNextWrappedLine(UT_sint32 iX,
 			xxx_UT_DEBUGMSG(("-2- New line %x has X %d Max width %d wrapped %d sameY %d \n",pLine,pLine->getX(),pLine->getMaxWidth(),pLine->isWrapped(),pLine->isSameYAsPrevious()));
 			pLine->setHeight(iHeight);
 			UT_ASSERT(findLineInBlock(pLine) >= 0);
+			pPrevLine->setAdditionalMargin(m_iAdditionalMarginAfter);
 			return pLine;
 		}
 		xxx_UT_DEBUGMSG(("Max width 6 set to %d \n",20));
+#if 0
 		pLine->setMaxWidth(61);
 		pLine->setX(iMinLeft-xoff);
 		pLine->setBlock(this);
@@ -2783,10 +2849,12 @@ fp_Line *  fl_BlockLayout::getNextWrappedLine(UT_sint32 iX,
 			m_iLinePosInContainer++;
 			pLine->setContainer(m_pVertContainer);
 		}
+#endif
 		m_bSameYAsPrevious = false;
-		
+		delete pLine;
 		iX = getLeftMargin();
 		m_iAccumulatedHeight += iHeight;
+		m_iAdditionalMarginAfter += iHeight;
 	}
 	xxx_UT_DEBUGMSG(("-3- New line %x has X %d Max width %d wrapped %d sameY %d \n",pLine,pLine->getX(),pLine->getMaxWidth(),pLine->isWrapped(),pLine->isSameYAsPrevious()));
 	pLine->setHeight(iHeight);
@@ -2797,6 +2865,7 @@ fp_Line *  fl_BlockLayout::getNextWrappedLine(UT_sint32 iX,
 	}
 #endif
 	UT_ASSERT(findLineInBlock(pLine) >= 0);
+	pPrevLine->setAdditionalMargin(m_iAdditionalMarginAfter);
 	return pLine;
 }
 

@@ -964,6 +964,7 @@ dcl(MENU_LABEL_FMT_SUPERSCRIPT,"Supe&rscript")
 dcl(MENU_LABEL_FMT_SUBSCRIPT,"&Subscript")
 dcl(MENU_LABEL_FMT_FRAME,"Text Box")
 dcl(MENU_LABEL_FMT_IMAGE, "&Image")
+dcl(MENU_LABEL_FMT_SETPOSIMAGE, "Set Positioned Image")
 dcl(MENU_LABEL_FMT_POSIMAGE, "&Image")
 dcl(MENU_LABEL_FMT_DIRECTION, "D&irectional")
 dcl(MENU_LABEL_FMT_DIRECTION_DD_RTL, "RTL &Paragraph")
@@ -1360,6 +1361,7 @@ dcl(MENU_STATUSLINE_SPELL_IGNOREALL,"Ignore all occurrences of this word in the 
 dcl(MENU_STATUSLINE_SPELL_ADD,"Add this word to the custom dictionary")
 dcl(MENU_STATUSLINE_FMT_IMAGE, "Resize this image")
 dcl(MENU_STATUSLINE_FMT_POSIMAGE, "Format this image")
+dcl(MENU_STATUSLINE_FMT_SETPOSIMAGE, "Set this image to be positioned")
 
 /* Toolbar labels */
 dcl(TB_Extra,"Extra")

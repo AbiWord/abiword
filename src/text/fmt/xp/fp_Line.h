@@ -165,7 +165,8 @@ public:
 	void         setScreenCleared(bool bisCleared)
 		{   m_bIsCleared = bisCleared;}
 	bool         isScreenCleared(void) const { return m_bIsCleared;}
-
+	void         setAdditionalMargin(UT_sint32 iAccum)
+	  { m_iAdditionalMarginAfter = iAccum;}
 	virtual void		draw(dg_DrawArgs*);
 	virtual void        draw(GR_Graphics*);
 	void		align(void);
@@ -289,6 +290,7 @@ private:
 	UT_sint32       m_iBreakTick;
 	bool            m_bIsWrapped;
 	bool            m_bIsSameYAsPrevious;
+        UT_sint32       m_iAdditionalMarginAfter;
 };
 
 #endif /* FP_LINE_H */

@@ -87,7 +87,8 @@ fp_Line::fp_Line(fl_SectionLayout * pSectionLayout) :
 	m_bIsCleared(true),
 	m_bContainsFootnoteRef(false),
 	m_bIsWrapped(false),
-	m_bIsSameYAsPrevious(false)
+	m_bIsSameYAsPrevious(false),
+	m_iAdditionalMarginAfter(0)
 {
 	if(!s_iClassInstanceCounter)
 	{
@@ -2637,11 +2638,10 @@ UT_sint32 fp_Line::getMarginAfter(void) const
 			}
 		}
 		UT_sint32 iMargin = UT_MAX(iBottomMargin, iNextTopMargin);
-
-		return iMargin;
+		return iMargin + m_iAdditionalMarginAfter;
 	}
 
-	return 0;
+	return m_iAdditionalMarginAfter;
 }
 
 bool fp_Line::recalculateFields(UT_uint32 iUpdateCount)

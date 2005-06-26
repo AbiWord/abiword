@@ -97,6 +97,19 @@ public:
 	        { m_bIsTightWrapped = bTight;}
 	bool                isTightWrapped(void) const
 	        { return m_bIsTightWrapped;}
+	bool                isTopBot(void) const
+	  { return m_bIsTopBot; }
+	void                setTopBot(bool b)
+	  { m_bIsTopBot = b;}
+	bool                isLeftWrapped(void) const
+	  { return m_bIsLeftWrapped;}
+	void                setLeftWrapped(bool b)
+	  { m_bIsLeftWrapped = b;}
+	bool                isRightWrapped(void) const
+	  { return m_bIsRightWrapped;}
+	void                setRightWrapped(bool b)
+	  { m_bIsRightWrapped = b;}
+
 	bool                overlapsRect(UT_Rect & rec);
 	bool                isAbove(void)
 	        { return m_bIsAbove;}
@@ -124,6 +137,9 @@ private:
 	bool                   m_bIsWrapped;
 	bool                   m_bIsTightWrapped;
 	bool                   m_bIsAbove;
+	bool                   m_bIsTopBot;
+	bool                   m_bIsLeftWrapped;
+	bool                   m_bIsRightWrapped;
 };
 
 

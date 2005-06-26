@@ -159,6 +159,7 @@ public:
 
 	bool            getXYOffsetToLine(UT_sint32 & xoff, UT_sint32 & yoff, fp_Line * pLine);
 	bool            setFramesOnPage(fp_Line * pLastLine);
+	UT_sint32       getMinWrapWidth(void);
 	UT_sint32       getHeightOfBlock(void);
 	fp_Line *       findLineWithFootnotePID(UT_uint32 pid);
 	UT_sint32 getMaxNonBreakableRun(void);
@@ -484,6 +485,8 @@ protected:
 	bool                    m_bForceSectionBreak;
 	bool                    m_bPrevListLabel;
 	fl_GrammarSquiggles *   m_pGrammarSquiggles;
+    UT_sint32               m_iAdditionalMarginAfter;
+
 };
 
 /*

@@ -467,6 +467,7 @@ public:
 	static EV_EditMethod_Fn dlgColumns;
 	static EV_EditMethod_Fn dlgFmtImage;
 	static EV_EditMethod_Fn dlgFmtPosImage;
+	static EV_EditMethod_Fn setPosImage;
 	static EV_EditMethod_Fn dlgHdrFtr;
 	static EV_EditMethod_Fn style;
 	static EV_EditMethod_Fn dlgBackground;
@@ -1037,6 +1038,7 @@ static EV_EditMethod s_arrayEditMethods[] =
 	EV_EditMethod(NF(selectWord),			0,	""),
 	EV_EditMethod(NF(setEditVI),			0,	""),
 	EV_EditMethod(NF(setInputVI),			0,	""),
+	EV_EditMethod(NF(setPosImage), 	0,		""),
 	EV_EditMethod(NF(setStyleHeading1), 	0,		""),
 	EV_EditMethod(NF(setStyleHeading2), 	0,		""),
 	EV_EditMethod(NF(setStyleHeading3), 	0,		""),
@@ -9812,6 +9814,127 @@ Defun1(dlgBorders)
 
 	s_TellNotImplemented(pFrame, "Border and shading dialog", __LINE__);
 	return true;
+}
+
+Defun(setPosImage)
+{
+	CHECK_FRAME;
+	ABIWORD_VIEW;
+
+	fl_BlockLayout * pBL = pView->getCurrentBlock();
+	PT_DocPosition pos = pView->getDocPositionFromLastXY();
+
+	fl_BlockLayout * pBlock = pView->getBlockAtPosition(pos);
+	fp_Run *  pRun = NULL;
+	fp_Line * pLine = NULL;
+	UT_sint32 x1,x2,y1,y2,iHeight,iWidth;
+	bool bEOL = false;
+	bool bDir = false;
+	if(pBlock)
+	{
+		pRun = pBlock->findPointCoords(pos,bEOL,x1,y1,x2,y2,iHeight,bDir);
+		while(pRun && pRun->getType() != FPRUN_IMAGE)
+		{
+			pRun = pRun->getNextRun();
+		}
+		if(pRun && pRun->getType() == FPRUN_IMAGE)
+		{
+			UT_DEBUGMSG(("SEVIOR: Image run on pos \n"));
+		}
+		else
+		{
+			UT_ASSERT_HARMLESS(UT_SHOULD_NOT_HAPPEN);
+			return false;
+		}
+	}
+	pLine = pRun->getLine();
+	if(pLine == NULL)
+	{
+	        return false;
+	}
+	pView->cmdSelect(pos,pos+1);
+	fp_ImageRun * pImageRun = static_cast<fp_ImageRun *>(pRun);
+	UT_String sWidth;
+	UT_String sHeight;
+	double d = static_cast<double>(pRun->getWidth())/static_cast<double>(UT_LAYOUT_RESOLUTION);
+	sWidth =  UT_formatDimensionedValue(d,"in", NULL);
+	d = static_cast<double>(pRun->getHeight())/static_cast<double>(UT_LAYOUT_RESOLUTION);
+	sHeight =  UT_formatDimensionedValue(d,"in", NULL);
+//
+// Get the dataID of the image.
+
+	const char * dataID = pImageRun->getDataId();
+	UT_String sFrameProps;
+	UT_String sProp;
+	UT_String sVal;
+	sProp = "frame-type";
+	sVal = "image";
+	UT_String_setProperty(sFrameProps,sProp,sVal);
+//
+// Turn off the borders.
+//
+	sProp = "top-style";
+	sVal = "none";
+	UT_String_setProperty(sFrameProps,sProp,sVal);
+	sProp = "right-style";
+	UT_String_setProperty(sFrameProps,sProp,sVal);
+	sProp = "left-style";
+	UT_String_setProperty(sFrameProps,sProp,sVal);
+	sProp = "bot-style";
+	UT_String_setProperty(sFrameProps,sProp,sVal);
+//
+// Set width/Height
+//
+	sProp = "frame-width";
+	sVal = sWidth;	   
+	UT_String_setProperty(sFrameProps,sProp,sVal);
+	sProp = "frame-height";
+	sVal = sHeight;
+	UT_String_setProperty(sFrameProps,sProp,sVal);
+	double xpos = 0.0;
+	double ypos= 0.0;
+ 
+	sProp = "position-to";
+	sVal = "column-above-text";
+	UT_String_setProperty(sFrameProps,sProp,sVal);
+//
+// Now calculate the Y offset to the Column
+//
+	UT_sint32 yLine = pLine->getY();
+	ypos = static_cast<double>(yLine)/static_cast<double>(UT_LAYOUT_RESOLUTION);
+	sProp = "frame-col-ypos";
+	sVal = UT_formatDimensionedValue(ypos,"in", NULL);
+	UT_String_setProperty(sFrameProps,sProp,sVal);
+	sProp = "wrap-mode";
+	sVal = "wrapped-both";
+	UT_String_setProperty(sFrameProps,sProp,sVal);
+	UT_sint32 ix = pRun->getX();
+	ix += pLine->getX();
+	xpos =  static_cast<double>(ix)/static_cast<double>(UT_LAYOUT_RESOLUTION);
+	sProp = "frame-col-xpos";
+	sVal = UT_formatDimensionedValue(xpos,"in", NULL);
+	UT_String_setProperty(sFrameProps,sProp,sVal);
+//
+// Wrapped Mode
+//
+	sProp = "wrap-mode";
+	sVal = "wrapped-both";
+	UT_String_setProperty(sFrameProps,sProp,sVal);
+//
+// Now define the Frame attributes strux
+//
+	const XML_Char * attributes[5] = {PT_STRUX_IMAGE_DATAID,
+					  NULL,"props",NULL,NULL};
+	attributes[1] = dataID;
+	attributes[3] = sFrameProps.c_str();
+//
+// This deletes the inline image and places a positioned image in it's place
+// It deals with the undo/general update issues.
+//
+	pView->convertInLineToPositioned(pos,attributes);
+//
+// Done! Now have a positioned image!
+//
 }
 
 Defun (dlgFmtPosImage)

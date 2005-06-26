@@ -159,6 +159,18 @@ void 	fl_FrameLayout::setContainerProperties(void)
         {
 	        pFrame->setAbove(false);
 	}
+	else if(FL_FRAME_WRAPPED_TO_RIGHT == m_iFrameWrapMode)
+	{
+	        pFrame->setRightWrapped(true);
+	}
+	else if(FL_FRAME_WRAPPED_TO_LEFT == m_iFrameWrapMode)
+	{
+	  pFrame->setLeftWrapped(true);
+	}
+	else if(FL_FRAME_WRAPPED_TOPBOT == m_iFrameWrapMode)
+	{
+	        pFrame->setTopBot(true);
+	}
 //
 // Now do the image for this frame.
 //
@@ -759,6 +771,7 @@ void fl_FrameLayout::_lookupProperties(const PP_AttrProp* pSectionAP)
 
 	const XML_Char * pszBoundingSpace = NULL;
 	const XML_Char * pszTightWrapped = NULL;
+
 // Frame Type
 
 	if(!pSectionAP || !pSectionAP->getProperty("frame-type",pszFrameType))
@@ -831,6 +844,10 @@ void fl_FrameLayout::_lookupProperties(const PP_AttrProp* pSectionAP)
 	else if(strcmp(pszWrapMode,"wrapped-both") == 0)
 	{
 		m_iFrameWrapMode = FL_FRAME_WRAPPED_BOTH_SIDES;
+	}
+	else if(strcmp(pszWrapMode,"wrapped-topbot") == 0)
+	{
+		m_iFrameWrapMode = FL_FRAME_WRAPPED_TOPBOT;
 	}
 	else 
 	{
