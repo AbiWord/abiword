@@ -1997,7 +1997,12 @@ void FV_View::_moveInsPtNextPrevPage(bool bNext)
 
 	// TODO when moving to the prev page, we should move to its end, not begining
 	// try to locate next/prev page
-	fp_Page* pPage = (bNext ? pOldPage->getNext() : pOldPage->getPrev());
+	fp_Page* pPage = 0;
+
+	if (pOldPage)
+	{
+		pPage = (bNext ? pOldPage->getNext() : pOldPage->getPrev());
+	}
 
 	// if couldn't move, go to top of this page if we are looking for the previous page
 	// or the end of this page if we are looking for the next page
@@ -2184,6 +2189,7 @@ fp_Page *FV_View::_getCurrentPage(void)
 	fl_BlockLayout* pOldBlock;
 	fp_Run* pOldRun;
 	_findPositionCoords(iOldPoint, m_bPointEOL, xPoint, yPoint, xPoint2, yPoint2, iPointHeight, bDirection, &pOldBlock, &pOldRun);
+	UT_return_val_if_fail ( pOldRun, 0 );
 	fp_Line* pOldLine = pOldRun->getLine();
 	fp_Page* pOldPage = pOldLine->getPage();
 	return pOldPage;
