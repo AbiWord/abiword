@@ -934,9 +934,35 @@ bool IE_Exp_RTF::_write_rtf_header(void)
 // Write out the facingp and titlepg keywords so that we can export our fancy
 // header-footers to RTF
 //
-	_rtf_keyword("facingp"); // Allow odd-even headers/footers
-	_rtf_keyword("titlepg"); // Allow first page headers/footers
-
+	PL_StruxDocHandle sdh = NULL;
+	getDoc()->getStruxOfTypeFromPosition(2,PTX_Section,&sdh);
+	if(sdh != NULL)
+	{
+	        PT_AttrPropIndex api = getDoc()->getAPIFromSDH(sdh);
+		const PP_AttrProp * pSectionAP = NULL;
+		getDoc()->getAttrProp(api,&pSectionAP);
+		const char * pszAtt = NULL;
+		if(pSectionAP != NULL)
+		{
+		     if(pSectionAP->getAttribute("header-even",pszAtt))
+		     {
+		          _rtf_keyword("facingp"); // Allow odd-even headers/footers
+		     }
+		     else if(pSectionAP->getAttribute("footer-even",pszAtt))
+		     {
+		          _rtf_keyword("facingp"); // Allow odd-even headers/footers
+		     }
+		     if(pSectionAP->getAttribute("header-first",pszAtt))
+		     {
+			 _rtf_keyword("titlepg"); // Allow first page headers/footers
+		     }
+		     else if(pSectionAP->getAttribute("footer-first",pszAtt))
+		     {
+			 _rtf_keyword("titlepg"); // Allow first page headers/footers
+		     }
+		}
+		
+	}
 	// revisions stuff
 	const UT_GenericVector<AD_Revision*> & Revs = getDoc()->getRevisions();
 
