@@ -9897,6 +9897,13 @@ Defun(setPosImage)
 	sProp = "position-to";
 	sVal = "column-above-text";
 	UT_String_setProperty(sFrameProps,sProp,sVal);
+	if(pView->isHdrFtrEdit() || pView->isInHdrFtr(pos))
+	{
+		pView->clearHdrFtrEdit();
+		pView->warpInsPtToXY(0,0,false);
+		pos = pView->getPoint();
+	}
+
 //
 // Now calculate the Y offset to the Column
 //

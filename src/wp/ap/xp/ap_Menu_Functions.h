@@ -72,6 +72,7 @@ Defun_EV_GetMenuItemState_Fn(ap_GetState_InTableIsRepeat);
 Defun_EV_GetMenuItemState_Fn(ap_GetState_InTableMerged);
 Defun_EV_GetMenuItemState_Fn(ap_GetState_InFootnote);
 Defun_EV_GetMenuItemState_Fn(ap_GetState_InImage);
+Defun_EV_GetMenuItemState_Fn(ap_GetState_SetPosImage);
 Defun_EV_GetMenuItemState_Fn(ap_GetState_InFrame);
 Defun_EV_GetMenuItemState_Fn(ap_GetState_AlwaysDisabled); // REMOVE ME
 Defun_EV_GetMenuItemState_Fn(ap_GetState_Recent);

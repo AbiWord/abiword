@@ -1481,6 +1481,35 @@ Defun_EV_GetMenuItemState_Fn(ap_GetState_InImage)
 	return EV_MIS_Gray;
 }
 
+Defun_EV_GetMenuItemState_Fn(ap_GetState_SetPosImage)
+{
+        ABIWORD_VIEW;
+  	UT_return_val_if_fail (pView, EV_MIS_Gray);
+	bool bCont= false;
+	if(pView->isImageSelected())
+	{
+		bCont = true;
+	}
+	if(!bCont & pView->getFrameEdit()->isActive())
+	{
+	        fl_FrameLayout * pFL = pView->getFrameLayout();
+		if(pFL && pFL->getFrameType() == FL_FRAME_TEXTBOX_TYPE)
+		{
+		        return EV_MIS_Gray;
+		}
+		bCont = true;
+	}
+	if(!bCont)
+	{
+	  return EV_MIS_Gray;
+	}
+	if(pView->isHdrFtrEdit() || pView->isInHdrFtr(pView->getPoint()))
+	{
+		return EV_MIS_Gray;
+	}
+	return EV_MIS_ZERO;
+}
+
 Defun_EV_GetMenuItemState_Fn(ap_GetState_InFrame)
 {
 	ABIWORD_VIEW;
