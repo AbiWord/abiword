@@ -1988,6 +1988,20 @@ bool IE_Imp_XHTML::appendFmt(const UT_GenericVector<XML_Char*>* pVecAttributes)
 		}
 	if(!bInTable())
 		{
+			if(pVecAttributes->getItemCount() >= 2)
+			{
+				XML_Char * pszProp = pVecAttributes->getNthItem(0);
+				XML_Char * pszVal = pVecAttributes->getNthItem(1);
+				if(UT_strcmp(pszProp,"props") == 0 && strlen(pszVal) == 0)
+				{
+					const_cast<UT_GenericVector<XML_Char*>*>(pVecAttributes)->deleteNthItem(0);
+					const_cast<UT_GenericVector<XML_Char*>*>(pVecAttributes)->deleteNthItem(0);
+				}
+				if(pVecAttributes->getItemCount() == 0)
+				{
+					return true;
+				}
+			}
 			return getDoc()->appendFmt(pVecAttributes);
 		}
 	else
