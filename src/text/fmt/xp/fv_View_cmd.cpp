@@ -3994,7 +3994,11 @@ void FV_View::cmdSelect(UT_sint32 xPos, UT_sint32 yPos, FV_DocPos dpBeg, FV_DocP
 			fp_Line * pLine = pRun->getLine();
 			if(pLine == static_cast<fp_Line *>(pBlock->getFirstContainer()))
 			{
-				iPosLeft = pBlock->getPosition() -1;
+				PT_DocPosition iPosNew = pBlock->getPosition() -1;
+				if(iPosNew < iPosLeft)
+				{
+				     iPosLeft = iPosNew;
+				}
 				bRedraw = true; // Need to trick a global redraw in 
 				                // header/footer
 			}

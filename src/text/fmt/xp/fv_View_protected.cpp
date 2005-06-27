@@ -333,7 +333,8 @@ void FV_View::_deleteSelection(PP_AttrProp *p_AttrProp_Before, bool bNoUpdate)
 	UT_uint32 iSelAnchor = m_Selection.getSelectionAnchor();
 	if(iSelAnchor < 2)
 	{
-		iSelAnchor = 2;
+		if(!m_pDoc->isTableAtPos(iSelAnchor))
+			iSelAnchor = 2;
 	}
 	if(m_FrameEdit.isActive())
 	{
@@ -937,7 +938,15 @@ PT_DocPosition FV_View::_getDocPosFromPoint(PT_DocPosition iPoint, FV_DocPos dp,
 	{
 		bool bRes = getEditableBounds(false, iPos);
 		UT_ASSERT(bRes);
-
+		fl_DocSectionLayout * pDSL = m_pLayout->getFirstSection();
+		if(pDSL)
+		{
+			fl_ContainerLayout * pCL = pDSL->getFirstLayout();
+			if(pCL->getContainerType() == FL_CONTAINER_TABLE)
+			{
+				iPos = pCL->getPosition(true);
+			}
+		}
 		return iPos;
 	}
 
