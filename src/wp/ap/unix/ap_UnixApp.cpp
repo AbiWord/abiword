@@ -671,6 +671,20 @@ void AP_UnixApp::pasteFromClipboard(PD_DocumentRange * pDocRange, bool bUseClipb
 	}
     else if (AP_UnixClipboard::isImageTag(szFormatFound))
       {
+		  UT_DEBUGMSG(("Format Found = %s \n",szFormatFound));
+		  if(strncmp(szFormatFound,"application",11) == 0) // embedded object
+		  {
+			  IE_Imp * pImp = NULL;
+			  IEGraphicFileType iegft = IE_Imp::fileTypeForContents(reinterpret_cast<char *>(const_cast<unsigned char *>(pData)),iLen);
+			  IE_Imp::constructImporter(pDocRange->m_pDoc,NULL,iegft,&pImp);
+			  if(pImp == NULL)
+			  {
+					  goto retry_text;
+			  }
+			  bool b = pImp->pasteFromBuffer(pDocRange,pData,iLen);
+			  DELETEP(pImp);
+			  return;
+		  }
 		  IE_ImpGraphic * pIEG = NULL;
 		  FG_Graphic * pFG = NULL;
 		  IEGraphicFileType iegft = IEGFT_Unknown;
