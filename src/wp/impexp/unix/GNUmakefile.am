@@ -28,3 +28,6 @@ noinst_LTLIBRARIES = libImpExp_unix.la
 libImpExp_unix_la_SOURCES = \
 	ie_impexp_RegisterUnix.cpp \
 	ie_impGraphic_GdkPixbuf.cpp
+
+install-data-hook:
+	@mkdir -p $(libabiword_includedir_private) && cp *.h $(libabiword_includedir_private)

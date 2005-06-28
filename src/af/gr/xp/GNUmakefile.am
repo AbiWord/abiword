@@ -37,3 +37,6 @@ ABI_SOURCE = \
 	gr_ContextGlyph.cpp		\
 	gr_RenderInfo.cpp		\
 	gr_EmbedManager.cpp
+
+install-data-hook:
+	@mkdir -p $(libabiword_includedir_private) && cp *.h $(libabiword_includedir_private)

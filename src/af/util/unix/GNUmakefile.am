@@ -32,3 +32,6 @@ libUtil_unix_la_SOURCES = \
 	ut_unixIdle.cpp		\
 	ut_path.cpp		\
 	ut_unixMisc.cpp
+
+install-data-hook:
+	@mkdir -p $(libabiword_includedir_private) && cp *.h $(libabiword_includedir_private)

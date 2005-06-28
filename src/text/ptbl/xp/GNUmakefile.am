@@ -77,3 +77,6 @@ libPtbl_la_SOURCES= \
 	px_CR_TestRoutines.cpp  \
 	fd_Field.cpp	\
 	pd_Iterator.cpp
+
+install-data-hook:
+	@mkdir -p $(libabiword_includedir_private) && cp *.h $(libabiword_includedir_private)

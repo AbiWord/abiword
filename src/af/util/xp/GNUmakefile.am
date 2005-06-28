@@ -94,3 +94,6 @@ ABI_SOURCE = \
 	ut_IntStrMap.cpp \
         ut_crc32.cpp \
 	ut_uuid.cpp
+
+install-data-hook:
+	@mkdir -p $(libabiword_includedir_private) && cp *.h $(libabiword_includedir_private)

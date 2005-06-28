@@ -55,3 +55,6 @@ libImpExp_xp_la_SOURCES = \
 	ie_imp_PasteListener.cpp	\
 	ie_mailmerge.cpp		\
 	ie_TOC.cpp
+
+install-data-hook:
+	@mkdir -p $(libabiword_includedir_private) && cp *.h $(libabiword_includedir_private)

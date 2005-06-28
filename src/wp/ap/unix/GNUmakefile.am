@@ -120,3 +120,6 @@ libWpAp_unix_la_SOURCES = \
 	abiintwidget.cpp				\
 	ap_@ABI_FE@Dialog_PageSetup.cpp \
 	ap_@ABI_FE@Dialog_Latex.cpp 
+
+install-data-hook:
+	@mkdir -p $(libabiword_includedir_private) && cp *.h $(libabiword_includedir_private)

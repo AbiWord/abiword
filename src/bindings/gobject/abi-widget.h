@@ -23,7 +23,12 @@
 
 
 #include <gtk/gtk.h>
-#include "abi-widget-priv.h"
+/* dirty hack */
+#ifdef ABIWORD_INTERNAL
+#include "private/abi-widget-priv.h"
+#else
+#include <abiword/private/abi-widget-priv.h>
+#endif /* ABIWORD_INTERNAL */
 #include "abi-doc.h"
 
 

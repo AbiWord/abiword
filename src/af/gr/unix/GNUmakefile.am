@@ -28,3 +28,6 @@ ABI_SOURCE = \
 	gr_UnixGraphics.cpp	\
 	gr_UnixImage.cpp	\
 	gr_UnixPangoGraphics.cpp
+
+install-data-hook:
+	@mkdir -p $(libabiword_includedir_private) && cp *.h $(libabiword_includedir_private)

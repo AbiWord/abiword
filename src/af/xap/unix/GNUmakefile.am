@@ -91,3 +91,6 @@ libXap_unix_la_SOURCES=\
 	xap_UnixDlg_History.cpp \
 	xap_UnixDlg_DocComparison.cpp \
 	xap_UnixWidget.cpp
+
+install-data-hook:
+	@mkdir -p $(libabiword_includedir_private) && cp *.h $(libabiword_includedir_private)

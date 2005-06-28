@@ -33,3 +33,6 @@ ABI_SOURCE = \
 	 ev_UnixMouse.cpp		\
 	 ev_UnixToolbar.cpp		\
 	 ev_UnixToolbar_ViewListener.cpp
+
+install-data-hook:
+	@mkdir -p $(libabiword_includedir_private) && cp *.h $(libabiword_includedir_private)

@@ -36,9 +36,13 @@
 #include "ap_UnixViewListener.h"
 
 #include "abi-widget.h"
-#include "abi-widget-priv.h"
-#include "ap_WidgetApp.h"
 
+/* dirty hack */
+#ifdef ABIWORD_INTERNAL
+#include "private/ap_WidgetApp.h"
+#else
+#include <abiword/private/ap_WidgetApp.h>
+#endif /* ABIWORD_INTERNAL */
 
 /* TODO */
 #define UT_DEBUGMSG(M) printf M
