@@ -18,13 +18,10 @@
 
 include $(top_srcdir)/includes.mk
 
-# change this below to match the rest of the tree
-ABI_OBJECTS=xp/*.o 
-
 SUBDIRS = xp 
 
-check_LIBRARIES= libTF.a
+check_LTLIBRARIES = libTF.la
 
-libTF_a_SOURCES = 
+libTF_la_SOURCES = 
 
-libTF_a_LIBADD = $(ABI_OBJECTS) 
+libTF_la_LIBADD = xp/libTF_xp.la

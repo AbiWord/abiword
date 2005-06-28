@@ -20,7 +20,7 @@ include $(top_srcdir)/includes.mk
 
 INCLUDES = $(AF_INCLUDES) $(WP_INCLUDES) $(ICONV_INCLUDES) @SPELL_CFLAGS@
 
-noinst_LIBRARIES = libSpell.a
+noinst_LTLIBRARIES = libSpell.la
 
 COMMONSOURCES = spell_manager.cpp barbarisms.cpp
 
@@ -36,4 +36,4 @@ else
 ISPELLSOURCES = 
 endif
 
-libSpell_a_SOURCES = $(COMMONSOURCES) $(ENCHANTSOURCES) $(ISPELLSOURCES)
+libSpell_la_SOURCES = $(COMMONSOURCES) $(ENCHANTSOURCES) $(ISPELLSOURCES)

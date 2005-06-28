@@ -22,9 +22,9 @@ INCLUDES= $(TEXT_INCLUDES) $(WP_INCLUDES) $(AF_INCLUDES) $(OTHER_INCLUDES)
 
 SUBDIRS = t
 
-noinst_LIBRARIES = libPtbl.a 
+noinst_LTLIBRARIES = libPtbl.la
 
-libPtbl_a_SOURCES= \
+libPtbl_la_SOURCES= \
 	pd_Document.cpp			\
 	pd_Document_TestRoutines.cpp	\
 	pd_Style.cpp			\

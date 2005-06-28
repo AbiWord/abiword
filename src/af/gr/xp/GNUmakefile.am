@@ -20,9 +20,11 @@ include $(top_srcdir)/includes.mk
 
 INCLUDES = $(AF_INCLUDES) $(ICONV_INCLUDES)
 
-noinst_LIBRARIES = libGr_xp.a
+noinst_LTLIBRARIES = libGr_xp.la
 
-libGr_xp_a_SOURCES=\
+libGr_xp_la_SOURCES = $(ABI_SOURCE)
+
+ABI_SOURCE = \
 	gr_CharWidths.cpp		\
 	gr_CharWidthsCache.cpp		\
 	gr_DrawArgs.cpp			\
@@ -31,7 +33,7 @@ libGr_xp_a_SOURCES=\
 	gr_Image.cpp			\
 	gr_VectorImage.cpp		\
 	gr_Caret.cpp			\
-	gr_Painter.cpp \
-	gr_ContextGlyph.cpp \
-	gr_RenderInfo.cpp \
-	gr_EmbedManager.cpp 
+	gr_Painter.cpp			\
+	gr_ContextGlyph.cpp		\
+	gr_RenderInfo.cpp		\
+	gr_EmbedManager.cpp

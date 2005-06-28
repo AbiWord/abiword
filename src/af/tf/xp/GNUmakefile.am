@@ -21,9 +21,10 @@ include $(top_srcdir)/includes.mk
 
 INCLUDES= $(AF_INCLUDES) $(OTHER_INCLUDES) $(ICONV_INCLUDES) $(LIBPNG_INCLUDES)
 
-check_LIBRARIES = libTF_xp.a
+CFLAGS += -frepo 
 
-CFLAGS+=-frepo 
+check_LTLIBRARIES = libTF_xp.la
 
+libTF_xp_la_SOURCES = $(ABI_SOURCE)
 
-libTF_xp_a_SOURCES= tf_test.cpp
+ABI_SOURCE = tf_test.cpp

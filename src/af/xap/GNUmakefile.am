@@ -21,23 +21,27 @@ include $(top_srcdir)/includes.mk
 
 SUBDIRS = xp @PLATFORM@
 
-noinst_LIBRARIES= libXap.a
-check_LIBRARIES = libTestXap.a 
+noinst_LTLIBRARIES= libXap.la
+
+check_LTLIBRARIES = libTestXap.la 
 
 if WITH_GNOME
-objects = $(ABI_OBJECTS) $(ABI_GNOME_OBJECTS)
+ABI_GNOME = unix/gnome/libXap_Gnome.la
+ABI_HILDON = 
 else
 if WITH_HILDON
-objects = $(ABI_OBJECTS) $(ABI_HILDON_OBJECTS)
+ABI_GNOME = 
+ABI_HILDON = unix/hildon/libXap_hildon.la
 else
-objects = $(ABI_OBJECTS)
+ABI_GNOME = 
+ABI_HILDON = 
 endif
 endif
 
-libXap_a_SOURCES = 
+libXap_la_SOURCES = 
 
-libXap_a_LIBADD = $(objects) 
+libXap_la_LIBADD = xp/libXap_xp.la unix/libXap_unix.la $(ABI_GNOME) $(ABI_HILDON)
 
-libTestXap_a_SOURCES =
+libTestXap_la_SOURCES =
 
-libTestXap_a_LIBADD = @PLATFORM@/t/*.o
+libTestXap_la_LIBADD = unix/t/libTestXap_unix.la

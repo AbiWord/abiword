@@ -32,7 +32,7 @@ INCLUDES= \
 	$(AF_INCLUDES) $(TEXT_INCLUDES) $(WP_INCLUDES) \
 	@GMODULE_CFLAGS@ @GTK_CFLAGS@ $(OTHER_INCLUDES) $(ICONV_INCLUDES)
 
-noinst_LIBRARIES = libWpAp_unix.a
+noinst_LTLIBRARIES = libWpAp_unix.la
 
 gladedir=$(datadir)/$(PACKAGE)/AbiWord/glade
 
@@ -68,7 +68,7 @@ glade_DATA = \
 	ap_UnixDialog_Latex.glade \
 	$(cond_glade)
 
-libWpAp_unix_a_SOURCES=\
+libWpAp_unix_la_SOURCES = \
 	ap_@ABI_FE@App.cpp			\
 	ap_@ABI_FE@AppImpl.cpp			\
 	ap_@ABI_FE@Clipboard.cpp		\

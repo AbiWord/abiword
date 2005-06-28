@@ -18,7 +18,7 @@
 
 include $(top_srcdir)/includes.mk
 
-noinst_LIBRARIES = libApkg.a
+noinst_LTLIBRARIES = libApkg.la
 
-libApkg_a_SOURCES=\
+libApkg_la_SOURCES = \
 	prefix.c

@@ -25,6 +25,40 @@ AC_CONFIG_SRCDIR([src/af/ev/xp/ev_Menu.h])
 AC_CONFIG_AUX_DIR(ac-helpers)
 dnl AC_CONFIG_HEADERS(config.h)
 
+dnl This next section is courtesy gtk+
+dnl
+# Making releases:
+#   LIBABI_MICRO_VERSION += 1;
+#   LIBABI_INTERFACE_AGE += 1;
+#   LIBABI_BINARY_AGE += 1;
+# if any functions have been added, set LIBABI_INTERFACE_AGE to 0.
+# if backwards compatibility has been broken,
+# set LIBABI_BINARY_AGE and LIBABI_INTERFACE_AGE to 0.
+#
+LIBABI_MAJOR_VERSION=2
+LIBABI_MINOR_VERSION=4
+LIBABI_MICRO_VERSION=0
+LIBABI_INTERFACE_AGE=0
+LIBABI_BINARY_AGE=0
+LIBABI_VERSION=$LIBABI_MAJOR_VERSION.$LIBABI_MINOR_VERSION.$LIBABI_MICRO_VERSION
+
+AC_SUBST(LIBABI_MAJOR_VERSION)
+AC_SUBST(LIBABI_MINOR_VERSION)
+AC_SUBST(LIBABI_MICRO_VERSION)
+AC_SUBST(LIBABI_INTERFACE_AGE)
+AC_SUBST(LIBABI_BINARY_AGE)
+AC_SUBST(LIBABI_VERSION)
+
+# libtool versioning
+LT_RELEASE=$LIBABI_MAJOR_VERSION.$LIBABI_MINOR_VERSION
+LT_CURRENT=`expr $LIBABI_MICRO_VERSION - $LIBABI_INTERFACE_AGE`
+LT_REVISION=$LIBABI_INTERFACE_AGE
+LT_AGE=`expr $LIBABI_BINARY_AGE - $LIBABI_INTERFACE_AGE`
+AC_SUBST(LT_RELEASE)
+AC_SUBST(LT_CURRENT)
+AC_SUBST(LT_REVISION)
+AC_SUBST(LT_AGE)
+
 AM_INIT_AUTOMAKE(AbiSuite-2.4,2.3.2)
 
 if test "$srcdir" = "."; then
@@ -58,8 +92,8 @@ ABI_FEATURE_DEFS=""
 AC_PROG_INSTALL
 AC_PROG_LN_S
 AC_PROG_MAKE_SET
-AC_PROG_RANLIB
-dnl AC_PROG_LIBTOOL
+AC_PROG_LIBTOOL
+
 AM_ACLOCAL_INCLUDE(ac-helpers)
 
 dnl Detect our platform (unix, win32, etc)
@@ -428,7 +462,6 @@ if test "$VALGRIND" != ""; then
 fi
 AC_SUBST(VALGRIND)
 
-
 AC_CONFIG_FILES([GNUmakefile
  src/GNUmakefile
  src/af/GNUmakefile
@@ -519,6 +552,7 @@ AC_CONFIG_FILES([GNUmakefile
  src/bindings/perl/GNUmakefile
  src/pkg/linux/apkg/abiword-gnome.apspec
  src/pkg/linux/apkg/abiword-gtk.apspec
+ libabiword-1.pc.in
 ])
 AC_OUTPUT
 

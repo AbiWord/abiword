@@ -18,22 +18,16 @@
 
 include $(top_srcdir)/includes.mk
 
-#redefine that for Cocoa. Because on Cocoa we do not implement ut
-if WITH_COCOA
-ABI_BE_OBJECTS=xp/*.o unix/*.o
-else
-ABI_BE_OBJECTS=$(ABI_OBJECTS)
-endif
-
 SUBDIRS = xp @BE_PLATFORM@
 
-noinst_LIBRARIES = libUtil.a 
-check_LIBRARIES = libTestUtil.a
+noinst_LTLIBRARIES = libUtil.la
 
-libUtil_a_SOURCES = 
+check_LTLIBRARIES = libTestUtil.la
 
-libUtil_a_LIBADD = $(ABI_BE_OBJECTS)
+libUtil_la_SOURCES = 
 
-libTestUtil_a_SOURCES =
+libUtil_la_LIBADD = xp/libUtil_xp.la unix/libUtil_unix.la
 
-libTestUtil_a_LIBADD = $(ABI_TEST_OBJECTS)
+libTestUtil_la_SOURCES =
+
+libTestUtil_la_LIBADD = xp/t/libTestUtil_xp.la

@@ -20,8 +20,6 @@ include $(top_srcdir)/includes.mk
 
 CLEANFILES = abi_ver.cpp
 
-bin_PROGRAMS = AbiWord-2.4
-
 INCLUDES = \
 	-DABIWORD_APP_NAME="\"$(ABIWORD_APP_NAME)\"" \
 	-DABISUITE_HOME="\"$(pkgdatadir)\"" \
@@ -29,11 +27,28 @@ INCLUDES = \
 	$(PLUGIN_DEFS) -I$(top_srcdir)/../abiword-plugins \
 	$(BINRELOC_CFLAGS)
 
-REPEAT_LIBS = $(ABI_LIBS) $(ABI_LIBS) $(ABI_LIBS) $(ABI_LIBS)
+bin_PROGRAMS = AbiWord-2.4
 
-AbiWord_2_4_LDADD = @PLUGIN_LIST@ $(REPEAT_LIBS) $(PLATFORM_LIBS) $(OTHER_LIBS) 
+lib_LTLIBRARIES = libabiword-1.la
 
-AbiWord_2_4_SOURCES = abi_ver.cpp UnixMain.cpp
+libabiword_1_la_SOURCES = abi_ver.cpp
+libabiword_1_la_LDFLAGS = -version-info $(LT_CURRENT):$(LT_REVISION):$(LT_AGE) -export-dynamic
+libabiword_1_la_LIBADD = \
+	../../../af/ev/libEv.la \
+	../../../af/gr/libGr.la \
+	../../../af/util/libUtil.la \
+	../../../af/xap/libXap.la \
+	../../../text/fmt/xp/libFmt.la \
+	../../../text/ptbl/xp/libPtbl.la \
+	../../../other/spell/xp/libSpell.la \
+	../../../other/ttftool/unix/libTtfTool.la \
+	../../ap/libAp.la \
+	../../impexp/libImpExp.la \
+	$(PLATFORM_LIBS) $(OTHER_LIBS)
+
+AbiWord_2_4_SOURCES = UnixMain.cpp
+
+AbiWord_2_4_LDADD = @PLUGIN_LIST@ libabiword-1.la $(PLATFORM_LIBS) $(OTHER_LIBS) 
 
 abi_ver.cpp:	@PLUGIN_LIST@
 	cp $(srcdir)/../xp/abi_ver.cpp .

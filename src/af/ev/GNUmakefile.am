@@ -20,14 +20,14 @@ include $(top_srcdir)/includes.mk
 
 SUBDIRS = xp @PLATFORM@
 
-noinst_LIBRARIES= libEv.a
+noinst_LTLIBRARIES = libEv.la
 
 if WITH_GNOME
-objects = $(ABI_OBJECTS) $(ABI_GNOME_OBJECTS)
+ABI_GNOME = unix/gnome/libEv_gnome.la
 else
-objects = $(ABI_OBJECTS)
+ABI_GNOME = 
 endif
 
-libEv_a_SOURCES = 
+libEv_la_SOURCES = 
 
-libEv_a_LIBADD = $(objects)
+libEv_la_LIBADD = xp/libEv_xp.la unix/libEv_unix.la $(ABI_GNOME)

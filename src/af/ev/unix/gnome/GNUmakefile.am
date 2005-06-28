@@ -23,9 +23,9 @@ if WITH_GNOME
 INCLUDES= @GTK_CFLAGS@ @GMODULE_CFLAGS@ \
 	$(AF_INCLUDES) $(WP_INCLUDES) $(TEXT_INCLUDES) $(ICONV_INCLUDES) @GNOME_CFLAGS@
 
-noinst_LIBRARIES = libEv_gnome.a
+noinst_LTLIBRARIES = libEv_gnome.la
 
-libEv_gnome_a_SOURCES=		\
-		ev_GnomeToolbar.cpp
+libEv_gnome_la_SOURCES = \
+	ev_GnomeToolbar.cpp
 
 endif

@@ -20,10 +20,11 @@ include $(top_srcdir)/includes.mk
 
 INCLUDES= $(PSICONV_INCLUDES) $(WP_INCLUDES) \
 	$(TEXT_INCLUDES) $(AF_INCLUDES)  $(ICONV_INCLUDES) \
-	$(LIBPNG_INCLUDES) $(OTHER_INCLUDES)  \
+	$(LIBPNG_INCLUDES) $(OTHER_INCLUDES) \
 	@GMODULE_CFLAGS@ @GTK_CFLAGS@ @GNOME_CFLAGS@
 
-noinst_LIBRARIES = libImpExp_unix.a
+noinst_LTLIBRARIES = libImpExp_unix.la
 
-libImpExp_unix_a_SOURCES = ie_impexp_RegisterUnix.cpp \
-			ie_impGraphic_GdkPixbuf.cpp
+libImpExp_unix_la_SOURCES = \
+	ie_impexp_RegisterUnix.cpp \
+	ie_impGraphic_GdkPixbuf.cpp

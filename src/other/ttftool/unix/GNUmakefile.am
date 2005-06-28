@@ -20,6 +20,6 @@ include $(top_srcdir)/includes.mk
 
 INCLUDES = $(AF_INCLUDES) $(ICONV_INCLUDES) 
 
-noinst_LIBRARIES = libTtfTool.a
+noinst_LTLIBRARIES = libTtfTool.la
 
-libTtfTool_a_SOURCES = parse.c ps.c ttfutils.c
+libTtfTool_la_SOURCES = parse.c ps.c ttfutils.c

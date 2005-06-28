@@ -18,33 +18,35 @@
 
 include $(top_srcdir)/includes.mk
 
-INCLUDES= $(AF_INCLUDES) $(OTHER_INCLUDES) $(ICONV_INCLUDES) $(LIBPNG_INCLUDES)
+SUBDIRS = t
 
-noinst_LIBRARIES = libUtil_xp.a
+CFLAGS += -frepo
+
+INCLUDES = $(AF_INCLUDES) $(OTHER_INCLUDES) $(ICONV_INCLUDES) $(LIBPNG_INCLUDES)
+
+noinst_LTLIBRARIES = libUtil_xp.la
 
 if SCRIPT
-SCRIPT_OBJ=ut_PerlBindings.cpp
+SCRIPT_OBJ = ut_PerlBindings.cpp
 else
-SCRIPT_OBJ=
+SCRIPT_OBJ = 
 endif
 
 if HAVE_EXPAT
-XML_OBJ=ut_xml_expat.cpp
+XML_OBJ = ut_xml_expat.cpp
 else
-XML_OBJ=ut_xml_libxml2.cpp
+XML_OBJ = ut_xml_libxml2.cpp
 endif
 
 if HAVE_THREADS
-THREAD_OBJ=ut_thread.cpp
+THREAD_OBJ = ut_thread.cpp
 else
-THREAD_OBJ=
+THREAD_OBJ = 
 endif
 
-CFLAGS+=-frepo
+libUtil_xp_la_SOURCES = $(ABI_SOURCE)
 
-SUBDIRS = t
-
-libUtil_xp_a_SOURCES=\
+ABI_SOURCE = \
 	ut_AdobeEncoding.cpp 	\
 	ut_allocator.cpp	\
 	ut_base64.cpp		\

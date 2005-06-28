@@ -11,6 +11,21 @@
 rm -rf autom4te.cache
 rm -f autogen.err
 
+# Setup libtool
+# 
+echo "Seting up libtool: $LIBTOOLIZE --force --copy"
+
+if test "x`uname`" = "xDarwin"; then
+    LIBTOOLIZE=glibtoolize
+else
+    LIBTOOLIZE=libtoolize
+fi
+
+$LIBTOOLIZE --force --copy || {
+    echo "error: libtoolize failed"
+    exit 1
+}
+
 automake --version | perl -ne 'if (/\(GNU automake\) ([0-9].[0-9])/) {print;  if ($1 < 1.4) {exit 1;}}'
 
 if [ $? -ne 0 ]; then

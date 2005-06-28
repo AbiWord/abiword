@@ -22,14 +22,14 @@ INCLUDES= -UVERSION @GMODULE_CFLAGS@ @GTK_CFLAGS@ \
 	$(AF_INCLUDES) $(WP_INCLUDES) $(TEXT_INCLUDES) \
 	@GNOME_CFLAGS@
 
-noinst_LIBRARIES = libXap_Gnome.a
+noinst_LIBRARIES = libXap_Gnome.la
 
-libXap_Gnome_a_SOURCES=\
+libXap_Gnome_la_SOURCES = \
 	e-colors.c				\
         widget-color-combo.c                    \
 	color-palette.c				\
 	color-group.c				\
 	gal-combo-box.c				\
 	gnm-marshalers.c			\
-	xap_UnixGnomeDlg_About.cpp	\
+	xap_UnixGnomeDlg_About.cpp		\
 	xap_UnixGnomeDlg_ClipArt.cpp

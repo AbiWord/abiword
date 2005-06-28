@@ -22,9 +22,9 @@ INCLUDES=  $(OTHER_INCLUDES) $(PSICONV_INCLUDES) $(WP_INCLUDES) \
 	$(TEXT_INCLUDES) $(AF_INCLUDES) $(WV_INCLUDES) $(ICONV_INCLUDES) \
 	$(LIBPNG_INCLUDES)
 
-noinst_LIBRARIES = libImpExp_xp.a
+noinst_LTLIBRARIES = libImpExp_xp.la
 
-libImpExp_xp_a_SOURCES=\
+libImpExp_xp_la_SOURCES = \
 	ie_exp_AbiWord_1.cpp		\
 	ie_exp_AWT.cpp			\
 	ie_exp.cpp			\

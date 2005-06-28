@@ -20,8 +20,8 @@ include $(top_srcdir)/includes.mk
 
 SUBDIRS= xp @PLATFORM@
 
-noinst_LIBRARIES= libGr.a
+noinst_LTLIBRARIES = libGr.la
 
-libGr_a_SOURCES = 
+libGr_la_SOURCES = 
 
-libGr_a_LIBADD = $(ABI_OBJECTS)
+libGr_la_LIBADD = xp/libGr_xp.la unix/libGr_unix.la

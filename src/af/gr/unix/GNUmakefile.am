@@ -20,10 +20,11 @@ include $(top_srcdir)/includes.mk
 
 INCLUDES= @GTK_CFLAGS@ @GMODULE_CFLAGS@ $(AF_INCLUDES) $(ICONV_INCLUDES)
 
-noinst_LIBRARIES = libGr_unix.a
+noinst_LTLIBRARIES = libGr_unix.la
 
-libGr_unix_a_SOURCES=\
+libGr_unix_la_SOURCES = $(ABI_SOURCE)
+
+ABI_SOURCE = \
 	gr_UnixGraphics.cpp	\
-	gr_UnixImage.cpp \
+	gr_UnixImage.cpp	\
 	gr_UnixPangoGraphics.cpp
-

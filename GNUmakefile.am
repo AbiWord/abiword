@@ -1,4 +1,6 @@
 
+include $(top_srcdir)/includes.mk
+
 SUBDIRS = src
 
 expat_peerdir=$(top_builddir)/../expat
@@ -12,6 +14,12 @@ desktopdir = $(datadir)/applications
 
 icon_DATA = abiword_48.png
 icondir= $(datadir)/icons
+
+pkgconfigdir = $(libdir)/pkgconfig
+pkgconfig_DATA = libabiword-1.pc
+
+libabiword-1.pc: libabiword-1.pc.in
+	sed -e "s|§OTHER_LIBS§|$(OTHER_LIBS)|g" libabiword-1.pc.in > libabiword-1.pc
 
 # Hack: make sure that the PEERS stuff is build first
 # We can not use the all target, because on parallel builds there is no

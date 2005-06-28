@@ -17,6 +17,3 @@
 ## 02111-1307, USA.
 
 SUBDIRS = ap impexp main test
-
-
-

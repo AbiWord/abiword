@@ -21,7 +21,7 @@ include $(top_srcdir)/includes.mk
 
 INCLUDES= $(TEXT_INCLUDES) $(WP_INCLUDES) $(AF_INCLUDES) $(OTHER_INCLUDES)
 
-check_LIBRARIES = libTestPtbl.a
+check_LTLIBRARIES = libTestPtbl.la
 
-libTestPtbl_a_SOURCES= \
+libTestPtbl_la_SOURCES = \
 	pt_PieceTable.t.cpp

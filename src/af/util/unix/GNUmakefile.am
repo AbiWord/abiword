@@ -20,9 +20,9 @@ include $(top_srcdir)/includes.mk
 
 INCLUDES= @GMODULE_CFLAGS@ @GTK_CFLAGS@ $(AF_INCLUDES)
 
-noinst_LIBRARIES = libUtil_unix.a
+noinst_LTLIBRARIES = libUtil_unix.la
 
-libUtil_unix_a_SOURCES=\
+libUtil_unix_la_SOURCES = \
 	ut_debugmsg.cpp		\
 	ut_files.cpp		\
 	ut_unixAssert.cpp	\
@@ -30,5 +30,5 @@ libUtil_unix_a_SOURCES=\
 	ut_unixString.cpp	\
 	ut_unixTimer.cpp	\
 	ut_unixIdle.cpp		\
-	ut_path.cpp	\
+	ut_path.cpp		\
 	ut_unixMisc.cpp

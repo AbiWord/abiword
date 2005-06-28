@@ -18,14 +18,15 @@
 
 include $(top_srcdir)/includes.mk
 
-CLEANFILES=ap_wp_splash.cpp ap_wp_sidebar.cpp
+CLEANFILES = ap_wp_splash.cpp ap_wp_sidebar.cpp
 
 INCLUDES= $(AF_INCLUDES) $(WP_INCLUDES) $(TEXT_INCLUDES) \
 	  $(OTHER_INCLUDES) $(ICONV_INCLUDES)
 
-noinst_LIBRARIES = libWpAp_xp.a
+noinst_LTLIBRARIES = libWpAp_xp.la
 
-libWpAp_xp_a_SOURCES=	ap_Args.cpp		\
+libWpAp_xp_la_SOURCES = \
+		ap_Args.cpp			\
 		ap_Convert.cpp			\
 		ap_Dialog_Background.cpp	\
 		ap_Dialog_HdrFtr.cpp		\

@@ -23,14 +23,29 @@ TESTS = testwrap.sh
 
 check_PROGRAMS = AbiWord-test
 
+check_LTLIBRARIES = libTestAbiWord.la
+
 INCLUDES = \
 	$(AF_INCLUDES) $(WP_INCLUDES) $(OTHER_INCLUDES) $(TEXT_INCLUDES)
 
-REPEAT_LIBS = $(ABI_LIBS) $(ABI_LIBS) $(ABI_LIBS) $(ABI_LIBS) $(ABI_LIBS)
-
-AbiWord_test_LDFLAGS = -Wl,-whole-archive $(ABI_TEST_LIBS) -Wl,-no-whole-archive
-
-AbiWord_test_LDADD =  $(ABI_TEST_LIBS) $(REPEAT_LIBS) $(PLATFORM_LIBS) $(OTHER_LIBS)
-
 AbiWord_test_SOURCES = test_main.cpp 
 
+AbiWord_test_LDADD = libTestAbiWord.la $(PLATFORM_LIBS) $(OTHER_LIBS)
+
+libTestAbiWord_la_SOURCES = 
+libTestAbiWord_la_LDFLAGS = -version-info $(LT_CURRENT):$(LT_REVISION):$(LT_AGE) -release $(LT_RELEASE) -export-dynamic
+libTestAbiWord_la_LIBADD = \
+	../../../af/ev/libEv.la \
+	../../../af/gr/libGr.la \
+	../../../af/util/libUtil.la \
+	../../../af/xap/libXap.la \
+	../../../test/fmt/xp/libFmt.la \
+	../../../test/ptbl/xp/libPtbl.la \
+	../../../other/spell/xp/libSpell.la \
+	../../../other/ttftool/unix/libTtfTool.la \
+	../../ap/libAp.la \
+	../../impexp/libImpExp.la \
+	../../../af/tf/libTF.la \
+	../../../af/util/libTestUtil.la \
+	../../../af/xap/libTestXap.la \
+	$(PLATFORM_LIBS) $(OTHER_LIBS)

@@ -20,14 +20,8 @@ include $(top_srcdir)/includes.mk
 
 SUBDIRS= xp @PLATFORM@
 
-noinst_LIBRARIES= libAp.a
+noinst_LTLIBRARIES= libAp.la
 
-if WITH_GNOME
-objects = $(ABI_OBJECTS) #$(ABI_GNOME_OBJECTS)
-else
-objects = $(ABI_OBJECTS)
-endif
+libAp_la_SOURCES = 
 
-libAp_a_SOURCES = 
-
-libAp_a_LIBADD = $(objects) 
+libAp_la_LIBADD = xp/libWpAp_xp.la unix/libWpAp_unix.la

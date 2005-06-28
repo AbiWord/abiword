@@ -18,11 +18,13 @@
 
 include $(top_srcdir)/includes.mk
 
-INCLUDES= $(AF_INCLUDES) $(OTHER_INCLUDES)
+INCLUDES = $(AF_INCLUDES) $(OTHER_INCLUDES)
 
-noinst_LIBRARIES = libEv_xp.a
+noinst_LTLIBRARIES = libEv_xp.la
 
-libEv_xp_a_SOURCES=	\
+libEv_xp_la_SOURCES = $(ABI_SOURCE)
+
+ABI_SOURCE = \
 	ev_EditBinding.cpp	\
 	ev_EditEventMapper.cpp	\
 	ev_EditMethod.cpp	\
@@ -38,4 +40,3 @@ libEv_xp_a_SOURCES=	\
 	ev_Toolbar_Control.cpp	\
 	ev_Toolbar_Labels.cpp	\
 	ev_Toolbar_Layouts.cpp
-

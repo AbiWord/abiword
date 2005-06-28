@@ -20,10 +20,8 @@ include $(top_srcdir)/includes.mk
 
 SUBDIRS= xp @PLATFORM@
 
-noinst_LIBRARIES= libImpExp.a
+noinst_LTLIBRARIES= libImpExp.la
 
-objects = $(ABI_OBJECTS)
+libImpExp_la_SOURCES = 
 
-libImpExp_a_SOURCES = 
-
-libImpExp_a_LIBADD = $(objects)
+libImpExp_la_LIBADD = xp/libImpExp_xp.la unix/libImpExp_unix.la
