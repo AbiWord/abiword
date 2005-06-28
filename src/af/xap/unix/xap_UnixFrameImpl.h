@@ -69,7 +69,7 @@ protected:
 	GtkIMContext *		    m_imContext;
 	bool need_im_reset;
 
-	GtkIMContext * getIMContext();
+	virtual GtkIMContext * getIMContext();
 
 	virtual bool _close();
 	virtual bool _raise();

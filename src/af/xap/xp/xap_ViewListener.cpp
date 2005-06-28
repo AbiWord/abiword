@@ -33,7 +33,6 @@
 #include "ev_Mouse.h"
 #include "ev_Keyboard.h"
 
-
 ap_ViewListener::ap_ViewListener(XAP_Frame* pFrame)
 {
 	m_pFrame = pFrame;
@@ -47,6 +46,7 @@ bool ap_ViewListener::notify(AV_View * pView, const AV_ChangeMask mask)
 {
 	UT_ASSERT(pView);
 	UT_ASSERT(pView==m_pFrame->getCurrentView());
+	UT_DEBUGMSG(("ap_ViewListener::notify() frame: %x, view: %x, current-view: %x\n", m_pFrame, pView, m_pFrame->getCurrentView()));
 
 	if ((mask & AV_CHG_DIRTY) || (mask & AV_CHG_FILENAME))
 	{

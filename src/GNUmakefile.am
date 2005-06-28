@@ -1,5 +1,5 @@
 
-SUBDIRS = tools af text other pkg wp bindings
+SUBDIRS = tools af text other pkg bindings wp
 
 
 

@@ -42,6 +42,7 @@ libabiword_1_la_LIBADD = \
 	../../../text/ptbl/xp/libPtbl.la \
 	../../../other/spell/xp/libSpell.la \
 	../../../other/ttftool/unix/libTtfTool.la \
+	../../../bindings/gobject/libBindingsGObject.la \
 	../../ap/libAp.la \
 	../../impexp/libImpExp.la \
 	$(PLATFORM_LIBS) $(OTHER_LIBS)

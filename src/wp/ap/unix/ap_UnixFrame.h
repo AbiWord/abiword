@@ -29,6 +29,7 @@ class GR_Graphics;
 
 class XAP_UnixApp;
 class AP_UnixFrame;
+class AP_UnixFrameImpl;
 
 /*****************************************************************/
 
@@ -36,6 +37,7 @@ class AP_UnixFrame : public AP_Frame
 {
 public:
 	AP_UnixFrame(XAP_UnixApp * app);
+	AP_UnixFrame(XAP_UnixApp * app, AP_UnixFrameImpl * impl);
 	AP_UnixFrame(AP_UnixFrame * f);
 	virtual ~AP_UnixFrame(void);
 

@@ -49,7 +49,7 @@
 #include <gtk/gtklabel.h>
 #include <gtk/gtksignal.h>
 #include "ap_UnixGnomeApp.h"
-#include "abiwidget.h"
+#include "abiintwidget.h"
 
 /* 
  * CHANGE: You probably want some different widget than a label to be
@@ -124,13 +124,13 @@ nautilus_abiword_content_view_initialize (NautilusAbiWordContentView *view)
 	view->details = g_new0 (NautilusAbiWordContentViewDetails, 1);
 
 	/*
-	 * create a new AbiWidget instance
+	 * create a new AbiIntwidget instance
 	 */
 	
 	AP_UnixApp * pApp = (AP_UnixApp *) XAP_App::getApp();
 	UT_ASSERT(pApp);
 
-	view->details->abiword = abi_widget_new_with_app (pApp);
+	view->details->abiword = abi_intwidget_new_with_app (pApp);
 	fprintf(logfile,"Using app %x created abiwidget %x\n",view->details->abiword);
 	gtk_widget_show (view->details->abiword);
 	
@@ -170,7 +170,7 @@ nautilus_abiword_content_view_destroy (GtkObject *object)
 
 /*!
  * Actually do the loading here. This is trivial using the load_file
- * argument of AbiWidget.
+ * argument of AbiIntwidget.
  */
 
 static void
@@ -184,7 +184,7 @@ load_location (NautilusAbiWordContentView *view,
 	g_free (view->details->location);
 	view->details->location = g_strdup (location);
 	GtkObject * abi = GTK_OBJECT(view->details->abiword);
-	gtk_object_set(abi,"AbiWidget::load_file",(gchar *) location,NULL);
+	gtk_object_set(abi,"AbiIntwidget::load_file",(gchar *) location,NULL);
 }
 
 /*!

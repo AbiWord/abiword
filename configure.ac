@@ -549,6 +549,7 @@ AC_CONFIG_FILES([GNUmakefile
  src/tools/scripts/GNUmakefile
  src/tools/scripts/unix/GNUmakefile
  src/bindings/GNUmakefile
+ src/bindings/gobject/GNUmakefile
  src/bindings/perl/GNUmakefile
  src/pkg/linux/apkg/abiword-gnome.apspec
  src/pkg/linux/apkg/abiword-gtk.apspec

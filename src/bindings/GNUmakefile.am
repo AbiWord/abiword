@@ -1,7 +1,7 @@
 if SCRIPT
-PERLSUBDIR=perl
+	PERLSUBDIR = perl
+else
+	PERLSUBDIR = 
 endif
 
-SUBDIRS = $(PERLSUBDIR)
-
-
+SUBDIRS = gobject $(PERLSUBDIR)

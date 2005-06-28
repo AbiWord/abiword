@@ -40,24 +40,23 @@ class AP_UnixFrameImpl : public XAP_UnixFrameImpl
 	virtual UT_RGBColor getColorSelBackground () const;
 	virtual UT_RGBColor getColorSelForeground () const;
 
-	GtkWidget * getDrawingArea() const {return m_dArea;}
+	virtual GtkWidget * getDrawingArea() const;
 	
  protected:
 	friend class AP_UnixFrame;
-	void _showOrHideStatusbar(void);
-	void _showOrHideToolbars(void);
+	virtual void _showOrHideStatusbar(void);
+	virtual void _showOrHideToolbars(void);
 
 	virtual void _refillToolbarsInFrameData();
-	void _bindToolbars(AV_View * pView);
-	void _createWindow();
+	virtual void _bindToolbars(AV_View * pView);
+	virtual void _createWindow();
 
 	virtual GtkWidget * _createDocumentWindow();
 	virtual GtkWidget * _createStatusBarWindow();
 
 	virtual void _setWindowIcon();
-	void _setScrollRange(apufi_ScrollType scrollType, int iValue, gfloat fUpperLimit, gfloat fSize);
+	virtual void _setScrollRange(apufi_ScrollType scrollType, int iValue, gfloat fUpperLimit, gfloat fSize);
 
-	GtkWidget * m_dArea;
 	GtkAdjustment *	m_pVadj;
 	GtkAdjustment *	m_pHadj;
 	GtkWidget * m_hScroll;
@@ -67,5 +66,6 @@ class AP_UnixFrameImpl : public XAP_UnixFrameImpl
 	GtkWidget * m_table;
 	GtkWidget * m_innertable;
 	GtkWidget * m_wSunkenBox;
+	GtkWidget * m_dArea;
 };
 #endif

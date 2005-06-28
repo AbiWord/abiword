@@ -35,9 +35,15 @@ AP_UnixFrameImpl::AP_UnixFrameImpl(AP_UnixFrame *pUnixFrame, XAP_UnixApp *pUnixA
 
 XAP_FrameImpl * AP_UnixFrameImpl::createInstance(XAP_Frame *pFrame, XAP_App *pApp)
 {
+	UT_DEBUGMSG (("AP_UnixFrameImpl::createInstance()\n"));
 	XAP_FrameImpl *pFrameImpl = new AP_UnixFrameImpl(static_cast<AP_UnixFrame *>(pFrame), static_cast<XAP_UnixApp *>(pApp));
 
 	return pFrameImpl;
+}
+
+GtkWidget * AP_UnixFrameImpl::getDrawingArea() const 
+{
+	return m_dArea;
 }
 
 void AP_UnixFrameImpl::_bindToolbars(AV_View * pView)

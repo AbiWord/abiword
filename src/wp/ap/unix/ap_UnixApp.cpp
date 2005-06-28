@@ -101,7 +101,7 @@
 #include "gr_Image.h"
 
 #include "xap_UnixPSGraphics.h"
-#include "abiwidget.h"
+#include "abiintwidget.h"
 #include "ut_sleep.h"
 #include "gr_Painter.h"
 #include "ap_Preview_Abi.h"
@@ -165,9 +165,9 @@ AP_UnixApp::AP_UnixApp(XAP_Args * pArgs, const char * szAppName)
 	  m_pFrameSelection(0)
 {
 #ifndef HAVE_GNOME
-    // hack to link abi_widget - thanks fjf
+    // hack to link abi_intwidget - thanks fjf
 	if(this == 0)
-		GtkWidget * pUn = abi_widget_new_with_file("fred.abw");
+		GtkWidget * pUn = abi_intwidget_new_with_file("fred.abw");
 #endif
 }
 
@@ -1916,7 +1916,7 @@ void AP_UnixApp::catchSignals(int sig_num)
 // Bonobo Control factory stuff
 //-------------------------------------------------------------------
 
-static BonoboControl * AbiWidget_control_new (AbiWidget * abi);
+static BonoboControl * AbiIntwidget_control_new (AbiIntwidget * abi);
 
 
 /* 
@@ -1930,10 +1930,10 @@ static void get_prop (BonoboPropertyBag 	*bag,
 {
 	GObject 	*abi;
 	
-	g_return_if_fail (IS_ABI_WIDGET(user_data));
+	g_return_if_fail (IS_ABI_INTWIDGET(user_data));
 		
 	/*
-	 * get data from our AbiWidget
+	 * get data from our AbiIntwidget
 	 */
 //
 // first create fresh GValue
@@ -1944,7 +1944,7 @@ static void get_prop (BonoboPropertyBag 	*bag,
 // Now extract the requested GValue from abiwidget using arg_id
 //
 	abi = G_OBJECT(user_data); 
-	abi_widget_get_property(abi,arg_id,&gVal,&ParamSpec);
+	abi_intwidget_get_property(abi,arg_id,&gVal,&ParamSpec);
 //
 // Now copy it back to the bonobo argument.
 //
@@ -1969,7 +1969,7 @@ static void set_prop (BonoboPropertyBag 	*bag,
 {
 	GObject 	*abi;
 	
-	g_return_if_fail (IS_ABI_WIDGET(user_data));
+	g_return_if_fail (IS_ABI_INTWIDGET(user_data));
 #ifdef LOGFILE
 	fprintf(logfile,"UnixApp::set_prop id %d \n",arg_id);
 #endif
@@ -1983,7 +1983,7 @@ static void set_prop (BonoboPropertyBag 	*bag,
 //
 // Now send it to abiwidget via send prop
 //
-	abi_widget_set_property(abi,arg_id,&gVal,&ParamSpec);
+	abi_intwidget_set_property(abi,arg_id,&gVal,&ParamSpec);
 //
 // Free up allocated memory
 //
@@ -2006,11 +2006,11 @@ static void
 verb_Undo_cb (BonoboUIComponent *uic, gpointer data, const char *name)
 {
 
-	g_return_if_fail (IS_ABI_WIDGET(data));
+	g_return_if_fail (IS_ABI_INTWIDGET(data));
 
-	AbiWidget * abi = ABI_WIDGET (G_OBJECT(data));
+	AbiIntwidget * abi = ABI_INTWIDGET (G_OBJECT(data));
 	GObject * object = G_OBJECT(abi);
-	AbiWidgetClass * abi_klazz = ABI_WIDGET_CLASS (G_OBJECT_GET_CLASS(object));
+	AbiIntwidgetClass * abi_klazz = ABI_INTWIDGET_CLASS (G_OBJECT_GET_CLASS(object));
 	abi_klazz->undo(abi);
 }
 
@@ -2018,11 +2018,11 @@ static void
 verb_generic_cb (BonoboUIComponent *uic, gpointer data, const char *name)
 {
 
-	g_return_if_fail (IS_ABI_WIDGET(data));
+	g_return_if_fail (IS_ABI_INTWIDGET(data));
 
-	AbiWidget * abi = ABI_WIDGET (G_OBJECT(data));
+	AbiIntwidget * abi = ABI_INTWIDGET (G_OBJECT(data));
 	GObject * object = G_OBJECT(abi);
-	AbiWidgetClass * abi_klazz = ABI_WIDGET_CLASS (G_OBJECT_GET_CLASS(object));
+	AbiIntwidgetClass * abi_klazz = ABI_INTWIDGET_CLASS (G_OBJECT_GET_CLASS(object));
 	if(UT_strcmp(name,"redo") == 0)
 	{
 		abi_klazz->redo(abi);
@@ -2041,19 +2041,19 @@ verb_generic_cb (BonoboUIComponent *uic, gpointer data, const char *name)
 	}
 	else if(UT_strcmp(name,"print") == 0)
 	{
-		abi_widget_invoke(abi,"print");
+		abi_intwidget_invoke(abi,"print");
 	}
 	else if(UT_strcmp(name,"printPreview") == 0)
 	{
-		abi_widget_invoke(abi,"printPreview");
+		abi_intwidget_invoke(abi,"printPreview");
 	}
 	else if(UT_strcmp(name,"fileSave") == 0)
 	{
-		abi_widget_invoke(abi,"fileSave");
+		abi_intwidget_invoke(abi,"fileSave");
 	}
 	else if(UT_strcmp(name,"fileSaveAs") == 0)
 	{
-		abi_widget_invoke(abi,"fileSaveAs");
+		abi_intwidget_invoke(abi,"fileSaveAs");
 	}
 }
 
@@ -2075,11 +2075,11 @@ static BonoboUIVerb abi_nautilus_verbs[] = {
  * Do this after
  */
 static void
-abi_nautilus_view_create_ui (AbiWidget *abi)
+abi_nautilus_view_create_ui (AbiIntwidget *abi)
 {
 #if 0
-	g_return_if_fail (IS_ABI_WIDGET(abi));
-	BonoboUIComponent * uic = abi_widget_get_Bonobo_uic(abi);
+	g_return_if_fail (IS_ABI_INTWIDGET(abi));
+	BonoboUIComponent * uic = abi_intwidget_get_Bonobo_uic(abi);
 
 	/* Connect the UI component to the control frame's UI container. */
 
@@ -2105,30 +2105,30 @@ abi_nautilus_view_create_ui (AbiWidget *abi)
 }
 
 static void
-control_set_ui_container (AbiWidget *abi,
+control_set_ui_container (AbiIntwidget *abi,
 			  Bonobo_UIContainer ui_container)
 {
-	g_return_if_fail (IS_ABI_WIDGET(abi));
+	g_return_if_fail (IS_ABI_INTWIDGET(abi));
 	g_return_if_fail (ui_container != CORBA_OBJECT_NIL);
 
-	bonobo_ui_component_set_container (abi_widget_get_Bonobo_uic(abi), ui_container, NULL);
+	bonobo_ui_component_set_container (abi_intwidget_get_Bonobo_uic(abi), ui_container, NULL);
 
 	abi_nautilus_view_create_ui (abi);
 }
 
 static void
-control_unset_ui_container (AbiWidget * abi)
+control_unset_ui_container (AbiIntwidget * abi)
 {
-	g_return_if_fail (IS_ABI_WIDGET(abi));
+	g_return_if_fail (IS_ABI_INTWIDGET(abi));
 
-	bonobo_ui_component_unset_container (abi_widget_get_Bonobo_uic(abi), NULL);
+	bonobo_ui_component_unset_container (abi_intwidget_get_Bonobo_uic(abi), NULL);
 }
 
 static void abi_control_activate_cb(BonoboControl *object, gboolean state, gpointer data)
 {
-	AbiWidget * abi;
-	g_return_if_fail (IS_ABI_WIDGET(G_OBJECT(data)));
-	abi = ABI_WIDGET(G_OBJECT(data));
+	AbiIntwidget * abi;
+	g_return_if_fail (IS_ABI_INTWIDGET(G_OBJECT(data)));
+	abi = ABI_INTWIDGET(G_OBJECT(data));
 	if(state)
 	{
 		Bonobo_UIContainer ui_container;
@@ -2166,13 +2166,13 @@ print_document (GnomePrintContext *ctx,
 {
 	// assert pre-conditions
 	g_return_if_fail (user_data != NULL);
-	g_return_if_fail (IS_ABI_WIDGET (user_data));
+	g_return_if_fail (IS_ABI_INTWIDGET (user_data));
 	
 	// get me!
-	AbiWidget * abi = ABI_WIDGET(user_data);
+	AbiIntwidget * abi = ABI_INTWIDGET(user_data);
 	
 	// get our frame
-	XAP_Frame * pFrame = abi_widget_get_frame ( abi ) ;
+	XAP_Frame * pFrame = abi_intwidget_get_frame ( abi ) ;
 	UT_return_if_fail(pFrame != NULL);
 	
 	// get our current view so we can get the document being worked on
@@ -2239,7 +2239,7 @@ load_document_from_stream (BonoboPersistStream *ps,
 					 void *data,
 					 CORBA_Environment *ev)
 {
-	AbiWidget *abiwidget;
+	AbiIntwidget *abiwidget;
 	Bonobo_Stream_iobuf *buffer;
 	size_t len_read;
 	FILE * tmpfile;
@@ -2248,9 +2248,9 @@ load_document_from_stream (BonoboPersistStream *ps,
 #endif
 
 	g_return_if_fail (data != NULL);
-	g_return_if_fail (IS_ABI_WIDGET (data));
+	g_return_if_fail (IS_ABI_INTWIDGET (data));
 	
-	abiwidget = static_cast<AbiWidget *>(data);
+	abiwidget = static_cast<AbiIntwidget *>(data);
 #ifdef LOGFILE
 	fprintf(logfile,"At entry Load file from stream refcount %d \n",G_OBJECT(abiwidget)->ref_count);
 #endif
@@ -2295,9 +2295,9 @@ load_document_from_stream (BonoboPersistStream *ps,
 	// Load the file.
 	//
 	//
-	g_object_set(G_OBJECT(abiwidget),"AbiWidget--unlink-after-load",static_cast<gboolean>(TRUE),NULL);
-	g_object_set(G_OBJECT(abiwidget),"AbiWidget--load-file",static_cast<gchar *>(szTempfile),NULL);
-	abi_widget_map_to_screen(abiwidget);
+	g_object_set(G_OBJECT(abiwidget),"AbiIntwidget--unlink-after-load",static_cast<gboolean>(TRUE),NULL);
+	g_object_set(G_OBJECT(abiwidget),"AbiIntwidget--load-file",static_cast<gchar *>(szTempfile),NULL);
+	abi_intwidget_map_to_screen(abiwidget);
 
 	return;
 
@@ -2318,16 +2318,16 @@ save_document_to_stream (BonoboPersistStream *ps,
 			 void *data,
 			 CORBA_Environment *ev)
 {
-	AbiWidget *abiwidget;
+	AbiIntwidget *abiwidget;
 	Bonobo_Stream_iobuf *stream_buffer;
 	CORBA_octet buffer [ ABI_BUFFER_SIZE ] = "" ;
 	CORBA_long len_read = 0;
 	FILE * tmpfile = NULL;
 
 	g_return_if_fail (data != NULL);
-	g_return_if_fail (IS_ABI_WIDGET (data));
+	g_return_if_fail (IS_ABI_INTWIDGET (data));
 
-	abiwidget = static_cast<AbiWidget *>(data);
+	abiwidget = static_cast<AbiIntwidget *>(data);
 
 	//
 	// Create a temp file name.
@@ -2355,7 +2355,7 @@ save_document_to_stream (BonoboPersistStream *ps,
 	  ext = ".wml" ;
 
 	// todo: vary this based on the ContentType
-	if ( !abi_widget_save_ext ( abiwidget, szTempfile, ext ) )
+	if ( !abi_intwidget_save_ext ( abiwidget, szTempfile, ext ) )
 	  return ;
 
 	tmpfile = fopen(szTempfile, "wb");
@@ -2392,15 +2392,15 @@ abiwidget_get_object(BonoboItemContainer *item_container,
 					 CORBA_char          *item_name,
 					 CORBA_boolean       only_if_exists,
 					 CORBA_Environment   *ev,
-					 AbiWidget *  abi)
+					 AbiIntwidget *  abi)
 {
 	Bonobo_Unknown corba_object;
 	BonoboObject *object = NULL;
 
 	g_return_val_if_fail(abi != NULL, CORBA_OBJECT_NIL);
-	g_return_val_if_fail(IS_ABI_WIDGET(abi), CORBA_OBJECT_NIL);
+	g_return_val_if_fail(IS_ABI_INTWIDGET(abi), CORBA_OBJECT_NIL);
 
-	object = BONOBO_OBJECT (AbiWidget_control_new(abi));
+	object = BONOBO_OBJECT (AbiIntwidget_control_new(abi));
 
 	if (object == NULL)
 		return NULL;
@@ -2421,17 +2421,17 @@ static int
 load_document_from_file(BonoboPersistFile *pf, const CORBA_char *filename,
 				   CORBA_Environment *ev, void *data)
 {
-	AbiWidget *abiwidget;
+	AbiIntwidget *abiwidget;
 
 	g_return_val_if_fail (data != NULL,-1);
-	g_return_val_if_fail (IS_ABI_WIDGET (data),-1);
+	g_return_val_if_fail (IS_ABI_INTWIDGET (data),-1);
 
-	abiwidget = ABI_WIDGET (data);
+	abiwidget = ABI_INTWIDGET (data);
 
 	//
 	// Load the file.
 	//
-	g_object_set(G_OBJECT(abiwidget),"AbiWidget--load-file",reinterpret_cast<const gchar *>(filename),NULL);
+	g_object_set(G_OBJECT(abiwidget),"AbiIntwidget--load-file",reinterpret_cast<const gchar *>(filename),NULL);
 	return 0;
 }
 
@@ -2439,14 +2439,14 @@ static int
 save_document_to_file(BonoboPersistFile *pf, const CORBA_char *filename,
 					  CORBA_Environment *ev, void *data)
 {
-  AbiWidget *abiwidget;
+  AbiIntwidget *abiwidget;
   
   g_return_val_if_fail (data != NULL,-1);
-  g_return_val_if_fail (IS_ABI_WIDGET (data),-1);
+  g_return_val_if_fail (IS_ABI_INTWIDGET (data),-1);
   
-  abiwidget = ABI_WIDGET (data);
+  abiwidget = ABI_INTWIDGET (data);
 
-  abi_widget_save ( abiwidget, filename ) ;
+  abi_intwidget_save ( abiwidget, filename ) ;
 
   return 0 ;
 }
@@ -2479,14 +2479,14 @@ static const gint n_zoom_levels = (sizeof (preferred_zoom_levels) / sizeof (floa
 static void zoom_level_func(GObject * z, float lvl, gpointer data)
 {
   g_return_if_fail (data != NULL);
-  g_return_if_fail (IS_ABI_WIDGET(data));
+  g_return_if_fail (IS_ABI_INTWIDGET(data));
 
-  AbiWidget * abi = ABI_WIDGET(data);
+  AbiIntwidget * abi = ABI_INTWIDGET(data);
 
   if ( lvl <= 0.0 )
     return ;
 
-  XAP_Frame * pFrame = abi_widget_get_frame ( abi ) ;
+  XAP_Frame * pFrame = abi_intwidget_get_frame ( abi ) ;
   UT_return_if_fail ( pFrame != NULL ) ;
 
   pFrame->setZoomType (XAP_Frame::z_PERCENT);
@@ -2496,11 +2496,11 @@ static void zoom_level_func(GObject * z, float lvl, gpointer data)
 static void zoom_in_func(GObject * z, gpointer data)
 {
   g_return_if_fail (data != NULL);
-  g_return_if_fail (IS_ABI_WIDGET(data));
+  g_return_if_fail (IS_ABI_INTWIDGET(data));
 
-  AbiWidget * abi = ABI_WIDGET(data);
+  AbiIntwidget * abi = ABI_INTWIDGET(data);
 
-  XAP_Frame * pFrame = abi_widget_get_frame ( abi ) ;
+  XAP_Frame * pFrame = abi_intwidget_get_frame ( abi ) ;
   UT_return_if_fail ( pFrame != NULL ) ;
 
   UT_sint32 zoom_lvl = pFrame->getZoomPercentage();
@@ -2513,11 +2513,11 @@ static void zoom_in_func(GObject * z, gpointer data)
 static void zoom_out_func(GObject * z, gpointer data)
 {
   g_return_if_fail (data != NULL);
-  g_return_if_fail (IS_ABI_WIDGET(data));
+  g_return_if_fail (IS_ABI_INTWIDGET(data));
 
-  AbiWidget * abi = ABI_WIDGET(data);
+  AbiIntwidget * abi = ABI_INTWIDGET(data);
 
-  XAP_Frame * pFrame = abi_widget_get_frame ( abi ) ;
+  XAP_Frame * pFrame = abi_intwidget_get_frame ( abi ) ;
   UT_return_if_fail ( pFrame != NULL ) ;
 
   UT_sint32 zoom_lvl = pFrame->getZoomPercentage();
@@ -2533,11 +2533,11 @@ static void zoom_out_func(GObject * z, gpointer data)
 static void zoom_to_fit_func(GObject * z, gpointer data)
 {
   g_return_if_fail (data != NULL);
-  g_return_if_fail (IS_ABI_WIDGET(data));
+  g_return_if_fail (IS_ABI_INTWIDGET(data));
 
-  AbiWidget * abi = ABI_WIDGET(data);
+  AbiIntwidget * abi = ABI_INTWIDGET(data);
 
-  XAP_Frame * pFrame = abi_widget_get_frame ( abi ) ;
+  XAP_Frame * pFrame = abi_intwidget_get_frame ( abi ) ;
   UT_return_if_fail ( pFrame != NULL ) ;
 
   FV_View * pView = static_cast<FV_View*>(pFrame->getCurrentView());
@@ -2551,11 +2551,11 @@ static void zoom_to_fit_func(GObject * z, gpointer data)
 static void zoom_to_default_func(GObject * z, gpointer data)
 {
   g_return_if_fail (data != NULL);
-  g_return_if_fail (IS_ABI_WIDGET(data));
+  g_return_if_fail (IS_ABI_INTWIDGET(data));
 
-  AbiWidget * abi = ABI_WIDGET(data);
+  AbiIntwidget * abi = ABI_INTWIDGET(data);
 
-  XAP_Frame * pFrame = abi_widget_get_frame ( abi ) ;
+  XAP_Frame * pFrame = abi_intwidget_get_frame ( abi ) ;
   UT_return_if_fail ( pFrame != NULL ) ;
 
   pFrame->setZoomType (XAP_Frame::z_100);
@@ -2572,7 +2572,7 @@ static void zoom_to_default_func(GObject * z, gpointer data)
 // Add extra interfaces to load data into the control
 //
 BonoboObject *
-AbiControl_add_interfaces (AbiWidget *abiwidget,
+AbiControl_add_interfaces (AbiIntwidget *abiwidget,
 						   BonoboObject *to_aggregate)
 {
 	BonoboPersistFile   *file;
@@ -2580,7 +2580,7 @@ AbiControl_add_interfaces (AbiWidget *abiwidget,
 	BonoboItemContainer *item_container;
 	BonoboZoomable      *zoomable;
 
-	g_return_val_if_fail (IS_ABI_WIDGET(abiwidget), NULL);
+	g_return_val_if_fail (IS_ABI_INTWIDGET(abiwidget), NULL);
 	g_return_val_if_fail (BONOBO_IS_OBJECT (to_aggregate), NULL);
 
 	/* Inteface Bonobo::PropertyBag */
@@ -2686,7 +2686,7 @@ AbiControl_add_interfaces (AbiWidget *abiwidget,
 
 /* UI Component */
 	BonoboUIComponent * uic = bonobo_ui_component_new ("AbiWordNautilusView");
-	abi_widget_set_Bonobo_uic(abiwidget,uic);
+	abi_intwidget_set_Bonobo_uic(abiwidget,uic);
 
 	g_signal_connect (BONOBO_CONTROL(to_aggregate), "activate", G_CALLBACK (abi_control_activate_cb), abiwidget);
 
@@ -2694,7 +2694,7 @@ AbiControl_add_interfaces (AbiWidget *abiwidget,
 }
 
 
-static BonoboControl * AbiWidget_control_new (AbiWidget * abi)
+static BonoboControl * AbiIntwidget_control_new (AbiIntwidget * abi)
 {
   // create a BonoboControl from a widget
 #ifdef LOGFILE
@@ -2714,11 +2714,11 @@ static BonoboControl * AbiWidget_control_new (AbiWidget * abi)
 	fprintf(logfile," Just after the un_ref abi count %d \n",G_OBJECT(abi)->ref_count);
 #endif
 #if 0
-  AbiWidgetClass * abi_klazz = ABI_WIDGET_CLASS (G_OBJECT_GET_CLASS(G_OBJECT(abi)));
+  AbiIntwidgetClass * abi_klazz = ABI_INTWIDGET_CLASS (G_OBJECT_GET_CLASS(G_OBJECT(abi)));
   BonoboObjectClass *bonobo_object_class = (BonoboObjectClass *)abi_klazz;
   GObjectClass *gobject_class = G_OBJECT_CLASS(abi_klazz);
 #endif
-  AbiControl_add_interfaces (ABI_WIDGET(abi),
+  AbiControl_add_interfaces (ABI_INTWIDGET(abi),
 							 BONOBO_OBJECT(control));
 #ifdef LOGFILE
 	fprintf(logfile," After AbiControl_add_interfaces ref count %d \n",G_OBJECT(control)->ref_count);
@@ -2733,15 +2733,15 @@ static BonoboControl * AbiWidget_control_new (AbiWidget * abi)
  *  	'bonobo_generic_factory_new')
  */
 static BonoboObject*
-bonobo_AbiWidget_factory  (BonoboGenericFactory *factory, 
+bonobo_AbiIntwidget_factory  (BonoboGenericFactory *factory, 
 						   const char           *oaf_iid,
 						   void *closure)
 {
   /*
-   * create a new AbiWidget instance
+   * create a new AbiIntwidget instance
    */  
   AP_UnixApp * pApp = static_cast<AP_UnixApp *>(XAP_App::getApp());
-  GtkWidget  * abi  = abi_widget_new_with_app (pApp);
+  GtkWidget  * abi  = abi_intwidget_new_with_app (pApp);
 #ifdef LOGFILE
 	fprintf(logfile," After new_with_app ref count %d \n",G_OBJECT(abi)->ref_count);
 #endif
@@ -2751,7 +2751,7 @@ bonobo_AbiWidget_factory  (BonoboGenericFactory *factory,
 	fprintf(logfile," After gtk_widget_show ref count %d \n",G_OBJECT(abi)->ref_count);
 #endif
 
-  return BONOBO_OBJECT (AbiWidget_control_new (ABI_WIDGET (abi)));
+  return BONOBO_OBJECT (AbiIntwidget_control_new (ABI_INTWIDGET (abi)));
 }
 
 
@@ -2762,7 +2762,7 @@ static int mainBonobo(int argc, const char ** argv)
 	XAP_App * pApp = XAP_App::getApp();
 	pApp->setBonoboRunning();
 	return bonobo_generic_factory_main ("OAFIID:GNOME_AbiWord_ControlFactory",
-										bonobo_AbiWidget_factory, NULL);
+										bonobo_AbiIntwidget_factory, NULL);
 }
 
 #endif /* HAVE_GNOME */
