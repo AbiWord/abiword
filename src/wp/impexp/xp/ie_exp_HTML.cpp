@@ -520,6 +520,8 @@ private:
 	void	_closeSpan (void);
 	void	_openSpan (PT_AttrPropIndex api);
 
+	void _popUnendedStructures(void);
+
 #ifdef HTML_TABLES_SUPPORTED
 	void	_openTable (PT_AttrPropIndex api);
 	void	_closeTable ();
@@ -1017,11 +1019,24 @@ void s_HTML_Listener::tagPop ()
 				tagClose (TT_BDO, "bdo");
 			}
 			break;
-
+		case TT_LI:
+			{
+				tagClose (TT_LI, "li");
+			}
+			break;
+		case TT_UL:
+			{
+				tagClose (TT_UL, "ul");
+			}
+			break;
 		default:
 			{
 				UT_DEBUGMSG(("tagPop: unhandled tag closure! %d\n",tagTop()));
 				m_utf8_1 ="error - not handled";
+				/* There has got to be a better way than this.
+						I think putting up the usual "Write error -
+						file a bug and attach this" message is preferable
+						to spitting out nonsense html. -MG */
 				tagClose (tagTop(), m_utf8_1); // prevents hangs see 7524
 			}
 			break;
@@ -1940,10 +1955,16 @@ void s_HTML_Listener::listPush (UT_uint32 type, const char * ClassName)
 
 void s_HTML_Listener::listPop ()
 {
+	if (tagTop () == TT_SPAN)
+	{
+		// We don't just tagPop() for the sake of prettiness, apparently.
+		m_utf8_1 = "span";
+		tagClose (TT_SPAN, m_utf8_1, ws_Post);
+	}
 	if (tagTop () == TT_LI)
 	{
 		m_utf8_1 = "li";
-		tagClose (TT_LI, m_utf8_1, ws_Post);
+		tagClose (TT_LI, m_utf8_1);
 	}
 
 	UT_sint32 type = 0;
@@ -2854,6 +2875,15 @@ void s_HTML_Listener::_closeSpan ()
 		tagClose (TT_SPAN, "span", ws_None);
 	}
 	m_bInSpan = false;
+}
+
+/*! 	Close up all HTML-structures for which we haven't a definitive end in the piecetable,
+ *   such as lists.
+ *		\todo Somebody needs to check for others aside from lists, in order to preempt ugly bugs.
+ */
+void s_HTML_Listener::_popUnendedStructures (void)
+{
+	listPopToDepth(0);
 }
 
 #ifdef HTML_TABLES_SUPPORTED
@@ -4922,8 +4952,11 @@ bool s_HTML_Listener::populateStrux (PL_StruxDocHandle sdh,
 			// Ignore HdrFtr for now
 		case PTX_SectionHdrFtr:
 			{
-			m_bIgnoreTillNextSection = true;
-			return true;
+				/* We need to close unended structures (like lists, which are known only as paragraphs with listIDs)
+				   because the HdrFtr comes after all such things except for those which are contained within it. -MG */
+				_popUnendedStructures();
+				m_bIgnoreTillNextSection = true;
+				return true;
 			}
 		case PTX_SectionTOC: 
 			{
@@ -4945,6 +4978,7 @@ bool s_HTML_Listener::populateStrux (PL_StruxDocHandle sdh,
 
 bool s_HTML_Listener::endOfDocument () {
 	m_bIgnoreTillNextSection = false;
+	_popUnendedStructures(); // We need to clean up after ourselves lest we fsck up the footer and anything else that comes after this.
 	/* Remaining endnotes, whether from the last of multiple sections or from all sections */
 	_doEndnotes();
 	
