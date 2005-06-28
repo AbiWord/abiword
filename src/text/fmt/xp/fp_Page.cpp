@@ -507,6 +507,8 @@ fp_Container * fp_Page::updatePageForWrapping(fp_Column *& pNextCol)
 						}
 					}
 				}
+				if(j< 0)
+				  j = 0;
 			}
 			pCol = static_cast<fp_Column *>(pCol->getFollower());
 		}
