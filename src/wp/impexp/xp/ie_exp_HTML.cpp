@@ -579,6 +579,8 @@ private:
 	inline bool     get_Class_Only()    const { return m_exp_opt->bClassOnly; }
 
 	bool			m_bInSection;
+	bool			m_bInFrame;
+	bool			m_bInTextBox; // Necessary?  Possibly not.  Convenient and safe?  Yes.
 	bool			m_bInBlock;
 	bool			m_bInSpan;
 	bool			m_bNextIsSpace;
@@ -3922,6 +3924,13 @@ void s_HTML_Listener::_openTextBox (PT_AttrPropIndex api)
 	bool bHaveProp = m_pDocument->getAttrProp (api, &pAP);
 	if (!bHaveProp || (pAP == 0)) return;
 	const XML_Char * tempProp = 0;
+	const XML_Char * inTBAlready = 0;
+	
+	if(m_bInTextBox)
+	  _closeTextBox(); // Fortunately for the html exporter, abi does not permit nested frames.
+	  
+	m_bInFrame = true;
+	m_bInTextBox = true; // See comment by declaration
 
 	// I'm going to step out on a limb here and assert that we shouldn't need a tagPop at this point because _closeSection should do all such tasks within itself. -MG
 	_closeSection();
@@ -3976,6 +3985,10 @@ void s_HTML_Listener::_openTextBox (PT_AttrPropIndex api)
 	m_utf8_1 += "\"";
 	
 	tagOpen(TT_DIV, m_utf8_1);
+	
+	// Achem...we're going to pretend we actually opened a section.  *cough*hack*cough*
+	m_bInSection = true;
+	
 	return;
 }
 
@@ -3983,6 +3996,9 @@ void s_HTML_Listener::_closeTextBox ()
 {
 	// We don't need to close the block ourselves because _closeSection does it for us.
 	_closeSection();
+	// Fortunately for us, abi does not permit nested frames yet.
+	m_bInFrame = false;
+	m_bInTextBox = false;
 }
 
 void s_HTML_Listener::_outputData (const UT_UCSChar * data, UT_uint32 length)
@@ -4096,6 +4112,8 @@ s_HTML_Listener::s_HTML_Listener (PD_Document * pDocument, IE_Exp_HTML * pie, bo
 		m_exp_opt(exp_opt),
 		m_style_tree(style_tree),
 		m_bInSection(false),
+		m_bInFrame(false),
+		m_bInTextBox(false),
 		m_bInBlock(false),
 		m_bInSpan(false),
 		m_bNextIsSpace(false),
@@ -4952,6 +4970,10 @@ bool s_HTML_Listener::populateStrux (PL_StruxDocHandle sdh,
 			}
 		case PTX_SectionFrame:
 			{
+				// We do this individually for explicitly handled types of frame, because we don't know the consequences
+				// of doing it generally.
+				// m_bInFrame = true; // Fortunately for the html exporter, abi does not permit nested frames.
+				
 				if(m_bIgnoreTillEnd || m_bIgnoreTillNextSection)
 				{
 					return true;
@@ -4961,14 +4983,14 @@ bool s_HTML_Listener::populateStrux (PL_StruxDocHandle sdh,
 				bool bHaveProp = m_pDocument->getAttrProp (api, &pAP);
 				if (!bHaveProp || (pAP == 0)) return true;
 				const XML_Char * szType = 0;
-				pAP->getProperty ("frame-type", szType);
-				if (szType == 0) return true;
-				// ---
-				if (!UT_strcmp(szType, "textbox"))
-				{
+				if((pAP->getProperty ("frame-type", szType)) && szType)
+				  {
+				     if (!UT_strcmp(szType, "textbox"))
+				     {
 					_openTextBox(pcr->getIndexAP()); // Open a new text box
 					return true;
-				}
+				     }
+				  }
 				return true;
 			}
 		case PTX_EndFrame:
