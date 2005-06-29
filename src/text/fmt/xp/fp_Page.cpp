@@ -547,6 +547,10 @@ fp_Container * fp_Page::updatePageForWrapping(fp_Column *& pNextCol)
 	{
 		pNewFirstCon = static_cast<fp_Container *>(pNewFirstCon->getNext());
 	}
+	if(pNewFirstCon->getColumn() == NULL)
+	{
+	       return NULL;
+	}
 	pNextCol = static_cast<fp_Column *>(pNewFirstCon->getColumn());
 	pNewFirstCon = static_cast<fp_Container *>(pNextCol->getNthCon(0));
 	if(pNewFirstCon->getContainerType() == FP_CONTAINER_LINE)
