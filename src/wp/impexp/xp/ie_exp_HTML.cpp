@@ -3930,9 +3930,20 @@ void s_HTML_Listener::_openTextBox (PT_AttrPropIndex api)
 	  
 	m_bInFrame = true;
 	m_bInTextBox = true; // See comment by declaration
+	/* --- Copied from closeSection --- */
+	// TODO: Extract me into closePseudoSection.
+		if (m_bInBlock)
+		_closeTag (); // We need to investigate the tag stack usage of this, and whether or not we really would rather specify the tag in all cases.
 
-	// I'm going to step out on a limb here and assert that we shouldn't need a tagPop at this point because _closeSection should do all such tasks within itself. -MG
-	_closeSection();
+	       // Need to investigate whether we can safely uncomment this without undoing heading work, or any other kind using unended structures like lists.
+	  	// _popUnendedStructures(); // Close lists, and possibly other stuff.  Even if it theoretically can span sections, we run a high risk of corrupting the document.
+
+	       if (m_bInSection && (tagTop () == TT_DIV))
+	       {
+		    m_utf8_1 = "div";
+	     	    tagClose (TT_DIV, m_utf8_1);
+	       }
+	/* --- */
 	m_utf8_1 = "div style=\""; // We represent the box with a div (block)
 	
 	// TODO: Enum frame properties (and in any case where props equal their css counterparts) separately
@@ -3985,16 +3996,31 @@ void s_HTML_Listener::_openTextBox (PT_AttrPropIndex api)
 	
 	tagOpen(TT_DIV, m_utf8_1);
 	
-	// Achem...we're going to pretend we actually opened a section.  *cough*hack*cough*
-	m_bInSection = true;
-	
 	return;
 }
 
 void s_HTML_Listener::_closeTextBox ()
 {
 	// We don't need to close the block ourselves because _closeSection does it for us.
-	_closeSection();
+   /* --- */
+   // TODO: Extract me into closePseudoSection
+	// We cannot use _closeSection(), we're not actually in a section.
+	  if (m_bInBlock)
+		_closeTag (); // We need to investigate the tag stack usage of this, and whether or not we really would rather specify the tag in all cases.
+
+	  // Need to investigate whether we can safely uncomment this without undoing heading work, or any other kind using unended structures like lists.
+	  // _popUnendedStructures(); // Close lists, and possibly other stuff.  Even if it theoretically can span sections, we run a high risk of corrupting the document.
+
+	  if ((tagTop () == TT_DIV))
+	  {
+	  	m_utf8_1 = "div";
+		tagClose (TT_DIV, m_utf8_1);
+	  }
+	  else
+	  {
+	       UT_DEBUGMSG(("WARNING: Something gone awry with this textbox"));
+	  }
+   /* --- */
 	// Fortunately for us, abi does not permit nested frames yet.
 	m_bInFrame = false;
 	m_bInTextBox = false;
