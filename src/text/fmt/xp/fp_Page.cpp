@@ -2138,7 +2138,10 @@ void fp_Page::mapXYToPosition(bool bNotFrames,UT_sint32 x, UT_sint32 y, PT_DocPo
 
 	UT_ASSERT(pMinDist);
 
-	pMinDist->mapXYToPosition(x - pMinDist->getX(), y - pMinDist->getY(), pos, bBOL, bEOL,isTOC);
+	if (pMinDist)
+	{
+		pMinDist->mapXYToPosition(x - pMinDist->getX(), y - pMinDist->getY(), pos, bBOL, bEOL,isTOC);
+	}
 }
 
 void fp_Page::setView(FV_View* pView)
