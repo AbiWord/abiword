@@ -3924,7 +3924,6 @@ void s_HTML_Listener::_openTextBox (PT_AttrPropIndex api)
 	bool bHaveProp = m_pDocument->getAttrProp (api, &pAP);
 	if (!bHaveProp || (pAP == 0)) return;
 	const XML_Char * tempProp = 0;
-	const XML_Char * inTBAlready = 0;
 	
 	if(m_bInTextBox)
 	  _closeTextBox(); // Fortunately for the html exporter, abi does not permit nested frames.
