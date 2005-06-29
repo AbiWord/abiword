@@ -957,6 +957,7 @@ UT_uint32 s_HTML_Listener::tagTop ()
 
 void s_HTML_Listener::tagPop ()
 {
+	// Don't forget to not put tags without explicit closure in here.
 	switch (tagTop ())
 	{
 		case TT_TD:
@@ -1027,6 +1028,11 @@ void s_HTML_Listener::tagPop ()
 		case TT_UL:
 			{
 				tagClose (TT_UL, "ul");
+			}
+			break;
+		case TT_OL:
+		       {
+				tagClose (TT_OL, "ol");
 			}
 			break;
 		default:
@@ -1869,7 +1875,10 @@ void s_HTML_Listener::_openSection (PT_AttrPropIndex api, UT_uint16 iSectionSpec
 void s_HTML_Listener::_closeSection (void)
 {
 	if (m_bInBlock)
-		_closeTag ();
+		_closeTag (); // We need to investigate the tag stack usage of this, and whether or not we really would rather specify the tag in all cases.
+
+	// Need to investigate whether we can safely uncomment this without undoing heading work, or any other kind using unended structures like lists.
+	// _popUnendedStructures(); // Close lists, and possibly other stuff.  Even if it theoretically can span sections, we run a high risk of corrupting the document.
 
 	if (m_bInSection && (tagTop () == TT_DIV))
 	{
@@ -3914,7 +3923,7 @@ void s_HTML_Listener::_openTextBox (PT_AttrPropIndex api)
 	if (!bHaveProp || (pAP == 0)) return;
 	const XML_Char * tempProp = 0;
 
-	tagPop();
+	// I'm going to step out on a limb here and assert that we shouldn't need a tagPop at this point because _closeSection should do all such tasks within itself. -MG
 	_closeSection();
 	m_utf8_1 = "div style=\""; // We represent the box with a div (block)
 	
@@ -4814,6 +4823,9 @@ bool s_HTML_Listener::populateStrux (PL_StruxDocHandle sdh,
 				// also (as of this writing) do not support incontiguous lists.  Again, there's an ambiguity
 				// regarding how this should be handled because the behaviour of the piecetable is incompletely
 				// defined.
+				// UPDATE: We're going to put one in _closeSection for safety's sake.  If it makes some output
+				// 	    less pretty, please do file bugs and we can fix that on a case by case basis, but
+				// 	    that's preferable to spitting out corrupt html.
 				
 				if(m_bIgnoreTillEnd)
 				{
