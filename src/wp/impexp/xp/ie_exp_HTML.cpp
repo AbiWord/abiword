@@ -1972,6 +1972,8 @@ void s_HTML_Listener::listPop ()
 		m_utf8_1 = "span";
 		tagClose (TT_SPAN, m_utf8_1, ws_Post);
 	}
+#if 0
+   // This code may come in handy if AbiWord ever supported listed frames, which is conceivable
 	if (m_bInFrame && tagTop () == TT_DIV) // Frame embedded in list, hopefully.  I _really_ hope we don't have a first order section in a list.
 	{
 	     if(m_bInTextBox)
@@ -1984,6 +1986,7 @@ void s_HTML_Listener::listPop ()
 		tagClose (TT_DIV, m_utf8_1);
 	     }
 	}
+#endif
 	if (tagTop () == TT_LI)
 	{
 		m_utf8_1 = "li";
@@ -2048,7 +2051,7 @@ void s_HTML_Listener::_openTag (PT_AttrPropIndex api, PL_StruxDocHandle sdh)
 	const PP_AttrProp * pAP = 0;
 	bool bHaveProp = m_pDocument->getAttrProp (api, &pAP);
 	
-	if (!bHaveProp || (pAP == 0)) // <p> with no style attribute, and no properties either
+	if ((!bHaveProp || (pAP == 0)) && !m_bInFrame) // [Appears to be and we're assuming it's a] <p> with no style attribute, and no properties either, and not a frame embedded in the list
 	{
 		listPopToDepth (0);
 
@@ -3939,7 +3942,10 @@ void s_HTML_Listener::_openTextBox (PT_AttrPropIndex api)
 	
 	if(m_bInTextBox)
 	  _closeTextBox(); // Fortunately for the html exporter, abi does not permit nested frames.
-	  
+	
+	if(m_iListDepth)
+	  listPopToDepth(0); // AbiWord does not support textboxes in LIs, neither do we.
+	
 	m_bInFrame = true;
 	m_bInTextBox = true; // See comment by declaration
 	/* --- Copied from closeSection --- */
@@ -5011,6 +5017,9 @@ bool s_HTML_Listener::populateStrux (PL_StruxDocHandle sdh,
 				// of doing it generally.
 				// m_bInFrame = true; // Fortunately for the html exporter, abi does not permit nested frames.
 				
+				if(m_iListDepth)
+	              	  listPopToDepth(0); // AbiWord does not support frames in LIs, neither do we.
+
 				if(m_bIgnoreTillEnd || m_bIgnoreTillNextSection)
 				{
 					return true;
