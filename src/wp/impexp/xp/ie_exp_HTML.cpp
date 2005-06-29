@@ -3000,7 +3000,10 @@ void s_HTML_Listener::_openTable (PT_AttrPropIndex api)
 
 	if (!m_bInSection) return;
 
-	if (m_bInBlock) _closeTag ();
+	if(m_iListDepth)
+	     listPopToDepth(0); // AbiWord does not support tables in LIs, neither do we.  For AbiWord, an LI is a special <p>.  See next line.
+
+	if (m_bInBlock) _closeTag (); // HTML does not make it any more desirable to embed a table in a <p> than AbiWord.
 
 	const PP_AttrProp * pAP = NULL;
 	bool bHaveProp = m_pDocument->getAttrProp (api,&pAP);
