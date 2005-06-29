@@ -1972,6 +1972,18 @@ void s_HTML_Listener::listPop ()
 		m_utf8_1 = "span";
 		tagClose (TT_SPAN, m_utf8_1, ws_Post);
 	}
+	if (m_bInFrame && tagTop () == TT_DIV) // Frame embedded in list, hopefully.  I _really_ hope we don't have a first order section in a list.
+	{
+	     if(m_bInTextBox)
+	        _closeTextBox();
+	     else
+	     {
+	        UT_DEBUGMSG(("WARNING: Popping a frame which is not a textbox within a list item, heaven help us \n"));
+		 
+	       m_utf8_1 = "div";
+		tagClose (TT_DIV, m_utf8_1);
+	     }
+	}
 	if (tagTop () == TT_LI)
 	{
 		m_utf8_1 = "li";
@@ -4018,7 +4030,7 @@ void s_HTML_Listener::_closeTextBox ()
 	  }
 	  else
 	  {
-	       UT_DEBUGMSG(("WARNING: Something gone awry with this textbox"));
+	       UT_DEBUGMSG(("WARNING: Something gone awry with this textbox \n"));
 	  }
    /* --- */
 	// Fortunately for us, abi does not permit nested frames yet.
