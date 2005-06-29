@@ -2107,6 +2107,10 @@ void s_HTML_Listener::_openTag (PT_AttrPropIndex api, PL_StruxDocHandle sdh)
 			m_iListDepth = 0;
 		}
 		/* TODO: why can m_iListDepth be zero sometimes ?? (numbered headings?)
+		 * UPDATE: I don't know, but it probably shouldn't be handled this way because the definition of 0
+		 *	    from earlier in the code is that it means we are not in a list of any sort.
+		 *	    For numbered headings and the like, if that's the handling of it, we may actually end up
+		 *	    with more than one list after having 'risen to desired list depth'. -MG
 		 */
 		if (m_iListDepth == 0) m_iListDepth = 1;
 
@@ -2883,7 +2887,8 @@ void s_HTML_Listener::_closeSpan ()
  */
 void s_HTML_Listener::_popUnendedStructures (void)
 {
-	listPopToDepth(0);
+	if(m_iListDepth)
+	  listPopToDepth(0);
 }
 
 #ifdef HTML_TABLES_SUPPORTED
@@ -3890,6 +3895,12 @@ void s_HTML_Listener::_closeCell ()
 		tagRaw(s);
 	}
 	
+	/* The number of times _popUnendedStructures has to be used may be indicative of serious fundamental flows in the
+	   current tag stack(s) implementation, an implementation which therefore is in dire need of an expert audit.
+	   On the other hand, it may also be the necessary result of the already known shortcomings of our piecetable with
+	   regard to the permission of unstruxed structures and unilateral struxes.  -MG */
+	_popUnendedStructures();
+	
 	m_utf8_1 = "td";
 	tagClose (TT_TD, m_utf8_1);
 }
@@ -4796,6 +4807,14 @@ bool s_HTML_Listener::populateStrux (PL_StruxDocHandle sdh,
 		case PTX_Section:
 			{
 				m_bIgnoreTillNextSection = false;
+				
+				// TODO: It may be wise to look into the necessity of an _popUnendedStructures here.  However,
+				// that may also not play nice with structures, if any, which span sections.  Unended structures
+				// can theoretically do so, such as lists that attach to a extrastructural listID.  However, we
+				// also (as of this writing) do not support incontiguous lists.  Again, there's an ambiguity
+				// regarding how this should be handled because the behaviour of the piecetable is incompletely
+				// defined.
+				
 				if(m_bIgnoreTillEnd)
 				{
 					return true;  // Nested sections could be the sign of a severe problem, even if caused by import
@@ -4954,6 +4973,7 @@ bool s_HTML_Listener::populateStrux (PL_StruxDocHandle sdh,
 			{
 				/* We need to close unended structures (like lists, which are known only as paragraphs with listIDs)
 				   because the HdrFtr comes after all such things except for those which are contained within it. -MG */
+				// This call may be unnecessary. -MG
 				_popUnendedStructures();
 				m_bIgnoreTillNextSection = true;
 				return true;
