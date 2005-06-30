@@ -1,7 +1,15 @@
-if SCRIPT
-	PERLSUBDIR = perl
-else
-	PERLSUBDIR = 
+SUBDIRS = gobject
+
+BINDINGS_LIBS = gobject/libBindingsGObject.la
+
+if ENABLE_PYTHON
+SUBDIRS += python
 endif
 
-SUBDIRS = gobject $(PERLSUBDIR)
+if SCRIPT
+SUBDIRS += perl
+endif
+
+noinst_LTLIBRARIES = libBindings.la
+libBindings_la_SOURCES = 
+libBindings_la_LIBADD = $(BINDINGS_LIBS)

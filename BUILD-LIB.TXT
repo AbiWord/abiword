@@ -1,0 +1,4 @@
+
+A typical configuration looks like this:
+
+./configure --prefix=/home/foo/libabi --disable-static --enable-symbols --disable-debug --disable-gnome --with-sys-wv && make

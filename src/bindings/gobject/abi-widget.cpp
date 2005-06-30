@@ -494,7 +494,7 @@ abi_widget_finalize (GObject *obj)
 	G_OBJECT_CLASS (abi_widget_parent_class)->finalize (obj);
 }
 
-static AbiWidgets* 
+AbiWidgets* 
 abi_widget_priv_create_widgets  (AbiWidget *self)
 {
 	AbiWidgets *widgets = (AbiWidgets*)g_new0 (AbiWidgets, 1);
@@ -824,7 +824,7 @@ abi_widget_priv_set_scroll_range (AbiWidget *self, apufi_ScrollType scrollType, 
 
 extern "C" {
 
-static void 
+void 
 abi_widget_priv_scroll_func_y (gpointer abi, UT_sint32 yoff, UT_sint32 /*yrange*/)
 {	
 	AbiWidget *self = NULL;
@@ -861,7 +861,7 @@ abi_widget_priv_scroll_func_y (gpointer abi, UT_sint32 yoff, UT_sint32 /*yrange*
 	self->view->setYScrollOffset(static_cast<UT_sint32>(yoffDisc));
 }
 
-static void 
+void 
 abi_widget_priv_scroll_func_x (gpointer abi, UT_sint32 xoff, UT_sint32 /*xrange*/)
 {
 	AbiWidget *self = NULL;

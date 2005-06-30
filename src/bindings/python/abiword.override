@@ -1,0 +1,37 @@
+%%
+headers
+#include <Python.h>
+#include <pygobject.h>
+#include <abi-widget.h>
+
+%%
+modulename abiword
+%%
+import gtk.Frame as PyGtkFrame_Type
+import gobject.GObject as PyGObject_Type
+%%
+ignore-glob
+  *_get_type
+  abi_widget_priv_*
+  AbiWidgetPrivate
+  AbiWidgets
+%%
+override abi_widget_new kwargs
+static int
+_wrap_abi_widget_new(PyGObject *self, PyObject *args, PyObject *kwargs)
+{
+    GType obj_type = pyg_type_from_object((PyObject *) self);
+    static char* kwlist[] = { NULL };
+
+    if (!PyArg_ParseTupleAndKeywords(args, kwargs, ":abiword.Widget.__init__", kwlist))
+        return -1;
+
+    self->obj = (GObject*)g_object_newv(obj_type, 0, NULL);
+    if (!self->obj) {
+        PyErr_SetString(PyExc_RuntimeError, "could not create %(typename)s object");
+        return -1;
+    }
+
+    pygobject_register_wrapper((PyObject *)self);
+    return 0;
+}
