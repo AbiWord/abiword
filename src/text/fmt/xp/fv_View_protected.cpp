@@ -2221,6 +2221,8 @@ void FV_View::_moveInsPtNthPage(UT_uint32 n)
 
 void FV_View::_moveInsPtToPage(fp_Page *page)
 {
+	UT_return_if_fail(page);
+
 	// move to the first pos on this page
 	PT_DocPosition iNewPoint = page->getFirstLastPos(true);
 	_setPoint(iNewPoint, false);
