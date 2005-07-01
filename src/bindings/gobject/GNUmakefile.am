@@ -36,7 +36,8 @@ noinst_LTLIBRARIES = libBindingsGObject.la
 
 libBindingsGObject_la_SOURCES = \
 	abi-doc.cpp \
-	abi-widget.cpp
+	abi-widget.cpp \
+	libabiword.cpp
 	
 libBindingsGObject_ladir = $(auto_includedir)
 libBindingsGObject_la_HEADERS = \

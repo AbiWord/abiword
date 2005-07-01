@@ -21,7 +21,9 @@
 #ifndef __LIBABIWORD_H__
 #define __LIBABIWORD_H__
 
+
 #include <glib.h>
+
 
 G_BEGIN_DECLS
 
@@ -29,5 +31,6 @@ void libabiword_init 	 (void);
 void libabiword_shutdown (void);
 
 G_END_DECLS
+
 
 #endif /* __LIBABIWORD_H__ */

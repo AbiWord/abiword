@@ -39,9 +39,9 @@
 
 /* dirty hack */
 #ifdef ABIWORD_INTERNAL
-#include "private/ap_WidgetApp.h"
+#include "private/libabiword-priv.h"
 #else
-#include <abiword/private/ap_WidgetApp.h>
+#include <abiword/private/libabiword-priv.h>
 #endif /* ABIWORD_INTERNAL */
 
 /* TODO */
@@ -92,6 +92,7 @@ static void focus_out_cb (GtkWidget 	   *d_area,
 
 static GtkFrameClass *abi_widget_parent_class = NULL;
 
+extern LibAbiWordPrivate libabiword_priv;
 
 GType
 abi_widget_get_type (void)
@@ -137,12 +138,12 @@ abi_widget_load_file (AbiWidget *self, const gchar *filename)
 		*/
 	}
 
-	self->doc = new PD_Document (self->priv->app);
+	self->doc = new PD_Document (libabiword_priv.app);
 	self->doc->newDocument();
 	/* TODO don't know if we have to determine type here and pass e.g. IEFT_AbiWord_1 */
 	errorCode = self->doc->readFromFile(filename, IEFT_Unknown);
 
-	if (self->priv->frame->isFrameLocked ()) {
+	if (libabiword_priv.frame->isFrameLocked ()) {
 
 		UT_DEBUGMSG (("abi_widget_load_file() Nasty race bug, please fix me!! \n"));
 		UT_ASSERT_HARMLESS(0);
@@ -169,15 +170,15 @@ abi_widget_priv_show_doc (AbiWidget *self)
 
 
 	UT_DEBUGMSG(("!!!!!!!!! _showdOCument: Initial zoom is %d \n", self->zoom_percentage));
-	self->priv->frame->setFrameLocked(true);
+	libabiword_priv.frame->setFrameLocked(true);
 
 
 	/// AP_UnixFrame::_createViewGraphics
-	XAP_UnixFontManager * fontManager = (static_cast<XAP_UnixApp *>(self->priv->app)->getFontManager());
-	UT_ASSERT(self->priv->frame_impl);
-	UT_DEBUGMSG(("Got FrameImpl %x area %x \n",self->priv->frame_impl,self->widgets->d_area));
-	GR_UnixAllocInfo ai(self->widgets->d_area->window, fontManager, self->priv->app);
-	self->graphics = (GR_UnixGraphics*) self->priv->app->newGraphics(ai);
+	XAP_UnixFontManager * fontManager = (static_cast<XAP_UnixApp *>(libabiword_priv.app)->getFontManager());
+	UT_ASSERT(libabiword_priv.frame_impl);
+	UT_DEBUGMSG(("Got FrameImpl %x area %x \n",libabiword_priv.frame_impl,self->widgets->d_area));
+	GR_UnixAllocInfo ai(self->widgets->d_area->window, fontManager, libabiword_priv.app);
+	self->graphics = (GR_UnixGraphics*) libabiword_priv.app->newGraphics(ai);
 	///
 
 
@@ -186,8 +187,8 @@ abi_widget_priv_show_doc (AbiWidget *self)
 
 	FL_DocLayout *layout = new FL_DocLayout(static_cast<PD_Document *>(self->doc), self->graphics);
 
-	self->view = new FV_View(self->priv->app, self->priv->frame, layout);
-	self->priv->frame->setView (self->view);
+	self->view = new FV_View(libabiword_priv.app, libabiword_priv.frame, layout);
+	libabiword_priv.frame->setView (self->view);
 
 	if(self->zoom_type == XAP_Frame::z_PAGEWIDTH)
 	{
@@ -200,15 +201,15 @@ abi_widget_priv_show_doc (AbiWidget *self)
 		self->graphics->setZoomPercentage(self->zoom_percentage);
 	}
 	UT_DEBUGMSG(("!!!!!!!!! _showdOCument: zoom is %d \n",self->zoom_percentage));
-	self->priv->frame->setZoomPercentage(self->zoom_percentage);
+	libabiword_priv.frame->setZoomPercentage(self->zoom_percentage);
 
 
 	/// _createScrollBarListeners
 	pScrollObj = new AV_ScrollObj(self, abi_widget_priv_scroll_func_x, abi_widget_priv_scroll_func_y);
 	UT_return_val_if_fail (pScrollObj, FALSE);
 
-	pViewListener = new ap_UnixViewListener(self->priv->frame);
-	pScrollbarViewListener = new ap_Scrollbar_ViewListener(self->priv->frame,self->view);
+	pViewListener = new ap_UnixViewListener(libabiword_priv.frame);
+	pScrollbarViewListener = new ap_Scrollbar_ViewListener(libabiword_priv.frame,self->view);
 	
 	if (!self->view->addListener(static_cast<AV_Listener *>(pViewListener),&lid))
 		return false;
@@ -226,7 +227,7 @@ abi_widget_priv_show_doc (AbiWidget *self)
 	//?pView->setInsertMode((static_cast<AP_FrameData*>(m_pData)->m_bInsertMode));
 	//?m_pView->setWindowSize(_getDocumentAreaWidth(), _getDocumentAreaHeight());
 	layout->fillLayouts ();
-	//?	self->priv->frame_impl->notifyViewChanged(m_pView);
+	//?	libabiword_priv.frame_impl->notifyViewChanged(m_pView);
 	///
 
 	abi_widget_priv_set_x_scroll_range (self);
@@ -246,7 +247,7 @@ abi_widget_priv_show_doc (AbiWidget *self)
 	self->view->notifyListeners(AV_CHG_ALL);
 	self->view->focusChange(AV_FOCUS_HERE);
 
-	self->priv->frame->setFrameLocked(false);
+	libabiword_priv.frame->setFrameLocked(false);
 	return UT_OK;
 
 Cleanup:
@@ -346,7 +347,7 @@ abi_widget_priv_replace_view (AbiWidget *self, FL_DocLayout *pDocLayout,
 
 	pDocLayout->fillLayouts();      
 
-	self->priv->frame_impl->notifyViewChanged(m_pView);
+	libabiword_priv.frame_impl->notifyViewChanged(m_pView);
 
 	DELETEP(pReplacedView);
 #endif
@@ -501,12 +502,12 @@ abi_widget_priv_create_widgets  (AbiWidget *self)
 
 	if (self->priv->show_rulers) {
 
-		self->top_ruler = new AP_UnixTopRuler(self->priv->frame);
+		self->top_ruler = new AP_UnixTopRuler(libabiword_priv.frame);
 		UT_ASSERT(self->top_ruler);
 		
 		if (self->view_mode == ABI_VIEW_PRINT) {
 
-		    self->left_ruler = new AP_UnixLeftRuler(self->priv->frame);
+		    self->left_ruler = new AP_UnixLeftRuler(libabiword_priv.frame);
 		    UT_ASSERT(self->left_ruler);
 		}
 		else {
@@ -907,36 +908,23 @@ static void
 abi_widget_realize_cb (GtkWidget *widget, gpointer data)
 {
 	AbiWidget *self;
-	const char *argv[1];
-	XAP_Args *args;
 
 	UT_ASSERT (GDK_IS_WINDOW (widget->window));	
 	self = ABI_WIDGET (data);
 
-	argv[0] = "AbiWidget";
-	args = new XAP_Args (1, argv);
-	self->priv->app = new AP_WidgetApp (args, argv[0]);
-	UT_DEBUGMSG (("app: %x\n", self->priv->app));
-	self->priv->app->initialize (TRUE);
+	libabiword_priv.frame_impl->setWidget (self);
+	libabiword_priv.frame->setWidget (self);
 
-	self->priv->frame_impl = new AP_WidgetFrameImpl (self, NULL, self->priv->app);
-	UT_DEBUGMSG (("new frame-impl: %x, drawing-area: %x\n", self->priv->frame_impl, self->priv->frame_impl->getDrawingArea ()));
-
-	self->priv->frame = new AP_WidgetFrame (self, self->priv->app, self->priv->frame_impl);
-	self->priv->frame->setFrameImpl (self->priv->frame_impl);
-	self->priv->frame->initialize ();
-	self->priv->app->setFrame (self->priv->frame);
-
-	self->doc = new PD_Document (self->priv->app);
+	self->doc = new PD_Document (libabiword_priv.app);
 	self->doc->newDocument ();
 
 /* we probably don't need this, it should be done in _show_doc()
-	GR_UnixAllocInfo alloc_info (self->widgets->d_area->window, self->priv->app->getFontManager (), self->priv->app);
-	self->graphics = self->priv->app->newGraphics (alloc_info);
+	GR_UnixAllocInfo alloc_info (self->widgets->d_area->window, libabiword_priv.app->getFontManager (), libabiword_priv.app);
+	self->graphics = libabiword_priv.app->newGraphics (alloc_info);
 	self->graphics->setZoomPercentage (self->zoom_percentage);
 
 	self->layout = new FL_DocLayout (self->doc, self->graphics);
-	self->view = new FV_View (self->priv->app, self->priv->frame, self->layout);
+	self->view = new FV_View (libabiword_priv.app, libabiword_priv.frame, self->layout);
 	self->layout->setView (self->view);
 	self->layout->fillLayouts ();
 */
@@ -997,9 +985,9 @@ key_release_cb (GtkWidget* w, GdkEventKey* e, gpointer data)
 	AbiWidget *self = reinterpret_cast<AbiWidget*>(data);
 
 	// Let IM handle the event first.
-	if (gtk_im_context_filter_keypress(self->priv->frame_impl->getIMContext(), e)) {
+	if (gtk_im_context_filter_keypress(libabiword_priv.frame_impl->getIMContext(), e)) {
 	    xxx_UT_DEBUGMSG(("IMCONTEXT keyevent swallow: %lu\n", e->keyval));
-		self->priv->frame_impl->queueIMReset ();
+		libabiword_priv.frame_impl->queueIMReset ();
 	    return 0;
 	}
 	return TRUE;
@@ -1011,8 +999,8 @@ key_press_cb (GtkWidget* w, GdkEventKey* e, gpointer data)
 	AbiWidget *self = reinterpret_cast<AbiWidget*>(data);
 
 	// Let IM handle the event first.
-	if (gtk_im_context_filter_keypress(self->priv->frame_impl->getIMContext(), e)) {
-		self->priv->frame_impl->queueIMReset ();
+	if (gtk_im_context_filter_keypress(libabiword_priv.frame_impl->getIMContext(), e)) {
+		libabiword_priv.frame_impl->queueIMReset ();
 
 		if ((e->state & GDK_MOD1_MASK) ||
 			(e->state & GDK_MOD3_MASK) ||
@@ -1026,8 +1014,8 @@ key_press_cb (GtkWidget* w, GdkEventKey* e, gpointer data)
 		return 1;
 	}
 
-	self->priv->app->setTimeOfLastEvent(e->time);
-	ev_UnixKeyboard * pUnixKeyboard = static_cast<ev_UnixKeyboard *>(self->priv->frame->getKeyboard());
+	libabiword_priv.app->setTimeOfLastEvent(e->time);
+	ev_UnixKeyboard * pUnixKeyboard = static_cast<ev_UnixKeyboard *>(libabiword_priv.frame->getKeyboard());
 
 	if (self->view)
 		pUnixKeyboard->keyPressEvent(self->view, e);
@@ -1051,7 +1039,7 @@ button_press_cb(GtkWidget * w, GdkEventButton * e, gpointer data)
 */
 
 	if (self->view) {
-		mouse = static_cast<EV_UnixMouse*>(self->priv->frame->getMouse ());
+		mouse = static_cast<EV_UnixMouse*>(libabiword_priv.frame->getMouse ());
 		UT_ASSERT (mouse);
 		mouse->mouseClick(self->view, e);
 	}
@@ -1066,7 +1054,7 @@ gint button_release_cb(GtkWidget * w, GdkEventButton * e, gpointer data)
 	gtk_grab_remove(w);
 
 	if (self->view) {
-		mouse = static_cast<EV_UnixMouse*>(self->priv->frame->getMouse ());
+		mouse = static_cast<EV_UnixMouse*>(libabiword_priv.frame->getMouse ());
 		UT_ASSERT (mouse);
 		mouse->mouseUp (self->view, e);
 	}
@@ -1106,7 +1094,7 @@ motion_notify_cb(GtkWidget* w, GdkEventMotion* e, gpointer data)
 	}
 
 	if (self->view) {
-		mouse = static_cast<EV_UnixMouse*>(self->priv->frame->getMouse ());
+		mouse = static_cast<EV_UnixMouse*>(libabiword_priv.frame->getMouse ());
 		UT_ASSERT (mouse); 
 		/* UT_DEBUGMSG (("motion_notify_cb() mouse: %x\n", mouse));*/
 		mouse->mouseMotion(self->view, e);
@@ -1121,7 +1109,7 @@ scroll_notify_cb(GtkWidget* w, GdkEventScroll* e, gpointer data)
 	EV_UnixMouse *mouse = NULL;
 
 	if (self->view) {
-		mouse = static_cast<EV_UnixMouse*>(self->priv->frame->getMouse ());
+		mouse = static_cast<EV_UnixMouse*>(libabiword_priv.frame->getMouse ());
 		UT_ASSERT (mouse);
 		mouse->mouseScroll(self->view, e);
 	}
