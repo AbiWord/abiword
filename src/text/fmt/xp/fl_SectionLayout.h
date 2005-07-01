@@ -386,7 +386,7 @@ public:
 	void                        setDocSectionLayout(fl_DocSectionLayout * pDSL) { m_pDocSL = pDSL;}
 	void                        setHdrFtr(HdrFtrType iHFType) { 	m_iHFType = iHFType;}
 	virtual bool				recalculateFields(UT_uint32 iUpdateCount);
-	bool                        doclistener_deleteStrux(const PX_ChangeRecord_Strux * pcrx);
+	bool                        doclistener_deleteStrux(const PX_ChangeRecord * pcr);
 	void                        checkAndAdjustCellSize(fl_ContainerLayout * pCL);
 	void                        localFormat(void);
 	virtual void                markAllRunsDirty(void);

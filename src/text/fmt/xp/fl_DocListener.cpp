@@ -1259,6 +1259,19 @@ bool fl_DocListener::change(PL_StruxFmtHandle sfh,
 		}
 		case PTX_SectionHdrFtr:
 		{
+			if(pcrxc->isRevisionDelete())
+			{
+				fl_Layout * pL = (fl_Layout *)sfh;
+				UT_ASSERT(pL->getType() == PTX_SectionHdrFtr);
+				fl_HdrFtrSectionLayout * pSL = static_cast<fl_HdrFtrSectionLayout *>(pL);
+				//
+				// Nuke the HdrFtrSectionLayout and the shadows associated with it.
+				//
+				pSL->doclistener_deleteStrux(pcr); 
+				m_pLayout->updateLayout();
+				goto finish_up;
+			}
+			
 //
 // OK A previous "insertStrux" has created a HdrFtrSectionLayout but it
 // Doesn't know if it's a header or a footer or the DocSection and hences pages

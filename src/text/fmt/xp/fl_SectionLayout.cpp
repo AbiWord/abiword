@@ -3342,10 +3342,23 @@ void fl_HdrFtrSectionLayout::changeIntoHdrFtrSection( fl_DocSectionLayout * pSL)
 \param pcrx the changerecord identifying this action as necesary.
 \returns true
 */
-bool fl_HdrFtrSectionLayout::doclistener_deleteStrux(const PX_ChangeRecord_Strux * pcrx)
+bool fl_HdrFtrSectionLayout::doclistener_deleteStrux(const PX_ChangeRecord * pcr)
 {
-	UT_ASSERT(pcrx->getType()==PX_ChangeRecord::PXT_DeleteStrux);
-	UT_ASSERT(pcrx->getStruxType()==PTX_SectionHdrFtr);
+	UT_ASSERT(pcr->getType()==PX_ChangeRecord::PXT_DeleteStrux ||
+			  pcr->getType()==PX_ChangeRecord::PXT_ChangeStrux);
+	
+
+	if(pcr->getType()==PX_ChangeRecord::PXT_ChangeStrux)
+	{
+		PX_ChangeRecord_StruxChange * pcrx  = (PX_ChangeRecord_StruxChange *) pcr;
+		UT_ASSERT_HARMLESS( pcrx->isRevisionDelete() );
+	}
+	else
+	{
+		PX_ChangeRecord_Strux * pcrx  = (PX_ChangeRecord_Strux *) pcr;
+		UT_ASSERT(pcrx->getStruxType()==PTX_SectionHdrFtr);
+	}
+	
 //
 // Get last doc section. Move all the blocks from here to there after deleting
 // this strux.
