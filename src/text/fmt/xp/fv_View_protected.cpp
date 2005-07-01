@@ -395,14 +395,14 @@ void FV_View::_deleteSelection(PP_AttrProp *p_AttrProp_Before, bool bNoUpdate)
 // Don't delete the block right before a TOC!
 //
 	fl_BlockLayout * pBL = _findBlockAtPosition(iLow);
-	if(pBL->getPrev() && pBL->getPrev()->getContainerType() == FL_CONTAINER_TOC)
+	if(pBL && pBL->getPrev() && pBL->getPrev()->getContainerType() == FL_CONTAINER_TOC)
 	{
 		if(pBL->getPosition(true) == iLow)
 		{
 			iLow++;
 		}
 	}
-	else if((pBL->getPosition() + pBL->getLength()) < iLow)
+	else if((pBL && pBL->getPosition() + pBL->getLength()) < iLow)
 	{
 		iLow++;
 	}

@@ -3988,21 +3988,24 @@ void FV_View::cmdSelect(UT_sint32 xPos, UT_sint32 yPos, FV_DocPos dpBeg, FV_DocP
 	if((dpBeg == FV_DOCPOS_BOL) || (dpBeg == FV_DOCPOS_BOP) || (dpBeg == FV_DOCPOS_BOD))
 	{
 		fl_BlockLayout * pBlock =  _findBlockAtPosition(iPosLeft);
-		UT_sint32 x, y, x2, y2, h;
-		bool b;
-		fp_Run* pRun = pBlock->findPointCoords(m_iInsPoint, false, x, y, x2, y2, h, b);
-		if(pRun)
+		if(pBlock)
 		{
-			fp_Line * pLine = pRun->getLine();
-			if(pLine == static_cast<fp_Line *>(pBlock->getFirstContainer()))
+			UT_sint32 x, y, x2, y2, h;
+			bool b;
+			fp_Run* pRun = pBlock->findPointCoords(m_iInsPoint, false, x, y, x2, y2, h, b);
+			if(pRun)
 			{
-				PT_DocPosition iPosNew = pBlock->getPosition() -1;
-				if(iPosNew < iPosLeft)
+				fp_Line * pLine = pRun->getLine();
+				if(pLine == static_cast<fp_Line *>(pBlock->getFirstContainer()))
 				{
-				     iPosLeft = iPosNew;
+					PT_DocPosition iPosNew = pBlock->getPosition() -1;
+					if(iPosNew < iPosLeft)
+					{
+						iPosLeft = iPosNew;
+					}
+					bRedraw = true; // Need to trick a global redraw in 
+					// header/footer
 				}
-				bRedraw = true; // Need to trick a global redraw in 
-				                // header/footer
 			}
 		}
 	}

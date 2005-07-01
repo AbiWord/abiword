@@ -464,8 +464,10 @@ void FV_VisualDragText::getImageFromSelection(UT_sint32 x, UT_sint32 y)
 	}
 	fp_Run * pRunLow2 = NULL;
 	m_pView->_findPositionCoords(posLow+1, bEOL, xLow, yLow, xCaret2, yCaret2, heightCaret, bDirection, NULL, &pRunLow2);
+	UT_return_if_fail( pRunLow2 );
 	fl_BlockLayout * pBLow2 = pRunLow2->getBlock();
 	m_pView->_findPositionCoords(posLow, bEOL, xLow, yLow, xCaret2, yCaret2, heightCaret, bDirection, NULL, &pRunLow);
+	UT_return_if_fail( pRunLow );
 	fl_BlockLayout * pBLow1 = pRunLow->getBlock();
 	if(pBLow2 != pBLow1)
 	{
