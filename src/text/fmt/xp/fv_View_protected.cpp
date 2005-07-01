@@ -525,9 +525,10 @@ void FV_View::_deleteSelection(PP_AttrProp *p_AttrProp_Before, bool bNoUpdate)
 //
 	PT_DocPosition posEnd = 0;
 	getEditableBounds(true, posEnd);
-	while(!isPointLegal() && getPoint() < posEnd)
+	bool bOK = true;
+	while(bOK && !isPointLegal() && getPoint() < posEnd)
 	{
-		_charMotion(true,1);
+		bOK = _charMotion(true,1);
 	}
 	m_pG->getCaret()->enable();
 }
@@ -4988,7 +4989,7 @@ bool FV_View::_charMotion(bool bForward,UT_uint32 countChars, bool bSkipCannotCo
 	}
 	UT_DEBUGMSG(("SEVIOR: Point = %d \n",getPoint()));
 	_fixInsertionPointCoords();
-	return bRes;
+	return (bRes && m_iInsPoint != posOld);
 }
 
 
@@ -5553,7 +5554,6 @@ void FV_View::_removeThisHdrFtr(fl_HdrFtrSectionLayout * pHdrFtr)
 // Remove the header/footer strux
 //
 	m_pDoc->deleteHdrFtrStrux(sdhHdrFtr);
-
 }
 
 void FV_View::_cmdEditHdrFtr(HdrFtrType hfType)
@@ -5570,6 +5570,7 @@ void FV_View::_cmdEditHdrFtr(HdrFtrType hfType)
 		insertHeaderFooter(hfType);
 		return;
 	}
+	
 	if(isHdrFtrEdit())
 		clearHdrFtrEdit();
 	pShadow = pHFCon->getShadow();

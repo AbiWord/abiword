@@ -126,9 +126,11 @@ void FV_View::cmdCharMotion(bool bForward, UT_uint32 count)
 		{
 			_setPoint(iPoint);
 		}
-		while(!isPointLegal() && (getPoint() > 2))
+
+		bool bOK = true;
+		while(bOK && !isPointLegal() && (getPoint() > 2))
 		{
-			_charMotion(false,1);
+			bOK = _charMotion(false,1);
 		}
 	}
 	else
@@ -4164,13 +4166,16 @@ void FV_View::cmdUndo(UT_uint32 count)
 	PT_DocPosition posBOD = 0;
 	getEditableBounds(true, posEnd);
 	getEditableBounds(true, posBOD);
-	while(!isPointLegal() && (getPoint() < posEnd))
+	bool bOK = true;
+	while(bOK && !isPointLegal() && (getPoint() < posEnd))
 	{
-		_charMotion(true,1);
+		bOK = _charMotion(true,1);
 	}
-	while(!isPointLegal() && (getPoint() > posBOD))
+
+	bOK = true;
+	while(bOK && !isPointLegal() && (getPoint() > posBOD))
 	{
-		_charMotion(false,1);
+		bOK = _charMotion(false,1);
 	}
 	setCursorToContext();
 
@@ -4222,17 +4227,20 @@ void FV_View::cmdRedo(UT_uint32 count)
 //
 	PT_DocPosition posEnd = 0;
 	getEditableBounds(true, posEnd);
-	while(!isPointLegal() && (getPoint() < posEnd))
+	bool bOK = true;
+	while(bOK && !isPointLegal() && (getPoint() < posEnd))
 	{
-		_charMotion(true,1);
+		bOK = _charMotion(true,1);
 	}
 	if(getPoint() > posEnd)
 	{
 		setPoint(posEnd);
 	}
-	while(!isPointLegal() && (getPoint() > 2))
+
+	bOK = true;
+	while(bOK && !isPointLegal() && (getPoint() > 2))
 	{
-		_charMotion(false,1);
+		bOK = _charMotion(false,1);
 	}
 
 	setCursorToContext();
