@@ -2764,7 +2764,11 @@ bool PD_Document::notifyListeners(const pf_Frag_Strux * pfs, const PX_ChangeReco
 			PL_StruxFmtHandle sfh = 0;
 			if (pfs)
 				sfh = pfs->getFmtHandle(lid);
-			pListener->change(sfh,pcr);
+
+			// some pt elements have no corresponding layout elements (for example a
+			// hdr/ftr section that was deleted in revisions mode)
+			if(sfh)
+				pListener->change(sfh,pcr);
 		}
 	}
 
@@ -5439,6 +5443,9 @@ bool PD_Document::_acceptRejectRevision(bool bReject, UT_uint32 iStart, UT_uint3
 	ppAttr[1] = NULL;
 	ppAttr[2] = NULL;
 
+	UT_uint32 iAttrCount;
+	UT_uint32 iPropCount;
+
 	const XML_Char ** ppProps = NULL, ** ppAttr2 = NULL;
 	bool bRet = true;
 	UT_uint32 i;
@@ -5618,12 +5625,20 @@ bool PD_Document::_acceptRejectRevision(bool bReject, UT_uint32 iStart, UT_uint3
 			case PP_REVISION_FMT_CHANGE:
 				// overlay the formatting and remove this revision
 				// from the revision attribute
-				ppProps = new const XML_Char *[2* pRev->getPropertyCount() + 1];
-				ppAttr2 = new const XML_Char *[2* pRev->getAttributeCount() + 3];
+				iPropCount = 0;
+				iAttrCount = 0;
+				ppProps = new const XML_Char *[2*pRev->getPropertyCount()+1];
+				ppAttr2 = new const XML_Char *[2*pRev->getAttributeCount()+3];
 
 				for(i = 0; i < pRev->getPropertyCount(); i++)
 				{
 					pRev->getNthProperty(i, ppProps[2*i],ppProps[2*i + 1]);
+
+					// we have to make copies of these because they might be deleted
+					// before we need them
+					ppProps[2*i] = (XML_Char*)UT_strdup(ppProps[2*i]);
+					ppProps[2*i + 1] = (XML_Char*)UT_strdup(ppProps[2*i + 1]);
+					iPropCount += 2; // these will need to be freed later ...
 				}
 
 				ppProps[2*i] = NULL;
@@ -5631,6 +5646,12 @@ bool PD_Document::_acceptRejectRevision(bool bReject, UT_uint32 iStart, UT_uint3
 				for(i = 0; i < pRev->getAttributeCount(); i++)
 				{
 					pRev->getNthAttribute(i, ppAttr2[2*i],ppAttr2[2*i + 1]);
+					
+					// we have to make copies of these because they might be deleted
+					// before we need them
+					ppAttr2[2*i] = (XML_Char*)UT_strdup(ppAttr2[2*i]);
+					ppAttr2[2*i + 1] = (XML_Char*)UT_strdup(ppAttr2[2*i + 1]);
+					iAttrCount += 2; // these will need to be freed later ...
 				}
 
 				if(pRev->getType() == PP_REVISION_ADDITION_AND_FMT)
@@ -5696,6 +5717,12 @@ bool PD_Document::_acceptRejectRevision(bool bReject, UT_uint32 iStart, UT_uint3
 				}
 				else
 					bRet &= changeSpanFmt(PTC_AddFmt,iStart,iEnd,ppAttr2,ppProps);
+
+				for(i = 0; i < iPropCount; ++i)
+					free((XML_Char*)ppProps[i]);
+				
+				for(i = 0; i < iAttrCount; ++i)
+					free((XML_Char*)ppAttr2[i]);
 
 				delete ppProps;
 				delete ppAttr2;
