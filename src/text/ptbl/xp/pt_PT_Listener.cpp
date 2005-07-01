@@ -118,9 +118,13 @@ bool pt_PieceTable::_tellAndMaybeAddListener(PL_Listener * pListener,
 				bool bStatus1 = pfs->createSpecialChangeRecord(&pcr,sum);
 				UT_return_val_if_fail (bStatus1, false);
 				bool bStatus2 = pListener->populateStrux(sdh,pcr,&sfh);
-				if (bAdd)
+
+				// This can happen legally, for example when inserting a hdr/ftr strux
+				// which was marked deleted in revisions mode -- such strux has no
+				// corresponding layout element
+				// UT_ASSERT_HARMLESS( sfh || !bAdd );
+				if (bAdd && sfh)
 				{
-					UT_ASSERT(sfh != NULL);
 					pfs->setFmtHandle(listenerId,sfh);
 				}
 				
