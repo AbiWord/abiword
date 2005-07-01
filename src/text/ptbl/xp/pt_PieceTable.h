@@ -466,7 +466,7 @@ protected:
 
 	void                    _deleteHdrFtrStruxWithNotify( pf_Frag_Strux * pfFragStruxHdrFtr);
 
-	bool                    _fixHdrFtrReferences(const XML_Char * pType, const XML_Char * pId);
+	bool                    _fixHdrFtrReferences(const XML_Char * pType, const XML_Char * pId, bool bNotional = false);
 	
 	bool					_fmtChangeStrux(pf_Frag_Strux * pfs,
 											PT_AttrPropIndex indexNewAP);
