@@ -53,9 +53,10 @@ public:
 	
 	// XAP_UnixFrameImpl
 
-	GtkIMContext* getIMContext (void);
+	void 		  createIMContext (GdkWindow *window);
+	GtkIMContext* getIMContext 	  (void);
 
- protected:
+protected:
 
 	void _showOrHideStatusbar (void);
 	void _showOrHideToolbars  (void);

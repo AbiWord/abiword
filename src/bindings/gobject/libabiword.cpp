@@ -119,6 +119,12 @@ AP_WidgetFrameImpl::getColorSelForeground (void) const
 	UT_DEBUGMSG (("AP_WidgetFrameImpl::getColorSelForeground()\n")); 
 }
 
+void
+AP_WidgetFrameImpl::createIMContext (GdkWindow *window)
+{
+	_createIMContext (window);
+}
+
 GtkIMContext* 
 AP_WidgetFrameImpl::getIMContext (void) 
 { 

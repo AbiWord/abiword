@@ -59,6 +59,8 @@ struct _AbiWidget {
 	GR_Graphics *graphics;
 	FV_View *view;
 
+	GtkIMContext *im_cx;
+
 	AbiViewMode		view_mode;
 	XAP_Frame::tZoomType zoom_type;
 	gint zoom_percentage;

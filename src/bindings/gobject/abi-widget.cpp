@@ -88,6 +88,11 @@ static void focus_in_cb  (GtkWidget 	   *d_area,
 static void focus_out_cb (GtkWidget 	   *d_area, 
 						  GdkEventCrossing *event, 
 						  gpointer 		    data);
+static void _imPreeditChanged_cb (GtkIMContext *context, gpointer data);
+static gint _imRetrieveSurrounding_cb (GtkIMContext *context, gpointer data);
+static gint _imDeleteSurrounding_cb (GtkIMContext *slave, gint offset, gint n_chars, gpointer data);
+static void _imCommit_cb(GtkIMContext *imc, const gchar *text, gpointer data);
+static void _imCommit(AbiWidget *self, GtkIMContext *imc, const gchar * text);
 
 
 static GtkFrameClass *abi_widget_parent_class = NULL;
@@ -115,13 +120,6 @@ abi_widget_get_type (void)
 
 		frame_type = g_type_register_static (GTK_TYPE_FRAME, "AbiWidget", &frame_info, (GTypeFlags)0);
 	}
-
-	/* linker hack 
-	if (!frame_type) {
-		abi_widget_priv_scroll_func_x (NULL, 0, 0);
-		abi_widget_priv_scroll_func_y (NULL, 0, 0);	
-	}	
-	*/
 
 	return frame_type;
 }
@@ -248,6 +246,12 @@ abi_widget_priv_show_doc (AbiWidget *self)
 	self->view->focusChange(AV_FOCUS_HERE);
 
 	libabiword_priv.frame->setFrameLocked(false);
+
+	GdkEventConfigure e;
+	e.width = GTK_WIDGET (self)->requisition.width;
+	e.height = GTK_WIDGET (self)->requisition.height;
+	configure_cb (GTK_WIDGET (self), &e, self);
+
 	return UT_OK;
 
 Cleanup:
@@ -414,6 +418,8 @@ abi_widget_init (AbiWidget *self)
 	self->widgets = abi_widget_priv_create_widgets (self);
 	gtk_container_add (GTK_CONTAINER (self), self->widgets->table);
 	gtk_frame_set_shadow_type (GTK_FRAME (self), GTK_SHADOW_IN);
+
+	self->im_cx = NULL;
 
 	self->zoom_percentage = 100;
 
@@ -912,6 +918,18 @@ abi_widget_realize_cb (GtkWidget *widget, gpointer data)
 	UT_ASSERT (GDK_IS_WINDOW (widget->window));	
 	self = ABI_WIDGET (data);
 
+	self->im_cx = gtk_im_multicontext_new();
+	gtk_im_context_set_use_preedit (self->im_cx, FALSE); // show alternate preedit stuff in a separate window or somesuch
+	gtk_im_context_set_client_window(self->im_cx, self->widgets->d_area->window);
+	g_signal_connect(G_OBJECT(self->im_cx), "commit", 
+					 G_CALLBACK(_imCommit_cb), self);
+	g_signal_connect (self->im_cx, "preedit_changed",
+					  G_CALLBACK (_imPreeditChanged_cb), self);
+	g_signal_connect (self->im_cx, "retrieve_surrounding",
+					  G_CALLBACK (_imRetrieveSurrounding_cb), self);
+	g_signal_connect (self->im_cx, "delete_surrounding",
+					  G_CALLBACK (_imDeleteSurrounding_cb), self);
+
 	libabiword_priv.frame_impl->setWidget (self);
 	libabiword_priv.frame->setWidget (self);
 
@@ -929,7 +947,7 @@ abi_widget_realize_cb (GtkWidget *widget, gpointer data)
 	self->layout->fillLayouts ();
 */
 
-//TODO enable after loading works	abi_widget_priv_show_doc (self);
+	abi_widget_priv_show_doc (self);
 }
 
 void 
@@ -985,7 +1003,7 @@ key_release_cb (GtkWidget* w, GdkEventKey* e, gpointer data)
 	AbiWidget *self = reinterpret_cast<AbiWidget*>(data);
 
 	// Let IM handle the event first.
-	if (gtk_im_context_filter_keypress(libabiword_priv.frame_impl->getIMContext(), e)) {
+	if (gtk_im_context_filter_keypress(self->im_cx, e)) {
 	    xxx_UT_DEBUGMSG(("IMCONTEXT keyevent swallow: %lu\n", e->keyval));
 		libabiword_priv.frame_impl->queueIMReset ();
 	    return 0;
@@ -999,7 +1017,7 @@ key_press_cb (GtkWidget* w, GdkEventKey* e, gpointer data)
 	AbiWidget *self = reinterpret_cast<AbiWidget*>(data);
 
 	// Let IM handle the event first.
-	if (gtk_im_context_filter_keypress(libabiword_priv.frame_impl->getIMContext(), e)) {
+	if (gtk_im_context_filter_keypress(self->im_cx, e)) {
 		libabiword_priv.frame_impl->queueIMReset ();
 
 		if ((e->state & GDK_MOD1_MASK) ||
@@ -1126,12 +1144,12 @@ configure_cb (GtkWidget* w, GdkEventConfigure *event, gpointer data)
 
 	UT_DEBUGMSG (("configure_cb() view: %x\n", self->view));
 
+	self->priv->new_width = event->width;
+	self->priv->new_height = event->height;
+
 	if (self->view) {
 
 		// Dynamic Zoom Implementation
-
-		self->priv->new_width = event->width;
-		self->priv->new_height = event->height;
 
 		if (!self->priv->do_zoom_update && (self->priv->zoom_idle_cb_handle == 0))
 		{
@@ -1210,3 +1228,92 @@ focus_out_cb (GtkWidget 	   *d_area,
 			  GdkEventCrossing *event, 
 			  gpointer 			data)
 {}
+
+static void 
+_imPreeditChanged_cb (GtkIMContext *context, gpointer data)
+{
+	AbiWidget *self;
+
+	self = ABI_WIDGET (data);
+
+	UT_DEBUGMSG(("Preedit Changed\n"));
+
+#if 0
+	gchar *preedit_string;
+	gint cursor_pos;
+	
+	gtk_im_context_get_preedit_string (context,
+									   &preedit_string, NULL,
+									   &cursor_pos);
+	entry->preedit_length = strlen (preedit_string);
+	cursor_pos = CLAMP (cursor_pos, 0, g_utf8_strlen (preedit_string, -1));
+	entry->preedit_cursor = cursor_pos;
+	g_free (preedit_string);
+	
+	gtk_entry_recompute (entry);
+#endif
+}
+
+static gint 
+_imRetrieveSurrounding_cb (GtkIMContext *context, gpointer data)
+{
+	AbiWidget *self;
+	PT_DocPosition begin_p, end_p, here;
+
+	self = ABI_WIDGET (data);
+
+	begin_p = self->view->mapDocPosSimple (FV_DOCPOS_BOB);
+	end_p = self->view->mapDocPosSimple (FV_DOCPOS_EOB);
+	here = self->view->getInsPoint ();
+
+	UT_UCSChar * text = self->view->getTextBetweenPos (begin_p, end_p);
+
+	if (!text)
+		return TRUE;
+
+	UT_UTF8String utf (text);
+	DELETEPV(text);
+
+	gtk_im_context_set_surrounding (context,
+									utf.utf8_str(),
+									utf.byteLength (),
+									g_utf8_offset_to_pointer(utf.utf8_str(), here - begin_p) - utf.utf8_str());
+
+	return TRUE;
+}
+
+static gint 
+_imDeleteSurrounding_cb (GtkIMContext *slave, gint offset, gint n_chars, gpointer data)
+{
+	AbiWidget *self;
+
+	self = ABI_WIDGET (data);
+
+	PT_DocPosition insPt = self->view->getInsPoint ();
+	if ((gint) insPt + offset < 0)
+		return TRUE;
+
+	self->view->moveInsPtTo (insPt + offset);
+	self->view->cmdCharDelete (true, n_chars);
+
+	return TRUE;
+}
+
+// Actual keyboard commit should be done here.
+static void 
+_imCommit_cb(GtkIMContext *imc, const gchar *text, gpointer data)
+{
+	AbiWidget *self;
+
+	self = ABI_WIDGET (data);
+
+	_imCommit (self, imc, text);
+}
+
+// Actual keyboard commit should be done here.
+static void 
+_imCommit(AbiWidget *self, GtkIMContext *imc, const gchar * text)
+{
+	ev_UnixKeyboard * pUnixKeyboard = static_cast<ev_UnixKeyboard *>(libabiword_priv.frame->getKeyboard());
+	pUnixKeyboard->charDataEvent(self->view, static_cast<EV_EditBits>(0), text, strlen(text));
+}
