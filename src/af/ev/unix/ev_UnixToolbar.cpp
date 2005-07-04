@@ -696,8 +696,8 @@ bool EV_UnixToolbar::synthesize(void)
 	UT_ASSERT(m_wToolbar);
 	
 	gtk_toolbar_set_tooltips(GTK_TOOLBAR(m_wToolbar), TRUE);
-	gtk_toolbar_set_style(GTK_TOOLBAR( m_wToolbar), style );
-
+	gtk_toolbar_set_style(GTK_TOOLBAR(m_wToolbar), style );
+	gtk_toolbar_set_show_arrow(GTK_TOOLBAR(m_wToolbar), TRUE);
 
 #ifndef HAVE_HILDON /* In Hildon its not posible */
 //

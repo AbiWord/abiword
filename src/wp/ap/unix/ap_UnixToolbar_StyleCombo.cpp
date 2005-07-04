@@ -148,8 +148,10 @@ bool AP_UnixToolbar_StyleCombo::repopulate(void)
 			UT_DEBUGMSG(("no style instance for '%s'\n", szName));
 		}
 
+		/* TODO Numbered Headings are also lists, we need to show them tough
 		if (pStyle->isList())
 			continue;
+		*/
 
 		list = g_slist_prepend (list, (char *)szName);
 

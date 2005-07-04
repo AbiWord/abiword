@@ -9,7 +9,7 @@ Packager: Robert Staudinger <robsta@stereolyzer.net>
 Summary: AbiWord is a lightweight word processing application.
 SoftwareVersion: @VERSION@
 AutopackageTarget: 1.0
-#PackageVersion: 8
+PackageVersion: 11
 
 # Only uncomment InterfaceVersion if your package exposes interfaces to other software,
 # for instance if it includes DSOs or python/perl modules. See the developer guide for more info,
@@ -22,15 +22,19 @@ AbiWord is a multi-platform word processor with a GTK+ interface on the UNIX pla
 
 [BuildPrepare]
 orig_build_root="$build_root"
-#abiword
-echo '#!/bin/bash' > configure
-echo '../abi/configure $@' >> configure
-chmod +x configure
+### abiword
+# create configure wrapper when building out of the source tree
+if [ ! -e "configure" ] ; then
+	echo '#!/bin/bash' > configure
+	echo '../abi/configure $@' >> configure
+	chmod +x configure
+fi
 prepareBuild --enable-binreloc --enable-gnome --enable-gucharmap --disable-debug --disable-symbols
-#plugins
+### plugins
 build_root="$orig_build_root"
 cd ../abiword-plugins
-prepareBuild --disable-debug --disable-all --enable-abigrammar --enable-wordperfect
+make clean
+prepareBuild --disable-debug --disable-static --disable-all --enable-abigrammar --enable-wordperfect --enable-abimathview
 
 [BuildUnprepare]
 unprepareBuild
