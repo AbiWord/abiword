@@ -402,7 +402,10 @@ void FV_View::_deleteSelection(PP_AttrProp *p_AttrProp_Before, bool bNoUpdate)
 			iLow++;
 		}
 	}
-	else if((pBL && pBL->getPosition() + pBL->getLength()) < iLow)
+	// fl_BlockLayout::getLength() *includes* the length of the block strux, hence we
+	// should use getPosition(true) here; however, since the block is found at iLow, this
+	// condition can never be true !!! -- Anybody knows what this is about?
+	else if(pBL && (pBL->getPosition(true) + pBL->getLength() < iLow))
 	{
 		iLow++;
 	}
