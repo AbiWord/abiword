@@ -424,7 +424,7 @@ void AP_Dialog_FormatFrame::setCurFrameProps(void)
 	m_borderThicknessBottom = 1.0f;
 
 	m_sBorderThickness = "1.00pt",
-
+ 
 	m_sBorderThicknessRight  = "1.00pt";
 	m_sBorderThicknessLeft   = "1.00pt";
 	m_sBorderThicknessTop    = "1.00pt";

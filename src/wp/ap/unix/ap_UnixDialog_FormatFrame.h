@@ -83,6 +83,9 @@ protected:
 	guint       m_iBorderThicknessConnect;
 	double      m_dThickness[FORMAT_FRAME_NUMTHICKNESS];
 	GtkWidget * m_wWrapButton;
+	GtkWidget * m_wPosParagraph;
+	GtkWidget * m_wPosColumn;
+	GtkWidget * m_wPosPage;
 
 };
 

@@ -47,7 +47,7 @@ static void s_apply_changes(GtkWidget *widget, gpointer data )
 {
 	AP_UnixDialog_FormatFrame * dlg = reinterpret_cast<AP_UnixDialog_FormatFrame *>(data);
 	UT_return_if_fail(widget && dlg);
-	dlg->applyChanges();
+	dlg->event_ApplyToChanged();
 }
 
 static void s_close_window(GtkWidget *widget, gpointer data )
@@ -246,6 +246,9 @@ AP_UnixDialog_FormatFrame::AP_UnixDialog_FormatFrame(XAP_DialogFactory * pDlgFac
 	m_wBorderThickness = NULL;
 	m_iBorderThicknessConnect = 0;
 	m_wWrapButton = NULL;
+	m_wPosParagraph =  NULL;
+	m_wPosColumn = NULL;
+	m_wPosPage = NULL;
 //
 // These are hardwired into the GUI.
 //
@@ -371,6 +374,19 @@ void AP_UnixDialog_FormatFrame::event_BorderThicknessChanged(void)
 
 void AP_UnixDialog_FormatFrame::event_ApplyToChanged(void)
 {
+        if(gtk_toggle_button_get_active(GTK_TOGGLE_BUTTON(m_wPosParagraph )))
+        {
+	     setPositionMode(FL_FRAME_POSITIONED_TO_BLOCK);  
+	}
+	else if(gtk_toggle_button_get_active(GTK_TOGGLE_BUTTON(m_wPosColumn )))
+        {
+	     setPositionMode(FL_FRAME_POSITIONED_TO_COLUMN);  
+	}
+	else if(gtk_toggle_button_get_active(GTK_TOGGLE_BUTTON(m_wPosPage )))
+        {
+	     setPositionMode(FL_FRAME_POSITIONED_TO_PAGE);  
+	}
+        applyChanges();
 }
 
 void AP_UnixDialog_FormatFrame::destroy(void)
@@ -415,6 +431,18 @@ void AP_UnixDialog_FormatFrame::notifyActiveFrame(XAP_Frame *pFrame)
 			setWrapping(false);
 		}
 		gtk_toggle_button_set_active(GTK_TOGGLE_BUTTON(m_wWrapButton),getWrapping());
+		if(positionMode() == FL_FRAME_POSITIONED_TO_BLOCK)
+		{
+		     gtk_toggle_button_set_active(GTK_TOGGLE_BUTTON( m_wPosParagraph),TRUE);
+		}
+		else if(positionMode() == FL_FRAME_POSITIONED_TO_COLUMN)
+		{
+		     gtk_toggle_button_set_active(GTK_TOGGLE_BUTTON(m_wPosColumn),TRUE);
+		} 
+		else if(positionMode() == FL_FRAME_POSITIONED_TO_PAGE)
+		{
+		     gtk_toggle_button_set_active(GTK_TOGGLE_BUTTON(m_wPosPage),TRUE);
+		} 
 	}
 }
 
@@ -482,7 +510,10 @@ GtkWidget * AP_UnixDialog_FormatFrame::_constructWindow(void)
 	localizeButton(glade_xml_get_widget(xml, "rbSetToParagraph"), pSS, AP_STRING_ID_DLG_FormatFrame_SetToParagraph);
 	localizeButton(glade_xml_get_widget(xml, "rbSetToColumn"), pSS, AP_STRING_ID_DLG_FormatFrame_SetToColumn);
 	localizeButton(glade_xml_get_widget(xml, "rbSetToPage"), pSS, AP_STRING_ID_DLG_FormatFrame_SetToPage);
-	
+	m_wPosParagraph = glade_xml_get_widget(xml, "rbSetToParagraph");
+	m_wPosColumn = glade_xml_get_widget(xml, "rbSetToColumn");
+	m_wPosPage = glade_xml_get_widget(xml, "rbSetToPage");
+
 //  Button and label for text wrapping
 
 	m_wWrapButton = glade_xml_get_widget(xml, "btTextWrapState");
