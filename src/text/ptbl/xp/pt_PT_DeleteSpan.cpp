@@ -403,10 +403,6 @@ bool pt_PieceTable::deleteSpan(PT_DocPosition dpos1,
 							return false;
 
 						_fixHdrFtrReferences(pszHdrType, pszHdrId, true);
-
-						// empty the strux listener chache since the pointers are now
-						// invalid
-						pfHdr->clearAllFmtHandles();
 					}
 					
 					break;
@@ -1305,9 +1301,20 @@ bool pt_PieceTable::_deleteComplexSpan(PT_DocPosition & origPos1,
 // 
 					if(!isFootnote(pfs) && !isEndFootnote(pfs))
 					{ 
-						UT_DEBUGMSG(("Delete Block strux \n"));
+						UT_DEBUGMSG(("Delete Block strux dpos1 %d \n",dpos1));
 						bResult = _deleteStruxWithNotify(dpos1,pfs,
-												  &pfNewEnd,&fragOffsetNewEnd);
+										 &pfNewEnd,&fragOffsetNewEnd);
+						
+						if(!bResult) // can't delete this block strux
+						             // but can delete the rest of the content
+						{
+						  UT_DEBUGMSG(("dpos1 = %d \n",dpos1));
+						  pfNewEnd = pfs->getNext();
+						  dpos1 += pfs->getLength();
+						  pfsContainer = pfs;
+						  fragOffsetNewEnd = 0;
+						}
+						// UT_return_val_if_fail(bResult,false);
 						bPrevWasCell = false;
 						bPrevWasFrame = false;
 						bPrevWasEndTable = false;
@@ -1568,7 +1575,7 @@ bool pt_PieceTable::_deleteComplexSpan(PT_DocPosition & origPos1,
 			UT_return_val_if_fail (bResult, false);
 		}
 		break;
-		// the bookmark and hyperlink objects require special treatment; since
+		// the bookmark and hyperlink objects require specxial treatment; since
 		// they come in pairs, we have to ensure that both are deleted together
 		// so we have to find the other part of the pair, delete it, adjust the
 		// positional variables and the delete the one we were originally asked
