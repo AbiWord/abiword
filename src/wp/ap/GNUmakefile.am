@@ -25,7 +25,11 @@ noinst_LIBRARIES= libAp.a
 if WITH_GNOME
 objects = $(ABI_OBJECTS) #$(ABI_GNOME_OBJECTS)
 else
+if WITH_HILDON
+objects = $(ABI_OBJECTS) $(ABI_HILDON_OBJECTS)
+else
 objects = $(ABI_OBJECTS)
+endif
 endif
 
 libAp_a_SOURCES = 
