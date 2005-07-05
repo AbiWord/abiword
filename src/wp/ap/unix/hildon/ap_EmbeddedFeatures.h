@@ -1,7 +1,5 @@
 /* AbiSource Application Framework
  * Copyright (c) 2004 Hubert Figuiere
- * Copyright (C) 2005 INdT
- * Author: Renato Araujo <renato.filho@indt.org.br>
  * 
  * This program is free software; you can redistribute it and/or
  * modify it under the terms of the GNU General Public License
@@ -20,9 +18,11 @@
  */
  
  
-#ifndef __XAP_EMBEDDED_HILDON_FEATURES_H__
-#define __XAP_EMBEDDED_HILDON_FEATURES_H__
+#ifndef __XP_EMBEDDEDHILDON_FEATURES_H__
+#define __XP_EMBEDDEDHILDON_FEATURES_H__
 
-#define XAP_SINGLE_XAPAPP 1
+#define XP_SIMPLE_MENU 1
+
+#define XP_SIMPLE_TOOLBAR 1
 
 #endif

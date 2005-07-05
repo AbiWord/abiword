@@ -306,7 +306,7 @@ void AP_UnixFrameImpl::_setWindowIcon()
 
 void AP_UnixFrameImpl::_createWindow()
 {
-	createTopLevelWindow();
+	_createTopLevelWindow();
 	
 #ifdef HAVE_HILDON	
 	gtk_widget_show_all(gtk_widget_get_parent(getTopLevelWindow()));

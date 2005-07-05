@@ -58,6 +58,11 @@
 #include "gr_UnixImage.h"
 #include "gr_Painter.h"
 
+#ifdef HAVE_HILDON
+#include <hildon-widgets/hildon-file-chooser-dialog.h>
+#endif
+
+
 #include <sys/stat.h>
 
 #include "../../../wp/impexp/xp/ie_types.h"
@@ -68,10 +73,6 @@
 #define PREVIEW_HEIGHT 100
 
 
-#ifdef HAVE_HILDON
-#include <hildon-widgets/hildon-file-chooser-dialog.h>
-#include "xap_UnixHildonApp.h" 
-#endif
 
 /*****************************************************************/
 XAP_Dialog * XAP_UnixDialog_FileOpenSaveAs::static_constructor(XAP_DialogFactory * pFactory,
@@ -575,12 +576,14 @@ void XAP_UnixDialog_FileOpenSaveAs::runModal(XAP_Frame * pFrame)
 	GtkWidget * parent = pUnixFrameImpl->getTopLevelWindow();
 
 #ifdef HAVE_HILDON
-	m_FC = GTK_FILE_CHOOSER( hildon_file_chooser_dialog_new(GTK_WINDOW(XAP_UnixHildonApp::getApp()),
+	GtkWidget * wHildonView = gtk_widget_get_parent(parent);
+
+	m_FC = GTK_FILE_CHOOSER( hildon_file_chooser_dialog_new(GTK_WINDOW(wHildonView),
 							(m_id == XAP_DIALOG_ID_FILE_OPEN || m_id == XAP_DIALOG_ID_INSERT_PICTURE || m_id == XAP_DIALOG_ID_INSERT_FILE ? GTK_FILE_CHOOSER_ACTION_OPEN : GTK_FILE_CHOOSER_ACTION_SAVE))
 							);
 	
 #else	
-
+	
 	m_FC = GTK_FILE_CHOOSER( gtk_file_chooser_dialog_new (szTitle.utf8_str(),
 									GTK_WINDOW(parent),
 									(m_id == XAP_DIALOG_ID_FILE_OPEN || m_id == XAP_DIALOG_ID_INSERT_PICTURE || m_id == XAP_DIALOG_ID_INSERT_FILE ? GTK_FILE_CHOOSER_ACTION_OPEN : GTK_FILE_CHOOSER_ACTION_SAVE),

@@ -64,6 +64,7 @@ toolbaritem(IMG)
 toolbaritem(FMT_STYLE)
 #if XP_SIMPLE_TOOLBAR
 toolbaritem(FMT_CHOOSE)	
+toolbaritem(VIEW_FULL_SCREEN)	
 #else
 #endif
 toolbaritem(FMT_FONT)

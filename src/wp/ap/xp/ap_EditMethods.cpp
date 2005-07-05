@@ -9304,6 +9304,12 @@ Defun1(viewFullScreen)
 	CHECK_FRAME;
 	XAP_Frame * pFrame = static_cast<XAP_Frame *> ( pAV_View->getParentData());
 	AP_FrameData *pFrameData = static_cast<AP_FrameData *>(pFrame->getFrameData());
+	
+#ifdef HAVE_HILDON
+	pFrame->setFullScreen(!pFrameData->m_bIsFullScreen);
+	pFrameData->m_bIsFullScreen = !pFrameData->m_bIsFullScreen;
+	return true;
+#endif
 
 	if(!pFrameData->m_bIsFullScreen) // we're hiding stuff
 	{

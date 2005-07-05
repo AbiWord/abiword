@@ -50,7 +50,8 @@ AP_UnixDialog_Columns::AP_UnixDialog_Columns(XAP_DialogFactory * pDlgFactory, XA
 	m_windowMain = NULL;
 
 	m_wlineBetween = NULL;
-#ifndef HAVE_HILDON
+#ifdef HAVE_HILDON
+#else
 	m_wtoggleOne = NULL;
 	m_wtoggleTwo = NULL;
 	m_wpreviewArea = NULL;
@@ -71,14 +72,16 @@ AP_UnixDialog_Columns::AP_UnixDialog_Columns(XAP_DialogFactory * pDlgFactory, XA
 
 AP_UnixDialog_Columns::~AP_UnixDialog_Columns(void)
 {
-#ifndef HAVE_HILDON
+#ifdef HAVE_HILDON
+#else
 	DELETEP (m_pPreviewWidget);
 #endif
 }
 
 /*****************************************************************/
 
-#ifndef HAVE_HILDON
+#ifdef HAVE_HILDON
+#else
 static void s_two_clicked(GtkWidget * widget, AP_UnixDialog_Columns * dlg)
 {
 	UT_return_if_fail(widget && dlg);
@@ -133,7 +136,8 @@ static void s_line_clicked(GtkWidget * widget, AP_UnixDialog_Columns * dlg)
 	dlg->checkLineBetween();
 }
 
-#ifndef HAVE_HILDON
+#ifdef HAVE_HILDON
+#else
 static gboolean s_preview_exposed(GtkWidget * widget, gpointer /* data */, AP_UnixDialog_Columns * dlg)
 {
 	UT_return_val_if_fail(widget && dlg, FALSE);
@@ -145,7 +149,8 @@ static gboolean s_preview_exposed(GtkWidget * widget, gpointer /* data */, AP_Un
 static gboolean s_window_exposed(GtkWidget * widget, gpointer /* data */, AP_UnixDialog_Columns * dlg)
 {
 	UT_return_val_if_fail(widget && dlg, FALSE);
-#ifndef HAVE_HILDON
+#ifdef HAVE_HILDON
+#else
 	dlg->event_previewExposed();
 #endif
 	return FALSE;
@@ -184,7 +189,8 @@ void AP_UnixDialog_Columns::runModal(XAP_Frame * pFrame)
 	gtk_entry_set_text( GTK_ENTRY(m_wMaxColumnHeightEntry),getHeightString() );
 	g_signal_handler_unblock(G_OBJECT(m_wMaxColumnHeightEntry), m_iMaxColumnHeightID);
 	
-#ifndef HAVE_HILDON
+#ifdef HAVE_HILDON
+#else
 	// *** this is how we add the gc for Column Preview ***
 	// attach a new graphics context to the drawing area
 	XAP_UnixApp * unixapp = static_cast<XAP_UnixApp *> (m_pApp);
@@ -233,7 +239,8 @@ void AP_UnixDialog_Columns::runModal(XAP_Frame * pFrame)
 												 GTK_TOGGLE_BUTTON(m_checkOrder)));
 
 	_storeWindowData();
-#ifndef HAVE_HILDON
+#ifdef HAVE_HILDON
+#else
 	DELETEP (m_pPreviewWidget);
 #endif
 
@@ -291,7 +298,8 @@ void AP_UnixDialog_Columns::readSpin(void)
 		event_Toggle(val);
 		return;
 	}
-#ifndef HAVE_HILDON	
+#ifdef HAVE_HILDON
+#else
 	g_signal_handler_block(G_OBJECT(m_wtoggleOne),
 							 m_oneHandlerID);
 	g_signal_handler_block(G_OBJECT(m_wtoggleTwo),
@@ -316,7 +324,8 @@ void AP_UnixDialog_Columns::readSpin(void)
 void AP_UnixDialog_Columns::event_Toggle( UT_uint32 icolumns)
 {
 	checkLineBetween();
-#ifndef HAVE_HILDON
+#ifdef HAVE_HILDON
+#else
 	g_signal_handler_block(G_OBJECT(m_wtoggleOne),
 							 m_oneHandlerID);
 	g_signal_handler_block(G_OBJECT(m_wtoggleTwo),
@@ -330,7 +339,8 @@ void AP_UnixDialog_Columns::event_Toggle( UT_uint32 icolumns)
 	gtk_spin_button_set_value( GTK_SPIN_BUTTON(m_wSpin), (gfloat) icolumns);
 	g_signal_handler_unblock(G_OBJECT(m_wSpin),
 							   m_spinHandlerID);
-#ifndef HAVE_HILDON
+#ifdef HAVE_HILDON
+#else
 	switch (icolumns)
 	{
 	case 1:
@@ -361,7 +371,8 @@ void AP_UnixDialog_Columns::event_Toggle( UT_uint32 icolumns)
 							   m_threeHandlerID);
 #endif
 	setColumns( icolumns );
-#ifndef HAVE_HILDON
+#ifdef HAVE_HILDON
+#else
 	m_pColumnsPreview->draw();
 #endif
 }
@@ -409,7 +420,8 @@ void AP_UnixDialog_Columns::event_Cancel(void)
 	m_answer = AP_Dialog_Columns::a_CANCEL;
 }
 
-#ifndef HAVE_HILDON
+#ifdef HAVE_HILDON
+#else
 void AP_UnixDialog_Columns::event_previewExposed(void)
 {
         if(m_pColumnsPreview)
@@ -441,7 +453,8 @@ GtkWidget * AP_UnixDialog_Columns::_constructWindow(void)
 
 void AP_UnixDialog_Columns::_constructWindowContents(GtkWidget * windowColumns)
 {
-#ifndef HAVE_HILDON
+#ifdef HAVE_HILDON
+#else
 	GtkWidget *wColumnFrame;
 	GtkWidget *tableColumns;
 	GtkWidget *hboxColumns;
@@ -464,7 +477,8 @@ void AP_UnixDialog_Columns::_constructWindowContents(GtkWidget * windowColumns)
 	const XAP_StringSet * pSS = m_pApp->getStringSet();
 	UT_UTF8String s;
 	
-#ifndef HAVE_HILDON	
+#ifdef HAVE_HILDON
+#else
 	GtkWidget * tableTop = gtk_table_new (1, 2, FALSE);
 	gtk_widget_show (tableTop);
 	gtk_box_pack_start (GTK_BOX (windowColumns), tableTop, FALSE, FALSE, 6);
@@ -659,7 +673,8 @@ void AP_UnixDialog_Columns::_constructWindowContents(GtkWidget * windowColumns)
 	// might need to be queried or altered later.
 
 	m_wlineBetween = wLineBtween;
-#ifndef HAVE_HILDON
+#ifdef HAVE_HILDON
+#else
 	m_wtoggleOne = wToggleOne;
 	m_wtoggleTwo = wToggleTwo;
 	m_wtoggleThree = wToggleThree;
@@ -681,7 +696,8 @@ void AP_UnixDialog_Columns::_connectsignals(void)
 {
 
 	// the control buttons
-#ifndef HAVE_HILDON
+#ifdef HAVE_HILDON
+#else
 	m_oneHandlerID = g_signal_connect(G_OBJECT(m_wtoggleOne),
 					   "clicked",
 					   G_CALLBACK(s_one_clicked),
@@ -733,7 +749,8 @@ void AP_UnixDialog_Columns::_connectsignals(void)
 					   reinterpret_cast<gpointer>(this));
 
 	// the expose event of the preview
-#ifndef HAVE_HILDON
+#ifdef HAVE_HILDON
+#else
 	             g_signal_connect(G_OBJECT(m_wpreviewArea),
 					   "expose_event",
 					   G_CALLBACK(s_preview_exposed),

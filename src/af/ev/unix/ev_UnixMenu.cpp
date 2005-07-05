@@ -883,7 +883,8 @@ bool EV_UnixMenu::synthesizeMenu(GtkWidget * wMenuRoot)
 		}
 	}
 
-#ifndef HAVE_HILDON	 /* don't use accelerators in Hildon -- not enough screen space */
+#ifdef HAVE_HILDON	 /* don't use accelerators in Hildon -- not enough screen space */
+#else
 
 	// make sure our last item on the stack is the one we started with
 	GtkWidget * wDbg = NULL;
@@ -1195,7 +1196,8 @@ bool EV_UnixMenuBar::synthesizeMenuBar()
 	synthesizeMenu(m_wMenuBar);
 	gtk_widget_show_all(m_wMenuBar);
 
-#ifndef HAVE_HILDON	 /* in hildon no need */
+#ifdef HAVE_HILDON	 /* in hildon no need */
+#else
 	gtk_box_pack_start(GTK_BOX(wVBox), m_wMenuBar, FALSE, TRUE, 0);
 #endif	
 
@@ -1316,7 +1318,8 @@ GtkWidget * EV_UnixMenu::s_createNormalMenuEntry(int id, const bool isCheckable,
 			w = gtk_radio_menu_item_new_with_mnemonic (NULL, buf);
 		}
 	
-#ifndef HAVE_HILDON /* not necessary in hildon */		
+#ifdef HAVE_HILDON /* not necessary in hildon */		
+#else
 	if (szMnemonicName && *szMnemonicName)
 	  {
 		  guint accelKey = 0;

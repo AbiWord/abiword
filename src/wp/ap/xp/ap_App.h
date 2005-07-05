@@ -47,6 +47,9 @@ class XAP_Frame;
 #elif 0//defined(HAVE_GNOME)
 #include "xap_UnixGnomeApp.h"
 #define XAP_App_BaseClass XAP_UnixGnomeApp
+#elif HAVE_HILDON
+#include "xap_UnixHildonApp.h"
+#define XAP_App_BaseClass XAP_UnixHildonApp
 #else
 #include "xap_UnixApp.h"
 #define XAP_App_BaseClass XAP_UnixApp

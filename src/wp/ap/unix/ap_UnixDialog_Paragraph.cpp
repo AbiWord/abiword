@@ -117,7 +117,8 @@ static gboolean do_update(gpointer p)
 // FIXME!!! Could get nasty crash if the dlg is destroyed while 
 // a redraw is pending....
 //
-#ifndef HAVE_HILDON
+#ifdef HAVE_HILDON
+#else
 	AP_UnixDialog_Paragraph * dlg = (AP_UnixDialog_Paragraph *) p;
 	dlg->event_PreviewAreaExposed();
 #endif
@@ -153,7 +154,8 @@ void AP_UnixDialog_Paragraph::runModal(XAP_Frame * pFrame)
 	// Show the top level dialog,
 	gtk_widget_show(mainWindow);
 
-#ifndef HAVE_HILDON
+#ifdef HAVE_HILDON
+#else
 	// *** this is how we add the gc ***
 	{
 		// attach a new graphics context to the drawing area
@@ -291,7 +293,8 @@ void AP_UnixDialog_Paragraph::event_CheckToggled(GtkWidget * widget)
 
 void AP_UnixDialog_Paragraph::event_PreviewAreaExposed(void)
 {
-#ifndef HAVE_HILDON
+#ifdef HAVE_HILDON
+#else
 	if (m_paragraphPreview)
 		m_paragraphPreview->draw();
 #endif	
@@ -813,7 +816,8 @@ GtkWidget * AP_UnixDialog_Paragraph::_constructWindowContents(GtkWidget *windowM
                     (GtkAttachOptions) (GTK_FILL), 0, 0);
 
 //TODO: In hildon only hide components for future features
-#ifndef HAVE_HILDON					
+#ifdef HAVE_HILDON					
+#else
 	gtk_widget_show (labelSpacing);
 	gtk_widget_show (hseparator1);
 	gtk_widget_show (labelBefore);
@@ -931,7 +935,8 @@ GtkWidget * AP_UnixDialog_Paragraph::_constructWindowContents(GtkWidget *windowM
                     (GtkAttachOptions) (GTK_FILL), 0, 0 );
 
 	// End of notebook. Next comes the preview area.
-#ifndef HAVE_HILDON
+#ifdef HAVE_HILDON
+#else
 	hboxPreview = gtk_hbox_new (FALSE, 5);
 	gtk_widget_show (hboxPreview);
 
@@ -1080,7 +1085,8 @@ void AP_UnixDialog_Paragraph::_connectCallbackSignals(void)
 	g_signal_connect(G_OBJECT(m_checkbuttonDomDirection), "toggled",
 					   G_CALLBACK(s_check_toggled), (gpointer) this);
 
-#ifndef HAVE_HILDON
+#ifdef HAVE_HILDON
+#else
 	// the expose event off the preview
 	g_signal_connect(G_OBJECT(m_drawingareaPreview),
 					   "expose_event",

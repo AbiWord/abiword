@@ -37,6 +37,7 @@ AF_INCLUDES+=-I'$(top_srcdir)/src/af/xap/@PLATFORM@'
 AF_INCLUDES+=-I'$(top_srcdir)/src/af/xap/@PLATFORM@/gnome'
 AF_INCLUDES+=-I'$(top_srcdir)/src/af/ev/@PLATFORM@/gnome'
 else
+if WITH_HILDON
 AF_INCLUDES=-I'$(top_srcdir)/src/af/util/xp' 
 AF_INCLUDES+=-I'$(top_srcdir)/src/af/tf/xp' 
 AF_INCLUDES+=-I'$(top_srcdir)/src/af/ev/xp'
@@ -47,8 +48,18 @@ AF_INCLUDES+=-I'$(top_srcdir)/src/af/util/@BE_PLATFORM@'
 AF_INCLUDES+=-I'$(top_srcdir)/src/af/ev/@PLATFORM@'
 AF_INCLUDES+=-I'$(top_srcdir)/src/af/gr/@PLATFORM@'
 AF_INCLUDES+=-I'$(top_srcdir)/src/af/xap/@PLATFORM@'
-if WITH_HILDON
 AF_INCLUDES+=-I'$(top_srcdir)/src/af/xap/@PLATFORM@/hildon'
+else
+AF_INCLUDES=-I'$(top_srcdir)/src/af/util/xp' 
+AF_INCLUDES+=-I'$(top_srcdir)/src/af/tf/xp' 
+AF_INCLUDES+=-I'$(top_srcdir)/src/af/ev/xp'
+AF_INCLUDES+=-I'$(top_srcdir)/src/af/ev/xp'
+AF_INCLUDES+=-I'$(top_srcdir)/src/af/gr/xp'
+AF_INCLUDES+=-I'$(top_srcdir)/src/af/xap/xp'
+AF_INCLUDES+=-I'$(top_srcdir)/src/af/util/@BE_PLATFORM@'
+AF_INCLUDES+=-I'$(top_srcdir)/src/af/ev/@PLATFORM@'
+AF_INCLUDES+=-I'$(top_srcdir)/src/af/gr/@PLATFORM@'
+AF_INCLUDES+=-I'$(top_srcdir)/src/af/xap/@PLATFORM@'
 endif
 endif
 
@@ -61,13 +72,19 @@ WP_INCLUDES+=-I'$(top_srcdir)/src/wp/ap/xp/ToolbarIcons'
 WP_INCLUDES+=-I'$(top_srcdir)/src/wp/ap/@PLATFORM@/gnome'
 WP_INCLUDES+=-I'$(top_srcdir)/src/pkg/linux/apkg'
 else
+if WITH_HILDON
 WP_INCLUDES=-I'$(top_srcdir)/src/wp/ap/xp'
 WP_INCLUDES+=-I'$(top_srcdir)/src/wp/impexp/xp'
 WP_INCLUDES+=-I'$(top_srcdir)/src/wp/ap/@PLATFORM@'
 WP_INCLUDES+=-I'$(top_srcdir)/src/wp/ap/xp/ToolbarIcons'
 WP_INCLUDES+=-I'$(top_srcdir)/src/pkg/linux/apkg'
-if WITH_HILDON
 AF_INCLUDES+=-I'$(top_srcdir)/src/wp/ap/@PLATFORM@/hildon'
+else
+WP_INCLUDES=-I'$(top_srcdir)/src/wp/ap/xp'
+WP_INCLUDES+=-I'$(top_srcdir)/src/wp/impexp/xp'
+WP_INCLUDES+=-I'$(top_srcdir)/src/wp/ap/@PLATFORM@'
+WP_INCLUDES+=-I'$(top_srcdir)/src/wp/ap/xp/ToolbarIcons'
+WP_INCLUDES+=-I'$(top_srcdir)/src/pkg/linux/apkg'
 endif
 endif
 

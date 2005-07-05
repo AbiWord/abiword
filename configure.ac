@@ -481,6 +481,7 @@ AC_CONFIG_FILES([GNUmakefile
  src/wp/ap/qnx/GNUmakefile
  src/wp/ap/unix/GNUmakefile
  src/wp/ap/unix/gnome/GNUmakefile
+ src/wp/ap/unix/hildon/GNUmakefile
  src/wp/impexp/GNUmakefile
  src/wp/impexp/cocoa/GNUmakefile
  src/wp/impexp/unix/GNUmakefile

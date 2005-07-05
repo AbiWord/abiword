@@ -52,7 +52,6 @@ class XAP_UnixFrameImpl : public XAP_FrameImpl
 
 	GtkWidget * getTopLevelWindow() const;
 	void setTopLevelWindow(GtkWidget * window) { m_wTopLevelWindow = window; }
-	void createTopLevelWindow(void);
 	GtkWidget * getVBoxWidget() const;
 
 	void focusIMIn ();
@@ -67,6 +66,14 @@ private:
 
 protected:
 	GtkIMContext *		    m_imContext;
+	GtkWidget *		    m_wVBox;
+
+	GtkWidget * 		    m_wSunkenBox;
+	GtkWidget *		    m_wStatusBar;
+	
+	GtkWidget *		    m_wTopLevelWindow;
+	EV_UnixMenuBar *	    m_pUnixMenu;
+
 	bool need_im_reset;
 
 	GtkIMContext * getIMContext();
@@ -74,6 +81,8 @@ protected:
 	virtual bool _close();
 	virtual bool _raise();
 	virtual bool _show();
+
+	virtual void _createTopLevelWindow(void);
 
 	virtual void _nullUpdate () const; // a virtual member function in xap_Frame
 	virtual void _initialize();
@@ -147,18 +156,10 @@ protected:
 	guint                       m_iZoomUpdateID;
 	guint                       m_iAbiRepaintID;
 
-	GtkWidget *		    m_wTopLevelWindow;
-	GtkWidget *		    m_wVBox;
-	GtkWidget * 		    m_wSunkenBox;
-	GtkWidget *		    m_wStatusBar;
 
 	XAP_UnixApp *				m_pUnixApp;
-	EV_UnixMenuBar *			m_pUnixMenu;
 	EV_UnixMenuPopup *			m_pUnixPopup; /* only valid while a context popup is up */
 	AP_UnixDialogFactory		        m_dialogFactory;
-#ifdef HAVE_HILDON
-	GtkWidget * 			m_pHildonApp;
-#endif
 };
 #endif /* XAP_UNIXFRAME_H */
 

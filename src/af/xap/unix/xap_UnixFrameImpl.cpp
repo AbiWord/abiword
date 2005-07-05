@@ -59,10 +59,6 @@
 
 #include "fv_View.h"
 
-#ifdef HAVE_HILDON
-#include "xap_UnixHildonApp.h" 
-#endif
-
 #ifdef HAVE_GNOME
 // sorry about the XAP/AP separation breakage, but this is more important
 #include "ie_types.h"
@@ -470,9 +466,6 @@ XAP_UnixFrameImpl::XAP_UnixFrameImpl(XAP_Frame *pFrame, XAP_UnixApp * pApp) :
 	m_pUnixPopup(NULL),
 	m_dialogFactory(pFrame, static_cast<XAP_App *>(pApp))
 {
-#ifdef HAVE_HILDON
-	m_pHildonApp =  GTK_WIDGET(XAP_UnixHildonApp::getApp());
-#endif	
 }
 
 XAP_UnixFrameImpl::~XAP_UnixFrameImpl() 
@@ -688,7 +681,8 @@ gint XAP_UnixFrameImpl::_fe::configure_event(GtkWidget* w, GdkEventConfigure *e)
 // -- MES
 //
 
-#ifndef HAVE_HILDON
+#ifdef HAVE_HILDON
+#else
         GtkWindow * pWin = NULL;
 		if(pFrame->getFrameMode() == XAP_NormalFrame)
 			pWin = GTK_WINDOW(pUnixFrameImpl->m_wTopLevelWindow);
@@ -1138,6 +1132,7 @@ void XAP_UnixFrameImpl::_setCursor(GR_Graphics::Cursor c)
 	GdkCursor * cursor = gdk_cursor_new(cursor_number);
 	gdk_window_set_cursor(getTopLevelWindow()->window, cursor);
 	gdk_window_set_cursor(getVBoxWidget()->window, cursor);
+
 	gdk_window_set_cursor(m_wSunkenBox->window, cursor);
 	gdk_window_set_cursor(m_wStatusBar->window, cursor);
 	gdk_cursor_unref(cursor);
@@ -1176,7 +1171,7 @@ XAP_DialogFactory * XAP_UnixFrameImpl::_getDialogFactory(void)
 }
 
 // TODO: split me up into smaller pieces/subfunctions
-void XAP_UnixFrameImpl::createTopLevelWindow(void)
+void XAP_UnixFrameImpl::_createTopLevelWindow(void)
 {
 	// create a top-level window for us.
 
@@ -1192,24 +1187,9 @@ void XAP_UnixFrameImpl::createTopLevelWindow(void)
 	}
 	
 	bool bResult;
-#ifdef	HAVE_HILDON
-	GtkWidget *wintemp = GTK_WIDGET(m_pHildonApp);
-#else
-	GtkWidget *wintemp = m_wTopLevelWindow;
-#endif 	
 	
 	if(m_iFrameMode == XAP_NormalFrame)
 	{
-		
-#ifdef HAVE_HILDON		
-		m_wTopLevelWindow = hildon_appview_new(m_pUnixApp->getApplicationTitleForTitleBar());
-		hildon_app_set_appview(HILDON_APP(m_pHildonApp), HILDON_APPVIEW(m_wTopLevelWindow));
-		hildon_app_set_title(HILDON_APP(m_pHildonApp),  m_pUnixApp->getApplicationTitleForTitleBar());
-		hildon_app_set_two_part_title(HILDON_APP(m_pHildonApp), TRUE);
-				
-		gtk_widget_show_all(GTK_WIDGET(m_pHildonApp));		
-		wintemp = GTK_WIDGET(m_pHildonApp);
-#else		
 		m_wTopLevelWindow = gtk_window_new(GTK_WINDOW_TOPLEVEL);
 		gtk_window_set_title(GTK_WINDOW(m_wTopLevelWindow),
 				     m_pUnixApp->getApplicationTitleForTitleBar());
@@ -1218,34 +1198,31 @@ void XAP_UnixFrameImpl::createTopLevelWindow(void)
 		if ( wmIcon )
 			gtk_window_set_icon(GTK_WINDOW(m_wTopLevelWindow), wmIcon);
 		
-		wintemp = 	m_wTopLevelWindow; 		
+		gtk_window_set_resizable(GTK_WINDOW(m_wTopLevelWindow), TRUE);
+		gtk_window_set_role(GTK_WINDOW(m_wTopLevelWindow), "topLevelWindow");		
 		
-		gtk_window_set_resizable(GTK_WINDOW(wintemp), TRUE);
-		
-#endif	/* HAVE_HILDON */	
-		g_object_set_data(G_OBJECT(wintemp), "ic_attr", NULL);
-		g_object_set_data(G_OBJECT(wintemp), "ic", NULL);		
-		gtk_window_set_role(GTK_WINDOW(wintemp), "topLevelWindow");		
+		g_object_set_data(G_OBJECT(m_wTopLevelWindow), "ic_attr", NULL);
+		g_object_set_data(G_OBJECT(m_wTopLevelWindow), "ic", NULL);		
 		
 	}
 	g_object_set_data(G_OBJECT(m_wTopLevelWindow), "toplevelWindow",
 						m_wTopLevelWindow);
 	g_object_set_data(G_OBJECT(m_wTopLevelWindow), "toplevelWindowFocus",
 						GINT_TO_POINTER(FALSE));
-	g_object_set_data(G_OBJECT(wintemp), "user_data", this); 
+	g_object_set_data(G_OBJECT(m_wTopLevelWindow), "user_data", this); 
 
 	_setGeometry ();
 
-	g_signal_connect(G_OBJECT(wintemp), "realize",
+	g_signal_connect(G_OBJECT(m_wTopLevelWindow), "realize",
 					   G_CALLBACK(_fe::realize), NULL);
-	g_signal_connect(G_OBJECT(wintemp), "unrealize",
+	g_signal_connect(G_OBJECT(m_wTopLevelWindow), "unrealize",
 					   G_CALLBACK(_fe::unrealize), NULL);
-	g_signal_connect(G_OBJECT(wintemp), "size_allocate",
+	g_signal_connect(G_OBJECT(m_wTopLevelWindow), "size_allocate",
 					   G_CALLBACK(_fe::sizeAllocate), NULL);
 
-	g_signal_connect(G_OBJECT(wintemp), "focus_in_event",
+	g_signal_connect(G_OBJECT(m_wTopLevelWindow), "focus_in_event",
 					   G_CALLBACK(_fe::focusIn), NULL);
-	g_signal_connect(G_OBJECT(wintemp), "focus_out_event",
+	g_signal_connect(G_OBJECT(m_wTopLevelWindow), "focus_out_event",
 					   G_CALLBACK(_fe::focusOut), NULL);
 
 #ifdef HAVE_GNOME
@@ -1274,12 +1251,12 @@ void XAP_UnixFrameImpl::createTopLevelWindow(void)
 					  static_cast<gpointer>(this));
 #endif
 
-	g_signal_connect(G_OBJECT(wintemp), "delete_event",
+	g_signal_connect(G_OBJECT(m_wTopLevelWindow), "delete_event",
 					   G_CALLBACK(_fe::delete_event), NULL);
 	// here we connect the "destroy" event to a signal handler.
 	// This event occurs when we call gtk_widget_destroy() on the window,
 	// or if we return 'FALSE' in the "delete_event" callback.
-	g_signal_connect(G_OBJECT(wintemp), "destroy",
+	g_signal_connect(G_OBJECT(m_wTopLevelWindow), "destroy",
 					   G_CALLBACK(_fe::destroy), NULL);
 
 	g_signal_connect(G_OBJECT(m_wTopLevelWindow), "focus_in_event",
@@ -1310,11 +1287,11 @@ void XAP_UnixFrameImpl::createTopLevelWindow(void)
 	if(m_iFrameMode == XAP_NormalFrame)
 		gtk_widget_realize(m_wTopLevelWindow);
 
-	_createIMContext(wintemp->window);
+	_createIMContext(m_wTopLevelWindow->window);
 
-	g_signal_connect(G_OBJECT(wintemp), "key_press_event",
+	g_signal_connect(G_OBJECT(m_wTopLevelWindow), "key_press_event",
 					   G_CALLBACK(_fe::key_press_event), NULL);
-	g_signal_connect(G_OBJECT(wintemp), "key_release_event",
+	g_signal_connect(G_OBJECT(m_wTopLevelWindow), "key_release_event",
 					   G_CALLBACK(_fe::key_release_event), NULL);
 
 	if(m_iFrameMode == XAP_NormalFrame)
@@ -1343,11 +1320,9 @@ void XAP_UnixFrameImpl::createTopLevelWindow(void)
 
 	gtk_widget_show(m_wVBox);
 
-#ifndef HAVE_HILDON	
 	// set the icon
 	if(m_iFrameMode == XAP_NormalFrame)
 		_setWindowIcon();
-#endif	
 }
 
 void XAP_UnixFrameImpl::_createIMContext(GdkWindow *w)
@@ -1453,7 +1428,6 @@ GtkIMContext * XAP_UnixFrameImpl::getIMContext()
 
 void XAP_UnixFrameImpl::_setGeometry ()
 {
-#ifndef HAVE_HILDON	
 	UT_sint32 app_x = 0;
 	UT_sint32 app_y = 0;
 	UT_uint32 app_w = 0;
@@ -1548,7 +1522,6 @@ void XAP_UnixFrameImpl::_setGeometry ()
 	// Remember geometry settings for next time
 	m_pUnixApp->getPrefs()->setGeometry (user_x, user_y, user_w, user_h, user_f);
 			
-#endif /* HAVE_HILDON */			
 }
 
 /*!
@@ -1610,13 +1583,7 @@ bool XAP_UnixFrameImpl::_close()
 bool XAP_UnixFrameImpl::_raise()
 {
 	UT_ASSERT(m_wTopLevelWindow);
-
-#ifdef HAVE_HILDON	
-	gtk_window_present(GTK_WINDOW (gtk_widget_get_parent(m_wTopLevelWindow)));	
-#else
 	gtk_window_present(GTK_WINDOW (m_wTopLevelWindow));	
-#endif	
-
 	return true;
 }
 
@@ -1640,12 +1607,7 @@ bool XAP_UnixFrameImpl::_updateTitle()
 	if(getFrame()->getFrameMode() == XAP_NormalFrame)
 	{
 		const char * szTitle = getFrame()->getTitle(MAX_TITLE_LENGTH);
-#ifdef HAVE_HILDON
-		hildon_appview_set_title(HILDON_APPVIEW(m_wTopLevelWindow), szTitle);
-#else		
 		gtk_window_set_title(GTK_WINDOW(m_wTopLevelWindow), szTitle);
-#endif /* HAVE_HILDON */		
-		
 	}
 	return true;
 }

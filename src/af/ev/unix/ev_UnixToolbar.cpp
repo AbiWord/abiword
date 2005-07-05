@@ -72,7 +72,7 @@
 #endif // HAVE_GNOME
 
 #ifdef HAVE_HILDON
-#include "xap_UnixHildonApp.h"
+#include "hildon-widgets/hildon-appview.h"
 #endif
 
 
@@ -556,6 +556,7 @@ void EV_UnixToolbar::rebuildToolbar(UT_sint32 oldpos)
   //
     synthesize();
 #ifdef HAVE_HILDON
+#else
 	GtkWidget * wVBox = static_cast<XAP_UnixFrameImpl *>(m_pFrame->getFrameImpl())->getVBoxWidget();
 	gtk_box_reorder_child(GTK_BOX(wVBox), m_wHandleBox, oldpos);
 //
@@ -686,7 +687,10 @@ bool EV_UnixToolbar::synthesize(void)
 	UT_ASSERT(nrLabelItemsInLayout > 0);
 
 	GtkWidget * wTLW = static_cast<XAP_UnixFrameImpl *>(m_pFrame->getFrameImpl())->getTopLevelWindow();
+#ifdef HAVE_HILDON	
+#else
 	GtkWidget * wVBox = static_cast<XAP_UnixFrameImpl *>(m_pFrame->getFrameImpl())->getVBoxWidget();
+#endif
 
 	m_wHandleBox = gtk_alignment_new(0, 0, 1, 1);
 	
@@ -699,7 +703,8 @@ bool EV_UnixToolbar::synthesize(void)
 	gtk_toolbar_set_style(GTK_TOOLBAR(m_wToolbar), style );
 	gtk_toolbar_set_show_arrow(GTK_TOOLBAR(m_wToolbar), TRUE);
 
-#ifndef HAVE_HILDON /* In Hildon its not posible */
+#ifdef HAVE_HILDON /* In Hildon its not posible */
+#else
 //
 // Make the toolbar a destination for drops
 //
@@ -772,7 +777,8 @@ bool EV_UnixToolbar::synthesize(void)
 				g_object_set_data(G_OBJECT(wwd),
 									"wd_pointer",
 									wd);
-#ifndef HAVE_HILDON /* not drag toolbar in hildon */
+#ifdef HAVE_HILDON /* not drag toolbar in hildon */
+#else
 				gtk_drag_source_set(wwd,GDK_BUTTON3_MASK,
 									s_AbiTBTargets,1,
 									GDK_ACTION_COPY);
@@ -1001,12 +1007,11 @@ bool EV_UnixToolbar::synthesize(void)
 	}
 
 #ifdef HAVE_HILDON	
-	GtkWidget *wToolbarR = m_wToolbar;
 	
-	hildon_appview_set_toolbar(HILDON_APPVIEW(wTLW),
-					GTK_TOOLBAR(wToolbarR));
-	gtk_widget_show_all(wToolbarR);	
+	gtk_box_pack_end(GTK_BOX(HILDON_APPVIEW(wTLW)->vbox), m_wToolbar, FALSE, FALSE, 0);
+	gtk_widget_show_all(m_wToolbar);	
 	gtk_widget_show_all(wTLW);			
+	
 	
 #else
 	// show the complete thing
@@ -1017,9 +1022,10 @@ bool EV_UnixToolbar::synthesize(void)
 	// put it in the vbox
 	gtk_widget_show(m_wHandleBox);
 	gtk_box_pack_start(GTK_BOX(wVBox), m_wHandleBox, FALSE, FALSE, 0);
-#endif /* HAVE_HILDON */
 
 	setDetachable(getDetachable());
+#endif /* HAVE_HILDON */
+
 	
 	return true;
 }
@@ -1205,11 +1211,11 @@ XAP_Frame * EV_UnixToolbar::getFrame(void)
 
 void EV_UnixToolbar::show(void)
 {
-	GtkWidget *widget = gtk_bin_get_child(GTK_BIN(m_wHandleBox));
 	if (m_wToolbar) {
 #ifdef HAVE_HILDON		
 		gtk_widget_show (m_wToolbar);
 #else
+		GtkWidget *widget = gtk_bin_get_child(GTK_BIN(m_wHandleBox));
 		gtk_widget_show(m_wHandleBox);
 		gtk_widget_show (m_wToolbar->parent);
 		if (getDetachable()) {
@@ -1223,11 +1229,11 @@ void EV_UnixToolbar::show(void)
 void EV_UnixToolbar::hide(void)
 {
 
-	GtkWidget *widget = gtk_bin_get_child(GTK_BIN(m_wHandleBox));
 	if (m_wToolbar) {
 #ifdef HAVE_HILDON		
 		gtk_widget_hide (m_wToolbar);
 #else
+		GtkWidget *widget = gtk_bin_get_child(GTK_BIN(m_wHandleBox));
 		gtk_widget_hide(m_wHandleBox);
 		gtk_widget_hide (m_wToolbar->parent);
 		if (getDetachable()) {

@@ -156,9 +156,9 @@ BeginLayout(Main,0)
 			MenuItem(AP_MENU_ID_VIEW_ZOOM_75)
 			MenuItem(AP_MENU_ID_VIEW_ZOOM_50)
 		EndSubMenu()
-
 	EndSubMenu()
-#endif
+#endif /*  XP_SIMPLE_MENU */
+	
 	BeginSubMenu(AP_MENU_ID_INSERT)
 		MenuItem(AP_MENU_ID_INSERT_BREAK)
 		MenuItem(AP_MENU_ID_INSERT_PAGENO)
@@ -247,12 +247,25 @@ BeginLayout(Main,0)
         	MenuItem(AP_MENU_ID_FMT_DIRECTION_DO_RTL)
     	EndSubMenu()
 
-#if !XP_SIMPLE_MENU
+#if XP_SIMPLE_MENU
+	BeginSubMenu(AP_MENU_ID_VIEW_ZOOM_MENU)
+		MenuItem(AP_MENU_ID_VIEW_ZOOM)
+		MenuItem(AP_MENU_ID_VIEW_ZOOM_WIDTH)
+		MenuItem(AP_MENU_ID_VIEW_ZOOM_WHOLE)
+		MenuItem(AP_MENU_ID_VIEW_ZOOM_200)
+		MenuItem(AP_MENU_ID_VIEW_ZOOM_100)
+		MenuItem(AP_MENU_ID_VIEW_ZOOM_75)
+		MenuItem(AP_MENU_ID_VIEW_ZOOM_50)
+	EndSubMenu()
+#else	
+
 		Separator()
 
 		MenuItem(AP_MENU_ID_FMT_STYLE_DEFINE)
-#endif	
+	
 
+#endif
+	
 	EndSubMenu()
 
 	BeginSubMenu(AP_MENU_ID_TOOLS)
