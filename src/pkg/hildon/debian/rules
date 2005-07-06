@@ -77,7 +77,7 @@ install: build
 	install -m 644 $(CURDIR)/debian/misc/abiword.desktop $(CURDIR)/debian/abiword/usr/share/applications/hildon
 
 	# Add D-Bus service
-	install -m 644 $(CURDIR)/debian/misc/com.nokia.osso_abiword.service $(CURDIR)/debian/abiword/usr/lib/dbus-1.0/services
+	install -m 644 $(CURDIR)/debian/misc/org.abisource.abiword.service $(CURDIR)/debian/abiword/usr/lib/dbus-1.0/services
 
 	# Link the desktop file to /etc/others-menu/
 	mkdir -p $(CURDIR)/debian/abiword/etc/others-menu
