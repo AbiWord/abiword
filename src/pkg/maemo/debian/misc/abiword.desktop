@@ -1,0 +1,13 @@
+[Desktop Entry]
+Encoding=UTF-8
+Version=0.1
+Type=Application
+Name=Word Processor
+Exec=/usr/bin/osso_abiword.sh
+Icon=qgn_list_word
+X-Window-Icon=qgn_list_word
+X-Window-Icon-Dimmed=qgn_list_word
+X-Osso-Service=osso_abiword
+X-HildonDesk-ShowInToolbar=true
+X-Osso-Type=application/x-executable
+StartupWMClass=osso_abiword
