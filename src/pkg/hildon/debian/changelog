@@ -1,9 +1,0 @@
-abiword (2.3.2) maemo; urgency=low
-
-  * Initial package for maemo-word-processor package by 
-
- -- Rodrigo Parra Novo <rodrigo.novo@indt.org.br>  Mon, 25 May 2005 10:28:17 -0300
-
-  * Changes for AbiWord 2.4
-
- -- Tomas Frydrych <tomasfrydrych@yahoo.co.uk>  Wed, 6 July 2005 17:22 +0100
