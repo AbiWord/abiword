@@ -51,7 +51,7 @@ clean:
 	# Add here commands to clean up after the build process.
 	-$(MAKE) -C $(CURDIR) clean
 	-$(MAKE) -C $(CURDIR) realclean
-	$(CURDIR)/clean_dir_struct.sh
+	#$(CURDIR)/clean_dir_struct.sh
 
 	dh_clean
 
