@@ -10642,6 +10642,7 @@ fl_BlockSpellIterator::nextWordForSpellChecking(const UT_UCSChar*& pWord, UT_sin
 						continue;
 					}
 					
+					UT_uint32 iMaxLen = UT_MIN(pRun->getLength(), m_iWordOffset + iWordLength - pRun->getBlockOffset());
 						
 					bool bDeletedVisible =
 						pRun->getVisibility() == FP_VISIBLE &&
@@ -10658,8 +10659,8 @@ fl_BlockSpellIterator::nextWordForSpellChecking(const UT_UCSChar*& pWord, UT_sin
 			
 					if(st && st->bIgnore == bIgnore)
 					{
-						// this run continues the last ignore section, just adjust the end
-						st->iEnd += pRun->getBlockOffset() - m_iWordOffset + pRun->getLength();
+						// this run continues the last ignore section, just adjust to the end
+						st->iEnd += iMaxLen;
 					}
 					else
 					{
@@ -10668,7 +10669,7 @@ fl_BlockSpellIterator::nextWordForSpellChecking(const UT_UCSChar*& pWord, UT_sin
 
 						st->bIgnore = bIgnore;
 						st->iStart = pRun->getBlockOffset() - m_iWordOffset;
-						st->iEnd = pRun->getBlockOffset() - m_iWordOffset + pRun->getLength();
+						st->iEnd = st->iStart + iMaxLen;
 
 						vWordLimits.addItem(st);
 					}
