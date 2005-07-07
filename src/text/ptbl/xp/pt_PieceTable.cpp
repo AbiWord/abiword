@@ -164,7 +164,7 @@ void pt_PieceTable::_unlinkFrag(pf_Frag * pf,
 		*pfragOffsetEnd = 0;
 
 	pf_Frag * pp = pf->getPrev();
-
+	xxx_UT_DEBUGMSG(("Unlink frag %x of type %d \n",pf,pf->getType()));
 	m_fragments.unlinkFrag(pf);
 
 	if (   pp
@@ -188,6 +188,7 @@ void pt_PieceTable::_unlinkFrag(pf_Frag * pf,
 			delete pnt;
 		}
 	}
+	UT_ASSERT(pp->getNext() != pf);
 }
 
 bool pt_PieceTable::_struxHasContent(pf_Frag_Strux * pfs) const

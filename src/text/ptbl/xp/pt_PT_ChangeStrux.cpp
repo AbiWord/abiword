@@ -563,7 +563,7 @@ bool pt_PieceTable::_realChangeStruxFmt(PTChangeFmt ptc,
 
 		PT_DocPosition dpos = getFragPosition(pfs_First);
 		pf_Frag_Strux * pfsContainer = pfs_First;
-		pf_Frag * pfNewEnd;
+		pf_Frag * pfNewEnd = NULL;
 		UT_uint32 fragOffsetNewEnd;
 
 		bool bEndSeen = false;
@@ -592,6 +592,7 @@ bool pt_PieceTable::_realChangeStruxFmt(PTChangeFmt ptc,
 					{
 						bool bResult;
 						bResult = _fmtChangeStruxWithNotify(ptc,pfsContainer,attributes,sProps,bRevisionDelete);
+						pfNewEnd = pf->getNext(); // fix 9226 change strux can delete the following object!
 						UT_return_val_if_fail (bResult,false);
 					}
 					if(!bEndSeen && isEndFootnote(static_cast<pf_Frag *>(pfsContainer)))
