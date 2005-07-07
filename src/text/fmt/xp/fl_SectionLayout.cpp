@@ -1873,6 +1873,7 @@ void fl_DocSectionLayout::setNeedsSectionBreak(bool bSet, fp_Page * pPage)
 void fl_DocSectionLayout::completeBreakSection(void)
 {
 	m_bNeedsSectionBreak = true;
+	updateLayout(true);
 	m_ColumnBreaker.setStartPage(NULL);
 	m_ColumnBreaker.breakSection(this);
 	m_bNeedsSectionBreak = false;
