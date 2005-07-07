@@ -3173,6 +3173,7 @@ void fl_HdrFtrSectionLayout::collapseBlock(fl_ContainerLayout *pBlock)
 		_PageHdrFtrShadowPair* pPair = m_vecPages.getNthItem(i);
 		fl_ContainerLayout * pShadowBL = pPair->getShadow()->findMatchingContainer(pBlock);
 		UT_ASSERT(pShadowBL);
+		UT_DEBUGMSG(("Doing collapseBlock %x \n",pBlock));
 		if(pShadowBL)
 		{
 			// In case we've never checked this one
@@ -3454,7 +3455,7 @@ void fl_HdrFtrSectionLayout::addPage(fp_Page* pPage)
 	UT_return_if_fail( pPair );
 	
 	// TODO outofmem
-	xxx_UT_DEBUGMSG(("SEVIOR: Add page %x to pair %x \n",pPage,pPair));
+	UT_DEBUGMSG(("SEVIOR: Add page %x to pair %x \n",pPage,pPair));
 	pPair->setPage(pPage);
 	pPair->setShadow(new fl_HdrFtrShadow(m_pLayout, pPage, this, getStruxDocHandle(), m_apIndex));
 	//
@@ -3602,6 +3603,7 @@ void fl_HdrFtrSectionLayout::deletePage(fp_Page* pPage)
 	fp_Page * ppPage = pPair->getPage();
 	UT_ASSERT(pPage == ppPage);
 	delete pPair->getShadow();
+	UT_DEBUGMSG(("Doing deletePage %x \n",pPage));
 	if(getDocLayout()->findPage(ppPage) >= 0)
 	{
 			ppPage->removeHdrFtr(getHFType());

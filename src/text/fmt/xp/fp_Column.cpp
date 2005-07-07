@@ -1995,6 +1995,8 @@ fp_ShadowContainer::fp_ShadowContainer(UT_sint32 iX,
 
 fp_ShadowContainer::~fp_ShadowContainer()
 {
+  UT_DEBUGMSG(("Delete Shadow Container %x from shadow Layout %x \n",this,getSectionLayout()));
+  getSectionLayout()->setFirstContainer(NULL);
 }
 
 

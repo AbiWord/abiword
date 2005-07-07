@@ -1509,9 +1509,16 @@ void fp_Page::_reformatColumns(void)
 			}
 			UT_sint32 iYNext = pFirstNextContainer->getHeight();
 			bool bIsTable = (pFirstNextContainer->getContainerType() == FP_CONTAINER_TABLE)  || (countFootnoteContainers() > 0) || (pNext->countFootnoteContainers() > 0);
+			fl_ContainerLayout * pCNext = static_cast<fl_SectionLayout *>(pFirstNextContainer->getSectionLayout());
+			if(pCNext == static_cast<fl_ContainerLayout *>(pLastContainer->getSectionLayout()))
+		        {
+			  bIsTable = true; // only rebuild if we have a change
+			                   // of docsection
+			}
 			if( !bIsTable && (iY + 3*iYNext) < (getHeight() - getFootnoteHeight() - iBottomMargin))
 			{
-		   		m_pOwner->markForRebuild();
+			  UT_DEBUGMSG(("Extra space on page. Mark for rebuild \n"));
+			  //m_pOwner->markForRebuild();
 //
 // FIXME see if this code works instead
 //
