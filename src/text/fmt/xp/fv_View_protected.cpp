@@ -4067,6 +4067,10 @@ void FV_View::_fixInsertionPointCoords()
 				yoff = 0;
 			}
 		}
+		if(pRun && (pRun->getType() == FPRUN_IMAGE))
+		{
+			UT_DEBUGMSG(("On image run with fixPointcoords \n"));
+		}
 		xxx_UT_DEBUGMSG(("Xpoint in fixpoint %d \n",m_xPoint));
 		m_pG->getCaret()->setCoords(m_xPoint, m_yPoint+yoff, m_iPointHeight-yoff,
 									m_xPoint2, m_yPoint2+yoff, m_iPointHeight-yoff, 

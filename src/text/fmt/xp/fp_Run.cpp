@@ -478,9 +478,15 @@ fp_Run*
 fp_Run::_findPrevPropertyRun(void) const
 {
 	fp_Run* pRun = getPrevRun();
-	while (pRun && (!pRun->hasLayoutProperties() || pRun->isHidden()))
+	while (pRun && (!pRun->hasLayoutProperties() || pRun->isHidden() || (pRun->getType() == FPRUN_IMAGE)))
 	    pRun = pRun->getPrevRun();
+	if(pRun == NULL)
+	{
+		pRun = getPrevRun();
+		while (pRun && (!pRun->hasLayoutProperties() || pRun->isHidden()))
+			pRun = pRun->getPrevRun();
 
+	}
 	return pRun;
 }
 
@@ -3067,17 +3073,30 @@ void fp_EndOfParagraphRun::findPointCoords(UT_uint32 iOffset,
 	fp_Run* pPropRun = _findPrevPropertyRun();
 
 	height = getHeight();
+	if(pPropRun && pPropRun->getType() == FPRUN_IMAGE)
+	{
+		height = static_cast<fp_ImageRun *>(pPropRun)->getPointHeight();
+	}
 	xxx_UT_DEBUGMSG((" Got initial height of %d \n",height));
 	if (pPropRun)
 	{
 		xxx_UT_DEBUGMSG(("Got propRun in EOPRun \n"));
 		height = pPropRun->getHeight();
+		if(pPropRun->getType() == FPRUN_IMAGE)
+	    {
+			height = static_cast<fp_ImageRun *>(pPropRun)->getPointHeight();
+		}
+
 		// If property Run is on the same line, get y location from
 		// it (to reflect proper ascent).
 		if (pPropRun->getLine() == getLine())
 		{
 			pPropRun->findPointCoords(iOffset, x, y, x2, y2, height, bDirection);
 			xxx_UT_DEBUGMSG(("Got propRun in EOPRun inherited height %d \n",height));
+			if(pPropRun->getType() == FPRUN_IMAGE)
+			{
+				height = static_cast<fp_ImageRun *>(pPropRun)->getPointHeight();
+			}
 			return;
 		}
 	}

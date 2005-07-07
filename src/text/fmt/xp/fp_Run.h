@@ -775,6 +775,8 @@ public:
 	virtual bool 			hasLayoutProperties(void) const;
 	virtual GR_Image * 				getImage();
 	void                     regenerateImage(GR_Graphics * pG);
+	UT_sint32               getPointHeight(void)
+	{ return m_iPointHeight;}
 protected:
 	virtual void			_lookupProperties(const PP_AttrProp * pSpanAP,
 											  const PP_AttrProp * pBlockAP,
