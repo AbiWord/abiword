@@ -403,6 +403,9 @@ bool pt_PieceTable::deleteSpan(PT_DocPosition dpos1,
 							return false;
 
 						_fixHdrFtrReferences(pszHdrType, pszHdrId, true);
+                        // empty the strux listener chache since the pointers are now
+                        // invalid                                              
+                        pfHdr->clearAllFmtHandles();                            
 					}
 					
 					break;
