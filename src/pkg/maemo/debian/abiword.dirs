@@ -1,6 +1,4 @@
 etc/others-menu
 usr/bin
-usr/share/AbiSuite-2.4/AbiWord/glade
-usr/share/applications/hildon
-usr/share/icons/hicolor/26x26
-usr/lib/dbus-1.0/services
+usr/lib
+usr/share

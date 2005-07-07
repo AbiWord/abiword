@@ -1,9 +1,22 @@
-abiword (2.3.2) maemo; urgency=low
+abiword (2.3.2-1maemo1) unstable; urgency=low
 
-  * Initial package for maemo-word-processor package by 
+  * Some bug fixes to make abiword work on Nokia 770
 
- -- Rodrigo Parra Novo <rodrigo.novo@indt.org.br>  Mon, 25 May 2005 10:28:17 -0300
+ -- Renato Araujo Oliveira Filho <renato.filho@indt.org.br>  Wed,  6 Jul 2005 13:00:01 -0300
+
 
   * Changes for AbiWord 2.4
 
  -- Tomas Frydrych <tomasfrydrych@yahoo.co.uk>  Wed, 6 July 2005 17:22 +0100
+
+
+  * Initial package for maemo-word-processor package by
+
+ -- Rodrigo Parra Novo <rodrigo.novo@indt.org.br>  Mon, 25 May 2005 10:28:17 -0300
+
+
+Local variables:
+mode: debian-changelog
+add-log-mailing-address: "gecko@debian.org"
+End:
+

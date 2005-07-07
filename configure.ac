@@ -520,6 +520,8 @@ AC_CONFIG_FILES([GNUmakefile
  src/bindings/perl/GNUmakefile
  src/pkg/linux/apkg/abiword-gnome.apspec
  src/pkg/linux/apkg/abiword-gtk.apspec
+ src/pkg/maemo/debian/misc/abiword.desktop
+ src/pkg/maemo/debian/misc/org.abisource.abiword.service
 ])
 AC_OUTPUT
 

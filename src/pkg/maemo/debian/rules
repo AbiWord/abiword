@@ -61,28 +61,25 @@ install: build
 	dh_clean -k
 	dh_installdirs
 
-	# Add here commands to install the package into debian/maemo-word-processor.
-	install -m 755 $(CURDIR)/src/wp/main/unix/AbiWord-2.4 $(CURDIR)/debian/abiword/usr/bin/abiword
-	install -m 755 $(CURDIR)/debian/misc/osso_abiword.sh $(CURDIR)/debian/abiword/usr/bin/
+        # Add here commands to install the package into debian/abiword.
+	install -m 755 $(CURDIR)/src/wp/main/unix/AbiWord-2.4 $(CURDIR)/debian/abiword/usr/bin/AbiWord-2.4
 
-	# Install Glade files
-	mkdir -p -p $(CURDIR)/debian/abiword/usr/share/AbiSuite-2.4/AbiWord/glade/
+        # Install Glade files
+	mkdir -p $(CURDIR)/debian/abiword/usr/share/AbiSuite-2.4/AbiWord/glade/
 	install -m 644 $(CURDIR)/src/af/xap/unix/*.glade $(CURDIR)/debian/abiword/usr/share/AbiSuite-2.4/AbiWord/glade/
 	install -m 644 $(CURDIR)/src/wp/ap/unix/*.glade $(CURDIR)/debian/abiword/usr/share/AbiSuite-2.4/AbiWord/glade/
 
-	# Install menu icon.
+        # Install menu icon.
+	mkdir -p $(CURDIR)/debian/abiword/usr/share/icons/hicolor/26x26/
 	install -m 644 $(CURDIR)/debian/misc/qgn_list_word.png $(CURDIR)/debian/abiword/usr/share/icons/hicolor/26x26/
 
-	# Install desktop file.
+        # Install desktop file.
+	mkdir -p $(CURDIR)/debian/abiword/usr/share/applications/hildon/
 	install -m 644 $(CURDIR)/debian/misc/abiword.desktop $(CURDIR)/debian/abiword/usr/share/applications/hildon
 
-	# Add D-Bus service
+        # Add D-Bus service
+	mkdir -p $(CURDIR)/debian/abiword/usr/lib/dbus-1.0/services/
 	install -m 644 $(CURDIR)/debian/misc/org.abisource.abiword.service $(CURDIR)/debian/abiword/usr/lib/dbus-1.0/services
-
-	# Link the desktop file to /etc/others-menu/
-	mkdir -p $(CURDIR)/debian/abiword/etc/others-menu
-	( cd $(CURDIR)/debian/abiword/etc/others-menu && \
-	  ln -s /usr/share/applications/hildon/abiword.desktop 3257_abiword.desktop )
 
 # Build architecture-dependent files here.
 binary: build install

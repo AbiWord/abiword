@@ -1,3 +1,0 @@
-[D-BUS Service]
-Name=com.nokia.osso_abiword
-Exec=/usr/bin/osso_abiword.sh
