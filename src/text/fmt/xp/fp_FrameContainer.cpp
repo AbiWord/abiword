@@ -385,16 +385,17 @@ void fp_FrameContainer::getBlocksAroundFrame(UT_GenericVector<fl_BlockLayout *> 
       pCol = pPage->getNthColumnLeader(0);
       fp_Container * pCon = pCol->getFirstContainer();
       fl_BlockLayout * pB = NULL;
-      if(pCon->getContainerType() == FP_CONTAINER_LINE)
+      if(pCon && pCon->getContainerType() == FP_CONTAINER_LINE)
       {
 	  pB = static_cast<fp_Line *>(pCon)->getBlock();
       }
-      else
+      else if(pCon)
       {
 	  fl_ContainerLayout * pCL = static_cast<fl_ContainerLayout *>(pCon->getSectionLayout());
 	  pB = pCL->getNextBlockInDocument();
       }
-      vecBlocks.addItem(pB);
+      if(pB != NULL)
+	vecBlocks.addItem(pB);
   }
 
 }
