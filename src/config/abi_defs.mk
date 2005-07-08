@@ -343,11 +343,6 @@ include $(ABI_ROOT)/src/config/platforms/wxwin.mk
 HAVEPLAT=1
 endif
  
-ifeq ($(OS_NAME), BeOS)
-include $(ABI_ROOT)/src/config/platforms/beos.mk
-HAVEPLAT=1
-endif
-
 ifeq ($(OS_NAME), procnto)
 include $(ABI_ROOT)/src/config/platforms/nto.mk
 HAVEPLAT=1
