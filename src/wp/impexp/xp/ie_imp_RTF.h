@@ -878,6 +878,7 @@ private:
 	bool                  m_bInFootnote;
 	UT_uint32             m_iDepthAtFootnote;
 	UT_uint32             m_iLastFootnoteId;
+	UT_uint32             m_iLastEndnoteId;
 	UT_String             m_hyperlinkBase;
 	UT_uint32             m_iHyperlinkOpen;
 	bool                  m_bBidiMode;

@@ -1394,6 +1394,7 @@ IE_Imp_RTF::IE_Imp_RTF(PD_Document * pDocument)
 	m_bInFootnote(false),
 	m_iDepthAtFootnote(0),
 	m_iLastFootnoteId((UT_uint32)pDocument->getUID(UT_UniqueId::Footnote)),
+	m_iLastEndnoteId((UT_uint32)pDocument->getUID(UT_UniqueId::Endnote)),
 	m_iHyperlinkOpen(0),
 	m_bBidiMode(false),
 	m_bFootnotePending(false),
@@ -2119,9 +2120,16 @@ void IE_Imp_RTF::HandleNoteReference(void)
 	UT_String footpid;
 	if(m_bInFootnote && !m_bFtnReferencePending)
 	{
-		UT_String_sprintf(footpid,"%i",m_iLastFootnoteId-1);
+		if(m_bNoteIsFNote)
+		{
+			UT_String_sprintf(footpid,"%i",m_iLastFootnoteId);
+		}
+		else
+		{
+			UT_String_sprintf(footpid,"%i",m_iLastEndnoteId);
+		}
 		attribs[1] = footpid.c_str();
-
+		UT_DEBUGMSG(("Note anchor %s \n",footpid.c_str()));
 		if(m_bNoteIsFNote)
 		{
 			_appendField ("footnote_anchor",attribs);
@@ -2142,9 +2150,18 @@ void IE_Imp_RTF::HandleNoteReference(void)
 		m_stateStack.push(pSaved);
 		m_stateStack.push(&m_FootnoteRefState);
 		m_currentRTFState = m_FootnoteRefState;
-		m_iLastFootnoteId = getDoc()->getUID(UT_UniqueId::Footnote);
-		UT_String_sprintf(footpid,"%i",m_iLastFootnoteId-1);
+		if(m_bNoteIsFNote)
+		{
+			m_iLastFootnoteId = getDoc()->getUID(UT_UniqueId::Footnote);
+			UT_String_sprintf(footpid,"%i",m_iLastFootnoteId);
+		}
+		else
+		{
+			m_iLastEndnoteId = getDoc()->getUID(UT_UniqueId::Endnote);
+			UT_String_sprintf(footpid,"%i",m_iLastEndnoteId);
+		}
 		attribs[1] = footpid.c_str();
+		UT_DEBUGMSG(("Note reference %s \n",footpid.c_str()));
 
 		if(m_bNoteIsFNote)
 		{
@@ -2199,8 +2216,16 @@ void IE_Imp_RTF::HandleNote(void)
 	}
 	
 	UT_String footpid;
-	UT_String_sprintf(footpid,"%i",m_iLastFootnoteId-1);
+	if(m_bNoteIsFNote)
+	{
+	    UT_String_sprintf(footpid,"%i",m_iLastFootnoteId);
+	}
+	else
+	{
+	    UT_String_sprintf(footpid,"%i",m_iLastEndnoteId);
+	}
 	attribs[1] = footpid.c_str();
+	UT_DEBUGMSG(("Note Strux ID = %s \n", footpid.c_str()));
 	UT_DEBUGMSG(("ie_imp_RTF: Handle Footnote now \n"));
 
 	if(!bUseInsertNotAppend())
