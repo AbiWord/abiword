@@ -1773,6 +1773,8 @@ void fl_DocSectionLayout::updateLayout(bool bDoFull)
 		UT_sint32 count = static_cast<UT_sint32>(m_vecFormatLayout.getItemCount());
 		for(i=0; i<count; i++)
 		{  
+		        if(j >= m_vecFormatLayout.getItemCount())
+			    break;
 		        pBL = m_vecFormatLayout.getNthItem(j);
 			j++;
 		        eHidden  = pBL->isHidden();
@@ -1789,7 +1791,8 @@ void fl_DocSectionLayout::updateLayout(bool bDoFull)
 				  {
 				       pBL->format();
 				       j--;
-				       m_vecFormatLayout.deleteNthItem(j);
+				       if(j < m_vecFormatLayout.getItemCount())
+					 m_vecFormatLayout.deleteNthItem(j);
 				  }
 			     }
 			     if (pBL->getContainerType() != FL_CONTAINER_BLOCK && !getDocument()->isDontImmediateLayout())

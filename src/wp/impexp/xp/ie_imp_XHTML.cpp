@@ -1285,6 +1285,7 @@ void IE_Imp_XHTML::startElement(const XML_Char *name, const XML_Char **atts)
 		break;
 	case TT_TABLE:
 		{
+			requireSection();
 			m_parseState = _PS_Table;
 			const XML_Char * szStyle = _getXMLPropValue (static_cast<const XML_Char *>("style"), atts);
 
