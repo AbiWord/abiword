@@ -8,7 +8,6 @@ Contents
 	Unix
 	Windows
 	QNX
-	BeOS
 	Mac OS X
 
 Unix:
@@ -312,22 +311,6 @@ There are 2 ways to build and run AbiWord:
 	Developer Style:  just cd to abi and type 'make'.  To run AbiWord, cd to the bin directory and type 'AbiWord -lib ../AbiSuite' -- this will help AbiWord find the dictionary and other support files.
 
 	End-User Style:  just cd to abi and type 'make distribution ABI_BUILD_VERSION=x.y.z' This will build a QNX 'Repository in a File' (src/pkg/qnx/abiword-x.y.z.qpr). Install this with 'pkg-installer -u abiword-x.y.z.qpr'.
-
-
-BeOS:
-
-
-Prerequisites:
-
-(See QNX requirements)
-
-Building on BeOS is similar to the other platforms.  We rely on the GNU command line utilities  bash, sed, gawk, etc.  On Intel systems we use GCC and on PPC we use MWCC.
-
-There are 2 ways to build and run AbiWord:
-
-	Developer Style:  just cd to abi and type 'make'.  To run AbiWord, cd to the bin directory and type 'AbiWord -lib ../AbiSuite' -- this will help AbiWord find the dictionary and other support files.
-
-	End-User Style:  just cd to abi and type 'make distribution ABI_BUILD_VERSION=x.y.z' This will build a distribution zip file (abi/dist/AbiSuite-x.y.z-$(arch).zip). Expand this in /boot/apps.  You can then run /boot/apps/AbiSuite/bin/AbiWord.
 
 
 Mac OS X:

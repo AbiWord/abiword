@@ -536,8 +536,6 @@ case "$PLATFORM" in
        AC_MSG_RESULT([Configured to build on a Unix/Linux platform.]) ;;
      "win32" )
        AC_MSG_RESULT([Configured to build on a Windows platform.]) ;;
-     "beos" )
-       AC_MSG_RESULT([Configured to build on a BeOS platform.]) ;;
      "qnx" )
        AC_MSG_RESULT([Configured to build on a QNX RTOS platform.]) ;;
      "cocoa" )

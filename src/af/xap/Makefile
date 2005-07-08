@@ -66,9 +66,6 @@ PLATFORM_OBJS += $(OBJDIR)/xap_$(ABI_FE)Toolbar_Icons.$(OBJ_SUFFIX)
 endif
 
 # Note that we might later want to include the FakeClipboard code only for certain platforms.
-ifeq ($(ABI_FE), BeOS)
-PLATFORM_OBJS += $(OBJDIR)/be_GRDrawView.$(OBJ_SUFFIX)
-endif
 
 # THESE ARE OBJECTS EXCLUSIVE TO THE UNIX FRONT-END
 ifeq ($(ABI_FE), Unix)

@@ -79,7 +79,6 @@ class UT_Timer;
 // The line between these two things _is_ sometimes ambiguous. use your judgement
 // when adding something onto the frame code
 
-// Now it is enabled on all platform. BeOS platform will seriously break. It is already anyway.
 #include "xap_FrameImpl.h"
 
 class ABI_EXPORT XAP_Frame

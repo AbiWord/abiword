@@ -157,18 +157,6 @@ FL_DocLayout::~FL_DocLayout()
 	{
 		m_bStopSpellChecking = true;
 		m_pBackgroundCheckTimer->stop();
-#ifdef __BEOS__
-		m_pBackgroundCheckTimer->start();	// is already stopped
-											// so we don't go out of this while
-#endif
-		while(m_bImSpellCheckingNow == true)
-		{
-#ifdef __BEOS__
-			/* On BeOS, we must release the cpu as timers are
-			   run on separate threads */
-			UT_usleep(10000);
-#endif
-		}
 	}
 
 	DELETEP(m_pBackgroundCheckTimer);

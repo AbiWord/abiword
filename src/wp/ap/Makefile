@@ -137,10 +137,6 @@ ifeq ($(ABI_FE), Win32)
 PLATFORM_OBJS += 	$(OBJDIR)/ap_$(ABI_FE)FrameImpl.$(OBJ_SUFFIX)
 endif
 
-ifeq ($(ABI_FE), BeOS)
-PLATFORM_OBJS += 	$(OBJDIR)/ap_$(ABI_FE)FrameImpl.$(OBJ_SUFFIX)
-endif
-
 OBJS=		$(PLATFORM_OBJS)				\
 		$(OBJDIR)/ap_Convert.$(OBJ_SUFFIX)		\
 		$(OBJDIR)/ap_Dialog_New.$(OBJ_SUFFIX)		\

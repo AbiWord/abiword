@@ -167,7 +167,7 @@ private:
 	FV_View*				m_pView;
 	// is this used in a modeless dialog like this?
 	//
-	// These will all be rationalized after windows and beos get the
+	// These will all be rationalized after windows get the
 	// new dialog
 
 	tAnswer					m_Answer;

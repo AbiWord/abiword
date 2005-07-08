@@ -14,7 +14,7 @@ Conflicts: abi-fonts,abisuite,abiword-xml,abiword-expat,abiword-common
 Description: WYSIWYG word processor based on GTK.
  AbiWord is the first of a complete, open source office suite.  AbiWord is
  based on GTK and the original source includes crossplatform support for
- Win32 and BeOS.
+ Win32 and MacOS X.
  .
  AbiWord is still being developed.  It's quite usable but not yet full-
  featured or polished.  For many applications, however, it should prove

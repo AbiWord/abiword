@@ -92,7 +92,6 @@ h3 {
     <li class="normal_unspaced"><span xml:lang="en-GB" lang="en-GB">&nbsp;</span><a href="#unix">Unix</a></li>
     <li class="normal_unspaced"><span xml:lang="en-GB" lang="en-GB">&nbsp;</span><a href="#windows">Windows</a></li>
     <li class="normal_unspaced"><span xml:lang="en-GB" lang="en-GB">&nbsp;</span><a href="#qnx">QNX</a></li>
-    <li class="normal_unspaced"><span xml:lang="en-GB" lang="en-GB">&nbsp;</span><a href="#beos">BeOS</a></li>
     <li class="normal_unspaced"><span xml:lang="en-GB" lang="en-GB">&nbsp;</span><a href="#macosx">Mac OS X</a></li>
    </ul>
    <h2 id="__AbiTOC2__"><span style="text-decoration:underline" xml:lang="en-US" lang="en-US">Unix</span><span style="text-decoration:underline" xml:lang="en-US" lang="en-US">:</span></h2>
@@ -133,7 +132,7 @@ h3 {
    <ul>
     <li><span xml:lang="en-US" lang="en-US">&nbsp;</span><span xml:lang="en-US" lang="en-US">abi (Absolutely vital)</span></li>
     <li><span xml:lang="en-US" lang="en-US">&nbsp;</span><span xml:lang="en-US" lang="en-US">abidistfiles (needed if you plan to make install)</span></li>
-    <li dir="ltr" style="text-align:left"><span xml:lang="en-US" lang="en-US">&nbsp;</span><span xml:lang="en-US" lang="en-US">wv (highly recommended) Note: you can also get wv release tar-balls from wvWare's official site on SourceForge, </span><a href="http://sourceforge.net/projects/wvware/"><span xml:lang="en-US" lang="en-US">http://sourceforge.net/projects/wvware/</span></a><span xml:lang="en-US" lang="en-US">. For building AbiWord, however, the version of wv can be critical and so it is usually bundled with abi; for CVS AbiWord use AbiWord's CVS wv (use cvs co -r wv-1-0-0-STABLE</span><span xml:lang="en-US" lang="en-US"> wv</span><span xml:lang="en-US" lang="en-US">). See also: </span><span class="command_text plain_text" style="">configure --with-sys-wv</span><span xml:lang="en-US" lang="en-US">.</span></li>
+    <li dir="ltr" style="text-align:left"><span xml:lang="en-US" lang="en-US">&nbsp;</span><span xml:lang="en-US" lang="en-US">wv (highly recommended) Note: you can also get wv release tar-balls from wvWare's official site on SourceForge, </span><a href="http://sourceforge.net/projects/wvware/"><span xml:lang="en-US" lang="en-US">http://sourceforge.net/projects/wvware/</span></a><span xml:lang="en-US" lang="en-US">. For building AbiWord, however, the version of wv can be critical and so it is usually bundled with abi; for CVS AbiWord use AbiWord's CVS wv (use cvs co -r wv-1-0-0-STABLE wv). See also: </span><span class="command_text plain_text" style="">configure --with-sys-wv</span><span xml:lang="en-US" lang="en-US">.</span></li>
     <li><span xml:lang="en-US" lang="en-US">&nbsp;</span><span xml:lang="en-US" lang="en-US">abiword-plugins (optional, for extra importer/exporters, nifty tools, and other toys)</span></li>
    </ul>
    <p style="margin-left:0pt;text-indent:0in"><span xml:lang="en-US" lang="en-US">And, if you don't have these already:</span></p>
@@ -217,7 +216,7 @@ h3 {
     <li dir="ltr"><span xml:lang="en-GB" lang="en-GB">&nbsp;</span>libiconv</li>
     <li dir="ltr"><span xml:lang="en-GB" lang="en-GB">&nbsp;</span>libpng</li>
     <li dir="ltr"><span xml:lang="en-GB" lang="en-GB">&nbsp;</span>popt</li>
-    <li dir="ltr" style="text-align:left"><span xml:lang="en-GB" lang="en-GB">&nbsp;</span>wv<span xml:lang="en-US" lang="en-US"> (use cvs co -r wv-1-0-0-STABLE</span><span xml:lang="en-US" lang="en-US"> wv</span><span xml:lang="en-US" lang="en-US">)</span></li>
+    <li dir="ltr" style="text-align:left"><span xml:lang="en-GB" lang="en-GB">&nbsp;</span>wv<span xml:lang="en-US" lang="en-US"> (use cvs co -r wv-1-0-0-STABLE wv)</span></li>
    </ul>
    <p dir="ltr">The following modules may optionally be checked out as well:</p>
    <ul>
@@ -255,7 +254,7 @@ h3 {
    <ul>
     <li><span xml:lang="en-GB" lang="en-GB">&nbsp;</span>abi</li>
     <li><span xml:lang="en-GB" lang="en-GB">&nbsp;</span>abidistfiles</li>
-    <li dir="ltr" style="text-align:left"><span xml:lang="en-GB" lang="en-GB">&nbsp;</span>wv<span xml:lang="en-US" lang="en-US"> (use cvs co -r wv-1-0-0-STABLE</span><span xml:lang="en-US" lang="en-US"> wv</span><span xml:lang="en-US" lang="en-US">)</span></li>
+    <li dir="ltr" style="text-align:left"><span xml:lang="en-GB" lang="en-GB">&nbsp;</span>wv<span xml:lang="en-US" lang="en-US"> (use cvs co -r wv-1-0-0-STABLE wv)</span></li>
    </ul>
    <p>You also need to have libpng, libiconv, libfribidi and libxml2. All except libfribidi are available from the QNX 3rd party CD. FriBiDi can be downloaded from <a href="http://www.qnxzone.com/%7etravis/packages/fribidi_x86-0.10.4-x86-public.qpr">http://www.qnxzone.com/~travis/packages/fribidi_x86-0.10.4-x86-public.qpr</a></p>
    <p>Building on QNX is similar to the other unix-like platforms. &nbsp;We rely on the command line utilities bash, sed, gawk, etc. &nbsp;</p>
@@ -264,19 +263,10 @@ h3 {
     <li><span xml:lang="en-GB" lang="en-GB">&nbsp;</span>Developer Style: &nbsp;just cd to abi and type '<span class="command_text plain_text" style="">make</span>'. &nbsp;To run AbiWord, <span class="command_text plain_text" style="">cd</span> to the bin directory and type '<span class="command_text plain_text" style="">AbiWord -lib ../AbiSuite</span>' -- this will help AbiWord find the dictionary and other support files.</li>
     <li><span xml:lang="en-GB" lang="en-GB">&nbsp;</span>End-User Style: &nbsp;just <span class="command_text plain_text" style="">cd</span> to abi and type '<span class="command_text plain_text" style="">make distribution ABI_BUILD_VERSION=x.y.z</span>' This will build a QNX 'Repository in a File' (src/pkg/qnx/abiword-x.y.z.qpr). Install this with '<span class="command_text plain_text" style="">pkg-installer -u abiword-x.y.z.qpr</span>'.</li>
    </ol>
-   <h2 id="__AbiTOC28__"><a name="beos" id="beos"><span style="text-decoration:underline" xml:lang="en-US" lang="en-US">BeOS:</span></a></h2>
-   <h3 id="__AbiTOC29__"><span xml:lang="en-US" lang="en-US">Prerequisites:</span></h3>
-   <p><span xml:lang="en-US" lang="en-US">(See </span><a href="#qnx"><span xml:lang="en-US" lang="en-US">QNX</span></a><span xml:lang="en-US" lang="en-US"> requirements)</span></p>
-   <p><span xml:lang="en-US" lang="en-US">Building on BeOS is similar to the other platforms. &nbsp;We rely on the GNU command line utilities &nbsp;bash, sed, gawk, etc. &nbsp;On Intel systems we use GCC and on PPC we use MWCC.</span></p>
-   <p><span xml:lang="en-US" lang="en-US">There are 2 ways to build and run AbiWord:</span></p>
-   <ol>
-    <li><span xml:lang="en-US" lang="en-US">&nbsp;</span><span xml:lang="en-US" lang="en-US">Developer Style: &nbsp;just </span><span class="command_text plain_text" style="">cd</span><span xml:lang="en-US" lang="en-US"> to abi and type '</span><span class="command_text plain_text" style="">make</span><span xml:lang="en-US" lang="en-US">'. &nbsp;To run AbiWord, </span><span class="command_text plain_text" style="">cd</span><span xml:lang="en-US" lang="en-US"> to the bin directory and type '</span><span class="command_text plain_text" style="">AbiWord -lib ../AbiSuite</span><span xml:lang="en-US" lang="en-US">' -- this will help AbiWord find the dictionary and other support files.</span></li>
-    <li><span xml:lang="en-US" lang="en-US">&nbsp;</span><span xml:lang="en-US" lang="en-US">End-User Style: &nbsp;just </span><span class="command_text plain_text" style="">cd</span><span xml:lang="en-US" lang="en-US"> to abi and type '</span><span class="command_text plain_text" style="">make distribution ABI_BUILD_VERSION=x.y.z</span><span xml:lang="en-US" lang="en-US">' This will build a distribution zip file (abi/dist/AbiSuite-x.y.z-$(arch).zip). Expand this in /boot/apps. &nbsp;You can then run </span><span class="command_text plain_text" style="">/boot/apps/AbiSuite/bin/AbiWord</span><span xml:lang="en-US" lang="en-US">.</span></li>
-   </ol>
-   <h2 id="__AbiTOC30__"><a name="macosx" id="macosx"><span style="text-decoration:underline" xml:lang="en-US" lang="en-US">Mac OS X</span></a><span style="text-decoration:underline">:</span></h2>
-   <p id="__AbiTOC31__" class="heading_4" awml:style="Heading 4">X11 AbiWord</p>
+   <h2 id="__AbiTOC28__"><a name="macosx" id="macosx"><span style="text-decoration:underline" xml:lang="en-US" lang="en-US">Mac OS X</span></a><span style="text-decoration:underline">:</span></h2>
+   <p id="__AbiTOC29__" class="heading_4" awml:style="Heading 4">X11 AbiWord</p>
    <p>The official build method on Mac OS X is to use Project Builder to build the Cocoa front end. However, it is possible also to build for X11 - see the section on building for <a href="#unix">Unix</a>. Note: You will need to specify <span class="command_text plain_text" style="">--disable-Cocoa</span> to configure. Apple's X11.app and X11 SDK betas are one source of X11, unfortunately based on XFree86 4.2 and lacking fontconfig/Xft2 - hopefully Apple will get its act together. XDarwin may be a better choice until then. fink (<a href="http://fink.sourceforge.net/">http://fink.sourceforge.net/</a>) provides most of the packages needed by AbiWord.</p>
-   <h3 id="__AbiTOC32__"><span xml:lang="en-US" lang="en-US">Prerequisites (Cocoa):</span></h3>
+   <h3 id="__AbiTOC30__"><span xml:lang="en-US" lang="en-US">Prerequisites (Cocoa):</span></h3>
    <p><span xml:lang="en-US" lang="en-US">Currently fink </span><span xml:lang="en-US" lang="en-US">(</span><a href="http://fink.sourceforge.net/"><span xml:lang="en-US" lang="en-US">http://fink.sourceforge.net/</span></a><span xml:lang="en-US" lang="en-US">), in particular the libiconv and glib2 packages, is required in order to build the Cocoa port. Other dependencies are covered by modules in AbiWord's CVS. To get the source do:</span></p>
    <p class="normal_unspaced" awml:style="Normal Unspaced">&nbsp;<span class="command_text plain_text" style="">cvs -d:pser</span><span class="command_text plain_text" style="">ver:anoncvs@anoncvs.abisource.com:/cvsroot login</span></p>
    <p class="normal_unspaced" awml:style="Normal Unspaced">	CVS password:	(<span class="command_text plain_text" style="">anoncvs</span>)</p>
