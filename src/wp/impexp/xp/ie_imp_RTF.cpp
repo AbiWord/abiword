@@ -5773,6 +5773,11 @@ bool IE_Imp_RTF::_insertSpan()
 					if(i - iLast > 0)
 					{
 						p = reinterpret_cast<UT_UCS4Char*>(m_gbBlock.getPointer(iLast));
+						if(getDoc()->isFrameAtPos(m_dposPaste-1) || getDoc()->isTableAtPos(m_dposPaste-1) || getDoc()->isCellAtPos(m_dposPaste-1))
+						{
+							getDoc()->insertStrux(m_dposPaste,PTX_Block);
+							m_dposPaste++;
+						}
 						if(!getDoc()->insertSpan(m_dposPaste, p ,i - iLast))
 							return false;
 						
@@ -5864,6 +5869,11 @@ bool IE_Imp_RTF::_insertSpan()
 	{
 		// not a bidi doc, just do it the simple way
 		p = reinterpret_cast<UT_UCS4Char*>(m_gbBlock.getPointer(0));
+		if(getDoc()->isFrameAtPos(m_dposPaste-1) || getDoc()->isTableAtPos(m_dposPaste-1) || getDoc()->isCellAtPos(m_dposPaste-1))
+		{
+			getDoc()->insertStrux(m_dposPaste,PTX_Block);
+			m_dposPaste++;
+		}
 		if(!getDoc()->insertSpan(m_dposPaste, p ,iLen))
 			return false;
 						
@@ -8826,6 +8836,12 @@ bool IE_Imp_RTF::HandleAbiMathml(void)
 	getDoc()->getUID(UT_UniqueId::Image); // Increment the image uid counter
 	if(bUseInsertNotAppend())
 	{
+		if(getDoc()->isFrameAtPos(m_dposPaste-1) || getDoc()->isTableAtPos(m_dposPaste-1) || getDoc()->isCellAtPos(m_dposPaste-1))
+		{
+			getDoc()->insertStrux(m_dposPaste,PTX_Block);
+			m_dposPaste++;
+		}
+
 		getDoc()->insertObject(m_dposPaste, PTO_Math, attrs,NULL);
 		m_dposPaste++;
 	}
@@ -8870,6 +8886,12 @@ bool IE_Imp_RTF::HandleAbiEmbed(void)
 	getDoc()->getUID(UT_UniqueId::Image); // Increment the image uid counter
 	if(bUseInsertNotAppend())
 	{
+		if(getDoc()->isFrameAtPos(m_dposPaste-1) || getDoc()->isTableAtPos(m_dposPaste-1) || getDoc()->isCellAtPos(m_dposPaste-1))
+		{
+			getDoc()->insertStrux(m_dposPaste,PTX_Block);
+			m_dposPaste++;
+		}
+
 		getDoc()->insertObject(m_dposPaste, PTO_Embed, attrs,NULL);
 		m_dposPaste++;
 	}
