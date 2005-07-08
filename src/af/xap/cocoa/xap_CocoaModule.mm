@@ -147,8 +147,6 @@ bool XAP_CocoaModule::getErrorMsg (char ** dest) const
 	if (!dest)
 		return false;
 
-	bool bError = false;
-
 	*dest = (char *) UT_strdup(g_module_error());
 	return (*dest ? true : false);
 }
@@ -345,25 +343,25 @@ bool XAP_CocoaModule::loadPlugin (const UT_UTF8String & path)
 	bool bAbi = false;
 	bool bLoaded = false;
 
-	if (path.length() > 4)
-		if (strcmp(path.utf8_str() + path.length() - 4, ".Abi") == 0)
-			{
-				XAP_CocoaAppController * pController = (XAP_CocoaAppController *) [NSApp delegate];
+	if (path.length() > 4) {
+		if (strcmp(path.utf8_str() + path.length() - 4, ".Abi") == 0) {
+			XAP_CocoaAppController * pController = (XAP_CocoaAppController *) [NSApp delegate];
 
-				XAP_CocoaPlugin * plugin = [pController loadPlugin:[NSString stringWithUTF8String:(path.utf8_str())]];
+			XAP_CocoaPlugin * plugin = [pController loadPlugin:[NSString stringWithUTF8String:(path.utf8_str())]];
 
-				if (plugin)
-					{
-						bLoaded = [[plugin delegate] pluginActivate] ? true : false;
-					}
-				bAbi = true;
+			if (plugin) {
+				[[plugin delegate] pluginActivate];
+				bLoaded = true; // we have no idea if activate succeeded. just assume so.
 			}
+			bAbi = true;
+		}
+	}
 
-	if (!bAbi && (path.length() > 7))
-		if (strcmp(path.utf8_str() + path.length() - 7, ".so-abi") == 0)
-			{
-				bLoaded = XAP_ModuleManager::instance().loadModule (path.utf8_str());
-			}
+	if (!bAbi && (path.length() > 7)) {
+		if (strcmp(path.utf8_str() + path.length() - 7, ".so-abi") == 0) {
+			bLoaded = XAP_ModuleManager::instance().loadModule (path.utf8_str());
+		}
+	}
 
 	return bLoaded;
 }
