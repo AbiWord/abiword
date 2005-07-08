@@ -1588,6 +1588,32 @@ void IE_Imp_RTF::OpenTable(bool bDontFlush)
 			FlushStoredChars();
 		}
 	}
+	if(m_bInFootnote)
+	{
+		bool ok =true;
+		if(!bUseInsertNotAppend())
+		{
+			if(m_bNoteIsFNote)
+				getDoc()->appendStrux(PTX_EndFootnote,NULL);
+			else
+				getDoc()->appendStrux(PTX_EndEndnote,NULL);
+				
+		}
+		else
+		{
+			if(m_bNoteIsFNote)
+				ok = insertStrux(PTX_EndFootnote);
+			else
+				ok = insertStrux(PTX_EndEndnote);
+			if(	m_bMovedPos)
+			{
+				m_bMovedPos = false;
+				m_dposPaste += m_dPosBeforeFootnote; // restore old position
+			}
+		}
+		m_bInFootnote = false;
+		m_iDepthAtFootnote = 0;
+	}
 	m_TableControl.OpenTable();
 //
 // Need to have a block to append a table to
