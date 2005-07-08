@@ -124,7 +124,14 @@ void FV_View::cmdCharMotion(bool bForward, UT_uint32 count)
 		}
 		else
 		{
-			_setPoint(iPoint);
+		        if(m_bInsertAtTablePending)
+			{
+			      m_iInsPoint = iPoint;
+			}
+			else
+			{
+			      _setPoint(iPoint);
+			}
 		}
 
 		bool bOK = true;
