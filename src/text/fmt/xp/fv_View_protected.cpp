@@ -5823,14 +5823,13 @@ bool FV_View::_charInsert(const UT_UCSChar * text, UT_uint32 count, bool bForce)
 				m_pDoc->insertFmtMark(PTC_AddFmt,getPoint(), &AP);
 			}
 			insertParaBreakIfNeededAtPos(getPoint());
-			bResult = m_pDoc->insertSpan(getPoint(), text, count, NULL);
+			const fl_BlockLayout * pBL = getCurrentBlock();
+			bResult = m_pDoc->insertSpan(getPoint(), text, count,NULL);
 
 			if(!bResult)
 			{
-				const fl_BlockLayout * pBL = getCurrentBlock();
 				const PP_AttrProp *pBlockAP = NULL;
 				pBL->getAP(pBlockAP);
-
 				bResult = m_pDoc->insertSpan(getPoint(), text, count,
 											 const_cast<PP_AttrProp *>(pBlockAP));
 				UT_ASSERT(bResult);

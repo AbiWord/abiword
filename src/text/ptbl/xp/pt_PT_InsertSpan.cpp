@@ -79,10 +79,12 @@ bool pt_PieceTable::insertSpan(PT_DocPosition dpos,
 		// revision attribute (e.g., if we are inserting it next to
 		// revisioned text
 		const XML_Char name[] = "revision";
-		const XML_Char * ppRevAttrib[3];
+		const XML_Char * ppRevAttrib[5];
 		ppRevAttrib[0] = name;
 		ppRevAttrib[1] = NULL;
 		ppRevAttrib[2] = NULL;
+		ppRevAttrib[3] = NULL;
+		ppRevAttrib[4] = NULL;
 		
 		const XML_Char * pRevision = NULL;
 
@@ -97,13 +99,32 @@ bool pt_PieceTable::insertSpan(PT_DocPosition dpos,
 		const PP_AttrProp * pAP;
 		if(_getSpanAttrPropHelper(pf1, &pAP))
 		{
+		        const XML_Char * szStyleNameVal = NULL;
+		        pAP->getAttribute(PT_STYLE_ATTRIBUTE_NAME,szStyleNameVal);
 			if(!pAP->getAttribute(name, pRevision))
 			{
 				// if we have no revision attribute, then everything
 				// is OK
-				return _realInsertSpan(dpos, p, length, NULL, NULL, pField, bAddChangeRec);
+				const XML_Char * ppStyle[3];
+				ppStyle[0] = PT_STYLE_ATTRIBUTE_NAME;
+				ppStyle[1] = NULL;
+				ppStyle[2] = NULL;
+				if(szStyleNameVal != NULL)
+				{
+				     ppStyle[1] = szStyleNameVal;
+				     return _realInsertSpan(dpos, p, length, ppStyle, NULL, pField, bAddChangeRec);
+				}
+				else
+				{
+				     return _realInsertSpan(dpos, p, length,NULL , NULL, pField, bAddChangeRec);
+				}
 			}
-
+			if(szStyleNameVal != NULL)
+			{
+			        ppRevAttrib[2] = PT_STYLE_ATTRIBUTE_NAME;;
+				ppRevAttrib[3] = szStyleNameVal;
+			  
+			}
 			//if(!_realChangeSpanFmt(PTC_RemoveFmt, dpos, dpos+length, ppRevAttrib,NULL))
 			//	return false;
 			return _realInsertSpan(dpos, p, length, ppRevAttrib, NULL, pField, bAddChangeRec);
