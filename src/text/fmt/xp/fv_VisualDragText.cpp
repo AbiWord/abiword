@@ -196,6 +196,10 @@ void FV_VisualDragText::mouseDrag(UT_sint32 x, UT_sint32 y)
 
 	}
 	clearCursor();
+	if(m_iVisualDragMode == FV_VisualDrag_START_DRAGGING)
+	{
+	  reposOffsets(x,y);
+	}
 	m_iVisualDragMode = FV_VisualDrag_DRAGGING;
 	xxx_UT_DEBUGMSG(("x = %d y = %d width \n",x,y));
 	bool bScrollDown = false;
@@ -319,6 +323,120 @@ void FV_VisualDragText::mouseDrag(UT_sint32 x, UT_sint32 y)
 	m_pView->_setPoint(posAtXY);
 //	m_pView->_fixInsertionPointCoords();
 	drawCursor(posAtXY);
+}
+
+/*!
+ * This method is called at the commencement of a visual drag. If the offsets
+ * to the caret are too big, this method will adjust them and shift the image
+ * of the dragged text to a comfortable distance fromthe caret.
+ * Returns true if the offsets are shifted.
+ * UT_sint32 x pos of the caret
+ * UT_sint32 y pos of  the caret 
+ */
+bool FV_VisualDragText::reposOffsets(UT_sint32 x, UT_sint32 y)
+{
+  UT_sint32 dx = 0;
+  UT_sint32 dy = 0;
+  bool bAdjustX = false;
+  bool bAdjustY = false;
+  UT_sint32 iext = getGraphics()->tlu(3);
+  dx = x - m_recCurFrame.left - m_recOrigLeft.width;
+  dy = y - m_recCurFrame.top;
+  UT_DEBUGMSG((" repos dx = %d \n",dx));
+  UT_DEBUGMSG((" repos dy = %d \n",dy));
+  UT_Rect expX(0,m_recCurFrame.top,0,m_recCurFrame.height);
+  UT_Rect expY(m_recCurFrame.left,0,m_recCurFrame.width,0);
+  if(abs(dx) > getGraphics()->tlu(40))
+  {
+    bAdjustX = true;
+    dx -= getGraphics()->tlu(20);
+    m_iInitialOffX -= dx;
+    UT_Rect expX(0,m_recCurFrame.top,0,m_recCurFrame.height);
+    m_recCurFrame.left += dx;
+    m_recOrigLeft.left += dx;
+    m_recOrigRight.left += dx;
+  }
+  if(dy > getGraphics()->tlu(40))
+  {
+    bAdjustY = true;
+    dy -= getGraphics()->tlu(20);
+    m_iInitialOffY -= dy;
+    UT_Rect expY(m_recCurFrame.left,0,m_recCurFrame.width,0);
+    m_recCurFrame.top += dy;
+    m_recOrigLeft.top += dy;
+    m_recOrigRight.top += dy;
+  }
+
+  if(bAdjustX && dx < 0)
+  {
+    expX.left = m_recCurFrame.left+m_recCurFrame.width -iext;
+    expX.width = -dx + 2*iext;
+    if(dy > 0)
+    {
+        expX.top -=  iext;
+	expX.height += dy + 2*iext;
+    }
+    else
+    {
+	expX.top -=  iext;
+	expX.height += (-dy + 2*iext);
+    }
+  }
+  else if(bAdjustX)
+  {
+      expX.left = m_recCurFrame.left - dx - iext;
+      expX.width = dx + 2*iext;
+      if(dy > 0)
+      {
+	  expX.top -=  iext;
+	  expX.height += dy + 2*iext;
+      }
+      else
+      {
+	  expX.top -= iext;
+	  expX.height += (-dy + 2*iext);
+      }
+  }
+  expY.left -= iext;
+  expY.width += 2*iext;
+  if(bAdjustY && dy < 0)
+  {
+        expY.top = m_recCurFrame.top + m_recCurFrame.height -iext;
+	expY.height = -dy + 2*iext;
+  }
+  else if(bAdjustY)
+  {
+        expY.top = m_recCurFrame.top - dy - iext;
+	expY.height = dy + 2*iext;
+  }
+
+  if(bAdjustX && expX.width > 0)
+  {
+      getGraphics()->setClipRect(&expX);
+      m_pView->updateScreen(false);
+  }
+  if(bAdjustY && (expY.height > 0))
+  {
+      getGraphics()->setClipRect(&expY);
+      m_pView->updateScreen(false);
+  }
+  if(bAdjustX || bAdjustY)
+  {
+      getGraphics()->setClipRect(NULL);
+      drawImage();
+      if(m_recOrigLeft.width > 0)
+      {
+	  getGraphics()->setClipRect(&m_recOrigLeft);
+	  m_pView->updateScreen(false);
+      }
+      if(m_recOrigRight.width > 0)
+      {
+	  getGraphics()->setClipRect(&m_recOrigRight);
+	  m_pView->updateScreen(false);
+      }
+      return true;
+  }
+  return false;
 }
 
 void FV_VisualDragText::clearCursor(void)
