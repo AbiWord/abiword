@@ -1,9 +1,8 @@
 /* -*- mode: C++; tab-width: 4; c-basic-offset: 4; -*- */
-
 /* AbiWord
  * Copyright (C) 2003 Dom Lachowicz
  * Copyright (C) 2004 Martin Sevior
- * Copyright (C) 2004 Hubert Figuiere
+ * Copyright (C) 2004-2005 Hubert Figuiere
  * 
  * This program is free software; you can redistribute it and/or
  * modify it under the terms of the GNU General Public License
@@ -129,15 +128,15 @@ AP_CocoaDialog_Stylist::~AP_CocoaDialog_Stylist(void)
 void AP_CocoaDialog_Stylist::event_Close(void)
 {
 	if (m_bModal)
-		{
-			m_bDialogClosed = true; // we may need to destroy()
-			setStyleValid(false);
-			[NSApp stopModal];
-		}
+	{
+		m_bDialogClosed = true; // we may need to destroy()
+		setStyleValid(false);
+		[NSApp stopModal];
+	}
 	else
-		{
-			destroy();
-		}
+	{
+		destroy();
+	}
 }
 
 void AP_CocoaDialog_Stylist::setStyleInGUI(void)
@@ -170,7 +169,6 @@ void AP_CocoaDialog_Stylist::setStyleInGUI(void)
 void AP_CocoaDialog_Stylist::destroy(void)
 {
 	finalize();
-	[m_dlg close];
 	[m_dlg release];
 	m_dlg = nil;
 }
@@ -195,19 +193,19 @@ void AP_CocoaDialog_Stylist::styleClicked(UT_sint32 row, UT_sint32 col)
 
 	UT_sint32 row_count = getStyleTree()->getNumRows();
 	if ((row >= 0) && (row < row_count))
+	{
+		UT_sint32 col_count = getStyleTree()->getNumCols(row);
+		if ((col >= 0) && (col < col_count))
 		{
-			UT_sint32 col_count = getStyleTree()->getNumCols(row);
-			if ((col >= 0) && (col < col_count))
-				{
-					UT_UTF8String sStyle;
+			UT_UTF8String sStyle;
 
-					getStyleTree()->getStyleAtRowCol(sStyle, row, col);
+			getStyleTree()->getStyleAtRowCol(sStyle, row, col);
 
-					UT_DEBUGMSG(("StyleClicked row %d col %d style %s \n", (int) row, (int) col, sStyle.utf8_str()));
+			UT_DEBUGMSG(("StyleClicked row %d col %d style %s \n", (int) row, (int) col, sStyle.utf8_str()));
 
-					setCurStyle(sStyle);
-				}
+			setCurStyle(sStyle);
 		}
+	}
 }
 
 void AP_CocoaDialog_Stylist::runModal(XAP_Frame * pFrame)
@@ -215,13 +213,13 @@ void AP_CocoaDialog_Stylist::runModal(XAP_Frame * pFrame)
 	bool bUsingModeless = (m_dlg ? true : false);
 
 	if (!bUsingModeless)
-		{
-			m_dlg = [[AP_CocoaDialog_Stylist_Controller alloc] initFromNib];
+	{
+		m_dlg = [[AP_CocoaDialog_Stylist_Controller alloc] initFromNib];
 
-			[m_dlg setXAPOwner:this];
+		[m_dlg setXAPOwner:this];
 
-			_populateWindowData();
-		}
+		_populateWindowData();
+	}
 
 	m_bDialogClosed = false;
 	m_bModal = true;
@@ -235,18 +233,18 @@ void AP_CocoaDialog_Stylist::runModal(XAP_Frame * pFrame)
 	m_bModal = false;
 
 	if (!bUsingModeless)
-		{
-			[m_dlg discardXAP];
-			[m_dlg close];
-			[m_dlg release];
+	{
+		[m_dlg discardXAP];
+		[m_dlg close];
+		[m_dlg release];
 
-			m_dlg = nil;
-		}
+		m_dlg = nil;
+	}
 	else if (m_bDialogClosed)
-		{
-			// the user closed the dialog...
-			destroy();
-		}
+	{
+		// the user closed the dialog...
+		destroy();
+	}
 }
 
 void AP_CocoaDialog_Stylist::runModeless(XAP_Frame * pFrame)
@@ -266,14 +264,14 @@ void AP_CocoaDialog_Stylist::runModeless(XAP_Frame * pFrame)
 void  AP_CocoaDialog_Stylist::event_Apply(void)
 {
 	if (m_bModal)
-		{
-			setStyleValid(true);
-			[NSApp stopModal];
-		}
+	{
+		setStyleValid(true);
+		[NSApp stopModal];
+	}
 	else
-		{
-			Apply();
-		}
+	{
+		Apply();
+	}
 }
 
 /*!
@@ -377,11 +375,11 @@ void  AP_CocoaDialog_Stylist::_populateWindowData(void)
 
 		UT_UTF8String label;
 		if (pSS->getValueUTF8(AP_STRING_ID_DLG_Stylist_Styles, label))
-			{
-				NSArray * columns = [_stylistList tableColumns];
+		{
+			NSArray * columns = [_stylistList tableColumns];
 
-				[[[columns objectAtIndex:0] headerCell] setStringValue:[NSString stringWithUTF8String:(label.utf8_str())]];
-			}
+			[[[columns objectAtIndex:0] headerCell] setStringValue:[NSString stringWithUTF8String:(label.utf8_str())]];
+		}
 
 		[_stylistList setDoubleAction:@selector(outlineDoubleAction:)];
 
@@ -406,13 +404,13 @@ void  AP_CocoaDialog_Stylist::_populateWindowData(void)
 
 	int row = [_stylistList rowForItem:childNode];
 	if (row >= 0)
-		{
-			[_stylistList selectRow:row byExtendingSelection:NO];
-		}
+	{
+		[_stylistList selectRow:row byExtendingSelection:NO];
+	}
 	else
-		{
-			[_stylistList deselectAll:self];
-		}
+	{
+		[_stylistList deselectAll:self];
+	}
 	[_applyBtn setEnabled:NO];
 }
 
