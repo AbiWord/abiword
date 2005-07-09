@@ -111,6 +111,8 @@ static bool s_EditMethod_CtxtFn (AV_View * pView, EV_EditMethodCallData * pCallD
 	AP_CocoaPlugin_EditMethod * editMethod = (AP_CocoaPlugin_EditMethod *) context;
 
 	[editMethod trigger];
+	
+	return true;
 }
 
 @implementation AP_CocoaPlugin_EditMethod
@@ -231,7 +233,7 @@ static EV_Menu_ItemState s_GetMenuItemState_Fn (AV_View * pView, XAP_Menu_Id men
 
 	AP_CocoaPlugin_MenuIDRef * ref = [pController refForMenuID:[NSNumber numberWithInt:((int) menuid)]];
 
-	EV_Menu_ItemState state = EV_MIS_ZERO;
+	int state = EV_MIS_ZERO;
 
 	if (ref)
 		{
@@ -239,12 +241,14 @@ static EV_Menu_ItemState s_GetMenuItemState_Fn (AV_View * pView, XAP_Menu_Id men
 
 			// TODO: validate against target ??
 
-			if ([menuItem isEnabled] == NO)
+			if ([menuItem isEnabled] == NO) {
 				state |= EV_MIS_Gray;		//	= 0x01,		/* item is or should be gray */
-			if ([menuItem state] == NSOnState)
+			}
+			if ([menuItem state] == NSOnState) {
 				state |= EV_MIS_Toggled;	//	= 0x02,		/* checkable item should be checked */
+			}
 		}
-	return state;
+	return (EV_Menu_ItemState)state;
 }
 
 static const char * s_GetMenuItemComputedLabel_Fn (const EV_Menu_Label * pLabel, XAP_Menu_Id menuid)
