@@ -639,9 +639,23 @@ fl_SectionLayout * fl_SectionLayout::bl_doclistener_insertTable(SectionType iTyp
 	m_pDoc->getBounds(true,pos1);
 
 	fl_SectionLayout* pSL = NULL;
+	bool bFrame = (getContainerType() == FL_CONTAINER_FRAME);
+	PT_DocPosition pos = getPosition(true)+1;
+	bool bTooFar = (pcrx->getPosition() > pos);
+	if(bFrame && bTooFar)
+	{
+	  //
+	  // This happens if a table is inserted right after an end frame strux
+	  //
+	  fl_DocSectionLayout * pDSL = getDocSectionLayout();
+	  fl_ContainerLayout * pCL = static_cast<fl_ContainerLayout *>(this);
+	  pSL = static_cast<fl_SectionLayout *>(static_cast<fl_ContainerLayout *>(pDSL)->insert(sdh,pCL,pcrx->getIndexAP(), FL_CONTAINER_TABLE));
 
-	pSL = static_cast<fl_SectionLayout *>(static_cast<fl_ContainerLayout *>(this)->insert(sdh,this,pcrx->getIndexAP(), FL_CONTAINER_TABLE));
-
+	}
+	else
+	{
+	  pSL = static_cast<fl_SectionLayout *>(static_cast<fl_ContainerLayout *>(this)->insert(sdh,this,pcrx->getIndexAP(), FL_CONTAINER_TABLE));
+	}
 	PL_StruxFmtHandle sfhNew = static_cast<PL_StruxFmtHandle>(pSL);
 	//
 	// Don't bind to shadows
