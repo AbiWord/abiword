@@ -1,6 +1,6 @@
 /* AbiWord
  * Copyright (C) 1998 AbiSource, Inc.
- * Copyright (C) 2003 Hubert Figuiere
+ * Copyright (C) 2003, 2005 Hubert Figuiere
  * 
  * This program is free software; you can redistribute it and/or
  * modify it under the terms of the GNU General Public License
@@ -38,8 +38,78 @@
 #include "pd_Style.h"
 #include "ut_string_class.h"
 
-#define INTERNAL_OBJC
 #include "ap_CocoaDialog_Styles.h"
+
+@interface AP_CocoaDialog_StylesController : NSWindowController <XAP_CocoaDialogProtocol>
+{
+@public
+    IBOutlet NSButton *_applyBtn;
+    IBOutlet NSBox *_availStylesBox;
+    IBOutlet NSTableView *_availStylesList;
+    IBOutlet XAP_CocoaNSView *_charPreview;
+    IBOutlet NSBox *_charPreviewBox;
+    IBOutlet NSButton *_closeBtn;
+    IBOutlet NSButton *_deleteBtn;
+    IBOutlet NSBox *_descriptionBox;
+    IBOutlet NSTextField *_descriptionData;
+    IBOutlet NSPopUpButton *_listCombo;
+    IBOutlet NSTextField *_listLabel;
+    IBOutlet NSButton *_modifyBtn;
+    IBOutlet NSButton *_newBtn;
+    IBOutlet XAP_CocoaNSView *_paraPreview;
+    IBOutlet NSBox *_paraPreviewBox;
+	
+	XAP_StringListDataSource* m_stylesDataSource;
+	AP_CocoaDialog_Styles* _xap;
+}
+- (IBAction)applyAction:(id)sender;
+- (IBAction)closeAction:(id)sender;
+- (IBAction)deleteAction:(id)sender;
+- (IBAction)listSelectedAction:(id)sender;
+- (IBAction)listFilterSelectedAction:(id)sender;
+- (IBAction)modifyAction:(id)sender;
+- (IBAction)newAction:(id)sender;
+
+- (void)setStyleDescription:(NSString*)desc;
+@end
+
+@interface AP_CocoaDialog_StylesModifyController : NSWindowController <XAP_CocoaDialogProtocol>
+{
+@public
+    IBOutlet NSComboBox *_basedOnCombo;
+    IBOutlet NSTextField *_basedOnLabel;
+    IBOutlet NSButton *_cancelBtn;
+    IBOutlet NSTextField *_desc;
+    IBOutlet NSBox *_descBox;
+    IBOutlet NSComboBox *_followStyleCombo;
+    IBOutlet NSTextField *_followStyleLabel;
+    IBOutlet NSPopUpButton *_formatPopupBtn;
+    IBOutlet NSButton *_okBtn;
+    IBOutlet XAP_CocoaNSView *_preview;
+    IBOutlet NSBox *_previewBox;
+    IBOutlet NSButton *_removeBtn;
+    IBOutlet NSComboBox *_removePropCombo;
+    IBOutlet NSTextField *_removePropLabel;
+    IBOutlet NSButton *_shortcutBtn;
+    IBOutlet NSTextField *_styleNameData;
+    IBOutlet NSTextField *_styleNameLabel;
+    IBOutlet NSComboBox *_styleTypeCombo;
+    IBOutlet NSTextField *_styleTypeLabel;
+	AP_CocoaDialog_Styles* _xap;
+}
+- (IBAction)basedOnAction:(id)sender;
+- (IBAction)cancelAction:(id)sender;
+- (IBAction)followStyleAction:(id)sender;
+- (IBAction)formatAction:(id)sender;
+- (IBAction)okAction:(id)sender;
+- (IBAction)removeAction:(id)sender;
+- (IBAction)shortcutAction:(id)sender;
+- (IBAction)styleNameAction:(id)sender;
+- (IBAction)styleTypeAction:(id)sender;
+
+- (void)sheetDidEnd:(NSWindow*)sheet returnCode:(int)returnCode contextInfo:(void  *)c;
+@end
+
 
 XAP_Dialog * AP_CocoaDialog_Styles::static_constructor(XAP_DialogFactory * pFactory,
 													   XAP_Dialog_Id dlgid)
@@ -277,21 +347,22 @@ const char * AP_CocoaDialog_Styles::getCurrentStyle (void) const
 
 void AP_CocoaDialog_Styles::event_Modify_OK(void)
 {
-  const char * text = [[m_modifyDlg->_styleNameData stringValue] UTF8String];
+	// force the update, it might not have lost focus
+	new_styleName();
 
-  if (!text || !strlen (text))
+	if (!m_newStyleName || !strlen (m_newStyleName))
     {
-      // error message!
-      const XAP_StringSet * pSS = m_pApp->getStringSet ();
-	  UT_UTF8String label;
-	  pSS->getValueUTF8(AP_STRING_ID_DLG_Styles_ErrBlankName, label);
-      const char * msg = label.utf8_str();
+		// error message!
+		const XAP_StringSet * pSS = m_pApp->getStringSet ();
+		UT_UTF8String label;
+		pSS->getValueUTF8(AP_STRING_ID_DLG_Styles_ErrBlankName, label);
+		const char * msg = label.utf8_str();
 
-      getFrame()->showMessageBox ((const char *)msg,
-				  XAP_Dialog_MessageBox::b_O,
-				  XAP_Dialog_MessageBox::a_OK);
+		getFrame()->showMessageBox ((const char *)msg,
+			  XAP_Dialog_MessageBox::b_O,
+			  XAP_Dialog_MessageBox::a_OK);
 
-      return;
+		return;
     }
 
 	// TODO save out state of radio items
@@ -806,8 +877,10 @@ void   AP_CocoaDialog_Styles::event_ModifyTabs()
 {
 	NSString *str;
 	int row = [_availStylesList selectedRow];
-	str = [[m_stylesDataSource array] objectAtIndex:row];
-	_xap->event_DeleteClicked(str);
+	if (row >= 0) {
+		str = [[m_stylesDataSource array] objectAtIndex:row];
+		_xap->event_DeleteClicked(str);
+	}
 }
 
 - (IBAction)listSelectedAction:(id)sender
