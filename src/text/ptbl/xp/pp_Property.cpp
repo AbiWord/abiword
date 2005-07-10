@@ -77,7 +77,7 @@ static PP_Property _props[] =
 	{ "bgcolor",               "transparent",     true,  NULL, PP_LEVEL_CHAR},
 	{ "bot-attach",            "",               false,  NULL, PP_LEVEL_TABLE},
 	{ "bot-color",             "000000",          false, NULL, PP_LEVEL_TABLE},
-	{ "bot-style",             "solid",           false, NULL, PP_LEVEL_TABLE},
+	{ "bot-style",             "1",           false, NULL, PP_LEVEL_TABLE},
 	{ "bot-thickness",         "1px",             false, NULL, PP_LEVEL_TABLE},
 
 	{ "bounding-space",        "0.05in",          false, NULL, PP_LEVEL_FRAME},
@@ -135,7 +135,7 @@ static PP_Property _props[] =
 	{ "lang",                  "en-US",           true,  NULL, PP_LEVEL_CHAR},
 	{ "left-attach",           "",               false,  NULL, PP_LEVEL_TABLE},
 	{ "left-color",            "000000",          false, NULL, PP_LEVEL_TABLE},
-	{ "left-style",            "solid",           false, NULL, PP_LEVEL_TABLE},
+	{ "left-style",            "1",           false, NULL, PP_LEVEL_TABLE},
 	{ "left-thickness",        "1px",             false, NULL, PP_LEVEL_TABLE},
 	{ "line-height",           "1.0",             false, NULL, PP_LEVEL_BLOCK},
 	{ "list-decimal",          ".",               true,  NULL, PP_LEVEL_BLOCK},
@@ -159,7 +159,7 @@ static PP_Property _props[] =
 
 	{ "right-attach",         "",               false,  NULL, PP_LEVEL_TABLE},
 	{ "right-color",           "000000",          false, NULL, PP_LEVEL_TABLE},
-	{ "right-style",           "solid",           false, NULL, PP_LEVEL_TABLE},
+	{ "right-style",           "1",           false, NULL, PP_LEVEL_TABLE},
 	{ "right-thickness",       "1px",             false, NULL, PP_LEVEL_TABLE},
 
 	{ "section-footnote-line-thickness","0.005in",false, NULL, PP_LEVEL_SECT},
@@ -241,7 +241,7 @@ static PP_Property _props[] =
 
 	{ "top-attach",             "",               false, NULL, PP_LEVEL_TABLE},
 	{ "top-color",             "000000",          false, NULL, PP_LEVEL_TABLE},
-	{ "top-style",             "solid",           false, NULL, PP_LEVEL_TABLE},
+	{ "top-style",             "1",           false, NULL, PP_LEVEL_TABLE},
 	{ "top-thickness",         "1px",             false, NULL, PP_LEVEL_TABLE},
 
 	{ "widows",                "2",               false, NULL, PP_LEVEL_BLOCK},
