@@ -640,17 +640,17 @@ UT_RBTree::checkInvariants()
 {
 	int nb_blacks = 0;
 
-	Iterator end(end());
+	Iterator _end(end());
 	Iterator it(begin());
 
-	if (it != end)
+	if (it != _end)
 		nb_blacks = _countBlackNodes(it++);
 
 	if (nb_blacks < 0)
 		return false;
 
 	Node* pleaf = getLeaf();
-	for (; it != end; ++it)
+	for (; it != _end; ++it)
 		if (it.getNode()->left == pleaf && it.getNode()->right == pleaf &&
 			nb_blacks != _countBlackNodes(it))
 			return false;

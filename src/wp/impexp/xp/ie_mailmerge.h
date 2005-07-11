@@ -25,6 +25,8 @@
 #include "ut_hash.h"
 #include "pd_Document.h"
 
+class IE_MailMerge;
+
 typedef UT_sint32 IEMergeType;
 #define IEMT_Unknown ((IEMergeType)-1)
 
