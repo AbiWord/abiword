@@ -817,6 +817,7 @@ void GR_CocoaGraphics::drawChars(const UT_UCSChar* pChars, int iCharOffset,
 								   yoff, 0, rangeLength);
 				}
 			}
+			FREEP(cBuf);
 		}
 	}
 	::CGContextSetShouldAntialias (m_CGContext, false);
