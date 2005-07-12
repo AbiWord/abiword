@@ -121,6 +121,275 @@ const char* GR_Graphics::findNearestFont(const char* pszFontFamily,
 	return pszFontFamily;
 }
 
+bool      GR_CocoaGraphics::m_colorAndImageInited = false;
+NSImage * GR_CocoaGraphics::m_imageBlue16x15 = nil;
+NSImage * GR_CocoaGraphics::m_imageBlue11x16 = nil;
+NSImage * GR_CocoaGraphics::m_imageGrey16x15 = nil;
+NSImage * GR_CocoaGraphics::m_imageGrey11x16 = nil;
+NSColor * GR_CocoaGraphics::m_colorBlue16x15 = nil;
+NSColor * GR_CocoaGraphics::m_colorBlue11x16 = nil;
+NSColor * GR_CocoaGraphics::m_colorGrey16x15 = nil;
+NSColor * GR_CocoaGraphics::m_colorGrey11x16 = nil;
+NSCursor *	GR_CocoaGraphics::m_Cursor_E = nil;
+NSCursor *	GR_CocoaGraphics::m_Cursor_N = nil;
+NSCursor *	GR_CocoaGraphics::m_Cursor_NE = nil;
+NSCursor *	GR_CocoaGraphics::m_Cursor_NW = nil;
+NSCursor *	GR_CocoaGraphics::m_Cursor_S = nil;
+NSCursor *	GR_CocoaGraphics::m_Cursor_SE = nil;
+NSCursor *	GR_CocoaGraphics::m_Cursor_SW = nil;
+NSCursor *	GR_CocoaGraphics::m_Cursor_W = nil;
+
+NSCursor *	GR_CocoaGraphics::m_Cursor_Wait  = nil;
+NSCursor *	GR_CocoaGraphics::m_Cursor_LeftArrow = nil;
+NSCursor *	GR_CocoaGraphics::m_Cursor_RightArrow = nil;
+NSCursor *	GR_CocoaGraphics::m_Cursor_Compass = nil;
+NSCursor *	GR_CocoaGraphics::m_Cursor_Exchange = nil;
+NSCursor *	GR_CocoaGraphics::m_Cursor_LeftRight = nil;
+NSCursor *	GR_CocoaGraphics::m_Cursor_UpDown = nil;
+NSCursor *	GR_CocoaGraphics::m_Cursor_Crosshair = nil;
+NSCursor *	GR_CocoaGraphics::m_Cursor_HandPointer = nil;
+NSCursor *	GR_CocoaGraphics::m_Cursor_DownArrow = nil;
+
+
+void GR_CocoaGraphics::_initColorAndImage(void)
+{
+	NSBundle * bundle = [NSBundle mainBundle];
+	NSString * path   = nil;
+	NSImage  * image  = nil;
+
+	if (m_colorAndImageInited) {
+		return;
+	}
+	if (path = [bundle pathForResource:@"Blue16x15" ofType:@"png"]) {
+		if (m_imageBlue16x15 = [[NSImage alloc] initWithContentsOfFile:path]) {
+			m_colorBlue16x15 = [NSColor colorWithPatternImage:m_imageBlue16x15];
+			[m_colorBlue16x15 retain];
+		}
+	}
+	if (!m_colorBlue16x15) {
+		m_colorBlue16x15 = [NSColor blueColor];
+		[m_colorBlue16x15 retain];
+	}
+	if (path = [bundle pathForResource:@"Blue11x16" ofType:@"png"]) {
+		if (m_imageBlue11x16 = [[NSImage alloc] initWithContentsOfFile:path]) {
+			m_colorBlue11x16 = [NSColor colorWithPatternImage:m_imageBlue11x16];
+			[m_colorBlue11x16 retain];
+		}
+	}
+	if (!m_colorBlue11x16) {
+		m_colorBlue11x16 = [NSColor blueColor];
+		[m_colorBlue11x16 retain];
+	}
+	if (path = [bundle pathForResource:@"Grey16x15" ofType:@"png"]) {
+		if (m_imageGrey16x15 = [[NSImage alloc] initWithContentsOfFile:path]) {
+			m_colorGrey16x15 = [NSColor colorWithPatternImage:m_imageGrey16x15];
+			[m_colorGrey16x15 retain];
+		}
+	}
+	if (!m_colorGrey16x15) {
+		m_colorGrey16x15 = [NSColor grayColor];
+		[m_colorGrey16x15 retain];
+	}
+	
+	if (path = [bundle pathForResource:@"Grey11x16" ofType:@"png"]) {
+		if (m_imageGrey11x16 = [[NSImage alloc] initWithContentsOfFile:path]) {
+			m_colorGrey11x16 = [NSColor colorWithPatternImage:m_imageGrey11x16];
+			[m_colorGrey11x16 retain];
+		}
+	}
+	if (!m_colorGrey11x16) {
+		m_colorGrey11x16 = [NSColor grayColor];
+		[m_colorGrey11x16 retain];
+	}
+
+	// Cursors
+	if (path = [bundle pathForResource:@"Cursor_E" ofType:@"png"]) {
+		if (image = [[NSImage alloc] initWithContentsOfFile:path]) {
+			m_Cursor_E = [[NSCursor alloc] initWithImage:image hotSpot:NSMakePoint(7,7)];
+			[image release];
+		}
+	}
+	if (!m_Cursor_E) {
+		m_Cursor_E = [NSCursor arrowCursor];
+		[m_Cursor_E retain];
+	}
+	if (path = [bundle pathForResource:@"Cursor_N" ofType:@"png"]) {
+		if (image = [[NSImage alloc] initWithContentsOfFile:path]) {
+			m_Cursor_N = [[NSCursor alloc] initWithImage:image hotSpot:NSMakePoint(7,8)];
+			[image release];
+		}
+	}
+	if (!m_Cursor_N) {
+		m_Cursor_N = [NSCursor arrowCursor];
+		[m_Cursor_N retain];
+	}
+	if (path = [bundle pathForResource:@"Cursor_NE" ofType:@"png"]) {
+		if (image = [[NSImage alloc] initWithContentsOfFile:path]) {
+			m_Cursor_NE = [[NSCursor alloc] initWithImage:image hotSpot:NSMakePoint(8,7)];
+			[image release];
+		}
+	}
+	if (!m_Cursor_NE) {
+		m_Cursor_NE = [NSCursor arrowCursor];
+		[m_Cursor_NE retain];
+	}
+	if (path = [bundle pathForResource:@"Cursor_NW" ofType:@"png"]) {
+		if (image = [[NSImage alloc] initWithContentsOfFile:path]) {
+			m_Cursor_NW = [[NSCursor alloc] initWithImage:image hotSpot:NSMakePoint(7,7)];
+			[image release];
+		}
+	}
+	if (!m_Cursor_NW) {
+		m_Cursor_NW = [NSCursor arrowCursor];
+		[m_Cursor_NW retain];
+	}
+	if (path = [bundle pathForResource:@"Cursor_S" ofType:@"png"]) {
+		if (image = [[NSImage alloc] initWithContentsOfFile:path]) {
+			m_Cursor_S = [[NSCursor alloc] initWithImage:image hotSpot:NSMakePoint(7,7)];
+			[image release];
+		}
+	}
+	if (!m_Cursor_S) {
+		m_Cursor_S = [NSCursor arrowCursor];
+		[m_Cursor_S retain];
+	}
+	if (path = [bundle pathForResource:@"Cursor_SE" ofType:@"png"]) {
+		if (image = [[NSImage alloc] initWithContentsOfFile:path]) {
+			m_Cursor_SE = [[NSCursor alloc] initWithImage:image hotSpot:NSMakePoint(8,8)];
+			[image release];
+		}
+	}
+	if (!m_Cursor_SE) {
+		m_Cursor_SE = [NSCursor arrowCursor];
+		[m_Cursor_SE retain];
+	}
+	if (path = [bundle pathForResource:@"Cursor_SW" ofType:@"png"]) {
+		if (image = [[NSImage alloc] initWithContentsOfFile:path]) {
+			m_Cursor_SW = [[NSCursor alloc] initWithImage:image hotSpot:NSMakePoint(7,8)];
+			[image release];
+		}
+	}
+	if (!m_Cursor_SW) {
+		m_Cursor_SW = [NSCursor arrowCursor];
+		[m_Cursor_SW retain];
+	}
+	if (path = [bundle pathForResource:@"Cursor_W" ofType:@"png"]) {
+		if (image = [[NSImage alloc] initWithContentsOfFile:path]) {
+			m_Cursor_W = [[NSCursor alloc] initWithImage:image hotSpot:NSMakePoint(8,7)];
+			[image release];
+		}
+	}
+	if (!m_Cursor_W) {
+		m_Cursor_W = [NSCursor arrowCursor];
+		[m_Cursor_W retain];
+	}
+
+	if (path = [bundle pathForResource:@"Cursor_Wait" ofType:@"png"]) {
+		if (image = [[NSImage alloc] initWithContentsOfFile:path]) {
+			m_Cursor_Wait = [[NSCursor alloc] initWithImage:image hotSpot:NSMakePoint(8,7)];
+			[image release];
+		}
+	}
+	if (!m_Cursor_Wait) {
+		m_Cursor_Wait = [NSCursor arrowCursor];
+		[m_Cursor_Wait retain];
+	}
+	if (path = [bundle pathForResource:@"Cursor_LeftArrow" ofType:@"png"]) {
+		if (image = [[NSImage alloc] initWithContentsOfFile:path]) {
+			m_Cursor_LeftArrow = [[NSCursor alloc] initWithImage:image hotSpot:NSMakePoint(7,8)];
+			[image release];
+		}
+	}
+	if (!m_Cursor_LeftArrow) {
+		m_Cursor_LeftArrow = [NSCursor arrowCursor];
+		[m_Cursor_LeftArrow retain];
+	}
+	if (path = [bundle pathForResource:@"Cursor_RightArrow" ofType:@"png"]) {
+		if (image = [[NSImage alloc] initWithContentsOfFile:path]) {
+			m_Cursor_RightArrow = [[NSCursor alloc] initWithImage:image hotSpot:NSMakePoint(8,7)];
+			[image release];
+		}
+	}
+	if (!m_Cursor_RightArrow) {
+		m_Cursor_RightArrow = [NSCursor arrowCursor];
+		[m_Cursor_RightArrow retain];
+	}
+	if (path = [bundle pathForResource:@"Cursor_Compass" ofType:@"png"]) {
+		if (image = [[NSImage alloc] initWithContentsOfFile:path]) {
+			m_Cursor_Compass = [[NSCursor alloc] initWithImage:image hotSpot:NSMakePoint(7,7)];
+			[image release];
+		}
+	}
+	if (!m_Cursor_Compass) {
+		m_Cursor_Compass = [NSCursor arrowCursor];
+		[m_Cursor_Compass retain];
+	}
+	if (path = [bundle pathForResource:@"Cursor_Exchange" ofType:@"png"]) {
+		if (image = [[NSImage alloc] initWithContentsOfFile:path]) {
+			m_Cursor_Exchange = [[NSCursor alloc] initWithImage:image hotSpot:NSMakePoint(7,7)];
+			[image release];
+		}
+	}
+	if (!m_Cursor_Exchange) {
+		m_Cursor_Exchange = [NSCursor arrowCursor];
+		[m_Cursor_Exchange retain];
+	}
+	if (path = [bundle pathForResource:@"leftright_cursor" ofType:@"png"]) {
+		if (image = [[NSImage alloc] initWithContentsOfFile:path]) {
+			m_Cursor_LeftRight = [[NSCursor alloc] initWithImage:image hotSpot:NSMakePoint(8,8)];
+			[image release];
+		}
+	}
+	if (!m_Cursor_LeftRight) {
+		m_Cursor_LeftRight = [NSCursor arrowCursor];
+		[m_Cursor_LeftRight retain];
+	}
+	if (path = [bundle pathForResource:@"updown_cursor" ofType:@"png"]) {
+		if (image = [[NSImage alloc] initWithContentsOfFile:path]) {
+			m_Cursor_UpDown = [[NSCursor alloc] initWithImage:image hotSpot:NSMakePoint(8,8)];
+			[image release];
+		}
+	}
+	if (!m_Cursor_UpDown) {
+		m_Cursor_UpDown = [NSCursor arrowCursor];
+		[m_Cursor_UpDown retain];
+	}
+	if (path = [bundle pathForResource:@"Cursor_Crosshair" ofType:@"png"]) {
+		if (image = [[NSImage alloc] initWithContentsOfFile:path]) {
+			m_Cursor_Crosshair = [[NSCursor alloc] initWithImage:image hotSpot:NSMakePoint(7,7)];
+			[image release];
+		}
+	}
+	if (!m_Cursor_Crosshair) {
+		m_Cursor_Crosshair = [NSCursor arrowCursor];
+		[m_Cursor_Crosshair retain];
+	}
+	if (path = [bundle pathForResource:@"Cursor_HandPointer" ofType:@"png"]) {
+		if (image = [[NSImage alloc] initWithContentsOfFile:path]) {
+			m_Cursor_HandPointer = [[NSCursor alloc] initWithImage:image hotSpot:NSMakePoint(6,0)];
+			[image release];
+		}
+	}
+	if (!m_Cursor_HandPointer) {
+		m_Cursor_HandPointer = [NSCursor arrowCursor];
+		[m_Cursor_HandPointer retain];
+	}
+	if (path = [bundle pathForResource:@"Cursor_DownArrow" ofType:@"png"]) {
+		if (image = [[NSImage alloc] initWithContentsOfFile:path]) {
+			m_Cursor_DownArrow = [[NSCursor alloc] initWithImage:image hotSpot:NSMakePoint(6,0)];
+			[image release];
+		}
+	}
+	if (!m_Cursor_DownArrow) {
+		m_Cursor_DownArrow = [NSCursor arrowCursor];
+		[m_Cursor_DownArrow retain];
+	}
+	
+	m_colorAndImageInited = true;
+}
+
+
+
 GR_CocoaGraphics::GR_CocoaGraphics(NSView * win, XAP_App * app) :
 	m_updateCallback(NULL),
 	m_updateCBparam (NULL),
@@ -128,14 +397,6 @@ GR_CocoaGraphics::GR_CocoaGraphics(NSView * win, XAP_App * app) :
 	m_cacheArray (10),
 	m_cacheRectArray (10),
 	m_currentColor (nil),
-	m_imageBlue16x15 (nil),
-	m_imageBlue11x16 (nil),
-	m_imageGrey16x15 (nil),
-	m_imageGrey11x16 (nil),
-	m_colorBlue16x15 (nil),
-	m_colorBlue11x16 (nil),
-	m_colorGrey16x15 (nil),
-	m_colorGrey11x16 (nil),
 	m_pFont (NULL),
 	m_fontForGraphics (nil),
 	m_pFontGUI(NULL),
@@ -143,24 +404,6 @@ GR_CocoaGraphics::GR_CocoaGraphics(NSView * win, XAP_App * app) :
 	m_joinStyle(JOIN_MITER),
 	m_capStyle(CAP_BUTT),
 	m_lineStyle(LINE_SOLID),
-	m_Cursor_E (nil),
-	m_Cursor_N (nil),
-	m_Cursor_NE (nil),
-	m_Cursor_NW (nil),
-	m_Cursor_S (nil),
-	m_Cursor_SE (nil),
-	m_Cursor_SW (nil),
-	m_Cursor_W (nil),
-	m_Cursor_Wait (nil),
-	m_Cursor_LeftArrow (nil),
-	m_Cursor_RightArrow (nil),
-	m_Cursor_Compass (nil),
-	m_Cursor_Exchange (nil),
-	m_Cursor_LeftRight (nil),
-	m_Cursor_UpDown (nil),
-	m_Cursor_Crosshair (nil),
-	m_Cursor_HandPointer (nil),
-	m_Cursor_DownArrow (nil),
 	m_GrabCursor(GR_CURSOR_DEFAULT),
 	m_screenResolution(0),
 	m_bIsPrinting(false),
@@ -170,211 +413,8 @@ GR_CocoaGraphics::GR_CocoaGraphics(NSView * win, XAP_App * app) :
 	m_fontMetricsLayoutManager(nil),
 	m_fontMetricsTextContainer(nil)
 {
-	NSBundle * bundle = [NSBundle mainBundle];
-	NSString * path   = 0;
-	NSImage  * image  = 0;
-
-	if (path = [bundle pathForResource:@"Blue16x15" ofType:@"png"])
-		if (m_imageBlue16x15 = [[NSImage alloc] initWithContentsOfFile:path]) {
-			m_colorBlue16x15 = [NSColor colorWithPatternImage:m_imageBlue16x15];
-			[m_colorBlue16x15 retain];
-		}
-	if (!m_colorBlue16x15) {
-		m_colorBlue16x15 = [NSColor blueColor];
-		[m_colorBlue16x15 retain];
-	}
-	if (path = [bundle pathForResource:@"Blue11x16" ofType:@"png"])
-		if (m_imageBlue11x16 = [[NSImage alloc] initWithContentsOfFile:path]) {
-			m_colorBlue11x16 = [NSColor colorWithPatternImage:m_imageBlue11x16];
-			[m_colorBlue11x16 retain];
-		}
-	if (!m_colorBlue11x16) {
-		m_colorBlue11x16 = [NSColor blueColor];
-		[m_colorBlue11x16 retain];
-	}
-	if (path = [bundle pathForResource:@"Grey16x15" ofType:@"png"])
-		if (m_imageGrey16x15 = [[NSImage alloc] initWithContentsOfFile:path]) {
-			m_colorGrey16x15 = [NSColor colorWithPatternImage:m_imageGrey16x15];
-			[m_colorGrey16x15 retain];
-		}
-	if (!m_colorGrey16x15) {
-		m_colorGrey16x15 = [NSColor grayColor];
-		[m_colorGrey16x15 retain];
-	}
-	if (path = [bundle pathForResource:@"Grey11x16" ofType:@"png"])
-		if (m_imageGrey11x16 = [[NSImage alloc] initWithContentsOfFile:path]) {
-			m_colorGrey11x16 = [NSColor colorWithPatternImage:m_imageGrey11x16];
-			[m_colorGrey11x16 retain];
-		}
-	if (!m_colorGrey11x16) {
-		m_colorGrey11x16 = [NSColor grayColor];
-		[m_colorGrey11x16 retain];
-	}
-
-	if (path = [bundle pathForResource:@"Cursor_E" ofType:@"png"])
-		if (image = [[NSImage alloc] initWithContentsOfFile:path]) {
-			m_Cursor_E = [[NSCursor alloc] initWithImage:image hotSpot:NSMakePoint(7,7)];
-			[image release];
-		}
-	if (!m_Cursor_E) {
-		m_Cursor_E = [NSCursor arrowCursor];
-		[m_Cursor_E retain];
-	}
-	if (path = [bundle pathForResource:@"Cursor_N" ofType:@"png"])
-		if (image = [[NSImage alloc] initWithContentsOfFile:path]) {
-			m_Cursor_N = [[NSCursor alloc] initWithImage:image hotSpot:NSMakePoint(7,8)];
-			[image release];
-		}
-	if (!m_Cursor_N) {
-		m_Cursor_N = [NSCursor arrowCursor];
-		[m_Cursor_N retain];
-	}
-	if (path = [bundle pathForResource:@"Cursor_NE" ofType:@"png"])
-		if (image = [[NSImage alloc] initWithContentsOfFile:path]) {
-			m_Cursor_NE = [[NSCursor alloc] initWithImage:image hotSpot:NSMakePoint(8,7)];
-			[image release];
-		}
-	if (!m_Cursor_NE) {
-		m_Cursor_NE = [NSCursor arrowCursor];
-		[m_Cursor_NE retain];
-	}
-	if (path = [bundle pathForResource:@"Cursor_NW" ofType:@"png"])
-		if (image = [[NSImage alloc] initWithContentsOfFile:path]) {
-			m_Cursor_NW = [[NSCursor alloc] initWithImage:image hotSpot:NSMakePoint(7,7)];
-			[image release];
-		}
-	if (!m_Cursor_NW) {
-		m_Cursor_NW = [NSCursor arrowCursor];
-		[m_Cursor_NW retain];
-	}
-	if (path = [bundle pathForResource:@"Cursor_S" ofType:@"png"])
-		if (image = [[NSImage alloc] initWithContentsOfFile:path]) {
-			m_Cursor_S = [[NSCursor alloc] initWithImage:image hotSpot:NSMakePoint(7,7)];
-			[image release];
-		}
-	if (!m_Cursor_S) {
-		m_Cursor_S = [NSCursor arrowCursor];
-		[m_Cursor_S retain];
-	}
-	if (path = [bundle pathForResource:@"Cursor_SE" ofType:@"png"])
-		if (image = [[NSImage alloc] initWithContentsOfFile:path]) {
-			m_Cursor_SE = [[NSCursor alloc] initWithImage:image hotSpot:NSMakePoint(8,8)];
-			[image release];
-		}
-	if (!m_Cursor_SE) {
-		m_Cursor_SE = [NSCursor arrowCursor];
-		[m_Cursor_SE retain];
-	}
-	if (path = [bundle pathForResource:@"Cursor_SW" ofType:@"png"])
-		if (image = [[NSImage alloc] initWithContentsOfFile:path]) {
-			m_Cursor_SW = [[NSCursor alloc] initWithImage:image hotSpot:NSMakePoint(7,8)];
-			[image release];
-		}
-	if (!m_Cursor_SW) {
-		m_Cursor_SW = [NSCursor arrowCursor];
-		[m_Cursor_SW retain];
-	}
-	if (path = [bundle pathForResource:@"Cursor_W" ofType:@"png"])
-		if (image = [[NSImage alloc] initWithContentsOfFile:path]) {
-			m_Cursor_W = [[NSCursor alloc] initWithImage:image hotSpot:NSMakePoint(8,7)];
-			[image release];
-		}
-	if (!m_Cursor_W) {
-		m_Cursor_W = [NSCursor arrowCursor];
-		[m_Cursor_W retain];
-	}
-
-	if (path = [bundle pathForResource:@"Cursor_Wait" ofType:@"png"])
-		if (image = [[NSImage alloc] initWithContentsOfFile:path]) {
-			m_Cursor_Wait = [[NSCursor alloc] initWithImage:image hotSpot:NSMakePoint(8,7)];
-			[image release];
-		}
-	if (!m_Cursor_Wait) {
-		m_Cursor_Wait = [NSCursor arrowCursor];
-		[m_Cursor_Wait retain];
-	}
-	if (path = [bundle pathForResource:@"Cursor_LeftArrow" ofType:@"png"])
-		if (image = [[NSImage alloc] initWithContentsOfFile:path]) {
-			m_Cursor_LeftArrow = [[NSCursor alloc] initWithImage:image hotSpot:NSMakePoint(7,8)];
-			[image release];
-		}
-	if (!m_Cursor_LeftArrow) {
-		m_Cursor_LeftArrow = [NSCursor arrowCursor];
-		[m_Cursor_LeftArrow retain];
-	}
-	if (path = [bundle pathForResource:@"Cursor_RightArrow" ofType:@"png"])
-		if (image = [[NSImage alloc] initWithContentsOfFile:path]) {
-			m_Cursor_RightArrow = [[NSCursor alloc] initWithImage:image hotSpot:NSMakePoint(8,7)];
-			[image release];
-		}
-	if (!m_Cursor_RightArrow) {
-		m_Cursor_RightArrow = [NSCursor arrowCursor];
-		[m_Cursor_RightArrow retain];
-	}
-	if (path = [bundle pathForResource:@"Cursor_Compass" ofType:@"png"])
-		if (image = [[NSImage alloc] initWithContentsOfFile:path]) {
-			m_Cursor_Compass = [[NSCursor alloc] initWithImage:image hotSpot:NSMakePoint(7,7)];
-			[image release];
-		}
-	if (!m_Cursor_Compass) {
-		m_Cursor_Compass = [NSCursor arrowCursor];
-		[m_Cursor_Compass retain];
-	}
-	if (path = [bundle pathForResource:@"Cursor_Exchange" ofType:@"png"])
-		if (image = [[NSImage alloc] initWithContentsOfFile:path]) {
-			m_Cursor_Exchange = [[NSCursor alloc] initWithImage:image hotSpot:NSMakePoint(7,7)];
-			[image release];
-		}
-	if (!m_Cursor_Exchange) {
-		m_Cursor_Exchange = [NSCursor arrowCursor];
-		[m_Cursor_Exchange retain];
-	}
-	if (path = [bundle pathForResource:@"leftright_cursor" ofType:@"png"])
-		if (image = [[NSImage alloc] initWithContentsOfFile:path]) {
-			m_Cursor_LeftRight = [[NSCursor alloc] initWithImage:image hotSpot:NSMakePoint(8,8)];
-			[image release];
-		}
-	if (!m_Cursor_LeftRight) {
-		m_Cursor_LeftRight = [NSCursor arrowCursor];
-		[m_Cursor_LeftRight retain];
-	}
-	if (path = [bundle pathForResource:@"updown_cursor" ofType:@"png"])
-		if (image = [[NSImage alloc] initWithContentsOfFile:path]) {
-			m_Cursor_UpDown = [[NSCursor alloc] initWithImage:image hotSpot:NSMakePoint(8,8)];
-			[image release];
-		}
-	if (!m_Cursor_UpDown) {
-		m_Cursor_UpDown = [NSCursor arrowCursor];
-		[m_Cursor_UpDown retain];
-	}
-	if (path = [bundle pathForResource:@"Cursor_Crosshair" ofType:@"png"])
-		if (image = [[NSImage alloc] initWithContentsOfFile:path]) {
-			m_Cursor_Crosshair = [[NSCursor alloc] initWithImage:image hotSpot:NSMakePoint(7,7)];
-			[image release];
-		}
-	if (!m_Cursor_Crosshair) {
-		m_Cursor_Crosshair = [NSCursor arrowCursor];
-		[m_Cursor_Crosshair retain];
-	}
-	if (path = [bundle pathForResource:@"Cursor_HandPointer" ofType:@"png"])
-		if (image = [[NSImage alloc] initWithContentsOfFile:path]) {
-			m_Cursor_HandPointer = [[NSCursor alloc] initWithImage:image hotSpot:NSMakePoint(6,0)];
-			[image release];
-		}
-	if (!m_Cursor_HandPointer) {
-		m_Cursor_HandPointer = [NSCursor arrowCursor];
-		[m_Cursor_HandPointer retain];
-	}
-	if (path = [bundle pathForResource:@"Cursor_DownArrow" ofType:@"png"])
-		if (image = [[NSImage alloc] initWithContentsOfFile:path]) {
-			m_Cursor_DownArrow = [[NSCursor alloc] initWithImage:image hotSpot:NSMakePoint(6,0)];
-			[image release];
-		}
-	if (!m_Cursor_DownArrow) {
-		m_Cursor_DownArrow = [NSCursor arrowCursor];
-		[m_Cursor_DownArrow retain];
-	}
-
+	_initColorAndImage();
+	
 	m_pApp = app;
 	UT_ASSERT (m_pWin);
 	m_fontProps = [[NSMutableDictionary alloc] init];
