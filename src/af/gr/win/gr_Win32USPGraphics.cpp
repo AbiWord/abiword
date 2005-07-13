@@ -836,6 +836,9 @@ bool GR_Win32USPGraphics::shape(GR_ShapingInfo & si, GR_RenderInfo *& ri)
 		RI->m_iClustSize = si.m_iLength;
 	}
 
+	// remove any justification information -- it will have to be recalculated
+	delete[] RI->m_pJustify; RI->m_pJustify = NULL;
+	
 	// to save time we will use a reasonably sized static buffer and
 	// will only allocate one on heap if the static one is too small.
 	static WCHAR wcInChars[GRWIN32USP_CHARBUFF_SIZE]; 
@@ -1072,6 +1075,11 @@ bool GR_Win32USPGraphics::shape(GR_ShapingInfo & si, GR_RenderInfo *& ri)
 		// this might not be strictly necessary, but it is safer to do so
 		// no, this is necessary
 		RI->s_pOwnerChar = NULL;
+	}
+
+	if(RI->s_pOwnerDraw == RI)
+	{
+		RI->s_pOwnerDraw = NULL;
 	}
 	
 	return true;

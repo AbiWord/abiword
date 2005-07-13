@@ -1114,7 +1114,9 @@ void fp_Line::_doClearScreenFromRunToEnd(UT_sint32 runIndex)
 
 
 	// not sure what the reason for this is (Tomas, Oct 25, 2003)
-	fp_Run * pFRun = pRun;
+	fp_Run * pLeftVisualRun = pRun;
+	fp_Run * pRunToEraseFrom  = m_vecRuns.getNthItem(runIndex);
+	
 	bool bUseFirst = false;
 	
 	if(runIndex == 1)
@@ -1223,7 +1225,7 @@ void fp_Line::_doClearScreenFromRunToEnd(UT_sint32 runIndex)
 		}
 		if(bUseFirst)
 		{
-			getScreenOffsets(pFRun, xoff, yoff);
+			getScreenOffsets(pLeftVisualRun, xoff, yoff);
 		}
 		else
 		{
@@ -1263,20 +1265,31 @@ void fp_Line::_doClearScreenFromRunToEnd(UT_sint32 runIndex)
 			xxx_UT_DEBUGMSG(("pl_Line _doClear no Page \n"));
 			return;
 		}
-		fl_DocSectionLayout * pSL =  getBlock()->getDocSectionLayout();
+
 		UT_sint32 iExtra = getGraphics()->tlu(2);
-		if(getContainer() && (getContainer()->getContainerType() != FP_CONTAINER_CELL) && (getContainer()->getContainerType() != FP_CONTAINER_FRAME))
-		  
+
+		// this code adds half of the section/column margin to the left of the erasure are
+		// -- we can only do this if the run we are to erase from is the leftmost run
+		// (otherwise we erase area that belongs to runs that will not redraw themselves)
+
+		if(pLeftVisualRun == pRunToEraseFrom)
 		{
-		    if(pSL->getNumColumns() >1)
-		    {
-		         iExtra = pSL->getColumnGap()/2;
-		    }
-		    else
-		    {
-		         iExtra = pSL->getRightMargin()/2;
-		    }
+			fl_DocSectionLayout * pSL =  getBlock()->getDocSectionLayout();
+			if(getContainer() &&
+			   (getContainer()->getContainerType() != FP_CONTAINER_CELL) &&
+			   (getContainer()->getContainerType() != FP_CONTAINER_FRAME))
+			{
+				if(pSL->getNumColumns() >1)
+				{
+					iExtra = pSL->getColumnGap()/2;
+				}
+				else
+				{
+					iExtra = pSL->getRightMargin()/2;
+				}
+			}
 		}
+		
 //		UT_ASSERT((m_iClearToPos + leftClear - (xoff-xoffLine)) <= getPage()->getWidth());
 		xxx_UT_DEBUGMSG(("Clear from runindex to end height %d \n",getHeight()));
 		xxx_UT_DEBUGMSG(("Width of clear %d \n",m_iClearToPos + leftClear - xoff));
@@ -1313,7 +1326,7 @@ void fp_Line::_doClearScreenFromRunToEnd(UT_sint32 runIndex)
 		if(bUseFirst)
 		{
 			//pRun = static_cast<fp_Run*>(m_vecRuns.getNthItem(_getRunLogIndx(0)));
-			pRun = pFRun;
+			pRun = pLeftVisualRun;
 			runIndex = 0;
 		}
 		pRun->markAsDirty();

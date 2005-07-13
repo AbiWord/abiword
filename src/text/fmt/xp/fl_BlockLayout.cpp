@@ -3083,7 +3083,11 @@ void fl_BlockLayout::format()
 		pRun = pRun->getNextRun();
 	}
 
-#if 1
+#if 0
+	// we need to coalesce runs *before* we do justification (coalescing might require
+	// that the whole run is reshaped, and that can lead to loss of the justification
+	// information for the run).
+	
     	// was previously after breakParagraph. Idea is to make this a less
 		// frequent occurance. So the paragraph get's lines coalessed 
         // whenever the height changes. So we don't do this on every key press

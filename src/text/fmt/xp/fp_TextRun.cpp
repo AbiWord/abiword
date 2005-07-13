@@ -1074,7 +1074,7 @@ void fp_TextRun::mergeWithNext(void)
 	}
 	
 
-	setLength(iMyLen + iNextLen, false);
+	_setLength(iMyLen + iNextLen);
 	_setDirty(isDirty() || pNext->isDirty());
 
 	setNextRun(pNext->getNextRun(), false);
