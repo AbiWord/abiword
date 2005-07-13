@@ -22,11 +22,18 @@
 #ifndef FL_AUTONUM_H
 #define FL_AUTONUM_H
 
+#include <vector>
 #include "ut_types.h"
 #include "ut_misc.h"
 #include "ut_vector.h"
 #include "pt_Types.h"
 #include "fl_AutoLists.h"
+#include "ut_string_class.h"
+using namespace std;
+using std::vector;
+
+typedef pair< PL_StruxDocHandle, UT_UCS4String > FL_SDHLabelPair;
+typedef vector< FL_SDHLabelPair > FL_LabelMap;
 
 // fwd. decl.
 class fl_BlockLayout;
@@ -121,6 +128,7 @@ public:
 	static void					dec2hebrew(UT_UCSChar labelStr[], UT_uint32 * insPoint, UT_sint32 value);
 	const char **				getAttributes(void) ;
 	PL_StruxDocHandle                       getLastItemInHeiracy(void);
+
 protected:
 	void                        _setParent(fl_AutoNum * pParent);
 	void                        _setParentID(UT_uint32 iParentID);
@@ -132,11 +140,11 @@ protected:
 	void						_updateItems(UT_uint32 start, PL_StruxDocHandle notMe );
 	UT_uint32					_getLevelValue(fl_AutoNum * pAutoNum);
 
-	fl_AutoNum *				m_pParent;
+	fl_AutoNum *					m_pParent;
 
 	UT_Vector					m_pItems;
-	PD_Document *               m_pDoc;
-	FV_View *				    m_pView;
+	PD_Document *               		m_pDoc;
+	FV_View *				    	m_pView;
 	FL_ListType					m_List_Type;
 	UT_uint32					m_iID;
 	UT_uint32					m_iParentID;
@@ -150,7 +158,7 @@ protected:
 	XML_Char					m_pszDelim[80];
 	XML_Char					m_pszIndent[80];
 	bool						m_bWordMultiStyle;
-	PL_StruxDocHandle			m_pParentItem;
+	PL_StruxDocHandle				m_pParentItem;
 };
 
 #endif

@@ -2911,6 +2911,7 @@ void FV_View::processSelectedBlocks(FL_ListType listType)
 //
 	for(i=0; i<static_cast<UT_sint32>(vNoListBlocks.getItemCount()); i++)
 	{
+		UT_DEBUGMSG(("Doing Block %d of %d \n",i,vNoListBlocks.getItemCount()));
 		fl_BlockLayout * pBlock = vNoListBlocks.getNthItem(i);
 		fl_BlockLayout * pPrev = static_cast<fl_BlockLayout *>(pBlock->getPrev());
 		while(pPrev && (pPrev->getContainerType() != FL_CONTAINER_BLOCK))
