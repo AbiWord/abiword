@@ -19,12 +19,14 @@ So these plugins will be built and shipped with the autopackage.
 (5) Make AbiWord's skeleton files available to autopackage. Simply put: 
 	cp abi/src/pkg/linux/apkg/\@* /usr/share/autopackage/skeletons/
 
-(6) You need to build the autopackage out of the source tree. this means you have to create and "abi-build" peer directory at the save level as "abi" and "abiword-plugins". Go into "abi-build" and issue "../abi/configure"
+(6) If you are working with a CVS version and have a fresh checkout of "abiword-plugins" you need to cd into that directory and run ./nextgen.sh (that's the ./autogen.sh equivalent for plugins).
 
-(7) Build the autopackage by running 
+(7) You need to build the autopackage out of the source tree. this means you have to create and "abi-build" peer directory at the save level as "abi" and "abiword-plugins". Go into "abi-build" and issue "../abi/configure"
+
+(8) Build the autopackage by running 
 	makeinstaller src/pkg/linux/apkg/abiword-gnome.apspec
 
-(8) After the build finished successfully you'll have the autopackage in your current directory. If you want to ship it make sure you test it on machines that don't have the autopackage developer tools installed before doing so.
+(9) After the build finished successfully you'll have the autopackage in your current directory. If you want to ship it make sure you test it on machines that don't have the autopackage developer tools installed before doing so.
 
 If you have any questions please get in touch via AbiWord's developer mailing list or IRC channel.
 
