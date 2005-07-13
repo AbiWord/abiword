@@ -40,10 +40,6 @@
 
 #define CONV_TO_UCS (UT_UCSChar) (unsigned char)
 
-static FL_LabelMap m_pLabelMap;
-static bool sLabelCacheNeedsRefresh;
-static bool sLabelCacheRecentlyRefreshed;
-
 class pf_Frag;
 
 fl_AutoNum::fl_AutoNum(	UT_uint32 id,
@@ -583,53 +579,14 @@ const UT_UCSChar * fl_AutoNum::getLabel(PL_StruxDocHandle pItem)  const
 	static UT_UCSChar label[100];
 	UT_uint32 insPoint = 0;
 	UT_uint32 depth = 0;
-	
-	if(m_pDoc && m_pDoc->getPieceTable() && (m_pDoc->getPieceTable()->getPieceTableState() != PTS_Editing))
+	_getLabelstr( label, &insPoint, depth , pItem);
+	if(insPoint == 0 )
 	{
-	     // Nothing fancy, just do like we used to always do.
-	     _getLabelstr( label, &insPoint, depth , pItem);
-	     return static_cast<const UT_UCSChar *>(label);
-	}
-
-	/* If we've mucked around in a way that might dirty the label cache, clear out the whole thing (wasteful but simple and adequate). */
-	if((m_bDirty && m_bUpdatingItems && !sLabelCacheRecentlyRefreshed) || sLabelCacheNeedsRefresh) {
-	     m_pLabelMap.clear();
-	     sLabelCacheRecentlyRefreshed = true;
-	     sLabelCacheNeedsRefresh = false;
-	}
-	
-	/* Aware that this whole scheme is terribly unoptimal, but for our purposes as a word processor it seems to be an improvement. */
-	FL_LabelMap::iterator labelIter = m_pLabelMap.begin();
-	for(; labelIter != m_pLabelMap.end(); ++labelIter)
-	{
-	  if((*labelIter).first == pItem)
-	  {
-	     if(sLabelCacheRecentlyRefreshed)
-		    sLabelCacheRecentlyRefreshed = false;
-	     else // Here's how this ugly hack works: we recalculate everything twice after an value-affecting update before sticking with the cache.  It's still better than what we had, and forces a recalc as much as we need it.
-	           break;
-	  }
-	}
-	
-	if(labelIter == m_pLabelMap.end()) // We haven't cached this one already, or it may have changed and we need to recalculate.
-	{
-		_getLabelstr( label, &insPoint, depth , pItem);
-		if(insPoint == 0)
-		{
-			// I'm not convinced of a need to cache the NULL.  If there is, it'll be trivial by mimicking the below.
-		       return static_cast<const UT_UCSChar *>(NULL);
-		}
-		else
-		{
-		       UT_UCS4String labelCpy = UT_UCS4String(label, 100);
-			FL_SDHLabelPair labelPair = FL_SDHLabelPair(pItem,labelCpy);
-			m_pLabelMap.push_back(labelPair);
-			return static_cast<const UT_UCSChar *>(label);
-		}		
+		return static_cast<const UT_UCSChar *>(NULL);
 	}
 	else
 	{
-		return ((*labelIter).second).ucs4_str();
+		return static_cast<const UT_UCSChar *>(label);
 	}
 }
 
@@ -1144,7 +1101,6 @@ void fl_AutoNum::update(UT_uint32 start)
 
 void fl_AutoNum::_updateItems(UT_uint32 start, PL_StruxDocHandle notMe)
 {
-	sLabelCacheNeedsRefresh = true;
 	//	UT_DEBUGMSG(("Entering _updateItems\n"));
 	UT_sint32 j;
 	if(m_pDoc->areListUpdatesAllowed() == true)
