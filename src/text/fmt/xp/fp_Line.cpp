@@ -2989,6 +2989,16 @@ bool fp_Line::containsForcedPageBreak(void) const
 	return false;
 }
 
+/*!
+    Call to this function must be followed by calling fp_Line::layout() since coalescing
+    runs might require shaping of the resulting run, which in turn might result in lost of
+    justification information (this is due to the fact that the data used by the external
+    shaping engine can be opaque to us, so we are not able to combine it for the two
+    original runs -- we have to ask the external engine to recalculate it for the whole
+    combined run).
+
+    At the moment we simply call coalesceRuns() just before doing layout() in fb_LineBreaker().
+*/
 void fp_Line::coalesceRuns(void)
 {
 	//UT_DEBUGMSG(("coalesceRuns (line 0x%x)\n", this));
