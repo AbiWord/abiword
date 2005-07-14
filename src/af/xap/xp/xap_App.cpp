@@ -1404,6 +1404,11 @@ const char*         XAP_App::_findNearestFont(const char* pszFontFamily,
 												const char* pszFontStretch,
 												const char* pszFontSize)
 {
+        XAP_Frame * pFrame = getLastFocussedFrame();
+        if(pFrame == NULL)
+	{
+	      return pszFontFamily;
+	}
 	GR_Graphics * pG = newDefaultScreenGraphics();
 	UT_return_val_if_fail( pG, pszFontFamily );
 

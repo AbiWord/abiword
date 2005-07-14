@@ -28,6 +28,7 @@
 #include "xap_UnixApp.h"
 #include "xap_UnixFontManager.h"
 #include "xap_UnixFont.h"
+#include "xap_UnixNullGraphics.h"
 
 #include "gr_UnixGraphics.h"
 #include "gr_UnixImage.h"
@@ -1902,12 +1903,18 @@ void GR_UnixGraphics::_endPaint ()
 
 GR_Graphics *   GR_UnixGraphics::graphicsAllocator(GR_AllocInfo& allocInfo)
 {
-	GR_UnixAllocInfo &allocator = (GR_UnixAllocInfo&)allocInfo;
 
-	if (allocator.m_win) {
-		return new GR_UnixGraphics(allocator.m_win, allocator.m_fontManager, XAP_App::getApp());
-	}
-	else {
+	if (allocInfo.getType() == GRID_UNIX_NULL)
+		{
+			return UnixNull_Graphics::graphicsAllocator(allocInfo);
+		}
+	GR_UnixAllocInfo &allocator = (GR_UnixAllocInfo&)allocInfo;
+	if (allocator.m_win) 
+		{
+			return new GR_UnixGraphics(allocator.m_win, allocator.m_fontManager, XAP_App::getApp());
+		}
+	else 
+		{
 		return new GR_UnixGraphics(allocator.m_pixmap, allocator.m_fontManager, XAP_App::getApp(), allocator.m_usePixmap);
 	}
 }

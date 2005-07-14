@@ -160,6 +160,7 @@ class GR_UnixGraphics : public GR_Graphics
  	GR_UnixGraphics(GdkWindow * win, XAP_UnixFontManager * fontManager, XAP_App *app);
 	GR_UnixGraphics(GdkPixmap * win, XAP_UnixFontManager * fontManager, XAP_App *app, bool bUsePixmap);
 
+
 	virtual void _beginPaint ();
 	virtual void _endPaint ();
 
