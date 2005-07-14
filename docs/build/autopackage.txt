@@ -7,7 +7,7 @@ Autopackage is a distribution independent packaging system for x86 linux. Inform
 
 (1) Download and install the autopackage developer tools. I'd recommend to get the stable CVS branch because this makes updating very easy.
 
-(2) Get the AbiWord sources. Recommended is to get them from CVS as described at [2]. In addition to the modules mentioned on this page you need to get "abiword-plugins". If you want to build an official package you need to get the right CVS tag. This usually looks similar to "release-2-3-2".
+(2) Get the AbiWord sources. Recommended is to get them from CVS as described at [2]. In addition to the modules mentioned on this page you need to get "abiword-plugins". If you want to build an official package you need to get the right CVS tag. This usually looks similar to "release-2-3-3". Versions prior to 2.3.3 do not include any plugins in the autopackage.
 
 (3) Check AbiWord's dependencies. Check that you have everything in place to build AbiWord with GNOME support. Also make sure you have the development packages for enchant [3] and gucharmap [4] installed because these are optional. 
 
