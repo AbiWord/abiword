@@ -620,20 +620,48 @@ bool IE_Imp_XHTML::pasteFromBuffer(PD_DocumentRange * pDocRange,
 	UT_Error e = newXML->parse (&buf);
 	if(e != UT_OK)
 	{
-		UT_UTF8String sData;
-		sData.clear();
-		sData.append(reinterpret_cast<const char *>(pData), lenData);
-		UT_DEBUGMSG(("Error pasting HTML.... \n"));
+		char * szPrint = new char [lenData+1];
+		UT_uint32 i = 0;
+		for(i=0; i<lenData;i++)
+			{
+				szPrint[i] = pData[i];
+			}
+		szPrint[i] = 0;
+		UT_DEBUGMSG(("Error Pasting HTML \n"));
 		if(lenData < 10000)
 		{
-			UT_DEBUGMSG(("Data is %s Length of buffer is %d \n",sData.utf8_str(),lenData));
+			UT_DEBUGMSG(("Data is %s Length of buffer is %d \n",szPrint,lenData));
 		}
 		delete p;
 		delete newXML;
+		delete [] szPrint;
 		UNREFP( newDoc);
 		return false;
 	}
 	newDoc->finishRawCreation();
+	PT_DocPosition posEnd = 0;
+	bool b = newDoc->getBounds(true, posEnd);
+	if(!b || posEnd <= 2)
+	{
+		// import failed.
+		char * szPrint = new char [lenData+1];
+		UT_uint32 i = 0;
+		for(i=0; i<lenData;i++)
+			{
+				szPrint[i] = pData[i];
+			}
+		szPrint[i] = 0;
+		UT_DEBUGMSG(("Could not paste HTML.... \n"));
+		if(lenData < 10000)
+		{
+			UT_DEBUGMSG(("Data is |%s| Length of buffer is %d \n",szPrint,lenData));
+		}
+		delete p;
+		delete newXML;
+		delete [] szPrint;
+		UNREFP( newDoc);
+		return false;
+	}
 	//
 	// OK Broadcast from the just filled source document into our current
 	// doc via the paste listener
