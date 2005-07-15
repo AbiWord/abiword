@@ -93,20 +93,40 @@ static void _cdata (void * userData, const XML_Char * buffer, int length)
   pXML->cdataSection (false);
 }
 
-static void _errorSAXFunc(void *ctx,
+static void _errorSAXFunc(void *xmlp,
 			  const char *msg,
 			  ...)
 {
   va_list args;
   va_start (args, msg);
-  UT_String errorMessage(UT_String_vprintf (msg, args));
+  UT_String errorMessage;
+  UT_String_vprintf (errorMessage,msg, args);
   va_end (args);
-  UT_DEBUGMSG(("SAX function error here \n"));
-  UT_DEBUGMSG(("%s", errorMessage.c_str()));
-  UT_ASSERT(UT_SHOULD_NOT_HAPPEN);
+  // Handle 'nbsp' here
+  UT_XML * pXML = reinterpret_cast<UT_XML *>(xmlp);
+  pXML->incMinorErrors();
+  char * szErr = UT_strdup(errorMessage.c_str() );
+  if(strstr(szErr,"'nbsp' not defined") != NULL)
+  {
+    UT_DEBUGMSG(("nbsp found in stream errs %d \n",pXML->getNumMinorErrors()));
+      pXML->incRecoveredErrors();
+      const char buffer []= {0xa0};
+      pXML->charData(buffer,1); 
+  }
+  else if(strstr(szErr,"not defined") != NULL)
+  {
+      pXML->incRecoveredErrors();
+  }
+  else
+  {
+      UT_DEBUGMSG(("SAX function error here \n"));
+      UT_DEBUGMSG(("%s", errorMessage.c_str()));
+      UT_ASSERT(UT_SHOULD_NOT_HAPPEN);
+  }
+  FREEP(szErr);
 }
 
-static void _fatalErrorSAXFunc(void *ctx,
+static void _fatalErrorSAXFunc(void *xmlp,
 			       const char *msg,
 			       ...)
 {
@@ -117,8 +137,7 @@ static void _fatalErrorSAXFunc(void *ctx,
   UT_DEBUGMSG((" fatal SAX function error here \n"));
 
   UT_DEBUGMSG(("%s", errorMessage.c_str()));
-  xmlParserCtxt * pCtx = reinterpret_cast<xmlParserCtxt *>(ctx);
-  UT_XML * pXML = static_cast<UT_XML *>(pCtx->userData);
+  UT_XML * pXML = reinterpret_cast<UT_XML *>(xmlp);
   UT_DEBUGMSG((" userData pointer is %x \n",pXML));
   UT_ASSERT(UT_SHOULD_NOT_HAPPEN);
   pXML->stop();
@@ -192,21 +211,24 @@ UT_Error UT_XML::parse (const char * szFilename)
 			
 			if (xmlParseChunk (ctxt, buffer, static_cast<int>(length), 0))
 			{
-				UT_DEBUGMSG (("Error parsing '%s' (Line: %d, Column: %d)\n", szFilename, getLineNumber(ctxt), getColumnNumber(ctxt)));
+			  if(getNumMinorErrors() > getNumRecoveredErrors())
+			    {
+				UT_DEBUGMSG (("Error - 1 parsing '%s' (Line: %d, Column: %d)\n", szFilename, getLineNumber(ctxt), getColumnNumber(ctxt)));
 				ret = UT_IE_IMPORTERROR;
 				break;
+			    }
 			}
 		}
 		if (ret == UT_OK)
-			if (!m_bStopped)
+		  if (!m_bStopped && (getNumMinorErrors() == 0))
 			{
 				if (xmlParseChunk (ctxt, "", 0, 1))
 				{
-					UT_DEBUGMSG (("Error parsing '%s' (Line: %d, Column: %d)\n", szFilename, getLineNumber(ctxt), getColumnNumber(ctxt)));
+					UT_DEBUGMSG (("Error -2 parsing '%s' (Line: %d, Column: %d)\n", szFilename, getLineNumber(ctxt), getColumnNumber(ctxt)));
 					ret = UT_IE_IMPORTERROR;
 				}
 			}
-		if (ret == UT_OK)
+		if (ret == UT_OK && (getNumMinorErrors() == 0))
 			if (!ctxt->wellFormed && !m_bStopped) ret = UT_IE_IMPORTERROR; // How does stopping mid-file affect wellFormed?
 		
 		ctxt->sax = NULL;

@@ -56,7 +56,6 @@ class ABI_EXPORT IE_Imp_XML : public IE_Imp, public UT_XML::Listener
 public:
     IE_Imp_XML(PD_Document * pDocument, bool whiteSignificant);
     virtual ~IE_Imp_XML();
-
     virtual UT_Error	importFile(const char * szFilename);
 
 	virtual bool		pasteFromBuffer(PD_DocumentRange * pDocRange,
@@ -164,7 +163,6 @@ protected:
 private:
 	UT_uint32	m_iCharCount;
 	bool		m_bStripLeading;
-
 protected:
 	UT_uint32	_data_CharCount () const { return m_iCharCount; }
 	void		_data_NewBlock ();

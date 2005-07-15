@@ -103,6 +103,8 @@ UT_XML::UT_XML () :
   m_chardata_buffer(0),
   m_chardata_length(0),
   m_chardata_max(0),
+  m_iMinorErrors(0),
+  m_iRecoveredErrors(0),
   m_namespace(0),
   m_nslength(0),
   m_bSniffing(false),
