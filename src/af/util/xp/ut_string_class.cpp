@@ -890,10 +890,11 @@ void UT_UTF8String::appendBuf (const UT_ByteBuf & buf, UT_UCS4_mbtowc & converte
 	UT_UCS4Char wc;
 	const UT_Byte *ptr = buf.getPointer(0);
 	
-	for (i = 0; i < buf.getLength(); i++) {
-		converter.mbtowc(wc, static_cast<char>(ptr[i])); 
-		pimpl->appendUCS4(&wc, 1);
-	}
+	for (i = 0; i < buf.getLength(); i++) 
+	{
+	  if (converter.mbtowc(wc, static_cast<char>(ptr[i])))
+	        pimpl->appendUCS4(&wc, 1);
+ 	}
 }
 
 void UT_UTF8String::appendUCS4 (const UT_UCS4Char * sz, size_t n /* == 0 => null-termination */)
