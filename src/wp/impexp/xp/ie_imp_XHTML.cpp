@@ -1655,8 +1655,17 @@ X_Fail:
 
 void IE_Imp_XHTML::charData (const XML_Char * buffer, int length)
 {
+#if DEBUG
+#if 0
+
+	UT_UTF8String sBuf;
+	sBuf.append(buffer,length);
+	UT_DEBUGMSG(("IE_Imp_XHTML::charData Text | %s | \n",sBuf.utf8_str()));
+#endif
+#endif
 	if ((m_parseState == _PS_StyleSec) || (m_parseState == _PS_Init))
 		{
+			xxx_UT_DEBUGMSG(("IE_Imp_XHTML::charData wrong parseState %d  \n",m_parseState));
 			return; // outside body here
 		}
 
@@ -1680,6 +1689,7 @@ void IE_Imp_XHTML::charData (const XML_Char * buffer, int length)
 
 	X_CheckError(requireBlock ());
 
+	xxx_UT_DEBUGMSG(("Calling IE_Imp_XML::charData \n"));
 	IE_Imp_XML::charData (buffer, length);
 
 	// if (bResetState) m_parseState = _PS_Sec;

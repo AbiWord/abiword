@@ -225,7 +225,7 @@ void UT_XML::endElement (const char * name)
 void UT_XML::charData (const char * buffer, int length)
 {
   if (m_bStopped) return;
-
+  xxx_UT_DEBUGMSG(("In UT_XML::charData \n"));
   if (m_chardata_length && !m_is_chardata) flush_all ();
 
   m_is_chardata = true;

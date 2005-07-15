@@ -10246,7 +10246,12 @@ bool fl_BlockLayout::isWordDelimiter(UT_UCS4Char c, UT_UCS4Char next, UT_UCS4Cha
 	{
 		return true;
 	}
-	UT_return_val_if_fail( pRun, false );
+	if(pRun == NULL)
+	{
+		UT_DEBUGMSG(("No run where one is expected block %x iBlockPos %d \n",this,iBlockPos));
+		return false;
+	}
+	//	UT_return_val_if_fail( pRun, false );
 
 	// ignore hidden runs
 	if(pRun->getVisibility() != FP_VISIBLE)
@@ -10591,6 +10596,11 @@ fl_BlockSpellIterator::nextWordForSpellChecking(const UT_UCSChar*& pWord, UT_sin
 		// hidden text is to be ignored (i.e., hidden from the spellcheker)
 		// delete revisions that are visible are also to be ignored
 		fp_Run * pRun = m_pBL->findRunAtOffset(m_iWordOffset);
+		if(pRun == NULL)
+			{
+				UT_DEBUGMSG(("No run where one is expected block %x WordOffset %d \n",this,m_iWordOffset));
+				return false;
+			}
 		UT_return_val_if_fail( pRun, false );
 		bool bRevised = false;
 

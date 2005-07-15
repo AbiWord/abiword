@@ -1245,7 +1245,21 @@ bool PD_Document::appendSpan(const UT_UCSChar * pbuf, UT_uint32 length)
 	}
 
 	if(length - (pStart-pbuf))
-		result &= m_pPieceTable->appendSpan(pStart,length - (pStart-pbuf));
+		{
+#if DEBUG
+#if 0
+	UT_uint32 ii = 0;
+	UT_String sStr;
+	for(ii=0; ii<(length -(pStart-pbuf));ii++)
+	{
+		sStr += static_cast<const char>(pStart[ii]);
+	}
+	UT_DEBUGMSG(("Append span %s \n",sStr.c_str()));
+#endif
+#endif
+
+			result &= m_pPieceTable->appendSpan(pStart,length - (pStart-pbuf));
+		}
 	return result;
 }
 
@@ -5116,7 +5130,7 @@ bool PD_Document::insertSpanBeforeFrag(pf_Frag * pF, const UT_UCSChar * pbuf, UT
 	if(pF->getType() == pf_Frag::PFT_Strux)
 	{
 		pf_Frag_Strux * pfs = static_cast<pf_Frag_Strux *>(pF);
-		if((pfs->getStruxType() != PTX_Block) && (pfs->getStruxType() != PTX_EndFootnote) && (pfs->getStruxType() != PTX_EndEndnote) )
+		if((pfs->getStruxType() != PTX_Block) && (pfs->getStruxType() != PTX_EndFootnote) && (pfs->getStruxType() != PTX_EndEndnote) && (pfs->getStruxType() != PTX_EndCell) )
 		{
 			//
 			// Append a block!
