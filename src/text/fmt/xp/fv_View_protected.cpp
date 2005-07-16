@@ -2367,7 +2367,14 @@ fp_Page* FV_View::_getPageForXY(UT_sint32 xPos, UT_sint32 yPos, UT_sint32& xClic
 	{
 		// we're below the last page
 		pPage = m_pLayout->getLastPage();
-
+		if(pPage == NULL)
+	    {
+			pPage = m_pLayout->getFirstPage();
+		}
+		if(pPage == NULL)
+		{
+			return pPage;
+		}
 		UT_sint32 iPageHeight = pPage->getHeight();
 		yClick += iPageHeight + getPageViewSep();
 	}

@@ -1048,6 +1048,14 @@ bool PD_Document::appendStrux(PTStruxType pts, const XML_Char ** attributes, pf_
 	XAP_Frame * pFrame = m_pApp->getLastFocussedFrame();
 	if(pFrame)
 		pFrame->nullUpdate();
+	if(pts == PTX_EndCell)
+	{
+		checkForSuspect();
+	}
+	else if(pts == PTX_Section)
+	{
+		checkForSuspect();
+	}
 	return m_pPieceTable->appendStrux(pts,attributes,ppfs_ret);
 }
 
@@ -1101,6 +1109,7 @@ bool PD_Document::appendStruxFmt(pf_Frag_Strux * pfs, const XML_Char ** attribut
  */
 bool PD_Document::repairDoc(void)
 {
+	checkForSuspect(); // Look at last frag. If it's an endtable we need a block
 	if(m_vecSuspectFrags.getItemCount() == 0)
 	{
 		return true;
@@ -1124,6 +1133,46 @@ bool PD_Document::repairDoc(void)
 					insertStruxBeforeFrag(pfNext, PTX_Block,NULL);
 					bRepaired = true;
 				}
+				else if(pfNext && (pfs->getStruxType() == PTX_SectionCell) && (pfNext->getType() == pf_Frag::PFT_Strux) )
+				{
+					pf_Frag_Strux * pfNexts = static_cast<pf_Frag_Strux *>(pfNext);
+					if(pfNexts->getStruxType() == PTX_EndCell)
+					{
+					//
+					// Insert a block afterwards!
+					//
+						insertStruxBeforeFrag(pfNext, PTX_Block,NULL);
+						bRepaired = true;
+					}
+				}
+				else if(pfNext && (pfs->getStruxType() == PTX_EndTable) && ((pfNext->getType() == pf_Frag::PFT_Strux) || (pfNext == m_pPieceTable->getFragments().getLast())))
+			    {
+					if(pfNext == m_pPieceTable->getFragments().getLast())
+					{
+					//
+					// Insert a block afterwards!
+					//
+						insertStruxBeforeFrag(pfNext, PTX_Block,NULL);
+						bRepaired = true;
+					}
+					else
+					{
+						pf_Frag_Strux * pfNexts = static_cast<pf_Frag_Strux *>(pfNext);
+						if(pfNexts->getStruxType() == PTX_Section)
+						{
+							//
+							// Insert a block afterwards!
+							//
+							insertStruxBeforeFrag(pfNext, PTX_Block,NULL);
+							bRepaired = true;
+						}
+						
+					}
+				}
+				else if(pfs->getStruxType() == PTX_EndTable && pfNext == NULL)
+				{
+					appendStrux(PTX_Block, NULL);
+				}
 			}
 		}
 	}
@@ -1139,6 +1188,10 @@ bool PD_Document::repairDoc(void)
 bool PD_Document::checkForSuspect(void)
 {
 	pf_Frag * pf = getLastFrag();
+	if(pf == NULL)
+	{
+		return true;
+	}
 	if(pf->getType() == pf_Frag::PFT_Strux)
 	{
 		pf_Frag_Strux * pfs = static_cast<pf_Frag_Strux *>(pf);
@@ -5120,6 +5173,18 @@ bool PD_Document::insertStruxBeforeFrag(pf_Frag * pF, PTStruxType pts,
 	if(pFrame)
 	{
 		pFrame->nullUpdate();
+	}
+	if(pts == PTX_EndCell)
+	{
+		pf_Frag * pPrevFrag = pF->getPrev();
+		if(pPrevFrag && pPrevFrag->getType() == pf_Frag::PFT_Strux)
+		{
+			pf_Frag_Strux * pfs = static_cast<pf_Frag_Strux *>(pPrevFrag);
+			if(pfs->getStruxType() == PTX_SectionCell)
+			{
+				m_vecSuspectFrags.addItem(pPrevFrag);
+			}
+		} 
 	}
 	return m_pPieceTable->insertStruxBeforeFrag(pF,pts,attributes,ppfs_ret);
 }

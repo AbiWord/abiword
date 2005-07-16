@@ -1255,6 +1255,9 @@ void fl_DocSectionLayout::_HdrFtrChangeCallback(UT_Worker * pWorker)
 //
 // update the screen
 //
+	pDSL->format();
+	pDSL->formatAllHdrFtr();
+	pDSL->updateLayout(true);
 	pDoc->signalListeners(PD_SIGNAL_UPDATE_LAYOUT);
 	pDoc->notifyPieceTableChangeEnd();
 	pDSL->m_sHdrFtrChangeProps.clear();
