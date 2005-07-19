@@ -37,25 +37,25 @@ static const char * LanguageISOName;
 static const char * LanguageISOTerritory;
 
 const char* XAP_Win32EncodingManager::getNativeEncodingName() const
-{     return NativeEncodingName; };
+{     return NativeEncodingName; }
 
 const char* XAP_Win32EncodingManager::getNativeSystemEncodingName() const
-{     return NativeSystemEncodingName; };
+{     return NativeSystemEncodingName; }
 
 const char* XAP_Win32EncodingManager::getNative8BitEncodingName() const
-{     return Native8BitEncodingName; };
+{     return Native8BitEncodingName; }
 
 const char* XAP_Win32EncodingManager::getNativeNonUnicodeEncodingName() const
-{     return NativeNonUnicodeEncodingName; };
+{     return NativeNonUnicodeEncodingName; }
 
 const char* XAP_Win32EncodingManager::getNativeUnicodeEncodingName() const
-{     return NativeUnicodeEncodingName; };
+{     return NativeUnicodeEncodingName; }
 
 const char* XAP_Win32EncodingManager::getLanguageISOName() const
-{ 	return LanguageISOName; };
+{ 	return LanguageISOName; }
 
 const char* XAP_Win32EncodingManager::getLanguageISOTerritory() const
-{ 	return LanguageISOTerritory; };
+{ 	return LanguageISOTerritory; }
 
 
 void  XAP_Win32EncodingManager::initialize()
@@ -131,6 +131,6 @@ void  XAP_Win32EncodingManager::initialize()
 	}
 
 	describe();
-};
+}
 
 

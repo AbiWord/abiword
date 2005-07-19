@@ -520,7 +520,7 @@ UT_RGBColor XAP_Win32FrameImpl::getColorSelBackground () const
 						   (unsigned char)GetBValue(dwResult));
 
 	return clr;
-};
+}
 
 UT_RGBColor XAP_Win32FrameImpl::getColorSelForeground () const
 {
@@ -530,7 +530,7 @@ UT_RGBColor XAP_Win32FrameImpl::getColorSelForeground () const
 						   (unsigned char)GetBValue(dwResult));
 
 	return clr;
-};
+}
 
 #define MAXAPPNAME 256
 bool XAP_Win32FrameImpl::_RegisterClass(XAP_Win32App * app)
@@ -917,6 +917,7 @@ LRESULT CALLBACK XAP_Win32FrameImpl::_FrameWndProc(HWND hwnd, UINT iMsg, WPARAM 
 			HDROP hDrop = (HDROP) wParam; 
 			// How many files were dropped?
 			int count = DragQueryFile(hDrop, 0xFFFFFFFF, NULL, 0);
+			#define _MAX_PATH 260 // FIXME: fixed array length bad
 			char szFileName[_MAX_PATH];
 			int i,pathlength;
 			for (i=0; i<count; i++)
