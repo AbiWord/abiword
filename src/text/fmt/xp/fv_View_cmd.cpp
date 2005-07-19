@@ -3934,7 +3934,6 @@ void FV_View::cmdSelect(PT_DocPosition dpBeg, PT_DocPosition dpEnd)
 	{
 		_clearSelection();
 	}
-
 	_setPoint(dpBeg);
 	_setSelectionAnchor();
 	m_Selection.setSelectionLeftAnchor(dpBeg);
@@ -3957,9 +3956,7 @@ void FV_View::cmdSelect(PT_DocPosition dpBeg, PT_DocPosition dpEnd)
 	{
 		return;
 	}
-
 	_drawSelection();
-
 	notifyListeners(AV_CHG_EMPTYSEL);
 }
 
@@ -3970,7 +3967,6 @@ void FV_View::cmdSelect(UT_sint32 xPos, UT_sint32 yPos, FV_DocPos dpBeg, FV_DocP
 	UT_DEBUGMSG(("Double click on mouse \n"));
 
 	warpInsPtToXY(xPos, yPos,true);
-
 	PT_DocPosition iPosLeft = _getDocPos(dpBeg, false);
 	PT_DocPosition iPosRight = _getDocPos(dpEnd, false);
 	if(iPosLeft > iPosRight)

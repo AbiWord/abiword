@@ -80,6 +80,15 @@ GR_Graphics * FV_VisualDragText::getGraphics(void) const
 void FV_VisualDragText::setMode(FV_VisualDragMode iEditMode)
 {
 	m_iVisualDragMode = iEditMode;
+	if(iEditMode == FV_VisualDrag_NOT_ACTIVE)
+	{	
+	    m_iInitialOffX = 0;
+	    m_iInitialOffY = 0;
+	    m_iLastX = 0;
+	    m_iLastY = 0;
+	    m_xLastMouse = 0;
+	    m_yLastMouse = 0;
+	}
 }
 
 void FV_VisualDragText::_autoScroll(UT_Worker * pWorker)
@@ -152,6 +161,15 @@ void FV_VisualDragText::_autoScroll(UT_Worker * pWorker)
 
 void FV_VisualDragText::mouseDrag(UT_sint32 x, UT_sint32 y)
 {
+ 	  //
+	  // Don't try to drag the entire document.
+	  //
+         if(!m_bDoingCopy && m_pView->isSelectAll())
+	 {
+	     setMode(FV_VisualDrag_NOT_ACTIVE);
+	     return;
+	 }
+
         if(m_iVisualDragMode == FV_VisualDrag_NOT_ACTIVE)
         {
 	  m_iInitialOffX = x;
@@ -189,7 +207,6 @@ void FV_VisualDragText::mouseDrag(UT_sint32 x, UT_sint32 y)
 //
 // Haven't started the drag yet so create our image and cut the text.
 //
-
 		m_pView->getDocument()->beginUserAtomicGlob();
 		mouseCut(m_iInitialOffX,m_iInitialOffY);
 		m_bTextCut = true;

@@ -237,6 +237,8 @@ public:
 	virtual void        rebuildLayout(void);
 	virtual void        remeasureCharsWithoutRebuild();
 	virtual bool		isSelectionEmpty(void) const;
+	bool                isSelectAll(void)
+	{ return m_Selection.isSelectAll();}
 	virtual void		cmdUnselectSelection(void);
 	void				getDocumentRangeOfCurrentSelection(PD_DocumentRange * pdr);
 	PT_DocPosition		mapDocPos( FV_DocPos dp );

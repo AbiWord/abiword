@@ -13672,8 +13672,7 @@ Defun(dragVisualText)
 {
 	CHECK_FRAME;
 	ABIWORD_VIEW;
-
-    sEndVisualDrag = false;
+	sEndVisualDrag = false;
 	xxx_UT_DEBUGMSG(("Drag Visual Text \n"));
 //
 // Do this operation in an idle loop so when can reject queued events
