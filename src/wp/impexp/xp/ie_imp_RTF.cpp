@@ -9414,6 +9414,12 @@ bool IE_Imp_RTF::insertStrux(PTStruxType pts , const XML_Char ** attrs, const XM
 		m_dposPaste++;
 		res = getDoc()->insertStrux(m_dposPaste,pts,attrs,props);
 		m_dposPaste++;
+		if(	bInHyperlink)
+		{
+			m_iHyperlinkOpen =0;
+		}
+		m_bStruxInserted = true;
+		return res;
 	}
 	//
 	// Can't  paste sections in Footnotes/Endnotes
