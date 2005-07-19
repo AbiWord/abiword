@@ -28,6 +28,7 @@ class XAP_Win32Clipboard
 {
 public:
 	XAP_Win32Clipboard(void);
+	virtual ~XAP_Win32Clipboard() {}
 	
 	virtual bool			openClipboard(HWND hWnd);
 	virtual bool			closeClipboard(void);
