@@ -10162,6 +10162,11 @@ Defun(dlgFmtImage)
 	if(pView->getFrameEdit()->isActive())
 	{
 	  fl_FrameLayout * pFL = pView->getFrameLayout();
+
+	  if(pFL == NULL)
+	  {
+	    return false;
+	  }
 	  if(pFL->getFrameType() == FL_FRAME_TEXTBOX_TYPE)
 	  {
 	    return true;
