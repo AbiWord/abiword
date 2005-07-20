@@ -154,7 +154,7 @@ bool XAP_Win32Slurp::connectSlurper(void)
 	// the "TopicName" must match the value in the key:
 	// HKEY_CLASSES_ROOT\<xxx>\shell\open\ddeexec\topic
 	
-	m_hszServerName = DdeCreateStringHandle(m_idDdeServerInst, m_pApp->getApplicationName(), CP_WINANSI);
+	m_hszServerName = DdeCreateStringHandle(m_idDdeServerInst, const_cast<char *>(m_pApp->getApplicationName()), CP_WINANSI);
 	m_hszTopic = DdeCreateStringHandle(m_idDdeServerInst, MY_DDE_TOPICNAME, CP_WINANSI);
 
 	// register the server Name
