@@ -67,6 +67,14 @@ void  FV_Selection::checkSelectAll(void)
 	 fl_SectionLayout * pSL = m_pView->m_pLayout->getLastSection();
 	 if(pSL == NULL)
 	   return;
+	 if(m_pView->m_pDoc->isPieceTableChanging())
+	 {
+	      return;
+	 }
+	 if(m_pView->m_pLayout->isLayoutFilling())
+	 {
+	      return;
+	 }
 	 PT_DocPosition posLow = m_iSelectAnchor;
 	 PT_DocPosition posHigh = m_pView->getPoint();
 	 if(posHigh < posLow)

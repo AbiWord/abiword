@@ -4964,8 +4964,22 @@ bool FV_View::_charMotion(bool bForward,UT_uint32 countChars, bool bSkipCannotCo
 	if(!isHdrFtrEdit())
 	{
 		fl_DocSectionLayout * pDSL = m_pLayout->getFirstSection();
-		fl_BlockLayout * pBL = pDSL->getFirstBlock();
-		legalBOD = pBL->getPosition(false);
+		if(pDSL == NULL)
+		{
+			legalBOD =2;
+		}
+		else
+		{
+			fl_BlockLayout * pBL = pDSL->getFirstBlock();
+			if(pBL != NULL)
+			{
+					legalBOD = pBL->getPosition(false);
+			}
+			else
+			{
+					legalBOD = 2;
+			}
+		}
 	}
 	if (static_cast<UT_sint32>(m_iInsPoint) < static_cast<UT_sint32>(legalBOD))
 	{

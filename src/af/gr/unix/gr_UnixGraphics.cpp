@@ -953,6 +953,7 @@ void GR_UnixGraphics::drawChars(const UT_UCSChar* pChars, int iCharOffset,
 			{
 				pCharSpec[i].x = idx;
 				pCharSpec[i].y = currentYoff;
+				xxx_UT_DEBUGMSG(("xPos %d idx %d i %d \n",xPos,idx,i));
 			}
 			else
 			{
