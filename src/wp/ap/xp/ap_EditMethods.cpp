@@ -11052,6 +11052,9 @@ UT_return_val_if_fail(pFrameData, false);
 	// the view actually does the dirty work
 	pAV_View->setInsertMode(pFrameData->m_bInsertMode);
 
+	if (pFrameData->m_pStatusBar)
+	  pFrameData->m_pStatusBar->notify(pAV_View, AV_CHG_ALL);
+
 	// POLICY: make this the default for new frames, too
 	XAP_PrefsScheme * pScheme = pPrefs->getCurrentScheme(true);
 UT_return_val_if_fail(pScheme, false);
