@@ -27,8 +27,11 @@ noinst_LIBRARIES = libXap_win.a
 
 libXap_win_a_SOURCES=\
 	xap_Win32App.cpp			\
+	xap_Win32AppImpl.cpp			\
 	xap_Win32Clipboard.cpp			\
 	xap_Win32DragAndDrop.cpp		\
+	xap_Win32DialogBase.cpp		\
+	xap_Win32DialogHelper.cpp		\
 	xap_Win32Dlg_About.cpp			\
 	xap_Win32Dlg_Image.cpp			\
 	xap_Win32Dlg_ClipArt.cpp			\
