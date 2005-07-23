@@ -1,6 +1,7 @@
 ## AbiSource Applications
 ## Copyright (C) 2001 Sam Tobin-Hochstadt
 ## Copyright (C) 2001, 2005 Hubert Figuiere <hfiguiere@teaser.fr>
+## Copyright (C) 2005 J.M. Maurer <uwog@abisource.com>
 ##
 ## This program is free software; you can redistribute it and/or
 ## modify it under the terms of the GNU General Public License
@@ -112,11 +113,10 @@ ABI_CFLAGS=@WARNING_CFLAGS@ @DEBUG_CFLAGS@ @OPTIMIZE_CFLAGS@ \
 	@WV_CFLAGS@ @LIBPOPT_CFLAGS@ @XFT_CFLAGS@ @FREETYPE_CFLAGS@ \
 	@LIBPNG_CFLAGS@ @ZLIB_CFLAGS@ @THREAD_CFLAGS@ @ABI_FEATURE_DEFS@ @ABITYPES_CFLAGS@
 
+
 if WITH_WIN32
-
 # the _WIN32_IE define is a bit hackish (should get it from the MINGW environment), but it works
-WIN32_CFLAGS = -DWIN32 -D_WIN32_IE=0x0300
-
+WIN32_CFLAGS = -DWIN32 -D_WIN32_IE=0x0300 -UHAVE_STRCASECMP -UHAVE_STRICMP -U__STRICT_ANSI__ -U_NO_OLDNAMES
 else
 WIN32_CFLAGS = 
 endif
