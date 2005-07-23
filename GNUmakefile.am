@@ -44,7 +44,7 @@ distclean-stop:
 clean-local:
 	for i in . $(expat_peerdir)  $(wv_peerdir) \
                  $(libpng_peerdir) $(libpopt_peerdir); do \
-	  if test $$i != . ; then \
+	  if test $$i != . && test -d $$i ; then \
 	    $(MAKE) -C $$i clean || true; \
 	  fi; \
 	done
@@ -52,7 +52,7 @@ clean-local:
 realclean: clean
 	for i in . $(expat_peerdir)  $(wv_peerdir) \
                  $(libpng_peerdir) $(libpopt_peerdir); do \
-	  if test $$i != . ; then \
+	  if test $$i != . && test -d $$i ; then \
 	    $(MAKE) -C $$i distclean || true; \
 	  fi; \
 	done
