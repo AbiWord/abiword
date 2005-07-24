@@ -253,9 +253,7 @@ If attempting to use the MSVC project files, follow the instructions in the READ
 
 4.	Using the autoconf style build system using MSYS and MINGW
 
-We assume that you have a 'recent' mingw and msys installed, including a recent 
-w32api. Furthermore we assume you are installing all software in the /home/foobar/local 
-prefix. Make sure to change this to match your setup.
+We assume that you have a 'recent' mingw and msys installed, including a recent w32api. Furthermore we assume you are installing all software in the /home/foobar/local prefix. Make sure to change this to match your setup.
 
 1. Prerequisites:
 	   pkgconfig, libiconv, gettext, glib and libgsf
@@ -330,7 +328,7 @@ prefix. Make sure to change this to match your setup.
 	cd abiword-x.y.z/abi
 	./autogen.sh
 
-NOTE: if autogen.sh exits with errors, them most likely the maximum command line lenght has been succeeded. For some reason, the bash shell that comes with mingw only allows a command line lenght of 8KB. As a workaround, open the file ./configure.ac, and remove all lines starting with "src/pkg/" from the AC_CONFIG_FILES macro that can be found near the bottom of the file.
+NOTE: if autogen.sh exits with errors, them most likely the maximum command line length has been succeeded. For some reason, the bash shell that comes with mingw only allows a command line length of 8KB. As a workaround, open the file ./configure.ac, and remove all lines starting with "src/pkg/" from the AC_CONFIG_FILES macro that can be found near the bottom of the file. Then rerun autogen.sh.
 
 	./configure --with-sys-wv --with-libxml2 --with-zlib=/home/foobar/local --prefix=/home/foobar/local
 	make
