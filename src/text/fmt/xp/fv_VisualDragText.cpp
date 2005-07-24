@@ -604,9 +604,11 @@ void FV_VisualDragText::getImageFromSelection(UT_sint32 x, UT_sint32 y)
 	m_pView->_findPositionCoords(posLow, bEOL, xLow, yLow, xCaret2, yCaret2, heightCaret, bDirection, NULL, &pRunLow);
 	UT_return_if_fail( pRunLow );
 	fl_BlockLayout * pBLow1 = pRunLow->getBlock();
+	bool bUseNext = false;
 	if(pBLow2 != pBLow1)
 	{
 		pRunLow = pRunLow2;
+		bUseNext = true;
 	}
 	fp_Line * pLineLow = pRunLow->getLine();
 	fp_Run * pRunHigh = NULL;
@@ -662,7 +664,14 @@ void FV_VisualDragText::getImageFromSelection(UT_sint32 x, UT_sint32 y)
 //
 // Grab that first charcter!
 //
-		m_pView->_findPositionCoords(posLow, bEOL, xLow, yLow, xCaret2, yCaret2, heightCaret, bDirection, NULL, &pRunLow2);
+	        if(!bUseNext)
+		{
+		    m_pView->_findPositionCoords(posLow, bEOL, xLow, yLow, xCaret2, yCaret2, heightCaret, bDirection, NULL, &pRunLow2);
+		}
+		else
+		{
+		    m_pView->_findPositionCoords(posLow+1, bEOL, xLow, yLow, xCaret2, yCaret2, heightCaret, bDirection, NULL, &pRunLow2);
+		}
 		UT_sint32 xx,yy;
 		pLineLow->getScreenOffsets(pRunLow,xx,yy);
 		m_recCurFrame.left = xLow < xHigh ? xLow : xHigh;
