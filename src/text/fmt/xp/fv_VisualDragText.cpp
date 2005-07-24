@@ -164,7 +164,7 @@ void FV_VisualDragText::mouseDrag(UT_sint32 x, UT_sint32 y)
  	  //
 	  // Don't try to drag the entire document.
 	  //
-         if(!m_bDoingCopy && m_pView->isSelectAll())
+         if(!m_bDoingCopy && m_pView->isSelectAll() &&(m_iVisualDragMode != FV_VisualDrag_DRAGGING))
 	 {
 	     setMode(FV_VisualDrag_NOT_ACTIVE);
 	     return;
@@ -338,6 +338,7 @@ void FV_VisualDragText::mouseDrag(UT_sint32 x, UT_sint32 y)
 	getGraphics()->setClipRect(NULL);
 	PT_DocPosition posAtXY = getPosFromXY(x,y);
 	m_pView->_setPoint(posAtXY);
+	xxx_UT_DEBUGMSG(("Point at visual drag set to %d \n",m_pView->getPoint()));
 //	m_pView->_fixInsertionPointCoords();
 	drawCursor(posAtXY);
 }
@@ -849,6 +850,7 @@ PT_DocPosition FV_VisualDragText::getPosFromXY(UT_sint32 x, UT_sint32 y)
 	y += getGraphics()->tlu(6); //Otherwise it's too easy to hit the line above
 	x += m_recOrigLeft.width; // Add in offset 
 	PT_DocPosition posAtXY = m_pView->getDocPositionFromXY(x,y,false);
+	xxx_UT_DEBUGMSG(("Point at x %d y %d is %d \n",x,y,posAtXY));
 	return posAtXY;
 }
 
@@ -866,6 +868,7 @@ void   FV_VisualDragText::abortDrag(void)
 	m_bDoingCopy = false;
 	m_bNotDraggingImage = false;
 	clearCursor();
+	UT_DEBUGMSG(("Abort Drag! \n"));
 	if(m_iVisualDragMode != FV_VisualDrag_DRAGGING)
 	{
 //
