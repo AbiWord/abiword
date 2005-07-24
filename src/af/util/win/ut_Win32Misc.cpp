@@ -44,7 +44,7 @@ void UT_gettimeofday(struct timeval *tv)
 
     ULARGE_INTEGER _100ns = {ft.dwLowDateTime,ft.dwHighDateTime};
 
-    _100ns.QuadPart -= 0x19db1ded53e8000;
+    _100ns.QuadPart -= 0x19db1ded53e8000ULL;
 
     tv->tv_sec = long (_100ns.QuadPart / (10000 * 1000));
     tv->tv_usec = (long) ((_100ns.LowPart % (DWORD) (10000 * 1000)) / 10);
