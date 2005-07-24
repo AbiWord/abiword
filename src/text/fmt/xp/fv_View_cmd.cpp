@@ -3161,7 +3161,7 @@ UT_Error FV_View::cmdInsertTable(UT_sint32 numRows, UT_sint32 numCols, const XML
 //
 	if(m_pDoc->isTOCAtPos(getPoint()-1))
 	{
-		setPoint(getPoint()-1);
+	 		setPoint(getPoint()-1);
 	}
 //
 // insert a block to terminate the text before this.
@@ -3171,7 +3171,7 @@ UT_Error FV_View::cmdInsertTable(UT_sint32 numRows, UT_sint32 numCols, const XML
 	//
 	// Don't do this if there is a block at pointBreak already.
 	//
-	if(!m_pDoc->isBlockAtPos(getPoint()) && !m_pDoc->isTableAtPos(getPoint()) && !(m_pDoc->isEndFrameAtPos(getPoint()) && m_pDoc->isBlockAtPos(getPoint()-1) ))
+	if((!m_pDoc->isBlockAtPos(getPoint()) && !m_pDoc->isTableAtPos(getPoint()) && !(m_pDoc->isEndFrameAtPos(getPoint()) && m_pDoc->isBlockAtPos(getPoint()-1) )) || m_pDoc->isTOCAtPos(getPoint()-2) )
 	{
 	         e = m_pDoc->insertStrux(getPoint(),PTX_Block);
 	}
