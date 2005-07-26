@@ -846,6 +846,7 @@ void IE_Imp_XHTML::startElement(const XML_Char *name, const XML_Char **atts)
 
 	case TT_PRE:
 		if (m_parseState == _PS_Block) m_parseState = _PS_Sec;
+		requireBlock ();
 		m_iPreCount++;
 		m_bWhiteSignificant = true;
 		return;
