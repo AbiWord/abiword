@@ -3618,8 +3618,10 @@ void FV_View::cmdCharDelete(bool bForward, UT_uint32 count)
 		//where we have to move the insertion point
 		// only if we are deleting forward; if deleting backwards, the
 		// code above already moved the insertion point
+		//
 		// Tomas, Oct 28, 2003
-		if(bForward && isMarkRevisions() && iRealDeleteCount)
+		// do this if we deleted fewer than count characters
+		if(bForward && isMarkRevisions() && (iRealDeleteCount < count))
 		{
 			UT_ASSERT( iRealDeleteCount <= count );
 			_charMotion(bForward,count - iRealDeleteCount);
