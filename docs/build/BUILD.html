@@ -313,7 +313,7 @@ h3 {
    <p dir="ltr" style="text-align:left"></p>
    <p dir="ltr" style="text-align:left"><span xml:lang="en-US" lang="en-US">1. Prerequisites:</span></p>
    <ul>
-    <li dir="ltr" style="text-align:left"><span xml:lang="en-US" lang="en-US">&nbsp;</span><span xml:lang="en-US" lang="en-US"> &nbsp;&nbsp;pkgconfig, libiconv, gettext, glib and libgsf</span>    </li>
+    <li dir="ltr" style="text-align:left"><span xml:lang="en-US" lang="en-US">&nbsp;</span><span xml:lang="en-US" lang="en-US"> &nbsp;&nbsp;pkgconfig, libiconv, gettext</span><span xml:lang="en-US" lang="en-US"> a</span><span xml:lang="en-US" lang="en-US">nd</span><span xml:lang="en-US" lang="en-US"> glib</span>    </li>
    </ul>
    <p dir="ltr" style="text-align:left;margin-left:0pt;text-indent:0in"></p>
    <p dir="ltr" style="text-align:left"><span xml:lang="en-US" lang="en-US"> &nbsp;&nbsp;&nbsp;&nbsp;Download and install the binaries and developer files from</span></p>
@@ -337,7 +337,7 @@ h3 {
     <li><span xml:lang="en-GB" lang="en-GB">&nbsp;</span>fribidi (download the source tarball from <a href="http://fribidi.org/">http://fribidi.org/</a>)    </li>
    </ul>
    <p style="margin-left:0pt"></p>
-   <p><span xml:lang="en-US" lang="en-US">&nbsp;</span>NOTE: You'll need to patch the fribidi sources first if you are using<span xml:lang="en-US" lang="en-US"> v</span>ersion 0.10.4 or <span xml:lang="en-US" lang="en-US">&nbsp;</span>0.10.5. <span xml:lang="en-US" lang="en-US">T</span>o do this, open the file fribidi_benchmark.c, and simply remove the line <span xml:lang="en-US" lang="en-US">&nbsp;</span>"#include<span xml:lang="en-US" lang="en-US">&nbsp;</span>&lt;sys/times.h&gt;", around line 31.</p>
+   <p dir="ltr" style="text-align:left"><span xml:lang="en-US" lang="en-US">&nbsp;</span>NOTE: You'll need to patch the fribidi sources first if you are using<span xml:lang="en-US" lang="en-US"> v</span>ersion 0.10.4 or<span xml:lang="en-US" lang="en-US">&nbsp;</span>0.10.5. <span xml:lang="en-US" lang="en-US">T</span>o do this, open the file fribidi_benchmark.c, and simply remove the line <span xml:lang="en-US" lang="en-US">&nbsp;</span>"#include<span xml:lang="en-US" lang="en-US">&nbsp;</span>&lt;sys/times.h&gt;", around line 31.<span xml:lang="en-US" lang="en-US"> Next, </span><span xml:lang="en-US" lang="en-US">replace the contents of </span><span xml:lang="en-US" lang="en-US">t</span><span xml:lang="en-US" lang="en-US">he </span><span xml:lang="en-US" lang="en-US">function </span><span xml:lang="en-US" lang="en-US">utime (void)</span><span xml:lang="en-US" lang="en-US">&nbsp;</span><span xml:lang="en-US" lang="en-US">around line 91 </span><span xml:lang="en-US" lang="en-US">with</span><span xml:lang="en-US" lang="en-US"> t</span><span xml:lang="en-US" lang="en-US">he si</span><span xml:lang="en-US" lang="en-US">ngle line: return 0</span><span xml:lang="en-US" lang="en-US">;</span><span xml:lang="en-US" lang="en-US"> (we do</span><span xml:lang="en-US" lang="en-US">n't need it </span><span xml:lang="en-US" lang="en-US">anyway</span><span xml:lang="en-US" lang="en-US">)</span><span xml:lang="en-US" lang="en-US">.</span></p>
    <p dir="ltr" style="text-align:left"></p>
    <p dir="ltr" style="text-align:left"> &nbsp;&nbsp;&nbsp;&nbsp;To build fribidi, execute the following commands (where x.y.z is the fribidi version number):</p>
    <p dir="ltr" style="text-align:left"></p>
@@ -378,6 +378,17 @@ h3 {
    <p dir="ltr" style="text-align:left"><span class="command_text plain_text" style="" xml:lang="en-US" lang="en-US">&nbsp;</span><span class="command_text plain_text" style="">./configure --without-ftp --without-http --prefix=/home/foobar/local/</span></p>
    <p dir="ltr" style="text-align:left"><span class="command_text plain_text" style="" xml:lang="en-US" lang="en-US">&nbsp;</span><span class="command_text plain_text" style="">make</span></p>
    <p dir="ltr" style="text-align:left"><span class="command_text plain_text" style="" xml:lang="en-US" lang="en-US">&nbsp;</span><span class="command_text plain_text" style="">make install</span></p>
+   <p dir="ltr" style="text-align:left"></p>
+   <ul>
+    <li dir="ltr" style="text-align:left;margin-bottom:0.0000in;margin-top:0.0000in;margin-right:0.0000in">&nbsp;<span xml:lang="en-US" lang="en-US">libgsf (download the source tarball for version &gt;=</span><span xml:lang="en-US" lang="en-US">&nbsp;</span><span xml:lang="en-US" lang="en-US">1.12.1 from </span><a href="ftp://ftp.gnome.org/pub/gnome/sources/libgsf/"><span xml:lang="en-US" lang="en-US">ftp://ftp.gnome.org/pub/gnome/sources/libgsf/</span></a><span xml:lang="en-US" lang="en-US">)</span>    </li>
+   </ul>
+   <p dir="ltr" style="text-align:left;margin-bottom:0.0000in;margin-top:0.0000in;margin-right:0.0000in;margin-left:0pt;text-indent:0in"></p>
+   <p dir="ltr" style="text-align:left;margin-bottom:0.0000in;margin-top:0.0000in;margin-right:0.0000in"><span xml:lang="en-GB" lang="en-GB"> &nbsp;&nbsp;&nbsp;&nbsp;To build </span><span xml:lang="en-US" lang="en-US">libgsf</span><span xml:lang="en-GB" lang="en-GB">, execute the following commands (where x.y.z is the </span><span xml:lang="en-US" lang="en-US">libgsf</span><span xml:lang="en-GB" lang="en-GB"> version number):</span></p>
+   <p dir="ltr" style="text-align:left;margin-bottom:0.0000in;margin-top:0.0000in;margin-right:0.0000in"></p>
+   <p dir="ltr" style="text-align:left;margin-bottom:0.0000in;margin-top:0.0000in;margin-right:0.0000in"><span class="command_text plain_text" style="" xml:lang="en-US" lang="en-US">&nbsp;</span><span class="command_text plain_text" style="" xml:lang="en-GB" lang="en-GB">cd </span><span class="command_text plain_text" style="" xml:lang="en-US" lang="en-US">libgsf</span><span class="command_text plain_text" style="" xml:lang="en-GB" lang="en-GB">-x.y.z</span></p>
+   <p dir="ltr" style="text-align:left;margin-bottom:0.0000in;margin-top:0.0000in;margin-right:0.0000in"><span style="font-size:10pt;font-family:'Courier New';color:#0000ff" xml:lang="en-US" lang="en-US">	./configure --prefix=/home/foobar/local/ --with-zlib=/home/foobar/local/</span></p>
+   <p dir="ltr" style="text-align:left;margin-bottom:0.0000in;margin-top:0.0000in;margin-right:0.0000in"><span class="command_text plain_text" style="" xml:lang="en-US" lang="en-US">&nbsp;</span><span class="command_text plain_text" style="" xml:lang="en-GB" lang="en-GB">make</span></p>
+   <p dir="ltr" style="text-align:left;margin-bottom:0.0000in;margin-top:0.0000in;margin-right:0.0000in"><span class="command_text plain_text" style="" xml:lang="en-US" lang="en-US">&nbsp;</span><span class="command_text plain_text" style="" xml:lang="en-GB" lang="en-GB">make install</span><span xml:lang="en-US" lang="en-US">&nbsp;</span></p>
    <p dir="ltr" style="text-align:left"></p>
    <ul>
     <li dir="ltr" style="text-align:left"><span xml:lang="en-GB" lang="en-GB">&nbsp;</span> &nbsp;&nbsp;wvWare (shipped with the AbiWord source distribution)    </li>

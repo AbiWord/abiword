@@ -256,7 +256,7 @@ If attempting to use the MSVC project files, follow the instructions in the READ
 We assume that you have a 'recent' mingw and msys installed, including a recent w32api. Furthermore we assume you are installing all software in the /home/foobar/local prefix. Make sure to change this to match your setup.
 
 1. Prerequisites:
-	   pkgconfig, libiconv, gettext, glib and libgsf
+	   pkgconfig, libiconv, gettext and glib
 
      Download and install the binaries and developer files from
      http://www.gimp.org/~tml/gimp/win32/downloads.html
@@ -275,7 +275,7 @@ We assume that you have a 'recent' mingw and msys installed, including a recent 
 
 	fribidi (download the source tarball from http://fribidi.org/)
 
-	NOTE: You'll need to patch the fribidi sources first if you are using version 0.10.4 or 	0.10.5. To do this, open the file fribidi_benchmark.c, and simply remove the line 	"#include <sys/times.h>", around line 31.
+	NOTE: You'll need to patch the fribidi sources first if you are using version 0.10.4 or 0.10.5. To do this, open the file fribidi_benchmark.c, and simply remove the line 	"#include <sys/times.h>", around line 31. Next, replace the contents of the function utime (void) around line 91 with the single line: return 0; (we don't need it anyway).
 
      To build fribidi, execute the following commands (where x.y.z is the fribidi version number):
 
@@ -310,6 +310,15 @@ We assume that you have a 'recent' mingw and msys installed, including a recent 
 	./configure --without-ftp --without-http --prefix=/home/foobar/local/
 	make
 	make install
+
+	libgsf (download the source tarball for version >= 1.12.1 from ftp://ftp.gnome.org/pub/gnome/sources/libgsf/)
+
+     To build libgsf, execute the following commands (where x.y.z is the libgsf version number):
+
+	cd libgsf-x.y.z
+	./configure --prefix=/home/foobar/local/ --with-zlib=/home/foobar/local/
+	make
+	make install	
 
 	   wvWare (shipped with the AbiWord source distribution)
 
