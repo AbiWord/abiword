@@ -27,8 +27,7 @@ INCLUDES = \
 	-DABIWORD_APP_NAME="\"$(ABIWORD_APP_NAME)\"" \
 	-DABISUITE_HOME="\"$(pkgdatadir)\"" \
 	$(AF_INCLUDES) $(WP_INCLUDES) $(OTHER_INCLUDES) $(TEXT_INCLUDES) \
-	$(PLUGIN_DEFS) -I$(top_srcdir)/../abiword-plugins \
-	$(BINRELOC_CFLAGS)
+	$(PLUGIN_DEFS) -I$(top_srcdir)/../abiword-plugins
 
 REPEAT_LIBS = $(ABI_LIBS) $(ABI_LIBS) $(ABI_LIBS) $(ABI_LIBS)
 
