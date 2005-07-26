@@ -390,47 +390,6 @@ static void s_gtkMenuPositionFunc(GtkMenu * /* menu */, gint * x, gint * y, gboo
 	*push_in = TRUE ;
 }
 
-static void wmspec_change_state(bool add, GdkWindow *w, GdkAtom atom1, GdkAtom atom2)
-{
-   XEvent xev;
-#define _NET_WM_STATE_REMOVE        0    /* remove/unset property */
-#define _NET_WM_STATE_ADD           1    /* add/set property */
-#define _NET_WM_STATE_TOGGLE        2    /* toggle property  */  
-
-   xev.xclient.type = ClientMessage;
-   xev.xclient.serial = 0;
-   xev.xclient.send_event = True;
-   xev.xclient.display = gdk_display;
-   xev.xclient.window = GDK_WINDOW_XID (w);
-   xev.xclient.message_type = gdk_x11_get_xatom_by_name ("_NET_WM_STATE");
-   xev.xclient.format = 32;
-   xev.xclient.data.l[0] = add ? _NET_WM_STATE_ADD : _NET_WM_STATE_REMOVE;
-   xev.xclient.data.l[1] = gdk_x11_atom_to_xatom (atom1);
-   xev.xclient.data.l[2] = gdk_x11_atom_to_xatom (atom2);
-   XSendEvent(gdk_display, GDK_WINDOW_XID (gdk_get_default_root_window ()),
-              False, SubstructureRedirectMask | SubstructureNotifyMask,
-              &xev);
-}
-
-static void wmspec_change_layer(bool fullscreen, GdkWindow *window)
-{
-   XEvent xev;
-#define _WIN_LAYER_TOP        -1    /* remove/unset property */
-#define _WIN_LAYER_NORMAL      4    /* add/set property */
-
-   xev.xclient.type = ClientMessage;
-   xev.xclient.serial = 0;
-   xev.xclient.send_event = True;
-   xev.xclient.display = gdk_display;
-   xev.xclient.window = GDK_WINDOW_XID (window);
-   xev.xclient.message_type = gdk_x11_get_xatom_by_name ("_WIN_LAYER");
-   xev.xclient.format = 32;
-   xev.xclient.data.l[0] = fullscreen ? _WIN_LAYER_TOP : _WIN_LAYER_NORMAL ;
-   XSendEvent(gdk_display, GDK_WINDOW_XID (gdk_get_default_root_window ()),
-              False, SubstructureRedirectMask | SubstructureNotifyMask,
-              &xev);
-}
-
 /****************************************************************/
 XAP_UnixFrameImpl::XAP_UnixFrameImpl(XAP_Frame *pFrame, XAP_UnixApp * pApp) : 
 	XAP_FrameImpl(pFrame),
@@ -1652,10 +1611,10 @@ EV_Menu* XAP_UnixFrameImpl::_getMainMenu()
 
 void XAP_UnixFrameImpl::_setFullScreen(bool changeToFullScreen)
 {
-	wmspec_change_layer(changeToFullScreen, GTK_WIDGET(m_wTopLevelWindow)->window);
-	wmspec_change_state(changeToFullScreen, GTK_WIDGET(m_wTopLevelWindow)->window,
-			    gdk_atom_intern ("_NET_WM_STATE_FULLSCREEN", TRUE),
-			    GDK_NONE);
+	if (changeToFullScreen)
+		gtk_window_fullscreen (GTK_WINDOW(m_wTopLevelWindow));
+	else
+		gtk_window_unfullscreen (GTK_WINDOW(m_wTopLevelWindow));
 }
 
 EV_Toolbar * XAP_UnixFrameImpl::_newToolbar(XAP_App *pApp, XAP_Frame *pFrame,
