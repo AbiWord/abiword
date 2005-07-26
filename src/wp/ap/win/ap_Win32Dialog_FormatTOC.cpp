@@ -335,18 +335,12 @@ void AP_Win32Dialog_FormatTOC_General::_onCommand(HWND hWnd, WPARAM wParam, LPAR
 	{		
 		case AP_RID_DIALOG_FORMATTOC_GENERAL_CHECK_HASHEADING:
 		{
-			UT_UTF8String sProp = static_cast<char *> ("toc-prop");
+			UT_UTF8String sProp = static_cast<char *> ("toc-has-heading");
 			UT_UTF8String sVal = "1";
 
 			if (IsDlgButtonChecked(hWnd, AP_RID_DIALOG_FORMATTOC_GENERAL_CHECK_HASHEADING) != BST_CHECKED)
 				sVal = "0";		
 			
-			if(UT_stricmp("toc-has-heading",sProp.utf8_str()) != 0)
-			{
-				UT_String sNum =  UT_String_sprintf("%d",getContainer()->getMainLevel());
-				sProp += sNum.c_str();
-			} 
-
 			getContainer()->setTOCProperty(sProp,sVal);			
 			break;
 		}
