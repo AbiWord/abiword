@@ -309,7 +309,7 @@ h3 {
    <p><span xml:lang="en-GB" lang="en-GB">If attempting to use the MSVC project files, follow the instructions in </span><span xml:lang="en-US" lang="en-US">the</span><span xml:lang="en-GB" lang="en-GB"> README.TXT file</span><span xml:lang="en-US" lang="en-US"> located in the directory holding the project files.</span></p>
    <p></p>
    <h3 id="__AbiTOC25__">4.<span xml:lang="en-US" lang="en-US">&nbsp;</span>Using the autoconf style build system using MSYS and MINGW</h3>
-   <p dir="ltr" style="text-align:left"><span xml:lang="en-US" lang="en-US">We assume that you have a 'recent' mingw and msys installed, including a recent </span><span xml:lang="en-US" lang="en-US">w32api. Furthermore we assume you are installing all software in the /home/foobar/local </span><span xml:lang="en-US" lang="en-US">prefix. Make</span><span xml:lang="en-US" lang="en-US">&nbsp;</span><span xml:lang="en-US" lang="en-US">sure to change this to match your setup.</span></p>
+   <p dir="ltr" style="text-align:left"><span xml:lang="en-US" lang="en-US">We assume that you have a 'recent' mingw and msys installed, including a recent w32api. Furthermore we assume you are installing all software in the /home/foobar/local prefix. Make sure to change this to match your setup.</span></p>
    <p dir="ltr" style="text-align:left"></p>
    <p dir="ltr" style="text-align:left"><span xml:lang="en-US" lang="en-US">1. Prerequisites:</span></p>
    <ul>
@@ -397,9 +397,6 @@ h3 {
    <p dir="ltr" style="text-align:left"></p>
    <p dir="ltr" style="text-align:left"><span class="command_text plain_text" style="">	cd abiword-x.y.z/abi</span></p>
    <p dir="ltr" style="text-align:left"><span class="command_text plain_text" style="">	./autogen.sh</span></p>
-   <p dir="ltr" style="text-align:left"></p>
-   <p dir="ltr" style="text-align:left">NOTE: if autogen.sh exits with errors, them most likely the maximum command<span xml:lang="en-US" lang="en-US">&nbsp;</span>line lengt<span xml:lang="en-US" lang="en-US">h</span> has been succeeded. For some reason, the bash shell that comes with mingw only allows a command line lengt<span xml:lang="en-US" lang="en-US">h</span> of 8KB. As a workaround, open the file ./configure.ac, and remove all lines starting with "src/pkg/" from the AC_CONFIG_FILES macro that can be found near the bottom of the file.<span xml:lang="en-US" lang="en-US"> Then</span><span xml:lang="en-US" lang="en-US"> re</span><span xml:lang="en-US" lang="en-US">run autoge</span><span xml:lang="en-US" lang="en-US">n.sh.</span></p>
-   <p dir="ltr" style="text-align:left"></p>
    <p dir="ltr" style="text-align:left"><span class="command_text plain_text" style="">	./configure --with-sys-wv --with-libxml2 --with-zlib=/home/foobar/local --prefix=/home/foobar/local</span></p>
    <p dir="ltr" style="text-align:left"><span class="command_text plain_text" style="">	make</span></p>
    <p dir="ltr" style="text-align:left"></p>
