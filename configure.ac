@@ -492,6 +492,8 @@ AC_CONFIG_FILES([GNUmakefile
  src/wp/impexp/qnx/GNUmakefile
  src/wp/impexp/win/GNUmakefile
  src/wp/impexp/xp/GNUmakefile
+])
+AC_CONFIG_FILES([
  src/wp/main/GNUmakefile
  src/wp/main/xp/GNUmakefile
  src/wp/main/cocoa/GNUmakefile
