@@ -25,7 +25,6 @@
 #define KEY_DETACHABLE "/desktop/gnome/interface/toolbar_detachable"
 #define KEY_STYLE "/desktop/gnome/interface/toolbar_style"
 
-
 /*!
 * "detachable toolbars" value changed in gconf
 */
@@ -95,12 +94,14 @@ EV_GnomeToolbar::EV_GnomeToolbar(XAP_UnixApp * pUnixApp,
 							 NULL,
 							 NULL);
 
+#if HONOR_GNOME_TOOLBAR_SETTINGS
 	gconf_client_notify_add (client,
 							 KEY_STYLE,
 							 style_changed_cb,
 							 (gpointer)this,
 							 NULL,
 							 NULL);
+#endif
 
 	g_object_unref(G_OBJECT(client));
 }
@@ -110,6 +111,7 @@ EV_GnomeToolbar::EV_GnomeToolbar(XAP_UnixApp * pUnixApp,
 */
 GtkToolbarStyle EV_GnomeToolbar::getStyle(void)
 {
+#if HONOR_GNOME_TOOLBAR_SETTINGS
 	GConfClient 	*client;
 	const gchar 	*style;
 	
@@ -124,6 +126,9 @@ GtkToolbarStyle EV_GnomeToolbar::getStyle(void)
 		return GTK_TOOLBAR_BOTH;
 	
 	return GTK_TOOLBAR_ICONS;
+#else
+	return EV_UnixToolbar::getStyle();
+#endif
 }
 
 /*!
