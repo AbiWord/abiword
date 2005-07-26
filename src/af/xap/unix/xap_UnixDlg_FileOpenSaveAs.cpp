@@ -916,6 +916,13 @@ void XAP_UnixDialog_FileOpenSaveAs::runModal(XAP_Frame * pFrame)
 		{
 			// use m_szInitialPathname
 #if GTK_CHECK_VERSION(2,4,0)			
+			if (!g_path_is_absolute (m_szInitialPathname)) {
+				gchar *dir = g_get_current_dir ();
+				gchar *file = m_szInitialPathname;
+				m_szInitialPathname = g_build_filename (dir, file, NULL);
+				g_free (dir);
+				g_free (file);
+			}
 			gtk_file_chooser_set_filename(m_FC, m_szInitialPathname);
 #else
 			gtk_file_selection_set_filename(m_FS, m_szInitialPathname);
