@@ -2461,8 +2461,12 @@ FL_DocLayout::queueBlockForBackgroundCheck(UT_uint32 iReason,
 	if (!m_pBackgroundCheckTimer)
 	{
 	    int inMode = UT_WorkerFactory::IDLE | UT_WorkerFactory::TIMER;
+	    if(getView() && getView()->isGrammarLoaded() && m_bAutoGrammarCheck)
+	    {
+	         inMode = UT_WorkerFactory::TIMER;
+	    }
 	    UT_WorkerFactory::ConstructMode outMode = UT_WorkerFactory::NONE;
-
+	    
 	    m_pBackgroundCheckTimer = UT_WorkerFactory::static_constructor (_backgroundCheck, this, inMode, outMode, m_pG);
 
 	    UT_ASSERT(m_pBackgroundCheckTimer);

@@ -40,6 +40,9 @@
 #include "gr_Image.h"
 #include "xap_Frame.h"
 #include "xap_EditMethods.h"
+#include "xap_ModuleManager.h"
+#include "xap_Module.h"
+
 #include "xap_Menu_ActionSet.h"
 #include "xap_Toolbar_ActionSet.h"
 #include "xap_LoadBindings.h"
@@ -209,6 +212,30 @@ EV_Toolbar_ActionSet *XAP_App::getToolbarActionSet()
 	return m_pToolbarActionSet;
 }
 
+/*!
+ * Returns a pointer to the requested plugin if it is loaded.
+ * Return NULL otherwise.
+ */
+XAP_Module * XAP_App::getPlugin(const char * szPluginName)
+{
+     XAP_Module * pModule = NULL;
+     const UT_GenericVector<XAP_Module*> * pVec = XAP_ModuleManager::instance().enumModules ();
+     bool bFound = false;
+     for (UT_uint32 i = 0; (i < pVec->size()) && !bFound; i++)
+     {
+          pModule = pVec->getNthItem (i);
+	  const char * szName = pModule->getModuleInfo()->name;
+	  if(UT_stricmp(szName,szPluginName) == 0)
+	  {
+	        bFound = true;
+	  }
+     }
+     if(!bFound)
+     {
+           return NULL;
+     }
+     return pModule;
+}
 
 /*!
  * Register an embeddable plugin with XAP_App

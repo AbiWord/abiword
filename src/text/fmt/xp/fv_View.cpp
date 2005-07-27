@@ -49,6 +49,7 @@
 #include "fp_Line.h"
 #include "fp_Run.h"
 #include "fp_TextRun.h"
+#include "xap_Module.h"
 #include "fg_Graphic.h"
 #include "fg_GraphicRaster.h"
 #include "pd_Document.h"
@@ -4530,6 +4531,33 @@ bool FV_View::queryCharFormat(const XML_Char * szProperty, UT_UTF8String & szVal
 		++position; // ??
 	}
 	return okay;
+}
+
+
+/*!
+ * Returns true if the abigrammar plugin is loaded
+ */
+bool FV_View::isGrammarLoaded(void)
+{
+	XAP_Module * pGrammar = m_pApp->getPlugin("abigrammar");
+	if(pGrammar == NULL)
+	{
+		return false;
+	}
+	return true;
+}
+
+/*!
+ * Returns true if the abimathview plugin is loaded
+ */
+bool FV_View::isMathLoaded(void)
+{
+	XAP_Module * pMath = m_pApp->getPlugin("abimathview");
+	if(pMath == NULL)
+	{
+		return false;
+	}
+	return true;
 }
 
 bool FV_View::queryCharFormat(const XML_Char * szProperty, UT_UTF8String & szValue, bool & bExplicitlyDefined, PT_DocPosition position) const

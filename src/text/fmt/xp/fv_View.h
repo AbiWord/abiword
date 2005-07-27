@@ -717,6 +717,10 @@ public:
 	FV_BIDI_Order	    getBidiOrder()const {return m_eBidiOrder;}
 	void                setBidiOrder(FV_BIDI_Order o) {m_eBidiOrder = o;}
 
+	// -- plugins
+        bool                isMathLoaded(void);
+	bool                isGrammarLoaded(void);
+
 protected:
 	void				_saveAndNotifyPieceTableChange(void);
 	void				_restorePieceTableState(void);
