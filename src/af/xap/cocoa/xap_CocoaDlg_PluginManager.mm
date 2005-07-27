@@ -119,7 +119,8 @@ void XAP_CocoaDialog_PluginManager::event_Load ()
 						{
 							XAP_CocoaAppController * pController = (XAP_CocoaAppController *) [NSApp delegate];
 							XAP_CocoaPlugin * plugin = [pController loadPlugin:[NSString stringWithUTF8String:szResultPathname]];
-							bActivated = [[plugin delegate] pluginActivate] ? true : false;
+							[[plugin delegate] pluginActivate];
+							bActivated =  true; // we don't really know if activation succeeded....
 						}
 					else bActivated = activatePlugin(szResultPathname);
 
@@ -503,24 +504,23 @@ void XAP_CocoaDialog_PluginManager::runModal(XAP_Frame * pFrame)
 - (IBAction)activateAction:(id)sender
 {
 	int selection = [oPluginList selectedRow];
-	if (selection >= 0)
-		{
-			XAP_CocoaPluginReference * pRef = (XAP_CocoaPluginReference *) [m_PluginRefs objectAtIndex:selection];
+	if (selection >= 0) {
+		XAP_CocoaPluginReference * pRef = (XAP_CocoaPluginReference *) [m_PluginRefs objectAtIndex:selection];
 
-			if (XAP_CocoaPlugin * pPlugin = [pRef plugin])
-				if ([[pPlugin delegate] pluginActivate])
-					{
-						[oForceDeactivation setEnabled:YES];
+		if (XAP_CocoaPlugin * pPlugin = [pRef plugin]) {
+			[[pPlugin delegate] pluginActivate];
+		
+			[oForceDeactivation setEnabled:YES];
 
-						[pRef setActive:YES];
+			[pRef setActive:YES];
 
-						[oPluginList setNeedsDisplay:YES];
-						[oPluginList displayIfNeeded];
+			[oPluginList setNeedsDisplay:YES];
+			[oPluginList displayIfNeeded];
 
-						[oActivateBtn   setEnabled:NO];
-						[oDeactivateBtn setEnabled:YES];
-					}
+			[oActivateBtn   setEnabled:NO];
+			[oDeactivateBtn setEnabled:YES];
 		}
+	}
 }
 
 - (IBAction)deactivateAction:(id)sender
