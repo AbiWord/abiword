@@ -1,6 +1,7 @@
 /* AbiSource Application Framework
  * Copyright (C) 1998 AbiSource, Inc.
  * Copyright (C) 2001, 2003 Hubert Figuiere
+ * Copyright (C) 2005 Net Integration Technologies Inc. (written by Hubert Figuiere)
  * 
  * This program is free software; you can redistribute it and/or
  * modify it under the terms of the GNU General Public License
@@ -72,16 +73,7 @@ bool XAP_CocoaClipboard::getClipboardData(const char** formatAccepted, void ** p
 	NSString* pbType = nil;
 	NSPasteboard* pb = _getPasteboard();
 	while (*current) {
-		pbType = nil;
-		if (strcmp(*current, XAP_CLIPBOARD_RTF) == 0) {
-			pbType = NSRTFPboardType;
-		}
-		else if (strcmp(*current, XAP_CLIPBOARD_TEXTPLAIN_8BIT) == 0) {
-			pbType = NSStringPboardType;
-		}
-		else if (strcmp(*current, XAP_CLIPBOARD_IMAGE) == 0) {
-			pbType = NSTIFFPboardType;
-		}
+		pbType = _abi2ns_cbType(*current);
 		if (pbType) {
 			NSData* data = [pb dataForType:pbType];
 			if (data) {
@@ -110,17 +102,48 @@ bool XAP_CocoaClipboard::clearClipboard(void)
 
 bool XAP_CocoaClipboard::hasFormat(const char* format)
 {
-//	UT_ASSERT (m_pasteboard != nil);
+	NSString *pbType = _abi2ns_cbType(format);
 	
-//	NSArray * availableFormat = [m_pasteboard types];
-	if (strcmp (format, "rtf") == 0) 
-	{
-	
+	NSString * availableFormat = [_getPasteboard() availableTypeFromArray:[NSArray arrayWithObject:pbType]];
+
+	if (availableFormat) {
+		return true;
 	}
-	else if (strcmp (format, "text-8bit") == 0) 
-	{
-		
-	}
+
 	return false;
+}
+
+
+
+bool XAP_CocoaClipboard::hasFormats(const char** format)
+{
+	bool found = false;
+	while(*format) {
+		found = hasFormat(*format);
+		
+		if (found) {
+			break;
+		}
+	}
+	
+	return found;
+}
+
+
+
+NSString *XAP_CocoaClipboard::_abi2ns_cbType(const char *cbType)
+{
+	NSString *pbType;
+	
+	if (strcmp(cbType, XAP_CLIPBOARD_RTF) == 0) {
+		pbType = NSRTFPboardType;
+	}
+	else if (strcmp(cbType, XAP_CLIPBOARD_TEXTPLAIN_8BIT) == 0) {
+		pbType = NSStringPboardType;
+	}
+	else if (strcmp(cbType, XAP_CLIPBOARD_IMAGE) == 0) {
+		pbType = NSTIFFPboardType;
+	}
+	return pbType;
 }
 
