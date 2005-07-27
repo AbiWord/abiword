@@ -897,8 +897,8 @@ void GR_Win32Graphics::fillRect(const UT_RGBColor& c, UT_sint32 x, UT_sint32 y, 
 	RECT r;
 	r.left = (UT_sint32)((double)_tduX(x) * m_fXYRatio);
 	r.top = _tduY(y);
-	r.right = (UT_sint32)(_tduR(x + w) * m_fXYRatio);
-	r.bottom =(UT_sint32)((double) _tduR(y + h) * m_fXYRatio);
+	r.right = (UT_sint32)(_tduX(x+w) * m_fXYRatio);
+	r.bottom = _tduY(y+h);
 
 	COLORREF clr = RGB(c.m_red, c.m_grn, c.m_blu);
 
@@ -1046,9 +1046,19 @@ void GR_Win32Graphics::clearArea(UT_sint32 x, UT_sint32 y, UT_sint32 width, UT_s
 	r.bottom = r.top + height;
 
 #if 1
+	// for the sake of consistency we should be using the same method as the fillRect()
+	// does; however, we already have brush created, so FillRect is probably quicker here
+	// (someone should do some profiling on this one day)
 	FillRect(m_hdc, &r, m_hClearBrush);
 #else
-	// we should be using the same method as the fillRect() does ...
+	// this is the method used by fillRect(); if we were to use it, it we should
+	// cache lb.lbColor from inside setBrush() to avoid calling GetObject() all the time
+	LOGBRUSH lb;
+	GetObject(m_hClearBrush, sizeof(LOGBRUSH), &lb);
+	
+	const COLORREF cr = ::SetBkColor(m_hdc,  lb.lbColor);
+	::ExtTextOut(m_hdc, 0, 0, ETO_OPAQUE, &r, NULL, 0, NULL);
+	::SetBkColor(m_hdc, cr);
 #endif
 }
 
@@ -1326,8 +1336,8 @@ void GR_Win32Graphics::fillRect(GR_Color3D c, UT_sint32 x, UT_sint32 y, UT_sint3
 	RECT r;
 	r.left = (UT_sint32)((double)_tduX(x) * m_fXYRatio);
 	r.top = _tduY(y);
-	r.right = (UT_sint32)((double)_tduR(x + w) * m_fXYRatio);
-	r.bottom = _tduR(y + h);
+	r.right = (UT_sint32)((double)_tduX(x+w) * m_fXYRatio);
+	r.bottom = _tduY(y+h);
 
 	// This might look wierd (and I think it is), but it's MUCH faster.
 	// CreateSolidBrush is dog slow.
