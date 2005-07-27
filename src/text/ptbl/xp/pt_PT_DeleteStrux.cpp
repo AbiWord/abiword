@@ -183,7 +183,45 @@ bool pt_PieceTable::_unlinkStrux_Block(pf_Frag_Strux * pfs,
 			UT_ASSERT_HARMLESS(0);
 			return false;
 		}
-
+		//
+		// Check to see if this is the first section of the document.
+		//
+		if(pfsPrev->getPrev() == NULL)
+		{
+		  pf_Frag * pfNext = pfs->getNext();
+		  if(pfNext == NULL)
+		  {
+		    //
+		    // Cannot delete this because then there will be no page
+		    //
+			UT_DEBUGMSG(("Cannot delete only paragraph.\n"));
+			UT_ASSERT_HARMLESS(0);
+			return false;
+		  }
+		  if(pfNext->getType() == pf_Frag::PFT_Strux)
+		  {
+		      pf_Frag_Strux * pfsNext = static_cast<pf_Frag_Strux *>(pfNext);
+		      if(pfsNext->getStruxType() == PTX_SectionHdrFtr)
+		      {
+		    //
+		    // Cannot delete this because then there will be no page
+		    //
+			  UT_DEBUGMSG(("Cannot delete only paragraph.\n"));
+			  UT_ASSERT_HARMLESS(0);
+			  return false;
+		      }  
+		      if(pfsNext->getStruxType() == PTX_SectionFrame)
+		      {
+		    //
+		    // Cannot delete this because then there will be nowhere
+		    // for the frame
+		    //
+			  UT_DEBUGMSG(("Cannot delete becase we need the frame.\n"));
+			  UT_ASSERT_HARMLESS(0);
+			  return false;
+		      }
+		  }  
+		}
 
 	case PTX_SectionHdrFtr:
 		// we are the first paragraph in this section.  if we have
