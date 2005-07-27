@@ -749,6 +749,25 @@ SubSectionEnd
 
 SubSection /e "File Format Importers/Exporters"
 
+Section "OpenDocument (*.odt) Plugin" ODT_IDX
+	SectionIn 2
+
+	; Testing clause to Overwrite Existing Version - if exists
+	IfFileExists "$INSTDIR\AbiWord\plugins\AbiOpenDocument.dll" 0 DoInstall
+	
+	MessageBox MB_YESNO "Overwrite Existing AbiOpenDocument Plugin?" IDYES DoInstall
+	
+	DetailPrint "Skipping AbiOpenDocument Plugin (already exists)!"
+	Goto End
+
+	DoInstall:
+	File "AbiOpenDocument.dll"
+  
+	End:
+SectionEnd
+
+;SectionDivider
+
 Section "OpenWriter (*.sxw) Plugin" SXW_IDX
 	SectionIn 2
 
@@ -901,6 +920,7 @@ Section "Uninstall"
 	Delete "$INSTDIR\AbiMIF.dll"
 	Delete "$INSTDIR\AbiMSWrite.dll"
 	Delete "$INSTDIR\AbiNroff.dll"
+	Delete "$INSTDIR\AbiOpenDocument.dll"
 	Delete "$INSTDIR\AbiOpenWriter.dll"
 	Delete "$INSTDIR\AbiPalmDoc.dll"
 	Delete "$INSTDIR\AbiPsion.dll"
@@ -940,6 +960,11 @@ Function .onSelChange
 	; Make sure glib is selected when seleting one of the plugins that need it
 	strcmp $GLIB_ENABLED "yes" end_l
 		  
+	!insertmacro SectionFlagIsSet ${ODT_IDX} ${SF_SELECTED} "" sxw_l 
+		!insertmacro SelectSection ${GLIB_IDX}
+		strcpy $GLIB_ENABLED "yes"
+		goto end_l
+sxw_l:
 	!insertmacro SectionFlagIsSet ${SXW_IDX} ${SF_SELECTED} "" sdw_l 
 		!insertmacro SelectSection ${GLIB_IDX}
 		strcpy $GLIB_ENABLED "yes"
