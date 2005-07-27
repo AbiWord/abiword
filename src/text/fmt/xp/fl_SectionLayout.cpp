@@ -4463,7 +4463,6 @@ fl_SectionLayout * fl_HdrFtrSectionLayout::bl_doclistener_insertTable(SectionTyp
 	}
 
 	fl_SectionLayout::checkAndAdjustCellSize();
-	bool bResult = true;
 //
 // Now insert it into all the shadows.
 //

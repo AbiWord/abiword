@@ -705,7 +705,7 @@ AP_PreferenceScheme::AP_PreferenceScheme(AP_PreferenceSchemeManager * pSchemeMan
 	UT_uint32 i = 0;
 	UT_uint32 count = static_cast<UT_uint32>(bo__count);
 
-	for (UT_uint32 i = 0; i < count; i++)
+	for (i = 0; i < count; i++)
 		{
 			BoolOption bo = static_cast<BoolOption>(i);
 
@@ -714,7 +714,7 @@ AP_PreferenceScheme::AP_PreferenceScheme(AP_PreferenceSchemeManager * pSchemeMan
 		}
 	lookupDefaultOptionValues();
 
-	for (UT_uint32 i = 0; i < count; i++)
+	for (i = 0; i < count; i++)
 		{
 			BoolOption bo = static_cast<BoolOption>(i);
 
@@ -783,7 +783,7 @@ AP_PreferenceScheme::AP_PreferenceScheme(AP_PreferenceSchemeManager * pSchemeMan
 	// NOT (YET?) IMPLEMENTED: if (m_pPrefsScheme->getValueBool("",&bValue)) m_BOData[bo_ViewAll			].m_original = bValue;
 	// NOT (YET?) IMPLEMENTED: if (m_pPrefsScheme->getValueBool("",&bValue)) m_BOData[bo_ViewHidden			].m_original = bValue;
 
-	for (UT_uint32 i = 0; i < count; i++)
+	for (i = 0; i < count; i++)
 		{
 			BoolOption bo = static_cast<BoolOption>(i);
 

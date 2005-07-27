@@ -1732,6 +1732,8 @@ static bool s_AskRevertFile(XAP_Frame * pFrame)
 						== XAP_Dialog_MessageBox::a_YES);
 }
 
+#if XAP_DONT_CONFIRM_QUIT
+#else
 static bool s_AskCloseAllAndExit(XAP_Frame * pFrame)
 {
 	// return true if we should quit.
@@ -1741,6 +1743,7 @@ static bool s_AskCloseAllAndExit(XAP_Frame * pFrame)
 		== XAP_Dialog_MessageBox::a_YES);
 
 }
+#endif
 
 static XAP_Dialog_MessageBox::tAnswer s_AskSaveFile(XAP_Frame * pFrame)
 {
@@ -9827,13 +9830,12 @@ Defun(setPosImage)
 	CHECK_FRAME;
 	ABIWORD_VIEW;
 
-	fl_BlockLayout * pBL = pView->getCurrentBlock();
 	PT_DocPosition pos = pView->getDocPositionFromLastXY();
 
 	fl_BlockLayout * pBlock = pView->getBlockAtPosition(pos);
 	fp_Run *  pRun = NULL;
 	fp_Line * pLine = NULL;
-	UT_sint32 x1,x2,y1,y2,iHeight,iWidth;
+	UT_sint32 x1,x2,y1,y2,iHeight;
 	bool bEOL = false;
 	bool bDir = false;
 	if(pBlock)
@@ -9948,6 +9950,7 @@ Defun(setPosImage)
 //
 // Done! Now have a positioned image!
 //
+	return true;
 }
 
 Defun (dlgFmtPosImage)

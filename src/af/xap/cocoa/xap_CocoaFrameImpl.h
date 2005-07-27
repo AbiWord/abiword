@@ -38,15 +38,15 @@ class XAP_CocoaFrameImpl;
 	XAP_CocoaFrameImpl *m_frame;
     IBOutlet NSView *mainView;
     IBOutlet XAP_CocoaNSStatusBar *statusBar;
-	id <NSTextInput> m_textView;
+	NSView <NSTextInput> *m_textView;
 }
 + (XAP_CocoaFrameController*)createFrom:(XAP_CocoaFrameImpl *)frame;
 - (id)initWith:(XAP_CocoaFrameImpl *)frame;
 - (NSView *)getMainView;
 - (XAP_CocoaNSStatusBar *)getStatusBar;
 - (XAP_CocoaFrameImpl *)frameImpl;
-- (void)setTextView:(id <NSTextInput>)tv;
-- (id <NSTextInput>)textView;
+- (void)setTextView:(NSView <NSTextInput>*)tv;
+- (NSView <NSTextInput>*)textView;
 
 - (NSArray *)getToolbars;
 - (NSString *)getToolbarSummaryID;

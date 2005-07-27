@@ -1290,8 +1290,6 @@ bool fl_TOCLayout::doclistener_deleteStrux(const PX_ChangeRecord_Strux * pcrx)
 //	UT_ASSERT(pcrx->getStruxType()== PTX_SectionTOC);
 //
 	fl_DocSectionLayout * pDSL = getDocSectionLayout();
-	fl_ContainerLayout * pPrev = getPrev();
-	fl_ContainerLayout * pNext = getNext();
 	myContainingLayout()->remove(this);
 	UT_sint32 iPage = getDocLayout()->findPage(pPage);
 	if(iPage >= 0)

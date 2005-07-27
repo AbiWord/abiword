@@ -512,11 +512,11 @@ static unichar s_remap[224] = {
 	// XAP_CocoaFont Font(m_CurrentFont); // this is causing a crash
 
 	for (int i = 0; i < 224; i++)
-		{
-			UT_UCS4Char ucs4 = static_cast<UT_UCS4Char>(m_bRemapGlyphs ? s_remap[i] : (i + 32));
+	{
+		//UT_UCS4Char ucs4 = static_cast<UT_UCS4Char>(m_bRemapGlyphs ? s_remap[i] : (i + 32));
 
-			m_SymbolWidth[i] = 1; // Font.measureUnremappedCharForCache(ucs4);
-		}
+		m_SymbolWidth[i] = 1; // Font.measureUnremappedCharForCache(ucs4);
+	}
 }
 
 /* NSTableViewDataSource methods

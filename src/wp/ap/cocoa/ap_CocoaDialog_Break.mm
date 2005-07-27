@@ -91,12 +91,12 @@ void AP_CocoaDialog_Break::_storeWindowData(void)
 
 @implementation AP_CocoaDialog_BreakController
 
-- (AP_CocoaDialog_BreakController *)initFromNib
+- (id)initFromNib
 {
 	if (self = [super initWithWindowNibName:@"ap_CocoaDialog_Break"])
-		{
-			m_xap = 0;
-		}
+	{
+		m_xap = 0;
+	}
 	return self;
 }
 

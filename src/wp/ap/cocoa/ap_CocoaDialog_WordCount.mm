@@ -75,7 +75,7 @@ void AP_CocoaDialog_WordCount::runModeless(XAP_Frame * pFrame)
 
 	[m_dlg setXAPOwner:this];
 
-	NSWindow * window = [m_dlg window];
+	[m_dlg window]; // just to make sure the nib is loaded.
 	localizeDialog();
 
 	/* Save dialog the ID number and pointer to the widget

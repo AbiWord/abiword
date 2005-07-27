@@ -1314,11 +1314,10 @@ void fp_VerticalContainer::mapXYToPosition(UT_sint32 x, UT_sint32 y, PT_DocPosit
 				// Note that it is difficult to prevent this from happening on the PT level, since
 				// just because text is marked as hidden or deleted does not mean it is not
 				// visible in a given view.
-				FL_DocLayout * pDL = NULL;
 				fp_Page * pPage = getPage();
-				if(getPage() && getPage()->getDocLayout() && getPage()->getDocLayout()->getFirstSection())
+				if(pPage && pPage->getDocLayout() && pPage->getDocLayout()->getFirstSection())
 				{
-					pBlock = getPage()->getDocLayout()->getFirstSection()->getFirstBlock();
+					pBlock = pPage->getDocLayout()->getFirstSection()->getFirstBlock();
 				}
 
 				if(!pBlock)

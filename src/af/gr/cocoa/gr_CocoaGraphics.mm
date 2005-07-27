@@ -721,8 +721,6 @@ void GR_CocoaGraphics::drawChars(const UT_UCSChar* pChars, int iCharOffset,
 		UT_sint32 widthTrailingNeutral = 0;
 		UT_sint32 countTrailingNeutral = 0;
 
-		const UT_UCSChar * endTN = end;
-
 		NSCharacterSet * punctuation = [NSCharacterSet punctuationCharacterSet];
 
 		while (end > begin) {
@@ -771,7 +769,7 @@ void GR_CocoaGraphics::drawChars(const UT_UCSChar* pChars, int iCharOffset,
 					if (UT_UCS4_isspace(cBuf[j])) {
 						if (rangeLength > 0) {
 							//NSLog (@"x = %d, currentRunLen = %d", TDUX(x), TDUX(currentRunLen));
-							_realDrawChars(cBuf + rangeBegin, iLength - rangeBegin, m_fontProps, TDUX(x),
+							_realDrawChars(cBuf + rangeBegin, iLength - rangeBegin, m_fontProps, TDUX((UT_sint32)rintf(x)),
 										   yoff, 0, rangeLength);
 							// from here currentRunLen is signed... so just add it
 							if (!rtl) {
@@ -803,7 +801,7 @@ void GR_CocoaGraphics::drawChars(const UT_UCSChar* pChars, int iCharOffset,
 					}
 				}
 				if (rangeLength > 0) {
-					_realDrawChars(cBuf + rangeBegin, iLength - rangeBegin, m_fontProps, TDUX(x),
+					_realDrawChars(cBuf + rangeBegin, iLength - rangeBegin, m_fontProps, TDUX((UT_sint32)rintf(x)),
 								   yoff, 0, rangeLength);
 				}
 			}

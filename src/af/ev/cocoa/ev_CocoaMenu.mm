@@ -720,8 +720,6 @@ bool EV_CocoaMenu::menuEvent(XAP_Menu_Id menuid)
 
 	UT_String script_name(pAction->getScriptName());
 
-	XAP_CocoaAppController * pController = (XAP_CocoaAppController *) [NSApp delegate];
-
 	XAP_Frame * frame = m_pCocoaApp->getLastFocussedFrame();
 
 	AV_View * view = frame ? frame->getCurrentView() : 0;

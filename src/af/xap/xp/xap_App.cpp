@@ -1200,7 +1200,8 @@ void XAP_App::parseAndSetGeometry(const char *string)
         nw = strtoul(next, &next, 10);
         if(*next == 'x' || *next == 'X')
 		{
-            nh = strtoul(++next, &next, 10);
+			next++;
+            nh = strtoul(next, &next, 10);
             nflags |= PREF_FLAG_GEOMETRY_SIZE;
         }
     }

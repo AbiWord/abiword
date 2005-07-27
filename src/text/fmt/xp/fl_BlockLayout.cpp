@@ -2503,9 +2503,6 @@ void fl_BlockLayout::getLeftRightForWrapping(UT_sint32 iX, UT_sint32 iHeight,
 	UT_sint32 iScreenX = iX + xoff;
 	UT_Rect projRec;
 	bool bIsTight = false;
-	bool bIsTopBot = false;
-	bool bIsLeft = false;
-	bool bIsRight = false;
 	iMinLeft = BIG_NUM_BLOCKBL;
 	iMinWidth = BIG_NUM_BLOCKBL;
 	iMinRight = BIG_NUM_BLOCKBL;

@@ -254,6 +254,7 @@ typedef struct {
 	const char *	description;
 } UT_SpecialCharacter;
 
+#if 0
 static UT_SpecialCharacter s_unicode_extra[] = {
 	{ 0x00A0, "Non-breaking space" },
 	{ 0x2206, "Increment (Delta)"  },
@@ -261,6 +262,7 @@ static UT_SpecialCharacter s_unicode_extra[] = {
 	{ 0x00B5, "Micro sign (mu)"    },
 	{ 0x2044, "Fraction slash"     }
 };
+#endif
 
 /* Unicode mapping for Symbol (provided by Adobe, available from http://www.unicode.org/)
  */

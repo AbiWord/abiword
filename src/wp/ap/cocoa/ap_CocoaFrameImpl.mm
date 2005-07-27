@@ -191,7 +191,7 @@ void AP_CocoaFrameImpl::_setHScrollbarValues()
 		[m_hScrollbar setFloatValue:value knobProportion:knob];
 	}
 	[m_hScrollbar setNeedsDisplay:YES];
-	[[(_getController()) getHRuler] setNeedsDisplay:YES];
+	[[(AP_CocoaFrameController*)_getController() getHRuler] setNeedsDisplay:YES];
 }
 
 

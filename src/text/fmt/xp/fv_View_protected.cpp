@@ -3193,7 +3193,6 @@ FV_View::_findBlockSearchRegexp(const UT_UCSChar* /* haystack */,
 */
 void FV_View::_generalUpdate(void)
 {
-	bool bOK = true;
 	if(!shouldScreenUpdateOnGeneralUpdate())
 		return;
 	m_pDoc->signalListeners(PD_SIGNAL_UPDATE_LAYOUT);

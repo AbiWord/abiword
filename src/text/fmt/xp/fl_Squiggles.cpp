@@ -640,7 +640,7 @@ fl_Squiggles::textRevised(UT_sint32 iOffset, UT_sint32 iLength)
 		// If not affected by insert, remove it
 		if (!m_pOwner->getDocLayout()->touchesPendingWordForSpell(m_pOwner, iOffset, 0))
 		{
-			fl_PartOfBlock* pPending = m_pOwner->getDocLayout()->getPendingWordForSpell();
+			//fl_PartOfBlock* pPending = m_pOwner->getDocLayout()->getPendingWordForSpell();
 
 			m_pOwner->getDocLayout()->setPendingWordForSpell(NULL,NULL);
 		}

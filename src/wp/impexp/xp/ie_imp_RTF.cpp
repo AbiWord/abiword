@@ -6834,6 +6834,7 @@ bool IE_Imp_RTF::ApplyParagraphAttributes(bool bDontInsert)
 		}
 		return bSuccess;
 	}
+	return true;
 }
 
 
@@ -8419,7 +8420,8 @@ bool IE_Imp_RTF::ReadFontName(UT_String sFontNames[2])
 		default:
 			break;
 		} // switch
-	}; // while
+	} // while
+	return true;
 }
 
 

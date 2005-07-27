@@ -381,14 +381,15 @@ void XAP_CocoaDialog_FileOpenSaveAs::runModal(XAP_Frame * pFrame)
 	if (bOpenPanel) {
 		m_panel = m_OpenPanel;
 
+		// cast it id to avoid warning.
 		if ([m_panel respondsToSelector:@selector(setAllowsMultipleSelection:)])
-			[m_panel setAllowsMultipleSelection:NO];
+			[(id)m_panel setAllowsMultipleSelection:NO];
 		if ([m_panel respondsToSelector:@selector(setCanChooseDirectories:)])
-			[m_panel setCanChooseDirectories:NO];
+			[(id)m_panel setCanChooseDirectories:NO];
 		if ([m_panel respondsToSelector:@selector(setCanChooseFiles:)])
-			[m_panel setCanChooseFiles:YES];
+			[(id)m_panel setCanChooseFiles:YES];
 		if ([m_panel respondsToSelector:@selector(setCanCreateDirectories:)])
-			[m_panel setCanCreateDirectories:NO];
+			[(id)m_panel setCanCreateDirectories:NO];
 
 		[m_panel setCanSelectHiddenExtension:NO];
 		[m_panel setExtensionHidden:NO];
