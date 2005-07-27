@@ -12,6 +12,7 @@
                 "aColor_BG" = id; 
                 "aColor_FG" = id; 
                 aDocumentStyle = id; 
+                aFontMemberName = id; 
                 aFontName = id; 
                 aFontSize = id; 
                 "aSwitch_BG" = id; 
@@ -31,6 +32,7 @@
                 "oColor_BG" = NSColorWell; 
                 "oColor_FG" = NSColorWell; 
                 oDocumentStyle = NSPopUpButton; 
+                oFontMemberName = NSPopUpButton; 
                 oFontName = NSPopUpButton; 
                 oFontSize = NSComboBox; 
                 oPanel = NSPanel; 

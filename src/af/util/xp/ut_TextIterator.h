@@ -104,6 +104,7 @@ enum UTIterStatus
 class ABI_EXPORT UT_TextIterator
 {
   public:
+	virtual ~UT_TextIterator() {}
 
 	/////////////////////////////////////////////////////////////////////////
 	// data accessor; retrieves character at present position

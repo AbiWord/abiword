@@ -1,3 +1,5 @@
+/* -*- mode: C++; tab-width: 4; c-basic-offset: 4; -*- */
+
 /* AbiWord
  * Copyright (C) 2000 AbiSource, Inc.
  * Copyright (C) 2004 Hubert Figuiere
@@ -44,7 +46,6 @@ public:
     virtual void            setSensitivity(bool bSensitive);
 	virtual void            destroy(void);
 	virtual void            activate(void);	
-	void			_createLevelItems(NSPopUpButton*);
 private:
 	void			_populateWindowData(void);
 	AP_CocoaDialog_FormatTOC_Controller *m_dlg;
@@ -53,45 +54,77 @@ private:
 
 @interface AP_CocoaDialog_FormatTOC_Controller : NSWindowController <XAP_CocoaDialogProtocol>
 {
-    IBOutlet NSButton *_applyBtn;
-    IBOutlet NSTextField *_displayStyleLabel;
-    IBOutlet NSPopUpButton *_displayStylePopup;
-    IBOutlet NSTextField *_fillStyleLabel;
-    IBOutlet NSPopUpButton *_fillStylePopup;
-    IBOutlet NSBox *_hasHeadingBox;
-    IBOutlet NSButton *_hasHeadingBtn;
-    IBOutlet NSButton *_hasLabelBtn;
-	IBOutlet NSPopUpButton *_headingStyleData;
-	IBOutlet NSTextField *_headingStyleLabel;
-	IBOutlet NSTextField *_headingTextData;
-	IBOutlet NSTextField *_headingTextLabel;
-    IBOutlet NSTextField *_indentData;
-    IBOutlet NSTextField *_indentLabel;
-    IBOutlet NSButton *_inheritLabelBtn;
-    IBOutlet NSBox *_labelDefBox;
-    IBOutlet NSPopUpButton *_layoutLevelPopup;
-    IBOutlet NSPopUpButton *_mainLevelPopup;
-    IBOutlet NSBox *_mainPropBox;
-    IBOutlet NSPopUpButton *_numberingTypeData;
-    IBOutlet NSTextField *_numberingTypeLabel;
-    IBOutlet NSPopUpButton *_pageNumberingData;
-    IBOutlet NSTextField *_pageNumberingLabel;
-    IBOutlet NSTextField *_startAtData;
-    IBOutlet NSTextField *_startAtLabel;
-    IBOutlet NSPopUpButton *_tabLeadersData;
-    IBOutlet NSTextField *_tabLeadersLabel;
-    IBOutlet NSBox *_tabsAndPageNumbBox;
-    IBOutlet NSTabView *_tabView;
-    IBOutlet NSTextField *_textAfterData;
-    IBOutlet NSTextField *_textAfterLabel;
-    IBOutlet NSTextField *_textBeforeData;
-    IBOutlet NSTextField *_textBeforeLabel;
-	AP_CocoaDialog_FormatTOC *_xap;
+	IBOutlet NSButton *			_applyBtn;
+	IBOutlet NSButton *			_hasHeadingBtn;
+	IBOutlet NSButton *			_hasLabelBtn;
+	IBOutlet NSButton *			_inheritLabelBtn;
+	IBOutlet NSButton *			_displayStyleBtn;
+	IBOutlet NSButton *			_fillStyleBtn;
+	IBOutlet NSButton *			_headingStyleBtn;
+
+	IBOutlet NSPopUpButton *	_layoutLevelPopup;
+	IBOutlet NSPopUpButton *	_mainLevelPopup;
+	IBOutlet NSPopUpButton *	_numberingTypeData;
+	IBOutlet NSPopUpButton *	_pageNumberingData;
+	IBOutlet NSPopUpButton *	_tabLeadersData;
+
+	IBOutlet NSTextField *		_displayStyleLabel;
+	IBOutlet NSTextField *		_displayStyleData;
+	IBOutlet NSTextField *		_fillStyleLabel;
+	IBOutlet NSTextField *		_fillStyleData;
+	IBOutlet NSTextField *		_headingStyleLabel;
+	IBOutlet NSTextField *		_headingStyleData;
+	IBOutlet NSTextField *		_headingTextData;
+	IBOutlet NSTextField *		_headingTextLabel;
+	IBOutlet NSTextField *		_indentData;
+	IBOutlet NSTextField *		_indentLabel;
+	IBOutlet NSTextField *		_numberingTypeLabel;
+	IBOutlet NSTextField *		_pageNumberingLabel;
+	IBOutlet NSTextField *		_startAtData;
+	IBOutlet NSTextField *		_startAtLabel;
+	IBOutlet NSTextField *		_tabLeadersLabel;
+	IBOutlet NSTextField *		_textAfterData;
+	IBOutlet NSTextField *		_textAfterLabel;
+	IBOutlet NSTextField *		_textBeforeData;
+	IBOutlet NSTextField *		_textBeforeLabel;
+	IBOutlet NSTextField *		_defineMainLabel;
+	IBOutlet NSTextField *		_labelDefinitionsLabel;
+	IBOutlet NSTextField *		_tabsPageNoLabel;
+
+	IBOutlet NSStepper *		_startAtStepper;
+	IBOutlet NSStepper *		_indentStepper;
+
+//	IBOutlet NSBox *			_hasHeadingBox;
+//	IBOutlet NSBox *			_labelDefBox;
+//	IBOutlet NSBox *			_mainPropBox;
+//	IBOutlet NSBox *			_tabsAndPageNumbBox;
+
+	IBOutlet NSTabView *		_tabView;
+
+	AP_CocoaDialog_FormatTOC *	_xap;
 }
+- (IBAction)startAtStepperAction:(id)sender;
+- (IBAction)startAtAction:(id)sender;
+- (IBAction)indentStepperAction:(id)sender;
+- (IBAction)indentAction:(id)sender;
 - (IBAction)mainLevelAction:(id)sender;
 - (IBAction)detailLevelAction:(id)sender;
+- (IBAction)headingStyleAction:(id)sender;
+- (IBAction)fillStyleAction:(id)sender;
+- (IBAction)displayStyleAction:(id)sender;
 - (IBAction)applyAction:(id)sender;
-- (void)enableApply:(BOOL)enable;
+
+- (void)setSensitivity:(BOOL)enable;
+
+- (void)createLevelItems:(NSPopUpButton *)popup;
+- (void)createNumberingItems:(NSPopUpButton *)popup;
+
+- (void)sync;
+- (void)syncMainLevelSettings;
+- (void)syncDetailLevelSettings;
+
+- (void)saveMainLevelSettings;
+- (void)saveDetailLevelSettings;
 @end
 
 #endif /* AP_COCOADIALOG_FORMATOC_H */

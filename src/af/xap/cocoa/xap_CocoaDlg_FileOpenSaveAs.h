@@ -1,3 +1,5 @@
+/* -*- mode: C++; tab-width: 4; c-basic-offset: 4; -*- */
+
 /* AbiSource Application Framework
  * Copyright (C) 1998 AbiSource, Inc.
  * Copyright (C) 2001-2003 Hubert Figuiere
@@ -29,26 +31,58 @@
 class XAP_CocoaFrame;
 class XAP_CocoaDialog_FileOpenSaveAs;
 
+@interface XAP_CocoaOpenPanel : NSOpenPanel
+{
+	BOOL			m_bPanelCanOrderOut;
+}
+- (id)init;
+- (BOOL)panelCanOrderOut;
+- (void)setPanelCanOrderOut:(BOOL)panelCanOrderOut;
+- (void)orderOut:(id)sender;
+@end
+
+@interface XAP_CocoaSavePanel : NSSavePanel
+{
+	BOOL	m_bPanelCanOrderOut;
+}
+- (id)init;
+- (BOOL)panelCanOrderOut;
+- (void)setPanelCanOrderOut:(BOOL)panelCanOrderOut;
+- (void)orderOut:(id)sender;
+@end
 
 @interface XAP_OpenSavePanel_AccessoryController : NSObject
 {
-	IBOutlet NSTextField*		_fileTypeLabel;
-	IBOutlet NSPopUpButton*	_fileTypePopup;
-	IBOutlet NSView*			_fileTypeAcessoryView;
-//	IBOutlet NSImageView*		_imagePreview;
-	XAP_CocoaDialog_FileOpenSaveAs*	_xap;
+	IBOutlet NSTextField *		oFTLabel;
+	IBOutlet NSTextField *		oFTILabel;
+	IBOutlet NSPopUpButton *	oFTPopUp;
+	IBOutlet NSPopUpButton *	oFTIPopUp;
+	IBOutlet NSView *			oFTAccessoryView;
+	IBOutlet NSView *			oFTIAccessoryView;
+	IBOutlet NSImageView *		oFTIImageView;
+
+	XAP_CocoaDialog_FileOpenSaveAs *	_xap;
+
+	BOOL	m_bInsertGraphic;
 }
 
--(id)initWithXAP:(XAP_CocoaDialog_FileOpenSaveAs*)xap;
+- (id)initWithXAP:(XAP_CocoaDialog_FileOpenSaveAs*)xap;
 
--(NSView*)fileTypeAcessoryView;
--(void)setFileTypeLabel:(NSString*)label;
--(void)setSelectedFileType:(int)type;
--(NSMenu*)fileTypesMenu;
--(void)removeItemsOfFileTypesMenu;
+- (void)setInsertGraphic:(BOOL)insertGraphic;
 
--(IBAction)selectFileType:(id)sender;
+- (void)setPreviewImage:(NSImage *)image;
+- (NSSize)previewSize;
 
+- (NSView *)fileTypeAccessoryView;
+- (void)setFileTypeLabel:(NSString*)label;
+- (void)setSelectedFileType:(int)type;
+
+- (void)removeItemsOfFileTypesMenu;
+- (void)addItemWithTitle:(NSString *)title fileType:(int)type;
+
+- (IBAction)selectFileType:(id)sender;
+
+- (void)panelSelectionDidChange:(id)sender;
 @end
 
 /*****************************************************************/
@@ -65,25 +99,24 @@ public:
 	int previewPicture (void);
 
 	void	_setSelectedFileType (UT_sint32 type);
-protected:
-	NSSavePanel	*m_panel;
-#if 0
-	bool					_run_gtk_main(XAP_Frame * pFrame, void * pFSvoid,
-										  bool bCheckWritePermission,
-										  GtkWidget * filetypes_pulldown);
-	void 					_notifyError_OKOnly(XAP_Frame * pFrame,
-												XAP_String_Id sid);
-	void 					_notifyError_OKOnly(XAP_Frame * pFrame,
-												XAP_String_Id sid,
-												const char * sz1);
-	bool 				_askOverwrite_YesNo(XAP_Frame * pFrame,
-												const char * fileName);
+	void	_updatePreview ();
 
-	GtkFileSelection * m_FS;
-	GtkWidget * m_preview;
-#endif
-	XAP_OpenSavePanel_AccessoryController*	m_accessoryViewsController;
+private:
+	XAP_OpenSavePanel_AccessoryController *	m_accessoryViewsController;
 	XAP_CocoaFrame *						m_pCocoaFrame;
+
+	XAP_CocoaOpenPanel *					m_OpenPanel;
+	XAP_CocoaSavePanel *					m_SavePanel;
+
+	NSSavePanel	*							m_panel;
+	NSMutableArray *						m_FileTypes;
+
+	const char *							m_szFileTypeDescription;
+	UT_uint32								m_szFileTypeCount;
+
+	bool									m_bPanelActive;
+	bool									m_bOpenPanel;
+	bool									m_bIgnoreCancel;
 };
 
 #endif /* XAP_COCOADIALOG_FILEOPENSAVEAS_H */

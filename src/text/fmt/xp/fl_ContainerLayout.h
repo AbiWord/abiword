@@ -93,6 +93,7 @@ public:
 
 	virtual fp_Container*		getNewContainer(fp_Container * pFirstContainer = NULL) = 0;
 	virtual FL_DocLayout *      getDocLayout(void) const;
+	UT_sint32           getLevelInList(void);
 	virtual void		format(void) = 0;
 	virtual void        appendTextToBuf(UT_GrowBuf & buf);
 	virtual void		updateLayout(void) = 0;

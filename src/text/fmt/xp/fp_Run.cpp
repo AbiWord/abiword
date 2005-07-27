@@ -1920,7 +1920,10 @@ void fp_TabRun::findPointCoords(UT_uint32 iOffset, UT_sint32& x, UT_sint32& y, U
 	UT_sint32 yoff2;
 
 	UT_ASSERT(getLine());
-
+	if(getLine()->getY() == -2000000)
+	{
+		//		UT_ASSERT(UT_SHOULD_NOT_HAPPEN); // might need this later
+	}
 	getLine()->getOffsets(this, xoff, yoff);
 
 	fp_Run * pRun = 0;
@@ -3818,7 +3821,7 @@ void fp_FieldRun::_lookupProperties(const PP_AttrProp * pSpanAP,
 	fd_Field * fd = NULL;
 	if(!getBlock()->isContainedByTOC())
 	{
-		getBlock()->getField(getBlockOffset()+1,fd); // Next Pos?
+		getBlock()->getField(getBlockOffset() /*+1*/,fd); // Next Pos?
 		_setField(fd);
 	}
 	else

@@ -1,6 +1,9 @@
+/* -*- mode: C++; tab-width: 4; c-basic-offset: 4; -*- */
+
 /* AbiSource Application Framework
  * Copyright (C) 1998 AbiSource, Inc.
  * Copyright (c) 2003 Hubert Figuiere
+ * Copyright (c) 2005 Francis James Franklin
  * 
  * This program is free software; you can redistribute it and/or
  * modify it under the terms of the GNU General Public License
@@ -17,128 +20,257 @@
  * Foundation, Inc., 59 Temple Place - Suite 330, Boston, MA  
  * 02111-1307, USA.
  */
-/* $Id */
 
 #include <stdio.h>
 #include <string.h>
 #include <stdlib.h>
+
 #include "ut_assert.h"
 #include "ut_debugmsg.h"
 #include "ut_string.h"
+
+#include "xap_App.h"
 #include "xap_CocoaDialog_Utilities.h"
 #include "xap_CocoaDlg_Language.h"
-#include "xap_CocoaApp.h"
-#include "xap_CocoaFrame.h"
-#include "gr_CocoaGraphics.h"
 
+/* *************************************************************** */
 
-class XAP_LanguageList_Proxy: public XAP_GenericListChooser_Proxy
+XAP_Dialog * XAP_CocoaDialog_Language::static_constructor(XAP_DialogFactory * pFactory, XAP_Dialog_Id dlgid)
 {
-public:
-	XAP_LanguageList_Proxy (XAP_CocoaDialog_Language* dlg)
-		: XAP_GenericListChooser_Proxy(),
-			m_dlg(dlg)
-	{
-	};
-	virtual void okAction ()
-	{
-		m_dlg->okAction();
-	};
-	virtual void cancelAction ()
-	{
-		m_dlg->cancelAction();
-	};
-	virtual void selectAction ()
-	{
-		m_dlg->okAction();
-	};
-private:
-	XAP_CocoaDialog_Language*	m_dlg;
-};
-
-
-/*****************************************************************/
-XAP_Dialog * XAP_CocoaDialog_Language::static_constructor(XAP_DialogFactory * pFactory,
-														 XAP_Dialog_Id dlgid)
-{
-	XAP_CocoaDialog_Language * p = new XAP_CocoaDialog_Language(pFactory,dlgid);
+	XAP_CocoaDialog_Language * p = new XAP_CocoaDialog_Language(pFactory, dlgid);
 	return p;
 }
 
-XAP_CocoaDialog_Language::XAP_CocoaDialog_Language(XAP_DialogFactory * pDlgFactory,
-												   XAP_Dialog_Id dlgid)
-	: XAP_Dialog_Language(pDlgFactory,dlgid),
-		m_dataSource(nil),
-		m_dlg(nil)
+XAP_CocoaDialog_Language::XAP_CocoaDialog_Language(XAP_DialogFactory * pDlgFactory, XAP_Dialog_Id dlgid) :
+	XAP_Dialog_Language(pDlgFactory, dlgid),
+	m_dlg(nil)
 {
+	// 
 }
 
 XAP_CocoaDialog_Language::~XAP_CocoaDialog_Language(void)
 {
+	// 
 }
-
-
-void XAP_CocoaDialog_Language::okAction(void)
-{	
-	m_answer = XAP_Dialog_Language::a_OK;
-	[NSApp stopModal];
-}
-
-
-void XAP_CocoaDialog_Language::cancelAction(void)
-{
-	m_answer = XAP_Dialog_Language::a_CANCEL;
-	[NSApp stopModal];
-}
-
 
 void XAP_CocoaDialog_Language::runModal(XAP_Frame * pFrame)
 {
-	NSWindow* window;
-	m_dlg = [XAP_GenericListChooser_Controller loadFromNib];
-	UT_ASSERT(m_pApp);
-	XAP_LanguageList_Proxy proxy(this);
-	[m_dlg setXAPProxy:&proxy];
-	m_dataSource = [[XAP_StringListDataSource alloc] init];
-	
-	window = [m_dlg window];
-	const XAP_StringSet * pSS = m_pApp->getStringSet();
-	[m_dlg setTitle:LocalizedString(pSS, XAP_STRING_ID_DLG_ULANG_LangTitle)];
-	[m_dlg setLabel:LocalizedString(pSS, XAP_STRING_ID_DLG_ULANG_LangLabel)];
+	m_dlg = [[XAP_CocoaDialog_Language_Controller alloc] initFromNib];
 
-	for (UT_uint32 k = 0; k < m_iLangCount; k++)
-	{
-		[m_dataSource addString:[NSString stringWithUTF8String:m_ppLanguages[k]]];
-	}
-	[m_dlg setDataSource:m_dataSource];
-	
-	// Set the defaults in the list boxes according to dialog data
-	int foundAt = 0;
+	[m_dlg setXAPOwner:this];
 
-	// is this safe with an XML_Char * string?
-	foundAt = [m_dataSource rowWithCString:m_pLanguage];
-	if (foundAt >= 0)
-	{
-		[m_dlg setSelected:foundAt];
-	}
-	
-	[NSApp runModalForWindow:window];
+	[NSApp runModalForWindow:[m_dlg window]];
 
-	if (m_answer == XAP_Dialog_Language::a_OK)
-	{
-		int row = [m_dlg selected];
-		NSString* str = [[m_dataSource array] objectAtIndex:row];
-		const char* 	utf8str = [str UTF8String];
-		if (!m_pLanguage || UT_stricmp(m_pLanguage, utf8str))
+	int index = [m_dlg indexOfSelectedLanguage];
+
+	if (index >= 0)
 		{
-			_setLanguage((XML_Char*)utf8str);
+			m_answer = XAP_Dialog_Language::a_OK;
+
+			setMakeDocumentDefault([m_dlg applyToDocument] == YES);
+
+			_setLanguage(m_ppLanguages[index]);
+
 			m_bChangedLanguage = true;
 		}
-	}
-	[m_dlg close];
+	else
+		{
+			m_answer = XAP_Dialog_Language::a_CANCEL;
+		}
 
-	[m_dataSource release];
+	[m_dlg close];
+	[m_dlg release];
 
 	m_dlg = nil;
 }
 
+/* **************************************************************************************** */
+
+@implementation XAP_CocoaDialog_Language_Controller
+
+- (id)initFromNib
+{
+	if (self = [super initWithWindowNibName:@"xap_CocoaDlg_Language"])
+		{
+			_xap = 0;
+
+			m_Selection = 0;
+			m_SelectionIndex = -1;
+
+			m_bApplyToDocument = NO;
+
+			m_Languages = [[NSMutableArray alloc] initWithCapacity:100];
+			if (!m_Languages)
+				{
+					[self release];
+					self = nil;
+				}
+		}
+	return self;
+}
+
+- (void)dealloc
+{
+	if (m_Languages)
+		{
+			[m_Languages release];
+			m_Languages = 0;
+		}
+	if (m_Selection)
+		{
+			[m_Selection release];
+			m_Selection = 0;
+		}
+	[super dealloc];
+}
+
+- (void)setXAPOwner:(XAP_Dialog *)owner
+{
+	if (m_Selection)
+		{
+			[m_Selection release];
+			m_Selection = 0;
+		}
+	m_SelectionIndex = -1;
+
+	_xap = static_cast<XAP_CocoaDialog_Language *>(owner);
+}
+
+- (void)discardXAP
+{
+	if (m_Selection)
+		{
+			[m_Selection release];
+			m_Selection = 0;
+		}
+	m_SelectionIndex = -1;
+
+	_xap = 0;
+}
+
+- (void)windowDidLoad
+{
+	const XAP_StringSet * pSS = XAP_App::getApp()->getStringSet();
+
+	LocalizeControl([self window],     pSS, XAP_STRING_ID_DLG_ULANG_LangTitle);
+
+	LocalizeControl(oCancel,           pSS, XAP_STRING_ID_DLG_Cancel);
+	LocalizeControl(oOK,               pSS, XAP_STRING_ID_DLG_OK);
+
+	LocalizeControl(oDocumentDefault,  pSS, XAP_STRING_ID_DLG_ULANG_DefaultLangChkbox);
+
+	if (_xap)
+		{
+			UT_UTF8String defaultLanguageString;
+			_xap->getDocDefaultLangDescription(defaultLanguageString);
+			[oDocumentCurrent setStringValue:[NSString stringWithUTF8String:(defaultLanguageString.utf8_str())]];
+
+			const char * current_language = _xap->getCurrentLanguage();
+
+			int current_index = -1;
+
+			UT_uint32 count = _xap->getLanguageCount();
+
+			for (UT_uint32 i = 0; i < count; i++)
+				{
+					const char * language = _xap->getNthLanguage(i);
+
+					[m_Languages addObject:[NSString stringWithUTF8String:language]];
+
+					if (current_language)
+						if (UT_stricmp(current_language, language) == 0)
+							{
+								current_index = (int) i;
+							}
+				}
+			[oLanguageTable reloadData];
+
+			if (current_index >= 0)
+				{
+					[oLanguageTable selectRow:current_index byExtendingSelection:NO];
+				}
+		}
+}
+
+- (NSString *)selectedLanguage
+{
+	return m_Selection;
+}
+
+- (int)indexOfSelectedLanguage
+{
+	return m_SelectionIndex;
+}
+
+- (BOOL)applyToDocument
+{
+	return m_bApplyToDocument;
+}
+
+- (IBAction)aCancel:(id)sender
+{
+	if (m_Selection)
+		{
+			[m_Selection release];
+			m_Selection = 0;
+		}
+	m_SelectionIndex = -1;
+
+	[NSApp stopModal];
+}
+
+- (IBAction)aOK:(id)sender
+{
+	m_bApplyToDocument = ([oDocumentDefault state] == NSOnState) ? YES : NO;
+
+	[NSApp stopModal];
+}
+
+- (IBAction)aLanguageTable:(id)sender
+{
+	if (m_Selection)
+		{
+			[m_Selection release];
+			m_Selection = 0;
+		}
+	m_SelectionIndex = [oLanguageTable selectedRow];
+
+	if (m_SelectionIndex >= 0)
+		{
+			if ((unsigned) m_SelectionIndex < [m_Languages count])
+				{
+					m_Selection = (NSString *) [m_Languages objectAtIndex:((unsigned) m_SelectionIndex)];
+					[m_Selection retain];
+				}
+			else // huh?
+				{
+					m_SelectionIndex = -1;
+				}
+		}
+}
+
+/* NSTableViewDataSource methods
+ */
+- (int)numberOfRowsInTableView:(NSTableView *)aTableView
+{
+	return (int) [m_Languages count];
+}
+
+- (id)tableView:(NSTableView *)aTableView objectValueForTableColumn:(NSTableColumn *)aTableColumn row:(int)rowIndex
+{
+	return [m_Languages objectAtIndex:((unsigned) rowIndex)];
+}
+
+/* NSTableView delegate methods
+ */
+- (void)tableView:(NSTableView *)aTableView willDisplayCell:(id)aCell forTableColumn:(NSTableColumn *)aTableColumn row:(int)rowIndex
+{
+	// 
+}
+
+- (BOOL)tableView:(NSTableView *)aTableView shouldSelectRow:(int)rowIndex
+{
+	return YES;
+}
+
+@end

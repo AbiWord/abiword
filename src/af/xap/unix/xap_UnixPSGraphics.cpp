@@ -989,7 +989,7 @@ void PS_Graphics::_emit_SetColor(void)
   unsigned char newclr;
 
   {
-	  UT_LocaleTransactor(LC_NUMERIC, "C");
+	  UT_LocaleTransactor t(LC_NUMERIC, "C");
 	  switch(m_cs)
 	  {
 	  case GR_Graphics::GR_COLORSPACE_COLOR:

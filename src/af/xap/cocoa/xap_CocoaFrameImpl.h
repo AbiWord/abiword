@@ -48,7 +48,8 @@ class XAP_CocoaFrameImpl;
 - (void)setTextView:(id <NSTextInput>)tv;
 - (id <NSTextInput>)textView;
 
-- (NSArray*)getToolbars;
+- (NSArray *)getToolbars;
+- (NSString *)getToolbarSummaryID;
 @end
 
 

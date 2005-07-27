@@ -79,6 +79,8 @@ public:
 class ABI_EXPORT GR_ImageFactory
 {
 public:
+	virtual ~GR_ImageFactory() {}
+
    	virtual GR_Image*	createNewImage(const char* pszName, GR_Image::GRType iType = GR_Image::GRT_Raster) = 0;
 };
 

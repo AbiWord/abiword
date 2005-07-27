@@ -895,7 +895,8 @@ bool fp_TextRun::canMergeWithNext(void)
 	if (!getNextRun() ||
 		!getLine() ||
 		getNextRun()->getType() != FPRUN_TEXT ||
-		!getNextRun()->getLine())
+		!getNextRun()->getLine() ||
+		getLength()+ getNextRun()->getLength() > 32000) // sanity check, see bug 8542
 	{
 		return false;
 	}

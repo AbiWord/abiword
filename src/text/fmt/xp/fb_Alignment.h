@@ -49,6 +49,7 @@ class ABI_EXPORT fb_Alignment
 {
 
 public:
+	virtual ~fb_Alignment() {}
 
 	virtual void		initialize(fp_Line *pLine) = 0;
 	virtual UT_sint32	getStartPosition() = 0;

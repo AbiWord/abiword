@@ -1,3 +1,5 @@
+/* -*- mode: C++; tab-width: 4; c-basic-offset: 4; -*- */
+
 /* AbiWord
  * Copyright (C) 1998 AbiSource, Inc.
  * Copyright (C) 2001, 2003 Hubert Figuiere
@@ -56,17 +58,25 @@ private:
 
 @interface AP_CocoaDialog_PageNumbersController : NSWindowController <XAP_CocoaDialogProtocol>
 {
-    IBOutlet NSBox *_alignmentBox;
-    IBOutlet NSButton *_cancelBtn;
-    IBOutlet NSButtonCell *_centerBtn;
-    IBOutlet NSButtonCell *_footerBtn;
-    IBOutlet NSButtonCell *_headerBtn;
-    IBOutlet NSButtonCell *_leftBtn;
-    IBOutlet NSButton *_okBtn;
-    IBOutlet NSBox *_positionBox;
-    IBOutlet XAP_CocoaNSView *_preview;
-    IBOutlet NSBox *_previewBox;
-    IBOutlet NSButtonCell *_rightBtn;
+	IBOutlet NSButton *		_cancelBtn;
+	IBOutlet NSButton *		_okBtn;
+
+	IBOutlet NSBox *		_positionBox;
+	IBOutlet NSBox *		_alignmentBox;
+	IBOutlet NSBox *		_previewBox;
+
+	IBOutlet NSButtonCell *	_headerBtn;
+	IBOutlet NSButtonCell *	_footerBtn;
+
+	IBOutlet NSButtonCell *	_leftBtn;
+	IBOutlet NSButtonCell *	_centerBtn;
+	IBOutlet NSButtonCell *	_rightBtn;
+
+	IBOutlet NSMatrix *		_positionMatrix;
+	IBOutlet NSMatrix *		_alignmentMatrix;
+
+	IBOutlet XAP_CocoaNSView *_preview;
+
 	AP_CocoaDialog_PageNumbers*	_xap;
 }
 - (IBAction)alignmentAction:(id)sender;

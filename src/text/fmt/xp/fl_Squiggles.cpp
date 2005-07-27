@@ -24,6 +24,7 @@
 #include "ut_string.h"
 #include "fv_View.h"
 #include "pd_Document.h"
+#include "fp_Run.h"
 
 /*! \page squiggle_overview Squiggles
 
@@ -273,6 +274,7 @@ fl_Squiggles::add(fl_PartOfBlock* pPOB)
 			// "gest's" the entire >gest's< is squiggled.
 			pPrev->setLength(pPOB->getLength());
 			_deleteNth(iIndex--);
+			markForRedraw(pPrev);
 		}
 		else if (pPOB->getOffset() == pPrev->getOffset() + pPrev->getLength())
 		{
@@ -281,7 +283,17 @@ fl_Squiggles::add(fl_PartOfBlock* pPOB)
 			// typing a character ' between them.
 			pPrev->setLength(pPrev->getLength() + pPOB->getLength());
 			_deleteNth(iIndex--);
+			markForRedraw(pPrev);
 		}
+		else
+		{
+			markForRedraw(pPOB);
+		}
+
+	}
+	else
+	{
+	        markForRedraw(pPOB);
 	}
 #if UT_DEBUG
 	UT_sint32 iSquiggles = _getCount();
@@ -310,8 +322,8 @@ fl_Squiggles::_deleteNth(UT_sint32 iIndex)
 {
 	xxx_UT_DEBUGMSG(("fl_Squiggles::delelteNth(%d)\n", iIndex));
 	fl_PartOfBlock* pPOB = getNth(iIndex);
-	clear(pPOB);
 	m_vecSquiggles.deleteNthItem(iIndex);
+	clear(pPOB);
 	delete pPOB;
 }
 
@@ -378,6 +390,27 @@ fl_Squiggles::get(UT_sint32 iOffset) const
 }
 
 /*!
+ * Mark all the runs overlapping with the POB for Redraw.
+ */
+void fl_Squiggles::markForRedraw(fl_PartOfBlock* pPOB)
+{
+	PT_DocPosition pos1 = pPOB->getOffset();
+	PT_DocPosition pos2 = pos1 + pPOB->getLength();
+	//
+	// Make sure the runs in this POB get redrawn.
+	//
+	fp_Run * pRun = m_pOwner->getFirstRun();
+	while(pRun && (pRun->getBlockOffset() <= pos2))
+	{
+	    if((pRun->getBlockOffset() + pRun->getLength() >= pos1))
+	    {
+	         pRun->markAsDirty();
+	    }
+	    pRun = pRun->getNextRun();
+	}
+}
+
+/*!
  Clear squiggle
  \param pPOB Part of block to clear squiggle for
  This clears the squiggle graphics from the screen.
@@ -391,12 +424,16 @@ fl_Squiggles::clear(fl_PartOfBlock* pPOB)
 		return;
 	}
 	FV_View* pView = m_pOwner->getDocLayout()->getView();
-	if(pView->getDocument()->isPieceTableChanging())
-	{
-		return;
-	}
 	PT_DocPosition pos1 = m_pOwner->getPosition() + pPOB->getOffset();
 	PT_DocPosition pos2 = pos1 + pPOB->getLength();
+	if(pView->getDocument()->isPieceTableChanging())
+	{
+	  //
+	  // Make sure the runs in this POB get redrawn.
+	  //
+	  markForRedraw(pPOB);
+	  return;
+	}
 	PT_DocPosition posEOD = 0;
 	m_pOwner->getDocument()->getBounds(true,posEOD);
 	if(pos2 > posEOD)
@@ -448,7 +485,7 @@ fl_Squiggles::textInserted(UT_sint32 iOffset, UT_sint32 iLength)
 			// offset according to the change
 			if (pPending->getOffset() > iOffset)
 				pPending->setOffset(pPending->getOffset() + chg);
-
+			
 #if 0
 			m_pOwner->getDocLayout()->checkPendingWordForSpell();
 #else

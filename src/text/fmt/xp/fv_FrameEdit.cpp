@@ -1003,14 +1003,16 @@ bool FV_FrameEdit::isImageWrapper(void) const
 	return false;
 }
 
-bool FV_FrameEdit::getFrameStrings(UT_sint32 x, UT_sint32 y, 
-										UT_String & sXpos,
-										UT_String & sYpos,
-										UT_String & sWidth,
-										UT_String & sHeight,
-										UT_String & sColXpos,
-										UT_String & sColYpos,
-								   fl_BlockLayout ** pCloseBL)
+bool FV_FrameEdit::getFrameStrings(UT_sint32 x, UT_sint32 y,
+				   UT_String & sXpos,
+				   UT_String & sYpos,
+				   UT_String & sWidth,
+				   UT_String & sHeight,
+				   UT_String & sColXpos,
+				   UT_String & sColYpos,
+				   UT_String & sPageXpos,
+				   UT_String & sPageYpos,
+				   fl_BlockLayout ** pCloseBL)
 {
 //
 // Find the block that contains (x,y). We'll insert the frame after
@@ -1109,6 +1111,13 @@ bool FV_FrameEdit::getFrameStrings(UT_sint32 x, UT_sint32 y,
 		double yPos = static_cast<double>(finalColy)/static_cast<double>(UT_LAYOUT_RESOLUTION);
 		sColXpos = UT_formatDimensionedValue(xPos,"in", NULL);
 		sColYpos = UT_formatDimensionedValue(yPos,"in", NULL);
+		//
+		// OK calculate relative to page now
+		//
+		xPos += static_cast<double>(pCol->getX())/static_cast<double>(UT_LAYOUT_RESOLUTION);
+		yPos += static_cast<double>(pCol->getY())/static_cast<double>(UT_LAYOUT_RESOLUTION);
+		sPageXpos = UT_formatDimensionedValue(xPos,"in", NULL);
+		sPageYpos = UT_formatDimensionedValue(yPos,"in", NULL);
 
 //
 // Find the screen coords of pLine, then work out the offset to the (x,y)
@@ -1190,22 +1199,26 @@ void FV_FrameEdit::mouseRelease(UT_sint32 x, UT_sint32 y)
 		UT_String sYpos("");
 		UT_String sColXpos("");
 		UT_String sColYpos("");
+		UT_String sPageXpos("");
+		UT_String sPageYpos("");
 		UT_String sWidth("");
 		UT_String sHeight("");
 		fl_BlockLayout * pCloseBL = NULL;
-		getFrameStrings(m_recCurFrame.left,m_recCurFrame.top,sXpos,sYpos,sWidth,sHeight,sColXpos,sColYpos,&pCloseBL);
+		getFrameStrings(m_recCurFrame.left,m_recCurFrame.top,sXpos,sYpos,sWidth,sHeight,sColXpos,sColYpos,sPageXpos,sPageYpos,&pCloseBL);
 		pf_Frag_Strux * pfFrame = NULL;
-		const XML_Char * props[22] = {"frame-type","textbox",
-									  "wrap-mode","wrapped-both",
-									 "position-to","column-above-text",
-									 "xpos",sXpos.c_str(),
-									 "ypos",sYpos.c_str(),
-									 "frame-width",sWidth.c_str(),
-									  "frame-height",sHeight.c_str(),
-									  "frame-col-xpos",sColXpos.c_str(),
-									  "frame-col-ypos",sColYpos.c_str(),
-									  "background-color", "ffffff",
-									  NULL,NULL};
+		const XML_Char * props[26] = {"frame-type","textbox",
+					      "wrap-mode","wrapped-both",
+					      "position-to","column-above-text",
+					      "xpos",sXpos.c_str(),
+					      "ypos",sYpos.c_str(),
+					      "frame-width",sWidth.c_str(),
+					      "frame-height",sHeight.c_str(),
+					      "frame-col-xpos",sColXpos.c_str(),
+					      "frame-col-ypos",sColYpos.c_str(),
+					      "frame-page-xpos",sPageXpos.c_str(),
+					      "frame-page-ypos",sPageYpos.c_str(),
+					      "background-color", "ffffff",
+					      NULL,NULL};
 //
 // This should place the the frame strux immediately after the block containing
 // position posXY.
@@ -1555,8 +1568,10 @@ void FV_FrameEdit::mouseRelease(UT_sint32 x, UT_sint32 y)
 		UT_String sHeight("");
 		UT_String sColXpos("");
 		UT_String sColYpos("");
+		UT_String sPageXpos("");
+		UT_String sPageYpos("");
 		fl_BlockLayout * pCloseBL = NULL;
-		getFrameStrings(m_recCurFrame.left,m_recCurFrame.top,sXpos,sYpos,sWidth,sHeight,sColXpos,sColYpos,&pCloseBL);
+		getFrameStrings(m_recCurFrame.left,m_recCurFrame.top,sXpos,sYpos,sWidth,sHeight,sColXpos,sColYpos,sPageXpos,sPageYpos,&pCloseBL);
 		sProp = "xpos";
 		sVal = sXpos;
 		UT_String_setProperty(sFrameProps,sProp,sVal);		
@@ -1569,6 +1584,14 @@ void FV_FrameEdit::mouseRelease(UT_sint32 x, UT_sint32 y)
 		UT_String_setProperty(sFrameProps,sProp,sVal);		
 		sProp = "frame-col-ypos";
 		sVal = sColYpos;
+		UT_String_setProperty(sFrameProps,sProp,sVal);		
+
+
+		sProp = "frame-page-xpos";
+		sVal = sPageXpos;
+		UT_String_setProperty(sFrameProps,sProp,sVal);		
+		sProp = "frame-page-ypos";
+		sVal = sPageYpos;
 		UT_String_setProperty(sFrameProps,sProp,sVal);		
 
 		sProp = "frame-width";

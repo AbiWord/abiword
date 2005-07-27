@@ -86,6 +86,7 @@ void AP_Dialog_Stylist::Apply(void)
 		return;
 	}
 	pView->setStyle(getCurStyle()->utf8_str());
+	pView->notifyListeners(AV_CHG_MOTION | AV_CHG_HDRFTR);
 }
 
 void AP_Dialog_Stylist::stopUpdater(void)

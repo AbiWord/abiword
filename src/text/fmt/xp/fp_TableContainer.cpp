@@ -2602,7 +2602,8 @@ void fp_CellContainer::setLineMarkers(void)
 	}
 	else
 	{
-		m_iRight = getX() + getWidth() - getGraphics()->tlu(1);
+		//		m_iRight = getX() + getWidth() - getGraphics()->tlu(1);
+		m_iRight = getX() + getWidth();
 		m_iRight += static_cast<UT_sint32> (0.5 * static_cast<double>(pTab->getBorderWidth()));
 	}
 	m_iTopY = pTab->getYOfRow(getTopAttach());

@@ -1,3 +1,5 @@
+/* -*- mode: C++; tab-width: 4; c-basic-offset: 4; -*- */
+
 /* AbiWord
  * Copyright (C) 1998 AbiSource, Inc.
  * Copyright (C) 2001, 2003 Hubert Figuiere
@@ -75,6 +77,10 @@ private:
 - (void)typesAction:(id)sender;
 - (IBAction)cancelAction:(id)sender;
 - (IBAction)okAction:(id)sender;
+
+/* NSTableView delegate methods
+ */
+- (void)tableViewSelectionDidChange:(NSNotification *)aNotification;
 @end
 
 #endif /* AP_COCOADIALOG_FIELD_H */

@@ -8,6 +8,7 @@
 ; load each [partially] supported language 
 ${LANG_LOAD} "Albanian"
 ${LANG_LOAD} "Arabic"
+${LANG_LOAD} "Breton"
 ${LANG_LOAD} "Bulgarian"
 ${LANG_LOAD} "Catalan"
 ${LANG_LOAD} "Croatian"

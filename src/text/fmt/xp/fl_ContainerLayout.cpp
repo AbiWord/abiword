@@ -48,6 +48,8 @@
 #include "ut_units.h"
 #include "fl_FrameLayout.h"
 #include "fp_FrameContainer.h"
+#include "fl_AutoNum.h"
+
 
 fl_ContainerLayout::fl_ContainerLayout(fl_ContainerLayout* pMyLayout, PL_StruxDocHandle sdh, PT_AttrPropIndex indexAP, PTStruxType iStrux, fl_ContainerType iType)
 	: fl_Layout(iStrux, sdh),
@@ -95,7 +97,7 @@ void fl_ContainerLayout::lookupProperties(void)
 	
 	//  Find the folded Level of the strux
 	lookupFoldedLevel();
-	if(isHidden() == FP_VISIBLE && getFoldedLevel()>0)
+	if((isHidden() == FP_VISIBLE) && (getFoldedLevel() > 0) && (getLevelInList() > getFoldedLevel()) )
 	{
 		xxx_UT_DEBUGMSG(("Table set to hidden folded \n"));
 		setVisibility(FP_HIDDEN_FOLDED);
@@ -213,7 +215,86 @@ const char*	fl_ContainerLayout::getAttribute(const char * pszName) const
 	return pszAtt;
 }
 
+/*!
+ * Return the nested List level of this structure.
+ */
+UT_sint32 fl_ContainerLayout::getLevelInList(void)
+{
+      fl_BlockLayout * pBList = NULL;
+      if(getContainerType() == FL_CONTAINER_BLOCK)
+      {
+	   pBList = static_cast<fl_BlockLayout * >(this);
+      }
+      else
+      {
+	   pBList = getPrevBlockInDocument();
+      }
+      UT_sint32 iLevel = 0;
+      bool bLoop = true;
+      while(pBList && bLoop)
+      {
+	  while(pBList && !pBList->isListItem())
+	  {
+	       pBList = pBList->getPrevBlockInDocument();
+	  }
+	  if(pBList == NULL)
+	  {
+	       bLoop = false;
+	       break;
+	  }
+	  const PP_AttrProp * pAP = NULL;
+	  pBList->getAP(pAP);
+	  const XML_Char * szLid=NULL;
+	  UT_uint32 id=0;
 
+	  if (!pAP || !pAP->getAttribute(PT_LISTID_ATTRIBUTE_NAME, szLid))
+	       szLid = NULL;
+	  if (szLid)
+	  {
+	       id = atoi(szLid);
+		
+	  }
+	  else
+	  {
+		id = 0;
+	  }
+	  if(id == 0)
+	  {
+	        bLoop = false;
+	        break;
+	  }
+	  PD_Document * pDoc = getDocLayout()->getDocument();
+	  fl_AutoNum * pAuto = pDoc->getListByID( id);
+	  if(pAuto->getLastItem() == pBList->getStruxDocHandle())
+	  {
+	        if(pAuto->getLastItem() == getStruxDocHandle())
+		{
+		     iLevel = pAuto->getLevel();
+		     bLoop = false;
+		     break;
+		}
+	        iLevel = pAuto->getLevel() -1;
+		if(iLevel < 0)
+		{
+		      iLevel = 0;
+		}
+	  }
+	  else
+	  {
+	        if(pBList == this)
+	        { 
+		      iLevel = pAuto->getLevel();
+		}
+		else
+		{
+		      iLevel = pAuto->getLevel() + 1;
+		}
+	  }
+	  bLoop = false;
+	  break;
+      }
+      return iLevel;
+}
 /*!
  * This method returns the folded level of the text.
  */
@@ -249,7 +330,7 @@ void fl_ContainerLayout::lookupFoldedLevel(void)
 	{
 		m_iFoldedLevel = atoi(pszTEXTFOLDED);
 	}
-
+	xxx_UT_DEBUGMSG(("FOlded Level is %d \n",m_iFoldedLevel));
     pszTEXTFOLDED = NULL;
 	if(!pSectionAP || !pSectionAP->getProperty("text-folded-id",pszTEXTFOLDED))
 	{

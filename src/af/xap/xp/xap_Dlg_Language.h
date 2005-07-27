@@ -91,7 +91,7 @@ protected:
 	UT_uint32					    m_iLangCount;
 	bool                            m_bSpellCheck;
 	bool                            m_bDocDefault;
-	const XML_Char *                m_pDocLang;
+	UT_UTF8String                   m_docLang;
 };
 #endif /* XAP_DIALOG_LANGUAGE_H */
 

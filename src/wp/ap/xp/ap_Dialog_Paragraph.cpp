@@ -440,6 +440,8 @@ bool AP_Dialog_Paragraph::getDialogData(const XML_Char **& pProps)
 			// get with no dimension
 			UT_Dimension dim = UT_determineDimension(_getSpinItemValue(id_SPIN_SPECIAL_INDENT));
 			double val = UT_convertDimensionless(_getSpinItemValue(id_SPIN_SPECIAL_INDENT));
+			// Convert to inches
+			val = UT_convertDimToInches(val, dim);
 
 			// flip sign
 			val = val * (double) -1;
@@ -1108,8 +1110,11 @@ void AP_Dialog_Paragraph::_syncControls(tControl changed, bool bAll /* = false *
 
 		// sanity check.
 
-		double effectiveLeftMargin = UT_convertToDimension
-		  (_getSpinItemValue(id_SPIN_SPECIAL_INDENT), m_dim) * sign;
+		double leftIndent =
+		UT_convertToDimension(_getSpinItemValue(id_SPIN_LEFT_INDENT), m_dim);
+
+		double effectiveLeftMargin = leftIndent + (UT_convertToDimension
+		  (_getSpinItemValue(id_SPIN_SPECIAL_INDENT), m_dim) * sign);
 
 		double leftPageMargin = UT_convertToDimension(m_pageLeftMargin, m_dim);
 		double rightIndent = UT_convertToDimension(_getSpinItemValue(id_SPIN_RIGHT_INDENT), m_dim);
@@ -1119,7 +1124,7 @@ void AP_Dialog_Paragraph::_syncControls(tControl changed, bool bAll /* = false *
 			_setSpinItemValue(id_SPIN_SPECIAL_INDENT,
 									(const XML_Char *)UT_formatDimensionString(m_dim, -leftPageMargin),
 									op_SYNC);
-		}
+		} 
 
   		if(effectiveLeftMargin >
 			UT_convertInchesToDimension(m_iMaxWidth, m_dim) - rightIndent)

@@ -21,8 +21,6 @@
  * 02111-1307, USA.
  */
 
-#undef GTK_DISABLE_DEPRECATED
-
 #include <gtk/gtk.h>
 #include <gdk/gdkkeysyms.h>
 #include <gdk/gdk.h>
@@ -458,9 +456,7 @@ on_pressed(GtkButton* button, gpointer user_data)
 	popup_grab_on_window (GTK_WIDGET(table->area)->window,
 			      gtk_get_current_event_time ());
 
-	selected_color.red = 0;
-	selected_color.green = 0;
-	selected_color.blue = 0x8000;
+	selected_color = (GTK_WIDGET (button))->style->base[GTK_STATE_SELECTED];
 
 	/* leak */
 	table->selected_gc = gdk_gc_new(GTK_WIDGET(button)->window);

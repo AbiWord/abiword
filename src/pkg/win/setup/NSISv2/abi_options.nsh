@@ -41,7 +41,7 @@
 
 ; Initially selected/default download location for dictionary files
 ; we attempt to let user pick, but this is our fallback/default entry
-!define DICTIONARY_BASE_DEFAULT "http://dl.sourceforge.net/abiword"
+!define DICTIONARY_BASE_DEFAULT "http://www.abisource.com/downloads/dictionaries/Windows/archives"
 
 ; The other/mirror locations for downloading dictionary files
 !define DICTIONARY_BASE_MIRRORS "http://unc.dl.sourceforge.net/abiword|http://telia.dl.sourceforge.net/abiword|http://umn.dl.sourceforge.net/abiword|http://twtelecom.dl.sourceforge.net/abiword|http://easynews.dl.sourceforge.net/abiword|http://belnet.dl.sourceforge.net/abiword|http://cesnet.dl.sourceforge.net/abiword|http://switch.dl.sourceforge.net/abiword"

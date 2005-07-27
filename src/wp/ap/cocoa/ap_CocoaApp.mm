@@ -181,26 +181,69 @@ static bool s_createDirectoryIfNecessary(const char * szDir, bool publicdir = fa
 */
 bool AP_CocoaApp::initialize(void)
 {
+	static const char * suffix = "/Library/Application Support/AbiSuite";
+
+	if (s_createDirectoryIfNecessary(suffix, true)) // let's create some system-level directories also, if we can
+		{
+			UT_UTF8String path(suffix);
+
+			path += "/dictionary";
+			s_createDirectoryIfNecessary(path.utf8_str(), true);
+
+			path  = suffix;
+			path += "/templates";
+			s_createDirectoryIfNecessary(path.utf8_str(), true);
+
+			path  = suffix;
+			path += "/Plug-ins";
+			s_createDirectoryIfNecessary(path.utf8_str(), true);
+		}
+
     const char * szUserPrivateDirectory = getUserPrivateDirectory();
 
     bool bVerified = false;
+
 	if (szUserPrivateDirectory)
 		{
-			static const char * suffix = "/Application Support/AbiSuite";
-			int suffix_length = strlen (suffix);
-			int usrprv_length = strlen (szUserPrivateDirectory);
-			if (usrprv_length > suffix_length)
-				if (strcmp (szUserPrivateDirectory + (usrprv_length - suffix_length), suffix) == 0)
-					{
-						UT_String path(szUserPrivateDirectory, usrprv_length - suffix_length);
+			int suffix_length = strlen(suffix);
+			int usrprv_length = strlen(szUserPrivateDirectory);
 
-						if (s_createDirectoryIfNecessary (path.c_str ()))
+			if (usrprv_length > suffix_length)
+				if (strcmp(szUserPrivateDirectory + (usrprv_length - suffix_length), suffix) == 0)
+					{
+						UT_UTF8String path(szUserPrivateDirectory, usrprv_length - suffix_length);
+
+						if (s_createDirectoryIfNecessary(path.utf8_str()))
 							{
-								path += "/Application Support";
-								if (s_createDirectoryIfNecessary (path.c_str ()))
+								path += "/Library";
+								if (s_createDirectoryIfNecessary(path.utf8_str()))
 									{
-										path += "/AbiSuite";
-										if (s_createDirectoryIfNecessary (path.c_str ())) bVerified = true;
+										path += "/Application Support";
+										if (s_createDirectoryIfNecessary(path.utf8_str()))
+											{
+												UT_UTF8String path2(path);
+
+												path2 += "/Enchant";
+												s_createDirectoryIfNecessary(path2.utf8_str());
+
+												path += "/AbiSuite";
+												if (s_createDirectoryIfNecessary(path.utf8_str()))
+													{
+														bVerified = true;
+
+														path2  = path;
+														path2 += "/dictionary";
+														s_createDirectoryIfNecessary(path2.utf8_str());
+
+														path2  = path;
+														path2 += "/templates";
+														s_createDirectoryIfNecessary(path2.utf8_str());
+
+														path2  = path;
+														path2 += "/Plug-ins";
+														s_createDirectoryIfNecessary(path2.utf8_str());
+													}
+											}
 									}
 							}
 					}
@@ -450,7 +493,7 @@ bool AP_CocoaApp::getPrefsValueDirectory(bool bAppSpecific,
 */
 const char * AP_CocoaApp::getAbiSuiteAppDir(void) const
 {
-	static const char * SystemAppDir = "/Library/Application Support/AbiSuite/AbiWord";
+	static const char * SystemAppDir = "/Library/Application Support/AbiSuite/AbiWord"; // FIXME ??
 	return SystemAppDir;
 #if 0
     // we return a static string, use it quickly.

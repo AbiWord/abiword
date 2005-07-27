@@ -1,3 +1,5 @@
+/* -*- mode: C++; tab-width: 4; c-basic-offset: 4; -*- */
+
 /* AbiWord
  * Copyright (C) 2001 AbiSource, Inc.
  * Copyright (C) 2001, 2003 Hubert Figuiere
@@ -62,17 +64,19 @@ class AP_CocoaDialog_PageSetup;
 class AP_CocoaDialog_PageSetup : public AP_Dialog_PageSetup
 {
 public:
-	AP_CocoaDialog_PageSetup (XAP_DialogFactory *pDlgFactory, XAP_Dialog_Id dlgid);
-	virtual ~AP_CocoaDialog_PageSetup (void);
-
-	virtual void runModal (XAP_Frame *pFrame);
-
 	static XAP_Dialog *		static_constructor(XAP_DialogFactory *, XAP_Dialog_Id dlgid);
 
+	AP_CocoaDialog_PageSetup(XAP_DialogFactory * pDlgFactory, XAP_Dialog_Id dlgid);
+
+	virtual ~AP_CocoaDialog_PageSetup();
+
+	virtual void runModal(XAP_Frame *pFrame);
+
 private:
-	void _validate(AP_CocoaDialog_PageSetup_Controller* ctrl);
-	AP_CocoaDialog_PageSetup_Controller* m_ctrl;
-    XAP_Frame * m_pFrame;
+	bool					_validate(AP_CocoaDialog_PageSetup_Controller* ctrl, NSPrintInfo * printInfo);
+
+	AP_CocoaDialog_PageSetup_Controller *	m_ctrl;
+	XAP_Frame *								m_pFrame;
 };
 
 #endif // AP_CocoaDialog_PageSetup_H

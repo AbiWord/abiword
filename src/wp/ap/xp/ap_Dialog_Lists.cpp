@@ -229,22 +229,40 @@ void AP_Dialog_Lists::Apply(void)
 // OK fold up the text according the level specified.
 //
 		fl_AutoNum * pAuto = getBlock()->getAutoNum();
-		if(!pAuto)
-		{
-			return;
-		}
 		const XML_Char * props[5] = {"text-folded",NULL,"text-folded-id",NULL,NULL};
 		UT_UTF8String sStr = UT_UTF8String_sprintf("%d",getCurrentFold());
 		props[1] = sStr.utf8_str();
-		PT_DocPosition posLow = 0;
-		PT_DocPosition posHigh = 0;
-		UT_uint32 ID = pAuto->getID();
+		UT_uint32 ID = 0;
+		if(!pAuto)
+		{
+		        ID = getView()->getDocument()->getUID(UT_UniqueId::List);
+		}
+		else
+		{
+		        ID = pAuto->getID();
+		}
 		UT_UTF8String sID = UT_UTF8String_sprintf("%d",ID);
 		props[3] = sID.utf8_str();
-		PL_StruxDocHandle sdhLow = pAuto->getFirstItem();
-		PL_StruxDocHandle sdhHigh = pAuto->getLastItem();
-		posLow = getView()->getDocument()->getStruxPosition(sdhLow)+1;
-		posHigh = getView()->getDocument()->getStruxPosition(sdhHigh)+1;
+		PT_DocPosition posLow = 0;
+		PT_DocPosition posHigh = 0;
+		if(getView()->isSelectionEmpty() && pAuto)
+		{
+		      PL_StruxDocHandle sdhLow = pAuto->getFirstItem();
+		      PL_StruxDocHandle sdhHigh = pAuto->getLastItem();
+		      posLow = getView()->getDocument()->getStruxPosition(sdhLow)+1;
+		      posHigh = getView()->getDocument()->getStruxPosition(sdhHigh)+1;
+		}
+		else
+		{
+		      posLow = getView()->getPoint();
+		      posHigh = getView()->getSelectionAnchor();
+		      if(posLow > posHigh)
+		      {
+			  PT_DocPosition posTemp = posLow;
+			  posLow = posHigh;
+			  posHigh = posTemp;
+		      }
+		}
 		getView()->setCollapsedRange(posLow,posHigh,props);
 		return;
 	}
@@ -322,6 +340,9 @@ void AP_Dialog_Lists::Apply(void)
 		}
 		getView()->getDocument()->endUserAtomicGlob();
 		clearDirty();
+		getView()->updateLayout();
+		getView()->setPoint(getView()->getPoint());
+		getView()->ensureInsertionPointOnScreen();
 		return;
 	}
 /*!
@@ -340,6 +361,9 @@ void AP_Dialog_Lists::Apply(void)
 		}
 		getView()->getDocument()->endUserAtomicGlob();
 		clearDirty();
+		getView()->updateLayout();
+		getView()->setPoint(getView()->getPoint());
+		getView()->ensureInsertionPointOnScreen();
 		return;
 	}
 /*!
@@ -443,9 +467,12 @@ void AP_Dialog_Lists::Apply(void)
 			}
 		}
 		clearDirty();
+		getView()->updateLayout();
+		getView()->setPoint(getView()->getPoint());
 		getView()->updateScreen(true);
 		getView()->notifyListeners(AV_CHG_MOTION | AV_CHG_HDRFTR);
 		getView()->getDocument()->endUserAtomicGlob();
+		getView()->ensureInsertionPointOnScreen();
 		return;
 	}
 /*!
@@ -467,8 +494,11 @@ void AP_Dialog_Lists::Apply(void)
 		}
 		getView()->getDocument()->endUserAtomicGlob();
 	}
+	getView()->updateLayout();
+	getView()->setPoint(getView()->getPoint());
 	getView()->updateScreen(true);
 	getView()->notifyListeners(AV_CHG_MOTION | AV_CHG_HDRFTR);
+	getView()->ensureInsertionPointOnScreen();
 	clearDirty();
 }
 

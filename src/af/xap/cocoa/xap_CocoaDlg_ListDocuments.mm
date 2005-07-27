@@ -98,12 +98,16 @@ void XAP_CocoaDialog_ListDocuments::event_Cancel(void)
 
 void XAP_CocoaDialog_ListDocuments::_populateWindowData(void)
 {
+	const char * untitled = "(untitled)";
+
 	UT_uint32 c = _getDocumentCount();
 	UT_uint32 i;
 	
 	[m_dataSource removeAllStrings];
-	for (i = 0; i < c; i++) {
-		[m_dataSource addString:[NSString stringWithUTF8String:_getNthDocumentName(i)]];
+	for (i = 0; i < c; i++)
+	{
+		const char * name = _getNthDocumentName(i);
+		[m_dataSource addString:[NSString stringWithUTF8String:(name ? name : untitled)]];
 	}
 }
 

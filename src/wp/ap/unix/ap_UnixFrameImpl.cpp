@@ -106,13 +106,11 @@ static void
 focus_in_event (GtkWidget * drawing_area, GdkEventCrossing *event, AP_UnixFrameImpl * me)
 {
   gtk_widget_grab_focus (drawing_area);
-  me->focusIMIn ();
 }
 
 static void
 focus_out_event (GtkWidget * drawing_area, GdkEventCrossing * event, AP_UnixFrameImpl * me)
 {
-  me->focusIMOut ();
 }
 
 GtkWidget * AP_UnixFrameImpl::_createDocumentWindow()
@@ -352,15 +350,7 @@ void AP_UnixFrameImpl::_setScrollRange(apufi_ScrollType scrollType, int iValue, 
 UT_RGBColor AP_UnixFrameImpl::getColorSelBackground () const
 {
   // owen says that any widget should be ok, not just text widgets
-  gint state;
-  
-  // our text widget has focus
-  if (GTK_WIDGET_HAS_FOCUS(m_dArea))
-    state = GTK_STATE_SELECTED;
-  else
-    state = GTK_STATE_ACTIVE;
-  
-  GdkColor clr = m_dArea->style->base[state];
+  GdkColor clr = m_dArea->style->base[GTK_STATE_SELECTED];
   return UT_RGBColor (clr.red >> 8, clr.green >> 8, clr.blue >> 8);
 }
 

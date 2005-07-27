@@ -53,7 +53,7 @@ void XAP_UnixGnomeDialog_About::runModal(XAP_Frame * pFrame)
   static const gchar *documenters[] = {"David Chart <linux@dchart.demon.co.uk>",
 				       NULL};
 
-  static const gchar *gcopystr = "(c) 1998-2004 Dom Lachowicz and other contributors, GNU GPL v2.0";
+  static const gchar *gcopystr = "(c) 1998-2005 Dom Lachowicz and other contributors, GNU GPL v2.0";
 
   UT_String str (XAP_App::getApp()->getAbiSuiteLibDir());
   str += "/icons/abiword_48.png";

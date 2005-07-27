@@ -27,6 +27,8 @@ class UT_String;
 class XAP_AppImpl
 {
 public:
+	virtual ~XAP_AppImpl() {}
+
 	static XAP_AppImpl* static_constructor(void);		/* must be implemented by the ap_<FE>AppImpl */
 
 	/* XAP_App can call impl methods. */

@@ -342,10 +342,26 @@ fl_SectionLayout * fl_FrameLayout::getSectionLayout(void) const
 bool fl_FrameLayout::doclistener_changeStrux(const PX_ChangeRecord_StruxChange * pcrxc)
 {
 	UT_ASSERT(pcrxc->getType()==PX_ChangeRecord::PXT_ChangeStrux);
+	fp_FrameContainer * pFrameC = static_cast<fp_FrameContainer *>(getFirstContainer());
+	UT_GenericVector<fl_BlockLayout *> vecBlocks;
+	pFrameC->getBlocksAroundFrame(vecBlocks);
+	UT_uint32 i = 0;
+	for(i=0; i< vecBlocks.getItemCount();i++)
+	{
+	  fl_BlockLayout * pBL = vecBlocks.getNthItem(i);
+	  pBL->collapse();
+	  xxx_UT_DEBUGMSG(("Collapse block %x \n",pBL));
+	}
 	setAttrPropIndex(pcrxc->getIndexAP());
 	collapse();
 	lookupProperties();
 	format();
+	for(i=0; i< vecBlocks.getItemCount();i++)
+	{
+	  fl_BlockLayout * pBL = vecBlocks.getNthItem(i);
+	  pBL->format();
+	  xxx_UT_DEBUGMSG(("Format block %x \n",pBL));
+	}
 	return true;
 }
 
@@ -417,6 +433,17 @@ bool fl_FrameLayout::doclistener_deleteStrux(const PX_ChangeRecord_Strux * pcrx)
 		pFrameC->getPage()->markDirtyOverlappingRuns(pFrameC);
 	}
 #endif
+	fp_FrameContainer * pFrameC = static_cast<fp_FrameContainer *>(getFirstContainer());
+	UT_GenericVector<fl_BlockLayout *> vecBlocks;
+	pFrameC->getBlocksAroundFrame(vecBlocks);
+	UT_uint32 i = 0;
+	for(i=0; i< vecBlocks.getItemCount();i++)
+	{
+	  fl_BlockLayout * pBL = vecBlocks.getNthItem(i);
+	  pBL->collapse();
+	  xxx_UT_DEBUGMSG(("Collapse block %x \n",pBL));
+	}
+
 //
 // Remove all remaining structures
 //
@@ -457,9 +484,8 @@ bool fl_FrameLayout::doclistener_deleteStrux(const PX_ChangeRecord_Strux * pcrx)
 		return false;
 	}
 	fl_BlockLayout * pBL = static_cast<fl_BlockLayout *>(pCL);
-	UT_sint32 i = 0;
 	bool bFound = false;
-	for(i=0; i<pBL->getNumFrames() && !bFound;i++)
+	for(i=0; i<static_cast<UT_uint32>(pBL->getNumFrames()) && !bFound;i++)
 	{
 	  fl_FrameLayout * pF = pBL->getNthFrameLayout(i);
 	  if(pF == this)
@@ -487,6 +513,13 @@ bool fl_FrameLayout::doclistener_deleteStrux(const PX_ChangeRecord_Strux * pcrx)
 	  pBL = static_cast<fl_BlockLayout *>(pCL);
 	  pBL->removeFrame(this);
 	}
+	for(i=0; i< vecBlocks.getItemCount();i++)
+	{
+	  pBL = vecBlocks.getNthItem(i);
+	  pBL->format();
+	  xxx_UT_DEBUGMSG(("format block %x \n",pBL));
+	}
+
 	delete this;			// TODO whoa!  this construct is VERY dangerous.
 
 	return true;
@@ -535,8 +568,10 @@ void fl_FrameLayout::_createFrameContainer(void)
 	// Now do Frame image
 
 	const PP_AttrProp* pSectionAP = NULL;
-	m_pLayout->getDocument()->getAttrProp(m_apIndex, &pSectionAP);
-
+	// This is a real NO-NO: must *always* call getAP()
+	// m_pLayout->getDocument()->getAttrProp(m_apIndex, &pSectionAP);
+	getAP(pSectionAP);
+	
 	const XML_Char * pszDataID = NULL;
 	pSectionAP->getAttribute(PT_STRUX_IMAGE_DATAID, (const XML_Char *&)pszDataID);
 	DELETEP(m_pGraphicImage);

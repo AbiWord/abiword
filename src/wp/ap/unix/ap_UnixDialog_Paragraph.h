@@ -64,11 +64,13 @@ public:
 
  protected:
 
+ 	// Gtk sets up escape key to close a GtkDialog only when
+	// the one of the button responses is GTK_RESPONSE_CANCEL
 	enum
 	  {
-	    BUTTON_OK,
-	    BUTTON_TABS,
-	    BUTTON_CANCEL
+	    BUTTON_OK = GTK_RESPONSE_OK,
+	    BUTTON_TABS = 0,
+	    BUTTON_CANCEL = GTK_RESPONSE_CANCEL
 	  } ResponseId;
 
 	GR_UnixGraphics	* 		m_unixGraphics;

@@ -159,6 +159,11 @@ UT_sint32 XAP_CocoaApp::makeDirectory(const char * szPath, const UT_sint32 mode 
 	return mkdir(szPath, mode); 
 }
 
+XAP_App::BidiSupportType XAP_CocoaApp::theOSHasBidiSupport() const 
+{
+	return BIDI_SUPPORT_FULL;
+}
+
 XAP_DialogFactory * XAP_CocoaApp::getDialogFactory()
 {
 	return &m_dialogFactory;

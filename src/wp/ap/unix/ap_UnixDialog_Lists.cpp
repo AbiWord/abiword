@@ -931,7 +931,7 @@ GtkWidget *AP_UnixDialog_Lists::_constructWindowContents (void)
 					  (GtkAttachOptions) (0), 0, 0);
 	gtk_entry_set_text (GTK_ENTRY (format_en), "");
 
-	start_sb_adj = gtk_adjustment_new (1, 0, 100, 1, 10, 10);
+	start_sb_adj = gtk_adjustment_new (1, 0, G_MAXINT32, 1, 10, 10);
 	start_sb = gtk_spin_button_new (GTK_ADJUSTMENT (start_sb_adj), 1, 0);
 	gtk_widget_show (start_sb);
 	gtk_table_attach (GTK_TABLE (table2), start_sb, 1, 2, 3, 4,
@@ -1493,7 +1493,15 @@ bool    AP_UnixDialog_Lists::dontUpdate(void)
  */
 void AP_UnixDialog_Lists::_gatherData(void)
 {
-	UT_sint32 maxWidth = getBlock()->getFirstContainer()->getContainer()->getWidth();
+	UT_sint32 maxWidth = getBlock()->getDocSectionLayout()->getActualColumnWidth();
+	if(getBlock()->getFirstContainer())
+	{
+	  if(getBlock()->getFirstContainer()->getContainer())
+	  {
+	    maxWidth = getBlock()->getFirstContainer()->getContainer()->getWidth();
+	  }
+	}
+
 //
 // screen resolution is 100 pixels/inch
 //

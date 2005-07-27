@@ -87,13 +87,13 @@ NSString* LocalizedString (const XAP_StringSet * pSS, XAP_String_Id stringId)
 	\param pSS the string set
 	\param stringId the string id
  */
-void AppendLocalizedMenuItem (NSPopUpButton* menu, const XAP_StringSet * pSS, XAP_String_Id stringId, int tag)
+void AppendLocalizedMenuItem (NSPopUpButton * menu, const XAP_StringSet * pSS, XAP_String_Id stringId, int tag)
 {
-	NSString* str = LocalizedString(pSS, stringId);
-	NSMenuItem* item = [[NSMenuItem alloc] initWithTitle:str action:nil keyEquivalent:@""];
-	[item setTag:tag];
-	[[menu menu] addItem:item];
-	[item release];
+	NSString * str = LocalizedString(pSS, stringId);
+
+	[menu addItemWithTitle:str];
+
+	[[menu lastItem] setTag:tag];
 }
 
 /*!

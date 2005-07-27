@@ -60,11 +60,9 @@ private:
 
 	XAP_Frame * m_pFrame;
 
-	GtkWidget * m_entryFilename;
 	GtkWidget * m_buttonFilename;
 	GtkWidget * m_radioNew;
 	GtkWidget * m_radioExisting;
-	GtkWidget * m_radioEmpty;
 	GtkWidget * m_choicesList;
 
 	UT_Vector mTemplates ;
