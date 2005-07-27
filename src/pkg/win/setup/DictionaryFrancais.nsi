@@ -6,6 +6,9 @@
 ; was not corrupted by the download.  
 CRCCheck on
 
+; set the compression algorithm used, zlib | bzip2 | lzma
+SetCompressor /SOLID lzma
+
 ; The name of the installer
 Name "AbiWord Dictionary - Francais"
 Icon "setup.ico"
