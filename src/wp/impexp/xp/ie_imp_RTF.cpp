@@ -2434,7 +2434,10 @@ UT_Error IE_Imp_RTF::_parseFile(FILE* fp)
 	{
 		double width = 12240./1440.; // default width in twips
 		double height = 15840./1440;; // default height in twips
-		getDoc()->m_docPageSize.Set(width,height,DIM_IN);
+		if(fp != NULL)
+		{
+			getDoc()->m_docPageSize.Set(width,height,DIM_IN);
+		}
 	}
 	return _parseText();
 }
