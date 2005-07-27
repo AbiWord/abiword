@@ -300,6 +300,7 @@ dcl(LANG_EN_NZ, 							"English (New Zealand)")
 dcl(LANG_EN_ZA, 							"English (South Africa)")
 dcl(LANG_EN_US, 							"English (US)")
 dcl(LANG_AF_ZA, 							"Afrikaans")
+dcl(LANG_AK_GH, 							"Akan")	// 
 dcl(LANG_SQ_AL, 							"Albanian")	// Jordi 19/10/2002
 dcl(LANG_AM_ET, 							"Amharic (Ethiopia)")
 dcl(LANG_AR_EG, 							"Arabic (Egypt)")
