@@ -3402,7 +3402,39 @@ bool FV_View::setStyleAtPos(const XML_Char * style, PT_DocPosition posStart1, PT
 	pBL = _findBlockAtPosition(posStart+2);
 	if(pBL == NULL)
 	{
+		m_pDoc->enableListUpdates();
+		UT_DEBUGMSG(("restoring PieceTable state (3)\n"));
+		_restorePieceTableState();
 		return false;
+	}
+	if(bisListStyle)
+	{
+		if(pBL->isHdrFtr())
+		{
+			m_pDoc->enableListUpdates();
+			UT_DEBUGMSG(("restoring PieceTable state (4)\n"));
+			_restorePieceTableState();
+			return false;
+		}
+		fl_ContainerLayout * pCL = pBL->myContainingLayout();
+		while(pCL && (pCL->getContainerType() != FL_CONTAINER_DOCSECTION))
+		{
+			if((pCL->getContainerType() == FL_CONTAINER_HDRFTR) ||
+			   (pCL->getContainerType() == FL_CONTAINER_SHADOW) ||
+			   (pCL->getContainerType() == FL_CONTAINER_FOOTNOTE) ||
+			   (pCL->getContainerType() == FL_CONTAINER_ENDNOTE))
+			{
+				m_pDoc->enableListUpdates();
+				UT_DEBUGMSG(("restoring PieceTable state (5)\n"));
+				_restorePieceTableState();
+				return false;
+			}
+			pCL = pCL->myContainingLayout();
+		}
+		if(pCL == NULL)
+		{
+			return false;
+		}
 	}
 	if((posStart == pBL->getPosition(true)) && (posEnd > posStart))
 	{
