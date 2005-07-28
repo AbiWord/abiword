@@ -660,7 +660,7 @@ void fp_VerticalContainer::getScreenOffsets(fp_ContainerObject* pContainer,
 		{
 		  bTable = true;
 		  pContainer = pCon;
-		  fp_Container * pCon = static_cast<fp_Container *>(this);
+		  pCon = static_cast<fp_Container *>(this);
 		  my_yoff = getY();
 		  my_xoff = getX();
 		}
