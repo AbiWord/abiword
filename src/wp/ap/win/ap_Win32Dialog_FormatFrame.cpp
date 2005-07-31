@@ -23,6 +23,7 @@
 #include "ut_string.h"
 #include "ut_assert.h"
 #include "ut_debugmsg.h"
+#include "ut_locale.h"
 
 #include "xap_App.h"
 #include "xap_Win32App.h"
@@ -374,12 +375,13 @@ BOOL AP_Win32Dialog_FormatFrame::_onCommand(HWND hWnd, WPARAM wParam, LPARAM lPa
 
 				if (nSelected != CB_ERR)
 				{
-					char szThickness[1024];
+					UT_LocaleTransactor t(LC_NUMERIC, "C");					
 					UT_UTF8String sThickness;
 
-					SendMessage(hCombo, CB_GETLBTEXT, nSelected, (LPARAM)szThickness);
-					sThickness = szThickness;
-					setBorderThickness(sThickness);
+					
+					sThickness = UT_UTF8String_sprintf("%fin",m_dThickness[nSelected]);
+					setBorderThickness(sThickness);					
+					event_previewExposed();
 				}
 			}
 			return 1;
