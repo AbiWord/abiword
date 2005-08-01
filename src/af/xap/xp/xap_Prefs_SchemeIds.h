@@ -165,6 +165,9 @@
 #define XAP_PREF_KEY_DefaultGraphics "DefaultGraphics"
 #define XAP_PREF_DEFAULT_DefaultGraphics "0"
 
+#define XAP_PREF_KEY_ToolPaletteVisible "ToolPaletteVisible"
+#define XAP_PREF_DEFAULT_ToolPaletteVisible "1"
+
 #else /* XAP_PREFS_SCHEMEID_H */
 #ifdef dcl
 
@@ -211,5 +214,6 @@ dcl(ChangeLanguageWithKeyboard)
 dcl(DirMarkerAfterClosingParenthesis)
 dcl(NoMACinUUID)
 dcl(DefaultGraphics)
+dcl(ToolPaletteVisible)
 #endif /* dcl */
 #endif /* XAP_PREFS_SCHEMEID_H */
