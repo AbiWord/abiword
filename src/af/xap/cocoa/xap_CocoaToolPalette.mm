@@ -87,56 +87,45 @@ enum _XAP_CocoaTool_Id
 
 - (id)initWithPalette:(const struct XAP_CocoaPaletteRef *)palette
 {
-	if (self = [super init])
-		{
-			UT_ASSERT(palette);
-			UT_ASSERT(palette->Name);
+	self = [super init];
+	if (self) {
+		UT_ASSERT(palette);
+		UT_ASSERT(palette->Name);
 
-			m_Name = [[NSString alloc] initWithString:(palette->Name)];
-			if (!m_Name)
-				{
-					[super dealloc];
-					self = 0;
-				}
-		}
-	if (self)
-		{
-			UT_ASSERT(palette->Title && palette->Box);
+		m_Name = [[NSString alloc] initWithString:(palette->Name)];
+		UT_ASSERT(palette->Title && palette->Box);
 
-			m_Title = palette->Title;
-			m_Box   = palette->Box;
+		m_Title = palette->Title;
+		m_Box   = palette->Box;
 
-			[m_Title retain];
-			[m_Box   retain];
+		[m_Title retain];
+		[m_Box   retain];
 
-			NSRect frame;
+		NSRect frame;
 
-			frame = [m_Title frame];
-			m_heightTitle = static_cast<UT_uint32>(frame.size.height);
+		frame = [m_Title frame];
+		m_heightTitle = static_cast<UT_uint32>(frame.size.height);
 
-			frame = [m_Box frame];
-			m_heightBox = static_cast<UT_uint32>(frame.size.height);
-		}
+		frame = [m_Box frame];
+		m_heightBox = static_cast<UT_uint32>(frame.size.height);
+	}
 	return self;
 }
 
 - (void)dealloc
 {
 	if (m_Name)
-		{
-			[m_Name release];
-			m_Name = 0;
-		}
+	{
+		[m_Name release];
+	}
 	if (m_Title)
-		{
-			[m_Title release];
-			m_Title = 0;
-		}
+	{
+		[m_Title release];
+	}
 	if (m_Box)
-		{
-			[m_Box release];
-			m_Box = 0;
-		}
+	{
+		[m_Box release];
+	}
 	[super dealloc];
 }
 
@@ -175,9 +164,9 @@ enum _XAP_CocoaTool_Id
 	UT_uint32 height = m_heightTitle;
 
 	if ([m_Title tag] == 1)
-		{
-			height += m_heightBox;
-		}
+	{
+		height += m_heightBox;
+	}
 	return height;
 }
 
@@ -193,25 +182,21 @@ enum _XAP_CocoaTool_Id
 	frame.size.width  = 300;
 	frame.size.height = 100;
 
-	if (self = [super initWithFrame:frame]) // ignore frame here
-		{
-			m_Palette = [[NSMutableArray alloc] initWithCapacity:4];
-			if (!m_Palette)
-				{
-					[super dealloc];
-					self = nil;
-				}
-		}
+	self  = [super initWithFrame:frame];
+	if (self) // ignore frame here
+	{
+		m_Palette = [[NSMutableArray alloc] initWithCapacity:4];
+	}
 	return self;
 }
 
 - (void)dealloc
 {
 	if (m_Palette)
-		{
-			[m_Palette release];
-			m_Palette = 0;
-		}
+	{
+		[m_Palette release];
+		m_Palette = 0;
+	}
 	[super dealloc];
 }
 
@@ -219,20 +204,20 @@ enum _XAP_CocoaTool_Id
 {
 	XAP_CocoaPalette * palette = [[XAP_CocoaPalette alloc] initWithPalette:paletteRef];
 	if (palette)
-		{
-			[m_Palette addObject:palette];
-			[palette release];
+	{
+		[m_Palette addObject:palette];
+		[palette release];
 
-			[paletteRef->Title removeFromSuperviewWithoutNeedingDisplay];
-			[paletteRef->Box   removeFromSuperviewWithoutNeedingDisplay];
+		[paletteRef->Title removeFromSuperviewWithoutNeedingDisplay];
+		[paletteRef->Box   removeFromSuperviewWithoutNeedingDisplay];
 
-			[self sync]; // update frames
+		[self sync]; // update frames
 
-			[self addSubview:(paletteRef->Title)];
-			[self addSubview:(paletteRef->Box  )];
+		[self addSubview:(paletteRef->Title)];
+		[self addSubview:(paletteRef->Box  )];
 
-			[self setNeedsDisplay:YES];
-		}
+		[self setNeedsDisplay:YES];
+	}
 }
 
 #define PALETTE_ELEMENT_ORIGIN_X  -3
@@ -244,18 +229,20 @@ enum _XAP_CocoaTool_Id
 	unsigned count = [m_Palette count];
 	unsigned i;
 
-	if (!count) return; // huh. no palettes
+	if (!count) {
+		return; // huh. no palettes
+	}
 
 	/* First, calculate total height
 	 */
 	UT_uint32 view_height = 0;
 
 	for (i = 0; i < count; i++)
-		{
-			XAP_CocoaPalette * palette = (XAP_CocoaPalette *) [m_Palette objectAtIndex:i];
+	{
+		XAP_CocoaPalette * palette = (XAP_CocoaPalette *) [m_Palette objectAtIndex:i];
 
-			view_height += [palette heightConditional];
-		}
+		view_height += [palette heightConditional];
+	}
 
 	NSSize size;
 	size.width  = PALETTE_PANEL_WIDTH;
@@ -268,35 +255,35 @@ enum _XAP_CocoaTool_Id
 	/* Adjust frames of individual palettes
 	 */
 	for (i = 0; i < count; i++)
+	{
+		XAP_CocoaPalette * palette = (XAP_CocoaPalette *) [m_Palette objectAtIndex:i];
+
+		UT_uint32 height = [palette heightTitle];
+
+		view_height -= height;
+
+		/* Title
+		 */
+
+		/* Box
+		 */
+		height = [palette heightBox];
+
+		if ([palette isExpanded])
 		{
-			XAP_CocoaPalette * palette = (XAP_CocoaPalette *) [m_Palette objectAtIndex:i];
-
-			UT_uint32 height = [palette heightTitle];
-
 			view_height -= height;
-
-			/* Title
-			 */
-
-			/* Box
-			 */
-			height = [palette heightBox];
-
-			if ([palette isExpanded])
-				{
-					view_height -= height;
-				}
-			else // move it out of sight
-				{
-					[self setNeedsDisplayInRect:[[palette Box] frame]];
-
-					frame.origin.x    = PALETTE_ELEMENT_WIDTH;
-					frame.origin.y    = static_cast<float>(view_height);
-					frame.size.width  = PALETTE_ELEMENT_WIDTH;
-					frame.size.height = static_cast<float>(height);
-					[[palette Box] setFrame:frame];
-				}
 		}
+		else // move it out of sight
+		{
+			[self setNeedsDisplayInRect:[[palette Box] frame]];
+
+			frame.origin.x    = PALETTE_ELEMENT_WIDTH;
+			frame.origin.y    = static_cast<float>(view_height);
+			frame.size.width  = PALETTE_ELEMENT_WIDTH;
+			frame.size.height = static_cast<float>(height);
+			[[palette Box] setFrame:frame];
+		}
+	}
 	[self displayIfNeeded];
 
 	view_height = vh_remember;
@@ -305,78 +292,78 @@ enum _XAP_CocoaTool_Id
 	 */
 	NSWindow * window = [self window];
 	if (window)
-		{
-			// [self setNeedsDisplay:NO];
+	{
+		// [self setNeedsDisplay:NO];
 
-			NSRect current = [window frame];
+		NSRect current = [window frame];
 
-			int y = static_cast<int>(current.origin.y) + static_cast<int>(current.size.height);
+		int y = static_cast<int>(current.origin.y) + static_cast<int>(current.size.height);
 
-			NSRect content;
-			content.origin.x    = 0;
-			content.origin.y    = 0;
-			content.size.width  = size.width;
-			content.size.height = size.height;
+		NSRect content;
+		content.origin.x    = 0;
+		content.origin.y    = 0;
+		content.size.width  = size.width;
+		content.size.height = size.height;
 
-			frame = [NSWindow frameRectForContentRect:content styleMask:(NSTitledWindowMask|NSClosableWindowMask|NSUtilityWindowMask)];
-			frame.origin.x = current.origin.x;
-			frame.origin.y = static_cast<float>(y - static_cast<int>(frame.size.height));
-			[window setFrame:frame display:YES animate:YES];
-		}
+		frame = [NSWindow frameRectForContentRect:content styleMask:(NSTitledWindowMask|NSClosableWindowMask|NSUtilityWindowMask)];
+		frame.origin.x = current.origin.x;
+		frame.origin.y = static_cast<float>(y - static_cast<int>(frame.size.height));
+		[window setFrame:frame display:YES animate:YES];
+	}
 	else
-		{
-			frame.origin.x    = 0;
-			frame.origin.y    = 0;
-			frame.size.width  = size.width;
-			frame.size.height = size.height;
-			[self setFrame:frame];
-		}
+	{
+		frame.origin.x    = 0;
+		frame.origin.y    = 0;
+		frame.size.width  = size.width;
+		frame.size.height = size.height;
+		[self setFrame:frame];
+	}
 
 	/* Adjust frames of individual palettes
 	 */
 	for (i = 0; i < count; i++)
+	{
+		XAP_CocoaPalette * palette = (XAP_CocoaPalette *) [m_Palette objectAtIndex:i];
+
+		UT_uint32 height = [palette heightTitle];
+
+		view_height -= height;
+
+		/* Title
+		 */
+		frame.origin.x    = PALETTE_ELEMENT_ORIGIN_X;
+		frame.origin.y    = static_cast<float>(view_height);
+		frame.size.width  = PALETTE_ELEMENT_WIDTH;
+		frame.size.height = static_cast<float>(height);
+		[[palette Title] setFrame:frame];
+		[[palette Title] setNeedsDisplay:YES];
+		[[palette Title] displayIfNeeded];
+
+		/* Box
+		 */
+		height = [palette heightBox];
+
+		if ([palette isExpanded])
 		{
-			XAP_CocoaPalette * palette = (XAP_CocoaPalette *) [m_Palette objectAtIndex:i];
-
-			UT_uint32 height = [palette heightTitle];
-
 			view_height -= height;
 
-			/* Title
-			 */
 			frame.origin.x    = PALETTE_ELEMENT_ORIGIN_X;
 			frame.origin.y    = static_cast<float>(view_height);
 			frame.size.width  = PALETTE_ELEMENT_WIDTH;
 			frame.size.height = static_cast<float>(height);
-			[[palette Title] setFrame:frame];
-			[[palette Title] setNeedsDisplay:YES];
-			[[palette Title] displayIfNeeded];
-
-			/* Box
-			 */
-			height = [palette heightBox];
-
-			if ([palette isExpanded])
-				{
-					view_height -= height;
-
-					frame.origin.x    = PALETTE_ELEMENT_ORIGIN_X;
-					frame.origin.y    = static_cast<float>(view_height);
-					frame.size.width  = PALETTE_ELEMENT_WIDTH;
-					frame.size.height = static_cast<float>(height);
-					[[palette Box] setFrame:frame];
-					[[palette Box] setNeedsDisplay:YES];
-					[[palette Box] displayIfNeeded];
-				}
-			else // move it out of sight
-				{
-					frame.origin.x    = PALETTE_ELEMENT_WIDTH;
-					frame.origin.y    = static_cast<float>(view_height);
-					frame.size.width  = PALETTE_ELEMENT_WIDTH;
-					frame.size.height = static_cast<float>(height);
-					[[palette Box] setFrame:frame];
-				}
+			[[palette Box] setFrame:frame];
+			[[palette Box] setNeedsDisplay:YES];
+			[[palette Box] displayIfNeeded];
 		}
+		else // move it out of sight
+		{
+			frame.origin.x    = PALETTE_ELEMENT_WIDTH;
+			frame.origin.y    = static_cast<float>(view_height);
+			frame.size.width  = PALETTE_ELEMENT_WIDTH;
+			frame.size.height = static_cast<float>(height);
+			[[palette Box] setFrame:frame];
+		}
+	}
 }
 
 @end
@@ -406,140 +393,136 @@ enum _XAP_CocoaTool_Id
 - (id)initWithAP:(const PP_AttrProp *)pAP levelName:(NSString *)name
 {
 	if (self = [super init])
-		{
-			m_IsLevel = YES;
+	{
+		m_IsLevel = YES;
 
-			m_Name  = name;
-			m_Value = @"";
+		m_Name  = name;
+		m_Value = @"";
 
-			[m_Name  retain];
-			[m_Value retain];
+		[m_Name  retain];
+		[m_Value retain];
 
-			m_Properties = 0;
+		m_Properties = 0;
 
-			if (int count = static_cast<int>(pAP->getPropertyCount()))
-				if (m_Properties = [[NSMutableArray alloc] initWithCapacity:((unsigned) count)])
-					for (int i = 0; i < count; i++)
-						{
-							const XML_Char * szName  = 0;
-							const XML_Char * szValue = 0;
+		if (int count = static_cast<int>(pAP->getPropertyCount())) {
+			if (m_Properties = [[NSMutableArray alloc] initWithCapacity:((unsigned) count)]) {
+				for (int i = 0; i < count; i++) {
+					const XML_Char * szName  = 0;
+					const XML_Char * szValue = 0;
 
-							if (pAP->getNthProperty(i, szName, szValue))
-								{
-									NSString * name  = [NSString stringWithUTF8String:((const char *) szName )];
-									NSString * value = [NSString stringWithUTF8String:((const char *) szValue)];
+					if (pAP->getNthProperty(i, szName, szValue)) {
+						NSString * name  = [NSString stringWithUTF8String:((const char *) szName )];
+						NSString * value = [NSString stringWithUTF8String:((const char *) szValue)];
 
-									XAP_PaletteProperties_Level * property = [[XAP_PaletteProperties_Level alloc] initWithPropertyName:name propertyValue:value];
-									if (property)
-										{
-											[m_Properties addObject:property];
-											[property release];
-										}
-								}
+						XAP_PaletteProperties_Level * property = [[XAP_PaletteProperties_Level alloc] initWithPropertyName:name propertyValue:value];
+						if (property) {
+							[m_Properties addObject:property];
+							[property release];
 						}
+					}
+				}
+			}
 		}
+	}
 	return self;
 }
 
 - (id)initWithStyle:(PD_Style *)style levelName:(NSString *)name
 {
 	if (self = [super init])
-		{
-			m_IsLevel = YES;
+	{
+		m_IsLevel = YES;
 
-			m_Name  = name;
-			m_Value = @"";
+		m_Name  = name;
+		m_Value = @"";
 
-			[m_Name  retain];
-			[m_Value retain];
+		[m_Name  retain];
+		[m_Value retain];
 
-			m_Properties = 0;
+		m_Properties = 0;
 
-			if (int count = static_cast<int>(style->getPropertyCount()))
-				if (m_Properties = [[NSMutableArray alloc] initWithCapacity:((unsigned) count)])
-					for (int i = 0; i < count; i++)
-						{
-							const XML_Char * szName  = 0;
-							const XML_Char * szValue = 0;
+		if (int count = static_cast<int>(style->getPropertyCount())) {
+			if (m_Properties = [[NSMutableArray alloc] initWithCapacity:((unsigned) count)]) {
+				for (int i = 0; i < count; i++) {
+					const XML_Char * szName  = 0;
+					const XML_Char * szValue = 0;
 
-							if (style->getNthProperty(i, szName, szValue))
-								{
-									NSString * name  = [NSString stringWithUTF8String:((const char *) szName )];
-									NSString * value = [NSString stringWithUTF8String:((const char *) szValue)];
+					if (style->getNthProperty(i, szName, szValue)) {
+						NSString * name  = [NSString stringWithUTF8String:((const char *) szName )];
+						NSString * value = [NSString stringWithUTF8String:((const char *) szValue)];
 
-									XAP_PaletteProperties_Level * property = [[XAP_PaletteProperties_Level alloc] initWithPropertyName:name propertyValue:value];
-									if (property)
-										{
-											[m_Properties addObject:property];
-											[property release];
-										}
-								}
+						XAP_PaletteProperties_Level * property = [[XAP_PaletteProperties_Level alloc] initWithPropertyName:name propertyValue:value];
+						if (property) {
+							[m_Properties addObject:property];
+							[property release];
 						}
+					}
+				}
+			}
 		}
+	}
 	return self;
 }
 
 - (id)initWithPropertyName:(NSString *)name propertyValue:(NSString *)value
 {
-	if (self = [super init])
-		{
-			m_IsLevel = NO;
+	self = [super init];
+	if (self)
+	{
+		m_IsLevel = NO;
 
-			m_Name  = name;
-			m_Value = value;
+		m_Name  = name;
+		m_Value = value;
 
-			[m_Name  retain];
-			[m_Value retain];
+		[m_Name  retain];
+		[m_Value retain];
 
-			m_Properties = 0;
-		}
+		m_Properties = 0;
+	}
 	return self;
 }
 
 - (void)dealloc
 {
 	if (m_Name)
-		{
-			[m_Name  release];
-			m_Name = 0;
-		}
+	{
+		[m_Name  release];
+	}
 	if (m_Value)
-		{
-			[m_Value release];
-			m_Value = 0;
-		}
+	{
+		[m_Value release];
+	}
 	if (m_Properties)
-		{
-			[m_Properties release];
-			m_Properties = 0;
-		}
+	{
+		[m_Properties release];
+	}
 	[super dealloc];
 }
 
 - (int)numberOfChildrenOfItem
 {
 	if (m_IsLevel && m_Properties)
-		{
-			return [m_Properties count];
-		}
+	{
+		return [m_Properties count];
+	}
 	return 0;
 }
 
 - (BOOL)isItemExpandable
 {
 	if (m_IsLevel)
-		{
-			return YES;
-		}
+	{
+		return YES;
+	}
 	return NO;
 }
 
 - (id)child:(int)index
 {
 	if (m_IsLevel /* && m_Properties */)
-		{
-			return [m_Properties objectAtIndex:((unsigned) index)];
-		}
+	{
+		return [m_Properties objectAtIndex:((unsigned) index)];
+	}
 	return 0; // ??
 }
 
@@ -548,9 +531,9 @@ enum _XAP_CocoaTool_Id
 	NSTableHeaderCell * headerCell = [tableColumn headerCell];
 
 	if ([[headerCell stringValue] isEqualToString:@"Value"])
-		{
-			return m_Value;
-		}
+	{
+		return m_Value;
+	}
 	return m_Name;
 }
 
@@ -568,21 +551,23 @@ static PD_Style * _getStyle(const PP_AttrProp * pAttrProp, PD_Document * pDoc)
 // PT_STYLE_ATTRIBUTE_NAME. - MES.
 
 	if (pAttrProp->getAttribute(PT_NAME_ATTRIBUTE_NAME, szValue))
-		{
-			UT_return_val_if_fail (szValue && szValue[0], 0);
-			if (pDoc)
-				pDoc->getStyle(reinterpret_cast<const char*>(szValue), &pStyle);
-
-			// NOTE: we silently fail if style is referenced, but not defined
+	{
+		UT_return_val_if_fail (szValue && szValue[0], 0);
+		if (pDoc) {
+			pDoc->getStyle(reinterpret_cast<const char*>(szValue), &pStyle);
 		}
+		
+		// NOTE: we silently fail if style is referenced, but not defined
+	}
     else if(pAttrProp->getAttribute(PT_STYLE_ATTRIBUTE_NAME, szValue))
-		{
-			UT_return_val_if_fail (szValue && szValue[0], 0);
-			if (pDoc)
-				pDoc->getStyle(reinterpret_cast<const char*>(szValue), &pStyle);
-
-			// NOTE: we silently fail if style is referenced, but not defined
+	{
+		UT_return_val_if_fail (szValue && szValue[0], 0);
+		if (pDoc) {
+			pDoc->getStyle(reinterpret_cast<const char*>(szValue), &pStyle);
 		}
+		
+		// NOTE: we silently fail if style is referenced, but not defined
+	}
 	return pStyle;
 }
 
@@ -591,16 +576,11 @@ static PD_Style * _getStyle(const PP_AttrProp * pAttrProp, PD_Document * pDoc)
 - (id)initWithOutlineView:(NSOutlineView *)outlineView
 {
 	if (self = [super init])
-		{
-			m_OutlineView = outlineView;
+	{
+		m_OutlineView = outlineView;
 
-			m_PropertyLevels = [[NSMutableArray alloc] initWithCapacity:6];
-			if (!m_PropertyLevels)
-				{
-					[super dealloc];
-					self = 0;
-				}
-		}
+		m_PropertyLevels = [[NSMutableArray alloc] initWithCapacity:6];
+	}
 	return self;
 }
 
@@ -610,121 +590,124 @@ static PD_Style * _getStyle(const PP_AttrProp * pAttrProp, PD_Document * pDoc)
 	[m_OutlineView setDataSource:nil];
 
 	if (m_PropertyLevels)
-		{
-			[m_PropertyLevels release];
-			m_PropertyLevels = 0;
-		}
+	{
+		[m_PropertyLevels release];
+		m_PropertyLevels = 0;
+	}
 	[super dealloc];
 }
 
 - (void)syncWithView:(FV_View *)pView
 {
 	if (m_PropertyLevels)
-		{
-			[m_PropertyLevels removeAllObjects];
-		}
+	{
+		[m_PropertyLevels removeAllObjects];
+	}
 	if (pView)
+	{
+		const PP_AttrProp * pSpanAP    = 0;
+		const PP_AttrProp * pBlockAP   = 0;
+		const PP_AttrProp * pSectionAP = 0;
+		const PP_AttrProp * pDocAP     = 0;
+
+		if (pView->getAllAttrProp(pSpanAP, pBlockAP, pSectionAP, pDocAP))
 		{
-			const PP_AttrProp * pSpanAP    = 0;
-			const PP_AttrProp * pBlockAP   = 0;
-			const PP_AttrProp * pSectionAP = 0;
-			const PP_AttrProp * pDocAP     = 0;
-
-			if (pView->getAllAttrProp(pSpanAP, pBlockAP, pSectionAP, pDocAP))
+			if (pSpanAP)
+			{
+				if (XAP_PaletteProperties_Level * pPPLevel = [[XAP_PaletteProperties_Level alloc] initWithAP:pSpanAP levelName:@"Span"])
 				{
-					if (pSpanAP)
-						{
-							if (XAP_PaletteProperties_Level * pPPLevel = [[XAP_PaletteProperties_Level alloc] initWithAP:pSpanAP levelName:@"Span"])
-								{
-									[m_PropertyLevels addObject:pPPLevel];
-									[pPPLevel release];
-								}
-							if (PD_Style * style = _getStyle(pSpanAP, pView->getDocument()))
-								{
-									NSString * name = [NSString stringWithUTF8String:(style->getName())];
-									if (XAP_PaletteProperties_Level * pPPLevel = [[XAP_PaletteProperties_Level alloc] initWithStyle:style levelName:name])
-										{
-											[m_PropertyLevels addObject:pPPLevel];
-											[pPPLevel release];
-										}
-								}
-						}
-
-					if (pBlockAP)
-						{
-							if (XAP_PaletteProperties_Level * pPPLevel = [[XAP_PaletteProperties_Level alloc] initWithAP:pBlockAP levelName:@"Block"])
-								{
-									[m_PropertyLevels addObject:pPPLevel];
-									[pPPLevel release];
-								}
-							if (PD_Style * style = _getStyle(pBlockAP, pView->getDocument()))
-								{
-									NSString * name = [NSString stringWithUTF8String:(style->getName())];
-									if (XAP_PaletteProperties_Level * pPPLevel = [[XAP_PaletteProperties_Level alloc] initWithStyle:style levelName:name])
-										{
-											[m_PropertyLevels addObject:pPPLevel];
-											[pPPLevel release];
-										}
-								}
-						}
-
-					if (pSectionAP)
-						if (XAP_PaletteProperties_Level * pPPLevel = [[XAP_PaletteProperties_Level alloc] initWithAP:pSectionAP levelName:@"Section"])
-							{
-								[m_PropertyLevels addObject:pPPLevel];
-								[pPPLevel release];
-							}
-
-					if (pDocAP)
-						if (XAP_PaletteProperties_Level * pPPLevel = [[XAP_PaletteProperties_Level alloc] initWithAP:pDocAP levelName:@"Document"])
-							{
-								[m_PropertyLevels addObject:pPPLevel];
-								[pPPLevel release];
-							}
+					[m_PropertyLevels addObject:pPPLevel];
+					[pPPLevel release];
 				}
+				if (PD_Style * style = _getStyle(pSpanAP, pView->getDocument()))
+				{
+					NSString * name = [NSString stringWithUTF8String:(style->getName())];
+					if (XAP_PaletteProperties_Level * pPPLevel = [[XAP_PaletteProperties_Level alloc] initWithStyle:style levelName:name])
+					{
+						[m_PropertyLevels addObject:pPPLevel];
+						[pPPLevel release];
+					}
+				}
+			}
+
+			if (pBlockAP)
+			{
+				if (XAP_PaletteProperties_Level * pPPLevel = [[XAP_PaletteProperties_Level alloc] initWithAP:pBlockAP levelName:@"Block"])
+				{
+					[m_PropertyLevels addObject:pPPLevel];
+					[pPPLevel release];
+				}
+				if (PD_Style * style = _getStyle(pBlockAP, pView->getDocument()))
+				{
+					NSString * name = [NSString stringWithUTF8String:(style->getName())];
+					if (XAP_PaletteProperties_Level * pPPLevel = [[XAP_PaletteProperties_Level alloc] initWithStyle:style levelName:name])
+					{
+						[m_PropertyLevels addObject:pPPLevel];
+						[pPPLevel release];
+					}
+				}
+			}
+
+			if (pSectionAP) 
+			{
+				if (XAP_PaletteProperties_Level * pPPLevel = [[XAP_PaletteProperties_Level alloc] initWithAP:pSectionAP levelName:@"Section"])
+				{
+					[m_PropertyLevels addObject:pPPLevel];
+					[pPPLevel release];
+				}
+			}
+			if (pDocAP) 
+			{
+				if (XAP_PaletteProperties_Level * pPPLevel = [[XAP_PaletteProperties_Level alloc] initWithAP:pDocAP levelName:@"Document"])
+				{
+					[m_PropertyLevels addObject:pPPLevel];
+					[pPPLevel release];
+				}
+			}
 		}
+	}
 	[m_OutlineView reloadData];
 }
 
 - (int)outlineView:(NSOutlineView *)outlineView numberOfChildrenOfItem:(id)item
 {
 	if (item)
-		{
-			XAP_PaletteProperties_Level * pPPLevel = (XAP_PaletteProperties_Level *) item;
-			return [pPPLevel numberOfChildrenOfItem];
-		}
+	{
+		XAP_PaletteProperties_Level * pPPLevel = (XAP_PaletteProperties_Level *) item;
+		return [pPPLevel numberOfChildrenOfItem];
+	}
 	return (int) [m_PropertyLevels count];
 }
 
 - (BOOL)outlineView:(NSOutlineView *)outlineView isItemExpandable:(id)item
 {
 	if (item)
-		{
-			XAP_PaletteProperties_Level * pPPLevel = (XAP_PaletteProperties_Level *) item;
-			return [pPPLevel isItemExpandable];
-		}
+	{
+		XAP_PaletteProperties_Level * pPPLevel = (XAP_PaletteProperties_Level *) item;
+		return [pPPLevel isItemExpandable];
+	}
 	return YES; // ??
 }
 
 - (id)outlineView:(NSOutlineView *)outlineView child:(int)index ofItem:(id)item
 {
 	if (item)
-		{
-			XAP_PaletteProperties_Level * pPPLevel = (XAP_PaletteProperties_Level *) item;
-			return [pPPLevel child:index];
-		}
+	{
+		XAP_PaletteProperties_Level * pPPLevel = (XAP_PaletteProperties_Level *) item;
+		return [pPPLevel child:index];
+	}
 	return [m_PropertyLevels objectAtIndex:((unsigned) index)];
 }
 
 - (id)outlineView:(NSOutlineView *)outlineView objectValueForTableColumn:(NSTableColumn *)tableColumn byItem:(id)item
 {
 	if (item)
-		{
-			XAP_PaletteProperties_Level * pPPLevel = (XAP_PaletteProperties_Level *) item;
-			return [pPPLevel objectValueForTableColumn:tableColumn];
-		}
+	{
+		XAP_PaletteProperties_Level * pPPLevel = (XAP_PaletteProperties_Level *) item;
+		return [pPPLevel objectValueForTableColumn:tableColumn];
+	}
 	return @"??"; // ??
- }
+}
 
 - (void)outlineView:(NSOutlineView *)outlineView willDisplayCell:(id)cell forTableColumn:(NSTableColumn *)tableColumn item:(id)item
 {
@@ -742,11 +725,7 @@ static PD_Style * _getStyle(const PP_AttrProp * pAttrProp, PD_Document * pDoc)
 
 - (id)init
 {
-	if (self = [super init])
-		{
-			// 
-		}
-	return self;
+	return [super init];
 }
 
 - (void)dealloc
@@ -766,21 +745,23 @@ static PD_Style * _getStyle(const PP_AttrProp * pAttrProp, PD_Document * pDoc)
 	XAP_CocoaAppController * pController = (XAP_CocoaAppController *) [NSApp delegate];
 
 	if (NSMenuItem * item = [[NSMenuItem alloc] initWithTitle:@"Preview Panel" action:@selector(toggleVisibility:) keyEquivalent:@"I"])
-		{
-			[item setTarget:self];
-			[pController appendPanelItem:item];
-			[item release];
-		}
+	{
+		[item setTarget:self];
+		[pController appendPanelItem:item];
+		[item release];
+	}
 }
 
 - (void)toggleVisibility:(id)sender
 {
 	NSPanel * panel = (NSPanel *) [self window];
 
-	if ([panel isVisible])
+	if ([panel isVisible]) {
 		[panel orderOut:self];
-	else
+	}
+	else {
 		[panel orderFront:self];
+	}
 }
 
 - (BOOL)validateMenuItem:(id <NSMenuItem>)menuItem
@@ -799,17 +780,18 @@ static PD_Style * _getStyle(const PP_AttrProp * pAttrProp, PD_Document * pDoc)
 
 @end
 
-static XAP_CocoaToolPalette * s_instance = 0;
+static XAP_CocoaToolPalette * s_instance = nil;
 
 @implementation XAP_CocoaToolPalette
 
 + (XAP_CocoaToolPalette *)instance:(id)sender
 {
-	if (!s_instance)
+	if (!s_instance) {
 		if (s_instance = [[XAP_CocoaToolPalette alloc] init])
-			{
-				[s_instance showWindow:sender];
-			}
+		{
+			[s_instance showWindow:sender];
+		}
+	}
 	return s_instance;
 }
 
@@ -820,150 +802,113 @@ static XAP_CocoaToolPalette * s_instance = 0;
 
 - (id)init
 {
-	if (self = [super initWithWindowNibName:@"xap_CocoaToolPalette"])
-		{
-			m_ToolChest = 0;
-			m_PaletteView = 0;
-			m_Properties_DataSource = 0;
+	self = [super initWithWindowNibName:@"xap_CocoaToolPalette"];
+	if (self)
+	{
+		m_ToolChest = 0;
+		m_PaletteView = 0;
+		m_Properties_DataSource = 0;
 
-			m_pMenuActionSet = 0;
-			m_pToolbarActionSet = 0;
-			m_pEditMethodContainer = 0;
-			m_pFontFamilies = 0;
-			m_pCurrentFontFamily = 0;
-			m_pCurrentFontFamilyHelper = 0;
+		m_pMenuActionSet = 0;
+		m_pToolbarActionSet = 0;
+		m_pEditMethodContainer = 0;
+		m_pFontFamilies = 0;
+		m_pCurrentFontFamily = 0;
+		m_pCurrentFontFamilyHelper = 0;
+		m_Listener = 0;
+
+		m_pCocoaApp = static_cast<XAP_CocoaApp *>(XAP_App::getApp());
+
+		m_pMenuActionSet       = m_pCocoaApp->getMenuActionSet();
+		m_pToolbarActionSet    = m_pCocoaApp->getToolbarActionSet();
+		m_pEditMethodContainer = m_pCocoaApp->getEditMethodContainer();
+
+		if (!m_pToolbarActionSet || !m_pMenuActionSet || !m_pEditMethodContainer)
+		{
+			UT_ASSERT(m_pToolbarActionSet && m_pMenuActionSet && m_pEditMethodContainer);
+		}
+		NSArray * pAvailableFontFamilies = [[NSFontManager sharedFontManager] availableFontFamilies];
+
+		unsigned count = [pAvailableFontFamilies count];
+		if (count)
+		{
+			m_pFontFamilies = [[NSMutableArray alloc] initWithCapacity:count];
+			if (m_pFontFamilies) {
+				for (unsigned ff = 0; ff < count; ff++) {
+					NSString * pFontFamily = [pAvailableFontFamilies objectAtIndex:ff];
+
+					/* const char * szFF = [pFontFamily UTF8String]; */
+
+					if (true /* (*szFF != '.') && (*szFF != '#') */) // cf. Bug 6638
+					{
+						[m_pFontFamilies addObject:pFontFamily];
+					}
+				}
+				if ([m_pFontFamilies count]) {
+					[m_pFontFamilies sortUsingSelector:@selector(compare:)];
+				}
+				else {
+					UT_DEBUGMSG(("XAP_CocoaToolPalette -init: no usable font families?\n"));
+
+					[m_pFontFamilies release];
+					m_pFontFamilies = 0;
+				}
+			}
+		}
+		else
+		{
+			UT_DEBUGMSG(("XAP_CocoaToolPalette -init: no available font families?\n"));
+		}
+		UT_TRY
+		{
+			m_ToolChest = new struct XAP_CocoaToolRef[XAP_COCOA_TOOL_ID__COUNT_];
+		}
+		UT_CATCH(...)
+		{
+			m_ToolChest = nil;
+		}
+		m_PaletteView = [[XAP_CocoaPaletteView alloc] init];
+		UT_TRY
+		{
+			m_Listener = new XAP_CocoaToolPaletteListener(self);
+		}
+		UT_CATCH(...)
+		{
 			m_Listener = 0;
-
-			m_pCocoaApp = static_cast<XAP_CocoaApp *>(XAP_App::getApp());
-
-			m_pMenuActionSet       = m_pCocoaApp->getMenuActionSet();
-			m_pToolbarActionSet    = m_pCocoaApp->getToolbarActionSet();
-			m_pEditMethodContainer = m_pCocoaApp->getEditMethodContainer();
-
-			if (!m_pToolbarActionSet || !m_pMenuActionSet || !m_pEditMethodContainer)
-				{
-					UT_ASSERT(m_pToolbarActionSet && m_pMenuActionSet && m_pEditMethodContainer);
-
-					[self dealloc];
-					self = nil;
-				}
 		}
-	if (self)
-		{
-			NSArray * pAvailableFontFamilies = [[NSFontManager sharedFontManager] availableFontFamilies];
-
-			unsigned count = [pAvailableFontFamilies count];
-			if (count)
-				{
-					m_pFontFamilies = [[NSMutableArray alloc] initWithCapacity:count];
-					if (m_pFontFamilies)
-						{
-							for (unsigned ff = 0; ff < count; ff++)
-								{
-									NSString * pFontFamily = [pAvailableFontFamilies objectAtIndex:ff];
-
-									/* const char * szFF = [pFontFamily UTF8String]; */
-
-									if (true /* (*szFF != '.') && (*szFF != '#') */) // cf. Bug 6638
-										{
-											[m_pFontFamilies addObject:pFontFamily];
-										}
-								}
-							if ([m_pFontFamilies count])
-								{
-									[m_pFontFamilies sortUsingSelector:@selector(compare:)];
-								}
-							else
-								{
-									UT_DEBUGMSG(("XAP_CocoaToolPalette -init: no usable font families?\n"));
-
-									[m_pFontFamilies release];
-									m_pFontFamilies = 0;
-								}
-						}
-				}
-			else
-				{
-					UT_DEBUGMSG(("XAP_CocoaToolPalette -init: no available font families?\n"));
-				}
-			if (!m_pFontFamilies)
-				{
-					[self dealloc];
-					self = nil;
-				}
-		}
-	if (self)
-		{
-			UT_TRY
-				{
-					m_ToolChest = new struct XAP_CocoaToolRef[XAP_COCOA_TOOL_ID__COUNT_];
-				}
-			UT_CATCH(...)
-				{
-					m_ToolChest = 0;
-				}
-			if (!m_ToolChest)
-				{
-					[self dealloc];
-					self = nil;
-				}
-		}
-	if (self)
-		{
-			m_PaletteView = [[XAP_CocoaPaletteView alloc] init];
-			if (!m_PaletteView)
-				{
-					[self dealloc];
-					self = nil;
-				}
-		}
-	if (self)
-		{
-			UT_TRY
-				{
-					m_Listener = new XAP_CocoaToolPaletteListener(self);
-				}
-			UT_CATCH(...)
-				{
-					m_Listener = 0;
-				}
-			if (!m_ToolChest)
-				{
-					[self dealloc];
-					self = nil;
-				}
-		}
+	}
 	return self;
 }
 
 - (void)dealloc
 {
 	if (m_Properties_DataSource)
-		{
-			[m_Properties_DataSource release];
-			m_Properties_DataSource = 0;
-		}
-	if (m_PaletteView)
+	{
+		[m_Properties_DataSource release];
+		m_Properties_DataSource = 0;
+	}
+	if (m_PaletteView) {
 		if (![m_PaletteView superview])
-			{
-				[m_PaletteView dealloc];
-				m_PaletteView = 0;
-			}
+		{
+			[m_PaletteView dealloc];
+			m_PaletteView = 0;
+		}
+	}
 	if (m_pFontFamilies)
-		{
-			[m_pFontFamilies release];
-			m_pFontFamilies = 0;
-		}
+	{
+		[m_pFontFamilies release];
+		m_pFontFamilies = 0;
+	}
 	if (m_pCurrentFontFamily)
-		{
-			[m_pCurrentFontFamily release];
-			m_pCurrentFontFamily = 0;
-		}
+	{
+		[m_pCurrentFontFamily release];
+		m_pCurrentFontFamily = 0;
+	}
 	if (m_pCurrentFontFamilyHelper)
-		{
-			[m_pCurrentFontFamilyHelper release];
-			m_pCurrentFontFamilyHelper = 0;
-		}
+	{
+		[m_pCurrentFontFamilyHelper release];
+		m_pCurrentFontFamilyHelper = 0;
+	}
 	DELETEP(m_ToolChest);
 	DELETEP(m_Listener);
 
@@ -977,74 +922,74 @@ static XAP_CocoaToolPalette * s_instance = 0;
 	XAP_CocoaAppController * pController = (XAP_CocoaAppController *) [NSApp delegate];
 
 	if (m_PaletteView)
+	{
+		// TODO: localise palette titles based on toolbar names
+
+		struct XAP_CocoaPaletteRef palette;
+
+		[oTitle_Standard setTag:1];
+		palette.Name  = @"Standard";
+		palette.Title = oTitle_Standard;
+		palette.Box   = oBox_Standard;
+		[m_PaletteView addPalette:&palette];
+
+		[oTitle_Format setTag:1];
+		palette.Name  = @"Format";
+		palette.Title = oTitle_Format;
+		palette.Box   = oBox_Format;
+		[m_PaletteView addPalette:&palette];
+
+		[oTitle_Table setTag:0];
+		palette.Name  = @"Table";
+		palette.Title = oTitle_Table;
+		palette.Box   = oBox_Table;
+		[m_PaletteView addPalette:&palette];
+
+		[oTitle_Extra setTag:0];
+		palette.Name  = @"Extra";
+		palette.Title = oTitle_Extra;
+		palette.Box   = oBox_Extra;
+		[m_PaletteView addPalette:&palette];
+
+		[oTitle_Properties setTag:0];
+		palette.Name  = @"Properties";
+		palette.Title = oTitle_Properties;
+		palette.Box   = oBox_Properties;
+		[m_PaletteView addPalette:&palette];
+
+		NSRect content = [m_PaletteView frame];
+		NSRect frame = [NSWindow frameRectForContentRect:content styleMask:(NSTitledWindowMask|NSClosableWindowMask|NSUtilityWindowMask)];
+
+		NSRect visible_frame = [[oPanel screen] visibleFrame];
+		int x = static_cast<int>(visible_frame.size.width ) + static_cast<int>(visible_frame.origin.x);
+		int y = static_cast<int>(visible_frame.size.height) + static_cast<int>(visible_frame.origin.y);
+
+		frame.origin.x = static_cast<float>(x - static_cast<int>(frame.size.width ));
+		frame.origin.y = static_cast<float>(y - static_cast<int>(frame.size.height));
+
+		[oPanel setFrame:frame display:NO];
+		[oPanel setContentView:m_PaletteView];
+
+		[m_PaletteView setNeedsDisplay:YES];
+
+		[oPanel setFloatingPanel:YES];
+		[oPanel setBecomesKeyOnlyIfNeeded:YES];
+		[oPanel setReleasedWhenClosed:YES];
+		[oPanel setDelegate:self];
+
+		[self setWindow:oPanel];
+
+		if (NSMenuItem * item = [[NSMenuItem alloc] initWithTitle:@"Tool Palette" action:@selector(toggleVisibility:) keyEquivalent:@"T"])
 		{
-			// TODO: localise palette titles based on toolbar names
-
-			struct XAP_CocoaPaletteRef palette;
-
-			[oTitle_Standard setTag:1];
-			palette.Name  = @"Standard";
-			palette.Title = oTitle_Standard;
-			palette.Box   = oBox_Standard;
-			[m_PaletteView addPalette:&palette];
-
-			[oTitle_Format setTag:1];
-			palette.Name  = @"Format";
-			palette.Title = oTitle_Format;
-			palette.Box   = oBox_Format;
-			[m_PaletteView addPalette:&palette];
-
-			[oTitle_Table setTag:0];
-			palette.Name  = @"Table";
-			palette.Title = oTitle_Table;
-			palette.Box   = oBox_Table;
-			[m_PaletteView addPalette:&palette];
-
-			[oTitle_Extra setTag:0];
-			palette.Name  = @"Extra";
-			palette.Title = oTitle_Extra;
-			palette.Box   = oBox_Extra;
-			[m_PaletteView addPalette:&palette];
-
-			[oTitle_Properties setTag:0];
-			palette.Name  = @"Properties";
-			palette.Title = oTitle_Properties;
-			palette.Box   = oBox_Properties;
-			[m_PaletteView addPalette:&palette];
-
-			NSRect content = [m_PaletteView frame];
-			NSRect frame = [NSWindow frameRectForContentRect:content styleMask:(NSTitledWindowMask|NSClosableWindowMask|NSUtilityWindowMask)];
-
-			NSRect visible_frame = [[oPanel screen] visibleFrame];
-			int x = static_cast<int>(visible_frame.size.width ) + static_cast<int>(visible_frame.origin.x);
-			int y = static_cast<int>(visible_frame.size.height) + static_cast<int>(visible_frame.origin.y);
-
-			frame.origin.x = static_cast<float>(x - static_cast<int>(frame.size.width ));
-			frame.origin.y = static_cast<float>(y - static_cast<int>(frame.size.height));
-
-			[oPanel setFrame:frame display:NO];
-			[oPanel setContentView:m_PaletteView];
-
-			[m_PaletteView setNeedsDisplay:YES];
-
-			[oPanel setFloatingPanel:YES];
-			[oPanel setBecomesKeyOnlyIfNeeded:YES];
-			[oPanel setReleasedWhenClosed:YES];
-			[oPanel setDelegate:self];
-
-			[self setWindow:oPanel];
-
-			if (NSMenuItem * item = [[NSMenuItem alloc] initWithTitle:@"Tool Palette" action:@selector(toggleVisibility:) keyEquivalent:@"T"])
-				{
-					[item setTarget:self];
-					[pController appendPanelItem:item];
-					[item release];
-				}
+			[item setTarget:self];
+			[pController appendPanelItem:item];
+			[item release];
 		}
+	}
 
 #define defn(T,X,Y)			m_ToolChest[ToolID_##T].button = T; \
-							m_ToolChest[ToolID_##T].tlbrid = X; \
-							m_ToolChest[ToolID_##T].ttipid = Y;
+	m_ToolChest[ToolID_##T].tlbrid = X;							\
+	m_ToolChest[ToolID_##T].ttipid = Y;
 #include "xap_CocoaTools.h"
 #undef defn
 
@@ -1053,42 +998,43 @@ static XAP_CocoaToolPalette * s_instance = 0;
 	const char * tooltip = 0;
 
 	for (int i = 0; i < XAP_COCOA_TOOL_ID__COUNT_; i++)
-		{
-			[m_ToolChest[i].button setTag:i];
-			[m_ToolChest[i].button setEnabled:NO];
-			[m_ToolChest[i].button setBordered:NO];
+	{
+		[m_ToolChest[i].button setTag:i];
+		[m_ToolChest[i].button setEnabled:NO];
+		[m_ToolChest[i].button setBordered:NO];
 
-			if (m_ToolChest[i].ttipid != AP_STRING_ID__FIRST__)
-				if (tooltip = pSS->getValue(m_ToolChest[i].ttipid))
-					{
-						[m_ToolChest[i].button setToolTip:[NSString stringWithUTF8String:tooltip]];
-					}
-
-			if ([m_ToolChest[i].button isKindOfClass:[XAP_CocoaToolbarButton class]])
-				{
-					NSButtonCell * cell = (NSButtonCell *) [m_ToolChest[i].button cell];
-
-					[cell setShowsStateBy:NSNoCellMask];
-					[cell setHighlightsBy:NSNoCellMask];
-				}
+		if (m_ToolChest[i].ttipid != AP_STRING_ID__FIRST__) {
+			if (tooltip = pSS->getValue(m_ToolChest[i].ttipid))
+			{
+				[m_ToolChest[i].button setToolTip:[NSString stringWithUTF8String:tooltip]];
+			}
 		}
+		
+		if ([m_ToolChest[i].button isKindOfClass:[XAP_CocoaToolbarButton class]])
+		{
+			NSButtonCell * cell = (NSButtonCell *) [m_ToolChest[i].button cell];
+
+			[cell setShowsStateBy:NSNoCellMask];
+			[cell setHighlightsBy:NSNoCellMask];
+		}
+	}
 
 	if (tooltip = pSS->getValue(AP_STRING_ID_TOOLBAR_TOOLTIP_FMT_STYLE))
-		{
-			[oDocumentStyle setToolTip:[NSString stringWithUTF8String:tooltip]];
-		}
+	{
+		[oDocumentStyle setToolTip:[NSString stringWithUTF8String:tooltip]];
+	}
 	if (tooltip = pSS->getValue(AP_STRING_ID_TOOLBAR_TOOLTIP_FMT_FONT))
-		{
-			[oFontName setToolTip:[NSString stringWithUTF8String:tooltip]];
-		}
+	{
+		[oFontName setToolTip:[NSString stringWithUTF8String:tooltip]];
+	}
 	if (tooltip = pSS->getValue(AP_STRING_ID_TOOLBAR_TOOLTIP_FMT_SIZE))
-		{
-			[oFontSize setToolTip:[NSString stringWithUTF8String:tooltip]];
-		}
+	{
+		[oFontSize setToolTip:[NSString stringWithUTF8String:tooltip]];
+	}
 	if (tooltip = pSS->getValue(AP_STRING_ID_TOOLBAR_TOOLTIP_ZOOM))
-		{
-			[oZoom setToolTip:[NSString stringWithUTF8String:tooltip]];
-		}
+	{
+		[oZoom setToolTip:[NSString stringWithUTF8String:tooltip]];
+	}
 
 	[self rebuildFontFamilyPopUp];
 
@@ -1098,11 +1044,11 @@ static XAP_CocoaToolPalette * s_instance = 0;
 	[[oDocumentStyle menu] setAutoenablesItems:NO];
 
 	if (m_Properties_DataSource = [[XAP_PaletteProperties_DataSource alloc] initWithOutlineView:oProperties])
-		{
-			[oProperties setIndentationPerLevel:10.0f];
-			[oProperties setDataSource:m_Properties_DataSource];
-			[oProperties setDelegate:m_Properties_DataSource];
-		}
+	{
+		[oProperties setIndentationPerLevel:10.0f];
+		[oProperties setDataSource:m_Properties_DataSource];
+		[oProperties setDelegate:m_Properties_DataSource];
+	}
 
 	[oPreviewPanel windowDidLoad];
 
@@ -1113,7 +1059,7 @@ static XAP_CocoaToolPalette * s_instance = 0;
 - (void)close
 {
 	UT_DEBUGMSG(("XAP_CocoaToolPalette -close\n"));
-	s_instance = 0;
+	s_instance = nil;
 	[super close];
 }
 
@@ -1124,10 +1070,12 @@ static XAP_CocoaToolPalette * s_instance = 0;
 
 - (void)toggleVisibility:(id)sender
 {
-	if ([oPanel isVisible])
+	if ([oPanel isVisible]) {
 		[oPanel orderOut:self];
-	else
+	}
+	else {
 		[oPanel orderFront:self];
+	}
 }
 
 - (BOOL)validateMenuItem:(id <NSMenuItem>)menuItem
@@ -1165,21 +1113,25 @@ static XAP_CocoaToolPalette * s_instance = 0;
 
 - (void)setColor:(XAP_Toolbar_Id)tlbrid
 {
-	if (!m_pViewCurrent)
+	if (!m_pViewCurrent) {
 		return;
+	}
 
 	const EV_Toolbar_Action * pAction = m_pToolbarActionSet->getAction(tlbrid);
 	UT_ASSERT(pAction);
-	if (!pAction)
+	if (!pAction) {
 		return;
+	}
 
 	const char * szMethodName = pAction->getMethodName();
-	if (!szMethodName)
+	if (!szMethodName) {
 		return;
+	}
 
 	EV_EditMethod * pEM = m_pEditMethodContainer->findEditMethodByName(szMethodName);
-	if (!pEM)
+	if (!pEM) {
 		return;
+	}
 
 	UT_DEBUGMSG(("XAP_CocoaToolPalette -setColor: have edit method\n"));
 
@@ -1202,15 +1154,15 @@ static XAP_CocoaToolPalette * s_instance = 0;
 											  static_cast<unsigned char>(g),
 											  static_cast<unsigned char>(b));
 	if (color_string)
-		{
-			UT_UCS4String color_data(color_string);
+	{
+		UT_UCS4String color_data(color_string);
 
-			const UT_UCS4Char * pData = color_data.ucs4_str();
-			UT_uint32 dataLength = static_cast<UT_uint32>(color_data.length());
+		const UT_UCS4Char * pData = color_data.ucs4_str();
+		UT_uint32 dataLength = static_cast<UT_uint32>(color_data.length());
 
-			EV_EditMethodCallData emcd(pData,dataLength);
-			pEM->Fn(m_pViewCurrent, &emcd);
-		}
+		EV_EditMethodCallData emcd(pData,dataLength);
+		pEM->Fn(m_pViewCurrent, &emcd);
+	}
 }
 
 - (IBAction)aColor_FG:(id)sender
@@ -1237,10 +1189,12 @@ static XAP_CocoaToolPalette * s_instance = 0;
 {
 	NSButton * title = (NSButton *) sender;
 
-	if ([title tag] == 0)
+	if ([title tag] == 0) {
 		[title setTag:1];
-	else
+	}
+	else {
 		[title setTag:0];
+	}
 
 	[m_PaletteView sync];
 	[m_PaletteView setNeedsDisplay:YES];
@@ -1248,21 +1202,25 @@ static XAP_CocoaToolPalette * s_instance = 0;
 
 - (IBAction)aDocumentStyle:(id)sender
 {
-	if (!m_pViewCurrent)
+	if (!m_pViewCurrent) {
 		return;
+	}
 
 	const EV_Toolbar_Action * pAction = m_pToolbarActionSet->getAction(AP_TOOLBAR_ID_FMT_STYLE);
 	UT_ASSERT(pAction);
-	if (!pAction)
+	if (!pAction) {
 		return;
+	}
 
 	const char * szMethodName = pAction->getMethodName();
-	if (!szMethodName)
+	if (!szMethodName) {
 		return;
+	}
 
 	EV_EditMethod * pEM = m_pEditMethodContainer->findEditMethodByName(szMethodName);
-	if (!pEM)
+	if (!pEM) {
 		return;
+	}
 
 	UT_DEBUGMSG(("XAP_CocoaToolPalette -aDocumentStyle: have edit method\n"));
 
@@ -1277,21 +1235,25 @@ static XAP_CocoaToolPalette * s_instance = 0;
 
 - (IBAction)aFontName:(id)sender
 {
-	if (!m_pViewCurrent)
+	if (!m_pViewCurrent) {
 		return;
+	}
 
 	const EV_Toolbar_Action * pAction = m_pToolbarActionSet->getAction(AP_TOOLBAR_ID_FMT_FONT);
 	UT_ASSERT(pAction);
-	if (!pAction)
+	if (!pAction) {
 		return;
+	}
 
 	const char * szMethodName = pAction->getMethodName();
-	if (!szMethodName)
+	if (!szMethodName) {
 		return;
+	}
 
 	EV_EditMethod * pEM = m_pEditMethodContainer->findEditMethodByName(szMethodName);
-	if (!pEM)
+	if (!pEM) {
 		return;
+	}
 
 	UT_DEBUGMSG(("XAP_CocoaToolPalette -aFontName: have edit method\n"));
 
@@ -1306,13 +1268,14 @@ static XAP_CocoaToolPalette * s_instance = 0;
 
 - (IBAction)aFontMemberName:(id)sender
 {
-	if (!m_pViewCurrent)
+	if (!m_pViewCurrent) {
 		return;
+	}
 
 	if (!m_pCurrentFontFamily || !m_pCurrentFontFamilyHelper)
-		{
-			return;
-		}
+	{
+		return;
+	}
 
 	int index = [[oFontMemberName selectedItem] tag];
 
@@ -1325,57 +1288,60 @@ static XAP_CocoaToolPalette * s_instance = 0;
 	BOOL bSetItalic = NO;
 
 	if (index == [m_pCurrentFontFamilyHelper indexBoldItalic])
-		{
-			bSetBold   = YES;
-			bSetItalic = YES;
-		}
+	{
+		bSetBold   = YES;
+		bSetItalic = YES;
+	}
 	else if (index == [m_pCurrentFontFamilyHelper indexBold])
-		{
-			bSetBold   = YES;
-		}
+	{
+		bSetBold   = YES;
+	}
 	else if (index == [m_pCurrentFontFamilyHelper indexItalic])
-		{
-			bSetItalic = YES;
-		}
+	{
+		bSetItalic = YES;
+	}
 	else if (index == [m_pCurrentFontFamilyHelper indexRegular])
-		{
-			// 
-		}
+	{
+		// 
+	}
 	else // need to set an explicit font name rather than a font family name...
-		{
-			NSArray * fontNames = [m_pCurrentFontFamilyHelper fontNames];
+	{
+		NSArray * fontNames = [m_pCurrentFontFamilyHelper fontNames];
 
-			fontFamilyName = [fontNames objectAtIndex:index];
-		}
+		fontFamilyName = [fontNames objectAtIndex:index];
+	}
 
 	/* fontFamilyName gets corrupted for some probably obvious reason, so copy it here and now...
 	 */
 	UT_UCS4String selection([fontFamilyName UTF8String]);
 
 	if (bBold != bSetBold)
-		{
-			[oTB_text_bold setState:(bSetBold ? NSOnState : NSOffState)];
-			[self aTB_click:oTB_text_bold];
-		}
+	{
+		[oTB_text_bold setState:(bSetBold ? NSOnState : NSOffState)];
+		[self aTB_click:oTB_text_bold];
+	}
 
 	if (bItalic != bSetItalic)
-		{
-			[oTB_text_italic setState:(bSetItalic ? NSOnState : NSOffState)];
-			[self aTB_click:oTB_text_italic];
-		}
+	{
+		[oTB_text_italic setState:(bSetItalic ? NSOnState : NSOffState)];
+		[self aTB_click:oTB_text_italic];
+	}
 
 	const EV_Toolbar_Action * pAction = m_pToolbarActionSet->getAction(AP_TOOLBAR_ID_FMT_FONT);
 	UT_ASSERT(pAction);
-	if (!pAction)
+	if (!pAction) {
 		return;
+	}
 
 	const char * szMethodName = pAction->getMethodName();
-	if (!szMethodName)
+	if (!szMethodName) {
 		return;
+	}
 
 	EV_EditMethod * pEM = m_pEditMethodContainer->findEditMethodByName(szMethodName);
-	if (!pEM)
+	if (!pEM) {
 		return;
+	}
 
 	UT_DEBUGMSG(("XAP_CocoaToolPalette -aFontMemberName: have edit method\n"));
 
@@ -1389,45 +1355,51 @@ static XAP_CocoaToolPalette * s_instance = 0;
 - (IBAction)aFontSize:(id)sender
 {
 	if (!m_pViewPrevious)
-		{
-			if (m_pFramePrevious)
-				m_pFramePrevious->raise();
-			return;
+	{
+		if (m_pFramePrevious) {
+			m_pFramePrevious->raise();
 		}
+		return;
+	}
 
 	const EV_Toolbar_Action * pAction = m_pToolbarActionSet->getAction(AP_TOOLBAR_ID_FMT_SIZE);
 	UT_ASSERT(pAction);
 	if (!pAction)
-		{
-			if (m_pFramePrevious)
-				m_pFramePrevious->raise();
-			return;
+	{
+		if (m_pFramePrevious) {
+			m_pFramePrevious->raise();
 		}
+		return;
+	}
 
 	const char * szMethodName = pAction->getMethodName();
 	if (!szMethodName)
-		{
-			if (m_pFramePrevious)
-				m_pFramePrevious->raise();
-			return;
+	{
+		if (m_pFramePrevious) {
+			m_pFramePrevious->raise();
 		}
+		return;
+	}
 
 	EV_EditMethod * pEM = m_pEditMethodContainer->findEditMethodByName(szMethodName);
 	if (!pEM)
-		{
-			if (m_pFramePrevious)
-				m_pFramePrevious->raise();
-			return;
+	{
+		if (m_pFramePrevious) {
+			m_pFramePrevious->raise();
 		}
+		return;
+	}
 
 	UT_DEBUGMSG(("XAP_CocoaToolPalette -aFontSize: have edit method\n"));
 
 	int size = [oFontSize intValue];
 
-	if (size < 1)
+	if (size < 1) {
 		size = 1;   // TODO: ??
-	if (size > 100)
+	}
+	if (size > 100) {
 		size = 100; // TODO: ??
+	}
 
 	char buf[8];
 	sprintf(buf, "%d", size);
@@ -1440,8 +1412,9 @@ static XAP_CocoaToolPalette * s_instance = 0;
 	EV_EditMethodCallData emcd(pData,dataLength);
 	pEM->Fn(m_pViewPrevious, &emcd);
 
-	if (m_pFramePrevious)
+	if (m_pFramePrevious) {
 		m_pFramePrevious->raise();
+	}
 }
 
 - (IBAction)aTB_click:(id)sender
@@ -1451,10 +1424,10 @@ static XAP_CocoaToolPalette * s_instance = 0;
 	int tag = [button tag];
 
 	if ((tag < 0) || (tag >= XAP_COCOA_TOOL_ID__COUNT_))
-		{
-			UT_DEBUGMSG(("XAP_CocoaToolPalette -aTB_click: invalid tag\n"));
-			return;
-		}
+	{
+		UT_DEBUGMSG(("XAP_CocoaToolPalette -aTB_click: invalid tag\n"));
+		return;
+	}
 	// button == m_ToolChest[tag].button;
 
 	// TODO: other special buttons
@@ -1462,223 +1435,234 @@ static XAP_CocoaToolPalette * s_instance = 0;
 	XAP_Toolbar_Id tlbrid = m_ToolChest[tag].tlbrid;
 
 	if (!m_pViewCurrent)
+	{
+		if ((tlbrid == AP_TOOLBAR_ID_FILE_NEW ) ||
+			(tlbrid == AP_TOOLBAR_ID_FILE_OPEN) ||
+			(tlbrid == AP_TOOLBAR_ID_HELP))
 		{
-			if ((tlbrid == AP_TOOLBAR_ID_FILE_NEW ) ||
-				(tlbrid == AP_TOOLBAR_ID_FILE_OPEN) ||
-				(tlbrid == AP_TOOLBAR_ID_HELP))
-				{
-					// Only these are okay
-				}
-			else
-				{
-					return;
-				}
+			// Only these are okay
 		}
+		else
+		{
+			return;
+		}
+	}
 
 	/* Toolbar fore- & background color buttons don't actually set the color, they just ensure that the
 	 * color-chooser is visible & correctly configured:
 	 */
 	if ((tlbrid == AP_TOOLBAR_ID_COLOR_FORE) || (tlbrid == AP_TOOLBAR_ID_COLOR_BACK))
+	{
+		NSColorPanel * colorPanel = [NSColorPanel sharedColorPanel];
+
+		// ?? [NSColorPanel setPickerMask:(NSColorPanelRGBModeMask|NSColorPanelWheelModeMask|NSColorPanelGrayModeMask)];
+
+		[colorPanel setAction:0];
+		[colorPanel setTarget:0];
+
+		if (tlbrid == AP_TOOLBAR_ID_COLOR_FORE)
 		{
-			NSColorPanel * colorPanel = [NSColorPanel sharedColorPanel];
+			// [colorPanel setTitle:@"Foreground Color"]; // TODO: Localize
+			[colorPanel setColor:[oColor_FG color]];
+			[colorPanel setAction:@selector(aColor_FG:)];
+		}
+		else
+		{
+			// [colorPanel setTitle:@"Background Color"]; // TODO: Localize
+			[colorPanel setColor:[oColor_BG color]];
+			[colorPanel setAction:@selector(aColor_BG:)];
+		}
+		[colorPanel orderFront:self];
+		[colorPanel setTarget:self];
 
-			// ?? [NSColorPanel setPickerMask:(NSColorPanelRGBModeMask|NSColorPanelWheelModeMask|NSColorPanelGrayModeMask)];
+		return;
+	}
 
-			[colorPanel setAction:0];
-			[colorPanel setTarget:0];
-
-			if (tlbrid == AP_TOOLBAR_ID_COLOR_FORE)
-				{
-					// [colorPanel setTitle:@"Foreground Color"]; // TODO: Localize
-					[colorPanel setColor:[oColor_FG color]];
-					[colorPanel setAction:@selector(aColor_FG:)];
-				}
-			else
-				{
-					// [colorPanel setTitle:@"Background Color"]; // TODO: Localize
-					[colorPanel setColor:[oColor_BG color]];
-					[colorPanel setAction:@selector(aColor_BG:)];
-				}
-			[colorPanel orderFront:self];
-			[colorPanel setTarget:self];
-
+	if (tlbrid)
+	{
+		const EV_Toolbar_Action * pAction = m_pToolbarActionSet->getAction(tlbrid);
+		UT_ASSERT(pAction);
+		if (!pAction) {
 			return;
 		}
 
-	if (tlbrid)
-		{
-			const EV_Toolbar_Action * pAction = m_pToolbarActionSet->getAction(tlbrid);
-			UT_ASSERT(pAction);
-			if (!pAction)
-				return;
-
-			const char * szMethodName = pAction->getMethodName();
-			if (!szMethodName)
-				return;
-
-			EV_EditMethod * pEM = m_pEditMethodContainer->findEditMethodByName(szMethodName);
-			if (!pEM)
-				return;
-
-			UT_DEBUGMSG(("XAP_CocoaToolPalette -aTB_click: have edit method\n"));
-
-			EV_EditMethodType t = pEM->getType();
-
-			if (t & EV_EMT_REQUIREDATA) // This method requires character data
-				{
-					UT_DEBUGMSG(("XAP_CocoaToolPalette -aTB_click: method requires data\n"));
-				}
-			else
-				{
-					const UT_UCS4Char * pData = 0;
-					UT_uint32 dataLength = 0;
-
-					EV_EditMethodCallData emcd(pData,dataLength);
-					pEM->Fn(m_pViewCurrent, &emcd);
-				}
+		const char * szMethodName = pAction->getMethodName();
+		if (!szMethodName) {
+			return;
 		}
+
+		EV_EditMethod * pEM = m_pEditMethodContainer->findEditMethodByName(szMethodName);
+		if (!pEM) {
+			return;
+		}
+
+		UT_DEBUGMSG(("XAP_CocoaToolPalette -aTB_click: have edit method\n"));
+
+		EV_EditMethodType t = pEM->getType();
+
+		if (t & EV_EMT_REQUIREDATA) // This method requires character data
+		{
+			UT_DEBUGMSG(("XAP_CocoaToolPalette -aTB_click: method requires data\n"));
+		}
+		else
+		{
+			const UT_UCS4Char * pData = NULL;
+			UT_uint32 dataLength = 0;
+
+			EV_EditMethodCallData emcd(pData,dataLength);
+			pEM->Fn(m_pViewCurrent, &emcd);
+		}
+	}
 	else
+	{
+		switch (tag) {
+		case ToolID_oTB_LineAll:
+		case ToolID_oTB_LineBottom:
+		case ToolID_oTB_LineLeft:
+		case ToolID_oTB_LineNone:
+		case ToolID_oTB_LineRight:
+		case ToolID_oTB_LineTop:
+			// TODO: this is something else. use menu methods, perhaps
+			break;
+
+		case ToolID_oTB_search:
 		{
-			switch (tag)
+			bool okay = false;
+
+			const EV_Menu_Action * pAction = m_pMenuActionSet->getAction(AP_MENU_ID_EDIT_FIND);
+			if (m_pViewCurrent && pAction) {
+				if (const char * szMethodName = pAction->getMethodName())
 				{
-				case ToolID_oTB_LineAll:
-				case ToolID_oTB_LineBottom:
-				case ToolID_oTB_LineLeft:
-				case ToolID_oTB_LineNone:
-				case ToolID_oTB_LineRight:
-				case ToolID_oTB_LineTop:
-					// TODO: this is something else. use menu methods, perhaps
-					break;
-
-				case ToolID_oTB_search:
+					EV_EditMethod * pEM = m_pEditMethodContainer->findEditMethodByName(szMethodName);
+					if (pEM)
 					{
-						bool okay = false;
-
-						const EV_Menu_Action * pAction = m_pMenuActionSet->getAction(AP_MENU_ID_EDIT_FIND);
-						if (m_pViewCurrent && pAction)
-							if (const char * szMethodName = pAction->getMethodName())
-							{
-								EV_EditMethod * pEM = m_pEditMethodContainer->findEditMethodByName(szMethodName);
-								if (pEM)
-									{
-										EV_EditMethodCallData data;
-										okay = pEM->Fn(m_pViewCurrent, &data);
-									}
-							}
-						if (!okay)
-							{
-								UT_DEBUGMSG(("XAP_CocoaToolPalette -aTB_click: ToolID_oTB_search: failed!\n"));
-							}
+						EV_EditMethodCallData data;
+						okay = pEM->Fn(m_pViewCurrent, &data);
 					}
-					break;
-				case ToolID_oTB_search_replace:
-					{
-						bool okay = false;
-
-						const EV_Menu_Action * pAction = m_pMenuActionSet->getAction(AP_MENU_ID_EDIT_REPLACE);
-						if (m_pViewCurrent && pAction)
-							if (const char * szMethodName = pAction->getMethodName())
-							{
-								EV_EditMethod * pEM = m_pEditMethodContainer->findEditMethodByName(szMethodName);
-								if (pEM)
-									{
-										EV_EditMethodCallData data;
-										okay = pEM->Fn(m_pViewCurrent, &data);
-									}
-							}
-						if (!okay)
-							{
-								UT_DEBUGMSG(("XAP_CocoaToolPalette -aTB_click: ToolID_oTB_search_replace: failed!\n"));
-							}
-					}
-					break;
-
-				case ToolID_oTB_SplitAbove:
-				case ToolID_oTB_SplitBelow:
-				case ToolID_oTB_SplitHoriMid:
-				case ToolID_oTB_SplitLeft:
-				case ToolID_oTB_SplitRight:
-				case ToolID_oTB_SplitVertMid:
-					// TODO: this is something else. use menu methods, perhaps
-					break;
-
-				default:
-					UT_DEBUGMSG (("XAP_CocoaToolPalette -aTB_click: Unimplemented toolbar button!\n"));
-					break;
 				}
+			}
+			if (!okay)
+			{
+				UT_DEBUGMSG(("XAP_CocoaToolPalette -aTB_click: ToolID_oTB_search: failed!\n"));
+			}
+			break;
 		}
+		case ToolID_oTB_search_replace:
+		{
+			bool okay = false;
+
+			const EV_Menu_Action * pAction = m_pMenuActionSet->getAction(AP_MENU_ID_EDIT_REPLACE);
+			if (m_pViewCurrent && pAction) {
+				if (const char * szMethodName = pAction->getMethodName())
+				{
+					EV_EditMethod * pEM = m_pEditMethodContainer->findEditMethodByName(szMethodName);
+					if (pEM)
+					{
+						EV_EditMethodCallData data;
+						okay = pEM->Fn(m_pViewCurrent, &data);
+					}
+				}
+			}
+			if (!okay)
+			{
+				UT_DEBUGMSG(("XAP_CocoaToolPalette -aTB_click: ToolID_oTB_search_replace: failed!\n"));
+			}
+			break;
+		}
+
+		case ToolID_oTB_SplitAbove:
+		case ToolID_oTB_SplitBelow:
+		case ToolID_oTB_SplitHoriMid:
+		case ToolID_oTB_SplitLeft:
+		case ToolID_oTB_SplitRight:
+		case ToolID_oTB_SplitVertMid:
+			// TODO: this is something else. use menu methods, perhaps
+			break;
+
+		default:
+			UT_DEBUGMSG (("XAP_CocoaToolPalette -aTB_click: Unimplemented toolbar button!\n"));
+			break;
+		}
+	}
 }
 
 - (IBAction)aZoom:(id)sender
 {
 	if (!m_pViewPrevious)
-		{
-			if (m_pFramePrevious)
-				m_pFramePrevious->raise();
-			return;
+	{
+		if (m_pFramePrevious) {
+			m_pFramePrevious->raise();
 		}
+		return;
+	}
 
 	const EV_Toolbar_Action * pAction = m_pToolbarActionSet->getAction(AP_TOOLBAR_ID_ZOOM);
 	UT_ASSERT(pAction);
 	if (!pAction)
-		{
-			if (m_pFramePrevious)
-				m_pFramePrevious->raise();
-			return;
+	{
+		if (m_pFramePrevious) {
+			m_pFramePrevious->raise();
 		}
+		return;
+	}
 
 	const char * szMethodName = pAction->getMethodName();
 	if (!szMethodName)
-		{
-			if (m_pFramePrevious)
-				m_pFramePrevious->raise();
-			return;
+	{
+		if (m_pFramePrevious) {
+			m_pFramePrevious->raise();
 		}
+		return;
+	}
 
 	EV_EditMethod * pEM = m_pEditMethodContainer->findEditMethodByName(szMethodName);
 	if (!pEM)
-		{
-			if (m_pFramePrevious)
-				m_pFramePrevious->raise();
-			return;
+	{
+		if (m_pFramePrevious) {
+			m_pFramePrevious->raise();
 		}
+		return;
+	}
 
 	UT_DEBUGMSG(("XAP_CocoaToolPalette -aZoom: have edit method\n"));
 
 	NSString * value = [oZoom stringValue];
 
 	if ([value isEqualToString:@"Whole Page"] || [value isEqualToString:@"Page Width"])
-		{
-			UT_UCS4String selection([value UTF8String]);
+	{
+		UT_UCS4String selection([value UTF8String]);
 
-			const UT_UCS4Char * pData = selection.ucs4_str();
-			UT_uint32 dataLength = static_cast<UT_uint32>(selection.length());
+		const UT_UCS4Char * pData = selection.ucs4_str();
+		UT_uint32 dataLength = static_cast<UT_uint32>(selection.length());
 
-			EV_EditMethodCallData emcd(pData,dataLength);
-			pEM->Fn(m_pViewPrevious, &emcd);
-		}
+		EV_EditMethodCallData emcd(pData,dataLength);
+		pEM->Fn(m_pViewPrevious, &emcd);
+	}
 	else
-		{
-			int size = [oZoom intValue];
+	{
+		int size = [oZoom intValue];
 
-			if (size < 1)
-				size = 1;    // TODO: ??
-			if (size > 1000)
-				size = 1000; // TODO: ??
-
-			char buf[8];
-			sprintf(buf, "%d", size);
-
-			UT_UCS4String selection(buf);
-
-			const UT_UCS4Char * pData = selection.ucs4_str();
-			UT_uint32 dataLength = static_cast<UT_uint32>(selection.length());
-
-			EV_EditMethodCallData emcd(pData,dataLength);
-			pEM->Fn(m_pViewPrevious, &emcd);
+		if (size < 1) {
+			size = 1;    // TODO: ??
 		}
-	if (m_pFramePrevious)
+		if (size > 1000) {
+			size = 1000; // TODO: ??
+		}
+
+		char buf[8];
+		sprintf(buf, "%d", size);
+
+		UT_UCS4String selection(buf);
+
+		const UT_UCS4Char * pData = selection.ucs4_str();
+		UT_uint32 dataLength = static_cast<UT_uint32>(selection.length());
+
+		EV_EditMethodCallData emcd(pData,dataLength);
+		pEM->Fn(m_pViewPrevious, &emcd);
+	}
+	if (m_pFramePrevious) {
 		m_pFramePrevious->raise();
+	}
 }
 
 - (void)sync
@@ -1686,265 +1670,262 @@ static XAP_CocoaToolPalette * s_instance = 0;
 	/* toolbar buttons
 	 */
 	for (UT_uint32 i = 0; i < XAP_COCOA_TOOL_ID__COUNT_; i++)
+	{
+		if (m_ToolChest[i].tlbrid)
 		{
-			if (m_ToolChest[i].tlbrid)
+			if (!m_pViewCurrent)
+			{
+				if ((m_ToolChest[i].tlbrid == AP_TOOLBAR_ID_FILE_NEW ) ||
+					(m_ToolChest[i].tlbrid == AP_TOOLBAR_ID_FILE_OPEN) ||
+					(m_ToolChest[i].tlbrid == AP_TOOLBAR_ID_HELP))
 				{
-					if (!m_pViewCurrent)
-						{
-							if ((m_ToolChest[i].tlbrid == AP_TOOLBAR_ID_FILE_NEW ) ||
-								(m_ToolChest[i].tlbrid == AP_TOOLBAR_ID_FILE_OPEN) ||
-								(m_ToolChest[i].tlbrid == AP_TOOLBAR_ID_HELP))
-								{
-									[m_ToolChest[i].button setEnabled:YES];
-								}
-							else
-								{
-									[m_ToolChest[i].button setEnabled:NO];
-								}
-							continue;
-						}
+					[m_ToolChest[i].button setEnabled:YES];
+				}
+				else
+				{
+					[m_ToolChest[i].button setEnabled:NO];
+				}
+				continue;
+			}
 
-					if ((m_ToolChest[i].tlbrid == AP_TOOLBAR_ID_MERGEABOVE) ||
-						(m_ToolChest[i].tlbrid == AP_TOOLBAR_ID_MERGEBELOW) ||
-						(m_ToolChest[i].tlbrid == AP_TOOLBAR_ID_MERGELEFT ) ||
-						(m_ToolChest[i].tlbrid == AP_TOOLBAR_ID_MERGERIGHT))
-						{
-							/* WARNING: MERGELEFT/RIGHT/ABOVE/BELOW need to be implemented properly in toolbar actions!
-							 */
-							[m_ToolChest[i].button setEnabled:NO];
-							continue;
-						}
+			if ((m_ToolChest[i].tlbrid == AP_TOOLBAR_ID_MERGEABOVE) ||
+				(m_ToolChest[i].tlbrid == AP_TOOLBAR_ID_MERGEBELOW) ||
+				(m_ToolChest[i].tlbrid == AP_TOOLBAR_ID_MERGELEFT ) ||
+				(m_ToolChest[i].tlbrid == AP_TOOLBAR_ID_MERGERIGHT))
+			{
+				/* WARNING: MERGELEFT/RIGHT/ABOVE/BELOW need to be implemented properly in toolbar actions!
+				 */
+				[m_ToolChest[i].button setEnabled:NO];
+				continue;
+			}
 
-					const EV_Toolbar_Action * pAction = m_pToolbarActionSet->getAction(m_ToolChest[i].tlbrid);
-					UT_ASSERT(pAction);
-					if (!pAction)
-						continue;
+			const EV_Toolbar_Action * pAction = m_pToolbarActionSet->getAction(m_ToolChest[i].tlbrid);
+			UT_ASSERT(pAction);
+			if (!pAction) {
+				continue;
+			}
 
-					const char * szState = 0;
-					EV_Toolbar_ItemState tis = pAction->getToolbarItemState(m_pViewCurrent, &szState);
+			const char * szState = 0;
+			EV_Toolbar_ItemState tis = pAction->getToolbarItemState(m_pViewCurrent, &szState);
 
-					switch (pAction->getItemType())
-						{
-						case EV_TBIT_PushButton:
-						case EV_TBIT_ColorFore:
-						case EV_TBIT_ColorBack:
-							{
-								[m_ToolChest[i].button setEnabled:(EV_TIS_ShouldBeGray(tis) ? NO : YES)];
-							}
-							break;
+			switch (pAction->getItemType()) {
 			
-						case EV_TBIT_ToggleButton:
-						case EV_TBIT_GroupButton:
-							{
-								[m_ToolChest[i].button setEnabled:(EV_TIS_ShouldBeGray(tis) ? NO : YES)];
-								[m_ToolChest[i].button setState:(EV_TIS_ShouldBeToggled(tis) ? NSOnState : NSOffState)];
-							}
-							break;
+			case EV_TBIT_PushButton:
+			case EV_TBIT_ColorFore:
+			case EV_TBIT_ColorBack:
+			{
+				[m_ToolChest[i].button setEnabled:(EV_TIS_ShouldBeGray(tis) ? NO : YES)];
+			}
+			break;
 
-						case EV_TBIT_StaticLabel:
-						case EV_TBIT_Spacer:
-						case EV_TBIT_BOGUS:
-						case EV_TBIT_EditText:
-						case EV_TBIT_DropDown:
-						case EV_TBIT_ComboBox: // handled elsewhere
-							break;
+			case EV_TBIT_ToggleButton:
+			case EV_TBIT_GroupButton:
+			{
+				[m_ToolChest[i].button setEnabled:(EV_TIS_ShouldBeGray(tis) ? NO : YES)];
+				[m_ToolChest[i].button setState:(EV_TIS_ShouldBeToggled(tis) ? NSOnState : NSOffState)];
+			}
+			break;
 
-						default:
-							UT_DEBUGMSG (("XAP_CocoaToolPalette -sync: Unexpected toolbar layout flags!\n"));
-							UT_ASSERT(0);
-							break;
-						}
-				}
-			else
-				{
-					switch (i) // well, okay, a little insane to switch this, but...
-						{
-						case ToolID_oTB_LineAll:
-						case ToolID_oTB_LineBottom:
-						case ToolID_oTB_LineLeft:
-						case ToolID_oTB_LineNone:
-						case ToolID_oTB_LineRight:
-						case ToolID_oTB_LineTop:
-							// TODO: this is something else. use menu methods, perhaps
-							[m_ToolChest[i].button setEnabled:NO];
-							break;
+			case EV_TBIT_StaticLabel:
+			case EV_TBIT_Spacer:
+			case EV_TBIT_BOGUS:
+			case EV_TBIT_EditText:
+			case EV_TBIT_DropDown:
+			case EV_TBIT_ComboBox: // handled elsewhere
+				break;
 
-						case ToolID_oTB_search:
-						case ToolID_oTB_search_replace:
-								[m_ToolChest[i].button setEnabled:(m_pViewCurrent ? YES : NO)];
-							break;
-
-						case ToolID_oTB_SplitAbove:
-						case ToolID_oTB_SplitBelow:
-						case ToolID_oTB_SplitHoriMid:
-						case ToolID_oTB_SplitLeft:
-						case ToolID_oTB_SplitRight:
-						case ToolID_oTB_SplitVertMid:
-							// TODO: this is something else. use menu methods, perhaps
-							[m_ToolChest[i].button setEnabled:NO];
-							break;
-
-						default:
-							UT_DEBUGMSG (("XAP_CocoaToolPalette -sync: Unimplemented toolbar button!\n"));
-							[m_ToolChest[i].button setEnabled:NO];
-							break;
-						}
-				}
+			default:
+				UT_DEBUGMSG (("XAP_CocoaToolPalette -sync: Unexpected toolbar layout flags!\n"));
+				UT_ASSERT(0);
+				break;
+			}
 		}
+		else
+		{
+			switch (i) {// well, okay, a little insane to switch this, but...
+			case ToolID_oTB_LineAll:
+			case ToolID_oTB_LineBottom:
+			case ToolID_oTB_LineLeft:
+			case ToolID_oTB_LineNone:
+			case ToolID_oTB_LineRight:
+			case ToolID_oTB_LineTop:
+				// TODO: this is something else. use menu methods, perhaps
+				[m_ToolChest[i].button setEnabled:NO];
+				break;
+
+			case ToolID_oTB_search:
+			case ToolID_oTB_search_replace:
+				[m_ToolChest[i].button setEnabled:(m_pViewCurrent ? YES : NO)];
+				break;
+
+			case ToolID_oTB_SplitAbove:
+			case ToolID_oTB_SplitBelow:
+			case ToolID_oTB_SplitHoriMid:
+			case ToolID_oTB_SplitLeft:
+			case ToolID_oTB_SplitRight:
+			case ToolID_oTB_SplitVertMid:
+				// TODO: this is something else. use menu methods, perhaps
+				[m_ToolChest[i].button setEnabled:NO];
+				break;
+
+			default:
+				UT_DEBUGMSG (("XAP_CocoaToolPalette -sync: Unimplemented toolbar button!\n"));
+				[m_ToolChest[i].button setEnabled:NO];
+				break;
+			}
+		}
+	}
 
 	/* Document styles
 	 */
 	[oDocumentStyle removeAllItems];
 	[oDocumentStyle setEnabled:NO];
 
-	if (m_pFrameCurrent)
-		if (PD_Document * pDoc = static_cast<PD_Document *>(m_pFrameCurrent->getCurrentDoc()))
-			{
-				const char * szName = 0;
-				const PD_Style * pStyle = 0;
+	if (m_pFrameCurrent) {
+		if (PD_Document * pDoc = static_cast<PD_Document *>(m_pFrameCurrent->getCurrentDoc())) {
+			const char * szName = 0;
+			const PD_Style * pStyle = 0;
 
-				NSMutableArray * styles = [NSMutableArray arrayWithCapacity:32];
+			NSMutableArray * styles = [NSMutableArray arrayWithCapacity:32];
 
-				for (UT_uint32 k = 0; (pDoc->enumStyles(k, &szName, &pStyle)); k++)
-					if (szName)
-						{
+			for (UT_uint32 k = 0; (pDoc->enumStyles(k, &szName, &pStyle)); k++) {
+				if (szName) {
 #if 1
-							[styles addObject:[NSString stringWithUTF8String:szName]];
+					[styles addObject:[NSString stringWithUTF8String:szName]];
 #else
-							// TODO: Make style names reflect properties such as: font, size, alignment ??
-							NSString * name = [NSString stringWithUTF8String:szName];
+					// TODO: Make style names reflect properties such as: font, size, alignment ??
+					NSString * name = [NSString stringWithUTF8String:szName];
 
-							NSDictionary * attr = TODO
+					NSDictionary * attr = TODO
 
-							[oDocumentStyle addItemWithTitle:[NSAttributedString initWithString:name attributes:attr]];
+						[oDocumentStyle addItemWithTitle:[NSAttributedString initWithString:name attributes:attr]];
 #endif
-						}
-				[styles sortUsingSelector:@selector(compare:)];
-
-				[oDocumentStyle addItemsWithTitles:styles];
-
-				const EV_Toolbar_Action * pAction = m_pToolbarActionSet->getAction(AP_TOOLBAR_ID_FMT_STYLE);
-				UT_ASSERT(pAction);
-				if (pAction)
-					{
-						const char * szState = 0;
-						EV_Toolbar_ItemState tis = pAction->getToolbarItemState(m_pViewCurrent, &szState);
-
-						[oDocumentStyle setEnabled:(EV_TIS_ShouldBeGray(tis) ? NO : YES)];
-
-						UT_ASSERT(szState);
-						if (szState)
-							{
-								[oDocumentStyle selectItemWithTitle:[NSString stringWithUTF8String:szState]];
-							}
-					}
+				}
 			}
+			[styles sortUsingSelector:@selector(compare:)];
 
+			[oDocumentStyle addItemsWithTitles:styles];
+
+			const EV_Toolbar_Action * pAction = m_pToolbarActionSet->getAction(AP_TOOLBAR_ID_FMT_STYLE);
+			UT_ASSERT(pAction);
+			if (pAction) {
+				const char * szState = 0;
+				EV_Toolbar_ItemState tis = pAction->getToolbarItemState(m_pViewCurrent, &szState);
+
+				[oDocumentStyle setEnabled:(EV_TIS_ShouldBeGray(tis) ? NO : YES)];
+
+				UT_ASSERT(szState);
+				if (szState) {
+					[oDocumentStyle selectItemWithTitle:[NSString stringWithUTF8String:szState]];
+				}
+			}
+		}
+	}
 	/* Font name
 	 */
 	[oFontName setEnabled:NO];
 
 	if (m_pViewCurrent)
+	{
+		const EV_Toolbar_Action * pAction = m_pToolbarActionSet->getAction(AP_TOOLBAR_ID_FMT_FONT);
+		UT_ASSERT(pAction);
+		if (pAction)
 		{
-			const EV_Toolbar_Action * pAction = m_pToolbarActionSet->getAction(AP_TOOLBAR_ID_FMT_FONT);
-			UT_ASSERT(pAction);
-			if (pAction)
-				{
-					const char * szState = 0;
-					EV_Toolbar_ItemState tis = pAction->getToolbarItemState(m_pViewCurrent, &szState);
+			const char * szState = 0;
+			EV_Toolbar_ItemState tis = pAction->getToolbarItemState(m_pViewCurrent, &szState);
 
-					[oFontName setEnabled:(EV_TIS_ShouldBeGray(tis) ? NO : YES)];
+			[oFontName setEnabled:(EV_TIS_ShouldBeGray(tis) ? NO : YES)];
 
-					// UT_ASSERT(szState); // This assert is triggered if the selection contains multiple fonts?
-					if (szState)
-						{
-							[self syncPopUpsForFont:[NSString stringWithUTF8String:szState]];
-						}
-				}
+			// UT_ASSERT(szState); // This assert is triggered if the selection contains multiple fonts?
+			if (szState)
+			{
+				[self syncPopUpsForFont:[NSString stringWithUTF8String:szState]];
+			}
 		}
+	}
 
 	/* Font size
 	 */
 	[oFontSize setEnabled:NO];
 
 	if (m_pViewCurrent)
+	{
+		const EV_Toolbar_Action * pAction = m_pToolbarActionSet->getAction(AP_TOOLBAR_ID_FMT_SIZE);
+		UT_ASSERT(pAction);
+		if (pAction)
 		{
-			const EV_Toolbar_Action * pAction = m_pToolbarActionSet->getAction(AP_TOOLBAR_ID_FMT_SIZE);
-			UT_ASSERT(pAction);
-			if (pAction)
+			const char * szState = 0;
+			EV_Toolbar_ItemState tis = pAction->getToolbarItemState(m_pViewCurrent, &szState);
+
+			[oFontSize setEnabled:(EV_TIS_ShouldBeGray(tis) ? NO : YES)];
+
+			if (szState)
+			{
+				NSString * selection = [NSString stringWithUTF8String:szState];
+
+				int index = [oFontSize indexOfItemWithObjectValue:selection];
+
+				if (index == NSNotFound)
 				{
-					const char * szState = 0;
-					EV_Toolbar_ItemState tis = pAction->getToolbarItemState(m_pViewCurrent, &szState);
+					index = [oFontSize indexOfSelectedItem];
 
-					[oFontSize setEnabled:(EV_TIS_ShouldBeGray(tis) ? NO : YES)];
-
-					if (szState)
-						{
-							NSString * selection = [NSString stringWithUTF8String:szState];
-
-							int index = [oFontSize indexOfItemWithObjectValue:selection];
-
-							if (index == NSNotFound)
-								{
-									index = [oFontSize indexOfSelectedItem];
-
-									if (index >= 0)
-										{
-											[oFontSize deselectItemAtIndex:index];
-										}
-								}
-							else
-								{
-									[oFontSize selectItemAtIndex:index];
-								}
-							[oFontSize setStringValue:selection];
-						}
-					else // mixed selection
-						{
-							[oFontSize setStringValue:@""];
-						}
+					if (index >= 0)
+					{
+						[oFontSize deselectItemAtIndex:index];
+					}
 				}
+				else
+				{
+					[oFontSize selectItemAtIndex:index];
+				}
+				[oFontSize setStringValue:selection];
+			}
+			else // mixed selection
+			{
+				[oFontSize setStringValue:@""];
+			}
 		}
+	}
 
 	/* Zoom
 	 */
 	[oZoom setEnabled:NO];
 
 	if (m_pViewCurrent)
+	{
+		const EV_Toolbar_Action * pAction = m_pToolbarActionSet->getAction(AP_TOOLBAR_ID_ZOOM);
+		UT_ASSERT(pAction);
+		if (pAction)
 		{
-			const EV_Toolbar_Action * pAction = m_pToolbarActionSet->getAction(AP_TOOLBAR_ID_ZOOM);
-			UT_ASSERT(pAction);
-			if (pAction)
+			const char * szState = 0;
+			EV_Toolbar_ItemState tis = pAction->getToolbarItemState(m_pViewCurrent, &szState);
+
+			[oZoom setEnabled:(EV_TIS_ShouldBeGray(tis) ? NO : YES)];
+
+			UT_ASSERT(szState);
+			if (szState)
+			{
+				NSString * selection = [NSString stringWithUTF8String:szState];
+
+				int index = [oZoom indexOfItemWithObjectValue:selection];
+
+				if (index == NSNotFound)
 				{
-					const char * szState = 0;
-					EV_Toolbar_ItemState tis = pAction->getToolbarItemState(m_pViewCurrent, &szState);
+					index = [oZoom indexOfSelectedItem];
 
-					[oZoom setEnabled:(EV_TIS_ShouldBeGray(tis) ? NO : YES)];
-
-					UT_ASSERT(szState);
-					if (szState)
-						{
-							NSString * selection = [NSString stringWithUTF8String:szState];
-
-							int index = [oZoom indexOfItemWithObjectValue:selection];
-
-							if (index == NSNotFound)
-								{
-									index = [oZoom indexOfSelectedItem];
-
-									if (index >= 0)
-										{
-											[oZoom deselectItemAtIndex:index];
-										}
-								}
-							else
-								{
-									[oZoom selectItemAtIndex:index];
-								}
-							[oZoom setStringValue:selection];
-						}
+					if (index >= 0)
+					{
+						[oZoom deselectItemAtIndex:index];
+					}
 				}
+				else
+				{
+					[oZoom selectItemAtIndex:index];
+				}
+				[oZoom setStringValue:selection];
+			}
 		}
+	}
 
 	/* Color buttons
 	 */
@@ -1952,79 +1933,80 @@ static XAP_CocoaToolPalette * s_instance = 0;
 	[oSwitch_BG setEnabled:NO]; // TODO
 
 	if (m_pViewCurrent)
+	{
+		FV_View * pFView = static_cast<FV_View *>(m_pViewCurrent);
+
+		bool bMixedSelection;
+		bool bExplicitlyDefined;
+
+		UT_UTF8String szColorValue;
+
+		if (pFView->queryCharFormat("color", szColorValue, bExplicitlyDefined, bMixedSelection))
 		{
-			FV_View * pFView = static_cast<FV_View *>(m_pViewCurrent);
+			[oSwitch_FG setState:(bExplicitlyDefined ? NSOnState : NSOffState)];
 
-			bool bMixedSelection;
-			bool bExplicitlyDefined;
+			UT_HashColor hash;
 
-			UT_UTF8String szColorValue;
+			bool bValid = (hash.setColor(szColorValue.utf8_str()) != 0);
+			if (!bValid) {
+				bValid = (hash.setHashIfValid(szColorValue.utf8_str()) != 0);
+			}
+			
+			if (bValid)
+			{
+				UT_RGBColor rgb = hash.rgb();
 
-			if (pFView->queryCharFormat("color", szColorValue, bExplicitlyDefined, bMixedSelection))
-				{
-					[oSwitch_FG setState:(bExplicitlyDefined ? NSOnState : NSOffState)];
+				float r = static_cast<float>(rgb.m_red) / 255;
+				float g = static_cast<float>(rgb.m_grn) / 255;
+				float b = static_cast<float>(rgb.m_blu) / 255;
+				float a = 1;
 
-					UT_HashColor hash;
-
-					bool bValid = (hash.setColor(szColorValue.utf8_str()) != 0);
-					if (!bValid)
-						bValid = (hash.setHashIfValid(szColorValue.utf8_str()) != 0);
-
-					if (bValid)
-						{
-							UT_RGBColor rgb = hash.rgb();
-
-							float r = static_cast<float>(rgb.m_red) / 255;
-							float g = static_cast<float>(rgb.m_grn) / 255;
-							float b = static_cast<float>(rgb.m_blu) / 255;
-							float a = 1;
-
-							[oColor_FG setColor:[NSColor colorWithDeviceRed:r green:g blue:b alpha:a]];
-						}
-					else
-						{
-							UT_DEBUGMSG(("XAP_CocoaToolPalette -sync: fg=\"%s\"?\n", szColorValue.utf8_str()));
-						}
-				}
-			if (pFView->queryCharFormat("bgcolor", szColorValue, bExplicitlyDefined, bMixedSelection))
-				{
-					[oSwitch_BG setState:(bExplicitlyDefined ? NSOnState : NSOffState)];
-
-					if (strcmp (szColorValue.utf8_str(), "transparent") == 0)
-						{
-							float r = 1;
-							float g = 1;
-							float b = 1;
-							float a = 0;
-
-							[oColor_BG setColor:[NSColor colorWithDeviceRed:r green:g blue:b alpha:a]];
-						}
-					else
-						{
-							UT_HashColor hash;
-
-							bool bValid = (hash.setColor(szColorValue.utf8_str()) != 0);
-							if (!bValid)
-								bValid = (hash.setHashIfValid(szColorValue.utf8_str()) != 0);
-
-							if (bValid)
-								{
-									UT_RGBColor rgb = hash.rgb();
-
-									float r = static_cast<float>(rgb.m_red) / 255;
-									float g = static_cast<float>(rgb.m_grn) / 255;
-									float b = static_cast<float>(rgb.m_blu) / 255;
-									float a = 1;
-
-									[oColor_BG setColor:[NSColor colorWithDeviceRed:r green:g blue:b alpha:a]];
-								}
-							else
-								{
-									UT_DEBUGMSG(("XAP_CocoaToolPalette -sync: bg=\"%s\"?\n", szColorValue.utf8_str()));
-								}
-						}
-				}
+				[oColor_FG setColor:[NSColor colorWithDeviceRed:r green:g blue:b alpha:a]];
+			}
+			else
+			{
+				UT_DEBUGMSG(("XAP_CocoaToolPalette -sync: fg=\"%s\"?\n", szColorValue.utf8_str()));
+			}
 		}
+		if (pFView->queryCharFormat("bgcolor", szColorValue, bExplicitlyDefined, bMixedSelection))
+		{
+			[oSwitch_BG setState:(bExplicitlyDefined ? NSOnState : NSOffState)];
+
+			if (strcmp (szColorValue.utf8_str(), "transparent") == 0)
+			{
+				float r = 1;
+				float g = 1;
+				float b = 1;
+				float a = 0;
+
+				[oColor_BG setColor:[NSColor colorWithDeviceRed:r green:g blue:b alpha:a]];
+			}
+			else
+			{
+				UT_HashColor hash;
+
+				bool bValid = (hash.setColor(szColorValue.utf8_str()) != 0);
+				if (!bValid) {
+					bValid = (hash.setHashIfValid(szColorValue.utf8_str()) != 0);
+				}
+				if (bValid)
+				{
+					UT_RGBColor rgb = hash.rgb();
+
+					float r = static_cast<float>(rgb.m_red) / 255;
+					float g = static_cast<float>(rgb.m_grn) / 255;
+					float b = static_cast<float>(rgb.m_blu) / 255;
+					float a = 1;
+
+					[oColor_BG setColor:[NSColor colorWithDeviceRed:r green:g blue:b alpha:a]];
+				}
+				else
+				{
+					UT_DEBUGMSG(("XAP_CocoaToolPalette -sync: bg=\"%s\"?\n", szColorValue.utf8_str()));
+				}
+			}
+		}
+	}
 
 	/* Properties OutlineView
 	 */
@@ -2045,33 +2027,34 @@ static XAP_CocoaToolPalette * s_instance = 0;
 	bool bSync = false;
 
 	if (frame && view)
-		{
-			m_pViewCurrent  = view;
-			m_pFrameCurrent = frame;
+	{
+		m_pViewCurrent  = view;
+		m_pFrameCurrent = frame;
 
-			bSync = true;
-		}
+		bSync = true;
+	}
 	else if (!frame && !view)
-		{
-			m_pViewCurrent  = 0;
-			m_pFrameCurrent = 0;
+	{
+		m_pViewCurrent  = 0;
+		m_pFrameCurrent = 0;
 
-			// should we sync in this case?
-		}
+		// should we sync in this case?
+	}
 	else
-		{
-			UT_ASSERT(view && frame);
+	{
+		UT_ASSERT(view && frame);
 
-			m_pViewCurrent  = 0;
-			m_pFrameCurrent = 0;
+		m_pViewCurrent  = 0;
+		m_pFrameCurrent = 0;
 
-			bSync = true;
-		}
+		bSync = true;
+	}
 
 	m_Listener->setCurrentView(m_pViewCurrent);
 
-	if (bSync)
+	if (bSync) {
 		[self sync];
+	}
 }
 
 - (void)rebuildFontFamilyPopUp
@@ -2085,26 +2068,26 @@ static XAP_CocoaToolPalette * s_instance = 0;
 	BOOL bAttributedTitles = YES;
 
 	for (unsigned i = 0; i < count; i++)
+	{
+		NSString * Family = [m_pFontFamilies objectAtIndex:i];
+
+		[oFontName addItemWithTitle:Family];
+
+		NSMenuItem * item = [oFontName lastItem];
+
+		[item setTag:((int) i)];
+
+		if (i == 0)
 		{
-			NSString * Family = [m_pFontFamilies objectAtIndex:i];
-
-			[oFontName addItemWithTitle:Family];
-
-			NSMenuItem * item = [oFontName lastItem];
-
-			[item setTag:((int) i)];
-
-			if (i == 0)
-				{
-					bAttributedTitles = [item respondsToSelector:@selector(setAttributedTitle:)];
-				}
-			if (bAttributedTitles)
-				{
-					XAP_CocoaFontFamilyHelper * helper = [pController helperForFontFamily:Family];
-
-					[item setAttributedTitle:[helper attributedFontFamilyName]];
-				}
+			bAttributedTitles = [item respondsToSelector:@selector(setAttributedTitle:)];
 		}
+		if (bAttributedTitles)
+		{
+			XAP_CocoaFontFamilyHelper * helper = [pController helperForFontFamily:Family];
+
+			[item setAttributedTitle:[helper attributedFontFamilyName]];
+		}
+	}
 }
 
 - (void)syncPopUpsForFont:(NSString *)requestedFontFamilyName
@@ -2125,53 +2108,53 @@ static XAP_CocoaToolPalette * s_instance = 0;
 	XAP_CocoaFontFamilyHelper * helper = [pController helperForFontFamily:requestedFontFamilyName];
 
 	if (helper)
-		{
-			// (a) a recognized font family name
+	{
+		// (a) a recognized font family name
 
-			fontFamilyName = requestedFontFamilyName;
-		}
+		fontFamilyName = requestedFontFamilyName;
+	}
 	else if (fontRef = [pController helperReferenceForFont:requestedFontFamilyName])
-		{
-			// (b) really a font name
+	{
+		// (b) really a font name
 
-			fontFamilyName = [fontRef fontFamily];
+		fontFamilyName = [fontRef fontFamily];
 
-			helper = [fontRef fontFamilyHelper];
-		}
+		helper = [fontRef fontFamilyHelper];
+	}
 	else
-		{
-			// (c) completely unknown, so we pretend it's a new font family name
+	{
+		// (c) completely unknown, so we pretend it's a new font family name
 
-			fontFamilyName = requestedFontFamilyName;
+		fontFamilyName = requestedFontFamilyName;
 
-			helper = [pController helperForUnknownFontFamily:requestedFontFamilyName];
+		helper = [pController helperForUnknownFontFamily:requestedFontFamilyName];
 
-			/* In this case we need to modify the list of font families
-			 */
+		/* In this case we need to modify the list of font families
+		 */
 
-			[m_pFontFamilies addObject:fontFamilyName];
-			[m_pFontFamilies sortUsingSelector:@selector(compare:)];
+		[m_pFontFamilies addObject:fontFamilyName];
+		[m_pFontFamilies sortUsingSelector:@selector(compare:)];
 
-			[self rebuildFontFamilyPopUp];
-		}
+		[self rebuildFontFamilyPopUp];
+	}
 
 	BOOL bRebuildMemberPopUp = YES;
 
 	if (m_pCurrentFontFamily)
+	{
+		if ([m_pCurrentFontFamily isEqualToString:fontFamilyName])
 		{
-			if ([m_pCurrentFontFamily isEqualToString:fontFamilyName])
-				{
-					bRebuildMemberPopUp = NO;
-				}
-			[m_pCurrentFontFamily release];
+			bRebuildMemberPopUp = NO;
 		}
+		[m_pCurrentFontFamily release];
+	}
 	m_pCurrentFontFamily = fontFamilyName;
 	[m_pCurrentFontFamily retain];
 
 	if (m_pCurrentFontFamilyHelper)
-		{
-			[m_pCurrentFontFamilyHelper release];
-		}
+	{
+		[m_pCurrentFontFamilyHelper release];
+	}
 	m_pCurrentFontFamilyHelper = helper;
 	[m_pCurrentFontFamilyHelper retain];
 
@@ -2182,45 +2165,45 @@ static XAP_CocoaToolPalette * s_instance = 0;
 	NSArray * fontMembers = [helper fontMembers];
 
 	if (bRebuildMemberPopUp)
+	{
+		[oFontMemberName removeAllItems];
+
+		NSArray * attributedFontMembers = [helper attributedFontMembers];
+
+		BOOL bAttributedTitles = YES;
+
+		for (unsigned i = 0; i < count; i++)
 		{
-			[oFontMemberName removeAllItems];
+			NSString * fontMember = [fontMembers objectAtIndex:i];
 
-			NSArray * attributedFontMembers = [helper attributedFontMembers];
+			[oFontMemberName addItemWithTitle:fontMember];
 
-			BOOL bAttributedTitles = YES;
+			NSMenuItem * item = [oFontMemberName lastItem];
 
-			for (unsigned i = 0; i < count; i++)
-				{
-					NSString * fontMember = [fontMembers objectAtIndex:i];
+			[item setTag:((int) i)];
 
-					[oFontMemberName addItemWithTitle:fontMember];
+			if (i == 0)
+			{
+				bAttributedTitles = [item respondsToSelector:@selector(setAttributedTitle:)];
+			}
+			if (bAttributedTitles)
+			{
+				NSAttributedString * attr_title = [attributedFontMembers objectAtIndex:i];
 
-					NSMenuItem * item = [oFontMemberName lastItem];
-
-					[item setTag:((int) i)];
-
-					if (i == 0)
-						{
-							bAttributedTitles = [item respondsToSelector:@selector(setAttributedTitle:)];
-						}
-					if (bAttributedTitles)
-						{
-							NSAttributedString * attr_title = [attributedFontMembers objectAtIndex:i];
-
-							[item setAttributedTitle:attr_title];
-						}
-				}
-			[oFontMemberName setEnabled:((count > 1) ? YES : NO)];
+				[item setAttributedTitle:attr_title];
+			}
 		}
+		[oFontMemberName setEnabled:((count > 1) ? YES : NO)];
+	}
 	if (count == 1)
-		{
-			return;
-		}
+	{
+		return;
+	}
 	if (fontRef)
-		{
-			[oFontMemberName selectItemAtIndex:((int) [fontRef index])];
-			return;
-		}
+	{
+		[oFontMemberName selectItemAtIndex:((int) [fontRef index])];
+		return;
+	}
 
 	/* We have a font family name but we need to choose a particular member of the font...
 	 */
@@ -2228,38 +2211,38 @@ static XAP_CocoaToolPalette * s_instance = 0;
 	BOOL bItalic = ([oTB_text_italic state] == NSOnState) ? YES : NO;
 
 	if (bBold && bItalic)
+	{
+		int index = [helper indexBoldItalic];
+		if (index >= 0)
 		{
-			int index = [helper indexBoldItalic];
-			if (index >= 0)
-				{
-					[oFontMemberName selectItemAtIndex:index];
-					return;
-				}
+			[oFontMemberName selectItemAtIndex:index];
+			return;
 		}
+	}
 	else if (bBold)
+	{
+		int index = [helper indexBold];
+		if (index >= 0)
 		{
-			int index = [helper indexBold];
-			if (index >= 0)
-				{
-					[oFontMemberName selectItemAtIndex:index];
-					return;
-				}
+			[oFontMemberName selectItemAtIndex:index];
+			return;
 		}
+	}
 	else if (bItalic)
+	{
+		int index = [helper indexItalic];
+		if (index >= 0)
 		{
-			int index = [helper indexItalic];
-			if (index >= 0)
-				{
-					[oFontMemberName selectItemAtIndex:index];
-					return;
-				}
+			[oFontMemberName selectItemAtIndex:index];
+			return;
 		}
+	}
 	else
-		{
-			int index = [helper indexRegular];
+	{
+		int index = [helper indexRegular];
 
-			[oFontMemberName selectItemAtIndex:((index >= 0) ? index : 0)];
-		}
+		[oFontMemberName selectItemAtIndex:((index >= 0) ? index : 0)];
+	}
 }
 
 @end
@@ -2279,32 +2262,32 @@ XAP_CocoaToolPaletteListener::~XAP_CocoaToolPaletteListener()
 void XAP_CocoaToolPaletteListener::setCurrentView(AV_View * view)
 {
 	if (m_pView)
+	{
+		if (!m_pView->removeListener(m_lid))
 		{
-			if (!m_pView->removeListener(m_lid))
-				{
-					UT_DEBUGMSG(("XAP_CocoaToolPaletteListener::setCurrentView: failed to remove listener!\n"));
-				}
-			m_pView = 0;
+			UT_DEBUGMSG(("XAP_CocoaToolPaletteListener::setCurrentView: failed to remove listener!\n"));
 		}
+		m_pView = 0;
+	}
 	if (view)
+	{
+		if (view->addListener(this, &m_lid))
 		{
-			if (view->addListener(this, &m_lid))
-				{
-					m_pView = view;
-				}
-			else
-				{
-					UT_DEBUGMSG(("XAP_CocoaToolPaletteListener::setCurrentView: failed to add listener!\n"));
-				}
+			m_pView = view;
 		}
+		else
+		{
+			UT_DEBUGMSG(("XAP_CocoaToolPaletteListener::setCurrentView: failed to add listener!\n"));
+		}
+	}
 }
 
 bool XAP_CocoaToolPaletteListener::notify(AV_View * pView, const AV_ChangeMask mask)
 {
 	if (pView == m_pView)
-		{
-			[m_pPalette sync];
-		}
+	{
+		[m_pPalette sync];
+	}
 	return true; // why is this a bool function?
 }
 
