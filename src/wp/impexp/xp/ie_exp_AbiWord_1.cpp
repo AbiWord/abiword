@@ -1225,7 +1225,6 @@ void s_AbiWord_1_Listener::_handleStyles(void)
 {
 	bool bWroteOpenStyleSection = false;
 
-	const char * szName = NULL;
 	const PD_Style * pStyle=NULL;
 	UT_GenericVector<PD_Style *> vecStyles;
 	m_pDocument->getAllUsedStyles(&vecStyles);
@@ -1243,8 +1242,16 @@ void s_AbiWord_1_Listener::_handleStyles(void)
 		_openTag("s","/",true,api,0);
 	}
 
-	for (k=0; m_pDocument->enumStyles(k, &szName, &pStyle); k++)
+	UT_GenericVector<PD_Style*> * pStyles = NULL;
+	m_pDocument->enumStyles(pStyles);
+	UT_return_if_fail( pStyles );
+	UT_uint32 iStyleCount = m_pDocument->getStyleCount();
+	
+	for (k=0; k < iStyleCount; k++)
 	{
+		pStyle = pStyles->getNthItem(k);
+		UT_return_if_fail( pStyle );
+		
 		if (!pStyle->isUserDefined() || (vecStyles.findItem(const_cast<PD_Style*>(pStyle))) >= 0)
 			continue;
 
@@ -1258,6 +1265,8 @@ void s_AbiWord_1_Listener::_handleStyles(void)
 		_openTag("s","/",true,api,0);
 	}
 
+	delete pStyles;
+	
 	if (bWroteOpenStyleSection)
 		m_pie->write("</styles>\n");
 

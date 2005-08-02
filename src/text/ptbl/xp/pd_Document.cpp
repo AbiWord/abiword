@@ -2584,19 +2584,24 @@ bool PD_Document::removeStyle(const XML_Char * pszName)
 // with Normal
 //
 	UT_uint32 nstyles = getStyleCount();
-	const PD_Style * cStyle = NULL;
-	const char * szCstyle = NULL;
 	UT_uint32 i;
+	UT_GenericVector<PD_Style*> * pStyles = NULL;
+	enumStyles(pStyles);
+	UT_return_val_if_fail( pStyles, false );
+	
 	for(i=0; i< nstyles;i++)
 	{
-		enumStyles(i, &szCstyle,&cStyle);
+		// enumStyles(i, &szCstyle,&cStyle);
+		const PD_Style * pStyle = pStyles->getNthItem(i);
+		UT_return_val_if_fail( pStyle, false );
+		
 		bool bDoBasedOn = false;
 		bool bDoFollowedby = false;
-		if(const_cast<PD_Style *>(cStyle)->getBasedOn() == pNuke)
+		if(const_cast<PD_Style *>(pStyle)->getBasedOn() == pNuke)
 		{
 			bDoBasedOn = true;
 		}
-		if(const_cast<PD_Style *>(cStyle)->getFollowedBy() == pNuke)
+		if(const_cast<PD_Style *>(pStyle)->getFollowedBy() == pNuke)
 		{
 			bDoFollowedby = true;
 		}
@@ -2624,9 +2629,11 @@ bool PD_Document::removeStyle(const XML_Char * pszName)
 			{
 				xxx_UT_DEBUGMSG(("SEVIOR New Style Name %s, Value %s \n",nAtts[i],nAtts[i+1]));
 			}
-			const_cast<PD_Style *>(cStyle)->addAttributes( static_cast<const XML_Char **>(&nAtts[0]));
+			const_cast<PD_Style *>(pStyle)->addAttributes( static_cast<const XML_Char **>(&nAtts[0]));
 		}
 	}
+
+	delete pStyles;
 //
 // OK Now remove the style
 //
@@ -3856,6 +3863,11 @@ bool PD_Document::enumStyles(UT_uint32 k,
 								const char ** pszName, const PD_Style ** ppStyle) const
 {
 	return m_pPieceTable->enumStyles(k, pszName, ppStyle);
+}
+
+bool PD_Document::enumStyles(UT_GenericVector<PD_Style*> * & pStyles) const
+{
+	return m_pPieceTable->enumStyles(pStyles);
 }
 
 bool	PD_Document::addStyleProperty(const char * szStyleName, const char * szPropertyName, const char * szPropertyValue)

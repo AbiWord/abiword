@@ -81,13 +81,21 @@ bool AP_Win32Toolbar_StyleCombo::populate(void)
 	// TODO: need a view/doc pointer to get this right
 	// ALSO: will need to repopulate as new styles added
 	// HYP:  only call this method from shared code? 
-	const char * szName;
 	const PD_Style * pStyle;
 
-	for (UT_uint32 k=0; (m_pDocument->enumStyles(k,&szName,&pStyle)); k++)
+	UT_GenericVector<PD_Style*> * pStyles = NULL;
+	pDoc->enumStyles(pStyles);
+	UT_return_val_if_fail( pStyles, false );
+	UT_uint32 iStyleCount = getDoc()->getStyleCount();
+	
+	for (UT_uint32 k=0; k < iStyleCount; k++)
 	{
-		m_vecContents.addItem(szName);
+		pStyle = pStyles->getNthItem(k);
+		UT_return_val_if_fail( pStyle );
+		m_vecContents.addItem(pStyle->getName());
 	}
+
+	delete pStyles;
 #endif 
 
 	return true;
@@ -109,13 +117,22 @@ bool AP_Win32Toolbar_StyleCombo::repopulate(void)
 	m_vecContents.clear();
 
 	m_pDocument = static_cast<PD_Document *>(pAD_Doc);
-	const char * szName;
 	const PD_Style * pStyle;
 
-	for (UT_uint32 k=0; (m_pDocument->enumStyles(k,&szName,&pStyle)); k++)
+	UT_GenericVector<PD_Style*> * pStyles = NULL;
+	m_pDocument->enumStyles(pStyles);
+	UT_return_val_if_fail( pStyles, false );
+	UT_uint32 iStyleCount = m_pDocument->getStyleCount();
+
+	for (UT_uint32 k=0; k < iStyleCount; k++)
 	{
-		m_vecContents.addItem(szName);
+		pStyle = pStyles->getNthItem(k);
+		UT_return_val_if_fail( pStyle, false );
+		m_vecContents.addItem(pStyle->getName());
 	}
+
+	delete pStyles;
+	
 	return true;
 }
 

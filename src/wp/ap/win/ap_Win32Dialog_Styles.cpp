@@ -317,11 +317,17 @@ BOOL AP_Win32Dialog_Styles::_onInitDialog(HWND hWnd, WPARAM wParam, LPARAM lPara
 		int nIndex;
 		UT_UTF8String utf8;
 		UT_String str;	
+
+		UT_GenericVector<PD_Style*> * pStyles = NULL;
+		getDoc()->enumStyles(pStyles);
+		UT_return_val_if_fail( pStyles, FALSE );
 		
 		for (UT_uint32 i = 0; i < nStyles; i++)
 		{
-    		getDoc()->enumStyles(i, &name, &pcStyle);	
-    		
+    		pcStyle = pStyles->getNthItem(i);
+			UT_return_val_if_fail( pcStyle, FALSE );
+			name = pcStyle->getName();
+			
    			pt_PieceTable::s_getLocalisedStyleName(name, utf8);			
 			pLocalised = utf8.utf8_str();
 			str = AP_Win32App::s_fromUTF8ToWinLocale (pLocalised);
@@ -335,6 +341,8 @@ BOOL AP_Win32Dialog_Styles::_onInitDialog(HWND hWnd, WPARAM wParam, LPARAM lPara
 			_win32DialogNewModify.setComboDataItem(AP_RID_DIALOG_STYLES_NEWMODIFY_CBX_FOLLOWPARA, 
 				nIndex, i);				
 		}
+
+		delete pStyles;
 		
 		// Strings (not styles names)
 		const char*	pDefCurrent = pSS->getValue(AP_STRING_ID_DLG_Styles_DefCurrent);
@@ -430,10 +438,15 @@ BOOL AP_Win32Dialog_Styles::_onInitDialog(HWND hWnd, WPARAM wParam, LPARAM lPara
 			size_t nStyles = getDoc()->getStyleCount();
 			const char * name = NULL;
 			const PD_Style * pcStyle = NULL;
+			UT_GenericVector<PD_Style*> * pStyles = NULL;
+			getDoc()->enumStyles(pStyles);
+			UT_return_val_if_fail( pStyles, FALSE );
 	
 			for (UT_uint32 i = 0; i < nStyles; i++)
 			{
-			    getDoc()->enumStyles(i, &name, &pcStyle);
+				pcStyle = pStyles->getNthItem(i);
+				UT_return_val_if_fail( pcStyle, FALSE );
+				name = pcStyle->getName();
 
 				if(pBasedOnStyle && pcStyle == pBasedOnStyle)
 				{
@@ -444,7 +457,9 @@ BOOL AP_Win32Dialog_Styles::_onInitDialog(HWND hWnd, WPARAM wParam, LPARAM lPara
 					szFollowedBy = name;
 				}
 			}
-		
+
+			delete pStyles;
+			
 			if(pBasedOnStyle != NULL)
 			{
 
@@ -832,16 +847,22 @@ void AP_Win32Dialog_Styles::_populateCList(void)
 
 	_win32Dialog.resetContent(AP_RID_DIALOG_STYLES_TOP_LIST_STYLES);
 	
+	UT_GenericVector<PD_Style*> * pStyles = NULL;
+	getDoc()->enumStyles(pStyles);
+	UT_return_if_fail( pStyles );
 	
 	for (UT_uint32 i = 0; i < nStyles; i++)
 	{
 	    const char * data[1];
 
 	    getDoc()->enumStyles((UT_uint32)i, &name, &pStyle);
-
+		pStyle = pStyles->getNthItem(i);
+		
 		// style has been deleted probably
 		if (!pStyle)
 			continue;
+
+		name = pStyle->getName();
 
 	    // all of this is safe to do... append should take a const char **
 	    data[0] = name;	    
@@ -862,6 +883,7 @@ void AP_Win32Dialog_Styles::_populateCList(void)
 		}
 	}
 
+	delete pStyles;
 }
 
 const char * AP_Win32Dialog_Styles::getCurrentStyle (void) const

@@ -396,6 +396,8 @@ PT_AttrPropIndex            getAPIFromSOH(PL_ObjectHandle odh);
 	size_t                  getStyleCount(void);
 	bool					enumStyles(UT_uint32 k,
 									   const char ** pszName, const PD_Style ** ppStyle) const;
+	bool                    enumStyles(UT_GenericVector<PD_Style*> * & pStyles) const;
+	
 	bool					addStyleProperty(const XML_Char * szStyleName, const XML_Char * szPropertyName, const XML_Char * szPropertyValue);
 	bool					addStyleProperties(const XML_Char * szStyleName, const XML_Char ** pProperties);
 	bool	                setAllStyleAttributes(const XML_Char * szStyleName, const XML_Char ** pAttribs);

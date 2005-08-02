@@ -2142,17 +2142,28 @@ void IE_Exp_RTF::_selectStyles()
     const PD_Style * pStyle;
 	UT_GenericVector<PD_Style*> vecStyles;
 	getDoc()->getAllUsedStyles(&vecStyles);
-    for (i = 0; getDoc()->enumStyles(i, &szName, &pStyle); ++i)
+
+	UT_GenericVector<PD_Style*> * pStyles = NULL;
+	getDoc()->enumStyles(pStyles);
+	UT_return_if_fail( pStyles );
+	UT_uint32 iStyleCount = getDoc()->getStyleCount();
+
+	for (i = 0; i < iStyleCount; ++i)
 	{
-	  // DOM: hack for 2069 - we'll export all styles instead of just
-	  // user-defined styles and used styles. To fix it (and export fewer
-	  // styles in general) make this routine recursive to include
-	  // parent (basedon) styles as well...
-	  if (true /* pStyle->isUserDefined() || (vecStyles.findItem((void *) pStyle) >= 0)*/)
+		// DOM: hack for 2069 - we'll export all styles instead of just
+		// user-defined styles and used styles. To fix it (and export fewer
+		// styles in general) make this routine recursive to include
+		// parent (basedon) styles as well...
+		pStyle = pStyles->getNthItem(i);
+		UT_return_if_fail( pStyle );
+
+		szName = pStyle->getName();
+		
+		if (true /* pStyle->isUserDefined() || (vecStyles.findItem((void *) pStyle) >= 0)*/)
 		{
-//
-// Add this style to the hash
-//
+			//
+			// Add this style to the hash
+			//
 			NumberedStyle * pns = (NumberedStyle *) m_hashStyles.pick(szName);
 			if(pns == NULL)
 			{
@@ -2165,9 +2176,9 @@ void IE_Exp_RTF::_selectStyles()
 							_addFont(&fi);
 					}
 				}
-//
-// Now do it for the field font as well
-//
+				//
+				// Now do it for the field font as well
+				//
 				{
 					_rtf_font_info fi;
 
@@ -2179,6 +2190,8 @@ void IE_Exp_RTF::_selectStyles()
 			}
 		}
     }
+
+	delete pStyles;
 }
 
 

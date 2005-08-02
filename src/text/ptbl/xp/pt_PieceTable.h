@@ -319,9 +319,12 @@ public:
 												  pf_Frag ** ppf2, PT_BlockOffset * pOffset2) const;
 
 	bool					getStyle(const char * szName, PD_Style ** ppStyle) const;
+
 	bool					enumStyles(UT_uint32 k,
 									   const char ** pszName, const PD_Style ** ppStyle) const;
 
+	bool                    enumStyles(UT_GenericVector<PD_Style*> * & pStyles) const;
+	
 	const UT_GenericStringMap<PD_Style *> & getAllStyles()const {return m_hashStyles;}
 	bool                    isEndFootnote(pf_Frag * pf) const;
 	bool                    isFootnote(pf_Frag * pf) const;

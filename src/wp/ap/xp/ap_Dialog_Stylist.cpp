@@ -233,12 +233,19 @@ void Stylist_tree::buildStyles(PD_Document * pDoc)
 	const PD_Style * pStyle = NULL;
 	const char * pszStyle = NULL;
 	UT_DEBUGMSG(("In Build styles num styles in doc %d \n",numStyles));
+
+	UT_GenericVector<PD_Style*> * pStyles = NULL;
+	pDoc->enumStyles(pStyles);
+	UT_return_if_fail( pStyles );
+
 	for(i=0; i < numStyles; i++)
 	{
-		pDoc->enumStyles(i, &pszStyle, &pStyle);
+		pStyle = pStyles->getNthItem(i);
 		m_vecAllStyles.addItem(pStyle);
 		vecStyles.addItem(pStyle);
 	}
+
+	delete pStyles;
 //
 // OK now build the tree of Styles
 //

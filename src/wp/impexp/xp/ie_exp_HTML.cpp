@@ -6255,8 +6255,18 @@ void IE_Exp_HTML::_buildStyleTree ()
 	const PD_Style * p_pds = 0;
 	const XML_Char * szStyleName = 0;
 
-	for (size_t n = 0; getDoc()->enumStyles (n, &szStyleName, &p_pds); n++)
+	UT_GenericVector<PD_Style*> * pStyles = NULL;
+	getDoc()->enumStyles(pStyles);
+	UT_return_if_fail( pStyles );
+	UT_uint32 iStyleCount = getDoc()->getStyleCount();
+
+	for (size_t n = 0; n < iStyleCount; n++)
 	{
+		p_pds = pStyles->getNthItem(n);
+		UT_return_if_fail( p_pds );
+
+		szStyleName = p_pds->getName();
+		
 		if (p_pds == 0) continue;
 
 		PT_AttrPropIndex api = p_pds->getIndexAP ();
@@ -6270,6 +6280,8 @@ void IE_Exp_HTML::_buildStyleTree ()
 		}
 	}
 
+	delete pStyles;
+	
 	if (isCopying ()) // clipboard
 		getDoc()->tellListenerSubset (m_style_tree, getDocRange ());
 	else
