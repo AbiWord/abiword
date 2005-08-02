@@ -1,7 +1,9 @@
 {
     IBClasses = (
         {CLASS = FirstResponder; LANGUAGE = ObjC; SUPERCLASS = NSObject; }, 
+        {CLASS = "XAP_CocoaPaletteView"; LANGUAGE = ObjC; SUPERCLASS = NSView; }, 
         {
+            ACTIONS = {toggleVisibility = id; }; 
             CLASS = "XAP_CocoaPreviewPanel"; 
             LANGUAGE = ObjC; 
             OUTLETS = {oPreview = NSTextField; }; 
@@ -20,6 +22,7 @@
                 "aTB_click" = id; 
                 "aTitle_click" = id; 
                 aZoom = id; 
+                toggleVisibility = id; 
             }; 
             CLASS = "XAP_CocoaToolPalette"; 
             LANGUAGE = ObjC; 
@@ -126,7 +129,12 @@
             }; 
             SUPERCLASS = NSObject; 
         }, 
-        {CLASS = "XAP_CocoaToolbarButton"; LANGUAGE = ObjC; SUPERCLASS = NSButton; }
+        {CLASS = "XAP_CocoaToolbarButton"; LANGUAGE = ObjC; SUPERCLASS = NSButton; }, 
+        {
+            CLASS = "XAP_PaletteProperties_DataSource"; 
+            LANGUAGE = ObjC; 
+            SUPERCLASS = NSObject; 
+        }
     ); 
     IBVersion = 1; 
 }

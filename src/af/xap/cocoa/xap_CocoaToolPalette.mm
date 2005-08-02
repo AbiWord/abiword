@@ -35,6 +35,8 @@
 #include "xap_Frame.h"
 #include "xap_Toolbar_LabelSet.h"
 #include "xav_View.h"
+#include "xap_Prefs.h"
+#include "xap_Prefs_SchemeIds.h"
 
 #include "ev_EditEventMapper.h"
 #include "ev_Menu_Actions.h"
@@ -789,7 +791,17 @@ static XAP_CocoaToolPalette * s_instance = nil;
 	if (!s_instance) {
 		if (s_instance = [[XAP_CocoaToolPalette alloc] init])
 		{
-			[s_instance showWindow:sender];
+			bool visible = false;
+			XAP_Prefs *pPrefs = XAP_App::getApp()->getPrefs();
+			UT_ASSERT(pPrefs);
+
+			XAP_PrefsScheme *pPrefsScheme = pPrefs->getCurrentScheme();
+			UT_ASSERT(pPrefsScheme);
+			
+			pPrefsScheme->getValueBool(XAP_PREF_KEY_ToolPaletteVisible, &visible);
+			if (visible) {
+				[s_instance showWindow:sender];
+			}
 		}
 	}
 	return s_instance;
@@ -1063,8 +1075,17 @@ static XAP_CocoaToolPalette * s_instance = nil;
 	[super close];
 }
 
-- (void)windowWillClose
+- (void)windowWillClose:(NSNotification *)aNotification
 {
+	XAP_Prefs *pPrefs = XAP_App::getApp()->getPrefs();
+	UT_return_if_fail (pPrefs);
+
+	XAP_PrefsScheme *pPrefsScheme = pPrefs->getCurrentScheme();
+	UT_return_if_fail (pPrefsScheme);
+	
+	pPrefsScheme->setValueBool(XAP_PREF_KEY_ToolPaletteVisible, false);
+
+
 	UT_DEBUGMSG(("XAP_CocoaToolPalette -windowWillClose\n"));
 }
 
