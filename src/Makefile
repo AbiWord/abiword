@@ -179,6 +179,7 @@ ifneq ($(ABIPKGDIR),)
 	fi
 	@echo Building tools plugins...
 	@$(MAKE) ABI_ROOT=$(ABI_ROOT) prefix=$(prefix) -C $(ABI_ROOT)/../abiword-plugins/tools all
+	@$(MAKE) ABI_ROOT=$(ABI_ROOT) prefix=$(prefix) -C $(ABI_ROOT)/../abiword-plugins/wp/scripts/shell
 	@echo Building distribution tools plugin package for $(ABIPKGDIR)...
 	@$(MAKE) ABI_ROOT=$(ABI_ROOT) prefix=$(prefix) -C pkg/$(ABIPKGDIR) disttools
 
