@@ -230,7 +230,7 @@ class XAP_UnixFontHandle : public GR_Font
 	float measureUnRemappedChar(const UT_UCSChar c, UT_uint32 iSize) const;
 
 	virtual bool doesGlyphExist(UT_UCS4Char g);
-        virtual bool            glyphBox(UT_UCS4Char g, UT_Rect & rec) const;
+        virtual bool            glyphBox(UT_UCS4Char g, UT_Rect & rec, GR_Graphics * pG);
 
 private:
  	XAP_UnixFontHandle();
