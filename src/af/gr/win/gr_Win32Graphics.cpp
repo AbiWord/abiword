@@ -1674,18 +1674,98 @@ UT_sint32 GR_Win32Font::measureUnremappedCharForCache(UT_UCSChar cChar) const
 #endif
 }
 
-//
-// UT_Rect of glyph in Logical units.
-// rec.left = bearing Left (distance from origin to start)
-// rec.width = width of the glyph
-// rec.top = distance from the origin to the top of the glyph
-// rec.height = total height of the glyph
+/*!
+    UT_Rect of glyph in Logical units.
+	rec.left = bearing Left (distance from origin to start)
+	rec.width = width of the glyph
+	rec.top = distance from the origin to the top of the glyph
+	rec.height = total height of the glyph
 
-bool GR_Win32Font::glyphBox(UT_UCS4Char g, UT_Rect & rec) const
+    This function will only work on win NT -- check the return value before doing anything
+    with the rectangle (win9x implementation would have to use GetGlyphOutlineA() and
+    convert the UT_UCS4Char to an appropriate ansi value 
+*/
+bool GR_Win32Font::glyphBox(UT_UCS4Char g, UT_Rect & rec, GR_Graphics * pG)
 {
-  // FIXME: Write the code for this!
-  UT_ASSERT(0);
-  return false;
+	UT_return_val_if_fail( pG, false );
+	GR_Win32Graphics * pWin32Gr = (GR_Win32Graphics *)pG;
+
+	// we do all measurements on the printer DC and only later scale down to display to
+	// ensure WYSIWYG behaviour
+	HDC hdc = getPrimaryHDC();
+	HDC printDC = pWin32Gr->getPrintDC() ? pWin32Gr->getPrintDC() : hdc;
+	
+	GLYPHMETRICS gm;
+	MAT2 m = {{0,1}, {0,0}, {0,0}, {0,1}};
+
+	int nLogPixelsY      = GetDeviceCaps(hdc, LOGPIXELSY);    // resolution of primary device
+	int nPrintLogPixelsY = GetDeviceCaps(printDC, LOGPIXELSY);// resolution of printer
+
+	int nLogPixelsX      = GetDeviceCaps(hdc, LOGPIXELSX);
+	int nPrintLogPixelsX = GetDeviceCaps(printDC, LOGPIXELSX);
+
+	UT_uint32 pixels = getUnscaledHeight();
+
+	// scale the pixel size to the printer resolution and get the font
+	if(!m_bGUIFont)
+		pixels = MulDiv(pixels, nPrintLogPixelsY, 72);
+	
+	HFONT pFont = getFontFromCache(pixels, false, 100);
+	if (!pFont)
+	{
+		fetchFont(pixels);
+		pFont = getFontFromCache(pixels, false, 100);
+	}
+
+	// select our font into the printer DC
+	HGDIOBJ hRet = SelectObject(printDC, pFont);
+	UT_return_val_if_fail( hRet != (void*)GDI_ERROR, false);
+		
+	if (printDC != m_hdc)
+	{
+		// invalidate cached info when we change hdc's.
+		// this is probably unnecessary except when
+		// sharing a font with screen and printer.
+		_clearAnyCachedInfo();
+		m_hdc = printDC;
+	}
+	
+	DWORD iRet = GDI_ERROR;
+	
+	if (UT_IsWinNT())
+	{
+		iRet = GetGlyphOutlineW(printDC, (UINT)g, GGO_METRICS, &gm, 0, NULL, &m);
+	}
+	else
+	{
+		// TODO: an UT_UCS4Char -> ANSI conversion here, then call GetGlyphOutlineA() ...
+		UT_return_val_if_fail( UT_NOT_IMPLEMENTED, false );
+	}
+	
+	if(GDI_ERROR == iRet)
+		return false;
+
+	rec.left   = gm.gmptGlyphOrigin.x;
+	rec.top    = gm.gmptGlyphOrigin.y;
+	rec.width  = gm.gmBlackBoxX;
+	rec.height = gm.gmBlackBoxY;
+	
+	// if the primary DC is not the printer, we now have to scale the metrics to the
+	// screen resolution
+	if(nLogPixelsY != nPrintLogPixelsY)
+	{
+		rec.height  = MulDiv(rec.height, nLogPixelsY, nPrintLogPixelsY);
+		rec.top  = MulDiv(rec.top, nLogPixelsY, nPrintLogPixelsY);
+	}
+
+	if(nLogPixelsX != nPrintLogPixelsX)
+	{
+		rec.width  = MulDiv(rec.width, nLogPixelsX, nPrintLogPixelsX);
+		rec.left  = MulDiv(rec.left, nLogPixelsX, nPrintLogPixelsX);
+	}
+
+	UT_DEBUGMSG(("gr_Win32Graphics::glyphBox(l=%d, t=%d, w=%d, h=%d\n", rec.left, rec.top, rec.width, rec.height));
+	return true;
 }
 
 /*!

@@ -112,7 +112,7 @@ class ABI_EXPORT GR_Font
 // rec.top = distance from the origin to the top of the glyph
 // rec.height = total height of the glyph
 
-	virtual bool glyphBox(UT_UCS4Char g, UT_Rect & rec) const = 0;
+	virtual bool glyphBox(UT_UCS4Char g, UT_Rect & rec, GR_Graphics * pG) = 0;
 	static  bool s_doesGlyphExist(UT_UCS4Char g, void *instance)
 	{
 		UT_return_val_if_fail(instance, false);
