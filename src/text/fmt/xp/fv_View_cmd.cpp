@@ -5709,7 +5709,7 @@ void FV_View::cmdAcceptRejectRevision(bool bReject, UT_sint32 xPos, UT_sint32 yP
 
 void FV_View::cmdSetRevisionLevel(UT_uint32 i)
 {
-	UT_return_if_fail( i < PD_MAX_REVISION );
+	UT_return_if_fail( i <= PD_MAX_REVISION );
 	// first set the same level in Doc; we do this unconditionally,
 	// this way the doc will always save the level the user last used
 	// NB: the doc id and the view id can be differnt if the user
