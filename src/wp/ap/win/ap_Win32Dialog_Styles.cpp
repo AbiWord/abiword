@@ -67,6 +67,7 @@ AP_Win32Dialog_Styles::AP_Win32Dialog_Styles(XAP_DialogFactory * pDlgFactory,
 AP_Win32Dialog_Styles::~AP_Win32Dialog_Styles(void)
 {
 	DELETEP(m_pParaPreviewWidget);
+	DELETEP(m_pCharPreviewWidget);
 }
 
 
