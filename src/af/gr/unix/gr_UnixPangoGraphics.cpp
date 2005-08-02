@@ -993,7 +993,7 @@ bool GR_UnixPangoFont::doesGlyphExist(UT_UCS4Char g)
 	return true;
 }
 
-bool GR_UnixPangoFont::glyphBox(UT_UCS4Char g, UT_Rect & rec) const
+bool GR_UnixPangoFont::glyphBox(UT_UCS4Char g, UT_Rect & rec, GR_Graphics * pG)
 {
 	UT_ASSERT_HARMLESS( UT_NOT_IMPLEMENTED );
 	return false;
