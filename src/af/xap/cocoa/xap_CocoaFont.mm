@@ -182,7 +182,7 @@ void XAP_CocoaFont::getCoverage(UT_NumberVector& coverage)
 // rec.top = distance from the origin to the top of the glyph
 // rec.height = total height of the glyph
 
-bool XAP_CocoaFont::glyphBox(UT_UCS4Char g, UT_Rect & rec) const
+bool XAP_CocoaFont::glyphBox(UT_UCS4Char g, UT_Rect & rec, GR_Graphics *)
 {
   // FIXME: Write the code for this!
   UT_ASSERT(0);
