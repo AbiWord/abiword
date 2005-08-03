@@ -231,7 +231,6 @@ void Stylist_tree::buildStyles(PD_Document * pDoc)
 	m_vecStyleRows.clear();
 	UT_GenericVector<const PD_Style *> vecStyles;
 	const PD_Style * pStyle = NULL;
-	const char * pszStyle = NULL;
 	UT_DEBUGMSG(("In Build styles num styles in doc %d \n",numStyles));
 
 	UT_GenericVector<PD_Style*> * pStyles = NULL;
