@@ -104,12 +104,13 @@ bool XAP_CocoaClipboard::hasFormat(const char* format)
 {
 	NSString *pbType = _abi2ns_cbType(format);
 	
-	NSString * availableFormat = [_getPasteboard() availableTypeFromArray:[NSArray arrayWithObject:pbType]];
+	if (pbType) {
+		NSString * availableFormat = [_getPasteboard() availableTypeFromArray:[NSArray arrayWithObject:pbType]];
 
-	if (availableFormat) {
-		return true;
+		if (availableFormat) {
+			return true;
+		}
 	}
-
 	return false;
 }
 
@@ -120,6 +121,8 @@ bool XAP_CocoaClipboard::hasFormats(const char** format)
 	bool found = false;
 	while(*format) {
 		found = hasFormat(*format);
+		
+		format++;
 		
 		if (found) {
 			break;
@@ -133,7 +136,7 @@ bool XAP_CocoaClipboard::hasFormats(const char** format)
 
 NSString *XAP_CocoaClipboard::_abi2ns_cbType(const char *cbType)
 {
-	NSString *pbType;
+	NSString *pbType = nil;
 	
 	if (strcmp(cbType, XAP_CLIPBOARD_RTF) == 0) {
 		pbType = NSRTFPboardType;
