@@ -4057,7 +4057,7 @@ void FV_View::_fixInsertionPointCoords()
 	}
 	else if ((getPoint() > 0) && !isLayoutFilling())
 	{
-		_findPositionCoords(getPoint(), false, m_xPoint, m_yPoint, m_xPoint2, m_yPoint2, m_iPointHeight, m_bPointDirection, &pBlock, &pRun);
+		_findPositionCoords(getPoint(), m_bPointEOL, m_xPoint, m_yPoint, m_xPoint2, m_yPoint2, m_iPointHeight, m_bPointDirection, &pBlock, &pRun);
 		pPage = getCurrentPage();
 		UT_RGBColor * pClr = NULL;
 		if (pPage)
