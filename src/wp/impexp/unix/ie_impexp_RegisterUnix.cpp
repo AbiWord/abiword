@@ -23,6 +23,7 @@
 #include "ie_impexp_Register.h"
 
 #include "ie_impGraphic_GdkPixbuf.h"
+#include "ie_exp_PDF.h"
 
 /*!
   Register all GTK Importers and Exporters
@@ -31,4 +32,6 @@
 void IE_ImpExp_RegisterPlatform ()
 {
     IE_ImpGraphic::registerImporter(new IE_ImpGraphicGdkPixbuf_Sniffer ());
+    IE_Exp::registerExporter(new IE_Exp_PDF_Sniffer());
+    IE_Exp::registerExporter(new IE_Exp_PS_Sniffer());
 }
