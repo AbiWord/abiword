@@ -57,7 +57,9 @@ public:
 
     GnomePrintJob *job = NULL;
     GnomePrintConfig *config = NULL;
-
+    FL_DocLayout *pDocLayout = NULL;
+    FV_View * printView = NULL;
+    XAP_UnixGnomePrintGraphics * print_graphics = NULL;
     job = gnome_print_job_new (NULL);
     if(!job)
       goto exit_writeDocument;
@@ -80,11 +82,11 @@ public:
     if (gnome_print_job_print_to_file (job, getFileName()) != GNOME_PRINT_OK)
       goto exit_writeDocument;
 
-    XAP_UnixGnomePrintGraphics * print_graphics = new XAP_UnixGnomePrintGraphics(job);
+    print_graphics = new XAP_UnixGnomePrintGraphics(job);
 
     // create a new layout and view object for the doc
-    FL_DocLayout *pDocLayout = new FL_DocLayout(getDoc(), print_graphics);
-    FV_View * printView = new FV_View(XAP_App::getApp(),0,pDocLayout);
+    pDocLayout = new FL_DocLayout(getDoc(), print_graphics);
+    printView = new FV_View(XAP_App::getApp(),0,pDocLayout);
     printView->getLayout()->fillLayouts();
     printView->getLayout()->formatAll();
     printView->getLayout()->recalculateTOCFields();
@@ -95,8 +97,6 @@ public:
 		     pDocLayout->getWidth(), pDocLayout->getHeight() / pDocLayout->countPages(), 
 		     pDocLayout->countPages(), 1);
     
-    DELETEP(pDocLayout);
-    DELETEP(printView);
 
     /* free()'d for us by GnomePrint */
     config = NULL;
@@ -109,6 +109,9 @@ public:
     if(job)
       g_object_unref (G_OBJECT (job));
 
+    DELETEP(pDocLayout);
+    DELETEP(printView);
+    DELETEP(print_graphics);
     return exit_status;
   }
 };
