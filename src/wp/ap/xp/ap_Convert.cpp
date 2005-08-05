@@ -136,10 +136,11 @@ public:
 		{
 			FL_DocLayout *pDocLayout = new FL_DocLayout(m_doc,m_pGraphics);
 			FV_View printView(XAP_App::getApp(),0,pDocLayout);
-			pDocLayout->setView (&printView);
+			//pDocLayout->setView (&printView);
 			pDocLayout->fillLayouts();
 			pDocLayout->formatAll();
-			
+			pDocLayout->recalculateTOCFields();			
+
 #ifdef XP_UNIX_TARGET_GTK
 			if (!m_bPrintedFirstPage) {
 				PS_Graphics *psGr = static_cast<PS_Graphics*>(m_pGraphics);
