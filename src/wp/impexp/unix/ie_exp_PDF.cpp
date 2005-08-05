@@ -185,7 +185,7 @@ bool IE_Exp_PDF_Sniffer::getDlgLabels (const char ** szDesc,
 				       const char ** szSuffixList,
 				      IEFileType * ft)
 {
-  *szDesc = "PDF (.pdf)";
+  *szDesc = "Portable Document Format (.pdf)";
   *szSuffixList = "*.pdf";
   *ft = getFileType();
   return true;
