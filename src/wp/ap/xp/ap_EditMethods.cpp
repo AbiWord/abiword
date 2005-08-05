@@ -13682,6 +13682,30 @@ Defun(dragVisualText)
 	ABIWORD_VIEW;
 	sEndVisualDrag = false;
 	xxx_UT_DEBUGMSG(("Drag Visual Text \n"));
+	PT_DocPosition posLow = pView->getSelectionAnchor();
+	PT_DocPosition posHigh = pView->getPoint();
+	if(posLow > posHigh)
+	{
+	     PT_DocPosition pos = posLow;
+	     posLow = posHigh;
+	     posHigh = pos;
+	}
+	if((posLow + 1) == posHigh)
+	{
+	     fl_BlockLayout * pBL = pView->getCurrentBlock();
+	     if((pBL->getPosition() >= posLow) && ((pBL->getPosition() + pBL->getLength()) > posHigh))
+	     {
+	       UT_sint32 x1,x2,y1,y2,height;
+	       bool bEOL,bDir;
+	       bEOL = false;
+	       fp_Run * pRun = pBL->findPointCoords(posHigh,bEOL,x1,x2,y1,y2,height,bDir);
+	       if(pRun->getType() == FPRUN_IMAGE)
+	       {
+		 FV_VisualDragText * pVis = pView->getVisualText();
+		 pVis->abortDrag();
+	       }
+	     }
+	}
 //
 // Do this operation in an idle loop so when can reject queued events
 //

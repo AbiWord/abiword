@@ -222,7 +222,7 @@ public:
 	void            pasteFromLocalTo(PT_DocPosition pos);
 	void            _pasteFromLocalTo(PT_DocPosition pos);
 	void            copyToLocal(PT_DocPosition pos1, PT_DocPosition pos2);
-	void			copyTextToClipboard(const UT_UCS4String sIncoming, bool useClipboard=true);
+	void		copyTextToClipboard(const UT_UCS4String sIncoming, bool useClipboard=true);
 
 	virtual void	getTopRulerInfo(AP_TopRulerInfo * pInfo);
 	virtual void	getTopRulerInfo(PT_DocPosition pos, AP_TopRulerInfo * pInfo);
