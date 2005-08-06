@@ -278,6 +278,10 @@ bool AP_CocoaApp::initialize(void)
     if (! AP_App::initialize())
 		return false;
 
+	NSString * resources = [[NSBundle mainBundle] resourcePath];
+
+	setenv ("ABIWORD_COCOA_BUNDLED_RESOURCES", [resources UTF8String], 1);
+
 	//////////////////////////////////////////////////////////////////
 	// Initialize the importers/exporters
 	//////////////////////////////////////////////////////////////////
@@ -319,7 +323,6 @@ bool AP_CocoaApp::initialize(void)
 			szPathname += ".strings";
 #endif
 
-			NSString* resources = [[NSBundle mainBundle] resourcePath];
 			NSString* stringSet = [resources stringByAppendingPathComponent:[NSString stringWithFormat:@"AbiWord/strings/%s%@",szStringSet,@".strings"]];
 
 			AP_DiskStringSet * pDiskStringSet = new AP_DiskStringSet(this);
