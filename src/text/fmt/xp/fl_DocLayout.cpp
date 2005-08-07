@@ -111,7 +111,10 @@ FL_DocLayout::FL_DocLayout(PD_Document* doc, GR_Graphics* pG)
     m_iFilled(0),
     m_bSpellCheckInProgress(false),
     m_bAutoGrammarCheck(false),
-    m_PendingBlockForGrammar(NULL)
+    m_PendingBlockForGrammar(NULL),
+    m_iGrammarCount(0),
+    m_bFinishedInitialCheck(false),
+    m_iPrevPos(0)
 {
 #ifdef FMT_TEST
         m_pDocLayout = this;
@@ -486,6 +489,9 @@ void FL_DocLayout::fillLayouts(void)
 	UT_ASSERT(m_lid != (PL_ListenerId)-1);
 	GR_Graphics * pG = getGraphics();
 	formatAll(); // Do we keep this or not?
+	m_bFinishedInitialCheck = false;
+	m_iPrevPos = 0;
+	m_iGrammarCount = 0;
 	if(m_pView)
 	{
 		m_pView->setLayoutIsFilling(false);
@@ -624,6 +630,8 @@ void FL_DocLayout::setView(FV_View* pView)
 			{
 				addBackgroundCheckReason(bgcrGrammar);
 				m_bAutoGrammarCheck = true;
+				m_iGrammarCount = 0;
+				m_iPrevPos = 0;
 			}
 		}
 	}
@@ -2375,6 +2383,12 @@ FL_DocLayout::_backgroundCheck(UT_Worker * pWorker)
 					mask = (1 << bitdex);
 					if (pB->hasBackgroundCheckReason(mask))
 					{
+					        if(!pDocLayout->m_bFinishedInitialCheck && pDocLayout->m_iPrevPos > pB->getPosition())
+						{
+						     pDocLayout->m_bFinishedInitialCheck = true;
+						}
+						pDocLayout->m_iPrevPos = pB->getPosition();
+
 					// Note that we remove this reason from queue
 					// before checking it (otherwise asserts could
 					// trigger redundant recursive calls)
@@ -2399,6 +2413,17 @@ FL_DocLayout::_backgroundCheck(UT_Worker * pWorker)
 						}
 						case bgcrGrammar:
 						{
+						        if(!pDocLayout->m_bFinishedInitialCheck)
+							{
+							      if(pDocLayout->m_iGrammarCount < 4)
+							      {
+								   pDocLayout->m_iGrammarCount++;
+								   pDocLayout->m_bImSpellCheckingNow = false;
+								   return;
+							      }
+							      pDocLayout->m_iGrammarCount = 0;
+							}
+
 							UT_DEBUGMSG(("Grammar checking block %x directly \n",pB));
 							XAP_App * pApp = pDocLayout->getView()->getApp();
      //
