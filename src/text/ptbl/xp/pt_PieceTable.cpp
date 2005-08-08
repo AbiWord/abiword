@@ -198,6 +198,25 @@ bool pt_PieceTable::_struxHasContent(pf_Frag_Strux * pfs) const
 	return (pfs->getNext() && (pfs->getNext()->getType() == pf_Frag::PFT_Text));
 }
 
+bool  pt_PieceTable::_struxIsEmpty(pf_Frag_Strux * pfs) const
+{
+	if(pfs->getNext() == NULL)
+	{
+		return true;
+	}
+	pf_Frag * pf = pfs->getNext();
+	if(pf->getType() != pf_Frag::PFT_Strux)
+	{
+		return false;
+	}
+	pf_Frag_Strux * pfsNext = static_cast<pf_Frag_Strux *>(pfs->getNext());
+	if(isFootnote(pfsNext))
+	{
+		return false;
+	}
+	return true;
+}
+
 bool pt_PieceTable::getAttrProp(PT_AttrPropIndex indexAP, const PP_AttrProp ** ppAP) const
 {
 	UT_return_val_if_fail (ppAP,false);

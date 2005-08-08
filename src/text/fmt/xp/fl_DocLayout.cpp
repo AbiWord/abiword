@@ -2327,7 +2327,7 @@ FL_DocLayout::_backgroundCheck(UT_Worker * pWorker)
 //	{
 //		return;
 //	}
-
+	xxx_UT_DEBUGMSG(("BAckground check called. \n"));
 	// Don't spell check while printing!
 	if(pDocLayout->m_pG->queryProperties(GR_Graphics::DGP_PAPER))
 	{
@@ -2337,6 +2337,7 @@ FL_DocLayout::_backgroundCheck(UT_Worker * pWorker)
 	// Don't spell check if disabled, or already happening
 	if(pDocLayout->m_bStopSpellChecking || pDocLayout->m_bImSpellCheckingNow || pDocLayout->isLayoutFilling())
 	{
+	  xxx_UT_DEBUGMSG(("Already spellchecking!!!!!!!! \n"));
 		return;
 	}
 
@@ -2578,7 +2579,7 @@ void FL_DocLayout::setPendingBlockForGrammar(fl_BlockLayout * pBL)
   if((m_PendingBlockForGrammar != NULL) && (m_PendingBlockForGrammar != pBL))
     {
       xxx_UT_DEBUGMSG(("Block %x queued \n",m_PendingBlockForGrammar));
-      queueBlockForBackgroundCheck(bgcrGrammar,m_PendingBlockForGrammar);
+      queueBlockForBackgroundCheck(bgcrGrammar,m_PendingBlockForGrammar,true);
     }
   m_PendingBlockForGrammar = pBL;
 }
@@ -2595,7 +2596,7 @@ void FL_DocLayout::triggerPendingBlock(fl_BlockLayout * pBL)
     return;
   if((m_PendingBlockForGrammar != NULL) && (m_PendingBlockForGrammar != pBL))
     {
-      queueBlockForBackgroundCheck(bgcrGrammar,m_PendingBlockForGrammar);
+      queueBlockForBackgroundCheck(bgcrGrammar,m_PendingBlockForGrammar,true);
       m_PendingBlockForGrammar = NULL;
      }
 }

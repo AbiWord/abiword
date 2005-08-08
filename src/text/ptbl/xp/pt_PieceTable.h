@@ -404,6 +404,7 @@ protected:
 														pf_Frag_Strux ** ppfs) const;
 	bool					_doTheDo(const PX_ChangeRecord * pcr, bool bUndo);
 	bool					_struxHasContent(pf_Frag_Strux * pfs) const;
+	bool					_struxIsEmpty(pf_Frag_Strux * pfs) const;
 	bool					_unlinkStrux(pf_Frag_Strux * pfs,
 										 pf_Frag ** ppfEnd, UT_uint32 * pfragOffsetEnd);
 	bool					_unlinkStrux_Block(pf_Frag_Strux * pfs,

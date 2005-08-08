@@ -175,8 +175,8 @@ bool pt_PieceTable::_unlinkStrux_Block(pf_Frag_Strux * pfs,
 		// we are the first paragraph in this section.  if we have
 		// content, we cannot be deleted, since there is no one to
 		// inherit our content.
-
-		if (_struxHasContent(pfs))
+	  UT_DEBUGMSG(("Prev frag is section in delete strux block \n"));
+		if (!_struxIsEmpty(pfs))
 		{
 			// TODO decide if this should assert or just fail...
 			UT_DEBUGMSG(("Cannot delete first paragraph with content.\n"));
@@ -228,7 +228,7 @@ bool pt_PieceTable::_unlinkStrux_Block(pf_Frag_Strux * pfs,
 		// content, we cannot be deleted, since there is no one to
 		// inherit our content.
 
-		if (_struxHasContent(pfs))
+		if (!_struxIsEmpty(pfs))
 		{
 			// TODO decide if this should assert or just fail...
 			UT_DEBUGMSG(("Cannot delete first paragraph with content.\n"));
