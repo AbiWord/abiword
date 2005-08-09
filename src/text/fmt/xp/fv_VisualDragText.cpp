@@ -164,7 +164,7 @@ void FV_VisualDragText::mouseDrag(UT_sint32 x, UT_sint32 y)
  	  //
 	  // Don't try to drag the entire document.
 	  //
-         if(!m_bDoingCopy && m_pView->isSelectAll() &&(m_iVisualDragMode != FV_VisualDrag_DRAGGING))
+  if(!m_bDoingCopy && (m_pView->isSelectAll() && !m_pView->isHdrFtrEdit())&&(m_iVisualDragMode != FV_VisualDrag_DRAGGING))
 	 {
 	     setMode(FV_VisualDrag_NOT_ACTIVE);
 	     return;
