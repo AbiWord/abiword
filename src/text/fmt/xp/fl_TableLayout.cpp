@@ -102,7 +102,8 @@ fl_TableLayout::fl_TableLayout(FL_DocLayout* pLayout, PL_StruxDocHandle sdh,
 	  m_iNumNestedTables(0),
 	  m_bIsEndTableIn(false),
 	  m_iHeightChanged(0),
-      m_pNewHeightCell(NULL)
+      m_pNewHeightCell(NULL),
+	  m_bDoingDestructor(false)
 
 {
 	UT_DEBUGMSG(("Created Table Layout %x \n",this));
@@ -116,6 +117,7 @@ fl_TableLayout::~fl_TableLayout()
 {
 	// NB: be careful about the order of these
 	UT_DEBUGMSG(("SEVIOR: !!!!!!!! Deleting tableLayout  %x !! \n",this));
+	m_bDoingDestructor = true;
 	_purgeLayout();
 	fp_TableContainer * pTC = static_cast<fp_TableContainer *>(getFirstContainer());
 	if (pTC)
