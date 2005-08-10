@@ -22,7 +22,7 @@
 
 #include <string.h>
 
-#include "abiwidget.h"
+#include "abiintwidget.h"
 #include "gr_UnixGraphics.h"
 #include "ev_EditMethod.h"
 #include "ut_assert.h"
@@ -55,7 +55,7 @@
  *
  * Not stymied by the hoopla and fanfare surrounding their earlier 
  * achievements, the two decided to actually make AbiWord's main frame
- * an instance of this AbiWidget. Following that, Martin undertook the
+ * an instance of this AbiIntwidget. Following that, Martin undertook the
  * ordeal of exposing this Widget via a Bonobo interface (after first
  * inventing Bonobo, of course) so that other applications such as
  * Ximian Evolution could seamlessly embed instances of AbiWord inside
@@ -97,7 +97,7 @@ enum {
   CURSOR_ON,
   INVOKE_NOARGS,
   MAP_TO_SCREEN,
-  IS_ABI_WIDGET,
+  IS_ABI_INTWIDGET,
   UNLINK_AFTER_LOAD,
   DRAW,
   LOAD_FILE,
@@ -193,14 +193,14 @@ enum {
 // our parent class
 static GtkBinClass * parent_class = 0;
 
-static void s_abi_widget_map_cb(GObject * w,  GdkEvent *event,gpointer p);
+static void s_abi_intwidget_map_cb(GObject * w,  GdkEvent *event,gpointer p);
 
 #if 0
-static void s_abi_widget_destroy(GObject * w, gpointer abi);
+static void s_abi_intwidget_destroy(GObject * w, gpointer abi);
 
-static void s_abi_widget_delete(GObject * w, gpointer abi);
+static void s_abi_intwidget_delete(GObject * w, gpointer abi);
 
-static void abi_widget_destroy (GObject *object);
+static void abi_intwidget_destroy (GObject *object);
 #endif
 
 /**************************************************************************/
@@ -217,34 +217,34 @@ static void abi_widget_destroy (GObject *object);
 #define EM_NAME(n) abi_em_##n
 
 #define EM_CHARPTR_INT_INT__BOOL(n) \
-static gboolean EM_NAME(n) (AbiWidget * w, const char * str, gint32 x, gint32 y) \
+static gboolean EM_NAME(n) (AbiIntwidget * w, const char * str, gint32 x, gint32 y) \
 { \
-return abi_widget_invoke_ex (w, #n, str, x, y); \
+return abi_intwidget_invoke_ex (w, #n, str, x, y); \
 }
 
 #define EM_VOID__BOOL(n) \
-static gboolean EM_NAME(n) (AbiWidget * w)\
+static gboolean EM_NAME(n) (AbiIntwidget * w)\
 { \
-return abi_widget_invoke_ex (w, #n, 0, 0, 0); \
+return abi_intwidget_invoke_ex (w, #n, 0, 0, 0); \
 }
 
 #define EM_INT_INT__BOOL(n) \
-static gboolean EM_NAME(n) (AbiWidget * w, gint32 x, gint32 y) \
+static gboolean EM_NAME(n) (AbiIntwidget * w, gint32 x, gint32 y) \
 { \
-return abi_widget_invoke_ex (w, #n, 0, x, y); \
+return abi_intwidget_invoke_ex (w, #n, 0, x, y); \
 }
 
 #define EM_CHARPTR__BOOL(n) \
-static gboolean EM_NAME(n) (AbiWidget * w, const char * str) \
+static gboolean EM_NAME(n) (AbiIntwidget * w, const char * str) \
 { \
-return abi_widget_invoke_ex (w, #n, str, 0, 0); \
+return abi_intwidget_invoke_ex (w, #n, str, 0, 0); \
 }
 
 /**************************************************************************/
 /**************************************************************************/
 
 // Here we define our EditMethods which will later be mapped back onto
-// Our AbiWidgetClass' member functions
+// Our AbiIntwidgetClass' member functions
 
 EM_VOID__BOOL(alignCenter)
 EM_VOID__BOOL(alignLeft)
@@ -522,7 +522,7 @@ static void s_StartStopLoadingCursor( bool bStartStop, XAP_Frame * pFrame)
 
 
 static bool
-abi_widget_load_file(AbiWidget * abi, const char * pszFile)
+abi_intwidget_load_file(AbiIntwidget * abi, const char * pszFile)
 {
 	if(abi->priv->m_szFilename)
 		free(abi->priv->m_szFilename);
@@ -561,27 +561,27 @@ abi_widget_load_file(AbiWidget * abi, const char * pszFile)
 	return FALSE;
 }
 
-static gint s_abi_widget_load_file(gpointer p)
+static gint s_abi_intwidget_load_file(gpointer p)
 {
-  AbiWidget * abi = (AbiWidget *) p;
+  AbiIntwidget * abi = (AbiIntwidget *) p;
 
   if(!abi->priv->m_bMappedToScreen)
   {
-	abi_widget_map_to_screen(abi);
+	abi_intwidget_map_to_screen(abi);
 	return TRUE;
   }
   if(abi->priv->m_bPendingFile)
   {
 	char * pszFile = UT_strdup(abi->priv->m_szFilename);
-	abi_widget_load_file(abi, pszFile);
+	abi_intwidget_load_file(abi, pszFile);
 	free(pszFile);
   }
   return FALSE;
 }
 
-static void s_abi_widget_map_cb(GObject * w,  GdkEvent *event,gpointer p)
+static void s_abi_intwidget_map_cb(GObject * w,  GdkEvent *event,gpointer p)
 {
-  AbiWidget * abi = ABI_WIDGET(p);
+  AbiIntwidget * abi = ABI_INTWIDGET(p);
 
   if(!abi->priv->m_bMappedEventProcessed)
   {
@@ -589,42 +589,42 @@ static void s_abi_widget_map_cb(GObject * w,  GdkEvent *event,gpointer p)
 //
 // Can't load until this event has finished propagating
 //
-	  g_idle_add(static_cast<GSourceFunc>(s_abi_widget_load_file),static_cast<gpointer>(abi));
+	  g_idle_add(static_cast<GSourceFunc>(s_abi_intwidget_load_file),static_cast<gpointer>(abi));
   }
 }
 
 
 #if 0
-static void s_abi_widget_destroy(GObject * w, gpointer p)
+static void s_abi_intwidget_destroy(GObject * w, gpointer p)
 {
 
 #ifdef LOGFILE
 	fprintf(getlogfile(),"abiwidget destroyed \n");
 #endif
-  abi_widget_destroy(G_OBJECT(p));
+  abi_intwidget_destroy(G_OBJECT(p));
 }
 
 
-static void s_abi_widget_delete(GObject * w, gpointer p)
+static void s_abi_intwidget_delete(GObject * w, gpointer p)
 {
 
 #ifdef LOGFILE
 	fprintf(getlogfile(),"abiwidget deleted\n");
 #endif
 
-  abi_widget_destroy(G_OBJECT(p));
+  abi_intwidget_destroy(G_OBJECT(p));
 }
 #endif
 
 //
 // arguments to abiwidget
 //
-static void abi_widget_get_prop (GObject  *object,
+static void abi_intwidget_get_prop (GObject  *object,
 								 guint arg_id,
 								 GValue     *arg,
 								 GParamSpec *pspec)
 {
-    AbiWidget * abi = ABI_WIDGET(object);
+    AbiIntwidget * abi = ABI_INTWIDGET(object);
 	switch(arg_id)
 	{
 	    case MAP_TO_SCREEN:
@@ -632,7 +632,7 @@ static void abi_widget_get_prop (GObject  *object,
 			g_value_set_boolean(arg, (gboolean) abi->priv->m_bMappedToScreen);
 			break;
 		}
-	    case IS_ABI_WIDGET:
+	    case IS_ABI_INTWIDGET:
 		{
 			g_value_set_boolean(arg,(gboolean) true);
 			break;
@@ -647,26 +647,26 @@ static void abi_widget_get_prop (GObject  *object,
 	}
 }
 
-void abi_widget_get_property(GObject  *object,
+void abi_intwidget_get_property(GObject  *object,
 								 guint arg_id,
 								 GValue     *arg,
 								 GParamSpec *pspec)
 {
-	abi_widget_get_prop(object,	arg_id,	arg, pspec);
+	abi_intwidget_get_prop(object,	arg_id,	arg, pspec);
 }
 
 //
 // props to abiwidget
 //
-static void abi_widget_set_prop (GObject  *object,
+static void abi_intwidget_set_prop (GObject  *object,
 								 guint	arg_id,
 								 const GValue *arg,
 								 GParamSpec *pspec)
 {
   g_return_if_fail (object != 0);
 
-  AbiWidget * abi = ABI_WIDGET (object);
-  AbiWidgetClass * abi_klazz = ABI_WIDGET_CLASS (G_OBJECT_GET_CLASS(object));
+  AbiIntwidget * abi = ABI_INTWIDGET (object);
+  AbiIntwidgetClass * abi_klazz = ABI_INTWIDGET_CLASS (G_OBJECT_GET_CLASS(object));
 
 #ifdef LOGFILE
 	fprintf(getlogfile(),"setArg %d\n",arg_id);
@@ -677,19 +677,19 @@ static void abi_widget_set_prop (GObject  *object,
 	    case CURSOR_ON:
 		{
 		     if(g_value_get_boolean(arg) == TRUE)
-			      abi_widget_turn_on_cursor(abi);
+			      abi_intwidget_turn_on_cursor(abi);
 			 break;
 		}
 	    case INVOKE_NOARGS:
 		{
 		     const char * psz= g_value_get_string( arg);
-		     abi_widget_invoke_ex(abi,psz,0,0,0);
+		     abi_intwidget_invoke_ex(abi,psz,0,0,0);
 			 break;
 		}
 	    case MAP_TO_SCREEN:
 		{
 		     if(g_value_get_boolean(arg) == TRUE)
-			      abi_widget_map_to_screen(abi);
+			      abi_intwidget_map_to_screen(abi);
 			 break;
 		}
 	    case UNLINK_AFTER_LOAD:
@@ -703,13 +703,13 @@ static void abi_widget_set_prop (GObject  *object,
 	    case DRAW:
 		{
 		     if(g_value_get_boolean(arg) == TRUE)
-			      abi_widget_draw(abi);
+			      abi_intwidget_draw(abi);
 			 break;
 		}
 	    case LOAD_FILE:
 		{
 		     const char * pszFile= g_value_get_string(arg);
-			 abi_widget_load_file(abi,pszFile);
+			 abi_intwidget_load_file(abi,pszFile);
 			 break;
 		}
 	    case ALIGNCENTER:
@@ -1149,26 +1149,26 @@ static void abi_widget_set_prop (GObject  *object,
 	}
 }
 
-void abi_widget_set_property(GObject  *object,
+void abi_intwidget_set_property(GObject  *object,
 							 guint	arg_id,
 							 const GValue *arg,
 							 GParamSpec *pspec)
 {
-	abi_widget_set_prop(object, arg_id, arg, pspec);
+	abi_intwidget_set_prop(object, arg_id, arg, pspec);
 }
 
 static void 
-abi_widget_size_request (GtkWidget      *widget,
+abi_intwidget_size_request (GtkWidget      *widget,
 			 GtkRequisition *requisition)
 {
 	requisition->width = ABI_DEFAULT_WIDTH;
 	requisition->height = ABI_DEFAULT_HEIGHT;
 
-	if (ABI_WIDGET(widget)->child)
+	if (ABI_INTWIDGET(widget)->child)
 	  {
 		GtkRequisition child_requisition;
       
-		gtk_widget_size_request (ABI_WIDGET(widget)->child, &child_requisition);
+		gtk_widget_size_request (ABI_INTWIDGET(widget)->child, &child_requisition);
 
 		requisition->width = child_requisition.width;
 		requisition->height = child_requisition.height;
@@ -1188,7 +1188,7 @@ abiwidget_add(GtkContainer *container,
   if (GTK_CONTAINER_CLASS (parent_class)->add)
 	  GTK_CONTAINER_CLASS (parent_class)->add (container, widget);
 
-  ABI_WIDGET(container)->child = GTK_BIN (container)->child;
+  ABI_INTWIDGET(container)->child = GTK_BIN (container)->child;
 }
 
 //
@@ -1204,7 +1204,7 @@ abiwidget_remove (GtkContainer *container,
   if (GTK_CONTAINER_CLASS (parent_class)->remove)
     GTK_CONTAINER_CLASS (parent_class)->remove (container, widget);
 
-  ABI_WIDGET(container)->child = GTK_BIN (container)->child;
+  ABI_INTWIDGET(container)->child = GTK_BIN (container)->child;
 }
 
 //
@@ -1220,7 +1220,7 @@ abiwidget_child_type (GtkContainer *container)
 }
 
 static void
-abi_widget_init (AbiWidget * abi)
+abi_intwidget_init (AbiIntwidget * abi)
 {
 	// this isn't really needed, since each widget is
 	// guaranteed to be created with g_new0 and we just
@@ -1231,13 +1231,13 @@ abi_widget_init (AbiWidget * abi)
 }
 
 static void
-abi_widget_size_allocate (GtkWidget     *widget,
+abi_intwidget_size_allocate (GtkWidget     *widget,
 						  GtkAllocation *allocation)
 {
-	AbiWidget *abi;
+	AbiIntwidget *abi;
 	
 	g_return_if_fail (widget != NULL);
-	g_return_if_fail (IS_ABI_WIDGET (widget));
+	g_return_if_fail (IS_ABI_INTWIDGET (widget));
 	g_return_if_fail (allocation != NULL);
 
 	GtkAllocation child_allocation;
@@ -1250,7 +1250,7 @@ abi_widget_size_allocate (GtkWidget     *widget,
     {
 		// only allocate on realized widgets
 
-		abi = ABI_WIDGET(widget);
+		abi = ABI_INTWIDGET(widget);
 		gdk_window_move_resize (widget->window,
 					allocation->x+border_width, 
 					allocation->y+border_width,
@@ -1266,15 +1266,15 @@ abi_widget_size_allocate (GtkWidget     *widget,
 										   (gint)widget->allocation.width - child_allocation.x * 2 - border_width * 2);
 			 child_allocation.height = MAX (1, 
 											(gint)widget->allocation.height - child_allocation.y * 2 - border_width * 2);
-			 gtk_widget_size_allocate (ABI_WIDGET (widget)->child, &child_allocation);
+			 gtk_widget_size_allocate (ABI_INTWIDGET (widget)->child, &child_allocation);
 		}
     }
 }
 
 static void
-abi_widget_realize (GtkWidget * widget)
+abi_intwidget_realize (GtkWidget * widget)
 {
-	AbiWidget * abi;
+	AbiIntwidget * abi;
 	GdkWindowAttr attributes;
 	gint attributes_mask;
 
@@ -1282,10 +1282,10 @@ abi_widget_realize (GtkWidget * widget)
 	// this here is just boilerplate GTK+ code
 
 	g_return_if_fail (widget != NULL);
-	g_return_if_fail (IS_ABI_WIDGET(widget));
+	g_return_if_fail (IS_ABI_INTWIDGET(widget));
 
 	GTK_WIDGET_SET_FLAGS (widget, GTK_REALIZED);
-	abi = ABI_WIDGET(widget);
+	abi = ABI_INTWIDGET(widget);
 
 	attributes.x = widget->allocation.x;
 	attributes.y = widget->allocation.y;
@@ -1316,31 +1316,31 @@ abi_widget_realize (GtkWidget * widget)
 	// state.
 	//
 	g_signal_connect_after(G_OBJECT(widget),"map_event", 
-			       G_CALLBACK (s_abi_widget_map_cb),
+			       G_CALLBACK (s_abi_intwidget_map_cb),
 			       (gpointer) abi);
 	//
 	// connect a signal handler to the destroy signal of the window
 	//
 // 	g_signal_connect(G_OBJECT(widget),"delete_event", 
-//					 G_CALLBACK (s_abi_widget_delete),
+//					 G_CALLBACK (s_abi_intwidget_delete),
 //					 (gpointer) abi);
 //	g_signal_connect(G_OBJECT(widget),"destroy", 
-//					 G_CALLBACK (s_abi_widget_delete),
+//					 G_CALLBACK (s_abi_intwidget_delete),
 //					 (gpointer) abi);
 }
 
 #ifdef HAVE_GNOME
 #if 0
 static void
-abi_widget_finalize(GObject *object)
+abi_intwidget_finalize(GObject *object)
 {
-	AbiWidget * abi;
+	AbiIntwidget * abi;
 	
 	g_return_if_fail (object != NULL);
-	g_return_if_fail (IS_ABI_WIDGET(object));
+	g_return_if_fail (IS_ABI_INTWIDGET(object));
 
 	// here we free any self-created data
-	abi = ABI_WIDGET(object);
+	abi = ABI_INTWIDGET(object);
 
 	// order of deletion is important here
 
@@ -1374,15 +1374,15 @@ abi_widget_finalize(GObject *object)
 
 #if 0
 static void
-abi_widget_destroy (GObject *object)
+abi_intwidget_destroy (GObject *object)
 {
-	AbiWidget * abi;
+	AbiIntwidget * abi;
 	
 	g_return_if_fail (object != NULL);
-	g_return_if_fail (IS_ABI_WIDGET(object));
+	g_return_if_fail (IS_ABI_INTWIDGET(object));
 
 	// here we free any self-created data
-	abi = ABI_WIDGET(object);
+	abi = ABI_INTWIDGET(object);
 
 	// order of deletion is important here
 
@@ -1406,22 +1406,22 @@ abi_widget_destroy (GObject *object)
 	}
 
 #ifdef LOGFILE
-	fprintf(getlogfile(),"abiwidget destroyed in abi_widget_destroy \n");
+	fprintf(getlogfile(),"abiwidget destroyed in abi_intwidget_destroy \n");
 #endif
 }
 #endif
 
 
 static void
-abi_widget_destroy_gtk (GtkObject *object)
+abi_intwidget_destroy_gtk (GtkObject *object)
 {
-	AbiWidget * abi;
+	AbiIntwidget * abi;
 	
 	g_return_if_fail (object != NULL);
-	g_return_if_fail (IS_ABI_WIDGET(object));
+	g_return_if_fail (IS_ABI_INTWIDGET(object));
 
 	// here we free any self-created data
-	abi = ABI_WIDGET(object);
+	abi = ABI_INTWIDGET(object);
 
 	// order of deletion is important here
 	bool bBonobo = false;
@@ -1457,7 +1457,7 @@ abi_widget_destroy_gtk (GtkObject *object)
 	g_free (abi->priv);
 
 #ifdef LOGFILE
-	fprintf(getlogfile(),"abiwidget destroyed in abi_widget_destroy_gtk\n");
+	fprintf(getlogfile(),"abiwidget destroyed in abi_intwidget_destroy_gtk\n");
 #endif
 	if(!bBonobo)
 	{
@@ -1487,14 +1487,14 @@ abi_widget_destroy_gtk (GtkObject *object)
 #ifdef HAVE_GNOME
 
 static void
-abi_widget_bonobo_destroy (BonoboObject *object)
+abi_intwidget_bonobo_destroy (BonoboObject *object)
 {
-	AbiWidget * abi;
+	AbiIntwidget * abi;
 	g_return_if_fail (object != NULL);
-	g_return_if_fail (IS_ABI_WIDGET(object));
+	g_return_if_fail (IS_ABI_INTWIDGET(object));
 
 	// here we free any self-created data
-	abi = ABI_WIDGET(object);
+	abi = ABI_INTWIDGET(object);
 
 	// order of deletion is important here
 
@@ -1526,7 +1526,7 @@ abi_widget_bonobo_destroy (BonoboObject *object)
 
 
 static void
-abi_widget_class_init (AbiWidgetClass *abi_class)
+abi_intwidget_class_init (AbiIntwidgetClass *abi_class)
 {
 
 #ifdef LOGFILE
@@ -1550,8 +1550,8 @@ abi_widget_class_init (AbiWidgetClass *abi_class)
 	if(pApp->isBonoboRunning())
 	{
 		BonoboObjectClass *bonobo_object_class = (BonoboObjectClass *)abi_class;
-		bonobo_object_class->destroy = abi_widget_bonobo_destroy;
-//		gobject_class->finalize = abi_widget_finalize;
+		bonobo_object_class->destroy = abi_intwidget_bonobo_destroy;
+//		gobject_class->finalize = abi_intwidget_finalize;
 	}
 #endif
 
@@ -1560,23 +1560,23 @@ abi_widget_class_init (AbiWidgetClass *abi_class)
 		gtk_type_class (gtk_bin_get_type());
 	
 	// set our custom destroy method
-	object_class->destroy = abi_widget_destroy_gtk;
-	gobject_class->set_property = abi_widget_set_prop;
-	gobject_class->get_property = abi_widget_get_prop;
+	object_class->destroy = abi_intwidget_destroy_gtk;
+	gobject_class->set_property = abi_intwidget_set_prop;
+	gobject_class->get_property = abi_intwidget_get_prop;
 
 	// set our custom class methods
-	widget_class->realize       = abi_widget_realize;
-	widget_class->size_request  = abi_widget_size_request;
-   	widget_class->size_allocate = abi_widget_size_allocate; 
+	widget_class->realize       = abi_intwidget_realize;
+	widget_class->size_request  = abi_intwidget_size_request;
+   	widget_class->size_allocate = abi_intwidget_size_allocate; 
 
 	// For the container methods
 	container_class->add = abiwidget_add;
 	container_class->remove = abiwidget_remove;
 	container_class->child_type = abiwidget_child_type;
 
-	// AbiWidget's master "invoke" method
-	abi_class->invoke    = abi_widget_invoke;
-	abi_class->invoke_ex = abi_widget_invoke_ex;
+	// AbiIntwidget's master "invoke" method
+	abi_class->invoke    = abi_intwidget_invoke;
+	abi_class->invoke_ex = abi_intwidget_invoke_ex;
 
 	// assign handles to Abi's edit methods
 	abi_class->align_center  = EM_NAME(alignCenter);
@@ -1683,133 +1683,133 @@ abi_widget_class_init (AbiWidgetClass *abi_class)
 
 	g_object_class_install_property (gobject_class,
 									 CURSOR_ON,
-									 g_param_spec_boolean("AbiWidget--cursoron",
+									 g_param_spec_boolean("AbiIntwidget--cursoron",
 														  NULL,
 														  NULL,
 														  FALSE,
 														  (GParamFlags) G_PARAM_READWRITE));
 	g_object_class_install_property (gobject_class,
 									 INVOKE_NOARGS,
-									 g_param_spec_string("AbiWidget--invoke_noargs",
+									 g_param_spec_string("AbiIntwidget--invoke_noargs",
 														 NULL,
 														 NULL,
 														 NULL,
 														 (GParamFlags) G_PARAM_READWRITE));
 	g_object_class_install_property (gobject_class,
 									 MAP_TO_SCREEN,
-									 g_param_spec_boolean("AbiWidget--map_to_screen",
+									 g_param_spec_boolean("AbiIntwidget--map_to_screen",
 														  NULL,
 														  NULL,
 														  FALSE,
 														  (GParamFlags) G_PARAM_READWRITE));
 	g_object_class_install_property (gobject_class,
 									 UNLINK_AFTER_LOAD,
-									 g_param_spec_boolean("AbiWidget--unlink_after_load",
+									 g_param_spec_boolean("AbiIntwidget--unlink_after_load",
 														  NULL,
 														  NULL,
 														  FALSE,
 														  (GParamFlags) G_PARAM_READWRITE));
 	g_object_class_install_property (gobject_class,
-									 IS_ABI_WIDGET,
-									 g_param_spec_boolean("AbiWidget--is_abi_widget",
+									 IS_ABI_INTWIDGET,
+									 g_param_spec_boolean("AbiIntwidget--is_abi_intwidget",
 														  NULL,
 														  NULL,
 														  FALSE,
 														  (GParamFlags) G_PARAM_READWRITE));
 	g_object_class_install_property (gobject_class,
 									 DRAW,
-									 g_param_spec_boolean("AbiWidget--draw",
+									 g_param_spec_boolean("AbiIntwidget--draw",
 														  NULL,
 														  NULL,
 														  FALSE,
 														  (GParamFlags) G_PARAM_READWRITE));
 	g_object_class_install_property (gobject_class,
 									 LOAD_FILE,
-									 g_param_spec_string("AbiWidget--load-file",
+									 g_param_spec_string("AbiIntwidget--load-file",
 														 NULL,
 														 NULL,
 													   NULL,
 														 (GParamFlags) G_PARAM_READWRITE));
 	g_object_class_install_property (gobject_class,
 									 ALIGNCENTER,
-									 g_param_spec_boolean("AbiWidget--aligncenter",
+									 g_param_spec_boolean("AbiIntwidget--aligncenter",
 														  NULL,
 														  NULL,
 														  FALSE,
 														  (GParamFlags) G_PARAM_READWRITE));
 	g_object_class_install_property (gobject_class,
 									 ALIGNLEFT,
-									 g_param_spec_boolean("AbiWidget--alignleft",
+									 g_param_spec_boolean("AbiIntwidget--alignleft",
 														  NULL,
 														  NULL,
 														  FALSE,
 														  (GParamFlags) G_PARAM_READWRITE));
 	g_object_class_install_property (gobject_class,
 									 ALIGNRIGHT,
-									 g_param_spec_boolean("AbiWidget--alignright",
+									 g_param_spec_boolean("AbiIntwidget--alignright",
 														  NULL,
 														  NULL,
 														  FALSE,
 														  (GParamFlags) G_PARAM_READWRITE));
 	g_object_class_install_property (gobject_class,
 									 ALIGNJUSTIFY,
-									 g_param_spec_boolean("AbiWidget--alignjustify",
+									 g_param_spec_boolean("AbiIntwidget--alignjustify",
 														  NULL,
 														  NULL,
 														  FALSE,
 														  (GParamFlags) G_PARAM_READWRITE));
 	g_object_class_install_property (gobject_class,
 									 COPY,
-									 g_param_spec_boolean("AbiWidget--copy",
+									 g_param_spec_boolean("AbiIntwidget--copy",
 														  NULL,
 														  NULL,
 														  FALSE,
 														  (GParamFlags) G_PARAM_READWRITE));
 	g_object_class_install_property (gobject_class,
 									 CUT,
-									 g_param_spec_boolean("AbiWidget--cut",
+									 g_param_spec_boolean("AbiIntwidget--cut",
 														  NULL,
 														  NULL,
 														  FALSE,
 														  (GParamFlags) G_PARAM_READWRITE));
 	g_object_class_install_property (gobject_class,
 									 PASTE,
-									 g_param_spec_boolean("AbiWidget--paste",
+									 g_param_spec_boolean("AbiIntwidget--paste",
 														  NULL,
 														  NULL,
 														  FALSE,
 														  (GParamFlags) G_PARAM_READWRITE));
 	g_object_class_install_property (gobject_class,
 									 PASTESPECIAL,
-									 g_param_spec_boolean("AbiWidget--pastespecial",
+									 g_param_spec_boolean("AbiIntwidget--pastespecial",
 														  NULL,
 														  NULL,
 														  FALSE,
 														  (GParamFlags) G_PARAM_READWRITE));
 	g_object_class_install_property (gobject_class,
 									 SELECTBLOCK,
-									 g_param_spec_boolean("AbiWidget--selectblock",
+									 g_param_spec_boolean("AbiIntwidget--selectblock",
 														  NULL,
 														  NULL,
 														  FALSE,
 														  (GParamFlags) G_PARAM_READWRITE));
 	g_object_class_install_property (gobject_class,
 									 SELECTLINE,
-									 g_param_spec_boolean("AbiWidget--selectline",
+									 g_param_spec_boolean("AbiIntwidget--selectline",
 														  NULL,
 														  NULL,
 														  FALSE,
 														  (GParamFlags) G_PARAM_READWRITE));
 	g_object_class_install_property (gobject_class,
 									 SELECTWORD,
-									 g_param_spec_boolean("AbiWidget--selectword",
+									 g_param_spec_boolean("AbiIntwidget--selectword",
 														  NULL,
 														  NULL,
 														  FALSE,
 														  (GParamFlags) G_PARAM_READWRITE));
 	g_object_class_install_property (gobject_class,
 									 SELECTALL,
-									 g_param_spec_boolean("AbiWidget--selectall",
+									 g_param_spec_boolean("AbiIntwidget--selectall",
 														  NULL,
 														  NULL,
 														  FALSE,
@@ -1817,7 +1817,7 @@ abi_widget_class_init (AbiWidgetClass *abi_class)
 
 	g_object_class_install_property (gobject_class,
 									 INSERTDATA,
-									 g_param_spec_string("AbiWidget--insertdata",
+									 g_param_spec_string("AbiIntwidget--insertdata",
 														 NULL,
 														 NULL,
 													   NULL,
@@ -1825,511 +1825,511 @@ abi_widget_class_init (AbiWidgetClass *abi_class)
 
 	  g_object_class_install_property(gobject_class,
 									  INSERTSPACE,
-									  g_param_spec_boolean("AbiWidget--insertspace",
+									  g_param_spec_boolean("AbiIntwidget--insertspace",
 														   NULL,
 														   NULL,
 														   FALSE,
 														   (GParamFlags) G_PARAM_READWRITE));
   g_object_class_install_property(gobject_class,
 								  DELBOB,
-								  g_param_spec_boolean("AbiWidget--delbob",
+								  g_param_spec_boolean("AbiIntwidget--delbob",
 													   NULL,
 													   NULL,
 													   FALSE,
 													   (GParamFlags) G_PARAM_READWRITE));
   g_object_class_install_property(gobject_class,
 								  DELBOD,
-								  g_param_spec_boolean("AbiWidget--delbod",
+								  g_param_spec_boolean("AbiIntwidget--delbod",
 													   NULL,
 													   NULL,
 													   FALSE,
 													   (GParamFlags) G_PARAM_READWRITE));
   g_object_class_install_property(gobject_class,
 								  DELBOL,
-								  g_param_spec_boolean("AbiWidget--delbol",
+								  g_param_spec_boolean("AbiIntwidget--delbol",
 													   NULL,
 													   NULL,
 													   FALSE,
 													   (GParamFlags) G_PARAM_READWRITE));
   g_object_class_install_property(gobject_class,
 								  DELBOW,
-								  g_param_spec_boolean("AbiWidget--delbow",
+								  g_param_spec_boolean("AbiIntwidget--delbow",
 													   NULL,
 													   NULL,
 													   FALSE,
 													   (GParamFlags) G_PARAM_READWRITE));
   g_object_class_install_property(gobject_class,
 								  DELEOB,
-								  g_param_spec_boolean("AbiWidget--deleob",
+								  g_param_spec_boolean("AbiIntwidget--deleob",
 													   NULL,
 													   NULL,
 													   FALSE,
 													   (GParamFlags) G_PARAM_READWRITE));
   g_object_class_install_property(gobject_class,
 								  DELEOD,
-								  g_param_spec_boolean("AbiWidget--deleod",
+								  g_param_spec_boolean("AbiIntwidget--deleod",
 													   NULL,
 													   NULL,
 													   FALSE,
 													   (GParamFlags) G_PARAM_READWRITE));
   g_object_class_install_property(gobject_class,
 								  DELEOL,
-								  g_param_spec_boolean("AbiWidget--deleol",
+								  g_param_spec_boolean("AbiIntwidget--deleol",
 													   NULL,
 													   NULL,
 													   FALSE,
 													   (GParamFlags) G_PARAM_READWRITE));
   g_object_class_install_property(gobject_class,
 								  DELEOW,
-								  g_param_spec_boolean("AbiWidget--deleow",
+								  g_param_spec_boolean("AbiIntwidget--deleow",
 													   NULL,
 													   NULL,
 													   FALSE,
 													   (GParamFlags) G_PARAM_READWRITE));
   g_object_class_install_property(gobject_class,
 								  DELLEFT,
-								  g_param_spec_boolean("AbiWidget--delleft",
+								  g_param_spec_boolean("AbiIntwidget--delleft",
 													   NULL,
 													   NULL,
 													   FALSE,
 													   (GParamFlags) G_PARAM_READWRITE));
   g_object_class_install_property(gobject_class,
 								  DELRIGHT,
-								  g_param_spec_boolean("AbiWidget--delright",
+								  g_param_spec_boolean("AbiIntwidget--delright",
 													   NULL,
 													   NULL,
 													   FALSE,
 													   (GParamFlags) G_PARAM_READWRITE));
   g_object_class_install_property(gobject_class,
 								  EDITHEADER,
-								  g_param_spec_boolean("AbiWidget--editheader",
+								  g_param_spec_boolean("AbiIntwidget--editheader",
 													   NULL,
 													   NULL,
 													   FALSE,
 													   (GParamFlags) G_PARAM_READWRITE));
   g_object_class_install_property(gobject_class,
 								  EDITFOOTER,
-								  g_param_spec_boolean("AbiWidget--editfooter",
+								  g_param_spec_boolean("AbiIntwidget--editfooter",
 													   NULL,
 													   NULL,
 													   FALSE,
 													   (GParamFlags) G_PARAM_READWRITE));
   g_object_class_install_property(gobject_class,
 								  REMOVEHEADER,
-								  g_param_spec_boolean("AbiWidget--removeheader",
+								  g_param_spec_boolean("AbiIntwidget--removeheader",
 													   NULL,
 													   NULL,
 													   FALSE,
 													   (GParamFlags) G_PARAM_READWRITE));
   g_object_class_install_property(gobject_class,
 								  REMOVEFOOTER,
-								  g_param_spec_boolean("AbiWidget--removefooter",
+								  g_param_spec_boolean("AbiIntwidget--removefooter",
 													   NULL,
 													   NULL,
 													   FALSE,
 													   (GParamFlags) G_PARAM_READWRITE));
   g_object_class_install_property(gobject_class,
 								  EXTSELBOB,
-								  g_param_spec_boolean("AbiWidget--extselbob",
+								  g_param_spec_boolean("AbiIntwidget--extselbob",
 													   NULL,
 													   NULL,
 													   FALSE,
 													   (GParamFlags) G_PARAM_READWRITE));
   g_object_class_install_property(gobject_class,
 								  EXTSELBOL,
-								  g_param_spec_boolean("AbiWidget--extselboL",
+								  g_param_spec_boolean("AbiIntwidget--extselboL",
 													   NULL,
 													   NULL,
 													   FALSE,
 													   (GParamFlags) G_PARAM_READWRITE));
   g_object_class_install_property(gobject_class,
 								  EXTSELBOD,
-								  g_param_spec_boolean("AbiWidget--extselbod",
+								  g_param_spec_boolean("AbiIntwidget--extselbod",
 													   NULL,
 													   NULL,
 													   FALSE,
 													   (GParamFlags) G_PARAM_READWRITE));
   g_object_class_install_property(gobject_class,
 								  EXTSELBOW,
-								  g_param_spec_boolean("AbiWidget--extselbow",
+								  g_param_spec_boolean("AbiIntwidget--extselbow",
 													   NULL,
 													   NULL,
 													   FALSE,
 													   (GParamFlags) G_PARAM_READWRITE));
   g_object_class_install_property(gobject_class,
 								  EXTSELEOB,
-								  g_param_spec_boolean("AbiWidget--extseleob",
+								  g_param_spec_boolean("AbiIntwidget--extseleob",
 													   NULL,
 													   NULL,
 													   FALSE,
 													   (GParamFlags) G_PARAM_READWRITE));
   g_object_class_install_property(gobject_class,
 								  EXTSELEOD,
-								  g_param_spec_boolean("AbiWidget--extseleod",
+								  g_param_spec_boolean("AbiIntwidget--extseleod",
 													   NULL,
 													   NULL,
 													   FALSE,
 													   (GParamFlags) G_PARAM_READWRITE));
   g_object_class_install_property(gobject_class,
 								  EXTSELEOL,
-								  g_param_spec_boolean("AbiWidget--extseleol",
+								  g_param_spec_boolean("AbiIntwidget--extseleol",
 													   NULL,
 													   NULL,
 													   FALSE,
 													   (GParamFlags) G_PARAM_READWRITE));
   g_object_class_install_property(gobject_class,
 								  EXTSELEOW,
-								  g_param_spec_boolean("AbiWidget--extseleow",
+								  g_param_spec_boolean("AbiIntwidget--extseleow",
 													   NULL,
 													   NULL,
 													   FALSE,
 													   (GParamFlags) G_PARAM_READWRITE));
   g_object_class_install_property(gobject_class,
 								  EXTSELLEFT,
-								  g_param_spec_boolean("AbiWidget--extselleft",
+								  g_param_spec_boolean("AbiIntwidget--extselleft",
 													   NULL,
 													   NULL,
 													   FALSE,
 													   (GParamFlags) G_PARAM_READWRITE));
   g_object_class_install_property(gobject_class,
 								  EXTSELRIGHT,
-								  g_param_spec_boolean("AbiWidget--extselright",
+								  g_param_spec_boolean("AbiIntwidget--extselright",
 													   NULL,
 													   NULL,
 													   FALSE,
 													   (GParamFlags) G_PARAM_READWRITE));
   g_object_class_install_property(gobject_class,
 								  EXTSELNEXTLINE,
-								  g_param_spec_boolean("AbiWidget--extselnextline",
+								  g_param_spec_boolean("AbiIntwidget--extselnextline",
 													   NULL,
 													   NULL,
 													   FALSE,
 													   (GParamFlags) G_PARAM_READWRITE));
   g_object_class_install_property(gobject_class,
 								  EXTSELPAGEDOWN,
-								  g_param_spec_boolean("AbiWidget--extselpagedown",
+								  g_param_spec_boolean("AbiIntwidget--extselpagedown",
 													   NULL,
 													   NULL,
 													   FALSE,
 													   (GParamFlags) G_PARAM_READWRITE));
   g_object_class_install_property(gobject_class,
 								  EXTSELPAGEUP,
-								  g_param_spec_boolean("AbiWidget--extselpageup",
+								  g_param_spec_boolean("AbiIntwidget--extselpageup",
 													   NULL,
 													   NULL,
 													   FALSE,
 													   (GParamFlags) G_PARAM_READWRITE));
   g_object_class_install_property(gobject_class,
 								  EXTSELPREVLINE,
-								  g_param_spec_boolean("AbiWidget--extselprevline",
+								  g_param_spec_boolean("AbiIntwidget--extselprevline",
 													   NULL,
 													   NULL,
 													   FALSE,
 													   (GParamFlags) G_PARAM_READWRITE));
   g_object_class_install_property(gobject_class,
 								  EXTSELSCREENDOWN,
-								  g_param_spec_boolean("AbiWidget--extselscreendown",
+								  g_param_spec_boolean("AbiIntwidget--extselscreendown",
 													   NULL,
 													   NULL,
 													   FALSE,
 													   (GParamFlags) G_PARAM_READWRITE));
   g_object_class_install_property(gobject_class,
 								  EXTSELSCREENUP,
-								  g_param_spec_boolean("AbiWidget--extselscreenup",
+								  g_param_spec_boolean("AbiIntwidget--extselscreenup",
 													   NULL,
 													   NULL,
 													   FALSE,
 													   (GParamFlags) G_PARAM_READWRITE));
   g_object_class_install_property(gobject_class,
 								  TOGGLEBOLD,
-								  g_param_spec_boolean("AbiWidget--togglebold",
+								  g_param_spec_boolean("AbiIntwidget--togglebold",
 													   NULL,
 													   NULL,
 													   FALSE,
 													   (GParamFlags) G_PARAM_READWRITE));
   g_object_class_install_property(gobject_class,
 								  TOGGLEBOTTOMLINE,
-								  g_param_spec_boolean("AbiWidget--togglebottomline",
+								  g_param_spec_boolean("AbiIntwidget--togglebottomline",
 													   NULL,
 													   NULL,
 													   FALSE,
 													   (GParamFlags) G_PARAM_READWRITE));
   g_object_class_install_property(gobject_class,
 								  TOGGLEINSERTMODE,
-								  g_param_spec_boolean("AbiWidget--toggleinsertmode",
+								  g_param_spec_boolean("AbiIntwidget--toggleinsertmode",
 													   NULL,
 													   NULL,
 													   FALSE,
 													   (GParamFlags) G_PARAM_READWRITE));
   g_object_class_install_property(gobject_class,
 								  TOGGLEITALIC,
-								  g_param_spec_boolean("AbiWidget--toggleitalic",
+								  g_param_spec_boolean("AbiIntwidget--toggleitalic",
 													   NULL,
 													   NULL,
 													   FALSE,
 													   (GParamFlags) G_PARAM_READWRITE));
   g_object_class_install_property(gobject_class,
 								  TOGGLEOLINE,
-								  g_param_spec_boolean("AbiWidget--toggleoline",
+								  g_param_spec_boolean("AbiIntwidget--toggleoline",
 													   NULL,
 													   NULL,
 													   FALSE,
 													   (GParamFlags) G_PARAM_READWRITE));
   g_object_class_install_property(gobject_class,
 								  TOGGLEPLAIN,
-								  g_param_spec_boolean("AbiWidget--toggleplain",
+								  g_param_spec_boolean("AbiIntwidget--toggleplain",
 													   NULL,
 													   NULL,
 													   FALSE,
 													   (GParamFlags) G_PARAM_READWRITE));
   g_object_class_install_property(gobject_class,
 								  TOGGLESTRIKE,
-								  g_param_spec_boolean("AbiWidget--togglestrike",
+								  g_param_spec_boolean("AbiIntwidget--togglestrike",
 													   NULL,
 													   NULL,
 													   FALSE,
 													   (GParamFlags) G_PARAM_READWRITE));
   g_object_class_install_property(gobject_class,
 								  TOGGLESUB,
-								  g_param_spec_boolean("AbiWidget--togglesub",
+								  g_param_spec_boolean("AbiIntwidget--togglesub",
 													   NULL,
 													   NULL,
 													   FALSE,
 													   (GParamFlags) G_PARAM_READWRITE));
   g_object_class_install_property(gobject_class,
 								  TOGGLESUPER,
-								  g_param_spec_boolean("AbiWidget--togglesuper",
+								  g_param_spec_boolean("AbiIntwidget--togglesuper",
 													   NULL,
 													   NULL,
 													   FALSE,
 													   static_cast<GParamFlags>(G_PARAM_READWRITE)));
   g_object_class_install_property(gobject_class,
 								  TOGGLETOPLINE,
-								  g_param_spec_boolean("AbiWidget--toggletopline",
+								  g_param_spec_boolean("AbiIntwidget--toggletopline",
 													   NULL,
 													   NULL,
 													   FALSE,
 													   static_cast<GParamFlags>(G_PARAM_READWRITE)));
   g_object_class_install_property(gobject_class,
 								  TOGGLEULINE,
-								  g_param_spec_boolean("AbiWidget--toggleuline",
+								  g_param_spec_boolean("AbiIntwidget--toggleuline",
 													   NULL,
 													   NULL,
 													   FALSE,
 													   static_cast<GParamFlags>(G_PARAM_READWRITE)));
   g_object_class_install_property(gobject_class,
 								  TOGGLEUNINDENT,
-								  g_param_spec_boolean("AbiWidget--toggleunindent",
+								  g_param_spec_boolean("AbiIntwidget--toggleunindent",
 													   NULL,
 													   NULL,
 													   FALSE,
 													   static_cast<GParamFlags>(G_PARAM_READWRITE)));
   g_object_class_install_property(gobject_class,
 								  VIEWPARA,
-								  g_param_spec_boolean("AbiWidget--viewpara",
+								  g_param_spec_boolean("AbiIntwidget--viewpara",
 													   NULL,
 													   NULL,
 													   FALSE,
 													   static_cast<GParamFlags>(G_PARAM_READWRITE)));
   g_object_class_install_property(gobject_class,
 								  VIEWPRINTLAYOUT,
-								  g_param_spec_boolean("AbiWidget--viewprintlayout",
+								  g_param_spec_boolean("AbiIntwidget--viewprintlayout",
 													   NULL,
 													   NULL,
 													   FALSE,
 													   static_cast<GParamFlags>(G_PARAM_READWRITE)));
   g_object_class_install_property(gobject_class,
 								  VIEWNORMALLAYOUT,
-								  g_param_spec_boolean("AbiWidget--viewnormallayout",
+								  g_param_spec_boolean("AbiIntwidget--viewnormallayout",
 													   NULL,
 													   NULL,
 													   FALSE,
 													   static_cast<GParamFlags>(G_PARAM_READWRITE)));
   g_object_class_install_property(gobject_class,
 								  VIEWWEBLAYOUT,
-								  g_param_spec_boolean("AbiWidget--viewweblayout",
+								  g_param_spec_boolean("AbiIntwidget--viewweblayout",
 													   NULL,
 													   NULL,
 													   FALSE,
 													   static_cast<GParamFlags>(G_PARAM_READWRITE)));
   g_object_class_install_property(gobject_class,
 								  UNDO,
-								  g_param_spec_boolean("AbiWidget--undo",
+								  g_param_spec_boolean("AbiIntwidget--undo",
 													   NULL,
 													   NULL,
 													   FALSE,
 													   static_cast<GParamFlags>(G_PARAM_READWRITE)));
   g_object_class_install_property(gobject_class,
 								  REDO,
-								  g_param_spec_boolean("AbiWidget--redo",
+								  g_param_spec_boolean("AbiIntwidget--redo",
 													   NULL,
 													   NULL,
 													   FALSE,
 													   static_cast<GParamFlags>(G_PARAM_READWRITE)));
   g_object_class_install_property(gobject_class,
 								  WARPINSPTBOB,
-								  g_param_spec_boolean("AbiWidget--warpinsptbob",
+								  g_param_spec_boolean("AbiIntwidget--warpinsptbob",
 													   NULL,
 													   NULL,
 													   FALSE,
 													   static_cast<GParamFlags>(G_PARAM_READWRITE)));
   g_object_class_install_property(gobject_class,
 								  WARPINSPTBOD,
-								  g_param_spec_boolean("AbiWidget--warpinsptbod",
+								  g_param_spec_boolean("AbiIntwidget--warpinsptbod",
 													   NULL,
 													   NULL,
 													   FALSE,
 													   static_cast<GParamFlags>(G_PARAM_READWRITE)));
   g_object_class_install_property(gobject_class,
 								  WARPINSPTBOL,
-								  g_param_spec_boolean("AbiWidget--warpinsptbol",
+								  g_param_spec_boolean("AbiIntwidget--warpinsptbol",
 													   NULL,
 													   NULL,
 													   FALSE,
 													   static_cast<GParamFlags>(G_PARAM_READWRITE)));
   g_object_class_install_property(gobject_class,
 								  WARPINSPTBOP,
-								  g_param_spec_boolean("AbiWidget--warpinsptbop",
+								  g_param_spec_boolean("AbiIntwidget--warpinsptbop",
 													   NULL,
 													   NULL,
 													   FALSE,
 													   static_cast<GParamFlags>(G_PARAM_READWRITE)));
   g_object_class_install_property(gobject_class,
 								  WARPINSPTBOW,
-								  g_param_spec_boolean("AbiWidget--warpinsptbow",
+								  g_param_spec_boolean("AbiIntwidget--warpinsptbow",
 													   NULL,
 													   NULL,
 													   FALSE,
 													   static_cast<GParamFlags>(G_PARAM_READWRITE)));
   g_object_class_install_property(gobject_class,
 								  WARPINSPTEOB,
-								  g_param_spec_boolean("AbiWidget--warpinspteob",
+								  g_param_spec_boolean("AbiIntwidget--warpinspteob",
 													   NULL,
 													   NULL,
 													   FALSE,
 													   static_cast<GParamFlags>(G_PARAM_READWRITE)));
   g_object_class_install_property(gobject_class,
 								  WARPINSPTEOD,
-								  g_param_spec_boolean("AbiWidget--warpinspteod",
+								  g_param_spec_boolean("AbiIntwidget--warpinspteod",
 													   NULL,
 													   NULL,
 													   FALSE,
 													   static_cast<GParamFlags>(G_PARAM_READWRITE)));
   g_object_class_install_property(gobject_class,
 								  WARPINSPTEOL,
-								  g_param_spec_boolean("AbiWidget--warpinspteol",
+								  g_param_spec_boolean("AbiIntwidget--warpinspteol",
 													   NULL,
 													   NULL,
 													   FALSE,
 													   static_cast<GParamFlags>(G_PARAM_READWRITE)));
   g_object_class_install_property(gobject_class,
 								  WARPINSPTEOP,
-								  g_param_spec_boolean("AbiWidget--warpinspteop",
+								  g_param_spec_boolean("AbiIntwidget--warpinspteop",
 													   NULL,
 													   NULL,
 													   FALSE,
 													   static_cast<GParamFlags>(G_PARAM_READWRITE)));
   g_object_class_install_property(gobject_class,
 								  WARPINSPTEOW,
-								  g_param_spec_boolean("AbiWidget--warpinspteow",
+								  g_param_spec_boolean("AbiIntwidget--warpinspteow",
 													   NULL,
 													   NULL,
 													   FALSE,
 													   static_cast<GParamFlags>(G_PARAM_READWRITE)));
   g_object_class_install_property(gobject_class,
 								  WARPINSPTLEFT,
-								  g_param_spec_boolean("AbiWidget--warpinsptleft",
+								  g_param_spec_boolean("AbiIntwidget--warpinsptleft",
 													   NULL,
 													   NULL,
 													   FALSE,
 													   static_cast<GParamFlags>(G_PARAM_READWRITE)));
   g_object_class_install_property(gobject_class,
 								  WARPINSPTNEXTLINE,
-								  g_param_spec_boolean("AbiWidget--warpinsptnextline",
+								  g_param_spec_boolean("AbiIntwidget--warpinsptnextline",
 													   NULL,
 													   NULL,
 													   FALSE,
 													   static_cast<GParamFlags>(G_PARAM_READWRITE)));
   g_object_class_install_property(gobject_class,
 								  WARPINSPTNEXTPAGE,
-								  g_param_spec_boolean("AbiWidget--warpinsptnextpage",
+								  g_param_spec_boolean("AbiIntwidget--warpinsptnextpage",
 													   NULL,
 													   NULL,
 													   FALSE,
 													   static_cast<GParamFlags>(G_PARAM_READWRITE)));
   g_object_class_install_property(gobject_class,
 								  WARPINSPTNEXTSCREEN,
-								  g_param_spec_boolean("AbiWidget--warpinsptnextscreen",
+								  g_param_spec_boolean("AbiIntwidget--warpinsptnextscreen",
 													   NULL,
 													   NULL,
 													   FALSE,
 													   static_cast<GParamFlags>(G_PARAM_READWRITE)));
   g_object_class_install_property(gobject_class,
 								  WARPINSPTPREVLINE,
-								  g_param_spec_boolean("AbiWidget--warpinsptprevline",
+								  g_param_spec_boolean("AbiIntwidget--warpinsptprevline",
 													   NULL,
 													   NULL,
 													   FALSE,
 													   static_cast<GParamFlags>(G_PARAM_READWRITE)));
   g_object_class_install_property(gobject_class,
 								  WARPINSPTPREVPAGE,
-								  g_param_spec_boolean("AbiWidget--warpinsptprevpage",
+								  g_param_spec_boolean("AbiIntwidget--warpinsptprevpage",
 													   NULL,
 													   NULL,
 													   FALSE,
 													   static_cast<GParamFlags>(G_PARAM_READWRITE)));
   g_object_class_install_property(gobject_class,
 								  WARPINSPTPREVSCREEN,
-								  g_param_spec_boolean("AbiWidget--warpinsptprevscreen",
+								  g_param_spec_boolean("AbiIntwidget--warpinsptprevscreen",
 													   NULL,
 													   NULL,
 													   FALSE,
 													   static_cast<GParamFlags>(G_PARAM_READWRITE)));
   g_object_class_install_property(gobject_class,
 								  WARPINSPTPREVRIGHT,
-								  g_param_spec_boolean("AbiWidget--warpinsptprevright",
+								  g_param_spec_boolean("AbiIntwidget--warpinsptprevright",
 													   NULL,
 													   NULL,
 													   FALSE,
 													   static_cast<GParamFlags>(G_PARAM_READWRITE)));
   g_object_class_install_property(gobject_class,
 								  ZOOM100,
-								  g_param_spec_boolean("AbiWidget--zoom100",
+								  g_param_spec_boolean("AbiIntwidget--zoom100",
 													   NULL,
 													   NULL,
 													   FALSE,
 													   static_cast<GParamFlags>(G_PARAM_READWRITE)));
   g_object_class_install_property(gobject_class,
 								  ZOOM200,
-								  g_param_spec_boolean("AbiWidget--zoom200",
+								  g_param_spec_boolean("AbiIntwidget--zoom200",
 													   NULL,
 													   NULL,
 													   FALSE,
 													   static_cast<GParamFlags>(G_PARAM_READWRITE)));
   g_object_class_install_property(gobject_class,
 								  ZOOM50,
-								  g_param_spec_boolean("AbiWidget--zoom50",
+								  g_param_spec_boolean("AbiIntwidget--zoom50",
 													   NULL,
 													   NULL,
 													   FALSE,
 													   static_cast<GParamFlags>(G_PARAM_READWRITE)));
   g_object_class_install_property(gobject_class,
 								  ZOOM75,
-								  g_param_spec_boolean("AbiWidget--zoom75",
+								  g_param_spec_boolean("AbiIntwidget--zoom75",
 													   NULL,
 													   NULL,
 													   FALSE,
 													   static_cast<GParamFlags>(G_PARAM_READWRITE)));
   g_object_class_install_property(gobject_class,
 								  ZOOMWHOLE,
-								  g_param_spec_boolean("AbiWidget--zoomwhole",
+								  g_param_spec_boolean("AbiIntwidget--zoomwhole",
 													   NULL,
 													   NULL,
 													   FALSE,
 													   static_cast<GParamFlags>(G_PARAM_READWRITE)));
   g_object_class_install_property(gobject_class,
 								  ZOOMWIDTH,
-								  g_param_spec_boolean("AbiWidget--zoomwidth",
+								  g_param_spec_boolean("AbiIntwidget--zoomwidth",
 													   NULL,
 													   NULL,
 													   FALSE,
@@ -2337,7 +2337,7 @@ abi_widget_class_init (AbiWidgetClass *abi_class)
 }
 
 static void
-abi_widget_construct (AbiWidget * abi, const char * file, AP_UnixApp * pApp)
+abi_intwidget_construct (AbiIntwidget * abi, const char * file, AP_UnixApp * pApp)
 {
 	AbiPrivData * priv = g_new0 (AbiPrivData, 1);
 	priv->m_pFrame = NULL;
@@ -2365,7 +2365,7 @@ abi_widget_construct (AbiWidget * abi, const char * file, AP_UnixApp * pApp)
 
 	abi->priv = priv;
 #ifdef LOGFILE
-	fprintf(getlogfile(),"AbiWidget Constructed %x \n",abi);
+	fprintf(getlogfile(),"AbiIntwidget Constructed %x \n",abi);
 #endif
 }
 
@@ -2373,7 +2373,7 @@ abi_widget_construct (AbiWidget * abi, const char * file, AP_UnixApp * pApp)
 /**************************************************************************/
 
 extern "C" void 
-abi_widget_map_to_screen(AbiWidget * abi)
+abi_intwidget_map_to_screen(AbiIntwidget * abi)
 {
   g_return_if_fail (abi != 0);
   UT_DEBUGMSG(("Doing map_to_screen \n"));
@@ -2385,8 +2385,8 @@ abi_widget_map_to_screen(AbiWidget * abi)
   // now we can set up Abi inside of this GdkWindow
 
 #ifdef LOGFILE
-	fprintf(getlogfile(),"AbiWidget about to map_to_screen \n");
-	fprintf(getlogfile(),"AbiWidget about to map_to_screen ref_count %d \n",G_OBJECT(abi)->ref_count);
+	fprintf(getlogfile(),"AbiIntwidget about to map_to_screen \n");
+	fprintf(getlogfile(),"AbiIntwidget about to map_to_screen ref_count %d \n",G_OBJECT(abi)->ref_count);
 #endif
 
 	XAP_Args *pArgs = 0;
@@ -2402,7 +2402,7 @@ abi_widget_map_to_screen(AbiWidget * abi)
 		AP_UnixApp * pApp = static_cast<AP_UnixApp*>(XAP_App::getApp());
 
 		if ( !pApp )
-		    pApp = new AP_UnixApp (pArgs, "AbiWidget");
+		    pApp = new AP_UnixApp (pArgs, "AbiIntwidget");
 
 		UT_ASSERT(pApp);
 		pApp->initialize(true);
@@ -2422,12 +2422,12 @@ abi_widget_map_to_screen(AbiWidget * abi)
 	abi->priv->m_pApp->rememberFocussedFrame ( pFrame ) ;
 
 #ifdef LOGFILE
-	fprintf(getlogfile(),"AbiWidget After Finished map_to_screen ref_count %d \n",G_OBJECT(abi)->ref_count);
+	fprintf(getlogfile(),"AbiIntwidget After Finished map_to_screen ref_count %d \n",G_OBJECT(abi)->ref_count);
 #endif
 }
 
 extern "C" void 
-abi_widget_turn_on_cursor(AbiWidget * abi)
+abi_intwidget_turn_on_cursor(AbiIntwidget * abi)
 {
 	if(abi->priv->m_pFrame)
 	{
@@ -2439,24 +2439,24 @@ abi_widget_turn_on_cursor(AbiWidget * abi)
 }
 
 extern "C" GType
-abi_widget_get_type (void)
+abi_intwidget_get_type (void)
 {
 	static GType abi_type = 0;
 
 	if (!abi_type){
 		GTypeInfo info = {
-			sizeof (AbiWidgetClass),
+			sizeof (AbiIntwidgetClass),
 			NULL,
 			NULL,
-			(GClassInitFunc)abi_widget_class_init,
+			(GClassInitFunc)abi_intwidget_class_init,
 			NULL,
 			NULL,
-			sizeof(AbiWidget),
+			sizeof(AbiIntwidget),
 			0,
-			(GInstanceInitFunc)abi_widget_init,
+			(GInstanceInitFunc)abi_intwidget_init,
 		};
 		
-		abi_type = g_type_register_static (gtk_bin_get_type (), "AbiWidget",
+		abi_type = g_type_register_static (gtk_bin_get_type (), "AbiIntwidget",
 										   &info, (GTypeFlags)0);
 	}
 	
@@ -2464,23 +2464,23 @@ abi_widget_get_type (void)
 }
 
 /**
- * abi_widget_new
+ * abi_intwidget_new
  *
  * Creates a new AbiWord widget using an internal Abiword App
  */
 extern "C" GtkWidget *
-abi_widget_new (void)
+abi_intwidget_new (void)
 {
-	AbiWidget * abi;
+	AbiIntwidget * abi;
 
-	abi = static_cast<AbiWidget *>(g_object_new (abi_widget_get_type (), NULL));
-	abi_widget_construct (abi, 0, NULL);
+	abi = static_cast<AbiIntwidget *>(g_object_new (abi_intwidget_get_type (), NULL));
+	abi_intwidget_construct (abi, 0, NULL);
 
 	return GTK_WIDGET (abi);
 }
 
 /**
- * abi_widget_new_with_file
+ * abi_intwidget_new_with_file
  *
  * Creates a new AbiWord widget and tries to load the file
  * This uses an internal Abiword App
@@ -2488,38 +2488,38 @@ abi_widget_new (void)
  * \param file - A file on your HD
  */
 extern "C" GtkWidget *
-abi_widget_new_with_file (const gchar * file)
+abi_intwidget_new_with_file (const gchar * file)
 {
-	AbiWidget * abi;
+	AbiIntwidget * abi;
 
 	g_return_val_if_fail (file != 0, 0);
 
-	abi = static_cast<AbiWidget *>(g_object_new (abi_widget_get_type (), NULL));
-	abi_widget_construct (abi, file,NULL);
+	abi = static_cast<AbiIntwidget *>(g_object_new (abi_intwidget_get_type (), NULL));
+	abi_intwidget_construct (abi, file,NULL);
 
 	return GTK_WIDGET (abi);
 }
 
 /**
- * abi_widget_new_with_app
+ * abi_intwidget_new_with_app
  *
  * Creates a new AbiWord widget using an external Abiword App
  */
 extern "C" GtkWidget *
-abi_widget_new_with_app (AP_UnixApp * pApp)
+abi_intwidget_new_with_app (AP_UnixApp * pApp)
 {
-	AbiWidget * abi;
+	AbiIntwidget * abi;
 
 	g_return_val_if_fail (pApp != 0, 0);
 
-	abi = static_cast<AbiWidget *>(g_object_new (abi_widget_get_type (), NULL));
-	abi_widget_construct (abi, 0, pApp);
+	abi = static_cast<AbiIntwidget *>(g_object_new (abi_intwidget_get_type (), NULL));
+	abi_intwidget_construct (abi, 0, pApp);
 
 	return GTK_WIDGET (abi);
 }
 
 /**
- * abi_widget_new_with_app_file
+ * abi_intwidget_new_with_app_file
  *
  * Creates a new AbiWord widget and tries to load the file
  * This uses an external Abiword App
@@ -2528,21 +2528,21 @@ abi_widget_new_with_app (AP_UnixApp * pApp)
  * \param pApp - pointer to a valid AbiWord XAP_UnixApp
  */
 extern "C" GtkWidget *
-abi_widget_new_with_app_file (AP_UnixApp * pApp, const gchar * file)
+abi_intwidget_new_with_app_file (AP_UnixApp * pApp, const gchar * file)
 {
-	AbiWidget * abi;
+	AbiIntwidget * abi;
 
 	g_return_val_if_fail (file != 0, 0);
 	g_return_val_if_fail (pApp != 0, 0);
 
-	abi = static_cast<AbiWidget *>(g_object_new (abi_widget_get_type (), NULL));
-	abi_widget_construct (abi, file, pApp);
+	abi = static_cast<AbiIntwidget *>(g_object_new (abi_intwidget_get_type (), NULL));
+	abi_intwidget_construct (abi, file, pApp);
 
 	return GTK_WIDGET (abi);
 }
 
 extern "C" XAP_Frame * 
-abi_widget_get_frame ( AbiWidget * w )
+abi_intwidget_get_frame ( AbiIntwidget * w )
 {
   g_return_val_if_fail ( w != NULL, NULL ) ;
   return w->priv->m_pFrame ;
@@ -2550,20 +2550,20 @@ abi_widget_get_frame ( AbiWidget * w )
 
 #ifdef HAVE_GNOME
 extern "C" void
-abi_widget_set_Bonobo_uic(AbiWidget * w, BonoboUIComponent * uic)
+abi_intwidget_set_Bonobo_uic(AbiIntwidget * w, BonoboUIComponent * uic)
 {
 	w->priv->m_uic = uic;
 }
 
 extern "C" BonoboUIComponent *
-abi_widget_get_Bonobo_uic(AbiWidget * w)
+abi_intwidget_get_Bonobo_uic(AbiIntwidget * w)
 {
 	return 	w->priv->m_uic;
 }
 
 #endif
 /**
- * abi_widget_invoke()
+ * abi_intwidget_invoke()
  *
  * Invoke any of abiword's edit methods by name
  *
@@ -2576,19 +2576,19 @@ abi_widget_get_Bonobo_uic(AbiWidget * w)
  * example usage:
  *
  * gboolean b = FALSE; 
- * GtkWidget * w = abi_widget_new ();
+ * GtkWidget * w = abi_intwidget_new ();
  *
- * b = abi_widget_invoke (ABI_WIDGET(w), "alignCenter");
+ * b = abi_intwidget_invoke (ABI_INTWIDGET(w), "alignCenter");
  *
  */
 extern "C" gboolean
-abi_widget_invoke (AbiWidget * w, const char * mthdName)
+abi_intwidget_invoke (AbiIntwidget * w, const char * mthdName)
 {
-  return abi_widget_invoke_ex ( w, mthdName, NULL, 0, 0 ) ;
+  return abi_intwidget_invoke_ex ( w, mthdName, NULL, 0, 0 ) ;
 }
 
 /**
- * abi_widget_invoke_ex()
+ * abi_intwidget_invoke_ex()
  *
  * Invoke any of abiword's edit methods by name
  *
@@ -2604,14 +2604,14 @@ abi_widget_invoke (AbiWidget * w, const char * mthdName)
  * example usage:
  *
  * gboolean b = FALSE; 
- * GtkWidget * w = abi_widget_new ();
+ * GtkWidget * w = abi_intwidget_new ();
  *
- * b = abi_widget_invoke_ex (ABI_WIDGET(w), "insertData", "Hello World!", 0, 0);
- * b = abi_widget_invoke_ex (ABI_WIDGET(w), "alignCenter", 0, 0, 0);
+ * b = abi_intwidget_invoke_ex (ABI_INTWIDGET(w), "insertData", "Hello World!", 0, 0);
+ * b = abi_intwidget_invoke_ex (ABI_INTWIDGET(w), "alignCenter", 0, 0, 0);
  *
  */
 extern "C" gboolean
-abi_widget_invoke_ex (AbiWidget * w, const char * mthdName, 
+abi_intwidget_invoke_ex (AbiIntwidget * w, const char * mthdName, 
 		      const char * data, gint32 x, gint32 y)
 {
 	EV_EditMethodContainer * container;
@@ -2648,7 +2648,7 @@ abi_widget_invoke_ex (AbiWidget * w, const char * mthdName,
 }
 
 extern "C" void
-abi_widget_draw (AbiWidget * w)
+abi_intwidget_draw (AbiIntwidget * w)
 {
 	// obtain a valid view
 	if(w->priv->m_pFrame)
@@ -2662,17 +2662,17 @@ abi_widget_draw (AbiWidget * w)
 }
 
 extern "C" gboolean
-abi_widget_save ( AbiWidget * w, const char * fname )
+abi_intwidget_save ( AbiIntwidget * w, const char * fname )
 {
-  return abi_widget_save_ext ( w, fname, ".abw" ) ;
+  return abi_intwidget_save_ext ( w, fname, ".abw" ) ;
 }
 
 extern "C" gboolean 
-abi_widget_save_ext ( AbiWidget * w, const char * fname,
+abi_intwidget_save_ext ( AbiIntwidget * w, const char * fname,
 		      const char * extension )
 {
   g_return_val_if_fail ( w != NULL, FALSE );
-  g_return_val_if_fail ( IS_ABI_WIDGET(w), FALSE );
+  g_return_val_if_fail ( IS_ABI_INTWIDGET(w), FALSE );
   g_return_val_if_fail ( fname != NULL, FALSE );
 
   FV_View * view = reinterpret_cast<FV_View *>(w->priv->m_pFrame->getCurrentView());
