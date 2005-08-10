@@ -606,6 +606,8 @@ void FV_VisualDragText::getImageFromSelection(UT_sint32 x, UT_sint32 y)
 	UT_return_if_fail( pRunLow );
 	fl_BlockLayout * pBLow1 = pRunLow->getBlock();
 	bool bUseNext = false;
+	fl_TableLayout * pTabLow = m_pView->getTableAtPos(posLow);
+	fl_TableLayout * pTabHigh = m_pView->getTableAtPos(posHigh);
 	if(pBLow2 != pBLow1)
 	{
 		pRunLow = pRunLow2;
@@ -660,6 +662,7 @@ void FV_VisualDragText::getImageFromSelection(UT_sint32 x, UT_sint32 y)
 //
 // OK deal with the nice case of the selection just on the single line
 //
+	bool bDoBroken = true;
 	if(pLineLow == pLineHigh)
 	{
 //
@@ -687,8 +690,80 @@ void FV_VisualDragText::getImageFromSelection(UT_sint32 x, UT_sint32 y)
 		m_recOrigRight.height = 0;
 		m_recOrigRight.left = 0;
 		m_recOrigRight.top = 0;
+		bDoBroken = false;
 	}
-	else
+	if ( bDoBroken && (pTabLow != NULL) && (pTabHigh == pTabLow))
+	{
+	    //
+	    // Look to see if we have a rectangular table selection
+	    //
+	    UT_sint32 iExtra = 1;
+	    if(m_pView->getDocument()->isTableAtPos(posLow+iExtra))
+	    {
+	      iExtra++;
+	    }
+	    if(m_pView->getDocument()->isCellAtPos(posLow+iExtra))
+	    {
+	      iExtra++;
+	    }
+	    if(m_pView->getDocument()->isBlockAtPos(posLow+iExtra))
+	    {
+	      iExtra++;
+	    }
+	    fp_CellContainer * pCellConLow = m_pView->getCellAtPos(posLow+iExtra);
+	    if(pCellConLow == NULL)
+	      goto do_broken;
+	    fl_CellLayout * pCellLow = static_cast<fl_CellLayout *>(pCellConLow->getSectionLayout());
+	    fp_CellContainer * pCellConHigh = m_pView->getCellAtPos(posHigh-1);
+	    if(pCellConHigh == NULL)
+	      goto do_broken;
+	    fl_CellLayout * pCellHigh = static_cast<fl_CellLayout *>(pCellConHigh->getSectionLayout());
+	    if((pCellLow->getPosition(true) >= (posLow -1)) &&
+	       ((pCellHigh->getPosition(true) + pCellHigh->getLength()-1) <= (posHigh + 1) ))
+	    {
+	      UT_sint32 numCols = static_cast<fp_TableContainer *>(pCellConLow->getContainer())->getNumCols();
+	      if(((pCellConLow->getLeftAttach() == 0) && 
+		  (pCellConHigh->getRightAttach() == numCols)) || 
+		 (pCellConLow->getTopAttach() == pCellConHigh->getTopAttach()))
+	      {
+		//
+		// OK the low and high cells are fully selected.
+		//
+		  UT_DEBUGMSG(("Fully selected low and high positions \n"));
+//
+// Grab that first charcter!
+//
+	          if(!bUseNext)
+		  {
+		      m_pView->_findPositionCoords(posLow, bEOL, xLow, yLow, xCaret2, yCaret2, heightCaret, bDirection, NULL, &pRunLow2);
+		  }
+		  else
+		  {
+		      m_pView->_findPositionCoords(posLow+1, bEOL, xLow, yLow, xCaret2, yCaret2, heightCaret, bDirection, NULL, &pRunLow2);
+		  }
+		  UT_Rect * pLow = pCellConLow->getScreenRect();
+		  UT_Rect * pHigh = pCellConHigh->getScreenRect();
+		  UT_return_if_fail(pLow);
+		  UT_return_if_fail(pHigh);
+		  m_recCurFrame.left = pLow->left;
+		  m_recCurFrame.width = pHigh->left + pHigh->width - pLow->left;
+		  m_recCurFrame.top = pLow->top;
+		  m_recCurFrame.height = pHigh->top + pHigh->height - pLow->top;
+		  DELETEP(pLow);
+		  DELETEP(pHigh);
+		  m_recOrigLeft.width = 0;
+		  m_recOrigLeft.height = 0;
+		  m_recOrigLeft.left = 0;
+		  m_recOrigLeft.top = 0;
+		  m_recOrigRight.width = 0;
+		  m_recOrigRight.height = 0;
+		  m_recOrigRight.left = 0;
+		  m_recOrigRight.top = 0;
+		  bDoBroken = false;
+	      }
+	    }
+	}
+ do_broken:	if(bDoBroken)
 	{
 //
 // low and high are on different rows. First get top, left

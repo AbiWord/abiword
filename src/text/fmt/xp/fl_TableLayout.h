@@ -306,6 +306,7 @@ public:
 #ifdef FMT_TEST
 	void				     __dump(FILE * fp) const;
 #endif
+	UT_uint32                   getLength(void);
 
 	UT_sint32                getLeftOffset(void) const;
 UT_sint32                    getRightOffset(void) const;

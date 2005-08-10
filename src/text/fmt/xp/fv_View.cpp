@@ -9081,6 +9081,21 @@ fp_CellContainer * FV_View::getCellAtPos(PT_DocPosition pos)
 				return pCell;
 			}
 		}
+		fl_ContainerLayout * pCL = pBlock->myContainingLayout();
+		if((pCL->getContainerType() == FL_CONTAINER_FOOTNOTE) ||
+		   (pCL->getContainerType() == FL_CONTAINER_ENDNOTE))
+		{
+			pBlock = pBlock->getEnclosingBlock();
+			if(pBlock == NULL)
+			{
+				return NULL;
+			}
+			pCL = pBlock->myContainingLayout();
+			if(pCL->getContainerType() == FL_CONTAINER_CELL)
+			{
+				return static_cast<fp_CellContainer *>(pCL->getFirstContainer());
+			}
+		}
 	}
 	return NULL;
 }
@@ -12001,6 +12016,15 @@ bool FV_View::isInTable( PT_DocPosition pos)
 	}
 	UT_ASSERT(pCL->getContainerType() != FL_CONTAINER_TABLE);
 	xxx_UT_DEBUGMSG(("Containing Layout is %s  pos %d \n",pCL->getContainerString(),pos));
+	if((pCL->getContainerType() == FL_CONTAINER_FOOTNOTE) || (pCL->getContainerType() == FL_CONTAINER_ENDNOTE))
+	{
+		pBL = pBL->getEnclosingBlock();
+		if(pBL == NULL)
+		{
+			return false;
+		}
+		pCL = pBL->myContainingLayout();
+	}
 	if(pCL->getContainerType() == FL_CONTAINER_CELL)
 	{
 		xxx_UT_DEBUGMSG(("Inside Table cell pos %d this pos %d \n",pCL->getPosition(),pos));

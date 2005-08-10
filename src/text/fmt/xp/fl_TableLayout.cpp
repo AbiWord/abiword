@@ -2521,6 +2521,37 @@ void fl_CellLayout::_localCollapse(void)
 		pCL = pCL->getNext();
 	}
 }
+/*!
+ * Return the total length of the cell including nested tables.
+ * This length includes the cell and endcell struxs so if you add it
+ * to the position of the cell strux you will get the first position 
+ * past the endcell strux
+ */
+UT_uint32 fl_CellLayout::getLength(void)
+{
+	PL_StruxDocHandle sdhCell = getStruxDocHandle();
+	PL_StruxDocHandle sdhEnd = m_pDoc->getEndCellStruxFromCellSDH(sdhCell);
+	PT_DocPosition posEnd = 0;
+	PT_DocPosition posStart = 0;
+	UT_uint32 len = 0;
+	if(sdhCell && (sdhEnd == NULL)) // handle case of endStrux not in yet
+	{
+		posStart = m_pDoc->getStruxPosition(sdhCell);
+		m_pDoc->getBounds(true,posEnd);
+		len = posEnd - posStart + 1;
+	}
+	else if(sdhCell == NULL)
+	{
+		return 0;
+	}
+	else
+	{
+		posEnd = m_pDoc->getStruxPosition(sdhEnd);
+		len = posEnd -  m_pDoc->getStruxPosition(sdhCell) + 1;
+	}
+	return len;
+}
+
 
 void fl_CellLayout::collapse(void)
 {

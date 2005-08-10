@@ -1202,11 +1202,50 @@ void fl_BlockLayout::updateEnclosingBlockIfNeeded(void)
 	fl_BlockLayout * pBL = reinterpret_cast<fl_BlockLayout *>(const_cast<void *>(psfh));
 	UT_ASSERT(pBL->getContainerType() == FL_CONTAINER_BLOCK);
 	UT_ASSERT(iSize > 1);
-	UT_sint32 iOldSize = pFL->getOldSize();
-	pFL->setOldSize(iSize);
+    UT_sint32 iOldSize = pFL->getOldSize();
+    pFL->setOldSize(iSize);
 	pBL->updateOffsets(posStart,iSize,iSize-iOldSize);
 }
 
+/*!
+ * Get the enclosing block of this if this block is in a footnote-type strux
+ * Return NULL is not an embedded type 
+*/
+fl_BlockLayout * fl_BlockLayout::getEnclosingBlock(void)
+{
+	UT_return_val_if_fail (m_pLayout,NULL);
+	
+	if(!isEmbeddedType())
+	{
+		xxx_UT_DEBUGMSG(("Block %x is Not enclosed - returning \n"));
+		return NULL;
+	}
+	fl_ContainerLayout * pCL = myContainingLayout();
+	UT_ASSERT((pCL->getContainerType() == FL_CONTAINER_FOOTNOTE) || (pCL->getContainerType() == FL_CONTAINER_ENDNOTE) );
+	fl_EmbedLayout * pFL = static_cast<fl_EmbedLayout *>(pCL);
+	if(!pFL->isEndFootnoteIn())
+	{
+		return NULL;
+	}
+	PL_StruxDocHandle sdhStart = pCL->getStruxDocHandle();
+	PL_StruxDocHandle sdhEnd = NULL;
+	if(pCL->getContainerType() == FL_CONTAINER_FOOTNOTE)
+	{
+		getDocument()->getNextStruxOfType(sdhStart,PTX_EndFootnote, &sdhEnd);
+	}
+	else
+	{
+		getDocument()->getNextStruxOfType(sdhStart,PTX_EndEndnote, &sdhEnd);
+	}
+
+	UT_return_val_if_fail(sdhEnd != NULL,NULL);
+	PT_DocPosition posStart = getDocument()->getStruxPosition(sdhStart);
+	PL_StruxFmtHandle  psfh = NULL;
+	getDocument()->getStruxOfTypeFromPosition(m_pLayout->getLID(),posStart,PTX_Block, &psfh);
+	fl_BlockLayout * pBL = reinterpret_cast<fl_BlockLayout *>(const_cast<void *>(psfh));
+	UT_ASSERT(pBL->getContainerType() == FL_CONTAINER_BLOCK);
+	return pBL;
+}
 
 /*!
  * This method returns the DocSectionLayout that this block is associated with
