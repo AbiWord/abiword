@@ -322,6 +322,7 @@ private:
 	UT_uint32   m_iTextStart;
 	UT_uint32   m_iTextEnd;
 	bool        m_bPageBreakPending;
+	bool        m_bLineBreakPending;
 	UT_NumberVector m_vListIdMap;
 	bool        m_bSymbolFont;
 	UT_Dimension m_dim;

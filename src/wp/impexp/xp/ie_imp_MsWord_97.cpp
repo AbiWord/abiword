@@ -861,6 +861,7 @@ IE_Imp_MsWord_97::IE_Imp_MsWord_97(PD_Document * pDocument)
 	m_iTextStart(0xffffffff),
 	m_iTextEnd(0xffffffff),
 	m_bPageBreakPending(false),
+    m_bLineBreakPending(false),
 	m_bSymbolFont(false),
 	m_dim(DIM_IN),
 	m_iLeft(0),
@@ -1635,6 +1636,14 @@ int IE_Imp_MsWord_97::_charProc (wvParseStruct *ps, U16 eachchar, U8 chartype, U
 		this->_appendChar (UCS_FF);
 		m_bPageBreakPending = false;
 	}
+
+	// reset the page break tracker
+	if(m_bLineBreakPending)
+	{
+		// we have a line break pending
+		this->_appendChar (UCS_LF);
+		m_bLineBreakPending = false;
+	}
 	
 	if(!_handleHeadersText(ps->currentcp,true))
 		return 0;
@@ -1673,12 +1682,13 @@ int IE_Imp_MsWord_97::_charProc (wvParseStruct *ps, U16 eachchar, U8 chartype, U
 		return 0;
 
 	case 13: // end of paragraph
-	  _flush();
-	  // <delackner> aaah actually, Cocoa's writer is *definitely broken
+	  this->_flush();
+	  // see bug 9370
+	  // <delackner> aaah actually, Cocoa's writer is *definitely* broken
 	  // <delackner> ms word thinks the second para is part of the first, but broken with a non-paragraph-breaking-line-break
-	  // let's emulate msword's behavior, then...
-		eachchar = UCS_LF;
-		break;
+	  // so we'll treat this like msword does
+	  m_bLineBreakPending = true;
+	  return 0;
 
 	case 14: // column break
 		eachchar = UCS_VTAB;
@@ -1731,8 +1741,10 @@ int IE_Imp_MsWord_97::_charProc (wvParseStruct *ps, U16 eachchar, U8 chartype, U
 	}
 
 	// see bug 9370. we probably got a char 13, but no open paragraph.
-	if(!m_bInPara)
+	if(!m_bInPara) {
+	  this->_appendChar (UCS_LF);
 	  _flush();
+	}
 	
 	this->_appendChar (static_cast<UT_UCSChar>(eachchar));
 
@@ -2571,7 +2583,8 @@ int IE_Imp_MsWord_97::_endSect (wvParseStruct * /* ps */ , UT_uint32  /* tag */ 
 
 	// if there is a pending page break it belongs to the section and
 	// is to be removed, we just need to set the tracker to false
-	m_bPageBreakPending = false;	
+	m_bPageBreakPending = false;
+	m_bLineBreakPending = false;
 
 	m_bInSect = false;
 	m_bInPara = false; // reset paragraph status
@@ -3093,6 +3106,7 @@ int IE_Imp_MsWord_97::_endPara (wvParseStruct *ps, UT_uint32 tag,
 
 	this->_flush ();
 	m_bInPara = false;
+	m_bLineBreakPending = false;
 	
 	return 0;
 }
