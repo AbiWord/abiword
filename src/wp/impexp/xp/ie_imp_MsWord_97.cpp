@@ -1624,8 +1624,7 @@ int IE_Imp_MsWord_97::_charProc (wvParseStruct *ps, U16 eachchar, U8 chartype, U
 	{
 		UT_DEBUGMSG(("IE_Imp_MsWord_97::_charProc: processing past end of document !!! %d \n",ps->currentcp ));
 		return 0;
-	}
-	
+	}       
 	
 	// reset the page break tracker
 	if(m_bPageBreakPending)
@@ -1674,6 +1673,8 @@ int IE_Imp_MsWord_97::_charProc (wvParseStruct *ps, U16 eachchar, U8 chartype, U
 		return 0;
 
 	case 13: // end of paragraph
+	  _flush();
+	        m_bInPara = false;
 		return 0;
 
 	case 14: // column break
@@ -1725,6 +1726,10 @@ int IE_Imp_MsWord_97::_charProc (wvParseStruct *ps, U16 eachchar, U8 chartype, U
 	{
 		eachchar &= 0x00ff;
 	}
+
+	// see bug 9370. we probably got a char 13, but no open paragraph.
+	if(!m_bInPara)
+	  _flush();
 	
 	this->_appendChar (static_cast<UT_UCSChar>(eachchar));
 
