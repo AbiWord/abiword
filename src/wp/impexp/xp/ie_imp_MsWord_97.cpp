@@ -1674,8 +1674,11 @@ int IE_Imp_MsWord_97::_charProc (wvParseStruct *ps, U16 eachchar, U8 chartype, U
 
 	case 13: // end of paragraph
 	  _flush();
-	        m_bInPara = false;
-		return 0;
+	  // <delackner> aaah actually, Cocoa's writer is *definitely broken
+	  // <delackner> ms word thinks the second para is part of the first, but broken with a non-paragraph-breaking-line-break
+	  // let's emulate msword's behavior, then...
+		eachchar = UCS_LF;
+		break;
 
 	case 14: // column break
 		eachchar = UCS_VTAB;
