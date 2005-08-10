@@ -606,8 +606,18 @@ void FV_VisualDragText::getImageFromSelection(UT_sint32 x, UT_sint32 y)
 	UT_return_if_fail( pRunLow );
 	fl_BlockLayout * pBLow1 = pRunLow->getBlock();
 	bool bUseNext = false;
-	fl_TableLayout * pTabLow = m_pView->getTableAtPos(posLow);
+	bool bIsTable = false;
+	if(m_pView->getDocument()->isTableAtPos(posLow))
+	{
+	    posLow += 2;
+	    bIsTable = true;
+	}
+	fl_TableLayout * pTabLow = m_pView->getTableAtPos(posLow+1);
 	fl_TableLayout * pTabHigh = m_pView->getTableAtPos(posHigh);
+	if(bIsTable && (pTabLow != pTabHigh))
+	{
+	    posLow -= 2;
+	}
 	if(pBLow2 != pBLow1)
 	{
 		pRunLow = pRunLow2;
