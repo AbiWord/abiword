@@ -3038,9 +3038,23 @@ UT_sint32 FV_View::getNumRowsInSelection(void)
 	fl_BlockLayout * pBlock = NULL;
 	fl_CellLayout * pCell = NULL;
 	fp_CellContainer * pCellCon = NULL;
+	PT_DocPosition startpos = getPoint();
+	PT_DocPosition endpos = startpos;
+	if (m_Selection.getSelectionAnchor() > startpos)
+	{
+		endpos = m_Selection.getSelectionAnchor();
+	}
+	else
+	{
+		startpos = m_Selection.getSelectionAnchor();
+	}
 	for(i=0; i< static_cast<UT_sint32>(vecBlocks.getItemCount());i++)
 	{
 		pBlock = vecBlocks.getNthItem(i);
+		if((getNumSelections() == 0) && ((pBlock->getPosition() + pBlock->getLength() - 1) <= startpos))
+		{
+			continue;
+		}
 		if(pBlock->myContainingLayout()->getContainerType() != FL_CONTAINER_CELL)
 		{
 			return 0;

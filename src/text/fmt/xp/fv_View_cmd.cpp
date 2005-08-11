@@ -2824,24 +2824,18 @@ bool FV_View::cmdDeleteRow(PT_DocPosition posRow)
 // Now find the number of rows and columns inthis table. This is easiest to
 // get from the table container
 //
-	fl_BlockLayout * pBL =	m_pLayout->findBlockAtPosition(posRow);
-	fp_Run * pRun;
-	UT_sint32 xPoint,yPoint,xPoint2,yPoint2,iPointHeight;
-	bool bDirection;
-	pRun = pBL->findPointCoords(posRow, false, xPoint,
-							    yPoint, xPoint2, yPoint2,
-							    iPointHeight, bDirection);
-	UT_return_val_if_fail(pRun, false);
-
-	fp_Line * pLine = pRun->getLine();
-	UT_return_val_if_fail(pLine, false);
-
-	fp_Container * pCon = pLine->getContainer();
-	UT_return_val_if_fail(pCon, false);
-
-	fp_TableContainer * pTab = static_cast<fp_TableContainer *>(pCon->getContainer());
+	fl_TableLayout * pTabL = getTableAtPos(posRow);
+	if(pTabL == NULL)
+	{
+	    pTabL = getTableAtPos(posRow+1);
+	    if(pTabL == NULL)
+	    {
+		pTabL = getTableAtPos(posRow+2);
+		UT_return_val_if_fail(pTabL, false);
+	    }
+	}
+	fp_TableContainer * pTab = static_cast<fp_TableContainer *>(pTabL->getFirstContainer());
 	UT_return_val_if_fail(pTab, false);
-
 	UT_sint32 numCols = pTab->getNumCols();
 //
 // If we delete the last row we're actually deleting the table, so do that 
@@ -4301,7 +4295,19 @@ void FV_View::cmdCut(void)
 	if(m_Selection.getSelectionMode() == FV_SelectionMode_TableColumn)
 	{
 		PD_DocumentRange * pDR = m_Selection.getNthSelection(0);
-		PT_DocPosition pos = pDR->m_pos1 +1;
+		PT_DocPosition pos = 0;
+		if(pDR)
+		{
+		    pos = pDR->m_pos1 +1;
+		}
+		else
+		{
+		    pos = getSelectionAnchor();
+		    if(pos > getPoint())
+		    {
+			pos = getPoint();
+		    }
+		}
 		_clearSelection();
 		cmdDeleteCol(pos);
 		return;
@@ -4309,7 +4315,19 @@ void FV_View::cmdCut(void)
 	if(m_Selection.getSelectionMode() == FV_SelectionMode_TableRow)
 	{
 		PD_DocumentRange * pDR = m_Selection.getNthSelection(0);
-		PT_DocPosition pos = pDR->m_pos1 +1;
+		PT_DocPosition pos = 0;
+		if(pDR)
+		{
+		    pos = pDR->m_pos1 +1;
+		}
+		else
+		{
+		    pos = getSelectionAnchor();
+		    if(pos > getPoint())
+		    {
+			pos = getPoint();
+		    }
+		}
 		_clearSelection();
 		cmdDeleteRow(pos);
 		return;

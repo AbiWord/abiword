@@ -52,7 +52,8 @@ FV_VisualDragText::FV_VisualDragText (FV_View * pView)
 	  m_xLastMouse(1),
 	  m_yLastMouse(1),
 	  m_bDoingCopy(false),
-	  m_bNotDraggingImage(false)
+	  m_bNotDraggingImage(false),
+	  m_bSelectedRow(false)
 {
 	UT_ASSERT (pView);
 }
@@ -724,7 +725,7 @@ void FV_VisualDragText::getImageFromSelection(UT_sint32 x, UT_sint32 y)
 	    if(pCellConLow == NULL)
 	      goto do_broken;
 	    fl_CellLayout * pCellLow = static_cast<fl_CellLayout *>(pCellConLow->getSectionLayout());
-	    fp_CellContainer * pCellConHigh = m_pView->getCellAtPos(posHigh-1);
+	    fp_CellContainer * pCellConHigh = m_pView->getCellAtPos(posHigh);
 	    if(pCellConHigh == NULL)
 	      goto do_broken;
 	    fl_CellLayout * pCellHigh = static_cast<fl_CellLayout *>(pCellConHigh->getSectionLayout());
@@ -750,6 +751,11 @@ void FV_VisualDragText::getImageFromSelection(UT_sint32 x, UT_sint32 y)
 		  else
 		  {
 		      m_pView->_findPositionCoords(posLow+1, bEOL, xLow, yLow, xCaret2, yCaret2, heightCaret, bDirection, NULL, &pRunLow2);
+		  }
+		  if((pCellConLow->getLeftAttach() == 0) && 
+		  (pCellConHigh->getRightAttach() == numCols))
+		  {
+		      m_bSelectedRow = true;
 		  }
 		  UT_Rect * pLow = pCellConLow->getScreenRect();
 		  UT_Rect * pHigh = pCellConHigh->getScreenRect();
@@ -887,10 +893,19 @@ void FV_VisualDragText::mouseCut(UT_sint32 x, UT_sint32 y)
 			pos2 = m_pView->getSelectionAnchor();
 			pos1 = m_pView->getPoint();
 		}
-		m_pView->copyToLocal(pos1,pos2);
-		m_pView->cmdCharDelete(true,1);
+		if(m_bSelectedRow)
+		{
+		    m_pView->copyToLocal(pos1,pos2);
+		    m_pView->cmdDeleteRow(pos1+2);
+		    m_pView->setSelectionMode(FV_SelectionMode_TableRow);
+		}
+		else
+		{
+		    m_pView->copyToLocal(pos1,pos2);
+		    m_pView->cmdCharDelete(true,1);
+		}
 	}
-
+	m_bSelectedRow = false;
 	m_pView->getDocument()->setVDNDinProgress(false);
 	
 	m_pView->updateScreen(false);
@@ -1027,6 +1042,7 @@ void FV_VisualDragText::mouseRelease(UT_sint32 x, UT_sint32 y)
 	{
 		m_pView->cmdPaste();
 	}
+	m_bSelectedRow = false;
 	PT_DocPosition newPoint = m_pView->getPoint();
 	DELETEP(m_pDragImage);
 	if(m_bTextCut)

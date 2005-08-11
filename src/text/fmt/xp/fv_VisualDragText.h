@@ -88,6 +88,7 @@ private:
 
 	bool                  m_bDoingCopy;
 	bool                  m_bNotDraggingImage;
+	bool                  m_bSelectedRow;
 };
 
 #endif /* FV_VISUALDRAGTEXT_H */
