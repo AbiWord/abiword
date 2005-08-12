@@ -151,9 +151,10 @@ UT_GenericVector<T>::UT_GenericVector(UT_uint32 sizehint, UT_uint32 baseincr)
 
 template <class T>
 UT_GenericVector<T>::UT_GenericVector(const UT_GenericVector<T>& utv)
+  : m_pEntries(NULL), m_iCount(0), m_iSpace(0), 
+  m_iCutoffDouble(utv.m_iCutoffDouble), 
+  m_iPostCutoffIncrement(utv.m_iPostCutoffIncrement) 
 {
-	m_iCutoffDouble = utv.m_iCutoffDouble;
-	m_iPostCutoffIncrement = utv.m_iPostCutoffIncrement;
 	copy(&utv);
 }
 
