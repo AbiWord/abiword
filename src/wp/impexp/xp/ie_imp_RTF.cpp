@@ -4173,6 +4173,7 @@ bool IE_Imp_RTF::TranslateKeywordID(RTF_KEYWORD_ID keywordID,
 		return _appendField ("page_number");
 	case RTF_KW_chftn:
 		HandleNoteReference();
+		break;
 	case RTF_KW_cs:
 		m_currentRTFState.m_charProps.m_styleNumber = param;
 		return true;
@@ -4236,7 +4237,7 @@ bool IE_Imp_RTF::TranslateKeywordID(RTF_KEYWORD_ID keywordID,
 		xxx_UT_DEBUGMSG(("Writing background color %s to properties \n",sColor.c_str()));
 		_setStringProperty(m_currentRTFState.m_cellProps.m_sCellProps,"background-color",sColor.c_str());
 	}
-	// KAY: TODO Should there be a break here?
+	break;
 	case RTF_KW_deff: 
 		if (fParam) {
 			m_iDefaultFontNumber = param;
