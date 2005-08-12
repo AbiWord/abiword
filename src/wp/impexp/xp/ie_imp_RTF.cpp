@@ -486,7 +486,9 @@ ABI_Paste_Table::ABI_Paste_Table(void):
 	m_iMaxRightCell(0),
 	m_iCurRightCell(0),
 	m_iCurTopCell(0),
-	m_bPasteAfterRow(false)
+	m_bPasteAfterRow(false),
+	m_iPrevPasteTop(0),
+	m_iNumRows(1)
 {
 }
 
@@ -1735,7 +1737,7 @@ void IE_Imp_RTF::closePastedTableIfNeeded(void)
 // Close off pasted rows by incrementing the top and botton's of the cell's
 // below
 //
-				UT_sint32 numRows = pPaste->m_iCurTopCell -pPaste->m_iRowNumberAtPaste +1;
+				UT_sint32 numRows = pPaste->m_iNumRows;
 				PL_StruxDocHandle sdhCell = NULL;
 				PL_StruxDocHandle sdhTable = NULL;
 				PL_StruxDocHandle sdhEndTable = NULL;
@@ -2600,7 +2602,10 @@ bool IE_Imp_RTF::HandleParKeyword()
 		}
 		else
 		{
-			UT_return_val_if_fail(getDoc()->changeLastStruxFmtNoUndo(m_dposPaste, PTX_Block, attrs, props, true),false );
+			if(!getDoc()->isEndTableAtPos(m_dposPaste))
+			{
+				UT_return_val_if_fail(getDoc()->changeLastStruxFmtNoUndo(m_dposPaste, PTX_Block, attrs, props, true),false );
+			}
 		}
 		
 	}
@@ -9274,6 +9279,14 @@ bool IE_Imp_RTF::HandleAbiCell(void)
 	UT_String sDum = "top-attach";
 	UT_String sTop = UT_String_getPropVal(sProps,sDum);
 	pPaste->m_iCurTopCell = atoi(sTop.c_str());
+	UT_sint32 iAdditional = 0;
+	//
+	// Look for the next row of the table
+	//
+	iAdditional = pPaste->m_iCurTopCell - pPaste->m_iPrevPasteTop;
+	pPaste->m_iPrevPasteTop = pPaste->m_iCurTopCell;
+	pPaste->m_iRowNumberAtPaste += iAdditional;
+	pPaste->m_iNumRows += iAdditional;
 	sDum = "right-attach";
 	UT_String sRight = UT_String_getPropVal(sProps,sDum);
 	pPaste->m_iCurRightCell = atoi(sRight.c_str());

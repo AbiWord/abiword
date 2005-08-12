@@ -502,6 +502,8 @@ public:
 	UT_sint32             m_iCurRightCell;
 	UT_sint32             m_iCurTopCell;
 	bool                  m_bPasteAfterRow;
+	UT_sint32             m_iPrevPasteTop;
+	UT_sint32             m_iNumRows;
 };
 
 // The importer/reader for Rich Text Format files

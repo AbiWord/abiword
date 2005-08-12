@@ -2920,12 +2920,18 @@ bool FV_View::cmdDeleteRow(PT_DocPosition posRow)
 // the endTable strux. So lets's get that now.
 //
 	endTableSDH = m_pDoc->getEndTableStruxFromTableSDH(tableSDH);
-	if(!bRes)
+	if(!bRes || (endTableSDH == NULL))
 	{
 		//
 		// Disaster! the table structure in the piecetable is screwed.
 		// we're totally stuffed now.
 		UT_ASSERT(UT_SHOULD_NOT_HAPPEN);
+		m_pDoc->setDontImmediatelyLayout(false);
+	
+		// Signal PieceTable Changes have finished
+		_restorePieceTableState();
+		m_pDoc->endUserAtomicGlob();
+		return false;;
 	}
 	PT_DocPosition posEndTable = m_pDoc->getStruxPosition(endTableSDH);
 	PT_DocPosition posEndCell;

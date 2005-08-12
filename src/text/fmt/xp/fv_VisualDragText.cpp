@@ -312,12 +312,32 @@ void FV_VisualDragText::mouseDrag(UT_sint32 x, UT_sint32 y)
 	if(!m_bNotDraggingImage && (expX.width > 0))
 	{
 		getGraphics()->setClipRect(&expX);
+		if(m_bSelectedRow)
+
+		{
+		      m_pView->setSelectionMode(FV_SelectionMode_NONE);
+		}
 		m_pView->updateScreen(false);
+		if(m_bSelectedRow);
+		{
+		      m_pView->setSelectionMode(FV_SelectionMode_TableRow);
+		}
+
 	}
 	if(!m_bNotDraggingImage && (expY.height > 0))
 	{
+	  xxx_UT_DEBUGMSG(("expY left %d top %d width %d height %d \n",expY.left,expY.top,expY.width,expY.height));
 		getGraphics()->setClipRect(&expY);
+		if(m_bSelectedRow);
+		{
+		      m_pView->setSelectionMode(FV_SelectionMode_NONE);
+		}
 		m_pView->updateScreen(false);
+		if(m_bSelectedRow);
+		{
+		      m_pView->setSelectionMode(FV_SelectionMode_TableRow);
+		}
+
 	}
 	if(!m_bNotDraggingImage)
 	{
@@ -725,6 +745,10 @@ void FV_VisualDragText::getImageFromSelection(UT_sint32 x, UT_sint32 y)
 	    if(pCellConLow == NULL)
 	      goto do_broken;
 	    fl_CellLayout * pCellLow = static_cast<fl_CellLayout *>(pCellConLow->getSectionLayout());
+	    if(m_pView->getDocument()->isEndTableAtPos(posHigh-1))
+	    {
+		posHigh--;
+	    }
 	    fp_CellContainer * pCellConHigh = m_pView->getCellAtPos(posHigh);
 	    if(pCellConHigh == NULL)
 	      goto do_broken;
@@ -753,7 +777,7 @@ void FV_VisualDragText::getImageFromSelection(UT_sint32 x, UT_sint32 y)
 		      m_pView->_findPositionCoords(posLow+1, bEOL, xLow, yLow, xCaret2, yCaret2, heightCaret, bDirection, NULL, &pRunLow2);
 		  }
 		  if((pCellConLow->getLeftAttach() == 0) && 
-		  (pCellConHigh->getRightAttach() == numCols))
+		     (pCellConHigh->getRightAttach() == numCols))
 		  {
 		      m_bSelectedRow = true;
 		  }
@@ -905,7 +929,6 @@ void FV_VisualDragText::mouseCut(UT_sint32 x, UT_sint32 y)
 		    m_pView->cmdCharDelete(true,1);
 		}
 	}
-	m_bSelectedRow = false;
 	m_pView->getDocument()->setVDNDinProgress(false);
 	
 	m_pView->updateScreen(false);
@@ -964,6 +987,7 @@ void   FV_VisualDragText::abortDrag(void)
 		m_pAutoScrollTimer->stop();
 		DELETEP(m_pAutoScrollTimer);
 	}
+	m_bSelectedRow = false;
 	bool bDidCopy = m_bDoingCopy;
 	m_bDoingCopy = false;
 	m_bNotDraggingImage = false;
@@ -1000,6 +1024,7 @@ void FV_VisualDragText::mouseRelease(UT_sint32 x, UT_sint32 y)
 	}
 	m_bDoingCopy = false;
 	m_bNotDraggingImage = false;
+	m_bSelectedRow = false;
 	clearCursor();
 	if(m_iVisualDragMode != FV_VisualDrag_DRAGGING)
 	{

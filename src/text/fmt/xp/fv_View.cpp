@@ -2459,6 +2459,12 @@ bool FV_View::isSelectionEmpty(void) const
 	if((m_Selection.getSelectionMode() != FV_SelectionMode_Single) &&
 	   (m_Selection.getSelectionMode() != FV_SelectionMode_NONE))
 	{
+		if((m_Selection.getSelectionMode() ==  FV_SelectionMode_TableRow) &&
+		   (getPoint() == getSelectionAnchor()) && (m_Selection.getSelectionLeftAnchor() ==
+		   m_Selection.getSelectionLeftAnchor()))
+		{
+			return true;
+		}
 		return false;
 	}
 	PT_DocPosition curPos = getPoint();

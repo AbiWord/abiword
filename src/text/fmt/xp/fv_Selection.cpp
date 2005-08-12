@@ -281,6 +281,8 @@ PT_DocPosition FV_Selection::getSelectionLeftAnchor(void) const
 
 void FV_Selection::setSelectionLeftAnchor(PT_DocPosition pos)
 {
+        if(pos == 0)
+	  return;
 	m_iSelectLeftAnchor = pos;
 	PT_DocPosition posBeg,posEnd=0;
 	m_pView->getEditableBounds(false,posBeg);
@@ -303,6 +305,8 @@ PT_DocPosition FV_Selection::getSelectionRightAnchor(void) const
 
 void FV_Selection::setSelectionRightAnchor(PT_DocPosition pos)
 {
+        if(pos == 0)
+	  return;
 	m_iSelectRightAnchor = pos;
 	PT_DocPosition posBeg,posEnd=0;
 	m_pView->getEditableBounds(false,posBeg);

@@ -310,6 +310,8 @@ void FV_View::_resetSelection(void)
 {
 	m_Selection.clearSelection();
 	m_Selection.setSelectionAnchor(getPoint());
+	m_Selection.setSelectionLeftAnchor(getPoint());
+	m_Selection.setSelectionRightAnchor(getPoint());
 	m_iGrabCell = 0;
 }
 
