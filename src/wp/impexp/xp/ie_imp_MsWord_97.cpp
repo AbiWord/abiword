@@ -2234,8 +2234,6 @@ int IE_Imp_MsWord_97::_beginSect (wvParseStruct *ps, UT_uint32 tag,
 			// be used (i.e., we want to use inches for Letter but
 			// metric units for A4, etc.)
 			fp_PageSize PageSize(paper_name);
-			if(asep->dmOrientPage == 1)
-				PageSize.setLandscape();
 
 			// if we know that the explicit size is not valid, we do
 			// not need any further checking
