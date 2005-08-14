@@ -351,7 +351,7 @@ Section "AbiMathView Plugin"
 	DoInstall:
 
 	;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;
-	; Unzip libxml2 into same directory as AbiWord.exe
+	; Unzip libxml2 and friends into same directory as AbiWord.exe
 	SetOutPath $INSTDIR\AbiWord
 
 	;;;;;;;;;
@@ -361,9 +361,36 @@ Section "AbiMathView Plugin"
 	${unzipFile} "$TEMP\libxml2-2.6.19-runtime.zip" "$INSTDIR\AbiWord" "bin\libxml2.dll" "ERROR: failed to extract libxml2.dll from libxml2-2.6.19-runtime.zip"
 	StrCmp $0 "success" 0 doCleanup
 
+	;;;;;;;
+	; iconv
+	${dlFile} "http://www.abisource.com/downloads/dependencies/libiconv/libiconv-1.9.1-runtime.zip" "$TEMP\libiconv-1.9.1-runtime.zip" "ERROR: failed to download http://www.abisource.com/downloads/dependencies/libiconv/libiconv-1.9.1-runtime.zip"
+	StrCmp $0 "success" 0 doCleanup
+	${unzipFile} "$TEMP\libiconv-1.9.1-runtime.zip" "$INSTDIR\AbiWord" "bin\iconv.dll" "ERROR: failed to extract iconv.dll from libiconv-1.9.1-runtime.zip"
+	StrCmp $0 "success" 0 doCleanup
+
+	;;;;;;
+	; intl
+	${dlFile} "http://www.abisource.com/downloads/dependencies/gettext/gettext-runtime-0.13.1-runtime.zip" "$TEMP\gettext-runtime-0.13.1.zip" "ERROR: failed to download http://www.abisource.com/downloads/dependencies/gettext/gettext-runtime-0.13.1-runtime.zip"
+	StrCmp $0 "success" 0 doCleanup
+	${unzipFile} "$TEMP\gettext-runtime-0.13.1-runtime.zip" "$INSTDIR\AbiWord" "bin\intl.dll" "ERROR: failed to extract intl.dll from gettext-runtime-0.13.1-runtime.zip"
+	StrCmp $0 "success" 0 doCleanup
+
+	;;;;;;;;;;;;;;;;;;
+	; glib and gobject
+	${dlFile} "http://www.abisource.com/downloads/dependencies/glib/glib-2.4.7-runtime.zip" "$TEMP\glib-2.4.7-runtime.zip" "ERROR: failed to download http://www.abisource.com/downloads/dependencies/glib/glib-2.4.7-runtime.zip"
+	StrCmp $0 "success" 0 doCleanup
+	${unzipFile} "$TEMP\glib-2.4.7-runtime.zip" "$INSTDIR\AbiWord" "bin\libglib-2.0-0.dll" "ERROR: failed to extract libglib-2.0-0.dll from glib-2.4.7-runtime.zip"
+	StrCmp $0 "success" 0 doCleanup
+	${unzipFile} "$TEMP\glib-2.4.7-runtime.zip" "$INSTDIR\AbiWord" "bin\libgobject-2.0-0.dll" "ERROR: failed to extract libgobject-2.0-0.dll from glib-2.4.7-runtime.zip"
+	StrCmp $0 "success" 0 doCleanup
+
 
 	doCleanup:
 		; Delete temporary files
+		
+		Delete "$TEMP\libiconv-1.9.1-runtime.zip"
+		Delete "$TEMP\gettext-runtime-0.13.1-runtime.zip"
+		Delete "$TEMP\glib-2.4.7-runtime.zip"
 		Delete "$TEMP\libxml2-2.6.19-runtime.zip"
 
 	;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;
