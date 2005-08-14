@@ -672,25 +672,25 @@ Section "Download glib 2.4" GLIB_IDX
 
 	;;;;;;;
 	; iconv
-	${dlFile} "http://www.abisource.com/downloads/dependencies/libiconv/libiconv-1.9.1.bin.win32.zip" "$TEMP\libiconv-1.9.1.bin.win32.zip" "ERROR: failed to download http://www.abisource.com/downloads/dependencies/libiconv/libiconv-1.9.1.bin.win32.zip"
+	${dlFile} "http://www.abisource.com/downloads/dependencies/libiconv/libiconv-1.9.1-runtime.zip" "$TEMP\libiconv-1.9.1-runtime.zip" "ERROR: failed to download http://www.abisource.com/downloads/dependencies/libiconv/libiconv-1.9.1-runtime.zip"
 	StrCmp $0 "success" 0 doCleanup
-	${unzipFile} "$TEMP\libiconv-1.9.1.bin.win32.zip" "$INSTDIR\AbiWord" "bin\iconv.dll" "ERROR: failed to extract iconv.dll from libiconv-1.9.1.bin.win32.zip"
+	${unzipFile} "$TEMP\libiconv-1.9.1-runtime.zip" "$INSTDIR\AbiWord" "bin\iconv.dll" "ERROR: failed to extract iconv.dll from libiconv-1.9.1.bin.win32.zip"
 	StrCmp $0 "success" 0 doCleanup
 
 	;;;;;;
 	; intl
-	${dlFile} "http://www.abisource.com/downloads/dependencies/gettext/gettext-runtime-0.13.1.zip" "$TEMP\gettext-runtime-0.13.1.zip" "ERROR: failed to download http://www.abisource.com/downloads/dependencies/gettext/gettext-runtime-0.13.1.zip"
+	${dlFile} "http://www.abisource.com/downloads/dependencies/gettext/gettext-runtime-0.13.1-runtime.zip" "$TEMP\gettext-runtime-0.13.1-runtime.zip" "ERROR: failed to download http://www.abisource.com/downloads/dependencies/gettext/gettext-runtime-0.13.1-runtime.zip"
 	StrCmp $0 "success" 0 doCleanup
-	${unzipFile} "$TEMP\gettext-runtime-0.13.1.zip" "$INSTDIR\AbiWord" "bin\intl.dll" "ERROR: failed to extract intl.dll from gettext-runtime-0.13.1.zip"
+	${unzipFile} "$TEMP\gettext-runtime-0.13.1-runtime.zip" "$INSTDIR\AbiWord" "bin\intl.dll" "ERROR: failed to extract intl.dll from gettext-runtime-0.13.1-runtime.zip"
 	StrCmp $0 "success" 0 doCleanup
 
 	;;;;;;;;;;;;;;;;;;
 	; glib and gobject
-	${dlFile} "http://www.abisource.com/downloads/dependencies/glib/glib-2.4.5.zip" "$TEMP\glib-2.4.5.zip" "ERROR: failed to download http://www.abisource.com/downloads/dependencies/glib/glib-2.4.5.zip"
+	${dlFile} "http://www.abisource.com/downloads/dependencies/glib/glib-2.4.7-runtime.zip" "$TEMP\glib-2.4.5.zip" "ERROR: failed to download http://www.abisource.com/downloads/dependencies/glib/glib-2.4.7-runtime.zip"
 	StrCmp $0 "success" 0 doCleanup
-	${unzipFile} "$TEMP\glib-2.4.5.zip" "$INSTDIR\AbiWord" "bin\libglib-2.0-0.dll" "ERROR: failed to extract libglib-2.0-0.dll from glib-2.4.5.zip"
+	${unzipFile} "$TEMP\glib-2.4.7-runtime.zip" "$INSTDIR\AbiWord" "bin\libglib-2.0-0.dll" "ERROR: failed to extract libglib-2.0-0.dll from glib-2.4.7-runtime.zip"
 	StrCmp $0 "success" 0 doCleanup
-	${unzipFile} "$TEMP\glib-2.4.5.zip" "$INSTDIR\AbiWord" "bin\libgobject-2.0-0.dll" "ERROR: failed to extract libgobject-2.0-0.dll from glib-2.4.5.zip"
+	${unzipFile} "$TEMP\glib-2.4.7-runtime.zip" "$INSTDIR\AbiWord" "bin\libgobject-2.0-0.dll" "ERROR: failed to extract libgobject-2.0-0.dll from glib-2.4.7-runtime.zip"
 	StrCmp $0 "success" 0 doCleanup
 
 	;;;;;;;;
@@ -702,19 +702,19 @@ Section "Download glib 2.4" GLIB_IDX
 
 	;;;;;;;;;
 	; libxml2
-	${dlFile} "http://www.abisource.com/downloads/dependencies/libxml2/libxml2-2.4.12-bin.zip" "$TEMP\libxml2-2.4.12-bin.zip" "ERROR: failed to download http://www.abisource.com/downloads/dependencies/libxml2/libxml2-2.4.12-bin.zip"
+	${dlFile} "http://www.abisource.com/downloads/dependencies/libxml2/libxml2-2.6.19-runtime.zip" "$TEMP\libxml2-2.6.19-runtime.zip" "ERROR: failed to download http://www.abisource.com/downloads/dependencies/libxml2/libxml2-2.6.19-runtime.zip"
 	StrCmp $0 "success" 0 doCleanup
-	${unzipFile} "$TEMP\libxml2-2.4.12-bin.zip" "$INSTDIR\AbiWord" "bin\libxml2.dll" "ERROR: failed to extract libxml2.dll from libxml2-2.4.12-bin.zip"
+	${unzipFile} "$TEMP\libxml2-2.6.19-runtime.zip" "$INSTDIR\AbiWord" "bin\libxml2.dll" "ERROR: failed to extract libxml2.dll from libxml2-2.6.19-runtime.zip"
 	StrCmp $0 "success" 0 doCleanup
 
 
 	doCleanup:
 		; Delete temporary files
-		Delete "$TEMP\libiconv-1.9.1.bin.woe32.zip"
-		Delete "$TEMP\gettext-runtime-0.13.1.zip"
-		Delete "$TEMP\glib-2.4.5.zip"
+		Delete "$TEMP\libiconv-1.9.1-runtime.zip"
+		Delete "$TEMP\gettext-runtime-0.13.1-runtime.zip"
+		Delete "$TEMP\glib-2.4.7-runtime.zip"
 		Delete "$TEMP\libgsf-1.8.2-20040121.zip"
-		Delete "$TEMP\libxml2-2.4.12-bin.zip"
+		Delete "$TEMP\libxml2-2.6.19-runtime.zip"
 
 	;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;
 	; Set output path back to the plugins directory.
