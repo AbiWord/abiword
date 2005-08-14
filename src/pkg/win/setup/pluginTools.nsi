@@ -376,6 +376,7 @@ Section "AbiMathView Plugin"
 	;Install Configuration File - This better work...
 	SetOutPath $INSTDIR\math
 	File /r "..\AbiSuite\math\gtkmathview.conf.xml"
+	File /r "..\AbiSuite\math\dictionary.xml"
 	SetOutPath $INSTDIR\AbiWord\plugins
   
 	End:
@@ -484,6 +485,7 @@ Section "Uninstall"
 	; AbiMathView
 	Delete "$INSTDIR\AbiMathView.dll"
 	Delete "$INSTDIR\..\..\math\gtkmathview.conf.xml"
+	Delete "$INSTDIR\..\..\math\dictionary.xml"
 	Delete "$INSTDIR\..\bin\libxml2.dll"
 
 	; AbiGrammar
