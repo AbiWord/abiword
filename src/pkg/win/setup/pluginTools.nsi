@@ -81,7 +81,7 @@ Section
 
 SectionEnd
 
-SubSection /e "Dictionary, Thesaurus, etc."
+SubSection /e "Mechanics and Grammar Tools"
 
 !ifdef 0
 SubSection "AikSaurus (thesaurus) Plugins"
@@ -127,6 +127,28 @@ SectionEnd
 SubSectionEnd
 !endif
 
+Section "AbiGrammar Plugin"
+	SectionIn 1 2
+
+	; Testing clause to Overwrite Existing Version - if exists
+	IfFileExists "$INSTDIR\AbiWord\plugins\AbiGrammar.dll" 0 DoInstall
+	
+	MessageBox MB_YESNO "Overwrite Existing AbiGrammar Plugin?" IDYES DoInstall
+	
+	DetailPrint "Skipping AbiGrammar Plugin (already exists)!"
+	Goto End
+
+	DoInstall:
+	File "AbiGrammar.dll"
+	SetOutPath $INSTDIR\AbiWord\bin
+	File /r "..\bin\liblink-grammar-4.dll"
+	SetOutPath $INSTDIR\AbiWord\bin\en
+	File /r "..\bin\en\*"
+	SetOutPath $INSTDIR\AbiWord\Plugins
+  
+	End:
+SectionEnd
+
 ; OPTIONAL
 Section "AbiURLDict Plugin"
 	SectionIn 1 2
@@ -143,6 +165,29 @@ Section "AbiURLDict Plugin"
 	File "AbiURLDict.dll"
 
 	End:
+SectionEnd
+
+; Dictionary, thesaurus, encyclopedia, etc.
+SubSectionEnd
+
+SubSection /e "Reference Tools"
+
+; OPTIONAL
+Section "AbiGoogle Plugin"
+	SectionIn 1 2
+
+	; Testing clause to Overwrite Existing Version - if exists
+	IfFileExists "$INSTDIR\AbiWord\plugins\AbiGoogle.dll" 0 DoInstall
+	
+	MessageBox MB_YESNO "Overwrite Existing AbiGoogle Plugin?" IDYES DoInstall
+	
+	DetailPrint "Skipping AbiGoogle Plugin (already exists)!"
+	Goto End
+
+	DoInstall:
+	File "AbiGoogle.dll"
+
+	End:  
 SectionEnd
 
 ; OPTIONAL
@@ -163,25 +208,7 @@ Section "AbiWikipedia Plugin"
 	End:  
 SectionEnd
 
-; OPTIONAL
-Section "AbiGoogle Plugin"
-	SectionIn 1 2
-
-	; Testing clause to Overwrite Existing Version - if exists
-	IfFileExists "$INSTDIR\AbiWord\plugins\AbiGoogle.dll" 0 DoInstall
-	
-	MessageBox MB_YESNO "Overwrite Existing AbiGoogle Plugin?" IDYES DoInstall
-	
-	DetailPrint "Skipping AbiGoogle Plugin (already exists)!"
-	Goto End
-
-	DoInstall:
-	File "AbiGoogle.dll"
-
-	End:  
-SectionEnd
-
-; Dictionary, thesaurus, encyclopedia, etc.
+;Reference Tools
 SubSectionEnd
 
 SubSection /e "Translation Plugins"
@@ -269,6 +296,91 @@ SectionEnd
 
 ;SectionDivider
 SubSectionEnd
+
+!macro dlFileMacro remoteFname localFname errMsg
+	!define retryDLlbl retryDL_${__FILE__}${__LINE__}
+	!define dlDonelbl dlDoneDL_${__FILE__}${__LINE__}
+
+	;Call ConnectInternet	; try to establish connection if not connected
+	;StrCmp $0 "online" 0 ${dlDonelbl}
+
+	${retryDLlbl}:
+	NSISdl::download "${remoteFname}" "${localFname}"
+	Pop $0 ;Get the return value
+	StrCmp $0 "success" ${dlDonelbl}
+		; Couldn't download the file
+		DetailPrint "${errMsg}"
+		DetailPrint "Remote URL: ${remoteFname}"
+		DetailPrint "Local File: ${localFname}"
+		DetailPrint "NSISdl::download returned $0"
+		MessageBox MB_RETRYCANCEL|MB_ICONEXCLAMATION|MB_DEFBUTTON1 "${errMsg}" IDRETRY ${retryDLlbl}
+	${dlDonelbl}:
+	!undef retryDLlbl
+	!undef dlDonelbl
+!macroend
+!define dlFile "!insertmacro dlFileMacro"
+
+;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;
+; Macro for unzipping a file from an archive with error reporting
+!macro unzipFileMacro archiveFname destinationPath fnameToExtract errMsg
+	!define uzDonelbl uzDone_${__FILE__}${__LINE__}
+
+	ZipDLL::extractfile "${archiveFname}" "${destinationPath}" "${fnameToExtract}"
+	Pop $0 ; Get return value
+	StrCmp $0 "success" ${uzDonelbl}
+		; Couldn't unzip the file
+		DetailPrint "${errMsg}"
+		MessageBox MB_OK|MB_ICONEXCLAMATION|MB_DEFBUTTON1 "${errMsg}" IDOK
+	${uzDonelbl}:
+	!undef uzDonelbl
+!macroend
+!define unzipFile "!insertmacro unzipFileMacro"
+
+Section "AbiMathView Plugin"
+	SectionIn 2
+	
+
+	; Testing clause to Overwrite Existing Version - if exists
+	IfFileExists "$INSTDIR\AbiWord\plugins\AbiMathView.dll" 0 DoInstall
+	
+	MessageBox MB_YESNO "Overwrite Existing AbiMathView Plugin?" IDYES DoInstall
+	
+	DetailPrint "Skipping AbiMathView Plugin (already exists)!"
+	Goto End
+
+	DoInstall:
+
+	;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;
+	; Unzip libxml2 into same directory as AbiWord.exe
+	SetOutPath $INSTDIR\AbiWord
+
+	;;;;;;;;;
+	; libxml2
+	${dlFile} "http://www.abisource.com/downloads/dependencies/libxml2/libxml2-2.6.19-runtime.zip" "$TEMP\libxml2-2.6.19-runtime.zip" "ERROR: failed to download http://www.abisource.com/downloads/dependencies/libxml2/libxml2-2.6.19-runtime.zip"
+	StrCmp $0 "success" 0 doCleanup
+	${unzipFile} "$TEMP\libxml2-2.6.19-runtime.zip" "$INSTDIR\AbiWord" "bin\libxml2.dll" "ERROR: failed to extract libxml2.dll from libxml2-2.6.19-runtime.zip"
+	StrCmp $0 "success" 0 doCleanup
+
+
+	doCleanup:
+		; Delete temporary files
+		Delete "$TEMP\libxml2-2.6.19-runtime.zip"
+
+	;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;
+	; Set output path back to the plugins directory.
+	SetOutPath $INSTDIR\AbiWord\plugins
+
+	;Note - Requires Libxml2 - code for download mooched off of impexp installer
+	
+	File "AbiMathView.dll"
+	;Install Configuration File - This better work...
+	SetOutPath $INSTDIR\math
+	File /r "..\AbiSuite\math\gtkmathview.conf.xml"
+	SetOutPath $INSTDIR\AbiWord\plugins
+  
+	End:
+SectionEnd
+
 
 SubSection /e "Script Related Plugins"
 
@@ -368,6 +480,16 @@ Section "Uninstall"
 
 	; AbiScriptHappy
 	Delete "$INSTDIR\AbiScriptHappy.dll"
+
+	; AbiMathView
+	Delete "$INSTDIR\AbiMathView.dll"
+	Delete "$INSTDIR\..\..\math\gtkmathview.conf.xml"
+	Delete "$INSTDIR\..\bin\libxml2.dll"
+
+	; AbiGrammar
+	Delete "$INSTDIR\AbiGrammar.dll"
+	Delete "$INSTDIR\..\bin\liblink-grammar-4.dll"
+	Delete "$INSTDIR\..\bin\en\*"
 
 	; remove uninstaller
 	Delete /REBOOTOK "$INSTDIR\UninstallAbiWordToolsPlugins.exe"
