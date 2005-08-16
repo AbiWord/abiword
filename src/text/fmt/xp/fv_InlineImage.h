@@ -79,7 +79,8 @@ public:
 	void                  mouseCopy(UT_sint32 x, UT_sint32 y);
 	void                  mouseRelease(UT_sint32 x, UT_sint32 y);
 	bool                  drawImage(void);
-	void                  getImageFromSelection(UT_sint32 x, UT_sint32 y); 	
+	void                  getImageFromSelection(UT_sint32 x, UT_sint32 y,PP_AttrProp ** pAP = NULL ); 	
+	PP_AttrProp *         getImageAPFromXY(UT_sint32 x, UT_sint32 y);
 	PT_DocPosition        getPosFromXY(UT_sint32 x, UT_sint32 y);
 	void                  drawCursor(PT_DocPosition newPos);
 	static void 		  _autoScroll(UT_Worker * pTimer);
