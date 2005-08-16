@@ -206,6 +206,7 @@ public:
 	static EV_EditMethod_Fn contextHyperlink;
 	static EV_EditMethod_Fn contextMenu;
 	static EV_EditMethod_Fn contextRevision;
+	static EV_EditMethod_Fn contextTOC;
 	static EV_EditMethod_Fn contextText;
 	static EV_EditMethod_Fn contextMisspellText;
 	static EV_EditMethod_Fn contextEmbedLayout;
@@ -730,6 +731,7 @@ static EV_EditMethod s_arrayEditMethods[] =
 	EV_EditMethod(NF(contextMisspellText),	0,	""),
 	EV_EditMethod(NF(contextPosObject), 0, ""),
 	EV_EditMethod(NF(contextRevision),	    0,	""),
+	EV_EditMethod(NF(contextTOC),			0,	""),
 	EV_EditMethod(NF(contextText),			0,	""),
 	EV_EditMethod(NF(copy), 				0,	""),
 	EV_EditMethod(NF(copyFrame), 				0,	""),
@@ -4292,6 +4294,15 @@ Defun(contextRevision)
 	XAP_Frame * pFrame = static_cast<XAP_Frame *> (pView->getParentData());
 	UT_return_val_if_fail(pFrame, false);
 	return s_doContextMenu(EV_EMC_REVISION,pCallData->m_xPos, pCallData->m_yPos,pView,pFrame);
+}
+
+Defun(contextTOC)
+{
+	CHECK_FRAME;
+	ABIWORD_VIEW;
+	XAP_Frame * pFrame = static_cast<XAP_Frame *> (pView->getParentData());
+	UT_return_val_if_fail(pFrame, false);
+	return s_doContextMenu_no_move(EV_EMC_TOC,pCallData->m_xPos, pCallData->m_yPos,pView,pFrame);
 }
 
 Defun(contextMisspellText)

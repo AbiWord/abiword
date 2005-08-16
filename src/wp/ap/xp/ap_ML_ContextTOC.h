@@ -1,5 +1,5 @@
 /* AbiWord
- * Copyright (C) 1998 AbiSource, Inc.
+ * Copyright (C) 2005 Martin Sevior <msevior@physics.unimelb.edu.au>
  *
  * This program is free software; you can redistribute it and/or
  * modify it under the terms of the GNU General Public License
@@ -17,7 +17,6 @@
  * 02111-1307, USA.
  */
 
-
 /*****************************************************************
 ******************************************************************
 ** IT IS IMPORTANT THAT THIS FILE ALLOW ITSELF TO BE INCLUDED
@@ -25,15 +24,11 @@
 ******************************************************************
 *****************************************************************/
 
-// Include each menu layout that we want to build.
+BeginLayout(ContextTOC,EV_EMC_TOC)
 
-#include "ap_Menu_Layouts_MainMenu.h"
-#include "ap_ML_ContextText.h"
-#include "ap_ML_ContextSquiggle.h"
-#include "ap_ML_ContextHyperlink.h"
-#include "ap_ML_ContextImage.h"
-#include "ap_ML_ContextPosObject.h"
-#include "ap_ML_ContextRevision.h"
-#include "ap_ML_ContextFrame.h"
-#include "ap_ML_ContextEmbed.h"
-#include "ap_ML_ContextTOC.h"
+	BeginPopupMenu()
+		MenuItem(AP_MENU_ID_FMT_TABLEOFCONTENTS)
+	EndPopupMenu()
+
+EndLayout()
+

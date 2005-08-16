@@ -208,9 +208,11 @@ ap_bs_Mouse MouseTable[] =
 	//{_CZ _B3,	{ "contextImageSize",	"",			"",		"",			"",			""				}},
 	//{_CF _B3,	{ "contextField",		"",			"",		"",			"",			""				}},
 
-	{_CH _B3,	{ "contextHyperlink",		"",			"",		"",			"",			""				}},
+	{_CH _B3,	{ "contextHyperlink", "",  "",	"", "",	 ""  }},
 
-	{_CV _B3,	{ "contextRevision",		"",			"",		"",			"",			""				}},
+	{_CTO _B3,	{ "contextTOC",       "",  "",	"", "",  ""  }},
+
+	{_CV _B3,	{ "contextRevision",  "",  "",	"", "",	 ""  }},
 
 //  Button-4, Mouse wheel (3 lines up)... yes, a hack.
 	{_CU _B4,	{ "scrollWheelMouseUp",		"scrollWheelMouseUp",			"",		"",			"",			""				}},
