@@ -462,6 +462,10 @@ bool fp_Line::removeRun(fp_Run* pRun, bool bTellTheRunAboutIt)
 //	if(pPrevRun)
 //		pPrevRun->clearScreen();
 
+        if(pRun->getType() == FPRUN_FORCEDPAGEBREAK)
+	{
+	    getBlock()->forceSectionBreak();
+	}
 	if (bTellTheRunAboutIt)
 	{
 		pRun->setLine(NULL);
