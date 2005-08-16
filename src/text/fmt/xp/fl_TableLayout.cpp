@@ -253,6 +253,7 @@ void fl_TableLayout::insertTableContainer( fp_TableContainer * pNewTab)
 	fl_ContainerLayout * pPrevL = static_cast<fl_ContainerLayout *>(getPrev());
 	fp_Container * pPrevCon = NULL;
 	fp_Container * pUpCon = NULL;
+	fp_Line * pPrevLine = NULL;
 	if(pPrevL != NULL )
 	{
 		while(pPrevL && (pPrevL != pUPCL) && ((pPrevL->getContainerType() == FL_CONTAINER_FOOTNOTE)
@@ -316,6 +317,22 @@ void fl_TableLayout::insertTableContainer( fp_TableContainer * pNewTab)
 				{
 					pPrevL = NULL;
 				}
+				if(pPrevCon && pPrevCon->getContainerType() == FP_CONTAINER_LINE)
+				{
+					pPrevLine = static_cast<fp_Line *>(pPrevCon);
+					if(pPrevLine->containsForcedPageBreak())
+					{
+						pUpCon = pPrevLine->getContainer();
+						while(pUpCon && pUpCon->getPage() == pPrevLine->getPage())
+						{
+							pUpCon = static_cast<fp_Container *>(pUpCon->getNext());
+						}
+					}
+					if(pUpCon == NULL)
+					{
+							pUpCon = pPrevLine->getContainer();
+					}
+				}
 			}
 		}
 		else
@@ -371,6 +388,11 @@ void fl_TableLayout::insertTableContainer( fp_TableContainer * pNewTab)
 			else if( i >=0 &&  (i+ 1) == static_cast<UT_sint32>(pUpCon->countCons()))
 			{
 				pUpCon->addCon(pNewTab);
+				pNewTab->setContainer(pUpCon);
+			}
+			else if( i < 0)
+			{
+				pUpCon->insertConAt(pNewTab,0);
 				pNewTab->setContainer(pUpCon);
 			}
 			else

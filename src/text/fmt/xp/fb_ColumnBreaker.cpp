@@ -173,7 +173,7 @@ UT_sint32 fb_ColumnBreaker::breakSection(fl_DocSectionLayout * pSL)
 		if (pCurContainer)
 		{
 			fp_Container* pPrevContainer = 
-				static_cast<fp_Container *>(pCurContainer->getPrev());
+				static_cast<fp_Container *>(pCurContainer->getPrevContainerInSection());
 			if(pPrevContainer && 
 			   pPrevContainer->getContainerType() == FP_CONTAINER_LINE)
 			{

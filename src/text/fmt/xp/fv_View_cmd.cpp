@@ -3171,11 +3171,13 @@ UT_Error FV_View::cmdInsertTable(UT_sint32 numRows, UT_sint32 numCols, const XML
 	//
 	// Don't do this if there is a block at pointBreak already.
 	//
+	bool bInsert = false;
 	if((!m_pDoc->isBlockAtPos(getPoint()) && !m_pDoc->isTableAtPos(getPoint()) && !(m_pDoc->isEndFrameAtPos(getPoint()) && m_pDoc->isBlockAtPos(getPoint()-1) )) || m_pDoc->isTOCAtPos(getPoint()-2) )
 	{
 	         e = m_pDoc->insertStrux(getPoint(),PTX_Block);
+		 bInsert = true;
 	}
-	else if(!m_pDoc->isEndFootnoteAtPos(getPoint()-1) && !m_pDoc->isEndFootnoteAtPos(getPoint()-1))
+	if(!bInsert && !m_pDoc->isEndFootnoteAtPos(getPoint()-1) && !m_pDoc->isEndFootnoteAtPos(getPoint()-1))
 	{
 	         pointBreak--;
 	}
