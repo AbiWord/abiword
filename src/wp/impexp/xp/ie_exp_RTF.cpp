@@ -516,6 +516,19 @@ void IE_Exp_RTF::_rtf_semi(void)
 
 void IE_Exp_RTF::_rtf_fontname(const char * szFontName)
 {
+	UT_UCS2Char *szUCS2FontName; // The font name converted to UCS-2
+	UT_UTF8String szOutFontName; // The font name that will be written to file.
+	bool bAddedUCCommend = false;
+	
+	/* Convert fontname to UCS-2 */
+	szUCS2FontName = reinterpret_cast<UT_UCS2Char *>(UT_convert(szFontName, UT_XML_strlen(szFontName), "UTF-8", "UCS-2", NULL, NULL));
+	if (!szUCS2FontName) {
+		UT_DEBUGMSG(("RTF: _rtf_fontname: Out of memory.\n"));
+		// Is this the right thing to do on error?
+		m_error = UT_OUTOFMEM;
+		return;
+	}
+
 	write(" ");
 #if 0
 	/*we handle 'helvetica' in a special way on import - so it's safe
@@ -534,9 +547,37 @@ void IE_Exp_RTF::_rtf_fontname(const char * szFontName)
 		if (UT_stricmp(szFontName,"helvetic")==0)
 			write("Helvetica");
 		else
-			write(szFontName);
+		{
+			// Loop for each character in the UCS-2 font name checking for
+			// non-ascii characters.
+			for (UT_uint32 i=0; i<UT_UCS2_strlen(szUCS2FontName); i++)
+			{
+				// If an ASCII character append to szOutFontName.
+				if (szUCS2FontName[i] <= 0x7f) 
+					szOutFontName += szUCS2FontName[i];
+				// Otherwise write out a \uXXXXX escaped sequence.
+				if (szUCS2FontName[i] > 0x7f)
+				{
+					// We only need output one "\ucX" command per font.
+					if (!bAddedUCCommend)
+					{
+						szOutFontName += "\\uc1";
+						bAddedUCCommend = true;
+					}
+				 	// RTF is limited to +-32K ints, therefore negative numbers
+					// are needed to represent some unicode chars.
+					signed short tmp = (signed short) ((unsigned short) szUCS2FontName[i]);
+					// Append a \uXXXXX sequence + a "?" alternative char.
+					szOutFontName += UT_UTF8String_sprintf("\\u%d ?",tmp);
+				}
+			}
+			// Write out the fontname to the file.
+			write(szOutFontName.utf8_str());
+		}
 	}
 	_rtf_semi();
+	free(szUCS2FontName);
+	return;
 }
 
 void IE_Exp_RTF::_rtf_chardata(const char * pbuf, UT_uint32 buflen)

@@ -56,7 +56,7 @@ struct ABI_EXPORT RTFFontTableItem
 	enum FontPitch { fpDefault, fpFixed, fpVariable};
 
 	RTFFontTableItem(FontFamilyEnum fontFamily, int charSet, int codepage, FontPitch pitch,
-						unsigned char* panose, char* pFontName, char* pAlternativeFontName);
+						const char* panose, const char* pFontName, const char* pAlternativeFontName);
 	~RTFFontTableItem();
 
 	FontFamilyEnum m_family;
@@ -617,8 +617,12 @@ private:
 
 	bool ReadColourTable();
 	bool ReadFontTable();
-	bool ReadOneFontFromTable(bool bNested);
-	bool ReadFontName(UT_String sFontNames[2]);
+	bool RegisterFont(RTFFontTableItem::FontFamilyEnum fontFamily,
+	                  RTFFontTableItem::FontPitch pitch,
+	                  UT_uint16 fontIndex,
+	                  int charSet, int codepage,
+	                  UT_UTF8String sFontNames[]);
+	bool PostProcessAndValidatePanose(UT_UTF8String &Panose);
 	bool ReadRevisionTable();
 	void setEncoding();  
 public:

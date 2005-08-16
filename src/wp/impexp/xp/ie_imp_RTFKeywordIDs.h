@@ -522,6 +522,7 @@ typedef enum {
 	RTF_KW_fs,
 	RTF_KW_fscript,
 	RTF_KW_fswiss,
+	RTF_KW_ftech,
 	RTF_KW_ftnalt,
 	RTF_KW_ftnbj,
 	RTF_KW_ftncn,
