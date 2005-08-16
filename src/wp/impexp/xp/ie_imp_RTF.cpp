@@ -11246,38 +11246,95 @@ bool IE_Imp_RTF::HandleInfoMetaData()
 }
 
 
+/* 
+ * TODO:
+ * This reads PCData until it reaches a terminating '}'.
+ * It assumes that a PCData block will not contain sub-groups. This may well be
+ * fine but we should check the spec. If there is a sub-group then it's closing
+ * brace will close the PCData block.
+ *
+ * Also we assume that the \uc keyword cannot appear.
+ *
+ * In general, I think the handling of keywords within this function is
+ * extremely dangerous. They should be pushed back onto the stream and left for
+ * the caller to deal with. Otherwise, a "\b" in the header would cause the
+ * start of the document to be bold as well, for example.
+ */
 bool IE_Imp_RTF::HandlePCData(UT_UTF8String & str)
 {
+	RTF_KEYWORD_ID keywordID;
 	RTFTokenType tokenType;
 	unsigned char keyword[MAX_KEYWORD_LEN];
 	UT_sint32 parameter = 0;
 	bool paramUsed = false;	
 	bool bStop = false;
 	UT_ByteBuf buf;
+	UT_sint32 iUniCharsLeftToSkip = 0;
 	
 	do {
 		tokenType = NextToken (keyword, &parameter, &paramUsed, MAX_KEYWORD_LEN, false);
 		switch (tokenType) {
 		case RTF_TOKEN_KEYWORD:			
-			if ((*keyword == '\'') && (keyword[1] == 0)) {
+			keywordID = KeywordToID(reinterpret_cast<char *>(keyword));
+			switch(keywordID)
+			{
+			case RTF_KW_QUOTE:
+			{
 				UT_UCS4Char wc;
 				UT_Byte ch;
 				wc = ReadHexChar();
 				// here we assume that the read char fit on ONE byte. Should be correct.
 				ch = static_cast<UT_Byte>(wc);
 				buf.append(&ch, 1);
+				break;
 			}
-			else
+			case RTF_KW_u:
 			{
+				UT_UCS2Char ch;
+				/* RTF is limited to +/-32K ints so we need to use negative
+				 * numbers for large unicode values. So, check for Unicode chars
+				 * wrapped to negative values.
+		 		 */
+				if (parameter < 0)
+				{
+					unsigned short tmp = (unsigned short) ((signed short) parameter);
+					parameter = (UT_sint32) tmp;
+				}
+				ch = parameter;
+
+				// First flush any data in the byte buffer to str. Then append
+				// the unicode char.
+				str.appendBuf(buf, m_mbtowc);
+				buf.truncate(0);
+				str.appendUCS2(&ch, 1);
+
+				// Make sure we skip alternative chars.
+				iUniCharsLeftToSkip = m_currentRTFState.m_unicodeAlternateSkipCount;
+				break;
+			}
+			case RTF_KW_uc:
+				// A little bit evil, but I'd like to know if this happens! - R.Kay
+				UT_ASSERT(UT_SHOULD_NOT_HAPPEN);
+				break;
+			default:
 				bStop = true; // regular keyword stop reading data and handle it
+				break;
 			}
 			break;
 		case RTF_TOKEN_DATA:
-			buf.append(keyword, 1);
+			// Don't append data if we're skipping a unicode alternative.
+			if (iUniCharsLeftToSkip > 0)
+				iUniCharsLeftToSkip--;
+			else
+				buf.append(keyword, 1);
 			break;
 		case RTF_TOKEN_ERROR:
 			// force close brace to exit loop
 			tokenType = RTF_TOKEN_CLOSE_BRACE;
+			break;
+		case RTF_TOKEN_OPEN_BRACE:
+			// A little bit evil, but I'd like to know if this happens! - R.Kay
+			UT_ASSERT(UT_SHOULD_NOT_HAPPEN);
 			break;
 		case RTF_TOKEN_CLOSE_BRACE:
 			SkipBackChar('}');
@@ -11289,6 +11346,12 @@ bool IE_Imp_RTF::HandlePCData(UT_UTF8String & str)
 	}
 	while ((tokenType != RTF_TOKEN_CLOSE_BRACE) && !bStop);
 
+	/*
+	 * TODO: Think about how much sense handling keywords here makes.
+	 * What keywords are legal and where should the changes they make appear?
+	 * (E.g. in the document, in the header) It probably depends on where this
+	 * function is called.
+	 */
 	str.appendBuf(buf, m_mbtowc);
 	if(bStop)
 	{
