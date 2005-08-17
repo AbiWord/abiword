@@ -370,7 +370,7 @@ Section "AbiMathView Plugin"
 
 	;;;;;;
 	; intl
-	${dlFile} "http://www.abisource.com/downloads/dependencies/gettext/gettext-runtime-0.13.1-runtime.zip" "$TEMP\gettext-runtime-0.13.1.zip" "ERROR: failed to download http://www.abisource.com/downloads/dependencies/gettext/gettext-runtime-0.13.1-runtime.zip"
+	${dlFile} "http://www.abisource.com/downloads/dependencies/gettext/gettext-runtime-0.13.1-runtime.zip" "$TEMP\gettext-runtime-0.13.1-runtime.zip" "ERROR: failed to download http://www.abisource.com/downloads/dependencies/gettext/gettext-runtime-0.13.1-runtime.zip"
 	StrCmp $0 "success" 0 doCleanup
 	${unzipFile} "$TEMP\gettext-runtime-0.13.1-runtime.zip" "$INSTDIR\AbiWord" "bin\intl.dll" "ERROR: failed to extract intl.dll from gettext-runtime-0.13.1-runtime.zip"
 	StrCmp $0 "success" 0 doCleanup
