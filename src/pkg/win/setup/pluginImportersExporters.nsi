@@ -535,28 +535,6 @@ Section "AbiPsion (*.psiword) Plugin"
 SectionEnd
 ;SectionDivider
 
-!ifdef 0
-;Saig PatheticWriter 
-Section "AbiPatheticWriter Plugin"
-	SectionIn 2
-
-	; Testing clause to Overwrite Existing Version - if exists
-	IfFileExists "$INSTDIR\AbiWord\plugins\AbiPW.dll" 0 DoInstall
-	
-	MessageBox MB_YESNO "Overwrite Existing AbiPatheticWriter Plugin?" IDYES DoInstall
-	
-	DetailPrint "Skipping AbiPatheticWriter Plugin (already exists)!"
-	Goto End
-
-	DoInstall:
-	File "AbiPW.dll"
-  
-	End:
-SectionEnd
-
-;SectionDivider
-!endif
-
 Section "AbiT602 importer Plugin"
 	SectionIn 2
 
