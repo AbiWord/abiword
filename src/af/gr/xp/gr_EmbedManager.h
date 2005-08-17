@@ -74,6 +74,7 @@ public:
     virtual bool           changeAPI(UT_sint32 uid, UT_uint32 api);
     virtual bool           convert(UT_uint32 iConvType, UT_ByteBuf & pFrom, UT_ByteBuf & pTo);
     virtual bool           isEdittable(void);
+    virtual bool           isResizeable(void);
 private:
     GR_Graphics *               m_pG;
     UT_GenericVector<GR_EmbedView *>   m_vecSnapshots;

@@ -451,3 +451,12 @@ bool GR_EmbedManager::isEdittable(void)
 {
   return false;
 }
+
+/*!
+ * Returns true if the plugin can be resized. Subclasses overide if they 
+ * need to
+ */
+bool GR_EmbedManager::isResizeable(void)
+{
+  return true;
+}

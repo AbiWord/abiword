@@ -138,6 +138,9 @@ class GR_UnixGraphics : public GR_Graphics
 
 	void                createPixmapFromXPM( char ** pXPM,GdkPixmap *source,
 											 GdkBitmap * mask);
+	GdkWindow*  	  	getWindow(void)
+	{ return m_pWin;}
+
 
 	virtual void setLineProperties ( double inWidth, 
 					 GR_Graphics::JoinStyle inJoinStyle = JOIN_MITER,
