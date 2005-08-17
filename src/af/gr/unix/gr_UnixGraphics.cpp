@@ -748,7 +748,7 @@ void GR_UnixGraphics::setZoomPercentage(UT_uint32 iZoom)
 	// If we have a font at all then fetch a device font suitable for the new
 	// zoom level.
 	if (m_pFont)
-		m_pXftFontD = m_pFont->getDeviceXftFont(getZoomPercentage());
+		m_pXftFontD = m_pFont->getDeviceXftFont(iZoom);
 }
 
 static GdkCapStyle mapCapStyle ( GR_Graphics::CapStyle in )
