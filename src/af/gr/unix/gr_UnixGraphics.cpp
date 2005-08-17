@@ -744,6 +744,11 @@ bool GR_UnixGraphics::queryProperties(GR_Graphics::Properties gp) const
 void GR_UnixGraphics::setZoomPercentage(UT_uint32 iZoom)
 {
 	GR_Graphics::setZoomPercentage (iZoom); // chain up
+
+	// If we have a font at all then fetch a device font suitable for the new
+	// zoom level.
+	if (m_pFont)
+		m_pXftFontD = m_pFont->getDeviceXftFont(getZoomPercentage());
 }
 
 static GdkCapStyle mapCapStyle ( GR_Graphics::CapStyle in )
