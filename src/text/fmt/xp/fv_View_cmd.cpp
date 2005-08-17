@@ -2841,7 +2841,8 @@ bool FV_View::cmdDeleteRow(PT_DocPosition posRow)
 // If we delete the last row we're actually deleting the table, so do that 
 // instead.
 //
-	if(pTab->getNumRows() == 1)
+	UT_sint32 nRows = getNumRowsInSelection();
+	if(pTab->getNumRows() == 1 || (nRows == pTab->getNumRows()))
 	{
 		cmdDeleteTable(posRow);
 		return true;

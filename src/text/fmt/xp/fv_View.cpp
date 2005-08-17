@@ -3061,6 +3061,10 @@ UT_sint32 FV_View::getNumRowsInSelection(void)
 		{
 			continue;
 		}
+		if(pBlock->getPosition() > endpos)
+		{
+				break;
+		}
 		if(pBlock->myContainingLayout()->getContainerType() != FL_CONTAINER_CELL)
 		{
 			return 0;
