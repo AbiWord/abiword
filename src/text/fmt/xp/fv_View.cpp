@@ -9337,14 +9337,20 @@ EV_EditMouseContext FV_View::getMouseContext(UT_sint32 xPos, UT_sint32 yPos)
 				xxx_UT_DEBUGMSG(("getContext: xPos %d yPos %d iLeft %d iRight %d iTop %d iBot %d \n",xPos,yPos,iLeft,iRight,iTop,iBot));
 				if((iLeft - xPos < ires) && (xPos - iLeft < ires))
 				{
-					m_prevMouseContext = EV_EMC_VLINE;
-					return EV_EMC_VLINE;
+					if(((iTop - ires) < yPos) && ((iBot+ires)> yPos))
+					{
+						m_prevMouseContext = EV_EMC_VLINE;
+						return EV_EMC_VLINE;
+					}
 				}
 				if((iRight - xPos < ires) && (xPos - iRight < ires))
 				{
-					xxx_UT_DEBUGMSG(("getContext: Found right cell \n"));
-					m_prevMouseContext = EV_EMC_VLINE;
-					return EV_EMC_VLINE;
+					if(((iTop - ires) < yPos) && ((iBot+ires)> yPos))
+					{
+						xxx_UT_DEBUGMSG(("getContext: Found right cell \n"));
+						m_prevMouseContext = EV_EMC_VLINE;
+						return EV_EMC_VLINE;
+					}
 				}
 				if((iTop - yPos < 2*ires) && (yPos - iTop < 2*ires))
 				{
