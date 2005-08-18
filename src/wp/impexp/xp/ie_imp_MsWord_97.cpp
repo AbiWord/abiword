@@ -2944,7 +2944,11 @@ int IE_Imp_MsWord_97::_beginPara (wvParseStruct *ps, UT_uint32 tag,
 		UT_UTF8String sDelim;
 		s_mapDocToAbiListDelim (apap->linfo.numberstr,apap->linfo.numberstr_size,sDelim);
 		list_atts[iOffset++] = "list-delim";
-		list_atts[iOffset++] = s_stripDangerousChars(sDelim.utf8_str());
+
+		char * t = s_stripDangerousChars(sDelim.utf8_str());
+		UT_String sDlm = t;
+		FREEP(t);
+		list_atts[iOffset++] = sDlm.c_str();
 
 		list_atts[iOffset++] = "level";
 		UT_String_sprintf(propBuffer, "%d", apap->ilvl + 1); // Word level starts at 0, Abi's at 1
