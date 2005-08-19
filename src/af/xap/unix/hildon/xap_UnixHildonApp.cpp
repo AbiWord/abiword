@@ -28,6 +28,13 @@
 #include <osso-log.h>
 
 static void osso_hw_event_cb (osso_hw_state_t *state, gpointer data);
+static void osso_top_event_cb (const gchar     *args, gpointer data);
+static gint osso_rpc_event_cb (const gchar     *interface,
+                               const gchar     *method,
+                               GArray          *arguments,
+                               gpointer         data,
+                               osso_rpc_t      *retval);
+
 
 /*****************************************************************/
 XAP_UnixHildonApp::XAP_UnixHildonApp(XAP_Args * pArgs, const char * szAppName)
@@ -40,13 +47,20 @@ XAP_UnixHildonApp::~XAP_UnixHildonApp()
 {
 	if (m_pOsso) {
 		/* Unset callbacks */
-		// osso_application_unset_top_cb (
-		// 	m_pOsso, 
-		//	osso_top_event_cb, 
-		//	NULL);
+		osso_application_unset_top_cb (
+			m_pOsso, 
+			osso_top_event_cb, 
+			NULL);
+
 
 		osso_hw_unset_event_cb (
 			m_pOsso,
+			NULL);
+
+
+		osso_rpc_unset_default_cb_f (
+			m_pOsso, 
+			osso_rpc_event_cb,
 			NULL);
 
 		/* Deinit osso */
@@ -60,29 +74,34 @@ bool XAP_UnixHildonApp::initialize(const char * szKeyBindingsKey, const char * s
 	osso_return_t ret;
 
 	osso_log (LOG_INFO, "Initializing osso");
-	      
+
 	//Initialize osso, for receive hardware signals
 	m_pOsso = osso_initialize (
-		ABIWORD_APP_NAME,
-		VERSION,
-		TRUE, 
-		NULL);
-	
+			ABIWORD_APP_NAME,
+			VERSION,
+			TRUE, 
+			NULL);
+
 	if (m_pOsso == NULL) {
-		osso_log (LOG_ERR, "Osso initialization failed");
+		osso_log (LOG_ERR, " Osso initialization failed" );
 		return false;
 	}
-		  
+	  
 	// Set topping callback 
-	// ret = osso_application_set_top_cb (m_pOsso, osso_top_event_cb, this);
-	// if (ret != OSSO_OK)
-	//        osso_log (LOG_ERR, "Could not set topping callback");
+	ret = osso_application_set_top_cb (m_pOsso, osso_top_event_cb, this);
+	if (ret != OSSO_OK)
+		osso_log (LOG_ERR, "Could not set topping callback");
 
 	// Set handling changes in HW states. 
 	ret = osso_hw_set_event_cb (m_pOsso, NULL, osso_hw_event_cb, this);
-        if (ret != OSSO_OK)
+	if (ret != OSSO_OK) {
 		osso_log (LOG_ERR, "Could not set callback for HW monitoring");
+	}
 
+	ret = osso_rpc_set_default_cb_f(m_pOsso, osso_rpc_event_cb, this);
+	if (ret != OSSO_OK) {
+		osso_log (LOG_ERR, "Could not set callback for receiving messages");
+	}
 
 	return XAP_UnixApp::initialize(szKeyBindingsKey, szKeyBindingsDefaultValue);
 }
@@ -90,7 +109,7 @@ bool XAP_UnixHildonApp::initialize(const char * szKeyBindingsKey, const char * s
 /* Depending on the state of hw, do something */
 static void 
 osso_hw_event_cb (osso_hw_state_t *state, 
-		  gpointer 	   data)
+		  gpointer    data)
 {
 	XAP_UnixHildonApp *pApp;
 
@@ -103,17 +122,33 @@ osso_hw_event_cb (osso_hw_state_t *state,
 		for (unsigned int ndx=0; ndx < pApp->getFrameCount(); ndx++) 
 			pApp->getFrame(ndx)->close();
 	}
-		
+
 	//signal save unsaved data received
 	if (state->save_unsaved_data_ind) {
 		for (unsigned int ndx=0; ndx < pApp->getFrameCount(); ndx++) 
 			pApp->getFrame(ndx)->close();
 	}
-	
+
 	//signal memory low received
 	//if (state->memory_low_ind);
 
 	//signal system inactivity received
 	//if (state->system_inactivity_ind);
 }
+
+static void osso_top_event_cb (const gchar     *args, gpointer data)
+{
+	return;
+}
+
+static gint osso_rpc_event_cb (const gchar     *interface,
+                               const gchar     *method,
+                               GArray          *arguments,
+                               gpointer         data,
+                               osso_rpc_t      *retval)
+{
+	return OSSO_OK;
+}
+
+
 
