@@ -84,9 +84,6 @@ fp_Page::~fp_Page()
 		m_pOwner = NULL;
 		pDSL->deleteOwnedPage(this);
 	}
-
-	delete m_pFooter;
-	delete m_pHeader;
 }
 
 /*!
@@ -2213,8 +2210,6 @@ fp_Page::buildHdrFtrContainer(fl_HdrFtrSectionLayout* pHFSL,
 	{
 		UT_ASSERT(UT_SHOULD_NOT_HAPPEN);
 		(*ppHF)->getHdrFtrSectionLayout()->deletePage(this);
-
-		UT_ASSERT_HARMLESS( ! *ppHF );
 	}
 	xxx_UT_DEBUGMSG(("SEVIOR: Building header container. page = %x hdrftr = %x \n",this,pHFSL));
 
