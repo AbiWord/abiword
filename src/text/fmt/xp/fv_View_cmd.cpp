@@ -2250,7 +2250,14 @@ bool FV_View::cmdInsertRow(PT_DocPosition posRow, bool bBefore)
 	UT_sint32 numRowsForInsertion = getNumRowsInSelection();
 	if(numRowsForInsertion == 0)
 	{
+	    if(isSelectionEmpty() && isInTable(posRow))
+	    {
+	        numRowsForInsertion = 1;
+	    }
+	    else
+	    {
 		return false;
+	    }
 	}
 
 	if (!isSelectionEmpty())

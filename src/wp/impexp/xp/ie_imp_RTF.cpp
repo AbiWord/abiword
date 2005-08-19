@@ -8038,7 +8038,8 @@ bool IE_Imp_RTF::ReadFontTable()
 	UT_Stack stateStack;
 	// RTF state pointers.
 	struct SFontTableState *currentState = new SFontTableState;
-	struct SFontTableState *oldState;
+	UT_DEBUGMSG(("Made new currentState -1 %x \n",currentState));
+	struct SFontTableState *oldState = NULL;
 	UT_sint32 i;                         // Generic loop index.
 
 	// Initialise the current state.
@@ -8069,6 +8070,7 @@ bool IE_Imp_RTF::ReadFontTable()
 			stateStack.push(reinterpret_cast<void*>(currentState));
 			// ...allocate a new one...
 			currentState = new SFontTableState;
+			UT_DEBUGMSG(("Made new currentState -2 %x \n",currentState));
 			if (!currentState) {
 				UT_DEBUGMSG(("RTF: Out of memory.\n"));
 				goto IEImpRTF_ReadFontTable_ErrorExit;
@@ -8081,7 +8083,8 @@ bool IE_Imp_RTF::ReadFontTable()
 			break;
 		case RTF_TOKEN_CLOSE_BRACE:
 			// Throw away the current state.
-			delete currentState;
+			UT_DEBUGMSG(("Deleting currentState -4 %x \n",currentState));
+			DELETEP(currentState);
 			// Pop an old state off the stack .
 			if (!stateStack.pop(reinterpret_cast<void**>(&currentState))) 
 			{
@@ -8090,6 +8093,7 @@ bool IE_Imp_RTF::ReadFontTable()
 				bFoundFinalClosingBracket = true;
 				// Put the closing brace back onto the input stream.
 				SkipBackChar('}');
+				currentState = NULL;
 			}
 			break;
 		case RTF_TOKEN_DATA:
@@ -8278,8 +8282,8 @@ bool IE_Imp_RTF::ReadFontTable()
 			break;
 		} // Token type switch
 	}; // while (we've finished reading the font entry).
-
-	delete currentState;
+	UT_DEBUGMSG(("Deleting currentState -2 %x \n",currentState));
+	DELETEP(currentState);
 	return true;
 
 /*
@@ -8289,9 +8293,11 @@ bool IE_Imp_RTF::ReadFontTable()
 IEImpRTF_ReadFontTable_ErrorExit:
 	UT_DEBUGMSG(("RTF: ReadFontTable: Freeing memory due to error.\n"));
 	// Delete the current state and everything on the state stack.
-	delete currentState;
+	UT_DEBUGMSG(("Deleting currentState -2 %x \n",currentState));
+	DELETEP(currentState);
 	while (stateStack.pop(reinterpret_cast<void**>(&currentState))) 
-		delete currentState;
+		UT_DEBUGMSG(("Deleting currentState -3  %x \n",currentState));
+	    DELETEP(currentState);
 	return false;
 }
 
