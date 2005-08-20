@@ -336,6 +336,7 @@ SubSectionEnd
 !macroend
 !define unzipFile "!insertmacro unzipFileMacro"
 
+!ifdef 0
 Section "AbiMathView Plugin"
 	SectionIn 2
 	
@@ -408,7 +409,7 @@ Section "AbiMathView Plugin"
   
 	End:
 SectionEnd
-
+!endif
 
 SubSection /e "Script Related Plugins"
 
@@ -509,11 +510,13 @@ Section "Uninstall"
 	; AbiScriptHappy
 	Delete "$INSTDIR\AbiScriptHappy.dll"
 
+!ifdef 0
 	; AbiMathView
 	Delete "$INSTDIR\AbiMathView.dll"
 	Delete "$INSTDIR\..\..\math\gtkmathview.conf.xml"
 	Delete "$INSTDIR\..\..\math\dictionary.xml"
 	Delete "$INSTDIR\..\bin\libxml2.dll"
+!endif
 
 	; AbiGrammar
 	Delete "$INSTDIR\AbiGrammar.dll"
