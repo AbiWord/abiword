@@ -37,12 +37,13 @@ AC_DEFUN([ABI_GLIB2],[
 	AM_CONDITIONAL(HAVE_THREADS, test $abi_gthread2 = yes)
 ])
 
-# test for gtk2 and libglade-2.0
+# test for gtk2, pango-xft and libglade-2.0
 AC_DEFUN([ABI_GTK2],[
 	ABI_GLIB2
 
 	PKG_CHECK_MODULES(GTK,[
 		gtk+-2.0 >= 2.4.0
+		pangoxft >= 1.2.0
 		libglade-2.0 >= 2.0.0
 	],[	abi_gtk2=yes
 	],[	abi_gtk2=no
@@ -62,6 +63,7 @@ AC_DEFUN([ABI_GTK2],[
 	AC_PATH_XTRA
 
 	GTK_LIBS="$GTK_LIBS $X_LIBS $X_PRE_LIBS -lX11 $X_EXTRA_LIBS"
+	AC_SUBST(GTK_LIBS)
 ])
 
 # Check for optional glib
