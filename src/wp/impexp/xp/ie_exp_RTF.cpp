@@ -516,19 +516,10 @@ void IE_Exp_RTF::_rtf_semi(void)
 
 void IE_Exp_RTF::_rtf_fontname(const char * szFontName)
 {
-	UT_UCS2Char *szUCS2FontName; // The font name converted to UCS-2
-	UT_UTF8String szOutFontName; // The font name that will be written to file.
+	UT_UCS4String sUCS4FontName(szFontName); // The font name as UCS-4.
+	UT_UTF8String sOutFontName("");          // The name to write (in fact will be ASCII)
 	bool bAddedUCCommend = false;
 	
-	/* Convert fontname to UCS-2 */
-	szUCS2FontName = reinterpret_cast<UT_UCS2Char *>(UT_convert(szFontName, UT_XML_strlen(szFontName), "UTF-8", "UCS-2", NULL, NULL));
-	if (!szUCS2FontName) {
-		UT_DEBUGMSG(("RTF: _rtf_fontname: Out of memory.\n"));
-		// Is this the right thing to do on error?
-		m_error = UT_OUTOFMEM;
-		return;
-	}
-
 	write(" ");
 #if 0
 	/*we handle 'helvetica' in a special way on import - so it's safe
@@ -548,35 +539,47 @@ void IE_Exp_RTF::_rtf_fontname(const char * szFontName)
 			write("Helvetica");
 		else
 		{
-			// Loop for each character in the UCS-2 font name checking for
+			// Loop for each character in the UCS-4 font name checking for
 			// non-ascii characters.
-			for (UT_uint32 i=0; i<UT_UCS2_strlen(szUCS2FontName); i++)
+			for (UT_uint32 i=0; i<sUCS4FontName.size(); i++)
 			{
 				// If an ASCII character append to szOutFontName.
-				if (szUCS2FontName[i] <= 0x7f) 
-					szOutFontName += szUCS2FontName[i];
-				// Otherwise write out a \uXXXXX escaped sequence.
-				if (szUCS2FontName[i] > 0x7f)
+				if (sUCS4FontName[i] <= 0x7f) 
+				{
+					sOutFontName += sUCS4FontName[i];
+					continue;
+				}
+				// If a code point representable in UCS-2 (without surrogates)
+				// write out a \uXXXXX escaped sequence.
+				if (sUCS4FontName[i] > 0x7f && sUCS4FontName[i] <=0xffff)
 				{
 					// We only need output one "\ucX" command per font.
 					if (!bAddedUCCommend)
 					{
-						szOutFontName += "\\uc1";
+						sOutFontName += "\\uc1";
 						bAddedUCCommend = true;
 					}
-				 	// RTF is limited to +-32K ints, therefore negative numbers
+					// RTF is limited to +-32K ints, therefore negative numbers
 					// are needed to represent some unicode chars.
-					signed short tmp = (signed short) ((unsigned short) szUCS2FontName[i]);
+					signed short tmp = (signed short) ((unsigned short) sUCS4FontName[i]);
 					// Append a \uXXXXX sequence + a "?" alternative char.
-					szOutFontName += UT_UTF8String_sprintf("\\u%d ?",tmp);
+					sOutFontName += UT_UTF8String_sprintf("\\u%d ?",tmp);
+					continue;
 				}
+				// TODO: Strictly speaking we should be using the UTF-16 encoding,
+				// since we ought to represent unicode values above 0xffff as surrogate
+				// pairs. However, the abi util classes lack a UT_UCS2String class.
+				// We could use UT_convert() to convert to UCS-2, but that's rather messy.
+				// In any case, unicode points above 0xffff are rather rare, so for the time
+				// being we just assert and replace such code points with a "?".
+				UT_ASSERT_NOT_REACHED();
+				sOutFontName += "?";
 			}
 			// Write out the fontname to the file.
-			write(szOutFontName.utf8_str());
+			write(sOutFontName.utf8_str());
 		}
 	}
 	_rtf_semi();
-	free(szUCS2FontName);
 	return;
 }
 
