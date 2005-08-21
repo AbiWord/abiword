@@ -5981,7 +5981,7 @@ bool IE_Imp_MsWord_97::_handleNotesText(UT_uint32 iDocPosition)
 			m_bInSect = true;
 		}
 
-		if(iDocPosition == m_pEndnotes[m_iNextENote].txt_pos +
+		if( m_iNextENote < m_iEndnotesCount && iDocPosition == m_pEndnotes[m_iNextENote].txt_pos +
 		                   m_pEndnotes[m_iNextENote].txt_len)
 		{
 			m_iNextENote++;
@@ -5999,7 +5999,7 @@ bool IE_Imp_MsWord_97::_handleNotesText(UT_uint32 iDocPosition)
 		}
 
 		// if this is the first character in an endnote, insert the anchor
-		if(iDocPosition == m_pEndnotes[m_iNextENote].txt_pos)
+		if( m_iNextENote < m_iEndnotesCount && iDocPosition == m_pEndnotes[m_iNextENote].txt_pos)
 		{
 			const XML_Char * attribsA[] = {"type", "endnote_anchor",
 										   "endnote-id", NULL,
