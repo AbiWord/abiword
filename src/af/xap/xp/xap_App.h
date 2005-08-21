@@ -112,175 +112,166 @@ public:
 	virtual bool					forgetFrame(XAP_Frame * pFrame);
 	virtual bool					forgetClones(XAP_Frame * pFrame);
 	virtual bool					getClones(UT_GenericVector<XAP_Frame*> *pvClonesCopy, XAP_Frame * pFrame);
-	virtual XAP_Frame * 			newFrame() = 0;
+	virtual XAP_Frame *				newFrame() = 0;
 	virtual void					reallyExit() = 0;
 
-	bool							updateClones(XAP_Frame * pFrame);
+	bool						updateClones(XAP_Frame * pFrame);
 
 	virtual void					notifyFrameCountChange (); // default is empty method
-	UT_uint32						getFrameCount() const;
+	UT_uint32					getFrameCount() const;
 	XAP_Frame * 					getFrame(UT_uint32 ndx) const;
-	UT_sint32						findFrame(XAP_Frame * pFrame);
-	UT_sint32						findFrame(const char * szFilename);
+	UT_sint32					findFrame(XAP_Frame * pFrame);
+	UT_sint32					findFrame(const char * szFilename);
 
-	void                            enumerateFrames(UT_Vector & v);
-	void                            enumerateDocuments(UT_Vector & v, const AD_Document * pExclude);
+	void						enumerateFrames(UT_Vector & v);
+	void						enumerateDocuments(UT_Vector & v, const AD_Document * pExclude);
 	const char *					getApplicationTitleForTitleBar() const;
 	const char *					getApplicationName() const;
 	
-	EV_EditMethodContainer *		getEditMethodContainer() const;
+	EV_EditMethodContainer *			getEditMethodContainer() const;
 	EV_EditBindingMap *				getBindingMap(const char * szName);
-	const EV_Menu_ActionSet *		getMenuActionSet() const;
-	const EV_Toolbar_ActionSet *	getToolbarActionSet() const;
-	const XAP_EncodingManager *		getEncodingManager() const;
+	const EV_Menu_ActionSet *			getMenuActionSet() const;
+	const EV_Toolbar_ActionSet *			getToolbarActionSet() const;
+	const XAP_EncodingManager *			getEncodingManager() const;
 	EV_Menu_ActionSet *				getMenuActionSet();
-	EV_Toolbar_ActionSet *			getToolbarActionSet();
+	EV_Toolbar_ActionSet *				getToolbarActionSet();
 
-	XAP_Args *			getArgs() const { return m_pArgs; };
+	XAP_Args *					getArgs() const { return m_pArgs; };
 
 	// only used in ispell builds because aspell doesn't suck...
-	bool				addWordToDict(const UT_UCSChar * pWord, UT_uint32 len);
-	bool				isWordInDict(const UT_UCSChar * pWord, UT_uint32 len) const;
-	void                            suggestWord(UT_GenericVector<UT_UCSChar*> * pVecSuggestions, const UT_UCSChar * pWord, UT_uint32 lenWord);
+	bool						addWordToDict(const UT_UCSChar * pWord, UT_uint32 len);
+	bool						isWordInDict(const UT_UCSChar * pWord, UT_uint32 len) const;
+	void						suggestWord(UT_GenericVector<UT_UCSChar*> * pVecSuggestions, const UT_UCSChar * pWord, UT_uint32 lenWord);
     XAP_Prefs *						getPrefs() const;
-	bool							getPrefsValue(const XML_Char * szKey, const XML_Char ** pszValue) const;
-	bool							getPrefsValue(const UT_String &stKey, UT_String &stValue) const;
-	bool							getPrefsValueBool(const XML_Char * szKey, bool * pbValue) const;
+	bool						getPrefsValue(const XML_Char * szKey, const XML_Char ** pszValue) const;
+	bool						getPrefsValue(const UT_String &stKey, UT_String &stValue) const;
+	bool						getPrefsValueBool(const XML_Char * szKey, bool * pbValue) const;
 
 	static XAP_App *				getApp();
 
-	virtual XAP_DialogFactory *				getDialogFactory() = 0;
-	virtual XAP_Toolbar_ControlFactory *	getControlFactory() = 0;
+	virtual XAP_DialogFactory *			getDialogFactory() = 0;
+	virtual XAP_Toolbar_ControlFactory *		getControlFactory() = 0;
 
 	virtual const XAP_StringSet *			getStringSet() const = 0;
-	virtual const char *					getUserPrivateDirectory() = 0;
-	virtual const char *					getAbiSuiteLibDir() const;
-	virtual const char *					getAbiSuiteAppDir() const = 0;
-	virtual bool							findAbiSuiteLibFile(UT_String & path, const char * filename, const char * subdir = 0);
-	virtual bool							findAbiSuiteAppFile(UT_String & path, const char * filename, const char * subdir = 0); // doesn't check user-dir
-	virtual void							copyToClipboard(PD_DocumentRange * pDocRange, bool bUseClipboard = true) = 0;
-	virtual void							pasteFromClipboard(PD_DocumentRange * pDocRange, bool bUseClipboard, bool bHonorFormatting = true) = 0;
-	virtual bool							canPasteFromClipboard() = 0;
-	virtual void							cacheCurrentSelection(AV_View *) = 0;
-	void									rememberFocussedFrame(void * pJustFocussedFrame);
-	XAP_Frame *								getLastFocussedFrame() const;
-	XAP_Frame *								findValidFrame() const;
-	bool									safeCompare(XAP_Frame * lff, XAP_Frame * f);
-	UT_sint32								safefindFrame(XAP_Frame * f) const;
-	void									clearLastFocussedFrame();
-	void									clearIdTable();
-	bool                                    setDebugBool(void)
-		{m_bDebugBool = true; return m_bDebugBool;}
-	bool                                    clearDebugBool(void)
-		{m_bDebugBool = false; return m_bDebugBool;}
-	bool                                    isDebug(void)
-		{return m_bDebugBool;}
-	void									rememberModelessId(UT_sint32 id, XAP_Dialog_Modeless * pDialog);
-	void									forgetModelessId(UT_sint32 id );
-	bool									isModelessRunning(UT_sint32 id);
-	XAP_Dialog_Modeless *					getModelessDialog(UT_sint32 id);
-	void									closeModelessDlgs();
-	void									notifyModelessDlgsOfActiveFrame(XAP_Frame *p_Frame);
-	void									notifyModelessDlgsCloseFrame(XAP_Frame *p_Frame);
+	virtual const char *				getUserPrivateDirectory() = 0;
+	virtual const char *				getAbiSuiteLibDir() const;
+	virtual const char *				getAbiSuiteAppDir() const = 0;
+	virtual bool					findAbiSuiteLibFile(UT_String & path, const char * filename, const char * subdir = 0);
+	virtual bool					findAbiSuiteAppFile(UT_String & path, const char * filename, const char * subdir = 0); // doesn't check user-dir
+	virtual void					copyToClipboard(PD_DocumentRange * pDocRange, bool bUseClipboard = true) = 0;
+	virtual void					pasteFromClipboard(PD_DocumentRange * pDocRange, bool bUseClipboard, bool bHonorFormatting = true) = 0;
+	virtual bool					canPasteFromClipboard() = 0;
+	virtual void					cacheCurrentSelection(AV_View *) = 0;
+	void						rememberFocussedFrame(void * pJustFocussedFrame);
+	XAP_Frame *					getLastFocussedFrame() const;
+	XAP_Frame *					findValidFrame() const;
+	bool						safeCompare(XAP_Frame * lff, XAP_Frame * f);
+	UT_sint32					safefindFrame(XAP_Frame * f) const;
+	void						clearLastFocussedFrame();
+	void						clearIdTable();
+	bool						setDebugBool(void) { m_bDebugBool = true; return m_bDebugBool; }
+	bool						clearDebugBool(void) { m_bDebugBool = false; return m_bDebugBool; }
+	bool						isDebug(void) { return m_bDebugBool; }
+	void						rememberModelessId(UT_sint32 id, XAP_Dialog_Modeless * pDialog);
+	void						forgetModelessId(UT_sint32 id);
+	bool						isModelessRunning(UT_sint32 id);
+	XAP_Dialog_Modeless *				getModelessDialog(UT_sint32 id);
+	void						closeModelessDlgs();
+	void						notifyModelessDlgsOfActiveFrame(XAP_Frame *p_Frame);
+	void						notifyModelessDlgsCloseFrame(XAP_Frame *p_Frame);
 
-	virtual void							setViewSelection(AV_View * pView) {}; //subclasses override
-	virtual AV_View *						getViewSelection() { return static_cast<AV_View *>(NULL);} ; // subclasses override
+	virtual void					setViewSelection(AV_View * pView) {}; //subclasses override
+	virtual AV_View *				getViewSelection() { return static_cast<AV_View *>(NULL);} ; // subclasses override
 	
-	virtual	bool							setGeometry(UT_sint32 x, UT_sint32 y, 
-														UT_uint32 width, UT_uint32 height, UT_uint32 flags = 0);
-	virtual	bool							getGeometry(UT_sint32 *x, UT_sint32 *y, 
-														UT_uint32 *width, UT_uint32 *height, UT_uint32 *flags = 0);
-	virtual void 							parseAndSetGeometry(const char *string);
-	virtual UT_sint32						makeDirectory(const char * szPath, const UT_sint32 mode ) const = 0;
-	XAP_Menu_Factory *                      getMenuFactory(void) const { return m_pMenuFactory;}
-	XAP_Toolbar_Factory *                   getToolbarFactory(void) const { return m_pToolbarFactory;}
+	virtual	bool					setGeometry(UT_sint32 x, UT_sint32 y, 
+									UT_uint32 width, UT_uint32 height, UT_uint32 flags = 0);
+	virtual	bool					getGeometry(UT_sint32 *x, UT_sint32 *y, 
+									UT_uint32 *width, UT_uint32 *height, UT_uint32 *flags = 0);
+	virtual void 					parseAndSetGeometry(const char *string);
+	virtual UT_sint32				makeDirectory(const char * szPath, const UT_sint32 mode ) const = 0;
+	XAP_Menu_Factory *				getMenuFactory(void) const { return m_pMenuFactory; }
+	XAP_Toolbar_Factory *				getToolbarFactory(void) const { return m_pToolbarFactory; }
 
 	typedef enum {BIDI_SUPPORT_NONE, BIDI_SUPPORT_GUI, BIDI_SUPPORT_FULL} BidiSupportType;
 	
-    virtual BidiSupportType                 theOSHasBidiSupport() const {return BIDI_SUPPORT_NONE;}
-	bool                                    areToolbarsCustomizable(void) const 
-		                                             { return m_bAllowCustomizing;}
-	bool                                    areToolbarsCustomized(void) const 
-		                                             { return m_bAreCustomized;}
-    void                                    resetToolbarsToDefault(void);
-    void                                    setToolbarsCustomizable(bool b);
-    void                                    setToolbarsCustomized(bool b);
-    void                                    setEnableSmoothScrolling(bool b);
-    bool                                    isSmoothScrollingEnabled(void)
-	{ return m_bEnableSmoothScrolling;}
+	virtual BidiSupportType				theOSHasBidiSupport() const {return BIDI_SUPPORT_NONE;}
+	bool						areToolbarsCustomizable(void) const { return m_bAllowCustomizing; }
+	bool						areToolbarsCustomized(void) const { return m_bAreCustomized; }
+	void						resetToolbarsToDefault(void);
+	void						setToolbarsCustomizable(bool b);
+	void						setToolbarsCustomized(bool b);
+	void						setEnableSmoothScrolling(bool b);
+	bool						isSmoothScrollingEnabled(void) { return m_bEnableSmoothScrolling; }
 
-	void                            setBonoboRunning(void) {m_bBonoboRunning = true;}
-	bool                            isBonoboRunning(void) const { return m_bBonoboRunning;}
-	virtual void							getDefaultGeometry(UT_uint32& width, UT_uint32& height, UT_uint32& flags){};
+	void						setBonoboRunning(void) { m_bBonoboRunning = true; }
+	bool						isBonoboRunning(void) const { return m_bBonoboRunning; }
+	virtual void					getDefaultGeometry(UT_uint32& width, UT_uint32& height, UT_uint32& flags) {}
 
-	const UT_LangRecord *                   getKbdLanguage() const {return m_pKbdLang;}
-	void                                    setKbdLanguage(const char * pszLang);
+	const UT_LangRecord *				getKbdLanguage() const { return m_pKbdLang; }
+	void						setKbdLanguage(const char * pszLang);
 
-	UT_UUIDGenerator *                      getUUIDGenerator() const {return m_pUUIDGenerator;}
+	UT_UUIDGenerator *				getUUIDGenerator() const { return m_pUUIDGenerator; }
 
-	bool 									openURL(const char * url) 
-							{ return m_pImpl->openURL(url); }
-	bool 									openHelpURL(const char * url) 
-							{ return m_pImpl->openHelpURL(url); }
-	UT_String 								localizeHelpUrl (const char * pathBeforeLang, 
-												const char * pathAfterLang, const char * remoteURLbase)
+	bool						openURL(const char * url) { return m_pImpl->openURL(url); }
+	bool						openHelpURL(const char * url) { return m_pImpl->openHelpURL(url); }
+	UT_String					localizeHelpUrl(const char * pathBeforeLang, 
+									const char * pathAfterLang, const char * remoteURLbase)
 							{ return m_pImpl->localizeHelpUrl(pathBeforeLang, pathAfterLang, remoteURLbase); }
 
-	GR_GraphicsFactory *       getGraphicsFactory() const {return m_pGraphicsFactory;}
-	void                       setDefaultGraphicsId(UT_uint32 i);
-	                           /* primary graphics allocator */
-	GR_Graphics *              newGraphics(GR_AllocInfo &ai) const;
-	                           /*secondary graphics allocator; use only in special cases */
-	GR_Graphics *              newGraphics(UT_uint32 iClassId, GR_AllocInfo &ai) const;
-	virtual GR_Graphics *      newDefaultScreenGraphics() const = 0;
+	GR_GraphicsFactory *				getGraphicsFactory() const { return m_pGraphicsFactory; }
+	void						setDefaultGraphicsId(UT_uint32 i);
+	/* primary graphics allocator */
+	GR_Graphics *					newGraphics(GR_AllocInfo &ai) const;
+	/* secondary graphics allocator; use only in special cases */
+	GR_Graphics *					newGraphics(UT_uint32 iClassId, GR_AllocInfo &ai) const;
+	virtual GR_Graphics *				newDefaultScreenGraphics() const = 0;
 	
-	virtual UT_sint32			setInputMode(const char * szName);
-	const char *				getInputMode() const;
-	EV_EditEventMapper *		getEditEventMapper() const;
-	bool			            addListener(AV_Listener * pListener, AV_ListenerId * pListenerId);
-	bool			            removeListener(AV_ListenerId listenerId);
-	virtual bool	            notifyListeners(AV_View * pView, const AV_ChangeMask hint,void * pPrivateData = NULL);
+	virtual UT_sint32				setInputMode(const char * szName);
+	const char *					getInputMode() const;
+	EV_EditEventMapper *				getEditEventMapper() const;
+	bool						addListener(AV_Listener * pListener, AV_ListenerId * pListenerId);
+	bool						removeListener(AV_ListenerId listenerId);
+	virtual bool					notifyListeners(AV_View * pView, const AV_ChangeMask hint,void * pPrivateData = NULL);
 
-    UT_uint32                   registerEmbeddable(GR_EmbedManager * pEmbed);
-    bool                        unRegisterEmbeddable(UT_uint32 uid);
-	GR_EmbedManager *           getEmbeddableManager(GR_Graphics * pG, const char * szObjectType);
-	XAP_Module *                getPlugin(const char * szPluginName);
-	static const char*          findNearestFont(const char* pszFontFamily,
-												const char* pszFontStyle,
-												const char* pszFontVariant,
-												const char* pszFontWeight,
-												const char* pszFontStretch,
-												const char* pszFontSize);
+	UT_uint32					registerEmbeddable(GR_EmbedManager * pEmbed);
+	bool						unRegisterEmbeddable(UT_uint32 uid);
+	GR_EmbedManager *				getEmbeddableManager(GR_Graphics * pG, const char * szObjectType);
+	XAP_Module *					getPlugin(const char * szPluginName);
+	static const char*				findNearestFont(const char* pszFontFamily,
+									const char* pszFontStyle,
+									const char* pszFontVariant,
+									const char* pszFontWeight,
+									const char* pszFontStretch,
+									const char* pszFontSize);
 
 protected:
-	virtual const char*          _findNearestFont(const char* pszFontFamily,
-												const char* pszFontStyle,
-												const char* pszFontVariant,
-												const char* pszFontWeight,
-												const char* pszFontStretch,
-												const char* pszFontSize);
+	virtual const char*				_findNearestFont(const char* pszFontFamily,
+									const char* pszFontStyle,
+									const char* pszFontVariant,
+									const char* pszFontWeight,
+									const char* pszFontStretch,
+									const char* pszFontSize);
 	
-	void									_setAbiSuiteLibDir(const char * sz);
-	virtual const char *                    _getKbdLanguage() {return NULL;}
-	void                                    _setUUIDGenerator(UT_UUIDGenerator * pG)
-	                                                                 {m_pUUIDGenerator = pG;}
+	void						_setAbiSuiteLibDir(const char * sz);
+	virtual const char *				_getKbdLanguage() {return NULL;}
+	void						_setUUIDGenerator(UT_UUIDGenerator * pG) { m_pUUIDGenerator = pG; }
 
-	XAP_Args *								m_pArgs;
-	const char *							m_szAppName;
-	const char *							m_szAbiSuiteLibDir;
+	XAP_Args *					m_pArgs;
+	const char *					m_szAppName;
+	const char *					m_szAbiSuiteLibDir;
 
-	EV_EditMethodContainer *				m_pEMC;				/* the set of all possible EditMethods in the app */
-	XAP_BindingSet *						m_pBindingSet;		/* the set of binding maps */
-	EV_Menu_ActionSet *						m_pMenuActionSet;	/* the set of all possible menu actions in the app */
-	EV_Toolbar_ActionSet *					m_pToolbarActionSet;
-	XAP_Dictionary *						m_pDict;
-	XAP_Prefs *								m_prefs;			/* populated in AP_<platform>App::initialize() */
+	EV_EditMethodContainer *			m_pEMC;			/* the set of all possible EditMethods in the app */
+	XAP_BindingSet *				m_pBindingSet;		/* the set of binding maps */
+	EV_Menu_ActionSet *				m_pMenuActionSet;	/* the set of all possible menu actions in the app */
+	EV_Toolbar_ActionSet *				m_pToolbarActionSet;
+	XAP_Dictionary *				m_pDict;
+	XAP_Prefs *					m_prefs;		/* populated in AP_<platform>App::initialize() */
 
 	UT_GenericVector<XAP_Frame*>			m_vecFrames;
 	UT_GenericStringMap<UT_GenericVector<XAP_Frame*>*>	m_hashClones;
-	XAP_Frame *								m_lastFocussedFrame;
-	XAP_Menu_Factory *                      m_pMenuFactory;
-	XAP_Toolbar_Factory *                   m_pToolbarFactory;
+	XAP_Frame *					m_lastFocussedFrame;
+	XAP_Menu_Factory *              	        m_pMenuFactory;
+	XAP_Toolbar_Factory *				m_pToolbarFactory;
 
 	struct modeless_pair 
 	{ 
@@ -288,38 +279,30 @@ protected:
 		XAP_Dialog_Modeless * pDialog;
 	} m_IdTable[NUM_MODELESSID+1]; 
         
-	static XAP_App *						m_pApp;
-	bool                                    m_bAllowCustomizing;
-	bool                                    m_bAreCustomized;
-	bool                                    m_bDebugBool;
-	bool                                    m_bBonoboRunning;
-	bool                                    m_bEnableSmoothScrolling;
+	static XAP_App *				m_pApp;
+	bool						m_bAllowCustomizing;
+	bool						m_bAreCustomized;
+	bool						m_bDebugBool;
+	bool						m_bBonoboRunning;
+	bool						m_bEnableSmoothScrolling;
 
 private:
-	const UT_LangRecord *                   m_pKbdLang;
-	UT_UUIDGenerator *                      m_pUUIDGenerator;
+	const UT_LangRecord *				m_pKbdLang;
+	UT_UUIDGenerator *				m_pUUIDGenerator;
 
-	GR_GraphicsFactory *                    m_pGraphicsFactory;
-	UT_uint32                               m_iDefaultGraphicsId;
+	GR_GraphicsFactory *				m_pGraphicsFactory;
+	UT_uint32					m_iDefaultGraphicsId;
 	
-	XAP_InputModes *						m_pInputModes;
-	UT_GenericVector <GR_EmbedManager *>    m_vecEmbedManagers;	
-	XAP_App(const XAP_App&);				// should not even be called. Just to avoid a warning.
+	XAP_InputModes *				m_pInputModes;
+	UT_GenericVector <GR_EmbedManager *>		m_vecEmbedManagers;	
+	XAP_App(const XAP_App&);			// should not even be called. Just to avoid a warning.
 	void operator=(const XAP_App&);
 #ifdef DEBUG
 	void _fundamentalAsserts() const;
 #endif
 	XAP_AppImpl* m_pImpl;
-    UT_GenericVector<AV_Listener *>         m_vecPluginListeners;
+	UT_GenericVector<AV_Listener *>			m_vecPluginListeners;
 };
 
 #endif /* XAP_APP_H */
-
-
-
-
-
-
-
-
 
