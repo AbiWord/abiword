@@ -41,7 +41,6 @@ if test "$gnome" = true ; then
 	PKG_CHECK_MODULES(GNOME,[
 		libbonobo-2.0 >= 2.0
 		libgnomeui-2.0 >= 2.0
-		libglade-2.0 >= 2.0
 	])
 	GNOME_CFLAGS="$GNOME_CFLAGS -DHAVE_GNOME=1"
 	GNOME_LIBS="$GNOME_LIBS"
