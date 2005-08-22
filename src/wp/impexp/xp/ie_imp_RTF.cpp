@@ -8296,8 +8296,10 @@ IEImpRTF_ReadFontTable_ErrorExit:
 	UT_DEBUGMSG(("Deleting currentState -2 %x \n",currentState));
 	DELETEP(currentState);
 	while (stateStack.pop(reinterpret_cast<void**>(&currentState))) 
+	{
 		UT_DEBUGMSG(("Deleting currentState -3  %x \n",currentState));
-	    DELETEP(currentState);
+		DELETEP(currentState);
+	}
 	return false;
 }
 
