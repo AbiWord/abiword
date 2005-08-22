@@ -2401,7 +2401,7 @@ UT_Error IE_Imp_RTF::_parseText()
 			default:
 				if (m_currentRTFState.m_internalState == RTFStateStore::risNorm)
 				{
-					ok = ParseChar(c);
+					ok = ParseChar(c, false);
 					if (!ok) {
 						UT_DEBUGMSG(("ParseChar()\n"));
 					}
@@ -2419,7 +2419,7 @@ UT_Error IE_Imp_RTF::_parseText()
 					cNibble--;
 					if (!cNibble  &&  ok)
 					{
-						ok = ParseChar(b,0);
+						ok = ParseChar(b, false);
 						if (!ok) {
 							UT_DEBUGMSG(("ParseChar()\n"));
 						}
@@ -2861,7 +2861,7 @@ bool IE_Imp_RTF::ParseChar(UT_UCSChar ch,bool no_convert)
 			// Insert a character into the story
             if ((ch >= 32  ||  ch == 9 || ch == UCS_FF || ch == UCS_LF || ch == UCS_VTAB)  &&  !m_currentRTFState.m_charProps.m_deleted)
 			{
-				if (no_convert==0 && ch<=0xff)
+				if (!no_convert && ch<=0xff)
 				{
 					UT_UCS4Char wc;
 					// TODO Doesn't handle multibyte encodings (CJK)
@@ -2874,7 +2874,7 @@ bool IE_Imp_RTF::ParseChar(UT_UCSChar ch,bool no_convert)
 			// handle other destinations....
 			return true;
 	}
-	UT_DEBUGMSG (("went thru all ParseChar() withou doing anything\n"));
+	UT_DEBUGMSG (("went thru all ParseChar() without doing anything\n"));
 	return true;
 }
 
