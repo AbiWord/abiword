@@ -36,6 +36,7 @@
 #include "xap_Frame.h"
 #include "xap_Dialog_Id.h"
 #include "xap_Win32Dlg_Print.h"
+#include "xap_EncodingManager.h"
 
 #include "ut_debugmsg.h"
 #include "ut_assert.h"
@@ -330,7 +331,18 @@ GR_Font* GR_Win32Graphics::_findFont(const char* pszFontFamily,
 	else if (0 == UT_stricmp(pszFontFamily, "monospace"))
 		lf.lfPitchAndFamily = DEFAULT_PITCH | FF_MODERN;
 	else
-		strcpy(lf.lfFaceName, pszFontFamily);
+	{
+		// NB: lf.lfFaceName is a statically allocated char buffer of len 
+		// LF_FACESIZE. strToNative() will truncate the string at 500 bytes,
+		// but as LF_FACESIZE is generally 32, this shouldn't matter.
+		//
+		// This convertion is needed because the windows API expects fontnames
+		// in the native encoding and later lf will be passing to a windows
+		// API funcion (CreateFontIndirect()).
+		strncpy(lf.lfFaceName, 
+		        getApp()->getEncodingManager()->strToNative(pszFontFamily, "UTF-8", false),
+		        LF_FACESIZE);
+	}
 
 	// Get character set value from the font itself
 	LOGFONT enumlf = { 0 };
@@ -1382,7 +1394,11 @@ void GR_Font::s_getGenericFontProperties(const char * szFontName,
 	else if (UT_stricmp(szFontName, "monospace") == 0)
 		lf.lfPitchAndFamily = DEFAULT_PITCH | FF_MODERN;
 	else
-		strcpy(lf.lfFaceName, szFontName);
+	{
+			strncpy(lf.lfFaceName, 
+				    XAP_EncodingManager::get_instance()->strToNative(szFontName, "UTF-8", false),
+			        LF_FACESIZE);
+	}
 
 	// let the system create the font with the given name or
 	// properties and then query it and see what was actually
