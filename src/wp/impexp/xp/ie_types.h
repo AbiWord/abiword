@@ -66,5 +66,6 @@ typedef UT_sint32 IEGraphicFileType;
 #define IE_IMPEXPNAME_MHTML		"AbiWord::HTML/multipart"
 #define IE_IMPEXPNAME_MATHML    "AbiWord::MathML"
 #define IE_IMPEXPNAME_GOCHART   "AbiWord::GNOME Office Chart"
+#define IE_IMPEXPNAME_GOCOMPONENT   "AbiWord::GNOME Office Component"
 
 #endif /* IE_TYPES_H */
