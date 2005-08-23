@@ -8222,35 +8222,24 @@ bool IE_Imp_RTF::ReadFontTable()
 			// Handle \uXXXXX escaped data.
 			case RTF_KW_u:
 			{
-				char sInputChar[2]; // 2 bytes for one UCS2 char.
-				char *output;
-
 				/* RTF is limited to +/-32K ints so we need to use negative
 				 * numbers for large unicode values. So, check for Unicode chars
 				 * wrapped to negative values.
-		 		*/
+				 */
 				if (parameter < 0)
 				{
 					unsigned short tmp = (unsigned short) ((signed short) parameter);
 					parameter = (UT_sint32) tmp;
 				}
-				// Separate out the LSB and MSB of the character in that order.
-				sInputChar[0] = parameter & 0x000000ff;
-				sInputChar[1] = (parameter & 0x0000ff00) >> 8;
-				output = UT_convert(sInputChar, 2, "UCS2", "UTF-8", NULL, NULL);
-				if (!output) {
-					UT_DEBUGMSG(("RTF: Failed to convert \\uXXXX sequence in Font name.\n"));
-				}
-				else 
-				{
-					// First flush any data in the buffer to the font name
-					// string, converting to UTF8.
-					sFontNamesAndPanose[currentState->iCurrentInputData].appendBuf(RawDataBuf[currentState->iCurrentInputData], m_mbtowc);
-					RawDataBuf[currentState->iCurrentInputData].truncate(0);
-					// Then add the new UTF-8 data directly.
-					sFontNamesAndPanose[currentState->iCurrentInputData] += output;
-					free(output);
-				}
+				// First flush any data in the buffer to the font name
+				// string, converting to UTF8.
+				sFontNamesAndPanose[currentState->iCurrentInputData].appendBuf(RawDataBuf[currentState->iCurrentInputData], m_mbtowc);
+				RawDataBuf[currentState->iCurrentInputData].truncate(0);
+				// Then append the UCS2 char.
+				// TODO Since we process one character at a time, this code 
+				// will not handle surrogate pairs.
+				sFontNamesAndPanose[currentState->iCurrentInputData].appendUCS2(reinterpret_cast<UT_UCS2Char *>(&parameter), 1);
+
 				// Set the reader to skip the appropriate number of ANSI
 				// characters after the \uXXXXX command.
 				currentState->iUniCharsLeftToSkip = currentState->iUniSkipCount;
