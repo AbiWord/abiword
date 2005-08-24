@@ -457,12 +457,12 @@ static void s_gtkMenuPositionFunc(GtkMenu * /* menu */, gint * x, gint * y, gboo
 XAP_UnixFrameImpl::XAP_UnixFrameImpl(XAP_Frame *pFrame, XAP_UnixApp * pApp) : 
 	XAP_FrameImpl(pFrame),
 	m_imContext(NULL),
+	m_pUnixMenu(NULL),
 	need_im_reset (false),
 	m_bDoZoomUpdate(false),
 	m_iZoomUpdateID(0),
 	m_iAbiRepaintID(0),
 	m_pUnixApp(pApp),
-	m_pUnixMenu(NULL),
 	m_pUnixPopup(NULL),
 	m_dialogFactory(pFrame, static_cast<XAP_App *>(pApp))
 {
