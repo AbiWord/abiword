@@ -143,6 +143,8 @@ protected:
 	void				_rtf_semi(void);
 	void				_rtf_fontname(const char * szFontName);
 	void				_rtf_chardata(const char * pbuf, UT_uint32 buflen);
+	void				_rtf_pcdata(UT_UTF8String &sPCData, bool bSupplyUC=false, UT_uint32 iAltChars=1);
+	void				_rtf_pcdata(const char * szPCData, bool bSupplyUC=false, UT_uint32 iAltChars=1);
 	void				_rtf_nl(void);
 	const XML_Char *    _getStyleProp(s_RTF_AttrPropAdapter_Style * pADStyle,
 									  const s_RTF_AttrPropAdapter * apa,
@@ -187,6 +189,11 @@ protected:
 	void				_addFont(const _rtf_font_info * pfi);
 
  private:	
+	static bool s_escapeString(UT_UTF8String &sOutStr, UT_UCS4String &sInStr, 
+	                           UT_uint32 iAltChars);
+	static bool s_escapeString(UT_UTF8String &sOutStr, const char * szInStr,
+                               UT_uint32 iSize, UT_uint32 iAltChars);
+
 	s_RTF_ListenerWriteDoc *	m_pListenerWriteDoc;
 	UT_Vector					m_vecColors;			/* vector of "const char * szColor" */
 	UT_Vector					m_vecFonts;				/* vector of struct _font */

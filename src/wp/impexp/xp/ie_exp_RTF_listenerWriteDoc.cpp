@@ -4280,29 +4280,39 @@ bool s_RTF_ListenerWriteDoc::signal(UT_uint32 /* iSignal */)
  */
 void s_RTF_ListenerWriteDoc::_rtf_info(void)
 {
+	// Define the number of alternative chars for unicode escapes.
+	const UT_uint32 iNumAltChars = 1; 
+	// The keys for the information that we'll put in the info block.
+	const char * keys[] = {PD_META_KEY_TITLE,      
+	                       PD_META_KEY_CREATOR,
+	                       PD_META_KEY_CONTRIBUTOR, 
+	                       PD_META_KEY_PUBLISHER,
+	                       PD_META_KEY_SUBJECT,    
+	                       PD_META_KEY_KEYWORDS,
+	                       PD_META_KEY_DESCRIPTION,
+	                       PD_META_KEY_TYPE,
+	                       NULL};
+	const char * rtfkeys[] = {"title", "author", "manager", "company", "subject", "keywords", 
+	                         "doccomm", "category", NULL};
+
 	if (!m_pie->isCopying ()) {
 		UT_UTF8String propVal ;
 		
 		m_pie->_rtf_open_brace () ;
 		m_pie->_rtf_keyword("info");
-		
-		if(m_pDocument->getMetaDataProp (PD_META_KEY_TITLE, propVal) && propVal.size())
-		{ m_pie->_rtf_open_brace () ; m_pie->_rtf_keyword("title ",propVal.utf8_str()); m_pie->_rtf_close_brace(); }
-		if(m_pDocument->getMetaDataProp (PD_META_KEY_CREATOR, propVal) && propVal.size())
-		{ m_pie->_rtf_open_brace () ; m_pie->_rtf_keyword("author ",propVal.utf8_str()); m_pie->_rtf_close_brace(); }
-		if(m_pDocument->getMetaDataProp (PD_META_KEY_CONTRIBUTOR, propVal) && propVal.size())
-		{ m_pie->_rtf_open_brace () ; m_pie->_rtf_keyword("manager ",propVal.utf8_str()); m_pie->_rtf_close_brace(); }
-		if(m_pDocument->getMetaDataProp (PD_META_KEY_PUBLISHER, propVal) && propVal.size())
-		{ m_pie->_rtf_open_brace () ; m_pie->_rtf_keyword("company ",propVal.utf8_str()); m_pie->_rtf_close_brace(); }
-		if(m_pDocument->getMetaDataProp (PD_META_KEY_SUBJECT, propVal) && propVal.size())
-		{ m_pie->_rtf_open_brace () ; m_pie->_rtf_keyword("category ",propVal.utf8_str()); m_pie->_rtf_close_brace(); }
-		if(m_pDocument->getMetaDataProp (PD_META_KEY_KEYWORDS, propVal) && propVal.size())
-		{ m_pie->_rtf_open_brace () ; m_pie->_rtf_keyword("keywords ",propVal.utf8_str()); m_pie->_rtf_close_brace(); }
-		if(m_pDocument->getMetaDataProp (PD_META_KEY_DESCRIPTION, propVal) && propVal.size())
-		{ m_pie->_rtf_open_brace () ; m_pie->_rtf_keyword("comment ",propVal.utf8_str()); m_pie->_rtf_close_brace(); }
-		if(m_pDocument->getMetaDataProp (PD_META_KEY_DESCRIPTION, propVal) && propVal.size())
-		{ m_pie->_rtf_open_brace () ; m_pie->_rtf_keyword("doccomm ",propVal.utf8_str()); m_pie->_rtf_close_brace(); }
-		
+		m_pie->_rtf_keyword("uc", iNumAltChars);
+
+		for (UT_uint32 i=0; keys[i]; i++)
+		{
+			if (m_pDocument->getMetaDataProp (keys[i], propVal) && propVal.size())
+			{
+				m_pie->_rtf_open_brace () ; 
+				m_pie->_rtf_keyword(rtfkeys[i]);
+				m_pie->write(" ");
+				m_pie->_rtf_pcdata(propVal, iNumAltChars); 
+				m_pie->_rtf_close_brace();
+			}
+		}
 		m_pie->_rtf_close_brace();
 	}
 }
