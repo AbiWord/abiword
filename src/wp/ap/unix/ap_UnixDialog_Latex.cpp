@@ -90,11 +90,11 @@ void AP_UnixDialog_Latex::runModeless(XAP_Frame * pFrame)
 
 void AP_UnixDialog_Latex::event_Insert(void)
 {
-    getLatexFromGUI();
-    if(convertLatexToMathML())
-    {
-	insertIntoDoc();
-    }
+	getLatexFromGUI();
+	if (convertLatexToMathML())
+	{
+		insertIntoDoc();
+	}
 }
 
 void AP_UnixDialog_Latex::event_Close(void)
@@ -119,7 +119,8 @@ void AP_UnixDialog_Latex::destroy(void)
 {
 	m_answer = AP_Dialog_Latex::a_CANCEL;	
 	modeless_cleanup();
-	if (m_windowMain != NULL) {
+	if (m_windowMain != NULL)
+	{
 		gtk_widget_destroy(m_windowMain);
 		m_windowMain = NULL;
 	}
@@ -168,7 +169,8 @@ void AP_UnixDialog_Latex::constructDialog(void)
 	// load the dialog from the glade file
 	GladeXML *xml = abiDialogNewFromXML( glade_path.c_str() );
 	UT_ASSERT(xml);
-	if (!xml) {
+	if (!xml)
+	{
 		return;
 	}
 
