@@ -8113,16 +8113,28 @@ bool IE_Imp_RTF::ReadFontTable()
 				}
 				// Flush any data in the buffers to the font name and panose
 				// strings, converting to UTF8.
-				for (i=SFontTableState::MainFontName; i<SFontTableState::Panose; i++) 
+				for (i=SFontTableState::MainFontName; i<=SFontTableState::Panose; i++) 
 				{
 					sFontNamesAndPanose[i].appendBuf(RawDataBuf[i], m_mbtowc);
 					RawDataBuf[i].truncate(0);
 				}
-				// Validate and post-process the Panose string.
-				if
-				(!PostProcessAndValidatePanose(sFontNamesAndPanose[SFontTableState::Panose])) 
+				// It's possible that the font name will be empty. This might happend 
+				// because the font table didn't specify a name, or because the \ansicpgN
+				// command was invalid, in which case the mbtowc convertion might fail.
+				// In these cases, substitute "Times New Roman".
+				if (!sFontNamesAndPanose[SFontTableState::MainFontName].length())
 				{
-					goto IEImpRTF_ReadFontTable_ErrorExit;
+					UT_DEBUGMSG(("RTF: Font Index %d: Substituting \"Times New Roman\" for missing font name.\n", fontIndex));
+					sFontNamesAndPanose[SFontTableState::MainFontName] = "Times New Roman";
+				}
+				// Validate and post-process the Panose string.
+				if (!PostProcessAndValidatePanose(sFontNamesAndPanose[SFontTableState::Panose])) 
+				{
+					// If the panose string was invalid, then clear it.
+					// I don't think it's worth refusing to load the file just because
+					// the panose string is wrong.
+					UT_DEBUGMSG(("RTF: Panose string for font with index %d invalid, ignoring.\n", fontIndex));
+					sFontNamesAndPanose[SFontTableState::Panose] == "";
 				}
 				// Register the font.
 				if (!RegisterFont(fontFamily, pitch, fontIndex, charSet, 
@@ -8131,7 +8143,7 @@ bool IE_Imp_RTF::ReadFontTable()
 					goto IEImpRTF_ReadFontTable_ErrorExit;
 				}
 				// Reset both font names/panose.
-				for (i=SFontTableState::MainFontName; i<SFontTableState::Panose; i++)
+				for (i=SFontTableState::MainFontName; i<=SFontTableState::Panose; i++)
 					sFontNamesAndPanose[i] = "";
 				bGotFontIndex = false;
 				bSeenNonWhiteSpaceData = false;
@@ -8310,10 +8322,6 @@ bool IE_Imp_RTF::RegisterFont(RTFFontTableItem::FontFamilyEnum fontFamily,
 	}
 #endif /* ! XP_TARGET_COCOA */
 
-	// Check that the panose string from the rtf file is sensible and
-	// do any post-processing necessary.
-	if (!PostProcessAndValidatePanose(sFontNamesAndPanose[SFontTableState::Panose]))
-		return false;
 
 	// Create the font entry and put it into the font table
 	// NB: If the font table didn't specify a font name then we want to pass
@@ -8366,10 +8374,7 @@ bool IE_Imp_RTF::RegisterFont(RTFFontTableItem::FontFamilyEnum fontFamily,
  * Therefore, this function does the same. In addition, it checks that all
  * characters in the string are digits (0-9) and nothing else.
  *
- * This function returns false on error. Since Panose numbers are probably
- * not very important, this function could easily be changed to simple blank the
- * panose string on error. This would mean that files with corrupt panose
- * numbers would still load.
+ * This function returns false on error. 
  */
 bool IE_Imp_RTF::PostProcessAndValidatePanose(UT_UTF8String &Panose) 
 {
@@ -8378,37 +8383,39 @@ bool IE_Imp_RTF::PostProcessAndValidatePanose(UT_UTF8String &Panose)
 	UT_sint32 i;
 
 	// If the panose string is not empty.
-	if (iter.start()) {
-		iter = iter.start(); // Set the iterator to the first character.
-		// There should be 20 characters
-		for (i=0; i<20; i++, ++iter)
+	iter = iter.start(); // Set the iterator to the first character.
+	// There should be 20 characters
+	for (i=0; i<20; i++, ++iter)
+	{
+		const char * pUTF = iter.current ();
+		// If we run out of data then the panose string is too short.
+		if (!pUTF || !*pUTF)
 		{
-			const char * pUTF = iter.current ();
-			// If we run out of data then the panose string is too short.
-			if (!pUTF)
-			{
-				UT_DEBUGMSG(("RTF: Panose string too short.\n"));
-				return false;
-			}
-			// Only numeric digits are allowed so we bail if we see anything
-			// else.
-			if (((*pUTF) < '0') || ((*pUTF) > '9'))
-			{
-				UT_DEBUGMSG(("RTF: Invalid character in panose string.\n"));
-				return false;
-			}
-			// Store alternate characters in the output string.
-			if ((i%2)==0)
-			{
-				// This wouldn't work for genuine UTF-8, since it's a variable
-				// byte encoding. However, we've already check that the string
-				// only contains the characters 0-9, so it's effectively ASCII.
-				sProcessedPanose += *pUTF;
-			}
+			// An empty string is valid, so return true if this is the 
+			// first character.
+			if (i==0)
+				return true;
+			UT_DEBUGMSG(("RTF: Panose string too short.\n"));
+			return false;
 		}
-		// Replace the original panose string with the new one.
-		Panose = sProcessedPanose;
+		// Only numeric digits are allowed so we bail if we see anything
+		// else.
+		if (((*pUTF) < '0') || ((*pUTF) > '9'))
+		{
+			UT_DEBUGMSG(("RTF: Invalid character in panose string.\n"));
+			return false;
+		}
+		// Store alternate characters in the output string.
+		if ((i%2)==1)
+		{
+			// This wouldn't work for genuine UTF-8, since it's a variable
+			// byte encoding. However, we've already check that the string
+			// only contains the characters 0-9, so it's effectively ASCII.
+			sProcessedPanose += *pUTF;
+		}
 	}
+	// Replace the original panose string with the new one.
+	Panose = sProcessedPanose;
 	return true;
 }
 
