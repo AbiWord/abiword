@@ -22,6 +22,7 @@
 #include "xap_Win32Dlg_MessageBox.h"
 #include "xap_Win32App.h"
 #include "xap_Win32FrameImpl.h"
+#include "xap_EncodingManager.h"
 
 /*****************************************************************/
 XAP_Dialog * XAP_Win32Dialog_MessageBox::static_constructor(XAP_DialogFactory * pFactory,
