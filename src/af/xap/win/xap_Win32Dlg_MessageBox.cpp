@@ -84,7 +84,7 @@ void XAP_Win32Dialog_MessageBox::runModal(XAP_Frame * pFrame)
 		UT_ASSERT(UT_SHOULD_NOT_HAPPEN);
 	}
 
-	int res = MessageBox(hwnd, m_szMessage, szCaption, flags);
+	int res = MessageBox(hwnd, getApp()->getEncodingManager()->strToNative(m_szMessage, "UTF-8"), szCaption, flags);
 
 	switch (res)
 	{
