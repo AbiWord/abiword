@@ -121,6 +121,10 @@ ABI_EXPORT XML_Char *  UT_XML_transNoAmpersands(const XML_Char * szSource);
 ABI_EXPORT UT_UCSChar  UT_decodeUTF8char(const XML_Char * p, UT_uint32 len);
 ABI_EXPORT void  UT_decodeUTF8string(const XML_Char * p, UT_uint32 len, UT_GrowBuf * pResult);
 ABI_EXPORT XML_Char *  UT_encodeUTF8char(UT_UCSChar cIn);
+ABI_EXPORT bool  UT_isValidUTF8string(const XML_Char * p, UT_uint32 len);
+
+ABI_EXPORT bool  UT_isValidXML(const char *s);
+ABI_EXPORT bool  UT_validXML(char * s);
 
 /* ABI_EXPORT XML_Char *  UT_decodeXMLstring(XML_Char *pcIn);
  * This has moved to ut_xml.cpp as UT_XML::decode ()

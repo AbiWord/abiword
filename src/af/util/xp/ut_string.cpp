@@ -439,28 +439,216 @@ UT_uint32 UT_XML_strncpy(XML_Char * szDest, UT_uint32 nLen, const XML_Char * szS
 
 UT_UCSChar UT_decodeUTF8char(const XML_Char * p, UT_uint32 len)
 {
-	UT_UCSChar ucs, ucs1, ucs2, ucs3;
+	UT_UCSChar ucs, ucs1, ucs2, ucs3, ucs4;
 
 	switch (len)
 	{
-	case 2:
-		ucs1 = static_cast<UT_UCSChar>(p[0] & 0x1f);
-		ucs2 = static_cast<UT_UCSChar>(p[1] & 0x3f);
-		ucs  = (ucs1 << 6) | ucs2;
-		return ucs;
+		case 2:
+			ucs1 = static_cast<UT_UCSChar>(p[0] & 0x1f);
+			ucs2 = static_cast<UT_UCSChar>(p[1] & 0x3f);
+			ucs  = (ucs1 << 6) | ucs2;
+			return ucs;
 
-	case 3:
-		ucs1 = static_cast<UT_UCSChar>(p[0] & 0x0f);
-		ucs2 = static_cast<UT_UCSChar>(p[1] & 0x3f);
-		ucs3 = static_cast<UT_UCSChar>(p[2] & 0x3f);
-		ucs  = (ucs1 << 12) | (ucs2 << 6) | ucs3;
-		return ucs;
+		case 3:
+			ucs1 = static_cast<UT_UCSChar>(p[0] & 0x0f);
+			ucs2 = static_cast<UT_UCSChar>(p[1] & 0x3f);
+			ucs3 = static_cast<UT_UCSChar>(p[2] & 0x3f);
+			ucs  = (ucs1 << 12) | (ucs2 << 6) | ucs3;
+			return ucs;
 
-	default:
-		UT_ASSERT(UT_SHOULD_NOT_HAPPEN);
-		return 0;
+		case 4:
+			ucs1 = static_cast<UT_UCSChar>((p[0] & 0x07) << 2) | static_cast<UT_UCSChar>((p[1] & 0x0f00) >> 4);
+			ucs2 = static_cast<UT_UCSChar>(p[1] & 0x0f);
+			ucs3 = static_cast<UT_UCSChar>(p[2] & 0x3f);
+			ucs4 = static_cast<UT_UCSChar>(p[3] & 0x3f);
+			ucs  = (ucs1 << 16) | (ucs2 << 12) | (ucs3 << 6) | ucs3;
+			return ucs;
+
+		default:
+			UT_ASSERT(UT_SHOULD_NOT_HAPPEN);
+			return 0;
 	}
 }
+
+/*! \fn bool UT_isValidXML(const char *s)
+	 \param s The string of characters which is to be checked for XML-validity.
+	 \retval TRUE if the characters are all valid for XML, FALSE if any one of them is not.
+
+	 NB: this function also checks that the string is valid utf-8
+*/
+bool UT_isValidXML(const char *pString)
+{
+	if(!pString)
+		return true;
+
+	if(!UT_isValidUTF8string(pString, strlen(pString)))
+		return false;
+
+	const UT_Byte * s = reinterpret_cast<const UT_Byte *>(pString);
+	
+	while(*s)
+	{
+		if(*s < ' ' && *s != '\t' && *s != '\n' && *s != '\r')
+		{
+			return false;
+		}
+		
+		++s;
+	}
+
+	return true;
+}
+
+/*!
+    XML cannot contain any control characters except \t, \n, \r, see bug 8565
+    (http://www.w3.org/TR/REC-xml/#charsets)
+    
+    This function removes any illegal characters and invalid utf-8 sequences.
+
+    The return value of true indicates that the string was modified
+*/
+bool UT_validXML(char * pString)
+{
+	if(!pString)
+		return false;
+
+	UT_ASSERT(sizeof(XML_Char) == sizeof(UT_Byte));
+	const UT_Byte * p = reinterpret_cast<const UT_Byte *>(pString);	// XML_Char is signed...
+	
+	bool bChanged = false;
+	UT_uint32 len = strlen(pString);
+
+	int bytesInSequence = 0;
+	int bytesExpectedInSequence = 0;
+
+	UT_String s;
+	for (UT_uint32 k=0; k<len; k++)
+	{
+		if (p[k] < 0x80)						// plain us-ascii part of latin-1
+		{
+			if(bytesInSequence != 0)
+				bChanged = true;
+			
+			if(p[k] < ' ' && p[k] >= 0 && p[k] != '\t' && p[k] != '\n' && p[k] != '\r')
+			{
+				bChanged = true;
+			}
+			else
+				s += p[k];
+				
+			bytesInSequence = 0;
+			bytesExpectedInSequence = 0;
+		}
+		else if ((p[k] & 0xf0) == 0xf0)			// lead byte in 4-byte surrogate pair
+		{
+			if(bytesInSequence != 0)
+				bChanged = true;
+			
+			UT_ASSERT_HARMLESS( UT_NOT_IMPLEMENTED );
+			bytesExpectedInSequence = 4;
+			bytesInSequence = 1;
+		}
+		else if ((p[k] & 0xe0) == 0xe0)			// lead byte in 3-byte sequence
+		{
+			if(bytesInSequence != 0)
+				bChanged = true;
+			
+			bytesExpectedInSequence = 3;
+			bytesInSequence = 1;
+		}
+		else if ((p[k] & 0xc0) == 0xc0)			// lead byte in 2-byte sequence
+		{
+			if(bytesInSequence != 0)
+				bChanged = true;
+			
+			bytesExpectedInSequence = 2;
+			bytesInSequence = 1;
+		}
+		else if ((p[k] & 0x80) == 0x80)			// trailing byte in multi-byte sequence
+		{
+			bytesInSequence++;
+			if (bytesInSequence == bytesExpectedInSequence)		// final byte in multi-byte sequence
+			{
+				for(UT_sint32 i = k - bytesInSequence + 1; i <= (UT_sint32)k; i++)
+				{
+					s += p[i];
+				}
+				
+				bytesInSequence = 0;
+				bytesExpectedInSequence = 0;
+			}
+		}
+	}
+
+	strncpy(pString, s.c_str(), s.length());
+	
+	return bChanged;
+}
+
+	
+
+/*!
+    Checks that string p contains valid utf-8 sequence
+*/
+bool  UT_isValidUTF8string(const XML_Char * pString, UT_uint32 len)
+{
+	UT_ASSERT(sizeof(XML_Char) == sizeof(UT_Byte));
+	const UT_Byte * p = reinterpret_cast<const UT_Byte *>(pString);	// XML_Char is signed...
+
+	int bytesInSequence = 0;
+	int bytesExpectedInSequence = 0;
+
+	for (UT_uint32 k=0; k<len; k++)
+	{
+		if (p[k] < 0x80)						// plain us-ascii part of latin-1
+		{
+			if(bytesInSequence != 0)
+				return false;
+
+			bytesExpectedInSequence = 0;
+			bytesInSequence = 0;
+		}
+		else if ((p[k] & 0xf0) == 0xf0)			// lead byte in 4-byte surrogate pair
+		{
+			if(bytesInSequence != 0)
+				return false;
+			
+			bytesExpectedInSequence = 4;
+			bytesInSequence = 1;
+		}
+		else if ((p[k] & 0xe0) == 0xe0)			// lead byte in 3-byte sequence
+		{
+			if(bytesInSequence != 0)
+				return false;
+			
+			bytesExpectedInSequence = 3;
+			bytesInSequence = 1;
+		}
+		else if ((p[k] & 0xc0) == 0xc0)			// lead byte in 2-byte sequence
+		{
+			if(bytesInSequence != 0)
+				return false;
+			
+			bytesExpectedInSequence = 2;
+			bytesInSequence = 1;
+		}
+		else if ((p[k] & 0x80) == 0x80)			// trailing byte in multi-byte sequence
+		{
+			if(bytesInSequence == 0)
+				return false;
+			
+			bytesInSequence++;
+			if (bytesInSequence == bytesExpectedInSequence)		// final byte in multi-byte sequence
+			{
+				bytesInSequence = 0;
+				bytesExpectedInSequence = 0;
+			}
+		}
+	}
+
+	return true;
+}
+	
 
 void UT_decodeUTF8string(const XML_Char * pString, UT_uint32 len, UT_GrowBuf * pResult)
 {
@@ -488,7 +676,8 @@ void UT_decodeUTF8string(const XML_Char * pString, UT_uint32 len, UT_GrowBuf * p
 			// mechanism for rare characters in future extensions
 			// of the unicode standard.
 			UT_ASSERT(bytesInSequence == 0);
-			UT_ASSERT(UT_NOT_IMPLEMENTED);
+			bytesExpectedInSequence = 4;
+			buf[bytesInSequence++] = p[k];
 		}
 		else if ((p[k] & 0xe0) == 0xe0)			// lead byte in 3-byte sequence
 		{
