@@ -81,6 +81,11 @@ int CALLBACK XAP_Win32PropertyPage::s_pageWndProc(HWND hWnd, UINT msg, WPARAM wP
 
 		case WM_NOTIFY:
 		{
+			XAP_Win32PropertyPage *pThis = (XAP_Win32PropertyPage *)GetWindowLong(hWnd,DWL_USER);
+
+			if (pThis)
+				pThis->_onNotify((LPNMHDR) lParam, wParam); 
+			
 			pNMHDR = (NMHDR*)lParam;					
 			if (pNMHDR->code==PSN_KILLACTIVE)
 			{
@@ -205,7 +210,7 @@ int CALLBACK XAP_Win32PropertySheet::s_sheetWndProc(HWND hWnd, UINT msg, WPARAM 
 			if (LOWORD(wParam)==ID_APPLY)
 			{
 				XAP_Win32PropertyPage* pPage;	
-				UT_sint32 i= 0;
+				UT_uint32 i= 0;
 				
 				for(i=0; i< pThis->m_vecPages.getItemCount();  i++)
 				{			

@@ -56,6 +56,7 @@ public:
 	virtual	void				_onOK(){}; 		
 	virtual	void				_onApply(){}; 
 	virtual void				_onCommand(HWND hWnd, WPARAM wParam, LPARAM lParam){};
+	virtual void				_onNotify(LPNMHDR hdr, int iCtrlID){};
 	static int CALLBACK			s_pageWndProc(HWND hWnd, UINT msg, WPARAM wParam,LPARAM lParam);
 	void						setChanged (bool bChanged); // Unables or disables apply button
 	

@@ -41,8 +41,9 @@ public:
     virtual void            setSensitivity(bool bSensitive);
 	virtual void            destroy(void);
 	virtual void            activate(void);	
-	void 					setStyle(HWND hwndCtrl);
+	void 					setStyle(HWND hWnd, int nCtrlID);
 	void 					setMainLevel(UT_sint32 iLevel);
+	void					setDetailsLevel(UT_sint32 iLevel);
 	UT_sint32				m_iStartValue;
 
 private:
@@ -104,11 +105,15 @@ public:
 	AP_Win32Dialog_FormatTOC*	getContainer(){return m_pData;};	
 	void						_fillGUI(void);
 	virtual void				_onCommand(HWND hWnd, WPARAM wParam, LPARAM lParam);
+	virtual void				_onNotify(LPNMHDR hdr, int iCtrlID);
+	void						saveCtrlsValuesForDetailsLevel ();	
+	void						loadCtrlsValuesForDetailsLevel ();
 	
 private:
 
 	virtual	void				_onInitDialog();
 	virtual	void				_onApply(); 
+	void						getCtrlsValues ();
 	
 	AP_Win32Dialog_FormatTOC*			m_pData;		
 	
