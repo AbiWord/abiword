@@ -81,9 +81,21 @@ XAP_CocoaFont::XAP_CocoaFont(const XAP_CocoaFont & copy)
 
 XAP_CocoaFont::~XAP_CocoaFont()
 {
-	[m_font release];
-	[m_fontForCache release];
-	[m_fontProps release];
+	if (m_font)
+		{
+			[m_font release];
+			m_font = 0;
+		}
+	if (m_fontForCache)
+		{
+			[m_fontForCache release];
+			m_fontForCache = 0;
+		}
+	if (m_fontProps)
+		{
+			[m_fontProps release];
+			m_fontProps = 0;
+		}
 	DELETEP(_m_coverage);
 }
 
@@ -182,11 +194,31 @@ void XAP_CocoaFont::getCoverage(UT_NumberVector& coverage)
 // rec.top = distance from the origin to the top of the glyph
 // rec.height = total height of the glyph
 
-bool XAP_CocoaFont::glyphBox(UT_UCS4Char g, UT_Rect & rec, GR_Graphics *)
+bool XAP_CocoaFont::glyphBox(UT_UCS4Char g, UT_Rect & rec, GR_Graphics * pG)
 {
-  // FIXME: Write the code for this!
-  UT_ASSERT(0);
-  return false;
+	bool bHaveGlyph = false;
+	// TODO: convert from unicode to glyph (??) see, e.g., http://www.cocoabuilder.com/archive/message/cocoa/2005/2/14/128271
+	NSGlyph aGlyph = (NSGlyph) g;
+
+	NSRect rect;
+
+	if ([m_font glyphIsEncoded:aGlyph])
+		{
+			bHaveGlyph = true;
+
+			rect = [m_font boundingRectForGlyph:aGlyph];
+			rec.width  = static_cast<UT_sint32>(pG->ftluD(rect.size.width));
+			rec.height = static_cast<UT_sint32>(pG->ftluD(rect.size.height));
+			rec.left   = static_cast<UT_sint32>(pG->ftluD(rect.origin.x));
+			rec.top    = static_cast<UT_sint32>(pG->ftluD(rect.origin.y)) + rec.height;
+		}
+	/*
+fprintf(stderr, "(%lu) [%c] (%d , %d) [%d x %d] { (%f , %f) [%f x %f] }\n",
+		(unsigned long) g, (bHaveGlyph ? 'Y' : 'N'),
+		(int) rec.left, (int) rec.top, (int) rec.width, (int) rec.height,
+		rect.origin.x, rect.origin.y, rect.size.width, rect.size.height);
+	*/
+	return bHaveGlyph;
 }
 
 UT_sint32 XAP_CocoaFont::measureUnremappedCharForCache(UT_UCSChar cChar) const
