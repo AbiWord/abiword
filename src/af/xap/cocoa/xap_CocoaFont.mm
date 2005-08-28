@@ -207,17 +207,11 @@ bool XAP_CocoaFont::glyphBox(UT_UCS4Char g, UT_Rect & rec, GR_Graphics * pG)
 			bHaveGlyph = true;
 
 			rect = [m_font boundingRectForGlyph:aGlyph];
-			rec.width  = static_cast<UT_sint32>(pG->ftluD(rect.size.width));
-			rec.height = static_cast<UT_sint32>(pG->ftluD(rect.size.height));
-			rec.left   = static_cast<UT_sint32>(pG->ftluD(rect.origin.x));
-			rec.top    = static_cast<UT_sint32>(pG->ftluD(rect.origin.y)) + rec.height;
+			rec.width  = static_cast<UT_sint32>(pG->tluD(rect.size.width));
+			rec.height = static_cast<UT_sint32>(pG->tluD(rect.size.height));
+			rec.left   = static_cast<UT_sint32>(pG->tluD(rect.origin.x));
+			rec.top    = static_cast<UT_sint32>(pG->tluD(rect.origin.y)) + rec.height;
 		}
-	/*
-fprintf(stderr, "(%lu) [%c] (%d , %d) [%d x %d] { (%f , %f) [%f x %f] }\n",
-		(unsigned long) g, (bHaveGlyph ? 'Y' : 'N'),
-		(int) rec.left, (int) rec.top, (int) rec.width, (int) rec.height,
-		rect.origin.x, rect.origin.y, rect.size.width, rect.size.height);
-	*/
 	return bHaveGlyph;
 }
 
