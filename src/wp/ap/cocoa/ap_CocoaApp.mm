@@ -3,7 +3,7 @@
 /* AbiWord
  * Copyright (C) 1998-2000 AbiSource, Inc.
  * Copyright (C) 2001-2005 Hubert Figuiere
- * Copyright (C) 2002-2004 Francis James Franklin
+ * Copyright (C) 2002-2005 Francis James Franklin
  * 
  * This program is free software; you can redistribute it and/or
  * modify it under the terms of the GNU General Public License
@@ -36,6 +36,17 @@
 #include <signal.h>
 
 #include <popt.h>
+
+/* Have to link the gtkmathview library to AbiWord, not just the plug-in :-(
+ * Otherwise get obscure problems with construction of static variables
+ * during dynamic linking that hand AbiWord.
+ * 
+ * RGBColor is defined in one of the many headers included by Cocoa/Cocoa.h and
+ * gets redefined by one of the many headers included by MathView/Configuration.hh
+ */
+#define RGBColor GtkMathView_RGBColor
+#include <MathView/Configuration.hh>
+#undef RGBColor
 
 #include "ut_bytebuf.h"
 #include "ut_debugmsg.h"
@@ -199,6 +210,10 @@ bool AP_CocoaApp::initialize(void)
 			path  = suffix;
 			path += "/Plug-ins";
 			s_createDirectoryIfNecessary(path.utf8_str(), true);
+
+			path  = suffix;
+			path += "/math";
+			s_createDirectoryIfNecessary(path.utf8_str(), true);
 		}
 
     const char * szUserPrivateDirectory = getUserPrivateDirectory();
@@ -244,6 +259,10 @@ bool AP_CocoaApp::initialize(void)
 														path2  = path;
 														path2 += "/Plug-ins";
 														s_createDirectoryIfNecessary(path2.utf8_str());
+
+														path2  = path;
+														path2 += "/math";
+														s_createDirectoryIfNecessary(path2.utf8_str());
 													}
 											}
 									}
@@ -281,6 +300,14 @@ bool AP_CocoaApp::initialize(void)
 	NSString * resources = [[NSBundle mainBundle] resourcePath];
 
 	setenv ("ABIWORD_COCOA_BUNDLED_RESOURCES", [resources UTF8String], 1);
+
+	/* Have to link the gtkmathview library to AbiWord, not just the plug-in :-(
+	 * Otherwise get obscure problems with construction of static variables
+	 * during dynamic linking that hand AbiWord.
+	 */
+	UT_UTF8String bundleConfDir([resources UTF8String]);
+	bundleConfDir += "/gtkmathview/gtkmathview.conf.xml";
+	Configuration::addConfigurationPath(bundleConfDir.utf8_str());
 
 	//////////////////////////////////////////////////////////////////
 	// Initialize the importers/exporters
