@@ -122,14 +122,17 @@ const char* GR_Graphics::findNearestFont(const char* pszFontFamily,
 }
 
 bool      GR_CocoaGraphics::m_colorAndImageInited = false;
+
 NSImage * GR_CocoaGraphics::m_imageBlue16x15 = nil;
 NSImage * GR_CocoaGraphics::m_imageBlue11x16 = nil;
 NSImage * GR_CocoaGraphics::m_imageGrey16x15 = nil;
 NSImage * GR_CocoaGraphics::m_imageGrey11x16 = nil;
+
 NSColor * GR_CocoaGraphics::m_colorBlue16x15 = nil;
 NSColor * GR_CocoaGraphics::m_colorBlue11x16 = nil;
 NSColor * GR_CocoaGraphics::m_colorGrey16x15 = nil;
 NSColor * GR_CocoaGraphics::m_colorGrey11x16 = nil;
+
 NSCursor *	GR_CocoaGraphics::m_Cursor_E = nil;
 NSCursor *	GR_CocoaGraphics::m_Cursor_N = nil;
 NSCursor *	GR_CocoaGraphics::m_Cursor_NE = nil;
@@ -160,6 +163,7 @@ void GR_CocoaGraphics::_initColorAndImage(void)
 	if (m_colorAndImageInited) {
 		return;
 	}
+
 	if (path = [bundle pathForResource:@"Blue16x15" ofType:@"png"]) {
 		if (m_imageBlue16x15 = [[NSImage alloc] initWithContentsOfFile:path]) {
 			m_colorBlue16x15 = [NSColor colorWithPatternImage:m_imageBlue16x15];
@@ -190,7 +194,6 @@ void GR_CocoaGraphics::_initColorAndImage(void)
 		m_colorGrey16x15 = [NSColor grayColor];
 		[m_colorGrey16x15 retain];
 	}
-	
 	if (path = [bundle pathForResource:@"Grey11x16" ofType:@"png"]) {
 		if (m_imageGrey11x16 = [[NSImage alloc] initWithContentsOfFile:path]) {
 			m_colorGrey11x16 = [NSColor colorWithPatternImage:m_imageGrey11x16];
@@ -464,7 +467,7 @@ GR_CocoaGraphics::~GR_CocoaGraphics()
 	[m_fontProps release];
 	[m_fontForGraphics release];
 	[m_currentColor release];
-
+#if 0
 	RELEASEP(m_imageBlue16x15);
 	RELEASEP(m_imageBlue11x16);
 	RELEASEP(m_imageGrey16x15);
@@ -494,7 +497,7 @@ GR_CocoaGraphics::~GR_CocoaGraphics()
 	RELEASEP(m_Cursor_Crosshair);
 	RELEASEP(m_Cursor_HandPointer);
 	RELEASEP(m_Cursor_DownArrow);
-
+#endif
 	s_iInstanceCount--;
 	for (int i = 0; i < COUNT_3D_COLORS; i++) {
 		[m_3dColors[i] release];
