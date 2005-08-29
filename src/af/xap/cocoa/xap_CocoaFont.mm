@@ -207,19 +207,21 @@ bool XAP_CocoaFont::glyphBox(UT_UCS4Char g, UT_Rect & rec, GR_Graphics * pG)
 			bHaveGlyph = true;
 
 			rect = [m_font boundingRectForGlyph:aGlyph];
-			rec.width  = static_cast<UT_sint32>(pG->tluD(rect.size.width));
-			rec.height = static_cast<UT_sint32>(pG->tluD(rect.size.height));
-			rec.left   = static_cast<UT_sint32>(pG->tluD(rect.origin.x));
-			rec.top    = static_cast<UT_sint32>(pG->tluD(rect.origin.y)) + rec.height;
+			rec.width  = static_cast<UT_sint32>(pG->ftluD(rect.size.width));
+			rec.height = static_cast<UT_sint32>(pG->ftluD(rect.size.height));
+			rec.left   = static_cast<UT_sint32>(pG->ftluD(rect.origin.x));
+			rec.top    = static_cast<UT_sint32>(pG->ftluD(rect.origin.y)) + rec.height;
 		}
 	return bHaveGlyph;
 }
 
 UT_sint32 XAP_CocoaFont::measureUnremappedCharForCache(UT_UCSChar cChar) const
 {
-	if (m_fontForCache == nil) {
-		m_fontForCache = [[NSFontManager sharedFontManager] 
-					convertFont:m_font toSize:GR_CharWidthsCache::CACHE_FONT_SIZE];
+	if (m_fontForCache == nil)
+	{
+		m_fontForCache = [[NSFontManager sharedFontManager] convertFont:m_font toSize:GR_CharWidthsCache::CACHE_FONT_SIZE];
+		[m_fontForCache retain];
+
 		m_fontProps = [[NSMutableDictionary alloc] init];
 		[m_fontProps setObject:m_fontForCache forKey:NSFontAttributeName];
 	}
