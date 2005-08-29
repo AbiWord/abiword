@@ -1,3 +1,5 @@
+/* -*- mode: C++; tab-width: 4; c-basic-offset: 4; -*- */
+
 /* AbiWord
  * Copyright (C) 2005 Martin Sevior
  * 
@@ -20,46 +22,68 @@
 #ifndef AP_COCOADIALOG_LATEX_H
 #define AP_COCOADIALOG_LATEX_H
 
-#include "ap_Dialog_Latex.h"
+#import <Cocoa/Cocoa.h>
 
-class XAP_CocoaFrame;
+#include "ap_Dialog_Latex.h"
+#include "xap_CocoaDialog_Utilities.h"
+
+@class AP_CocoaDialog_LatexController;
 
 /*****************************************************************/
 
-class AP_CocoaDialog_Latex: public AP_Dialog_Latex
+class AP_CocoaDialog_Latex : public AP_Dialog_Latex
 {
 public:
-	AP_CocoaDialog_Latex(XAP_DialogFactory * pDlgFactory, XAP_Dialog_Id id);
+	AP_CocoaDialog_Latex(XAP_DialogFactory * pDlgFactory, XAP_Dialog_Id dlgid);
+
 	virtual ~AP_CocoaDialog_Latex(void);
 
 	virtual void			runModeless(XAP_Frame * pFrame);
 	virtual void			destroy(void);
 	virtual void			activate(void);
-	virtual void			notifyActiveFrame(XAP_Frame *pFrame);
+	virtual void			notifyActiveFrame(XAP_Frame * pFrame);
 
-	static XAP_Dialog *		static_constructor(XAP_DialogFactory *, XAP_Dialog_Id id);
+	static XAP_Dialog *		static_constructor(XAP_DialogFactory *, XAP_Dialog_Id dlgid);
 
 	// callbacks can fire these events
 
 	void			event_Insert(void);
 	void			event_Close(void);
 	void			event_WindowDelete(void);
-	virtual void            setLatexInGUI(void);
-	virtual bool            getLatexFromGUI(void);
 
+	virtual void	setLatexInGUI(void);
+	virtual bool	getLatexFromGUI(void);
 
 protected:
-	virtual void constructDialog(void);
-
-	// pointers to widgets we need
+	AP_CocoaDialog_LatexController *	m_dlg;
 };
 
+@interface AP_CocoaDialog_LatexController : NSWindowController <XAP_CocoaDialogProtocol>
+{
+	IBOutlet NSButton *		oClose;
+	IBOutlet NSButton *		oInsert;
+
+	IBOutlet NSTextView *	oEditor;
+
+	IBOutlet NSTextField *	oHeadingText;
+	IBOutlet NSTextField *	oExampleText;
+
+	AP_CocoaDialog_Latex *	_xap;
+}
+- (id)initFromNib;
+- (void)dealloc;
+
+- (void)setXAPOwner:(XAP_Dialog *)owner;
+- (void)discardXAP;
+
+- (void)windowDidLoad;
+- (void)windowWillClose:(NSNotification *)aNotification;
+
+- (IBAction)aClose:(id)sender;
+- (IBAction)aInsert:(id)sender;
+
+- (void)setEditorText:(NSString *)text;
+- (NSString *)editorText;
+@end
+
 #endif /* AP_COCOADIALOG_Latex_H */
-
-
-
-
-
-
-
-
