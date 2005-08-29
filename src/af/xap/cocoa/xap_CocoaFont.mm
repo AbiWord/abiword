@@ -28,20 +28,81 @@
 #include "ut_debugmsg.h"
 #include "xap_CocoaFont.h"
 
+/*******************************************************************/
+
+NSTextStorage *   XAP_CocoaFont::s_fontMetricsTextStorage   = nil;
+NSLayoutManager * XAP_CocoaFont::s_fontMetricsLayoutManager = nil;
+NSTextContainer * XAP_CocoaFont::s_fontMetricsTextContainer = nil;
 
 /*******************************************************************/
-NSTextStorage *XAP_CocoaFont::s_fontMetricsTextStorage = nil;
-NSLayoutManager *XAP_CocoaFont::s_fontMetricsLayoutManager = nil;
-NSTextContainer *XAP_CocoaFont::s_fontMetricsTextContainer = nil;
 
+XAP_CocoaFont_LayoutHelper::XAP_CocoaFont_LayoutHelper(NSFont * font) :
+	m_fontattr(0),
+	m_storage(0),
+	m_layout(0)
+{
+	m_fontattr = [NSDictionary dictionaryWithObject:font forKey:NSFontAttributeName];
+	[m_fontattr retain];
 
-/*******************************************************************/
+	m_storage = [[NSTextStorage alloc] initWithString:@"" attributes:m_fontattr];
+	m_layout  = [[NSLayoutManager alloc] init];
+
+	NSTextContainer * textContainer = [[NSTextContainer alloc] init];
+
+	[m_layout  addTextContainer:textContainer];
+	[m_storage addLayoutManager:m_layout];
+
+	[textContainer release];
+}
+
+XAP_CocoaFont_LayoutHelper::~XAP_CocoaFont_LayoutHelper()
+{
+	if (m_fontattr)
+		{
+			[m_fontattr release];
+			m_fontattr = 0;
+		}
+	if (m_storage)
+		{
+			[m_storage release];
+			m_storage = 0;
+		}
+	if (m_layout)
+		{
+			[m_layout release];
+			m_layout = 0;
+		}
+}
+
+bool XAP_CocoaFont_LayoutHelper::setUnichar(UT_UCS4Char c, NSGlyph & firstGlyph)
+{
+	unichar uc = (unichar) c;
+	return setString([NSString stringWithCharacters:&uc length:1], firstGlyph);
+}
+
+bool XAP_CocoaFont_LayoutHelper::setString(NSString * str, NSGlyph & firstGlyph)
+{
+	NSAttributedString * attr_str = [[NSAttributedString alloc] initWithString:str attributes:m_fontattr];
+	[m_storage setAttributedString:attr_str];
+	[attr_str release];
+
+	bool bOkay = false;
+
+	if ([m_layout isValidGlyphIndex:0])
+		{
+			bOkay = true;
+			firstGlyph = [m_layout glyphAtIndex:0];
+		}
+	return bOkay;
+}
+
 
 XAP_CocoaFont::XAP_CocoaFont()
   : GR_Font(),
 	m_font(nil),
 	m_fontForCache(nil),
 	m_fontProps(nil),
+	m_LayoutHelper(0),
 	_m_coverage(NULL)
 {
 	m_hashKey = "";
@@ -55,6 +116,7 @@ XAP_CocoaFont::XAP_CocoaFont(NSFont* font)
 	m_font(nil),
 	m_fontForCache(nil),
 	m_fontProps(nil),
+	m_LayoutHelper(0),
 	_m_coverage(NULL)
 {
 	m_hashKey = [[font fontName] UTF8String];
@@ -70,6 +132,7 @@ XAP_CocoaFont::XAP_CocoaFont(const XAP_CocoaFont & copy)
 	m_font(nil),
 	m_fontForCache(nil),
 	m_fontProps(nil),
+	m_LayoutHelper(0),
 	_m_coverage(NULL)
 {
 	m_hashKey = copy.hashKey();
@@ -97,6 +160,7 @@ XAP_CocoaFont::~XAP_CocoaFont()
 			m_fontProps = 0;
 		}
 	DELETEP(_m_coverage);
+	DELETEP(m_LayoutHelper);
 }
 
 
@@ -197,21 +261,27 @@ void XAP_CocoaFont::getCoverage(UT_NumberVector& coverage)
 bool XAP_CocoaFont::glyphBox(UT_UCS4Char g, UT_Rect & rec, GR_Graphics * pG)
 {
 	bool bHaveGlyph = false;
-	// TODO: convert from unicode to glyph (??) see, e.g., http://www.cocoabuilder.com/archive/message/cocoa/2005/2/14/128271
-	NSGlyph aGlyph = (NSGlyph) g;
+
+	NSGlyph aGlyph;
 
 	NSRect rect;
 
-	if ([m_font glyphIsEncoded:aGlyph])
+	if (!m_LayoutHelper)
 		{
-			bHaveGlyph = true;
-
-			rect = [m_font boundingRectForGlyph:aGlyph];
-			rec.width  = static_cast<UT_sint32>(pG->ftluD(rect.size.width));
-			rec.height = static_cast<UT_sint32>(pG->ftluD(rect.size.height));
-			rec.left   = static_cast<UT_sint32>(pG->ftluD(rect.origin.x));
-			rec.top    = static_cast<UT_sint32>(pG->ftluD(rect.origin.y)) + rec.height;
+			m_LayoutHelper = new XAP_CocoaFont_LayoutHelper(m_font);
 		}
+	if (m_LayoutHelper)
+		if (m_LayoutHelper->setUnichar(g, aGlyph)) // convert from unicode to glyph
+			if ([m_font glyphIsEncoded:aGlyph])
+				{
+					bHaveGlyph = true;
+
+					rect = [m_font boundingRectForGlyph:aGlyph];
+					rec.width  = static_cast<UT_sint32>(pG->ftluD(rect.size.width));
+					rec.height = static_cast<UT_sint32>(pG->ftluD(rect.size.height));
+					rec.left   = static_cast<UT_sint32>(pG->ftluD(rect.origin.x));
+					rec.top    = static_cast<UT_sint32>(pG->ftluD(rect.origin.y)) + rec.height;
+				}
 	return bHaveGlyph;
 }
 

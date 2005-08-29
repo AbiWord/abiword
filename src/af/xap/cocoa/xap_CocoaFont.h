@@ -28,6 +28,22 @@
 #include "ut_vector.h"
 #include "gr_Graphics.h"
 
+class XAP_CocoaFont_LayoutHelper
+{
+private:
+	NSDictionary *		m_fontattr;
+	NSTextStorage *		m_storage;
+	NSLayoutManager *	m_layout;
+
+public:
+	XAP_CocoaFont_LayoutHelper(NSFont * font);
+
+	~XAP_CocoaFont_LayoutHelper();
+
+	bool	setUnichar(UT_UCS4Char c, NSGlyph & firstGlyph);
+	bool	setString(NSString * str, NSGlyph & firstGlyph);
+};
+
 /*
   We derive our handle from GR_Font so we can be passed around the GR
   contexts as a native Cocoa font.
@@ -79,6 +95,8 @@ private:
 	NSFont *						m_font;
 	mutable NSFont *				m_fontForCache;
 	mutable NSMutableDictionary *	m_fontProps;
+
+	XAP_CocoaFont_LayoutHelper *	m_LayoutHelper;
 
 	void					_resetMetricsCache();
 	static void				_initMetricsLayouts(void);
