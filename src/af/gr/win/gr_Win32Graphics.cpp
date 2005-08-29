@@ -1161,13 +1161,40 @@ void GR_Win32Graphics::drawImage(GR_Image* pImg, UT_sint32 xDest, UT_sint32 yDes
 	UT_uint32 iSizeOfColorData = pDIB->bmiHeader.biClrUsed * sizeof(RGBQUAD);
 	UT_Byte* pBits = ((unsigned char*) pDIB) + pDIB->bmiHeader.biSize + iSizeOfColorData;
 
-	int iRes = StretchDIBits(m_hdc,
+	int iRes = 0;
+
+#if 0
+	// AlphaBlend is supported from win98 upwards
+	// we need to turn the DIB into DC first
+	HDC memDC = CreateCompatibleDC(m_hdc);
+
+	if(memDC)
+	{
+		// need to convert the dib pointer to handle here ...
+
+		// now select into the memory dc and call AlphaBlend
+		SelectObject(memDC, hDIB);
+		iRes = AlphaBlend(m_hdc,
+						  xDest, yDest,
+						  pImg->getDisplayWidth(), pImg->getDisplayHeight(),
+						  memDC,
+						  0, 0,
+						  pDIB->bmiHeader.biWidth, pDIB->bmiHeader.biHeight,
+						  blendfnct);
+	}
+	
+#endif
+	
+	if(!iRes)
+	{
+		iRes = StretchDIBits(m_hdc,
 							 xDest, yDest,
 							 pImg->getDisplayWidth(), pImg->getDisplayHeight(),
 							 0, 0,
 							 pDIB->bmiHeader.biWidth, pDIB->bmiHeader.biHeight,
 							 pBits, pDIB, DIB_RGB_COLORS, SRCCOPY);
-
+	}
+	
 	if (iRes == GDI_ERROR)
 	{
 		DWORD err = GetLastError();
@@ -1714,10 +1741,7 @@ bool GR_Win32Font::glyphBox(UT_UCS4Char g, UT_Rect & rec, GR_Graphics * pG)
 	GLYPHMETRICS gm;
 	MAT2 m = {{0,1}, {0,0}, {0,0}, {0,1}};
 
-	int nLogPixelsY      = GetDeviceCaps(hdc, LOGPIXELSY);    // resolution of primary device
 	int nPrintLogPixelsY = GetDeviceCaps(printDC, LOGPIXELSY);// resolution of printer
-
-	int nLogPixelsX      = GetDeviceCaps(hdc, LOGPIXELSX);
 	int nPrintLogPixelsX = GetDeviceCaps(printDC, LOGPIXELSX);
 
 	UT_uint32 pixels = getUnscaledHeight();
@@ -1755,6 +1779,9 @@ bool GR_Win32Font::glyphBox(UT_UCS4Char g, UT_Rect & rec, GR_Graphics * pG)
 	else
 	{
 		// TODO: an UT_UCS4Char -> ANSI conversion here, then call GetGlyphOutlineA() ...
+		// Actually, this probably is not much use, since this function is currently only
+		// used by the math plugin, and for that to work, we do need to work with unicode,
+		// not ANSI
 		UT_return_val_if_fail( UT_NOT_IMPLEMENTED, false );
 	}
 	
@@ -1766,19 +1793,13 @@ bool GR_Win32Font::glyphBox(UT_UCS4Char g, UT_Rect & rec, GR_Graphics * pG)
 	rec.width  = gm.gmBlackBoxX;
 	rec.height = gm.gmBlackBoxY;
 	
-	// if the primary DC is not the printer, we now have to scale the metrics to the
-	// screen resolution
-	if(nLogPixelsY != nPrintLogPixelsY)
-	{
-		rec.height  = MulDiv(rec.height, nLogPixelsY, nPrintLogPixelsY);
-		rec.top  = MulDiv(rec.top, nLogPixelsY, nPrintLogPixelsY);
-	}
+	// the metrics are in device units, scale them to layout
+	int iResolution = pG->getResolution();
+	rec.height  = MulDiv(rec.height, iResolution, nPrintLogPixelsY);
+	rec.top  = MulDiv(rec.top, iResolution, nPrintLogPixelsY);
 
-	if(nLogPixelsX != nPrintLogPixelsX)
-	{
-		rec.width  = MulDiv(rec.width, nLogPixelsX, nPrintLogPixelsX);
-		rec.left  = MulDiv(rec.left, nLogPixelsX, nPrintLogPixelsX);
-	}
+	rec.width  = MulDiv(rec.width, iResolution, nPrintLogPixelsX);
+	rec.left  = MulDiv(rec.left, iResolution, nPrintLogPixelsX);
 
 	UT_DEBUGMSG(("gr_Win32Graphics::glyphBox(l=%d, t=%d, w=%d, h=%d\n", rec.left, rec.top, rec.width, rec.height));
 	return true;
