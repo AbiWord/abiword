@@ -195,6 +195,7 @@ enum XAP_CocoaAppMenu_Id
  */
 - (XAP_CocoaFontFamilyHelper *)helperForUnknownFontFamily:(NSString *)fontFamilyName;
 
+- (void)reappendPluginMenuItems; // for use after rebuilding menus - see XAP_CocoaApp::rebuildMenus()
 - (void)appendPluginMenuItem:(NSMenuItem *)menuItem;
 - (void)removePluginMenuItem:(NSMenuItem *)menuItem;
 

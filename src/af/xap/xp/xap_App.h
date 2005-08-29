@@ -128,6 +128,8 @@ public:
 	const char *					getApplicationTitleForTitleBar() const;
 	const char *					getApplicationName() const;
 	
+	virtual void                rebuildMenus(void);
+
 	EV_EditMethodContainer *			getEditMethodContainer() const;
 	EV_EditBindingMap *				getBindingMap(const char * szName);
 	const EV_Menu_ActionSet *			getMenuActionSet() const;

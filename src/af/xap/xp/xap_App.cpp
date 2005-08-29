@@ -604,6 +604,17 @@ const char * XAP_App::getApplicationName() const
 	return m_szAppName;
 }
 
+void XAP_App::rebuildMenus(void)
+{
+	UT_uint32 frameCount = getFrameCount();
+
+	for (UT_uint32 i = 0; i < frameCount; i++)
+		if (XAP_Frame * pFrame = getFrame(i))
+		{
+			pFrame->rebuildMenus();
+		}
+}
+
 EV_EditMethodContainer * XAP_App::getEditMethodContainer() const
 {
 	return m_pEMC;

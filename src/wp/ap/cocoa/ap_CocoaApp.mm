@@ -443,6 +443,20 @@ bool AP_CocoaApp::initialize(void)
     return true;
 }
 
+void AP_CocoaApp::rebuildMenus(void)
+{
+	// getMenuFactory()->buildMenuLabelSet(m_szMenuLabelSetName);
+
+	DELETEP(m_pCocoaMenu);
+	m_pCocoaMenu = new EV_CocoaMenuBar(this, m_szMenuLayoutName, m_szMenuLabelSetName);
+	UT_ASSERT(m_pCocoaMenu);
+
+	m_pCocoaMenu->buildAppMenu();
+
+	XAP_CocoaAppController * pController = (XAP_CocoaAppController *) [NSApp delegate];
+	[pController reappendPluginMenuItems];
+}
+
 /*!
   Create a new frame based on the current one.  
   \return A pointer to the new frame.  

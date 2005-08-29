@@ -806,6 +806,21 @@ static XAP_CocoaAppController * XAP_AppController_Instance = nil;
 	return helper;
 }
 
+- (void)reappendPluginMenuItems
+{
+	if (unsigned count = [m_PluginsTools count])
+		{
+			[m_AppMenu[XAP_CocoaAppMenu_Tools] addItem:m_PluginsToolsSeparator];
+
+			for (unsigned i = 0; i < count; i++)
+				{
+					NSMenuItem * menuItem = (NSMenuItem *) [m_PluginsTools objectAtIndex:i];
+
+					[m_AppMenu[XAP_CocoaAppMenu_Tools] addItem:menuItem];
+				}
+		}
+}
+
 - (void)appendPluginMenuItem:(NSMenuItem *)menuItem
 {
 	if (![m_PluginsTools containsObject:menuItem])
