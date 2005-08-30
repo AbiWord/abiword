@@ -188,7 +188,7 @@
 			<string>ODTDocument.icns</string>
 			<key>CFBundleTypeMIMETypes</key>
 			<array>
-				<string>vnd.oasis.opendocument.text</string>
+				<string>application/vnd.oasis.opendocument.text</string>
 			</array>
 			<key>CFBundleTypeName</key>
 			<string>OpenDocument Text</string>
