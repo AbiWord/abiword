@@ -84,9 +84,30 @@ fp_Page::~fp_Page()
 		m_pOwner = NULL;
 		pDSL->deleteOwnedPage(this);
 	}
-
-	delete m_pHeader;
-	delete m_pFooter;
+	if((m_pHeader != NULL) || (m_pFooter != NULL))
+	{
+	    fl_HdrFtrSectionLayout * pHdrFtr = NULL;
+	    if(m_pHeader != NULL)
+	    {
+	         pHdrFtr = m_pHeader->getHdrFtrSectionLayout();
+		 if(pHdrFtr != NULL && pHdrFtr->isPageHere(this))
+		 {
+		   pHdrFtr->deletePage(this);
+		   UT_DEBUGMSG(("Remove Page from Hdr %x in page destructor \n",pHdrFtr));
+		 }
+	    }
+	    if(m_pFooter != NULL)
+	    {
+	         pHdrFtr = m_pFooter->getHdrFtrSectionLayout();
+		 if(pHdrFtr != NULL && pHdrFtr->isPageHere(this))
+		 {
+		   pHdrFtr->deletePage(this);
+		   UT_DEBUGMSG(("Remove Page from Ftr %x in page destructor \n",pHdrFtr));
+		 }
+	    }
+	}
+	DELETEP(m_pHeader);
+	DELETEP(m_pFooter);
 }
 
 /*!

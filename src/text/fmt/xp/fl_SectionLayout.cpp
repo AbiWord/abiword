@@ -3469,6 +3469,7 @@ void fl_HdrFtrSectionLayout::addPage(fp_Page* pPage)
 	if(pOldShadow != NULL)
 	{
 		pOldShadow->getHdrFtrSectionLayout()->deletePage(pPage);
+		pPage->removeHdrFtr(m_iHFType);
 	}
 
 	_PageHdrFtrShadowPair* pPair = new _PageHdrFtrShadowPair();
