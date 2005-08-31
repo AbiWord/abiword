@@ -224,12 +224,12 @@ public:
 
 	  Of course it uses iconv internally.
 	*/
-	const char* strToNative(const char* in,const char* charset,bool bUseSysEncoding=false) const;
+	const char* strToNative(const char* in,const char* charset,bool bReverse=false, bool bUseSysEncoding=false) const;
 
 	/*
 	 Same as above, but it will use buffer provided by caller.
 	*/
-	const char* strToNative(const char* in,const char* charset,char* buf,int bufsz,bool bUseSysEncoding=false) const;
+	const char* strToNative(const char* in,const char* charset,char* buf,int bufsz, bool bReverse=false, bool bUseSysEncoding=false) const;
 
 	/*this is used by code that reads xml using expat*/
 	static int XAP_XML_UnknownEncodingHandler(void *encodingHandlerData,

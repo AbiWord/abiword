@@ -26,6 +26,7 @@
 #include "ut_misc.h"
 
 #include "xap_App.h"
+#include "xap_EncodingManager.h"
 #include "xap_Win32App.h"
 #include "xap_Win32FrameImpl.h"
 
@@ -106,7 +107,7 @@ void XAP_Win32Dialog_FontChooser::runModal(XAP_Frame * pFrame)
 	cf.hInstance = pApp->getInstance();
 
 	if (m_pFontFamily && *m_pFontFamily)
-		strcpy(lf.lfFaceName,m_pFontFamily);
+		strcpy(lf.lfFaceName,getApp()->getEncodingManager()->strToNative(m_pFontFamily, "UTF-8"));
 	else
 		cf.Flags |= CF_NOFACESEL;
 
