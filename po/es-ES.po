@@ -1,8 +1,4 @@
-# translation of es-ES.po to 
-# traducción de es-ES.po al Spanish
-# translation of es-ES.po to Spanish
-# translation of abiword to Spanish
-# This file is distributed under the same license as the PACKAGE package.
+# This file is distributed under the same license as the Abiword package.
 # Copyright (C) 2003
 # Francisco Javier F. Serrador <serrador@arrakis.es>, 2003.
 # Francisco Javier F. Serrador <serrador@cvs.gnome.org>, 2004, 2005.
@@ -10,8 +6,8 @@ msgid ""
 msgstr ""
 "Project-Id-Version: es-ES\n"
 "Report-Msgid-Bugs-To: \n"
-"POT-Creation-Date: 2005-07-14 00:04+0200\n"
-"PO-Revision-Date: 2005-07-14 00:06+0200\n"
+"POT-Creation-Date: 2005-08-31 23:13+0200\n"
+"PO-Revision-Date: 2005-08-31 23:14+0200\n"
 "Last-Translator: \n"
 "Language-Team:  <es@li.org>\n"
 "MIME-Version: 1.0\n"
@@ -4096,7 +4092,7 @@ msgstr "Numerados"
 
 #. DLG_Lists_Numbered_List
 #. STYLE_NUMBER_LIST
-#: po/tmp/ap_String_Id.h.h:1673 po/tmp/xap_String_Id.h.h:531
+#: po/tmp/ap_String_Id.h.h:1673 po/tmp/xap_String_Id.h.h:533
 msgid "Numbered List"
 msgstr "Lista numerada"
 
@@ -4195,7 +4191,7 @@ msgstr "Se agotó la memoria al intentar abrir %s"
 #. TOOLBAR_STATUSLINE_FMT_OVERLINE
 #. TOOLBAR_TOOLTIP_FMT_OVERLINE
 #. DLG_UFS_OverlineCheck
-#: po/tmp/ap_String_Id.h.h:1722 po/tmp/xap_String_Id.h.h:545
+#: po/tmp/ap_String_Id.h.h:1722 po/tmp/xap_String_Id.h.h:547
 msgid "Overline"
 msgstr "Sobrelinear"
 
@@ -4429,7 +4425,7 @@ msgstr "Preferencias"
 #. DLG_Lists_Preview
 #. DLG_PageNumbers_Preview
 #. DLG_Zoom_PreviewFrame
-#: po/tmp/ap_String_Id.h.h:1822 po/tmp/xap_String_Id.h.h:575
+#: po/tmp/ap_String_Id.h.h:1822 po/tmp/xap_String_Id.h.h:577
 msgid "Preview"
 msgstr "Vista previa"
 
@@ -4458,7 +4454,7 @@ msgstr ""
 #. TOOLBAR_LABEL_FILE_PRINT
 #. DLG_UP_PrintTitle
 #. DLG_UP_PrintButton
-#: po/tmp/ap_String_Id.h.h:1833 po/tmp/xap_String_Id.h.h:580
+#: po/tmp/ap_String_Id.h.h:1833 po/tmp/xap_String_Id.h.h:582
 msgid "Print"
 msgstr "Imprimir"
 
@@ -4948,7 +4944,7 @@ msgstr "Ver histórico del documento actual"
 
 #. MENU_STATUSLINE_TABLE_SELECT
 #. DLG_Select
-#: po/tmp/ap_String_Id.h.h:2037 po/tmp/xap_String_Id.h.h:630
+#: po/tmp/ap_String_Id.h.h:2037 po/tmp/xap_String_Id.h.h:632
 msgid "Select"
 msgstr "Seleccionar"
 
@@ -5015,7 +5011,7 @@ msgstr "Selecciona el documento completo"
 
 #. DLG_FormatTable_Apply_To_Selection
 #. DLG_UP_Selection
-#: po/tmp/ap_String_Id.h.h:2064 po/tmp/xap_String_Id.h.h:638
+#: po/tmp/ap_String_Id.h.h:2064 po/tmp/xap_String_Id.h.h:640
 msgid "Selection"
 msgstr "Selección"
 
@@ -5169,7 +5165,7 @@ msgstr "Combinación de teclas"
 
 #. DLG_Options_Label_Show
 #. DLG_Show
-#: po/tmp/ap_String_Id.h.h:2126 po/tmp/xap_String_Id.h.h:650
+#: po/tmp/ap_String_Id.h.h:2126 po/tmp/xap_String_Id.h.h:652
 msgid "Show"
 msgstr "Mostrar"
 
@@ -5474,7 +5470,7 @@ msgstr "Dividir esta celda"
 
 #. DLG_Lists_Square_List
 #. STYLE_SQUARELIST
-#: po/tmp/ap_String_Id.h.h:2253 po/tmp/xap_String_Id.h.h:662
+#: po/tmp/ap_String_Id.h.h:2253 po/tmp/xap_String_Id.h.h:664
 msgid "Square List"
 msgstr "Lista de cuadrados"
 
@@ -5495,7 +5491,7 @@ msgstr "Barra estándar"
 
 #. DLG_Lists_Star_List
 #. STYLE_STARLIST
-#: po/tmp/ap_String_Id.h.h:2261 po/tmp/xap_String_Id.h.h:666
+#: po/tmp/ap_String_Id.h.h:2261 po/tmp/xap_String_Id.h.h:668
 msgid "Star List"
 msgstr "Lista de estrellas"
 
@@ -5549,7 +5545,7 @@ msgstr "&Tachado"
 #. TOOLBAR_STATUSLINE_FMT_STRIKE
 #. TOOLBAR_TOOLTIP_FMT_STRIKE
 #. DLG_UFS_StrikeoutCheck
-#: po/tmp/ap_String_Id.h.h:2284 po/tmp/xap_String_Id.h.h:668
+#: po/tmp/ap_String_Id.h.h:2284 po/tmp/xap_String_Id.h.h:670
 msgid "Strike"
 msgstr "Tachar"
 
@@ -5597,7 +5593,7 @@ msgstr "El nombre del estilo no puede dejarse en blanco"
 
 #. DLG_Lists_Style
 #. DLG_UFS_StyleLabel
-#: po/tmp/ap_String_Id.h.h:2304 po/tmp/xap_String_Id.h.h:670
+#: po/tmp/ap_String_Id.h.h:2304 po/tmp/xap_String_Id.h.h:672
 msgid "Style:"
 msgstr "Estilo:"
 
@@ -5626,7 +5622,7 @@ msgstr "Asunto:"
 #. TOOLBAR_STATUSLINE_FMT_SUBSCRIPT
 #. TOOLBAR_TOOLTIP_FMT_SUBSCRIPT
 #. DLG_UFS_SubScript
-#: po/tmp/ap_String_Id.h.h:2317 po/tmp/xap_String_Id.h.h:674
+#: po/tmp/ap_String_Id.h.h:2317 po/tmp/xap_String_Id.h.h:676
 msgid "Subscript"
 msgstr "Subíndice"
 
@@ -5674,7 +5670,7 @@ msgstr "Supe&ríndice"
 #. TOOLBAR_STATUSLINE_FMT_SUPERSCRIPT
 #. TOOLBAR_TOOLTIP_FMT_SUPERSCRIPT
 #. DLG_UFS_SuperScript
-#: po/tmp/ap_String_Id.h.h:2337 po/tmp/xap_String_Id.h.h:676
+#: po/tmp/ap_String_Id.h.h:2337 po/tmp/xap_String_Id.h.h:678
 msgid "Superscript"
 msgstr "Superíndice"
 
@@ -5712,7 +5708,7 @@ msgstr "Tabuladores a borrar:"
 #. DLG_FormatTable_Apply_To_Table
 #. MENU_STATUSLINE_TABLE
 #. TB_Table
-#: po/tmp/ap_String_Id.h.h:2353 po/tmp/xap_String_Id.h.h:686
+#: po/tmp/ap_String_Id.h.h:2353 po/tmp/xap_String_Id.h.h:688
 msgid "Table"
 msgstr "Tabla"
 
@@ -5901,7 +5897,7 @@ msgstr "Tres"
 
 #. DLG_Lists_Tick_List
 #. STYLE_TICKLIST
-#: po/tmp/ap_String_Id.h.h:2417 po/tmp/xap_String_Id.h.h:718
+#: po/tmp/ap_String_Id.h.h:2417 po/tmp/xap_String_Id.h.h:720
 msgid "Tick List"
 msgstr "Lista de verificación"
 
@@ -5922,7 +5918,7 @@ msgstr "Capitalización De Título"
 
 #. DLG_MetaData_Title_LBL
 #. DLG_Image_LblTitle
-#: po/tmp/ap_String_Id.h.h:2425 po/tmp/xap_String_Id.h.h:722
+#: po/tmp/ap_String_Id.h.h:2425 po/tmp/xap_String_Id.h.h:724
 msgid "Title:"
 msgstr "Título:"
 
@@ -5942,13 +5938,13 @@ msgstr "Margen superior [%s]"
 #. TOOLBAR_STATUSLINE_FMT_TOPLINE
 #. TOOLBAR_TOOLTIP_FMT_TOPLINE
 #. DLG_UFS_ToplineCheck
-#: po/tmp/ap_String_Id.h.h:2434 po/tmp/xap_String_Id.h.h:728
+#: po/tmp/ap_String_Id.h.h:2434 po/tmp/xap_String_Id.h.h:730
 msgid "Topline"
 msgstr "Línea superior"
 
 #. DLG_Lists_Triangle_List
 #. STYLE_TRIANGLELIST
-#: po/tmp/ap_String_Id.h.h:2436 po/tmp/xap_String_Id.h.h:730
+#: po/tmp/ap_String_Id.h.h:2436 po/tmp/xap_String_Id.h.h:732
 msgid "Triangle List"
 msgstr "Lista de triángulos"
 
@@ -5981,7 +5977,7 @@ msgstr "MAYÚSCULAS"
 #. TOOLBAR_STATUSLINE_FMT_UNDERLINE
 #. TOOLBAR_TOOLTIP_FMT_UNDERLINE
 #. DLG_UFS_UnderlineCheck
-#: po/tmp/ap_String_Id.h.h:2450 po/tmp/xap_String_Id.h.h:750
+#: po/tmp/ap_String_Id.h.h:2450 po/tmp/xap_String_Id.h.h:752
 msgid "Underline"
 msgstr "Subrayar"
 
@@ -6004,13 +6000,13 @@ msgstr "Deshace la edición"
 
 #. DLG_Lists_Upper_Case_List
 #. STYLE_UPPERCASTELIST
-#: po/tmp/ap_String_Id.h.h:2460 po/tmp/xap_String_Id.h.h:784
+#: po/tmp/ap_String_Id.h.h:2460 po/tmp/xap_String_Id.h.h:786
 msgid "Upper Case List"
 msgstr "Lista en mayúsculas"
 
 #. DLG_Lists_Upper_Roman_List
 #. STYLE_UPPERROMANLIST
-#: po/tmp/ap_String_Id.h.h:2462 po/tmp/xap_String_Id.h.h:786
+#: po/tmp/ap_String_Id.h.h:2462 po/tmp/xap_String_Id.h.h:788
 msgid "Upper Roman List"
 msgstr "Lista romana en mayúsculas"
 
@@ -6051,7 +6047,7 @@ msgstr "Estilos definidos por el usuario"
 
 #. FIELD_Application_Version
 #. DLG_History_Version_Version
-#: po/tmp/ap_String_Id.h.h:2478 po/tmp/xap_String_Id.h.h:792
+#: po/tmp/ap_String_Id.h.h:2478 po/tmp/xap_String_Id.h.h:794
 msgid "Version"
 msgstr "Versión"
 
@@ -6186,7 +6182,7 @@ msgstr "Sus cambios se perderán si no los guarda."
 #. TOOLBAR_STATUSLINE_ZOOM
 #. TOOLBAR_TOOLTIP_ZOOM
 #. DLG_Zoom_ZoomTitle
-#: po/tmp/ap_String_Id.h.h:2537 po/tmp/xap_String_Id.h.h:839
+#: po/tmp/ap_String_Id.h.h:2537 po/tmp/xap_String_Id.h.h:841
 msgid "Zoom"
 msgstr "Ampliación"
 
@@ -7392,474 +7388,479 @@ msgstr "Macedonio"
 msgid "Make default for document"
 msgstr "Convertir en predeterminado para el documento"
 
-#. LANG_MI_NZ
+#. LANG_MS_MY
 #: po/tmp/xap_String_Id.h.h:497
+msgid "Malay"
+msgstr "Malayo"
+
+#. LANG_MI_NZ
+#: po/tmp/xap_String_Id.h.h:499
 msgid "Maori"
 msgstr "Maori"
 
 #. LANG_MR_IN
-#: po/tmp/xap_String_Id.h.h:499
+#: po/tmp/xap_String_Id.h.h:501
 msgid "Marathi"
 msgstr "Marati"
 
 #. LANG_MH_MH
-#: po/tmp/xap_String_Id.h.h:501
+#: po/tmp/xap_String_Id.h.h:503
 msgid "Marshallese (Marshall Islands)"
 msgstr "Marshalés (Islas Marshall)"
 
 #. LANG_MH_NR
-#: po/tmp/xap_String_Id.h.h:503
+#: po/tmp/xap_String_Id.h.h:505
 msgid "Marshallese (Nauru)"
 msgstr "Marshalés (Nauru)"
 
 #. DLG_Merge
-#: po/tmp/xap_String_Id.h.h:505
+#: po/tmp/xap_String_Id.h.h:507
 msgid "Merge"
 msgstr "Combinar"
 
 #. LANG_MN_MN
-#: po/tmp/xap_String_Id.h.h:507
+#: po/tmp/xap_String_Id.h.h:509
 msgid "Mongolian"
 msgstr "Mongol"
 
 #. DLG_PLUGIN_MANAGER_NAME
-#: po/tmp/xap_String_Id.h.h:509
+#: po/tmp/xap_String_Id.h.h:511
 msgid "Name:"
 msgstr "Nombre:"
 
 #. DLG_QNXMB_No
-#: po/tmp/xap_String_Id.h.h:511
+#: po/tmp/xap_String_Id.h.h:513
 msgid "No"
 msgstr "No"
 
 #. DLG_IP_No_Picture_Label
-#: po/tmp/xap_String_Id.h.h:513
+#: po/tmp/xap_String_Id.h.h:515
 msgid "No Picture"
 msgstr "Sin imagen"
 
 #. DLG_PLUGIN_MANAGER_NONE_SELECTED
-#: po/tmp/xap_String_Id.h.h:515
+#: po/tmp/xap_String_Id.h.h:517
 msgid "No plugin selected"
 msgstr "No hay un complemento seleccionado"
 
 #. STYLE_NORMAL
-#: po/tmp/xap_String_Id.h.h:517
+#: po/tmp/xap_String_Id.h.h:519
 msgid "Normal"
 msgstr "Normal"
 
 #. LANG_NB_NO
-#: po/tmp/xap_String_Id.h.h:519
+#: po/tmp/xap_String_Id.h.h:521
 msgid "Norwegian Bokmal"
 msgstr "Noruego Bokmaal"
 
 #. LANG_NN_NO
-#: po/tmp/xap_String_Id.h.h:521
+#: po/tmp/xap_String_Id.h.h:523
 msgid "Norwegian Nynorsk"
 msgstr "Noruego Nynorsk"
 
 #. DLG_PLUGIN_MANAGER_NOT_AVAILABLE
-#: po/tmp/xap_String_Id.h.h:523
+#: po/tmp/xap_String_Id.h.h:525
 msgid "Not available"
 msgstr "No disponible"
 
 #. STYLE_NUMHEAD1
-#: po/tmp/xap_String_Id.h.h:525
+#: po/tmp/xap_String_Id.h.h:527
 msgid "Numbered Heading 1"
 msgstr "Cabecera numerada 1"
 
 #. STYLE_NUMHEAD2
-#: po/tmp/xap_String_Id.h.h:527
+#: po/tmp/xap_String_Id.h.h:529
 msgid "Numbered Heading 2"
 msgstr "Cabecera numerada 2"
 
 #. STYLE_NUMHEAD3
-#: po/tmp/xap_String_Id.h.h:529
+#: po/tmp/xap_String_Id.h.h:531
 msgid "Numbered Heading 3"
 msgstr "Cabecera numerada 3"
 
 #. DLG_OK
-#: po/tmp/xap_String_Id.h.h:533
+#: po/tmp/xap_String_Id.h.h:535
 msgid "OK"
 msgstr "Aceptar"
 
 #. LANG_OC_FR
-#: po/tmp/xap_String_Id.h.h:535
+#: po/tmp/xap_String_Id.h.h:537
 msgid "Occitan"
 msgstr "Occitano"
 
 #. DLG_FOSA_OpenTitle
-#: po/tmp/xap_String_Id.h.h:537
+#: po/tmp/xap_String_Id.h.h:539
 msgid "Open File"
 msgstr "Abrir archivo"
 
 #. DLG_FOSA_FileOpenTypeLabel
-#: po/tmp/xap_String_Id.h.h:539
+#: po/tmp/xap_String_Id.h.h:541
 msgid "Open file as type:"
 msgstr "Abrir archivo como tipo:"
 
 #. DLG_LISTDOCS_Title
-#: po/tmp/xap_String_Id.h.h:541
+#: po/tmp/xap_String_Id.h.h:543
 msgid "Opened Documents"
 msgstr "Documentos abiertos"
 
 #. TB_Zoom_Percent
-#: po/tmp/xap_String_Id.h.h:543
+#: po/tmp/xap_String_Id.h.h:545
 msgid "Other..."
 msgstr "Otro..."
 
 #. DLG_Zoom_Percent
-#: po/tmp/xap_String_Id.h.h:547
+#: po/tmp/xap_String_Id.h.h:549
 msgid "P&ercent:"
 msgstr "Porc&entaje:"
 
 #. TB_Zoom_PageWidth
-#: po/tmp/xap_String_Id.h.h:549
+#: po/tmp/xap_String_Id.h.h:551
 msgid "Page Width"
 msgstr "Anchura de página"
 
 #. DLG_UP_PageRanges
-#: po/tmp/xap_String_Id.h.h:551
+#: po/tmp/xap_String_Id.h.h:553
 msgid "Page ranges:"
 msgstr "Rangos de página:"
 
 #. DLG_Password_Password
-#: po/tmp/xap_String_Id.h.h:553
+#: po/tmp/xap_String_Id.h.h:555
 msgid "Password:"
 msgstr "Contraseña:"
 
 #. STYLE_PLAIN_TEXT
-#: po/tmp/xap_String_Id.h.h:555
+#: po/tmp/xap_String_Id.h.h:557
 msgid "Plain Text"
 msgstr "Texto plano"
 
 #. DLG_PLUGIN_MANAGER_DETAILS
-#: po/tmp/xap_String_Id.h.h:557
+#: po/tmp/xap_String_Id.h.h:559
 msgid "Plugin Details:"
 msgstr "Detalles del complemento:"
 
 #. DLG_PLUGIN_MANAGER_LIST
-#: po/tmp/xap_String_Id.h.h:559
+#: po/tmp/xap_String_Id.h.h:561
 msgid "Plugin List"
 msgstr "Lista de complementos"
 
 #. LANG_PL_PL
-#: po/tmp/xap_String_Id.h.h:561
+#: po/tmp/xap_String_Id.h.h:563
 msgid "Polish"
 msgstr "Polaco"
 
 #. LANG_PT_BR
-#: po/tmp/xap_String_Id.h.h:563
+#: po/tmp/xap_String_Id.h.h:565
 msgid "Portuguese (Brazil)"
 msgstr "Portugués (Brasil)"
 
 #. LANG_PT_PT
-#: po/tmp/xap_String_Id.h.h:565
+#: po/tmp/xap_String_Id.h.h:567
 msgid "Portuguese (Portugal)"
 msgstr "Portugués (Portugal)"
 
 #. DLG_Image_PlaceColumn
-#: po/tmp/xap_String_Id.h.h:567
+#: po/tmp/xap_String_Id.h.h:569
 msgid "Position relative to its Column"
 msgstr "Posición relativa a su columna"
 
 #. DLG_Image_PlacePage
-#: po/tmp/xap_String_Id.h.h:569
+#: po/tmp/xap_String_Id.h.h:571
 msgid "Position relative to its Page"
 msgstr "Posición relativa a su página"
 
 #. DLG_Image_PlaceParagraph
-#: po/tmp/xap_String_Id.h.h:571
+#: po/tmp/xap_String_Id.h.h:573
 msgid "Position relative to nearest paragraph"
 msgstr "Posición relativa al parágrafo más cercano"
 
 #. DLG_Image_Aspect
-#: po/tmp/xap_String_Id.h.h:573
+#: po/tmp/xap_String_Id.h.h:575
 msgid "Preserve aspect ratio"
 msgstr "Conservar proporciones"
 
 #. DLG_IP_Activate_Label
-#: po/tmp/xap_String_Id.h.h:577
+#: po/tmp/xap_String_Id.h.h:579
 msgid "Preview Picture"
 msgstr "Vista previa de la imagen"
 
 #. DLG_FOSA_PrintToFileTitle
-#: po/tmp/xap_String_Id.h.h:582
+#: po/tmp/xap_String_Id.h.h:584
 msgid "Print To File"
 msgstr "Imprimir a un archivo"
 
 #. DLG_FOSA_FilePrintTypeLabel
-#: po/tmp/xap_String_Id.h.h:584
+#: po/tmp/xap_String_Id.h.h:586
 msgid "Print file as type:"
 msgstr "Imprimir archivo como tipo:"
 
 #. DLG_UP_PrintIn
-#: po/tmp/xap_String_Id.h.h:586
+#: po/tmp/xap_String_Id.h.h:588
 msgid "Print in: "
 msgstr "Imprimir en: "
 
 #. DLG_UP_PrintTo
-#: po/tmp/xap_String_Id.h.h:588
+#: po/tmp/xap_String_Id.h.h:590
 msgid "Print to: "
 msgstr "Imprimir a: "
 
 #. DLG_UP_Printer
-#: po/tmp/xap_String_Id.h.h:590
+#: po/tmp/xap_String_Id.h.h:592
 msgid "Printer"
 msgstr "Impresora"
 
 #. DLG_UP_PrinterCommand
-#: po/tmp/xap_String_Id.h.h:592
+#: po/tmp/xap_String_Id.h.h:594
 msgid "Printer command: "
 msgstr "Comando de impresión: "
 
 #. LANG_PA_IN
-#: po/tmp/xap_String_Id.h.h:594
+#: po/tmp/xap_String_Id.h.h:596
 msgid "Punjabi (Gurmukhi)"
 msgstr "Punjabi (Gurmukhi)"
 
 #. LANG_PA_PK
-#: po/tmp/xap_String_Id.h.h:596
+#: po/tmp/xap_String_Id.h.h:598
 msgid "Punjabi (Shahmukhi)"
 msgstr "Punjabi (Shahmukhi)"
 
 #. LANG_QU_BO
-#: po/tmp/xap_String_Id.h.h:598
+#: po/tmp/xap_String_Id.h.h:600
 msgid "Quechua"
 msgstr "Quechua"
 
 #. DLG_UFS_StyleRegular
-#: po/tmp/xap_String_Id.h.h:600
+#: po/tmp/xap_String_Id.h.h:602
 msgid "Regular"
 msgstr "Regular"
 
 #. DLG_DocComparison_Relationship
-#: po/tmp/xap_String_Id.h.h:602
+#: po/tmp/xap_String_Id.h.h:604
 msgid "Relationship:"
 msgstr "Relación:"
 
 #. DLG_Restore
-#: po/tmp/xap_String_Id.h.h:604
+#: po/tmp/xap_String_Id.h.h:606
 msgid "Restore"
 msgstr "Restablecer"
 
 #. DLG_HTMLOPT_ExpRestore
-#: po/tmp/xap_String_Id.h.h:606
+#: po/tmp/xap_String_Id.h.h:608
 msgid "Restore Settings"
 msgstr "Restaurar configuración"
 
 #. DLG_DocComparison_Results
-#: po/tmp/xap_String_Id.h.h:608
+#: po/tmp/xap_String_Id.h.h:610
 msgid "Results"
 msgstr "Resultados"
 
 #. LANG_RO_RO
-#: po/tmp/xap_String_Id.h.h:610
+#: po/tmp/xap_String_Id.h.h:612
 msgid "Romanian"
 msgstr "Rumano"
 
 #. ENC_ROMA_MAC
-#: po/tmp/xap_String_Id.h.h:612
+#: po/tmp/xap_String_Id.h.h:614
 msgid "Romanian, Macintosh"
 msgstr "Rumano, Macintosh"
 
 #. LANG_RU_RU
-#: po/tmp/xap_String_Id.h.h:614
+#: po/tmp/xap_String_Id.h.h:616
 msgid "Russian (Russia)"
 msgstr "Ruso (Rusia)"
 
 #. DLG_UFS_SampleFrameLabel
-#: po/tmp/xap_String_Id.h.h:616
+#: po/tmp/xap_String_Id.h.h:618
 msgid "Sample"
 msgstr "Muestra"
 
 #. LANG_SC_IT
-#: po/tmp/xap_String_Id.h.h:618
+#: po/tmp/xap_String_Id.h.h:620
 msgid "Sardinian"
 msgstr "Sardo"
 
 #. DLG_FOSA_SaveAsTitle
-#: po/tmp/xap_String_Id.h.h:620
+#: po/tmp/xap_String_Id.h.h:622
 msgid "Save File As"
 msgstr "Guardar archivo como"
 
 #. DLG_HTMLOPT_ExpSave
-#: po/tmp/xap_String_Id.h.h:622
+#: po/tmp/xap_String_Id.h.h:624
 msgid "Save Settings"
 msgstr "Guardar configuración"
 
 #. DLG_FOSA_FileSaveTypeLabel
-#: po/tmp/xap_String_Id.h.h:624
+#: po/tmp/xap_String_Id.h.h:626
 msgid "Save file as type:"
 msgstr "Guardar archivo como tipo:"
 
 #. DLG_UFS_ScriptLabel
-#: po/tmp/xap_String_Id.h.h:626
+#: po/tmp/xap_String_Id.h.h:628
 msgid "Script:"
 msgstr "Script:"
 
 #. STYLE_SECTHEADING
-#: po/tmp/xap_String_Id.h.h:628
+#: po/tmp/xap_String_Id.h.h:630
 msgid "Section Heading"
 msgstr "Cabecera de sección"
 
 #. DLG_UENC_EncLabel
-#: po/tmp/xap_String_Id.h.h:632
+#: po/tmp/xap_String_Id.h.h:634
 msgid "Select Encoding:"
 msgstr "Seleccione la codificación:"
 
 #. DLG_HTMLOPT_ExpLabel
-#: po/tmp/xap_String_Id.h.h:634
+#: po/tmp/xap_String_Id.h.h:636
 msgid "Select HTML export options:"
 msgstr "Seleccionar opciones de exportación HTML:"
 
 #. DLG_ULANG_LangLabel
-#: po/tmp/xap_String_Id.h.h:636
+#: po/tmp/xap_String_Id.h.h:638
 msgid "Select Language:"
 msgstr "Seleccione el idioma:"
 
 #. LANG_SR
-#: po/tmp/xap_String_Id.h.h:640
+#: po/tmp/xap_String_Id.h.h:642
 msgid "Serbian"
 msgstr "Servio"
 
 #. DLG_Image_ImageDesc
-#: po/tmp/xap_String_Id.h.h:642
+#: po/tmp/xap_String_Id.h.h:644
 msgid "Set Image Name"
 msgstr "Establecer nombre de la imagen"
 
 #. DLG_Image_ImageSize
-#: po/tmp/xap_String_Id.h.h:644
+#: po/tmp/xap_String_Id.h.h:646
 msgid "Set Image Size"
 msgstr "Establecer tamaño de la imagen"
 
 #. DLG_ULANG_LangTitle
-#: po/tmp/xap_String_Id.h.h:646
+#: po/tmp/xap_String_Id.h.h:648
 msgid "Set Language"
 msgstr "Establecer idioma"
 
 #. DLG_UFS_TransparencyCheck
-#: po/tmp/xap_String_Id.h.h:648
+#: po/tmp/xap_String_Id.h.h:650
 msgid "Set no Highlight Color"
 msgstr "Establecer sin color de resaltado"
 
 #. DLG_UFS_SizeLabel
-#: po/tmp/xap_String_Id.h.h:652
+#: po/tmp/xap_String_Id.h.h:654
 msgid "Size:"
 msgstr "Tamaño:"
 
 #. LANG_SK_SK
-#: po/tmp/xap_String_Id.h.h:654
+#: po/tmp/xap_String_Id.h.h:656
 msgid "Slovak"
 msgstr "Eslovaco"
 
 #. LANG_SL_SI
-#: po/tmp/xap_String_Id.h.h:656
+#: po/tmp/xap_String_Id.h.h:658
 msgid "Slovenian"
 msgstr "Esloveno"
 
 #. LANG_ES_MX
-#: po/tmp/xap_String_Id.h.h:658
+#: po/tmp/xap_String_Id.h.h:660
 msgid "Spanish (Mexico)"
 msgstr "Español (México)"
 
 #. LANG_ES_ES
-#: po/tmp/xap_String_Id.h.h:660
+#: po/tmp/xap_String_Id.h.h:662
 msgid "Spanish (Spain)"
 msgstr "Español (España)"
 
 #. DLG_Image_SquareWrap
-#: po/tmp/xap_String_Id.h.h:664
+#: po/tmp/xap_String_Id.h.h:666
 msgid "Square text wrapping"
 msgstr "Ajuste de texto cuadrado"
 
 #. DLG_DocComparison_Styles
-#: po/tmp/xap_String_Id.h.h:672
+#: po/tmp/xap_String_Id.h.h:674
 msgid "Styles:"
 msgstr "Estilos:"
 
 #. LANG_SW
-#: po/tmp/xap_String_Id.h.h:678
+#: po/tmp/xap_String_Id.h.h:680
 msgid "Swahili"
 msgstr "Swahili"
 
 #. LANG_SV_SE
-#: po/tmp/xap_String_Id.h.h:680
+#: po/tmp/xap_String_Id.h.h:682
 msgid "Swedish"
 msgstr "Sueco"
 
 #. TB_Font_Symbol
-#: po/tmp/xap_String_Id.h.h:682
+#: po/tmp/xap_String_Id.h.h:684
 msgid "Symbols"
 msgstr "Símbolos"
 
 #. LANG_SYR
-#: po/tmp/xap_String_Id.h.h:684
+#: po/tmp/xap_String_Id.h.h:686
 msgid "Syriac"
 msgstr "Sirio"
 
 #. LANG_TL_PH
-#: po/tmp/xap_String_Id.h.h:688
+#: po/tmp/xap_String_Id.h.h:690
 msgid "Tagalog"
 msgstr "Tagalo"
 
 #. LANG_TA_IN
-#: po/tmp/xap_String_Id.h.h:690
+#: po/tmp/xap_String_Id.h.h:692
 msgid "Tamil"
 msgstr "Tamil"
 
 #. LANG_TE_IN
-#: po/tmp/xap_String_Id.h.h:692
+#: po/tmp/xap_String_Id.h.h:694
 msgid "Telugu"
 msgstr "Telugu"
 
 #. DLG_UFS_ColorTab
-#: po/tmp/xap_String_Id.h.h:694
+#: po/tmp/xap_String_Id.h.h:696
 msgid "Text Color"
 msgstr "Color del texto"
 
 #. DLG_Image_WrappedBoth
-#: po/tmp/xap_String_Id.h.h:696
+#: po/tmp/xap_String_Id.h.h:698
 msgid "Text wrapped on both sides of the Image"
 msgstr "Texto ajustado a ambos lados de la imagen"
 
 #. DLG_Image_WrappedLeft
-#: po/tmp/xap_String_Id.h.h:698
+#: po/tmp/xap_String_Id.h.h:700
 msgid "Text wrapped to the Left of the Image"
 msgstr "Texto ajustado a la izquierda de la imagen"
 
 #. DLG_Image_WrappedRight
-#: po/tmp/xap_String_Id.h.h:700
+#: po/tmp/xap_String_Id.h.h:702
 msgid "Text wrapped to the Right of the Image"
 msgstr "Texto ajustado a la derecha de la imagen"
 
 #. LANG_TH_TH
-#: po/tmp/xap_String_Id.h.h:702
+#: po/tmp/xap_String_Id.h.h:704
 msgid "Thai"
 msgstr "Tailandés"
 
 #. ENC_THAI_MAC
-#: po/tmp/xap_String_Id.h.h:704
+#: po/tmp/xap_String_Id.h.h:706
 msgid "Thai, Macintosh"
 msgstr "Tailandés, Macintosh"
 
 #. ENC_THAI_TIS
-#: po/tmp/xap_String_Id.h.h:706
+#: po/tmp/xap_String_Id.h.h:708
 msgid "Thai, TIS-620"
 msgstr "Tailandés, TIS-620"
 
 #. ENC_THAI_WIN
-#: po/tmp/xap_String_Id.h.h:708
+#: po/tmp/xap_String_Id.h.h:710
 msgid "Thai, Windows Code Page 874"
 msgstr "Tailandés, página de códigos Windows 874"
 
 #. DLG_NoSaveFile_DirNotWriteable
-#: po/tmp/xap_String_Id.h.h:710
+#: po/tmp/xap_String_Id.h.h:712
 #, c-format
 msgid "The directory '%s' is write-protected."
 msgstr "El directorio «%s» está protegido contra escritura."
 
 #. MSG_HistoryPartRestore2
-#: po/tmp/xap_String_Id.h.h:712
+#: po/tmp/xap_String_Id.h.h:714
 #, c-format
 msgid ""
 "The nearest version that can be restored fully is %d. Would you like to "
@@ -7870,274 +7871,274 @@ msgstr ""
 "d pulse No."
 
 #. DLG_UP_InvalidPrintString
-#: po/tmp/xap_String_Id.h.h:714
+#: po/tmp/xap_String_Id.h.h:716
 msgid "The print command string is not valid."
 msgstr "El comando de impresión no es válido."
 
 #. MSG_NoUndo
-#: po/tmp/xap_String_Id.h.h:716
+#: po/tmp/xap_String_Id.h.h:718
 msgid "This operation cannot be undone. Are you sure you want to proceed?"
 msgstr "Esta operación no se puede deshacer. ¿Seguro que quiere proceder?"
 
 #. DLG_Image_TightWrap
-#: po/tmp/xap_String_Id.h.h:720
+#: po/tmp/xap_String_Id.h.h:722
 msgid "Tight text wrapping"
 msgstr "Ajuste de texto estrecho"
 
 #. MSG_HistoryPartRestore3
-#: po/tmp/xap_String_Id.h.h:724
+#: po/tmp/xap_String_Id.h.h:726
 msgid "To continue anyway, press OK."
 msgstr "Para continuar de todas formas pulse Aceptar."
 
 #. MSG_HistoryPartRestore4
-#: po/tmp/xap_String_Id.h.h:726
+#: po/tmp/xap_String_Id.h.h:728
 msgid "To quit the restoration attempt, press Cancel."
 msgstr "Para eliminar el intento de restauración, pulse Cancelar."
 
 #. LANG_TR_TR
-#: po/tmp/xap_String_Id.h.h:732
+#: po/tmp/xap_String_Id.h.h:734
 msgid "Turkish"
 msgstr "Turco"
 
 #. ENC_TURK_ISO
-#: po/tmp/xap_String_Id.h.h:734
+#: po/tmp/xap_String_Id.h.h:736
 msgid "Turkish, ISO-8859-9"
 msgstr "Turco, ISO-8859-9"
 
 #. ENC_TURK_MAC
-#: po/tmp/xap_String_Id.h.h:736
+#: po/tmp/xap_String_Id.h.h:738
 msgid "Turkish, Macintosh"
 msgstr "Turco, Macintosh"
 
 #. ENC_TURK_WIN
-#: po/tmp/xap_String_Id.h.h:738
+#: po/tmp/xap_String_Id.h.h:740
 msgid "Turkish, Windows Code Page 1254"
 msgstr "Turco, página de códigos Windows 1254"
 
 #. DLG_Image_WrapType
-#: po/tmp/xap_String_Id.h.h:740
+#: po/tmp/xap_String_Id.h.h:742
 msgid "Type of text wrapping"
 msgstr "Tipo de ajuste de texto"
 
 #. ENC_WEST_ASCII
-#: po/tmp/xap_String_Id.h.h:742
+#: po/tmp/xap_String_Id.h.h:744
 msgid "US-ASCII"
 msgstr "US-ASCII"
 
 #. LANG_UK_UA
-#: po/tmp/xap_String_Id.h.h:744
+#: po/tmp/xap_String_Id.h.h:746
 msgid "Ukrainian"
 msgstr "Ucraniano"
 
 #. ENC_UKRA_KOI
-#: po/tmp/xap_String_Id.h.h:746
+#: po/tmp/xap_String_Id.h.h:748
 msgid "Ukrainian, KOI8-U"
 msgstr "Ucraniano, KOI8-U"
 
 #. ENC_UKRA_MAC
-#: po/tmp/xap_String_Id.h.h:748
+#: po/tmp/xap_String_Id.h.h:750
 msgid "Ukrainian, Macintosh"
 msgstr "Ucraniano, Macintosh"
 
 #. ENC_UNIC_UCS2
-#: po/tmp/xap_String_Id.h.h:752
+#: po/tmp/xap_String_Id.h.h:754
 msgid "Unicode UCS-2"
 msgstr "Unicode UCS-2"
 
 #. ENC_UNIC_UCS_2BE
-#: po/tmp/xap_String_Id.h.h:754
+#: po/tmp/xap_String_Id.h.h:756
 msgid "Unicode UCS-2 Big Endian"
 msgstr "Unicode UCS-2 Big Endian"
 
 #. ENC_UNIC_UCS_2LE
-#: po/tmp/xap_String_Id.h.h:756
+#: po/tmp/xap_String_Id.h.h:758
 msgid "Unicode UCS-2 Little Endian"
 msgstr "Unicode UCS-2 Little Endian"
 
 #. ENC_UNIC_UCS4
-#: po/tmp/xap_String_Id.h.h:758
+#: po/tmp/xap_String_Id.h.h:760
 msgid "Unicode UCS-4"
 msgstr "Unicode UCS-4"
 
 #. ENC_UNIC_UCS_4BE
-#: po/tmp/xap_String_Id.h.h:760
+#: po/tmp/xap_String_Id.h.h:762
 msgid "Unicode UCS-4 Big Endian"
 msgstr "Unicode UCS-4 Big Endian"
 
 #. ENC_UNIC_UCS_4LE
-#: po/tmp/xap_String_Id.h.h:762
+#: po/tmp/xap_String_Id.h.h:764
 msgid "Unicode UCS-4 Little Endian"
 msgstr "Unicode UCS-4 Little Endian"
 
 #. ENC_UNIC_UTF_16
-#: po/tmp/xap_String_Id.h.h:764
+#: po/tmp/xap_String_Id.h.h:766
 msgid "Unicode UTF-16"
 msgstr "Unicode UTF-16"
 
 #. ENC_UNIC_UTF_16BE
-#: po/tmp/xap_String_Id.h.h:766
+#: po/tmp/xap_String_Id.h.h:768
 msgid "Unicode UTF-16 Big Endian"
 msgstr "Unicode UTF-16 Big Endian"
 
 #. ENC_UNIC_UTF_16LE
-#: po/tmp/xap_String_Id.h.h:768
+#: po/tmp/xap_String_Id.h.h:770
 msgid "Unicode UTF-16 Little Endian"
 msgstr "Unicode UTF-16 Little Endian"
 
 #. ENC_UNIC_UTF_32
-#: po/tmp/xap_String_Id.h.h:770
+#: po/tmp/xap_String_Id.h.h:772
 msgid "Unicode UTF-32"
 msgstr "Unicode UTF-32"
 
 #. ENC_UNIC_UTF_32BE
-#: po/tmp/xap_String_Id.h.h:772
+#: po/tmp/xap_String_Id.h.h:774
 msgid "Unicode UTF-32 Big Endian"
 msgstr "Unicode UTF-32 Big Endian"
 
 #. ENC_UNIC_UTF_32LE
-#: po/tmp/xap_String_Id.h.h:774
+#: po/tmp/xap_String_Id.h.h:776
 msgid "Unicode UTF-32 Little Endian"
 msgstr "Unicode UTF-32 Little Endian"
 
 #. ENC_UNIC_UTF_7
-#: po/tmp/xap_String_Id.h.h:776
+#: po/tmp/xap_String_Id.h.h:778
 msgid "Unicode UTF-7"
 msgstr "Unicode UTF-7"
 
 #. ENC_UNIC_UTF_8
-#: po/tmp/xap_String_Id.h.h:778
+#: po/tmp/xap_String_Id.h.h:780
 msgid "Unicode UTF-8"
 msgstr "Unicode UTF-8"
 
 #. UntitledDocument
-#: po/tmp/xap_String_Id.h.h:780
+#: po/tmp/xap_String_Id.h.h:782
 #, c-format
 msgid "Untitled%d"
 msgstr "Sin título%d"
 
 #. DLG_Update
-#: po/tmp/xap_String_Id.h.h:782
+#: po/tmp/xap_String_Id.h.h:784
 msgid "Update"
 msgstr "Actualizar"
 
 #. LANG_UR_PK
-#: po/tmp/xap_String_Id.h.h:788
+#: po/tmp/xap_String_Id.h.h:790
 msgid "Urdu"
 msgstr "Urdu"
 
 #. LANG_UZ_UZ
-#: po/tmp/xap_String_Id.h.h:790
+#: po/tmp/xap_String_Id.h.h:792
 msgid "Uzbek"
 msgstr "Uzbeco"
 
 #. DLG_History_List_Title
-#: po/tmp/xap_String_Id.h.h:794
+#: po/tmp/xap_String_Id.h.h:796
 msgid "Version history"
 msgstr "Histórico de versión"
 
 #. DLG_PLUGIN_MANAGER_VERSION
 #. DLG_History_Version
-#: po/tmp/xap_String_Id.h.h:797
+#: po/tmp/xap_String_Id.h.h:799
 msgid "Version:"
 msgstr "Versión:"
 
 #. LANG_VI_VN
-#: po/tmp/xap_String_Id.h.h:799
+#: po/tmp/xap_String_Id.h.h:801
 msgid "Vietnamese"
 msgstr "Vietnamita"
 
 #. ENC_VIET_TCVN
-#: po/tmp/xap_String_Id.h.h:801
+#: po/tmp/xap_String_Id.h.h:803
 msgid "Vietnamese, TCVN"
 msgstr "Vietnamita, TCVN"
 
 #. ENC_VIET_VISCII
-#: po/tmp/xap_String_Id.h.h:803
+#: po/tmp/xap_String_Id.h.h:805
 msgid "Vietnamese, VISCII"
 msgstr "Vietnamita, VISCII"
 
 #. ENC_VIET_WIN
-#: po/tmp/xap_String_Id.h.h:805
+#: po/tmp/xap_String_Id.h.h:807
 msgid "Vietnamese, Windows Code Page 1258"
 msgstr "Vietnamita, página de códigos Windows 1258"
 
 #. DLG_MW_MoreWindows
-#: po/tmp/xap_String_Id.h.h:807
+#: po/tmp/xap_String_Id.h.h:809
 msgid "View Document"
 msgstr "Ver documento"
 
 #. DLG_MW_Activate
-#: po/tmp/xap_String_Id.h.h:809
+#: po/tmp/xap_String_Id.h.h:811
 msgid "View:"
 msgstr "Ver:"
 
 #. LANG_CY_GB
-#: po/tmp/xap_String_Id.h.h:811
+#: po/tmp/xap_String_Id.h.h:813
 msgid "Welsh"
 msgstr "Galés"
 
 #. ENC_US_DOS
-#: po/tmp/xap_String_Id.h.h:813
+#: po/tmp/xap_String_Id.h.h:815
 msgid "Western European, DOS/Windows Code Page 437"
 msgstr "Europeo occidental, página de códigos Windows/DOS 437"
 
 #. ENC_MLNG_DOS
-#: po/tmp/xap_String_Id.h.h:815
+#: po/tmp/xap_String_Id.h.h:817
 msgid "Western European, DOS/Windows Code Page 850"
 msgstr "Europeo occidental, página de códigos Windows/DOS 850"
 
 #. ENC_WEST_HP
-#: po/tmp/xap_String_Id.h.h:817
+#: po/tmp/xap_String_Id.h.h:819
 msgid "Western European, HP"
 msgstr "Europeo occidental, HP"
 
 #. ENC_WEST_ISO
-#: po/tmp/xap_String_Id.h.h:819
+#: po/tmp/xap_String_Id.h.h:821
 msgid "Western European, ISO-8859-1"
 msgstr "Europeo occidental, ISO-8859-1"
 
 #. ENC_WEST_MAC
-#: po/tmp/xap_String_Id.h.h:821
+#: po/tmp/xap_String_Id.h.h:823
 msgid "Western European, Macintosh"
 msgstr "Europeo occidental, Macintosh"
 
 #. ENC_WEST_NXT
-#: po/tmp/xap_String_Id.h.h:823
+#: po/tmp/xap_String_Id.h.h:825
 msgid "Western European, NeXT"
 msgstr "Europeo occidental, NeXT"
 
 #. ENC_WEST_WIN
-#: po/tmp/xap_String_Id.h.h:825
+#: po/tmp/xap_String_Id.h.h:827
 msgid "Western European, Windows Code Page 1252"
 msgstr "Europeo occidental, página de códigos Windows 1252"
 
 #. TB_Zoom_WholePage
-#: po/tmp/xap_String_Id.h.h:827
+#: po/tmp/xap_String_Id.h.h:829
 msgid "Whole Page"
 msgstr "Página completa"
 
 #. DLG_Image_Width
-#: po/tmp/xap_String_Id.h.h:829
+#: po/tmp/xap_String_Id.h.h:831
 msgid "Width:"
 msgstr "Anchura:"
 
 #. DLG_IP_Width_Label
-#: po/tmp/xap_String_Id.h.h:831
+#: po/tmp/xap_String_Id.h.h:833
 msgid "Width:  "
 msgstr "Anchura:  "
 
 #. DLG_QNXMB_Yes
-#: po/tmp/xap_String_Id.h.h:833
+#: po/tmp/xap_String_Id.h.h:835
 msgid "Yes"
 msgstr "Sí"
 
 #. LANG_YI
-#: po/tmp/xap_String_Id.h.h:835
+#: po/tmp/xap_String_Id.h.h:837
 msgid "Yiddish"
 msgstr "Yiddish"
 
 #. MSG_HistoryConfirmSave
-#: po/tmp/xap_String_Id.h.h:837
+#: po/tmp/xap_String_Id.h.h:839
 #, c-format
 msgid "You have to save changes to document %s before proceeding. Save now?"
 msgstr ""
@@ -8145,73 +8146,73 @@ msgstr ""
 "ahora?"
 
 #. DLG_Zoom_RadioFrameCaption
-#: po/tmp/xap_String_Id.h.h:841
+#: po/tmp/xap_String_Id.h.h:843
 msgid "Zoom to"
 msgstr "Ampliar a"
 
 #. DLG_UnixMB_No
-#: po/tmp/xap_String_Id.h.h:843
+#: po/tmp/xap_String_Id.h.h:845
 msgid "_No"
 msgstr "_No"
 
 #. DLG_UnixMB_Yes
-#: po/tmp/xap_String_Id.h.h:845
+#: po/tmp/xap_String_Id.h.h:847
 msgid "_Yes"
 msgstr "_Sí"
 
 #. DLG_Unit_cm
-#: po/tmp/xap_String_Id.h.h:847
+#: po/tmp/xap_String_Id.h.h:849
 msgid "cm"
 msgstr "centímetros"
 
 #. DLG_DocComparison_Different
-#: po/tmp/xap_String_Id.h.h:849
+#: po/tmp/xap_String_Id.h.h:851
 msgid "different"
 msgstr "diferente"
 
 #. DLG_DocComparison_DivergingPos
-#: po/tmp/xap_String_Id.h.h:851
+#: po/tmp/xap_String_Id.h.h:853
 #, c-format
 msgid "diverging after document position %d"
 msgstr "diverge después de la posición del documento %d"
 
 #. DLG_DocComparison_Diverging
-#: po/tmp/xap_String_Id.h.h:853
+#: po/tmp/xap_String_Id.h.h:855
 #, c-format
 msgid "diverging after version %d of %s"
 msgstr "diverge después de la versión %d de %s"
 
 #. DLG_DocComparison_Identical
-#: po/tmp/xap_String_Id.h.h:855
+#: po/tmp/xap_String_Id.h.h:857
 msgid "identical"
 msgstr "idénticos"
 
 #. DLG_Unit_inch
-#: po/tmp/xap_String_Id.h.h:857
+#: po/tmp/xap_String_Id.h.h:859
 msgid "inch"
 msgstr "pulgadas"
 
 #. DLG_Unit_mm
-#: po/tmp/xap_String_Id.h.h:859
+#: po/tmp/xap_String_Id.h.h:861
 msgid "mm"
 msgstr "milímetros"
 
 #. DLG_Unit_pica
-#: po/tmp/xap_String_Id.h.h:861
+#: po/tmp/xap_String_Id.h.h:863
 msgid "pica"
 msgstr "picas"
 
 #. DLG_Unit_points
-#: po/tmp/xap_String_Id.h.h:863
+#: po/tmp/xap_String_Id.h.h:865
 msgid "points"
 msgstr "puntos"
 
 #. DLG_DocComparison_Siblings
-#: po/tmp/xap_String_Id.h.h:865
+#: po/tmp/xap_String_Id.h.h:867
 msgid "siblings"
 msgstr "similares"
 
 #. DLG_DocComparison_Unrelated
-#: po/tmp/xap_String_Id.h.h:867
+#: po/tmp/xap_String_Id.h.h:869
 msgid "unrelated"
 msgstr "no relacionados"
