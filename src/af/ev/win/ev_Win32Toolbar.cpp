@@ -36,6 +36,7 @@
 #include "ev_Toolbar_Control.h"
 #include "ev_EditEventMapper.h"
 #include "xap_Win32Toolbar_Icons.h"
+#include "xap_EncodingManager.h"
 #include "ev_Win32Toolbar_ViewListener.h"
 #include "xav_View.h"
 #include "ut_xml.h"
@@ -1052,6 +1053,7 @@ bool EV_Win32Toolbar::_refreshItem(AV_View * pView, const EV_Toolbar_Action * pA
 					break;
 				}					
 				
+				szState = XAP_EncodingManager::get_instance()->strToNative(szState, "UTF-8");
 				
 				// Find the proper non-localised text
 				const char* pLocalised = szState;
