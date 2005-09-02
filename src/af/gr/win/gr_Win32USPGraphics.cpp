@@ -1721,6 +1721,9 @@ bool GR_Win32USPGraphics::_scriptBreak(GR_Win32USPRenderInfo &ri)
 			ri.s_pChars[i] = (WCHAR)ri.m_pText->getChar();
 		}
 
+		// restore the iterrator to the initial position
+		*(ri.m_pText) -= iLen;
+		
 		GR_Win32USPItem &I = (GR_Win32USPItem &)*ri.m_pItem;
 		HRESULT hRes = fScriptBreak(ri.s_pChars, iLen, &I.m_si.a, ri.s_pLogAttr);
 
@@ -1790,7 +1793,19 @@ bool GR_Win32USPGraphics::canBreak(GR_RenderInfo & ri, UT_sint32 &iNext, bool bA
 		if(RI.s_pLogAttr[ri.m_iOffset].fWhiteSpace)
 			return true;
 
-		// find the next break
+		// this fixes 9462;
+		//
+		// NB: GR_Graphics::canBreak() ignores the iNext parameter, so if it returns false
+		// and there is a white space later on in the current run, the results might not
+		// be what we want. I think the best solution would be to fix up
+		// GR_Graphics::canBreak() to provide a valid iNext, after which the loop below
+		// should be removed
+		bool bBreak = GR_Graphics::canBreak(ri, iNext, bAfter);
+
+		// if the base class gave us a break or indicated where the break is, return
+		if(bBreak || iNext >= 0)
+			return bBreak;
+		
 		for(UT_sint32 i = ri.m_iOffset; i < RI.m_iLength; ++i)
 		{
 			if(RI.s_pLogAttr[i].fWhiteSpace)
