@@ -301,6 +301,16 @@ void XAP_CocoaDialog_FileOpenSaveAs::runModal(XAP_Frame * pFrame)
 
 	switch (m_id)
 	{
+	case XAP_DIALOG_ID_INSERTMATHML:
+		{
+			bOpenPanel = true;
+
+			pSS->getValueUTF8(XAP_STRING_ID_DLG_FOSA_InsertMath, szTitle);
+			pSS->getValueUTF8(XAP_STRING_ID_DLG_FOSA_FileInsertMath, szFileTypeLabel);
+
+			bCheckWritePermission = false;
+			break;
+		}
 	case XAP_DIALOG_ID_INSERT_PICTURE:
 		{
 			bOpenPanel = true;
