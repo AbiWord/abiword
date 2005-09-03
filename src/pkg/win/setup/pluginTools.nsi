@@ -336,7 +336,6 @@ SubSectionEnd
 !macroend
 !define unzipFile "!insertmacro unzipFileMacro"
 
-!ifdef 0
 Section "AbiMathView Plugin"
 	SectionIn 2
 	
@@ -409,7 +408,6 @@ Section "AbiMathView Plugin"
   
 	End:
 SectionEnd
-!endif
 
 SubSection /e "Script Related Plugins"
 
