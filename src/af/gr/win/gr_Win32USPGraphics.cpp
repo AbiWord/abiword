@@ -1794,26 +1794,12 @@ bool GR_Win32USPGraphics::canBreak(GR_RenderInfo & ri, UT_sint32 &iNext, bool bA
 			return true;
 
 		// this fixes 9462;
-		//
-		// NB: GR_Graphics::canBreak() ignores the iNext parameter, so if it returns false
-		// and there is a white space later on in the current run, the results might not
-		// be what we want. I think the best solution would be to fix up
-		// GR_Graphics::canBreak() to provide a valid iNext, after which the loop below
-		// should be removed
 		bool bBreak = GR_Graphics::canBreak(ri, iNext, bAfter);
 
 		// if the base class gave us a break or indicated where the break is, return
 		if(bBreak || iNext >= 0)
 			return bBreak;
 		
-		for(UT_sint32 i = ri.m_iOffset; i < RI.m_iLength; ++i)
-		{
-			if(RI.s_pLogAttr[i].fWhiteSpace)
-			{
-				iNext = i;
-				break;
-			}
-		}
 	}
 	
 	return false;
