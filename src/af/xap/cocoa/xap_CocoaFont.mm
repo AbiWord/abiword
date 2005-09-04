@@ -243,12 +243,14 @@ bool XAP_CocoaFont::glyphBox(UT_UCS4Char g, UT_Rect & rec, GR_Graphics * pG)
 
 	NSRect rect;
 
+	UT_UCS4Char c = remapChar(g, remapFont(m_font));
+
 	if (!m_LayoutHelper)
 	{
 		m_LayoutHelper = new XAP_CocoaFont_LayoutHelper(m_font);
 	}
 	if (m_LayoutHelper) {
-		if (m_LayoutHelper->setUnichar(g, aGlyph)) {// convert from unicode to glyph
+		if (m_LayoutHelper->setUnichar(c, aGlyph)) {// convert from unicode to glyph
 			if ([m_font glyphIsEncoded:aGlyph])	{
 				bHaveGlyph = true;
 				rect = [m_font boundingRectForGlyph:aGlyph];
@@ -256,6 +258,11 @@ bool XAP_CocoaFont::glyphBox(UT_UCS4Char g, UT_Rect & rec, GR_Graphics * pG)
 				rec.height = static_cast<UT_sint32>(pG->ftluD(rect.size.height));
 				rec.left   = static_cast<UT_sint32>(pG->ftluD(rect.origin.x));
 				rec.top    = static_cast<UT_sint32>(pG->ftluD(rect.origin.y)) + rec.height;
+
+				NSSize adv = [m_font advancementForGlyph:aGlyph];
+				if (adv.width > rect.size.width) {
+					rec.width = static_cast<UT_sint32>(pG->ftluD(adv.width));
+				}
 			}
 		}
 	}
