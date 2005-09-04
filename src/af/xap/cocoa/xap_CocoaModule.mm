@@ -85,7 +85,7 @@ bool XAP_CocoaModule::load (const char * name)
 			 */
 			m_bLoaded = false;
 
-			if (m_module = g_module_open(name, (GModuleFlags) 0))
+			if (m_module = g_module_open(name, G_MODULE_BIND_LAZY))
 			{
 				m_bLoaded = true;
 				UT_DEBUGMSG(("FJF: plugin loaded: \"%s\"\n", m_module_path.utf8_str()));
