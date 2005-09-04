@@ -113,173 +113,181 @@ static struct EV_CocoaKeyEquiv KeyEquiv[] = {
 	bool bEventHandled = false;
 
 	if ([anEvent type] == NSKeyDown)
+	{
+		unsigned int modifierFlags = [anEvent modifierFlags];
+
+		if (modifierFlags & NSCommandKeyMask)
 		{
-			unsigned int modifierFlags = [anEvent modifierFlags];
-
-			if (modifierFlags & NSCommandKeyMask)
+			if ((bFrameIsActive || !keyWindow) && !(modifierFlags & (NSShiftKeyMask|NSControlKeyMask)))
+			{
+				NSString * str = [anEvent charactersIgnoringModifiers];
+				if ([str length] == 1)
 				{
-					if ((bFrameIsActive || !keyWindow) && !(modifierFlags & (NSShiftKeyMask|NSControlKeyMask)))
+					unichar uc;
+					[str getCharacters:&uc];
+
+					if ((uc & 0x7f) == uc) 
+					{
+						switch (static_cast<char>(uc))
 						{
-							NSString * str = [anEvent charactersIgnoringModifiers];
-							if ([str length] == 1)
-								{
-									unichar uc;
-									[str getCharacters:&uc];
+						case ',': // Cmd-, (preferences)
+							if (!(modifierFlags & NSAlternateKeyMask))
+							{
+								UT_DEBUGMSG(("[XAP_CocoaApplication -sendEvent: (Cmd-,)]\n"));
+								[self orderFrontPreferencesPanel:self];
+								bEventHandled = true;
+							}
+							break;
 
-									if ((uc & 0x7f) == uc)
-										switch (static_cast<char>(uc))
-											{
-											case ',': // Cmd-, (preferences)
-												if (!(modifierFlags & NSAlternateKeyMask))
-													{
-														UT_DEBUGMSG(("[XAP_CocoaApplication -sendEvent: (Cmd-,)]\n"));
-														[self orderFrontPreferencesPanel:self];
-														bEventHandled = true;
-													}
-												break;
+						case '/': // how to do this, since ? = Shift-/
+						case '?': // Cmd-? (help)
+							if (!(modifierFlags & NSAlternateKeyMask))
+							{
+								UT_DEBUGMSG(("[XAP_CocoaApplication -sendEvent: (Cmd-?)]\n"));
+								[self openContextHelp:self];
+								bEventHandled = true;
+							}
+							break;
 
-											case '/': // how to do this, since ? = Shift-/
-											case '?': // Cmd-? (help)
-												if (!(modifierFlags & NSAlternateKeyMask))
-													{
-														UT_DEBUGMSG(("[XAP_CocoaApplication -sendEvent: (Cmd-?)]\n"));
-														[self openContextHelp:self];
-														bEventHandled = true;
-													}
-												break;
+						case 'h': // Alt-Cmd-H (hide others)
+							if (modifierFlags & NSAlternateKeyMask)
+							{
+								UT_DEBUGMSG(("[XAP_CocoaApplication -sendEvent: (Alt-Cmd-H)]\n"));
+								[self hideOtherApplications:self];
+								bEventHandled = true;
+							}
+							else  // Cmd-H (hide application)
+							{
+								UT_DEBUGMSG(("[XAP_CocoaApplication -sendEvent: (Cmd-H)]\n"));
+								[self hide:self];
+								bEventHandled = true;
+							}
+							break;
 
-											case 'h': // Alt-Cmd-H (hide others)
-												if (modifierFlags & NSAlternateKeyMask)
-													{
-														UT_DEBUGMSG(("[XAP_CocoaApplication -sendEvent: (Alt-Cmd-H)]\n"));
-														[self hideOtherApplications:self];
-														bEventHandled = true;
-													}
-												else  // Cmd-H (hide application)
-													{
-														UT_DEBUGMSG(("[XAP_CocoaApplication -sendEvent: (Cmd-H)]\n"));
-														[self hide:self];
-														bEventHandled = true;
-													}
-												break;
+						case 'm': // Cmd-M (minimize current frame/window)
+							if (bFrameIsActive && keyWindow && !(modifierFlags & NSAlternateKeyMask))
+							{
+								UT_DEBUGMSG(("[XAP_CocoaApplication -sendEvent: (Cmd-M)]\n"));
+								[keyWindow miniaturize:self];
+								bEventHandled = true;
+							}
+							break;
 
-											case 'm': // Cmd-M (minimize current frame/window)
-												if (bFrameIsActive && keyWindow && !(modifierFlags & NSAlternateKeyMask))
-													{
-														UT_DEBUGMSG(("[XAP_CocoaApplication -sendEvent: (Cmd-M)]\n"));
-														[keyWindow miniaturize:self];
-														bEventHandled = true;
-													}
-												break;
+						case 'n': // Cmd-N (open untitled)
+							if (pController && !(modifierFlags & NSAlternateKeyMask))
+							{
+								UT_DEBUGMSG(("[XAP_CocoaApplication -sendEvent: (Cmd-N)]\n"));
+								[pController applicationOpenUntitledFile:self];
+								bEventHandled = true;
+							}
+							break;
 
-											case 'n': // Cmd-N (open untitled)
-												if (pController && !(modifierFlags & NSAlternateKeyMask))
-													{
-														UT_DEBUGMSG(("[XAP_CocoaApplication -sendEvent: (Cmd-N)]\n"));
-														[pController applicationOpenUntitledFile:self];
-														bEventHandled = true;
-													}
-												break;
+						case 'o': // Cmd-O (open file)
+							if (pController && !(modifierFlags & NSAlternateKeyMask))
+							{
+								UT_DEBUGMSG(("[XAP_CocoaApplication -sendEvent: (Cmd-O)]\n"));
+								[pController applicationOpenFile:self];
+								bEventHandled = true;
+							}
+							break;
 
-											case 'o': // Cmd-O (open file)
-												if (pController && !(modifierFlags & NSAlternateKeyMask))
-													{
-														UT_DEBUGMSG(("[XAP_CocoaApplication -sendEvent: (Cmd-O)]\n"));
-														[pController applicationOpenFile:self];
-														bEventHandled = true;
-													}
-												break;
+						case 'q': // Cmd-Q (quit)
+							if (!(modifierFlags & NSAlternateKeyMask))
+							{
+								UT_DEBUGMSG(("[XAP_CocoaApplication -sendEvent: (Cmd-Q)]\n"));
+								[self terminate:self];
+								bEventHandled = true;
+							}
+							break;
 
-											case 'q': // Cmd-Q (quit)
-												if (!(modifierFlags & NSAlternateKeyMask))
-													{
-														UT_DEBUGMSG(("[XAP_CocoaApplication -sendEvent: (Cmd-Q)]\n"));
-														[self terminate:self];
-														bEventHandled = true;
-													}
-												break;
-
-											default:
-												break;
-											}
-								}
+						default:
+							break;
 						}
+					}
+				}
+			}
 
-					if (!bEventHandled && false /* m_MenuDelegate */ && bFrameIsActive)
+			if (!bEventHandled && false /* m_MenuDelegate */ && bFrameIsActive)
+			{
+				id  target;
+				SEL action;
+
+				if (false /* [m_MenuDelegate menuHasKeyEquivalent:[self mainMenu] forEvent:anEvent target:&target action:&action] */)
+				{
+					[self sendAction:action to:target from:self];
+					bEventHandled = true;
+				}
+			}
+			else if (!bEventHandled && keyWindow && !bFrameIsActive)
+			{
+				NSString * str = [anEvent charactersIgnoringModifiers];
+				if ([str length] == 1)
+				{
+					unichar uc;
+					[str getCharacters:&uc];
+
+					if ((uc & 0x7f) == uc)
+						switch (static_cast<char>(uc))
 						{
-							id  target;
-							SEL action;
-
-							if (false /* [m_MenuDelegate menuHasKeyEquivalent:[self mainMenu] forEvent:anEvent target:&target action:&action] */)
+						case 'a': // In other applications this would normally be handled by the Edit menu
+						{
+							if (NSResponder * firstResponder = [keyWindow firstResponder])
+							{
+								[firstResponder selectAll:self];
+								bEventHandled = true;
+							}
+							break;
+						}
+						case 'c': // In other applications this would normally be handled by the Edit menu
+						{
+							if (NSResponder * firstResponder = [keyWindow firstResponder]) 
+							{
+								if ([firstResponder respondsToSelector:@selector(copy:)])
 								{
-									[self sendAction:action to:target from:self];
+									NSText * textResponder = (NSText *) firstResponder;
+									[textResponder copy:self];
 									bEventHandled = true;
 								}
+							}
+							break;
 						}
-					else if (!bEventHandled && keyWindow && !bFrameIsActive)
+						case 'v': // In other applications this would normally be handled by the Edit menu
 						{
-							NSString * str = [anEvent charactersIgnoringModifiers];
-							if ([str length] == 1)
+							if (NSResponder * firstResponder = [keyWindow firstResponder]) 
+							{
+								if ([firstResponder respondsToSelector:@selector(paste:)])
 								{
-									unichar uc;
-									[str getCharacters:&uc];
-
-									if ((uc & 0x7f) == uc)
-										switch (static_cast<char>(uc))
-											{
-											case 'a': // In other applications this would normally be handled by the Edit menu
-												{
-													if (NSResponder * firstResponder = [keyWindow firstResponder])
-														{
-															[firstResponder selectAll:self];
-															bEventHandled = true;
-														}
-													break;
-												}
-											case 'c': // In other applications this would normally be handled by the Edit menu
-												{
-													if (NSResponder * firstResponder = [keyWindow firstResponder])
-														if ([firstResponder respondsToSelector:@selector(copy:)])
-															{
-																NSText * textResponder = (NSText *) firstResponder;
-																[textResponder copy:self];
-																bEventHandled = true;
-															}
-													break;
-												}
-											case 'v': // In other applications this would normally be handled by the Edit menu
-												{
-													if (NSResponder * firstResponder = [keyWindow firstResponder])
-														if ([firstResponder respondsToSelector:@selector(paste:)])
-															{
-																NSText * textResponder = (NSText *) firstResponder;
-																[textResponder paste:self];
-																bEventHandled = true;
-															}
-													break;
-												}
-											case 'x': // In other applications this would normally be handled by the Edit menu
-												{
-													if (NSResponder * firstResponder = [keyWindow firstResponder])
-														if ([firstResponder respondsToSelector:@selector(cut:)])
-															{
-																NSText * textResponder = (NSText *) firstResponder;
-																[textResponder cut:self];
-																bEventHandled = true;
-															}
-													break;
-												}
-											default:
-												break;
-											}
+									NSText * textResponder = (NSText *) firstResponder;
+									[textResponder paste:self];
+									bEventHandled = true;
 								}
+							}
+							break;
+						}
+						case 'x': // In other applications this would normally be handled by the Edit menu
+						{
+							if (NSResponder * firstResponder = [keyWindow firstResponder]) 
+							{
+								if ([firstResponder respondsToSelector:@selector(cut:)])
+								{
+									NSText * textResponder = (NSText *) firstResponder;
+									[textResponder cut:self];
+									bEventHandled = true;
+								}
+							}
+							break;
+						}
+						default:
+							break;
 						}
 				}
+			}
 		}
+	}
 	if (!bEventHandled)
-		{
-			[super sendEvent:anEvent];
-		}
+	{
+		[super sendEvent:anEvent];
+	}
 }
 
 @end
@@ -291,96 +299,60 @@ static XAP_CocoaAppController * XAP_AppController_Instance = nil;
 + (XAP_CocoaAppController*)sharedAppController // do we really need/want this?? the app controller is instantiated within the application's nib
 {
 	if (!XAP_AppController_Instance)
-		{
-			[[XAP_CocoaAppController alloc] init];
-		}
+	{
+		[[XAP_CocoaAppController alloc] init];
+	}
 	return XAP_AppController_Instance;
 }
 
 - (id)init 
 {
 	if (XAP_AppController_Instance)
-		{
-			NSLog (@"Attempt to allocate more that one XAP_CocoaAppController");
-			return nil;
-		}
+	{
+		NSLog (@"Attempt to allocate more that one XAP_CocoaAppController");
+		return nil;
+	}
 
 	if (self = [super init])
-		{
-			XAP_AppController_Instance = self;
+	{
+		XAP_AppController_Instance = self;
 
-			m_FilesRequestedDuringLaunch = [[NSMutableArray alloc] initWithCapacity:8];
+		m_FilesRequestedDuringLaunch = [[NSMutableArray alloc] initWithCapacity:8];
 
-			m_bApplicationLaunching   = YES;
+		m_bApplicationLaunching   = YES;
 
-			m_bAutoLoadPluginsAfterLaunch = NO;
+		m_bAutoLoadPluginsAfterLaunch = NO;
 
-			m_PanelMenu   = [[NSMenu alloc] initWithTitle:@"Panels"];
-			m_ContextMenu = [[NSMenu alloc] initWithTitle:@"Context Menu"];
+		m_PanelMenu   = [[NSMenu alloc] initWithTitle:@"Panels"];
+		m_ContextMenu = [[NSMenu alloc] initWithTitle:@"Context Menu"];
 
-			m_FontReferenceDictionary = [[NSMutableDictionary alloc] initWithCapacity:128];
-			m_FontFamilyDictionary    = [XAP_CocoaFontFamilyHelper fontFamilyHelperDictionary:m_FontReferenceDictionary];
+		m_FontReferenceDictionary = [[NSMutableDictionary alloc] initWithCapacity:128];
+		m_FontFamilyDictionary    = [XAP_CocoaFontFamilyHelper fontFamilyHelperDictionary:m_FontReferenceDictionary];
 
-			[m_FontFamilyDictionary retain];
+		[m_FontFamilyDictionary retain];
 
-			m_MenuIDRefDictionary = [[NSMutableDictionary alloc] initWithCapacity:16];
+		m_MenuIDRefDictionary = [[NSMutableDictionary alloc] initWithCapacity:16];
 
-			m_Plugins      = [[NSMutableArray alloc] initWithCapacity:16];
-			m_PluginsTools = [[NSMutableArray alloc] initWithCapacity:16];
+		m_Plugins      = [[NSMutableArray alloc] initWithCapacity:16];
+		m_PluginsTools = [[NSMutableArray alloc] initWithCapacity:16];
 
-			m_PluginsToolsSeparator = [NSMenuItem separatorItem];
-			[m_PluginsToolsSeparator retain];
-		}
+		m_PluginsToolsSeparator = [NSMenuItem separatorItem];
+		[m_PluginsToolsSeparator retain];
+	}
 	return self;
 }
 
 - (void)dealloc
 {
-	if (m_FilesRequestedDuringLaunch)
-		{
-			[m_FilesRequestedDuringLaunch release];
-			m_FilesRequestedDuringLaunch = 0;
-		}
-	if (m_PanelMenu)
-		{
-			[m_PanelMenu release];
-			m_PanelMenu = 0;
-		}
-	if (m_ContextMenu)
-		{
-			[m_ContextMenu release];
-			m_ContextMenu = 0;
-		}
-	if (m_FontReferenceDictionary)
-		{
-			[m_FontReferenceDictionary release];
-			m_FontReferenceDictionary = 0;
-		}
-	if (m_FontFamilyDictionary)
-		{
-			[m_FontFamilyDictionary release];
-			m_FontFamilyDictionary = 0;
-		}
-	if (m_MenuIDRefDictionary)
-		{
-			[m_MenuIDRefDictionary release];
-			m_MenuIDRefDictionary = 0;
-		}
-	if (m_Plugins)
-		{
-			[m_Plugins release];
-			m_Plugins = 0;
-		}
-	if (m_PluginsTools)
-		{
-			[m_PluginsTools release];
-			m_PluginsTools = 0;
-		}
-	if (m_PluginsToolsSeparator)
-		{
-			[m_PluginsToolsSeparator release];
-			m_PluginsToolsSeparator = 0;
-		}
+	[m_FilesRequestedDuringLaunch release];
+	[m_PanelMenu release];
+	[m_ContextMenu release];
+	[m_FontReferenceDictionary release];
+	[m_FontFamilyDictionary release];
+	[m_MenuIDRefDictionary release];
+	[m_Plugins release];
+	[m_PluginsTools release];
+	[m_PluginsToolsSeparator release];
 	[super dealloc];
 }
 
@@ -397,18 +369,19 @@ static XAP_CocoaAppController * XAP_AppController_Instance = nil;
 - (void)applicationWillFinishLaunching:(NSNotification *)aNotification
 {
 	if (const char * home = getenv("HOME"))
-		{
-			NSString * desktop = [[NSString stringWithUTF8String:home] stringByAppendingPathComponent:@"Desktop"];
-
-			[[NSFileManager defaultManager] changeCurrentDirectoryPath:desktop];
-		}
-	if (NSMenu * menu = [NSApp windowsMenu])
+	{
+		NSString * desktop = [[NSString stringWithUTF8String:home] stringByAppendingPathComponent:@"Desktop"];
+		
+		[[NSFileManager defaultManager] changeCurrentDirectoryPath:desktop];
+	}
+	if (NSMenu * menu = [NSApp windowsMenu]) {
 		if (NSMenuItem * item = [[NSMenuItem alloc] initWithTitle:@"Panels" action:nil keyEquivalent:@""])
-			{
-				[menu addItem:item];
-				[item setSubmenu:m_PanelMenu];
-				[item release];
-			}
+		{
+			[menu addItem:item];
+			[item setSubmenu:m_PanelMenu];
+			[item release];
+		}
+	}
 }
 
 - (void)applicationDidFinishLaunching:(NSNotification *)aNotification
@@ -419,70 +392,70 @@ static XAP_CocoaAppController * XAP_AppController_Instance = nil;
 	XAP_CocoaApp * pApp = static_cast<XAP_CocoaApp *>(XAP_App::getApp());
 
 	if (EV_CocoaMenuBar * pCocoaMenuBar = pApp->getCocoaMenuBar())
-		{
-			m_AppItem[XAP_CocoaAppMenu_File  ] = oMenuItem_File;
-			m_AppItem[XAP_CocoaAppMenu_Edit  ] = oMenuItem_Edit;
-			m_AppItem[XAP_CocoaAppMenu_View  ] = oMenuItem_View;
-			m_AppItem[XAP_CocoaAppMenu_Insert] = oMenuItem_Insert;
-			m_AppItem[XAP_CocoaAppMenu_Format] = oMenuItem_Format;
-			m_AppItem[XAP_CocoaAppMenu_Tools ] = oMenuItem_Tools;
-			m_AppItem[XAP_CocoaAppMenu_Table ] = oMenuItem_Table;
-			m_AppItem[XAP_CocoaAppMenu_Window] = oMenuItem_Window;
-			m_AppItem[XAP_CocoaAppMenu_Help  ] = oMenuItem_Help;
+	{
+		m_AppItem[XAP_CocoaAppMenu_File  ] = oMenuItem_File;
+		m_AppItem[XAP_CocoaAppMenu_Edit  ] = oMenuItem_Edit;
+		m_AppItem[XAP_CocoaAppMenu_View  ] = oMenuItem_View;
+		m_AppItem[XAP_CocoaAppMenu_Insert] = oMenuItem_Insert;
+		m_AppItem[XAP_CocoaAppMenu_Format] = oMenuItem_Format;
+		m_AppItem[XAP_CocoaAppMenu_Tools ] = oMenuItem_Tools;
+		m_AppItem[XAP_CocoaAppMenu_Table ] = oMenuItem_Table;
+		m_AppItem[XAP_CocoaAppMenu_Window] = oMenuItem_Window;
+		m_AppItem[XAP_CocoaAppMenu_Help  ] = oMenuItem_Help;
 
-			m_AppMenu[XAP_CocoaAppMenu_File  ] = oMenu_File;
-			m_AppMenu[XAP_CocoaAppMenu_Edit  ] = oMenu_Edit;
-			m_AppMenu[XAP_CocoaAppMenu_View  ] = oMenu_View;
-			m_AppMenu[XAP_CocoaAppMenu_Insert] = oMenu_Insert;
-			m_AppMenu[XAP_CocoaAppMenu_Format] = oMenu_Format;
-			m_AppMenu[XAP_CocoaAppMenu_Tools ] = oMenu_Tools;
-			m_AppMenu[XAP_CocoaAppMenu_Table ] = oMenu_Table;
-			m_AppMenu[XAP_CocoaAppMenu_Window] = oMenu_Window;
-			m_AppMenu[XAP_CocoaAppMenu_Help  ] = oMenu_Help;
+		m_AppMenu[XAP_CocoaAppMenu_File  ] = oMenu_File;
+		m_AppMenu[XAP_CocoaAppMenu_Edit  ] = oMenu_Edit;
+		m_AppMenu[XAP_CocoaAppMenu_View  ] = oMenu_View;
+		m_AppMenu[XAP_CocoaAppMenu_Insert] = oMenu_Insert;
+		m_AppMenu[XAP_CocoaAppMenu_Format] = oMenu_Format;
+		m_AppMenu[XAP_CocoaAppMenu_Tools ] = oMenu_Tools;
+		m_AppMenu[XAP_CocoaAppMenu_Table ] = oMenu_Table;
+		m_AppMenu[XAP_CocoaAppMenu_Window] = oMenu_Window;
+		m_AppMenu[XAP_CocoaAppMenu_Help  ] = oMenu_Help;
 
-			UT_DEBUGMSG(("[...FinishLaunching] Building application menu:\n"));
-			pCocoaMenuBar->buildAppMenu();
-		}
+		UT_DEBUGMSG(("[...FinishLaunching] Building application menu:\n"));
+		pCocoaMenuBar->buildAppMenu();
+	}
 	[XAP_CocoaToolPalette instance:self];
 
 	if (m_bAutoLoadPluginsAfterLaunch)
-		{
-			UT_DEBUGMSG(("[...FinishLaunching] Auto-Loading plug-ins:\n"));
-			XAP_CocoaModule::loadAllPlugins();
-		}
+	{
+		UT_DEBUGMSG(("[...FinishLaunching] Auto-Loading plug-ins:\n"));
+		XAP_CocoaModule::loadAllPlugins();
+	}
 
 	BOOL bFileOpenedDuringLaunch = NO;
 
 	unsigned count = [m_FilesRequestedDuringLaunch count];
 
 	for (unsigned i = 0; i < count; i++) // filter out plugins from list and open those first
+	{
+		NSString * filename = (NSString *) [m_FilesRequestedDuringLaunch objectAtIndex:i];
+
+		UT_UTF8String path([filename UTF8String]);
+
+		if (XAP_CocoaModule::hasPluginExtension(path))
 		{
-			NSString * filename = (NSString *) [m_FilesRequestedDuringLaunch objectAtIndex:i];
-
-			UT_UTF8String path([filename UTF8String]);
-
-			if (XAP_CocoaModule::hasPluginExtension(path))
-				{
-					[self application:NSApp openFile:filename];
-				}
+			[self application:NSApp openFile:filename];
 		}
+	}
 	for (unsigned i = 0; i < count; i++) // open the rest
-		{
-			NSString * filename = (NSString *) [m_FilesRequestedDuringLaunch objectAtIndex:i];
+	{
+		NSString * filename = (NSString *) [m_FilesRequestedDuringLaunch objectAtIndex:i];
 
-			UT_UTF8String path([filename UTF8String]);
+		UT_UTF8String path([filename UTF8String]);
 
-			if (!XAP_CocoaModule::hasPluginExtension(path))
-				if ([self application:NSApp openFile:filename])
-					{
-						bFileOpenedDuringLaunch = YES;
-					}
-		}
+		if (!XAP_CocoaModule::hasPluginExtension(path))
+			if ([self application:NSApp openFile:filename])
+			{
+				bFileOpenedDuringLaunch = YES;
+			}
+	}
 	if (bFileOpenedDuringLaunch == NO)
-		{
-			UT_DEBUGMSG(("[...FinishLaunching] No file opened during launch, so opening untitled document:\n"));
-			[self applicationOpenUntitledFile:NSApp];
-		}
+	{
+		UT_DEBUGMSG(("[...FinishLaunching] No file opened during launch, so opening untitled document:\n"));
+		[self applicationOpenUntitledFile:NSApp];
+	}
 }
 
 - (NSApplicationTerminateReply)applicationShouldTerminate:(NSApplication *)sender // probably unused now that NSApp's terminate is overridden
@@ -496,38 +469,35 @@ static XAP_CocoaAppController * XAP_AppController_Instance = nil;
 - (void)applicationWillTerminate:(NSNotification *)aNotification // probably unused now that NSApp's terminate is overridden
 {
 	if ([XAP_CocoaToolPalette instantiated])
-		{
-			[[XAP_CocoaToolPalette instance:self] close];
-		}
+	{
+		[[XAP_CocoaToolPalette instance:self] close];
+	}
 }
 
 - (BOOL)application:(NSApplication *)theApplication openFile:(NSString *)filename
 {
 	if (m_bApplicationLaunching == YES)
-		{
-			[m_FilesRequestedDuringLaunch addObject:filename];
-			return YES;
-		}
+	{
+		[m_FilesRequestedDuringLaunch addObject:filename];
+		return YES;
+	}
 
 	UT_DEBUGMSG(("Requested to open %s\n", [filename UTF8String]));
 
 	UT_UTF8String path([filename UTF8String]);
 
 	if (XAP_CocoaModule::hasPluginExtension(path))
-		{
-			return (XAP_CocoaModule::loadPlugin(path) ? YES : NO);
-		}
+	{
+		return (XAP_CocoaModule::loadPlugin(path) ? YES : NO);
+	}
 
 	XAP_App * pApp = XAP_App::getApp();
 	XAP_Frame * pNewFrame = pApp->newFrame();
 
 	bool result = (UT_OK == pNewFrame->loadDocument([filename UTF8String], IEFT_Unknown));
-	if (result)
-	{
-		/*
-		 * TODO: check what we should really do now
-		 */
-	}
+	/*
+	 * TODO: check what we should really do now
+	 */
 	if (result)
 	{
 		pNewFrame->show();
@@ -538,8 +508,8 @@ static XAP_CocoaAppController * XAP_AppController_Instance = nil;
 - (BOOL)application:(NSApplication *)theApplication openTempFile:(NSString *)filename
 {
 	/*
-		TODO: really open temp file. ie, delete it when done
-	 */
+	  TODO: really open temp file. ie, delete it when done
+	*/
 	UT_DEBUGMSG(("Requested to open temp file %s\n", [filename UTF8String]));
 	return [self application:theApplication openFile:filename];
 }
@@ -547,8 +517,8 @@ static XAP_CocoaAppController * XAP_AppController_Instance = nil;
 - (BOOL)application:(NSApplication *)theApplication printFile:(NSString *)filename
 {
 	/*
-		TODO: really print the file.
-	 */
+	  TODO: really print the file.
+	*/
 	UT_DEBUGMSG(("Requested to print %s\n", [filename UTF8String]));
 	return [self application:theApplication openFile:filename];
 }
@@ -556,19 +526,21 @@ static XAP_CocoaAppController * XAP_AppController_Instance = nil;
 - (BOOL)applicationOpenUntitledFile:(NSApplication *)theApplication
 {
 	if (m_bApplicationLaunching == YES)
-		{
-			return YES;
-		}
+	{
+		return YES;
+	}
 
 	UT_DEBUGMSG(("Requested to open untitled file...\n"));
 
 	EV_EditMethodContainer * pEMC = XAP_App::getApp()->getEditMethodContainer();
-	if (!pEMC)
+	if (!pEMC) {
 		return NO;
+	}
 
 	EV_EditMethod * pEM = pEMC->findEditMethodByName("fileNew");
-	if (!pEM)
+	if (!pEM) {
 		return NO;
+	}
 
 	return (pEM->Fn(0,0) ? YES : NO);
 }
@@ -576,12 +548,14 @@ static XAP_CocoaAppController * XAP_AppController_Instance = nil;
 - (BOOL)applicationOpenFile:(NSApplication *)theApplication
 {
 	EV_EditMethodContainer * pEMC = XAP_App::getApp()->getEditMethodContainer();
-	if (!pEMC)
+	if (!pEMC) {
 		return NO;
+	}
 
 	EV_EditMethod * pEM = pEMC->findEditMethodByName("fileOpen");
-	if (!pEM)
+	if (!pEM) {
 		return NO;
+	}
 
 	return (pEM->Fn(0,0) ? YES : NO);
 }
@@ -598,12 +572,12 @@ static XAP_CocoaAppController * XAP_AppController_Instance = nil;
 	return self;
 }
 /*
-- (NSMenu *)applicationDockMenu:(NSApplication *)sender
-{
-	XAP_CocoaApp * pCocoaApp = static_cast<XAP_CocoaApp *>(XAP_App::getApp());
-	return (NSMenu *) pCocoaApp->getDockNSMenu ();
-}
- */
+  - (NSMenu *)applicationDockMenu:(NSApplication *)sender
+  {
+  XAP_CocoaApp * pCocoaApp = static_cast<XAP_CocoaApp *>(XAP_App::getApp());
+  return (NSMenu *) pCocoaApp->getDockNSMenu ();
+  }
+*/
 /* For building the Application Menu
  */
 - (void)setAboutTitle:(NSString *)title
@@ -624,26 +598,26 @@ static XAP_CocoaAppController * XAP_AppController_Instance = nil;
 - (void)setTitle:(NSString *)title forMenu:(XAP_CocoaAppMenu_Id)appMenu
 {
 	switch (appMenu)
-		{
-		case XAP_CocoaAppMenu_File:
-		case XAP_CocoaAppMenu_Edit:
-		case XAP_CocoaAppMenu_View:
-		case XAP_CocoaAppMenu_Insert:
-		case XAP_CocoaAppMenu_Format:
-		case XAP_CocoaAppMenu_Tools:
-		case XAP_CocoaAppMenu_Table:
-		case XAP_CocoaAppMenu_Window: // ??
-		case XAP_CocoaAppMenu_Help:
-			[m_AppItem[appMenu] setTitle:title];
-			break;
+	{
+	case XAP_CocoaAppMenu_File:
+	case XAP_CocoaAppMenu_Edit:
+	case XAP_CocoaAppMenu_View:
+	case XAP_CocoaAppMenu_Insert:
+	case XAP_CocoaAppMenu_Format:
+	case XAP_CocoaAppMenu_Tools:
+	case XAP_CocoaAppMenu_Table:
+	case XAP_CocoaAppMenu_Window: // ??
+	case XAP_CocoaAppMenu_Help:
+		[m_AppItem[appMenu] setTitle:title];
+		break;
 
-		case XAP_CocoaAppMenu_AbiWord: // disallow
+	case XAP_CocoaAppMenu_AbiWord: // disallow
 
-		case XAP_CocoaAppMenu_count__:
-		default:
-			// shouldn't really happen, but...
-			break;
-		}
+	case XAP_CocoaAppMenu_count__:
+	default:
+		// shouldn't really happen, but...
+		break;
+	}
 }
 
 - (const char *)keyEquivalentForMenuID:(int /* XAP_Menu_Id */)menuid modifierMask:(unsigned int *)mask
@@ -652,16 +626,16 @@ static XAP_CocoaAppController * XAP_AppController_Instance = nil;
 
 	struct EV_CocoaKeyEquiv * pKE = KeyEquiv;
 	while (pKE->equiv)
+	{
+		if (menuid == (int) pKE->menuid)
 		{
-			if (menuid == (int) pKE->menuid)
-				{
-					equiv = pKE->equiv;
-					if ( mask)
-						*mask = pKE->modifier;
-					break;
-				}
-			++pKE;
+			equiv = pKE->equiv;
+			if ( mask)
+				*mask = pKE->modifier;
+			break;
 		}
+		++pKE;
+	}
 	return equiv;
 }
 
@@ -688,75 +662,75 @@ static XAP_CocoaAppController * XAP_AppController_Instance = nil;
 - (void)appendItem:(NSMenuItem *)item toMenu:(XAP_CocoaAppMenu_Id)appMenu
 {
 	switch (appMenu)
-		{
-		case XAP_CocoaAppMenu_File:
-		case XAP_CocoaAppMenu_Edit:
-		case XAP_CocoaAppMenu_View:
-		case XAP_CocoaAppMenu_Insert:
-		case XAP_CocoaAppMenu_Format:
-		case XAP_CocoaAppMenu_Tools:
-		case XAP_CocoaAppMenu_Table:
-		case XAP_CocoaAppMenu_Help:
-			{
-				// UT_DEBUGMSG(("appendItem: toMenu:\"%s\"\n", [[m_AppItem[appMenu] title] UTF8String]));
-				[m_AppMenu[appMenu] addItem:item];
-			}
-			break;
+	{
+	case XAP_CocoaAppMenu_File:
+	case XAP_CocoaAppMenu_Edit:
+	case XAP_CocoaAppMenu_View:
+	case XAP_CocoaAppMenu_Insert:
+	case XAP_CocoaAppMenu_Format:
+	case XAP_CocoaAppMenu_Tools:
+	case XAP_CocoaAppMenu_Table:
+	case XAP_CocoaAppMenu_Help:
+	{
+		// UT_DEBUGMSG(("appendItem: toMenu:\"%s\"\n", [[m_AppItem[appMenu] title] UTF8String]));
+		[m_AppMenu[appMenu] addItem:item];
+	}
+	break;
 
-		case XAP_CocoaAppMenu_AbiWord:
-		case XAP_CocoaAppMenu_Window:
-			// these menus treated separately
+	case XAP_CocoaAppMenu_AbiWord:
+	case XAP_CocoaAppMenu_Window:
+		// these menus treated separately
 
-		case XAP_CocoaAppMenu_count__:
-		default:
-			// shouldn't really happen, but...
-			break;
-		}
+	case XAP_CocoaAppMenu_count__:
+	default:
+		// shouldn't really happen, but...
+		break;
+	}
 }
 
 - (void)clearContextMenu
 {
 	while (int count = [m_ContextMenu numberOfItems])
-		{
-			[m_ContextMenu removeItemAtIndex:(count - 1)];
-		}
+	{
+		[m_ContextMenu removeItemAtIndex:(count - 1)];
+	}
 }
 
 - (void)clearMenu:(XAP_CocoaAppMenu_Id)appMenu
 {
 	switch (appMenu)
+	{
+	case XAP_CocoaAppMenu_File:
+	case XAP_CocoaAppMenu_Edit:
+	case XAP_CocoaAppMenu_View:
+	case XAP_CocoaAppMenu_Insert:
+	case XAP_CocoaAppMenu_Format:
+	case XAP_CocoaAppMenu_Tools:
+	case XAP_CocoaAppMenu_Table:
+		while (int count = [m_AppMenu[appMenu] numberOfItems])
 		{
-		case XAP_CocoaAppMenu_File:
-		case XAP_CocoaAppMenu_Edit:
-		case XAP_CocoaAppMenu_View:
-		case XAP_CocoaAppMenu_Insert:
-		case XAP_CocoaAppMenu_Format:
-		case XAP_CocoaAppMenu_Tools:
-		case XAP_CocoaAppMenu_Table:
-			while (int count = [m_AppMenu[appMenu] numberOfItems])
-				{
-					[m_AppMenu[appMenu] removeItemAtIndex:(count - 1)];
-				}
-			break;
-
-		case XAP_CocoaAppMenu_Help:
-			while (int count = [m_AppMenu[appMenu] numberOfItems])
-				{
-					if (count == 1) // the first Help item (context-help) is treated separately
-						break;
-					[m_AppMenu[appMenu] removeItemAtIndex:(count - 1)];
-				}
-			break;
-
-		case XAP_CocoaAppMenu_AbiWord:
-		case XAP_CocoaAppMenu_Window:
-			// these menus treated separately
-
-		case XAP_CocoaAppMenu_count__:
-		default:
-			// shouldn't really happen, but...
-			break;
+			[m_AppMenu[appMenu] removeItemAtIndex:(count - 1)];
 		}
+		break;
+
+	case XAP_CocoaAppMenu_Help:
+		while (int count = [m_AppMenu[appMenu] numberOfItems])
+		{
+			if (count == 1) // the first Help item (context-help) is treated separately
+				break;
+			[m_AppMenu[appMenu] removeItemAtIndex:(count - 1)];
+		}
+		break;
+
+	case XAP_CocoaAppMenu_AbiWord:
+	case XAP_CocoaAppMenu_Window:
+		// these menus treated separately
+
+	case XAP_CocoaAppMenu_count__:
+	default:
+		// shouldn't really happen, but...
+		break;
+	}
 }
 
 - (void)clearAllMenus
@@ -778,9 +752,9 @@ static XAP_CocoaAppController * XAP_AppController_Instance = nil;
 	NSString * familyName = nil;
 
 	if (XAP_CocoaFontReference * fontRef = [m_FontReferenceDictionary objectForKey:fontName])
-		{
-			familyName = [fontRef fontFamily];
-		}
+	{
+		familyName = [fontRef fontFamily];
+	}
 	return familyName;
 }
 
@@ -809,44 +783,44 @@ static XAP_CocoaAppController * XAP_AppController_Instance = nil;
 - (void)reappendPluginMenuItems
 {
 	if (unsigned count = [m_PluginsTools count])
+	{
+		[m_AppMenu[XAP_CocoaAppMenu_Tools] addItem:m_PluginsToolsSeparator];
+
+		for (unsigned i = 0; i < count; i++)
 		{
-			[m_AppMenu[XAP_CocoaAppMenu_Tools] addItem:m_PluginsToolsSeparator];
+			NSMenuItem * menuItem = (NSMenuItem *) [m_PluginsTools objectAtIndex:i];
 
-			for (unsigned i = 0; i < count; i++)
-				{
-					NSMenuItem * menuItem = (NSMenuItem *) [m_PluginsTools objectAtIndex:i];
-
-					[m_AppMenu[XAP_CocoaAppMenu_Tools] addItem:menuItem];
-				}
+			[m_AppMenu[XAP_CocoaAppMenu_Tools] addItem:menuItem];
 		}
+	}
 }
 
 - (void)appendPluginMenuItem:(NSMenuItem *)menuItem
 {
 	if (![m_PluginsTools containsObject:menuItem])
+	{
+		if ([m_PluginsTools count] == 0)
 		{
-			if ([m_PluginsTools count] == 0)
-				{
-					[m_AppMenu[XAP_CocoaAppMenu_Tools] addItem:m_PluginsToolsSeparator];
-				}
-			[m_AppMenu[XAP_CocoaAppMenu_Tools] addItem:menuItem];
-
-			[m_PluginsTools addObject:menuItem];
+			[m_AppMenu[XAP_CocoaAppMenu_Tools] addItem:m_PluginsToolsSeparator];
 		}
+		[m_AppMenu[XAP_CocoaAppMenu_Tools] addItem:menuItem];
+
+		[m_PluginsTools addObject:menuItem];
+	}
 }
 
 - (void)removePluginMenuItem:(NSMenuItem *)menuItem
 {
 	if ([m_PluginsTools containsObject:menuItem])
-		{
-			[m_AppMenu[XAP_CocoaAppMenu_Tools] removeItem:menuItem];
+	{
+		[m_AppMenu[XAP_CocoaAppMenu_Tools] removeItem:menuItem];
 
-			if ([m_PluginsTools count] == 1)
-				{
-					[m_AppMenu[XAP_CocoaAppMenu_Tools] removeItem:m_PluginsToolsSeparator];
-				}
-			[m_PluginsTools removeObject:menuItem];
+		if ([m_PluginsTools count] == 1)
+		{
+			[m_AppMenu[XAP_CocoaAppMenu_Tools] removeItem:m_PluginsToolsSeparator];
 		}
+		[m_PluginsTools removeObject:menuItem];
+	}
 }
 
 /* Do we need this? getLastFocussedFrame() should be tracking this now... [TODO!!]
@@ -854,12 +828,12 @@ static XAP_CocoaAppController * XAP_AppController_Instance = nil;
 - (void)setCurrentView:(AV_View *)view inFrame:(XAP_Frame *)frame
 {
 	if (frame)
-		{
-			XAP_App * pApp = XAP_App::getApp();
+	{
+		XAP_App * pApp = XAP_App::getApp();
 
-			pApp->clearLastFocussedFrame();
-			pApp->rememberFocussedFrame(static_cast<void *>(frame));
-		}
+		pApp->clearLastFocussedFrame();
+		pApp->rememberFocussedFrame(static_cast<void *>(frame));
+	}
 
 	m_pViewPrevious  = m_pViewCurrent;
 	m_pFramePrevious = m_pFrameCurrent;
@@ -874,10 +848,10 @@ static XAP_CocoaAppController * XAP_AppController_Instance = nil;
 {
 	// UT_DEBUGMSG(("XAP_CocoaAppController - (void)resetCurrentView:(AV_View *)view inFrame:(XAP_Frame *)frame\n"));
 	if (m_pFrameCurrent == frame)
-		{
-			m_pViewCurrent = view;
-			[self notifyFrameViewChange];
-		}
+	{
+		m_pViewCurrent = view;
+		[self notifyFrameViewChange];
+	}
 }
 
 - (void)unsetCurrentView:(AV_View *)view inFrame:(XAP_Frame *)frame
@@ -885,19 +859,19 @@ static XAP_CocoaAppController * XAP_AppController_Instance = nil;
 	XAP_App * pApp = XAP_App::getApp();
 
 	if (pApp->getLastFocussedFrame() == frame)
-		{
-			pApp->clearLastFocussedFrame();
-		}
+	{
+		pApp->clearLastFocussedFrame();
+	}
 	if ((m_pViewCurrent == view) && (m_pFrameCurrent == frame))
-		{
-			m_pViewCurrent = 0;
-			m_pFrameCurrent = 0;
-		}
+	{
+		m_pViewCurrent = NULL;
+		m_pFrameCurrent = NULL;
+	}
 	if ((m_pViewPrevious == view) && (m_pFramePrevious == frame))
-		{
-			m_pViewPrevious = 0;
-			m_pFramePrevious = 0;
-		}
+	{
+		m_pViewPrevious = NULL;
+		m_pFramePrevious = NULL;
+	}
 	[self notifyFrameViewChange];
 }
 
@@ -924,39 +898,41 @@ static XAP_CocoaAppController * XAP_AppController_Instance = nil;
 - (void)notifyFrameViewChange
 {
 	if ([XAP_CocoaToolPalette instantiated])
-		{
-			[[XAP_CocoaToolPalette instance:self] setCurrentView:m_pViewCurrent inFrame:m_pFrameCurrent];
-		}
+	{
+		[[XAP_CocoaToolPalette instance:self] setCurrentView:m_pViewCurrent inFrame:m_pFrameCurrent];
+	}
 
 	unsigned count = [m_Plugins count];
 
 	for (unsigned i = 0; i < count; i++)
-		{
-			XAP_CocoaPlugin * plugin = (XAP_CocoaPlugin *) [m_Plugins objectAtIndex:i];
-			[[plugin delegate] pluginCurrentDocumentHasChanged];
-		}
+	{
+		XAP_CocoaPlugin * plugin = (XAP_CocoaPlugin *) [m_Plugins objectAtIndex:i];
+		[[plugin delegate] pluginCurrentDocumentHasChanged];
+	}
 }
 
 /* load .Abi bundle plugin at path, returns nil on failure
  */
 - (XAP_CocoaPlugin *)loadPlugin:(NSString *)path
 {
-	if (!path)
+	if (!path) {
 		return nil;
+	}
 
 	XAP_CocoaPlugin * cocoa_plugin = [[XAP_CocoaPlugin alloc] init];
-	if (!cocoa_plugin)
+	if (!cocoa_plugin) {
 		return nil;
+	}
 
 	if ([cocoa_plugin loadBundleWithPath:path])
-		{
-			[m_Plugins addObject:cocoa_plugin];
-		}
+	{
+		[m_Plugins addObject:cocoa_plugin];
+	}
 	else
-		{
-			[cocoa_plugin release];
-			cocoa_plugin = nil;
-		}
+	{
+		[cocoa_plugin release];
+		cocoa_plugin = nil;
+	}
 	return cocoa_plugin;
 }
 
@@ -977,22 +953,23 @@ static XAP_CocoaAppController * XAP_AppController_Instance = nil;
 	BOOL bCanDeactivate = YES;
 
 	for (unsigned i = 0; i < count; i++)
-		{
-			XAP_CocoaPlugin * plugin = (XAP_CocoaPlugin *) [m_Plugins objectAtIndex:i];
+	{
+		XAP_CocoaPlugin * plugin = (XAP_CocoaPlugin *) [m_Plugins objectAtIndex:i];
 
-			bCanDeactivate = [[plugin delegate] pluginCanDeactivate];
-			if (!bCanDeactivate)
-				break;
-		}
-	if (!bCanDeactivate)
+		bCanDeactivate = [[plugin delegate] pluginCanDeactivate];
+		if (!bCanDeactivate)
+			break;
+	}
+	if (!bCanDeactivate) {
 		return NO;
+	}
 
 	for (unsigned i = 0; i < count; i++)
-		{
-			XAP_CocoaPlugin * plugin = (XAP_CocoaPlugin *) [m_Plugins objectAtIndex:i];
+	{
+		XAP_CocoaPlugin * plugin = (XAP_CocoaPlugin *) [m_Plugins objectAtIndex:i];
 
-			[[plugin delegate] pluginDeactivate];
-		}
+		[[plugin delegate] pluginDeactivate];
+	}
 	return YES;
 }
 
@@ -1002,10 +979,11 @@ static XAP_CocoaAppController * XAP_AppController_Instance = nil;
 - (BOOL)deactivatePlugin:(XAP_CocoaPlugin *)plugin overridePlugin:(BOOL)override
 {
 	if (!override)
-		{
-			if (![[plugin delegate] pluginCanDeactivate])
-				return NO;
+	{
+		if (![[plugin delegate] pluginCanDeactivate]) {
+			return NO;
 		}
+	}
 	[[plugin delegate] pluginDeactivate];
 
 	return YES;
