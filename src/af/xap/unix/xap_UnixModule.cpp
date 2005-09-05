@@ -47,7 +47,7 @@ bool XAP_UnixModule::load (const char * name)
   if (m_bLoaded)
 	  return false;
   
-  m_module = g_module_open (name, static_cast<GModuleFlags>(0));
+  m_module = g_module_open (name, static_cast<GModuleFlags>(G_MODULE_BIND_LAZY|G_MODULE_BIND_LOCAL));
   
   if (m_module)
   {
