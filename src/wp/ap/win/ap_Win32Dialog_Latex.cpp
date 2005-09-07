@@ -137,15 +137,11 @@ void AP_Win32Dialog_Latex::setLatexInGUI(void)
 
 bool AP_Win32Dialog_Latex::getLatexFromGUI(void)
 {
-	char* buffer = NULL;
+	char buffer[2048]; // TODO: FIXME: BAD BAD FIXED LENGTH
 	UT_UTF8String sLatex;
-	UT_sint32 length;
 
-	getControlText(AP_RID_DIALOG_LATEX_EDIT_LATEX, NULL, length);
-	buffer = new char[length+1];
-	getControlText(AP_RID_DIALOG_LATEX_EDIT_LATEX, (LPSTR) buffer, length);
+	getControlText(AP_RID_DIALOG_LATEX_EDIT_LATEX, (LPSTR) buffer, 2048);
 	sLatex = AP_Win32App::s_fromWinLocaleToUTF8(buffer);
-	delete buffer;
 	
 	UT_DEBUGMSG(("LaTeX from widget is %s \n",sLatex.utf8_str()));
 	setLatex(sLatex);
