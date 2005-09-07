@@ -37,19 +37,6 @@
 
 #include <popt.h>
 
-#if 0
-/* Have to link the gtkmathview library to AbiWord, not just the plug-in :-(
- * Otherwise get obscure problems with construction of static variables
- * during dynamic linking that hand AbiWord.
- * 
- * RGBColor is defined in one of the many headers included by Cocoa/Cocoa.h and
- * gets redefined by one of the many headers included by MathView/Configuration.hh
- */
-#define RGBColor GtkMathView_RGBColor
-#include <MathView/Configuration.hh>
-#undef RGBColor
-#endif
-
 #include "ut_bytebuf.h"
 #include "ut_debugmsg.h"
 #include "ut_string.h"
@@ -302,16 +289,6 @@ bool AP_CocoaApp::initialize(void)
 	NSString * resources = [[NSBundle mainBundle] resourcePath];
 
 	setenv ("ABIWORD_COCOA_BUNDLED_RESOURCES", [resources UTF8String], 1);
-
-#if 0
-	/* Have to link the gtkmathview library to AbiWord, not just the plug-in :-(
-	 * Otherwise get obscure problems with construction of static variables
-	 * during dynamic linking that hand AbiWord.
-	 */
-	UT_UTF8String bundleConfDir([resources UTF8String]);
-	bundleConfDir += "/gtkmathview/gtkmathview.conf.xml";
-	Configuration::addConfigurationPath(bundleConfDir.utf8_str());
-#endif
 
 	//////////////////////////////////////////////////////////////////
 	// Initialize the importers/exporters
