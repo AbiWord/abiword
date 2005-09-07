@@ -228,12 +228,17 @@ void AP_CocoaDialog_Spell::event_ChangeAll()
 		changeWordWith(replace);
 	}
 	else {
-		NSString * replace = [m_dlg replace];
+		// replacement input by the user. If it is empty, we do nothing, 
+		// see bug 8552
+		NSString * replaceUser = [m_dlg replace];
 		
-		UT_UCS4String str([replace UTF8String], 0);
+		if ([replaceUser length] > 0) {
+			
+			UT_UCS4String str([replaceUser UTF8String], 0);
 
-		addChangeAll(str.ucs4_str());
-		changeWordWith(str.ucs4_str());
+			addChangeAll(str.ucs4_str());
+			changeWordWith(str.ucs4_str());
+		}
 	}
    
    [NSApp stopModal];
