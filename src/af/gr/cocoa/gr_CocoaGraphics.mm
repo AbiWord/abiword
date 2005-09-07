@@ -668,7 +668,11 @@ void GR_CocoaGraphics::drawChars(const UT_UCSChar* pChars, int iCharOffset,
 								 int * pCharWidths)
 {
 	UT_DEBUGMSG (("GR_CocoaGraphics::drawChars()\n"));
-	UT_sint32 yoff = _tduY(yoffLU); // - m_pFont->getDescent();
+	//
+	// this is where things get tricky.
+	// AbiWord draws strings with the Y origin as top of the line while Cocoa do it 
+	// on the baseline
+	UT_sint32 yoff = _tduY(yoffLU + m_pFont->getAscent());
 	UT_sint32 xoff = xoffLU;	// layout Unit !
 
     if (!m_fontMetricsTextStorage) {
