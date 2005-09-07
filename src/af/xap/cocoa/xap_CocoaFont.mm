@@ -37,9 +37,9 @@ NSTextContainer * XAP_CocoaFont::s_fontMetricsTextContainer = nil;
 /*******************************************************************/
 
 XAP_CocoaFont_LayoutHelper::XAP_CocoaFont_LayoutHelper(NSFont * font) :
-	m_fontattr(0),
-	m_storage(0),
-	m_layout(0)
+	m_fontattr(nil),
+	m_storage(nil),
+	m_layout(nil)
 {
 	m_fontattr = [NSDictionary dictionaryWithObject:font forKey:NSFontAttributeName];
 	[m_fontattr retain];
@@ -185,6 +185,7 @@ float XAP_CocoaFont::getDescent()
 	if (_m_descent == 0.0)
 	{
 		_m_descent = -[m_font descender];
+		UT_ASSERT(_m_descent >= 0);
 	}
 	return _m_descent;
 }
@@ -193,7 +194,7 @@ float XAP_CocoaFont::getHeight()
 {
 	if (_m_height == 0.0)
 	{
-		_m_height = [m_font defaultLineHeightForFont];
+		_m_height = getAscent() + getDescent();
 	}
 	return _m_height;
 }
@@ -283,9 +284,6 @@ UT_sint32 XAP_CocoaFont::measureUnremappedCharForCache(UT_UCSChar cChar) const
 	return _measureChar (cChar, m_fontForCache);
 }
 
-#ifdef LAYOUT_CONTAINER_WIDTH
-#undef LAYOUT_CONTAINER_WIDTH
-#endif
 #define LAYOUT_CONTAINER_WIDTH 10000.0f
 
 void XAP_CocoaFont::_initMetricsLayouts(void)

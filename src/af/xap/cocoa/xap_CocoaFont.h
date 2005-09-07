@@ -108,9 +108,9 @@ private:
 
 	/* metrics cache */
 	UT_uint32						_m_size;
-	float							_m_ascent;
-	float							_m_descent;
-	float							_m_height;
+	volatile float							_m_ascent;
+	volatile float							_m_descent;
+	volatile float							_m_height;
 	UT_NumberVector *				_m_coverage;
 
 	/*! static metrics stuff */
