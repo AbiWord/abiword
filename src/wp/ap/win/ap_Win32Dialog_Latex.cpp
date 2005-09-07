@@ -39,7 +39,7 @@ XAP_Dialog * AP_Win32Dialog_Latex::static_constructor(XAP_DialogFactory * pFacto
 }
 
 AP_Win32Dialog_Latex::AP_Win32Dialog_Latex(XAP_DialogFactory * pDlgFactory,
-												 XAP_Dialog_Id id)
+					 XAP_Dialog_Id id)
 	: AP_Dialog_Latex(pDlgFactory,id)
 {
 }
@@ -132,7 +132,7 @@ void AP_Win32Dialog_Latex::setLatexInGUI(void)
 	UT_UTF8String sLatex;
 	getLatex(sLatex);
 
-	setControlText( AP_RID_DIALOG_LATEX_TEXT_EXAMPLE,(LPCSTR)(AP_Win32App::s_fromUTF8ToWinLocale(sLatex.utf8_str())).c_str() );
+	setControlText(AP_RID_DIALOG_LATEX_EDIT_LATEX, (LPCSTR)(AP_Win32App::s_fromUTF8ToWinLocale(sLatex.utf8_str())).c_str());
 }
 
 bool AP_Win32Dialog_Latex::getLatexFromGUI(void)
@@ -147,7 +147,7 @@ bool AP_Win32Dialog_Latex::getLatexFromGUI(void)
 	sLatex = AP_Win32App::s_fromWinLocaleToUTF8(buffer);
 	delete buffer;
 	
-	UT_DEBUGMSG(("LAtex from widget is %s \n",sLatex.utf8_str()));
+	UT_DEBUGMSG(("LaTeX from widget is %s \n",sLatex.utf8_str()));
 	setLatex(sLatex);
 		
 	return true;
