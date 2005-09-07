@@ -167,7 +167,7 @@ BOOL AP_Win32Dialog_Latex::_onInitDialog(HWND hWnd, WPARAM wParam, LPARAM lParam
 	localizeControlText(AP_RID_DIALOG_LATEX_BTN_INSERT,XAP_STRING_ID_DLG_Insert);
 
 	setLatexInGUI();
-//	centerDialog();	
+	centerDialog();	
 
 	return 1;							// 1 == we did not call SetFocus()
 }
