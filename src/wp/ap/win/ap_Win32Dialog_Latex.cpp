@@ -78,11 +78,11 @@ void AP_Win32Dialog_Latex::runModeless(XAP_Frame * pFrame)
 
 void AP_Win32Dialog_Latex::event_Insert(void)
 {
-  getLatexFromGUI();
-  if(convertLatexToMathML())
-  {
-    insertIntoDoc();
-  }
+	getLatexFromGUI();
+	if(convertLatexToMathML())
+	{
+		insertIntoDoc();
+	}
 }
 
 void AP_Win32Dialog_Latex::event_Close(void)
@@ -141,9 +141,9 @@ bool AP_Win32Dialog_Latex::getLatexFromGUI(void)
 	UT_UTF8String sLatex;
 	UT_sint32 length;
 
-	getControlText(AP_RID_DIALOG_LATEX_TEXT_EXAMPLE, NULL, length);
+	getControlText(AP_RID_DIALOG_LATEX_EDIT_LATEX, NULL, length);
 	buffer = new char[length+1];
-	getControlText(AP_RID_DIALOG_LATEX_TEXT_EXAMPLE, (LPSTR) buffer, length);
+	getControlText(AP_RID_DIALOG_LATEX_EDIT_LATEX, (LPSTR) buffer, length);
 	sLatex = AP_Win32App::s_fromWinLocaleToUTF8(buffer);
 	delete buffer;
 	
