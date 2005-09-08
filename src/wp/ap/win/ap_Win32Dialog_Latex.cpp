@@ -54,25 +54,39 @@ void  AP_Win32Dialog_Latex::activate(void)
 	
 	ConstructWindowName();
 	setDialogTitle((LPCSTR)(AP_Win32App::s_fromUTF8ToWinLocale(m_sWindowName.utf8_str())).c_str());
-	
-	iResult = ShowWindow( m_hDlg, SW_SHOW );
-	iResult = BringWindowToTop( m_hDlg );
-
-	UT_ASSERT((iResult != 0));
 }
 
 void AP_Win32Dialog_Latex::runModeless(XAP_Frame * pFrame)
 {
-	UT_ASSERT(pFrame);
-	UT_ASSERT(m_id == AP_DIALOG_ID_LATEX);
+        // raise the dialog
+        int iResult;
+        XAP_Win32App * pWin32App = static_cast<XAP_Win32App *>(m_pApp);
 
-	setDialog(this);
-	HWND hWndDialog = createModeless( pFrame, MAKEINTRESOURCE(AP_RID_DIALOG_LATEX) );
+        LPCTSTR lpTemplate = NULL;
 
-	UT_ASSERT((hWndDialog != NULL));
-	ShowWindow(hWndDialog, SW_SHOW);
+        UT_return_if_fail (m_id == AP_RID_DIALOG_LATEX);
 
-	m_pApp->rememberModelessId(m_id, this);		
+        lpTemplate = MAKEINTRESOURCE(AP_RID_DIALOG_LATEX);
+
+        HWND hResult = CreateDialogParam(pWin32App->getInstance(),lpTemplate,
+                                                        static_cast<XAP_Win32FrameImpl*>(pFrame->getFrameImpl())->getTopLevelWindow(),
+                                                        (DLGPROC)s_dlgProc,(LPARAM)this);
+
+        UT_ASSERT_HARMLESS((hResult != NULL));
+
+        m_hWnd = hResult;
+
+        // Save dialog the ID number and pointer to the widget
+        UT_sint32 sid =(UT_sint32)  getDialogId();
+        m_pApp->rememberModelessId( sid, (XAP_Dialog_Modeless *) m_pDialog);
+
+        iResult = ShowWindow( m_hWnd, SW_SHOW );
+
+        iResult = BringWindowToTop( m_hWnd );
+
+        UT_ASSERT_HARMLESS((iResult != 0));
+
+
 }
 
 
@@ -123,8 +137,11 @@ void AP_Win32Dialog_Latex::notifyCloseFrame(XAP_Frame *pFrame)
 void AP_Win32Dialog_Latex::destroy(void)
 {
 	m_answer = AP_Dialog_Latex::a_CANCEL;	
-	modeless_cleanup();
-	destroyWindow();
+        int iResult = DestroyWindow( m_hWnd );
+
+        UT_ASSERT_HARMLESS((iResult != 0));
+
+        modeless_cleanup();
 }
 
 void AP_Win32Dialog_Latex::setLatexInGUI(void)
