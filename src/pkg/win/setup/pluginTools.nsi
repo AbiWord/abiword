@@ -84,7 +84,7 @@ SectionEnd
 SubSection /e "Mechanics and Grammar Tools"
 
 !ifdef 0
-SubSection "AikSaurus (thesaurus) Plugins"
+SubSection "AikSaurus Thesaurus Plugin"
 ; OPTIONAL
 Section "The AikSaurus Plugin"
 	SectionIn 1 2
@@ -127,15 +127,15 @@ SectionEnd
 SubSectionEnd
 !endif
 
-Section "AbiGrammar Plugin"
+Section "Grammar Checker"
 	SectionIn 1 2
 
 	; Testing clause to Overwrite Existing Version - if exists
 	IfFileExists "$INSTDIR\AbiWord\plugins\AbiGrammar.dll" 0 DoInstall
 	
-	MessageBox MB_YESNO "Overwrite Existing AbiGrammar Plugin?" IDYES DoInstall
+	MessageBox MB_YESNO "Overwrite Existing Grammar Checker Plugin?" IDYES DoInstall
 	
-	DetailPrint "Skipping AbiGrammar Plugin (already exists)!"
+	DetailPrint "Skipping Grammar Checker Plugin (already exists)!"
 	Goto End
 
 	DoInstall:
@@ -150,15 +150,15 @@ Section "AbiGrammar Plugin"
 SectionEnd
 
 ; OPTIONAL
-Section "AbiURLDict Plugin"
+Section "Web Dictionary Integration"
 	SectionIn 1 2
 
 	; Testing clause to Overwrite Existing Version - if exists
 	IfFileExists "$INSTDIR\AbiWord\plugins\AbiURLDict.dll" 0 DoInstall
 	
-	MessageBox MB_YESNO "Overwrite Existing AbiURLDict Plugin?" IDYES DoInstall
+	MessageBox MB_YESNO "Overwrite Existing Web Dictionary Integration Plugin?" IDYES DoInstall
 	
-	DetailPrint "Skipping AbiURLDict Plugin (already exists)!"
+	DetailPrint "Skipping Web Dictionary Integration Plugin (already exists)!"
 	Goto End
 
 	DoInstall:
@@ -173,15 +173,15 @@ SubSectionEnd
 SubSection /e "Reference Tools"
 
 ; OPTIONAL
-Section "AbiGoogle Plugin"
+Section "Google Search"
 	SectionIn 1 2
 
 	; Testing clause to Overwrite Existing Version - if exists
 	IfFileExists "$INSTDIR\AbiWord\plugins\AbiGoogle.dll" 0 DoInstall
 	
-	MessageBox MB_YESNO "Overwrite Existing AbiGoogle Plugin?" IDYES DoInstall
+	MessageBox MB_YESNO "Overwrite Existing Google Search Plugin?" IDYES DoInstall
 	
-	DetailPrint "Skipping AbiGoogle Plugin (already exists)!"
+	DetailPrint "Skipping Google Search Plugin (already exists)!"
 	Goto End
 
 	DoInstall:
@@ -191,15 +191,15 @@ Section "AbiGoogle Plugin"
 SectionEnd
 
 ; OPTIONAL
-Section "AbiWikipedia Plugin"
+Section "Wikipedia Lookup"
 	SectionIn 1 2
 
 	; Testing clause to Overwrite Existing Version - if exists
 	IfFileExists "$INSTDIR\AbiWord\plugins\AbiWikipedia.dll" 0 DoInstall
 	
-	MessageBox MB_YESNO "Overwrite Existing AbiWikipedia Plugin?" IDYES DoInstall
+	MessageBox MB_YESNO "Overwrite Existing Wikipedia Lookup Plugin?" IDYES DoInstall
 	
-	DetailPrint "Skipping AbiWikipedia Plugin (already exists)!"
+	DetailPrint "Skipping Wikipedia Lookup Plugin (already exists)!"
 	Goto End
 
 	DoInstall:
@@ -214,15 +214,15 @@ SubSectionEnd
 SubSection /e "Translation Plugins"
 
 ; OPTIONAL
-Section "AbiBabelfish Plugin"
+Section "Babelfish Translation"
 	SectionIn 1 2
 
 	; Testing clause to Overwrite Existing Version - if exists
 	IfFileExists "$INSTDIR\AbiWord\plugins\AbiBabelfish.dll" 0 DoInstall
 	
-	MessageBox MB_YESNO "Overwrite Existing AbiBabelfish Plugin?" IDYES DoInstall
+	MessageBox MB_YESNO "Overwrite Existing Babelfish Translation Plugin?" IDYES DoInstall
 	
-	DetailPrint "Skipping AbiBabelfish Plugin (already exists)!"
+	DetailPrint "Skipping Babelfish Translation Plugin (already exists)!"
 	Goto End
 
 	DoInstall:
@@ -234,15 +234,15 @@ SectionEnd
 ;SectionDivider
 
 ; OPTIONAL
-Section "AbiFreeTranslation Plugin"
+Section "FreeTranslation.com Translation"
 	SectionIn 1 2
 
 	; Testing clause to Overwrite Existing Version - if exists
 	IfFileExists "$INSTDIR\AbiWord\plugins\AbiFreeTranslation.dll" 0 DoInstall
 	
-	MessageBox MB_YESNO "Overwrite Existing AbiFreeTranslation Plugin?" IDYES DoInstall
+	MessageBox MB_YESNO "Overwrite Existing FreeTranslation.com Translation Plugin?" IDYES DoInstall
 	
-	DetailPrint "Skipping AbiFreeTranslation Plugin (already exists)!"
+	DetailPrint "Skipping FreeTranslation.com Translation Plugin (already exists)!"
 	Goto End
 
 	DoInstall:
@@ -252,7 +252,7 @@ Section "AbiFreeTranslation Plugin"
 SectionEnd
 
 SubSectionEnd
-
+!ifdef 0
 ;SectionDivider
 SubSection /e "Image Manipulation"
 
@@ -277,6 +277,8 @@ SubSection /e "Image Manipulation"
 ;SectionDivider
 
 ; OPTIONAL
+
+;conflicts with AbiMathView
 Section "AbiPaint Plugin"
 	SectionIn 1 2
 
@@ -294,8 +296,11 @@ Section "AbiPaint Plugin"
 	End:
 SectionEnd
 
+
 ;SectionDivider
 SubSectionEnd
+!endif
+
 
 !macro dlFileMacro remoteFname localFname errMsg
 	!define retryDLlbl retryDL_${__FILE__}${__LINE__}
@@ -336,16 +341,16 @@ SubSectionEnd
 !macroend
 !define unzipFile "!insertmacro unzipFileMacro"
 
-Section "AbiMathView Plugin"
+Section "Equation Editor"
 	SectionIn 2
 	
 
 	; Testing clause to Overwrite Existing Version - if exists
 	IfFileExists "$INSTDIR\AbiWord\plugins\AbiMathView.dll" 0 DoInstall
 	
-	MessageBox MB_YESNO "Overwrite Existing AbiMathView Plugin?" IDYES DoInstall
+	MessageBox MB_YESNO "Overwrite Existing Equation Editor Plugin?" IDYES DoInstall
 	
-	DetailPrint "Skipping AbiMathView Plugin (already exists)!"
+	DetailPrint "Skipping Equation Editor Plugin (already exists)!"
 	Goto End
 
 	DoInstall:
@@ -384,6 +389,15 @@ Section "AbiMathView Plugin"
 	${unzipFile} "$TEMP\glib-2.4.7-runtime.zip" "$INSTDIR\AbiWord" "bin\libgobject-2.0-0.dll" "ERROR: failed to extract libgobject-2.0-0.dll from glib-2.4.7-runtime.zip"
 	StrCmp $0 "success" 0 doCleanup
 
+	;;;;;;;;;
+	; libmathview
+	${dlFile} "http://www.abisource.com/downloads/dependencies/gtkmathview/libmathview-0.7.3-1rp.zip" "$TEMP\libmathview-0.7.3-1rp.zip" "ERROR: failed to download http://www.abisource.com/downloads/dependencies/gtkmathview/libmathview-0.7.3-1rp.zip"
+	StrCmp $0 "success" 0 doCleanup
+	${unzipFile} "$TEMP\libmathview-0.7.3-1rp.zip" "$INSTDIR\AbiWord\bin" "libmathview-0.dll" "ERROR: failed to extract libmathview-0.dll from libmathview-0.7.3-1rp.zip"
+	StrCmp $0 "success" 0 doCleanup
+	${unzipFile} "$TEMP\libmathview-0.7.3-1rp.zip" "$INSTDIR\AbiWord\bin" "libmathview_frontend_libxml2-0.dll" "ERROR: failed to extract libmathview_frontend_libxml2-0.dll from libmathview-0.7.3-1rp.zip"
+	StrCmp $0 "success" 0 doCleanup
+
 
 	doCleanup:
 		; Delete temporary files
@@ -392,6 +406,7 @@ Section "AbiMathView Plugin"
 		Delete "$TEMP\gettext-runtime-0.13.1-runtime.zip"
 		Delete "$TEMP\glib-2.4.7-runtime.zip"
 		Delete "$TEMP\libxml2-2.6.19-runtime.zip"
+		Delete "$TEMP\libmathview-0.7.3-1rp.zip"
 
 	;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;
 	; Set output path back to the plugins directory.
@@ -409,17 +424,17 @@ Section "AbiMathView Plugin"
 	End:
 SectionEnd
 
-SubSection /e "Script Related Plugins"
 
-Section "AbiScriptHappy Plugin"
+
+Section "Command Output Scripting"
 	SectionIn 1 2
 
 	; Testing clause to Overwrite Existing Version - if exists
 	IfFileExists "$INSTDIR\AbiWord\plugins\AbiScriptHappy.dll" 0 DoInstall
 	
-	MessageBox MB_YESNO "Overwrite Existing AbiScriptHappy Plugin?" IDYES DoInstall
+	MessageBox MB_YESNO "Overwrite Existing Command Output Scripting Plugin?" IDYES DoInstall
 	
-	DetailPrint "Skipping AbiScriptHappy Plugin (already exists)!"
+	DetailPrint "Skipping Command Output Scripting Plugin (already exists)!"
 	Goto End
 
 	DoInstall:
@@ -428,7 +443,7 @@ Section "AbiScriptHappy Plugin"
 	End:
 SectionEnd
 
-SubSectionEnd
+
 
 ; uncomment [here and in uninstall] & change .ext if this plugin adds support for new type (with new extension)
 ; OPTIONAL Registry Settings
