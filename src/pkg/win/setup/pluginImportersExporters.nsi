@@ -201,17 +201,22 @@ SectionEnd
 SubSectionEnd
 !endif
 
-SubSection /e "File Format Importers/Exporters"
 
-Section "AbiApplix Plugin"
+;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;
+;;;;;;;;;; Importers/Exporters
+
+
+SubSection /e "Importers/Exporters"
+
+Section "ApplixWare"
 	SectionIn 2
 
 	; Testing clause to Overwrite Existing Version - if exists
 	IfFileExists "$INSTDIR\AbiWord\plugins\AbiApplix.dll" 0 DoInstall
 	
-	MessageBox MB_YESNO "Overwrite Existing AbiApplix Plugin?" IDYES DoInstall
+	MessageBox MB_YESNO "Overwrite Existing ApplixWare Plugin?" IDYES DoInstall
 	
-	DetailPrint "Skipping AbiApplix Plugin (already exists)!"
+	DetailPrint "Skipping ApplixWare Plugin (already exists)!"
 	Goto End
 
 	DoInstall:
@@ -222,8 +227,8 @@ SectionEnd
 
 ;SectionDivider
 
-SubSection "AbiBZ2ABW (*.bzabw) Plugin"
-Section "The .bzabw Plugin"
+SubSection "BZ2ABW AbiWord Compression (*.bzabw)"
+Section "BZ2ABW Support"
 	SectionIn 1 2
 
 	; Testing clause to Overwrite Existing Version - if exists
@@ -244,7 +249,7 @@ Section "The .bzabw Plugin"
 SectionEnd
 
 ; OPTIONAL Registry Settings
-Section "Add .bzabw Association (to Registry)"
+Section "Use AbiWord to open .bzabw files by default"
 	SectionIn 1 2
 
 	; Skip adding registry entries if plugin doesn't exist
@@ -260,15 +265,15 @@ SubSectionEnd
 
 ;SectionDivider
 
-Section "AbiClarisWorks Plugin"
+Section "ClarisWorks"
 	SectionIn 2
 
 	; Testing clause to Overwrite Existing Version - if exists
 	IfFileExists "$INSTDIR\AbiWord\plugins\AbiClarisWorks.dll" 0 DoInstall
 	
-	MessageBox MB_YESNO "Overwrite Existing AbiClarisWorks Plugin?" IDYES DoInstall
+	MessageBox MB_YESNO "Overwrite Existing ClarisWorks Plugin?" IDYES DoInstall
 	
-	DetailPrint "Skipping AbiClarisWorks Plugin (already exists)!"
+	DetailPrint "Skipping ClarisWorks Plugin (already exists)!"
 	Goto End
 
 	DoInstall:
@@ -279,7 +284,7 @@ SectionEnd
 
 ;SectionDivider
 
-Section "AbiDocbook Plugin"
+Section "Docbook/Coquille"
 	SectionIn 2
 
 	; Testing clause to Overwrite Existing Version - if exists
@@ -298,15 +303,15 @@ SectionEnd
 
 ;SectionDivider
 
-Section "AbiEML Plugin"
+Section "Outlook Express .EML email format"
 	SectionIn 1 2
 
 	; Testing clause to Overwrite Existing Version - if exists
 	IfFileExists "$INSTDIR\AbiWord\plugins\AbiEML.dll" 0 DoInstall
 	
-	MessageBox MB_YESNO "Overwrite Existing AbiEML Plugin?" IDYES DoInstall
+	MessageBox MB_YESNO "Overwrite Existing Outlook Express .EML Plugin?" IDYES DoInstall
 	
-	DetailPrint "Skipping AbiEML Plugin (already exists)!"
+	DetailPrint "Skipping Outlook Express .EML Plugin (already exists)!"
 	Goto End
 
 	DoInstall:
@@ -315,57 +320,18 @@ Section "AbiEML Plugin"
 	End:
 SectionEnd
 
-;SectionDivider
 
-!ifdef 0
-Section "AbiHancom Plugin"
-	SectionIn 2
 
-	; Testing clause to Overwrite Existing Version - if exists
-	IfFileExists "$INSTDIR\AbiWord\plugins\AbiHancom.dll" 0 DoInstall
-	
-	MessageBox MB_YESNO "Overwrite Existing AbiHancom Plugin?" IDYES DoInstall
-	
-	DetailPrint "Skipping AbiHancom Plugin (already exists)!"
-	Goto End
 
-	DoInstall:
-	File "AbiHancom.dll"
-  
-	End:
-SectionEnd
-!endif
-
-;SectionDivider
-
-Section "AbiHrtext Plugin"
-	SectionIn 2
-
-	; Testing clause to Overwrite Existing Version - if exists
-	IfFileExists "$INSTDIR\AbiWord\plugins\AbiHrtext.dll" 0 DoInstall
-	
-	MessageBox MB_YESNO "Overwrite Existing AbiHrtext Plugin?" IDYES DoInstall
-	
-	DetailPrint "Skipping AbiHrtext Plugin (already exists)!"
-	Goto End
-
-	DoInstall:
-	File "AbiHrtext.dll"
-  
-	End:
-SectionEnd
-
-;SectionDivider
-
-Section "AbiISCII-Text Plugin"
+Section "ISCII (Indic script) Text"
 	SectionIn 2
 
 	; Testing clause to Overwrite Existing Version - if exists
 	IfFileExists "$INSTDIR\AbiWord\plugins\AbiISCII_Text.dll" 0 DoInstall
 	
-	MessageBox MB_YESNO "Overwrite Existing AbiIscii-text Plugin?" IDYES DoInstall
+	MessageBox MB_YESNO "Overwrite Existing ISCII (Indic script) Text Plugin?" IDYES DoInstall
 	
-	DetailPrint "Skipping AbiIscii-text Plugin (already exists)!"
+	DetailPrint "Skipping ISCII (Indic script) Text Plugin (already exists)!"
 	Goto End
 
 	DoInstall:
@@ -374,7 +340,167 @@ Section "AbiISCII-Text Plugin"
 	End:
 SectionEnd
 
+
+
+
+
+
 ;SectionDivider
+
+
+
+
+Section "Palm .pdb DOC"
+	SectionIn 2
+
+	; Testing clause to Overwrite Existing Version - if exists
+	IfFileExists "$INSTDIR\AbiWord\plugins\AbiPalmDoc.dll" 0 DoInstall
+	
+	MessageBox MB_YESNO "Overwrite Existing Palm .pdb DOC Plugin?" IDYES DoInstall
+	
+	DetailPrint "Skipping Palm .pdb DOC Plugin (already exists)!"
+	Goto End
+
+	DoInstall:
+	File "AbiPalmDoc.dll"
+  
+	End:
+SectionEnd
+
+;Wireless Markup Language (old HTML replacement for mobile devices)
+Section "WML Wireless Markup"
+	SectionIn 2
+
+	; Testing clause to Overwrite Existing Version - if exists
+	IfFileExists "$INSTDIR\AbiWord\plugins\AbiWML.dll" 0 DoInstall
+	
+	MessageBox MB_YESNO "Overwrite Existing WML Wireless Markup Plugin?" IDYES DoInstall
+	
+	DetailPrint "Skipping WML Wireless Markup Plugin (already exists)!"
+	Goto End
+
+	DoInstall:
+	File "AbiWML.dll"
+  
+	End:
+SectionEnd
+
+;SectionDivider
+
+;XML/XSL Formatting objects, meant to be similar in scope to LaTeX
+Section "XSL-FO"
+	SectionIn 2
+
+	; Testing clause to Overwrite Existing Version - if exists
+	IfFileExists "$INSTDIR\AbiWord\plugins\AbiXSLFO.dll" 0 DoInstall
+	
+	MessageBox MB_YESNO "Overwrite Existing XSL-FO Plugin?" IDYES DoInstall
+	
+	DetailPrint "Skipping XSL-FO Plugin (already exists)!"
+	Goto End
+
+	DoInstall:
+	File "AbiXSLFO.dll"
+  
+	End:
+SectionEnd
+
+
+SubSectionEnd
+
+
+;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;
+;;;;;;; Import Only
+
+SubSection /e "Import-Only Support"
+Section "MS Write (*.wri)"
+	SectionIn 1 2
+
+	; Testing clause to Overwrite Existing Version - if exists
+	IfFileExists "$INSTDIR\AbiWord\plugins\AbiMSWrite.dll" 0 DoInstall
+	
+	MessageBox MB_YESNO "Overwrite Existing MS Write Plugin?" IDYES DoInstall
+	
+	DetailPrint "Skipping MS Write Plugin (already exists)!"
+	Goto End
+
+	DoInstall:
+	File "AbiMSWrite.dll"
+  
+	End:
+SectionEnd
+
+Section "T602"
+	SectionIn 2
+
+	; Testing clause to Overwrite Existing Version - if exists
+	IfFileExists "$INSTDIR\AbiWord\plugins\AbiT602.dll" 0 DoInstall
+	
+	MessageBox MB_YESNO "Overwrite Existing AbiT602 Plugin?" IDYES DoInstall
+	
+	DetailPrint "Skipping AbiT602 Plugin (already exists)!"
+	Goto End
+
+	DoInstall:
+	File "AbiT602.dll"
+  
+	End:
+SectionEnd
+
+SubSectionEnd
+
+
+;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;
+;;;;;;; Export Only
+
+SubSection /e "Export-Only Support"
+
+Section "Newsgroup Markup (Hrtext)"
+	SectionIn 2
+
+	; Testing clause to Overwrite Existing Version - if exists
+	IfFileExists "$INSTDIR\AbiWord\plugins\AbiHrtext.dll" 0 DoInstall
+	
+	MessageBox MB_YESNO "Overwrite Existing Newsgroup Markup (Hrtext) Plugin?" IDYES DoInstall
+	
+	DetailPrint "Skipping Newsgroup Markup (Hrtext) Plugin (already exists)!"
+	Goto End
+
+	DoInstall:
+	File "AbiHrtext.dll"
+  
+	End:
+SectionEnd
+
+Section "LaTeX"
+	SectionIn 2
+
+	; Testing clause to Overwrite Existing Version - if exists
+	IfFileExists "$INSTDIR\AbiWord\plugins\AbiLaTeX.dll" 0 DoInstall
+	
+	MessageBox MB_YESNO "Overwrite Existing AbiLaTeX Plugin?" IDYES DoInstall
+	
+	DetailPrint "Skipping AbiLaTeX Plugin (already exists)!"
+	Goto End
+
+	DoInstall:
+	File "AbiLaTeX.dll"
+  
+	End:
+SectionEnd
+
+;SectionDivider
+
+
+;SectionDivider
+
+SubSectionEnd
+
+
+
+;;;;;;;;;;;;;;;;;;;;;;;;
+;;;;;;; Experimental or Disabled Plugins
+
 
 !ifdef EXPERIMENTALPLUGINS
 Section "AbiKword Plugin"
@@ -397,22 +523,7 @@ SectionEnd
 
 ;SectionDivider
 
-Section "AbiLaTeX Plugin"
-	SectionIn 2
 
-	; Testing clause to Overwrite Existing Version - if exists
-	IfFileExists "$INSTDIR\AbiWord\plugins\AbiLaTeX.dll" 0 DoInstall
-	
-	MessageBox MB_YESNO "Overwrite Existing AbiLaTeX Plugin?" IDYES DoInstall
-	
-	DetailPrint "Skipping AbiLaTeX Plugin (already exists)!"
-	Goto End
-
-	DoInstall:
-	File "AbiLaTeX.dll"
-  
-	End:
-SectionEnd
 
 ;SectionDivider
 
@@ -437,22 +548,7 @@ SectionEnd
 ;SectionDivider
 !endif
 
-Section "MSWrite (*.wri) Plugin"
-	SectionIn 1 2
 
-	; Testing clause to Overwrite Existing Version - if exists
-	IfFileExists "$INSTDIR\AbiWord\plugins\AbiMSWrite.dll" 0 DoInstall
-	
-	MessageBox MB_YESNO "Overwrite Existing AbiMSWrite Plugin?" IDYES DoInstall
-	
-	DetailPrint "Skipping AbiMSWrite Plugin (already exists)!"
-	Goto End
-
-	DoInstall:
-	File "AbiMSWrite.dll"
-  
-	End:
-SectionEnd
 
 ;SectionDivider
 
@@ -477,22 +573,45 @@ SectionEnd
 ;SectionDivider
 !endif
 
-Section "AbiPalmDoc (*.pdb) Plugin"
+!ifdef 0
+Section "AbiHancom Plugin"
 	SectionIn 2
 
 	; Testing clause to Overwrite Existing Version - if exists
-	IfFileExists "$INSTDIR\AbiWord\plugins\AbiPalmDoc.dll" 0 DoInstall
+	IfFileExists "$INSTDIR\AbiWord\plugins\AbiHancom.dll" 0 DoInstall
 	
-	MessageBox MB_YESNO "Overwrite Existing AbiPalmDoc Plugin?" IDYES DoInstall
+	MessageBox MB_YESNO "Overwrite Existing AbiHancom Plugin?" IDYES DoInstall
 	
-	DetailPrint "Skipping AbiPalmDoc Plugin (already exists)!"
+	DetailPrint "Skipping AbiHancom Plugin (already exists)!"
 	Goto End
 
 	DoInstall:
-	File "AbiPalmDoc.dll"
+	File "AbiHancom.dll"
   
 	End:
 SectionEnd
+
+
+;SectionDivider
+
+Section "Psion (*.psiword) Plugin"
+	SectionIn 2
+
+	; Testing clause to Overwrite Existing Version - if exists
+	IfFileExists "$INSTDIR\AbiWord\plugins\AbiPsion.dll" 0 DoInstall
+	
+	MessageBox MB_YESNO "Overwrite Existing AbiPsion Plugin?" IDYES DoInstall
+	
+	DetailPrint "Skipping AbiPsion Plugin (already exists)!"
+	Goto End
+
+	DoInstall:
+	File "AbiPsion.dll"
+  
+	End:
+SectionEnd
+!endif
+
 
 ;SectionDivider
 
@@ -517,89 +636,31 @@ SectionEnd
 ;SectionDivider
 !endif
 
-Section "AbiPsion (*.psiword) Plugin"
-	SectionIn 2
 
-	; Testing clause to Overwrite Existing Version - if exists
-	IfFileExists "$INSTDIR\AbiWord\plugins\AbiPsion.dll" 0 DoInstall
-	
-	MessageBox MB_YESNO "Overwrite Existing AbiPsion Plugin?" IDYES DoInstall
-	
-	DetailPrint "Skipping AbiPsion Plugin (already exists)!"
-	Goto End
-
-	DoInstall:
-	File "AbiPsion.dll"
-  
-	End:
-SectionEnd
-;SectionDivider
-
-Section "AbiT602 importer Plugin"
-	SectionIn 2
-
-	; Testing clause to Overwrite Existing Version - if exists
-	IfFileExists "$INSTDIR\AbiWord\plugins\AbiT602.dll" 0 DoInstall
-	
-	MessageBox MB_YESNO "Overwrite Existing AbiT602 Plugin?" IDYES DoInstall
-	
-	DetailPrint "Skipping AbiT602 Plugin (already exists)!"
-	Goto End
-
-	DoInstall:
-	File "AbiT602.dll"
-  
-	End:
-SectionEnd
 
 ;SectionDivider
 
-;Wireless Markup Language (old HTML replacement for mobile devices)
-Section "AbiWML (*.wml) Plugin"
-	SectionIn 2
 
-	; Testing clause to Overwrite Existing Version - if exists
-	IfFileExists "$INSTDIR\AbiWord\plugins\AbiWML.dll" 0 DoInstall
-	
-	MessageBox MB_YESNO "Overwrite Existing AbiWML Plugin?" IDYES DoInstall
-	
-	DetailPrint "Skipping AbiWML Plugin (already exists)!"
-	Goto End
 
-	DoInstall:
-	File "AbiWML.dll"
-  
-	End:
-SectionEnd
 
 ;SectionDivider
 
-;XML/XSL Formatting objects, meant to be similar in scope to LaTeX
-Section "AbiXSL-FO Plugin"
-	SectionIn 2
-
-	; Testing clause to Overwrite Existing Version - if exists
-	IfFileExists "$INSTDIR\AbiWord\plugins\AbiXSLFO.dll" 0 DoInstall
-	
-	MessageBox MB_YESNO "Overwrite Existing AbiXSL-FO Plugin?" IDYES DoInstall
-	
-	DetailPrint "Skipping AbiXSL-FO Plugin (already exists)!"
-	Goto End
-
-	DoInstall:
-	File "AbiXSLFO.dll"
-  
-	End:
-SectionEnd
 
 ; Additional File Format importer/exporters
-SubSectionEnd
+
+
+
+
+
+
+;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;
+;;;;;; GLIB based
 
 
 ;SectionDivider
 
 
-SubSection /e "Glib based Importers/Exporters"
+SubSection /e "Other Importers/Exporters (GLIB-based)"
 
 !macro dlFileMacro remoteFname localFname errMsg
 	!define retryDLlbl retryDL_${__FILE__}${__LINE__}
@@ -641,7 +702,7 @@ SubSection /e "Glib based Importers/Exporters"
 !define unzipFile "!insertmacro unzipFileMacro"
 
 ; Not required if Glib is already available, otherwise is required
-Section "Download glib 2.4" GLIB_IDX
+Section "Download glib 2.4 - Required for this group" GLIB_IDX
 	SectionIn 2
 
 	;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;
@@ -727,7 +788,7 @@ SubSectionEnd
 
 SubSection /e "File Format Importers/Exporters"
 
-Section "OpenDocument (*.odt) Plugin" ODT_IDX
+Section "OpenDocument (*.odt) Import" ODT_IDX
 	SectionIn 2
 
 	; Testing clause to Overwrite Existing Version - if exists
@@ -746,7 +807,7 @@ SectionEnd
 
 ;SectionDivider
 
-Section "OpenWriter (*.sxw) Plugin" SXW_IDX
+Section "OpenWriter (*.sxw) Import/Export" SXW_IDX
 	SectionIn 2
 
 	; Testing clause to Overwrite Existing Version - if exists
@@ -765,7 +826,7 @@ SectionEnd
 
 ;SectionDivider
 
-Section "AbiSDW (*.sdw) Plugin" SDW_IDX
+Section "Star Office Writer 5.1 .sdw Importer" SDW_IDX
 	SectionIn 2
 
 	; Testing clause to Overwrite Existing Version - if exists
@@ -784,7 +845,7 @@ SectionEnd
 
 ;SectionDivider
 
-Section "AbiWordPerfect (*.wpd) Plugin" WP_IDX
+Section "WordPerfect Importer" WP_IDX
 	SectionIn 2
 
 	; Testing clause to Overwrite Existing Version - if exists
