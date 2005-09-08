@@ -54,39 +54,25 @@ void  AP_Win32Dialog_Latex::activate(void)
 	
 	ConstructWindowName();
 	setDialogTitle((LPCSTR)(AP_Win32App::s_fromUTF8ToWinLocale(m_sWindowName.utf8_str())).c_str());
+	
+	iResult = ShowWindow( m_hDlg, SW_SHOW );
+	iResult = BringWindowToTop( m_hDlg );
+
+	UT_ASSERT((iResult != 0));
 }
 
 void AP_Win32Dialog_Latex::runModeless(XAP_Frame * pFrame)
 {
-        // raise the dialog
-        int iResult;
-        XAP_Win32App * pWin32App = static_cast<XAP_Win32App *>(m_pApp);
+	UT_ASSERT(pFrame);
+	UT_ASSERT(m_id == AP_DIALOG_ID_LATEX);
 
-        LPCTSTR lpTemplate = NULL;
+	setDialog(this);
+	HWND hWndDialog = createModeless( pFrame, MAKEINTRESOURCE(AP_RID_DIALOG_LATEX) );
 
-        UT_return_if_fail (m_id == AP_RID_DIALOG_LATEX);
+	UT_ASSERT((hWndDialog != NULL));
+	ShowWindow(hWndDialog, SW_SHOW);
 
-        lpTemplate = MAKEINTRESOURCE(AP_RID_DIALOG_LATEX);
-
-        HWND hResult = CreateDialogParam(pWin32App->getInstance(),lpTemplate,
-                                                        static_cast<XAP_Win32FrameImpl*>(pFrame->getFrameImpl())->getTopLevelWindow(),
-                                                        (DLGPROC)s_dlgProc,(LPARAM)this);
-
-        UT_ASSERT_HARMLESS((hResult != NULL));
-
-        m_hWnd = hResult;
-
-        // Save dialog the ID number and pointer to the widget
-        UT_sint32 sid =(UT_sint32)  getDialogId();
-        m_pApp->rememberModelessId( sid, (XAP_Dialog_Modeless *) m_pDialog);
-
-        iResult = ShowWindow( m_hWnd, SW_SHOW );
-
-        iResult = BringWindowToTop( m_hWnd );
-
-        UT_ASSERT_HARMLESS((iResult != 0));
-
-
+	m_pApp->rememberModelessId(m_id, this);		
 }
 
 
@@ -137,11 +123,8 @@ void AP_Win32Dialog_Latex::notifyCloseFrame(XAP_Frame *pFrame)
 void AP_Win32Dialog_Latex::destroy(void)
 {
 	m_answer = AP_Dialog_Latex::a_CANCEL;	
-        int iResult = DestroyWindow( m_hWnd );
-
-        UT_ASSERT_HARMLESS((iResult != 0));
-
-        modeless_cleanup();
+	modeless_cleanup();
+	destroyWindow();
 }
 
 void AP_Win32Dialog_Latex::setLatexInGUI(void)
@@ -184,7 +167,7 @@ BOOL AP_Win32Dialog_Latex::_onInitDialog(HWND hWnd, WPARAM wParam, LPARAM lParam
 	localizeControlText(AP_RID_DIALOG_LATEX_BTN_INSERT,XAP_STRING_ID_DLG_Insert);
 
 	setLatexInGUI();
-//	centerDialog();	
+	centerDialog();	
 
 	return 1;							// 1 == we did not call SetFocus()
 }
