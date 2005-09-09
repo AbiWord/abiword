@@ -22,6 +22,7 @@
 #include "xap_Win32Dlg_MessageBox.h"
 #include "xap_Win32App.h"
 #include "xap_Win32FrameImpl.h"
+#include "xap_EncodingManager.h"
 
 /*****************************************************************/
 XAP_Dialog * XAP_Win32Dialog_MessageBox::static_constructor(XAP_DialogFactory * pFactory,
@@ -84,7 +85,7 @@ void XAP_Win32Dialog_MessageBox::runModal(XAP_Frame * pFrame)
 		UT_ASSERT(UT_SHOULD_NOT_HAPPEN);
 	}
 
-	int res = MessageBox(hwnd, m_szMessage, szCaption, flags);
+	int res = MessageBox(hwnd, getApp()->getEncodingManager()->strToNative(m_szMessage, "UTF-8"), szCaption, flags);
 
 	switch (res)
 	{

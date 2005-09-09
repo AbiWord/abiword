@@ -209,7 +209,8 @@ UT_sint32                    getBottomOffset(void) const;
 		{ m_bIsEndTableIn = true;}
 	bool                     isEndTableIn(void)
 	  { return m_bIsEndTableIn;}
-
+	bool                     isDoingDestructor(void)
+	{ return m_bDoingDestructor;}
 protected:
 	virtual void		        _lookupProperties(const PP_AttrProp* pSectionAP);
 	void				        _purgeLayout();
@@ -257,6 +258,7 @@ private:
 	bool                   m_bIsEndTableIn;
     UT_sint32              m_iHeightChanged;
 	fp_CellContainer *     m_pNewHeightCell;
+	bool                   m_bDoingDestructor;
 };
 
 
@@ -304,6 +306,7 @@ public:
 #ifdef FMT_TEST
 	void				     __dump(FILE * fp) const;
 #endif
+	UT_uint32                   getLength(void);
 
 	UT_sint32                getLeftOffset(void) const;
 UT_sint32                    getRightOffset(void) const;

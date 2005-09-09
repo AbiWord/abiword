@@ -124,6 +124,7 @@
 #	include "tb_transparent.xpm"
 #	include "tb_WrapButton.xpm"
 #       include "tb_stock_font.xpm"
+#	include "tb_view_full_screen.xpm"
 
 	// ... add new icons here (don't forget to add below the #else) ...
 
@@ -203,6 +204,8 @@
 	DefineToolbarIcon(tb_text_subscript_xpm)
 	DefineToolbarIcon(tb_help_xpm)
 	DefineToolbarIcon(tb_stock_font_xpm)
+	DefineToolbarIcon(tb_view_full_screen_xpm)
+
 
 	DefineToolbarIcon(tb_text_direction_ltr_xpm)
 	DefineToolbarIcon(tb_text_direction_rtl_xpm)

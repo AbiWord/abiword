@@ -517,28 +517,36 @@ void IE_Exp_RTF::_rtf_semi(void)
 void IE_Exp_RTF::_rtf_fontname(const char * szFontName)
 {
 	write(" ");
-#if 0
-	/*we handle 'helvetica' in a special way on import - so it's safe
-	 to output "Helvetica" unconditionally.
+
+	/*  map "Helvetic" to "Helvetica", since on Windows
+	    font "Helvetic" contains only Latin1 chars, while
+	    "Helvetica" contains all needed chars.
+	    This is safe to do for both attic and non-attic format
+	    because we handle "helvetica" in a special way on import.
 	*/
-	if (!m_atticFormat && 0)
-	    write(szFontName);
+	if (UT_stricmp(szFontName,"helvetic")==0)
+		write("Helvetica");
 	else
-#endif
 	{
-		/*  map "Helvetic" to "Helvetica", since on Windows
-		    font "Helvetic" contains only Latin1 chars, while
-		    "Helvetica" contains all needed chars. This is innocient
-		    since we do this when attic format is requested.
-		*/
-		if (UT_stricmp(szFontName,"helvetic")==0)
-			write("Helvetica");
-		else
-			write(szFontName);
+		_rtf_pcdata(szFontName, true);
 	}
+
 	_rtf_semi();
+	return;
 }
 
+/*
+ * I'm increasingly suspicious of this function. It seems to be
+ * being used to output PCDATA (like stylesheet names). For 
+ * such a use it is certainly broken. Does it have any genuine use?
+ *
+ * It's broken because it converts the input data to UCS-4 and 
+ * then writes out any characters between 0x80 and 0xff as hex escaped
+ * sequences. However, it takes no account of the rtf files encoding
+ * set by the \ansicpg command in the header
+ * - R.Kay (Aug '05)
+ *
+ */
 void IE_Exp_RTF::_rtf_chardata(const char * pbuf, UT_uint32 buflen)
 {
 	UT_iconv_t conv;
@@ -592,6 +600,36 @@ void IE_Exp_RTF::_rtf_chardata(const char * pbuf, UT_uint32 buflen)
 		}
 	}
 	UT_iconv_close(conv);
+}
+
+/*
+ * This writes out UTF8 data by escaping non-ASCII chars.
+ * using \uXXXX.
+ */
+void IE_Exp_RTF::_rtf_pcdata(UT_UTF8String &sPCData, bool bSupplyUC, UT_uint32 iAltChars)
+{
+	bool bEscaped;
+
+	UT_UTF8String sEscapedData;
+	UT_UCS4String sUCS4PCData = sPCData.ucs4_str();
+
+	// Escape the string.
+	bEscaped = s_escapeString(sEscapedData, sUCS4PCData, iAltChars);
+	// If escaping was necessary and we've been asked to do it, supply
+	// the appropriate \uc command.
+	if (bEscaped && bSupplyUC)
+		_rtf_keyword("uc", iAltChars);  
+	// Write the string to the file.
+	write(sEscapedData.utf8_str());
+}
+
+/*
+ * Access functions for above
+ */
+void IE_Exp_RTF::_rtf_pcdata(const char * szPCData, bool bSupplyUC, UT_uint32 iAltChars)
+{
+	UT_UTF8String str(szPCData);
+	_rtf_pcdata(str, bSupplyUC, iAltChars);
 }
 
 void IE_Exp_RTF::_rtf_nl(void)
@@ -2142,17 +2180,28 @@ void IE_Exp_RTF::_selectStyles()
     const PD_Style * pStyle;
 	UT_GenericVector<PD_Style*> vecStyles;
 	getDoc()->getAllUsedStyles(&vecStyles);
-    for (i = 0; getDoc()->enumStyles(i, &szName, &pStyle); ++i)
+
+	UT_GenericVector<PD_Style*> * pStyles = NULL;
+	getDoc()->enumStyles(pStyles);
+	UT_return_if_fail( pStyles );
+	UT_uint32 iStyleCount = getDoc()->getStyleCount();
+
+	for (i = 0; i < iStyleCount; ++i)
 	{
-	  // DOM: hack for 2069 - we'll export all styles instead of just
-	  // user-defined styles and used styles. To fix it (and export fewer
-	  // styles in general) make this routine recursive to include
-	  // parent (basedon) styles as well...
-	  if (true /* pStyle->isUserDefined() || (vecStyles.findItem((void *) pStyle) >= 0)*/)
+		// DOM: hack for 2069 - we'll export all styles instead of just
+		// user-defined styles and used styles. To fix it (and export fewer
+		// styles in general) make this routine recursive to include
+		// parent (basedon) styles as well...
+		pStyle = pStyles->getNthItem(i);
+		UT_return_if_fail( pStyle );
+
+		szName = pStyle->getName();
+		
+		if (true /* pStyle->isUserDefined() || (vecStyles.findItem((void *) pStyle) >= 0)*/)
 		{
-//
-// Add this style to the hash
-//
+			//
+			// Add this style to the hash
+			//
 			NumberedStyle * pns = (NumberedStyle *) m_hashStyles.pick(szName);
 			if(pns == NULL)
 			{
@@ -2165,9 +2214,9 @@ void IE_Exp_RTF::_selectStyles()
 							_addFont(&fi);
 					}
 				}
-//
-// Now do it for the field font as well
-//
+				//
+				// Now do it for the field font as well
+				//
 				{
 					_rtf_font_info fi;
 
@@ -2179,6 +2228,8 @@ void IE_Exp_RTF::_selectStyles()
 			}
 		}
     }
+
+	delete pStyles;
 }
 
 
@@ -2259,8 +2310,8 @@ void IE_Exp_RTF::_write_stylesheets(void)
 		{
 			_rtf_keyword("snext", _getStyleNumber(pStyleNext));
 		}
-		_rtf_chardata(pStyle->getName(), strlen(pStyle->getName()));
-		_rtf_chardata(";",1);
+		_rtf_pcdata(pStyle->getName(), true); 
+		_rtf_semi();
 		_rtf_close_brace();
     }
 
@@ -3013,6 +3064,73 @@ void IE_Exp_RTF::_addFont(const _rtf_font_info * pfi)
 		m_vecFonts.addItem(pNew);
 }
 
+/*
+ * Convert a UCS4 string into an ASCII string by using \uXXXXX
+ * sequences to escape any non-ascii data.
+ *
+ * returns true if escaping was necesary and false otherwise.
+ * iAltChars specifies the number of alternative characters to provide.
+ */
+bool IE_Exp_RTF::s_escapeString(UT_UTF8String &sOutStr, 
+                                UT_UCS4String &sInStr,
+                                UT_uint32 iAltChars)
+{
+	sOutStr = "";  // Empty output string.
+	bool bRetVal = false;
+	
+	// Loop for each character in the UCS-4 string checking for
+	// non-ascii characters.
+	for (UT_uint32 i=0; i<sInStr.size(); i++)
+	{
+		// If an ASCII character append to output string.
+		if (sInStr[i] <= 0x7f) 
+		{
+			sOutStr += sInStr[i];
+			continue;
+		}
+		// If a code point representable in UCS-2 (without surrogates)
+		// write out a \uXXXXX escaped sequence.
+		if (sInStr[i] > 0x7f && sInStr[i] <=0xffff)
+		{
+			bRetVal = true;
+			// RTF is limited to +-32K ints, therefore negative numbers
+			// are needed to represent some unicode chars.
+			signed short tmp = (signed short) ((unsigned short) sInStr[i]);
+			// Append a \uXXXXX sequence.
+			sOutStr += UT_UTF8String_sprintf("\\u%d",tmp);
+			// Append alternative chars.
+			if (iAltChars)
+				sOutStr += " ";
+			for (UT_uint32 j=0; j<iAltChars; j++)
+				sOutStr += "?";
+			continue;
+		}
+		// TODO: Strictly speaking we should be using the UTF-16 encoding,
+		// since we ought to represent unicode values above 0xffff as surrogate
+		// pairs. However, the abi util classes lack a UT_UCS2String class.
+		// We could use UT_convert() to convert to UCS-2, but that's rather messy.
+		// In any case, unicode points above 0xffff are rather rare, so for the time
+		// being we just assert and replace such code points with a "?".
+		UT_ASSERT_HARMLESS(UT_NOT_IMPLEMENTED);
+		sOutStr += "?";
+	}
+
+	return bRetVal;
+}
+
+/* 
+ * Various access functions for above.
+ */
+bool IE_Exp_RTF::s_escapeString(UT_UTF8String &sOutStr, 
+                                const char * szInStr,
+                                UT_uint32 iSize,  /* 0 == NULL terminated */
+                                UT_uint32 iAltChars)
+{
+	UT_UCS4String sUCS4InStr(szInStr, iSize);
+	return IE_Exp_RTF::s_escapeString(sOutStr, sUCS4InStr, iAltChars);
+}
+
+
 _rtf_font_info::_rtf_font_info()
 {
 	// TODO: set these to some default bogus values
@@ -3020,8 +3138,8 @@ _rtf_font_info::_rtf_font_info()
 
 bool _rtf_font_info::init(const s_RTF_AttrPropAdapter & apa, bool bDoFieldFont)
 {
-    // Not a typo. The AbiWord "font-family" property is what RTF
-    // calls font name. It has values like "Courier New".
+	// Not a typo. The AbiWord "font-family" property is what RTF
+	// calls font name. It has values like "Courier New".
 	const char * szName = NULL;
 	if(!bDoFieldFont)
 	{
@@ -3044,19 +3162,19 @@ bool _rtf_font_info::init(const s_RTF_AttrPropAdapter & apa, bool bDoFieldFont)
 		return false;
 	}
 
-    static const char * t_ff[] = { "fnil", "froman", "fswiss", "fmodern", "fscript", "fdecor", "ftech", "fbidi" };
-    GR_Font::FontFamilyEnum ff;
-    GR_Font::FontPitchEnum fp;
-    bool tt;
-    GR_Font::s_getGenericFontProperties((char*)szName, &ff, &fp, &tt);
+	static const char * t_ff[] = { "fnil", "froman", "fswiss", "fmodern", "fscript", "fdecor", "ftech", "fbidi" };
+	GR_Font::FontFamilyEnum ff;
+	GR_Font::FontPitchEnum fp;
+	bool tt;
+	GR_Font::s_getGenericFontProperties((char*)szName, &ff, &fp, &tt);
 
-    if ((ff >= 0) && (ff < (int)NrElements(t_ff)))
-	szFamily = t_ff[ff];
-    else
-	szFamily = t_ff[GR_Font::FF_Unknown];
-    nCharset = XAP_EncodingManager::get_instance()->getWinCharsetCode();
-    nPitch = fp;
-    fTrueType = tt;
+	if ((ff >= 0) && (ff < (int)NrElements(t_ff)))
+		szFamily = t_ff[ff];
+	else
+		szFamily = t_ff[GR_Font::FF_Unknown];
+	nCharset = XAP_EncodingManager::get_instance()->getWinCharsetCode();
+	nPitch = fp;
+	fTrueType = tt;
 
 	return true;
 }

@@ -36,7 +36,7 @@
 CRCCheck on
 
 ; set the compression algorithm used, zlib | bzip2 | lzma
-SetCompressor lzma
+SetCompressor /SOLID lzma
 
 ; where to look for NSIS plugins during setup creation
 ; default includes ./plugins, but we also want to check current directory
@@ -263,7 +263,9 @@ Section "$(TITLE_section_abi_req)" section_abi_req
 	!insertmacro MUI_STARTMENU_WRITE_BEGIN Application
 		;SetShellVarContext current|all???
 		${lngCreateSMGroup}  "$STARTMENU_FOLDER"
+		SetOutPath $INSTDIR\AbiWord\bin
 		${lngCreateShortCut} "$SMPROGRAMS" "$STARTMENU_FOLDER" "$(SHORTCUT_NAME)" "$INSTDIR\${MAINPROGRAM}" "" "$INSTDIR\${MAINPROGRAM}" 0
+		SetOutPath $TEMP ; needed for removing the directories on uninstall
 		${lngCreateShortCut} "$SMPROGRAMS" "$STARTMENU_FOLDER" "$(SHORTCUT_NAME_UNINSTALL)" "$INSTDIR\Uninstall${PRODUCT}${VERSION_MAJOR}.exe" "" "$INSTDIR\Uninstall${PRODUCT}${VERSION_MAJOR}.exe" 0
 	!insertmacro MUI_STARTMENU_WRITE_END
 

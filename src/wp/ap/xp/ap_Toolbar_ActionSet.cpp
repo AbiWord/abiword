@@ -101,6 +101,7 @@ EV_Toolbar_ActionSet * AP_CreateToolbarActionSet(void)
 	
 #if XP_SIMPLE_TOOLBAR
 	_s(AP_TOOLBAR_ID_FMT_CHOOSE,	EV_TBIT_PushButton,		"dlgFont",		AV_CHG_NONE,		NULL);	
+	_s(AP_TOOLBAR_ID_VIEW_FULL_SCREEN,	EV_TBIT_PushButton,		"viewFullScreen",		AV_CHG_NONE,		NULL);	
 #endif	
 	
 	_s(AP_TOOLBAR_ID_FMT_SIZE,		EV_TBIT_ComboBox,		"fontSize",		AV_CHG_FMTCHAR | AV_CHG_MOTION,		ap_ToolbarGetState_CharFmt);

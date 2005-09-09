@@ -84,6 +84,30 @@ fp_Page::~fp_Page()
 		m_pOwner = NULL;
 		pDSL->deleteOwnedPage(this);
 	}
+	if((m_pHeader != NULL) || (m_pFooter != NULL))
+	{
+	    fl_HdrFtrSectionLayout * pHdrFtr = NULL;
+	    if(m_pHeader != NULL)
+	    {
+	         pHdrFtr = m_pHeader->getHdrFtrSectionLayout();
+		 if(pHdrFtr != NULL && pHdrFtr->isPageHere(this))
+		 {
+		   pHdrFtr->deletePage(this);
+		   UT_DEBUGMSG(("Remove Page from Hdr %x in page destructor \n",pHdrFtr));
+		 }
+	    }
+	    if(m_pFooter != NULL)
+	    {
+	         pHdrFtr = m_pFooter->getHdrFtrSectionLayout();
+		 if(pHdrFtr != NULL && pHdrFtr->isPageHere(this))
+		 {
+		   pHdrFtr->deletePage(this);
+		   UT_DEBUGMSG(("Remove Page from Ftr %x in page destructor \n",pHdrFtr));
+		 }
+	    }
+	}
+	DELETEP(m_pHeader);
+	DELETEP(m_pFooter);
 }
 
 /*!
@@ -507,6 +531,8 @@ fp_Container * fp_Page::updatePageForWrapping(fp_Column *& pNextCol)
 						}
 					}
 				}
+				if(j< 0)
+				  j = 0;
 			}
 			pCol = static_cast<fp_Column *>(pCol->getFollower());
 		}
@@ -544,6 +570,10 @@ fp_Container * fp_Page::updatePageForWrapping(fp_Column *& pNextCol)
 	while(pNewFirstCon && pNewFirstCon->getPage() != NULL && pNewFirstCon->getPage() != this)
 	{
 		pNewFirstCon = static_cast<fp_Container *>(pNewFirstCon->getNext());
+	}
+	if(pNewFirstCon->getColumn() == NULL)
+	{
+	       return NULL;
 	}
 	pNextCol = static_cast<fp_Column *>(pNewFirstCon->getColumn());
 	pNewFirstCon = static_cast<fp_Container *>(pNextCol->getNthCon(0));
@@ -1503,9 +1533,16 @@ void fp_Page::_reformatColumns(void)
 			}
 			UT_sint32 iYNext = pFirstNextContainer->getHeight();
 			bool bIsTable = (pFirstNextContainer->getContainerType() == FP_CONTAINER_TABLE)  || (countFootnoteContainers() > 0) || (pNext->countFootnoteContainers() > 0);
+			fl_ContainerLayout * pCNext = static_cast<fl_SectionLayout *>(pFirstNextContainer->getSectionLayout());
+			if(pCNext == static_cast<fl_ContainerLayout *>(pLastContainer->getSectionLayout()))
+		        {
+			  bIsTable = true; // only rebuild if we have a change
+			                   // of docsection
+			}
 			if( !bIsTable && (iY + 3*iYNext) < (getHeight() - getFootnoteHeight() - iBottomMargin))
 			{
-		   		m_pOwner->markForRebuild();
+			  UT_DEBUGMSG(("Extra space on page. Mark for rebuild \n"));
+			  //m_pOwner->markForRebuild();
 //
 // FIXME see if this code works instead
 //
@@ -2132,7 +2169,10 @@ void fp_Page::mapXYToPosition(bool bNotFrames,UT_sint32 x, UT_sint32 y, PT_DocPo
 
 	UT_ASSERT(pMinDist);
 
-	pMinDist->mapXYToPosition(x - pMinDist->getX(), y - pMinDist->getY(), pos, bBOL, bEOL,isTOC);
+	if (pMinDist)
+	{
+		pMinDist->mapXYToPosition(x - pMinDist->getX(), y - pMinDist->getY(), pos, bBOL, bEOL,isTOC);
+	}
 }
 
 void fp_Page::setView(FV_View* pView)
@@ -2194,6 +2234,8 @@ fp_Page::buildHdrFtrContainer(fl_HdrFtrSectionLayout* pHFSL,
 	{
 		UT_ASSERT(UT_SHOULD_NOT_HAPPEN);
 		(*ppHF)->getHdrFtrSectionLayout()->deletePage(this);
+
+		UT_ASSERT_HARMLESS( !*ppHF );
 	}
 	xxx_UT_DEBUGMSG(("SEVIOR: Building header container. page = %x hdrftr = %x \n",this,pHFSL));
 

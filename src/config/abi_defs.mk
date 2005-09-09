@@ -343,11 +343,6 @@ include $(ABI_ROOT)/src/config/platforms/wxwin.mk
 HAVEPLAT=1
 endif
  
-ifeq ($(OS_NAME), BeOS)
-include $(ABI_ROOT)/src/config/platforms/beos.mk
-HAVEPLAT=1
-endif
-
 ifeq ($(OS_NAME), procnto)
 include $(ABI_ROOT)/src/config/platforms/nto.mk
 HAVEPLAT=1
@@ -371,7 +366,7 @@ fake-target::
 	@echo "    than this, the deprecated and unsupported diving make system) by running"
 	@echo "    configure (creating it with autogen.sh if need be) and using GNU Make."
 	@echo "    Using configure is a requirement for all known platforms that aren't some form"
-	@echo "    of Windows, QNX Neutrino, BeOS, or MacOS X."
+	@echo "    of Windows, QNX Neutrino, or MacOS X."
 	@echo
 	exit 1
 endif

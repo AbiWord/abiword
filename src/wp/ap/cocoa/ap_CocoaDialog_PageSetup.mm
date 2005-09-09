@@ -107,8 +107,10 @@ bool AP_CocoaDialog_PageSetup::_validate(AP_CocoaDialog_PageSetup_Controller * c
 
 	/* Printable page rectangle (inches)
 	 */
+#if 0
 	float boundsOriginX = (float) UT_convertDimensions((double) bounds.origin.x, DIM_PT, DIM_IN);
 	float boundsOriginY = (float) UT_convertDimensions((double) bounds.origin.y, DIM_PT, DIM_IN);
+#endif
 
 	float boundedWidth  = (float) UT_convertDimensions((double) bounds.size.width,  DIM_PT, DIM_IN);
 	float boundedHeight = (float) UT_convertDimensions((double) bounds.size.height, DIM_PT, DIM_IN);

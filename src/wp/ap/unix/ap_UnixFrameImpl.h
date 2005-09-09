@@ -22,9 +22,10 @@
 #define AP_UNIXFRAMEIMPL_H
 #include "xap_Frame.h"
 #include "ap_Frame.h"
-#include "xap_UnixFrameImpl.h"
 #include "ap_UnixFrame.h"
 #include "ie_types.h"
+#include "xap_UnixFrameImpl.h"
+
 
 class XAP_UnixApp;
 class AP_UnixFrame;

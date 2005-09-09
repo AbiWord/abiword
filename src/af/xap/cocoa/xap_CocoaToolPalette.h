@@ -195,7 +195,7 @@ private:
 
 - (void)windowDidLoad;
 - (void)close;
-- (void)windowWillClose;
+- (void)windowWillClose:(NSNotification *)aNotification;
 
 - (void)toggleVisibility:(id)sender;
 - (BOOL)validateMenuItem:(id <NSMenuItem>)menuItem;

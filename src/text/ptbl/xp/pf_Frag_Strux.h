@@ -49,6 +49,7 @@ public:
 	PTStruxType				getStruxType(void) const;
 	PL_StruxFmtHandle		getFmtHandle(PL_ListenerId lid) const;
 	bool					setFmtHandle(PL_ListenerId lid, PL_StruxFmtHandle sfh);
+	void                    clearAllFmtHandles() {m_vecFmtHandle.clear();}
 	
 	virtual bool			createSpecialChangeRecord(PX_ChangeRecord ** ppcr,
 													  PT_DocPosition dpos) const;

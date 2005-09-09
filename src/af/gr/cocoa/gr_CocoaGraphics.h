@@ -206,15 +206,37 @@ private:
 	UT_GenericVector<NSRect*>	m_cacheRectArray;
 	NSColor *					m_currentColor;
 
-	NSImage *					m_imageBlue16x15;
-	NSImage *					m_imageBlue11x16;
-	NSImage *					m_imageGrey16x15;
-	NSImage *					m_imageGrey11x16;
-	NSColor *					m_colorBlue16x15;
-	NSColor *					m_colorBlue11x16;
-	NSColor *					m_colorGrey16x15;
-	NSColor *					m_colorGrey11x16;
+	static void _initColorAndImage(void);
+	static bool                 m_colorAndImageInited;
+	static NSImage *			m_imageBlue16x15;
+	static NSImage *			m_imageBlue11x16;
+	static NSImage *			m_imageGrey16x15;
+	static NSImage *			m_imageGrey11x16;
+	static NSColor *			m_colorBlue16x15;
+	static NSColor *			m_colorBlue11x16;
+	static NSColor *			m_colorGrey16x15;
+	static NSColor *			m_colorGrey11x16;
+	
+	static NSCursor *	m_Cursor_E;
+	static NSCursor *	m_Cursor_N;
+	static NSCursor *	m_Cursor_NE;
+	static NSCursor *	m_Cursor_NW;
+	static NSCursor *	m_Cursor_S;
+	static NSCursor *	m_Cursor_SE;
+	static NSCursor *	m_Cursor_SW;
+	static NSCursor *	m_Cursor_W;
 
+	static NSCursor *	m_Cursor_Wait;
+	static NSCursor *	m_Cursor_LeftArrow;
+	static NSCursor *	m_Cursor_RightArrow;
+	static NSCursor *	m_Cursor_Compass;
+	static NSCursor *	m_Cursor_Exchange;
+	static NSCursor *	m_Cursor_LeftRight;
+	static NSCursor *	m_Cursor_UpDown;
+	static NSCursor *	m_Cursor_Crosshair;
+	static NSCursor *	m_Cursor_HandPointer;
+	static NSCursor *	m_Cursor_DownArrow;
+	
 	// our currently requested font by handle
 	XAP_CocoaFont *	m_pFont;
 	NSFont*						m_fontForGraphics;
@@ -227,26 +249,6 @@ private:
 	JoinStyle m_joinStyle;
 	CapStyle m_capStyle;
 	LineStyle m_lineStyle;
-
-	NSCursor *	m_Cursor_E;
-	NSCursor *	m_Cursor_N;
-	NSCursor *	m_Cursor_NE;
-	NSCursor *	m_Cursor_NW;
-	NSCursor *	m_Cursor_S;
-	NSCursor *	m_Cursor_SE;
-	NSCursor *	m_Cursor_SW;
-	NSCursor *	m_Cursor_W;
-
-	NSCursor *	m_Cursor_Wait;
-	NSCursor *	m_Cursor_LeftArrow;
-	NSCursor *	m_Cursor_RightArrow;
-	NSCursor *	m_Cursor_Compass;
-	NSCursor *	m_Cursor_Exchange;
-	NSCursor *	m_Cursor_LeftRight;
-	NSCursor *	m_Cursor_UpDown;
-	NSCursor *	m_Cursor_Crosshair;
-	NSCursor *	m_Cursor_HandPointer;
-	NSCursor *	m_Cursor_DownArrow;
 
 	GR_Graphics::Cursor		m_cursor;
 	GR_Graphics::Cursor		m_GrabCursor;

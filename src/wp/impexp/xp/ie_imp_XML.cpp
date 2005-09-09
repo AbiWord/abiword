@@ -207,6 +207,7 @@ void IE_Imp_XML::charData(const XML_Char *s, int len)
 	// TODO as a 'char' not as a 'unsigned char'.
 	// TODO does this cause any problems ??
 
+	xxx_UT_DEBUGMSG(("In IE_Imp_XML::charDat, len = %d parsestate %d \n",len,m_parseState));
 	if(!s || !len)
 		return;
 
@@ -220,7 +221,7 @@ void IE_Imp_XML::charData(const XML_Char *s, int len)
 		case _PS_Revision:
 			{
 				UT_UCS4String buf(s,static_cast<size_t>(len),!m_bWhiteSignificant);
-				
+				xxx_UT_DEBUGMSG(("In IE_Imp_XML::charData buf.size %d \n",buf.size()));
 				// flush out the buffer
 				if (buf.size() == 0)
 					return;
@@ -256,6 +257,7 @@ void IE_Imp_XML::charData(const XML_Char *s, int len)
 						// 0 is not a valid revision Id
 						if(m_currentRevisionId)
 						{
+							UT_DEBUGMSG(("Doing revision \n"));
 							X_CheckError(getDoc()->addRevision(m_currentRevisionId,
 															   buf.ucs4_str(),
 															   buf.size(),
@@ -347,6 +349,7 @@ void IE_Imp_XML::charData(const XML_Char *s, int len)
 			}
 			
 		default:
+			UT_DEBUGMSG(("ie_imp_XML::charData Default just return \n"));
 			return;
 		}
 }

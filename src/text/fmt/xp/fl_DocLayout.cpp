@@ -111,7 +111,10 @@ FL_DocLayout::FL_DocLayout(PD_Document* doc, GR_Graphics* pG)
     m_iFilled(0),
     m_bSpellCheckInProgress(false),
     m_bAutoGrammarCheck(false),
-    m_PendingBlockForGrammar(NULL)
+    m_PendingBlockForGrammar(NULL),
+    m_iGrammarCount(0),
+    m_bFinishedInitialCheck(false),
+    m_iPrevPos(0)
 {
 #ifdef FMT_TEST
         m_pDocLayout = this;
@@ -157,18 +160,6 @@ FL_DocLayout::~FL_DocLayout()
 	{
 		m_bStopSpellChecking = true;
 		m_pBackgroundCheckTimer->stop();
-#ifdef __BEOS__
-		m_pBackgroundCheckTimer->start();	// is already stopped
-											// so we don't go out of this while
-#endif
-		while(m_bImSpellCheckingNow == true)
-		{
-#ifdef __BEOS__
-			/* On BeOS, we must release the cpu as timers are
-			   run on separate threads */
-			UT_usleep(10000);
-#endif
-		}
 	}
 
 	DELETEP(m_pBackgroundCheckTimer);
@@ -498,6 +489,9 @@ void FL_DocLayout::fillLayouts(void)
 	UT_ASSERT(m_lid != (PL_ListenerId)-1);
 	GR_Graphics * pG = getGraphics();
 	formatAll(); // Do we keep this or not?
+	m_bFinishedInitialCheck = false;
+	m_iPrevPos = 0;
+	m_iGrammarCount = 0;
 	if(m_pView)
 	{
 		m_pView->setLayoutIsFilling(false);
@@ -636,6 +630,8 @@ void FL_DocLayout::setView(FV_View* pView)
 			{
 				addBackgroundCheckReason(bgcrGrammar);
 				m_bAutoGrammarCheck = true;
+				m_iGrammarCount = 0;
+				m_iPrevPos = 0;
 			}
 		}
 	}
@@ -2331,7 +2327,7 @@ FL_DocLayout::_backgroundCheck(UT_Worker * pWorker)
 //	{
 //		return;
 //	}
-
+	xxx_UT_DEBUGMSG(("BAckground check called. \n"));
 	// Don't spell check while printing!
 	if(pDocLayout->m_pG->queryProperties(GR_Graphics::DGP_PAPER))
 	{
@@ -2341,6 +2337,7 @@ FL_DocLayout::_backgroundCheck(UT_Worker * pWorker)
 	// Don't spell check if disabled, or already happening
 	if(pDocLayout->m_bStopSpellChecking || pDocLayout->m_bImSpellCheckingNow || pDocLayout->isLayoutFilling())
 	{
+	  xxx_UT_DEBUGMSG(("Already spellchecking!!!!!!!! \n"));
 		return;
 	}
 
@@ -2387,6 +2384,12 @@ FL_DocLayout::_backgroundCheck(UT_Worker * pWorker)
 					mask = (1 << bitdex);
 					if (pB->hasBackgroundCheckReason(mask))
 					{
+					        if(!pDocLayout->m_bFinishedInitialCheck && pDocLayout->m_iPrevPos > pB->getPosition())
+						{
+						     pDocLayout->m_bFinishedInitialCheck = true;
+						}
+						pDocLayout->m_iPrevPos = pB->getPosition();
+
 					// Note that we remove this reason from queue
 					// before checking it (otherwise asserts could
 					// trigger redundant recursive calls)
@@ -2411,6 +2414,17 @@ FL_DocLayout::_backgroundCheck(UT_Worker * pWorker)
 						}
 						case bgcrGrammar:
 						{
+						        if(!pDocLayout->m_bFinishedInitialCheck)
+							{
+							      if(pDocLayout->m_iGrammarCount < 4)
+							      {
+								   pDocLayout->m_iGrammarCount++;
+								   pDocLayout->m_bImSpellCheckingNow = false;
+								   return;
+							      }
+							      pDocLayout->m_iGrammarCount = 0;
+							}
+
 							UT_DEBUGMSG(("Grammar checking block %x directly \n",pB));
 							XAP_App * pApp = pDocLayout->getView()->getApp();
      //
@@ -2473,8 +2487,12 @@ FL_DocLayout::queueBlockForBackgroundCheck(UT_uint32 iReason,
 	if (!m_pBackgroundCheckTimer)
 	{
 	    int inMode = UT_WorkerFactory::IDLE | UT_WorkerFactory::TIMER;
+	    if(getView() && getView()->isGrammarLoaded() && m_bAutoGrammarCheck)
+	    {
+	         inMode = UT_WorkerFactory::TIMER;
+	    }
 	    UT_WorkerFactory::ConstructMode outMode = UT_WorkerFactory::NONE;
-
+	    
 	    m_pBackgroundCheckTimer = UT_WorkerFactory::static_constructor (_backgroundCheck, this, inMode, outMode, m_pG);
 
 	    UT_ASSERT(m_pBackgroundCheckTimer);
@@ -2561,7 +2579,7 @@ void FL_DocLayout::setPendingBlockForGrammar(fl_BlockLayout * pBL)
   if((m_PendingBlockForGrammar != NULL) && (m_PendingBlockForGrammar != pBL))
     {
       xxx_UT_DEBUGMSG(("Block %x queued \n",m_PendingBlockForGrammar));
-      queueBlockForBackgroundCheck(bgcrGrammar,m_PendingBlockForGrammar);
+      queueBlockForBackgroundCheck(bgcrGrammar,m_PendingBlockForGrammar,true);
     }
   m_PendingBlockForGrammar = pBL;
 }
@@ -2578,7 +2596,7 @@ void FL_DocLayout::triggerPendingBlock(fl_BlockLayout * pBL)
     return;
   if((m_PendingBlockForGrammar != NULL) && (m_PendingBlockForGrammar != pBL))
     {
-      queueBlockForBackgroundCheck(bgcrGrammar,m_PendingBlockForGrammar);
+      queueBlockForBackgroundCheck(bgcrGrammar,m_PendingBlockForGrammar,true);
       m_PendingBlockForGrammar = NULL;
      }
 }

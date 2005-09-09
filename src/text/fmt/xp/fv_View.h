@@ -222,7 +222,7 @@ public:
 	void            pasteFromLocalTo(PT_DocPosition pos);
 	void            _pasteFromLocalTo(PT_DocPosition pos);
 	void            copyToLocal(PT_DocPosition pos1, PT_DocPosition pos2);
-	void			copyTextToClipboard(const UT_UCS4String sIncoming, bool useClipboard=true);
+	void		copyTextToClipboard(const UT_UCS4String sIncoming, bool useClipboard=true);
 
 	virtual void	getTopRulerInfo(AP_TopRulerInfo * pInfo);
 	virtual void	getTopRulerInfo(PT_DocPosition pos, AP_TopRulerInfo * pInfo);
@@ -237,6 +237,8 @@ public:
 	virtual void        rebuildLayout(void);
 	virtual void        remeasureCharsWithoutRebuild();
 	virtual bool		isSelectionEmpty(void) const;
+	bool                isSelectAll(void)
+	{ return m_Selection.isSelectAll();}
 	virtual void		cmdUnselectSelection(void);
 	void				getDocumentRangeOfCurrentSelection(PD_DocumentRange * pdr);
 	PT_DocPosition		mapDocPos( FV_DocPos dp );
@@ -714,6 +716,10 @@ public:
 	const XML_Char **   getViewPersistentProps();
 	FV_BIDI_Order	    getBidiOrder()const {return m_eBidiOrder;}
 	void                setBidiOrder(FV_BIDI_Order o) {m_eBidiOrder = o;}
+
+	// -- plugins
+        bool                isMathLoaded(void);
+	bool                isGrammarLoaded(void);
 
 protected:
 	void				_saveAndNotifyPieceTableChange(void);

@@ -22,6 +22,10 @@ if WITH_GNOME
 #SUBDIRS = gnome
 endif
 
+if WITH_HILDON
+SUBDIRS= hildon
+endif
+
 INCLUDES= \
 	-DABIWORD_PREFIX=\""$(prefix)"\"			\
 	-DABIWORD_SYSCONFDIR=\""$(sysconfdir)"\"			\
@@ -36,12 +40,6 @@ noinst_LTLIBRARIES = libWpAp_unix.la
 
 gladedir=$(datadir)/$(PACKAGE)/AbiWord/glade
 
-if WITH_HILDON
-	cond_glade = ap_UnixHildonDialog_Options.glade ap_UnixHildonDialog_HdrFtr.glade
-else
-	cond_glade = ap_UnixDialog_Options.glade ap_UnixDialog_HdrFtr.glade
-endif
-
 glade_DATA = \
 	ap_UnixDialog_Break.glade \
 	ap_UnixDialog_Field.glade \
@@ -54,6 +52,8 @@ glade_DATA = \
 	ap_UnixDialog_Insert_DateTime.glade \
 	ap_UnixDialog_MailMerge.glade	\
 	ap_UnixDialog_MetaData.glade	\
+	ap_UnixDialog_Options.glade	\
+	ap_UnixDialog_HdrFtr.glade \
 	ap_UnixDialog_Options_ColorSel.glade	\
 	ap_UnixDialog_PageNumbers.glade		\
 	ap_UnixDialog_PageSetup.glade		\
@@ -66,7 +66,8 @@ glade_DATA = \
 	ap_UnixDialog_Tab.glade	\
 	ap_UnixDialog_WordCount.glade \
 	ap_UnixDialog_Latex.glade \
-	$(cond_glade)
+	ap_UnixDialog_Options.glade \
+	ap_UnixDialog_HdrFtr.glade
 
 libWpAp_unix_la_SOURCES = \
 	ap_@ABI_FE@App.cpp			\

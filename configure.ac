@@ -1,5 +1,6 @@
 dnl AbiWord
 dnl Copyright (C) 2001 Sam Tobin-Hochstadt
+dnl Copyright (C) 2005 J.M. Maurer <uwog@abisource.com>
 dnl MacOS X hackery by Hubert Figuiere <hfiguiere@teaser.fr>
 dnl
 dnl This program is free software; you can redistribute it and/or
@@ -59,7 +60,7 @@ AC_SUBST(LT_CURRENT)
 AC_SUBST(LT_REVISION)
 AC_SUBST(LT_AGE)
 
-AM_INIT_AUTOMAKE(AbiSuite-2.4,2.3.2)
+AM_INIT_AUTOMAKE(AbiSuite-2.4,2.3.6)
 
 if test "$srcdir" = "."; then
 	abi_rootdir=".."
@@ -327,8 +328,8 @@ esac
 
 if test "$PLATFORM" = "unix"; then
 	if test "$gnome" = "true"; then
-		PLATFORM_CFLAGS="$GNOME_CFLAGS $GMODULE_CFLAGS $GUCHARMAP_CFLAGS $GNOMEPRINT_CFLAGS -DSUPPORTS_UT_IDLE=1"
-		PLATFORM_LIBS="$GNOME_LIBS $GMODULE_LIBS $GUCHARMAP_LIBS $GNOMEPRINT_LIBS"
+		PLATFORM_CFLAGS="$GTK_CFLAGS $GNOME_CFLAGS $GMODULE_CFLAGS $GUCHARMAP_CFLAGS $GNOMEPRINT_CFLAGS -DSUPPORTS_UT_IDLE=1"
+		PLATFORM_LIBS="$GTK_LIBS $GNOME_LIBS $GMODULE_LIBS $GUCHARMAP_LIBS $GNOMEPRINT_LIBS"
 	else
 		PLATFORM_CFLAGS="$GTK_CFLAGS $GMODULE_CFLAGS $GUCHARMAP_CFLAGS $GNOMEPRINT_CFLAGS -DSUPPORTS_UT_IDLE=1"
 		PLATFORM_LIBS="$GTK_LIBS $GMODULE_LIBS $GUCHARMAP_LIBS $GNOMEPRINT_LIBS"
@@ -485,11 +486,13 @@ AC_CONFIG_FILES([GNUmakefile
  src/af/util/xp/t/GNUmakefile
  src/af/util/unix/GNUmakefile
  src/af/util/qnx/GNUmakefile
+ src/af/util/win/GNUmakefile
  src/af/tf/xp/GNUmakefile
  src/af/xap/GNUmakefile
  src/af/xap/xp/GNUmakefile
  src/af/xap/cocoa/GNUmakefile
  src/af/xap/qnx/GNUmakefile
+ src/af/xap/win/GNUmakefile
  src/af/xap/unix/GNUmakefile
  src/af/xap/unix/t/GNUmakefile
  src/af/xap/unix/gnome/GNUmakefile
@@ -515,11 +518,16 @@ AC_CONFIG_FILES([GNUmakefile
  src/wp/ap/qnx/GNUmakefile
  src/wp/ap/unix/GNUmakefile
  src/wp/ap/unix/gnome/GNUmakefile
+ src/wp/ap/unix/hildon/GNUmakefile
+ src/wp/ap/win/GNUmakefile
  src/wp/impexp/GNUmakefile
  src/wp/impexp/cocoa/GNUmakefile
  src/wp/impexp/unix/GNUmakefile
  src/wp/impexp/qnx/GNUmakefile
+ src/wp/impexp/win/GNUmakefile
  src/wp/impexp/xp/GNUmakefile
+])
+AC_CONFIG_FILES([
  src/wp/main/GNUmakefile
  src/wp/main/xp/GNUmakefile
  src/wp/main/cocoa/GNUmakefile
@@ -533,10 +541,13 @@ AC_CONFIG_FILES([GNUmakefile
  src/wp/main/cocoa/AbiWord.app/Contents/Resources/English.lproj/GNUmakefile
  src/wp/main/qnx/GNUmakefile
  src/wp/main/unix/GNUmakefile
+ src/wp/main/win/GNUmakefile
  src/wp/test/GNUmakefile
  src/wp/test/xp/GNUmakefile
  src/wp/test/unix/GNUmakefile
  src/wp/test/unix/testwrap.sh
+ src/wp/test/win/GNUmakefile
+ src/wp/test/win/testwrap.sh
  src/tools/GNUmakefile
  src/tools/cdump/GNUmakefile
  src/tools/cdump/xp/GNUmakefile
@@ -557,6 +568,8 @@ AC_CONFIG_FILES([GNUmakefile
  src/pkg/linux/apkg/abiword-gnome.apspec
  src/pkg/linux/apkg/abiword-gtk.apspec
  libabiword-1.pc.in
+ src/pkg/maemo/debian/misc/abiword.desktop
+ src/pkg/maemo/debian/misc/org.abisource.abiword.service
 ])
 AC_OUTPUT
 
@@ -571,8 +584,6 @@ case "$PLATFORM" in
        AC_MSG_RESULT([Configured to build on a Unix/Linux platform.]) ;;
      "win32" )
        AC_MSG_RESULT([Configured to build on a Windows platform.]) ;;
-     "beos" )
-       AC_MSG_RESULT([Configured to build on a BeOS platform.]) ;;
      "qnx" )
        AC_MSG_RESULT([Configured to build on a QNX RTOS platform.]) ;;
      "cocoa" )

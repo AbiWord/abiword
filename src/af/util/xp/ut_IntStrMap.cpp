@@ -867,7 +867,12 @@ bool UT_UTF8Hash::del (const UT_UTF8String & key, UT_UTF8String *& value)
 static bool key_lt (const char * key, UT_uint32 key_length, const UT_UTF8String & key2)
 {
 	UT_uint32 length = key2.byteLength ();
-	length = 1 + (length > key_length) ? length : key_length;
+	
+	if (length > key_length) {
+		length = 1 + length;
+	} else {
+		length = 1 + key_length;
+	}
 
 	return (memcmp (key, key2.utf8_str (), length) < 0);
 }
@@ -875,7 +880,12 @@ static bool key_lt (const char * key, UT_uint32 key_length, const UT_UTF8String 
 static bool key_gt (const char * key, UT_uint32 key_length, const UT_UTF8String & key2)
 {
 	UT_uint32 length = key2.byteLength ();
-	length = 1 + (length > key_length) ? length : key_length;
+	
+	if (length > key_length) {
+		length = 1 + length;
+	} else {
+		length = 1 + key_length;
+	}
 
 	return (memcmp (key, key2.utf8_str (), length) > 0);
 }

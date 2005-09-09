@@ -51,6 +51,11 @@
 #include "ev_Menu_Actions.h"
 #endif
 
+
+#ifdef HAVE_HILDON
+#include "ap_UnixHildonFrameImpl.h"
+#endif
+
 /*****************************************************************/
 
 #define ENSUREP_RF(p)            do { UT_ASSERT(p); if (!p) return false; } while (0)
@@ -129,7 +134,11 @@ void AP_UnixFrame::setYScrollRange(void)
 
 
 AP_UnixFrame::AP_UnixFrame(XAP_UnixApp * pApp)
-	: AP_Frame(new AP_UnixFrameImpl(this, pApp), pApp)
+#ifdef HAVE_HILDON
+: AP_Frame(new AP_UnixHildonFrameImpl(this, pApp), pApp)
+#else
+: AP_Frame(new AP_UnixFrameImpl(this, pApp), pApp)
+#endif
 {
 	m_pData = NULL;
 	setFrameLocked(false);

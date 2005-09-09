@@ -26,6 +26,7 @@
 #include "ut_misc.h"
 
 #include "xap_App.h"
+#include "xap_EncodingManager.h"
 #include "xap_Win32App.h"
 #include "xap_Win32FrameImpl.h"
 
@@ -67,6 +68,8 @@ void XAP_Win32Dialog_FontChooser::runModal(XAP_Frame * pFrame)
 
 	XAP_Win32App * pApp = static_cast<XAP_Win32App *>(pFrame->getApp());
 	UT_return_if_fail(pApp);
+	const XAP_EncodingManager *pEncMan = pApp->getEncodingManager();
+	UT_return_if_fail(pEncMan);
 
 	UT_DEBUGMSG(("FontChooserStart: Family[%s] Size[%s] Weight[%s] Style[%s] Color[%s] Underline[%d] StrikeOut[%d]\n",
 				 ((m_pFontFamily) ? m_pFontFamily : ""),
@@ -106,7 +109,7 @@ void XAP_Win32Dialog_FontChooser::runModal(XAP_Frame * pFrame)
 	cf.hInstance = pApp->getInstance();
 
 	if (m_pFontFamily && *m_pFontFamily)
-		strcpy(lf.lfFaceName,m_pFontFamily);
+		strcpy(lf.lfFaceName,pEncMan->strToNative(m_pFontFamily, "UTF-8"));
 	else
 		cf.Flags |= CF_NOFACESEL;
 
@@ -149,23 +152,27 @@ void XAP_Win32Dialog_FontChooser::runModal(XAP_Frame * pFrame)
 
 	// run the actual dialog...
 	m_answer = (ChooseFont(&cf) ? a_OK : a_CANCEL);
+	// Convert the font name returned by the Windows Font Chooser
+	// to UTF-8.
+	// (strToNative() puts the string in a static buffer).
+	const char *szFontFamily = pEncMan->strToNative(lf.lfFaceName, "UTF-8", true);
 
 	if (m_answer == a_OK)
 	{
 		if(m_pFontFamily)
 		{
-			if((UT_stricmp(lf.lfFaceName,m_pFontFamily) != 0))
+			if((UT_stricmp(szFontFamily, m_pFontFamily) != 0))
 			{
 				m_bChangedFontFamily = true;
-				CLONEP((char *&) m_pFontFamily, lf.lfFaceName);
+				CLONEP((char *&) m_pFontFamily, szFontFamily);
 			}
 		}
 		else
 		{
-			if(lf.lfFaceName[0])
+			if(szFontFamily[0])
 			{
 				m_bChangedFontFamily = true;
-				CLONEP((char *&) m_pFontFamily, lf.lfFaceName);
+				CLONEP((char *&) m_pFontFamily, szFontFamily);
 			}
 		}
 

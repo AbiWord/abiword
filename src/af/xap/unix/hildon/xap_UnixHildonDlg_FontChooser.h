@@ -1,5 +1,7 @@
 /* AbiSource Application Framework
  * Copyright (C) 1998-2000 AbiSource, Inc.
+ * Copyright (C) 2005 INdT
+ * Author: Renato Araujo <renato.filho@indt.org.br>
  *
  * This program is free software; you can redistribute it and/or
  * modify it under the terms of the GNU General Public License
@@ -17,11 +19,6 @@
  * 02111-1307, USA.
  */
  
-  /*
-  * Port to Maemo Development Platform 
-  * Author: INdT - Renato Araujo <renato.filho@indt.org.br>
-  */
-
 
 
 #ifndef XAP_UNIXHILDONDIALOG_FONTCHOOSER_H

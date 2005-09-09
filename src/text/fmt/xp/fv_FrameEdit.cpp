@@ -1676,7 +1676,14 @@ void FV_FrameEdit::mouseRelease(UT_sint32 x, UT_sint32 y)
 		PL_StruxDocHandle sdhEnd = NULL;
 		posStart = getDoc()->getStruxPosition(sdhStart);
 		getDoc()->getNextStruxOfType(sdhStart, PTX_EndFrame, &sdhEnd);
-		posEnd = getDoc()->getStruxPosition(sdhEnd)+1;
+		if(sdhEnd == NULL)
+		{
+		    posEnd= posStart+1;
+		}
+		else
+		{
+		    posEnd = getDoc()->getStruxPosition(sdhEnd)+1;
+		}
 		UT_uint32 iRealDeleteCount;
 		PP_AttrProp * p_AttrProp_Before = NULL;
 

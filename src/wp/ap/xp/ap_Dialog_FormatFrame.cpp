@@ -28,6 +28,7 @@
 #include "ut_assert.h"
 #include "ut_string.h"
 #include "ut_debugmsg.h"
+#include "ut_locale.h"
 
 #include "xap_App.h"
 #include "xap_Dialog_Id.h"
@@ -424,7 +425,7 @@ void AP_Dialog_FormatFrame::setCurFrameProps(void)
 	m_borderThicknessBottom = 1.0f;
 
 	m_sBorderThickness = "1.00pt",
-
+ 
 	m_sBorderThicknessRight  = "1.00pt";
 	m_sBorderThicknessLeft   = "1.00pt";
 	m_sBorderThicknessTop    = "1.00pt";
@@ -876,6 +877,7 @@ static UT_UTF8String s_canonical_thickness (float thickness)
 	}
 	else {
 		char buf[16];
+		UT_LocaleTransactor t(LC_NUMERIC, "C");
 		sprintf(buf, "%.2fpt", thickness);
 		sThick = buf;
 	}
@@ -898,6 +900,7 @@ static UT_UTF8String s_canonical_thickness (const UT_UTF8String & sThickness, fl
 	}
 	else {
 		char buf[16];
+		UT_LocaleTransactor t(LC_NUMERIC, "C");
 		sprintf(buf, "%.2fpt", thickness);
 		sThick = buf;
 	}
@@ -1245,8 +1248,7 @@ void AP_FormatFrame_preview::draw(void)
 		else
 			m_gc->setLineProperties(1, GR_Graphics::JOIN_MITER, GR_Graphics::CAP_BUTT, GR_Graphics::LINE_SOLID);
 
-		m_gc->setColor(m_pFormatFrame->borderColorTop());
-
+		m_gc->setColor(m_pFormatFrame->borderColorTop());		
 		UT_sint32 iTopThickness = UT_convertToLogicalUnits(m_pFormatFrame->getBorderThicknessTop().utf8_str());
 		m_gc->setLineWidth(iTopThickness);
 

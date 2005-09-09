@@ -3,7 +3,7 @@
 /* AbiWord
  * Copyright (C) 1998-2000 AbiSource, Inc.
  * Copyright (C) 2001-2005 Hubert Figuiere
- * Copyright (C) 2002-2004 Francis James Franklin
+ * Copyright (C) 2002-2005 Francis James Franklin
  * 
  * This program is free software; you can redistribute it and/or
  * modify it under the terms of the GNU General Public License
@@ -199,6 +199,10 @@ bool AP_CocoaApp::initialize(void)
 			path  = suffix;
 			path += "/Plug-ins";
 			s_createDirectoryIfNecessary(path.utf8_str(), true);
+
+			path  = suffix;
+			path += "/math";
+			s_createDirectoryIfNecessary(path.utf8_str(), true);
 		}
 
     const char * szUserPrivateDirectory = getUserPrivateDirectory();
@@ -244,6 +248,10 @@ bool AP_CocoaApp::initialize(void)
 														path2  = path;
 														path2 += "/Plug-ins";
 														s_createDirectoryIfNecessary(path2.utf8_str());
+
+														path2  = path;
+														path2 += "/math";
+														s_createDirectoryIfNecessary(path2.utf8_str());
 													}
 											}
 									}
@@ -277,6 +285,10 @@ bool AP_CocoaApp::initialize(void)
     
     if (! AP_App::initialize())
 		return false;
+
+	NSString * resources = [[NSBundle mainBundle] resourcePath];
+
+	setenv ("ABIWORD_COCOA_BUNDLED_RESOURCES", [resources UTF8String], 1);
 
 	//////////////////////////////////////////////////////////////////
 	// Initialize the importers/exporters
@@ -319,7 +331,6 @@ bool AP_CocoaApp::initialize(void)
 			szPathname += ".strings";
 #endif
 
-			NSString* resources = [[NSBundle mainBundle] resourcePath];
 			NSString* stringSet = [resources stringByAppendingPathComponent:[NSString stringWithFormat:@"AbiWord/strings/%s%@",szStringSet,@".strings"]];
 
 			AP_DiskStringSet * pDiskStringSet = new AP_DiskStringSet(this);
@@ -411,6 +422,20 @@ bool AP_CocoaApp::initialize(void)
 #endif
 
     return true;
+}
+
+void AP_CocoaApp::rebuildMenus(void)
+{
+	// getMenuFactory()->buildMenuLabelSet(m_szMenuLabelSetName);
+
+	DELETEP(m_pCocoaMenu);
+	m_pCocoaMenu = new EV_CocoaMenuBar(this, m_szMenuLayoutName, m_szMenuLabelSetName);
+	UT_ASSERT(m_pCocoaMenu);
+
+	m_pCocoaMenu->buildAppMenu();
+
+	XAP_CocoaAppController * pController = (XAP_CocoaAppController *) [NSApp delegate];
+	[pController reappendPluginMenuItems];
 }
 
 /*!
@@ -593,14 +618,26 @@ void AP_CocoaApp::pasteFromClipboard(PD_DocumentRange * pDocRange, bool bUseClip
     unsigned char * pData = NULL;
     UT_uint32 iLen = 0;
 
-    bool bFoundOne = m_pClipboard->getClipboardData(aszFormatsAccepted,(void**)&pData,&iLen,&szFormatFound);
+    bool bFoundOne = false;
+	
+	if (bHonorFormatting) {
+		bFoundOne = m_pClipboard->getClipboardData(aszFormatsAccepted,(void**)&pData,&iLen,&szFormatFound);
+	}
+	else {
+		const char * formats[] = {
+							XAP_CocoaClipboard::XAP_CLIPBOARD_TEXTPLAIN_8BIT, 
+							XAP_CocoaClipboard::XAP_CLIPBOARD_STRING,
+							NULL 
+							};
+		bFoundOne = m_pClipboard->getClipboardData(formats,(void**)&pData,&iLen,&szFormatFound);
+	}
     if (!bFoundOne)
     {
 		UT_DEBUGMSG(("PasteFromClipboard: did not find anything to paste.\n"));
 		return;
     }
 	
-    if (strcmp(szFormatFound, XAP_CocoaClipboard::XAP_CLIPBOARD_RTF) == 0 && bHonorFormatting)
+    if (strcmp(szFormatFound, XAP_CocoaClipboard::XAP_CLIPBOARD_RTF) == 0)
     {
 		iLen = UT_MIN(iLen,strlen((const char *)pData));
 		UT_DEBUGMSG(("PasteFromClipboard: pasting %d bytes in format [%s].\n",iLen,szFormatFound));
@@ -608,7 +645,6 @@ void AP_CocoaApp::pasteFromClipboard(PD_DocumentRange * pDocRange, bool bUseClip
 		IE_Imp_RTF * pImpRTF = new IE_Imp_RTF(pDocRange->m_pDoc);
 		pImpRTF->pasteFromBuffer(pDocRange,pData,iLen);
 		DELETEP(pImpRTF);
-
     }
 	else if (   (strcmp(szFormatFound, XAP_CocoaClipboard::XAP_CLIPBOARD_TEXTPLAIN_8BIT) == 0)
 		   || (strcmp(szFormatFound, XAP_CocoaClipboard::XAP_CLIPBOARD_STRING) == 0))
@@ -674,23 +710,13 @@ void AP_CocoaApp::pasteFromClipboard(PD_DocumentRange * pDocRange, bool bUseClip
 }
 
 /*!
-  Theoretically, this should determine if we can paste from the
-  cliboard.  However, it isn't really possible to get this info, since
-  X has a weird clipboard model.  So we always return true.  If we
-  return true with no data on the clipboard, then the paste just ends
-  up being empty.  As far as we can tell, this has no bad effects.  
-  \bug Is this really right?  It seems like a hack.  
-  \return Always true. 
+  This should determine if we can paste from the
+  cliboard. 
 */
 bool AP_CocoaApp::canPasteFromClipboard(void)
 {
-    const char * szFormatFound = NULL;
-    unsigned char * pData = NULL;
-    UT_uint32 iLen = 0;
-
     // first, try to see if we can paste from the clipboard
-    bool bFoundOne = m_pClipboard->getClipboardData(aszFormatsAccepted,(void**)&pData,&iLen,&szFormatFound);
-	FREEP(pData);
+    bool bFoundOne = m_pClipboard->hasFormats(aszFormatsAccepted);
 	
 	return bFoundOne;
 }

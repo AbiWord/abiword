@@ -52,7 +52,8 @@ FV_VisualDragText::FV_VisualDragText (FV_View * pView)
 	  m_xLastMouse(1),
 	  m_yLastMouse(1),
 	  m_bDoingCopy(false),
-	  m_bNotDraggingImage(false)
+	  m_bNotDraggingImage(false),
+	  m_bSelectedRow(false)
 {
 	UT_ASSERT (pView);
 }
@@ -80,6 +81,15 @@ GR_Graphics * FV_VisualDragText::getGraphics(void) const
 void FV_VisualDragText::setMode(FV_VisualDragMode iEditMode)
 {
 	m_iVisualDragMode = iEditMode;
+	if(iEditMode == FV_VisualDrag_NOT_ACTIVE)
+	{	
+	    m_iInitialOffX = 0;
+	    m_iInitialOffY = 0;
+	    m_iLastX = 0;
+	    m_iLastY = 0;
+	    m_xLastMouse = 0;
+	    m_yLastMouse = 0;
+	}
 }
 
 void FV_VisualDragText::_autoScroll(UT_Worker * pWorker)
@@ -152,6 +162,15 @@ void FV_VisualDragText::_autoScroll(UT_Worker * pWorker)
 
 void FV_VisualDragText::mouseDrag(UT_sint32 x, UT_sint32 y)
 {
+ 	  //
+	  // Don't try to drag the entire document.
+	  //
+  if(!m_bDoingCopy && (m_pView->isSelectAll() && !m_pView->isHdrFtrEdit())&&(m_iVisualDragMode != FV_VisualDrag_DRAGGING))
+	 {
+	     setMode(FV_VisualDrag_NOT_ACTIVE);
+	     return;
+	 }
+
         if(m_iVisualDragMode == FV_VisualDrag_NOT_ACTIVE)
         {
 	  m_iInitialOffX = x;
@@ -189,13 +208,16 @@ void FV_VisualDragText::mouseDrag(UT_sint32 x, UT_sint32 y)
 //
 // Haven't started the drag yet so create our image and cut the text.
 //
-
 		m_pView->getDocument()->beginUserAtomicGlob();
 		mouseCut(m_iInitialOffX,m_iInitialOffY);
 		m_bTextCut = true;
 
 	}
 	clearCursor();
+	if(m_iVisualDragMode == FV_VisualDrag_START_DRAGGING)
+	{
+	  reposOffsets(x,y);
+	}
 	m_iVisualDragMode = FV_VisualDrag_DRAGGING;
 	xxx_UT_DEBUGMSG(("x = %d y = %d width \n",x,y));
 	bool bScrollDown = false;
@@ -290,12 +312,32 @@ void FV_VisualDragText::mouseDrag(UT_sint32 x, UT_sint32 y)
 	if(!m_bNotDraggingImage && (expX.width > 0))
 	{
 		getGraphics()->setClipRect(&expX);
+		if(m_bSelectedRow)
+
+		{
+		      m_pView->setSelectionMode(FV_SelectionMode_NONE);
+		}
 		m_pView->updateScreen(false);
+		if(m_bSelectedRow);
+		{
+		      m_pView->setSelectionMode(FV_SelectionMode_TableRow);
+		}
+
 	}
 	if(!m_bNotDraggingImage && (expY.height > 0))
 	{
+	  xxx_UT_DEBUGMSG(("expY left %d top %d width %d height %d \n",expY.left,expY.top,expY.width,expY.height));
 		getGraphics()->setClipRect(&expY);
+		if(m_bSelectedRow);
+		{
+		      m_pView->setSelectionMode(FV_SelectionMode_NONE);
+		}
 		m_pView->updateScreen(false);
+		if(m_bSelectedRow);
+		{
+		      m_pView->setSelectionMode(FV_SelectionMode_TableRow);
+		}
+
 	}
 	if(!m_bNotDraggingImage)
 	{
@@ -317,8 +359,123 @@ void FV_VisualDragText::mouseDrag(UT_sint32 x, UT_sint32 y)
 	getGraphics()->setClipRect(NULL);
 	PT_DocPosition posAtXY = getPosFromXY(x,y);
 	m_pView->_setPoint(posAtXY);
+	xxx_UT_DEBUGMSG(("Point at visual drag set to %d \n",m_pView->getPoint()));
 //	m_pView->_fixInsertionPointCoords();
 	drawCursor(posAtXY);
+}
+
+/*!
+ * This method is called at the commencement of a visual drag. If the offsets
+ * to the caret are too big, this method will adjust them and shift the image
+ * of the dragged text to a comfortable distance fromthe caret.
+ * Returns true if the offsets are shifted.
+ * UT_sint32 x pos of the caret
+ * UT_sint32 y pos of  the caret 
+ */
+bool FV_VisualDragText::reposOffsets(UT_sint32 x, UT_sint32 y)
+{
+  UT_sint32 dx = 0;
+  UT_sint32 dy = 0;
+  bool bAdjustX = false;
+  bool bAdjustY = false;
+  UT_sint32 iext = getGraphics()->tlu(3);
+  dx = x - m_recCurFrame.left - m_recOrigLeft.width;
+  dy = y - m_recCurFrame.top;
+  UT_DEBUGMSG((" repos dx = %d \n",dx));
+  UT_DEBUGMSG((" repos dy = %d \n",dy));
+  UT_Rect expX(0,m_recCurFrame.top,0,m_recCurFrame.height);
+  UT_Rect expY(m_recCurFrame.left,0,m_recCurFrame.width,0);
+  if(abs(dx) > getGraphics()->tlu(40))
+  {
+    bAdjustX = true;
+    dx -= getGraphics()->tlu(20);
+    m_iInitialOffX -= dx;
+    UT_Rect expX(0,m_recCurFrame.top,0,m_recCurFrame.height);
+    m_recCurFrame.left += dx;
+    m_recOrigLeft.left += dx;
+    m_recOrigRight.left += dx;
+  }
+  if(dy > getGraphics()->tlu(40))
+  {
+    bAdjustY = true;
+    dy -= getGraphics()->tlu(20);
+    m_iInitialOffY -= dy;
+    UT_Rect expY(m_recCurFrame.left,0,m_recCurFrame.width,0);
+    m_recCurFrame.top += dy;
+    m_recOrigLeft.top += dy;
+    m_recOrigRight.top += dy;
+  }
+
+  if(bAdjustX && dx < 0)
+  {
+    expX.left = m_recCurFrame.left+m_recCurFrame.width -iext;
+    expX.width = -dx + 2*iext;
+    if(dy > 0)
+    {
+        expX.top -=  iext;
+	expX.height += dy + 2*iext;
+    }
+    else
+    {
+	expX.top -=  iext;
+	expX.height += (-dy + 2*iext);
+    }
+  }
+  else if(bAdjustX)
+  {
+      expX.left = m_recCurFrame.left - dx - iext;
+      expX.width = dx + 2*iext;
+      if(dy > 0)
+      {
+	  expX.top -=  iext;
+	  expX.height += dy + 2*iext;
+      }
+      else
+      {
+	  expX.top -= iext;
+	  expX.height += (-dy + 2*iext);
+      }
+  }
+  expY.left -= iext;
+  expY.width += 2*iext;
+  if(bAdjustY && dy < 0)
+  {
+        expY.top = m_recCurFrame.top + m_recCurFrame.height -iext;
+	expY.height = -dy + 2*iext;
+  }
+  else if(bAdjustY)
+  {
+        expY.top = m_recCurFrame.top - dy - iext;
+	expY.height = dy + 2*iext;
+  }
+
+  if(bAdjustX && expX.width > 0)
+  {
+      getGraphics()->setClipRect(&expX);
+      m_pView->updateScreen(false);
+  }
+  if(bAdjustY && (expY.height > 0))
+  {
+      getGraphics()->setClipRect(&expY);
+      m_pView->updateScreen(false);
+  }
+  if(bAdjustX || bAdjustY)
+  {
+      getGraphics()->setClipRect(NULL);
+      drawImage();
+      if(m_recOrigLeft.width > 0)
+      {
+	  getGraphics()->setClipRect(&m_recOrigLeft);
+	  m_pView->updateScreen(false);
+      }
+      if(m_recOrigRight.width > 0)
+      {
+	  getGraphics()->setClipRect(&m_recOrigRight);
+	  m_pView->updateScreen(false);
+      }
+      return true;
+  }
+  return false;
 }
 
 void FV_VisualDragText::clearCursor(void)
@@ -464,12 +621,28 @@ void FV_VisualDragText::getImageFromSelection(UT_sint32 x, UT_sint32 y)
 	}
 	fp_Run * pRunLow2 = NULL;
 	m_pView->_findPositionCoords(posLow+1, bEOL, xLow, yLow, xCaret2, yCaret2, heightCaret, bDirection, NULL, &pRunLow2);
+	UT_return_if_fail( pRunLow2 );
 	fl_BlockLayout * pBLow2 = pRunLow2->getBlock();
 	m_pView->_findPositionCoords(posLow, bEOL, xLow, yLow, xCaret2, yCaret2, heightCaret, bDirection, NULL, &pRunLow);
+	UT_return_if_fail( pRunLow );
 	fl_BlockLayout * pBLow1 = pRunLow->getBlock();
+	bool bUseNext = false;
+	bool bIsTable = false;
+	if(m_pView->getDocument()->isTableAtPos(posLow))
+	{
+	    posLow += 2;
+	    bIsTable = true;
+	}
+	fl_TableLayout * pTabLow = m_pView->getTableAtPos(posLow+1);
+	fl_TableLayout * pTabHigh = m_pView->getTableAtPos(posHigh);
+	if(bIsTable && (pTabLow != pTabHigh))
+	{
+	    posLow -= 2;
+	}
 	if(pBLow2 != pBLow1)
 	{
 		pRunLow = pRunLow2;
+		bUseNext = true;
 	}
 	fp_Line * pLineLow = pRunLow->getLine();
 	fp_Run * pRunHigh = NULL;
@@ -520,12 +693,20 @@ void FV_VisualDragText::getImageFromSelection(UT_sint32 x, UT_sint32 y)
 //
 // OK deal with the nice case of the selection just on the single line
 //
+	bool bDoBroken = true;
 	if(pLineLow == pLineHigh)
 	{
 //
 // Grab that first charcter!
 //
-		m_pView->_findPositionCoords(posLow, bEOL, xLow, yLow, xCaret2, yCaret2, heightCaret, bDirection, NULL, &pRunLow2);
+	        if(!bUseNext)
+		{
+		    m_pView->_findPositionCoords(posLow, bEOL, xLow, yLow, xCaret2, yCaret2, heightCaret, bDirection, NULL, &pRunLow2);
+		}
+		else
+		{
+		    m_pView->_findPositionCoords(posLow+1, bEOL, xLow, yLow, xCaret2, yCaret2, heightCaret, bDirection, NULL, &pRunLow2);
+		}
 		UT_sint32 xx,yy;
 		pLineLow->getScreenOffsets(pRunLow,xx,yy);
 		m_recCurFrame.left = xLow < xHigh ? xLow : xHigh;
@@ -540,8 +721,89 @@ void FV_VisualDragText::getImageFromSelection(UT_sint32 x, UT_sint32 y)
 		m_recOrigRight.height = 0;
 		m_recOrigRight.left = 0;
 		m_recOrigRight.top = 0;
+		bDoBroken = false;
 	}
-	else
+	if ( bDoBroken && (pTabLow != NULL) && (pTabHigh == pTabLow))
+	{
+	    //
+	    // Look to see if we have a rectangular table selection
+	    //
+	    UT_sint32 iExtra = 1;
+	    if(m_pView->getDocument()->isTableAtPos(posLow+iExtra))
+	    {
+	      iExtra++;
+	    }
+	    if(m_pView->getDocument()->isCellAtPos(posLow+iExtra))
+	    {
+	      iExtra++;
+	    }
+	    if(m_pView->getDocument()->isBlockAtPos(posLow+iExtra))
+	    {
+	      iExtra++;
+	    }
+	    fp_CellContainer * pCellConLow = m_pView->getCellAtPos(posLow+iExtra);
+	    if(pCellConLow == NULL)
+	      goto do_broken;
+	    fl_CellLayout * pCellLow = static_cast<fl_CellLayout *>(pCellConLow->getSectionLayout());
+	    if(m_pView->getDocument()->isEndTableAtPos(posHigh-1))
+	    {
+		posHigh--;
+	    }
+	    fp_CellContainer * pCellConHigh = m_pView->getCellAtPos(posHigh);
+	    if(pCellConHigh == NULL)
+	      goto do_broken;
+	    fl_CellLayout * pCellHigh = static_cast<fl_CellLayout *>(pCellConHigh->getSectionLayout());
+	    if((pCellLow->getPosition(true) >= (posLow -1)) &&
+	       ((pCellHigh->getPosition(true) + pCellHigh->getLength()-1) <= (posHigh + 1) ))
+	    {
+	      UT_sint32 numCols = static_cast<fp_TableContainer *>(pCellConLow->getContainer())->getNumCols();
+	      if(((pCellConLow->getLeftAttach() == 0) && 
+		  (pCellConHigh->getRightAttach() == numCols)) || 
+		 (pCellConLow->getTopAttach() == pCellConHigh->getTopAttach()))
+	      {
+		//
+		// OK the low and high cells are fully selected.
+		//
+		  UT_DEBUGMSG(("Fully selected low and high positions \n"));
+//
+// Grab that first charcter!
+//
+	          if(!bUseNext)
+		  {
+		      m_pView->_findPositionCoords(posLow, bEOL, xLow, yLow, xCaret2, yCaret2, heightCaret, bDirection, NULL, &pRunLow2);
+		  }
+		  else
+		  {
+		      m_pView->_findPositionCoords(posLow+1, bEOL, xLow, yLow, xCaret2, yCaret2, heightCaret, bDirection, NULL, &pRunLow2);
+		  }
+		  if((pCellConLow->getLeftAttach() == 0) && 
+		     (pCellConHigh->getRightAttach() == numCols))
+		  {
+		      m_bSelectedRow = true;
+		  }
+		  UT_Rect * pLow = pCellConLow->getScreenRect();
+		  UT_Rect * pHigh = pCellConHigh->getScreenRect();
+		  UT_return_if_fail(pLow);
+		  UT_return_if_fail(pHigh);
+		  m_recCurFrame.left = pLow->left;
+		  m_recCurFrame.width = pHigh->left + pHigh->width - pLow->left;
+		  m_recCurFrame.top = pLow->top;
+		  m_recCurFrame.height = pHigh->top + pHigh->height - pLow->top;
+		  DELETEP(pLow);
+		  DELETEP(pHigh);
+		  m_recOrigLeft.width = 0;
+		  m_recOrigLeft.height = 0;
+		  m_recOrigLeft.left = 0;
+		  m_recOrigLeft.top = 0;
+		  m_recOrigRight.width = 0;
+		  m_recOrigRight.height = 0;
+		  m_recOrigRight.left = 0;
+		  m_recOrigRight.top = 0;
+		  bDoBroken = false;
+	      }
+	    }
+	}
+ do_broken:	if(bDoBroken)
 	{
 //
 // low and high are on different rows. First get top, left
@@ -655,10 +917,18 @@ void FV_VisualDragText::mouseCut(UT_sint32 x, UT_sint32 y)
 			pos2 = m_pView->getSelectionAnchor();
 			pos1 = m_pView->getPoint();
 		}
-		m_pView->copyToLocal(pos1,pos2);
-		m_pView->cmdCharDelete(true,1);
+		if(m_bSelectedRow)
+		{
+		    m_pView->copyToLocal(pos1,pos2);
+		    m_pView->cmdDeleteRow(pos1+2);
+		    m_pView->setSelectionMode(FV_SelectionMode_TableRow);
+		}
+		else
+		{
+		    m_pView->copyToLocal(pos1,pos2);
+		    m_pView->cmdCharDelete(true,1);
+		}
 	}
-
 	m_pView->getDocument()->setVDNDinProgress(false);
 	
 	m_pView->updateScreen(false);
@@ -703,6 +973,7 @@ PT_DocPosition FV_VisualDragText::getPosFromXY(UT_sint32 x, UT_sint32 y)
 	y += getGraphics()->tlu(6); //Otherwise it's too easy to hit the line above
 	x += m_recOrigLeft.width; // Add in offset 
 	PT_DocPosition posAtXY = m_pView->getDocPositionFromXY(x,y,false);
+	xxx_UT_DEBUGMSG(("Point at x %d y %d is %d \n",x,y,posAtXY));
 	return posAtXY;
 }
 
@@ -716,10 +987,12 @@ void   FV_VisualDragText::abortDrag(void)
 		m_pAutoScrollTimer->stop();
 		DELETEP(m_pAutoScrollTimer);
 	}
+	m_bSelectedRow = false;
 	bool bDidCopy = m_bDoingCopy;
 	m_bDoingCopy = false;
 	m_bNotDraggingImage = false;
 	clearCursor();
+	UT_DEBUGMSG(("Abort Drag! \n"));
 	if(m_iVisualDragMode != FV_VisualDrag_DRAGGING)
 	{
 //
@@ -751,6 +1024,7 @@ void FV_VisualDragText::mouseRelease(UT_sint32 x, UT_sint32 y)
 	}
 	m_bDoingCopy = false;
 	m_bNotDraggingImage = false;
+	m_bSelectedRow = false;
 	clearCursor();
 	if(m_iVisualDragMode != FV_VisualDrag_DRAGGING)
 	{
@@ -793,6 +1067,7 @@ void FV_VisualDragText::mouseRelease(UT_sint32 x, UT_sint32 y)
 	{
 		m_pView->cmdPaste();
 	}
+	m_bSelectedRow = false;
 	PT_DocPosition newPoint = m_pView->getPoint();
 	DELETEP(m_pDragImage);
 	if(m_bTextCut)

@@ -49,6 +49,7 @@
 #include "fp_Line.h"
 #include "fp_Run.h"
 #include "fp_TextRun.h"
+#include "xap_Module.h"
 #include "fg_Graphic.h"
 #include "fg_GraphicRaster.h"
 #include "pd_Document.h"
@@ -2458,6 +2459,12 @@ bool FV_View::isSelectionEmpty(void) const
 	if((m_Selection.getSelectionMode() != FV_SelectionMode_Single) &&
 	   (m_Selection.getSelectionMode() != FV_SelectionMode_NONE))
 	{
+		if((m_Selection.getSelectionMode() ==  FV_SelectionMode_TableRow) &&
+		   (getPoint() == getSelectionAnchor()) && (m_Selection.getSelectionLeftAnchor() ==
+		   m_Selection.getSelectionLeftAnchor()))
+		{
+			return true;
+		}
 		return false;
 	}
 	PT_DocPosition curPos = getPoint();
@@ -2911,6 +2918,7 @@ void FV_View::processSelectedBlocks(FL_ListType listType)
 //
 	for(i=0; i<static_cast<UT_sint32>(vNoListBlocks.getItemCount()); i++)
 	{
+		UT_DEBUGMSG(("Doing Block %d of %d \n",i,vNoListBlocks.getItemCount()));
 		fl_BlockLayout * pBlock = vNoListBlocks.getNthItem(i);
 		fl_BlockLayout * pPrev = static_cast<fl_BlockLayout *>(pBlock->getPrev());
 		while(pPrev && (pPrev->getContainerType() != FL_CONTAINER_BLOCK))
@@ -3036,9 +3044,27 @@ UT_sint32 FV_View::getNumRowsInSelection(void)
 	fl_BlockLayout * pBlock = NULL;
 	fl_CellLayout * pCell = NULL;
 	fp_CellContainer * pCellCon = NULL;
+	PT_DocPosition startpos = getPoint();
+	PT_DocPosition endpos = startpos;
+	if (m_Selection.getSelectionAnchor() > startpos)
+	{
+		endpos = m_Selection.getSelectionAnchor();
+	}
+	else
+	{
+		startpos = m_Selection.getSelectionAnchor();
+	}
 	for(i=0; i< static_cast<UT_sint32>(vecBlocks.getItemCount());i++)
 	{
 		pBlock = vecBlocks.getNthItem(i);
+		if((getNumSelections() == 0) && ((pBlock->getPosition() + pBlock->getLength() - 1) <= startpos))
+		{
+			continue;
+		}
+		if(pBlock->getPosition() > endpos)
+		{
+				break;
+		}
 		if(pBlock->myContainingLayout()->getContainerType() != FL_CONTAINER_CELL)
 		{
 			return 0;
@@ -3400,7 +3426,39 @@ bool FV_View::setStyleAtPos(const XML_Char * style, PT_DocPosition posStart1, PT
 	pBL = _findBlockAtPosition(posStart+2);
 	if(pBL == NULL)
 	{
+		m_pDoc->enableListUpdates();
+		UT_DEBUGMSG(("restoring PieceTable state (3)\n"));
+		_restorePieceTableState();
 		return false;
+	}
+	if(bisListStyle)
+	{
+		if(pBL->isHdrFtr())
+		{
+			m_pDoc->enableListUpdates();
+			UT_DEBUGMSG(("restoring PieceTable state (4)\n"));
+			_restorePieceTableState();
+			return false;
+		}
+		fl_ContainerLayout * pCL = pBL->myContainingLayout();
+		while(pCL && (pCL->getContainerType() != FL_CONTAINER_DOCSECTION))
+		{
+			if((pCL->getContainerType() == FL_CONTAINER_HDRFTR) ||
+			   (pCL->getContainerType() == FL_CONTAINER_SHADOW) ||
+			   (pCL->getContainerType() == FL_CONTAINER_FOOTNOTE) ||
+			   (pCL->getContainerType() == FL_CONTAINER_ENDNOTE))
+			{
+				m_pDoc->enableListUpdates();
+				UT_DEBUGMSG(("restoring PieceTable state (5)\n"));
+				_restorePieceTableState();
+				return false;
+			}
+			pCL = pCL->myContainingLayout();
+		}
+		if(pCL == NULL)
+		{
+			return false;
+		}
 	}
 	if((posStart == pBL->getPosition(true)) && (posEnd > posStart))
 	{
@@ -4529,6 +4587,33 @@ bool FV_View::queryCharFormat(const XML_Char * szProperty, UT_UTF8String & szVal
 		++position; // ??
 	}
 	return okay;
+}
+
+
+/*!
+ * Returns true if the abigrammar plugin is loaded
+ */
+bool FV_View::isGrammarLoaded(void)
+{
+	XAP_Module * pGrammar = m_pApp->getPlugin("abigrammar");
+	if(pGrammar == NULL)
+	{
+		return false;
+	}
+	return true;
+}
+
+/*!
+ * Returns true if the abimathview plugin is loaded
+ */
+bool FV_View::isMathLoaded(void)
+{
+	XAP_Module * pMath = m_pApp->getPlugin("abimathview");
+	if(pMath == NULL)
+	{
+		return false;
+	}
+	return true;
 }
 
 bool FV_View::queryCharFormat(const XML_Char * szProperty, UT_UTF8String & szValue, bool & bExplicitlyDefined, PT_DocPosition position) const
@@ -9020,6 +9105,21 @@ fp_CellContainer * FV_View::getCellAtPos(PT_DocPosition pos)
 				return pCell;
 			}
 		}
+		fl_ContainerLayout * pCL = pBlock->myContainingLayout();
+		if((pCL->getContainerType() == FL_CONTAINER_FOOTNOTE) ||
+		   (pCL->getContainerType() == FL_CONTAINER_ENDNOTE))
+		{
+			pBlock = pBlock->getEnclosingBlock();
+			if(pBlock == NULL)
+			{
+				return NULL;
+			}
+			pCL = pBlock->myContainingLayout();
+			if(pCL->getContainerType() == FL_CONTAINER_CELL)
+			{
+				return static_cast<fp_CellContainer *>(pCL->getFirstContainer());
+			}
+		}
 	}
 	return NULL;
 }
@@ -9237,14 +9337,20 @@ EV_EditMouseContext FV_View::getMouseContext(UT_sint32 xPos, UT_sint32 yPos)
 				xxx_UT_DEBUGMSG(("getContext: xPos %d yPos %d iLeft %d iRight %d iTop %d iBot %d \n",xPos,yPos,iLeft,iRight,iTop,iBot));
 				if((iLeft - xPos < ires) && (xPos - iLeft < ires))
 				{
-					m_prevMouseContext = EV_EMC_VLINE;
-					return EV_EMC_VLINE;
+					if(((iTop - ires) < yPos) && ((iBot+ires)> yPos))
+					{
+						m_prevMouseContext = EV_EMC_VLINE;
+						return EV_EMC_VLINE;
+					}
 				}
 				if((iRight - xPos < ires) && (xPos - iRight < ires))
 				{
-					xxx_UT_DEBUGMSG(("getContext: Found right cell \n"));
-					m_prevMouseContext = EV_EMC_VLINE;
-					return EV_EMC_VLINE;
+					if(((iTop - ires) < yPos) && ((iBot+ires)> yPos))
+					{
+						xxx_UT_DEBUGMSG(("getContext: Found right cell \n"));
+						m_prevMouseContext = EV_EMC_VLINE;
+						return EV_EMC_VLINE;
+					}
 				}
 				if((iTop - yPos < 2*ires) && (yPos - iTop < 2*ires))
 				{
@@ -11940,6 +12046,15 @@ bool FV_View::isInTable( PT_DocPosition pos)
 	}
 	UT_ASSERT(pCL->getContainerType() != FL_CONTAINER_TABLE);
 	xxx_UT_DEBUGMSG(("Containing Layout is %s  pos %d \n",pCL->getContainerString(),pos));
+	if((pCL->getContainerType() == FL_CONTAINER_FOOTNOTE) || (pCL->getContainerType() == FL_CONTAINER_ENDNOTE))
+	{
+		pBL = pBL->getEnclosingBlock();
+		if(pBL == NULL)
+		{
+			return false;
+		}
+		pCL = pBL->myContainingLayout();
+	}
 	if(pCL->getContainerType() == FL_CONTAINER_CELL)
 	{
 		xxx_UT_DEBUGMSG(("Inside Table cell pos %d this pos %d \n",pCL->getPosition(),pos));

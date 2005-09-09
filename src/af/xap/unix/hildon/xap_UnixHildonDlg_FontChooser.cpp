@@ -1,7 +1,7 @@
 /* AbiSource Application Framework
  * Copyright (C) 1998-2000 AbiSource, Inc.
- *
- * 0wn3d by R3n4t0
+ * Copyright (C) 2005 INdT
+ * Author: Renato Araujo <renato.filho@indt.org.br>
  *
  * This program is free software; you can redistribute it and/or
  * modify it under the terms of the GNU General Public License
@@ -18,12 +18,6 @@
  * Foundation, Inc., 59 Temple Place - Suite 330, Boston, MA
  * 02111-1307, USA.
  */
-
-// 9/4/04 Updated to use GtkTreeView , Tim O'Brien (obrientimo@vuw.ac.nz)
-  /*
-  * Port to Maemo Development Platform 
-  * Author: INdT - Renato Araujo <renato.filho@indt.org.br>
-  */
 
 #include <stdio.h>
 #include <string.h>

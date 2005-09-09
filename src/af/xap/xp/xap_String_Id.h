@@ -374,6 +374,7 @@ dcl(LANG_LA_IT, 							"Latin (Renaissance)")	// Is _IT the right thing here?
 dcl(LANG_LV_LV, 							"Latvian")
 dcl(LANG_LT_LT, 							"Lithuanian")
 dcl(LANG_MK,								"Macedonian")	// Jordi 19/10/2002 Hipi: Why not mk-MK?
+dcl(LANG_MS_MY,                             "Malay")
 dcl(LANG_MI_NZ,                             "Maori")
 dcl(LANG_MR_IN,                             "Marathi")
 dcl(LANG_MH_MH, 							"Marshallese (Marshall Islands)")

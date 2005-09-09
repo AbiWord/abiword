@@ -44,7 +44,7 @@ public:
 	virtual const UT_String & hashKey(void) const;
 	virtual UT_sint32   measureUnremappedCharForCache(UT_UCSChar cChar) const;
 	float               measureUnRemappedChar(const UT_UCSChar c, UT_uint32 iSize) const;
-        virtual bool        glyphBox(UT_UCS4Char g, UT_Rect & rec) const;
+        virtual bool        glyphBox(UT_UCS4Char g, UT_Rect & rec, GR_Graphics * pG);
 
 	virtual bool doesGlyphExist(UT_UCS4Char g);
 

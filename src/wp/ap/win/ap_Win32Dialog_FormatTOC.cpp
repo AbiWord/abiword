@@ -144,10 +144,29 @@ void AP_Win32Dialog_FormatTOC::runModeless(XAP_Frame * pFrame)
 	startUpdater(); 
 }
 
-void AP_Win32Dialog_FormatTOC::setStyle(HWND hwndCtrl)
+void AP_Win32Dialog_FormatTOC::setStyle(HWND hWnd, int nCtrlID)
 {
 	UT_UTF8String sVal, str_loc;	
-	UT_UTF8String sProp = static_cast<char *> ("toc-prop");
+	UT_UTF8String sProp;
+	HWND hwndCtrl = GetDlgItem (hWnd, nCtrlID);
+
+	switch (nCtrlID) 
+	{
+		case AP_RID_DIALOG_FORMATTOC_GENERAL_TEXT_HEADINGSTYLEVALUE:
+			sProp = static_cast<char *> ("toc-heading-style");
+			break;
+
+		case AP_RID_DIALOG_FORMATTOC_GENERAL_TEXT_FILLSTYLEVALUE:
+			sProp = static_cast<char *> ("toc-source-style");
+			break;
+
+		case AP_RID_DIALOG_FORMATTOC_GENERAL_TEXT_DISPLAYSTYLEVALUE:
+			sProp = static_cast<char *> ("toc-dest-style");
+			break;
+
+		default:
+			break;
+	}
 
 	if(UT_stricmp("toc-heading-style",sProp.utf8_str()) != 0)
 	{
@@ -160,6 +179,8 @@ void AP_Win32Dialog_FormatTOC::setStyle(HWND hwndCtrl)
 
 	SendMessage (hwndCtrl, 	WM_SETTEXT, 0,  (LPARAM)str_loc.utf8_str());
 	setTOCProperty(sProp,sVal);
+	applyTOCPropsToDoc ();
+
 }
 
 
@@ -187,10 +208,29 @@ void AP_Win32Dialog_FormatTOC::setMainLevel(UT_sint32 iLevel)
 
 	sVal = getTOCPropVal("toc-has-label",getMainLevel());
 	
-	CheckDlgButton(m_pGeneral->getHandle(), AP_RID_DIALOG_FORMATTOC_GENERAL_CHECK_HASHEADING,
+	CheckDlgButton(m_pGeneral->getHandle(), AP_RID_DIALOG_FORMATTOC_GENERAL_CHECK_HASLEVEL,
 		(UT_stricmp(sVal.utf8_str(),"1") == 0) ? BST_CHECKED :BST_UNCHECKED);	
 }
 
+
+void AP_Win32Dialog_FormatTOC::setDetailsLevel(UT_sint32 iLevel)
+{
+		
+	UT_UTF8String sVal, str_loc;
+	UT_String str;
+
+	AP_Dialog_FormatTOC::setDetailsLevel(iLevel);
+
+	
+	/* Start at */
+	sVal = getTOCPropVal("toc-label-start", getDetailsLevel());
+
+	SetWindowText (GetDlgItem (m_pLayout->getHandle(),
+		AP_RID_DIALOG_FORMATTOC_LAYOUTDETAILS_EDIT_STARTAT), sVal.utf8_str());
+
+	m_pLayout->loadCtrlsValuesForDetailsLevel ();
+
+}
 
 /*
 
@@ -255,7 +295,8 @@ void AP_Win32Dialog_FormatTOC_General::_fillGUI()
 	CheckDlgButton(getHandle(), AP_RID_DIALOG_FORMATTOC_GENERAL_CHECK_HASHEADING,
 		(UT_stricmp(sVal.utf8_str(),"1") == 0) ? BST_CHECKED :BST_UNCHECKED);
 
-	sVal = getContainer()->getTOCPropVal("toc-has-label"); 	 
+	
+	sVal = getContainer()->getTOCPropVal("toc-has-label", getContainer()->getMainLevel()); 	 
 	CheckDlgButton(getHandle(), AP_RID_DIALOG_FORMATTOC_GENERAL_CHECK_HASLEVEL,
 		(UT_stricmp(sVal.utf8_str(),"1") == 0) ? BST_CHECKED :BST_UNCHECKED);
 
@@ -266,6 +307,8 @@ void AP_Win32Dialog_FormatTOC_General::_fillGUI()
 	SendMessage (GetDlgItem (getHandle(), AP_RID_DIALOG_FORMATTOC_GENERAL_TEXT_HEADINGSTYLEVALUE), 	
 		WM_SETTEXT, 0, (LPARAM)str.c_str());	
 
+	// Set MainLevel for the Combobox	
+	SendMessage(GetDlgItem(getHandle(), AP_RID_DIALOG_FORMATTOC_GENERAL_COMBO_LEVEL), CB_SETCURSEL, getContainer()->getMainLevel() - 1, 0);	
 	getContainer()->setMainLevel(getContainer()->getMainLevel());
 
 	sVal = getContainer()->getTOCPropVal("toc-heading");
@@ -335,32 +378,26 @@ void AP_Win32Dialog_FormatTOC_General::_onCommand(HWND hWnd, WPARAM wParam, LPAR
 	{		
 		case AP_RID_DIALOG_FORMATTOC_GENERAL_CHECK_HASHEADING:
 		{
-			UT_UTF8String sProp = static_cast<char *> ("toc-prop");
+			UT_UTF8String sProp = static_cast<char *> ("toc-has-heading");
 			UT_UTF8String sVal = "1";
 
 			if (IsDlgButtonChecked(hWnd, AP_RID_DIALOG_FORMATTOC_GENERAL_CHECK_HASHEADING) != BST_CHECKED)
 				sVal = "0";		
 			
-			if(UT_stricmp("toc-has-heading",sProp.utf8_str()) != 0)
-			{
-				UT_String sNum =  UT_String_sprintf("%d",getContainer()->getMainLevel());
-				sProp += sNum.c_str();
-			} 
-
 			getContainer()->setTOCProperty(sProp,sVal);			
 			break;
 		}
 				
 		case AP_RID_DIALOG_FORMATTOC_GENERAL_BUTTON_HEADINGSTYLE:						   
-			getContainer()->setStyle(GetDlgItem (hWnd, AP_RID_DIALOG_FORMATTOC_GENERAL_TEXT_HEADINGSTYLEVALUE));
+			getContainer()->setStyle(hWnd, AP_RID_DIALOG_FORMATTOC_GENERAL_TEXT_HEADINGSTYLEVALUE);
 			break;
 
 		case AP_RID_DIALOG_FORMATTOC_GENERAL_BUTTON_FILLSTYLE:						   
-			getContainer()->setStyle(GetDlgItem (hWnd, AP_RID_DIALOG_FORMATTOC_GENERAL_TEXT_FILLSTYLEVALUE));
+			getContainer()->setStyle(hWnd, AP_RID_DIALOG_FORMATTOC_GENERAL_TEXT_FILLSTYLEVALUE);
 			break;
 
 		case AP_RID_DIALOG_FORMATTOC_GENERAL_BUTTON_DISPLAYSTYLE:						   
-			getContainer()->setStyle(GetDlgItem (hWnd, AP_RID_DIALOG_FORMATTOC_GENERAL_TEXT_DISPLAYSTYLEVALUE));
+			getContainer()->setStyle(hWnd, AP_RID_DIALOG_FORMATTOC_GENERAL_TEXT_DISPLAYSTYLEVALUE);
 			break;
 
 		case AP_RID_DIALOG_FORMATTOC_GENERAL_COMBO_LEVEL:
@@ -378,7 +415,27 @@ void AP_Win32Dialog_FormatTOC_General::_onCommand(HWND hWnd, WPARAM wParam, LPAR
 					getContainer()->setMainLevel (nLevel);
 				}
 			}
+			break;
 			
+		}
+
+		case AP_RID_DIALOG_FORMATTOC_GENERAL_CHECK_HASLEVEL:
+		{
+
+			UT_UTF8String sProp = static_cast<char *> ("toc-has-label");
+			UT_UTF8String sVal = "1";
+			UT_String sNum =  UT_String_sprintf("%d",getContainer()->getMainLevel());
+
+			/* Has label */
+			sVal = getContainer()->getTOCPropVal(sProp.utf8_str(), getContainer()->getMainLevel());
+			sVal = "1";
+
+			if (IsDlgButtonChecked(getHandle(), AP_RID_DIALOG_FORMATTOC_GENERAL_CHECK_HASLEVEL) != BST_CHECKED)
+				sVal = "0";	
+				
+			sProp += sNum.c_str();			
+			getContainer()->setTOCProperty(sProp,sVal);	
+			break;
 		}
 			
 		default:
@@ -418,7 +475,31 @@ AP_Win32Dialog_FormatTOC_Layout::~AP_Win32Dialog_FormatTOC_Layout()
 
 void AP_Win32Dialog_FormatTOC_Layout::_fillGUI()
 {														 	
-		
+	UT_UTF8String sVal, str_loc;
+	UT_String str;
+
+	/* Text Before */
+	sVal = getContainer()->getTOCPropVal("toc-label-before", getContainer()->getDetailsLevel());
+	pt_PieceTable::s_getLocalisedStyleName (sVal.utf8_str(), str_loc);
+	str = AP_Win32App::s_fromUTF8ToWinLocale (str_loc.utf8_str()); 
+
+	SetWindowText (GetDlgItem (getHandle(),
+		AP_RID_DIALOG_FORMATTOC_LAYOUTDETAILS_EDIT_TEXTBEFORE), str.c_str());	
+
+	/* Text After */	
+	sVal = getContainer()->getTOCPropVal("toc-label-after", getContainer()->getDetailsLevel());
+	pt_PieceTable::s_getLocalisedStyleName (sVal.utf8_str(), str_loc);
+	str = AP_Win32App::s_fromUTF8ToWinLocale (str_loc.utf8_str()); 
+
+	SetWindowText (GetDlgItem (getHandle(),
+		AP_RID_DIALOG_FORMATTOC_LAYOUTDETAILS_EDIT_TEXTAFTER), str.c_str());	
+
+	/* Start at */
+	sVal = getContainer()->getTOCPropVal("toc-label-start", getContainer()->getDetailsLevel());
+
+	SetWindowText (GetDlgItem (getHandle(),
+		AP_RID_DIALOG_FORMATTOC_LAYOUTDETAILS_EDIT_STARTAT), sVal.utf8_str());
+
 }
 
 void AP_Win32Dialog_FormatTOC_Layout::_onInitDialog()
@@ -497,11 +578,11 @@ void AP_Win32Dialog_FormatTOC_Layout::_onInitDialog()
 			CB_ADDSTRING, 0, (LPARAM) szVal);
 	}	
 	
-	FV_View * pView = static_cast<FV_View *>(getContainer()->getActiveFrame()->getCurrentView());
+	/*FV_View * pView = static_cast<FV_View *>(getContainer()->getActiveFrame()->getCurrentView());
 	val = getContainer()->getTOCPropVal("toc-page-type", getContainer()->getDetailsLevel());	
 	UT_sint32 iHist = static_cast<UT_sint32>(pView->getLayout()->FootnoteTypeFromString(val.utf8_str()));
 		
-	SendDlgItemMessage(getHandle(), AP_RID_DIALOG_FORMATTOC_LAYOUTDETAILS_COMBO_NUMTYPE, CB_SETCURSEL, iHist, 0);	
+	SendDlgItemMessage(getHandle(), AP_RID_DIALOG_FORMATTOC_LAYOUTDETAILS_COMBO_NUMTYPE, CB_SETCURSEL, iHist, 0);	*/
 
 	/* Tab Type styles */
 	const UT_GenericVector<const XML_Char*> * vecLabels = getContainer()->getVecTABLeadersLabel();
@@ -521,30 +602,7 @@ void AP_Win32Dialog_FormatTOC_Layout::_onInitDialog()
 	SendDlgItemMessage(getHandle(), AP_RID_DIALOG_FORMATTOC_LAYOUTDETAILS_COMBO_TABLEADER, 
 			CB_SETCURSEL, 0, 0);	
 
-	SendDlgItemMessage(getHandle(), AP_RID_DIALOG_FORMATTOC_LAYOUTDETAILS_COMBO_PAGENUMERING, 
-			CB_SETCURSEL, 0, 0);
-
-	/* Text Before */
-	sVal = getContainer()->getTOCPropVal("toc-label-before", getContainer()->getDetailsLevel());
-	pt_PieceTable::s_getLocalisedStyleName (sVal.utf8_str(), str_loc);
-	str = AP_Win32App::s_fromUTF8ToWinLocale (str_loc.utf8_str()); 
-
-	SetWindowText (GetDlgItem (getHandle(),
-		AP_RID_DIALOG_FORMATTOC_LAYOUTDETAILS_EDIT_TEXTBEFORE), str.c_str());	
-
-	/* Text After */	
-	sVal = getContainer()->getTOCPropVal("toc-label-after", getContainer()->getDetailsLevel());
-	pt_PieceTable::s_getLocalisedStyleName (sVal.utf8_str(), str_loc);
-	str = AP_Win32App::s_fromUTF8ToWinLocale (str_loc.utf8_str()); 
-
-	SetWindowText (GetDlgItem (getHandle(),
-		AP_RID_DIALOG_FORMATTOC_LAYOUTDETAILS_EDIT_TEXTAFTER), str.c_str());	
-
-	/* Start at */
-	sVal = getContainer()->getTOCPropVal("toc-label-start", getContainer()->getDetailsLevel());
-
-	SetWindowText (GetDlgItem (getHandle(),
-		AP_RID_DIALOG_FORMATTOC_LAYOUTDETAILS_EDIT_STARTAT), sVal.utf8_str());
+	loadCtrlsValuesForDetailsLevel ();	
 
 }
 
@@ -563,33 +621,94 @@ void AP_Win32Dialog_FormatTOC_Layout::_onCommand(HWND hWnd, WPARAM wParam, LPARA
 		{
 			if (wNotifyCode == CBN_SELCHANGE)
 			{
-
 				int nSelected, nLevel;
 				HWND hCombo = GetDlgItem(hWnd, AP_RID_DIALOG_FORMATTOC_LAYOUTDETAILS_COMBO_LEVEL);
 
 				nSelected = SendMessage(hCombo, CB_GETCURSEL, 0, 0);					
 
 				if (nSelected!=CB_ERR) 
-				{		
-					nLevel  = SendMessage(hCombo, CB_GETITEMDATA, nSelected, 0);
+				{					
+					saveCtrlsValuesForDetailsLevel (); // Save current level settings
+
+					nLevel = SendMessage(hCombo, CB_GETITEMDATA, nSelected, 0);
 					getContainer()->setDetailsLevel (nLevel);
 				}
 			}
-			
-		}
-			
+
+			break;			
+		}					
 		default:
 			break;
 	}
 }
 
-void AP_Win32Dialog_FormatTOC_Layout::_onApply()
+// Spin control notification
+void AP_Win32Dialog_FormatTOC_Layout::_onNotify(LPNMHDR pNMHDR, int iCtrlID)
 {
 
-	char szText[1024];
+	if (pNMHDR->code != UDN_DELTAPOS)
+			return;	
+
+	NMUPDOWN* up = (NMUPDOWN* ) pNMHDR;
+	
+	/* Start at*/
+	UT_sint32 iNew = up->iPos + up->iDelta;
+	bool bInc = true;
+	if(iNew != getContainer()->m_iStartValue)
+	{	
+		UT_UTF8String sVal;
+
+		if(iNew < getContainer()->m_iStartValue)
+			bInc = false;
+		
+		getContainer()->m_iStartValue = iNew;
+		getContainer()->incrementStartAt(getContainer()->getDetailsLevel(),bInc);
+		sVal = getContainer()->getTOCPropVal("toc-label-start",getContainer()->getDetailsLevel());
+		SetWindowText (GetDlgItem (getHandle(),
+			AP_RID_DIALOG_FORMATTOC_LAYOUTDETAILS_EDIT_STARTAT), sVal.utf8_str());
+	}
+
+}
+
+void AP_Win32Dialog_FormatTOC_Layout::loadCtrlsValuesForDetailsLevel ()
+{
+	UT_UTF8String sVal, str_loc;
+	UT_String str;	
+	UT_sint32 iHist;
+
+	FV_View * pView = static_cast<FV_View *>(getContainer()->getActiveFrame()->getCurrentView());
+	sVal = getContainer()->getTOCPropVal("toc-page-type", getContainer()->getDetailsLevel());
+	iHist = static_cast<UT_sint32>(pView->getLayout()->FootnoteTypeFromString(sVal.utf8_str()));
+	SendDlgItemMessage(getHandle(), AP_RID_DIALOG_FORMATTOC_LAYOUTDETAILS_COMBO_NUMTYPE, 
+			CB_SETCURSEL, iHist, 0);
+
+	/* Text Before */
+	sVal = getContainer()->getTOCPropVal("toc-label-before", getContainer()->getDetailsLevel());
+	pt_PieceTable::s_getLocalisedStyleName (sVal.utf8_str(), str_loc);
+	str = AP_Win32App::s_fromUTF8ToWinLocale (str_loc.utf8_str()); 
+
+	SetWindowText (GetDlgItem (getHandle(),
+		AP_RID_DIALOG_FORMATTOC_LAYOUTDETAILS_EDIT_TEXTBEFORE), str.c_str());	
+
+	/* Text After */	
+	sVal = getContainer()->getTOCPropVal("toc-label-after", getContainer()->getDetailsLevel());
+	pt_PieceTable::s_getLocalisedStyleName (sVal.utf8_str(), str_loc);
+	str = AP_Win32App::s_fromUTF8ToWinLocale (str_loc.utf8_str()); 
+
+	SetWindowText (GetDlgItem (getHandle(),
+		AP_RID_DIALOG_FORMATTOC_LAYOUTDETAILS_EDIT_TEXTAFTER), str.c_str());	
+
+}
+
+void AP_Win32Dialog_FormatTOC_Layout::saveCtrlsValuesForDetailsLevel ()
+{
+		
 	UT_UTF8String sProp, sVal;
 	UT_String sNum;
+	char szText[1024];
+	int nSelected;
 
+	
 	/* Text Before */
 	GetWindowText(GetDlgItem (getHandle(),
 		AP_RID_DIALOG_FORMATTOC_LAYOUTDETAILS_EDIT_TEXTBEFORE), szText, 1024);
@@ -610,36 +729,35 @@ void AP_Win32Dialog_FormatTOC_Layout::_onApply()
 	sProp += sNum.c_str();
 	getContainer()->setTOCProperty(sProp, sVal);
 
-	/* Start at*/	
-	GetWindowText(GetDlgItem (getHandle(),
-		AP_RID_DIALOG_FORMATTOC_LAYOUTDETAILS_EDIT_STARTAT), szText, 1024);
+	/* Numering type */
+	HWND hCombo = GetDlgItem(getHandle(), AP_RID_DIALOG_FORMATTOC_LAYOUTDETAILS_COMBO_NUMTYPE);
+	nSelected = SendMessage(hCombo, CB_GETCURSEL, 0, 0);					
 
-	UT_sint32 iNew = atoi (szText);
-	bool bInc = true;
-	if(iNew != getContainer()->m_iStartValue)
+	if (nSelected!=CB_ERR) 
 	{	
-		if(iNew < getContainer()->m_iStartValue)
-			bInc = false;
-	
-		getContainer()->m_iStartValue = iNew;
-		getContainer()->incrementStartAt(getContainer()->getDetailsLevel(),bInc);
-		sVal = getContainer()->getTOCPropVal("toc-label-start",getContainer()->getDetailsLevel());
-		SetWindowText (GetDlgItem (getHandle(),
-			AP_RID_DIALOG_FORMATTOC_LAYOUTDETAILS_EDIT_STARTAT), sVal.utf8_str());
+		UT_String sNum;		
+
+		const UT_GenericVector<const XML_Char*> * vecPropList = getContainer()->getVecLabelPropValue();
+		const char * szVal = static_cast<const char *>(vecPropList->getNthItem(nSelected));
+		sProp = static_cast<char *> ("toc-page-type");
+		sVal = static_cast<const char *> (szVal);
+		
+		sNum = UT_String_sprintf("%d",getContainer()->getDetailsLevel());
+		sProp += sNum.c_str();
+		getContainer()->setTOCProperty(sProp,sVal);				
+		
 	}
 
-	/* Has label */
-	sProp = "toc-has-label";
-	sVal = "1";
 
-	if (IsDlgButtonChecked(getHandle(), AP_RID_DIALOG_FORMATTOC_LAYOUTDETAILS_CHECK_INHERITLABEL) != BST_CHECKED)
-		sVal = "0";	
-		
-	sProp += sNum.c_str();			
-	getContainer()->setTOCProperty(sProp,sVal);			
+}
+
+void AP_Win32Dialog_FormatTOC_Layout::_onApply()
+{
 	
+	saveCtrlsValuesForDetailsLevel ();	
+	getContainer()->Apply(); /* Apply */
 
-	/* Apply */
-	getContainer()->Apply();
 	
 }
+
+

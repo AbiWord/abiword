@@ -154,6 +154,7 @@ public:
 	bool            isLastRunInBlock(fp_Run * pRun);
 	void            updateOffsets(PT_DocPosition posEmbedded, UT_uint32 iEmebbedSize, UT_sint32 iSuggestedDiff);
 	void            updateEnclosingBlockIfNeeded(void);
+	fl_BlockLayout * getEnclosingBlock(void);
 	UT_sint32       getEmbeddedOffset(UT_sint32 startOffset, fl_ContainerLayout *& pEmbedCL);
 	void            shuffleEmbeddedIfNeeded(fl_BlockLayout * pBlock, UT_uint32 blockOffset);
 

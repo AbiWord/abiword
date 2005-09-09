@@ -20,13 +20,15 @@
 #ifndef AP_WIN32DIALOG_LATEX_H
 #define AP_WIN32DIALOG_LATEX_H
 
+#include "xap_Win32DialogBase.h"
 #include "ap_Dialog_Latex.h"
 
+class XAP_Frame;
 class XAP_Win32Frame;
 
 /*****************************************************************/
 
-class AP_Win32Dialog_Latex: public AP_Dialog_Latex
+class AP_Win32Dialog_Latex: public XAP_Win32DialogBase, public AP_Dialog_Latex
 {
 public:
 	AP_Win32Dialog_Latex(XAP_DialogFactory * pDlgFactory, XAP_Dialog_Id id);
@@ -36,20 +38,23 @@ public:
 	virtual void			destroy(void);
 	virtual void			activate(void);
 	virtual void			notifyActiveFrame(XAP_Frame *pFrame);
+	virtual void			notifyCloseFrame(XAP_Frame *pFrame);
 
 	static XAP_Dialog *		static_constructor(XAP_DialogFactory *, XAP_Dialog_Id id);
 
 	// callbacks can fire these events
-
 	void			event_Insert(void);
 	void			event_Close(void);
 	void			event_WindowDelete(void);
-	virtual void            setLatexInGUI(void);
-	virtual bool            getLatexFromGUI(void);
+	virtual void    setLatexInGUI(void);
+	virtual bool    getLatexFromGUI(void);
 
 protected:
-	virtual void constructDialog(void);
+	BOOL	_onInitDialog(HWND hWnd, WPARAM wParam, LPARAM lParam);
+	BOOL	_onCommand(HWND hWnd, WPARAM wParam, LPARAM lParam);
+	BOOL	_onDeltaPos(NM_UPDOWN * pnmud);
 
+	HWND m_hDlg;	
 	// pointers to widgets we need
 };
 

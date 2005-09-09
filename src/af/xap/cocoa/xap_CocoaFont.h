@@ -28,6 +28,22 @@
 #include "ut_vector.h"
 #include "gr_Graphics.h"
 
+class XAP_CocoaFont_LayoutHelper
+{
+private:
+	NSDictionary *		m_fontattr;
+	NSTextStorage *		m_storage;
+	NSLayoutManager *	m_layout;
+
+public:
+	XAP_CocoaFont_LayoutHelper(NSFont * font);
+
+	~XAP_CocoaFont_LayoutHelper();
+
+	bool	setUnichar(UT_UCS4Char c, NSGlyph & firstGlyph);
+	bool	setString(NSString * str, NSGlyph & firstGlyph);
+};
+
 /*
   We derive our handle from GR_Font so we can be passed around the GR
   contexts as a native Cocoa font.
@@ -62,7 +78,7 @@ public:
 // rec.top = distance from the origin to the top of the glyph
 // rec.height = total height of the glyph
 
-	virtual bool glyphBox(UT_UCS4Char g, UT_Rect & rec) const;
+	virtual bool glyphBox(UT_UCS4Char g, UT_Rect & rec, GR_Graphics *);
 
 	enum RemapFont {
 		rf_None = 0,
@@ -80,6 +96,8 @@ private:
 	mutable NSFont *				m_fontForCache;
 	mutable NSMutableDictionary *	m_fontProps;
 
+	XAP_CocoaFont_LayoutHelper *	m_LayoutHelper;
+
 	void					_resetMetricsCache();
 	static void				_initMetricsLayouts(void);
 
@@ -90,9 +108,9 @@ private:
 
 	/* metrics cache */
 	UT_uint32						_m_size;
-	float							_m_ascent;
-	float							_m_descent;
-	float							_m_height;
+	volatile float							_m_ascent;
+	volatile float							_m_descent;
+	volatile float							_m_height;
 	UT_NumberVector *				_m_coverage;
 
 	/*! static metrics stuff */

@@ -246,6 +246,10 @@ UT_uint32 fl_FrameLayout::getLength(void)
 	bool bres;
 	bres = m_pLayout->getDocument()->getNextStruxOfType(sdhStart,PTX_EndFrame,&sdhEnd);
 	UT_ASSERT(bres && sdhEnd);
+	if(sdhEnd == NULL)
+	{
+	  return 1;
+	}
 	PT_DocPosition endPos = m_pLayout->getDocument()->getStruxPosition(sdhEnd);
 	UT_uint32 length = static_cast<UT_uint32>(endPos - startPos + 1); 
 	return length;

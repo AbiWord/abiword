@@ -1012,6 +1012,8 @@ Defun_EV_GetMenuItemState_Fn(ap_GetState_View)
 	case AP_MENU_ID_VIEW_RULER:
 		if ( pFrameData->m_bShowRuler && !pFrameData->m_bIsFullScreen)
 			s = EV_MIS_Toggled;
+		else if( pFrameData->m_bIsFullScreen )
+			s = EV_MIS_Gray;
 		else
 			s = EV_MIS_ZERO;
 		break;
@@ -1030,24 +1032,32 @@ Defun_EV_GetMenuItemState_Fn(ap_GetState_View)
 	case AP_MENU_ID_VIEW_TB_1:
 		if ( pFrameData->m_bShowBar[0] && !pFrameData->m_bIsFullScreen)
 			s = EV_MIS_Toggled;
+		else if( pFrameData->m_bIsFullScreen )
+			s = EV_MIS_Gray;
 		else
 			s = EV_MIS_ZERO;
 		break;
 	case AP_MENU_ID_VIEW_TB_2:	
 		if ( pFrameData->m_bShowBar[1] && !pFrameData->m_bIsFullScreen)
 			s = EV_MIS_Toggled;
+		else if( pFrameData->m_bIsFullScreen )
+			s = EV_MIS_Gray;
 		else
 			s = EV_MIS_ZERO;
 		break;
 	case AP_MENU_ID_VIEW_TB_3:	
 		if ( pFrameData->m_bShowBar[2] && !pFrameData->m_bIsFullScreen)
 			s = EV_MIS_Toggled;
+		else if( pFrameData->m_bIsFullScreen )
+			s = EV_MIS_Gray;
 		else
 			s = EV_MIS_ZERO;
 		break;
 	case AP_MENU_ID_VIEW_TB_4:	
 		if ( pFrameData->m_bShowBar[3] && !pFrameData->m_bIsFullScreen)
 			s = EV_MIS_Toggled;
+		else if( pFrameData->m_bIsFullScreen )
+			s = EV_MIS_Gray;
 		else
 			s = EV_MIS_ZERO;
 		break;
@@ -1065,6 +1075,8 @@ Defun_EV_GetMenuItemState_Fn(ap_GetState_View)
               if ( pFrameData->m_bShowStatusBar &&
 				   !pFrameData->m_bIsFullScreen )
 				  s = EV_MIS_Toggled;
+			  else if( pFrameData->m_bIsFullScreen )
+				  s = EV_MIS_Gray;
 			  else
 				  s = EV_MIS_ZERO;
 			  break;

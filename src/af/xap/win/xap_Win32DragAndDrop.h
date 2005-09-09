@@ -51,7 +51,7 @@ interface ABI_EXPORT XAP_Win32DropTarget : public IDropTarget
 public:
 	
 	XAP_Win32DropTarget();	
-	~XAP_Win32DropTarget() {};
+	virtual ~XAP_Win32DropTarget() {}
 	
 	// Ole Methods
 	STDMETHODIMP QueryInterface (REFIID riid, LPVOID FAR* ppv);

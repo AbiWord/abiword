@@ -310,6 +310,8 @@ void FV_View::_resetSelection(void)
 {
 	m_Selection.clearSelection();
 	m_Selection.setSelectionAnchor(getPoint());
+	m_Selection.setSelectionLeftAnchor(getPoint());
+	m_Selection.setSelectionRightAnchor(getPoint());
 	m_iGrabCell = 0;
 }
 
@@ -395,14 +397,17 @@ void FV_View::_deleteSelection(PP_AttrProp *p_AttrProp_Before, bool bNoUpdate)
 // Don't delete the block right before a TOC!
 //
 	fl_BlockLayout * pBL = _findBlockAtPosition(iLow);
-	if(pBL->getPrev() && pBL->getPrev()->getContainerType() == FL_CONTAINER_TOC)
+	if(pBL && pBL->getPrev() && pBL->getPrev()->getContainerType() == FL_CONTAINER_TOC)
 	{
 		if(pBL->getPosition(true) == iLow)
 		{
 			iLow++;
 		}
 	}
-	else if((pBL->getPosition() + pBL->getLength()) < iLow)
+	// fl_BlockLayout::getLength() *includes* the length of the block strux, hence we
+	// should use getPosition(true) here; however, since the block is found at iLow, this
+	// condition can never be true !!! -- Anybody knows what this is about?
+	else if(pBL && (pBL->getPosition(true) + pBL->getLength() < iLow))
 	{
 		iLow++;
 	}
@@ -525,9 +530,10 @@ void FV_View::_deleteSelection(PP_AttrProp *p_AttrProp_Before, bool bNoUpdate)
 //
 	PT_DocPosition posEnd = 0;
 	getEditableBounds(true, posEnd);
-	while(!isPointLegal() && getPoint() < posEnd)
+	bool bOK = true;
+	while(bOK && !isPointLegal() && getPoint() < posEnd)
 	{
-		_charMotion(true,1);
+		bOK = _charMotion(true,1);
 	}
 	m_pG->getCaret()->enable();
 }
@@ -2221,6 +2227,8 @@ void FV_View::_moveInsPtNthPage(UT_uint32 n)
 
 void FV_View::_moveInsPtToPage(fp_Page *page)
 {
+	UT_return_if_fail(page);
+
 	// move to the first pos on this page
 	PT_DocPosition iNewPoint = page->getFirstLastPos(true);
 	_setPoint(iNewPoint, false);
@@ -2361,7 +2369,14 @@ fp_Page* FV_View::_getPageForXY(UT_sint32 xPos, UT_sint32 yPos, UT_sint32& xClic
 	{
 		// we're below the last page
 		pPage = m_pLayout->getLastPage();
-
+		if(pPage == NULL)
+	    {
+			pPage = m_pLayout->getFirstPage();
+		}
+		if(pPage == NULL)
+		{
+			return pPage;
+		}
 		UT_sint32 iPageHeight = pPage->getHeight();
 		yClick += iPageHeight + getPageViewSep();
 	}
@@ -3180,7 +3195,6 @@ FV_View::_findBlockSearchRegexp(const UT_UCSChar* /* haystack */,
 */
 void FV_View::_generalUpdate(void)
 {
-	bool bOK = true;
 	if(!shouldScreenUpdateOnGeneralUpdate())
 		return;
 	m_pDoc->signalListeners(PD_SIGNAL_UPDATE_LAYOUT);
@@ -4045,7 +4059,7 @@ void FV_View::_fixInsertionPointCoords()
 	}
 	else if ((getPoint() > 0) && !isLayoutFilling())
 	{
-		_findPositionCoords(getPoint(), false, m_xPoint, m_yPoint, m_xPoint2, m_yPoint2, m_iPointHeight, m_bPointDirection, &pBlock, &pRun);
+		_findPositionCoords(getPoint(), m_bPointEOL, m_xPoint, m_yPoint, m_xPoint2, m_yPoint2, m_iPointHeight, m_bPointDirection, &pBlock, &pRun);
 		pPage = getCurrentPage();
 		UT_RGBColor * pClr = NULL;
 		if (pPage)
@@ -4060,6 +4074,10 @@ void FV_View::_fixInsertionPointCoords()
 				m_iPointHeight = 0;
 				yoff = 0;
 			}
+		}
+		if(pRun && (pRun->getType() == FPRUN_IMAGE))
+		{
+			UT_DEBUGMSG(("On image run with fixPointcoords \n"));
 		}
 		xxx_UT_DEBUGMSG(("Xpoint in fixpoint %d \n",m_xPoint));
 		m_pG->getCaret()->setCoords(m_xPoint, m_yPoint+yoff, m_iPointHeight-yoff,
@@ -4456,6 +4474,7 @@ void FV_View::_setPoint(PT_DocPosition pt, bool bEOL)
 		}		
 	}
 	m_iInsPoint = pt;
+	m_Selection.checkSelectAll();
 	m_bInsertAtTablePending = false;
 	m_iPosAtTable = 0;
 	xxx_UT_DEBUGMSG(("Point set to %d in View %x \n",pt,this));
@@ -4946,8 +4965,22 @@ bool FV_View::_charMotion(bool bForward,UT_uint32 countChars, bool bSkipCannotCo
 	if(!isHdrFtrEdit())
 	{
 		fl_DocSectionLayout * pDSL = m_pLayout->getFirstSection();
-		fl_BlockLayout * pBL = pDSL->getFirstBlock();
-		legalBOD = pBL->getPosition(false);
+		if(pDSL == NULL)
+		{
+			legalBOD =2;
+		}
+		else
+		{
+			fl_BlockLayout * pBL = pDSL->getFirstBlock();
+			if(pBL != NULL)
+			{
+					legalBOD = pBL->getPosition(false);
+			}
+			else
+			{
+					legalBOD = 2;
+			}
+		}
 	}
 	if (static_cast<UT_sint32>(m_iInsPoint) < static_cast<UT_sint32>(legalBOD))
 	{
@@ -4986,7 +5019,7 @@ bool FV_View::_charMotion(bool bForward,UT_uint32 countChars, bool bSkipCannotCo
 	}
 	UT_DEBUGMSG(("SEVIOR: Point = %d \n",getPoint()));
 	_fixInsertionPointCoords();
-	return bRes;
+	return (bRes && m_iInsPoint != posOld);
 }
 
 
@@ -5551,7 +5584,6 @@ void FV_View::_removeThisHdrFtr(fl_HdrFtrSectionLayout * pHdrFtr)
 // Remove the header/footer strux
 //
 	m_pDoc->deleteHdrFtrStrux(sdhHdrFtr);
-
 }
 
 void FV_View::_cmdEditHdrFtr(HdrFtrType hfType)
@@ -5568,6 +5600,7 @@ void FV_View::_cmdEditHdrFtr(HdrFtrType hfType)
 		insertHeaderFooter(hfType);
 		return;
 	}
+	
 	if(isHdrFtrEdit())
 		clearHdrFtrEdit();
 	pShadow = pHFCon->getShadow();
@@ -5813,14 +5846,13 @@ bool FV_View::_charInsert(const UT_UCSChar * text, UT_uint32 count, bool bForce)
 				m_pDoc->insertFmtMark(PTC_AddFmt,getPoint(), &AP);
 			}
 			insertParaBreakIfNeededAtPos(getPoint());
-			bResult = m_pDoc->insertSpan(getPoint(), text, count, NULL);
+			const fl_BlockLayout * pBL = getCurrentBlock();
+			bResult = m_pDoc->insertSpan(getPoint(), text, count,NULL);
 
 			if(!bResult)
 			{
-				const fl_BlockLayout * pBL = getCurrentBlock();
 				const PP_AttrProp *pBlockAP = NULL;
 				pBL->getAP(pBlockAP);
-
 				bResult = m_pDoc->insertSpan(getPoint(), text, count,
 											 const_cast<PP_AttrProp *>(pBlockAP));
 				UT_ASSERT(bResult);

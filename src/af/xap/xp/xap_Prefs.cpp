@@ -217,6 +217,7 @@ bool XAP_PrefsScheme::getNthValue(UT_uint32 k, const XML_Char ** pszKey, const X
 		*pszValue = NULL;
 		return false;
 	}
+	return false;
 }
 
 /*****************************************************************/

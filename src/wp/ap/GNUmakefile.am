@@ -22,6 +22,8 @@ SUBDIRS= xp @PLATFORM@
 
 noinst_LTLIBRARIES= libAp.la
 
+# TODO conditionally add hildon
+
 libAp_la_SOURCES = 
 
 libAp_la_LIBADD = xp/libWpAp_xp.la unix/libWpAp_unix.la

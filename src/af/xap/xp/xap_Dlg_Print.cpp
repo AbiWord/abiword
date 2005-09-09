@@ -238,7 +238,7 @@ bool XAP_Dialog_Print::_getPrintToFilePathname(XAP_Frame * pFrame,
 		// TODO : filter list (creat that while you're at it).
 
 		// TODO : Right now we can just feed the dialog some static filters
-		// TODO : that will be ignored by Windows and BeOS but will be required
+		// TODO : that will be ignored by Windows but will be required
 		// TODO : by Unix.
 
 		UT_uint32 filterCount = 1;

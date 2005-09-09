@@ -142,12 +142,12 @@ endif
 ifeq ($(CCSET), VC7)
 
 ifeq ($(ABI_OPT_DEBUG),1)
-OS_CFLAGS 	+= -RTC -GS
+OS_CFLAGS 	+= -RTC1 -GS
 else
 OPTIMIZER	+= -GL
 LDFLAGS	+= -LTCG
 endif
-OS_CFLAGS 	+= -OPT:REF,ICF
+LDFLAGS 	+= -OPT:REF,ICF
 
 endif
 

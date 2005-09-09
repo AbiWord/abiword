@@ -1202,11 +1202,50 @@ void fl_BlockLayout::updateEnclosingBlockIfNeeded(void)
 	fl_BlockLayout * pBL = reinterpret_cast<fl_BlockLayout *>(const_cast<void *>(psfh));
 	UT_ASSERT(pBL->getContainerType() == FL_CONTAINER_BLOCK);
 	UT_ASSERT(iSize > 1);
-	UT_sint32 iOldSize = pFL->getOldSize();
-	pFL->setOldSize(iSize);
+    UT_sint32 iOldSize = pFL->getOldSize();
+    pFL->setOldSize(iSize);
 	pBL->updateOffsets(posStart,iSize,iSize-iOldSize);
 }
 
+/*!
+ * Get the enclosing block of this if this block is in a footnote-type strux
+ * Return NULL is not an embedded type 
+*/
+fl_BlockLayout * fl_BlockLayout::getEnclosingBlock(void)
+{
+	UT_return_val_if_fail (m_pLayout,NULL);
+	
+	if(!isEmbeddedType())
+	{
+		xxx_UT_DEBUGMSG(("Block %x is Not enclosed - returning \n"));
+		return NULL;
+	}
+	fl_ContainerLayout * pCL = myContainingLayout();
+	UT_ASSERT((pCL->getContainerType() == FL_CONTAINER_FOOTNOTE) || (pCL->getContainerType() == FL_CONTAINER_ENDNOTE) );
+	fl_EmbedLayout * pFL = static_cast<fl_EmbedLayout *>(pCL);
+	if(!pFL->isEndFootnoteIn())
+	{
+		return NULL;
+	}
+	PL_StruxDocHandle sdhStart = pCL->getStruxDocHandle();
+	PL_StruxDocHandle sdhEnd = NULL;
+	if(pCL->getContainerType() == FL_CONTAINER_FOOTNOTE)
+	{
+		getDocument()->getNextStruxOfType(sdhStart,PTX_EndFootnote, &sdhEnd);
+	}
+	else
+	{
+		getDocument()->getNextStruxOfType(sdhStart,PTX_EndEndnote, &sdhEnd);
+	}
+
+	UT_return_val_if_fail(sdhEnd != NULL,NULL);
+	PT_DocPosition posStart = getDocument()->getStruxPosition(sdhStart);
+	PL_StruxFmtHandle  psfh = NULL;
+	getDocument()->getStruxOfTypeFromPosition(m_pLayout->getLID(),posStart,PTX_Block, &psfh);
+	fl_BlockLayout * pBL = reinterpret_cast<fl_BlockLayout *>(const_cast<void *>(psfh));
+	UT_ASSERT(pBL->getContainerType() == FL_CONTAINER_BLOCK);
+	return pBL;
+}
 
 /*!
  * This method returns the DocSectionLayout that this block is associated with
@@ -2503,9 +2542,6 @@ void fl_BlockLayout::getLeftRightForWrapping(UT_sint32 iX, UT_sint32 iHeight,
 	UT_sint32 iScreenX = iX + xoff;
 	UT_Rect projRec;
 	bool bIsTight = false;
-	bool bIsTopBot = false;
-	bool bIsLeft = false;
-	bool bIsRight = false;
 	iMinLeft = BIG_NUM_BLOCKBL;
 	iMinWidth = BIG_NUM_BLOCKBL;
 	iMinRight = BIG_NUM_BLOCKBL;
@@ -3083,7 +3119,11 @@ void fl_BlockLayout::format()
 		pRun = pRun->getNextRun();
 	}
 
-#if 1
+#if 0
+	// we need to coalesce runs *before* we do justification (coalescing might require
+	// that the whole run is reshaped, and that can lead to loss of the justification
+	// information for the run).
+	
     	// was previously after breakParagraph. Idea is to make this a less
 		// frequent occurance. So the paragraph get's lines coalessed 
         // whenever the height changes. So we don't do this on every key press
@@ -10242,7 +10282,12 @@ bool fl_BlockLayout::isWordDelimiter(UT_UCS4Char c, UT_UCS4Char next, UT_UCS4Cha
 	{
 		return true;
 	}
-	UT_return_val_if_fail( pRun, false );
+	if(pRun == NULL)
+	{
+		UT_DEBUGMSG(("No run where one is expected block %x iBlockPos %d \n",this,iBlockPos));
+		return false;
+	}
+	//	UT_return_val_if_fail( pRun, false );
 
 	// ignore hidden runs
 	if(pRun->getVisibility() != FP_VISIBLE)
@@ -10587,6 +10632,11 @@ fl_BlockSpellIterator::nextWordForSpellChecking(const UT_UCSChar*& pWord, UT_sin
 		// hidden text is to be ignored (i.e., hidden from the spellcheker)
 		// delete revisions that are visible are also to be ignored
 		fp_Run * pRun = m_pBL->findRunAtOffset(m_iWordOffset);
+		if(pRun == NULL)
+			{
+				UT_DEBUGMSG(("No run where one is expected block %x WordOffset %d \n",this,m_iWordOffset));
+				return false;
+			}
 		UT_return_val_if_fail( pRun, false );
 		bool bRevised = false;
 
@@ -10642,6 +10692,7 @@ fl_BlockSpellIterator::nextWordForSpellChecking(const UT_UCSChar*& pWord, UT_sin
 						continue;
 					}
 					
+					UT_uint32 iMaxLen = UT_MIN(pRun->getLength(), m_iWordOffset + iWordLength - pRun->getBlockOffset());
 						
 					bool bDeletedVisible =
 						pRun->getVisibility() == FP_VISIBLE &&
@@ -10658,8 +10709,8 @@ fl_BlockSpellIterator::nextWordForSpellChecking(const UT_UCSChar*& pWord, UT_sin
 			
 					if(st && st->bIgnore == bIgnore)
 					{
-						// this run continues the last ignore section, just adjust the end
-						st->iEnd += pRun->getBlockOffset() - m_iWordOffset + pRun->getLength();
+						// this run continues the last ignore section, just adjust to the end
+						st->iEnd += iMaxLen;
 					}
 					else
 					{
@@ -10668,7 +10719,7 @@ fl_BlockSpellIterator::nextWordForSpellChecking(const UT_UCSChar*& pWord, UT_sin
 
 						st->bIgnore = bIgnore;
 						st->iStart = pRun->getBlockOffset() - m_iWordOffset;
-						st->iEnd = pRun->getBlockOffset() - m_iWordOffset + pRun->getLength();
+						st->iEnd = st->iStart + iMaxLen;
 
 						vWordLimits.addItem(st);
 					}

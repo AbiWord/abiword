@@ -112,7 +112,7 @@ class ABI_EXPORT GR_Font
 // rec.top = distance from the origin to the top of the glyph
 // rec.height = total height of the glyph
 
-	virtual bool glyphBox(UT_UCS4Char g, UT_Rect & rec) const = 0;
+	virtual bool glyphBox(UT_UCS4Char g, UT_Rect & rec, GR_Graphics * pG) = 0;
 	static  bool s_doesGlyphExist(UT_UCS4Char g, void *instance)
 	{
 		UT_return_val_if_fail(instance, false);
@@ -174,7 +174,7 @@ enum GR_GraphicsId
 
 	/* IDs for built-in classes: DO NOT CHANGE THE ASSIGNED VALUES !!!*/
 	/* (these classes cannot be unregistered) */
-	GRID_BEOS            =  0x101,
+	GRID_BEOS            =  0x101, // deprecated
 	GRID_COCOA           =  0x102,
 	GRID_QNX             =  0x103,
 	GRID_WIN32           =  0x104,

@@ -109,12 +109,23 @@ void ev_Win32Keyboard::remapKeyboard(HKL hKeyboardLayout)
 	if( hKeyboardLayout != 0 )
 	{
 		strcpy( szCodePage, "CP" );
-		if( GetLocaleInfo( LOWORD( hKeyboardLayout ), LOCALE_IDEFAULTANSICODEPAGE, &szCodePage[2], sizeof( szCodePage ) / sizeof( szCodePage[0] ) - 2 ) )
+		if( GetLocaleInfo( LOWORD( hKeyboardLayout ),
+						   LOCALE_IDEFAULTANSICODEPAGE,
+						   &szCodePage[2],
+						   sizeof( szCodePage ) / sizeof( szCodePage[0] ) - 2 ))
 		{
 			// Unicode locale?
-			if( !strcmp( szCodePage, "CP0" ) )
+			// NT-based systems (at least XP) always produce unicode input irrespective of
+			// the ANSI locale -- see WM_CHAR on MSDN and bug 9374
+			// 
+			// (It would be more efficient to do the NT test before calling
+			// GetLocaleInfo(), but for maintanence reasons it is better here.)
+			
+			if( UT_IsWinNT() || !strcmp( szCodePage, "CP0" ) )
 			{
-				const char *szUCS2Name = XAP_EncodingManager::get_instance()->getNativeUnicodeEncodingName();
+				const char *szUCS2Name
+					= XAP_EncodingManager::get_instance()->getNativeUnicodeEncodingName();
+				
 				UT_ASSERT(szUCS2Name);
 				m_bIsUnicodeInput = true;
 				strcpy( szCodePage, szUCS2Name );

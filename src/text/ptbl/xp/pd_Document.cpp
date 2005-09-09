@@ -1048,6 +1048,14 @@ bool PD_Document::appendStrux(PTStruxType pts, const XML_Char ** attributes, pf_
 	XAP_Frame * pFrame = m_pApp->getLastFocussedFrame();
 	if(pFrame)
 		pFrame->nullUpdate();
+	if(pts == PTX_EndCell)
+	{
+		checkForSuspect();
+	}
+	else if(pts == PTX_Section)
+	{
+		checkForSuspect();
+	}
 	return m_pPieceTable->appendStrux(pts,attributes,ppfs_ret);
 }
 
@@ -1101,6 +1109,7 @@ bool PD_Document::appendStruxFmt(pf_Frag_Strux * pfs, const XML_Char ** attribut
  */
 bool PD_Document::repairDoc(void)
 {
+	checkForSuspect(); // Look at last frag. If it's an endtable we need a block
 	if(m_vecSuspectFrags.getItemCount() == 0)
 	{
 		return true;
@@ -1124,6 +1133,46 @@ bool PD_Document::repairDoc(void)
 					insertStruxBeforeFrag(pfNext, PTX_Block,NULL);
 					bRepaired = true;
 				}
+				else if(pfNext && (pfs->getStruxType() == PTX_SectionCell) && (pfNext->getType() == pf_Frag::PFT_Strux) )
+				{
+					pf_Frag_Strux * pfNexts = static_cast<pf_Frag_Strux *>(pfNext);
+					if(pfNexts->getStruxType() == PTX_EndCell)
+					{
+					//
+					// Insert a block afterwards!
+					//
+						insertStruxBeforeFrag(pfNext, PTX_Block,NULL);
+						bRepaired = true;
+					}
+				}
+				else if(pfNext && (pfs->getStruxType() == PTX_EndTable) && ((pfNext->getType() == pf_Frag::PFT_Strux) || (pfNext == m_pPieceTable->getFragments().getLast())))
+			    {
+					if(pfNext == m_pPieceTable->getFragments().getLast())
+					{
+					//
+					// Insert a block afterwards!
+					//
+						insertStruxBeforeFrag(pfNext, PTX_Block,NULL);
+						bRepaired = true;
+					}
+					else
+					{
+						pf_Frag_Strux * pfNexts = static_cast<pf_Frag_Strux *>(pfNext);
+						if(pfNexts->getStruxType() == PTX_Section)
+						{
+							//
+							// Insert a block afterwards!
+							//
+							insertStruxBeforeFrag(pfNext, PTX_Block,NULL);
+							bRepaired = true;
+						}
+						
+					}
+				}
+				else if(pfs->getStruxType() == PTX_EndTable && pfNext == NULL)
+				{
+					appendStrux(PTX_Block, NULL);
+				}
 			}
 		}
 	}
@@ -1139,6 +1188,10 @@ bool PD_Document::repairDoc(void)
 bool PD_Document::checkForSuspect(void)
 {
 	pf_Frag * pf = getLastFrag();
+	if(pf == NULL)
+	{
+		return true;
+	}
 	if(pf->getType() == pf_Frag::PFT_Strux)
 	{
 		pf_Frag_Strux * pfs = static_cast<pf_Frag_Strux *>(pf);
@@ -1245,7 +1298,21 @@ bool PD_Document::appendSpan(const UT_UCSChar * pbuf, UT_uint32 length)
 	}
 
 	if(length - (pStart-pbuf))
-		result &= m_pPieceTable->appendSpan(pStart,length - (pStart-pbuf));
+		{
+#if DEBUG
+#if 0
+	UT_uint32 ii = 0;
+	UT_String sStr;
+	for(ii=0; ii<(length -(pStart-pbuf));ii++)
+	{
+		sStr += static_cast<const char>(pStart[ii]);
+	}
+	UT_DEBUGMSG(("Append span %s \n",sStr.c_str()));
+#endif
+#endif
+
+			result &= m_pPieceTable->appendSpan(pStart,length - (pStart-pbuf));
+		}
 	return result;
 }
 
@@ -2517,19 +2584,24 @@ bool PD_Document::removeStyle(const XML_Char * pszName)
 // with Normal
 //
 	UT_uint32 nstyles = getStyleCount();
-	const PD_Style * cStyle = NULL;
-	const char * szCstyle = NULL;
 	UT_uint32 i;
+	UT_GenericVector<PD_Style*> * pStyles = NULL;
+	enumStyles(pStyles);
+	UT_return_val_if_fail( pStyles, false );
+	
 	for(i=0; i< nstyles;i++)
 	{
-		enumStyles(i, &szCstyle,&cStyle);
+		// enumStyles(i, &szCstyle,&cStyle);
+		const PD_Style * pStyle = pStyles->getNthItem(i);
+		UT_return_val_if_fail( pStyle, false );
+		
 		bool bDoBasedOn = false;
 		bool bDoFollowedby = false;
-		if(const_cast<PD_Style *>(cStyle)->getBasedOn() == pNuke)
+		if(const_cast<PD_Style *>(pStyle)->getBasedOn() == pNuke)
 		{
 			bDoBasedOn = true;
 		}
-		if(const_cast<PD_Style *>(cStyle)->getFollowedBy() == pNuke)
+		if(const_cast<PD_Style *>(pStyle)->getFollowedBy() == pNuke)
 		{
 			bDoFollowedby = true;
 		}
@@ -2557,9 +2629,11 @@ bool PD_Document::removeStyle(const XML_Char * pszName)
 			{
 				xxx_UT_DEBUGMSG(("SEVIOR New Style Name %s, Value %s \n",nAtts[i],nAtts[i+1]));
 			}
-			const_cast<PD_Style *>(cStyle)->addAttributes( static_cast<const XML_Char **>(&nAtts[0]));
+			const_cast<PD_Style *>(pStyle)->addAttributes( static_cast<const XML_Char **>(&nAtts[0]));
 		}
 	}
+
+	delete pStyles;
 //
 // OK Now remove the style
 //
@@ -2764,7 +2838,11 @@ bool PD_Document::notifyListeners(const pf_Frag_Strux * pfs, const PX_ChangeReco
 			PL_StruxFmtHandle sfh = 0;
 			if (pfs)
 				sfh = pfs->getFmtHandle(lid);
-			pListener->change(sfh,pcr);
+
+			// some pt elements have no corresponding layout elements (for example a
+			// hdr/ftr section that was deleted in revisions mode)
+			if(sfh)
+				pListener->change(sfh,pcr);
 		}
 	}
 
@@ -3785,6 +3863,11 @@ bool PD_Document::enumStyles(UT_uint32 k,
 								const char ** pszName, const PD_Style ** ppStyle) const
 {
 	return m_pPieceTable->enumStyles(k, pszName, ppStyle);
+}
+
+bool PD_Document::enumStyles(UT_GenericVector<PD_Style*> * & pStyles) const
+{
+	return m_pPieceTable->enumStyles(pStyles);
 }
 
 bool	PD_Document::addStyleProperty(const char * szStyleName, const char * szPropertyName, const char * szPropertyValue)
@@ -5103,6 +5186,18 @@ bool PD_Document::insertStruxBeforeFrag(pf_Frag * pF, PTStruxType pts,
 	{
 		pFrame->nullUpdate();
 	}
+	if(pts == PTX_EndCell)
+	{
+		pf_Frag * pPrevFrag = pF->getPrev();
+		if(pPrevFrag && pPrevFrag->getType() == pf_Frag::PFT_Strux)
+		{
+			pf_Frag_Strux * pfs = static_cast<pf_Frag_Strux *>(pPrevFrag);
+			if(pfs->getStruxType() == PTX_SectionCell)
+			{
+				m_vecSuspectFrags.addItem(pPrevFrag);
+			}
+		} 
+	}
 	return m_pPieceTable->insertStruxBeforeFrag(pF,pts,attributes,ppfs_ret);
 }
 
@@ -5112,7 +5207,7 @@ bool PD_Document::insertSpanBeforeFrag(pf_Frag * pF, const UT_UCSChar * pbuf, UT
 	if(pF->getType() == pf_Frag::PFT_Strux)
 	{
 		pf_Frag_Strux * pfs = static_cast<pf_Frag_Strux *>(pF);
-		if((pfs->getStruxType() != PTX_Block) && (pfs->getStruxType() != PTX_EndFootnote) && (pfs->getStruxType() != PTX_EndEndnote) )
+		if((pfs->getStruxType() != PTX_Block) && (pfs->getStruxType() != PTX_EndFootnote) && (pfs->getStruxType() != PTX_EndEndnote) && (pfs->getStruxType() != PTX_EndCell) )
 		{
 			//
 			// Append a block!
@@ -5439,6 +5534,9 @@ bool PD_Document::_acceptRejectRevision(bool bReject, UT_uint32 iStart, UT_uint3
 	ppAttr[1] = NULL;
 	ppAttr[2] = NULL;
 
+	UT_uint32 iAttrCount;
+	UT_uint32 iPropCount;
+
 	const XML_Char ** ppProps = NULL, ** ppAttr2 = NULL;
 	bool bRet = true;
 	UT_uint32 i;
@@ -5618,12 +5716,20 @@ bool PD_Document::_acceptRejectRevision(bool bReject, UT_uint32 iStart, UT_uint3
 			case PP_REVISION_FMT_CHANGE:
 				// overlay the formatting and remove this revision
 				// from the revision attribute
-				ppProps = new const XML_Char *[2* pRev->getPropertyCount() + 1];
-				ppAttr2 = new const XML_Char *[2* pRev->getAttributeCount() + 3];
+				iPropCount = 0;
+				iAttrCount = 0;
+				ppProps = new const XML_Char *[2*pRev->getPropertyCount()+1];
+				ppAttr2 = new const XML_Char *[2*pRev->getAttributeCount()+3];
 
 				for(i = 0; i < pRev->getPropertyCount(); i++)
 				{
 					pRev->getNthProperty(i, ppProps[2*i],ppProps[2*i + 1]);
+
+					// we have to make copies of these because they might be deleted
+					// before we need them
+					ppProps[2*i] = (XML_Char*)UT_strdup(ppProps[2*i]);
+					ppProps[2*i + 1] = (XML_Char*)UT_strdup(ppProps[2*i + 1]);
+					iPropCount += 2; // these will need to be freed later ...
 				}
 
 				ppProps[2*i] = NULL;
@@ -5631,6 +5737,12 @@ bool PD_Document::_acceptRejectRevision(bool bReject, UT_uint32 iStart, UT_uint3
 				for(i = 0; i < pRev->getAttributeCount(); i++)
 				{
 					pRev->getNthAttribute(i, ppAttr2[2*i],ppAttr2[2*i + 1]);
+					
+					// we have to make copies of these because they might be deleted
+					// before we need them
+					ppAttr2[2*i] = (XML_Char*)UT_strdup(ppAttr2[2*i]);
+					ppAttr2[2*i + 1] = (XML_Char*)UT_strdup(ppAttr2[2*i + 1]);
+					iAttrCount += 2; // these will need to be freed later ...
 				}
 
 				if(pRev->getType() == PP_REVISION_ADDITION_AND_FMT)
@@ -5696,6 +5808,12 @@ bool PD_Document::_acceptRejectRevision(bool bReject, UT_uint32 iStart, UT_uint3
 				}
 				else
 					bRet &= changeSpanFmt(PTC_AddFmt,iStart,iEnd,ppAttr2,ppProps);
+
+				for(i = 0; i < iPropCount; ++i)
+					free((XML_Char*)ppProps[i]);
+				
+				for(i = 0; i < iAttrCount; ++i)
+					free((XML_Char*)ppAttr2[i]);
 
 				delete ppProps;
 				delete ppAttr2;

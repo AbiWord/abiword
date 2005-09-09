@@ -36,6 +36,7 @@
 #include "xap_Frame.h"
 #include "xap_Dialog_Id.h"
 #include "xap_Win32Dlg_Print.h"
+#include "xap_EncodingManager.h"
 
 #include "ut_debugmsg.h"
 #include "ut_assert.h"
@@ -330,7 +331,18 @@ GR_Font* GR_Win32Graphics::_findFont(const char* pszFontFamily,
 	else if (0 == UT_stricmp(pszFontFamily, "monospace"))
 		lf.lfPitchAndFamily = DEFAULT_PITCH | FF_MODERN;
 	else
-		strcpy(lf.lfFaceName, pszFontFamily);
+	{
+		// NB: lf.lfFaceName is a statically allocated char buffer of len 
+		// LF_FACESIZE. strToNative() will truncate the string at 500 bytes,
+		// but as LF_FACESIZE is generally 32, this shouldn't matter.
+		//
+		// This convertion is needed because the windows API expects fontnames
+		// in the native encoding and later lf will be passing to a windows
+		// API funcion (CreateFontIndirect()).
+		strncpy(lf.lfFaceName, 
+		        getApp()->getEncodingManager()->strToNative(pszFontFamily, "UTF-8", false),
+		        LF_FACESIZE);
+	}
 
 	// Get character set value from the font itself
 	LOGFONT enumlf = { 0 };
@@ -887,8 +899,8 @@ void GR_Win32Graphics::fillRect(const UT_RGBColor& c, UT_sint32 x, UT_sint32 y, 
 	RECT r;
 	r.left = (UT_sint32)((double)_tduX(x) * m_fXYRatio);
 	r.top = _tduY(y);
-	r.right = (UT_sint32)(_tduR(x + w) * m_fXYRatio);
-	r.bottom =(UT_sint32)((double) _tduR(y + h) * m_fXYRatio);
+	r.right = (UT_sint32)(_tduX(x+w) * m_fXYRatio);
+	r.bottom = _tduY(y+h);
 
 	COLORREF clr = RGB(c.m_red, c.m_grn, c.m_blu);
 
@@ -1040,9 +1052,19 @@ void GR_Win32Graphics::clearArea(UT_sint32 x, UT_sint32 y, UT_sint32 width, UT_s
 	r.bottom = r.top + height;
 
 #if 1
+	// for the sake of consistency we should be using the same method as the fillRect()
+	// does; however, we already have brush created, so FillRect is probably quicker here
+	// (someone should do some profiling on this one day)
 	FillRect(m_hdc, &r, m_hClearBrush);
 #else
-	// we should be using the same method as the fillRect() does ...
+	// this is the method used by fillRect(); if we were to use it, it we should
+	// cache lb.lbColor from inside setBrush() to avoid calling GetObject() all the time
+	LOGBRUSH lb;
+	GetObject(m_hClearBrush, sizeof(LOGBRUSH), &lb);
+	
+	const COLORREF cr = ::SetBkColor(m_hdc,  lb.lbColor);
+	::ExtTextOut(m_hdc, 0, 0, ETO_OPAQUE, &r, NULL, 0, NULL);
+	::SetBkColor(m_hdc, cr);
 #endif
 }
 
@@ -1139,13 +1161,40 @@ void GR_Win32Graphics::drawImage(GR_Image* pImg, UT_sint32 xDest, UT_sint32 yDes
 	UT_uint32 iSizeOfColorData = pDIB->bmiHeader.biClrUsed * sizeof(RGBQUAD);
 	UT_Byte* pBits = ((unsigned char*) pDIB) + pDIB->bmiHeader.biSize + iSizeOfColorData;
 
-	int iRes = StretchDIBits(m_hdc,
+	int iRes = 0;
+
+#if 0
+	// AlphaBlend is supported from win98 upwards
+	// we need to turn the DIB into DC first
+	HDC memDC = CreateCompatibleDC(m_hdc);
+
+	if(memDC)
+	{
+		// need to convert the dib pointer to handle here ...
+
+		// now select into the memory dc and call AlphaBlend
+		SelectObject(memDC, hDIB);
+		iRes = AlphaBlend(m_hdc,
+						  xDest, yDest,
+						  pImg->getDisplayWidth(), pImg->getDisplayHeight(),
+						  memDC,
+						  0, 0,
+						  pDIB->bmiHeader.biWidth, pDIB->bmiHeader.biHeight,
+						  blendfnct);
+	}
+	
+#endif
+	
+	if(!iRes)
+	{
+		iRes = StretchDIBits(m_hdc,
 							 xDest, yDest,
 							 pImg->getDisplayWidth(), pImg->getDisplayHeight(),
 							 0, 0,
 							 pDIB->bmiHeader.biWidth, pDIB->bmiHeader.biHeight,
 							 pBits, pDIB, DIB_RGB_COLORS, SRCCOPY);
-
+	}
+	
 	if (iRes == GDI_ERROR)
 	{
 		DWORD err = GetLastError();
@@ -1320,8 +1369,8 @@ void GR_Win32Graphics::fillRect(GR_Color3D c, UT_sint32 x, UT_sint32 y, UT_sint3
 	RECT r;
 	r.left = (UT_sint32)((double)_tduX(x) * m_fXYRatio);
 	r.top = _tduY(y);
-	r.right = (UT_sint32)((double)_tduR(x + w) * m_fXYRatio);
-	r.bottom = _tduR(y + h);
+	r.right = (UT_sint32)((double)_tduX(x+w) * m_fXYRatio);
+	r.bottom = _tduY(y+h);
 
 	// This might look wierd (and I think it is), but it's MUCH faster.
 	// CreateSolidBrush is dog slow.
@@ -1372,7 +1421,11 @@ void GR_Font::s_getGenericFontProperties(const char * szFontName,
 	else if (UT_stricmp(szFontName, "monospace") == 0)
 		lf.lfPitchAndFamily = DEFAULT_PITCH | FF_MODERN;
 	else
-		strcpy(lf.lfFaceName, szFontName);
+	{
+			strncpy(lf.lfFaceName, 
+				    XAP_EncodingManager::get_instance()->strToNative(szFontName, "UTF-8", false),
+			        LF_FACESIZE);
+	}
 
 	// let the system create the font with the given name or
 	// properties and then query it and see what was actually
@@ -1664,18 +1717,92 @@ UT_sint32 GR_Win32Font::measureUnremappedCharForCache(UT_UCSChar cChar) const
 #endif
 }
 
-//
-// UT_Rect of glyph in Logical units.
-// rec.left = bearing Left (distance from origin to start)
-// rec.width = width of the glyph
-// rec.top = distance from the origin to the top of the glyph
-// rec.height = total height of the glyph
+/*!
+    UT_Rect of glyph in Logical units.
+	rec.left = bearing Left (distance from origin to start)
+	rec.width = width of the glyph
+	rec.top = distance from the origin to the top of the glyph
+	rec.height = total height of the glyph
 
-bool GR_Win32Font::glyphBox(UT_UCS4Char g, UT_Rect & rec) const
+    This function will only work on win NT -- check the return value before doing anything
+    with the rectangle (win9x implementation would have to use GetGlyphOutlineA() and
+    convert the UT_UCS4Char to an appropriate ansi value 
+*/
+bool GR_Win32Font::glyphBox(UT_UCS4Char g, UT_Rect & rec, GR_Graphics * pG)
 {
-  // FIXME: Write the code for this!
-  UT_ASSERT(0);
-  return false;
+	UT_return_val_if_fail( pG, false );
+	GR_Win32Graphics * pWin32Gr = (GR_Win32Graphics *)pG;
+
+	// we do all measurements on the printer DC and only later scale down to display to
+	// ensure WYSIWYG behaviour
+	HDC hdc = getPrimaryHDC();
+	HDC printDC = pWin32Gr->getPrintDC() ? pWin32Gr->getPrintDC() : hdc;
+	
+	GLYPHMETRICS gm;
+	MAT2 m = {{0,1}, {0,0}, {0,0}, {0,1}};
+
+	int nPrintLogPixelsY = GetDeviceCaps(printDC, LOGPIXELSY);// resolution of printer
+	int nPrintLogPixelsX = GetDeviceCaps(printDC, LOGPIXELSX);
+
+	UT_uint32 pixels = getUnscaledHeight();
+
+	// scale the pixel size to the printer resolution and get the font
+	if(!m_bGUIFont)
+		pixels = MulDiv(pixels, nPrintLogPixelsY, 72);
+	
+	HFONT pFont = getFontFromCache(pixels, false, 100);
+	if (!pFont)
+	{
+		fetchFont(pixels);
+		pFont = getFontFromCache(pixels, false, 100);
+	}
+
+	// select our font into the printer DC
+	HGDIOBJ hRet = SelectObject(printDC, pFont);
+	UT_return_val_if_fail( hRet != (void*)GDI_ERROR, false);
+		
+	if (printDC != m_hdc)
+	{
+		// invalidate cached info when we change hdc's.
+		// this is probably unnecessary except when
+		// sharing a font with screen and printer.
+		_clearAnyCachedInfo();
+		m_hdc = printDC;
+	}
+	
+	DWORD iRet = GDI_ERROR;
+	
+	if (UT_IsWinNT())
+	{
+		iRet = GetGlyphOutlineW(printDC, (UINT)g, GGO_METRICS, &gm, 0, NULL, &m);
+	}
+	else
+	{
+		// TODO: an UT_UCS4Char -> ANSI conversion here, then call GetGlyphOutlineA() ...
+		// Actually, this probably is not much use, since this function is currently only
+		// used by the math plugin, and for that to work, we do need to work with unicode,
+		// not ANSI
+		UT_return_val_if_fail( UT_NOT_IMPLEMENTED, false );
+	}
+	
+	if(GDI_ERROR == iRet)
+		return false;
+
+	rec.left   = gm.gmptGlyphOrigin.x;
+	rec.top    = gm.gmptGlyphOrigin.y;
+	rec.width  = gm.gmBlackBoxX;
+	rec.height = gm.gmBlackBoxY;
+	
+	// the metrics are in device units, scale them to layout
+	int iResolution = pG->getResolution();
+	rec.height  = MulDiv(rec.height, iResolution, nPrintLogPixelsY);
+	rec.top  = MulDiv(rec.top, iResolution, nPrintLogPixelsY);
+
+	rec.width  = MulDiv(rec.width, iResolution, nPrintLogPixelsX);
+	rec.left  = MulDiv(rec.left, iResolution, nPrintLogPixelsX);
+
+	UT_DEBUGMSG(("gr_Win32Graphics::glyphBox(l=%d, t=%d, w=%d, h=%d\n", rec.left, rec.top, rec.width, rec.height));
+	return true;
 }
 
 /*!

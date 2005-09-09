@@ -36,10 +36,6 @@
   #include "xap_Win32Module.h"
   #define MODULE_CLASS XAP_Win32Module
 
-#elif defined (__BEOS__)
-  #include "xap_BeOSModule.h"
-  #define MODULE_CLASS XAP_BeOSModule
-
 #elif defined (__QNXNTO__)
   #include "xap_QNXModule.h"
   #define MODULE_CLASS XAP_QNXModule

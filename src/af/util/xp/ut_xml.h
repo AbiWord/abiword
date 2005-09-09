@@ -46,6 +46,15 @@ class ABI_EXPORT UT_XML
   /* Strip "svg:" from "svg:svg" etc. in element names, pass any other namespace indicators
    */
   void setNameSpace (const char * xml_namespace);
+  UT_sint32           getNumMinorErrors(void) const
+  { return m_iMinorErrors;}
+	
+  UT_sint32           getNumRecoveredErrors(void) const
+  { return m_iRecoveredErrors;}
+  void                incMinorErrors(void)
+  { m_iMinorErrors++;}
+  void                incRecoveredErrors(void)
+  { m_iRecoveredErrors++;}
 
  private:
   bool m_is_chardata; // as opposed to SAX "default" data
@@ -54,6 +63,8 @@ class ABI_EXPORT UT_XML
 
   UT_uint32 m_chardata_length;
   UT_uint32 m_chardata_max;
+  UT_sint32 m_iMinorErrors;
+  UT_sint32 m_iRecoveredErrors;
 
   bool grow (char *& buffer, UT_uint32 & length, UT_uint32 & max, UT_uint32 require);
 

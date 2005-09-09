@@ -461,7 +461,6 @@ fp_Column *         getBrokenColumn(void);
 #ifdef FMT_TEST
 	void				__dump(FILE * fp) const;
 #endif
-
 private:
 	void                    _size_request_init(void);
 	void                    _size_request_pass1(void);

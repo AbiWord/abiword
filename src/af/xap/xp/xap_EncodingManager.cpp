@@ -235,22 +235,28 @@ UT_UCSChar XAP_EncodingManager::UToWindows(UT_UCSChar c)  const
 }
 
 
-const char* XAP_EncodingManager::strToNative(const char* in,const char* charset,bool bUseSysEncoding) const
+const char* XAP_EncodingManager::strToNative(const char* in,const char* charset, bool bReverse, bool bUseSysEncoding) const
 {
 	static char buf[500];
-	return strToNative(in, charset, buf, sizeof(buf), bUseSysEncoding);
+	return strToNative(in, charset, buf, sizeof(buf), bReverse, bUseSysEncoding);
 }
 
 const char* XAP_EncodingManager::strToNative(const char* in, const char* charset, char* buf, int bufsz,
-											 bool bUseSysEncoding) const
+											 bool bReverse, bool bUseSysEncoding) const
 {
 	if (!charset || !*charset || !in || !*in || !buf)
 		return in; /*won't translate*/
 #if 1
 	// TODO this gets around the fact that gtk 1.2 cannot handle UTF-8 input
 	// when we move to gtk 2 this original branch needs to be enabled
-	UT_iconv_t iconv_handle = UT_iconv_open(
-		bUseSysEncoding ? getNativeSystemEncodingName() : getNativeEncodingName(), charset);
+	UT_iconv_t iconv_handle;
+	if (!bReverse)
+		iconv_handle = UT_iconv_open(
+		    bUseSysEncoding ? getNativeSystemEncodingName() : getNativeEncodingName(), charset);
+	else
+		iconv_handle = UT_iconv_open(
+		    charset, bUseSysEncoding ? getNativeSystemEncodingName() : getNativeEncodingName());
+
 #else
 	UT_iconv_t iconv_handle;
 	const char * pNative =  bUseSysEncoding ? getNativeSystemEncodingName() : getNativeEncodingName();

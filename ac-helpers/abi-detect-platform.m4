@@ -241,10 +241,6 @@ case "$OS_NAME" in
 		PLATFORM=$abi_gui
 		ABISUITE_HOME="\$(pkgdatadir)"
 		;;
-	BeOS)
-		PLATFORM="beos"
-		ABISUITE_HOME="\$(pkgdatadir)"
-		;;
 	*)
 	       PLATFORM="unix"
 		ABISUITE_HOME="\$(pkgdatadir)"

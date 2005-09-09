@@ -1,6 +1,7 @@
 ## AbiSource Applications
 ## Copyright (C) 2001 Sam Tobin-Hochstadt
 ## Copyright (C) 2001, 2005 Hubert Figuiere <hfiguiere@teaser.fr>
+## Copyright (C) 2005 J.M. Maurer <uwog@abisource.com>
 ##
 ## This program is free software; you can redistribute it and/or
 ## modify it under the terms of the GNU General Public License
@@ -37,6 +38,7 @@ AF_INCLUDES+=-I'$(top_srcdir)/src/af/xap/@PLATFORM@'
 AF_INCLUDES+=-I'$(top_srcdir)/src/af/xap/@PLATFORM@/gnome'
 AF_INCLUDES+=-I'$(top_srcdir)/src/af/ev/@PLATFORM@/gnome'
 else
+if WITH_HILDON
 AF_INCLUDES=-I'$(top_srcdir)/src/af/util/xp' 
 AF_INCLUDES+=-I'$(top_srcdir)/src/af/tf/xp' 
 AF_INCLUDES+=-I'$(top_srcdir)/src/af/ev/xp'
@@ -47,8 +49,18 @@ AF_INCLUDES+=-I'$(top_srcdir)/src/af/util/@BE_PLATFORM@'
 AF_INCLUDES+=-I'$(top_srcdir)/src/af/ev/@PLATFORM@'
 AF_INCLUDES+=-I'$(top_srcdir)/src/af/gr/@PLATFORM@'
 AF_INCLUDES+=-I'$(top_srcdir)/src/af/xap/@PLATFORM@'
-if WITH_HILDON
 AF_INCLUDES+=-I'$(top_srcdir)/src/af/xap/@PLATFORM@/hildon'
+else
+AF_INCLUDES=-I'$(top_srcdir)/src/af/util/xp' 
+AF_INCLUDES+=-I'$(top_srcdir)/src/af/tf/xp' 
+AF_INCLUDES+=-I'$(top_srcdir)/src/af/ev/xp'
+AF_INCLUDES+=-I'$(top_srcdir)/src/af/ev/xp'
+AF_INCLUDES+=-I'$(top_srcdir)/src/af/gr/xp'
+AF_INCLUDES+=-I'$(top_srcdir)/src/af/xap/xp'
+AF_INCLUDES+=-I'$(top_srcdir)/src/af/util/@BE_PLATFORM@'
+AF_INCLUDES+=-I'$(top_srcdir)/src/af/ev/@PLATFORM@'
+AF_INCLUDES+=-I'$(top_srcdir)/src/af/gr/@PLATFORM@'
+AF_INCLUDES+=-I'$(top_srcdir)/src/af/xap/@PLATFORM@'
 endif
 endif
 
@@ -61,13 +73,19 @@ WP_INCLUDES+=-I'$(top_srcdir)/src/wp/ap/xp/ToolbarIcons'
 WP_INCLUDES+=-I'$(top_srcdir)/src/wp/ap/@PLATFORM@/gnome'
 WP_INCLUDES+=-I'$(top_srcdir)/src/pkg/linux/apkg'
 else
+if WITH_HILDON
 WP_INCLUDES=-I'$(top_srcdir)/src/wp/ap/xp'
 WP_INCLUDES+=-I'$(top_srcdir)/src/wp/impexp/xp'
 WP_INCLUDES+=-I'$(top_srcdir)/src/wp/ap/@PLATFORM@'
 WP_INCLUDES+=-I'$(top_srcdir)/src/wp/ap/xp/ToolbarIcons'
 WP_INCLUDES+=-I'$(top_srcdir)/src/pkg/linux/apkg'
-if WITH_HILDON
 AF_INCLUDES+=-I'$(top_srcdir)/src/wp/ap/@PLATFORM@/hildon'
+else
+WP_INCLUDES=-I'$(top_srcdir)/src/wp/ap/xp'
+WP_INCLUDES+=-I'$(top_srcdir)/src/wp/impexp/xp'
+WP_INCLUDES+=-I'$(top_srcdir)/src/wp/ap/@PLATFORM@'
+WP_INCLUDES+=-I'$(top_srcdir)/src/wp/ap/xp/ToolbarIcons'
+WP_INCLUDES+=-I'$(top_srcdir)/src/pkg/linux/apkg'
 endif
 endif
 
@@ -99,8 +117,18 @@ ABI_CFLAGS=@WARNING_CFLAGS@ @DEBUG_CFLAGS@ @OPTIMIZE_CFLAGS@ \
 	@WV_CFLAGS@ @LIBPOPT_CFLAGS@ @XFT_CFLAGS@ @FREETYPE_CFLAGS@ \
 	@LIBPNG_CFLAGS@ @ZLIB_CFLAGS@ @THREAD_CFLAGS@ @ABI_FEATURE_DEFS@ @ABITYPES_CFLAGS@
 
-MACOSX_CFLAGS=-DXP_MAC_TARGET_MACOSX -DXP_MAC_TARGET_QUARTZ 
 
+if WITH_WIN32
+# the _WIN32_IE define is a bit hackish (should get it from the MINGW environment), but it works
+WIN32_CFLAGS = \
+				-DWIN32 \
+				-D_WIN32_IE=0x0300 \
+				-UHAVE_STRCASECMP -UHAVE_STRICMP -U__STRICT_ANSI__ -U_NO_OLDNAMES
+else
+WIN32_CFLAGS = 
+endif
+
+MACOSX_CFLAGS=-DXP_MAC_TARGET_MACOSX -DXP_MAC_TARGET_QUARTZ 
 
 if WITH_COCOA
 COCOA_CFLAGS = -DXP_TARGET_COCOA $(MACOSX_CFLAGS) 
@@ -108,7 +136,7 @@ else
 COCOA_CFLAGS = 
 endif
 
-PLATFORM_CFLAGS = @PLATFORM_CFLAGS@ $(COCOA_CFLAGS)
+PLATFORM_CFLAGS = @PLATFORM_CFLAGS@ $(COCOA_CFLAGS) $(WIN32_CFLAGS)
 
 CFLAGS   = @CFLAGS@   $(ABI_CFLAGS) $(PLATFORM_CFLAGS)
 CXXFLAGS = @CXXFLAGS@ $(ABI_CFLAGS) $(PLATFORM_CFLAGS) \

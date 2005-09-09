@@ -45,7 +45,8 @@ FV_Selection::FV_Selection (FV_View * pView)
 	  m_iSelectLeftAnchor(0),
 	  m_iSelectRightAnchor(0),
 	  m_pTableOfSelectedColumn(NULL),
-	  m_pSelectedTOC(NULL)
+	  m_pSelectedTOC(NULL),
+	  m_bSelectAll(false)
 {
 	UT_ASSERT (pView);
 	m_vecSelRanges.clear();
@@ -61,6 +62,39 @@ FV_Selection::~FV_Selection()
 	UT_VECTOR_PURGEALL(FV_SelectionCellProps *,m_vecSelCellProps);
 }
 
+void  FV_Selection::checkSelectAll(void)
+{
+	 fl_SectionLayout * pSL = m_pView->m_pLayout->getLastSection();
+	 if(pSL == NULL)
+	   return;
+	 if(m_pView->m_pDoc->isPieceTableChanging())
+	 {
+	      return;
+	 }
+	 if(m_pView->m_pLayout->isLayoutFilling())
+	 {
+	      return;
+	 }
+	 PT_DocPosition posLow = m_iSelectAnchor;
+	 PT_DocPosition posHigh = m_pView->getPoint();
+	 if(posHigh < posLow)
+	 {
+	      posHigh = m_iSelectAnchor;
+	      posLow = m_pView->getPoint();
+	 }
+	 PT_DocPosition posBeg,posEnd=0;
+	 m_pView->getEditableBounds(false,posBeg);
+	 m_pView->getEditableBounds(true,posEnd);
+	 xxx_UT_DEBUGMSG(("posLow %d posBeg %d posHigh %d posEnd %d\n",posLow,posBeg,posHigh,posEnd));
+	 bool bSelAll = ((posBeg >= posLow) && (posEnd == posHigh));
+	 setSelectAll(bSelAll);
+}
+
+void  FV_Selection::setSelectAll(bool bSelectAll)
+{
+        xxx_UT_DEBUGMSG(("Select All = %d \n",bSelectAll));
+	m_bSelectAll = bSelectAll;	      
+}
 void FV_Selection::setMode(FV_SelectionMode iSelMode)
 {
 	if( (m_iSelectionMode != FV_SelectionMode_NONE) || (iSelMode !=  FV_SelectionMode_NONE))
@@ -86,6 +120,7 @@ void FV_Selection::setMode(FV_SelectionMode iSelMode)
 		m_vecSelRTFBuffers.clear();
 		m_vecSelCellProps.clear();
 	}
+	setSelectAll(false);
 }
 
 void FV_Selection::setTOCSelected(fl_TOCLayout * pTOCL)
@@ -94,6 +129,7 @@ void FV_Selection::setTOCSelected(fl_TOCLayout * pTOCL)
 	m_pSelectedTOC = pTOCL;
 	m_iSelectAnchor = pTOCL->getPosition();
 	pTOCL->setSelected(true);
+	setSelectAll(false);
 }
 
 void FV_Selection::pasteRowOrCol(void)
@@ -213,7 +249,23 @@ PT_DocPosition FV_Selection::getSelectionAnchor(void) const
 
 void FV_Selection::setSelectionAnchor(PT_DocPosition pos)
 {
-		m_iSelectAnchor = pos;
+	 m_iSelectAnchor = pos;
+	 fl_SectionLayout * pSL = m_pView->m_pLayout->getLastSection();
+	 if(pSL == NULL)
+	   return;
+	 PT_DocPosition posLow = m_iSelectAnchor;
+	 PT_DocPosition posHigh = m_pView->getPoint();
+	 if(posHigh < posLow)
+	 {
+	      posHigh = m_iSelectAnchor;
+	      posLow = m_pView->getPoint();
+	 }
+	 PT_DocPosition posBeg,posEnd=0;
+	 m_pView->getEditableBounds(false,posBeg);
+	 m_pView->getEditableBounds(true,posEnd);
+	 xxx_UT_DEBUGMSG(("posLow %d posBeg %d posHigh %d posEnd %d\n",posLow,posBeg,posHigh,posEnd));
+	 bool bSelAll = ((posBeg >= posLow) && (posEnd <= posHigh));
+	 setSelectAll(bSelAll);
 }
 
 
@@ -229,7 +281,15 @@ PT_DocPosition FV_Selection::getSelectionLeftAnchor(void) const
 
 void FV_Selection::setSelectionLeftAnchor(PT_DocPosition pos)
 {
+        if(pos == 0)
+	  return;
 	m_iSelectLeftAnchor = pos;
+	PT_DocPosition posBeg,posEnd=0;
+	m_pView->getEditableBounds(false,posBeg);
+	m_pView->getEditableBounds(true,posEnd);
+	bool bSelAll = ((posBeg >= m_iSelectLeftAnchor) && (posEnd <= m_iSelectRightAnchor));
+	 xxx_UT_DEBUGMSG(("setleft posBeg %d left %d posEnd %d right %d\n",posBeg,m_iSelectLeftAnchor,posEnd,m_iSelectRightAnchor));
+	setSelectAll(bSelAll);
 }
 
 
@@ -245,7 +305,15 @@ PT_DocPosition FV_Selection::getSelectionRightAnchor(void) const
 
 void FV_Selection::setSelectionRightAnchor(PT_DocPosition pos)
 {
+        if(pos == 0)
+	  return;
 	m_iSelectRightAnchor = pos;
+	PT_DocPosition posBeg,posEnd=0;
+	m_pView->getEditableBounds(false,posBeg);
+	m_pView->getEditableBounds(true,posEnd);
+	bool bSelAll = ((posBeg >= m_iSelectLeftAnchor) && (posEnd <= m_iSelectRightAnchor));
+	 xxx_UT_DEBUGMSG(("setRight posBeg %d left %d posEnd %d right %d\n",posBeg,m_iSelectLeftAnchor,posEnd,m_iSelectRightAnchor));
+	setSelectAll(bSelAll);
 }
 
 bool FV_Selection::isPosSelected(PT_DocPosition pos) const
@@ -292,6 +360,7 @@ bool FV_Selection::isSelected(void) const
 void FV_Selection::clearSelection(void)
 {
 	setMode(FV_SelectionMode_NONE);
+	setSelectAll(false);
 }
 
 void FV_Selection::setTableLayout(fl_TableLayout * pFL)
@@ -355,6 +424,7 @@ void FV_Selection::addCellToSelection(fl_CellLayout * pCell)
 	pCellProps->m_iTop = iTop;
 	pCellProps->m_iBot = iBot;
 	m_vecSelCellProps.addItem(pCellProps);
+	setSelectAll(false);
 }
 
 /*!

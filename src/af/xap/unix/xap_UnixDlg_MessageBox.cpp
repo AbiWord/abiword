@@ -91,6 +91,7 @@ void XAP_UnixDialog_MessageBox::runModal(XAP_Frame * pFrame)
 			message = gtk_message_dialog_new ( toplevel, GTK_DIALOG_MODAL,
 							   GTK_MESSAGE_INFO,
 							   GTK_BUTTONS_OK,
+							   "%s",
 							   m_szMessage ) ;
 
 			break;
@@ -100,6 +101,7 @@ void XAP_UnixDialog_MessageBox::runModal(XAP_Frame * pFrame)
 			message = gtk_message_dialog_new ( toplevel, GTK_DIALOG_MODAL,
 							   GTK_MESSAGE_QUESTION,
 							   GTK_BUTTONS_YES_NO,
+							   "%s",
 							   m_szMessage ) ;
 			break;
 

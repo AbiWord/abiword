@@ -520,6 +520,8 @@ private:
 	void	_closeSpan (void);
 	void	_openSpan (PT_AttrPropIndex api);
 
+	void _popUnendedStructures(void);
+
 #ifdef HTML_TABLES_SUPPORTED
 	void	_openTable (PT_AttrPropIndex api);
 	void	_closeTable ();
@@ -577,6 +579,8 @@ private:
 	inline bool     get_Class_Only()    const { return m_exp_opt->bClassOnly; }
 
 	bool			m_bInSection;
+	bool			m_bInFrame;
+	bool			m_bInTextBox; // Necessary?  Possibly not.  Convenient and safe?  Yes.
 	bool			m_bInBlock;
 	bool			m_bInSpan;
 	bool			m_bNextIsSpace;
@@ -955,6 +959,7 @@ UT_uint32 s_HTML_Listener::tagTop ()
 
 void s_HTML_Listener::tagPop ()
 {
+	// Don't forget to not put tags without explicit closure in here.
 	switch (tagTop ())
 	{
 		case TT_TD:
@@ -1017,11 +1022,29 @@ void s_HTML_Listener::tagPop ()
 				tagClose (TT_BDO, "bdo");
 			}
 			break;
-
+		case TT_LI:
+			{
+				tagClose (TT_LI, "li");
+			}
+			break;
+		case TT_UL:
+			{
+				tagClose (TT_UL, "ul");
+			}
+			break;
+		case TT_OL:
+		       {
+				tagClose (TT_OL, "ol");
+			}
+			break;
 		default:
 			{
 				UT_DEBUGMSG(("tagPop: unhandled tag closure! %d\n",tagTop()));
 				m_utf8_1 ="error - not handled";
+				/* There has got to be a better way than this.
+						I think putting up the usual "Write error -
+						file a bug and attach this" message is preferable
+						to spitting out nonsense html. -MG */
 				tagClose (tagTop(), m_utf8_1); // prevents hangs see 7524
 			}
 			break;
@@ -1854,7 +1877,10 @@ void s_HTML_Listener::_openSection (PT_AttrPropIndex api, UT_uint16 iSectionSpec
 void s_HTML_Listener::_closeSection (void)
 {
 	if (m_bInBlock)
-		_closeTag ();
+		_closeTag (); // We need to investigate the tag stack usage of this, and whether or not we really would rather specify the tag in all cases.
+
+	// Need to investigate whether we can safely uncomment this without undoing heading work, or any other kind using unended structures like lists.
+	// _popUnendedStructures(); // Close lists, and possibly other stuff.  Even if it theoretically can span sections, we run a high risk of corrupting the document.
 
 	if (m_bInSection && (tagTop () == TT_DIV))
 	{
@@ -1940,10 +1966,31 @@ void s_HTML_Listener::listPush (UT_uint32 type, const char * ClassName)
 
 void s_HTML_Listener::listPop ()
 {
+	if (tagTop () == TT_SPAN)
+	{
+		// We don't just tagPop() for the sake of prettiness, apparently.
+		m_utf8_1 = "span";
+		tagClose (TT_SPAN, m_utf8_1, ws_Post);
+	}
+#if 0
+   // This code may come in handy if AbiWord ever supported listed frames, which is conceivable
+	if (m_bInFrame && tagTop () == TT_DIV) // Frame embedded in list, hopefully.  I _really_ hope we don't have a first order section in a list.
+	{
+	     if(m_bInTextBox)
+	        _closeTextBox();
+	     else
+	     {
+	        UT_DEBUGMSG(("WARNING: Popping a frame which is not a textbox within a list item, heaven help us \n"));
+		 
+	       m_utf8_1 = "div";
+		tagClose (TT_DIV, m_utf8_1);
+	     }
+	}
+#endif
 	if (tagTop () == TT_LI)
 	{
 		m_utf8_1 = "li";
-		tagClose (TT_LI, m_utf8_1, ws_Post);
+		tagClose (TT_LI, m_utf8_1);
 	}
 
 	UT_sint32 type = 0;
@@ -2004,7 +2051,7 @@ void s_HTML_Listener::_openTag (PT_AttrPropIndex api, PL_StruxDocHandle sdh)
 	const PP_AttrProp * pAP = 0;
 	bool bHaveProp = m_pDocument->getAttrProp (api, &pAP);
 	
-	if (!bHaveProp || (pAP == 0)) // <p> with no style attribute, and no properties either
+	if ((!bHaveProp || (pAP == 0)) && !m_bInFrame) // [Appears to be and we're assuming it's a] <p> with no style attribute, and no properties either, and not a frame embedded in the list
 	{
 		listPopToDepth (0);
 
@@ -2086,6 +2133,10 @@ void s_HTML_Listener::_openTag (PT_AttrPropIndex api, PL_StruxDocHandle sdh)
 			m_iListDepth = 0;
 		}
 		/* TODO: why can m_iListDepth be zero sometimes ?? (numbered headings?)
+		 * UPDATE: I don't know, but it probably shouldn't be handled this way because the definition of 0
+		 *	    from earlier in the code is that it means we are not in a list of any sort.
+		 *	    For numbered headings and the like, if that's the handling of it, we may actually end up
+		 *	    with more than one list after having 'risen to desired list depth'. -MG
 		 */
 		if (m_iListDepth == 0) m_iListDepth = 1;
 
@@ -2856,6 +2907,16 @@ void s_HTML_Listener::_closeSpan ()
 	m_bInSpan = false;
 }
 
+/*! 	Close up all HTML-structures for which we haven't a definitive end in the piecetable,
+ *   such as lists.
+ *		\todo Somebody needs to check for others aside from lists, in order to preempt ugly bugs.
+ */
+void s_HTML_Listener::_popUnendedStructures (void)
+{
+	if(m_iListDepth)
+	  listPopToDepth(0);
+}
+
 #ifdef HTML_TABLES_SUPPORTED
 
 void s_HTML_Listener::_fillColWidthsVector(void)
@@ -2939,7 +3000,10 @@ void s_HTML_Listener::_openTable (PT_AttrPropIndex api)
 
 	if (!m_bInSection) return;
 
-	if (m_bInBlock) _closeTag ();
+	if(m_iListDepth)
+	     listPopToDepth(0); // AbiWord does not support tables in LIs, neither do we.  For AbiWord, an LI is a special <p>.  See next line.
+
+	if (m_bInBlock) _closeTag (); // HTML does not make it any more desirable to embed a table in a <p> than AbiWord.
 
 	const PP_AttrProp * pAP = NULL;
 	bool bHaveProp = m_pDocument->getAttrProp (api,&pAP);
@@ -3856,9 +3920,15 @@ void s_HTML_Listener::_closeCell ()
 		// have its borders
 		// this is not necessary; the same effect can be achieved by
 		// setting "border-collapse:collapse;empty-cells:show"
-		UT_UTF8String s = "&nbsp;";
+   		UT_UTF8String s = " "; // This enables the table to be reimported in abi
 		tagRaw(s);
 	}
+	
+	/* The number of times _popUnendedStructures has to be used may be indicative of serious fundamental flows in the
+	   current tag stack(s) implementation, an implementation which therefore is in dire need of an expert audit.
+	   On the other hand, it may also be the necessary result of the already known shortcomings of our piecetable with
+	   regard to the permission of unstruxed structures and unilateral struxes.  -MG */
+	_popUnendedStructures();
 	
 	m_utf8_1 = "td";
 	tagClose (TT_TD, m_utf8_1);
@@ -3872,9 +3942,29 @@ void s_HTML_Listener::_openTextBox (PT_AttrPropIndex api)
 	bool bHaveProp = m_pDocument->getAttrProp (api, &pAP);
 	if (!bHaveProp || (pAP == 0)) return;
 	const XML_Char * tempProp = 0;
+	
+	if(m_bInTextBox)
+	  _closeTextBox(); // Fortunately for the html exporter, abi does not permit nested frames.
+	
+	if(m_iListDepth)
+	  listPopToDepth(0); // AbiWord does not support textboxes in LIs, neither do we.
+	
+	m_bInFrame = true;
+	m_bInTextBox = true; // See comment by declaration
+	/* --- Copied from closeSection --- */
+	// TODO: Extract me into closePseudoSection.
+		if (m_bInBlock)
+		_closeTag (); // We need to investigate the tag stack usage of this, and whether or not we really would rather specify the tag in all cases.
 
-	tagPop();
-	_closeSection();
+	       // Need to investigate whether we can safely uncomment this without undoing heading work, or any other kind using unended structures like lists.
+	  	// _popUnendedStructures(); // Close lists, and possibly other stuff.  Even if it theoretically can span sections, we run a high risk of corrupting the document.
+
+	       if (m_bInSection && (tagTop () == TT_DIV))
+	       {
+		    m_utf8_1 = "div";
+	     	    tagClose (TT_DIV, m_utf8_1);
+	       }
+	/* --- */
 	m_utf8_1 = "div style=\""; // We represent the box with a div (block)
 	
 	// TODO: Enum frame properties (and in any case where props equal their css counterparts) separately
@@ -3926,13 +4016,35 @@ void s_HTML_Listener::_openTextBox (PT_AttrPropIndex api)
 	m_utf8_1 += "\"";
 	
 	tagOpen(TT_DIV, m_utf8_1);
+	
 	return;
 }
 
 void s_HTML_Listener::_closeTextBox ()
 {
 	// We don't need to close the block ourselves because _closeSection does it for us.
-	_closeSection();
+   /* --- */
+   // TODO: Extract me into closePseudoSection
+	// We cannot use _closeSection(), we're not actually in a section.
+	  if (m_bInBlock)
+		_closeTag (); // We need to investigate the tag stack usage of this, and whether or not we really would rather specify the tag in all cases.
+
+	  // Need to investigate whether we can safely uncomment this without undoing heading work, or any other kind using unended structures like lists.
+	  // _popUnendedStructures(); // Close lists, and possibly other stuff.  Even if it theoretically can span sections, we run a high risk of corrupting the document.
+
+	  if ((tagTop () == TT_DIV))
+	  {
+	  	m_utf8_1 = "div";
+		tagClose (TT_DIV, m_utf8_1);
+	  }
+	  else
+	  {
+	       UT_DEBUGMSG(("WARNING: Something gone awry with this textbox \n"));
+	  }
+   /* --- */
+	// Fortunately for us, abi does not permit nested frames yet.
+	m_bInFrame = false;
+	m_bInTextBox = false;
 }
 
 void s_HTML_Listener::_outputData (const UT_UCSChar * data, UT_uint32 length)
@@ -4046,6 +4158,8 @@ s_HTML_Listener::s_HTML_Listener (PD_Document * pDocument, IE_Exp_HTML * pie, bo
 		m_exp_opt(exp_opt),
 		m_style_tree(style_tree),
 		m_bInSection(false),
+		m_bInFrame(false),
+		m_bInTextBox(false),
 		m_bInBlock(false),
 		m_bInSpan(false),
 		m_bNextIsSpace(false),
@@ -4766,6 +4880,17 @@ bool s_HTML_Listener::populateStrux (PL_StruxDocHandle sdh,
 		case PTX_Section:
 			{
 				m_bIgnoreTillNextSection = false;
+				
+				// TODO: It may be wise to look into the necessity of an _popUnendedStructures here.  However,
+				// that may also not play nice with structures, if any, which span sections.  Unended structures
+				// can theoretically do so, such as lists that attach to a extrastructural listID.  However, we
+				// also (as of this writing) do not support incontiguous lists.  Again, there's an ambiguity
+				// regarding how this should be handled because the behaviour of the piecetable is incompletely
+				// defined.
+				// UPDATE: We're going to put one in _closeSection for safety's sake.  If it makes some output
+				// 	    less pretty, please do file bugs and we can fix that on a case by case basis, but
+				// 	    that's preferable to spitting out corrupt html.
+				
 				if(m_bIgnoreTillEnd)
 				{
 					return true;  // Nested sections could be the sign of a severe problem, even if caused by import
@@ -4891,6 +5016,13 @@ bool s_HTML_Listener::populateStrux (PL_StruxDocHandle sdh,
 			}
 		case PTX_SectionFrame:
 			{
+				// We do this individually for explicitly handled types of frame, because we don't know the consequences
+				// of doing it generally.
+				// m_bInFrame = true; // Fortunately for the html exporter, abi does not permit nested frames.
+				
+				if(m_iListDepth)
+	              	  listPopToDepth(0); // AbiWord does not support frames in LIs, neither do we.
+
 				if(m_bIgnoreTillEnd || m_bIgnoreTillNextSection)
 				{
 					return true;
@@ -4900,14 +5032,14 @@ bool s_HTML_Listener::populateStrux (PL_StruxDocHandle sdh,
 				bool bHaveProp = m_pDocument->getAttrProp (api, &pAP);
 				if (!bHaveProp || (pAP == 0)) return true;
 				const XML_Char * szType = 0;
-				pAP->getProperty ("frame-type", szType);
-				if (szType == 0) return true;
-				// ---
-				if (!UT_strcmp(szType, "textbox"))
-				{
+				if((pAP->getProperty ("frame-type", szType)) && szType)
+				  {
+				     if (!UT_strcmp(szType, "textbox"))
+				     {
 					_openTextBox(pcr->getIndexAP()); // Open a new text box
 					return true;
-				}
+				     }
+				  }
 				return true;
 			}
 		case PTX_EndFrame:
@@ -4922,8 +5054,12 @@ bool s_HTML_Listener::populateStrux (PL_StruxDocHandle sdh,
 			// Ignore HdrFtr for now
 		case PTX_SectionHdrFtr:
 			{
-			m_bIgnoreTillNextSection = true;
-			return true;
+				/* We need to close unended structures (like lists, which are known only as paragraphs with listIDs)
+				   because the HdrFtr comes after all such things except for those which are contained within it. -MG */
+				// This call may be unnecessary. -MG
+				_popUnendedStructures();
+				m_bIgnoreTillNextSection = true;
+				return true;
 			}
 		case PTX_SectionTOC: 
 			{
@@ -4945,6 +5081,7 @@ bool s_HTML_Listener::populateStrux (PL_StruxDocHandle sdh,
 
 bool s_HTML_Listener::endOfDocument () {
 	m_bIgnoreTillNextSection = false;
+	_popUnendedStructures(); // We need to clean up after ourselves lest we fsck up the footer and anything else that comes after this.
 	/* Remaining endnotes, whether from the last of multiple sections or from all sections */
 	_doEndnotes();
 	
@@ -6118,8 +6255,18 @@ void IE_Exp_HTML::_buildStyleTree ()
 	const PD_Style * p_pds = 0;
 	const XML_Char * szStyleName = 0;
 
-	for (size_t n = 0; getDoc()->enumStyles (n, &szStyleName, &p_pds); n++)
+	UT_GenericVector<PD_Style*> * pStyles = NULL;
+	getDoc()->enumStyles(pStyles);
+	UT_return_if_fail( pStyles );
+	UT_uint32 iStyleCount = getDoc()->getStyleCount();
+
+	for (size_t n = 0; n < iStyleCount; n++)
 	{
+		p_pds = pStyles->getNthItem(n);
+		UT_return_if_fail( p_pds );
+
+		szStyleName = p_pds->getName();
+		
 		if (p_pds == 0) continue;
 
 		PT_AttrPropIndex api = p_pds->getIndexAP ();
@@ -6133,6 +6280,8 @@ void IE_Exp_HTML::_buildStyleTree ()
 		}
 	}
 
+	delete pStyles;
+	
 	if (isCopying ()) // clipboard
 		getDoc()->tellListenerSubset (m_style_tree, getDocRange ());
 	else

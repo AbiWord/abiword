@@ -90,6 +90,10 @@ public:
 	fl_TableLayout *      getTableLayout(void);
 	void                  addCellToSelection(fl_CellLayout * pCell);
 	void                  pasteRowOrCol(void);
+	void                  checkSelectAll(void);
+	void                  setSelectAll(bool bSelectAll);
+	bool                  isSelectAll(void) const
+	{ return m_bSelectAll;}
 private:
 	FV_View *             m_pView;
 	FV_SelectionMode      m_iSelectionMode;
@@ -102,6 +106,7 @@ private:
 	UT_GenericVector<PD_DocumentRange *> m_vecSelRanges;
 	UT_GenericVector<UT_ByteBuf*> m_vecSelRTFBuffers;
 	UT_GenericVector<FV_SelectionCellProps*> m_vecSelCellProps;
+	bool                  m_bSelectAll;
 };
 
 #endif /* FV_Selection_H */

@@ -353,6 +353,9 @@ private:
 	UT_GenericVector<GR_EmbedManager *> m_vecEmbedManager;
 	bool                m_bAutoGrammarCheck;
 	fl_BlockLayout  *   m_PendingBlockForGrammar;
+	UT_sint32           m_iGrammarCount;
+	bool                m_bFinishedInitialCheck;
+	PT_DocPosition      m_iPrevPos;
 };
 
 #endif /* DOCLAYOUT_H */

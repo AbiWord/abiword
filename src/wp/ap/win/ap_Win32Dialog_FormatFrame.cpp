@@ -23,6 +23,7 @@
 #include "ut_string.h"
 #include "ut_assert.h"
 #include "ut_debugmsg.h"
+#include "ut_locale.h"
 
 #include "xap_App.h"
 #include "xap_Win32App.h"
@@ -210,11 +211,27 @@ BOOL AP_Win32Dialog_FormatFrame::_onInitDialog(HWND hWnd, WPARAM wParam, LPARAM 
 	setAllSensitivities();
 
 	/* Default status for the dialog controls */
-	CheckDlgButton(m_hwndDlg, AP_RID_DIALOG_FORMATFRAME_BMP_TOP, getTopToggled() ? BST_CHECKED: BST_UNCHECKED);
-	CheckDlgButton(m_hwndDlg, AP_RID_DIALOG_FORMATFRAME_BMP_BOTTOM, getBottomToggled() ? BST_CHECKED: BST_UNCHECKED);
-	CheckDlgButton(m_hwndDlg, AP_RID_DIALOG_FORMATFRAME_BMP_RIGHT, getRightToggled() ? BST_CHECKED: BST_UNCHECKED);
-	CheckDlgButton(m_hwndDlg, AP_RID_DIALOG_FORMATFRAME_BMP_LEFT, getLeftToggled() ? BST_CHECKED: BST_UNCHECKED);
-	CheckDlgButton(m_hwndDlg, AP_RID_DIALOG_FORMATFRAME_CHK_TEXTWRAP, getWrapping() ? BST_CHECKED: BST_UNCHECKED);
+	CheckDlgButton(hWnd, AP_RID_DIALOG_FORMATFRAME_BMP_TOP, getTopToggled() ? BST_CHECKED: BST_UNCHECKED);
+	CheckDlgButton(hWnd, AP_RID_DIALOG_FORMATFRAME_BMP_BOTTOM, getBottomToggled() ? BST_CHECKED: BST_UNCHECKED);
+	CheckDlgButton(hWnd, AP_RID_DIALOG_FORMATFRAME_BMP_RIGHT, getRightToggled() ? BST_CHECKED: BST_UNCHECKED);
+	CheckDlgButton(hWnd, AP_RID_DIALOG_FORMATFRAME_BMP_LEFT, getLeftToggled() ? BST_CHECKED: BST_UNCHECKED);
+
+	/* Position to radio buttons */
+	if(positionMode() == FL_FRAME_POSITIONED_TO_BLOCK)
+	{
+		CheckRadioButton(hWnd, AP_RID_DIALOG_FORMATFRAME_RADIO_PARA, AP_RID_DIALOG_FORMATFRAME_RADIO_PAGE, AP_RID_DIALOG_FORMATFRAME_RADIO_PARA);
+	}
+	else if(positionMode() == FL_FRAME_POSITIONED_TO_COLUMN)
+	{
+		CheckRadioButton(hWnd, AP_RID_DIALOG_FORMATFRAME_RADIO_PARA, AP_RID_DIALOG_FORMATFRAME_RADIO_PAGE, AP_RID_DIALOG_FORMATFRAME_RADIO_COLUMN);
+	}
+	else if(positionMode() == FL_FRAME_POSITIONED_TO_PAGE)
+	{
+		CheckRadioButton(hWnd, AP_RID_DIALOG_FORMATFRAME_RADIO_PARA, AP_RID_DIALOG_FORMATFRAME_RADIO_PAGE, AP_RID_DIALOG_FORMATFRAME_RADIO_PAGE);
+	}
+
+	/* Wrapping checkbox */
+	CheckDlgButton(hWnd, AP_RID_DIALOG_FORMATFRAME_CHK_TEXTWRAP, getWrapping() ? BST_CHECKED: BST_UNCHECKED);
 
 	/* Combo Values for Thickness */
 	HWND hCombo = GetDlgItem(hWnd, AP_RID_DIALOG_FORMATFRAME_COMBO_THICKNESS);
@@ -358,12 +375,13 @@ BOOL AP_Win32Dialog_FormatFrame::_onCommand(HWND hWnd, WPARAM wParam, LPARAM lPa
 
 				if (nSelected != CB_ERR)
 				{
-					char szThickness[1024];
+					UT_LocaleTransactor t(LC_NUMERIC, "C");					
 					UT_UTF8String sThickness;
 
-					SendMessage(hCombo, CB_GETLBTEXT, nSelected, (LPARAM)szThickness);
-					sThickness = szThickness;
-					setBorderThickness(sThickness);
+					
+					sThickness = UT_UTF8String_sprintf("%fin",m_dThickness[nSelected]);
+					setBorderThickness(sThickness);					
+					event_previewExposed();
 				}
 			}
 			return 1;
@@ -375,6 +393,18 @@ BOOL AP_Win32Dialog_FormatFrame::_onCommand(HWND hWnd, WPARAM wParam, LPARAM lPa
 
 		case AP_RID_DIALOG_FORMATFRAME_BUTTON_NOIMAGE:
 				clearImage();
+				return 1;
+
+		case AP_RID_DIALOG_FORMATFRAME_RADIO_PARA:
+				setPositionMode(FL_FRAME_POSITIONED_TO_BLOCK);
+				return 1;
+
+		case AP_RID_DIALOG_FORMATFRAME_RADIO_COLUMN:
+				setPositionMode(FL_FRAME_POSITIONED_TO_COLUMN);
+				return 1;
+
+		case AP_RID_DIALOG_FORMATFRAME_RADIO_PAGE:
+				setPositionMode(FL_FRAME_POSITIONED_TO_PAGE);
 				return 1;
 
 		case AP_RID_DIALOG_FORMATFRAME_BTN_APPLY:

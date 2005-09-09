@@ -103,6 +103,8 @@ UT_XML::UT_XML () :
   m_chardata_buffer(0),
   m_chardata_length(0),
   m_chardata_max(0),
+  m_iMinorErrors(0),
+  m_iRecoveredErrors(0),
   m_namespace(0),
   m_nslength(0),
   m_bSniffing(false),
@@ -223,7 +225,7 @@ void UT_XML::endElement (const char * name)
 void UT_XML::charData (const char * buffer, int length)
 {
   if (m_bStopped) return;
-
+  xxx_UT_DEBUGMSG(("In UT_XML::charData \n"));
   if (m_chardata_length && !m_is_chardata) flush_all ();
 
   m_is_chardata = true;

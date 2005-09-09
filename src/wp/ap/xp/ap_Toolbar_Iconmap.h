@@ -192,5 +192,6 @@ toolbariconmap(_BOGUS2__,NoIcon)
 // Add new overloaded icons here		
 #if XP_SIMPLE_TOOLBAR
 toolbariconmap(FMT_CHOOSE,tb_stock_font_xpm)
+toolbariconmap(VIEW_FULL_SCREEN,tb_view_full_screen_xpm)
 #endif
 

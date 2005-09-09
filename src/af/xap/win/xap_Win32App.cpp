@@ -491,11 +491,15 @@ void XAP_Win32App::_setBidiOS(void)
 	gcpResult.lpCaretPos = NULL;		// Caret positions
 	gcpResult.lpClass = NULL;         // Character classifications
 // w32api changed lpGlyphs from UINT * to LPWSTR to match MS PSDK in w32api v2.4
-#if defined(__MINGW32__) && (__W32API_MAJOR_VERSION == 2 && __W32API_MINOR_VERSION < 4)
+#ifdef __MINGW32__
+#if (__W32API_MAJOR_VERSION == 2 && __W32API_MINOR_VERSION < 4)
 	gcpResult.lpGlyphs = (UINT *) glyphArray;    // Character glyphs
+#else
+	gcpResult.lpGlyphs = (LPWSTR) glyphArray;    // Character glyphs
+#endif
 #else	
 	gcpResult.lpGlyphs = (unsigned short *) glyphArray;    // Character glyphs
-#endif	
+#endif
 	gcpResult.nGlyphs = 2;              // Array size
 
 	UT_UCS2Char inStr[] = {araAin, one};

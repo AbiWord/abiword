@@ -385,6 +385,13 @@ void XAP_Win32Dialog_FileOpenSaveAs::runModal(XAP_Frame * pFrame)
 		bDialogResult = GetOpenFileName((OPENFILENAME *)&ofn);
 		break;
 
+	case XAP_DIALOG_ID_INSERTMATHML:
+		ofn.lpstrTitle	 = pSS->getValue(XAP_STRING_ID_DLG_FOSA_InsertMath);
+		ofn.nFilterIndex = UT_pointerArrayLength((void **) m_szDescriptions) + 1;
+		ofn.Flags |= OFN_FILEMUSTEXIST;
+		bDialogResult = GetOpenFileName((OPENFILENAME *)&ofn);
+		break;
+
 	case XAP_DIALOG_ID_FILE_EXPORT:
 		ofn.lpstrTitle = pSS->getValue(XAP_STRING_ID_DLG_FOSA_ExportTitle);
 		ofn.lpfnHook	   = (LPOFNHOOKPROC) s_hookSaveAsProc;

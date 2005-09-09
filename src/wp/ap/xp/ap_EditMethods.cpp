@@ -206,6 +206,7 @@ public:
 	static EV_EditMethod_Fn contextHyperlink;
 	static EV_EditMethod_Fn contextMenu;
 	static EV_EditMethod_Fn contextRevision;
+	static EV_EditMethod_Fn contextTOC;
 	static EV_EditMethod_Fn contextText;
 	static EV_EditMethod_Fn contextMisspellText;
 	static EV_EditMethod_Fn contextEmbedLayout;
@@ -730,6 +731,7 @@ static EV_EditMethod s_arrayEditMethods[] =
 	EV_EditMethod(NF(contextMisspellText),	0,	""),
 	EV_EditMethod(NF(contextPosObject), 0, ""),
 	EV_EditMethod(NF(contextRevision),	    0,	""),
+	EV_EditMethod(NF(contextTOC),			0,	""),
 	EV_EditMethod(NF(contextText),			0,	""),
 	EV_EditMethod(NF(copy), 				0,	""),
 	EV_EditMethod(NF(copyFrame), 				0,	""),
@@ -1732,6 +1734,8 @@ static bool s_AskRevertFile(XAP_Frame * pFrame)
 						== XAP_Dialog_MessageBox::a_YES);
 }
 
+#if XAP_DONT_CONFIRM_QUIT
+#else
 static bool s_AskCloseAllAndExit(XAP_Frame * pFrame)
 {
 	// return true if we should quit.
@@ -1741,6 +1745,7 @@ static bool s_AskCloseAllAndExit(XAP_Frame * pFrame)
 		== XAP_Dialog_MessageBox::a_YES);
 
 }
+#endif
 
 static XAP_Dialog_MessageBox::tAnswer s_AskSaveFile(XAP_Frame * pFrame)
 {
@@ -4289,6 +4294,15 @@ Defun(contextRevision)
 	XAP_Frame * pFrame = static_cast<XAP_Frame *> (pView->getParentData());
 	UT_return_val_if_fail(pFrame, false);
 	return s_doContextMenu(EV_EMC_REVISION,pCallData->m_xPos, pCallData->m_yPos,pView,pFrame);
+}
+
+Defun(contextTOC)
+{
+	CHECK_FRAME;
+	ABIWORD_VIEW;
+	XAP_Frame * pFrame = static_cast<XAP_Frame *> (pView->getParentData());
+	UT_return_val_if_fail(pFrame, false);
+	return s_doContextMenu_no_move(EV_EMC_TOC,pCallData->m_xPos, pCallData->m_yPos,pView,pFrame);
 }
 
 Defun(contextMisspellText)
@@ -9304,6 +9318,12 @@ Defun1(viewFullScreen)
 	CHECK_FRAME;
 	XAP_Frame * pFrame = static_cast<XAP_Frame *> ( pAV_View->getParentData());
 	AP_FrameData *pFrameData = static_cast<AP_FrameData *>(pFrame->getFrameData());
+	
+#ifdef HAVE_HILDON
+	pFrame->setFullScreen(!pFrameData->m_bIsFullScreen);
+	pFrameData->m_bIsFullScreen = !pFrameData->m_bIsFullScreen;
+	return true;
+#endif
 
 	if(!pFrameData->m_bIsFullScreen) // we're hiding stuff
 	{
@@ -9794,7 +9814,7 @@ Defun1(dlgBullets)
 //
   // Dialog for Bullets and Lists
   //
-#if defined(__QNXTO__) || defined(__BEOS__) || defined(TARGET_OS_MAC)
+#if defined(__QNXTO__) || defined(TARGET_OS_MAC)
 	XAP_Frame * pFrame = static_cast<XAP_Frame *> ( pAV_View->getParentData());
 	UT_return_val_if_fail(pFrame, false);
 
@@ -9821,13 +9841,12 @@ Defun(setPosImage)
 	CHECK_FRAME;
 	ABIWORD_VIEW;
 
-	fl_BlockLayout * pBL = pView->getCurrentBlock();
 	PT_DocPosition pos = pView->getDocPositionFromLastXY();
 
 	fl_BlockLayout * pBlock = pView->getBlockAtPosition(pos);
 	fp_Run *  pRun = NULL;
 	fp_Line * pLine = NULL;
-	UT_sint32 x1,x2,y1,y2,iHeight,iWidth;
+	UT_sint32 x1,x2,y1,y2,iHeight;
 	bool bEOL = false;
 	bool bDir = false;
 	if(pBlock)
@@ -9942,6 +9961,7 @@ Defun(setPosImage)
 //
 // Done! Now have a positioned image!
 //
+	return true;
 }
 
 Defun (dlgFmtPosImage)
@@ -10156,6 +10176,11 @@ Defun(dlgFmtImage)
 	if(pView->getFrameEdit()->isActive())
 	{
 	  fl_FrameLayout * pFL = pView->getFrameLayout();
+
+	  if(pFL == NULL)
+	  {
+	    return false;
+	  }
 	  if(pFL->getFrameType() == FL_FRAME_TEXTBOX_TYPE)
 	  {
 	    return true;
@@ -13666,9 +13691,32 @@ Defun(dragVisualText)
 {
 	CHECK_FRAME;
 	ABIWORD_VIEW;
-
-    sEndVisualDrag = false;
+	sEndVisualDrag = false;
 	xxx_UT_DEBUGMSG(("Drag Visual Text \n"));
+	PT_DocPosition posLow = pView->getSelectionAnchor();
+	PT_DocPosition posHigh = pView->getPoint();
+	if(posLow > posHigh)
+	{
+	     PT_DocPosition pos = posLow;
+	     posLow = posHigh;
+	     posHigh = pos;
+	}
+	if((posLow + 1) == posHigh)
+	{
+	     fl_BlockLayout * pBL = pView->getCurrentBlock();
+	     if((pBL->getPosition() >= posLow) && ((pBL->getPosition() + pBL->getLength()) > posHigh))
+	     {
+	       UT_sint32 x1,x2,y1,y2,height;
+	       bool bEOL,bDir;
+	       bEOL = false;
+	       fp_Run * pRun = pBL->findPointCoords(posHigh,bEOL,x1,x2,y1,y2,height,bDir);
+	       if(pRun->getType() == FPRUN_IMAGE)
+	       {
+		 FV_VisualDragText * pVis = pView->getVisualText();
+		 pVis->abortDrag();
+	       }
+	     }
+	}
 //
 // Do this operation in an idle loop so when can reject queued events
 //

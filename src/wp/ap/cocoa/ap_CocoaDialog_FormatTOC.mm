@@ -447,7 +447,7 @@ void AP_CocoaDialog_FormatTOC::_populateWindowData(void)
 	}
 }
 
-- (void)saveDetaiLevelSettings
+- (void)saveDetailLevelSettings
 {
 	if (_xap) {
 		const UT_GenericVector<const XML_Char *> * vecPropList = _xap->getVecLabelPropValue();
@@ -518,8 +518,8 @@ void AP_CocoaDialog_FormatTOC::_populateWindowData(void)
 
 - (IBAction)applyAction:(id)sender
 {
-	[self  saveMainLevelSettings];
-	[self saveDetaiLevelSettings];
+	[self saveMainLevelSettings];
+	[self saveDetailLevelSettings];
 
 	UT_UTF8String sTOCProp;
 	UT_UTF8String sVal;

@@ -152,7 +152,7 @@ bool XAP_UnixFontHandle::doesGlyphExist(UT_UCS4Char g)
 // rec.top = distance from the origin to the top of the glyph
 // rec.height = total height of the glyph
 //
-bool  XAP_UnixFontHandle::glyphBox(UT_UCS4Char g, UT_Rect & rec) const
+bool  XAP_UnixFontHandle::glyphBox(UT_UCS4Char g, UT_Rect & rec, GR_Graphics * pG) 
 {
 	XftFaceLocker locker(m_font->getLayoutXftFont(GR_CharWidthsCache::CACHE_FONT_SIZE));
 	FT_Face pFace = locker.getFace();

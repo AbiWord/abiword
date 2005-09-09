@@ -836,6 +836,9 @@ bool GR_Win32USPGraphics::shape(GR_ShapingInfo & si, GR_RenderInfo *& ri)
 		RI->m_iClustSize = si.m_iLength;
 	}
 
+	// remove any justification information -- it will have to be recalculated
+	delete[] RI->m_pJustify; RI->m_pJustify = NULL;
+	
 	// to save time we will use a reasonably sized static buffer and
 	// will only allocate one on heap if the static one is too small.
 	static WCHAR wcInChars[GRWIN32USP_CHARBUFF_SIZE]; 
@@ -1072,6 +1075,11 @@ bool GR_Win32USPGraphics::shape(GR_ShapingInfo & si, GR_RenderInfo *& ri)
 		// this might not be strictly necessary, but it is safer to do so
 		// no, this is necessary
 		RI->s_pOwnerChar = NULL;
+	}
+
+	if(RI->s_pOwnerDraw == RI)
+	{
+		RI->s_pOwnerDraw = NULL;
 	}
 	
 	return true;
@@ -1713,6 +1721,9 @@ bool GR_Win32USPGraphics::_scriptBreak(GR_Win32USPRenderInfo &ri)
 			ri.s_pChars[i] = (WCHAR)ri.m_pText->getChar();
 		}
 
+		// restore the iterrator to the initial position
+		*(ri.m_pText) -= iLen;
+		
 		GR_Win32USPItem &I = (GR_Win32USPItem &)*ri.m_pItem;
 		HRESULT hRes = fScriptBreak(ri.s_pChars, iLen, &I.m_si.a, ri.s_pLogAttr);
 
@@ -1782,15 +1793,13 @@ bool GR_Win32USPGraphics::canBreak(GR_RenderInfo & ri, UT_sint32 &iNext, bool bA
 		if(RI.s_pLogAttr[ri.m_iOffset].fWhiteSpace)
 			return true;
 
-		// find the next break
-		for(UT_sint32 i = ri.m_iOffset; i < RI.m_iLength; ++i)
-		{
-			if(RI.s_pLogAttr[i].fWhiteSpace)
-			{
-				iNext = i;
-				break;
-			}
-		}
+		// this fixes 9462;
+		bool bBreak = GR_Graphics::canBreak(ri, iNext, bAfter);
+
+		// if the base class gave us a break or indicated where the break is, return
+		if(bBreak || iNext >= 0)
+			return bBreak;
+		
 	}
 	
 	return false;

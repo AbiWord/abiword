@@ -124,11 +124,20 @@ void FV_View::cmdCharMotion(bool bForward, UT_uint32 count)
 		}
 		else
 		{
-			_setPoint(iPoint);
+		        if(m_bInsertAtTablePending)
+			{
+			      m_iInsPoint = iPoint;
+			}
+			else
+			{
+			      _setPoint(iPoint);
+			}
 		}
-		while(!isPointLegal() && (getPoint() > 2))
+
+		bool bOK = true;
+		while(bOK && !isPointLegal() && (getPoint() > 2))
 		{
-			_charMotion(false,1);
+			bOK = _charMotion(false,1);
 		}
 	}
 	else
@@ -2241,7 +2250,14 @@ bool FV_View::cmdInsertRow(PT_DocPosition posRow, bool bBefore)
 	UT_sint32 numRowsForInsertion = getNumRowsInSelection();
 	if(numRowsForInsertion == 0)
 	{
+	    if(isSelectionEmpty() && isInTable(posRow))
+	    {
+	        numRowsForInsertion = 1;
+	    }
+	    else
+	    {
 		return false;
+	    }
 	}
 
 	if (!isSelectionEmpty())
@@ -2815,30 +2831,25 @@ bool FV_View::cmdDeleteRow(PT_DocPosition posRow)
 // Now find the number of rows and columns inthis table. This is easiest to
 // get from the table container
 //
-	fl_BlockLayout * pBL =	m_pLayout->findBlockAtPosition(posRow);
-	fp_Run * pRun;
-	UT_sint32 xPoint,yPoint,xPoint2,yPoint2,iPointHeight;
-	bool bDirection;
-	pRun = pBL->findPointCoords(posRow, false, xPoint,
-							    yPoint, xPoint2, yPoint2,
-							    iPointHeight, bDirection);
-	UT_return_val_if_fail(pRun, false);
-
-	fp_Line * pLine = pRun->getLine();
-	UT_return_val_if_fail(pLine, false);
-
-	fp_Container * pCon = pLine->getContainer();
-	UT_return_val_if_fail(pCon, false);
-
-	fp_TableContainer * pTab = static_cast<fp_TableContainer *>(pCon->getContainer());
+	fl_TableLayout * pTabL = getTableAtPos(posRow);
+	if(pTabL == NULL)
+	{
+	    pTabL = getTableAtPos(posRow+1);
+	    if(pTabL == NULL)
+	    {
+		pTabL = getTableAtPos(posRow+2);
+		UT_return_val_if_fail(pTabL, false);
+	    }
+	}
+	fp_TableContainer * pTab = static_cast<fp_TableContainer *>(pTabL->getFirstContainer());
 	UT_return_val_if_fail(pTab, false);
-
 	UT_sint32 numCols = pTab->getNumCols();
 //
 // If we delete the last row we're actually deleting the table, so do that 
 // instead.
 //
-	if(pTab->getNumRows() == 1)
+	UT_sint32 nRows = getNumRowsInSelection();
+	if(pTab->getNumRows() == 1 || (nRows == pTab->getNumRows()))
 	{
 		cmdDeleteTable(posRow);
 		return true;
@@ -2917,12 +2928,18 @@ bool FV_View::cmdDeleteRow(PT_DocPosition posRow)
 // the endTable strux. So lets's get that now.
 //
 	endTableSDH = m_pDoc->getEndTableStruxFromTableSDH(tableSDH);
-	if(!bRes)
+	if(!bRes || (endTableSDH == NULL))
 	{
 		//
 		// Disaster! the table structure in the piecetable is screwed.
 		// we're totally stuffed now.
 		UT_ASSERT(UT_SHOULD_NOT_HAPPEN);
+		m_pDoc->setDontImmediatelyLayout(false);
+	
+		// Signal PieceTable Changes have finished
+		_restorePieceTableState();
+		m_pDoc->endUserAtomicGlob();
+		return false;;
 	}
 	PT_DocPosition posEndTable = m_pDoc->getStruxPosition(endTableSDH);
 	PT_DocPosition posEndCell;
@@ -3152,7 +3169,7 @@ UT_Error FV_View::cmdInsertTable(UT_sint32 numRows, UT_sint32 numCols, const XML
 //
 	if(m_pDoc->isTOCAtPos(getPoint()-1))
 	{
-		setPoint(getPoint()-1);
+	 		setPoint(getPoint()-1);
 	}
 //
 // insert a block to terminate the text before this.
@@ -3162,11 +3179,13 @@ UT_Error FV_View::cmdInsertTable(UT_sint32 numRows, UT_sint32 numCols, const XML
 	//
 	// Don't do this if there is a block at pointBreak already.
 	//
-	if(!m_pDoc->isBlockAtPos(getPoint()) && !m_pDoc->isTableAtPos(getPoint()) && !(m_pDoc->isEndFrameAtPos(getPoint()) && m_pDoc->isBlockAtPos(getPoint()-1) ))
+	bool bInsert = false;
+	if((!m_pDoc->isBlockAtPos(getPoint()) && !m_pDoc->isTableAtPos(getPoint()) && !(m_pDoc->isEndFrameAtPos(getPoint()) && m_pDoc->isBlockAtPos(getPoint()-1) )) || m_pDoc->isTOCAtPos(getPoint()-2) )
 	{
 	         e = m_pDoc->insertStrux(getPoint(),PTX_Block);
+		 bInsert = true;
 	}
-	else if(!m_pDoc->isEndFootnoteAtPos(getPoint()-1) && !m_pDoc->isEndFootnoteAtPos(getPoint()-1))
+	if(!bInsert && !m_pDoc->isEndFootnoteAtPos(getPoint()-1) && !m_pDoc->isEndFootnoteAtPos(getPoint()-1))
 	{
 	         pointBreak--;
 	}
@@ -3925,7 +3944,6 @@ void FV_View::cmdSelect(PT_DocPosition dpBeg, PT_DocPosition dpEnd)
 	{
 		_clearSelection();
 	}
-
 	_setPoint(dpBeg);
 	_setSelectionAnchor();
 	m_Selection.setSelectionLeftAnchor(dpBeg);
@@ -3948,9 +3966,7 @@ void FV_View::cmdSelect(PT_DocPosition dpBeg, PT_DocPosition dpEnd)
 	{
 		return;
 	}
-
 	_drawSelection();
-
 	notifyListeners(AV_CHG_EMPTYSEL);
 }
 
@@ -3961,7 +3977,6 @@ void FV_View::cmdSelect(UT_sint32 xPos, UT_sint32 yPos, FV_DocPos dpBeg, FV_DocP
 	UT_DEBUGMSG(("Double click on mouse \n"));
 
 	warpInsPtToXY(xPos, yPos,true);
-
 	PT_DocPosition iPosLeft = _getDocPos(dpBeg, false);
 	PT_DocPosition iPosRight = _getDocPos(dpEnd, false);
 	if(iPosLeft > iPosRight)
@@ -3986,21 +4001,24 @@ void FV_View::cmdSelect(UT_sint32 xPos, UT_sint32 yPos, FV_DocPos dpBeg, FV_DocP
 	if((dpBeg == FV_DOCPOS_BOL) || (dpBeg == FV_DOCPOS_BOP) || (dpBeg == FV_DOCPOS_BOD))
 	{
 		fl_BlockLayout * pBlock =  _findBlockAtPosition(iPosLeft);
-		UT_sint32 x, y, x2, y2, h;
-		bool b;
-		fp_Run* pRun = pBlock->findPointCoords(m_iInsPoint, false, x, y, x2, y2, h, b);
-		if(pRun)
+		if(pBlock)
 		{
-			fp_Line * pLine = pRun->getLine();
-			if(pLine == static_cast<fp_Line *>(pBlock->getFirstContainer()))
+			UT_sint32 x, y, x2, y2, h;
+			bool b;
+			fp_Run* pRun = pBlock->findPointCoords(m_iInsPoint, false, x, y, x2, y2, h, b);
+			if(pRun)
 			{
-				PT_DocPosition iPosNew = pBlock->getPosition() -1;
-				if(iPosNew < iPosLeft)
+				fp_Line * pLine = pRun->getLine();
+				if(pLine == static_cast<fp_Line *>(pBlock->getFirstContainer()))
 				{
-				     iPosLeft = iPosNew;
+					PT_DocPosition iPosNew = pBlock->getPosition() -1;
+					if(iPosNew < iPosLeft)
+					{
+						iPosLeft = iPosNew;
+					}
+					bRedraw = true; // Need to trick a global redraw in 
+					// header/footer
 				}
-				bRedraw = true; // Need to trick a global redraw in 
-				                // header/footer
 			}
 		}
 	}
@@ -4164,13 +4182,16 @@ void FV_View::cmdUndo(UT_uint32 count)
 	PT_DocPosition posBOD = 0;
 	getEditableBounds(true, posEnd);
 	getEditableBounds(true, posBOD);
-	while(!isPointLegal() && (getPoint() < posEnd))
+	bool bOK = true;
+	while(bOK && !isPointLegal() && (getPoint() < posEnd))
 	{
-		_charMotion(true,1);
+		bOK = _charMotion(true,1);
 	}
-	while(!isPointLegal() && (getPoint() > posBOD))
+
+	bOK = true;
+	while(bOK && !isPointLegal() && (getPoint() > posBOD))
 	{
-		_charMotion(false,1);
+		bOK = _charMotion(false,1);
 	}
 	setCursorToContext();
 
@@ -4222,17 +4243,20 @@ void FV_View::cmdRedo(UT_uint32 count)
 //
 	PT_DocPosition posEnd = 0;
 	getEditableBounds(true, posEnd);
-	while(!isPointLegal() && (getPoint() < posEnd))
+	bool bOK = true;
+	while(bOK && !isPointLegal() && (getPoint() < posEnd))
 	{
-		_charMotion(true,1);
+		bOK = _charMotion(true,1);
 	}
 	if(getPoint() > posEnd)
 	{
 		setPoint(posEnd);
 	}
-	while(!isPointLegal() && (getPoint() > 2))
+
+	bOK = true;
+	while(bOK && !isPointLegal() && (getPoint() > 2))
 	{
-		_charMotion(false,1);
+		bOK = _charMotion(false,1);
 	}
 
 	setCursorToContext();
@@ -4287,7 +4311,19 @@ void FV_View::cmdCut(void)
 	if(m_Selection.getSelectionMode() == FV_SelectionMode_TableColumn)
 	{
 		PD_DocumentRange * pDR = m_Selection.getNthSelection(0);
-		PT_DocPosition pos = pDR->m_pos1 +1;
+		PT_DocPosition pos = 0;
+		if(pDR)
+		{
+		    pos = pDR->m_pos1 +1;
+		}
+		else
+		{
+		    pos = getSelectionAnchor();
+		    if(pos > getPoint())
+		    {
+			pos = getPoint();
+		    }
+		}
 		_clearSelection();
 		cmdDeleteCol(pos);
 		return;
@@ -4295,7 +4331,19 @@ void FV_View::cmdCut(void)
 	if(m_Selection.getSelectionMode() == FV_SelectionMode_TableRow)
 	{
 		PD_DocumentRange * pDR = m_Selection.getNthSelection(0);
-		PT_DocPosition pos = pDR->m_pos1 +1;
+		PT_DocPosition pos = 0;
+		if(pDR)
+		{
+		    pos = pDR->m_pos1 +1;
+		}
+		else
+		{
+		    pos = getSelectionAnchor();
+		    if(pos > getPoint())
+		    {
+			pos = getPoint();
+		    }
+		}
 		_clearSelection();
 		cmdDeleteRow(pos);
 		return;
@@ -5695,7 +5743,7 @@ void FV_View::cmdAcceptRejectRevision(bool bReject, UT_sint32 xPos, UT_sint32 yP
 
 void FV_View::cmdSetRevisionLevel(UT_uint32 i)
 {
-	UT_return_if_fail( i < PD_MAX_REVISION );
+	UT_return_if_fail( i <= PD_MAX_REVISION );
 	// first set the same level in Doc; we do this unconditionally,
 	// this way the doc will always save the level the user last used
 	// NB: the doc id and the view id can be differnt if the user

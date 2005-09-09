@@ -324,6 +324,10 @@ fb_LineBreaker::breakParagraph(fl_BlockLayout* pBlock,
 			}
 			// FIXME: This should go in the block above. But only when
 			// we are guaranteed a full re-layout on block changes.
+			// runs _must_ be coalesced before any justification calculations (since
+			// coalescing might require that we reshape, and in that process we might
+			// loose the justification information).
+			pLine->coalesceRuns();
 			pLine->layout();
 #if DEBUG
 			pLine->assertLineListIntegrity();

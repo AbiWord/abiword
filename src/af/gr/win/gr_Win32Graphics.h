@@ -61,7 +61,7 @@ public:
 // rec.top = distance from the origin to the top of the glyph
 // rec.height = total height of the glyph
 
-	virtual bool glyphBox(UT_UCS4Char g, UT_Rect & rec) const;
+	virtual bool glyphBox(UT_UCS4Char g, UT_Rect & rec, GR_Graphics * pG);
 	
 	void        selectFontIntoDC(GR_Graphics * pGr, HDC hdc);
 	

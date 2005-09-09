@@ -41,7 +41,7 @@ XAP_Win32DropTarget::XAP_Win32DropTarget()
 	m_uCF_RTF = RegisterClipboardFormat(CF_RTF);	
 	m_nCount = 0;
 	
-};
+}
 
 STDMETHODIMP XAP_Win32DropTarget::QueryInterface(REFIID riid, LPVOID FAR* ppvObj)
 {

@@ -381,6 +381,33 @@ bool pt_PieceTable::deleteSpan(PT_DocPosition dpos1,
 					if(! _realChangeStruxFmt(PTC_AddFmt, dpos1 + iLen, dpos1 + iLen /*2*iLen*/, ppRevAttrib,NULL,
 											 eStruxType,true))
 						return false;
+
+					if(bHdrFtr)
+					{
+						// even though this is just a notional removal, we still have to
+						// fix the references
+						bHdrFtr = false; // only do this once
+						pf_Frag_Strux_SectionHdrFtr * pfHdr = static_cast<pf_Frag_Strux_SectionHdrFtr *>(pf1);
+
+						const PP_AttrProp * pAP = NULL;
+
+						if(!getAttrProp(pfHdr->getIndexAP(),&pAP) || !pAP)
+							return false;
+
+						const XML_Char * pszHdrId;
+						if(!pAP->getAttribute("id", pszHdrId) || !pszHdrId)
+							return false;
+
+						const XML_Char * pszHdrType;
+						if(!pAP->getAttribute("type", pszHdrType) || !pszHdrType)
+							return false;
+
+						_fixHdrFtrReferences(pszHdrType, pszHdrId, true);
+                        // empty the strux listener chache since the pointers are now
+                        // invalid                                              
+                        pfHdr->clearAllFmtHandles();                            
+					}
+					
 					break;
 
 				default:;
@@ -398,8 +425,11 @@ bool pt_PieceTable::deleteSpan(PT_DocPosition dpos1,
 
 /*!
     scan piecetable and remove any references to the hdr/ftr located at pos dpos
+    bNotional indicates that the header has been marked deleted in revison mode, but not
+    physically removed from the document
 */
-bool pt_PieceTable::_fixHdrFtrReferences(const XML_Char * pszHdrType, const XML_Char * pszHdrId)
+bool pt_PieceTable::_fixHdrFtrReferences(const XML_Char * pszHdrType, const XML_Char * pszHdrId,
+										 bool bNotional /* = false */)
 {
 	UT_return_val_if_fail( pszHdrType && pszHdrId, false );
 	
@@ -438,6 +468,7 @@ bool pt_PieceTable::_fixHdrFtrReferences(const XML_Char * pszHdrType, const XML_
 			{
 				bool bFound = false;
 				PP_RevisionAttr Revisions(pszRevision);
+
 				for(UT_uint32 i = 0; i < Revisions.getRevisionsCount(); ++i)
 				{
 					const PP_Revision * pRev = Revisions.getNthRevision(i);
@@ -449,13 +480,39 @@ bool pt_PieceTable::_fixHdrFtrReferences(const XML_Char * pszHdrType, const XML_
 						if(0 != strcmp(pszHdrId, pszMyHdrId))
 							continue;
 
-						const_cast<PP_Revision*>(pRev)->setAttribute(pszHdrType, "");
+						if(!bNotional)
+						{
+							// NB: this is safe, since we own the PP_RevisionAttr object
+							// of local scope which in turn owns this revisions
+							const_cast<PP_Revision*>(pRev)->setAttribute(pszHdrType, "");
+						}
+						else
+						{
+							UT_uint32 iId = m_pDocument->getRevisionId();
+							UT_uint32 iMinId;
+							const PP_Revision * pRev = Revisions.getRevisionWithId(iId, iMinId);
+							if(pRev)
+							{
+								// NB: this is safe, since we own the PP_RevisionAttr object
+								// of local scope which in turn owns this revisions
+								const_cast<PP_Revision*>(pRev)->setAttribute(pszHdrType, "");
+							}
+							else
+							{
+								// we have a section that references this header in
+								// previous revision and has no changes in the current
+								// revision, so we need to add a new revisions in which
+								// the header is not referenced
+								const XML_Char * pAttrs [3] = {pszHdrType, pszHdrId, NULL};
+								Revisions.addRevision(iId, PP_REVISION_FMT_CHANGE, pAttrs, NULL);
+							}
+						}
+
 						Revisions.forceDirty();
 						bFound = true;
 					}
-										
 				}
-
+				
 				if(bFound)
 				{
 					const XML_Char* pAttrs [3];
@@ -1247,9 +1304,20 @@ bool pt_PieceTable::_deleteComplexSpan(PT_DocPosition & origPos1,
 // 
 					if(!isFootnote(pfs) && !isEndFootnote(pfs))
 					{ 
-						UT_DEBUGMSG(("Delete Block strux \n"));
+						UT_DEBUGMSG(("Delete Block strux dpos1 %d \n",dpos1));
 						bResult = _deleteStruxWithNotify(dpos1,pfs,
-												  &pfNewEnd,&fragOffsetNewEnd);
+										 &pfNewEnd,&fragOffsetNewEnd);
+						
+						if(!bResult) // can't delete this block strux
+						             // but can delete the rest of the content
+						{
+						  UT_DEBUGMSG(("dpos1 = %d \n",dpos1));
+						  pfNewEnd = pfs->getNext();
+						  dpos1 += pfs->getLength();
+						  pfsContainer = pfs;
+						  fragOffsetNewEnd = 0;
+						}
+						// UT_return_val_if_fail(bResult,false);
 						bPrevWasCell = false;
 						bPrevWasFrame = false;
 						bPrevWasEndTable = false;
@@ -1510,7 +1578,7 @@ bool pt_PieceTable::_deleteComplexSpan(PT_DocPosition & origPos1,
 			UT_return_val_if_fail (bResult, false);
 		}
 		break;
-		// the bookmark and hyperlink objects require special treatment; since
+		// the bookmark and hyperlink objects require specxial treatment; since
 		// they come in pairs, we have to ensure that both are deleted together
 		// so we have to find the other part of the pair, delete it, adjust the
 		// positional variables and the delete the one we were originally asked

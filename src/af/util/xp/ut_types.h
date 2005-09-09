@@ -268,7 +268,8 @@ ABI_EXPORT void * UT_calloc ( UT_uint32 nmemb, UT_uint32 size );
 #define FRIBIDI_TYPE_UNSET -1
 #define FRIBIDI_TYPE_IGNORE -2
 
-#if !defined(WIN32) && !defined(__BEOS__) && !defined(__QNX__) && !defined(XP_MAC_TARGET_MACOSX)
+/* TODO: move to includes.mk */
+#if !defined(WIN32) && !defined(__QNX__) && !defined(XP_MAC_TARGET_MACOSX)
 #define XP_UNIX_TARGET_GTK 1
 #endif
 

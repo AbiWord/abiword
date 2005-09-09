@@ -22,7 +22,7 @@ INCLUDES= -UVERSION @GMODULE_CFLAGS@ @GTK_CFLAGS@ \
 	$(AF_INCLUDES) $(WP_INCLUDES) $(TEXT_INCLUDES) \
 	@GNOME_CFLAGS@
 
-noinst_LIBRARIES = libXap_Gnome.la
+noinst_LTLIBRARIES = libXap_Gnome.la
 
 libXap_Gnome_la_SOURCES = \
 	e-colors.c				\

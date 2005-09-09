@@ -138,6 +138,9 @@ class GR_UnixGraphics : public GR_Graphics
 
 	void                createPixmapFromXPM( char ** pXPM,GdkPixmap *source,
 											 GdkBitmap * mask);
+	GdkWindow*  	  	getWindow(void)
+	{ return m_pWin;}
+
 
 	virtual void setLineProperties ( double inWidth, 
 					 GR_Graphics::JoinStyle inJoinStyle = JOIN_MITER,
@@ -159,6 +162,7 @@ class GR_UnixGraphics : public GR_Graphics
 	// all instances have to be created via GR_GraphicsFactory; see gr_Graphics.h
  	GR_UnixGraphics(GdkWindow * win, XAP_UnixFontManager * fontManager, XAP_App *app);
 	GR_UnixGraphics(GdkPixmap * win, XAP_UnixFontManager * fontManager, XAP_App *app, bool bUsePixmap);
+
 
 	virtual void _beginPaint ();
 	virtual void _endPaint ();

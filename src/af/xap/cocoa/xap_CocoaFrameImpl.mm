@@ -648,12 +648,12 @@ void XAP_CocoaFrameImpl::setToolbarRect(const NSRect &r)
 	return m_frame;
 }
 
-- (void)setTextView:(id <NSTextInput>)tv
+- (void)setTextView:(NSView <NSTextInput>*)tv
 {
 	m_textView = tv;
 }
 
-- (id <NSTextInput>)textView
+- (NSView <NSTextInput>*)textView
 {
 	return m_textView;
 }

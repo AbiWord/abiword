@@ -3622,6 +3622,17 @@ void fp_TableContainer::deleteBrokenTables(bool bClearFirst, bool bRecurseUp)
 	fp_TableContainer * pLast = NULL;
 	pBroke = getFirstBrokenTable();
 	bool bFirst = true;
+	bool bDontRemove = false;
+	fl_ContainerLayout * pMyConL = getSectionLayout()->myContainingLayout();
+	if(pMyConL && pMyConL->getContainerType() == FL_CONTAINER_CELL)
+	{
+		pMyConL = pMyConL->myContainingLayout();
+		fl_TableLayout * pTL = static_cast<fl_TableLayout *>(pMyConL);
+		if(pTL->isDoingDestructor())
+		{
+				bDontRemove = true;
+		}
+	}
 	while(pBroke )
 	{
 		pNext = static_cast<fp_TableContainer *>(pBroke->getNext());
@@ -3637,7 +3648,7 @@ void fp_TableContainer::deleteBrokenTables(bool bClearFirst, bool bRecurseUp)
 			pBroke->getNext()->setPrev(pBroke->getPrev());
 		}
 		pLast = pBroke;
-		if(pBroke->getContainer())
+		if(pBroke->getContainer() && !bDontRemove)
 		{
 			UT_sint32 i = pBroke->getContainer()->findCon(pBroke);
 //

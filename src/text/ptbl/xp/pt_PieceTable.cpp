@@ -164,7 +164,7 @@ void pt_PieceTable::_unlinkFrag(pf_Frag * pf,
 		*pfragOffsetEnd = 0;
 
 	pf_Frag * pp = pf->getPrev();
-
+	xxx_UT_DEBUGMSG(("Unlink frag %x of type %d \n",pf,pf->getType()));
 	m_fragments.unlinkFrag(pf);
 
 	if (   pp
@@ -188,6 +188,7 @@ void pt_PieceTable::_unlinkFrag(pf_Frag * pf,
 			delete pnt;
 		}
 	}
+	UT_ASSERT(pp->getNext() != pf);
 }
 
 bool pt_PieceTable::_struxHasContent(pf_Frag_Strux * pfs) const
@@ -195,6 +196,25 @@ bool pt_PieceTable::_struxHasContent(pf_Frag_Strux * pfs) const
 	// return true iff the paragraph has content (text).
 
 	return (pfs->getNext() && (pfs->getNext()->getType() == pf_Frag::PFT_Text));
+}
+
+bool  pt_PieceTable::_struxIsEmpty(pf_Frag_Strux * pfs) const
+{
+	if(pfs->getNext() == NULL)
+	{
+		return true;
+	}
+	pf_Frag * pf = pfs->getNext();
+	if(pf->getType() != pf_Frag::PFT_Strux)
+	{
+		return false;
+	}
+	pf_Frag_Strux * pfsNext = static_cast<pf_Frag_Strux *>(pfs->getNext());
+	if(isFootnote(pfsNext))
+	{
+		return false;
+	}
+	return true;
 }
 
 bool pt_PieceTable::getAttrProp(PT_AttrPropIndex indexAP, const PP_AttrProp ** ppAP) const

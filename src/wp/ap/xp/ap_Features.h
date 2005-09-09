@@ -34,7 +34,7 @@
 */
 
 #ifdef EMBEDDED_TARGET 
-#  include "xp_EmbeddedFeatures.h"
+#  include "ap_EmbeddedFeatures.h"
 #endif
 
 

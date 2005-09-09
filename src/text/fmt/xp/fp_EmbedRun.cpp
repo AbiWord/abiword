@@ -284,7 +284,7 @@ const char * fp_EmbedRun::getDataID(void) const
  */
 bool fp_EmbedRun::isEdittable(void)
 {
-  return getEmbedManager()->isEdittable();
+  return getEmbedManager()->isEdittable(m_iEmbedUID);
 }
 
 void fp_EmbedRun::_draw(dg_DrawArgs* pDA)

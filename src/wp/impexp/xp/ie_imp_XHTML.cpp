@@ -620,20 +620,48 @@ bool IE_Imp_XHTML::pasteFromBuffer(PD_DocumentRange * pDocRange,
 	UT_Error e = newXML->parse (&buf);
 	if(e != UT_OK)
 	{
-		UT_UTF8String sData;
-		sData.clear();
-		sData.append(reinterpret_cast<const char *>(pData), lenData);
-		UT_DEBUGMSG(("Error pasting HTML.... \n"));
+		char * szPrint = new char [lenData+1];
+		UT_uint32 i = 0;
+		for(i=0; i<lenData;i++)
+			{
+				szPrint[i] = pData[i];
+			}
+		szPrint[i] = 0;
+		UT_DEBUGMSG(("Error Pasting HTML \n"));
 		if(lenData < 10000)
 		{
-			UT_DEBUGMSG(("Data is %s Length of buffer is %d \n",sData.utf8_str(),lenData));
+			UT_DEBUGMSG(("Data is %s Length of buffer is %d \n",szPrint,lenData));
 		}
 		delete p;
 		delete newXML;
+		delete [] szPrint;
 		UNREFP( newDoc);
 		return false;
 	}
 	newDoc->finishRawCreation();
+	PT_DocPosition posEnd = 0;
+	bool b = newDoc->getBounds(true, posEnd);
+	if(!b || posEnd <= 2)
+	{
+		// import failed.
+		char * szPrint = new char [lenData+1];
+		UT_uint32 i = 0;
+		for(i=0; i<lenData;i++)
+			{
+				szPrint[i] = pData[i];
+			}
+		szPrint[i] = 0;
+		UT_DEBUGMSG(("Could not paste HTML.... \n"));
+		if(lenData < 10000)
+		{
+			UT_DEBUGMSG(("Data is |%s| Length of buffer is %d \n",szPrint,lenData));
+		}
+		delete p;
+		delete newXML;
+		delete [] szPrint;
+		UNREFP( newDoc);
+		return false;
+	}
 	//
 	// OK Broadcast from the just filled source document into our current
 	// doc via the paste listener
@@ -818,6 +846,7 @@ void IE_Imp_XHTML::startElement(const XML_Char *name, const XML_Char **atts)
 
 	case TT_PRE:
 		if (m_parseState == _PS_Block) m_parseState = _PS_Sec;
+		requireBlock ();
 		m_iPreCount++;
 		m_bWhiteSignificant = true;
 		return;
@@ -1285,6 +1314,7 @@ void IE_Imp_XHTML::startElement(const XML_Char *name, const XML_Char **atts)
 		break;
 	case TT_TABLE:
 		{
+			requireSection();
 			m_parseState = _PS_Table;
 			const XML_Char * szStyle = _getXMLPropValue (static_cast<const XML_Char *>("style"), atts);
 
@@ -1626,8 +1656,17 @@ X_Fail:
 
 void IE_Imp_XHTML::charData (const XML_Char * buffer, int length)
 {
+#if DEBUG
+#if 0
+
+	UT_UTF8String sBuf;
+	sBuf.append(buffer,length);
+	UT_DEBUGMSG(("IE_Imp_XHTML::charData Text | %s | \n",sBuf.utf8_str()));
+#endif
+#endif
 	if ((m_parseState == _PS_StyleSec) || (m_parseState == _PS_Init))
 		{
+			xxx_UT_DEBUGMSG(("IE_Imp_XHTML::charData wrong parseState %d  \n",m_parseState));
 			return; // outside body here
 		}
 
@@ -1651,6 +1690,7 @@ void IE_Imp_XHTML::charData (const XML_Char * buffer, int length)
 
 	X_CheckError(requireBlock ());
 
+	xxx_UT_DEBUGMSG(("Calling IE_Imp_XML::charData \n"));
 	IE_Imp_XML::charData (buffer, length);
 
 	// if (bResetState) m_parseState = _PS_Sec;

@@ -319,9 +319,12 @@ public:
 												  pf_Frag ** ppf2, PT_BlockOffset * pOffset2) const;
 
 	bool					getStyle(const char * szName, PD_Style ** ppStyle) const;
+
 	bool					enumStyles(UT_uint32 k,
 									   const char ** pszName, const PD_Style ** ppStyle) const;
 
+	bool                    enumStyles(UT_GenericVector<PD_Style*> * & pStyles) const;
+	
 	const UT_GenericStringMap<PD_Style *> & getAllStyles()const {return m_hashStyles;}
 	bool                    isEndFootnote(pf_Frag * pf) const;
 	bool                    isFootnote(pf_Frag * pf) const;
@@ -401,6 +404,7 @@ protected:
 														pf_Frag_Strux ** ppfs) const;
 	bool					_doTheDo(const PX_ChangeRecord * pcr, bool bUndo);
 	bool					_struxHasContent(pf_Frag_Strux * pfs) const;
+	bool					_struxIsEmpty(pf_Frag_Strux * pfs) const;
 	bool					_unlinkStrux(pf_Frag_Strux * pfs,
 										 pf_Frag ** ppfEnd, UT_uint32 * pfragOffsetEnd);
 	bool					_unlinkStrux_Block(pf_Frag_Strux * pfs,
@@ -466,7 +470,7 @@ protected:
 
 	void                    _deleteHdrFtrStruxWithNotify( pf_Frag_Strux * pfFragStruxHdrFtr);
 
-	bool                    _fixHdrFtrReferences(const XML_Char * pType, const XML_Char * pId);
+	bool                    _fixHdrFtrReferences(const XML_Char * pType, const XML_Char * pId, bool bNotional = false);
 	
 	bool					_fmtChangeStrux(pf_Frag_Strux * pfs,
 											PT_AttrPropIndex indexNewAP);

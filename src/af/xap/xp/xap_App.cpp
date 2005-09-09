@@ -40,6 +40,9 @@
 #include "gr_Image.h"
 #include "xap_Frame.h"
 #include "xap_EditMethods.h"
+#include "xap_ModuleManager.h"
+#include "xap_Module.h"
+
 #include "xap_Menu_ActionSet.h"
 #include "xap_Toolbar_ActionSet.h"
 #include "xap_LoadBindings.h"
@@ -209,6 +212,30 @@ EV_Toolbar_ActionSet *XAP_App::getToolbarActionSet()
 	return m_pToolbarActionSet;
 }
 
+/*!
+ * Returns a pointer to the requested plugin if it is loaded.
+ * Return NULL otherwise.
+ */
+XAP_Module * XAP_App::getPlugin(const char * szPluginName)
+{
+     XAP_Module * pModule = NULL;
+     const UT_GenericVector<XAP_Module*> * pVec = XAP_ModuleManager::instance().enumModules ();
+     bool bFound = false;
+     for (UT_uint32 i = 0; (i < pVec->size()) && !bFound; i++)
+     {
+          pModule = pVec->getNthItem (i);
+	  const char * szName = pModule->getModuleInfo()->name;
+	  if(UT_stricmp(szName,szPluginName) == 0)
+	  {
+	        bFound = true;
+	  }
+     }
+     if(!bFound)
+     {
+           return NULL;
+     }
+     return pModule;
+}
 
 /*!
  * Register an embeddable plugin with XAP_App
@@ -575,6 +602,17 @@ const char * XAP_App::getApplicationName() const
 	// can use as a class name for various window-manager-like
 	// operations.
 	return m_szAppName;
+}
+
+void XAP_App::rebuildMenus(void)
+{
+	UT_uint32 frameCount = getFrameCount();
+
+	for (UT_uint32 i = 0; i < frameCount; i++)
+		if (XAP_Frame * pFrame = getFrame(i))
+		{
+			pFrame->rebuildMenus();
+		}
 }
 
 EV_EditMethodContainer * XAP_App::getEditMethodContainer() const
@@ -1173,7 +1211,8 @@ void XAP_App::parseAndSetGeometry(const char *string)
         nw = strtoul(next, &next, 10);
         if(*next == 'x' || *next == 'X')
 		{
-            nh = strtoul(++next, &next, 10);
+			next++;
+            nh = strtoul(next, &next, 10);
             nflags |= PREF_FLAG_GEOMETRY_SIZE;
         }
     }
@@ -1404,6 +1443,11 @@ const char*         XAP_App::_findNearestFont(const char* pszFontFamily,
 												const char* pszFontStretch,
 												const char* pszFontSize)
 {
+        XAP_Frame * pFrame = getLastFocussedFrame();
+        if(pFrame == NULL)
+	{
+	      return pszFontFamily;
+	}
 	GR_Graphics * pG = newDefaultScreenGraphics();
 	UT_return_val_if_fail( pG, pszFontFamily );
 

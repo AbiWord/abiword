@@ -104,7 +104,8 @@ UT_Map::insert(key_t key, data_t data)
 void
 UT_Map::erase(key_t key)
 {
-	Iterator it(m_rbtree.find_if(key, equal));
+	UT_Pair<void*,void*> tmp((void*)key, (void*)data_t());
+	Iterator it(m_rbtree.find_if(&tmp, equal));
 
 	if (it.is_valid())
 		erase(it);

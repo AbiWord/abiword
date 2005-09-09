@@ -184,6 +184,7 @@ void AP_UnixDialog_FormatTOC::setStyle(GtkWidget * wid)
 	sVal = getNewStyle(sProp);
 	gtk_label_set_text(GTK_LABEL(pLabel),sVal.utf8_str());
 	setTOCProperty(sProp,sVal);
+	applyTOCPropsToDoc();
 }
 
 void AP_UnixDialog_FormatTOC::setSensitivity(bool bSensitive)
@@ -710,7 +711,11 @@ void  AP_UnixDialog_FormatTOC::_fillGUI(void)
 {
 	UT_UTF8String sVal;
 	sVal = getTOCPropVal("toc-has-heading");
-	GtkWidget * pW = _getWidget("cbHasHeading");
+
+	GtkWidget * pW = _getWidget("wLevelOption");
+	gtk_option_menu_set_history(GTK_OPTION_MENU(pW), getMainLevel()-1);
+
+	pW = _getWidget("cbHasHeading");
 	if(UT_stricmp(sVal.utf8_str(),"1") == 0)
 	{
 		gtk_toggle_button_set_active(GTK_TOGGLE_BUTTON(pW),TRUE);

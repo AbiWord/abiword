@@ -173,7 +173,7 @@ UT_sint32 fb_ColumnBreaker::breakSection(fl_DocSectionLayout * pSL)
 		if (pCurContainer)
 		{
 			fp_Container* pPrevContainer = 
-				static_cast<fp_Container *>(pCurContainer->getPrev());
+				static_cast<fp_Container *>(pCurContainer->getPrevContainerInSection());
 			if(pPrevContainer && 
 			   pPrevContainer->getContainerType() == FP_CONTAINER_LINE)
 			{
@@ -808,7 +808,7 @@ UT_sint32 fb_ColumnBreaker::breakSection(fl_DocSectionLayout * pSL)
 					UT_DEBUGMSG((" CurContainer %x type %d \n",pCurContainer,pCurContainer->getContainerType()));
 					UT_DEBUGMSG((" FirstContainer to keep %x Last container to keep %x \n",pTab,pLastContainerToKeep));
 					UT_DEBUGMSG(("Try to recover.... \n"));
-					UT_ASSERT(UT_SHOULD_NOT_HAPPEN);
+					//	UT_ASSERT(UT_SHOULD_NOT_HAPPEN);
 					pLastContainerToKeep = NULL;
 					break;
 				}

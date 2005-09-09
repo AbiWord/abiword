@@ -309,7 +309,12 @@ void FV_VisualInlineImage::mouseDrag(UT_sint32 x, UT_sint32 y)
 		m_pView->updateScreen(false);
 	}
 	pG->setClipRect(NULL);
-	drawImage();
+	bool b = drawImage();
+	if(!b)
+	{
+	  cleanUP();
+	  return;
+	}
 	m_iLastX = x;
 	m_iLastY = y;
 	pG->setClipRect(NULL);
@@ -684,11 +689,21 @@ void FV_VisualInlineImage::drawCursor(PT_DocPosition newPos)
 }
 
 /*!
+ * This method returns the Attributes/Properties pointer of the image at 
+ location (X,y). It return NULL if there is no image at (x,y)
+*/
+PP_AttrProp * FV_VisualInlineImage::getImageAPFromXY(UT_sint32 x, UT_sint32 y)
+{
+  PP_AttrProp * pAP = NULL;
+  getImageFromSelection(x, y, &pAP );
+  return pAP;
+}
+/*!
  * This method creates an image from the current selection. It sets
  * the drag rectangle, the initial offsets and the initial positions 
  * of the cursor.
  */
-void FV_VisualInlineImage::getImageFromSelection(UT_sint32 x, UT_sint32 y)
+void FV_VisualInlineImage::getImageFromSelection(UT_sint32 x, UT_sint32 y,PP_AttrProp ** pAP )
 {
 //
 // OK first work out the locations in the document of the anchor and point
@@ -704,16 +719,34 @@ void FV_VisualInlineImage::getImageFromSelection(UT_sint32 x, UT_sint32 y)
 	m_pView->_findPositionCoords(posAtXY,bEOL,x1,y1,x2,y2,height,bDirection,&pBlock,&pRun);
 	if(!pBlock)
 	{
+	    if(pAP != NULL)
+	    {
+	      *pAP = NULL;
+	      return;
+	    }
 	    m_iInlineDragMode = FV_InlineDrag_NOT_ACTIVE;
 	    return;
 	}
 	if(!pRun)
 	{
+	    if(pAP != NULL)
+	    {
+	      *pAP = NULL;
+	      return;
+	    }
 	    m_iInlineDragMode = FV_InlineDrag_NOT_ACTIVE;
 	    return;
 	}
 	while(pRun && (pRun->getLength() == 0))
 	  pRun = pRun->getNextRun();
+	if(pAP != NULL)
+	{
+	    if(pRun == NULL)
+	      *pAP = NULL;
+	    else
+	      *pAP = const_cast<PP_AttrProp*>(pRun->getSpanAP());
+	    return;
+	}
 	if(pRun == NULL)
 	{
 	  m_iInlineDragMode = FV_InlineDrag_NOT_ACTIVE;
@@ -759,7 +792,48 @@ void FV_VisualInlineImage::mouseCut(UT_sint32 x, UT_sint32 y)
 	getImageFromSelection(x,y);
 	m_bDoingCopy = false;
 	UT_DEBUGMSG(("Doing Mouse Cut \n"));
+	PT_DocPosition posImage = m_pView->getDocPositionFromXY(x,y);
 	_beginGlob();
+	PT_DocPosition posLow = m_pView->getSelectionAnchor();
+	PT_DocPosition posHigh = m_pView->getPoint();
+	if(posLow > posHigh)
+	{
+	     PT_DocPosition pos = posLow;
+	     posLow = posHigh;
+	     posHigh = pos;
+	}
+	if((posImage > posHigh) || (posImage < posLow))
+	{
+	  m_pView->_clearSelection();
+	  posLow = posImage;
+	  posHigh = posLow+1;
+	  m_pView->setPoint(posLow);
+	  m_pView->_setSelectionAnchor();
+	  m_pView->setPoint(posHigh);
+	}
+	fl_BlockLayout * pBlock = m_pView->getBlockAtPosition(posLow);
+	if(pBlock)
+	{
+		UT_sint32 x1,x2,y1,y2,iHeight;
+		bool bEOL = false;
+		bool bDir = false;
+		
+		fp_Run * pRun = NULL;
+		
+		pRun = pBlock->findPointCoords(posLow,bEOL,x1,y1,x2,y2,iHeight,bDir);
+		while(pRun && ((pRun->getType() != FPRUN_IMAGE) && (pRun->getType() != FPRUN_EMBED)))
+		{
+			pRun = pRun->getNextRun();
+		}
+		if(pRun && ((pRun->getType() == FPRUN_IMAGE) || ((pRun->getType() == FPRUN_EMBED))))
+		{
+		        posLow = pBlock->getPosition() + pRun->getBlockOffset();
+			// we've found an image: do not move the view, just select the image and exit
+			m_pView->cmdSelect(posLow,posLow+1);
+			// Set the cursor context to image selected.
+			// m_pView->getMouseContext(x,y);
+		}
+	}
 	m_pView->cmdCharDelete(true,1);
 	m_pView->updateScreen(false);
 	drawImage();
@@ -803,6 +877,33 @@ void FV_VisualInlineImage::mouseLeftPress(UT_sint32 x, UT_sint32 y)
 		m_iInlineDragMode = FV_InlineDrag_WAIT_FOR_MOUSE_CLICK;
 		setDragType(x,y,false);
 		return;
+	}
+	if(getImageAPFromXY(x,y) != m_pImageAP)
+	{
+	        cleanUP();
+		m_iInlineDragMode = FV_InlineDrag_WAIT_FOR_MOUSE_CLICK;
+		setDragType(x,y,false);
+		//
+		// Select the new image
+		//
+		PT_DocPosition pos = m_pView->getDocPositionFromXY(x, y);
+		fl_BlockLayout * pBlock = m_pView->getBlockAtPosition(pos);
+		UT_sint32 x1,x2,y1,y2,iHeight;
+		bool bEOL = false;
+		bool bDir = false;
+		fp_Run * pRun = NULL;
+		pRun = pBlock->findPointCoords(pos,bEOL,x1,y1,x2,y2,iHeight,bDir);
+		while(pRun && ((pRun->getType() != FPRUN_IMAGE) && (pRun->getType() != FPRUN_EMBED)))
+		{
+			pRun = pRun->getNextRun();
+		}
+		if(pRun && ((pRun->getType() == FPRUN_IMAGE) || ((pRun->getType() == FPRUN_EMBED))))
+		{
+			// we've found an image: do not move the view, just select the image and exit
+			m_pView->cmdSelect(pos,pos+1);
+			// Set the cursor context to image selected.
+			m_pView->getMouseContext(x, y);
+		}
 	}
 //
 // Find the type of drag we should do.
@@ -1324,14 +1425,15 @@ void FV_VisualInlineImage::mouseRelease(UT_sint32 x, UT_sint32 y)
 	}
 }
 
-void FV_VisualInlineImage::drawImage(void)
+bool FV_VisualInlineImage::drawImage(void)
 {
 	if(m_pDragImage == NULL)
 	{
 		UT_ASSERT(UT_SHOULD_NOT_HAPPEN);
-		return;
+		return false;
 	}
 	GR_Painter painter(getGraphics());
-	UT_DEBUGMSG(("Draw Inline image \n"));
+	xxx_UT_DEBUGMSG(("Draw Inline image \n"));
 	painter.drawImage(m_pDragImage,m_recCurFrame.left,m_recCurFrame.top);
+	return true;
 }

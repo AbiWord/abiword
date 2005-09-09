@@ -102,7 +102,8 @@ fl_TableLayout::fl_TableLayout(FL_DocLayout* pLayout, PL_StruxDocHandle sdh,
 	  m_iNumNestedTables(0),
 	  m_bIsEndTableIn(false),
 	  m_iHeightChanged(0),
-      m_pNewHeightCell(NULL)
+      m_pNewHeightCell(NULL),
+	  m_bDoingDestructor(false)
 
 {
 	UT_DEBUGMSG(("Created Table Layout %x \n",this));
@@ -116,6 +117,7 @@ fl_TableLayout::~fl_TableLayout()
 {
 	// NB: be careful about the order of these
 	UT_DEBUGMSG(("SEVIOR: !!!!!!!! Deleting tableLayout  %x !! \n",this));
+	m_bDoingDestructor = true;
 	_purgeLayout();
 	fp_TableContainer * pTC = static_cast<fp_TableContainer *>(getFirstContainer());
 	if (pTC)
@@ -251,6 +253,7 @@ void fl_TableLayout::insertTableContainer( fp_TableContainer * pNewTab)
 	fl_ContainerLayout * pPrevL = static_cast<fl_ContainerLayout *>(getPrev());
 	fp_Container * pPrevCon = NULL;
 	fp_Container * pUpCon = NULL;
+	fp_Line * pPrevLine = NULL;
 	if(pPrevL != NULL )
 	{
 		while(pPrevL && (pPrevL != pUPCL) && ((pPrevL->getContainerType() == FL_CONTAINER_FOOTNOTE)
@@ -314,6 +317,22 @@ void fl_TableLayout::insertTableContainer( fp_TableContainer * pNewTab)
 				{
 					pPrevL = NULL;
 				}
+				if(pPrevCon && pPrevCon->getContainerType() == FP_CONTAINER_LINE)
+				{
+					pPrevLine = static_cast<fp_Line *>(pPrevCon);
+					if(pPrevLine->containsForcedPageBreak())
+					{
+						pUpCon = pPrevLine->getContainer();
+						while(pUpCon && pUpCon->getPage() == pPrevLine->getPage())
+						{
+							pUpCon = static_cast<fp_Container *>(pUpCon->getNext());
+						}
+					}
+					if(pUpCon == NULL)
+					{
+							pUpCon = pPrevLine->getContainer();
+					}
+				}
 			}
 		}
 		else
@@ -369,6 +388,11 @@ void fl_TableLayout::insertTableContainer( fp_TableContainer * pNewTab)
 			else if( i >=0 &&  (i+ 1) == static_cast<UT_sint32>(pUpCon->countCons()))
 			{
 				pUpCon->addCon(pNewTab);
+				pNewTab->setContainer(pUpCon);
+			}
+			else if( i < 0)
+			{
+				pUpCon->insertConAt(pNewTab,0);
 				pNewTab->setContainer(pUpCon);
 			}
 			else
@@ -2519,6 +2543,37 @@ void fl_CellLayout::_localCollapse(void)
 		pCL = pCL->getNext();
 	}
 }
+/*!
+ * Return the total length of the cell including nested tables.
+ * This length includes the cell and endcell struxs so if you add it
+ * to the position of the cell strux you will get the first position 
+ * past the endcell strux
+ */
+UT_uint32 fl_CellLayout::getLength(void)
+{
+	PL_StruxDocHandle sdhCell = getStruxDocHandle();
+	PL_StruxDocHandle sdhEnd = m_pDoc->getEndCellStruxFromCellSDH(sdhCell);
+	PT_DocPosition posEnd = 0;
+	PT_DocPosition posStart = 0;
+	UT_uint32 len = 0;
+	if(sdhCell && (sdhEnd == NULL)) // handle case of endStrux not in yet
+	{
+		posStart = m_pDoc->getStruxPosition(sdhCell);
+		m_pDoc->getBounds(true,posEnd);
+		len = posEnd - posStart + 1;
+	}
+	else if(sdhCell == NULL)
+	{
+		return 0;
+	}
+	else
+	{
+		posEnd = m_pDoc->getStruxPosition(sdhEnd);
+		len = posEnd -  m_pDoc->getStruxPosition(sdhCell) + 1;
+	}
+	return len;
+}
+
 
 void fl_CellLayout::collapse(void)
 {

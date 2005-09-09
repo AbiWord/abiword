@@ -867,6 +867,8 @@ fl_ContainerLayout * fl_DocListener::popContainerLayout(void)
 bool fl_DocListener::change(PL_StruxFmtHandle sfh,
 							const PX_ChangeRecord * pcr)
 {
+	UT_return_val_if_fail( sfh, false );
+	
 	//UT_DEBUGMSG(("fl_DocListener::change\n"));
 	bool bResult = false;
 	AV_ChangeMask chgMask = AV_CHG_NONE;
@@ -986,6 +988,14 @@ bool fl_DocListener::change(PL_StruxFmtHandle sfh,
 	{
 		const PX_ChangeRecord_FmtMark * pcrfm = static_cast<const PX_ChangeRecord_FmtMark *>(pcr);
 
+		if(!sfh)
+		{
+			// sometimes happens with revisions, not sure if this is a real problem, but
+			// assert anyway
+			UT_ASSERT_HARMLESS( UT_SHOULD_NOT_HAPPEN );
+			goto finish_up;
+		}
+		
 		fl_Layout * pL = (fl_Layout *)sfh;
 		UT_ASSERT(pL->getType() == PTX_Block);
 		fl_ContainerLayout * pCL = static_cast<fl_ContainerLayout *>(pL);
@@ -1259,6 +1269,19 @@ bool fl_DocListener::change(PL_StruxFmtHandle sfh,
 		}
 		case PTX_SectionHdrFtr:
 		{
+			if(pcrxc->isRevisionDelete())
+			{
+				fl_Layout * pL = (fl_Layout *)sfh;
+				UT_ASSERT(pL->getType() == PTX_SectionHdrFtr);
+				fl_HdrFtrSectionLayout * pSL = static_cast<fl_HdrFtrSectionLayout *>(pL);
+				//
+				// Nuke the HdrFtrSectionLayout and the shadows associated with it.
+				//
+				pSL->doclistener_deleteStrux(pcr); 
+				m_pLayout->updateLayout();
+				goto finish_up;
+			}
+			
 //
 // OK A previous "insertStrux" has created a HdrFtrSectionLayout but it
 // Doesn't know if it's a header or a footer or the DocSection and hences pages

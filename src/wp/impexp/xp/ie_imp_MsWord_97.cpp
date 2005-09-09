@@ -861,6 +861,7 @@ IE_Imp_MsWord_97::IE_Imp_MsWord_97(PD_Document * pDocument)
 	m_iTextStart(0xffffffff),
 	m_iTextEnd(0xffffffff),
 	m_bPageBreakPending(false),
+    m_bLineBreakPending(false),
 	m_bSymbolFont(false),
 	m_dim(DIM_IN),
 	m_iLeft(0),
@@ -1624,8 +1625,7 @@ int IE_Imp_MsWord_97::_charProc (wvParseStruct *ps, U16 eachchar, U8 chartype, U
 	{
 		UT_DEBUGMSG(("IE_Imp_MsWord_97::_charProc: processing past end of document !!! %d \n",ps->currentcp ));
 		return 0;
-	}
-	
+	}       
 	
 	// reset the page break tracker
 	if(m_bPageBreakPending)
@@ -1635,6 +1635,14 @@ int IE_Imp_MsWord_97::_charProc (wvParseStruct *ps, U16 eachchar, U8 chartype, U
 		// then continue normal processing
 		this->_appendChar (UCS_FF);
 		m_bPageBreakPending = false;
+	}
+
+	// reset the page break tracker
+	if(m_bLineBreakPending)
+	{
+		// we have a line break pending
+		this->_appendChar (UCS_LF);
+		m_bLineBreakPending = false;
 	}
 	
 	if(!_handleHeadersText(ps->currentcp,true))
@@ -1674,7 +1682,13 @@ int IE_Imp_MsWord_97::_charProc (wvParseStruct *ps, U16 eachchar, U8 chartype, U
 		return 0;
 
 	case 13: // end of paragraph
-		return 0;
+	  this->_flush();
+	  // see bug 9370
+	  // <delackner> aaah actually, Cocoa's writer is *definitely* broken
+	  // <delackner> ms word thinks the second para is part of the first, but broken with a non-paragraph-breaking-line-break
+	  // so we'll treat this like msword does
+	  m_bLineBreakPending = true;
+	  return 0;
 
 	case 14: // column break
 		eachchar = UCS_VTAB;
@@ -1724,6 +1738,12 @@ int IE_Imp_MsWord_97::_charProc (wvParseStruct *ps, U16 eachchar, U8 chartype, U
 	if(m_bSymbolFont)
 	{
 		eachchar &= 0x00ff;
+	}
+
+	// see bug 9370. we probably got a char 13, but no open paragraph.
+	if(!m_bInPara) {
+	  this->_appendChar (UCS_LF);
+	  _flush();
 	}
 	
 	this->_appendChar (static_cast<UT_UCSChar>(eachchar));
@@ -2214,8 +2234,6 @@ int IE_Imp_MsWord_97::_beginSect (wvParseStruct *ps, UT_uint32 tag,
 			// be used (i.e., we want to use inches for Letter but
 			// metric units for A4, etc.)
 			fp_PageSize PageSize(paper_name);
-			if(asep->dmOrientPage == 1)
-				PageSize.setLandscape();
 
 			// if we know that the explicit size is not valid, we do
 			// not need any further checking
@@ -2563,7 +2581,8 @@ int IE_Imp_MsWord_97::_endSect (wvParseStruct * /* ps */ , UT_uint32  /* tag */ 
 
 	// if there is a pending page break it belongs to the section and
 	// is to be removed, we just need to set the tracker to false
-	m_bPageBreakPending = false;	
+	m_bPageBreakPending = false;
+	m_bLineBreakPending = false;
 
 	m_bInSect = false;
 	m_bInPara = false; // reset paragraph status
@@ -2925,7 +2944,11 @@ int IE_Imp_MsWord_97::_beginPara (wvParseStruct *ps, UT_uint32 tag,
 		UT_UTF8String sDelim;
 		s_mapDocToAbiListDelim (apap->linfo.numberstr,apap->linfo.numberstr_size,sDelim);
 		list_atts[iOffset++] = "list-delim";
-		list_atts[iOffset++] = s_stripDangerousChars(sDelim.utf8_str());
+
+		char * t = s_stripDangerousChars(sDelim.utf8_str());
+		UT_String sDlm = t;
+		FREEP(t);
+		list_atts[iOffset++] = sDlm.c_str();
 
 		list_atts[iOffset++] = "level";
 		UT_String_sprintf(propBuffer, "%d", apap->ilvl + 1); // Word level starts at 0, Abi's at 1
@@ -3085,6 +3108,7 @@ int IE_Imp_MsWord_97::_endPara (wvParseStruct *ps, UT_uint32 tag,
 
 	this->_flush ();
 	m_bInPara = false;
+	m_bLineBreakPending = false;
 	
 	return 0;
 }
@@ -5957,7 +5981,7 @@ bool IE_Imp_MsWord_97::_handleNotesText(UT_uint32 iDocPosition)
 			m_bInSect = true;
 		}
 
-		if(iDocPosition == m_pEndnotes[m_iNextENote].txt_pos +
+		if( m_iNextENote < m_iEndnotesCount && iDocPosition == m_pEndnotes[m_iNextENote].txt_pos +
 		                   m_pEndnotes[m_iNextENote].txt_len)
 		{
 			m_iNextENote++;
@@ -5975,7 +5999,7 @@ bool IE_Imp_MsWord_97::_handleNotesText(UT_uint32 iDocPosition)
 		}
 
 		// if this is the first character in an endnote, insert the anchor
-		if(iDocPosition == m_pEndnotes[m_iNextENote].txt_pos)
+		if( m_iNextENote < m_iEndnotesCount && iDocPosition == m_pEndnotes[m_iNextENote].txt_pos)
 		{
 			const XML_Char * attribsA[] = {"type", "endnote_anchor",
 										   "endnote-id", NULL,

@@ -639,9 +639,23 @@ fl_SectionLayout * fl_SectionLayout::bl_doclistener_insertTable(SectionType iTyp
 	m_pDoc->getBounds(true,pos1);
 
 	fl_SectionLayout* pSL = NULL;
+	bool bFrame = (getContainerType() == FL_CONTAINER_FRAME);
+	PT_DocPosition pos = getPosition(true)+1;
+	bool bTooFar = (pcrx->getPosition() > pos);
+	if(bFrame && bTooFar)
+	{
+	  //
+	  // This happens if a table is inserted right after an end frame strux
+	  //
+	  fl_DocSectionLayout * pDSL = getDocSectionLayout();
+	  fl_ContainerLayout * pCL = static_cast<fl_ContainerLayout *>(this);
+	  pSL = static_cast<fl_SectionLayout *>(static_cast<fl_ContainerLayout *>(pDSL)->insert(sdh,pCL,pcrx->getIndexAP(), FL_CONTAINER_TABLE));
 
-	pSL = static_cast<fl_SectionLayout *>(static_cast<fl_ContainerLayout *>(this)->insert(sdh,this,pcrx->getIndexAP(), FL_CONTAINER_TABLE));
-
+	}
+	else
+	{
+	  pSL = static_cast<fl_SectionLayout *>(static_cast<fl_ContainerLayout *>(this)->insert(sdh,this,pcrx->getIndexAP(), FL_CONTAINER_TABLE));
+	}
 	PL_StruxFmtHandle sfhNew = static_cast<PL_StruxFmtHandle>(pSL);
 	//
 	// Don't bind to shadows
@@ -1241,6 +1255,9 @@ void fl_DocSectionLayout::_HdrFtrChangeCallback(UT_Worker * pWorker)
 //
 // update the screen
 //
+	pDSL->format();
+	pDSL->formatAllHdrFtr();
+	pDSL->updateLayout(true);
 	pDoc->signalListeners(PD_SIGNAL_UPDATE_LAYOUT);
 	pDoc->notifyPieceTableChangeEnd();
 	pDSL->m_sHdrFtrChangeProps.clear();
@@ -1773,6 +1790,8 @@ void fl_DocSectionLayout::updateLayout(bool bDoFull)
 		UT_sint32 count = static_cast<UT_sint32>(m_vecFormatLayout.getItemCount());
 		for(i=0; i<count; i++)
 		{  
+		        if(j >= m_vecFormatLayout.getItemCount())
+			    break;
 		        pBL = m_vecFormatLayout.getNthItem(j);
 			j++;
 		        eHidden  = pBL->isHidden();
@@ -1789,7 +1808,8 @@ void fl_DocSectionLayout::updateLayout(bool bDoFull)
 				  {
 				       pBL->format();
 				       j--;
-				       m_vecFormatLayout.deleteNthItem(j);
+				       if(j < m_vecFormatLayout.getItemCount())
+					 m_vecFormatLayout.deleteNthItem(j);
 				  }
 			     }
 			     if (pBL->getContainerType() != FL_CONTAINER_BLOCK && !getDocument()->isDontImmediateLayout())
@@ -1873,6 +1893,7 @@ void fl_DocSectionLayout::setNeedsSectionBreak(bool bSet, fp_Page * pPage)
 void fl_DocSectionLayout::completeBreakSection(void)
 {
 	m_bNeedsSectionBreak = true;
+	updateLayout(true);
 	m_ColumnBreaker.setStartPage(NULL);
 	m_ColumnBreaker.breakSection(this);
 	m_bNeedsSectionBreak = false;
@@ -3172,6 +3193,7 @@ void fl_HdrFtrSectionLayout::collapseBlock(fl_ContainerLayout *pBlock)
 		_PageHdrFtrShadowPair* pPair = m_vecPages.getNthItem(i);
 		fl_ContainerLayout * pShadowBL = pPair->getShadow()->findMatchingContainer(pBlock);
 		UT_ASSERT(pShadowBL);
+		UT_DEBUGMSG(("Doing collapseBlock %x \n",pBlock));
 		if(pShadowBL)
 		{
 			// In case we've never checked this one
@@ -3342,10 +3364,23 @@ void fl_HdrFtrSectionLayout::changeIntoHdrFtrSection( fl_DocSectionLayout * pSL)
 \param pcrx the changerecord identifying this action as necesary.
 \returns true
 */
-bool fl_HdrFtrSectionLayout::doclistener_deleteStrux(const PX_ChangeRecord_Strux * pcrx)
+bool fl_HdrFtrSectionLayout::doclistener_deleteStrux(const PX_ChangeRecord * pcr)
 {
-	UT_ASSERT(pcrx->getType()==PX_ChangeRecord::PXT_DeleteStrux);
-	UT_ASSERT(pcrx->getStruxType()==PTX_SectionHdrFtr);
+	UT_ASSERT(pcr->getType()==PX_ChangeRecord::PXT_DeleteStrux ||
+			  pcr->getType()==PX_ChangeRecord::PXT_ChangeStrux);
+	
+
+	if(pcr->getType()==PX_ChangeRecord::PXT_ChangeStrux)
+	{
+		PX_ChangeRecord_StruxChange * pcrx  = (PX_ChangeRecord_StruxChange *) pcr;
+		UT_ASSERT_HARMLESS( pcrx->isRevisionDelete() );
+	}
+	else
+	{
+		PX_ChangeRecord_Strux * pcrx  = (PX_ChangeRecord_Strux *) pcr;
+		UT_ASSERT(pcrx->getStruxType()==PTX_SectionHdrFtr);
+	}
+	
 //
 // Get last doc section. Move all the blocks from here to there after deleting
 // this strux.
@@ -3434,13 +3469,14 @@ void fl_HdrFtrSectionLayout::addPage(fp_Page* pPage)
 	if(pOldShadow != NULL)
 	{
 		pOldShadow->getHdrFtrSectionLayout()->deletePage(pPage);
+		pPage->removeHdrFtr(m_iHFType);
 	}
 
 	_PageHdrFtrShadowPair* pPair = new _PageHdrFtrShadowPair();
 	UT_return_if_fail( pPair );
 	
 	// TODO outofmem
-	xxx_UT_DEBUGMSG(("SEVIOR: Add page %x to pair %x \n",pPage,pPair));
+	UT_DEBUGMSG(("SEVIOR: Add page %x to pair %x \n",pPage,pPair));
 	pPair->setPage(pPage);
 	pPair->setShadow(new fl_HdrFtrShadow(m_pLayout, pPage, this, getStruxDocHandle(), m_apIndex));
 	//
@@ -3588,6 +3624,7 @@ void fl_HdrFtrSectionLayout::deletePage(fp_Page* pPage)
 	fp_Page * ppPage = pPair->getPage();
 	UT_ASSERT(pPage == ppPage);
 	delete pPair->getShadow();
+	UT_DEBUGMSG(("Doing deletePage %x \n",pPage));
 	if(getDocLayout()->findPage(ppPage) >= 0)
 	{
 			ppPage->removeHdrFtr(getHFType());
@@ -4427,7 +4464,6 @@ fl_SectionLayout * fl_HdrFtrSectionLayout::bl_doclistener_insertTable(SectionTyp
 	}
 
 	fl_SectionLayout::checkAndAdjustCellSize();
-	bool bResult = true;
 //
 // Now insert it into all the shadows.
 //

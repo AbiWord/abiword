@@ -447,7 +447,16 @@ void GR_EmbedManager::releaseEmbedView(UT_sint32 uid)
  * Returns true if the plugin can be editted via the modify method.
  * The default implementation cannot be editted so we return false.
  */
-bool GR_EmbedManager::isEdittable(void)
+bool GR_EmbedManager::isEdittable(UT_sint32 uid)
 {
   return false;
+}
+
+/*!
+ * Returns true if the plugin can be resized. Subclasses overide if they 
+ * need to
+ */
+bool GR_EmbedManager::isResizeable(UT_sint32 uid)
+{
+  return true;
 }

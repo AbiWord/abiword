@@ -51,4 +51,7 @@ BeginLayout(SimpleOps, AP_STRING_ID_TB_Simple, AP_PREF_KEY_SimpleBarVisible)
 	ToolbarItem(AP_TOOLBAR_ID_EDIT_UNDO)
 	ToolbarItem(AP_TOOLBAR_ID_EDIT_REDO)
 	
+	Spacer()
+	ToolbarItem(AP_TOOLBAR_ID_VIEW_FULL_SCREEN)
+	
 EndLayout()

@@ -2,3 +2,8 @@
 A typical configuration looks like this:
 
 ./configure --prefix=/home/foo/libabi --disable-static --enable-symbols --disable-debug --disable-gnome --with-sys-wv && make
+
+TODO: 
+* install headers by using _HEADERS macro or similar instead of install-hook
+* fix hildon
+* move bindings to own lib

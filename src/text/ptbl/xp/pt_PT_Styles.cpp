@@ -412,6 +412,9 @@ static UT_sint32 compareStyleNames(const void * vS1, const void * vS2)
 }
 #endif
 
+/*!
+    Do not use this function inside loops, used the other enumStyles() instead !!!
+ */
 bool pt_PieceTable::enumStyles(UT_uint32 k,
 							   const char ** pszName,
 							   const PD_Style ** ppStyle) const
@@ -440,6 +443,17 @@ bool pt_PieceTable::enumStyles(UT_uint32 k,
 	UT_ASSERT_HARMLESS(*pszName);
 
 	delete vStyle;
+
+	return true;
+}
+
+/*!
+    generate vector of styles
+    the caller has to delete pStyle when done ...
+*/
+bool pt_PieceTable::enumStyles(UT_GenericVector<PD_Style*> *& pStyles) const
+{
+	pStyles = m_hashStyles.enumerate() ;
 
 	return true;
 }

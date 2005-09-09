@@ -1102,41 +1102,62 @@ bool GR_Graphics::canBreak(GR_RenderInfo & ri, UT_sint32 &iNext, bool bAfter)
 {
 	UT_UCS4Char c[2];
 
-	iNext = -1; // we do not bother with this
+	// Default to -1.
+	iNext = -1; 
+
+	// Check the iterator is OK.
 	UT_return_val_if_fail(ri.m_pText && ri.m_pText->getStatus() == UTIter_OK, false);
-	
+
+	// Advance the iterator by the given offset.
 	*(ri.m_pText) += ri.m_iOffset;
+	// Check that we haven't run off the end of the iterator.
 	UT_return_val_if_fail(ri.m_pText->getStatus() == UTIter_OK, false);
-	
+
+	// Fetch a pointer to the Encoding manager.
 	UT_return_val_if_fail(getApp(), false);
+	const XAP_EncodingManager *encMan = getApp()->getEncodingManager();
+	UT_return_val_if_fail(encMan, false);
 
-
-	if (bAfter) 
+	// Set up c[] appropriately depending on whether we're looking
+	// for break before or after.
+	if (bAfter)
 	{
-		// Look up this character and the next.
-		c[0] = ri.m_pText->getChar();
-		++(*ri.m_pText);
 		c[1] = ri.m_pText->getChar();
-		// Check for end of document.
-		if (c[1] == UT_IT_ERROR) 
-			return false;
-
-		return getApp()->getEncodingManager()->canBreakBetween(c);
 	}
 	else
 	{
-		// Look up this character and the one before.
+		--(*ri.m_pText);  
 		c[1] = ri.m_pText->getChar();
-		--(*ri.m_pText);
-		c[0] = ri.m_pText->getChar();
-		// Check for beginning of document.
-		if (c[0] == UT_IT_ERROR) 
-			return true;
-
-		return getApp()->getEncodingManager()->canBreakBetween(c);
 	}
-	// Control should never reach here.
-	UT_ASSERT(UT_SHOULD_NOT_HAPPEN);
+
+	// Make sure we managed to get the character we wanted.
+	if (c[1] == UT_IT_ERROR)
+		return false;
+
+	UT_uint32 iCount = ri.m_iOffset;
+	do
+	{
+		++(*ri.m_pText);
+		c[0] = c[1];
+		c[1] = ri.m_pText->getChar();
+
+		// If we reach the end of the document then return false
+		// (and leave iNext set to -1).
+		if (c[1] == UT_IT_ERROR)
+			return false;
+		iCount++;
+	}
+	while (!encMan->canBreakBetween(c));
+
+	// Set iNext.
+	iNext = iCount - 1;
+
+	// If a break was possible between the first character pair
+	// then return true. 
+	if (iNext == ri.m_iOffset)
+		return true;
+	// ...otherwise, return false.
+	return false;
 }
 
 /*!

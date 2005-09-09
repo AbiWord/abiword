@@ -557,6 +557,8 @@ static void help_button_cb (GObject * button, XAP_Dialog * pDlg)
 
 static void sAddHelpButton (GtkDialog * me, XAP_Dialog * pDlg)
 {
+#ifdef HAVE_HILDON
+#else
   // prevent help button from being added twice
   gint has_button = GPOINTER_TO_INT (g_object_get_data (G_OBJECT (me), "has-help-button"));
 
@@ -576,6 +578,7 @@ static void sAddHelpButton (GtkDialog * me, XAP_Dialog * pDlg)
 
     g_object_set_data (G_OBJECT (me), "has-help-button", GINT_TO_POINTER (1));
   }
+#endif
 }
 
 /*!
@@ -590,9 +593,9 @@ void centerDialog(GtkWidget * parent, GtkWidget * child, bool set_transient_for)
 	  gtk_window_set_transient_for(GTK_WINDOW(child),
 				       GTK_WINDOW(parent));
 
-#ifdef HAVE_GNOME
+#if defined(HAVE_GNOME)
 	gnome_window_icon_set_from_default (GTK_WINDOW(child));
-#else
+#elif !defined(HAVE_HILDON)
 	GdkPixbuf * icon = gtk_window_get_icon(GTK_WINDOW(parent));	
 	if ( NULL != icon )
 	{
@@ -625,9 +628,7 @@ void abiSetupModalDialog(GtkDialog * me, XAP_Frame *pFrame, XAP_Dialog * pDlg, g
 	
 	// set the default response
 	gtk_dialog_set_default_response ( me, dfl_response ) ;
-#ifndef HAVE_HILDON
 	sAddHelpButton (me, pDlg);
-#endif
 
 	// and make it modal
 	gtk_window_set_modal ( GTK_WINDOW(me), TRUE ) ;
@@ -703,10 +704,7 @@ void abiSetupModelessDialog(GtkDialog * me, XAP_Frame * pFrame, XAP_Dialog * pDl
 	
 	// set the default response
 	gtk_dialog_set_default_response ( me, dfl_response ) ;
-
-#ifndef HAVE_HILDON	
 	sAddHelpButton (me, pDlg);
-#endif
 
 	// and mark it as modeless
 	gtk_window_set_modal ( GTK_WINDOW(me), FALSE ) ;

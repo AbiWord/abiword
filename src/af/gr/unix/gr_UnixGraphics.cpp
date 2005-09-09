@@ -28,6 +28,7 @@
 #include "xap_UnixApp.h"
 #include "xap_UnixFontManager.h"
 #include "xap_UnixFont.h"
+#include "xap_UnixNullGraphics.h"
 
 #include "gr_UnixGraphics.h"
 #include "gr_UnixImage.h"
@@ -743,6 +744,11 @@ bool GR_UnixGraphics::queryProperties(GR_Graphics::Properties gp) const
 void GR_UnixGraphics::setZoomPercentage(UT_uint32 iZoom)
 {
 	GR_Graphics::setZoomPercentage (iZoom); // chain up
+
+	// If we have a font at all then fetch a device font suitable for the new
+	// zoom level.
+	if (m_pFont)
+		m_pXftFontD = m_pFont->getDeviceXftFont(iZoom);
 }
 
 static GdkCapStyle mapCapStyle ( GR_Graphics::CapStyle in )
@@ -952,6 +958,7 @@ void GR_UnixGraphics::drawChars(const UT_UCSChar* pChars, int iCharOffset,
 			{
 				pCharSpec[i].x = idx;
 				pCharSpec[i].y = currentYoff;
+				xxx_UT_DEBUGMSG(("xPos %d idx %d i %d \n",xPos,idx,i));
 			}
 			else
 			{
@@ -1902,12 +1909,18 @@ void GR_UnixGraphics::_endPaint ()
 
 GR_Graphics *   GR_UnixGraphics::graphicsAllocator(GR_AllocInfo& allocInfo)
 {
-	GR_UnixAllocInfo &allocator = (GR_UnixAllocInfo&)allocInfo;
 
-	if (allocator.m_win) {
-		return new GR_UnixGraphics(allocator.m_win, allocator.m_fontManager, XAP_App::getApp());
-	}
-	else {
+	if (allocInfo.getType() == GRID_UNIX_NULL)
+		{
+			return UnixNull_Graphics::graphicsAllocator(allocInfo);
+		}
+	GR_UnixAllocInfo &allocator = (GR_UnixAllocInfo&)allocInfo;
+	if (allocator.m_win) 
+		{
+			return new GR_UnixGraphics(allocator.m_win, allocator.m_fontManager, XAP_App::getApp());
+		}
+	else 
+		{
 		return new GR_UnixGraphics(allocator.m_pixmap, allocator.m_fontManager, XAP_App::getApp(), allocator.m_usePixmap);
 	}
 }

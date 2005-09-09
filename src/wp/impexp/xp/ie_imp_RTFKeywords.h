@@ -516,6 +516,7 @@ _rtf_keyword rtfKeywords[] = {
 	{"fs", false, false, NO_CONTEXT, RTF_KW_fs }, 
 	{"fscript", false, false, NO_CONTEXT, RTF_KW_fscript }, 
 	{"fswiss", false, false, NO_CONTEXT, RTF_KW_fswiss }, 
+	{"ftech", false, false, NO_CONTEXT, RTF_KW_ftech },
 	{"ftnalt", false, false, NO_CONTEXT, RTF_KW_ftnalt }, 
 	{"ftnbj", false, false, NO_CONTEXT, RTF_KW_ftnbj }, 
 	{"ftncn", false, false, NO_CONTEXT, RTF_KW_ftncn }, 
