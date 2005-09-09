@@ -1,0 +1,12 @@
+[Desktop Entry]
+Version=@VERSION@
+Encoding=UTF-8
+Name=AbiWord
+Type=Application
+Exec=@prefix@/bin/abiword
+Icon=qgn_list_word
+X-Window-Icon=qgn_list_word
+X-Window-Icon-Dimmed=qgn_list_word
+X-HildonDesk-ShowInToolbar=true
+StartupWMClass=abiword
+GenericName[en]=

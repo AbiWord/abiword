@@ -1,0 +1,101 @@
+#!/usr/bin/make -f
+# maemo-word-processor debian/rules that uses debhelper.
+# GNU copyright 1997 to 1999 by Joey Hess.
+
+# Uncomment this to turn on verbose mode.
+#export DH_VERBOSE=1
+
+# These are used for cross-compiling and for saving the configure script
+# from having to guess our platform (since we know it already)
+DEB_HOST_GNU_TYPE   ?= $(shell dpkg-architecture -qDEB_HOST_GNU_TYPE)
+DEB_BUILD_GNU_TYPE  ?= $(shell dpkg-architecture -qDEB_BUILD_GNU_TYPE)
+
+CFLAGS = -Wall -g
+
+ifneq (,$(findstring noopt,$(DEB_BUILD_OPTIONS)))
+	CFLAGS += -O0
+else
+	CFLAGS += -O2
+endif
+ifeq (,$(findstring nostrip,$(DEB_BUILD_OPTIONS)))
+	INSTALL_PROGRAM += -s
+endif
+
+configure: configure-stamp
+
+configure-stamp:
+	dh_testdir
+	# Add here commands to configure the package.
+	#
+	cd $(CURDIR) && \
+	  ./autogen.sh && \
+	  ./configure --host=$(DEB_HOST_GNU_TYPE) --build=$(DEB_BUILD_GNU_TYPE) --prefix=/usr --mandir=\$${prefix}/share/man --infodir=\$${prefix}/share/info --enable-hildon
+	touch configure-stamp
+
+build: build-stamp
+
+build-stamp: configure-stamp
+	dh_testdir
+
+	# Add here commands to compile the package.
+	$(MAKE)
+
+	touch $@
+
+clean:
+	dh_testdir
+	dh_testroot
+	rm -f build-stamp configure-stamp
+
+	# Add here commands to clean up after the build process.
+	-$(MAKE) -C $(CURDIR) clean
+	-$(MAKE) -C $(CURDIR) realclean
+	#$(CURDIR)/clean_dir_struct.sh
+
+	dh_clean
+
+install: build
+	dh_testdir
+	dh_testroot
+	dh_clean -k
+	dh_installdirs
+
+        # Add here commands to install the package into debian/abiword.
+	install -m 755 $(CURDIR)/src/wp/main/unix/AbiWord-2.4 $(CURDIR)/debian/abiword/usr/bin/AbiWord-2.4
+
+        # Install Glade files
+	mkdir -p $(CURDIR)/debian/abiword/usr/share/AbiSuite-2.4/AbiWord/glade/
+	install -m 644 $(CURDIR)/src/af/xap/unix/*.glade $(CURDIR)/debian/abiword/usr/share/AbiSuite-2.4/AbiWord/glade/
+	install -m 644 $(CURDIR)/src/wp/ap/unix/*.glade $(CURDIR)/debian/abiword/usr/share/AbiSuite-2.4/AbiWord/glade/
+
+        # Install menu icon.
+	mkdir -p $(CURDIR)/debian/abiword/usr/share/icons/hicolor/26x26/
+	install -m 644 $(CURDIR)/debian/misc/qgn_list_word.png $(CURDIR)/debian/abiword/usr/share/icons/hicolor/26x26/
+
+        # Install desktop file.
+	mkdir -p $(CURDIR)/debian/abiword/usr/share/applications/hildon/
+	install -m 644 $(CURDIR)/debian/misc/abiword.desktop $(CURDIR)/debian/abiword/usr/share/applications/hildon
+
+        # Add D-Bus service
+	mkdir -p $(CURDIR)/debian/abiword/usr/lib/dbus-1.0/services/
+	install -m 644 $(CURDIR)/debian/misc/org.abisource.abiword.service $(CURDIR)/debian/abiword/usr/lib/dbus-1.0/services
+
+# Build architecture-dependent files here.
+binary: build install
+	dh_testdir -a
+	dh_testroot -a
+	dh_installdocs -a -XCVS
+	dh_installmime -a
+	dh_installman -a
+	dh_installchangelogs -a
+	dh_link -a
+	dh_strip -a
+	dh_compress -a
+	dh_fixperms -a
+	dh_installdeb -a
+	dh_shlibdeps -a
+	dh_gencontrol -a
+	dh_md5sums -a
+	dh_builddeb -a
+
+.PHONY: build clean binary install configure
