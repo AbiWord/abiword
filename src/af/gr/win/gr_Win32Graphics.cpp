@@ -1778,11 +1778,10 @@ bool GR_Win32Font::glyphBox(UT_UCS4Char g, UT_Rect & rec, GR_Graphics * pG)
 	}
 	else
 	{
-		// TODO: an UT_UCS4Char -> ANSI conversion here, then call GetGlyphOutlineA() ...
-		// Actually, this probably is not much use, since this function is currently only
-		// used by the math plugin, and for that to work, we do need to work with unicode,
-		// not ANSI
-		UT_return_val_if_fail( UT_NOT_IMPLEMENTED, false );
+		// GetGlyphOutlineA() ... using the GGO_GLYPH_INDEX = 0x0080 to get the ttf glyph 
+		// for the unicode character set in ANSI
+		//  
+		iRet = GetGlyphOutlineA(printDC, (UINT)g, 0x0080, &gm, 0, NULL, &m);
 	}
 	
 	if(GDI_ERROR == iRet)
