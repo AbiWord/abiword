@@ -457,37 +457,7 @@ GR_CocoaGraphics::~GR_CocoaGraphics()
 	[m_fontProps release];
 	[m_fontForGraphics release];
 	[m_currentColor release];
-#if 0
-	RELEASEP(m_imageBlue16x15);
-	RELEASEP(m_imageBlue11x16);
-	RELEASEP(m_imageGrey16x15);
-	RELEASEP(m_imageGrey11x16);
 
-	RELEASEP(m_colorBlue16x15);
-	RELEASEP(m_colorBlue11x16);
-	RELEASEP(m_colorGrey16x15);
-	RELEASEP(m_colorGrey11x16);
-
-	RELEASEP(m_Cursor_E);
-	RELEASEP(m_Cursor_N);
-	RELEASEP(m_Cursor_NE);
-	RELEASEP(m_Cursor_NW);
-	RELEASEP(m_Cursor_S);
-	RELEASEP(m_Cursor_SE);
-	RELEASEP(m_Cursor_SW);
-	RELEASEP(m_Cursor_W);
-
-	RELEASEP(m_Cursor_Wait);
-	RELEASEP(m_Cursor_LeftArrow);
-	RELEASEP(m_Cursor_RightArrow);
-	RELEASEP(m_Cursor_Compass);
-	RELEASEP(m_Cursor_Exchange);
-	RELEASEP(m_Cursor_LeftRight);
-	RELEASEP(m_Cursor_UpDown);
-	RELEASEP(m_Cursor_Crosshair);
-	RELEASEP(m_Cursor_HandPointer);
-	RELEASEP(m_Cursor_DownArrow);
-#endif
 	s_iInstanceCount--;
 	for (int i = 0; i < COUNT_3D_COLORS; i++) {
 		[m_3dColors[i] release];
