@@ -9,7 +9,7 @@ Packager: Robert Staudinger <robsta@stereolyzer.net>
 Summary: AbiWord is a lightweight word processing application.
 SoftwareVersion: @VERSION@
 AutopackageTarget: 1.0
-PackageVersion: 11
+PackageVersion: 1
 
 # Only uncomment InterfaceVersion if your package exposes interfaces to other software,
 # for instance if it includes DSOs or python/perl modules. See the developer guide for more info,
@@ -35,6 +35,19 @@ build_root="$orig_build_root"
 cd ../abiword-plugins
 make clean
 prepareBuild --disable-debug --disable-static --disable-all --enable-abigrammar --enable-wordperfect --enable-abimathview
+### the charts and ODT plugins have higher dependencies
+if [ $ABI_PLUGIN_ABIGOCHART_ENV ] ; then
+	export PATH=$ABI_PLUGIN_ABIGOCHART_ENV/bin:$PATH
+	export PKG_CONFIG_PATH=$ABI_PLUGIN_ABIGOCHART_ENV/lib/pkgconfig:/usr/lib/pkgconfig
+	# only ship ODT /importer/
+	export CFLAGS="$CFLAGS -DODT_DISABLE_EXPORTER"
+	export CXXFLAGS="$CXXFLAGS -DODT_DISABLE_EXPORTER"
+	build_root="$orig_build_root"
+	cd $build_root/../abiword-plugins
+	make clean
+	prepareBuild --disable-debug --disable-static --disable-all --enable-abigochart --enable-OpenDocument
+fi
+
 
 [BuildUnprepare]
 unprepareBuild
@@ -65,6 +78,8 @@ require @freedesktop.org/enchant 1.1
 ### plugin dependencies
 require @abisource.com/link-grammar 4.1
 require @libwpd.sourceforge.net/libwpd 8.0
+require @gnome.org/gtkmathview 0.7
+require @gnome.org/goffice 0.0
 
 [Install]
 # abiword

@@ -12,21 +12,27 @@ Autopackage is a distribution independent packaging system for x86 linux. Inform
 (3) Check AbiWord's dependencies. Check that you have everything in place to build AbiWord with GNOME support. Also make sure you have the development packages for enchant [3] and gucharmap [4] installed because these are optional. 
 
 (4) Make sure you have the dependencies for the following plugins in place: 
-	* Grammar: link-grammar (get it from AbiWord's CVS)
-	* Wordperfect: libwpd (http://libwpd.sourceforge.net)
+	* Grammar: 	link-grammar (get it from AbiWord's CVS or released tarballs)
+	* Wordperfect: 	libwpd (http://libwpd.sourceforge.net)
+	* Charts: 	libgoffice (get if from GNOME CVS or released tarballs)
+	* OpenDocument:	libgsf must be recent enough (GNOME CVS or tarballs)
+	* Equations: 	abimathview (GNOME CVS or tarballs)
 So these plugins will be built and shipped with the autopackage.
 
 (5) Make AbiWord's skeleton files available to autopackage. Simply put: 
 	cp abi/src/pkg/linux/apkg/\@* /usr/share/autopackage/skeletons/
+	(adapt paths to your setup)
 
 (6) If you are working with a CVS version and have a fresh checkout of "abiword-plugins" you need to cd into that directory and run ./nextgen.sh (that's the ./autogen.sh equivalent for plugins).
 
 (7) You need to build the autopackage out of the source tree. this means you have to create and "abi-build" peer directory at the save level as "abi" and "abiword-plugins". Go into "abi-build" and issue "../abi/configure"
 
-(8) Build the autopackage by running 
+(8) There seems to be a problem with applications built against a recent gnome stack (with glib >= 2.6). Therefore our reference build box runs Fedora Core 3. The chats and OpenDocument plugins however depends on recent libxml/libgsf/gtk+/libgoffice, so the prefix of an up to date build environment can be specified in the environment variable ABI_PLUGIN_ABIGOCHART_ENV. If that variable is not set these two plugins won't be built. For details please look at abiword-gnome.apspec.in
+
+(9) Build the autopackage by running 
 	makeinstaller src/pkg/linux/apkg/abiword-gnome.apspec
 
-(9) After the build finished successfully you'll have the autopackage in your current directory. If you want to ship it make sure you test it on machines that don't have the autopackage developer tools installed before doing so.
+(10) After the build finished successfully you'll have the autopackage in your current directory. If you want to ship it make sure you test it on machines that don't have the autopackage developer tools installed before doing so.
 
 If you have any questions please get in touch via AbiWord's developer mailing list or IRC channel.
 
