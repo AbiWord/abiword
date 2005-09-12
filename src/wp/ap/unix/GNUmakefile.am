@@ -122,5 +122,6 @@ libWpAp_unix_la_SOURCES = \
 	ap_@ABI_FE@Dialog_PageSetup.cpp \
 	ap_@ABI_FE@Dialog_Latex.cpp 
 
-libabiwordprivateincdir = $(libabiword_includedir_private)
-libabiwordprivateinc_HEADERS = *.h
+install-data-hook:
+	@mkdir -p $(libabiword_includedir_private) && cp *.h $(libabiword_includedir_private)
+
