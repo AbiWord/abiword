@@ -1294,7 +1294,8 @@ GR_Image * AP_UnixApp::_showSplash(UT_uint32 delay)
 			}
 		}
 		// create a centered window the size of our image
-		wSplash = gtk_window_new(GTK_WINDOW_POPUP); //GTK_WINDOW_DIALOG
+		wSplash = gtk_window_new(GTK_WINDOW_TOPLEVEL); //GTK_WINDOW_DIALOG
+		gtk_window_set_decorated (GTK_WINDOW(wSplash), FALSE);
 		gtk_window_set_default_size (GTK_WINDOW (wSplash),
 									 iSplashWidth, iSplashHeight);
 		gtk_window_set_resizable(GTK_WINDOW(wSplash), FALSE);
