@@ -170,6 +170,11 @@ BOOL AP_Win32Dialog_Latex::_onInitDialog(HWND hWnd, WPARAM wParam, LPARAM lParam
 	setLatexInGUI();
 	centerDialog();	
 
+	if (GetDlgCtrlID((HWND) wParam) != AP_RID_DIALOG_LATEX_EDIT_LATEX) 
+	{ 
+		SetFocus(GetDlgItem(hWnd, AP_RID_DIALOG_LATEX_EDIT_LATEX)); 
+		return 0; 
+	} 	
 	return 1;							// 1 == we did not call SetFocus()
 }
 
