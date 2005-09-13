@@ -1780,8 +1780,34 @@ bool GR_Win32Font::glyphBox(UT_UCS4Char g, UT_Rect & rec, GR_Graphics * pG)
 	{
 		// GetGlyphOutlineA() ... using the GGO_GLYPH_INDEX = 0x0080 to get the ttf glyph 
 		// for the unicode character set in ANSI
-		//  
-		iRet = GetGlyphOutlineA(printDC, (UINT)g, 0x0080, &gm, 0, NULL, &m);
+
+		// first of all, we need to translate the ucs4 value to the index; we use
+		// GetCharacterPlacementW() for this. Event though the docs state that this
+		// function is only available on win9x via unicows, this is in fact incorrect
+		// (whether the 9x version of the function is fully functional I do not know, but
+		// it does glyph index lookup).
+		UINT iIndx;
+		GCP_RESULTSW gcpResult = {0};
+		gcpResult.lStructSize = sizeof(GCP_RESULTS);
+		
+		// w32api changed lpGlyphs from UINT * to LPWSTR to match MS PSDK in w32api v2.4
+#if defined(__MINGW32__) && (__W32API_MAJOR_VERSION == 2 && __W32API_MINOR_VERSION < 4)
+		gcpResult.lpGlyphs = (UINT *) &iIndx;	// Character glyphs
+#else			
+		gcpResult.lpGlyphs = (LPWSTR) &iIndx;	// Character glyphs
+#endif			
+		gcpResult.nGlyphs = 1;  // Array size
+
+		if(GetCharacterPlacementW(printDC, (LPCWSTR)&g, 1, 0, &gcpResult, 0))
+		{
+			iRet = GetGlyphOutlineA(printDC, iIndx, 0x0080 | GGO_METRICS, &gm, 0, NULL, &m);
+		}
+		else
+		{
+			// OK, the GetCharacterPlacementW function probably not present, we just do
+			// our best with the ANSI stuff
+			iRet = GetGlyphOutlineA(printDC, g, GGO_METRICS, &gm, 0, NULL, &m);
+		}
 	}
 	
 	if(GDI_ERROR == iRet)
