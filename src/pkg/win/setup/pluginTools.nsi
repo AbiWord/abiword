@@ -81,6 +81,134 @@ Section
 
 SectionEnd
 
+
+
+!macro dlFileMacro remoteFname localFname errMsg
+	!define retryDLlbl retryDL_${__FILE__}${__LINE__}
+	!define dlDonelbl dlDoneDL_${__FILE__}${__LINE__}
+
+	;Call ConnectInternet	; try to establish connection if not connected
+	;StrCmp $0 "online" 0 ${dlDonelbl}
+
+	${retryDLlbl}:
+	NSISdl::download "${remoteFname}" "${localFname}"
+	Pop $0 ;Get the return value
+	StrCmp $0 "success" ${dlDonelbl}
+		; Couldn't download the file
+		DetailPrint "${errMsg}"
+		DetailPrint "Remote URL: ${remoteFname}"
+		DetailPrint "Local File: ${localFname}"
+		DetailPrint "NSISdl::download returned $0"
+		MessageBox MB_RETRYCANCEL|MB_ICONEXCLAMATION|MB_DEFBUTTON1 "${errMsg}" IDRETRY ${retryDLlbl}
+	${dlDonelbl}:
+	!undef retryDLlbl
+	!undef dlDonelbl
+!macroend
+!define dlFile "!insertmacro dlFileMacro"
+
+;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;
+; Macro for unzipping a file from an archive with error reporting
+!macro unzipFileMacro archiveFname destinationPath fnameToExtract errMsg
+	!define uzDonelbl uzDone_${__FILE__}${__LINE__}
+
+	ZipDLL::extractfile "${archiveFname}" "${destinationPath}" "${fnameToExtract}"
+	Pop $0 ; Get return value
+	StrCmp $0 "success" ${uzDonelbl}
+		; Couldn't unzip the file
+		DetailPrint "${errMsg}"
+		MessageBox MB_OK|MB_ICONEXCLAMATION|MB_DEFBUTTON1 "${errMsg}" IDOK
+	${uzDonelbl}:
+	!undef uzDonelbl
+!macroend
+!define unzipFile "!insertmacro unzipFileMacro"
+
+Section "Equation Editor"
+	SectionIn 2
+	
+
+	; Testing clause to Overwrite Existing Version - if exists
+	IfFileExists "$INSTDIR\AbiWord\plugins\AbiMathView.dll" 0 DoInstall
+	
+	MessageBox MB_YESNO "Overwrite Existing Equation Editor Plugin?" IDYES DoInstall
+	
+	DetailPrint "Skipping Equation Editor Plugin (already exists)!"
+	Goto End
+
+	DoInstall:
+
+	;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;
+	; Unzip libxml2 and friends into same directory as AbiWord.exe
+	SetOutPath $INSTDIR\AbiWord
+
+	;;;;;;;;;
+	; libxml2
+	${dlFile} "http://www.abisource.com/downloads/dependencies/libxml2/libxml2-2.6.19-runtime.zip" "$TEMP\libxml2-2.6.19-runtime.zip" "ERROR: failed to download http://www.abisource.com/downloads/dependencies/libxml2/libxml2-2.6.19-runtime.zip"
+	StrCmp $0 "success" 0 doCleanup
+	${unzipFile} "$TEMP\libxml2-2.6.19-runtime.zip" "$INSTDIR\AbiWord" "bin\libxml2.dll" "ERROR: failed to extract libxml2.dll from libxml2-2.6.19-runtime.zip"
+	StrCmp $0 "success" 0 doCleanup
+
+	;;;;;;;
+	; iconv
+	${dlFile} "http://www.abisource.com/downloads/dependencies/libiconv/libiconv-1.9.1-runtime.zip" "$TEMP\libiconv-1.9.1-runtime.zip" "ERROR: failed to download http://www.abisource.com/downloads/dependencies/libiconv/libiconv-1.9.1-runtime.zip"
+	StrCmp $0 "success" 0 doCleanup
+	${unzipFile} "$TEMP\libiconv-1.9.1-runtime.zip" "$INSTDIR\AbiWord" "bin\iconv.dll" "ERROR: failed to extract iconv.dll from libiconv-1.9.1-runtime.zip"
+	StrCmp $0 "success" 0 doCleanup
+
+	;;;;;;
+	; intl
+	${dlFile} "http://www.abisource.com/downloads/dependencies/gettext/gettext-runtime-0.13.1-runtime.zip" "$TEMP\gettext-runtime-0.13.1-runtime.zip" "ERROR: failed to download http://www.abisource.com/downloads/dependencies/gettext/gettext-runtime-0.13.1-runtime.zip"
+	StrCmp $0 "success" 0 doCleanup
+	${unzipFile} "$TEMP\gettext-runtime-0.13.1-runtime.zip" "$INSTDIR\AbiWord" "bin\intl.dll" "ERROR: failed to extract intl.dll from gettext-runtime-0.13.1-runtime.zip"
+	StrCmp $0 "success" 0 doCleanup
+
+	;;;;;;;;;;;;;;;;;;
+	; glib and gobject
+	${dlFile} "http://www.abisource.com/downloads/dependencies/glib/glib-2.4.7-runtime.zip" "$TEMP\glib-2.4.7-runtime.zip" "ERROR: failed to download http://www.abisource.com/downloads/dependencies/glib/glib-2.4.7-runtime.zip"
+	StrCmp $0 "success" 0 doCleanup
+	${unzipFile} "$TEMP\glib-2.4.7-runtime.zip" "$INSTDIR\AbiWord" "bin\libglib-2.0-0.dll" "ERROR: failed to extract libglib-2.0-0.dll from glib-2.4.7-runtime.zip"
+	StrCmp $0 "success" 0 doCleanup
+	${unzipFile} "$TEMP\glib-2.4.7-runtime.zip" "$INSTDIR\AbiWord" "bin\libgobject-2.0-0.dll" "ERROR: failed to extract libgobject-2.0-0.dll from glib-2.4.7-runtime.zip"
+	StrCmp $0 "success" 0 doCleanup
+
+	;;;;;;;;;
+	; libmathview
+	${dlFile} "http://www.abisource.com/downloads/dependencies/gtkmathview/libmathview-0.7.3-1rp.zip" "$TEMP\libmathview-0.7.3-1rp.zip" "ERROR: failed to download http://www.abisource.com/downloads/dependencies/gtkmathview/libmathview-0.7.3-1rp.zip"
+	StrCmp $0 "success" 0 doCleanup
+	${unzipFile} "$TEMP\libmathview-0.7.3-1rp.zip" "$INSTDIR\AbiWord\bin" "libmathview-0.dll" "ERROR: failed to extract libmathview-0.dll from libmathview-0.7.3-1rp.zip"
+	StrCmp $0 "success" 0 doCleanup
+	${unzipFile} "$TEMP\libmathview-0.7.3-1rp.zip" "$INSTDIR\AbiWord\bin" "libmathview_frontend_libxml2-0.dll" "ERROR: failed to extract libmathview_frontend_libxml2-0.dll from libmathview-0.7.3-1rp.zip"
+	StrCmp $0 "success" 0 doCleanup
+
+
+	doCleanup:
+		; Delete temporary files
+		
+		Delete "$TEMP\libiconv-1.9.1-runtime.zip"
+		Delete "$TEMP\gettext-runtime-0.13.1-runtime.zip"
+		Delete "$TEMP\glib-2.4.7-runtime.zip"
+		Delete "$TEMP\libxml2-2.6.19-runtime.zip"
+		Delete "$TEMP\libmathview-0.7.3-1rp.zip"
+
+	;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;
+	; Set output path back to the plugins directory.
+	SetOutPath $INSTDIR\AbiWord\plugins
+
+	;Note - Requires Libxml2 - code for download mooched off of impexp installer
+	
+	File "AbiMathView.dll"
+	;Install Configuration Files - This better work...
+	SetOutPath $INSTDIR\math
+	File /r "..\AbiSuite\math\gtkmathview.conf.xml"
+	File /r "..\AbiSuite\math\dicionary-local.xml"
+	File /r "..\AbiSuite\math\dictionary.xml"
+	SetOutPath $INSTDIR\AbiWord\plugins
+  
+	End:
+SectionEnd
+
+
+
+
 SubSection /e "Mechanics and Grammar Tools"
 
 !ifdef 0
@@ -300,129 +428,6 @@ SectionEnd
 ;SectionDivider
 SubSectionEnd
 !endif
-
-
-!macro dlFileMacro remoteFname localFname errMsg
-	!define retryDLlbl retryDL_${__FILE__}${__LINE__}
-	!define dlDonelbl dlDoneDL_${__FILE__}${__LINE__}
-
-	;Call ConnectInternet	; try to establish connection if not connected
-	;StrCmp $0 "online" 0 ${dlDonelbl}
-
-	${retryDLlbl}:
-	NSISdl::download "${remoteFname}" "${localFname}"
-	Pop $0 ;Get the return value
-	StrCmp $0 "success" ${dlDonelbl}
-		; Couldn't download the file
-		DetailPrint "${errMsg}"
-		DetailPrint "Remote URL: ${remoteFname}"
-		DetailPrint "Local File: ${localFname}"
-		DetailPrint "NSISdl::download returned $0"
-		MessageBox MB_RETRYCANCEL|MB_ICONEXCLAMATION|MB_DEFBUTTON1 "${errMsg}" IDRETRY ${retryDLlbl}
-	${dlDonelbl}:
-	!undef retryDLlbl
-	!undef dlDonelbl
-!macroend
-!define dlFile "!insertmacro dlFileMacro"
-
-;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;
-; Macro for unzipping a file from an archive with error reporting
-!macro unzipFileMacro archiveFname destinationPath fnameToExtract errMsg
-	!define uzDonelbl uzDone_${__FILE__}${__LINE__}
-
-	ZipDLL::extractfile "${archiveFname}" "${destinationPath}" "${fnameToExtract}"
-	Pop $0 ; Get return value
-	StrCmp $0 "success" ${uzDonelbl}
-		; Couldn't unzip the file
-		DetailPrint "${errMsg}"
-		MessageBox MB_OK|MB_ICONEXCLAMATION|MB_DEFBUTTON1 "${errMsg}" IDOK
-	${uzDonelbl}:
-	!undef uzDonelbl
-!macroend
-!define unzipFile "!insertmacro unzipFileMacro"
-
-Section "Equation Editor"
-	SectionIn 2
-	
-
-	; Testing clause to Overwrite Existing Version - if exists
-	IfFileExists "$INSTDIR\AbiWord\plugins\AbiMathView.dll" 0 DoInstall
-	
-	MessageBox MB_YESNO "Overwrite Existing Equation Editor Plugin?" IDYES DoInstall
-	
-	DetailPrint "Skipping Equation Editor Plugin (already exists)!"
-	Goto End
-
-	DoInstall:
-
-	;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;
-	; Unzip libxml2 and friends into same directory as AbiWord.exe
-	SetOutPath $INSTDIR\AbiWord
-
-	;;;;;;;;;
-	; libxml2
-	${dlFile} "http://www.abisource.com/downloads/dependencies/libxml2/libxml2-2.6.19-runtime.zip" "$TEMP\libxml2-2.6.19-runtime.zip" "ERROR: failed to download http://www.abisource.com/downloads/dependencies/libxml2/libxml2-2.6.19-runtime.zip"
-	StrCmp $0 "success" 0 doCleanup
-	${unzipFile} "$TEMP\libxml2-2.6.19-runtime.zip" "$INSTDIR\AbiWord" "bin\libxml2.dll" "ERROR: failed to extract libxml2.dll from libxml2-2.6.19-runtime.zip"
-	StrCmp $0 "success" 0 doCleanup
-
-	;;;;;;;
-	; iconv
-	${dlFile} "http://www.abisource.com/downloads/dependencies/libiconv/libiconv-1.9.1-runtime.zip" "$TEMP\libiconv-1.9.1-runtime.zip" "ERROR: failed to download http://www.abisource.com/downloads/dependencies/libiconv/libiconv-1.9.1-runtime.zip"
-	StrCmp $0 "success" 0 doCleanup
-	${unzipFile} "$TEMP\libiconv-1.9.1-runtime.zip" "$INSTDIR\AbiWord" "bin\iconv.dll" "ERROR: failed to extract iconv.dll from libiconv-1.9.1-runtime.zip"
-	StrCmp $0 "success" 0 doCleanup
-
-	;;;;;;
-	; intl
-	${dlFile} "http://www.abisource.com/downloads/dependencies/gettext/gettext-runtime-0.13.1-runtime.zip" "$TEMP\gettext-runtime-0.13.1-runtime.zip" "ERROR: failed to download http://www.abisource.com/downloads/dependencies/gettext/gettext-runtime-0.13.1-runtime.zip"
-	StrCmp $0 "success" 0 doCleanup
-	${unzipFile} "$TEMP\gettext-runtime-0.13.1-runtime.zip" "$INSTDIR\AbiWord" "bin\intl.dll" "ERROR: failed to extract intl.dll from gettext-runtime-0.13.1-runtime.zip"
-	StrCmp $0 "success" 0 doCleanup
-
-	;;;;;;;;;;;;;;;;;;
-	; glib and gobject
-	${dlFile} "http://www.abisource.com/downloads/dependencies/glib/glib-2.4.7-runtime.zip" "$TEMP\glib-2.4.7-runtime.zip" "ERROR: failed to download http://www.abisource.com/downloads/dependencies/glib/glib-2.4.7-runtime.zip"
-	StrCmp $0 "success" 0 doCleanup
-	${unzipFile} "$TEMP\glib-2.4.7-runtime.zip" "$INSTDIR\AbiWord" "bin\libglib-2.0-0.dll" "ERROR: failed to extract libglib-2.0-0.dll from glib-2.4.7-runtime.zip"
-	StrCmp $0 "success" 0 doCleanup
-	${unzipFile} "$TEMP\glib-2.4.7-runtime.zip" "$INSTDIR\AbiWord" "bin\libgobject-2.0-0.dll" "ERROR: failed to extract libgobject-2.0-0.dll from glib-2.4.7-runtime.zip"
-	StrCmp $0 "success" 0 doCleanup
-
-	;;;;;;;;;
-	; libmathview
-	${dlFile} "http://www.abisource.com/downloads/dependencies/gtkmathview/libmathview-0.7.3-1rp.zip" "$TEMP\libmathview-0.7.3-1rp.zip" "ERROR: failed to download http://www.abisource.com/downloads/dependencies/gtkmathview/libmathview-0.7.3-1rp.zip"
-	StrCmp $0 "success" 0 doCleanup
-	${unzipFile} "$TEMP\libmathview-0.7.3-1rp.zip" "$INSTDIR\AbiWord\bin" "libmathview-0.dll" "ERROR: failed to extract libmathview-0.dll from libmathview-0.7.3-1rp.zip"
-	StrCmp $0 "success" 0 doCleanup
-	${unzipFile} "$TEMP\libmathview-0.7.3-1rp.zip" "$INSTDIR\AbiWord\bin" "libmathview_frontend_libxml2-0.dll" "ERROR: failed to extract libmathview_frontend_libxml2-0.dll from libmathview-0.7.3-1rp.zip"
-	StrCmp $0 "success" 0 doCleanup
-
-
-	doCleanup:
-		; Delete temporary files
-		
-		Delete "$TEMP\libiconv-1.9.1-runtime.zip"
-		Delete "$TEMP\gettext-runtime-0.13.1-runtime.zip"
-		Delete "$TEMP\glib-2.4.7-runtime.zip"
-		Delete "$TEMP\libxml2-2.6.19-runtime.zip"
-		Delete "$TEMP\libmathview-0.7.3-1rp.zip"
-
-	;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;
-	; Set output path back to the plugins directory.
-	SetOutPath $INSTDIR\AbiWord\plugins
-
-	;Note - Requires Libxml2 - code for download mooched off of impexp installer
-	
-	File "AbiMathView.dll"
-	;Install Configuration File - This better work...
-	SetOutPath $INSTDIR\math
-	File /r "..\AbiSuite\math\gtkmathview.conf.xml"
-	File /r "..\AbiSuite\math\dictionary.xml"
-	SetOutPath $INSTDIR\AbiWord\plugins
-  
-	End:
-SectionEnd
 
 
 
