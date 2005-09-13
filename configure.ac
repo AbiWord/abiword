@@ -180,7 +180,6 @@ ABI_GNOME_QUICK
 ABI_HILDON_QUICK
 ABI_GUCHARMAP
 ABI_XFT_QUICK
-ABI_PYGTK
 
 abi_build_shared=yes
 abi_build_static=no
@@ -561,13 +560,10 @@ AC_CONFIG_FILES([
  src/tools/scripts/GNUmakefile
  src/tools/scripts/unix/GNUmakefile
  src/bindings/GNUmakefile
- src/bindings/gobject/GNUmakefile
- src/bindings/gobject/private/GNUmakefile
- src/bindings/python/GNUmakefile
  src/bindings/perl/GNUmakefile
  src/pkg/linux/apkg/abiword-gnome.apspec
  src/pkg/linux/apkg/abiword-gtk.apspec
- libabiword-1.pc.in
+ libabipriv-1.pc.in
  src/pkg/maemo/debian/misc/abiword.desktop
  src/pkg/maemo/debian/misc/org.abisource.abiword.service
 ])

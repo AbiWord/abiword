@@ -35,4 +35,4 @@ ABI_SOURCE = \
 	 ev_UnixToolbar_ViewListener.cpp
 
 install-data-hook:
-	@mkdir -p $(libabiword_includedir_private) && cp *.h $(libabiword_includedir_private)
+	@mkdir -p $(libabiword_includedir_private) && cp $(srcdir)/*.h $(libabiword_includedir_private)

@@ -32,5 +32,5 @@ libImpExp_unix_la_SOURCES = \
 	ie_exp_PDF.h
 
 install-data-hook:
-	@mkdir -p $(libabiword_includedir_private) && cp *.h $(libabiword_includedir_private)
+	@mkdir -p $(libabiword_includedir_private) && cp $(srcdir)/*.h $(libabiword_includedir_private)
 

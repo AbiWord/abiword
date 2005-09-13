@@ -1,5 +1,0 @@
-
-include $(top_srcdir)/includes.mk
-
-install-data-hook:
-	@mkdir -p $(libabiword_includedir_private) && cp *.h $(libabiword_includedir_private)
