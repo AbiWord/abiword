@@ -98,8 +98,11 @@ fp_TextRun::fp_TextRun(fl_BlockLayout* pBL,
 
 fp_TextRun::~fp_TextRun()
 {
+        xxx_UT_DEBUGMSG(("!!!!!!!! Text run %x deleted \n",this));
 	DELETEP(m_pRenderInfo);
 	DELETEP(m_pItem);
+	FREEP(m_pLanguage);
+	m_pLanguage = NULL;
 }
 
 bool fp_TextRun::hasLayoutProperties(void) const
@@ -248,8 +251,10 @@ void fp_TextRun::_lookupProperties(const PP_AttrProp * pSpanAP,
 	const XML_Char * pszLanguage = PP_evalProperty("lang",pSpanAP,pBlockAP,pSectionAP, pDoc, true);
 
 	const XML_Char * pszOldLanguage = m_pLanguage;
-	m_pLanguage = lls.getCodeFromCode(pszLanguage);
-	if(pszOldLanguage && m_pLanguage != pszOldLanguage)
+	FREEP(m_pLanguage);
+	m_pLanguage = UT_strdup(lls.getCodeFromCode(pszLanguage));
+	xxx_UT_DEBUGMSG(("!!!!!!!! Language of run set to %s pointer %x run %x \n",getLanguage(),m_pLanguage,this));
+	if(pszOldLanguage && (UT_strcmp(m_pLanguage,pszOldLanguage) != 0))
 	{
 	        UT_uint32 reason =  0;
 		if( getBlock()->getDocLayout()->getAutoSpellCheck())
@@ -940,7 +945,7 @@ bool fp_TextRun::canMergeWithNext(void)
 		|| (pNext->_getFont() != _getFont())
 		|| (getHeight() != pNext->getHeight())
 		|| (pNext->getField() != getField())
-		|| (pNext->m_pLanguage != m_pLanguage)	//this is not a bug
+		|| (UT_strcmp(pNext->m_pLanguage,m_pLanguage) != 0)	//this is not a bug
 		|| (pNext->_getColorFG() != _getColorFG())
 		|| (pNext->_getColorHL() != _getColorHL())
 		|| (pNext->_getColorHL().isTransparent() != _getColorHL().isTransparent())
@@ -1005,7 +1010,7 @@ void fp_TextRun::mergeWithNext(void)
 	UT_ASSERT(getDescent() == pNext->getDescent());
 	UT_ASSERT(getHeight() == pNext->getHeight());
 	UT_ASSERT(_getLineWidth() == pNext->_getLineWidth());
-	UT_ASSERT(m_pLanguage == pNext->m_pLanguage); //this is not a bug
+	UT_ASSERT(UT_strcmp(m_pLanguage,pNext->m_pLanguage) == 0); //this is not a bug
 	UT_ASSERT(m_fPosition == pNext->m_fPosition);
 	UT_ASSERT(m_iDirOverride == pNext->m_iDirOverride); //#TF
 	//UT_ASSERT(m_iSpaceWidthBeforeJustification == pNext->m_iSpaceWidthBeforeJustification);
@@ -1138,7 +1143,9 @@ bool fp_TextRun::split(UT_uint32 iSplitOffset)
 	pNew->_setHeight(this->getHeight());
 	pNew->_setLineWidth(this->_getLineWidth());
 	pNew->_setDirty(true);
-	pNew->m_pLanguage = this->m_pLanguage;
+	FREEP(pNew->m_pLanguage);
+	pNew->m_pLanguage = UT_strdup(this->m_pLanguage);
+	xxx_UT_DEBUGMSG(("!!!!--- Run %x gets Language pointer %x \n",pNew,pNew->m_pLanguage));
 	pNew->_setDirection(this->_getDirection()); //#TF
 	pNew->m_iDirOverride = this->m_iDirOverride;
 	// set the visual direction to same as that of the old run
@@ -1467,6 +1474,11 @@ void fp_TextRun::_clearScreen(bool /* bFullLineHeightRect */)
 					 leftClear,getWidth(),xoff,getLine()->getHeight()));
 
 }
+const XML_Char * fp_TextRun::getLanguage() const
+{ 
+  return m_pLanguage; 
+}
+
 
 void fp_TextRun::_draw(dg_DrawArgs* pDA)
 {
@@ -2019,7 +2031,6 @@ bool fp_TextRun::_refreshDrawBuffer()
 		GR_ShapingInfo si(text,iLen, m_pLanguage, iVisDir,
 						  m_pRenderInfo ? m_pRenderInfo->m_eShapingResult : GRSR_Unknown,
 						  _getFont(), m_pItem);
-
 		getGraphics()->shape(si, m_pRenderInfo);
 		
 		UT_ASSERT(m_pRenderInfo && m_pRenderInfo->m_eShapingResult != GRSR_Error );

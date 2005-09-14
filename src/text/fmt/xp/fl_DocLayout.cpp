@@ -34,6 +34,7 @@
 #include "fl_Squiggles.h"
 #include "fl_AutoNum.h"
 #include "fp_Page.h"
+#include "fp_TextRun.h"
 #include "fp_Run.h"
 #include "fv_View.h"
 #include "pd_Document.h"
