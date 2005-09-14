@@ -29,11 +29,11 @@ INCLUDES = \
 
 bin_PROGRAMS = AbiWord-2.4
 
-lib_LTLIBRARIES = libabiword-1.la
+lib_LTLIBRARIES = libabipriv-1.la
 
-libabiword_1_la_SOURCES = abi_ver.cpp
-libabiword_1_la_LDFLAGS = -version-info $(LT_CURRENT):$(LT_REVISION):$(LT_AGE) -export-dynamic
-libabiword_1_la_LIBADD = \
+libabipriv_1_la_SOURCES = abi_ver.cpp
+libabipriv_1_la_LDFLAGS = -version-info $(LT_CURRENT):$(LT_REVISION):$(LT_AGE) -export-dynamic
+libabipriv_1_la_LIBADD = \
 	../../../af/ev/libEv.la \
 	../../../af/gr/libGr.la \
 	../../../af/util/libUtil.la \
@@ -42,7 +42,6 @@ libabiword_1_la_LIBADD = \
 	../../../text/ptbl/xp/libPtbl.la \
 	../../../other/spell/xp/libSpell.la \
 	../../../other/ttftool/unix/libTtfTool.la \
-	../../../bindings/libBindings.la \
 	../../ap/libAp.la \
 	../../impexp/libImpExp.la \
 	$(PLATFORM_LIBS) $(OTHER_LIBS)

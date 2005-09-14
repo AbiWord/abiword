@@ -102,9 +102,8 @@ WV_INCLUDES+=-I'$(top_srcdir)/../wv/libole2'
 WV_INCLUDES+=-I'$(top_srcdir)/../wv/exporter'
 WV_INCLUDES+=-I'$(top_srcdir)/../wv/glib-wv'
 
-auto_includedir=$(includedir)/libabipriv-1/abiword
-libabiword_includedir=$(DESTDIR)/$(auto_includedir)
-libabiword_includedir_private=$(libabiword_includedir)/private
+auto_includedir=$(includedir)/libabipriv-1/abi
+libabiword_includedir_private=$(DESTDIR)/$(auto_includedir)
 
 # expat includes are handled by @XML_INCLUDES@
 # iconv includes are handled by @ICONV_INCLUDES@
