@@ -5214,7 +5214,7 @@ UT_Error FV_View::_deleteHyperlink(PT_DocPosition &pos1, bool bSignal)
 	// now reset the hyperlink member for the runs that belonged to this
 	// hyperlink
 
-	fp_Run * pRun = pRun = pH1->getNextRun();
+	fp_Run * pRun = pH1->getNextRun();
 	UT_ASSERT(pRun);
 	while(pRun && pRun->getHyperlink() != NULL)
 	{
