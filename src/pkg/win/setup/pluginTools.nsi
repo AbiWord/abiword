@@ -172,11 +172,11 @@ Section "Equation Editor"
 
 	;;;;;;;;;
 	; libmathview
-	${dlFile} "http://www.abisource.com/downloads/dependencies/gtkmathview/libmathview-0.7.3-1rp.zip" "$TEMP\libmathview-0.7.3-1rp.zip" "ERROR: failed to download http://www.abisource.com/downloads/dependencies/gtkmathview/libmathview-0.7.3-1rp.zip"
+	${dlFile} "http://www.abisource.com/downloads/dependencies/gtkmathview/libmathview-0.7.4-1rp-runtime.zip" "$TEMP\libmathview-0.7.4-1rp-runtime.zip" "ERROR: failed to download http://www.abisource.com/downloads/dependencies/gtkmathview/libmathview-0.7.4-1rp-runtime.zip"
 	StrCmp $0 "success" 0 doCleanup
-	${unzipFile} "$TEMP\libmathview-0.7.3-1rp.zip" "$INSTDIR\AbiWord\bin" "libmathview-0.dll" "ERROR: failed to extract libmathview-0.dll from libmathview-0.7.3-1rp.zip"
+	${unzipFile} "$TEMP\libmathview-0.7.4-1rp-runtime.zip" "$INSTDIR\AbiWord\bin" "bin\libmathview-0.dll" "ERROR: failed to extract libmathview-0.dll from libmathview-0.7.4-1rp-runtime.zip"
 	StrCmp $0 "success" 0 doCleanup
-	${unzipFile} "$TEMP\libmathview-0.7.3-1rp.zip" "$INSTDIR\AbiWord\bin" "libmathview_frontend_libxml2-0.dll" "ERROR: failed to extract libmathview_frontend_libxml2-0.dll from libmathview-0.7.3-1rp.zip"
+	${unzipFile} "$TEMP\libmathview-0.7.4-1rp-runtime.zip" "$INSTDIR\AbiWord\bin" "bin\libmathview_frontend_libxml2-0.dll" "ERROR: failed to extract libmathview_frontend_libxml2-0.dll from libmathview-0.7.4-1rp-runtime.zip"
 	StrCmp $0 "success" 0 doCleanup
 
 
@@ -187,7 +187,7 @@ Section "Equation Editor"
 		Delete "$TEMP\gettext-runtime-0.13.1-runtime.zip"
 		Delete "$TEMP\glib-2.4.7-runtime.zip"
 		Delete "$TEMP\libxml2-2.6.19-runtime.zip"
-		Delete "$TEMP\libmathview-0.7.3-1rp.zip"
+		Delete "$TEMP\libmathview-0.7.4-1rp-runtime.zip"
 
 	;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;
 	; Set output path back to the plugins directory.
@@ -199,7 +199,7 @@ Section "Equation Editor"
 	;Install Configuration Files - This better work...
 	SetOutPath $INSTDIR\math
 	File /r "..\AbiSuite\math\gtkmathview.conf.xml"
-	File /r "..\AbiSuite\math\dicionary-local.xml"
+	File /r "..\AbiSuite\math\dictionary-local.xml"
 	File /r "..\AbiSuite\math\dictionary.xml"
 	SetOutPath $INSTDIR\AbiWord\plugins
   
