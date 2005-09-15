@@ -49,8 +49,6 @@ public:
 
 	virtual ~AP_CocoaApp();
 
-	virtual BidiSupportType			theOSHasBidiSupport() const { return BIDI_SUPPORT_FULL; }
-
 	virtual bool					initialize(void);
 	virtual void					rebuildMenus(void);
 	virtual XAP_Frame *				newFrame(void);
