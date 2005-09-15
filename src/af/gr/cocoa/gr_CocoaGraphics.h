@@ -85,10 +85,23 @@ class GR_CocoaGraphics : public GR_Graphics
 	virtual void		setColor(const UT_RGBColor& clr);
 	virtual void		getColor(UT_RGBColor& clr);
 
-	NSColor *		HBlue() const { return m_colorBlue16x15; }
-	NSColor *		VBlue() const { return m_colorBlue11x16; }
-	NSColor *		HGrey() const { return m_colorGrey16x15; }
-	NSColor *		VGrey() const { return m_colorGrey11x16; }
+	// at least one instance of GR_CocoaGraphics must have been created...
+	static NSColor *		HBlue() 
+		{ 
+			return m_colorBlue16x15; 
+		}
+	static NSColor *		VBlue()
+		{ 
+			return m_colorBlue11x16; 
+		}
+	static NSColor *		HGrey() 
+		{ 
+			return m_colorGrey16x15; 
+		}
+	static NSColor *		VGrey() 
+		{ 
+			return m_colorGrey11x16; 
+		}
 
 	virtual GR_Font*	getGUIFont();
 
