@@ -64,11 +64,17 @@ bool XAP_UnixAppImpl::openHelpURL(const char * url)
 
 bool XAP_UnixAppImpl::openURL(const char * szURL)
 {
+  //
+  // Need this to make AbiGimp Load!!!!!
+  //
+        if(progExists("epiphany"))
+	{
+	}
 #ifdef HAVE_GNOME
 	gnome_url_show(szURL, NULL);
 	return false;
 #else
-	static char *fmtstring = NULL;
+	xstatic char *fmtstring = NULL;
   	char *execstring = NULL;
 
 	if(fmtstring)			// lookup browser result when we have
@@ -97,7 +103,8 @@ bool XAP_UnixAppImpl::openURL(const char * szURL)
   	char *env_browser = getenv ("BROWSER");
   	if (env_browser)
   	{
-		if(progExists(env_browser))
+	        bPExists = progExists(env_browser);
+		if(bPExists)
 		{
 			if (strstr (env_browser, "netscape"))
 			{
