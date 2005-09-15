@@ -1760,6 +1760,12 @@ bool FV_View::cmdAutoFitTable(void)
 	pszTable[5] = "1";
 
 	m_pDoc->changeStruxFmt(PTC_RemoveFmt,getPoint(),getPoint(),NULL,pszTable,PTX_SectionTable);
+	pszTable[0] = "homogeneous";
+	pszTable[1] = "1";
+	pszTable[2] = NULL;
+	pszTable[3] = NULL;
+
+	m_pDoc->changeStruxFmt(PTC_AddFmt,getPoint(),getPoint(),NULL,pszTable,PTX_SectionTable);
 	m_pDoc->setDontImmediatelyLayout(false);
 
 	// Signal PieceTable Changes have finished
