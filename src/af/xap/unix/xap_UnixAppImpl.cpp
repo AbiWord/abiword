@@ -74,7 +74,7 @@ bool XAP_UnixAppImpl::openURL(const char * szURL)
 	gnome_url_show(szURL, NULL);
 	return false;
 #else
-	xstatic char *fmtstring = NULL;
+	static char *fmtstring = NULL;
   	char *execstring = NULL;
 
 	if(fmtstring)			// lookup browser result when we have
