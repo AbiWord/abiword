@@ -1328,6 +1328,8 @@ void GR_Win32USPGraphics::renderChars(GR_RenderInfo & ri)
 	if(RI.m_bShapingFailed)
 		pItem->m_si.a.eScript = GRScriptType_Undefined;
 
+	SetTextAlign(m_hdc, TA_LEFT | TA_TOP);
+	
 	HRESULT hRes = fScriptTextOut(m_hdc, pFont->getScriptCache(), xoff, yoff,
 								  dFlags, /*option flags*/
 								  NULL, /*not sure about this*/
@@ -2249,6 +2251,8 @@ void GR_Win32USPGraphics::drawChars(const UT_UCSChar* pChars,
 		SetBkMode(m_hdc, TRANSPARENT); // this is necessary
 	}
 
+	SetTextAlign(m_hdc, TA_LEFT | TA_TOP);
+	
 	static WCHAR buff[100];
 	WCHAR * pwChars = buff;
     bool bDelete = false;
@@ -2282,7 +2286,8 @@ void GR_Win32USPGraphics::drawChars(const UT_UCSChar* pChars,
 		LOG_USP_EXCPT_X("fScriptStringAnalyse failed", hRes)
 	}
 	
-	hRes = fScriptStringOut(SSA, (UT_sint32)((double)_tduX(xoff) * m_fXYRatio), _tduY(yoff), 0, NULL, 0, 0, FALSE);
+	hRes = fScriptStringOut(SSA, (UT_sint32)((double)_tduX(xoff) * m_fXYRatio), _tduY(yoff),
+							0, NULL, 0, 0, FALSE);
 
 	if(hRes)
 	{
