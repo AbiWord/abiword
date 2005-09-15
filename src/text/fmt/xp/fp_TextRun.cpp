@@ -1873,6 +1873,22 @@ void fp_TextRun::_draw(dg_DrawArgs* pDA)
 		xxx_UT_DEBUGMSG(("_drawText segment %d off %d length %d width %d \n",iSegment,iMyOffset,m_pRenderInfo->m_iLength ,iSegmentWidth[iSegment]));
 		painter.renderChars(*m_pRenderInfo);
 		
+#if 0
+		//DEBUG
+		GR_Font * f = _getFont();
+		UT_uint32 _ascent, _descent, _height;
+		
+		_ascent = pG->getFontAscent(f);
+		_descent = pG->getFontDescent(f);
+		_height = pG->getFontHeight(f);
+		
+		UT_DEBUGMSG(("_drawText font %s ascent = %u height = %u descent = %u\n", f->hashKey().c_str(),
+			_ascent, _height, _descent));
+		painter.drawLine(iX, pDA->yoff - _ascent, iX + iSegmentWidth[iSegment], pDA->yoff - _ascent);
+		painter.drawLine(iX, pDA->yoff, iX + iSegmentWidth[iSegment], pDA->yoff);
+		painter.drawLine(iX, pDA->yoff + _descent, iX + iSegmentWidth[iSegment], pDA->yoff + _descent);
+		//end DEBUG
+#endif		
 		if(iVisDir == UT_BIDI_LTR)
 			iX += iSegmentWidth[iSegment];
 	}
