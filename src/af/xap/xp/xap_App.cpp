@@ -242,6 +242,8 @@ XAP_Module * XAP_App::getPlugin(const char * szPluginName)
  */
 UT_uint32 XAP_App::registerEmbeddable(GR_EmbedManager * pEmbed)
 {
+	 UT_return_val_if_fail( pEmbed, 0xFFFFFFF );
+	 
      UT_sint32 i=0;
      bool bFound = false;
      GR_EmbedManager * pCur = NULL;
