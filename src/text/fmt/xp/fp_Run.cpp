@@ -1433,6 +1433,20 @@ bool fp_Run::recalcWidth(void)
 		return _recalcWidth();
 }
 
+/*!
+    update ascent, decent and height
+*/
+void fp_Run::updateVerticalMetric()
+{
+	if(m_pFont)
+	{
+		_setAscent(getGraphics()->getFontAscent(m_pFont));
+		_setDescent(getGraphics()->getFontDescent(m_pFont));
+		_setHeight(getGraphics()->getFontHeight(m_pFont));
+	}
+}
+
+
 bool fp_Run::_recalcWidth(void)
 {
 	// do nothing.  subclasses may override this.

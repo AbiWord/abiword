@@ -650,7 +650,7 @@ UT_uint32 GR_Win32Graphics::getFontHeight()
 {
 	UT_return_val_if_fail( m_pFont, 0 );
 
-	return (UT_uint32)((m_pFont->getHeight(m_hdc, m_printHDC)) * getResolution() / getDeviceResolution());
+	return (UT_uint32)(m_pFont->getHeight(m_hdc, m_printHDC));
 }
 
 UT_uint32 GR_Win32Graphics::getFontAscent(GR_Font* fnt)
@@ -665,7 +665,7 @@ UT_uint32 GR_Win32Graphics::getFontAscent(GR_Font* fnt)
 UT_uint32 GR_Win32Graphics::getFontAscent()
 {
 	UT_return_val_if_fail( m_pFont, 0 );
-	return (UT_uint32)((m_pFont->getAscent(m_hdc, m_printHDC)) * getResolution() / getDeviceResolution());
+	return (UT_uint32)(m_pFont->getAscent(m_hdc, m_printHDC));
 }
 
 UT_uint32 GR_Win32Graphics::getFontDescent(GR_Font* fnt)
@@ -680,7 +680,7 @@ UT_uint32 GR_Win32Graphics::getFontDescent(GR_Font* fnt)
 UT_uint32 GR_Win32Graphics::getFontDescent()
 {
 	UT_return_val_if_fail( m_pFont, 0 );
-	return (UT_uint32)((m_pFont->getDescent(m_hdc, m_printHDC)) * getResolution() / getDeviceResolution());
+	return (UT_uint32)(m_pFont->getDescent(m_hdc, m_printHDC));
 }
 
 void GR_Win32Graphics::getCoverage(UT_NumberVector& coverage)
@@ -1539,7 +1539,7 @@ GR_Win32Font::GR_Win32Font(LOGFONT & lf, double fPoints, HDC hdc, HDC printHDC)
 			GetTextFace(printHDC, 1000, lpFaceName );
 
 			_updateFontYMetrics(hdc, printHDC);
-			
+
 			UT_String_sprintf(m_hashKey, "%s-%d-%d-%d-%d-%d",
 							  lpFaceName,
 							  m_tm.tmHeight, m_tm.tmWeight, m_tm.tmItalic, m_tm.tmUnderlined,
@@ -1644,13 +1644,18 @@ void GR_Win32Font::_updateFontYMetrics(HDC hdc, HDC printHDC)
 	{
 		GetTextMetrics(printHDC,&m_tm);
 
-		// now we have to scale the metrics down from the printHDC to primary dc
+		// now we have to scale the metrics down from the printHDC to our layout units
+		// 
+		// (we used to scale the metrics down to the device resolution, but that since we
+		// then scale it back up to layout units all the time, this caused us huge
+		// rounding error) Tomas, 16/9/05
+		// 
 		// NB: we do not want to obtain the metrics directly for the primary dc
 		// Windows is designed to get slightly bigger font for the screen than the
 		// user asks for (MS say to improve readibility), and this causes us
 		// non-WYSIWYG behaviour (basically our characters are wider on screen than on
 		// the printer and our lines are further apart)
-		int nLogPixelsY      = GetDeviceCaps(hdc, LOGPIXELSY);
+		int nLogPixelsY      = GR_Graphics::getResolution();
 		int nPrintLogPixelsY = GetDeviceCaps(printHDC, LOGPIXELSY);
 
 		if(nLogPixelsY != nPrintLogPixelsY)

@@ -236,6 +236,7 @@ public:
 	virtual void        updateLayout(void);
 	virtual void        rebuildLayout(void);
 	virtual void        remeasureCharsWithoutRebuild();
+	virtual void        fontMetricsChange();
 	virtual bool		isSelectionEmpty(void) const;
 	bool                isSelectAll(void)
 	{ return m_Selection.isSelectAll();}

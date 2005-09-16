@@ -12714,3 +12714,29 @@ void FV_View::remeasureCharsWithoutRebuild()
 
 	updateLayout();
 }
+
+/*!
+    This function is called when the font metrics for the view change. This happens for
+    example when on win32 the user changes the currently selected printer. In order to
+    maintain WYSIWYG behaviour, we have to remeasure and rebuild
+*/
+void FV_View::fontMetricsChange()
+{
+    fl_BlockLayout * pBL = getBlockAtPosition(2);
+
+    while(pBL)
+    {
+        fp_Run * pRun = pBL->getFirstRun();
+
+		while(pRun)
+        {
+			pRun->updateVerticalMetric();
+			pRun->markWidthDirty();  // it will be recalculated during rebuild
+            pRun = pRun->getNextRun();
+        }
+        pBL = pBL->getNextBlockInDocument();
+    }
+
+	m_pLayout->rebuildFromHere(static_cast<fl_DocSectionLayout *>(m_pLayout->getFirstSection()));	
+}
+

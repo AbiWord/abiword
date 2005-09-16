@@ -222,6 +222,20 @@ bool fp_EmbedRun::isSubscript(void) const
 	return false;
 }
 
+void fp_EmbedRun::updateVerticalMetric()
+{
+	UT_ASSERT_HARMLESS( UT_NOT_IMPLEMENTED );
+}
+
+bool fp_EmbedRun::_recalcWidth(void)
+{
+	if(!_getRecalcWidth())
+		return false;
+	
+	UT_ASSERT_HARMLESS( UT_NOT_IMPLEMENTED );
+	return false;
+}
+
 void fp_EmbedRun::mapXYToPosition(UT_sint32 x, UT_sint32 /*y*/, PT_DocPosition& pos, bool& bBOL, bool& bEOL, bool &isTOC)
 {
 	if (x > getWidth())

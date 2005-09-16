@@ -530,7 +530,7 @@ UT_uint32 GR_Win32USPGraphics::getFontHeight()
 		_setupFontOnDC((GR_Win32USPFont*)m_pFont, false);
 	}
 	
-	return (UT_uint32)((m_pFont->getHeight(m_hdc, getPrintDC())) * getResolution() / getDeviceResolution());
+	return (UT_uint32)(m_pFont->getHeight(m_hdc, getPrintDC()));
 }
 
 UT_uint32 GR_Win32USPGraphics::getFontAscent(GR_Font* fnt)
@@ -554,7 +554,7 @@ UT_uint32 GR_Win32USPGraphics::getFontAscent()
 		_setupFontOnDC((GR_Win32USPFont*)m_pFont, false);
 	}
 	
-	return (UT_uint32)((m_pFont->getAscent(m_hdc, getPrintDC())) * getResolution() / getDeviceResolution());
+	return (UT_uint32)(m_pFont->getAscent(m_hdc, getPrintDC()));
 }
 
 UT_uint32 GR_Win32USPGraphics::getFontDescent(GR_Font* fnt)
@@ -578,7 +578,7 @@ UT_uint32 GR_Win32USPGraphics::getFontDescent()
 		_setupFontOnDC((GR_Win32USPFont*)m_pFont, false);
 	}
 	
-	return (UT_uint32)((m_pFont->getDescent(m_hdc, getPrintDC())) * getResolution() / getDeviceResolution());
+	return (UT_uint32)(m_pFont->getDescent(m_hdc, getPrintDC()));
 }
 
 /*!
@@ -1308,7 +1308,7 @@ void GR_Win32USPGraphics::renderChars(GR_RenderInfo & ri)
 			pFont->setScreenAscent(iAscentScreen);
 		}
 
-		UT_sint32 iAscentPrint = pFont->getTextMetric().tmAscent * getResolution() / getDeviceResolution();
+		UT_sint32 iAscentPrint = pFont->getTextMetric().tmAscent;
 		yoff = _tduY(RI.m_yoff + iAscentPrint - iAscentScreen);
 	}
 	
@@ -1397,7 +1397,7 @@ void GR_Win32USPGraphics::setPrintDC(HDC dc)
 					GR_Graphics * pG = pView->getGraphics();
 
 					if(pG == this)
-						pView->rebuildLayout();
+						pView->fontMetricsChange();
 				}
 			}
 		}
@@ -1442,7 +1442,7 @@ void GR_Win32USPGraphics::measureRenderedCharWidths(GR_RenderInfo & ri)
 
 		if(getPrintDC())
 		{
-			// we also need to remeasure the font metrics as well
+			// we also need to remeasure the font metrics
 			// and scale it down for the screen
 			_setupFontOnDC(pFont, false);
 			bFontSetUpOnDC = true;
@@ -1456,9 +1456,9 @@ void GR_Win32USPGraphics::measureRenderedCharWidths(GR_RenderInfo & ri)
 			GetTextMetrics(printHDC, &tm2);
 			DeleteDC(printHDC);
 #endif
-			pFont->setHeight(MulDiv(tm.tmHeight, getDeviceResolution(), m_nPrintLogPixelsY));
-			pFont->setAscent(MulDiv(tm.tmAscent, getDeviceResolution(), m_nPrintLogPixelsY));
-			pFont->setDescent(MulDiv(tm.tmDescent, getDeviceResolution(), m_nPrintLogPixelsY));
+			pFont->setHeight(MulDiv(tm.tmHeight, getResolution(), m_nPrintLogPixelsY));
+			pFont->setAscent(MulDiv(tm.tmAscent, getResolution(), m_nPrintLogPixelsY));
+			pFont->setDescent(MulDiv(tm.tmDescent, getResolution(), m_nPrintLogPixelsY));
 		}
 	}
 

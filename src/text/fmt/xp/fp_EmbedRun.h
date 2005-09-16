@@ -42,6 +42,9 @@ public:
 	virtual bool			isSuperscript(void) const ;
 	virtual bool			isSubscript(void)  const;
 	virtual bool 			hasLayoutProperties(void) const;
+
+	virtual void            updateVerticalMetric();
+
 	GR_EmbedManager *   getEmbedManager(void);
 	bool                    isEdittable(void);
 	const char *            getDataID(void) const;
@@ -59,6 +62,8 @@ protected:
 	void                    _drawResizeBox(UT_Rect box);
 	UT_sint32               _getLayoutPropFromObject(const char * szProp);
     bool                    _updatePropValuesIfNeeded(void);
+	virtual	bool		    _recalcWidth(void);
+	
 	UT_sint32               m_iPointHeight;
 	const PP_AttrProp *     m_pSpanAP;
 	UT_uint32               m_iGraphicTick;

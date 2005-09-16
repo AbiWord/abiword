@@ -227,6 +227,7 @@ public:
 	bool			    canContainPoint(void) const;
 	bool		        recalcWidth(void);
 	virtual void        updateOnDelete(UT_uint32 offset, UT_uint32 iLen);
+	virtual void        updateVerticalMetric();
 
     virtual UT_Rect *   getScreenRect();
     virtual void        markDirtyOverlappingRuns(UT_Rect & recScreen);
