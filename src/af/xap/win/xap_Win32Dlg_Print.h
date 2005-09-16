@@ -47,7 +47,6 @@ public:
 	UT_uint32               getNewPrinter() const {return m_iNewPrinter;}
 
 	void                    setClosed(bool b){m_bClosed = b;}
-	static XAP_Win32Dialog_Print * s_pThis;
 	
 protected:
 	void					_extractResults(XAP_Frame *pFrame);
