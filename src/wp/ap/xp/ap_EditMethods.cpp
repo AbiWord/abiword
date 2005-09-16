@@ -204,6 +204,7 @@ public:
 	static EV_EditMethod_Fn contextPosObject;
 	static EV_EditMethod_Fn contextImage;
 	static EV_EditMethod_Fn contextHyperlink;
+	static EV_EditMethod_Fn contextMath;
 	static EV_EditMethod_Fn contextMenu;
 	static EV_EditMethod_Fn contextRevision;
 	static EV_EditMethod_Fn contextTOC;
@@ -727,6 +728,7 @@ static EV_EditMethod s_arrayEditMethods[] =
 	EV_EditMethod(NF(contextFrame), 		0,	""),
 	EV_EditMethod(NF(contextHyperlink), 		0,	""),
 	EV_EditMethod(NF(contextImage), 0, ""),
+	EV_EditMethod(NF(contextMath),			0,	""),
 	EV_EditMethod(NF(contextMenu),			0,	""),
 	EV_EditMethod(NF(contextMisspellText),	0,	""),
 	EV_EditMethod(NF(contextPosObject), 0, ""),
@@ -4274,6 +4276,9 @@ Defun(contextText)
 	ABIWORD_VIEW;
 	XAP_Frame * pFrame = static_cast<XAP_Frame *> (pView->getParentData());
 	UT_return_val_if_fail(pFrame, false);
+	//
+	// Look if we've right clicked on a mathrun
+	//
 	return s_doContextMenu(EV_EMC_TEXT,pCallData->m_xPos, pCallData->m_yPos,pView,pFrame);
 }
 
@@ -4303,6 +4308,26 @@ Defun(contextTOC)
 	XAP_Frame * pFrame = static_cast<XAP_Frame *> (pView->getParentData());
 	UT_return_val_if_fail(pFrame, false);
 	return s_doContextMenu_no_move(EV_EMC_TOC,pCallData->m_xPos, pCallData->m_yPos,pView,pFrame);
+}
+
+
+Defun(contextMath)
+{
+	CHECK_FRAME;
+	ABIWORD_VIEW;
+	XAP_Frame * pFrame = static_cast<XAP_Frame *> (pView->getParentData());
+	UT_return_val_if_fail(pFrame, false);
+	bool b = false;
+	if(pView->isMathLoaded())
+	{
+	    b = s_doContextMenu_no_move( EV_EMC_MATH,pCallData->m_xPos, pCallData->m_yPos,pView,pFrame);
+	}
+	else
+	{
+	    b = s_doContextMenu_no_move( EV_EMC_TEXT,pCallData->m_xPos, pCallData->m_yPos,pView,pFrame);
+
+	}
+	return b;
 }
 
 Defun(contextMisspellText)
