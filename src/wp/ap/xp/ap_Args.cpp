@@ -216,7 +216,7 @@ const struct poptOption AP_Args::const_opts[] =
 	 {"plugin", 'E', POPT_ARG_STRING, &m_sPlugin, 0, "Execute plugin NAME instead of the main application", NULL},
 	 {"merge", 'm', POPT_ARG_STRING, &m_sMerge, 0, "Mail-merge", "FILE"},
 	 {"imp-props", 'i', POPT_ARG_STRING, &m_impProps, 0, "Importer Arguments", "CSS String"},
-	 {"exp-props", 'e', POPT_ARG_STRING, &m_expProps, 0, "Exorter Arguments", "CSS String"},
+	 {"exp-props", 'e', POPT_ARG_STRING, &m_expProps, 0, "Exporter Arguments", "CSS String"},
 	 {"AbiControl", '\0', POPT_ARG_NONE, &m_iAbiControl, 0, "Execute plugin AbiControl instead of the main application", ""},
 	 {"thumb",'\0',POPT_ARG_INT,&m_iToThumb,0,"Make a thumb nail of the first page",""},
 	 {"sizeXY",'S',POPT_ARG_STRING,&m_sThumbXY,0,"Size of PNG thumb nail in pixels","VALxVAL"},
