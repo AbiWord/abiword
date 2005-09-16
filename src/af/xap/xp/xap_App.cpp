@@ -249,16 +249,16 @@ UT_uint32 XAP_App::registerEmbeddable(GR_EmbedManager * pEmbed)
      GR_EmbedManager * pCur = NULL;
      for(i=0; !bFound && (i< static_cast<UT_sint32>(m_vecEmbedManagers.getItemCount())); i++)
      {
-       pCur =  m_vecEmbedManagers.getNthItem(i);
-       if(UT_strcmp(pCur->getObjectType(),pEmbed->getObjectType()) == 0)
-       {
-	 bFound = true;
-       }
+		 pCur =  m_vecEmbedManagers.getNthItem(i);
+		 if(UT_strcmp(pCur->getObjectType(),pEmbed->getObjectType()) == 0)
+		 {
+			 bFound = true;
+		 }
      }
      if(!bFound)
      {
-       m_vecEmbedManagers.addItem(pEmbed);
-       return  m_vecEmbedManagers.getItemCount() - 1;
+		 m_vecEmbedManagers.addItem(pEmbed);
+		 return  m_vecEmbedManagers.getItemCount() - 1;
      }
      return 0xFFFFFFF;
 }
