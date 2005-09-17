@@ -241,11 +241,14 @@ void fp_EmbedRun::_lookupLocalProperties()
 void fp_EmbedRun::updateVerticalMetric()
 {
 	// do something here to make the embedded view to redo its layout ...
-	UT_ASSERT_HARMLESS( UT_NOT_IMPLEMENTED );
+	// there might be a more efficient way, but this should work
+	if(m_iEmbedUID < 0 )
+	{
+		getEmbedManager()->releaseEmbedView(m_iEmbedUID);
+		m_iEmbedUID = -1;
+	}
 
-
-	// look up properties to reflect the new metrics ( we only need to lookup the
-	// properties that are specific to this class)
+	// now lookup local properties which will create a new embedded view for us
 	_lookupLocalProperties();
 
 	// _lookupProperties() fixed also our width, so if width was marked as dirty, clear
@@ -260,10 +263,15 @@ bool fp_EmbedRun::_recalcWidth(void)
 	
 	UT_sint32 iWidth = getWidth();
 
-	// do something here to force the embedded view to redo its layout
-	UT_ASSERT_HARMLESS( UT_NOT_IMPLEMENTED );
+	// do something here to make the embedded view to redo its layout ...
+	// there might be a more efficient way, but this should work
+	if(m_iEmbedUID < 0 )
+	{
+		getEmbedManager()->releaseEmbedView(m_iEmbedUID);
+		m_iEmbedUID = -1;
+	}
 
-	// now lookup properties
+	// now lookup local properties which will create a new embedded view for us
 	_lookupLocalProperties();
 	
 	return (iWidth != getWidth());
