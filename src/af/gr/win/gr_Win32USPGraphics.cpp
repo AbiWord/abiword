@@ -624,7 +624,7 @@ void GR_Win32USPGraphics::_setupFontOnDC(GR_Win32USPFont *pFont, bool bZoomMe)
 		// achieve true WYSIWIG), the letters, particularly, the descending parts, can be
 		// drawn outwith the line rectangle (and so leave pixel dirt, etc.)
 		// In order to avoid that, we actually request a slightly smaller font from the
-		// system if the physical pixel size drops below certain (heristically determined) value.
+		// system if the physical pixel size drops below certain (heuristically determined) value.
 		zoom = getZoomPercentage();
 		double dZoom = (double)zoom;
 		double dSizeFactor = dZoom * (double)pFont->getUnscaledHeight()/(double)getDeviceResolution();
