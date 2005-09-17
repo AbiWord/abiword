@@ -260,9 +260,14 @@ void XAP_Win32Dialog_Print::runModal(XAP_Frame * pFrame)
 
 		// we need to differentiate between actual OK being pressed by user and simulated
 		// by our hook procedure -- in the later case we want to return a_CANCEL so that
-		// the document does not get sent to the printer
+		// the document does not get sent to the printer. We will also set m_bPersistValid
+		// as if OK was clicked
 		if(m_bClosed)
+		{
 			m_answer = a_CANCEL;
+			m_bPersistValid = true;
+		}
+		
 	}
 	else
 	{

@@ -7977,8 +7977,10 @@ UT_return_val_if_fail(pDialog, false);
 
 		// TODO these are here temporarily to make printing work.  We'll fix the hack later.
 		// BUGBUG assumes all pages are same size and orientation
-		UT_sint32 iWidth = pLayout->getWidth();
-		UT_sint32 iHeight = pLayout->getHeight() / pLayout->countPages();
+		// Must use the layout create with printer graphics here, because the screen
+		// layout adds screen margins to the width and height
+		UT_sint32 iWidth = pDocLayout->getWidth();
+		UT_sint32 iHeight = pDocLayout->getHeight() / pLayout->countPages();
 
 		const char *pDocName = ((doc->getFilename()) ? doc->getFilename() : pFrame->getNonDecoratedTitle());
 		s_actuallyPrint(doc, pGraphics, pPrintView, pDocName, nCopies, bCollate,

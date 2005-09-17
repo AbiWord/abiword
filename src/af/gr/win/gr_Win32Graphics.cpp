@@ -931,8 +931,10 @@ bool GR_Win32Graphics::startPrint(void)
 bool GR_Win32Graphics::startPage(const char * szPageLabel, UT_uint32 pageNumber,
 									bool bPortrait, UT_uint32 iWidth, UT_uint32 iHeight)
 {
-	iWidth = (UT_sint32)((double)_tduR(iWidth) * m_fXYRatio);
-	iHeight = _tduR(iHeight);
+	// need these in 10th of milimiters
+	iWidth = iWidth * m_fXYRatio * 254 / getResolution();
+	iHeight = iHeight * 254 / getResolution();
+
 	if (m_bStartPage)
 	{
 		EndPage(m_hdc);
@@ -942,8 +944,12 @@ bool GR_Win32Graphics::startPage(const char * szPageLabel, UT_uint32 pageNumber,
 	if (m_hDevMode)
 	{
 		DEVMODE *pDevMode = (DEVMODE*) GlobalLock(m_hDevMode);
-		pDevMode->dmFields = DM_ORIENTATION;
+		pDevMode->dmFields = DM_ORIENTATION | DM_PAPERLENGTH | DM_PAPERWIDTH;
 		pDevMode->dmOrientation = (bPortrait) ? DMORIENT_PORTRAIT : DMORIENT_LANDSCAPE;
+		pDevMode->dmPaperSize = 0;
+		pDevMode->dmPaperLength = iHeight;
+		pDevMode->dmPaperWidth = iWidth;
+		
 		GlobalUnlock(m_hDevMode);
 
 		// call DocumentProperties() on the DEVMODE to ensure changes propagate down into
