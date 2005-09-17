@@ -270,6 +270,11 @@ PT_DocPosition fp_Run::posSelHigh(void) const
  */
 bool fp_Run::clearIfNeeded(void)
 {
+	// only do this on runs that have not been cleared already
+	// see bug 8154
+	if(m_bIsCleared)
+		return true;
+	
 	//	if((getTmpX() == getX()) && (getTmpWidth() == getWidth()) && (getTmpY() == getY()))
 	if((getTmpX() == getX()) && (getTmpY() == getY()) && (getTmpLine() == getLine()))
 	{
