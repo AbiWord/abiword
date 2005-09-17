@@ -230,9 +230,11 @@ UT_Error UT_XML::parse (const char * szFilename)
 			}
 		if (ret == UT_OK && (getNumMinorErrors() == 0))
 			if (!ctxt->wellFormed && !m_bStopped) ret = UT_IE_IMPORTERROR; // How does stopping mid-file affect wellFormed?
-		
+
+		xmlDocPtr xmlDoc = ctxt->myDoc;
 		ctxt->sax = NULL;
 		xmlFreeParserCtxt (ctxt);
+		xmlFreeDoc(xmlDoc);
     }
 	else
     {
@@ -289,8 +291,25 @@ UT_Error UT_XML::parse (const char * buffer, UT_uint32 length)
 
   if (!ctxt->wellFormed) ret = UT_IE_IMPORTERROR;
 
+  xmlDocPtr xmlDoc = ctxt->myDoc;
   ctxt->sax = NULL;
   xmlFreeParserCtxt (ctxt);
+  xmlFreeDoc(xmlDoc);
 
   return ret;
+}
+
+// guardian because (afaik) xmlParserXXX aren't guaranteed to be idempotent
+static volatile int iLibXml2Guardian = 0;
+
+void UT_XML::_init()
+{
+  if(++iLibXml2Guardian == 1)
+    xmlInitParser();
+}
+
+void UT_XML::_cleanup()
+{
+  if(--iLibXml2Guardian == 0)
+    xmlCleanupParser();
 }
