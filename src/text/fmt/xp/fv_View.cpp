@@ -11856,6 +11856,9 @@ UT_uint32 FV_View::calculateZoomPercentForWholePage()
 void FV_View::toggleMarkRevisions()
 {
 	m_pDoc->toggleMarkRevisions();
+
+	// force screen update to fix 7673
+	updateScreen();
 }
 
 void FV_View::setShowRevisions(bool bShow)
