@@ -56,6 +56,8 @@ protected:
 											  const PP_AttrProp * pSectionAP,
 											  GR_Graphics * pG = NULL);
 
+	void                    _lookupLocalProperties();
+	
 	virtual void			_draw(dg_DrawArgs*);
 	virtual void			_clearScreen(bool bFullLineHeightRect);
 	virtual bool			_letPointPass(void) const;

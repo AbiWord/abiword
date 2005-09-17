@@ -12730,8 +12730,12 @@ void FV_View::fontMetricsChange()
 
 		while(pRun)
         {
+			// The order here matters; marking width dirty before call to
+			// updateVerticalMetric() allows some fp_Run subclasses to clear the width
+			// flag in the updateVerticalMetric() call (see fp_EmbedRun for example)
+			
+			pRun->markWidthDirty();  // width will be recalculated during rebuild
 			pRun->updateVerticalMetric();
-			pRun->markWidthDirty();  // it will be recalculated during rebuild
             pRun = pRun->getNextRun();
         }
         pBL = pBL->getNextBlockInDocument();

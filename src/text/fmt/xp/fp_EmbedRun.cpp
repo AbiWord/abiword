@@ -222,9 +222,35 @@ bool fp_EmbedRun::isSubscript(void) const
 	return false;
 }
 
+void fp_EmbedRun::_lookupLocalProperties()
+{
+	const PP_AttrProp * pSpanAP = NULL;
+	const PP_AttrProp * pBlockAP = NULL;
+	const PP_AttrProp * pSectionAP = NULL;
+
+	getBlockAP(pBlockAP);
+
+	if(!getBlock()->isContainedByTOC())
+	{
+		getSpanAP(pSpanAP);
+	}
+
+	_lookupProperties(pSpanAP, pBlockAP, pSectionAP,getGraphics());
+}
+
 void fp_EmbedRun::updateVerticalMetric()
 {
+	// do something here to make the embedded view to redo its layout ...
 	UT_ASSERT_HARMLESS( UT_NOT_IMPLEMENTED );
+
+
+	// look up properties to reflect the new metrics ( we only need to lookup the
+	// properties that are specific to this class)
+	_lookupLocalProperties();
+
+	// _lookupProperties() fixed also our width, so if width was marked as dirty, clear
+	// that flag
+	_setRecalcWidth(false);
 }
 
 bool fp_EmbedRun::_recalcWidth(void)
@@ -232,8 +258,15 @@ bool fp_EmbedRun::_recalcWidth(void)
 	if(!_getRecalcWidth())
 		return false;
 	
+	UT_sint32 iWidth = getWidth();
+
+	// do something here to force the embedded view to redo its layout
 	UT_ASSERT_HARMLESS( UT_NOT_IMPLEMENTED );
-	return false;
+
+	// now lookup properties
+	_lookupLocalProperties();
+	
+	return (iWidth != getWidth());
 }
 
 void fp_EmbedRun::mapXYToPosition(UT_sint32 x, UT_sint32 /*y*/, PT_DocPosition& pos, bool& bBOL, bool& bEOL, bool &isTOC)
