@@ -642,8 +642,7 @@ void GR_Win32USPGraphics::_setupFontOnDC(GR_Win32USPFont *pFont, bool bZoomMe)
 	{
 		// we are using the printer dc for measuring, so we do not do any scaling
 		zoom = 100;
-		UT_uint32 iHeight = (UT_uint32)pFont->getPointSize();
-		pixels = MulDiv(iHeight, m_nPrintLogPixelsY, 72);
+		pixels = (int)(pFont->getPointSize() * (double)m_nPrintLogPixelsY / 72.0 + 0.5);
 		hdc = getPrintDC();
 	}
 	else

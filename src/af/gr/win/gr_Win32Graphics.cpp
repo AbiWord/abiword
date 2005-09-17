@@ -1498,7 +1498,7 @@ GR_Win32Font::GR_Win32Font(LOGFONT & lf, double fPoints, HDC hdc, HDC printHDC)
 		// use the point size rather than the screen pixel size to minimise rounding error
 		// (lfHeight already carries a rounding error from conversion pts -> screen pixels)
 		// lf.lfHeight = MulDiv(lf.lfHeight, nPrintLogPixelsY, nLogPixelsY);
-		lf.lfHeight =  (int)(-fPoints * nPrintLogPixelsY / 72.00 + 0.5);
+		lf.lfHeight =  (int)(-fPoints * (double)nPrintLogPixelsY / 72.00 + 0.5);
 		printFont = CreateFontIndirect(&lf);
 		
 		if(!printFont)
@@ -1755,7 +1755,11 @@ bool GR_Win32Font::glyphBox(UT_UCS4Char g, UT_Rect & rec, GR_Graphics * pG)
 
 	// scale the pixel size to the printer resolution and get the font
 	if(!m_bGUIFont)
-		pixels = MulDiv(pixels, nPrintLogPixelsY, 72);
+	{
+		// use point size to reduce rounding errors
+		// pixels = MulDiv(pixels, nPrintLogPixelsY, 72);
+		pixels = (int)(m_fPointSize * (double)nPrintLogPixelsY / 72.0 + 0.5);
+	}
 	
 	HFONT pFont = getFontFromCache(pixels, false, 100);
 	if (!pFont)
