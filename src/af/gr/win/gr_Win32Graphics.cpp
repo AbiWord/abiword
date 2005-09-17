@@ -1493,10 +1493,12 @@ GR_Win32Font::GR_Win32Font(LOGFONT & lf, double fPoints, HDC hdc, HDC printHDC)
 	
 	if(hdc != printHDC)
 	{
-		int nLogPixelsY      = GetDeviceCaps(hdc, LOGPIXELSY);
 		int nPrintLogPixelsY = GetDeviceCaps(printHDC, LOGPIXELSY);
 
-		lf.lfHeight = MulDiv(lf.lfHeight, nPrintLogPixelsY, nLogPixelsY);
+		// use the point size rather than the screen pixel size to minimise rounding error
+		// (lfHeight already carries a rounding error from conversion pts -> screen pixels)
+		// lf.lfHeight = MulDiv(lf.lfHeight, nPrintLogPixelsY, nLogPixelsY);
+		lf.lfHeight =  (int)(-fPoints * nPrintLogPixelsY / 72.00 + 0.5);
 		printFont = CreateFontIndirect(&lf);
 		
 		if(!printFont)
