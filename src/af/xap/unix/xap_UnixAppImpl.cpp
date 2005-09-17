@@ -103,7 +103,7 @@ bool XAP_UnixAppImpl::openURL(const char * szURL)
   	char *env_browser = getenv ("BROWSER");
   	if (env_browser)
   	{
-	        bPExists = progExists(env_browser);
+	        bool bPExists = progExists(env_browser);
 		if(bPExists)
 		{
 			if (strstr (env_browser, "netscape"))
