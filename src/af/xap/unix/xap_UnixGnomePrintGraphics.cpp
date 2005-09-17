@@ -254,7 +254,8 @@ void XAP_UnixGnomePrintGraphics::drawChars(const UT_UCSChar* pChars,
 			else
 				glyph_index = FT_Get_Char_Index(pFace, pChars[iCharOffset + i]);
 
-			gnome_glyphlist_moveto (pGL, scale_xdir (tdu (xoff + advance)), yoff);
+			//			gnome_glyphlist_moveto (pGL, scale_xdir (tdu (xoff + advance)), yoff);
+			gnome_glyphlist_moveto (pGL, tduD (xoff + advance), yoff);
 			gnome_glyphlist_glyph (pGL, glyph_index);
 
 			if (pCharWidths)
@@ -536,7 +537,7 @@ bool XAP_UnixGnomePrintGraphics::_endDocument(void)
 
 UT_uint32 XAP_UnixGnomePrintGraphics::_getResolution(void) const
 {
-	return 72;
+	return 72; // was 72
 }
 
 void XAP_UnixGnomePrintGraphics::fillRect(const UT_RGBColor& c, 
@@ -803,11 +804,10 @@ UT_sint32 XAP_UnixGnomePrintGraphics::scale_ydir (UT_sint32 in)
 		height = m_height;
 	else
 		height = m_width;
-
-	return static_cast<UT_sint32>(height - in);
+	return static_cast<UT_sint32>(height - static_cast<double>(in));
 }
 
 UT_sint32 XAP_UnixGnomePrintGraphics::scale_xdir (UT_sint32 in)
 {
-	return static_cast<UT_sint32>(in);
+	return in;
 }
