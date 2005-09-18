@@ -4218,6 +4218,96 @@ Defun1(cursorImageSize)
 	return true;
 }
 
+static bool dlgEditLatexEquation(AV_View *pAV_View, EV_EditMethodCallData * pCallData, bool bStartDlg, PT_DocPosition pos)
+{
+	CHECK_FRAME;
+	ABIWORD_VIEW;
+	FL_DocLayout * pLayout = pView->getLayout();
+	GR_EmbedManager * pMath = pLayout->getEmbedManager("mathml");
+	if(pMath->isDefault())
+	{
+	  //
+	  // No MathML plugin. We can't edit this.
+	  //
+	  UT_DEBUGMSG(("No Math Plugin! \n"));
+	     return false;
+	}
+	if(pos == 0)
+	{
+	    pos = pView->getPoint()-1;
+	}
+	fl_BlockLayout * pBlock = pView->getCurrentBlock();
+	fp_Run * pRun = NULL;
+	fp_MathRun * pMathRun = NULL;
+	UT_sint32 x1,y1,x2,y2,height;
+	bool bEOL = false;
+	bool bDir = false;
+	pRun = pBlock->findPointCoords(pos,bEOL,x1,y1,x2,y2,height,bDir);
+	while(pRun && pRun->getLength() == 0)
+	{
+	  pRun = pRun->getNextRun();
+	}
+	if(pRun == NULL)
+	{
+	  return false;
+	}
+	if(pRun->getType() != FPRUN_MATH)
+        {
+	  return false;
+	}
+	pMathRun = static_cast<fp_MathRun *>(pRun);
+	const PP_AttrProp * pSpanAP = pMathRun->getSpanAP();
+	const XML_Char * pszLatexID = NULL;
+	pSpanAP->getAttribute("latexid",pszLatexID);
+	if(pszLatexID == NULL)
+	{
+	  return false;
+	}
+	if(pszLatexID == "")
+	{
+	  return false;
+	}
+       const UT_ByteBuf * pByteBuf = NULL;
+       UT_UTF8String sLatex;
+       PD_Document * pDoc= pView->getDocument();
+       bool bFoundLatexID = pDoc->getDataItemDataByName(pszLatexID, 
+						    const_cast<const UT_ByteBuf **>(&pByteBuf),
+						    NULL, NULL);
+
+       if(!bFoundLatexID)
+       {
+	 return true;
+       }
+       UT_UCS4_mbtowc myWC;
+       sLatex.appendBuf( *pByteBuf, myWC);
+       UT_DEBUGMSG(("Loaded Latex %s from PT \n",sLatex.utf8_str()));
+       XAP_Frame * pFrame = static_cast<XAP_Frame *> ( pView->getParentData());
+       pFrame->raise();
+
+       XAP_DialogFactory * pDialogFactory
+	 = static_cast<XAP_DialogFactory *>(pFrame->getDialogFactory());
+
+       AP_Dialog_Latex * pDialog
+	 = static_cast<AP_Dialog_Latex *>(pDialogFactory->requestDialog(AP_DIALOG_ID_LATEX));
+       UT_return_val_if_fail(pDialog, false);
+       if(pDialog->isRunning())
+       {
+	   pDialog->fillLatex(sLatex);
+	   pDialog->activate();
+       }
+       else if(bStartDlg)
+       {
+	   pDialog->runModeless(pFrame);
+	   pDialog->fillLatex(sLatex);
+       }
+       else
+       {
+	   pDialogFactory->releaseDialog(pDialog);
+       }
+       return true;
+
+}
+
 /*****************************************************************/
 
 Defun1(contextMenu)
@@ -4279,6 +4369,11 @@ Defun(contextText)
 	//
 	// Look if we've right clicked on a mathrun
 	//
+	PT_DocPosition pos = 0;
+	if(pView->isMathSelected(pCallData->m_xPos, pCallData->m_yPos,pos))
+	{
+	  return dlgEditLatexEquation(pAV_View, pCallData, true, pos);
+	}
 	return s_doContextMenu(EV_EMC_TEXT,pCallData->m_xPos, pCallData->m_yPos,pView,pFrame);
 }
 
@@ -4813,93 +4908,6 @@ Defun(selectTOC)
 
 
 
-static bool dlgEditLatexEquation(AV_View *pAV_View, EV_EditMethodCallData * pCallData, bool bStartDlg)
-{
-	CHECK_FRAME;
-	ABIWORD_VIEW;
-	FL_DocLayout * pLayout = pView->getLayout();
-	GR_EmbedManager * pMath = pLayout->getEmbedManager("mathml");
-	if(pMath->isDefault())
-	{
-	  //
-	  // No MathML plugin. We can't edit this.
-	  //
-	  UT_DEBUGMSG(("No Math Plugin! \n"));
-	     return false;
-	}
-        PT_DocPosition pos = pView->getPoint()-1;
-	fl_BlockLayout * pBlock = pView->getCurrentBlock();
-	fp_Run * pRun = NULL;
-	fp_MathRun * pMathRun = NULL;
-	UT_sint32 x1,y1,x2,y2,height;
-	bool bEOL = false;
-	bool bDir = false;
-	pRun = pBlock->findPointCoords(pos,bEOL,x1,y1,x2,y2,height,bDir);
-	while(pRun && pRun->getLength() == 0)
-	{
-	  pRun = pRun->getNextRun();
-	}
-	if(pRun == NULL)
-	{
-	  return false;
-	}
-	if(pRun->getType() != FPRUN_MATH)
-        {
-	  return false;
-	}
-	pMathRun = static_cast<fp_MathRun *>(pRun);
-	const PP_AttrProp * pSpanAP = pMathRun->getSpanAP();
-	const XML_Char * pszLatexID = NULL;
-	pSpanAP->getAttribute("latexid",pszLatexID);
-	if(pszLatexID == NULL)
-	{
-	  return false;
-	}
-	if(pszLatexID == "")
-	{
-	  return false;
-	}
-       const UT_ByteBuf * pByteBuf = NULL;
-       UT_UTF8String sLatex;
-       PD_Document * pDoc= pView->getDocument();
-       bool bFoundLatexID = pDoc->getDataItemDataByName(pszLatexID, 
-						    const_cast<const UT_ByteBuf **>(&pByteBuf),
-						    NULL, NULL);
-
-       if(!bFoundLatexID)
-       {
-	 return true;
-       }
-       UT_UCS4_mbtowc myWC;
-       sLatex.appendBuf( *pByteBuf, myWC);
-       UT_DEBUGMSG(("Loaded Latex %s from PT \n",sLatex.utf8_str()));
-       XAP_Frame * pFrame = static_cast<XAP_Frame *> ( pView->getParentData());
-       pFrame->raise();
-
-       XAP_DialogFactory * pDialogFactory
-	 = static_cast<XAP_DialogFactory *>(pFrame->getDialogFactory());
-
-       AP_Dialog_Latex * pDialog
-	 = static_cast<AP_Dialog_Latex *>(pDialogFactory->requestDialog(AP_DIALOG_ID_LATEX));
-       UT_return_val_if_fail(pDialog, false);
-       if(pDialog->isRunning())
-       {
-	   pDialog->fillLatex(sLatex);
-	   pDialog->activate();
-       }
-       else if(bStartDlg)
-       {
-	   pDialog->runModeless(pFrame);
-	   pDialog->fillLatex(sLatex);
-       }
-       else
-       {
-	   pDialogFactory->releaseDialog(pDialog);
-       }
-       return true;
-
-}
-
 Defun(editLatexEquation)
 {
 	CHECK_FRAME;
@@ -4908,7 +4916,7 @@ Defun(editLatexEquation)
         PT_DocPosition posL = pView->getDocPositionFromXY(pCallData->m_xPos, pCallData->m_yPos);
 	PT_DocPosition posH = posL+1;
 	pView->cmdSelect(posL,posH);
-        return dlgEditLatexEquation(pAV_View, pCallData, true);
+        return dlgEditLatexEquation(pAV_View, pCallData, true,0);
 }
 
 
@@ -4973,7 +4981,7 @@ Defun(selectMath)
         PT_DocPosition posL = pView->getDocPositionFromXY(pCallData->m_xPos, pCallData->m_yPos);
 	PT_DocPosition posH = posL+1;
 	pView->cmdSelect(posL,posH);
-	dlgEditLatexEquation(pAV_View, pCallData, false);
+	dlgEditLatexEquation(pAV_View, pCallData, false,0);
 	return true;
 }
 

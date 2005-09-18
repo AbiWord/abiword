@@ -718,6 +718,7 @@ public:
 	FV_BIDI_Order	    getBidiOrder()const {return m_eBidiOrder;}
 	void                setBidiOrder(FV_BIDI_Order o) {m_eBidiOrder = o;}
 
+	bool                isMathSelected(UT_sint32 x, UT_sint32 y, PT_DocPosition & pos);
 	// -- plugins
         bool                isMathLoaded(void);
 	bool                isGrammarLoaded(void);

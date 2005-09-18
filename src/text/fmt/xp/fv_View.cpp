@@ -9598,6 +9598,42 @@ EV_EditMouseContext FV_View::getMouseContext(UT_sint32 xPos, UT_sint32 yPos)
 }
 
 /*!
+ * Returns true if the (x,y) location on the screen is over a selected
+ * fp_MathRun.
+ */
+bool FV_View::isMathSelected(UT_sint32 x, UT_sint32 y, PT_DocPosition  & pos)
+{
+	if(isSelectionEmpty())
+	{
+			return false;
+	}
+	// Figure out which page we clicked on.
+	// Pass the click down to that page.
+	UT_sint32 xClick, yClick;
+	fp_Page* pPage = _getPageForXY(x,y, xClick, yClick);
+	bool bBOL = false;
+	bool bEOL = false;
+	bool isTOC = false;
+	bool bUseHdrFtr = true;
+	pPage->mapXYToPosition(false,xClick, yClick, pos, bBOL, bEOL,isTOC, bUseHdrFtr,NULL);
+	fl_BlockLayout * pBlock = NULL;
+	fp_Run * pRun = NULL;
+	UT_sint32 xCaret, yCaret;
+	UT_uint32 heightCaret;
+	UT_sint32 xCaret2, yCaret2;
+	bool bDirection;
+	_findPositionCoords(pos, m_bPointEOL, xCaret, yCaret, xCaret2, yCaret2, heightCaret, bDirection, &pBlock, &pRun);
+	if(pRun && pRun->getType() == FPRUN_MATH)
+	{
+		if(pos >= getPoint() && pos <= getSelectionAnchor())
+			return true;
+		if(pos >= getSelectionAnchor() && pos <= getPoint())
+			return true;
+	}  
+	return false;
+}
+
+/*!
  * Return the document position from the most recent mouse positions
  */
 PT_DocPosition FV_View::getDocPositionFromLastXY(void)
