@@ -158,33 +158,34 @@ static float fixedToFloat(signed long in)
 //
 bool  XAP_UnixFontHandle::glyphBox(UT_UCS4Char g, UT_Rect & rec, GR_Graphics * pG) 
 {
-  //	XftFaceLocker locker(m_font->getLayoutXftFont(GR_CharWidthsCache::CACHE_FONT_SIZE));
-  XftFaceLocker locker(m_font->getLayoutXftFont(m_size));
+	XftFaceLocker locker(m_font->getLayoutXftFont(GR_CharWidthsCache::CACHE_FONT_SIZE));
 
 	FT_Face pFace = locker.getFace();
 
 	UT_UCS4Char cChar = g;
-	if(m_font->isSymbol()) cChar = static_cast<UT_UCS4Char>(adobeToUnicode(g));
+	
+	if(m_font->isSymbol())
+		cChar = static_cast<UT_UCS4Char>(adobeToUnicode(g));
+	
 	FT_UInt glyph_index = FT_Get_Char_Index(pFace, cChar);
-	FT_Error error =
-		FT_Load_Glyph(pFace, glyph_index,
-					FT_LOAD_LINEAR_DESIGN |
-					FT_LOAD_IGNORE_TRANSFORM |
-					FT_LOAD_NO_BITMAP);
-	if (error) {
+
+	FT_Error error = FT_Load_Glyph(pFace, glyph_index,
+								   FT_LOAD_LINEAR_DESIGN |
+								   FT_LOAD_IGNORE_TRANSFORM |
+								   FT_LOAD_NO_BITMAP |
+								   FT_LOAD_NO_SCALE);
+	if (error)
+	{
 		return false;
 	}
-	//
-	// The 64 is because these numbers are returned as fixed point 
-	// integers multiplied by 64.
-	// The UT_LAYOUT_RESOLUTION)/64.0 undoes the "fromAbiLayoutUnits"
-	// calculation.
-	float rat = static_cast<float>(UT_LAYOUT_RESOLUTION)/(64.0*72.0);
+
+	UT_uint32 iSize = m_size * getResolution() / s_getDeviceResolution();
 	
-	rec.left = static_cast<UT_sint32>(rat*pFace->glyph->metrics.horiBearingX);
-	rec.width = static_cast<UT_sint32>(rat*pFace->glyph->metrics.width);
-	rec.top = static_cast<UT_sint32>(rat*pFace->glyph->metrics.horiBearingY);
-	rec.height = static_cast<UT_sint32>(rat*pFace->glyph->metrics.height);
+	rec.left   = static_cast<UT_sint32>(fontPoints2float(iSize, pFace, pFace->glyph->metrics.horiBearingX));
+	rec.width  = static_cast<UT_sint32>(fontPoints2float(iSize, pFace, pFace->glyph->metrics.width));
+	rec.top    = static_cast<UT_sint32>(fontPoints2float(iSize, pFace, pFace->glyph->metrics.horiBearingY));
+	rec.height = static_cast<UT_sint32>(fontPoints2float(iSize, pFace, pFace->glyph->metrics.height));
+	
 	UT_DEBUGMSG((" left %d width %d top %d height %d \n",rec.left,rec.width,rec.top,rec.height));
 
 	return true;
