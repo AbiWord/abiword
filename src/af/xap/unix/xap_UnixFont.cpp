@@ -145,6 +145,10 @@ bool XAP_UnixFontHandle::doesGlyphExist(UT_UCS4Char g)
 	return m_font->doesGlyphExist(g);
 }
 
+static float fixedToFloat(signed long in)
+{
+  float res = static_cast<float>(in*64);
+}
 //
 // UT_Rect of glyph in Logical units.
 // rec.left = bearing Left (distance from origin to start)
@@ -154,7 +158,9 @@ bool XAP_UnixFontHandle::doesGlyphExist(UT_UCS4Char g)
 //
 bool  XAP_UnixFontHandle::glyphBox(UT_UCS4Char g, UT_Rect & rec, GR_Graphics * pG) 
 {
-	XftFaceLocker locker(m_font->getLayoutXftFont(GR_CharWidthsCache::CACHE_FONT_SIZE));
+  //	XftFaceLocker locker(m_font->getLayoutXftFont(GR_CharWidthsCache::CACHE_FONT_SIZE));
+  XftFaceLocker locker(m_font->getLayoutXftFont(m_size));
+
 	FT_Face pFace = locker.getFace();
 
 	UT_UCS4Char cChar = g;
@@ -164,15 +170,18 @@ bool  XAP_UnixFontHandle::glyphBox(UT_UCS4Char g, UT_Rect & rec, GR_Graphics * p
 		FT_Load_Glyph(pFace, glyph_index,
 					FT_LOAD_LINEAR_DESIGN |
 					FT_LOAD_IGNORE_TRANSFORM |
-					FT_LOAD_NO_BITMAP | FT_LOAD_NO_SCALE);
+					FT_LOAD_NO_BITMAP);
 	if (error) {
 		return false;
 	}
-	rec.left = pFace->glyph->metrics.horiBearingX;
-	rec.width = pFace->glyph->metrics.width;
-	rec.top = pFace->glyph->metrics.horiBearingY;
-	rec.height = pFace->glyph->metrics.height;
-	xxx_UT_DEBUGMSG((" left %d width %d top %d height %d \n",rec.left,rec.width,rec.top,rec.height));
+	float rat = static_cast<float>(UT_LAYOUT_RESOLUTION)/(64.0*72.0);
+	
+	rec.left = static_cast<UT_sint32>(rat*pFace->glyph->metrics.horiBearingX);
+	rec.width = static_cast<UT_sint32>(rat*pFace->glyph->metrics.width);
+	rec.top = static_cast<UT_sint32>(rat*pFace->glyph->metrics.horiBearingY);
+	rec.height = static_cast<UT_sint32>(rat*pFace->glyph->metrics.height);
+	UT_DEBUGMSG((" left %d width %d top %d height %d \n",rec.left,rec.width,rec.top,rec.height));
+
 	return true;
 }
 /*******************************************************************/
