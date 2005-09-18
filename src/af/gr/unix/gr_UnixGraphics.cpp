@@ -1218,7 +1218,8 @@ GR_Font * GR_UnixGraphics::_findFont(const char* pszFontFamily,
 															  pszFontStretch, pszFontSize,this);
 
 	// bury the pointer to our Unix font in a XAP_UnixFontHandle with the correct size.
-	UT_uint32 iSize = static_cast<UT_uint32>(UT_convertToPoints(pszFontSize));
+	UT_uint32 iSize = static_cast<UT_uint32>(UT_convertToPoints(pszFontSize)*s_getDeviceResolution()/72.);
+
 	XAP_UnixFontHandle* pFont = new XAP_UnixFontHandle(pUnixFont, iSize);
 	UT_ASSERT(pFont);
 	xxx_UT_DEBUGMSG(("Return Font name %s \n",pUnixFont->getName())); 

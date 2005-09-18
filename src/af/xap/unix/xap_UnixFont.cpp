@@ -158,6 +158,8 @@ static float fixedToFloat(signed long in)
 //
 bool  XAP_UnixFontHandle::glyphBox(UT_UCS4Char g, UT_Rect & rec, GR_Graphics * pG) 
 {
+	UT_return_val_if_fail( pG, false );
+	
 	XftFaceLocker locker(m_font->getLayoutXftFont(GR_CharWidthsCache::CACHE_FONT_SIZE));
 
 	FT_Face pFace = locker.getFace();
@@ -179,7 +181,7 @@ bool  XAP_UnixFontHandle::glyphBox(UT_UCS4Char g, UT_Rect & rec, GR_Graphics * p
 		return false;
 	}
 
-	UT_uint32 iSize = m_size * pG->getResolution() / 72;
+	UT_uint32 iSize = m_size * pG->getResolution() / pG->getDeviceResolution();
 	
 	rec.left   = static_cast<UT_sint32>(fontPoints2float(iSize, pFace, pFace->glyph->metrics.horiBearingX));
 	rec.width  = static_cast<UT_sint32>(fontPoints2float(iSize, pFace, pFace->glyph->metrics.width));
