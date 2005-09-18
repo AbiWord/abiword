@@ -30,8 +30,8 @@
 #include "xap_CocoaAppController.h"
 #include "xap_CocoaFont.h"
 #include "xap_CocoaModule.h"
-#include "xap_CocoaPlugin.h"
 #include "xap_CocoaToolPalette.h"
+#include "xap_CocoaToolProvider.h"
 #include "xap_App.h"
 #include "xap_Frame.h"
 
@@ -338,6 +338,8 @@ static XAP_CocoaAppController * XAP_AppController_Instance = nil;
 
 		m_PluginsToolsSeparator = [NSMenuItem separatorItem];
 		[m_PluginsToolsSeparator retain];
+
+		m_ToolProviders = [[NSMutableArray alloc] initWithCapacity:4];
 	}
 	return self;
 }
@@ -353,6 +355,7 @@ static XAP_CocoaAppController * XAP_AppController_Instance = nil;
 	[m_Plugins release];
 	[m_PluginsTools release];
 	[m_PluginsToolsSeparator release];
+	[m_ToolProviders release];
 	[super dealloc];
 }
 
@@ -388,6 +391,9 @@ static XAP_CocoaAppController * XAP_AppController_Instance = nil;
 {
 	UT_DEBUGMSG(("[XAP_CocoaAppController -applicationDidFinishLaunching:]\n"));
 	m_bApplicationLaunching = NO;
+
+	UT_DEBUGMSG(("[...FinishLaunching] Constructing standard toolset:\n"));
+	[m_ToolProviders addObject:[XAP_CocoaToolProvider AbiWordToolProvider]];
 
 	XAP_CocoaApp * pApp = static_cast<XAP_CocoaApp *>(XAP_App::getApp());
 
@@ -1011,6 +1017,44 @@ static XAP_CocoaAppController * XAP_AppController_Instance = nil;
 - (void)removeRefForMenuID:(NSNumber *)menuid
 {
 	[m_MenuIDRefDictionary removeObjectForKey:menuid];
+}
+
+/* Get a list of all the tool providers.
+ * Each tool provider is of type id <NSObject, XAP_CocoaPlugin_ToolProvider>.
+ */
+- (NSArray *)toolProviders
+{
+	return m_ToolProviders;
+}
+
+/* Find a tool provider by name.
+ * (TODO: If plug-ins are registering tool providers, we need to implement a notification
+ *        system to update toolbar systems.)
+ */
+- (id <NSObject, XAP_CocoaPlugin_ToolProvider>)toolProvider:(NSString *)name
+{
+	id <NSObject, XAP_CocoaPlugin_ToolProvider> matched_provider = 0;
+
+	int count = [m_ToolProviders count];
+	int i;
+
+	if (!name)
+		return 0;
+
+	if ([name length] == 0)
+		return 0;
+
+	for (i = 0; i < count; i++)
+		{
+			id <NSObject, XAP_CocoaPlugin_ToolProvider> provider = (id <NSObject, XAP_CocoaPlugin_ToolProvider>) [m_ToolProviders objectAtIndex:i];
+
+			if ([name isEqualToString:[provider name]])
+				{
+					matched_provider = provider;
+					break;
+				}
+		}
+	return matched_provider;
 }
 
 @end
