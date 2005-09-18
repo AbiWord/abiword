@@ -145,7 +145,6 @@ public:
 
 	void   _setupFontOnDC(GR_Win32USPFont *pFont, bool bZoomMe);
 
-	UT_uint32 m_iDCFontAllocNo;
 	bool   m_bConstructorSucceeded;
 	
 	static HINSTANCE s_hUniscribe;

@@ -269,6 +269,10 @@ public:
 
 	virtual void          setPrintDC(HDC dc);
 	HDC                   getPrintDC() const {return m_printHDC;}
+	HDC                   getPrimaryDC() const {return m_hdc;}
+
+	void                  setPrintDCFontAllocNo(UT_uint32 i){m_iPrintDCFontAllocNo = i;}
+	void                  setDCFontAllocNo(UT_uint32 i){m_iDCFontAllocNo = i;}
 	
 	double                getXYRatio() const {return m_fXYRatio;}
 	double                getXYRatioPrint() const {return m_fXYRatioPrint;}
@@ -297,6 +301,8 @@ protected:
 
   protected:
 
+	UT_uint32               m_iDCFontAllocNo;
+	UT_uint32               m_iPrintDCFontAllocNo;
 	HDC						m_hdc;
 	HDC                     m_printHDC;
 	HWND 					m_hwnd;

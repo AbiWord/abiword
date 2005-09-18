@@ -93,6 +93,8 @@ void GR_Win32Graphics::_constructorCommonCode(HDC hdc)
 {
 	UT_ASSERT(hdc);
 
+	m_iDCFontAllocNo = 0;
+	m_iPrintDCFontAllocNo = 0;
 	m_hdc = hdc;
 	m_printHDC = NULL;
 	m_nPrintLogPixelsY = 0;
@@ -475,6 +477,7 @@ void GR_Win32Graphics::drawChars(const UT_UCSChar* pChars,
 	int iLength = iLengthOrig;
 	HFONT hFont = m_pFont->getDisplayFont(this);
 	SelectObject(m_hdc, hFont);
+	m_iDCFontAllocNo = m_pFont->getAllocNumber();
 	SetTextAlign(m_hdc, TA_LEFT | TA_TOP);
 	SetBkMode(m_hdc, TRANSPARENT);		// TODO: remember and reset?
 
@@ -932,7 +935,7 @@ bool GR_Win32Graphics::startPage(const char * szPageLabel, UT_uint32 pageNumber,
 									bool bPortrait, UT_uint32 iWidth, UT_uint32 iHeight)
 {
 	// need these in 10th of milimiters
-	iWidth = iWidth * m_fXYRatio * 254 / getResolution();
+	iWidth = (int)((double)iWidth * m_fXYRatio * 254.0 / (double)getResolution() + 0.5);
 	iHeight = iHeight * 254 / getResolution();
 
 	if (m_bStartPage)
@@ -1777,7 +1780,14 @@ bool GR_Win32Font::glyphBox(UT_UCS4Char g, UT_Rect & rec, GR_Graphics * pG)
 	// select our font into the printer DC
 	HGDIOBJ hRet = SelectObject(printDC, pFont);
 	UT_return_val_if_fail( hRet != (void*)GDI_ERROR, false);
-		
+
+	// remember which font we selected into the dc
+	if(printDC == pWin32Gr->getPrintDC())
+		pWin32Gr->setPrintDCFontAllocNo(getAllocNumber());
+
+	if(printDC == pWin32Gr->getPrimaryDC())
+		pWin32Gr->setDCFontAllocNo(getAllocNumber());
+	
 	if (printDC != m_hdc)
 	{
 		// invalidate cached info when we change hdc's.

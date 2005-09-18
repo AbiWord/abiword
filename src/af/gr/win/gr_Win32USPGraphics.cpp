@@ -277,7 +277,6 @@ GOFFSET *       GR_Win32USPRenderInfo::s_pGoffsets          = NULL;
 
 GR_Win32USPGraphics::GR_Win32USPGraphics(HDC hdc, HWND hwnd, XAP_App * pApp)
 	:GR_Win32Graphics(hdc, hwnd, pApp),
-	 m_iDCFontAllocNo(0),
 	 m_bConstructorSucceeded(false)
 {
 	if(!_constructorCommonCode())
@@ -293,7 +292,6 @@ GR_Win32USPGraphics::GR_Win32USPGraphics(HDC hdc, HWND hwnd, XAP_App * pApp)
 GR_Win32USPGraphics::GR_Win32USPGraphics(HDC hdc, const DOCINFO * pDI, XAP_App * pApp,
 										 HGLOBAL hDevMode)
 	:GR_Win32Graphics(hdc, pDI, pApp, hDevMode),
-	 m_iDCFontAllocNo(0),
 	 m_bConstructorSucceeded(false)
 {
 	if(!_constructorCommonCode())
@@ -661,8 +659,14 @@ void GR_Win32USPGraphics::_setupFontOnDC(GR_Win32USPFont *pFont, bool bZoomMe)
 		hFont = pFont->getFontFromCache(pixels, false, zoom);
 	}
 
-	if(pFont->getAllocNumber() != m_iDCFontAllocNo ||
-	   (HFONT) GetCurrentObject(hdc, OBJ_FONT) != hFont)
+	bool bAllocNoMismatch = false;
+	if(hdc == m_hdc && pFont->getAllocNumber() != m_iDCFontAllocNo)
+		bAllocNoMismatch = true;
+
+	if(!bAllocNoMismatch && hdc == getPrintDC() && pFont->getAllocNumber() != m_iPrintDCFontAllocNo)
+		bAllocNoMismatch = true;
+	
+	if(bAllocNoMismatch || (HFONT) GetCurrentObject(hdc, OBJ_FONT) != hFont)
 	{
 		if(NULL == SelectObject(hdc, hFont))
 		{
@@ -692,8 +696,15 @@ void GR_Win32USPGraphics::_setupFontOnDC(GR_Win32USPFont *pFont, bool bZoomMe)
 
 			LocalFree( lpMsgBuf );
 		}
-		
-		m_iDCFontAllocNo = pFont->getAllocNumber();
+
+		// remember which font we loaded
+		// NB: when printing both of these are true (m_hdc == printDC)
+		if(hdc == m_hdc)
+			m_iDCFontAllocNo = pFont->getAllocNumber();
+
+		if(hdc == getPrintDC())
+			m_iPrintDCFontAllocNo = pFont->getAllocNumber();
+			
 	}
 }
 
