@@ -174,6 +174,11 @@ bool  XAP_UnixFontHandle::glyphBox(UT_UCS4Char g, UT_Rect & rec, GR_Graphics * p
 	if (error) {
 		return false;
 	}
+	//
+	// The 64 is because these numbers are returned as fixed point 
+	// integers multiplied by 64.
+	// The UT_LAYOUT_RESOLUTION)/64.0 undoes the "fromAbiLayoutUnits"
+	// calculation.
 	float rat = static_cast<float>(UT_LAYOUT_RESOLUTION)/(64.0*72.0);
 	
 	rec.left = static_cast<UT_sint32>(rat*pFace->glyph->metrics.horiBearingX);
