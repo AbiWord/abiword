@@ -550,15 +550,15 @@ void XAP_UnixGnomePrintGraphics::fillRect(const UT_RGBColor& c,
 	// set the bgcolor
 	UT_RGBColor old (m_currentColor);
 	setColor (c);
-	
-	x = scale_xdir (tdu(x)); y = scale_ydir (tdu(y)); w = scale_xdir (tdu(w)); h = tdu(h);
+	double dx,dy,dw,dh;
+	dx = tduD(x); dy = static_cast<double>(scale_ydir (tdu(y))); dw = tduD(w); dh = tduD(h);
 
 	gnome_print_newpath (m_gpc);
-	gnome_print_moveto (m_gpc, x,   y);		
-	gnome_print_lineto (m_gpc, x+w, y);
-	gnome_print_lineto (m_gpc, x+w, y-h);
-	gnome_print_lineto (m_gpc, x,   y-h);
-	gnome_print_lineto (m_gpc, x,   y);
+	gnome_print_moveto (m_gpc, dx,   dy);		
+	gnome_print_lineto (m_gpc, dx+dw, dy);
+	gnome_print_lineto (m_gpc, dx+dw, dy-dh);
+	gnome_print_lineto (m_gpc, dx,   dy-dh);
+	gnome_print_lineto (m_gpc, dx,   dy);
 	gnome_print_closepath (m_gpc);
 	gnome_print_fill (m_gpc);
 	
