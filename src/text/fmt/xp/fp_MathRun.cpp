@@ -121,6 +121,7 @@ void fp_MathRun::_lookupProperties(const PP_AttrProp * pSpanAP,
 	  iAscent = getMathManager()->getAscent(m_iMathUID);
 	  iDescent = getMathManager()->getDescent(m_iMathUID);
 	}
+	m_iPointHeight = iAscent + iDescent;
 	UT_DEBUGMSG(("Width = %d Ascent = %d Descent = %d \n",iWidth,iAscent,iDescent)); 
 
 	fl_DocSectionLayout * pDSL = getBlock()->getDocSectionLayout();
@@ -250,7 +251,7 @@ void fp_MathRun::findPointCoords(UT_uint32 iOffset, UT_sint32& x, UT_sint32& y, 
 		x = xoff;
 		x2 = x;
 	}
-	y = yoff + getAscent() - m_iPointHeight;
+	y = yoff;
 	height = m_iPointHeight;
 	y2 = y;
 	bDirection = (getVisDirection() != UT_BIDI_LTR);
@@ -324,7 +325,7 @@ void fp_MathRun::_draw(dg_DrawArgs* pDA)
 	}
 	else
 	{
-		Fill(getGraphics(),pDA->xoff, pDA->yoff - getAscent(), getWidth(), iLineHeight);
+	  Fill(getGraphics(),pDA->xoff, pDA->yoff - getLine()->getAscent(), getWidth(), iLineHeight);
 	}
 	getMathManager()->setColor(m_iMathUID,getFGColor());
 	UT_Rect rec;
