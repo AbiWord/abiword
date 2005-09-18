@@ -179,7 +179,7 @@ bool  XAP_UnixFontHandle::glyphBox(UT_UCS4Char g, UT_Rect & rec, GR_Graphics * p
 		return false;
 	}
 
-	UT_uint32 iSize = m_size * getResolution() / s_getDeviceResolution();
+	UT_uint32 iSize = m_size * pG->getResolution() / 72;
 	
 	rec.left   = static_cast<UT_sint32>(fontPoints2float(iSize, pFace, pFace->glyph->metrics.horiBearingX));
 	rec.width  = static_cast<UT_sint32>(fontPoints2float(iSize, pFace, pFace->glyph->metrics.width));
