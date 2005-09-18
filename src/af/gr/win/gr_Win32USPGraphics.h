@@ -77,12 +77,19 @@ public:
 	static const char *    getUSPVersion();
 	static GR_Graphics *   graphicsAllocator(GR_AllocInfo&);
 
-	virtual void			setFont(GR_Font* pFont);
+	virtual void		   setFont(GR_Font* pFont);
 	
-	virtual void			drawChars(const UT_UCSChar* pChars,
+	virtual void		   drawChars(const UT_UCSChar* pChars,
 									  int iCharOffset, int iLength,
 									  UT_sint32 xoff, UT_sint32 yoff,
 									  int * pCharWidth);
+	
+	virtual void           drawCharsRelativeToBaseline(const UT_UCSChar* pChars,
+													   int iCharOffset,
+													   int iLength,
+													   UT_sint32 xoff,
+													   UT_sint32 yoff,
+													   int* pCharWidths = NULL);
 
 	virtual UT_uint32		getFontHeight();
 	virtual UT_uint32		getFontAscent();
@@ -145,6 +152,11 @@ public:
 
 	void   _setupFontOnDC(GR_Win32USPFont *pFont, bool bZoomMe);
 
+	void   _drawChars(const UT_UCSChar* pChars,
+					  int iCharOffset, int iLength,
+					  UT_sint32 xoff, UT_sint32 yoff,
+					  int * pCharWidth);
+	
 	bool   m_bConstructorSucceeded;
 	
 	static HINSTANCE s_hUniscribe;

@@ -63,6 +63,13 @@ public:
 				   UT_sint32 yoff,
 				   int* pCharWidths = NULL);
 
+	void drawCharsRelativeToBaseline(const UT_UCSChar* pChars,
+				   int iCharOffset,
+				   int iLength,
+				   UT_sint32 xoff,
+				   UT_sint32 yoff,
+				   int* pCharWidths = NULL);
+
 	void renderChars(GR_RenderInfo & ri);
 
 	

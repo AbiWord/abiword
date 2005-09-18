@@ -2248,7 +2248,7 @@ void GR_Win32USPGraphics::positionToXY(const GR_RenderInfo & ri,
 	x2 = x;
 }
 
-void GR_Win32USPGraphics::drawChars(const UT_UCSChar* pChars,
+void GR_Win32USPGraphics::_drawChars(const UT_UCSChar* pChars,
 									int iCharOffset, int iLength,
 									UT_sint32 xoff, UT_sint32 yoff,
 									int * /*pCharWidth*/)
@@ -2261,8 +2261,6 @@ void GR_Win32USPGraphics::drawChars(const UT_UCSChar* pChars,
 		SetBkMode(m_hdc, TRANSPARENT); // this is necessary
 	}
 
-	SetTextAlign(m_hdc, TA_LEFT | TA_TOP);
-	
 	static WCHAR buff[100];
 	WCHAR * pwChars = buff;
     bool bDelete = false;
@@ -2311,6 +2309,28 @@ void GR_Win32USPGraphics::drawChars(const UT_UCSChar* pChars,
 	if(bDelete)
 		delete [] pwChars;
 }
+
+void GR_Win32USPGraphics::drawChars(const UT_UCSChar* pChars,
+									int iCharOffset, int iLength,
+									UT_sint32 xoff, UT_sint32 yoff,
+									int * pCharWidth)
+{
+	SetTextAlign(m_hdc, TA_LEFT | TA_TOP);
+	_drawChars(pChars, iCharOffset, iLength, xoff, yoff, pCharWidth);
+}
+
+
+void GR_Win32USPGraphics::drawCharsRelativeToBaseline(const UT_UCSChar* pChars,
+								 int iCharOffset,
+								 int iLength,
+								 UT_sint32 xoff,
+								 UT_sint32 yoff,
+								 int* pCharWidths)
+{
+	SetTextAlign(m_hdc, TA_LEFT | TA_BASELINE);
+	_drawChars(pChars, iCharOffset, iLength, xoff, yoff, pCharWidths);
+}
+
 
 void GR_Win32USPGraphics::setZoomPercentage(UT_uint32 iZoom)
 {

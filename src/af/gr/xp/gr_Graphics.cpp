@@ -416,6 +416,27 @@ void GR_Graphics::drawImage(GR_Image* pImg, UT_sint32 xDest, UT_sint32 yDest)
 }
 
 /*!
+    This method is just like drawChars() except it treats yoff as position of the font
+    baseline. The default implementation simply subtracts the ascent of the current font
+    from yoff and calls drawChars(), which should work on all platforms except for win32.
+
+    On win32 because of the trickery we use to achieve wysiwyg layout the acent of the
+    font we work with is slightly smaller than that of the actual font the system uses to
+    draw on the screen. As a result, the characters end up positioned slightly higher than
+    they should and this has proved a problem in the math plugin (see screen shots in #9500)
+*/
+void GR_Graphics::drawCharsRelativeToBaseline(const UT_UCSChar* pChars,
+								 int iCharOffset,
+								 int iLength,
+								 UT_sint32 xoff,
+								 UT_sint32 yoff,
+								 int* pCharWidths)
+{
+	drawChars(pChars, iCharOffset, iLength, xoff, yoff - getFontAscent(), pCharWidths);
+}
+
+
+/*!
  * Create a new image from the Raster rgba byte buffer defined by pBB.
  * The dimensions of iWidth and iHeight are in logical units but the image
  * doesn't scale if the resolution or zoom changes. Instead you must create

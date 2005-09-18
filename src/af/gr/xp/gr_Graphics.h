@@ -714,6 +714,14 @@ class ABI_EXPORT GR_Graphics
 						   UT_sint32 xoff,
 						   UT_sint32 yoff,
 						   int* pCharWidths = NULL) = 0;
+
+	virtual void drawCharsRelativeToBaseline(const UT_UCSChar* pChars,
+											 int iCharOffset,
+											 int iLength,
+											 UT_sint32 xoff,
+											 UT_sint32 yoff,
+											 int* pCharWidths = NULL);
+	
 	virtual GR_Image *	  genImageFromRectangle(const UT_Rect & r) = 0;
 
 	XAP_App * getApp() const {return m_pApp;}
