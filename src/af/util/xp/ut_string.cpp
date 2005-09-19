@@ -581,7 +581,9 @@ bool UT_validXML(char * pString)
 	}
 
 	strncpy(pString, s.c_str(), s.length());
-	
+
+	// make sure we null-terminate
+	pString[s.length()] = 0;
 	return bChanged;
 }
 
