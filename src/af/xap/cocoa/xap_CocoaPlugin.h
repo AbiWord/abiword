@@ -22,17 +22,85 @@
 #ifndef XAP_COCOAPLUGIN_H
 #define XAP_COCOAPLUGIN_H
 
-#define XAP_COCOAPLUGIN_INTERFACE 20050918 /** The current version of the CocoaPlugin API. */
+#define XAP_COCOAPLUGIN_INTERFACE 20050919 /** The current version of the CocoaPlugin API. */
 
 #import <Cocoa/Cocoa.h>
 
 @class XAP_CocoaPlugin;
 
+@protocol XAP_CocoaPlugin_Tool;
+@protocol XAP_CocoaPlugin_ToolProvider;
+
+@protocol XAP_CocoaPlugin_ToolInstance
+- (id <NSObject, XAP_CocoaPlugin_Tool>)tool;
+
+- (NSButton *)toolbarButton;
+
+- (NSMenuItem *)toolbarMenuItem;
+
+- (NSString *)configWidth;
+- (NSString *)configHeight;
+- (NSString *)configImage;
+- (NSString *)configAltImage;
+
+- (void)setConfigWidth:(NSString *)width;
+- (void)setConfigHeight:(NSString *)height;
+- (void)setConfigImage:(NSString *)image;
+- (void)setConfigAltImage:(NSString *)altImage;
+@end
+
+/**
+ * \protocol XAP_CocoaPlugin_Tool XAP_CocoaPlugin.h "XAP_CocoaPlugin.h"
+ * 
+ * A class which provides information about a specific tool. Any given tool
+ * may have any number of buttons (or menu items) in any number of toolbars;
+ * the XAP_CocoaPlugin_Tool object is used to create instances of these.
+ */
+@protocol XAP_CocoaPlugin_Tool
+
+/**
+ * Each tool, for a given provider, has a unique identifier.
+ * 
+ * \return The unique identifier for this tool.
+ */
+- (NSString *)identifier;
+
+/**
+ * The description is the tooltip or menu item name for this tool.
+ * 
+ * \return A description of this tool.
+ */
+- (NSString *)description;
+
+/**
+ * When a tool is added to a tool provider, the provider sends a setProvider: message to the tool.
+ * 
+ * \param provider The tool provider which has assumed ownership of this tool, or nil if the
+ *                 provider has removed the tool from its list. (Internal use only.)
+ */
+- (void)setProvider:(id <NSObject, XAP_CocoaPlugin_ToolProvider>)provider;
+
+/**
+ * The tool provider which owns the tool.
+ * 
+ * \return The tool provider which owns the tool, or nil if none does.
+ */
+- (id <NSObject, XAP_CocoaPlugin_ToolProvider>)provider;
+
+/**
+ * Multiple toolbar buttons can be created for a particular tool. This method instantiates a new
+ * tool object which manages a toolbar button and, optionally, a menu item.
+ * 
+ * \return A tool object which manages a toolbar button and, optionally, a menu item.
+ */
+- (id <NSObject, XAP_CocoaPlugin_ToolInstance>)tool;
+@end
+
 /**
  * \protocol XAP_CocoaPlugin_ToolProvider XAP_CocoaPlugin.h "XAP_CocoaPlugin.h"
  * 
- * A class which provides information about available tools and also provides
- * toolbar items (i.e., buttons) for these tools.
+ * A class which provides a set of available tools which can be used to create a
+ * toolbar.
  */
 @protocol XAP_CocoaPlugin_ToolProvider
 
@@ -42,6 +110,15 @@
  * \return The name identifying the provider.
  */
 - (NSString *)name;
+
+/**
+ * Get the tool with the specified identifier.
+ * 
+ * \param identifier The identifier of the tool which is desired.
+ * 
+ * \return The specified tool, or nil if the identifier is not matched.
+ */
+- (id <NSObject, XAP_CocoaPlugin_Tool>)toolWithIdentifier:(NSString *)identifier;
 
 /**
  * Get the identifiers of the tools provided.

@@ -26,16 +26,6 @@
 
 #include "xap_CocoaPlugin.h"
 
-@protocol XAP_CocoaTool_Generic
-- (NSString *)identifier;
-- (NSString *)description;
-
-- (void)setProvider:(id <XAP_CocoaPlugin_ToolProvider>)provider;
-- (id <XAP_CocoaPlugin_ToolProvider>)provider;
-
-- (NSButton *)tool;
-@end
-
 @interface XAP_CocoaToolProvider : NSObject <XAP_CocoaPlugin_ToolProvider>
 {
 	NSString *	m_name;
@@ -58,9 +48,9 @@
 /**
  * Add a tool to the provider's list of tools. The provider will send the tool a setProvider: message.
  * 
- * \param tool An object which implements the XAP_CocoaTool_Generic protocol.
+ * \param tool An object which implements the XAP_CocoaPlugin_Tool protocol.
  */
-- (void)addTool:(id <NSObject, XAP_CocoaTool_Generic>)tool;
+- (void)addTool:(id <NSObject, XAP_CocoaPlugin_Tool>)tool;
 
 /**
  * Remove a tool from the provider's list of tools. The provider will send the tool a setProvider:nil message.
@@ -76,7 +66,7 @@
  * 
  * \return The specified tool, or nil if the identifier is not matched.
  */
-- (id <NSObject, XAP_CocoaTool_Generic>)toolWithIdentifier:(NSString *)identifier;
+- (id <NSObject, XAP_CocoaPlugin_Tool>)toolWithIdentifier:(NSString *)identifier;
 
 /**
  * Get the identifiers of the tools provided.

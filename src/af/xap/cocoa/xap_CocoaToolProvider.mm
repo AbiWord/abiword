@@ -83,9 +83,9 @@
 /**
  * Add a tool to the provider's list of tools. The provider will send the tool a setProvider: message.
  * 
- * \param tool An object which implements the XAP_CocoaTool_Generic protocol.
+ * \param tool An object which implements the XAP_CocoaPlugin_Tool protocol.
  */
-- (void)addTool:(id <NSObject, XAP_CocoaTool_Generic>)tool
+- (void)addTool:(id <NSObject, XAP_CocoaPlugin_Tool>)tool
 {
 	NSString * identifier = [tool identifier];
 
@@ -108,7 +108,7 @@
 {
 	if ([m_identifiers containsObject:identifier])
 	{
-		id <NSObject, XAP_CocoaTool_Generic> tool = (id <NSObject, XAP_CocoaTool_Generic>) [m_tools objectForKey:identifier];
+		id <NSObject, XAP_CocoaPlugin_Tool> tool = (id <NSObject, XAP_CocoaPlugin_Tool>) [m_tools objectForKey:identifier];
 
 		[m_identifiers removeObject:identifier];
 
@@ -128,9 +128,9 @@
  * 
  * \return The specified tool, or nil if the identifier is not matched.
  */
-- (id <NSObject, XAP_CocoaTool_Generic>)toolWithIdentifier:(NSString *)identifier
+- (id <NSObject, XAP_CocoaPlugin_Tool>)toolWithIdentifier:(NSString *)identifier
 {
-	id <NSObject, XAP_CocoaTool_Generic> tool = (id <NSObject, XAP_CocoaTool_Generic>) [m_tools objectForKey:identifier];
+	id <NSObject, XAP_CocoaPlugin_Tool> tool = (id <NSObject, XAP_CocoaPlugin_Tool>) [m_tools objectForKey:identifier];
 
 	return tool;
 }
@@ -154,7 +154,7 @@
  */
 - (NSString *)toolDescription:(NSString *)identifier
 {
-	id <NSObject, XAP_CocoaTool_Generic> tool = (id <NSObject, XAP_CocoaTool_Generic>) [m_tools objectForKey:identifier];
+	id <NSObject, XAP_CocoaPlugin_Tool> tool = (id <NSObject, XAP_CocoaPlugin_Tool>) [m_tools objectForKey:identifier];
 
 	return tool ? [tool description] : 0;
 }

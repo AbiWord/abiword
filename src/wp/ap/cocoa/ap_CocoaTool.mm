@@ -32,8 +32,56 @@
 #include "ap_Prefs_SchemeIds.h"
 #include "ap_Toolbar_Id.h"
 
-static void       s_addToolsToProvider (XAP_CocoaToolProvider * provider);
-static NSButton * s_toolButtonForIdentifier (NSString * m_identifier, NSString * m_description, NSString * iconName, unsigned toolbarID);
+static void s_addToolToProvider (XAP_CocoaToolProvider * provider, EV_Toolbar_Label * pLabel, const char * szIdentifier, unsigned tlbrid)
+{
+	NSString * identifier  = [NSString stringWithUTF8String:szIdentifier];
+	NSString * description = [NSString stringWithUTF8String:(pLabel->getToolTip())];
+	NSString * icon_name   = [NSString stringWithUTF8String:(pLabel->getIconName())];
+
+	AP_CocoaTool * tool = [[AP_CocoaTool alloc] initWithIdentifier:identifier description:description iconName:icon_name toolbarID:tlbrid];
+
+	[provider addTool:tool];
+
+	[tool release];
+}
+
+static void s_addToolsToProvider (XAP_CocoaToolProvider * provider)
+{
+	const char * szToolbarLabelSetKey          = AP_PREF_KEY_StringSet;
+	const char * szToolbarLabelSetDefaultValue = AP_PREF_DEFAULT_StringSet;
+
+	const char * szToolbarLabelSetName = NULL;
+
+	XAP_App * pApp = XAP_App::getApp();
+
+	if ((pApp->getPrefsValue(szToolbarLabelSetKey, static_cast<const XML_Char **>(&szToolbarLabelSetName))) && (szToolbarLabelSetName) && (*szToolbarLabelSetName))
+		;
+	else
+		szToolbarLabelSetName = szToolbarLabelSetDefaultValue;
+
+	EV_Toolbar_LabelSet * toolbarLabelSet = AP_CreateToolbarLabelSet(szToolbarLabelSetName);
+	UT_ASSERT(toolbarLabelSet);
+	if (!toolbarLabelSet)
+	{
+		return;
+	}
+
+#ifdef toolbaritem
+#undef toolbaritem
+#endif
+#define toolbaritem(id) s_addToolToProvider(provider, \
+											toolbarLabelSet->getLabel(AP_TOOLBAR_ID_##id), \
+											#id, \
+											static_cast<unsigned>(AP_TOOLBAR_ID_##id));
+
+#include "ap_Toolbar_Id_List.h"
+
+	DELETEP(toolbarLabelSet);
+
+	// TODO: this isn't all available tools, though; just the buttons...
+}
+
+static id <NSObject, XAP_CocoaPlugin_ToolInstance> s_toolInstance (NSString * identifier, NSString * description, NSString * iconName, unsigned toolbarID);
 
 @implementation AP_CocoaTool
 
@@ -90,65 +138,117 @@ static NSButton * s_toolButtonForIdentifier (NSString * m_identifier, NSString *
 	return m_provider;
 }
 
-- (NSButton *)tool
+- (id <NSObject, XAP_CocoaPlugin_ToolInstance>)tool
 {
 	if (!m_provider || !m_description)
 	{
 		return nil;
 	}
-	return s_toolButtonForIdentifier (m_identifier, m_description, m_icon_name, m_toolbarID);
+
+	id <NSObject, XAP_CocoaPlugin_ToolInstance> instance = nil;
+
+	switch (m_toolbarID)
+	{
+		// TODO: special cases
+
+	default:
+		{
+			AP_CocoaToolInstance_StandardButton * SB = [[AP_CocoaToolInstance_StandardButton alloc] initWithTool:self toolbarID:m_toolbarID];
+
+			instance = SB;
+
+			[SB autorelease];
+		}
+		break;
+	}
+	return instance;
 }
 
 @end
 
-static void s_addToolToProvider (XAP_CocoaToolProvider * provider, EV_Toolbar_Label * pLabel, const char * szIdentifier, unsigned tlbrid)
+@implementation AP_CocoaToolInstance_StandardButton
+
+- (id)initWithTool:(AP_CocoaTool *)tool toolbarID:(unsigned)tlbrid
 {
-	NSString * identifier  = [NSString stringWithUTF8String:szIdentifier];
-	NSString * description = [NSString stringWithUTF8String:(pLabel->getToolTip())];
-	NSString * icon_name   = [NSString stringWithUTF8String:(pLabel->getIconName())];
+	if (self = [super init])
+		{
+			m_tool = tool;
 
-	AP_CocoaTool * tool = [[AP_CocoaTool alloc] initWithIdentifier:identifier description:description iconName:icon_name toolbarID:tlbrid];
-
-	[provider addTool:tool];
-
-	[tool release];
+			m_toolbarID = tlbrid;
+		}
+	return self;
 }
 
-static void s_addToolsToProvider (XAP_CocoaToolProvider * provider)
+- (void)dealloc
 {
-	const char * szToolbarLabelSetKey          = AP_PREF_KEY_StringSet;
-	const char * szToolbarLabelSetDefaultValue = AP_PREF_DEFAULT_StringSet;
-
-	const char * szToolbarLabelSetName = NULL;
-
-	XAP_App * pApp = XAP_App::getApp();
-
-	if ((pApp->getPrefsValue(szToolbarLabelSetKey, static_cast<const XML_Char **>(&szToolbarLabelSetName))) && (szToolbarLabelSetName) && (*szToolbarLabelSetName))
-		;
-	else
-		szToolbarLabelSetName = szToolbarLabelSetDefaultValue;
-
-	EV_Toolbar_LabelSet * toolbarLabelSet = AP_CreateToolbarLabelSet(szToolbarLabelSetName);
-	UT_ASSERT(toolbarLabelSet);
-	if (!toolbarLabelSet)
-	{
-		return;
-	}
-
-#ifdef toolbaritem
-#undef toolbaritem
-#endif
-#define toolbaritem(id) s_addToolToProvider(provider, \
-											toolbarLabelSet->getLabel(AP_TOOLBAR_ID_##id), \
-											#id, \
-											static_cast<unsigned>(AP_TOOLBAR_ID_##id));
-
-#include "ap_Toolbar_Id_List.h"
-
-	DELETEP(toolbarLabelSet);
+	// ...
+	[super dealloc];
 }
 
-static NSButton * s_toolButtonForIdentifier (NSString * identifier, NSString * m_description, NSString * iconName, unsigned toolbarID)
+- (IBAction)click:(id)sender
 {
+	// TODO
+}
+
+/* XAP_CocoaPlugin_ToolInstance implementation
+ */
+- (id <NSObject, XAP_CocoaPlugin_Tool>)tool
+{
+	return m_tool;
+}
+
+- (NSButton *)toolbarButton
+{
+	// TODO
 	return nil;
 }
+
+- (NSMenuItem *)toolbarMenuItem
+{
+	// TODO
+	return nil;
+}
+
+- (NSString *)configWidth
+{
+	return @"auto";
+}
+
+- (NSString *)configHeight
+{
+	return @"auto";
+}
+
+- (NSString *)configImage
+{
+	// TODO
+	return @"auto";
+}
+
+- (NSString *)configAltImage
+{
+	// TODO
+	return @"auto";
+}
+
+- (void)setConfigWidth:(NSString *)width
+{
+	// ...
+}
+
+- (void)setConfigHeight:(NSString *)height;
+{
+	// ...
+}
+
+- (void)setConfigImage:(NSString *)image;
+{
+	// TODO
+}
+
+- (void)setConfigAltImage:(NSString *)altImage;
+{
+	// TODO
+}
+
+@end

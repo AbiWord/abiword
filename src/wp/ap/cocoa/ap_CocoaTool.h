@@ -24,7 +24,7 @@
 
 #include "xap_CocoaToolProvider.h"
 
-@interface AP_CocoaTool : NSObject <XAP_CocoaTool_Generic>
+@interface AP_CocoaTool : NSObject <XAP_CocoaPlugin_Tool>
 {
 	NSString *	m_identifier;
 	NSString *	m_description;
@@ -45,7 +45,37 @@
 - (void)setProvider:(id <XAP_CocoaPlugin_ToolProvider>)provider;
 - (id <XAP_CocoaPlugin_ToolProvider>)provider;
 
-- (NSButton *)tool;
+- (id <NSObject, XAP_CocoaPlugin_ToolInstance>)tool;
+@end
+
+@interface AP_CocoaToolInstance_StandardButton : NSObject <XAP_CocoaPlugin_ToolInstance>
+{
+	AP_CocoaTool *	m_tool;
+
+	unsigned		m_toolbarID;
+}
+- (id)initWithTool:(AP_CocoaTool *)tool toolbarID:(unsigned)tlbrid;
+- (void)dealloc;
+
+- (IBAction)click:(id)sender;
+
+/* XAP_CocoaPlugin_ToolInstance implementation
+ */
+- (id <NSObject, XAP_CocoaPlugin_Tool>)tool;
+
+- (NSButton *)toolbarButton;
+
+- (NSMenuItem *)toolbarMenuItem;
+
+- (NSString *)configWidth;
+- (NSString *)configHeight;
+- (NSString *)configImage;
+- (NSString *)configAltImage;
+
+- (void)setConfigWidth:(NSString *)width;
+- (void)setConfigHeight:(NSString *)height;
+- (void)setConfigImage:(NSString *)image;
+- (void)setConfigAltImage:(NSString *)altImage;
 @end
 
 #endif /* ! AP_COCOATOOLPROVIDER_H */
