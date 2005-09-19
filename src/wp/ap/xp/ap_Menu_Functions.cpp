@@ -720,11 +720,11 @@ Defun_EV_GetMenuItemState_Fn(ap_GetState_Selection)
 	{
 	case AP_MENU_ID_FMT_LANGUAGE:
 	case AP_MENU_ID_EDIT_CUT:
+	case AP_MENU_ID_EDIT_LATEXEQUATION:
 	case AP_MENU_ID_EDIT_COPY:
 		if (pView->isSelectionEmpty())
 			s = EV_MIS_Gray;
 		break;
-
 	default:
 		UT_ASSERT_HARMLESS(UT_SHOULD_NOT_HAPPEN);
 		break;

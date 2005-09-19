@@ -97,6 +97,7 @@ menuitem(EDIT_COPYIMAGE)
 menuitem(EDIT_CUTEMBED)
 menuitem(EDIT_COPYEMBED)
 menuitem(EDIT_DELETEEMBED)
+menuitem(EDIT_LATEXEQUATION)
 
 menuitem(VIEW)
 menuitem(VIEW_TOOLBARS)

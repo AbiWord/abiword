@@ -229,6 +229,7 @@ public:
 	static EV_EditMethod_Fn dragToXYword;
 	static EV_EditMethod_Fn endDrag;
 
+	static EV_EditMethod_Fn editLatexAtPos;
 	static EV_EditMethod_Fn editLatexEquation;
 	static EV_EditMethod_Fn editEmbed;
 
@@ -821,6 +822,7 @@ static EV_EditMethod s_arrayEditMethods[] =
 	EV_EditMethod(NF(editEmbed),			0,	""),
 	EV_EditMethod(NF(editFooter),			0,	""),
 	EV_EditMethod(NF(editHeader),			0,	""),
+	EV_EditMethod(NF(editLatexAtPos),			0,	""),
 	EV_EditMethod(NF(editLatexEquation),			0,	""),
 	EV_EditMethod(NF(endDrag),				0,	""),
 	EV_EditMethod(NF(endDragHline),			0,	""),
@@ -4370,9 +4372,9 @@ Defun(contextText)
 	// Look if we've right clicked on a mathrun
 	//
 	PT_DocPosition pos = 0;
-	if(pView->isMathSelected(pCallData->m_xPos, pCallData->m_yPos,pos))
+	if(pView->isMathLoaded() && pView->isMathSelected(pCallData->m_xPos, pCallData->m_yPos,pos))
 	{
-	  return dlgEditLatexEquation(pAV_View, pCallData, true, pos);
+	  return s_doContextMenu(EV_EMC_MATH,pCallData->m_xPos, pCallData->m_yPos,pView,pFrame);
 	}
 	return s_doContextMenu(EV_EMC_TEXT,pCallData->m_xPos, pCallData->m_yPos,pView,pFrame);
 }
@@ -4906,6 +4908,15 @@ Defun(selectTOC)
 	return true;
 }
 
+
+Defun(editLatexAtPos)
+{
+	CHECK_FRAME;
+	ABIWORD_VIEW;
+	UT_DEBUGMSG(("Edit Math at Pos\n"));
+        PT_DocPosition pos = pView->getDocPositionFromLastXY();
+        return dlgEditLatexEquation(pAV_View, pCallData, true,pos);
+}
 
 
 Defun(editLatexEquation)
