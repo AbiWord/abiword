@@ -1,3 +1,5 @@
+/* -*- mode: C++; tab-width: 4; c-basic-offset: 4; -*- */
+
 /* AbiSource Application Framework
  * Copyright (C) 1998 AbiSource, Inc.
  * Copyright (C) 2001 Hubert Figuiere
@@ -53,6 +55,8 @@ public:
 	~AP_CocoaToolbar_Icons(void);
 
 	NSImage*			getPixmapForIcon(const char * szIconName);
+
+	static NSString *	getPNGNameForIcon(const char * szIconName);
 	
 protected:
 };

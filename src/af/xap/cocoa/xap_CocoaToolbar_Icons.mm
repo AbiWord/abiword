@@ -133,6 +133,26 @@ AP_CocoaToolbar_Icons::~AP_CocoaToolbar_Icons(void)
 	// TODO handed out, so that we can delete them ??
 }
 
+NSString * AP_CocoaToolbar_Icons::getPNGNameForIcon(const char * szIconID)
+{
+	const char * szIconName = NULL;
+
+	if (AP_Toolbar_Icons::_findIconNameForID(szIconID, &szIconName))
+	{
+		UT_UTF8String name(szIconName);
+
+		if (char * suffix = strstr(szIconName, "_xpm"))
+		{
+			name.assign(szIconName, suffix - szIconName);
+		}
+		name += ".png";
+
+		return [NSString stringWithUTF8String:(name.utf8_str ())];
+	}
+
+	UT_ASSERT_NOT_REACHED();
+	return nil;
+}
 
 typedef struct _my_argb {
 	UT_RGBColor rgb;

@@ -22,7 +22,7 @@
 #ifndef XAP_COCOAPLUGIN_H
 #define XAP_COCOAPLUGIN_H
 
-#define XAP_COCOAPLUGIN_INTERFACE 20050919 /** The current version of the CocoaPlugin API. */
+#define XAP_COCOAPLUGIN_INTERFACE 20050920 /** The current version of the CocoaPlugin API. */
 
 #import <Cocoa/Cocoa.h>
 
@@ -31,21 +31,99 @@
 @protocol XAP_CocoaPlugin_Tool;
 @protocol XAP_CocoaPlugin_ToolProvider;
 
+/**
+ * \protocol XAP_CocoaPlugin_ToolInstance XAP_CocoaPlugin.h "XAP_CocoaPlugin.h"
+ * 
+ * A class which has a toolbar button and, optionally, a menu item associated with
+ * a specific tool. The class also manages size and image information which can be
+ * saved to and loaded from a configuration file, if desired.
+ */
 @protocol XAP_CocoaPlugin_ToolInstance
+
+/**
+ * Information about what this tool actually is, rather than what it looks like, can
+ * be obtained from the tool which created this instance.
+ * 
+ * \return The tool associated with this object.
+ */
 - (id <NSObject, XAP_CocoaPlugin_Tool>)tool;
 
+/**
+ * The XAP_CocoaPlugin_ToolInstance object manages a button and, optionally, a menu
+ * item.
+ * 
+ * \return The button managed by this object.
+ */
 - (NSButton *)toolbarButton;
 
+/**
+ * The XAP_CocoaPlugin_ToolInstance object may manage a menu item for use in case the
+ * button disappears off the end of the toolbar.
+ * 
+ * \return The menu item managed by this object, or nil if there is no menu item.
+ */
 - (NSMenuItem *)toolbarMenuItem;
 
+/**
+ * The XAP_CocoaPlugin_ToolInstance manages a set of configuration strings.
+ * 
+ * \return The string describing the width of the button - should be @"auto" if it is
+ *         the same as the default setting.
+ */
 - (NSString *)configWidth;
+
+/**
+ * The XAP_CocoaPlugin_ToolInstance manages a set of configuration strings.
+ * 
+ * \return The string describing the height of the button - should be @"auto" if it is
+ *         the same as the default setting.
+ */
 - (NSString *)configHeight;
+
+/**
+ * The XAP_CocoaPlugin_ToolInstance manages a set of configuration strings.
+ * 
+ * \return The string describing the image used by the button, if any image is used at all.
+ *         Should be @"auto" if it is the same as the default setting.
+ */
 - (NSString *)configImage;
+
+/**
+ * The XAP_CocoaPlugin_ToolInstance manages a set of configuration strings.
+ * 
+ * \return The string describing the alternative image used by the button, if any image
+ *         is used at all. Should be @"auto" if it is the same as the default setting.
+ */
 - (NSString *)configAltImage;
 
+/**
+ * The XAP_CocoaPlugin_ToolInstance manages a set of configuration strings.
+ * 
+ * \param width The width setting which has been read from a configuration file.
+ */
 - (void)setConfigWidth:(NSString *)width;
+
+/**
+ * The XAP_CocoaPlugin_ToolInstance manages a set of configuration strings.
+ * 
+ * \param height The height setting which has been read from a configuration file.
+ */
 - (void)setConfigHeight:(NSString *)height;
+
+/**
+ * The XAP_CocoaPlugin_ToolInstance manages a set of configuration strings.
+ * 
+ * \param image The image setting (i.e., filename) which has been read from a
+ *              configuration file.
+ */
 - (void)setConfigImage:(NSString *)image;
+
+/**
+ * The XAP_CocoaPlugin_ToolInstance manages a set of configuration strings.
+ * 
+ * \param altImage The alternative image setting (i.e., filename) which has been
+ *                 read from a configuration file.
+ */
 - (void)setConfigAltImage:(NSString *)altImage;
 @end
 

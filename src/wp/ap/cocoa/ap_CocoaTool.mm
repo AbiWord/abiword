@@ -24,6 +24,7 @@
 #include "ut_assert.h"
 
 #include "xap_App.h"
+#include "xap_CocoaToolbar_Icons.h"
 #include "xap_Toolbar_LabelSet.h"
 
 #include "ev_Toolbar_Labels.h"
@@ -41,7 +42,7 @@ static void s_addToolToProvider (XAP_CocoaToolProvider * provider, EV_Toolbar_La
 	AP_CocoaTool * tool = [[AP_CocoaTool alloc] initWithIdentifier:identifier description:description iconName:icon_name toolbarID:tlbrid];
 
 	[provider addTool:tool];
-
+[tool tool]; // TODO: remove
 	[tool release];
 }
 
@@ -80,8 +81,6 @@ static void s_addToolsToProvider (XAP_CocoaToolProvider * provider)
 
 	// TODO: this isn't all available tools, though; just the buttons...
 }
-
-static id <NSObject, XAP_CocoaPlugin_ToolInstance> s_toolInstance (NSString * identifier, NSString * description, NSString * iconName, unsigned toolbarID);
 
 @implementation AP_CocoaTool
 
@@ -126,6 +125,11 @@ static id <NSObject, XAP_CocoaPlugin_ToolInstance> s_toolInstance (NSString * id
 - (NSString *)description
 {
 	return m_description;
+}
+
+- (NSString *)iconName
+{
+	return m_icon_name;
 }
 
 - (void)setProvider:(id <XAP_CocoaPlugin_ToolProvider>)provider
@@ -175,14 +179,63 @@ static id <NSObject, XAP_CocoaPlugin_ToolInstance> s_toolInstance (NSString * id
 			m_tool = tool;
 
 			m_toolbarID = tlbrid;
+
+			m_defaultImage = AP_CocoaToolbar_Icons::getPNGNameForIcon([[m_tool iconName] UTF8String]);
+			m_defaultAltImage = m_defaultImage;
+
+			[m_defaultImage    retain];
+			[m_defaultAltImage retain];
+
+			m_configImage    = m_defaultImage;
+			m_configAltImage = m_defaultAltImage;
+
+			[m_configImage    retain];
+			[m_configAltImage retain];
+
+			NSRect frame;
+			frame.origin.x = 0.0f;
+			frame.origin.y = 0.0f;
+			frame.size.width  = 28.0f;
+			frame.size.height = 28.0f;
+
+			m_button = [[NSButton alloc] initWithFrame:frame];
+
+			[m_button setTarget:self];
+			[m_button setAction:@selector(click:)];
+
+			[m_button setToolTip:[m_tool description]];
+			[m_button setBezelStyle:NSRegularSquareBezelStyle];
+			[m_button setBordered:NO];
+
+			// TODO [m_button setImage:s_findImage(m_configImage)];
+			// TODO [m_button setAlternateImage:s_findImage(m_configAltImage)];
+
+			// TODO ??
+
+			m_item = [[NSMenuItem alloc] initWithTitle:[m_tool description] action:@selector(click:) keyEquivalent:@""];
+
+			[m_item setTarget:self];
 		}
 	return self;
 }
 
 - (void)dealloc
 {
-	// ...
+	[m_button release];
+	[m_item   release];
+
+	[m_defaultImage    release];
+	[m_defaultAltImage release];
+
+	[m_configImage     release];
+	[m_configAltImage  release];
+
 	[super dealloc];
+}
+
+- (BOOL)validateMenuItem:(id <NSMenuItem>)menuItem
+{
+	return NO; // TODO
 }
 
 - (IBAction)click:(id)sender
@@ -199,14 +252,12 @@ static id <NSObject, XAP_CocoaPlugin_ToolInstance> s_toolInstance (NSString * id
 
 - (NSButton *)toolbarButton
 {
-	// TODO
-	return nil;
+	return m_button;
 }
 
 - (NSMenuItem *)toolbarMenuItem
 {
-	// TODO
-	return nil;
+	return m_item;
 }
 
 - (NSString *)configWidth
@@ -221,14 +272,20 @@ static id <NSObject, XAP_CocoaPlugin_ToolInstance> s_toolInstance (NSString * id
 
 - (NSString *)configImage
 {
-	// TODO
-	return @"auto";
+	if ([m_configImage isEqualToString:m_defaultImage])
+		{
+			return @"auto";
+		}
+	return m_configImage;
 }
 
 - (NSString *)configAltImage
 {
-	// TODO
-	return @"auto";
+	if ([m_configAltImage isEqualToString:m_defaultAltImage])
+		{
+			return @"auto";
+		}
+	return m_configAltImage;
 }
 
 - (void)setConfigWidth:(NSString *)width

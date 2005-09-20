@@ -41,6 +41,7 @@
 
 - (NSString *)identifier;
 - (NSString *)description;
+- (NSString *)iconName; /* note: an internal ID, not an actual file name */
 
 - (void)setProvider:(id <XAP_CocoaPlugin_ToolProvider>)provider;
 - (id <XAP_CocoaPlugin_ToolProvider>)provider;
@@ -53,9 +54,20 @@
 	AP_CocoaTool *	m_tool;
 
 	unsigned		m_toolbarID;
+
+	NSButton *		m_button;
+	NSMenuItem *	m_item;
+
+	NSString *		m_defaultImage;
+	NSString *		m_defaultAltImage;
+
+	NSString *		m_configImage;
+	NSString *		m_configAltImage;
 }
 - (id)initWithTool:(AP_CocoaTool *)tool toolbarID:(unsigned)tlbrid;
 - (void)dealloc;
+
+- (BOOL)validateMenuItem:(id <NSMenuItem>)menuItem;
 
 - (IBAction)click:(id)sender;
 
