@@ -387,12 +387,15 @@ void fp_EmbedRun::_draw(dg_DrawArgs* pDA)
 		painter.fillRect(_getView()->getColorSelBackground(), /*pDA->xoff*/DA_xoff, iFillTop, getWidth(), iFillHeight);
 		bIsSelected = true;
 
+		getEmbedManager()->setColor(m_iEmbedUID,_getView()->getColorSelForeground());
+
 	}
 	else
 	{
 		Fill(getGraphics(),pDA->xoff, pDA->yoff - getAscent(), getWidth(), iLineHeight);
+		getEmbedManager()->setColor(m_iEmbedUID,getFGColor());
 	}
-	getEmbedManager()->setColor(m_iEmbedUID,getFGColor());
+
 	UT_Rect rec;
 	rec.left = pDA->xoff;
 	rec.top = pDA->yoff;
