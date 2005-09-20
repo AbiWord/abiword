@@ -9,6 +9,7 @@ Standards-Version: 3.6.1
 Package: abiword
 Section: editors
 Architecture: any
+Depends: libfribidi0, libgsf-1, libgnomeprintui2.2-0, libgnomeprint2.2-0
 Description: WYSIWYG word processor for the Maemo Development Platform
  Maemo Word Processor is a complete Word Processing application for the
  Maemo Development Platform. AbiWord is Distributed under GPL, 
