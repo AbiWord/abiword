@@ -24,8 +24,7 @@
 #include <stdio.h>
 #include "xap_UnixHildonApp.h"
 #include "xap_Frame.h"
-
-#include <osso-log.h>
+#include <log-functions.h>
 
 static void osso_hw_event_cb (osso_hw_state_t *state, gpointer data);
 static void osso_top_event_cb (const gchar     *args, gpointer data);
