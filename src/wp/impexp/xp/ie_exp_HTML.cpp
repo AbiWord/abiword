@@ -1448,7 +1448,7 @@ void s_HTML_Listener::_outputBegin (PT_AttrPropIndex api)
 
 	if (get_PHTML ())
 	{
-		m_utf8_1 = MYEOL "  include($DOCUMENT_ROOT.'/x-header.php');" MYEOL " ";
+		m_utf8_1 = MYEOL "  include($_SERVER['DOCUMENT_ROOT'].'/x-header.php');" MYEOL " ";
 		tagPI ("php", m_utf8_1);
 	}
 
@@ -1464,7 +1464,7 @@ void s_HTML_Listener::_outputBegin (PT_AttrPropIndex api)
 
 	if (get_PHTML ())
 	{
-		m_utf8_1 = MYEOL "  include($DOCUMENT_ROOT.'/x-page-begin.php');" MYEOL " ";
+		m_utf8_1 = MYEOL "  include($_SERVER['DOCUMENT_ROOT'].'/x-page-begin.php');" MYEOL " ";
 		tagPI ("php", m_utf8_1);
 	}
 
@@ -1486,7 +1486,7 @@ void s_HTML_Listener::_outputEnd ()
 
 	if (get_PHTML ())
 	{
-		m_utf8_1 = MYEOL "  include($DOCUMENT_ROOT.'/x-page-end.php');" MYEOL " ";
+		m_utf8_1 = MYEOL "  include($_SERVER['DOCUMENT_ROOT'].'/x-page-end.php');" MYEOL " ";
 		tagPI ("php", m_utf8_1);
 	}
 
