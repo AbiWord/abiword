@@ -286,8 +286,7 @@ private:
 	/*!
 	  Wrapper to draw the char.
 
-	  \param cBuf the unichar buffer for the string
-	  \param len the length of the buffer
+	  \param atsuLayout the ATSU layout
 	  \param x X position
 	  \param y Y position
 	  \param begin the start of the range to draw
@@ -295,8 +294,9 @@ private:
 
 	  \note the NSView must be focused prior this call
 	 */
-	void _realDrawChars(const unichar* cBuf, int len, 
-						float x, float y, int begin, int rangelen);
+	void _realDrawChars(ATSUTextLayout atsuLayout,
+						float x, float y, int begin, int rangelen,
+						float xOffset);
 	//
 	StNSViewLocker* m_viewLocker;
 	//private font metrics objects

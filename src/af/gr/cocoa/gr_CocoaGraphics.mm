@@ -634,9 +634,13 @@ static void _atsuStyleInit(ATSUStyle *atsuStyle, NSFont *font)
 	
 	status = ATSUCreateStyle(atsuStyle);
 
-	ATSFontRef fontRef = ATSFontFindFromPostScriptName((CFStringRef)[font fontName], 0);
+	CFStringRef fontName = (CFStringRef)[font fontName];
+	ATSFontRef fontRef = ATSFontFindFromPostScriptName(fontName, 0);
 	if (fontRef == kATSUInvalidFontID) {
-		fontRef = ATSFontFindFromName((CFStringRef)[font fontName], 0);
+		fontRef = ATSFontFindFromName(fontName, 0);
+		if (fontRef == kATSUInvalidFontID) {
+			NSLog(@"Unable to find ATSU font %@", fontName);
+		}
 	}
 	
 	// upside down - Flipped
@@ -646,7 +650,7 @@ static void _atsuStyleInit(ATSUStyle *atsuStyle, NSFont *font)
 	ATSUAttributeTag styleTags[] = { 
 		kATSUSizeTag, 
 		kATSUFontTag, 
-		kATSUFontMatrixTag 
+		kATSUFontMatrixTag
 	};
 	ByteCount styleSizes[] = {
 		sizeof(Fixed), 
@@ -672,7 +676,7 @@ static void _atsuCreateLayout(ATSUTextLayout *atsuLayout, const unichar* run, in
 	OSStatus status = ::ATSUCreateTextLayoutWithTextPtr(run, begin, runLength, len, 
 	                                                    1, &runLength, atsuStyle, atsuLayout);
     ATSLineLayoutOptions lineLayoutOptions = (kATSLineFractDisable | kATSLineDisableAutoAdjustDisplayPos | 
-												kATSLineUseDeviceMetrics |
+												kATSLineUseDeviceMetrics | kATSLineDisableAllLayoutOperations |
 												kATSLineKeepSpacesOutOfMargin | kATSLineHasNoHangers);
     ATSUAttributeTag tags[] = { 
 		kATSUCGContextTag, 
@@ -699,25 +703,20 @@ static void _atsuCreateLayout(ATSUTextLayout *atsuLayout, const unichar* run, in
 
 
 
-void GR_CocoaGraphics::_realDrawChars(const unichar* cBuf, int len, 
-									  float x, float y, int begin, int rangelen)
+void GR_CocoaGraphics::_realDrawChars(ATSUTextLayout atsuLayout,
+									  float x, float y, int begin, int rangelen, float xOffset)
 {
-	ATSUTextLayout atsuLayout;
 	OSStatus status;
 	
-	y += [m_fontForGraphics ascender]; // draw on the baseline
+	y += [m_fontForGraphics ascender];
 	
-	_atsuCreateLayout(&atsuLayout, cBuf, len, begin, rangelen, &m_atsuStyle, m_CGContext);
-
-	::CGContextTranslateCTM(m_CGContext, x, y);
+	::CGContextTranslateCTM(m_CGContext, x - xOffset, y);
 	status = ::ATSUDrawText(atsuLayout, begin, rangelen, 0, 0);
-	::CGContextTranslateCTM(m_CGContext, -x, -y);
+	::CGContextTranslateCTM(m_CGContext, -(x - xOffset), -y);
 
 	if(status) {
 		NSLog(@"ATSUDrawText() failed with %d\n", status);
 	}
-	
-	::ATSUDisposeTextLayout(atsuLayout);
 }
 
 
@@ -729,133 +728,42 @@ void GR_CocoaGraphics::drawChars(const UT_UCSChar* pChars, int iCharOffset,
 	UT_sint32 yoff = _tduY(yoffLU); // - m_pFont->getDescent();
 	UT_sint32 xoff = xoffLU;	// layout Unit !
 
-    if (!m_fontMetricsTextStorage) {
-		_initMetricsLayouts();
-    }
+	ATSUTextLayout atsuLayout = NULL;
 
 	::CGContextSetShouldAntialias (m_CGContext, true);
+
+	const UT_UCSChar* begin = pChars + iCharOffset;
+	unichar * cBuf = (unichar *) malloc((iLength + 1) * sizeof(unichar));
+	int i;
+	for (i = 0; i < iLength; i++) {
+		cBuf[i] = (unichar) (m_pFont ? m_pFont->remapChar(begin[i]) : begin[i]);
+	}
+	cBuf[iLength] = 0;
+
+	_atsuCreateLayout(&atsuLayout, cBuf, iLength, 0, iLength, &m_atsuStyle, m_CGContext);
 
 	if (!pCharWidths) {
 		/*
 		  We don't have char widths because we don't care. Just draw the text.
-		  CAUTION BiDi is handled by Cocoa in that case.
+		  CAUTION BiDi is handled by ATSU in that case.
 		 */
-		unichar * uniString = (unichar*)malloc((iLength + 1) * sizeof (unichar));
-		for (int i = 0; i < iLength; i++) {
-			uniString[i] = m_pFont ? m_pFont->remapChar(pChars[i + iCharOffset]) : pChars[i + iCharOffset];
-		}
 		LOCK_CONTEXT__;
-		_realDrawChars(uniString, iLength, TDUX(xoff), yoff, 0, iLength);
-		FREEP(uniString);
+		_realDrawChars(atsuLayout, TDUX(xoff), yoff, 0, iLength, 0);
 	}
 	else {
 		LOCK_CONTEXT__;
-
-		/*
-		  Here we have charWidth. that means WE HAVE TO USE THEM
-		  Changes in revision 1.78 BROKE THAT.
-
-		  That said, we should be done is that we must split the text run into words 
-		  and draw run by run, cumulating the xoff with the char width.
-
-		  Given the implication, a word is defined by either a blank (see UT_UCS4_isspace())
-		  or a change of direction. -- Hub
-		 */
-
-		const UT_UCSChar * begin = pChars + iCharOffset;
-		const UT_UCSChar * end = begin + iLength;
-
-		int * endWidth = pCharWidths + iCharOffset + iLength;
-
-		UT_sint32 widthWhiteSpace = 0;
-
-		while (end > begin) {
-			if (!UT_UCS4_isspace(*(end - 1))) {
-				break;
-			}
-			--end;
-			--endWidth;
-			widthWhiteSpace += *endWidth;
+			
+		UT_sint32 x = xoff;
+		
+		for (i = 0; i < iLength; i++) {
+			NSLog(@"drawing at %d, offset = %d", TDUX(x), TDUX(x - xoff));
+			_realDrawChars(atsuLayout, TDUX(x), yoff, i, 1, TDUX(x - xoff));
+			x += pCharWidths[iCharOffset + i];
 		}
-		iLength = end - begin;
-
-		UT_sint32 widthTrailingNeutral = 0;
-		UT_sint32 countTrailingNeutral = 0;
-
-		NSCharacterSet * punctuation = [NSCharacterSet punctuationCharacterSet];
-
-		while (end > begin) {
-			unichar uc = (unichar) (*(end - 1));
-			if ([punctuation characterIsMember:uc] == NO) {
-				break;
-			}
-			--end;
-			--endWidth;
-			widthTrailingNeutral += *endWidth;
-			countTrailingNeutral++;
-		}
-
-		if (iLength) {
-			unichar * cBuf = (unichar *) malloc((iLength + 1) * sizeof(unichar));
-			if (cBuf) {
-				bool knownDir = false;
-				bool rtl = false;
-				int i;
-				for (i = 0; i < iLength; i++) {
-					if (!knownDir) {
-						UT_BidiCharType charType = UT_bidiGetCharType(begin[i]);
-						if (UT_BIDI_IS_STRONG(charType)) {
-							rtl = UT_BIDI_IS_RTL(charType);
-							knownDir = true;
-							NSLog(@"direction is %d (1 == RTL %x)) set at idx %d with chartype = %x, char %x", rtl, 
-							                           UT_BIDI_RTL, i, charType, begin[i]); 
-						}
-					}
-					cBuf[i] = (unichar) (m_pFont ? m_pFont->remapChar(begin[i]) : begin[i]);
-				}
-				cBuf[iLength] = 0;
-
-				//if(!knownDir) {
-				//	NSLog(@"direction is UNKNOWN");
-				//}
-
-				float x = xoff;
-				int len = iLength;
-				int rangeLength = 0;
-				int rangeBegin = 0;
-				int j;
-				float currentRunLen = 0;
-				NSLog (@"start at x = %d", TDUX(x));
-				for (j = 0; j < len; j++) {
-					if (UT_UCS4_isspace(cBuf[j])) {
-						if (rangeLength > 0) {
-							NSLog (@"x = %d, currentRunLen = %d", TDUX(x), TDUX(currentRunLen));
-							_realDrawChars(cBuf + rangeBegin, iLength - rangeBegin, TDUX((UT_sint32)rintf(x)),
-										   yoff, 0, rangeLength);
-							// from here currentRunLen is signed... so just add it
-							x += currentRunLen;
-							NSLog(@"x is now %d", TDUX(x));
-						}
-						if (j < len - 1) {
-							x += pCharWidths[iCharOffset+j];
-							NSLog (@"moved to (space) x = %d charwidth was %d", TDUX(x), TDUX(pCharWidths[iCharOffset+j]));
-						}
-						rangeBegin = j + 1;
-						rangeLength = 0;
-						currentRunLen = 0;
-					}
-					else {
-						rangeLength++;
-						currentRunLen += pCharWidths[iCharOffset+j];
-					}
-				}
-				if (rangeLength > 0) {
-					_realDrawChars(cBuf + rangeBegin, iLength - rangeBegin, TDUX((UT_sint32)rintf(x)),
-								   yoff, 0, rangeLength);
-				}
-			}
-			FREEP(cBuf);
-		}
+	}
+	FREEP(cBuf);
+	if (atsuLayout) {
+		::ATSUDisposeTextLayout(atsuLayout);
 	}
 	::CGContextSetShouldAntialias (m_CGContext, false);
 }
