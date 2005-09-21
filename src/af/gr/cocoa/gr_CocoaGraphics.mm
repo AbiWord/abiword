@@ -756,7 +756,7 @@ void GR_CocoaGraphics::drawChars(const UT_UCSChar* pChars, int iCharOffset,
 		UT_sint32 x = xoff;
 		
 		for (i = 0; i < iLength; i++) {
-			NSLog(@"drawing at %d, offset = %d", TDUX(x), TDUX(x - xoff));
+			//NSLog(@"drawing at %d, offset = %d", TDUX(x), TDUX(x - xoff));
 			_realDrawChars(atsuLayout, TDUX(x), yoff, i, 1, TDUX(x - xoff));
 			x += pCharWidths[iCharOffset + i];
 		}
