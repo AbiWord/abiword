@@ -213,7 +213,7 @@ private:
 	gr_cocoa_graphics_update	m_updateCallback;
 	void 						*m_updateCBparam;
 	XAP_CocoaNSView *  			m_pWin;
-	NSMutableDictionary*		m_fontProps;
+	ATSUStyle					m_atsuStyle;
 	CGContextRef				m_CGContext;
 	UT_GenericVector<id>		m_cacheArray;
 	UT_GenericVector<NSRect*>	m_cacheRectArray;
@@ -288,7 +288,6 @@ private:
 
 	  \param cBuf the unichar buffer for the string
 	  \param len the length of the buffer
-	  \param fontProps the properties for the NSAttributedString
 	  \param x X position
 	  \param y Y position
 	  \param begin the start of the range to draw
@@ -296,7 +295,7 @@ private:
 
 	  \note the NSView must be focused prior this call
 	 */
-	void _realDrawChars(const unichar* cBuf, int len, NSDictionary *fontProps, 
+	void _realDrawChars(const unichar* cBuf, int len, 
 						float x, float y, int begin, int rangelen);
 	//
 	StNSViewLocker* m_viewLocker;
