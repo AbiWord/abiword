@@ -1,5 +1,5 @@
 #!/usr/bin/make -f
-# maemo-word-processor debian/rules that uses debhelper.
+# Abiword debian/rules that uses debhelper.
 # GNU copyright 1997 to 1999 by Joey Hess.
 
 # Uncomment this to turn on verbose mode.
