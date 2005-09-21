@@ -583,6 +583,13 @@ void XAP_CocoaDialog_FontChooser::_deleteGC(void)
 			[_fontList scrollRowToVisible:idx];
 		}
 	}
+	else {
+		UT_DEBUGMSG(("selectFont: called with NULL value\n"));
+		[_fontList setAllowsEmptySelection:YES];
+		[_fontList deselectAll:nil];
+		return;
+	}
+
 }
 
 
@@ -597,7 +604,13 @@ void XAP_CocoaDialog_FontChooser::_deleteGC(void)
 {
 	int idx;
 	char sizeString[60];
-	
+
+	if (value == NULL) {
+		UT_DEBUGMSG(("selectSize: called with NULL value\n"));
+		[_sizeList setAllowsEmptySelection:YES];
+		[_sizeList deselectAll:nil];
+		return;
+	}
 	snprintf(sizeString, 60, "%s", std_size_string(UT_convertToPoints(value)));
 	idx = [(XAP_StringListDataSource*)[_sizeList dataSource] rowWithCString:(char *)XAP_EncodingManager::fontsizes_mapping.lookupBySource(sizeString)];
 	if (idx >= 0) {
