@@ -188,7 +188,7 @@ bool  XAP_UnixFontHandle::glyphBox(UT_UCS4Char g, UT_Rect & rec, GR_Graphics * p
 	rec.top    = static_cast<UT_sint32>(fontPoints2float(iSize, pFace, pFace->glyph->metrics.horiBearingY));
 	rec.height = static_cast<UT_sint32>(fontPoints2float(iSize, pFace, pFace->glyph->metrics.height));
 	
-	UT_DEBUGMSG((" left %d width %d top %d height %d \n",rec.left,rec.width,rec.top,rec.height));
+	UT_DEBUGMSG(("GlyphBox: left %d width %d top %d height %d \n",rec.left,rec.width,rec.top,rec.height));
 
 	return true;
 }

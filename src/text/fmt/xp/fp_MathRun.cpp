@@ -104,7 +104,7 @@ void fp_MathRun::_lookupProperties(const PP_AttrProp * pSpanAP,
 	{
 	  PD_Document * pDoc = getBlock()->getDocument();
 	  m_iMathUID = getMathManager()->makeEmbedView(pDoc,m_iIndexAP,m_pszDataID);
-	  UT_DEBUGMSG((" MathRun %x UID is %d \n",m_iMathUID));
+	  UT_DEBUGMSG((" MathRun %x UID is %d \n",this,m_iMathUID));
 	  getMathManager()->initializeEmbedView(m_iMathUID);
 	  getMathManager()->loadEmbedData(m_iMathUID);
 	}
@@ -337,6 +337,7 @@ void fp_MathRun::_draw(dg_DrawArgs* pDA)
 	{
 	  rec.top -= getAscent();
 	}
+	UT_DEBUGMSG((" Mathrun Left %d top %d width %d height %d \n",rec.left,rec.top,rec.height,rec.width)); 
 	getMathManager()->render(m_iMathUID,rec);
 	if(m_bNeedsSnapshot && !getMathManager()->isDefault() && getGraphics()->queryProperties(GR_Graphics::DGP_SCREEN)  )
 	{
