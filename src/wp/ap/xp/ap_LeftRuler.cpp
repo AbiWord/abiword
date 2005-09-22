@@ -130,6 +130,7 @@ void AP_LeftRuler::setView(AV_View* pView, UT_uint32 iZoom)
 
 void AP_LeftRuler::setZoom(UT_uint32 iZoom)
 {
+        m_pG->clearFont();
 	m_pG->setZoomPercentage(iZoom);
     // TODO this dimension shouldn't be hard coded.
 	// in fact, it shouldn't need to be recomputed at all anymore.
@@ -1795,14 +1796,12 @@ void AP_LeftRuler::draw(const UT_Rect * pCR, AP_LeftRulerInfo * lfi)
 				sprintf(buf, "%d", n);
 				UT_UCS4_strcpy_char(span, buf);
 				UT_uint32 len = strlen(buf);
-
 				UT_uint32 w = m_pG->measureString(span, 0, len, charWidths) * 100 / m_pG->getZoomPercentage();
 
 				UT_sint32 x = xLeft;
 				
 				if(xBar > w)
 					x += (xBar-w)/2;
-				
 				painter.drawChars(span, 0, len, x, y - iFontHeight/2);
 			}
 		}
@@ -1839,12 +1838,10 @@ void AP_LeftRuler::draw(const UT_Rect * pCR, AP_LeftRulerInfo * lfi)
 				UT_uint32 len = strlen(buf);
 
 				UT_uint32 w = m_pG->measureString(span, 0, len, charWidths) * 100 / m_pG->getZoomPercentage();
-				
 				UT_sint32 x = xLeft;
 
 				if(xBar > w)
 					x += (xBar-w)/2;
-				
 				painter.drawChars(span, 0, len, x, y - iFontHeight/2);
 			}
 		}

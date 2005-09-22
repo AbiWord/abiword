@@ -147,6 +147,7 @@ void AP_TopRuler::setView(AV_View* pView, UT_uint32 iZoom)
 void AP_TopRuler::setZoom(UT_uint32 iZoom)
 {
 	UT_return_if_fail (m_pG);
+	m_pG->clearFont();
 	m_pG->setZoomPercentage(iZoom);
 
     // TODO this dimension shouldn't be hard coded.
