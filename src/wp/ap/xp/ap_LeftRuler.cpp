@@ -1797,7 +1797,7 @@ void AP_LeftRuler::draw(const UT_Rect * pCR, AP_LeftRulerInfo * lfi)
 				UT_uint32 len = strlen(buf);
 
 				UT_uint32 w = m_pG->measureString(span, 0, len, charWidths) * 100 / m_pG->getZoomPercentage();
-				UT_sint32 x = xLeft;
+				UT_sint32 x = xLeft + (xBar-w)/2;;
 				painter.drawChars(span, 0, len, x, y - iFontHeight/2);
 			}
 		}
@@ -1834,7 +1834,7 @@ void AP_LeftRuler::draw(const UT_Rect * pCR, AP_LeftRulerInfo * lfi)
 				UT_uint32 len = strlen(buf);
 
 				UT_uint32 w = m_pG->measureString(span, 0, len, charWidths) * 100 / m_pG->getZoomPercentage();
-				UT_sint32 x = xLeft;
+				UT_sint32 x = xLeft + (xBar-w)/2;
 				painter.drawChars(span, 0, len, x, y - iFontHeight/2);
 			}
 		}
