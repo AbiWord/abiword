@@ -159,6 +159,61 @@ void fp_MathRun::_lookupProperties(const PP_AttrProp * pSpanAP,
 }
 
 
+void fp_MathRun::_lookupLocalProperties()
+{
+	const PP_AttrProp * pSpanAP = NULL;
+	const PP_AttrProp * pBlockAP = NULL;
+	const PP_AttrProp * pSectionAP = NULL;
+
+	getBlockAP(pBlockAP);
+
+	if(!getBlock()->isContainedByTOC())
+	{
+		getSpanAP(pSpanAP);
+	}
+
+	_lookupProperties(pSpanAP, pBlockAP, pSectionAP,getGraphics());
+}
+
+void fp_MathRun::updateVerticalMetric()
+{
+	// do something here to make the embedded view to redo its layout ...
+	// there might be a more efficient way, but this should work
+	if(m_iMathUID >= 0 )
+	{
+		getMathManager()->releaseEmbedView(m_iMathUID);
+		m_iMathUID = -1;
+	}
+
+	// now lookup local properties which will create a new embedded view for us
+	_lookupLocalProperties();
+
+	// _lookupProperties() fixed also our width, so if width was marked as dirty, clear
+	// that flag
+	_setRecalcWidth(false);
+}
+
+bool fp_MathRun::_recalcWidth(void)
+{
+	if(!_getRecalcWidth())
+		return false;
+	
+	UT_sint32 iWidth = getWidth();
+
+	// do something here to make the embedded view to redo its layout ...
+	// there might be a more efficient way, but this should work
+	if(m_iMathUID >= 0 )
+	{
+		getMathManager()->releaseEmbedView(m_iMathUID);
+		m_iMathUID = -1;
+	}
+
+	// now lookup local properties which will create a new embedded view for us
+	_lookupLocalProperties();
+	
+	return (iWidth != getWidth());
+}
+
 void fp_MathRun::_drawResizeBox(UT_Rect box)
 {
 	GR_Graphics * pG = getGraphics();

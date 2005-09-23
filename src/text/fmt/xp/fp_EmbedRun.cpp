@@ -242,7 +242,7 @@ void fp_EmbedRun::updateVerticalMetric()
 {
 	// do something here to make the embedded view to redo its layout ...
 	// there might be a more efficient way, but this should work
-	if(m_iEmbedUID < 0 )
+	if(m_iEmbedUID >= 0 )
 	{
 		getEmbedManager()->releaseEmbedView(m_iEmbedUID);
 		m_iEmbedUID = -1;
@@ -265,7 +265,7 @@ bool fp_EmbedRun::_recalcWidth(void)
 
 	// do something here to make the embedded view to redo its layout ...
 	// there might be a more efficient way, but this should work
-	if(m_iEmbedUID < 0 )
+	if(m_iEmbedUID >= 0 )
 	{
 		getEmbedManager()->releaseEmbedView(m_iEmbedUID);
 		m_iEmbedUID = -1;

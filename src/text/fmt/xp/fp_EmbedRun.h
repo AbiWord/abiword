@@ -45,7 +45,7 @@ public:
 
 	virtual void            updateVerticalMetric();
 
-	GR_EmbedManager *   getEmbedManager(void);
+	GR_EmbedManager *       getEmbedManager(void);
 	bool                    isEdittable(void);
 	const char *            getDataID(void) const;
 	UT_sint32               getUID(void) const
