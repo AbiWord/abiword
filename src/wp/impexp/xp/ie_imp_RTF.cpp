@@ -7937,9 +7937,10 @@ bool IE_Imp_RTF::ReadOneFontFromTable(bool bNested)
 	    FIXME: CJK font names come in form \'aa\'cd\'ef - so we have to
 	    parse \'HH correctly (currently we ignore them!) - VH
 	*/
-	while ( ch != '}'  &&  ch != '\\'  &&  ch != ';' && ch!= '{')
+	while ( ch != '}'  &&  ch != '\\'  &&  ch != ';' && ch!= '{' && count < MAX_KEYWORD_LEN)
 	{
-		keyword[count++] = ch;
+		keyword[count] = ch;
+		count++;
 		if (!ReadCharFromFile(&ch))
 		{
 			return false;
