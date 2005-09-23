@@ -4588,6 +4588,13 @@ bool IE_Imp_RTF::TranslateKeywordID(RTF_KEYWORD_ID keywordID,
 		break;
 	case RTF_KW_margl:
 		m_sectdProps.m_leftMargTwips = param ;
+
+		// bug 9432: the \margl is document default, and we have to adjust the current
+		// settings accordingly -- this assumes that \margl is not preceeded by \marglsxn,
+		// but since \margl is document wide setting this should be true in normal rtf
+		// documents (otherwise we would need to add m_b*Changed members to the sect props
+		// for everyting).
+		m_currentRTFState.m_sectionProps.m_leftMargTwips = param;
 		break;
 	case RTF_KW_margrsxn:
 		// Right margin of section
@@ -4595,6 +4602,13 @@ bool IE_Imp_RTF::TranslateKeywordID(RTF_KEYWORD_ID keywordID,
 		break;
 	case RTF_KW_margr:
 		m_sectdProps.m_rightMargTwips = param;
+
+		// bug 9432: the \margl is document default, and we have to adjust the current
+		// settings accordingly -- this assumes that \margl is not preceeded by \marglsxn,
+		// but since \margl is document wide setting this should be true in normal rtf
+		// documents (otherwise we would need to add m_b*Changed members to the sect props
+		// for everyting).
+		m_currentRTFState.m_sectionProps.m_rightMargTwips = param;
 		break;
 	case RTF_KW_margtsxn:
 		// top margin of section
@@ -4602,6 +4616,13 @@ bool IE_Imp_RTF::TranslateKeywordID(RTF_KEYWORD_ID keywordID,
 		break;
 	case RTF_KW_margt:
 		m_sectdProps.m_topMargTwips = param;
+
+		// bug 9432: the \margl is document default, and we have to adjust the current
+		// settings accordingly -- this assumes that \margl is not preceeded by \marglsxn,
+		// but since \margl is document wide setting this should be true in normal rtf
+		// documents (otherwise we would need to add m_b*Changed members to the sect props
+		// for everyting).
+		m_currentRTFState.m_sectionProps.m_topMargTwips = param;
 		break;
 	case RTF_KW_margbsxn:
 		// bottom margin of section
@@ -4609,6 +4630,13 @@ bool IE_Imp_RTF::TranslateKeywordID(RTF_KEYWORD_ID keywordID,
 		break;
 	case RTF_KW_margb:
 		m_sectdProps.m_bottomMargTwips = param;
+
+		// bug 9432: the \margl is document default, and we have to adjust the current
+		// settings accordingly -- this assumes that \margl is not preceeded by \marglsxn,
+		// but since \margl is document wide setting this should be true in normal rtf
+		// documents (otherwise we would need to add m_b*Changed members to the sect props
+		// for everyting).
+		m_currentRTFState.m_sectionProps.m_bottomMargTwips = param;
 		break;
 	case RTF_KW_nestrow:
 		HandleRow();
