@@ -19,145 +19,106 @@
  * 02111-1307, USA.
  */
 
-#import "xap_CocoaPlugin.h"
+#include "xap_CocoaAppController.h"
+#include "xap_CocoaPlugin.h"
 
-@interface XAP_CocoaPluginImpl : NSObject
-{
-	id<XAP_CocoaPluginDelegate>	m_delegate;
+#include "ap_CocoaPlugin.h"
 
-	NSString *	m_path;
-	NSString *	m_configurationFile;
-}
-- (id)initWithPath:(NSString *)path;
-- (void)dealloc;
-- (void)setDelegate:(id<XAP_CocoaPluginDelegate>)delegate;
-- (id<XAP_CocoaPluginDelegate>)delegate;
-- (NSString *)path;
-- (NSString *)configurationFile;
-- (void)configure:(NSString *)configurationFile;
-@end
+@implementation XAP_CocoaPlugin
 
-@implementation XAP_CocoaPluginImpl
-
-- (id)initWithPath:(NSString *)path
+- (id)init
 {
 	if (self = [super init])
 		{
-			m_delegate = 0;
-
-			m_path = path;
-			[m_path retain];
-
-			m_configurationFile = 0;
+			m_delegate = nil;
 		}
 	return self;
 }
 
 - (void)dealloc
 {
-	if (m_path)
-		{
-			[m_path release];
-			m_path = 0;
-		}
-	if (m_configurationFile)
-		{
-			[m_configurationFile release];
-			m_configurationFile = 0;
-		}
+	// 
 	[super dealloc];
 }
 
-- (void)setDelegate:(id<XAP_CocoaPluginDelegate>)delegate
+- (BOOL)loadBundleWithPath:(NSString *)path
+{
+	BOOL bLoaded = NO;
+
+	if (NSBundle * bundle = [NSBundle bundleWithPath:path])
+		if (![bundle isLoaded])
+			if ([bundle load])
+				if (Class bundleClass = [bundle principalClass])
+					if (id <NSObject, XAP_CocoaPluginDelegate> instance = [[bundleClass alloc] init])
+					{
+						if ([instance respondsToSelector:@selector(pluginCanRegisterForAbiWord:version:interface:)])
+						{
+							[self setDelegate:instance];
+							unsigned long interface = XAP_COCOAPLUGIN_INTERFACE;
+							NSString * version = [NSString stringWithUTF8String:ABI_BUILD_VERSION];
+							bLoaded = [instance pluginCanRegisterForAbiWord:self version:version interface:interface];
+						}
+						if (!bLoaded)
+						{
+							[instance release];
+						}
+					}
+	return bLoaded;
+}
+
+- (void)setDelegate:(id <NSObject, XAP_CocoaPluginDelegate>)delegate
 {
 	m_delegate = delegate;
 }
 
-- (id<XAP_CocoaPluginDelegate>)delegate
+- (id <NSObject, XAP_CocoaPluginDelegate>)delegate
 {
 	return m_delegate;
 }
 
-- (NSString *)path
+- (void)appendMenuItem:(NSMenuItem *)menuItem
 {
-	return m_path;
+	XAP_CocoaAppController * pController = (XAP_CocoaAppController *) [NSApp delegate];
+	[pController appendPluginMenuItem:menuItem];
 }
 
-- (NSString *)configurationFile
+- (void)removeMenuItem:(NSMenuItem *)menuItem
 {
-	return m_configurationFile;
+	XAP_CocoaAppController * pController = (XAP_CocoaAppController *) [NSApp delegate];
+	[pController removePluginMenuItem:menuItem];
 }
 
-- (void)configure:(NSString *)configurationFile
+- (id <NSObject, XAP_CocoaPlugin_Document>)currentDocument // may return nil;
 {
-	if (m_configurationFile)
-		{
-			[m_configurationFile release];
-			m_configurationFile = 0;
-		}
-	if (configurationFile)
-		{
-			m_configurationFile = configurationFile;
-			[m_configurationFile retain];
-		}
-	if (m_delegate)
-		{
-			[m_delegate pluginHasConfigurationFile:m_configurationFile];
-		}
+	return [AP_CocoaPlugin_Document currentDocument];
 }
 
-@end
-
-@implementation XAP_CocoaPlugin
-
-- (id)initWithPath:(NSString *)path
+- (NSArray *)documents
 {
-	if (self = [super init])
-		{
-			m_pImpl = [[XAP_CocoaPluginImpl alloc] initWithPath:path];
-			if (!m_pImpl)
-				{
-					[self dealloc];
-					self = 0;
-				}
-		}
-	return self;
+	return [AP_CocoaPlugin_Document documents];
 }
 
-- (void)dealloc
+- (NSString *)selectMailMergeSource // may return nil
 {
-	if (m_pImpl)
-		{
-			[m_pImpl release];
-			m_pImpl = 0;
-		}
-	[super dealloc];
+	return [AP_CocoaPlugin_Document selectMailMergeSource];
 }
 
-- (void)setDelegate:(id)delegate
+/* Returns an NSMutableArray whose objects are NSMutableArray of NSString, the first row holding the
+ * field names, the rest being records; returns nil on failure.
+ */
+- (NSMutableArray *)importMailMergeSource:(NSString *)path
 {
-	[m_pImpl setDelegate:((id<XAP_CocoaPluginDelegate>) delegate)];
+	return [AP_CocoaPlugin_Document importMailMergeSource:path];
 }
 
-- (id)delegate
+- (id <NSObject, XAP_CocoaPlugin_FramelessDocument>)importDocumentFromFile:(NSString *)path importOptions:(NSDictionary *)options
 {
-	return [m_pImpl delegate];
+	return [AP_CocoaPlugin_FramelessDocument documentFromFile:path importOptions:options];
 }
 
-- (NSString *)path
+- (id <NSObject, XAP_CocoaPlugin_MenuItem>)contextMenuItemWithLabel:(NSString *)label
 {
-	return [m_pImpl path];
-}
-
-- (NSString *)configurationFile
-{
-	return (m_pImpl ? [m_pImpl configurationFile] : nil);
-}
-
-- (void)configure:(NSString *)configurationFile
-{
-	if (m_pImpl)
-		[m_pImpl configure:configurationFile];
+	return [AP_CocoaPlugin_ContextMenuItem itemWithLabel:label];
 }
 
 @end

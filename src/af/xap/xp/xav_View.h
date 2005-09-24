@@ -111,6 +111,7 @@ public:
 	virtual void	      updateScreen(bool bDirtyRunsOnly=true) = 0;
 	virtual GR_Graphics * getGraphics(void) const = 0;
     virtual void          updateLayout(void) = 0;
+	virtual void          rebuildLayout(void) = 0;
 	virtual void	cmdScroll(AV_ScrollCmd cmd, UT_uint32 iPos = 0) = 0;
 	void			addScrollListener(AV_ScrollObj*);
 	void			removeScrollListener(AV_ScrollObj*);
@@ -155,8 +156,6 @@ public:
 	virtual void setCursorWait(void) = 0;
 	virtual void clearCursorWait(void) = 0;
 
-	virtual void remeasureChars(void) = 0;
-	
 protected:
 	XAP_App *			m_pApp;
 	void*				m_pParentData;

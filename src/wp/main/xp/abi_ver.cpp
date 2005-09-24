@@ -16,7 +16,11 @@
  * Foundation, Inc., 59 Temple Place - Suite 330, Boston, MA  
  * 02111-1307, USA.
  */
- 
+
+#ifdef ENABLE_BINRELOC
+#include "prefix.h"
+#endif // ENABLE_BINRELOC
+
 #include "xap_App.h"
 
 #ifndef ABI_BUILD_ID
@@ -39,7 +43,11 @@ const char* XAP_App::s_szBuild_ID = ABI_BUILD_ID;
 #ifndef ABISUITE_HOME
 #error CRASH
 #endif
+#ifdef ENABLE_BINRELOC
+const char* XAP_App::s_szAbiSuite_Home = BR_DATADIR( "/" PACKAGE );
+#else
 const char* XAP_App::s_szAbiSuite_Home = ABISUITE_HOME;
+#endif // ENABLE_BINRELOC
 const char* XAP_App::s_szBuild_Version = ABI_BUILD_VERSION;
 const char* XAP_App::s_szBuild_Options = ABI_BUILD_OPTIONS;
 const char* XAP_App::s_szBuild_Target = ABI_BUILD_TARGET;

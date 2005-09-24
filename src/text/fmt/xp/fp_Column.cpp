@@ -1741,7 +1741,9 @@ void fp_Column::layout(void)
 		{
 			pTOC = static_cast<fp_TOCContainer *>(pContainer);
 			iHeight = pTOC->getHeight();
-			UT_ASSERT(iHeight > 0);
+			// This is incorrect; if the TOC has been delete in revisions mode, is will
+			// have 0 height
+			// UT_ASSERT(iHeight > 0);
 		}
 		else if(pContainer->getContainerType() == FP_CONTAINER_LINE)
 		{
@@ -2116,7 +2118,7 @@ void fp_ShadowContainer::_drawHdrFtrBoundaries(dg_DrawArgs * pDA)
 //
 //	if(m_bHdrFtrBoxDrawn)
 //		return;
-	UT_RGBColor clrDrawHdrFtr(0,0,0);
+	UT_RGBColor clrDrawHdrFtr(127,127,127);
 	getGraphics()->setLineWidth(getGraphics()->tlu(1));
 	getGraphics()->setColor(clrDrawHdrFtr);
 //

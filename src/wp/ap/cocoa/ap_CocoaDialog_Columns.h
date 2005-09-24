@@ -1,3 +1,5 @@
+/* -*- mode: C++; tab-width: 4; c-basic-offset: 4; -*- */
+
 /* AbiWord
  * Copyright (C) 1998 AbiSource, Inc.
  * Copyright (C) 2001, 2003 Hubert Figuiere
@@ -56,33 +58,50 @@ public:
 	void			event_OK(void);
 	void			event_Cancel(void);
 
+	void			incrMaxHeight(bool bIncrement);
+	void			incrSpaceAfter(bool bIncrement);
+
 private:
-	GR_CocoaGraphics	* 		m_pPreviewWidget;
-	AP_CocoaDialog_ColumnsController *m_dlg;
+	GR_CocoaGraphics *	m_pPreviewWidget;
+
+	AP_CocoaDialog_ColumnsController *	m_dlg;
+
+	UT_Dimension		m_Dim_MaxHeight;
+	UT_Dimension		m_Dim_SpaceAfter;
 };
 
 
 @interface AP_CocoaDialog_ColumnsController : NSWindowController <XAP_CocoaDialogProtocol>
 {
-    IBOutlet NSButton *_cancelBtn;
-    IBOutlet NSButton *_lineBetweenBtn;
-    IBOutlet NSTextField *_maxColSizeData;
-    IBOutlet NSTextField *_maxColSizeLabel;
-    IBOutlet NSStepper *_maxColSizeStepper;
-    IBOutlet NSTextField *_numColumn2Label;
-    IBOutlet NSTextField *_numColumnLabel;
-    IBOutlet NSTextField *_numOfColumnData;
-    IBOutlet NSStepper *_numOfColumnStepper;
-    IBOutlet NSButton *_okBtn;
-    IBOutlet NSButton *_oneBtn;
-    IBOutlet XAP_CocoaNSView *_preview;
-    IBOutlet NSBox *_previewBox;
-    IBOutlet NSStepper *_spaceAfterColStepper;
-    IBOutlet NSTextField *_spaceAfterColData;
-    IBOutlet NSTextField *_spaceAfterColLabel;
-    IBOutlet NSButton *_threeBtn;
-    IBOutlet NSButton *_twoBtn;
-    IBOutlet NSButton *_useRTLBtn;
+	IBOutlet NSButton *			_cancelBtn;
+	IBOutlet NSButton *			_okBtn;
+
+	IBOutlet NSButton *			_oneBtn;
+	IBOutlet NSButton *			_twoBtn;
+	IBOutlet NSButton *			_threeBtn;
+
+	IBOutlet NSButton *			_useRTLBtn;
+	IBOutlet NSButton *			_lineBetweenBtn;
+
+	IBOutlet NSStepper *		_maxColSizeStepper;
+	IBOutlet NSStepper *		_numOfColumnStepper;
+	IBOutlet NSStepper *		_spaceAfterColStepper;
+
+	IBOutlet NSTextField *		_maxColSizeData;
+	IBOutlet NSTextField *		_maxColSizeLabel;
+	IBOutlet NSTextField *		_numColumn2Label;
+	IBOutlet NSTextField *		_numColumnLabel;
+	IBOutlet NSTextField *		_numOfColumnData;
+	IBOutlet NSTextField *		_spaceAfterColData;
+	IBOutlet NSTextField *		_spaceAfterColLabel;
+	IBOutlet NSTextField *		_oneLabel;
+	IBOutlet NSTextField *		_twoLabel;
+	IBOutlet NSTextField *		_threeLabel;
+
+	IBOutlet NSBox *			_previewBox;
+
+	IBOutlet XAP_CocoaNSView *	_preview;
+
 	AP_CocoaDialog_Columns	*_xap;
 }
 - (IBAction)cancelAction:(id)sender;
@@ -98,8 +117,8 @@ private:
 - (IBAction)threeAction:(id)sender;
 - (IBAction)twoAction:(id)sender;
 
-- (UT_uint32)colNum;
-- (void)setColNum:(UT_uint32)num;
+- (int)colNum;
+- (void)setColNum:(int)num;
 
 - (NSString*)spaceAfter;
 - (void)setSpaceAfter:(const char *)str;
@@ -114,9 +133,3 @@ private:
 @end
 
 #endif /* AP_CocoaDialog_Columns_H */
-
-
-
-
-
-

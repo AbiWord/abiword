@@ -34,6 +34,8 @@ class XAP_Draw_Symbol;
 class XAP_Insert_symbol_listener
 	{
 	public:
+		virtual ~XAP_Insert_symbol_listener() {}
+
 	        virtual void setView( AV_View * pJustPocussedView) {};
 		virtual bool insertSymbol(UT_UCSChar Char, char *p_font_name) = 0;
 	};

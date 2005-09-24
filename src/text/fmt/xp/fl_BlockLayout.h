@@ -346,6 +346,9 @@ public:
 	void					__dump(FILE * fp) const;
 #endif
 
+private:
+	virtual bool            _canContainPoint() const;
+	
 protected:
 
 	void					_recalcPendingWord(UT_uint32 iOffset, UT_sint32 chg);

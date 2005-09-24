@@ -758,7 +758,7 @@ XAP_Dialog_MessageBox * XAP_Frame::createMessageBox(XAP_String_Id id,
 		vsprintf(szNewMessage, static_cast<const char*>(s.c_str()), args);
 		va_end(args);
 
-		pDialog->setMessage(szNewMessage);
+		pDialog->setMessage("%s", szNewMessage);
 		
 		// XAP_MessageBox makes a copy of the message, so free it
 		FREEP(szNewMessage);

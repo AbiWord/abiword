@@ -79,14 +79,16 @@ public:
 	void                  drawFrame(bool bWithHandles);
 	void                  deleteFrame(void);
 	void                  setDragType(UT_sint32 x,UT_sint32 y, bool bDrawFrame);
-	bool                  getFrameStrings(UT_sint32 x, UT_sint32 y, 
-										  UT_String & sXpos,
-										  UT_String & sYpos,
-										  UT_String & sWidth,
-										  UT_String & sHeight,
-										  UT_String & sColXpos,
-										  UT_String & sColYpos,
-										  fl_BlockLayout ** pCloseBL);
+	bool                  getFrameStrings(UT_sint32 x, UT_sint32 y,
+					      UT_String & sXpos,
+					      UT_String & sYpos,
+					      UT_String & sWidth,
+					      UT_String & sHeight,
+					      UT_String & sColXpos,
+					      UT_String & sColYpos,
+					      UT_String & sPageXpos,
+					      UT_String & sPageYpos,
+					      fl_BlockLayout ** pCloseBL);
 	fl_FrameLayout *      getFrameLayout(void)
 		{ return m_pFrameLayout;}
 	void                  setPointInside(void);

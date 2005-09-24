@@ -1,3 +1,5 @@
+/* -*- mode: C++; tab-width: 4; c-basic-offset: 4; -*- */
+
 /* AbiWord
  * Copyright (C) 1998 AbiSource, Inc.
  * Copyright (C) 2003 Hubert Figuiere
@@ -18,8 +20,6 @@
  * 02111-1307, USA.
  */
 
-#import <Cocoa/Cocoa.h>
-
 #include <stdlib.h>
 #include <time.h>
 
@@ -27,8 +27,6 @@
 #include "ut_assert.h"
 #include "ut_debugmsg.h"
 
-// This header defines some functions for Cocoa dialogs,
-// like centering them, measuring them, etc.
 #include "xap_CocoaDialog_Utilities.h"
 
 #include "xap_App.h"
@@ -40,30 +38,27 @@
 #include "ap_Dialog_Field.h"
 #include "ap_CocoaDialog_Field.h"
 
-
 /*****************************************************************/
 
-
-XAP_Dialog * AP_CocoaDialog_Field::static_constructor(XAP_DialogFactory * pFactory,
-													 XAP_Dialog_Id dlgid)
+XAP_Dialog * AP_CocoaDialog_Field::static_constructor(XAP_DialogFactory * pFactory, XAP_Dialog_Id dlgid)
 {
 	AP_CocoaDialog_Field * p = new AP_CocoaDialog_Field(pFactory,dlgid);
 	return p;
 }
 
-AP_CocoaDialog_Field::AP_CocoaDialog_Field(XAP_DialogFactory * pDlgFactory,
-										 XAP_Dialog_Id dlgid)
-	: AP_Dialog_Field(pDlgFactory, dlgid),
+AP_CocoaDialog_Field::AP_CocoaDialog_Field(XAP_DialogFactory * pDlgFactory, XAP_Dialog_Id dlgid) : 
+	AP_Dialog_Field(pDlgFactory, dlgid),
 	m_typeList(nil),
 	m_fieldList(nil),
 	m_dlg(nil)
 {
+	// 
 }
 
 AP_CocoaDialog_Field::~AP_CocoaDialog_Field(void)
 {
+	// 
 }
-
 
 /*****************************************************************/
 
@@ -79,19 +74,22 @@ void AP_CocoaDialog_Field::runModal(XAP_Frame * pFrame)
 	UT_ASSERT(window);
 
 	m_fieldList = [[XAP_StringListDataSource alloc] init];
-	m_typeList = [[XAP_StringListDataSource alloc] init];
-	[m_dlg setTypeList:m_typeList andFieldList:m_fieldList];
+	m_typeList  = [[XAP_StringListDataSource alloc] init];
+
 	_populateCategories();
+
+	[m_dlg setTypeList:m_typeList andFieldList:m_fieldList];
+
 	[NSApp runModalForWindow:window];
 
 	[m_dlg discardXAP];
 	[m_dlg close];
 	[m_dlg release];
+	m_dlg = nil;
+
 	[m_typeList release];
 	[m_fieldList release];
-	m_dlg = nil;
 }
-
 
 void AP_CocoaDialog_Field::event_OK(void)
 {
@@ -119,13 +117,37 @@ void AP_CocoaDialog_Field::event_OK(void)
 		return;
 	}
 
-	m_iFormatIndex = idx;
-	
+	m_iFormatIndex = 0;
+
+	fp_FieldTypesEnum FType = fp_FieldTypes[m_iTypeIndex].m_Type;
+
+	for (int i = 0; fp_FieldFmts[i].m_Tag != NULL; i++) {
+		if((fp_FieldFmts[i].m_Num != FPFIELD_endnote_anch ) &&
+		   (fp_FieldFmts[i].m_Num != FPFIELD_endnote_ref  ) &&
+		   (fp_FieldFmts[i].m_Num != FPFIELD_footnote_anch) &&
+		   (fp_FieldFmts[i].m_Num != FPFIELD_footnote_ref ))
+			{ 
+				if (fp_FieldFmts[i].m_Type == FType) {
+					if (!idx) {
+						m_iFormatIndex = i;
+						break;
+					}
+					--idx;
+			}
+		}
+	}
+
 	setParameter([[m_dlg extraParam] UTF8String]);
+
 	m_answer = AP_Dialog_Field::a_OK;
 	[NSApp stopModal];
 }
 
+void AP_CocoaDialog_Field::event_Cancel(void)
+{
+	m_answer = AP_Dialog_Field::a_CANCEL;
+	[NSApp stopModal];
+}
 
 void AP_CocoaDialog_Field::types_changed(int row)
 {
@@ -136,21 +158,20 @@ void AP_CocoaDialog_Field::types_changed(int row)
 	setFieldsList();
 }
 
-void AP_CocoaDialog_Field::event_Cancel(void)
+void AP_CocoaDialog_Field::_populateCategories(void)
 {
-	m_answer = AP_Dialog_Field::a_CANCEL;
-	[NSApp stopModal];
+	// Fill in the two lists
+	setTypesList();
+	setFieldsList();
 }
-
-
 
 void AP_CocoaDialog_Field::setTypesList(void)
 {
 	UT_ASSERT(m_typeList);
-	int i;
+
 	[m_typeList removeAllStrings];
 
-	for (i = 0; fp_FieldTypes[i].m_Desc != NULL; i++) {
+	for (int i = 0; fp_FieldTypes[i].m_Desc != NULL; i++) {
 		[m_typeList addString:[NSString stringWithUTF8String:fp_FieldTypes[i].m_Desc]];
 	}
 	
@@ -160,72 +181,72 @@ void AP_CocoaDialog_Field::setTypesList(void)
 void AP_CocoaDialog_Field::setFieldsList(void)
 {
 	UT_ASSERT(m_fieldList);
-	int i;
-	fp_FieldTypesEnum  FType = fp_FieldTypes[m_iTypeIndex].m_Type;
+
+	fp_FieldTypesEnum FType = fp_FieldTypes[m_iTypeIndex].m_Type;
 
 	[m_fieldList removeAllStrings];
 
-	for (i = 0; fp_FieldFmts[i].m_Tag != NULL; i++) {
-			if((fp_FieldFmts[i].m_Num != FPFIELD_endnote_anch) &&
-			(fp_FieldFmts[i].m_Num != FPFIELD_endnote_ref) &&
-			(fp_FieldFmts[i].m_Num != FPFIELD_footnote_anch) &&
-			(fp_FieldFmts[i].m_Num != FPFIELD_footnote_ref))
+	for (int i = 0; fp_FieldFmts[i].m_Tag != NULL; i++) {
+		if((fp_FieldFmts[i].m_Num != FPFIELD_endnote_anch ) &&
+		   (fp_FieldFmts[i].m_Num != FPFIELD_endnote_ref  ) &&
+		   (fp_FieldFmts[i].m_Num != FPFIELD_footnote_anch) &&
+		   (fp_FieldFmts[i].m_Num != FPFIELD_footnote_ref ))
 			{ 
 				if (fp_FieldFmts[i].m_Type == FType) {
-					[m_fieldList addString:[NSString stringWithUTF8String:fp_FieldFmts[i].m_Desc]];	
+					[m_fieldList addString:[NSString stringWithUTF8String:fp_FieldFmts[i].m_Desc]];
 			}
 		}
 	}
 }
 
-
 /*****************************************************************/
-
-void AP_CocoaDialog_Field::_populateCategories(void)
-{
-	// Fill in the two lists
-	setTypesList();
-	setFieldsList();
-}
-	
-
-
 
 @implementation AP_CocoaDialog_FieldController
 
 - (id)initFromNib
 {
-	self = [super initWithWindowNibName:@"ap_CocoaDialog_Field"];
+	if (self = [super initWithWindowNibName:@"ap_CocoaDialog_Field"])
+		{
+			_xap = 0;
+		}
 	return self;
-}
-
--(void)discardXAP
-{
-	_xap = NULL; 
 }
 
 -(void)dealloc
 {
+	// 
 	[super dealloc];
+}
+
+-(void)discardXAP
+{
+	_xap = 0;
 }
 
 - (void)setXAPOwner:(XAP_Dialog *)owner
 {
-	_xap = dynamic_cast<AP_CocoaDialog_Field*>(owner);
+	_xap = static_cast<AP_CocoaDialog_Field *>(owner);
 }
 
 -(void)windowDidLoad
 {
-	if (_xap) {
-		const XAP_StringSet *pSS = XAP_App::getApp()->getStringSet();
-		LocalizeControl([self window], pSS, AP_STRING_ID_DLG_Field_FieldTitle);
-		LocalizeControl(_okBtn, pSS, XAP_STRING_ID_DLG_OK);
-		LocalizeControl(_cancelBtn, pSS, XAP_STRING_ID_DLG_Cancel);
-		LocalizeControl(_typesLabel, pSS, AP_STRING_ID_DLG_Field_Types);
-		LocalizeControl(_fieldsLabel, pSS, AP_STRING_ID_DLG_Field_Fields);
-		LocalizeControl(_extraParamLabel, pSS, AP_STRING_ID_DLG_Field_Parameters);
-		[_typesList setAction:@selector(typesAction:)];
-	}
+	if (_xap)
+		{
+			const XAP_StringSet * pSS = XAP_App::getApp()->getStringSet();
+
+			LocalizeControl([self window],    pSS, AP_STRING_ID_DLG_Field_FieldTitle);
+
+			LocalizeControl(_okBtn,           pSS, XAP_STRING_ID_DLG_OK);
+			LocalizeControl(_cancelBtn,       pSS, XAP_STRING_ID_DLG_Cancel);
+
+			LocalizeControl(_typesLabel,      pSS,  AP_STRING_ID_DLG_Field_Types);
+			LocalizeControl(_fieldsLabel,     pSS,  AP_STRING_ID_DLG_Field_Fields);
+			LocalizeControl(_extraParamLabel, pSS,  AP_STRING_ID_DLG_Field_Parameters);
+
+			[_typesList  setDelegate:self];
+			[_typesList  setAction:@selector(typesAction:)];
+			[_fieldsList setDoubleAction:@selector(okAction:)];
+		}
 }
 
 - (int)selectedType
@@ -233,31 +254,33 @@ void AP_CocoaDialog_Field::_populateCategories(void)
 	return [_typesList selectedRow];
 }
 
-
 - (int)selectedField
 {
 	return [_fieldsList selectedRow];
 }
 
-
-- (void)setTypeList:(XAP_StringListDataSource*)tl andFieldList:(XAP_StringListDataSource*)fl
+- (void)setTypeList:(XAP_StringListDataSource *)tl andFieldList:(XAP_StringListDataSource *)fl
 {
 	[_fieldsList setDataSource:fl];
-	[_typesList setDataSource:tl];
+	[_typesList  setDataSource:tl];
 }
 
-- (NSString*)extraParam
+- (NSString *)extraParam
 {
 	return [_extraParamData stringValue];
 }
 
-
-- (void)typesAction:(id)sender
+- (void)tableViewSelectionDidChange:(NSNotification *)aNotification
 {
 	_xap->types_changed([_typesList selectedRow]);
 	[_fieldsList reloadData];
 }
 
+- (void)typesAction:(id)sender
+{
+	// _xap->types_changed([_typesList selectedRow]);
+	// [_fieldsList reloadData];
+}
 
 - (IBAction)cancelAction:(id)sender
 {

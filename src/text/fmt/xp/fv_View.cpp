@@ -1,3 +1,4 @@
+/* -*- c-basic-offset: 4; tab-width: 4; indent-tabs-mode: t -*- */
 /* AbiWord
  * Copyright (C) 1998-2000 AbiSource, Inc.
  * Copyright (c) 2001,2002 Tomas Frydrych
@@ -2012,6 +2013,10 @@ PT_DocPosition FV_View::saveSelectedImage (const char * toFile)
 
 PT_DocPosition FV_View::mapDocPos( FV_DocPos dp ) {
 	return ( _getDocPos( dp ));
+	}
+
+PT_DocPosition FV_View::mapDocPosSimple( FV_DocPos dp ) {
+	return ( _getDocPos( dp, false ));
 	}
 
 PT_DocPosition FV_View::saveSelectedImage (const UT_ByteBuf ** pBytes)
@@ -8056,6 +8061,7 @@ void FV_View::getTopRulerInfo(PT_DocPosition pos,AP_TopRulerInfo * pInfo)
 				pTInfo->m_iRightSpacing = ( pCur->getRightPos() - pCur->getX()
 											- pCur->getWidth());
 				pInfo->m_vecTableColInfo->addItem(pTInfo);
+				xxx_UT_DEBUGMSG(("TableColInfo RightPos %d LeftPos %d \n", pTInfo->m_iRightCellPos,pTInfo->m_iLeftCellPos));
 				i = pCur->getRightAttach();
 				iCellCount++;
 			}
@@ -8078,11 +8084,11 @@ void FV_View::getTopRulerInfo(PT_DocPosition pos,AP_TopRulerInfo * pInfo)
 			ioff_x += pCon->getX();
 			pCon = static_cast<fp_Container *>(pCon->getContainer());
 		}
-		ioff_x += pTab->getX();
+		xxx_UT_DEBUGMSG(("Initial X %d \n",ioff_x));
 		pCur = pTab->getCellAtRowColumn(0,0);
 		ioff_x += pCur->getLeftPos();
 		pRC = pTab->getNthCol(0);
-		ioff_x -= pRC->spacing/2;
+		xxx_UT_DEBUGMSG(("Tab X %d LeftPos %d Spacing %d \n",pTab->getX(),pCur->getLeftPos(),pRC->spacing));
 		for( i=0;i < numcols;i++)
 		{
 			pCur = pTab->getCellAtRowColumn(0,i);
@@ -8094,14 +8100,16 @@ void FV_View::getTopRulerInfo(PT_DocPosition pos,AP_TopRulerInfo * pInfo)
 				pTInfo->m_pCell = pCur;
 				pTInfo->m_iLeftCellPos = iCum +ioff_x;
 				pTInfo->m_iRightCellPos = iCum + width +ioff_x;
-				pTInfo->m_iRightCellPos -= getGraphics()->tlu(1);
 				pTInfo->m_iLeftSpacing = pRC->spacing/2;
 				pTInfo->m_iRightSpacing = pRC->spacing/2;
 				if(i== (numcols -1))
 				{
-					pTInfo->m_iRightCellPos -= pTab->getBorderWidth()/2;
+					//					pTInfo->m_iRightCellPos -= pTab->getBorderWidth()/2;
+					pTInfo->m_iRightCellPos -= (pTInfo->m_iRightSpacing);
+					xxx_UT_DEBUGMSG(("FullTable RightPos %d Spacing %d \n", pTInfo->m_iRightCellPos,pTInfo->m_iRightSpacing));
 				}
 				pInfo->m_vecFullTable->addItem(pTInfo);
+				xxx_UT_DEBUGMSG(("FullTable RightPos %d LeftPos %d \n", pTInfo->m_iRightCellPos,pTInfo->m_iLeftCellPos));
 			}
 			iCum += width;
 		}
@@ -8143,7 +8151,7 @@ void FV_View::getTopRulerInfo(PT_DocPosition pos,AP_TopRulerInfo * pInfo)
 	static UT_String buf;
 
 	{
-		UT_LocaleTransactor(LC_NUMERIC, "C");
+		UT_LocaleTransactor t(LC_NUMERIC, "C");
 		buf = UT_String_sprintf ("%.4fin", m_pDoc->m_docPageSize.Width(DIM_IN));
 	}
 
@@ -8389,7 +8397,7 @@ void FV_View::getLeftRulerInfo(PT_DocPosition pos, AP_LeftRulerInfo * pInfo)
 		else if(pContainer->getContainerType() == FP_CONTAINER_FRAME)
 		{
 			fp_FrameContainer * pFC = static_cast<fp_FrameContainer *>(pContainer);
-			fl_FrameLayout * pFL = static_cast<fl_FrameLayout *>(pSection);
+			fl_FrameLayout * pFL = static_cast<fl_FrameLayout *>(pFC->getSectionLayout());
 			pInfo->m_mode = AP_LeftRulerInfo::TRI_MODE_FRAME;
 			fl_DocSectionLayout * pDSL = pFL->getDocSectionLayout();
 			if(pDSL == NULL)
@@ -9072,7 +9080,7 @@ void FV_View::setCursorToContext()
 		}
 		else if(m_FrameEdit.getFrameEditDragWhat() ==FV_FrameEdit_DragLeftEdge)
 		{
-			cursor = GR_Graphics::GR_CURSOR_IMAGESIZE_E;
+			cursor = GR_Graphics::GR_CURSOR_IMAGESIZE_W;
 		}
 		else if(m_FrameEdit.getFrameEditDragWhat() ==FV_FrameEdit_DragTopEdge)
 		{
@@ -9080,7 +9088,7 @@ void FV_View::setCursorToContext()
 		}
 		else if(m_FrameEdit.getFrameEditDragWhat() ==FV_FrameEdit_DragRightEdge)
 		{
-			cursor = GR_Graphics::GR_CURSOR_IMAGESIZE_W;
+			cursor = GR_Graphics::GR_CURSOR_IMAGESIZE_E;
 		}
 		else if(m_FrameEdit.getFrameEditDragWhat() ==FV_FrameEdit_DragBotEdge)
 		{
@@ -9738,27 +9746,50 @@ bool FV_View::isParaBreakNeededAtPos(PT_DocPosition pos)
   if(!m_pDoc->isSectionAtPos(pos) && !m_pDoc->isHdrFtrAtPos(pos) &&
      (pos < posEOD))
   {
-    return false;
+	  return false;
   }
   pf_Frag * pf = m_pDoc->getFragFromPosition(pos);
   while(pf && pf->getType() != pf_Frag::PFT_Strux)
   {
-     pf = pf->getPrev();
+	  pf = pf->getPrev();
   }
   if(pf == NULL)
   {  
-     return false;
+	  return false;
   }
   pf_Frag_Strux * pfs = static_cast<pf_Frag_Strux *>(pf);
   if(pfs->getStruxType() == PTX_EndTOC)
   {
-     return true;
+	  return true;
   }
   if((pfs->getStruxType() == PTX_EndFootnote) || 
      (pfs->getStruxType() == PTX_EndEndnote) || 
      (pfs->getStruxType() == PTX_Block) )
   {
-    return false;
+	  return false;
+  }
+  if((pfs->getStruxType() == PTX_Section) || (pfs->getStruxType() == PTX_SectionHdrFtr))
+  {
+	  if(pfs->getPos() < pos)
+	  {
+		  return true;
+	  }
+	  pf = pf->getPrev();
+	  while(pf && pf->getType() != pf_Frag::PFT_Strux)
+	  {
+		  pf = pf->getPrev();
+	  }
+	  if(pf == NULL)
+	  {  
+		  return false;
+	  }
+	  pf_Frag_Strux * pfs = static_cast<pf_Frag_Strux *>(pf);
+	  if((pfs->getStruxType() == PTX_EndFootnote) || 
+		 (pfs->getStruxType() == PTX_EndEndnote) || 
+		 (pfs->getStruxType() == PTX_Block) )
+	  {
+		  return false;
+	  }
   }
   return true;
 }
@@ -10261,7 +10292,7 @@ void FV_View::insertHeaderFooter(HdrFtrType hfType)
 	{
 		UT_ASSERT(UT_SHOULD_NOT_HAPPEN);
 	}
-	UT_ASSERT(pHFCon);
+	UT_return_if_fail(pHFCon);
 	pShadow = pHFCon->getShadow();
 	UT_ASSERT(pShadow);
 //
@@ -10528,6 +10559,13 @@ bool FV_View::isPointLegal(PT_DocPosition pos)
 	{
 	  return false;
 	}
+
+ // another corner case
+
+	if(m_pDoc->isEndTableAtPos(pos-1) && m_pDoc->isEndFrameAtPos(pos))	
+	{
+		return false;
+	}
 	if(m_pDoc->isEndFrameAtPos(pos) &&  !m_pDoc->isFrameAtPos(pos-1))
 	{
 	  return true; // This is how we insert into frames
@@ -10565,7 +10603,11 @@ bool FV_View::isPointLegal(PT_DocPosition pos)
 	{
 		return false;
 	}
-	return true;
+	if((pos > pBL->getPosition(true)) && (pos <= (pBL->getPosition(true) + pBL->getLength())))
+	{
+		return true;
+	}
+	return false;
 }
 
 bool FV_View::isPointLegal(void)
@@ -11831,28 +11873,10 @@ const XML_Char ** FV_View::getViewPersistentProps()
 	return pProps;
 }
 
-void FV_View::remeasureChars()
+void FV_View::rebuildLayout()
 {
-	fl_BlockLayout * pBL = getBlockAtPosition(2);
-
-	while(pBL)
-	{
-		pBL->setNeedsReformat();
-		
-		fp_Run * pRun = pBL->getFirstRun();
-		while(pRun)
-		{
-			pRun->markWidthDirty();
-			pRun = pRun->getNextRun();
-		}
-		
-		pBL = pBL->getNextBlockInDocument();
-	}
-	
-	
-	updateLayout();
+	m_pLayout->rebuildFromHere(static_cast<fl_DocSectionLayout *>(m_pLayout->getFirstSection()));	
 }
-
 
 fv_PropCache::fv_PropCache(void):
 	m_iTick(0),

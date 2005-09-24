@@ -42,7 +42,6 @@ public:
 private:
 	
 	void event_setLang();
-	void event_Cancel();
 
 	void _populateWindowData();
 
@@ -53,6 +52,8 @@ private:
 
 	GtkWidget *             constructWindow();
 	GtkWidget * 			m_pLanguageList;
+	GtkWidget * 			m_lbDefaultLanguage;
+	GtkWidget * 			m_cbDefaultLanguage;
 	GtkWidget *             m_windowMain;
 };
 

@@ -1,3 +1,5 @@
+/* -*- mode: C++; tab-width: 4; c-basic-offset: 4; -*- */
+
 /* AbiWord
  * Copyright (C) 1998 AbiSource, Inc.
  * Copyright (C) 2003 Hubert Figuiere
@@ -73,6 +75,7 @@ private:
 	AP_CocoaDialog_InsertTable *_xap;
 }
 - (IBAction)cancelAction:(id)sender;
+- (IBAction)colSizeAction:(id)sender;
 - (IBAction)fixedColSizeAction:(id)sender;
 - (IBAction)fixedColSizeStepperAction:(id)sender;
 - (IBAction)numColAction:(id)sender;

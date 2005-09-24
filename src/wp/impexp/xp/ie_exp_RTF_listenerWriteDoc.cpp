@@ -1485,6 +1485,8 @@ void s_RTF_ListenerWriteDoc::_outputData(const UT_UCSChar * data, UT_uint32 leng
 		case UCS_NBSP:					// NBSP -- non breaking space
 			FlushBuffer();
 			m_pie->_rtf_keyword("~");
+			m_pie->m_bLastWasKeyword = false;       // no space needed afterward
+			
 			pData++;
 			break;
 
@@ -3902,8 +3904,12 @@ bool s_RTF_ListenerWriteDoc::populateStrux(PL_StruxDocHandle sdh,
 			{
 				bFooterLast = true;
 			}
-
-			if(bHeader)
+			if(bHeader && !bHeaderEven)
+			{
+			        m_bInBlock = false;
+				m_pie->exportHdrFtr("header",pszHeaderID,"header");
+			}
+			else if(bHeader)
 			{
 				m_bInBlock = false;
 				m_pie->exportHdrFtr("header",pszHeaderID,"headerl");
@@ -3913,17 +3919,17 @@ bool s_RTF_ListenerWriteDoc::populateStrux(PL_StruxDocHandle sdh,
 				m_bInBlock = false;
 				m_pie->exportHdrFtr("header-even",pszHeaderEvenID,"headerr");
 			}
-			else if(bHeader)
-			{
-				m_bInBlock = false;
-				m_pie->exportHdrFtr("header",pszHeaderID,"headerr");
-			}
 			if(bHeaderFirst)
 			{
 				m_bInBlock = false;
 				m_pie->exportHdrFtr("header-first",pszHeaderFirstID,"headerf");
 			}
-			if(bFooter)
+			if(bFooter && !bFooterEven)
+			{
+			        m_bInBlock = false;
+				m_pie->exportHdrFtr("footer",pszFooterID,"footer");
+			}
+			else if(bFooter)
 			{
 				m_bInBlock = false;
 				m_pie->exportHdrFtr("footer",pszFooterID,"footerl");
@@ -3932,11 +3938,6 @@ bool s_RTF_ListenerWriteDoc::populateStrux(PL_StruxDocHandle sdh,
 			{
 				m_bInBlock = false;
 				m_pie->exportHdrFtr("footer-even",pszFooterEvenID,"footerr");
-			}
-			else if(bFooter)
-			{
-				m_bInBlock = false;
-				m_pie->exportHdrFtr("footer",pszFooterID,"footerr");
 			}
 			if(bFooterFirst)
 			{
@@ -3953,6 +3954,7 @@ bool s_RTF_ListenerWriteDoc::populateStrux(PL_StruxDocHandle sdh,
 			m_sdh = sdh;
 			_rtf_open_section(pcr->getIndexAP());
 			m_bInBlock = false;
+			m_bBlankLine = true;
 			return true;
 		}
 
@@ -3965,34 +3967,6 @@ bool s_RTF_ListenerWriteDoc::populateStrux(PL_StruxDocHandle sdh,
 			_closeSection();
 			_setTabEaten(false);
 			return false;
-#if 0
-//
-// We should have already outputting this.
-
-			// begin a header/footer.  in RTF this is expressed as
-			//
-			// {' <hdrctl> <para>+ '}' where <hdrctl> is one of
-			// \header or \footer for headers or footers on all pages
-			// \headerl or \headerr or \headerf for headers on left, right, and first pages
-			// \footerl or \footerr or \footerf for footers on left, right, and first pages
-			//
-			// here we deal with everything except for the <para>+
-			m_sdh = sdh;
-			m_pie->_rtf_nl();
-			m_pie->_rtf_open_brace();
-			PT_AttrPropIndex indexAP = pcr->getIndexAP();
-			const PP_AttrProp* pAP = NULL;
-			m_pDocument->getAttrProp(indexAP, &pAP);
-			const XML_Char* pszSectionType = NULL;
-			pAP->getAttribute("type", pszSectionType);
-			if(0 == UT_strcmp(pszSectionType, "header"))
-				m_pie->_rtf_keyword("header");
-			else if(0 == UT_strcmp(pszSectionType, "footer"))
-				m_pie->_rtf_keyword("footer");
-			else
-				UT_ASSERT_NOT_REACHED();
-			return true;
-#endif
 		}
 	case PTX_SectionFootnote:
 	    {
@@ -4110,6 +4084,7 @@ bool s_RTF_ListenerWriteDoc::populateStrux(PL_StruxDocHandle sdh,
 			m_bInBlock = false;
 			_setTabEaten(false);
 			m_sdh = sdh;
+			m_bBlankLine = true; // Need this as well!
 			_open_cell(pcr->getIndexAP());
 			return true;
 		}
@@ -4136,7 +4111,7 @@ bool s_RTF_ListenerWriteDoc::populateStrux(PL_StruxDocHandle sdh,
 		{
 			xxx_UT_DEBUGMSG(("_rtf_listenerWriteDoc: Populate block \n"));
 			_closeSpan();
-			if(!m_bBlankLine)
+			if(!m_bBlankLine && !m_bOpennedFootnote)
 			{
 				m_bInBlock = true;
 			}
@@ -4261,7 +4236,7 @@ void s_RTF_ListenerWriteDoc::_rtf_docfmt(void)
 	bool landscape = !m_pDocument->m_docPageSize.isPortrait();
 
 	{
-		UT_LocaleTransactor(LC_NUMERIC, "C");
+		UT_LocaleTransactor t(LC_NUMERIC, "C");
 		
 		double width = m_pDocument->m_docPageSize.Width(DIM_IN);
 		double height = m_pDocument->m_docPageSize.Height(DIM_IN);
@@ -4400,7 +4375,7 @@ void s_RTF_ListenerWriteDoc::_rtf_open_section(PT_AttrPropIndex api)
 	m_pie->_rtf_keyword_ifnotdefault_twips("colsx",static_cast<const char*>(szColumnGap),720);
 
 	{
-		UT_LocaleTransactor(LC_NUMERIC, "C");
+		UT_LocaleTransactor t(LC_NUMERIC, "C");
 		
 		if (bColLine)
 		{
@@ -4914,16 +4889,31 @@ void s_RTF_ListenerWriteDoc::_rtf_open_block(PT_AttrPropIndex api)
 	if (strcmp(szLineHeight,"1.0") != 0)
 	{
 		double f = UT_convertDimensionless(szLineHeight);
-		if (f != 0.0)					// we get zero on bogus strings....
-		{
-			// don't ask me to explain the details of this conversion factor,
-			// because i don't know....
-			UT_sint32 dSpacing = (UT_sint32)(f * 240.0);
-			m_pie->_rtf_keyword("sl",dSpacing);
-			m_pie->_rtf_keyword("slmult",1);
+
+
+		if (f > 0.000001) 
+		{                                   // we get zero on bogus strings....
+		        const char * pPlusFound = strrchr(szLineHeight, '+');
+		        if (pPlusFound && *(pPlusFound + 1) == 0)             //  "+" means "at least" line spacing
+			{
+				UT_sint32 dSpacing = (UT_sint32)(f * 20.0);
+				m_pie->_rtf_keyword("sl",dSpacing);
+				m_pie->_rtf_keyword("slmult",0);
+			}
+			else if (UT_hasDimensionComponent(szLineHeight)) //  use exact line spacing
+			{
+			        UT_sint32 dSpacing = (UT_sint32)(f * 20.0);
+			        m_pie->_rtf_keyword("sl",-dSpacing);
+			        m_pie->_rtf_keyword("slmult",0);
+		        }
+			else // multiple line spacing
+			{
+			        UT_sint32 dSpacing = (UT_sint32)(f * 240.0);
+			        m_pie->_rtf_keyword("sl",dSpacing);
+			        m_pie->_rtf_keyword("slmult",1);
+		        }
 		}
 	}
-
 //
 // Output Paragraph Cell nesting level.
 //
@@ -5037,8 +5027,16 @@ void s_RTF_ListenerWriteDoc::_writeImageInRTF(const PX_ChangeRecord_Object * pcr
 
 	const XML_Char * szWidthProp = NULL;
 	const XML_Char * szHeightProp = NULL;
+	const XML_Char * szCroplProp = NULL;
+	const XML_Char * szCroprProp = NULL;
+	const XML_Char * szCroptProp = NULL;
+	const XML_Char * szCropbProp = NULL;
 	bool bFoundWidthProperty = pImageAP->getProperty("width",szWidthProp);
 	bool bFoundHeightProperty = pImageAP->getProperty("height",szHeightProp);
+	bool bFoundCropl = pImageAP->getProperty ("cropl",szCroplProp);
+	bool bFoundCropr = pImageAP->getProperty ("cropr",szCroprProp);
+	bool bFoundCropt = pImageAP->getProperty ("cropt",szCroptProp);
+	bool bFoundCropb = pImageAP->getProperty ("cropb",szCropbProp);
 
 	// get the width/height of the image from the image itself.
 
@@ -5097,6 +5095,23 @@ void s_RTF_ListenerWriteDoc::_writeImageInRTF(const PX_ChangeRecord_Object * pcr
 				UT_uint32 iscaley = static_cast<UT_uint32>(scaley);
 				m_pie->_rtf_keyword("picscaley",iscaley);
 			}
+			if (bFoundCropl)
+			{
+				m_pie->_rtf_keyword_ifnotdefault_twips("piccropl",static_cast<const char*>(szCroplProp),0);
+			}
+			if (bFoundCropr)
+			{
+				m_pie->_rtf_keyword_ifnotdefault_twips("piccropr",static_cast<const char*>(szCroprProp),0);
+			}
+			if (bFoundCropt)
+			{
+				m_pie->_rtf_keyword_ifnotdefault_twips("piccropt",static_cast<const char*>(szCroptProp),0);
+			}
+			if (bFoundCropb)
+			{
+				m_pie->_rtf_keyword_ifnotdefault_twips("piccropb",static_cast<const char*>(szCropbProp),0);
+			}
+
 
 			// TODO deal with <metafileinfo>
 

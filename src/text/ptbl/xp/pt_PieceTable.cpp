@@ -244,8 +244,11 @@ bool pt_PieceTable::getSpanAttrProp(PL_StruxDocHandle sdh, UT_uint32 offset, boo
 	const pf_Frag * pf = static_cast<const pf_Frag *>(sdh);
 	UT_return_val_if_fail (pf->getType() == pf_Frag::PFT_Strux,false);
 	const pf_Frag_Strux * pfsBlock = static_cast<const pf_Frag_Strux *> (pf);
-	UT_return_val_if_fail (pfsBlock->getStruxType() == PTX_Block,false);
-
+	
+	// This assert is incorrect; blocks that are inserted inside a TOC use sdh of the TOC section
+	// UT_return_val_if_fail (pfsBlock->getStruxType() == PTX_Block,false);
+	UT_return_val_if_fail (pfsBlock->getStruxType() == PTX_Block || pfsBlock->getStruxType() == PTX_SectionTOC,false);
+	
 	UT_uint32 cumOffset = 0;
 	UT_uint32 cumEndOffset = 0;
 	pf_Frag * pfTemp = NULL;
@@ -735,7 +738,7 @@ bool pt_PieceTable::getStruxOfTypeFromPosition( PT_DocPosition docPos,
 
 bool pt_PieceTable::isEndFootnote(pf_Frag * pf) const
 {
-	if(pf->getType() == pf_Frag::PFT_Strux)
+	if(pf && (pf->getType() == pf_Frag::PFT_Strux))
 	{
 		pf_Frag_Strux * pfs = static_cast<pf_Frag_Strux *>(pf);
 		if((pfs->getStruxType() == PTX_EndFootnote) || (pfs->getStruxType() == PTX_EndEndnote) || (pfs->getStruxType() == PTX_EndTOC))
@@ -749,7 +752,7 @@ bool pt_PieceTable::isEndFootnote(pf_Frag * pf) const
 
 bool pt_PieceTable::isFootnote(pf_Frag * pf) const
 {
-	if(pf->getType() == pf_Frag::PFT_Strux)
+	if(pf && (pf->getType() == pf_Frag::PFT_Strux))
 	{
 		pf_Frag_Strux * pfs = static_cast<pf_Frag_Strux *>(pf);
 		if((pfs->getStruxType() == PTX_SectionFootnote) || (pfs->getStruxType() == PTX_SectionEndnote) || (pfs->getStruxType() == PTX_SectionTOC))

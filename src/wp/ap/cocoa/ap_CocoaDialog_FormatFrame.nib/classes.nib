@@ -6,12 +6,17 @@
                 applyToAction = id; 
                 bgColorAction = id; 
                 borderColorAction = id; 
+                borderLineStyleAction = id; 
+                borderThicknessField = id; 
+                borderThicknessStepper = id; 
                 bottomBorderAction = id; 
                 leftBorderAction = id; 
+                positionAction = id; 
                 removeImageAction = id; 
                 rightBorderAction = id; 
                 selectImageAction = id; 
                 topBorderAction = id; 
+                wrapAction = id; 
             }; 
             CLASS = "AP_CocoaDialog_FormatFrameController"; 
             LANGUAGE = ObjC; 
@@ -23,19 +28,46 @@
                 "_borderBox" = NSBox; 
                 "_borderColorLabel" = NSTextField; 
                 "_borderColorWell" = NSColorWell; 
-                "_bottomBorderBtn" = NSButton; 
-                "_leftBorderBtn" = NSButton; 
+                "_borderNumber" = NSFormCell; 
+                "_borderNumberForm" = NSForm; 
+                "_borderStepper" = NSStepper; 
+                "_bottomBorderBtn" = "XAP_CocoaToolbarButton"; 
+                "_bottomBorderColorWell" = NSColorWell; 
+                "_bottomBorderNumber" = NSFormCell; 
+                "_bottomBorderNumberForm" = NSForm; 
+                "_bottomBorderStepper" = NSStepper; 
+                "_leftBorderBtn" = "XAP_CocoaToolbarButton"; 
+                "_leftBorderColorWell" = NSColorWell; 
+                "_leftBorderNumber" = NSFormCell; 
+                "_leftBorderNumberForm" = NSForm; 
+                "_leftBorderStepper" = NSStepper; 
+                "_linestyleDashed" = NSMenuItem; 
+                "_linestyleDotted" = NSMenuItem; 
+                "_linestyleMenu" = NSMenu; 
+                "_linestyleNone" = NSMenuItem; 
+                "_linestyleNormal" = NSMenuItem; 
                 "_noImageBtn" = NSButton; 
+                "_positionPopUp" = NSPopUpButton; 
                 "_preview" = "XAP_CocoaNSView"; 
                 "_previewBox" = NSBox; 
-                "_rightBorderBtn" = NSButton; 
+                "_rightBorderBtn" = "XAP_CocoaToolbarButton"; 
+                "_rightBorderColorWell" = NSColorWell; 
+                "_rightBorderNumber" = NSFormCell; 
+                "_rightBorderNumberForm" = NSForm; 
+                "_rightBorderStepper" = NSStepper; 
                 "_setImageBtn" = NSButton; 
-                "_topBorderBtn" = NSButton; 
+                "_topBorderBtn" = "XAP_CocoaToolbarButton"; 
+                "_topBorderColorWell" = NSColorWell; 
+                "_topBorderNumber" = NSFormCell; 
+                "_topBorderNumberForm" = NSForm; 
+                "_topBorderStepper" = NSStepper; 
+                "_wrapSwitch" = NSButton; 
             }; 
             SUPERCLASS = NSWindowController; 
         }, 
         {CLASS = FirstResponder; LANGUAGE = ObjC; SUPERCLASS = NSObject; }, 
-        {CLASS = "XAP_CocoaNSView"; LANGUAGE = ObjC; SUPERCLASS = NSView; }
+        {CLASS = "XAP_CocoaNSView"; LANGUAGE = ObjC; SUPERCLASS = NSView; }, 
+        {CLASS = "XAP_CocoaToolbarButton"; LANGUAGE = ObjC; SUPERCLASS = NSButton; }
     ); 
     IBVersion = 1; 
 }

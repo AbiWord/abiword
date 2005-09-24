@@ -1,6 +1,7 @@
 /* AbiSource Application Framework
  * Copyright (C) 1998 AbiSource, Inc.
  * Copyright (C) 2001, 2003 Hubert Figuiere
+ * Copyright (C) 2005 Net Integration Technologies Inc. (written by Hubert Figuiere)
  * 
  * This program is free software; you can redistribute it and/or
  * modify it under the terms of the GNU General Public License
@@ -44,6 +45,9 @@ public:
 	virtual bool			addData(const char* format, void* pData, UT_sint32 iNumBytes);
 	virtual bool			getClipboardData(const char** formatAccepted, void ** ppData, UT_uint32 * pLen, const char ** szFormatFound);
 	virtual bool			hasFormat(const char* format);
+	/*! return if clipboard has one of the formats listed
+	 */
+	bool					hasFormats(const char** format);
 	void					prepareForText();
 	NSPasteboard		*_getPasteboard () { return [NSPasteboard generalPasteboard]; };
 static const char *	XAP_CLIPBOARD_TEXTPLAIN_8BIT;
@@ -51,6 +55,9 @@ static const char *	XAP_CLIPBOARD_STRING;
 static const char *	XAP_CLIPBOARD_COMPOUND_TEXT;
 static const char *	XAP_CLIPBOARD_RTF;
 static const char * XAP_CLIPBOARD_IMAGE;
+
+private:
+	static NSString *_abi2ns_cbType(const char *);
 };
 
 #endif /* XAP_COCOACLIPBOARD_H */

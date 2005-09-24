@@ -193,7 +193,8 @@ private:
 	XML_Char * _getBookmarkName(const wvParseStruct * ps, UT_uint32 pos);
 	bool	   _insertBookmarkIfAppropriate(UT_uint32 iPos);
 	bool	   _insertBookmark(bookmark * bm);
-	UT_Error   _handleImage (Blip *, long width, long height);
+	UT_Error   _handleImage (Blip *, long width, long height, long cropt, long cropb, long cropl, long cropr);
+	UT_Error   _handlePositionedImage (Blip *, UT_String & sImageName);
 	bool	   _handleCommandField (char *command);
 	bool	   _handleFieldEnd (char * command, UT_uint32 iPos);
 	int 	   _fieldProc (wvParseStruct *ps, UT_uint16 eachchar,

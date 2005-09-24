@@ -17,9 +17,6 @@
  * 02111-1307, USA.
  */
 
-#undef GTK_DISABLE_DEPRECATED
-#undef GDK_DISABLE_DEPRECATED
-
 #include "ut_assert.h"
 #include "xap_App.h"
 #include "xap_UnixApp.h"

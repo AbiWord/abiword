@@ -1009,6 +1009,11 @@ void XAP_UnixDialog_FontChooser::runModal(XAP_Frame * pFrame)
 	else
 		gtk_toggle_button_set_active(GTK_TOGGLE_BUTTON(m_checkTransparency), TRUE);
 
+	// fix for GTK's questionable gtk_toggle_set_active behaviour (emits when setting TRUE)
+	m_bChangedStrikeOut = m_bStrikeout;
+	m_bChangedUnderline = m_bUnderline;
+	m_bChangedOverline = m_bOverline;
+
 	// set the strikeout and underline check buttons
 	gtk_toggle_button_set_active(GTK_TOGGLE_BUTTON(m_checkStrikeOut), m_bStrikeout);
 	gtk_toggle_button_set_active(GTK_TOGGLE_BUTTON(m_checkUnderline), m_bUnderline);

@@ -661,6 +661,7 @@ Defun_EV_GetMenuItemComputedLabel_Fn(ap_GetLabel_Suggest)
 	const char * c = NULL;
 	const UT_UCSChar *p;
 	static char cBuf[128];		// BUGBUG: possible buffer overflow
+	UT_UTF8String s;
 	UT_uint32 len = 0;
 
 	p = pView->getContextSuggest(ndx);
@@ -680,8 +681,7 @@ Defun_EV_GetMenuItemComputedLabel_Fn(ap_GetLabel_Suggest)
 	}
 	else if (ndx == 1)
 	{
-		// placeholder when no suggestions
-		UT_UTF8String s;
+		// placeholder when no suggestions		
 		const XAP_StringSet * pSS = pApp->getStringSet();
 		pSS->getValueUTF8(AP_STRING_ID_DLG_Spell_NoSuggestions,s);
 		c = s.utf8_str();
@@ -1114,6 +1114,8 @@ Defun_EV_GetMenuItemState_Fn(ap_GetState_View)
 	case AP_MENU_ID_VIEW_RULER:
 		if ( pFrameData->m_bShowRuler && !pFrameData->m_bIsFullScreen)
 			s = EV_MIS_Toggled;
+		else if( pFrameData->m_bIsFullScreen )
+			s = EV_MIS_Gray;
 		else
 			s = EV_MIS_ZERO;
 		break;
@@ -1132,24 +1134,32 @@ Defun_EV_GetMenuItemState_Fn(ap_GetState_View)
 	case AP_MENU_ID_VIEW_TB_1:
 		if ( pFrameData->m_bShowBar[0] && !pFrameData->m_bIsFullScreen)
 			s = EV_MIS_Toggled;
+		else if( pFrameData->m_bIsFullScreen )
+			s = EV_MIS_Gray;
 		else
 			s = EV_MIS_ZERO;
 		break;
 	case AP_MENU_ID_VIEW_TB_2:	
 		if ( pFrameData->m_bShowBar[1] && !pFrameData->m_bIsFullScreen)
 			s = EV_MIS_Toggled;
+		else if( pFrameData->m_bIsFullScreen )
+			s = EV_MIS_Gray;
 		else
 			s = EV_MIS_ZERO;
 		break;
 	case AP_MENU_ID_VIEW_TB_3:	
 		if ( pFrameData->m_bShowBar[2] && !pFrameData->m_bIsFullScreen)
 			s = EV_MIS_Toggled;
+		else if( pFrameData->m_bIsFullScreen )
+			s = EV_MIS_Gray;
 		else
 			s = EV_MIS_ZERO;
 		break;
 	case AP_MENU_ID_VIEW_TB_4:	
 		if ( pFrameData->m_bShowBar[3] && !pFrameData->m_bIsFullScreen)
 			s = EV_MIS_Toggled;
+		else if( pFrameData->m_bIsFullScreen )
+			s = EV_MIS_Gray;
 		else
 			s = EV_MIS_ZERO;
 		break;
@@ -1167,6 +1177,8 @@ Defun_EV_GetMenuItemState_Fn(ap_GetState_View)
               if ( pFrameData->m_bShowStatusBar &&
 				   !pFrameData->m_bIsFullScreen )
 				  s = EV_MIS_Toggled;
+			  else if( pFrameData->m_bIsFullScreen )
+				  s = EV_MIS_Gray;
 			  else
 				  s = EV_MIS_ZERO;
 			  break;

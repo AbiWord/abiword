@@ -1162,7 +1162,7 @@ void s_AbiWord_1_Listener::_handlePageSize(void)
 	        m_pie->write("landscape\"");
 	UT_Dimension docUnit = m_pDocument->m_docPageSize.getDims();
 
-	UT_LocaleTransactor(LC_NUMERIC, "C");
+	UT_LocaleTransactor t(LC_NUMERIC, "C");
 	m_pie->write( UT_String_sprintf(" width=\"%f\"", m_pDocument->m_docPageSize.Width(docUnit)).c_str() );
 	m_pie->write( UT_String_sprintf(" height=\"%f\"",m_pDocument->m_docPageSize.Height(docUnit)).c_str() );
 	m_pie->write(" units=\"");

@@ -31,21 +31,59 @@
 #include "xap_CocoaToolbar_Icons.h"
 
 static NSPoint s_ButtonOnPoint[12] = {
-	{	 1.0f,	 8.0f	},
-	{	 1.0f,	 1.0f	},
-	{	 8.0f,	 1.0f	},
-	{	24.0f,	 1.0f	},
-	{	31.0f,	 1.0f	},
-	{	31.0f,	 8.0f	},
-	{	31.0f,	24.0f	},
-	{	31.0f,	31.0f	},
-	{	24.0f,	31.0f	},
-	{	 8.0f,	31.0f	},
-	{	 1.0f,	31.0f	},
-	{	 1.0f,	24.0f	}
+	{	 0.0f,	 7.0f	},
+	{	 0.0f,	 0.0f	},
+	{	 7.0f,	 0.0f	},
+	{	19.0f,	 0.0f	},
+	{	26.0f,	 0.0f	},
+	{	26.0f,	 7.0f	},
+	{	26.0f,	19.0f	},
+	{	26.0f,	26.0f	},
+	{	19.0f,	26.0f	},
+	{	 7.0f,	26.0f	},
+	{	 0.0f,	26.0f	},
+	{	 0.0f,	19.0f	}
+};
+
+static NSPoint s_ButtonMenuPoint[3] = {
+	{	26.0f,	21.0f	},
+	{	20.0f,	21.0f	},
+	{	23.0f,	26.0f	}
 };
 
 @implementation XAP_CocoaToolbarButton
+
+- (id)initWithFrame:(NSRect)frameRect
+{
+	if (self = [super initWithFrame:frameRect])
+		{
+			m_menu = 0;
+			m_controller = 0;
+		}
+	return self;
+}
+
+- (void)setMenu:(NSMenu *)menu withController:(id <XAP_CocoaButtonController>)controller
+{
+	m_menu = menu;
+	m_controller = controller;
+}
+
+- (void)mouseDown:(NSEvent *)theEvent
+{
+	if (m_menu && [self isEnabled])
+		{
+			if (m_controller)
+				{
+					[m_controller menuWillActivate:m_menu forButton:self];
+				}
+			[NSMenu popUpContextMenu:m_menu withEvent:theEvent forView:self];
+		}
+	else
+		{
+			[super mouseDown:theEvent];
+		}
+}
 
 - (void)drawRect:(NSRect)aRect
 {
@@ -67,6 +105,19 @@ static NSPoint s_ButtonOnPoint[12] = {
 			[path fill];
 		}
 	[super drawRect:aRect];
+
+	if (m_menu)
+		{
+			[[NSColor blackColor] set];
+
+			NSBezierPath * path = [NSBezierPath bezierPath];
+
+			[path moveToPoint:s_ButtonMenuPoint[0]];
+			[path lineToPoint:s_ButtonMenuPoint[1]];
+			[path lineToPoint:s_ButtonMenuPoint[2]];
+			[path closePath];
+			[path fill];
+		}
 }
 
 @end

@@ -72,7 +72,7 @@ class FV_View;
 - (void)drawRect:(NSRect)aRect;
 - (BOOL)isFlipped;
 - (BOOL)isOpaque;
-
+- (void)hasBeenResized:(NSNotification*)notif;
 - (void)setCursor:(NSCursor*)cursor;
 @end
 

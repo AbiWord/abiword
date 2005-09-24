@@ -41,8 +41,9 @@ static UT_LangRecord s_Table[] =
 	//language code, localised language name, numerical id, text
 	//direction
 	{"-none-",		NULL, XAP_STRING_ID_LANG_0,     UTLANG_LTR},
-	{"am-ET",		NULL, XAP_STRING_ID_LANG_AM_ET, UTLANG_LTR},
 	{"af-ZA",		NULL, XAP_STRING_ID_LANG_AF_ZA, UTLANG_LTR},
+	{"ak-GH",		NULL, XAP_STRING_ID_LANG_AK_GH, UTLANG_LTR},
+	{"am-ET",		NULL, XAP_STRING_ID_LANG_AM_ET, UTLANG_LTR},
 	{"ar-EG",		NULL, XAP_STRING_ID_LANG_AR_EG, UTLANG_RTL},
 	{"ar-SA",		NULL, XAP_STRING_ID_LANG_AR_SA, UTLANG_RTL},
 	{"as-IN",		NULL, XAP_STRING_ID_LANG_AS_IN, UTLANG_LTR},
@@ -98,6 +99,7 @@ static UT_LangRecord s_Table[] =
 	{"ka-GE",		NULL, XAP_STRING_ID_LANG_KA_GE, UTLANG_LTR},
 	{"kn-IN",       NULL, XAP_STRING_ID_LANG_KN_IN, UTLANG_LTR},     // is Kannada LTR?
 	{"ko-KR",		NULL, XAP_STRING_ID_LANG_KO_KR, UTLANG_VERTICAL},	// TODO also UTLANG_LTR, Hipi: What about ko-KP?
+	{"ku",			NULL, XAP_STRING_ID_LANG_KU, UTLANG_LTR},	
 	{"kw-GB",		NULL, XAP_STRING_ID_LANG_KW_GB, UTLANG_LTR},	
 	{"la-IT",		NULL, XAP_STRING_ID_LANG_LA_IT, UTLANG_LTR},	// Hipi: Should be just "la"
 	{"lo-LA",       NULL, XAP_STRING_ID_LANG_LO_LA, UTLANG_LTR},
@@ -109,6 +111,7 @@ static UT_LangRecord s_Table[] =
 	{"mk",			NULL, XAP_STRING_ID_LANG_MK,    UTLANG_LTR},		// Hipi: Why not mk-MK?
     {"mn-MN",       NULL, XAP_STRING_ID_LANG_MN_MN, UTLANG_LTR},
     {"mr-IN",       NULL, XAP_STRING_ID_LANG_MR_IN, UTLANG_LTR},
+    {"ms-MY",       NULL, XAP_STRING_ID_LANG_MS_MY, UTLANG_LTR},
 	{"nb-NO",		NULL, XAP_STRING_ID_LANG_NB_NO, UTLANG_LTR},
 	{"nl-BE",		NULL, XAP_STRING_ID_LANG_NL_BE, UTLANG_LTR},
 	{"nl-NL",		NULL, XAP_STRING_ID_LANG_NL_NL, UTLANG_LTR},
@@ -137,6 +140,7 @@ static UT_LangRecord s_Table[] =
 	{"tr-TR",		NULL, XAP_STRING_ID_LANG_TR_TR, UTLANG_LTR},		// UTLANG_RTL for Ottoman Turkish
 	{"uk-UA",		NULL, XAP_STRING_ID_LANG_UK_UA, UTLANG_LTR},
 	{"ur-PK",		NULL, XAP_STRING_ID_LANG_UR_PK, UTLANG_RTL},
+	{"uz-UZ",		NULL, XAP_STRING_ID_LANG_UZ_UZ, UTLANG_RTL},
 	{"vi-VN",		NULL, XAP_STRING_ID_LANG_VI_VN, UTLANG_LTR},
 	{"yi",			NULL, XAP_STRING_ID_LANG_YI,    UTLANG_RTL},
 	{"zh-CN",		NULL, XAP_STRING_ID_LANG_ZH_CN, UTLANG_VERTICAL},	// TODO also UTLANG_LTR
@@ -201,9 +205,26 @@ static int s_compareB(const void * l, const void *e)
 #endif
 }
 
+/*!
+ Set the language name attribut in the language table. It takes the localized
+ names from the available stringset. This function is supplied to set the names
+ after the stringset is known to the application.
+*/
+void UT_Language_updateLanguageNames() 
+{
+    const XAP_StringSet * pSS = XAP_App::getApp()->getStringSet();
+    UT_return_if_fail(pSS);
+    
+    for(UT_uint32 i = 0; i < NrElements(s_Table); i++)
+    {
+        s_Table[i].m_szLangName = const_cast<XML_Char *>(pSS->getValue(s_Table[i].m_nID));
+    }
+
+    qsort(&s_Table[0], NrElements(s_Table), sizeof(UT_LangRecord), s_compareQ);
+}
+
 
 bool UT_Language::s_Init = true;
-
 
 /*!
  The constructor looks up the translations for the language code and sorts the table
@@ -211,20 +232,11 @@ bool UT_Language::s_Init = true;
  */
 UT_Language::UT_Language()
 {
-	if(s_Init) //only do this once
-	{
-		const XAP_StringSet * pSS = XAP_App::getApp()->getStringSet();
-
-		UT_return_if_fail(pSS);
-		
-		for(UT_uint32 i = 0; i < NrElements(s_Table); i++)
-		{
-			s_Table[i].m_szLangName = const_cast<XML_Char *>(pSS->getValue(s_Table[i].m_nID));
-		}
-
-		qsort(&s_Table[0], NrElements(s_Table), sizeof(UT_LangRecord), s_compareQ);
-		s_Init = false;
-	}
+	if(s_Init) // do this once here
+    {
+        UT_Language_updateLanguageNames();
+        s_Init = false;
+    }
 }
 
 UT_uint32 UT_Language::getCount()

@@ -220,6 +220,7 @@ void AP_Preview_Paragraph_Block::setFormat(const XML_Char * pageLeftMargin,
 		m_spacing = spacing;
 		switch (m_spacing)
 		{
+		case AP_Dialog_Paragraph::spacing_UNDEF:
 		case AP_Dialog_Paragraph::spacing_SINGLE:
 			m_lineSpacing = 0;
 			break;
@@ -740,29 +741,31 @@ UT_uint32 AP_Preview_Paragraph::_appendLine(UT_Vector * words,
 
 	UT_uint32 k;
 
-	UT_UCS4Char fb1[100];
-	UT_UCS4Char fb2[100];
-	UT_uint32 j, iLen;
-
 	GR_Painter painter(m_gc);
 
+	UT_UCS4String s;
+	UT_UCS4Char *pBuf = NULL;
+	UT_uint32 size = 0;
 	for (k = startWithWord; k < i; k++)
 	{
 		// this will not produce correct results in true bidi text, since the words that are inconsistend
 		// with the overall pargraph direction will be in wrong order, but that is not a big deal
-  	    iLen = UT_UCS4_strlen((UT_UCSChar *) words->getNthItem(k));
-	    for(j = 0; j < iLen; j++)
-		    fb1[j] = ((UT_UCS4Char *)words->getNthItem(k))[j];
+		s = (UT_UCS4Char *)words->getNthItem(k);
+		size = s.size() + 1;
+		pBuf = (UT_UCS4Char *)UT_calloc(size, sizeof(UT_UCS4Char));
+		memset(pBuf, 0, size * sizeof(UT_UCS4Char));
 
-		UT_bidiReorderString(&fb1[0], iLen, m_dir, &fb2[0]);
+		UT_bidiReorderString(s.ucs4_str(), s.size(), m_dir, pBuf);
 
 		if(m_dir == UT_BIDI_RTL)
 		    willDrawAt -= ((widths->getNthItem(k)) << 8) + spaceCharWidth;
 
-		painter.drawChars(fb2, 0,	iLen, willDrawAt >> 8, y);
+		painter.drawChars(pBuf, 0, s.size(), willDrawAt >> 8, y);
 
 		if(m_dir == UT_BIDI_LTR)
 		    willDrawAt += ((widths->getNthItem(k)) << 8) + spaceCharWidth;
+
+		FREEP(pBuf);
 	}
 
 	// return number of words drawn

@@ -63,7 +63,8 @@ OBJS=	$(PLATFORM_OBJS)	\
         $(OBJDIR)/ie_impGraphic_SVG.$(OBJ_SUFFIX)                   \
         $(OBJDIR)/ie_FileInfo.$(OBJ_SUFFIX)                         \
 	$(OBJDIR)/ie_Table.$(OBJ_SUFFIX) 			    \
-	$(OBJDIR)/ie_mailmerge.$(OBJ_SUFFIX)
+	$(OBJDIR)/ie_mailmerge.$(OBJ_SUFFIX)			    \
+	$(OBJDIR)/ie_TOC.$(OBJ_SUFFIX)
 
 include $(ABI_ROOT)/src/config/abi_rules.mk
 
