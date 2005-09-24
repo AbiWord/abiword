@@ -4206,19 +4206,20 @@ void fp_FieldRun::_defaultDraw(dg_DrawArgs* pDA)
 			&& (iSel2 > iRunBase)))
 			)
 		{
-			UT_RGBColor color(_getView()->getColorSelBackground());
-			color -= _getView()->getColorFieldOffset();
+			UT_RGBColor color(_getView()->getColorSelBackground());			
+			pG->setColor(_getView()->getColorSelForeground());
 			painter.fillRect(color, pDA->xoff, iFillTop, getWidth(), iFillHeight);
 
 		}
 		else
 		{
 			Fill(getGraphics(),pDA->xoff, iFillTop, getWidth(), iFillHeight);
+			pG->setColor(_getColorFG());
 		}
 	}
 
 	pG->setFont(_getFont());
-	pG->setColor(_getColorFG());
+	
 
 	UT_GrowBufElement aCharWidths[FPFIELD_MAX_LENGTH];
 	UT_uint32 len = UT_UCS4_strlen(m_sFieldValue);
