@@ -42,7 +42,7 @@ static void s_addToolToProvider (XAP_CocoaToolProvider * provider, EV_Toolbar_La
 	AP_CocoaTool * tool = [[AP_CocoaTool alloc] initWithIdentifier:identifier description:description iconName:icon_name toolbarID:tlbrid];
 
 	[provider addTool:tool];
-[tool tool]; // TODO: remove
+// [tool tool]; // TODO: remove
 	[tool release];
 }
 
@@ -80,6 +80,27 @@ static void s_addToolsToProvider (XAP_CocoaToolProvider * provider)
 	DELETEP(toolbarLabelSet);
 
 	// TODO: this isn't all available tools, though; just the buttons...
+}
+
+static NSImage * s_findImage (NSString * filename)
+{
+	NSImage * image = nil;
+
+	XAP_App * pApp = XAP_App::getApp();
+
+	NSString * path = AP_CocoaToolbar_Icons::getFilenameForIcon(filename);
+
+	image = [[NSImage alloc] initWithContentsOfFile:path];
+	if (image)
+	{
+		[image autorelease];
+	}
+	else
+	{
+		UT_ASSERT(image);
+		image = [NSImage imageNamed:@"NSApplicationIcon"];
+	}
+	return image;
 }
 
 @implementation AP_CocoaTool
@@ -175,52 +196,64 @@ static void s_addToolsToProvider (XAP_CocoaToolProvider * provider)
 - (id)initWithTool:(AP_CocoaTool *)tool toolbarID:(unsigned)tlbrid
 {
 	if (self = [super init])
+	{
+		m_tool = tool;
+
+		[m_tool retain];
+
+		m_toolbarID = tlbrid;
+
+		m_defaultImage = AP_CocoaToolbar_Icons::getPNGNameForIcon([[m_tool iconName] UTF8String]);
+		m_defaultAltImage = m_defaultImage;
+
+		[m_defaultImage    retain];
+		[m_defaultAltImage retain];
+
+		m_configImage    = m_defaultImage;
+		m_configAltImage = m_defaultAltImage;
+
+		[m_configImage    retain];
+		[m_configAltImage retain];
+
+		NSRect frame;
+		frame.origin.x = 0.0f;
+		frame.origin.y = 0.0f;
+		frame.size.width  = 28.0f;
+		frame.size.height = 28.0f;
+
+		m_button = [[NSButton alloc] initWithFrame:frame];
+
+		[m_button setTarget:self];
+		[m_button setAction:@selector(click:)];
+
+		[m_button setToolTip:[m_tool description]];
+		[m_button setBezelStyle:NSRegularSquareBezelStyle];
+		[m_button setBordered:NO];
+
+		NSImage * image = nil;
+
+		if (image = s_findImage(m_configImage))
 		{
-			m_tool = tool;
-
-			m_toolbarID = tlbrid;
-
-			m_defaultImage = AP_CocoaToolbar_Icons::getPNGNameForIcon([[m_tool iconName] UTF8String]);
-			m_defaultAltImage = m_defaultImage;
-
-			[m_defaultImage    retain];
-			[m_defaultAltImage retain];
-
-			m_configImage    = m_defaultImage;
-			m_configAltImage = m_defaultAltImage;
-
-			[m_configImage    retain];
-			[m_configAltImage retain];
-
-			NSRect frame;
-			frame.origin.x = 0.0f;
-			frame.origin.y = 0.0f;
-			frame.size.width  = 28.0f;
-			frame.size.height = 28.0f;
-
-			m_button = [[NSButton alloc] initWithFrame:frame];
-
-			[m_button setTarget:self];
-			[m_button setAction:@selector(click:)];
-
-			[m_button setToolTip:[m_tool description]];
-			[m_button setBezelStyle:NSRegularSquareBezelStyle];
-			[m_button setBordered:NO];
-
-			// TODO [m_button setImage:s_findImage(m_configImage)];
-			// TODO [m_button setAlternateImage:s_findImage(m_configAltImage)];
-
-			// TODO ??
-
-			m_item = [[NSMenuItem alloc] initWithTitle:[m_tool description] action:@selector(click:) keyEquivalent:@""];
-
-			[m_item setTarget:self];
+			[m_button setImage:image];
 		}
+		if (image = s_findImage(m_configAltImage))
+		{
+			[m_button setAlternateImage:image];
+		}
+
+		// TODO ??
+
+		m_item = [[NSMenuItem alloc] initWithTitle:[m_tool description] action:@selector(click:) keyEquivalent:@""];
+
+		[m_item setTarget:self];
+	}
 	return self;
 }
 
 - (void)dealloc
 {
+	[m_tool release];
+
 	[m_button release];
 	[m_item   release];
 
@@ -293,19 +326,69 @@ static void s_addToolsToProvider (XAP_CocoaToolProvider * provider)
 	// ...
 }
 
-- (void)setConfigHeight:(NSString *)height;
+- (void)setConfigHeight:(NSString *)height
 {
 	// ...
 }
 
-- (void)setConfigImage:(NSString *)image;
+- (void)setConfigImage:(NSString *)imageFilename
 {
-	// TODO
+	if ([imageFilename isEqualToString:@"auto"])
+	{
+		[m_configImage release];
+		m_configImage = m_defaultImage;
+		[m_configImage retain];
+
+		NSImage * image = nil;
+
+		if (image = s_findImage(m_configImage))
+		{
+			[m_button setImage:image];
+		}
+	}
+	else if (imageFilename)
+	{
+		[m_configImage release];
+		m_configImage = imageFilename;
+		[m_configImage retain];
+
+		NSImage * image = nil;
+
+		if (image = s_findImage(m_configImage))
+		{
+			[m_button setImage:image];
+		}
+	}
 }
 
-- (void)setConfigAltImage:(NSString *)altImage;
+- (void)setConfigAltImage:(NSString *)imageFilename
 {
-	// TODO
+	if ([imageFilename isEqualToString:@"auto"])
+	{
+		[m_configAltImage release];
+		m_configAltImage = m_defaultAltImage;
+		[m_configAltImage retain];
+
+		NSImage * image = nil;
+
+		if (image = s_findImage(m_configAltImage))
+		{
+			[m_button setImage:image];
+		}
+	}
+	else if (imageFilename)
+	{
+		[m_configAltImage release];
+		m_configAltImage = imageFilename;
+		[m_configAltImage retain];
+
+		NSImage * image = nil;
+
+		if (image = s_findImage(m_configAltImage))
+		{
+			[m_button setImage:image];
+		}
+	}
 }
 
 @end

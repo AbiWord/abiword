@@ -22,7 +22,7 @@
 #ifndef XAP_COCOAPLUGIN_H
 #define XAP_COCOAPLUGIN_H
 
-#define XAP_COCOAPLUGIN_INTERFACE 20050920 /** The current version of the CocoaPlugin API. */
+#define XAP_COCOAPLUGIN_INTERFACE 20050924 /** The current version of the CocoaPlugin API. */
 
 #import <Cocoa/Cocoa.h>
 

@@ -54,9 +54,10 @@ public:
 	AP_CocoaToolbar_Icons(void);
 	~AP_CocoaToolbar_Icons(void);
 
-	NSImage*			getPixmapForIcon(const char * szIconName);
+	NSImage *			getPixmapForIcon(const char * szIconID);  // the ID is an internal AbiWord identifier
 
-	static NSString *	getPNGNameForIcon(const char * szIconName);
+	static NSString *	getPNGNameForIcon(const char * szIconID);
+	static NSString *	getFilenameForIcon(NSString * szIconName); // e.g., the PNGName from the above method
 	
 protected:
 };
