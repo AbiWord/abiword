@@ -129,6 +129,7 @@ void AP_Win32Dialog_Field::SetFieldsList(void)
 		}
 	}
 	SendMessage(m_hwndFormats, LB_SETCURSEL, 0, 0);
+	_FormatListBoxChange();
 }
 
 #define _DS(c,s)	SetDlgItemText(hWnd,AP_RID_DIALOG_##c,pSS->getValue(AP_STRING_ID_##s))
@@ -154,7 +155,6 @@ BOOL AP_Win32Dialog_Field::_onInitDialog(HWND hWnd, WPARAM wParam, LPARAM lParam
 	m_hwndParam = GetDlgItem(hWnd, AP_RID_DIALOG_FIELD_EDIT_PARAM);
 	SetTypesList();
 	SetFieldsList();
-	SendMessage(m_hwndFormats,LB_SETCURSEL,(WPARAM)0,(LPARAM)0);
 	XAP_Win32DialogHelper::s_centerDialog(hWnd);		
 	return 1;				// 1 == we did not call SetFocus()
 }
