@@ -283,7 +283,7 @@ static NSImage * s_findImage (NSString * filename)
 	return m_tool;
 }
 
-- (NSButton *)toolbarButton
+- (NSView *)toolbarButton
 {
 	return m_button;
 }

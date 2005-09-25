@@ -75,7 +75,7 @@
  */
 - (id <NSObject, XAP_CocoaPlugin_Tool>)tool;
 
-- (NSButton *)toolbarButton;
+- (NSView *)toolbarButton;
 
 - (NSMenuItem *)toolbarMenuItem;
 

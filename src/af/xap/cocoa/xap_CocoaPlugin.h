@@ -22,7 +22,7 @@
 #ifndef XAP_COCOAPLUGIN_H
 #define XAP_COCOAPLUGIN_H
 
-#define XAP_COCOAPLUGIN_INTERFACE 20050924 /** The current version of the CocoaPlugin API. */
+#define XAP_COCOAPLUGIN_INTERFACE 20050925 /** The current version of the CocoaPlugin API. */
 
 #import <Cocoa/Cocoa.h>
 
@@ -54,7 +54,7 @@
  * 
  * \return The button managed by this object.
  */
-- (NSButton *)toolbarButton;
+- (NSView *)toolbarButton;
 
 /**
  * The XAP_CocoaPlugin_ToolInstance object may manage a menu item for use in case the
