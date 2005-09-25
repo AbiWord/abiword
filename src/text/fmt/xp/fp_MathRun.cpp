@@ -67,7 +67,7 @@ void fp_MathRun::_lookupProperties(const PP_AttrProp * pSpanAP,
 									const PP_AttrProp * /*pSectionAP*/,
 									GR_Graphics * pG)
 {
-	UT_DEBUGMSG(("fp_MathRun _lookupProperties span %x \n",pSpanAP));
+  UT_DEBUGMSG(("fp_MathRun _lookupProperties span %x run is % uid is %d \n",pSpanAP,this,m_iMathUID));
 	m_pSpanAP = pSpanAP;
 	m_bNeedsSnapshot = true;
 	pSpanAP->getAttribute("dataid", m_pszDataID);
@@ -90,6 +90,7 @@ void fp_MathRun::_lookupProperties(const PP_AttrProp * pSpanAP,
 
 	if (pFont != _getFont())
 	{
+	  UT_DEBUGMSG(("Font is set here... %x \n",pFont));
 		_setFont(pFont);
 	}
 	m_iPointHeight = pG->getFontAscent(pFont) + getGraphics()->getFontDescent(pFont);
@@ -108,7 +109,8 @@ void fp_MathRun::_lookupProperties(const PP_AttrProp * pSpanAP,
 	  getMathManager()->initializeEmbedView(m_iMathUID);
 	  getMathManager()->loadEmbedData(m_iMathUID);
 	}
-	getMathManager()->setDefaultFontSize(m_iMathUID,atoi(pszSize));
+	UT_sint32 iFSize = atoi(pszSize);
+	getMathManager()->setDefaultFontSize(m_iMathUID,iFSize);
 	if(getMathManager()->isDefault())
 	{
 	  iWidth = _getLayoutPropFromObject("width");
