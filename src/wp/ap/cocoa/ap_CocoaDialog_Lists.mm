@@ -192,13 +192,17 @@ void AP_CocoaDialog_Lists::autoupdateLists(UT_Worker * pWorker)
 
 void AP_CocoaDialog_Lists::setFoldLevelInGUI(void)
 {
-	UT_ASSERT(0);
+	[m_dlg selectFolding:getCurrentFold()];
 }
 
 bool AP_CocoaDialog_Lists::isPageLists(void)
 {
-	UT_ASSERT(0);
-	return true;
+	if(isModal())
+	{
+		return true;
+	}
+
+	return [m_dlg selectedTab] == 0;
 }
 
 void AP_CocoaDialog_Lists::previewExposed(void)
@@ -727,6 +731,15 @@ void AP_CocoaDialog_Lists::_gatherData(void)
 	LocalizeControl(_applyToCurrentBtn, pSS, AP_STRING_ID_DLG_Lists_Apply_Current);
 	LocalizeControl(_attachToPreviousBtn, pSS, AP_STRING_ID_DLG_Lists_Resume);
 
+	LocalizeControl([_mainTab tabViewItemAtIndex:0], pSS, AP_STRING_ID_DLG_Lists_PageProperties);
+	LocalizeControl([_mainTab tabViewItemAtIndex:1], pSS, AP_STRING_ID_DLG_Lists_PageFolding);
+	
+	LocalizeControl(_noFoldingBtn, pSS, AP_STRING_ID_DLG_Lists_FoldingLevelexp);
+	LocalizeControl(_noFoldingBtn, pSS, AP_STRING_ID_DLG_Lists_FoldingLevel0);
+	LocalizeControl(_foldLevel1Btn, pSS, AP_STRING_ID_DLG_Lists_FoldingLevel1);
+	LocalizeControl(_foldLevel2Btn, pSS, AP_STRING_ID_DLG_Lists_FoldingLevel2);
+	LocalizeControl(_foldLevel3Btn, pSS, AP_STRING_ID_DLG_Lists_FoldingLevel3);
+	LocalizeControl(_foldLevel4Btn, pSS, AP_STRING_ID_DLG_Lists_FoldingLevel4);
 }
 
 - (XAP_CocoaNSView*)preview
@@ -787,6 +800,17 @@ void AP_CocoaDialog_Lists::_gatherData(void)
 	}
 }
 
+- (void)selectFolding:(int)folding
+{
+	[_foldingMatrix selectCellWithTag:folding];
+}
+
+
+// return the tab that is selected.
+- (int)selectedTab
+{
+	return [_mainTab indexOfTabViewItem: [_mainTab selectedTabViewItem]];
+}
 
 - (IBAction)applyAction:(id)sender
 {
@@ -870,6 +894,15 @@ void AP_CocoaDialog_Lists::_gatherData(void)
 	_xap->setXPFromLocal(); // Update member Variables
 	_xap->previewExposed();
 }
+
+
+- (IBAction)foldingChanged:(id)sender
+{
+	NSMatrix *m = sender;
+	
+	_xap->_foldingChanged([m selectedRow]);
+}
+
 
 @end
 

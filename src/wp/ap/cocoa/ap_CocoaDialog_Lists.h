@@ -63,6 +63,16 @@ class AP_CocoaDialog_Lists;
     IBOutlet NSTextField *_typeLabel;
     IBOutlet NSPopUpButton *_typePopup;
 	
+	IBOutlet NSTabView	*_mainTab;
+	
+	IBOutlet NSTextField *_hideTextLabel;
+	IBOutlet NSMatrix *_foldingMatrix;
+	IBOutlet NSCell	*_noFoldingBtn;
+	IBOutlet NSCell	*_foldLevel1Btn;
+	IBOutlet NSCell	*_foldLevel2Btn;
+	IBOutlet NSCell	*_foldLevel3Btn;
+	IBOutlet NSCell	*_foldLevel4Btn;
+	
 	IBOutlet NSMenu*	m_listStyleNone_menu;
 	IBOutlet NSMenu*	m_listStyleNumbered_menu;
 	IBOutlet NSMenu*	m_listStyleBulleted_menu;	
@@ -79,6 +89,8 @@ class AP_CocoaDialog_Lists;
 - (NSMenuItem*)selectedListStyle;
 - (NSMenuItem*)selectedListType;
 - (void)setStyleMenu:(int)type;
+- (void)selectFolding:(int)folding;
+- (int)selectedTab;
 
 - (int)listAction;
 
@@ -94,6 +106,8 @@ class AP_CocoaDialog_Lists;
 - (IBAction)textAlignActionStepper:(id)sender;
 - (IBAction)typeChangedAction:(id)sender;
 - (IBAction)valueChangedAction:(id)sender;
+
+- (IBAction)foldingChanged:(id)sender;
 @end
 
 /*****************************************************************/
@@ -136,10 +150,11 @@ class AP_CocoaDialog_Lists: public AP_Dialog_Lists
 	void					_fillFontMenu(NSPopUpButton* menu);
 
 	virtual const XML_Char*	_getDingbatsFontName() const;
+	void					_foldingChanged(int i)
+		{
+			setCurrentFold(i);
+		}
  protected:
-#if 0
-	void					_connectSignals(void);
-#endif
 	void					_setRadioButtonLabels(void);
 	void					_gatherData(void);
  private:
@@ -149,53 +164,6 @@ class AP_CocoaDialog_Lists: public AP_Dialog_Lists
 	bool					m_bDontUpdate;
 	bool					m_bDestroy_says_stopupdating;
 	bool					m_bAutoUpdate_happening_now;
-#if 0
-	bool					m_bManualListStyle;
-	bool					m_bisCustomFrameHidden;
-
-	GtkWidget *				m_wMainWindow;
-
-	GtkWidget * m_wApply;
-	GtkWidget * m_wClose;
-	GtkWidget * m_wContents;
-	GtkWidget * m_wStartNewList;
-	GtkWidget * m_wApplyCurrent;
-	GtkWidget * m_wStartSubList;
-	GSList    * m_wRadioGroup;
-	GtkWidget * m_wPreviewArea;
-	GtkWidget * m_wDelimEntry;
-	GtkWidget * m_wDecimalEntry;
-	GtkObject * m_oAlignList_adj;
-	GtkWidget * m_wAlignListSpin;
-	GtkObject * m_oIndentAlign_adj;
-	GtkWidget * m_wIndentAlignSpin;
-	GtkObject * m_oLevelSpin_adj;
-	GtkWidget * m_wFontOptions;
-	GtkWidget * m_wFontOptions_menu;
-	GtkWidget * m_wCustomFrame;
-	GtkWidget * m_wCustomTable;
-	GtkWidget * m_wCustomLabel;
-	GtkWidget * m_wListStyleBox;
-	GtkWidget * m_wListStyleNumbered_menu;
-	GtkWidget * m_wListStyleBulleted_menu;
-	GtkWidget * m_wListStyleNone_menu;
-	GtkWidget * m_wListStyle_menu;
-	GtkWidget * m_wListTypeBox;
-	GtkWidget * m_wListType_menu;
-	GtkObject * m_oStartSpin_adj;
-	GtkWidget * m_wStartSpin;
-	GtkWidget * m_wMenu_None;
-	GtkWidget * m_wMenu_Bull;
-	GtkWidget * m_wMenu_Num;
-	GtkWidget * m_wStartSub_label;
-	GtkWidget * m_wStartNew_label;
-	gint m_iDelimEntryID;
-	gint m_iDecimalEntryID;
-	gint m_iStyleBoxID;
-	gint m_iAlignListSpinID;
-	gint m_iIndentAlignSpinID;
-	gint m_iFontOptionsID;
-#endif
 	AP_CocoaDialog_ListsController* m_dlg;
 };
 
