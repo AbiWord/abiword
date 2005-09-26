@@ -3844,7 +3844,7 @@ bool PD_Document::_syncFileTypes(bool bReadSaveWriteOpen)
 
 	if (ieft == IEFT_Unknown || ieft == IEFT_Bogus)
 	{
-		UT_ASSERT_HARMLESS(UT_SHOULD_NOT_HAPPEN);
+		//UT_ASSERT_HARMLESS(UT_SHOULD_NOT_HAPPEN);
 		return false;
 	}
 

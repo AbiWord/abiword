@@ -472,10 +472,7 @@ void XAP_UnixDialog_FileOpenSaveAs::fileTypeChanged(GtkWidget * w)
 	sFileName = sFileName.substr(0,i);
 	sFileName += sSuffix;
 	
-	if (!gtk_file_chooser_select_filename(m_FC,sFileName.c_str()))
-	{
-		gtk_file_chooser_set_current_name(m_FC, UT_basename(sFileName.c_str()));
-	}
+	gtk_file_chooser_set_current_name(m_FC, UT_basename(sFileName.c_str()));
 }
 
 void XAP_UnixDialog_FileOpenSaveAs::onDeleteCancel() 
@@ -786,6 +783,33 @@ void XAP_UnixDialog_FileOpenSaveAs::runModal(XAP_Frame * pFrame)
 				m_szInitialPathname = g_build_filename (dir, file, NULL);
 				g_free (dir);
 				g_free (file);
+			}
+			if(m_id == XAP_DIALOG_ID_FILE_SAVEAS)
+			{
+				const char * szInitialSuffix = UT_pathSuffix(m_szInitialPathname);
+				const char * szSaveTypeSuffix = UT_pathSuffix(m_szSuffixes[m_nDefaultFileType]);
+				if(szInitialSuffix && szSaveTypeSuffix && (UT_strcmp(szInitialSuffix,szSaveTypeSuffix) != 0))
+				{
+					UT_String sFileName = m_szInitialPathname;
+					bool bFoundSuffix = false;
+					UT_sint32 i = 0;
+					for(i= sFileName.length()-1; i> 0; i--)
+					{
+						if(sFileName[i] == '.')
+						{
+							bFoundSuffix = true;
+							break;
+						}
+					}
+					if( bFoundSuffix)
+					{
+						sFileName = sFileName.substr(0,i);
+						UT_String sSuffix = szSaveTypeSuffix;
+						sFileName += sSuffix;
+						FREEP(m_szInitialPathname);
+						UT_cloneString(m_szInitialPathname,sFileName.c_str());
+					}
+				}
 			}
 			gtk_file_chooser_set_filename(m_FC, m_szInitialPathname);
 		}

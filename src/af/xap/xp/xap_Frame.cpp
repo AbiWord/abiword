@@ -864,10 +864,11 @@ UT_Error XAP_Frame::backup(const char* szExt, UT_sint32 iEFT)
 // Don't put this auto-save in the most recent list.
 //
 	getApp()->getPrefs()->setIgnoreNextRecent();
-
+	
 	if(iEFT < 0)
 	{
-		error = m_pDoc->saveAs(backupName.c_str(), m_pDoc->getLastSavedAsType(), false);
+	        iEFT = 1; // *.abw format
+		error = m_pDoc->saveAs(backupName.c_str(), iEFT, false);
 	}
 	else
 	{

@@ -312,17 +312,17 @@ IEFileType IE_Exp::fileTypeForSuffix(const char * szSuffix)
 					return static_cast<IEFileType>(a+1);
 			}
 
-			UT_ASSERT_HARMLESS(UT_SHOULD_NOT_HAPPEN);
+			// UT_ASSERT_HARMLESS(UT_SHOULD_NOT_HAPPEN);
 			// Hm... an exporter has registered for the given suffix,
 			// but refuses to support any file type we request.
 			// Default to native format.
-			return IE_Exp::fileTypeForSuffix(".abw");
+			return IEFT_Unknown;
 		}
 	}
 
 	// No filter is registered for that extension, try native format
 	// for default export.
-	return IE_Exp::fileTypeForSuffix(".abw");
+	return IEFT_Unknown;
 	
 }
 
