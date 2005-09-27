@@ -5906,8 +5906,8 @@ bool IE_Imp_MsWord_97::_handleNotesText(UT_uint32 iDocPosition)
 
 		// the current footnote will end at pos
 		// f.txt_pos + f.txt_len, 
-		if(iDocPosition == m_pFootnotes[m_iNextFNote].txt_pos +
-		                   m_pFootnotes[m_iNextFNote].txt_len)
+		if( m_iNextFNote < m_iFootnotesCount && iDocPosition == m_pFootnotes[m_iNextFNote].txt_pos +
+		                                                        m_pFootnotes[m_iNextFNote].txt_len)
 		{
 			m_iNextFNote++;
 
