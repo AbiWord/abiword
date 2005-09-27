@@ -6093,7 +6093,7 @@ bool IE_Imp_MsWord_97::_handleTextboxesText(UT_uint32 iDocPosition)
 
 		// the current footnote will end at pos
 		// f.txt_pos + f.txt_len, 
-		if(iDocPosition == m_pTextboxes[m_iNextTextbox].txt_pos +
+		if( m_iNextTextbox < m_iTextboxCount && iDocPosition == m_pTextboxes[m_iNextTextbox].txt_pos +
 		                   m_pTextboxes[m_iNextTextbox].txt_len)
 		{
 			m_iNextTextbox++;
