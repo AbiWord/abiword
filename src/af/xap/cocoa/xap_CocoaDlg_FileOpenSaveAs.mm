@@ -469,7 +469,7 @@ void XAP_CocoaDialog_FileOpenSaveAs::runModal(XAP_Frame * pFrame)
 	
 	NSString * szPersistDirectory = nil;
 	NSString * szPersistFile = nil;
-	
+
 	if (!m_szInitialPathname || !*m_szInitialPathname)
 	{
 		// the caller did not supply initial pathname
@@ -502,14 +502,54 @@ void XAP_CocoaDialog_FileOpenSaveAs::runModal(XAP_Frame * pFrame)
 
 		if (m_bSuggestName)
 		{
-			// use m_szInitialPathname
-			szPersistDirectory = [NSString stringWithUTF8String:m_szInitialPathname];
-			szPersistFile = [NSString string];
+			/* use m_szInitialPathname
+			 */
+			NSString * path = [NSString stringWithUTF8String:m_szInitialPathname];
+
+			szPersistDirectory = [path stringByDeletingLastPathComponent];
+
+			if ([szPersistDirectory isEqualToString:path]) // shouldn't happen
+			{
+				szPersistFile = [NSString string];
+			}
+			else
+			{
+				szPersistFile = [path lastPathComponent];
+			}
+
+			/* Slightly odd case where we're saving a file whose original document type
+			 * (guessing by the suffix) is not supported for saving to.
+			 */
+			if ((m_id == XAP_DIALOG_ID_FILE_SAVEAS) && [szPersistFile length])
+			{
+				NSString * extension = [szPersistFile pathExtension];
+
+				const char * szSaveTypeSuffix = UT_pathSuffix(m_szSuffixes[m_nDefaultFileType]);
+
+				if ([extension length] && szSaveTypeSuffix)
+				{
+					if (*szSaveTypeSuffix == '.')
+					{
+						NSString * new_suffix = [NSString stringWithUTF8String:(szSaveTypeSuffix + 1)];
+
+						if (![new_suffix isEqualToString:extension])
+						{
+							/* okay, the suggested extension doesn't match the desired extension
+							 */
+							NSString * filename = [szPersistFile stringByDeletingPathExtension];
+							szPersistFile = [filename stringByAppendingPathExtension:new_suffix];
+						}
+					}
+				}
+			}
 		}
 		else
 		{
-			// use directory(m_szInitialPathname)
-			szPersistDirectory = [NSString stringWithUTF8String:m_szInitialPathname];
+			/* use directory(m_szInitialPathname)
+			 */
+			NSString * path = [NSString stringWithUTF8String:m_szInitialPathname];
+
+			szPersistDirectory = [path stringByDeletingLastPathComponent];
 			szPersistFile = [NSString string];
 		}
 	}
