@@ -251,10 +251,9 @@ void fp_TextRun::_lookupProperties(const PP_AttrProp * pSpanAP,
 	const XML_Char * pszLanguage = PP_evalProperty("lang",pSpanAP,pBlockAP,pSectionAP, pDoc, true);
 
 	const XML_Char * pszOldLanguage = m_pLanguage;
-	FREEP(m_pLanguage);
-	m_pLanguage = UT_strdup(lls.getCodeFromCode(pszLanguage));
-	xxx_UT_DEBUGMSG(("!!!!!!!! Language of run set to %s pointer %x run %x \n",getLanguage(),m_pLanguage,this));
-	if(pszOldLanguage && (UT_strcmp(m_pLanguage,pszOldLanguage) != 0))
+	const XML_Char * pszNewLanguage = UT_strdup(lls.getCodeFromCode(pszLanguage));
+	xxx_UT_DEBUGMSG(("!!!!!!!! Language of run set to %s pointer %x run %x \n",getLanguage(),pszNewLanguage,this));
+	if(pszOldLanguage && (UT_strcmp(pszNewLanguage,pszOldLanguage) != 0))
 	{
 	        UT_uint32 reason =  0;
 		if( getBlock()->getDocLayout()->getAutoSpellCheck())
@@ -268,6 +267,8 @@ void fp_TextRun::_lookupProperties(const PP_AttrProp * pSpanAP,
 		getBlock()->getDocLayout()->queueBlockForBackgroundCheck(reason, getBlock());
 		bChanged = true;
 	}
+	FREEP(m_pLanguage);
+	m_pLanguage = pszNewLanguage;
 
 
 	UT_BidiCharType iOldOverride = m_iDirOverride;
