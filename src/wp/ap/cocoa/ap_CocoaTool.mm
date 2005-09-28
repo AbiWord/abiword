@@ -86,8 +86,6 @@ static NSImage * s_findImage (NSString * filename)
 {
 	NSImage * image = nil;
 
-	XAP_App * pApp = XAP_App::getApp();
-
 	NSString * path = AP_CocoaToolbar_Icons::getFilenameForIcon(filename);
 
 	image = [[NSImage alloc] initWithContentsOfFile:path];
