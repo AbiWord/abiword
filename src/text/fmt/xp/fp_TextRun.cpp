@@ -101,8 +101,6 @@ fp_TextRun::~fp_TextRun()
         xxx_UT_DEBUGMSG(("!!!!!!!! Text run %x deleted \n",this));
 	DELETEP(m_pRenderInfo);
 	DELETEP(m_pItem);
-	FREEP(m_pLanguage);
-	m_pLanguage = NULL;
 }
 
 bool fp_TextRun::hasLayoutProperties(void) const
@@ -250,10 +248,13 @@ void fp_TextRun::_lookupProperties(const PP_AttrProp * pSpanAP,
 	UT_Language lls;
 	const XML_Char * pszLanguage = PP_evalProperty("lang",pSpanAP,pBlockAP,pSectionAP, pDoc, true);
 
+	// NB: m_pLanguage is a pointer into static tables inside UT_Language class and as
+	// such has a guaranteed life-span same as the application; hence no strdup here and
+	// no strcmp later
 	const XML_Char * pszOldLanguage = m_pLanguage;
-	const XML_Char * pszNewLanguage = UT_strdup(lls.getCodeFromCode(pszLanguage));
-	xxx_UT_DEBUGMSG(("!!!!!!!! Language of run set to %s pointer %x run %x \n",getLanguage(),pszNewLanguage,this));
-	if(pszOldLanguage && (UT_strcmp(pszNewLanguage,pszOldLanguage) != 0))
+	m_pLanguage = lls.getCodeFromCode(pszLanguage);
+	xxx_UT_DEBUGMSG(("!!!!!!!! Language of run set to %s pointer %x run %x \n",getLanguage(),m_pLanguage,this));
+	if(pszOldLanguage && (m_pLanguage != pszOldLanguage))
 	{
 	        UT_uint32 reason =  0;
 		if( getBlock()->getDocLayout()->getAutoSpellCheck())
@@ -267,8 +268,6 @@ void fp_TextRun::_lookupProperties(const PP_AttrProp * pSpanAP,
 		getBlock()->getDocLayout()->queueBlockForBackgroundCheck(reason, getBlock());
 		bChanged = true;
 	}
-	FREEP(m_pLanguage);
-	m_pLanguage = pszNewLanguage;
 
 
 	UT_BidiCharType iOldOverride = m_iDirOverride;
@@ -946,7 +945,8 @@ bool fp_TextRun::canMergeWithNext(void)
 		|| (pNext->_getFont() != _getFont())
 		|| (getHeight() != pNext->getHeight())
 		|| (pNext->getField() != getField())
-		|| (UT_strcmp(pNext->m_pLanguage,m_pLanguage) != 0)	//this is not a bug
+		|| (pNext->m_pLanguage != m_pLanguage)	//this is not a bug; see m_pLanguage in
+												//fp_TextRun.h before modifying this line
 		|| (pNext->_getColorFG() != _getColorFG())
 		|| (pNext->_getColorHL() != _getColorHL())
 		|| (pNext->_getColorHL().isTransparent() != _getColorHL().isTransparent())
@@ -1011,7 +1011,8 @@ void fp_TextRun::mergeWithNext(void)
 	UT_ASSERT(getDescent() == pNext->getDescent());
 	UT_ASSERT(getHeight() == pNext->getHeight());
 	UT_ASSERT(_getLineWidth() == pNext->_getLineWidth());
-	UT_ASSERT(UT_strcmp(m_pLanguage,pNext->m_pLanguage) == 0); //this is not a bug
+	UT_ASSERT(m_pLanguage == pNext->m_pLanguage); //this is not a bug; see m_pLanguage in
+	                                              //fp_TextRun.h before modifying this line
 	UT_ASSERT(m_fPosition == pNext->m_fPosition);
 	UT_ASSERT(m_iDirOverride == pNext->m_iDirOverride); //#TF
 	//UT_ASSERT(m_iSpaceWidthBeforeJustification == pNext->m_iSpaceWidthBeforeJustification);
@@ -1144,8 +1145,7 @@ bool fp_TextRun::split(UT_uint32 iSplitOffset)
 	pNew->_setHeight(this->getHeight());
 	pNew->_setLineWidth(this->_getLineWidth());
 	pNew->_setDirty(true);
-	FREEP(pNew->m_pLanguage);
-	pNew->m_pLanguage = UT_strdup(this->m_pLanguage);
+	pNew->m_pLanguage = this->m_pLanguage;
 	xxx_UT_DEBUGMSG(("!!!!--- Run %x gets Language pointer %x \n",pNew,pNew->m_pLanguage));
 	pNew->_setDirection(this->_getDirection()); //#TF
 	pNew->m_iDirOverride = this->m_iDirOverride;
