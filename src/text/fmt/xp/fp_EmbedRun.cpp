@@ -240,6 +240,7 @@ void fp_EmbedRun::_lookupLocalProperties()
 
 void fp_EmbedRun::updateVerticalMetric()
 {
+#if 0
 	// do something here to make the embedded view to redo its layout ...
 	// there might be a more efficient way, but this should work
 	if(m_iEmbedUID >= 0 )
@@ -254,10 +255,12 @@ void fp_EmbedRun::updateVerticalMetric()
 	// _lookupProperties() fixed also our width, so if width was marked as dirty, clear
 	// that flag
 	_setRecalcWidth(false);
+#endif
 }
 
 bool fp_EmbedRun::_recalcWidth(void)
 {
+#if 0
 	if(!_getRecalcWidth())
 		return false;
 	
@@ -275,6 +278,9 @@ bool fp_EmbedRun::_recalcWidth(void)
 	_lookupLocalProperties();
 	
 	return (iWidth != getWidth());
+#else
+	return false;
+#endif
 }
 
 void fp_EmbedRun::mapXYToPosition(UT_sint32 x, UT_sint32 /*y*/, PT_DocPosition& pos, bool& bBOL, bool& bEOL, bool &isTOC)
