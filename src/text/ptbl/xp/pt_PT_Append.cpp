@@ -85,7 +85,7 @@ pf_Frag * pt_PieceTable::_findLastStruxOfType(pf_Frag * pfStart, PTStruxType pst
 	UT_return_val_if_fail( pfStart, NULL );
 
 	pf_Frag * pf = pfStart;
-	
+	bool bFirst = true;
 	while(pf)
 	{
 		if(pf->getType() == pf_Frag::PFT_Strux)
@@ -173,7 +173,7 @@ pf_Frag * pt_PieceTable::_findLastStruxOfType(pf_Frag * pfStart, PTStruxType pst
 						pf = pf->getPrev();
 					}
 				}
-				if(pfs->getStruxType() == PTX_EndCell)
+				if(!bFirst && pfs->getStruxType() == PTX_EndCell)
 				{
 					while(pf)
 					{
@@ -203,7 +203,7 @@ pf_Frag * pt_PieceTable::_findLastStruxOfType(pf_Frag * pfStart, PTStruxType pst
 						pf = pf->getPrev();
 					}
 				}
-			
+				bFirst = false;
 			}
 		}
 		if(pf)
