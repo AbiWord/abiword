@@ -1894,7 +1894,7 @@ void AP_UnixApp::catchSignals(int sig_num)
 	}
 #endif
     UT_uint32 i = 0;
-	IEFileType abiType = IE_Imp::fileTypeForSuffix("abw");
+	IEFileType abiType = IE_Imp::fileTypeForSuffix(".abw");
     for(;i<m_vecFrames.getItemCount();i++)
     {
 		AP_UnixFrame * curFrame = const_cast<AP_UnixFrame*>(static_cast<const AP_UnixFrame*>(m_vecFrames[i]));

@@ -666,7 +666,7 @@ void AP_QNXApp::catchSignals(int sig_num)
 	UT_DEBUGMSG(("Oh no - we just segfaulted!\n"));
 
 	UT_uint32 i = 0;
-	IEFileType abiType = IE_Imp::fileTypeForSuffix("abw");
+	IEFileType abiType = IE_Imp::fileTypeForSuffix(".abw");
 	for(;i<m_vecFrames.getItemCount();i++)
 	{
 		AP_QNXFrame * curFrame = (AP_QNXFrame*) m_vecFrames[i];
