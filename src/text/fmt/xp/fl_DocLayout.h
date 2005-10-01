@@ -161,6 +161,7 @@ public:
 	void		setPendingWordForSpell(fl_BlockLayout *pBlock, fl_PartOfBlock* pWord);
 	bool		checkPendingWordForSpell(void);
 	void        dequeueAll(void);
+	void        queueAll(UT_uint32 iReason);
 	void 		queueBlockForBackgroundCheck(UT_uint32 reason, fl_BlockLayout *pBlock, bool bHead=false);
 	bool 		dequeueBlockForBackgroundCheck(fl_BlockLayout *pBlock);
 

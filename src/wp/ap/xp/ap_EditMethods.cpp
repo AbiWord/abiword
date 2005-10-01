@@ -6982,7 +6982,8 @@ static bool s_doLangDlg(FV_View * pView)
 
 	XAP_Dialog_Language * pDialog
 		= static_cast<XAP_Dialog_Language *>(pDialogFactory->requestDialog(id));
-UT_return_val_if_fail(pDialog, false);
+	UT_return_val_if_fail(pDialog, false);
+	
 	const XML_Char ** props_in = NULL;
 	if (pView->getCharFormat(&props_in))
 	{
@@ -7036,8 +7037,16 @@ UT_return_val_if_fail(pDialog, false);
 		if(k > 0 && bChange)								// if something changed
 			pView->setCharFormat(props_out);
 
-		if(k > 0 &&pDialog->isMakeDocumentDefault())
+		if(k > 0 && pDialog->isMakeDocumentDefault() && UT_strcmp(pLang, s))
+		{
+			FL_DocLayout* pLayout = pView->getLayout();
+			
+			if(pLayout)
+				pLayout->queueAll(FL_DocLayout::bgcrSpelling | FL_DocLayout::bgcrGrammar);
+			
 			pDoc->setProperties(props_out);
+		}
+		
 	}
 
 	pDialogFactory->releaseDialog(pDialog);

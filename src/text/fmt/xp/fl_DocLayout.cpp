@@ -2143,27 +2143,7 @@ FL_DocLayout::_toggleAutoSpell(bool bSpell)
 	if (bSpell)
 	{
 		UT_DEBUGMSG(("Rechecking spelling in blocks \n"));
-		// When enabling, recheck the whole document
-		fl_DocSectionLayout * pSL = getFirstSection();
-		if(pSL)
-		{
-			fl_ContainerLayout* b = pSL->getFirstLayout();
-			while (b)
-			{
-				// TODO: just check and remove matching squiggles
-				// for now, destructively recheck the whole thing
-				if(b->getContainerType() == FL_CONTAINER_BLOCK)
-				{
-					UT_DEBUGMSG(("Add block  %x for spellcheck \n",b));
-					queueBlockForBackgroundCheck(bgcrSpelling, static_cast<fl_BlockLayout *>(b));
-					b = static_cast<fl_BlockLayout *>(b)->getNextBlockInDocument();
-				}
-				else
-				{
-					b = b->getNext();
-				}
-			}
-		}
+		queueAll(bgcrSpelling);
 	}
 	else
 	{
@@ -2232,27 +2212,7 @@ FL_DocLayout::_toggleAutoGrammar(bool bGrammar)
 	if (bGrammar)
 	{
 		UT_DEBUGMSG(("Rechecking Grammar in blocks \n"));
-		// When enabling, recheck the whole document
-		fl_DocSectionLayout * pSL = getFirstSection();
-		if(pSL)
-		{
-			fl_ContainerLayout* b = pSL->getFirstLayout();
-			while (b)
-			{
-				// TODO: just check and remove matching squiggles
-				// for now, destructively recheck the whole thing
-				if(b->getContainerType() == FL_CONTAINER_BLOCK)
-				{
-					UT_DEBUGMSG(("Add block  %x for Grammar check \n",b));
-					queueBlockForBackgroundCheck(bgcrGrammar, static_cast<fl_BlockLayout *>(b));
-					b = static_cast<fl_BlockLayout *>(b)->getNextBlockInDocument();
-				}
-				else
-				{
-					b = b->getNext();
-				}
-			}
-		}
+		queueAll(bgcrGrammar);
 	}
 	else
 	{
@@ -2564,6 +2524,55 @@ void FL_DocLayout::dequeueAll(void)
 		while(m_bImSpellCheckingNow == true)
 		{
 			// TODO shouldn't we have a little sleep here?
+		}
+	}
+}
+
+void FL_DocLayout::queueAll(UT_uint32 iReason)
+{
+	fl_DocSectionLayout * pSL = getFirstSection();
+	if(pSL)
+	{
+		// We will place the block that contains the ins point and its immediate neigbours
+		// at the top of the queue, this will make the check look faster to the user
+		FV_View * pView = getView();
+		UT_GenericVector<fl_BlockLayout*> vBL;
+		const iLimit = 5;
+		
+		fl_BlockLayout * pCurBL = pView->getBlockAtPosition(pView->getPoint());
+
+		if(pCurBL)
+		{
+			fl_BlockLayout * pBL = pCurBL;
+
+			UT_sint32 i = 0;
+			for(i = 0; i < iLimit/2 + iLimit%2 && pBL; ++i, pBL = pBL->getPrevBlockInDocument())
+			{
+				vBL.addItem(pBL);
+			}
+
+			pBL = pCurBL->getNextBlockInDocument();
+			for(i = iLimit/2 + iLimit%2; i < iLimit && pBL; ++i, pBL = pBL->getNextBlockInDocument())
+			{
+				vBL.addItem(pBL);
+			}
+		}
+		
+		fl_ContainerLayout* b = pSL->getFirstLayout();
+		while (b)
+		{
+			// TODO: just check and remove matching squiggles
+			// for now, destructively recheck the whole thing
+			if(b->getContainerType() == FL_CONTAINER_BLOCK)
+			{
+				bool bHead = (vBL.findItem(static_cast<fl_BlockLayout *>(b)) >= 0);
+				queueBlockForBackgroundCheck(iReason, static_cast<fl_BlockLayout *>(b), bHead);
+				b = static_cast<fl_BlockLayout *>(b)->getNextBlockInDocument();
+			}
+			else
+			{
+				b = b->getNext();
+			}
 		}
 	}
 }

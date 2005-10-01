@@ -100,13 +100,15 @@ fl_BlockLayout::_getSpellChecker (UT_uint32 blockPos)
 	// it will create a new AP with the new attr/props, rather than
 	// add them to the existing AP for the section of the document, so
 	// that identical AP's always imply identical formatting, and thus
-	// language	
+	// language
+	// 
+	// Unfortunately, this does not work as intented because if the APs do not contain
+	// explicit lang property and the default language for document changes, we need to
+	// get a different checker. We therefore have to evaluate the property on all
+	// occasions and remember the language, not the APs (bug #9562)
 
 	static SpellChecker * checker = NULL;
-	
-	// initialize these to 1, so as to force initial lang evaluation
-	static const PP_AttrProp * pPrevSpanAP = reinterpret_cast<const PP_AttrProp *>(1);
-	static const PP_AttrProp * pPrevBlockAP = reinterpret_cast<const PP_AttrProp *>(1);
+	static char szPrevLang[8] = {0};
 
 	const PP_AttrProp * pSpanAP = NULL;
 	const PP_AttrProp * pBlockAP = NULL;
@@ -114,24 +116,21 @@ fl_BlockLayout::_getSpellChecker (UT_uint32 blockPos)
 	getSpanAP(blockPos, false, pSpanAP);
 	getAP(pBlockAP);
 
-	if(pSpanAP != pPrevSpanAP || pBlockAP != pPrevBlockAP)
+	const char * pszLang = static_cast<const char *>(PP_evalProperty("lang",pSpanAP,pBlockAP,NULL,m_pDoc,true));
+	if(!pszLang || !*pszLang)
 	{
-		const char * szLang = static_cast<const char *>(PP_evalProperty("lang",pSpanAP,pBlockAP,NULL,m_pDoc,true));
+		// we just (dumbly) default to the last dictionary
+		checker = SpellManager::instance().lastDictionary();
+		return checker;
+	}
+	
+	if(!szPrevLang[0] || UT_strcmp(pszLang,szPrevLang))
+	{
+		checker = SpellManager::instance().requestDictionary(pszLang);
 
-		if (szLang)
-		{
-			//UT_DEBUGMSG(("fl_BlockLaout::_spellCheckWord: lang = %s\n", szLang));
-			// we get smart and request the proper dictionary
-			checker = SpellManager::instance().requestDictionary(szLang);
-		}
-		else
-		{
-			// we just (dumbly) default to the last dictionary
-			checker = SpellManager::instance().lastDictionary();
-		}
-
-		pPrevSpanAP = pSpanAP;
-		pPrevBlockAP = pBlockAP;
+		strncpy(szPrevLang, pszLang, sizeof(szPrevLang));
+		UT_uint32 iEnd = UT_MIN(sizeof(szPrevLang)-1, strlen(pszLang));
+		szPrevLang[iEnd] = 0;
 	}
 
 	return checker;
