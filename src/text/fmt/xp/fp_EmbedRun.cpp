@@ -24,6 +24,7 @@
 #include "pd_Document.h"
 #include "fl_BlockLayout.h"
 #include "ut_debugmsg.h"
+#include "ut_locale.h"
 #include "pd_Document.h"
 #include "ut_mbtowc.h"
 #include "fp_Page.h"
@@ -123,6 +124,9 @@ void fp_EmbedRun::_lookupProperties(const PP_AttrProp * pSpanAP,
 	  bool bFoundHeight = pSpanAP->getProperty("height", pszHeight);
 	  const char * pszWidth = NULL;
 	  bool bFoundWidth = pSpanAP->getProperty("width", pszWidth);
+	  const char * pszAscent = NULL;
+	  bool bFoundAscent = pSpanAP->getProperty("ascent", pszAscent);
+
 	  if(!bFoundWidth || pszWidth == NULL)
 	  {
 	      iWidth = getEmbedManager()->getWidth(m_iEmbedUID);
@@ -132,22 +136,27 @@ void fp_EmbedRun::_lookupProperties(const PP_AttrProp * pSpanAP,
 	      iWidth = UT_convertToLogicalUnits(pszWidth);
 	      if(iWidth <= 0)
 	      {
-		  iWidth = getEmbedManager()->getWidth(m_iEmbedUID);
+			  iWidth = getEmbedManager()->getWidth(m_iEmbedUID);
 	      }
 	  }
-	  if(!bFoundHeight || pszHeight == NULL)
+	  if(!bFoundHeight || pszHeight == NULL || !bFoundAscent || pszAscent == NULL)
 	  {
 	      iAscent = getEmbedManager()->getAscent(m_iEmbedUID);
+		  iDescent = getEmbedManager()->getDescent(m_iEmbedUID);
 	  }
 	  else
 	  {
-	      iAscent = UT_convertToLogicalUnits(pszHeight);
+	      iAscent = UT_convertToLogicalUnits(pszAscent);
 	      if(iAscent <= 0)
 	      {
-		  iAscent = getEmbedManager()->getAscent(m_iEmbedUID);
+			  iAscent = getEmbedManager()->getAscent(m_iEmbedUID);
+			  iDescent = getEmbedManager()->getDescent(m_iEmbedUID);
 	      }
+		  else
+		  {
+			  iDescent = UT_convertToLogicalUnits(pszHeight) - iAscent;
+		  }
 	  }
-	  iDescent = getEmbedManager()->getDescent(m_iEmbedUID);
 	}
 	UT_DEBUGMSG(("Width = %d Ascent = %d Descent = %d \n",iWidth,iAscent,iDescent)); 
 
@@ -513,7 +522,8 @@ bool fp_EmbedRun::_updatePropValuesIfNeeded(void)
   if(bDoUpdate)
     {
       const char * pProps[10] = {NULL,NULL,NULL,NULL,NULL,NULL,NULL,NULL};
-      UT_UTF8String sHeight,sWidth,sAscent,sDescent;
+	  UT_LocaleTransactor t(LC_NUMERIC, "C");
+	  UT_UTF8String sHeight,sWidth,sAscent,sDescent;
       UT_UTF8String_sprintf(sHeight,"%fin",static_cast<double>(getHeight())/1440.);
       pProps[0] = "height";
       pProps[1] = sHeight.utf8_str();
