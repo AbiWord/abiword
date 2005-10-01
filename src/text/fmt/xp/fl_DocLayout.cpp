@@ -2537,7 +2537,7 @@ void FL_DocLayout::queueAll(UT_uint32 iReason)
 		// at the top of the queue, this will make the check look faster to the user
 		FV_View * pView = getView();
 		UT_GenericVector<fl_BlockLayout*> vBL;
-		const iLimit = 5;
+		const UT_sint32 iLimit = 5;
 		
 		fl_BlockLayout * pCurBL = pView->getBlockAtPosition(pView->getPoint());
 
