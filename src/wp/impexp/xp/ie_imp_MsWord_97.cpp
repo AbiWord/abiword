@@ -1812,7 +1812,7 @@ int IE_Imp_MsWord_97::_specCharProc (wvParseStruct *ps, U16 eachchar, CHP *achp)
 	case 20: // field separator
 		if (achp->fOle2)
 		{
-			UT_DEBUGMSG(("Field has an assocaited embedded OLE object\n"));
+			UT_DEBUGMSG(("Field has an associated embedded OLE object\n"));
 		}
 		ps->fieldmiddle = 1;
 		this->_fieldProc (ps, eachchar, 0, 0x400);
