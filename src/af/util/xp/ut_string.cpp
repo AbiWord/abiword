@@ -246,6 +246,25 @@ bool UT_replaceString(char *& rszDest, const char * szSource)
 	return UT_cloneString(rszDest,szSource);
 }
 
+// determine the length of a fixed-size string
+size_t UT_strnlen(const char *s, size_t maxlen)
+{
+#ifdef HAVE_STRNLEN
+  return strnlen(s, maxlen);
+#else
+  size_t i;
+  const char *p;
+
+  if(!s)
+    return 0;
+
+  for(i = 0, p = s; (*p) && (i < maxlen); i++, p++)
+    ;
+
+  return i;
+#endif
+}
+
 // convert each character in a string to ASCII uppercase
 char * UT_upperString(char * string)
 {
