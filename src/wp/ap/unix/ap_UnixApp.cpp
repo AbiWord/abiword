@@ -643,7 +643,7 @@ void AP_UnixApp::pasteFromClipboard(PD_DocumentRange * pDocRange, bool bUseClipb
 
     if (AP_UnixClipboard::isRichTextTag(szFormatFound))
     {
-		iLen = UT_MIN(iLen,strlen(reinterpret_cast<const char *>(pData)));
+		iLen = UT_strnlen(reinterpret_cast<const char *>(pData),iLen);
 
 		IE_Imp_RTF * pImpRTF = new IE_Imp_RTF(pDocRange->m_pDoc);
 		bSuccess = pImpRTF->pasteFromBuffer(pDocRange,pData,iLen);
@@ -724,7 +724,7 @@ void AP_UnixApp::pasteFromClipboard(PD_DocumentRange * pDocRange, bool bUseClipb
       }
     else // ( AP_UnixClipboard::isTextTag(szFormatFound) )
     {
-		iLen = UT_MIN(iLen,strlen(reinterpret_cast<const char *>(pData)));
+		iLen = UT_strnlen(reinterpret_cast<const char *>(pData),iLen);
 		
 		IE_Imp_Text * pImpText = new IE_Imp_Text(pDocRange->m_pDoc,"UTF-8");
 		bSuccess = pImpText->pasteFromBuffer(pDocRange,pData,iLen);
@@ -737,8 +737,8 @@ void AP_UnixApp::pasteFromClipboard(PD_DocumentRange * pDocRange, bool bUseClipb
 	if(!bSuccess && m_pClipboard->getTextData(tFrom,reinterpret_cast<const void **>(&pData),&iLen, &szFormatFound)) {
 		UT_DEBUGMSG(("DOM: pasting text as an absolute fallback (bug 7666)\n"));
 		
-		iLen = UT_MIN(iLen,strlen(reinterpret_cast<const char *>(pData)));
-		
+		iLen = UT_strnlen(reinterpret_cast<const char *>(pData),iLen);
+
 		IE_Imp_Text * pImpText = new IE_Imp_Text(pDocRange->m_pDoc,"UTF-8");
 		bSuccess = pImpText->pasteFromBuffer(pDocRange,pData,iLen);
 		DELETEP(pImpText);
