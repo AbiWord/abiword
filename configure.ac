@@ -369,7 +369,7 @@ ABI_LIBJPEG
 dnl Checks for library functions.
 AC_FUNC_ALLOCA
 AC_TYPE_SIGNAL
-AC_CHECK_FUNCS(re_comp regcomp strdup strstr strcasecmp stricmp)
+AC_CHECK_FUNCS(re_comp regcomp strdup strstr strcasecmp stricmp strnlen)
 
 AC_CHECK_FUNC(putenv,abi_putenv=maybe,abi_putenv=no)
 AC_CHECK_FUNC(setenv,abi_setenv=maybe,abi_setenv=no)
