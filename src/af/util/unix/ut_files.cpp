@@ -69,6 +69,7 @@ bool progExists(const char* progName)
 
 		if(laststat == 0 && (S_ISREG(statbuf.st_mode) || S_ISLNK(statbuf.st_mode)))
 		{
+                        DELETEP(utvPath);
 			return true;
 		}
 	}
