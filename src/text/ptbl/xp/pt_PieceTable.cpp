@@ -205,6 +205,10 @@ bool  pt_PieceTable::_struxIsEmpty(pf_Frag_Strux * pfs) const
 		return true;
 	}
 	pf_Frag * pf = pfs->getNext();
+	if(pf->getType() == pf_Frag::PFT_EndOfDoc)
+	{
+		return true;
+	}
 	if(pf->getType() != pf_Frag::PFT_Strux)
 	{
 		return false;
