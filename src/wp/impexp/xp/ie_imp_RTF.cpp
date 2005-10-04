@@ -389,7 +389,7 @@ bool RTF_msword97_level::ParseLevelText(const UT_String & szLevelText,const UT_S
 	UT_sint32 icurrent = 0;
 	UT_sint32 istrlen = szLevelText.size();
 	bool bIsUnicode;
-	while (pText[0] != '\0' && icurrent < 10000)
+	while (pText[0] != '\0' && icurrent < 1000)
 	{
 		bIsUnicode = ((pText[0] == '\\') && (pText[1] == '\'') && UT_UCS4_isdigit(pText[2]) && UT_UCS4_isdigit(pText[3]));
 		// A broken exporter writes some junk at the beginning of the string.
