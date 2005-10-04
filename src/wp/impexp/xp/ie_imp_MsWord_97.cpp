@@ -245,6 +245,12 @@ static char * s_stripDangerousChars(const char *s)
 	
 	for(j = 0, k = 0; j < strlen(s); )
 	{
+	    if(s[j] < ' ' && s[j] >= 0 && s[j] != '\t' && s[j] != '\n' && s[j] != '\r')
+	    {
+	        j++;
+	    }
+	    else
+	    {
 		switch(s[j])
 		{
 			default:
@@ -262,12 +268,14 @@ static char * s_stripDangerousChars(const char *s)
 				j++;
 				break;
 		}
+	     }
 	}
 	
 	t[k] = 0;
 	
 	return t;
 }
+
 
 //
 // DOC uses an unsigned int color index
@@ -500,7 +508,7 @@ s_mapDocToAbiListId (MSWordListIdType id)
 /*!
  * form AW list deliminator string
  */
-static void s_mapDocToAbiListDelim (UT_uint16 * pStr, UT_uint32 iLen, UT_String &sDelim)
+static void s_mapDocToAbiListDelim (UT_uint16 * pStr, UT_uint32 iLen, UT_UTF8String &sDelim)
 {
 	// the Word format string looks like this
 	//    prefix '\0' suffix
@@ -542,9 +550,9 @@ static void s_mapDocToAbiListDelim (UT_uint16 * pStr, UT_uint32 iLen, UT_String 
 		pSfx++;
 	}
 
-	sDelim.clear();
-
-	UT_String_sprintf(sDelim, "%s%%L%s",sUtf8Pfx.utf8_str(), sUtf8Sfx.utf8_str());
+	sDelim = sUtf8Pfx;
+	sDelim += "%L";
+	sDelim += sUtf8Sfx;
 }
 
 /*!
@@ -1832,7 +1840,7 @@ int IE_Imp_MsWord_97::_specCharProc (wvParseStruct *ps, U16 eachchar, CHP *achp)
 
 			if (wv0x01(&blip, fil, picf.lcb - picf.cbHeader))
 			  {
-                       this->_handleImage(&blip, picf.mx * picf.dxaGoal / 1000, picf.my * picf.dyaGoal / 1000);
+                       this->_handleImage(&blip, picf.mx * picf.dxaGoal / 1000, picf.my * picf.dyaGoal / 1000, picf.dyaCropTop, picf.dyaCropBottom, picf.dxaCropLeft, picf.dxaCropRight);
 			  }
 			else
 			  {
@@ -1874,15 +1882,16 @@ int IE_Imp_MsWord_97::_specCharProc (wvParseStruct *ps, U16 eachchar, CHP *achp)
 				UT_DEBUGMSG(("Left %f Right %f Top %f Bottom %f \n",dLeft,dRight,dTop,dBottom));
 				UT_DEBUGMSG(("spid %d cTxbx %d \n",fspa->spid,fspa->cTxbx));
 				UT_DEBUGMSG(("fHdr %d bx %d by %d wr %d wrk %d fRcaSimple %d fBelowText %d fAnchorLock %d \n",fspa->fHdr,fspa->bx,fspa->by,fspa->wr,fspa->wrk,fspa->fRcaSimple,fspa->fBelowText,fspa->fAnchorLock));
-
+				UT_String sImageName;
+				bool bPositionObject = false;
 				if (wv0x08(&blip, fspa->spid, ps))
 				{
 //
 // FIXME! Put some code in here to make this use Sectionframes!!
 //
 					UT_DEBUGMSG(("!!!!Found a blip in a fspa!!!!!!!!!! \n"));
-					this->_handleImage(&blip, fspa->xaRight-fspa->xaLeft,
-									   fspa->yaBottom-fspa->yaTop);
+					this->_handlePositionedImage(&blip, sImageName);
+					bPositionObject = true;
 				}
 				bool isTextBox = false;
 				UT_uint32 textOff = 0;
@@ -1908,20 +1917,38 @@ int IE_Imp_MsWord_97::_specCharProc (wvParseStruct *ps, U16 eachchar, CHP *achp)
 					{
 						isTextBox = true;
 						textOff = *cTextBox.textid;
+						UT_DEBUGMSG(("Found a Text box! text offset is.. %d \n",textOff));
 					}
 					UT_DEBUGMSG((" clienttextbox %x clientdata %x \n",answer->clienttextbox,answer->clientdata));
 				}
-//				if(isTextBox)
-//				{
+				if(isTextBox || bPositionObject)
+				{
 //				if(answer != NULL)
 //				{
-					UT_DEBUGMSG(("Found a Text box! text offset is.. %d \n",textOff));
-					const char * atts[] = {"props",NULL,NULL,NULL};
+					const char * atts[] = {NULL,NULL,NULL,NULL,NULL,NULL};
+					if(bPositionObject)
+					{
+					  atts[0] =  PT_STRUX_IMAGE_DATAID;
+					  atts[1] = sImageName.c_str();
+					  atts[2] = "props";
+					}
+					else
+					{
+					  atts[0] = "props";
+					}
+					UT_String sProp;
 					UT_String sProps;
 					UT_String sVal;
 					sProps.clear();
 					sProps = "frame-type:";
-					sProps += "textbox; ";
+					if(isTextBox)
+					{
+					  sProps += "textbox; ";
+					}
+					else
+					{
+					  sProps += "image; ";
+					}
 					sProps += "position-to:";
 					if(fspa->by ==2)
 					{
@@ -1976,16 +2003,41 @@ int IE_Imp_MsWord_97::_specCharProc (wvParseStruct *ps, U16 eachchar, CHP *achp)
 					UT_String_sprintf(sVal,"%f",dBottom-dTop);
 					sVal += "in";
 					sProps += sVal;
-					atts[1] = sProps.c_str();
+//
+// Turn off the borders.
+//
+					if(bPositionObject && !isTextBox)
+					{
+					  sProp = "top-style";
+					  sVal = "none";
+					  UT_String_setProperty(sProps,sProp,sVal);
+					  sProp = "right-style";
+					  UT_String_setProperty(sProps,sProp,sVal);
+					  sProp = "left-style";
+					  UT_String_setProperty(sProps,sProp,sVal);
+					  sProp = "bot-style";
+					  UT_String_setProperty(sProps,sProp,sVal);
+					}
+					if(bPositionObject)
+					{
+					  atts[3] = sProps.c_str();
+					}
+					else
+					{
+					  atts[1] = sProps.c_str();
+					}
 					_appendStrux(PTX_SectionFrame,atts);
 					_appendStrux(PTX_EndFrame,atts);
-					textboxPos * pPos = new textboxPos;
-					pPos->lid = fspa->spid;
-					pPos->endFrame = getDoc()->getLastFrag();
-					m_vecTextboxPos.addItem(pPos);
+					if(isTextBox)
+					{
+					  textboxPos * pPos = new textboxPos;
+					  pPos->lid = fspa->spid;
+					  pPos->endFrame = getDoc()->getLastFrag();
+					  m_vecTextboxPos.addItem(pPos);
+					}
 					wvReleaseEscher (&item);
 					return true;
-//				}
+				}
 				wvReleaseEscher (&item);
 			}
 			else
@@ -2856,10 +2908,10 @@ int IE_Imp_MsWord_97::_beginPara (wvParseStruct *ps, UT_uint32 tag,
 		list_atts[iOffset++] = szStartValue.c_str();
 
 		// list delimiter
-		UT_String sDelim;
+		UT_UTF8String sDelim;
 		s_mapDocToAbiListDelim (apap->linfo.numberstr,apap->linfo.numberstr_size,sDelim);
 		list_atts[iOffset++] = "list-delim";
-		list_atts[iOffset++] = sDelim.c_str();
+		list_atts[iOffset++] = s_stripDangerousChars(sDelim.utf8_str());
 
 		list_atts[iOffset++] = "level";
 		UT_String_sprintf(propBuffer, "%d", apap->ilvl + 1); // Word level starts at 0, Abi's at 1
@@ -3670,8 +3722,7 @@ bool IE_Imp_MsWord_97::_insertTOC(field *f)
 		{
 			UT_UTF8String_sprintf(sTemp, "toc-dest-style%d:TOC %d", i, i);
 			sProps += sTemp;
-			if(i < 9)
-				sProps += ";";
+			sProps += ";";
 
 			if(sLeader.size())
 			{
@@ -3686,8 +3737,7 @@ bool IE_Imp_MsWord_97::_insertTOC(field *f)
 		{
 			UT_UTF8String_sprintf(sTemp, "toc-dest-style%d:nonexistentstyle", i);
 			sProps += sTemp;
-			if(i < 9)
-				sProps += ";";
+			sProps += ";";
 		}
 	}
 
@@ -3699,7 +3749,7 @@ bool IE_Imp_MsWord_97::_insertTOC(field *f)
 		// style-based toc, the params have the format
 		// \t "style,level,style,level ..."
 		bSupported = true;
-		t1 = strchr(params, '\"');
+		t1 = strchr(t, '\"');
 		if(!t1)
 		{
 			bRet = false;
@@ -3738,7 +3788,7 @@ bool IE_Imp_MsWord_97::_insertTOC(field *f)
 			sProps += sTemp;
 			sProps += ";";
 
-			sProps += "tod-dest-style";
+			sProps += "toc-dest-style";
 			sProps += t1;
 			sProps += ":TOC ";
 			sProps += t1;
@@ -3967,7 +4017,7 @@ static MSWord_ImageType s_determineImageType ( Blip * b )
 	}
 }
 
-UT_Error IE_Imp_MsWord_97::_handleImage (Blip * b, long width, long height)
+UT_Error IE_Imp_MsWord_97::_handleImage (Blip * b, long width, long height, long cropt, long cropb, long cropl, long cropr)
 {
 	const char * mimetype = UT_strdup ("image/png");
 	IE_ImpGraphic * importer	= 0;
@@ -4075,10 +4125,14 @@ UT_Error IE_Imp_MsWord_97::_handleImage (Blip * b, long width, long height)
   //
 
   {
-	  UT_LocaleTransactor(LC_NUMERIC, "C");
-	  UT_String_sprintf(propBuffer, "width:%fin; height:%fin",
+	  UT_LocaleTransactor t(LC_NUMERIC, "C");
+	  UT_String_sprintf(propBuffer, "width:%fin; height:%fin; cropt:%fin; cropb:%fin; cropl:%fin; cropr:%fin",
 						static_cast<double>(width) / static_cast<double>(1440),
-						static_cast<double>(height) / static_cast<double>(1440));
+			    static_cast<double>(height) / static_cast<double>(1440),
+			    static_cast<double>(cropt) / static_cast<double>(1440),
+			    static_cast<double>(cropb) / static_cast<double>(1440),
+			    static_cast<double>(cropl) / static_cast<double>(1440),
+						static_cast<double>(cropr) / static_cast<double>(1440));
   }
 
   UT_String_sprintf(propsName, "%d", getDoc()->getUID(UT_UniqueId::Image));
@@ -4106,6 +4160,131 @@ UT_Error IE_Imp_MsWord_97::_handleImage (Blip * b, long width, long height)
 	}
 
   if (!getDoc()->createDataItem(propsName.c_str(), false,
+				buf, const_cast<void*>(static_cast<const void*>(mimetype)), NULL))
+	{
+	  UT_DEBUGMSG (("Could not create data item\n"));
+	  error = UT_ERROR;
+	  goto Cleanup;
+	}
+
+ Cleanup:
+  DELETEP(importer);
+
+  return error;
+}
+
+
+
+/*!
+ * This method imports an image that can be later used as an embedded object.
+ * The Blip pointer p contains the MS Word data we use to create the image
+ * "width" and "height" are the width and height of the object in inches.
+ * The routine returns the name of the data-item it creates is in the 
+ * UT_UTF8String sImageName
+ */
+UT_Error IE_Imp_MsWord_97::_handlePositionedImage (Blip * b, UT_String & sImageName)
+{
+	const char * mimetype = UT_strdup ("image/png");
+	IE_ImpGraphic * importer	= 0;
+	FG_Graphic* pFG		= 0;
+	UT_Error error		= UT_OK;
+	UT_ByteBuf * buf		= 0;
+	UT_ByteBuf * pictData 	= new UT_ByteBuf();
+
+  // suck the data into the ByteBuffer
+
+  MSWord_ImageType imgType = s_determineImageType ( b );
+
+  wvStream *pwv;
+  bool decompress = false;
+
+  if ( imgType == MSWord_RasterImage )
+	{
+	  pwv = b->blip.bitmap.m_pvBits;
+
+	}
+  else if ( imgType == MSWord_VectorImage )
+	{
+	  pwv = b->blip.metafile.m_pvBits;
+	  decompress = (b->blip.metafile.m_fCompression == msocompressionDeflate);
+	}
+  else
+	{
+	  UT_DEBUGMSG(("UNKNOWN IMAGE TYPE!!"));
+	  DELETEP(pictData);
+	  FREEP(mimetype);
+	  return UT_ERROR;
+	}
+
+  size_t size = wvStream_size (pwv);
+  char *data = new char[size];
+  wvStream_rewind(pwv);
+  wvStream_read(data,size,sizeof(char),pwv);
+
+  if (decompress)
+  {
+
+    unsigned long uncomprLen, comprLen;
+    comprLen = size;
+    uncomprLen = b->blip.metafile.m_cb;
+    Bytef *uncompr = new Bytef[uncomprLen];    
+    int err = uncompress (uncompr, &uncomprLen, reinterpret_cast<const unsigned char *>(data), comprLen);
+    if (err != Z_OK)
+      {
+	UT_DEBUGMSG(("Could not uncompress image\n"));
+        DELETEP(uncompr);
+	DELETEP(pictData);
+	FREEP(mimetype);
+	goto Cleanup;
+      }
+      pictData->append(reinterpret_cast<const UT_Byte*>(uncompr), uncomprLen);
+      DELETEPV(uncompr);
+  }
+  else
+  {
+    pictData->append(reinterpret_cast<const UT_Byte*>(data), size);
+  }
+
+  delete [] data;
+
+  if(!pictData->getPointer(0))
+	  error =  UT_ERROR;
+  else
+	  error = IE_ImpGraphic::constructImporter (pictData, IEGFT_Unknown, &importer);
+
+  if ((error != UT_OK) || !importer)
+	{
+	  UT_DEBUGMSG(("Could not create image importer object\n"));
+	  DELETEP(pictData);
+	  FREEP(mimetype);
+	  goto Cleanup;
+	}
+
+  error = importer->importGraphic(pictData, &pFG);
+  if ((error != UT_OK) || !pFG)
+	{
+	  UT_DEBUGMSG(("Could not import graphic\n"));
+	  // pictData is already freed in ~FG_Graphic
+	  FREEP(mimetype);
+	  goto Cleanup;
+	}
+
+  // TODO: can we get back a vector graphic?
+  buf = static_cast<FG_GraphicRaster *>(pFG)->getRaster_PNG();
+
+  if (!buf)
+	{
+	  // i don't think that this could ever happen, but...
+	  UT_DEBUGMSG(("Could not convert to PNG\n"));
+	  DELETEP(pictData);
+	  FREEP(mimetype);
+	  error = UT_ERROR;
+	  goto Cleanup;
+	}
+
+  UT_String_sprintf(sImageName, "%d", getDoc()->getUID(UT_UniqueId::Image));
+
+  if (!getDoc()->createDataItem(sImageName.c_str(), false,
 				buf, const_cast<void*>(static_cast<const void*>(mimetype)), NULL))
 	{
 	  UT_DEBUGMSG (("Could not create data item\n"));
@@ -4598,7 +4777,7 @@ void IE_Imp_MsWord_97::_cell_open (const wvParseStruct *ps, const PAP *apap)
     propBuffer += "bg-style:1;";
 
   {
-	  UT_LocaleTransactor(LC_NUMERIC, "C");
+	  UT_LocaleTransactor t(LC_NUMERIC, "C");
 	  propBuffer += UT_String_sprintf("top-color:%s; top-thickness:%fpt; top-style:%d;",
 									  sMapIcoToColor(apap->ptap.rgtc[m_iCurrentCell].brcTop.ico, true).c_str(),
 									  brc_to_pixel(apap->ptap.rgtc[m_iCurrentCell].brcTop.dptLineWidth),

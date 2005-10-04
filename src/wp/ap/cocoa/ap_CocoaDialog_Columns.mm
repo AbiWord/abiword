@@ -1,3 +1,5 @@
+/* -*- mode: C++; tab-width: 4; c-basic-offset: 4; -*- */
+
 /* AbiWord
  * Copyright (C) 1998 AbiSource, Inc.
  * Copyright (C) 2003 Hubert Figuiere
@@ -70,8 +72,13 @@ void AP_CocoaDialog_Columns::runModal(XAP_Frame * pFrame)
 
 	NSWindow * window = [m_dlg window];
 
-	[m_dlg setSpaceAfter:getSpaceAfterString()];
-	[m_dlg setMaxColHeight:getHeightString()];
+	const char * szHeight = getHeightString();
+	m_Dim_MaxHeight = UT_determineDimension(szHeight, DIM_none);
+	[m_dlg setMaxColHeight:szHeight];
+
+	const char * szAfter = getSpaceAfterString();
+	m_Dim_SpaceAfter = UT_determineDimension(szAfter, DIM_none);
+	[m_dlg setSpaceAfter:szAfter];
 
 	// make a new Cocoa GC
 	DELETEP (m_pPreviewWidget);
@@ -112,7 +119,7 @@ void AP_CocoaDialog_Columns::checkLineBetween(void)
 
 void AP_CocoaDialog_Columns::colNumberChanged(void)
 {
-	UT_sint32 val = [m_dlg colNum];
+	UT_sint32 val = (UT_sint32) [m_dlg colNum];
 	if(val < 1)
 		return;
 	event_Toggle(val);
@@ -122,7 +129,7 @@ void AP_CocoaDialog_Columns::event_Toggle( UT_uint32 icolumns)
 {
 	checkLineBetween();
 
-	[m_dlg setColNum:icolumns];
+	[m_dlg setColNum:((int) icolumns)];
 	
 	setColumns(icolumns);
 	m_pColumnsPreview->draw();
@@ -136,25 +143,42 @@ void AP_CocoaDialog_Columns::event_OK(void)
 }
 
 
-void AP_CocoaDialog_Columns::doMaxHeightEntry(const char * szHeight)
+void AP_CocoaDialog_Columns::doMaxHeightEntry(const char * szMaxHeight)
 {
-	if(UT_determineDimension(szHeight, DIM_none) != DIM_none)
-	{
-		setMaxHeight(szHeight);
+	UT_UTF8String szHeight = szMaxHeight;
 
-		[m_dlg setMaxColHeight:getHeightString()];
-	}
+	UT_Dimension new_dimension = UT_determineDimension(szHeight.utf8_str(), DIM_none);
+
+	if (new_dimension == DIM_none)
+		{
+			szHeight += UT_dimensionName(m_Dim_MaxHeight);
+		}
+	else
+		{
+			m_Dim_MaxHeight = new_dimension;
+		}
+	setMaxHeight(szHeight.utf8_str());
+
+	[m_dlg setMaxColHeight:getHeightString()];
 }
 
 void AP_CocoaDialog_Columns::doSpaceAfterEntry(void)
 {
-	const char * szAfter = [[m_dlg spaceAfter] UTF8String];
-	if(UT_determineDimension(szAfter,DIM_none) != DIM_none)
-	{
-		setSpaceAfter(szAfter);
+	UT_UTF8String szAfter = [[m_dlg spaceAfter] UTF8String];
 
-		[m_dlg setSpaceAfter:getSpaceAfterString()];
-	}
+    UT_Dimension new_dimension = UT_determineDimension(szAfter.utf8_str(), DIM_none);
+
+	if (new_dimension == DIM_none)
+		{
+			szAfter += UT_dimensionName(m_Dim_SpaceAfter);
+		}
+	else
+		{
+			m_Dim_SpaceAfter = new_dimension;
+		}
+	setSpaceAfter(szAfter.utf8_str());
+
+	[m_dlg setSpaceAfter:getSpaceAfterString()];
 }
 
 void AP_CocoaDialog_Columns::event_Cancel(void)
@@ -163,6 +187,17 @@ void AP_CocoaDialog_Columns::event_Cancel(void)
 	[NSApp stopModal];
 }
 
+void AP_CocoaDialog_Columns::incrMaxHeight(bool bIncrement)
+{
+	incrementMaxHeight(bIncrement);
+	[m_dlg setMaxColHeight:getHeightString()];
+}
+
+void AP_CocoaDialog_Columns::incrSpaceAfter(bool bIncrement)
+{
+	incrementSpaceAfter(bIncrement);
+	[m_dlg setSpaceAfter:getSpaceAfterString()];
+}
 
 /*****************************************************************/
 
@@ -198,25 +233,38 @@ void AP_CocoaDialog_Columns::enableLineBetweenControl(bool bState)
 {
 	if (_xap) {
 		const XAP_StringSet *pSS = XAP_App::getApp()->getStringSet();
-		LocalizeControl([self window], pSS, AP_STRING_ID_DLG_Column_ColumnTitle);
-		LocalizeControl(_okBtn, pSS, XAP_STRING_ID_DLG_OK);
-		LocalizeControl(_cancelBtn, pSS, XAP_STRING_ID_DLG_Cancel);
-		LocalizeControl(_numColumnLabel, pSS, AP_STRING_ID_DLG_Column_Number);
-		LocalizeControl(_oneBtn, pSS, AP_STRING_ID_DLG_Column_One);
-		[_oneBtn setImage:[NSImage imageNamed:@"tb_1column"]];
-		LocalizeControl(_twoBtn, pSS, AP_STRING_ID_DLG_Column_Two);
-		[_twoBtn setImage:[NSImage imageNamed:@"tb_2column"]];
-		LocalizeControl(_threeBtn, pSS, AP_STRING_ID_DLG_Column_Three);
-		[_threeBtn setImage:[NSImage imageNamed:@"tb_3column"]];
-		LocalizeControl(_previewBox, pSS, AP_STRING_ID_DLG_Column_Preview);
-		LocalizeControl(_lineBetweenBtn, pSS, AP_STRING_ID_DLG_Column_Line_Between);
-		LocalizeControl(_useRTLBtn, pSS, AP_STRING_ID_DLG_Column_RtlOrder);
-		LocalizeControl(_numColumn2Label, pSS, AP_STRING_ID_DLG_Column_Number_Cols);
-		LocalizeControl(_spaceAfterColLabel, pSS, AP_STRING_ID_DLG_Column_Space_After);
-		LocalizeControl(_maxColSizeLabel, pSS, AP_STRING_ID_DLG_Column_Size);
+
+		LocalizeControl([self window],			pSS, AP_STRING_ID_DLG_Column_ColumnTitle);
+
+		LocalizeControl(_okBtn,					pSS, XAP_STRING_ID_DLG_OK);
+		LocalizeControl(_cancelBtn,				pSS, XAP_STRING_ID_DLG_Cancel);
+
+		LocalizeControl(_numColumnLabel,		pSS, AP_STRING_ID_DLG_Column_Number);
+		LocalizeControl(_previewBox,			pSS, AP_STRING_ID_DLG_Column_Preview);
+		LocalizeControl(_lineBetweenBtn,		pSS, AP_STRING_ID_DLG_Column_Line_Between);
+		LocalizeControl(_useRTLBtn,				pSS, AP_STRING_ID_DLG_Column_RtlOrder);
+		LocalizeControl(_numColumn2Label,		pSS, AP_STRING_ID_DLG_Column_Number_Cols);
+		LocalizeControl(_spaceAfterColLabel,	pSS, AP_STRING_ID_DLG_Column_Space_After);
+		LocalizeControl(_maxColSizeLabel,		pSS, AP_STRING_ID_DLG_Column_Size);
+
+		LocalizeControl(_oneLabel,				pSS, AP_STRING_ID_DLG_Column_One);
+		LocalizeControl(_twoLabel,				pSS, AP_STRING_ID_DLG_Column_Two);
+		LocalizeControl(_threeLabel,			pSS, AP_STRING_ID_DLG_Column_Three);
+
+		[[  _oneBtn cell] setShowsStateBy:NSNoCellMask]; /* TODO: should really do this in XAP_CocoaToolbarButton */
+		[[  _oneBtn cell] setHighlightsBy:NSNoCellMask];
+		[[  _twoBtn cell] setShowsStateBy:NSNoCellMask];
+		[[  _twoBtn cell] setHighlightsBy:NSNoCellMask];
+		[[_threeBtn cell] setShowsStateBy:NSNoCellMask];
+		[[_threeBtn cell] setHighlightsBy:NSNoCellMask];
 	}
 }
 	
+- (IBAction)okAction:(id)sender
+{
+	_xap->event_OK();
+}
+
 - (IBAction)cancelAction:(id)sender
 {
 	_xap->event_Cancel();
@@ -229,31 +277,32 @@ void AP_CocoaDialog_Columns::enableLineBetweenControl(bool bState)
 
 - (IBAction)maxColSizeAction:(id)sender
 {
-	[_maxColSizeStepper setFloatValue:[sender floatValue]];
-	_xap->doMaxHeightEntry([[sender stringValue] UTF8String]);
+	_xap->doMaxHeightEntry([[_maxColSizeData stringValue] UTF8String]);
 }
 
 - (IBAction)maxColSizeStepperAction:(id)sender
 {
-	[_maxColSizeData setFloatValue:[sender floatValue]];
-	_xap->doMaxHeightEntry([[sender stringValue] UTF8String]);
+	bool bIncr = ([_maxColSizeStepper intValue] == 0) ? false : true;
+
+	[_maxColSizeStepper setIntValue:1];
+
+	_xap->incrMaxHeight(bIncr);
 }
 
 - (IBAction)numOfColAction:(id)sender
 {
-	[_numOfColumnStepper setIntValue:[sender intValue]];
+	int count = [sender intValue];
+
+	count = (count < 1) ? 1 : ((count > 20) ? 20 : count);
+
 	_xap->colNumberChanged();
 }
 
 - (IBAction)numOfColStepperAction:(id)sender
 {
 	[_numOfColumnData setIntValue:[sender intValue]];
-	_xap->colNumberChanged();
-}
 
-- (IBAction)okAction:(id)sender
-{
-	_xap->event_OK();
+	_xap->colNumberChanged();
 }
 
 - (IBAction)oneAction:(id)sender
@@ -261,14 +310,9 @@ void AP_CocoaDialog_Columns::enableLineBetweenControl(bool bState)
 	_xap->event_Toggle(1);
 }
 
-- (IBAction)spaceAfterColAction:(id)sender
+- (IBAction)twoAction:(id)sender
 {
-	[_spaceAfterColStepper setIntValue:[sender intValue]];
-}
-
-- (IBAction)spaceAfterColStepperAction:(id)sender
-{
-	[_spaceAfterColData setIntValue:[sender intValue]];
+	_xap->event_Toggle(2);
 }
 
 - (IBAction)threeAction:(id)sender
@@ -276,28 +320,36 @@ void AP_CocoaDialog_Columns::enableLineBetweenControl(bool bState)
 	_xap->event_Toggle(3);
 }
 
-- (IBAction)twoAction:(id)sender
-{
-	_xap->event_Toggle(2);
-}
-
-
-- (UT_uint32)colNum
+- (int)colNum
 {
 	return [_numOfColumnData intValue];
 }
 
-- (void)setColNum:(UT_uint32)num
+- (void)setColNum:(int)num
 {
-	[_numOfColumnData setIntValue:num];
+	[_numOfColumnData    setIntValue:num];
 	[_numOfColumnStepper setIntValue:num];
-	[_oneBtn setState:((num == 1)?NSOnState:NSOffState)];
-	[_twoBtn setState:((num == 2)?NSOnState:NSOffState)];
-	[_threeBtn setState:((num == 3)?NSOnState:NSOffState)];
+
+	[  _oneBtn setState:((num == 1) ? NSOnState : NSOffState)];
+	[  _twoBtn setState:((num == 2) ? NSOnState : NSOffState)];
+	[_threeBtn setState:((num == 3) ? NSOnState : NSOffState)];
 }
 
+- (IBAction)spaceAfterColAction:(id)sender
+{
+	_xap->doSpaceAfterEntry();
+}
 
-- (NSString*)spaceAfter
+- (IBAction)spaceAfterColStepperAction:(id)sender
+{
+	bool bIncr = ([_spaceAfterColStepper intValue] == 0) ? false : true;
+
+	[_spaceAfterColStepper setIntValue:1];
+
+	_xap->incrSpaceAfter(bIncr);
+}
+
+- (NSString *)spaceAfter
 {
 	return [_spaceAfterColData stringValue];
 }
@@ -305,13 +357,11 @@ void AP_CocoaDialog_Columns::enableLineBetweenControl(bool bState)
 - (void)setSpaceAfter:(const char *)str
 {
 	[_spaceAfterColData setStringValue:[NSString stringWithUTF8String:str]];
-	[_spaceAfterColStepper setFloatValue:[_spaceAfterColData floatValue]];
 }
 
 - (void)setMaxColHeight:(const char *)str
 {
 	[_maxColSizeData setStringValue:[NSString stringWithUTF8String:str]];
-	[_maxColSizeStepper setFloatValue:[_maxColSizeData floatValue]];	
 }
 
 - (bool)lineBetween
@@ -321,9 +371,8 @@ void AP_CocoaDialog_Columns::enableLineBetweenControl(bool bState)
 
 - (void)setLineBetween:(bool)b
 {
-	[_lineBetweenBtn setState:(b?NSOnState:NSOffState)];
+	[_lineBetweenBtn setState:(b ? NSOnState : NSOffState)];
 }
-
 
 - (UT_uint32)columnRTLOrder
 {
@@ -332,15 +381,12 @@ void AP_CocoaDialog_Columns::enableLineBetweenControl(bool bState)
 
 - (void)setColumnRTLOrder:(UT_uint32)val
 {
-	[_useRTLBtn setState:((val == 0)?NSOffState:NSOnState)];
+	[_useRTLBtn setState:((val == 0) ? NSOffState : NSOnState)];
 }
 
-- (XAP_CocoaNSView*)preview
+- (XAP_CocoaNSView *)preview
 {
 	return _preview;
 }
 
 @end
-
-
-

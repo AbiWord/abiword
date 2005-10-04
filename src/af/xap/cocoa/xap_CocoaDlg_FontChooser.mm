@@ -1,3 +1,5 @@
+/* -*- mode: C++; tab-width: 4; c-basic-offset: 4; -*- */
+
 /* AbiSource Application Framework
  * Copyright (C) 1998 AbiSource, Inc.
  * Copyright (C) 2003 Hubert Figuiere
@@ -39,19 +41,20 @@
 
 
 /*****************************************************************/
-XAP_Dialog * XAP_CocoaDialog_FontChooser::static_constructor(XAP_DialogFactory * pFactory,
-														 XAP_Dialog_Id dlgid)
+XAP_Dialog * XAP_CocoaDialog_FontChooser::static_constructor(XAP_DialogFactory * pFactory, XAP_Dialog_Id dlgid)
 {
 	XAP_CocoaDialog_FontChooser * p = new XAP_CocoaDialog_FontChooser(pFactory,dlgid);
 	return p;
 }
 
-XAP_CocoaDialog_FontChooser::XAP_CocoaDialog_FontChooser(XAP_DialogFactory * pDlgFactory,
-												   XAP_Dialog_Id dlgid)
-	: XAP_Dialog_FontChooser(pDlgFactory,dlgid),
-		m_currentFamily(NULL),
-		m_dlg(nil)
+XAP_CocoaDialog_FontChooser::XAP_CocoaDialog_FontChooser(XAP_DialogFactory * pDlgFactory, XAP_Dialog_Id dlgid) :
+	XAP_Dialog_FontChooser(pDlgFactory,dlgid),
+	m_bSuperScriptInitialValue(false),
+	m_bSubScriptInitialValue(false),
+	m_currentFamily(NULL),
+	m_dlg(nil)
 {
+	// 
 }
 
 XAP_CocoaDialog_FontChooser::~XAP_CocoaDialog_FontChooser(void)
@@ -63,15 +66,6 @@ XAP_CocoaDialog_FontChooser::~XAP_CocoaDialog_FontChooser(void)
 
 /*****************************************************************/
 
-void XAP_CocoaDialog_FontChooser::underlineChanged(bool value)
-{
-	m_bUnderline = value;
-	m_bChangedUnderline = !m_bChangedUnderline;
-	setFontDecoration(m_bUnderline,m_bOverline,m_bStrikeout,m_bTopline,m_bBottomline);
-	updatePreview();
-}
-
-
 void XAP_CocoaDialog_FontChooser::strikeoutChanged(bool value)
 {
 	m_bStrikeout = value;
@@ -80,6 +74,13 @@ void XAP_CocoaDialog_FontChooser::strikeoutChanged(bool value)
 	updatePreview();
 }
 
+void XAP_CocoaDialog_FontChooser::underlineChanged(bool value)
+{
+	m_bUnderline = value;
+	m_bChangedUnderline = !m_bChangedUnderline;
+	setFontDecoration(m_bUnderline,m_bOverline,m_bStrikeout,m_bTopline,m_bBottomline);
+	updatePreview();
+}
 
 void XAP_CocoaDialog_FontChooser::overlineChanged(bool value)
 {
@@ -89,6 +90,37 @@ void XAP_CocoaDialog_FontChooser::overlineChanged(bool value)
 	updatePreview();
 }
 
+void XAP_CocoaDialog_FontChooser::superscriptChanged(bool value)
+{
+	m_bSuperScript = value;
+	m_bSubScript   = false;
+
+	[m_dlg setSubscript:m_bSubScript];
+
+	m_bChangedSuperScript = (m_bSuperScript != m_bSuperScriptInitialValue);
+	m_bChangedSubScript   = (m_bSubScript   != m_bSubScriptInitialValue  );
+
+	setSuperScript(m_bSuperScript);
+	setSubScript  (m_bSubScript);
+
+	updatePreview();
+}
+
+void XAP_CocoaDialog_FontChooser::subscriptChanged(bool value)
+{
+	m_bSuperScript = false;
+	m_bSubScript   = value;
+
+	[m_dlg setSuperscript:m_bSuperScript];
+
+	m_bChangedSuperScript = (m_bSuperScript != m_bSuperScriptInitialValue);
+	m_bChangedSubScript   = (m_bSubScript   != m_bSubScriptInitialValue  );
+
+	setSuperScript(m_bSuperScript);
+	setSubScript  (m_bSubScript);
+
+	updatePreview();
+}
 
 void XAP_CocoaDialog_FontChooser::transparencyChanged(bool value)
 {
@@ -142,7 +174,6 @@ void XAP_CocoaDialog_FontChooser::styleRowChanged(int rowNumber)
 	updatePreview();
 }
 
-
 void XAP_CocoaDialog_FontChooser::sizeRowChanged(void)
 {
 	NSString* fontSize;
@@ -164,8 +195,7 @@ void XAP_CocoaDialog_FontChooser::sizeRowChanged(void)
 	\param attr the CSS attribute
 	\param buf the buf to store the color (static in the caller)
  */
-void XAP_CocoaDialog_FontChooser::_colorChanged(NSColor* color, const XML_Char* attr,
-					char* buf)
+void XAP_CocoaDialog_FontChooser::_colorChanged(NSColor * color, const XML_Char * attr, char * buf)
 {
 	float r,g,b,a;
 	color = [color colorUsingColorSpaceName:NSDeviceRGBColorSpace];
@@ -187,7 +217,6 @@ void XAP_CocoaDialog_FontChooser::fgColorChanged(void)
 	_colorChanged([m_dlg textColor], "color", buf_color);
 }
 
-
 /*!
 	Called when text background color has been changed in the widget
  */
@@ -196,8 +225,6 @@ void XAP_CocoaDialog_FontChooser::bgColorChanged(void)
 	static char buf_color[8];
 	_colorChanged([m_dlg bgColor], "bgcolor", buf_color);
 }
-
-
 
 void XAP_CocoaDialog_FontChooser::runModal(XAP_Frame * pFrame)
 {
@@ -254,6 +281,12 @@ void XAP_CocoaDialog_FontChooser::runModal(XAP_Frame * pFrame)
 	[m_dlg setStrikeout:m_bStrikeout];
 	[m_dlg setUnderline:m_bUnderline];
 	[m_dlg setOverline:m_bOverline];
+
+	m_bSuperScriptInitialValue = m_bSuperScript;
+	m_bSubScriptInitialValue   = m_bSubScript;
+
+	[m_dlg setSuperscript:m_bSuperScript];
+	[m_dlg setSubscript:m_bSubScript];
 	
 	updatePreview();
 	// Run the dialog
@@ -369,23 +402,26 @@ void XAP_CocoaDialog_FontChooser::_deleteGC(void)
 -(void)windowDidLoad
 {
 	if (_xap) {
-		/* localize */
 		const XAP_StringSet * pSS = _xap->getApp()->getStringSet();
-		LocalizeControl([self window], pSS, XAP_STRING_ID_DLG_UFS_FontTitle);
-		LocalizeControl(_okBtn, pSS, XAP_STRING_ID_DLG_OK);
-		LocalizeControl(_cancelBtn, pSS, XAP_STRING_ID_DLG_Cancel);
-		LocalizeControl(_fontLabel, pSS, XAP_STRING_ID_DLG_UFS_FontLabel);
-		LocalizeControl(_styleLabel, pSS, XAP_STRING_ID_DLG_UFS_StyleLabel);
-		LocalizeControl(_sizeLabel, pSS, XAP_STRING_ID_DLG_UFS_SizeLabel);
-		LocalizeControl(_effectLabel, pSS, XAP_STRING_ID_DLG_UFS_EffectsFrameLabel);
-		LocalizeControl(_strikeButton, pSS, XAP_STRING_ID_DLG_UFS_StrikeoutCheck);
-		LocalizeControl(_underlineButton, pSS, XAP_STRING_ID_DLG_UFS_UnderlineCheck);
-		LocalizeControl(_overlineButton, pSS, XAP_STRING_ID_DLG_UFS_OverlineCheck);
-		LocalizeControl(_strikeButton, pSS, XAP_STRING_ID_DLG_UFS_StrikeoutCheck);
-	//	LocalizeControl(_strikeButton, pSS, XAP_STRING_ID_DLG_UFS_EncodingLabel);
-		LocalizeControl(_textColorLabel, pSS, XAP_STRING_ID_DLG_UFS_ColorTab);
-		LocalizeControl(_textHighlightColorLabel, pSS, XAP_STRING_ID_DLG_UFS_BGColorTab);
-		LocalizeControl(_noHighlightColorButton, pSS, XAP_STRING_ID_DLG_UFS_TransparencyCheck);
+
+		LocalizeControl([self window],				pSS, XAP_STRING_ID_DLG_UFS_FontTitle);
+
+		LocalizeControl(_okBtn,						pSS, XAP_STRING_ID_DLG_OK);
+		LocalizeControl(_cancelBtn,					pSS, XAP_STRING_ID_DLG_Cancel);
+		LocalizeControl(_fontLabel,					pSS, XAP_STRING_ID_DLG_UFS_FontLabel);
+		LocalizeControl(_styleLabel,				pSS, XAP_STRING_ID_DLG_UFS_StyleLabel);
+		LocalizeControl(_sizeLabel,					pSS, XAP_STRING_ID_DLG_UFS_SizeLabel);
+		LocalizeControl(_effectLabel,				pSS, XAP_STRING_ID_DLG_UFS_EffectsFrameLabel);
+		LocalizeControl(_strikeButton,				pSS, XAP_STRING_ID_DLG_UFS_StrikeoutCheck);
+		LocalizeControl(_underlineButton,			pSS, XAP_STRING_ID_DLG_UFS_UnderlineCheck);
+		LocalizeControl(_overlineButton,			pSS, XAP_STRING_ID_DLG_UFS_OverlineCheck);
+		LocalizeControl(_strikeButton,				pSS, XAP_STRING_ID_DLG_UFS_StrikeoutCheck);
+	//	LocalizeControl(_strikeButton,				pSS, XAP_STRING_ID_DLG_UFS_EncodingLabel);
+		LocalizeControl(_superscriptButton,			pSS, XAP_STRING_ID_DLG_UFS_SuperScript);
+		LocalizeControl(_subscriptButton,			pSS, XAP_STRING_ID_DLG_UFS_SubScript);
+		LocalizeControl(_textColorLabel,			pSS, XAP_STRING_ID_DLG_UFS_ColorTab);
+		LocalizeControl(_textHighlightColorLabel,	pSS, XAP_STRING_ID_DLG_UFS_BGColorTab);
+		LocalizeControl(_noHighlightColorButton,	pSS, XAP_STRING_ID_DLG_UFS_TransparencyCheck);
 		
 		m_fontDataSource = [[XAP_StringListDataSource alloc] init];
 		[m_fontDataSource loadFontList];
@@ -425,32 +461,35 @@ void XAP_CocoaDialog_FontChooser::_deleteGC(void)
 	else {
 		NSLog(@"Loaded Windows without XAP (%s:%d)", __FILE__, __LINE__);
 	}
+
+	if ([[NSColorPanel sharedColorPanel] isVisible])
+		{
+			[_textColorWell activate:YES];
+		}
 }
 
 -(IBAction)okAction:(id)sender
 {
-	static_cast<XAP_CocoaDialog_FontChooser*>(_xap)->_okAction();
-}
+	[[NSColorPanel sharedColorPanel] orderOut:self];
 
+	static_cast<XAP_CocoaDialog_FontChooser *>(_xap)->_okAction();
+}
 
 -(IBAction)cancelAction:(id)sender
 {
-	static_cast<XAP_CocoaDialog_FontChooser*>(_xap)->_cancelAction();
-}
+	[[NSColorPanel sharedColorPanel] orderOut:self];
 
+	static_cast<XAP_CocoaDialog_FontChooser *>(_xap)->_cancelAction();
+}
 
 -(IBAction)colorWellAction:(id)sender
 {
-//	NSColorPanel*	panel = [NSColorPanel sharedColorPanel];
-//	[panel setTarget:sender];
-//	[panel setColor:[sender color]];
 	if (sender == _textColorWell) {
 		_xap->fgColorChanged();
 	}
 	else if (sender == _textHighlightColorWell) {
 		_xap->bgColorChanged();
 	}
-
 }
 
 -(IBAction)underlineAction:(id)sender
@@ -459,13 +498,11 @@ void XAP_CocoaDialog_FontChooser::_deleteGC(void)
 				([(NSControl*)sender intValue] == NSOffState ? 0 : 1);
 }
 
-
 -(IBAction)overlineAction:(id)sender
 {
 	static_cast<XAP_CocoaDialog_FontChooser*>(_xap)->overlineChanged
 			([(NSControl*)sender intValue] == NSOffState ? 0 : 1);
 }
-
 
 -(IBAction)strikeoutAction:(id)sender
 {
@@ -473,13 +510,23 @@ void XAP_CocoaDialog_FontChooser::_deleteGC(void)
 			([(NSControl*)sender intValue] == NSOffState ? 0 : 1);
 }
 
-
--(IBAction)transparentAction:(id)sender
+-(IBAction)superscriptAction:(id)sender
 {
-	static_cast<XAP_CocoaDialog_FontChooser*>(_xap)->strikeoutChanged
+	static_cast<XAP_CocoaDialog_FontChooser*>(_xap)->superscriptChanged
 			([(NSControl*)sender intValue] == NSOffState ? 0 : 1);
 }
 
+-(IBAction)subscriptAction:(id)sender
+{
+	static_cast<XAP_CocoaDialog_FontChooser*>(_xap)->subscriptChanged
+			([(NSControl*)sender intValue] == NSOffState ? 0 : 1);
+}
+
+-(IBAction)transparentAction:(id)sender
+{
+	static_cast<XAP_CocoaDialog_FontChooser*>(_xap)->transparencyChanged
+			([(NSControl*)sender intValue] == NSOffState ? 0 : 1);
+}
 
 - (void)tableViewSelectionDidChange:(NSNotification *)aNotification
 {
@@ -504,21 +551,28 @@ void XAP_CocoaDialog_FontChooser::_deleteGC(void)
 
 -(void)setStrikeout:(bool)value
 {
-	[_strikeButton setIntValue:value];
+	[_strikeButton setState:(value ? NSOnState : NSOffState)];
 }
-
 
 -(void)setUnderline:(bool)value
 {
-	[_underlineButton setIntValue:value];
+	[_underlineButton setState:(value ? NSOnState : NSOffState)];
 }
-
 
 -(void)setOverline:(bool)value
 {
-	[_overlineButton setIntValue:value];
+	[_overlineButton setState:(value ? NSOnState : NSOffState)];
 }
 
+-(void)setSuperscript:(bool)value
+{
+	[_superscriptButton setState:(value ? NSOnState : NSOffState)];
+}
+
+-(void)setSubscript:(bool)value
+{
+	[_subscriptButton setState:(value ? NSOnState : NSOffState)];
+}
 
 -(void)selectFont:(char*)value
 {

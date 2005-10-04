@@ -2387,21 +2387,24 @@ bool IE_Imp_TableHelper::tdEnd(void)
 	m_current->m_tzone = m_tzone;
 	UT_GenericVector<CellHelper *>* pVecCells = NULL;
 	pCell = NULL;
-	if(pfsThis == NULL)
+	if(true)
 		{
 			if(m_tzone == tz_head)
 				{
-					pCell = getCellAtRowCol(m_thead,m_row_next,m_col_next+colspan);
+					if(pfsThis == NULL)
+						pCell = getCellAtRowCol(m_thead,m_row_next,m_col_next+colspan);
 					pVecCells = & m_thead;
 				}
 			else if(m_tzone == tz_foot)
 				{
-					pCell = getCellAtRowCol(m_tfoot,m_row_next,m_col_next+colspan);
+					if(pfsThis == NULL)
+						pCell = getCellAtRowCol(m_tfoot,m_row_next,m_col_next+colspan);
 					pVecCells = & m_tfoot;
 				}
 			else if(m_tzone == tz_body)
 				{
-					pCell = getCellAtRowCol(m_tbody,m_row_next,m_col_next+colspan);
+					if(pfsThis == NULL)
+						pCell = getCellAtRowCol(m_tbody,m_row_next,m_col_next+colspan);
 					pVecCells = & m_tbody;
 				}
 		}

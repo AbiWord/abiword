@@ -58,14 +58,14 @@ Be aware that because the site does not receive too much attention,
 http://www.abisource.com/developers/ is obsolete in some areas and
 you will probably find the developers on list and IRC more helpful.
 
-If you are not a programmer, you can still join the Abiword Developer
+If you are not a programmer, you can still join the AbiWord Developer
 mailing list and contribute in other ways.  The easiest way to help is
 to simply use the program and report any bugs you find.  A tool called
 Bugzilla is available on our web site for exactly this purpose.
 Contributions can be easily made in the areas of documentation,
 site maintenance, quality assurance (bug-checking, a little harder),
 and product promotion.  Whatever you're good at, the friendly folks
-on the Abiword Developer mailing list are perfectly willing to find 
+on the AbiWord Developer mailing list are perfectly willing to find 
 something for you to help with and there is always plenty to be done.  
 We appreciate any help we can get.
 
@@ -94,7 +94,7 @@ on par with the Unix port yet.
 
 ---- Legalese
 
-Copyright 1998-2003 AbiSource, Inc.
+Copyright 1998-2005 AbiSource, Inc.
 All Rights Reserved
 
 This program is free software; you can redistribute it and/or

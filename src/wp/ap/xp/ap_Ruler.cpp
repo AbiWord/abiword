@@ -21,6 +21,7 @@
 
 #include <stdio.h>
 #include "ut_types.h"
+#include "ut_locale.h"
 #include "ut_assert.h"
 #include "gr_Graphics.h"
 #include "ap_Ruler.h"
@@ -37,6 +38,8 @@ ap_RulerTicks::ap_RulerTicks(GR_Graphics * pG, UT_Dimension dim)
 	m_pG = pG;
 	dimType = dim;
 	
+	UT_LocaleTransactor t(LC_NUMERIC, "C");
+
 	// we scale the units up by UnitScale to avoid round-off problems.
 	
 	switch (dimType)
@@ -78,7 +81,7 @@ ap_RulerTicks::ap_RulerTicks(GR_Graphics * pG, UT_Dimension dim)
 		tickUnit = UT_convertToLogicalUnits(Buffer);
 		tickLong = 2;
 		tickLabel = 4;
-		tickScale = 1;
+		tickScale = 10;
 		sprintf(Buffer, "%fmm", (dBasicUnit / 2 * (double)tickUnitScale));
 		dragDelta = UT_convertToLogicalUnits(Buffer);
 		break;

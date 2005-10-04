@@ -28,6 +28,8 @@
 typedef UT_sint32 IEMergeType;
 #define IEMT_Unknown ((IEMergeType)-1)
 
+class IE_MailMerge;
+
 class ABI_EXPORT IE_MergeSniffer : public UT_AbiObject
 {
   friend class IE_MailMerge;
@@ -134,6 +136,8 @@ public:
 	
 	void setListener (IE_MailMerge_Listener * listener);
 	
+	const UT_GenericStringMap<UT_UTF8String *> & getCurrentMapping() const { return m_map; }
+
 protected:
 	
 	IE_MailMerge ();

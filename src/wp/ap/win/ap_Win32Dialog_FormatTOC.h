@@ -43,12 +43,14 @@ public:
 	virtual void            activate(void);	
 	void 					setStyle(HWND hwndCtrl);
 	void 					setMainLevel(UT_sint32 iLevel);
+	UT_sint32				m_iStartValue;
 
 private:
 
 	AP_Win32Dialog_FormatTOC_Sheet* 	m_pSheet;
 	AP_Win32Dialog_FormatTOC_General*	m_pGeneral;
 	AP_Win32Dialog_FormatTOC_Layout*	m_pLayout;
+	
 
 };
 
@@ -63,6 +65,7 @@ public:
 	void						setContainer(AP_Win32Dialog_FormatTOC*	pData){m_pData=pData;};
 	AP_Win32Dialog_FormatTOC*	getContainer(){return m_pData;};
 	static int CALLBACK			s_sheetInit(HWND hwnd,  UINT uMsg,  LPARAM lParam);
+	void						_onInitDialog(HWND hwnd);
 
 private:
 
@@ -80,8 +83,7 @@ public:
 	void						setContainer(AP_Win32Dialog_FormatTOC*	pData){m_pData=pData;};
 	AP_Win32Dialog_FormatTOC*	getContainer(){return m_pData;};	
 	void						_fillGUI(void);
-	virtual void				_onCommand(HWND hWnd, WPARAM wParam, LPARAM lParam);
-	
+	virtual void				_onCommand(HWND hWnd, WPARAM wParam, LPARAM lParam);	
 private:
 
 	virtual	void				_onInitDialog();

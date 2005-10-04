@@ -181,26 +181,69 @@ static bool s_createDirectoryIfNecessary(const char * szDir, bool publicdir = fa
 */
 bool AP_CocoaApp::initialize(void)
 {
+	static const char * suffix = "/Library/Application Support/AbiSuite";
+
+	if (s_createDirectoryIfNecessary(suffix, true)) // let's create some system-level directories also, if we can
+		{
+			UT_UTF8String path(suffix);
+
+			path += "/dictionary";
+			s_createDirectoryIfNecessary(path.utf8_str(), true);
+
+			path  = suffix;
+			path += "/templates";
+			s_createDirectoryIfNecessary(path.utf8_str(), true);
+
+			path  = suffix;
+			path += "/Plug-ins";
+			s_createDirectoryIfNecessary(path.utf8_str(), true);
+		}
+
     const char * szUserPrivateDirectory = getUserPrivateDirectory();
 
     bool bVerified = false;
+
 	if (szUserPrivateDirectory)
 		{
-			static const char * suffix = "/Application Support/AbiSuite";
-			int suffix_length = strlen (suffix);
-			int usrprv_length = strlen (szUserPrivateDirectory);
-			if (usrprv_length > suffix_length)
-				if (strcmp (szUserPrivateDirectory + (usrprv_length - suffix_length), suffix) == 0)
-					{
-						UT_String path(szUserPrivateDirectory, usrprv_length - suffix_length);
+			int suffix_length = strlen(suffix);
+			int usrprv_length = strlen(szUserPrivateDirectory);
 
-						if (s_createDirectoryIfNecessary (path.c_str ()))
+			if (usrprv_length > suffix_length)
+				if (strcmp(szUserPrivateDirectory + (usrprv_length - suffix_length), suffix) == 0)
+					{
+						UT_UTF8String path(szUserPrivateDirectory, usrprv_length - suffix_length);
+
+						if (s_createDirectoryIfNecessary(path.utf8_str()))
 							{
-								path += "/Application Support";
-								if (s_createDirectoryIfNecessary (path.c_str ()))
+								path += "/Library";
+								if (s_createDirectoryIfNecessary(path.utf8_str()))
 									{
-										path += "/AbiSuite";
-										if (s_createDirectoryIfNecessary (path.c_str ())) bVerified = true;
+										path += "/Application Support";
+										if (s_createDirectoryIfNecessary(path.utf8_str()))
+											{
+												UT_UTF8String path2(path);
+
+												path2 += "/Enchant";
+												s_createDirectoryIfNecessary(path2.utf8_str());
+
+												path += "/AbiSuite";
+												if (s_createDirectoryIfNecessary(path.utf8_str()))
+													{
+														bVerified = true;
+
+														path2  = path;
+														path2 += "/dictionary";
+														s_createDirectoryIfNecessary(path2.utf8_str());
+
+														path2  = path;
+														path2 += "/templates";
+														s_createDirectoryIfNecessary(path2.utf8_str());
+
+														path2  = path;
+														path2 += "/Plug-ins";
+														s_createDirectoryIfNecessary(path2.utf8_str());
+													}
+											}
 									}
 							}
 					}
@@ -450,7 +493,7 @@ bool AP_CocoaApp::getPrefsValueDirectory(bool bAppSpecific,
 */
 const char * AP_CocoaApp::getAbiSuiteAppDir(void) const
 {
-	static const char * SystemAppDir = "/Library/Application Support/AbiSuite/AbiWord";
+	static const char * SystemAppDir = "/Library/Application Support/AbiSuite/AbiWord"; // FIXME ??
 	return SystemAppDir;
 #if 0
     // we return a static string, use it quickly.
@@ -548,14 +591,26 @@ void AP_CocoaApp::pasteFromClipboard(PD_DocumentRange * pDocRange, bool bUseClip
     unsigned char * pData = NULL;
     UT_uint32 iLen = 0;
 
-    bool bFoundOne = m_pClipboard->getClipboardData(aszFormatsAccepted,(void**)&pData,&iLen,&szFormatFound);
+    bool bFoundOne = false;
+	
+	if (bHonorFormatting) {
+		bFoundOne = m_pClipboard->getClipboardData(aszFormatsAccepted,(void**)&pData,&iLen,&szFormatFound);
+	}
+	else {
+		const char * formats[] = {
+							XAP_CocoaClipboard::XAP_CLIPBOARD_TEXTPLAIN_8BIT, 
+							XAP_CocoaClipboard::XAP_CLIPBOARD_STRING,
+							NULL 
+							};
+		bFoundOne = m_pClipboard->getClipboardData(formats,(void**)&pData,&iLen,&szFormatFound);
+	}
     if (!bFoundOne)
     {
 		UT_DEBUGMSG(("PasteFromClipboard: did not find anything to paste.\n"));
 		return;
     }
 	
-    if (strcmp(szFormatFound, XAP_CocoaClipboard::XAP_CLIPBOARD_RTF) == 0 && bHonorFormatting)
+    if (strcmp(szFormatFound, XAP_CocoaClipboard::XAP_CLIPBOARD_RTF) == 0)
     {
 		iLen = UT_MIN(iLen,strlen((const char *)pData));
 		UT_DEBUGMSG(("PasteFromClipboard: pasting %d bytes in format [%s].\n",iLen,szFormatFound));
@@ -563,7 +618,6 @@ void AP_CocoaApp::pasteFromClipboard(PD_DocumentRange * pDocRange, bool bUseClip
 		IE_Imp_RTF * pImpRTF = new IE_Imp_RTF(pDocRange->m_pDoc);
 		pImpRTF->pasteFromBuffer(pDocRange,pData,iLen);
 		DELETEP(pImpRTF);
-
     }
 	else if (   (strcmp(szFormatFound, XAP_CocoaClipboard::XAP_CLIPBOARD_TEXTPLAIN_8BIT) == 0)
 		   || (strcmp(szFormatFound, XAP_CocoaClipboard::XAP_CLIPBOARD_STRING) == 0))
@@ -629,23 +683,13 @@ void AP_CocoaApp::pasteFromClipboard(PD_DocumentRange * pDocRange, bool bUseClip
 }
 
 /*!
-  Theoretically, this should determine if we can paste from the
-  cliboard.  However, it isn't really possible to get this info, since
-  X has a weird clipboard model.  So we always return true.  If we
-  return true with no data on the clipboard, then the paste just ends
-  up being empty.  As far as we can tell, this has no bad effects.  
-  \bug Is this really right?  It seems like a hack.  
-  \return Always true. 
+  This should determine if we can paste from the
+  cliboard. 
 */
 bool AP_CocoaApp::canPasteFromClipboard(void)
 {
-    const char * szFormatFound = NULL;
-    unsigned char * pData = NULL;
-    UT_uint32 iLen = 0;
-
     // first, try to see if we can paste from the clipboard
-    bool bFoundOne = m_pClipboard->getClipboardData(aszFormatsAccepted,(void**)&pData,&iLen,&szFormatFound);
-	FREEP(pData);
+    bool bFoundOne = m_pClipboard->hasFormats(aszFormatsAccepted);
 	
 	return bFoundOne;
 }

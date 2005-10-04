@@ -1,0 +1,60 @@
+# -*-shell-script-*-
+
+### ATTENTION ###
+This file is not maintained and should be brought up to par with abiword-gnome.apspec before an eventual release of an abiword-gtk autopackage.
+#################
+
+[Meta]
+RootName: @abisource.org/abiword-gtk:@VERSION@
+DisplayName: AbiWord Word Processor
+ShortName: abiword-gtk
+Maintainer: Abi the Ant - http://www.abisource.com/
+Packager: Robert Staudinger <robsta@stereolyzer.net>
+Summary: AbiWord is a lightweight word processing application.
+SoftwareVersion: @VERSION@
+AutopackageTarget: 1.0
+PackageVersion: 1
+
+# Only uncomment InterfaceVersion if your package exposes interfaces to other software,
+# for instance if it includes DSOs or python/perl modules. See the developer guide for more info,
+# or ask on autopackage-dev if you don't understand interface versioning in autopackage.
+#
+# InterfaceVersion: 0.0
+
+[Description]
+AbiWord is a multi-platform word processor with a GTK+ interface on the UNIX platform. This version is built against gtk only to ensure maximum portability through a minimal set of dependencies. Abiword with the GNOME front-end is part of the GNOME Office Suite. AbiWord is made available under the GNU GPL license.
+
+[BuildPrepare]
+echo '#!/bin/bash' > configure
+echo '../abi/configure $@' >> configure
+chmod +x configure
+prepareBuild --prefix=/bail/if/binreloc/fails --enable-binreloc --disable-gnome --disable-gucharmap --disable-debug --disable-symbols
+
+[BuildUnprepare]
+unprepareBuild
+
+[Imports]
+echo '*' | import
+
+[Prepare]
+require @gnu.org/libstdc++ 3
+require @rpm.org/popt 0.0
+require @libpng.org/libpng 3
+require @gtk.org/gtk 2.2
+require @xmlsoft.org/libxml2 2.0
+require @glade.gnome.org/libglade 2.0
+### my skels, use with care!
+require @jig.org/libjpeg 62
+# actually 10.4 but the so seems not to be versioned properly
+require @freedesktop.org/fribidi 0.0	
+require @freedesktop.org/enchant 1.1
+
+[Install]
+# Put your installation script here
+installExe bin/*
+installData share/AbiSuite-@PACKAGE_VERSION@
+installDesktop "Word Processing" share/applications/abiword.desktop
+
+[Uninstall]
+# Usually just the following line is enough to uninstall everything
+uninstallFromLog

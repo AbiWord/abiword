@@ -4,6 +4,7 @@
 ; and modified by Michael D. Pritchett <mpritchett@attglobal.net>
 ; modified by Kenneth J Davis <jeremyd@computer.org>
 
+!include Sections.nsH
 
 ; Uncomment the following define to include plugins that
 ; either lack functionality, are unstable, or otherwise
@@ -28,6 +29,9 @@
 ; Do a Cyclic Redundancy Check to make sure the installer 
 ; was not corrupted by the download.  
 CRCCheck on
+
+; set the compression algorithm used, zlib | bzip2 | lzma
+SetCompressor /SOLID lzma
 
 ; The name of the installer
 Name "AbiWord's Importer/Exporter Plugins"
@@ -63,6 +67,13 @@ DirText "Choose the AbiSuite directory where you previously installed Abiword:"
 
 ; For NSIS 2.xx
 CheckBitmap ..\..\pkg\win\setup\modern.bmp
+
+; Remember if we already enabled Glib or not
+var GLIB_ENABLED 
+
+Function .onInit
+	strcpy $GLIB_ENABLED "no"
+FunctionEnd
 
 ; The stuff that must be installed
 ; binary, license, or whatever
@@ -610,7 +621,7 @@ SubSectionEnd
 ;SectionDivider
 
 
-SubSection /e "Glib/GSF based I/E importer and exporter plugins"
+SubSection /e "Glib based Importers/Exporters"
 
 !macro dlFileMacro remoteFname localFname errMsg
 	!define retryDLlbl retryDL_${__FILE__}${__LINE__}
@@ -651,9 +662,8 @@ SubSection /e "Glib/GSF based I/E importer and exporter plugins"
 !macroend
 !define unzipFile "!insertmacro unzipFileMacro"
 
-
 ; Not required if Glib is already available, otherwise is required
-Section "Download glib 2.4"
+Section "Download glib 2.4" GLIB_IDX
 	SectionIn 2
 
 	;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;
@@ -662,21 +672,21 @@ Section "Download glib 2.4"
 
 	;;;;;;;
 	; iconv
-	${dlFile} "http://www.gimp.org/~tml/gimp/win32/libiconv-1.9.1.bin.woe32.zip" "$TEMP\libiconv-1.9.1.bin.woe32.zip" "ERROR: failed to download http://www.gimp.org/~tml/gimp/win32/libiconv-1.9.1.bin.woe32.zip"
+	${dlFile} "http://www.abisource.com/downloads/dependencies/libiconv/libiconv-1.9.1.bin.win32.zip" "$TEMP\libiconv-1.9.1.bin.win32.zip" "ERROR: failed to download http://www.abisource.com/downloads/dependencies/libiconv/libiconv-1.9.1.bin.win32.zip"
 	StrCmp $0 "success" 0 doCleanup
-	${unzipFile} "$TEMP\libiconv-1.9.1.bin.woe32.zip" "$INSTDIR\AbiWord" "bin\iconv.dll" "ERROR: failed to extract iconv.dll from libiconv-1.9.1.bin.woe32.zip"
+	${unzipFile} "$TEMP\libiconv-1.9.1.bin.win32.zip" "$INSTDIR\AbiWord" "bin\iconv.dll" "ERROR: failed to extract iconv.dll from libiconv-1.9.1.bin.win32.zip"
 	StrCmp $0 "success" 0 doCleanup
 
 	;;;;;;
 	; intl
-	${dlFile} "http://www.gimp.org/~tml/gimp/win32/gettext-runtime-0.13.1.zip" "$TEMP\gettext-runtime-0.13.1.zip" "ERROR: failed to download http://www.gimp.org/~tml/gimp/win32/gettext-runtime-0.13.1.zip"
+	${dlFile} "http://www.abisource.com/downloads/dependencies/gettext/gettext-runtime-0.13.1.zip" "$TEMP\gettext-runtime-0.13.1.zip" "ERROR: failed to download http://www.abisource.com/downloads/dependencies/gettext/gettext-runtime-0.13.1.zip"
 	StrCmp $0 "success" 0 doCleanup
 	${unzipFile} "$TEMP\gettext-runtime-0.13.1.zip" "$INSTDIR\AbiWord" "bin\intl.dll" "ERROR: failed to extract intl.dll from gettext-runtime-0.13.1.zip"
 	StrCmp $0 "success" 0 doCleanup
 
 	;;;;;;;;;;;;;;;;;;
 	; glib and gobject
-	${dlFile} "http://www.gimp.org/~tml/gimp/win32/glib-2.4.5.zip" "$TEMP\glib-2.4.5.zip" "ERROR: failed to download http://www.gimp.org/~tml/gimp/win32/glib-2.4.5.zip"
+	${dlFile} "http://www.abisource.com/downloads/dependencies/glib/glib-2.4.5.zip" "$TEMP\glib-2.4.5.zip" "ERROR: failed to download http://www.abisource.com/downloads/dependencies/glib/glib-2.4.5.zip"
 	StrCmp $0 "success" 0 doCleanup
 	${unzipFile} "$TEMP\glib-2.4.5.zip" "$INSTDIR\AbiWord" "bin\libglib-2.0-0.dll" "ERROR: failed to extract libglib-2.0-0.dll from glib-2.4.5.zip"
 	StrCmp $0 "success" 0 doCleanup
@@ -685,14 +695,14 @@ Section "Download glib 2.4"
 
 	;;;;;;;;
 	; libgsf
-	${dlFile} "http://www.gimp.org/~tml/gimp/win32/libgsf-1.8.2-20040121.zip" "$TEMP\libgsf-1.8.2-20040121.zip" "ERROR: failed to download http://www.gimp.org/~tml/gimp/win32/libgsf-1.8.2-20040121.zip"
+	${dlFile} "http://www.abisource.com/downloads/dependencies/libgsf/libgsf-1.8.2-20040121.zip" "$TEMP\libgsf-1.8.2-20040121.zip" "ERROR: failed to download http://www.abisource.com/downloads/dependencies/libgsf/libgsf-1.8.2-20040121.zip"
 	StrCmp $0 "success" 0 doCleanup
 	${unzipFile} "$TEMP\libgsf-1.8.2-20040121.zip" "$INSTDIR\AbiWord" "bin\libgsf-1-1.dll" "ERROR: failed to extract libgsf-1-1.dll from libgsf-1.8.2-20040121.zip"
 	StrCmp $0 "success" 0 doCleanup
 
 	;;;;;;;;;
 	; libxml2
-	${dlFile} "http://dl.sourceforge.net/gnuwin32/libxml2-2.4.12-bin.zip" "$TEMP\libxml2-2.4.12-bin.zip" "ERROR: failed to download http://dl.sourceforge.net/gnuwin32/libxml2-2.4.12-bin.zip"
+	${dlFile} "http://www.abisource.com/downloads/dependencies/libxml2/libxml2-2.4.12-bin.zip" "$TEMP\libxml2-2.4.12-bin.zip" "ERROR: failed to download http://www.abisource.com/downloads/dependencies/libxml2/libxml2-2.4.12-bin.zip"
 	StrCmp $0 "success" 0 doCleanup
 	${unzipFile} "$TEMP\libxml2-2.4.12-bin.zip" "$INSTDIR\AbiWord" "bin\libxml2.dll" "ERROR: failed to extract libxml2.dll from libxml2-2.4.12-bin.zip"
 	StrCmp $0 "success" 0 doCleanup
@@ -739,7 +749,7 @@ SubSectionEnd
 
 SubSection /e "File Format Importers/Exporters"
 
-Section "OpenWriter (*.sxw) Plugin"
+Section "OpenWriter (*.sxw) Plugin" SXW_IDX
 	SectionIn 2
 
 	; Testing clause to Overwrite Existing Version - if exists
@@ -758,7 +768,7 @@ SectionEnd
 
 ;SectionDivider
 
-Section "AbiSDW (*.sdw) Plugin"
+Section "AbiSDW (*.sdw) Plugin" SDW_IDX
 	SectionIn 2
 
 	; Testing clause to Overwrite Existing Version - if exists
@@ -777,7 +787,7 @@ SectionEnd
 
 ;SectionDivider
 
-Section "AbiWordPerfect (*.wpd) Plugin"
+Section "AbiWordPerfect (*.wpd) Plugin" WP_IDX
 	SectionIn 2
 
 	; Testing clause to Overwrite Existing Version - if exists
@@ -790,9 +800,13 @@ Section "AbiWordPerfect (*.wpd) Plugin"
 
 	DoInstall:
         SetOutPath $INSTDIR\AbiWord\bin
-        File "libwpd-1.dll"
+        File "libwpd-0.8.dll"
+
+        SetOutPath $INSTDIR\AbiWord\bin
+        File "libwpd-stream-0.8.dll"
+
         SetOutPath $INSTDIR\AbiWord\plugins
-	File "AbiWordPerfect.dll"
+	  File "AbiWordPerfect.dll"
 
   
 	End:
@@ -840,7 +854,7 @@ SubSectionEnd  ; glib based plugins
 
 ; OPTIONAL Create Uninstaller for Plugin
 Section "Create Uninstaller for I/E Plugins"
-	SectionIn 2
+	SectionIn 1 2
 	; Write the uninstall keys for Windows
 	; N.B. This needs to include a version number or unique identifier.  
 	; More than one version of Abiword but only one Control Panel.  
@@ -902,7 +916,8 @@ Section "Uninstall"
 	Delete "$INSTDIR\..\bin\libglib-2.0-0.dll"
 	Delete "$INSTDIR\..\bin\libgobject-2.0-0.dll"
 	Delete "$INSTDIR\..\bin\libgsf-1-1.dll"
-	Delete "$INSTDIR\..\bin\libwpd-1.dll"
+	Delete "$INSTDIR\..\bin\libwpd-0.8.dll"
+	Delete "$INSTDIR\..\bin\libwpd-stream-0.8.dll"
 	Delete "$INSTDIR\..\bin\libxml2.dll"
 
 !ifdef 0
@@ -919,5 +934,26 @@ Section "Uninstall"
 	Delete /REBOOTOK "$INSTDIR\UninstallAbiWordIEPlugins.exe"
 
 SectionEnd
+
+; Selection Change Handler 
+Function .onSelChange
+	; Make sure glib is selected when seleting one of the plugins that need it
+	strcmp $GLIB_ENABLED "yes" end_l
+		  
+	!insertmacro SectionFlagIsSet ${SXW_IDX} ${SF_SELECTED} "" sdw_l 
+		!insertmacro SelectSection ${GLIB_IDX}
+		strcpy $GLIB_ENABLED "yes"
+		goto end_l 
+sdw_l:
+	!insertmacro SectionFlagIsSet ${SDW_IDX} ${SF_SELECTED} "" wpd_l 
+		!insertmacro SelectSection ${GLIB_IDX}
+		strcpy $GLIB_ENABLED "yes"
+		goto end_l
+wpd_l: 
+	!insertmacro SectionFlagIsSet ${WP_IDX} ${SF_SELECTED} "" end_l
+		!insertmacro SelectSection ${GLIB_IDX}
+		strcpy $GLIB_ENABLED "yes"
+end_l:
+FunctionEnd
 
 ; eof

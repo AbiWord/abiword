@@ -30,6 +30,12 @@ class XAP_Frame;
 
 @class EV_CocoaMenuDelegate;
 
+@class XAP_CocoaFontFamilyHelper;
+@class XAP_CocoaFontReference;
+@class XAP_CocoaPlugin;
+
+@class AP_CocoaPlugin_MenuIDRef;
+
 @interface XAP_CocoaApplication : NSApplication
 {
 	// 
@@ -91,7 +97,20 @@ enum XAP_CocoaAppMenu_Id
 	NSMenu *				m_AppMenu[XAP_CocoaAppMenu_count__];
 	NSMenuItem *			m_AppItem[XAP_CocoaAppMenu_count__];
 
-	BOOL			m_bFileOpenedDuringLaunch;
+	NSMutableDictionary *	m_FontDictionary;
+
+	NSMutableDictionary *	m_FontReferenceDictionary;
+	NSMutableDictionary *	m_FontFamilyDictionary;
+
+	NSMutableDictionary *	m_MenuIDRefDictionary;
+
+	NSMutableArray *		m_Plugins;
+	NSMutableArray *		m_PluginsTools;
+
+	NSMenuItem *			m_PluginsToolsSeparator;
+
+	NSMutableArray *		m_FilesRequestedDuringLaunch;
+
 	BOOL			m_bApplicationLaunching;
 	BOOL			m_bAutoLoadPluginsAfterLaunch;
 
@@ -148,6 +167,37 @@ enum XAP_CocoaAppMenu_Id
 - (void)clearMenu:(XAP_CocoaAppMenu_Id)appMenu; // except AbiWord & Windows
 - (void)clearAllMenus;                          // except AbiWord & Windows
 
+/**
+ * Look up a font name for the corresponding font family name.
+ * 
+ * \return Returns the corresponding font family name, or nil if none found.
+ */
+- (NSString *)familyNameForFont:(NSString *)fontName;
+
+/**
+ * Look up a font name for the corresponding font family helper.
+ * 
+ * \return Returns a reference to the corresponding font family helper, or nil if none found.
+ */
+- (XAP_CocoaFontReference *)helperReferenceForFont:(NSString *)fontName;
+
+/**
+ * Look up a font family name for the corresponding font family helper.
+ * 
+ * \return Returns the corresponding font family helper, or nil if none found.
+ */
+- (XAP_CocoaFontFamilyHelper *)helperForFontFamily:(NSString *)fontFamilyName;
+
+/**
+ * Create a font family helper for an unknown font or font family name.
+ * 
+ * \return Returns the corresponding font family helper.
+ */
+- (XAP_CocoaFontFamilyHelper *)helperForUnknownFontFamily:(NSString *)fontFamilyName;
+
+- (void)appendPluginMenuItem:(NSMenuItem *)menuItem;
+- (void)removePluginMenuItem:(NSMenuItem *)menuItem;
+
 /* Do we need this? getLastFocussedFrame() should be tracking this now... [TODO!!]
  */
 - (void)setCurrentView:(AV_View *)view inFrame:(XAP_Frame *)frame;
@@ -159,6 +209,53 @@ enum XAP_CocoaAppMenu_Id
 
 - (AV_View *)previousView;
 - (XAP_Frame *)previousFrame;
+
+- (void)notifyFrameViewChange; // [re/un]setCurrentView call this
+
+/**
+ * Load .Abi bundle plugin at path.
+ * 
+ * \return Returns nil on failure.
+ */
+- (XAP_CocoaPlugin *)loadPlugin:(NSString *)path;
+
+/**
+ * \return Returns list of currently loaded plugins.
+ */
+- (NSArray *)plugins;
+
+/**
+ * Checks to see whether the plugins can deactivate, and, if they can, deactivates them.
+ * 
+ * \return Returns false if any of the plugins object.
+ */
+- (BOOL)deactivateAllPlugins;
+
+/**
+ * Checks to see whether the plugins can deactivate, and, if they can, deactivates them.
+ * 
+ * \return Returns false if the plugin objects, unless override is YES.
+ */
+- (BOOL)deactivatePlugin:(XAP_CocoaPlugin *)plugin overridePlugin:(BOOL)override;
+
+/**
+ * This provides a mechanism for associating XAP_CocoaPlugin_MenuItem objects
+ * with a given menu ID.
+ */
+- (void)addRef:(AP_CocoaPlugin_MenuIDRef *)ref forMenuID:(NSNumber *)menuid;
+
+/**
+ * This provides a mechanism for finding XAP_CocoaPlugin_MenuItem objects associated
+ * with a given menu ID.
+ */
+- (AP_CocoaPlugin_MenuIDRef *)refForMenuID:(NSNumber *)menuid;
+
+/**
+ * This provides a mechanism for removing XAP_CocoaPlugin_MenuItem objects associated
+ * with a given menu ID.
+ */
+- (void)removeRefForMenuID:(NSNumber *)menuid;
+
 @end
 
 #endif /* ! XAP_COCOAAPPCONTROLLER_H */

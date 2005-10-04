@@ -241,7 +241,7 @@ void XAP_CocoaDialog_Image::runModal(XAP_Frame * pFrame)
 
 		[self setTextWrap:(_xap->getWrapping()) isEnabled:YES];
 
-		[self setImagePlacement:(_xap->getPositionTo()) isEnabled:YES];
+		[self setImagePlacement:(_xap->getPositionTo()) isEnabled:((_xap->getWrapping() == WRAP_INLINE) ? NO : YES)];
 	}
 }
 
@@ -325,6 +325,14 @@ void XAP_CocoaDialog_Image::runModal(XAP_Frame * pFrame)
 - (void)setPreserveRatio:(BOOL)val
 {
 	[_preserveAspectBtn setState:(val?NSOnState:NSOffState)];
+}
+
+- (IBAction)wrapAction:(id)sender
+{
+	BOOL bEnabled = (([self textWrap] == WRAP_INLINE) ? NO : YES);
+
+	[_imagePlaceLabel  setEnabled:bEnabled];
+	[_imagePlaceMatrix setEnabled:bEnabled];
 }
 
 - (void)setTextWrap:(WRAPPING_TYPE)textWrap isEnabled:(BOOL)enabled

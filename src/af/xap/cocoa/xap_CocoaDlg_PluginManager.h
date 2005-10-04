@@ -27,6 +27,7 @@
 #include <Cocoa/Cocoa.h>
 
 #include "xap_App.h"
+#include "xap_CocoaPlugin.h"
 #include "xap_Dlg_PluginManager.h"
 #include "xap_Module.h"
 
@@ -38,16 +39,24 @@ class XAP_CocoaModule;
 
 @interface XAP_CocoaPluginReference : NSObject
 {
-	NSString *			m_name;
-	NSString *			m_author;
-	NSString *			m_version;
-	NSString *			m_description;
-	NSString *			m_usage;
+	NSAttributedString *	m_entry;
 
-	XAP_CocoaModule *	m_module;
+	NSString *				m_name;
+	NSString *				m_author;
+	NSString *				m_version;
+	NSString *				m_description;
+	NSString *				m_usage;
+
+	XAP_CocoaModule *		m_module;
+	XAP_CocoaPlugin *		m_plugin;
 }
-- (id)initWithModule:(XAP_CocoaModule *)pluginModule;
+- (id)initWithModule:(XAP_CocoaModule *)module;
+- (id)initWithPlugin:(XAP_CocoaPlugin *)plugin;
 - (void)dealloc;
+
+- (void)setActive:(BOOL)active;
+
+- (NSAttributedString *)entry;
 
 - (NSString *)name;
 - (NSString *)author;
@@ -56,10 +65,13 @@ class XAP_CocoaModule;
 - (NSString *)usage;
 
 - (XAP_CocoaModule *)module;
+- (XAP_CocoaPlugin *)plugin;
 @end
 
 @interface XAP_CocoaDlg_PluginManagerController : NSWindowController <XAP_CocoaDialogProtocol>
 {
+	IBOutlet NSButton *		oForceDeactivation;
+	IBOutlet NSButton *		oActivateBtn;
 	IBOutlet NSButton *		oDeactivateBtn;
 	IBOutlet NSButton *		oDeactivateAllBtn;
 	IBOutlet NSButton *		oInstallBtn;
@@ -86,6 +98,7 @@ class XAP_CocoaModule;
 - (void)dealloc;
 
 - (IBAction)closeAction:(id)sender;
+- (IBAction)activateAction:(id)sender;
 - (IBAction)deactivateAction:(id)sender;
 - (IBAction)deactivateAllAction:(id)sender;
 - (IBAction)installAction:(id)sender;

@@ -219,9 +219,6 @@ public:
 	static EV_EditMethod_Fn dragToXYword;
 	static EV_EditMethod_Fn endDrag;
 
-	static EV_EditMethod_Fn dragSelectionBegin;
-	static EV_EditMethod_Fn dragSelectionEnd;
-
 	static EV_EditMethod_Fn extSelToXY;
 	static EV_EditMethod_Fn extSelLeft;
 	static EV_EditMethod_Fn extSelRight;
@@ -821,8 +818,6 @@ static EV_EditMethod s_arrayEditMethods[] =
 	EV_EditMethod(NF(dragFrame), 			0,	""),
 	EV_EditMethod(NF(dragHline), 			0,	""),
 	EV_EditMethod(NF(dragImage),			0,	""),
-	EV_EditMethod(NF(dragSelectionBegin), 0, ""),
-	EV_EditMethod(NF(dragSelectionEnd), 0, ""),
 	EV_EditMethod(NF(dragToXY), 			0,	""),
 	EV_EditMethod(NF(dragToXYword), 		0,	""),
 	EV_EditMethod(NF(dragVisualText),       0, ""),
@@ -4391,30 +4386,6 @@ Defun1(spellAdd)
 
 /*****************************************************************/
 
-Defun(dragSelectionBegin)
-{
-  // begin of drag+drop edit
-
-  CHECK_FRAME;
-  //ABIWORD_VIEW;
-
-  return true;
-}
-
-Defun(dragSelectionEnd)
-{
-  // end of drag+drop edit
-
-  CHECK_FRAME;
-  ABIWORD_VIEW;
-
-  if (pView->isSelectionEmpty())
-    return true;
-
-  pView->endDragSelection(pCallData->m_xPos, pCallData->m_yPos);
-  return true;
-}
-
 
 static void sActualDragToXY(AV_View *  pAV_View, EV_EditMethodCallData * pCallData)
 {
@@ -5272,7 +5243,8 @@ static bool s_doHyperlinkDlg(FV_View * pView)
 			{
 				pRun = pRun->getNextRun();
 			}
-			pos2 = pBL->getPosition(true) + pRun->getBlockOffset();
+			UT_ASSERT_HARMLESS(pRun); // no FPRUN_HYPERLINK found?
+			pos2 = pBL->getPosition(true) + ( pRun ? pRun->getBlockOffset() : 0 );
 		}
 		else
 		{
@@ -6850,7 +6822,7 @@ UT_return_val_if_fail(pDialog, false);
 		{
 			bSubScript = (strstr(h, "subscript") != NULL);
 		}
-		pDialog->setSuperScript(bSubScript);
+		pDialog->setSubScript(bSubScript);
 
 		FREEP(props_in);
 	}
@@ -7723,6 +7695,7 @@ UT_return_val_if_fail(pDialog, false);
 //
 		pView->clearCursorWait();
 		s_pLoadingFrame = NULL;
+		pView->updateScreen(false);
 	}
 
 	pDialogFactory->releaseDialog(pDialog);
@@ -7825,10 +7798,30 @@ static bool s_doZoomDlg(FV_View * pView)
 
 	pDialog->runModal(pFrame);
 
+	switch (pDialog->getZoomType())
+	{
+	case XAP_Frame::z_PAGEWIDTH:
+		pPrefsScheme->setValue(static_cast<const XML_Char*>(XAP_PREF_KEY_ZoomType),
+				       static_cast<const XML_Char*>("Width"));
+		break;
+	case XAP_Frame::z_WHOLEPAGE:
+		pPrefsScheme->setValue(static_cast<const XML_Char*>(XAP_PREF_KEY_ZoomType),
+				       static_cast<const XML_Char*>("Page"));
+		break;
+	default:
+		{
+			UT_UTF8String percent = UT_UTF8String_sprintf("%lu", static_cast<unsigned long>(pDialog->getZoomPercent()));
+			pPrefsScheme->setValue(static_cast<const XML_Char*>(XAP_PREF_KEY_ZoomType),
+					       static_cast<const XML_Char*>(percent.utf8_str()));
+		}
+		break;
+	}
+	pFrame->setZoomType(pDialog->getZoomType());
+	pFrame->quickZoom(pDialog->getZoomPercent());
+
 	// Zoom is instant-apply, no need to worry about processing the
 	// OK/cancel state of the dialog.  Just release it.
 	pDialogFactory->releaseDialog(pDialog);
-
 	return true;
 }
 
@@ -8609,6 +8602,10 @@ Defun1(dlgSpellPrefs)
 	CHECK_FRAME;
 	ABIWORD_VIEW;
 	
+#ifdef XP_TARGET_COCOA
+    return s_doOptionsDlg(pView, 4); // spelling tab
+#endif
+
 #if !defined (WIN32) && !defined (XP_UNIX_TARGET_GTK)
     return s_doOptionsDlg(pView, 1); // spelling tab
 #else
@@ -11054,6 +11051,9 @@ UT_return_val_if_fail(pFrameData, false);
 
 	// the view actually does the dirty work
 	pAV_View->setInsertMode(pFrameData->m_bInsertMode);
+
+	if (pFrameData->m_pStatusBar)
+	  pFrameData->m_pStatusBar->notify(pAV_View, AV_CHG_ALL);
 
 	// POLICY: make this the default for new frames, too
 	XAP_PrefsScheme * pScheme = pPrefs->getCurrentScheme(true);

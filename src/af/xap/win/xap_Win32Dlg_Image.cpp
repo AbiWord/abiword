@@ -203,6 +203,11 @@ BOOL XAP_Win32Dialog_Image::_onCommand(HWND hWnd, WPARAM wParam, LPARAM lParam)
 		{
 			char buf[BUFSIZE];
 			GetDlgItemText( hWnd, wId, buf, BUFSIZE );
+
+			//let the user manually change dimensions too
+			if(!strstr(buf,UT_dimensionName(getPreferedUnits())))
+				strcat(buf,UT_dimensionName(getPreferedUnits()));
+
 			setHeight( buf );
 			setControlText( XAP_RID_DIALOG_IMAGE_EBX_HEIGHT, getHeightString() );
 			setControlText( XAP_RID_DIALOG_IMAGE_EBX_WIDTH, getWidthString() );
@@ -214,6 +219,11 @@ BOOL XAP_Win32Dialog_Image::_onCommand(HWND hWnd, WPARAM wParam, LPARAM lParam)
 		{
 			char buf[BUFSIZE];
 			GetDlgItemText( hWnd, wId, buf, BUFSIZE );
+
+			//let the user manually change dimensions too
+			if(!strstr(buf,UT_dimensionName(getPreferedUnits())))
+				strcat(buf,UT_dimensionName(getPreferedUnits()));
+
 			setWidth( buf );
 			setControlText( XAP_RID_DIALOG_IMAGE_EBX_HEIGHT, getHeightString() );
 			setControlText( XAP_RID_DIALOG_IMAGE_EBX_WIDTH, getWidthString() );

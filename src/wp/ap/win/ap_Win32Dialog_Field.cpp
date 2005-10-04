@@ -121,10 +121,15 @@ void AP_Win32Dialog_Field::SetFieldsList(void)
 		   (fp_FieldFmts[i].m_Num != FPFIELD_footnote_anch) &&
 		   (fp_FieldFmts[i].m_Num != FPFIELD_footnote_ref))
 		{ 
-			SendMessage(m_hwndFormats, LB_ADDSTRING, 0, (LPARAM)fp_FieldFmts[i].m_Desc);
+			UT_sint32 index = SendMessage(m_hwndFormats, LB_ADDSTRING, 0, (LPARAM)fp_FieldFmts[i].m_Desc);
+			if (index != LB_ERR && index != LB_ERRSPACE)
+			{
+				SendMessage(m_hwndFormats, LB_SETITEMDATA, (WPARAM)index, (LPARAM)i);
+			}
 		}
 	}
 	SendMessage(m_hwndFormats, LB_SETCURSEL, 0, 0);
+	_FormatListBoxChange();
 }
 
 #define _DS(c,s)	SetDlgItemText(hWnd,AP_RID_DIALOG_##c,pSS->getValue(AP_STRING_ID_##s))
@@ -150,7 +155,6 @@ BOOL AP_Win32Dialog_Field::_onInitDialog(HWND hWnd, WPARAM wParam, LPARAM lParam
 	m_hwndParam = GetDlgItem(hWnd, AP_RID_DIALOG_FIELD_EDIT_PARAM);
 	SetTypesList();
 	SetFieldsList();
-	SendMessage(m_hwndFormats,LB_SETCURSEL,(WPARAM)0,(LPARAM)0);
 	XAP_Win32DialogHelper::s_centerDialog(hWnd);		
 	return 1;				// 1 == we did not call SetFocus()
 }
@@ -211,15 +215,11 @@ BOOL AP_Win32Dialog_Field::_onCommand(HWND hWnd, WPARAM wParam, LPARAM lParam)
 void AP_Win32Dialog_Field::_FormatListBoxChange(void)
 {
 	m_iTypeIndex = SendMessage(m_hwndTypes, LB_GETCURSEL, 0, 0);
-	fp_FieldTypesEnum  FType = fp_FieldTypes[m_iTypeIndex].m_Type;
 
-	int i;
-	for (i = 0;fp_FieldFmts[i].m_Tag != NULL;i++) 
-	{
-		if( fp_FieldFmts[i].m_Type == FType )
-			break;
-	}
+	UT_sint32 index = SendMessage(m_hwndFormats, LB_GETCURSEL, 0, 0);
+	UT_sint32 tag = SendMessage(m_hwndFormats, LB_GETITEMDATA, index, 0);
+	UT_ASSERT(tag != LB_ERR);
 
-	m_iFormatIndex = SendMessage(m_hwndFormats, LB_GETCURSEL, 0, 0) + i;
+	m_iFormatIndex = tag;
 }
 

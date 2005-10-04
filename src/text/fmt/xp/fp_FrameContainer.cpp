@@ -38,6 +38,7 @@
 #include "fp_TableContainer.h"
 #include "fv_View.h"
 #include "gr_Painter.h"
+#include "fl_BlockLayout.h"
 
 /*!
   Create Frame container
@@ -186,6 +187,55 @@ fl_DocSectionLayout * fp_FrameContainer::getDocSectionLayout(void)
 	return pDSL;
 }
 
+/*!
+ * Fill the supplied vector with a list of the blocks whose lines are affected
+ * by the Frame.
+ */ 
+void fp_FrameContainer::getBlocksAroundFrame(UT_GenericVector<fl_BlockLayout *> & vecBlocks)
+{
+  fp_Page * pPage = getPage();
+  if(pPage == NULL)
+  {
+    return;
+  }
+  UT_uint32 iColLeader = 0;
+  fp_Column * pCol = NULL;
+  fl_BlockLayout * pCurBlock = NULL;
+  fp_Line * pCurLine = NULL;
+  fp_Container * pCurCon = NULL;
+  for(iColLeader = 0; iColLeader < pPage->countColumnLeaders(); iColLeader++)
+  {
+    pCol = pPage->getNthColumnLeader(iColLeader);
+    while(pCol)
+    {
+      UT_uint32 i = 0;
+      UT_sint32 iYCol = pCol->getY(); // Vertical position relative to page.
+      for(i=0; i< pCol->countCons(); i++)
+      {
+	pCurCon = static_cast<fp_Container *>(pCol->getNthCon(i));
+	if(pCurCon->getContainerType() == FP_CONTAINER_LINE)
+	{
+	  pCurLine = static_cast<fp_Line *>(pCurCon);
+	  UT_sint32 iYLine = iYCol + pCurLine->getY();
+	  xxx_UT_DEBUGMSG(("iYLine %d FullY %d FullHeight %d \n",iYLine,getFullY(),getFullHeight()));
+	  if((iYLine + pCurLine->getHeight() > getFullY()) && (iYLine < (getFullY() + getFullHeight())))
+	  {
+	    //
+	    // Line overlaps frame in Height. Add it's block to the vector.
+	    //
+	    if(pCurLine->getBlock() != pCurBlock)
+	    {
+	      pCurBlock = pCurLine->getBlock();
+	      vecBlocks.addItem(pCurBlock);
+	      xxx_UT_DEBUGMSG(("Add Block %x to vector \n",pCurBlock));
+	    }
+	  }
+	}
+      }
+      pCol = pCol->getFollower();
+    }
+  }
+}
 
 /* just a little helper function
  */
@@ -342,7 +392,7 @@ void fp_FrameContainer::draw(dg_DrawArgs* pDA)
 			pDA->bDirtyRunsOnly= false;
 		} 
 		UT_sint32 srcX,srcY;
-
+		getSectionLayout()->checkGraphicTick(pG);
 		srcX = -m_iXpad;
 		srcY = -m_iYpad;
 

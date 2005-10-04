@@ -36,7 +36,7 @@
 CRCCheck on
 
 ; set the compression algorithm used, zlib | bzip2 | lzma
-SetCompressor lzma
+SetCompressor /SOLID lzma
 
 ; where to look for NSIS plugins during setup creation
 ; default includes ./plugins, but we also want to check current directory

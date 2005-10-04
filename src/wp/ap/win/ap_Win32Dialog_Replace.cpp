@@ -81,6 +81,7 @@ void AP_Win32Dialog_Replace::activate(void)
 		char * bufferNormal = new char [lenUnicode + 1];
 		UT_UCS4_strcpy_to_char(bufferNormal, bufferUnicode);
 		SetDlgItemText(m_hWnd,AP_RID_DIALOG_REPLACE_COMBO_FIND,bufferNormal);
+		SendMessage(GetDlgItem(m_hWnd,AP_RID_DIALOG_REPLACE_COMBO_FIND), CB_SETEDITSEL, 0, MAKELONG (0, -1));
 		DELETEP(bufferNormal);
 	}
 	FREEP(bufferUnicode);
@@ -96,6 +97,7 @@ void AP_Win32Dialog_Replace::activate(void)
 			char * bufferNormal = new char [lenUnicode + 1];
 			UT_UCS4_strcpy_to_char(bufferNormal, bufferUnicode);
 			SetDlgItemText(m_hWnd,AP_RID_DIALOG_REPLACE_COMBO_REPLACE,bufferNormal);
+			SendMessage(GetDlgItem(m_hWnd,AP_RID_DIALOG_REPLACE_COMBO_FIND), CB_SETEDITSEL, 0, MAKELONG (0, -1));
 			DELETEP(bufferNormal);
 		}
 		FREEP(bufferUnicode);

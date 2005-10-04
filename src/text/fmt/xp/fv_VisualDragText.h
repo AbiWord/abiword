@@ -28,7 +28,8 @@ typedef enum _FV_VisualDragMode
 	FV_VisualDrag_NOT_ACTIVE,
 	FV_VisualDrag_WAIT_FOR_MOUSE_CLICK,
 	FV_VisualDrag_WAIT_FOR_MOUSE_DRAG,
-	FV_VisualDrag_DRAGGING
+	FV_VisualDrag_DRAGGING,
+	FV_VisualDrag_START_DRAGGING
 } FV_VisualDragMode;
 
 class GR_Graphics;
@@ -79,6 +80,8 @@ private:
 	UT_Timer *			  m_pAutoScrollTimer;
 	UT_sint32			  m_xLastMouse;
 	UT_sint32			  m_yLastMouse;
+
+	bool                  m_bDoingCopy;
 };
 
 #endif /* FV_VISUALDRAGTEXT_H */

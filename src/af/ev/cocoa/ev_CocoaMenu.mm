@@ -47,6 +47,7 @@
 #include "ev_EditEventMapper.h"
 #include "ev_Menu_Actions.h"
 #include "ev_Menu_Labels.h"
+#include "ev_Toolbar_Actions.h"
 
 #include "ap_CocoaFrame.h"
 #include "ap_Menu_Id.h"
@@ -137,20 +138,222 @@ bool EV_CocoaMenuPopup::refreshMenu(AV_View * pView)
 		{
 			[menuItem setTitle:(m_menu->convertToString(szLabel))];
 		}
-	if (bChecked)
-		{
-			[menuItem setState:(bChecked ? NSOnState : NSOffState)];
-		}
+	[menuItem setState:(bChecked ? NSOnState : NSOffState)];
+
 	return bEnabled ? YES : NO;
 }
 
 @end
 
+@implementation EV_CocoaFontTarget
+
+- (id)init
+{
+	if (self = [super init])
+		{
+			m_Fonts = [[NSMutableArray alloc] initWithCapacity:128];
+		}
+	return self;
+}
+
+- (void)dealloc
+{
+	[m_Fonts release];
+	[super dealloc];
+}
+
+- (NSMenuItem *)fontMenuItem:(NSString *)title
+{
+	NSMenuItem * item = [[NSMenuItem alloc] initWithTitle:title action:nil keyEquivalent:@""];
+
+	[item setTarget:self];
+	// [item setAction:@selector(menuSelected:)];
+	[item setTag:((int) (-1))];
+
+	NSMenu * family_menu = [[NSMenu alloc] initWithTitle:title];
+
+	NSFontManager * FM = [NSFontManager sharedFontManager];
+
+	NSArray * Families = [[FM availableFontFamilies] sortedArrayUsingSelector:@selector(compare:)];
+
+	float font_size = [NSFont systemFontSize];
+
+	int tag = 0;
+
+	unsigned family_count = [Families count];
+
+	for (unsigned f_i = 0; f_i < family_count; f_i++)
+		{
+			NSString * Family = [Families objectAtIndex:f_i];
+
+			NSArray * Members = [FM availableMembersOfFontFamily:Family];
+
+			unsigned member_count = [Members count];
+
+			if (member_count == 1)
+				{
+					NSArray * Member = [Members objectAtIndex:0];
+
+					NSString * font_name = [Member objectAtIndex:0];
+
+					NSMenuItem * member_item = [[NSMenuItem alloc] initWithTitle:Family action:nil keyEquivalent:@""];
+
+					if ([member_item respondsToSelector:@selector(setAttributedTitle:)])
+						{
+							NSFont * font = [NSFont fontWithName:font_name size:font_size];
+
+							NSDictionary * attr = [NSDictionary dictionaryWithObject:font forKey:NSFontAttributeName];
+
+							NSAttributedString * attr_title = [[NSAttributedString alloc] initWithString:Family attributes:attr];
+
+							[member_item setAttributedTitle:attr_title];
+
+							[attr_title release];
+						}
+					[member_item setTarget:self];
+					[member_item setAction:@selector(menuSelected:)];
+					[member_item setTag:tag];
+
+					[family_menu addItem:member_item];
+
+					[member_item release];
+
+					[m_Fonts addObject:font_name];
+
+					tag++;
+				}
+			else if (member_count > 1)
+				{
+					NSArray * Member = [Members objectAtIndex:0];
+
+					NSString * font_name = [Member objectAtIndex:0];
+
+					NSMenuItem * family_item = [[NSMenuItem alloc] initWithTitle:Family action:nil keyEquivalent:@""];
+
+					if ([family_item respondsToSelector:@selector(setAttributedTitle:)])
+						{
+							NSFont * font = [NSFont fontWithName:font_name size:font_size];
+
+							NSDictionary * attr = [NSDictionary dictionaryWithObject:font forKey:NSFontAttributeName];
+
+							NSAttributedString * attr_title = [[NSAttributedString alloc] initWithString:Family attributes:attr];
+
+							[family_item setAttributedTitle:attr_title];
+
+							[attr_title release];
+						}
+					[family_item setTarget:self];
+					// [family_item setAction:@selector(menuSelected:)];
+					[family_item setTag:((int) (-1))];
+
+					NSMenu * member_menu = [[NSMenu alloc] initWithTitle:Family];
+
+					for (unsigned m_i = 0; m_i < member_count; m_i++)
+						{
+							Member = [Members objectAtIndex:m_i];
+
+							font_name = [Member objectAtIndex:0];
+
+							NSString * member_name = [Member objectAtIndex:1];
+
+							NSMenuItem * member_item = [[NSMenuItem alloc] initWithTitle:member_name action:nil keyEquivalent:@""];
+
+							if ([member_item respondsToSelector:@selector(setAttributedTitle:)])
+								{
+									NSFont * font = [NSFont fontWithName:font_name size:font_size];
+
+									NSDictionary * attr = [NSDictionary dictionaryWithObject:font forKey:NSFontAttributeName];
+
+									NSAttributedString * attr_title = [[NSAttributedString alloc] initWithString:member_name attributes:attr];
+
+									[member_item setAttributedTitle:attr_title];
+
+									[attr_title release];
+								}
+							[member_item setTarget:self];
+							[member_item setAction:@selector(menuSelected:)];
+							[member_item setTag:tag];
+
+							[member_menu addItem:member_item];
+
+							[member_item release];
+
+							[m_Fonts addObject:font_name];
+
+							tag++;
+						}
+					[family_item setSubmenu:member_menu];
+
+					[member_menu release];
+
+					[family_menu addItem:family_item];
+
+					[family_item release];
+				}
+		}
+	[item setSubmenu:family_menu];
+
+	[family_menu release];
+
+	[item autorelease];
+
+	return item;
+}
+
+- (void)menuSelected:(id)sender
+{
+	int tag = [sender tag];
+	if (tag >= 0)
+		if (XAP_Frame * pFrame = XAP_App::getApp()->getLastFocussedFrame())
+			if (AV_View * pView = pFrame->getCurrentView())
+				{
+					const EV_Toolbar_ActionSet * pToolbarActionSet = XAP_App::getApp()->getToolbarActionSet();
+					UT_ASSERT(pToolbarActionSet);
+					if (!pToolbarActionSet)
+						return;
+
+					const EV_EditMethodContainer * pEditMethodContainer = XAP_App::getApp()->getEditMethodContainer();
+					UT_ASSERT(pEditMethodContainer);
+					if (!pEditMethodContainer)
+						return;
+
+					const EV_Toolbar_Action * pAction = pToolbarActionSet->getAction(AP_TOOLBAR_ID_FMT_FONT);
+					UT_ASSERT(pAction);
+					if (!pAction)
+						return;
+
+					const char * szMethodName = pAction->getMethodName();
+					if (!szMethodName)
+						return;
+
+					EV_EditMethod * pEM = pEditMethodContainer->findEditMethodByName(szMethodName);
+					if (!pEM)
+						return;
+
+					NSString * font_name = [m_Fonts objectAtIndex:tag];
+
+					UT_UCS4String selection([font_name UTF8String]);
+
+					const UT_UCS4Char * pData = selection.ucs4_str();
+					UT_uint32 dataLength = static_cast<UT_uint32>(selection.length());
+
+					EV_EditMethodCallData emcd(pData, dataLength);
+					pEM->Fn(pView, &emcd);
+				}
+}
+
+- (BOOL)validateMenuItem:(id <NSMenuItem>)menuItem
+{
+	return XAP_App::getApp()->getLastFocussedFrame() ? YES : NO;
+}
+
+@end
 
 EV_CocoaMenu::EV_CocoaMenu(XAP_CocoaApp * pCocoaApp, const char * szMenuLayoutName, const char * szMenuLabelSetName, bool bContextMenu) :
 	EV_Menu(pCocoaApp, pCocoaApp->getEditMethodContainer(), szMenuLayoutName, szMenuLabelSetName),
 	m_pCocoaApp(pCocoaApp),
 	m_menuTarget(0),
+	m_fontTarget(0),
 	m_AppMenuCurrent(static_cast<XAP_CocoaAppMenu_Id>(0)),
 	m_menuStack(0),
 	m_buffer(0),
@@ -159,6 +362,7 @@ EV_CocoaMenu::EV_CocoaMenu(XAP_CocoaApp * pCocoaApp, const char * szMenuLayoutNa
 	m_bAddSeparator(false)
 {
 	m_menuTarget = [[EV_CocoaMenuTarget alloc] initWithMenu:this];
+	m_fontTarget = [[EV_CocoaFontTarget alloc] init];
 	UT_ASSERT(m_menuTarget);
 }
 
@@ -168,6 +372,11 @@ EV_CocoaMenu::~EV_CocoaMenu()
 		{
 			[m_menuTarget release];
 			m_menuTarget = 0;
+		}
+	if (m_fontTarget)
+		{
+			[m_fontTarget release];
+			m_fontTarget = 0;
 		}
 	DELETEPV(m_buffer);
 }
@@ -393,6 +602,7 @@ void EV_CocoaMenu::addToAppMenu(XAP_Menu_Id menuid, const EV_Menu_Action * pActi
 							// TODO: setKeyEquivalent (usually Cmd-Q)
 						}
 						break;
+						// fall through...
 
 					default:
 						{
@@ -512,7 +722,7 @@ bool EV_CocoaMenu::menuEvent(XAP_Menu_Id menuid)
 
 	XAP_CocoaAppController * pController = (XAP_CocoaAppController *) [NSApp delegate];
 
-	XAP_Frame * frame = [pController currentFrame]; // ?? static_cast<XAP_CocoaApp*>(XAP_App::getApp())->_getFrontFrame();
+	XAP_Frame * frame = m_pCocoaApp->getLastFocussedFrame();
 
 	AV_View * view = frame ? frame->getCurrentView() : 0;
 
@@ -653,7 +863,7 @@ NSString * EV_CocoaMenu::convertToString(const char * label, bool strip_dots)
 
 	if (strip_dots)
 		{
-			length = static_cast<UT_uint32>(strlen(label));
+			length = static_cast<UT_uint32>(strlen(m_buffer));
 			if (length > 3)
 				{
 					char * ptr = m_buffer + length - 1;

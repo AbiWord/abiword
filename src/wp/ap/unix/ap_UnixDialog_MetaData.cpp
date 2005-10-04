@@ -83,7 +83,7 @@ void AP_UnixDialog_MetaData::eventCancel ()
 }
 
 #define GRAB_ENTRY_TEXT(name) txt = gtk_entry_get_text(GTK_ENTRY(m_entry##name)) ; \
-if( txt && strlen(txt) ) \
+if( txt ) \
 set##name ( txt )
 
 void AP_UnixDialog_MetaData::eventOK ()

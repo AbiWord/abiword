@@ -1,3 +1,5 @@
+/* -*- mode: C++; tab-width: 4; c-basic-offset: 4; -*- */
+
 /* AbiWord
  * Copyright (C) 2003 Dom Lachowicz
  * Copyright (C) 2004 Hubert Figuiere
@@ -47,17 +49,23 @@ public:
 	void			event_Close(void);
 	void            event_Apply(void);
 	void            styleClicked(UT_sint32 row, UT_sint32 col);
+
 	virtual void            destroy(void);
 	virtual void            activate(void);
 	virtual void            notifyActiveFrame(XAP_Frame * pFrame);
 	virtual void            setStyleInGUI(void);
-	NSMutableArray* getItems(void) { return m_items; }
+
+	NSMutableArray *		getItems(void) { return m_items; }
+
 private:
 	void            _fillTree(void);
 	void			_populateWindowData(void);
 
-	AP_CocoaDialog_Stylist_Controller* m_dlg;
-	NSMutableArray* m_items;
+	AP_CocoaDialog_Stylist_Controller *	m_dlg;
+
+	NSMutableArray *	m_items;
+	bool				m_bModal;
+	bool				m_bDialogClosed;
 };
 
 @interface AP_CocoaDialog_Stylist_Controller : NSWindowController 
@@ -68,7 +76,7 @@ private:
 	AP_CocoaDialog_Stylist* _xap;
 }
 - (void)refresh;
-- (void)selectStyleNode:(StyleNode*)node;
+- (void)selectStyleNode:(StyleNode *)childNode childOf:(StyleNode *)parentNode;
 - (IBAction)applyAction:(id)sender;
 - (IBAction)outlineAction:(id)sender;
 @end

@@ -170,6 +170,35 @@ UT_uint32 IE_ImpGraphic::getImporterCount(void)
 	return s_impGraphicTable.size ();
 }
 
+UT_Error IE_ImpGraphic::constructImporterWithDescription(const char * szDesc, IE_ImpGraphic ** ppieg)
+{
+	UT_return_val_if_fail(ppieg,  UT_ERROR);
+	UT_return_val_if_fail(szDesc, UT_ERROR);
+
+	UT_Error err = UT_ERROR;
+
+	UT_uint32 count = s_impGraphicTable.size();
+
+	for (UT_uint32 i = 0; i < count; i++)
+	{
+		const char * szDescription = 0;
+		const char * szSuffixList  = 0;
+
+		IEGraphicFileType ft = 0;
+
+		IE_ImpGraphicSniffer * s = s_impGraphicTable.getNthItem(i);
+
+		if (s->getDlgLabels(&szDescription, &szSuffixList, &ft))
+			if (szDescription)
+				if (UT_strcmp (szDescription, szDesc) == 0)
+				{
+					err = s->constructImporter(ppieg);
+					break;
+				}
+	}
+	return err;
+}
+
 UT_Error IE_ImpGraphic:: constructImporter(const UT_ByteBuf * bytes,
 					   IEGraphicFileType ft,
 					   IE_ImpGraphic **ppieg)

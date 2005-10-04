@@ -1,7 +1,7 @@
 {
     IBClasses = (
         {
-            ACTIONS = {cancelAction = id; okAction = id; setAction = id; }; 
+            ACTIONS = {cancelAction = id; okAction = id; }; 
             CLASS = "AP_CocoaDialog_ToggleCaseController"; 
             LANGUAGE = ObjC; 
             OUTLETS = {

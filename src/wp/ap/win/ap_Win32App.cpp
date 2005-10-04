@@ -207,6 +207,7 @@ bool AP_Win32App::initialize(void)
 			{
 				pDiskStringSet->setFallbackStringSet(m_pStringSet);
 				m_pStringSet = pDiskStringSet;
+                UT_Language_updateLanguageNames();
 				UT_DEBUGMSG(("Using StringSet [%s]\n",szPathname));
 			}
 			else

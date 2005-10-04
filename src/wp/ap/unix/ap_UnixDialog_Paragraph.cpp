@@ -1168,16 +1168,22 @@ void AP_UnixDialog_Paragraph::_syncControls(tControl changed, bool bAll /* = fal
 		{
 		case id_SPIN_LEFT_INDENT:
 			gtk_entry_set_text(GTK_ENTRY(m_spinbuttonLeft), 	_getSpinItemValue(id_SPIN_LEFT_INDENT));
+			break;
 		case id_SPIN_RIGHT_INDENT:
 			gtk_entry_set_text(GTK_ENTRY(m_spinbuttonRight), 	_getSpinItemValue(id_SPIN_RIGHT_INDENT));
+			break;
 		case id_SPIN_SPECIAL_INDENT:
 			gtk_entry_set_text(GTK_ENTRY(m_spinbuttonBy), 		_getSpinItemValue(id_SPIN_SPECIAL_INDENT));
+			break;
 		case id_SPIN_BEFORE_SPACING:
 			gtk_entry_set_text(GTK_ENTRY(m_spinbuttonBefore), 	_getSpinItemValue(id_SPIN_BEFORE_SPACING));
+			break;
 		case id_SPIN_AFTER_SPACING:
 			gtk_entry_set_text(GTK_ENTRY(m_spinbuttonAfter), 	_getSpinItemValue(id_SPIN_AFTER_SPACING));
+			break;
 		case id_SPIN_SPECIAL_SPACING:
 			gtk_entry_set_text(GTK_ENTRY(m_spinbuttonAt), 		_getSpinItemValue(id_SPIN_SPECIAL_SPACING));
+			break;
 		default:
 			break;
 		}

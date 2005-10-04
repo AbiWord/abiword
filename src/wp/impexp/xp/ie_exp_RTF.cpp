@@ -302,7 +302,7 @@ void IE_Exp_RTF::exportHdrFtr(const char * pszHdrFtr , const char * pszHdrFtrID,
 	_rtf_keyword(pszKeyWord);
 	_rtf_keyword("pard");
 	_rtf_keyword("plain");
-	m_pListenerWriteDoc->m_bBlankLine = false;
+	m_pListenerWriteDoc->m_bBlankLine = true;
 	m_pListenerWriteDoc->m_bStartedList = false;
 	UT_DEBUGMSG(("SEVIOR: Doing header \n"));
 //
@@ -2519,8 +2519,8 @@ bool _rtf_font_info::init(const s_RTF_AttrPropAdapter & apa, bool bDoFieldFont)
 			m_szName = szName;
 		}
 	}
-    if (szName == NULL)
-	{
+	if (szName == NULL || UT_strcmp(szName, "NULL") == 0)  // Field-font is "NULL" when there is no special field-font.
+	{                                                      // We don't want it in the \fonttbl
 		return false;
 	}
 

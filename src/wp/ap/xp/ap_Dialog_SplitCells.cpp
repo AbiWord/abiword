@@ -1,3 +1,5 @@
+/* -*- mode: C++; tab-width: 4; c-basic-offset: 4; -*- */
+
 /* AbiWord
  * Copyright (C) 1998 AbiSource, Inc.
  * 
@@ -111,30 +113,39 @@ void AP_Dialog_SplitCells::stopUpdater(void)
 	DELETEP(m_pAutoUpdaterMC);
 	m_pAutoUpdaterMC = NULL;
 }
+
 /*!
  * Autoupdater of the dialog.
  */
 void AP_Dialog_SplitCells::autoUpdateMC(UT_Worker * pTimer)
 {
-
-	UT_return_if_fail (pTimer);
+	UT_return_if_fail(pTimer);
 	
 // this is a static callback method and does not have a 'this' pointer
 
 	AP_Dialog_SplitCells * pDialog = static_cast<AP_Dialog_SplitCells *>(pTimer->getInstanceData());
-	// Handshaking code
-	FV_View * pView = static_cast<FV_View *>(pDialog->getApp()->getLastFocussedFrame()->getCurrentView());
-	PD_Document * pDoc = pView->getDocument();
-	if( pDialog->m_bDestroy_says_stopupdating != true)
+
+	if (pDialog->m_bDestroy_says_stopupdating != true)
 	{
-		pDialog->m_bAutoUpdate_happening_now = true;
-		if(!pDoc->isPieceTableChanging())
+		FV_View * pView = 0;
+
+		if (XAP_Frame * pFrame = pDialog->getApp()->getLastFocussedFrame())
 		{
-			pDialog->setAllSensitivities();
+			pView = static_cast<FV_View *>(pFrame->getCurrentView());
 		}
-		pDialog->m_bAutoUpdate_happening_now = false;
+		if (pView)
+		{
+			PD_Document * pDoc = pView->getDocument();
+
+			if (!pDoc->isPieceTableChanging())
+			{
+				pDialog->m_bAutoUpdate_happening_now = true;
+				pDialog->setAllSensitivities();
+				pDialog->m_bAutoUpdate_happening_now = false;
+			}
+		}
 	}
-}        
+}
 
 /*! 
  * This method sets the sensitivity of the radio buttons to above/below/left/right merges
@@ -144,18 +155,33 @@ void AP_Dialog_SplitCells::autoUpdateMC(UT_Worker * pTimer)
  */
 void AP_Dialog_SplitCells::setAllSensitivities(void)
 {
-    FV_View * pView = static_cast<FV_View *>(m_pApp->getLastFocussedFrame()->getCurrentView());
-	m_iCellSource = pView->getPoint();
-	if(!pView->isInTable())
+	FV_View * pView = 0;
+
+	if (XAP_Frame * pFrame = getApp()->getLastFocussedFrame())
 	{
-		setSensitivity(vert_above,false);
-		setSensitivity(vert_mid,false);
-		setSensitivity(vert_below,false);
-		setSensitivity(hori_left,false);
-		setSensitivity(hori_mid,false);
-		setSensitivity(hori_right,false);
+		pView = static_cast<FV_View *>(pFrame->getCurrentView());
+	}
+	if (!pView)
+	{
+		setSensitivity(vert_above, false);
+		setSensitivity(vert_mid,   false);
+		setSensitivity(vert_below, false);
+		setSensitivity(hori_left,  false);
+		setSensitivity(hori_mid,   false);
+		setSensitivity(hori_right, false);
 		return;
 	}
+	if (!pView->isInTable())
+	{
+		setSensitivity(vert_above, false);
+		setSensitivity(vert_mid,   false);
+		setSensitivity(vert_below, false);
+		setSensitivity(hori_left,  false);
+		setSensitivity(hori_mid,   false);
+		setSensitivity(hori_right, false);
+		return;
+	}
+
 	PT_DocPosition iCurPos = pView->getPoint();
 	m_iCellSource = iCurPos;
 	pView->getCellParams(iCurPos,&m_iLeft,&m_iRight,&m_iTop,&m_iBot);
@@ -245,8 +271,17 @@ void AP_Dialog_SplitCells::setSplitType(AP_CellSplitType iSplitType)
  */
 void AP_Dialog_SplitCells::onSplit(void)
 {
-	FV_View * pView = static_cast<FV_View *>(m_pApp->getLastFocussedFrame()->getCurrentView());
-	pView->cmdSplitCells(m_SplitType);
+	FV_View * pView = 0;
+
+	if (XAP_Frame * pFrame = getApp()->getLastFocussedFrame())
+	{
+		pView = static_cast<FV_View *>(pFrame->getCurrentView());
+	}
+	if (pView)
+	{
+		pView->cmdSplitCells(m_SplitType);
+	}
+	setAllSensitivities();
 }
 
 PT_DocPosition AP_Dialog_SplitCells::getCellSource(void)

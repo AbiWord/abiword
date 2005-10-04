@@ -1,6 +1,9 @@
+/* -*- mode: C++; tab-width: 4; c-basic-offset: 4; -*- */
+
 /* AbiWord
  * Copyright (C) 2000 AbiSource, Inc.
  * Copyright (C) 2001, 2003 Hubert Figuiere
+ * Copyright (C) 2005 Francis Franklin
  * 
  * This program is free software; you can redistribute it and/or
  * modify it under the terms of the GNU General Public License
@@ -30,17 +33,21 @@ class AP_CocoaDialog_New;
 
 @interface AP_CocoaDialog_NewController :  NSWindowController <XAP_CocoaDialogProtocol>
 {
-    IBOutlet NSButton *_cancelBtn;
-    IBOutlet NSButton *_chooseFileBtn;
-    IBOutlet NSButton *_createNewBtn;
-    IBOutlet NSTextField *_documentNameData;
-    IBOutlet NSButton *_okBtn;
-    IBOutlet NSButton *_openBtn;
-    IBOutlet NSButton *_startEmptyBtn;
-    IBOutlet NSTableView *_templateList;
-	AP_CocoaDialog_New*	_xap;
-	XAP_StringListDataSource* _dataSource;
-	NSMutableArray*	m_templates;
+	IBOutlet NSButton *		_cancelBtn;
+	IBOutlet NSButton *		_chooseFileBtn;
+	IBOutlet NSButton *		_createNewBtn;
+	IBOutlet NSButton *		_okBtn;
+	IBOutlet NSButton *		_openBtn;
+
+	IBOutlet NSTextField *	_documentNameData;
+
+	IBOutlet NSTableView *	_templateList;
+
+	AP_CocoaDialog_New *	_xap;
+
+	XAP_StringListDataSource *	_dataSource;
+
+	NSMutableArray *	m_templates;
 }
 - (void)tableViewSelectionDidChange:(NSNotification *)aNotification;
 - (IBAction)cancelAction:(id)sender;
@@ -51,7 +58,6 @@ class AP_CocoaDialog_New;
 - (BOOL)existingBtnState;
 - (void)setExistingBtnState:(BOOL)state;
 - (NSString *)newBtnState;
-- (BOOL)emptyBtnState;
 - (void)setFileName:(NSString*)name;
 @end
 

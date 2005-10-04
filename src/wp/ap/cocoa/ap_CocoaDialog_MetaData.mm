@@ -1,3 +1,5 @@
+/* -*- mode: C++; tab-width: 4; c-basic-offset: 4; -*- */
+
 /* AbiWord
  * Copyright (C) 2000 AbiSource, Inc.
  * Copyright (C) 2001-2003 Hubert Figuiere
@@ -41,7 +43,7 @@
 #define GRAB_ENTRY_TEXT(name) { \
 	NSString* str;\
 	str = [m_dlg GUI##name] ; \
-	if(str && ([str length] > 0)){ \
+	if(str){ \
 	set##name ( [str UTF8String] );} \
 }
 

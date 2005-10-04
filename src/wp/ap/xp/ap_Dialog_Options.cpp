@@ -1506,13 +1506,17 @@ void AP_PreferenceSchemeManager::_constructLanguageArrays()
 	DELETEPV(ppLanguageTemp);
 }
 
+/* TODO: make this dynamic!
+ */
+static const XML_Char * s_internal_units[5] = { "in", "cm", "mm", "pt", "pi" };
+
 UT_uint32 AP_PreferenceSchemeManager::getPopUp_UnitsIndex(const XML_Char * szUnits) const
 {
 	UT_uint32 index = 0;
 
 	if (szUnits)
-		for (UT_uint32 i = 0; i < m_PopUp_UnitsCount; i++)
-			if (strcmp(m_PopUp_UnitsList[i], szUnits) == 0)
+		for (UT_uint32 i = 0; i < 5; i++)
+			if ((strcmp(s_internal_units[i], szUnits) == 0) || (strcmp(m_PopUp_UnitsList[i], szUnits) == 0))
 				{
 					index = i;
 					break;
@@ -1528,21 +1532,21 @@ const XML_Char * AP_PreferenceSchemeManager::reverseTranslate(const char * PopUp
 
 	if (tmp = pSS->getValue(XAP_STRING_ID_DLG_Unit_inch))
 		if (strcmp (tmp, PopUp_Units) == 0)
-			return "inch";
+			return s_internal_units[0];
 	if (tmp = pSS->getValue(XAP_STRING_ID_DLG_Unit_cm))
 		if (strcmp (tmp, PopUp_Units) == 0)
-			return "cm";
+			return s_internal_units[1];
 	if (tmp = pSS->getValue(XAP_STRING_ID_DLG_Unit_mm))
 		if (strcmp (tmp, PopUp_Units) == 0)
-			return "mm";
+			return s_internal_units[2];
 	if (tmp = pSS->getValue(XAP_STRING_ID_DLG_Unit_points))
 		if (strcmp (tmp, PopUp_Units) == 0)
-			return "points";
+			return s_internal_units[3];
 	if (tmp = pSS->getValue(XAP_STRING_ID_DLG_Unit_pica))
 		if (strcmp (tmp, PopUp_Units) == 0)
-			return "pica";
+			return s_internal_units[4];
 
-	return "inch";
+	return s_internal_units[0];
 }
 
 void AP_PreferenceSchemeManager::_constructPopUpArrays()
@@ -1569,6 +1573,8 @@ void AP_PreferenceSchemeManager::_constructPopUpArrays()
 	if (tmp = pSS->getValue(XAP_STRING_ID_DLG_Unit_pica))
 		if (tmpcopy = UT_strdup(tmp))
 			m_PopUp_UnitsList[m_PopUp_UnitsCount++] = tmpcopy;
+
+	UT_ASSERT(m_PopUp_UnitsCount == 5); // must match size of s_internal_units[] // TODO: make dynamic!
 
 	// TODO
 }

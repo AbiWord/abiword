@@ -29,9 +29,20 @@
 
 /*****************************************************************/
 
+@class XAP_CocoaToolbarButton;
+
+@protocol XAP_CocoaButtonController
+- (void)menuWillActivate:(NSMenu *)menu forButton:(XAP_CocoaToolbarButton *)button;
+@end
+
 @interface XAP_CocoaToolbarButton : NSButton
 {
+	NSMenu *	m_menu;
+	id <XAP_CocoaButtonController>	m_controller;
 }
+- (id)initWithFrame:(NSRect)frameRect;
+- (void)setMenu:(NSMenu *)menu withController:(id <XAP_CocoaButtonController>)controller;
+- (void)mouseDown:(NSEvent *)theEvent;
 - (void)drawRect:(NSRect)aRect;
 @end
 

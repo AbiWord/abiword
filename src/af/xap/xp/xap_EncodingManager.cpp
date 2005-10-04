@@ -764,9 +764,12 @@ static const _map langcode_to_winlangcode[]=
    {"zh_CN.GB2312",	"0x804"},     
    {"zh_CN.GBK",	"0x804"}, 
    {"zh_CN.GB18030",	"0x804"}, 
+   {"zh_CN.UTF-8",	"0x804"}, 
    {"zh_HK.BIG5-HKSCS",	"0x404"},  
+   {"zh_HK.UTF-8",	"0x404"},  
    {"zh_TW.BIG5",	"0x404"},  
-    {NULL}
+   {"zh_TW.UTF-8",	"0x404"},  
+   {NULL}
 };
 
 #undef v

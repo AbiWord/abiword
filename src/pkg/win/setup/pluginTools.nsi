@@ -20,6 +20,9 @@
 ; was not corrupted by the download.  
 CRCCheck on
 
+; set the compression algorithm used, zlib | bzip2 | lzma
+SetCompressor /SOLID lzma
+
 ; The name of the installer
 Name "AbiWord's Tools Plugins"
 
@@ -301,7 +304,7 @@ SubSectionEnd
 
 ; OPTIONAL Create Uninstaller for Plugin
 Section "Create Uninstaller for Tools Plugins"
-	SectionIn 2
+	SectionIn 1 2
 	; Write the uninstall keys for Windows
 	; N.B. This needs to include a version number or unique identifier.  
 	; More than one version of Abiword but only one Control Panel.  

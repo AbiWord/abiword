@@ -32,7 +32,6 @@
 #include "xap_UnixFrameImpl.h"
 #include "gr_UnixGraphics.h"
 
-#define CUSTOM_RESPONSE_SET_LANG 1
 
 XAP_Dialog * XAP_UnixDialog_Language::static_constructor(XAP_DialogFactory * pFactory,
 							 XAP_Dialog_Id id)
@@ -51,7 +50,7 @@ void XAP_UnixDialog_Language::s_lang_dblclicked(GtkTreeView *treeview,
 												GtkTreeViewColumn *arg2,
 												XAP_UnixDialog_Language * me)
 {
-	gtk_dialog_response (GTK_DIALOG(me->m_windowMain), CUSTOM_RESPONSE_SET_LANG);
+	gtk_dialog_response (GTK_DIALOG(me->m_windowMain), GTK_RESPONSE_CLOSE);
 }
 
 XAP_UnixDialog_Language::~XAP_UnixDialog_Language(void)
@@ -87,6 +86,9 @@ void XAP_UnixDialog_Language::event_setLang()
 	      _setLanguage(m_ppLanguages[row]);
 	      m_bChangedLanguage = true;
 		  m_answer = XAP_Dialog_Language::a_OK;
+
+		  bool b = gtk_toggle_button_get_active (GTK_TOGGLE_BUTTON(m_cbDefaultLanguage));
+		  setMakeDocumentDefault(b);
 	    }
 	  else {
 		  m_answer = XAP_Dialog_Language::a_CANCEL;
@@ -95,11 +97,6 @@ void XAP_UnixDialog_Language::event_setLang()
 		UT_ASSERT_NOT_REACHED();
 		m_answer = XAP_Dialog_Language::a_CANCEL;
 	}
-}
-
-void XAP_UnixDialog_Language::event_Cancel()
-{
-	m_answer = XAP_Dialog_Language::a_CANCEL;
 }
 
 GtkWidget * XAP_UnixDialog_Language::constructWindow(void)
@@ -122,12 +119,18 @@ GtkWidget * XAP_UnixDialog_Language::constructWindow(void)
 	// might need to be queried or altered later
 	m_windowMain = glade_xml_get_widget(xml, "xap_UnixDlg_Language");
 	m_pLanguageList = glade_xml_get_widget(xml, "tvAvailableLanguages");
+	m_lbDefaultLanguage = glade_xml_get_widget(xml, "lbDefaultLanguage");
+	m_cbDefaultLanguage = glade_xml_get_widget(xml, "cbDefaultLanguage");
 
 	UT_UTF8String s;
 	pSS->getValueUTF8(XAP_STRING_ID_DLG_ULANG_LangTitle,s);
 	gtk_window_set_title (GTK_WINDOW(m_windowMain), s.utf8_str());
 	localizeLabelMarkup (glade_xml_get_widget(xml, "lbAvailableLanguages"), pSS, XAP_STRING_ID_DLG_ULANG_AvailableLanguages);
-	localizeButtonUnderline (glade_xml_get_widget(xml, "btSetLanguage"), pSS, XAP_STRING_ID_DLG_ULANG_SetLangButton);
+	getDocDefaultLangDescription(s);
+	gtk_label_set_text (GTK_LABEL(m_lbDefaultLanguage), s.utf8_str());
+	getDocDefaultLangCheckboxLabel(s);
+	gtk_button_set_label (GTK_BUTTON(m_cbDefaultLanguage), s.utf8_str());
+	gtk_toggle_button_set_active (GTK_TOGGLE_BUTTON(m_cbDefaultLanguage), isMakeDocumentDefault());
 
 	// add a column to our TreeViews
 
@@ -206,15 +209,10 @@ void XAP_UnixDialog_Language::runModal(XAP_Frame * pFrame)
   GtkWidget * cf = constructWindow();    
   UT_return_if_fail(cf);	
 	
-  _populateWindowData();  
-
-  switch ( abiRunModalDialog ( GTK_DIALOG(cf), pFrame, this, CUSTOM_RESPONSE_SET_LANG, false ) )
-    {
-    case CUSTOM_RESPONSE_SET_LANG:
-		event_setLang(); break;
-    default:
-		event_Cancel(); break;
-    }
+  _populateWindowData();
+  
+  abiRunModalDialog ( GTK_DIALOG(cf), pFrame, this, GTK_RESPONSE_CLOSE, false );
+  event_setLang();
   
   abiDestroyWidget(cf);
 }

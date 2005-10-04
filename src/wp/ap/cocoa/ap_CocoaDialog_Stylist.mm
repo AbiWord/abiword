@@ -1,9 +1,8 @@
 /* -*- mode: C++; tab-width: 4; c-basic-offset: 4; -*- */
-
 /* AbiWord
  * Copyright (C) 2003 Dom Lachowicz
  * Copyright (C) 2004 Martin Sevior
- * Copyright (C) 2004 Hubert Figuiere
+ * Copyright (C) 2004-2005 Hubert Figuiere
  * 
  * This program is free software; you can redistribute it and/or
  * modify it under the terms of the GNU General Public License
@@ -41,7 +40,7 @@
 @interface StyleNode : NSObject
 {
 	NSString *_value;
-	NSMutableArray *_childrens;
+	NSMutableArray *_children;
 	int _row;
 	int _col;
 }
@@ -49,7 +48,7 @@
 -(void)dealloc;
 
 -(void)addChild:(id)child;
--(NSArray*)childrens;
+-(NSArray*)children;
 -(NSString*)value;
 -(int)row;
 -(int)col;
@@ -72,21 +71,21 @@
 -(void)dealloc
 {
 	[_value release];
-	[_childrens release];
+	[_children release];
 	[super dealloc];
 }
 
 -(void)addChild:(id)child
 {
-	if (!_childrens) {
-		_childrens = [[NSMutableArray alloc] init];
+	if (!_children) {
+		_children = [[NSMutableArray alloc] init];
 	}
-	[_childrens addObject:child];
+	[_children addObject:child];
 }
 
--(NSArray*)childrens
+-(NSArray*)children
 {
-	return _childrens;
+	return _children;
 }
 
 -(NSString*) value
@@ -106,53 +105,17 @@
 
 @end
 
-
-#if 0
-static gboolean
-tree_select_filter (GtkTreeSelection *selection, GtkTreeModel *model,
-								  GtkTreePath *path, gboolean path_selected,
-								  gpointer data)
-{
-	if (gtk_tree_path_get_depth (path) > 1)
-		return TRUE;
-	return FALSE;
-}
-
-
-static void s_delete_clicked(GtkWidget * wid, AP_CocoaDialog_Stylist * me )
-{
-    abiDestroyWidget( wid ) ;// will emit signals for us
-}
-
-
-static void s_destroy_clicked(GtkWidget * wid, AP_CocoaDialog_Stylist * me )
-{
-   me->event_Close();
-}
-
-
-static void s_response_triggered(GtkWidget * widget, gint resp, AP_CocoaDialog_Stylist * dlg)
-{
-	UT_return_if_fail(widget && dlg);
-	
-	if ( resp == GTK_RESPONSE_APPLY )
-	  dlg->event_Apply();
-	else if ( resp == GTK_RESPONSE_CLOSE )
-	  abiDestroyWidget(widget);
-}
-#endif
-
-XAP_Dialog * AP_CocoaDialog_Stylist::static_constructor(XAP_DialogFactory * pFactory,
-														  XAP_Dialog_Id dlgid)
+XAP_Dialog * AP_CocoaDialog_Stylist::static_constructor(XAP_DialogFactory * pFactory, XAP_Dialog_Id dlgid)
 {
 	return new AP_CocoaDialog_Stylist(pFactory,dlgid);
 }
 
-AP_CocoaDialog_Stylist::AP_CocoaDialog_Stylist(XAP_DialogFactory * pDlgFactory,
-												   XAP_Dialog_Id dlgid)
-	: AP_Dialog_Stylist(pDlgFactory,dlgid),
-		m_dlg(nil),
-		m_items(nil)
+AP_CocoaDialog_Stylist::AP_CocoaDialog_Stylist(XAP_DialogFactory * pDlgFactory, XAP_Dialog_Id dlgid) :
+	AP_Dialog_Stylist(pDlgFactory, dlgid),
+	m_dlg(nil),
+	m_items(nil),
+	m_bModal(false),
+	m_bDialogClosed(false)
 {
 	m_items = [[NSMutableArray alloc] init];
 }
@@ -164,7 +127,16 @@ AP_CocoaDialog_Stylist::~AP_CocoaDialog_Stylist(void)
 
 void AP_CocoaDialog_Stylist::event_Close(void)
 {
-	destroy();
+	if (m_bModal)
+	{
+		m_bDialogClosed = true; // we may need to destroy()
+		setStyleValid(false);
+		[NSApp stopModal];
+	}
+	else
+	{
+		destroy();
+	}
 }
 
 void AP_CocoaDialog_Stylist::setStyleInGUI(void)
@@ -180,12 +152,15 @@ void AP_CocoaDialog_Stylist::setStyleInGUI(void)
 		_fillTree();
 	}
 	getStyleTree()->findStyle(sCurStyle,row,col);
-	if (row >= 0) {
-		StyleNode *node = [m_items objectAtIndex:row];
-		if (col >= 0) {
-			node = [[node childrens] objectAtIndex:col];
+	if (row >= 0)
+	{
+		StyleNode * parentNode = [m_items objectAtIndex:row];
+		if (col >= 0)
+		{
+			StyleNode * childNode = [[parentNode children] objectAtIndex:col];
+
+			[m_dlg selectStyleNode:childNode childOf:parentNode];
 		}
-		[m_dlg selectStyleNode:node];
 	}
 
 	setStyleChanged(false);
@@ -194,7 +169,6 @@ void AP_CocoaDialog_Stylist::setStyleInGUI(void)
 void AP_CocoaDialog_Stylist::destroy(void)
 {
 	finalize();
-	[m_dlg close];
 	[m_dlg release];
 	m_dlg = nil;
 }
@@ -211,32 +185,66 @@ void AP_CocoaDialog_Stylist::notifyActiveFrame(XAP_Frame *pFrame)
 }
 
 /*!
- * Set the style in the XP layer fromthe selection in the GUI.
+ * Set the style in the XP layer from the selection in the GUI.
  */
 void AP_CocoaDialog_Stylist::styleClicked(UT_sint32 row, UT_sint32 col)
 {
-	UT_UTF8String sStyle;
 	UT_DEBUGMSG(("row %d col %d clicked \n",row,col));
-	if((col == 0) && (getStyleTree()->getNumCols(row) == 1))
-	{
-		return;
-	}
-	else if(col == 0)
-	{
-		getStyleTree()->getStyleAtRowCol(sStyle,row,col);
-	}
-	else
-	{
-		getStyleTree()->getStyleAtRowCol(sStyle,row,col-1);
-	}
-	UT_DEBUGMSG(("StyleClicked row %d col %d style %s \n",row,col,sStyle.utf8_str()));
-	setCurStyle(sStyle);
-}
 
+	UT_sint32 row_count = getStyleTree()->getNumRows();
+	if ((row >= 0) && (row < row_count))
+	{
+		UT_sint32 col_count = getStyleTree()->getNumCols(row);
+		if ((col >= 0) && (col < col_count))
+		{
+			UT_UTF8String sStyle;
+
+			getStyleTree()->getStyleAtRowCol(sStyle, row, col);
+
+			UT_DEBUGMSG(("StyleClicked row %d col %d style %s \n", (int) row, (int) col, sStyle.utf8_str()));
+
+			setCurStyle(sStyle);
+		}
+	}
+}
 
 void AP_CocoaDialog_Stylist::runModal(XAP_Frame * pFrame)
 {
-	UT_ASSERT(0);
+	bool bUsingModeless = (m_dlg ? true : false);
+
+	if (!bUsingModeless)
+	{
+		m_dlg = [[AP_CocoaDialog_Stylist_Controller alloc] initFromNib];
+
+		[m_dlg setXAPOwner:this];
+
+		_populateWindowData();
+	}
+
+	m_bDialogClosed = false;
+	m_bModal = true;
+
+	NSWindow * window = [m_dlg window];
+
+	[window orderFront:m_dlg];
+
+	[NSApp runModalForWindow:window];
+
+	m_bModal = false;
+
+	if (!bUsingModeless)
+	{
+		[m_dlg discardXAP];
+		[m_dlg close];
+		[m_dlg release];
+
+		m_dlg = nil;
+	}
+	else if (m_bDialogClosed)
+	{
+		// the user closed the dialog...
+		destroy();
+	}
 }
 
 void AP_CocoaDialog_Stylist::runModeless(XAP_Frame * pFrame)
@@ -255,7 +263,15 @@ void AP_CocoaDialog_Stylist::runModeless(XAP_Frame * pFrame)
 
 void  AP_CocoaDialog_Stylist::event_Apply(void)
 {
-	Apply();
+	if (m_bModal)
+	{
+		setStyleValid(true);
+		[NSApp stopModal];
+	}
+	else
+	{
+		Apply();
+	}
 }
 
 /*!
@@ -359,16 +375,22 @@ void  AP_CocoaDialog_Stylist::_populateWindowData(void)
 
 		UT_UTF8String label;
 		if (pSS->getValueUTF8(AP_STRING_ID_DLG_Stylist_Styles, label))
-			{
-				NSArray * columns = [_stylistList tableColumns];
+		{
+			NSArray * columns = [_stylistList tableColumns];
 
-				[[[columns objectAtIndex:0] headerCell] setStringValue:[NSString stringWithUTF8String:(label.utf8_str())]];
-			}
+			[[[columns objectAtIndex:0] headerCell] setStringValue:[NSString stringWithUTF8String:(label.utf8_str())]];
+		}
 
 		[_stylistList setDoubleAction:@selector(outlineDoubleAction:)];
 
-		// data source an delegate for style list should be set by the Nib.
+		// data source and delegate for style list should be set by the Nib.
 	}
+}
+
+- (void)windowWillClose:(NSNotification *)aNotification
+{
+	if (_xap)
+		_xap->event_Close();
 }
 
 - (void)refresh
@@ -376,11 +398,21 @@ void  AP_CocoaDialog_Stylist::_populateWindowData(void)
 	[_stylistList reloadData];
 }
 
-- (void)selectStyleNode:(StyleNode*)node;
+- (void)selectStyleNode:(StyleNode *)childNode childOf:(StyleNode *)parentNode;
 {
-	[_stylistList expandItem:node];
-}
+	[_stylistList expandItem:parentNode];
 
+	int row = [_stylistList rowForItem:childNode];
+	if (row >= 0)
+	{
+		[_stylistList selectRow:row byExtendingSelection:NO];
+	}
+	else
+	{
+		[_stylistList deselectAll:self];
+	}
+	[_applyBtn setEnabled:NO];
+}
 
 - (IBAction)applyAction:(id)sender
 {
@@ -389,18 +421,40 @@ void  AP_CocoaDialog_Stylist::_populateWindowData(void)
 
 - (IBAction)outlineAction:(id)sender
 {
-	int row;
-	row = [sender selectedRow];
-	StyleNode *node = [sender itemAtRow:row];
-	_xap->styleClicked([node row], [node col]);
+	BOOL bCanApply = NO;
+
+	int row = [sender selectedRow];
+	if (row >= 0)
+	{
+		StyleNode * node = [sender itemAtRow:row];
+
+		if (![node children])
+		{
+			_xap->styleClicked([node row], [node col]);
+			bCanApply = YES;
+		}
+	}
+	[_applyBtn setEnabled:bCanApply];
 }
 
 - (IBAction)outlineDoubleAction:(id)sender
 {
-	[self outlineAction:sender];
-	_xap->event_Apply ();
-}
+	BOOL bCanApply = NO;
 
+	int row = [sender selectedRow];
+	if (row >= 0)
+	{
+		StyleNode * node = [sender itemAtRow:row];
+
+		if (![node children])
+		{
+			_xap->styleClicked([node row], [node col]);
+			_xap->event_Apply();
+			bCanApply = YES;
+		}
+	}
+	[_applyBtn setEnabled:bCanApply];
+}
 
 - (int)outlineView:(NSOutlineView *)outlineView numberOfChildrenOfItem:(id)item
 {
@@ -410,7 +464,7 @@ void  AP_CocoaDialog_Stylist::_populateWindowData(void)
 	if (![item isKindOfClass:[StyleNode class]]) {
 		return 0;
 	}
-	return [[item childrens] count];
+	return [[item children] count];
 }
 
 - (BOOL)outlineView:(NSOutlineView *)outlineView isItemExpandable:(id)item
@@ -418,7 +472,7 @@ void  AP_CocoaDialog_Stylist::_populateWindowData(void)
 	if (![item isKindOfClass:[StyleNode class]]) {
 		return NO;
 	}
-	return ([item childrens]?YES:NO);
+	return ([item children] ? YES : NO);
 }
 
 - (id)outlineView:(NSOutlineView *)outlineView child:(int)index ofItem:(id)item
@@ -429,14 +483,17 @@ void  AP_CocoaDialog_Stylist::_populateWindowData(void)
 	if (![item isKindOfClass:[StyleNode class]]) {
 		return nil;
 	}
-	return [[item childrens] objectAtIndex:index];
+	return [[item children] objectAtIndex:index];
 }
-
 
 - (id)outlineView:(NSOutlineView *)outlineView objectValueForTableColumn:(NSTableColumn *)tableColumn byItem:(id)item
 {
 	return [item value];
 }
 
+- (void)outlineView:(NSOutlineView *)outlineView willDisplayCell:(id)cell forTableColumn:(NSTableColumn *)tableColumn item:(id)item
+{
+	[cell setFont:[NSFont systemFontOfSize:10.0f]];
+}
 
 @end
