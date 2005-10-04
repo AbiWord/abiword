@@ -132,9 +132,13 @@ void fp_MathRun::_lookupProperties(const PP_AttrProp * pSpanAP,
 	{
 		p = pDSL->getFirstContainer()->getPage();
 	}
-	else
+	else if(pDSL->getDocLayout()->countPages() > 0)
 	{
 		p = pDSL->getDocLayout()->getNthPage(0);
+	}
+	else
+	{
+	    return;
 	}
 	UT_sint32 maxW = p->getWidth() - UT_convertToLogicalUnits("0.1in"); 
 	UT_sint32 maxH = p->getHeight() - UT_convertToLogicalUnits("0.1in");
