@@ -49,12 +49,14 @@ fp_MathRun::fp_MathRun(fl_BlockLayout* pBL,
 	m_OH(oh)
 {
         m_pDocLayout = getBlock()->getDocLayout();
+	UT_DEBUGMSG((" -----MathRun created %x Object Pointer is %x \n",this,oh));
 	lookupProperties(getGraphics());
 }
 
 fp_MathRun::~fp_MathRun(void)
 {
   getMathManager()->releaseEmbedView(m_iMathUID);
+  UT_DEBUGMSG(("Deleting Math Object!!!!!!!!!!!! \n"));
 }
 
 GR_EmbedManager * fp_MathRun::getMathManager(void)

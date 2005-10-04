@@ -319,7 +319,10 @@ bool pt_PieceTable::_doTheDo(const PX_ChangeRecord * pcr, bool bUndo)
 			}
 
 			pf_Frag_Object * pfo = static_cast<pf_Frag_Object *> (pf);
-			UNDO_return_val_if_fail (pfo->getIndexAP() == pcrObject->getIndexAP(),false);
+			if((pfo->getObjectType() != PTO_Math) && ((pfo->getObjectType() != PTO_Embed)))
+			{
+			    UNDO_return_val_if_fail (pfo->getIndexAP() == pcrObject->getIndexAP(),false);
+			}
 			_deleteObject(pfo,NULL,NULL);
 
 			DONE();
