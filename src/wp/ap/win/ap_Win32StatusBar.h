@@ -47,6 +47,8 @@ public:
 	WNDPROC getOrgWndProc() { return m_pOrgStatusbarWndProc; }
 	int getPrevWidth () { return m_iPrevWidth; }
 	void setPrevWidth (int n) { m_iPrevWidth = n; }
+
+	UINT                    getDir() const {return m_iDIR;}
 	
 protected:
 	virtual void			show();
@@ -55,6 +57,7 @@ protected:
 	HWND					m_hwndStatusBar;
 	WNDPROC					m_pOrgStatusbarWndProc; 
 	int						m_iPrevWidth;
+	UINT                    m_iDIR;
 
 };
 

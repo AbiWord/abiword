@@ -23,6 +23,7 @@
 #include "ut_types.h"
 #include "ut_assert.h"
 #include "ut_debugmsg.h"
+#include "ut_Language.h"
 #include "ut_Win32OS.h"
 #include "ap_Win32StatusBar.h"
 #include "xap_Win32App.h"
@@ -121,21 +122,29 @@ LRESULT APIENTRY StatusbarWndProc (HWND hwnd, UINT uMsg, WPARAM wParam, LPARAM l
 class ap_usb_TextListener : public AP_StatusBarFieldListener
 {
 public:
-	ap_usb_TextListener(AP_StatusBarField *pStatusBarField, HWND hWnd, UINT nID) : AP_StatusBarFieldListener(pStatusBarField) {m_nID=nID; m_hWnd=hWnd; }
+	ap_usb_TextListener(AP_StatusBarField *pStatusBarField, HWND hWnd, UINT nID,
+						const AP_Win32StatusBar * pSB) :
+		AP_StatusBarFieldListener(pStatusBarField),
+		m_nID(nID),
+		m_hWnd(hWnd),
+		m_pSB(pSB)
+	{UT_ASSERT_HARMLESS( m_pSB );}
+	
 	virtual void notify(); 
 
 private:
 	HWND	m_hWnd;
 	UINT	m_nID;
+	const AP_Win32StatusBar * m_pSB;
 };
 
 void ap_usb_TextListener::notify()
 {
 
-	UT_return_if_fail (m_hWnd);	
+	UT_return_if_fail (m_hWnd && m_pSB);	
 	AP_StatusBarField_TextInfo * textInfo = ((AP_StatusBarField_TextInfo *)m_pStatusBarField);
 	UT_String 	s =	AP_Win32App::s_fromUTF8ToWinLocale(textInfo->getBuf().utf8_str());	
-	SendMessage(m_hWnd, SB_SETTEXT, m_nID, (LPARAM)  s.c_str());
+	SendMessage(m_hWnd, SB_SETTEXT, m_nID | m_pSB->getDir(), (LPARAM)  s.c_str());
 	
 }
 
@@ -143,11 +152,18 @@ void ap_usb_TextListener::notify()
 /*****************************************************************/
 
 AP_Win32StatusBar::AP_Win32StatusBar(XAP_Frame * pFrame)
-	: AP_StatusBar(pFrame)
+	: AP_StatusBar(pFrame),
+	  m_hwndStatusBar(NULL),
+	  m_pOrgStatusbarWndProc(NULL),
+	  m_iPrevWidth(-1),
+	  m_iDIR(0)
 {
-	m_hwndStatusBar = NULL;	
-	m_pOrgStatusbarWndProc = NULL;
-	m_iPrevWidth = -1;
+	const XAP_StringSet * pSS = pFrame->getApp()->getStringSet();
+	UT_return_if_fail( pSS );
+	
+	UT_Language l;
+	if(l.getDirFromCode(pSS->getLanguageName()) == UTLANG_RTL)
+		m_iDIR = SBT_RTLREADING;
 
 }
 
@@ -206,8 +222,9 @@ HWND AP_Win32StatusBar::createWindow(HWND hwndFrame,
 		if (pf_TextInfo) 
 		{	
 					
-			pf->setListener((AP_StatusBarFieldListener *)(new ap_usb_TextListener(pf_TextInfo, m_hwndStatusBar, nID)));					
-									
+			pf->setListener((AP_StatusBarFieldListener *)(new ap_usb_TextListener(pf_TextInfo, m_hwndStatusBar,
+																				  nID, this)));
+			
 			// size and place
 			nWitdh+= (strlen(pf_TextInfo->getRepresentativeString())*10);			
 			*pCurWidth = nWitdh;											
