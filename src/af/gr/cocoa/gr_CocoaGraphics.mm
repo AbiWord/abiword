@@ -732,11 +732,21 @@ void GR_CocoaGraphics::drawChars(const UT_UCSChar* pChars, int iCharOffset,
 
 	::CGContextSetShouldAntialias (m_CGContext, true);
 
-	const UT_UCSChar* begin = pChars + iCharOffset;
+	const UT_UCS4Char* begin = pChars + iCharOffset;
 	unichar * cBuf = (unichar *) malloc((iLength + 1) * sizeof(unichar));
 	int i;
-	for (i = 0; i < iLength; i++) {
-		cBuf[i] = (unichar) (m_pFont ? m_pFont->remapChar(begin[i]) : begin[i]);
+	// small speed optimization. Better than nothing
+	// but short-circuiting the remap can be useful;
+	if (m_pFont && m_pFont->needsRemap()) {
+		for (i = 0; i < iLength; i++) {
+			cBuf[i] = (unichar) m_pFont->remapChar(begin[i]);
+		}
+	}
+	else {
+		for (i = 0; i < iLength; i++) {
+			// remember ucs-4 -> ucs-2
+			cBuf[i] = (unichar)begin[i];
+		}
 	}
 	cBuf[iLength] = 0;
 
