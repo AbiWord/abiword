@@ -388,7 +388,7 @@ bool RTF_msword97_level::ParseLevelText(const UT_String & szLevelText,const UT_S
 	UT_sint32 icurrent = 0;
 	UT_sint32 istrlen = szLevelText.size();
 	bool bIsUnicode;
-	while (pText[0] != '\0')
+	while (pText[0] != '\0' && icurrent < 10000)
 	{
 		bIsUnicode = ((pText[0] == '\\') && (pText[1] == '\'') && UT_UCS4_isdigit(pText[2]) && UT_UCS4_isdigit(pText[3]));
 		// A broken exporter writes some junk at the beginning of the string.
@@ -6946,11 +6946,11 @@ char * IE_Imp_RTF::getCharsInsideBrace(void)
 
 	UT_sint32 count = 0;
 	UT_uint32 nesting = 1;
-	while(nesting > 0)
+	while(nesting > 0 && count < MAX_KEYWORD_LEN - 1)
 	{
 		if (!ReadCharFromFile(&ch))
 			return NULL;
-        if( nesting == 1 && (ch == '}'  || ch == ';'))
+		if( nesting == 1 && (ch == '}'  || ch == ';'))
 		{
 			nesting--;
 		}
@@ -7937,7 +7937,7 @@ bool IE_Imp_RTF::ReadOneFontFromTable(bool bNested)
 	    FIXME: CJK font names come in form \'aa\'cd\'ef - so we have to
 	    parse \'HH correctly (currently we ignore them!) - VH
 	*/
-	while ( ch != '}'  &&  ch != '\\'  &&  ch != ';' && ch!= '{' && count < MAX_KEYWORD_LEN)
+	while ( ch != '}'  &&  ch != '\\'  &&  ch != ';' && ch!= '{' && count < MAX_KEYWORD_LEN - 1)
 	{
 		keyword[count] = ch;
 		count++;
@@ -8203,7 +8203,7 @@ bool IE_Imp_RTF::HandleLists(_rtfListTable & rtfTable )
 					int count = 0;
 					if (!ReadCharFromFile(&ch))
 						return false;
-					while ( level != 0 || (ch != '}' && ch != ';'))
+					while ((level != 0 || (ch != '}' && ch != ';')) && count < MAX_KEYWORD_LEN - 1)
 					{
 						if (ch == '{') {
 							level++;
@@ -8221,11 +8221,13 @@ bool IE_Imp_RTF::HandleLists(_rtfListTable & rtfTable )
 					keyword[count++] = 0;
 					switch (dest) {
 					case 1:
-						strcpy(rtfTable.textafter,reinterpret_cast<char*>(&keyword[0]));
+						strncpy(rtfTable.textafter,reinterpret_cast<char*>(&keyword[0]), sizeof(rtfTable.textafter));
+						rtfTable.textafter[sizeof(rtfTable.textafter) - 1] = 0;
 						UT_DEBUGMSG(("FOUND pntxta in stream, copied %s to input  \n",keyword));
 						break;
 					case 2:
-						strcpy(rtfTable.textbefore,reinterpret_cast<char*>(&keyword[0]));
+						strncpy(rtfTable.textbefore,reinterpret_cast<char*>(&keyword[0]), sizeof(rtfTable.textbefore));
+						rtfTable.textbefore[sizeof(rtfTable.textbefore) - 1] = 0;
 						UT_DEBUGMSG(("FOUND pntxtb in stream,copied %s to input  \n",keyword));
 						break;
 					default:
@@ -8974,14 +8976,15 @@ bool IE_Imp_RTF::HandleAbiLists()
 					 int count = 0;
 					 if (!ReadCharFromFile(&ch))
 						 return false;
-					 while ( ch != '}'  && ch != ';')
+					 while ( ch != '}'  && ch != ';' && count < MAX_KEYWORD_LEN - 1)
 					 {
 						 keyword[count++] = ch;
 						 if (!ReadCharFromFile(&ch))
 							 return false;
 					 }
 					 keyword[count++] = 0;
-					 strcpy(m_currentRTFState.m_paraProps.m_pszStyle,reinterpret_cast<char*>(&keyword[0]));
+					 strncpy(m_currentRTFState.m_paraProps.m_pszStyle,reinterpret_cast<char*>(&keyword[0]), sizeof(m_currentRTFState.m_paraProps.m_pszStyle));
+					 m_currentRTFState.m_paraProps.m_pszStyle[sizeof(m_currentRTFState.m_paraProps.m_pszStyle) - 1] = 0;
 				 }
 				 else if (strcmp(reinterpret_cast<char*>(&keyword[0]), "abilistdecimal") == 0)
 				 {
@@ -8990,14 +8993,15 @@ bool IE_Imp_RTF::HandleAbiLists()
 					 int count = 0;
 					 if (!ReadCharFromFile(&ch))
 						 return false;
-					 while ( ch != '}'  && ch != ';' )
+					 while ( ch != '}'  && ch != ';' && count < MAX_KEYWORD_LEN - 1)
 					 {
 						 keyword[count++] = ch;
 						 if (!ReadCharFromFile(&ch))
 							 return false;
 					 }
 					 keyword[count++] = 0;
-					 strcpy(m_currentRTFState.m_paraProps.m_pszListDecimal,reinterpret_cast<char*>(&keyword[0]));
+					 strncpy(m_currentRTFState.m_paraProps.m_pszListDecimal,reinterpret_cast<char*>(&keyword[0]), sizeof(m_currentRTFState.m_paraProps.m_pszListDecimal));
+					 m_currentRTFState.m_paraProps.m_pszListDecimal[sizeof(m_currentRTFState.m_paraProps.m_pszListDecimal) - 1] = 0;
 				 }
 				 else if (strcmp(reinterpret_cast<char*>(&keyword[0]), "abilistdelim") == 0)
 				 {
@@ -9006,14 +9010,15 @@ bool IE_Imp_RTF::HandleAbiLists()
 					 int count = 0;
 					 if (!ReadCharFromFile(&ch))
 						 return false;
-					 while ( ch != '}'  && ch != ';' )
+					 while ( ch != '}'  && ch != ';' && count < MAX_KEYWORD_LEN - 1)
 					 {
 						 keyword[count++] = ch;
 						 if (!ReadCharFromFile(&ch))
 							 return false;
 					 }
 					 keyword[count++] = 0;
-					 strcpy(m_currentRTFState.m_paraProps.m_pszListDelim,reinterpret_cast<char*>(&keyword[0]));
+					 strncpy(m_currentRTFState.m_paraProps.m_pszListDelim,reinterpret_cast<char*>(&keyword[0]), sizeof(m_currentRTFState.m_paraProps.m_pszListDelim));
+					 m_currentRTFState.m_paraProps.m_pszListDelim[sizeof(m_currentRTFState.m_paraProps.m_pszListDelim) - 1] = 0;
 				 }
 				 else if (strcmp(reinterpret_cast<char*>(&keyword[0]), "abifieldfont") == 0)
 				 {
@@ -9022,14 +9027,15 @@ bool IE_Imp_RTF::HandleAbiLists()
 					 int count = 0;
 					 if (!ReadCharFromFile(&ch))
 						 return false;
-					 while ( ch != '}'  && ch != ';' )
+					 while ( ch != '}'  && ch != ';' && count < MAX_KEYWORD_LEN - 1)
 					 {
 						 keyword[count++] = ch;
 						 if (!ReadCharFromFile(&ch))
 							 return false;
 					 }
 					 keyword[count++] = 0;
-					 strcpy(m_currentRTFState.m_paraProps.m_pszFieldFont,reinterpret_cast<char*>(&keyword[0]));
+					 strncpy(m_currentRTFState.m_paraProps.m_pszFieldFont,reinterpret_cast<char*>(&keyword[0]), sizeof(m_currentRTFState.m_paraProps.m_pszFieldFont));
+					 m_currentRTFState.m_paraProps.m_pszFieldFont[sizeof(m_currentRTFState.m_paraProps.m_pszFieldFont) - 1] = 0;
 				 }
 				 else
 				 {
