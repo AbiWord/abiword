@@ -275,23 +275,24 @@ bool pt_PieceTable::_doTheDo(const PX_ChangeRecord * pcr, bool bUndo)
 				bool bFoundStrux = _getStruxFromFragSkip(static_cast<pf_Frag *>(pfs),&pfs);
 				UNDO_return_val_if_fail (bFoundStrux,false);
 			}
-            pf_Frag_Object * pfo = NULL;
+			pf_Frag_Object * pfo = NULL;
 			if (!_insertObject(pf,fragOffset,pcrObject->getObjectType(),
                                pcrObject->getIndexAP(),pfo))
 				return false;
-            UNDO_return_val_if_fail (pfo,false);
+			pcrObject->setObjectHandle(pfo);
+			UNDO_return_val_if_fail (pfo,false);
             
             // need to set field pointers to values of new pointer
             // as old field doesn't exist
-            pf = pfo->getNext();
-            while (pf&&pf->getType()==pf_Frag::PFT_Text&&
-                   pf->getField())
-            {
-                pf_Frag_Text * pft = 
-                    static_cast<pf_Frag_Text *>(pf);
-                pft->setField(pfo->getField());
-                pf = pft->getNext();
-            }
+			pf = pfo->getNext();
+			while (pf&&pf->getType()==pf_Frag::PFT_Text&&
+			       pf->getField())
+			  {
+			    pf_Frag_Text * pft = 
+			      static_cast<pf_Frag_Text *>(pf);
+			    pft->setField(pfo->getField());
+			    pf = pft->getNext();
+			  }
 			DONE();            
 			m_pDocument->notifyListeners(pfs,pcr);
             // don't update field until all of changes have been made
