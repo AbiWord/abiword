@@ -8426,9 +8426,9 @@ bool IE_Imp_RTF::PostProcessAndValidatePanose(UT_UTF8String &Panose)
 			UT_DEBUGMSG(("RTF: Panose string too short.\n"));
 			return false;
 		}
-		// Only numeric digits are allowed so we bail if we see anything
+		// Only hex digits are allowed so we bail if we see anything
 		// else.
-		if (((*pUTF) < '0') || ((*pUTF) > '9'))
+		if (!isxdigit(*pUTF))
 		{
 			UT_DEBUGMSG(("RTF: Invalid character in panose string.\n"));
 			return false;
