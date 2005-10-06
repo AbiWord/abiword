@@ -1840,6 +1840,7 @@ static bool s_AskForPathname(XAP_Frame * pFrame,
 			if(!bSet)
 				pDialog->setCurrentPathname(title.utf8_str());
 #else
+			UT_legalizeFileName(title);
 			pDialog->setCurrentPathname(title.utf8_str());
 #endif
 			pDialog->setSuggestFilename(true);

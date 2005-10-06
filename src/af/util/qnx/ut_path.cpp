@@ -19,6 +19,7 @@
 
 
 #include "ut_path.h"
+#include "ut_string_class.h"
 #include <string.h>
 #include <sys/stat.h>
 /*!	This function takes a char* representing a path to a file and returns
@@ -74,3 +75,15 @@ time_t UT_mTime(const char* path)
     
     return((time_t)-1);
 }
+
+/*!
+    check that the given filename is legal and remove any illegal characters
+	\param filename [in/out] the suggested file name
+    \return false if filename is left unchanged, true otherwise
+ */
+bool UT_legalizeFileName(UT_UTF8String &filename)
+{
+	UT_ASSERT_HARMLESS( UT_NOT_IMPLEMENTED );
+	return false;
+}
+
