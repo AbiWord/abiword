@@ -110,9 +110,24 @@ time_t UT_mTime(const char* path)
  */
 bool UT_legalizeFileName(UT_UTF8String &filename)
 {
-	UT_ASSERT_HARMLESS( UT_NOT_IMPLEMENTED );
+	bool bRet = false;
 
-	// NB: this function is shared by *nix and cocoa and might require #ifdef to
-	// differentiate the two, I am not sure.
-	return false;
+	char *tmp = strdup(filename.utf8_str());
+	char *ptr = tmp;
+
+	while (*ptr) {
+		if (*ptr == '/') {
+			*ptr = '-';
+			bRet = true;
+		}
+		ptr++;
+	}
+	
+	if(bRet) {
+		filename = tmp;
+	}
+
+	FREEP(tmp);
+
+	return bRet;
 }
