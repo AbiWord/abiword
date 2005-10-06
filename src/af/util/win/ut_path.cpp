@@ -104,7 +104,7 @@ bool UT_legalizeFileName(UT_UTF8String &sFilename)
 	UT_UTF8String sTmp;
 	bool bRet = false;
 	
- 	UT_UTF8Stringbuf::UTF8Iterator & iter = sFilename.getIterator ();
+ 	UT_UTF8Stringbuf::UTF8Iterator iter = sFilename.getIterator ();
  	if (iter.start())
  	{
 		const char * pUTF = iter.current();
