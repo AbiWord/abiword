@@ -20,6 +20,8 @@
 
 #include "ut_path.h"
 #include "ut_string_class.h"
+#include "ut_assert.h"
+
 #include <string.h>
 #include <sys/stat.h>
 #include <sys/types.h>
