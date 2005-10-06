@@ -9711,10 +9711,10 @@ bool IE_Imp_RTF::HandleRevisedTextTimestamp(UT_uint32 iDttm)
 {
 	// we basically rely on the dttm keyword to follow the auth keyword -- Word outputs
 	// them in this sequence, and so do we
-	UT_return_val_if_fail( m_currentRTFState.m_charProps.m_iCurrentRevisionId > 0,false);
+	UT_return_val_if_fail( m_currentRTFState.m_charProps.m_iCurrentRevisionId > 0,true); // was false (this enables RTF spec to load)
 	
 	const UT_GenericVector<AD_Revision*> & Rtbl = getDoc()->getRevisions();
-	UT_return_val_if_fail(Rtbl.getItemCount(),false);
+	UT_return_val_if_fail(Rtbl.getItemCount(),true); // was false (This enables RTF spec to load)
 
 	// valid revision id's start at 1, but vector is 0-based
 	AD_Revision * pRev = Rtbl.getNthItem(m_currentRTFState.m_charProps.m_iCurrentRevisionId - 1);

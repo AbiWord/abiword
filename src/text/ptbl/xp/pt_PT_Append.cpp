@@ -85,7 +85,6 @@ pf_Frag * pt_PieceTable::_findLastStruxOfType(pf_Frag * pfStart, PTStruxType pst
 	UT_return_val_if_fail( pfStart, NULL );
 
 	pf_Frag * pf = pfStart;
-	bool bFirst = true;
 	while(pf)
 	{
 		if(pf->getType() == pf_Frag::PFT_Strux)
@@ -173,37 +172,6 @@ pf_Frag * pt_PieceTable::_findLastStruxOfType(pf_Frag * pfStart, PTStruxType pst
 						pf = pf->getPrev();
 					}
 				}
-				if(!bFirst && pfs->getStruxType() == PTX_EndCell)
-				{
-					while(pf)
-					{
-						if(pf->getType() == pf_Frag::PFT_Strux)
-						{
-							pf_Frag_Strux * pfs = static_cast<pf_Frag_Strux*>(pf);
-
-							if(pfs->getStruxType() == PTX_SectionCell)
-								break;
-						}
-
-						pf = pf->getPrev();
-					}
-				}
-				if(pfs->getStruxType() == PTX_EndTable)
-				{
-					while(pf)
-					{
-						if(pf->getType() == pf_Frag::PFT_Strux)
-						{
-							pf_Frag_Strux * pfs = static_cast<pf_Frag_Strux*>(pf);
-
-							if(pfs->getStruxType() == PTX_SectionTable)
-								break;
-						}
-
-						pf = pf->getPrev();
-					}
-				}
-				bFirst = false;
 			}
 		}
 		if(pf)
@@ -239,7 +207,7 @@ bool pt_PieceTable::appendLastStruxFmt(PTStruxType pst, const XML_Char ** attrib
 	pf_Frag * pf = m_fragments.getLast();
 
 	UT_return_val_if_fail ( pf, false );
-
+	
 	pf = _findLastStruxOfType(pf, pst, bSkipEmbededSections);
 	
 	UT_return_val_if_fail( pf, false );
