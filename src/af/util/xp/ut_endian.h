@@ -67,7 +67,7 @@
         #elif defined(_LITTLE_ENDIAN)
                 #define UT_LITTLE_ENDIAN
         #endif
-#elif defined(__NetBSD__)
+#elif defined(__NetBSD__) || defined(__OpenBSD__)
 	#include <machine/endian.h>
 	#if BYTE_ORDER == LITTLE_ENDIAN         
 		#define UT_LITTLE_ENDIAN
