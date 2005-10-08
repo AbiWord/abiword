@@ -42,6 +42,9 @@
 
 /*
  * $Log$
+ * Revision 1.9  2005/10/08 14:41:37  uwog
+ * Build fix for 64 bit archs
+ *
  * Revision 1.8  2004/03/29 02:30:17  mgilbert
  * forport build maskfix.  again, as a reminder, this is not a fix, it is
  * still potentially dangerous on non-32bit archs.
@@ -344,22 +347,22 @@ int ISpellChecker::linit (char *hashname)
 			if (dp->word == (char *) -1)
 				dp->word = NULL;
 			else
-				dp->word = &m_hashstrings [ (int)(dp->word) ];
+				dp->word = &m_hashstrings [ (long)(dp->word) ];
 			if (dp->next == (struct dent *) -1)
 				dp->next = NULL;
 			else
-				dp->next = &m_hashtbl [ (int)(dp->next) ];
+				dp->next = &m_hashtbl [ (long)(dp->next) ];
 	    }
 	}
 
     for (i = m_numsflags + m_numpflags, entry = m_sflaglist; --i >= 0; entry++)
 	{
 		if (entry->stripl)
-			entry->strip = reinterpret_cast<ichar_t *>(&m_hashstrings[(int)(entry->strip)]);
+			entry->strip = reinterpret_cast<ichar_t *>(&m_hashstrings[(long)(entry->strip)]);
 		else
 			entry->strip = NULL;
 		if (entry->affl)
-			entry->affix = reinterpret_cast<ichar_t *>(&m_hashstrings[(int)(entry->affix)]);
+			entry->affix = reinterpret_cast<ichar_t *>(&m_hashstrings[(long)(entry->affix)]);
 		else
 			entry->affix = NULL;
 	}
