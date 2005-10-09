@@ -44,6 +44,8 @@
 float fontPoints2float(UT_uint32 iSize, FT_Face pFace,
 				     UT_uint32 iFontPoints)
 {
+        if(pFace == NULL)
+	  return 0.0;
 	return iFontPoints * iSize * 1.0 / pFace->units_per_EM;
 }
 
@@ -106,6 +108,8 @@ UT_sint32 XAP_UnixFontHandle::measureUnremappedCharForCache(UT_UCSChar cChar) co
 	UT_sint32 width;
 	XftFaceLocker locker(m_font->getLayoutXftFont(GR_CharWidthsCache::CACHE_FONT_SIZE));
 	FT_Face pFace = locker.getFace();
+	if(pFace == NULL)
+	  return 0;
 	if(m_font->isDingbat())
 	{
 		FT_Select_Charmap(pFace,FT_ENCODING_ADOBE_CUSTOM);
@@ -865,7 +869,10 @@ void XAP_UnixFont::fetchXftFont(UT_uint32 pixelsize) const
 
 	// That means that we should should be 100% sure that,
 	// at this point, the font exists in the system
-	UT_ASSERT(pXftFont);
+	if(pXftFont == NULL)
+        {
+	  return;
+	}
 	
 	insertFontInCache(pixelsize, pXftFont);
 }
@@ -948,6 +955,8 @@ float XAP_UnixFont::getAscender(UT_uint32 iSize) const
 	// in fact, we don't care about the pixelsize of the font, as we're going to use font units here
 	XftFaceLocker locker(getLayoutXftFont(12));
 	FT_Face pFace = locker.getFace();
+	if(pFace == NULL)
+	  return 0.0;
 	FT_Short ascender = pFace->ascender;
 	float fAscender = fontPoints2float(iSize, pFace, ascender);
 	xxx_UT_DEBUGMSG(("XAP_UnixFont::getAscender(%u) -> %f\n", iSize,
@@ -961,6 +970,8 @@ float XAP_UnixFont::getDescender(UT_uint32 iSize) const
 	// in fact, we don't care about the pixelsize of the font, as we're going to use font units here
 	XftFaceLocker locker(getLayoutXftFont(12));
 	FT_Face pFace = locker.getFace();
+	if(pFace == NULL)
+	  return 0.0;
 	FT_Short descender = -pFace->descender;
 	float fDescender = fontPoints2float(iSize, pFace, descender);
 	xxx_UT_DEBUGMSG(("XAP_UnixFont::getDescender(%u) -> %f\n", iSize,

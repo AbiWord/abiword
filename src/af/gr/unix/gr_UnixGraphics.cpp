@@ -847,7 +847,8 @@ void GR_UnixGraphics::drawGlyph(UT_uint32 Char, UT_sint32 xoff, UT_sint32 yoff)
 		iChar =  FT_Get_Char_Index(face,Char);
 		XftUnlockFace (m_pXftFontD);
 	}
-	
+	if(m_pXftFontD == NULL)
+		return;
 	// FIXME ascent in wrong unit
 
 	UT_sint32 idy = _tduY(yoff);
@@ -863,13 +864,14 @@ void GR_UnixGraphics::drawChars(const UT_UCSChar* pChars, int iCharOffset,
 	xxx_UT_DEBUGMSG(("UnixGraphics:drawChars: m_bIsSymbol %d iLength %d \n",m_bIsSymbol,iLength));
 	if (iLength == 0)
 		return;
+	if(m_pXftFontD == NULL)
+		return;
 	// FIXME shouldn't need to do this - plam
 	UT_sint32 idy = _tduY(yoff);
 	UT_sint32 idx = _tduX(xoff);
 
 	//	UT_sint32 iAscent = m_pXftFontL->ascent * getResolution() / s_getDeviceResolution();
 	UT_sint32 iAscent = getFontAscent();
-
 	if (!pCharWidths)
 	{
 		if(!isSymbol() && !isDingbat())
