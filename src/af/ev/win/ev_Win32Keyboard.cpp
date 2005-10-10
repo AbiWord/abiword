@@ -203,6 +203,8 @@ bool ev_Win32Keyboard::onKeyDown(AV_View * pView,
 	else
 	{	// Non-special key with CTRL 
 
+#if 0
+		// this causes bug 9618
 		WCHAR	char_value[2];
 		BYTE	keyboardState[256];
 
@@ -212,12 +214,29 @@ bool ev_Win32Keyboard::onKeyDown(AV_View * pView,
 		// into a control code, this is not what we want
 		keyboardState[VK_CONTROL] &= 0x7F;		// mask off high bit
 
-		if (ToAsciiEx(nVirtKey, keyData & 0x00FF0000, keyboardState, (unsigned short*) &char_value[0], 0, m_hKeyboardLayout)==0)
+		if (ToAsciiEx(nVirtKey, keyData & 0x00FF0000, keyboardState, (unsigned short*) &char_value[0], 0,
+					  m_hKeyboardLayout)==0)
 			return true;
-
 		charLen		= 1;
 		charData[0]	= UT_UCSChar(char_value [0] & 0x000000FF);		
 		charData[1]	= 0;
+#else
+		charLen = 1;
+		charData[0] = (UT_UCS4Char)MapVirtualKeyEx(nVirtKey, 2, m_hKeyboardLayout);
+
+		if(!charData[0]) // no mapping
+			return true;
+		
+		charData[1]	= 0;
+
+		if((ems & EV_EMS_SHIFT) == 0)
+		{
+			// shift not pressed; MapVirtualKeyEx() always returns capital letter, so we
+			// have to lowercase it
+			charData[0] = UT_UCS4_tolower(charData[0]);
+		}
+		
+#endif
 	}
 	
 
