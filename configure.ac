@@ -535,10 +535,6 @@ AC_CONFIG_FILES([
 ])
 AC_OUTPUT
 
-if test "$PLATFORM" = "unix" ; then
-	chmod a+x src/wp/test/unix/testwrap.sh
-fi
-
 echo " "
 
 case "$PLATFORM" in

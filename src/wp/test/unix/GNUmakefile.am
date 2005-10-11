@@ -20,7 +20,9 @@
 include $(top_srcdir)/includes.mk
 
 TESTS = testwrap.sh
+CLEANFILES = vgcore.*
 
+check_SCRIPTS = testwrap.sh-stamp testwrap.sh
 check_PROGRAMS = AbiWord-test
 
 INCLUDES = \
@@ -28,9 +30,13 @@ INCLUDES = \
 
 REPEAT_LIBS = $(ABI_LIBS) $(ABI_LIBS) $(ABI_LIBS) $(ABI_LIBS) $(ABI_LIBS)
 
+
 AbiWord_test_LDFLAGS = -Wl,-whole-archive $(ABI_TEST_LIBS) -Wl,-no-whole-archive
 
 AbiWord_test_LDADD =  $(ABI_TEST_LIBS) $(REPEAT_LIBS) $(PLATFORM_LIBS) $(OTHER_LIBS)
 
 AbiWord_test_SOURCES = test_main.cpp 
 
+testwrap.sh-stamp: testwrap.sh
+	chmod a+x testwrap.sh
+	touch $@
