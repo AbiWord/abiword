@@ -260,9 +260,11 @@ bool XAP_CocoaFont::glyphBox(UT_UCS4Char g, UT_Rect & rec, GR_Graphics * pG)
 				rec.left   = static_cast<UT_sint32>(pG->ftluD(rect.origin.x));
 				rec.top    = static_cast<UT_sint32>(pG->ftluD(rect.origin.y)) + rec.height;
 
-				NSSize adv = [m_font advancementForGlyph:aGlyph];
-				if (adv.width > rect.size.width) {
-					rec.width = static_cast<UT_sint32>(pG->ftluD(adv.width));
+				if (![[m_font familyName] isEqualToString:@"cmex10"]) {
+					NSSize adv = [m_font advancementForGlyph:aGlyph];
+					if (adv.width > rect.size.width) {
+						rec.width = static_cast<UT_sint32>(pG->ftluD(adv.width));
+					}
 				}
 			}
 		}

@@ -1161,13 +1161,45 @@ void GR_CocoaGraphics::fillRect(const UT_RGBColor& clr, UT_sint32 x, UT_sint32 y
 							   UT_sint32 w, UT_sint32 h)
 {
 	UT_DEBUGMSG(("GR_CocoaGraphics::fillRect(UT_RGBColor&, %ld, %ld, %ld, %ld)\n", x, y, w, h));
+
+	/* make this as accurate as possible, though it's still not perfect :-(
+	 */
+	double _x1 = tduD(x);
+	double _y1 = tduD(y);
+
+	double x1 = floor(_x1);
+	double y1 = floor(_y1);
+
+	double _x2 = tduD(x+w);
+	double _y2 = tduD(y+h);
+
+	double x2 = ceil(_x2);
+	double y2 = ceil(_y2);
+
+	double dw = ceil(tduD(w));
+	double dh = ceil(tduD(h));
+
+	float f_x = static_cast<float>(x1);
+	float f_y = static_cast<float>(y1);
+	float f_w = static_cast<float>(dw);
+	float f_h = static_cast<float>(dh);
+
+	if (((_x1 - x1) > 0.75) || ((x2 - _x2) < 0.25) || ((_x1 - x1) > (x2 - _x2)))
+	{
+		f_x = static_cast<float>(x2 - dw);
+	}
+	if (((_y1 - y1) > 0.75) || ((y2 - _y2) < 0.25) || ((_y1 - y1) > (y2 - _y2)))
+	{
+		f_y = static_cast<float>(y2 - dh);
+	}
+
 	// save away the current color, and restore it after we fill the rect
 	NSColor *c = _utRGBColorToNSColor (clr);
 
 	LOCK_CONTEXT__;
 	::CGContextSaveGState(m_CGContext);
 	[c set];	
-	::CGContextFillRect(m_CGContext, ::CGRectMake (tdu(x), tdu(y), tdu(w), tdu(h)));
+	::CGContextFillRect(m_CGContext, ::CGRectMake (f_x, f_y, f_w, f_h));
 	::CGContextRestoreGState(m_CGContext);
 }
 
