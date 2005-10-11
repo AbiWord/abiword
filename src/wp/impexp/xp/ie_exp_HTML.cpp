@@ -1589,6 +1589,9 @@ void s_HTML_Listener::_populateFooterStyle() {
 
 void s_HTML_Listener::_outputStyles (const PP_AttrProp * pAP)
 {
+	// make sure any unit conversions use correct locale
+	UT_LocaleTransactor t(LC_NUMERIC, "C");
+
 	/* some cascading style rules
 	 */
 	const XML_Char * szName  = 0;
@@ -1791,6 +1794,8 @@ void s_HTML_Listener::startEmbeddedStrux(void)
 
 void s_HTML_Listener::_openSection (PT_AttrPropIndex api, UT_uint16 iSectionSpecialType)
 {
+	UT_LocaleTransactor t(LC_NUMERIC, "C");
+	
 	if (m_bFirstWrite) _outputBegin (api);
 
 	if (m_bInSection) _closeSection ();
@@ -2611,6 +2616,9 @@ void s_HTML_Listener::_openSpan (PT_AttrPropIndex api)
 
 	m_StyleTreeInline = 0;
 
+	// make sure any unit conversions are correct
+	UT_LocaleTransactor t(LC_NUMERIC, "C");
+
 	const PP_AttrProp * pAP = 0;
 	bool bHaveProp = (api ? (m_pDocument->getAttrProp (api, &pAP)) : false);
 	
@@ -2700,7 +2708,6 @@ void s_HTML_Listener::_openSpan (PT_AttrPropIndex api)
 			char buf[16];
 
 			{
-				UT_LocaleTransactor t(LC_NUMERIC, "C");
 				sprintf (buf, "%g", UT_convertToPoints (szP_FontSize));
 			}
 
@@ -2921,6 +2928,9 @@ void s_HTML_Listener::_popUnendedStructures (void)
 
 void s_HTML_Listener::_fillColWidthsVector(void)
 {
+	// make sure any unit conversions are correct
+	UT_LocaleTransactor t(LC_NUMERIC, "C");
+
 	//
 	// Positioned columns controls
 	//
@@ -2996,6 +3006,9 @@ void s_HTML_Listener::_fillColWidthsVector(void)
 
 void s_HTML_Listener::_openTable (PT_AttrPropIndex api)
 {
+	// make sure any unit conversions are correct
+	UT_LocaleTransactor t(LC_NUMERIC, "C");
+
 	if (m_bFirstWrite) _openSection (api, 0);
 
 	if (!m_bInSection) return;
@@ -3388,7 +3401,6 @@ void s_HTML_Listener::_openTable (PT_AttrPropIndex api)
 			double percent = 100.0*(*pDWidth/totWidth);
 
 			{
-				UT_LocaleTransactor t(LC_NUMERIC, "C");
 				/*m_utf8_1  = "colgroup";   // methinks zat colgaroup ist incoddect hier, this can be deleted when well tested below
 
 				if(get_Abs_Units())
@@ -3434,7 +3446,6 @@ void s_HTML_Listener::_openTable (PT_AttrPropIndex api)
 		tagOpen (TT_TABLE, m_utf8_1);
 
 		{
-			UT_LocaleTransactor t(LC_NUMERIC, "C");
 			// colgroup correct here in a sense
 			// TODO: distinction might be made for AbsUnits and sans width for default
 			m_utf8_1  = "colgroup width=\"";
@@ -3487,6 +3498,8 @@ void s_HTML_Listener::_setCellWidthInches(void)
 
 void s_HTML_Listener::_openRow (PT_AttrPropIndex api)
 {
+	UT_LocaleTransactor t(LC_NUMERIC, "C");
+	
 	if (tagTop () == TT_TR)
 	{
 		m_utf8_1 = "tr";
@@ -3531,6 +3544,8 @@ void s_HTML_Listener::_openRow (PT_AttrPropIndex api)
 
 void s_HTML_Listener::_openCell (PT_AttrPropIndex api)
 {
+	UT_LocaleTransactor t(LC_NUMERIC, "C");
+	
 	m_bCellHasData = false;
 	
 	if (m_bFirstWrite) _openSection (api, 0);
@@ -4270,6 +4285,8 @@ void s_HTML_Listener::_handleImage (PT_AttrPropIndex api)
 
 	if (!bHaveProp || (pAP == 0)) return;
 
+	UT_LocaleTransactor t(LC_NUMERIC, "C");
+	
 	const XML_Char * szDataID = 0;
 	pAP->getAttribute ("dataid", szDataID);
 
@@ -4370,6 +4387,7 @@ void s_HTML_Listener::_handleImage (PT_AttrPropIndex api)
 	const XML_Char * szWidth  = 0;
 
 	pAP->getProperty ("width",  szWidth);
+
 	double dWidth = UT_convertToInches(szWidth);
 	double total = 0;
 	if(m_TableHelper.getNestDepth() > 0)
@@ -5319,6 +5337,8 @@ s_StyleTree::s_StyleTree (s_StyleTree * parent, const char * style_name, PD_Styl
 	m_class_list(style_name),
 	m_style(style)
 {
+	UT_LocaleTransactor t(LC_NUMERIC, "C");
+
 	if ((m_style_name == "Heading 1") ||
 		(m_style_name == "Heading 2") ||
 		(m_style_name == "Heading 3") ||
