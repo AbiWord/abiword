@@ -899,7 +899,7 @@ fl_BlockLayout::~fl_BlockLayout()
 	m_pLayout->dequeueBlockForBackgroundCheck(this);
 	m_pDoc = NULL;
 	m_pLayout = NULL;
-	UT_DEBUGMSG(("~fl_BlockLayout: Deleting block %x sdh %x \n",this,getStruxDocHandle()));
+	xxx_UT_DEBUGMSG(("~fl_BlockLayout: Deleting block %x sdh %x \n",this,getStruxDocHandle()));
 }
 
 void fl_BlockLayout::getStyle(UT_UTF8String & sStyle)
