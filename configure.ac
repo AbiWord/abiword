@@ -425,7 +425,12 @@ if test "$VALGRIND" = ""; then
 	AC_MSG_WARN([Valgrind is missing. UnitTesting will run without])
 fi
 if test "$VALGRIND" != ""; then
-	VALGRIND="valgrind --tool=memcheck --leak-check=yes --num-callers=10 --logfile-fd=-1 "
+dnl due to stupid m4 I had to double the [ and ] in the regexp
+	vg_ver=`valgrind --version | sed -e  's/.*-\([[0-9]]\)\.[[0-9]].*/\1/'`
+	VALGRIND="$VALGRIND --tool=memcheck --leak-check=yes --num-callers=10"
+	if test "$vg_ver" != "3" ; then
+	   VALGRIND="$VALGRIND --logfile-fd=-1"
+	fi
 fi
 AC_SUBST(VALGRIND)
 
