@@ -20,6 +20,7 @@
 #include "ut_map.h"
 #include "ut_pair.h"
 #include "ut_assert.h"
+#include "ut_debugmsg.h"
 
 bool ut_map_lexico_lesser(UT_RBTree::key_t x, UT_RBTree::key_t y)
 {
@@ -91,8 +92,10 @@ UT_Map::~UT_Map()
 	// Any operation on rbtree after that (except the destructor) has indeterminated
 	// effects (with a bit of luck a segfault).
 	Iterator end(m_rbtree.end());
-	for (Iterator it(m_rbtree.begin()); it != end; ++it)
+	for (Iterator it(m_rbtree.begin()); it != end; ++it) {
+		xxx_UT_DEBUGMSG(("deleting elem\n"));
 		delete const_cast<UT_Pair<void*,void*>*> (static_cast<const UT_Pair<void*,void*>*> (it.value()));
+	}
 }
 
 bool
@@ -107,8 +110,10 @@ UT_Map::erase(key_t key)
 	UT_Pair<void*,void*> tmp((void*)key, (void*)data_t());
 	Iterator it(m_rbtree.find_if(&tmp, equal));
 
-	if (it.is_valid())
+	if (it.is_valid()) {
+		delete const_cast<UT_Pair<void*,void*>*> (static_cast<const UT_Pair<void*,void*>*> (it.value()));
 		erase(it);
+	}
 }
 
 UT_Map::Iterator
