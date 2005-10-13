@@ -2611,6 +2611,11 @@ UT_sint32 fp_Line::getMarginBefore(void) const
 				{
 					pPrevC = pPrevC->getPrev();
 				}
+				else
+				{
+				    bLoop = false;
+				    return 0;
+				}
 			}
 		}
 		UT_sint32 iNextTopMargin = getBlock()->getTopMargin();
