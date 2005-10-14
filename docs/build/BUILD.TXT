@@ -161,14 +161,14 @@ CVS modules required to check out are:
 	libiconv
 	libpng
 	popt
+	psiconv
+	zlib
 	wv (use cvs co -r wv-1-0-0-STABLE wv)
 
 The following modules may optionally be checked out as well:
 
 	MSVC6	(if attempting to use MSVC project files)
 	MSVC71	(like the above, but for Visual Studio .Net and later)
-
-You will need the "zlib" library to build AbiWord.  The zlib "compiled DLL" version can be found at http://www.gzip.org/zlib/.  Extract the complete archive (i.e. headers, library files, and the compiled dll) to a peer directory named 'libs\zlib\'.
 
 To build the distribution installer of AbiWord, you will need the latest version of NSIS 2, as well as the md5dll and untgz plugins.  These packages can be found at http://nsis.sourceforge.net/.  Additionally, the command make canonical can be used to build a directory structure useful for testing spellchecking and alternate languages. Install them according to the instructions.  If you do not install NSIS to C:\Program Files\NSIS, you will need to add makensis.exe to your PATH variable.
 
