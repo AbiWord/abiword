@@ -162,6 +162,7 @@ bool IE_Imp_RTF::LoadPictData(PictFormat format, const char * image_name,
 		}
 
 		ok = InsertImage (buf, image_name, imgProps);
+		DELETEP(pFG);
 		if (!ok)
 		{
 			delete pictData;
