@@ -23,6 +23,7 @@ INCLUDES= $(AF_INCLUDES) $(OTHER_INCLUDES) $(ICONV_INCLUDES) $(LIBPNG_INCLUDES)
 check_LIBRARIES = libTestUtil_xp.a
 
 libTestUtil_xp_a_SOURCES=\
+	ut_bytebuf.t.cpp \
 	ut_locale.t.cpp \
 	ut_map.t.cpp \
 	ut_set.t.cpp \
