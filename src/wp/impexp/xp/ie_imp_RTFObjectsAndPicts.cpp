@@ -79,27 +79,33 @@ bool IE_Imp_RTF::LoadPictData(PictFormat format, const char * image_name,
 {
 	// first, we load the actual data into a buffer
 	bool ok;
+	bool retval = true;
 
 	const UT_uint16 chars_per_byte = 2;
 	const UT_uint16 BITS_PER_BYTE = 8;
 	const UT_uint16 bits_per_char = BITS_PER_BYTE / chars_per_byte;
 
-	UT_ByteBuf * pictData = new UT_ByteBuf();
+	UT_ByteBuf *pictData = new UT_ByteBuf();
 	UT_uint16 chLeft = chars_per_byte;
 	UT_Byte pic_byte = 0;
+	IE_ImpGraphic * pGraphicImporter = NULL;
 
 	unsigned char ch;
 
 	if (!isBinary) {
-		if (!ReadCharFromFile(&ch))
-			return false;
+		if (!ReadCharFromFile(&ch)) {
+			retval = false;
+			goto cleanup;
+		}
 
 		while (ch != '}')
 		{
 			int digit;
 			
-			if (!hexVal(ch, digit))
-				return false;
+			if (!hexVal(ch, digit)) {
+				retval = false;
+				goto cleanup;
+			}
 			
 			pic_byte = (pic_byte << bits_per_char) + digit;
 			
@@ -111,15 +117,19 @@ bool IE_Imp_RTF::LoadPictData(PictFormat format, const char * image_name,
 				pic_byte = 0;
 			}
 			
-			if (!ReadCharFromFile(&ch))
-				return false;
+			if (!ReadCharFromFile(&ch)) {
+				retval = false;
+				goto cleanup;
+			}
 		}
 	} else {
 		UT_ASSERT_HARMLESS(binaryLen);
 		UT_DEBUGMSG(("Loading binary data image of %d bytes\n", binaryLen));
 		for (long i = 0; i < binaryLen; i++) {
-			if (!ReadCharFromFileWithCRLF(&ch))
-				return false;
+			if (!ReadCharFromFileWithCRLF(&ch)) {
+				retval = false;
+				goto cleanup;
+			}
 			pictData->append(&ch, 1);
 		}
 	}
@@ -128,18 +138,18 @@ bool IE_Imp_RTF::LoadPictData(PictFormat format, const char * image_name,
 	SkipBackChar(ch);
 
 	// TODO: investigate whether pictData is leaking memory or not
-	IE_ImpGraphic * pGraphicImporter = NULL;
 
 	UT_Error error = IE_ImpGraphic::constructImporter(pictData, iegftForRTF(format), &pGraphicImporter);
 
 	if ((error == UT_OK) && pGraphicImporter)
 	{
-		FG_Graphic* pFG = 0;
+		FG_Graphic* pFG = NULL;
 
 		// TODO: according with IE_ImpGraphic header, we shouldn't free
 		// TODO: the buffer. Confirm that.
 		error = pGraphicImporter->importGraphic(pictData, &pFG);
 		DELETEP(pGraphicImporter);
+		pictData = NULL;
 
 		if (error != UT_OK || !pFG)
 		{
@@ -148,7 +158,7 @@ bool IE_Imp_RTF::LoadPictData(PictFormat format, const char * image_name,
 			return false;
 		}
 
-		UT_ByteBuf * buf = 0;
+		UT_ByteBuf * buf = NULL;
 		buf = static_cast<FG_GraphicRaster *>(pFG)->getRaster_PNG();
 		imgProps.width = static_cast<UT_uint32>(pFG->getWidth ());
 		imgProps.height = static_cast<UT_uint32>(pFG->getHeight ());
@@ -157,7 +167,7 @@ bool IE_Imp_RTF::LoadPictData(PictFormat format, const char * image_name,
 		if (!FlushStoredChars(true))
 		{
 			UT_DEBUGMSG(("Error flushing stored chars just before inserting a picture\n"));
-			delete pictData;
+			DELETEP(pFG);
 			return false;
 		}
 
@@ -165,7 +175,6 @@ bool IE_Imp_RTF::LoadPictData(PictFormat format, const char * image_name,
 		DELETEP(pFG);
 		if (!ok)
 		{
-			delete pictData;
 			return false;
 		}
 	}
@@ -173,10 +182,11 @@ bool IE_Imp_RTF::LoadPictData(PictFormat format, const char * image_name,
 	{
 		// if we're not inserting a graphic, we should destroy the buffer
 		UT_DEBUGMSG (("no translator found: %d\n", error));
-		delete pictData;
 	}
 
-	return true;
+ cleanup:
+	DELETEP(pictData);
+	return retval;
 }
 
 
