@@ -344,6 +344,7 @@ bool GR_UnixImage::convertFromBuffer(const UT_ByteBuf* pBB,
 		g_error_free(err);
 	    }
 	  gdk_pixbuf_loader_close (ldr, NULL);
+	  g_object_unref(G_OBJECT(ldr));
 	  return false ;
 	}
 //
