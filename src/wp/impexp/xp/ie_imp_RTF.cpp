@@ -530,7 +530,7 @@ RTF_msword97_listOverride::RTF_msword97_listOverride(IE_Imp_RTF * pie_rtf )
 
 	m_OverrideCount = 0;
 	m_pParaProps = NULL;
-m_pParaProps = NULL;
+	m_pCharProps = NULL;
 	m_pbParaProps = NULL;
 	m_pbCharProps = NULL;
 	m_pie_rtf = pie_rtf;
@@ -540,7 +540,7 @@ m_pParaProps = NULL;
 RTF_msword97_listOverride::~RTF_msword97_listOverride(void)
 {
 	DELETEP(m_pParaProps);
-	DELETEP(m_pParaProps);
+	DELETEP(m_pCharProps);
 	DELETEP(m_pbParaProps);
 	DELETEP(m_pbCharProps);
 }
