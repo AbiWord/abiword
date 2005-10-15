@@ -89,7 +89,7 @@ bool IE_Imp_RTF::LoadPictData(PictFormat format, const char * image_name,
 	UT_uint16 chLeft = chars_per_byte;
 	UT_Byte pic_byte = 0;
 	IE_ImpGraphic * pGraphicImporter = NULL;
-
+	UT_Error error = UT_OK;
 	unsigned char ch;
 
 	if (!isBinary) {
@@ -139,7 +139,7 @@ bool IE_Imp_RTF::LoadPictData(PictFormat format, const char * image_name,
 
 	// TODO: investigate whether pictData is leaking memory or not
 
-	UT_Error error = IE_ImpGraphic::constructImporter(pictData, iegftForRTF(format), &pGraphicImporter);
+	error = IE_ImpGraphic::constructImporter(pictData, iegftForRTF(format), &pGraphicImporter);
 
 	if ((error == UT_OK) && pGraphicImporter)
 	{
