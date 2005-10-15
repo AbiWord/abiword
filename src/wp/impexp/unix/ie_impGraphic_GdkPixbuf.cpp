@@ -23,6 +23,7 @@
  * 02111-1307, USA.
  */
 
+#define GDK_PIXBUF_ENABLE_BACKEND
 #include "ie_impGraphic_GdkPixbuf.h"
 
 //------------------------------------------------------------------------------------
@@ -468,6 +469,95 @@ IE_ImpGraphicGdkPixbuf_Sniffer::~IE_ImpGraphicGdkPixbuf_Sniffer()
 {
 }
 
+/**** CODE STOLEN FROM gdk-pixbuf-io.c ****/
+
+static gint 
+format_check (GdkPixbufFormat *info, const guchar *buffer, int size)
+{
+	int i, j;
+	gchar m;
+	GdkPixbufModulePattern *pattern;
+	gboolean anchored;
+	guchar *prefix;
+	gchar *mask;
+
+	for (pattern = info->signature; pattern->prefix; pattern++) {
+		if (pattern->mask && pattern->mask[0] == '*') {
+			prefix = (guchar *)pattern->prefix + 1;
+			mask = (gchar *)pattern->mask + 1;
+			anchored = FALSE;
+		}
+		else {
+			prefix = (guchar *)pattern->prefix;
+			mask = (gchar *)pattern->mask;
+			anchored = TRUE;
+		}
+		for (i = 0; i < size; i++) {
+			for (j = 0; i + j < size && prefix[j] != 0; j++) {
+				m = mask ? mask[j] : ' ';
+				if (m == ' ') {
+					if (buffer[i + j] != prefix[j])
+						break;
+				}
+				else if (m == '!') {
+					if (buffer[i + j] == prefix[j])
+						break;
+				}
+				else if (m == 'z') {
+					if (buffer[i + j] != 0)
+						break;
+				}
+				else if (m == 'n') {
+					if (buffer[i + j] == 0)
+						break;
+				}
+			} 
+
+			if (prefix[j] == 0) 
+				return pattern->relevance;
+
+			if (anchored)
+				break;
+		}
+	}
+	return 0;
+}
+
+static bool
+_gdk_pixbuf_get_module (const guchar *buffer, guint size)
+{
+	GSList *formats, *format_ptr;
+
+	gint score, best = 0;
+	GdkPixbufFormat *selected = NULL;
+
+	format_ptr = gdk_pixbuf_get_formats ();
+	for (formats = format_ptr; formats; formats = g_slist_next (formats)) {
+		GdkPixbufFormat *info = (GdkPixbufFormat *)formats->data;
+
+#if 0
+		if (info->disabled)
+			continue;
+#endif
+
+		score = format_check (info, buffer, size);
+		if (score > best) {
+			best = score; 
+			selected = info;
+		}
+		if (score >= 100) 
+			break;
+	}
+
+	g_slist_free(format_ptr);
+	if (selected != NULL)
+		return true;
+
+	return false;
+}
+
+/**** END CODE STOLEN FROM gdk-pixbuf-io.c ****/
+
 /*!
  * Sniff the byte buffer to see if it contains vaild image data recognized
  * by gdk-pixbuf
@@ -485,31 +575,7 @@ UT_Confidence_t IE_ImpGraphicGdkPixbuf_Sniffer::recognizeContents(const char * s
 		return UT_CONFIDENCE_PERFECT;
 	}
 
-	GdkPixbufLoader * ldr = gdk_pixbuf_loader_new ();
-	UT_return_val_if_fail (ldr, UT_CONFIDENCE_ZILCH);
-
-	GError * err = NULL;
-	if ( FALSE == gdk_pixbuf_loader_write (ldr, reinterpret_cast<const guchar *>(szBuf),static_cast<gsize>(iNum), &err) )
-		{
-			UT_DEBUGMSG(("No pixbuf loader created \n"));
-			gdk_pixbuf_loader_close (ldr, NULL);
-			return UT_CONFIDENCE_ZILCH;
-		}
-
-	gdk_pixbuf_loader_close (ldr, NULL);
-	GdkPixbuf * pixbuf =  gdk_pixbuf_loader_get_pixbuf (ldr);
-
-	if(pixbuf)
-	{
-		// never need to ref the pixbuf
-		return UT_CONFIDENCE_PERFECT;
-	}
-	else
-	{
-		UT_DEBUGMSG(("No pixbuf created \n"));
-		// never need to ref the pixbuf
-		return UT_CONFIDENCE_ZILCH;
-	}
+	return _gdk_pixbuf_get_module((guchar *)szBuf, iNum);
 }
 
 UT_Confidence_t IE_ImpGraphicGdkPixbuf_Sniffer::recognizeSuffix(const char * szSuffix)

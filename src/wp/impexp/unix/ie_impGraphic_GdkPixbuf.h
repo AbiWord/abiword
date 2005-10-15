@@ -27,6 +27,7 @@
 #include <glib.h>
 #include <gdk-pixbuf/gdk-pixbuf.h>
 #include <gdk-pixbuf/gdk-pixbuf-loader.h>
+#include <gdk-pixbuf/gdk-pixbuf-io.h>
 
 #include "ut_debugmsg.h"
 #include "ut_types.h"
