@@ -1748,7 +1748,6 @@ bool AP_UnixApp::doWindowlessArgs(const AP_Args *Args)
 		//		szRequest = poptGetArg(Args->poptcon);
 		szRequest = Args->m_sPlugin;
 		bool bFound = false;	
-		printf(" Looking for plugin name %s \n",szRequest);
 		if(Args->m_sPlugin != NULL)
 		{
 			const UT_GenericVector<XAP_Module*> * pVec = XAP_ModuleManager::instance().enumModules ();
@@ -1757,17 +1756,15 @@ bool AP_UnixApp::doWindowlessArgs(const AP_Args *Args)
 			{
 				pModule = pVec->getNthItem (i);
 				szName = pModule->getModuleInfo()->name;
-				printf("Plugin %s loaded \n",szName);
 				if(UT_strcmp(szName,szRequest) == 0)
 				{
-					printf("plugin %s found sending control there! \n",szName);
 					bFound = true;
 				}
 			}
 		}
 		if(!bFound)
 		{
-			printf("Plugin %s not found or loaded \n",szRequest);
+			fprintf(stderr, "Plugin %s not found or loaded \n",szRequest);
 			return false;
 		}
 //
@@ -1779,54 +1776,8 @@ bool AP_UnixApp::doWindowlessArgs(const AP_Args *Args)
 		const EV_EditMethod * pInvoke = pEMC->findEditMethodByName(evExecute);
 		if(!pInvoke)
 		{
-			printf("Plugin %s invoke method %s not found \n",
-				   Args->m_sPlugin,evExecute);
-			return false;
-		}
-//
-// Execute the plugin, then quit
-//
-		ev_EditMethod_invoke(pInvoke, UT_String ("Called From Unix[Gnome]App"));
-		return false;
-	}
-
-
-	if(Args->m_iAbiControl)
-	{
-//
-// Start a plugin rather than the main abiword application.
-//
-	    const char * szName = NULL;
-		XAP_Module * pModule = NULL;
-		bool bFound = false;	
-		const UT_GenericVector<XAP_Module*> * pVec = XAP_ModuleManager::instance().enumModules ();
-		for (UT_uint32 i = 0; (i < pVec->size()) && !bFound; i++)
-		{
-			pModule = pVec->getNthItem (i);
-			szName = pModule->getModuleInfo()->name;
-			printf("Plugin %s loaded \n",szName);
-			if(UT_strcmp(szName,"AbiControl") == 0)
-			{
-				printf("plugin %s found sending control there! \n",szName);
-				bFound = true;
-			}
-		}
-		if(!bFound)
-		{
-			printf("Plugin %s not found or loaded \n",Args->m_sPlugin);
-			return false;
-		}
-//
-// You must put the name of the ev_EditMethod in the usage field
-// of the plugin registered information.
-//
-		const char * evExecute = pModule->getModuleInfo()->usage;
-		EV_EditMethodContainer* pEMC = pMyUnixApp->getEditMethodContainer();
-		const EV_EditMethod * pInvoke = pEMC->findEditMethodByName(evExecute);
-		if(!pInvoke)
-		{
-			printf("Plugin %s invoke method %s not found \n",
-				   Args->m_sPlugin,evExecute);
+			fprintf(stderr, "Plugin %s invoke method %s not found \n",
+					Args->m_sPlugin,evExecute);
 			return false;
 		}
 //
