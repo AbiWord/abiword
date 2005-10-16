@@ -1331,7 +1331,7 @@ UT_UCS4String::UT_UCS4String(const char * utf8_str, size_t bytelength /* 0 == ze
 :	pimpl(new UT_UCS4Stringbuf)
 {
 	if (bytelength == 0) {
-		if (utf8_str == 0 || utf8_str == '\0') return;
+		if (utf8_str == 0 || *utf8_str == '\0') return;
 		bytelength = strlen (utf8_str);
 	}
 	while (true) {
