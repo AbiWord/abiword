@@ -260,9 +260,9 @@ UT_Error UT_XML::parse (const char * buffer, UT_uint32 length)
 
   UT_Error ret = UT_OK;
 
-  xmlSAXHandler hdl;
   xmlParserCtxtPtr ctxt;
 
+  xmlSAXHandler hdl;
   memset(&hdl, 0, sizeof(hdl));
 
   hdl.getEntity    = _getEntity;
@@ -281,7 +281,7 @@ UT_Error UT_XML::parse (const char * buffer, UT_uint32 length)
       UT_DEBUGMSG (("Unable to create libxml2 memory context!\n"));
       return UT_ERROR;
     }
-  ctxt->sax = &hdl;
+  memcpy(ctxt->sax, &hdl, sizeof(hdl));
   ctxt->userData = static_cast<void *>(this);
 
   m_bStopped = false;
@@ -291,7 +291,6 @@ UT_Error UT_XML::parse (const char * buffer, UT_uint32 length)
   if (!ctxt->wellFormed) ret = UT_IE_IMPORTERROR;
 
   xmlDocPtr xmlDoc = ctxt->myDoc;
-  ctxt->sax = NULL;
   xmlFreeParserCtxt (ctxt);
   xmlFreeDoc(xmlDoc);
 
