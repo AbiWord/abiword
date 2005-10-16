@@ -291,6 +291,7 @@ UT_Error UT_XML::parse (const char * buffer, UT_uint32 length)
   if (!ctxt->wellFormed) ret = UT_IE_IMPORTERROR;
 
   xmlDocPtr xmlDoc = ctxt->myDoc;
+  ctx->sax = NULL;
   xmlFreeParserCtxt (ctxt);
   xmlFreeDoc(xmlDoc);
 
