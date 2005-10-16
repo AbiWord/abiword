@@ -481,10 +481,10 @@ void  XAP_UnixEncodingManager::initialize()
 	}
 	else
 	{
-		char * lang = 0;
-		char * terr = 0;
-		char * cs   = 0;
-		char * mod  = 0;
+		char * lang = NULL;
+		char * terr = NULL;
+		char * cs   = NULL;
+		char * mod  = NULL;
 
 		int mask = explode_locale (locname,&lang,&terr,&cs,&mod);
 
@@ -497,89 +497,89 @@ void  XAP_UnixEncodingManager::initialize()
 		if ((mask & COMPONENT_CODESET) && cs)
 		{
 			if (cs[1])
+			{
+				int length = strlen (cs + 1);
+				char * name = static_cast<char *>(malloc (length + 3));
+				if (name)
 				{
-					int length = strlen (cs + 1);
-					char * name = static_cast<char *>(malloc (length + 3));
-					if (name)
+					strcpy (name, cs + 1);
+					
+					/* make the encoding name upper-case
+					 * TODO why not use the UT_islower/UT_isupper?
+					 */
+					for (int i = 0; i < length; i++)
+						if (islower (static_cast<int>(static_cast<unsigned char>(name[i]))))
+							name[i] = static_cast<char>(toupper (static_cast<int>(static_cast<unsigned char>(name[i]))));
+					
+					/* encoding names may be presented as iso88591 or ISO8859-1,
+					 * but we need both hyphens for iconv
+					 */
+					if (strncmp (name, "ISO8859", 7) == 0)
+					{
+						memmove (name + 4, name + 3, length + 1 - 3);
+						length++;
+						name[3] = '-';
+						if (name[8] != '-')
 						{
-							strcpy (name, cs + 1);
-
-							/* make the encoding name upper-case
-							 * TODO why not use the UT_islower/UT_isupper?
-							 */
-							for (int i = 0; i < length; i++)
-								if (islower (static_cast<int>(static_cast<unsigned char>(name[i]))))
-									name[i] = static_cast<char>(toupper (static_cast<int>(static_cast<unsigned char>(name[i]))));
-
-							/* encoding names may be presented as iso88591 or ISO8859-1,
-							 * but we need both hyphens for iconv
-							 */
-							if (strncmp (name, "ISO8859", 7) == 0)
-								{
-									memmove (name + 4, name + 3, length + 1 - 3);
-									length++;
-									name[3] = '-';
-									if (name[8] != '-')
-										{
-											memmove (name + 9, name + 8, length + 1 - 8);
-											length++;
-											name[8] = '-';
-										}
-								}
-							NativeEncodingName = name;
-							FREEP(name);
+							memmove (name + 9, name + 8, length + 1 - 8);
+							length++;
+							name[8] = '-';
 						}
+					}
+					NativeEncodingName = name;
+					FREEP(name);
 				}
+			}
 			Native8BitEncodingName = NativeSystemEncodingName = NativeEncodingName;
-
+			
 			// need to get non-unicode encoding if encoding is UTF-8
 			if(!UT_stricmp(NativeEncodingName.utf8_str(), "UTF-8"))
-				{
-					// we want to get the encoding that would be used for the given
-					// language/territory if the UTF-8 encoding was not specified
-					// by LANG
-
-					UT_UTF8String OLDLANG (getenv("LANG"));
+			{
+				// we want to get the encoding that would be used for the given
+				// language/territory if the UTF-8 encoding was not specified
+				// by LANG
+				
+				UT_UTF8String OLDLANG (getenv("LANG"));
 #if defined(SETENV_MISSING) 
-					UT_UTF8String MYLANG ("LANG=");
-
-					MYLANG += LanguageISOName;
-					MYLANG += "_";
-					MYLANG += LanguageISOTerritory;
-					putenv(MYLANG.utf8_str());
+				UT_UTF8String MYLANG ("LANG=");
+				
+				MYLANG += LanguageISOName;
+				MYLANG += "_";
+				MYLANG += LanguageISOTerritory;
+				putenv(MYLANG.utf8_str());
 #else
-					UT_UTF8String MYLANG (LanguageISOName);
-					MYLANG += "_";
-					MYLANG += LanguageISOTerritory;
-					setenv ("LANG", MYLANG.utf8_str(), 1);
+				UT_UTF8String MYLANG (LanguageISOName);
+				MYLANG += "_";
+				MYLANG += LanguageISOTerritory;
+				setenv ("LANG", MYLANG.utf8_str(), 1);
 #endif
-					if (mask & COMPONENT_CODESET)
-						{
-							NativeNonUnicodeEncodingName = cs+1;
-							xxx_UT_DEBUGMSG(("NativeNonUnicodeEncodingName (1) %s\n", NativeNonUnicodeEncodingName));
-							if (!strncmp(cs+1,"ISO8859",strlen("ISO8859")))
-								{
-									char buf[40];
-									strcpy(buf,"ISO-");
-									strcat(buf,cs+1+3);
-									NativeNonUnicodeEncodingName = buf;
-								}
-							xxx_UT_DEBUGMSG(("NativeNonUnicodeEncodingName (2) %s\n", NativeNonUnicodeEncodingName));
-						}
-#if defined(SETENV_MISSING)
-					MYLANG = "LANG=";
-					MYLANG += OLDLANG;
-					putenv(MYLANG.utf8_str());
-#else
-					setenv("LANG", OLDLANG.utf8_str(), 1);
-#endif			
+				if (mask & COMPONENT_CODESET)
+				{
+					NativeNonUnicodeEncodingName = cs+1;
+					xxx_UT_DEBUGMSG(("NativeNonUnicodeEncodingName (1) %s\n", NativeNonUnicodeEncodingName));
+					if (!strncmp(cs+1,"ISO8859",strlen("ISO8859")))
+					{
+						char buf[40];
+						strcpy(buf,"ISO-");
+						strcat(buf,cs+1+3);
+						NativeNonUnicodeEncodingName = buf;
+					}
+					xxx_UT_DEBUGMSG(("NativeNonUnicodeEncodingName (2) %s\n", NativeNonUnicodeEncodingName));
 				}
-
-			FREEP(lang);
-			FREEP(terr);
-			FREEP(cs);
-			FREEP(mod);
+#if defined(SETENV_MISSING)
+				MYLANG = "LANG=";
+				MYLANG += OLDLANG;
+				putenv(MYLANG.utf8_str());
+#else
+				setenv("LANG", OLDLANG.utf8_str(), 1);
+#endif			
+			}
+			
 		}
+		FREEP(lang);
+		FREEP(terr);
+		FREEP(cs);
+		FREEP(mod);
 	}
 	// Moved to end so that we correctly detect if the locale is CJK.
 	XAP_EncodingManager::initialize(); 
