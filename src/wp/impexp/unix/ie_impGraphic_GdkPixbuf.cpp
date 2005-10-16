@@ -172,25 +172,6 @@ UT_Error IE_ImpGraphic_GdkPixbuf::convertGraphic(UT_ByteBuf* pBB,
 	return UT_OK;
 }
 
-#if 0
-//
-// FIXME Remove this code after we work out how to speed to image writing
-// with libpng
-//
-// Otherwise might need this code is we can work out how to make gdk-pixbuf
-// to speed up writes.
-//
-static gboolean convCallback(const gchar *buf,
-			     gsize count,
-			     GError **error,
-			     gpointer byteBuf)
-{
-  UT_ByteBuf * pBB = reinterpret_cast<UT_ByteBuf *>(byteBuf);
-  pBB->append(reinterpret_cast<const UT_Byte *>(buf),count);
-  return TRUE;
-}
-
-#endif
 /*!
  * This method fills the m_pPNG byte buffer with a PNG representation of 
  * of the supplied gdk-pixbuf.
@@ -200,28 +181,6 @@ static gboolean convCallback(const gchar *buf,
  */
 void IE_ImpGraphic_GdkPixbuf::_createPNGFromPixbuf(GdkPixbuf * pixbuf)
 {
-#if 0
-  const guchar * pixels = gdk_pixbuf_get_pixels(pixbuf);
-  DELETEP(m_pPngBB);
-	  
-  if (pixels)
-  {
-	  m_pPngBB =  new UT_ByteBuf();
-	  GError    * error =NULL;
-	  gdk_pixbuf_save_to_callback(pixbuf,
-								  convCallback,
-								  reinterpret_cast<gpointer>(m_pPngBB),
-								  "png",
-								  &error,NULL,NULL);
-	  if(error != NULL)
-      {
-		  g_error_free (error);
-      }
-  }
-#endif
-  
-#if 1
-
 	int colorType = PNG_COLOR_TYPE_RGB;
 
 	if(gdk_pixbuf_get_has_alpha(pixbuf))
@@ -264,7 +223,6 @@ void IE_ImpGraphic_GdkPixbuf::_createPNGFromPixbuf(GdkPixbuf * pixbuf)
 
 	DELETEPV (pngScanline);		
 	png_write_end(m_pPNG, m_pPNGInfo);
-#endif
 }
 
 /*!
