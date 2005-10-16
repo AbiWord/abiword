@@ -228,6 +228,7 @@ void AP_Convert::convertTo(const char * szSourceFilename,
 				fprintf(stderr, "AbiWord: could not open the file [%s]\n", szSourceFilename);
 		}
 		
+		UNREFP(pNewDoc);
 		return;
 	}
 
@@ -369,6 +370,7 @@ void AP_Convert::print(const char * szFile, GR_Graphics * pGraphics, const char 
 	if( err != UT_OK)
 	{
 		fprintf(stderr, "AbiWord: Error importing file. [%s]  Could not print \n", szFile);
+		UNREFP(pDoc);
 		return;
 	}
 	if (m_mergeSource.size()){
