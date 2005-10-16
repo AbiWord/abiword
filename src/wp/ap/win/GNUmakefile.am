@@ -25,7 +25,7 @@ INCLUDES= \
 	-DABIWORD_DATADIR=\""$(datadir)"\"			\
 	-DABIWORD_APP_NAME="\"$(ABIWORD_APP_NAME)\"" \
 	-DABIWORD_APP_LIBDIR="\"$(ABIWORD_APP_LIBDIR)\"" \
-	-DABIWORD_PLUGINDIR="\"$(libdir)/AbiWord-2.4/plugins/\"" \
+	-DABIWORD_PLUGINDIR="\"$(libdir)/AbiWord-2.6/plugins/\"" \
 	$(AF_INCLUDES) $(TEXT_INCLUDES) $(WP_INCLUDES) \
 	$(OTHER_INCLUDES) $(ICONV_INCLUDES)
 

@@ -15,8 +15,8 @@ ABISUITE_FONT_HOME=$ABISUITE_HOME/fonts
 
 # Hard coded for a Debian system
 # We dont have both!
-DYNAMIC_BIN=/usr/bin/AbiWord-2.4
-#STATIC_BIN=/usr/bin/AbiWord-2.4
+DYNAMIC_BIN=/usr/bin/AbiWord-2.6
+#STATIC_BIN=/usr/bin/AbiWord-2.6
 
 # Set run-time font path
 if [ -d $ABISUITE_FONT_HOME ]

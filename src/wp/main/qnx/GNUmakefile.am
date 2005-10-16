@@ -20,7 +20,7 @@ include $(top_srcdir)/includes.mk
 
 CLEANFILES = abi_ver.cpp
 
-noinst_PROGRAMS = AbiWord-2.4
+noinst_PROGRAMS = AbiWord-2.6
 
 bin_SCRIPTS = AbiWord
 
@@ -40,15 +40,15 @@ AbiWord_2_4_SOURCES = abi_ver.cpp QNXMain.cpp
 abi_ver.cpp:	@PLUGIN_LIST@
 	cp $(srcdir)/../xp/abi_ver.cpp .
 
-AbiWord:	AbiWord-2.4
-	ln -fs AbiWord-2.4 AbiWord
+AbiWord:	AbiWord-2.6
+	ln -fs AbiWord-2.6 AbiWord
 	bindres -q AbiWord Icon.wgti $(top_srcdir)/src/wp/ap/qnx/dialogs/wgt/*.wgtd $(top_srcdir)/src/af/xap/qnx/dialogs/wgt/*.wgtd	
 
 install-exec-local:	
 	@if test -f $(DESTDIR)/$(bindir)/abiword; then \
 	  echo "$(DESTDIR)/$(bindir)/abiword is a regular file - I'm not going to create a link."; \
 	else \
-	  (cd $(DESTDIR)/$(bindir) && ln -sf AbiWord-2.4 abiword); \
+	  (cd $(DESTDIR)/$(bindir) && ln -sf AbiWord-2.6 abiword); \
 	fi
 
 abiword_plugins = ../../../../../abiword-plugins

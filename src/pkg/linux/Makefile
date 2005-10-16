@@ -39,14 +39,14 @@ include $(ABI_ROOT)/src/config/abi_rules.mk
 
 # The plain "install" common to all Unix targets
 install:
-	@TARGET=$(prefix)/share/AbiSuite-2.4 BINDIR=$(prefix)/bin SRCDIR=$(OUTDIR) \
+	@TARGET=$(prefix)/share/AbiSuite-2.6 BINDIR=$(prefix)/bin SRCDIR=$(OUTDIR) \
 		SCRIPTDIR=$(ABI_ROOT)/src/pkg/common/unix/scripts \
 		$(ABI_ROOT)/src/pkg/common/unix/scripts/install.sh 
 
 ########################################################################
 
 install_redhat:
-	@strip $(OUTDIR)/bin/AbiWord-2.4
+	@strip $(OUTDIR)/bin/AbiWord-2.6
 	@TARGET=/usr/share/abisuite BINDIR=/usr/bin SRCDIR=$(OUTDIR) \
 		DOCDIR=/usr/doc LIBDIR=/usr/lib \
 		SCRIPTDIR=$(ABI_ROOT)/src/pkg/common/unix/scripts \

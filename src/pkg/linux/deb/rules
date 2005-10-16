@@ -26,7 +26,7 @@ clean:
 
 install: build-stamp
 	install -m 755 -d debian/tmp/usr/bin
-	mv debian/tmp/bin/AbiWord-2.4 debian/tmp/usr/bin/
+	mv debian/tmp/bin/AbiWord-2.6 debian/tmp/usr/bin/
 	ln -s AbiWord debian/tmp/usr/bin/abiword
 	install -m 755 -d debian/tmp/usr/bin
 	install -m 755 -d debian/tmp/usr/share/man/man1

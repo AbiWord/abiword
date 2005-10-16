@@ -139,7 +139,7 @@ fi
 
 # At this point, we now have the following info:
 # OS_NAME = something like 'Linux'
-# OS_RELEASE = something like '2.4.1'
+# OS_RELEASE = something like '2.6.1'
 # Additionally, there may be info about Cygwin versions.
 
 dnl why not call AC_CANONICAL_HOST or AC_CANONICAL_SYSTEM and

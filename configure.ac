@@ -21,12 +21,12 @@ dnl 02111-1307, USA.
 dnl Process this file with autoconf to produce a configure script.
 
 AC_PREREQ(2.50)
-AC_INIT([AbiSuite],[2.4],[http://www.abisource.com/])
+AC_INIT([AbiSuite],[2.6],[http://www.abisource.com/])
 AC_CONFIG_SRCDIR([src/af/ev/xp/ev_Menu.h])
 AC_CONFIG_AUX_DIR(ac-helpers)
 dnl AC_CONFIG_HEADERS(config.h)
 
-AM_INIT_AUTOMAKE(AbiSuite-2.4,2.4.2)
+AM_INIT_AUTOMAKE(AbiSuite-2.6,2.5.0)
 
 if test "$srcdir" = "."; then
 	abi_rootdir=".."

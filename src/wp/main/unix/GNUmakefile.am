@@ -20,7 +20,7 @@ include $(top_srcdir)/includes.mk
 
 CLEANFILES = abi_ver.cpp
 
-bin_PROGRAMS = AbiWord-2.4
+bin_PROGRAMS = AbiWord-2.6
 
 INCLUDES = \
 	-DABIWORD_APP_NAME="\"$(ABIWORD_APP_NAME)\"" \
@@ -42,7 +42,7 @@ install-exec-local:
 	@if test -f $(DESTDIR)/$(bindir)/abiword; then \
 	  echo "$(DESTDIR)/$(bindir)/abiword is a regular file - I'm not going to create a link."; \
 	else \
-	  (cd $(DESTDIR)/$(bindir) && ln -sf AbiWord-2.4 abiword); \
+	  (cd $(DESTDIR)/$(bindir) && ln -sf AbiWord-2.6 abiword); \
 	fi
 
 abiword_plugins = ../../../../../abiword-plugins
