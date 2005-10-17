@@ -102,6 +102,15 @@ UT_sint32 fb_ColumnBreaker::breakSection(fl_DocSectionLayout * pSL)
 		return 0;
 	}
 	pOuterContainer = pFirstLayout->getFirstContainer();
+	if(pOuterContainer->getContainerType() == FP_CONTAINER_FRAME)
+	{
+	            fl_ContainerLayout * pCL = pOuterContainer->getSectionLayout()->getNext();
+		    if(pCL)
+		    {
+			pOuterContainer = static_cast<fp_Container *>(pCL->getFirstContainer());
+		    }
+
+	}
 	pCurColumn = static_cast<fp_Column*>(pSL->getFirstContainer());
 	xxx_UT_DEBUGMSG(("fb_ColumnBreaker: For DocSec %x first column %x \n",pSL,pCurColumn));
 	if(m_pStartPage)

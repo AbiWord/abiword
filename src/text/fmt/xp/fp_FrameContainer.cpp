@@ -630,6 +630,7 @@ fp_Container * fp_FrameContainer::getNextContainerInSection() const
  */
 fp_Container * fp_FrameContainer::getPrevContainerInSection() const
 {
+        fl_ContainerLayout * pCL = getSectionLayout()->getPrev();
 	return NULL;
 }
 
