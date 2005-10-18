@@ -4047,7 +4047,6 @@ UT_Error IE_Imp_MsWord_97::_handleImage (Blip * b, long width, long height, long
   if ((error != UT_OK) || !importer)
 	{
 	  UT_DEBUGMSG(("Could not create image importer object\n"));
-	  DELETEP(pictData);
 	  goto Cleanup;
 	}
 
@@ -4055,9 +4054,6 @@ UT_Error IE_Imp_MsWord_97::_handleImage (Blip * b, long width, long height, long
   if ((error != UT_OK) || !pFG)
 	{
 	  UT_DEBUGMSG(("Could not import graphic\n"));
-	  if(!pFG) {
-	    DELETEP(pictData);
-	  }
 	  goto Cleanup;
 	}
 
@@ -4121,6 +4117,7 @@ UT_Error IE_Imp_MsWord_97::_handleImage (Blip * b, long width, long height, long
 	}
 
  Cleanup:
+  DELETEP(pictData);
   DELETEP(importer);
   DELETEP(pFG);
 
@@ -4185,7 +4182,6 @@ UT_Error IE_Imp_MsWord_97::_handlePositionedImage (Blip * b, UT_String & sImageN
       {
 	UT_DEBUGMSG(("Could not uncompress image\n"));
         DELETEP(uncompr);
-	DELETEP(pictData);
 	goto Cleanup;
       }
       pictData->append(reinterpret_cast<const UT_Byte*>(uncompr), uncomprLen);
@@ -4206,7 +4202,6 @@ UT_Error IE_Imp_MsWord_97::_handlePositionedImage (Blip * b, UT_String & sImageN
   if ((error != UT_OK) || !importer)
 	{
 	  UT_DEBUGMSG(("Could not create image importer object\n"));
-	  DELETEP(pictData);
 	  goto Cleanup;
 	}
 
@@ -4214,9 +4209,6 @@ UT_Error IE_Imp_MsWord_97::_handlePositionedImage (Blip * b, UT_String & sImageN
   if ((error != UT_OK) || !pFG)
 	{
 	  UT_DEBUGMSG(("Could not import graphic\n"));
-	  if(!pFG) {
-	    DELETEP(pictData);
-	  }
 	  goto Cleanup;
 	}
 
@@ -4244,6 +4236,7 @@ UT_Error IE_Imp_MsWord_97::_handlePositionedImage (Blip * b, UT_String & sImageN
 	}
 
  Cleanup:
+  DELETEP(pictData);
   DELETEP(importer);
   DELETEP(pFG);
 
