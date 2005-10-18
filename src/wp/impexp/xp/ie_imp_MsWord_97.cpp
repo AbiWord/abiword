@@ -3981,6 +3981,7 @@ UT_Error IE_Imp_MsWord_97::_handleImage (Blip * b, long width, long height, long
 	FG_Graphic* pFG		= 0;
 	UT_Error error		= UT_OK;
 	UT_ByteBuf * buf		= 0;
+	char * mimetype = 0;
 
         UT_String propBuffer;
         UT_String propsName;
@@ -4106,7 +4107,7 @@ UT_Error IE_Imp_MsWord_97::_handleImage (Blip * b, long width, long height, long
 	  goto Cleanup;
 	}
 
-  char * mimetype = UT_strdup("image/png");
+  mimetype = UT_strdup("image/png");
   if (!getDoc()->createDataItem(propsName.c_str(), false,
 				buf, const_cast<void*>(static_cast<const void*>(mimetype)), NULL))
 	{
@@ -4139,6 +4140,7 @@ UT_Error IE_Imp_MsWord_97::_handlePositionedImage (Blip * b, UT_String & sImageN
 	FG_Graphic* pFG		= 0;
 	UT_Error error		= UT_OK;
 	UT_ByteBuf * buf		= 0;
+	char * mimetype = 0;
 
   // suck the data into the ByteBuffer
 
@@ -4225,7 +4227,7 @@ UT_Error IE_Imp_MsWord_97::_handlePositionedImage (Blip * b, UT_String & sImageN
 
   UT_String_sprintf(sImageName, "%d", getDoc()->getUID(UT_UniqueId::Image));
 
-  const char * mimetype = UT_strdup ("image/png");
+  mimetype = UT_strdup ("image/png");
   if (!getDoc()->createDataItem(sImageName.c_str(), false,
 				buf, const_cast<void*>(static_cast<const void*>(mimetype)), NULL))
 	{
