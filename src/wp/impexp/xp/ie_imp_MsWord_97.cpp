@@ -940,9 +940,6 @@ UT_Error IE_Imp_MsWord_97::importFile(const char * szFilename)
   int ret = wvInitParser (&ps, const_cast<char *>(szFilename));
   const char * password = NULL;
 
-  // HACK!!
-  bool decrypted = false ;
-
   if (ret & 0x8000)		/* Password protected? */
     {
       UT_UTF8String pass (GetPassword());
@@ -965,7 +962,6 @@ UT_Error IE_Imp_MsWord_97::importFile(const char * szFilename)
 			//ErrorMessage(AP_STRING_ID_WORD_PassInvalid);
 		  ErrCleanupAndExit(UT_IE_PROTECTED);
 		}
-	      decrypted = true ;
 	    }
 	}
       else if (((ret & 0x7fff) == WORD7) || ((ret & 0x7fff) == WORD6))
@@ -984,7 +980,6 @@ UT_Error IE_Imp_MsWord_97::importFile(const char * szFilename)
 		  //("Incorrect Password\n"));
 		  ErrCleanupAndExit(UT_IE_PROTECTED);
 		}
-	      decrypted = true ;
 	    }
 	}
     }
@@ -1006,89 +1001,14 @@ UT_Error IE_Imp_MsWord_97::importFile(const char * szFilename)
   if(!getLoadStylesOnly())
 	  getDoc()->setAttrProp(NULL);
   
-  UT_DEBUGMSG(("DOM: wvText\n"));
-
   wvText(&ps);
 
-  if(getLoadStylesOnly())
-	  return UT_OK;
-
-  // now get the summary information, if available
-  ret = wvQuerySupported (&ps.fib, NULL);
-
-#if 0
-  
-  UT_DEBUGMSG(("DOM: about to get summary information\n"));
-
-  // word 2 used an OLE like mechanism inside of a FILE*, but
-  // good luck trying to ms_ole_summary_open something using that...
-  if (WORD2 != ret)
-    {
-      MsOleSummary *summary = ms_ole_summary_open (ps.ole_file);
-      if (summary)
-	{
-	  UT_DEBUGMSG(("DOM: getting summary information\n"));
-
-	  UT_UTF8String prop_str;
-	  gboolean found = FALSE;
-
-	  // title
-	  prop_str = ms_ole_summary_get_string (summary, MS_OLE_SUMMARY_TITLE, &found);
-	  if (found && prop_str.size())
-	    getDoc()->setMetaDataProp ( PD_META_KEY_TITLE, prop_str ) ;
-
-	  // subject
-	  prop_str = ms_ole_summary_get_string (summary, MS_OLE_SUMMARY_SUBJECT, &found);
-	  if (found && prop_str.size())
-	    getDoc()->setMetaDataProp ( PD_META_KEY_SUBJECT, prop_str ) ;
-
-	  // author
-	  prop_str = ms_ole_summary_get_string (summary, MS_OLE_SUMMARY_AUTHOR, &found);
-	  if (found && prop_str.size())
-	    getDoc()->setMetaDataProp ( PD_META_KEY_CREATOR, prop_str ) ;
-
-	  prop_str = ms_ole_summary_get_string (summary, MS_OLE_SUMMARY_LASTAUTHOR, &found);
-	  if (found && prop_str.size())
-	    getDoc()->setMetaDataProp ( PD_META_KEY_CONTRIBUTOR, prop_str ) ;
-
-	  // keywords
-	  prop_str = ms_ole_summary_get_string (summary, MS_OLE_SUMMARY_KEYWORDS, &found);
-	  if (found && prop_str.size())
-	    getDoc()->setMetaDataProp ( PD_META_KEY_KEYWORDS, prop_str ) ;
-
-	  // comments
-	  prop_str = ms_ole_summary_get_string (summary, MS_OLE_SUMMARY_COMMENTS, &found);
-	  if (found && prop_str.size())
-	    getDoc()->setMetaDataProp ( PD_META_KEY_DESCRIPTION, prop_str ) ;
-
-	  // below this line are from Document Summary Information
-
-	  ms_ole_summary_close (summary);
-	  summary = ms_ole_docsummary_open(ps.ole_file);
-
-	  if(summary){
-	    // category
-	    prop_str = ms_ole_summary_get_string (summary, MS_OLE_SUMMARY_CATEGORY, &found);
-	    if (found && prop_str.size())
-	      getDoc()->setMetaDataProp ( PD_META_KEY_TYPE, prop_str ) ;
-
-	    // organization
-	    prop_str = ms_ole_summary_get_string (summary, MS_OLE_SUMMARY_COMPANY, &found);
-	    if (found && prop_str.size())
-	      getDoc()->setMetaDataProp ( PD_META_KEY_PUBLISHER, prop_str ) ;
-
-	    ms_ole_summary_close (summary);
-	  }
-	}
-    }
-
-  UT_DEBUGMSG(("DOM: finished summary info\n"));
-
-#endif
-
-  // HACK - this will do until i sort out some global stream ugliness in wv
-  if ( !decrypted && WORD2 != ret )
+  if(getLoadStylesOnly()) {
     wvOLEFree(&ps);
+    return UT_OK;
+  }
+
+  wvOLEFree(&ps);
 
   // We can't be in a good state if we didn't add any sections!
   if (m_nSections == 0)
@@ -4057,12 +3977,10 @@ static MSWord_ImageType s_determineImageType ( Blip * b )
 
 UT_Error IE_Imp_MsWord_97::_handleImage (Blip * b, long width, long height, long cropt, long cropb, long cropl, long cropr)
 {
-	const char * mimetype = UT_strdup ("image/png");
 	IE_ImpGraphic * importer	= 0;
 	FG_Graphic* pFG		= 0;
 	UT_Error error		= UT_OK;
 	UT_ByteBuf * buf		= 0;
-	UT_ByteBuf * pictData 	= new UT_ByteBuf();
 
         UT_String propBuffer;
         UT_String propsName;
@@ -4087,8 +4005,6 @@ UT_Error IE_Imp_MsWord_97::_handleImage (Blip * b, long width, long height, long
   else
 	{
 	  UT_DEBUGMSG(("UNKNOWN IMAGE TYPE!!"));
-	  DELETEP(pictData);
-	  FREEP(mimetype);
 	  return UT_ERROR;
 	}
 
@@ -4097,6 +4013,7 @@ UT_Error IE_Imp_MsWord_97::_handleImage (Blip * b, long width, long height, long
   wvStream_rewind(pwv);
   wvStream_read(data,size,sizeof(char),pwv);
 
+  UT_ByteBuf * pictData 	= new UT_ByteBuf();
   if (decompress)
   {
 
@@ -4110,7 +4027,6 @@ UT_Error IE_Imp_MsWord_97::_handleImage (Blip * b, long width, long height, long
 	UT_DEBUGMSG(("Could not uncompress image\n"));
         DELETEP(uncompr);
 	DELETEP(pictData);
-	FREEP(mimetype);
 	goto Cleanup;
       }
       pictData->append(reinterpret_cast<const UT_Byte*>(uncompr), uncomprLen);
@@ -4131,8 +4047,6 @@ UT_Error IE_Imp_MsWord_97::_handleImage (Blip * b, long width, long height, long
   if ((error != UT_OK) || !importer)
 	{
 	  UT_DEBUGMSG(("Could not create image importer object\n"));
-	  DELETEP(pictData);
-	  FREEP(mimetype);
 	  goto Cleanup;
 	}
 
@@ -4140,8 +4054,6 @@ UT_Error IE_Imp_MsWord_97::_handleImage (Blip * b, long width, long height, long
   if ((error != UT_OK) || !pFG)
 	{
 	  UT_DEBUGMSG(("Could not import graphic\n"));
-	  // pictData is already freed in ~FG_Graphic
-	  FREEP(mimetype);
 	  goto Cleanup;
 	}
 
@@ -4152,8 +4064,6 @@ UT_Error IE_Imp_MsWord_97::_handleImage (Blip * b, long width, long height, long
 	{
 	  // i don't think that this could ever happen, but...
 	  UT_DEBUGMSG(("Could not convert to PNG\n"));
-	  DELETEP(pictData);
-	  FREEP(mimetype);
 	  error = UT_ERROR;
 	  goto Cleanup;
 	}
@@ -4193,20 +4103,23 @@ UT_Error IE_Imp_MsWord_97::_handleImage (Blip * b, long width, long height, long
 	{
 	  UT_DEBUGMSG (("Could not create append object\n"));
 	  error = UT_ERROR;
-	  FREEP(mimetype);
 	  goto Cleanup;
 	}
 
+  char * mimetype = UT_strdup("image/png");
   if (!getDoc()->createDataItem(propsName.c_str(), false,
 				buf, const_cast<void*>(static_cast<const void*>(mimetype)), NULL))
 	{
 	  UT_DEBUGMSG (("Could not create data item\n"));
+	  FREEP(mimetype);
 	  error = UT_ERROR;
 	  goto Cleanup;
 	}
 
  Cleanup:
+  DELETEP(pictData);
   DELETEP(importer);
+  DELETEP(pFG);
 
   return error;
 }
@@ -4222,12 +4135,10 @@ UT_Error IE_Imp_MsWord_97::_handleImage (Blip * b, long width, long height, long
  */
 UT_Error IE_Imp_MsWord_97::_handlePositionedImage (Blip * b, UT_String & sImageName)
 {
-	const char * mimetype = UT_strdup ("image/png");
 	IE_ImpGraphic * importer	= 0;
 	FG_Graphic* pFG		= 0;
 	UT_Error error		= UT_OK;
 	UT_ByteBuf * buf		= 0;
-	UT_ByteBuf * pictData 	= new UT_ByteBuf();
 
   // suck the data into the ByteBuffer
 
@@ -4249,8 +4160,6 @@ UT_Error IE_Imp_MsWord_97::_handlePositionedImage (Blip * b, UT_String & sImageN
   else
 	{
 	  UT_DEBUGMSG(("UNKNOWN IMAGE TYPE!!"));
-	  DELETEP(pictData);
-	  FREEP(mimetype);
 	  return UT_ERROR;
 	}
 
@@ -4258,6 +4167,8 @@ UT_Error IE_Imp_MsWord_97::_handlePositionedImage (Blip * b, UT_String & sImageN
   char *data = new char[size];
   wvStream_rewind(pwv);
   wvStream_read(data,size,sizeof(char),pwv);
+
+  UT_ByteBuf * pictData = new UT_ByteBuf();
 
   if (decompress)
   {
@@ -4271,8 +4182,6 @@ UT_Error IE_Imp_MsWord_97::_handlePositionedImage (Blip * b, UT_String & sImageN
       {
 	UT_DEBUGMSG(("Could not uncompress image\n"));
         DELETEP(uncompr);
-	DELETEP(pictData);
-	FREEP(mimetype);
 	goto Cleanup;
       }
       pictData->append(reinterpret_cast<const UT_Byte*>(uncompr), uncomprLen);
@@ -4293,8 +4202,6 @@ UT_Error IE_Imp_MsWord_97::_handlePositionedImage (Blip * b, UT_String & sImageN
   if ((error != UT_OK) || !importer)
 	{
 	  UT_DEBUGMSG(("Could not create image importer object\n"));
-	  DELETEP(pictData);
-	  FREEP(mimetype);
 	  goto Cleanup;
 	}
 
@@ -4302,8 +4209,6 @@ UT_Error IE_Imp_MsWord_97::_handlePositionedImage (Blip * b, UT_String & sImageN
   if ((error != UT_OK) || !pFG)
 	{
 	  UT_DEBUGMSG(("Could not import graphic\n"));
-	  // pictData is already freed in ~FG_Graphic
-	  FREEP(mimetype);
 	  goto Cleanup;
 	}
 
@@ -4314,24 +4219,26 @@ UT_Error IE_Imp_MsWord_97::_handlePositionedImage (Blip * b, UT_String & sImageN
 	{
 	  // i don't think that this could ever happen, but...
 	  UT_DEBUGMSG(("Could not convert to PNG\n"));
-	  DELETEP(pictData);
-	  FREEP(mimetype);
 	  error = UT_ERROR;
 	  goto Cleanup;
 	}
 
   UT_String_sprintf(sImageName, "%d", getDoc()->getUID(UT_UniqueId::Image));
 
+  const char * mimetype = UT_strdup ("image/png");
   if (!getDoc()->createDataItem(sImageName.c_str(), false,
 				buf, const_cast<void*>(static_cast<const void*>(mimetype)), NULL))
 	{
 	  UT_DEBUGMSG (("Could not create data item\n"));
 	  error = UT_ERROR;
+	  FREEP(mimetype);
 	  goto Cleanup;
 	}
 
  Cleanup:
+  DELETEP(pictData);
   DELETEP(importer);
+  DELETEP(pFG);
 
   return error;
 }
