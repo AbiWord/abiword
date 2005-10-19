@@ -74,7 +74,10 @@ void XAP_CocoaDialog_PluginManager::event_Load ()
 	if (!pDialog)
 		return;
 	
-	pDialog->setCurrentPathname(0);
+	UT_UTF8String plugin_path = [[[NSBundle mainBundle] bundlePath] UTF8String];
+	plugin_path += "/Contents/Plug-ins/AbiHack.so-abi";
+
+	pDialog->setCurrentPathname(plugin_path.utf8_str ());
 	pDialog->setSuggestFilename(false);
 	
 	const char * szDescList[3];
