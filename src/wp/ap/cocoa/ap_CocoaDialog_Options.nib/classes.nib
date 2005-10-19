@@ -50,6 +50,7 @@
                 oPreferenceSchemeManager = "AP_CocoaSchemeManager"; 
                 "oStepper_Minutes" = NSStepper; 
                 "oSwitch_AutoSave" = NSButton; 
+                "oSwitch_CheckGrammar" = NSButton; 
                 "oSwitch_CheckSpelling" = NSButton; 
                 "oSwitch_CursorBlink" = NSButton; 
                 "oSwitch_DirectionMarkers" = NSButton; 
