@@ -96,7 +96,6 @@ public:									// we create...
 	{
 		m_pUnixMenu = pUnixMenu;
 		m_id = id;
-		m_accelGroup = NULL;
 	}
 	
 	~_wd(void)
@@ -179,7 +178,6 @@ public:									// we create...
 		gtk_main_quit();
 	}
 
-	GtkAccelGroup *		m_accelGroup;
 	EV_UnixMenu *		m_pUnixMenu;
 	XAP_Menu_Id			m_id;
 };
@@ -811,9 +809,10 @@ bool EV_UnixMenu::synthesizeMenu(GtkWidget * wMenuRoot)
 				
 				// we always set an accel group, even if we don't actually bind any
 				// to this widget
-				wd->m_accelGroup = gtk_accel_group_new();
-				gtk_menu_set_accel_group(GTK_MENU(wsub), wd->m_accelGroup);
-				
+				GtkAccelGroup *accelGroup = gtk_accel_group_new();
+				gtk_menu_set_accel_group(GTK_MENU(wsub),accelGroup);
+				g_object_unref(accelGroup);
+
 				// This stuff happens to every label:
 				// 
 				// menu items with sub menus attached (w) get this signal
@@ -1260,8 +1259,9 @@ bool EV_UnixMenuPopup::synthesizeMenuPopup()
 	m_wMenuPopup = gtk_menu_new();
 	_wd * wd = new _wd(this, 0);
 	UT_ASSERT(wd);
-	wd->m_accelGroup = gtk_accel_group_new();
-	gtk_menu_set_accel_group(GTK_MENU(m_wMenuPopup), wd->m_accelGroup);
+	GtkAccelGroup *accelGroup = gtk_accel_group_new();
+	gtk_menu_set_accel_group(GTK_MENU(m_wMenuPopup),accelGroup);
+	g_object_unref(accelGroup);
 	g_signal_connect(G_OBJECT(m_wMenuPopup), "map",
 					   G_CALLBACK(_wd::s_onInitMenu), wd);
 	g_signal_connect(G_OBJECT(m_wMenuPopup), "unmap",
