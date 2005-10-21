@@ -356,6 +356,7 @@ bool GR_UnixImage::convertFromBuffer(const UT_ByteBuf* pBB,
 	{
 		UT_DEBUGMSG (("GdkPixbuf: couldn't get image from loader!\n"));
 		gdk_pixbuf_loader_close (ldr, NULL);
+		g_object_unref(G_OBJECT(ldr));
 		return false;
 	}
 
@@ -371,6 +372,7 @@ bool GR_UnixImage::convertFromBuffer(const UT_ByteBuf* pBB,
 		g_object_unref(G_OBJECT(m_image));
 		return false;
 	}
+	g_object_unref(G_OBJECT(ldr));
 //
 // Adjust the reference count so it's always 1. Unfortunately 
 // the reference count after the close is undefined.
