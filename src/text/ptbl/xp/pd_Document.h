@@ -641,7 +641,7 @@ PT_AttrPropIndex            getAPIFromSOH(PL_ObjectHandle odh);
 	bool                    isVDNDinProgress() const {return m_bVDND;}
 	
 protected:
-	~PD_Document();
+	virtual ~PD_Document();
 
 	virtual UT_Error		_saveAs(const char * szFilename, int ieft, const char * expProps = NULL);
 	virtual UT_Error   		_saveAs(const char * szFilename, int ieft, bool cpy, const char * expProps = NULL);
