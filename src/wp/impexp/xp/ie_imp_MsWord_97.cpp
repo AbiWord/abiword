@@ -2995,21 +2995,27 @@ int IE_Imp_MsWord_97::_beginPara (wvParseStruct *ps, UT_uint32 tag,
 	if (myListId > 0 && !bDoNotInsertStrux)
 	  {
 		// TODO: honor more props
-		const XML_Char *list_field_fmt[3];
+		const XML_Char *list_field_fmt[5];
 		list_field_fmt[0] = "type";
 		list_field_fmt[1] = "list_label";
-		list_field_fmt[2] = 0;
+		list_field_fmt[2] = "props";
+		list_field_fmt[3] = "text-decoration:none";
+		list_field_fmt[4] = 0;
 		_appendObject(PTO_Field, static_cast<const XML_Char**>(&list_field_fmt[0]));
 		m_bInPara = true;
 
 		// the character following the list label - 0=tab, 1=space, 2=none
 		if(apap->linfo.ixchFollow == 0) // tab
 		{
+		        const XML_Char* attribs[3] = {"props","text-decoration:none",NULL};
+			getDoc()->appendFmt(attribs);
 			UT_UCSChar tab = UCS_TAB;
 			_appendSpan(&tab, 1);
 		}
 		else if(apap->linfo.ixchFollow == 1) // space
 		{
+		        const XML_Char* attribs[3] = {"props","text-decoration:none",NULL};
+			getDoc()->appendFmt(attribs);
 			UT_UCSChar space = UCS_SPACE;
 			_appendSpan(&space, 1);
 		}
