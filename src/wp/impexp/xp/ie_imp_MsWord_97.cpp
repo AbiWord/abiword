@@ -3312,6 +3312,7 @@ int IE_Imp_MsWord_97::_fieldProc (wvParseStruct *ps, U16 eachchar,
 		f->argument[0] = 0;
 		f->fieldI = 0;
 		f->fieldRet = 1;
+		f->type = F_OTHER;
 		m_stackField.push((void*)f);
 	}
 	else if (eachchar == 0x14) // field trigger
