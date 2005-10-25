@@ -34,8 +34,10 @@ bool UT_Stack::pop(void ** ppVoid)
 {
 	UT_ASSERT(ppVoid);
 	UT_uint32 indexEnd = m_vecStack.getItemCount();
-	if (!indexEnd)
+	if (!indexEnd) {
+		*ppVoid = 0;
 		return false;
+	}
 	*ppVoid = const_cast<void*>(m_vecStack.getLastItem());
 	m_vecStack.deleteNthItem(indexEnd-1);
 	return true;
@@ -45,8 +47,10 @@ bool UT_Stack::viewTop(void ** ppVoid) const
 {
 	UT_ASSERT(ppVoid);
 	UT_uint32 indexEnd = m_vecStack.getItemCount();
-	if (!indexEnd)
+	if (!indexEnd) {
+		*ppVoid = 0;
 		return false;
+	}
 	*ppVoid = const_cast<void*>(m_vecStack.getLastItem());
 	return true;
 }
