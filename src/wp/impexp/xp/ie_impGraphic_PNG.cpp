@@ -65,6 +65,10 @@ UT_Error IE_ImpGraphicPNG_Sniffer::constructImporter(IE_ImpGraphic **ppieg)
 UT_Error IE_ImpGraphic_PNG::importGraphic(UT_ByteBuf* pBB, 
 										  FG_Graphic ** ppfg)
 {
+#if 1
+  	*ppfg = 0;
+	return UT_ERROR;
+#else
 	FG_GraphicRaster *pFGR;
 
 	pFGR = new FG_GraphicRaster();
@@ -79,12 +83,18 @@ UT_Error IE_ImpGraphic_PNG::importGraphic(UT_ByteBuf* pBB,
 
 	*ppfg = static_cast<FG_Graphic *>(pFGR);
 	return UT_OK;
+#endif
 }
 
 UT_Error IE_ImpGraphic_PNG::convertGraphic(UT_ByteBuf* pBB,
 					   UT_ByteBuf** ppBB)
 {
+#if 1
+	*ppBB = 0;
+	return UT_ERROR;
+#else
    	if (!ppBB) return UT_ERROR;
    	*ppBB = pBB;
    	return UT_OK;
+#endif
 }
