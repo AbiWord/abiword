@@ -46,8 +46,6 @@ UT_LocaleTransactor::UT_LocaleTransactor (int category, const char * locale)
 {
 	mOldLocale = UT_strdup(setlocale(category, NULL));
 	setlocale (category, locale);
-
-	// TODO: win32 may need to free old_locale
 }
 
 UT_LocaleTransactor::~UT_LocaleTransactor ()
