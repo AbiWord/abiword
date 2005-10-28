@@ -155,7 +155,8 @@ void fp_TextRun::_lookupProperties(const PP_AttrProp * pSpanAP,
 	/*
 	  TODO map line width to a property, not a hard-coded value
 	*/
-	bChanged |= _setLineWidth(UT_convertToLogicalUnits("0.8pt"));
+	static const UT_sint32 iLineWidth = UT_convertToLogicalUnits("0.8pt");
+	bChanged |= _setLineWidth(iLineWidth);
 
 	UT_uint32 oldDecors = _getDecorations();
 	_setDecorations(0);
