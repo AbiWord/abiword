@@ -79,7 +79,7 @@ public:
 
 	size_t		size() const;
 	size_t length () const { return size () ; }
-
+	void            reserve(size_t n);
 	bool		empty() const;
 	void        clear() const;
 
@@ -184,6 +184,7 @@ public:
 	size_t		size () const;
 	size_t length () const { return size () ; }
 
+	void            reserve(size_t n);
 	bool		empty () const;
 	void		clear () const;
 	size_t		byteLength() const;
@@ -325,6 +326,7 @@ public:
 	size_t	size() const;
 	size_t length () const { return size () ; }
 
+	void            reserve(size_t n);
 	bool		empty() const;
 	void        clear() const;
 

@@ -195,6 +195,11 @@ void UT_String::swap(UT_String& rhs)
 	rhs.pimpl = p;
 }
 
+void UT_String::reserve(size_t n)
+{
+        pimpl->reserve(n);
+}
+
 //////////////////////////////////////////////////////////////////
 // End of class members, start of free functions
 //////////////////////////////////////////////////////////////////
@@ -829,6 +834,11 @@ void UT_UTF8String::clear () const
 	pimpl->clear ();
 }
 
+void UT_UTF8String::reserve(size_t n)
+{
+        pimpl->reserve(n);
+}
+
 UT_UTF8String &	UT_UTF8String::operator=(const char * rhs)
 {
   // treat null string assignment as a clear
@@ -1435,6 +1445,11 @@ const char* UT_UCS4String::utf8_str()
 
 //////////////////////////////////////////////////////////////////
 // mutators
+
+void UT_UCS4String::reserve(size_t n)
+{
+        pimpl->reserve(n);
+}
 
 UT_UCS4String& UT_UCS4String::operator=(const UT_UCS4String& rhs)
 {
