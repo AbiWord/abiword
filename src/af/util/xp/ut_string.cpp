@@ -541,6 +541,8 @@ bool UT_validXML(char * pString)
 	int bytesExpectedInSequence = 0;
 
 	UT_String s;
+	s.reserve(len);
+
 	for (UT_uint32 k=0; k<len; k++)
 	{
 		if (p[k] < 0x80)						// plain us-ascii part of latin-1
