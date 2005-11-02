@@ -248,6 +248,12 @@ BeginLayout(Main,0)
     	EndSubMenu()
 
 #if XP_SIMPLE_MENU
+	BeginSubMenu(AP_MENU_ID_VIEW)
+		MenuItem(AP_MENU_ID_VIEW_NORMAL)
+		MenuItem(AP_MENU_ID_VIEW_WEB)
+		MenuItem(AP_MENU_ID_VIEW_PRINT)
+		MenuItem(AP_MENU_ID_WEB_WEBPREVIEW)
+	EndSubMenu()
 	BeginSubMenu(AP_MENU_ID_VIEW_ZOOM_MENU)
 		MenuItem(AP_MENU_ID_VIEW_ZOOM)
 		MenuItem(AP_MENU_ID_VIEW_ZOOM_WIDTH)
