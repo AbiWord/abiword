@@ -3893,30 +3893,32 @@ bool IE_Imp_MsWord_97::_handleCommandField (char *command)
 					const XML_Char *new_atts[3];
 					token = strtok (NULL, "\"\" ");
 
-					// hyperlink or hyperlink to bookmark
-					new_atts[0] = "xlink:href";
-					UT_String href;
-					if ( !strcmp(token, "\\l") )
-					{
-						token = strtok (NULL, "\"\" ");
-						href = "#";
-						href += token;
+					if(token) {
+					  // hyperlink or hyperlink to bookmark
+					  new_atts[0] = "xlink:href";
+					  UT_String href;
+					  if ( !strcmp(token, "\\l") )
+					    {
+					      token = strtok (NULL, "\"\" ");
+					      href = "#";
+					      href += token;
+					    }
+					  else
+					    {
+					      href = token;
+					    }
+					  new_atts[1] = href.c_str();
+					  new_atts[2] = 0;
+					  this->_flush();
+					  
+					  if(!m_bInPara)
+					    {
+					      _appendStrux(PTX_Block, NULL);
+					      m_bInPara = true ;
+					    }
+					  
+					  _appendObject(PTO_Hyperlink, new_atts);
 					}
-					else
-					{
-						href = token;
-					}
-					new_atts[1] = href.c_str();
-					new_atts[2] = 0;
-					this->_flush();
-
-					if(!m_bInPara)
-					{
-						_appendStrux(PTX_Block, NULL);
-						m_bInPara = true ;
-					}
-
-					_appendObject(PTO_Hyperlink, new_atts);
 					return true;
 				}
 
