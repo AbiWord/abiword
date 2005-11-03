@@ -69,8 +69,8 @@ install: build
 	install -m 644 $(CURDIR)/src/wp/ap/unix/*.glade $(CURDIR)/debian/abiword/usr/share/AbiSuite-2.6/AbiWord/glade/
 
         # Install menu icon.
-	mkdir -p $(CURDIR)/debian/abiword/usr/share/icons/hicolor/26x26/
-	install -m 644 $(CURDIR)/debian/misc/qgn_list_word.png $(CURDIR)/debian/abiword/usr/share/icons/hicolor/26x26/
+	mkdir -p $(CURDIR)/debian/abiword/usr/share/pixmaps
+	install -m 644 $(CURDIR)/debian/misc/qgn_list_abiword.png $(CURDIR)/debian/abiword/usr/share/pixmaps
 
         # Install desktop file.
 	mkdir -p $(CURDIR)/debian/abiword/usr/share/applications/hildon/
@@ -78,7 +78,7 @@ install: build
 
         # Add D-Bus service
 	mkdir -p $(CURDIR)/debian/abiword/usr/lib/dbus-1.0/services/
-	install -m 644 $(CURDIR)/debian/misc/org.abisource.abiword.service $(CURDIR)/debian/abiword/usr/lib/dbus-1.0/services
+	install -m 644 $(CURDIR)/debian/misc/osso-abiword.service $(CURDIR)/debian/abiword/usr/lib/dbus-1.0/services
 
 # Build architecture-dependent files here.
 binary: build install
