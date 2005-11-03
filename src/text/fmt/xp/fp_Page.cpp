@@ -1401,6 +1401,82 @@ fp_Column * fp_Page::getPrevColOnPages(fp_Column * pCol, fp_Page * pPage)
 }
 #endif
 
+/*!
+    This function updates the x-offset of all columns without changing any of their
+    dimensions (it is used when changing from the view mode)
+ */
+void fp_Page::updateColumnX()
+{
+	UT_uint32 count = countColumnLeaders();
+	if (count == 0)
+		return;
+
+	fp_Column* pFirstColumnLeader = getNthColumnLeader(0);
+	fp_Column * pLastCol = NULL;
+	fl_DocSectionLayout* pFirstSectionLayout = (pFirstColumnLeader->getDocSectionLayout());
+	UT_ASSERT(m_pOwner == pFirstSectionLayout);
+
+
+	UT_sint32 iLeftMargin = 0;
+	UT_sint32 iRightMargin = 0;
+
+	for (UT_uint32 i = 0; i < count; i++)
+	{
+		fp_Column* pLeader = getNthColumnLeader(i);
+		UT_ASSERT(pLeader->getContainerType() == FP_CONTAINER_COLUMN);
+		fl_DocSectionLayout* pSL = (pLeader->getDocSectionLayout());
+
+		if(m_pView->getViewMode() == VIEW_NORMAL)
+		{
+			iLeftMargin = m_pView->getTabToggleAreaWidth();
+			iRightMargin = 0;
+		}
+		else
+		{
+			iLeftMargin = pSL->getLeftMargin();
+			iRightMargin = pSL->getRightMargin();
+		}
+		
+		UT_uint32 iSpace = getWidth() - iLeftMargin - iRightMargin;
+		pSL->checkAndAdjustColumnGap(iSpace);
+
+		UT_uint32 iNumColumns = pSL->getNumColumns();
+		UT_uint32 iColumnGap = pSL->getColumnGap();
+		UT_uint32 iColWidth = (iSpace - ((iNumColumns - 1) * iColumnGap)) / iNumColumns;
+
+		UT_sint32 iX;
+		if(pSL->getColumnOrder())
+		{
+			iX = getWidth() - iRightMargin - iColWidth;
+		}
+		else
+		{
+			iX = iLeftMargin;
+		}
+
+		fp_Column* pTmpCol = pLeader;
+
+		while (pTmpCol)
+		{
+			UT_ASSERT(pTmpCol->getContainerType() == FP_CONTAINER_COLUMN);
+			pTmpCol->setX(iX);
+
+			if(pSL->getColumnOrder())
+			{
+				iX -= (iColWidth + iColumnGap);
+			}
+			else
+			{
+				iX += (iColWidth + iColumnGap);
+			}
+
+			pLastCol = pTmpCol;
+			pTmpCol = pTmpCol->getFollower();
+		}
+	}
+}
+
+
 void fp_Page::_reformat(void)
 {
 	// this is naive, because columns can cause the footnotes
@@ -1456,9 +1532,17 @@ void fp_Page::_reformatColumns(void)
 		UT_ASSERT(pLeader->getContainerType() == FP_CONTAINER_COLUMN);
 		fl_DocSectionLayout* pSL = (pLeader->getDocSectionLayout());
 
-		iLeftMargin = pSL->getLeftMargin();
-		iRightMargin = pSL->getRightMargin();
-
+		if(m_pView->getViewMode() == VIEW_NORMAL)
+		{
+			iLeftMargin = m_pView->getTabToggleAreaWidth();
+			iRightMargin = 0;
+		}
+		else
+		{
+			iLeftMargin = pSL->getLeftMargin();
+			iRightMargin = pSL->getRightMargin();
+		}
+		
 		UT_uint32 iSpace = getWidth() - iLeftMargin - iRightMargin;
 		pSL->checkAndAdjustColumnGap(iSpace);
 
@@ -1622,7 +1706,11 @@ void fp_Page::_reformatFootnotes(void)
 		fp_FootnoteContainer * pFC = getNthFootnoteContainer(i);
 		fl_DocSectionLayout* pSL = (getNthColumnLeader(0)->getDocSectionLayout());
 
-		pFC->setX(pSL->getLeftMargin());
+		if(m_pView->getViewMode() == VIEW_NORMAL)
+			pFC->setX(m_pView->getTabToggleAreaWidth());
+		else
+			pFC->setX(pSL->getLeftMargin());
+
 		pFC->setY(pageHeight);
 		pageHeight += getNthFootnoteContainer(i)->getHeight();
 	}

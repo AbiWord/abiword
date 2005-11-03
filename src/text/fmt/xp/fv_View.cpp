@@ -8434,6 +8434,29 @@ void FV_View::getTopRulerInfo(AP_TopRulerInfo * pInfo)
 	getTopRulerInfo(getPoint(), pInfo);
 }
 
+UT_uint32 FV_View::getTabToggleAreaWidth() const
+{
+		if(m_pTopRuler)
+			return m_pTopRuler->getTabToggleAreaWidth();
+		else
+			return m_pG->tlu(AP_TopRuler::getFixedWidth());
+}
+
+void FV_View::setViewMode (ViewMode vm)
+{
+	m_viewMode = vm;
+
+	UT_return_if_fail( m_pLayout );
+	
+	for(UT_uint32 i = 0; i < m_pLayout->countPages(); i++)
+	{
+		fp_Page * pPage = m_pLayout->getNthPage(i);
+		UT_return_if_fail( pPage );
+
+		pPage->updateColumnX();
+	}
+}
+
 void FV_View::getTopRulerInfo(PT_DocPosition pos,AP_TopRulerInfo * pInfo)
 {
 	if(m_pDoc->isPieceTableChanging())
@@ -8520,8 +8543,17 @@ void FV_View::getTopRulerInfo(PT_DocPosition pos,AP_TopRulerInfo * pInfo)
 		pInfo->m_iCurrentColumn = nCol;
 		pInfo->m_iNumColumns = pDSL->getNumColumns();
 
-		pInfo->u.c.m_xaLeftMargin = pDSL->getLeftMargin();
-		pInfo->u.c.m_xaRightMargin = pDSL->getRightMargin();
+		if(getViewMode() == VIEW_NORMAL)
+		{
+			pInfo->u.c.m_xaLeftMargin = m_pTopRuler ? m_pTopRuler->getTabToggleAreaWidth() : 0;
+			pInfo->u.c.m_xaRightMargin = 0;
+		}
+		else
+		{
+			pInfo->u.c.m_xaLeftMargin = pDSL->getLeftMargin();
+			pInfo->u.c.m_xaRightMargin = pDSL->getRightMargin();
+		}
+		
 		pInfo->u.c.m_xColumnGap = pDSL->getColumnGap();
 		pInfo->u.c.m_xColumnWidth = pColumn->getWidth();
 		if(pSection->getContainerType() == FL_CONTAINER_FOOTNOTE)

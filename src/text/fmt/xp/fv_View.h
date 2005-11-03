@@ -561,12 +561,14 @@ public:
 	UT_uint32			calculateZoomPercentForPageWidth();
 	UT_uint32			calculateZoomPercentForPageHeight();
 	UT_uint32			calculateZoomPercentForWholePage();
-	inline void 			setViewMode (ViewMode vm) {m_viewMode = vm;}
+	void 			    setViewMode (ViewMode vm);
 	inline ViewMode 		getViewMode (void) const  {return m_viewMode;}
 	bool				isPreview(void) const {return VIEW_PREVIEW == m_viewMode;}
 	void				setPreviewMode(PreViewMode pre) {m_previewMode = pre;}
 	PreViewMode 		getPreviewMode(void) { return m_previewMode;}
 
+	UT_uint32           getTabToggleAreaWidth() const;
+	
 	void				setScreenUpdateOnGeneralUpdate( bool bDoit)
 		{m_bDontUpdateScreenOnGeneralUpdate = !bDoit;}
 	bool				shouldScreenUpdateOnGeneralUpdate(void) const
