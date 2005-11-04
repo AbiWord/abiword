@@ -224,7 +224,7 @@ public:
 
 	UT_uint32       getTabToggleAreaWidth() const;
 
-	static          getFixedWidth(){return s_iFixedWidth;}
+	static UT_uint32 getFixedWidth(){return s_iFixedWidth;}
 	
 protected:
 	void	_draw(const UT_Rect * pClipRect, AP_TopRulerInfo * pUseInfo);
