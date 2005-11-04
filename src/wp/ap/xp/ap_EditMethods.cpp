@@ -13209,9 +13209,13 @@ Defun(beginVDrag)
 	CHECK_FRAME;
 	ABIWORD_VIEW;
 	AP_TopRuler * pTopRuler = pView->getTopRuler();
+#if 0
 	if(pTopRuler == NULL)
 	{
 		XAP_Frame * pFrame = static_cast<XAP_Frame *> (pView->getParentData());
+
+		// this is not good -- AP_TopRuler is not a complete class and lot of the members
+		// are only initialised from the platfrom code !!!
 		pTopRuler = new AP_TopRuler(pFrame);
 		AP_FrameData *pFrameData = static_cast<AP_FrameData *>(pFrame->getFrameData());
 		pFrameData->m_pTopRuler = pTopRuler;
@@ -13222,12 +13226,17 @@ Defun(beginVDrag)
 	{
 		return true;
 	}
+#else
+	if(!pTopRuler)
+		return true;
+#endif
 	pView->setDragTableLine(true);
 	UT_sint32 x = pCallData->m_xPos;
 	UT_sint32 y = pCallData->m_yPos;
 	PT_DocPosition pos = pView->getDocPositionFromXY(x, y);
 	xxx_UT_DEBUGMSG(("ap_EditMethods.cpp:: VDrag begin \n"));
-	sTopRulerHeight = pTopRuler->setTableLineDrag(pos,x,siFixed);
+	
+	sTopRulerHeight = pTopRuler ? pTopRuler->setTableLineDrag(pos,x,siFixed) : 0;
 	pView->getGraphics()->setCursor(GR_Graphics::GR_CURSOR_GRAB);
 	return true;
 }
@@ -13237,15 +13246,23 @@ Defun(beginHDrag)
 	CHECK_FRAME;
 	ABIWORD_VIEW;
 	AP_LeftRuler * pLeftRuler = pView->getLeftRuler();
+#if 0
 	if(pLeftRuler == NULL)
 	{
 		XAP_Frame * pFrame = static_cast<XAP_Frame *> (pView->getParentData());
+
+		// this is not good -- AP_LeftRuler is not a complete class and lot of the members
+		// are only initialised from the platfrom code !!!
 		pLeftRuler = new AP_LeftRuler(pFrame);
 		AP_FrameData *pFrameData = static_cast<AP_FrameData *>(pFrame->getFrameData());
 		pFrameData->m_pLeftRuler = pLeftRuler;
 		pView->setLeftRuler(pLeftRuler);
 		pLeftRuler->setViewHidden(pView);
 	}
+#else
+	if(!pLeftRuler)
+		return true;
+#endif
 	pView->setDragTableLine(true);
 	UT_sint32 x = pCallData->m_xPos;
 	UT_sint32 y = pCallData->m_yPos;

@@ -441,7 +441,8 @@ void AP_Win32FrameImpl::_toggleTopRuler(AP_Win32Frame *pFrame, bool bRulerOn)
 			DestroyWindow(m_hwndTopRuler);
 
 		DELETEP(pFrameData->m_pTopRuler);
-
+		FV_View * pFV = static_cast<FV_View *>(pFrame->getCurrentView());
+		pFV->setTopRuler(NULL);
 		m_hwndTopRuler = NULL;
 	}
 
@@ -480,6 +481,8 @@ void AP_Win32FrameImpl::_toggleLeftRuler(AP_Win32Frame *pFrame, bool bRulerOn)
 			DestroyWindow(m_hwndLeftRuler);
 
 		DELETEP(pFrameData->m_pLeftRuler);
+		FV_View * pFV = static_cast<FV_View *>(pFrame->getCurrentView());
+		pFV->setLeftRuler(NULL);
 
 		m_hwndLeftRuler = NULL;
 	}
