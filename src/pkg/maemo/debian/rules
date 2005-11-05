@@ -29,7 +29,7 @@ configure-stamp:
 	#
 	cd $(CURDIR) && \
 	  ./autogen.sh && \
-	  ./configure --host=$(DEB_HOST_GNU_TYPE) --build=$(DEB_BUILD_GNU_TYPE) --prefix=/usr --mandir=\$${prefix}/share/man --infodir=\$${prefix}/share/info --enable-hildon
+	  ./configure --host=$(DEB_HOST_GNU_TYPE) --build=$(DEB_BUILD_GNU_TYPE) --prefix=/var/lib/install/usr --mandir=\$${prefix}/share/man --infodir=\$${prefix}/share/info --enable-hildon
 	touch configure-stamp
 
 build: build-stamp
@@ -61,6 +61,7 @@ install: build
 	dh_installdirs
 
         # Add here commands to install the package into debian/abiword.
+	mkdir -p $(CURDIR)/debian/abiword/usr/bin/
 	install -m 755 $(CURDIR)/src/wp/main/unix/AbiWord-2.4 $(CURDIR)/debian/abiword/usr/bin/AbiWord-2.4
 
         # Install Glade files
