@@ -8580,8 +8580,17 @@ void FV_View::getTopRulerInfo(PT_DocPosition pos,AP_TopRulerInfo * pInfo)
 		pInfo->m_iCurrentColumn = 0;
 		pInfo->m_iNumColumns = 1;
 
-		pInfo->u.c.m_xaLeftMargin = pDSL->getLeftMargin();
-		pInfo->u.c.m_xaRightMargin = pDSL->getRightMargin();
+		if(getViewMode() == VIEW_NORMAL)
+		{
+			pInfo->u.c.m_xaLeftMargin = m_pTopRuler ? m_pTopRuler->getTabToggleAreaWidth() : 0;
+			pInfo->u.c.m_xaRightMargin = 0;
+		}
+		else
+		{
+			pInfo->u.c.m_xaLeftMargin = pDSL->getLeftMargin();
+			pInfo->u.c.m_xaRightMargin = pDSL->getRightMargin();
+		}
+		
 		pInfo->u.c.m_xColumnGap = pDSL->getColumnGap();
 		pInfo->u.c.m_xColumnWidth = pColumn->getWidth();
 		pInfo->m_mode = AP_TopRulerInfo::TRI_MODE_COLUMNS;
@@ -8655,8 +8664,18 @@ void FV_View::getTopRulerInfo(PT_DocPosition pos,AP_TopRulerInfo * pInfo)
 				pInfo->m_iNumColumns = 1;
 
 			}
-			pInfo->u.c.m_xaLeftMargin = pDSL->getLeftMargin();
-			pInfo->u.c.m_xaRightMargin = pDSL->getRightMargin();
+
+			if(getViewMode() == VIEW_NORMAL)
+			{
+				pInfo->u.c.m_xaLeftMargin = m_pTopRuler ? m_pTopRuler->getTabToggleAreaWidth() : 0;
+				pInfo->u.c.m_xaRightMargin = 0;
+			}
+			else
+			{
+				pInfo->u.c.m_xaLeftMargin = pDSL->getLeftMargin();
+				pInfo->u.c.m_xaRightMargin = pDSL->getRightMargin();
+			}
+			
 			pInfo->u.c.m_xColumnGap = pDSL->getColumnGap();
 			pInfo->u.c.m_xColumnWidth = pColumn->getWidth();
 			pInfo->m_xrPoint = xCaret - pContainer->getX();

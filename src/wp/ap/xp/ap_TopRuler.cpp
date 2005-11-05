@@ -862,6 +862,13 @@ void AP_TopRuler::_drawParagraphProperties(const UT_Rect * pClipRect,
 
 UT_uint32 AP_TopRuler::getTabToggleAreaWidth() const
 {
+	// note, we cannot use the m_pG here becaus this function gets called (and needs to
+	// return a meaningful value) even if the m_pG is not set (when the ruler is hidden)
+	FV_View * pView = static_cast<FV_View *>(m_pView);
+	UT_return_val_if_fail( pView, 0 );
+	
+	GR_Graphics * pG = pView->getGraphics();
+
 #if 0
 	// this code makes it possible to further increase screen realestate when the ruler is
 	// hidden -- this might be worth enabling for embedded devices
@@ -872,12 +879,11 @@ UT_uint32 AP_TopRuler::getTabToggleAreaWidth() const
 	UT_return_val_if_fail( pFrameData, 0 );
 
 	if(!pFrameData->m_bShowRuler)
-		return m_pG->tlu(4);
+		return pG->tlu(4);
 #endif
-	UT_sint32 xFixed = static_cast<UT_sint32>(m_pG->tlu(UT_MAX(m_iLeftRulerWidth,s_iFixedWidth)));
-	FV_View * pView = static_cast<FV_View *>(m_pView);
+	UT_sint32 xFixed = pG ? static_cast<UT_sint32>(pG->tlu(UT_MAX(m_iLeftRulerWidth,s_iFixedWidth))) : 0;
 	if(pView->getViewMode() != VIEW_PRINT)
-		xFixed = m_pG->tlu(s_iFixedWidth);
+		xFixed = pG->tlu(s_iFixedWidth);
 
 	return xFixed;
 }
@@ -1978,7 +1984,10 @@ UT_sint32 AP_TopRuler::setTableLineDrag(PT_DocPosition pos, UT_sint32 x, UT_sint
 	m_draggingWhat = DW_NOTHING;
 	m_bEventIgnored = false;
 	FV_View * pView = (static_cast<FV_View *>(m_pView));
+	UT_return_val_if_fail( pView, 0 );
+
 	UT_sint32 y = pView->getGraphics()->tlu(s_iFixedHeight)/2;
+
 	if(pView->getDocument()->isPieceTableChanging())
 	{
 		return 0;
@@ -2079,7 +2088,16 @@ UT_sint32 AP_TopRuler::setTableLineDrag(PT_DocPosition pos, UT_sint32 x, UT_sint
 				m_pG->setCursor(GR_Graphics::GR_CURSOR_GRAB);
 			}
 			m_draggingCell = i;
-			return y;
+
+			UT_return_val_if_fail( m_pFrame, 0 );
+			AP_FrameData * pFrameData = static_cast<AP_FrameData *>(m_pFrame->getFrameData());
+			UT_return_val_if_fail( pFrameData, 0 );
+
+			// hidden ruler has height 0, not y
+			if(!pFrameData->m_bShowRuler)
+				return 0;
+			else
+				return y;
 		}
 	}
 	return 0;

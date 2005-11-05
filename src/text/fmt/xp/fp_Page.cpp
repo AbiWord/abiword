@@ -1403,7 +1403,7 @@ fp_Column * fp_Page::getPrevColOnPages(fp_Column * pCol, fp_Page * pPage)
 
 /*!
     This function updates the x-offset of all columns without changing any of their
-    dimensions (it is used when changing from the view mode)
+    dimensions (it is used when changing the view mode)
  */
 void fp_Page::updateColumnX()
 {
