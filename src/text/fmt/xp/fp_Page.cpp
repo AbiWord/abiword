@@ -1498,6 +1498,8 @@ void fp_Page::_reformatColumns(void)
 
 	UT_sint32 iLeftMargin = 0;
 	UT_sint32 iRightMargin = 0;
+	UT_sint32 iLeftMarginReal = 0;
+	UT_sint32 iRightMarginReal = 0;
 	UT_sint32 iTopMargin = pFirstSectionLayout->getTopMargin();
 	UT_sint32 iBottomMargin = pFirstSectionLayout->getBottomMargin();
 	UT_sint32 iY = iTopMargin;
@@ -1543,7 +1545,10 @@ void fp_Page::_reformatColumns(void)
 			iRightMargin = pSL->getRightMargin();
 		}
 		
-		UT_uint32 iSpace = getWidth() - iLeftMargin - iRightMargin;
+		iLeftMarginReal = pSL->getLeftMargin();
+		iRightMarginReal = pSL->getRightMargin();
+
+		UT_uint32 iSpace = getWidth() - iLeftMarginReal - iRightMarginReal;
 		pSL->checkAndAdjustColumnGap(iSpace);
 
 		UT_uint32 iNumColumns = pSL->getNumColumns();
