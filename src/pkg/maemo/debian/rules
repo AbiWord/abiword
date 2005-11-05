@@ -61,12 +61,13 @@ install: build
 	dh_installdirs
 
         # Add here commands to install the package into debian/abiword.
-	install -m 755 $(CURDIR)/src/wp/main/unix/AbiWord-2.6 $(CURDIR)/debian/abiword/var/lib/install/usr/bin/AbiWord-2.6
+	mkdir -p $(CURDIR)/debian/abiword/usr/bin/
+	install -m 755 $(CURDIR)/src/wp/main/unix/AbiWord-2.6 $(CURDIR)/debian/abiword/usr/bin/AbiWord-2.6
 
         # Install Glade files
-	mkdir -p $(CURDIR)/debian/abiword/var/lib/install/usr/share/AbiSuite-2.6/AbiWord/glade/
-	install -m 644 $(CURDIR)/src/af/xap/unix/*.glade $(CURDIR)/debian/abiword/var/lib/install/usr/share/AbiSuite-2.6/AbiWord/glade/
-	install -m 644 $(CURDIR)/src/wp/ap/unix/*.glade $(CURDIR)/debian/abiword/var/lib/install/usr/share/AbiSuite-2.6/AbiWord/glade/
+	mkdir -p $(CURDIR)/debian/abiword/usr/share/AbiSuite-2.6/AbiWord/glade/
+	install -m 644 $(CURDIR)/src/af/xap/unix/*.glade $(CURDIR)/debian/abiword/usr/share/AbiSuite-2.6/AbiWord/glade/
+	install -m 644 $(CURDIR)/src/wp/ap/unix/*.glade $(CURDIR)/debian/abiword/usr/share/AbiSuite-2.6/AbiWord/glade/
 
         # Install menu icon.
 	mkdir -p $(CURDIR)/debian/abiword/usr/share/pixmaps
