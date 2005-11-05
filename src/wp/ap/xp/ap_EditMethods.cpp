@@ -4387,6 +4387,11 @@ Defun(contextFrame)
 	ABIWORD_VIEW;
 	XAP_Frame * pFrame = static_cast<XAP_Frame *> (pView->getParentData());
 	UT_return_val_if_fail(pFrame, false);
+
+	// no frame context menu in normal view ...
+	if(pView->getViewMode() == VIEW_NORMAL)
+		return true;
+	
 	return s_doContextMenu(EV_EMC_FRAME,pCallData->m_xPos, pCallData->m_yPos,pView,pFrame);
 }
 

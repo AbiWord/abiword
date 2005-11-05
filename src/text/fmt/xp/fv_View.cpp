@@ -8769,7 +8769,7 @@ void FV_View::getTopRulerInfo(PT_DocPosition pos,AP_TopRulerInfo * pInfo)
 			iCum += width;
 		}
 	}
-	else if(pContainer->getContainerType() == FP_CONTAINER_FRAME)
+	else if(pContainer->getContainerType() == FP_CONTAINER_FRAME && getViewMode() != VIEW_NORMAL)
 	{
 		fp_FrameContainer * pFC = static_cast<fp_FrameContainer *>(pContainer);
 		fl_FrameLayout * pFL = static_cast<fl_FrameLayout *>(pSection);

@@ -1117,6 +1117,19 @@ Defun_EV_GetMenuItemState_Fn(ap_GetState_View)
 	return s;
 }
 
+Defun_EV_GetMenuItemState_Fn(ap_GetState_InsTextBox)
+{
+	ABIWORD_VIEW;
+	UT_return_val_if_fail (pView, EV_MIS_Gray);
+
+        if(pView->getViewMode() == VIEW_NORMAL)
+		{
+            return EV_MIS_Gray;
+        }
+
+        return EV_MIS_ZERO;
+}
+
 Defun_EV_GetMenuItemState_Fn(ap_GetState_StylesLocked)
 {
 	ABIWORD_VIEW;

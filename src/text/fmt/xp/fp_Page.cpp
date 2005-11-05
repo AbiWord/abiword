@@ -957,8 +957,8 @@ void fp_Page::draw(dg_DrawArgs* pDA, bool bAlwaysUseWhiteBackground)
 
 	UT_sint32 count = 0;
 
-	// draw Below Frames
-	count = m_vecBelowFrames.getItemCount();
+	// draw Below Frames (no frames in normal view)
+	count = m_pView->getViewMode() == VIEW_NORMAL ? 0 : m_vecBelowFrames.getItemCount();
 	for (i=0; i<count; i++)
 	{
 		fp_FrameContainer* pFC = m_vecBelowFrames.getNthItem(i);
@@ -1049,8 +1049,8 @@ void fp_Page::draw(dg_DrawArgs* pDA, bool bAlwaysUseWhiteBackground)
 		pFC->draw(&da);
 	}
 
-	// draw Above Frames
-	count = m_vecAboveFrames.getItemCount();
+	// draw Above Frames (no frames in Normal view)
+	count = m_pView->getViewMode() == VIEW_NORMAL ?  0 : m_vecAboveFrames.getItemCount();
 	for (i=0; i<count; i++)
 	{
 		fp_FrameContainer* pFC = m_vecAboveFrames.getNthItem(i);
