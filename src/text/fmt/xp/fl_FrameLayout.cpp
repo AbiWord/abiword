@@ -390,7 +390,14 @@ bool fl_FrameLayout::doclistener_changeStrux(const PX_ChangeRecord_StruxChange *
 
 bool fl_FrameLayout::recalculateFields(UT_uint32 iUpdateCount)
 {
-
+	// ingnore frames in normal view mode
+	FV_View * pView = getDocLayout()->getView();
+	GR_Graphics * pG = getDocLayout()->getGraphics();
+	UT_return_val_if_fail( pView && pG, false );
+	
+	if(pView->getViewMode() == VIEW_NORMAL && !pG->queryProperties(GR_Graphics::DGP_PAPER))
+		return false;
+	
 	bool bResult = false;
 	fl_ContainerLayout*	pBL = getFirstLayout();
 	while (pBL)
@@ -414,7 +421,16 @@ void fl_FrameLayout::markAllRunsDirty(void)
 
 void fl_FrameLayout::updateLayout(bool bDoAll)
 {
-        xxx_UT_DEBUGMSG(("UpdsateLayout in in framelayout \n"));
+	// ingnore frames in normal view mode
+	FV_View * pView = getDocLayout()->getView();
+	GR_Graphics * pG = getDocLayout()->getGraphics();
+	UT_return_if_fail( pView && pG);
+	
+	if(pView->getViewMode() == VIEW_NORMAL && !pG->queryProperties(GR_Graphics::DGP_PAPER))
+		return;
+	
+
+	xxx_UT_DEBUGMSG(("UpdsateLayout in in framelayout \n"));
 	if(needsReformat())
 	{
 		format();
@@ -434,6 +450,14 @@ void fl_FrameLayout::updateLayout(bool bDoAll)
 
 void fl_FrameLayout::redrawUpdate(void)
 {
+	// ingnore frames in normal view mode
+	FV_View * pView = getDocLayout()->getView();
+	GR_Graphics * pG = getDocLayout()->getGraphics();
+	UT_return_if_fail( pView && pG);
+	
+	if(pView->getViewMode() == VIEW_NORMAL && !pG->queryProperties(GR_Graphics::DGP_PAPER))
+		return;
+	
 	fl_ContainerLayout*	pBL = getFirstLayout();
 	while (pBL)
 	{
@@ -615,6 +639,14 @@ void fl_FrameLayout::_insertFrameContainer(fp_Container * pNewFC)
 
 void fl_FrameLayout::miniFormat(void)
 {
+	// ingnore frames in normal view mode
+	FV_View * pView = getDocLayout()->getView();
+	GR_Graphics * pG = getDocLayout()->getGraphics();
+	UT_return_if_fail( pView && pG );
+	
+	if(pView->getViewMode() == VIEW_NORMAL && !pG->queryProperties(GR_Graphics::DGP_PAPER))
+		return;
+	
 	fl_ContainerLayout*	pBL = getFirstLayout();
 	
 	while (pBL)
@@ -631,6 +663,14 @@ void fl_FrameLayout::miniFormat(void)
 
 void fl_FrameLayout::format(void)
 {
+	// ingnore frames in normal view mode
+	FV_View * pView = getDocLayout()->getView();
+	GR_Graphics * pG = getDocLayout()->getGraphics();
+	UT_return_if_fail( pView && pG );
+	
+	if(pView->getViewMode() == VIEW_NORMAL && !pG->queryProperties(GR_Graphics::DGP_PAPER))
+		return;
+
 	xxx_UT_DEBUGMSG(("SEVIOR: Formatting first container is %x \n",getFirstContainer()));
 	if(isHidden() > FP_VISIBLE)
 	{

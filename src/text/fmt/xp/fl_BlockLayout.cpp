@@ -2090,10 +2090,16 @@ fl_BlockLayout::_breakLineAfterRun(fp_Run* pRun)
  */
 bool fl_BlockLayout::setFramesOnPage(fp_Line * pLastLine)
 {
-	if(getNumFrames() == 0)
+	FV_View *pView = getView();
+	GR_Graphics * pG = m_pLayout->getGraphics();
+	UT_return_val_if_fail( pView && pG, false );
+	
+	if(getNumFrames() == 0 ||
+	   (pView->getViewMode() == VIEW_NORMAL && !pG->queryProperties(GR_Graphics::DGP_PAPER)))
 	{
 		return true;
 	}
+	
 	UT_sint32 i = 0;
 	for(i=0; i< getNumFrames();i++)
 	{

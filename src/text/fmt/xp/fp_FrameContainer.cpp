@@ -243,6 +243,14 @@ void fp_FrameContainer::clearScreen(void)
 	{
 		return;
 	}
+
+	// ingnore frames in normal view mode
+	GR_Graphics * pG = getGraphics();
+	UT_return_if_fail(pG);
+	
+	if(getView()->getViewMode() == VIEW_NORMAL && !pG->queryProperties(GR_Graphics::DGP_PAPER))
+		return;
+	
 	UT_sint32 srcX,srcY;
 	UT_sint32 xoff,yoff;
 	getView()->getPageScreenOffsets(pPage,xoff,yoff);
@@ -444,6 +452,14 @@ void fp_FrameContainer::_drawLine (const PP_PropertyMap::Line & style,
  */
 void  fp_FrameContainer::drawBoundaries(dg_DrawArgs * pDA)
 {
+	// ingnore frames in normal view mode
+	FV_View * pView = getView();
+	GR_Graphics * pG = getGraphics();
+	UT_return_if_fail( pView && pG);
+	
+	if(pView->getViewMode() == VIEW_NORMAL && !pG->queryProperties(GR_Graphics::DGP_PAPER))
+		return;
+
 	UT_sint32 iXlow = pDA->xoff - m_iXpad;
 	UT_sint32 iXhigh = iXlow + getFullWidth() ;
 	UT_sint32 iYlow = pDA->yoff - m_iYpad;
@@ -474,6 +490,14 @@ void  fp_FrameContainer::drawHandles(dg_DrawArgs * pDA)
 	{
 	     return;
 	}
+
+	// ingnore frames in normal view mode
+	GR_Graphics * pG = getGraphics();
+	UT_return_if_fail( pG);
+	
+	if(getView()->getViewMode() == VIEW_NORMAL && !pG->queryProperties(GR_Graphics::DGP_PAPER))
+		return;
+
 	UT_sint32 iXlow = pDA->xoff - m_iXpad;
 	UT_sint32 iYlow = pDA->yoff - m_iYpad;
 
@@ -487,6 +511,15 @@ void  fp_FrameContainer::drawHandles(dg_DrawArgs * pDA)
  */
 void fp_FrameContainer::draw(dg_DrawArgs* pDA)
 {
+	// ingnore frames in normal view mode
+	FV_View * pView = getView();
+	dg_DrawArgs da = *pDA;
+	GR_Graphics * pG = da.pG;
+	UT_return_if_fail( pView && pG);
+	
+	if(pView->getViewMode() == VIEW_NORMAL && !pG->queryProperties(GR_Graphics::DGP_PAPER))
+		return;
+
 	xxx_UT_DEBUGMSG(("FrameContainer %x called, page %x \n",this,getPage()));
 	if(getPage() == NULL)
 	{
@@ -497,11 +530,11 @@ void fp_FrameContainer::draw(dg_DrawArgs* pDA)
 		return;
 	     }
 	}
-	if(getView())
+	if(pView)
 	{
-		if(getView()->getFrameEdit()->getFrameEditMode() == FV_FrameEdit_DRAG_EXISTING)
+		if(pView->getFrameEdit()->getFrameEditMode() == FV_FrameEdit_DRAG_EXISTING)
 		{
-			if((getView()->getFrameEdit()->getFrameContainer() == this))
+			if((pView->getFrameEdit()->getFrameContainer() == this))
 			{
 				return;
 			}
@@ -525,8 +558,6 @@ void fp_FrameContainer::draw(dg_DrawArgs* pDA)
 	{
 		pDA->bDirtyRunsOnly = false;
 	}
-	dg_DrawArgs da = *pDA;
-	GR_Graphics * pG = da.pG;
 	if(!pDA->bDirtyRunsOnly || m_bNeverDrawn)
 	{
 		if(m_bNeverDrawn)
@@ -635,6 +666,14 @@ fp_Container * fp_FrameContainer::getPrevContainerInSection() const
 
 void fp_FrameContainer::layout(void)
 {
+	// ingnore frames in normal view mode
+	FV_View * pView = getView();
+	GR_Graphics * pG = getGraphics();
+	UT_return_if_fail( pView && pG);
+	
+	if(pView->getViewMode() == VIEW_NORMAL && !pG->queryProperties(GR_Graphics::DGP_PAPER))
+		return;
+	
 	_setMaxContainerHeight(0);
 	UT_sint32 iY = 0, iPrevY = 0;
 	iY= 0;
