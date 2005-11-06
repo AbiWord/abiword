@@ -118,13 +118,15 @@ BeginLayout(Main,0)
 #endif
 	EndSubMenu()
 
-#if !XP_SIMPLE_MENU
 	BeginSubMenu(AP_MENU_ID_VIEW)
 		MenuItem(AP_MENU_ID_VIEW_NORMAL)
+#if !XP_SIMPLE_MENU
 		MenuItem(AP_MENU_ID_VIEW_WEB)
-		MenuItem(AP_MENU_ID_VIEW_PRINT)
+#endif
+	    MenuItem(AP_MENU_ID_VIEW_PRINT)
+#if !XP_SIMPLE_MENU
 		MenuItem(AP_MENU_ID_WEB_WEBPREVIEW)
-		Separator()
+	    Separator()
 
 		BeginSubMenu(AP_MENU_ID_VIEW_TOOLBARS)
 			MenuItem(AP_MENU_ID_VIEW_TB_1)
@@ -143,10 +145,11 @@ BeginLayout(Main,0)
 		MenuItem(AP_MENU_ID_VIEW_STATUSBAR)
 		Separator()
 		MenuItem(AP_MENU_ID_VIEW_LOCKSTYLES)
-		MenuItem(AP_MENU_ID_VIEW_SHOWPARA)
-		Separator()
+#endif
+	    MenuItem(AP_MENU_ID_VIEW_SHOWPARA)
+#if !XP_SIMPLE_MENU
+	    Separator()
 		MenuItem(AP_MENU_ID_VIEW_FULLSCREEN)
-
 		BeginSubMenu(AP_MENU_ID_VIEW_ZOOM_MENU)
 			MenuItem(AP_MENU_ID_VIEW_ZOOM)
 			MenuItem(AP_MENU_ID_VIEW_ZOOM_WIDTH)
@@ -156,8 +159,8 @@ BeginLayout(Main,0)
 			MenuItem(AP_MENU_ID_VIEW_ZOOM_75)
 			MenuItem(AP_MENU_ID_VIEW_ZOOM_50)
 		EndSubMenu()
+#endif
 	EndSubMenu()
-#endif /*  XP_SIMPLE_MENU */
 	
 	BeginSubMenu(AP_MENU_ID_INSERT)
 		MenuItem(AP_MENU_ID_INSERT_BREAK)
