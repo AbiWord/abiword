@@ -63,8 +63,9 @@ public:
 		SET_GATHER (ViewRulerUnits,	 UT_Dimension);
 
 		// Application Startup
-
+#ifndef HAVE_HILDON
  		SET_GATHER (ShowSplash,		 bool);
+#endif
 		SET_GATHER (AutoLoadPlugins,	 bool);
 
 	// Documents

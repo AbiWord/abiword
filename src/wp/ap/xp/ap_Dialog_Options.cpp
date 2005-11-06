@@ -114,7 +114,9 @@ void AP_Dialog_Options::_storeWindowData(void)
 	Save_Pref_Bool( pPrefsScheme, AP_PREF_KEY_AutoGrammarCheck, _gatherGrammarCheck() );
 	Save_Pref_Bool( pPrefsScheme, AP_PREF_KEY_SpellCheckCaps, _gatherSpellUppercase() );
 	Save_Pref_Bool( pPrefsScheme, AP_PREF_KEY_SpellCheckNumbers, _gatherSpellNumbers() );
+#ifndef HAVE_HILDON
 	Save_Pref_Bool(pPrefsScheme, AP_PREF_KEY_ShowSplash,_gatherShowSplash());
+#endif
 	Save_Pref_Bool( pPrefsScheme, XAP_PREF_KEY_SmartQuotesEnable, _gatherSmartQuotesEnable() );
 
 	Save_Pref_Bool( pPrefsScheme, AP_PREF_KEY_CursorBlink, _gatherViewCursorBlink() );
@@ -373,12 +375,12 @@ void AP_Dialog_Options::_storeDataForControl (tControl id)
 		case id_CHECK_VIEW_UNPRINTABLE:
 			Save_Pref_Bool (pPrefsScheme, AP_PREF_KEY_ParaVisible,
 					_gatherViewUnprintable());
-
+#ifndef HAVE_HILDON
 		case id_SHOWSPLASH:
 			Save_Pref_Bool (pPrefsScheme, AP_PREF_KEY_ShowSplash,
 					_gatherShowSplash());
 			break;
-
+#endif
 		case id_CHECK_ALLOW_CUSTOM_TOOLBARS:
 			Save_Pref_Bool (pPrefsScheme, XAP_PREF_KEY_AllowCustomToolbars,
 					_gatherAllowCustomToolbars());
@@ -497,11 +499,11 @@ void AP_Dialog_Options::_populateWindowData(void)
 
 	// ------------ Prefs
 	_setPrefsAutoSave( pPrefs->getAutoSavePrefs() );
-
+#ifndef HAVE_HILDON
 	//-------------ShowSplash
 	if (pPrefs->getPrefsValueBool((XML_Char*)AP_PREF_KEY_ShowSplash,&b))
 		_setShowSplash (b);
-
+#endif
 	// ------------ View
 	if (pPrefs->getPrefsValue((XML_Char*)AP_PREF_KEY_RulerUnits,&pszBuffer))
 		_setViewRulerUnits (UT_determineDimension(pszBuffer));
