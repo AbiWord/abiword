@@ -124,8 +124,8 @@ osso_hw_event_cb (osso_hw_state_t *state,
 
 	//signal save unsaved data received
 	if (state->save_unsaved_data_ind) {
-		for (unsigned int ndx=0; ndx < pApp->getFrameCount(); ndx++) 
-			pApp->getFrame(ndx)->close();
+	    // TODO: can we just save the file? the user might not like that;
+	    // IMO we need to save to some kind of backup or tmp file.
 	}
 
 	//signal memory low received
