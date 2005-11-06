@@ -1485,7 +1485,9 @@ const char** localeinfo_combinations(const char* prefix,const char* suffix,const
     if (!skip_fallback)
 	{
 		buf[idx] = prefix;
-		buf[idx++] += suffix;
+
+		if(suffix && *suffix) // do not append nothing
+			buf[idx++] += suffix;
 	}
 
     UT_String lang (XAP_EncodingManager::get_instance()->getLanguageISOName());
@@ -1494,17 +1496,20 @@ const char** localeinfo_combinations(const char* prefix,const char* suffix,const
 
 	buf[idx] += sep;
 	buf[idx] += lang;
-	buf[idx++] += suffix;
+	if(suffix && *suffix)
+		buf[idx++] += suffix;
 	
 	buf[idx] += sep;
 	buf[idx] += enc;
-	buf[idx++] += suffix;
+	if(suffix && *suffix)
+		buf[idx++] += suffix;
 
 	buf[idx] += sep;
 	buf[idx] += lang;
 	buf[idx] += '-';
 	buf[idx] += territory;
-	buf[idx++] += suffix;
+	if(suffix && *suffix)
+		buf[idx++] += suffix;
 
 	buf[idx] += sep;
 	buf[idx] += lang;
@@ -1512,7 +1517,8 @@ const char** localeinfo_combinations(const char* prefix,const char* suffix,const
 	buf[idx] += territory;
 	buf[idx] += '.';
 	buf[idx] += enc;
-	buf[idx++] += suffix;
+	if(suffix && *suffix)
+		buf[idx++] += suffix;
 
 	for (size_t j = 0; j < 5; ++j)
 		ptrs[j] = buf[j].c_str();
