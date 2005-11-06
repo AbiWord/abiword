@@ -78,7 +78,7 @@ bool XAP_UnixHildonApp::initialize(const char * szKeyBindingsKey, const char * s
 	m_pOsso = osso_initialize (
 			ABIWORD_APP_NAME,
 			VERSION,
-			TRUE, 
+			FALSE, 
 			NULL);
 
 	if (m_pOsso == NULL) {
