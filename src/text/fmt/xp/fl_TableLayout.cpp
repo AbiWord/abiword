@@ -1260,9 +1260,11 @@ void fl_TableLayout::_lookupProperties(const PP_AttrProp* pSectionAP)
 		UT_DEBUGMSG(("Left colpos is %s \n",pszLeftColPos));
 
 		FV_View * pView = m_pLayout->getView();
-		UT_return_if_fail( pView );
-
-		if(pView->getViewMode() == VIEW_NORMAL && m_iLeftColPos < 0)
+		GR_Graphics * pG = getDocLayout()->getGraphics();
+		UT_return_if_fail( pView && pG );
+		
+		if(pView->getViewMode() == VIEW_NORMAL && m_iLeftColPos < 0 &&
+		   !pG->queryProperties(GR_Graphics::DGP_PAPER))
 		{
 			m_iLeftColPos = 0;
 		}
@@ -1578,9 +1580,11 @@ void fl_TableLayout::_lookupMarginProperties(const PP_AttrProp* pSectionAP)
 		UT_DEBUGMSG(("Left colpos is %s \n",pszLeftColPos));
 
 		FV_View * pView = m_pLayout->getView();
-		UT_return_if_fail( pView );
+		GR_Graphics * pG = getDocLayout()->getGraphics();
+		UT_return_if_fail( pView && pG );
 
-		if(pView->getViewMode() == VIEW_NORMAL && m_iLeftColPos < 0)
+		if(pView->getViewMode() == VIEW_NORMAL && m_iLeftColPos < 0 &&
+		   !pG->queryProperties(GR_Graphics::DGP_PAPER))
 		{
 			m_iLeftColPos = 0;
 		}
