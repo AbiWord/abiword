@@ -8443,7 +8443,11 @@ UT_uint32 FV_View::getTabToggleAreaWidth() const
 		if(m_pTopRuler)
 			return m_pTopRuler->getTabToggleAreaWidth();
 		else
+#ifdef EMBEDDED_TARGET
+			return (UT_uint32) ((float)m_pG->tlu(AP_TopRuler::getFixedWidth()) * 0.1);
+#else
 			return m_pG->tlu(AP_TopRuler::getFixedWidth());
+#endif
 }
 
 void FV_View::setViewMode (ViewMode vm)

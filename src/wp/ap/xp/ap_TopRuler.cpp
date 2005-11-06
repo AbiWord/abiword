@@ -869,22 +869,15 @@ UT_uint32 AP_TopRuler::getTabToggleAreaWidth() const
 	
 	GR_Graphics * pG = pView->getGraphics();
 
-#if 0
-	// this code makes it possible to further increase screen realestate when the ruler is
-	// hidden -- this might be worth enabling for embedded devices
-	// a corresponding change would be needed in FV_View::getTabToggleAreaWidth() when
-	// there is no ruler.
-	UT_return_val_if_fail( m_pFrame, 0 );
-	AP_FrameData * pFrameData = static_cast<AP_FrameData *>(m_pFrame->getFrameData());
-	UT_return_val_if_fail( pFrameData, 0 );
-
-	if(!pFrameData->m_bShowRuler)
-		return pG->tlu(4);
-#endif
 	UT_sint32 xFixed = pG ? static_cast<UT_sint32>(pG->tlu(UT_MAX(m_iLeftRulerWidth,s_iFixedWidth))) : 0;
 	if(pView->getViewMode() != VIEW_PRINT)
 		xFixed = pG->tlu(s_iFixedWidth);
 
+#ifdef EMBEDDED_TARGET
+			xFixed = (UT_uint32) (float)xFixed * 0.1;
+#endif
+
+	
 	return xFixed;
 }
 
