@@ -85,13 +85,11 @@ fl_ContainerLayout::~fl_ContainerLayout()
 #endif
 }
 
-void fl_ContainerLayout::lookupProperties(void)
+bool fl_ContainerLayout::_getPropertiesAP(const PP_AttrProp*& pAP)
 {
-	// first of all, call getAP() which will set default visibility
-	// for us (either visible, or hidden revision)
-	const PP_AttrProp* pAP = NULL;
+	pAP = NULL;
 	FPVisibility eVisibility = getAP(pAP);
-	UT_return_if_fail(pAP);
+	UT_return_val_if_fail(pAP, false);
 
 	setVisibility(eVisibility);
 	
@@ -111,10 +109,47 @@ void fl_ContainerLayout::lookupProperties(void)
 		setVisibility(FP_HIDDEN_TEXT);
 	}
 
+	return true;
+}
+
+void fl_ContainerLayout::lookupProperties(void)
+{
+	// first of all, call getAP() which will set default visibility
+	// for us (either visible, or hidden revision)
+
 	// other common properties should come here
 
 	// this should only implement class-specific properties ...
+	const PP_AttrProp* pAP;
+
+	// assert not needed, since _getPropertiesAP() asserts on failure
+	if(!_getPropertiesAP(pAP))
+		return;
+	
 	_lookupProperties(pAP);
+}
+
+/*!
+    This function looks up only a limited set of properties such as margins.
+    It's purpose is to allow to reformat the document when the view mode changes (in
+    normal view we cannot allow negative margins; the derrived _lookupMarginProperties()
+    needs to handled that in a meaningful way.
+*/
+void fl_ContainerLayout::lookupMarginProperties(void)
+{
+	// first of all, call getAP() which will set default visibility
+	// for us (either visible, or hidden revision)
+
+	// other common properties should come here
+
+	// this should only implement class-specific properties ...
+	const PP_AttrProp* pAP;
+
+	// assert not needed, since _getPropertiesAP() asserts on failure
+	if(!_getPropertiesAP(pAP))
+		return;
+	
+	_lookupMarginProperties(pAP);
 }
 
 

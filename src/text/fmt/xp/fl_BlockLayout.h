@@ -414,6 +414,7 @@ protected:
 	bool					_deleteFmtMark(PT_BlockOffset blockOffset);
 
 	virtual void			_lookupProperties(const PP_AttrProp* pAP);
+	virtual void			_lookupMarginProperties(const PP_AttrProp* pAP);
 	void					_removeLine(fp_Line*, bool bRemoveFromContainer, bool bReCalc);
 	void                    _purgeLine(fp_Line*);
 	void					_removeAllEmptyLines(void);

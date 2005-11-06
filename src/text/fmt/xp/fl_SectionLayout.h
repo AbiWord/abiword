@@ -309,6 +309,7 @@ public:
 		{ return m_bDoingCollapse;}
 private:
 	virtual void		_lookupProperties(const PP_AttrProp* pAP);
+	virtual void		_lookupMarginProperties(const PP_AttrProp* pAP);
 	fb_ColumnBreaker    m_ColumnBreaker;
 	/*
 	  TODO support special case header/footer for first page of section
@@ -470,6 +471,7 @@ public:
 private:
 	UT_sint32					_findShadow(fp_Page * pPage);
 	virtual void				_lookupProperties(const PP_AttrProp* pAP);
+	virtual void		        _lookupMarginProperties(const PP_AttrProp* pAP);
 	void                        _localCollapse(void);
 
 	fl_DocSectionLayout*		m_pDocSL;
@@ -508,6 +510,7 @@ virtual	fl_HdrFtrSectionLayout*	getHdrFtrSectionLayout(void) const { return m_pH
 
 private:
 	virtual void				_lookupProperties(const PP_AttrProp* pAP);
+	virtual void				_lookupMarginProperties(const PP_AttrProp* pAP);
 	void						_createContainer(void);
 
 	fp_ShadowContainer*			m_pContainer;

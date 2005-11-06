@@ -1983,6 +1983,21 @@ void FL_DocLayout::deleteEmptyPages( bool bDontNotify /* default false */)
 	}
 }
 
+void FL_DocLayout::updateOnViewModeChange()
+{
+	// force margin properties lookup
+	fl_SectionLayout* pSL = m_pFirstSection;
+  	while (pSL)
+  	{
+		pSL->lookupMarginProperties();
+		pSL = static_cast<fl_SectionLayout *>(pSL->getNext());
+  	}
+	
+	// rebuild
+	formatAll();
+}
+
+
 void FL_DocLayout::formatAll()
 {
 	UT_ASSERT(m_pDoc);

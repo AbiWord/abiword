@@ -2007,6 +2007,30 @@ void fl_DocSectionLayout::updateDocSection(void)
 	return;
 }
 
+void fl_DocSectionLayout::_lookupMarginProperties(const PP_AttrProp* pSectionAP)
+{
+	// force lookup on all container layouts in this section
+
+	fl_ContainerLayout*	pBL = getFirstLayout();
+	while (pBL)
+	{
+		pBL->lookupMarginProperties();
+		pBL = pBL->getNext();
+	}
+
+	// header/footers
+	UT_GenericVector<fl_HdrFtrSectionLayout*> vecHdrFtr;
+	getVecOfHdrFtrs( &vecHdrFtr);
+	UT_uint32 i = 0;
+	fl_HdrFtrSectionLayout * pHdrFtr = NULL;
+	for(i = 0; i < vecHdrFtr.getItemCount(); i++)
+	{
+		pHdrFtr = vecHdrFtr.getNthItem(i);
+		pHdrFtr->lookupMarginProperties();
+	}
+	
+}
+
 void fl_DocSectionLayout::_lookupProperties(const PP_AttrProp* pSectionAP)
 {
 	UT_return_if_fail(pSectionAP);
@@ -3954,6 +3978,23 @@ void fl_HdrFtrSectionLayout::_lookupProperties(const PP_AttrProp* pAP)
 {
 }
 
+void fl_HdrFtrSectionLayout::_lookupMarginProperties(const PP_AttrProp* pAP)
+{
+	fl_ContainerLayout * pShadow = NULL;
+	UT_uint32 iCount = m_vecPages.getItemCount();
+
+	for (UT_uint32 i=0; i<iCount; i++)
+	{
+		_PageHdrFtrShadowPair* pPair = m_vecPages.getNthItem(i);
+		// Find matching block in this shadow.
+		pShadow = pPair->getShadow();
+		if(pShadow)
+		{
+			pShadow->lookupMarginProperties();
+		}
+	}
+}
+
 bool fl_HdrFtrSectionLayout::bl_doclistener_populateSpan(fl_ContainerLayout* pBL, const PX_ChangeRecord_Span * pcrs, PT_BlockOffset blockOffset, UT_uint32 len)
 {
 //
@@ -5145,6 +5186,16 @@ bool fl_HdrFtrShadow::doclistener_changeStrux(const PX_ChangeRecord_StruxChange 
 */
 void fl_HdrFtrShadow::_lookupProperties(const PP_AttrProp* pAP)
 {
+}
+
+void fl_HdrFtrShadow::_lookupMarginProperties(const PP_AttrProp* pAP)
+{
+	fl_ContainerLayout*	pBL = getFirstLayout();
+	while (pBL)
+	{
+		pBL->lookupMarginProperties();
+		pBL = pBL->getNext();
+	}
 }
 
 //////////////////////////////////////////////////////////////////

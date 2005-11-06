@@ -412,6 +412,131 @@ void buildTabStops(GR_Graphics * pG, const char* pszTabStops, UT_GenericVector<f
 }
 
 /*!
+    this function is only to be called by fl_ContainerLayout::lookupMarginProperties()
+    all other code must call lookupMarginProperties() instead
+
+    This function looks up the block margins and handles the values appropriately to the
+    type of current view mode
+*/
+void fl_BlockLayout::_lookupMarginProperties(const PP_AttrProp* pBlockAP)
+{
+	UT_return_if_fail(pBlockAP);
+	
+	UT_ASSERT(myContainingLayout() != NULL);
+ 	FV_View * pView = getView();
+	UT_return_if_fail( pView );
+	
+	GR_Graphics* pG = m_pLayout->getGraphics();
+
+	UT_sint32 iTopMargin = m_iTopMargin;
+	UT_sint32 iBottomMargin = m_iBottomMargin;
+	UT_sint32 iLeftMargin = m_iLeftMargin;
+	UT_sint32 iRightMargin = m_iRightMargin;
+	UT_sint32 iTextIndent = m_iTextIndent;
+	
+	struct MarginAndIndent_t
+	{
+		const char* szProp;
+		UT_sint32*	pVar;
+	}
+	const rgProps[] =
+	{
+		{ "margin-top", 	&m_iTopMargin    },
+		{ "margin-bottom",	&m_iBottomMargin },
+		{ "margin-left",	&m_iLeftMargin,  },
+		{ "margin-right",	&m_iRightMargin, },
+		{ "text-indent",	&m_iTextIndent,  }
+	};
+	for (UT_uint32 iRg = 0; iRg < NrElements(rgProps); ++iRg)
+	{
+		const MarginAndIndent_t& mai = rgProps[iRg];
+		const PP_PropertyTypeSize * pProp =
+			static_cast<const PP_PropertyTypeSize *>(getPropertyType(static_cast<const XML_Char*>(mai.szProp),
+																	 Property_type_size));
+		
+		*mai.pVar	= UT_convertSizeToLayoutUnits(pProp->getValue(), pProp->getDim());
+		xxx_UT_DEBUGMSG(("para prop %s layout size %d \n",mai.szProp,*mai.pVar));
+	}
+
+	if(pView->getViewMode() == VIEW_NORMAL)
+	{
+		if(m_iLeftMargin < 0)
+		{
+			m_iLeftMargin = 0;
+		}
+		
+		if(m_iTextIndent < 0)
+		{
+			// shuv the whole thing to the left
+			m_iLeftMargin -= m_iTextIndent;
+		}
+
+		// igonre right margin
+		m_iRightMargin = 0;
+	}
+	
+	// NOTE : Parsing spacing strings:
+	// NOTE : - if spacing string ends with "+", it's marked as an "At Least" measurement
+	// NOTE : - if spacing has a unit in it, it's an "Exact" measurement
+	// NOTE : - if spacing is a unitless number, it's just a "Multiple"
+    // 	UT_uint32 nLen = strlen(pszSpacing);
+	// this assumed that only spacing 1 can be represented by a single charcter
+	// but that is not very safe assumption, for there should be nothing stoping
+	// us to use 2 or 3 in place of 2.0 or 3.0, so I commented this this out
+	// Tomas 21/1/2002
+	const char * pszSpacing = getProperty("line-height");
+	const char * pPlusFound = strrchr(pszSpacing, '+');
+	eSpacingPolicy eSpacingPolicy = m_eSpacingPolicy;
+	double dLineSpacing = m_dLineSpacing;
+	
+	if (pPlusFound && *(pPlusFound + 1) == 0)
+	{
+		m_eSpacingPolicy = spacing_ATLEAST;
+
+		// need to strip the plus first
+		int posPlus = pPlusFound - pszSpacing;
+		UT_ASSERT(posPlus>=0);
+		UT_ASSERT(posPlus<100);
+
+		UT_String pTmp(pszSpacing);
+		pTmp[posPlus] = 0;
+
+		m_dLineSpacing = UT_convertToLogicalUnits(pTmp.c_str());
+	}
+	else if (UT_hasDimensionComponent(pszSpacing))
+	{
+		m_eSpacingPolicy = spacing_EXACT;
+		m_dLineSpacing = UT_convertToLogicalUnits(pszSpacing);
+
+	}
+	else
+	{
+		m_eSpacingPolicy = spacing_MULTIPLE;
+		m_dLineSpacing =
+			UT_convertDimensionless(pszSpacing);
+	}
+
+	if(pView->getViewMode() == VIEW_NORMAL)
+	{
+		// flatten the text; we will indicate more than single spacing by using 1.2, which
+		// is enough for the text to be noticeably spaced, but not enough for it to take
+		// too much space
+		m_eSpacingPolicy = spacing_MULTIPLE;
+
+		double dSpacing1 = UT_convertDimensionless("1.0");
+		if(m_dLineSpacing > dSpacing1) 
+			m_dLineSpacing = UT_convertDimensionless("1.2");
+	}
+
+	if(iTopMargin != m_iTopMargin || iBottomMargin != m_iBottomMargin ||
+	   iLeftMargin != m_iLeftMargin || iRightMargin != m_iRightMargin || iTextIndent != m_iTextIndent ||
+	   eSpacingPolicy != m_eSpacingPolicy || dLineSpacing != m_dLineSpacing)
+	{
+		collapse();
+	}
+}
+
+/*!
     this function is only to be called by fl_ContainerLayout::lookupProperties()
     all other code must call lookupProperties() instead
 */
@@ -598,6 +723,23 @@ void fl_BlockLayout::_lookupProperties(const PP_AttrProp* pBlockAP)
 		xxx_UT_DEBUGMSG(("para prop %s layout size %d \n",mai.szProp,*mai.pVar));
 	}
 
+	if(pView->getViewMode() == VIEW_NORMAL)
+	{
+		if(m_iLeftMargin < 0)
+		{
+			m_iLeftMargin = 0;
+		}
+		
+		if(m_iTextIndent < 0)
+		{
+			// shuv the whole thing to the left
+			m_iLeftMargin -= m_iTextIndent;
+		}
+
+		// igonre right margin
+		m_iRightMargin = 0;
+	}
+	
 	{
 		const char* pszAlign = getProperty("text-align");
 
@@ -678,36 +820,46 @@ void fl_BlockLayout::_lookupProperties(const PP_AttrProp* pBlockAP)
 	// us to use 2 or 3 in place of 2.0 or 3.0, so I commented this this out
 	// Tomas 21/1/2002
 	// if (nLen > 1)
+	const char * pPlusFound = strrchr(pszSpacing, '+');
+	if (pPlusFound && *(pPlusFound + 1) == 0)
 	{
-		const char * pPlusFound = strrchr(pszSpacing, '+');
-		if (pPlusFound && *(pPlusFound + 1) == 0)
-		{
-			m_eSpacingPolicy = spacing_ATLEAST;
+		m_eSpacingPolicy = spacing_ATLEAST;
 
-			// need to strip the plus first
-			int posPlus = pPlusFound - pszSpacing;
-			UT_ASSERT(posPlus>=0);
-			UT_ASSERT(posPlus<100);
+		// need to strip the plus first
+		int posPlus = pPlusFound - pszSpacing;
+		UT_ASSERT(posPlus>=0);
+		UT_ASSERT(posPlus<100);
 
-			UT_String pTmp(pszSpacing);
-			pTmp[posPlus] = 0;
+		UT_String pTmp(pszSpacing);
+		pTmp[posPlus] = 0;
 
-			m_dLineSpacing = UT_convertToLogicalUnits(pTmp.c_str());
-		}
-		else if (UT_hasDimensionComponent(pszSpacing))
-		{
-			m_eSpacingPolicy = spacing_EXACT;
-			m_dLineSpacing = UT_convertToLogicalUnits(pszSpacing);
+		m_dLineSpacing = UT_convertToLogicalUnits(pTmp.c_str());
+	}
+	else if (UT_hasDimensionComponent(pszSpacing))
+	{
+		m_eSpacingPolicy = spacing_EXACT;
+		m_dLineSpacing = UT_convertToLogicalUnits(pszSpacing);
 
-		}
-		else
-		{
-			m_eSpacingPolicy = spacing_MULTIPLE;
-			m_dLineSpacing =
-				    UT_convertDimensionless(pszSpacing);
-		}
+	}
+	else
+	{
+		m_eSpacingPolicy = spacing_MULTIPLE;
+		m_dLineSpacing =
+			UT_convertDimensionless(pszSpacing);
 	}
 
+	if(pView->getViewMode() == VIEW_NORMAL)
+	{
+		// flatten the text; we will indicate more than single spacing by using 1.2, which
+		// is enough for the text to be noticeably spaced, but not enough for it to take
+		// too much space
+		m_eSpacingPolicy = spacing_MULTIPLE;
+
+		double dSpacing1 = UT_convertDimensionless("1.0");
+		if(m_dLineSpacing > dSpacing1) 
+			m_dLineSpacing = UT_convertDimensionless("1.2");
+	}
+	
 	//
 	// No numbering in headers/footers
 	//

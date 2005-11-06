@@ -151,6 +151,7 @@ public:
 
 	void		formatAll();
 	void  		updateLayout();
+	void        updateOnViewModeChange();
 	void        rebuildFromHere(fl_DocSectionLayout * pDSL);
 	void        updateColor();
 
