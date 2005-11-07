@@ -957,8 +957,8 @@ void fp_Page::draw(dg_DrawArgs* pDA, bool bAlwaysUseWhiteBackground)
 
 	UT_sint32 count = 0;
 
-	// draw Below Frames (no frames in normal view)
-	count = m_pView->getViewMode() == VIEW_NORMAL ? 0 : m_vecBelowFrames.getItemCount();
+	// draw Below Frames
+	count = m_vecBelowFrames.getItemCount();
 	for (i=0; i<count; i++)
 	{
 		fp_FrameContainer* pFC = m_vecBelowFrames.getNthItem(i);
@@ -969,12 +969,15 @@ void fp_Page::draw(dg_DrawArgs* pDA, bool bAlwaysUseWhiteBackground)
 		}
 		
 		dg_DrawArgs da = *pDA;
-		if(m_pView && (m_pView->getViewMode() != VIEW_PRINT) && !pDA->pG->queryProperties(GR_Graphics::DGP_PAPER))
+#if 0
+		if(m_pView && (m_pView->getViewMode() != VIEW_PRINT) &&
+		   !pDA->pG->queryProperties(GR_Graphics::DGP_PAPER))
 		{
 			fp_Column* pFirstColumnLeader = getNthColumnLeader(0);
 			fl_DocSectionLayout* pFirstSectionLayout = (pFirstColumnLeader->getDocSectionLayout());
 			da.yoff -= pFirstSectionLayout->getTopMargin();
 		}
+#endif
 		da.xoff += pFC->getX();
 		da.yoff += pFC->getY();
 		pFC->draw(&da);
@@ -1038,7 +1041,8 @@ void fp_Page::draw(dg_DrawArgs* pDA, bool bAlwaysUseWhiteBackground)
 	{
 		fp_FootnoteContainer* pFC = m_vecFootnotes.getNthItem(i);
 		dg_DrawArgs da = *pDA;
-		if(m_pView && (m_pView->getViewMode() != VIEW_PRINT) && !pDA->pG->queryProperties(GR_Graphics::DGP_PAPER))
+		if(m_pView && (m_pView->getViewMode() != VIEW_PRINT) &&
+		   !pDA->pG->queryProperties(GR_Graphics::DGP_PAPER))
 		{
 			fp_Column* pFirstColumnLeader = getNthColumnLeader(0);
 			fl_DocSectionLayout* pFirstSectionLayout = (pFirstColumnLeader->getDocSectionLayout());
@@ -1049,8 +1053,8 @@ void fp_Page::draw(dg_DrawArgs* pDA, bool bAlwaysUseWhiteBackground)
 		pFC->draw(&da);
 	}
 
-	// draw Above Frames (no frames in Normal view)
-	count = m_pView->getViewMode() == VIEW_NORMAL ?  0 : m_vecAboveFrames.getItemCount();
+	// draw Above Frames
+	count = m_vecAboveFrames.getItemCount();
 	for (i=0; i<count; i++)
 	{
 		fp_FrameContainer* pFC = m_vecAboveFrames.getNthItem(i);
@@ -1060,12 +1064,15 @@ void fp_Page::draw(dg_DrawArgs* pDA, bool bAlwaysUseWhiteBackground)
 			pFC->setOverWrote();
 		}
 		dg_DrawArgs da = *pDA;
-		if(m_pView && (m_pView->getViewMode() != VIEW_PRINT) && !pDA->pG->queryProperties(GR_Graphics::DGP_PAPER))
+#if 0
+		if(m_pView && (m_pView->getViewMode() != VIEW_PRINT) &&
+		   !pDA->pG->queryProperties(GR_Graphics::DGP_PAPER))
 		{
 			fp_Column* pFirstColumnLeader = getNthColumnLeader(0);
 			fl_DocSectionLayout* pFirstSectionLayout = (pFirstColumnLeader->getDocSectionLayout());
 			da.yoff -= pFirstSectionLayout->getTopMargin();
 		}
+#endif
 		da.xoff += pFC->getX();
 		da.yoff += pFC->getY();
 		pFC->draw(&da);
@@ -1117,12 +1124,15 @@ void   fp_Page::redrawDamagedFrames(dg_DrawArgs* pDA)
 			pFC->setOverWrote();
 		}
 		dg_DrawArgs da = *pDA;
-		if(m_pView && (m_pView->getViewMode() != VIEW_PRINT) && !pDA->pG->queryProperties(GR_Graphics::DGP_PAPER))
+#if 0
+		if(m_pView && (m_pView->getViewMode() != VIEW_PRINT) &&
+		   !pDA->pG->queryProperties(GR_Graphics::DGP_PAPER))
 		{
 			fp_Column* pFirstColumnLeader = getNthColumnLeader(0);
 			fl_DocSectionLayout* pFirstSectionLayout = (pFirstColumnLeader->getDocSectionLayout());
 			da.yoff -= pFirstSectionLayout->getTopMargin();
 		}
+#endif
 		da.xoff += pFC->getX();
 		da.yoff += pFC->getY();
 		pFC->draw(&da);

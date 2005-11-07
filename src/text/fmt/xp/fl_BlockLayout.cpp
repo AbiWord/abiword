@@ -523,11 +523,30 @@ void fl_BlockLayout::_lookupMarginProperties(const PP_AttrProp* pBlockAP)
 		// too much space
 		m_eSpacingPolicy = spacing_MULTIPLE;
 
-		double dSpacing1 = UT_convertDimensionless("1.0");
+		double dSpacing1 = UT_convertDimensionless("1.2");
 		if(m_dLineSpacing > dSpacing1) 
 			m_dLineSpacing = UT_convertDimensionless("1.2");
 	}
 
+
+	UT_sint32 i = 0;
+	for(i=0; i< getNumFrames();i++)
+	{
+		fl_FrameLayout * pFrame = getNthFrameLayout(i);
+
+		if(pFrame->isHidden() > FP_VISIBLE)
+			continue;
+		
+		if(pFrame->getContainerType() != FL_CONTAINER_FRAME)
+		{
+			UT_ASSERT(UT_SHOULD_NOT_HAPPEN);
+			continue;
+		}
+
+		pFrame->lookupMarginProperties();
+	}
+	
+	
 	if(iTopMargin != m_iTopMargin || iBottomMargin != m_iBottomMargin ||
 	   iLeftMargin != m_iLeftMargin || iRightMargin != m_iRightMargin || iTextIndent != m_iTextIndent ||
 	   eSpacingPolicy != m_eSpacingPolicy || dLineSpacing != m_dLineSpacing)
@@ -855,7 +874,7 @@ void fl_BlockLayout::_lookupProperties(const PP_AttrProp* pBlockAP)
 		// too much space
 		m_eSpacingPolicy = spacing_MULTIPLE;
 
-		double dSpacing1 = UT_convertDimensionless("1.0");
+		double dSpacing1 = UT_convertDimensionless("1.2");
 		if(m_dLineSpacing > dSpacing1) 
 			m_dLineSpacing = UT_convertDimensionless("1.2");
 	}
@@ -2094,8 +2113,7 @@ bool fl_BlockLayout::setFramesOnPage(fp_Line * pLastLine)
 	GR_Graphics * pG = m_pLayout->getGraphics();
 	UT_return_val_if_fail( pView && pG, false );
 	
-	if(getNumFrames() == 0 ||
-	   (pView->getViewMode() == VIEW_NORMAL && !pG->queryProperties(GR_Graphics::DGP_PAPER)))
+	if(getNumFrames() == 0)
 	{
 		return true;
 	}
@@ -8355,21 +8373,28 @@ bool fl_BlockLayout::recalculateFields(UT_uint32 iUpdateCount)
 		if (pRun->getType() == FPRUN_FIELD)
 		{
 			fp_FieldRun* pFieldRun = static_cast<fp_FieldRun*>(pRun);
-	/*	TODO: Write list (fl_autonum, I think) code adding a member
-	 * bool indicating if the list structure has changed since the last field recalc and
-	 * setting it to true whenever such a change occurs (ie, adding an item, deleting one, whatever).
-	 * Then here you can
-	 * if(pFieldRun->getFieldType() == FPFIELD_list_label)
-	 *	get the list to which it belongs, and get that list's
-	 *	m_bDirtyForFieldRecalc which is set true after any change
-	 *	to the list structure. Thus only recalc if needed.  Finally, after the loop, tell the list to reset that member to false. 
-	 * However, the possible down side to this is that you need to recalc the entire list and not just the individual fields, because otherwise
-	 * you risk having an only partially recalced list being left alone because it's marked clean... in retrospect I think you may need to
-	 * move this sort of optimization up to the DocSectionLayout redraw code, rather than having it here at the block level where it might (not 100% sure but might)
-	 * be waaay overcalculated (having a 1-1 block-li situation.  In fl_DocSectionLayout::redrawUpdate, you just make a special case for if any block encountered has
-	 * an autonum (as opposed to any old field), and if so you do this (recalc the whole list and mark it no longer dirty for recalc), and then subsequent blocks with
-	 * part of the same autonum	will pass over recalculating it.  You may still need (or want) a new method in BL to recalculateAutoNums, called separately from
-	 * recalculateFields (which ignores fields from autonums), to ease still recalculating non-autonum fields from the DSL code. 			 */
+			/*	TODO: Write list (fl_autonum, I think) code adding a member bool
+			 * indicating if the list structure has changed since the last field recalc
+			 * and setting it to true whenever such a change occurs (ie, adding an item,
+			 * deleting one, whatever).  Then here you can if(pFieldRun->getFieldType() ==
+			 * FPFIELD_list_label) * get the list to which it belongs, and get that list's
+			 * * m_bDirtyForFieldRecalc which is set true after any change * to the list
+			 * structure. Thus only recalc if needed.  Finally, after the loop, tell the
+			 * list to reset that member to false.  However, the possible down side to
+			 * this is that you need to recalc the entire list and not just the individual
+			 * fields, because otherwise you risk having an only partially recalced list
+			 * being left alone because it's marked clean... in retrospect I think you may
+			 * need to move this sort of optimization up to the DocSectionLayout redraw
+			 * code, rather than having it here at the block level where it might (not
+			 * 100% sure but might) be waaay overcalculated (having a 1-1 block-li
+			 * situation.  In fl_DocSectionLayout::redrawUpdate, you just make a special
+			 * case for if any block encountered has an autonum (as opposed to any old
+			 * field), and if so you do this (recalc the whole list and mark it no longer
+			 * dirty for recalc), and then subsequent blocks with part of the same autonum
+			 * will pass over recalculating it.  You may still need (or want) a new method
+			 * in BL to recalculateAutoNums, called separately from recalculateFields
+			 * (which ignores fields from autonums), to ease still recalculating
+			 * non-autonum fields from the DSL code.  */
 	
 			xxx_UT_DEBUGMSG(("DOM: %d %d\n", pFieldRun==0, pFieldRun->needsFrequentUpdates()));
 

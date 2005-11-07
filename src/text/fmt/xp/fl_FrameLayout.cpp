@@ -395,9 +395,6 @@ bool fl_FrameLayout::recalculateFields(UT_uint32 iUpdateCount)
 	GR_Graphics * pG = getDocLayout()->getGraphics();
 	UT_return_val_if_fail( pView && pG, false );
 	
-	if(pView->getViewMode() == VIEW_NORMAL && !pG->queryProperties(GR_Graphics::DGP_PAPER))
-		return false;
-	
 	bool bResult = false;
 	fl_ContainerLayout*	pBL = getFirstLayout();
 	while (pBL)
@@ -426,10 +423,6 @@ void fl_FrameLayout::updateLayout(bool bDoAll)
 	GR_Graphics * pG = getDocLayout()->getGraphics();
 	UT_return_if_fail( pView && pG);
 	
-	if(pView->getViewMode() == VIEW_NORMAL && !pG->queryProperties(GR_Graphics::DGP_PAPER))
-		return;
-	
-
 	xxx_UT_DEBUGMSG(("UpdsateLayout in in framelayout \n"));
 	if(needsReformat())
 	{
@@ -450,14 +443,6 @@ void fl_FrameLayout::updateLayout(bool bDoAll)
 
 void fl_FrameLayout::redrawUpdate(void)
 {
-	// ingnore frames in normal view mode
-	FV_View * pView = getDocLayout()->getView();
-	GR_Graphics * pG = getDocLayout()->getGraphics();
-	UT_return_if_fail( pView && pG);
-	
-	if(pView->getViewMode() == VIEW_NORMAL && !pG->queryProperties(GR_Graphics::DGP_PAPER))
-		return;
-	
 	fl_ContainerLayout*	pBL = getFirstLayout();
 	while (pBL)
 	{
@@ -644,9 +629,6 @@ void fl_FrameLayout::miniFormat(void)
 	GR_Graphics * pG = getDocLayout()->getGraphics();
 	UT_return_if_fail( pView && pG );
 	
-	if(pView->getViewMode() == VIEW_NORMAL && !pG->queryProperties(GR_Graphics::DGP_PAPER))
-		return;
-	
 	fl_ContainerLayout*	pBL = getFirstLayout();
 	
 	while (pBL)
@@ -668,9 +650,6 @@ void fl_FrameLayout::format(void)
 	GR_Graphics * pG = getDocLayout()->getGraphics();
 	UT_return_if_fail( pView && pG );
 	
-	if(pView->getViewMode() == VIEW_NORMAL && !pG->queryProperties(GR_Graphics::DGP_PAPER))
-		return;
-
 	xxx_UT_DEBUGMSG(("SEVIOR: Formatting first container is %x \n",getFirstContainer()));
 	if(isHidden() > FP_VISIBLE)
 	{
@@ -794,6 +773,10 @@ void fl_FrameLayout::_lookupProperties(const PP_AttrProp* pSectionAP)
 {
 	UT_return_if_fail(pSectionAP);
 
+	FV_View * pView = getDocLayout()->getView();
+	GR_Graphics * pG = getDocLayout()->getGraphics();
+	UT_return_if_fail( pView && pG );
+
 	const XML_Char *pszFrameType = NULL;
 	const XML_Char *pszPositionTo = NULL;
 	const XML_Char *pszWrapMode = NULL;
@@ -839,7 +822,8 @@ void fl_FrameLayout::_lookupProperties(const PP_AttrProp* pSectionAP)
 
 // Position-to
 
-	if(!pSectionAP || !pSectionAP->getProperty("position-to",pszPositionTo))
+	if((pView->getViewMode() == VIEW_NORMAL && !pG->queryProperties(GR_Graphics::DGP_PAPER)) ||
+	   !pSectionAP || !pSectionAP->getProperty("position-to",pszPositionTo))
 	{
 		m_iFramePositionTo = FL_FRAME_POSITIONED_TO_BLOCK;
 	}
@@ -865,7 +849,11 @@ void fl_FrameLayout::_lookupProperties(const PP_AttrProp* pSectionAP)
 
 // wrap-mode
 
-	if(!pSectionAP || !pSectionAP->getProperty("wrap-mode",pszWrapMode))
+	if(pView->getViewMode() == VIEW_NORMAL && !pG->queryProperties(GR_Graphics::DGP_PAPER))
+	{
+		m_iFrameWrapMode = FL_FRAME_WRAPPED_TO_RIGHT;
+	}
+	else if(!pSectionAP || !pSectionAP->getProperty("wrap-mode",pszWrapMode))
 	{
 		m_iFrameWrapMode = FL_FRAME_ABOVE_TEXT;
 	}
@@ -902,7 +890,8 @@ void fl_FrameLayout::_lookupProperties(const PP_AttrProp* pSectionAP)
 	//
 	// Wrap type
 	//
-	if(!pSectionAP || !pSectionAP->getProperty("tight-wrap",pszTightWrapped))
+	if((pView->getViewMode() == VIEW_NORMAL && !pG->queryProperties(GR_Graphics::DGP_PAPER)) ||
+	   !pSectionAP || !pSectionAP->getProperty("tight-wrap",pszTightWrapped))
 	{
 		m_bIsTightWrap = false;
 	}
@@ -917,9 +906,10 @@ void fl_FrameLayout::_lookupProperties(const PP_AttrProp* pSectionAP)
 
 // Xpos
 
-	if(!pSectionAP || !pSectionAP->getProperty("xpos",pszXpos))
+	if((pView->getViewMode() == VIEW_NORMAL && !pG->queryProperties(GR_Graphics::DGP_PAPER)) ||
+	   !pSectionAP || !pSectionAP->getProperty("xpos",pszXpos))
 	{
-		m_iXpos = UT_convertToLogicalUnits("0.0in");
+		m_iXpos = 0;
 	}
 	else
 	{
@@ -928,9 +918,10 @@ void fl_FrameLayout::_lookupProperties(const PP_AttrProp* pSectionAP)
 	UT_DEBUGMSG(("xpos for frame is %s \n",pszXpos));
 // Ypos
 
-	if(!pSectionAP || !pSectionAP->getProperty("ypos",pszYpos))
+	if((pView->getViewMode() == VIEW_NORMAL && !pG->queryProperties(GR_Graphics::DGP_PAPER)) ||
+	   !pSectionAP || !pSectionAP->getProperty("ypos",pszYpos))
 	{
-		m_iYpos = UT_convertToLogicalUnits("0.0in");
+		m_iYpos = 0;
 	}
 	else
 	{
@@ -940,9 +931,10 @@ void fl_FrameLayout::_lookupProperties(const PP_AttrProp* pSectionAP)
 
 // ColXpos
 
-	if(!pSectionAP || !pSectionAP->getProperty("frame-col-xpos",pszColXpos))
+	if((pView->getViewMode() == VIEW_NORMAL && !pG->queryProperties(GR_Graphics::DGP_PAPER)) ||
+	   !pSectionAP || !pSectionAP->getProperty("frame-col-xpos",pszColXpos))
 	{
-		m_iXColumn = UT_convertToLogicalUnits("0.0in");
+		m_iXColumn = 0;
 	}
 	else
 	{
@@ -951,9 +943,10 @@ void fl_FrameLayout::_lookupProperties(const PP_AttrProp* pSectionAP)
 	UT_DEBUGMSG(("ColXpos for frame is %s \n",pszColXpos));
 // colYpos
 
-	if(!pSectionAP || !pSectionAP->getProperty("frame-col-ypos",pszColYpos))
+	if((pView->getViewMode() == VIEW_NORMAL && !pG->queryProperties(GR_Graphics::DGP_PAPER)) ||
+	   !pSectionAP || !pSectionAP->getProperty("frame-col-ypos",pszColYpos))
 	{
-		m_iYColumn = UT_convertToLogicalUnits("0.0in");
+		m_iYColumn = 0;
 	}
 	else
 	{
@@ -964,9 +957,10 @@ void fl_FrameLayout::_lookupProperties(const PP_AttrProp* pSectionAP)
 
 // PageXpos
 
-	if(!pSectionAP || !pSectionAP->getProperty("frame-page-xpos",pszPageXpos))
+	if((pView->getViewMode() == VIEW_NORMAL && !pG->queryProperties(GR_Graphics::DGP_PAPER)) ||
+	   !pSectionAP || !pSectionAP->getProperty("frame-page-xpos",pszPageXpos))
 	{
-		m_iXPage = UT_convertToLogicalUnits("0.0in");
+		m_iXPage = 0;
 	}
 	else
 	{
@@ -975,9 +969,10 @@ void fl_FrameLayout::_lookupProperties(const PP_AttrProp* pSectionAP)
 	UT_DEBUGMSG(("PageXpos for frame is %s \n",pszPageXpos));
 // PageYpos
 
-	if(!pSectionAP || !pSectionAP->getProperty("frame-page-ypos",pszPageYpos))
+	if((pView->getViewMode() == VIEW_NORMAL && !pG->queryProperties(GR_Graphics::DGP_PAPER)) ||
+	   !pSectionAP || !pSectionAP->getProperty("frame-page-ypos",pszPageYpos))
 	{
-		m_iYPage = UT_convertToLogicalUnits("0.0in");
+		m_iYPage = 0;
 	}
 	else
 	{
@@ -1107,6 +1102,216 @@ void fl_FrameLayout::_lookupProperties(const PP_AttrProp* pSectionAP)
 	else
 	{
 		m_iBoundingSpace = UT_convertToLogicalUnits(pszBoundingSpace);
+	}
+}
+
+void fl_FrameLayout::_lookupMarginProperties(const PP_AttrProp* pSectionAP)
+{
+	
+	UT_return_if_fail(pSectionAP);
+	FV_View * pView = getDocLayout()->getView();
+	GR_Graphics * pG = getDocLayout()->getGraphics();
+	UT_return_if_fail( pView && pG );
+	
+	UT_sint32 iFramePositionTo = m_iFramePositionTo;
+	FL_FrameWrapMode iFrameWrapMode = m_iFrameWrapMode;
+	bool bIsTightWrap = m_bIsTightWrap;
+	UT_sint32 iXpos = m_iXpos;
+	UT_sint32 iYpos = m_iYpos;
+	UT_sint32 iXColumn = m_iXColumn;
+	UT_sint32 iYColumn = m_iYColumn;
+	UT_sint32 iXPage = m_iXPage;
+	UT_sint32 iYPage = m_iYPage;
+
+	
+	if(pView->getViewMode() == VIEW_NORMAL && !pG->queryProperties(GR_Graphics::DGP_PAPER))
+	{
+		m_iFramePositionTo = FL_FRAME_POSITIONED_TO_BLOCK;
+		m_iFrameWrapMode = FL_FRAME_WRAPPED_TO_RIGHT;
+		m_bIsTightWrap = false;
+		m_iXpos = 0;
+		m_iYpos = 0;
+		m_iXColumn = 0;
+		m_iYColumn = 0;
+		m_iXPage = 0;
+		m_iYPage = 0;
+	}
+	else
+	{
+		const XML_Char *pszPositionTo = NULL;
+		const XML_Char *pszWrapMode = NULL;
+		const XML_Char *pszXpos = NULL;
+		const XML_Char *pszYpos = NULL;
+		const XML_Char *pszColXpos = NULL;
+		const XML_Char *pszColYpos = NULL;
+		const XML_Char *pszPageXpos = NULL;
+		const XML_Char *pszPageYpos = NULL;
+		const XML_Char * pszTightWrapped = NULL;
+
+
+		// Position-to
+
+		if(!pSectionAP || !pSectionAP->getProperty("position-to",pszPositionTo))
+		{
+			m_iFramePositionTo = FL_FRAME_POSITIONED_TO_BLOCK;
+		}
+		else if(strcmp(pszPositionTo,"block-above-text") == 0)
+		{
+			m_iFramePositionTo = FL_FRAME_POSITIONED_TO_BLOCK;
+		}
+		else if(strcmp(pszPositionTo,"column-above-text") == 0)
+		{
+			m_iFramePositionTo = FL_FRAME_POSITIONED_TO_COLUMN;
+		}
+		else if(strcmp(pszPositionTo,"page-above-text") == 0)
+		{
+			m_iFramePositionTo = FL_FRAME_POSITIONED_TO_PAGE;
+		}
+		else 
+		{
+			UT_DEBUGMSG(("Unknown Position to %s \n",pszPositionTo));
+			UT_ASSERT(UT_SHOULD_NOT_HAPPEN);
+			m_iFramePositionTo =  FL_FRAME_POSITIONED_TO_BLOCK;
+		}
+
+
+		// wrap-mode
+
+		if(!pSectionAP || !pSectionAP->getProperty("wrap-mode",pszWrapMode))
+		{
+			m_iFrameWrapMode = FL_FRAME_ABOVE_TEXT;
+		}
+		else if(strcmp(pszWrapMode,"above-text") == 0)
+		{
+			m_iFrameWrapMode = FL_FRAME_ABOVE_TEXT;
+		}
+		else if(strcmp(pszWrapMode,"below-text") == 0)
+		{
+			m_iFrameWrapMode = FL_FRAME_BELOW_TEXT;
+		}
+		else if(strcmp(pszWrapMode,"wrapped-to-right") == 0)
+		{
+			m_iFrameWrapMode = FL_FRAME_WRAPPED_TO_RIGHT;
+		}
+		else if(strcmp(pszWrapMode,"wrapped-to-left") == 0)
+		{
+			m_iFrameWrapMode = FL_FRAME_WRAPPED_TO_LEFT;
+		}
+		else if(strcmp(pszWrapMode,"wrapped-both") == 0)
+		{
+			m_iFrameWrapMode = FL_FRAME_WRAPPED_BOTH_SIDES;
+		}
+		else if(strcmp(pszWrapMode,"wrapped-topbot") == 0)
+		{
+			m_iFrameWrapMode = FL_FRAME_WRAPPED_TOPBOT;
+		}
+		else 
+		{
+			UT_DEBUGMSG(("Unknown wrap-mode %s \n",pszWrapMode));
+			UT_ASSERT(UT_SHOULD_NOT_HAPPEN);
+			m_iFrameWrapMode = FL_FRAME_ABOVE_TEXT;
+		}
+		//
+		// Wrap type
+		//
+		if(!pSectionAP || !pSectionAP->getProperty("tight-wrap",pszTightWrapped))
+		{
+			m_bIsTightWrap = false;
+		}
+		else if(strcmp(pszTightWrapped,"1") == 0)
+		{
+			m_bIsTightWrap = true;
+		}
+		else
+		{
+			m_bIsTightWrap = false;
+		}
+
+		// Xpos
+
+		if(!pSectionAP || !pSectionAP->getProperty("xpos",pszXpos))
+		{
+			m_iXpos = 0;
+		}
+		else
+		{
+			m_iXpos = UT_convertToLogicalUnits(pszXpos);
+		}
+		UT_DEBUGMSG(("xpos for frame is %s \n",pszXpos));
+		// Ypos
+
+		if(!pSectionAP || !pSectionAP->getProperty("ypos",pszYpos))
+		{
+			m_iYpos = 0;
+		}
+		else
+		{
+			m_iYpos = UT_convertToLogicalUnits(pszYpos);
+		}
+		UT_DEBUGMSG(("ypos for frame is %s \n",pszYpos));
+
+		// ColXpos
+
+		if(!pSectionAP || !pSectionAP->getProperty("frame-col-xpos",pszColXpos))
+		{
+			m_iXColumn = 0;
+		}
+		else
+		{
+			m_iXColumn = UT_convertToLogicalUnits(pszColXpos);
+		}
+		UT_DEBUGMSG(("ColXpos for frame is %s \n",pszColXpos));
+		// colYpos
+
+		if(!pSectionAP || !pSectionAP->getProperty("frame-col-ypos",pszColYpos))
+		{
+			m_iYColumn = 0;
+		}
+		else
+		{
+			m_iYColumn = UT_convertToLogicalUnits(pszColYpos);
+		}
+		UT_DEBUGMSG(("ColYpos for frame is %s units %d \n",pszColYpos,m_iYColumn));
+
+
+		// PageXpos
+
+		if(!pSectionAP || !pSectionAP->getProperty("frame-page-xpos",pszPageXpos))
+		{
+			m_iXPage = 0;
+		}
+		else
+		{
+			m_iXPage = UT_convertToLogicalUnits(pszPageXpos);
+		}
+		UT_DEBUGMSG(("PageXpos for frame is %s \n",pszPageXpos));
+		// PageYpos
+
+		if(!pSectionAP || !pSectionAP->getProperty("frame-page-ypos",pszPageYpos))
+		{
+			m_iYPage = 0;
+		}
+		else
+		{
+			m_iYPage = UT_convertToLogicalUnits(pszPageYpos);
+		}
+		UT_DEBUGMSG(("PageYpos for frame is %s units %d \n",pszColYpos,m_iYPage));
+
+	}
+
+	fl_ContainerLayout*	pCL = getFirstLayout();
+	while (pCL)
+	{
+		pCL->lookupMarginProperties();
+		pCL = pCL->getNext();
+	}
+
+	if(iFramePositionTo != m_iFramePositionTo || iFrameWrapMode != m_iFrameWrapMode ||
+	   bIsTightWrap != m_bIsTightWrap || iXpos != m_iXpos || iYpos != m_iYpos ||
+	   iXColumn != m_iXColumn || iYColumn != m_iYColumn || iXPage != m_iXPage ||
+	   iYPage != m_iYPage)
+	{
+		collapse();
 	}
 }
 
