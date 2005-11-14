@@ -4610,7 +4610,7 @@ void s_RTF_ListenerWriteDoc::_rtf_open_block(PT_AttrPropIndex api)
 	// also, block-level character properties are applied to \par so it really matters
 	// that gets associated with the correct paragraph
 	
-	if(m_bStartedList && !m_bInFrame)
+	if(m_bStartedList && !m_bInFrame && !m_bOpennedFootnote )
 	{
 		m_pie->_rtf_close_brace();
 	}
