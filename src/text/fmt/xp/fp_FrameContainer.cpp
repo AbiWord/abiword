@@ -490,9 +490,7 @@ void  fp_FrameContainer::drawHandles(dg_DrawArgs * pDA)
 void fp_FrameContainer::draw(dg_DrawArgs* pDA)
 {
 	FV_View * pView = getView();
-	dg_DrawArgs da = *pDA;
-	GR_Graphics * pG = da.pG;
-	UT_return_if_fail( pView && pG);
+	UT_return_if_fail( pView);
 	
 	xxx_UT_DEBUGMSG(("FrameContainer %x called, page %x \n",this,getPage()));
 	if(getPage() == NULL)
@@ -532,6 +530,9 @@ void fp_FrameContainer::draw(dg_DrawArgs* pDA)
 	{
 		pDA->bDirtyRunsOnly = false;
 	}
+	dg_DrawArgs da = *pDA;
+	GR_Graphics * pG = da.pG;
+	UT_return_if_fail( pG);
 	if(!pDA->bDirtyRunsOnly || m_bNeverDrawn)
 	{
 		if(m_bNeverDrawn)
