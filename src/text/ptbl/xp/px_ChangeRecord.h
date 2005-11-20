@@ -76,7 +76,7 @@ public:
 
 	virtual PX_ChangeRecord* reverse(void) const;
 	PXType					getRevType(void) const;
-	UT_sint32               getCRNumber(void)
+	UT_sint32               getCRNumber(void) const
 	  { return m_iCRNumber;}
 	UT_uint32               getXID() const {return m_iXID;}
 
