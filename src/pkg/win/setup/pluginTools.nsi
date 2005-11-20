@@ -541,7 +541,7 @@ Section "Uninstall"
 	; AbiGrammar
 	Delete "$INSTDIR\AbiGrammar.dll"
 	Delete "$INSTDIR\..\bin\liblink-grammar-4.dll"
-	Delete "$INSTDIR\..\bin\en\*"
+	RMDir /r "$INSTDIR\..\bin\en\"
 
 	; remove uninstaller
 	Delete /REBOOTOK "$INSTDIR\UninstallAbiWordToolsPlugins.exe"
