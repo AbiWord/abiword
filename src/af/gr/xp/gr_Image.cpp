@@ -319,17 +319,27 @@ GR_Image::GRType GR_Image::getBufferType(const UT_ByteBuf * pBB)
    return GR_Image::GRT_Unknown;
 }
 
+/*!
+Sets the display dimentions of the image. This does not perform any scaling 
+on the image, it just stores the values. Values in device units.
+*/
 void GR_Image::setDisplaySize(UT_sint32 iDisplayWidth, UT_sint32 iDisplayHeight) 
 { 
   m_iDisplayWidth = iDisplayWidth; 
   m_iDisplayHeight = iDisplayHeight; 
 }
-	
+
+/*!
+Returns the width of the image. Values in in device units.
+*/
 UT_sint32 GR_Image::getDisplayWidth(void) const 
 { 
   return m_iDisplayWidth; 
 }
 
+/*!
+Returns the height of the image. Values in in device units.
+*/
 UT_sint32 GR_Image::getDisplayHeight(void) const 
 { 
   return m_iDisplayHeight; 

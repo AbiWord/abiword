@@ -94,11 +94,6 @@ GR_Image::GRType GR_UnixImage::getType(void) const
 	return  m_ImageType;
 }
 
-UT_sint32  GR_UnixImage::getDisplayWidth(void) const
-{
-	UT_return_val_if_fail(m_image, 0);
-	return gdk_pixbuf_get_width (m_image);
-}
 /*!
  * The idea is to create a
  * new image from the rectangular segment in device units defined by 
@@ -181,13 +176,6 @@ void GR_UnixImage::scaleImageTo(GR_Graphics * pG, const UT_Rect & rec)
 	}
 	scale(width,height);
 	//	UT_ASSERT(G_OBJECT(m_image)->ref_count == 1);
-}
-
-UT_sint32  GR_UnixImage::getDisplayHeight(void) const
-{
-	UT_return_val_if_fail(m_image, 0);
-
-	return gdk_pixbuf_get_height (m_image);
 }
 
 static gboolean convCallback(const gchar *buf,
@@ -316,7 +304,16 @@ void GR_UnixImage::scale (UT_sint32 iDisplayWidth,
 	// UT_ASSERT(G_OBJECT(m_image)->ref_count == 1);
 }
 
-// note that this does take device units, unlike everything else.
+/*!
+Loads an image from from a byte buffer. Note: If the specified width and/or
+height does not match the size of the image contained in the byte buffer,
+some image information will be lost. WARNING: TODO
+@param iDisplayWidth the width to which the image needs to be scaled. Values
+are in device units. Setting this to -1 will cause the image not to be scaled.
+@param iDisplayheight the height to which the image needs to be scaled. Values
+are in device units. Setting this to -1 will cause the image not to be scaled.
+@return true if successful, false otherwise
+*/
 bool GR_UnixImage::convertFromBuffer(const UT_ByteBuf* pBB, 
 				     UT_sint32 iDisplayWidth, 
 				     UT_sint32 iDisplayHeight)
@@ -324,6 +321,8 @@ bool GR_UnixImage::convertFromBuffer(const UT_ByteBuf* pBB,
 	// assert no image loaded yet
 	UT_ASSERT(!m_image);
 
+	bool forceScale = (iDisplayWidth != -1 && iDisplayHeight != -1);
+	
 	GError * err = 0;
 	GdkPixbufLoader * ldr = gdk_pixbuf_loader_new ();	
 
@@ -334,18 +333,21 @@ bool GR_UnixImage::convertFromBuffer(const UT_ByteBuf* pBB,
 		return false;
 	}
 	
-	gdk_pixbuf_loader_set_size(ldr, iDisplayWidth, iDisplayHeight);
+	if (forceScale) {
+		setDisplaySize(iDisplayWidth, iDisplayHeight);
+		gdk_pixbuf_loader_set_size(ldr, iDisplayWidth, iDisplayHeight);
+	}
 	
 	if ( !gdk_pixbuf_loader_write (ldr, static_cast<const guchar *>(pBB->getPointer (0)),static_cast<gsize>(pBB->getLength ()), &err) )
 	{
-	  if(err != NULL)
-	    {
-		UT_DEBUGMSG(("DOM: couldn't write to loader:%s \n", err->message));
-		g_error_free(err);
-	    }
-	  gdk_pixbuf_loader_close (ldr, NULL);
-	  g_object_unref(G_OBJECT(ldr));
-	  return false ;
+		if(err != NULL)
+		{
+			UT_DEBUGMSG(("DOM: couldn't write to loader:%s \n", err->message));
+			g_error_free(err);
+		}
+		gdk_pixbuf_loader_close (ldr, NULL);
+		g_object_unref(G_OBJECT(ldr));
+		return false;
 	}
 //
 // This is just pointer to the buffer in the loader. This can be deleted
@@ -384,9 +386,9 @@ bool GR_UnixImage::convertFromBuffer(const UT_ByteBuf* pBB,
 	UT_ASSERT(G_OBJECT(m_image)->ref_count == 1);
 	
 	// if gdk_pixbuf_loader_set_size was not able to scale the image, then do it manually
-	if (iDisplayWidth != gdk_pixbuf_get_width (m_image) || iDisplayHeight != gdk_pixbuf_get_height(m_image))
+	if (forceScale && (iDisplayWidth != gdk_pixbuf_get_width (m_image) || iDisplayHeight != gdk_pixbuf_get_height(m_image)))
 		scale (iDisplayWidth, iDisplayHeight);
 	UT_ASSERT(G_OBJECT(m_image)->ref_count == 1);
-
+	
 	return true;
 }
