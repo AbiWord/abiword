@@ -45,7 +45,7 @@ public:
   UT_ByteBuf *                m_PNGBuf;
   GR_Image *                  m_pPreview;
   UT_UTF8String               m_sDataID;
-  UT_sint32                   m_iZoom;
+  UT_uint32                   m_iZoom;
 };
 
 class ABI_EXPORT GR_EmbedManager

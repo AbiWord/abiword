@@ -171,10 +171,11 @@ GR_UnixPangoGraphics::GR_UnixPangoGraphics(GdkWindow * win, XAP_UnixFontManager 
 	:GR_UnixGraphics(win, fontManager, app),
 	 m_pFontMap(NULL),
 	 m_pContext(NULL),
-	 m_pFont(NULL),
-	 m_pFontGUI(NULL)
+	 m_pPFont(NULL),
+	 m_pPFontGUI(NULL)
 {
 	UT_DEBUGMSG(("GR_UnixPangoGraphics::GR_UnixPangoGraphics using pango (window)\n"));
+
 	GdkDisplay * gDisp = gdk_drawable_get_display(win);
 	GdkScreen *  gScreen = gdk_drawable_get_screen(win);
 	Display * disp = GDK_DISPLAY_XDISPLAY(gDisp);
@@ -188,10 +189,11 @@ GR_UnixPangoGraphics::GR_UnixPangoGraphics(GdkPixmap * win, XAP_UnixFontManager 
 	:GR_UnixGraphics(win, fontManager, app, bUsePixmap),
 	 m_pFontMap(NULL),
 	 m_pContext(NULL),
-	 m_pFont(NULL),
-	 m_pFontGUI(NULL)
+	 m_pPFont(NULL),
+	 m_pPFontGUI(NULL)
 {
 	UT_DEBUGMSG(("GR_UnixPangoGraphics::GR_UnixPangoGraphics using pango (pixmap)\n"));
+	
 	// this is wrong, need context for the printer
 	UT_ASSERT_HARMLESS( 0 );
 
@@ -266,10 +268,9 @@ UT_sint32 GR_UnixPangoGraphics::measureUnRemappedChar(const UT_UCSChar c)
 	
 	pango_shape(s.utf8_str(), s.byteLength(), &(pItem->analysis), pGS);
 
-	GR_UnixPangoFont * pFont = (GR_UnixPangoFont *) m_pFont;
-	UT_return_val_if_fail( m_pFont, 0 );
+	UT_return_val_if_fail( m_pPFont, 0 );
 	
-	PangoFont * pf = pFont->getPangoFont();
+	PangoFont * pf = m_pPFont->getPangoFont();
 	UT_return_val_if_fail( pf, 0 );
 	
 	PangoRectangle IR, LR;
@@ -744,7 +745,7 @@ void GR_UnixPangoGraphics::drawChars(const UT_UCSChar* pChars,
 	UT_sint32 xoffD = _tduX(xoff);
 	UT_sint32 yoffD = _tduY(yoff);
 
-	PangoFont * pf = m_pFont->getPangoFont();
+	PangoFont * pf = m_pPFont->getPangoFont();
 	PangoRectangle IR, LR;
 	
 	for(int i = 0; i < iItemCount; ++i)
@@ -767,12 +768,24 @@ void GR_UnixPangoGraphics::drawChars(const UT_UCSChar* pChars,
 
 void GR_UnixPangoGraphics::setFont(GR_Font * pFont)
 {
-	UT_return_if_fail( pFont );
+	UT_return_if_fail( pFont && pFont->getType() == GR_FONT_UNIX_PANGO);
 
 	//PangoFont * pf = (PangoFont*) pFont;
-	m_pFont = (GR_UnixPangoFont *)pFont;
+	m_pPFont = static_cast<GR_UnixPangoFont*>(pFont);
 }
 
+void GR_UnixPangoGraphics::setZoomPercentage(UT_uint32 iZoom)
+{
+	// not sure if we should not call GR_UnixGraphics::setZoomPercentage() here instead
+	GR_Graphics::setZoomPercentage (iZoom); // chain up
+
+	DELETEP(m_pPFontGUI);
+	GR_Font * pFont = getGUIFont();
+	UT_return_if_fail( pFont->getType()== GR_FONT_UNIX_PANGO );
+	
+	m_pPFontGUI = NULL;
+	m_pPFontGUI = static_cast<GR_UnixPangoFont*>(pFont);
+}
 
 GR_Font* GR_UnixPangoGraphics::getDefaultFont(UT_String& fontFamily)
 {
@@ -781,17 +794,17 @@ GR_Font* GR_UnixPangoGraphics::getDefaultFont(UT_String& fontFamily)
 
 UT_uint32 GR_UnixPangoGraphics::getFontAscent()
 {
-	return getFontAscent(m_pFont);
+	return getFontAscent(m_pPFont);
 }
 
 UT_uint32 GR_UnixPangoGraphics::getFontDescent()
 {
-	return getFontDescent(m_pFont);
+	return getFontDescent(m_pPFont);
 }
 
 UT_uint32 GR_UnixPangoGraphics::getFontHeight()
 {
-	return getFontHeight(m_pFont);
+	return getFontHeight(m_pPFont);
 }
 
 UT_uint32 GR_UnixPangoGraphics::getFontAscent(GR_Font * pFont)
@@ -927,7 +940,7 @@ void GR_UnixPangoGraphics::getCoverage(UT_NumberVector& coverage)
 
 GR_Font * GR_UnixPangoGraphics::getGUIFont(void)
 {
-	if (!m_pFontGUI)
+	if (!m_pPFontGUI)
 	{
 		// get the font resource
 		GtkStyle *tempStyle = gtk_style_new();
@@ -941,12 +954,12 @@ GR_Font * GR_UnixPangoGraphics::getGUIFont(void)
 		UT_return_val_if_fail( pfd, NULL );
 		g_object_unref(G_OBJECT(tempStyle));
 	
-		m_pFontGUI = new GR_UnixPangoFont(pfd, this);
+		m_pPFontGUI = new GR_UnixPangoFont(pfd, this);
 		
-		UT_ASSERT(m_pFontGUI);
+		UT_ASSERT(m_pPFontGUI);
 	}
 
-	return m_pFontGUI;
+	return m_pPFontGUI;
 }
 
 ////////////////////////////////////////////////////////////////////////////////////////////////////
@@ -956,6 +969,8 @@ GR_Font * GR_UnixPangoGraphics::getGUIFont(void)
 GR_UnixPangoFont::GR_UnixPangoFont(PangoFontDescription * pDesc, GR_UnixPangoGraphics * pG)
 	:m_pf(NULL)
 {
+	m_eType = GR_FONT_UNIX_PANGO;
+	
 	UT_return_if_fail( pDesc && pG );
 	
 	m_pf = pango_context_load_font(pG->getContext(), pDesc);

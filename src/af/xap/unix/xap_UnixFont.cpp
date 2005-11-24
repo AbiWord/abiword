@@ -85,11 +85,13 @@ XftFaceLocker & XftFaceLocker::operator=(const XftFaceLocker & other)
 
 XAP_UnixFontHandle::XAP_UnixFontHandle():m_font(NULL), m_size(0)
 {
+	m_eType = GR_FONT_UNIX;
 }
 
 XAP_UnixFontHandle::XAP_UnixFontHandle(XAP_UnixFont * font, UT_uint32 size):m_font(font),
 																			m_size (size)
 {
+	m_eType = GR_FONT_UNIX;
 	m_hashKey = m_font->getName();
 }
 
@@ -149,10 +151,6 @@ bool XAP_UnixFontHandle::doesGlyphExist(UT_UCS4Char g)
 	return m_font->doesGlyphExist(g);
 }
 
-static float fixedToFloat(signed long in)
-{
-  float res = static_cast<float>(in*64);
-}
 //
 // UT_Rect of glyph in Logical units.
 // rec.left = bearing Left (distance from origin to start)

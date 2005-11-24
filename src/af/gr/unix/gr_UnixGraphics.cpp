@@ -751,7 +751,7 @@ void GR_UnixGraphics::setZoomPercentage(UT_uint32 iZoom)
 		m_pXftFontD = m_pFont->getDeviceXftFont(iZoom);
 	DELETEP(m_pFontGUI);
 	m_pFontGUI = NULL;
-	m_pFontGUI = static_cast<XAP_UnixFontHandle*>(getGUIFont());
+	m_pFontGUI = getGUIFont();
 }
 
 static GdkCapStyle mapCapStyle ( GR_Graphics::CapStyle in )

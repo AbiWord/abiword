@@ -417,8 +417,8 @@ void XAP_UnixGnomePrintGraphics::_drawAnyImage (GR_Image* pImg,
 	gnome_print_gsave (m_gpc);
 	gnome_print_translate (m_gpc, xDest, yDest - iDestHeight);
 
-	float scale_x = static_cast<float>(iDestWidth)/width;
-	float scale_y = static_cast<float>(iDestHeight)/height;
+	//float scale_x = static_cast<float>(iDestWidth)/width;
+	//float scale_y = static_cast<float>(iDestHeight)/height;
 	gnome_print_scale (m_gpc, iDestWidth, iDestHeight);
 
 	/* Not sure about the grayimage part, but the other 2 are correct */

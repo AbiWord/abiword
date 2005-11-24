@@ -587,7 +587,7 @@ double UT_convertToDimension(const char* s, UT_Dimension dim)
 	return d;
 }
 
-bool UT_isValidDimensionString(const char * sz, UT_sint32 max_length)
+bool UT_isValidDimensionString(const char * sz, size_t max_length)
 {
 	// Check for validity of the input: the first part (before the dimension specifier)
 	// should only contain the characters '0'..'9' and/or at most one '.'. The last part possibly

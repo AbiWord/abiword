@@ -203,8 +203,13 @@ class GR_UnixGraphics : public GR_Graphics
 	GdkGC*  	      		m_pXORGC;
 	GdkWindow*  	  		m_pWin;
 
-	// our currently requested font by handle
+  private: // font stuff should be private so that derrived classes do not get easily
+		   // mixed up if using different fonts
 	XAP_UnixFontHandle *	m_pFont;
+
+	// make this just a GR_Font pointer so that derrived classes can set it (derrived
+	// classes might use font class not derrived from XAP_UnixFontHandle)
+	GR_Font *	            m_pFontGUI;
 
 	// Current GDK fonts corresponding to this. Calling m_pFont->explodeGdkFont
 	// causes gdk_font_load to be called and memory to be allocated. This should
@@ -212,7 +217,6 @@ class GR_UnixGraphics : public GR_Graphics
 	GdkFont * m_pSingleByteFont, * m_pMultiByteFont;
 
 	// our "OEM" system font, like a 10 point Helvetica for GUI items
-	XAP_UnixFontHandle *	m_pFontGUI;
 	static UT_uint32		s_iInstanceCount;
   
 	GdkColormap* 	 		m_pColormap;
@@ -223,7 +227,6 @@ class GR_UnixGraphics : public GR_Graphics
 	GR_Graphics::ColorSpace	m_cs;
 	
 	GdkColor				m_3dColors[COUNT_3D_COLORS];
-private:
 	XAP_UnixFontHandle *	m_pFallBackFontHandle;
 
 protected:	

@@ -549,8 +549,9 @@ bool UT_validXML(char * pString)
 		{
 			if(bytesInSequence != 0)
 				bChanged = true;
-			
-			if(p[k] < ' ' && p[k] >= 0 && p[k] != '\t' && p[k] != '\n' && p[k] != '\r')
+
+			// UT_Byte is unsigned char, hence p[k] always >= 0
+			if(p[k] < ' ' /*&& p[k] >= 0*/ && p[k] != '\t' && p[k] != '\n' && p[k] != '\r')
 			{
 				bChanged = true;
 			}

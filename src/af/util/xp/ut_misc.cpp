@@ -1129,7 +1129,7 @@ const XML_Char ** UT_splitPropsToArray(XML_Char * pProps)
 
 		char * semi = NULL;
 		const char * p = pProps;
-		while(semi = strchr(p, ';'))
+ 		while((semi = strchr(p, ';')))
 		{
 			*semi = 0;
 			p = semi + 1;

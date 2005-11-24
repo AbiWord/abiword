@@ -68,12 +68,24 @@ class GR_ShapingInfo;
 class GR_Graphics;
 class GR_Painter;
 
+typedef enum {
+	GR_FONT_UNSET=0,
+	GR_FONT_UNIX,
+	GR_FONT_UNIX_PANGO,
+	GR_FONT_WIN32,
+	GR_FONT_WIN32_USP
+} GrFontType;
+
 class ABI_EXPORT GR_Font
 {
 	friend class GR_Graphics;
 	friend class UT_GenericStringMap<GR_Font*>;
 
  public:
+	// want the destructor public so that the derrived graphics classes can delete font
+	// objects without having to be declared here as friends
+ 	virtual ~GR_Font();
+
 
 	typedef enum { FF_Unknown = 0, FF_Roman, FF_Swiss, FF_Modern,
 				   FF_Script, FF_Decorative, FF_Technical, FF_BiDi, FF_Last } FontFamilyEnum;
@@ -119,12 +131,12 @@ class ABI_EXPORT GR_Font
 		GR_Font * pThis = static_cast<GR_Font*>(instance);
 		return pThis->doesGlyphExist(g);
 	}
+
+	GrFontType getType()const {return m_eType;}
 	
   protected:
 
 	GR_Font();
-
-	virtual ~GR_Font();
 
 	GR_CharWidths * _getCharWidths() const {return m_pCharWidths;}
 	/*! 
@@ -133,7 +145,9 @@ class ABI_EXPORT GR_Font
 	*/
 	mutable UT_String		m_hashKey;
 
-  private:
+	GrFontType               m_eType;
+
+private:
 
 	static UT_uint32 s_iAllocCount;
 	UT_uint32        m_iAllocNo;

@@ -42,8 +42,9 @@
 UT_uint32 GR_Font::s_iAllocCount = 0;
 UT_VersionInfo GR_Graphics::s_Version;
 
-GR_Font::GR_Font()
-	:m_pCharWidths(NULL)
+GR_Font::GR_Font():
+	m_eType(GR_FONT_UNSET),
+	m_pCharWidths(NULL)
 {
 	s_iAllocCount++;
 	m_iAllocNo = s_iAllocCount;
@@ -1428,8 +1429,8 @@ bool GR_GraphicsFactory::registerClass(GR_Allocator allocator, GR_Descriptor des
 		return false;
 	}
 	
-	m_vAllocators.addItem((void*)allocator);
-	m_vDescriptors.addItem((void*)descriptor);
+	m_vAllocators.addItem(reinterpret_cast<void*>(allocator));
+	m_vDescriptors.addItem(reinterpret_cast<void*>(descriptor));
 	m_vClassIds.addItem((UT_sint32)iClassId);
 
 	return true;
@@ -1509,7 +1510,7 @@ GR_Graphics * GR_GraphicsFactory::newGraphics(UT_uint32 iClassId, GR_AllocInfo &
 		return NULL;
 				
 					
-	GR_Allocator alloc = (GR_Allocator)m_vAllocators.getNthItem(indx);
+	GR_Allocator alloc = reinterpret_cast<GR_Allocator>(m_vAllocators.getNthItem(indx));
 				
 	if(!alloc)
 		return NULL;
@@ -1530,7 +1531,7 @@ const char *  GR_GraphicsFactory::getClassDescription(UT_uint32 iClassId) const
 	if(indx < 0)
 		return NULL;
 					
-	GR_Descriptor descr = (GR_Descriptor)m_vDescriptors.getNthItem(indx);
+	GR_Descriptor descr = reinterpret_cast<GR_Descriptor>(m_vDescriptors.getNthItem(indx));
 				
 	if(!descr)
 		return NULL;

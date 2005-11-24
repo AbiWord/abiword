@@ -250,7 +250,7 @@ bool GR_UnixImage::isTransparentAt(UT_sint32 x, UT_sint32 y)
     return false;
   }
   UT_return_val_if_fail(m_image,false);
-  UT_sint32 iBitsPerPixel = gdk_pixbuf_get_bits_per_sample(m_image);
+  // UT_sint32 iBitsPerPixel = gdk_pixbuf_get_bits_per_sample(m_image);
   UT_sint32 iRowStride = gdk_pixbuf_get_rowstride(m_image);
   UT_sint32 iWidth =  gdk_pixbuf_get_width(m_image);
   UT_sint32 iHeight =  gdk_pixbuf_get_height(m_image);

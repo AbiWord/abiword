@@ -90,6 +90,8 @@ public:
 	virtual GR_Font*	   getDefaultFont(UT_String& fontFamily);
 	virtual void           setFont(GR_Font *);
 
+	virtual void           setZoomPercentage(UT_uint32 iZoom);
+	
 	///////////////////////////////////////////////////////////////////
 	// complex script processing
 	//
@@ -158,8 +160,8 @@ public:
 	PangoFontMap * m_pFontMap;
 	PangoContext * m_pContext;
 
-	GR_UnixPangoFont * m_pFont;
-	GR_UnixPangoFont * m_pFontGUI;
+	GR_UnixPangoFont* m_pPFont;
+	GR_UnixPangoFont* m_pPFontGUI;
 };
 
 #endif
