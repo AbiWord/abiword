@@ -18,16 +18,16 @@
 
 AC_DEFUN([ABI_SPELL],[
 
-SPELL_CFLAGS=""
-SPELL_LIBS=""
-
 PKG_CHECK_MODULES(SPELL,[enchant >= 1.2.0])
 
 AM_CONDITIONAL(WITH_ENCHANT,[/bin/true])
 AM_CONDITIONAL(WITH_ISPELL,[/bin/false])
 
+AC_DEFINE(HAVE_ENCHANT, 1, [ Define if you have Enchant ])
 AC_SUBST(SPELL_CFLAGS)
 AC_SUBST(SPELL_LIBS)
+
+abi_spell_message="enchant"
 
 ])
 

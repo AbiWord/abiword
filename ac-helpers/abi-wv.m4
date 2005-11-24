@@ -23,5 +23,4 @@ AC_DEFUN([ABI_WV], [
 	abi_wv_message="$WV_LIBS"
 	
 	AC_DEFINE(HAVE_WV, 1, [ Define if you have wv ])
-	AM_CONDITIONAL(LOCAL_WV,[/bin/false])
 ])
