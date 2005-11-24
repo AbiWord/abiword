@@ -314,8 +314,8 @@ class GR_GraphicsFactory
 	
 	
   private:	
-	UT_Vector       m_vAllocators;
-	UT_Vector       m_vDescriptors;
+	UT_GenericVector<GR_Allocator>       m_vAllocators;
+	UT_GenericVector<GR_Descriptor>       m_vDescriptors;
 	UT_NumberVector m_vClassIds;
 
 	UT_uint32       m_iDefaultScreen;

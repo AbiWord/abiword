@@ -1429,8 +1429,8 @@ bool GR_GraphicsFactory::registerClass(GR_Allocator allocator, GR_Descriptor des
 		return false;
 	}
 	
-	m_vAllocators.addItem((void *)(allocator));
-	m_vDescriptors.addItem((void *)(descriptor));
+	m_vAllocators.addItem(allocator);
+	m_vDescriptors.addItem(descriptor);
 	m_vClassIds.addItem((UT_sint32)iClassId);
 
 	return true;
@@ -1510,7 +1510,7 @@ GR_Graphics * GR_GraphicsFactory::newGraphics(UT_uint32 iClassId, GR_AllocInfo &
 		return NULL;
 				
 					
-	GR_Allocator alloc = (GR_Allocator)(m_vAllocators.getNthItem(indx));
+	GR_Allocator alloc = m_vAllocators.getNthItem(indx);
 				
 	if(!alloc)
 		return NULL;
@@ -1531,7 +1531,7 @@ const char *  GR_GraphicsFactory::getClassDescription(UT_uint32 iClassId) const
 	if(indx < 0)
 		return NULL;
 					
-	GR_Descriptor descr = (GR_Descriptor)(m_vDescriptors.getNthItem(indx));
+	GR_Descriptor descr = m_vDescriptors.getNthItem(indx);
 				
 	if(!descr)
 		return NULL;
