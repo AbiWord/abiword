@@ -151,6 +151,12 @@ public:
 	GR_UnixPangoGraphics(GdkPixmap * win, XAP_UnixFontManager * fontManager, XAP_App *app, bool bUsePixmap);
 
 	inline bool _scriptBreak(GR_UnixPangoRenderInfo &ri);
+
+	static int _dtpu(int d);
+	static int _ptdu(int p);
+	static int _ptlu(int p);
+	static int _ltpu(int l);
+	static int _pftlu(int pf);
 	
   private:
 	static UT_uint32 s_iInstanceCount;

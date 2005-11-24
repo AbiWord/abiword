@@ -181,7 +181,7 @@ GR_UnixPangoGraphics::GR_UnixPangoGraphics(GdkWindow * win, XAP_UnixFontManager 
 	Display * disp = GDK_DISPLAY_XDISPLAY(gDisp);
 	int iScreen = gdk_x11_screen_get_screen_number(gScreen);
 	
-	m_pContext = gdk_pango_context_get_for_screen(gScreen);
+	m_pContext = pango_xft_get_context(disp, iScreen);
 	m_pFontMap = pango_xft_get_font_map(disp, iScreen);
 }
 		
@@ -202,7 +202,7 @@ GR_UnixPangoGraphics::GR_UnixPangoGraphics(GdkPixmap * win, XAP_UnixFontManager 
 	Display * disp = GDK_DISPLAY_XDISPLAY(gDisp);
 	int iScreen = gdk_x11_screen_get_screen_number(gScreen);
 	
-	m_pContext = gdk_pango_context_get_for_screen(gScreen);
+	m_pContext = pango_xft_get_context(disp,iScreen);
 	m_pFontMap = pango_xft_get_font_map(disp, iScreen);
 }
 
@@ -239,7 +239,6 @@ UT_sint32 GR_UnixPangoGraphics::measureUnRemappedChar(const UT_UCSChar c)
 	// character cells.
 
 	UT_UCS4Char newChar;
-	double fWidth;
 
 	if(!isSymbol() && !isDingbat())
 	{
@@ -280,10 +279,8 @@ UT_sint32 GR_UnixPangoGraphics::measureUnRemappedChar(const UT_UCSChar c)
 	pango_glyph_string_free(pGS);
 	pango_item_free(pItem);
 	g_list_free(pGL);
-	
-	fWidth = IR.width
-		* ((double)getResolution() / (double)s_getDeviceResolution());
-	return static_cast<UT_uint32>(rint(fWidth));
+
+	return _ptlu(IR.width);
 }
 
 bool GR_UnixPangoGraphics::itemize(UT_TextIterator & text, GR_Itemization & I)
@@ -446,9 +443,7 @@ UT_sint32 GR_UnixPangoGraphics::getTextWidth(GR_RenderInfo & ri)
 
 	pango_glyph_string_extents_range(RI.m_pGlyphs, iOffsetStart, iOffsetEnd, pf, &IR, &LR);
 
-	iWidth = tlu(IR.width) / PANGO_SCALE;
-
-	return iWidth;
+	return _ptlu(IR.width);
 }
 
 void GR_UnixPangoGraphics::prepareToRenderChars(GR_RenderInfo & ri)
@@ -472,7 +467,7 @@ void GR_UnixPangoGraphics::renderChars(GR_RenderInfo & ri)
 
 	UT_DEBUGMSG(("renderChars: xoff %d yoff %d\n", RI.m_xoff, RI.m_yoff));
 	UT_sint32 xoff = _tduX(RI.m_xoff);
-	UT_sint32 yoff = _tduY(RI.m_yoff);
+	UT_sint32 yoff = _tduY(RI.m_yoff + getFontAscent(pFont));
 
 	
 
@@ -703,9 +698,6 @@ void GR_UnixPangoGraphics::positionToXY(const GR_RenderInfo & ri,
 	if(!pItem)
 		return;
 
-	// the code in fp_TextRun that calls this function does not construct the iterator !!!
-	UT_ASSERT_HARMLESS( 0 );
-	
 	// TODO: this is very inefficient: to cache or not to cache ?
 	UT_UTF8String utf8;
 	
@@ -743,7 +735,7 @@ void GR_UnixPangoGraphics::drawChars(const UT_UCSChar* pChars,
 	PangoGlyphString * pGstring = pango_glyph_string_new();
 
 	UT_sint32 xoffD = _tduX(xoff);
-	UT_sint32 yoffD = _tduY(yoff);
+	UT_sint32 yoffD = _tduY(yoff+getFontAscent());
 
 	PangoFont * pf = m_pPFont->getPangoFont();
 	PangoRectangle IR, LR;
@@ -778,13 +770,14 @@ void GR_UnixPangoGraphics::setZoomPercentage(UT_uint32 iZoom)
 {
 	// not sure if we should not call GR_UnixGraphics::setZoomPercentage() here instead
 	GR_Graphics::setZoomPercentage (iZoom); // chain up
-
+#if 0
 	DELETEP(m_pPFontGUI);
 	GR_Font * pFont = getGUIFont();
 	UT_return_if_fail( pFont->getType()== GR_FONT_UNIX_PANGO );
 	
 	m_pPFontGUI = NULL;
 	m_pPFontGUI = static_cast<GR_UnixPangoFont*>(pFont);
+#endif
 }
 
 GR_Font* GR_UnixPangoGraphics::getDefaultFont(UT_String& fontFamily)
@@ -817,8 +810,9 @@ UT_uint32 GR_UnixPangoGraphics::getFontAscent(GR_Font * pFont)
 	// FIXME: we probably want the real language from somewhere
 	PangoFontMetrics * pfm = pango_font_get_metrics(pf, pango_language_from_string("en-US"));
 	UT_return_val_if_fail( pfm, 0 );
-	
-	UT_uint32 i = (UT_uint32) pango_font_metrics_get_descent(pfm);
+
+	// pango_metrics_ functions return in points * PANGO_SCALE (points * 1024)
+	UT_uint32 i = (UT_uint32) _pftlu(pango_font_metrics_get_ascent(pfm));
 	pango_font_metrics_unref(pfm);
 	return i;
 }
@@ -834,7 +828,8 @@ UT_uint32 GR_UnixPangoGraphics::getFontDescent(GR_Font *pFont)
 	PangoFontMetrics * pfm = pango_font_get_metrics(pf, pango_language_from_string("en-US"));
 	UT_return_val_if_fail( pfm, 0 );
 
-	UT_uint32 i = (UT_uint32) pango_font_metrics_get_descent(pfm);
+	// pango_metrics_ functions return in points * PANGO_SCALE (points * 1024)
+	UT_uint32 i = (UT_uint32) _pftlu(pango_font_metrics_get_descent(pfm));
 	pango_font_metrics_unref(pfm);
 	return i;
 }
@@ -850,7 +845,10 @@ UT_uint32 GR_UnixPangoGraphics::getFontHeight(GR_Font *pFont)
 	PangoFontMetrics * pfm = pango_font_get_metrics(pf, pango_language_from_string("en-US"));
 	UT_return_val_if_fail( pfm, 0 );
 	
-	UT_uint32 i = (UT_uint32) pango_font_metrics_get_descent(pfm);
+	// pango_metrics_ functions return in points * PANGO_SCALE (points * 1024)
+	UT_uint32 i = (UT_uint32) _pftlu(pango_font_metrics_get_descent(pfm) +
+		(UT_uint32) pango_font_metrics_get_ascent(pfm));
+	
 	pango_font_metrics_unref(pfm);
 	return i;
 }
@@ -949,7 +947,7 @@ GR_Font * GR_UnixPangoGraphics::getGUIFont(void)
 			guiFontName = "Times New Roman";
 
 		UT_String s;
-		UT_String_sprintf(s, "'%s' %f", guiFontName,12*100.0/getZoomPercentage()); 
+		UT_String_sprintf(s, "'%s' %f", guiFontName,11.0); 
 		PangoFontDescription * pfd = pango_font_description_from_string(s.c_str());
 		UT_return_val_if_fail( pfd, NULL );
 		g_object_unref(G_OBJECT(tempStyle));
@@ -1061,4 +1059,43 @@ GR_UnixPangoFont::~GR_UnixPangoFont()
 {
 }
 
+/*!
+    Convert device units to pango units
+*/
+inline int GR_UnixPangoGraphics::_dtpu(int d)
+{
+	return d * PANGO_SCALE;
+}
 
+/*!
+    Convert pango units to device units
+*/
+inline int GR_UnixPangoGraphics::_ptdu(int p)
+{
+	return PANGO_PIXELS(p);
+}
+
+/*!
+    Convert pango units to layout units
+*/
+inline int GR_UnixPangoGraphics::_ptlu(int p)
+{
+	return PANGO_PIXELS(p * getResolution()) / s_getDeviceResolution();
+}
+
+/*!
+    Convert layout units to pango units
+*/
+inline int GR_UnixPangoGraphics::_ltpu(int l)
+{
+	return l*s_getDeviceResolution()* PANGO_SCALE/getResolution();
+}
+	
+
+/*!
+    Convert pango font units to layout units
+*/
+inline int GR_UnixPangoGraphics::_pftlu(int pf)
+{
+	return PANGO_PIXELS(pf * 20);
+}

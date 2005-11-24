@@ -920,9 +920,25 @@ void fp_TextRun::findPointCoords(UT_uint32 iOffset, UT_sint32& x, UT_sint32& y, 
 		bDirection = (getVisDirection() != UT_BIDI_LTR);
 		m_pRenderInfo->m_iOffset = iOffset - getBlockOffset() - 1;
 		m_pRenderInfo->m_iLength = getLength();
+
+#ifndef WIN32
+		// This is really for the benefit of the Pango graphics, which requires the raw
+		// text for almost anything; we do not need this on win32, and since this this
+		// called all the time, do not want it in
+		PD_StruxIterator text(getBlock()->getStruxDocHandle(),
+							  getBlockOffset() + fl_BLOCK_STRUX_OFFSET);
+		UT_return_if_fail(text.getStatus() == UTIter_OK);
+		m_pRenderInfo->m_pText = &text;
+#endif
+		
 		getGraphics()->positionToXY(*m_pRenderInfo, x, y, x2, y2, height, bDirection);
 		x += xoff;
 		x2 += xoff;
+		
+#ifndef WIN32
+		// reset this, so we have no stale pointers there
+		m_pRenderInfo->m_pText = NULL;
+#endif
 	}
 }
 
