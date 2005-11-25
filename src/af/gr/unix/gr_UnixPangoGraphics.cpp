@@ -411,7 +411,6 @@ UT_sint32 GR_UnixPangoGraphics::getTextWidth(GR_RenderInfo & ri)
 	PangoFont * pf = pFont->getPangoFont();
 	UT_return_val_if_fail( pf, 0 );
 	
-	UT_sint32 iWidth = 0;
 	PangoRectangle IR, LR;
 
 	// need to convert the char offset and length to glyph offsets
@@ -713,10 +712,10 @@ void GR_UnixPangoGraphics::positionToXY(const GR_RenderInfo & ri,
 								   utf8.byteLength(),
 								   &(pItem->m_pi->analysis), 
 								   RI.m_iOffset,
-								   RI.m_bLastOnLine,
+								   TRUE,
 								   &x);
 
-	x = x;
+	x = _ptlu(x);
 	x2 = x;
 }
 
@@ -770,14 +769,11 @@ void GR_UnixPangoGraphics::setZoomPercentage(UT_uint32 iZoom)
 {
 	// not sure if we should not call GR_UnixGraphics::setZoomPercentage() here instead
 	GR_Graphics::setZoomPercentage (iZoom); // chain up
-#if 0
-	DELETEP(m_pPFontGUI);
-	GR_Font * pFont = getGUIFont();
-	UT_return_if_fail( pFont->getType()== GR_FONT_UNIX_PANGO );
-	
-	m_pPFontGUI = NULL;
-	m_pPFontGUI = static_cast<GR_UnixPangoFont*>(pFont);
-#endif
+
+	if(m_pPFont && !m_pPFont->isGuiFont() && m_pPFont->getZoom() != iZoom)
+	{
+		m_pPFont->reloadFont(this);
+	}
 }
 
 GR_Font* GR_UnixPangoGraphics::getDefaultFont(UT_String& fontFamily)
@@ -905,28 +901,16 @@ GR_Font* GR_UnixPangoGraphics::_findFont(const char* pszFontFamily,
 										 const char* pszFontStretch,
 										 const char* pszFontSize)
 {
-	UT_String s = "'";
-	s += pszFontFamily;
-	s += "' ";
-	s += pszFontStyle;
-	s += " ";
-	s += pszFontVariant;
-	s += " ";
-	s += pszFontWeight;
-	s += " ";
-	s += pszFontStretch;
-	s += " ";
-	s += pszFontSize;
+	double dPointSize = UT_convertToPoints(pszFontSize);
+	UT_String s;
+	UT_String_sprintf(s, "'%s' %s %s %s %s",
+					  pszFontFamily,
+					  pszFontStyle,
+					  pszFontVariant,
+					  pszFontWeight,
+					  pszFontStretch);
 
-	const char * cs = s.c_str() + s.length() - 2;
-
-	if(!UT_strcmp(cs, "pt"))
-	   s[s.length()-2] = 0;
-
-	PangoFontDescription * pfd = pango_font_description_from_string(s.c_str());
-	UT_return_val_if_fail( pfd, NULL );
-	
-	return new GR_UnixPangoFont(pfd, this);
+	return new GR_UnixPangoFont(s.c_str(), dPointSize, this);
 }
 
 	
@@ -944,15 +928,11 @@ GR_Font * GR_UnixPangoGraphics::getGUIFont(void)
 		GtkStyle *tempStyle = gtk_style_new();
 		const char *guiFontName = pango_font_description_get_family(tempStyle->font_desc);
 		if (!guiFontName)
-			guiFontName = "Times New Roman";
-
-		UT_String s;
-		UT_String_sprintf(s, "'%s' %f", guiFontName,11.0); 
-		PangoFontDescription * pfd = pango_font_description_from_string(s.c_str());
-		UT_return_val_if_fail( pfd, NULL );
-		g_object_unref(G_OBJECT(tempStyle));
+			guiFontName = "'Times New Roman'";
 	
-		m_pPFontGUI = new GR_UnixPangoFont(pfd, this);
+		m_pPFontGUI = new GR_UnixPangoFont(guiFontName, 11.0, this, true);
+
+		g_object_unref(G_OBJECT(tempStyle));
 		
 		UT_ASSERT(m_pPFontGUI);
 	}
@@ -964,15 +944,48 @@ GR_Font * GR_UnixPangoGraphics::getGUIFont(void)
 //
 // GR_UnixPangFont implementation
 //
-GR_UnixPangoFont::GR_UnixPangoFont(PangoFontDescription * pDesc, GR_UnixPangoGraphics * pG)
-	:m_pf(NULL)
+GR_UnixPangoFont::GR_UnixPangoFont(const char * pDesc, double dSize,
+								   GR_UnixPangoGraphics * pG, bool bGuiFont):
+	m_dPointSize(dSize),
+	m_iZoom(0), // forces creation of font by reloadFont()
+	m_pf(NULL),
+	m_bGuiFont(bGuiFont)
 {
 	m_eType = GR_FONT_UNIX_PANGO;
 	
 	UT_return_if_fail( pDesc && pG );
+	m_sDesc = pDesc;
 	
-	m_pf = pango_context_load_font(pG->getContext(), pDesc);
+	reloadFont(pG);
 }
+
+/*!
+    Reloads the Pango font associated with this font, taking into account the current
+    level of zoom
+*/
+void GR_UnixPangoFont::reloadFont(GR_UnixPangoGraphics * pG)
+{
+	UT_return_if_fail( pG );
+
+	UT_uint32 iZoom = pG->getZoomPercentage();
+	if(m_pf && (m_bGuiFont || m_iZoom == iZoom))
+		return;
+	
+	m_iZoom = iZoom;
+	
+	UT_String s;
+	if(!m_bGuiFont)
+		UT_String_sprintf(s, "%s %f", m_sDesc.c_str(), m_dPointSize * (double)m_iZoom / 100.0);
+	else
+		UT_String_sprintf(s, "%s %f", m_sDesc.c_str(), m_dPointSize);
+		
+
+	PangoFontDescription * pfd = pango_font_description_from_string(s.c_str());
+	UT_return_if_fail(pfd);
+	
+	m_pf = pango_context_load_font(pG->getContext(), pfd);
+}
+
 
 /*!
 	Measure the unremapped char to be put into the cache.

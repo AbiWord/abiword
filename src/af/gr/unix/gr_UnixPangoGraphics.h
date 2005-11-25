@@ -23,7 +23,6 @@
 #include "ut_types.h"
 #include "gr_UnixGraphics.h"
 #include "gr_RenderInfo.h"
-#include "xap_UnixFont.h"
 #include <pango/pango-font.h>
 
 // we do not want this to be a plugin for now
@@ -42,7 +41,9 @@ class GR_UnixPangoGraphics;
 class ABI_EXPORT GR_UnixPangoFont : public GR_Font
 {
   public:
-	GR_UnixPangoFont(PangoFontDescription * pDesc, GR_UnixPangoGraphics * pG);
+	GR_UnixPangoFont(const char * pDesc, double dSize,
+					 GR_UnixPangoGraphics * pG, bool bGuiFont = false);
+	
 	virtual ~GR_UnixPangoFont();
 
 	/*!
@@ -59,9 +60,18 @@ class ABI_EXPORT GR_UnixPangoFont : public GR_Font
 	virtual bool glyphBox(UT_UCS4Char g, UT_Rect & rec, GR_Graphics * pG);
 	
 	PangoFont * getPangoFont() const {return m_pf;}
+
+	void        reloadFont(GR_UnixPangoGraphics * pG);
+	double      getPointSize() const {return m_dPointSize;}
+	UT_uint32   getZoom() const {return m_iZoom;}
+	bool        isGuiFont () const {return m_bGuiFont;}
 	
   private:
+	UT_String  m_sDesc;
+	double     m_dPointSize;
+	UT_uint32  m_iZoom;
 	PangoFont *m_pf;
+	bool       m_bGuiFont;
 };
 
 class GR_UnixPangoRenderInfo;
