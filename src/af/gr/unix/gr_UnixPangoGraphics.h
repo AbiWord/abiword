@@ -23,6 +23,7 @@
 #include "ut_types.h"
 #include "gr_UnixGraphics.h"
 #include "gr_RenderInfo.h"
+
 #include <pango/pango-font.h>
 
 // we do not want this to be a plugin for now
@@ -52,19 +53,17 @@ class ABI_EXPORT GR_UnixPangoFont : public GR_Font
 	 */
 	virtual UT_sint32 measureUnremappedCharForCache(UT_UCS4Char cChar) const;
 	
-	/*
-	   NB: it is essential that this function is fast
-	*/
-	virtual bool doesGlyphExist(UT_UCS4Char g);
+	virtual bool      doesGlyphExist(UT_UCS4Char g);
 
-	virtual bool glyphBox(UT_UCS4Char g, UT_Rect & rec, GR_Graphics * pG);
+	virtual bool      glyphBox(UT_UCS4Char g, UT_Rect & rec, GR_Graphics * pG);
 	
-	PangoFont * getPangoFont() const {return m_pf;}
+	PangoFont *       getPangoFont() const {return m_pf;}
 
-	void        reloadFont(GR_UnixPangoGraphics * pG);
-	double      getPointSize() const {return m_dPointSize;}
-	UT_uint32   getZoom() const {return m_iZoom;}
-	bool        isGuiFont () const {return m_bGuiFont;}
+	void              reloadFont(GR_UnixPangoGraphics * pG);
+	double            getPointSize() const {return m_dPointSize;}
+	UT_uint32         getZoom() const {return m_iZoom;}
+	bool              isGuiFont () const {return m_bGuiFont;}
+	const UT_String & getDescription() const {return m_sDesc;}
 	
   private:
 	UT_String  m_sDesc;
@@ -72,6 +71,7 @@ class ABI_EXPORT GR_UnixPangoFont : public GR_Font
 	UT_uint32  m_iZoom;
 	PangoFont *m_pf;
 	bool       m_bGuiFont;
+	PangoCoverage * m_pCover;
 };
 
 class GR_UnixPangoRenderInfo;
@@ -162,11 +162,14 @@ public:
 
 	inline bool _scriptBreak(GR_UnixPangoRenderInfo &ri);
 
-	static int _dtpu(int d);
-	static int _ptdu(int p);
-	static int _ptlu(int p);
-	static int _ltpu(int l);
-	static int _pftlu(int pf);
+	void _scaleCharacterMetrics(GR_UnixPangoRenderInfo & RI);
+	void _scaleJustification(GR_UnixPangoRenderInfo & RI);
+	
+	int _dtpu(int d) const;
+	int _ptdu(int p) const;
+	int _ptlu(int p) const;
+	int _ltpu(int l) const;
+	int _pftlu(int pf) const;
 	
   private:
 	static UT_uint32 s_iInstanceCount;

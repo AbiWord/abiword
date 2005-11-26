@@ -1813,6 +1813,12 @@ bool GR_Win32USPGraphics::canBreak(GR_RenderInfo & ri, UT_sint32 &iNext, bool bA
 			return bBreak;
 		
 	}
+
+	if(iNext == -1)
+	{
+		// we have not found any breaks in this run -- signal this to the caller
+		iNext = -2;
+	}
 	
 	return false;
 }

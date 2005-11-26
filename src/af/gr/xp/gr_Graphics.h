@@ -623,7 +623,8 @@ class ABI_EXPORT GR_Graphics
 	//          iNext, relative to start of the text represented by ri
 	//          (not relative to m_iOffset); if the class does not
 	//          know where the next break point lies, it should set
-	//          iNext to -1
+	//          iNext to -1; if it knows that there is no break in this run, it should set
+	//          iNext to -2
 	// bAfter indicates whether we are quering for a break after the character at given offset
 	
 	virtual bool canBreak(GR_RenderInfo & ri, UT_sint32 &iNext, bool bAfter) VIRTUAL_SFX;
