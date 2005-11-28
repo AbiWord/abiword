@@ -94,21 +94,24 @@ class GR_UnixPangoRenderInfo : public GR_RenderInfo
 		GR_RenderInfo(t),
 		m_pGlyphs(NULL),
 		m_pLogOffsets(NULL),
+		m_pLogAttrs(NULL),
 		m_pJustify(NULL),
-		m_iZoom(0)
+		m_iZoom(0),
+		m_iLogBuffSize(0)
 	{
 		++s_iInstanceCount;
 	};
 	
 	virtual ~GR_UnixPangoRenderInfo()
 	{
-		delete [] m_pJustify; delete [] m_pLogOffsets;
+		delete [] m_pJustify; delete [] m_pLogOffsets; delete [] m_pLogAttrs;
 
 		s_iInstanceCount--;
+#if 0
 		if(!s_iInstanceCount)
 		{
-			delete [] s_pLogAttr;  s_pLogAttr  = NULL;
 		}
+#endif
 	};
 
 	virtual GRRI_Type getType() const {return GRRI_UNIX_PANGO;}
@@ -121,11 +124,6 @@ class GR_UnixPangoRenderInfo : public GR_RenderInfo
 	
 	inline bool       allocStaticBuffers(UT_uint32 iSize)
 	    {
-			if(s_pLogAttr) { delete [] s_pLogAttr; s_pLogAttr = NULL; }
-			s_pLogAttr  = new PangoLogAttr[iSize]; // log attr. correspont to characters, not glyphs, but since there are
-												   // always at least as many glyphs, this is OK
-			UT_return_val_if_fail(s_pLogAttr, false);
-
 			s_iStaticSize = iSize;
 			
 			s_pOwnerUTF8 = NULL;
@@ -135,12 +133,13 @@ class GR_UnixPangoRenderInfo : public GR_RenderInfo
 
 	PangoGlyphString* m_pGlyphs;
 	int *             m_pLogOffsets;
+	PangoLogAttr *    m_pLogAttrs;
 	int *             m_pJustify;
 	UT_uint32         m_iZoom;
-
+	UT_uint32         m_iLogBuffSize;
+	
 	static UT_UTF8String sUTF8;
 	static GR_UnixPangoRenderInfo * s_pOwnerUTF8;
-	static PangoLogAttr * s_pLogAttr;
 	static UT_uint32  s_iInstanceCount;
 	static UT_uint32  s_iStaticSize;  // size of the static buffers
 };
@@ -148,7 +147,6 @@ class GR_UnixPangoRenderInfo : public GR_RenderInfo
 
 GR_UnixPangoRenderInfo * GR_UnixPangoRenderInfo::s_pOwnerUTF8 = NULL;
 UT_UTF8String            GR_UnixPangoRenderInfo::sUTF8;
-PangoLogAttr *           GR_UnixPangoRenderInfo::s_pLogAttr = NULL;
 UT_uint32                GR_UnixPangoRenderInfo::s_iInstanceCount = 0;
 UT_uint32                GR_UnixPangoRenderInfo::s_iStaticSize = 0;
 
@@ -641,12 +639,18 @@ bool GR_UnixPangoGraphics::_scriptBreak(GR_UnixPangoRenderInfo &ri)
 	UT_return_val_if_fail(ri.getUTF8Text(), false);
 
 	// the buffer has to have at least one more slot than the number of glyphs
-	UT_return_val_if_fail(ri.allocStaticBuffers(ri.sUTF8.length() + 1), false);
+	if(!ri.m_pLogAttrs || ri.m_iLogBuffSize < ri.sUTF8.length() + 1)
+	{
+		ri.m_pLogAttrs = new PangoLogAttr[ri.sUTF8.length() + 1];
+		ri.m_iLogBuffSize = ri.sUTF8.length() + 1;
+	}
+	
+	UT_return_val_if_fail(ri.m_pLogAttrs, false);
 		
 	pango_break(ri.sUTF8.utf8_str(),
 				ri.sUTF8.byteLength(),
 				&(pItem->m_pi->analysis),
-				ri.s_pLogAttr, ri.s_iStaticSize);
+				ri.m_pLogAttrs, ri.m_iLogBuffSize);
 
 	return true;
 }
@@ -666,7 +670,7 @@ bool GR_UnixPangoGraphics::canBreak(GR_RenderInfo & ri, UT_sint32 &iNext, bool b
 		// the caller wants to know if break can occur on the (logically) right edge of the given
 		// character
 		
-		if(ri.m_iOffset + 1 >= (UT_sint32)RI.s_iStaticSize)
+		if(ri.m_iOffset + 1 >= (UT_sint32)RI.m_iLogBuffSize)
 		{
 			// we are quering past what have data for
 			return false;
@@ -677,13 +681,13 @@ bool GR_UnixPangoGraphics::canBreak(GR_RenderInfo & ri, UT_sint32 &iNext, bool b
 		iDelta = 1;
 	}
 
-	if(RI.s_pLogAttr[ri.m_iOffset + iDelta].is_line_break)
+	if(RI.m_pLogAttrs[ri.m_iOffset + iDelta].is_line_break)
 		return true;
 
 	// find the next break
 	for(UT_sint32 i = ri.m_iOffset + iDelta + 1; i < RI.m_iLength; ++i)
 	{
-		if(RI.s_pLogAttr[i].is_line_break)
+		if(RI.m_pLogAttrs[i].is_line_break)
 		{
 			iNext = i - iDelta;
 			break;
@@ -702,20 +706,84 @@ bool GR_UnixPangoGraphics::canBreak(GR_RenderInfo & ri, UT_sint32 &iNext, bool b
 
 bool GR_UnixPangoGraphics::needsSpecialCaretPositioning(GR_RenderInfo & ri)
 {
-	// this is not implemented yet, but assert in this function is a pain
-	// UT_ASSERT_HARMLESS( UT_NOT_IMPLEMENTED );
-	return false;
+	// something smarter is needed here, so we do not go through this for langugages that
+	// do not need it.
+	return true;
 }
 
 UT_uint32 GR_UnixPangoGraphics::adjustCaretPosition(GR_RenderInfo & ri, bool bForward)
 {
-	UT_ASSERT_HARMLESS( UT_NOT_IMPLEMENTED );
-	return ri.m_iOffset;
+	UT_return_val_if_fail(ri.getType() == GRRI_UNIX_PANGO, 0);
+	GR_UnixPangoRenderInfo & RI = (GR_UnixPangoRenderInfo &)ri;
+	
+	if(!RI.m_pLogAttrs)
+		_scriptBreak(RI);
+
+	UT_return_val_if_fail( RI.m_pLogAttrs, RI.m_iOffset );
+	
+	UT_sint32 iOffset = ri.m_iOffset;
+
+	if(bForward)
+		while(!RI.m_pLogAttrs[iOffset].is_cursor_position && iOffset < RI.m_iLength)
+			iOffset++;
+	else
+		while(!RI.m_pLogAttrs[iOffset].is_cursor_position && iOffset > 0)
+			iOffset--;
+	
+	return iOffset;
 }
 
 void GR_UnixPangoGraphics::adjustDeletePosition(GR_RenderInfo & ri)
 {
-	UT_ASSERT_HARMLESS( UT_NOT_IMPLEMENTED );
+	UT_return_if_fail(ri.getType() == GRRI_UNIX_PANGO);
+	GR_UnixPangoRenderInfo & RI = (GR_UnixPangoRenderInfo &)ri;
+
+	if(ri.m_iLength >= (UT_sint32)RI.m_iLogBuffSize)
+		return;
+	
+	if(!RI.m_pLogAttrs)
+		_scriptBreak(RI);
+
+	UT_return_if_fail( RI.m_pLogAttrs);
+	
+	// deletion can start anywhere, but can only end on cluster boundary if the base character is
+	// included in the deletion
+	
+	// get the offset of the character that follows the deleted segment
+	UT_sint32 iNextOffset = (UT_sint32)ri.m_iOffset + ri.m_iLength;
+
+	if(RI.m_pLogAttrs[iNextOffset].is_cursor_position)
+	{
+		// the next char is a valid caret position, so we are OK
+		return;
+	}
+
+	// If we got this far, we were asked to end the deletion before a character that is
+	// not a valid caret position. We need to determine if the segment we are asked to
+	// delete contains the character's base character; if it does, we have to expand the
+	// seletion to delete the entire cluster.
+
+	UT_sint32 iOffset = iNextOffset - 1;
+	while(iOffset > 0 && iOffset > ri.m_iOffset && !RI.m_pLogAttrs[iOffset].is_cursor_position)
+		iOffset--;
+
+	if(RI.m_pLogAttrs[iOffset].is_cursor_position)
+	{
+		// our delete segment includes the base character, so we have to delete the entire cluster
+		iNextOffset = iOffset + 1;
+		
+		while(iNextOffset < (UT_sint32)RI.m_iLogBuffSize - 1 // -1 because iLogBuffSize is char count +1
+			  && !RI.m_pLogAttrs[iNextOffset].is_cursor_position)
+			iNextOffset++;
+
+		
+		ri.m_iLength = iNextOffset - ri.m_iOffset;
+		return;
+	}
+	
+	// two posibilities: we are deleting only a cluster appendage or the run does not contain
+	// base character. The latter should probably not happen, but in both cases we will let the
+	// delete proceed as is
 }
 
 
@@ -1325,6 +1393,9 @@ bool GR_UnixPangoRenderInfo::append(GR_RenderInfo &ri, bool bReverse)
 	if(s_pOwnerUTF8 == this)
 		s_pOwnerUTF8 = NULL;
 
+	delete [] m_pLogAttrs; m_pLogAttrs = NULL;
+	delete [] m_pLogOffsets; m_pLogOffsets = NULL;
+	
 	return false;
 }
 
@@ -1347,6 +1418,9 @@ bool GR_UnixPangoRenderInfo::split (GR_RenderInfo *&pri, bool bReverse)
 	if(s_pOwnerUTF8 == this)
 		s_pOwnerUTF8 = NULL;
 	
+	delete [] m_pLogAttrs; m_pLogAttrs = NULL;
+	delete [] m_pLogOffsets; m_pLogOffsets = NULL;
+	
 	return false;
 }
 
@@ -1355,6 +1429,9 @@ bool GR_UnixPangoRenderInfo::cut(UT_uint32 offset, UT_uint32 iLen, bool bReverse
 
 	if(s_pOwnerUTF8 == this)
 		s_pOwnerUTF8 = NULL;
+
+	delete [] m_pLogAttrs; m_pLogAttrs = NULL;
+	delete [] m_pLogOffsets; m_pLogOffsets = NULL;
 	
 	return false;
 }
