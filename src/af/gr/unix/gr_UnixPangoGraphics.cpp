@@ -93,6 +93,7 @@ class GR_UnixPangoRenderInfo : public GR_RenderInfo
 	GR_UnixPangoRenderInfo(GR_ScriptType t):
 		GR_RenderInfo(t),
 		m_pGlyphs(NULL),
+		m_pLogOffsets(NULL),
 		m_pJustify(NULL),
 		m_iZoom(0)
 	{
@@ -101,7 +102,7 @@ class GR_UnixPangoRenderInfo : public GR_RenderInfo
 	
 	virtual ~GR_UnixPangoRenderInfo()
 	{
-		delete [] m_pJustify;
+		delete [] m_pJustify; delete [] m_pLogOffsets;
 
 		s_iInstanceCount--;
 		if(!s_iInstanceCount)
@@ -133,6 +134,7 @@ class GR_UnixPangoRenderInfo : public GR_RenderInfo
 	    }
 
 	PangoGlyphString* m_pGlyphs;
+	int *             m_pLogOffsets;
 	int *             m_pJustify;
 	UT_uint32         m_iZoom;
 
@@ -181,7 +183,6 @@ GR_UnixPangoGraphics::GR_UnixPangoGraphics(GdkWindow * win, XAP_UnixFontManager 
 	 m_pPFontGUI(NULL)
 {
 	UT_DEBUGMSG(("GR_UnixPangoGraphics::GR_UnixPangoGraphics using pango (window)\n"));
-
 	GdkDisplay * gDisp = gdk_drawable_get_display(win);
 	GdkScreen *  gScreen = gdk_drawable_get_screen(win);
 	Display * disp = GDK_DISPLAY_XDISPLAY(gDisp);
@@ -325,6 +326,7 @@ bool GR_UnixPangoGraphics::itemize(UT_TextIterator & text, GR_Itemization & I)
 	// pango_attr_list_unref(pAttr);
 	
 	// now we process the ouptut
+	UT_uint32 iOffset = 0;
 	UT_DEBUGMSG(("itemize: number of items %d\n", iItemCount));
 	for(i = 0; i < iItemCount; ++i)
 	{
@@ -333,7 +335,8 @@ bool GR_UnixPangoGraphics::itemize(UT_TextIterator & text, GR_Itemization & I)
 		GR_UnixPangoItem * pI = new GR_UnixPangoItem(pItem);
 		UT_return_val_if_fail(pI, false);
 
-		I.addItem(pItem->offset, pI);
+		I.addItem(iOffset, pI);
+		iOffset += pItem->num_chars;
 	}
 
 	I.addItem(iPosEnd - iPosStart + 1, new GR_UnixPangoItem());
@@ -403,6 +406,49 @@ bool GR_UnixPangoGraphics::shape(GR_ShapingInfo & si, GR_RenderInfo *& ri)
 
 	pango_shape(utf8.utf8_str(), utf8.byteLength(), &(pItem->m_pi->analysis), RI->m_pGlyphs);
 
+	// the RI->m_Glyphs now contains logical cluster info, which is unfortunately indexed
+	// to bytes in the utf-8 string, not characters -- this is real pain
+	// and we have to convert it
+	if(RI->m_pLogOffsets)
+	{
+		delete [] RI->m_pLogOffsets;
+	}
+
+	RI->m_pLogOffsets = new int [RI->m_pGlyphs->num_glyphs];
+	const char * p = utf8.utf8_str();
+	
+	for(int i = 0; i < RI->m_pGlyphs->num_glyphs; ++i)
+	{
+		// there is no way to reset the iterator, so we have to
+		// create it afresh on each iteration
+		UT_UTF8Stringbuf::UTF8Iterator I = utf8.getIterator();
+
+		int j = 0;
+		int iOff = RI->m_pGlyphs->log_clusters[i];
+
+		// advance the iterator until we find the offset that corresponds to the glyph
+		// byte offset
+		while(I.current() && I.current() != p + iOff)
+		{
+			I.advance();
+			++j;
+		}
+
+		RI->m_pLogOffsets[i] = j;
+
+		// set also any subsequent glyphs that have the same byte offset (to save
+		// ourselves the overhead of iterating the utf8 string againg)
+		int k = i+1;
+		while(k < RI->m_pGlyphs->num_glyphs && RI->m_pGlyphs->log_clusters[k] == iOff)
+		{
+			RI->m_pLogOffsets[k] = j;
+			++k;
+		}
+
+		// jump ahead as appropriate
+		i = k - 1;
+	}
+	
 	// need to transfer data that we will need later from si to RI
 	RI->m_iLength = si.m_iLength;
 
@@ -426,7 +472,7 @@ UT_sint32 GR_UnixPangoGraphics::getTextWidth(GR_RenderInfo & ri)
 	UT_return_val_if_fail(ri.getType() == GRRI_UNIX_PANGO, 0);
 	GR_UnixPangoRenderInfo & RI = (GR_UnixPangoRenderInfo &)ri;
 
-	UT_return_val_if_fail( RI.m_pGlyphs, 0 );
+	UT_return_val_if_fail( RI.m_pGlyphs && RI.m_pLogOffsets, 0 );
 	
 	GR_UnixPangoFont * pFont = (GR_UnixPangoFont *) RI.m_pFont;
 	UT_return_val_if_fail( pFont, 0 );
@@ -442,13 +488,16 @@ UT_sint32 GR_UnixPangoGraphics::getTextWidth(GR_RenderInfo & ri)
 	
 	for(UT_uint32 i = 0; i < iGlyphCount; ++i)
 	{
-		if(iOffsetStart < 0 && RI.m_pGlyphs->log_clusters[i] == RI.m_iOffset)
+		// test for >= -- in case of combining characters, the requested offset might
+		// inside the cluster, which is not legal, we take the first offset given to us
+		if(iOffsetStart < 0 && RI.m_pLogOffsets[i] >= RI.m_iOffset)
 		{
 			iOffsetStart = i;
 			continue;
 		}
+		
 
-		if(iOffsetEnd < 0 && RI.m_pGlyphs->log_clusters[i] == RI.m_iOffset + RI.m_iLength)
+		if(iOffsetEnd < 0 && RI.m_pLogOffsets[i] == RI.m_iOffset + RI.m_iLength)
 		{
 			iOffsetEnd = i;
 			break;
@@ -650,6 +699,24 @@ bool GR_UnixPangoGraphics::canBreak(GR_RenderInfo & ri, UT_sint32 &iNext, bool b
 	return false;
 }
 
+
+bool GR_UnixPangoGraphics::needsSpecialCaretPositioning(GR_RenderInfo & ri)
+{
+	// this is not implemented yet, but assert in this function is a pain
+	// UT_ASSERT_HARMLESS( UT_NOT_IMPLEMENTED );
+	return false;
+}
+
+UT_uint32 GR_UnixPangoGraphics::adjustCaretPosition(GR_RenderInfo & ri, bool bForward)
+{
+	UT_ASSERT_HARMLESS( UT_NOT_IMPLEMENTED );
+	return ri.m_iOffset;
+}
+
+void GR_UnixPangoGraphics::adjustDeletePosition(GR_RenderInfo & ri)
+{
+	UT_ASSERT_HARMLESS( UT_NOT_IMPLEMENTED );
+}
 
 
 UT_sint32 GR_UnixPangoGraphics::resetJustification(GR_RenderInfo & ri, bool bPermanent)
@@ -988,7 +1055,7 @@ const char* GR_UnixPangoGraphics::findNearestFont(const char* pszFontFamily,
 												  const char* pszFontSize)
 {
 	UT_String s;
-	UT_String_sprintf(s, "'%s' %s %s %s %s %s",
+	UT_String_sprintf(s, "%s, %s %s %s %s %s",
 					  pszFontFamily,
 					  pszFontStyle,
 					  pszFontVariant,
@@ -1030,14 +1097,42 @@ GR_Font* GR_UnixPangoGraphics::_findFont(const char* pszFontFamily,
 {
 	double dPointSize = UT_convertToPoints(pszFontSize);
 	UT_String s;
-	
-	UT_String_sprintf(s, "'%s' %s %s %s %s",
-					  pszFontFamily,
-					  pszFontStyle,
-					  pszFontVariant,
-					  pszFontWeight,
-					  pszFontStretch);
 
+	// Pango is picky about the string we pass to it -- it cannot handle any 'normal'
+	// values, and it will stop parsing when it encounters one.
+	const char * pStyle = pszFontStyle;
+	const char * pVariant = pszFontVariant;
+	const char * pWeight = pszFontWeight;
+	const char * pStretch = pszFontStretch;
+	
+	if(*pszFontStyle == 'n')
+		pStyle = "";
+
+	if(*pszFontVariant == 'n')
+		pVariant = "";
+
+	if(*pszFontWeight == 'n')
+		pWeight = "";
+
+	if(*pszFontStretch == 'n')
+		pStretch = "";
+	
+	UT_String_sprintf(s, "%s, %s %s %s %s",
+					  pszFontFamily,
+					  pStyle,
+					  pVariant,
+					  pWeight,
+					  pStretch);
+#if 0
+	PangoFontDescription * pfd = pango_font_description_new();
+	pango_font_description_set_weight(pfd, PANGO_WEIGHT_BOLD);
+	pango_font_description_set_style(pfd, PANGO_STYLE_ITALIC);
+	pango_font_description_set_variant(pfd, PANGO_VARIANT_NORMAL);
+	pango_font_description_set_stretch(pfd, PANGO_STRETCH_NORMAL);
+	pango_font_description_set_size(pfd, 12*PANGO_SCALE);
+	char * p = pango_font_description_to_string(pfd);
+#endif
+	
 	return new GR_UnixPangoFont(s.c_str(), dPointSize, this);
 }
 
