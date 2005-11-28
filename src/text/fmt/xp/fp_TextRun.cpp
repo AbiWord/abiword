@@ -939,6 +939,9 @@ void fp_TextRun::findPointCoords(UT_uint32 iOffset, UT_sint32& x, UT_sint32& y, 
 		y = y2 = yoff;
 		height = getHeight();
 		bDirection = (getVisDirection() != UT_BIDI_LTR);
+
+		// I am not sure why we have to subtract the 1 here, but we do -- we need to make
+		// sure we do not pass -1 down the line
 		m_pRenderInfo->m_iOffset = iOffset - getBlockOffset() - 1;
 		m_pRenderInfo->m_iLength = getLength();
 

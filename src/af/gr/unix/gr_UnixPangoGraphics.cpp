@@ -22,6 +22,7 @@
 #include "xap_UnixFontManager.h"
 #include "ut_debugmsg.h"
 #include "ut_misc.h"
+#include "ut_vector.h"
 
 #include "xap_App.h"
 #include "xap_Prefs.h"
@@ -960,11 +961,15 @@ void GR_UnixPangoGraphics::positionToXY(const GR_RenderInfo & ri,
 
 	// TODO: this is very inefficient: to cache or not to cache ?
 	UT_UTF8String utf8;
+
+	// we need by offset into the utf8 string, so we will remember it as we construct it
+	UT_GenericVector<int> vByteOffset;
 	
 	UT_sint32 i;
 	for(i = 0; i < RI.m_iLength; ++i, ++(*(RI.m_pText)))
 	{
 		UT_return_if_fail(RI.m_pText->getStatus() == UTIter_OK);
+		vByteOffset.addItem(utf8.byteLength());
 		utf8 += RI.m_pText->getChar();
 	}
 	
@@ -972,7 +977,8 @@ void GR_UnixPangoGraphics::positionToXY(const GR_RenderInfo & ri,
 								   (char*)utf8.utf8_str(), // do not like this ...
 								   utf8.byteLength(),
 								   &(pItem->m_pi->analysis), 
-								   RI.m_iOffset,
+								   RI.m_iOffset >= 0 ?
+								        vByteOffset.getNthItem(RI.m_iOffset) : RI.m_iOffset,
 								   TRUE,
 								   &x);
 
