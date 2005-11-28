@@ -309,7 +309,7 @@ GtkWidget * AP_UnixDialog_New::_constructWindow ()
 							 renderer,
 							 "text", 
 							 0,
-							 NULL);
+							 (gchar*)NULL);
 	gtk_tree_view_append_column( GTK_TREE_VIEW(m_choicesList), column);
 
 	UT_UTF8String templateList[2];

@@ -159,15 +159,15 @@ AP_UnixApp::AP_UnixApp(XAP_Args * pArgs, const char * szAppName)
 	  m_pClipboard(0),
 	  m_bHasSelection(false),
 	  m_bSelectionInFlux(false),
+	  m_cacheDeferClear(0),
 	  m_pViewSelection(0),
 	  m_cacheSelectionView(0),
-	  m_cacheDeferClear(0),
 	  m_pFrameSelection(0)
 {
 #ifndef HAVE_GNOME
     // hack to link abi_widget - thanks fjf
 	if(this == 0)
-		GtkWidget * pUn = abi_widget_new_with_file("fred.abw");
+		/*GtkWidget * pUn =*/ abi_widget_new_with_file("fred.abw");
 #endif
 }
 
@@ -681,7 +681,7 @@ void AP_UnixApp::pasteFromClipboard(PD_DocumentRange * pDocRange, bool bUseClipb
 			  {
 					  goto retry_text;
 			  }
-			  bool b = pImp->pasteFromBuffer(pDocRange,pData,iLen);
+			  /*bool b = */ pImp->pasteFromBuffer(pDocRange,pData,iLen);
 			  DELETEP(pImp);
 			  return;
 		  }

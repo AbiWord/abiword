@@ -13843,14 +13843,14 @@ Defun(btn0VisualText)
 Defun(repeatThisRow)
 {
 	CHECK_FRAME;
-	ABIWORD_VIEW;
+//	ABIWORD_VIEW;
 	return true;
 }
 
 Defun(removeThisRowRepeat)
 {
 	CHECK_FRAME;
-	ABIWORD_VIEW;
+//	ABIWORD_VIEW;
 	return true;
 }
 
