@@ -1545,9 +1545,8 @@ abi_widget_class_init (AbiWidgetClass *abi_class)
 	GObjectClass *gobject_class = G_OBJECT_CLASS(abi_class);
 
 	// we need our own special destroy function
-	XAP_App * pApp = XAP_App::getApp();
 #ifdef HAVE_GNOME
-	if(pApp->isBonoboRunning())
+	if(XAP_App::getApp()->isBonoboRunning())
 	{
 		BonoboObjectClass *bonobo_object_class = (BonoboObjectClass *)abi_class;
 		bonobo_object_class->destroy = abi_widget_bonobo_destroy;
