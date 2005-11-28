@@ -586,7 +586,7 @@ void XAP_UnixDialog_FileOpenSaveAs::runModal(XAP_Frame * pFrame)
 									(!m_bSave ? GTK_FILE_CHOOSER_ACTION_OPEN : GTK_FILE_CHOOSER_ACTION_SAVE),
 									GTK_STOCK_CANCEL, GTK_RESPONSE_CANCEL,
 									GTK_STOCK_OK, GTK_RESPONSE_ACCEPT,
-									NULL)
+									(gchar*)NULL)
 							);
 #endif	
 
@@ -780,7 +780,7 @@ void XAP_UnixDialog_FileOpenSaveAs::runModal(XAP_Frame * pFrame)
 			if (!g_path_is_absolute (m_szInitialPathname)) {
 				gchar *dir = g_get_current_dir ();
 				gchar *file = m_szInitialPathname;
-				m_szInitialPathname = g_build_filename (dir, file, NULL);
+				m_szInitialPathname = g_build_filename (dir, file, (gchar *)NULL);
 				g_free (dir);
 				g_free (file);
 			}
