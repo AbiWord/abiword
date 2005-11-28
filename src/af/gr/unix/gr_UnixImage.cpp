@@ -63,6 +63,7 @@ GR_UnixImage::GR_UnixImage(const char* szName,GdkPixbuf * pPixbuf )
     setName ( "GdkPixbufImage" );
   }
   m_ImageType = GR_Image::GRT_Raster;
+  setDisplaySize (gdk_pixbuf_get_width (pPixbuf), gdk_pixbuf_get_height (pPixbuf));
 }
 
 
@@ -301,6 +302,7 @@ void GR_UnixImage::scale (UT_sint32 iDisplayWidth,
 	//	UT_ASSERT(G_OBJECT(m_image)->ref_count == 1);
 	g_object_unref(G_OBJECT(m_image));
 	m_image = image;
+	setDisplaySize (iDisplayWidth, iDisplayHeight);
 	// UT_ASSERT(G_OBJECT(m_image)->ref_count == 1);
 }
 
