@@ -1034,6 +1034,10 @@ bool PD_Document::insertFmtMark(PTChangeFmt ptc, PT_DocPosition dpos, PP_AttrPro
 	return m_pPieceTable->insertFmtMark(ptc, dpos, p_AttrProp);
 }
 
+bool  PD_Document::deleteFmtMark( PT_DocPosition dpos)
+{
+	return m_pPieceTable->deleteFmtMark(dpos);
+}
 //////////////////////////////////////////////////////////////////
 //////////////////////////////////////////////////////////////////
 
@@ -1464,6 +1468,44 @@ bool PD_Document::isStruxBeforeThis(PL_StruxDocHandle sdh,  PTStruxType pts)
 	if(pfsb->getStruxType() == pts)
 		return true;
 	return false;
+}
+
+
+/*!
+ * This method deletes a strux of the type specified at the position
+ * requested.
+ * if bRecordChange is fale no change record is recorded.
+ * This method was created soled for the use of AbiCollab.
+  * Use with extreme care. Should only be needed by AbiCollab
+ */
+bool PD_Document::deleteStrux(PT_DocPosition dpos,
+							  PTStruxType pts,
+							  bool bRecordChange)
+{
+	PT_BlockOffset pOffset;
+	pf_Frag * pf = NULL;
+	m_pPieceTable->getFragFromPosition(dpos,&pf,&pOffset);
+	while(pf && pf->getLength() == 0)
+		pf = pf->getPrev();
+	if(pf == NULL)
+		return false;
+	PL_StruxDocHandle sdh = NULL;
+	if(pf->getType() == pf_Frag::PFT_Strux)
+	{
+		pf_Frag_Strux * pfs = static_cast<pf_Frag_Strux *>(pf);
+		sdh = static_cast<PL_StruxDocHandle>(pfs);
+	}
+	else
+	{
+		return false;
+	}
+	if(!bRecordChange)
+	{
+		return m_pPieceTable->deleteStruxNoUpdate(sdh);
+	}
+	if(getStruxPosition(sdh) != dpos)
+		return false;
+	return m_pPieceTable->deleteStruxWithNotify(sdh);
 }
 
 /*!

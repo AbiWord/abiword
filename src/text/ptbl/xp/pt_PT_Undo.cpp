@@ -403,7 +403,26 @@ bool pt_PieceTable::_doTheDo(const PX_ChangeRecord * pcr, bool bUndo)
 
 			// we backup one because we have zero length and getFragFromPosition()
 			// returns the right-most thing with this document position.
-			pf = pf->getPrev();
+			if(pf->getType() != pf_Frag::PFT_FmtMark)
+			  pf = pf->getPrev();
+			if(pf->getType()==pf_Frag::PFT_Strux)
+			{
+			    if(pf->getNext() && pf->getNext()->getType() == pf_Frag::PFT_Strux)
+			    {
+				DONE();
+				m_bDoingTheDo = false;
+				return true;
+			    }
+			    if(pf->getNext() && pf->getNext()->getType() == pf_Frag::PFT_Text)
+			    {
+			        pf = pf->getNext();
+			    
+				if(pf->getNext() && pf->getNext()->getType() == pf_Frag::PFT_FmtMark)
+				{
+				    pf = pf->getNext();
+				}
+			    }
+			}
 
 			UNDO_return_val_if_fail (pf->getType() == pf_Frag::PFT_FmtMark,false);
 			UNDO_return_val_if_fail (fragOffset == 0,false);
@@ -413,7 +432,7 @@ bool pt_PieceTable::_doTheDo(const PX_ChangeRecord * pcr, bool bUndo)
 			UNDO_return_val_if_fail (bFoundStrux,false);
 
 			pf_Frag_FmtMark * pffm = static_cast<pf_Frag_FmtMark *> (pf);
-			UNDO_return_val_if_fail (pffm->getIndexAP() == pcrFM->getIndexAP(),false);
+			//			UNDO_return_val_if_fail (pffm->getIndexAP() == pcrFM->getIndexAP(),false);
 			_deleteFmtMark(pffm,NULL,NULL);
 
 			DONE();
@@ -435,8 +454,17 @@ bool pt_PieceTable::_doTheDo(const PX_ChangeRecord * pcr, bool bUndo)
 
 			// we backup one because we have zero length and getFragFromPosition()
 			// returns the right-most thing with this document position.
-			pf = pf->getPrev();
-
+			if(pf->getType() != pf_Frag::PFT_FmtMark)
+			  pf = pf->getPrev();
+			if(pf->getType()==pf_Frag::PFT_Strux)
+			{
+			    if(pf->getNext() && pf->getNext()->getType() == pf_Frag::PFT_Strux)
+			    {
+				DONE();
+				m_bDoingTheDo = false;
+				return true;
+			    }
+			}
 			UNDO_return_val_if_fail (pf->getType() == pf_Frag::PFT_FmtMark,false);
 			UNDO_return_val_if_fail (fragOffset == 0,false);
 

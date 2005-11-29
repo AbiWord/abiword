@@ -112,6 +112,52 @@ bool pt_PieceTable::deleteStruxNoUpdate(PL_StruxDocHandle sdh)
 }
 
 /*!
+ * Delete the single strux given in sdh and create and record a change record.
+ */
+bool pt_PieceTable::deleteStruxWithNotify(PL_StruxDocHandle sdh)
+{
+	pf_Frag_Strux * pfs = static_cast<pf_Frag_Strux *>(const_cast<void *>(sdh));
+	PT_DocPosition dpos = pfs->getPos();
+	pf_Frag * pfEnd = NULL;
+	UT_uint32 pfragOffsetEnd = 0;
+	bool b = _deleteStruxWithNotify(dpos,pfs,&pfEnd,&pfragOffsetEnd,true);
+	return b;
+}
+
+/*!
+ * Delete The first FmtMark found at the position given.
+ */
+bool pt_PieceTable::deleteFmtMark(PT_DocPosition dpos)
+{
+	pf_Frag * pf = NULL;
+	PT_BlockOffset pOffset= 0;
+	getFragFromPosition(dpos,&pf,&pOffset);
+	pf_Frag_FmtMark * pfm = NULL;
+	if(pf->getType() == pf_Frag::PFT_FmtMark)
+	{
+		pfm = static_cast<pf_Frag_FmtMark *>(pf);
+	}
+	if(pf->getPrev()->getType() == pf_Frag::PFT_FmtMark)
+	{
+		pfm = static_cast<pf_Frag_FmtMark *>(pf->getPrev());
+	}
+	if(pf->getNext()->getType() == pf_Frag::PFT_FmtMark)
+	{
+		pfm = static_cast<pf_Frag_FmtMark *>(pf->getNext());
+	}
+	if(pfm == NULL)
+	{
+		return false;
+	}
+	pf_Frag_Strux * pfs = NULL;
+	if (!_getStruxFromFragSkip(pfm,&pfs))
+		return false;
+	pf_Frag * pfEnd = NULL;
+	UT_uint32 fragOff = 0;
+	bool b = _deleteFmtMarkWithNotify(dpos,pfm,pfs,&pfEnd,&fragOff);
+	return b;
+}
+/*!
  * This method inserts a strux of type pts immediately before the sdh given.
  * Attributes of the strux can be optionally passed. This method does not throw
  * a change record and should only be used under exceptional circumstances to 

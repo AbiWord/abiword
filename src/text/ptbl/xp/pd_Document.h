@@ -216,11 +216,14 @@ PT_AttrPropIndex            getAPIFromSOH(PL_ObjectHandle odh);
 									   const UT_UCSChar * p,
 									   UT_uint32 length,
 									   PP_AttrProp *p_AttrProp = NULL);
+
 	bool					deleteSpan(PT_DocPosition dpos1,
 									   PT_DocPosition dpos2,
 									   PP_AttrProp *p_AttrProp_Before,
 									   UT_uint32 &iRealDeleteCount,
 									   bool bDeleteTableStruxes = false);
+
+	bool                    deleteFmtMark( PT_DocPosition dpos);
 
 	bool					changeSpanFmt(PTChangeFmt ptc,
 										  PT_DocPosition dpos1,
@@ -230,6 +233,9 @@ PT_AttrPropIndex            getAPIFromSOH(PL_ObjectHandle odh);
 
 	bool					insertStrux(PT_DocPosition dpos,
 										PTStruxType pts, pf_Frag_Strux ** ppfs_ret = 0);
+	bool					deleteStrux(PT_DocPosition dpos,
+										PTStruxType pts,
+										bool bRecordChange);
 
 
 	bool					insertStrux(PT_DocPosition dpos,

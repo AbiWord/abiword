@@ -223,6 +223,7 @@ public:
 												const char * pszParentID);
     bool                    changeSectionAttsNoUpdate(pf_Frag_Strux * pfStrux, const char * attr, const char * attvalue);
 	bool                    deleteStruxNoUpdate(PL_StruxDocHandle sdh);
+	bool                    deleteStruxWithNotify(PL_StruxDocHandle sdh);
 	bool                    insertStruxNoUpdateBefore(PL_StruxDocHandle sdh, PTStruxType pts,const XML_Char ** attributes );
 	bool                    changeLastStruxFmtNoUndo(PT_DocPosition dpos, PTStruxType pts,
 													 const XML_Char ** attrs, const XML_Char ** props,
@@ -240,6 +241,8 @@ public:
 		{
 			return _insertFmtMarkFragWithNotify(ptc,dpos,p_AttrProp);
 		}
+	bool                    deleteFmtMark(PT_DocPosition dpos);
+
 	// the append- methods are only available while importing
 	// the document.
 
