@@ -137,11 +137,11 @@ bool pt_PieceTable::deleteFmtMark(PT_DocPosition dpos)
 	{
 		pfm = static_cast<pf_Frag_FmtMark *>(pf);
 	}
-	if(pf->getPrev()->getType() == pf_Frag::PFT_FmtMark)
+	if(pf->getPrev() && pf->getPrev()->getType() == pf_Frag::PFT_FmtMark)
 	{
 		pfm = static_cast<pf_Frag_FmtMark *>(pf->getPrev());
 	}
-	if(pf->getNext()->getType() == pf_Frag::PFT_FmtMark)
+	if(pf->getNext() && pf->getNext()->getType() == pf_Frag::PFT_FmtMark)
 	{
 		pfm = static_cast<pf_Frag_FmtMark *>(pf->getNext());
 	}
