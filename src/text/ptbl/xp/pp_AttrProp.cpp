@@ -876,6 +876,29 @@ bool PP_AttrProp::isExactMatch(const PP_AttrProp * pMatch) const
 	return true;
 }
 
+
+/*! Create a new AttrProp with exactly the attributes/properties given.
+  \return NULL on failure, the newly-created PP_AttrProp.
+*/
+PP_AttrProp * PP_AttrProp::createExactly(const XML_Char ** attributes,
+					 const XML_Char ** properties) const
+{
+	bool bIgnoreProps = false; // see below
+
+	// first, create a new AttrProp using just the values given.
+
+	PP_AttrProp * papNew = new PP_AttrProp();
+	if (!papNew)
+		goto Failed;
+	if (!papNew->setAttributes(attributes) || !papNew->setProperties(properties))
+		goto Failed;
+	return papNew;
+
+Failed:
+	DELETEP(papNew);
+	return NULL;
+}
+
 /*! Create a new AttrProp based upon the given one, adding or replacing the items given.
 	 \return NULL on failure, the newly-created PP_AttrProp clone otherwise.
 */

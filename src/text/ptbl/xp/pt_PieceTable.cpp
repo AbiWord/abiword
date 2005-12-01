@@ -111,6 +111,51 @@ bool pt_PieceTable::deleteStruxNoUpdate(PL_StruxDocHandle sdh)
 	return true;
 }
 
+bool pt_PieceTable::createAndSendCR(PT_DocPosition iPos, UT_sint32 iType,bool bSave)
+{
+	PX_ChangeRecord::PXType cType = static_cast< PX_ChangeRecord::PXType>(iType);
+  switch(cType)
+    {
+    case PX_ChangeRecord::PXT_InsertSpan:
+    case PX_ChangeRecord::PXT_DeleteSpan:
+    case PX_ChangeRecord::PXT_ChangeSpan:
+    case PX_ChangeRecord::PXT_InsertStrux:
+    case PX_ChangeRecord::PXT_DeleteStrux:
+    case PX_ChangeRecord::PXT_ChangeStrux:
+    case PX_ChangeRecord::PXT_InsertObject:
+    case PX_ChangeRecord::PXT_ChangeObject:
+    case PX_ChangeRecord::PXT_InsertFmtMark:
+    case PX_ChangeRecord::PXT_DeleteFmtMark:
+    case PX_ChangeRecord::PXT_ChangeFmtMark:
+    case PX_ChangeRecord::PXT_ChangePoint:
+		{
+			UT_DEBUGMSG(("CR already implemented \n"));
+			UT_ASSERT(UT_SHOULD_NOT_HAPPEN);
+			return false;
+		}
+    case PX_ChangeRecord::PXT_ListUpdate:
+    case PX_ChangeRecord::PXT_StopList:
+    case PX_ChangeRecord::PXT_UpdateField:
+    case PX_ChangeRecord::PXT_RemoveList:
+    case PX_ChangeRecord::PXT_GlobMarker:
+    case PX_ChangeRecord::PXT_UpdateLayout:
+    {
+		PX_ChangeRecord * pcr= new PX_ChangeRecord(cType,iPos, 0,0);
+		if(bSave)
+			{
+				m_history.addChangeRecord(pcr);
+			}
+		m_pDocument->notifyListeners(NULL, pcr);
+		if(!bSave)
+			delete pcr;
+		return true;
+     }
+    default:
+		return false;
+    }
+}
+
+
 /*!
  * Delete the single strux given in sdh and create and record a change record.
  */

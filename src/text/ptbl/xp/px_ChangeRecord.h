@@ -53,12 +53,12 @@ public:
 		PXT_RemoveList=16,
 		PXT_UpdateLayout=17,
 		PXT__LAST__ = 18
-	} PXType;
+	}PXType;
 
 	PX_ChangeRecord(PXType type,
-					PT_DocPosition position,
-					PT_AttrPropIndex indexNewAP,
-					UT_uint32 iXID);
+			PT_DocPosition position,
+			PT_AttrPropIndex indexNewAP,
+			UT_uint32 iXID);
 
 	virtual ~PX_ChangeRecord();
 

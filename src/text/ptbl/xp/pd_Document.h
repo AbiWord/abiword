@@ -39,6 +39,7 @@
 #include "fp_PageSize.h"
 #include "ut_string_class.h"
 #include "ut_misc.h"
+#include "px_ChangeRecord.h"
 
 class UT_ByteBuf;
 class UT_GrowBuf;
@@ -237,6 +238,7 @@ PT_AttrPropIndex            getAPIFromSOH(PL_ObjectHandle odh);
 										PTStruxType pts,
 										bool bRecordChange);
 
+	bool                    createAndSendCR(PT_DocPosition dpos,UT_sint32 iType,bool bsave);
 
 	bool					insertStrux(PT_DocPosition dpos,
 										PTStruxType pts,

@@ -29,10 +29,10 @@
 #include "ut_stack.h"
 #include "pt_Types.h"
 #include "pp_TableAttrProp.h"
-#include "px_ChangeHistory.h"
 #include "pf_Fragments.h"
 #include "pt_VarSet.h"
 #include "pp_Revision.h"
+#include "px_ChangeHistory.h"
 
 class pf_Frag_Object;
 class pf_Frag_FmtMark;
@@ -173,7 +173,8 @@ public:
 									   UT_uint32 &iRealDeleteCount,
 									   bool bDeleteTableStruxes,
 									   bool bDontGlob);
-
+	bool                    createAndSendCR(PT_DocPosition  dpos, 
+											UT_sint32 iType,bool bSave);
 
 	bool					deleteSpanWithTable(PT_DocPosition dpos1,
 												PT_DocPosition dpos2,

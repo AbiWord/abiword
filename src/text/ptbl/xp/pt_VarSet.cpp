@@ -24,6 +24,7 @@
 #include "pt_Types.h"
 #include "pt_VarSet.h"
 #include "pd_Style.h"
+#include "pd_Document.h"
 
 /*!
  * This class is used to store and manipulate collections of Attributes
@@ -227,6 +228,24 @@ bool pt_VarSet::mergeAP(PTChangeFmt ptc, PT_AttrPropIndex apiOld,
 			// presented.
 			
 			PP_AttrProp * pNew = papOld->cloneWithReplacements(attributes,properties, true);
+			if (!pNew)
+				return false;
+
+			pNew->markReadOnly();
+			return addIfUniqueAP(pNew,papiNew);
+		}
+	case PTC_SetExactly:
+		{
+			if (papOld->isEquivalent(attributes,properties))
+			{
+				*papiNew = apiOld;
+				return true;
+			}
+
+			// create a new AP that is exactly given by the atts/props
+			// presented.
+			
+			PP_AttrProp * pNew = papOld->createExactly(attributes,properties);
 			if (!pNew)
 				return false;
 
