@@ -25,6 +25,7 @@
 #include "gr_RenderInfo.h"
 
 #include <pango/pango-font.h>
+#include "xap_UnixGnomePrintGraphics.h"
 
 // we do not want this to be a plugin for now
 #define GR_UNIXPANGO_BUILTIN
@@ -64,6 +65,8 @@ class ABI_EXPORT GR_UnixPangoFont : public GR_Font
 	UT_uint32         getZoom() const {return m_iZoom;}
 	bool              isGuiFont () const {return m_bGuiFont;}
 	const UT_String & getDescription() const {return m_sDesc;}
+
+	virtual const char* getFamily() const;
 	
   private:
 	UT_String  m_sDesc;
@@ -162,8 +165,8 @@ public:
 	
   protected:
 	// all instances have to be created via GR_GraphicsFactory; see gr_Graphics.h
-	GR_UnixPangoGraphics(GdkWindow * win, XAP_UnixFontManager * fontManager, XAP_App *app);
-	GR_UnixPangoGraphics(GdkPixmap * win, XAP_UnixFontManager * fontManager, XAP_App *app, bool bUsePixmap);
+	GR_UnixPangoGraphics(GdkWindow * win);
+	GR_UnixPangoGraphics();
 
 	inline bool _scriptBreak(GR_UnixPangoRenderInfo &ri);
 
@@ -175,17 +178,103 @@ public:
 	int _ptlu(int p) const;
 	int _ltpu(int l) const;
 	int _pftlu(int pf) const;
-	
+
+  protected:
+	PangoFontMap * m_pFontMap;
+	PangoContext * m_pContext;
+
   private:
 	static UT_uint32 s_iInstanceCount;
 	static UT_VersionInfo s_Version;
 	static int s_iMaxScript;
 
-	PangoFontMap * m_pFontMap;
-	PangoContext * m_pContext;
-
 	GR_UnixPangoFont* m_pPFont;
 	GR_UnixPangoFont* m_pPFontGUI;
+};
+
+class XAP_UnixGnomePrintGraphics;
+
+/*!
+    When printing, we need to combine pango with GnomePrint; we could do that in a single
+    graphics class, but that would mean if(print) test inside each function. In order to
+    avoid slowing the screen operations, we will use a derrived class.
+*/
+class ABI_EXPORT GR_UnixPangoPrintGraphics : public GR_UnixPangoGraphics
+{
+  public:
+	
+	GR_UnixPangoPrintGraphics(XAP_UnixGnomePrintGraphics * pGPG);
+
+	virtual ~GR_UnixPangoPrintGraphics();
+
+	static UT_uint32 s_getClassId() {return GRID_UNIX_PANGO_PRINT;}
+	virtual UT_uint32 getClassId() {return s_getClassId();}
+	
+	virtual GR_Capability  getCapability() {return GRCAP_PRINTER_ONLY;}
+	static const char *    graphicsDescriptor(){return "Unix Pango Print";}
+	static GR_Graphics *   graphicsAllocator(GR_AllocInfo&);
+
+	virtual void setColor(const UT_RGBColor& clr);
+	virtual void getColor(UT_RGBColor& clr);
+	
+	virtual void drawChars(const UT_UCSChar* pChars, 
+						   int iCharOffset, int iLength,
+						   UT_sint32 xoff, UT_sint32 yoff,
+						   int * pCharWidths = NULL);
+	
+	virtual void renderChars(GR_RenderInfo & ri);
+
+	virtual void drawLine(UT_sint32 x1, UT_sint32 y1, UT_sint32 x2, UT_sint32 y2);
+	virtual void setLineWidth(UT_sint32);
+	virtual void setLineProperties ( double inWidthPixels,
+									 JoinStyle inJoinStyle,
+									 CapStyle inCapStyle,
+									 LineStyle inLineStyle);
+
+	virtual GR_Font* getGUIFont();
+	virtual void xorLine(UT_sint32, UT_sint32, UT_sint32, UT_sint32);
+	virtual void polyLine(UT_Point * pts, UT_uint32 nPoints);
+	virtual void fillRect(const UT_RGBColor& c, UT_sint32 x, UT_sint32 y, UT_sint32 w, UT_sint32 h);
+	virtual void invertRect(const UT_Rect*);
+	virtual void setClipRect(const UT_Rect*);
+	virtual void scroll(UT_sint32, UT_sint32);
+	virtual void scroll(UT_sint32 x_dest, UT_sint32 y_dest,
+						UT_sint32 x_src, UT_sint32 y_src,
+						UT_sint32 width, UT_sint32 height);
+	virtual void clearArea(UT_sint32, UT_sint32, UT_sint32, UT_sint32);
+
+	virtual void drawImage(GR_Image* pImg, UT_sint32 xDest, UT_sint32 yDest);
+   	virtual GR_Image* createNewImage(const char* pszName, const UT_ByteBuf* pBBPNG, UT_sint32 iDisplayWidth, UT_sint32 iDisplayHeight, GR_Image::GRType iType);
+	
+	virtual bool queryProperties(GR_Graphics::Properties gp) const;
+	
+	virtual bool startPrint(void);
+	virtual bool startPage(const char * szPagelabel, UT_uint32 pageNumber,
+							  bool bPortrait, UT_uint32 iWidth, UT_uint32 iHeight);
+	virtual bool endPrint(void);
+
+	virtual void setColorSpace(GR_Graphics::ColorSpace c);
+	virtual GR_Graphics::ColorSpace getColorSpace(void) const;
+	
+	virtual void setCursor(GR_Graphics::Cursor c);
+	virtual GR_Graphics::Cursor getCursor(void) const;
+
+	virtual void					setColor3D(GR_Color3D c);
+	virtual UT_RGBColor *			getColor3D(GR_Color3D c);
+	virtual void fillRect(GR_Color3D c, UT_sint32 x, UT_sint32 y, UT_sint32 w, UT_sint32 h);
+	virtual void fillRect(GR_Color3D c, UT_Rect &r);
+	virtual void setPageSize(char* pageSizeName, UT_uint32 iwidth = 0, UT_uint32 iheight=0);
+
+    virtual GR_Image * genImageFromRectangle(const UT_Rect & r) { return NULL;}
+	virtual void	  saveRectangle(UT_Rect & r, UT_uint32 iIndx) {}
+	virtual void	  restoreRectangle(UT_uint32 iIndx) {}
+
+	virtual UT_uint32 getDeviceResolution(void) const;
+	
+  protected:
+
+	
+	XAP_UnixGnomePrintGraphics * m_pGnomePrint;
 };
 
 #endif

@@ -205,6 +205,7 @@ enum GR_GraphicsId
 	   unregisterClass()) */
 	GRID_UNIX_PANGO      =  0x201,
 	GRID_WIN32_UNISCRIBE =  0x202,
+	GRID_UNIX_PANGO_PRINT = 0x203,
 
 	GRID_LAST_EXTENSION = 0x0000ffff,
 

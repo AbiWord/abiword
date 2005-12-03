@@ -48,7 +48,7 @@ protected:
 	virtual void			_raisePrintDialog(XAP_Frame * pFrame);
 	virtual void            _getGraphics(void);
 
-	XAP_UnixGnomePrintGraphics  * m_pGnomePrintGraphics;
+	GR_Graphics  *                m_pPrintGraphics;
 	GR_Graphics::ColorSpace		  colorSpace;
 	GnomePrintJob                *m_gpm;
 	bool                          m_bIsPreview;

@@ -39,6 +39,7 @@ class UT_Wctomb;
 
 class XAP_App;
 class XAP_UnixFontManager;
+class XAP_UnixGnomePrintGraphics;
 
 UT_uint32 adobeToUnicode(UT_uint32 iAdobe);
 
@@ -48,10 +49,17 @@ class GR_UnixAllocInfo : public GR_AllocInfo
 {
 public:
  	GR_UnixAllocInfo(GdkWindow * win, XAP_UnixFontManager * fontManager, XAP_App *app)
-		: m_win(win), m_pixmap(NULL), m_fontManager(fontManager), m_usePixmap(false) {};
+		: m_win(win),m_pixmap(NULL),m_fontManager(fontManager),
+		  m_usePixmap(false), m_pGnomePrint(NULL) {};
 
-	GR_UnixAllocInfo(GdkPixmap * win, XAP_UnixFontManager * fontManager, XAP_App *app, bool bUsePixmap)
-		: m_win(NULL), m_pixmap(win), m_fontManager(fontManager), m_usePixmap(bUsePixmap) {};
+	GR_UnixAllocInfo(GdkPixmap * win, XAP_UnixFontManager * fontManager,
+					 XAP_App *app, bool bUsePixmap)
+		: m_win(NULL), m_pixmap(win), m_fontManager(fontManager),
+		  m_usePixmap(bUsePixmap), m_pGnomePrint(NULL) {};
+
+	GR_UnixAllocInfo(XAP_UnixGnomePrintGraphics * pGPG)
+		: m_win(NULL), m_pixmap(NULL), m_fontManager(NULL),
+		  m_usePixmap(false), m_pGnomePrint(pGPG) {};
 
 	virtual GR_GraphicsId getType() const {return GRID_UNIX;};
 	virtual bool isPrinterGraphics() const {return false; };
@@ -60,6 +68,7 @@ public:
 	GdkPixmap* m_pixmap;
 	XAP_UnixFontManager * m_fontManager;
 	bool m_usePixmap;
+	XAP_UnixGnomePrintGraphics * m_pGnomePrint;
 };
 
 class GR_UnixGraphics : public GR_Graphics
@@ -160,8 +169,8 @@ class GR_UnixGraphics : public GR_Graphics
 
  protected:
 	// all instances have to be created via GR_GraphicsFactory; see gr_Graphics.h
- 	GR_UnixGraphics(GdkWindow * win, XAP_UnixFontManager * fontManager, XAP_App *app);
-	GR_UnixGraphics(GdkPixmap * win, XAP_UnixFontManager * fontManager, XAP_App *app, bool bUsePixmap);
+ 	GR_UnixGraphics(GdkWindow * win, XAP_UnixFontManager * fontManager);
+	GR_UnixGraphics(GdkPixmap * win, XAP_UnixFontManager * fontManager, bool bUsePixmap);
 
 
 	virtual void _beginPaint ();

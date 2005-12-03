@@ -56,6 +56,8 @@
 #include "gr_UnixGraphics.h"
 #include "gr_UnixPangoGraphics.h"
 
+//#define _USE_PANGO
+
 UnixNull_Graphics * abi_unixnullgraphics_instance = 0;
 
 /*****************************************************************/
@@ -107,12 +109,31 @@ XAP_UnixApp::XAP_UnixApp(XAP_Args * pArgs, const char * szAppName)
 
 		
 		UT_ASSERT( bSuccess );
-#if 1
+
 		bSuccess = pGF->registerClass(GR_UnixPangoGraphics::graphicsAllocator,
 									  GR_UnixPangoGraphics::graphicsDescriptor,
 									  GR_UnixPangoGraphics::s_getClassId());
 
 		UT_ASSERT( bSuccess );
+
+#ifdef _USE_PANGO
+		if(bSuccess)
+		{
+			pGF->registerAsDefault(GR_UnixPangoGraphics::s_getClassId(), true);
+		}
+		
+		bSuccess = pGF->registerClass(GR_UnixPangoPrintGraphics::graphicsAllocator,
+									  GR_UnixPangoPrintGraphics::graphicsDescriptor,
+									  GR_UnixPangoPrintGraphics::s_getClassId());
+#endif
+		
+		UT_ASSERT( bSuccess );
+		
+#ifdef _USE_PANGO
+		if(bSuccess)
+		{
+			pGF->registerAsDefault(GR_UnixPangoPrintGraphics::s_getClassId(), false);
+		}
 #endif
 	}
 
@@ -124,7 +145,8 @@ XAP_UnixApp::XAP_UnixApp(XAP_Args * pArgs, const char * szAppName)
 	    delete abi_unixnullgraphics_instance;
 	    //abi_unixnullgraphics_instance = new UnixNull_Graphics(0,0);
 		XAP_UnixNullGraphicsAllocInfo ai(NULL, NULL);
-		abi_unixnullgraphics_instance = (UnixNull_Graphics*) XAP_App::getApp()->newGraphics(GRID_UNIX_NULL, ai);
+		abi_unixnullgraphics_instance =
+			(UnixNull_Graphics*) XAP_App::getApp()->newGraphics(GRID_UNIX_NULL, ai);
 	  }
 	  
 }

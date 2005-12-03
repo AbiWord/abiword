@@ -26,6 +26,7 @@
 
 #include "xap_App.h"
 #include "xap_Prefs.h"
+#include "xap_UnixGnomePrintGraphics.h"
 
 // need this to include what Pango considers 'low-level' api
 #define PANGO_ENABLE_ENGINE
@@ -34,6 +35,8 @@
 #include <pango/pango-engine.h>
 #include <pango/pangoxft.h>
 #include <math.h>
+
+#include <libgnomeprint/gnome-print-pango.h>
 
 UT_uint32                GR_UnixPangoGraphics::s_iInstanceCount = 0;
 UT_VersionInfo           GR_UnixPangoGraphics::s_Version;
@@ -76,8 +79,8 @@ GR_UnixPangoItem::GR_UnixPangoItem(PangoItem *pi):
 	}
 	else
 	{
-		// there does not seem to be anything that we could use to easily identify the script, so we
-		// will hash the pointers to the two text engines
+		// there does not seem to be anything that we could use to easily identify the
+		// script, so we will hash the pointers to the two text engines
 		
 		void * b[2];
 		b[0] = (void*)pi->analysis.shape_engine;
@@ -174,8 +177,8 @@ bool GR_UnixPangoRenderInfo::getUTF8Text()
 	return true;
 }
 
-GR_UnixPangoGraphics::GR_UnixPangoGraphics(GdkWindow * win, XAP_UnixFontManager * fontManager, XAP_App *app)
-	:GR_UnixGraphics(win, fontManager, app),
+GR_UnixPangoGraphics::GR_UnixPangoGraphics(GdkWindow * win)
+	:GR_UnixGraphics(win, NULL),
 	 m_pFontMap(NULL),
 	 m_pContext(NULL),
 	 m_pPFont(NULL),
@@ -190,27 +193,19 @@ GR_UnixPangoGraphics::GR_UnixPangoGraphics(GdkWindow * win, XAP_UnixFontManager 
 	m_pContext = pango_xft_get_context(disp, iScreen);
 	m_pFontMap = pango_xft_get_font_map(disp, iScreen);
 }
-		
-GR_UnixPangoGraphics::GR_UnixPangoGraphics(GdkPixmap * win, XAP_UnixFontManager * fontManager, XAP_App *app, bool bUsePixmap)
-	:GR_UnixGraphics(win, fontManager, app, bUsePixmap),
+
+
+GR_UnixPangoGraphics::GR_UnixPangoGraphics()
+	:GR_UnixGraphics(NULL, NULL),
 	 m_pFontMap(NULL),
 	 m_pContext(NULL),
 	 m_pPFont(NULL),
 	 m_pPFontGUI(NULL)
 {
-	UT_DEBUGMSG(("GR_UnixPangoGraphics::GR_UnixPangoGraphics using pango (pixmap)\n"));
-	
-	// this is wrong, need context for the printer
-	UT_ASSERT_HARMLESS( 0 );
-
-	GdkDisplay * gDisp = gdk_drawable_get_display(win);
-	GdkScreen *  gScreen = gdk_drawable_get_screen(win);
-	Display * disp = GDK_DISPLAY_XDISPLAY(gDisp);
-	int iScreen = gdk_x11_screen_get_screen_number(gScreen);
-	
-	m_pContext = pango_xft_get_context(disp,iScreen);
-	m_pFontMap = pango_xft_get_font_map(disp, iScreen);
+	m_pFontMap = gnome_print_pango_get_default_font_map();
+	m_pContext = gnome_print_pango_create_context(m_pFontMap);
 }
+
 
 GR_UnixPangoGraphics::~GR_UnixPangoGraphics()
 {
@@ -227,13 +222,15 @@ GR_Graphics *   GR_UnixPangoGraphics::graphicsAllocator(GR_AllocInfo& info)
 	if(AI.m_usePixmap || AI.m_pixmap)
 	{
 		// printer graphics required
-		return new GR_UnixPangoGraphics(AI.m_pixmap, AI.m_fontManager,
-										XAP_App::getApp(),AI.m_usePixmap);
+		// This class does not provide printing services -- we need a separate derrived
+		// class for that
+		UT_ASSERT_HARMLESS( UT_SHOULD_NOT_HAPPEN );
+		return NULL;
 	}
 	else
 	{
 		// screen graphics required
-		return new GR_UnixPangoGraphics(AI.m_win, AI.m_fontManager, XAP_App::getApp());
+		return new GR_UnixPangoGraphics(AI.m_win);
 	}
 }
 
@@ -553,8 +550,6 @@ void GR_UnixPangoGraphics::renderChars(GR_RenderInfo & ri)
 	UT_DEBUGMSG(("renderChars: xoff %d yoff %d\n", RI.m_xoff, RI.m_yoff));
 	UT_sint32 xoff = _tduX(RI.m_xoff);
 	UT_sint32 yoff = _tduY(RI.m_yoff + getFontAscent(pFont));
-
-	
 
 	UT_DEBUGMSG(("about to pango_xft_render xoff %d yoff %d\n", xoff, yoff));
 	UT_return_if_fail(m_pXftDraw && RI.m_pGlyphs);
@@ -1386,6 +1381,12 @@ bool GR_UnixPangoFont::glyphBox(UT_UCS4Char g, UT_Rect & rec, GR_Graphics * pG)
 	return false;
 }
 
+const char* GR_UnixPangoFont::getFamily() const
+{
+	UT_ASSERT_HARMLESS( UT_NOT_IMPLEMENTED );
+	return NULL;
+}
+
 
 //////////////////////////////////////////////////////////////////////////////
 //
@@ -1446,4 +1447,289 @@ bool GR_UnixPangoRenderInfo::cut(UT_uint32 offset, UT_uint32 iLen, bool bReverse
 bool GR_UnixPangoRenderInfo::isJustified() const
 {
 	UT_return_val_if_fail( UT_NOT_IMPLEMENTED,false );
+}
+
+
+GR_UnixPangoPrintGraphics::GR_UnixPangoPrintGraphics(XAP_UnixGnomePrintGraphics * pGPG):
+	GR_UnixPangoGraphics(),
+	m_pGnomePrint(pGPG)
+{
+}
+
+
+GR_UnixPangoPrintGraphics::~GR_UnixPangoPrintGraphics()
+{
+	delete m_pGnomePrint;
+}
+
+GR_Graphics * GR_UnixPangoPrintGraphics::graphicsAllocator(GR_AllocInfo& info)
+{
+	UT_return_val_if_fail(info.getType() == GRID_UNIX, NULL);
+	UT_DEBUGMSG(("GR_UnixPangoGraphics::graphicsAllocator\n"));
+	
+	GR_UnixAllocInfo &AI = (GR_UnixAllocInfo&)info;
+
+	//!!!WDG might be right
+	if(AI.m_pGnomePrint)
+	{
+		// printer graphics required
+		// This class does not provide printing services -- we need a separate derrived
+		// class for that
+		return new GR_UnixPangoPrintGraphics(AI.m_pGnomePrint);
+	}
+	else
+	{
+		// screen graphics required
+		UT_ASSERT_HARMLESS( UT_SHOULD_NOT_HAPPEN );
+		return NULL;
+	}
+}
+
+void GR_UnixPangoPrintGraphics::drawChars(const UT_UCSChar* pChars, 
+										   int iCharOffset, int iLength,
+										   UT_sint32 xoff, UT_sint32 yoff,
+										   int * pCharWidths)
+{
+	// we cannot call XAP_UnixGnomePrintGraphic::drawChars() here because the fonts this
+	// class uses are pango fonts, not the PS fonts the class expects
+#if 0
+	UT_return_if_fail( m_pGnomePrint );
+	m_pGnomePrint->drawChars(pChars, iCharOffset, iLength, xoff, yoff, pCharWidths);
+#endif
+
+	UT_ASSERT_HARMLESS( UT_NOT_IMPLEMENTED );
+}
+
+
+void GR_UnixPangoPrintGraphics::renderChars(GR_RenderInfo & ri)
+{
+	UT_DEBUGMSG(("GR_UnixPangoGraphics::renderChars\n"));
+	UT_return_if_fail(ri.getType() == GRRI_UNIX_PANGO);
+	GR_UnixPangoRenderInfo & RI = (GR_UnixPangoRenderInfo &)ri;
+	GR_UnixPangoFont * pFont = (GR_UnixPangoFont *)RI.m_pFont;
+	GR_UnixPangoItem * pItem = (GR_UnixPangoItem *)RI.m_pItem;
+	UT_return_if_fail(pItem && pFont && pFont->getPangoFont() && m_pGnomePrint);
+
+	if(RI.m_iLength == 0)
+		return;
+
+	UT_DEBUGMSG(("renderChars: xoff %d yoff %d\n", RI.m_xoff, RI.m_yoff));
+	UT_sint32 xoff = _tduX(RI.m_xoff);
+	UT_sint32 yoff = m_pGnomePrint->scale_ydir(_tduY(RI.m_yoff + getFontAscent(pFont)));
+
+	UT_DEBUGMSG(("about to gnome_print_pango_gplyph_string render xoff %d yoff %d\n",
+				 xoff, yoff));
+
+	GnomePrintContext * gpc = m_pGnomePrint->getGnomePrintContext();
+	UT_return_if_fail( gpc );
+
+	gnome_print_gsave(gpc);
+	gnome_print_moveto(gpc, xoff, yoff);
+	
+	gnome_print_pango_glyph_string(gpc, pFont->getPangoFont(), RI.m_pGlyphs);
+
+	gnome_print_grestore (gpc);
+}
+
+void GR_UnixPangoPrintGraphics::drawLine (UT_sint32 x1, UT_sint32 y1,
+										   UT_sint32 x2, UT_sint32 y2)
+{
+	UT_return_if_fail( m_pGnomePrint );
+	m_pGnomePrint->drawLine(x1, y1, x2, y2);
+}
+
+bool GR_UnixPangoPrintGraphics::queryProperties(GR_Graphics::Properties gp) const
+{
+	UT_return_val_if_fail( m_pGnomePrint, false );
+	return m_pGnomePrint->queryProperties(gp);
+}
+
+void GR_UnixPangoPrintGraphics::getColor(UT_RGBColor& clr)
+{
+	UT_return_if_fail( m_pGnomePrint );
+	m_pGnomePrint->getColor(clr);
+}
+
+void GR_UnixPangoPrintGraphics::setColor(const UT_RGBColor& clr)
+{
+	UT_return_if_fail( m_pGnomePrint );
+	m_pGnomePrint->setColor(clr);
+}
+
+void GR_UnixPangoPrintGraphics::setLineWidth(UT_sint32 iLineWidth)
+{
+	UT_return_if_fail( m_pGnomePrint );
+	m_pGnomePrint->setLineWidth(iLineWidth);
+}
+
+bool GR_UnixPangoPrintGraphics::startPrint(void)
+{
+	UT_return_val_if_fail( m_pGnomePrint, false );
+	return m_pGnomePrint->startPrint();
+}
+
+bool GR_UnixPangoPrintGraphics::startPage (const char *szPageLabel,
+											UT_uint32 pageNo, bool portrait, 
+											UT_uint32 width, UT_uint32 height)
+{
+	UT_return_val_if_fail( m_pGnomePrint, false );
+	return m_pGnomePrint->startPage(szPageLabel, pageNo, portrait, width, height);	
+}
+
+bool GR_UnixPangoPrintGraphics::endPrint()
+{
+	UT_return_val_if_fail( m_pGnomePrint, false );
+	return m_pGnomePrint->endPrint();
+}
+
+void GR_UnixPangoPrintGraphics::setColorSpace(GR_Graphics::ColorSpace c)
+{
+	UT_return_if_fail( m_pGnomePrint );
+	m_pGnomePrint->setColorSpace(c);
+}
+
+GR_Graphics::ColorSpace GR_UnixPangoPrintGraphics::getColorSpace(void) const
+{
+	UT_return_val_if_fail( m_pGnomePrint, getColorSpace() );
+	return m_pGnomePrint->getColorSpace();
+}
+
+UT_uint32 GR_UnixPangoPrintGraphics::getDeviceResolution(void) const
+{
+	UT_return_val_if_fail( m_pGnomePrint, 0 );
+	return m_pGnomePrint->getDeviceResolution();
+}
+
+void GR_UnixPangoPrintGraphics::drawImage(GR_Image* pImg, UT_sint32 xDest, 
+										   UT_sint32 yDest)
+{
+	UT_return_if_fail( m_pGnomePrint );
+	m_pGnomePrint->drawImage(pImg, xDest, yDest);
+}
+
+GR_Image* GR_UnixPangoPrintGraphics::createNewImage(const char* pszName, 
+													 const UT_ByteBuf* pBB, 
+													 UT_sint32 iDisplayWidth,
+													 UT_sint32 iDisplayHeight, 
+													 GR_Image::GRType iType)
+{
+	UT_return_val_if_fail( m_pGnomePrint, NULL );
+	return m_pGnomePrint->createNewImage(pszName, pBB, iDisplayWidth, iDisplayHeight, iType);	
+}
+
+void GR_UnixPangoPrintGraphics::fillRect(const UT_RGBColor& c, 
+										  UT_sint32 x, UT_sint32 y, 
+										  UT_sint32 w, UT_sint32 h)
+{
+	UT_return_if_fail( m_pGnomePrint );
+	m_pGnomePrint->fillRect(c, x, y, w, h);
+}
+
+void GR_UnixPangoPrintGraphics::setCursor(GR_Graphics::Cursor c)
+{
+	UT_return_if_fail( m_pGnomePrint);
+	m_pGnomePrint->setCursor(c);
+}
+
+GR_Graphics::Cursor GR_UnixPangoPrintGraphics::getCursor(void) const
+{
+	UT_return_val_if_fail( m_pGnomePrint, GR_CURSOR_INVALID );
+	return m_pGnomePrint->getCursor();	
+}
+
+void GR_UnixPangoPrintGraphics::xorLine(UT_sint32 x1, UT_sint32 y1, UT_sint32 x2, 
+										 UT_sint32 y2)
+{
+	UT_return_if_fail( m_pGnomePrint );
+	m_pGnomePrint->xorLine(x1, y1, x2, y2);
+}
+
+void GR_UnixPangoPrintGraphics::polyLine(UT_Point * pts, 
+										  UT_uint32 nPoints)
+{
+	UT_return_if_fail( m_pGnomePrint );
+	m_pGnomePrint->polyLine(pts, nPoints);
+}
+
+void GR_UnixPangoPrintGraphics::invertRect(const UT_Rect* pRect)
+{
+	UT_return_if_fail( m_pGnomePrint );
+	m_pGnomePrint->invertRect(pRect);
+}
+
+void GR_UnixPangoPrintGraphics::clearArea(UT_sint32 x, UT_sint32 y,
+										   UT_sint32 width, UT_sint32 height)
+{
+	UT_return_if_fail( m_pGnomePrint );
+	m_pGnomePrint->clearArea(x, y, width, height);
+}
+
+void GR_UnixPangoPrintGraphics::scroll(UT_sint32 x, UT_sint32 y)
+{
+	UT_return_if_fail( m_pGnomePrint );
+	m_pGnomePrint->scroll(x,y);
+}
+
+void GR_UnixPangoPrintGraphics::scroll(UT_sint32 x_dest,
+										UT_sint32 y_dest,
+										UT_sint32 x_src,
+										UT_sint32 y_src,
+										UT_sint32 width,
+										UT_sint32 height)
+{
+	UT_return_if_fail( m_pGnomePrint );
+	m_pGnomePrint->scroll(x_dest, y_dest, x_src, y_src, width, height);
+}
+
+UT_RGBColor * GR_UnixPangoPrintGraphics::getColor3D(GR_Color3D c)
+{
+	UT_return_val_if_fail( m_pGnomePrint, NULL );
+	return m_pGnomePrint->getColor3D(c);
+}
+
+void GR_UnixPangoPrintGraphics::setColor3D(GR_Color3D c)
+{
+	UT_return_if_fail( m_pGnomePrint );
+	m_pGnomePrint->setColor3D(c);
+}
+
+GR_Font* GR_UnixPangoPrintGraphics::getGUIFont()
+{
+	UT_return_val_if_fail( m_pGnomePrint, NULL );
+	return m_pGnomePrint->getGUIFont();
+}
+
+void GR_UnixPangoPrintGraphics::fillRect(GR_Color3D c, UT_sint32 x, UT_sint32 y,
+										  UT_sint32 w, UT_sint32 h)
+{
+	UT_return_if_fail( m_pGnomePrint );
+	m_pGnomePrint->fillRect(c, x, y, w, h);
+}
+
+void GR_UnixPangoPrintGraphics::fillRect(GR_Color3D c, UT_Rect &r)
+{
+	UT_return_if_fail( m_pGnomePrint );
+	m_pGnomePrint->fillRect(c, r);
+}
+
+void GR_UnixPangoPrintGraphics::setPageSize(char* pageSizeName,
+											 UT_uint32 iwidth, UT_uint32 iheight)
+{
+	UT_return_if_fail( m_pGnomePrint );
+	m_pGnomePrint->setPageSize(pageSizeName, iwidth, iheight);
+}
+
+void GR_UnixPangoPrintGraphics::setClipRect(const UT_Rect* pRect)
+{
+	UT_return_if_fail( m_pGnomePrint );
+	m_pGnomePrint->setClipRect(pRect);
+}
+
+void GR_UnixPangoPrintGraphics::setLineProperties (double inWidth,
+												   JoinStyle inJoinStyle,
+												   CapStyle inCapStyle,
+												   LineStyle inLineStyle)
+{
+	UT_return_if_fail( m_pGnomePrint );
+	m_pGnomePrint->setLineProperties(inWidth, inJoinStyle, inCapStyle, inLineStyle);
 }
