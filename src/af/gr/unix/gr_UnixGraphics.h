@@ -164,7 +164,6 @@ class GR_UnixGraphics : public GR_Graphics
 	virtual void	  saveRectangle(UT_Rect & r, UT_uint32 iIndx);
 	virtual void	  restoreRectangle(UT_uint32 iIndx);
 	
-	static UT_uint32  s_getDeviceResolution(void);
 	virtual UT_uint32 	getDeviceResolution(void) const;
 
  protected:
@@ -259,7 +258,7 @@ private:
 	UT_GenericVector<GdkPixbuf *>  m_vSaveRectBuf;
 
 	bool                    m_bIsSymbol;       
-	bool                    m_bIsDingbat;       
+	bool                    m_bIsDingbat;
 };
 
 #endif /* GR_UNIXGRAPHICS_H */

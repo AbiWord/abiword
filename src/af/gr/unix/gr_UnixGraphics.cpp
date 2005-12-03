@@ -869,7 +869,7 @@ void GR_UnixGraphics::drawGlyph(UT_uint32 Char, UT_sint32 xoff, UT_sint32 yoff)
 	UT_sint32 idy = _tduY(yoff);
 	UT_sint32 idx = _tduX(xoff);
 
-	XftDrawGlyphs(m_pXftDraw, &m_XftColor, m_pXftFontD, tdu(m_iXoff) +idx, tdu(m_pXftFontL->ascent * getResolution() / s_getDeviceResolution() + m_iYoff)+idy, &iChar, 1);
+	XftDrawGlyphs(m_pXftDraw, &m_XftColor, m_pXftFontD, tdu(m_iXoff) +idx, tdu(m_pXftFontL->ascent * getResolution() / getDeviceResolution() + m_iYoff)+idy, &iChar, 1);
 }
 
 void GR_UnixGraphics::drawChars(const UT_UCSChar* pChars, int iCharOffset,
@@ -885,7 +885,7 @@ void GR_UnixGraphics::drawChars(const UT_UCSChar* pChars, int iCharOffset,
 	UT_sint32 idy = _tduY(yoff);
 	UT_sint32 idx = _tduX(xoff);
 
-	//	UT_sint32 iAscent = m_pXftFontL->ascent * getResolution() / s_getDeviceResolution();
+	//	UT_sint32 iAscent = m_pXftFontL->ascent * getResolution() / getDeviceResolution();
 	UT_sint32 iAscent = getFontAscent();
 	if (!pCharWidths)
 	{
@@ -1136,23 +1136,14 @@ UT_sint32 GR_UnixGraphics::measureUnRemappedChar(const UT_UCSChar c)
 	// FIXME but we're not smart enough to do that yet
 
 	fWidth = m_pFont->measureUnRemappedChar(newChar, m_pFont->getSize())
-		* ((double)getResolution() / (double)s_getDeviceResolution());
+		* ((double)getResolution() / (double)getDeviceResolution());
 	xxx_UT_DEBUGMSG(("char %d width = %d \n",newChar,rint(fWidth)));
 	return static_cast<UT_uint32>(rint(fWidth));
 }
 
-UT_uint32 GR_UnixGraphics::s_getDeviceResolution(void)
-{
-	// this is hard-coded at 96 for X now, since 72 (which
-	// most X servers return when queried for a resolution)
-	// makes for tiny fonts on modern resolutions.
-
-	return 72;
-}
-
 UT_uint32 GR_UnixGraphics::getDeviceResolution(void) const
 {
-	return s_getDeviceResolution();
+	return 72;
 }
 
 void GR_UnixGraphics::getColor(UT_RGBColor& clr)
@@ -1238,7 +1229,7 @@ GR_Font * GR_UnixGraphics::_findFont(const char* pszFontFamily,
 															  pszFontStretch, pszFontSize,this);
 
 	// bury the pointer to our Unix font in a XAP_UnixFontHandle with the correct size.
-	UT_uint32 iSize = static_cast<UT_uint32>(UT_convertToPoints(pszFontSize)*s_getDeviceResolution()/72.);
+	UT_uint32 iSize = static_cast<UT_uint32>(UT_convertToPoints(pszFontSize)*getDeviceResolution()/72.);
 
 	XAP_UnixFontHandle* pFont = new XAP_UnixFontHandle(pUnixFont, iSize);
 	UT_ASSERT(pFont);
@@ -1266,8 +1257,8 @@ UT_uint32 GR_UnixGraphics::getFontAscent(GR_Font * fnt)
 	
 	// FIXME we should really be getting stuff fromt he font in layout units,
 	// FIXME but we're not smart enough to do that yet
-    // we call s_getDeviceResolution() to avoid zoom
-	return static_cast<UT_uint32>(hndl->getUnixFont()->getAscender(hndl->getSize()) * getResolution() / s_getDeviceResolution() ); // +0.5);
+    // we call getDeviceResolution() to avoid zoom
+	return static_cast<UT_uint32>(hndl->getUnixFont()->getAscender(hndl->getSize()) * getResolution() / getDeviceResolution() ); // +0.5);
 }
 
 UT_uint32 GR_UnixGraphics::getFontAscent()

@@ -36,6 +36,7 @@
 #include <pango/pangoxft.h>
 #include <math.h>
 
+#include <gdk/gdk.h>
 #include <libgnomeprint/gnome-print-pango.h>
 
 UT_uint32                GR_UnixPangoGraphics::s_iInstanceCount = 0;
@@ -139,7 +140,7 @@ class GR_UnixPangoRenderInfo : public GR_RenderInfo
 	int *             m_pLogOffsets;
 	PangoLogAttr *    m_pLogAttrs;
 	int *             m_pJustify;
-	UT_uint32         m_iZoom;
+UT_uint32         m_iZoom;
 	UT_uint32         m_iLogBuffSize;
 	
 	static UT_UTF8String sUTF8;
@@ -182,14 +183,22 @@ GR_UnixPangoGraphics::GR_UnixPangoGraphics(GdkWindow * win)
 	 m_pFontMap(NULL),
 	 m_pContext(NULL),
 	 m_pPFont(NULL),
-	 m_pPFontGUI(NULL)
+	 m_pPFontGUI(NULL),
+	 m_iDeviceResolution(96)
 {
 	UT_DEBUGMSG(("GR_UnixPangoGraphics::GR_UnixPangoGraphics using pango (window)\n"));
 	GdkDisplay * gDisp = gdk_drawable_get_display(win);
 	GdkScreen *  gScreen = gdk_drawable_get_screen(win);
 	Display * disp = GDK_DISPLAY_XDISPLAY(gDisp);
 	int iScreen = gdk_x11_screen_get_screen_number(gScreen);
-	
+
+	// The following does not work; it returns 74 on my system in place of 96
+	// m_iDeviceResolution = (UT_uint32)((double)gdk_screen_width() * 25.4 /
+	//								  (double)gdk_screen_width_mm());
+#if 0
+	// this is not avaliable in the gtk we require
+	m_iDeviceResolution = (UT_uint32) gdk_screen_get_resolution_libgtk_only(gScreen);
+#endif
 	m_pContext = pango_xft_get_context(disp, iScreen);
 	m_pFontMap = pango_xft_get_font_map(disp, iScreen);
 }
@@ -200,7 +209,8 @@ GR_UnixPangoGraphics::GR_UnixPangoGraphics()
 	 m_pFontMap(NULL),
 	 m_pContext(NULL),
 	 m_pPFont(NULL),
-	 m_pPFontGUI(NULL)
+	 m_pPFontGUI(NULL),
+	 m_iDeviceResolution(96)
 {
 	m_pFontMap = gnome_print_pango_get_default_font_map();
 	m_pContext = gnome_print_pango_create_context(m_pFontMap);
@@ -233,6 +243,13 @@ GR_Graphics *   GR_UnixPangoGraphics::graphicsAllocator(GR_AllocInfo& info)
 		return new GR_UnixPangoGraphics(AI.m_win);
 	}
 }
+
+UT_uint32 GR_UnixPangoGraphics::getDeviceResolution(void) const
+{
+	// TODO -- we should get this somewhere from the xft lib
+	return m_iDeviceResolution;
+}
+
 
 UT_sint32 GR_UnixPangoGraphics::measureUnRemappedChar(const UT_UCSChar c)
 {
@@ -1075,7 +1092,7 @@ UT_uint32 GR_UnixPangoGraphics::getFontAscent(GR_Font * pFont)
 	UT_return_val_if_fail( pfm, 0 );
 
 	// pango_metrics_ functions return in points * PANGO_SCALE (points * 1024)
-	UT_uint32 i = (UT_uint32) _pftlu(pango_font_metrics_get_ascent(pfm));
+	UT_uint32 i = (UT_uint32) _ptlu(pango_font_metrics_get_ascent(pfm)); //#
 	pango_font_metrics_unref(pfm);
 	return i;
 }
@@ -1092,7 +1109,7 @@ UT_uint32 GR_UnixPangoGraphics::getFontDescent(GR_Font *pFont)
 	UT_return_val_if_fail( pfm, 0 );
 
 	// pango_metrics_ functions return in points * PANGO_SCALE (points * 1024)
-	UT_uint32 i = (UT_uint32) _pftlu(pango_font_metrics_get_descent(pfm));
+	UT_uint32 i = (UT_uint32) _ptlu(pango_font_metrics_get_descent(pfm)); //#
 	pango_font_metrics_unref(pfm);
 	return i;
 }
@@ -1109,7 +1126,7 @@ UT_uint32 GR_UnixPangoGraphics::getFontHeight(GR_Font *pFont)
 	UT_return_val_if_fail( pfm, 0 );
 	
 	// pango_metrics_ functions return in points * PANGO_SCALE (points * 1024)
-	UT_uint32 i = (UT_uint32) _pftlu(pango_font_metrics_get_descent(pfm) +
+	UT_uint32 i = (UT_uint32) _ptlu(pango_font_metrics_get_descent(pfm) + //#
 		(UT_uint32) pango_font_metrics_get_ascent(pfm));
 	
 	pango_font_metrics_unref(pfm);
@@ -1324,7 +1341,7 @@ void GR_UnixPangoFont::reloadFont(GR_UnixPangoGraphics * pG)
 	m_iZoom = iZoom;
 	
 	UT_String s;
-	if(!m_bGuiFont)
+	if(!m_bGuiFont && pG->queryProperties(GR_Graphics::DGP_SCREEN))
 		UT_String_sprintf(s, "%s %f", m_sDesc.c_str(), m_dPointSize * (double)m_iZoom / 100.0);
 	else
 		UT_String_sprintf(s, "%s %f", m_sDesc.c_str(), m_dPointSize);

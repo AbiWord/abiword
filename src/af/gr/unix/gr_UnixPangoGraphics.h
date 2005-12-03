@@ -166,6 +166,8 @@ public:
 	
 	virtual void getCoverage(UT_NumberVector& coverage);
 
+	virtual UT_uint32 getDeviceResolution(void) const;
+	
   protected:
 	// all instances have to be created via GR_GraphicsFactory; see gr_Graphics.h
 	GR_UnixPangoGraphics(GdkWindow * win);
@@ -188,6 +190,7 @@ public:
 	GR_UnixPangoFont* m_pPFont;
 	GR_UnixPangoFont* m_pPFontGUI;
 
+	UT_uint32         m_iDeviceResolution;
 private:
 	static UT_uint32 s_iInstanceCount;
 	static UT_VersionInfo s_Version;
