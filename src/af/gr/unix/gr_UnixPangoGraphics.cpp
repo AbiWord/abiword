@@ -1292,7 +1292,8 @@ GR_UnixPangoFont::GR_UnixPangoFont(const char * pDesc, double dSize,
 	m_iZoom(0), // forces creation of font by reloadFont()
 	m_pf(NULL),
 	m_bGuiFont(bGuiFont),
-	m_pCover(NULL)
+	m_pCover(NULL),
+	m_pfd(NULL)
 {
 	m_eType = GR_FONT_UNIX_PANGO;
 	
@@ -1305,6 +1306,7 @@ GR_UnixPangoFont::GR_UnixPangoFont(const char * pDesc, double dSize,
 GR_UnixPangoFont::~GR_UnixPangoFont()
 {
 	pango_coverage_unref(m_pCover);
+	pango_font_description_free(m_pfd);
 }
 
 /*!
@@ -1328,10 +1330,16 @@ void GR_UnixPangoFont::reloadFont(GR_UnixPangoGraphics * pG)
 		UT_String_sprintf(s, "%s %f", m_sDesc.c_str(), m_dPointSize);
 		
 
-	PangoFontDescription * pfd = pango_font_description_from_string(s.c_str());
-	UT_return_if_fail(pfd);
+	if(m_pfd)
+	{
+		pango_font_description_free(m_pfd);
+		m_pfd = NULL;
+	}
 	
-	m_pf = pango_context_load_font(pG->getContext(), pfd);
+	m_pfd = pango_font_description_from_string(s.c_str());
+	UT_return_if_fail(m_pfd);
+	
+	m_pf = pango_context_load_font(pG->getContext(), m_pfd);
 }
 
 
@@ -1383,8 +1391,9 @@ bool GR_UnixPangoFont::glyphBox(UT_UCS4Char g, UT_Rect & rec, GR_Graphics * pG)
 
 const char* GR_UnixPangoFont::getFamily() const
 {
-	UT_ASSERT_HARMLESS( UT_NOT_IMPLEMENTED );
-	return NULL;
+	UT_return_val_if_fail( m_pfd, NULL );
+	
+	return pango_font_description_get_family(m_pfd);
 }
 
 
@@ -1492,12 +1501,44 @@ void GR_UnixPangoPrintGraphics::drawChars(const UT_UCSChar* pChars,
 {
 	// we cannot call XAP_UnixGnomePrintGraphic::drawChars() here because the fonts this
 	// class uses are pango fonts, not the PS fonts the class expects
-#if 0
-	UT_return_if_fail( m_pGnomePrint );
-	m_pGnomePrint->drawChars(pChars, iCharOffset, iLength, xoff, yoff, pCharWidths);
-#endif
 
-	UT_ASSERT_HARMLESS( UT_NOT_IMPLEMENTED );
+	GR_UnixPangoFont * pFont = (GR_UnixPangoFont *)m_pPFont;
+	UT_UTF8String utf8(pChars + iCharOffset, iLength);
+	
+	GList * pLogItems = pango_itemize(m_pContext, utf8.utf8_str(), 0, utf8.byteLength(),
+									  NULL, NULL);
+
+	GList * pItems = pango_reorder_items(pLogItems);
+	g_list_free(pLogItems);
+	
+	xoff = _tduX(xoff);
+	yoff = m_pGnomePrint->scale_ydir(_tduY(yoff + getFontAscent(pFont)));
+
+	UT_DEBUGMSG(("about to gnome_print_pango_gplyph_string render xoff %d yoff %d\n",
+				 xoff, yoff));
+
+	GnomePrintContext * gpc = m_pGnomePrint->getGnomePrintContext();
+	UT_return_if_fail( gpc );
+
+	gnome_print_gsave(gpc);
+	gnome_print_moveto(gpc, xoff, yoff);
+	
+
+	for(unsigned int i = 0; i < g_list_length(pItems); ++i)
+	{
+		PangoGlyphString * pGlyphs = pango_glyph_string_new();
+		PangoItem *pItem = (PangoItem *)g_list_nth(pItems, i)->data;
+
+		pango_shape(utf8.utf8_str() + pItem->offset, pItem->length,
+					& pItem->analysis, pGlyphs);
+
+		gnome_print_pango_glyph_string(gpc, pFont->getPangoFont(), pGlyphs);
+
+		pango_glyph_string_free(pGlyphs);
+	}
+
+	gnome_print_grestore (gpc);
+	g_list_free(pItems);
 }
 
 

@@ -67,14 +67,17 @@ class ABI_EXPORT GR_UnixPangoFont : public GR_Font
 	const UT_String & getDescription() const {return m_sDesc;}
 
 	virtual const char* getFamily() const;
+	const PangoFontDescription * getPangoDescription() const {return m_pfd;}
+	
 	
   private:
-	UT_String  m_sDesc;
-	double     m_dPointSize;
-	UT_uint32  m_iZoom;
-	PangoFont *m_pf;
-	bool       m_bGuiFont;
-	PangoCoverage * m_pCover;
+	UT_String              m_sDesc;
+	double                 m_dPointSize;
+	UT_uint32              m_iZoom;
+	PangoFont *            m_pf;
+	bool                   m_bGuiFont;
+	PangoCoverage *        m_pCover;
+	PangoFontDescription * m_pfd;
 };
 
 class GR_UnixPangoRenderInfo;
@@ -162,7 +165,7 @@ public:
 							   const char* pszFontSize);
 	
 	virtual void getCoverage(UT_NumberVector& coverage);
-	
+
   protected:
 	// all instances have to be created via GR_GraphicsFactory; see gr_Graphics.h
 	GR_UnixPangoGraphics(GdkWindow * win);
@@ -180,16 +183,15 @@ public:
 	int _pftlu(int pf) const;
 
   protected:
-	PangoFontMap * m_pFontMap;
-	PangoContext * m_pContext;
+	PangoFontMap *    m_pFontMap;
+	PangoContext *    m_pContext;
+	GR_UnixPangoFont* m_pPFont;
+	GR_UnixPangoFont* m_pPFontGUI;
 
-  private:
+private:
 	static UT_uint32 s_iInstanceCount;
 	static UT_VersionInfo s_Version;
 	static int s_iMaxScript;
-
-	GR_UnixPangoFont* m_pPFont;
-	GR_UnixPangoFont* m_pPFontGUI;
 };
 
 class XAP_UnixGnomePrintGraphics;
