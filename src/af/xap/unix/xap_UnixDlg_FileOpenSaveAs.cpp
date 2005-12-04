@@ -248,12 +248,15 @@ bool XAP_UnixDialog_FileOpenSaveAs::_run_gtk_main(XAP_Frame * pFrame,
 				
 				// the index in the types table will match the index in the suffix
 				// table.  nFileType is the data we are searching for.
-				for (UT_uint32 i = 0; m_nTypeList[i]; i++)
+				if(m_nTypeList != NULL)
 				{
-					if (m_nTypeList[i] == nFileType)
+					for (UT_uint32 i = 0; m_nTypeList[i]; i++)
 					{
-						nIndex = i;
-						break;
+						if (m_nTypeList[i] == nFileType)
+						{
+							nIndex = i;
+							break;
+						}
 					}
 				}
 				bool wantSuffix = true;
@@ -555,6 +558,20 @@ void XAP_UnixDialog_FileOpenSaveAs::runModal(XAP_Frame * pFrame)
 				pSS->getValueUTF8(XAP_STRING_ID_DLG_FOSA_PrintToFileTitle,szTitle);
 				pSS->getValueUTF8(XAP_STRING_ID_DLG_FOSA_FilePrintTypeLabel,szFileTypeLabel);
 				m_bSave = true;
+				break;
+			}
+		case XAP_DIALOG_ID_RECORDTOFILE:
+			{
+				pSS->getValueUTF8(XAP_STRING_ID_DLG_FOSA_RecordToFileTitle,szTitle);
+				pSS->getValueUTF8(XAP_STRING_ID_DLG_FOSA_RecordToFileLabel,szFileTypeLabel);
+				m_bSave = true;
+				break;
+			}
+		case XAP_DIALOG_ID_REPLAYFROMFILE:
+			{
+				pSS->getValueUTF8(XAP_STRING_ID_DLG_FOSA_ReplayFromFileTitle,szTitle);
+				pSS->getValueUTF8(XAP_STRING_ID_DLG_FOSA_ReplayFromFileLabel,szFileTypeLabel);
+				m_bSave = false;
 				break;
 			}
 		default:
