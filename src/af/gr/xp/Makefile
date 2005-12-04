@@ -33,7 +33,6 @@ CPPSRCS=		gr_CharWidths.cpp		\
 			gr_VectorImage.cpp		\
 			gr_Caret.cpp			\
 			gr_Painter.cpp \
-			gr_ContextGlyph.cpp \
 			gr_RenderInfo.cpp \
 	                gr_EmbedManager.cpp
 

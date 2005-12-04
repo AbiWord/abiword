@@ -33,7 +33,6 @@
 #include "ut_misc.h"
 #include "pt_Types.h"
 #include "ut_assert.h"
-#include "gr_ContextGlyph.h"
 #include "ap_Strings.h"
 #include "fl_BlockLayout.h"
 #include "pp_Revision.h"

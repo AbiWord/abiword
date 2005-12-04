@@ -55,7 +55,6 @@
 #include "ut_rand.h"
 #include "ut_map.h"
 #include "gr_CharWidthsCache.h"
-#include "gr_ContextGlyph.h"
 #include "xav_Listener.h"
 #include "gr_EmbedManager.h"
 
@@ -149,10 +148,6 @@ XAP_App::~XAP_App()
 	// Delete the instance of the Encoding Manager.
 	XAP_EncodingManager::get_instance()->Delete_instance();
 
-	// This is to delete static data allocated by Gr_ContextGlyph; it
-	// is strictly speaking not necessary -- this is really to shut up
-	// the debugger complaining about memory leaks
-	GR_ContextGlyph::static_destructor();
 	GR_CharWidthsCache::destroyCharWidthsCache();
 
 	DELETEP(m_pUUIDGenerator);

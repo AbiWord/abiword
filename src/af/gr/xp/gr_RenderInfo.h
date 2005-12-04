@@ -22,11 +22,9 @@
 
 #include "ut_types.h"
 #include "ut_vector.h"
-#include "gr_ContextGlyph.h"
+#include "gr_Graphics.h"
 
 class UT_TextIterator;
-class GR_Graphics;
-class GR_Font;
 
 /*
     Identifies scripts for the shaping engine; the actual values are

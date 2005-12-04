@@ -23,8 +23,6 @@
 #include "ut_TextIterator.h"
 #include "ut_string.h"
 #include "gr_RenderInfo.h"
-#include "gr_ContextGlyph.h"
-#include "gr_Graphics.h"
 
 void GR_Itemization::clear()
 {
@@ -351,131 +349,50 @@ bool GR_XPRenderInfo::cut(UT_uint32 offset, UT_uint32 iLen, bool bReverse)
 	bool bRefresh = (((UT_uint32)m_eState & (UT_uint32)m_eShapingResult ) != 0);
 	UT_sint32 ioffset = static_cast<UT_sint32>(offset);
 	UT_sint32 jLen = static_cast<UT_sint32>(iLen);
+
 	if(bRefresh)
 		return false;
 	
-	bool bLigatures = (((UT_uint32)m_eShapingResult & (UT_uint32) GRSR_Ligatures) != 0);
-	bool bContext = (((UT_uint32)m_eShapingResult & (UT_uint32) GRSR_ContextSensitive) != 0);
-
 	m_iTotalLength -= jLen;
 
-	GR_ContextGlyph cg;
+	// if we got here, we just need to cut out a bit of the draw
+	// buffer
+	UT_sint32 iLenToCopy = m_iLength - ioffset - jLen;
 
-	UT_sint32 pos = static_cast<UT_sint32>(m_pText->getPosition());
-
-#ifndef NO_BIDI_SUPPORT
-	UT_UCS4Char c;
-	
-	if(!bRefresh && bLigatures)
+	if(m_iVisDir == UT_BIDI_RTL)
 	{
-		// we need to recalculate the draw buffer if the character
-		// left of the deleted section is susceptible to ligating or
-		// if the two characters around the right edge of the deletion
-		// form a ligagure
-
-		// start with the right boundary, as that is computationally
-		// easier
-		if(ioffset + jLen < m_iLength)
-		{
-			// the easiest way of checking for presence of ligature
-			// glyph is to check for the presence of the placeholder
-			UT_sint32 off2  = ioffset + jLen;
-
-			if(m_iVisDir == UT_BIDI_RTL)
-			{
-				off2 = m_iLength - off2 - 1;
-			}
-
-			bRefresh |= (m_pChars[off2] == UCS_LIGATURE_PLACEHOLDER);
-		}
-
-		// now the left boundary
-		if(!bRefresh && offset > 0)
-		{
-			m_pText->setPosition(pos + ioffset - 1);
-			if(m_pText->getStatus() == UTIter_OK)
-			{
-				c = m_pText->getChar();
-				bRefresh |= !cg.isNotFirstInLigature(c);
-			}
-		}
+		// if this is an rtl run, the end of the draw buffer corresponds to the start
+		// section of the run, so we are moving not what is left after the deletion,
+		// but what preceeds it
+		iLenToCopy = ioffset;
 	}
-	
-	if(!bRefresh && bContext)
+			
+	UT_return_val_if_fail(iLenToCopy >= 0, false);
+	if(iLenToCopy)
 	{
-		// we need to retrieve the characters left and right of the
-		// deletion
-		if(offset > 0)
-		{
-			m_pText->setPosition(pos + ioffset - 1);
-			if(m_pText->getStatus() == UTIter_OK)
-			{
-				c = m_pText->getChar();
-				bRefresh |= !cg.isNotContextSensitive(c);
-			}
-		}
-
-		if(!bRefresh && ioffset + jLen < m_iLength)
-		{
-			// this function is called in response to the PT being
-			// already changed, i.e., the character that used to be at
-			// ioffset + jLen is now at offset
-			m_pText->setPosition(pos + ioffset);
-			if(m_pText->getStatus() == UTIter_OK)
-			{
-				c = m_pText->getChar();
-				bRefresh |= !cg.isNotContextSensitive(c);
-			}
-		}
-	}
-
-#endif
-	
-	if(bRefresh)
-	{
-		return false;
-    }
-	else
-	{
-		// if we got here, we just need to cut out a bit of the draw
-		// buffer
-		UT_sint32 iLenToCopy = m_iLength - ioffset - jLen;
+		UT_UCS4Char * d = m_pChars+ioffset;
+		UT_UCS4Char * s = m_pChars+ioffset+jLen;
 
 		if(m_iVisDir == UT_BIDI_RTL)
 		{
-			// if this is an rtl run, the end of the draw buffer corresponds to the start
-			// section of the run, so we are moving not what is left after the deletion,
-			// but what preceeds it
-			iLenToCopy = ioffset;
+			d = m_pChars + (m_iLength - (ioffset + jLen));
+			s = m_pChars + (m_iLength - ioffset);
 		}
-			
-		UT_return_val_if_fail(iLenToCopy >= 0, false);
-		if(iLenToCopy)
+
+		UT_UCS4_strncpy(d, s, iLenToCopy);
+		m_pChars[m_iLength - iLen] = 0;
+
+		d = (UT_UCS4Char *) m_pWidths+ioffset;
+		s = (UT_UCS4Char *) m_pWidths+ioffset+jLen;
+
+		if(m_iVisDir == UT_BIDI_RTL)
 		{
-			UT_UCS4Char * d = m_pChars+ioffset;
-			UT_UCS4Char * s = m_pChars+ioffset+jLen;
-
-			if(m_iVisDir == UT_BIDI_RTL)
-			{
-				d = m_pChars + (m_iLength - (ioffset + jLen));
-				s = m_pChars + (m_iLength - ioffset);
-			}
-
-			UT_UCS4_strncpy(d, s, iLenToCopy);
-			m_pChars[m_iLength - iLen] = 0;
-
-			d = (UT_UCS4Char *) m_pWidths+ioffset;
-			s = (UT_UCS4Char *) m_pWidths+ioffset+jLen;
-
-			if(m_iVisDir == UT_BIDI_RTL)
-			{
-				d = (UT_UCS4Char *) m_pWidths + (m_iLength - (ioffset + jLen));
-				s = (UT_UCS4Char *) m_pWidths + (m_iLength - ioffset);
-			}
-
-			UT_UCS4_strncpy(d, s, iLenToCopy);
-			m_pWidths[m_iLength - jLen] = 0;
+			d = (UT_UCS4Char *) m_pWidths + (m_iLength - (ioffset + jLen));
+			s = (UT_UCS4Char *) m_pWidths + (m_iLength - ioffset);
 		}
+
+		UT_UCS4_strncpy(d, s, iLenToCopy);
+		m_pWidths[m_iLength - jLen] = 0;
 	}
 
 	// mark static buffers dirty if needed
@@ -507,7 +424,11 @@ void GR_XPRenderInfo::prepareToRenderChars()
 	s_pOwner = this;
 }
 
-
+/*!
+    This function no longer does any ligature handling (use the Pango graphics for that);
+    It still does some preprocessing on the static buffers that is needed by
+    _calculateCharacterAdvances.
+*/
 void GR_XPRenderInfo::_stripLigaturePlaceHolders()
 {
 	UT_return_if_fail(m_iLength <= m_iBufferSize && m_pText);
@@ -534,143 +455,16 @@ void GR_XPRenderInfo::_stripLigaturePlaceHolders()
 		bReverse = true;
 	}
 
-	UT_uint32 iOffset = m_pText->getPosition();
-	
 	for(UT_sint32 i = 0, j = 0; i < len; i++, j++)
 	{
-		// m is the logical offeset corresponding to the visual offest i
-		// UT_sint32 m = bReverse ? len - i - 1 : i;
-		UT_sint32 m = i;
-
-		if(m_pChars[i] != UCS_LIGATURE_PLACEHOLDER)
-		{
 			// ordinary character, just copy it and set the width as
 			// appropriate
 			s_pCharBuff[j] = m_pChars[i];
 
 			if(bReverse)
-				s_pWidthBuff[j] += m_pWidths[m];
+				s_pWidthBuff[j] += m_pWidths[i];
 			else
-				s_pWidthBuff[j] = m_pWidths[m];
-
-		}
-		else
-		{
-			// we will remember whether this ligature is split by the
-			// selection for later use
-			bool bSplitLigature = false;
-
-			// iSplitOffset is the offset of the middle of the
-			// ligature in logical coordinances; j is visual offset
-			// into our output buffer
-			UT_uint32 iSplitOffset = bReverse ? m_iLength - j - 1: j;
-
-			// scroll through the offset array; the offsets define the
-			// segments into which the run is split by the selection
-			// NB: there is always one more (dummy) offset than iOffsetCount
-			for(UT_sint32 k = 0; k <= (UT_sint32)m_iSegmentCount; k++)
-			{
-				if(!m_pSegmentOffset[k]
-				   || static_cast<UT_sint32>(m_pSegmentOffset[k]) < static_cast<UT_sint32>(iSplitOffset))
-					continue;
-
-				if(static_cast<UT_sint32>(m_pSegmentOffset[k]) == static_cast<UT_sint32>(iSplitOffset))
-				{
-					// this is the case, where the ligature
-					// placeholder is the first character in a
-					// segment, i.e., the ligature is split by the
-					// selection -- we have to feed the decomposed
-					// (orginal) glyphs into the output string, but
-					// use the original width metrics
-
-					// get the second decomposed character from our
-					// piece table
-					UT_UCS4Char c = (*m_pText)[iOffset + m];
-
-					if(m_pText->getStatus() == UTIter_OK)
-					{
-						s_pCharBuff[j] = c;
-					}
-					else
-					{
-						// we failed to get the character from the
-						// piecetable, handle it gracefully
-						UT_ASSERT(UT_NOT_REACHED );
-						s_pCharBuff[j] = '?';
-					}
-
-					// set the width for this glyph
-					s_pWidthBuff[j] = m_pWidths[m];
-
-					// now set the first part of the decomposed glyph,
-					// taking into account direction
-					UT_sint32 n = bReverse ? j + 1: j - 1;
-
-					// now get the first character for this ligature;
-					// we can only do this if it is not outside our run
-					if(m > 0 && n >= 0)
-					{
-						c = (*m_pText)[iOffset + m - 1];
-
-						if(m_pText->getStatus() == UTIter_OK)
-						{
-							s_pCharBuff[n] = c;
-						}
-						else
-						{
-							// we failed to get the character from the
-							// piecetable, handle it gracefully
-							UT_ASSERT(UT_NOT_REACHED );
-							s_pCharBuff[n] = '?';
-						}
-
-						if(bReverse)
-						{
-							//we have already processed the next
-							//character, we only need to set the width
-							//for it as well and then can skip the
-							//next iteration of the loop
-							i++;
-							j++;
-
-							s_pWidthBuff[j] = m_pWidths[m-1];
-						}
-					}
-
-					bSplitLigature = true;
-					break;
-				}
-
-				// this the case of pOffset[k] > j, just need to
-				// adjust it, since we removed the ligature
-				// placeholder from the string
-				m_pSegmentOffset[k]--;
-			}
-
-			if(!bSplitLigature)
-			{
-				// we have a ligature which is either completely
-				// selected, or completely outwith the selection; all
-				// we need to do is to set the widths and adjust our
-				// indexes (we are removing this charcter, the
-				// placeholder, from the buffer).
-				if(bReverse)
-				{
-					// the first part of the ligature will come at the j
-					// index, we want to include the half width of the
-					// second character
-					s_pWidthBuff[j] = m_pWidths[m];
-				}
-
-				j--;
-				m_iLength--;
-
-				if(j >= 0 && !bReverse)
-				{
-					s_pWidthBuff[j] += m_pWidths[m];
-				}
-			}
-		}
+				s_pWidthBuff[j] = m_pWidths[i];
 	}
 }
 

@@ -33,6 +33,7 @@
 #include "gr_CharWidthsCache.h"
 #include "ut_hash.h"
 #include "ut_vector.h"
+#include "ut_TextIterator.h"
 
 #ifdef ABI_GRAPHICS_PLUGIN
 #define VIRTUAL_SFX = 0
@@ -41,7 +42,6 @@
 #endif
 
 class UT_RGBColor;
-class UT_TextIterator;
 class XAP_App;
 class XAP_PrefsScheme;
 class XAP_Frame;
@@ -323,6 +323,17 @@ class GR_GraphicsFactory
 	UT_uint32       m_iDefaultPrinter;
 };
 
+
+enum GRShapingResult
+{
+	GRSR_BufferClean = 0x00,                  // clear all bits; see notes above !!!
+	GRSR_None = 0x01,                         // bit 0 set
+	GRSR_ContextSensitive = 0x02,             // bit 1 set
+	GRSR_Ligatures = 0x04,                    // bit 2 set
+	GRSR_ContextSensitiveAndLigatures = 0x06, // bit 1, 2 set
+	GRSR_Unknown = 0xef,                      // bits 0-6 set, initial value for text in our runs
+	GRSR_Error = 0xff                         // bits 0-7 set
+};
 
 /*
   GR_Graphics is a portable interface to a simple 2-d graphics layer.  It is not
@@ -803,6 +814,7 @@ class ABI_EXPORT GR_Graphics
 
 	static UT_VersionInfo   s_Version;
 	static UT_uint32        s_iInstanceCount;
+	static UT_UCS4Char      s_cDefaultGlyph;
 };
 
 #endif /* GR_GRAPHICS_H */
