@@ -540,7 +540,10 @@ bool fp_TextRun::findFirstNonBlankSplitPoint(fp_RunSplitInfo& si)
 bool	fp_TextRun::findMaxLeftFitSplitPoint(UT_sint32 iMaxLeftWidth, fp_RunSplitInfo& si, bool bForce)
 {
 	UT_return_val_if_fail(m_pRenderInfo, false);
-	
+
+	// this approach suffers from rounding errors if the graphics class keeps data
+	// internally in units other than layout; it might be better to recalculate the two
+	// portions onece we found the split point
 	UT_sint32 iLeftWidth = 0;
 	UT_sint32 iRightWidth = getWidth();
 
@@ -594,11 +597,6 @@ bool	fp_TextRun::findMaxLeftFitSplitPoint(UT_sint32 iMaxLeftWidth, fp_RunSplitIn
 		if (bForce || iNext == (UT_sint32)i || bCanBreak)
 		   //	&& ((i + offset) != (getBlockOffset() + getLength() - 1))
 		{
-			UT_sint32 ispace = 0;
-			if(c == UCS_SPACE)
-			{
-				ispace = iCW;
-			}
 			if (iLeftWidth <= iMaxLeftWidth)
 			{
 				si.iLeftWidth = iLeftWidth;
@@ -648,19 +646,14 @@ bool	fp_TextRun::findMaxLeftFitSplitPoint(UT_sint32 iMaxLeftWidth, fp_RunSplitIn
 			// legal break offset is; we just scroll through the
 			// characters in between; i-th char has been processed
 			// already
-			UT_uint32 n = 0;
-			for(n= i+1; n < (UT_uint32)iNext; ++n)
-			{
-				// getTextWidth() takes LOGICAL offset
-				m_pRenderInfo->m_iOffset = n;
-				m_pRenderInfo->m_iLength = 1;
-				UT_sint32 iCW = getGraphics()->getTextWidth(*m_pRenderInfo);
-				iLeftWidth += iCW;
-				iRightWidth -= iCW;
-			}
+			UT_uint32 iAdvance = iNext - i - 1;
+			m_pRenderInfo->m_iOffset = i + 1;
+			m_pRenderInfo->m_iLength = iAdvance;
+			UT_sint32 iCW = getGraphics()->getTextWidth(*m_pRenderInfo);
+			iLeftWidth += iCW;
+			iRightWidth -= iCW;
 
 			// advance iterator and index by number of chars processed
-			UT_uint32 iAdvance = n - i - 1;
 			i += iAdvance;
 			text += iAdvance; 
 			UT_return_val_if_fail(text.getStatus()==UTIter_OK, false);
@@ -1164,7 +1157,8 @@ bool fp_TextRun::split(UT_uint32 iSplitOffset)
 	UT_ASSERT(iSplitOffset < (getBlockOffset() + getLength()));
 
 	UT_BidiCharType iVisDirection = getVisDirection();
-	fp_TextRun* pNew = new fp_TextRun(getBlock(), iSplitOffset, getLength() - (iSplitOffset - getBlockOffset()), false);
+	fp_TextRun* pNew = new fp_TextRun(getBlock(), iSplitOffset,
+									  getLength() - (iSplitOffset - getBlockOffset()), false);
 
 
 	UT_ASSERT(pNew);

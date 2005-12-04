@@ -140,7 +140,7 @@ class GR_UnixPangoRenderInfo : public GR_RenderInfo
 	int *             m_pLogOffsets;
 	PangoLogAttr *    m_pLogAttrs;
 	int *             m_pJustify;
-UT_uint32         m_iZoom;
+	UT_uint32         m_iZoom;
 	UT_uint32         m_iLogBuffSize;
 	
 	static UT_UTF8String sUTF8;
@@ -186,7 +186,7 @@ GR_UnixPangoGraphics::GR_UnixPangoGraphics(GdkWindow * win)
 	 m_pPFontGUI(NULL),
 	 m_iDeviceResolution(96)
 {
-	UT_DEBUGMSG(("GR_UnixPangoGraphics::GR_UnixPangoGraphics using pango (window)\n"));
+	xxx_UT_DEBUGMSG(("GR_UnixPangoGraphics::GR_UnixPangoGraphics using pango (window)\n"));
 	GdkDisplay * gDisp = gdk_drawable_get_display(win);
 	GdkScreen *  gScreen = gdk_drawable_get_screen(win);
 	Display * disp = GDK_DISPLAY_XDISPLAY(gDisp);
@@ -224,7 +224,7 @@ GR_UnixPangoGraphics::~GR_UnixPangoGraphics()
 GR_Graphics *   GR_UnixPangoGraphics::graphicsAllocator(GR_AllocInfo& info)
 {
 	UT_return_val_if_fail(info.getType() == GRID_UNIX, NULL);
-	UT_DEBUGMSG(("GR_UnixPangoGraphics::graphicsAllocator\n"));
+	xxx_UT_DEBUGMSG(("GR_UnixPangoGraphics::graphicsAllocator\n"));
 	
 	GR_UnixAllocInfo &AI = (GR_UnixAllocInfo&)info;
 
@@ -307,7 +307,7 @@ bool GR_UnixPangoGraphics::itemize(UT_TextIterator & text, GR_Itemization & I)
 {
 	// Performance is not of the highest priorty, as this function gets only called once
 	// on each text fragment on load or keyboard entry
-	UT_DEBUGMSG(("GR_UnixPangoGraphics::itemize\n"));
+	xxx_UT_DEBUGMSG(("GR_UnixPangoGraphics::itemize\n"));
 	UT_return_val_if_fail( m_pContext, false );
  
 	// we need to convert our ucs4 data to utf8 for pango
@@ -340,10 +340,10 @@ bool GR_UnixPangoGraphics::itemize(UT_TextIterator & text, GR_Itemization & I)
 	
 	// now we process the ouptut
 	UT_uint32 iOffset = 0;
-	UT_DEBUGMSG(("itemize: number of items %d\n", iItemCount));
+	xxx_UT_DEBUGMSG(("itemize: number of items %d\n", iItemCount));
 	for(i = 0; i < iItemCount; ++i)
 	{
-		UT_DEBUGMSG(("itemize: creating item %d\n", i));
+		xxx_UT_DEBUGMSG(("itemize: creating item %d\n", i));
 		PangoItem *pItem = (PangoItem *)g_list_nth(gItems, i)->data;
 		GR_UnixPangoItem * pI = new GR_UnixPangoItem(pItem);
 		UT_return_val_if_fail(pI, false);
@@ -356,7 +356,7 @@ bool GR_UnixPangoGraphics::itemize(UT_TextIterator & text, GR_Itemization & I)
 
 	g_list_free(gItems);
 	
-	UT_DEBUGMSG(("itemize succeeded\n"));
+	xxx_UT_DEBUGMSG(("itemize succeeded\n"));
 	return true;
 }
 
@@ -481,7 +481,7 @@ bool GR_UnixPangoGraphics::shape(GR_ShapingInfo & si, GR_RenderInfo *& ri)
 
 UT_sint32 GR_UnixPangoGraphics::getTextWidth(GR_RenderInfo & ri)
 {
-	UT_DEBUGMSG(("GR_UnixPangoGraphics::getTextWidth\n"));
+	xxx_UT_DEBUGMSG(("GR_UnixPangoGraphics::getTextWidth\n"));
 	UT_return_val_if_fail(ri.getType() == GRRI_UNIX_PANGO, 0);
 	GR_UnixPangoRenderInfo & RI = (GR_UnixPangoRenderInfo &)ri;
 
@@ -554,7 +554,7 @@ void GR_UnixPangoGraphics::prepareToRenderChars(GR_RenderInfo & ri)
 */
 void GR_UnixPangoGraphics::renderChars(GR_RenderInfo & ri)
 {
-	UT_DEBUGMSG(("GR_UnixPangoGraphics::renderChars\n"));
+	xxx_UT_DEBUGMSG(("GR_UnixPangoGraphics::renderChars\n"));
 	UT_return_if_fail(ri.getType() == GRRI_UNIX_PANGO);
 	GR_UnixPangoRenderInfo & RI = (GR_UnixPangoRenderInfo &)ri;
 	GR_UnixPangoFont * pFont = (GR_UnixPangoFont *)RI.m_pFont;
@@ -564,13 +564,73 @@ void GR_UnixPangoGraphics::renderChars(GR_RenderInfo & ri)
 	if(RI.m_iLength == 0)
 		return;
 
-	UT_DEBUGMSG(("renderChars: xoff %d yoff %d\n", RI.m_xoff, RI.m_yoff));
+	xxx_UT_DEBUGMSG(("renderChars: xoff %d yoff %d\n", RI.m_xoff, RI.m_yoff));
 	UT_sint32 xoff = _tduX(RI.m_xoff);
 	UT_sint32 yoff = _tduY(RI.m_yoff + getFontAscent(pFont));
 
-	UT_DEBUGMSG(("about to pango_xft_render xoff %d yoff %d\n", xoff, yoff));
+	xxx_UT_DEBUGMSG(("about to pango_xft_render xoff %d yoff %d\n", xoff, yoff));
 	UT_return_if_fail(m_pXftDraw && RI.m_pGlyphs);
-	pango_xft_render(m_pXftDraw, &m_XftColor, pFont->getPangoFont(), RI.m_pGlyphs, xoff, yoff);
+
+	// TODO -- test here for the endpoint as well
+	if(RI.m_iOffset == 0 &&
+	   (RI.m_iLength + 1 == (UT_sint32)RI.m_iLogBuffSize || !RI.m_iLogBuffSize))
+	{
+		pango_xft_render(m_pXftDraw, &m_XftColor, pFont->getPangoFont(),
+						 RI.m_pGlyphs, xoff, yoff);
+	}
+	else
+	{
+		// This is really stupid -- Pango provides no way of drawing substrings, so we
+		// need to create a new glyph string, that only contains the subset
+		// This is complicated by the fact that all offsets in the Pango api are stupid
+		// byte offsets in to utf8 strings, not character offsets
+		UT_return_if_fail( RI.m_pText );
+		UT_TextIterator & text = *RI.m_pText;
+		PangoGlyphString gs;
+		UT_GenericVector<int> vByteOffset;
+
+		UT_UTF8String utf8;
+		UT_sint32 i;
+		
+		for(i = 0; i < RI.m_iOffset + RI.m_iLength && text.getStatus() == UTIter_OK;
+			++i, ++text)
+		{
+			vByteOffset.addItem(utf8.byteLength());
+			utf8 += text.getChar();
+		}
+
+		// these are byte offsets -- in Pango everything is in stupid byte offsets
+		UT_sint32 iOffsetStart = vByteOffset.getNthItem(RI.m_iOffset);
+		UT_sint32 iOffsetEnd = vByteOffset.getNthItem(RI.m_iOffset + RI.m_iLength - 1);
+
+		// now we need to work out the glyph offsets
+		UT_sint32 iGlyphsStart = -1;
+		UT_sint32 iGlyphsEnd = -1;
+		
+		i = 0;
+		while(i < RI.m_pGlyphs->num_glyphs)
+		{
+			if(iGlyphsStart < 0 && RI.m_pGlyphs->log_clusters[i] == iOffsetStart)
+				iGlyphsStart = i;
+
+			if(RI.m_pGlyphs->log_clusters[i] == iOffsetEnd)
+				iGlyphsEnd = i;
+
+			++i;
+		}
+
+		UT_return_if_fail( iGlyphsStart >= 0 && iGlyphsEnd > 0 );
+
+		gs.num_glyphs = iGlyphsEnd - iGlyphsStart + 1; // including the last glyph
+		gs.glyphs = RI.m_pGlyphs->glyphs + iGlyphsStart;
+		gs.log_clusters = RI.m_pGlyphs->log_clusters + iGlyphsStart;
+
+		pango_xft_render(m_pXftDraw, &m_XftColor, pFont->getPangoFont(),
+						 &gs, xoff, yoff);
+
+	}
+	
+	
 }
 
 void GR_UnixPangoGraphics::_scaleCharacterMetrics(GR_UnixPangoRenderInfo & RI)
@@ -1491,7 +1551,7 @@ GR_UnixPangoPrintGraphics::~GR_UnixPangoPrintGraphics()
 GR_Graphics * GR_UnixPangoPrintGraphics::graphicsAllocator(GR_AllocInfo& info)
 {
 	UT_return_val_if_fail(info.getType() == GRID_UNIX, NULL);
-	UT_DEBUGMSG(("GR_UnixPangoGraphics::graphicsAllocator\n"));
+	xxx_UT_DEBUGMSG(("GR_UnixPangoGraphics::graphicsAllocator\n"));
 	
 	GR_UnixAllocInfo &AI = (GR_UnixAllocInfo&)info;
 
@@ -1531,7 +1591,7 @@ void GR_UnixPangoPrintGraphics::drawChars(const UT_UCSChar* pChars,
 	xoff = _tduX(xoff);
 	yoff = m_pGnomePrint->scale_ydir(_tduY(yoff + getFontAscent(pFont)));
 
-	UT_DEBUGMSG(("about to gnome_print_pango_gplyph_string render xoff %d yoff %d\n",
+	xxx_UT_DEBUGMSG(("about to gnome_print_pango_gplyph_string render xoff %d yoff %d\n",
 				 xoff, yoff));
 
 	GnomePrintContext * gpc = m_pGnomePrint->getGnomePrintContext();
@@ -1561,7 +1621,7 @@ void GR_UnixPangoPrintGraphics::drawChars(const UT_UCSChar* pChars,
 
 void GR_UnixPangoPrintGraphics::renderChars(GR_RenderInfo & ri)
 {
-	UT_DEBUGMSG(("GR_UnixPangoGraphics::renderChars\n"));
+	xxx_UT_DEBUGMSG(("GR_UnixPangoGraphics::renderChars\n"));
 	UT_return_if_fail(ri.getType() == GRRI_UNIX_PANGO);
 	GR_UnixPangoRenderInfo & RI = (GR_UnixPangoRenderInfo &)ri;
 	GR_UnixPangoFont * pFont = (GR_UnixPangoFont *)RI.m_pFont;
@@ -1571,11 +1631,11 @@ void GR_UnixPangoPrintGraphics::renderChars(GR_RenderInfo & ri)
 	if(RI.m_iLength == 0)
 		return;
 
-	UT_DEBUGMSG(("renderChars: xoff %d yoff %d\n", RI.m_xoff, RI.m_yoff));
+	xxx_UT_DEBUGMSG(("renderChars: xoff %d yoff %d\n", RI.m_xoff, RI.m_yoff));
 	UT_sint32 xoff = _tduX(RI.m_xoff);
 	UT_sint32 yoff = m_pGnomePrint->scale_ydir(_tduY(RI.m_yoff + getFontAscent(pFont)));
 
-	UT_DEBUGMSG(("about to gnome_print_pango_gplyph_string render xoff %d yoff %d\n",
+	xxx_UT_DEBUGMSG(("about to gnome_print_pango_gplyph_string render xoff %d yoff %d\n",
 				 xoff, yoff));
 
 	GnomePrintContext * gpc = m_pGnomePrint->getGnomePrintContext();

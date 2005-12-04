@@ -56,7 +56,7 @@
 #include "gr_UnixGraphics.h"
 #include "gr_UnixPangoGraphics.h"
 
-//#define _USE_PANGO
+#define _USE_PANGO
 
 UnixNull_Graphics * abi_unixnullgraphics_instance = 0;
 
