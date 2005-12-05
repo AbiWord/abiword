@@ -23,6 +23,7 @@
 #include "ut_debugmsg.h"
 #include "ut_misc.h"
 #include "ut_vector.h"
+#include "ut_locale.h"
 
 #include "xap_App.h"
 #include "xap_Prefs.h"
@@ -1400,6 +1401,7 @@ void GR_UnixPangoFont::reloadFont(GR_UnixPangoGraphics * pG)
 	
 	m_iZoom = iZoom;
 	
+	UT_LocaleTransactor t(LC_NUMERIC, "C");
 	UT_String s;
 	if(!m_bGuiFont && pG->queryProperties(GR_Graphics::DGP_SCREEN))
 		UT_String_sprintf(s, "%s %f", m_sDesc.c_str(), m_dPointSize * (double)m_iZoom / 100.0);
