@@ -854,11 +854,16 @@ void XAP_UnixDialog_FileOpenSaveAs::runModal(XAP_Frame * pFrame)
 		UT_cloneString(m_szFinalPathname, m_szFinalPathnameCandidate);
 
 		FREEP(m_szFinalPathnameCandidate);
-		
+
+#ifndef HAVE_HILDON
 		// what a long ugly line of code
 		GtkWidget * activeItem = gtk_menu_get_active(GTK_MENU(gtk_option_menu_get_menu(GTK_OPTION_MENU(filetypes_pulldown))));
 		UT_ASSERT(activeItem);
 		m_nFileType = GPOINTER_TO_INT(g_object_get_data(G_OBJECT(activeItem), "user_data"));
+#else
+		// the hildon dlg does not have type selector, so we always need to force autodetect
+		m_nFileType = -1;
+#endif
 	}
 
 	if (m_FC != NULL) {
