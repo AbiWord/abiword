@@ -27,6 +27,8 @@
 #include "pd_Document.h"
 #include "pt_PieceTable.h"
 
+class PD_Document;
+
 class ABI_EXPORT PX_ChangeRecord
 {
   friend class pt_PieceTable;
@@ -82,7 +84,9 @@ public:
 
 	const char *            getDocUUID() const;
 	const char *            getMyUUID() const;
-	
+	PD_Document *           getDocument(void) const;
+	void                    setDocument(const PD_Document * pDoc) const;
+	bool                    setCRNumber(void) const;                    
 #ifdef PT_TEST
 	virtual void			__dump(FILE * fp) const;
 	void					__dump_type(FILE * fp) const;
@@ -100,8 +104,8 @@ protected:
 
 	// the XID attribute of the frag
 	UT_uint32               m_iXID;
-	UT_sint32               m_iCRNumber;
-
+mutable	 UT_sint32               m_iCRNumber;
+mutable  PD_Document *           m_pDoc;
 private:
 	struct uuid             m_MyUUID;
 };

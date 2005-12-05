@@ -108,7 +108,8 @@ PD_Document::PD_Document(XAP_App *pApp)
 	  m_iNewHdrHeight(0), 
 	  m_iNewFtrHeight(0),
 	  m_bMarginChangeOnly(false),
-	  m_bVDND(false)
+	  m_bVDND(false),
+	  m_iCRCounter(0)
 {
 	m_pApp = pApp;
 	
@@ -151,6 +152,12 @@ void PD_Document::setMetaDataProp ( const UT_String & key,
 	
 	UT_UTF8String * ptrvalue = new UT_UTF8String(value);
 	m_metaDataMap.set (key, ptrvalue);
+}
+
+UT_sint32  PD_Document::getNextCRNumber(void)
+{
+	m_iCRCounter++;
+	return m_iCRCounter;
 }
 
 bool PD_Document::getMetaDataProp (const UT_String & key, UT_UTF8String & outProp) const
@@ -2872,6 +2879,11 @@ bool PD_Document::notifyListeners(const pf_Frag_Strux * pfs, const PX_ChangeReco
 #ifdef PT_TEST
 	//pcr->__dump();
 #endif
+	if(pcr->getDocument() == NULL)
+	{
+	        pcr->setDocument(this);
+			pcr->setCRNumber();
+	}
 
 	PL_ListenerId lid;
 	PL_ListenerId lidCount = m_vecListeners.getItemCount();
@@ -2986,6 +2998,11 @@ bool PD_Document::notifyListeners(const pf_Frag_Strux * pfs,
 #ifdef PT_TEST
 	//pcr->__dump();
 #endif
+	if(pcr->getDocument() == NULL)
+	{
+	        pcr->setDocument(this);
+			pcr->setCRNumber();
+	}
 
 	PL_ListenerId lid;
 	PL_ListenerId lidCount = m_vecListeners.getItemCount();

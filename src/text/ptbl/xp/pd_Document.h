@@ -647,7 +647,7 @@ PT_AttrPropIndex            getAPIFromSOH(PL_ObjectHandle odh);
 
 	void                    setVDNDinProgress(bool b) {m_bVDND = b;}
 	bool                    isVDNDinProgress() const {return m_bVDND;}
-	
+	UT_sint32               getNextCRNumber(void);
 protected:
 	virtual ~PD_Document();
 
@@ -720,7 +720,7 @@ private:
 	UT_GenericVector<pf_Frag *> m_vecSuspectFrags;
 
 	bool                    m_bVDND;
-
+    UT_sint32               m_iCRCounter;
 };
 
 #endif /* PD_DOCUMENT_H */
