@@ -408,6 +408,7 @@ bool GR_UnixPangoGraphics::shape(GR_ShapingInfo & si, GR_RenderInfo *& ri)
 	// We want to do the shaping on a font at it's actual point size
 	UT_ASSERT_HARMLESS( !pFont->isGuiFont() );
 	
+	UT_LocaleTransactor t(LC_NUMERIC, "C");
 	UT_String s;
 	UT_String_sprintf(s, "%s %f", pFont->getDescription().c_str(), pFont->getPointSize());
 		
