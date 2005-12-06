@@ -302,11 +302,17 @@ UT_uint32 UT_XML_strlen(const XML_Char * sz)
 	if (!sz || !*sz)
 		return 0;
 
+#if 0
+	// this is waste of time, and we assume sizeof(XML_Char) == sizeof(char)
 	UT_uint32 k = 0;
 	while (sz[k])
 		k++;
 
 	return k;
+#else
+	UT_ASSERT_HARMLESS( sizeof(XML_Char) == sizeof(char) );
+	return strlen(sz);
+#endif
 }
 
 // Is this function implemented somewhere else?

@@ -229,8 +229,11 @@ bool AP_DiskStringSet::setValue(const XML_Char * szId, const XML_Char * szString
 	UT_uint32 kLimit = NrElements(s_map);
 	UT_uint32 k;
 
+	// we use predefined IDs to access the strings, so there is no need to do
+	// case-insensitive comparison (and it is costing us lot of time, particularly on
+	// startup).
 	for (k=0; k<kLimit; k++)
-		if (UT_XML_stricmp(s_map[k].szName,szId) == 0)
+		if (UT_XML_strcmp(s_map[k].szName,szId) == 0)
 			return setValue(s_map[k].id,szString);
 
 	// the name (szId) is not in our table, see if the base class knows about it.

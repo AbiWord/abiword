@@ -332,8 +332,11 @@ bool XAP_DiskStringSet::setValue(const XML_Char * szId, const XML_Char * szStrin
 	UT_uint32 kLimit = NrElements(s_map);
 	UT_uint32 k;
 
+	// we use predefined IDs to access the strings, so there is no need to do
+	// case-insensitive comparison (and it is costing us lot of time, particularly at
+	// startup).
 	for (k=0; k<kLimit; k++)
-		if (UT_XML_stricmp(s_map[k].szName,szId) == 0)
+		if (UT_XML_strcmp(s_map[k].szName,szId) == 0)
 			return XAP_DiskStringSet::setValue(s_map[k].id,szString);
 
 	// TODO should we promote this message to a message box ??
