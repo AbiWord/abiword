@@ -40,6 +40,9 @@
 #include <gdk/gdk.h>
 #include <libgnomeprint/gnome-print-pango.h>
 
+// found in xap_UnixFont.cpp
+extern float fontPoints2float(UT_uint32 iSize, FT_Face pFace, UT_uint32 iFontPoints);
+
 UT_uint32                GR_UnixPangoGraphics::s_iInstanceCount = 0;
 UT_VersionInfo           GR_UnixPangoGraphics::s_Version;
 int                      GR_UnixPangoGraphics::s_iMaxScript = 0;
@@ -631,8 +634,6 @@ void GR_UnixPangoGraphics::renderChars(GR_RenderInfo & ri)
 						 &gs, xoff, yoff);
 
 	}
-	
-	
 }
 
 void GR_UnixPangoGraphics::_scaleCharacterMetrics(GR_UnixPangoRenderInfo & RI)
@@ -1465,8 +1466,45 @@ bool GR_UnixPangoFont::doesGlyphExist(UT_UCS4Char g)
 
 bool GR_UnixPangoFont::glyphBox(UT_UCS4Char g, UT_Rect & rec, GR_Graphics * pG)
 {
-	UT_ASSERT_HARMLESS( UT_NOT_IMPLEMENTED );
-	return false;
+	UT_return_val_if_fail( m_pf, false );
+	
+	guint iGlyphIndx = pango_fc_font_get_glyph (PANGO_FC_FONT(m_pf), g);
+	FT_Face pFace = pango_fc_font_lock_face(PANGO_FC_FONT(m_pf));
+
+	FT_Error error = FT_Load_Glyph(pFace, iGlyphIndx,
+								   FT_LOAD_LINEAR_DESIGN |
+								   FT_LOAD_IGNORE_TRANSFORM |
+								   FT_LOAD_NO_BITMAP |
+								   FT_LOAD_NO_SCALE);
+
+	
+	if (error)
+	{
+		pango_fc_font_unlock_face(PANGO_FC_FONT(m_pf));
+		return false;
+	}
+
+	UT_uint32 iSize = (UT_uint32)(m_dPointSize * (double)pG->getResolution() /
+		(double)pG->getDeviceResolution());
+	
+	rec.left   = static_cast<UT_sint32>(fontPoints2float(iSize, pFace,
+														 pFace->glyph->metrics.horiBearingX));
+	
+	rec.width  = static_cast<UT_sint32>(fontPoints2float(iSize, pFace,
+														 pFace->glyph->metrics.width));
+	
+	rec.top    = static_cast<UT_sint32>(fontPoints2float(iSize, pFace,
+														 pFace->glyph->metrics.horiBearingY));
+	
+	rec.height = static_cast<UT_sint32>(fontPoints2float(iSize, pFace,
+														 pFace->glyph->metrics.height));
+	
+	UT_DEBUGMSG(("GlyphBox: %c [l:%d, w:%d, t:%d, h:%d\n",
+				 (char)g, rec.left,rec.width,rec.top,rec.height));
+
+	pango_fc_font_unlock_face(PANGO_FC_FONT(m_pf));
+	
+	return true;
 }
 
 const char* GR_UnixPangoFont::getFamily() const
