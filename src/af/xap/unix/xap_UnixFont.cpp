@@ -46,7 +46,7 @@ float fontPoints2float(UT_uint32 iSize, FT_Face pFace,
 {
         if(pFace == NULL)
 	  return 0.0;
-	return iFontPoints * iSize * 1.0 / pFace->units_per_EM;
+	return (UT_sint32)iFontPoints * (UT_sint32)iSize * 1.0 / pFace->units_per_EM;
 }
 
 /* Xft face locker impl. */
