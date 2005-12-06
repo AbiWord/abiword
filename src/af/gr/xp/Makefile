@@ -26,7 +26,6 @@ CPPSRCS=		gr_CharWidths.cpp		\
 			gr_CharWidthsCache.cpp		\
 			gr_DrawArgs.cpp			\
 			gr_Graphics.cpp			\
-			gr_ContextGlyph.cpp		\
 			gr_RenderInfo.cpp		\
 			gr_Transform.cpp		\
 			gr_Image.cpp			\

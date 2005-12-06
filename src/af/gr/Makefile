@@ -38,7 +38,6 @@ OBJS=		$(PLATFORM_OBJS)					\
 		$(OBJDIR)/gr_CharWidths.$(OBJ_SUFFIX)			\
 		$(OBJDIR)/gr_CharWidthsCache.$(OBJ_SUFFIX)		\
 		$(OBJDIR)/gr_DrawArgs.$(OBJ_SUFFIX)			\
-		$(OBJDIR)/gr_ContextGlyph.$(OBJ_SUFFIX)			\
 		$(OBJDIR)/gr_RenderInfo.$(OBJ_SUFFIX)			\
 		$(OBJDIR)/gr_Graphics.$(OBJ_SUFFIX)			\
 		$(OBJDIR)/gr_Transform.$(OBJ_SUFFIX)			\
