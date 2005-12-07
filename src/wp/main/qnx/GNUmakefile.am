@@ -33,9 +33,9 @@ INCLUDES = \
 
 REPEAT_LIBS = $(ABI_LIBS) $(ABI_LIBS) $(ABI_LIBS) $(ABI_LIBS)
 
-AbiWord_2_4_LDADD = @PLUGIN_LIST@ $(REPEAT_LIBS) $(PLATFORM_LIBS) $(OTHER_LIBS) 
+AbiWord_2_6_LDADD = @PLUGIN_LIST@ $(REPEAT_LIBS) $(PLATFORM_LIBS) $(OTHER_LIBS) 
 
-AbiWord_2_4_SOURCES = abi_ver.cpp QNXMain.cpp
+AbiWord_2_6_SOURCES = abi_ver.cpp QNXMain.cpp
 
 abi_ver.cpp:	@PLUGIN_LIST@
 	cp $(srcdir)/../xp/abi_ver.cpp .

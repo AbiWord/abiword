@@ -34,11 +34,11 @@ REPEAT_LIBS = $(ABI_LIBS) $(ABI_LIBS) $(ABI_LIBS) $(ABI_LIBS)
 WIN_LIBS = -lkernel32 -luser32 -lgdi32 -lwinspool -lcomdlg32 -ladvapi32 \
 			-lshell32 -luuid -lcomctl32 -lole32 -lversion
 
-AbiWord_2_4_LDADD = @PLUGIN_LIST@ $(REPEAT_LIBS) $(PLATFORM_LIBS) $(OTHER_LIBS) $(WIN_LIBS)
+AbiWord_2_6_LDADD = @PLUGIN_LIST@ $(REPEAT_LIBS) $(PLATFORM_LIBS) $(OTHER_LIBS) $(WIN_LIBS)
 
-AbiWord_2_4_LDFLAGS = -mwindows
+AbiWord_2_6_LDFLAGS = -mwindows
 
-AbiWord_2_4_SOURCES = abi_ver.cpp Win32Main.cpp
+AbiWord_2_6_SOURCES = abi_ver.cpp Win32Main.cpp
 
 abi_ver.cpp:	@PLUGIN_LIST@
 	cp $(srcdir)/../xp/abi_ver.cpp .
