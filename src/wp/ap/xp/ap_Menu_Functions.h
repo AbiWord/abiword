@@ -36,6 +36,8 @@ Defun_EV_GetMenuItemState_Fn(ap_GetState_Selection);
 Defun_EV_GetMenuItemState_Fn(ap_GetState_Clipboard);
 Defun_EV_GetMenuItemState_Fn(ap_GetState_CharFmt);
 Defun_EV_GetMenuItemState_Fn(ap_GetState_BlockFmt);
+Defun_EV_GetMenuItemState_Fn(ap_GetState_SectFmt);
+Defun_EV_GetMenuItemState_Fn(ap_GetState_DocFmt);
 Defun_EV_GetMenuItemState_Fn(ap_GetState_Window);
 Defun_EV_GetMenuItemState_Fn(ap_GetState_View);
 Defun_EV_GetMenuItemState_Fn(ap_GetState_Suggest);
