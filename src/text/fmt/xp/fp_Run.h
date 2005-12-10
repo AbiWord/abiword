@@ -924,6 +924,7 @@ public:
 	virtual void			_draw(dg_DrawArgs* pDA) { _defaultDraw(pDA); }
 	virtual UT_uint32		needsFrequentUpdates(){return FIELD_UPDATE_ENDNOTE;};
 	UT_uint32				getPID() const {return m_iPID;}
+
 private:
 	UT_uint32 m_iPID;
 };
@@ -941,6 +942,7 @@ public:
 	virtual void			_draw(dg_DrawArgs* pDA) { _defaultDraw(pDA); }
 	virtual UT_uint32		needsFrequentUpdates(){return FIELD_UPDATE_ENDNOTE;};
 	UT_uint32				getPID() const {return m_iPID;}
+
 private:
 	UT_uint32 m_iPID;
 };
@@ -957,6 +959,7 @@ public:
 	virtual void			_draw(dg_DrawArgs* pDA) { _defaultDraw(pDA); }
 	virtual UT_uint32		needsFrequentUpdates(){return FIELD_UPDATE_ENDNOTE;};
 	UT_uint32				getPID() const {return m_iPID;}
+
 private:
 	UT_uint32 m_iPID;
 };
@@ -973,6 +976,7 @@ public:
 	virtual void			_draw(dg_DrawArgs* pDA) { _defaultDraw(pDA); }
 	virtual UT_uint32		needsFrequentUpdates(){return FIELD_UPDATE_ENDNOTE;};
 	UT_uint32				getPID() const {return m_iPID;}
+
 private:
 	UT_uint32 m_iPID;
 };
