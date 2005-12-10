@@ -93,7 +93,6 @@ GR_UnixPangoItem::GR_UnixPangoItem(PangoItem *pi):
 
 		m_iType = UT_hash32((const char *) &b, 2 * sizeof(void*));
 	}
-	
 }
 
 class GR_UnixPangoRenderInfo : public GR_RenderInfo
@@ -114,7 +113,7 @@ class GR_UnixPangoRenderInfo : public GR_RenderInfo
 	virtual ~GR_UnixPangoRenderInfo()
 	{
 		delete [] m_pJustify; delete [] m_pLogOffsets; delete [] m_pLogAttrs;
-
+		pango_glyph_string_free(m_pGlyphs);
 		s_iInstanceCount--;
 #if 0
 		if(!s_iInstanceCount)
@@ -223,6 +222,11 @@ GR_UnixPangoGraphics::GR_UnixPangoGraphics()
 
 GR_UnixPangoGraphics::~GR_UnixPangoGraphics()
 {
+	g_object_unref(m_pContext);
+	// NB: m_pFontMap is owned by Pango
+
+	_destroyFonts();
+	delete m_pPFontGUI;
 }
 
 GR_Graphics *   GR_UnixPangoGraphics::graphicsAllocator(GR_AllocInfo& info)
@@ -396,6 +400,7 @@ bool GR_UnixPangoGraphics::shape(GR_ShapingInfo & si, GR_RenderInfo *& ri)
 	if(RI->m_pGlyphs)
 	{
 		pango_glyph_string_free(RI->m_pGlyphs);
+		RI->m_pGlyphs = NULL;
 	}
 	
 	RI->m_pGlyphs = pango_glyph_string_new();
