@@ -1577,6 +1577,9 @@ static enum EUniCat categoriseUniChar(UT_UCS4Char c) {
 	 * letters) for all code blocks below "Armenian". If it belongs to the
 	 * "Armenian" block or above we assume CJK like atomic letters.
 	 *
+	 * I have extended that up to 0x0800, so that Hebrew, Arabic and Syriac mostly work
+	 * (see bug 9792); this might need some fine tuning though.
+	 *
 	 * This is not sensible, but it should at least mean that Greek, Cyrillic,
 	 * maybe Korean, Chinese and maybe Japanese get handled OK.
 	 */
