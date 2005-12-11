@@ -221,6 +221,8 @@ EV_Menu_ActionSet * AP_CreateMenuActionSet(void)
 
 	_s(AP_MENU_ID_FMT_DIRECTION,  1,0,0,0, NULL, NULL, NULL);
 	_s(AP_MENU_ID_FMT_DIRECTION_DD_RTL,0,0,1,0, "toggleDomDirection", ap_GetState_BlockFmt, NULL);
+	_s(AP_MENU_ID_FMT_DIRECTION_SD_RTL,0,0,1,0, "toggleDomDirectionSect", ap_GetState_SectFmt, NULL);
+	_s(AP_MENU_ID_FMT_DIRECTION_DOCD_RTL,0,0,1,0, "toggleDomDirectionDoc", ap_GetState_DocFmt, NULL);
 	_s(AP_MENU_ID_FMT_DIRECTION_DO_LTR,0,0,1,0, "toggleDirOverrideLTR", ap_GetState_CharFmt, NULL);
 	_s(AP_MENU_ID_FMT_DIRECTION_DO_RTL,0,0,1,0, "toggleDirOverrideRTL", ap_GetState_CharFmt, NULL);
 	_s(AP_MENU_ID_FMT_EMBED,0,1,0,0, "editEmbed", NULL, NULL);
