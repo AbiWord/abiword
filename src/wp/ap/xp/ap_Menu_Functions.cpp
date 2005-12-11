@@ -45,6 +45,7 @@
 #include "ie_mailmerge.h"
 #include "fp_TableContainer.h"
 #include "fl_BlockLayout.h"
+#include "pp_AttrProp.h"
 
 #ifdef _WIN32
 #include "ap_Win32App.h" 
