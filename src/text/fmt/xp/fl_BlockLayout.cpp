@@ -521,6 +521,22 @@ void fl_BlockLayout::_lookupProperties(const PP_AttrProp* pBlockAP)
 				pRun->setVisDirection(m_iDomDirection);
 				pRun = pRun->getNextRun();
 			}
+			else if(pRun->getType() == FPRUN_FIELD)
+			{
+				fp_FieldRun * pFR = static_cast<fp_FieldRun*>(pRun);
+				if(pFR->getFieldType() == FPFIELD_endnote_anch  ||
+				   pFR->getFieldType() == FPFIELD_endnote_ref   ||
+				   pFR->getFieldType() == FPFIELD_footnote_anch ||
+				   pFR->getFieldType() == FPFIELD_footnote_ref)
+				{
+					// need to set the direction correctly
+					pRun->setDirection(m_iDomDirection);
+					pRun->setVisDirection(m_iDomDirection);
+					pRun = pRun->getNextRun();
+				}
+
+				pRun = pRun->getNextRun();
+			}
 			else
 				pRun = pRun->getNextRun();
 		}
