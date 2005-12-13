@@ -558,6 +558,11 @@ case "$gnome" in
         AC_MSG_RESULT([Configured with GNOME support.]) ;;
 esac
 
+case "$hildon" in
+     "true")
+	AC_MSG_RESULT([Configured with Hildon/maemo support.]) ;;
+esac
+
 case "$debug" in
      "true" )
         AC_MSG_RESULT([Configured with debugging symbols.]) ;;
