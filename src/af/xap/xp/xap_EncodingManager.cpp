@@ -1585,7 +1585,7 @@ static enum EUniCat categoriseUniChar(UT_UCS4Char c) {
 	 */
 	if (cat == UNKNOWN)
 	{
-		if (c <0x0530) 
+		if (c < 0x0800) 
 			cat = NONATOMIC;
 		else
 			cat = ATOMIC;
