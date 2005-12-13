@@ -1011,7 +1011,7 @@ LRESULT CALLBACK AP_Win32FrameImpl::_DocumentWndProc(HWND hwnd, UINT iMsg, WPARA
 {
 	AP_Win32Frame * f = reinterpret_cast<AP_Win32Frame *>(GetWindowLong(hwnd, GWL_USERDATA));
 
-	if (!f)
+	if (!f || !IsWindow(hwnd))
 	{
 		return UT_DefWindowProc(hwnd, iMsg, wParam, lParam);
 	}
