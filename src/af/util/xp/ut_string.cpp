@@ -151,7 +151,7 @@ char * UT_strdup(const char * szSource)
   UT_return_val_if_fail(szSource, NULL);
 
 	int len = strlen(szSource)+1;
-	if(char * ret = static_cast<char *>(UT_calloc(len, sizeof(char))))
+	if(char * ret = static_cast<char *>(malloc(len * sizeof(char))))
 		return(static_cast<char *>(memcpy(ret, szSource, len)));
 	else
 		return(NULL);
