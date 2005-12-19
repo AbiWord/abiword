@@ -167,6 +167,10 @@ public:
 	virtual void getCoverage(UT_NumberVector& coverage);
 
 	virtual UT_uint32 getDeviceResolution(void) const;
+
+	static  UT_GenericVector<const char*> *   getAllFontNames(void);
+	static  UT_uint32                         getAllFontCount();
+	virtual GR_Font * getDefaultFont(GR_Font::FontFamilyEnum f = GR_Font::FF_Roman);
 	
   protected:
 	// all instances have to be created via GR_GraphicsFactory; see gr_Graphics.h

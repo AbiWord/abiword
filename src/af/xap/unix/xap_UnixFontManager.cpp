@@ -87,6 +87,16 @@ UT_GenericVector<XAP_UnixFont*>* XAP_UnixFontManager::getAllFonts(void)
 	return pVec;
 }
 
+UT_GenericVector<void*>* XAP_UnixFontManager::getAllFontsAsVoid(void)
+{
+	UT_GenericVector<XAP_UnixFont*>* pVec = m_fontHash.enumerate();
+	UT_ASSERT(pVec);
+	if(pVec->getItemCount() > 1)
+		pVec->qsort(compareFontNames);
+	
+	return reinterpret_cast<UT_GenericVector<void*>* >(pVec);
+}
+
 static XAP_UnixFont* buildFont(XAP_UnixFontManager* pFM, FcPattern* fp)
 {
 	unsigned char* fontFile = NULL;

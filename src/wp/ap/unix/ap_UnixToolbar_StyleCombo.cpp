@@ -32,7 +32,7 @@
 #include "xap_App.h"
 #include "ev_UnixToolbar.h"
 #include "ut_debugmsg.h"
-
+#include "gr_UnixPangoGraphics.h"
 
 /*****************************************************************/
 
@@ -120,22 +120,41 @@ bool AP_UnixToolbar_StyleCombo::repopulate(void)
 	{
 		return false;
 	}
+
 	PD_Document *pDocument = static_cast<PD_Document *>(pAD_Doc);
 
+	GR_GraphicsFactory * pGF = XAP_App::getApp()->getGraphicsFactory();
+	if(!pGF)
+	{
+		return false;
+	}
 
+	UT_uint32 iGR = pGF->getDefaultClass(true);
+	
 	// clear anything that's already there
 	m_vecContents.clear();
 	freeStyles();
 
 	// defaults for style combo
-	if (m_pDefaultDesc == NULL) {
-		XAP_UnixFont *pDefaultFont = XAP_UnixFontManager::pFontManager->getDefaultFont ();
-		m_pDefaultDesc = pango_font_description_new ();
-		pango_font_description_set_family (m_pDefaultDesc, pDefaultFont->getName ());
-		// TODO hardcoded default size
-		pango_font_description_set_size (m_pDefaultDesc, 12 * PANGO_SCALE);
-		pango_font_description_set_style (m_pDefaultDesc, pDefaultFont->getPangoStyle ());
-		pango_font_description_set_weight (m_pDefaultDesc, pDefaultFont->getPangoWeight ());
+	if (m_pDefaultDesc == NULL)
+	{
+		if(iGR != GRID_UNIX_PANGO)
+		{
+			XAP_UnixFont *pDefaultFont = XAP_UnixFontManager::pFontManager->getDefaultFont ();
+			m_pDefaultDesc = pango_font_description_new ();
+			pango_font_description_set_family (m_pDefaultDesc, pDefaultFont->getName ());
+			// TODO hardcoded default size
+			pango_font_description_set_size (m_pDefaultDesc, 12 * PANGO_SCALE);
+			pango_font_description_set_style (m_pDefaultDesc, pDefaultFont->getPangoStyle ());
+			pango_font_description_set_weight (m_pDefaultDesc, pDefaultFont->getPangoWeight ());
+		}
+		else
+		{
+			// for now this is hardcoded
+			m_pDefaultDesc = pango_font_description_new ();
+			pango_font_description_set_family (m_pDefaultDesc, "Times");
+			pango_font_description_set_size (m_pDefaultDesc, 12 * PANGO_SCALE);
+		}
 	}
 
 	const char * szName;
@@ -205,7 +224,7 @@ AP_UnixToolbar_StyleCombo::getPangoAttrs (PD_Style *pStyle,
 	}
 
 	if (pStyle->getPropertyExpand ("font-size", value)) {
-		pango_font_description_set_size (desc, UT_convertToDimension (value, DIM_PT) * PANGO_SCALE);
+		pango_font_description_set_size (desc, (gint)(UT_convertToDimension (value, DIM_PT) * PANGO_SCALE));
 	}
 
 	if (pStyle->getPropertyExpand ("font-style", value)) {

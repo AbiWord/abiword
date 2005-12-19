@@ -64,7 +64,10 @@ UnixNull_Graphics * abi_unixnullgraphics_instance = 0;
 // #include <sys/time.h> // tmp just to measure the time that XftInit takes
 
 XAP_UnixApp::XAP_UnixApp(XAP_Args * pArgs, const char * szAppName)
-	: XAP_App(pArgs, szAppName), m_dialogFactory(this), m_controlFactory()
+	: XAP_App(pArgs, szAppName),
+	  m_dialogFactory(this),
+	  m_controlFactory(),
+	  m_fontManager(NULL)
 {
 #if FC_MINOR > 2
 	FcInit();
@@ -266,17 +269,34 @@ const char * XAP_UnixApp::getUserPrivateDirectory()
 
 bool XAP_UnixApp::_loadFonts()
 {
-	// create a font manager for our app to use
-	m_fontManager = new XAP_UnixFontManager();
-	XAP_UnixFontManager::pFontManager = m_fontManager; // set the static variable pFontManager, so we can access our fontmanager from a static context
-	UT_ASSERT(m_fontManager);
-
-	// let it loose
-	UT_DEBUGMSG(("Scavange Fonts started \n"));
-	if (!m_fontManager->scavengeFonts())
-		return false;
+	/*
+	   The Pango graphics factory does not use the fontmanager, and creating it and
+	   loading the fonts represents a significant resource waste. Eventually, I think we
+	   should make the Pango graphics independent of GR_UnixGraphics class, and make the
+	   latter a compile-time option only, or get rid of it altogether.
+	*/
 	
-	UT_DEBUGMSG(("Scavange Fonts finished \n"));
+	GR_GraphicsFactory * pGF = getGraphicsFactory();
+	UT_return_val_if_fail( pGF, false );
+
+	UT_uint32 iGrId = pGF->getDefaultClass(true /*screen*/);
+	
+	
+	if(iGrId != GRID_UNIX_PANGO)
+	{
+		// create a font manager for our app to use
+		m_fontManager = new XAP_UnixFontManager();
+		XAP_UnixFontManager::pFontManager = m_fontManager; // set the static variable pFontManager, so we can access our fontmanager from a static context
+		UT_ASSERT(m_fontManager);
+
+		// let it loose
+		UT_DEBUGMSG(("Scavange Fonts started \n"));
+		if (!m_fontManager->scavengeFonts())
+			return false;
+	
+		UT_DEBUGMSG(("Scavange Fonts finished \n"));
+	}
+	
 	return true;
 }
 

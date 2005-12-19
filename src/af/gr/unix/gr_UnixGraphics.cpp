@@ -1239,9 +1239,17 @@ GR_Font * GR_UnixGraphics::_findFont(const char* pszFontFamily,
 
 GR_Font* GR_UnixGraphics::getDefaultFont(UT_String& fontFamily)
 {
+	UT_return_val_if_fail( m_pFontManager, NULL );
+	
 	static XAP_UnixFontHandle fontHandle(m_pFontManager->getDefaultFont(), 12);
 	fontFamily = fontHandle.getUnixFont()->getName();
 	
+	return &fontHandle;
+}
+
+GR_Font* GR_UnixGraphics::getDefaultFont(GR_Font::FontFamilyEnum f)
+{
+	static XAP_UnixFontHandle fontHandle(m_pFontManager->getDefaultFont(f), 12);
 	return &fontHandle;
 }
 
@@ -1936,3 +1944,5 @@ GR_Graphics *   GR_UnixGraphics::graphicsAllocator(GR_AllocInfo& allocInfo)
 		return new GR_UnixGraphics(allocator.m_pixmap, allocator.m_fontManager, allocator.m_usePixmap);
 	}
 }
+
+

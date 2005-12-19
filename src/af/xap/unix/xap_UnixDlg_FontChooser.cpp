@@ -36,7 +36,9 @@
 #include "xap_Frame.h"
 #include "xap_UnixFrameImpl.h"
 #include "xap_EncodingManager.h"
+#include "xav_View.h"
 #include "gr_UnixGraphics.h"
+#include "gr_UnixPangoGraphics.h"
 
 #define PREVIEW_BOX_BORDER_WIDTH_PIXELS 8
 #define PREVIEW_BOX_HEIGHT_PIXELS	80
@@ -894,15 +896,48 @@ void XAP_UnixDialog_FontChooser::runModal(XAP_Frame * pFrame)
 	model = gtk_tree_view_get_model(GTK_TREE_VIEW(m_fontList));
 	gtk_list_store_clear(GTK_LIST_STORE(model));
 
-	// throw them in the hash save duplicates
-	UT_GenericVector<XAP_UnixFont*>* fonts = m_fontManager->getAllFonts();
-	for (UT_uint32 i = 0; i < fonts->size(); i++)
+	GR_GraphicsFactory * pGF = XAP_App::getApp()->getGraphicsFactory();
+	if(!pGF)
 	{
-		const XAP_UnixFont * pFont = fonts->getNthItem(i);
-		const char * fName = pFont->getName();
+		return;
+	}
 
+	UT_uint32 iGR = pGF->getDefaultClass(true);
+	
+	UT_GenericVector<XAP_UnixFont*>* fonts = NULL;
+	UT_GenericVector<const char*>* names = NULL;
+	UT_uint32 iCount = 0;
+	
+	if(iGR != GRID_UNIX_PANGO)
+	{
+		fonts = XAP_UnixFontManager::pFontManager->getAllFonts();
+		UT_return_if_fail( fonts );
+		iCount = fonts->size();
+	}
+	else
+	{
+		names = GR_UnixPangoGraphics::getAllFontNames();
+		UT_return_if_fail( names );
+		iCount = names->size();
+	}
+	
+	for (UT_uint32 i = 0; i < iCount; i++)
+	{
+		const char * fName = NULL;
+		
+		if(iGR != GRID_UNIX_PANGO)
+		{
+			const XAP_UnixFont * pFont = fonts->getNthItem(i);
+			fName = pFont->getName();
+		}
+		else
+		{
+			fName = names->getNthItem(i);
+		}
+		
+		
 		if (!fontHash.contains(fName, NULL))
-		  {
+		{
 		    fontHash.insert(fName,
 				    static_cast<const void *>(fName));
 
@@ -914,7 +949,7 @@ void XAP_UnixDialog_FontChooser::runModal(XAP_Frame * pFrame)
 	}
 
 	DELETEP(fonts);
-
+	DELETEP(names);
 
 	// Set the defaults in the list boxes according to dialog data
 	gint foundAt = 0;

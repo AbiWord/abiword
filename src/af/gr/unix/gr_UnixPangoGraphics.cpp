@@ -1297,6 +1297,81 @@ void GR_UnixPangoGraphics::getCoverage(UT_NumberVector& coverage)
 	UT_ASSERT_HARMLESS( UT_NOT_IMPLEMENTED );
 }
 
+UT_GenericVector<const char *> *  GR_UnixPangoGraphics::getAllFontNames(void)
+{
+	FcFontSet* fs;
+	fs = FcConfigGetFonts(FcConfigGetCurrent(), FcSetSystem);
+
+	UT_GenericVector<const char *> * pVec = new UT_GenericVector<const char *>;
+
+	UT_return_val_if_fail( pVec, NULL );
+	
+	for(UT_sint32 i = 0; i < fs->nfont; ++i)
+	{
+		unsigned char *family;
+		FcPatternGetString(fs->fonts[i], FC_FAMILY, 0, &family);
+		pVec->addItem((const char *)family);
+	}
+
+	return pVec;
+}
+
+UT_uint32 GR_UnixPangoGraphics::getAllFontCount()
+{
+	FcFontSet* fs;
+	fs = FcConfigGetFonts(FcConfigGetCurrent(), FcSetSystem);
+	return fs->nfont;
+}
+
+GR_Font * GR_UnixPangoGraphics::getDefaultFont(GR_Font::FontFamilyEnum f)
+{
+	const char* pszFontFamily = NULL;
+	const char* pszFontStyle = "normal";
+	const char* pszFontVariant = "normal";
+	const char* pszFontWeight = "normal";
+	const char* pszFontStretch = "normal";
+	const char* pszFontSize = "12pt";
+
+	switch (f)
+	{
+		case GR_Font::FF_Roman:
+			pszFontFamily = "Times";
+			break;
+
+		case GR_Font::FF_Swiss:
+			pszFontFamily = "Helvetica";
+			break;
+
+		case GR_Font::FF_Modern:
+			pszFontFamily = "Courier";
+			break;
+
+		case GR_Font::FF_Script:
+			pszFontFamily = "Cursive";
+			break;
+
+		case GR_Font::FF_Decorative:
+			pszFontFamily = "Old English";
+			break;
+
+		case GR_Font::FF_Technical:
+		case GR_Font::FF_BiDi:
+			pszFontFamily = "Arial";
+			break;
+			
+		default:
+			UT_ASSERT(UT_SHOULD_NOT_HAPPEN);
+	}
+
+	return findFont(pszFontFamily,
+					pszFontStyle,
+					pszFontVariant,
+					pszFontWeight,
+					pszFontStretch,
+					pszFontSize);
+}
+
+
 GR_Font * GR_UnixPangoGraphics::getGUIFont(void)
 {
 	if (!m_pPFontGUI)
@@ -1897,3 +1972,4 @@ void GR_UnixPangoPrintGraphics::setLineProperties (double inWidth,
 	UT_return_if_fail( m_pGnomePrint );
 	m_pGnomePrint->setLineProperties(inWidth, inJoinStyle, inCapStyle, inLineStyle);
 }
+

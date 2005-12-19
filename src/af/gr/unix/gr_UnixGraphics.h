@@ -107,6 +107,7 @@ class GR_UnixGraphics : public GR_Graphics
 	virtual GR_Font*	getGUIFont();
 
 	virtual GR_Font*	getDefaultFont(UT_String& fontFamily);
+	virtual GR_Font *   getDefaultFont(GR_Font::FontFamilyEnum f = GR_Font::FF_Roman);
 
 	virtual UT_uint32	getFontAscent();
 	virtual UT_uint32	getFontDescent();
