@@ -1,7 +1,7 @@
 # Dutch po for AbiWord.
 # Copyright (C) 2001 Free Software Foundation, Inc.
 # Copyright (C) 2001 Albi <albi@linuxfan.com> <onderste@casema.net>
-# Copyright (C) 2002-2004 Marc Maurer <j.m.maurer@student.utwente.nl>
+# Copyright (C) 2002-2004 Marc Maurer <uwog@uwog.net>
 # Reinout van Schouwen <reinout@cs.vu.nl>, 2004-2005
 # 
 msgid ""
