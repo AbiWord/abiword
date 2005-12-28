@@ -64,7 +64,9 @@ static UT_sint32 compareAPBinary(const void * vX1, const void * vX2)
 	return 0;
 }
 
-pp_TableAttrProp::pp_TableAttrProp()
+pp_TableAttrProp::pp_TableAttrProp():
+	m_vecTable(54,4,true), // there seems to be 50+ of these at the moment
+	m_vecTableSorted(54,4,true)
 {
 }
 

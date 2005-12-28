@@ -197,7 +197,8 @@ bool AP_BuiltinStringSet::dumpBuiltinSet(const char * szFilename) const
 //////////////////////////////////////////////////////////////////
 
 AP_DiskStringSet::AP_DiskStringSet(XAP_App * pApp)
-	: XAP_DiskStringSet(pApp)
+	: XAP_DiskStringSet(pApp),
+	  m_vecStringsAP(AP_STRING_ID__LAST__ - AP_STRING_ID__FIRST__ + 1, 4, true)
 {
 	setValue(AP_STRING_ID__FIRST__,0);			// bogus zero element
 }

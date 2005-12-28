@@ -34,7 +34,7 @@
 #include "ut_types.h"
 #endif
 #include "ut_assert.h"
-
+#include "ut_debugmsg.h"
 // ----------------------------------------------------------------
 
 #define UT_VECTOR_CLEANUP(d, v, r) \
@@ -81,7 +81,11 @@ template <class T> class ABI_EXPORT UT_GenericVector
 public:
 	typedef int (*compar_fn_t) (const void *, const void *);
 
-	UT_GenericVector(UT_uint32 sizehint = 2048, UT_uint32 baseincr = 256);
+	// Real-life tests shown that vast majority of our vectors contain less than 4 items
+	// and virtually all contains less than 32 elements; I have adjusted the initial
+	// values accordingly. Where vectors are known to be larger, bigger values should be
+	// passed to the constructor, and, if approprite, pre-allocation forced
+	UT_GenericVector(UT_uint32 sizehint = 32, UT_uint32 baseincr = 4, bool bPrealloc = false);
 	UT_GenericVector(const UT_GenericVector<T>&);
 	UT_GenericVector<T>& operator=(const UT_GenericVector<T>&);
 	virtual ~UT_GenericVector();
@@ -142,11 +146,22 @@ typedef ABI_EXPORT UT_GenericVector<UT_sint32> UT_NumberVector;
 #include <stdlib.h>
 #include <string.h>
 
+/*!
+    sizehint: expected size of the vector
+    
+    baseincr: the amount by which the internal storage will grow once the sizehint has
+              been reached (until then, the size gets doubled)
+
+    bPrealoc: if true, we immediately allocate storage of at least sizehint (otherwise the
+              space will be allocated when first item is inserted to baseincr)
+ */
 template <class T>
-UT_GenericVector<T>::UT_GenericVector(UT_uint32 sizehint, UT_uint32 baseincr)
+UT_GenericVector<T>::UT_GenericVector(UT_uint32 sizehint, UT_uint32 baseincr, bool bPrealoc)
   : m_pEntries(NULL), m_iCount(0), m_iSpace(0),
     m_iCutoffDouble(sizehint), m_iPostCutoffIncrement(baseincr)
 {
+	if(bPrealoc)
+		grow(sizehint);
 }
 
 template <class T>
@@ -173,15 +188,26 @@ UT_GenericVector<T>& UT_GenericVector<T>::operator=(const UT_GenericVector<T>& u
 template <class T>
 void UT_GenericVector<T>::clear()
 {
+	if(m_iCount > m_iCutoffDouble)
+	{
+		UT_DEBUGMSG(("Vector contained %d entries, allocated %d slots\n", m_iCount, m_iSpace));
+	}
+	
 	m_iCount = 0;
 	m_iSpace = 0;
 	FREEP(m_pEntries);
 	m_pEntries = NULL;
 }
 
+
 template <class T>
 UT_GenericVector<T>::~UT_GenericVector()
 {
+	if(m_iCount >  m_iCutoffDouble)
+	{
+		UT_DEBUGMSG(("Vector contained %d entries, allocated %d slots\n", m_iCount, m_iSpace));
+	}
+	
 	FREEP(m_pEntries);
 }
 
@@ -197,6 +223,7 @@ UT_sint32 UT_GenericVector<T>::grow(UT_uint32 ndx)
 		new_iSpace = m_iPostCutoffIncrement;
 	}
 	else if (m_iSpace < m_iCutoffDouble) {
+		xxx_UT_DEBUGMSG(("Vector growing (%d -> %d\n", m_iSpace, ndx));
 		new_iSpace = m_iSpace * 2;
 	}
 	else {

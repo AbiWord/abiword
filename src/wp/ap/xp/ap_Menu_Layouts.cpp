@@ -53,7 +53,8 @@
 	class _vectt
 	{
 	public:
-		_vectt(_tt * orig)
+		_vectt(_tt * orig):
+			m_Vec_lt(orig->m_nrEntries, 4, true)
 			{
 				m_name = orig->m_name;
 		        m_emc = orig->m_emc;

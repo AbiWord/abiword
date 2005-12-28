@@ -312,7 +312,11 @@ EV_UnixMenu::EV_UnixMenu(XAP_UnixApp * pUnixApp,
 						 const char * szMenuLabelSetName)
 	: EV_Menu(pUnixApp, pUnixApp->getEditMethodContainer(), szMenuLayoutName, szMenuLabelSetName),
 	  m_pUnixApp(pUnixApp),
-      m_pFrame(pFrame)
+	  m_pFrame(pFrame),
+	  // there are 189 callbacks at the moment. This is a large vector, but we do not want
+	  // it to grow too fast (it has the lifespan of the application, and so we do not
+	  // want too much empty space in it)
+	  m_vecCallbacks(189,4, true)
 {
 	m_accelGroup = gtk_accel_group_new();
 	

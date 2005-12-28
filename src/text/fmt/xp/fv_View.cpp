@@ -5764,7 +5764,9 @@ bool FV_View::getBlockFormat(const XML_Char *** pProps,bool bExpandStyles)
 	{
 		return false;
 	}
-	UT_GenericVector<_fmtPair *> v;
+
+	// currently there are 69 block level properties
+	UT_GenericVector<_fmtPair *> v(69,4,true);
 	UT_uint32 i;
 	_fmtPair * f = NULL;
 

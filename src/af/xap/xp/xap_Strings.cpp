@@ -178,7 +178,8 @@ const XML_Char * XAP_BuiltinStringSet::getValue(XAP_String_Id id) const
 //////////////////////////////////////////////////////////////////
 
 XAP_DiskStringSet::XAP_DiskStringSet(XAP_App * pApp)
-	: XAP_StringSet(pApp,NULL)
+	: XAP_StringSet(pApp,NULL),
+	  m_vecStringsXAP(XAP_STRING_ID__LAST__ - XAP_STRING_ID__FIRST__ + 1, 4, true)
 {
 	m_pFallbackStringSet = NULL;
 

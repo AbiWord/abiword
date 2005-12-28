@@ -1286,7 +1286,9 @@ UT_GenericVector<const char *> *  GR_UnixPangoGraphics::getAllFontNames(void)
 	FcFontSet* fs;
 	fs = FcConfigGetFonts(FcConfigGetCurrent(), FcSetSystem);
 
-	UT_GenericVector<const char *> * pVec = new UT_GenericVector<const char *>;
+	// we know how many fonts there are, so we tell the vector constructor
+	UT_GenericVector<const char *> * pVec =
+		new UT_GenericVector<const char *>(fs->nfont,fs->nfont);
 
 	UT_return_val_if_fail( pVec, NULL );
 	
