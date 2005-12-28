@@ -68,7 +68,10 @@ class ABI_EXPORT GR_UnixPangoFont : public GR_Font
 
 	virtual const char* getFamily() const;
 	const PangoFontDescription * getPangoDescription() const {return m_pfd;}
-	
+
+	// ascent/descent in layout units
+	UT_uint32         getAscent() const {return m_iAscent;}
+	UT_uint32         getDescent() const {return m_iDescent;}
 	
   private:
 	UT_String              m_sDesc;
@@ -78,6 +81,9 @@ class ABI_EXPORT GR_UnixPangoFont : public GR_Font
 	bool                   m_bGuiFont;
 	PangoCoverage *        m_pCover;
 	PangoFontDescription * m_pfd;
+
+	UT_uint32              m_iAscent;
+	UT_uint32              m_iDescent;
 };
 
 class GR_UnixPangoRenderInfo;
@@ -171,6 +177,12 @@ public:
 	static  UT_GenericVector<const char*> *   getAllFontNames(void);
 	static  UT_uint32                         getAllFontCount();
 	virtual GR_Font * getDefaultFont(GR_Font::FontFamilyEnum f = GR_Font::FF_Roman);
+
+	int dtpu(int d) const;
+	int ptdu(int p) const;
+	int ptlu(int p) const;
+	int ltpu(int l) const;
+	int pftlu(int pf) const;
 	
   protected:
 	// all instances have to be created via GR_GraphicsFactory; see gr_Graphics.h
@@ -182,12 +194,6 @@ public:
 	void _scaleCharacterMetrics(GR_UnixPangoRenderInfo & RI);
 	void _scaleJustification(GR_UnixPangoRenderInfo & RI);
 	
-	int _dtpu(int d) const;
-	int _ptdu(int p) const;
-	int _ptlu(int p) const;
-	int _ltpu(int l) const;
-	int _pftlu(int pf) const;
-
   protected:
 	PangoFontMap *    m_pFontMap;
 	PangoContext *    m_pContext;
