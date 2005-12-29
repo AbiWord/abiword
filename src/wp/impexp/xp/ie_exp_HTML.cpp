@@ -60,6 +60,9 @@
 #include "px_CR_Span.h"
 #include "px_CR_Strux.h"
 #include "ut_mbtowc.h"
+#include "xap_Frame.h"
+#include "xav_View.h"
+#include "gr_Graphics.h"
 
 #include "fd_Field.h"
 
@@ -6547,7 +6550,18 @@ bool IE_Exp_HTML::_openFile (const char * szFilename)
 	XAP_Frame * pFrame = getDoc()->getApp()->getLastFocussedFrame ();
 
 	if (m_bSuppressDialog || !pFrame) return IE_Exp::_openFile (szFilename);
-
+	if(pFrame)
+	{
+			AV_View * pView = pFrame->getCurrentView();
+			if(pView)
+			{
+				GR_Graphics * pG = pView->getGraphics();
+				if(pG && pG->queryProperties(GR_Graphics::DGP_PAPER))
+				{
+					return IE_Exp::_openFile (szFilename);
+				}
+			}
+		}
 	/* run the dialog
 	 */
 
