@@ -562,6 +562,7 @@ private:
 	void    _emitTOC ();
 
 	PD_Document *				m_pDocument;
+	PT_AttrPropIndex			m_apiLastSpan;
 	IE_Exp_HTML *				m_pie;
 	bool						m_bClipBoard;
 	bool						m_bTemplateBody;
@@ -2625,10 +2626,13 @@ void s_HTML_Listener::_openSpan (PT_AttrPropIndex api)
 	const PP_AttrProp * pAP = 0;
 	bool bHaveProp = (api ? (m_pDocument->getAttrProp (api, &pAP)) : false);
 	
+	if (m_bInSpan && m_apiLastSpan == api)
+		return;
+	
 	if (!bHaveProp || (pAP == 0))
 	{
 		if (m_bInSpan) _closeSpan ();
-		return;
+			return;
 	}
 
 	const XML_Char * szA_Style = 0;
@@ -2894,7 +2898,7 @@ void s_HTML_Listener::_openSpan (PT_AttrPropIndex api)
 
 					tagOpen (TT_BDO, m_utf8_1, ws_None);
 				}
-
+		m_apiLastSpan = api;
 		m_bInSpan = true;
 	}
 	else if (m_bInSpan) _closeSpan ();
@@ -4170,6 +4174,7 @@ s_HTML_Listener::s_HTML_Listener (PD_Document * pDocument, IE_Exp_HTML * pie, bo
 								  UT_UTF8String & linkCSS,
 								  UT_UTF8String & title) :
 	m_pDocument (pDocument),
+		m_apiLastSpan(0),
 		m_pie(pie),
 		m_bClipBoard(bClipBoard),
 		m_bTemplateBody(bTemplateBody),
