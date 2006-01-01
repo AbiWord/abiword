@@ -48,6 +48,7 @@ public:
   UT_uint32                   m_iZoom;
 };
 
+class fp_Run;
 class ABI_EXPORT GR_EmbedManager
 {
 public:
@@ -75,6 +76,8 @@ public:
     virtual bool           convert(UT_uint32 iConvType, UT_ByteBuf & pFrom, UT_ByteBuf & pTo);
     virtual bool           isEdittable(UT_sint32 uid);
     virtual bool           isResizeable(UT_sint32 uid);
+	virtual void		   setRun (UT_sint32 uid, fp_Run * run);
+
 private:
     GR_Graphics *               m_pG;
     UT_GenericVector<GR_EmbedView *>   m_vecSnapshots;
