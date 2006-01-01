@@ -160,6 +160,7 @@ GR_Image * GR_UnixImage::createImageSegment(GR_Graphics * pG,const UT_Rect & rec
 // Make a copy so we don't have to worry about ref counting the orginal.
 //
 	pImage->m_image = gdk_pixbuf_copy(pImage->m_image);
+	pImage->setDisplaySize(width,height);
 	return static_cast<GR_Image *>(pImage);
 }
 
