@@ -109,6 +109,7 @@ void fp_EmbedRun::_lookupProperties(const PP_AttrProp * pSpanAP,
 	  m_iEmbedUID = getEmbedManager()->makeEmbedView(pDoc,m_iIndexAP,m_pszDataID);
 	  UT_DEBUGMSG((" EmbedRun %x UID is %d \n",this,m_iEmbedUID));
 	  getEmbedManager()->initializeEmbedView(m_iEmbedUID);
+	  getEmbedManager()->setRun (m_iEmbedUID, this);
 	  getEmbedManager()->loadEmbedData(m_iEmbedUID);
 	}
 	getEmbedManager()->setDefaultFontSize(m_iEmbedUID,atoi(pszSize));
