@@ -536,7 +536,7 @@ AC_CONFIG_FILES([
  src/pkg/linux/apkg/abiword-gnome.apspec
  src/pkg/linux/apkg/abiword-gtk.apspec
  src/pkg/maemo/debian/misc/abiword.desktop
- src/pkg/maemo/debian/misc/org.abisource.abiword.service
+ src/pkg/maemo/debian/misc/osso-abiword.service
 ])
 AC_OUTPUT
 
@@ -556,6 +556,11 @@ esac
 case "$gnome" in
      "true" )
         AC_MSG_RESULT([Configured with GNOME support.]) ;;
+esac
+
+case "$hildon" in
+     "true")
+	AC_MSG_RESULT([Configured with Hildon/maemo support.]) ;;
 esac
 
 case "$debug" in

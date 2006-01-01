@@ -246,6 +246,7 @@ void AP_CocoaDialog_Options::runModal(XAP_Frame * pFrame)
 
 	defn(Switch_AutoSave,				AP_PreferenceScheme::bo_AutoSave);
 	defn(Switch_CheckSpelling,			AP_PreferenceScheme::bo_CheckSpelling);
+	defn(Switch_CheckGrammar,			AP_PreferenceScheme::bo_CheckGrammar);
 	defn(Switch_CursorBlink,			AP_PreferenceScheme::bo_CursorBlink);
 	defn(Switch_DirectionMarkers,		AP_PreferenceScheme::bo_DirectionMarkers);
 	defn(Switch_DirectionRTL,			AP_PreferenceScheme::bo_DirectionRTL);
@@ -339,6 +340,7 @@ void AP_CocoaDialog_Options::runModal(XAP_Frame * pFrame)
 	LocalizeControl(oSwitch_DirectionMarkers,		pSS,XAP_STRING_ID_DLG_Options_Label_DirMarkerAfterClosingParenthesis);
 
 	LocalizeControl(oSwitch_CheckSpelling,			pSS, AP_STRING_ID_DLG_Options_Label_SpellCheckAsType);
+	LocalizeControl(oSwitch_CheckGrammar,			pSS, AP_STRING_ID_DLG_Options_Label_GrammarCheck);
 	LocalizeControl(oSwitch_HighlightMisspelled,	pSS, AP_STRING_ID_DLG_Options_Label_SpellHighlightMisspelledWords);
 	LocalizeControl(oSwitch_SuggestCorrections,		pSS, AP_STRING_ID_DLG_Options_Label_SpellSuggest);
 	LocalizeControl(oSwitch_MainDictionaryOnly,		pSS, AP_STRING_ID_DLG_Options_Label_SpellMainOnly);
@@ -359,6 +361,7 @@ void AP_CocoaDialog_Options::runModal(XAP_Frame * pFrame)
 // TODO: schemes popup
 // TODO: page sizes popup
 // TODO: custom dictionaries popup
+// ?? AP_STRING_ID_DLG_Options_Label_Grammar
 
 	// ...
 

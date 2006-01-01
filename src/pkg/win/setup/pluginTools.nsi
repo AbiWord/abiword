@@ -528,18 +528,20 @@ Section "Uninstall"
 	; AbiScriptHappy
 	Delete "$INSTDIR\AbiScriptHappy.dll"
 
-!ifdef 0
 	; AbiMathView
 	Delete "$INSTDIR\AbiMathView.dll"
-	Delete "$INSTDIR\..\..\math\gtkmathview.conf.xml"
+	Delete "$INSTDIR\..\bin\libmathview_frontend_libxml2-0.dll"
+	Delete "$INSTDIR\..\bin\libmathview-0.dll"
 	Delete "$INSTDIR\..\..\math\dictionary.xml"
-	Delete "$INSTDIR\..\bin\libxml2.dll"
-!endif
+	Delete "$INSTDIR\..\..\math\dictionary-local.xml"
+	Delete "$INSTDIR\..\..\math\gtkmathview.conf.xml"
+	RMDir "$INSTDIR\..\..\math\"
+	; Note: we can't remove dependencies because they may be used by imp/exp plugins
 
 	; AbiGrammar
 	Delete "$INSTDIR\AbiGrammar.dll"
 	Delete "$INSTDIR\..\bin\liblink-grammar-4.dll"
-	Delete "$INSTDIR\..\bin\en\*"
+	RMDir /r "$INSTDIR\..\bin\en\"
 
 	; remove uninstaller
 	Delete /REBOOTOK "$INSTDIR\UninstallAbiWordToolsPlugins.exe"

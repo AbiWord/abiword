@@ -70,7 +70,6 @@ public:
 	static int    m_iVersion;
 	static int    m_iHelp;
 	static const char * m_sDisplay;
-	static int    m_iAbiControl;
 	static const char * m_sMerge;
 
 	static const char * m_impProps;

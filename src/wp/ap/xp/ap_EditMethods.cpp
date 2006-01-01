@@ -504,6 +504,8 @@ public:
 	static EV_EditMethod_Fn toggleDirOverrideLTR;
 	static EV_EditMethod_Fn toggleDirOverrideRTL;
 	static EV_EditMethod_Fn toggleDomDirection;
+	static EV_EditMethod_Fn toggleDomDirectionSect;
+	static EV_EditMethod_Fn toggleDomDirectionDoc;
 
 	static EV_EditMethod_Fn doBullets;
 	static EV_EditMethod_Fn doNumbers;
@@ -1081,6 +1083,8 @@ static EV_EditMethod s_arrayEditMethods[] =
 	EV_EditMethod(NF(toggleDirOverrideLTR), 0,	""),
 	EV_EditMethod(NF(toggleDirOverrideRTL), 0,	""),
 	EV_EditMethod(NF(toggleDomDirection),	0,	""),
+	EV_EditMethod(NF(toggleDomDirectionDoc),	0,	""),
+	EV_EditMethod(NF(toggleDomDirectionSect),	0,	""),
 	EV_EditMethod(NF(toggleHidden),			0,	""),
 	EV_EditMethod(NF(toggleIndent),         0,  ""),
 	EV_EditMethod(NF(toggleInsertMode), 	0,  ""),
@@ -11450,6 +11454,67 @@ Defun1(toggleDomDirection)
 	return true;
 }
 
+
+Defun1(toggleDomDirectionSect)
+{
+	CHECK_FRAME;
+	ABIWORD_VIEW;
+
+	const XML_Char * properties[] = { "dom-dir", NULL, 0};
+	const XML_Char drtl[]	= "rtl";
+	const XML_Char dltr[]	= "ltr";
+
+	fl_BlockLayout * pBl = pView->getCurrentBlock();
+	UT_return_val_if_fail( pBl, false );
+
+	fl_DocSectionLayout * pSL = pBl->getDocSectionLayout();
+	UT_return_val_if_fail( pSL, false );
+	
+	if(pSL->getColumnOrder())
+	{
+		properties[1] = static_cast<const XML_Char *>(&dltr[0]);
+	}
+	else
+	{
+		properties[1] = static_cast<const XML_Char *>(&drtl[0]);
+	}
+
+	pView->setSectionFormat(properties);
+
+	return true;
+}
+
+Defun1(toggleDomDirectionDoc)
+{
+	CHECK_FRAME;
+	ABIWORD_VIEW;
+
+	PD_Document * pDoc = pView->getDocument();
+	UT_return_val_if_fail(pDoc,false);
+
+	const PP_AttrProp * pAP = pDoc->getAttrProp();
+	UT_return_val_if_fail( pAP, false );
+
+	const XML_Char * properties[] = { "dom-dir", NULL, 0};
+	const XML_Char drtl[]	= "rtl";
+	const XML_Char dltr[]	= "ltr";
+	const XML_Char * szValue;
+	
+	UT_return_val_if_fail(pAP->getProperty(properties[0], szValue), false);
+	
+	if(!strcmp(szValue, drtl))
+	{
+		properties[1] = static_cast<const XML_Char *>(&dltr[0]);
+	}
+	else
+	{
+		properties[1] = static_cast<const XML_Char *>(&drtl[0]);
+	}
+
+	UT_return_val_if_fail(pDoc->setProperties(properties), false);
+
+	return true;
+}
 
 Defun1(doBullets)
 {

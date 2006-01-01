@@ -55,7 +55,6 @@ int    AP_Args::m_iVersion = 0;
 int    AP_Args::m_iHelp = 0;
 const char * AP_Args::m_sDisplay = NULL;
 struct poptOption * AP_Args::options = NULL;
-int  AP_Args::m_iAbiControl = 0;
 const char * AP_Args::m_sMerge = NULL;
 
 const char * AP_Args::m_impProps=NULL;
@@ -217,7 +216,6 @@ const struct poptOption AP_Args::const_opts[] =
 	 {"merge", 'm', POPT_ARG_STRING, &m_sMerge, 0, "Mail-merge", "FILE"},
 	 {"imp-props", 'i', POPT_ARG_STRING, &m_impProps, 0, "Importer Arguments", "CSS String"},
 	 {"exp-props", 'e', POPT_ARG_STRING, &m_expProps, 0, "Exporter Arguments", "CSS String"},
-	 {"AbiControl", '\0', POPT_ARG_NONE, &m_iAbiControl, 0, "Execute plugin AbiControl instead of the main application", ""},
 	 {"thumb",'\0',POPT_ARG_INT,&m_iToThumb,0,"Make a thumb nail of the first page",""},
 	 {"sizeXY",'S',POPT_ARG_STRING,&m_sThumbXY,0,"Size of PNG thumb nail in pixels","VALxVAL"},
 	 {"name",'o',POPT_ARG_STRING,&m_sThumb,0,"Name of PNG thumb nail file","Output png file name"},

@@ -256,8 +256,13 @@ GR_Font* UnixNull_Graphics::_findFont(const char* pszFontFamily,
 	else
 	{
 		// Oops!  We don't have that font here.  substitute something
-		// we know we have (get smarter about this later)
-		item = new XAP_UnixFontHandle(m_fm->getFont("Times New Roman", s),iSize);
+		// we know we have (get smarter about this later)]
+	        XAP_UnixFont *pFont = m_fm->getFont("Times", s);
+		if(pFont == NULL)
+		{
+		    pFont = m_fm->findNearestFont("Times","normal",NULL,NULL,NULL,pszFontSize,this);
+		}
+		item = new XAP_UnixFontHandle(pFont,iSize);
 	}
 
 	xxx_UT_DEBUGMSG(("SEVIOR: Using PS Font Size %d \n",iSize));

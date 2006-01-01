@@ -1956,8 +1956,42 @@ bool fl_DocSectionLayout::doclistener_changeStrux(const PX_ChangeRecord_StruxCha
 {
 	UT_ASSERT(pcrxc->getType()==PX_ChangeRecord::PXT_ChangeStrux);
 
-
+	PT_AttrPropIndex IndexOld = getAttrPropIndex();
+	
 	setAttrPropIndex(pcrxc->getIndexAP());
+
+	const PP_AttrProp * pAP1;
+	getDocument()->getAttrProp(IndexOld, &pAP1);
+
+	const PP_AttrProp * pAP2;
+	getDocument()->getAttrProp(pcrxc->getIndexAP(), &pAP2);
+
+	if(!pAP1 || !pAP2)
+	{
+		getDocLayout()->rebuildFromHere(this);
+	}
+
+	const XML_Char * prop = "dom-dir";
+	const XML_Char * val1 = NULL;
+	const XML_Char * val2 = NULL;
+
+	pAP1->getProperty(prop, val1);
+	pAP2->getProperty(prop, val2);
+
+	if(!val1 || !val2 || strcmp(val1, val2))
+	{
+		lookupProperties();
+		fl_ContainerLayout * pCL = getFirstLayout();
+		while(pCL)
+		{
+			pCL->lookupProperties();
+			pCL = pCL->getNext();
+		}
+		
+		getDocLayout()->rebuildFromHere(this);
+	}
+	
+	
 	return true;
 }
 

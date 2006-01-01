@@ -2323,6 +2323,7 @@ PT_DocPosition FV_View::saveSelectedImage (const UT_ByteBuf ** pBytes)
 	{
 		fl_FrameLayout * pFrame = getFrameLayout();
 		const PP_AttrProp* pAP = NULL;
+		UT_return_val_if_fail(pFrame, 0);
 		pFrame->getAP(pAP);
 		if(pAP == NULL)
 		{

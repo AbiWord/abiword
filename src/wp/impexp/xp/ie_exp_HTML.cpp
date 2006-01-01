@@ -60,6 +60,9 @@
 #include "px_CR_Span.h"
 #include "px_CR_Strux.h"
 #include "ut_mbtowc.h"
+#include "xap_Frame.h"
+#include "xav_View.h"
+#include "gr_Graphics.h"
 
 #include "fd_Field.h"
 
@@ -559,6 +562,7 @@ private:
 	void    _emitTOC ();
 
 	PD_Document *				m_pDocument;
+	PT_AttrPropIndex			m_apiLastSpan;
 	IE_Exp_HTML *				m_pie;
 	bool						m_bClipBoard;
 	bool						m_bTemplateBody;
@@ -581,6 +585,7 @@ private:
 	bool			m_bInSection;
 	bool			m_bInFrame;
 	bool			m_bInTextBox; // Necessary?  Possibly not.  Convenient and safe?  Yes.
+	bool			m_bInTOC;
 	bool			m_bInBlock;
 	bool			m_bInSpan;
 	bool			m_bNextIsSpace;
@@ -903,6 +908,7 @@ void s_HTML_Listener::tagClose (UT_uint32 tagID)
 	if (i == tagID) return;
 
 	UT_DEBUGMSG(("WARNING: possible tag mis-match in XHTML output!\n"));
+	UT_DEBUGMSG(("WARNING:     Tag requested %i, tag found %i", tagID, i));
 }
 
 /* use with *extreme* caution! (this is used by images with data-URLs)
@@ -2622,10 +2628,13 @@ void s_HTML_Listener::_openSpan (PT_AttrPropIndex api)
 	const PP_AttrProp * pAP = 0;
 	bool bHaveProp = (api ? (m_pDocument->getAttrProp (api, &pAP)) : false);
 	
+	if (m_bInSpan && m_apiLastSpan == api)
+		return;
+	
 	if (!bHaveProp || (pAP == 0))
 	{
 		if (m_bInSpan) _closeSpan ();
-		return;
+			return;
 	}
 
 	const XML_Char * szA_Style = 0;
@@ -2891,7 +2900,7 @@ void s_HTML_Listener::_openSpan (PT_AttrPropIndex api)
 
 					tagOpen (TT_BDO, m_utf8_1, ws_None);
 				}
-
+		m_apiLastSpan = api;
 		m_bInSpan = true;
 	}
 	else if (m_bInSpan) _closeSpan ();
@@ -4167,6 +4176,7 @@ s_HTML_Listener::s_HTML_Listener (PD_Document * pDocument, IE_Exp_HTML * pie, bo
 								  UT_UTF8String & linkCSS,
 								  UT_UTF8String & title) :
 	m_pDocument (pDocument),
+		m_apiLastSpan(0),
 		m_pie(pie),
 		m_bClipBoard(bClipBoard),
 		m_bTemplateBody(bTemplateBody),
@@ -4175,6 +4185,7 @@ s_HTML_Listener::s_HTML_Listener (PD_Document * pDocument, IE_Exp_HTML * pie, bo
 		m_bInSection(false),
 		m_bInFrame(false),
 		m_bInTextBox(false),
+		m_bInTOC(false),
 		m_bInBlock(false),
 		m_bInSpan(false),
 		m_bNextIsSpace(false),
@@ -5081,7 +5092,7 @@ bool s_HTML_Listener::populateStrux (PL_StruxDocHandle sdh,
 			}
 		case PTX_SectionTOC: 
 			{
-				_emitTOC ();
+				_emitTOC (); // Change this to pass the API via which emit can then get style props from to construct style trees.
 				return true;
 			}
 		case PTX_EndTOC:
@@ -5111,8 +5122,14 @@ bool s_HTML_Listener::endOfDocument () {
 void s_HTML_Listener::_emitTOC () {
 	if (m_toc) {
 
+		if(listDepth()) { // We don't support TOC-in-LI, but the bright side is that neither does AbiWord itself, so this matches application behaviour.
+			m_utf8_1 = "span";
+			tagClose (TT_SPAN, m_utf8_1, ws_None);
+			m_utf8_1 = "li";
+			tagClose (TT_LI, m_utf8_1, ws_Post);
+		}
+		
 		const XAP_StringSet * pSS = XAP_App::getApp()->getStringSet();
-
 		UT_UTF8String tocHeadingUTF8;
 		pSS->getValueUTF8(AP_STRING_ID_TOC_TocHeading, tocHeadingUTF8);
 		
@@ -5123,7 +5140,8 @@ void s_HTML_Listener::_emitTOC () {
 		_outputData (tocHeading.ucs4_str(), tocHeading.length());
 		m_bInBlock = false;
 		tagClose (TT_H1, "h1");
-
+		
+		m_bInTOC = true;
 		for (int i = 0; i < m_toc->getNumTOCEntries(); i++) {
 			int tocLevel = 0;			
 			
@@ -5139,6 +5157,7 @@ void s_HTML_Listener::_emitTOC () {
 				_closeTag ();
 			}
 		}
+		m_bInTOC = false;
 	}
 }
 
@@ -6547,7 +6566,18 @@ bool IE_Exp_HTML::_openFile (const char * szFilename)
 	XAP_Frame * pFrame = getDoc()->getApp()->getLastFocussedFrame ();
 
 	if (m_bSuppressDialog || !pFrame) return IE_Exp::_openFile (szFilename);
-
+	if(pFrame)
+	{
+			AV_View * pView = pFrame->getCurrentView();
+			if(pView)
+			{
+				GR_Graphics * pG = pView->getGraphics();
+				if(pG && pG->queryProperties(GR_Graphics::DGP_PAPER))
+				{
+					return IE_Exp::_openFile (szFilename);
+				}
+			}
+		}
 	/* run the dialog
 	 */
 

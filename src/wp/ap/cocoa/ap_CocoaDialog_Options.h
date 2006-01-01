@@ -94,6 +94,7 @@ enum AP_CocoaDialog_OptionsSwitch_ID
 	{
 		CDO_Switch_AutoSave = 0,
 		CDO_Switch_CheckSpelling,
+		CDO_Switch_CheckGrammar,
 		CDO_Switch_CursorBlink,
 		CDO_Switch_DirectionMarkers,
 		CDO_Switch_DirectionRTL,
@@ -183,6 +184,7 @@ enum AP_CocoaDialog_OptionsSwitch_ID
 
 	IBOutlet NSButton *			oSwitch_AutoSave;
 	IBOutlet NSButton *			oSwitch_CheckSpelling;
+	IBOutlet NSButton *			oSwitch_CheckGrammar;
 	IBOutlet NSButton *			oSwitch_CursorBlink;
 	IBOutlet NSButton *			oSwitch_DirectionMarkers;
 	IBOutlet NSButton *			oSwitch_DirectionRTL;
