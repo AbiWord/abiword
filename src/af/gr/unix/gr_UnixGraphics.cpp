@@ -1875,6 +1875,7 @@ GR_Image * GR_UnixGraphics::genImageFromRectangle(const UT_Rect &rec)
 
 	GR_UnixImage * pImg = new GR_UnixImage("ScreenShot");
 	pImg->m_image = pix;
+	pImg->setDisplaySize(idw,idh);
 	return static_cast<GR_Image *>(pImg);
 }
 
