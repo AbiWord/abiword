@@ -620,6 +620,16 @@ void GR_UnixPangoGraphics::renderChars(GR_RenderInfo & ri)
 			utf8 += text.getChar();
 		}
 
+
+		if((UT_uint32)RI.m_iOffset >= vByteOffset.getItemCount())
+		{
+			// it seems the iterator run out on us
+			// this should probably not happen
+			UT_DEBUGMSG(("gr_UnixPangoGraphics::renderChars: iterator too short\n"));
+			return;
+		}
+		
+		
 		// these are byte offsets -- in Pango everything is in stupid byte offsets
 		UT_sint32 iOffsetStart = vByteOffset.getNthItem(RI.m_iOffset);
 		UT_sint32 iOffsetEnd = vByteOffset.getNthItem(RI.m_iOffset + RI.m_iLength - 1);
@@ -1019,10 +1029,14 @@ UT_uint32 GR_UnixPangoGraphics::XYToPosition(const GR_RenderInfo & ri, UT_sint32
 	// TODO: this is very inefficient: to cache or not to cache ?
 	UT_UTF8String utf8;
 	
+	// we need by offset into the utf8 string, so we will remember it as we construct it
+	UT_GenericVector<int> vByteOffset;
+	
 	UT_sint32 i;
 	for(i = 0; i < RI.m_iLength; ++i, ++(*(RI.m_pText)))
 	{
 		UT_return_val_if_fail(RI.m_pText->getStatus() == UTIter_OK, 0);
+		vByteOffset.addItem(utf8.byteLength());
 		utf8 += RI.m_pText->getChar();
 	}
 	
@@ -1037,7 +1051,14 @@ UT_uint32 GR_UnixPangoGraphics::XYToPosition(const GR_RenderInfo & ri, UT_sint32
 								  &iPos,
 								  &iTrailing);
 
-	return iPos + iTrailing;
+	i = vByteOffset.findItem(iPos);
+	UT_DEBUGMSG(("iPos: %d, iTrailing: %d, indx: %d\n", iPos, iTrailing, i));
+	UT_return_val_if_fail( i >= 0, 0 );
+
+	if(iTrailing)
+		iPos++;
+	
+	return iPos;
 }
 
 void GR_UnixPangoGraphics::positionToXY(const GR_RenderInfo & ri,
