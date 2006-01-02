@@ -1053,7 +1053,7 @@ UT_uint32 GR_UnixPangoGraphics::XYToPosition(const GR_RenderInfo & ri, UT_sint32
 
 	i = vByteOffset.findItem(iPos);
 	UT_DEBUGMSG(("iPos: %d, iTrailing: %d, indx: %d\n", iPos, iTrailing, i));
-	UT_return_val_if_fail( i >= 0, 0 );
+	//UT_return_val_if_fail( i >= 0, 0 );
 
 	if(iTrailing)
 		iPos++;
