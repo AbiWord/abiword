@@ -2417,6 +2417,10 @@ void fl_CellLayout::_lookupProperties(const PP_AttrProp* pSectionAP)
 
 	}
 	defaultOffset = "0.01in";
+
+	static UT_sint32 idefaultOffsetLogicalUnits =  UT_convertToLogicalUnits("0.01in");
+	static double idefaultOffsetDimensionless =  UT_convertDimensionless("0.01in");
+
 	if(pszLeftOffset && pszLeftOffset[0])
 	{
 		m_iLeftOffset = UT_convertToLogicalUnits(pszLeftOffset);
@@ -2424,8 +2428,8 @@ void fl_CellLayout::_lookupProperties(const PP_AttrProp* pSectionAP)
 	}
 	else
 	{
-		m_iLeftOffset = UT_convertToLogicalUnits(defaultOffset.c_str());
-		m_dLeftOffsetUserUnits = UT_convertDimensionless(defaultOffset.c_str());
+		m_iLeftOffset = idefaultOffsetLogicalUnits;
+		m_dLeftOffsetUserUnits = idefaultOffsetDimensionless;
 	}
 
 	if(pszTopOffset && pszTopOffset[0])
@@ -2435,8 +2439,8 @@ void fl_CellLayout::_lookupProperties(const PP_AttrProp* pSectionAP)
 	}
 	else
 	{
-		m_iTopOffset = UT_convertToLogicalUnits(defaultOffset.c_str());
-		m_dTopOffsetUserUnits = UT_convertDimensionless(defaultOffset.c_str());
+		m_iTopOffset = idefaultOffsetLogicalUnits;
+		m_dTopOffsetUserUnits = idefaultOffsetDimensionless;
 	}
 
 	if(pszRightOffset && pszRightOffset[0])
@@ -2446,8 +2450,8 @@ void fl_CellLayout::_lookupProperties(const PP_AttrProp* pSectionAP)
 	}
 	else
 	{
-		m_iRightOffset = UT_convertToLogicalUnits(defaultOffset.c_str());
-		m_dRightOffsetUserUnits = UT_convertDimensionless(defaultOffset.c_str());
+		m_iRightOffset = idefaultOffsetLogicalUnits;
+		m_dRightOffsetUserUnits = idefaultOffsetDimensionless;
 	}
 
 	if(pszBottomOffset && pszBottomOffset[0])
@@ -2457,8 +2461,8 @@ void fl_CellLayout::_lookupProperties(const PP_AttrProp* pSectionAP)
 	}
 	else
 	{
-		m_iBottomOffset = UT_convertToLogicalUnits(defaultOffset.c_str());
-		m_dBottomOffsetUserUnits = UT_convertDimensionless(defaultOffset.c_str());
+		m_iBottomOffset = idefaultOffsetLogicalUnits;
+		m_dBottomOffsetUserUnits = idefaultOffsetDimensionless;
 	}
 	const char* pszLeftAttach = NULL;
 	const char* pszRightAttach = NULL;
