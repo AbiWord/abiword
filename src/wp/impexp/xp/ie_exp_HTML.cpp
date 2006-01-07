@@ -3404,7 +3404,7 @@ void s_HTML_Listener::_openTable (PT_AttrPropIndex api)
 		m_utf8_1 = "colgroup";
 		tagOpen(TT_COLGROUP, m_utf8_1);
 
-		for(i = 0; i< nCols;i++)
+		for(i = 0; (i< nCols) && (i<m_vecDWidths.getItemCount());i++)
 		{
 			double * pDWidth = m_vecDWidths.getNthItem(i);
 			double percent = 100.0*(*pDWidth/totWidth);
