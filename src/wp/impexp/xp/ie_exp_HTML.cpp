@@ -908,7 +908,7 @@ void s_HTML_Listener::tagClose (UT_uint32 tagID)
 	if (i == tagID) return;
 
 	UT_DEBUGMSG(("WARNING: possible tag mis-match in XHTML output!\n"));
-	UT_DEBUGMSG(("WARNING:     Tag requested %i, tag found %i", tagID, i));
+	UT_DEBUGMSG(("WARNING:     Tag requested %i, tag found %i\n", tagID, i));
 }
 
 /* use with *extreme* caution! (this is used by images with data-URLs)
@@ -1887,15 +1887,30 @@ void s_HTML_Listener::_openSection (PT_AttrPropIndex api, UT_uint16 iSectionSpec
 
 void s_HTML_Listener::_closeSection (void)
 {
-	if (m_bInBlock)
-		_closeTag (); // We need to investigate the tag stack usage of this, and whether or not we really would rather specify the tag in all cases.
-
+	// When we start tracking list ideas and doing store-first-write-later on them,
+	// and then start supporting unified discontinuous lists,
+	// complications with questionable worthwhileness,
+	// we will no longer have to pop out for every section break even when there are identical listIds spanning multiple sections.
+	// Until then, this is necessary.
+	listPopToDepth(0);
+	
+	if (tagTop() == TT_SPAN) {
+		UT_DEBUGMSG(("_closeSection closing span\n"));
+		tagClose(TT_SPAN, "span");
+	}
+	
+	if (m_bInBlock && (tagTop() == TT_P)) { // If only the first is true, we have a first-order tag mismatch.  The alternative with not testing the latter is a second-order tag mismatch.
+		UT_DEBUGMSG(("_closeSection closing block\n"));
+	//		_closeTag (); // We need to investigate the tag stack usage of this, and whether or not we really would rather specify the tag in all cases.
+		tagClose(TT_P, "p");
+	}
 	// Need to investigate whether we can safely uncomment this without undoing heading work, or any other kind using unended structures like lists.
 	// _popUnendedStructures(); // Close lists, and possibly other stuff.  Even if it theoretically can span sections, we run a high risk of corrupting the document.
 
 	if (m_bInSection && (tagTop () == TT_DIV))
 	{
 		m_utf8_1 = "div";
+		UT_DEBUGMSG(("_closeSection closing div\n"));
 		tagClose (TT_DIV, m_utf8_1);
 	}
 	m_bInSection = false;
@@ -3237,7 +3252,7 @@ void s_HTML_Listener::_openTable (PT_AttrPropIndex api)
 	UT_uint32 iCCount[4] = {0,0,0,0}; // 0 - L, 1 - R, 2 - T, 3 - B
 	UT_uint32 iSCount[4] = {0,0,0,0}; // 0 - L, 1 - R, 2 - T, 3 - B
 	UT_uint32 iBMaxIndx = 0, iCMaxIndx = 0, iSMaxIndx = 0;
-	UT_sint32 i = 0;
+	UT_sint32 i = 0; // We really want this signed?
 	
 	for(i = 0; i < 4; ++i)
 	{
