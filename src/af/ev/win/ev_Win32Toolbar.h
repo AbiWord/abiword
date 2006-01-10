@@ -94,6 +94,7 @@ private:
 	void							_addToRebar();
 	static LRESULT CALLBACK			_ComboWndProc(HWND, UINT, WPARAM, LPARAM);
 	static LRESULT CALLBACK			_ComboEditWndProc(HWND, UINT, WPARAM, LPARAM);
+	static LRESULT CALLBACK			_ToolBarWndProc (HWND hWnd, UINT uMessage, WPARAM wParam, LPARAM lParam);
 
 	XAP_Win32App *					m_pWin32App;
 	XAP_Frame *						m_pWin32Frame;
