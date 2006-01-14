@@ -46,7 +46,7 @@ UninstallIcon "..\..\pkg\win\setup\setup.ico"
 OutFile "abiword-plugins-impexp-${VERSION_MAJOR}.${VERSION_MINOR}.${VERSION_MICRO}.exe"
 
 ; License Information
-LicenseText "This program is Licensed under the GNU General Public License (GPL)."
+LicenseText "This program is Licensed under the GNU General Public License (GPL)." "$(^NextBtn)"
 LicenseData "..\AbiSuite\Copying"
 
 ; The default installation directory
