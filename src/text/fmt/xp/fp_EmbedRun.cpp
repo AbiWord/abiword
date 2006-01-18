@@ -198,7 +198,7 @@ void fp_EmbedRun::_lookupProperties(const PP_AttrProp * pSpanAP,
 
 void fp_EmbedRun::_drawResizeBox(UT_Rect box)
 {
-        _getView()->drawSelectionBox(box,true);
+        _getView()->drawSelectionBox(box,isResizeable());
 }
 
 bool fp_EmbedRun::canBreakAfter(void) const
@@ -356,6 +356,11 @@ const char * fp_EmbedRun::getDataID(void) const
 bool fp_EmbedRun::isEdittable(void)
 {
   return getEmbedManager()->isEdittable(m_iEmbedUID);
+}
+
+bool fp_EmbedRun::isResizeable(void)
+{
+  return getEmbedManager()->isResizeable(m_iEmbedUID);
 }
 
 void fp_EmbedRun::_draw(dg_DrawArgs* pDA)

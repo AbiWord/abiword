@@ -47,6 +47,7 @@ public:
 
 	GR_EmbedManager *       getEmbedManager(void);
 	bool                    isEdittable(void);
+	bool                    isResizeable(void);
 	const char *            getDataID(void) const;
 	UT_sint32               getUID(void) const
 	{ return m_iEmbedUID;}
