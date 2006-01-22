@@ -76,11 +76,26 @@ TFTEST_MAIN("UT_UTF8String")
 	TFPASS(s == "foobarbaz42!");
 
 
+	s.append("sep", 0);
+	TFPASS(s.size() == 15);
+	TFPASS(s == "foobarbaz42!sep");
+
 	UT_UTF8String s3(s);
 	TFPASS(s == s3);
 
 	s.clear();
 	TFPASS(s.size() == 0);
+
+
+	// test append with a possibly overflowing buffer.
+	UT_UTF8String s4;
+	char *string = (char*)malloc(1024);
+	memcpy(string, "application/vnd.oasis.opendocument.text", 39);
+	s4.append(string, 39);
+	TFPASS(s4.size() == 39);
+	TFPASS(s4 == "application/vnd.oasis.opendocument.text");
+	free(string);
+
 }
 
 TFTEST_MAIN("UT_UCS4String")
