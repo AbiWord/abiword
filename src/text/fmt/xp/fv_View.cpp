@@ -7811,7 +7811,7 @@ void FV_View::ensureInsertionPointOnScreen(void)
 }
 
 
-void FV_View::setPoint(PT_DocPosition pt)
+void FV_View::setPoint(UT_uint32 pt)
 {
 	_setPoint(pt, m_bPointEOL);
 }

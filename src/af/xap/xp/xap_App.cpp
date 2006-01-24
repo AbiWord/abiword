@@ -52,6 +52,7 @@
 #include "xap_Menu_Layouts.h"
 #include "xap_Toolbar_Layouts.h"
 #include "xav_View.h"
+#include "xad_Document.h"
 #include "ut_rand.h"
 #include "ut_map.h"
 #include "gr_CharWidthsCache.h"
@@ -1476,6 +1477,209 @@ const char* XAP_App::findNearestFont(const char* pszFontFamily,
 	return pApp->_findNearestFont(pszFontFamily, pszFontStyle, pszFontVariant,
 		pszFontWeight, pszFontStretch, pszFontSize);
 }
+
+/*!
+   Puts together the data necessary for state saving, carrying out any auxiliary actions
+   required (such as dealing with dirty documents).
+
+   The actual mechanism through which the state data is stored is implemented in _saveState().
+*/
+void XAP_App::saveState(bool bQuit)
+{
+	// gather the state data for platform code to deal with
+	XAP_StateData sd = {0};
+
+	// We will store data for up to XAP_SD_MAX_FILES, making sure we save it for the last
+	// focussed frame in the first slot
+	XAP_Frame * pLastFrame = getLastFocussedFrame();
+
+	UT_uint32 i;
+	UT_sint32 j;
+	
+	for(i = 0, j = 0; i < m_vecFrames.getItemCount(); ++i, ++j)
+	{
+		XAP_Frame * pFrame = NULL;
+
+		if(i == 0)
+			pFrame = pLastFrame;
+		else
+			pFrame = m_vecFrames[i];
+
+		if(pLastFrame == pFrame && j != 0)
+		{
+			--j;
+			continue; // done this one already
+		}
+		
+
+		if(!pFrame)
+		{
+			--j;
+			continue;
+		}
+		
+		AD_Document * pDoc = pFrame->getCurrentDoc();
+
+		if(!pDoc)
+		{
+			--j;
+			continue;
+		}
+		
+		if(pDoc->isDirty())
+		{
+			// need to decide what to do about dirty documents; perhaps we should keep a
+			// copy of the unsaved state under a different name?
+			// for now just save (otherwise the user will loose the changes when app hibernates)
+			pDoc->save();
+		}
+
+		if(j >= XAP_SD_MAX_FILES)
+		{
+			// no storage space left -- nothing more we can do with this document, so move
+			// to the next one (do not break, we need to deal with anything that is not
+			// saved)
+			
+			--j;      // we want to reserve the j value 
+			continue;
+		}
+		
+			
+		const char * file = pDoc->getFilename();
+		if(file && strlen(file) < XAP_SD_FILENAME_LENGTH)
+		{
+			strncpy(sd.filenames[j], file, XAP_SD_FILENAME_LENGTH);
+
+			AV_View * pView = pFrame->getCurrentView();
+			if(pView)
+			{
+				sd.iDocPos[j]  = pView->getPoint();
+				sd.iXScroll[j] = pView->getXScrollOffset();
+				sd.iYScroll[j] = pView->getYScrollOffset();
+			}
+		}
+		else
+		{
+			--j;
+			continue;
+		}
+	}
+
+	sd.iFileCount = j;
+	
+	_saveState(sd);
+
+	if(bQuit)
+	{
+		// we have dealt with unsaved docs above, so just clean up any modeless dlgs and quit
+		closeModelessDlgs();
+		reallyExit();
+	}
+}
+
+/*!
+    Implements the actual mechanism for storing of status data; derrived classes can
+    override to provide methods suitable to their platform.
+
+    For now, this method does nothing; it could save state data in the profile if we
+    wanted to. (For a working implementation see xap_UnixHildonApp.cpp)
+*/
+void XAP_App::_saveState(XAP_StateData & sd)
+{
+}
+
+/*!
+    Does the work necessary to restore the application to a previously saved state. The
+    actual mechanism through which the stored state data is retrieved is implemented in
+    _retrieveState().
+*/
+
+
+void XAP_App::retrieveState()
+{
+	XAP_StateData sd;
+	_retrieveState(sd);
+
+	UT_return_if_fail(sd.iFileCount <= XAP_SD_MAX_FILES);
+		
+	// now do our thing with it:
+	//  * open the files stored in the data
+	//  * move carets and scrollbars to the saved positions
+	//  * make the first saved frame to be the current frame
+
+	// we should only be restoring state with no docs already
+	// opened
+	UT_return_if_fail(m_vecFrames.getItemCount() <= 1);
+	XAP_Frame * pFrame = NULL;
+
+	if(m_vecFrames.getItemCount())
+		pFrame = m_vecFrames.getNthItem(0);
+
+	// if there is a frame, it should be one with unmodified untitled document
+	UT_return_if_fail( !pFrame || (!pFrame->getFilename() && !pFrame->isDirty()) );
+		
+	UT_Error errorCode = UT_IE_IMPORTERROR;
+	
+	for(UT_uint32 i = 0; i < sd.iFileCount; ++i)
+	{
+		if(!pFrame)
+			pFrame = newFrame();
+		
+		if (!pFrame)
+			return;
+		
+		// Open a complete but blank frame, then load the document into it
+		errorCode = pFrame->loadDocument(NULL, 0 /*IEFT_Unknown*/);
+		
+		if (!errorCode)
+			pFrame->show();
+	    else
+			continue;
+
+		errorCode = pFrame->loadDocument(sd.filenames[i], 0 /*IEFT_Unknown*/);
+
+		if (errorCode)
+			continue;
+
+		pFrame->show();
+
+		AV_View* pView = pFrame->getCurrentView();
+		if(!pView)
+		{
+			UT_ASSERT_HARMLESS( UT_SHOULD_NOT_HAPPEN );
+			continue;
+		}
+		
+		pView->setPoint(sd.iDocPos[i]);
+		pView->setXScrollOffset(sd.iXScroll[i]);
+		pView->setYScrollOffset(sd.iYScroll[i]);
+		
+		// frame used -- next doc needs a new one
+		pFrame = NULL;
+	}
+
+	// set focus to the first frame
+	pFrame = m_vecFrames.getNthItem(0);
+	UT_return_if_fail( pFrame );
+
+	AV_View* pView = pFrame->getCurrentView();
+	UT_return_if_fail( pView );
+
+	pView->focusChange(AV_FOCUS_HERE);	
+}
+
+/*!
+    Implements the actual mechanism for retrieving of status data; derrived classes can
+    override to provide methods suitable to their platform.
+
+    For now, this method does nothing; it could read state data in the profile if we
+    wanted to. (For a working implementation see xap_UnixHildonApp.cpp)
+*/
+void XAP_App::_retrieveState(XAP_StateData & sd)
+{
+}
+
+
 
 #ifdef DEBUG
 /*!

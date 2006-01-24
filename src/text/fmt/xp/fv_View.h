@@ -551,7 +551,7 @@ public:
 // -----------------------
 
 	bool				insertPageNum(const XML_Char ** props, HdrFtrType hfType);
-	void				setPoint(PT_DocPosition pt);
+	virtual void        setPoint(UT_uint32 pt);
 	void                ensureInsertionPointOnScreen(void);
 
 // -----------------------

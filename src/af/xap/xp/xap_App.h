@@ -70,6 +70,23 @@ class AV_Listener;
 class GR_EmbedManager;
 class XAP_Module;
 
+#define XAP_SD_FILENAME_LENGTH 256
+#define XAP_SD_MAX_FILES 5
+
+/*!
+    Date for storing state
+    Please note that this struction must not contain any pointers; the hildon state saving
+    mechanism simply memcopies its contents.
+*/
+struct ABI_EXPORT XAP_StateData
+{
+	UT_uint32 iFileCount;
+	char filenames[XAP_SD_MAX_FILES][XAP_SD_FILENAME_LENGTH];
+	UT_uint32 iDocPos[XAP_SD_MAX_FILES];
+	UT_sint32 iXScroll[XAP_SD_MAX_FILES];
+	UT_sint32 iYScroll[XAP_SD_MAX_FILES];
+};
+
 /*****************************************************************
 ******************************************************************
 ** This file defines the base class for the cross-platform 
@@ -238,26 +255,34 @@ public:
 	UT_uint32					registerEmbeddable(GR_EmbedManager * pEmbed);
 	bool						unRegisterEmbeddable(UT_uint32 uid);
 	GR_EmbedManager *				getEmbeddableManager(GR_Graphics * pG, const char * szObjectType);
-	XAP_Module *					getPlugin(const char * szPluginName);
-	static const char*				findNearestFont(const char* pszFontFamily,
-									const char* pszFontStyle,
-									const char* pszFontVariant,
-									const char* pszFontWeight,
-									const char* pszFontStretch,
-									const char* pszFontSize);
+	XAP_Module *				getPlugin(const char * szPluginName);
+	
+	static const char*			findNearestFont(const char* pszFontFamily,
+												const char* pszFontStyle,
+												const char* pszFontVariant,
+												const char* pszFontWeight,
+												const char* pszFontStretch,
+												const char* pszFontSize);
 
+	void                        saveState(bool bQuit);
+	void                        retrieveState();
+	
+	
 protected:
-	virtual const char*				_findNearestFont(const char* pszFontFamily,
-									const char* pszFontStyle,
-									const char* pszFontVariant,
-									const char* pszFontWeight,
-									const char* pszFontStretch,
-									const char* pszFontSize);
+	virtual const char*			_findNearestFont(const char* pszFontFamily,
+												 const char* pszFontStyle,
+												 const char* pszFontVariant,
+												 const char* pszFontWeight,
+												 const char* pszFontStretch,
+												 const char* pszFontSize);
 	
 	void						_setAbiSuiteLibDir(const char * sz);
 	virtual const char *				_getKbdLanguage() {return NULL;}
 	void						_setUUIDGenerator(UT_UUIDGenerator * pG) { m_pUUIDGenerator = pG; }
 
+	virtual void                _saveState(XAP_StateData & sd);
+	virtual void                _retrieveState(XAP_StateData & sd);
+	
 	XAP_Args *					m_pArgs;
 	const char *					m_szAppName;
 	const char *					m_szAbiSuiteLibDir;

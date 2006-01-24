@@ -92,6 +92,9 @@ public:
 	void*			getParentData() const;
 
 	void			setInsertMode(bool bInsert);
+
+	virtual void    setPoint(UT_uint32 pt) = 0;
+
 	/*! the parameters are in device units! */
 	void			setWindowSize(UT_sint32, UT_sint32);
 	virtual void	setXScrollOffset(UT_sint32) = 0;
