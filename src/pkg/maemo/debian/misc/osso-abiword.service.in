@@ -1,3 +1,3 @@
 [D-BUS Service]
-Name=com.nokia.abiword
-Exec=/usr/bin/abiword
+Name=com.abisource.abiword
+Exec=@prefix@/bin/abiword

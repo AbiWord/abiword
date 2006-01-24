@@ -8,4 +8,5 @@ Icon=qgn_list_abiword
 X-HildonDesk-ShowInToolbar=true
 StartupWMClass=abiword
 X-Osso-Type=application/x-executable
-GenericName[en]=
+X-Osso-Service=com.abisource.abiword
+GenericName[en]=AbiWord
