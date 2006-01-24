@@ -43,9 +43,13 @@ public:
 	XAP_UnixHildonApp(XAP_Args* pArgs, const char* szAppName);
 	virtual ~XAP_UnixHildonApp();
 
-	virtual bool			initialize(const char * szKeyBindingsKey, const char * szKeyBindingsDefaultValue);
+	virtual bool initialize(const char * szKeyBindingsKey, const char * szKeyBindingsDefaultValue);
+
 	
 protected:
+	virtual void _saveState(XAP_StateData & sd);
+	virtual void _retrieveState(XAP_StateData & sd);
+
 private:
 	osso_context_t *m_pOsso;
 };

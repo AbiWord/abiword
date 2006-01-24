@@ -75,11 +75,21 @@ bool XAP_UnixHildonApp::initialize(const char * szKeyBindingsKey, const char * s
 	osso_log (LOG_INFO, "Initializing osso");
 
 	//Initialize osso, for receive hardware signals
-	m_pOsso = osso_initialize (
-			ABIWORD_APP_NAME,
-			VERSION,
-			FALSE, 
-			NULL);
+
+	// This api is brain-dead -- if we are started via dbus, we have to pass this function
+	// TRUE as activation parameter otherwise it will fail; if we are not started from
+	// dbus, we have to pass it FALSE otherwise it will fail. Only one small problem: we
+	// have no way of knowing why and how we were started.
+	//
+	// Normally we would be started by dbus, so hardcoding TRUE makes some sense, except this
+	// prevents AbiWord being started from gdb. To start it from gdb in Scratchbox you have todo
+	// 
+	// $ run-standalone.sh gdb /var/lib/install/usr/bin/AbiWord-2.6
+
+	m_pOsso = osso_initialize ("abiword",
+							   VERSION,
+							   TRUE, 
+							   NULL);
 
 	if (m_pOsso == NULL) {
 		osso_log (LOG_ERR, " Osso initialization failed" );
@@ -104,6 +114,32 @@ bool XAP_UnixHildonApp::initialize(const char * szKeyBindingsKey, const char * s
 
 	return XAP_UnixApp::initialize(szKeyBindingsKey, szKeyBindingsDefaultValue);
 }
+
+
+void XAP_UnixHildonApp::_saveState(XAP_StateData & sd)
+{
+	UT_DEBUGMSG(("Save state called\n"));
+	osso_state_t osd;
+	osd.state_size = sizeof(XAP_StateData);
+	osd.state_data = (gpointer)& sd;
+
+	osso_return_t ret = osso_state_write(m_pOsso, &osd);
+
+	UT_ASSERT_HARMLESS( ret == OSSO_OK );
+}
+
+void XAP_UnixHildonApp::_retrieveState(XAP_StateData & sd)
+{
+	UT_DEBUGMSG(("Retrieve state called\n"));
+	osso_state_t osd;
+	osd.state_size = sizeof(XAP_StateData);
+	osd.state_data = (gpointer)& sd;
+	
+	osso_return_t ret = osso_state_read(m_pOsso, & osd);
+
+	UT_ASSERT_HARMLESS( ret == OSSO_OK );
+}
+
 
 /* Depending on the state of hw, do something */
 static void 
@@ -146,6 +182,16 @@ static gint osso_rpc_event_cb (const gchar     *interface,
                                gpointer         data,
                                osso_rpc_t      *retval)
 {
+	XAP_UnixHildonApp *pApp;
+	g_return_val_if_fail (data != NULL, OSSO_ERROR);
+
+	pApp = static_cast<XAP_UnixHildonApp *>(data);
+
+	if(strcmp(method, "restored"))
+	{
+		pApp->retrieveState();
+	}
+	
 	return OSSO_OK;
 }
 
