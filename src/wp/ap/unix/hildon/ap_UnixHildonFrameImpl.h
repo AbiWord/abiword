@@ -60,7 +60,6 @@ protected:
 	void _createTopLevelWindow(void);
 	
 private:
-	GtkWidget * 			m_pHildonApp;
 	XAP_UnixApp *			m_pUnixApp;
 };
 #endif /* AP_UNIXHILDONFRAMEIMPL_H */

@@ -25,20 +25,22 @@
 #include "xap_UnixHildonApp.h"
 #include "xap_Frame.h"
 #include <log-functions.h>
+#include <hildon-widgets/hildon-app.h>
 
 static void osso_hw_event_cb (osso_hw_state_t *state, gpointer data);
-static void osso_top_event_cb (const gchar     *args, gpointer data);
 static gint osso_rpc_event_cb (const gchar     *interface,
                                const gchar     *method,
                                GArray          *arguments,
                                gpointer         data,
                                osso_rpc_t      *retval);
 
+static void osso_exit_event_cb (gboolean die_now, gpointer data);
 
 /*****************************************************************/
 XAP_UnixHildonApp::XAP_UnixHildonApp(XAP_Args * pArgs, const char * szAppName)
 	: XAP_UnixApp(pArgs, szAppName),
-	  m_pOsso(NULL)
+	  m_pOsso(NULL),
+	  m_pHildonAppWidget(NULL)
 {
 }
 
@@ -46,12 +48,6 @@ XAP_UnixHildonApp::~XAP_UnixHildonApp()
 {
 	if (m_pOsso) {
 		/* Unset callbacks */
-		osso_application_unset_top_cb (
-			m_pOsso, 
-			osso_top_event_cb, 
-			NULL);
-
-
 		osso_hw_unset_event_cb (
 			m_pOsso,
 			NULL);
@@ -76,31 +72,23 @@ bool XAP_UnixHildonApp::initialize(const char * szKeyBindingsKey, const char * s
 
 	//Initialize osso, for receive hardware signals
 
-	// This api is brain-dead -- if we are started via dbus, we have to pass this function
-	// TRUE as activation parameter otherwise it will fail; if we are not started from
-	// dbus, we have to pass it FALSE otherwise it will fail. Only one small problem: we
-	// have no way of knowing why and how we were started.
-	//
-	// Normally we would be started by dbus, so hardcoding TRUE makes some sense, except this
-	// prevents AbiWord being started from gdb. To start it from gdb in Scratchbox you have todo
+	// This prevents AbiWord being started from gdb. To start it from gdb in Scratchbox
+	// you have todo
 	// 
 	// $ run-standalone.sh gdb /var/lib/install/usr/bin/AbiWord-2.6
-
 	m_pOsso = osso_initialize ("abiword",
 							   VERSION,
-							   TRUE, 
+							   FALSE, 
 							   NULL);
 
 	if (m_pOsso == NULL) {
-		osso_log (LOG_ERR, " Osso initialization failed" );
+		osso_log (LOG_ERR, "Osso initialization failed" );
+		UT_DEBUGMSG(("Osso initialization failed\n"));
 		return false;
 	}
-	  
-	// Set topping callback 
-	ret = osso_application_set_top_cb (m_pOsso, osso_top_event_cb, this);
-	if (ret != OSSO_OK)
-		osso_log (LOG_ERR, "Could not set topping callback");
 
+	UT_DEBUGMSG(("m_pOsso 0x%x\n", m_pOsso));
+	
 	// Set handling changes in HW states. 
 	ret = osso_hw_set_event_cb (m_pOsso, NULL, osso_hw_event_cb, this);
 	if (ret != OSSO_OK) {
@@ -112,7 +100,34 @@ bool XAP_UnixHildonApp::initialize(const char * szKeyBindingsKey, const char * s
 		osso_log (LOG_ERR, "Could not set callback for receiving messages");
 	}
 
+	
+	ret = osso_application_set_exit_cb(m_pOsso, osso_exit_event_cb, this);
+	if (ret != OSSO_OK) {
+		osso_log (LOG_ERR, "Could not set exit callback\n");
+	}
+
+		
 	return XAP_UnixApp::initialize(szKeyBindingsKey, szKeyBindingsDefaultValue);
+}
+
+
+GtkWidget *  XAP_UnixHildonApp::getHildonAppWidget() const
+{
+	if(!m_pHildonAppWidget)
+	{
+		m_pHildonAppWidget = hildon_app_new();
+		UT_return_val_if_fail( m_pHildonAppWidget, NULL );
+
+		hildon_app_set_killable(HILDON_APP(m_pHildonAppWidget), FALSE);
+		hildon_app_set_autoregistration(HILDON_APP(m_pHildonAppWidget), TRUE);
+		hildon_app_set_title(HILDON_APP(m_pHildonAppWidget), getApplicationTitleForTitleBar());
+		hildon_app_set_two_part_title(HILDON_APP(m_pHildonAppWidget), TRUE);
+
+		gtk_window_set_role(GTK_WINDOW(m_pHildonAppWidget), "topLevelWindow");		
+		g_object_set_data(G_OBJECT(m_pHildonAppWidget), "toplevelWindow", m_pHildonAppWidget);
+	}
+
+	return m_pHildonAppWidget;
 }
 
 
@@ -146,6 +161,7 @@ static void
 osso_hw_event_cb (osso_hw_state_t *state, 
 		  gpointer    data)
 {
+	UT_DEBUGMSG(("osso_hw_event_cb() called\n"));
 	XAP_UnixHildonApp *pApp;
 
 	g_return_if_fail (data != NULL);
@@ -165,15 +181,18 @@ osso_hw_event_cb (osso_hw_state_t *state,
 	}
 
 	//signal memory low received
-	//if (state->memory_low_ind);
+	if (state->memory_low_ind)
+	{
+		UT_DEBUGMSG(("Low memory hw signal\n"));
+	}
+	
 
 	//signal system inactivity received
-	//if (state->system_inactivity_ind);
-}
-
-static void osso_top_event_cb (const gchar     *args, gpointer data)
-{
-	return;
+	if (state->system_inactivity_ind)
+	{
+		UT_DEBUGMSG(("System inactivity hw signal\n"));
+	}
+	
 }
 
 static gint osso_rpc_event_cb (const gchar     *interface,
@@ -182,12 +201,15 @@ static gint osso_rpc_event_cb (const gchar     *interface,
                                gpointer         data,
                                osso_rpc_t      *retval)
 {
+	UT_DEBUGMSG(("osso_rpc_event_cb() called; interface %s, method %s\n",
+				 interface, method));
+	
 	XAP_UnixHildonApp *pApp;
 	g_return_val_if_fail (data != NULL, OSSO_ERROR);
 
 	pApp = static_cast<XAP_UnixHildonApp *>(data);
 
-	if(strcmp(method, "restored"))
+	if(!strcmp(method, "restored"))
 	{
 		pApp->retrieveState();
 	}
@@ -195,5 +217,10 @@ static gint osso_rpc_event_cb (const gchar     *interface,
 	return OSSO_OK;
 }
 
+
+static void osso_exit_event_cb (gboolean /*die_now*/, gpointer /*data*/)
+{
+	UT_DEBUGMSG(("osso_exit_event_cb() called\n"));
+}
 
 

@@ -27,6 +27,7 @@
 #include <sys/stat.h>
 #include "xap_UnixApp.h"
 
+#include <gtk/gtkwidget.h>
 #include <libosso.h>
 
 class XAP_Args;
@@ -45,13 +46,16 @@ public:
 
 	virtual bool initialize(const char * szKeyBindingsKey, const char * szKeyBindingsDefaultValue);
 
+	GtkWidget *  getHildonAppWidget() const;
 	
 protected:
 	virtual void _saveState(XAP_StateData & sd);
 	virtual void _retrieveState(XAP_StateData & sd);
 
 private:
-	osso_context_t *m_pOsso;
+	osso_context_t *    m_pOsso;
+	mutable GtkWidget * m_pHildonAppWidget;
+	
 };
 
 #endif /* XAP_UNIXHILDONAPP_H */

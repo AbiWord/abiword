@@ -1466,7 +1466,7 @@ Defun1(fileNew)
 	XAP_App * pApp = XAP_App::getApp();
 	UT_return_val_if_fail (pApp, false);
 	
-#ifdef HAVE_HILDON	
+#if 0 //def HAVE_HILDON	
 	
 	XAP_Frame * pNewFrame;
 	if (pApp->getFrameCount() == 0)
@@ -1477,7 +1477,12 @@ Defun1(fileNew)
 		pNewFrame = pApp->getFrame(0);
 		if (pNewFrame->isDirty())
 		{
-			fileSave(pAV_View, NULL);
+			if(!fileSave(pAV_View, NULL))
+			{
+				// we cannot just close the dirty file when the user clicked cancel -- if
+				// she really want to loose unsaved changes, let her close it manually
+				return false;
+			}
 		}
 	}
 #else

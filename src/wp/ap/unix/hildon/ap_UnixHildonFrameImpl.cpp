@@ -38,9 +38,11 @@
 #include "ut_files.h"
 #include "ut_sleep.h"
 #include "ev_UnixMenuBar.h"
+#include "ev_EditMethod.h"
 #include "xap_ViewListener.h"
 #include "xap_Frame.h"
 #include "xap_Prefs.h"
+#include "xap_UnixHildonApp.h"
 
 #include "fv_View.h"
 
@@ -56,7 +58,7 @@
  */
 AP_UnixHildonFrameImpl::AP_UnixHildonFrameImpl(AP_UnixFrame *pUnixFrame, XAP_UnixApp * pUnixApp) 
 :AP_UnixFrameImpl(pUnixFrame, pUnixApp),
-m_pUnixApp(pUnixApp)
+	 m_pUnixApp(pUnixApp)
 {
 	UT_DEBUGMSG(("Created AP_UnixHildonFrameImpl %x \n",this));
 }
@@ -80,44 +82,108 @@ XAP_FrameImpl * AP_UnixHildonFrameImpl::createInstance(XAP_Frame *pFrame, XAP_Ap
 }
 
 
+/*!
+    Because of the peculiar way hildon handles windows and views, we need a custom
+    function for the delete_event
+*/
+static gint s_delete_event(GtkWidget * w, GdkEvent * /*event*/, gpointer /*data*/)
+{
+	AP_UnixHildonFrameImpl * pFrameImpl = static_cast<AP_UnixHildonFrameImpl *>(g_object_get_data(G_OBJECT(w), "user_data"));
+	XAP_Frame* pFrame = pFrameImpl->getFrame();
+	XAP_App * pApp = XAP_App::getApp();
+
+	if(pApp->isBonoboRunning())
+		return FALSE;
+
+	UT_uint32 iFrameCount = pApp->getFrameCount();
+	
+	const EV_Menu_ActionSet * pMenuActionSet = pApp->getMenuActionSet();
+	UT_ASSERT(pMenuActionSet);
+
+	const EV_EditMethodContainer * pEMC = pApp->getEditMethodContainer();
+	UT_ASSERT(pEMC);
+
+	// was "closeWindow", TRUE, FALSE
+	const EV_EditMethod * pEM = pEMC->findEditMethodByName("closeWindowX");
+	UT_ASSERT(pEM);
+
+	if (pEM)
+	{
+		if (pEM->Fn(pFrame->getCurrentView(),NULL))
+		{
+			// returning FALSE means destroy the window, continue along the
+			// chain of Gtk destroy events
+			
+			// with hildon, our frames are not proper windows, but behave more like tabs
+			// in a single window. Pressing the 'close' button, however, closes the main
+			// window, not the individual tab. So, if there are frames left, we must
+			// return true to stop the processing chain. We also have to update the window
+			// title 
+			
+			if(iFrameCount > 1)
+			{
+				// switch the main window to a different view
+				GtkWidget * pHildonAppWidget = (static_cast<XAP_UnixHildonApp*>(XAP_App::getApp()))->getHildonAppWidget();
+				UT_return_val_if_fail( pHildonAppWidget, TRUE );
+
+				pFrame = pApp->getFrame(0);
+				UT_return_val_if_fail( pFrame, TRUE );
+
+				pFrameImpl = static_cast<AP_UnixHildonFrameImpl*>(pFrame->getFrameImpl());
+				UT_return_val_if_fail( pFrameImpl, TRUE );
+				
+				hildon_app_set_appview(HILDON_APP(pHildonAppWidget), HILDON_APPVIEW(pFrameImpl->getTopLevelWindow()));
+				
+				return TRUE;
+			}
+			else
+				return FALSE;
+		}
+	}
+
+	// returning TRUE means do NOT destroy the window; halt the message
+	// chain so it doesn't see destroy
+	return TRUE;
+}
+
 // TODO: split me up into smaller pieces/subfunctions
 void AP_UnixHildonFrameImpl::_createTopLevelWindow(void)
 {
 	// create a top-level window for us.
 	bool bResult;
+	GtkWidget * pHildonAppWidget = (static_cast<XAP_UnixHildonApp*>(XAP_App::getApp()))->getHildonAppWidget();
+	UT_return_if_fail( pHildonAppWidget );
 	
 	if(m_iFrameMode == XAP_NormalFrame)
 	{
-		if (m_pHildonApp == NULL)
-			m_pHildonApp = hildon_app_new();
-		
 		m_wTopLevelWindow = hildon_appview_new(m_pUnixApp->getApplicationTitleForTitleBar());
-		hildon_app_set_appview(HILDON_APP(m_pHildonApp), HILDON_APPVIEW(m_wTopLevelWindow));
-		hildon_app_set_title(HILDON_APP(m_pHildonApp),  m_pUnixApp->getApplicationTitleForTitleBar());
-		hildon_app_set_two_part_title(HILDON_APP(m_pHildonApp), TRUE);
+		
+		// This should not be needed -- autoregistration is turned On in getHildonAppWidget();
+		// 
+		// hildon_app_register_view(HILDON_APP(pHildonAppWidget), (gpointer*)m_wTopLevelWindow);
+		
+		hildon_app_set_appview(HILDON_APP(pHildonAppWidget), HILDON_APPVIEW(m_wTopLevelWindow));
 				
-		gtk_widget_show_all(GTK_WIDGET(m_pHildonApp));		
+		gtk_widget_show_all(GTK_WIDGET(pHildonAppWidget));		
 		
 		g_object_set_data(G_OBJECT(m_wTopLevelWindow), "ic_attr", NULL);
 		g_object_set_data(G_OBJECT(m_wTopLevelWindow), "ic", NULL);		
-		gtk_window_set_role(GTK_WINDOW(m_pHildonApp), "topLevelWindow");		
 	}
 	
-	g_object_set_data(G_OBJECT(m_pHildonApp), "toplevelWindow",
-						m_pHildonApp);
-
 	g_object_set_data(G_OBJECT(m_wTopLevelWindow), "toplevelWindowFocus",
-						GINT_TO_POINTER(FALSE));
+					  GINT_TO_POINTER(FALSE));
+	
 	g_object_set_data(G_OBJECT(m_wTopLevelWindow), "user_data", this); 
-	g_object_set_data(G_OBJECT(m_pHildonApp), "user_data", this); 
 
-	g_signal_connect(G_OBJECT(m_pHildonApp), "realize",
+	g_object_set_data(G_OBJECT(pHildonAppWidget), "user_data", this); 
+
+	g_signal_connect(G_OBJECT(pHildonAppWidget), "realize",
 					   G_CALLBACK(_fe::realize), NULL);
 
-	g_signal_connect(G_OBJECT(m_pHildonApp), "unrealize",
+	g_signal_connect(G_OBJECT(pHildonAppWidget), "unrealize",
 					   G_CALLBACK(_fe::unrealize), NULL);
 
-	g_signal_connect(G_OBJECT(m_pHildonApp), "size_allocate",
+	g_signal_connect(G_OBJECT(pHildonAppWidget), "size_allocate",
 					   G_CALLBACK(_fe::sizeAllocate), NULL);
 
 	g_signal_connect(G_OBJECT(m_wTopLevelWindow), "focus_in_event",
@@ -125,9 +191,9 @@ void AP_UnixHildonFrameImpl::_createTopLevelWindow(void)
 	g_signal_connect(G_OBJECT(m_wTopLevelWindow), "focus_out_event",
 					   G_CALLBACK(_fe::focusOut), NULL);
 
-	g_signal_connect(G_OBJECT(m_pHildonApp), "delete_event",
-					   G_CALLBACK(_fe::delete_event), NULL);
-	g_signal_connect(G_OBJECT(m_pHildonApp), "destroy",
+	g_signal_connect(G_OBJECT(pHildonAppWidget), "delete_event",
+					   G_CALLBACK(s_delete_event), NULL);
+	g_signal_connect(G_OBJECT(pHildonAppWidget), "destroy",
 					   G_CALLBACK(_fe::destroy), NULL);
 
 	g_signal_connect(G_OBJECT(m_wTopLevelWindow), "focus_in_event",
@@ -158,7 +224,7 @@ void AP_UnixHildonFrameImpl::_createTopLevelWindow(void)
 	if(m_iFrameMode == XAP_NormalFrame)
 		gtk_widget_realize(m_wTopLevelWindow);
 
-	_createIMContext(m_pHildonApp->window);
+	_createIMContext(pHildonAppWidget->window);
 
 	g_signal_connect(G_OBJECT(m_wTopLevelWindow), "key_press_event",
 					   G_CALLBACK(_fe::key_press_event), NULL);
