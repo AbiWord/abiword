@@ -79,7 +79,7 @@ install: build
 
         # Add D-Bus service
 	mkdir -p $(CURDIR)/debian/abiword/usr/lib/dbus-1.0/services/
-	install -m 644 $(CURDIR)/debian/misc/osso-abiword.service $(CURDIR)/debian/abiword/usr/lib/dbus-1.0/services
+	install -m 644 $(CURDIR)/debian/misc/com.nokia.abiword.service $(CURDIR)/debian/abiword/usr/lib/dbus-1.0/services
 
 # Build architecture-dependent files here.
 binary: build install
