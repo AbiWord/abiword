@@ -536,6 +536,7 @@ AC_CONFIG_FILES([
  src/pkg/linux/apkg/abiword-gnome.apspec
  src/pkg/linux/apkg/abiword-gtk.apspec
  src/pkg/maemo/debian/misc/abiword.desktop
+ src/pkg/maemo/debian/misc/com.nokia.abiword.service
 ])
 AC_OUTPUT
 
