@@ -119,7 +119,7 @@ XAP_UnixApp::XAP_UnixApp(XAP_Args * pArgs, const char * szAppName)
 
 		UT_ASSERT( bSuccess );
 
-#ifdef _USE_PANGO
+#if defined(_USE_PANGO) && !defined(HAVE_HILDON)
 		if(bSuccess)
 		{
 			pGF->registerAsDefault(GR_UnixPangoGraphics::s_getClassId(), true);
@@ -132,7 +132,7 @@ XAP_UnixApp::XAP_UnixApp(XAP_Args * pArgs, const char * szAppName)
 		
 		UT_ASSERT( bSuccess );
 		
-#ifdef _USE_PANGO
+#if defined(_USE_PANGO) && !defined(HAVE_HILDON)
 		if(bSuccess)
 		{
 			pGF->registerAsDefault(GR_UnixPangoPrintGraphics::s_getClassId(), false);
