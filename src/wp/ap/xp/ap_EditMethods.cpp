@@ -10289,11 +10289,11 @@ UT_return_val_if_fail(pDialog, false);
 	fl_DocSectionLayout * pDSL = pBL->getDocSectionLayout();
 	UT_sint32 iColWidth = pDSL->getActualColumnWidth();
 	UT_sint32 iColHeight = pDSL->getActualColumnHeight();
-	max_width  = 0.95*iColWidth*72.0/UT_LAYOUT_RESOLUTION; // units are 1/72 of an inch
-	max_height = 0.95*iColHeight*72.0/UT_LAYOUT_RESOLUTION;
+	max_width  = 0.95*iColWidth/UT_LAYOUT_RESOLUTION;
+	max_height = 0.95*iColHeight/UT_LAYOUT_RESOLUTION;
 
-	pDialog->setMaxWidth (max_width);
-	pDialog->setMaxHeight (max_height);
+	pDialog->setMaxWidth (max_width*72.0);
+	pDialog->setMaxHeight (max_height*72.0); // units are 1/72 of an inch
 	UT_DEBUGMSG(("formatting  image: %d\n", pCallData->m_xPos));
 	PT_DocPosition pos = pView->getDocPositionFromLastXY();
 
@@ -10349,39 +10349,10 @@ UT_return_val_if_fail(pDialog, false);
 		  FREEP(description);
 	  }
 
-	  bool bDoWidth = false;
+	  double width = 0., height = 0.;
 	  if(szWidth)
-	  {
-		  double dum = UT_convertToInches(szWidth);
-		  if(dum > max_width)
-		  {
-			  dum = max_width;
-		  }
-		  if(dum > 0.0001)
-		  {
-			  bDoWidth = true;
-		  }
-	  }
-	  bool bDoHeight = false;
-	  if(szHeight)
-	  {
-		  double dum = UT_convertToInches(szHeight);
-		  if(dum > max_height)
-		  {
-			  dum = max_height;
-		  }
-		  if(dum > 0.0001)
-		  {
-			  bDoHeight = true;
-		  }
-	  }
-
-	  if(bDoWidth)
-	  {
-		  double dum = UT_convertToInches(szWidth);
-		  pDialog->setWidth( UT_convertInchesToDimensionString(dim,dum));
-	  }
-	  else
+		  width = UT_convertToInches(szWidth);
+	  if (width < 0.0001)
 	  {
 		  iWidth = 0;
 		  UT_return_val_if_fail (pRun, false);
@@ -10395,19 +10366,11 @@ UT_return_val_if_fail(pDialog, false);
 			  FREEP(props_in);
 			  return false;
 		  }
-		  double width = iWidth*72.0/UT_LAYOUT_RESOLUTION;
-		  if(width > max_width)
-		  {
-			  width = max_width;
+		  width = iWidth*72.0/UT_LAYOUT_RESOLUTION;
 		  }
-		  pDialog->setWidth(width);
-	  }
-	  if(bDoHeight)
-	  {
-		  double dum = UT_convertToInches(szHeight);
-		  pDialog->setHeight( UT_convertInchesToDimensionString(dim,dum));
-	  }
-	  else
+	  if(szHeight)
+	      height = UT_convertToInches(szHeight);
+	  if (height < 0.0001)
 	  {
 		  iHeight = 0;
 		  UT_return_val_if_fail (pRun, false);
@@ -10421,13 +10384,20 @@ UT_return_val_if_fail(pDialog, false);
 			  FREEP(props_in);
 			  return false;
 		  }
-		  double height = iHeight*72.0/UT_LAYOUT_RESOLUTION;
-		  if(height > max_height)
-		  {
-			  height = max_height;
-		  }
-		  pDialog->setHeight(height);
+		  height = iHeight*72.0/UT_LAYOUT_RESOLUTION;
 	  }
+	  if(width > max_width)
+	  {
+	    height *= max_width / width;
+	    width = max_width;
+	  }
+	  if(height > max_height)
+	  {
+	    width *= max_height / height;
+	    height = max_height;
+	  }
+	  pDialog->setWidth( UT_convertInchesToDimensionString(dim,width));
+	  pDialog->setHeight( UT_convertInchesToDimensionString(dim,height));
 	  FREEP(props_in);
 
 	  WRAPPING_TYPE oldWrap = WRAP_INLINE;
