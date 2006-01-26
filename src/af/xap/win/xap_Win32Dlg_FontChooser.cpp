@@ -68,7 +68,7 @@ void XAP_Win32Dialog_FontChooser::runModal(XAP_Frame * pFrame)
 {
 	UT_return_if_fail(pFrame);
 
-	XAP_Win32App * pApp = static_cast<XAP_Win32App *>(pFrame->getApp());
+	XAP_Win32App * pApp = static_cast<XAP_Win32App *>(XAP_App::getApp());
 	UT_return_if_fail(pApp);
 	const XAP_EncodingManager *pEncMan = pApp->getEncodingManager();
 	UT_return_if_fail(pEncMan);

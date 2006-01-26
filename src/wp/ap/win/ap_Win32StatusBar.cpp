@@ -158,7 +158,7 @@ AP_Win32StatusBar::AP_Win32StatusBar(XAP_Frame * pFrame)
 	  m_iPrevWidth(-1),
 	  m_iDIR(0)
 {
-	const XAP_StringSet * pSS = pFrame->getApp()->getStringSet();
+	const XAP_StringSet * pSS = XAP_App::getApp()->getStringSet();
 	UT_return_if_fail( pSS );
 	
 	UT_Language l;
@@ -184,7 +184,7 @@ HWND AP_Win32StatusBar::createWindow(HWND hwndFrame,
 									 UT_uint32 left, UT_uint32 top,
 									 UT_uint32 width)
 {
-	XAP_Win32App * app = static_cast<XAP_Win32App *>(m_pFrame->getApp());
+	XAP_Win32App * app = static_cast<XAP_Win32App *>(XAP_App::getApp());
 	UINT nID = 0;
     int* pArWidths = new int[getFields()->getItemCount()+1];    
     int* pCurWidth = pArWidths;

@@ -119,7 +119,7 @@ void AP_Win32Dialog_FormatTOC::runModeless(XAP_Frame * pFrame)
 {
 
 	UT_return_if_fail (pFrame);
-	XAP_Win32App * pWin32App = static_cast<XAP_Win32App *>(pFrame->getApp());
+	XAP_Win32App * pWin32App = static_cast<XAP_Win32App *>(XAP_App::getApp());
 
 	m_pSheet = new AP_Win32Dialog_FormatTOC_Sheet();
 	m_pSheet->setContainer (this);	

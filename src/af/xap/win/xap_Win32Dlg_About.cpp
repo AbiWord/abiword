@@ -340,7 +340,7 @@ BOOL CALLBACK XAP_Win32Dialog_About::s_dlgProc(HWND hWnd,UINT msg,WPARAM wParam,
 		FillRect(hdc, &r, GetSysColorBrush(COLOR_BTNFACE));
 
 
-		GR_Win32AllocInfo ai(hdc,hWnd,pThis->m_pFrame->getApp());
+		GR_Win32AllocInfo ai(hdc,hWnd, XAP_App::getApp());
 		GR_Win32Graphics *pGR = (GR_Win32Graphics *)XAP_App::getApp()->newGraphics(ai);
 		UT_return_val_if_fail(pGR, 0);
 		

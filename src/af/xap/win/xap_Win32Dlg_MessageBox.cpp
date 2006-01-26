@@ -47,7 +47,7 @@ XAP_Win32Dialog_MessageBox::~XAP_Win32Dialog_MessageBox(void)
 void XAP_Win32Dialog_MessageBox::runModal(XAP_Frame * pFrame)
 {
 	UT_ASSERT(pFrame);
-	XAP_Win32App * pApp = static_cast<XAP_Win32App *>(pFrame->getApp());
+	XAP_Win32App * pApp = static_cast<XAP_Win32App *>(XAP_App::getApp());
 	UT_ASSERT(pApp);
 
 	const char * szCaption = pApp->getApplicationTitleForTitleBar();

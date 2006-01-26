@@ -843,7 +843,7 @@ LRESULT CALLBACK XAP_Win32FrameImpl::_FrameWndProc(HWND hwnd, UINT iMsg, WPARAM 
 
 	case WM_CLOSE:
 	{
-		XAP_App * pApp = f->getApp();
+		XAP_App * pApp = XAP_App::getApp();
 		UT_ASSERT(pApp);
 
 		const EV_EditMethodContainer * pEMC = pApp->getEditMethodContainer();
@@ -926,7 +926,7 @@ LRESULT CALLBACK XAP_Win32FrameImpl::_FrameWndProc(HWND hwnd, UINT iMsg, WPARAM 
 				if (pathlength < _MAX_PATH)
 				{
 					DragQueryFile(hDrop, i, szFileName, _MAX_PATH);
-					XAP_App * pApp = f->getApp();
+					XAP_App * pApp = XAP_App::getApp();
 					UT_ASSERT(pApp);
 					FV_View* pView = (FV_View *) f->getCurrentView();
 					XAP_Frame * pNewFrame = 0;

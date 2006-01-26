@@ -62,7 +62,7 @@ void AP_Win32LeftRuler::setView(AV_View * pView)
 	AP_LeftRuler::setView(pView);
 
 	DELETEP(m_pG);
-	GR_Win32AllocInfo ai(GetDC(m_hwndLeftRuler), m_hwndLeftRuler, m_pFrame->getApp());
+	GR_Win32AllocInfo ai(GetDC(m_hwndLeftRuler), m_hwndLeftRuler, XAP_App::getApp());
 	GR_Win32Graphics * pG = (GR_Win32Graphics *)XAP_App::getApp()->newGraphics(ai);
 	
 	m_pG = pG;
@@ -94,7 +94,7 @@ HWND AP_Win32LeftRuler::createWindow(HWND hwndContainer,
 									UT_uint32 height)
 {
 		
-	XAP_Win32App * app = static_cast<XAP_Win32App *>(m_pFrame->getApp());
+	XAP_Win32App * app = static_cast<XAP_Win32App *>(XAP_App::getApp());
 	m_hwndLeftRuler = UT_CreateWindowEx(0, s_LeftRulerWndClassName, NULL,
 									 WS_CHILD | WS_VISIBLE,
 									 left, top, s_iFixedWidth, height,
@@ -104,7 +104,7 @@ HWND AP_Win32LeftRuler::createWindow(HWND hwndContainer,
 	
 	
 	DELETEP(m_pG);
-	GR_Win32AllocInfo ai(GetDC(m_hwndLeftRuler), m_hwndLeftRuler, m_pFrame->getApp());
+	GR_Win32AllocInfo ai(GetDC(m_hwndLeftRuler), m_hwndLeftRuler, XAP_App::getApp());
 	GR_Win32Graphics * pG = (GR_Win32Graphics *)XAP_App::getApp()->newGraphics(ai);
 
 	m_pG = pG;
