@@ -48,19 +48,16 @@
 class AP_UnixHildonFrameImpl : public AP_UnixFrameImpl
 {
 public:
-	AP_UnixHildonFrameImpl(AP_UnixFrame *pUnixFrame, XAP_UnixApp *pUnixApp);
+	AP_UnixHildonFrameImpl(AP_UnixFrame *pUnixFrame);
 	virtual ~AP_UnixHildonFrameImpl();
 
-	virtual XAP_FrameImpl * createInstance(XAP_Frame *pFrame, XAP_App *pApp);
+	virtual XAP_FrameImpl * createInstance(XAP_Frame *pFrame);
 	
 protected:
 	bool _raise();
 	bool _updateTitle();
 	void _setFullScreen(bool changeToFullScreen);
 	void _createTopLevelWindow(void);
-	
-private:
-	XAP_UnixApp *			m_pUnixApp;
 };
 #endif /* AP_UNIXHILDONFRAMEIMPL_H */
 

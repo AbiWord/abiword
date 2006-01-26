@@ -214,14 +214,14 @@ void AP_Dialog_Options::_storeWindowData(void)
 	}
 
 
-	if ( _gatherAllowCustomToolbars() != m_pFrame->getApp()->areToolbarsCustomizable() )
+	if ( _gatherAllowCustomToolbars() != XAP_App::getApp()->areToolbarsCustomizable() )
 	{
-		m_pFrame->getApp()->setToolbarsCustomizable(_gatherAllowCustomToolbars());
+		XAP_App::getApp()->setToolbarsCustomizable(_gatherAllowCustomToolbars());
 	}
 #if defined(XP_UNIX_TARGET_GTK)
-	if ( _gatherEnableSmoothScrolling() != m_pFrame->getApp()->isSmoothScrollingEnabled() )
+	if ( _gatherEnableSmoothScrolling() != XAP_App::getApp()->isSmoothScrollingEnabled() )
 	{
-		m_pFrame->getApp()->setEnableSmoothScrolling(_gatherEnableSmoothScrolling());
+		XAP_App::getApp()->setEnableSmoothScrolling(_gatherEnableSmoothScrolling());
 	}
 #endif
 	// - - - - - - - - - - - - - - - - - - - - - - - - - - - - - -

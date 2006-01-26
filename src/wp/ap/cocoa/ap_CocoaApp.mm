@@ -444,7 +444,7 @@ void AP_CocoaApp::rebuildMenus(void)
 */
 XAP_Frame * AP_CocoaApp::newFrame(void)
 {
-    AP_CocoaFrame * pCocoaFrame = new AP_CocoaFrame(this);
+    AP_CocoaFrame * pCocoaFrame = new AP_CocoaFrame();
 
     if (pCocoaFrame)
 		pCocoaFrame->initialize();

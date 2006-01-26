@@ -51,7 +51,7 @@ class AP_CocoaFrameImpl : public XAP_CocoaFrameImpl
 {
  public:
 	AP_CocoaFrameImpl(AP_CocoaFrame *pCocoaFrame, XAP_CocoaApp *pCocoaApp); 
-	virtual XAP_FrameImpl * createInstance(XAP_Frame *pFrame, XAP_App *pApp);
+	virtual XAP_FrameImpl * createInstance(XAP_Frame *pFrame);
 
 	virtual NSString *			_getNibName (); /* must be public to be called from Obj-C */
 

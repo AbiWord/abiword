@@ -390,7 +390,7 @@ bool AP_UnixApp::initialize(bool has_display)
 */
 XAP_Frame * AP_UnixApp::newFrame(void)
 {
-    AP_UnixFrame * pUnixFrame = new AP_UnixFrame(this);
+    AP_UnixFrame * pUnixFrame = new AP_UnixFrame();
 
     if (pUnixFrame)
 		pUnixFrame->initialize();
@@ -1552,14 +1552,6 @@ int AP_UnixApp::main(const char * szAppName, int argc, const char ** argv)
 	return 0;
 }
 	
-XAP_Frame * AP_UnixApp::newFrame(AP_App * app)
-{
-  AP_UnixFrame * pFrame = new AP_UnixFrame(app);
-  if (pFrame)
-    pFrame->initialize();
-  return pFrame;
-}
-
 void AP_UnixApp::errorMsgBadArg(AP_Args * Args, int nextopt)
 {
   fprintf (stderr, "Error on option %s: %s.\nRun '%s --help' to see a full list of available command line options.\n",

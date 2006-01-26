@@ -56,9 +56,8 @@
  * @param pUnixFrame the pointer of frame
  * @param pUnixApp the pointer of App
  */
-AP_UnixHildonFrameImpl::AP_UnixHildonFrameImpl(AP_UnixFrame *pUnixFrame, XAP_UnixApp * pUnixApp) 
-:AP_UnixFrameImpl(pUnixFrame, pUnixApp),
-	 m_pUnixApp(pUnixApp)
+AP_UnixHildonFrameImpl::AP_UnixHildonFrameImpl(AP_UnixFrame *pUnixFrame) 
+:AP_UnixFrameImpl(pUnixFrame)
 {
 	UT_DEBUGMSG(("Created AP_UnixHildonFrameImpl %x \n",this));
 }
@@ -74,76 +73,11 @@ AP_UnixHildonFrameImpl::~AP_UnixHildonFrameImpl()
  * Create a new frame instance
  * @return the pointer of new frame
  */
-XAP_FrameImpl * AP_UnixHildonFrameImpl::createInstance(XAP_Frame *pFrame, XAP_App *pApp)
+XAP_FrameImpl * AP_UnixHildonFrameImpl::createInstance(XAP_Frame *pFrame)
 {
-	XAP_FrameImpl *pFrameImpl = new AP_UnixHildonFrameImpl(static_cast<AP_UnixFrame *>(pFrame), static_cast<XAP_UnixApp *>(pApp));
+	XAP_FrameImpl *pFrameImpl = new AP_UnixHildonFrameImpl(static_cast<AP_UnixFrame *>(pFrame));
 
 	return pFrameImpl;
-}
-
-
-/*!
-    Because of the peculiar way hildon handles windows and views, we need a custom
-    function for the delete_event
-*/
-static gint s_delete_event(GtkWidget * w, GdkEvent * /*event*/, gpointer /*data*/)
-{
-	AP_UnixHildonFrameImpl * pFrameImpl = static_cast<AP_UnixHildonFrameImpl *>(g_object_get_data(G_OBJECT(w), "user_data"));
-	XAP_Frame* pFrame = pFrameImpl->getFrame();
-	XAP_App * pApp = XAP_App::getApp();
-
-	if(pApp->isBonoboRunning())
-		return FALSE;
-
-	UT_uint32 iFrameCount = pApp->getFrameCount();
-	
-	const EV_Menu_ActionSet * pMenuActionSet = pApp->getMenuActionSet();
-	UT_ASSERT(pMenuActionSet);
-
-	const EV_EditMethodContainer * pEMC = pApp->getEditMethodContainer();
-	UT_ASSERT(pEMC);
-
-	// was "closeWindow", TRUE, FALSE
-	const EV_EditMethod * pEM = pEMC->findEditMethodByName("closeWindowX");
-	UT_ASSERT(pEM);
-
-	if (pEM)
-	{
-		if (pEM->Fn(pFrame->getCurrentView(),NULL))
-		{
-			// returning FALSE means destroy the window, continue along the
-			// chain of Gtk destroy events
-			
-			// with hildon, our frames are not proper windows, but behave more like tabs
-			// in a single window. Pressing the 'close' button, however, closes the main
-			// window, not the individual tab. So, if there are frames left, we must
-			// return true to stop the processing chain. We also have to update the window
-			// title 
-			
-			if(iFrameCount > 1)
-			{
-				// switch the main window to a different view
-				GtkWidget * pHildonAppWidget = (static_cast<XAP_UnixHildonApp*>(XAP_App::getApp()))->getHildonAppWidget();
-				UT_return_val_if_fail( pHildonAppWidget, TRUE );
-
-				pFrame = pApp->getFrame(0);
-				UT_return_val_if_fail( pFrame, TRUE );
-
-				pFrameImpl = static_cast<AP_UnixHildonFrameImpl*>(pFrame->getFrameImpl());
-				UT_return_val_if_fail( pFrameImpl, TRUE );
-				
-				hildon_app_set_appview(HILDON_APP(pHildonAppWidget), HILDON_APPVIEW(pFrameImpl->getTopLevelWindow()));
-				
-				return TRUE;
-			}
-			else
-				return FALSE;
-		}
-	}
-
-	// returning TRUE means do NOT destroy the window; halt the message
-	// chain so it doesn't see destroy
-	return TRUE;
 }
 
 // TODO: split me up into smaller pieces/subfunctions
@@ -156,7 +90,7 @@ void AP_UnixHildonFrameImpl::_createTopLevelWindow(void)
 	
 	if(m_iFrameMode == XAP_NormalFrame)
 	{
-		m_wTopLevelWindow = hildon_appview_new(m_pUnixApp->getApplicationTitleForTitleBar());
+		m_wTopLevelWindow = hildon_appview_new(XAP_App::getApp()->getApplicationTitleForTitleBar());
 		
 		// This should not be needed -- autoregistration is turned On in getHildonAppWidget();
 		// 
@@ -172,37 +106,21 @@ void AP_UnixHildonFrameImpl::_createTopLevelWindow(void)
 	
 	g_object_set_data(G_OBJECT(m_wTopLevelWindow), "toplevelWindowFocus",
 					  GINT_TO_POINTER(FALSE));
-	
 	g_object_set_data(G_OBJECT(m_wTopLevelWindow), "user_data", this); 
 
 	g_object_set_data(G_OBJECT(pHildonAppWidget), "user_data", this); 
 
-	g_signal_connect(G_OBJECT(pHildonAppWidget), "realize",
-					   G_CALLBACK(_fe::realize), NULL);
-
-	g_signal_connect(G_OBJECT(pHildonAppWidget), "unrealize",
-					   G_CALLBACK(_fe::unrealize), NULL);
-
-	g_signal_connect(G_OBJECT(pHildonAppWidget), "size_allocate",
-					   G_CALLBACK(_fe::sizeAllocate), NULL);
-
+	
 	g_signal_connect(G_OBJECT(m_wTopLevelWindow), "focus_in_event",
 					   G_CALLBACK(_fe::focusIn), NULL);
 	g_signal_connect(G_OBJECT(m_wTopLevelWindow), "focus_out_event",
 					   G_CALLBACK(_fe::focusOut), NULL);
-
-	g_signal_connect(G_OBJECT(pHildonAppWidget), "delete_event",
-					   G_CALLBACK(s_delete_event), NULL);
-	g_signal_connect(G_OBJECT(pHildonAppWidget), "destroy",
-					   G_CALLBACK(_fe::destroy), NULL);
-
 	g_signal_connect(G_OBJECT(m_wTopLevelWindow), "focus_in_event",
 					   G_CALLBACK(_fe::focus_in_event), NULL);
 	g_signal_connect(G_OBJECT(m_wTopLevelWindow), "focus_out_event",
 					   G_CALLBACK(_fe::focus_out_event), NULL);
 
 	// create a VBox inside it.
-
 	m_wVBox = gtk_vbox_new(FALSE,0);
 	g_object_set_data(G_OBJECT(m_wTopLevelWindow), "vbox", m_wVBox);
 	g_object_set_data(G_OBJECT(m_wVBox),"user_data", this);
@@ -210,7 +128,7 @@ void AP_UnixHildonFrameImpl::_createTopLevelWindow(void)
 
 	if (m_iFrameMode != XAP_NoMenusWindowLess) {
 		// synthesize a menu from the info in our base class.
-		m_pUnixMenu = new EV_UnixMenuBar(m_pUnixApp, getFrame(), m_szMenuLayoutName,
+		m_pUnixMenu = new EV_UnixMenuBar(static_cast<XAP_UnixApp*>(XAP_App::getApp()), getFrame(), m_szMenuLayoutName,
 										 m_szMenuLabelSetName);
 		UT_ASSERT(m_pUnixMenu);
 		bResult = m_pUnixMenu->synthesizeMenuBar();

@@ -80,7 +80,7 @@ AP_Win32FrameImpl::~AP_Win32FrameImpl(void)
 }
 
 
-XAP_FrameImpl * AP_Win32FrameImpl::createInstance(XAP_Frame *pFrame, XAP_App *pApp)
+XAP_FrameImpl * AP_Win32FrameImpl::createInstance(XAP_Frame *pFrame)
 {
 	XAP_FrameImpl *pFrameImpl = new AP_Win32FrameImpl(static_cast<AP_Frame *>(pFrame));
 

@@ -29,7 +29,7 @@
 
 /*****************************************************************/
 
-AP_FrameData::AP_FrameData(XAP_App * pApp)
+AP_FrameData::AP_FrameData()
 {
 	m_pDocLayout = NULL;
 	m_pRootView = NULL;
@@ -45,53 +45,51 @@ AP_FrameData::AP_FrameData(XAP_App * pApp)
 	m_bShowBar[1] = true;
 	m_bShowBar[2] = true;
 	m_bShowBar[3] = true;
-        m_bShowPara = true;
+	m_bShowPara = true;
 	m_bInsertMode = true;
 	m_bShowStatusBar = true;
 	m_bIsFullScreen = false;
 
-	if (pApp)
-	{
-		bool b;
-		const XML_Char *str;
+	bool b;
+	const XML_Char *str;
 
-		if (pApp->getPrefsValueBool(AP_PREF_KEY_InsertMode, &b))
-			m_bInsertMode = b;
+	if (XAP_App::getApp()->getPrefsValueBool(AP_PREF_KEY_InsertMode, &b))
+		m_bInsertMode = b;
 
-		if (pApp->getPrefsValueBool(AP_PREF_KEY_RulerVisible, &b))
-			m_bShowRuler = b;
+	if (XAP_App::getApp()->getPrefsValueBool(AP_PREF_KEY_RulerVisible, &b))
+		m_bShowRuler = b;
 
 #if XP_SIMPLE_TOOLBAR		
-		m_bShowBar[0] = true;
+	m_bShowBar[0] = true;
 #else		
-		if (pApp->getPrefsValueBool(AP_PREF_KEY_StandardBarVisible, &b))
-			m_bShowBar[0] = b;
+	if (XAP_App::getApp()->getPrefsValueBool(AP_PREF_KEY_StandardBarVisible, &b))
+		m_bShowBar[0] = b;
 
-		if (pApp->getPrefsValueBool(AP_PREF_KEY_FormatBarVisible, &b))
-			m_bShowBar[1] = b;
+	if (XAP_App::getApp()->getPrefsValueBool(AP_PREF_KEY_FormatBarVisible, &b))
+		m_bShowBar[1] = b;
 
-		if (pApp->getPrefsValueBool(AP_PREF_KEY_TableBarVisible, &b))
-			m_bShowBar[2] = b;
+	if (XAP_App::getApp()->getPrefsValueBool(AP_PREF_KEY_TableBarVisible, &b))
+		m_bShowBar[2] = b;
 
-		if (pApp->getPrefsValueBool(AP_PREF_KEY_ExtraBarVisible, &b))
-			m_bShowBar[3] = b;
+	if (XAP_App::getApp()->getPrefsValueBool(AP_PREF_KEY_ExtraBarVisible, &b))
+		m_bShowBar[3] = b;
 #endif		
 
-		if (pApp->getPrefsValueBool(AP_PREF_KEY_StatusBarVisible, &b))
-			m_bShowStatusBar = b;
+	if (XAP_App::getApp()->getPrefsValueBool(AP_PREF_KEY_StatusBarVisible, &b))
+		m_bShowStatusBar = b;
 
-		if (pApp->getPrefsValueBool(AP_PREF_KEY_ParaVisible, &b))
-			m_bShowPara = b;
+	if (XAP_App::getApp()->getPrefsValueBool(AP_PREF_KEY_ParaVisible, &b))
+		m_bShowPara = b;
 
-		if (pApp->getPrefsValue(AP_PREF_KEY_LayoutMode, &str))
-		  {
-		    int i = atoi ((const char *)str);
-		    switch (i){
-		    case 3:  m_pViewMode = VIEW_WEB;    break;
-		    case 2:  m_pViewMode = VIEW_NORMAL; break;
-		    default: m_pViewMode = VIEW_PRINT;  break;
-		    }
-		  }
+	if (XAP_App::getApp()->getPrefsValue(AP_PREF_KEY_LayoutMode, &str))
+	{
+		int i = atoi ((const char *)str);
+		switch (i)
+		{
+			case 3:  m_pViewMode = VIEW_WEB;    break;
+			case 2:  m_pViewMode = VIEW_NORMAL; break;
+			default: m_pViewMode = VIEW_PRINT;  break;
+		}
 	}
 }
 

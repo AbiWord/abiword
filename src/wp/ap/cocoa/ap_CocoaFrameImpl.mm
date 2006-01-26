@@ -67,9 +67,9 @@ AP_CocoaFrameImpl::AP_CocoaFrameImpl(AP_CocoaFrame *pCocoaFrame, XAP_CocoaApp *p
 {
 }
 
-XAP_FrameImpl * AP_CocoaFrameImpl::createInstance(XAP_Frame *pFrame, XAP_App *pApp)
+XAP_FrameImpl * AP_CocoaFrameImpl::createInstance(XAP_Frame *pFrame)
 {
-	return new AP_CocoaFrameImpl(static_cast<AP_CocoaFrame*>(pFrame), static_cast<XAP_CocoaApp*>(pApp));
+	return new AP_CocoaFrameImpl(static_cast<AP_CocoaFrame*>(pFrame), static_cast<XAP_CocoaApp*>(XAP_App::getApp()));
 }
 
 void AP_CocoaFrameImpl::_setHScrollValue(UT_sint32 value)

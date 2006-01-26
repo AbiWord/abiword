@@ -220,7 +220,7 @@ Defun_EV_GetMenuItemState_Fn(ap_GetState_Window)
 
 	XAP_Frame * pFrame = static_cast<XAP_Frame *>(pAV_View->getParentData());
 	UT_return_val_if_fail (pFrame, EV_MIS_Gray);
-	XAP_App * pApp = pFrame->getApp();
+	XAP_App * pApp = XAP_App::getApp();
 	UT_return_val_if_fail (pApp, EV_MIS_Gray);
 
 	if (pFrame == pApp->getFrame(ndx))
@@ -1093,7 +1093,7 @@ Defun_EV_GetMenuItemState_Fn(ap_GetState_View)
 	AP_FrameData *pFrameData = static_cast<AP_FrameData *> (pFrame->getFrameData());
 	UT_return_val_if_fail (pFrameData, EV_MIS_Gray);
 
-	XAP_App *pApp = pFrame->getApp();
+	XAP_App *pApp = XAP_App::getApp();
 	UT_return_val_if_fail (pApp, EV_MIS_Gray);
 
 	EV_Menu_ItemState s = EV_MIS_ZERO;

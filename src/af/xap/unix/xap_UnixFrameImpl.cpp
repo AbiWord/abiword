@@ -454,7 +454,7 @@ static void s_gtkMenuPositionFunc(GtkMenu * /* menu */, gint * x, gint * y, gboo
 }
 
 /****************************************************************/
-XAP_UnixFrameImpl::XAP_UnixFrameImpl(XAP_Frame *pFrame, XAP_UnixApp * pApp) : 
+XAP_UnixFrameImpl::XAP_UnixFrameImpl(XAP_Frame *pFrame) : 
 	XAP_FrameImpl(pFrame),
 	m_imContext(NULL),
 	m_pUnixMenu(NULL),
@@ -462,9 +462,8 @@ XAP_UnixFrameImpl::XAP_UnixFrameImpl(XAP_Frame *pFrame, XAP_UnixApp * pApp) :
 	m_bDoZoomUpdate(false),
 	m_iZoomUpdateID(0),
 	m_iAbiRepaintID(0),
-	m_pUnixApp(pApp),
 	m_pUnixPopup(NULL),
-	m_dialogFactory(pFrame, static_cast<XAP_App *>(pApp))
+	m_dialogFactory(pFrame, XAP_App::getApp())
 {
 }
 
@@ -669,7 +668,7 @@ gint XAP_UnixFrameImpl::_fe::configure_event(GtkWidget* w, GdkEventConfigure *e)
 	{
 		pUnixFrameImpl->m_iNewWidth = e->width;
 		pUnixFrameImpl->m_iNewHeight = e->height;
-		XAP_App * pApp = pFrame->getApp();
+		XAP_App * pApp = XAP_App::getApp();
 		UT_sint32 x,y;
 		UT_uint32 width,height,flags;
 		pApp->getGeometry(&x,&y,&width,&height,&flags);
@@ -836,7 +835,7 @@ gint XAP_UnixFrameImpl::_fe::delete_event(GtkWidget * w, GdkEvent * /*event*/, g
 {
 	XAP_UnixFrameImpl * pUnixFrameImpl = static_cast<XAP_UnixFrameImpl *>(g_object_get_data(G_OBJECT(w), "user_data"));
 	XAP_Frame* pFrame = pUnixFrameImpl->getFrame();
-	XAP_App * pApp = pFrame->getApp();
+	XAP_App * pApp = XAP_App::getApp();
 	UT_ASSERT(pApp);
 	if(pApp->isBonoboRunning())
 		return FALSE;
@@ -1192,7 +1191,7 @@ void XAP_UnixFrameImpl::_createTopLevelWindow(void)
 	{
 		m_wTopLevelWindow = gtk_window_new(GTK_WINDOW_TOPLEVEL);
 		gtk_window_set_title(GTK_WINDOW(m_wTopLevelWindow),
-				     m_pUnixApp->getApplicationTitleForTitleBar());
+				     XAP_App::getApp()->getApplicationTitleForTitleBar());
 		gtk_window_set_resizable(GTK_WINDOW(m_wTopLevelWindow), TRUE);
 		gtk_window_set_role(GTK_WINDOW(m_wTopLevelWindow), "topLevelWindow");
 		if ( wmIcon )
@@ -1273,7 +1272,7 @@ void XAP_UnixFrameImpl::_createTopLevelWindow(void)
 
 	if (m_iFrameMode != XAP_NoMenusWindowLess) {
 		// synthesize a menu from the info in our base class.
-		m_pUnixMenu = new EV_UnixMenuBar(m_pUnixApp, getFrame(), m_szMenuLayoutName,
+		m_pUnixMenu = new EV_UnixMenuBar(static_cast<XAP_UnixApp*>(XAP_App::getApp()), getFrame(), m_szMenuLayoutName,
 										 m_szMenuLabelSetName);
 		UT_ASSERT(m_pUnixMenu);
 		bResult = m_pUnixMenu->synthesizeMenuBar();
@@ -1434,7 +1433,7 @@ void XAP_UnixFrameImpl::_setGeometry ()
 	UT_uint32 app_h = 0;
 	UT_uint32 app_f = 0;
 
-	XAP_App * pApp = m_pUnixApp->XAP_App::getApp ();
+	XAP_UnixApp * pApp = static_cast<XAP_UnixApp*>(XAP_App::getApp ());
 	pApp->getGeometry (&app_x, &app_y, &app_w, &app_h, &app_f);
 	// (ignore app_x, app_y & app_f since the WM will set them for us just fine)
 	  
@@ -1452,7 +1451,7 @@ void XAP_UnixFrameImpl::_setGeometry ()
 	guint user_h = static_cast<guint>(app_h);
 	UT_uint32 user_f = 0;
 
-	m_pUnixApp->getWinGeometry (&user_x, &user_y, &user_w, &user_h, &user_f);
+	pApp->getWinGeometry (&user_x, &user_y, &user_w, &user_h, &user_f);
 
 	UT_DEBUGMSG(("xap_UnixFrameImpl: user-width=%u, user-height=%u\n",
 				 static_cast<unsigned>(user_w),static_cast<unsigned>(user_h)));
@@ -1464,7 +1463,7 @@ void XAP_UnixFrameImpl::_setGeometry ()
 	UT_uint32 pref_h = static_cast<UT_uint32>(app_h);
 	UT_uint32 pref_f = 0;
 
-	m_pUnixApp->getPrefs()->getGeometry (&pref_x, &pref_y, &pref_w, &pref_h, &pref_f);
+	pApp->getPrefs()->getGeometry (&pref_x, &pref_y, &pref_w, &pref_h, &pref_f);
 
 	UT_DEBUGMSG(("xap_UnixFrameImpl: pref-width=%lu, pref-height=%lu\n",
 				 static_cast<unsigned long>(pref_w),static_cast<unsigned long>(pref_h)));
@@ -1513,14 +1512,14 @@ void XAP_UnixFrameImpl::_setGeometry ()
 	// places for new windows, instead of having our windows
 	// pile upon each other.
 
-	if (m_pUnixApp->getFrameCount () <= 1)
+	if (pApp->getFrameCount () <= 1)
 		if (user_f & XAP_UnixApp::GEOMETRY_FLAG_POS)
 			{
 				gtk_window_move (GTK_WINDOW(m_wTopLevelWindow), user_x, user_y);
 			}
 
 	// Remember geometry settings for next time
-	m_pUnixApp->getPrefs()->setGeometry (user_x, user_y, user_w, user_h, user_f);
+	pApp->getPrefs()->setGeometry (user_x, user_y, user_w, user_h, user_f);
 			
 }
 
@@ -1535,7 +1534,7 @@ void XAP_UnixFrameImpl::_rebuildMenus(void)
 	DELETEP(m_pUnixMenu);
 	
 	// build new one.
-	m_pUnixMenu = new EV_UnixMenuBar(m_pUnixApp, getFrame(),
+	m_pUnixMenu = new EV_UnixMenuBar(static_cast<XAP_UnixApp*>(XAP_App::getApp()), getFrame(),
 					 m_szMenuLayoutName,
 					 m_szMenuLabelSetName);
 	UT_ASSERT(m_pUnixMenu);
@@ -1563,7 +1562,7 @@ void XAP_UnixFrameImpl::_rebuildToolbar(UT_uint32 ibar)
 	}
 
 	// Build a new one.
-	pToolbar = _newToolbar(m_pUnixApp, pFrame, szTBName,
+	pToolbar = _newToolbar(pFrame, szTBName,
 			       static_cast<const char *>(m_szToolbarLabelSetName));
 	static_cast<EV_UnixToolbar *>(pToolbar)->rebuildToolbar(oldpos);
 	m_vecToolbars.setNthItem(ibar, pToolbar, NULL);
@@ -1621,7 +1620,9 @@ bool XAP_UnixFrameImpl::_runModalContextMenu(AV_View * /* pView */, const char *
 	UT_ASSERT(!m_pUnixPopup);
 
 	// WL_REFACTOR: we DON'T want to do this
-	m_pUnixPopup = new EV_UnixMenuPopup(m_pUnixApp, pFrame, szMenuName, m_szMenuLabelSetName);
+	m_pUnixPopup = new EV_UnixMenuPopup(static_cast<XAP_UnixApp*>(XAP_App::getApp()),
+										pFrame, szMenuName, m_szMenuLabelSetName);
+	
 	if (m_pUnixPopup && m_pUnixPopup->synthesizeMenuPopup())
 	{
 		// Add our InputMethod selection item to the popup menu. Borrowed
@@ -1634,7 +1635,7 @@ bool XAP_UnixFrameImpl::_runModalContextMenu(AV_View * /* pView */, const char *
 		gtk_widget_show (menuitem);
 		gtk_menu_shell_append (GTK_MENU_SHELL (menu), menuitem);
 
-		const XAP_StringSet * pSS = m_pUnixApp->getStringSet();
+		const XAP_StringSet * pSS = XAP_App::getApp()->getStringSet();
 
 		menuitem = gtk_menu_item_new_with_label (pSS->getValue(XAP_STRING_ID_XIM_Methods));
 
@@ -1694,7 +1695,7 @@ bool XAP_UnixFrameImpl::_runModalContextMenu(AV_View * /* pView */, const char *
 
 void XAP_UnixFrameImpl::setTimeOfLastEvent(guint32 eventTime)
 {
-	m_pUnixApp->setTimeOfLastEvent(eventTime);
+	static_cast<XAP_UnixApp*>(XAP_App::getApp())->setTimeOfLastEvent(eventTime);
 }
 
 void XAP_UnixFrameImpl::_queue_resize()
@@ -1716,15 +1717,15 @@ void XAP_UnixFrameImpl::_setFullScreen(bool changeToFullScreen)
 		gtk_window_unfullscreen (GTK_WINDOW(m_wTopLevelWindow));
 }
 
-EV_Toolbar * XAP_UnixFrameImpl::_newToolbar(XAP_App *pApp, XAP_Frame *pFrame,
-					      const char *szLayout,
-					      const char *szLanguage)
+EV_Toolbar * XAP_UnixFrameImpl::_newToolbar(XAP_Frame *pFrame,
+											const char *szLayout,
+											const char *szLanguage)
 {
 	EV_UnixToolbar *pToolbar = NULL;
 #ifdef HAVE_GNOME
-	pToolbar = new EV_GnomeToolbar(static_cast<XAP_UnixApp *>(pApp), pFrame, szLayout, szLanguage);
+	pToolbar = new EV_GnomeToolbar(static_cast<XAP_UnixApp *>(XAP_App::getApp()), pFrame, szLayout, szLanguage);
 #else
-	pToolbar = new EV_UnixToolbar(static_cast<XAP_UnixApp *>(pApp), pFrame, szLayout, szLanguage);
+	pToolbar = new EV_UnixToolbar(static_cast<XAP_UnixApp *>(XAP_App::getApp()), pFrame, szLayout, szLanguage);
 #endif
 	return pToolbar;
 }

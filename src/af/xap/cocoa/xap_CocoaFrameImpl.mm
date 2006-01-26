@@ -365,7 +365,7 @@ void XAP_CocoaFrameImpl::_rebuildToolbar(UT_uint32 ibar)
 //
 // Build a new one.
 //
-	pToolbar = _newToolbar(m_pCocoaApp, pFrame, szTBName,
+	pToolbar = _newToolbar(pFrame, szTBName,
 						   (const char *) m_szToolbarLabelSetName);
 	static_cast<EV_CocoaToolbar *>(pToolbar)->rebuildToolbar(oldpos);
 	m_vecToolbars.setNthItem(ibar, pToolbar, NULL);
@@ -468,11 +468,11 @@ void XAP_CocoaFrameImpl::setTimeOfLastEvent(NSTimeInterval timestamp)
 	m_pCocoaApp->setTimeOfLastEvent(timestamp);
 }
 
-EV_Toolbar * XAP_CocoaFrameImpl::_newToolbar(XAP_App *app, XAP_Frame *frame,
-					const char *szLayout,
-					const char *szLanguage)
+EV_Toolbar * XAP_CocoaFrameImpl::_newToolbar(XAP_Frame *frame,
+											 const char *szLayout,
+											 const char *szLanguage)
 {
-	return (new EV_CocoaToolbar(static_cast<XAP_CocoaApp *>(app), 
+	return (new EV_CocoaToolbar(static_cast<XAP_CocoaApp *>(XAP_App::getApp()), 
 							   (AP_CocoaFrame *)frame, 
 							   szLayout, szLanguage));
 }

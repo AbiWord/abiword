@@ -84,7 +84,7 @@ class UT_Timer;
 class ABI_EXPORT XAP_Frame
 {
 public:
-	XAP_Frame(XAP_FrameImpl *pFrameImpl, XAP_App * pApp);
+	XAP_Frame(XAP_FrameImpl *pFrameImpl);
 	XAP_Frame(XAP_Frame * pFrame);
 	virtual ~XAP_Frame();
 
@@ -110,13 +110,12 @@ public:
 	void setFullScreen(bool isFullScreen) { m_pFrameImpl->_setFullScreen(isFullScreen); }
 
 	virtual XAP_DialogFactory * getDialogFactory() { return m_pFrameImpl->_getDialogFactory(); }
-	virtual EV_Toolbar * _newToolbar(XAP_App *app, XAP_Frame *frame, const char *szLayout, const char *szLanguage) { return m_pFrameImpl->_newToolbar(app, frame, szLayout, szLanguage); }
+	virtual EV_Toolbar * _newToolbar(XAP_Frame *frame, const char *szLayout, const char *szLanguage) { return m_pFrameImpl->_newToolbar(frame, szLayout, szLanguage); }
 	virtual EV_Menu* getMainMenu() { return m_pFrameImpl->_getMainMenu(); }
 
 	XAP_FrameImpl * getFrameImpl() const { return m_pFrameImpl; }
 
 	void                        nullUpdate () const { m_pFrameImpl->_nullUpdate(); }
-	XAP_App *					getApp() const;
 	AV_View *		       		getCurrentView() const;
 	AD_Document *				getCurrentDoc() const;
 	void                        setView(AV_View * pView) {m_pView = pView;}
@@ -225,7 +224,6 @@ public:
 protected:
 	friend class XAP_FrameImpl;
 
-	XAP_App *					m_pApp;			/* handle to application-specific data */
 	AD_Document *				m_pDoc;			/* to our in-memory representation of a document */
 	AV_View *					m_pView;		/* to our view on the document */
 	ap_ViewListener *			m_pViewListener;

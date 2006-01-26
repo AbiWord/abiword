@@ -62,7 +62,7 @@ void XAP_UnixDialog_MessageBox::runModal(XAP_Frame * pFrame)
 	XAP_UnixFrameImpl * pUnixFrameImpl = static_cast<XAP_UnixFrameImpl *>(pFrame->getFrameImpl());
 	UT_return_if_fail(pUnixFrameImpl);
 
-	XAP_UnixApp * pApp = static_cast<XAP_UnixApp *>(pFrame->getApp());
+	XAP_UnixApp * pApp = static_cast<XAP_UnixApp *>(XAP_App::getApp());
 	UT_return_if_fail(pApp);
 
 	GtkWidget * message = 0;	// initialize to prevent compiler warning

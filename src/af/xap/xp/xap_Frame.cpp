@@ -60,9 +60,8 @@
 #pragma warning(disable: 4355)
 #endif
 
-XAP_Frame::XAP_Frame(XAP_FrameImpl *pFrameImpl, XAP_App * pApp)
-	: m_pApp(pApp),
-	  m_pDoc(0),
+XAP_Frame::XAP_Frame(XAP_FrameImpl *pFrameImpl)
+	: m_pDoc(0),
 	  m_pView(0),
 	  m_pViewListener(0),
 	  m_lid(static_cast<AV_ListenerId>(-1)),
@@ -92,14 +91,13 @@ XAP_Frame::XAP_Frame(XAP_FrameImpl *pFrameImpl, XAP_App * pApp)
 	  m_pFrameImpl(pFrameImpl),
 	  m_iZoomPercentage(100)
 {
-	m_pApp->rememberFrame(this);
+	XAP_App::getApp()->rememberFrame(this);
 //	UT_DEBUGMSG(("Remembering UnCloned Frame \n"));
 //	UT_ASSERT(0);
 }
 
 XAP_Frame::XAP_Frame(XAP_Frame * f)
-	: m_pApp(f->m_pApp),
-	m_pDoc(REFP(f->m_pDoc)),
+	: m_pDoc(REFP(f->m_pDoc)),
 	m_pView(0),
 	m_pViewListener(0),
 	m_lid(static_cast<AV_ListenerId>(-1)),
@@ -121,10 +119,10 @@ XAP_Frame::XAP_Frame(XAP_Frame * f)
 	m_bHasDroppedTB(false),
 	m_bFirstDraw(false),
 	m_bIsFrameLocked(false),
-	m_pFrameImpl(f->m_pFrameImpl->createInstance(this, f->m_pApp)),
+	m_pFrameImpl(f->m_pFrameImpl->createInstance(this)),
 	m_iZoomPercentage(f->m_iZoomPercentage)
 {
-	m_pApp->rememberFrame(this, f);
+	XAP_App::getApp()->rememberFrame(this, f);
 //	UT_DEBUGMSG(("Remembering Cloned Frame \n"));
 //	UT_ASSERT(0);
 }
@@ -194,7 +192,7 @@ bool XAP_Frame::initialize(const char * szKeyBindingsKey, const char * szKeyBind
 						   const char * szToolbarLayoutsKey, const char * szToolbarLayoutsDefaultValue,
 						   const char * szToolbarLabelSetKey, const char * szToolbarLabelSetDefaultValue)
 {
-	XAP_App * pApp = getApp();
+	XAP_App * pApp = XAP_App::getApp();
 
 
 	//////////////////////////////////////////////////////////////////
@@ -315,7 +313,7 @@ bool XAP_Frame::initialize(const char * szKeyBindingsKey, const char * szKeyBind
 	{
 		m_zoomType = z_PAGEWIDTH;
 		const XML_Char * szZoom = NULL;
-		m_pApp->getPrefsValue(XAP_PREF_KEY_ZoomPercentage,
+		pApp->getPrefsValue(XAP_PREF_KEY_ZoomPercentage,
 							  static_cast<const XML_Char**>(&szZoom));
 		if(szZoom)
 		{
@@ -334,7 +332,7 @@ bool XAP_Frame::initialize(const char * szKeyBindingsKey, const char * szKeyBind
 	{
 		m_zoomType = z_WHOLEPAGE;
 		const XML_Char * szZoom = NULL;
-		m_pApp->getPrefsValue(XAP_PREF_KEY_ZoomPercentage,
+		pApp->getPrefsValue(XAP_PREF_KEY_ZoomPercentage,
 							  static_cast<const XML_Char**>(&szZoom));
 		if(szZoom)
 		{
@@ -406,8 +404,7 @@ void XAP_Frame::_createAutoSaveTimer()
 	UT_Timer *timer = UT_Timer::static_constructor(autoSaveCallback, this);
 	UT_String stPeriod;
 	
-	UT_ASSERT(m_pApp);
-	m_pApp->getPrefsValue(XAP_PREF_KEY_AutoSaveFilePeriod, stPeriod);
+	XAP_App::getApp()->getPrefsValue(XAP_PREF_KEY_AutoSaveFilePeriod, stPeriod);
 	UT_ASSERT(stPeriod.empty() == false);
 	m_iAutoSavePeriod = atoi(stPeriod.c_str());
 	
@@ -439,8 +436,8 @@ void XAP_FrameImpl::_startViewAutoUpdater(void)
 void /* static*/ XAP_FrameImpl::viewAutoUpdater(UT_Worker *wkr)
 {
 	XAP_FrameImpl *pFrameImpl = static_cast<XAP_FrameImpl *> (wkr->getInstanceData());
-	XAP_App *pApp = pFrameImpl->m_pFrame->getApp(); // WL_REFACTOR: may be redundant
-	const XAP_StringSet * pSS = pFrameImpl->m_pFrame->getApp()->getStringSet();
+	XAP_App *pApp = XAP_App::getApp();
+	const XAP_StringSet * pSS = pApp->getStringSet();
 	UT_String msg;
 	pSS->getValue(XAP_STRING_ID_MSG_BuildingDoc, pApp->getDefaultEncoding(),msg);
 	pFrameImpl->_setCursor(GR_Graphics::GR_CURSOR_WAIT);
@@ -505,11 +502,6 @@ UT_RGBColor XAP_Frame::getColorSelForeground () const
   return m_pFrameImpl->getColorSelForeground ();
 }
 
-
-XAP_App * XAP_Frame::getApp(void) const
-{
-	return m_pApp;
-}
 
 AV_View * XAP_Frame::getCurrentView(void) const
 {
@@ -597,7 +589,7 @@ const char * XAP_Frame::getNonDecoratedTitle() const
 void XAP_Frame::setZoomPercentage(UT_uint32 iZoom)
 {
 	m_iZoomPercentage = iZoom;
-	XAP_App * pApp = getApp();
+	XAP_App * pApp = XAP_App::getApp();
 	UT_ASSERT(pApp);
 	XAP_Prefs * pPrefs = pApp->getPrefs();
 	UT_ASSERT(pPrefs);
@@ -656,7 +648,7 @@ void XAP_FrameImpl::_createToolbars(void)
 	UT_uint32 nrToolbars = m_vecToolbarLayoutNames.getItemCount();
 	for (UT_uint32 k=0; k < nrToolbars; k++)
 	{
-		EV_Toolbar * pToolbar = m_pFrame->_newToolbar(m_pFrame->m_pApp, m_pFrame,
+		EV_Toolbar * pToolbar = m_pFrame->_newToolbar(m_pFrame,
 							      reinterpret_cast<const char *>(m_vecToolbarLayoutNames.getNthItem(k)),
 							      reinterpret_cast<const char *>(m_szToolbarLabelSetName));
 		UT_ASSERT(pToolbar);
@@ -749,9 +741,9 @@ XAP_Dialog_MessageBox * XAP_Frame::createMessageBox(XAP_String_Id id,
 
 	if (id > 0) {
 		char * szNewMessage = static_cast<char *>(malloc(sizeof(char) * 256));
-		const XAP_StringSet * pSS = getApp()->getStringSet();
+		const XAP_StringSet * pSS = XAP_App::getApp()->getStringSet();
 		UT_String s;
-		pSS->getValue(id, m_pApp->getDefaultEncoding(), s);
+		pSS->getValue(id, XAP_App::getApp()->getDefaultEncoding(), s);
 		
 		va_list args;		
 		va_start(args, default_answer);		
@@ -813,9 +805,9 @@ UT_String XAP_Frame::makeBackupName(const char* szExt)
   UT_DEBUGMSG(("In make Backup name. Old Name is  %s \n",oldName.c_str()));
   if (oldName.empty())
     {
-      const XAP_StringSet * pSS = m_pApp->getStringSet();
+      const XAP_StringSet * pSS = XAP_App::getApp()->getStringSet();
 	  UT_String sTmp;
-	  pSS->getValue(XAP_STRING_ID_UntitledDocument, m_pApp->getDefaultEncoding(), sTmp);
+	  pSS->getValue(XAP_STRING_ID_UntitledDocument, XAP_App::getApp()->getDefaultEncoding(), sTmp);
 	  UT_String_sprintf(oldName, sTmp.c_str(), m_iUntitled);
 
       UT_DEBUGMSG(("Untitled.  We will give it the name [%s]\n", oldName.c_str()));
@@ -863,7 +855,7 @@ UT_Error XAP_Frame::backup(const char* szExt, UT_sint32 iEFT)
 //
 // Don't put this auto-save in the most recent list.
 //
-	getApp()->getPrefs()->setIgnoreNextRecent();
+	XAP_App::getApp()->getPrefs()->setIgnoreNextRecent();
 	
 	if(iEFT < 0)
 	{
@@ -995,7 +987,7 @@ void XAP_Frame::dragDropToTB(XAP_Toolbar_Id srcId,EV_Toolbar * pTBsrc, EV_Toolba
 void XAP_Frame::dragEnd(XAP_Toolbar_Id srcId)
 {
 	UT_ASSERT(m_isrcId == srcId);
-	if(!getApp()->areToolbarsCustomizable())
+	if(!XAP_App::getApp()->areToolbarsCustomizable())
 	{
 		return;
 	}
@@ -1007,15 +999,15 @@ void XAP_Frame::dragEnd(XAP_Toolbar_Id srcId)
 		if(m_isrcId != m_idestId)
 		{
 			const char * szTBSrcName = reinterpret_cast<const char *>(m_pFrameImpl->m_vecToolbarLayoutNames.getNthItem(m_isrcTBNr));
-			getApp()->getToolbarFactory()->removeIcon(szTBSrcName,m_isrcId);
+			XAP_App::getApp()->getToolbarFactory()->removeIcon(szTBSrcName,m_isrcId);
 			const char * szTBDestName = reinterpret_cast<const char *>(m_pFrameImpl->m_vecToolbarLayoutNames.getNthItem(m_idestTBNr));
-			getApp()->getToolbarFactory()->addIconBefore(szTBDestName,m_isrcId,m_idestId);
+			XAP_App::getApp()->getToolbarFactory()->addIconBefore(szTBDestName,m_isrcId,m_idestId);
 			m_pFrameImpl->_rebuildToolbar(m_isrcTBNr);
 			if(m_isrcTBNr != m_idestTBNr)
 			{
 				m_pFrameImpl->_rebuildToolbar(m_idestTBNr);
 			}
-		getApp()->setToolbarsCustomized(true);
+			XAP_App::getApp()->setToolbarsCustomized(true);
 		}
 	}
 //
@@ -1024,9 +1016,9 @@ void XAP_Frame::dragEnd(XAP_Toolbar_Id srcId)
 	if(m_bisDragging && m_bHasDroppedTB)
 	{
 		const char * szTBSrcName = reinterpret_cast<const char *>(m_pFrameImpl->m_vecToolbarLayoutNames.getNthItem(m_isrcTBNr));
-		getApp()->getToolbarFactory()->removeIcon(szTBSrcName,m_isrcId);
+		XAP_App::getApp()->getToolbarFactory()->removeIcon(szTBSrcName,m_isrcId);
 		const char * szTBDestName = reinterpret_cast<const char *>(m_pFrameImpl->m_vecToolbarLayoutNames.getNthItem(m_idestTBNr));
-		getApp()->getToolbarFactory()->addIconAtEnd(szTBDestName,m_isrcId);
+		XAP_App::getApp()->getToolbarFactory()->addIconAtEnd(szTBDestName,m_isrcId);
 		m_pFrameImpl->_rebuildToolbar(m_isrcTBNr);
 		if(m_isrcTBNr != m_idestTBNr)
 		{
@@ -1044,7 +1036,7 @@ void XAP_Frame::dragEnd(XAP_Toolbar_Id srcId)
 		if(XAP_Dialog_MessageBox::a_YES == showMessageBox(XAP_STRING_ID_DLG_Remove_Icon,XAP_Dialog_MessageBox::b_YN,XAP_Dialog_MessageBox::a_NO))
 		{
 			const char * szTBSrcName = reinterpret_cast<const char *>(m_pFrameImpl->m_vecToolbarLayoutNames.getNthItem(m_isrcTBNr));
-			getApp()->getToolbarFactory()->removeIcon(szTBSrcName,m_isrcId);
+			XAP_App::getApp()->getToolbarFactory()->removeIcon(szTBSrcName,m_isrcId);
 			m_pFrameImpl->_rebuildToolbar(m_isrcTBNr);
 		}
 	}

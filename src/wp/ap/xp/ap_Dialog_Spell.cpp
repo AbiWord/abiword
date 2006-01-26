@@ -176,7 +176,7 @@ bool AP_Dialog_Spell::nextMisspelledWord(void)
    UT_return_val_if_fail (m_pWordIterator && m_pView && m_pView->getLayout(), false);
 
    // Makes this honor spelling prefs
-   XAP_App * pApp = m_pFrame->getApp();
+   XAP_App * pApp = XAP_App::getApp();
    UT_return_val_if_fail (pApp, false);
    XAP_Prefs * pPrefs = pApp->getPrefs();
    UT_return_val_if_fail (pPrefs, false);
@@ -232,7 +232,7 @@ bool AP_Dialog_Spell::nextMisspelledWord(void)
 		   if (!inChangeAll()) 
 		   {
 			   // try ignore all list and user dictionaries here, too
-			   XAP_App * pApp = m_pFrame->getApp();
+			   XAP_App * pApp = XAP_App::getApp();
 
 			   if (!_spellCheckWord(m_pWord, m_iWordLength)) 
 			   {

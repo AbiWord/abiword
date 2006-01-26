@@ -373,7 +373,7 @@ void AP_Dialog_Columns::_convertToPreferredUnits(XAP_Frame * pFrame,const char *
 	UT_Dimension PreferedUnits = DIM_none;
 	const XML_Char * pszRulerUnits = NULL;
 
-	if (pFrame->getApp()->getPrefsValue(AP_PREF_KEY_RulerUnits, &pszRulerUnits))
+	if (XAP_App::getApp()->getPrefsValue(AP_PREF_KEY_RulerUnits, &pszRulerUnits))
 	{
 		PreferedUnits = UT_determineDimension(static_cast<const char *>(pszRulerUnits));
 	};

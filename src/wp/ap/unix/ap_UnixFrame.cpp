@@ -133,11 +133,11 @@ void AP_UnixFrame::setYScrollRange(void)
 }
 
 
-AP_UnixFrame::AP_UnixFrame(XAP_UnixApp * pApp)
+AP_UnixFrame::AP_UnixFrame()
 #ifdef HAVE_HILDON
-: AP_Frame(new AP_UnixHildonFrameImpl(this, pApp), pApp)
+: AP_Frame(new AP_UnixHildonFrameImpl(this))
 #else
-: AP_Frame(new AP_UnixFrameImpl(this, pApp), pApp)
+: AP_Frame(new AP_UnixFrameImpl(this))
 #endif
 {
 	m_pData = NULL;
@@ -172,7 +172,7 @@ XAP_Frame * AP_UnixFrame::cloneFrame()
 	// clean up anything we created here
 	if (pClone)
 	{
-		static_cast<XAP_App *>(m_pApp)->forgetFrame(pClone);
+		XAP_App::getApp()->forgetFrame(pClone);
 		delete pClone;
 	}
 	return NULL;
@@ -466,14 +466,14 @@ void AP_UnixFrame::toggleStatusBar(bool bStatusBarOn)
 
 bool AP_UnixFrame::_createViewGraphics(GR_Graphics *& pG, UT_uint32 iZoom)
 {
-	XAP_UnixFontManager * fontManager = (static_cast<XAP_UnixApp *>(getApp())->getFontManager());
+	XAP_UnixFontManager * fontManager = (static_cast<XAP_UnixApp *>(XAP_App::getApp())->getFontManager());
 	//WL: experimentally hiding this
 	//gtk_widget_show(static_cast<AP_UnixFrameImpl *>(m_pFrameImpl)->m_dArea);
 	AP_UnixFrameImpl * pImpl = static_cast<AP_UnixFrameImpl *>(getFrameImpl());
 	UT_ASSERT(pImpl);
 	UT_DEBUGMSG(("Got FrameImpl %x area %x \n",pImpl,pImpl->m_dArea));
 	//pG = new GR_UnixGraphics(pImpl->m_dArea->window, fontManager, getApp());
-	GR_UnixAllocInfo ai(pImpl->m_dArea->window, fontManager, getApp());
+	GR_UnixAllocInfo ai(pImpl->m_dArea->window, fontManager, XAP_App::getApp());
 	pG = (GR_UnixGraphics*) XAP_App::getApp()->newGraphics(ai);
 
 	GtkWidget *widget = GTK_WIDGET(static_cast<AP_UnixFrameImpl *>(getFrameImpl())->m_dArea);

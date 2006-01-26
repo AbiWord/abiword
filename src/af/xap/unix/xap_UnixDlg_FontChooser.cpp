@@ -877,7 +877,7 @@ void XAP_UnixDialog_FontChooser::runModal(XAP_Frame * pFrame)
 	// displays.
 
 	// establish the font manager before dialog creation
-	XAP_App * app = m_pFrame->getApp();
+	XAP_App * app = XAP_App::getApp();
 	XAP_UnixApp * unixapp = static_cast<XAP_UnixApp *> (app);
 	m_fontManager = unixapp->getFontManager();
 
@@ -1058,7 +1058,7 @@ void XAP_UnixDialog_FontChooser::runModal(XAP_Frame * pFrame)
 
 	// attach a new graphics context
 	gtk_widget_show ( cf ) ;
-	XAP_App *pApp = pFrame->getApp();
+	XAP_App *pApp = XAP_App::getApp();
 	//m_gc = new GR_UnixGraphics(m_preview->window, m_fontManager, pApp);
 	GR_UnixAllocInfo ai(m_preview->window, m_fontManager, pApp);
 	m_gc = (GR_UnixGraphics*) XAP_App::getApp()->newGraphics(ai);

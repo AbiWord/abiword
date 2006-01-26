@@ -50,7 +50,7 @@ class ABI_EXPORT XAP_Win32FrameImpl : public XAP_FrameImpl
 	XAP_Win32FrameImpl(XAP_Frame *pFrame);
 	virtual ~XAP_Win32FrameImpl(void);
 
-	virtual XAP_FrameImpl * createInstance(XAP_Frame *pFrame, XAP_App *pApp) = 0;
+	virtual XAP_FrameImpl * createInstance(XAP_Frame *pFrame) = 0;
 
 	inline HWND getTopLevelWindow(void) const 	{  return _getTopLevelWindow();  }
 	inline HWND getToolbarWindow(void) const		{  return m_hwndRebar;  }
@@ -74,7 +74,7 @@ protected:
 	virtual bool _show(void);
 
 	virtual XAP_DialogFactory * _getDialogFactory(void);
-	virtual EV_Toolbar * _newToolbar(XAP_App *app, XAP_Frame *frame, const char *szLayout, const char *szLanguage);
+	virtual EV_Toolbar * _newToolbar(XAP_Frame *frame, const char *szLayout, const char *szLanguage);
 	virtual EV_Menu* _getMainMenu(void);
 
 	// Useful to refresh the size of the Frame.  For instance,

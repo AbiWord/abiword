@@ -370,13 +370,9 @@ bool AP_Win32App::initialize(void)
 
 
 // if app is NULL then we use 'this'
-XAP_Frame * AP_Win32App::newFrame(AP_App *app)
+XAP_Frame * AP_Win32App::newFrame(void)
 {
-	AP_Win32Frame * pWin32Frame;
-	if (app == NULL)
-		pWin32Frame = new AP_Win32Frame(this);
-	else
-		pWin32Frame = new AP_Win32Frame(app);
+	pWin32Frame = new AP_Win32Frame();
 
 	if (pWin32Frame)
 		pWin32Frame->initialize();

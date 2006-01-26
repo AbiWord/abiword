@@ -17,8 +17,8 @@
 #include "abiword_48.xpm"
 #endif
 
-AP_UnixFrameImpl::AP_UnixFrameImpl(AP_UnixFrame *pUnixFrame, XAP_UnixApp *pUnixApp) :
-	XAP_UnixFrameImpl(static_cast<XAP_Frame *>(pUnixFrame), static_cast<AP_App *>(pUnixApp)),
+AP_UnixFrameImpl::AP_UnixFrameImpl(AP_UnixFrame *pUnixFrame) :
+	XAP_UnixFrameImpl(static_cast<XAP_Frame *>(pUnixFrame)),
 	m_dArea(NULL),
 	m_pVadj(NULL),
 	m_pHadj(NULL),
@@ -33,9 +33,9 @@ AP_UnixFrameImpl::AP_UnixFrameImpl(AP_UnixFrame *pUnixFrame, XAP_UnixApp *pUnixA
 	UT_DEBUGMSG(("Created AP_UnixFrameImpl %x \n",this));
 }
 
-XAP_FrameImpl * AP_UnixFrameImpl::createInstance(XAP_Frame *pFrame, XAP_App *pApp)
+XAP_FrameImpl * AP_UnixFrameImpl::createInstance(XAP_Frame *pFrame)
 {
-	XAP_FrameImpl *pFrameImpl = new AP_UnixFrameImpl(static_cast<AP_UnixFrame *>(pFrame), static_cast<XAP_UnixApp *>(pApp));
+	XAP_FrameImpl *pFrameImpl = new AP_UnixFrameImpl(static_cast<AP_UnixFrame *>(pFrame));
 
 	return pFrameImpl;
 }

@@ -83,7 +83,7 @@ AP_TopRuler::AP_TopRuler(XAP_Frame * pFrame)
 	m_xGuide = 0;
 
 	const XML_Char * szRulerUnits;
-	if (pFrame->getApp()->getPrefsValue(AP_PREF_KEY_RulerUnits,&szRulerUnits))
+	if (XAP_App::getApp()->getPrefsValue(AP_PREF_KEY_RulerUnits,&szRulerUnits))
 		m_dim = UT_determineDimension(szRulerUnits);
 	else
 		m_dim = DIM_IN;
@@ -92,7 +92,7 @@ AP_TopRuler::AP_TopRuler(XAP_Frame * pFrame)
 	m_iHeight = s_iFixedHeight;
 
 	// install top_ruler_prefs_listener as this lister for this func
-	pFrame->getApp()->getPrefs()->addListener( AP_TopRuler::_prefsListener, static_cast<void *>(this ));
+	XAP_App::getApp()->getPrefs()->addListener( AP_TopRuler::_prefsListener, static_cast<void *>(this ));
 	m_iCellContainerLeftPos = 0;
 	m_draggingCell = 0;
 	m_lidTopRuler = 0;
@@ -111,7 +111,7 @@ AP_TopRuler::~AP_TopRuler(void)
 		m_pView->removeListener(m_lidTopRuler);
 	}
 	// no more prefs
-	m_pFrame->getApp()->getPrefs()->removeListener( AP_TopRuler::_prefsListener, static_cast<void *>(this ));
+	XAP_App::getApp()->getPrefs()->removeListener( AP_TopRuler::_prefsListener, static_cast<void *>(this ));
 	if(!m_bIsHidden)
 	{
 
@@ -4568,7 +4568,7 @@ void AP_TopRuler::_displayStatusMessage(XAP_String_Id messageID, const ap_RulerT
 {
 	const XML_Char * pText = m_pG->invertDimension(tick.dimType, dValue);
 	UT_String pzMessageFormat;
-	m_pFrame->getApp()->getStringSet()->getValue(messageID, XAP_App::getApp()->getDefaultEncoding(),pzMessageFormat);
+	XAP_App::getApp()->getStringSet()->getValue(messageID, XAP_App::getApp()->getDefaultEncoding(),pzMessageFormat);
 	UT_String temp(UT_String_sprintf(pzMessageFormat.c_str(), pText));
 
 	AP_FrameData * pFrameData = static_cast<AP_FrameData *>(m_pFrame->getFrameData());
@@ -4584,7 +4584,7 @@ void AP_TopRuler::_displayStatusMessage(XAP_String_Id messageID, const ap_RulerT
 	pText = m_pG->invertDimension(tick.dimType, dValue2);
 
 	UT_String pzMessageFormat;
-	m_pFrame->getApp()->getStringSet()->getValue(messageID, XAP_App::getApp()->getDefaultEncoding(), pzMessageFormat);
+	XAP_App::getApp()->getStringSet()->getValue(messageID, XAP_App::getApp()->getDefaultEncoding(), pzMessageFormat);
 	UT_String temp(UT_String_sprintf(pzMessageFormat.c_str(), buf1, pText));
 
 	AP_FrameData * pFrameData = static_cast<AP_FrameData *>(m_pFrame->getFrameData());
@@ -4595,7 +4595,7 @@ void AP_TopRuler::_displayStatusMessage(XAP_String_Id messageID, const ap_RulerT
 void AP_TopRuler::_displayStatusMessage(XAP_String_Id FormatMessageID, UT_sint32 iCol, const char * /*format*/)
 {
 	UT_String pzMessageFormat;
-	m_pFrame->getApp()->getStringSet()->getValue(FormatMessageID, XAP_App::getApp()->getDefaultEncoding(), pzMessageFormat);
+	XAP_App::getApp()->getStringSet()->getValue(FormatMessageID, XAP_App::getApp()->getDefaultEncoding(), pzMessageFormat);
 	static UT_String sCell;
 	UT_String_sprintf(sCell,pzMessageFormat.c_str(),iCol);
 
@@ -4608,7 +4608,7 @@ void AP_TopRuler::_displayStatusMessage(XAP_String_Id FormatMessageID, UT_sint32
 void AP_TopRuler::_displayStatusMessage(XAP_String_Id FormatMessageID)
 {
 	UT_String pzMessageFormat;
-	m_pFrame->getApp()->getStringSet()->getValue(FormatMessageID, XAP_App::getApp()->getDefaultEncoding(),pzMessageFormat);
+	XAP_App::getApp()->getStringSet()->getValue(FormatMessageID, XAP_App::getApp()->getDefaultEncoding(),pzMessageFormat);
 
 	AP_FrameData * pFrameData = static_cast<AP_FrameData *>(m_pFrame->getFrameData());
 	if(m_pFrame->getFrameMode() == XAP_NormalFrame)

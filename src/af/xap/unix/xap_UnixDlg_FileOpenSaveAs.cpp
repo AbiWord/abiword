@@ -261,7 +261,7 @@ bool XAP_UnixDialog_FileOpenSaveAs::_run_gtk_main(XAP_Frame * pFrame,
 				}
 				bool wantSuffix = true;
 				
-				XAP_Prefs *pPrefs= pFrame->getApp()->getPrefs();
+				XAP_Prefs *pPrefs= XAP_App::getApp()->getPrefs();
 	
 				pPrefs->getPrefsValueBool(static_cast<const XML_Char *>(XAP_PREF_KEY_UseSuffix), &wantSuffix);
 	

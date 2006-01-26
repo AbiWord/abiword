@@ -67,8 +67,7 @@ public:
 	virtual ~AP_Win32App(void);
 
 	virtual bool					initialize(void);
-	virtual XAP_Frame *				newFrame(void) { return newFrame(this); }
-	virtual XAP_Frame *				newFrame(AP_App *app);
+	virtual XAP_Frame *				newFrame(void);
 	virtual bool					shutdown(void);
 	virtual bool					getPrefsValueDirectory(bool bAppSpecific,
 														   const XML_Char * szKey, const XML_Char ** pszValue) const;

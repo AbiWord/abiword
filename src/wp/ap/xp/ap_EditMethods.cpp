@@ -1350,7 +1350,7 @@ Defun1(toggleAutoSpell)
 	XAP_Frame * pFrame = static_cast<XAP_Frame *> ( pAV_View->getParentData());
 	UT_return_val_if_fail (pFrame, false);
 
-	XAP_App * pApp = pFrame->getApp();
+	XAP_App * pApp = XAP_App::getApp();
 	UT_return_val_if_fail (pApp, false);
 	XAP_Prefs * pPrefs = pApp->getPrefs();
 	UT_return_val_if_fail (pPrefs, false);
@@ -1531,7 +1531,7 @@ static void s_LoadingCursorCallback(UT_Worker * pTimer )
 		s_bFirstDrawDone = false;
 		return;
 	}
-	const XAP_StringSet * pSS = pFrame->getApp()->getStringSet();
+	const XAP_StringSet * pSS = XAP_App::getApp()->getStringSet();
 	pFrame->setCursor(GR_Graphics::GR_CURSOR_WAIT);
 	FV_View * pView = static_cast<FV_View *>(pFrame->getCurrentView());
 	if(pView)
@@ -1902,7 +1902,7 @@ static bool s_AskForPathname(XAP_Frame * pFrame,
 	  }
 	else if (bSaveAs)
 	  {
-		XAP_App * pApp = pFrame->getApp();
+		XAP_App * pApp = XAP_App::getApp();
 		UT_return_val_if_fail (pApp, false);
 		XAP_Prefs * pPrefs = pApp->getPrefs();
 		UT_return_val_if_fail (pPrefs, false);
@@ -2407,7 +2407,7 @@ Defun(fileSave)
 
 	if (pFrame->getViewNumber() > 0)
 	{
-		XAP_App * pApp = pFrame->getApp();
+		XAP_App * pApp = XAP_App::getApp();
 		UT_return_val_if_fail (pApp, false);
 
 		pApp->updateClones(pFrame);
@@ -2451,7 +2451,7 @@ s_actuallySaveAs(AV_View * pAV_View, bool overwriteName)
 		return bOK;
 
 	// update the MRU list
-	XAP_App * pApp = pFrame->getApp();
+	XAP_App * pApp = XAP_App::getApp();
 	UT_return_val_if_fail (pApp, false);
 	free(pNewFile);
 
@@ -2824,7 +2824,7 @@ static bool _activateWindow(AV_View* pAV_View, UT_uint32 ndx)
 {
 	XAP_Frame * pFrame = static_cast<XAP_Frame *> ( pAV_View->getParentData());
 	UT_return_val_if_fail(pFrame, false);
-	XAP_App * pApp = pFrame->getApp();
+	XAP_App * pApp = XAP_App::getApp();
 	UT_return_val_if_fail (pApp, false);
 
 	UT_return_val_if_fail (ndx > 0 && ndx <= pApp->getFrameCount(), false);
@@ -3031,7 +3031,7 @@ Defun(dlgMetaData)
   XAP_Frame * pFrame = static_cast<XAP_Frame *>(pView->getParentData());
   UT_return_val_if_fail(pFrame, false);
 
-  XAP_App * pApp = pFrame->getApp();
+  XAP_App * pApp = XAP_App::getApp();
   UT_return_val_if_fail (pApp, false);
 
   pFrame->raise();
@@ -3251,7 +3251,7 @@ Defun1(cycleWindows)
 	CHECK_FRAME;
 	XAP_Frame * pFrame = static_cast<XAP_Frame *> ( pAV_View->getParentData());
 	UT_return_val_if_fail(pFrame, false);
-	XAP_App * pApp = pFrame->getApp();
+	XAP_App * pApp = XAP_App::getApp();
 	UT_return_val_if_fail (pApp, false);
 
 	UT_sint32 ndx = pApp->findFrame(pFrame);
@@ -3275,7 +3275,7 @@ Defun1(cycleWindowsBck)
 	CHECK_FRAME;
 	XAP_Frame * pFrame = static_cast<XAP_Frame *> ( pAV_View->getParentData());
 	UT_return_val_if_fail(pFrame, false);
-	XAP_App * pApp = pFrame->getApp();
+	XAP_App * pApp = XAP_App::getApp();
 	UT_return_val_if_fail (pApp, false);
 
 	UT_sint32 ndx = pApp->findFrame(pFrame);
@@ -3300,7 +3300,7 @@ s_closeWindow (AV_View * pAV_View, EV_EditMethodCallData * pCallData,
 {
 	XAP_Frame * pFrame = static_cast<XAP_Frame *> ( pAV_View->getParentData());
 	UT_return_val_if_fail(pFrame, false);
-	XAP_App * pApp = pFrame->getApp();
+	XAP_App * pApp = XAP_App::getApp();
 	UT_return_val_if_fail(pApp, false);
 
 	if(pFrame == pApp->getLastFocussedFrame())
@@ -3387,7 +3387,7 @@ Defun(closeWindow)
 #if !defined(XP_UNIX_TARGET_GTK)
 	XAP_Frame * pFrame = static_cast<XAP_Frame *> ( pAV_View->getParentData());
 	UT_return_val_if_fail(pFrame, false);
-	XAP_App * pApp = pFrame->getApp();
+	XAP_App * pApp = XAP_App::getApp();
 	UT_return_val_if_fail(pApp, false);
 
 	XAP_Prefs * pPrefs = pApp->getPrefs();
@@ -3503,7 +3503,7 @@ Defun1(insertClipart)
 	XAP_Frame * pFrame = static_cast<XAP_Frame *>(pView->getParentData());
 	UT_return_val_if_fail(pFrame, false);
 
-	XAP_App * pApp = pFrame->getApp();
+	XAP_App * pApp = XAP_App::getApp();
 	UT_return_val_if_fail(pApp, false);
 
 	pFrame->raise();
@@ -5263,7 +5263,7 @@ static bool pView->cmdCharInsert(const UT_UCS4Char * pText, UT_uint32 iLen,
 						bool bForce = false)
 {
 	// handle automatic language formatting
-	XAP_App * pApp = pFrame->getApp();
+	XAP_App * pApp = XAP_App::getApp();
 	UT_return_val_if_fail(pApp, false);
 	XAP_Prefs * pPrefs = pApp->getPrefs();
 	UT_return_val_if_fail(pPrefs, false);
@@ -5339,7 +5339,7 @@ Defun(insertClosingParenthesis)
 	UT_return_val_if_fail(pFrame, false);
 	ABIWORD_VIEW;
 
-	XAP_App * pApp = pFrame->getApp();
+	XAP_App * pApp = XAP_App::getApp();
 	UT_return_val_if_fail(pApp, false);
 	XAP_Prefs * pPrefs = pApp->getPrefs();
 	UT_return_val_if_fail(pPrefs, false);
@@ -5393,7 +5393,7 @@ Defun(insertOpeningParenthesis)
 	UT_return_val_if_fail(pFrame, false);
 	ABIWORD_VIEW;
 
-	XAP_App * pApp = pFrame->getApp();
+	XAP_App * pApp = XAP_App::getApp();
 	UT_return_val_if_fail(pApp, false);
 	XAP_Prefs * pPrefs = pApp->getPrefs();
 	UT_return_val_if_fail(pPrefs, false);
@@ -6768,7 +6768,7 @@ static bool checkViewModeIsPrint(FV_View * pView)
 			pView->setViewMode (VIEW_PRINT);
 
 			// POLICY: make this the default for new frames, too
-			XAP_App * pApp = pFrame->getApp();
+			XAP_App * pApp = XAP_App::getApp();
 			UT_return_val_if_fail(pApp, false);
 			XAP_Prefs * pPrefs = pApp->getPrefs();
 			UT_return_val_if_fail(pPrefs, false);
@@ -7978,7 +7978,7 @@ UT_return_val_if_fail(pDialog, false);
 // Turn on Wait cursor
 //
 		pView->setCursorWait();
-		const XAP_StringSet * pSS = pFrame->getApp()->getStringSet();
+		const XAP_StringSet * pSS = XAP_App::getApp()->getStringSet();
 		UT_String msg (pSS->getValue(AP_STRING_ID_MSG_PrintingDoc));
 
 		pFrame->setStatusMessage ( static_cast<const XML_Char *>(msg.c_str()) );
@@ -8002,7 +8002,7 @@ UT_return_val_if_fail(pDialog, false);
 		font list, we can remove the 4 lines below. - MARCM
 		*/
 		FL_DocLayout * pDocLayout = new FL_DocLayout(doc,pGraphics);
-        FV_View * pPrintView = new FV_View(pFrame->getApp(),0,pDocLayout);
+        FV_View * pPrintView = new FV_View(XAP_App::getApp(),0,pDocLayout);
 		pPrintView->getLayout()->fillLayouts();
 		pPrintView->getLayout()->formatAll();
 		pPrintView->getLayout()->recalculateTOCFields();
@@ -8084,7 +8084,7 @@ UT_return_val_if_fail(pDialog, false);
 	font list, we can remove the 4 lines below. - MARCM
 	*/
 	FL_DocLayout * pDocLayout = new FL_DocLayout(doc,pGraphics);
-	FV_View * pPrintView = new FV_View(pFrame->getApp(),0,pDocLayout);
+	FV_View * pPrintView = new FV_View(XAP_App::getApp(),0,pDocLayout);
 	pPrintView->getLayout()->fillLayouts();
 	pPrintView->getLayout()->formatAll();
 	pPrintView->getLayout()->recalculateTOCFields();
@@ -8121,7 +8121,7 @@ static bool s_doZoomDlg(FV_View * pView)
 	UT_String tmp;
 	XAP_Frame * pFrame = static_cast<XAP_Frame *> ( pView->getParentData());
 	UT_return_val_if_fail(pFrame, false);
-	XAP_App * pApp = pFrame->getApp();
+	XAP_App * pApp = XAP_App::getApp();
 	UT_return_val_if_fail(pApp, false);
 	XAP_Prefs * pPrefs = pApp->getPrefs();
 	UT_return_val_if_fail(pPrefs, false);
@@ -8175,7 +8175,7 @@ Defun1(zoom100)
 	ABIWORD_VIEW;
 	XAP_Frame * pFrame = static_cast<XAP_Frame *> ( pView->getParentData());
 	UT_return_val_if_fail(pFrame, false);
-	XAP_App * pApp = pFrame->getApp();
+	XAP_App * pApp = XAP_App::getApp();
 	UT_return_val_if_fail(pApp, false);
 	XAP_Prefs * pPrefs = pApp->getPrefs();
 	UT_return_val_if_fail(pPrefs, false);
@@ -8198,7 +8198,7 @@ Defun1(zoom200)
 	ABIWORD_VIEW;
   XAP_Frame * pFrame = static_cast<XAP_Frame *> ( pView->getParentData());
   UT_return_val_if_fail(pFrame, false);
-	XAP_App * pApp = pFrame->getApp();
+	XAP_App * pApp = XAP_App::getApp();
 	UT_return_val_if_fail(pApp, false);
 	XAP_Prefs * pPrefs = pApp->getPrefs();
 	UT_return_val_if_fail(pPrefs, false);
@@ -8222,7 +8222,7 @@ Defun1(zoom50)
 	ABIWORD_VIEW;
   XAP_Frame * pFrame = static_cast<XAP_Frame *> ( pView->getParentData());
   UT_return_val_if_fail(pFrame, false);
-	XAP_App * pApp = pFrame->getApp();
+	XAP_App * pApp = XAP_App::getApp();
 	UT_return_val_if_fail(pApp, false);
 	XAP_Prefs * pPrefs = pApp->getPrefs();
 	UT_return_val_if_fail(pPrefs, false);
@@ -8245,7 +8245,7 @@ Defun1(zoom75)
 	ABIWORD_VIEW;
   XAP_Frame * pFrame = static_cast<XAP_Frame *> ( pView->getParentData());
   UT_return_val_if_fail(pFrame, false);
-	XAP_App * pApp = pFrame->getApp();
+	XAP_App * pApp = XAP_App::getApp();
 	UT_return_val_if_fail(pApp, false);
 	XAP_Prefs * pPrefs = pApp->getPrefs();
 	UT_return_val_if_fail(pPrefs, false);
@@ -8268,7 +8268,7 @@ Defun1(zoomWidth)
 	ABIWORD_VIEW;
   XAP_Frame * pFrame = static_cast<XAP_Frame *> ( pView->getParentData());
   UT_return_val_if_fail(pFrame, false);
-	XAP_App * pApp = pFrame->getApp();
+	XAP_App * pApp = XAP_App::getApp();
 	UT_return_val_if_fail(pApp, false);
 	XAP_Prefs * pPrefs = pApp->getPrefs();
 	UT_return_val_if_fail(pPrefs, false);
@@ -8294,7 +8294,7 @@ Defun1(zoomWhole)
 	XAP_Frame * pFrame = static_cast<XAP_Frame *> ( pView->getParentData());
 	UT_return_val_if_fail(pFrame, false);
 
-	XAP_App * pApp = pFrame->getApp();
+	XAP_App * pApp = XAP_App::getApp();
 	UT_return_val_if_fail(pApp, false);
 	XAP_Prefs * pPrefs = pApp->getPrefs();
 	UT_return_val_if_fail(pPrefs, false);
@@ -8323,7 +8323,7 @@ Defun1(zoomIn)
 	pFrame->raise();
 	UT_uint32 newZoom = UT_MIN(pFrame->getZoomPercentage() + 10, XAP_DLG_ZOOM_MAXIMUM_ZOOM);
 	UT_String tmp (UT_String_sprintf("%d",newZoom));
-	XAP_App * pApp = pFrame->getApp();
+	XAP_App * pApp = XAP_App::getApp();
 	UT_return_val_if_fail(pApp, false);
 	XAP_Prefs * pPrefs = pApp->getPrefs();
 	UT_return_val_if_fail(pPrefs, false);
@@ -8348,7 +8348,7 @@ Defun1(zoomOut)
 	
 	UT_uint32 newZoom = UT_MAX(pFrame->getZoomPercentage() - 10, XAP_DLG_ZOOM_MINIMUM_ZOOM);
 	UT_String tmp (UT_String_sprintf("%d",newZoom));
-	XAP_App * pApp = pFrame->getApp();
+	XAP_App * pApp = XAP_App::getApp();
 	UT_return_val_if_fail(pApp, false);
 	XAP_Prefs * pPrefs = pApp->getPrefs();
 	UT_return_val_if_fail(pPrefs, false);
@@ -8424,7 +8424,7 @@ static bool s_doPageSetupDlg (FV_View * pView)
 	XAP_Frame * pFrame = static_cast<XAP_Frame *> ( pView->getParentData());
 	UT_return_val_if_fail(pFrame, false);
 
-	XAP_App * pApp = pFrame->getApp();
+	XAP_App * pApp = XAP_App::getApp();
 	UT_return_val_if_fail(pApp, false);
 
 	pFrame->raise();
@@ -8997,7 +8997,7 @@ _viewTBx(AV_View* pAV_View, int num)
 	pFrame->toggleBar(num, pFrameData->m_bShowBar[num] );
 
 	// POLICY: make this the default for new frames, too
-	XAP_App * pApp = pFrame->getApp();
+	XAP_App * pApp = XAP_App::getApp();
 	UT_return_val_if_fail(pApp, false);
 	XAP_Prefs * pPrefs = pApp->getPrefs();
 	UT_return_val_if_fail(pPrefs, false);
@@ -9058,7 +9058,7 @@ Defun1(viewStd)
 	pFrame->toggleBar( 0, pFrameData->m_bShowBar[0] );
 
 	// POLICY: make this the default for new frames, too
-	XAP_App * pApp = pFrame->getApp();
+	XAP_App * pApp = XAP_App::getApp();
 	UT_return_val_if_fail(pApp, false);
 	XAP_Prefs * pPrefs = pApp->getPrefs();
 	UT_return_val_if_fail(pPrefs, false);
@@ -9092,7 +9092,7 @@ Defun1(viewFormat)
 	pFrame->toggleBar( 1, pFrameData->m_bShowBar[1] );
 
 	// POLICY: make this the default for new frames, too
-	XAP_App * pApp = pFrame->getApp();
+	XAP_App * pApp = XAP_App::getApp();
 	UT_return_val_if_fail(pApp, false);
 	XAP_Prefs * pPrefs = pApp->getPrefs();
 	UT_return_val_if_fail(pPrefs, false);
@@ -9125,7 +9125,7 @@ UT_return_val_if_fail(pFrameData, false);
 	pFrame->toggleBar( 2, pFrameData->m_bShowBar[2] );
 
 	// POLICY: make this the default for new frames, too
-	XAP_App * pApp = pFrame->getApp();
+	XAP_App * pApp = XAP_App::getApp();
 	UT_return_val_if_fail(pApp, false);
 	XAP_Prefs * pPrefs = pApp->getPrefs();
 	UT_return_val_if_fail(pPrefs, false);
@@ -9157,7 +9157,7 @@ UT_return_val_if_fail(pFrameData, false);
 	pFrame->toggleBar( 3, pFrameData->m_bShowBar[3] );
 
 	// POLICY: make this the default for new frames, too
-	XAP_App * pApp = pFrame->getApp();
+	XAP_App * pApp = XAP_App::getApp();
 	UT_return_val_if_fail(pApp, false);
 	XAP_Prefs * pPrefs = pApp->getPrefs();
 	UT_return_val_if_fail(pPrefs, false);
@@ -9176,7 +9176,7 @@ Defun(lockToolbarLayout)
 	XAP_Frame * pFrame = static_cast<XAP_Frame *>(pAV_View->getParentData());
 	UT_return_val_if_fail(pFrame, false);
 
-	XAP_App * pApp = pFrame->getApp();
+	XAP_App * pApp = XAP_App::getApp();
 	UT_return_val_if_fail(pApp, false);
 
 	XAP_Prefs * pPrefs = pApp->getPrefs();
@@ -9201,7 +9201,7 @@ Defun(defaultToolbarLayout)
 	XAP_Frame * pFrame = static_cast<XAP_Frame *>(pAV_View->getParentData());
 	UT_return_val_if_fail(pFrame, false);
 
-	XAP_App * pApp = pFrame->getApp();
+	XAP_App * pApp = XAP_App::getApp();
 	UT_return_val_if_fail(pApp, false);
 
 	AP_FrameData *pFrameData = static_cast<AP_FrameData *>(pFrame->getFrameData());
@@ -9242,7 +9242,7 @@ UT_return_val_if_fail(pFrameData, false);
 	pView->setViewMode (VIEW_NORMAL);
 
 	// POLICY: make this the default for new frames, too
-	XAP_App * pApp = pFrame->getApp();
+	XAP_App * pApp = XAP_App::getApp();
 	UT_return_val_if_fail(pApp, false);
 	XAP_Prefs * pPrefs = pApp->getPrefs();
 	UT_return_val_if_fail(pPrefs, false);
@@ -9275,7 +9275,7 @@ UT_return_val_if_fail(pFrameData, false);
 	pView->setViewMode (VIEW_WEB);
 
 	// POLICY: make this the default for new frames, too
-	XAP_App * pApp = pFrame->getApp();
+	XAP_App * pApp = XAP_App::getApp();
 	UT_return_val_if_fail(pApp, false);
 	XAP_Prefs * pPrefs = pApp->getPrefs();
 	UT_return_val_if_fail(pPrefs, false);
@@ -9308,7 +9308,7 @@ UT_return_val_if_fail(pFrameData, false);
 	pView->setViewMode (VIEW_PRINT);
 
 	// POLICY: make this the default for new frames, too
-	XAP_App * pApp = pFrame->getApp();
+	XAP_App * pApp = XAP_App::getApp();
 	UT_return_val_if_fail(pApp, false);
 	XAP_Prefs * pPrefs = pApp->getPrefs();
 	UT_return_val_if_fail(pPrefs, false);
@@ -9344,7 +9344,7 @@ UT_return_val_if_fail(pFrameData, false);	// don't do anything if fullscreen
 	pFrame->toggleStatusBar(pFrameData->m_bShowStatusBar);
 
 	// POLICY: make this the default for new frames, too
-	XAP_App * pApp = pFrame->getApp();
+	XAP_App * pApp = XAP_App::getApp();
 	UT_return_val_if_fail(pApp, false);
 	XAP_Prefs * pPrefs = pApp->getPrefs();
 	UT_return_val_if_fail(pPrefs, false);
@@ -9373,7 +9373,7 @@ UT_return_val_if_fail(pFrameData, false);
 	pFrame->toggleRuler(pFrameData->m_bShowRuler);
 
 	// POLICY: make this the default for new frames, too
-	XAP_App * pApp = pFrame->getApp();
+	XAP_App * pApp = XAP_App::getApp();
 	UT_return_val_if_fail(pApp, false);
 	XAP_Prefs * pPrefs = pApp->getPrefs();
 	UT_return_val_if_fail(pPrefs, false);
@@ -9449,7 +9449,7 @@ UT_return_val_if_fail(pFrameData, false);
 	pView->setShowPara(pFrameData->m_bShowPara);
 
 	// POLICY: make this the default for new frames, too
-	XAP_App * pApp = pFrame->getApp();
+	XAP_App * pApp = XAP_App::getApp();
 	UT_return_val_if_fail(pApp, false);
 	XAP_Prefs * pPrefs = pApp->getPrefs();
 	UT_return_val_if_fail(pPrefs, false);
@@ -9488,7 +9488,7 @@ Defun(zoom)
 
 	XAP_Frame * pFrame = static_cast<XAP_Frame *> ( pAV_View->getParentData());
 	UT_return_val_if_fail(pFrame, false);
-	XAP_App * pApp = pFrame->getApp();
+	XAP_App * pApp = XAP_App::getApp();
 	UT_return_val_if_fail(pApp, false);
 	XAP_Prefs * pPrefs = pApp->getPrefs();
 	UT_return_val_if_fail(pPrefs, false);
@@ -9748,7 +9748,7 @@ Defun1(insFile)
 
 	XAP_Frame * pFrame = static_cast<XAP_Frame *>(pAV_View->getParentData());
 	UT_return_val_if_fail(pFrame, false);
-	XAP_App * pApp = pFrame->getApp();
+	XAP_App * pApp = XAP_App::getApp();
 	
 	IEFileType fType = IEFT_Unknown;
 	char *pathName = NULL;
@@ -10910,7 +10910,7 @@ UT_return_val_if_fail(pDialog, false);	if(pView->isHdrFtrEdit())
 //
 // update the combo box with the new styles.
 //
-	XAP_App * pApp = pFrame->getApp();
+	XAP_App * pApp = XAP_App::getApp();
 	UT_return_val_if_fail(pApp, false);
 	//
 	// Get all clones of this frame and set styles combo box
@@ -11789,7 +11789,7 @@ Defun1(cycleInputMode)
 
 	XAP_Frame * pFrame = static_cast<XAP_Frame *> ( pAV_View->getParentData());
 	UT_return_val_if_fail(pFrame, false);
-	XAP_App * pApp = pFrame->getApp();
+	XAP_App * pApp = XAP_App::getApp();
 	UT_return_val_if_fail(pApp, false);
 	XAP_Prefs * pPrefs = pApp->getPrefs();
 	UT_return_val_if_fail(pPrefs, false);
@@ -11821,7 +11821,7 @@ Defun1(toggleInsertMode)
 	CHECK_FRAME;
 	XAP_Frame * pFrame = static_cast<XAP_Frame *> ( pAV_View->getParentData());
 	UT_return_val_if_fail(pFrame, false);
-	XAP_App * pApp = pFrame->getApp();
+	XAP_App * pApp = XAP_App::getApp();
 	UT_return_val_if_fail(pApp, false);
 	XAP_Prefs * pPrefs = pApp->getPrefs();
 	UT_return_val_if_fail(pPrefs, false);

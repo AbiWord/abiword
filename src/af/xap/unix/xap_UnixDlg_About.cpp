@@ -97,7 +97,7 @@ void XAP_UnixDialog_About::runModal(XAP_Frame * pFrame)
 	_preparePicture();
   
 	// attach a new graphics context
-	XAP_App *pApp = m_pFrame->getApp();
+	XAP_App *pApp = XAP_App::getApp();
   
 	//m_gc = new GR_UnixGraphics(m_drawingareaGraphic->window, NULL, pApp);
 	GR_UnixAllocInfo ai(m_drawingareaGraphic->window, NULL, pApp);
@@ -133,7 +133,7 @@ GtkWidget * XAP_UnixDialog_About::_constructWindow(void)
 	GtkWidget *window;
 	
 	// get the path where our glade file is located
-	XAP_UnixApp * pApp = static_cast<XAP_UnixApp*>(m_pApp);	
+	XAP_UnixApp * pApp = static_cast<XAP_UnixApp*>(XAP_App::getApp());	
 	UT_String glade_path( pApp->getAbiSuiteAppGladeDir() );
 	glade_path += "/xap_UnixDlg_About.glade";
 	
@@ -149,12 +149,12 @@ GtkWidget * XAP_UnixDialog_About::_constructWindow(void)
 	
 	// set the dialog title and some non-localizable strings
 	
-	abiDialogSetTitle(window, XAP_ABOUT_TITLE, m_pApp->getApplicationName());
+	abiDialogSetTitle(window, XAP_ABOUT_TITLE, pApp->getApplicationName());
 	
-	UT_String title = UT_String_sprintf("%s %s", m_pApp->getApplicationName(), XAP_App::s_szBuild_Version);
+	UT_String title = UT_String_sprintf("%s %s", pApp->getApplicationName(), XAP_App::s_szBuild_Version);
 	setLabelMarkup(glade_xml_get_widget(xml, "lbTitle"), title.c_str());
 	
-	UT_String license = UT_String_sprintf(XAP_ABOUT_GPL_LONG_LINE_BROKEN, m_pApp->getApplicationName());
+	UT_String license = UT_String_sprintf(XAP_ABOUT_GPL_LONG_LINE_BROKEN, pApp->getApplicationName());
 	setLabelMarkup(glade_xml_get_widget(xml, "lbLicense"), license.c_str());
 	
 	setLabelMarkup(glade_xml_get_widget(xml, "lbCopyright"), XAP_ABOUT_COPYRIGHT);

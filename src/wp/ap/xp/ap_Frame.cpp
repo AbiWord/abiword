@@ -117,7 +117,7 @@ bool AP_Frame::initFrameData()
 {
 	UT_ASSERT_HARMLESS(!static_cast<AP_FrameData*>(m_pData));
 
-	AP_FrameData* pData = new AP_FrameData(static_cast<XAP_App *>(m_pApp));
+	AP_FrameData* pData = new AP_FrameData();
 
 	m_pData = static_cast<void*>(pData);
 	return (pData ? true : false);
@@ -151,11 +151,11 @@ UT_Error AP_Frame::_loadDocument(const char * szFilename, IEFileType ieft,
 
 	// load a document into the current frame.
 	// if no filename, create a new document.
-	if(m_pApp->findFrame(this) < 0)
+	if(XAP_App::getApp()->findFrame(this) < 0)
 	{
-		m_pApp->rememberFrame(this);
+		XAP_App::getApp()->rememberFrame(this);
 	}
-	AD_Document * pNewDoc = new PD_Document(getApp());
+	AD_Document * pNewDoc = new PD_Document(XAP_App::getApp());
 	UT_return_val_if_fail (pNewDoc, UT_ERROR);
 	
 	if (!szFilename || !*szFilename)
@@ -204,7 +204,7 @@ UT_Error AP_Frame::_loadDocument(const char * szFilename, IEFileType ieft,
 	return errorCode;
 
 ReplaceDocument:
-	getApp()->forgetClones(this);
+	XAP_App::getApp()->forgetClones(this);
 	UT_DEBUGMSG(("Doing replace document \n"));
 	// NOTE: prior document is discarded in _showDocument()
 	m_pDoc = pNewDoc;
@@ -226,7 +226,7 @@ UT_Error AP_Frame::_importDocument(const char * szFilename, int ieft,
 	// load a document into the current frame.
 	// if no filename, create a new document.
 
-	AD_Document * pNewDoc = new PD_Document(getApp());
+	AD_Document * pNewDoc = new PD_Document(XAP_App::getApp());
 	UT_return_val_if_fail (pNewDoc, UT_ERROR);
 
 	if (!szFilename || !*szFilename)
@@ -245,7 +245,7 @@ UT_Error AP_Frame::_importDocument(const char * szFilename, int ieft,
 	return errorCode;
 
 ReplaceDocument:
-	getApp()->forgetClones(this);
+	XAP_App::getApp()->forgetClones(this);
 
 	m_iUntitled = _getNextUntitledNumber();
 
@@ -279,7 +279,7 @@ XAP_Frame * AP_Frame::buildFrame(XAP_Frame * pF)
 	// clean up anything we created here
 	if (pClone)
 	{
-		static_cast<XAP_App *>(m_pApp)->forgetFrame(pClone);
+		XAP_App::getApp()->forgetFrame(pClone);
 		delete pClone;
 	}
 	return NULL;
@@ -289,7 +289,7 @@ UT_Error AP_Frame::loadDocument(const char * szFilename, int ieft, bool createNe
 {
 	bool bUpdateClones;
 	UT_GenericVector<XAP_Frame*> vClones;
-	XAP_App * pApp = getApp();
+	XAP_App * pApp = XAP_App::getApp();
 	UT_uint32 j = 0;
 	if(pApp->findFrame(this) < 0)
 	{
@@ -349,7 +349,7 @@ UT_Error AP_Frame::importDocument(const char * szFilename, int ieft, bool markCl
 {
 	bool bUpdateClones;
 	UT_GenericVector<XAP_Frame*> vClones;
-	XAP_App * pApp = getApp();
+	XAP_App * pApp = XAP_App::getApp();
 
 	bUpdateClones = (getViewNumber() > 0);
 	if (bUpdateClones)
@@ -391,7 +391,7 @@ UT_uint32 AP_Frame::getNewZoom(XAP_Frame::tZoomType * tZoom)
 {
 	UT_GenericVector<XAP_Frame*> vecClones;
 	XAP_Frame *pF = NULL;
-	XAP_App * pApp = getApp();
+	XAP_App * pApp = XAP_App::getApp();
 	UT_return_val_if_fail (pApp, 0);
 	XAP_Frame * pLastFrame = pApp->getLastFocussedFrame();
 	UT_uint32 iZoom = 100;
@@ -420,7 +420,7 @@ UT_uint32 AP_Frame::getNewZoom(XAP_Frame::tZoomType * tZoom)
 			*tZoom = pLastFrame->getZoomType();
 			return iZoom;
 		}
-		getApp()->getClones(&vecClones,this);
+		XAP_App::getApp()->getClones(&vecClones,this);
 		UT_uint32 i =0;
 		bool bMatch = false;
 		for (i=0; !bMatch && (i< vecClones.getItemCount()); i++)
@@ -497,7 +497,7 @@ UT_Error AP_Frame::_showDocument(UT_uint32 iZoom)
 	pDocLayout = new FL_DocLayout(static_cast<PD_Document *>(m_pDoc), pG);
 	ENSUREP_C(pDocLayout);  
 
-	pView = new FV_View(getApp(), this, pDocLayout);
+	pView = new FV_View(XAP_App::getApp(), this, pDocLayout);
 	ENSUREP_C(pView);
 	
 	if(getZoomType() == XAP_Frame::z_PAGEWIDTH)
@@ -656,7 +656,7 @@ void AP_Frame::_replaceView(GR_Graphics * pG, FL_DocLayout *pDocLayout,
 	AV_View * pReplacedView = m_pView;
 	m_pView = pView;
 
-	getApp()->setViewSelection(NULL);
+	XAP_App::getApp()->setViewSelection(NULL);
 
 	REPLACEP(m_pScrollObj, pScrollObj);
 	REPLACEP(m_pViewListener, pViewListener);
@@ -688,7 +688,7 @@ void AP_Frame::_replaceView(GR_Graphics * pG, FL_DocLayout *pDocLayout,
 	m_pView->setWindowSize(_getDocumentAreaWidth(), _getDocumentAreaHeight());
 
 	updateTitle();
-	XAP_App * pApp = getApp();
+	XAP_App * pApp = XAP_App::getApp();
 	if(pApp->findFrame(this) < 0)
 	{
 		pApp->rememberFrame(this);

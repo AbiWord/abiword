@@ -22,10 +22,16 @@
 
 
 #include <stdio.h>
+
+#include "ev_EditMethod.h"
 #include "xap_UnixHildonApp.h"
 #include "xap_Frame.h"
+#include "xap_UnixFrameImpl.h"
+
+// something wrong with these headers -- they need to be inculded after our own header
 #include <log-functions.h>
 #include <hildon-widgets/hildon-app.h>
+
 
 static void osso_hw_event_cb (osso_hw_state_t *state, gpointer data);
 static gint osso_rpc_event_cb (const gchar     *interface,
@@ -111,6 +117,70 @@ bool XAP_UnixHildonApp::initialize(const char * szKeyBindingsKey, const char * s
 }
 
 
+/*!
+    Because of the peculiar way hildon handles windows and views, we need a custom
+    function for the delete_event
+*/
+static gint s_delete_event(GtkWidget * w, GdkEvent * /*event*/, gpointer /*data*/)
+{
+	XAP_UnixFrameImpl * pFrameImpl = static_cast<XAP_UnixFrameImpl *>(g_object_get_data(G_OBJECT(w), "user_data"));
+	XAP_Frame* pFrame = pFrameImpl->getFrame();
+	XAP_UnixHildonApp * pApp = static_cast<XAP_UnixHildonApp*>(XAP_App::getApp());
+
+	if(pApp->isBonoboRunning())
+		return FALSE;
+
+	UT_uint32 iFrameCount = pApp->getFrameCount();
+	
+	const EV_Menu_ActionSet * pMenuActionSet = pApp->getMenuActionSet();
+	UT_ASSERT(pMenuActionSet);
+
+	const EV_EditMethodContainer * pEMC = pApp->getEditMethodContainer();
+	UT_ASSERT(pEMC);
+
+	// was "closeWindow", TRUE, FALSE
+	const EV_EditMethod * pEM = pEMC->findEditMethodByName("closeWindowX");
+	UT_ASSERT(pEM);
+
+	if (pEM)
+	{
+		if (pEM->Fn(pFrame->getCurrentView(),NULL))
+		{
+			// returning FALSE means destroy the window, continue along the
+			// chain of Gtk destroy events
+			
+			// with hildon, our frames are not proper windows, but behave more like tabs
+			// in a single window. Pressing the 'close' button, however, closes the main
+			// window, not the individual tab. So, if there are frames left, we must
+			// return true to stop the processing chain. We also have to update the window
+			// title 
+			
+			if(iFrameCount > 1)
+			{
+				// switch the main window to a different view
+				GtkWidget * pHildonAppWidget = pApp->getHildonAppWidget();
+				UT_return_val_if_fail( pHildonAppWidget, TRUE );
+
+				pFrame = pApp->getFrame(0);
+				UT_return_val_if_fail( pFrame, TRUE );
+
+				pFrameImpl = static_cast<XAP_UnixFrameImpl*>(pFrame->getFrameImpl());
+				UT_return_val_if_fail( pFrameImpl, TRUE );
+				
+				hildon_app_set_appview(HILDON_APP(pHildonAppWidget), HILDON_APPVIEW(pFrameImpl->getTopLevelWindow()));
+				
+				return TRUE;
+			}
+			else
+				return FALSE;
+		}
+	}
+
+	// returning TRUE means do NOT destroy the window; halt the message
+	// chain so it doesn't see destroy
+	return TRUE;
+}
+
 GtkWidget *  XAP_UnixHildonApp::getHildonAppWidget() const
 {
 	if(!m_pHildonAppWidget)
@@ -125,6 +195,21 @@ GtkWidget *  XAP_UnixHildonApp::getHildonAppWidget() const
 
 		gtk_window_set_role(GTK_WINDOW(m_pHildonAppWidget), "topLevelWindow");		
 		g_object_set_data(G_OBJECT(m_pHildonAppWidget), "toplevelWindow", m_pHildonAppWidget);
+
+		g_signal_connect(G_OBJECT(m_pHildonAppWidget), "realize",
+						 G_CALLBACK(XAP_UnixFrameImpl::_fe::realize), NULL);
+
+		g_signal_connect(G_OBJECT(m_pHildonAppWidget), "unrealize",
+						 G_CALLBACK(XAP_UnixFrameImpl::_fe::unrealize), NULL);
+
+		g_signal_connect(G_OBJECT(m_pHildonAppWidget), "size_allocate",
+						 G_CALLBACK(XAP_UnixFrameImpl::_fe::sizeAllocate), NULL);
+		
+		g_signal_connect(G_OBJECT(m_pHildonAppWidget), "delete_event",
+						 G_CALLBACK(s_delete_event), NULL);
+		
+		g_signal_connect(G_OBJECT(m_pHildonAppWidget), "destroy",
+						 G_CALLBACK(XAP_UnixFrameImpl::_fe::destroy), NULL);
 	}
 
 	return m_pHildonAppWidget;

@@ -46,7 +46,7 @@ class EV_UnixMenuPopup;
 class XAP_UnixFrameImpl : public XAP_FrameImpl
 {
  public:
-	XAP_UnixFrameImpl(XAP_Frame *pFrame, XAP_UnixApp *pUnixApp);
+	XAP_UnixFrameImpl(XAP_Frame *pFrame);
 	friend class XAP_Frame;
 	virtual ~XAP_UnixFrameImpl();
 
@@ -105,7 +105,7 @@ protected:
 	
 	virtual XAP_DialogFactory * _getDialogFactory();
 	virtual EV_Menu * _getMainMenu();
-	virtual EV_Toolbar * _newToolbar(XAP_App *pApp, XAP_Frame *pFrame,
+	virtual EV_Toolbar * _newToolbar(XAP_Frame *pFrame,
 				 const char *szLayout,
 				 const char *szLanguage);
 
@@ -120,32 +120,36 @@ protected:
 
 	virtual void _setFullScreen(bool changeToFullScreen);
 
+#ifdef HAVE_HILDON
+	// need to be able to get at this from XAP_UnixHildonApp
+  public:
+#endif
 	class _fe
         {
-	friend class XAP_Frame;
-	public:
-		static gint button_press_event(GtkWidget * w, GdkEventButton * e);
-		static gint button_release_event(GtkWidget * w, GdkEventButton * e);
-		static gint configure_event(GtkWidget* w, GdkEventConfigure *e);
-		static gint motion_notify_event(GtkWidget* w, GdkEventMotion* e);
-		static gint scroll_notify_event(GtkWidget* w, GdkEventScroll* e);
-		static gint key_press_event(GtkWidget* w, GdkEventKey* e);
-		static gint key_release_event(GtkWidget* w, GdkEventKey* e);
-		static gint delete_event(GtkWidget * w, GdkEvent * /*event*/, gpointer /*data*/);
-		static gint expose(GtkWidget * w, GdkEventExpose* pExposeEvent);
-		static gint abi_expose_repaint( gpointer /* xap_UnixFrame * */ p);
-		static gint do_ZoomUpdate( gpointer /* xap_UnixFrame * */ p);
-		static void vScrollChanged(GtkAdjustment * w, gpointer /*data*/);
-		static void hScrollChanged(GtkAdjustment * w, gpointer /*data*/);
-		static void destroy (GtkWidget * /*widget*/, gpointer /*data*/);
-		static gboolean focus_in_event(GtkWidget *w,GdkEvent *event,gpointer user_data);
-		static gboolean focus_out_event(GtkWidget *w,GdkEvent *event,gpointer user_data);
+			friend class XAP_Frame;
+		  public:
+			static gint button_press_event(GtkWidget * w, GdkEventButton * e);
+			static gint button_release_event(GtkWidget * w, GdkEventButton * e);
+			static gint configure_event(GtkWidget* w, GdkEventConfigure *e);
+			static gint motion_notify_event(GtkWidget* w, GdkEventMotion* e);
+			static gint scroll_notify_event(GtkWidget* w, GdkEventScroll* e);
+			static gint key_press_event(GtkWidget* w, GdkEventKey* e);
+			static gint key_release_event(GtkWidget* w, GdkEventKey* e);
+			static gint delete_event(GtkWidget * w, GdkEvent * /*event*/, gpointer /*data*/);
+			static gint expose(GtkWidget * w, GdkEventExpose* pExposeEvent);
+			static gint abi_expose_repaint( gpointer /* xap_UnixFrame * */ p);
+			static gint do_ZoomUpdate( gpointer /* xap_UnixFrame * */ p);
+			static void vScrollChanged(GtkAdjustment * w, gpointer /*data*/);
+			static void hScrollChanged(GtkAdjustment * w, gpointer /*data*/);
+			static void destroy (GtkWidget * /*widget*/, gpointer /*data*/);
+			static gboolean focus_in_event(GtkWidget *w,GdkEvent *event,gpointer user_data);
+			static gboolean focus_out_event(GtkWidget *w,GdkEvent *event,gpointer user_data);
 
-		static void realize(GtkWidget * widget, GdkEvent */* e*/,gpointer /*data*/);
-		static void unrealize(GtkWidget * widget, GdkEvent */* e */,gpointer /* data */);
-		static void sizeAllocate(GtkWidget * widget, GdkEvent */* e */,gpointer /* data */);
-		static gint focusIn(GtkWidget * widget, GdkEvent */* e */,gpointer /* data */);
-		static gint focusOut(GtkWidget * /*widget*/, GdkEvent */* e */,gpointer /* data */);
+			static void realize(GtkWidget * widget, GdkEvent */* e*/,gpointer /*data*/);
+			static void unrealize(GtkWidget * widget, GdkEvent */* e */,gpointer /* data */);
+			static void sizeAllocate(GtkWidget * widget, GdkEvent */* e */,gpointer /* data */);
+			static gint focusIn(GtkWidget * widget, GdkEvent */* e */,gpointer /* data */);
+			static gint focusOut(GtkWidget * /*widget*/, GdkEvent */* e */,gpointer /* data */);
 	};
 	friend class _fe;
 
@@ -157,9 +161,8 @@ protected:
 	guint                       m_iAbiRepaintID;
 
 
-	XAP_UnixApp *				m_pUnixApp;
 	EV_UnixMenuPopup *			m_pUnixPopup; /* only valid while a context popup is up */
-	AP_UnixDialogFactory		        m_dialogFactory;
+	AP_UnixDialogFactory        m_dialogFactory;
 };
 #endif /* XAP_UNIXFRAME_H */
 

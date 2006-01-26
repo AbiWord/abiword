@@ -378,9 +378,9 @@ XAP_DialogFactory * XAP_Win32FrameImpl::_getDialogFactory(void)
 	return &m_dialogFactory;
 }
 
-EV_Toolbar * XAP_Win32FrameImpl::_newToolbar(XAP_App *app, XAP_Frame *frame, const char *szLayout, const char *szLanguage)
+EV_Toolbar * XAP_Win32FrameImpl::_newToolbar(XAP_Frame *frame, const char *szLayout, const char *szLanguage)
 {
-	EV_Win32Toolbar *result = new EV_Win32Toolbar(static_cast<XAP_Win32App *>(app), 
+	EV_Win32Toolbar *result = new EV_Win32Toolbar(static_cast<XAP_Win32App *>(XAP_App::getApp()), 
 												  frame, 
 												  szLayout, szLanguage);
 	// for now, position each one manually
