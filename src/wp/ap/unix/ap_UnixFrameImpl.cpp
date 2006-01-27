@@ -106,17 +106,11 @@ static void
 focus_in_event (GtkWidget * drawing_area, GdkEventCrossing *event, AP_UnixFrameImpl * me)
 {
   gtk_widget_grab_focus (drawing_area);
-#ifdef HAVE_HILDON
-  me->focusIMIn ();
-#endif
 }
 
 static void
 focus_out_event (GtkWidget * drawing_area, GdkEventCrossing * event, AP_UnixFrameImpl * me)
 {
-#ifdef HAVE_HILDON
-  me->focusIMOut ();
-#endif
 }
 
 GtkWidget * AP_UnixFrameImpl::_createDocumentWindow()

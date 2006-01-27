@@ -511,6 +511,7 @@ gint XAP_UnixFrameImpl::_fe::focusOut(GtkWidget * /* w*/, GdkEvent * /*e*/,gpoin
 
 void XAP_UnixFrameImpl::focusIMIn ()
 {
+	UT_DEBUGMSG(("oooooooooooooooooooooooo XAP_UnixFrameImpl::focusIMIn(), this 0x%x\n", this));
 	need_im_reset = true;
 	gtk_im_context_focus_in(getIMContext());
 	gtk_im_context_reset (getIMContext());
@@ -518,6 +519,7 @@ void XAP_UnixFrameImpl::focusIMIn ()
 
 void XAP_UnixFrameImpl::focusIMOut ()
 {
+	UT_DEBUGMSG(("oooooooooooooooooooooooo XAP_UnixFrameImpl::focusIMOut(), this 0x%x\n", this));
 	need_im_reset = true;
 	gtk_im_context_focus_out(getIMContext());
 }
@@ -535,6 +537,8 @@ gboolean XAP_UnixFrameImpl::_fe::focus_in_event(GtkWidget *w,GdkEvent */*event*/
 {
 	XAP_UnixFrameImpl * pFrameImpl = static_cast<XAP_UnixFrameImpl *>(g_object_get_data(G_OBJECT(w), "user_data"));
 	UT_ASSERT(pFrameImpl);
+	UT_DEBUGMSG(("\n===========================\nfocus_in_event: frame 0x%x\n=========================\n", pFrameImpl));
+	
 	XAP_Frame* pFrame = pFrameImpl->getFrame();
 	g_object_set_data(G_OBJECT(w), "toplevelWindowFocus",
 						GINT_TO_POINTER(TRUE));
@@ -558,6 +562,7 @@ gboolean XAP_UnixFrameImpl::_fe::focus_out_event(GtkWidget *w,GdkEvent */*event*
 {
 	XAP_UnixFrameImpl * pFrameImpl = static_cast<XAP_UnixFrameImpl *>(g_object_get_data(G_OBJECT(w), "user_data"));
 	UT_ASSERT(pFrameImpl);
+	UT_DEBUGMSG(("\n===========================\nfocus_out_event: frame 0x%x\n=========================\n", pFrameImpl));
 	XAP_Frame* pFrame = pFrameImpl->getFrame();
 	g_object_set_data(G_OBJECT(w), "toplevelWindowFocus",
 						GINT_TO_POINTER(FALSE));
@@ -1326,6 +1331,9 @@ void XAP_UnixFrameImpl::_createTopLevelWindow(void)
 
 void XAP_UnixFrameImpl::_createIMContext(GdkWindow *w)
 {
+	UT_DEBUGMSG(("\n======================\nXAP_UnixFrameImp::_createIMContext(0x%x), this 0x%x\n====================\n",
+				 w, this));
+	
 	m_imContext = gtk_im_multicontext_new();
 	gtk_im_context_set_use_preedit (m_imContext, FALSE); // show alternate preedit stuff in a separate window or somesuch
 	gtk_im_context_set_client_window(m_imContext, w);
@@ -1413,6 +1421,9 @@ void XAP_UnixFrameImpl::_imCommit_cb(GtkIMContext *imc, const gchar *text, gpoin
 // Actual keyboard commit should be done here.
 void XAP_UnixFrameImpl::_imCommit(GtkIMContext *imc, const gchar * text)
 {
+	UT_DEBUGMSG(("\n<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<\nXAP_UnixFrameImpl::_imCommit(0x%x), this 0x%x\n<<<<<<<<<<<<<<<<<<\n",
+				 imc, this));
+				
 	XAP_Frame* pFrame = getFrame();
 	AV_View * pView   = pFrame->getCurrentView();
 	ev_UnixKeyboard * pUnixKeyboard = static_cast<ev_UnixKeyboard *>(pFrame->getKeyboard());

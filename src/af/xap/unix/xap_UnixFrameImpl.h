@@ -48,6 +48,7 @@ class XAP_UnixFrameImpl : public XAP_FrameImpl
  public:
 	XAP_UnixFrameImpl(XAP_Frame *pFrame);
 	friend class XAP_Frame;
+	
 	virtual ~XAP_UnixFrameImpl();
 
 	GtkWidget * getTopLevelWindow() const;
@@ -94,12 +95,6 @@ protected:
 
 	bool _updateTitle();
 	void _createIMContext(GdkWindow* w);
-	static void _imCommit_cb(GtkIMContext *imc, const gchar* text, gpointer data);
-	static void _imPreeditChanged_cb (GtkIMContext *context, gpointer data);
-	static gint _imRetrieveSurrounding_cb (GtkIMContext *context, gpointer data);
-	static gint _imDeleteSurrounding_cb (GtkIMContext *slave, gint offset, gint n_chars, gpointer data);
-
-	void _imCommit (GtkIMContext * imc, const gchar * text);
 	UT_sint32 _setInputMode(const char * szName);
 	virtual void _setCursor(GR_Graphics::Cursor cursor);
 	
@@ -120,10 +115,18 @@ protected:
 
 	virtual void _setFullScreen(bool changeToFullScreen);
 
+	void _imCommit (GtkIMContext * imc, const gchar * text);
+
 #ifdef HAVE_HILDON
 	// need to be able to get at this from XAP_UnixHildonApp
   public:
 #endif
+	static void _imCommit_cb(GtkIMContext *imc, const gchar* text, gpointer data);
+	static void _imPreeditChanged_cb (GtkIMContext *context, gpointer data);
+	static gint _imRetrieveSurrounding_cb (GtkIMContext *context, gpointer data);
+	static gint _imDeleteSurrounding_cb (GtkIMContext *slave, gint offset, gint n_chars, gpointer data);
+
+
 	class _fe
         {
 			friend class XAP_Frame;

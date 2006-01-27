@@ -46,7 +46,8 @@ static void osso_exit_event_cb (gboolean die_now, gpointer data);
 XAP_UnixHildonApp::XAP_UnixHildonApp(XAP_Args * pArgs, const char * szAppName)
 	: XAP_UnixApp(pArgs, szAppName),
 	  m_pOsso(NULL),
-	  m_pHildonAppWidget(NULL)
+	  m_pHildonAppWidget(NULL),
+	  m_imContext(NULL)
 {
 }
 
@@ -68,6 +69,9 @@ XAP_UnixHildonApp::~XAP_UnixHildonApp()
 		osso_deinitialize (m_pOsso);
 		m_pOsso = NULL;
 	}
+
+	g_object_unref (G_OBJECT (m_imContext));
+
 }
 
 bool XAP_UnixHildonApp::initialize(const char * szKeyBindingsKey, const char * szKeyBindingsDefaultValue)
@@ -123,7 +127,13 @@ bool XAP_UnixHildonApp::initialize(const char * szKeyBindingsKey, const char * s
 */
 static gint s_delete_event(GtkWidget * w, GdkEvent * /*event*/, gpointer /*data*/)
 {
-	XAP_UnixFrameImpl * pFrameImpl = static_cast<XAP_UnixFrameImpl *>(g_object_get_data(G_OBJECT(w), "user_data"));
+	XAP_UnixHildonApp * pThis = static_cast<XAP_UnixHildonApp*>(g_object_get_data(G_OBJECT(w), "user_data"));
+	UT_return_val_if_fail( pThis, FALSE );
+
+	HildonAppView * pHView = hildon_app_get_appview(HILDON_APP(pThis->getHildonAppWidget()));
+	UT_return_val_if_fail( pHView, FALSE );
+
+	XAP_UnixFrameImpl * pFrameImpl = static_cast<XAP_UnixFrameImpl *>(g_object_get_data(G_OBJECT(pHView), "user_data"));
 	XAP_Frame* pFrame = pFrameImpl->getFrame();
 	XAP_UnixHildonApp * pApp = static_cast<XAP_UnixHildonApp*>(XAP_App::getApp());
 
@@ -181,6 +191,106 @@ static gint s_delete_event(GtkWidget * w, GdkEvent * /*event*/, gpointer /*data*
 	return TRUE;
 }
 
+/*!
+   HildonAppViews, which represent our frames, do not receive focus_in and _out events;
+   intstead those events are caught by HildonApp; consequently our event handler needs to
+   call the frame handler implemented in XAP_UnixFrameImpl
+*/
+static gboolean s_focus_in_event(GtkWidget *w,GdkEvent *event, gpointer user_data)
+{
+	XAP_UnixHildonApp * pThis = static_cast<XAP_UnixHildonApp*>(g_object_get_data(G_OBJECT(w), "user_data"));
+	UT_return_val_if_fail( pThis, FALSE );
+
+	UT_DEBUGMSG(("\n===========================\nHildonApp focus_in_event: pThis 0x%x\n=========================\n",
+				 pThis));
+
+	HildonAppView * pHView = hildon_app_get_appview(HILDON_APP(pThis->getHildonAppWidget()));
+	UT_return_val_if_fail( pHView, FALSE );
+	
+	return XAP_UnixFrameImpl::_fe::focus_in_event(GTK_WIDGET(pHView), event, user_data);
+}
+
+static gboolean s_focus_out_event(GtkWidget *w,GdkEvent *event, gpointer user_data)
+{
+	XAP_UnixHildonApp * pThis = static_cast<XAP_UnixHildonApp*>(g_object_get_data(G_OBJECT(w), "user_data"));
+	UT_return_val_if_fail( pThis, FALSE );
+
+	UT_DEBUGMSG(("\n===========================\nHildonApp focus_out_event: pThis 0x%x\n=========================\n",
+				 pThis));
+
+	
+	HildonAppView * pHView = hildon_app_get_appview(HILDON_APP(pThis->getHildonAppWidget()));
+	UT_return_val_if_fail( pHView, FALSE );
+
+	return XAP_UnixFrameImpl::_fe::focus_out_event(GTK_WIDGET(pHView), event, user_data);
+}
+
+/*!
+    All input from the virtual keyboard operates on the HildonApp widget; the individual
+    frames do not get any signals. Consequently, we create one shared input context for
+    all our frames in the XAP_UnixHildonApp and register callbacks for it from here; we
+    then forward all events to the normal callbacks implemented in XAP_UnixFrameImp.
+*/
+static void s_imPreeditChanged_cb (GtkIMContext *context, gpointer data)
+{
+	XAP_UnixHildonApp * pThis = static_cast<XAP_UnixHildonApp*>(data);
+	UT_return_if_fail( pThis );
+
+	HildonAppView * pHView = hildon_app_get_appview(HILDON_APP(pThis->getHildonAppWidget()));
+	UT_return_if_fail( pHView );
+
+	XAP_UnixFrameImpl * pFrameImpl = static_cast<XAP_UnixFrameImpl *>(g_object_get_data(G_OBJECT(pHView), "user_data"));
+	UT_return_if_fail( pFrameImpl );
+
+	XAP_UnixFrameImpl::_imPreeditChanged_cb (context, (gpointer)pFrameImpl);
+}
+
+static gint s_imRetrieveSurrounding_cb (GtkIMContext *context, gpointer data)
+{
+	XAP_UnixHildonApp * pThis = static_cast<XAP_UnixHildonApp*>(data);
+	UT_return_val_if_fail( pThis, FALSE );
+
+	HildonAppView * pHView = hildon_app_get_appview(HILDON_APP(pThis->getHildonAppWidget()));
+	UT_return_val_if_fail( pHView, FALSE );
+
+	XAP_UnixFrameImpl * pFrameImpl = static_cast<XAP_UnixFrameImpl *>(g_object_get_data(G_OBJECT(pHView), "user_data"));
+	UT_return_val_if_fail( pFrameImpl, FALSE );
+
+	return XAP_UnixFrameImpl::_imRetrieveSurrounding_cb (context, (gpointer)pFrameImpl);
+}
+
+static gint s_imDeleteSurrounding_cb (GtkIMContext *slave, gint offset, gint n_chars, gpointer data)
+{
+	XAP_UnixHildonApp * pThis = static_cast<XAP_UnixHildonApp*>(data);
+	UT_return_val_if_fail( pThis, FALSE );
+
+	HildonAppView * pHView = hildon_app_get_appview(HILDON_APP(pThis->getHildonAppWidget()));
+	UT_return_val_if_fail( pHView, FALSE );
+
+	XAP_UnixFrameImpl * pFrameImpl = static_cast<XAP_UnixFrameImpl *>(g_object_get_data(G_OBJECT(pHView), "user_data"));
+	UT_return_val_if_fail( pFrameImpl, FALSE );
+
+	return XAP_UnixFrameImpl::_imDeleteSurrounding_cb (slave, offset, n_chars , (gpointer)pFrameImpl);
+}
+
+static void s_imCommit_cb(GtkIMContext *imc, const gchar *text, gpointer data)
+{
+	XAP_UnixHildonApp * pThis = static_cast<XAP_UnixHildonApp*>(data);
+	UT_return_if_fail( pThis );
+
+	HildonAppView * pHView = hildon_app_get_appview(HILDON_APP(pThis->getHildonAppWidget()));
+	UT_return_if_fail( pHView );
+
+	XAP_UnixFrameImpl * pFrameImpl = static_cast<XAP_UnixFrameImpl *>(g_object_get_data(G_OBJECT(pHView), "user_data"));
+	UT_return_if_fail( pFrameImpl );
+
+	XAP_UnixFrameImpl::_imCommit_cb (imc, text, (gpointer)pFrameImpl);
+}
+
+/*!
+    This methods returns an instance of HildonApp widget; there is only one instance of it
+    for the applicaiton, and it is created by this function when it is first called.
+*/
 GtkWidget *  XAP_UnixHildonApp::getHildonAppWidget() const
 {
 	if(!m_pHildonAppWidget)
@@ -193,6 +303,8 @@ GtkWidget *  XAP_UnixHildonApp::getHildonAppWidget() const
 		hildon_app_set_title(HILDON_APP(m_pHildonAppWidget), getApplicationTitleForTitleBar());
 		hildon_app_set_two_part_title(HILDON_APP(m_pHildonAppWidget), TRUE);
 
+		g_object_set_data(G_OBJECT(m_pHildonAppWidget), "user_data", const_cast<XAP_UnixHildonApp*>(this)); 
+	
 		gtk_window_set_role(GTK_WINDOW(m_pHildonAppWidget), "topLevelWindow");		
 		g_object_set_data(G_OBJECT(m_pHildonAppWidget), "toplevelWindow", m_pHildonAppWidget);
 
@@ -210,6 +322,32 @@ GtkWidget *  XAP_UnixHildonApp::getHildonAppWidget() const
 		
 		g_signal_connect(G_OBJECT(m_pHildonAppWidget), "destroy",
 						 G_CALLBACK(XAP_UnixFrameImpl::_fe::destroy), NULL);
+
+
+		g_signal_connect(G_OBJECT(m_pHildonAppWidget), "focus_in_event",
+						 G_CALLBACK(s_focus_in_event), NULL);
+		g_signal_connect(G_OBJECT(m_pHildonAppWidget), "focus_out_event",
+						 G_CALLBACK(s_focus_out_event), NULL);
+
+
+		gtk_widget_realize(m_pHildonAppWidget);
+
+		m_imContext = gtk_im_multicontext_new();
+		gtk_im_context_set_use_preedit (m_imContext, FALSE); 
+		gtk_im_context_set_client_window(m_imContext, m_pHildonAppWidget->window);
+		
+		g_signal_connect(G_OBJECT(m_imContext), "commit", 
+						 G_CALLBACK(s_imCommit_cb), const_cast<XAP_UnixHildonApp*>(this));
+		
+		g_signal_connect (m_imContext, "preedit_changed",
+					  G_CALLBACK (s_imPreeditChanged_cb), const_cast<XAP_UnixHildonApp*>(this));
+		
+		g_signal_connect (m_imContext, "retrieve_surrounding",
+						  G_CALLBACK (s_imRetrieveSurrounding_cb), const_cast<XAP_UnixHildonApp*>(this));
+		
+		g_signal_connect (m_imContext, "delete_surrounding",
+						  G_CALLBACK (s_imDeleteSurrounding_cb), const_cast<XAP_UnixHildonApp*>(this));
+
 	}
 
 	return m_pHildonAppWidget;

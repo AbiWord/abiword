@@ -85,7 +85,8 @@ void AP_UnixHildonFrameImpl::_createTopLevelWindow(void)
 {
 	// create a top-level window for us.
 	bool bResult;
-	GtkWidget * pHildonAppWidget = (static_cast<XAP_UnixHildonApp*>(XAP_App::getApp()))->getHildonAppWidget();
+	XAP_UnixHildonApp * pHApp = static_cast<XAP_UnixHildonApp*>(XAP_App::getApp());
+	GtkWidget * pHildonAppWidget = (pHApp)->getHildonAppWidget();
 	UT_return_if_fail( pHildonAppWidget );
 	
 	if(m_iFrameMode == XAP_NormalFrame)
@@ -108,18 +109,12 @@ void AP_UnixHildonFrameImpl::_createTopLevelWindow(void)
 					  GINT_TO_POINTER(FALSE));
 	g_object_set_data(G_OBJECT(m_wTopLevelWindow), "user_data", this); 
 
-	g_object_set_data(G_OBJECT(pHildonAppWidget), "user_data", this); 
-
 	
-	g_signal_connect(G_OBJECT(m_wTopLevelWindow), "focus_in_event",
-					   G_CALLBACK(_fe::focusIn), NULL);
-	g_signal_connect(G_OBJECT(m_wTopLevelWindow), "focus_out_event",
-					   G_CALLBACK(_fe::focusOut), NULL);
-	g_signal_connect(G_OBJECT(m_wTopLevelWindow), "focus_in_event",
-					   G_CALLBACK(_fe::focus_in_event), NULL);
-	g_signal_connect(G_OBJECT(m_wTopLevelWindow), "focus_out_event",
-					   G_CALLBACK(_fe::focus_out_event), NULL);
-
+	// we do not connect any focus or kbd related methods here, because those act on the
+	// HildonApp widget -- we register callbacks there and then forward the signals into
+	// the normal callbacks that XAP_UnixFrameImpl provides. Tomas
+	
+	
 	// create a VBox inside it.
 	m_wVBox = gtk_vbox_new(FALSE,0);
 	g_object_set_data(G_OBJECT(m_wTopLevelWindow), "vbox", m_wVBox);
@@ -142,13 +137,14 @@ void AP_UnixHildonFrameImpl::_createTopLevelWindow(void)
 	if(m_iFrameMode == XAP_NormalFrame)
 		gtk_widget_realize(m_wTopLevelWindow);
 
-	_createIMContext(pHildonAppWidget->window);
-
-	g_signal_connect(G_OBJECT(m_wTopLevelWindow), "key_press_event",
-					   G_CALLBACK(_fe::key_press_event), NULL);
-	g_signal_connect(G_OBJECT(m_wTopLevelWindow), "key_release_event",
-					   G_CALLBACK(_fe::key_release_event), NULL);
-
+	// we do not create an IM context for the hildon frames, because all the frames have
+	// to share the same context. So we fill the m_imContext member with reference to the
+	// context allocated by XAP_UnixHildonApp and increase its reference count to avoid it
+	// being destroyed when this frame is removed (~XAP_UnixFrameImpl() calls
+	// g_object_unref() on it)
+	m_imContext = pHApp->getIMContext();
+	g_object_ref (G_OBJECT (m_imContext));
+	
 	if(m_iFrameMode == XAP_NormalFrame)
 		_createToolbars();
 

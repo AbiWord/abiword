@@ -27,6 +27,7 @@
 #include <sys/stat.h>
 #include "xap_UnixApp.h"
 
+#include <gtk/gtk.h>
 #include <gtk/gtkwidget.h>
 #include <libosso.h>
 
@@ -47,6 +48,7 @@ public:
 	virtual bool initialize(const char * szKeyBindingsKey, const char * szKeyBindingsDefaultValue);
 
 	GtkWidget *  getHildonAppWidget() const;
+	GtkIMContext * getIMContext() const {return m_imContext;}
 	
 protected:
 	virtual void _saveState(XAP_StateData & sd);
@@ -55,6 +57,8 @@ protected:
 private:
 	osso_context_t *    m_pOsso;
 	mutable GtkWidget * m_pHildonAppWidget;
+	mutable GtkIMContext * m_imContext;
+
 	
 };
 
