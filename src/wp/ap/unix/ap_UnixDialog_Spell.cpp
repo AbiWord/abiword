@@ -209,7 +209,12 @@ AP_UnixDialog_Spell::runModal (XAP_Frame * pFrame)
             // update dialog with new misspelled word info/suggestions
             _updateWindow();
      
-            // run into the GTK event loop for this window
+		m_listHandlerID = g_signal_connect (gtk_tree_view_get_selection (GTK_TREE_VIEW (m_lvSuggestions)), 
+						  "changed",
+						  G_CALLBACK (AP_UnixDialog_Spell__onSuggestionSelected), 
+						  (gpointer)this);
+
+			// run into the GTK event loop for this window
 	    gint response = abiRunModalDialog (GTK_DIALOG(mainWindow), false);
 	    UT_DEBUGMSG (("ROB: response='%d'\n", response));
             switch(response) {
@@ -302,10 +307,6 @@ AP_UnixDialog_Spell::_constructWindow (void)
 	g_signal_connect (GTK_TREE_VIEW (m_lvSuggestions), 
 					  "row-activated", 
 					  G_CALLBACK (AP_UnixDialog_Spell__onSuggestionDblClicked), 
-					  (gpointer)this);
-	m_listHandlerID = g_signal_connect (gtk_tree_view_get_selection (GTK_TREE_VIEW (m_lvSuggestions)), 
-					  "changed",
-					  G_CALLBACK (AP_UnixDialog_Spell__onSuggestionSelected), 
 					  (gpointer)this);
     m_replaceHandlerID = g_signal_connect (G_OBJECT(m_eChange), 
 					   "changed",
