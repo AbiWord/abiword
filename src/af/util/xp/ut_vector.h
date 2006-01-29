@@ -194,9 +194,7 @@ void UT_GenericVector<T>::clear()
 	}
 	
 	m_iCount = 0;
-	m_iSpace = 0;
-	FREEP(m_pEntries);
-	m_pEntries = NULL;
+	memset(m_pEntries, 0, m_iSpace * sizeof(T));
 }
 
 
