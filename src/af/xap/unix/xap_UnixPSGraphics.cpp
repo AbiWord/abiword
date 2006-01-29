@@ -67,11 +67,9 @@ PS_Graphics::PS_Graphics(const char * szFilename,
 						 const char * szTitle,
 						 const char * szSoftwareNameAndVersion,
 						 XAP_UnixFontManager * fontManager,						 
-						 bool	  bIsFile,
-						 XAP_App *pApp)
+						 bool	  bIsFile)
 {
 	UT_ASSERT(szFilename && *szFilename);
-	m_pApp = pApp;
 	m_szFilename = UT_strdup (szFilename);
 	m_szTitle = szTitle;
 	m_szSoftwareNameAndVersion = szSoftwareNameAndVersion;
@@ -1309,8 +1307,7 @@ GR_Graphics *   PS_Graphics::graphicsAllocator(GR_AllocInfo& info)
 
 	return new PS_Graphics(allocator.m_fileName, allocator.m_title,
 						   allocator.m_softwareName,
-						   allocator.m_fontManager, allocator.m_isFile, 
-						   allocator.m_app);
+						   allocator.m_fontManager, allocator.m_isFile);
 }
 
 /***************************************************************************/

@@ -37,7 +37,6 @@ class UT_ByteBuf;
 class UT_String;
 class UT_Wctomb;
 
-class XAP_App;
 class XAP_UnixFontManager;
 class XAP_UnixGnomePrintGraphics;
 
@@ -48,12 +47,12 @@ UT_uint32 adobeDingbatsToUnicode(UT_uint32 iAdobe);
 class GR_UnixAllocInfo : public GR_AllocInfo
 {
 public:
- 	GR_UnixAllocInfo(GdkWindow * win, XAP_UnixFontManager * fontManager, XAP_App *app)
+ 	GR_UnixAllocInfo(GdkWindow * win, XAP_UnixFontManager * fontManager)
 		: m_win(win),m_pixmap(NULL),m_fontManager(fontManager),
 		  m_usePixmap(false), m_pGnomePrint(NULL) {};
 
 	GR_UnixAllocInfo(GdkPixmap * win, XAP_UnixFontManager * fontManager,
-					 XAP_App *app, bool bUsePixmap)
+					 bool bUsePixmap)
 		: m_win(NULL), m_pixmap(win), m_fontManager(fontManager),
 		  m_usePixmap(bUsePixmap), m_pGnomePrint(NULL) {};
 

@@ -34,14 +34,13 @@ class UT_ByteBuf;
 class XAP_UnixNullGraphicsAllocInfo : public GR_AllocInfo
 {
 public:
- 	XAP_UnixNullGraphicsAllocInfo(XAP_UnixFontManager * fontManager, XAP_App *app)
-		: m_fontManager(fontManager), m_app(app) {};
+ 	XAP_UnixNullGraphicsAllocInfo(XAP_UnixFontManager * fontManager)
+		: m_fontManager(fontManager) {};
 
 	virtual GR_GraphicsId getType() const {return GRID_UNIX_NULL;};
 	virtual bool isPrinterGraphics() const {return false; };
 
 	XAP_UnixFontManager * m_fontManager;
-	XAP_App * m_app;
 };
 
 
@@ -129,7 +128,7 @@ public:
 
 protected:
 	// all instances have to be created via GR_GraphicsFactory; see gr_Graphics.h
-	UnixNull_Graphics(XAP_UnixFontManager * fontManager,XAP_App *pApp);
+	UnixNull_Graphics(XAP_UnixFontManager * fontManager);
 	
 	virtual GR_Font* _findFont(const char* pszFontFamily, 
 							   const char* pszFontStyle, 

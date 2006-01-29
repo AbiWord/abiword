@@ -57,10 +57,8 @@
 ******************************************************************
 *****************************************************************/
 
-UnixNull_Graphics::UnixNull_Graphics( XAP_UnixFontManager * fontManager,
-							 XAP_App *pApp)
+UnixNull_Graphics::UnixNull_Graphics( XAP_UnixFontManager * fontManager )
 {
-	m_pApp = pApp;
 	m_pCurrentFont = 0;
 	m_cs = GR_Graphics::GR_COLORSPACE_COLOR;	
 	m_fm = fontManager;
@@ -418,5 +416,5 @@ GR_Graphics *   UnixNull_Graphics::graphicsAllocator(GR_AllocInfo& info)
 {
 	XAP_UnixNullGraphicsAllocInfo &allocator = (XAP_UnixNullGraphicsAllocInfo&)info;
 
-	return new UnixNull_Graphics(allocator.m_fontManager, allocator.m_app);
+	return new UnixNull_Graphics(allocator.m_fontManager);
 }

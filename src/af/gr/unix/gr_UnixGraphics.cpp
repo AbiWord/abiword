@@ -536,7 +536,6 @@ UT_uint32 				GR_UnixGraphics::s_iInstanceCount = 0;
 GR_UnixGraphics::GR_UnixGraphics(GdkWindow * win, XAP_UnixFontManager * fontManager):
 	m_iLineWidth(tlu(1))
 {
-	m_pApp = XAP_App::getApp();
 	m_pWin = win;
 	m_pFontManager = fontManager;
 	m_pFont = NULL;
@@ -637,7 +636,6 @@ bool GR_UnixGraphics::isSymbol(void) const
 
 GR_UnixGraphics::GR_UnixGraphics(GdkPixmap * win, XAP_UnixFontManager * fontManager, bool bUseDrawable):m_iLineWidth(tlu(1))
 {
-	m_pApp = XAP_App::getApp();
 	m_pWin = static_cast<GdkWindow *>(win);
 	m_pFontManager = fontManager;
 	m_pFont = NULL;
@@ -1475,7 +1473,7 @@ void GR_UnixGraphics::scroll(UT_sint32 dx, UT_sint32 dy)
 		return;
 	}
 	UT_sint32 iddy = labs(ddy);
-	bool bEnableSmooth = m_pApp->isSmoothScrollingEnabled();
+	bool bEnableSmooth = XAP_App::getApp()->isSmoothScrollingEnabled();
 	bEnableSmooth = bEnableSmooth && (iddy < 30) && (ddx == 0);
 	if(bEnableSmooth)
 	{

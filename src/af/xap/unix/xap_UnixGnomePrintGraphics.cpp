@@ -106,7 +106,6 @@ GnomePrintConfig * XAP_UnixGnomePrintGraphics::s_setup_config (XAP_Frame * pFram
 XAP_UnixGnomePrintGraphics::XAP_UnixGnomePrintGraphics(GnomePrintJob *gpm, bool isPreview)
 	: GR_Graphics ()
 {
-	m_pApp         = XAP_App::getApp ();
 	m_gpm          = gpm;
 	m_gpc          = gnome_print_job_get_context(gpm);
 	
@@ -124,7 +123,7 @@ XAP_UnixGnomePrintGraphics::XAP_UnixGnomePrintGraphics(GnomePrintJob *gpm, bool 
 	m_width = getDeviceResolution()*m_width/72.;
 
 	m_bIsPreview     = isPreview;
-	m_fm             = static_cast<XAP_UnixApp *>(m_pApp)->getFontManager();
+	m_fm             = static_cast<XAP_UnixApp *>(XAP_App::getApp())->getFontManager();
 	m_bStartPrint    = false;
 	m_bStartPage     = false;
 	m_pCurrentFont   = NULL;
@@ -138,7 +137,6 @@ XAP_UnixGnomePrintGraphics::XAP_UnixGnomePrintGraphics(GnomePrintJob *gpm, bool 
 XAP_UnixGnomePrintGraphics::XAP_UnixGnomePrintGraphics(GnomePrintContext *ctx,
 													   double inWidthDevice, double inHeightDevice)
 {
-	m_pApp         = XAP_App::getApp ();
 	m_gpm          = NULL;
 	m_gpc          = ctx;
 	
@@ -146,7 +144,7 @@ XAP_UnixGnomePrintGraphics::XAP_UnixGnomePrintGraphics(GnomePrintContext *ctx,
 	m_height = inHeightDevice;
 
 	m_bIsPreview     = false;
-	m_fm             = static_cast<XAP_UnixApp *>(m_pApp)->getFontManager();
+	m_fm             = static_cast<XAP_UnixApp *>(XAP_App::getApp())->getFontManager();
 	m_bStartPrint    = false;
 	m_bStartPage     = false;
 	m_pCurrentFont   = NULL;

@@ -1128,7 +1128,7 @@ bool AP_UnixApp:: makePngPreview(const char * pszInFile, const char * pszPNGFile
 	GdkPixmap * pMap =  gdk_pixmap_new(pWindow,iWidth,iHeight,-1); 	
 
 	//GR_UnixGraphics * pG =  new GR_UnixGraphics(pMap, getFontManager(), this,true);
-	GR_UnixAllocInfo ai(pMap, getFontManager(), this,true);
+	GR_UnixAllocInfo ai(pMap, getFontManager(), true);
 	GR_UnixGraphics * pG = (GR_UnixGraphics*) XAP_App::getApp()->newGraphics(ai);
 
 	pG->createCaret();
@@ -1325,7 +1325,7 @@ GR_Image * AP_UnixApp::_showSplash(UT_uint32 delay)
 		
 		// create image context
 		//pUnixGraphics = new GR_UnixGraphics(da->window, NULL, m_pApp);
-		GR_UnixAllocInfo ai(da->window, NULL, m_pApp);
+		GR_UnixAllocInfo ai(da->window, NULL);
 		pUnixGraphics = (GR_UnixGraphics*) XAP_App::getApp()->newGraphics(ai);
 		
 		pSplashImage = pUnixGraphics->createNewImage("splash", pBB, pUnixGraphics->tlu(iSplashWidth), 
@@ -1354,7 +1354,7 @@ GR_Graphics * AP_UnixApp::newDefaultScreenGraphics() const
 	GtkWidget * da = pFI->getDrawingArea();
 	UT_return_val_if_fail( da, NULL );
 	
-	GR_UnixAllocInfo ai(da->window, getFontManager(), m_pApp);
+	GR_UnixAllocInfo ai(da->window, getFontManager());
 	return XAP_App::getApp()->newGraphics(ai);
 }
 
@@ -1653,12 +1653,12 @@ bool AP_UnixApp::doWindowlessArgs(const AP_Args *Args)
 			PS_Graphics pGraphics ((Args->m_sPrintTo[0] == '|' ? Args->m_sPrintTo+1 : Args->m_sPrintTo),
 								   Args->m_sPrintTo, 
 								   pMyUnixApp->getApplicationName(), pMyUnixApp->getFontManager(),
-								   (Args->m_sPrintTo[0] != '|'), pMyUnixApp);
+								   (Args->m_sPrintTo[0] != '|'));
 #endif
 			PS_GraphicsAllocInfo ai((Args->m_sPrintTo[0] == '|' ? Args->m_sPrintTo+1 : Args->m_sPrintTo),
 								 Args->m_sPrintTo, 
 								 pMyUnixApp->getApplicationName(), pMyUnixApp->getFontManager(),
-								 (Args->m_sPrintTo[0] != '|'), pMyUnixApp);
+								 (Args->m_sPrintTo[0] != '|'));
 			
 			PS_Graphics * pGraphics = (PS_Graphics*) XAP_App::getApp()->newGraphics(ai);
 			
