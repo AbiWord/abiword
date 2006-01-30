@@ -25,7 +25,15 @@ INCLUDES= $(PSICONV_INCLUDES) $(WP_INCLUDES) \
 
 noinst_LIBRARIES = libImpExp_unix.a
 
-libImpExp_unix_a_SOURCES = ie_impexp_RegisterUnix.cpp \
-			ie_impGraphic_GdkPixbuf.cpp \
-			ie_exp_PDF.cpp \
-			ie_exp_PDF.h
+if WITH_PRINTING
+	print_src = ie_exp_PDF.cpp \
+				ie_exp_PDF.h
+else
+	print_src = 
+endif
+
+
+libImpExp_unix_a_SOURCES = \
+			$(print_src) \
+			ie_impexp_RegisterUnix.cpp \
+			ie_impGraphic_GdkPixbuf.cpp

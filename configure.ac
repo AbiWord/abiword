@@ -75,13 +75,46 @@ with_macosx=false
 with_cocoa=false
 with_qnx=false
 with_win32=false
+
+# check for hildon and print first, so we can handle gnomeprint dependency correcly
+ABI_HILDON_QUICK
+
+# by default we, of course, want Abi to be able to print, but on embedded systems
+# it might not be required and because of the dependencies, we want an option to 
+# disable printing at compile time
+
+# on hildon we will make --disable-print the default if no --enable/disable-printing 
+# is given
+
+AC_ARG_ENABLE(printing,[  --enable-printing    Include printing capabilities],[
+	case "${enableval}" in
+	   yes)	print=true ;
+		PRINT_CFLAGS="";;
+	   no) print=false ;
+		PRINT_CFLAGS="-DWITHOUT_PRINTING";;
+	     *)	AC_MSG_ERROR(bad value ${enableval} for --enable-printing) ;;
+	esac
+],[	print=undefined
+	PRINT_CFLAGS=""
+])
+
+
+if test $print = undefined && test $hildon = true; then
+   print=false
+   PRINT_CFLAGS="-DWITHOUT_PRINTING"
+fi
+
+AM_CONDITIONAL(WITH_PRINTING, test x$print = strue)
+
 if test "$PLATFORM" = "unix"; then
 	ABI_FE="Unix"
 	ABI_BE="$ABI_FE"
 	with_unix=true
 	dnl locate glib and gtk
 	ABI_GTK2
+if test $print = true; then
 	ABI_GNOMEPRINT
+fi
 	AM_BINRELOC
 elif test "$PLATFORM" = "cocoa" ; then
 	ABI_GLIB2
@@ -143,7 +176,6 @@ dnl The defined values are used mostly in includes.mk, but also in
 dnl some other places
 
 ABI_GNOME_QUICK
-ABI_HILDON_QUICK
 ABI_GUCHARMAP
 ABI_XFT_QUICK
 	
@@ -325,6 +357,7 @@ AC_SUBST(OPTIMIZE_CFLAGS)
 AC_SUBST(PROFILE_CFLAGS)
 AC_SUBST(LIBJPEG_LIBS)
 AC_SUBST(DEBUG_CFLAGS)
+AC_SUBST(PRINT_CFLAGS)
 AC_SUBST(SCRIPT_CFLAGS)
 AC_SUBST(SCRIPT_LIBS)
 AC_SUBST(PLATFORM_CFLAGS)
@@ -568,6 +601,13 @@ case "$debug" in
         AC_MSG_RESULT([Configured with debugging symbols.]) ;;
 esac
 
+case "$print" in
+	 "true" )
+        AC_MSG_RESULT([Configured with printing capabilities.]) ;;
+	 "false" )
+        AC_MSG_RESULT([Configured without printing capabilites.]) ;;
+esac
+
 case "$script" in
      "true" )
         AC_MSG_RESULT([Configured with scripting support.]) ;;
@@ -594,7 +634,11 @@ cat <<EOF
   iconv:           ${abi_iconv_message}
   spelling:        ${abi_spell_message}
   binreloc:        ${br_cv_binreloc}
+
+  installing in:   ${prefix}
+
 EOF
+
 
 if test "x$_abi_wv_warning" = "xyes"; then
 	ABI_WV_WARNING

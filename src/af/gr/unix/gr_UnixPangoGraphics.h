@@ -25,7 +25,10 @@
 #include "gr_RenderInfo.h"
 
 #include <pango/pango-font.h>
+
+#ifndef WITHOUT_PRINTING
 #include "xap_UnixGnomePrintGraphics.h"
+#endif
 
 // we do not want this to be a plugin for now
 #define GR_UNIXPANGO_BUILTIN
@@ -207,6 +210,8 @@ private:
 	static int s_iMaxScript;
 };
 
+
+#ifndef WITHOUT_PRINTING
 class XAP_UnixGnomePrintGraphics;
 
 /*!
@@ -291,5 +296,6 @@ class ABI_EXPORT GR_UnixPangoPrintGraphics : public GR_UnixPangoGraphics
 	
 	XAP_UnixGnomePrintGraphics * m_pGnomePrint;
 };
+#endif // ifndef WHITOUT_PRINTING
 
 #endif

@@ -27,7 +27,6 @@
 
 #include "xap_App.h"
 #include "xap_Prefs.h"
-#include "xap_UnixGnomePrintGraphics.h"
 
 // need this to include what Pango considers 'low-level' api
 #define PANGO_ENABLE_ENGINE
@@ -38,7 +37,10 @@
 #include <math.h>
 
 #include <gdk/gdk.h>
+
+#ifndef WITHOUT_PRINTING
 #include <libgnomeprint/gnome-print-pango.h>
+#endif
 
 // found in xap_UnixFont.cpp
 extern float fontPoints2float(UT_uint32 iSize, FT_Face pFace, UT_uint32 iFontPoints);
@@ -223,8 +225,12 @@ GR_UnixPangoGraphics::GR_UnixPangoGraphics()
 	 m_pPFontGUI(NULL),
 	 m_iDeviceResolution(96)
 {
+#ifndef WITHOUT_PRINTING
 	m_pFontMap = gnome_print_pango_get_default_font_map();
 	m_pContext = gnome_print_pango_create_context(m_pFontMap);
+#else
+	UT_ASSERT_HARMLESS( UT_SHOULD_NOT_HAPPEN );
+#endif
 }
 
 
@@ -1688,7 +1694,7 @@ bool GR_UnixPangoRenderInfo::isJustified() const
 	UT_return_val_if_fail( UT_NOT_IMPLEMENTED,false );
 }
 
-
+#ifndef WITHOUT_PRINTING
 GR_UnixPangoPrintGraphics::GR_UnixPangoPrintGraphics(XAP_UnixGnomePrintGraphics * pGPG):
 	GR_UnixPangoGraphics(),
 	m_pGnomePrint(pGPG)
@@ -2005,3 +2011,4 @@ void GR_UnixPangoPrintGraphics::setLineProperties (double inWidth,
 	m_pGnomePrint->setLineProperties(inWidth, inJoinStyle, inCapStyle, inLineStyle);
 }
 
+#endif

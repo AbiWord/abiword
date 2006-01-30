@@ -97,14 +97,14 @@ XAP_UnixApp::XAP_UnixApp(XAP_Args * pArgs, const char * szAppName)
 		// we are in deep trouble if this did not succeed
 		UT_ASSERT( bSuccess );
 		pGF->registerAsDefault(GR_UnixGraphics::s_getClassId(), true);
-
+#ifndef WITHOUT_PRINTING
 		bSuccess = pGF->registerClass(PS_Graphics::graphicsAllocator,
 									  PS_Graphics::graphicsDescriptor,
 									  PS_Graphics::s_getClassId());
 
 		UT_ASSERT( bSuccess );
 		pGF->registerAsDefault(PS_Graphics::s_getClassId(), false);
-		
+#endif
 
 		bSuccess = pGF->registerClass(UnixNull_Graphics::graphicsAllocator,
 									  UnixNull_Graphics::graphicsDescriptor,
@@ -132,7 +132,7 @@ XAP_UnixApp::XAP_UnixApp(XAP_Args * pArgs, const char * szAppName)
 		
 		UT_ASSERT( bSuccess );
 		
-#if defined(_USE_PANGO) && !defined(HAVE_HILDON)
+#if defined(_USE_PANGO) && !defined(WITHOUT_PRINTING) && !defined(HAVE_HILDON)
 		if(bSuccess)
 		{
 			pGF->registerAsDefault(GR_UnixPangoPrintGraphics::s_getClassId(), false);

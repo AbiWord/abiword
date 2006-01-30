@@ -7942,6 +7942,7 @@ bool s_doPrint(FV_View * pView, bool bTryToSuppressDialog, bool bPrintDirectly);
 #else
 static bool s_doPrint(FV_View * pView, bool bTryToSuppressDialog,bool bPrintDirectly)
 {
+#ifndef WITHOUT_PRINTING
 	XAP_Frame * pFrame = static_cast<XAP_Frame *> ( pView->getParentData());
 	UT_return_val_if_fail(pFrame, false);
 
@@ -8045,11 +8046,16 @@ UT_return_val_if_fail(pDialog, false);
 	pDialogFactory->releaseDialog(pDialog);
 
 	return bOK;
+#else
+	UT_DEBUGMSG(("Printing capabilities not included\n"));
+	return true;
+#endif
 }
 #endif
 
 static bool s_doPrintPreview(FV_View * pView)
 {
+#ifndef WITHOUT_PRINTING
 	XAP_Frame * pFrame = static_cast<XAP_Frame *> ( pView->getParentData());
 	UT_return_val_if_fail(pFrame, false);
 
@@ -8060,7 +8066,7 @@ static bool s_doPrintPreview(FV_View * pView)
 
 	XAP_Dialog_PrintPreview * pDialog
 		= static_cast<XAP_Dialog_PrintPreview *>(pDialogFactory->requestDialog(XAP_DIALOG_ID_PRINTPREVIEW));
-UT_return_val_if_fail(pDialog, false);
+	UT_return_val_if_fail(pDialog, false);
 	FL_DocLayout* pLayout = pView->getLayout();
 	PD_Document * doc = pLayout->getDocument();
 
@@ -8112,7 +8118,10 @@ UT_return_val_if_fail(pDialog, false);
 
     // Turn off wait cursor
 	pView->clearCursorWait();
-
+#else
+	UT_DEBUGMSG(("Printing capabilities not included\n"));
+#endif
+	
 	return true;
 }
 
@@ -8873,26 +8882,41 @@ UT_return_val_if_fail(pDialog, false);
 
 Defun1(print)
 {
+#ifndef WITHOUT_PRINTING
 	CHECK_FRAME;
 	ABIWORD_VIEW;
 	return s_doPrint(pView,false,false);
+#else
+	UT_DEBUGMSG(("Printing support not included\n"));
+	return true;
+#endif
 }
 
 Defun1(printDirectly)
 {
+#ifndef WITHOUT_PRINTING
 	CHECK_FRAME;
 	ABIWORD_VIEW;
 	return s_doPrint(pView,false,true);
+#else
+	UT_DEBUGMSG(("Printing support not included\n"));
+	return true;
+#endif
 }
 
 Defun1(printTB)
 {
+#ifndef WITHOUT_PRINTING
 	CHECK_FRAME;
 // print (intended to be from the tool-bar (where we'd like to
 	// suppress the dialog if possible))
 
 	ABIWORD_VIEW;
 	return s_doPrint(pView,true,false);
+#else
+	UT_DEBUGMSG(("Printing support not included\n"));
+	return true;
+#endif
 }
 
 Defun1(printPreview)

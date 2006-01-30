@@ -26,6 +26,7 @@
 #include "ut_misc.h"
 
 class PSFont;
+class XAP_UnixFontHandle;
 class XAP_UnixFontManager;
 class UT_ByteBuf;
 
@@ -137,8 +138,14 @@ protected:
 							   const char* pszFontStretch, 
 							   const char* pszFontSize);
 
-	virtual UT_uint32 getDeviceResolution(void) const;	
+	virtual UT_uint32 getDeviceResolution(void) const;
+	
+#ifndef WITHOUT_PRINTING
 	PSFont *		m_pCurrentFont;
+#else
+	XAP_UnixFontHandle *  m_pCurrentFont;
+#endif
+	
 	UT_RGBColor		m_currentColor;
 	
 	GR_Graphics::Cursor m_cursor;
