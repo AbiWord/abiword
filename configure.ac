@@ -102,6 +102,9 @@ AC_ARG_ENABLE(printing,[  --enable-printing    Include printing capabilities],[
 if test $print = undefined && test $hildon = true; then
    print=false
    PRINT_CFLAGS="-DWITHOUT_PRINTING"
+elif test $print = undefined; then
+   print=true;
+   PRINT_CFLAGS=""
 fi
 
 AM_CONDITIONAL(WITH_PRINTING, test x$print = strue)
