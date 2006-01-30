@@ -26,10 +26,10 @@ INCLUDES= $(PSICONV_INCLUDES) $(WP_INCLUDES) \
 noinst_LIBRARIES = libImpExp_unix.a
 
 if WITH_PRINTING
-	print_src = ie_exp_PDF.cpp \
-				ie_exp_PDF.h
+print_src = ie_exp_PDF.cpp \
+			ie_exp_PDF.h
 else
-	print_src = 
+print_src = 
 endif
 
 

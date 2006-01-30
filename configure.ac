@@ -107,7 +107,7 @@ elif test $print = undefined; then
    PRINT_CFLAGS=""
 fi
 
-AM_CONDITIONAL(WITH_PRINTING, test x$print = strue)
+AM_CONDITIONAL(WITH_PRINTING, test x$print = xtrue)
 
 if test "$PLATFORM" = "unix"; then
 	ABI_FE="Unix"

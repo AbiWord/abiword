@@ -37,17 +37,17 @@ noinst_LIBRARIES = libXap_unix.a
 
 gladedir=$(datadir)/$(PACKAGE)/AbiWord/glade
 
-print_src=
-
 if WITH_PRINTING
-	print_src = xap_UnixPSFont.cpp				\
-				xap_UnixPSGenerate.cpp			\
-				xap_UnixPSParseAFM.c			\
-				xap_UnixPSImage.cpp				\
-				xap_UnixPSGraphics.cpp			\
-				xap_UnixGnomePrintGraphics.cpp	\
-				xap_UnixDlg_PrintPreview.cpp	\
-				xap_UnixDlg_Print.cpp			
+print_src = xap_UnixPSFont.cpp				\
+			xap_UnixPSGenerate.cpp			\
+			xap_UnixPSParseAFM.c			\
+			xap_UnixPSImage.cpp				\
+			xap_UnixPSGraphics.cpp			\
+			xap_UnixGnomePrintGraphics.cpp	\
+			xap_UnixDlg_PrintPreview.cpp	\
+			xap_UnixDlg_Print.cpp			
+else
+print_src =
 endif
 
 glade_DATA = \
