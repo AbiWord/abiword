@@ -264,8 +264,8 @@ public:
 												const char* pszFontStretch,
 												const char* pszFontSize);
 
-	void                        saveState(bool bQuit);
-	void                        retrieveState();
+	bool                        saveState(bool bQuit);
+	bool                        retrieveState();
 	
 	
 protected:
@@ -280,8 +280,8 @@ protected:
 	virtual const char *				_getKbdLanguage() {return NULL;}
 	void						_setUUIDGenerator(UT_UUIDGenerator * pG) { m_pUUIDGenerator = pG; }
 
-	virtual void                _saveState(XAP_StateData & sd);
-	virtual void                _retrieveState(XAP_StateData & sd);
+	virtual bool                _saveState(XAP_StateData & sd);
+	virtual bool                _retrieveState(XAP_StateData & sd);
 	
 	XAP_Args *					m_pArgs;
 	const char *					m_szAppName;

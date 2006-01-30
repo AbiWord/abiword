@@ -287,6 +287,28 @@ static void s_imCommit_cb(GtkIMContext *imc, const gchar *text, gpointer data)
 	XAP_UnixFrameImpl::_imCommit_cb (imc, text, (gpointer)pFrameImpl);
 }
 
+static void s_topmost_lose_cb(HildonApp *hildonapp, gpointer data)
+{
+	UT_DEBUGMSG(("%%%%%%%%%%%%%% topmost-status-lose %%%%%%%%%%%%%%%%%%\n"));
+	XAP_UnixHildonApp * pThis = static_cast<XAP_UnixHildonApp*>(data);
+	UT_return_if_fail( pThis );
+
+	pThis->saveState(false);
+
+	hildon_app_set_killable(HILDON_APP(pThis->getHildonAppWidget()), TRUE);
+}
+
+static void s_topmost_acquire_cb(HildonApp *hildonapp, gpointer data)
+{
+	UT_DEBUGMSG(("%%%%%%%%%%%%%% topmost-status-acquire %%%%%%%%%%%%%%%%%%\n"));
+	XAP_UnixHildonApp * pThis = static_cast<XAP_UnixHildonApp*>(data);
+	UT_return_if_fail( pThis );
+
+	// it would be better to do this in conditional fashion, after the user modified the
+	// document, but this will do for now
+	hildon_app_set_killable(HILDON_APP(pThis->getHildonAppWidget()), FALSE);
+}
+
 /*!
     This methods returns an instance of HildonApp widget; there is only one instance of it
     for the applicaiton, and it is created by this function when it is first called.
@@ -303,7 +325,8 @@ GtkWidget *  XAP_UnixHildonApp::getHildonAppWidget() const
 		hildon_app_set_title(HILDON_APP(m_pHildonAppWidget), getApplicationTitleForTitleBar());
 		hildon_app_set_two_part_title(HILDON_APP(m_pHildonAppWidget), TRUE);
 
-		g_object_set_data(G_OBJECT(m_pHildonAppWidget), "user_data", const_cast<XAP_UnixHildonApp*>(this)); 
+		g_object_set_data(G_OBJECT(m_pHildonAppWidget), "user_data",
+						  const_cast<XAP_UnixHildonApp*>(this)); 
 	
 		gtk_window_set_role(GTK_WINDOW(m_pHildonAppWidget), "topLevelWindow");		
 		g_object_set_data(G_OBJECT(m_pHildonAppWidget), "toplevelWindow", m_pHildonAppWidget);
@@ -329,6 +352,10 @@ GtkWidget *  XAP_UnixHildonApp::getHildonAppWidget() const
 		g_signal_connect(G_OBJECT(m_pHildonAppWidget), "focus_out_event",
 						 G_CALLBACK(s_focus_out_event), NULL);
 
+		g_signal_connect(G_OBJECT(m_pHildonAppWidget), "topmost-status-lose",
+						 G_CALLBACK(s_topmost_lose_cb), const_cast<XAP_UnixHildonApp*>(this));
+		g_signal_connect(G_OBJECT(m_pHildonAppWidget), "topmost-status-acquire",
+						 G_CALLBACK(s_topmost_acquire_cb), const_cast<XAP_UnixHildonApp*>(this));
 
 		gtk_widget_realize(m_pHildonAppWidget);
 
@@ -354,28 +381,28 @@ GtkWidget *  XAP_UnixHildonApp::getHildonAppWidget() const
 }
 
 
-void XAP_UnixHildonApp::_saveState(XAP_StateData & sd)
+bool XAP_UnixHildonApp::_saveState(XAP_StateData & sd)
 {
-	UT_DEBUGMSG(("Save state called\n"));
 	osso_state_t osd;
 	osd.state_size = sizeof(XAP_StateData);
 	osd.state_data = (gpointer)& sd;
 
 	osso_return_t ret = osso_state_write(m_pOsso, &osd);
 
-	UT_ASSERT_HARMLESS( ret == OSSO_OK );
+	UT_DEBUGMSG(("Save state called: ret %d\n", ret));
+	return ( ret == OSSO_OK );
 }
 
-void XAP_UnixHildonApp::_retrieveState(XAP_StateData & sd)
+bool XAP_UnixHildonApp::_retrieveState(XAP_StateData & sd)
 {
-	UT_DEBUGMSG(("Retrieve state called\n"));
 	osso_state_t osd;
 	osd.state_size = sizeof(XAP_StateData);
 	osd.state_data = (gpointer)& sd;
 	
 	osso_return_t ret = osso_state_read(m_pOsso, & osd);
 
-	UT_ASSERT_HARMLESS( ret == OSSO_OK );
+	UT_DEBUGMSG(("Retrieve state called: ret %d\n", ret));
+	return ( ret == OSSO_OK );
 }
 
 

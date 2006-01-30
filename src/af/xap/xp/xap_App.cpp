@@ -1484,13 +1484,18 @@ const char* XAP_App::findNearestFont(const char* pszFontFamily,
 
    The actual mechanism through which the state data is stored is implemented in _saveState().
 */
-void XAP_App::saveState(bool bQuit)
+
+#define HIBERNATED_EXT ".HIBERNATED.abw"
+bool XAP_App::saveState(bool bQuit)
 {
 	// gather the state data for platform code to deal with
 	XAP_StateData sd = {0};
 
+	bool bRet = true;
+
 	// We will store data for up to XAP_SD_MAX_FILES, making sure we save it for the last
 	// focussed frame in the first slot
+
 	XAP_Frame * pLastFrame = getLastFocussedFrame();
 
 	UT_uint32 i;
@@ -1507,8 +1512,8 @@ void XAP_App::saveState(bool bQuit)
 
 		if(pLastFrame == pFrame && j != 0)
 		{
-			--j;
-			continue; // done this one already
+			// we have done this frame, but need to do the one at pos 0 in its place
+			pFrame = m_vecFrames[0];
 		}
 		
 
@@ -1525,22 +1530,34 @@ void XAP_App::saveState(bool bQuit)
 			--j;
 			continue;
 		}
+
+		UT_Error e = UT_OK;
 		
 		if(pDoc->isDirty())
 		{
 			// need to decide what to do about dirty documents; perhaps we should keep a
 			// copy of the unsaved state under a different name?
-			// for now just save (otherwise the user will loose the changes when app hibernates)
-			pDoc->save();
+			// for now just save (otherwise the user will loose the changes when app
+			// hibernates)
+			e = pDoc->save();
+			if(e == UT_SAVE_NAMEERROR)
+			{
+				// this is an Untitled document
+				UT_UTF8String s = pFrame->getNonDecoratedTitle();
+				s += HIBERNATED_EXT;
+				e = pDoc->saveAs(s.utf8_str(), 0);
+			}
+			
+			bRet &= (UT_OK == e);
 		}
 
-		if(j >= XAP_SD_MAX_FILES)
+		if(j >= XAP_SD_MAX_FILES || e != UT_OK)
 		{
 			// no storage space left -- nothing more we can do with this document, so move
 			// to the next one (do not break, we need to deal with anything that is not
 			// saved)
 			
-			--j;      // we want to reserve the j value 
+			--j;      // we want to preserve the j value 
 			continue;
 		}
 		
@@ -1567,7 +1584,8 @@ void XAP_App::saveState(bool bQuit)
 
 	sd.iFileCount = j;
 	
-	_saveState(sd);
+	if(!_saveState(sd))
+		return false;
 
 	if(bQuit)
 	{
@@ -1575,6 +1593,8 @@ void XAP_App::saveState(bool bQuit)
 		closeModelessDlgs();
 		reallyExit();
 	}
+
+	return bRet;
 }
 
 /*!
@@ -1583,9 +1603,12 @@ void XAP_App::saveState(bool bQuit)
 
     For now, this method does nothing; it could save state data in the profile if we
     wanted to. (For a working implementation see xap_UnixHildonApp.cpp)
+
+    returns true on success
 */
-void XAP_App::_saveState(XAP_StateData & sd)
+bool XAP_App::_saveState(XAP_StateData & sd)
 {
+	return false;
 }
 
 /*!
@@ -1595,12 +1618,16 @@ void XAP_App::_saveState(XAP_StateData & sd)
 */
 
 
-void XAP_App::retrieveState()
+bool XAP_App::retrieveState()
 {
-	XAP_StateData sd;
-	_retrieveState(sd);
+	XAP_StateData sd = {0};
 
-	UT_return_if_fail(sd.iFileCount <= XAP_SD_MAX_FILES);
+	bool bRet = true;
+	
+	if(!_retrieveState(sd))
+		return false;
+
+	UT_return_val_if_fail(sd.iFileCount <= XAP_SD_MAX_FILES, false);
 		
 	// now do our thing with it:
 	//  * open the files stored in the data
@@ -1609,14 +1636,14 @@ void XAP_App::retrieveState()
 
 	// we should only be restoring state with no docs already
 	// opened
-	UT_return_if_fail(m_vecFrames.getItemCount() <= 1);
+	UT_return_val_if_fail(m_vecFrames.getItemCount() <= 1, false);
 	XAP_Frame * pFrame = NULL;
 
 	if(m_vecFrames.getItemCount())
 		pFrame = m_vecFrames.getNthItem(0);
 
 	// if there is a frame, it should be one with unmodified untitled document
-	UT_return_if_fail( !pFrame || (!pFrame->getFilename() && !pFrame->isDirty()) );
+	UT_return_val_if_fail( !pFrame || (!pFrame->getFilename() && !pFrame->isDirty()), false );
 		
 	UT_Error errorCode = UT_IE_IMPORTERROR;
 	
@@ -1626,19 +1653,23 @@ void XAP_App::retrieveState()
 			pFrame = newFrame();
 		
 		if (!pFrame)
-			return;
+			return false;
 		
 		// Open a complete but blank frame, then load the document into it
 		errorCode = pFrame->loadDocument(NULL, 0 /*IEFT_Unknown*/);
+
+		bRet &= (errorCode == UT_OK);
 		
-		if (!errorCode)
+		if (errorCode == UT_OK)
 			pFrame->show();
 	    else
 			continue;
 
 		errorCode = pFrame->loadDocument(sd.filenames[i], 0 /*IEFT_Unknown*/);
 
-		if (errorCode)
+		bRet &= (errorCode == UT_OK);
+		
+		if (errorCode != UT_OK)
 			continue;
 
 		pFrame->show();
@@ -1647,12 +1678,29 @@ void XAP_App::retrieveState()
 		if(!pView)
 		{
 			UT_ASSERT_HARMLESS( UT_SHOULD_NOT_HAPPEN );
+			bRet = false;
 			continue;
 		}
 		
 		pView->setPoint(sd.iDocPos[i]);
 		pView->setXScrollOffset(sd.iXScroll[i]);
 		pView->setYScrollOffset(sd.iYScroll[i]);
+
+		// now we check if this doc was autosaved Untitled* doc at hibernation
+		char * p = strstr(sd.filenames[i], HIBERNATED_EXT);
+		if(p)
+		{
+			// remove extension
+			p = 0;
+			AD_Document * pDoc = pFrame->getCurrentDoc();
+
+			if(pDoc)
+			{
+				pDoc->clearFilename();
+				pFrame->updateTitle();
+			}
+		}
+		
 		
 		// frame used -- next doc needs a new one
 		pFrame = NULL;
@@ -1660,12 +1708,14 @@ void XAP_App::retrieveState()
 
 	// set focus to the first frame
 	pFrame = m_vecFrames.getNthItem(0);
-	UT_return_if_fail( pFrame );
+	UT_return_val_if_fail( pFrame, false );
 
 	AV_View* pView = pFrame->getCurrentView();
-	UT_return_if_fail( pView );
+	UT_return_val_if_fail( pView, false );
 
-	pView->focusChange(AV_FOCUS_HERE);	
+	pView->focusChange(AV_FOCUS_HERE);
+
+	return bRet;
 }
 
 /*!
@@ -1674,9 +1724,12 @@ void XAP_App::retrieveState()
 
     For now, this method does nothing; it could read state data in the profile if we
     wanted to. (For a working implementation see xap_UnixHildonApp.cpp)
+
+    returns true on success
 */
-void XAP_App::_retrieveState(XAP_StateData & sd)
+bool XAP_App::_retrieveState(XAP_StateData & sd)
 {
+	return false;
 }
 
 

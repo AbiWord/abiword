@@ -51,8 +51,8 @@ public:
 	GtkIMContext * getIMContext() const {return m_imContext;}
 	
 protected:
-	virtual void _saveState(XAP_StateData & sd);
-	virtual void _retrieveState(XAP_StateData & sd);
+	virtual bool _saveState(XAP_StateData & sd);
+	virtual bool _retrieveState(XAP_StateData & sd);
 
 private:
 	osso_context_t *    m_pOsso;

@@ -1469,10 +1469,6 @@ int AP_UnixApp::main(const char * szAppName, int argc, const char ** argv)
     sigaction(SIGQUIT, &sa, NULL);
     sigaction(SIGFPE, &sa, NULL);
 
-#ifdef HAVE_HILDON
-	sigaction(SIGTERM, &sa, NULL);
-#endif
-	
     // TODO: handle SIGABRT
 	
     // Step 2: Handle all non-window args.
@@ -1820,11 +1816,6 @@ void AP_UnixApp::catchSignals(int sig_num)
     // (not that it matters - this is mostly for race conditions)
     signal(SIGSEGV, signalWrapper);
 
-#ifdef HAVE_HILDON
-	if(sig_num != SIGTERM)
-	{
-#endif
-		
     s_signal_count = s_signal_count + 1;
     if(s_signal_count > 1)
     {
@@ -1865,16 +1856,6 @@ void AP_UnixApp::catchSignals(int sig_num)
     
     // Abort and dump core
     abort();
-
-#ifdef HAVE_HILDON
-	} // (sig_num == SIGTERM)
-	else
-	{
-		// hildon uses SIGTERM to 'hibernate' apps
-		// save state and quit
-		saveState(true);
-	}
-#endif
 }
 
 #ifdef HAVE_GNOME
