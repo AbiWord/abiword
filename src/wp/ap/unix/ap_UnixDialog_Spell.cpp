@@ -206,13 +206,11 @@ AP_UnixDialog_Spell::runModal (XAP_Frame * pFrame)
             // show word in main window
             makeWordVisible();
      
+			gpointer inst = gtk_tree_view_get_selection (GTK_TREE_VIEW (m_lvSuggestions));
+			g_signal_handler_block (inst, m_listHandlerID);
             // update dialog with new misspelled word info/suggestions
             _updateWindow();
-     
-		m_listHandlerID = g_signal_connect (gtk_tree_view_get_selection (GTK_TREE_VIEW (m_lvSuggestions)), 
-						  "changed",
-						  G_CALLBACK (AP_UnixDialog_Spell__onSuggestionSelected), 
-						  (gpointer)this);
+			g_signal_handler_unblock (inst, m_listHandlerID);
 
 			// run into the GTK event loop for this window
 	    gint response = abiRunModalDialog (GTK_DIALOG(mainWindow), false);
@@ -337,6 +335,10 @@ AP_UnixDialog_Spell::_constructWindow (void)
 	GtkTreeViewColumn *column = gtk_tree_view_get_column (GTK_TREE_VIEW (m_lvSuggestions), 0);
 	gtk_tree_view_column_set_sort_column_id (column, COLUMN_SUGGESTION);
 
+	m_listHandlerID = g_signal_connect (gtk_tree_view_get_selection (GTK_TREE_VIEW (m_lvSuggestions)), 
+				  "changed",
+				  G_CALLBACK (AP_UnixDialog_Spell__onSuggestionSelected), 
+				  (gpointer)this);
 
     gtk_widget_show_all (m_wDialog);
     return m_wDialog;
@@ -434,6 +436,11 @@ AP_UnixDialog_Spell::_updateWindow (void)
 								COLUMN_NUMBER, i,
 								-1);
 	    }
+		// put the first suggestion in the entry
+		suggest = (gchar*) _convertToMB((UT_UCSChar*)m_Suggestions->getNthItem(0));
+        g_signal_handler_block(G_OBJECT(m_eChange), m_replaceHandlerID);
+        gtk_entry_set_text(GTK_ENTRY(m_eChange), suggest);
+        g_signal_handler_unblock(G_OBJECT(m_eChange), m_replaceHandlerID);      
     }
 
 	gtk_tree_view_set_model (GTK_TREE_VIEW (m_lvSuggestions), model);
