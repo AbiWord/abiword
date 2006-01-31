@@ -3356,6 +3356,10 @@ s_closeWindow (AV_View * pAV_View, EV_EditMethodCallData * pCallData,
 		// in single XAPAPP mode we can't close the app when closing the last frame
 		// or reopen a new one.
 #if XAP_SINGLE_XAPAPP
+#ifdef HAVE_HILDON
+		// user initiate exit -- clear any state info from previous hibernation
+		pApp->clearStateInfo();
+#endif
 #else
 		if (bCanExit)
 		{
@@ -3459,6 +3463,10 @@ Defun(querySaveAndExit)
 		pApp->closeModelessDlgs();
 
 		// TODO: this shouldn't be necessary, but just in case
+#ifdef HAVE_HILDON
+		// user initiate exit -- clear any state info from previous hibernation
+		pApp->clearStateInfo();
+#endif
 		pApp->reallyExit();
 	}
 

@@ -27,11 +27,14 @@
 #include "xap_UnixHildonApp.h"
 #include "xap_Frame.h"
 #include "xap_UnixFrameImpl.h"
+#include "xad_Document.h"
 
 // something wrong with these headers -- they need to be inculded after our own header
 #include <log-functions.h>
 #include <hildon-widgets/hildon-app.h>
 
+bool XAP_UnixHildonApp::s_bInitDone      = false;
+bool XAP_UnixHildonApp::s_bRestoreNeeded = false;
 
 static void osso_hw_event_cb (osso_hw_state_t *state, gpointer data);
 static gint osso_rpc_event_cb (const gchar     *interface,
@@ -47,23 +50,18 @@ XAP_UnixHildonApp::XAP_UnixHildonApp(XAP_Args * pArgs, const char * szAppName)
 	: XAP_UnixApp(pArgs, szAppName),
 	  m_pOsso(NULL),
 	  m_pHildonAppWidget(NULL),
-	  m_imContext(NULL)
+	  m_imContext(NULL),
+	  m_bHibernate(false)
 {
 }
 
 XAP_UnixHildonApp::~XAP_UnixHildonApp()
 {
-	if (m_pOsso) {
+	if (m_pOsso)
+	{
 		/* Unset callbacks */
-		osso_hw_unset_event_cb (
-			m_pOsso,
-			NULL);
-
-
-		osso_rpc_unset_default_cb_f (
-			m_pOsso, 
-			osso_rpc_event_cb,
-			NULL);
+		osso_hw_unset_event_cb (m_pOsso, NULL);
+		osso_rpc_unset_default_cb_f (m_pOsso, osso_rpc_event_cb, NULL);
 
 		/* Deinit osso */
 		osso_deinitialize (m_pOsso);
@@ -71,7 +69,6 @@ XAP_UnixHildonApp::~XAP_UnixHildonApp()
 	}
 
 	g_object_unref (G_OBJECT (m_imContext));
-
 }
 
 bool XAP_UnixHildonApp::initialize(const char * szKeyBindingsKey, const char * szKeyBindingsDefaultValue)
@@ -101,23 +98,44 @@ bool XAP_UnixHildonApp::initialize(const char * szKeyBindingsKey, const char * s
 	
 	// Set handling changes in HW states. 
 	ret = osso_hw_set_event_cb (m_pOsso, NULL, osso_hw_event_cb, this);
-	if (ret != OSSO_OK) {
+	if (ret != OSSO_OK)
+	{
 		osso_log (LOG_ERR, "Could not set callback for HW monitoring");
 	}
 
 	ret = osso_rpc_set_default_cb_f(m_pOsso, osso_rpc_event_cb, this);
-	if (ret != OSSO_OK) {
+	if (ret != OSSO_OK)
+	{
 		osso_log (LOG_ERR, "Could not set callback for receiving messages");
 	}
 
 	
 	ret = osso_application_set_exit_cb(m_pOsso, osso_exit_event_cb, this);
-	if (ret != OSSO_OK) {
+	if (ret != OSSO_OK)
+	{
 		osso_log (LOG_ERR, "Could not set exit callback\n");
 	}
-
-		
+	
 	return XAP_UnixApp::initialize(szKeyBindingsKey, szKeyBindingsDefaultValue);
+}
+
+/*!
+    Some of our dbus messages arrive before the app initialization is completed (in
+    particular the message that tells us to restore from hibernation), and these need to
+    be queued up for later. This function gets called from ap_UnixApp::main() just before gtk_main().
+*/
+void XAP_UnixHildonApp::processStartupQueue()
+{
+	UT_DEBUGMSG(("\n$$$$$$$$$$$ XAP_UnixHildonApp::precessStartupQueue() $$$$$$$$$$$$\n"));
+	UT_return_if_fail( s_bInitDone );
+
+	if(s_bRestoreNeeded)
+	{
+		UT_DEBUGMSG(("Restoring state\n"));
+		retrieveState();
+		s_bRestoreNeeded = false;
+		setHibernate(false);
+	}
 }
 
 
@@ -293,9 +311,15 @@ static void s_topmost_lose_cb(HildonApp *hildonapp, gpointer data)
 	XAP_UnixHildonApp * pThis = static_cast<XAP_UnixHildonApp*>(data);
 	UT_return_if_fail( pThis );
 
-	pThis->saveState(false);
-
-	hildon_app_set_killable(HILDON_APP(pThis->getHildonAppWidget()), TRUE);
+	// because it takes us something like 9s to start up, we will only hibernated if the
+	// m_bHibernate flag is set. We set this flag in response to low memory signal and
+	// clear it every time we get awaken from hibernation
+	if(pThis->getHibernate())
+	{
+		pThis->saveState(false);
+		hildon_app_set_killable(HILDON_APP(pThis->getHildonAppWidget()), TRUE);
+	}
+	
 }
 
 static void s_topmost_acquire_cb(HildonApp *hildonapp, gpointer data)
@@ -304,6 +328,53 @@ static void s_topmost_acquire_cb(HildonApp *hildonapp, gpointer data)
 	XAP_UnixHildonApp * pThis = static_cast<XAP_UnixHildonApp*>(data);
 	UT_return_if_fail( pThis );
 
+	const char * pUntitled = "Untitled%d";
+	const XAP_StringSet * pSS = pThis->getStringSet();
+	if(pSS)
+	{
+		const char * p = pSS->getValue(XAP_STRING_ID_UntitledDocument);
+		if(p && *p)
+			pUntitled = p;
+	}
+	
+	for(UT_uint32 i = 0; i < pThis->getFrameCount(); ++i)
+	{
+		XAP_Frame * pFrame = pThis->getFrame(i);
+		if(!pFrame)
+		{
+			UT_ASSERT_HARMLESS( UT_SHOULD_NOT_HAPPEN );
+			continue;
+		}
+
+		AD_Document * pDoc = pFrame->getCurrentDoc();
+		if(!pDoc)
+		{
+			UT_ASSERT_HARMLESS( UT_SHOULD_NOT_HAPPEN );
+			continue;
+		}
+		
+		const char * pName = pFrame->getFilename();
+		if(pName && *pName)
+		{
+			// for now, only do this for untitled docs
+			// use the localised name for Untitled and compare len-2 chars (there is %d at
+			// the end of the string)
+			if(!strncmp(pName, pUntitled, strlen(pUntitled)-2))
+			{
+				const char * p = strstr(pName, "HIBERNATED.abw");
+
+				// this was an untitled doc before we lost focus; make it look like it
+				// still is
+				if(p)
+				{
+					pDoc->clearFilename();
+					pDoc->forceDirty();
+					pFrame->updateTitle();
+				}
+			}
+		}
+	}
+	
 	// it would be better to do this in conditional fashion, after the user modified the
 	// document, but this will do for now
 	hildon_app_set_killable(HILDON_APP(pThis->getHildonAppWidget()), FALSE);
@@ -395,14 +466,41 @@ bool XAP_UnixHildonApp::_saveState(XAP_StateData & sd)
 
 bool XAP_UnixHildonApp::_retrieveState(XAP_StateData & sd)
 {
+	/* we use the size of the stored data to differentiate between reall and stale state
+	   data (since the state data survives after the app exits normally) */
+	
+	char c = 0;
 	osso_state_t osd;
+	osd.state_size = sizeof(char);
+	osd.state_data = (gpointer)& c;
+
+	osso_return_t ret = osso_state_read(m_pOsso, & osd);
+
+	if(ret == OSSO_OK)
+	{
+		// this is not proper data ...
+		return false;
+	}
+
+	// now try the real thing
 	osd.state_size = sizeof(XAP_StateData);
 	osd.state_data = (gpointer)& sd;
 	
-	osso_return_t ret = osso_state_read(m_pOsso, & osd);
+	ret = osso_state_read(m_pOsso, & osd);
 
 	UT_DEBUGMSG(("Retrieve state called: ret %d\n", ret));
 	return ( ret == OSSO_OK );
+}
+
+void XAP_UnixHildonApp::clearStateInfo()
+{
+	char c = 0;
+	osso_state_t osd;
+	osd.state_size = sizeof(char);
+	osd.state_data = (gpointer)& c;
+
+	osso_return_t ret = osso_state_write(m_pOsso, &osd);
+	UT_ASSERT_HARMLESS( ret == OSSO_OK );
 }
 
 
@@ -426,14 +524,32 @@ osso_hw_event_cb (osso_hw_state_t *state,
 
 	//signal save unsaved data received
 	if (state->save_unsaved_data_ind) {
-	    // TODO: can we just save the file? the user might not like that;
-	    // IMO we need to save to some kind of backup or tmp file.
+		if(XAP_UnixHildonApp::s_bInitDone)
+		{
+			UT_DEBUGMSG(("App ready, proceeding to save state ...\n"));
+			pApp->saveState(false);
+		}
+		else
+		{
+			UT_DEBUGMSG(("App not ready, no state to save ...\n"));
+		}
 	}
 
 	//signal memory low received
 	if (state->memory_low_ind)
 	{
 		UT_DEBUGMSG(("Low memory hw signal\n"));
+		if(XAP_UnixHildonApp::s_bInitDone)
+		{
+			UT_DEBUGMSG(("App ready, proceeding to save state ...\n"));
+			pApp->saveState(false);
+			pApp->setHibernate(true);
+			hildon_app_set_killable(HILDON_APP(pApp->getHildonAppWidget()), TRUE);
+		}
+		else
+		{
+			UT_DEBUGMSG(("App not ready, no state to save ...\n"));
+		}
 	}
 	
 
@@ -451,7 +567,7 @@ static gint osso_rpc_event_cb (const gchar     *interface,
                                gpointer         data,
                                osso_rpc_t      *retval)
 {
-	UT_DEBUGMSG(("osso_rpc_event_cb() called; interface %s, method %s\n",
+	UT_DEBUGMSG(("\n++++++++++++++ osso_rpc_event_cb() called; interface %s, method %s +++++++++++++++\n",
 				 interface, method));
 	
 	XAP_UnixHildonApp *pApp;
@@ -459,10 +575,38 @@ static gint osso_rpc_event_cb (const gchar     *interface,
 
 	pApp = static_cast<XAP_UnixHildonApp *>(data);
 
+	// this function can get called before the initialisation process is finished, so some
+	// of these events need to be queued up
 	if(!strcmp(method, "restored"))
 	{
-		pApp->retrieveState();
+		if(XAP_UnixHildonApp::s_bInitDone)
+		{
+			UT_DEBUGMSG(("App ready, proceeding to restore state ...\n"));
+			pApp->retrieveState();
+			XAP_UnixHildonApp::s_bRestoreNeeded = false;
+		}
+		else
+		{
+			UT_DEBUGMSG(("App not ready, queuing up state restoration ...\n"));
+			XAP_UnixHildonApp::s_bRestoreNeeded = true;
+		}
 	}
+	else if(!strcmp(method, "top_application"))
+	{
+		if(XAP_UnixHildonApp::s_bInitDone)
+		{
+			UT_DEBUGMSG(("App ready, proceeding to restore state ...\n"));
+			pApp->retrieveState();
+			XAP_UnixHildonApp::s_bRestoreNeeded = false;
+			pApp->setHibernate(false);
+		}
+		else
+		{
+			UT_DEBUGMSG(("App not ready, queuing up state restoration ...\n"));
+			XAP_UnixHildonApp::s_bRestoreNeeded = true;
+		}
+	}
+	
 	
 	return OSSO_OK;
 }

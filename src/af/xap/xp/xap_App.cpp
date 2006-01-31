@@ -1697,6 +1697,7 @@ bool XAP_App::retrieveState()
 			if(pDoc)
 			{
 				pDoc->clearFilename();
+				pDoc->forceDirty();
 				pFrame->updateTitle();
 			}
 		}

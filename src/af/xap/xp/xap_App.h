@@ -266,7 +266,7 @@ public:
 
 	bool                        saveState(bool bQuit);
 	bool                        retrieveState();
-	
+	virtual void                clearStateInfo(){};
 	
 protected:
 	virtual const char*			_findNearestFont(const char* pszFontFamily,
@@ -282,7 +282,7 @@ protected:
 
 	virtual bool                _saveState(XAP_StateData & sd);
 	virtual bool                _retrieveState(XAP_StateData & sd);
-	
+
 	XAP_Args *					m_pArgs;
 	const char *					m_szAppName;
 	const char *					m_szAbiSuiteLibDir;

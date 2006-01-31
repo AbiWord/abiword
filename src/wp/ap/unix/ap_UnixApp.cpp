@@ -1527,8 +1527,14 @@ int AP_UnixApp::main(const char * szAppName, int argc, const char ** argv)
 		// anymore, because doWindowlessArgs was supposed to bail already. -PL
 
 		if (pMyUnixApp->openCmdLineFiles(&Args))
+		{
+#ifdef HAVE_HILDON
+			s_bInitDone = true;
+			pMyUnixApp->processStartupQueue();
+#endif
 			// turn over control to gtk
 			gtk_main();
+		}
 		else
 		{
 			UT_DEBUGMSG(("DOM: not parsing command line or showing app\n"));

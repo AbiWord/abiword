@@ -49,7 +49,12 @@ public:
 
 	GtkWidget *  getHildonAppWidget() const;
 	GtkIMContext * getIMContext() const {return m_imContext;}
-	
+
+	void         processStartupQueue();
+	virtual void clearStateInfo();
+
+	void setHibernate(bool b){m_bHibernate = b;}
+	bool getHibernate(void)const {return m_bHibernate;}
 protected:
 	virtual bool _saveState(XAP_StateData & sd);
 	virtual bool _retrieveState(XAP_StateData & sd);
@@ -58,8 +63,11 @@ private:
 	osso_context_t *    m_pOsso;
 	mutable GtkWidget * m_pHildonAppWidget;
 	mutable GtkIMContext * m_imContext;
-
+	bool                   m_bHibernate;
 	
+public:
+	static bool s_bInitDone;
+	static bool s_bRestoreNeeded;
 };
 
 #endif /* XAP_UNIXHILDONAPP_H */
