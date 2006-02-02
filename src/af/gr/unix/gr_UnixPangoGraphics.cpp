@@ -1270,18 +1270,26 @@ GR_Font* GR_UnixPangoGraphics::_findFont(const char* pszFontFamily,
 	const char * pWeight = pszFontWeight;
 	const char * pStretch = pszFontStretch;
 	
-	if(*pszFontStyle == 'n')
+	if(pszFontStyle && *pszFontStyle == 'n')
 		pStyle = "";
+	else if(pszFontStyle == NULL)
+	        pStyle = "";
 
-	if(*pszFontVariant == 'n')
+	if(pszFontVariant && *pszFontVariant == 'n')
 		pVariant = "";
+	else if(pszFontVariant == NULL)
+	        pVariant = "";
 
-	if(*pszFontWeight == 'n')
+	if(pszFontWeight && *pszFontWeight == 'n')
 		pWeight = "";
+	else if(pszFontWeight == NULL)
+	        pWeight = "";
 
-	if(*pszFontStretch == 'n')
+	if(pszFontStretch && *pszFontStretch == 'n')
 		pStretch = "";
-	
+	else if(pszFontStretch == NULL)
+	        pStretch = "";
+
 	UT_String_sprintf(s, "%s, %s %s %s %s",
 					  pszFontFamily,
 					  pStyle,
