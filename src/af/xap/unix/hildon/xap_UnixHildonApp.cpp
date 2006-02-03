@@ -51,7 +51,8 @@ XAP_UnixHildonApp::XAP_UnixHildonApp(XAP_Args * pArgs, const char * szAppName)
 	  m_pOsso(NULL),
 	  m_pHildonAppWidget(NULL),
 	  m_imContext(NULL),
-	  m_bHibernate(false)
+	  m_bHibernate(false),
+	  m_bTopmost(false)
 {
 }
 
@@ -319,7 +320,8 @@ static void s_topmost_lose_cb(HildonApp *hildonapp, gpointer data)
 		pThis->saveState(false);
 		hildon_app_set_killable(HILDON_APP(pThis->getHildonAppWidget()), TRUE);
 	}
-	
+
+	pThis->setTopmost(false);
 }
 
 static void s_topmost_acquire_cb(HildonApp *hildonapp, gpointer data)
@@ -328,6 +330,8 @@ static void s_topmost_acquire_cb(HildonApp *hildonapp, gpointer data)
 	XAP_UnixHildonApp * pThis = static_cast<XAP_UnixHildonApp*>(data);
 	UT_return_if_fail( pThis );
 
+	pThis->setTopmost(true);
+	
 	const char * pUntitled = "Untitled%d";
 	const XAP_StringSet * pSS = pThis->getStringSet();
 	if(pSS)
@@ -542,9 +546,14 @@ osso_hw_event_cb (osso_hw_state_t *state,
 		if(XAP_UnixHildonApp::s_bInitDone)
 		{
 			UT_DEBUGMSG(("App ready, proceeding to save state ...\n"));
-			pApp->saveState(false);
 			pApp->setHibernate(true);
-			hildon_app_set_killable(HILDON_APP(pApp->getHildonAppWidget()), TRUE);
+
+			// if we are not the active application, save state
+			if(!pApp->isTopmost())
+			{
+				pApp->saveState(false);
+				hildon_app_set_killable(HILDON_APP(pApp->getHildonAppWidget()), TRUE);
+			}
 		}
 		else
 		{

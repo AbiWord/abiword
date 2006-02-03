@@ -55,19 +55,25 @@ public:
 
 	void setHibernate(bool b){m_bHibernate = b;}
 	bool getHibernate(void)const {return m_bHibernate;}
+
+	void setTopmost(bool b) {m_bTopmost = b;}
+	bool isTopmost() const {return m_bTopmost;}
+	
 protected:
 	virtual bool _saveState(XAP_StateData & sd);
 	virtual bool _retrieveState(XAP_StateData & sd);
 
 private:
-	osso_context_t *    m_pOsso;
-	mutable GtkWidget * m_pHildonAppWidget;
+	osso_context_t *       m_pOsso;
+	mutable GtkWidget *    m_pHildonAppWidget;
 	mutable GtkIMContext * m_imContext;
 	bool                   m_bHibernate;
+	bool                   m_bTopmost;
 	
 public:
 	static bool s_bInitDone;
 	static bool s_bRestoreNeeded;
+
 };
 
 #endif /* XAP_UNIXHILDONAPP_H */
