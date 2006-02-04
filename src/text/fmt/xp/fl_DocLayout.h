@@ -173,6 +173,10 @@ public:
 		{
 			m_toSpellCheckHead = h;
 		}
+	fl_BlockLayout *spellQueueTail(void) const
+		{
+			return m_toSpellCheckTail;
+		}
 	void        setSpellQueueTail(fl_BlockLayout *t)
 		{
 			m_toSpellCheckTail = t;

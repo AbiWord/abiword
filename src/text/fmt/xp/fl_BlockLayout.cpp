@@ -10561,7 +10561,7 @@ void fl_BlockLayout::dequeueFromSpellCheck(void)
 		m_nextToSpell->m_prevToSpell = m_prevToSpell;
 	}
 	else {
-		UT_ASSERT(m_pLayout->speelQueueTail() == this);
+		UT_ASSERT(m_pLayout->spellQueueTail() == this);
 		m_pLayout->setSpellQueueTail(m_prevToSpell);
 	}
 	m_nextToSpell = m_prevToSpell = NULL;
