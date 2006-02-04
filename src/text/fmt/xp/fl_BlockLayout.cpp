@@ -10553,15 +10553,13 @@ void fl_BlockLayout::dequeueFromSpellCheck(void)
 	if (m_prevToSpell != NULL) {
 		m_prevToSpell->m_nextToSpell = m_nextToSpell;
 	}
-	else {
-		UT_ASSERT(m_pLayout->spellQueueHead() == this);
+	else if(m_pLayout->spellQueueHead() == this) {
 		m_pLayout->setSpellQueueHead(m_nextToSpell);
 	}
 	if (m_nextToSpell != NULL) {
 		m_nextToSpell->m_prevToSpell = m_prevToSpell;
 	}
-	else {
-		UT_ASSERT(m_pLayout->spellQueueTail() == this);
+	else if (m_pLayout->spellQueueTail() == this) {
 		m_pLayout->setSpellQueueTail(m_prevToSpell);
 	}
 	m_nextToSpell = m_prevToSpell = NULL;
