@@ -4412,7 +4412,7 @@ void s_RTF_ListenerWriteDoc::_rtf_docfmt(void)
 
 	if (landscape)
 		m_pie->_rtf_keyword("landscape");
-	m_pie->_rtf_keyword("widowctl");	// enable widow and orphan control
+	m_pie->_rtf_keyword("widowctrl");	// enable widow and orphan control
 
 	// TODO <docfmt> -- linked styles
 	// TODO <docfmt> -- compatibility options
