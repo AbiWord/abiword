@@ -245,11 +245,21 @@ bool EV_Win32Toolbar::toolbarEvent(XAP_Toolbar_Id id,
 #endif
 
 WHICHPROC s_lpfnDefCombo; 
-WHICHPROC s_lpfnDefComboEdit; 
+WHICHPROC s_lpfnDefToolBar;
 
 
 #define COMBO_BUF_LEN 256
 
+
+
+LRESULT CALLBACK EV_Win32Toolbar::_ToolBarWndProc (HWND hWnd, UINT uMessage, WPARAM wParam, LPARAM lParam)
+{
+	if (uMessage == WM_CTLCOLORSTATIC) {
+		return (LRESULT) GetSysColorBrush (COLOR_WINDOW);
+	}
+	
+	return (CallWindowProc(s_lpfnDefToolBar, hWnd, uMessage, wParam, lParam));
+}
 
 LRESULT CALLBACK EV_Win32Toolbar::_ComboWndProc( HWND hWnd, UINT uMessage, WPARAM wParam, LPARAM lParam)
 {
@@ -540,8 +550,11 @@ bool EV_Win32Toolbar::synthesize(void)
 
 	UT_ASSERT(m_hwnd);
 
-	// override the window procedure 	
+	// override the window procedure 		
+	s_lpfnDefToolBar = (WHICHPROC)GetWindowLong(m_hwnd, GWL_WNDPROC);
+	SetWindowLong(m_hwnd, GWL_WNDPROC, (LONG)_ToolBarWndProc);
 	SetWindowLong(m_hwnd, GWL_USERDATA, (LONG)this);
+
 
 	SendMessage(m_hwnd, TB_BUTTONSTRUCTSIZE, (WPARAM) sizeof(TBBUTTON), 0);  
 
