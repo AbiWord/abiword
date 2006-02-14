@@ -87,6 +87,7 @@ public:
 	static int CALLBACK			s_sheetWndProc(HWND hWnd, UINT msg, WPARAM wParam,LPARAM lParam);	
 	virtual	void				_onInitDialog(HWND hwnd){};	
 	virtual void 				destroy(void);
+	virtual void 				cleanup(void);
 	HWND						getHandle(){return m_hWnd;}
 
 	void						setCallBack(PFNPROPSHEETCALLBACK pCallback) {m_pCallback=pCallback;};

@@ -110,6 +110,7 @@ void AP_Win32Dialog_FormatTOC::destroy(void)
 
 void AP_Win32Dialog_FormatTOC::activate(void)
 {	  	
+
 	
 }	
 
@@ -271,9 +272,8 @@ void AP_Win32Dialog_FormatTOC_Sheet::_onInitDialog(HWND hwnd)
 }
 
 
-void AP_Win32Dialog_FormatTOC_Sheet::destroy(void) 
-{
-	XAP_Win32PropertySheet::destroy ();
+void AP_Win32Dialog_FormatTOC_Sheet::cleanup(void) 
+{		
 	getContainer()->modeless_cleanup ();
 }
 
