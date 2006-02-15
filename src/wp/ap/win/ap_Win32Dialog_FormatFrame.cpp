@@ -115,6 +115,13 @@ BOOL CALLBACK AP_Win32Dialog_FormatFrame::s_dlgProc(HWND hWnd,UINT msg,WPARAM wP
 		pThis = (AP_Win32Dialog_FormatFrame *)lParam;
 		SWL(hWnd,lParam);		
 		return pThis->_onInitDialog(hWnd,wParam,lParam);
+
+	case WM_DESTROY:
+	{
+		pThis = GWL(hWnd);
+		pThis->finalize();	
+		return 0;
+	}
 	
 	case WM_DRAWITEM:	
 	{
@@ -438,8 +445,7 @@ void AP_Win32Dialog_FormatFrame::setSensitivity(bool bSens)
 void AP_Win32Dialog_FormatFrame::destroy(void) 
 {
 	finalize();	
-	DestroyWindow(m_hwndDlg);
-	modeless_cleanup();
+	DestroyWindow(m_hwndDlg);	
 }
 
 
