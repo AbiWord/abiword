@@ -273,10 +273,9 @@ void AP_UnixDialog_Options::_constructWindowContents (GladeXML *xml)
 
 		// User Interface
 
-#ifndef HAVE_HILDON
 		tmp = WID ("lblUserInterface");
 		localizeLabelMarkup (tmp, pSS, AP_STRING_ID_DLG_Options_Label_UI);
-#endif
+		
 		m_checkbuttonViewCursorBlink = WID ("chkCursorBlink");
 		localizeButtonUnderline (m_checkbuttonViewCursorBlink, pSS,
 					AP_STRING_ID_DLG_Options_Label_ViewCursorBlink);
@@ -457,7 +456,7 @@ GtkWidget* AP_UnixDialog_Options::_constructWindow ()
 	glade_path += "/ap_UnixHildonDialog_Options.glade";
 #else
 	glade_path += "/ap_UnixDialog_Options.glade";
-#endif	
+#endif
 
 	// Update member variables with the important widgets that
 	// might need to be queried or altered later.
@@ -510,7 +509,7 @@ GtkWidget* AP_UnixDialog_Options::_constructWindow ()
 					  G_CALLBACK (s_control_changed),
 					  static_cast<gpointer>(this));
 	}
-
+	
 	return mainWindow;
 }
 
