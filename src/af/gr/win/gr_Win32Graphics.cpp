@@ -1196,7 +1196,6 @@ void GR_Win32Graphics::drawImage(GR_Image* pImg, UT_sint32 xDest, UT_sint32 yDes
 	
 	if(!iRes)
 	{
-		SetStretchBltMode(m_hdc, COLORONCOLOR);
 		iRes = StretchDIBits(m_hdc,
 							 xDest, yDest,
 							 pImg->getDisplayWidth(), pImg->getDisplayHeight(),
