@@ -57,8 +57,7 @@ bool AP_Win32Prefs::loadBuiltinPrefs(void)
 		bool bFallBackLocale = false;
 		
 		if (UT_getISO3166Country(&szLocaleInfo[3]))
-			szLocaleInfo[2] = '-';			
-		
+			szLocaleInfo[2] = '-';
 
 		UT_DEBUGMSG(("Prefs: Using LOCALE info from environment [%s]\n", szLocaleInfo));
 		
@@ -89,7 +88,6 @@ bool AP_Win32Prefs::loadBuiltinPrefs(void)
 		UT_ASSERT_HARMLESS(UT_SHOULD_NOT_HAPPEN);
 	}
 
-	m_builtinScheme->setValue( AP_PREF_KEY_StringSet, "ca-ES");
 	return ret;
 }
 
