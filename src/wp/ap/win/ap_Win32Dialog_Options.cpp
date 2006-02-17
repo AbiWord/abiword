@@ -774,6 +774,7 @@ void AP_Win32Dialog_Options_Spelling::_onInitDialog()
 	_DS2(OPTIONS_LBL_IGNOREDWORD,			DLG_Options_Label_SpellIgnoredWord);
 	_DS2(OPTIONS_BTN_IGNOREDRESET,			DLG_Options_Btn_IgnoreReset);
 	_DS2(OPTIONS_BTN_IGNOREDEDIT,			DLG_Options_Btn_IgnoreEdit);
+	_DS2(OPTIONS_CHK_GrammarCheck,			DLG_Options_Label_GrammarCheck);
 
 	// TODO need to populate values in the _COMBO_CUSTOMDICT
 	HWND hwndDict = GetDlgItem(getHandle(), AP_RID_DIALOG_OPTIONS_COMBO_CUSTOMDICT);
