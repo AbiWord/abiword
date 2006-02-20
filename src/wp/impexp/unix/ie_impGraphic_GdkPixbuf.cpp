@@ -116,25 +116,6 @@ UT_Error IE_ImpGraphic_GdkPixbuf::importGraphic(UT_ByteBuf * pBB, FG_Graphic ** 
 }
 
 /*!
- * Convert the data contained in the file to into a PNG-based 
- * FG_Graphic type
- */
-UT_Error IE_ImpGraphic_GdkPixbuf::importGraphic(const char * szFilename, FG_Graphic ** ppfg)
-{
-	UT_ByteBuf bb;
-
-	if ( bb.insertFromFile(0, szFilename) )
-		{
-			return importGraphic ( &bb, ppfg ) ;
-		}
-	else
-		{
-			*ppfg = 0;
-			return UT_ERROR;
-		}
-}
-
-/*!
  * Convert an image byte buffer into a PNG byte buffer
  */
 UT_Error IE_ImpGraphic_GdkPixbuf::convertGraphic(UT_ByteBuf* pBB,
