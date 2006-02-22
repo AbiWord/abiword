@@ -372,6 +372,7 @@ dcl(LANG_IT_IT, 							"Italian (Italy)")
 dcl(LANG_JA_JP, 							"Japanese")
 dcl(LANG_KN_IN,                             "Kannada")
 dcl(LANG_KO_KR, 							"Korean")
+dcl(LANG_KO, 								"Korean")
 dcl(LANG_KU, 								"Kurdish")
 dcl(LANG_LO_LA,                             "Lao")
 dcl(LANG_LA_IT, 							"Latin (Renaissance)")	// Is _IT the right thing here?
