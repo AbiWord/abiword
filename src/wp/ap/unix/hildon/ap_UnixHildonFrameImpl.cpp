@@ -91,13 +91,17 @@ void AP_UnixHildonFrameImpl::_createTopLevelWindow(void)
 	
 	if(m_iFrameMode == XAP_NormalFrame)
 	{
-		m_wTopLevelWindow = hildon_appview_new(XAP_App::getApp()->getApplicationTitleForTitleBar());
+		m_wTopLevelWindow =
+			hildon_appview_new(XAP_App::getApp()->getApplicationTitleForTitleBar());
 		
-		// This should not be needed -- autoregistration is turned On in getHildonAppWidget();
+		// This should not be needed -- autoregistration is turned On in
+		// getHildonAppWidget();
 		// 
-		// hildon_app_register_view(HILDON_APP(pHildonAppWidget), (gpointer*)m_wTopLevelWindow);
+		// hildon_app_register_view(HILDON_APP(pHildonAppWidget),
+		// (gpointer*)m_wTopLevelWindow);
 		
-		hildon_app_set_appview(HILDON_APP(pHildonAppWidget), HILDON_APPVIEW(m_wTopLevelWindow));
+		hildon_app_set_appview(HILDON_APP(pHildonAppWidget),
+							   HILDON_APPVIEW(m_wTopLevelWindow));
 				
 		gtk_widget_show_all(GTK_WIDGET(pHildonAppWidget));		
 		
@@ -110,10 +114,10 @@ void AP_UnixHildonFrameImpl::_createTopLevelWindow(void)
 	g_object_set_data(G_OBJECT(m_wTopLevelWindow), "user_data", this); 
 
 	
-	// we do not connect any focus or kbd related methods here, because those act on the
-	// HildonApp widget -- we register callbacks there and then forward the signals into
-	// the normal callbacks that XAP_UnixFrameImpl provides. Tomas
-	
+	// we do not connect any focus or kbd related methods here, because those
+	// act on the HildonApp widget -- we register callbacks there and then
+	// forward the signals into the normal callbacks that XAP_UnixFrameImpl
+	// provides. Tomas
 	
 	// create a VBox inside it.
 	m_wVBox = gtk_vbox_new(FALSE,0);
@@ -123,25 +127,28 @@ void AP_UnixHildonFrameImpl::_createTopLevelWindow(void)
 
 	if (m_iFrameMode != XAP_NoMenusWindowLess) {
 		// synthesize a menu from the info in our base class.
-		m_pUnixMenu = new EV_UnixMenuBar(static_cast<XAP_UnixApp*>(XAP_App::getApp()), getFrame(), m_szMenuLayoutName,
-										 m_szMenuLabelSetName);
+		m_pUnixMenu =
+			new EV_UnixMenuBar(static_cast<XAP_UnixApp*>(XAP_App::getApp()),
+							   getFrame(), m_szMenuLayoutName,
+							   m_szMenuLabelSetName);
+		
 		UT_ASSERT(m_pUnixMenu);
 		bResult = m_pUnixMenu->synthesizeMenuBar();
 		UT_ASSERT(bResult);
 	}
 
 	// create a toolbar instance for each toolbar listed in our base class.
-	// TODO for some reason, the toolbar functions require the TLW to be
-	// TODO realized (they reference m_wTopLevelWindow->window) before we call them.
+	// TODO for some reason, the toolbar functions require the TLW to be TODO
+	// realized (they reference m_wTopLevelWindow->window) before we call them.
 
 	if(m_iFrameMode == XAP_NormalFrame)
 		gtk_widget_realize(m_wTopLevelWindow);
 
-	// we do not create an IM context for the hildon frames, because all the frames have
-	// to share the same context. So we fill the m_imContext member with reference to the
-	// context allocated by XAP_UnixHildonApp and increase its reference count to avoid it
-	// being destroyed when this frame is removed (~XAP_UnixFrameImpl() calls
-	// g_object_unref() on it)
+	// we do not create an IM context for the hildon frames, because all the
+	// frames have to share the same context. So we fill the m_imContext member
+	// with reference to the context allocated by XAP_UnixHildonApp and increase
+	// its reference count to avoid it being destroyed when this frame is
+	// removed (~XAP_UnixFrameImpl() calls g_object_unref() on it)
 	m_imContext = pHApp->getIMContext();
 	g_object_ref (G_OBJECT (m_imContext));
 	
