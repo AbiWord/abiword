@@ -121,8 +121,8 @@ void AP_Dialog_Options::_storeWindowData(void)
 
 	Save_Pref_Bool( pPrefsScheme, AP_PREF_KEY_CursorBlink, _gatherViewCursorBlink() );
 	
-// Not implemented for UNIX. No need for it.
-#if !defined(XP_UNIX_TARGET_GTK) && !defined(XP_TARGET_COCOA)
+// Not implemented for UNIX or Win32. No need for it.
+#if !defined(XP_UNIX_TARGET_GTK) && !defined(XP_TARGET_COCOA) && !defined (WIN32) 
 	Save_Pref_Bool( pPrefsScheme, AP_PREF_KEY_RulerVisible, _gatherViewShowRuler() );
 	UT_uint32 i;
 	for (i = 0; i < m_pApp->getToolbarFactory()->countToolbars(); i++) {
@@ -169,7 +169,7 @@ void AP_Dialog_Options::_storeWindowData(void)
 	// If we changed whether the ruler is to be visible
 	// or hidden, then update the current window:
 	// (If we didn't change anything, leave it alone)
-#if !defined(XP_UNIX_TARGET_GTK) && !defined(XP_TARGET_COCOA)
+#if !defined(XP_UNIX_TARGET_GTK) && !defined(XP_TARGET_COCOA) && !defined (WIN32) 
 	if ( _gatherViewShowRuler() != pFrameData->m_bShowRuler )
 	{
 		pFrameData->m_bShowRuler = _gatherViewShowRuler() ;
@@ -329,7 +329,7 @@ void AP_Dialog_Options::_storeDataForControl (tControl id)
 			break;
 
 		case id_CHECK_VIEW_SHOW_RULER:
-#if !defined(XP_UNIX_TARGET_GTK) && !defined(XP_TARGET_COCOA)
+#if !defined(XP_UNIX_TARGET_GTK) && !defined(XP_TARGET_COCOA) && !defined (WIN32) 
 			{
 				bool tmpbool = _gatherViewShowRuler();
 				Save_Pref_Bool (pPrefsScheme, AP_PREF_KEY_RulerVisible, tmpbool);
@@ -353,7 +353,7 @@ void AP_Dialog_Options::_storeDataForControl (tControl id)
 					_gatherViewCursorBlink());
 
 		case id_CHECK_VIEW_SHOW_STATUS_BAR:
-#if !defined(XP_UNIX_TARGET_GTK) && !defined(XP_TARGET_COCOA)
+#if !defined(XP_UNIX_TARGET_GTK) && !defined(XP_TARGET_COCOA) && !defined (WIN32) 
 			{
 				bool tmpbool = _gatherViewShowStatusBar();
 				Save_Pref_Bool (pPrefsScheme, AP_PREF_KEY_StatusBarVisible, tmpbool);
@@ -509,7 +509,7 @@ void AP_Dialog_Options::_populateWindowData(void)
 		_setViewRulerUnits (UT_determineDimension(pszBuffer));
 
 
-#if !defined(XP_UNIX_TARGET_GTK) && !defined(XP_TARGET_COCOA)
+#if !defined(XP_UNIX_TARGET_GTK) && !defined(XP_TARGET_COCOA) && !defined (WIN32) 
 	if (pPrefs->getPrefsValueBool((XML_Char*)AP_PREF_KEY_RulerVisible,&b))
 		_setViewShowRuler (b);
 	UT_uint32 i;

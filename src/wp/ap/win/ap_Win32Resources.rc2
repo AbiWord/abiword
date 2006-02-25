@@ -35,10 +35,9 @@
 #define AP_RID_DIALOG_PARA_TAB1					205
 #define AP_RID_DIALOG_PARA_TAB2					206
 #define AP_RID_DIALOG_OPTIONS					207
-#define AP_RID_DIALOG_OPT_TOOLBARS				208		// tab-sub-dlg
 #define AP_RID_DIALOG_OPT_SPELL					209		// tab-sub-dlg
-#define AP_RID_DIALOG_OPT_LAYOUT				210		// tab-sub-dlg
-#define AP_RID_DIALOG_OPT_PREF					211		// tab-sub-dlg
+#define AP_RID_DIALOG_OPT_GENERAL				210		// tab-sub-dlg
+#define AP_RID_DIALOG_OPT_DOCUMENTS				211		// tab-sub-dlg
 #define AP_RID_DIALOG_DATETIME					212
 #define AP_RID_DIALOG_FIELD						213
 #define AP_RID_DIALOG_WORDCOUNT					214

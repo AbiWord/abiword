@@ -28,7 +28,8 @@
 
 class UT_String;
 class AP_Win32Dialog_Options;
-enum PSH_PAGES {PG_TOOLBARS, PG_SPELL, PG_LANG, PG_PREF, PG_LAYOUT};
+
+enum PSH_PAGES {PG_GENERAL, PG_DOCUMENT, PG_SPELL};
 
 /*
 	Sheet
@@ -48,33 +49,9 @@ public:
 private:		
 	
 		AP_Win32Dialog_Options*	m_pParent;
-};
-
-/*
-	Toolbar page
-*/
-class AP_Win32Dialog_Options_Toolbars: public XAP_Win32PropertyPage
-{
-	
-public:		
-								AP_Win32Dialog_Options_Toolbars();
-								~AP_Win32Dialog_Options_Toolbars();	
-
-	void						setContainer(AP_Win32Dialog_Options*	pParent){m_pParent=pParent;};
-	AP_Win32Dialog_Options*		getContainer(){return m_pParent;};
-	void						transferData();
-	static int CALLBACK			s_pageWndProc(HWND hWnd, UINT msg, WPARAM wParam,   LPARAM lParam);	
-	
-private:
-
-	void						_onInitDialog();
-	void						_onKillActive(){};
-	void						_onCommand(HWND hWnd, WPARAM wParam, LPARAM lParam);
 		
-	AP_Win32Dialog_Options*		m_pParent;	
-	int							m_nCentered;
-	
 };
+
 
 /*
 	Spelling page
@@ -97,19 +74,20 @@ private:
 	void						_onKillActive(){};
 	void						_onCommand(HWND hWnd, WPARAM wParam, LPARAM lParam);
 		
-	AP_Win32Dialog_Options*		m_pParent;	
+	AP_Win32Dialog_Options*		m_pParent;		
 	
 };
 
+
 /*
-	Lang
+	General page
 */
-class AP_Win32Dialog_Options_Lang: public XAP_Win32PropertyPage
+class AP_Win32Dialog_Options_General: public XAP_Win32PropertyPage
 {
 	
 public:		
-								AP_Win32Dialog_Options_Lang();
-								~AP_Win32Dialog_Options_Lang();	
+								AP_Win32Dialog_Options_General();
+								~AP_Win32Dialog_Options_General();	
 
 	void						setContainer(AP_Win32Dialog_Options*	pParent){m_pParent=pParent;};
 	AP_Win32Dialog_Options*		getContainer(){return m_pParent;};
@@ -122,45 +100,21 @@ private:
 	void						_onKillActive(){};
 	void						_onCommand(HWND hWnd, WPARAM wParam, LPARAM lParam);
 		
-	AP_Win32Dialog_Options*		m_pParent;	
+	AP_Win32Dialog_Options*		m_pParent;
+	int							m_nCentered;
 	UT_Vector*					m_pVecUILangs;
 	
 };
 
 /*
-	Layout page
+	Document page
 */
-class AP_Win32Dialog_Options_Layout: public XAP_Win32PropertyPage
-{
-	
-public:		
-								AP_Win32Dialog_Options_Layout();
-								~AP_Win32Dialog_Options_Layout();	
-
-	void						setContainer(AP_Win32Dialog_Options*	pParent){m_pParent=pParent;};
-	AP_Win32Dialog_Options*		getContainer(){return m_pParent;};
-	void						transferData();
-	static int CALLBACK			s_pageWndProc(HWND hWnd, UINT msg, WPARAM wParam,   LPARAM lParam);
-	
-private:
-
-	void						_onInitDialog();
-	void						_onKillActive(){};
-	void						_onCommand(HWND hWnd, WPARAM wParam, LPARAM lParam);
-		
-	AP_Win32Dialog_Options*		m_pParent;	
-	
-};
-
-/*
-	Preferences page
-*/
-class AP_Win32Dialog_Options_Pref: public XAP_Win32PropertyPage
+class AP_Win32Dialog_Options_Document: public XAP_Win32PropertyPage
 {
 	
 public:	
-								AP_Win32Dialog_Options_Pref();
-								~AP_Win32Dialog_Options_Pref();	
+								AP_Win32Dialog_Options_Document();
+								~AP_Win32Dialog_Options_Document();	
 
 	void						setContainer(AP_Win32Dialog_Options*	pParent){m_pParent=pParent;};
 	AP_Win32Dialog_Options*		getContainer(){return m_pParent;};
@@ -192,22 +146,20 @@ public:
 
 	static XAP_Dialog * 	static_constructor(XAP_DialogFactory *, XAP_Dialog_Id id);
 	
-	HWND					getPage(PSH_PAGES page);
-	void 					_initializeTransperentToggle(void);
+	HWND					getPage(PSH_PAGES page);	
 	XAP_DialogFactory * 	getDialogFactory() {return	m_pDialogFactory;};
 	XAP_Frame *				getFrame() {return	m_pFrame;};
 	void					checkLanguageChange();	
+	HFONT					getBoldFontHandle () {return m_hFont;}
 	
  protected:
- 
- 	AP_Win32Dialog_Options_Toolbars		m_toolbars;
- 	AP_Win32Dialog_Options_Spelling		m_spelling;
- 	AP_Win32Dialog_Options_Layout		m_layout; 	
- 	AP_Win32Dialog_Options_Lang			m_lang;
- 	AP_Win32Dialog_Options_Pref			m_pref;
+ 	
+	AP_Win32Dialog_Options_General		m_general; 
+	AP_Win32Dialog_Options_Document		m_document;
+ 	AP_Win32Dialog_Options_Spelling		m_spelling; 	 		
 	UT_String							m_curLang;
 	BOOL								m_langchanged;
- 	
+	HFONT								m_hFont; 	
 
 	virtual void _controlEnable( tControl id, bool value );
 	virtual void _initEnableControlsPlatformSpecific();
@@ -222,34 +174,33 @@ public:
 	SET_GATHER			(SpellMainOnly, 	bool );
 	SET_GATHER			(SpellUppercase,	bool );
 	SET_GATHER			(SpellNumbers,		bool );
-
-	SET_GATHER			(GrammarCheck,		bool);
-
+	SET_GATHER			(GrammarCheck,		bool); 
 	SET_GATHER			(ShowSplash,		bool );
-
 	SET_GATHER			(SmartQuotesEnable, bool );	
-	SET_GATHER			(PrefsAutoSave, 	bool );
-
-	SET_GATHER			(ViewShowRuler, 	bool );
-
-	
-	virtual bool _gatherViewShowToolbar(UT_uint32 t);
-	virtual void _setViewShowToolbar(UT_uint32 row, bool b);
-
-	SET_GATHER			(ViewShowStatusBar, bool );
 	SET_GATHER			(ViewRulerUnits,	UT_Dimension);
 	SET_GATHER			(ViewCursorBlink,	bool);
-
-	SET_GATHER			(ViewAll,			bool );
-	SET_GATHER			(ViewHiddenText,	bool );
-	SET_GATHER			(ViewUnprintable,	bool );
 	SET_GATHER			(AllowCustomToolbars, bool);
 	SET_GATHER			(AutoLoadPlugins, bool);
-
 	SET_GATHER			(OtherDirectionRtl, bool );
 	SET_GATHER			(OtherHebrewContextGlyphs,bool );
-
 	SET_GATHER			(AutoSaveFile, bool);
+	
+	virtual bool _gatherViewShowToolbar(UT_uint32 t) { UT_ASSERT(UT_SHOULD_NOT_HAPPEN); return true;}
+	virtual void _setViewShowToolbar(UT_uint32 row, bool b) {}
+
+
+	// unimplemented UI-wise. We need dummy implementations to satisfy the XP framework, though
+
+	SET_GATHER			(PrefsAutoSave,			bool);
+	SET_GATHER			(ViewShowRuler,			bool);
+	SET_GATHER			(ViewShowStatusBar,		bool);
+	SET_GATHER			(ViewAll,			bool);
+	SET_GATHER			(ViewHiddenText,		bool);
+	SET_GATHER			(ViewUnprintable,		bool);
+	SET_GATHER			(EnableSmoothScrolling,		bool);
+
+		
+	
 	virtual void _gatherAutoSaveFilePeriod(UT_String &stRetVal);
 	virtual void _setAutoSaveFilePeriod(const UT_String &stPeriod);
 	virtual void _gatherAutoSaveFileExt(UT_String &stRetVal);
@@ -260,7 +211,17 @@ public:
 
 	SET_GATHER			(NotebookPageNum,	int );
 	SET_GATHER          (LanguageWithKeyboard, bool);
-	SET_GATHER          (DirMarkerAfterClosingParenthesis, bool);
+
+	// Dummy
+	bool			m_boolEnableSmoothScrolling;
+	bool			m_boolPrefsAutoSave;
+	bool			m_boolViewAll;
+	bool			m_boolViewHiddenText;
+	bool			m_boolViewShowRuler;
+	bool			m_boolViewShowStatusBar;
+	bool			m_boolViewUnprintable;
+
+	
 #undef SET_GATHER
 
  protected:
