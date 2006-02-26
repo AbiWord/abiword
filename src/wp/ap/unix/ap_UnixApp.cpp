@@ -1473,9 +1473,10 @@ int AP_UnixApp::main(const char * szAppName, int argc, const char ** argv)
 	
     // Step 2: Handle all non-window args.
     
-    if (!Args.doWindowlessArgs()) {
+	bool windowlessArgsWereSuccessful = true;
+    if (!Args.doWindowlessArgs(windowlessArgsWereSuccessful )) {
 		delete pMyUnixApp;
-		return 0;
+		return (windowlessArgsWereSuccessful ? 0 : -1);
 	}
 
 	if (have_display) {
@@ -1606,8 +1607,10 @@ void AP_UnixApp::initPopt (AP_Args * Args)
  * A callback for AP_Args's doWindowlessArgs call which handles
  * platform-specific windowless args.
  */
-bool AP_UnixApp::doWindowlessArgs(const AP_Args *Args)
+bool AP_UnixApp::doWindowlessArgs(const AP_Args *Args, bool & bSuccess)
 {
+	bSuccess = true;
+
 	if (Args->m_sGeometry)
     {
 		// [--geometry <X geometry string>]
@@ -1673,6 +1676,7 @@ bool AP_UnixApp::doWindowlessArgs(const AP_Args *Args)
 	    {
 			// couldn't load document
 			fprintf(stderr, "Error: no file to print!\n");
+			bSuccess = false;
 	    }
 
 		return false;
@@ -1731,11 +1735,13 @@ bool AP_UnixApp::doWindowlessArgs(const AP_Args *Args)
 	    {
 			// couldn't load document
 			fprintf(stderr, "Error: no file to print!\n");
+			bSuccess = false;
 	    }
 		
 		return false;
 #else
 		fprintf(stderr,"Only works in GNOME build \n");
+		bSuccess = false;
 #endif
 	}
 
@@ -1767,6 +1773,7 @@ bool AP_UnixApp::doWindowlessArgs(const AP_Args *Args)
 		if(!bFound)
 		{
 			fprintf(stderr, "Plugin %s not found or loaded \n",szRequest);
+			bSuccess = false;
 			return false;
 		}
 //
@@ -1780,6 +1787,7 @@ bool AP_UnixApp::doWindowlessArgs(const AP_Args *Args)
 		{
 			fprintf(stderr, "Plugin %s invoke method %s not found \n",
 					Args->m_sPlugin,evExecute);
+			bSuccess = false;
 			return false;
 		}
 //
