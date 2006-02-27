@@ -107,8 +107,14 @@ libWpAp_xp_a_SOURCES=	ap_Args.cpp		\
 		ap_wp_splash.cpp		\
 		ap_wp_sidebar.cpp
 
+
+if CROSS_COMPILING
+CDUMP=
+CDUMPAPP=$(top_builddir)/src/tools/cdump/xp/cdump.pl
+else
 CDUMP=$(top_srcdir)/src/tools/cdump/xp/cdump.c
 CDUMPAPP=$(top_builddir)/src/tools/cdump/xp/cdump
+endif
 
 ap_wp_splash.cpp: $(CDUMP) $(srcdir)/splash.png
 	$(CDUMPAPP) $(srcdir)/splash.png g_pngSplash > ap_wp_splash.cpp
