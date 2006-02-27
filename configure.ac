@@ -76,6 +76,15 @@ with_cocoa=false
 with_qnx=false
 with_win32=false
 
+# when cross-compiling must have perl for cdump.pl
+if test x$cross_compiling = xyes; then
+AC_MSG_CHECKING([for perl])
+if test "x$(which perl)" = "x"; then
+   AC_MSG_ERROR([not found. Must have perl when cross-compiling.])
+fi
+AC_MSG_RESULT([found])
+fi
+
 # check for hildon and print first, so we can handle gnomeprint dependency correcly
 ABI_HILDON_QUICK
 
@@ -470,6 +479,7 @@ dnl due to stupid m4 I had to double the [ and ] in the regexp
 fi
 AC_SUBST(VALGRIND)
 
+AM_CONDITIONAL(CROSS_COMPILING, test x$cross_compiling = xyes)
 
 AC_CONFIG_FILES([GNUmakefile
  src/GNUmakefile
@@ -624,6 +634,11 @@ esac
 case "$xft" in
      "true" )
 	AC_MSG_RESULT([Configured with XFT support.]) ;;
+esac
+
+case "$cross_compiling" in
+     "yes" )
+	AC_MSG_RESULT([Cross compiling -- not using binary custom tools.]) ;;
 esac
 
 echo " "
