@@ -27,6 +27,8 @@
 // a static buffer without checking bounds), so we implement our own assert dialog, which
 // is even cooler. TF
 
+#include "ut_types.h"
+
 #ifdef NDEBUG
 #  define UT_ASSERT(x)
 #else
