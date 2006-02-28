@@ -1654,18 +1654,39 @@ bool AP_UnixApp::doWindowlessArgs(const AP_Args *Args, bool & bSuccess)
 				conv.setImpProps (Args->m_impProps);
 			if (Args->m_expProps)
 				conv.setExpProps (Args->m_expProps);
-#if 0
-			PS_Graphics pGraphics ((Args->m_sPrintTo[0] == '|' ? Args->m_sPrintTo+1 : Args->m_sPrintTo),
-								   Args->m_sPrintTo, 
-								   pMyUnixApp->getApplicationName(), pMyUnixApp->getFontManager(),
-								   (Args->m_sPrintTo[0] != '|'));
-#endif
-			PS_GraphicsAllocInfo ai((Args->m_sPrintTo[0] == '|' ? Args->m_sPrintTo+1 : Args->m_sPrintTo),
-								 Args->m_sPrintTo, 
-								 pMyUnixApp->getApplicationName(), pMyUnixApp->getFontManager(),
-								 (Args->m_sPrintTo[0] != '|'));
+
+			/*
+			   if we are running with the Pango graphics as default, we do
+			   not create the XAP font manager, but the PS graphics which we
+			   use here needs it, so we have to make sure it is there
+
+			   When/if we change this to using gnomeprint, this should be
+			   removed
+			*/
+			if(!getFontManager())
+			{
+				/*
+				   need to temporarily set the Unix graphics as default to
+				   force the font loading
+				*/
+				GR_GraphicsFactory * pGF = getGraphicsFactory();
+				UT_return_val_if_fail( pGF, false );
+
+				UT_uint32 iGrId = pGF->getDefaultClass(true /*screen*/);
+				pGF->registerAsDefault(GRID_UNIX, true);
+				_loadFonts();
+				pGF->registerAsDefault(iGrId, true);
+			}
 			
-			PS_Graphics * pGraphics = (PS_Graphics*) XAP_App::getApp()->newGraphics(ai);
+			PS_GraphicsAllocInfo ai((Args->m_sPrintTo[0] == '|' ?
+									 Args->m_sPrintTo+1 : Args->m_sPrintTo),
+									Args->m_sPrintTo, 
+									pMyUnixApp->getApplicationName(),
+									pMyUnixApp->getFontManager(),
+									(Args->m_sPrintTo[0] != '|'));
+			
+			PS_Graphics * pGraphics =
+				(PS_Graphics*) XAP_App::getApp()->newGraphics(GRID_UNIX_PS,ai);
 			
 			conv.setVerbose(Args->m_iVerbose);
 			conv.print (Args->m_sFile, pGraphics, Args->m_sFileExtension);
