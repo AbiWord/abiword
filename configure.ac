@@ -85,22 +85,37 @@ fi
 AC_MSG_RESULT([found])
 fi
 
-# check for hildon and print first, so we can handle gnomeprint dependency correcly
+# check for embedded and print first, so we can handle gnomeprint dependency
+# correcly
 ABI_HILDON_QUICK
 
-# by default we, of course, want Abi to be able to print, but on embedded systems
-# it might not be required and because of the dependencies, we want an option to 
-# disable printing at compile time
+AC_ARG_ENABLE(embedded,[  --enable-embedded    Include embedded features],[
+	case "${enableval}" in
+	   yes)	embedded=true ;;
+	   no) embedded=false ;;
+	     *)	AC_MSG_ERROR(bad value ${enableval} for --enable-embedded) ;;
+	esac
+],[	embedded=undefined
+	EMBEDDED_CFLAGS=""
+])
 
-# on hildon we will make --disable-print the default if no --enable/disable-printing 
-# is given
+if test "$embedded" = "true"; then
+   EMBEDDED_CFLAGS="-DEMBEDDED_TARGET=1"
+fi
+
+# by default we, of course, want Abi to be able to print, but on embedded
+# systems it might not be required and because of the dependencies, we want an
+# option to disable printing at compile time
+
+# on embedded we will make --disable-print the default if no
+# --enable/disable-printing is given
 
 AC_ARG_ENABLE(printing,[  --enable-printing    Include printing capabilities],[
 	case "${enableval}" in
 	   yes)	print=true ;
-		PRINT_CFLAGS="";;
+		PRINT_CFLAGS="" ;;
 	   no) print=false ;
-		PRINT_CFLAGS="-DWITHOUT_PRINTING";;
+		PRINT_CFLAGS="-DWITHOUT_PRINTING" ;;
 	     *)	AC_MSG_ERROR(bad value ${enableval} for --enable-printing) ;;
 	esac
 ],[	print=undefined
@@ -108,10 +123,10 @@ AC_ARG_ENABLE(printing,[  --enable-printing    Include printing capabilities],[
 ])
 
 
-if test $print = undefined && test $hildon = true; then
+if test "$print" = "undefined" && test "$embedded" = "true"; then
    print=false
    PRINT_CFLAGS="-DWITHOUT_PRINTING"
-elif test $print = undefined; then
+elif test "$print" = "undefined"; then
    print=true;
    PRINT_CFLAGS=""
 fi
@@ -363,6 +378,12 @@ fi
 if test "$PLATFORM" = "qnx"; then
 	PLATFORM_LIBS="-fexceptions"
 fi
+
+# this should be after all other platform cflags have been set
+if test "$embedded" = "true"; then
+   PLATFORM_CFLAGS="$PLATFORM_CFLAGS $EMBEDDED_CFLAGS"
+fi
+
 dnl SUBST all the variables we just defined
 AC_SUBST(ABI_FEATURE_DEFS)
 AC_SUBST(OPTIMIZE_CFLAGS)
@@ -602,6 +623,11 @@ esac
 case "$gnome" in
      "true" )
         AC_MSG_RESULT([Configured with GNOME support.]) ;;
+esac
+
+case "$embedded" in
+     "true")
+	AC_MSG_RESULT([Configured for embedded target.]) ;;
 esac
 
 case "$hildon" in
