@@ -123,8 +123,7 @@ GR_CharWidths* GR_Font::newFontWidths(void) const
 }
 
 GR_Graphics::GR_Graphics()
-	: m_pApp(NULL),
-	  m_iZoomPercentage(100),
+	: m_iZoomPercentage(100),
 	  m_iFontAllocNo(0),
 	  m_pRect(NULL),
 	  m_bHave3DColors(false),
@@ -1220,8 +1219,8 @@ bool GR_Graphics::canBreak(GR_RenderInfo & ri, UT_sint32 &iNext, bool bAfter)
 	UT_return_val_if_fail(ri.m_pText->getStatus() == UTIter_OK, false);
 
 	// Fetch a pointer to the Encoding manager.
-	UT_return_val_if_fail(getApp(), false);
-	const XAP_EncodingManager *encMan = getApp()->getEncodingManager();
+	UT_return_val_if_fail(XAP_App::getApp(), false);
+	const XAP_EncodingManager *encMan =  XAP_App::getApp()->getEncodingManager();
 	UT_return_val_if_fail(encMan, false);
 
 	// Set up c[] appropriately depending on whether we're looking

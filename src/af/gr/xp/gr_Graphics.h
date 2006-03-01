@@ -42,7 +42,6 @@
 #endif
 
 class UT_RGBColor;
-class XAP_App;
 class XAP_PrefsScheme;
 class XAP_Frame;
 class UT_String;
@@ -751,8 +750,6 @@ class ABI_EXPORT GR_Graphics
 	
 	virtual GR_Image *	  genImageFromRectangle(const UT_Rect & r) = 0;
 
-	XAP_App * getApp() const {return m_pApp;}
-	
  private:
 	virtual bool _setTransform(const GR_Transform & tr)
 		{
@@ -778,7 +775,6 @@ class ABI_EXPORT GR_Graphics
 	UT_uint32         m_iRasterPosition;
 
  protected:
-	XAP_App *         m_pApp;
 	UT_uint32	      m_iZoomPercentage;
 	UT_uint32         m_iFontAllocNo;
 
