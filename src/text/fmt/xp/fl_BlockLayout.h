@@ -143,16 +143,21 @@ public:
 	virtual void		redrawUpdate();
 	virtual void        updateLayout(bool bDoAll) {}
 	virtual fp_Container * getNewContainer(fp_Container * pCon = NULL);
-	FV_View *		getView(void) const { UT_return_val_if_fail( m_pLayout, NULL ); return m_pLayout->getView(); }
+	FV_View *		getView(void) const { 
+		UT_return_val_if_fail( m_pLayout, NULL ); 
+		return m_pLayout->getView(); 
+	}
 
 	const char* getProperty(const XML_Char * pszName, bool bExpandStyles = true) const;
-	const PP_PropertyType * getPropertyType(const XML_Char * szName, tProperty_type Type, bool bExpandStyles = true) const;
+	const PP_PropertyType * getPropertyType(const XML_Char * szName, 
+											tProperty_type Type, bool bExpandStyles = true) const;
 	void setAlignment(UT_uint32 iAlignCmd);
 	UT_sint32       getLength(void);
 	bool            isEmbeddedType(void);
 	bool            isNotTOCable(void);
 	bool            isLastRunInBlock(fp_Run * pRun);
-	void            updateOffsets(PT_DocPosition posEmbedded, UT_uint32 iEmebbedSize, UT_sint32 iSuggestedDiff);
+	void            updateOffsets(PT_DocPosition posEmbedded, 
+								  UT_uint32 iEmebbedSize, UT_sint32 iSuggestedDiff);
 	void            updateEnclosingBlockIfNeeded(void);
 	fl_BlockLayout * getEnclosingBlock(void);
 	UT_sint32       getEmbeddedOffset(UT_sint32 startOffset, fl_ContainerLayout *& pEmbedCL);
@@ -190,7 +195,10 @@ public:
 	bool isListLabelInBlock(void);
 	void StartList( const XML_Char * style, PL_StruxDocHandle prevSDH = NULL);
 
-	void StartList( FL_ListType lType, UT_uint32 start,const XML_Char * lDelim, const XML_Char * lDecimal, const XML_Char * fFont, float Align, float indent, UT_uint32 iParentID = 0, UT_uint32 level=0 );
+	void StartList( FL_ListType lType, UT_uint32 start,
+					const XML_Char * lDelim, const XML_Char * lDecimal, 
+					const XML_Char * fFont, float Align, float indent, 
+					UT_uint32 iParentID = 0, UT_uint32 level=0 );
 
 	void StopListInBlock(void);
 	void deleteListLabel(void);
@@ -210,7 +218,9 @@ public:
 	UT_uint32 canSlurp(fp_Line* pLine) const;
 
 	PT_DocPosition getPosition(bool bActualBlockPos=false) const;
-	fp_Run* findPointCoords(PT_DocPosition position, bool bEOL, UT_sint32& x, UT_sint32& y, UT_sint32& x2, UT_sint32& y2, UT_sint32& height, bool& bDirection);
+	fp_Run* findPointCoords(PT_DocPosition position, bool bEOL, 
+							UT_sint32& x, UT_sint32& y, UT_sint32& x2, 
+							UT_sint32& y2, UT_sint32& height, bool& bDirection);
 
 	fp_Run* findRunAtOffset(UT_uint32 offset) const;
 	
@@ -261,7 +271,9 @@ public:
 	bool    hasUpdatableField(void) { return m_bHasUpdatableField;}
 	void    setUpdatableField(bool bValue) { m_bHasUpdatableField = bValue;}
 	inline UT_sint32 getDefaultTabInterval(void) const { return m_iDefaultTabInterval; }
-	inline UT_sint32 getTabsCount(void) const { return static_cast<UT_sint32>(m_vecTabs.getItemCount()); }
+	inline UT_sint32 getTabsCount(void) const { 
+		return static_cast<UT_sint32>(m_vecTabs.getItemCount()); 
+	}
 
 	bool doclistener_populateSpan(const PX_ChangeRecord_Span * pcrs, PT_BlockOffset blockOffset, UT_uint32 len);
 	bool doclistener_populateObject(PT_BlockOffset blockOffset, const PX_ChangeRecord_Object * pcro);
@@ -361,6 +373,27 @@ public:
 												PT_DocPosition & endPos,
 												UT_UTF8String & sWord,
 												bool bIgnoreSpace);
+
+	/** put in queue for spellchecking after prev. If prev == NULL is put at the head */
+	void enqueueToSpellCheckAfter(fl_BlockLayout *prev);
+	/** remove from the spellchecking queue */
+	void dequeueFromSpellCheck(void);
+	/** call to clear the queue. Warning, you can mess up things */
+	void clearQueueing(void)
+	{
+		m_prevToSpell = m_nextToSpell = NULL;
+	}
+	fl_BlockLayout *nextToSpell(void) const
+	{
+		return m_nextToSpell;
+	}
+	/** return true if the block is queued */
+	bool isQueued(void) const
+	{
+		return (m_prevToSpell != NULL) 
+			|| (m_pLayout->spellQueueHead() == this);
+	}
+
 #ifdef FMT_TEST
 	void					__dump(FILE * fp) const;
 #endif
@@ -488,6 +521,9 @@ protected:
 	fl_GrammarSquiggles *   m_pGrammarSquiggles;
     UT_sint32               m_iAdditionalMarginAfter;
 
+
+	fl_BlockLayout          *m_nextToSpell;
+	fl_BlockLayout          *m_prevToSpell;
 };
 
 /*

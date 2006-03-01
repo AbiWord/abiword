@@ -189,7 +189,9 @@ fl_BlockLayout::fl_BlockLayout(PL_StruxDocHandle sdh,
 	  m_bForceSectionBreak(false),
 	  m_bPrevListLabel(false),
 	  m_pGrammarSquiggles(NULL),
-	  m_iAdditionalMarginAfter(0)
+	  m_iAdditionalMarginAfter(0),
+	  m_nextToSpell(0),
+	  m_prevToSpell(0)
 {
 	UT_DEBUGMSG(("BlockLayout %x created sdh %x \n",this,getStruxDocHandle()));
 	setPrev(pPrev);
@@ -892,6 +894,7 @@ void fl_BlockLayout::_lookupProperties(const PP_AttrProp* pBlockAP)
 
 fl_BlockLayout::~fl_BlockLayout()
 {
+	dequeueFromSpellCheck();
 	DELETEP(m_pSpellSquiggles);
 	DELETEP(m_pGrammarSquiggles);
 	purgeLayout();
@@ -10340,6 +10343,47 @@ bool fl_BlockLayout::isSentenceSeparator(UT_UCS4Char c, UT_uint32 iBlockPos)
 }
 
 
+
+
+void fl_BlockLayout::enqueueToSpellCheckAfter(fl_BlockLayout *prev)
+{
+	if (prev != NULL) {
+		m_nextToSpell = prev->m_nextToSpell;
+		prev->m_nextToSpell = this;
+	}
+	else {
+		m_nextToSpell = m_pLayout->spellQueueHead();
+		m_pLayout->setSpellQueueHead(this);
+	}
+	if (m_nextToSpell != NULL) {
+		m_nextToSpell->m_prevToSpell = this;
+	}
+	else {
+		m_pLayout->setSpellQueueTail(this);
+	}
+	m_prevToSpell = prev;
+}
+
+
+void fl_BlockLayout::dequeueFromSpellCheck(void)
+{
+	if (m_prevToSpell != NULL) {
+		m_prevToSpell->m_nextToSpell = m_nextToSpell;
+	}
+	else if(m_pLayout->spellQueueHead() == this) {
+		m_pLayout->setSpellQueueHead(m_nextToSpell);
+	}
+	if (m_nextToSpell != NULL) {
+		m_nextToSpell->m_prevToSpell = m_prevToSpell;
+	}
+	else if (m_pLayout->spellQueueTail() == this) {
+		m_pLayout->setSpellQueueTail(m_prevToSpell);
+	}
+	m_nextToSpell = m_prevToSpell = NULL;
+}
+
+
+
 /*!
   Constructor for iterator
   
@@ -10982,4 +11026,3 @@ fl_BlockSpellIterator::_ignoreLastWordCharacter(const UT_UCSChar c) const
         return false;
     }
 }
-
