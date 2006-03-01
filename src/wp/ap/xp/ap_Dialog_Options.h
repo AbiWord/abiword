@@ -53,10 +53,7 @@ class AP_Dialog_Options : public XAP_TabbedDialog_NonPersistent
 				   id_BUTTON_SPELL_AUTOREPLACE,
 				   id_CHECK_GRAMMAR_CHECK,
 
-				   id_CHECK_SMART_QUOTES_ENABLE,
-
 				   id_CHECK_OTHER_DEFAULT_DIRECTION_RTL,
-				   id_CHECK_OTHER_HEBREW_CONTEXT_GLYPHS,
 
 				   id_CHECK_AUTO_SAVE_FILE,
 				   id_TEXT_AUTO_SAVE_FILE_EXT,
@@ -139,8 +136,6 @@ class AP_Dialog_Options : public XAP_TabbedDialog_NonPersistent
 #ifndef HAVE_HILDON
 	SET_GATHER			(ShowSplash,bool);
 #endif
-	SET_GATHER			(SmartQuotesEnable, bool);
-
 	SET_GATHER			(PrefsAutoSave, 	bool);
 
 #if !defined (XP_UNIX_TARGET_GTK) && !defined(XP_TARGET_COCOA)
@@ -162,7 +157,6 @@ class AP_Dialog_Options : public XAP_TabbedDialog_NonPersistent
 	SET_GATHER			(AutoLoadPlugins, bool);
 
 	SET_GATHER			(OtherDirectionRtl, bool);
-	SET_GATHER			(OtherHebrewContextGlyphs, bool);
 
 	SET_GATHER			(AutoSaveFile,		bool);
 	virtual void _gatherAutoSaveFilePeriod(UT_String &stRetVal) = 0;
@@ -249,7 +243,6 @@ public:
 			bo_Ruler,
 			bo_SaveScheme,			// NOT (YET?) IMPLEMENTED
 			bo_ScreenColor,
-			bo_SmartQuotes,
 			bo_Splash,
 			bo_StatusBar,
 			bo_SuggestCorrections,	// NOT (YET?) IMPLEMENTED

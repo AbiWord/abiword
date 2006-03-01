@@ -58,7 +58,6 @@ public:
 		// User Interface
 
 		SET_GATHER (ViewCursorBlink,	 bool);
-		SET_GATHER (SmartQuotesEnable,	 bool);
 		SET_GATHER (AllowCustomToolbars, bool);
 		SET_GATHER (ViewRulerUnits,	 UT_Dimension);
 
@@ -81,7 +80,6 @@ public:
 		// RTL Text Layout
 
 		SET_GATHER (OtherDirectionRtl,	      bool);
-		SET_GATHER (OtherHebrewContextGlyphs, bool);
 
 	// Spell Checking
 
@@ -140,7 +138,6 @@ public:
 		// User Interface
 
 		GtkWidget *m_checkbuttonViewCursorBlink;
-		GtkWidget *m_checkbuttonSmartQuotesEnable;
 		GtkWidget *m_checkbuttonAllowCustomToolbars;
 		GtkWidget *m_pushbuttonNewTransparentColor;
 		GtkWidget *m_menuUnits;
@@ -166,7 +163,6 @@ public:
 		// RTL Text Layout
 
 		GtkWidget * m_checkbuttonOtherDirectionRtl;
-		GtkWidget * m_checkbuttonOtherHebrewContextGlyphs;
 
 	// Spell Checking
 
