@@ -1404,6 +1404,6 @@ UT_RGBColor AP_Win32FrameImpl::getColorSelBackground () const
 
 GR_Win32Graphics *AP_Win32FrameImpl::createDocWndGraphics(void)
 {
-	GR_Win32AllocInfo ai(GetDC(getHwndDocument()), getHwndDocument(), XAP_App::getApp());
+	GR_Win32AllocInfo ai(GetDC(getHwndDocument()), getHwndDocument());
 	return (GR_Win32Graphics *)XAP_App::getApp()->newGraphics(ai);
 }
