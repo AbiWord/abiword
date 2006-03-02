@@ -280,8 +280,8 @@ public:
 	
 protected:
 	// all instances have to be created via GR_GraphicsFactory; see gr_Graphics.h
-	GR_Win32Graphics(HDC, HWND, XAP_App *);					/* for screen */
-	GR_Win32Graphics(HDC, const DOCINFO *, XAP_App *, HGLOBAL hDevMode = NULL);	/* for printing */
+	GR_Win32Graphics(HDC, HWND);					/* for screen */
+	GR_Win32Graphics(HDC, const DOCINFO *, HGLOBAL hDevMode = NULL);	/* for printing */
 	
 	BITMAPINFO * ConvertDDBToDIB(HBITMAP bitmap, HPALETTE hPal, DWORD dwCompression);
 
