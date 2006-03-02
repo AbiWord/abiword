@@ -170,7 +170,7 @@ HWND AP_Win32FrameImpl::_createDocumentWindow(XAP_Frame *pFrame, HWND hwndParent
 	int xLeftRulerWidth = 0;
 
 	/* Create Graphics */
-	GR_Win32AllocInfo ai(GetDC(m_hwndContainer), m_hwndContainer, XAP_App::getApp());
+	GR_Win32AllocInfo ai(GetDC(m_hwndContainer), m_hwndContainer);
 	GR_Win32Graphics * pG = (GR_Win32Graphics *)XAP_App::getApp()->newGraphics(ai);
 
 	UT_return_val_if_fail (pG, 0);	   
