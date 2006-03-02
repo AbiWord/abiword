@@ -340,7 +340,7 @@ GR_Font* GR_Win32Graphics::_findFont(const char* pszFontFamily,
 		// in the native encoding and later lf will be passing to a windows
 		// API funcion (CreateFontIndirect()).
 		strncpy(lf.lfFaceName, 
-		        getApp()->getEncodingManager()->strToNative(pszFontFamily, "UTF-8", false),
+		        XAP_App::getApp()->getEncodingManager()->strToNative(pszFontFamily, "UTF-8", false),
 		        LF_FACESIZE);
 	}
 
