@@ -422,7 +422,7 @@ UT_uint16*	GR_Win32Graphics::_remapGlyphs(const UT_UCSChar* pChars, int iCharOff
 	{
 		delete [] m_remapBuffer;
 
-		if(getApp()->theOSHasBidiSupport() != XAP_App::BIDI_SUPPORT_NONE)
+		if(XAP_App::getApp()->theOSHasBidiSupport() != XAP_App::BIDI_SUPPORT_NONE)
 		{
 			delete [] m_remapIndices;
 			m_remapIndices = new UT_UCS2Char[iLength];
@@ -582,7 +582,7 @@ void GR_Win32Graphics::drawChars(const UT_UCSChar* pChars,
 
 			DWORD placementResult;
 
-			if(getApp()->theOSHasBidiSupport() == XAP_App::BIDI_SUPPORT_GUI)
+			if(XAP_App::getApp()->theOSHasBidiSupport() == XAP_App::BIDI_SUPPORT_GUI)
 				placementResult = GetCharacterPlacementW(m_hdc, (LPCWSTR) currentChars, iLength, 0, &gcpResult, 0);
 			else
 				placementResult = GetCharacterPlacementW(m_hdc, (LPCWSTR) currentChars, iLength, 0, &gcpResult, GCP_REORDER);
@@ -2364,7 +2364,7 @@ GR_Graphics * GR_Win32Graphics::getPrinterGraphics(const char * pPrinterName,
 	pDI->fwType = 0;
 	
 	{
-		GR_Win32AllocInfo ai(hPDC, pDI, XAP_App::getApp(), hDM);
+		GR_Win32AllocInfo ai(hPDC, pDI, hDM);
 	
 		pGr = (GR_Win32Graphics *)XAP_App::getApp()->newGraphics(ai);
 		UT_ASSERT_HARMLESS(pGr);
