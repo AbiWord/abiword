@@ -560,7 +560,7 @@ void GR_Win32Graphics::drawChars(const UT_UCSChar* pChars,
 		//        call GetCharacterPlacement function without
 		//        requesting reordering and then feed the indices to
 		//        ExTextOut (direct call to ExTextOut automatically reorders)
-		if(getApp()->theOSHasBidiSupport() != XAP_App::BIDI_SUPPORT_NONE)
+		if(XAP_App::getApp()->theOSHasBidiSupport() != XAP_App::BIDI_SUPPORT_NONE)
 		{
 			UT_ASSERT(m_remapIndices);
 			GCP_RESULTSW gcpResult;
