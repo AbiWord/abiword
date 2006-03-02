@@ -275,8 +275,8 @@ GR_RenderInfo * GR_Win32USPRenderInfo::s_pOwnerChar         = NULL;
 GOFFSET *       GR_Win32USPRenderInfo::s_pGoffsets          = NULL;
 
 
-GR_Win32USPGraphics::GR_Win32USPGraphics(HDC hdc, HWND hwnd, XAP_App * pApp)
-	:GR_Win32Graphics(hdc, hwnd, pApp),
+GR_Win32USPGraphics::GR_Win32USPGraphics(HDC hdc, HWND hwnd)
+	:GR_Win32Graphics(hdc, hwnd),
 	 m_bConstructorSucceeded(false)
 {
 	if(!_constructorCommonCode())
@@ -289,9 +289,8 @@ GR_Win32USPGraphics::GR_Win32USPGraphics(HDC hdc, HWND hwnd, XAP_App * pApp)
 }
 
 
-GR_Win32USPGraphics::GR_Win32USPGraphics(HDC hdc, const DOCINFO * pDI, XAP_App * pApp,
-										 HGLOBAL hDevMode)
-	:GR_Win32Graphics(hdc, pDI, pApp, hDevMode),
+GR_Win32USPGraphics::GR_Win32USPGraphics(HDC hdc, const DOCINFO * pDI, HGLOBAL hDevMode)
+	:GR_Win32Graphics(hdc, pDI, hDevMode),
 	 m_bConstructorSucceeded(false)
 {
 	if(!_constructorCommonCode())
@@ -492,13 +491,12 @@ GR_Graphics *   GR_Win32USPGraphics::graphicsAllocator(GR_AllocInfo& info)
 	if(AI.m_pDocInfo)
 	{
 		// printer graphics required
-		pG = new GR_Win32USPGraphics(AI.m_hdc, AI.m_pDocInfo,
-									   AI.m_pApp,AI.m_hDevMode);
+		pG = new GR_Win32USPGraphics(AI.m_hdc, AI.m_pDocInfo, AI.m_hDevMode);
 	}
 	else
 	{
 		// screen graphics required
-		pG = new GR_Win32USPGraphics(AI.m_hdc, AI.m_hwnd, AI.m_pApp);
+		pG = new GR_Win32USPGraphics(AI.m_hdc, AI.m_hwnd);
 	}
 
 	if(pG->m_bConstructorSucceeded)

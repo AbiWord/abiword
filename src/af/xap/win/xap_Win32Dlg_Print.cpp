@@ -154,7 +154,7 @@ GR_Graphics * XAP_Win32Dialog_Print::getPrinterGraphicsContext(void)
 	m_DocInfo.lpszDocName = m_szDocumentPathname;
 	m_DocInfo.lpszOutput = ((m_bDoPrintToFile) ? m_szPrintToFilePathname : NULL);
 	
-	GR_Win32AllocInfo ai(m_pPersistPrintDlg->hDC,&m_DocInfo, m_pApp, m_pPersistPrintDlg->hDevMode);
+	GR_Win32AllocInfo ai(m_pPersistPrintDlg->hDC,&m_DocInfo, m_pPersistPrintDlg->hDevMode);
 	GR_Win32Graphics *pGr = (GR_Win32Graphics *)XAP_App::getApp()->newGraphics(ai);
 	UT_ASSERT(pGr);
 	

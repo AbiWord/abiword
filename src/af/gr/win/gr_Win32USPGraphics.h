@@ -143,8 +143,8 @@ public:
 	
   protected:
 	// all instances have to be created via GR_GraphicsFactory; see gr_Graphics.h
-	GR_Win32USPGraphics(HDC, HWND, XAP_App *);
-	GR_Win32USPGraphics(HDC, const DOCINFO *, XAP_App *, HGLOBAL hDevMode = NULL);
+	GR_Win32USPGraphics(HDC, HWND);
+	GR_Win32USPGraphics(HDC, const DOCINFO *, HGLOBAL hDevMode = NULL);
 	
   private:
 	bool      _constructorCommonCode();
