@@ -154,20 +154,19 @@ class GR_Win32AllocInfo : public GR_AllocInfo
 {
   public:
 	GR_Win32AllocInfo():
-		m_hdc(0), m_hwnd(0), m_pApp(NULL), m_pDocInfo(NULL), m_hDevMode(NULL) {};
+		m_hdc(0), m_hwnd(0), m_pDocInfo(NULL), m_hDevMode(NULL) {};
 	
-	GR_Win32AllocInfo(HDC hdc, HWND hwnd, XAP_App * pApp):
-		m_hdc(hdc), m_hwnd(hwnd), m_pApp(pApp), m_pDocInfo(NULL), m_hDevMode(NULL) {};
+	GR_Win32AllocInfo(HDC hdc, HWND hwnd):
+		m_hdc(hdc), m_hwnd(hwnd), m_pDocInfo(NULL), m_hDevMode(NULL) {};
 	
-	GR_Win32AllocInfo(HDC hdc, const DOCINFO* pDoc, XAP_App * pApp, HGLOBAL devmode):
-		m_hdc(hdc), m_hwnd(0), m_pApp(pApp), m_pDocInfo(pDoc), m_hDevMode(devmode) {};
+	GR_Win32AllocInfo(HDC hdc, const DOCINFO* pDoc, HGLOBAL devmode):
+		m_hdc(hdc), m_hwnd(0), m_pDocInfo(pDoc), m_hDevMode(devmode) {};
 
 	virtual GR_GraphicsId getType() const {return GRID_WIN32;}
 	virtual bool isPrinterGraphics() const {return (m_pDocInfo != 0);}
 	
 	HDC               m_hdc;
 	HWND              m_hwnd;
-	XAP_App *         m_pApp;
 	const DOCINFO *   m_pDocInfo;
 	HGLOBAL           m_hDevMode;
 };

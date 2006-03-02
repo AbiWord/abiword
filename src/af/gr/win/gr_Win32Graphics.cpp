@@ -153,10 +153,9 @@ void GR_Win32Graphics::_constructorCommonCode(HDC hdc)
 	m_nArPenPos = 0;
 }
 
-GR_Win32Graphics::GR_Win32Graphics(HDC hdc, HWND hwnd, XAP_App * app)
+GR_Win32Graphics::GR_Win32Graphics(HDC hdc, HWND hwnd)
 {
 	_constructorCommonCode(hdc);
-	m_pApp = app;
 	m_hwnd = hwnd;
 
 	// init the print HDC with one for the default printer
@@ -191,10 +190,9 @@ void GR_Win32Graphics::setPrintDC(HDC dc)
 }
 
 
-GR_Win32Graphics::GR_Win32Graphics(HDC hdc, const DOCINFO * pDocInfo, XAP_App * app, HGLOBAL hDevMode)
+GR_Win32Graphics::GR_Win32Graphics(HDC hdc, const DOCINFO * pDocInfo, HGLOBAL hDevMode)
 {
 	_constructorCommonCode(hdc);
-	m_pApp = app;
  	m_bPrint = true;
 	m_pDocInfo = pDocInfo;
 	m_hDevMode = hDevMode;
@@ -1244,7 +1242,7 @@ void GR_Win32Graphics::handleSetCursorMessage(void)
 {
 	// deal with WM_SETCURSOR message.
 
-	XAP_Win32App * pWin32App = static_cast<XAP_Win32App *>(m_pApp);
+	XAP_Win32App * pWin32App = static_cast<XAP_Win32App *>(XAP_App::getApp());
 	HINSTANCE hinst = pWin32App->getInstance();
 	LPCTSTR cursor_name;
 
@@ -2291,12 +2289,12 @@ GR_Graphics * GR_Win32Graphics::graphicsAllocator(GR_AllocInfo &info)
 	if(AI.m_pDocInfo)
 	{
 		// printer graphics required
-		return new GR_Win32Graphics(AI.m_hdc, AI.m_pDocInfo, AI.m_pApp, AI.m_hDevMode);
+		return new GR_Win32Graphics(AI.m_hdc, AI.m_pDocInfo, AI.m_hDevMode);
 	}
 	else
 	{
 		// screen graphics required
-		return new GR_Win32Graphics(AI.m_hdc, AI.m_hwnd, AI.m_pApp);
+		return new GR_Win32Graphics(AI.m_hdc, AI.m_hwnd);
 	}
 #else
 	UT_return_val_if_fail(UT_NOT_IMPLEMENTED,NULL);
