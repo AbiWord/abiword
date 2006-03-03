@@ -176,13 +176,11 @@ public:
 	SET_GATHER			(SpellNumbers,		bool );
 	SET_GATHER			(GrammarCheck,		bool); 
 	SET_GATHER			(ShowSplash,		bool );
-	SET_GATHER			(SmartQuotesEnable, bool );	
 	SET_GATHER			(ViewRulerUnits,	UT_Dimension);
 	SET_GATHER			(ViewCursorBlink,	bool);
 	SET_GATHER			(AllowCustomToolbars, bool);
 	SET_GATHER			(AutoLoadPlugins, bool);
 	SET_GATHER			(OtherDirectionRtl, bool );
-	SET_GATHER			(OtherHebrewContextGlyphs,bool );
 	SET_GATHER			(AutoSaveFile, bool);
 	
 	virtual bool _gatherViewShowToolbar(UT_uint32 t) { UT_ASSERT(UT_SHOULD_NOT_HAPPEN); return true;}

@@ -60,7 +60,6 @@
 #define AP_RID_DIALOG_OPTIONS_CHK_ViewCursorBlink		1301
 #define AP_RID_DIALOG_OPTIONS_LBL_UNITS 				1302
 #define AP_RID_DIALOG_OPTIONS_COMBO_UNITS				1303
-#define AP_RID_DIALOG_OPTIONS_CHK_SmartQuotesEnable 	1304
 #define AP_RID_DIALOG_OPTIONS_BTN_BGColor				1305
 #define AP_RID_DIALOG_OPTIONS_CHK_AllowCustomToolbars	1306
 #define AP_RID_DIALOG_OPTIONS_CHK_ShowSplash			1307
@@ -84,7 +83,6 @@
 #define AP_RID_DIALOG_OPTIONS_LBL_AutoSaveExtension 	1413
 #define AP_RID_DIALOG_OPTIONS_TXT_AutoSaveExtension 	1414
 
-#define AP_RID_DIALOG_OPTIONS_CHK_OtherHebrewContextGlyphs	  1416
 #define AP_RID_DIALOG_OPTIONS_CHK_DirMarkerAfterClosingParenthesis	  1417
 
 
@@ -95,7 +93,7 @@
 
 // The sub-dialog for the General tab of the Preference dialog
 
-AP_RID_DIALOG_OPT_SPELL DIALOG DISCARDABLE  0, 0, 229, 250
+AP_RID_DIALOG_OPT_SPELL DIALOG DISCARDABLE  0, 0, 229, 233
 STYLE WS_CHILD
 FONT 8, "MS Sans Serif"
 BEGIN
@@ -125,45 +123,42 @@ BEGIN
     LTEXT           "Automatic Grammar Checking", AP_RID_DIALOG_OPTIONS_STATIC_Grammar,7,176,162,8
 END
 
-AP_RID_DIALOG_OPT_GENERAL DIALOG DISCARDABLE  0, 0, 229, 250
+AP_RID_DIALOG_OPT_GENERAL DIALOG DISCARDABLE  0, 0, 229, 233
 STYLE WS_CHILD
 FONT 8, "MS Sans Serif"
 BEGIN
-    LTEXT           "Units:",AP_RID_DIALOG_OPTIONS_LBL_UNITS,14,83,24,12,
+    LTEXT           "Units:",AP_RID_DIALOG_OPTIONS_LBL_UNITS,14,66,24,12,
                     SS_CENTERIMAGE | NOT WS_GROUP
-    COMBOBOX        AP_RID_DIALOG_OPTIONS_COMBO_UNITS,43,83,49,75,
+    COMBOBOX        AP_RID_DIALOG_OPTIONS_COMBO_UNITS,43,66,49,75,
                     CBS_DROPDOWNLIST | WS_VSCROLL | WS_TABSTOP
     CONTROL         "Blinking cursor",
                     AP_RID_DIALOG_OPTIONS_CHK_ViewCursorBlink,"Button",
                     BS_AUTOCHECKBOX | WS_TABSTOP,14,31,175,10
     PUSHBUTTON      "Choose Screen Color",AP_RID_DIALOG_OPTIONS_BTN_BGColor,
-                    15,104,90,14
+                    15,87,90,14
     LTEXT           "User Interface",AP_RID_DIALOG_OPTIONS_STATIC_UI,7,15,
                     127,8
     CONTROL         "Show Spash on Startup",
                     AP_RID_DIALOG_OPTIONS_CHK_ShowSplash,"Button",
-                    BS_AUTOCHECKBOX | WS_TABSTOP,16,148,205,10
-    CONTROL         "Enable smart quotes",
-                    AP_RID_DIALOG_OPTIONS_CHK_SmartQuotesEnable,"Button",
+                    BS_AUTOCHECKBOX | WS_TABSTOP,16,131,205,10
+    CONTROL         "Allow Custom Toolbars",AP_RID_DIALOG_OPTIONS_CHK_AllowCustomToolbars,"Button",
                     BS_AUTOCHECKBOX | WS_TABSTOP,14,48,175,10
-    CONTROL         "Toolbars",AP_RID_DIALOG_OPTIONS_CHK_AllowCustomToolbars,"Button",
-                    BS_AUTOCHECKBOX | WS_TABSTOP,14,65,175,10
-    LTEXT           "Aplication Startup",
-                    AP_RID_DIALOG_OPTIONS_STATIC_APPSTARTUP,10,132,127,8
-    CONTROL         "Pluggins",AP_RID_DIALOG_OPTIONS_CHK_AutoLoadPlugins,"Button",
-                    BS_AUTOCHECKBOX | WS_TABSTOP,16,165,201,10
+    LTEXT           "Application Startup",
+                    AP_RID_DIALOG_OPTIONS_STATIC_APPSTARTUP,10,115,127,8
+    CONTROL         "Plugins",AP_RID_DIALOG_OPTIONS_CHK_AutoLoadPlugins,"Button",
+                    BS_AUTOCHECKBOX | WS_TABSTOP,16,148,201,10
     LTEXT           "User Interface Language",
-                    AP_RID_DIALOG_OPTIONS_TEXT_UILANG,14,208,87,8
-    COMBOBOX        AP_RID_DIALOG_OPTIONS_COMBO_UILANG,106,206,113,200,
+                    AP_RID_DIALOG_OPTIONS_TEXT_UILANG,14,191,87,8
+    COMBOBOX        AP_RID_DIALOG_OPTIONS_COMBO_UILANG,106,189,113,200,
                     CBS_DROPDOWNLIST | CBS_SORT | WS_VSCROLL | WS_TABSTOP
     CONTROL         "Change language when changing keyboard",
                     AP_RID_DIALOG_OPTIONS_CHK_LanguageWithKeyboard,"Button",
-                    BS_AUTOCHECKBOX | WS_TABSTOP,14,227,206,8
-    LTEXT           "User Interface",AP_RID_DIALOG_OPTIONS_STATIC_LANGUAGE,
-                    10,192,127,8
+                    BS_AUTOCHECKBOX | WS_TABSTOP,14,210,206,8
+    LTEXT           "Language Settings",AP_RID_DIALOG_OPTIONS_STATIC_LANGUAGE,
+                    10,175,127,8
 END
 
-AP_RID_DIALOG_OPT_DOCUMENTS DIALOG DISCARDABLE  0, 0, 229, 250
+AP_RID_DIALOG_OPT_DOCUMENTS DIALOG DISCARDABLE  0, 0, 229, 233
 STYLE WS_CHILD
 FONT 8, "MS Sans Serif"
 BEGIN
@@ -178,12 +173,10 @@ BEGIN
     LTEXT           "File extension:", AP_RID_DIALOG_OPTIONS_LBL_AutoSaveExtension,13,48,57,8,NOT WS_GROUP
     EDITTEXT        AP_RID_DIALOG_OPTIONS_TXT_AutoSaveExtension,72,46,25,12
     LTEXT           "Interval:", AP_RID_DIALOG_OPTIONS_STATIC_Interval,14,31,57,8,NOT WS_GROUP
-    LTEXT           "Aplication Startup", AP_RID_DIALOG_OPTIONS_STATIC_BidiOptions,7,75,186,8
+    LTEXT           "Bi-Directional Options", AP_RID_DIALOG_OPTIONS_STATIC_BidiOptions,7,75,186,8
     CONTROL         "Default to right-to-left direction of text",
                     AP_RID_DIALOG_OPTIONS_CHK_OtherDirectionRtl,"Button",
                     BS_AUTOCHECKBOX | WS_TABSTOP,14,91,182,10
-    CONTROL         "Use glyph shaping for Hebrew", AP_RID_DIALOG_OPTIONS_CHK_OtherHebrewContextGlyphs,"Button",
-                    BS_AUTOCHECKBOX | WS_TABSTOP,14,108,178,10
 END
 
 

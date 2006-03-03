@@ -206,10 +206,6 @@ void AP_Win32Dialog_Options::_controlEnable( tControl id, bool value )
 			EnableWindow(GetDlgItem((HWND)getPage(PG_GENERAL),AP_RID_DIALOG_OPTIONS_CHK_ViewCursorBlink),value);
 			return;	  
 		
-		case id_CHECK_SMART_QUOTES_ENABLE:
-			EnableWindow(GetDlgItem((HWND)getPage(PG_GENERAL),AP_RID_DIALOG_OPTIONS_CHK_SmartQuotesEnable),value);
-			return;
-
 		case id_CHECK_LANG_WITH_KEYBOARD:
 			EnableWindow(GetDlgItem((HWND)getPage(PG_GENERAL),AP_RID_DIALOG_OPTIONS_CHK_LanguageWithKeyboard),value);
 			return;
@@ -227,10 +223,6 @@ void AP_Win32Dialog_Options::_controlEnable( tControl id, bool value )
 			return;
 
 
-
-		case id_CHECK_OTHER_HEBREW_CONTEXT_GLYPHS:
-			EnableWindow(GetDlgItem((HWND)getPage(PG_DOCUMENT),AP_RID_DIALOG_OPTIONS_CHK_OtherHebrewContextGlyphs),value);
-			return;
 
 		case id_CHECK_AUTO_SAVE_FILE:
 			EnableWindow(GetDlgItem((HWND)getPage(PG_DOCUMENT),AP_RID_DIALOG_OPTIONS_CHK_AutoSaveFile),value);
@@ -303,14 +295,12 @@ void	AP_Win32Dialog_Options::_set##Bool(bool b) { \
 
 
 DEFINE_GET_SET_BOOL(PG_GENERAL,ViewCursorBlink)
-DEFINE_GET_SET_BOOL(PG_GENERAL,SmartQuotesEnable)
 DEFINE_GET_SET_BOOL(PG_GENERAL,LanguageWithKeyboard)
 DEFINE_GET_SET_BOOL(PG_GENERAL,ShowSplash)
 DEFINE_GET_SET_BOOL(PG_GENERAL,AllowCustomToolbars)
 DEFINE_GET_SET_BOOL(PG_GENERAL,AutoLoadPlugins)
 
 DEFINE_GET_SET_BOOL(PG_DOCUMENT,OtherDirectionRtl)
-DEFINE_GET_SET_BOOL(PG_DOCUMENT,OtherHebrewContextGlyphs)
 
 DEFINE_GET_SET_BOOL(PG_SPELL,SpellCheckAsType)
 DEFINE_GET_SET_BOOL(PG_SPELL,SpellHideErrors)
@@ -675,7 +665,6 @@ void AP_Win32Dialog_Options_General::_onInitDialog()
 	// localize controls	
 	_DS2(OPTIONS_CHK_ViewCursorBlink,		DLG_Options_Label_ViewCursorBlink);	
 	_DS2(OPTIONS_LBL_UNITS,					DLG_Options_Label_ViewUnits);	
-	_DS2(OPTIONS_CHK_SmartQuotesEnable,		DLG_Options_Label_SmartQuotesEnable);	
 	_DS2(OPTIONS_BTN_BGColor,				DLG_Options_Label_ChooseForTransparent);
 	_DS2(OPTIONS_CHK_AllowCustomToolbars,	DLG_Options_Label_CheckAllowCustomToolbars);
 	_DS2(OPTIONS_CHK_ShowSplash, 			DLG_Options_Label_ShowSplash);
@@ -778,7 +767,6 @@ void AP_Win32Dialog_Options_Document::_onCommand(HWND hWnd, WPARAM wParam, LPARA
 	switch (wId)
 	{		
 	
-		case AP_RID_DIALOG_OPTIONS_CHK_OtherHebrewContextGlyphs:  pParent->_enableDisableLogic(AP_Dialog_Options::id_CHECK_OTHER_HEBREW_CONTEXT_GLYPHS);return;
 		case AP_RID_DIALOG_OPTIONS_CHK_AutoSaveFile:
 			bChecked = (IsDlgButtonChecked( hWnd, AP_RID_DIALOG_OPTIONS_CHK_AutoSaveFile ) == BST_CHECKED);
 			EnableWindow( GetDlgItem( hWnd, AP_RID_DIALOG_OPTIONS_TXT_AutoSavePeriod), bChecked );
@@ -813,7 +801,6 @@ void AP_Win32Dialog_Options_Document::_onInitDialog()
 	_DS2(OPTIONS_LBL_AutoSaveMinutes,			DLG_Options_Label_Minutes);	
 	_DS2(OPTIONS_STATIC_BidiOptions,			DLG_Options_Label_BiDiOptions);
 	_DS2(OPTIONS_CHK_OtherDirectionRtl,			DLG_Options_Label_DirectionRtl);
-	_DS2(OPTIONS_CHK_OtherHebrewContextGlyphs,	DLG_Options_Label_HebrewContextGlyphs);	
 	_DS2(OPTIONS_LBL_AutoSaveExtension,			DLG_Options_Label_FileExtension);
 	
 	
