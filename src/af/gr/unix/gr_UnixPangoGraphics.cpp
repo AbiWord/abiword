@@ -454,6 +454,61 @@ bool GR_UnixPangoGraphics::shape(GR_ShapingInfo & si, GR_RenderInfo *& ri)
 	}
 
 	RI->m_pLogOffsets = new int [RI->m_pGlyphs->num_glyphs];
+ 
+        // See http://www.abisource.com/mailinglists/abiword-dev/2006/Feb/0081.html
+	// for insight how this is supposeed to work and possible optimizations.
+ 
+	if (si.m_iVisDir == UT_BIDI_LTR)
+	{
+	  const char * p = utf8.utf8_str();
+	  UT_UTF8Stringbuf::UTF8Iterator I = utf8.getIterator();
+	  int j = 0;
+
+	  for(int i = 0; i < RI->m_pGlyphs->num_glyphs; ++i)
+	    {
+
+		int iOff = RI->m_pGlyphs->log_clusters[i];
+
+		// advance the iterator until we find the offset that corresponds to the glyph
+		// byte offset
+		while(I.current() && I.current() != p + iOff)
+		{
+			I.advance();
+			++j;
+		}
+
+		RI->m_pLogOffsets[i] = j;
+
+	    }
+	}
+	else //  GR_ShapingInfo.m_iVisDir == UT_BIDI_RTL)
+	{
+	  const char * p = utf8.utf8_str();
+	  UT_UTF8Stringbuf::UTF8Iterator I = utf8.getIterator();
+	  I = I.end();
+	  int j = 0;
+	
+	  for(int i = 0; i < RI->m_pGlyphs->num_glyphs; ++i)
+	  {
+		int iOff = RI->m_pGlyphs->log_clusters[i];
+
+		// retreat the iterator until we find the offset that corresponds to the glyph
+		// byte offset
+		while(I.current() && I.current() != p + iOff)
+		{
+			I.retreat();
+			--j;
+		}
+
+		RI->m_pLogOffsets[i] = j;
+
+	  }
+	}
+
+#ifdef DEBUG
+	// check against old algorithm
+
+	int *pLogOffsets = new int [RI->m_pGlyphs->num_glyphs];
 	
 	const char * p = utf8.utf8_str();
 	
@@ -474,21 +529,27 @@ bool GR_UnixPangoGraphics::shape(GR_ShapingInfo & si, GR_RenderInfo *& ri)
 			++j;
 		}
 
-		RI->m_pLogOffsets[i] = j;
+		pLogOffsets[i] = j;
 
 		// set also any subsequent glyphs that have the same byte offset (to save
 		// ourselves the overhead of iterating the utf8 string againg)
 		int k = i+1;
 		while(k < RI->m_pGlyphs->num_glyphs && RI->m_pGlyphs->log_clusters[k] == iOff)
 		{
-			RI->m_pLogOffsets[k] = j;
+			pLogOffsets[k] = j;
 			++k;
 		}
 
 		// jump ahead as appropriate
 		i = k - 1;
 	}
-	
+
+	for (int i=0; i< RI->m_pGlyphs->num_glyphs;i++)
+	  UT_ASSERT( pLogOffsets[i] == RI->m_pLogOffsets[i]);
+
+	delete [] pLogOffsets;
+
+#endif	
 	// need to transfer data that we will need later from si to RI
 	RI->m_iLength = si.m_iLength;
 
