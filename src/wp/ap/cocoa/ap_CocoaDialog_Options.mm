@@ -262,7 +262,6 @@ void AP_CocoaDialog_Options::runModal(XAP_Frame * pFrame)
 	defn(Switch_Ruler,					AP_PreferenceScheme::bo_Ruler);
 	defn(Switch_SaveScheme,				AP_PreferenceScheme::bo_SaveScheme);
 	defn(Switch_ScreenColor,			AP_PreferenceScheme::bo_ScreenColor);
-	defn(Switch_SmartQuotes,			AP_PreferenceScheme::bo_SmartQuotes);
 	defn(Switch_Splash,					AP_PreferenceScheme::bo_Splash);
 	defn(Switch_StatusBar,				AP_PreferenceScheme::bo_StatusBar);
 	defn(Switch_SuggestCorrections,		AP_PreferenceScheme::bo_SuggestCorrections);
