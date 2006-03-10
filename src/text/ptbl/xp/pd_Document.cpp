@@ -2932,13 +2932,15 @@ bool PD_Document::notifyListeners(const pf_Frag_Strux * pfs, const PX_ChangeReco
 		if (pListener)
 		{
 			PL_StruxFmtHandle sfh = 0;
-			if (pfs)
+			if (pfs && (pListener->getType() != PTL_CollabExport))
 				sfh = pfs->getFmtHandle(lid);
 
 			// some pt elements have no corresponding layout elements (for example a
 			// hdr/ftr section that was deleted in revisions mode)
-			if(sfh)
+			if(sfh && (pListener->getType() != PTL_CollabExport ))
 				pListener->change(sfh,pcr);
+			else if(pListener->getType() == PTL_CollabExport)
+				pListener->change(NULL,pcr);	
 		}
 	}
 
@@ -3051,11 +3053,14 @@ bool PD_Document::notifyListeners(const pf_Frag_Strux * pfs,
 		if (pListener)
 		{
 			PL_StruxDocHandle sdhNew = static_cast<PL_StruxDocHandle>(pfsNew);
-			PL_StruxFmtHandle sfh = pfs->getFmtHandle(lid);
+			PL_StruxFmtHandle sfh = NULL;
+			if(pListener->getType() != PTL_CollabExport)
+				sfh = pfs->getFmtHandle(lid);
 			if (pListener->insertStrux(sfh,pcr,sdhNew,lid,s_BindHandles))
 			{
 				// verify that the listener used our callback
-				UT_ASSERT_HARMLESS(pfsNew->getFmtHandle(lid));
+				if(pListener->getType() != PTL_CollabExport)
+					UT_ASSERT_HARMLESS(pfsNew->getFmtHandle(lid));
 			}
 		}
 	}

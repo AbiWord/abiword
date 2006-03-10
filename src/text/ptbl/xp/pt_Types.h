@@ -110,7 +110,8 @@ typedef enum _PTChangeFmt
 typedef enum _PLListenerType
 {
 	PTL_UNKNOWN,
-	PTL_DocLayout
+	PTL_DocLayout,
+	PTL_CollabExport
 	/* add more types here ONLY as necessary */
 } PLListenerType;
 
