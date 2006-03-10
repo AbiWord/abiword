@@ -2872,6 +2872,40 @@ bool PD_Document::signalListeners(UT_uint32 iSignal) const
 	return true;
 }
 
+/*!
+ * return a vector of all the views attached to this document.
+ */
+void PD_Document::getAllViews(UT_GenericVector<AV_View *> * vecViews)
+{
+	PL_ListenerId lid;
+	PL_ListenerId lidCount = m_vecListeners.getItemCount();
+
+	// for each listener in our vector, we send a notification.
+	// we step over null listners (for listeners which have been
+	// removed (views that went away)).
+
+	for (lid=0; lid<lidCount; lid++)
+	{
+		PL_Listener * pListener = static_cast<PL_Listener *>(m_vecListeners.getNthItem(lid));
+		if (pListener)
+		{
+			if(pListener->getType() == PTL_DocLayout)
+				{
+					fl_DocListener * pLayoutList = static_cast<fl_DocListener *>(pListener);
+					const FL_DocLayout * pLayout = pLayoutList->getLayout();
+					if(pLayout != NULL)
+					{
+						AV_View * pView = reinterpret_cast<AV_View *>(pLayout->getView());
+						if(pView != NULL)
+						 {
+							 vecViews->addItem(pView);
+						 }
+					}
+				}
+		}
+	}
+}
+
 bool PD_Document::notifyListeners(const pf_Frag_Strux * pfs, const PX_ChangeRecord * pcr) const
 {
 	// notify listeners of a change.

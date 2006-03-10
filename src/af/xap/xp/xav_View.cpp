@@ -37,7 +37,8 @@ AV_View::AV_View(XAP_App * pApp, void* pParentData)
 	m_bIsLayoutFilling(false),
 	m_iWindowHeight(0),
 	m_iWindowWidth(0),
-	m_dOneTDU(0)
+	m_dOneTDU(0),
+	m_bCouldBeActive(true)
 {
 }
 
@@ -149,8 +150,15 @@ bool AV_View::notifyListeners(const AV_ChangeMask hint, void * pPrivateData)
 	return true;
 }
 
+void AV_View:: setActivityMask(bool bActive)
+{
+        m_bCouldBeActive = bActive;
+}
+
 bool AV_View::isActive(void) 
 {
+        if(!m_bCouldBeActive)
+	        return false;
 	AV_View* pActiveView = NULL;
 	XAP_Frame* lff = getApp()->getLastFocussedFrame();
 	if(lff) 

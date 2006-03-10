@@ -136,6 +136,21 @@ enum FV_BIDI_Order
 	FV_Order_Logical_RTL = UT_BIDI_RTL
 };
 
+class ABI_EXPORT fv_CaretProps
+{
+ public:
+	PT_DocPosition		m_iInsPoint;
+	UT_sint32			m_xPoint;
+	UT_sint32			m_yPoint;
+	//the followingare BiDi specific, but need to be in place because of the
+	//change to the signature of findPointCoords
+	UT_sint32			m_xPoint2;
+	UT_sint32			m_yPoint2;
+	bool			        m_bPointDirection;
+	bool				m_bDefaultDirectionRtl;
+	bool				m_bUseHebrewContextGlyphs;
+	UT_uint32			m_iPointHeight;
+};
 								
 class ABI_EXPORT FV_View : public AV_View
 {
@@ -945,6 +960,7 @@ private:
 	FV_VisualInlineImage  m_InlineImage;
 	bool                m_bInsertAtTablePending;
 	PT_DocPosition      m_iPosAtTable;
+	UT_GenericVector<fv_CaretProps *> m_vecCarets;
 };
 
 #endif /* FV_VIEW_H */
