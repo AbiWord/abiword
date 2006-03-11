@@ -5141,21 +5141,50 @@ void s_HTML_Listener::_emitTOC () {
 		m_bInBlock = false;
 		tagClose (TT_H1, "h1");
 		
+		int level1_depth = 0;
+		int level2_depth = 0;
+		int level3_depth = 0;
+		int level4_depth = 0;
+
 		m_bInTOC = true;
 		for (int i = 0; i < m_toc->getNumTOCEntries(); i++) {
-			int tocLevel = 0;			
+			int tocLevel = 0;		
 			
 			UT_UCS4String tocText(m_toc->getNthTOCEntry(i, &tocLevel).utf8_str());
 
-			if (tocText.length()) {
-				UT_UTF8String tocLink(UT_UTF8String_sprintf("<a href=\"#__AbiTOC%d__\">", i));
-				
-				_openTag (TT_P, NULL);
-				m_pie->write(tocLink.utf8_str(), tocLink.length());
-				_outputData (tocText.ucs4_str(), tocText.length());
-				m_pie->write("</a>", 4);
-				_closeTag ();
+			{
+				UT_LocaleTransactor t(LC_NUMERIC, "C");
+				m_utf8_1 = UT_UTF8String_sprintf("p style=\"text-indent:%gin\"", ((tocLevel-1) * .5));
 			}
+			
+			UT_UCS4String tocLevelText;
+			if(tocLevel == 1) {
+				level1_depth++;
+				level2_depth = level3_depth = level4_depth = 0;
+				
+				tocLevelText = UT_UTF8String_sprintf("[%d] ", level1_depth).ucs4_str();
+			} else if(tocLevel == 2) {
+				level2_depth++;
+				level3_depth = level4_depth = 0;
+				tocLevelText = UT_UTF8String_sprintf("[%d.%d] ", level1_depth, level2_depth).ucs4_str();
+			} else if(tocLevel == 3) {
+				level3_depth++;
+				level4_depth = 0;
+				tocLevelText = UT_UTF8String_sprintf("[%d.%d.%d] ", level1_depth, level2_depth, level3_depth).ucs4_str();
+			} else if(tocLevel == 4) {
+				level4_depth++;
+				tocLevelText = UT_UTF8String_sprintf("[%d.%d.%d.%d] ", level1_depth, level2_depth, level3_depth, level4_depth).ucs4_str();
+			}
+			
+			UT_UTF8String tocLink(UT_UTF8String_sprintf("<a href=\"#__AbiTOC%d__\">", i));
+			tagOpen (TT_P, m_utf8_1);
+			m_bInBlock = true;
+			m_pie->write(tocLink.utf8_str(), tocLink.length());
+			_outputData (tocLevelText.ucs4_str(), tocLevelText.length());
+			_outputData (tocText.ucs4_str(), tocText.length());
+			m_pie->write("</a>", 4);
+			m_bInBlock = false;
+			tagClose (TT_P, "p");
 		}
 		m_bInTOC = false;
 	}
