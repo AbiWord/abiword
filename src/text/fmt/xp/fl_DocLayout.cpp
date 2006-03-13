@@ -81,8 +81,6 @@ FL_DocLayout::FL_DocLayout(PD_Document* doc, GR_Graphics* pG)
     m_lid((PL_ListenerId)-1),
     m_pFirstSection(NULL),
     m_pLastSection(NULL),
-	m_toSpellCheckHead(NULL),
-	m_toSpellCheckTail(NULL),
     m_pPendingBlockForSpell(NULL),
     m_pPendingWordForSpell(NULL),
     m_bSpellCheckCaps(true),
@@ -139,8 +137,7 @@ FL_DocLayout::FL_DocLayout(PD_Document* doc, GR_Graphics* pG)
 
 	m_pDoc->disableListUpdates();
 
-	strncpy(m_szCurrentTransparentColor,
-			static_cast<const char *>(XAP_PREF_DEFAULT_ColorForTransparent), 9);
+	strncpy(m_szCurrentTransparentColor,static_cast<const char *>(XAP_PREF_DEFAULT_ColorForTransparent),9);
 	m_vecFootnotes.clear();
 	m_vecEndnotes.clear();
 
@@ -2370,92 +2367,104 @@ FL_DocLayout::_backgroundCheck(UT_Worker * pWorker)
 	// Note: this is not a good way to do mutual exclusion!
 	pDocLayout->m_bImSpellCheckingNow = true;
 
-	fl_BlockLayout *pB = pDocLayout->spellQueueHead();
-	xxx_UT_DEBUGMSG(("Spellchecking block %x \n",pB));
-	if (pB != NULL)
+	// Find vector of blocks to check.
+	UT_GenericVector<fl_BlockLayout *>* vecToCheck = &pDocLayout->m_vecUncheckedBlocks;
+	UT_ASSERT(vecToCheck);
+
+	UT_uint32 i = vecToCheck->getItemCount();
+	if (i > 0)
 	{
-		// This looping seems like a lot of wasted effort when we
-		// don't define meaning for most of the bits, but it's
-		// small effort compared to all that squiggle stuff that
-		// goes on for the spelling stuff.
-		if(pB->getContainerType() == FL_CONTAINER_BLOCK)
+		// Check each block in the queue
+		fl_BlockLayout *pB = vecToCheck->getFirstItem();
+		xxx_UT_DEBUGMSG(("Spellchecking block %x \n",pB));
+		if (pB != NULL)
 		{
-			for (UT_uint32 bitdex = 0;
-				 bitdex < 8*sizeof(pB->m_uBackgroundCheckReasons);
-				 bitdex++)
+			// This looping seems like a lot of wasted effort when we
+			// don't define meaning for most of the bits, but it's
+			// small effort compared to all that squiggle stuff that
+			// goes on for the spelling stuff.
+			if(pB->getContainerType() == FL_CONTAINER_BLOCK)
 			{
-				UT_uint32 mask;
-				mask = (1 << bitdex);
-				if (pB->hasBackgroundCheckReason(mask))
+				for (UT_uint32 bitdex = 0;
+					 bitdex < 8*sizeof(pB->m_uBackgroundCheckReasons);
+					 bitdex++)
 				{
-					if(!pDocLayout->m_bFinishedInitialCheck 
-					   && pDocLayout->m_iPrevPos > pB->getPosition())
+					UT_uint32 mask;
+					mask = (1 << bitdex);
+					if (pB->hasBackgroundCheckReason(mask))
 					{
-						pDocLayout->m_bFinishedInitialCheck = true;
-					}
-					pDocLayout->m_iPrevPos = pB->getPosition();
-					
+					        if(!pDocLayout->m_bFinishedInitialCheck && pDocLayout->m_iPrevPos > pB->getPosition())
+						{
+						     pDocLayout->m_bFinishedInitialCheck = true;
+						}
+						pDocLayout->m_iPrevPos = pB->getPosition();
+
 					// Note that we remove this reason from queue
 					// before checking it (otherwise asserts could
 					// trigger redundant recursive calls)
-					switch (mask)
-					{
-					case bgcrNone:
-						pB->removeBackgroundCheckReason(mask);
-						break;
-					case bgcrDebugFlash:
-						pB->debugFlashing();
-						pB->removeBackgroundCheckReason(mask);
-						break;
-					case bgcrSpelling:
-					{
-						xxx_UT_DEBUGMSG(("Spelling checking block %x directly \n",pB));
-						bool b = pB->checkSpelling();
-						if(b)
+						switch (mask)
 						{
+						case bgcrNone:
 							pB->removeBackgroundCheckReason(mask);
-						}
-						break;
-					}
-					case bgcrGrammar:
-					{
-						if(!pDocLayout->m_bFinishedInitialCheck)
+							break;
+						case bgcrDebugFlash:
+							pB->debugFlashing();
+							pB->removeBackgroundCheckReason(mask);
+							break;
+						case bgcrSpelling:
 						{
-							if(pDocLayout->m_iGrammarCount < 4)
+							xxx_UT_DEBUGMSG(("Spelling checking block %x directly \n",pB));
+							bool b = pB->checkSpelling();
+							if(b)
 							{
-								pDocLayout->m_iGrammarCount++;
-								pDocLayout->m_bImSpellCheckingNow = false;
-								return;
+								pB->removeBackgroundCheckReason(mask);
 							}
-							pDocLayout->m_iGrammarCount = 0;
+							break;
 						}
-						
-						UT_DEBUGMSG(("Grammar checking block %x directly \n",pB));
-						XAP_App * pApp = pDocLayout->getView()->getApp();
-						//
-						// If a grammar checker plugin is loaded it will check the block now.
-						//
-						pApp->notifyListeners(pDocLayout->getView(),
-											  AV_CHG_BLOCKCHECK,reinterpret_cast<void *>(pB));
-						pB->removeBackgroundCheckReason(mask);
-						pB->drawGrammarSquiggles();
-						break;
-					}
-					
-					case bgcrSmartQuotes:
-					default:
-						pB->removeBackgroundCheckReason(mask);
-						break;
+						case bgcrGrammar:
+						{
+						        if(!pDocLayout->m_bFinishedInitialCheck)
+							{
+							      if(pDocLayout->m_iGrammarCount < 4)
+							      {
+								   pDocLayout->m_iGrammarCount++;
+								   pDocLayout->m_bImSpellCheckingNow = false;
+								   return;
+							      }
+							      pDocLayout->m_iGrammarCount = 0;
+							}
+
+							UT_DEBUGMSG(("Grammar checking block %x directly \n",pB));
+							XAP_App * pApp = pDocLayout->getView()->getApp();
+     //
+     // If a grammar checker plugin is loaded it will check the block now.
+     //
+							pApp->notifyListeners(pDocLayout->getView(),AV_CHG_BLOCKCHECK,reinterpret_cast<void *>(pB));
+							pB->removeBackgroundCheckReason(mask);
+							pB->drawGrammarSquiggles();
+							break;
+						}
+
+						case bgcrSmartQuotes:
+						default:
+							pB->removeBackgroundCheckReason(mask);
+							break;
+						}
 					}
 				}
 			}
-		}
-		// Delete block from queue if there are no more reasons
-		// for checking it.
-		if((pB->getContainerType() != FL_CONTAINER_BLOCK) 
-		   || (!pB->m_uBackgroundCheckReasons))
-		{
-			pB->dequeueFromSpellCheck();
+			// Delete block from queue if there are no more reasons
+			// for checking it.
+			if(pB->getContainerType() != FL_CONTAINER_BLOCK)
+			{
+				vecToCheck->deleteNthItem(0);
+				i--;
+			}
+			else if (!pB->m_uBackgroundCheckReasons)
+			{
+				vecToCheck->deleteNthItem(0);
+				i--;
+			}
 		}
 	}
 	else
@@ -2527,34 +2536,31 @@ FL_DocLayout::queueBlockForBackgroundCheck(UT_uint32 iReason,
 	}
 	pBlock->addBackgroundCheckReason(iReason);
 
-	if (!pBlock->isQueued())
+	UT_sint32 i = m_vecUncheckedBlocks.findItem(pBlock);
+	if (i < 0)
 	{
 		// Add block if it's not already in the queue. Add it either
 		// at the head, or at the tail.
 		if (bHead)
-			pBlock->enqueueToSpellCheckAfter(NULL);
+			m_vecUncheckedBlocks.insertItemAt(pBlock, 0);
 		else
-			pBlock->enqueueToSpellCheckAfter(m_toSpellCheckTail);
+			m_vecUncheckedBlocks.addItem(pBlock);
 	}
 	else if (bHead)
 	{
 		// Block is already in the queue, bubble it to the start
-		pBlock->dequeueFromSpellCheck();
-		pBlock->enqueueToSpellCheckAfter(NULL);
+		m_vecUncheckedBlocks.deleteNthItem(i);
+		m_vecUncheckedBlocks.insertItemAt(pBlock, 0);
 	}
 }
 
 void FL_DocLayout::dequeueAll(void)
 {
-	fl_BlockLayout *pB = spellQueueHead();
-	while (pB != NULL)
+	UT_sint32 i =0;
+	for(i= m_vecUncheckedBlocks.getItemCount()-1; i>= 0; i--)
 	{
-		fl_BlockLayout *pNext = pB->nextToSpell();
-		pB->clearQueueing();
-		pB = pNext;
+		m_vecUncheckedBlocks.deleteNthItem(i);	
 	}
-	setSpellQueueHead(NULL);
-	setSpellQueueTail(NULL);
 	UT_DEBUGMSG(("Dequeue all \n"));
 
 	m_PendingBlockForGrammar = NULL;
@@ -2667,9 +2673,11 @@ FL_DocLayout::dequeueBlockForBackgroundCheck(fl_BlockLayout *pBlock)
 	bool bRes = false;
 
 	// Remove block from queue if it's found there
-	bRes = pBlock->isQueued();
-	if (bRes) {
-		pBlock->dequeueFromSpellCheck();
+	UT_sint32 i = m_vecUncheckedBlocks.findItem(pBlock);
+	if (i >= 0)
+	{
+		m_vecUncheckedBlocks.deleteNthItem(i);
+		bRes = true;
 	}
 	if(pBlock == m_PendingBlockForGrammar)
 	  {
@@ -2677,7 +2685,7 @@ FL_DocLayout::dequeueBlockForBackgroundCheck(fl_BlockLayout *pBlock)
 	    m_PendingBlockForGrammar = NULL;
 	  }
 	// When queue is empty, kill timer
-	if (spellQueueHead() == NULL)
+	if (m_vecUncheckedBlocks.getItemCount() == 0)
 	{
 		m_bStopSpellChecking = true;
 		if(m_pBackgroundCheckTimer)
@@ -3757,7 +3765,11 @@ void FL_DocLayout::notifyBlockIsBeingDeleted(fl_BlockLayout *pBlock)
 	{
 		m_pPendingBlockForSmartQuote = NULL;
 	}
-	pBlock->dequeueFromSpellCheck();
+	UT_sint32 loc = m_vecUncheckedBlocks.findItem(pBlock);
+	if(loc >= 0)
+	{
+		m_vecUncheckedBlocks.deleteNthItem(loc);
+	}
 }
 
 inline fl_AutoNum * FL_DocLayout::getListByID(UT_uint32 id) const
