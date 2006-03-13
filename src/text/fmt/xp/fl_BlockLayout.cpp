@@ -4558,7 +4558,7 @@ bool	fl_BlockLayout::_doInsertTextSpan(PT_BlockOffset blockOffset, UT_uint32 len
 	
 	m_pLayout->getGraphics()->itemize(text, I);
 
-	for(UT_uint32 i = 0; i < I.getItemCount() - 1; ++i)
+	for(UT_sint32 i = 0; i < static_cast<UT_sint32>(I.getItemCount()) - 1; ++i)
 	{
 		UT_uint32 iRunOffset = I.getNthOffset(i);
 		UT_uint32 iRunLength = I.getNthLength(i);
