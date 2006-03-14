@@ -2774,6 +2774,90 @@ bool PD_Document::removeStyle(const XML_Char * pszName)
 	return true;
 }
 
+/*!
+ * Calculate the offset from the supplied position due to the effects of
+ * subsequent change record actions after the applied change record number.
+ */
+UT_sint32 PD_Document::adjustPointForCR(UT_sint32 iCRNum, PT_DocPosition pos) const
+{
+	PX_ChangeRecord * pcr = NULL;
+	UT_sint32 iOff =0;
+	UT_sint32 iCurCr = static_cast<UT_sint32>(m_pPieceTable->undoCount(true));
+	while(iCurCr > iCRNum)
+	{
+		m_pPieceTable->getNthUndo(&pcr,iCRNum);
+		iOff += getAdjustment(pcr,pos);
+		iCRNum--;
+	}
+	return iOff;
+}
+
+/*!
+ * Get the adjustment for the given changeRecord.
+ */
+UT_sint32 PD_Document::getAdjustment(const PX_ChangeRecord * pcr, PT_DocPosition pos) const
+{
+	UT_sint32 ioff = 0;
+	PT_DocPosition iCRPos = pcr->getPosition();
+	if(iCRPos > pos)
+		return ioff;
+	switch(pcr->getType())
+	{
+		case PX_ChangeRecord::PXT_GlobMarker:
+			ioff = 0;
+			break;
+		case PX_ChangeRecord::PXT_InsertSpan:
+			{
+				const PX_ChangeRecord_SpanChange * pcrc = static_cast<const PX_ChangeRecord_SpanChange *> (pcr);
+				UT_sint32 iLen = static_cast<UT_sint32>(pcrc->getLength());
+				ioff = iLen;
+			}
+			break;
+		case PX_ChangeRecord::PXT_DeleteSpan:
+			{
+				const PX_ChangeRecord_SpanChange * pcrc = static_cast<const PX_ChangeRecord_SpanChange *> (pcr);
+				UT_sint32 iLen = static_cast<UT_sint32>(pcrc->getLength());
+				ioff = -iLen;
+			}
+			break;
+		case PX_ChangeRecord::PXT_ChangeSpan:
+			ioff = 0;
+			break;
+		case PX_ChangeRecord::PXT_InsertStrux:
+			ioff = 1;
+			break;
+		case PX_ChangeRecord::PXT_DeleteStrux:
+			ioff = -1;
+			break;
+		case PX_ChangeRecord::PXT_ChangeStrux:
+			ioff = 0;
+			break;
+		case PX_ChangeRecord::PXT_InsertObject:
+			ioff = 1;
+			break;
+		case PX_ChangeRecord::PXT_DeleteObject:
+			ioff = -1;
+			break;
+		case PX_ChangeRecord::PXT_ChangeObject:
+		case PX_ChangeRecord::PXT_InsertFmtMark:
+		case PX_ChangeRecord::PXT_DeleteFmtMark:
+		case PX_ChangeRecord::PXT_ChangeFmtMark:
+		case PX_ChangeRecord::PXT_ChangePoint:
+		case PX_ChangeRecord::PXT_ListUpdate:
+		case PX_ChangeRecord::PXT_StopList:
+		case PX_ChangeRecord::PXT_UpdateField:
+		case PX_ChangeRecord::PXT_RemoveList:
+		case PX_ChangeRecord::PXT_UpdateLayout:
+			ioff = 0;
+			break;
+		default:
+			ioff = 0;
+			break;
+	}
+	return ioff;
+
+}
+
 bool PD_Document::appendStyle(const XML_Char ** attributes)
 {
 	UT_return_val_if_fail (m_pPieceTable, false);

@@ -1118,7 +1118,8 @@ GtkWidget *AP_UnixDialog_Lists::_constructWindowContents (void)
 GList *  AP_UnixDialog_Lists::_getGlistFonts (void)
 {
 	XAP_UnixApp * unixapp = static_cast<XAP_UnixApp *> (m_pApp);
-	UT_GenericVector<XAP_UnixFont*>* list = unixapp->getFontManager()->getAllFonts();
+
+	UT_GenericVector<XAP_UnixFont*>* list =  XAP_UnixFontManager::pFontManager->getAllFonts();
 	UT_uint32 count = list->size();
 
 	GList *glFonts = NULL;

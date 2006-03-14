@@ -73,7 +73,7 @@ public:
 	UT_uint32                               undoCount(bool bUndo) const;
 	bool					undoCmd(void);
 	bool					redoCmd(void);
-
+    bool                    getNthUndo(PX_ChangeRecord ** ppcr, UT_sint32 iUndo) const;
 	void                    clearUndo() {m_history.clearHistory();}
 	
 	static void		s_getLocalisedStyleName(const char *szStyle, UT_UTF8String &utf8);

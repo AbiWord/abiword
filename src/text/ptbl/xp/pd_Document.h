@@ -296,6 +296,8 @@ PT_AttrPropIndex            getAPIFromSOH(PL_ObjectHandle odh);
 	bool					appendObject(PTObjectType pto, const XML_Char ** attributes);
 	bool					appendFmtMark(void);
 	bool					appendStyle(const XML_Char ** attributes);
+	UT_sint32               adjustPointForCR(UT_sint32 iCRNum, PT_DocPosition pos) const;
+	UT_sint32               getAdjustment(const PX_ChangeRecord * pcr, PT_DocPosition pos) const;
 	bool                    changeStruxFormatNoUpdate(PTChangeFmt ptc ,PL_StruxDocHandle sdh,const XML_Char ** attributes);	
 	bool					insertStruxBeforeFrag(pf_Frag * pF, PTStruxType pts,
 												  const XML_Char ** attributes, pf_Frag_Strux ** ppfs_ret = 0);
