@@ -62,10 +62,6 @@ IE_ImpGraphic_GdkPixbuf::~IE_ImpGraphic_GdkPixbuf()
  */
 UT_Error IE_ImpGraphic_GdkPixbuf::importGraphic(UT_ByteBuf * pBB, FG_Graphic ** ppfg)
 {
-#if 1
-	*ppfg = 0;
-	return UT_ERROR;
-#else
 	GdkPixbuf * pixbuf = pixbufForByteBuf ( pBB );
 
 	if (!pixbuf)
@@ -117,7 +113,6 @@ UT_Error IE_ImpGraphic_GdkPixbuf::importGraphic(UT_ByteBuf * pBB, FG_Graphic ** 
 
 	*ppfg = static_cast<FG_Graphic *>(pFGR);
 	return UT_OK;
-#endif
 }
 
 /*!
@@ -126,10 +121,6 @@ UT_Error IE_ImpGraphic_GdkPixbuf::importGraphic(UT_ByteBuf * pBB, FG_Graphic ** 
 UT_Error IE_ImpGraphic_GdkPixbuf::convertGraphic(UT_ByteBuf* pBB,
 								UT_ByteBuf** ppBB)
 {
-#if 1
-	*ppBB = 0;
-	return UT_ERROR;
-#else
 	GdkPixbuf * pixbuf = pixbufForByteBuf (pBB);
 
 	if (!pixbuf)
@@ -164,7 +155,6 @@ UT_Error IE_ImpGraphic_GdkPixbuf::convertGraphic(UT_ByteBuf* pBB,
 
 	*ppBB =  m_pPngBB;
 	return UT_OK;
-#endif
 }
 
 /*!
