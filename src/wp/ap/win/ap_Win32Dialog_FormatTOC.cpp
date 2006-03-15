@@ -270,6 +270,14 @@ void AP_Win32Dialog_FormatTOC_Sheet::_onInitDialog(HWND hwnd)
 		(LPARAM) (pSS->getValue(XAP_STRING_ID_DLG_Close)));
 }
 
+
+void AP_Win32Dialog_FormatTOC_Sheet::destroy(void) 
+{
+	XAP_Win32PropertySheet::destroy ();
+	getContainer()->modeless_cleanup ();
+}
+
+
 /*
 
 	General
