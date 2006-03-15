@@ -62,6 +62,10 @@ IE_ImpGraphic_GdkPixbuf::~IE_ImpGraphic_GdkPixbuf()
  */
 UT_Error IE_ImpGraphic_GdkPixbuf::importGraphic(UT_ByteBuf * pBB, FG_Graphic ** ppfg)
 {
+#if 1
+	*ppfg = 0;
+	return UT_ERROR;
+#else
 	GdkPixbuf * pixbuf = pixbufForByteBuf ( pBB );
 
 	if (!pixbuf)
@@ -113,25 +117,7 @@ UT_Error IE_ImpGraphic_GdkPixbuf::importGraphic(UT_ByteBuf * pBB, FG_Graphic ** 
 
 	*ppfg = static_cast<FG_Graphic *>(pFGR);
 	return UT_OK;
-}
-
-/*!
- * Convert the data contained in the file to into a PNG-based 
- * FG_Graphic type
- */
-UT_Error IE_ImpGraphic_GdkPixbuf::importGraphic(const char * szFilename, FG_Graphic ** ppfg)
-{
-	UT_ByteBuf bb;
-
-	if ( bb.insertFromFile(0, szFilename) )
-		{
-			return importGraphic ( &bb, ppfg ) ;
-		}
-	else
-		{
-			*ppfg = 0;
-			return UT_ERROR;
-		}
+#endif
 }
 
 /*!
@@ -140,6 +126,10 @@ UT_Error IE_ImpGraphic_GdkPixbuf::importGraphic(const char * szFilename, FG_Grap
 UT_Error IE_ImpGraphic_GdkPixbuf::convertGraphic(UT_ByteBuf* pBB,
 								UT_ByteBuf** ppBB)
 {
+#if 1
+	*ppBB = 0;
+	return UT_ERROR;
+#else
 	GdkPixbuf * pixbuf = pixbufForByteBuf (pBB);
 
 	if (!pixbuf)
@@ -174,6 +164,7 @@ UT_Error IE_ImpGraphic_GdkPixbuf::convertGraphic(UT_ByteBuf* pBB,
 
 	*ppBB =  m_pPngBB;
 	return UT_OK;
+#endif
 }
 
 /*!
