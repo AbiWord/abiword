@@ -126,8 +126,11 @@ void AP_Args::parsePoptOpts ()
  * Handles arguments which require an XAP_App but no windows.
  * It has a callback to getApp()::doWindowlessArgs().
  */
-bool AP_Args::doWindowlessArgs()
+bool AP_Args::doWindowlessArgs(bool & bSuccessful)
 {
+  // start out optimistic
+  bSuccessful = true;
+
 #ifdef DEBUG
 	if (m_iDumpstrings)
 	{
@@ -163,7 +166,7 @@ bool AP_Args::doWindowlessArgs()
 		while ((m_sFile = poptGetArg (poptcon)) != NULL)
 		{
 			UT_DEBUGMSG(("Converting file (%s) to type (%s)\n", m_sFile, m_sTo));
-			conv->convertTo(m_sFile, m_sTo);
+			bSuccessful = bSuccessful && conv->convertTo(m_sFile, m_sTo);
 		}
 		delete conv;
 		return false;
@@ -176,13 +179,16 @@ bool AP_Args::doWindowlessArgs()
 // ie_impGraphicPNG, which perhaps doesn't like you freeing the
 // returned buffer.
 	  while ((m_sFile = poptGetArg (poptcon)) != NULL)
-	    conv->convertToPNG(m_sFile);
+	    bSuccessful = bSuccessful && conv->convertToPNG(m_sFile);
 	  delete conv;
 
 	  return false;
 	}
 
-	if (!m_pApp->doWindowlessArgs(this))
+	bool appWindowlessArgsWereSuccessful = true;
+	bool res = m_pApp->doWindowlessArgs(this, appWindowlessArgsWereSuccessful);
+	bSuccessful = bSuccessful && appWindowlessArgsWereSuccessful;
+	if (!res)
 		return false;
 
 	if (m_sTo || m_iToPNG || m_sPrintTo || m_iNosplash || m_sPlugin)

@@ -110,7 +110,7 @@ public:
 	virtual void errorMsgBadFile(XAP_Frame * pFrame, const char * file, 
 								 UT_Error error);
 	virtual void initPopt (AP_Args *);
-	virtual bool doWindowlessArgs (const AP_Args *);
+	virtual bool doWindowlessArgs (const AP_Args *, bool & bSuccess);
 	virtual XAP_Frame * newFrame(AP_App *);
 	bool makePngPreview(const char * pszInFile, const char * pszPNGFile, UT_sint32 iWidth, UT_sint32 iHeight);
 	AP_DiskStringSet * loadStringsFromDisk(const char 		   * szStringSet, 
