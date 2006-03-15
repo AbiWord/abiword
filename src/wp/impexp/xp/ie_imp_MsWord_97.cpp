@@ -1297,12 +1297,15 @@ XML_Char * IE_Imp_MsWord_97::_getBookmarkName(const wvParseStruct * ps, UT_uint3
 	{
 		// 16 bit stuff
 		const UT_UCS2Char * p = static_cast<const UT_UCS2Char *>(ps->Sttbfbkmk.u16strings[pos]);
-		UT_uint32 len  = UT_UCS2_strlen(static_cast<const UT_UCS2Char*>(ps->Sttbfbkmk.u16strings[pos]));
-		sUTF8.clear();
-		sUTF8.appendUCS2(p, len);
-		
-		str = new XML_Char[sUTF8.byteLength()+1];
-		strcpy(str, sUTF8.utf8_str());
+		if(p) {
+		  UT_uint32 len  = UT_UCS2_strlen(p);
+		  sUTF8.clear();
+		  sUTF8.appendUCS2(p, len);
+		  
+		  str = new XML_Char[sUTF8.byteLength()+1];
+		  strcpy(str, sUTF8.utf8_str());
+		} else
+		  str = NULL;
 	}
 	else
 	{
@@ -5445,6 +5448,8 @@ void IE_Imp_MsWord_97::_handleNotes(const wvParseStruct *ps)
 				break;
 			default:
 				UT_ASSERT_HARMLESS(UT_NOT_REACHED);
+				props[1] = "";
+				break;
 		}
 		
 		getDoc()->setProperties(&props[0]);
