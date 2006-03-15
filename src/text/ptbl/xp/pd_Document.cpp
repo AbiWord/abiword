@@ -2783,7 +2783,7 @@ UT_sint32 PD_Document::adjustPointForCR(UT_sint32 iCRNum, PT_DocPosition pos) co
 	PX_ChangeRecord * pcr = NULL;
 	UT_sint32 iOff =0;
 	UT_sint32 iCurCr = static_cast<UT_sint32>(m_pPieceTable->undoCount(true));
-	while(iCurCr > iCRNum)
+	while(iCurCr < iCRNum)
 	{
 		m_pPieceTable->getNthUndo(&pcr,iCRNum);
 		iOff += getAdjustment(pcr,pos);
