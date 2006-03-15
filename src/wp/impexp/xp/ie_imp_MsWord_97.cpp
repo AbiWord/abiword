@@ -5448,6 +5448,8 @@ void IE_Imp_MsWord_97::_handleNotes(const wvParseStruct *ps)
 				break;
 			default:
 				UT_ASSERT_HARMLESS(UT_NOT_REACHED);
+				props[1] = "";
+				break;
 		}
 		
 		getDoc()->setProperties(&props[0]);
