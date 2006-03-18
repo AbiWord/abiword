@@ -370,13 +370,9 @@ bool AP_Win32App::initialize(void)
 
 
 // if app is NULL then we use 'this'
-XAP_Frame * AP_Win32App::newFrame(AP_App *app)
+XAP_Frame * AP_Win32App::newFrame(void)
 {
-	AP_Win32Frame * pWin32Frame;
-	if (app == NULL)
-		pWin32Frame = new AP_Win32Frame(this);
-	else
-		pWin32Frame = new AP_Win32Frame(app);
+	AP_Win32Frame * pWin32Frame = new AP_Win32Frame();
 
 	if (pWin32Frame)
 		pWin32Frame->initialize();
@@ -1100,8 +1096,7 @@ static LRESULT CALLBACK _SplashWndProc(HWND hWnd, UINT message, WPARAM wParam, L
     case WM_PAINT:
         hdc = BeginPaint(hWnd, &ps);
 		{
-			// TODO: find XAP_App pointer for this
-			GR_Win32AllocInfo ai(hdc, hwndSplash,0);
+			GR_Win32AllocInfo ai(hdc, hwndSplash);
 			
 			GR_Graphics * pG = XAP_App::getApp()->newGraphics(ai);
 			{
@@ -1172,8 +1167,7 @@ static GR_Image * _showSplash(HINSTANCE hInstance, const char * szAppName)
 		if (hwndSplash) 
 		{
 			// create image first
-			// TODO: find XAP_App pointer for this
-			GR_Win32AllocInfo ai(GetDC(hwndSplash), hwndSplash,0);
+			GR_Win32AllocInfo ai(GetDC(hwndSplash), hwndSplash);
 			
 			GR_Graphics * pG = XAP_App::getApp()->newGraphics(ai);
 			
@@ -1257,12 +1251,13 @@ int AP_Win32App::WinMain(const char * szAppName, HINSTANCE hInstance,
 	// Step 2: Handle all non-window args.
 	// process args (calls common arg handler, which then calls platform specific)
 	// As best I understand, it returns true to continue and show window, or
-	// false if no window should be shown (and thus we should simply exit).
-	if (!Args.doWindowlessArgs())
+	// false if no window should be shown (and thus we should simply exit).    
+	bool windowlessArgsWereSuccessful = true;
+	if (!Args.doWindowlessArgs(windowlessArgsWereSuccessful))
 	{
 		pMyWin32App->shutdown();	// properly shutdown the app 1st
 		delete pMyWin32App;
-		return 0;
+		return (windowlessArgsWereSuccessful ? 0 : -1);
 	}
 
 	// Step 3: Create windows as appropriate.
@@ -1387,7 +1382,7 @@ catch (...)
 	
 	UT_uint32 i = 0;
 	
-	IEFileType abiType = IE_Imp::fileTypeForSuffix("abw");
+	IEFileType abiType = IE_Imp::fileTypeForSuffix(".abw");
 	for(;i<pApp->m_vecFrames.getItemCount();i++)
 	{
 		AP_Win32Frame * curFrame = (AP_Win32Frame*)pApp->m_vecFrames[i];
@@ -1507,8 +1502,10 @@ void AP_Win32App::errorMsgBadFile(XAP_Frame * pFrame, const char * file,
  * platform-specific windowless args.
  * return false if we should exit normally but Window should not be displayed
  */
-bool AP_Win32App::doWindowlessArgs(const AP_Args *Args)
+bool AP_Win32App::doWindowlessArgs(const AP_Args *Args, bool & bSuccess)
 {
+	bSuccess = true;
+
 	AP_Win32App * pMyWin32App = static_cast<AP_Win32App*>(Args->getApp());
 
 	if (Args->m_sGeometry)
@@ -1564,6 +1561,7 @@ bool AP_Win32App::doWindowlessArgs(const AP_Args *Args)
 		{
 			// couldn't load document
 			printf("Error: no file to print!\n");
+			bSuccess = false;
 		}
 
 		return false;
@@ -1592,6 +1590,7 @@ bool AP_Win32App::doWindowlessArgs(const AP_Args *Args)
 		if(!bFound)
 		{
 			printf("Plugin %s not found or loaded \n",Args->m_sPlugin);
+			bSuccess = false;
 			return false;
 		}
 
@@ -1606,6 +1605,7 @@ bool AP_Win32App::doWindowlessArgs(const AP_Args *Args)
 		{
 			printf("Plugin %s invoke method %s not found \n",
 				   Args->m_sPlugin,evExecute);
+			bSuccess = false;
 			return false;
 		}
 		//

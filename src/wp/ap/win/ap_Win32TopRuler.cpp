@@ -66,7 +66,7 @@ void AP_Win32TopRuler::setView(AV_View * pView)
 	AP_TopRuler::setView(pView);
 
 	DELETEP(m_pG);
-	GR_Win32AllocInfo ai(GetDC(m_hwndTopRuler), m_hwndTopRuler, m_pFrame->getApp());
+	GR_Win32AllocInfo ai(GetDC(m_hwndTopRuler), m_hwndTopRuler);
 	GR_Win32Graphics * pG = (GR_Win32Graphics *)XAP_App::getApp()->newGraphics(ai);
 
 	m_pG = pG;
@@ -103,7 +103,7 @@ HWND AP_Win32TopRuler::createWindow(HWND hwndContainer,
 	
 	
 
-	XAP_Win32App * app = static_cast<XAP_Win32App *>(m_pFrame->getApp());
+	XAP_Win32App * app = static_cast<XAP_Win32App *>(XAP_App::getApp());
 	m_hwndTopRuler = UT_CreateWindowEx(0, s_TopRulerWndClassName, NULL,
 									WS_CHILD | WS_VISIBLE,
 									left, top, width, s_iFixedHeight,
@@ -113,7 +113,7 @@ HWND AP_Win32TopRuler::createWindow(HWND hwndContainer,
 
 	
 	DELETEP(m_pG);
-	GR_Win32AllocInfo ai(GetDC(m_hwndTopRuler), m_hwndTopRuler, m_pFrame->getApp());
+	GR_Win32AllocInfo ai(GetDC(m_hwndTopRuler), m_hwndTopRuler);
 	GR_Win32Graphics * pG = (GR_Win32Graphics *)XAP_App::getApp()->newGraphics(ai);
 	m_pG = pG;
 	UT_return_val_if_fail (m_pG, 0);

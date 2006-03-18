@@ -26,6 +26,7 @@
 #include "fl_BlockLayout.h"
 #include "fp_Line.h"
 #include "fp_Run.h"
+#include "fp_EmbedRun.h"
 #include "fl_TableLayout.h"
 #include "fp_TableContainer.h"
 #include "fv_View.h"
@@ -760,9 +761,10 @@ void FV_VisualInlineImage::getImageFromSelection(UT_sint32 x, UT_sint32 y,PP_Att
 	if(pRun->getType() ==  FPRUN_EMBED)
 	{
 	  m_bIsEmbedded = true;
+	  m_bEmbedCanResize = (static_cast<fp_EmbedRun*>(pRun))->isResizeable();
 	}
 	else
-        {
+    {
 	  m_bIsEmbedded = false;
 	}
 	UT_sint32 xoff = 0, yoff = 0;
@@ -1022,10 +1024,18 @@ void FV_VisualInlineImage::setDragType(UT_sint32 x,UT_sint32 y, bool bDrawImage)
 	bool bRight = (iRight - ires < x) && (x < iRight + ires);
 	bool bTop = (iTop - ires < y) && (y < iTop + ires);
 	bool bBot = (iBot - ires < y) && (y < iBot + ires);
+
+//
+// Not resizeable embedded object
+//
+	if (m_bIsEmbedded && !m_bEmbedCanResize)
+	{
+		m_iDraggingWhat = FV_Inline_DragWholeImage;
+	}
 //
 // top left
 //
-	if((iLeft < x) && (x < iLeft + ires) && (iTop < y) && (y < iTop + ires))
+	else if((iLeft < x) && (x < iLeft + ires) && (iTop < y) && (y < iTop + ires))
 	{
 		m_iDraggingWhat = FV_Inline_DragTopLeftCorner;
 	}

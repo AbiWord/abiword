@@ -62,17 +62,22 @@ bool progExists(const char* progName)
 	if (!utvPath)
 	  return false;
 
+	bool found = false;
 	for(UT_uint32 i = 0; i < utvPath->getItemCount(); i++)
 	{
 		path = utvPath->getNthItem(i);
-		laststat = stat(UT_catPathname(path->c_str(), progName), &statbuf);
+		char * path2 = UT_catPathname(path->c_str(), progName);
+		laststat = stat(path2, &statbuf);
+		FREEP(path2);
 
 		if(laststat == 0 && (S_ISREG(statbuf.st_mode) || S_ISLNK(statbuf.st_mode)))
 		{
-			return true;
+			found = true;
+			break;
 		}
 	}
 
+	UT_VECTOR_PURGEALL(UT_String*, (*utvPath));
 	DELETEP(utvPath);
-	return false;
+	return found;
 }

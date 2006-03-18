@@ -27,6 +27,8 @@
 #ifndef AP_PREFS_SCHEMEIDS_H
 #define AP_PREFS_SCHEMEIDS_H
 
+#include "ap_Features.h"
+
 //////////////////////////////////////////////////////////////////////////////
 // The following are the set of application-dependent preference keys and the
 // set of default values for them.  Each item must have the AP_PREF_KEY_ prefix
@@ -136,7 +138,11 @@
 #define AP_PREF_DEFAULT_StringSetDirectory			"strings"					/* if relative, use prefix "getAbiSuiteAppDir()" */
 
 #define AP_PREF_KEY_LayoutMode                     "layoutMode"
+#ifdef EMBEDDED_TARGET
+#define AP_PREF_DEFAULT_LayoutMode                 "2" /* 1=print, 2=normal, 3=web */
+#else
 #define AP_PREF_DEFAULT_LayoutMode                 "1" /* 1=print, 2=normal, 3=web */
+#endif
 
 #define AP_PREF_KEY_AlwaysPromptEncoding			"AlwaysPromptEncoding"		/* if true, always show encoding dialog when importing/exporting text */
 #define AP_PREF_DEFAULT_AlwaysPromptEncoding		"0"

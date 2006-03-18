@@ -81,8 +81,8 @@ public:
 	inline virtual bool isSubscript(void) const;
 	GR_Font*				getFont(void) const
 		{ return _getFont(); }
-	const XML_Char *			getLanguage() const
-		{ return m_pLanguage; }
+	const XML_Char *			getLanguage() const;
+
 
 	UT_sint32				getStr(UT_UCSChar * str, UT_uint32 &iMax);
 

@@ -243,6 +243,7 @@ void fp_FrameContainer::clearScreen(void)
 	{
 		return;
 	}
+
 	UT_sint32 srcX,srcY;
 	UT_sint32 xoff,yoff;
 	getView()->getPageScreenOffsets(pPage,xoff,yoff);
@@ -474,6 +475,7 @@ void  fp_FrameContainer::drawHandles(dg_DrawArgs * pDA)
 	{
 	     return;
 	}
+
 	UT_sint32 iXlow = pDA->xoff - m_iXpad;
 	UT_sint32 iYlow = pDA->yoff - m_iYpad;
 
@@ -487,6 +489,9 @@ void  fp_FrameContainer::drawHandles(dg_DrawArgs * pDA)
  */
 void fp_FrameContainer::draw(dg_DrawArgs* pDA)
 {
+	FV_View * pView = getView();
+	UT_return_if_fail( pView);
+	
 	xxx_UT_DEBUGMSG(("FrameContainer %x called, page %x \n",this,getPage()));
 	if(getPage() == NULL)
 	{
@@ -494,14 +499,14 @@ void fp_FrameContainer::draw(dg_DrawArgs* pDA)
 	     getSectionLayout()->setNeedsReformat(getSectionLayout());
 	     if(getPage() == NULL)
 	     {
-		return;
+			 return;
 	     }
 	}
-	if(getView())
+	if(pView)
 	{
-		if(getView()->getFrameEdit()->getFrameEditMode() == FV_FrameEdit_DRAG_EXISTING)
+		if(pView->getFrameEdit()->getFrameEditMode() == FV_FrameEdit_DRAG_EXISTING)
 		{
-			if((getView()->getFrameEdit()->getFrameContainer() == this))
+			if((pView->getFrameEdit()->getFrameContainer() == this))
 			{
 				return;
 			}
@@ -527,6 +532,7 @@ void fp_FrameContainer::draw(dg_DrawArgs* pDA)
 	}
 	dg_DrawArgs da = *pDA;
 	GR_Graphics * pG = da.pG;
+	UT_return_if_fail( pG);
 	if(!pDA->bDirtyRunsOnly || m_bNeverDrawn)
 	{
 		if(m_bNeverDrawn)

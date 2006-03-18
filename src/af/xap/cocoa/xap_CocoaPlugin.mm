@@ -19,10 +19,105 @@
  * 02111-1307, USA.
  */
 
+#include "ut_string_class.h"
+#include "ut_xml.h"
+
+#include "xap_CocoaApp.h"
 #include "xap_CocoaAppController.h"
 #include "xap_CocoaPlugin.h"
 
 #include "ap_CocoaPlugin.h"
+
+class s_SimpleXML_Listener : public UT_XML::Listener
+{
+private:
+	id <XAP_CocoaPlugin_SimpleXML>	m_callback;
+
+	NSString *	m_error;
+
+	UT_XML		m_parser;
+
+public:
+	s_SimpleXML_Listener (id <XAP_CocoaPlugin_SimpleXML> callback) :
+		m_callback(callback),
+		m_error(0)
+	{
+		m_parser.setListener(this);
+	}
+
+	virtual ~s_SimpleXML_Listener ()
+	{
+		if (m_error)
+			{
+				[m_error release];
+				m_error = 0;
+			}
+	}
+
+	NSString * parse (NSString * path)
+	{
+		if (m_parser.parse ([path UTF8String]) != UT_OK)
+			if (!m_error)
+				{
+					m_error = [NSString stringWithFormat:@"Error while parsing \"%@\"", path];
+					[m_error retain];
+				}
+		return m_error;
+	}
+
+	virtual void startElement (const XML_Char * element_name, const XML_Char ** atts)
+	{
+		NSMutableDictionary * dictionary = [NSMutableDictionary dictionaryWithCapacity:4];
+
+		NSString * name = [NSString stringWithUTF8String:element_name];
+
+		const XML_Char ** attr = atts;
+
+		while (*attr)
+			{
+				const XML_Char * key   = *attr++;
+				const XML_Char * value = *attr++;
+
+				if (*key && value)
+					{
+						[dictionary setObject:[NSString stringWithUTF8String:value] forKey:[NSString stringWithUTF8String:key]];
+					}
+			}
+		if (![m_callback startElement:name attributes:dictionary])
+			{
+				m_parser.stop();
+
+				m_error = @"Simple XML parser stopped by callback method \"startElement:attributes:\".";
+				[m_error retain];
+			}
+	}
+
+	virtual void endElement (const XML_Char * element_name)
+	{
+		NSString * name = [NSString stringWithUTF8String:element_name];
+
+		if (![m_callback endElement:name])
+			{
+				m_parser.stop();
+
+				m_error = @"Simple XML parser stopped by callback method \"endElement:\".";
+				[m_error retain];
+			}
+	}
+
+	virtual void charData (const XML_Char * buffer, int length)
+	{
+		UT_UTF8String data(buffer,length);
+
+		if (![m_callback characterData:[NSString stringWithUTF8String:(data.utf8_str())]])
+			{
+				m_parser.stop();
+
+				m_error = @"Simple XML parser stopped by callback method \"characterData:\".";
+				[m_error retain];
+			}
+	}
+};
 
 @implementation XAP_CocoaPlugin
 
@@ -119,6 +214,66 @@
 - (id <NSObject, XAP_CocoaPlugin_MenuItem>)contextMenuItemWithLabel:(NSString *)label
 {
 	return [AP_CocoaPlugin_ContextMenuItem itemWithLabel:label];
+}
+
+- (NSArray *)toolProviders
+{
+	XAP_CocoaAppController * pController = (XAP_CocoaAppController *) [NSApp delegate];
+	return [pController toolProviders];
+}
+
+- (id <NSObject, XAP_CocoaPlugin_ToolProvider>)toolProvider:(NSString *)name
+{
+	XAP_CocoaAppController * pController = (XAP_CocoaAppController *) [NSApp delegate];
+	return [pController toolProvider:name];
+}
+
+- (NSString *)findResourcePath:(NSString *)relativePath
+{
+	XAP_CocoaApp * pApp = static_cast<XAP_CocoaApp *>(XAP_App::getApp());
+
+	NSString * resource_path = 0;
+
+	if (relativePath)
+		if ([relativePath length])
+			{
+				UT_String path;
+
+				if (pApp->findAbiSuiteLibFile(path, [relativePath UTF8String]))
+					{
+						resource_path = [NSString stringWithUTF8String:(path.c_str())];
+					}
+			}
+	return resource_path;
+}
+
+- (NSString *)userResourcePath:(NSString *)relativePath
+{
+	XAP_CocoaApp * pApp = static_cast<XAP_CocoaApp *>(XAP_App::getApp());
+
+	NSString * resource_path = [NSString stringWithUTF8String:(pApp->getUserPrivateDirectory())];
+
+	if (relativePath)
+		if ([relativePath length])
+			resource_path = [resource_path stringByAppendingPathComponent:relativePath];
+
+	return resource_path;
+}
+
+- (NSString *)parseFile:(NSString *)path simpleXML:(id <XAP_CocoaPlugin_SimpleXML>)callback
+{
+	NSString * error = 0;
+
+	if (path && callback)
+		{
+			s_SimpleXML_Listener parser(callback);
+			error = parser.parse(path);
+		}
+	else
+		{
+			error = @"Method \"parseFile:simpleXML:\" requires path and callback!";
+		}
+	return error;
 }
 
 @end

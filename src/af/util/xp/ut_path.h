@@ -30,6 +30,8 @@
 #include "ut_types.h"
 #endif
 
+class UT_UTF8String;
+
 ABI_EXPORT const char* UT_basename(const char* path);
 
 ABI_EXPORT bool UT_directoryExists(const char* dir);
@@ -40,4 +42,5 @@ ABI_EXPORT size_t UT_fileSize(const char * filename);
 
 ABI_EXPORT time_t UT_mTime(const char* path);
 
+ABI_EXPORT bool UT_legalizeFileName(UT_UTF8String &filename);
 #endif /* UT_PATH_H */

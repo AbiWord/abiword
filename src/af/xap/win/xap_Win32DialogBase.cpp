@@ -28,7 +28,7 @@ void XAP_Win32DialogBase::createModal(XAP_Frame* pFrame, LPCTSTR dlgTemplate)
 {
 	UT_ASSERT(m_tag == magic_tag);
 
-	XAP_App* pApp = pFrame->getApp();
+	XAP_App* pApp = XAP_App::getApp();
 	UT_ASSERT(pApp);
 
 	XAP_Win32App* pWin32App = static_cast<XAP_Win32App*>(pApp);
@@ -58,7 +58,7 @@ HWND XAP_Win32DialogBase::createModeless(XAP_Frame* pFrame, LPCTSTR dlgTemplate)
 {
 	UT_ASSERT(m_tag == magic_tag);
 
-	XAP_App* pApp = pFrame->getApp();
+	XAP_App* pApp = XAP_App::getApp();
 	UT_ASSERT(pApp);
 
 	XAP_Win32App* pWin32App = static_cast<XAP_Win32App*>(pApp);

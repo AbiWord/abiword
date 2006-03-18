@@ -108,7 +108,8 @@ PD_Document::PD_Document(XAP_App *pApp)
 	  m_iNewHdrHeight(0), 
 	  m_iNewFtrHeight(0),
 	  m_bMarginChangeOnly(false),
-	  m_bVDND(false)
+	  m_bVDND(false),
+	  m_iCRCounter(0)
 {
 	m_pApp = pApp;
 	
@@ -151,6 +152,12 @@ void PD_Document::setMetaDataProp ( const UT_String & key,
 	
 	UT_UTF8String * ptrvalue = new UT_UTF8String(value);
 	m_metaDataMap.set (key, ptrvalue);
+}
+
+UT_sint32  PD_Document::getNextCRNumber(void)
+{
+	m_iCRCounter++;
+	return m_iCRCounter;
 }
 
 bool PD_Document::getMetaDataProp (const UT_String & key, UT_UTF8String & outProp) const
@@ -1034,6 +1041,10 @@ bool PD_Document::insertFmtMark(PTChangeFmt ptc, PT_DocPosition dpos, PP_AttrPro
 	return m_pPieceTable->insertFmtMark(ptc, dpos, p_AttrProp);
 }
 
+bool  PD_Document::deleteFmtMark( PT_DocPosition dpos)
+{
+	return m_pPieceTable->deleteFmtMark(dpos);
+}
 //////////////////////////////////////////////////////////////////
 //////////////////////////////////////////////////////////////////
 
@@ -1464,6 +1475,52 @@ bool PD_Document::isStruxBeforeThis(PL_StruxDocHandle sdh,  PTStruxType pts)
 	if(pfsb->getStruxType() == pts)
 		return true;
 	return false;
+}
+
+ /*!
+ * Create a changerecord object and broadcast it to all the listeners.
+ * If bsave is true save the CR in th eunod stack.
+ */
+bool PD_Document::createAndSendCR(PT_DocPosition dpos, UT_sint32 iType,bool bSave)
+{
+	return m_pPieceTable->createAndSendCR(dpos,iType,bSave);
+}
+
+/*!
+ * This method deletes a strux of the type specified at the position
+ * requested.
+ * if bRecordChange is fale no change record is recorded.
+ * This method was created soled for the use of AbiCollab.
+  * Use with extreme care. Should only be needed by AbiCollab
+ */
+bool PD_Document::deleteStrux(PT_DocPosition dpos,
+							  PTStruxType pts,
+							  bool bRecordChange)
+{
+	PT_BlockOffset pOffset;
+	pf_Frag * pf = NULL;
+	m_pPieceTable->getFragFromPosition(dpos,&pf,&pOffset);
+	while(pf && pf->getLength() == 0)
+		pf = pf->getPrev();
+	if(pf == NULL)
+		return false;
+	PL_StruxDocHandle sdh = NULL;
+	if(pf->getType() == pf_Frag::PFT_Strux)
+	{
+		pf_Frag_Strux * pfs = static_cast<pf_Frag_Strux *>(pf);
+		sdh = static_cast<PL_StruxDocHandle>(pfs);
+	}
+	else
+	{
+		return false;
+	}
+	if(!bRecordChange)
+	{
+		return m_pPieceTable->deleteStruxNoUpdate(sdh);
+	}
+	if(getStruxPosition(sdh) != dpos)
+		return false;
+	return m_pPieceTable->deleteStruxWithNotify(sdh);
 }
 
 /*!
@@ -2717,6 +2774,94 @@ bool PD_Document::removeStyle(const XML_Char * pszName)
 	return true;
 }
 
+/*!
+ * Calculate the offset from the supplied position due to the effects of
+ * subsequent change record actions after the applied change record number.
+ */
+UT_sint32 PD_Document::adjustPointForCR(UT_sint32 iCRNum, PT_DocPosition pos) const
+{
+	PX_ChangeRecord * pcr = NULL;
+	UT_sint32 iOff =0;
+	UT_sint32 iCurCr = static_cast<UT_sint32>(m_pPieceTable->undoCount(true));
+	while(iCRNum <= iCurCr)
+	{
+		m_pPieceTable->getNthUndo(&pcr,iCurCr);
+		if(pcr == NULL)
+		{
+			return iOff;
+		}
+		iOff += getAdjustment(pcr,pos);
+		iCRNum--;
+	}
+	return iOff;
+}
+
+/*!
+ * Get the adjustment for the given changeRecord.
+ */
+UT_sint32 PD_Document::getAdjustment(const PX_ChangeRecord * pcr, PT_DocPosition pos) const
+{
+	UT_sint32 ioff = 0;
+	PT_DocPosition iCRPos = pcr->getPosition();
+	if(iCRPos > pos)
+		return ioff;
+	switch(pcr->getType())
+	{
+		case PX_ChangeRecord::PXT_GlobMarker:
+			ioff = 0;
+			break;
+		case PX_ChangeRecord::PXT_InsertSpan:
+			{
+				const PX_ChangeRecord_SpanChange * pcrc = static_cast<const PX_ChangeRecord_SpanChange *> (pcr);
+				UT_sint32 iLen = static_cast<UT_sint32>(pcrc->getLength());
+				ioff = iLen;
+			}
+			break;
+		case PX_ChangeRecord::PXT_DeleteSpan:
+			{
+				const PX_ChangeRecord_SpanChange * pcrc = static_cast<const PX_ChangeRecord_SpanChange *> (pcr);
+				UT_sint32 iLen = static_cast<UT_sint32>(pcrc->getLength());
+				ioff = -iLen;
+			}
+			break;
+		case PX_ChangeRecord::PXT_ChangeSpan:
+			ioff = 0;
+			break;
+		case PX_ChangeRecord::PXT_InsertStrux:
+			ioff = 1;
+			break;
+		case PX_ChangeRecord::PXT_DeleteStrux:
+			ioff = -1;
+			break;
+		case PX_ChangeRecord::PXT_ChangeStrux:
+			ioff = 0;
+			break;
+		case PX_ChangeRecord::PXT_InsertObject:
+			ioff = 1;
+			break;
+		case PX_ChangeRecord::PXT_DeleteObject:
+			ioff = -1;
+			break;
+		case PX_ChangeRecord::PXT_ChangeObject:
+		case PX_ChangeRecord::PXT_InsertFmtMark:
+		case PX_ChangeRecord::PXT_DeleteFmtMark:
+		case PX_ChangeRecord::PXT_ChangeFmtMark:
+		case PX_ChangeRecord::PXT_ChangePoint:
+		case PX_ChangeRecord::PXT_ListUpdate:
+		case PX_ChangeRecord::PXT_StopList:
+		case PX_ChangeRecord::PXT_UpdateField:
+		case PX_ChangeRecord::PXT_RemoveList:
+		case PX_ChangeRecord::PXT_UpdateLayout:
+			ioff = 0;
+			break;
+		default:
+			ioff = 0;
+			break;
+	}
+	return ioff;
+
+}
+
 bool PD_Document::appendStyle(const XML_Char ** attributes)
 {
 	UT_return_val_if_fail (m_pPieceTable, false);
@@ -2815,6 +2960,40 @@ bool PD_Document::signalListeners(UT_uint32 iSignal) const
 	return true;
 }
 
+/*!
+ * return a vector of all the views attached to this document.
+ */
+void PD_Document::getAllViews(UT_GenericVector<AV_View *> * vecViews)
+{
+	PL_ListenerId lid;
+	PL_ListenerId lidCount = m_vecListeners.getItemCount();
+
+	// for each listener in our vector, we send a notification.
+	// we step over null listners (for listeners which have been
+	// removed (views that went away)).
+
+	for (lid=0; lid<lidCount; lid++)
+	{
+		PL_Listener * pListener = static_cast<PL_Listener *>(m_vecListeners.getNthItem(lid));
+		if (pListener)
+		{
+			if(pListener->getType() == PTL_DocLayout)
+				{
+					fl_DocListener * pLayoutList = static_cast<fl_DocListener *>(pListener);
+					const FL_DocLayout * pLayout = pLayoutList->getLayout();
+					if(pLayout != NULL)
+					{
+						AV_View * pView = reinterpret_cast<AV_View *>(pLayout->getView());
+						if(pView != NULL)
+						 {
+							 vecViews->addItem(pView);
+						 }
+					}
+				}
+		}
+	}
+}
+
 bool PD_Document::notifyListeners(const pf_Frag_Strux * pfs, const PX_ChangeRecord * pcr) const
 {
 	// notify listeners of a change.
@@ -2822,6 +3001,11 @@ bool PD_Document::notifyListeners(const pf_Frag_Strux * pfs, const PX_ChangeReco
 #ifdef PT_TEST
 	//pcr->__dump();
 #endif
+	if(pcr->getDocument() == NULL)
+	{
+	        pcr->setDocument(this);
+			pcr->setCRNumber();
+	}
 
 	PL_ListenerId lid;
 	PL_ListenerId lidCount = m_vecListeners.getItemCount();
@@ -2836,13 +3020,15 @@ bool PD_Document::notifyListeners(const pf_Frag_Strux * pfs, const PX_ChangeReco
 		if (pListener)
 		{
 			PL_StruxFmtHandle sfh = 0;
-			if (pfs)
+			if (pfs && (pListener->getType() != PTL_CollabExport))
 				sfh = pfs->getFmtHandle(lid);
 
 			// some pt elements have no corresponding layout elements (for example a
 			// hdr/ftr section that was deleted in revisions mode)
-			if(sfh)
+			if(sfh && (pListener->getType() != PTL_CollabExport ))
 				pListener->change(sfh,pcr);
+			else if(pListener->getType() == PTL_CollabExport)
+				pListener->change(NULL,pcr);	
 		}
 	}
 
@@ -2936,6 +3122,11 @@ bool PD_Document::notifyListeners(const pf_Frag_Strux * pfs,
 #ifdef PT_TEST
 	//pcr->__dump();
 #endif
+	if(pcr->getDocument() == NULL)
+	{
+	        pcr->setDocument(this);
+			pcr->setCRNumber();
+	}
 
 	PL_ListenerId lid;
 	PL_ListenerId lidCount = m_vecListeners.getItemCount();
@@ -2950,11 +3141,14 @@ bool PD_Document::notifyListeners(const pf_Frag_Strux * pfs,
 		if (pListener)
 		{
 			PL_StruxDocHandle sdhNew = static_cast<PL_StruxDocHandle>(pfsNew);
-			PL_StruxFmtHandle sfh = pfs->getFmtHandle(lid);
+			PL_StruxFmtHandle sfh = NULL;
+			if(pListener->getType() != PTL_CollabExport)
+				sfh = pfs->getFmtHandle(lid);
 			if (pListener->insertStrux(sfh,pcr,sdhNew,lid,s_BindHandles))
 			{
 				// verify that the listener used our callback
-				UT_ASSERT_HARMLESS(pfsNew->getFmtHandle(lid));
+				if(pListener->getType() != PTL_CollabExport)
+					UT_ASSERT_HARMLESS(pfsNew->getFmtHandle(lid));
 			}
 		}
 	}
@@ -3844,7 +4038,7 @@ bool PD_Document::_syncFileTypes(bool bReadSaveWriteOpen)
 
 	if (ieft == IEFT_Unknown || ieft == IEFT_Bogus)
 	{
-		UT_ASSERT_HARMLESS(UT_SHOULD_NOT_HAPPEN);
+		//UT_ASSERT_HARMLESS(UT_SHOULD_NOT_HAPPEN);
 		return false;
 	}
 
@@ -4927,19 +5121,50 @@ bool PD_Document::setAttrProp(const XML_Char ** ppAttr)
 		// not unitialized memory.  When a hashing solution is factored out of the PT,
 		// it may be tempting to return NULLs.  Not good enough either.
 		// I'm going to ask Dom the preferred way to make this rather more concise. -MG
+		//
+		// Actually, we do not set these because of uninitialised memory; you never get a
+		// uninitialised memory from the the PP_AttrProp chain; nor do we set these
+		// because we cannot return NULLs. We set these, because without them we cannot
+		// lay the document out, and it is much better to have the defaults gathered in
+		// one place than having all kinds of fallback values hardcoded all over the
+		// place. Tomas
+		
 		// Update: Surely there is a way to make the getProperty mechanisms smarter, to
-		//				provide valid and accurate information on request (lazy-evaluation/late-binding),
-		//				because this superfluous storage sucks, and actually (in concept) adds ambiguity
-		//				by virtue of the fact that the means by which these were set is not known or
-		//				stored, and hence other pieces of code while capable of following
-		//				WYSIWYG, are not able to do otherwise with knowledge of whether the user
-		//				explicitly requested these properties to be set to these values or they're
-		//				just this way by virtue of AbiWord insisting on setting the default
-		//				upon initialization of any and every pd_Document.  This is bad for
-		//				external document storage and processing solutions, not to mention plugins
-		//				that AbiWord may ship.  Keep in mind, this is NOT the only place we have
-		//				to do this.  Even individual struxes within the document have to have their
-		//				properties initialized as it stands now. -MG
+		// provide valid and accurate information on request (lazy-evaluation /
+		// late-binding), because this superfluous storage sucks, and actually (in
+		// concept) adds ambiguity by virtue of the fact that the means by which these
+		// were set is not known or stored, and hence other pieces of code while capable
+		// of following WYSIWYG, are not able to do otherwise with knowledge of whether
+		// the user explicitly requested these properties to be set to these values or
+		// they're just this way by virtue of AbiWord insisting on setting the default
+		// upon initialization of any and every pd_Document.  This is bad for external
+		// document storage and processing solutions, not to mention plugins that AbiWord
+		// may ship.  Keep in mind, this is NOT the only place we have to do this.  Even
+		// individual struxes within the document have to have their properties
+		// initialized as it stands now. -MG
+
+		// This storage is not superfluous, I have already explained that. Also, the attrs
+		// and props in here fall into two separate groups. The document-only stuff (like
+		// the various xml attributes), and attributes and properties that are part of the
+		// resolution mechanism: when looking for property value, it is resolved through a
+		// chain: spanAP - blockAP - sectionAP - documentAP - hardcoded defaults (the
+		// hardcodes defaults are in PP_Property.cpp).  Struxes, etc., do not have any
+		// properties as such, and do not have to have them initialised; they simply have
+		// a reference to an PP_AttrProp instance, which can contain any number of
+		// attributes/props, or none. If you use the getProperty() mechanism, you are
+		// simply asking about resolution of a given property; if you want to know where
+		// that property came from, it can be achieved by stepping down the chain (and the
+		// PP_EvaluateProperty() function could easily be extended to return this info if
+		// you really need it).
+		//
+		// There might be some value in knowing which properties were set manually by the
+		// user, but I am not sure it is at all necessary. As the chain is, each level
+		// should only contain attributes and properties set manually, since everything
+		// else is inherited from the level below. There is currently a problem with some
+		// code that sets individual attributes and properties without asking about their
+		// relationship to the lower levels of the chain -- properties that resolve to the
+		// same values as the chain below should be removed, not explicitely set. This
+		// should be fixed up, but that has nothing to do with this code. Tomas
 
 			// Endnotes
 		props[0] = "document-endnote-type";

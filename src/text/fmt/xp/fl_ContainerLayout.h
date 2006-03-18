@@ -144,6 +144,7 @@ public:
     void                    lookupFoldedLevel(void);
 
 	void                    lookupProperties(void);
+	void                    lookupMarginProperties(void);
 	
 	fl_BlockLayout*         getNextBlockInDocument(void) const;
 	fl_BlockLayout*         getPrevBlockInDocument(void) const;
@@ -159,7 +160,12 @@ protected:
 	void	                _insertIntoList(fl_ContainerLayout * pL);
 
 private:
+	bool                    _getPropertiesAP(const PP_AttrProp *& pAP);
 	virtual void            _lookupProperties(const PP_AttrProp* pAP) = 0;
+
+	// This function must be overriden by any derrived class that can endup positioned
+	// outside of the normal printable area on page
+	virtual void            _lookupMarginProperties(const PP_AttrProp* pAP){}
 	
 	virtual bool            _canContainPoint() const {return true;}
 	void	                _insertFirst(fl_ContainerLayout * pL);

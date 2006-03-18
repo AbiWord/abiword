@@ -86,7 +86,7 @@ ABI_EXPORT UT_sint32 UT_strnicmp(const char *s1, const char *s2, int ilen);
 
 ABI_EXPORT bool  UT_cloneString(char *& rszDest, const char * szSource);
 ABI_EXPORT bool  UT_replaceString(char *& rszDest, const char * szSource);
-
+ABI_EXPORT size_t  UT_strnlen(const char *s, size_t maxlen);
 ABI_EXPORT char *  UT_upperString(char * string);
 ABI_EXPORT char *  UT_lowerString(char * string);
 

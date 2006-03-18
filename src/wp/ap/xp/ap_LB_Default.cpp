@@ -205,6 +205,8 @@ ap_bs_Mouse MouseTable[] =
 	{_CTF _B3,	{ "contextFrame",		"",			"",		"",			"",			""				}},
 	{_CPO _B3,	{ "contextPosObject",		"",			"",		"",			"",			""				}},
 	{_CEM _B3,	{ "contextEmbedLayout",		"",			"",		"",			"",			""				}},
+	{_CMA _B3, {"editLatexEquation",                "editLatexEquation",   "selectMath",            "",             "",                       "" }},
+
 	//{_CZ _B3,	{ "contextImageSize",	"",			"",		"",			"",			""				}},
 	//{_CF _B3,	{ "contextField",		"",			"",		"",			"",			""				}},
 
@@ -346,12 +348,21 @@ ap_bs_NVK NVKTable[] =
 						  "querySaveAndExit",	"",					"",				""					}},
 //	{EV_NVK_F5,			{ "",					"",					"",				"",
 //						  "",					"",					"",				""					}},
+#ifdef HAVE_HILDON						  
+	{EV_NVK_F6,			{ "viewFullScreen",					"",					"",				"",
+						  "",					"",					"",				""					}},
+	{EV_NVK_F7,			{ "zoomIn",			"",					"",				"",
+						  "",					"",					"",				""					}},
+	{EV_NVK_F8,			{ "zoomOut",					"",					"",				"",
+						  "",					"",					"",				""					}},
+#else
 //	{EV_NVK_F6,			{ "",					"",					"",				"",
-//						  "",					"",					"",				""					}},
+//						  "",					"",					"",			""					}},
 	{EV_NVK_F7,			{ "dlgSpell",			"",					"",				"",
 						  "",					"",					"",				""					}},
 //	{EV_NVK_F8,			{ "",					"",					"",				"",
 //						  "",					"",					"",				""					}},
+#endif
 //	{EV_NVK_F9,			{ "",					"",					"",				"",
 //						  "",					"",					"",				""					}},
 	{EV_NVK_F10,		{ "",					"contextMenu",		"",				"",
@@ -455,9 +466,9 @@ ap_bs_Char CharTable[] =
 	{0x39, /* 9      */ { "insertData",			"",					DO_NOT_USE,		""					}},
 	{0x3a, /* :      */ { "insertData",			"",					"",				""					}},
 	{0x3b, /* ;      */ { "insertData",			"",					"",				""					}},
-	{0x3c, /* <      */ { "insertData",			"fontSizeIncrease",	"",				"insertRLM"			}},
+	{0x3c, /* <      */ { "insertData",			"fontSizeDecrease",	"",				"insertRLM"			}},
 	{0x3d, /* =      */ { "insertData",			"toggleSuper",		"",				""					}},
-	{0x3e, /* >      */ { "insertData",			"fontSizeDecrease",	"",				"insertLRM"			}},
+	{0x3e, /* >      */ { "insertData",			"fontSizeIncrease",	"",				"insertLRM"			}},
 	{0x3f, /* ?      */ { "insertData",			"",					"",				""					}},
 	{0x40, /* @      */ { "insertData",			"",					"",				""					}},
 	{0x41, /* A      */ { "insertData",			"selectAll",		DO_NOT_USE,		""					}},

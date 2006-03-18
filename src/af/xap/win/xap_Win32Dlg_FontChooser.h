@@ -52,6 +52,9 @@ protected:
 	bool                    m_bWin32Hidden;
 	bool					m_bWin32SuperScript;
 	bool					m_bWin32SubScript;
+
+	int                     m_iColorIndx;
+	int                     m_iColorCount;
 };
 
 #endif /* XAP_WIN32DIALOG_FONTCHOOSER_H */

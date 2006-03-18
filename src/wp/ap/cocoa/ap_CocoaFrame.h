@@ -41,7 +41,7 @@ class GR_Graphics;
 class AP_CocoaFrame : public AP_Frame
 {
 public:
-	AP_CocoaFrame(XAP_CocoaApp * app);
+	AP_CocoaFrame();
 	AP_CocoaFrame(AP_CocoaFrame * f);
 	virtual ~AP_CocoaFrame(void);
 

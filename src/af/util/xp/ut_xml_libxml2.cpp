@@ -230,9 +230,10 @@ UT_Error UT_XML::parse (const char * szFilename)
 			}
 		if (ret == UT_OK && (getNumMinorErrors() == 0))
 			if (!ctxt->wellFormed && !m_bStopped) ret = UT_IE_IMPORTERROR; // How does stopping mid-file affect wellFormed?
-		
-		ctxt->sax = NULL;
+
+		xmlDocPtr xmlDoc = ctxt->myDoc;
 		xmlFreeParserCtxt (ctxt);
+		xmlFreeDoc(xmlDoc);
     }
 	else
     {
@@ -259,9 +260,9 @@ UT_Error UT_XML::parse (const char * buffer, UT_uint32 length)
 
   UT_Error ret = UT_OK;
 
-  xmlSAXHandler hdl;
   xmlParserCtxtPtr ctxt;
 
+  xmlSAXHandler hdl;
   memset(&hdl, 0, sizeof(hdl));
 
   hdl.getEntity    = _getEntity;
@@ -280,7 +281,7 @@ UT_Error UT_XML::parse (const char * buffer, UT_uint32 length)
       UT_DEBUGMSG (("Unable to create libxml2 memory context!\n"));
       return UT_ERROR;
     }
-  ctxt->sax = &hdl;
+  memcpy(ctxt->sax, &hdl, sizeof(hdl));
   ctxt->userData = static_cast<void *>(this);
 
   m_bStopped = false;
@@ -289,8 +290,24 @@ UT_Error UT_XML::parse (const char * buffer, UT_uint32 length)
 
   if (!ctxt->wellFormed) ret = UT_IE_IMPORTERROR;
 
-  ctxt->sax = NULL;
+  xmlDocPtr xmlDoc = ctxt->myDoc;
   xmlFreeParserCtxt (ctxt);
+  xmlFreeDoc(xmlDoc);
 
   return ret;
+}
+
+// guardian because (afaik) xmlParserXXX aren't guaranteed to be idempotent
+static volatile int iLibXml2Guardian = 0;
+
+void UT_XML::_init()
+{
+  if(++iLibXml2Guardian == 1)
+    xmlInitParser();
+}
+
+void UT_XML::_cleanup()
+{
+  if(--iLibXml2Guardian == 0)
+    xmlCleanupParser();
 }

@@ -22,9 +22,7 @@ INCLUDES = $(AF_INCLUDES) $(ICONV_INCLUDES)
 
 noinst_LTLIBRARIES = libGr_xp.la
 
-libGr_xp_la_SOURCES = $(ABI_SOURCE)
-
-ABI_SOURCE = \
+libGr_xp_la_SOURCES=\
 	gr_CharWidths.cpp		\
 	gr_CharWidthsCache.cpp		\
 	gr_DrawArgs.cpp			\
@@ -33,10 +31,9 @@ ABI_SOURCE = \
 	gr_Image.cpp			\
 	gr_VectorImage.cpp		\
 	gr_Caret.cpp			\
-	gr_Painter.cpp			\
-	gr_ContextGlyph.cpp		\
-	gr_RenderInfo.cpp		\
-	gr_EmbedManager.cpp
+	gr_Painter.cpp 			\
+	gr_RenderInfo.cpp 		\
+	gr_EmbedManager.cpp 
 
 install-data-hook:
 	@mkdir -p $(libabiword_includedir_private) && cp $(srcdir)/*.h $(libabiword_includedir_private)

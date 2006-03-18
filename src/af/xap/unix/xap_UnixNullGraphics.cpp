@@ -32,8 +32,11 @@
 #include "ut_endian.h"
 
 #include "xap_UnixNullGraphics.h"
-#include "xap_UnixPSFont.h"
-#include "xap_UnixPSImage.h"
+
+#ifndef WITHOUT_PRINTING
+#  include "xap_UnixPSFont.h"
+#  include "xap_UnixPSImage.h"
+#endif
 
 #include "xap_UnixFont.h"
 #include "xap_UnixFontManager.h"
@@ -57,10 +60,8 @@
 ******************************************************************
 *****************************************************************/
 
-UnixNull_Graphics::UnixNull_Graphics( XAP_UnixFontManager * fontManager,
-							 XAP_App *pApp)
+UnixNull_Graphics::UnixNull_Graphics( XAP_UnixFontManager * fontManager )
 {
-	m_pApp = pApp;
 	m_pCurrentFont = 0;
 	m_cs = GR_Graphics::GR_COLORSPACE_COLOR;	
 	m_fm = fontManager;
@@ -81,7 +82,17 @@ UnixNull_Graphics::~UnixNull_Graphics()
 	GR_Image* pImg = NULL;
    
    	if (iType == GR_Image::GRT_Raster)
-     		pImg = new PS_Image(pszName);
+#ifndef WITHOUT_PRINTING
+	{
+		
+		pImg = new PS_Image(pszName);
+	}
+#else
+	{
+		UT_ASSERT_HARMLESS( UT_SHOULD_NOT_HAPPEN );
+		return NULL;
+	}
+#endif
    	else if (iType == GR_Image::GRT_Vector)
      		pImg = new GR_VectorImage(pszName);
    
@@ -109,8 +120,11 @@ bool UnixNull_Graphics::queryProperties(GR_Graphics::Properties gp) const
 void UnixNull_Graphics::setFont(GR_Font* pFont)
 {
 	UT_ASSERT(pFont);
-	PSFont * pNewFont = (static_cast<PSFont*> (pFont));
-
+#ifndef WITHOUT_PRINTING
+	PSFont * pNewFont = static_cast<PSFont*> (pFont);
+#else
+	XAP_UnixFontHandle * pNewFont = static_cast<XAP_UnixFontHandle*>(pFont);
+#endif
 	// TODO Not always what we want, i.e., start of a new page.
 	// TODO I added a call directly to _startPage to call _emit_SetFont();
 	// TODO I would rather do it all here.
@@ -124,11 +138,23 @@ void UnixNull_Graphics::setFont(GR_Font* pFont)
 
 UT_uint32 UnixNull_Graphics::getFontAscent(GR_Font * fnt)
 {
+#ifndef WITHOUT_PRINTING
 	PSFont*	hndl = static_cast<PSFont*> (fnt);
 	// FIXME we should really be getting stuff fromt he font in layout units,
 	// FIXME but we're not smart enough to do that yet
 	// we call getDeviceResolution() to avoid zoom
-	return static_cast<UT_uint32>(hndl->getUnixFont()->getAscender(hndl->getSize()) * getResolution() / getDeviceResolution() + 0.5);
+	return static_cast<UT_uint32>(hndl->getUnixFont()->getAscender(hndl->getSize()) *
+								  getResolution() / getDeviceResolution() + 0.5);
+#else
+	UT_ASSERT(fnt);
+	XAP_UnixFontHandle * hndl = static_cast<XAP_UnixFontHandle *>(fnt);
+	
+	// FIXME we should really be getting stuff fromt he font in layout units,
+	// FIXME but we're not smart enough to do that yet
+    // we call getDeviceResolution() to avoid zoom
+	return static_cast<UT_uint32>(hndl->getUnixFont()->getAscender(hndl->getSize()) *
+								  getResolution() / getDeviceResolution() ); // +0.5);
+#endif
 }
 
 UT_uint32 UnixNull_Graphics::getFontAscent()
@@ -138,10 +164,21 @@ UT_uint32 UnixNull_Graphics::getFontAscent()
 
 UT_uint32 UnixNull_Graphics::getFontDescent(GR_Font * fnt)
 {
+#ifndef WITHOUT_PRINTING
 	PSFont*				psfnt = static_cast<PSFont*> (fnt);
 	// FIXME we should really be getting stuff fromt he font in layout units,
 	// FIXME but we're not smart enough to do that yet
 	return static_cast<UT_uint32>(psfnt->getUnixFont()->getDescender(psfnt->getSize()) * getResolution() / getDeviceResolution() + 0.5);
+#else
+	UT_ASSERT(fnt);
+	XAP_UnixFontHandle * hndl = static_cast<XAP_UnixFontHandle *>(fnt);
+
+	XAP_UnixFont* pFont = hndl->getUnixFont();
+	// FIXME we should really be getting stuff fromt he font in layout units,
+	// FIXME but we're not smart enough to do that yet
+	return static_cast<UT_uint32>(pFont->getDescender(hndl->getSize()) *
+								  getResolution() / getDeviceResolution() );  // +0.5);
+#endif
 }
 
 UT_uint32 UnixNull_Graphics::getFontDescent()
@@ -165,11 +202,20 @@ UT_uint32 UnixNull_Graphics::getFontHeight()
 	
 UT_sint32 UnixNull_Graphics::measureUnRemappedChar(const UT_UCSChar c)
 {
+#ifndef WITHOUT_PRINTING
 	// FIXME we should really be getting stuff fromt he font in layout units,
 	// FIXME but we're not smart enough to do that yet
 	float fWidth = m_pCurrentFont->measureUnRemappedChar(c, m_pCurrentFont->getSize()) 
 		* ((double)getResolution() / (double)getDeviceResolution());
 	return static_cast<UT_uint32>(rint(fWidth));
+#else
+	// taken from gr_UnixGraphics.cpp
+	float fWidth = m_pCurrentFont->measureUnRemappedChar(c, m_pCurrentFont->getSize())
+		* ((double)getResolution() / (double)getDeviceResolution());
+	
+	xxx_UT_DEBUGMSG(("char %d width = %d \n",c,rint(fWidth)));
+	return static_cast<UT_uint32>(rint(fWidth));
+#endif
 }
 
 UT_uint32 UnixNull_Graphics::getDeviceResolution(void) const
@@ -256,16 +302,24 @@ GR_Font* UnixNull_Graphics::_findFont(const char* pszFontFamily,
 	else
 	{
 		// Oops!  We don't have that font here.  substitute something
-		// we know we have (get smarter about this later)
-		item = new XAP_UnixFontHandle(m_fm->getFont("Times New Roman", s),iSize);
+		// we know we have (get smarter about this later)]
+	        XAP_UnixFont *pFont = m_fm->getFont("Times", s);
+		if(pFont == NULL)
+		{
+		    pFont = m_fm->findNearestFont("Times","normal",NULL,NULL,NULL,pszFontSize,this);
+		}
+		item = new XAP_UnixFontHandle(pFont,iSize);
 	}
-
+#ifndef WITHOUT_PRINTING
 	xxx_UT_DEBUGMSG(("SEVIOR: Using PS Font Size %d \n",iSize));
 	PSFont * pFont = new PSFont(item->getUnixFont(), iSize);
 	UT_ASSERT(pFont);
 	delete item;
 
 	return pFont;
+#else
+	return item;
+#endif
 }
 
 void UnixNull_Graphics::drawGlyph(UT_uint32 Char, UT_sint32 xoff, UT_sint32 yoff)
@@ -413,5 +467,5 @@ GR_Graphics *   UnixNull_Graphics::graphicsAllocator(GR_AllocInfo& info)
 {
 	XAP_UnixNullGraphicsAllocInfo &allocator = (XAP_UnixNullGraphicsAllocInfo&)info;
 
-	return new UnixNull_Graphics(allocator.m_fontManager, allocator.m_app);
+	return new UnixNull_Graphics(allocator.m_fontManager);
 }

@@ -67,11 +67,9 @@ PS_Graphics::PS_Graphics(const char * szFilename,
 						 const char * szTitle,
 						 const char * szSoftwareNameAndVersion,
 						 XAP_UnixFontManager * fontManager,						 
-						 bool	  bIsFile,
-						 XAP_App *pApp)
+						 bool	  bIsFile)
 {
 	UT_ASSERT(szFilename && *szFilename);
-	m_pApp = pApp;
 	m_szFilename = UT_strdup (szFilename);
 	m_szTitle = szTitle;
 	m_szSoftwareNameAndVersion = szSoftwareNameAndVersion;
@@ -1207,11 +1205,18 @@ void PS_Graphics::drawGrayImage(GR_Image* pImg, UT_sint32 xDest, UT_sint32 yDest
 		// TODO : I get from a simple average or adding the YIQ
 		// TODO : weights.  Look at Netscape for something better.
 		
-		g_snprintf(reinterpret_cast<char *>(&hexbuf[0]), sizeof(hexbuf), "%.2X", ( static_cast<UT_Byte>( ( static_cast<float>(*cursor++) * static_cast<float>(1) +
-										  static_cast<float>(*cursor++) * static_cast<float>(1) +
-										  static_cast<float>(*cursor++) * static_cast<float>(1) ) /
-										  static_cast<float>(3.0) )) );
-
+		{
+			float f1, f2, f3;
+			f1 = static_cast<float>(*cursor++);
+			f2 = static_cast<float>(*cursor++);
+			f3 = static_cast<float>(*cursor++);
+			g_snprintf(reinterpret_cast<char *>(&hexbuf[0]), 
+					   sizeof(hexbuf), "%.2X", 
+					   ( static_cast<UT_Byte>( ( f1 * static_cast<float>(1) +
+												 f2 * static_cast<float>(1) +
+												 f3 * static_cast<float>(1) ) /
+											   static_cast<float>(3.0) )) );
+		}
 		m_ps->writeBytes(hexbuf, 2);
 		if (col == 40)
 		{
@@ -1302,8 +1307,7 @@ GR_Graphics *   PS_Graphics::graphicsAllocator(GR_AllocInfo& info)
 
 	return new PS_Graphics(allocator.m_fileName, allocator.m_title,
 						   allocator.m_softwareName,
-						   allocator.m_fontManager, allocator.m_isFile, 
-						   allocator.m_app);
+						   allocator.m_fontManager, allocator.m_isFile);
 }
 
 /***************************************************************************/

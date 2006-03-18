@@ -2,7 +2,7 @@
 
 /* AbiWord
  * Copyright (C) 1998 AbiSource, Inc.
- * Copyright (C) 2001-2004 Hubert Figuiere
+ * Copyright (C) 2001-2005 Hubert Figuiere
  *
  * This program is free software; you can redistribute it and/or
  * modify it under the terms of the GNU General Public License
@@ -46,7 +46,14 @@
 #include "ut_OverstrikingChars.h"
 
 #import <Cocoa/Cocoa.h>
-#import <ApplicationServices/ApplicationServices.h>
+#include <CoreServices/CoreServices.h>
+#include <ApplicationServices/ApplicationServices.h>
+
+// this is needed bugged 10.2.8 SDK is buggy and FloatToFixed is missing from the headers. 
+// Screw Apple.
+#ifndef FloatToFixed
+#define FloatToFixed(a)     ((Fixed)((float)(a) * fixed1))
+#endif
 
 #define DISABLE_VERBOSE 1
 
@@ -56,6 +63,10 @@
 #  define UT_DEBUGMSG(x)
 # endif
 #endif
+
+// Define to use Cocoa instead of ATSUI. More bug less speed.
+#undef USE_COCOA_RENDER
+
 
 #define CONTEXT_LOCKED__ m_viewLocker
 #define LOCK_CONTEXT__   UT_ASSERT(CONTEXT_LOCKED__)
@@ -387,6 +398,7 @@ GR_CocoaGraphics::GR_CocoaGraphics(NSView * win, XAP_App * app) :
 	m_updateCallback(NULL),
 	m_updateCBparam (NULL),
 	m_pWin(win),
+	m_atsuStyle(NULL),
 	m_cacheArray (10),
 	m_cacheRectArray (10),
 	m_currentColor (nil),
@@ -410,7 +422,6 @@ GR_CocoaGraphics::GR_CocoaGraphics(NSView * win, XAP_App * app) :
 	
 	m_pApp = app;
 	UT_ASSERT (m_pWin);
-	m_fontProps = [[NSMutableDictionary alloc] init];
 	NSRect viewBounds = [m_pWin bounds];
 	if (![m_pWin isKindOfClass:[XAP_CocoaNSView class]]) {
 		NSLog(@"attaching a non-XAP_CocoaNSView to a GR_CocoaGraphics");
@@ -454,40 +465,9 @@ GR_CocoaGraphics::~GR_CocoaGraphics()
 	UT_VECTOR_RELEASE(m_cacheArray);
 	UT_VECTOR_PURGEALL(NSRect*, m_cacheRectArray);
 	[m_pWin setGraphics:NULL];
-	[m_fontProps release];
 	[m_fontForGraphics release];
 	[m_currentColor release];
-#if 0
-	RELEASEP(m_imageBlue16x15);
-	RELEASEP(m_imageBlue11x16);
-	RELEASEP(m_imageGrey16x15);
-	RELEASEP(m_imageGrey11x16);
 
-	RELEASEP(m_colorBlue16x15);
-	RELEASEP(m_colorBlue11x16);
-	RELEASEP(m_colorGrey16x15);
-	RELEASEP(m_colorGrey11x16);
-
-	RELEASEP(m_Cursor_E);
-	RELEASEP(m_Cursor_N);
-	RELEASEP(m_Cursor_NE);
-	RELEASEP(m_Cursor_NW);
-	RELEASEP(m_Cursor_S);
-	RELEASEP(m_Cursor_SE);
-	RELEASEP(m_Cursor_SW);
-	RELEASEP(m_Cursor_W);
-
-	RELEASEP(m_Cursor_Wait);
-	RELEASEP(m_Cursor_LeftArrow);
-	RELEASEP(m_Cursor_RightArrow);
-	RELEASEP(m_Cursor_Compass);
-	RELEASEP(m_Cursor_Exchange);
-	RELEASEP(m_Cursor_LeftRight);
-	RELEASEP(m_Cursor_UpDown);
-	RELEASEP(m_Cursor_Crosshair);
-	RELEASEP(m_Cursor_HandPointer);
-	RELEASEP(m_Cursor_DownArrow);
-#endif
 	s_iInstanceCount--;
 	for (int i = 0; i < COUNT_3D_COLORS; i++) {
 		[m_3dColors[i] release];
@@ -641,24 +621,101 @@ void GR_CocoaGraphics::_setLineStyle (LineStyle inLineStyle, CGContextRef * cont
 	}
 }
 
-void GR_CocoaGraphics::_realDrawChars(const unichar* cBuf, int len, NSDictionary *fontProps, 
-									  float x, float y, int begin, int rangelen)
+
+static void _atsuStyleInit(ATSUStyle *atsuStyle, NSFont *font)
 {
-	NSString *string;
-	string = [[NSString alloc] initWithCharacters:cBuf length:len];
-	if (string) {
-		//NSLog (@"drawChar(%@) x = %f, y = %f (%d,%d)", string, x, y, begin, rangelen);
-		NSAttributedString * attributedString = [[NSAttributedString alloc] initWithString:string 
-												 attributes:fontProps];
-		if (attributedString) {
-			[m_fontMetricsTextStorage setAttributedString:attributedString];
-			[attributedString release];
+	OSStatus status;
+	
+	UT_ASSERT(atsuStyle);
+	
+	if(*atsuStyle) {
+		::ATSUDisposeStyle(*atsuStyle);
+	}
+	
+	status = ATSUCreateStyle(atsuStyle);
+
+	CFStringRef fontName = (CFStringRef)[font fontName];
+	ATSFontRef fontRef = ATSFontFindFromPostScriptName(fontName, 0);
+	if (fontRef == kATSUInvalidFontID) {
+		fontRef = ATSFontFindFromName(fontName, 0);
+		if (fontRef == kATSUInvalidFontID) {
+			NSLog(@"Unable to find ATSU font %@", fontName);
 		}
-		[string release];
-		
-		NSPoint point = NSMakePoint(x, y);
-		
-		[m_fontMetricsLayoutManager drawGlyphsForGlyphRange:NSMakeRange(begin, rangelen) atPoint:point];
+	}
+	
+	// upside down - Flipped
+	CGAffineTransform transform = CGAffineTransformMakeScale (1,-1);
+	Fixed fontSize = FloatToFixed([font pointSize]);
+	
+	ATSUAttributeTag styleTags[] = { 
+		kATSUSizeTag, 
+		kATSUFontTag, 
+		kATSUFontMatrixTag
+	};
+	ByteCount styleSizes[] = {
+		sizeof(Fixed), 
+		sizeof(ATSFontRef), 
+		sizeof(CGAffineTransform) 
+	};
+	ATSUAttributeValuePtr styleValues[] = { 
+		&fontSize, 
+		&fontRef, 
+		&transform  
+	};
+	status = ATSUSetAttributes (*atsuStyle, 3, styleTags, styleSizes, styleValues);
+}
+
+
+
+static void _atsuCreateLayout(ATSUTextLayout *atsuLayout, const unichar* run, int len, int begin, 
+	int rangelen, ATSUStyle *atsuStyle,
+		CGContextRef cg)
+{
+	UniCharCount runLength = rangelen;
+
+	OSStatus status = ::ATSUCreateTextLayoutWithTextPtr(run, begin, runLength, len, 
+	                                                    1, &runLength, atsuStyle, atsuLayout);
+    ATSLineLayoutOptions lineLayoutOptions = (kATSLineFractDisable | kATSLineDisableAutoAdjustDisplayPos | 
+												kATSLineUseDeviceMetrics | kATSLineDisableAllLayoutOperations |
+												kATSLineKeepSpacesOutOfMargin | kATSLineHasNoHangers);
+    ATSUAttributeTag tags[] = { 
+		kATSUCGContextTag, 
+		kATSULineLayoutOptionsTag 
+	};
+    ByteCount sizes[] = { 
+		sizeof(CGContextRef), 
+		sizeof(ATSLineLayoutOptions) 
+	};
+    ATSUAttributeValuePtr values[] = { 
+		&cg, 
+		&lineLayoutOptions 
+	};
+	
+    status = ATSUSetLayoutControls(*atsuLayout, 2, tags, sizes, values);
+	if (status) {
+		NSLog(@"ATSUSetLayoutControls() failed with %d\n", status);
+	}
+    status = ATSUSetTransientFontMatching(*atsuLayout, YES);
+	if (status) {
+		NSLog(@"ATSUSetTransientFontMatching() failed with %d\n", status);
+	}
+}
+
+
+
+void GR_CocoaGraphics::_realDrawChars(ATSUTextLayout atsuLayout,
+									  float x, float y, int begin, int rangelen, float xOffset)
+{
+	OSStatus status;
+	
+	y += [m_fontForGraphics ascender];
+	
+	::CGContextTranslateCTM(m_CGContext, x - xOffset, y);
+	status = ::ATSUDrawText(atsuLayout, begin, rangelen, 0, 0);
+	::CGContextTranslateCTM(m_CGContext, -(x - xOffset), -y);
+
+	if(status) {
+		NSLog(@"ATSUDrawText() failed with %d\n", status);
 	}
 }
 
@@ -668,152 +725,55 @@ void GR_CocoaGraphics::drawChars(const UT_UCSChar* pChars, int iCharOffset,
 								 int * pCharWidths)
 {
 	UT_DEBUGMSG (("GR_CocoaGraphics::drawChars()\n"));
-	//
-	// this is where things get tricky.
-	// AbiWord draws strings with the Y origin as top of the line while Cocoa do it 
-	// on the baseline
-	UT_sint32 yoff = _tduY(yoffLU + m_pFont->getAscent());
+	UT_sint32 yoff = _tduY(yoffLU); // - m_pFont->getDescent();
 	UT_sint32 xoff = xoffLU;	// layout Unit !
 
-    if (!m_fontMetricsTextStorage) {
-		_initMetricsLayouts();
-    }
+	ATSUTextLayout atsuLayout = NULL;
 
 	::CGContextSetShouldAntialias (m_CGContext, true);
+
+	const UT_UCS4Char* begin = pChars + iCharOffset;
+	unichar * cBuf = (unichar *) malloc((iLength + 1) * sizeof(unichar));
+	int i;
+	// small speed optimization. Better than nothing
+	// but short-circuiting the remap can be useful;
+	if (m_pFont && m_pFont->needsRemap()) {
+		for (i = 0; i < iLength; i++) {
+			cBuf[i] = (unichar) m_pFont->remapChar(begin[i]);
+		}
+	}
+	else {
+		for (i = 0; i < iLength; i++) {
+			// remember ucs-4 -> ucs-2
+			cBuf[i] = (unichar)begin[i];
+		}
+	}
+	cBuf[iLength] = 0;
+
+	_atsuCreateLayout(&atsuLayout, cBuf, iLength, 0, iLength, &m_atsuStyle, m_CGContext);
 
 	if (!pCharWidths) {
 		/*
 		  We don't have char widths because we don't care. Just draw the text.
-		  CAUTION BiDi is handled by Cocoa in that case.
+		  CAUTION BiDi is handled by ATSU in that case.
 		 */
-		unichar * uniString = (unichar*)malloc((iLength + 1) * sizeof (unichar));
-		for (int i = 0; i < iLength; i++) {
-			uniString[i] = m_pFont ? m_pFont->remapChar(pChars[i + iCharOffset]) : pChars[i + iCharOffset];
-		}
 		LOCK_CONTEXT__;
-		_realDrawChars(uniString, iLength, m_fontProps, TDUX(xoff), yoff, 0, iLength);
-		FREEP(uniString);
+		_realDrawChars(atsuLayout, TDUX(xoff), yoff, 0, iLength, 0);
 	}
 	else {
 		LOCK_CONTEXT__;
-
-		/*
-		  Here we have charWidth. that means WE HAVE TO USE THEM
-		  Changes in revision 1.78 BROKE THAT.
-
-		  That said, we should be done is that we must split the text run into words 
-		  and draw run by run, cumulating the xoff with the char width.
-
-		  Given the implication, a word is defined by either a blank (see UT_UCS4_isspace())
-		  or a change of direction. -- Hub
-		 */
-
-		const UT_UCSChar * begin = pChars + iCharOffset;
-		const UT_UCSChar * end = begin + iLength;
-
-		int * endWidth = pCharWidths + iCharOffset + iLength;
-
-		UT_sint32 widthWhiteSpace = 0;
-
-		while (end > begin) {
-			if (!UT_UCS4_isspace(*(end - 1))) {
-				break;
-			}
-			--end;
-			--endWidth;
-			widthWhiteSpace += *endWidth;
+			
+		UT_sint32 x = xoff;
+		
+		for (i = 0; i < iLength; i++) {
+			//NSLog(@"drawing at %d, offset = %d", TDUX(x), TDUX(x - xoff));
+			_realDrawChars(atsuLayout, TDUX(x), yoff, i, 1, TDUX(x - xoff));
+			x += pCharWidths[iCharOffset + i];
 		}
-		iLength = end - begin;
-
-		UT_sint32 widthTrailingNeutral = 0;
-		UT_sint32 countTrailingNeutral = 0;
-
-		NSCharacterSet * punctuation = [NSCharacterSet punctuationCharacterSet];
-
-		while (end > begin) {
-			unichar uc = (unichar) (*(end - 1));
-			if ([punctuation characterIsMember:uc] == NO) {
-				break;
-			}
-			--end;
-			--endWidth;
-			widthTrailingNeutral += *endWidth;
-			countTrailingNeutral++;
-		}
-
-		if (iLength) {
-			unichar * cBuf = (unichar *) malloc((iLength + 1) * sizeof(unichar));
-			if (cBuf) {
-				bool knownDir = false;
-				bool rtl = false;
-				int i;
-				for (i = 0; i < iLength; i++) {
-					if (!knownDir) {
-						UT_BidiCharType charType = UT_bidiGetCharType(begin[i]);
-						if (UT_BIDI_IS_STRONG(charType)) {
-							rtl = UT_BIDI_IS_RTL(charType);
-							knownDir = true;
-							//NSLog(@"direction is %d (1 == RTL %x)) set at idx %d with chartype = %x, char %x", rtl, 
-							                           //UT_BIDI_RTL, i, charType, begin[i]); 
-						}
-					}
-					cBuf[i] = (unichar) (m_pFont ? m_pFont->remapChar(begin[i]) : begin[i]);
-				}
-				cBuf[iLength] = 0;
-
-				//if(!knownDir) {
-				//	NSLog(@"direction is UNKNOWN");
-				//}
-
-				float x = xoff;
-				int len = iLength;
-				int rangeLength = 0;
-				int rangeBegin = 0;
-				int j;
-				float currentRunLen = 0;
-				//NSLog (@"start at x = %d", TDUX(x));
-				for (j = 0; j < len; j++) {
-					if (UT_UCS4_isspace(cBuf[j])) {
-						if (rangeLength > 0) {
-							//NSLog (@"x = %d, currentRunLen = %d", TDUX(x), TDUX(currentRunLen));
-							_realDrawChars(cBuf + rangeBegin, iLength - rangeBegin, m_fontProps, TDUX((UT_sint32)rintf(x)),
-										   yoff, 0, rangeLength);
-							// from here currentRunLen is signed... so just add it
-							if (!rtl) {
-								x += currentRunLen;
-							}
-							//NSLog(@"x is now %d", TDUX(x));
-						}
-						if (j < len - 1) {
-							if (rtl) {
-								x -= pCharWidths[iCharOffset+j];
-							}
-							else{
-								x += pCharWidths[iCharOffset+j];
-							}
-							//NSLog (@"moved to (space) x = %d charwidth was %d", TDUX(x), TDUX(pCharWidths[iCharOffset+j]));
-						}
-						rangeBegin = j + 1;
-						rangeLength = 0;
-						currentRunLen = 0;
-					}
-					else {
-						rangeLength++;
-						if (rtl) {
-							currentRunLen -= pCharWidths[iCharOffset+j];
-						}
-						else {
-							currentRunLen += pCharWidths[iCharOffset+j];
-						}
-					}
-				}
-				if (rangeLength > 0) {
-					_realDrawChars(cBuf + rangeBegin, iLength - rangeBegin, m_fontProps, TDUX((UT_sint32)rintf(x)),
-								   yoff, 0, rangeLength);
-				}
-			}
-			FREEP(cBuf);
-		}
+	}
+	FREEP(cBuf);
+	if (atsuLayout) {
+		::ATSUDisposeTextLayout(atsuLayout);
 	}
 	::CGContextSetShouldAntialias (m_CGContext, false);
 }
@@ -827,7 +787,7 @@ void GR_CocoaGraphics::setFont(GR_Font * pFont)
 	NSFont* font = pUFont->getNSFont();
 	m_fontForGraphics = [[NSFontManager sharedFontManager] convertFont:font
 							toSize:[font pointSize] * (getZoomPercentage() / 100.)];
-	[m_fontProps setObject:m_fontForGraphics forKey:NSFontAttributeName];
+	_atsuStyleInit(&m_atsuStyle, m_fontForGraphics);
 }
 
 UT_uint32 GR_CocoaGraphics::getFontHeight(GR_Font * fnt)
@@ -955,7 +915,7 @@ void GR_CocoaGraphics::_setColor(NSColor * c)
 	UT_DEBUGMSG (("GR_CocoaGraphics::_setColor(NSColor *): setting NSColor\n"));
 	[m_currentColor release];
 	m_currentColor = [c copy];
-	[m_fontProps setObject:m_currentColor forKey:NSForegroundColorAttributeName];
+	// the ATSUStyle will take the color of the current CG
 	if (m_viewLocker) {
 		LOCK_CONTEXT__;
 		[m_currentColor set];
@@ -1201,13 +1161,45 @@ void GR_CocoaGraphics::fillRect(const UT_RGBColor& clr, UT_sint32 x, UT_sint32 y
 							   UT_sint32 w, UT_sint32 h)
 {
 	UT_DEBUGMSG(("GR_CocoaGraphics::fillRect(UT_RGBColor&, %ld, %ld, %ld, %ld)\n", x, y, w, h));
+
+	/* make this as accurate as possible, though it's still not perfect :-(
+	 */
+	double _x1 = tduD(x);
+	double _y1 = tduD(y);
+
+	double x1 = floor(_x1);
+	double y1 = floor(_y1);
+
+	double _x2 = tduD(x+w);
+	double _y2 = tduD(y+h);
+
+	double x2 = ceil(_x2);
+	double y2 = ceil(_y2);
+
+	double dw = ceil(tduD(w));
+	double dh = ceil(tduD(h));
+
+	float f_x = static_cast<float>(x1);
+	float f_y = static_cast<float>(y1);
+	float f_w = static_cast<float>(dw);
+	float f_h = static_cast<float>(dh);
+
+	if (((_x1 - x1) > 0.75) || ((x2 - _x2) < 0.25) || ((_x1 - x1) > (x2 - _x2)))
+	{
+		f_x = static_cast<float>(x2 - dw);
+	}
+	if (((_y1 - y1) > 0.75) || ((y2 - _y2) < 0.25) || ((_y1 - y1) > (y2 - _y2)))
+	{
+		f_y = static_cast<float>(y2 - dh);
+	}
+
 	// save away the current color, and restore it after we fill the rect
 	NSColor *c = _utRGBColorToNSColor (clr);
 
 	LOCK_CONTEXT__;
 	::CGContextSaveGState(m_CGContext);
 	[c set];	
-	::CGContextFillRect(m_CGContext, ::CGRectMake (tdu(x), tdu(y), tdu(w), tdu(h)));
+	::CGContextFillRect(m_CGContext, ::CGRectMake (f_x, f_y, f_w, f_h));
 	::CGContextRestoreGState(m_CGContext);
 }
 

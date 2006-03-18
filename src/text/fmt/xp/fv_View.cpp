@@ -172,7 +172,11 @@ FV_View::FV_View(XAP_App * pApp, void* pParentData, FL_DocLayout* pLayout)
 		m_sFind(0),
 		m_sReplace(0),
 		m_bShowPara(false),
+#ifdef EMBEDDED_TARGET
+		m_viewMode(VIEW_NORMAL),
+#else
 		m_viewMode(VIEW_PRINT),
+#endif
 		m_previewMode(PREVIEW_NONE),
 		m_bDontUpdateScreenOnGeneralUpdate(false),
 		m_iPieceTableState(0),
@@ -2323,6 +2327,7 @@ PT_DocPosition FV_View::saveSelectedImage (const UT_ByteBuf ** pBytes)
 	{
 		fl_FrameLayout * pFrame = getFrameLayout();
 		const PP_AttrProp* pAP = NULL;
+		UT_return_val_if_fail(pFrame, 0);
 		pFrame->getAP(pAP);
 		if(pAP == NULL)
 		{
@@ -4017,7 +4022,7 @@ bool FV_View::getStyle(const XML_Char ** style)
 					const XML_Char* sz = x_getStyle(pSpanAP, true);
 					bool bHere = (sz && sz[0]);
 
-					if ((bCharStyle != bHere) || (strcmp(sz, szChar)))
+					if ((bCharStyle != bHere) || ((sz && szChar && strcmp(sz, szChar))))
 					{
 						// doesn't match, so stop looking
 						bCharStyle = false;
@@ -5759,7 +5764,9 @@ bool FV_View::getBlockFormat(const XML_Char *** pProps,bool bExpandStyles)
 	{
 		return false;
 	}
-	UT_GenericVector<_fmtPair *> v;
+
+	// currently there are 69 block level properties
+	UT_GenericVector<_fmtPair *> v(69,4,true);
 	UT_uint32 i;
 	_fmtPair * f = NULL;
 
@@ -7804,7 +7811,7 @@ void FV_View::ensureInsertionPointOnScreen(void)
 }
 
 
-void FV_View::setPoint(PT_DocPosition pt)
+void FV_View::setPoint(UT_uint32 pt)
 {
 	_setPoint(pt, m_bPointEOL);
 }
@@ -8434,6 +8441,35 @@ void FV_View::getTopRulerInfo(AP_TopRulerInfo * pInfo)
 	getTopRulerInfo(getPoint(), pInfo);
 }
 
+UT_uint32 FV_View::getTabToggleAreaWidth() const
+{
+		if(m_pTopRuler)
+			return m_pTopRuler->getTabToggleAreaWidth();
+		else
+#ifdef EMBEDDED_TARGET
+			return (UT_uint32) ((float)m_pG->tlu(AP_TopRuler::getFixedWidth()) * 0.1);
+#else
+			return m_pG->tlu(AP_TopRuler::getFixedWidth());
+#endif
+}
+
+void FV_View::setViewMode (ViewMode vm)
+{
+	m_viewMode = vm;
+
+	UT_return_if_fail( m_pLayout );
+
+	m_pLayout->updateOnViewModeChange();
+	
+	for(UT_uint32 i = 0; i < m_pLayout->countPages(); i++)
+	{
+		fp_Page * pPage = m_pLayout->getNthPage(i);
+		UT_return_if_fail( pPage );
+
+		pPage->updateColumnX();
+	}
+}
+
 void FV_View::getTopRulerInfo(PT_DocPosition pos,AP_TopRulerInfo * pInfo)
 {
 	if(m_pDoc->isPieceTableChanging())
@@ -8520,8 +8556,17 @@ void FV_View::getTopRulerInfo(PT_DocPosition pos,AP_TopRulerInfo * pInfo)
 		pInfo->m_iCurrentColumn = nCol;
 		pInfo->m_iNumColumns = pDSL->getNumColumns();
 
-		pInfo->u.c.m_xaLeftMargin = pDSL->getLeftMargin();
-		pInfo->u.c.m_xaRightMargin = pDSL->getRightMargin();
+		if(getViewMode() == VIEW_NORMAL)
+		{
+			pInfo->u.c.m_xaLeftMargin = m_pTopRuler ? m_pTopRuler->getTabToggleAreaWidth() : 0;
+			pInfo->u.c.m_xaRightMargin = 0;
+		}
+		else
+		{
+			pInfo->u.c.m_xaLeftMargin = pDSL->getLeftMargin();
+			pInfo->u.c.m_xaRightMargin = pDSL->getRightMargin();
+		}
+		
 		pInfo->u.c.m_xColumnGap = pDSL->getColumnGap();
 		pInfo->u.c.m_xColumnWidth = pColumn->getWidth();
 		if(pSection->getContainerType() == FL_CONTAINER_FOOTNOTE)
@@ -8532,11 +8577,9 @@ void FV_View::getTopRulerInfo(PT_DocPosition pos,AP_TopRulerInfo * pInfo)
 			pInfo->u.c.m_xColumnWidth = pContainer->getWidth();
 		}
 		pInfo->m_mode = AP_TopRulerInfo::TRI_MODE_COLUMNS;
-
-		pInfo->m_xrPoint = xCaret - pContainer->getX();
-		pInfo->m_xrLeftIndent = UT_convertToLogicalUnits(pBlock->getProperty("margin-left"));
-		pInfo->m_xrRightIndent = UT_convertToLogicalUnits(pBlock->getProperty("margin-right"));
-		pInfo->m_xrFirstLineIndent = UT_convertToLogicalUnits(pBlock->getProperty("text-indent"));
+		pInfo->m_xrLeftIndent = pBlock->getLeftMargin();
+		pInfo->m_xrRightIndent = pBlock->getRightMargin();
+		pInfo->m_xrFirstLineIndent = pBlock->getTextIndent();
 		xxx_UT_DEBUGMSG(("ap_TopRuler: xrPoint %d LeftIndent %d RightIndent %d Firs %d \n",pInfo->m_xrPoint,pInfo->m_xrLeftIndent,pInfo->m_xrRightIndent,	pInfo->m_xrFirstLineIndent));
 	}
 	else if(isHdrFtrEdit() && (pSection->getContainerType() != FL_CONTAINER_CELL))
@@ -8548,16 +8591,25 @@ void FV_View::getTopRulerInfo(PT_DocPosition pos,AP_TopRulerInfo * pInfo)
 		pInfo->m_iCurrentColumn = 0;
 		pInfo->m_iNumColumns = 1;
 
-		pInfo->u.c.m_xaLeftMargin = pDSL->getLeftMargin();
-		pInfo->u.c.m_xaRightMargin = pDSL->getRightMargin();
+		if(getViewMode() == VIEW_NORMAL)
+		{
+			pInfo->u.c.m_xaLeftMargin = m_pTopRuler ? m_pTopRuler->getTabToggleAreaWidth() : 0;
+			pInfo->u.c.m_xaRightMargin = 0;
+		}
+		else
+		{
+			pInfo->u.c.m_xaLeftMargin = pDSL->getLeftMargin();
+			pInfo->u.c.m_xaRightMargin = pDSL->getRightMargin();
+		}
+		
 		pInfo->u.c.m_xColumnGap = pDSL->getColumnGap();
 		pInfo->u.c.m_xColumnWidth = pColumn->getWidth();
 		pInfo->m_mode = AP_TopRulerInfo::TRI_MODE_COLUMNS;
 
 		pInfo->m_xrPoint = xCaret - pContainer->getX();
-		pInfo->m_xrLeftIndent = UT_convertToLogicalUnits(pBlock->getProperty("margin-left"));
-		pInfo->m_xrRightIndent = UT_convertToLogicalUnits(pBlock->getProperty("margin-right"));
-		pInfo->m_xrFirstLineIndent = UT_convertToLogicalUnits(pBlock->getProperty("text-indent"));
+		pInfo->m_xrLeftIndent = pBlock->getLeftMargin();
+		pInfo->m_xrRightIndent = pBlock->getRightMargin();
+		pInfo->m_xrFirstLineIndent = pBlock->getTextIndent();
 	}
 	else if(pSection->getContainerType() == FL_CONTAINER_CELL)
 	{
@@ -8623,16 +8675,26 @@ void FV_View::getTopRulerInfo(PT_DocPosition pos,AP_TopRulerInfo * pInfo)
 				pInfo->m_iNumColumns = 1;
 
 			}
-			pInfo->u.c.m_xaLeftMargin = pDSL->getLeftMargin();
-			pInfo->u.c.m_xaRightMargin = pDSL->getRightMargin();
+
+			if(getViewMode() == VIEW_NORMAL)
+			{
+				pInfo->u.c.m_xaLeftMargin = m_pTopRuler ? m_pTopRuler->getTabToggleAreaWidth() : 0;
+				pInfo->u.c.m_xaRightMargin = 0;
+			}
+			else
+			{
+				pInfo->u.c.m_xaLeftMargin = pDSL->getLeftMargin();
+				pInfo->u.c.m_xaRightMargin = pDSL->getRightMargin();
+			}
+			
 			pInfo->u.c.m_xColumnGap = pDSL->getColumnGap();
 			pInfo->u.c.m_xColumnWidth = pColumn->getWidth();
 			pInfo->m_xrPoint = xCaret - pContainer->getX();
 		}
 		pInfo->m_mode = AP_TopRulerInfo::TRI_MODE_TABLE;
-		pInfo->m_xrLeftIndent = UT_convertToLogicalUnits(pBlock->getProperty("margin-left"));
-		pInfo->m_xrRightIndent = UT_convertToLogicalUnits(pBlock->getProperty("margin-right"));
-		pInfo->m_xrFirstLineIndent = UT_convertToLogicalUnits(pBlock->getProperty("text-indent"));
+		pInfo->m_xrLeftIndent = pBlock->getLeftMargin();
+		pInfo->m_xrRightIndent = pBlock->getRightMargin();
+		pInfo->m_xrFirstLineIndent = pBlock->getTextIndent();
 		fp_TableContainer * pTab = static_cast<fp_TableContainer *>(pCell->getContainer());
 		UT_sint32 row = pCell->getTopAttach();
 		UT_sint32 numcols = pTab->getNumCols();
@@ -8718,7 +8780,7 @@ void FV_View::getTopRulerInfo(PT_DocPosition pos,AP_TopRulerInfo * pInfo)
 			iCum += width;
 		}
 	}
-	else if(pContainer->getContainerType() == FP_CONTAINER_FRAME)
+	else if(pContainer->getContainerType() == FP_CONTAINER_FRAME && getViewMode() != VIEW_NORMAL)
 	{
 		fp_FrameContainer * pFC = static_cast<fp_FrameContainer *>(pContainer);
 		fl_FrameLayout * pFL = static_cast<fl_FrameLayout *>(pSection);
@@ -8742,9 +8804,9 @@ void FV_View::getTopRulerInfo(PT_DocPosition pos,AP_TopRulerInfo * pInfo)
 		pInfo->u.c.m_xaRightMargin = pPage->getWidth() - pFC->getFullX() - pFC->getFullWidth();
 		
 		pInfo->m_xrPoint = xCaret - pFC->getX();
-		pInfo->m_xrLeftIndent = UT_convertToLogicalUnits(pBlock->getProperty("margin-left"));
-		pInfo->m_xrRightIndent = UT_convertToLogicalUnits(pBlock->getProperty("margin-right"));
-		pInfo->m_xrFirstLineIndent = UT_convertToLogicalUnits(pBlock->getProperty("text-indent"));
+		pInfo->m_xrLeftIndent = pBlock->getLeftMargin();
+		pInfo->m_xrRightIndent = pBlock->getRightMargin();
+		pInfo->m_xrFirstLineIndent = pBlock->getTextIndent();
 		
 	}
 	else
@@ -9595,6 +9657,42 @@ EV_EditMouseContext FV_View::getMouseContext(UT_sint32 xPos, UT_sint32 yPos)
 	xxx_UT_DEBUGMSG(("fv_View::getMouseContext: (13)\n"));
 	m_prevMouseContext = EV_EMC_UNKNOWN;
 	return EV_EMC_UNKNOWN;
+}
+
+/*!
+ * Returns true if the (x,y) location on the screen is over a selected
+ * fp_MathRun.
+ */
+bool FV_View::isMathSelected(UT_sint32 x, UT_sint32 y, PT_DocPosition  & pos)
+{
+	if(isSelectionEmpty())
+	{
+			return false;
+	}
+	// Figure out which page we clicked on.
+	// Pass the click down to that page.
+	UT_sint32 xClick, yClick;
+	fp_Page* pPage = _getPageForXY(x,y, xClick, yClick);
+	bool bBOL = false;
+	bool bEOL = false;
+	bool isTOC = false;
+	bool bUseHdrFtr = true;
+	pPage->mapXYToPosition(false,xClick, yClick, pos, bBOL, bEOL,isTOC, bUseHdrFtr,NULL);
+	fl_BlockLayout * pBlock = NULL;
+	fp_Run * pRun = NULL;
+	UT_sint32 xCaret, yCaret;
+	UT_uint32 heightCaret;
+	UT_sint32 xCaret2, yCaret2;
+	bool bDirection;
+	_findPositionCoords(pos, m_bPointEOL, xCaret, yCaret, xCaret2, yCaret2, heightCaret, bDirection, &pBlock, &pRun);
+	if(pRun && pRun->getType() == FPRUN_MATH)
+	{
+		if(pos >= getPoint() && pos <= getSelectionAnchor())
+			return true;
+		if(pos >= getSelectionAnchor() && pos <= getPoint())
+			return true;
+	}  
+	return false;
 }
 
 /*!
@@ -11856,6 +11954,9 @@ UT_uint32 FV_View::calculateZoomPercentForWholePage()
 void FV_View::toggleMarkRevisions()
 {
 	m_pDoc->toggleMarkRevisions();
+
+	// force screen update to fix 7673
+	updateScreen();
 }
 
 void FV_View::setShowRevisions(bool bShow)
@@ -12714,3 +12815,33 @@ void FV_View::remeasureCharsWithoutRebuild()
 
 	updateLayout();
 }
+
+/*!
+    This function is called when the font metrics for the view change. This happens for
+    example when on win32 the user changes the currently selected printer. In order to
+    maintain WYSIWYG behaviour, we have to remeasure and rebuild
+*/
+void FV_View::fontMetricsChange()
+{
+    fl_BlockLayout * pBL = getBlockAtPosition(2);
+
+    while(pBL)
+    {
+        fp_Run * pRun = pBL->getFirstRun();
+
+		while(pRun)
+        {
+			// The order here matters; marking width dirty before call to
+			// updateVerticalMetric() allows some fp_Run subclasses to clear the width
+			// flag in the updateVerticalMetric() call (see fp_EmbedRun for example)
+			
+			pRun->markWidthDirty();  // width will be recalculated during rebuild
+			pRun->updateVerticalMetric();
+            pRun = pRun->getNextRun();
+        }
+        pBL = pBL->getNextBlockInDocument();
+    }
+
+	m_pLayout->rebuildFromHere(static_cast<fl_DocSectionLayout *>(m_pLayout->getFirstSection()));	
+}
+

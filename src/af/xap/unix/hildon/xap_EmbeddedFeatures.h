@@ -25,4 +25,6 @@
 
 #define XAP_SINGLE_XAPAPP 1
 
+#define EMBEDDED_TARGET 1
+
 #endif

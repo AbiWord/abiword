@@ -2,8 +2,8 @@
 #
 # This script is invoked to create wrapper scripts for AbiSuite
 # binaries.  One should pass it the _base_ name of the program
-# to wrap (one would pass "AbiWord" to wrap "AbiWord-2.4" and 
-# "AbiWord-2.4"), the install base of the tree and, optionally, the location
+# to wrap (one would pass "AbiWord" to wrap "AbiWord-2.6" and 
+# "AbiWord-2.6"), the install base of the tree and, optionally, the location
 # of the machine-dependent binaries and scripts, and, optionally, an
 # installation-only prefix.
 

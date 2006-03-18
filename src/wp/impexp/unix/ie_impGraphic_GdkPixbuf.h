@@ -27,6 +27,7 @@
 #include <glib.h>
 #include <gdk-pixbuf/gdk-pixbuf.h>
 #include <gdk-pixbuf/gdk-pixbuf-loader.h>
+#include <gdk-pixbuf/gdk-pixbuf-io.h>
 
 #include "ut_debugmsg.h"
 #include "ut_types.h"
@@ -45,7 +46,6 @@ public:
 	virtual ~IE_ImpGraphic_GdkPixbuf();
 
 	virtual UT_Error importGraphic(UT_ByteBuf * pBB, FG_Graphic ** ppfg);
-	virtual UT_Error importGraphic(const char * szFilename, FG_Graphic ** ppfg);
 	virtual UT_Error convertGraphic(UT_ByteBuf* pBB,
 									UT_ByteBuf** ppBB);
 

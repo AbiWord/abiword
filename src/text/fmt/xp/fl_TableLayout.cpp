@@ -1258,11 +1258,23 @@ void fl_TableLayout::_lookupProperties(const PP_AttrProp* pSectionAP)
 //
 		m_iLeftColPos = UT_convertToLogicalUnits(pszLeftColPos);
 		UT_DEBUGMSG(("Left colpos is %s \n",pszLeftColPos));
+
+		FV_View * pView = m_pLayout->getView();
+		GR_Graphics * pG = getDocLayout()->getGraphics();
+		UT_return_if_fail( pView && pG );
+		
+		if(pView->getViewMode() == VIEW_NORMAL && m_iLeftColPos < 0 &&
+		   !pG->queryProperties(GR_Graphics::DGP_PAPER))
+		{
+			m_iLeftColPos = 0;
+		}
 	}
 	else
 	{
 		m_iLeftColPos =  0;
 	}
+
+
 	if(pszColumnProps && *pszColumnProps)
 	{
 /*
@@ -1494,6 +1506,94 @@ void fl_TableLayout::_lookupProperties(const PP_AttrProp* pSectionAP)
 	s_background_properties (pszBgStyle, pszBgColor, pszBackgroundColor, m_background);
 
 
+}
+
+void fl_TableLayout::_lookupMarginProperties(const PP_AttrProp* pSectionAP)
+{
+	UT_return_if_fail( pSectionAP );
+#if 0 // I think these are relative to the position of the table, so we do not need to
+	  // bother with them
+	const char* pszLeftOffset = NULL;
+	const char* pszTopOffset = NULL;
+	const char* pszRightOffset = NULL;
+	const char* pszBottomOffset = NULL;
+	pSectionAP->getProperty("table-margin-left", (const XML_Char *&)pszLeftOffset);
+	pSectionAP->getProperty("table-margin-top", (const XML_Char *&)pszTopOffset);
+	pSectionAP->getProperty("table-margin-right", (const XML_Char *&)pszRightOffset);
+	pSectionAP->getProperty("table-margin-bottom", (const XML_Char *&)pszBottomOffset);
+
+	UT_String defaultOffset("0.01in");	// TODO: what to do with this. was 0.01in
+	if(pszLeftOffset && pszLeftOffset[0])
+	{
+		m_iLeftOffset = UT_convertToLogicalUnits(pszLeftOffset);
+		m_dLeftOffsetUserUnits = UT_convertDimensionless(pszLeftOffset);
+	}
+	else
+	{
+		m_iLeftOffset = UT_convertToLogicalUnits(defaultOffset.c_str());
+		m_dLeftOffsetUserUnits = UT_convertDimensionless(defaultOffset.c_str());
+	}
+
+	if(pszTopOffset && pszTopOffset[0])
+	{
+		m_iTopOffset = UT_convertToLogicalUnits(pszTopOffset);
+		m_dTopOffsetUserUnits = UT_convertDimensionless(pszTopOffset);
+	}
+	else
+	{
+		m_iTopOffset = UT_convertToLogicalUnits(defaultOffset.c_str());
+		m_dTopOffsetUserUnits = UT_convertDimensionless(defaultOffset.c_str());
+	}
+
+	if(pszRightOffset && pszRightOffset[0])
+	{
+		m_iRightOffset = UT_convertToLogicalUnits(pszRightOffset);
+		m_dRightOffsetUserUnits = UT_convertDimensionless(pszRightOffset);
+	}
+	else
+	{
+		m_iRightOffset = UT_convertToLogicalUnits(defaultOffset.c_str());
+		m_dRightOffsetUserUnits = UT_convertDimensionless(defaultOffset.c_str());
+	}
+
+	if(pszBottomOffset && pszBottomOffset[0])
+	{
+		m_iBottomOffset = UT_convertToLogicalUnits(pszBottomOffset);
+		m_dBottomOffsetUserUnits = UT_convertDimensionless(pszBottomOffset);
+	}
+	else
+	{
+		m_iBottomOffset = UT_convertToLogicalUnits(defaultOffset.c_str());
+		m_dBottomOffsetUserUnits = UT_convertDimensionless(defaultOffset.c_str());
+	}
+#endif
+
+//
+// Positioned columns controls
+//
+	const char * pszLeftColPos = NULL;
+	pSectionAP->getProperty("table-column-leftpos", (const XML_Char *&)pszLeftColPos);
+	UT_sint32 iLeftColPos = m_iLeftColPos;
+	if(pszLeftColPos && *pszLeftColPos)
+	{
+		m_iLeftColPos = UT_convertToLogicalUnits(pszLeftColPos);
+		UT_DEBUGMSG(("Left colpos is %s \n",pszLeftColPos));
+
+		FV_View * pView = m_pLayout->getView();
+		GR_Graphics * pG = getDocLayout()->getGraphics();
+		UT_return_if_fail( pView && pG );
+
+		if(pView->getViewMode() == VIEW_NORMAL && m_iLeftColPos < 0 &&
+		   !pG->queryProperties(GR_Graphics::DGP_PAPER))
+		{
+			m_iLeftColPos = 0;
+		}
+	}
+
+	if(iLeftColPos != m_iLeftColPos)
+	{
+		collapse();
+	}
 }
 
 UT_sint32 fl_TableLayout::getColSpacing(void) const
@@ -2317,6 +2417,10 @@ void fl_CellLayout::_lookupProperties(const PP_AttrProp* pSectionAP)
 
 	}
 	defaultOffset = "0.01in";
+
+	static UT_sint32 idefaultOffsetLogicalUnits =  UT_convertToLogicalUnits("0.01in");
+	static double idefaultOffsetDimensionless =  UT_convertDimensionless("0.01in");
+
 	if(pszLeftOffset && pszLeftOffset[0])
 	{
 		m_iLeftOffset = UT_convertToLogicalUnits(pszLeftOffset);
@@ -2324,8 +2428,8 @@ void fl_CellLayout::_lookupProperties(const PP_AttrProp* pSectionAP)
 	}
 	else
 	{
-		m_iLeftOffset = UT_convertToLogicalUnits(defaultOffset.c_str());
-		m_dLeftOffsetUserUnits = UT_convertDimensionless(defaultOffset.c_str());
+		m_iLeftOffset = idefaultOffsetLogicalUnits;
+		m_dLeftOffsetUserUnits = idefaultOffsetDimensionless;
 	}
 
 	if(pszTopOffset && pszTopOffset[0])
@@ -2335,8 +2439,8 @@ void fl_CellLayout::_lookupProperties(const PP_AttrProp* pSectionAP)
 	}
 	else
 	{
-		m_iTopOffset = UT_convertToLogicalUnits(defaultOffset.c_str());
-		m_dTopOffsetUserUnits = UT_convertDimensionless(defaultOffset.c_str());
+		m_iTopOffset = idefaultOffsetLogicalUnits;
+		m_dTopOffsetUserUnits = idefaultOffsetDimensionless;
 	}
 
 	if(pszRightOffset && pszRightOffset[0])
@@ -2346,8 +2450,8 @@ void fl_CellLayout::_lookupProperties(const PP_AttrProp* pSectionAP)
 	}
 	else
 	{
-		m_iRightOffset = UT_convertToLogicalUnits(defaultOffset.c_str());
-		m_dRightOffsetUserUnits = UT_convertDimensionless(defaultOffset.c_str());
+		m_iRightOffset = idefaultOffsetLogicalUnits;
+		m_dRightOffsetUserUnits = idefaultOffsetDimensionless;
 	}
 
 	if(pszBottomOffset && pszBottomOffset[0])
@@ -2357,8 +2461,8 @@ void fl_CellLayout::_lookupProperties(const PP_AttrProp* pSectionAP)
 	}
 	else
 	{
-		m_iBottomOffset = UT_convertToLogicalUnits(defaultOffset.c_str());
-		m_dBottomOffsetUserUnits = UT_convertDimensionless(defaultOffset.c_str());
+		m_iBottomOffset = idefaultOffsetLogicalUnits;
+		m_dBottomOffsetUserUnits = idefaultOffsetDimensionless;
 	}
 	const char* pszLeftAttach = NULL;
 	const char* pszRightAttach = NULL;

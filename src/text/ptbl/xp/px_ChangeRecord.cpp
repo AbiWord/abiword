@@ -41,6 +41,7 @@
 // after 2.5 this should be changed to #include pd_Document.h
 #include "xap_App.h"
 #include "ut_uuid.h"
+#include "pd_Document.h"
 
 /*!
   Create change record
@@ -49,15 +50,16 @@
   \param indexNewAP Index of new attribute property
  */
 PX_ChangeRecord::PX_ChangeRecord(PXType type,
-								 PT_DocPosition position,
-								 PT_AttrPropIndex indexNewAP,
-								 UT_uint32 iXID):
+				 PT_DocPosition position,
+				 PT_AttrPropIndex indexNewAP,
+				 UT_uint32 iXID):
 	m_type(type),
 	m_position(position),
 	m_indexAP(indexNewAP),
 	m_persistant(true),
 	m_iXID(iXID),
-	m_iCRNumber(0)
+	m_iCRNumber(0),
+	m_pDoc(NULL)
 {
 	// bulletproofing
 	memset(&m_MyUUID, 0, sizeof(m_MyUUID));
@@ -78,6 +80,26 @@ PX_ChangeRecord::PX_ChangeRecord(PXType type,
 */
 PX_ChangeRecord::~PX_ChangeRecord()
 {
+}
+
+bool PX_ChangeRecord::setCRNumber(void) const
+{
+  if(m_pDoc == NULL)
+  {
+      return false;
+  }
+  m_iCRNumber = m_pDoc->getNextCRNumber();
+  return true;
+}
+
+PD_Document * PX_ChangeRecord::getDocument(void) const
+{
+  return m_pDoc;
+}
+
+void PX_ChangeRecord::setDocument(const PD_Document * pDoc) const
+{
+  m_pDoc = const_cast<PD_Document *>(pDoc);
 }
 
 const char * PX_ChangeRecord::getDocUUID() const

@@ -136,6 +136,21 @@ enum FV_BIDI_Order
 	FV_Order_Logical_RTL = UT_BIDI_RTL
 };
 
+class ABI_EXPORT fv_CaretProps
+{
+ public:
+	PT_DocPosition		m_iInsPoint;
+	UT_sint32			m_xPoint;
+	UT_sint32			m_yPoint;
+	//the followingare BiDi specific, but need to be in place because of the
+	//change to the signature of findPointCoords
+	UT_sint32			m_xPoint2;
+	UT_sint32			m_yPoint2;
+	bool			        m_bPointDirection;
+	bool				m_bDefaultDirectionRtl;
+	bool				m_bUseHebrewContextGlyphs;
+	UT_uint32			m_iPointHeight;
+};
 								
 class ABI_EXPORT FV_View : public AV_View
 {
@@ -199,8 +214,10 @@ public:
 	UT_Error		cmdDeleteHyperlink();
 	bool                    cmdInsertMathML(const char * szFileName,
 						PT_DocPosition pos);
-	bool                    cmdInsertEmbed(UT_ByteBuf * pBuf,PT_DocPosition pos,const char * szMime,const char * szProps);
-	bool                    cmdUpdateEmbed(UT_ByteBuf * pBuf, const char * szMime, const char * szProps);
+	bool	        cmdInsertEmbed(UT_ByteBuf * pBuf,PT_DocPosition pos,const char * szMime,const char * szProps);
+	bool            cmdUpdateEmbed(UT_ByteBuf * pBuf, const char * szMime, const char * szProps);
+	bool	        cmdUpdateEmbed(fp_Run * pRun, UT_ByteBuf * pBuf, const char * szMime, const char * szProps);
+	bool	        cmdDeleteEmbed(fp_Run * pRun);
 
 	bool                    cmdInsertLatexMath(UT_UTF8String & sLatex,
 						   UT_UTF8String & sMath);
@@ -236,6 +253,7 @@ public:
 	virtual void        updateLayout(void);
 	virtual void        rebuildLayout(void);
 	virtual void        remeasureCharsWithoutRebuild();
+	virtual void        fontMetricsChange();
 	virtual bool		isSelectionEmpty(void) const;
 	bool                isSelectAll(void)
 	{ return m_Selection.isSelectAll();}
@@ -548,7 +566,7 @@ public:
 // -----------------------
 
 	bool				insertPageNum(const XML_Char ** props, HdrFtrType hfType);
-	void				setPoint(PT_DocPosition pt);
+	virtual void        setPoint(UT_uint32 pt);
 	void                ensureInsertionPointOnScreen(void);
 
 // -----------------------
@@ -560,12 +578,14 @@ public:
 	UT_uint32			calculateZoomPercentForPageWidth();
 	UT_uint32			calculateZoomPercentForPageHeight();
 	UT_uint32			calculateZoomPercentForWholePage();
-	inline void 			setViewMode (ViewMode vm) {m_viewMode = vm;}
+	void 			    setViewMode (ViewMode vm);
 	inline ViewMode 		getViewMode (void) const  {return m_viewMode;}
 	bool				isPreview(void) const {return VIEW_PREVIEW == m_viewMode;}
 	void				setPreviewMode(PreViewMode pre) {m_previewMode = pre;}
 	PreViewMode 		getPreviewMode(void) { return m_previewMode;}
 
+	UT_uint32           getTabToggleAreaWidth() const;
+	
 	void				setScreenUpdateOnGeneralUpdate( bool bDoit)
 		{m_bDontUpdateScreenOnGeneralUpdate = !bDoit;}
 	bool				shouldScreenUpdateOnGeneralUpdate(void) const
@@ -717,6 +737,7 @@ public:
 	FV_BIDI_Order	    getBidiOrder()const {return m_eBidiOrder;}
 	void                setBidiOrder(FV_BIDI_Order o) {m_eBidiOrder = o;}
 
+	bool                isMathSelected(UT_sint32 x, UT_sint32 y, PT_DocPosition & pos);
 	// -- plugins
         bool                isMathLoaded(void);
 	bool                isGrammarLoaded(void);
@@ -939,6 +960,7 @@ private:
 	FV_VisualInlineImage  m_InlineImage;
 	bool                m_bInsertAtTablePending;
 	PT_DocPosition      m_iPosAtTable;
+	UT_GenericVector<fv_CaretProps *> m_vecCarets;
 };
 
 #endif /* FV_VIEW_H */

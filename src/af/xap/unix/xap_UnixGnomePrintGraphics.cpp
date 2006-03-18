@@ -106,7 +106,6 @@ GnomePrintConfig * XAP_UnixGnomePrintGraphics::s_setup_config (XAP_Frame * pFram
 XAP_UnixGnomePrintGraphics::XAP_UnixGnomePrintGraphics(GnomePrintJob *gpm, bool isPreview)
 	: GR_Graphics ()
 {
-	m_pApp         = XAP_App::getApp ();
 	m_gpm          = gpm;
 	m_gpc          = gnome_print_job_get_context(gpm);
 	
@@ -124,7 +123,7 @@ XAP_UnixGnomePrintGraphics::XAP_UnixGnomePrintGraphics(GnomePrintJob *gpm, bool 
 	m_width = getDeviceResolution()*m_width/72.;
 
 	m_bIsPreview     = isPreview;
-	m_fm             = static_cast<XAP_UnixApp *>(m_pApp)->getFontManager();
+	m_fm             = static_cast<XAP_UnixApp *>(XAP_App::getApp())->getFontManager();
 	m_bStartPrint    = false;
 	m_bStartPage     = false;
 	m_pCurrentFont   = NULL;
@@ -138,7 +137,6 @@ XAP_UnixGnomePrintGraphics::XAP_UnixGnomePrintGraphics(GnomePrintJob *gpm, bool 
 XAP_UnixGnomePrintGraphics::XAP_UnixGnomePrintGraphics(GnomePrintContext *ctx,
 													   double inWidthDevice, double inHeightDevice)
 {
-	m_pApp         = XAP_App::getApp ();
 	m_gpm          = NULL;
 	m_gpc          = ctx;
 	
@@ -146,7 +144,7 @@ XAP_UnixGnomePrintGraphics::XAP_UnixGnomePrintGraphics(GnomePrintContext *ctx,
 	m_height = inHeightDevice;
 
 	m_bIsPreview     = false;
-	m_fm             = static_cast<XAP_UnixApp *>(m_pApp)->getFontManager();
+	m_fm             = static_cast<XAP_UnixApp *>(XAP_App::getApp())->getFontManager();
 	m_bStartPrint    = false;
 	m_bStartPage     = false;
 	m_pCurrentFont   = NULL;
@@ -254,7 +252,8 @@ void XAP_UnixGnomePrintGraphics::drawChars(const UT_UCSChar* pChars,
 			else
 				glyph_index = FT_Get_Char_Index(pFace, pChars[iCharOffset + i]);
 
-			gnome_glyphlist_moveto (pGL, scale_xdir (tdu (xoff + advance)), yoff);
+			//			gnome_glyphlist_moveto (pGL, scale_xdir (tdu (xoff + advance)), yoff);
+			gnome_glyphlist_moveto (pGL, tduD (xoff + advance), yoff);
 			gnome_glyphlist_glyph (pGL, glyph_index);
 
 			if (pCharWidths)
@@ -398,7 +397,7 @@ void XAP_UnixGnomePrintGraphics::_drawAnyImage (GR_Image* pImg,
 {
 	UT_sint32 iDestWidth  = pImg->getDisplayWidth ();
 	UT_sint32 iDestHeight = pImg->getDisplayHeight ();
-
+	
 	GR_UnixImage * pImage = static_cast<GR_UnixImage *>(pImg);
 	GdkPixbuf * image = pImage->getData ();
 	UT_return_if_fail (image);
@@ -406,6 +405,8 @@ void XAP_UnixGnomePrintGraphics::_drawAnyImage (GR_Image* pImg,
 	gint width, height, rowstride;
 	const guchar * pixels;
 	
+	/* The pixbuf should contain unscaled (raw) image data for best results. 
+	See XAP_UnixGnomePrintGraphics::createNewImage for details */
 	width     = gdk_pixbuf_get_width (image);
 	height    = gdk_pixbuf_get_height (image);
 	rowstride = gdk_pixbuf_get_rowstride (image);
@@ -414,9 +415,9 @@ void XAP_UnixGnomePrintGraphics::_drawAnyImage (GR_Image* pImg,
 	gnome_print_gsave (m_gpc);
 	gnome_print_translate (m_gpc, xDest, yDest - iDestHeight);
 
-	float scale_x = width * static_cast<float>(iDestWidth)/width;
-	float scale_y = height * static_cast<float>(iDestHeight)/height;
-	gnome_print_scale (m_gpc, scale_x, scale_y);
+	//float scale_x = static_cast<float>(iDestWidth)/width;
+	//float scale_y = static_cast<float>(iDestHeight)/height;
+	gnome_print_scale (m_gpc, iDestWidth, iDestHeight);
 
 	/* Not sure about the grayimage part, but the other 2 are correct */
 	if (!rgb)
@@ -456,6 +457,12 @@ void XAP_UnixGnomePrintGraphics::drawImage(GR_Image* pImg, UT_sint32 xDest,
 	}
 }
 
+/*!
+Creates and sets up a new image for printing.
+@param iDisplayWidth the width of the image to display. Values are in layout units.
+@param iDisplayHeight the height of the image to display. Values are in layout units.
+@return a new image if successful, NULL otherwise
+*/
 GR_Image* XAP_UnixGnomePrintGraphics::createNewImage(const char* pszName, 
 													 const UT_ByteBuf* pBB, 
 													 UT_sint32 iDisplayWidth,
@@ -468,8 +475,10 @@ GR_Image* XAP_UnixGnomePrintGraphics::createNewImage(const char* pszName,
 		pImg = new GR_UnixImage(pszName,iType);
    	else if (iType == GR_Image::GRT_Vector)
 		pImg = new GR_VectorImage(pszName);
-   
-	pImg->convertFromBuffer(pBB, tdu(iDisplayWidth), tdu(iDisplayHeight));
+	
+	// make sure we don't scale the image yet to not loose any information
+	pImg->convertFromBuffer(pBB, -1, -1);
+	pImg->setDisplaySize(tdu(iDisplayWidth), tdu(iDisplayHeight));
 
 	return pImg;
 }
@@ -536,7 +545,7 @@ bool XAP_UnixGnomePrintGraphics::_endDocument(void)
 
 UT_uint32 XAP_UnixGnomePrintGraphics::_getResolution(void) const
 {
-	return 72;
+	return 72; // was 72
 }
 
 void XAP_UnixGnomePrintGraphics::fillRect(const UT_RGBColor& c, 
@@ -549,15 +558,15 @@ void XAP_UnixGnomePrintGraphics::fillRect(const UT_RGBColor& c,
 	// set the bgcolor
 	UT_RGBColor old (m_currentColor);
 	setColor (c);
-	
-	x = scale_xdir (tdu(x)); y = scale_ydir (tdu(y)); w = scale_xdir (tdu(w)); h = tdu(h);
+	double dx,dy,dw,dh;
+	dx = tduD(x); dy = static_cast<double>(scale_ydir (tdu(y))); dw = tduD(w); dh = tduD(h);
 
 	gnome_print_newpath (m_gpc);
-	gnome_print_moveto (m_gpc, x,   y);		
-	gnome_print_lineto (m_gpc, x+w, y);
-	gnome_print_lineto (m_gpc, x+w, y-h);
-	gnome_print_lineto (m_gpc, x,   y-h);
-	gnome_print_lineto (m_gpc, x,   y);
+	gnome_print_moveto (m_gpc, dx,   dy);		
+	gnome_print_lineto (m_gpc, dx+dw, dy);
+	gnome_print_lineto (m_gpc, dx+dw, dy-dh);
+	gnome_print_lineto (m_gpc, dx,   dy-dh);
+	gnome_print_lineto (m_gpc, dx,   dy);
 	gnome_print_closepath (m_gpc);
 	gnome_print_fill (m_gpc);
 	
@@ -803,11 +812,10 @@ UT_sint32 XAP_UnixGnomePrintGraphics::scale_ydir (UT_sint32 in)
 		height = m_height;
 	else
 		height = m_width;
-
-	return static_cast<UT_sint32>(height - in);
+	return static_cast<UT_sint32>(height - static_cast<double>(in));
 }
 
 UT_sint32 XAP_UnixGnomePrintGraphics::scale_xdir (UT_sint32 in)
 {
-	return static_cast<UT_sint32>(in);
+	return in;
 }

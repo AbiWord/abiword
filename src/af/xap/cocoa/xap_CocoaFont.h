@@ -85,9 +85,14 @@ public:
 		rf_Symbols,
 		rf_Dings
 	};
+	bool					needsRemap()
+		{
+			return m_rfRemap;
+		}
 	static RemapFont		remapFont(NSFont * font);
 	static UT_UCS4Char		remapChar(UT_UCS4Char charCode, RemapFont rf);
-	UT_UCS4Char				remapChar(UT_UCS4Char charCode) const { return m_rfRemap ? remapChar(charCode, m_rfRemap) : charCode; }
+	UT_UCS4Char				remapChar(UT_UCS4Char charCode) const 
+		{ return m_rfRemap ? remapChar(charCode, m_rfRemap) : charCode; }
 
 private:
 	RemapFont						m_rfRemap;

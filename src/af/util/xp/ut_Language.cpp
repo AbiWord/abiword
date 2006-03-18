@@ -99,6 +99,7 @@ static UT_LangRecord s_Table[] =
 	{"ka-GE",		NULL, XAP_STRING_ID_LANG_KA_GE, UTLANG_LTR},
 	{"kn-IN",       NULL, XAP_STRING_ID_LANG_KN_IN, UTLANG_LTR},     // is Kannada LTR?
 	{"ko-KR",		NULL, XAP_STRING_ID_LANG_KO_KR, UTLANG_VERTICAL},	// TODO also UTLANG_LTR, Hipi: What about ko-KP?
+	{"ko",			NULL, XAP_STRING_ID_LANG_KO, UTLANG_LTR},
 	{"ku",			NULL, XAP_STRING_ID_LANG_KU, UTLANG_LTR},	
 	{"kw-GB",		NULL, XAP_STRING_ID_LANG_KW_GB, UTLANG_LTR},	
 	{"la-IT",		NULL, XAP_STRING_ID_LANG_LA_IT, UTLANG_LTR},	// Hipi: Should be just "la"

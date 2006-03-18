@@ -93,6 +93,8 @@ void GR_Win32Graphics::_constructorCommonCode(HDC hdc)
 {
 	UT_ASSERT(hdc);
 
+	m_iDCFontAllocNo = 0;
+	m_iPrintDCFontAllocNo = 0;
 	m_hdc = hdc;
 	m_printHDC = NULL;
 	m_nPrintLogPixelsY = 0;
@@ -151,10 +153,9 @@ void GR_Win32Graphics::_constructorCommonCode(HDC hdc)
 	m_nArPenPos = 0;
 }
 
-GR_Win32Graphics::GR_Win32Graphics(HDC hdc, HWND hwnd, XAP_App * app)
+GR_Win32Graphics::GR_Win32Graphics(HDC hdc, HWND hwnd)
 {
 	_constructorCommonCode(hdc);
-	m_pApp = app;
 	m_hwnd = hwnd;
 
 	// init the print HDC with one for the default printer
@@ -189,10 +190,9 @@ void GR_Win32Graphics::setPrintDC(HDC dc)
 }
 
 
-GR_Win32Graphics::GR_Win32Graphics(HDC hdc, const DOCINFO * pDocInfo, XAP_App * app, HGLOBAL hDevMode)
+GR_Win32Graphics::GR_Win32Graphics(HDC hdc, const DOCINFO * pDocInfo, HGLOBAL hDevMode)
 {
 	_constructorCommonCode(hdc);
-	m_pApp = app;
  	m_bPrint = true;
 	m_pDocInfo = pDocInfo;
 	m_hDevMode = hDevMode;
@@ -340,7 +340,7 @@ GR_Font* GR_Win32Graphics::_findFont(const char* pszFontFamily,
 		// in the native encoding and later lf will be passing to a windows
 		// API funcion (CreateFontIndirect()).
 		strncpy(lf.lfFaceName, 
-		        getApp()->getEncodingManager()->strToNative(pszFontFamily, "UTF-8", false),
+		        XAP_App::getApp()->getEncodingManager()->strToNative(pszFontFamily, "UTF-8", false),
 		        LF_FACESIZE);
 	}
 
@@ -422,7 +422,7 @@ UT_uint16*	GR_Win32Graphics::_remapGlyphs(const UT_UCSChar* pChars, int iCharOff
 	{
 		delete [] m_remapBuffer;
 
-		if(getApp()->theOSHasBidiSupport() != XAP_App::BIDI_SUPPORT_NONE)
+		if(XAP_App::getApp()->theOSHasBidiSupport() != XAP_App::BIDI_SUPPORT_NONE)
 		{
 			delete [] m_remapIndices;
 			m_remapIndices = new UT_UCS2Char[iLength];
@@ -475,6 +475,7 @@ void GR_Win32Graphics::drawChars(const UT_UCSChar* pChars,
 	int iLength = iLengthOrig;
 	HFONT hFont = m_pFont->getDisplayFont(this);
 	SelectObject(m_hdc, hFont);
+	m_iDCFontAllocNo = m_pFont->getAllocNumber();
 	SetTextAlign(m_hdc, TA_LEFT | TA_TOP);
 	SetBkMode(m_hdc, TRANSPARENT);		// TODO: remember and reset?
 
@@ -559,7 +560,7 @@ void GR_Win32Graphics::drawChars(const UT_UCSChar* pChars,
 		//        call GetCharacterPlacement function without
 		//        requesting reordering and then feed the indices to
 		//        ExTextOut (direct call to ExTextOut automatically reorders)
-		if(getApp()->theOSHasBidiSupport() != XAP_App::BIDI_SUPPORT_NONE)
+		if(XAP_App::getApp()->theOSHasBidiSupport() != XAP_App::BIDI_SUPPORT_NONE)
 		{
 			UT_ASSERT(m_remapIndices);
 			GCP_RESULTSW gcpResult;
@@ -581,7 +582,7 @@ void GR_Win32Graphics::drawChars(const UT_UCSChar* pChars,
 
 			DWORD placementResult;
 
-			if(getApp()->theOSHasBidiSupport() == XAP_App::BIDI_SUPPORT_GUI)
+			if(XAP_App::getApp()->theOSHasBidiSupport() == XAP_App::BIDI_SUPPORT_GUI)
 				placementResult = GetCharacterPlacementW(m_hdc, (LPCWSTR) currentChars, iLength, 0, &gcpResult, 0);
 			else
 				placementResult = GetCharacterPlacementW(m_hdc, (LPCWSTR) currentChars, iLength, 0, &gcpResult, GCP_REORDER);
@@ -650,7 +651,7 @@ UT_uint32 GR_Win32Graphics::getFontHeight()
 {
 	UT_return_val_if_fail( m_pFont, 0 );
 
-	return (UT_uint32)((m_pFont->getHeight(m_hdc, m_printHDC)) * getResolution() / getDeviceResolution());
+	return (UT_uint32)(m_pFont->getHeight(m_hdc, m_printHDC));
 }
 
 UT_uint32 GR_Win32Graphics::getFontAscent(GR_Font* fnt)
@@ -665,7 +666,7 @@ UT_uint32 GR_Win32Graphics::getFontAscent(GR_Font* fnt)
 UT_uint32 GR_Win32Graphics::getFontAscent()
 {
 	UT_return_val_if_fail( m_pFont, 0 );
-	return (UT_uint32)((m_pFont->getAscent(m_hdc, m_printHDC)) * getResolution() / getDeviceResolution());
+	return (UT_uint32)(m_pFont->getAscent(m_hdc, m_printHDC));
 }
 
 UT_uint32 GR_Win32Graphics::getFontDescent(GR_Font* fnt)
@@ -680,7 +681,7 @@ UT_uint32 GR_Win32Graphics::getFontDescent(GR_Font* fnt)
 UT_uint32 GR_Win32Graphics::getFontDescent()
 {
 	UT_return_val_if_fail( m_pFont, 0 );
-	return (UT_uint32)((m_pFont->getDescent(m_hdc, m_printHDC)) * getResolution() / getDeviceResolution());
+	return (UT_uint32)(m_pFont->getDescent(m_hdc, m_printHDC));
 }
 
 void GR_Win32Graphics::getCoverage(UT_NumberVector& coverage)
@@ -931,8 +932,10 @@ bool GR_Win32Graphics::startPrint(void)
 bool GR_Win32Graphics::startPage(const char * szPageLabel, UT_uint32 pageNumber,
 									bool bPortrait, UT_uint32 iWidth, UT_uint32 iHeight)
 {
-	iWidth = (UT_sint32)((double)_tduR(iWidth) * m_fXYRatio);
-	iHeight = _tduR(iHeight);
+	// need these in 10th of milimiters
+	iWidth = (int)((double)iWidth * m_fXYRatio * 254.0 / (double)getResolution() + 0.5);
+	iHeight = iHeight * 254 / getResolution();
+
 	if (m_bStartPage)
 	{
 		EndPage(m_hdc);
@@ -942,8 +945,12 @@ bool GR_Win32Graphics::startPage(const char * szPageLabel, UT_uint32 pageNumber,
 	if (m_hDevMode)
 	{
 		DEVMODE *pDevMode = (DEVMODE*) GlobalLock(m_hDevMode);
-		pDevMode->dmFields = DM_ORIENTATION;
+		pDevMode->dmFields = DM_ORIENTATION | DM_PAPERLENGTH | DM_PAPERWIDTH;
 		pDevMode->dmOrientation = (bPortrait) ? DMORIENT_PORTRAIT : DMORIENT_LANDSCAPE;
+		pDevMode->dmPaperSize = 0;
+		pDevMode->dmPaperLength = iHeight;
+		pDevMode->dmPaperWidth = iWidth;
+		
 		GlobalUnlock(m_hDevMode);
 
 		// call DocumentProperties() on the DEVMODE to ensure changes propagate down into
@@ -1187,6 +1194,7 @@ void GR_Win32Graphics::drawImage(GR_Image* pImg, UT_sint32 xDest, UT_sint32 yDes
 	
 	if(!iRes)
 	{
+		SetStretchBltMode(m_hdc, COLORONCOLOR);
 		iRes = StretchDIBits(m_hdc,
 							 xDest, yDest,
 							 pImg->getDisplayWidth(), pImg->getDisplayHeight(),
@@ -1234,7 +1242,7 @@ void GR_Win32Graphics::handleSetCursorMessage(void)
 {
 	// deal with WM_SETCURSOR message.
 
-	XAP_Win32App * pWin32App = static_cast<XAP_Win32App *>(m_pApp);
+	XAP_Win32App * pWin32App = static_cast<XAP_Win32App *>(XAP_App::getApp());
 	HINSTANCE hinst = pWin32App->getInstance();
 	LPCTSTR cursor_name;
 
@@ -1493,10 +1501,12 @@ GR_Win32Font::GR_Win32Font(LOGFONT & lf, double fPoints, HDC hdc, HDC printHDC)
 	
 	if(hdc != printHDC)
 	{
-		int nLogPixelsY      = GetDeviceCaps(hdc, LOGPIXELSY);
 		int nPrintLogPixelsY = GetDeviceCaps(printHDC, LOGPIXELSY);
 
-		lf.lfHeight = MulDiv(lf.lfHeight, nPrintLogPixelsY, nLogPixelsY);
+		// use the point size rather than the screen pixel size to minimise rounding error
+		// (lfHeight already carries a rounding error from conversion pts -> screen pixels)
+		// lf.lfHeight = MulDiv(lf.lfHeight, nPrintLogPixelsY, nLogPixelsY);
+		lf.lfHeight =  (int)(-fPoints * (double)nPrintLogPixelsY / 72.00 + 0.5);
 		printFont = CreateFontIndirect(&lf);
 		
 		if(!printFont)
@@ -1539,7 +1549,7 @@ GR_Win32Font::GR_Win32Font(LOGFONT & lf, double fPoints, HDC hdc, HDC printHDC)
 			GetTextFace(printHDC, 1000, lpFaceName );
 
 			_updateFontYMetrics(hdc, printHDC);
-			
+
 			UT_String_sprintf(m_hashKey, "%s-%d-%d-%d-%d-%d",
 							  lpFaceName,
 							  m_tm.tmHeight, m_tm.tmWeight, m_tm.tmItalic, m_tm.tmUnderlined,
@@ -1644,13 +1654,18 @@ void GR_Win32Font::_updateFontYMetrics(HDC hdc, HDC printHDC)
 	{
 		GetTextMetrics(printHDC,&m_tm);
 
-		// now we have to scale the metrics down from the printHDC to primary dc
+		// now we have to scale the metrics down from the printHDC to our layout units
+		// 
+		// (we used to scale the metrics down to the device resolution, but that since we
+		// then scale it back up to layout units all the time, this caused us huge
+		// rounding error) Tomas, 16/9/05
+		// 
 		// NB: we do not want to obtain the metrics directly for the primary dc
 		// Windows is designed to get slightly bigger font for the screen than the
 		// user asks for (MS say to improve readibility), and this causes us
 		// non-WYSIWYG behaviour (basically our characters are wider on screen than on
 		// the printer and our lines are further apart)
-		int nLogPixelsY      = GetDeviceCaps(hdc, LOGPIXELSY);
+		int nLogPixelsY      = GR_Graphics::getResolution();
 		int nPrintLogPixelsY = GetDeviceCaps(printHDC, LOGPIXELSY);
 
 		if(nLogPixelsY != nPrintLogPixelsY)
@@ -1748,7 +1763,11 @@ bool GR_Win32Font::glyphBox(UT_UCS4Char g, UT_Rect & rec, GR_Graphics * pG)
 
 	// scale the pixel size to the printer resolution and get the font
 	if(!m_bGUIFont)
-		pixels = MulDiv(pixels, nPrintLogPixelsY, 72);
+	{
+		// use point size to reduce rounding errors
+		// pixels = MulDiv(pixels, nPrintLogPixelsY, 72);
+		pixels = (int)(m_fPointSize * (double)nPrintLogPixelsY / 72.0 + 0.5);
+	}
 	
 	HFONT pFont = getFontFromCache(pixels, false, 100);
 	if (!pFont)
@@ -1760,7 +1779,14 @@ bool GR_Win32Font::glyphBox(UT_UCS4Char g, UT_Rect & rec, GR_Graphics * pG)
 	// select our font into the printer DC
 	HGDIOBJ hRet = SelectObject(printDC, pFont);
 	UT_return_val_if_fail( hRet != (void*)GDI_ERROR, false);
-		
+
+	// remember which font we selected into the dc
+	if(printDC == pWin32Gr->getPrintDC())
+		pWin32Gr->setPrintDCFontAllocNo(getAllocNumber());
+
+	if(printDC == pWin32Gr->getPrimaryDC())
+		pWin32Gr->setDCFontAllocNo(getAllocNumber());
+	
 	if (printDC != m_hdc)
 	{
 		// invalidate cached info when we change hdc's.
@@ -1778,11 +1804,36 @@ bool GR_Win32Font::glyphBox(UT_UCS4Char g, UT_Rect & rec, GR_Graphics * pG)
 	}
 	else
 	{
-		// TODO: an UT_UCS4Char -> ANSI conversion here, then call GetGlyphOutlineA() ...
-		// Actually, this probably is not much use, since this function is currently only
-		// used by the math plugin, and for that to work, we do need to work with unicode,
-		// not ANSI
-		UT_return_val_if_fail( UT_NOT_IMPLEMENTED, false );
+		// GetGlyphOutlineA() ... using the GGO_GLYPH_INDEX = 0x0080 to get the ttf glyph 
+		// for the unicode character set in ANSI
+
+		// first of all, we need to translate the ucs4 value to the index; we use
+		// GetCharacterPlacementW() for this. Event though the docs state that this
+		// function is only available on win9x via unicows, this is in fact incorrect
+		// (whether the 9x version of the function is fully functional I do not know, but
+		// it does glyph index lookup).
+		UINT iIndx;
+		GCP_RESULTSW gcpResult = {0};
+		gcpResult.lStructSize = sizeof(GCP_RESULTS);
+		
+		// w32api changed lpGlyphs from UINT * to LPWSTR to match MS PSDK in w32api v2.4
+#if defined(__MINGW32__) && (__W32API_MAJOR_VERSION == 2 && __W32API_MINOR_VERSION < 4)
+		gcpResult.lpGlyphs = (UINT *) &iIndx;	// Character glyphs
+#else			
+		gcpResult.lpGlyphs = (LPWSTR) &iIndx;	// Character glyphs
+#endif			
+		gcpResult.nGlyphs = 1;  // Array size
+
+		if(GetCharacterPlacementW(printDC, (LPCWSTR)&g, 1, 0, &gcpResult, 0))
+		{
+			iRet = GetGlyphOutlineA(printDC, iIndx, 0x0080 | GGO_METRICS, &gm, 0, NULL, &m);
+		}
+		else
+		{
+			// OK, the GetCharacterPlacementW function probably not present, we just do
+			// our best with the ANSI stuff
+			iRet = GetGlyphOutlineA(printDC, g, GGO_METRICS, &gm, 0, NULL, &m);
+		}
 	}
 	
 	if(GDI_ERROR == iRet)
@@ -2238,12 +2289,12 @@ GR_Graphics * GR_Win32Graphics::graphicsAllocator(GR_AllocInfo &info)
 	if(AI.m_pDocInfo)
 	{
 		// printer graphics required
-		return new GR_Win32Graphics(AI.m_hdc, AI.m_pDocInfo, AI.m_pApp, AI.m_hDevMode);
+		return new GR_Win32Graphics(AI.m_hdc, AI.m_pDocInfo, AI.m_hDevMode);
 	}
 	else
 	{
 		// screen graphics required
-		return new GR_Win32Graphics(AI.m_hdc, AI.m_hwnd, AI.m_pApp);
+		return new GR_Win32Graphics(AI.m_hdc, AI.m_hwnd);
 	}
 #else
 	UT_return_val_if_fail(UT_NOT_IMPLEMENTED,NULL);
@@ -2313,7 +2364,7 @@ GR_Graphics * GR_Win32Graphics::getPrinterGraphics(const char * pPrinterName,
 	pDI->fwType = 0;
 	
 	{
-		GR_Win32AllocInfo ai(hPDC, pDI, XAP_App::getApp(), hDM);
+		GR_Win32AllocInfo ai(hPDC, pDI, hDM);
 	
 		pGr = (GR_Win32Graphics *)XAP_App::getApp()->newGraphics(ai);
 		UT_ASSERT_HARMLESS(pGr);

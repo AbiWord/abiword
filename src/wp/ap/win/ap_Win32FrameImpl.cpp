@@ -80,7 +80,7 @@ AP_Win32FrameImpl::~AP_Win32FrameImpl(void)
 }
 
 
-XAP_FrameImpl * AP_Win32FrameImpl::createInstance(XAP_Frame *pFrame, XAP_App *pApp)
+XAP_FrameImpl * AP_Win32FrameImpl::createInstance(XAP_Frame *pFrame)
 {
 	XAP_FrameImpl *pFrameImpl = new AP_Win32FrameImpl(static_cast<AP_Frame *>(pFrame));
 
@@ -170,7 +170,7 @@ HWND AP_Win32FrameImpl::_createDocumentWindow(XAP_Frame *pFrame, HWND hwndParent
 	int xLeftRulerWidth = 0;
 
 	/* Create Graphics */
-	GR_Win32AllocInfo ai(GetDC(m_hwndContainer), m_hwndContainer, XAP_App::getApp());
+	GR_Win32AllocInfo ai(GetDC(m_hwndContainer), m_hwndContainer);
 	GR_Win32Graphics * pG = (GR_Win32Graphics *)XAP_App::getApp()->newGraphics(ai);
 
 	UT_return_val_if_fail (pG, 0);	   
@@ -441,7 +441,8 @@ void AP_Win32FrameImpl::_toggleTopRuler(AP_Win32Frame *pFrame, bool bRulerOn)
 			DestroyWindow(m_hwndTopRuler);
 
 		DELETEP(pFrameData->m_pTopRuler);
-
+		FV_View * pFV = static_cast<FV_View *>(pFrame->getCurrentView());
+		pFV->setTopRuler(NULL);
 		m_hwndTopRuler = NULL;
 	}
 
@@ -480,6 +481,8 @@ void AP_Win32FrameImpl::_toggleLeftRuler(AP_Win32Frame *pFrame, bool bRulerOn)
 			DestroyWindow(m_hwndLeftRuler);
 
 		DELETEP(pFrameData->m_pLeftRuler);
+		FV_View * pFV = static_cast<FV_View *>(pFrame->getCurrentView());
+		pFV->setLeftRuler(NULL);
 
 		m_hwndLeftRuler = NULL;
 	}
@@ -510,7 +513,7 @@ void AP_Win32FrameImpl::_setXScrollRange(AP_FrameData * pData, AV_View *pView)
 	GetClientRect(m_hwndDocument, &r);
 	const UT_uint32 iWindowWidth = r.right - r.left;
 	const UT_uint32 iWidth = pView->getGraphics()->tdu(pData->m_pDocLayout->getWidth());
-
+	XAP_Frame::tZoomType tZoom = getFrame()->getZoomType();	
 	SCROLLINFO si = { 0 };
 
 	si.cbSize = sizeof(si);
@@ -522,6 +525,34 @@ void AP_Win32FrameImpl::_setXScrollRange(AP_FrameData * pData, AV_View *pView)
 	SetScrollInfo(m_hWndHScroll, SB_CTL, &si, TRUE);
 
 	pView->sendHorizontalScrollEvent(pView->getGraphics()->tlu(si.nPos),pView->getGraphics()->tlu(si.nMax-si.nPage));
+
+	// hide the horizontal scrollbar if the scroll range is such that the window can contain it all
+	// show it otherwise
+	// Hide the horizontal scrollbar if we've set to page width or fit to page.
+	// This stops a resizing race condition.
+ 	if (iWidth <= iWindowWidth || tZoom == XAP_Frame::z_PAGEWIDTH || tZoom == XAP_Frame::z_WHOLEPAGE)
+	{	 	
+		if (IsWindowVisible (m_hWndHScroll)) {
+			RECT r;
+
+			ShowWindow (m_hWndHScroll, SW_HIDE);
+			ShowWindow (m_hWndGripperHack, SW_HIDE);
+			GetClientRect(m_hwndContainer, &r);
+			_onSize(pData, r.right - r.left, r.bottom - r.top);
+		}
+	}
+ 	else
+	{	
+		if (!IsWindowVisible (m_hWndHScroll)) {
+			RECT r;
+
+			ShowWindow(m_hWndHScroll, SW_NORMAL);
+			ShowWindow (m_hWndGripperHack, SW_NORMAL);
+			GetClientRect(m_hwndContainer, &r);
+			_onSize(pData, r.right - r.left, r.bottom - r.top);
+		}		
+	}
+
 }
 
 void AP_Win32FrameImpl::_setYScrollRange(AP_FrameData * pData, AV_View *pView)
@@ -646,17 +677,20 @@ void AP_Win32FrameImpl::_onSize(AP_FrameData* pData, int nWidth, int nHeight)
 	UT_return_if_fail(m_hWndHScroll);
 	UT_return_if_fail(m_hWndGripperHack);
 
-	const int cyHScroll = GetSystemMetrics(SM_CYHSCROLL);
+	int cyHScroll = GetSystemMetrics(SM_CYHSCROLL);
 	const int cxVScroll = GetSystemMetrics(SM_CXVSCROLL);
 	int yTopRulerHeight = 0;
-	int xLeftRulerWidth = 0;
+	int xLeftRulerWidth = 0;	
 
 	_getRulerSizes(pData, yTopRulerHeight, xLeftRulerWidth);
 
-	MoveWindow(m_hWndVScroll, nWidth-cxVScroll, 0, cxVScroll, nHeight-cyHScroll, TRUE);
 	MoveWindow(m_hWndHScroll, 0, nHeight-cyHScroll, nWidth - cxVScroll, cyHScroll, TRUE);
 	MoveWindow(m_hWndGripperHack, nWidth-cxVScroll, nHeight-cyHScroll, cxVScroll, cyHScroll, TRUE);
 
+	if (IsWindowVisible (m_hWndHScroll) == FALSE)
+		cyHScroll = 0;	
+	
+	MoveWindow(m_hWndVScroll, nWidth-cxVScroll, 0, cxVScroll, nHeight-cyHScroll, TRUE);		
 
 	if (m_hwndTopRuler)
 	{
@@ -670,7 +704,7 @@ void AP_Win32FrameImpl::_onSize(AP_FrameData* pData, int nWidth, int nHeight)
 
 	MoveWindow(m_hwndDocument, xLeftRulerWidth, yTopRulerHeight,
 			   nWidth - xLeftRulerWidth - cxVScroll,
-			   nHeight - yTopRulerHeight - cyHScroll, TRUE);
+			   nHeight - yTopRulerHeight - cyHScroll, TRUE);	
 }
 
 
@@ -1011,7 +1045,7 @@ LRESULT CALLBACK AP_Win32FrameImpl::_DocumentWndProc(HWND hwnd, UINT iMsg, WPARA
 {
 	AP_Win32Frame * f = reinterpret_cast<AP_Win32Frame *>(GetWindowLong(hwnd, GWL_USERDATA));
 
-	if (!f)
+	if (!f || !IsWindow(hwnd))
 	{
 		return UT_DefWindowProc(hwnd, iMsg, wParam, lParam);
 	}
@@ -1370,6 +1404,6 @@ UT_RGBColor AP_Win32FrameImpl::getColorSelBackground () const
 
 GR_Win32Graphics *AP_Win32FrameImpl::createDocWndGraphics(void)
 {
-	GR_Win32AllocInfo ai(GetDC(getHwndDocument()), getHwndDocument(), XAP_App::getApp());
+	GR_Win32AllocInfo ai(GetDC(getHwndDocument()), getHwndDocument());
 	return (GR_Win32Graphics *)XAP_App::getApp()->newGraphics(ai);
 }

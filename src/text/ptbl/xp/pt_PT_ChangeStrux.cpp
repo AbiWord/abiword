@@ -676,7 +676,7 @@ bool pt_PieceTable::changeLastStruxFmtNoUndo(PT_DocPosition dpos, PTStruxType ps
 {
 	UT_return_val_if_fail (NULL != m_fragments.getFirst(), false);
 
-	pf_Frag * pf = m_fragments.findFirstFragBeforePos(dpos);;
+	pf_Frag * pf = m_fragments.findFirstFragBeforePos(dpos);
 
 	UT_return_val_if_fail ( pf, false );
 

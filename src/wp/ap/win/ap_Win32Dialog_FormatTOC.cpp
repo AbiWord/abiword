@@ -110,6 +110,7 @@ void AP_Win32Dialog_FormatTOC::destroy(void)
 
 void AP_Win32Dialog_FormatTOC::activate(void)
 {	  	
+
 	
 }	
 
@@ -119,7 +120,7 @@ void AP_Win32Dialog_FormatTOC::runModeless(XAP_Frame * pFrame)
 {
 
 	UT_return_if_fail (pFrame);
-	XAP_Win32App * pWin32App = static_cast<XAP_Win32App *>(pFrame->getApp());
+	XAP_Win32App * pWin32App = static_cast<XAP_Win32App *>(XAP_App::getApp());
 
 	m_pSheet = new AP_Win32Dialog_FormatTOC_Sheet();
 	m_pSheet->setContainer (this);	
@@ -269,6 +270,13 @@ void AP_Win32Dialog_FormatTOC_Sheet::_onInitDialog(HWND hwnd)
 	SendMessage(GetDlgItem(getHandle(),IDCANCEL), WM_SETTEXT, 0, 
 		(LPARAM) (pSS->getValue(XAP_STRING_ID_DLG_Close)));
 }
+
+
+void AP_Win32Dialog_FormatTOC_Sheet::cleanup(void) 
+{		
+	getContainer()->modeless_cleanup ();
+}
+
 
 /*
 

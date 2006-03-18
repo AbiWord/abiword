@@ -77,7 +77,7 @@ XAP_Win32PreviewWidget::XAP_Win32PreviewWidget(XAP_Win32App * pWin32App, HWND hw
 	SWL(m_hwndPreview,this);
 
 	// create a GR_Graphics for this window and HDC
-	GR_Win32AllocInfo ai(GetDC(m_hwndPreview),m_hwndPreview, pWin32App->getApp());
+	GR_Win32AllocInfo ai(GetDC(m_hwndPreview),m_hwndPreview);
 	m_pGraphics = (GR_Win32Graphics *)XAP_App::getApp()->newGraphics(ai);
 	UT_ASSERT(m_pGraphics);
 

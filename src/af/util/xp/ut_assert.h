@@ -27,6 +27,8 @@
 // a static buffer without checking bounds), so we implement our own assert dialog, which
 // is even cooler. TF
 
+#include "ut_types.h"
+
 #ifdef NDEBUG
 #  define UT_ASSERT(x)
 #else
@@ -34,7 +36,7 @@
 // only to be referenced from here and we want to reduce the files we include here to a
 // bare minimum for performance reasons, as this file gets included from pretty much
 // everywhere).
-extern int UT_Win32ThrowAssert(const char * pCondition, const char * pFile, int iLine, int iCount);
+extern int ABI_EXPORT UT_Win32ThrowAssert(const char * pCondition, const char * pFile, int iLine, int iCount);
 
 // The best way of stepping into debugger is by generating the appropriate interupt
 // instruction, so if we are on Intel x86, we will issue int 3.  If we are not on x86, we

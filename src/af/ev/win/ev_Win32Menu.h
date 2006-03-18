@@ -81,6 +81,7 @@ protected:
 	HFONT						m_hFont;		
 	UT_Vector					m_vecItems;
 	bool						m_bTrack;
+	UINT                        m_iDIR;
 
 };
 

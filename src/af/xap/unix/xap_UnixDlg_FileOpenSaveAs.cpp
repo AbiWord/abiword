@@ -248,17 +248,20 @@ bool XAP_UnixDialog_FileOpenSaveAs::_run_gtk_main(XAP_Frame * pFrame,
 				
 				// the index in the types table will match the index in the suffix
 				// table.  nFileType is the data we are searching for.
-				for (UT_uint32 i = 0; m_nTypeList[i]; i++)
+				if(m_nTypeList != NULL)
 				{
-					if (m_nTypeList[i] == nFileType)
+					for (UT_uint32 i = 0; m_nTypeList[i]; i++)
 					{
-						nIndex = i;
-						break;
+						if (m_nTypeList[i] == nFileType)
+						{
+							nIndex = i;
+							break;
+						}
 					}
 				}
 				bool wantSuffix = true;
 				
-				XAP_Prefs *pPrefs= pFrame->getApp()->getPrefs();
+				XAP_Prefs *pPrefs= XAP_App::getApp()->getPrefs();
 	
 				pPrefs->getPrefsValueBool(static_cast<const XML_Char *>(XAP_PREF_KEY_UseSuffix), &wantSuffix);
 	
@@ -472,10 +475,7 @@ void XAP_UnixDialog_FileOpenSaveAs::fileTypeChanged(GtkWidget * w)
 	sFileName = sFileName.substr(0,i);
 	sFileName += sSuffix;
 	
-	if (!gtk_file_chooser_select_filename(m_FC,sFileName.c_str()))
-	{
-		gtk_file_chooser_set_current_name(m_FC, UT_basename(sFileName.c_str()));
-	}
+	gtk_file_chooser_set_current_name(m_FC, UT_basename(sFileName.c_str()));
 }
 
 void XAP_UnixDialog_FileOpenSaveAs::onDeleteCancel() 
@@ -560,6 +560,20 @@ void XAP_UnixDialog_FileOpenSaveAs::runModal(XAP_Frame * pFrame)
 				m_bSave = true;
 				break;
 			}
+		case XAP_DIALOG_ID_RECORDTOFILE:
+			{
+				pSS->getValueUTF8(XAP_STRING_ID_DLG_FOSA_RecordToFileTitle,szTitle);
+				pSS->getValueUTF8(XAP_STRING_ID_DLG_FOSA_RecordToFileLabel,szFileTypeLabel);
+				m_bSave = true;
+				break;
+			}
+		case XAP_DIALOG_ID_REPLAYFROMFILE:
+			{
+				pSS->getValueUTF8(XAP_STRING_ID_DLG_FOSA_ReplayFromFileTitle,szTitle);
+				pSS->getValueUTF8(XAP_STRING_ID_DLG_FOSA_ReplayFromFileLabel,szFileTypeLabel);
+				m_bSave = false;
+				break;
+			}
 		default:
 			UT_ASSERT(UT_SHOULD_NOT_HAPPEN);
 			m_bSave = false;
@@ -589,7 +603,7 @@ void XAP_UnixDialog_FileOpenSaveAs::runModal(XAP_Frame * pFrame)
 									(!m_bSave ? GTK_FILE_CHOOSER_ACTION_OPEN : GTK_FILE_CHOOSER_ACTION_SAVE),
 									GTK_STOCK_CANCEL, GTK_RESPONSE_CANCEL,
 									GTK_STOCK_OK, GTK_RESPONSE_ACCEPT,
-									NULL)
+									(gchar*)NULL)
 							);
 #endif	
 
@@ -783,9 +797,36 @@ void XAP_UnixDialog_FileOpenSaveAs::runModal(XAP_Frame * pFrame)
 			if (!g_path_is_absolute (m_szInitialPathname)) {
 				gchar *dir = g_get_current_dir ();
 				gchar *file = m_szInitialPathname;
-				m_szInitialPathname = g_build_filename (dir, file, NULL);
+				m_szInitialPathname = g_build_filename (dir, file, (gchar *)NULL);
 				g_free (dir);
 				g_free (file);
+			}
+			if(m_id == XAP_DIALOG_ID_FILE_SAVEAS)
+			{
+				const char * szInitialSuffix = UT_pathSuffix(m_szInitialPathname);
+				const char * szSaveTypeSuffix = UT_pathSuffix(m_szSuffixes[m_nDefaultFileType]);
+				if(szInitialSuffix && szSaveTypeSuffix && (UT_strcmp(szInitialSuffix,szSaveTypeSuffix) != 0))
+				{
+					UT_String sFileName = m_szInitialPathname;
+					bool bFoundSuffix = false;
+					UT_sint32 i = 0;
+					for(i= sFileName.length()-1; i> 0; i--)
+					{
+						if(sFileName[i] == '.')
+						{
+							bFoundSuffix = true;
+							break;
+						}
+					}
+					if( bFoundSuffix)
+					{
+						sFileName = sFileName.substr(0,i);
+						UT_String sSuffix = szSaveTypeSuffix;
+						sFileName += sSuffix;
+						FREEP(m_szInitialPathname);
+						UT_cloneString(m_szInitialPathname,sFileName.c_str());
+					}
+				}
 			}
 			gtk_file_chooser_set_filename(m_FC, m_szInitialPathname);
 		}
@@ -813,11 +854,16 @@ void XAP_UnixDialog_FileOpenSaveAs::runModal(XAP_Frame * pFrame)
 		UT_cloneString(m_szFinalPathname, m_szFinalPathnameCandidate);
 
 		FREEP(m_szFinalPathnameCandidate);
-		
+
+#ifndef HAVE_HILDON
 		// what a long ugly line of code
 		GtkWidget * activeItem = gtk_menu_get_active(GTK_MENU(gtk_option_menu_get_menu(GTK_OPTION_MENU(filetypes_pulldown))));
 		UT_ASSERT(activeItem);
 		m_nFileType = GPOINTER_TO_INT(g_object_get_data(G_OBJECT(activeItem), "user_data"));
+#else
+		// the hildon dlg does not have type selector, so we always need to force autodetect
+		m_nFileType = -1;
+#endif
 	}
 
 	if (m_FC != NULL) {

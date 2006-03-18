@@ -100,13 +100,15 @@ fl_BlockLayout::_getSpellChecker (UT_uint32 blockPos)
 	// it will create a new AP with the new attr/props, rather than
 	// add them to the existing AP for the section of the document, so
 	// that identical AP's always imply identical formatting, and thus
-	// language	
+	// language
+	// 
+	// Unfortunately, this does not work as intented because if the APs do not contain
+	// explicit lang property and the default language for document changes, we need to
+	// get a different checker. We therefore have to evaluate the property on all
+	// occasions and remember the language, not the APs (bug #9562)
 
 	static SpellChecker * checker = NULL;
-	
-	// initialize these to 1, so as to force initial lang evaluation
-	static const PP_AttrProp * pPrevSpanAP = reinterpret_cast<const PP_AttrProp *>(1);
-	static const PP_AttrProp * pPrevBlockAP = reinterpret_cast<const PP_AttrProp *>(1);
+	static char szPrevLang[8] = {0};
 
 	const PP_AttrProp * pSpanAP = NULL;
 	const PP_AttrProp * pBlockAP = NULL;
@@ -114,24 +116,21 @@ fl_BlockLayout::_getSpellChecker (UT_uint32 blockPos)
 	getSpanAP(blockPos, false, pSpanAP);
 	getAP(pBlockAP);
 
-	if(pSpanAP != pPrevSpanAP || pBlockAP != pPrevBlockAP)
+	const char * pszLang = static_cast<const char *>(PP_evalProperty("lang",pSpanAP,pBlockAP,NULL,m_pDoc,true));
+	if(!pszLang || !*pszLang)
 	{
-		const char * szLang = static_cast<const char *>(PP_evalProperty("lang",pSpanAP,pBlockAP,NULL,m_pDoc,true));
+		// we just (dumbly) default to the last dictionary
+		checker = SpellManager::instance().lastDictionary();
+		return checker;
+	}
+	
+	if(!szPrevLang[0] || UT_strcmp(pszLang,szPrevLang))
+	{
+		checker = SpellManager::instance().requestDictionary(pszLang);
 
-		if (szLang)
-		{
-			//UT_DEBUGMSG(("fl_BlockLaout::_spellCheckWord: lang = %s\n", szLang));
-			// we get smart and request the proper dictionary
-			checker = SpellManager::instance().requestDictionary(szLang);
-		}
-		else
-		{
-			// we just (dumbly) default to the last dictionary
-			checker = SpellManager::instance().lastDictionary();
-		}
-
-		pPrevSpanAP = pSpanAP;
-		pPrevBlockAP = pBlockAP;
+		strncpy(szPrevLang, pszLang, sizeof(szPrevLang));
+		UT_uint32 iEnd = UT_MIN(sizeof(szPrevLang)-1, strlen(pszLang));
+		szPrevLang[iEnd] = 0;
 	}
 
 	return checker;
@@ -190,7 +189,9 @@ fl_BlockLayout::fl_BlockLayout(PL_StruxDocHandle sdh,
 	  m_bForceSectionBreak(false),
 	  m_bPrevListLabel(false),
 	  m_pGrammarSquiggles(NULL),
-	  m_iAdditionalMarginAfter(0)
+	  m_iAdditionalMarginAfter(0),
+	  m_nextToSpell(0),
+	  m_prevToSpell(0)
 {
 	UT_DEBUGMSG(("BlockLayout %x created sdh %x \n",this,getStruxDocHandle()));
 	setPrev(pPrev);
@@ -413,6 +414,150 @@ void buildTabStops(GR_Graphics * pG, const char* pszTabStops, UT_GenericVector<f
 }
 
 /*!
+    this function is only to be called by fl_ContainerLayout::lookupMarginProperties()
+    all other code must call lookupMarginProperties() instead
+
+    This function looks up the block margins and handles the values appropriately to the
+    type of current view mode
+*/
+void fl_BlockLayout::_lookupMarginProperties(const PP_AttrProp* pBlockAP)
+{
+	UT_return_if_fail(pBlockAP);
+	
+	UT_ASSERT(myContainingLayout() != NULL);
+ 	FV_View * pView = getView();
+	UT_return_if_fail( pView );
+	
+	GR_Graphics* pG = m_pLayout->getGraphics();
+
+	UT_sint32 iTopMargin = m_iTopMargin;
+	UT_sint32 iBottomMargin = m_iBottomMargin;
+	UT_sint32 iLeftMargin = m_iLeftMargin;
+	UT_sint32 iRightMargin = m_iRightMargin;
+	UT_sint32 iTextIndent = m_iTextIndent;
+	
+	struct MarginAndIndent_t
+	{
+		const char* szProp;
+		UT_sint32*	pVar;
+	}
+	const rgProps[] =
+	{
+		{ "margin-top", 	&m_iTopMargin    },
+		{ "margin-bottom",	&m_iBottomMargin },
+		{ "margin-left",	&m_iLeftMargin,  },
+		{ "margin-right",	&m_iRightMargin, },
+		{ "text-indent",	&m_iTextIndent,  }
+	};
+	for (UT_uint32 iRg = 0; iRg < NrElements(rgProps); ++iRg)
+	{
+		const MarginAndIndent_t& mai = rgProps[iRg];
+		const PP_PropertyTypeSize * pProp =
+			static_cast<const PP_PropertyTypeSize *>(getPropertyType(static_cast<const XML_Char*>(mai.szProp),
+																	 Property_type_size));
+		
+		*mai.pVar	= UT_convertSizeToLayoutUnits(pProp->getValue(), pProp->getDim());
+		xxx_UT_DEBUGMSG(("para prop %s layout size %d \n",mai.szProp,*mai.pVar));
+	}
+
+	if(pView->getViewMode() == VIEW_NORMAL && !pG->queryProperties(GR_Graphics::DGP_PAPER))
+	{
+		if(m_iLeftMargin < 0)
+		{
+			m_iLeftMargin = 0;
+		}
+		
+		if(m_iTextIndent < 0)
+		{
+			// shuv the whole thing to the left
+			m_iLeftMargin -= m_iTextIndent;
+		}
+
+		// igonre right margin
+		m_iRightMargin = 0;
+	}
+	
+	// NOTE : Parsing spacing strings:
+	// NOTE : - if spacing string ends with "+", it's marked as an "At Least" measurement
+	// NOTE : - if spacing has a unit in it, it's an "Exact" measurement
+	// NOTE : - if spacing is a unitless number, it's just a "Multiple"
+    // 	UT_uint32 nLen = strlen(pszSpacing);
+	// this assumed that only spacing 1 can be represented by a single charcter
+	// but that is not very safe assumption, for there should be nothing stoping
+	// us to use 2 or 3 in place of 2.0 or 3.0, so I commented this this out
+	// Tomas 21/1/2002
+	const char * pszSpacing = getProperty("line-height");
+	const char * pPlusFound = strrchr(pszSpacing, '+');
+	eSpacingPolicy eSpacingPolicy = m_eSpacingPolicy;
+	double dLineSpacing = m_dLineSpacing;
+	
+	if (pPlusFound && *(pPlusFound + 1) == 0)
+	{
+		m_eSpacingPolicy = spacing_ATLEAST;
+
+		// need to strip the plus first
+		int posPlus = pPlusFound - pszSpacing;
+		UT_ASSERT(posPlus>=0);
+		UT_ASSERT(posPlus<100);
+
+		UT_String pTmp(pszSpacing);
+		pTmp[posPlus] = 0;
+
+		m_dLineSpacing = UT_convertToLogicalUnits(pTmp.c_str());
+	}
+	else if (UT_hasDimensionComponent(pszSpacing))
+	{
+		m_eSpacingPolicy = spacing_EXACT;
+		m_dLineSpacing = UT_convertToLogicalUnits(pszSpacing);
+
+	}
+	else
+	{
+		m_eSpacingPolicy = spacing_MULTIPLE;
+		m_dLineSpacing =
+			UT_convertDimensionless(pszSpacing);
+	}
+
+	if(pView->getViewMode() == VIEW_NORMAL && !pG->queryProperties(GR_Graphics::DGP_PAPER))
+	{
+		// flatten the text; we will indicate more than single spacing by using 1.2, which
+		// is enough for the text to be noticeably spaced, but not enough for it to take
+		// too much space
+		m_eSpacingPolicy = spacing_MULTIPLE;
+
+		double dSpacing1 = UT_convertDimensionless("1.2");
+		if(m_dLineSpacing > dSpacing1) 
+			m_dLineSpacing = UT_convertDimensionless("1.2");
+	}
+
+
+	UT_sint32 i = 0;
+	for(i=0; i< getNumFrames();i++)
+	{
+		fl_FrameLayout * pFrame = getNthFrameLayout(i);
+
+		if(pFrame->isHidden() > FP_VISIBLE)
+			continue;
+		
+		if(pFrame->getContainerType() != FL_CONTAINER_FRAME)
+		{
+			UT_ASSERT(UT_SHOULD_NOT_HAPPEN);
+			continue;
+		}
+
+		pFrame->lookupMarginProperties();
+	}
+	
+	
+	if(iTopMargin != m_iTopMargin || iBottomMargin != m_iBottomMargin ||
+	   iLeftMargin != m_iLeftMargin || iRightMargin != m_iRightMargin || iTextIndent != m_iTextIndent ||
+	   eSpacingPolicy != m_eSpacingPolicy || dLineSpacing != m_dLineSpacing)
+	{
+		collapse();
+	}
+}
+
+/*!
     this function is only to be called by fl_ContainerLayout::lookupProperties()
     all other code must call lookupProperties() instead
 */
@@ -522,6 +667,22 @@ void fl_BlockLayout::_lookupProperties(const PP_AttrProp* pBlockAP)
 				pRun->setVisDirection(m_iDomDirection);
 				pRun = pRun->getNextRun();
 			}
+			else if(pRun->getType() == FPRUN_FIELD)
+			{
+				fp_FieldRun * pFR = static_cast<fp_FieldRun*>(pRun);
+				if(pFR->getFieldType() == FPFIELD_endnote_anch  ||
+				   pFR->getFieldType() == FPFIELD_endnote_ref   ||
+				   pFR->getFieldType() == FPFIELD_footnote_anch ||
+				   pFR->getFieldType() == FPFIELD_footnote_ref)
+				{
+					// need to set the direction correctly
+					pRun->setDirection(m_iDomDirection);
+					pRun->setVisDirection(m_iDomDirection);
+					pRun = pRun->getNextRun();
+				}
+
+				pRun = pRun->getNextRun();
+			}
 			else
 				pRun = pRun->getNextRun();
 		}
@@ -599,6 +760,23 @@ void fl_BlockLayout::_lookupProperties(const PP_AttrProp* pBlockAP)
 		xxx_UT_DEBUGMSG(("para prop %s layout size %d \n",mai.szProp,*mai.pVar));
 	}
 
+	if(pView->getViewMode() == VIEW_NORMAL && !pG->queryProperties(GR_Graphics::DGP_PAPER))
+	{
+		if(m_iLeftMargin < 0)
+		{
+			m_iLeftMargin = 0;
+		}
+		
+		if(m_iTextIndent < 0)
+		{
+			// shuv the whole thing to the left
+			m_iLeftMargin -= m_iTextIndent;
+		}
+
+		// igonre right margin
+		m_iRightMargin = 0;
+	}
+	
 	{
 		const char* pszAlign = getProperty("text-align");
 
@@ -679,36 +857,46 @@ void fl_BlockLayout::_lookupProperties(const PP_AttrProp* pBlockAP)
 	// us to use 2 or 3 in place of 2.0 or 3.0, so I commented this this out
 	// Tomas 21/1/2002
 	// if (nLen > 1)
+	const char * pPlusFound = strrchr(pszSpacing, '+');
+	if (pPlusFound && *(pPlusFound + 1) == 0)
 	{
-		const char * pPlusFound = strrchr(pszSpacing, '+');
-		if (pPlusFound && *(pPlusFound + 1) == 0)
-		{
-			m_eSpacingPolicy = spacing_ATLEAST;
+		m_eSpacingPolicy = spacing_ATLEAST;
 
-			// need to strip the plus first
-			int posPlus = pPlusFound - pszSpacing;
-			UT_ASSERT(posPlus>=0);
-			UT_ASSERT(posPlus<100);
+		// need to strip the plus first
+		int posPlus = pPlusFound - pszSpacing;
+		UT_ASSERT(posPlus>=0);
+		UT_ASSERT(posPlus<100);
 
-			UT_String pTmp(pszSpacing);
-			pTmp[posPlus] = 0;
+		UT_String pTmp(pszSpacing);
+		pTmp[posPlus] = 0;
 
-			m_dLineSpacing = UT_convertToLogicalUnits(pTmp.c_str());
-		}
-		else if (UT_hasDimensionComponent(pszSpacing))
-		{
-			m_eSpacingPolicy = spacing_EXACT;
-			m_dLineSpacing = UT_convertToLogicalUnits(pszSpacing);
+		m_dLineSpacing = UT_convertToLogicalUnits(pTmp.c_str());
+	}
+	else if (UT_hasDimensionComponent(pszSpacing))
+	{
+		m_eSpacingPolicy = spacing_EXACT;
+		m_dLineSpacing = UT_convertToLogicalUnits(pszSpacing);
 
-		}
-		else
-		{
-			m_eSpacingPolicy = spacing_MULTIPLE;
-			m_dLineSpacing =
-				    UT_convertDimensionless(pszSpacing);
-		}
+	}
+	else
+	{
+		m_eSpacingPolicy = spacing_MULTIPLE;
+		m_dLineSpacing =
+			UT_convertDimensionless(pszSpacing);
 	}
 
+	if(pView->getViewMode() == VIEW_NORMAL && !pG->queryProperties(GR_Graphics::DGP_PAPER))
+	{
+		// flatten the text; we will indicate more than single spacing by using 1.2, which
+		// is enough for the text to be noticeably spaced, but not enough for it to take
+		// too much space
+		m_eSpacingPolicy = spacing_MULTIPLE;
+
+		double dSpacing1 = UT_convertDimensionless("1.2");
+		if(m_dLineSpacing > dSpacing1) 
+			m_dLineSpacing = UT_convertDimensionless("1.2");
+	}
+	
 	//
 	// No numbering in headers/footers
 	//
@@ -877,6 +1065,7 @@ void fl_BlockLayout::_lookupProperties(const PP_AttrProp* pBlockAP)
 
 fl_BlockLayout::~fl_BlockLayout()
 {
+	dequeueFromSpellCheck();
 	DELETEP(m_pSpellSquiggles);
 	DELETEP(m_pGrammarSquiggles);
 	purgeLayout();
@@ -900,7 +1089,7 @@ fl_BlockLayout::~fl_BlockLayout()
 	m_pLayout->dequeueBlockForBackgroundCheck(this);
 	m_pDoc = NULL;
 	m_pLayout = NULL;
-	UT_DEBUGMSG(("~fl_BlockLayout: Deleting block %x sdh %x \n",this,getStruxDocHandle()));
+	xxx_UT_DEBUGMSG(("~fl_BlockLayout: Deleting block %x sdh %x \n",this,getStruxDocHandle()));
 }
 
 void fl_BlockLayout::getStyle(UT_UTF8String & sStyle)
@@ -1939,10 +2128,15 @@ fl_BlockLayout::_breakLineAfterRun(fp_Run* pRun)
  */
 bool fl_BlockLayout::setFramesOnPage(fp_Line * pLastLine)
 {
+	FV_View *pView = getView();
+	GR_Graphics * pG = m_pLayout->getGraphics();
+	UT_return_val_if_fail( pView && pG, false );
+	
 	if(getNumFrames() == 0)
 	{
 		return true;
 	}
+	
 	UT_sint32 i = 0;
 	for(i=0; i< getNumFrames();i++)
 	{
@@ -3331,7 +3525,7 @@ fp_Container* fl_BlockLayout::getNewContainer(fp_Container * /* pCon*/)
 				if(ppPrev && ((ppPrev->getContainerType() == FP_CONTAINER_ENDNOTE) || (ppPrev->getContainerType() == FP_CONTAINER_FOOTNOTE) || (ppPrev->getContainerType() == FP_CONTAINER_FRAME) ))
 				{
 					fl_ContainerLayout * pCL = static_cast<fl_ContainerLayout *>(ppPrev->getSectionLayout());
-					while(pCL && (pCL->getContainerType() == FL_CONTAINER_FOOTNOTE) || (pCL->getContainerType() == FL_CONTAINER_ENDNOTE)|| (pCL->getContainerType() == FL_CONTAINER_FRAME))
+					while(pCL && ((pCL->getContainerType() == FL_CONTAINER_FOOTNOTE) || (pCL->getContainerType() == FL_CONTAINER_ENDNOTE)|| (pCL->getContainerType() == FL_CONTAINER_FRAME)))
 					{
 						pCL = pCL->getPrev();
 					}
@@ -4543,7 +4737,7 @@ bool	fl_BlockLayout::_doInsertTextSpan(PT_BlockOffset blockOffset, UT_uint32 len
 	
 	m_pLayout->getGraphics()->itemize(text, I);
 
-	for(UT_uint32 i = 0; i < I.getItemCount() - 1; ++i)
+	for(UT_sint32 i = 0; i < static_cast<UT_sint32>(I.getItemCount()) - 1; ++i)
 	{
 		UT_uint32 iRunOffset = I.getNthOffset(i);
 		UT_uint32 iRunLength = I.getNthLength(i);
@@ -8198,21 +8392,28 @@ bool fl_BlockLayout::recalculateFields(UT_uint32 iUpdateCount)
 		if (pRun->getType() == FPRUN_FIELD)
 		{
 			fp_FieldRun* pFieldRun = static_cast<fp_FieldRun*>(pRun);
-	/*	TODO: Write list (fl_autonum, I think) code adding a member
-	 * bool indicating if the list structure has changed since the last field recalc and
-	 * setting it to true whenever such a change occurs (ie, adding an item, deleting one, whatever).
-	 * Then here you can
-	 * if(pFieldRun->getFieldType() == FPFIELD_list_label)
-	 *	get the list to which it belongs, and get that list's
-	 *	m_bDirtyForFieldRecalc which is set true after any change
-	 *	to the list structure. Thus only recalc if needed.  Finally, after the loop, tell the list to reset that member to false. 
-	 * However, the possible down side to this is that you need to recalc the entire list and not just the individual fields, because otherwise
-	 * you risk having an only partially recalced list being left alone because it's marked clean... in retrospect I think you may need to
-	 * move this sort of optimization up to the DocSectionLayout redraw code, rather than having it here at the block level where it might (not 100% sure but might)
-	 * be waaay overcalculated (having a 1-1 block-li situation.  In fl_DocSectionLayout::redrawUpdate, you just make a special case for if any block encountered has
-	 * an autonum (as opposed to any old field), and if so you do this (recalc the whole list and mark it no longer dirty for recalc), and then subsequent blocks with
-	 * part of the same autonum	will pass over recalculating it.  You may still need (or want) a new method in BL to recalculateAutoNums, called separately from
-	 * recalculateFields (which ignores fields from autonums), to ease still recalculating non-autonum fields from the DSL code. 			 */
+			/*	TODO: Write list (fl_autonum, I think) code adding a member bool
+			 * indicating if the list structure has changed since the last field recalc
+			 * and setting it to true whenever such a change occurs (ie, adding an item,
+			 * deleting one, whatever).  Then here you can if(pFieldRun->getFieldType() ==
+			 * FPFIELD_list_label) * get the list to which it belongs, and get that list's
+			 * * m_bDirtyForFieldRecalc which is set true after any change * to the list
+			 * structure. Thus only recalc if needed.  Finally, after the loop, tell the
+			 * list to reset that member to false.  However, the possible down side to
+			 * this is that you need to recalc the entire list and not just the individual
+			 * fields, because otherwise you risk having an only partially recalced list
+			 * being left alone because it's marked clean... in retrospect I think you may
+			 * need to move this sort of optimization up to the DocSectionLayout redraw
+			 * code, rather than having it here at the block level where it might (not
+			 * 100% sure but might) be waaay overcalculated (having a 1-1 block-li
+			 * situation.  In fl_DocSectionLayout::redrawUpdate, you just make a special
+			 * case for if any block encountered has an autonum (as opposed to any old
+			 * field), and if so you do this (recalc the whole list and mark it no longer
+			 * dirty for recalc), and then subsequent blocks with part of the same autonum
+			 * will pass over recalculating it.  You may still need (or want) a new method
+			 * in BL to recalculateAutoNums, called separately from recalculateFields
+			 * (which ignores fields from autonums), to ease still recalculating
+			 * non-autonum fields from the DSL code.  */
 	
 			xxx_UT_DEBUGMSG(("DOM: %d %d\n", pFieldRun==0, pFieldRun->needsFrequentUpdates()));
 
@@ -10325,6 +10526,47 @@ bool fl_BlockLayout::isSentenceSeparator(UT_UCS4Char c, UT_uint32 iBlockPos)
 }
 
 
+
+
+void fl_BlockLayout::enqueueToSpellCheckAfter(fl_BlockLayout *prev)
+{
+	if (prev != NULL) {
+		m_nextToSpell = prev->m_nextToSpell;
+		prev->m_nextToSpell = this;
+	}
+	else {
+		m_nextToSpell = m_pLayout->spellQueueHead();
+		m_pLayout->setSpellQueueHead(this);
+	}
+	if (m_nextToSpell != NULL) {
+		m_nextToSpell->m_prevToSpell = this;
+	}
+	else {
+		m_pLayout->setSpellQueueTail(this);
+	}
+	m_prevToSpell = prev;
+}
+
+
+void fl_BlockLayout::dequeueFromSpellCheck(void)
+{
+	if (m_prevToSpell != NULL) {
+		m_prevToSpell->m_nextToSpell = m_nextToSpell;
+	}
+	else if(m_pLayout->spellQueueHead() == this) {
+		m_pLayout->setSpellQueueHead(m_nextToSpell);
+	}
+	if (m_nextToSpell != NULL) {
+		m_nextToSpell->m_prevToSpell = m_prevToSpell;
+	}
+	else if (m_pLayout->spellQueueTail() == this) {
+		m_pLayout->setSpellQueueTail(m_prevToSpell);
+	}
+	m_nextToSpell = m_prevToSpell = NULL;
+}
+
+
+
 /*!
   Constructor for iterator
   
@@ -10967,4 +11209,3 @@ fl_BlockSpellIterator::_ignoreLastWordCharacter(const UT_UCSChar c) const
         return false;
     }
 }
-

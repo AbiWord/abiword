@@ -28,6 +28,7 @@
 
 #ifndef XAP_PREFS_SCHEMEIDS_H
 #define XAP_PREFS_SCHEMEIDS_H
+#include "xap_Features.h"
 
 //////////////////////////////////////////////////////////////////////////////////////
 // The following are the set of scheme-based application-independent preference keys

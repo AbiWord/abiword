@@ -275,9 +275,8 @@ GR_RenderInfo * GR_Win32USPRenderInfo::s_pOwnerChar         = NULL;
 GOFFSET *       GR_Win32USPRenderInfo::s_pGoffsets          = NULL;
 
 
-GR_Win32USPGraphics::GR_Win32USPGraphics(HDC hdc, HWND hwnd, XAP_App * pApp)
-	:GR_Win32Graphics(hdc, hwnd, pApp),
-	 m_iDCFontAllocNo(0),
+GR_Win32USPGraphics::GR_Win32USPGraphics(HDC hdc, HWND hwnd)
+	:GR_Win32Graphics(hdc, hwnd),
 	 m_bConstructorSucceeded(false)
 {
 	if(!_constructorCommonCode())
@@ -290,10 +289,8 @@ GR_Win32USPGraphics::GR_Win32USPGraphics(HDC hdc, HWND hwnd, XAP_App * pApp)
 }
 
 
-GR_Win32USPGraphics::GR_Win32USPGraphics(HDC hdc, const DOCINFO * pDI, XAP_App * pApp,
-										 HGLOBAL hDevMode)
-	:GR_Win32Graphics(hdc, pDI, pApp, hDevMode),
-	 m_iDCFontAllocNo(0),
+GR_Win32USPGraphics::GR_Win32USPGraphics(HDC hdc, const DOCINFO * pDI, HGLOBAL hDevMode)
+	:GR_Win32Graphics(hdc, pDI, hDevMode),
 	 m_bConstructorSucceeded(false)
 {
 	if(!_constructorCommonCode())
@@ -494,13 +491,12 @@ GR_Graphics *   GR_Win32USPGraphics::graphicsAllocator(GR_AllocInfo& info)
 	if(AI.m_pDocInfo)
 	{
 		// printer graphics required
-		pG = new GR_Win32USPGraphics(AI.m_hdc, AI.m_pDocInfo,
-									   AI.m_pApp,AI.m_hDevMode);
+		pG = new GR_Win32USPGraphics(AI.m_hdc, AI.m_pDocInfo, AI.m_hDevMode);
 	}
 	else
 	{
 		// screen graphics required
-		pG = new GR_Win32USPGraphics(AI.m_hdc, AI.m_hwnd, AI.m_pApp);
+		pG = new GR_Win32USPGraphics(AI.m_hdc, AI.m_hwnd);
 	}
 
 	if(pG->m_bConstructorSucceeded)
@@ -530,7 +526,7 @@ UT_uint32 GR_Win32USPGraphics::getFontHeight()
 		_setupFontOnDC((GR_Win32USPFont*)m_pFont, false);
 	}
 	
-	return (UT_uint32)((m_pFont->getHeight(m_hdc, getPrintDC())) * getResolution() / getDeviceResolution());
+	return (UT_uint32)(m_pFont->getHeight(m_hdc, getPrintDC()));
 }
 
 UT_uint32 GR_Win32USPGraphics::getFontAscent(GR_Font* fnt)
@@ -554,7 +550,7 @@ UT_uint32 GR_Win32USPGraphics::getFontAscent()
 		_setupFontOnDC((GR_Win32USPFont*)m_pFont, false);
 	}
 	
-	return (UT_uint32)((m_pFont->getAscent(m_hdc, getPrintDC())) * getResolution() / getDeviceResolution());
+	return (UT_uint32)(m_pFont->getAscent(m_hdc, getPrintDC()));
 }
 
 UT_uint32 GR_Win32USPGraphics::getFontDescent(GR_Font* fnt)
@@ -578,7 +574,7 @@ UT_uint32 GR_Win32USPGraphics::getFontDescent()
 		_setupFontOnDC((GR_Win32USPFont*)m_pFont, false);
 	}
 	
-	return (UT_uint32)((m_pFont->getDescent(m_hdc, getPrintDC())) * getResolution() / getDeviceResolution());
+	return (UT_uint32)(m_pFont->getDescent(m_hdc, getPrintDC()));
 }
 
 /*!
@@ -624,7 +620,7 @@ void GR_Win32USPGraphics::_setupFontOnDC(GR_Win32USPFont *pFont, bool bZoomMe)
 		// achieve true WYSIWIG), the letters, particularly, the descending parts, can be
 		// drawn outwith the line rectangle (and so leave pixel dirt, etc.)
 		// In order to avoid that, we actually request a slightly smaller font from the
-		// system if the physical pixel size drops below certain (heristically determined) value.
+		// system if the physical pixel size drops below certain (heuristically determined) value.
 		zoom = getZoomPercentage();
 		double dZoom = (double)zoom;
 		double dSizeFactor = dZoom * (double)pFont->getUnscaledHeight()/(double)getDeviceResolution();
@@ -642,8 +638,7 @@ void GR_Win32USPGraphics::_setupFontOnDC(GR_Win32USPFont *pFont, bool bZoomMe)
 	{
 		// we are using the printer dc for measuring, so we do not do any scaling
 		zoom = 100;
-		UT_uint32 iHeight = (UT_uint32)pFont->getPointSize();
-		pixels = MulDiv(iHeight, m_nPrintLogPixelsY, 72);
+		pixels = (int)(pFont->getPointSize() * (double)m_nPrintLogPixelsY / 72.0 + 0.5);
 		hdc = getPrintDC();
 	}
 	else
@@ -662,8 +657,14 @@ void GR_Win32USPGraphics::_setupFontOnDC(GR_Win32USPFont *pFont, bool bZoomMe)
 		hFont = pFont->getFontFromCache(pixels, false, zoom);
 	}
 
-	if(pFont->getAllocNumber() != m_iDCFontAllocNo ||
-	   (HFONT) GetCurrentObject(hdc, OBJ_FONT) != hFont)
+	bool bAllocNoMismatch = false;
+	if(hdc == m_hdc && pFont->getAllocNumber() != m_iDCFontAllocNo)
+		bAllocNoMismatch = true;
+
+	if(!bAllocNoMismatch && hdc == getPrintDC() && pFont->getAllocNumber() != m_iPrintDCFontAllocNo)
+		bAllocNoMismatch = true;
+	
+	if(bAllocNoMismatch || (HFONT) GetCurrentObject(hdc, OBJ_FONT) != hFont)
 	{
 		if(NULL == SelectObject(hdc, hFont))
 		{
@@ -693,8 +694,15 @@ void GR_Win32USPGraphics::_setupFontOnDC(GR_Win32USPFont *pFont, bool bZoomMe)
 
 			LocalFree( lpMsgBuf );
 		}
-		
-		m_iDCFontAllocNo = pFont->getAllocNumber();
+
+		// remember which font we loaded
+		// NB: when printing both of these are true (m_hdc == printDC)
+		if(hdc == m_hdc)
+			m_iDCFontAllocNo = pFont->getAllocNumber();
+
+		if(hdc == getPrintDC())
+			m_iPrintDCFontAllocNo = pFont->getAllocNumber();
+			
 	}
 }
 
@@ -1308,7 +1316,7 @@ void GR_Win32USPGraphics::renderChars(GR_RenderInfo & ri)
 			pFont->setScreenAscent(iAscentScreen);
 		}
 
-		UT_sint32 iAscentPrint = pFont->getTextMetric().tmAscent * getResolution() / getDeviceResolution();
+		UT_sint32 iAscentPrint = pFont->getTextMetric().tmAscent;
 		yoff = _tduY(RI.m_yoff + iAscentPrint - iAscentScreen);
 	}
 	
@@ -1328,6 +1336,8 @@ void GR_Win32USPGraphics::renderChars(GR_RenderInfo & ri)
 	if(RI.m_bShapingFailed)
 		pItem->m_si.a.eScript = GRScriptType_Undefined;
 
+	SetTextAlign(m_hdc, TA_LEFT | TA_TOP);
+	
 	HRESULT hRes = fScriptTextOut(m_hdc, pFont->getScriptCache(), xoff, yoff,
 								  dFlags, /*option flags*/
 								  NULL, /*not sure about this*/
@@ -1395,7 +1405,7 @@ void GR_Win32USPGraphics::setPrintDC(HDC dc)
 					GR_Graphics * pG = pView->getGraphics();
 
 					if(pG == this)
-						pView->rebuildLayout();
+						pView->fontMetricsChange();
 				}
 			}
 		}
@@ -1440,7 +1450,7 @@ void GR_Win32USPGraphics::measureRenderedCharWidths(GR_RenderInfo & ri)
 
 		if(getPrintDC())
 		{
-			// we also need to remeasure the font metrics as well
+			// we also need to remeasure the font metrics
 			// and scale it down for the screen
 			_setupFontOnDC(pFont, false);
 			bFontSetUpOnDC = true;
@@ -1454,9 +1464,9 @@ void GR_Win32USPGraphics::measureRenderedCharWidths(GR_RenderInfo & ri)
 			GetTextMetrics(printHDC, &tm2);
 			DeleteDC(printHDC);
 #endif
-			pFont->setHeight(MulDiv(tm.tmHeight, getDeviceResolution(), m_nPrintLogPixelsY));
-			pFont->setAscent(MulDiv(tm.tmAscent, getDeviceResolution(), m_nPrintLogPixelsY));
-			pFont->setDescent(MulDiv(tm.tmDescent, getDeviceResolution(), m_nPrintLogPixelsY));
+			pFont->setHeight(MulDiv(tm.tmHeight, getResolution(), m_nPrintLogPixelsY));
+			pFont->setAscent(MulDiv(tm.tmAscent, getResolution(), m_nPrintLogPixelsY));
+			pFont->setDescent(MulDiv(tm.tmDescent, getResolution(), m_nPrintLogPixelsY));
 		}
 	}
 
@@ -1800,6 +1810,12 @@ bool GR_Win32USPGraphics::canBreak(GR_RenderInfo & ri, UT_sint32 &iNext, bool bA
 		if(bBreak || iNext >= 0)
 			return bBreak;
 		
+	}
+
+	if(iNext == -1)
+	{
+		// we have not found any breaks in this run -- signal this to the caller
+		iNext = -2;
 	}
 	
 	return false;
@@ -2236,7 +2252,7 @@ void GR_Win32USPGraphics::positionToXY(const GR_RenderInfo & ri,
 	x2 = x;
 }
 
-void GR_Win32USPGraphics::drawChars(const UT_UCSChar* pChars,
+void GR_Win32USPGraphics::_drawChars(const UT_UCSChar* pChars,
 									int iCharOffset, int iLength,
 									UT_sint32 xoff, UT_sint32 yoff,
 									int * /*pCharWidth*/)
@@ -2282,7 +2298,8 @@ void GR_Win32USPGraphics::drawChars(const UT_UCSChar* pChars,
 		LOG_USP_EXCPT_X("fScriptStringAnalyse failed", hRes)
 	}
 	
-	hRes = fScriptStringOut(SSA, (UT_sint32)((double)_tduX(xoff) * m_fXYRatio), _tduY(yoff), 0, NULL, 0, 0, FALSE);
+	hRes = fScriptStringOut(SSA, (UT_sint32)((double)_tduX(xoff) * m_fXYRatio), _tduY(yoff),
+							0, NULL, 0, 0, FALSE);
 
 	if(hRes)
 	{
@@ -2296,6 +2313,28 @@ void GR_Win32USPGraphics::drawChars(const UT_UCSChar* pChars,
 	if(bDelete)
 		delete [] pwChars;
 }
+
+void GR_Win32USPGraphics::drawChars(const UT_UCSChar* pChars,
+									int iCharOffset, int iLength,
+									UT_sint32 xoff, UT_sint32 yoff,
+									int * pCharWidth)
+{
+	SetTextAlign(m_hdc, TA_LEFT | TA_TOP);
+	_drawChars(pChars, iCharOffset, iLength, xoff, yoff, pCharWidth);
+}
+
+
+void GR_Win32USPGraphics::drawCharsRelativeToBaseline(const UT_UCSChar* pChars,
+								 int iCharOffset,
+								 int iLength,
+								 UT_sint32 xoff,
+								 UT_sint32 yoff,
+								 int* pCharWidths)
+{
+	SetTextAlign(m_hdc, TA_LEFT | TA_BASELINE);
+	_drawChars(pChars, iCharOffset, iLength, xoff, yoff, pCharWidths);
+}
+
 
 void GR_Win32USPGraphics::setZoomPercentage(UT_uint32 iZoom)
 {

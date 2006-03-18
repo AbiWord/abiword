@@ -96,7 +96,6 @@ public:									// we create...
 	{
 		m_pUnixMenu = pUnixMenu;
 		m_id = id;
-		m_accelGroup = NULL;
 	}
 	
 	~_wd(void)
@@ -179,7 +178,6 @@ public:									// we create...
 		gtk_main_quit();
 	}
 
-	GtkAccelGroup *		m_accelGroup;
 	EV_UnixMenu *		m_pUnixMenu;
 	XAP_Menu_Id			m_id;
 };
@@ -314,7 +312,11 @@ EV_UnixMenu::EV_UnixMenu(XAP_UnixApp * pUnixApp,
 						 const char * szMenuLabelSetName)
 	: EV_Menu(pUnixApp, pUnixApp->getEditMethodContainer(), szMenuLayoutName, szMenuLabelSetName),
 	  m_pUnixApp(pUnixApp),
-      m_pFrame(pFrame)
+	  m_pFrame(pFrame),
+	  // there are 189 callbacks at the moment. This is a large vector, but we do not want
+	  // it to grow too fast (it has the lifespan of the application, and so we do not
+	  // want too much empty space in it)
+	  m_vecCallbacks(189,4, true)
 {
 	m_accelGroup = gtk_accel_group_new();
 	
@@ -811,9 +813,10 @@ bool EV_UnixMenu::synthesizeMenu(GtkWidget * wMenuRoot)
 				
 				// we always set an accel group, even if we don't actually bind any
 				// to this widget
-				wd->m_accelGroup = gtk_accel_group_new();
-				gtk_menu_set_accel_group(GTK_MENU(wsub), wd->m_accelGroup);
-				
+				GtkAccelGroup *accelGroup = gtk_accel_group_new();
+				gtk_menu_set_accel_group(GTK_MENU(wsub),accelGroup);
+				g_object_unref(accelGroup);
+
 				// This stuff happens to every label:
 				// 
 				// menu items with sub menus attached (w) get this signal
@@ -1260,8 +1263,9 @@ bool EV_UnixMenuPopup::synthesizeMenuPopup()
 	m_wMenuPopup = gtk_menu_new();
 	_wd * wd = new _wd(this, 0);
 	UT_ASSERT(wd);
-	wd->m_accelGroup = gtk_accel_group_new();
-	gtk_menu_set_accel_group(GTK_MENU(m_wMenuPopup), wd->m_accelGroup);
+	GtkAccelGroup *accelGroup = gtk_accel_group_new();
+	gtk_menu_set_accel_group(GTK_MENU(m_wMenuPopup),accelGroup);
+	g_object_unref(accelGroup);
 	g_signal_connect(G_OBJECT(m_wMenuPopup), "map",
 					   G_CALLBACK(_wd::s_onInitMenu), wd);
 	g_signal_connect(G_OBJECT(m_wMenuPopup), "unmap",

@@ -118,6 +118,7 @@ private:
 	bool                  m_bFirstDragDone;
 	UT_UTF8String         m_sCopyName;
 	bool                  m_bIsEmbedded;
+	bool				  m_bEmbedCanResize;
 };
 
 #endif /* FV_VISUALINLINEIMAGE_H */

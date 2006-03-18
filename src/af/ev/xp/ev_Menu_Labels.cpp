@@ -65,7 +65,7 @@ EV_Menu_Label::getMenuStatusMessage() const
 
 EV_Menu_LabelSet::EV_Menu_LabelSet(const char * szLanguage,
 								   XAP_Menu_Id first, XAP_Menu_Id last)
-	: m_labelTable(last - first + 1),
+	: m_labelTable(last - first + 1, 16, true),
 	  m_first(first),
 	  m_stLanguage(szLanguage)
 {
@@ -76,7 +76,8 @@ EV_Menu_LabelSet::EV_Menu_LabelSet(const char * szLanguage,
 }
 
 
-EV_Menu_LabelSet::EV_Menu_LabelSet(EV_Menu_LabelSet * pLabelSet)
+EV_Menu_LabelSet::EV_Menu_LabelSet(EV_Menu_LabelSet * pLabelSet):
+	m_labelTable(pLabelSet->getAllLabels()->getItemCount(),4,true)
 {
 	m_stLanguage = pLabelSet->getLanguage();
 	m_first = pLabelSet->getFirst();

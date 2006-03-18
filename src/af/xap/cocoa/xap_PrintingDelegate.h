@@ -25,6 +25,7 @@
 class XAP_PrintingDelegate
 {
 public:
+	virtual ~XAP_PrintingDelegate() {}
 	virtual int getPageCount(void) = 0;
 	virtual void printPage(int pageNum) = 0;
 };

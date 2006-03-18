@@ -10,17 +10,21 @@ Eric Sink <eric@abisource.com>
 Shaw Terwilliger <sterwill@abisource.com>
 Hubert Figuiere <hfiguiere@teaser.fr>			Cocoa based MacOS X port.
 
-current maintainer
+project maintainer 
 -----------------------------
 Dom Lachowicz <doml@appligent.com>
 
+stable maintainer
+-----------------------------
+Marc Maurer <uwog@uwog.net>
+
 platform maintainers
 -----------------------------
-Dom Lachowicz <doml@appligent.com>, Martin Sevior <msevior@physics.unimelb.edu.au> - Unix
-Johann Bjork <phearbear@home.se> - Qnx
-Hubert Figuiere <hfiguiere@teaser.fr> - Mac OS
-Jordi Mas i Hernàndez <jmas@softcatala.org> - Win32  
-
+Dom Lachowicz <doml@appligent.com>, 
+Martin Sevior <msevior@physics.unimelb.edu.au>		Unix Port
+Johann Bjork <phearbear@home.se> 			Qnx Port
+Hubert Figuiere <hfiguiere@teaser.fr>			Mac OS Port
+Ryan Pavlik <abiryan@ryand.net>				Win32 Port
 
 contributors
 ------------
@@ -149,7 +153,7 @@ Kenneth MacDonald <kenny@holyrood.ed.ac.uk> 		Color Printing patch
 David Mandelin <mandelin@cs.wisc.edu>
 Brian Marick <marick@rstcorp.com>		
 Lalo Martins <lalo@webcom.com>
-Marc Maurer <j.m.maurer@student.utwente.nl>
+Marc Maurer <uwog@uwog.net>
 Vincent McIntyre <Vince.McIntyre@atnf.CSIRO.AU>		autoconf on Solaris 2.6
 Caolan McNamara <Caolan.McNamara@ul.ie> 		Word import
 Anders Melchiorsen <postmaster@and.nospam.kampsax.k-net.dk>  GTK Window Autosize
@@ -277,7 +281,7 @@ Karl Trygve Kalleberg <karltk@prosalg.no>		Norwegian Bokmål
 Linus G Larsson <linus@centrumntr.se>			Swedish
 Per Larsson <tucker@algonet.se> 			Swedish
 Jordi Mas <jmas@softcatala.org> 			Catalan
-Marc Maurer <j.m.maurer@student.utwente.nl>		Dutch
+Marc Maurer <uwog@uwog.net>				Dutch
 Zbynek Miksa <xmiksa@informatics.muni.cz>		Czech
 Gediminas Paulauskas <menesis@03bar.ktu.lt> 		Lithuanian
 John Profic <profic@linux.ru.net>			Russian
@@ -311,13 +315,12 @@ Besnik Bleta <besnikbleta@hotmail.com>			Albanian
 Alberto Cabello Sánchez <alberto@unex.es> 
 Vital Khilko <dojlid@mova.org>				Belarusian
 Gustavs Galdins <gusts@mits.lv>				Latvian
-Breton
 The KAD Association (Korvigelloù An Drouizig)
 		    <drouizig@drouizig.org>		Breton
 Team Turca <team_turca@yahoo.com>			Turkish
 Ismo Mäkinen <ismtaol@luukku.com>			Finnish
 Marek Laane <bald@online.ee>				Estonian
-Fábio Ranquetat <fabio_abr@hotmail.com>		Brazilian
+Fábio Ranquetat <fabio_abr@hotmail.com>			Brazilian
 
 unsung heroes
 -------------

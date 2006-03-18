@@ -148,6 +148,8 @@ public:
 	void				__dump(FILE * fp) const;
 #endif
 
+	void                updateColumnX();
+	
 protected:
     void                _drawCropMarks(dg_DrawArgs*);
 	void				_reformat(void);

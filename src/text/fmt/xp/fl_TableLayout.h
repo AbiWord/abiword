@@ -213,6 +213,7 @@ UT_sint32                    getBottomOffset(void) const;
 	{ return m_bDoingDestructor;}
 protected:
 	virtual void		        _lookupProperties(const PP_AttrProp* pSectionAP);
+	virtual void			    _lookupMarginProperties(const PP_AttrProp* pAP);
 	void				        _purgeLayout();
 private:
 	bool                   m_bNeedsRebuild;

@@ -67,7 +67,7 @@ extern "C" {
 #if defined (WIN32) || defined(__QNXNTO__) || defined(__CYGWIN__) ||  \
 (defined (__MACH__) && defined (__APPLE__)) || \
 (defined(TARGET_OS_MAC) && TARGET_OS_MAC) || \
-defined (__AIX__) || \
+defined (__AIX__) || defined(__OpenBSD__) || \
 (defined(__linux__) && defined(__powerpc__) && (__GLIBC__ <= 2) && (__GLIBC_MINOR__ <= 1))
 
 #define ICONV_CONST const

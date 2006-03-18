@@ -37,8 +37,8 @@ class UT_ByteBuf;
 class UT_String;
 class UT_Wctomb;
 
-class XAP_App;
 class XAP_UnixFontManager;
+class XAP_UnixGnomePrintGraphics;
 
 UT_uint32 adobeToUnicode(UT_uint32 iAdobe);
 
@@ -47,11 +47,18 @@ UT_uint32 adobeDingbatsToUnicode(UT_uint32 iAdobe);
 class GR_UnixAllocInfo : public GR_AllocInfo
 {
 public:
- 	GR_UnixAllocInfo(GdkWindow * win, XAP_UnixFontManager * fontManager, XAP_App *app)
-		: m_win(win), m_pixmap(NULL), m_fontManager(fontManager), m_usePixmap(false) {};
+ 	GR_UnixAllocInfo(GdkWindow * win, XAP_UnixFontManager * fontManager)
+		: m_win(win),m_pixmap(NULL),m_fontManager(fontManager),
+		  m_usePixmap(false), m_pGnomePrint(NULL) {};
 
-	GR_UnixAllocInfo(GdkPixmap * win, XAP_UnixFontManager * fontManager, XAP_App *app, bool bUsePixmap)
-		: m_win(NULL), m_pixmap(win), m_fontManager(fontManager), m_usePixmap(bUsePixmap) {};
+	GR_UnixAllocInfo(GdkPixmap * win, XAP_UnixFontManager * fontManager,
+					 bool bUsePixmap)
+		: m_win(NULL), m_pixmap(win), m_fontManager(fontManager),
+		  m_usePixmap(bUsePixmap), m_pGnomePrint(NULL) {};
+
+	GR_UnixAllocInfo(XAP_UnixGnomePrintGraphics * pGPG)
+		: m_win(NULL), m_pixmap(NULL), m_fontManager(NULL),
+		  m_usePixmap(false), m_pGnomePrint(pGPG) {};
 
 	virtual GR_GraphicsId getType() const {return GRID_UNIX;};
 	virtual bool isPrinterGraphics() const {return false; };
@@ -60,6 +67,7 @@ public:
 	GdkPixmap* m_pixmap;
 	XAP_UnixFontManager * m_fontManager;
 	bool m_usePixmap;
+	XAP_UnixGnomePrintGraphics * m_pGnomePrint;
 };
 
 class GR_UnixGraphics : public GR_Graphics
@@ -98,6 +106,7 @@ class GR_UnixGraphics : public GR_Graphics
 	virtual GR_Font*	getGUIFont();
 
 	virtual GR_Font*	getDefaultFont(UT_String& fontFamily);
+	virtual GR_Font *   getDefaultFont(GR_Font::FontFamilyEnum f = GR_Font::FF_Roman);
 
 	virtual UT_uint32	getFontAscent();
 	virtual UT_uint32	getFontDescent();
@@ -155,13 +164,13 @@ class GR_UnixGraphics : public GR_Graphics
 	virtual void	  saveRectangle(UT_Rect & r, UT_uint32 iIndx);
 	virtual void	  restoreRectangle(UT_uint32 iIndx);
 	
-	static UT_uint32  s_getDeviceResolution(void);
 	virtual UT_uint32 	getDeviceResolution(void) const;
 
  protected:
 	// all instances have to be created via GR_GraphicsFactory; see gr_Graphics.h
- 	GR_UnixGraphics(GdkWindow * win, XAP_UnixFontManager * fontManager, XAP_App *app);
-	GR_UnixGraphics(GdkPixmap * win, XAP_UnixFontManager * fontManager, XAP_App *app, bool bUsePixmap);
+ 	GR_UnixGraphics(GdkWindow * win, XAP_UnixFontManager * fontManager);
+	GR_UnixGraphics(GdkPixmap * win, XAP_UnixFontManager * fontManager, bool bUsePixmap);
+
 
 
 	virtual void _beginPaint ();
@@ -203,8 +212,13 @@ class GR_UnixGraphics : public GR_Graphics
 	GdkGC*  	      		m_pXORGC;
 	GdkWindow*  	  		m_pWin;
 
-	// our currently requested font by handle
+  private: // font stuff should be private so that derrived classes do not get easily
+		   // mixed up if using different fonts
 	XAP_UnixFontHandle *	m_pFont;
+
+	// make this just a GR_Font pointer so that derrived classes can set it (derrived
+	// classes might use font class not derrived from XAP_UnixFontHandle)
+	GR_Font *	            m_pFontGUI;
 
 	// Current GDK fonts corresponding to this. Calling m_pFont->explodeGdkFont
 	// causes gdk_font_load to be called and memory to be allocated. This should
@@ -212,7 +226,6 @@ class GR_UnixGraphics : public GR_Graphics
 	GdkFont * m_pSingleByteFont, * m_pMultiByteFont;
 
 	// our "OEM" system font, like a 10 point Helvetica for GUI items
-	XAP_UnixFontHandle *	m_pFontGUI;
 	static UT_uint32		s_iInstanceCount;
   
 	GdkColormap* 	 		m_pColormap;
@@ -223,7 +236,6 @@ class GR_UnixGraphics : public GR_Graphics
 	GR_Graphics::ColorSpace	m_cs;
 	
 	GdkColor				m_3dColors[COUNT_3D_COLORS];
-private:
 	XAP_UnixFontHandle *	m_pFallBackFontHandle;
 
 protected:	
@@ -247,7 +259,7 @@ private:
 	UT_GenericVector<GdkPixbuf *>  m_vSaveRectBuf;
 
 	bool                    m_bIsSymbol;       
-	bool                    m_bIsDingbat;       
+	bool                    m_bIsDingbat;
 };
 
 #endif /* GR_UNIXGRAPHICS_H */

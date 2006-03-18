@@ -49,12 +49,14 @@ fp_MathRun::fp_MathRun(fl_BlockLayout* pBL,
 	m_OH(oh)
 {
         m_pDocLayout = getBlock()->getDocLayout();
+	UT_DEBUGMSG((" -----MathRun created %x Object Pointer is %x \n",this,oh));
 	lookupProperties(getGraphics());
 }
 
 fp_MathRun::~fp_MathRun(void)
 {
   getMathManager()->releaseEmbedView(m_iMathUID);
+  UT_DEBUGMSG(("Deleting Math Object!!!!!!!!!!!! \n"));
 }
 
 GR_EmbedManager * fp_MathRun::getMathManager(void)
@@ -67,7 +69,7 @@ void fp_MathRun::_lookupProperties(const PP_AttrProp * pSpanAP,
 									const PP_AttrProp * /*pSectionAP*/,
 									GR_Graphics * pG)
 {
-	UT_DEBUGMSG(("fp_MathRun _lookupProperties span %x \n",pSpanAP));
+  UT_DEBUGMSG(("fp_MathRun _lookupProperties span %x run is % uid is %d \n",pSpanAP,this,m_iMathUID));
 	m_pSpanAP = pSpanAP;
 	m_bNeedsSnapshot = true;
 	pSpanAP->getAttribute("dataid", m_pszDataID);
@@ -90,6 +92,7 @@ void fp_MathRun::_lookupProperties(const PP_AttrProp * pSpanAP,
 
 	if (pFont != _getFont())
 	{
+	  UT_DEBUGMSG(("Font is set here... %x \n",pFont));
 		_setFont(pFont);
 	}
 	m_iPointHeight = pG->getFontAscent(pFont) + getGraphics()->getFontDescent(pFont);
@@ -104,11 +107,12 @@ void fp_MathRun::_lookupProperties(const PP_AttrProp * pSpanAP,
 	{
 	  PD_Document * pDoc = getBlock()->getDocument();
 	  m_iMathUID = getMathManager()->makeEmbedView(pDoc,m_iIndexAP,m_pszDataID);
-	  UT_DEBUGMSG((" MathRun %x UID is %d \n",m_iMathUID));
+	  UT_DEBUGMSG((" MathRun %x UID is %d \n",this,m_iMathUID));
 	  getMathManager()->initializeEmbedView(m_iMathUID);
 	  getMathManager()->loadEmbedData(m_iMathUID);
 	}
-	getMathManager()->setDefaultFontSize(m_iMathUID,atoi(pszSize));
+	UT_sint32 iFSize = atoi(pszSize);
+	getMathManager()->setDefaultFontSize(m_iMathUID,iFSize);
 	if(getMathManager()->isDefault())
 	{
 	  iWidth = _getLayoutPropFromObject("width");
@@ -121,6 +125,7 @@ void fp_MathRun::_lookupProperties(const PP_AttrProp * pSpanAP,
 	  iAscent = getMathManager()->getAscent(m_iMathUID);
 	  iDescent = getMathManager()->getDescent(m_iMathUID);
 	}
+	m_iPointHeight = iAscent + iDescent;
 	UT_DEBUGMSG(("Width = %d Ascent = %d Descent = %d \n",iWidth,iAscent,iDescent)); 
 
 	fl_DocSectionLayout * pDSL = getBlock()->getDocSectionLayout();
@@ -129,9 +134,13 @@ void fp_MathRun::_lookupProperties(const PP_AttrProp * pSpanAP,
 	{
 		p = pDSL->getFirstContainer()->getPage();
 	}
-	else
+	else if(pDSL->getDocLayout()->countPages() > 0)
 	{
 		p = pDSL->getDocLayout()->getNthPage(0);
+	}
+	else
+	{
+	    return;
 	}
 	UT_sint32 maxW = p->getWidth() - UT_convertToLogicalUnits("0.1in"); 
 	UT_sint32 maxH = p->getHeight() - UT_convertToLogicalUnits("0.1in");
@@ -157,6 +166,61 @@ void fp_MathRun::_lookupProperties(const PP_AttrProp * pSpanAP,
 	_updatePropValuesIfNeeded();
 }
 
+
+void fp_MathRun::_lookupLocalProperties()
+{
+	const PP_AttrProp * pSpanAP = NULL;
+	const PP_AttrProp * pBlockAP = NULL;
+	const PP_AttrProp * pSectionAP = NULL;
+
+	getBlockAP(pBlockAP);
+
+	if(!getBlock()->isContainedByTOC())
+	{
+		getSpanAP(pSpanAP);
+	}
+
+	_lookupProperties(pSpanAP, pBlockAP, pSectionAP,getGraphics());
+}
+
+void fp_MathRun::updateVerticalMetric()
+{
+	// do something here to make the embedded view to redo its layout ...
+	// there might be a more efficient way, but this should work
+	if(m_iMathUID >= 0 )
+	{
+		getMathManager()->releaseEmbedView(m_iMathUID);
+		m_iMathUID = -1;
+	}
+
+	// now lookup local properties which will create a new embedded view for us
+	_lookupLocalProperties();
+
+	// _lookupProperties() fixed also our width, so if width was marked as dirty, clear
+	// that flag
+	_setRecalcWidth(false);
+}
+
+bool fp_MathRun::_recalcWidth(void)
+{
+	if(!_getRecalcWidth())
+		return false;
+	
+	UT_sint32 iWidth = getWidth();
+
+	// do something here to make the embedded view to redo its layout ...
+	// there might be a more efficient way, but this should work
+	if(m_iMathUID >= 0 )
+	{
+		getMathManager()->releaseEmbedView(m_iMathUID);
+		m_iMathUID = -1;
+	}
+
+	// now lookup local properties which will create a new embedded view for us
+	_lookupLocalProperties();
+	
+	return (iWidth != getWidth());
+}
 
 void fp_MathRun::_drawResizeBox(UT_Rect box)
 {
@@ -250,7 +314,7 @@ void fp_MathRun::findPointCoords(UT_uint32 iOffset, UT_sint32& x, UT_sint32& y, 
 		x = xoff;
 		x2 = x;
 	}
-	y = yoff + getAscent() - m_iPointHeight;
+	y = yoff;
 	height = m_iPointHeight;
 	y2 = y;
 	bDirection = (getVisDirection() != UT_BIDI_LTR);
@@ -324,7 +388,7 @@ void fp_MathRun::_draw(dg_DrawArgs* pDA)
 	}
 	else
 	{
-		Fill(getGraphics(),pDA->xoff, pDA->yoff - getAscent(), getWidth(), iLineHeight);
+	  Fill(getGraphics(),pDA->xoff, pDA->yoff - getLine()->getAscent(), getWidth(), iLineHeight);
 	}
 	getMathManager()->setColor(m_iMathUID,getFGColor());
 	UT_Rect rec;
@@ -336,6 +400,7 @@ void fp_MathRun::_draw(dg_DrawArgs* pDA)
 	{
 	  rec.top -= getAscent();
 	}
+	UT_DEBUGMSG((" Mathrun Left %d top %d width %d height %d \n",rec.left,rec.top,rec.height,rec.width)); 
 	getMathManager()->render(m_iMathUID,rec);
 	if(m_bNeedsSnapshot && !getMathManager()->isDefault() && getGraphics()->queryProperties(GR_Graphics::DGP_SCREEN)  )
 	{

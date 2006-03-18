@@ -191,8 +191,10 @@ bool XAP_PrefsScheme::getNthValue(UT_uint32 k, const XML_Char ** pszKey, const X
 //
 // Output prefs in alphabetic Order.
 //
-	UT_GenericVector<const char*> vecKeys;
 	UT_GenericVector<const UT_String*> * vecD = m_hash.keys();
+	UT_return_val_if_fail( vecD, false );
+	
+	UT_GenericVector<const char*> vecKeys(vecD->getItemCount(), 4, true);
 	UT_uint32 i=0;
 	vecKeys.clear();
 	for(i=0; i< vecD->getItemCount(); i++)

@@ -27,7 +27,7 @@ INCLUDES = \
 	$(PLUGIN_DEFS) -I$(top_srcdir)/../abiword-plugins \
 	$(BINRELOC_CFLAGS)
 
-bin_PROGRAMS = AbiWord-2.4
+bin_PROGRAMS = AbiWord-2.6
 
 lib_LTLIBRARIES = libabipriv-1.la
 
@@ -46,9 +46,9 @@ libabipriv_1_la_LIBADD = \
 	../../impexp/libImpExp.la \
 	$(PLATFORM_LIBS) $(OTHER_LIBS)
 
-AbiWord_2_4_SOURCES = UnixMain.cpp
+AbiWord_2_6_SOURCES = UnixMain.cpp
 
-AbiWord_2_4_LDADD = @PLUGIN_LIST@ libabiword-1.la $(PLATFORM_LIBS) $(OTHER_LIBS) 
+AbiWord_2_6_LDADD = @PLUGIN_LIST@ libabipriv-1.la $(PLATFORM_LIBS) $(OTHER_LIBS) 
 
 abi_ver.cpp:	@PLUGIN_LIST@
 	cp $(srcdir)/../xp/abi_ver.cpp .
@@ -57,7 +57,7 @@ install-exec-local:
 	@if test -f $(DESTDIR)/$(bindir)/abiword; then \
 	  echo "$(DESTDIR)/$(bindir)/abiword is a regular file - I'm not going to create a link."; \
 	else \
-	  (cd $(DESTDIR)/$(bindir) && ln -sf AbiWord-2.4 abiword); \
+	  (cd $(DESTDIR)/$(bindir) && ln -sf AbiWord-2.6 abiword); \
 	fi
 
 abiword_plugins = ../../../../../abiword-plugins

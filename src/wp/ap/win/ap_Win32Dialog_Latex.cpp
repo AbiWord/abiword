@@ -87,7 +87,8 @@ void AP_Win32Dialog_Latex::event_Insert(void)
 
 void AP_Win32Dialog_Latex::event_Close(void)
 {
-	m_answer = AP_Dialog_Latex::a_CANCEL;	
+	m_answer = AP_Dialog_Latex::a_CANCEL;
+	modeless_cleanup();
 	destroyWindow();
 }
 
@@ -169,6 +170,11 @@ BOOL AP_Win32Dialog_Latex::_onInitDialog(HWND hWnd, WPARAM wParam, LPARAM lParam
 	setLatexInGUI();
 	centerDialog();	
 
+	if (GetDlgCtrlID((HWND) wParam) != AP_RID_DIALOG_LATEX_EDIT_LATEX) 
+	{ 
+		SetFocus(GetDlgItem(hWnd, AP_RID_DIALOG_LATEX_EDIT_LATEX)); 
+		return 0; 
+	} 	
 	return 1;							// 1 == we did not call SetFocus()
 }
 

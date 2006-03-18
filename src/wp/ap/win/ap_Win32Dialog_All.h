@@ -97,6 +97,8 @@
 	DeclareDialog(XAP_DIALOG_ID_INSERT_FILE,	XAP_Win32Dialog_FileOpenSaveAs)
 	DeclareDialog(XAP_DIALOG_ID_PRINT,			XAP_Win32Dialog_Print)
 	DeclareDialog(XAP_DIALOG_ID_PRINTTOFILE,	XAP_Win32Dialog_FileOpenSaveAs)
+	DeclareDialog(XAP_DIALOG_ID_RECORDTOFILE,	XAP_Win32Dialog_FileOpenSaveAs)
+	DeclareDialog(XAP_DIALOG_ID_REPLAYFROMFILE,	XAP_Win32Dialog_FileOpenSaveAs)
 	DeclareDialog(XAP_DIALOG_ID_FONT,			XAP_Win32Dialog_FontChooser)
 	DeclareDialog(XAP_DIALOG_ID_LANGUAGE,		XAP_Win32Dialog_Language)
 	DeclareDialog(XAP_DIALOG_ID_WINDOWMORE,		XAP_Win32Dialog_WindowMore)

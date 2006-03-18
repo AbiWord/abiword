@@ -39,6 +39,7 @@
 #include "ev_UnixToolbar.h"
 #include "ev_Toolbar.h"
 
+#include "gr_UnixPangoGraphics.h"
 
 EV_Toolbar_Control * AP_UnixToolbar_FontCombo::static_constructor(EV_Toolbar * pToolbar,
 														  XAP_Toolbar_Id id)
@@ -54,12 +55,21 @@ AP_UnixToolbar_FontCombo::AP_UnixToolbar_FontCombo(EV_Toolbar * pToolbar,
 	UT_ASSERT(id == AP_TOOLBAR_ID_FMT_FONT);
 	m_nPixels = 150;
 
-	EV_UnixToolbar * toolbar = static_cast<EV_UnixToolbar *>(m_pToolbar);
-	UT_GenericVector<XAP_UnixFont*> * list = toolbar->getApp()->getFontManager()->getAllFonts();
-	UT_ASSERT(list);
-
-	m_nLimit = list->size();
-	DELETEP(list);
+	GR_GraphicsFactory * pGF = XAP_App::getApp()->getGraphicsFactory();
+	UT_uint32 iGR = pGF->getDefaultClass(true);
+	
+	if(iGR != GRID_UNIX_PANGO)
+	{
+		UT_GenericVector<XAP_UnixFont*>* list = NULL;
+		list = XAP_UnixFontManager::pFontManager->getAllFonts();
+		UT_return_if_fail( list );
+		m_nLimit = list->size();
+		DELETEP(list);
+	}
+	else
+	{
+		m_nLimit = GR_UnixPangoGraphics::getAllFontCount();
+	}
 }
 
 AP_UnixToolbar_FontCombo::~AP_UnixToolbar_FontCombo(void)
@@ -73,21 +83,50 @@ bool AP_UnixToolbar_FontCombo::populate(void)
 	
 	// Things are relatively easy with the font manager.  Just
 	// request all fonts and ask them their names.
-	EV_UnixToolbar * toolbar = static_cast<EV_UnixToolbar *>(m_pToolbar);
+	GR_GraphicsFactory * pGF = XAP_App::getApp()->getGraphicsFactory();
+	if(!pGF)
+	{
+		return false;
+	}
+
+	UT_uint32 iGR = pGF->getDefaultClass(true);
 	
-	UT_GenericVector<XAP_UnixFont*>* list = toolbar->getApp()->getFontManager()->getAllFonts();
-	UT_ASSERT(list);
+	UT_GenericVector<XAP_UnixFont*>* list = NULL;
+	UT_GenericVector<const char*>* names = NULL;
 
-	UT_uint32 count = list->size();
-
+	UT_uint32 count = 0;
+	
+	if(iGR != GRID_UNIX_PANGO)
+	{
+		list = XAP_UnixFontManager::pFontManager->getAllFonts();
+		UT_return_val_if_fail( list, false );
+		count = list->size();
+	}
+	else
+	{
+		names = GR_UnixPangoGraphics::getAllFontNames();
+		UT_return_val_if_fail( names, false );
+		count = names->size();
+	}
+	
 	m_vecContents.clear();
 
 	for (UT_uint32 i = 0; i < count; i++)
 	{
+		const char * fName = NULL;
+		
 		// sort-out duplicates
-		XAP_UnixFont * pFont = list->getNthItem(i);
-		const char * fName = pFont->getName();
-
+		if(iGR != GRID_UNIX_PANGO)
+		{
+			XAP_UnixFont * pFont = list->getNthItem(i);
+			fName = pFont->getName();
+		}
+		else
+		{
+			fName = names->getNthItem(i);
+		}
+		
+		
 		int foundAt = -1;
 
 		for (UT_uint32 j = 0; j < m_vecContents.size(); j++)
@@ -105,6 +144,7 @@ bool AP_UnixToolbar_FontCombo::populate(void)
 			m_vecContents.addItem(fName);
 	}
 	DELETEP(list);
-
+	DELETEP(names);
+	
 	return true;
 }

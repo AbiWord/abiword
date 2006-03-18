@@ -26,8 +26,8 @@ CPPSRCS=		UnixGnomeMain.cpp
 
 INCLUDES=		$(GNOME_CFLAGS)
 
-PROGRAM=		$(BINDIR)/AbiWord-2.4
-PROGRAM_S=		$(BINDIR)/AbiWord-2.4
+PROGRAM=		$(BINDIR)/AbiWord-2.6
+PROGRAM_S=		$(BINDIR)/AbiWord-2.6
 
 # TODO the Linux linker is fussy about the ordering of libraries.
 # TODO in order to get all symbols to resolve, i had to list them

@@ -275,23 +275,24 @@ bool pt_PieceTable::_doTheDo(const PX_ChangeRecord * pcr, bool bUndo)
 				bool bFoundStrux = _getStruxFromFragSkip(static_cast<pf_Frag *>(pfs),&pfs);
 				UNDO_return_val_if_fail (bFoundStrux,false);
 			}
-            pf_Frag_Object * pfo = NULL;
+			pf_Frag_Object * pfo = NULL;
 			if (!_insertObject(pf,fragOffset,pcrObject->getObjectType(),
                                pcrObject->getIndexAP(),pfo))
 				return false;
-            UNDO_return_val_if_fail (pfo,false);
+			pcrObject->setObjectHandle(pfo);
+			UNDO_return_val_if_fail (pfo,false);
             
             // need to set field pointers to values of new pointer
             // as old field doesn't exist
-            pf = pfo->getNext();
-            while (pf&&pf->getType()==pf_Frag::PFT_Text&&
-                   pf->getField())
-            {
-                pf_Frag_Text * pft = 
-                    static_cast<pf_Frag_Text *>(pf);
-                pft->setField(pfo->getField());
-                pf = pft->getNext();
-            }
+			pf = pfo->getNext();
+			while (pf&&pf->getType()==pf_Frag::PFT_Text&&
+			       pf->getField())
+			  {
+			    pf_Frag_Text * pft = 
+			      static_cast<pf_Frag_Text *>(pf);
+			    pft->setField(pfo->getField());
+			    pf = pft->getNext();
+			  }
 			DONE();            
 			m_pDocument->notifyListeners(pfs,pcr);
             // don't update field until all of changes have been made
@@ -319,7 +320,10 @@ bool pt_PieceTable::_doTheDo(const PX_ChangeRecord * pcr, bool bUndo)
 			}
 
 			pf_Frag_Object * pfo = static_cast<pf_Frag_Object *> (pf);
-			UNDO_return_val_if_fail (pfo->getIndexAP() == pcrObject->getIndexAP(),false);
+			if((pfo->getObjectType() != PTO_Math) && ((pfo->getObjectType() != PTO_Embed)))
+			{
+			    UNDO_return_val_if_fail (pfo->getIndexAP() == pcrObject->getIndexAP(),false);
+			}
 			_deleteObject(pfo,NULL,NULL);
 
 			DONE();
@@ -399,7 +403,26 @@ bool pt_PieceTable::_doTheDo(const PX_ChangeRecord * pcr, bool bUndo)
 
 			// we backup one because we have zero length and getFragFromPosition()
 			// returns the right-most thing with this document position.
-			pf = pf->getPrev();
+			if(pf->getType() != pf_Frag::PFT_FmtMark)
+			  pf = pf->getPrev();
+			if(pf->getType()==pf_Frag::PFT_Strux)
+			{
+			    if(pf->getNext() && pf->getNext()->getType() == pf_Frag::PFT_Strux)
+			    {
+				DONE();
+				m_bDoingTheDo = false;
+				return true;
+			    }
+			    if(pf->getNext() && pf->getNext()->getType() == pf_Frag::PFT_Text)
+			    {
+			        pf = pf->getNext();
+			    
+				if(pf->getNext() && pf->getNext()->getType() == pf_Frag::PFT_FmtMark)
+				{
+				    pf = pf->getNext();
+				}
+			    }
+			}
 
 			UNDO_return_val_if_fail (pf->getType() == pf_Frag::PFT_FmtMark,false);
 			UNDO_return_val_if_fail (fragOffset == 0,false);
@@ -409,7 +432,7 @@ bool pt_PieceTable::_doTheDo(const PX_ChangeRecord * pcr, bool bUndo)
 			UNDO_return_val_if_fail (bFoundStrux,false);
 
 			pf_Frag_FmtMark * pffm = static_cast<pf_Frag_FmtMark *> (pf);
-			UNDO_return_val_if_fail (pffm->getIndexAP() == pcrFM->getIndexAP(),false);
+			//			UNDO_return_val_if_fail (pffm->getIndexAP() == pcrFM->getIndexAP(),false);
 			_deleteFmtMark(pffm,NULL,NULL);
 
 			DONE();
@@ -431,8 +454,17 @@ bool pt_PieceTable::_doTheDo(const PX_ChangeRecord * pcr, bool bUndo)
 
 			// we backup one because we have zero length and getFragFromPosition()
 			// returns the right-most thing with this document position.
-			pf = pf->getPrev();
-
+			if(pf->getType() != pf_Frag::PFT_FmtMark)
+			  pf = pf->getPrev();
+			if(pf->getType()==pf_Frag::PFT_Strux)
+			{
+			    if(pf->getNext() && pf->getNext()->getType() == pf_Frag::PFT_Strux)
+			    {
+				DONE();
+				m_bDoingTheDo = false;
+				return true;
+			    }
+			}
 			UNDO_return_val_if_fail (pf->getType() == pf_Frag::PFT_FmtMark,false);
 			UNDO_return_val_if_fail (fragOffset == 0,false);
 
@@ -483,6 +515,16 @@ bool pt_PieceTable::_doTheDo(const PX_ChangeRecord * pcr, bool bUndo)
 bool pt_PieceTable::canDo(bool bUndo) const
 {
 	return m_history.canDo(bUndo);
+}
+
+bool pt_PieceTable::getNthUndo(PX_ChangeRecord ** ppcr, UT_sint32 iUndo) const
+{
+        if(iUndo > undoCount(true))
+	{
+	       return false;
+	}
+	m_history.getUndo(ppcr, iUndo);
+	return true;
 }
 
 UT_uint32 pt_PieceTable::undoCount(bool bUndo) const

@@ -151,6 +151,7 @@ public:
 
 	void		formatAll();
 	void  		updateLayout();
+	void        updateOnViewModeChange();
 	void        rebuildFromHere(fl_DocSectionLayout * pDSL);
 	void        updateColor();
 
@@ -161,8 +162,26 @@ public:
 	void		setPendingWordForSpell(fl_BlockLayout *pBlock, fl_PartOfBlock* pWord);
 	bool		checkPendingWordForSpell(void);
 	void        dequeueAll(void);
+	void        queueAll(UT_uint32 iReason);
 	void 		queueBlockForBackgroundCheck(UT_uint32 reason, fl_BlockLayout *pBlock, bool bHead=false);
 	bool 		dequeueBlockForBackgroundCheck(fl_BlockLayout *pBlock);
+	fl_BlockLayout *spellQueueHead(void) const
+		{
+			return m_toSpellCheckHead;
+		}
+	void        setSpellQueueHead(fl_BlockLayout *h)
+		{
+			m_toSpellCheckHead = h;
+		}
+	fl_BlockLayout *spellQueueTail(void) const
+		{
+			return m_toSpellCheckTail;
+		}
+	void        setSpellQueueTail(fl_BlockLayout *t)
+		{
+			m_toSpellCheckTail = t;
+		}
+
 
 	void		addSection(fl_DocSectionLayout*);
 	void		removeSection(fl_DocSectionLayout*);
@@ -285,7 +304,7 @@ public:
 
 	void		__dump(FILE * fp) const;
 #endif
-	
+
 protected:
 	static void			_backgroundCheck(UT_Worker * pTimer);
 	void				_toggleAutoSpell(bool bSpell);
@@ -311,7 +330,9 @@ private:
 	fl_DocSectionLayout*m_pLastSection;   
 
 	// spell check stuff
-	UT_GenericVector<fl_BlockLayout *> m_vecUncheckedBlocks;
+	// UT_GenericVector<fl_BlockLayout *> m_vecUncheckedBlocks;
+	fl_BlockLayout      *m_toSpellCheckHead;
+	fl_BlockLayout      *m_toSpellCheckTail;
 	fl_BlockLayout*		m_pPendingBlockForSpell;	// if NULL, then ignore m_pPendingWordForSpell
 	fl_PartOfBlock*		m_pPendingWordForSpell;
 	bool				m_bSpellCheckCaps;

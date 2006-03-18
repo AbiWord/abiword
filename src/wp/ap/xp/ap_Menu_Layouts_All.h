@@ -37,3 +37,4 @@
 #include "ap_ML_ContextFrame.h"
 #include "ap_ML_ContextEmbed.h"
 #include "ap_ML_ContextTOC.h"
+#include "ap_ML_ContextEquation.h"

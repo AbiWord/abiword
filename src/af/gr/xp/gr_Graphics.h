@@ -33,6 +33,7 @@
 #include "gr_CharWidthsCache.h"
 #include "ut_hash.h"
 #include "ut_vector.h"
+#include "ut_TextIterator.h"
 
 #ifdef ABI_GRAPHICS_PLUGIN
 #define VIRTUAL_SFX = 0
@@ -41,8 +42,6 @@
 #endif
 
 class UT_RGBColor;
-class UT_TextIterator;
-class XAP_App;
 class XAP_PrefsScheme;
 class XAP_Frame;
 class UT_String;
@@ -68,12 +67,24 @@ class GR_ShapingInfo;
 class GR_Graphics;
 class GR_Painter;
 
+typedef enum {
+	GR_FONT_UNSET=0,
+	GR_FONT_UNIX,
+	GR_FONT_UNIX_PANGO,
+	GR_FONT_WIN32,
+	GR_FONT_WIN32_USP
+} GrFontType;
+
 class ABI_EXPORT GR_Font
 {
 	friend class GR_Graphics;
 	friend class UT_GenericStringMap<GR_Font*>;
 
  public:
+	// want the destructor public so that the derrived graphics classes can delete font
+	// objects without having to be declared here as friends
+ 	virtual ~GR_Font();
+
 
 	typedef enum { FF_Unknown = 0, FF_Roman, FF_Swiss, FF_Modern,
 				   FF_Script, FF_Decorative, FF_Technical, FF_BiDi, FF_Last } FontFamilyEnum;
@@ -119,12 +130,12 @@ class ABI_EXPORT GR_Font
 		GR_Font * pThis = static_cast<GR_Font*>(instance);
 		return pThis->doesGlyphExist(g);
 	}
+
+	GrFontType getType()const {return m_eType;}
 	
   protected:
 
 	GR_Font();
-
-	virtual ~GR_Font();
 
 	GR_CharWidths * _getCharWidths() const {return m_pCharWidths;}
 	/*! 
@@ -133,7 +144,9 @@ class ABI_EXPORT GR_Font
 	*/
 	mutable UT_String		m_hashKey;
 
-  private:
+	GrFontType               m_eType;
+
+private:
 
 	static UT_uint32 s_iAllocCount;
 	UT_uint32        m_iAllocNo;
@@ -191,6 +204,7 @@ enum GR_GraphicsId
 	   unregisterClass()) */
 	GRID_UNIX_PANGO      =  0x201,
 	GRID_WIN32_UNISCRIBE =  0x202,
+	GRID_UNIX_PANGO_PRINT = 0x203,
 
 	GRID_LAST_EXTENSION = 0x0000ffff,
 
@@ -300,14 +314,25 @@ class GR_GraphicsFactory
 	
 	
   private:	
-	UT_Vector       m_vAllocators;
-	UT_Vector       m_vDescriptors;
+	UT_GenericVector<GR_Allocator>       m_vAllocators;
+	UT_GenericVector<GR_Descriptor>       m_vDescriptors;
 	UT_NumberVector m_vClassIds;
 
 	UT_uint32       m_iDefaultScreen;
 	UT_uint32       m_iDefaultPrinter;
 };
 
+
+enum GRShapingResult
+{
+	GRSR_BufferClean = 0x00,                  // clear all bits; see notes above !!!
+	GRSR_None = 0x01,                         // bit 0 set
+	GRSR_ContextSensitive = 0x02,             // bit 1 set
+	GRSR_Ligatures = 0x04,                    // bit 2 set
+	GRSR_ContextSensitiveAndLigatures = 0x06, // bit 1, 2 set
+	GRSR_Unknown = 0xef,                      // bits 0-6 set, initial value for text in our runs
+	GRSR_Error = 0xff                         // bits 0-7 set
+};
 
 /*
   GR_Graphics is a portable interface to a simple 2-d graphics layer.  It is not
@@ -609,7 +634,8 @@ class ABI_EXPORT GR_Graphics
 	//          iNext, relative to start of the text represented by ri
 	//          (not relative to m_iOffset); if the class does not
 	//          know where the next break point lies, it should set
-	//          iNext to -1
+	//          iNext to -1; if it knows that there is no break in this run, it should set
+	//          iNext to -2
 	// bAfter indicates whether we are quering for a break after the character at given offset
 	
 	virtual bool canBreak(GR_RenderInfo & ri, UT_sint32 &iNext, bool bAfter) VIRTUAL_SFX;
@@ -714,10 +740,16 @@ class ABI_EXPORT GR_Graphics
 						   UT_sint32 xoff,
 						   UT_sint32 yoff,
 						   int* pCharWidths = NULL) = 0;
+
+	virtual void drawCharsRelativeToBaseline(const UT_UCSChar* pChars,
+											 int iCharOffset,
+											 int iLength,
+											 UT_sint32 xoff,
+											 UT_sint32 yoff,
+											 int* pCharWidths = NULL);
+	
 	virtual GR_Image *	  genImageFromRectangle(const UT_Rect & r) = 0;
 
-	XAP_App * getApp() const {return m_pApp;}
-	
  private:
 	virtual bool _setTransform(const GR_Transform & tr)
 		{
@@ -743,7 +775,6 @@ class ABI_EXPORT GR_Graphics
 	UT_uint32         m_iRasterPosition;
 
  protected:
-	XAP_App *         m_pApp;
 	UT_uint32	      m_iZoomPercentage;
 	UT_uint32         m_iFontAllocNo;
 
@@ -779,6 +810,7 @@ class ABI_EXPORT GR_Graphics
 
 	static UT_VersionInfo   s_Version;
 	static UT_uint32        s_iInstanceCount;
+	static UT_UCS4Char      s_cDefaultGlyph;
 };
 
 #endif /* GR_GRAPHICS_H */

@@ -25,7 +25,8 @@
 #include "ut_growbuf.h"
 #include "pt_Types.h"
 #include "pp_TableAttrProp.h"
-#include "pd_Document.h"
+
+class PD_Document;
 
 class ABI_EXPORT pt_VarSet
 {

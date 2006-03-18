@@ -533,9 +533,9 @@ const char* GR_UnixGraphics::findNearestFont(const char* pszFontFamily,
 
 UT_uint32 				GR_UnixGraphics::s_iInstanceCount = 0;
 
-GR_UnixGraphics::GR_UnixGraphics(GdkWindow * win, XAP_UnixFontManager * fontManager, XAP_App * app):m_iLineWidth(tlu(1))
+GR_UnixGraphics::GR_UnixGraphics(GdkWindow * win, XAP_UnixFontManager * fontManager):
+	m_iLineWidth(tlu(1))
 {
-	m_pApp = app;
 	m_pWin = win;
 	m_pFontManager = fontManager;
 	m_pFont = NULL;
@@ -543,65 +543,79 @@ GR_UnixGraphics::GR_UnixGraphics(GdkWindow * win, XAP_UnixFontManager * fontMana
 	m_pMultiByteFont = NULL;
 	m_pFontGUI = NULL;
 	s_iInstanceCount++;
-	m_pColormap = gdk_rgb_get_colormap();
 
-	//
-	// Martin's attempt to make double buffering work.with xft
-	//
-	m_iXoff = 0;
-	m_iYoff = 0;
-	GdkDrawable * realDraw;
-	gdk_window_get_internal_paint_info (m_pWin, &realDraw,&m_iXoff,&m_iYoff);
-    m_iXoff = tlu(m_iXoff); m_iYoff = tlu(m_iYoff);
-	m_pGC = gdk_gc_new(realDraw);
-	m_pXORGC = gdk_gc_new(realDraw);
-	m_pVisual = GDK_VISUAL_XVISUAL( gdk_drawable_get_visual(realDraw));
-	m_Drawable = gdk_x11_drawable_get_xid(realDraw);
-
+	m_pGC = NULL;
+	m_pXORGC = NULL;
+	m_pVisual = NULL;
 	m_pXftFontL = NULL;
 	m_pXftFontD = NULL;
-	m_Colormap = GDK_COLORMAP_XCOLORMAP(m_pColormap);
-	m_pXftDraw = XftDrawCreate(GDK_DISPLAY(), m_Drawable, m_pVisual, m_Colormap);
-	gdk_gc_set_function(m_pXORGC, GDK_XOR);
+	m_pXftDraw = NULL;
+	
+	if(win)
+	{
+		// if we have no window, we are only a base class for some other class that needs
+		// to take care of all of this
 
- 	GdkColor clrWhite;
-	clrWhite.red = clrWhite.green = clrWhite.blue = 65535;
-	gdk_colormap_alloc_color (m_pColormap, &clrWhite, FALSE, TRUE);
-	gdk_gc_set_foreground(m_pXORGC, &clrWhite);
+		m_pColormap = gdk_rgb_get_colormap();
 
- 	GdkColor clrBlack;
-	clrBlack.red = clrBlack.green = clrBlack.blue = 0;
-	gdk_colormap_alloc_color (m_pColormap, &clrBlack, FALSE, TRUE);
-	gdk_gc_set_foreground(m_pGC, &clrBlack);
+		//
+		// Martin's attempt to make double buffering work.with xft
+		//
+		m_iXoff = 0;
+		m_iYoff = 0;
+		GdkDrawable * realDraw;
+		gdk_window_get_internal_paint_info (m_pWin, &realDraw,&m_iXoff,&m_iYoff);
+		m_iXoff = tlu(m_iXoff); m_iYoff = tlu(m_iYoff);
+		m_pGC = gdk_gc_new(realDraw);
+		m_pXORGC = gdk_gc_new(realDraw);
+		m_pVisual = GDK_VISUAL_XVISUAL( gdk_drawable_get_visual(realDraw));
+		m_Drawable = gdk_x11_drawable_get_xid(realDraw);
 
-	m_XftColor.color.red = clrBlack.red;
-	m_XftColor.color.green = clrBlack.green;
-	m_XftColor.color.blue = clrBlack.blue;
-	m_XftColor.color.alpha = 0xffff;
-	m_XftColor.pixel = clrBlack.pixel;
+		m_pXftFontL = NULL;
+		m_pXftFontD = NULL;
+		m_Colormap = GDK_COLORMAP_XCOLORMAP(m_pColormap);
+		m_pXftDraw = XftDrawCreate(GDK_DISPLAY(), m_Drawable, m_pVisual, m_Colormap);
+		gdk_gc_set_function(m_pXORGC, GDK_XOR);
 
-	// I only want to set CAP_NOT_LAST, but the call takes all
-	// arguments (and doesn't have a default value).  Set the
-	// line attributes to not draw the last pixel.
+		GdkColor clrWhite;
+		clrWhite.red = clrWhite.green = clrWhite.blue = 65535;
+		gdk_colormap_alloc_color (m_pColormap, &clrWhite, FALSE, TRUE);
+		gdk_gc_set_foreground(m_pXORGC, &clrWhite);
 
-	// We force the line width to be zero because the CAP_NOT_LAST
-	// stuff does not seem to work correctly when the width is set
-	// to one.
+		GdkColor clrBlack;
+		clrBlack.red = clrBlack.green = clrBlack.blue = 0;
+		gdk_colormap_alloc_color (m_pColormap, &clrBlack, FALSE, TRUE);
+		gdk_gc_set_foreground(m_pGC, &clrBlack);
 
-	gdk_gc_set_line_attributes(m_pGC,   0,GDK_LINE_SOLID,GDK_CAP_NOT_LAST,GDK_JOIN_MITER);
-	gdk_gc_set_line_attributes(m_pXORGC,0,GDK_LINE_SOLID,GDK_CAP_NOT_LAST,GDK_JOIN_MITER);
+		m_XftColor.color.red = clrBlack.red;
+		m_XftColor.color.green = clrBlack.green;
+		m_XftColor.color.blue = clrBlack.blue;
+		m_XftColor.color.alpha = 0xffff;
+		m_XftColor.pixel = clrBlack.pixel;
 
-	// Set GraphicsExposes so that XCopyArea() causes an expose on
-	// obscured regions rather than just tiling in the default background.
-	gdk_gc_set_exposures(m_pGC,1);
-	gdk_gc_set_exposures(m_pXORGC,1);
+		// I only want to set CAP_NOT_LAST, but the call takes all
+		// arguments (and doesn't have a default value).  Set the
+		// line attributes to not draw the last pixel.
 
-	m_cs = GR_Graphics::GR_COLORSPACE_COLOR;
-	m_cursor = GR_CURSOR_INVALID;
-	setCursor(GR_CURSOR_DEFAULT);
-	m_bIsSymbol = false;
-	m_bIsDingbat = false;
+		// We force the line width to be zero because the CAP_NOT_LAST
+		// stuff does not seem to work correctly when the width is set
+		// to one.
 
+		gdk_gc_set_line_attributes(m_pGC,   0,GDK_LINE_SOLID,GDK_CAP_NOT_LAST,GDK_JOIN_MITER);
+		gdk_gc_set_line_attributes(m_pXORGC,0,GDK_LINE_SOLID,GDK_CAP_NOT_LAST,GDK_JOIN_MITER);
+
+		// Set GraphicsExposes so that XCopyArea() causes an expose on
+		// obscured regions rather than just tiling in the default background.
+		gdk_gc_set_exposures(m_pGC,1);
+		gdk_gc_set_exposures(m_pXORGC,1);
+
+		m_cs = GR_Graphics::GR_COLORSPACE_COLOR;
+		m_cursor = GR_CURSOR_INVALID;
+		setCursor(GR_CURSOR_DEFAULT);
+		m_bIsSymbol = false;
+		m_bIsDingbat = false;
+	}
+	
 	if (m_pFontManager)
 		m_pFallBackFontHandle = new XAP_UnixFontHandle(m_pFontManager->getDefaultFont(),
 													   FALLBACK_FONT_SIZE);
@@ -620,9 +634,8 @@ bool GR_UnixGraphics::isSymbol(void) const
 	return m_bIsSymbol;
 }
 
-GR_UnixGraphics::GR_UnixGraphics(GdkPixmap * win, XAP_UnixFontManager * fontManager, XAP_App * app, bool bUseDrawable):m_iLineWidth(tlu(1))
+GR_UnixGraphics::GR_UnixGraphics(GdkPixmap * win, XAP_UnixFontManager * fontManager, bool bUseDrawable):m_iLineWidth(tlu(1))
 {
-	m_pApp = app;
 	m_pWin = static_cast<GdkWindow *>(win);
 	m_pFontManager = fontManager;
 	m_pFont = NULL;
@@ -749,6 +762,9 @@ void GR_UnixGraphics::setZoomPercentage(UT_uint32 iZoom)
 	// zoom level.
 	if (m_pFont)
 		m_pXftFontD = m_pFont->getDeviceXftFont(iZoom);
+	DELETEP(m_pFontGUI);
+	m_pFontGUI = NULL;
+	m_pFontGUI = getGUIFont();
 }
 
 static GdkCapStyle mapCapStyle ( GR_Graphics::CapStyle in )
@@ -844,13 +860,14 @@ void GR_UnixGraphics::drawGlyph(UT_uint32 Char, UT_sint32 xoff, UT_sint32 yoff)
 		iChar =  FT_Get_Char_Index(face,Char);
 		XftUnlockFace (m_pXftFontD);
 	}
-	
+	if(m_pXftFontD == NULL)
+		return;
 	// FIXME ascent in wrong unit
 
 	UT_sint32 idy = _tduY(yoff);
 	UT_sint32 idx = _tduX(xoff);
 
-	XftDrawGlyphs(m_pXftDraw, &m_XftColor, m_pXftFontD, tdu(m_iXoff) +idx, tdu(m_pXftFontL->ascent * getResolution() / s_getDeviceResolution() + m_iYoff)+idy, &iChar, 1);
+	XftDrawGlyphs(m_pXftDraw, &m_XftColor, m_pXftFontD, tdu(m_iXoff) +idx, tdu(m_pXftFontL->ascent * getResolution() / getDeviceResolution() + m_iYoff)+idy, &iChar, 1);
 }
 
 void GR_UnixGraphics::drawChars(const UT_UCSChar* pChars, int iCharOffset,
@@ -860,13 +877,14 @@ void GR_UnixGraphics::drawChars(const UT_UCSChar* pChars, int iCharOffset,
 	xxx_UT_DEBUGMSG(("UnixGraphics:drawChars: m_bIsSymbol %d iLength %d \n",m_bIsSymbol,iLength));
 	if (iLength == 0)
 		return;
+	if(m_pXftFontD == NULL)
+		return;
 	// FIXME shouldn't need to do this - plam
 	UT_sint32 idy = _tduY(yoff);
 	UT_sint32 idx = _tduX(xoff);
 
-	//	UT_sint32 iAscent = m_pXftFontL->ascent * getResolution() / s_getDeviceResolution();
+	//	UT_sint32 iAscent = m_pXftFontL->ascent * getResolution() / getDeviceResolution();
 	UT_sint32 iAscent = getFontAscent();
-
 	if (!pCharWidths)
 	{
 		if(!isSymbol() && !isDingbat())
@@ -1116,23 +1134,14 @@ UT_sint32 GR_UnixGraphics::measureUnRemappedChar(const UT_UCSChar c)
 	// FIXME but we're not smart enough to do that yet
 
 	fWidth = m_pFont->measureUnRemappedChar(newChar, m_pFont->getSize())
-		* ((double)getResolution() / (double)s_getDeviceResolution());
+		* ((double)getResolution() / (double)getDeviceResolution());
 	xxx_UT_DEBUGMSG(("char %d width = %d \n",newChar,rint(fWidth)));
 	return static_cast<UT_uint32>(rint(fWidth));
 }
 
-UT_uint32 GR_UnixGraphics::s_getDeviceResolution(void)
-{
-	// this is hard-coded at 96 for X now, since 72 (which
-	// most X servers return when queried for a resolution)
-	// makes for tiny fonts on modern resolutions.
-
-	return 72;
-}
-
 UT_uint32 GR_UnixGraphics::getDeviceResolution(void) const
 {
-	return s_getDeviceResolution();
+	return 72;
 }
 
 void GR_UnixGraphics::getColor(UT_RGBColor& clr)
@@ -1218,7 +1227,8 @@ GR_Font * GR_UnixGraphics::_findFont(const char* pszFontFamily,
 															  pszFontStretch, pszFontSize,this);
 
 	// bury the pointer to our Unix font in a XAP_UnixFontHandle with the correct size.
-	UT_uint32 iSize = static_cast<UT_uint32>(UT_convertToPoints(pszFontSize));
+	UT_uint32 iSize = static_cast<UT_uint32>(UT_convertToPoints(pszFontSize)*getDeviceResolution()/72.);
+
 	XAP_UnixFontHandle* pFont = new XAP_UnixFontHandle(pUnixFont, iSize);
 	UT_ASSERT(pFont);
 	xxx_UT_DEBUGMSG(("Return Font name %s \n",pUnixFont->getName())); 
@@ -1227,9 +1237,17 @@ GR_Font * GR_UnixGraphics::_findFont(const char* pszFontFamily,
 
 GR_Font* GR_UnixGraphics::getDefaultFont(UT_String& fontFamily)
 {
+	UT_return_val_if_fail( m_pFontManager, NULL );
+	
 	static XAP_UnixFontHandle fontHandle(m_pFontManager->getDefaultFont(), 12);
 	fontFamily = fontHandle.getUnixFont()->getName();
 	
+	return &fontHandle;
+}
+
+GR_Font* GR_UnixGraphics::getDefaultFont(GR_Font::FontFamilyEnum f)
+{
+	static XAP_UnixFontHandle fontHandle(m_pFontManager->getDefaultFont(f), 12);
 	return &fontHandle;
 }
 
@@ -1245,8 +1263,8 @@ UT_uint32 GR_UnixGraphics::getFontAscent(GR_Font * fnt)
 	
 	// FIXME we should really be getting stuff fromt he font in layout units,
 	// FIXME but we're not smart enough to do that yet
-    // we call s_getDeviceResolution() to avoid zoom
-	return static_cast<UT_uint32>(hndl->getUnixFont()->getAscender(hndl->getSize()) * getResolution() / s_getDeviceResolution() ); // +0.5);
+    // we call getDeviceResolution() to avoid zoom
+	return static_cast<UT_uint32>(hndl->getUnixFont()->getAscender(hndl->getSize()) * getResolution() / getDeviceResolution() ); // +0.5);
 }
 
 UT_uint32 GR_UnixGraphics::getFontAscent()
@@ -1455,7 +1473,7 @@ void GR_UnixGraphics::scroll(UT_sint32 dx, UT_sint32 dy)
 		return;
 	}
 	UT_sint32 iddy = labs(ddy);
-	bool bEnableSmooth = m_pApp->isSmoothScrollingEnabled();
+	bool bEnableSmooth = XAP_App::getApp()->isSmoothScrollingEnabled();
 	bEnableSmooth = bEnableSmooth && (iddy < 30) && (ddx == 0);
 	if(bEnableSmooth)
 	{
@@ -1855,6 +1873,7 @@ GR_Image * GR_UnixGraphics::genImageFromRectangle(const UT_Rect &rec)
 
 	GR_UnixImage * pImg = new GR_UnixImage("ScreenShot");
 	pImg->m_image = pix;
+	pImg->setDisplaySize(idw,idh);
 	return static_cast<GR_Image *>(pImg);
 }
 
@@ -1917,10 +1936,12 @@ GR_Graphics *   GR_UnixGraphics::graphicsAllocator(GR_AllocInfo& allocInfo)
 	GR_UnixAllocInfo &allocator = (GR_UnixAllocInfo&)allocInfo;
 	if (allocator.m_win) 
 		{
-			return new GR_UnixGraphics(allocator.m_win, allocator.m_fontManager, XAP_App::getApp());
+			return new GR_UnixGraphics(allocator.m_win, allocator.m_fontManager);
 		}
 	else 
 		{
-		return new GR_UnixGraphics(allocator.m_pixmap, allocator.m_fontManager, XAP_App::getApp(), allocator.m_usePixmap);
+		return new GR_UnixGraphics(allocator.m_pixmap, allocator.m_fontManager, allocator.m_usePixmap);
 	}
 }
+
+

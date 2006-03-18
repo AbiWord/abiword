@@ -42,8 +42,12 @@ public:
 	virtual bool			isSuperscript(void) const ;
 	virtual bool			isSubscript(void)  const;
 	virtual bool 			hasLayoutProperties(void) const;
-	GR_EmbedManager *   getEmbedManager(void);
+
+	virtual void            updateVerticalMetric();
+
+	GR_EmbedManager *       getEmbedManager(void);
 	bool                    isEdittable(void);
+	bool                    isResizeable(void);
 	const char *            getDataID(void) const;
 	UT_sint32               getUID(void) const
 	{ return m_iEmbedUID;}
@@ -53,12 +57,16 @@ protected:
 											  const PP_AttrProp * pSectionAP,
 											  GR_Graphics * pG = NULL);
 
+	void                    _lookupLocalProperties();
+	
 	virtual void			_draw(dg_DrawArgs*);
 	virtual void			_clearScreen(bool bFullLineHeightRect);
 	virtual bool			_letPointPass(void) const;
 	void                    _drawResizeBox(UT_Rect box);
 	UT_sint32               _getLayoutPropFromObject(const char * szProp);
     bool                    _updatePropValuesIfNeeded(void);
+	virtual	bool		    _recalcWidth(void);
+	
 	UT_sint32               m_iPointHeight;
 	const PP_AttrProp *     m_pSpanAP;
 	UT_uint32               m_iGraphicTick;

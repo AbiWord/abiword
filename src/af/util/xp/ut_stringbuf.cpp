@@ -163,6 +163,11 @@ void UT_Stringbuf::clear()
 	}
 }
 
+void UT_Stringbuf::reserve(size_t n)
+{
+	grow_nocopy(n);
+}
+
 void UT_Stringbuf::grow_nocopy(size_t n)
 {
 	grow_common(n, false);
@@ -341,8 +346,10 @@ UT_UTF8Stringbuf::UCS4Char UT_UTF8Stringbuf::charCode (const char * str)
 
 void UT_UTF8Stringbuf::append (const char * sz, size_t n /* == 0 => null-termination */)
 {
-	if (sz == 0) return;
-	if (!grow (strlen (sz) + 1)) return;
+	if (sz == 0) 
+		return;
+	if (!grow ((n?n:strlen(sz)) + 1)) 
+		return;
 
 	const char * p = sz;
 	char buf[6];
@@ -1082,6 +1089,11 @@ void UT_UTF8Stringbuf::insert (char *& ptr, const char * str, size_t utf8length)
 	m_strlen += utf8length;
 }
 
+void UT_UTF8Stringbuf::reserve(size_t n)
+{
+	grow(n);
+}
+
 bool UT_UTF8Stringbuf::grow (size_t length)
 {
 	if (length + 1 <= (m_buflen - (m_pEnd - m_psz))) return true;
@@ -1505,6 +1517,11 @@ const char* UT_UCS4Stringbuf::utf8_data()
 	*utf8string = 0;
 
 	return m_utf8string;
+}
+
+void UT_UCS4Stringbuf::reserve(size_t n)
+{
+	grow_nocopy(n);
 }
 
 void UT_UCS4Stringbuf::grow_nocopy(size_t n)

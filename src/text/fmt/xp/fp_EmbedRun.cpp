@@ -24,6 +24,7 @@
 #include "pd_Document.h"
 #include "fl_BlockLayout.h"
 #include "ut_debugmsg.h"
+#include "ut_locale.h"
 #include "pd_Document.h"
 #include "ut_mbtowc.h"
 #include "fp_Page.h"
@@ -108,6 +109,7 @@ void fp_EmbedRun::_lookupProperties(const PP_AttrProp * pSpanAP,
 	  m_iEmbedUID = getEmbedManager()->makeEmbedView(pDoc,m_iIndexAP,m_pszDataID);
 	  UT_DEBUGMSG((" EmbedRun %x UID is %d \n",this,m_iEmbedUID));
 	  getEmbedManager()->initializeEmbedView(m_iEmbedUID);
+	  getEmbedManager()->setRun (m_iEmbedUID, this);
 	  getEmbedManager()->loadEmbedData(m_iEmbedUID);
 	}
 	getEmbedManager()->setDefaultFontSize(m_iEmbedUID,atoi(pszSize));
@@ -123,6 +125,9 @@ void fp_EmbedRun::_lookupProperties(const PP_AttrProp * pSpanAP,
 	  bool bFoundHeight = pSpanAP->getProperty("height", pszHeight);
 	  const char * pszWidth = NULL;
 	  bool bFoundWidth = pSpanAP->getProperty("width", pszWidth);
+	  const char * pszAscent = NULL;
+	  bool bFoundAscent = pSpanAP->getProperty("ascent", pszAscent);
+
 	  if(!bFoundWidth || pszWidth == NULL)
 	  {
 	      iWidth = getEmbedManager()->getWidth(m_iEmbedUID);
@@ -132,22 +137,27 @@ void fp_EmbedRun::_lookupProperties(const PP_AttrProp * pSpanAP,
 	      iWidth = UT_convertToLogicalUnits(pszWidth);
 	      if(iWidth <= 0)
 	      {
-		  iWidth = getEmbedManager()->getWidth(m_iEmbedUID);
+			  iWidth = getEmbedManager()->getWidth(m_iEmbedUID);
 	      }
 	  }
-	  if(!bFoundHeight || pszHeight == NULL)
+	  if(!bFoundHeight || pszHeight == NULL || !bFoundAscent || pszAscent == NULL)
 	  {
 	      iAscent = getEmbedManager()->getAscent(m_iEmbedUID);
+		  iDescent = getEmbedManager()->getDescent(m_iEmbedUID);
 	  }
 	  else
 	  {
-	      iAscent = UT_convertToLogicalUnits(pszHeight);
+	      iAscent = UT_convertToLogicalUnits(pszAscent);
 	      if(iAscent <= 0)
 	      {
-		  iAscent = getEmbedManager()->getAscent(m_iEmbedUID);
+			  iAscent = getEmbedManager()->getAscent(m_iEmbedUID);
+			  iDescent = getEmbedManager()->getDescent(m_iEmbedUID);
 	      }
+		  else
+		  {
+			  iDescent = UT_convertToLogicalUnits(pszHeight) - iAscent;
+		  }
 	  }
-	  iDescent = getEmbedManager()->getDescent(m_iEmbedUID);
 	}
 	UT_DEBUGMSG(("Width = %d Ascent = %d Descent = %d \n",iWidth,iAscent,iDescent)); 
 
@@ -188,7 +198,7 @@ void fp_EmbedRun::_lookupProperties(const PP_AttrProp * pSpanAP,
 
 void fp_EmbedRun::_drawResizeBox(UT_Rect box)
 {
-        _getView()->drawSelectionBox(box,true);
+        _getView()->drawSelectionBox(box,isResizeable());
 }
 
 bool fp_EmbedRun::canBreakAfter(void) const
@@ -220,6 +230,67 @@ bool fp_EmbedRun::isSuperscript(void) const
 bool fp_EmbedRun::isSubscript(void) const
 {
 	return false;
+}
+
+void fp_EmbedRun::_lookupLocalProperties()
+{
+	const PP_AttrProp * pSpanAP = NULL;
+	const PP_AttrProp * pBlockAP = NULL;
+	const PP_AttrProp * pSectionAP = NULL;
+
+	getBlockAP(pBlockAP);
+
+	if(!getBlock()->isContainedByTOC())
+	{
+		getSpanAP(pSpanAP);
+	}
+
+	_lookupProperties(pSpanAP, pBlockAP, pSectionAP,getGraphics());
+}
+
+void fp_EmbedRun::updateVerticalMetric()
+{
+#if 0
+	// do something here to make the embedded view to redo its layout ...
+	// there might be a more efficient way, but this should work
+	if(m_iEmbedUID >= 0 )
+	{
+		getEmbedManager()->releaseEmbedView(m_iEmbedUID);
+		m_iEmbedUID = -1;
+	}
+
+	// now lookup local properties which will create a new embedded view for us
+	_lookupLocalProperties();
+
+	// _lookupProperties() fixed also our width, so if width was marked as dirty, clear
+	// that flag
+	_setRecalcWidth(false);
+#endif
+}
+
+bool fp_EmbedRun::_recalcWidth(void)
+{
+#if 0
+	if(!_getRecalcWidth())
+		return false;
+	
+	UT_sint32 iWidth = getWidth();
+
+	// do something here to make the embedded view to redo its layout ...
+	// there might be a more efficient way, but this should work
+	if(m_iEmbedUID >= 0 )
+	{
+		getEmbedManager()->releaseEmbedView(m_iEmbedUID);
+		m_iEmbedUID = -1;
+	}
+
+	// now lookup local properties which will create a new embedded view for us
+	_lookupLocalProperties();
+	
+	return (iWidth != getWidth());
+#else
+	return false;
+#endif
 }
 
 void fp_EmbedRun::mapXYToPosition(UT_sint32 x, UT_sint32 /*y*/, PT_DocPosition& pos, bool& bBOL, bool& bEOL, bool &isTOC)
@@ -287,6 +358,11 @@ bool fp_EmbedRun::isEdittable(void)
   return getEmbedManager()->isEdittable(m_iEmbedUID);
 }
 
+bool fp_EmbedRun::isResizeable(void)
+{
+  return getEmbedManager()->isResizeable(m_iEmbedUID);
+}
+
 void fp_EmbedRun::_draw(dg_DrawArgs* pDA)
 {
 	GR_Graphics *pG = pDA->pG;
@@ -332,12 +408,15 @@ void fp_EmbedRun::_draw(dg_DrawArgs* pDA)
 		painter.fillRect(_getView()->getColorSelBackground(), /*pDA->xoff*/DA_xoff, iFillTop, getWidth(), iFillHeight);
 		bIsSelected = true;
 
+		getEmbedManager()->setColor(m_iEmbedUID,_getView()->getColorSelForeground());
+
 	}
 	else
 	{
 		Fill(getGraphics(),pDA->xoff, pDA->yoff - getAscent(), getWidth(), iLineHeight);
+		getEmbedManager()->setColor(m_iEmbedUID,getFGColor());
 	}
-	getEmbedManager()->setColor(m_iEmbedUID,getFGColor());
+
 	UT_Rect rec;
 	rec.left = pDA->xoff;
 	rec.top = pDA->yoff;
@@ -449,7 +528,8 @@ bool fp_EmbedRun::_updatePropValuesIfNeeded(void)
   if(bDoUpdate)
     {
       const char * pProps[10] = {NULL,NULL,NULL,NULL,NULL,NULL,NULL,NULL};
-      UT_UTF8String sHeight,sWidth,sAscent,sDescent;
+	  UT_LocaleTransactor t(LC_NUMERIC, "C");
+	  UT_UTF8String sHeight,sWidth,sAscent,sDescent;
       UT_UTF8String_sprintf(sHeight,"%fin",static_cast<double>(getHeight())/1440.);
       pProps[0] = "height";
       pProps[1] = sHeight.utf8_str();

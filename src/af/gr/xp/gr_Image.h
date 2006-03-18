@@ -81,11 +81,11 @@ public:
    	virtual GRType		getType() const;
    	virtual bool		render(GR_Graphics *pGR, UT_sint32 iDisplayWidth, UT_sint32 iDisplayHeight);
 
- protected:
+   	void setDisplaySize(UT_sint32 iDisplayWidth, UT_sint32 iDisplayHeight);
+
+protected:
 	void setName ( const char * szName );
 	void setName ( const UT_String & szName );
-
-   	void setDisplaySize(UT_sint32 iDisplayWidth, UT_sint32 iDisplayHeight);
 
 private:
    	UT_String		m_szName;

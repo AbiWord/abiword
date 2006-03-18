@@ -189,6 +189,7 @@ bool fp_Line::assertLineListIntegrity(void)
 			}
 			UT_ASSERT(pRunLine == pRunBlock);
 		}
+		UT_return_val_if_fail(pRunBlock,false);
 		pRunBlock = pRunBlock->getNextRun();
 	}
 	xxx_UT_DEBUGMSG(("Line %x Width of line is %d num runs is %d \n",this,width,k)); //   UT_ASSERT(width < getMaxWidth());
@@ -2610,6 +2611,11 @@ UT_sint32 fp_Line::getMarginBefore(void) const
 				if(pPrevC->getPrev())
 				{
 					pPrevC = pPrevC->getPrev();
+				}
+				else
+				{
+				    bLoop = false;
+				    return 0;
 				}
 			}
 		}

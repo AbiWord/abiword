@@ -42,7 +42,7 @@ class EV_Toolbar;
 class ABI_EXPORT AP_FrameData
 {
 public:
-	AP_FrameData(XAP_App * pApp);
+	AP_FrameData();
 	~AP_FrameData(void);
 
 	FL_DocLayout *		m_pDocLayout;
@@ -53,13 +53,13 @@ public:
 	bool				m_bShowRuler;
 	bool				m_bShowBar[4]; // TODO: 4 = NB_OF_TOOLBARS...
 	bool				m_bShowStatusBar;
-	bool             m_bShowPara;
-	bool             m_bIsFullScreen;
+	bool                m_bShowPara;
+	bool                m_bIsFullScreen;
 	AP_TopRuler *		m_pTopRuler;
 	AP_LeftRuler *		m_pLeftRuler;
 	EV_Toolbar *		m_pToolbar[4]; // TODO: 4 = NB_OF_TOOLBARS...
 	AP_StatusBar *		m_pStatusBar;
-	ViewMode                m_pViewMode;
+	ViewMode            m_pViewMode;
 };
 
 #endif /* AP_FRAMEDATA_H */

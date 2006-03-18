@@ -35,13 +35,13 @@ enum apufi_ScrollType { apufi_scrollX, apufi_scrollY }; // can we use namespaces
 class AP_UnixFrameImpl : public XAP_UnixFrameImpl
 {
  public:
-	AP_UnixFrameImpl(AP_UnixFrame *pUnixFrame, XAP_UnixApp *pUnixApp); 
-	virtual XAP_FrameImpl * createInstance(XAP_Frame *pFrame, XAP_App *pApp);
+	AP_UnixFrameImpl(AP_UnixFrame *pUnixFrame); 
+	virtual XAP_FrameImpl * createInstance(XAP_Frame *pFrame);
 
 	virtual UT_RGBColor getColorSelBackground () const;
 	virtual UT_RGBColor getColorSelForeground () const;
 
-	virtual GtkWidget * getDrawingArea() const;
+	virtual GtkWidget * getDrawingArea() {return m_dArea;}
 	
  protected:
 	friend class AP_UnixFrame;

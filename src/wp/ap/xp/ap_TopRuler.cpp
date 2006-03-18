@@ -83,7 +83,7 @@ AP_TopRuler::AP_TopRuler(XAP_Frame * pFrame)
 	m_xGuide = 0;
 
 	const XML_Char * szRulerUnits;
-	if (pFrame->getApp()->getPrefsValue(AP_PREF_KEY_RulerUnits,&szRulerUnits))
+	if (XAP_App::getApp()->getPrefsValue(AP_PREF_KEY_RulerUnits,&szRulerUnits))
 		m_dim = UT_determineDimension(szRulerUnits);
 	else
 		m_dim = DIM_IN;
@@ -92,7 +92,7 @@ AP_TopRuler::AP_TopRuler(XAP_Frame * pFrame)
 	m_iHeight = s_iFixedHeight;
 
 	// install top_ruler_prefs_listener as this lister for this func
-	pFrame->getApp()->getPrefs()->addListener( AP_TopRuler::_prefsListener, static_cast<void *>(this ));
+	XAP_App::getApp()->getPrefs()->addListener( AP_TopRuler::_prefsListener, static_cast<void *>(this ));
 	m_iCellContainerLeftPos = 0;
 	m_draggingCell = 0;
 	m_lidTopRuler = 0;
@@ -111,7 +111,7 @@ AP_TopRuler::~AP_TopRuler(void)
 		m_pView->removeListener(m_lidTopRuler);
 	}
 	// no more prefs
-	m_pFrame->getApp()->getPrefs()->removeListener( AP_TopRuler::_prefsListener, static_cast<void *>(this ));
+	XAP_App::getApp()->getPrefs()->removeListener( AP_TopRuler::_prefsListener, static_cast<void *>(this ));
 	if(!m_bIsHidden)
 	{
 
@@ -147,6 +147,7 @@ void AP_TopRuler::setView(AV_View* pView, UT_uint32 iZoom)
 void AP_TopRuler::setZoom(UT_uint32 iZoom)
 {
 	UT_return_if_fail (m_pG);
+	m_pG->clearFont();
 	m_pG->setZoomPercentage(iZoom);
 
     // TODO this dimension shouldn't be hard coded.
@@ -858,6 +859,27 @@ void AP_TopRuler::_drawParagraphProperties(const UT_Rect * pClipRect,
 
 
 /*****************************************************************/
+
+UT_uint32 AP_TopRuler::getTabToggleAreaWidth() const
+{
+	// note, we cannot use the m_pG here becaus this function gets called (and needs to
+	// return a meaningful value) even if the m_pG is not set (when the ruler is hidden)
+	FV_View * pView = static_cast<FV_View *>(m_pView);
+	UT_return_val_if_fail( pView, 0 );
+	
+	GR_Graphics * pG = pView->getGraphics();
+
+	UT_sint32 xFixed = pG ? static_cast<UT_sint32>(pG->tlu(UT_MAX(m_iLeftRulerWidth,s_iFixedWidth))) : 0;
+	if(pView->getViewMode() != VIEW_PRINT)
+		xFixed = pG->tlu(s_iFixedWidth);
+
+#ifdef EMBEDDED_TARGET
+			xFixed = (UT_uint32) (float)xFixed * 0.1;
+#endif
+
+	
+	return xFixed;
+}
 
 void AP_TopRuler::_getTabToggleRect(UT_Rect * prToggle)
 {
@@ -1955,7 +1977,10 @@ UT_sint32 AP_TopRuler::setTableLineDrag(PT_DocPosition pos, UT_sint32 x, UT_sint
 	m_draggingWhat = DW_NOTHING;
 	m_bEventIgnored = false;
 	FV_View * pView = (static_cast<FV_View *>(m_pView));
+	UT_return_val_if_fail( pView, 0 );
+
 	UT_sint32 y = pView->getGraphics()->tlu(s_iFixedHeight)/2;
+
 	if(pView->getDocument()->isPieceTableChanging())
 	{
 		return 0;
@@ -2056,7 +2081,16 @@ UT_sint32 AP_TopRuler::setTableLineDrag(PT_DocPosition pos, UT_sint32 x, UT_sint
 				m_pG->setCursor(GR_Graphics::GR_CURSOR_GRAB);
 			}
 			m_draggingCell = i;
-			return y;
+
+			UT_return_val_if_fail( m_pFrame, 0 );
+			AP_FrameData * pFrameData = static_cast<AP_FrameData *>(m_pFrame->getFrameData());
+			UT_return_val_if_fail( pFrameData, 0 );
+
+			// hidden ruler has height 0, not y
+			if(!pFrameData->m_bShowRuler)
+				return 0;
+			else
+				return y;
 		}
 	}
 	return 0;
@@ -4534,7 +4568,7 @@ void AP_TopRuler::_displayStatusMessage(XAP_String_Id messageID, const ap_RulerT
 {
 	const XML_Char * pText = m_pG->invertDimension(tick.dimType, dValue);
 	UT_String pzMessageFormat;
-	m_pFrame->getApp()->getStringSet()->getValue(messageID, XAP_App::getApp()->getDefaultEncoding(),pzMessageFormat);
+	XAP_App::getApp()->getStringSet()->getValue(messageID, XAP_App::getApp()->getDefaultEncoding(),pzMessageFormat);
 	UT_String temp(UT_String_sprintf(pzMessageFormat.c_str(), pText));
 
 	AP_FrameData * pFrameData = static_cast<AP_FrameData *>(m_pFrame->getFrameData());
@@ -4550,7 +4584,7 @@ void AP_TopRuler::_displayStatusMessage(XAP_String_Id messageID, const ap_RulerT
 	pText = m_pG->invertDimension(tick.dimType, dValue2);
 
 	UT_String pzMessageFormat;
-	m_pFrame->getApp()->getStringSet()->getValue(messageID, XAP_App::getApp()->getDefaultEncoding(), pzMessageFormat);
+	XAP_App::getApp()->getStringSet()->getValue(messageID, XAP_App::getApp()->getDefaultEncoding(), pzMessageFormat);
 	UT_String temp(UT_String_sprintf(pzMessageFormat.c_str(), buf1, pText));
 
 	AP_FrameData * pFrameData = static_cast<AP_FrameData *>(m_pFrame->getFrameData());
@@ -4561,7 +4595,7 @@ void AP_TopRuler::_displayStatusMessage(XAP_String_Id messageID, const ap_RulerT
 void AP_TopRuler::_displayStatusMessage(XAP_String_Id FormatMessageID, UT_sint32 iCol, const char * /*format*/)
 {
 	UT_String pzMessageFormat;
-	m_pFrame->getApp()->getStringSet()->getValue(FormatMessageID, XAP_App::getApp()->getDefaultEncoding(), pzMessageFormat);
+	XAP_App::getApp()->getStringSet()->getValue(FormatMessageID, XAP_App::getApp()->getDefaultEncoding(), pzMessageFormat);
 	static UT_String sCell;
 	UT_String_sprintf(sCell,pzMessageFormat.c_str(),iCol);
 
@@ -4574,7 +4608,7 @@ void AP_TopRuler::_displayStatusMessage(XAP_String_Id FormatMessageID, UT_sint32
 void AP_TopRuler::_displayStatusMessage(XAP_String_Id FormatMessageID)
 {
 	UT_String pzMessageFormat;
-	m_pFrame->getApp()->getStringSet()->getValue(FormatMessageID, XAP_App::getApp()->getDefaultEncoding(),pzMessageFormat);
+	XAP_App::getApp()->getStringSet()->getValue(FormatMessageID, XAP_App::getApp()->getDefaultEncoding(),pzMessageFormat);
 
 	AP_FrameData * pFrameData = static_cast<AP_FrameData *>(m_pFrame->getFrameData());
 	if(m_pFrame->getFrameMode() == XAP_NormalFrame)

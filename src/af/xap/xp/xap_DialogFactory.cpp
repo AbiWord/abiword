@@ -174,9 +174,7 @@ CreateItPersistent:
 HandToAppFactory:
 	{
 		// pass the request to the factory with the appropriate scope.
-		
-		UT_ASSERT(m_pFrame);
-		pDialog = m_pFrame->getApp()->getDialogFactory()->requestDialog(id);
+		pDialog = XAP_App::getApp()->getDialogFactory()->requestDialog(id);
 		return pDialog;
 	}
 }
@@ -234,9 +232,7 @@ FinishedUsingObject:
 HandToAppFactory:
 	{
 		// pass the request to the factory with the appropriate scope.
-		
-		UT_ASSERT(m_pFrame);
-		m_pFrame->getApp()->getDialogFactory()->releaseDialog(pDialog);
+		XAP_App::getApp()->getDialogFactory()->releaseDialog(pDialog);
 		return;
 	}
 }

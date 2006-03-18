@@ -93,7 +93,7 @@ ap_sbf_PageInfo::ap_sbf_PageInfo(AP_StatusBar * pSB)
     m_pageNr = 0;
     m_nrPages = 0;
 	UT_UTF8String s;
-	pSB->getFrame()->getApp()->getStringSet()->getValueUTF8(AP_STRING_ID_PageInfoField,s);
+	XAP_App::getApp()->getStringSet()->getValueUTF8(AP_STRING_ID_PageInfoField,s);
 	UT_XML_cloneString((XML_Char *&)m_szFormat,s.utf8_str());	
     m_fillMethod = REPRESENTATIVE_STRING;
     m_alignmentMethod = LEFT;
@@ -188,7 +188,7 @@ ap_sbf_InputMode::ap_sbf_InputMode(AP_StatusBar * pSB)
     : AP_StatusBarField_TextInfo(pSB)
       
 {
-    UT_UTF8String sInputMode(XAP_App::getApp()->getInputMode(), pSB->getFrame()->getApp()->getDefaultEncoding());
+    UT_UTF8String sInputMode(XAP_App::getApp()->getInputMode(), XAP_App::getApp()->getDefaultEncoding());
     m_sBuf = sInputMode;
 
     m_fillMethod = REPRESENTATIVE_STRING;
@@ -200,7 +200,7 @@ void ap_sbf_InputMode::notify(AV_View * /*pavView*/, const AV_ChangeMask mask)
 {
     if (mask & (AV_CHG_INPUTMODE))
     {
-	UT_UTF8String sInputMode(XAP_App::getApp()->getInputMode(), m_pSB->getFrame()->getApp()->getDefaultEncoding());
+	UT_UTF8String sInputMode(XAP_App::getApp()->getInputMode(), XAP_App::getApp()->getDefaultEncoding());
 	m_sBuf = sInputMode;
 
 	if (getListener())
@@ -231,10 +231,10 @@ ap_sbf_InsertMode::ap_sbf_InsertMode(AP_StatusBar * pSB)
 {
     m_bInsertMode = true;
     
-    UT_UTF8String s1(pSB->getFrame()->getApp()->getStringSet()->getValue(AP_STRING_ID_InsertModeFieldINS), 
-		     pSB->getFrame()->getApp()->getDefaultEncoding());
-    UT_UTF8String s2(pSB->getFrame()->getApp()->getStringSet()->getValue(AP_STRING_ID_InsertModeFieldOVR), 
-		     pSB->getFrame()->getApp()->getDefaultEncoding());
+    UT_UTF8String s1(XAP_App::getApp()->getStringSet()->getValue(AP_STRING_ID_InsertModeFieldINS), 
+					 XAP_App::getApp()->getDefaultEncoding());
+    UT_UTF8String s2(XAP_App::getApp()->getStringSet()->getValue(AP_STRING_ID_InsertModeFieldOVR), 
+					 XAP_App::getApp()->getDefaultEncoding());
     m_sInsertMode[0] = s2; // m_bInsertMode == false
     m_sInsertMode[1] = s1; // m_bInsertMode == true
 

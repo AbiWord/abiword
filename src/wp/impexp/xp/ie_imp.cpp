@@ -319,6 +319,9 @@ IEFileType IE_Imp::fileTypeForSuffix(const char * szSuffix)
 {
 	if (!szSuffix)
 		return IEFT_Unknown;
+
+	// this assert alerts us to bugs like 9571
+	UT_ASSERT_HARMLESS(*szSuffix == '.');
 	
 	IEFileType best = IEFT_Unknown;
 	UT_Confidence_t   best_confidence = UT_CONFIDENCE_ZILCH;

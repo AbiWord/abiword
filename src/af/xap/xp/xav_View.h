@@ -92,6 +92,9 @@ public:
 	void*			getParentData() const;
 
 	void			setInsertMode(bool bInsert);
+
+	virtual void    setPoint(UT_uint32 pt) = 0;
+
 	/*! the parameters are in device units! */
 	void			setWindowSize(UT_sint32, UT_sint32);
 	virtual void	setXScrollOffset(UT_sint32) = 0;
@@ -113,6 +116,8 @@ public:
     virtual void          updateLayout(void) = 0;
 	virtual void          rebuildLayout(void) = 0;
 	virtual void          remeasureCharsWithoutRebuild() = 0;
+	virtual void          fontMetricsChange() = 0;
+	
 	virtual void	cmdScroll(AV_ScrollCmd cmd, UT_uint32 iPos = 0) = 0;
 	void			addScrollListener(AV_ScrollObj*);
 	void			removeScrollListener(AV_ScrollObj*);
@@ -126,6 +131,7 @@ public:
 
 	//! returns true iff the current view is the active/focused window
 	bool			isActive(void);
+        void                    setActivityMask(bool bActive);
 	virtual bool	notifyListeners(const AV_ChangeMask hint, void * pPrivateData = NULL);
 	virtual bool    isDocumentPresent(void) = 0;
 	virtual bool	canDo(bool bUndo) const = 0;
@@ -178,6 +184,7 @@ private:
 	UT_sint32			m_iWindowHeight;
 	UT_sint32			m_iWindowWidth;
 	double				m_dOneTDU;
+	bool                            m_bCouldBeActive;
 };
 
 #endif /* AV_VIEW_H */

@@ -143,6 +143,7 @@ public:
 	  { return m_bIsTightWrap;}
 private:
 	virtual void		     _lookupProperties(const PP_AttrProp* pAP);
+	virtual void		     _lookupMarginProperties(const PP_AttrProp* pAP);
 	void                     _purgeLayout(void);
 	void                     _createFrameContainer(void);
 	void                     _insertFrameContainer(fp_Container * pNewFC);

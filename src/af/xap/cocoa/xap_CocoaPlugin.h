@@ -22,11 +22,236 @@
 #ifndef XAP_COCOAPLUGIN_H
 #define XAP_COCOAPLUGIN_H
 
-#define XAP_COCOAPLUGIN_INTERFACE 20050304 /** The current version of the CocoaPlugin API. */
+#define XAP_COCOAPLUGIN_INTERFACE 20050925 /** The current version of the CocoaPlugin API. */
 
 #import <Cocoa/Cocoa.h>
 
 @class XAP_CocoaPlugin;
+
+@protocol XAP_CocoaPlugin_Tool;
+@protocol XAP_CocoaPlugin_ToolProvider;
+
+/**
+ * \protocol XAP_CocoaPlugin_ToolInstance XAP_CocoaPlugin.h "XAP_CocoaPlugin.h"
+ * 
+ * A class which has a toolbar button and, optionally, a menu item associated with
+ * a specific tool. The class also manages size and image information which can be
+ * saved to and loaded from a configuration file, if desired.
+ */
+@protocol XAP_CocoaPlugin_ToolInstance
+
+/**
+ * Information about what this tool actually is, rather than what it looks like, can
+ * be obtained from the tool which created this instance.
+ * 
+ * \return The tool associated with this object.
+ */
+- (id <NSObject, XAP_CocoaPlugin_Tool>)tool;
+
+/**
+ * The XAP_CocoaPlugin_ToolInstance object manages a button and, optionally, a menu
+ * item.
+ * 
+ * \return The button managed by this object.
+ */
+- (NSView *)toolbarButton;
+
+/**
+ * The XAP_CocoaPlugin_ToolInstance object may manage a menu item for use in case the
+ * button disappears off the end of the toolbar.
+ * 
+ * \return The menu item managed by this object, or nil if there is no menu item.
+ */
+- (NSMenuItem *)toolbarMenuItem;
+
+/**
+ * The XAP_CocoaPlugin_ToolInstance manages a set of configuration strings.
+ * 
+ * \return The string describing the width of the button - should be @"auto" if it is
+ *         the same as the default setting.
+ */
+- (NSString *)configWidth;
+
+/**
+ * The XAP_CocoaPlugin_ToolInstance manages a set of configuration strings.
+ * 
+ * \return The string describing the height of the button - should be @"auto" if it is
+ *         the same as the default setting.
+ */
+- (NSString *)configHeight;
+
+/**
+ * The XAP_CocoaPlugin_ToolInstance manages a set of configuration strings.
+ * 
+ * \return The string describing the image used by the button, if any image is used at all.
+ *         Should be @"auto" if it is the same as the default setting.
+ */
+- (NSString *)configImage;
+
+/**
+ * The XAP_CocoaPlugin_ToolInstance manages a set of configuration strings.
+ * 
+ * \return The string describing the alternative image used by the button, if any image
+ *         is used at all. Should be @"auto" if it is the same as the default setting.
+ */
+- (NSString *)configAltImage;
+
+/**
+ * The XAP_CocoaPlugin_ToolInstance manages a set of configuration strings.
+ * 
+ * \param width The width setting which has been read from a configuration file.
+ */
+- (void)setConfigWidth:(NSString *)width;
+
+/**
+ * The XAP_CocoaPlugin_ToolInstance manages a set of configuration strings.
+ * 
+ * \param height The height setting which has been read from a configuration file.
+ */
+- (void)setConfigHeight:(NSString *)height;
+
+/**
+ * The XAP_CocoaPlugin_ToolInstance manages a set of configuration strings.
+ * 
+ * \param image The image setting (i.e., filename) which has been read from a
+ *              configuration file.
+ */
+- (void)setConfigImage:(NSString *)image;
+
+/**
+ * The XAP_CocoaPlugin_ToolInstance manages a set of configuration strings.
+ * 
+ * \param altImage The alternative image setting (i.e., filename) which has been
+ *                 read from a configuration file.
+ */
+- (void)setConfigAltImage:(NSString *)altImage;
+@end
+
+/**
+ * \protocol XAP_CocoaPlugin_Tool XAP_CocoaPlugin.h "XAP_CocoaPlugin.h"
+ * 
+ * A class which provides information about a specific tool. Any given tool
+ * may have any number of buttons (or menu items) in any number of toolbars;
+ * the XAP_CocoaPlugin_Tool object is used to create instances of these.
+ */
+@protocol XAP_CocoaPlugin_Tool
+
+/**
+ * Each tool, for a given provider, has a unique identifier.
+ * 
+ * \return The unique identifier for this tool.
+ */
+- (NSString *)identifier;
+
+/**
+ * The description is the tooltip or menu item name for this tool.
+ * 
+ * \return A description of this tool.
+ */
+- (NSString *)description;
+
+/**
+ * When a tool is added to a tool provider, the provider sends a setProvider: message to the tool.
+ * 
+ * \param provider The tool provider which has assumed ownership of this tool, or nil if the
+ *                 provider has removed the tool from its list. (Internal use only.)
+ */
+- (void)setProvider:(id <NSObject, XAP_CocoaPlugin_ToolProvider>)provider;
+
+/**
+ * The tool provider which owns the tool.
+ * 
+ * \return The tool provider which owns the tool, or nil if none does.
+ */
+- (id <NSObject, XAP_CocoaPlugin_ToolProvider>)provider;
+
+/**
+ * Multiple toolbar buttons can be created for a particular tool. This method instantiates a new
+ * tool object which manages a toolbar button and, optionally, a menu item.
+ * 
+ * \return A tool object which manages a toolbar button and, optionally, a menu item.
+ */
+- (id <NSObject, XAP_CocoaPlugin_ToolInstance>)tool;
+@end
+
+/**
+ * \protocol XAP_CocoaPlugin_ToolProvider XAP_CocoaPlugin.h "XAP_CocoaPlugin.h"
+ * 
+ * A class which provides a set of available tools which can be used to create a
+ * toolbar.
+ */
+@protocol XAP_CocoaPlugin_ToolProvider
+
+/**
+ * Get the name of the provider.
+ * 
+ * \return The name identifying the provider.
+ */
+- (NSString *)name;
+
+/**
+ * Get the tool with the specified identifier.
+ * 
+ * \param identifier The identifier of the tool which is desired.
+ * 
+ * \return The specified tool, or nil if the identifier is not matched.
+ */
+- (id <NSObject, XAP_CocoaPlugin_Tool>)toolWithIdentifier:(NSString *)identifier;
+
+/**
+ * Get the identifiers of the tools provided.
+ * 
+ * \return The identifiers of the tools provided.
+ */
+- (NSArray *)toolIdentifiers;
+
+/**
+ * See whether the provider provides a specific tool, and get the description (tooltip).
+ * 
+ * \param identifier The internal identifier of the desired tool.
+ * 
+ * \return The description (the tooltip) of the tool if the identifier is recognized, otherwise nil.
+ */
+- (NSString *)toolDescription:(NSString *)identifier;
+
+@end
+
+/**
+ * \protocol XAP_CocoaPlugin_SimpleXML XAP_CocoaPlugin.h "XAP_CocoaPlugin.h"
+ * 
+ * A simple call-back interface for SAX-style XML parsing.
+ */
+@protocol XAP_CocoaPlugin_SimpleXML
+
+/**
+ * Called on start of a new element.
+ * 
+ * \param name       The element name.
+ * \param attributes The element's attributes as a dictionary.
+ * 
+ * \return This method should return YES normally, but NO in order to stop parsing.
+ */
+- (BOOL)startElement:(NSString *)name attributes:(NSDictionary *)attributes;
+
+/**
+ * Called on end of a element.
+ * 
+ * \param name The element name.
+ * 
+ * \return This method should return YES normally, but NO in order to stop parsing.
+ */
+- (BOOL)endElement:(NSString *)name;
+
+/**
+ * Called with text data.
+ * 
+ * \param data The character data.
+ * 
+ * \return This method should return YES normally, but NO in order to stop parsing.
+ */
+- (BOOL)characterData:(NSString *)data;
+
+@end
 
 /**
  * \protocol XAP_CocoaPlugin_MenuItem XAP_CocoaPlugin.h "XAP_CocoaPlugin.h"
@@ -426,6 +651,55 @@
  * \see XAP_CocoaPlugin_MenuItem
  */
 - (id <NSObject, XAP_CocoaPlugin_MenuItem>)contextMenuItemWithLabel:(NSString *)label;
+
+/**
+ * Get a list of all the tool providers.
+ * Each tool provider is of type id <NSObject, XAP_CocoaPlugin_ToolProvider>.
+ * 
+ * \return The tool providers.
+ */
+- (NSArray *)toolProviders;
+
+/**
+ * Find a tool provider by name.
+ * (TODO: If plug-ins are registering tool providers, we need to implement a notification
+ *        system to update toolbar systems.)
+ * 
+ * \param name The name of the tool provider to find.
+ * 
+ * \return The tool provider, or nil if none is registered with the given name.
+ */
+- (id <NSObject, XAP_CocoaPlugin_ToolProvider>)toolProvider:(NSString *)name;
+
+/**
+ * Find a file in one of AbiWord's resource locations.
+ * This looks in the user's AbiSuite folder first, then the system AbiSuite folder, and
+ * finally the AbiWord bundle's Resources folder. Must be a regular file.
+ * 
+ * \param relativePath A filename or relative path, e.g., "MyPlugin/config.xml".
+ * 
+ * \return The full path to the specified resource, or nil if not found.
+ */
+- (NSString *)findResourcePath:(NSString *)relativePath;
+
+/**
+ * Generate a path in the user's AbiSuite resource location.
+ * 
+ * \param relativePath A filename or relative path, e.g., "MyPlugin/config.xml".
+ * 
+ * \return The full path to the specified resource.
+ */
+- (NSString *)userResourcePath:(NSString *)relativePath;
+
+/**
+ * Parse an XML file using a simple XML call-back interface.
+ * 
+ * \param path     The path to the XML file.
+ * \param callback An object which implements the XAP_CocoaPlugin_SimpleXML protocol.
+ * 
+ * \return A string with an error message on failure, or nil on success.
+ */
+- (NSString *)parseFile:(NSString *)path simpleXML:(id <XAP_CocoaPlugin_SimpleXML>)callback;
 
 @end
 

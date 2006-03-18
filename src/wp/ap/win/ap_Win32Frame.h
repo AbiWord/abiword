@@ -32,7 +32,7 @@
 class ABI_EXPORT AP_Win32Frame : public AP_Frame
 {
  public:
-	AP_Win32Frame(XAP_Win32App * app);
+	AP_Win32Frame();
 	AP_Win32Frame(AP_Win32Frame * f);
 	virtual ~AP_Win32Frame(void);
 

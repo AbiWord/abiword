@@ -2459,6 +2459,10 @@ void s_RTF_ListenerWriteDoc::_exportCellProps(PT_AttrPropIndex  api, UT_String &
 //
 	_getPropString(sCellProps,"top-style",sWork);
 	bDrawBorder = true;
+	if(sWork.size() == 0)
+	{
+	        _getPropString(sTableProps,"top-style",sWork) ;
+	}
 	if(sWork.size()>0)
 	{
 		PP_PropertyMap::TypeLineStyle linestyle = PP_PropertyMap::linestyle_type(sWork.c_str());
@@ -2486,6 +2490,11 @@ void s_RTF_ListenerWriteDoc::_exportCellProps(PT_AttrPropIndex  api, UT_String &
 			{
 				m_pie->_rtf_keyword("brdrdash"); // plain border
 			}
+		}
+		else
+		{
+			m_pie->_rtf_keyword("clbrdrt"); // cell top border
+			m_pie->_rtf_keyword("brdrnone"); // no border
 		}
 
 	}
@@ -2581,6 +2590,10 @@ void s_RTF_ListenerWriteDoc::_exportCellProps(PT_AttrPropIndex  api, UT_String &
 //
 	_getPropString(sCellProps,"left-style",sWork);
 	bDrawBorder = true;
+	if(sWork.size() == 0)
+	{
+	        _getPropString(sTableProps,"left-style",sWork); 
+	}
 	if(sWork.size()>0)
 	{
 		PP_PropertyMap::TypeLineStyle linestyle = PP_PropertyMap::linestyle_type(sWork.c_str());
@@ -2609,7 +2622,11 @@ void s_RTF_ListenerWriteDoc::_exportCellProps(PT_AttrPropIndex  api, UT_String &
 				m_pie->_rtf_keyword("brdrdash"); // plain border
 			}
 		}
-
+		else
+		{
+			m_pie->_rtf_keyword("clbrdrl"); // cell left border
+			m_pie->_rtf_keyword("brdrnone"); // no border
+		}
 	}
 	else
 	{
@@ -2657,6 +2674,10 @@ void s_RTF_ListenerWriteDoc::_exportCellProps(PT_AttrPropIndex  api, UT_String &
 //
 	_getPropString(sCellProps,"bot-style",sWork);
 	bDrawBorder = true;
+	if(sWork.size() == 0)
+	{
+	        _getPropString(sTableProps,"bot-style",sWork); 
+	}
 	if(sWork.size()>0)
 	{
 		PP_PropertyMap::TypeLineStyle linestyle = PP_PropertyMap::linestyle_type(sWork.c_str());
@@ -2684,6 +2705,11 @@ void s_RTF_ListenerWriteDoc::_exportCellProps(PT_AttrPropIndex  api, UT_String &
 			{
 				m_pie->_rtf_keyword("brdrdash"); // plain border
 			}
+		}
+		else
+		{
+			m_pie->_rtf_keyword("clbrdrb"); // cell bottom border
+			m_pie->_rtf_keyword("brdrnone"); // no border
 		}
 
 	}
@@ -2733,6 +2759,10 @@ void s_RTF_ListenerWriteDoc::_exportCellProps(PT_AttrPropIndex  api, UT_String &
 //
 	_getPropString(sCellProps,"right-style",sWork);
 	bDrawBorder = true;
+	if(sWork.size() == 0)
+	{
+	        _getPropString(sTableProps,"right-style",sWork); 
+	}
 	if(sWork.size()>0)
 	{
 		PP_PropertyMap::TypeLineStyle linestyle = PP_PropertyMap::linestyle_type(sWork.c_str());
@@ -2760,6 +2790,11 @@ void s_RTF_ListenerWriteDoc::_exportCellProps(PT_AttrPropIndex  api, UT_String &
 			{
 				m_pie->_rtf_keyword("brdrdash"); // plain border
 			}
+		}
+		else
+		{
+			m_pie->_rtf_keyword("clbrdrr"); // cell right border
+			m_pie->_rtf_keyword("brdrnone"); // no border
 		}
 
 	}
@@ -4377,7 +4412,7 @@ void s_RTF_ListenerWriteDoc::_rtf_docfmt(void)
 
 	if (landscape)
 		m_pie->_rtf_keyword("landscape");
-	m_pie->_rtf_keyword("widowctl");	// enable widow and orphan control
+	m_pie->_rtf_keyword("widowctrl");	// enable widow and orphan control
 
 	// TODO <docfmt> -- linked styles
 	// TODO <docfmt> -- compatibility options
@@ -4575,7 +4610,7 @@ void s_RTF_ListenerWriteDoc::_rtf_open_block(PT_AttrPropIndex api)
 	// also, block-level character properties are applied to \par so it really matters
 	// that gets associated with the correct paragraph
 	
-	if(m_bStartedList && !m_bInFrame)
+	if(m_bStartedList && !m_bInFrame && !m_bOpennedFootnote )
 	{
 		m_pie->_rtf_close_brace();
 	}

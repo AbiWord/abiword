@@ -100,24 +100,39 @@ UT_sint32 PSFont::measureUnremappedCharForCache(UT_UCSChar cChar) const
 // rec.top = distance from the origin to the top of the glyph
 // rec.height = total height of the glyph
 //
-bool  PSFont::glyphBox(UT_UCS4Char glyph_index, UT_Rect & rec, GR_Graphics * pG)
+bool  PSFont::glyphBox(UT_UCS4Char g, UT_Rect & rec, GR_Graphics * pG)
 {
+	UT_return_val_if_fail( pG, false );
+	
 	XftFaceLocker locker(m_hFont->getLayoutXftFont(GR_CharWidthsCache::CACHE_FONT_SIZE));
+
 	FT_Face pFace = locker.getFace();
 
-	FT_Error error =
-		FT_Load_Glyph(pFace, glyph_index,
-					FT_LOAD_LINEAR_DESIGN |
-					FT_LOAD_IGNORE_TRANSFORM |
-					FT_LOAD_NO_BITMAP | FT_LOAD_NO_SCALE);
-	if (error) {
+	UT_UCS4Char cChar = g;
+	
+	//	if(m_hFont->isSymbol())
+	//	cChar = static_cast<UT_UCS4Char>(adobeToUnicode(g));
+	
+	FT_UInt glyph_index = FT_Get_Char_Index(pFace, cChar);
+
+	FT_Error error = FT_Load_Glyph(pFace, glyph_index,
+								   FT_LOAD_LINEAR_DESIGN |
+								   FT_LOAD_IGNORE_TRANSFORM |
+								   FT_LOAD_NO_BITMAP |
+								   FT_LOAD_NO_SCALE);
+	if (error)
+	{
 		return false;
 	}
-	rec.left = pFace->glyph->metrics.horiBearingX;
-	rec.width = pFace->glyph->metrics.width;
-	rec.top = pFace->glyph->metrics.horiBearingY;
-	rec.height = pFace->glyph->metrics.height;
 
+	UT_uint32 iSize = m_pointSize * pG->getResolution() / pG->getDeviceResolution();
+	
+	rec.left   = static_cast<UT_sint32>(fontPoints2float(iSize, pFace, pFace->glyph->metrics.horiBearingX));
+	rec.width  = static_cast<UT_sint32>(fontPoints2float(iSize, pFace, pFace->glyph->metrics.width));
+	rec.top    = static_cast<UT_sint32>(fontPoints2float(iSize, pFace, pFace->glyph->metrics.horiBearingY));
+	rec.height = static_cast<UT_sint32>(fontPoints2float(iSize, pFace, pFace->glyph->metrics.height));
+
+	UT_DEBUGMSG(("Calling PSFONT:Glyph box X %d ,width %d ,Y %d ,height %d\n",rec.left,rec.width,rec.top,rec.height));
 
 	return true;
 }

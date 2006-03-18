@@ -107,8 +107,8 @@ cd $SCRIPTDIR
 
 mkdir -p $BINDIR
 
-echo "Making wrapper script at [$BINDIR/AbiWord-2.4]..."
-./makewrapper.sh $BINDIR/AbiWord-2.4 AbiWord $TARGET $LIBEXECDIR
+echo "Making wrapper script at [$BINDIR/AbiWord-2.6]..."
+./makewrapper.sh $BINDIR/AbiWord-2.6 AbiWord $TARGET $LIBEXECDIR
 
 # TODO : make use of these
 # ./makewrapper.sh AbiCalc $TARGET $LIBEXECDIR
@@ -124,7 +124,7 @@ echo "Creating symbolic links at [$BINDIR/AbiWord] and [$BINDIR/abiword]..."
 # NOTE : Solaris ln doesn't seem to honor the -f (force flag), so
 # NOTE : we have to remove them first.
 
-(cd $BINDIR && rm -f abiword && ln -s AbiWord-2.4 abiword)
+(cd $BINDIR && rm -f abiword && ln -s AbiWord-2.6 abiword)
 
 # TODO : make use of these, etc.
 # rm -f $BINDIR/AbiCalc ; ln -s $LIBEXECDIR/AbiCalc $LINK_DIR/AbiCalc

@@ -71,7 +71,7 @@ if(XAP_App::getApp() && XAP_App::getApp()->getPrefs())                          
 {                                                                                    \
     UT_String __s;                                                                   \
     UT_String_sprintf(__s, "(L%d): %s %s", __LINE__, msg1, msg2);                    \
-	UT_DEBUGMSG(("%s",__s.c_str()));                                                 \
+	UT_DEBUGMSG(("%s\n",__s.c_str()));                                                 \
     XAP_App::getApp()->getPrefs()->log("XAP_ModuleManager::loadModule", __s.c_str());\
 	XAP_App::getApp()->getPrefs()->savePrefsFile();                                  \
 }

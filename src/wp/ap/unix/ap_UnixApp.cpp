@@ -159,15 +159,15 @@ AP_UnixApp::AP_UnixApp(XAP_Args * pArgs, const char * szAppName)
 	  m_pClipboard(0),
 	  m_bHasSelection(false),
 	  m_bSelectionInFlux(false),
+	  m_cacheDeferClear(0),
 	  m_pViewSelection(0),
 	  m_cacheSelectionView(0),
-	  m_cacheDeferClear(0),
 	  m_pFrameSelection(0)
 {
 #ifndef HAVE_GNOME
     // hack to link abi_intwidget - thanks fjf
 	if(this == 0)
-		GtkWidget * pUn = abi_intwidget_new_with_file("fred.abw");
+		/*GtkWidget * pUn =*/ abi_intwidget_new_with_file("fred.abw");
 #endif
 }
 
@@ -390,7 +390,7 @@ bool AP_UnixApp::initialize(bool has_display)
 */
 XAP_Frame * AP_UnixApp::newFrame(void)
 {
-    AP_UnixFrame * pUnixFrame = new AP_UnixFrame(this);
+    AP_UnixFrame * pUnixFrame = new AP_UnixFrame();
 
     if (pUnixFrame)
 		pUnixFrame->initialize();
@@ -643,7 +643,7 @@ void AP_UnixApp::pasteFromClipboard(PD_DocumentRange * pDocRange, bool bUseClipb
 
     if (AP_UnixClipboard::isRichTextTag(szFormatFound))
     {
-		iLen = UT_MIN(iLen,strlen(reinterpret_cast<const char *>(pData)));
+		iLen = UT_strnlen(reinterpret_cast<const char *>(pData),iLen);
 
 		IE_Imp_RTF * pImpRTF = new IE_Imp_RTF(pDocRange->m_pDoc);
 		bSuccess = pImpRTF->pasteFromBuffer(pDocRange,pData,iLen);
@@ -681,7 +681,7 @@ void AP_UnixApp::pasteFromClipboard(PD_DocumentRange * pDocRange, bool bUseClipb
 			  {
 					  goto retry_text;
 			  }
-			  bool b = pImp->pasteFromBuffer(pDocRange,pData,iLen);
+			  /*bool b = */ pImp->pasteFromBuffer(pDocRange,pData,iLen);
 			  DELETEP(pImp);
 			  return;
 		  }
@@ -724,7 +724,7 @@ void AP_UnixApp::pasteFromClipboard(PD_DocumentRange * pDocRange, bool bUseClipb
       }
     else // ( AP_UnixClipboard::isTextTag(szFormatFound) )
     {
-		iLen = UT_MIN(iLen,strlen(reinterpret_cast<const char *>(pData)));
+		iLen = UT_strnlen(reinterpret_cast<const char *>(pData),iLen);
 		
 		IE_Imp_Text * pImpText = new IE_Imp_Text(pDocRange->m_pDoc,"UTF-8");
 		bSuccess = pImpText->pasteFromBuffer(pDocRange,pData,iLen);
@@ -737,8 +737,8 @@ void AP_UnixApp::pasteFromClipboard(PD_DocumentRange * pDocRange, bool bUseClipb
 	if(!bSuccess && m_pClipboard->getTextData(tFrom,reinterpret_cast<const void **>(&pData),&iLen, &szFormatFound)) {
 		UT_DEBUGMSG(("DOM: pasting text as an absolute fallback (bug 7666)\n"));
 		
-		iLen = UT_MIN(iLen,strlen(reinterpret_cast<const char *>(pData)));
-		
+		iLen = UT_strnlen(reinterpret_cast<const char *>(pData),iLen);
+
 		IE_Imp_Text * pImpText = new IE_Imp_Text(pDocRange->m_pDoc,"UTF-8");
 		bSuccess = pImpText->pasteFromBuffer(pDocRange,pData,iLen);
 		DELETEP(pImpText);
@@ -1128,7 +1128,7 @@ bool AP_UnixApp:: makePngPreview(const char * pszInFile, const char * pszPNGFile
 	GdkPixmap * pMap =  gdk_pixmap_new(pWindow,iWidth,iHeight,-1); 	
 
 	//GR_UnixGraphics * pG =  new GR_UnixGraphics(pMap, getFontManager(), this,true);
-	GR_UnixAllocInfo ai(pMap, getFontManager(), this,true);
+	GR_UnixAllocInfo ai(pMap, getFontManager(), true);
 	GR_UnixGraphics * pG = (GR_UnixGraphics*) XAP_App::getApp()->newGraphics(ai);
 
 	pG->createCaret();
@@ -1294,7 +1294,8 @@ GR_Image * AP_UnixApp::_showSplash(UT_uint32 delay)
 			}
 		}
 		// create a centered window the size of our image
-		wSplash = gtk_window_new(GTK_WINDOW_POPUP); //GTK_WINDOW_DIALOG
+		wSplash = gtk_window_new(GTK_WINDOW_TOPLEVEL); //GTK_WINDOW_DIALOG
+		gtk_window_set_decorated (GTK_WINDOW(wSplash), FALSE);
 		gtk_window_set_default_size (GTK_WINDOW (wSplash),
 									 iSplashWidth, iSplashHeight);
 		gtk_window_set_resizable(GTK_WINDOW(wSplash), FALSE);
@@ -1324,7 +1325,7 @@ GR_Image * AP_UnixApp::_showSplash(UT_uint32 delay)
 		
 		// create image context
 		//pUnixGraphics = new GR_UnixGraphics(da->window, NULL, m_pApp);
-		GR_UnixAllocInfo ai(da->window, NULL, m_pApp);
+		GR_UnixAllocInfo ai(da->window, NULL);
 		pUnixGraphics = (GR_UnixGraphics*) XAP_App::getApp()->newGraphics(ai);
 		
 		pSplashImage = pUnixGraphics->createNewImage("splash", pBB, pUnixGraphics->tlu(iSplashWidth), 
@@ -1353,7 +1354,7 @@ GR_Graphics * AP_UnixApp::newDefaultScreenGraphics() const
 	GtkWidget * da = pFI->getDrawingArea();
 	UT_return_val_if_fail( da, NULL );
 	
-	GR_UnixAllocInfo ai(da->window, getFontManager(), m_pApp);
+	GR_UnixAllocInfo ai(da->window, getFontManager());
 	return XAP_App::getApp()->newGraphics(ai);
 }
 
@@ -1467,13 +1468,15 @@ int AP_UnixApp::main(const char * szAppName, int argc, const char ** argv)
     sigaction(SIGILL, &sa, NULL);
     sigaction(SIGQUIT, &sa, NULL);
     sigaction(SIGFPE, &sa, NULL);
+
     // TODO: handle SIGABRT
 	
     // Step 2: Handle all non-window args.
     
-    if (!Args.doWindowlessArgs()) {
+	bool windowlessArgsWereSuccessful = true;
+    if (!Args.doWindowlessArgs(windowlessArgsWereSuccessful )) {
 		delete pMyUnixApp;
-		return 0;
+		return (windowlessArgsWereSuccessful ? 0 : -1);
 	}
 
 	if (have_display) {
@@ -1525,8 +1528,14 @@ int AP_UnixApp::main(const char * szAppName, int argc, const char ** argv)
 		// anymore, because doWindowlessArgs was supposed to bail already. -PL
 
 		if (pMyUnixApp->openCmdLineFiles(&Args))
+		{
+#ifdef HAVE_HILDON
+			s_bInitDone = true;
+			pMyUnixApp->processStartupQueue();
+#endif
 			// turn over control to gtk
 			gtk_main();
+		}
 		else
 		{
 			UT_DEBUGMSG(("DOM: not parsing command line or showing app\n"));
@@ -1536,6 +1545,9 @@ int AP_UnixApp::main(const char * szAppName, int argc, const char ** argv)
 		UT_DEBUGMSG(("No DISPLAY: this may not be what you want.\n"));
 	}
 
+	// unload all loaded plugins (remove some of the memory leaks shown at shutdown :-)
+	XAP_ModuleManager::instance().unloadAllPlugins();
+
 	// Step 4: Destroy the App.  It should take care of deleting all frames.
 	pMyUnixApp->shutdown();
 	delete pMyUnixApp;
@@ -1543,14 +1555,6 @@ int AP_UnixApp::main(const char * szAppName, int argc, const char ** argv)
 	return 0;
 }
 	
-XAP_Frame * AP_UnixApp::newFrame(AP_App * app)
-{
-  AP_UnixFrame * pFrame = new AP_UnixFrame(app);
-  if (pFrame)
-    pFrame->initialize();
-  return pFrame;
-}
-
 void AP_UnixApp::errorMsgBadArg(AP_Args * Args, int nextopt)
 {
   fprintf (stderr, "Error on option %s: %s.\nRun '%s --help' to see a full list of available command line options.\n",
@@ -1603,8 +1607,10 @@ void AP_UnixApp::initPopt (AP_Args * Args)
  * A callback for AP_Args's doWindowlessArgs call which handles
  * platform-specific windowless args.
  */
-bool AP_UnixApp::doWindowlessArgs(const AP_Args *Args)
+bool AP_UnixApp::doWindowlessArgs(const AP_Args *Args, bool & bSuccess)
 {
+	bSuccess = true;
+
 	if (Args->m_sGeometry)
     {
 		// [--geometry <X geometry string>]
@@ -1648,18 +1654,39 @@ bool AP_UnixApp::doWindowlessArgs(const AP_Args *Args)
 				conv.setImpProps (Args->m_impProps);
 			if (Args->m_expProps)
 				conv.setExpProps (Args->m_expProps);
-#if 0
-			PS_Graphics pGraphics ((Args->m_sPrintTo[0] == '|' ? Args->m_sPrintTo+1 : Args->m_sPrintTo),
-								   Args->m_sPrintTo, 
-								   pMyUnixApp->getApplicationName(), pMyUnixApp->getFontManager(),
-								   (Args->m_sPrintTo[0] != '|'), pMyUnixApp);
-#endif
-			PS_GraphicsAllocInfo ai((Args->m_sPrintTo[0] == '|' ? Args->m_sPrintTo+1 : Args->m_sPrintTo),
-								 Args->m_sPrintTo, 
-								 pMyUnixApp->getApplicationName(), pMyUnixApp->getFontManager(),
-								 (Args->m_sPrintTo[0] != '|'), pMyUnixApp);
+
+			/*
+			   if we are running with the Pango graphics as default, we do
+			   not create the XAP font manager, but the PS graphics which we
+			   use here needs it, so we have to make sure it is there
+
+			   When/if we change this to using gnomeprint, this should be
+			   removed
+			*/
+			if(!getFontManager())
+			{
+				/*
+				   need to temporarily set the Unix graphics as default to
+				   force the font loading
+				*/
+				GR_GraphicsFactory * pGF = getGraphicsFactory();
+				UT_return_val_if_fail( pGF, false );
+
+				UT_uint32 iGrId = pGF->getDefaultClass(true /*screen*/);
+				pGF->registerAsDefault(GRID_UNIX, true);
+				_loadFonts();
+				pGF->registerAsDefault(iGrId, true);
+			}
 			
-			PS_Graphics * pGraphics = (PS_Graphics*) XAP_App::getApp()->newGraphics(ai);
+			PS_GraphicsAllocInfo ai((Args->m_sPrintTo[0] == '|' ?
+									 Args->m_sPrintTo+1 : Args->m_sPrintTo),
+									Args->m_sPrintTo, 
+									pMyUnixApp->getApplicationName(),
+									pMyUnixApp->getFontManager(),
+									(Args->m_sPrintTo[0] != '|'));
+			
+			PS_Graphics * pGraphics =
+				(PS_Graphics*) XAP_App::getApp()->newGraphics(GRID_UNIX_PS,ai);
 			
 			conv.setVerbose(Args->m_iVerbose);
 			conv.print (Args->m_sFile, pGraphics, Args->m_sFileExtension);
@@ -1670,6 +1697,7 @@ bool AP_UnixApp::doWindowlessArgs(const AP_Args *Args)
 	    {
 			// couldn't load document
 			fprintf(stderr, "Error: no file to print!\n");
+			bSuccess = false;
 	    }
 
 		return false;
@@ -1728,11 +1756,13 @@ bool AP_UnixApp::doWindowlessArgs(const AP_Args *Args)
 	    {
 			// couldn't load document
 			fprintf(stderr, "Error: no file to print!\n");
+			bSuccess = false;
 	    }
 		
 		return false;
 #else
 		fprintf(stderr,"Only works in GNOME build \n");
+		bSuccess = false;
 #endif
 	}
 
@@ -1747,7 +1777,6 @@ bool AP_UnixApp::doWindowlessArgs(const AP_Args *Args)
 		//		szRequest = poptGetArg(Args->poptcon);
 		szRequest = Args->m_sPlugin;
 		bool bFound = false;	
-		printf(" Looking for plugin name %s \n",szRequest);
 		if(Args->m_sPlugin != NULL)
 		{
 			const UT_GenericVector<XAP_Module*> * pVec = XAP_ModuleManager::instance().enumModules ();
@@ -1756,17 +1785,16 @@ bool AP_UnixApp::doWindowlessArgs(const AP_Args *Args)
 			{
 				pModule = pVec->getNthItem (i);
 				szName = pModule->getModuleInfo()->name;
-				printf("Plugin %s loaded \n",szName);
 				if(UT_strcmp(szName,szRequest) == 0)
 				{
-					printf("plugin %s found sending control there! \n",szName);
 					bFound = true;
 				}
 			}
 		}
 		if(!bFound)
 		{
-			printf("Plugin %s not found or loaded \n",szRequest);
+			fprintf(stderr, "Plugin %s not found or loaded \n",szRequest);
+			bSuccess = false;
 			return false;
 		}
 //
@@ -1778,54 +1806,9 @@ bool AP_UnixApp::doWindowlessArgs(const AP_Args *Args)
 		const EV_EditMethod * pInvoke = pEMC->findEditMethodByName(evExecute);
 		if(!pInvoke)
 		{
-			printf("Plugin %s invoke method %s not found \n",
-				   Args->m_sPlugin,evExecute);
-			return false;
-		}
-//
-// Execute the plugin, then quit
-//
-		ev_EditMethod_invoke(pInvoke, UT_String ("Called From Unix[Gnome]App"));
-		return false;
-	}
-
-
-	if(Args->m_iAbiControl)
-	{
-//
-// Start a plugin rather than the main abiword application.
-//
-	    const char * szName = NULL;
-		XAP_Module * pModule = NULL;
-		bool bFound = false;	
-		const UT_GenericVector<XAP_Module*> * pVec = XAP_ModuleManager::instance().enumModules ();
-		for (UT_uint32 i = 0; (i < pVec->size()) && !bFound; i++)
-		{
-			pModule = pVec->getNthItem (i);
-			szName = pModule->getModuleInfo()->name;
-			printf("Plugin %s loaded \n",szName);
-			if(UT_strcmp(szName,"AbiControl") == 0)
-			{
-				printf("plugin %s found sending control there! \n",szName);
-				bFound = true;
-			}
-		}
-		if(!bFound)
-		{
-			printf("Plugin %s not found or loaded \n",Args->m_sPlugin);
-			return false;
-		}
-//
-// You must put the name of the ev_EditMethod in the usage field
-// of the plugin registered information.
-//
-		const char * evExecute = pModule->getModuleInfo()->usage;
-		EV_EditMethodContainer* pEMC = pMyUnixApp->getEditMethodContainer();
-		const EV_EditMethod * pInvoke = pEMC->findEditMethodByName(evExecute);
-		if(!pInvoke)
-		{
-			printf("Plugin %s invoke method %s not found \n",
-				   Args->m_sPlugin,evExecute);
+			fprintf(stderr, "Plugin %s invoke method %s not found \n",
+					Args->m_sPlugin,evExecute);
+			bSuccess = false;
 			return false;
 		}
 //
@@ -1893,7 +1876,7 @@ void AP_UnixApp::catchSignals(int sig_num)
 	}
 #endif
     UT_uint32 i = 0;
-	IEFileType abiType = IE_Imp::fileTypeForSuffix("abw");
+	IEFileType abiType = IE_Imp::fileTypeForSuffix(".abw");
     for(;i<m_vecFrames.getItemCount();i++)
     {
 		AP_UnixFrame * curFrame = const_cast<AP_UnixFrame*>(static_cast<const AP_UnixFrame*>(m_vecFrames[i]));
@@ -1916,7 +1899,7 @@ void AP_UnixApp::catchSignals(int sig_num)
 // Bonobo Control factory stuff
 //-------------------------------------------------------------------
 
-static BonoboControl * AbiIntwidget_control_new (AbiIntwidget * abi);
+static BonoboControl * AbiWidget_control_new (AbiWidget * abi);
 
 
 /* 
@@ -1930,10 +1913,10 @@ static void get_prop (BonoboPropertyBag 	*bag,
 {
 	GObject 	*abi;
 	
-	g_return_if_fail (IS_ABI_INTWIDGET(user_data));
+	g_return_if_fail (IS_ABI_WIDGET(user_data));
 		
 	/*
-	 * get data from our AbiIntwidget
+	 * get data from our AbiWidget
 	 */
 //
 // first create fresh GValue
@@ -1969,7 +1952,7 @@ static void set_prop (BonoboPropertyBag 	*bag,
 {
 	GObject 	*abi;
 	
-	g_return_if_fail (IS_ABI_INTWIDGET(user_data));
+	g_return_if_fail (IS_ABI_WIDGET(user_data));
 #ifdef LOGFILE
 	fprintf(logfile,"UnixApp::set_prop id %d \n",arg_id);
 #endif
@@ -2006,11 +1989,11 @@ static void
 verb_Undo_cb (BonoboUIComponent *uic, gpointer data, const char *name)
 {
 
-	g_return_if_fail (IS_ABI_INTWIDGET(data));
+	g_return_if_fail (IS_ABI_WIDGET(data));
 
-	AbiIntwidget * abi = ABI_INTWIDGET (G_OBJECT(data));
+	AbiWidget * abi = ABI_WIDGET (G_OBJECT(data));
 	GObject * object = G_OBJECT(abi);
-	AbiIntwidgetClass * abi_klazz = ABI_INTWIDGET_CLASS (G_OBJECT_GET_CLASS(object));
+	AbiWidgetClass * abi_klazz = ABI_WIDGET_CLASS (G_OBJECT_GET_CLASS(object));
 	abi_klazz->undo(abi);
 }
 
@@ -2018,11 +2001,11 @@ static void
 verb_generic_cb (BonoboUIComponent *uic, gpointer data, const char *name)
 {
 
-	g_return_if_fail (IS_ABI_INTWIDGET(data));
+	g_return_if_fail (IS_ABI_WIDGET(data));
 
-	AbiIntwidget * abi = ABI_INTWIDGET (G_OBJECT(data));
+	AbiWidget * abi = ABI_WIDGET (G_OBJECT(data));
 	GObject * object = G_OBJECT(abi);
-	AbiIntwidgetClass * abi_klazz = ABI_INTWIDGET_CLASS (G_OBJECT_GET_CLASS(object));
+	AbiWidgetClass * abi_klazz = ABI_WIDGET_CLASS (G_OBJECT_GET_CLASS(object));
 	if(UT_strcmp(name,"redo") == 0)
 	{
 		abi_klazz->redo(abi);
@@ -2075,10 +2058,10 @@ static BonoboUIVerb abi_nautilus_verbs[] = {
  * Do this after
  */
 static void
-abi_nautilus_view_create_ui (AbiIntwidget *abi)
+abi_nautilus_view_create_ui (AbiWidget *abi)
 {
 #if 0
-	g_return_if_fail (IS_ABI_INTWIDGET(abi));
+	g_return_if_fail (IS_ABI_WIDGET(abi));
 	BonoboUIComponent * uic = abi_intwidget_get_Bonobo_uic(abi);
 
 	/* Connect the UI component to the control frame's UI container. */
@@ -2105,10 +2088,10 @@ abi_nautilus_view_create_ui (AbiIntwidget *abi)
 }
 
 static void
-control_set_ui_container (AbiIntwidget *abi,
+control_set_ui_container (AbiWidget *abi,
 			  Bonobo_UIContainer ui_container)
 {
-	g_return_if_fail (IS_ABI_INTWIDGET(abi));
+	g_return_if_fail (IS_ABI_WIDGET(abi));
 	g_return_if_fail (ui_container != CORBA_OBJECT_NIL);
 
 	bonobo_ui_component_set_container (abi_intwidget_get_Bonobo_uic(abi), ui_container, NULL);
@@ -2117,18 +2100,18 @@ control_set_ui_container (AbiIntwidget *abi,
 }
 
 static void
-control_unset_ui_container (AbiIntwidget * abi)
+control_unset_ui_container (AbiWidget * abi)
 {
-	g_return_if_fail (IS_ABI_INTWIDGET(abi));
+	g_return_if_fail (IS_ABI_WIDGET(abi));
 
 	bonobo_ui_component_unset_container (abi_intwidget_get_Bonobo_uic(abi), NULL);
 }
 
 static void abi_control_activate_cb(BonoboControl *object, gboolean state, gpointer data)
 {
-	AbiIntwidget * abi;
-	g_return_if_fail (IS_ABI_INTWIDGET(G_OBJECT(data)));
-	abi = ABI_INTWIDGET(G_OBJECT(data));
+	AbiWidget * abi;
+	g_return_if_fail (IS_ABI_WIDGET(G_OBJECT(data)));
+	abi = ABI_WIDGET(G_OBJECT(data));
 	if(state)
 	{
 		Bonobo_UIContainer ui_container;
@@ -2166,10 +2149,10 @@ print_document (GnomePrintContext *ctx,
 {
 	// assert pre-conditions
 	g_return_if_fail (user_data != NULL);
-	g_return_if_fail (IS_ABI_INTWIDGET (user_data));
+	g_return_if_fail (IS_ABI_WIDGET (user_data));
 	
 	// get me!
-	AbiIntwidget * abi = ABI_INTWIDGET(user_data);
+	AbiWidget * abi = ABI_WIDGET(user_data);
 	
 	// get our frame
 	XAP_Frame * pFrame = abi_intwidget_get_frame ( abi ) ;
@@ -2239,7 +2222,7 @@ load_document_from_stream (BonoboPersistStream *ps,
 					 void *data,
 					 CORBA_Environment *ev)
 {
-	AbiIntwidget *abiwidget;
+	AbiWidget *abiwidget;
 	Bonobo_Stream_iobuf *buffer;
 	size_t len_read;
 	FILE * tmpfile;
@@ -2248,9 +2231,9 @@ load_document_from_stream (BonoboPersistStream *ps,
 #endif
 
 	g_return_if_fail (data != NULL);
-	g_return_if_fail (IS_ABI_INTWIDGET (data));
+	g_return_if_fail (IS_ABI_WIDGET (data));
 	
-	abiwidget = static_cast<AbiIntwidget *>(data);
+	abiwidget = static_cast<AbiWidget *>(data);
 #ifdef LOGFILE
 	fprintf(logfile,"At entry Load file from stream refcount %d \n",G_OBJECT(abiwidget)->ref_count);
 #endif
@@ -2295,8 +2278,8 @@ load_document_from_stream (BonoboPersistStream *ps,
 	// Load the file.
 	//
 	//
-	g_object_set(G_OBJECT(abiwidget),"AbiIntwidget--unlink-after-load",static_cast<gboolean>(TRUE),NULL);
-	g_object_set(G_OBJECT(abiwidget),"AbiIntwidget--load-file",static_cast<gchar *>(szTempfile),NULL);
+	g_object_set(G_OBJECT(abiwidget),"AbiWidget--unlink-after-load",static_cast<gboolean>(TRUE),NULL);
+	g_object_set(G_OBJECT(abiwidget),"AbiWidget--load-file",static_cast<gchar *>(szTempfile),NULL);
 	abi_intwidget_map_to_screen(abiwidget);
 
 	return;
@@ -2318,16 +2301,16 @@ save_document_to_stream (BonoboPersistStream *ps,
 			 void *data,
 			 CORBA_Environment *ev)
 {
-	AbiIntwidget *abiwidget;
+	AbiWidget *abiwidget;
 	Bonobo_Stream_iobuf *stream_buffer;
 	CORBA_octet buffer [ ABI_BUFFER_SIZE ] = "" ;
 	CORBA_long len_read = 0;
 	FILE * tmpfile = NULL;
 
 	g_return_if_fail (data != NULL);
-	g_return_if_fail (IS_ABI_INTWIDGET (data));
+	g_return_if_fail (IS_ABI_WIDGET (data));
 
-	abiwidget = static_cast<AbiIntwidget *>(data);
+	abiwidget = static_cast<AbiWidget *>(data);
 
 	//
 	// Create a temp file name.
@@ -2392,15 +2375,15 @@ abiwidget_get_object(BonoboItemContainer *item_container,
 					 CORBA_char          *item_name,
 					 CORBA_boolean       only_if_exists,
 					 CORBA_Environment   *ev,
-					 AbiIntwidget *  abi)
+					 AbiWidget *  abi)
 {
 	Bonobo_Unknown corba_object;
 	BonoboObject *object = NULL;
 
 	g_return_val_if_fail(abi != NULL, CORBA_OBJECT_NIL);
-	g_return_val_if_fail(IS_ABI_INTWIDGET(abi), CORBA_OBJECT_NIL);
+	g_return_val_if_fail(IS_ABI_WIDGET(abi), CORBA_OBJECT_NIL);
 
-	object = BONOBO_OBJECT (AbiIntwidget_control_new(abi));
+	object = BONOBO_OBJECT (AbiWidget_control_new(abi));
 
 	if (object == NULL)
 		return NULL;
@@ -2421,17 +2404,17 @@ static int
 load_document_from_file(BonoboPersistFile *pf, const CORBA_char *filename,
 				   CORBA_Environment *ev, void *data)
 {
-	AbiIntwidget *abiwidget;
+	AbiWidget *abiwidget;
 
 	g_return_val_if_fail (data != NULL,-1);
-	g_return_val_if_fail (IS_ABI_INTWIDGET (data),-1);
+	g_return_val_if_fail (IS_ABI_WIDGET (data),-1);
 
-	abiwidget = ABI_INTWIDGET (data);
+	abiwidget = ABI_WIDGET (data);
 
 	//
 	// Load the file.
 	//
-	g_object_set(G_OBJECT(abiwidget),"AbiIntwidget--load-file",reinterpret_cast<const gchar *>(filename),NULL);
+	g_object_set(G_OBJECT(abiwidget),"AbiWidget--load-file",reinterpret_cast<const gchar *>(filename),NULL);
 	return 0;
 }
 
@@ -2439,12 +2422,12 @@ static int
 save_document_to_file(BonoboPersistFile *pf, const CORBA_char *filename,
 					  CORBA_Environment *ev, void *data)
 {
-  AbiIntwidget *abiwidget;
+  AbiWidget *abiwidget;
   
   g_return_val_if_fail (data != NULL,-1);
-  g_return_val_if_fail (IS_ABI_INTWIDGET (data),-1);
+  g_return_val_if_fail (IS_ABI_WIDGET (data),-1);
   
-  abiwidget = ABI_INTWIDGET (data);
+  abiwidget = ABI_WIDGET (data);
 
   abi_intwidget_save ( abiwidget, filename ) ;
 
@@ -2479,9 +2462,9 @@ static const gint n_zoom_levels = (sizeof (preferred_zoom_levels) / sizeof (floa
 static void zoom_level_func(GObject * z, float lvl, gpointer data)
 {
   g_return_if_fail (data != NULL);
-  g_return_if_fail (IS_ABI_INTWIDGET(data));
+  g_return_if_fail (IS_ABI_WIDGET(data));
 
-  AbiIntwidget * abi = ABI_INTWIDGET(data);
+  AbiWidget * abi = ABI_WIDGET(data);
 
   if ( lvl <= 0.0 )
     return ;
@@ -2496,9 +2479,9 @@ static void zoom_level_func(GObject * z, float lvl, gpointer data)
 static void zoom_in_func(GObject * z, gpointer data)
 {
   g_return_if_fail (data != NULL);
-  g_return_if_fail (IS_ABI_INTWIDGET(data));
+  g_return_if_fail (IS_ABI_WIDGET(data));
 
-  AbiIntwidget * abi = ABI_INTWIDGET(data);
+  AbiWidget * abi = ABI_WIDGET(data);
 
   XAP_Frame * pFrame = abi_intwidget_get_frame ( abi ) ;
   UT_return_if_fail ( pFrame != NULL ) ;
@@ -2513,9 +2496,9 @@ static void zoom_in_func(GObject * z, gpointer data)
 static void zoom_out_func(GObject * z, gpointer data)
 {
   g_return_if_fail (data != NULL);
-  g_return_if_fail (IS_ABI_INTWIDGET(data));
+  g_return_if_fail (IS_ABI_WIDGET(data));
 
-  AbiIntwidget * abi = ABI_INTWIDGET(data);
+  AbiWidget * abi = ABI_WIDGET(data);
 
   XAP_Frame * pFrame = abi_intwidget_get_frame ( abi ) ;
   UT_return_if_fail ( pFrame != NULL ) ;
@@ -2533,9 +2516,9 @@ static void zoom_out_func(GObject * z, gpointer data)
 static void zoom_to_fit_func(GObject * z, gpointer data)
 {
   g_return_if_fail (data != NULL);
-  g_return_if_fail (IS_ABI_INTWIDGET(data));
+  g_return_if_fail (IS_ABI_WIDGET(data));
 
-  AbiIntwidget * abi = ABI_INTWIDGET(data);
+  AbiWidget * abi = ABI_WIDGET(data);
 
   XAP_Frame * pFrame = abi_intwidget_get_frame ( abi ) ;
   UT_return_if_fail ( pFrame != NULL ) ;
@@ -2551,9 +2534,9 @@ static void zoom_to_fit_func(GObject * z, gpointer data)
 static void zoom_to_default_func(GObject * z, gpointer data)
 {
   g_return_if_fail (data != NULL);
-  g_return_if_fail (IS_ABI_INTWIDGET(data));
+  g_return_if_fail (IS_ABI_WIDGET(data));
 
-  AbiIntwidget * abi = ABI_INTWIDGET(data);
+  AbiWidget * abi = ABI_WIDGET(data);
 
   XAP_Frame * pFrame = abi_intwidget_get_frame ( abi ) ;
   UT_return_if_fail ( pFrame != NULL ) ;
@@ -2572,7 +2555,7 @@ static void zoom_to_default_func(GObject * z, gpointer data)
 // Add extra interfaces to load data into the control
 //
 BonoboObject *
-AbiControl_add_interfaces (AbiIntwidget *abiwidget,
+AbiControl_add_interfaces (AbiWidget *abiwidget,
 						   BonoboObject *to_aggregate)
 {
 	BonoboPersistFile   *file;
@@ -2580,7 +2563,7 @@ AbiControl_add_interfaces (AbiIntwidget *abiwidget,
 	BonoboItemContainer *item_container;
 	BonoboZoomable      *zoomable;
 
-	g_return_val_if_fail (IS_ABI_INTWIDGET(abiwidget), NULL);
+	g_return_val_if_fail (IS_ABI_WIDGET(abiwidget), NULL);
 	g_return_val_if_fail (BONOBO_IS_OBJECT (to_aggregate), NULL);
 
 	/* Inteface Bonobo::PropertyBag */
@@ -2694,7 +2677,7 @@ AbiControl_add_interfaces (AbiIntwidget *abiwidget,
 }
 
 
-static BonoboControl * AbiIntwidget_control_new (AbiIntwidget * abi)
+static BonoboControl * AbiWidget_control_new (AbiWidget * abi)
 {
   // create a BonoboControl from a widget
 #ifdef LOGFILE
@@ -2714,11 +2697,11 @@ static BonoboControl * AbiIntwidget_control_new (AbiIntwidget * abi)
 	fprintf(logfile," Just after the un_ref abi count %d \n",G_OBJECT(abi)->ref_count);
 #endif
 #if 0
-  AbiIntwidgetClass * abi_klazz = ABI_INTWIDGET_CLASS (G_OBJECT_GET_CLASS(G_OBJECT(abi)));
+  AbiWidgetClass * abi_klazz = ABI_WIDGET_CLASS (G_OBJECT_GET_CLASS(G_OBJECT(abi)));
   BonoboObjectClass *bonobo_object_class = (BonoboObjectClass *)abi_klazz;
   GObjectClass *gobject_class = G_OBJECT_CLASS(abi_klazz);
 #endif
-  AbiControl_add_interfaces (ABI_INTWIDGET(abi),
+  AbiControl_add_interfaces (ABI_WIDGET(abi),
 							 BONOBO_OBJECT(control));
 #ifdef LOGFILE
 	fprintf(logfile," After AbiControl_add_interfaces ref count %d \n",G_OBJECT(control)->ref_count);
@@ -2733,12 +2716,12 @@ static BonoboControl * AbiIntwidget_control_new (AbiIntwidget * abi)
  *  	'bonobo_generic_factory_new')
  */
 static BonoboObject*
-bonobo_AbiIntwidget_factory  (BonoboGenericFactory *factory, 
+bonobo_AbiWidget_factory  (BonoboGenericFactory *factory, 
 						   const char           *oaf_iid,
 						   void *closure)
 {
   /*
-   * create a new AbiIntwidget instance
+   * create a new AbiWidget instance
    */  
   AP_UnixApp * pApp = static_cast<AP_UnixApp *>(XAP_App::getApp());
   GtkWidget  * abi  = abi_intwidget_new_with_app (pApp);
@@ -2751,7 +2734,7 @@ bonobo_AbiIntwidget_factory  (BonoboGenericFactory *factory,
 	fprintf(logfile," After gtk_widget_show ref count %d \n",G_OBJECT(abi)->ref_count);
 #endif
 
-  return BONOBO_OBJECT (AbiIntwidget_control_new (ABI_INTWIDGET (abi)));
+  return BONOBO_OBJECT (AbiWidget_control_new (ABI_WIDGET (abi)));
 }
 
 
@@ -2762,7 +2745,7 @@ static int mainBonobo(int argc, const char ** argv)
 	XAP_App * pApp = XAP_App::getApp();
 	pApp->setBonoboRunning();
 	return bonobo_generic_factory_main ("OAFIID:GNOME_AbiWord_ControlFactory",
-										bonobo_AbiIntwidget_factory, NULL);
+										bonobo_AbiWidget_factory, NULL);
 }
 
 #endif /* HAVE_GNOME */

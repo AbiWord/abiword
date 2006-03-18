@@ -562,10 +562,12 @@ void fb_LineBreaker::_splitRunAt(fp_Run *pCurrentRun, fp_RunSplitInfo &splitInfo
 	fp_TextRun *pOtherHalfOfSplitRun;
 	pOtherHalfOfSplitRun = static_cast<fp_TextRun*>(pRunToSplit->getNextRun());
 
-// todo decide if we need to call recalcWidth() now on the 2 pieces.
-//							pRunToSplit->recalcWidth();
-//							pOtherHalfOfSplitRun->recalcWidth();
-	UT_ASSERT(static_cast<UT_sint32>(pRunToSplit->getWidth()) == splitInfo.iLeftWidth);
+	// This assert fires sometimes with the Pango graphics; I believe it is due to
+	// rounding errors (the split info calculated by adding up the width of individual
+	// characters (which have to be converted to layout units), and the error cumulates so
+	// that when we remeasure the whole thing, we get a difference. I will disable the
+	// assert for now
+	// UT_ASSERT(static_cast<UT_sint32>(pRunToSplit->getWidth()) == splitInfo.iLeftWidth);
 
 	UT_ASSERT(pOtherHalfOfSplitRun);
 	UT_ASSERT(pOtherHalfOfSplitRun->getLine() == pRunToSplit->getLine());

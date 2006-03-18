@@ -559,3 +559,11 @@ UT_Error UT_XML::parse (const char * buffer, UT_uint32 length)
 
 	return ret;
 }
+
+void UT_XML::_init()
+{
+}
+
+void UT_XML::_cleanup()
+{
+}

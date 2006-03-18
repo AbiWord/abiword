@@ -50,8 +50,10 @@ XAP_Dialog * XAP_Win32Dialog_FontChooser::static_constructor(XAP_DialogFactory *
 XAP_Win32Dialog_FontChooser::XAP_Win32Dialog_FontChooser(XAP_DialogFactory * pDlgFactory,
 													 XAP_Dialog_Id id)
 	: XAP_Dialog_FontChooser(pDlgFactory,id),
-	m_pPreviewWidget(NULL),
-	m_bWin32Overline(false)
+	  m_pPreviewWidget(NULL),
+	  m_bWin32Overline(false),
+	  m_iColorIndx(0),
+	  m_iColorCount(0)
 {
 }
 
@@ -66,7 +68,7 @@ void XAP_Win32Dialog_FontChooser::runModal(XAP_Frame * pFrame)
 {
 	UT_return_if_fail(pFrame);
 
-	XAP_Win32App * pApp = static_cast<XAP_Win32App *>(pFrame->getApp());
+	XAP_Win32App * pApp = static_cast<XAP_Win32App *>(XAP_App::getApp());
 	UT_return_if_fail(pApp);
 	const XAP_EncodingManager *pEncMan = pApp->getEncodingManager();
 	UT_return_if_fail(pEncMan);
@@ -224,10 +226,10 @@ void XAP_Win32Dialog_FontChooser::runModal(XAP_Frame * pFrame)
 		sprintf(bufColor,"%02x%02x%02x",GetRValue(cf.rgbColors),
 				GetGValue(cf.rgbColors),GetBValue(cf.rgbColors));
 		bool bWasColorValid = (m_pColor && *m_pColor);
-		if (   (bWasColorValid && (UT_stricmp(bufColor,m_pColor) != 0))
-			|| (!bWasColorValid && (UT_stricmp(bufColor,"000000") != 0)))
+
+		if ( m_bChangedColor &&  ((bWasColorValid && (UT_stricmp(bufColor,m_pColor) != 0))
+								  || (!bWasColorValid && (UT_stricmp(bufColor,"000000") != 0))))
 		{
-			m_bChangedColor = true;
 			CLONEP((char *&)m_pColor, bufColor);
 		}
 
@@ -359,6 +361,36 @@ BOOL XAP_Win32Dialog_FontChooser::_onInitDialog(HWND hWnd, WPARAM wParam, LPARAM
 //	m_pPreviewWidget->setPreview(); // we need this to call draw() on WM_PAINTs
 //	_updatePreviewZoomPercent(getZoomPercent());
 
+	// get the initial offset in the text color dlg so that we can tell if the user
+	// changed color
+	m_iColorIndx = SendDlgItemMessage(hWnd, 1139, CB_GETCURSEL, 0, 0);
+	m_iColorCount = SendDlgItemMessage(hWnd, 1139, CB_GETCOUNT, 0, 0);
+
+	if(m_iColorIndx == 0 && m_pColor && *m_pColor && strcmp(m_pColor, "000000") != 0)
+	{
+		// the first item of the list was selected either becase becase the color we
+		// passed to the dlg is not one of those it supports -- we simply add it to the end
+		// of the list
+
+		// we have no name for this color, so left it empty
+		SendDlgItemMessage(hWnd, 1139, CB_ADDSTRING, 0, (LPARAM)(LPCSTR)"");
+
+		// set the color for the entry
+		UT_RGBColor c;
+		UT_parseColor(m_pColor,c);
+		DWORD dColor = RGB(c.m_red,c.m_grn,c.m_blu);
+		SendDlgItemMessage(hWnd, 1139, CB_SETITEMDATA, m_iColorCount, (LPARAM)(DWORD)dColor);
+
+		// make sure this worked and select the color
+		int iOldCount = m_iColorCount;
+		m_iColorCount = SendDlgItemMessage(hWnd, 1139, CB_GETCOUNT, 0, 0);
+		if(iOldCount + 1 == m_iColorCount)
+		{
+			SendDlgItemMessage(hWnd, 1139, CB_SETCURSEL, m_iColorCount-1, 0);
+			m_iColorIndx = m_iColorCount-1;
+		}
+	}
+	
 	return 1;		// 1 == we did not call SetFocus()
 }
 
@@ -370,29 +402,41 @@ BOOL XAP_Win32Dialog_FontChooser::_onCommand(HWND hWnd, WPARAM wParam, LPARAM lP
 
 	switch (wId)
 	{
-	case XAP_RID_DIALOG_FONT_CHK_OVERLINE:
-		m_bWin32Overline = (IsDlgButtonChecked(hWnd,XAP_RID_DIALOG_FONT_CHK_OVERLINE)==BST_CHECKED);
-		return 1;
+		case XAP_RID_DIALOG_FONT_CHK_OVERLINE:
+			m_bWin32Overline = (IsDlgButtonChecked(hWnd,XAP_RID_DIALOG_FONT_CHK_OVERLINE)==BST_CHECKED);
+			return 1;
 
-	case XAP_RID_DIALOG_FONT_CHK_HIDDEN:
-		m_bWin32Hidden = (IsDlgButtonChecked(hWnd,XAP_RID_DIALOG_FONT_CHK_HIDDEN)==BST_CHECKED);
-		return 1;
+		case XAP_RID_DIALOG_FONT_CHK_HIDDEN:
+			m_bWin32Hidden = (IsDlgButtonChecked(hWnd,XAP_RID_DIALOG_FONT_CHK_HIDDEN)==BST_CHECKED);
+			return 1;
 
-	case XAP_RID_DIALOG_FONT_CHK_SUPERSCRIPT:		
-		m_bWin32SuperScript = (IsDlgButtonChecked(hWnd,XAP_RID_DIALOG_FONT_CHK_SUPERSCRIPT)==BST_CHECKED);		
-		/* It makes no sense to have subscript and superscript at the same time, Word behaves this way also*/
-		if (m_bWin32SuperScript) CheckDlgButton(hWnd, XAP_RID_DIALOG_FONT_CHK_SUBSCRIPT, BST_UNCHECKED);		
-		return 1;
+		case XAP_RID_DIALOG_FONT_CHK_SUPERSCRIPT:		
+			m_bWin32SuperScript = (IsDlgButtonChecked(hWnd,XAP_RID_DIALOG_FONT_CHK_SUPERSCRIPT)==BST_CHECKED);		
+			/* It makes no sense to have subscript and superscript at the same time, Word behaves this way also*/
+			if (m_bWin32SuperScript) CheckDlgButton(hWnd, XAP_RID_DIALOG_FONT_CHK_SUBSCRIPT, BST_UNCHECKED);		
+			return 1;
 		
-	case XAP_RID_DIALOG_FONT_CHK_SUBSCRIPT:
-		m_bWin32SubScript = (IsDlgButtonChecked(hWnd,XAP_RID_DIALOG_FONT_CHK_SUBSCRIPT)==BST_CHECKED);
-		/* It makes no sense to have subscript and superscript at the same time, Word behaves this way also*/
-		if (m_bWin32SubScript) CheckDlgButton(hWnd, XAP_RID_DIALOG_FONT_CHK_SUPERSCRIPT, BST_UNCHECKED);
-		return 1;		
+		case XAP_RID_DIALOG_FONT_CHK_SUBSCRIPT:
+			m_bWin32SubScript = (IsDlgButtonChecked(hWnd,XAP_RID_DIALOG_FONT_CHK_SUBSCRIPT)==BST_CHECKED);
+			/* It makes no sense to have subscript and superscript at the same time, Word behaves this way also*/
+			if (m_bWin32SubScript) CheckDlgButton(hWnd, XAP_RID_DIALOG_FONT_CHK_SUPERSCRIPT, BST_UNCHECKED);
+			return 1;
 
-	default:							// we did not handle this notification
-		UT_DEBUGMSG(("WM_Command for id %ld\n",wId));
-		return 0;						// return zero to let windows take care of it.
+		case 1139: // this is hardcoded in the dlg
+			if(wNotifyCode == CBN_SELCHANGE)
+			{
+				int iIndx = SendDlgItemMessage(hWnd, 1139, CB_GETCURSEL, 0, 0);
+				if(iIndx != m_iColorIndx)
+					m_bChangedColor = true;
+
+				// return 0 in order for windows to do its thing, i.e., update the preview
+				return 0;
+			}
+			return 0;
+
+		default:							// we did not handle this notification
+			UT_DEBUGMSG(("WM_Command for id %ld\n",wId));
+			return 0;						// return zero to let windows take care of it.
 	}
 }
 

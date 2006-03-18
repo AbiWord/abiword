@@ -1026,7 +1026,7 @@ bool AD_Document::showHistory(AV_View * pView)
 		UT_uint32 iVersion = pDialog->getSelectionId();
 		UT_uint32 iOrigVersion = iVersion;
 		
-		const XAP_StringSet * pSS = pFrame->getApp()->getStringSet();
+		const XAP_StringSet * pSS = XAP_App::getApp()->getStringSet();
 
 		if(iVersion)
 		{

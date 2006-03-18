@@ -33,6 +33,7 @@
 #include "ut_hash.h"
 
 #include "gr_UnixGraphics.h"
+#include "gr_UnixPangoGraphics.h"
 
 // This header defines some functions for Unix dialogs,
 // like centering them, measuring them, etc.
@@ -550,19 +551,48 @@ GtkWidget * XAP_UnixDialog_Insert_Symbol::_constructWindow(void)
   used in the font selection combo box 
 */
 GList *XAP_UnixDialog_Insert_Symbol::_getGlistFonts (void)
-{	  
-	XAP_UnixApp * unixapp = static_cast<XAP_UnixApp *> (m_pApp);
-	UT_GenericVector<XAP_UnixFont*>* list = unixapp->getFontManager()->getAllFonts();
-	UT_uint32 count = list->size();
+{
+	GR_GraphicsFactory * pGF = XAP_App::getApp()->getGraphicsFactory();
+	if(!pGF)
+	{
+		return NULL;
+	}
+
+	UT_uint32 iGR = pGF->getDefaultClass(true);
+	
+	UT_GenericVector<XAP_UnixFont*>* fonts = NULL;
+	UT_GenericVector<const char*>* names = NULL;
+	UT_uint32 iCount = 0;
+	
+	if(iGR != GRID_UNIX_PANGO)
+	{
+		fonts = XAP_UnixFontManager::pFontManager->getAllFonts();
+		UT_return_val_if_fail( fonts,false );
+		iCount = fonts->size();
+	}
+	else
+	{
+		names = GR_UnixPangoGraphics::getAllFontNames();
+		UT_return_val_if_fail( names, false );
+		iCount = names->size();
+	}
 
 	GList *glFonts = NULL;
 	UT_String currentfont;
 	UT_uint32 j = 0;
 
-	for (UT_uint32 i = 0; i < count; i++)
+	for (UT_uint32 i = 0; i < iCount; i++)
 	{
-		const XAP_UnixFont * pFont = list->getNthItem(i);
-		const gchar * lgn  = static_cast<const gchar *>(pFont->getName());
+		const gchar * lgn = NULL;
+		if(iGR != GRID_UNIX_PANGO)
+		{
+			XAP_UnixFont * pFont = fonts->getNthItem(i);
+			lgn = static_cast<const gchar *>(pFont->getName());
+		}
+		else
+		{
+			lgn = static_cast<const gchar *>(names->getNthItem(i));
+		}
 		
 		if((strstr(currentfont.c_str(),lgn)==NULL) || (currentfont.size() !=strlen(lgn)) )
 		{
@@ -575,7 +605,8 @@ GList *XAP_UnixDialog_Insert_Symbol::_getGlistFonts (void)
 
 	m_Insert_Symbol_no_fonts = j;
 
-	DELETEP(list);
+	DELETEP(fonts);
+	DELETEP(names);
 	return g_list_reverse(glFonts);
 }
 

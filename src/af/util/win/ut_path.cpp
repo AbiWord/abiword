@@ -21,6 +21,7 @@
 #include "ut_path.h"
 #include "ut_assert.h"
 #include "ut_debugmsg.h"
+#include "ut_string_class.h"
 #include <string.h>
 #include <sys/types.h>
 #include <sys/stat.h>
@@ -92,3 +93,60 @@ time_t UT_mTime(const char* path)
 	UT_ASSERT_HARMLESS(1);
 	return((time_t)-1);
 }
+
+/*!
+    check that the given filename is legal and remove any illegal characters
+	\param filename [in/out] the suggested file name
+    \return false if filename is left unchanged, true otherwise
+ */
+bool UT_legalizeFileName(UT_UTF8String &sFilename)
+{
+	UT_UTF8String sTmp;
+	bool bRet = false;
+	
+ 	UT_UTF8Stringbuf::UTF8Iterator iter = sFilename.getIterator ();
+ 	if (iter.start())
+ 	{
+		const char * pUTF = iter.current();
+ 		while (pUTF && *pUTF)
+ 		{
+			UT_UCS4Char c = UT_UTF8Stringbuf::charCode(pUTF);
+			if(c < ' ')
+			{
+				bRet = true;
+			}
+			else
+			{
+				switch(c)
+				{
+					case ':':
+					case '/':
+					case '|':
+					case '<':
+					case '>':
+					case '\\':
+					case '^':
+					case '=':
+					case '?':
+					case '\"':
+					case '[':
+					case ']':
+					case ';':
+					case '*':
+						bRet = true;
+						break;
+						
+					default: sTmp += c;
+				}
+			}
+			
+ 			pUTF = iter.advance (); // or ++iter;
+ 		}
+ 	}
+
+	if(bRet)
+		sFilename = sTmp;
+	
+	return bRet;
+}
+

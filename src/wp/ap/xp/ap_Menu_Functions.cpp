@@ -220,7 +220,7 @@ Defun_EV_GetMenuItemState_Fn(ap_GetState_Window)
 
 	XAP_Frame * pFrame = static_cast<XAP_Frame *>(pAV_View->getParentData());
 	UT_return_val_if_fail (pFrame, EV_MIS_Gray);
-	XAP_App * pApp = pFrame->getApp();
+	XAP_App * pApp = XAP_App::getApp();
 	UT_return_val_if_fail (pApp, EV_MIS_Gray);
 
 	if (pFrame == pApp->getFrame(ndx))
@@ -720,11 +720,11 @@ Defun_EV_GetMenuItemState_Fn(ap_GetState_Selection)
 	{
 	case AP_MENU_ID_FMT_LANGUAGE:
 	case AP_MENU_ID_EDIT_CUT:
+	case AP_MENU_ID_EDIT_LATEXEQUATION:
 	case AP_MENU_ID_EDIT_COPY:
 		if (pView->isSelectionEmpty())
 			s = EV_MIS_Gray;
 		break;
-
 	default:
 		UT_ASSERT_HARMLESS(UT_SHOULD_NOT_HAPPEN);
 		break;
@@ -991,6 +991,97 @@ Defun_EV_GetMenuItemState_Fn(ap_GetState_BlockFmt)
 	return s;
 }
 
+Defun_EV_GetMenuItemState_Fn(ap_GetState_DocFmt)
+{
+	ABIWORD_VIEW;
+	UT_return_val_if_fail (pView, EV_MIS_Gray);
+
+	EV_Menu_ItemState s = EV_MIS_ZERO;
+
+	PD_Document * pDoc = pView->getDocument();
+	UT_return_val_if_fail( pDoc, EV_MIS_Gray );
+
+	const PP_AttrProp * pAP = pDoc->getAttrProp();
+	UT_return_val_if_fail( pAP, EV_MIS_Gray );
+	
+	const XML_Char * prop = NULL;
+	const XML_Char * val  = NULL;
+
+	if(pDoc->areStylesLocked()) {
+	    return EV_MIS_Gray;
+	}
+
+	switch(id)
+	{
+		case AP_MENU_ID_FMT_DIRECTION_DOCD_RTL:
+			prop = "dom-dir";
+			val  = "rtl";
+			break;
+
+		default:
+			UT_ASSERT_HARMLESS(UT_SHOULD_NOT_HAPPEN);
+			break;
+	}
+
+	if (prop && val)
+	{
+		const XML_Char * sz;
+
+		if (!pAP->getProperty(prop, sz))
+			return s;
+
+		if (sz && (0 == UT_strcmp(sz, val)))
+			s = EV_MIS_Toggled;
+	}
+
+	return s;
+}
+
+Defun_EV_GetMenuItemState_Fn(ap_GetState_SectFmt)
+{
+	ABIWORD_VIEW;
+	UT_return_val_if_fail (pView, EV_MIS_Gray);
+
+	EV_Menu_ItemState s = EV_MIS_ZERO;
+
+	const XML_Char * prop = NULL;
+	const XML_Char * val  = NULL;
+
+	if(pView->getDocument()->areStylesLocked()) {
+	    return EV_MIS_Gray;
+	}
+
+	switch(id)
+	{
+		case AP_MENU_ID_FMT_DIRECTION_SD_RTL:
+			prop = "dom-dir";
+			val  = "rtl";
+			break;
+
+		default:
+			UT_ASSERT_HARMLESS(UT_SHOULD_NOT_HAPPEN);
+			break;
+	}
+
+	if (prop && val)
+	{
+		// get current font info from pView
+		const XML_Char ** props_in = NULL;
+		const XML_Char * sz;
+
+		if (!pView->getSectionFormat(&props_in))
+			return s;
+
+		sz = UT_getAttribute(prop, props_in);
+		if (sz && (0 == UT_strcmp(sz, val)))
+			s = EV_MIS_Toggled;
+
+		free(props_in);
+	}
+
+	return s;
+}
+
 Defun_EV_GetMenuItemState_Fn(ap_GetState_View)
 {
 	ABIWORD_VIEW;
@@ -1002,7 +1093,7 @@ Defun_EV_GetMenuItemState_Fn(ap_GetState_View)
 	AP_FrameData *pFrameData = static_cast<AP_FrameData *> (pFrame->getFrameData());
 	UT_return_val_if_fail (pFrameData, EV_MIS_Gray);
 
-	XAP_App *pApp = pFrame->getApp();
+	XAP_App *pApp = XAP_App::getApp();
 	UT_return_val_if_fail (pApp, EV_MIS_Gray);
 
 	EV_Menu_ItemState s = EV_MIS_ZERO;
@@ -1115,6 +1206,19 @@ Defun_EV_GetMenuItemState_Fn(ap_GetState_View)
 	}
 
 	return s;
+}
+
+Defun_EV_GetMenuItemState_Fn(ap_GetState_InsTextBox)
+{
+	ABIWORD_VIEW;
+	UT_return_val_if_fail (pView, EV_MIS_Gray);
+
+        if(pView->getViewMode() == VIEW_NORMAL)
+		{
+            return EV_MIS_Gray;
+        }
+
+        return EV_MIS_ZERO;
 }
 
 Defun_EV_GetMenuItemState_Fn(ap_GetState_StylesLocked)

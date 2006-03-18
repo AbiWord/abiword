@@ -39,13 +39,12 @@ public:
 				const char * szTitle,
 				const char * szSoftwareNameAndVersion,
 				XAP_UnixFontManager * fontManager,
-				bool		 bIsFile,
-				XAP_App *app)
+				bool		 bIsFile)
 		: m_fileName(szFilename),
 		  m_title(szTitle),
 		  m_softwareName(szSoftwareNameAndVersion),
 		  m_fontManager(fontManager),
-		  m_isFile(bIsFile), m_app(app) {};
+		  m_isFile(bIsFile) {};
 
 	virtual GR_GraphicsId getType() const {return GRID_UNIX_PS;};
 	virtual bool isPrinterGraphics() const {return true; };
@@ -55,7 +54,6 @@ public:
 	const char * m_softwareName;
 	XAP_UnixFontManager * m_fontManager;
 	bool m_isFile;
-	XAP_App * m_app;
 };
 
 
@@ -153,8 +151,7 @@ protected:
 				const char * szTitle,
 				const char * szSoftwareNameAndVersion,
 				XAP_UnixFontManager * fontManager,
-				bool		 bIsFile,
-				XAP_App *pApp);
+				bool		 bIsFile);
 	
 	virtual GR_Font* _findFont(const char* pszFontFamily, 
 							   const char* pszFontStyle, 

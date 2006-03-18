@@ -99,6 +99,8 @@
 	DeclareDialog(XAP_DIALOG_ID_FILE_SAVEAS,	XAP_CocoaDialog_FileOpenSaveAs)
 	DeclareDialog(XAP_DIALOG_ID_PRINT,			XAP_CocoaDialog_Print)
 	DeclareDialog(XAP_DIALOG_ID_PRINTTOFILE,	XAP_CocoaDialog_FileOpenSaveAs)
+	DeclareDialog(XAP_DIALOG_ID_RECORDTOFILE,	XAP_CocoaDialog_FileOpenSaveAs)
+	DeclareDialog(XAP_DIALOG_ID_REPLAYFROMFILE,	XAP_CocoaDialog_FileOpenSaveAs)
 	DeclareDialog(XAP_DIALOG_ID_FONT,			XAP_CocoaDialog_FontChooser)
 	DeclareDialog(XAP_DIALOG_ID_LANGUAGE,		XAP_CocoaDialog_Language)
 	DeclareDialog(XAP_DIALOG_ID_WINDOWMORE,		XAP_CocoaDialog_WindowMore)

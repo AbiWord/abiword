@@ -40,11 +40,22 @@ public:
 
 	PRINTDLG *              getPrintDlg() const {return m_pPersistPrintDlg;}
 
+	void                    setOrigPrinter(UT_uint32 i) {m_iOrigPrinter = i;}
+	void                    setNewPrinter(UT_uint32 i) {m_iNewPrinter = i;}
+
+	UT_uint32               getOrigPrinter() const {return m_iOrigPrinter;}
+	UT_uint32               getNewPrinter() const {return m_iNewPrinter;}
+
+	void                    setClosed(bool b){m_bClosed = b;}
+	
 protected:
 	void					_extractResults(XAP_Frame *pFrame);
 	
 	PRINTDLG *				m_pPersistPrintDlg;
 	DOCINFO				    m_DocInfo;
+	UT_uint32               m_iOrigPrinter;
+	UT_uint32               m_iNewPrinter;
+	bool                    m_bClosed;
 };
 
 #endif /* XAP_WIN32DIALOG_PRINT_H */

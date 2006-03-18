@@ -34,6 +34,7 @@ AC_ARG_ENABLE(hildon,[  --enable-hildon    Turn on hildon ],[
 			AC_MSG_ERROR([sorry: --enable-hildon supported only on UNIX platforms])
 		fi
 		hildon=true
+		embedded=true
 	fi
 ])
 
@@ -43,10 +44,12 @@ PKG_CHECK_MODULES(HILDON, hildon-libs dbus-1, HAVE_HILDON=yes,HAVE_HILDON=no)
 		hildon-libs,
 		dbus-1,
 		libosso,
-		libgsf-1
+		libosso-gsf-1
 	])
-	HILDON_CFLAGS="$HILDON_CFLAGS -DHAVE_HILDON=1 -DEMBEDDED_TARGET=1"
+	HILDON_CFLAGS="$HILDON_CFLAGS -DHAVE_HILDON=1"
 	HILDON_LIBS="$HILDON_LIBS"
+
+	prefix=/var/lib/install/usr
 fi
 
 AC_SUBST(HILDON_CFLAGS)

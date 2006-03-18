@@ -45,6 +45,7 @@ public:
 	bool					scavengeFonts(void);
 
 	UT_GenericVector<XAP_UnixFont*> *  getAllFonts(void);
+	UT_GenericVector<void*> *          getAllFontsAsVoid(void);
 	XAP_UnixFont *			getDefaultFont(GR_Font::FontFamilyEnum f = GR_Font::FF_Roman);
 
 	XAP_UnixFont *			getFont(const char * fontname,

@@ -40,6 +40,7 @@ class PP_AttrProp;
 class ABI_EXPORT s_RTF_AttrPropAdapter
 {
 public:
+	virtual ~s_RTF_AttrPropAdapter() {}
     virtual const XML_Char * getAttribute(const XML_Char * szName) const = 0;
 
     virtual const XML_Char * getProperty(const XML_Char * szName) const = 0;
@@ -51,6 +52,7 @@ private:
     const PD_Style * m_pStyle;
 
 public:
+	virtual ~s_RTF_AttrPropAdapter_Style() {}
     s_RTF_AttrPropAdapter_Style(const PD_Style * pStyle) : m_pStyle(pStyle) {}
 
     virtual const XML_Char * getAttribute(const XML_Char * szName) const;
@@ -72,6 +74,7 @@ public:
 			     PD_Document * pDoc) : 
 	m_pSpanAP(pSpanAP), m_pBlockAP(pBlockAP), m_pSectionAP(pSectionAP),
 	m_pDoc(pDoc) {}
+	virtual ~s_RTF_AttrPropAdapter_AP() {}
 
     virtual const XML_Char * getAttribute(const XML_Char * szName) const;
     virtual const XML_Char * getProperty(const XML_Char * szName) const;

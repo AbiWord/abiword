@@ -27,6 +27,7 @@
 #include "xap_UnixDialogHelper.h"
 #include "xap_Dialog_Id.h"
 #include "xap_Strings.h"
+#include "gr_UnixPangoGraphics.h"
 
 XAP_Dialog * XAP_UnixDialog_Print::static_constructor(XAP_DialogFactory * pFactory,
 														   XAP_Dialog_Id id)
@@ -36,7 +37,9 @@ XAP_Dialog * XAP_UnixDialog_Print::static_constructor(XAP_DialogFactory * pFacto
 
 XAP_UnixDialog_Print::XAP_UnixDialog_Print(XAP_DialogFactory * pDlgFactory,
 													 XAP_Dialog_Id id)
-	: XAP_Dialog_Print(pDlgFactory,id), m_pGnomePrintGraphics (0), m_bIsPreview(false)
+	: XAP_Dialog_Print(pDlgFactory,id),
+	  m_pPrintGraphics (NULL),
+	  m_bIsPreview(false)
 {
 }
 
@@ -58,13 +61,13 @@ void XAP_UnixDialog_Print::useEnd(void)
 GR_Graphics * XAP_UnixDialog_Print::getPrinterGraphicsContext(void)
 {
 	UT_ASSERT(m_answer == a_OK);
-	return m_pGnomePrintGraphics;
+	return m_pPrintGraphics;
 }
 
 void XAP_UnixDialog_Print::releasePrinterGraphicsContext(GR_Graphics * pGraphics)
 {
-	UT_ASSERT(pGraphics == m_pGnomePrintGraphics);	
-	DELETEP(m_pGnomePrintGraphics);
+	UT_ASSERT(pGraphics == m_pPrintGraphics);	
+	DELETEP(m_pPrintGraphics);
 }
 
 /*****************************************************************/
@@ -134,9 +137,31 @@ void XAP_UnixDialog_Print::_getGraphics(void)
 {
 	UT_ASSERT(m_answer == a_OK);
 
-	m_pGnomePrintGraphics = new XAP_UnixGnomePrintGraphics(m_gpm, m_bIsPreview);
-	UT_ASSERT(m_pGnomePrintGraphics);
-	m_pGnomePrintGraphics->setColorSpace(m_cColorSpace);
+	XAP_UnixGnomePrintGraphics * pGPG = new XAP_UnixGnomePrintGraphics(m_gpm, m_bIsPreview);
+	UT_return_if_fail( pGPG );
+	pGPG->setColorSpace(m_cColorSpace);
+
+	GR_GraphicsFactory * pGF = XAP_App::getApp()->getGraphicsFactory();
+	UT_return_if_fail( pGF );
+	
+	UT_uint32 iDefaultPrintClass = pGF->getDefaultClass(false);
+
+	GR_UnixPangoPrintGraphics * pPPG = NULL;
+	
+	if(iDefaultPrintClass == GRID_UNIX_PANGO_PRINT || iDefaultPrintClass == GRID_UNIX_PANGO)
+	{
+		pPPG = new GR_UnixPangoPrintGraphics(pGPG);
+	}
+
+	if(pPPG)
+	{
+		m_pPrintGraphics = pPPG;
+	}
+	else
+	{
+		m_pPrintGraphics = pGPG;
+	}
+	
 	m_answer = a_OK;
 }
 

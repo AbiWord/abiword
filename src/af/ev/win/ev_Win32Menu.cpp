@@ -27,6 +27,7 @@
 #include "ut_string.h"
 #include "ut_string_class.h"
 #include "ut_debugmsg.h"
+#include "ut_Language.h"
 #include "xap_Types.h"
 #include "ev_Win32Menu.h"
 #include "xap_Win32App.h"
@@ -204,7 +205,8 @@ EV_Win32Menu::EV_Win32Menu(XAP_Win32App * pWin32App,
 :	EV_Menu(pWin32App, pWin32App->getEditMethodContainer(), szMenuLayoutName, szMenuLabelSetName),
 	m_pWin32App(pWin32App),
 	m_pEEM(pEEM),
-	m_myMenu(NULL)
+	m_myMenu(NULL),
+	m_iDIR(0)
 {
 		    
 	NONCLIENTMETRICSA ncm;
@@ -231,7 +233,12 @@ EV_Win32Menu::EV_Win32Menu(XAP_Win32App * pWin32App,
 
 		DeleteObject(hBitmap);
 	}						
+
+	UT_return_if_fail( m_pMenuLabelSet );
 	
+	UT_Language l;
+	if(l.getDirFromCode(m_pMenuLabelSet->getLanguage()) == UTLANG_RTL)
+		m_iDIR = DT_RTLREADING;
 }
 
 void	EV_Win32Menu::destroy()
@@ -379,7 +386,7 @@ bool EV_Win32Menu::synthesizeMenu(XAP_Frame * pFrame, HMENU menuRoot)
 						m_vecItems.addItem(item);
 							
 						if (!m_bTrack && stack.getDepth()==2)
-							AppendMenu(m, flags,u, szLabelName);																	
+							AppendMenu(m, flags,u, szLabelName);
 						else
 							AppendMenu(m, flags|MF_OWNERDRAW,u, (const char*) item);
 					}		
@@ -392,10 +399,10 @@ bool EV_Win32Menu::synthesizeMenu(XAP_Frame * pFrame, HMENU menuRoot)
 						EV_Menu_Item*	item = new EV_Menu_Item;
 						item->id = id;
 						item->pMenu= this;						
-						strcpy (item->szText, szLabelName);																						
+						strcpy (item->szText, szLabelName);
 						m_vecItems.addItem(item);
-						
-						AppendMenu(m, MF_OWNERDRAW , u, (const char*) item);// TODO: Parameter four, right cast												
+
+						AppendMenu(m, MF_OWNERDRAW , u, (const char*) item);
 					}
 				}
 
@@ -768,9 +775,19 @@ void EV_Win32Menu::onDrawItem(HWND hwnd, WPARAM wParam, LPARAM lParam)
 
 	/* Rect to draw the text */	
 	rect.top =  lpdis->rcItem.top;
-	rect.right = lpdis->rcItem.right;
 	rect.bottom = lpdis->rcItem.bottom;
-	rect.left = /*m_nBitmapCX*/ 20  + lpdis->rcItem.left;
+
+	if(m_iDIR)
+	{
+		rect.right = lpdis->rcItem.right - 20;
+		rect.left = lpdis->rcItem.left;
+	}
+	else
+	{
+		rect.right = lpdis->rcItem.right;
+		rect.left = /*m_nBitmapCX*/ 20  + lpdis->rcItem.left;
+	}
+	
 	
 	if (lpdis->itemState & ODS_GRAYED) 
 		crText = SetTextColor(lpdis->hDC, GetSysColor(COLOR_GRAYTEXT));	
@@ -799,7 +816,11 @@ void EV_Win32Menu::onDrawItem(HWND hwnd, WPARAM wParam, LPARAM lParam)
 	/*Draw the background of the item*/
 	FillRect(lpdis->hDC, &lpdis->rcItem, GetSysColorBrush(colorID));
 
-	rect.left = rect.left + SPACE_ICONTEXT;  
+	if(m_iDIR)
+		rect.right = rect.right - SPACE_ICONTEXT;
+	else
+		rect.left = rect.left;
+		
 	
 	// Select the font associated with the item into the 
     // item's device context, and then draw the string.  
@@ -832,11 +853,25 @@ void EV_Win32Menu::onDrawItem(HWND hwnd, WPARAM wParam, LPARAM lParam)
 		crBkgnd = SetBkColor(lpdis->hDC, GetSysColor(COLOR_HIGHLIGHT));
 
 	/* Draw text*/
-	DrawText(lpdis->hDC, sTextLeft.c_str(),  sTextLeft.length() , &rect, DT_LEFT | DT_VCENTER | DT_SINGLELINE);
-
-	if (sTextRight.length())
-		DrawText(lpdis->hDC, sTextRight.c_str(), sTextRight.length(), &rect, DT_RIGHT | DT_VCENTER | DT_SINGLELINE);
-
+	if(m_iDIR)
+	{
+		DrawText(lpdis->hDC, sTextLeft.c_str(),  sTextLeft.length() , &rect,
+				 DT_RIGHT | DT_VCENTER | DT_SINGLELINE | m_iDIR);
+		
+		if (sTextRight.length())
+			DrawText(lpdis->hDC, sTextRight.c_str(), sTextRight.length(), &rect,
+					 DT_LEFT | DT_VCENTER | DT_SINGLELINE | m_iDIR);
+	}
+	else
+	{
+		DrawText(lpdis->hDC, sTextLeft.c_str(),  sTextLeft.length() , &rect,
+				 DT_LEFT | DT_VCENTER | DT_SINGLELINE | m_iDIR);
+		
+		if (sTextRight.length())
+			DrawText(lpdis->hDC, sTextRight.c_str(), sTextRight.length(), &rect,
+					 DT_RIGHT | DT_VCENTER | DT_SINGLELINE | m_iDIR);
+	}
+	
 	if (lpdis->itemState & ODS_SELECTED) 
 		SetBkColor(lpdis->hDC, crBkgnd); 
 	
@@ -846,8 +881,11 @@ void EV_Win32Menu::onDrawItem(HWND hwnd, WPARAM wParam, LPARAM lParam)
 					  		
 		HDC hdcMem = CreateCompatibleDC(lpdis->hDC);
 		SelectObject(hdcMem,(void *)hBitmap);				
-		BitBlt(lpdis->hDC, lpdis->rcItem.left+1, lpdis->rcItem.top+1, 16, 16, hdcMem, 0, 0, SRCCOPY );
 
+		if(m_iDIR)
+			BitBlt(lpdis->hDC, lpdis->rcItem.right - 20, lpdis->rcItem.top+1, 16, 16, hdcMem, 0, 0, SRCCOPY );
+		else
+			BitBlt(lpdis->hDC, lpdis->rcItem.left+1, lpdis->rcItem.top+1, 16, 16, hdcMem, 0, 0, SRCCOPY );
 		
 		DeleteDC(hdcMem);					
 				
@@ -865,10 +903,14 @@ void EV_Win32Menu::onDrawItem(HWND hwnd, WPARAM wParam, LPARAM lParam)
 			SelectObject(hdcMem, bm);
 			SetRect(&r, 0, 0, nWidth, nHeight);
 			DrawFrameControl(hdcMem, &r, DFC_MENU,DFCS_MENUCHECK);			
-        
-			BitBlt(lpdis->hDC, lpdis->rcItem.left+2, lpdis->rcItem.top+2, nWidth, nHeight,
-				hdcMem, 0, 0, SRCCOPY);
 
+			if(m_iDIR)
+				BitBlt(lpdis->hDC, lpdis->rcItem.right - 20, lpdis->rcItem.top+2, nWidth, nHeight,
+					   hdcMem, 0, 0, SRCCOPY);
+			else
+				BitBlt(lpdis->hDC, lpdis->rcItem.left+2, lpdis->rcItem.top+2, nWidth, nHeight,
+					   hdcMem, 0, 0, SRCCOPY);
+				
 			DeleteDC(hdcMem);
 			DeleteObject(bm);
 		}	
@@ -948,7 +990,30 @@ bool EV_Win32MenuBar::synthesizeMenuBar(XAP_Frame * pFrame)
 {
 	m_myMenu = CreateMenu();
 
-	return (synthesizeMenu(pFrame, m_myMenu));
+	bool bRet = synthesizeMenu(pFrame, m_myMenu);
+
+	// when dealing with RTL interface language, we need to tell do some tricks here to
+	// make the menubar to layout RTL
+	// see http://www.microsoft.com/middleeast/msdn/faq.aspx
+	MENUITEMINFO mii;
+	char buff[81];
+	memset(buff,80,' ');
+	buff[80] = 0;
+	
+	mii.cbSize = sizeof(mii);
+	mii.dwTypeData = buff;
+	mii.fType = MF_STRING;
+	mii.cch = 80;
+	mii.fState = MFS_DEFAULT;
+	mii.fMask = MIIM_ID | MIIM_DATA | MIIM_TYPE | MIIM_SUBMENU;
+	
+	if(m_iDIR && GetMenuItemInfo(m_myMenu, 0, 1, &mii))
+	{
+		mii.fType |= MFT_RIGHTORDER;
+		SetMenuItemInfo(m_myMenu, 0, 1, &mii);
+	}
+	
+	return bRet;
 }
 
 /*****************************************************************/
@@ -973,6 +1038,30 @@ bool EV_Win32MenuPopup::synthesizeMenuPopup(XAP_Frame * pFrame)
 {
 	m_myMenu = CreatePopupMenu();
 
-	return synthesizeMenu(pFrame, m_myMenu);
+	bool bRet = synthesizeMenu(pFrame, m_myMenu);
+
+	// when dealing with RTL interface language, we need to tell do some tricks here to
+	// make the menubar to layout RTL
+	// see http://www.microsoft.com/middleeast/msdn/faq.aspx
+	MENUITEMINFO mii;
+	char buff[81];
+	memset(buff,80,' ');
+	buff[80] = 0;
+	
+	mii.cbSize = sizeof(mii);
+	mii.dwTypeData = buff;
+	mii.fType = MF_STRING;
+	mii.cch = 80;
+	mii.fState = MFS_DEFAULT;
+	mii.fMask = MIIM_ID | MIIM_DATA | MIIM_TYPE | MIIM_SUBMENU;
+	
+	if(m_iDIR && GetMenuItemInfo(m_myMenu, 0, 1, &mii))
+	{
+		mii.fType |= MFT_RIGHTORDER;
+		SetMenuItemInfo(m_myMenu, 0, 1, &mii);
+	}
+	
+	return bRet;
+	
 }
 

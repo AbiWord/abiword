@@ -32,8 +32,8 @@
 #pragma warning(disable: 4355)	// 'this' used in base member initializer list
 #endif
 
-AP_Win32Frame::AP_Win32Frame(XAP_Win32App * app) :
-	AP_Frame(new AP_Win32FrameImpl(this), app)
+AP_Win32Frame::AP_Win32Frame() :
+	AP_Frame(new AP_Win32FrameImpl(this))
 {
 }
 

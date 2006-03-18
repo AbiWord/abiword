@@ -969,12 +969,15 @@ void fp_Page::draw(dg_DrawArgs* pDA, bool bAlwaysUseWhiteBackground)
 		}
 		
 		dg_DrawArgs da = *pDA;
-		if(m_pView && (m_pView->getViewMode() != VIEW_PRINT) && !pDA->pG->queryProperties(GR_Graphics::DGP_PAPER))
+#if 0
+		if(m_pView && (m_pView->getViewMode() != VIEW_PRINT) &&
+		   !pDA->pG->queryProperties(GR_Graphics::DGP_PAPER))
 		{
 			fp_Column* pFirstColumnLeader = getNthColumnLeader(0);
 			fl_DocSectionLayout* pFirstSectionLayout = (pFirstColumnLeader->getDocSectionLayout());
 			da.yoff -= pFirstSectionLayout->getTopMargin();
 		}
+#endif
 		da.xoff += pFC->getX();
 		da.yoff += pFC->getY();
 		pFC->draw(&da);
@@ -1038,7 +1041,8 @@ void fp_Page::draw(dg_DrawArgs* pDA, bool bAlwaysUseWhiteBackground)
 	{
 		fp_FootnoteContainer* pFC = m_vecFootnotes.getNthItem(i);
 		dg_DrawArgs da = *pDA;
-		if(m_pView && (m_pView->getViewMode() != VIEW_PRINT) && !pDA->pG->queryProperties(GR_Graphics::DGP_PAPER))
+		if(m_pView && (m_pView->getViewMode() != VIEW_PRINT) &&
+		   !pDA->pG->queryProperties(GR_Graphics::DGP_PAPER))
 		{
 			fp_Column* pFirstColumnLeader = getNthColumnLeader(0);
 			fl_DocSectionLayout* pFirstSectionLayout = (pFirstColumnLeader->getDocSectionLayout());
@@ -1060,12 +1064,15 @@ void fp_Page::draw(dg_DrawArgs* pDA, bool bAlwaysUseWhiteBackground)
 			pFC->setOverWrote();
 		}
 		dg_DrawArgs da = *pDA;
-		if(m_pView && (m_pView->getViewMode() != VIEW_PRINT) && !pDA->pG->queryProperties(GR_Graphics::DGP_PAPER))
+#if 0
+		if(m_pView && (m_pView->getViewMode() != VIEW_PRINT) &&
+		   !pDA->pG->queryProperties(GR_Graphics::DGP_PAPER))
 		{
 			fp_Column* pFirstColumnLeader = getNthColumnLeader(0);
 			fl_DocSectionLayout* pFirstSectionLayout = (pFirstColumnLeader->getDocSectionLayout());
 			da.yoff -= pFirstSectionLayout->getTopMargin();
 		}
+#endif
 		da.xoff += pFC->getX();
 		da.yoff += pFC->getY();
 		pFC->draw(&da);
@@ -1117,12 +1124,15 @@ void   fp_Page::redrawDamagedFrames(dg_DrawArgs* pDA)
 			pFC->setOverWrote();
 		}
 		dg_DrawArgs da = *pDA;
-		if(m_pView && (m_pView->getViewMode() != VIEW_PRINT) && !pDA->pG->queryProperties(GR_Graphics::DGP_PAPER))
+#if 0
+		if(m_pView && (m_pView->getViewMode() != VIEW_PRINT) &&
+		   !pDA->pG->queryProperties(GR_Graphics::DGP_PAPER))
 		{
 			fp_Column* pFirstColumnLeader = getNthColumnLeader(0);
 			fl_DocSectionLayout* pFirstSectionLayout = (pFirstColumnLeader->getDocSectionLayout());
 			da.yoff -= pFirstSectionLayout->getTopMargin();
 		}
+#endif
 		da.xoff += pFC->getX();
 		da.yoff += pFC->getY();
 		pFC->draw(&da);
@@ -1401,6 +1411,82 @@ fp_Column * fp_Page::getPrevColOnPages(fp_Column * pCol, fp_Page * pPage)
 }
 #endif
 
+/*!
+    This function updates the x-offset of all columns without changing any of their
+    dimensions (it is used when changing the view mode)
+ */
+void fp_Page::updateColumnX()
+{
+	UT_uint32 count = countColumnLeaders();
+	if (count == 0)
+		return;
+
+	fp_Column* pFirstColumnLeader = getNthColumnLeader(0);
+	fp_Column * pLastCol = NULL;
+	fl_DocSectionLayout* pFirstSectionLayout = (pFirstColumnLeader->getDocSectionLayout());
+	UT_ASSERT(m_pOwner == pFirstSectionLayout);
+
+
+	UT_sint32 iLeftMargin = 0;
+	UT_sint32 iRightMargin = 0;
+
+	for (UT_uint32 i = 0; i < count; i++)
+	{
+		fp_Column* pLeader = getNthColumnLeader(i);
+		UT_ASSERT(pLeader->getContainerType() == FP_CONTAINER_COLUMN);
+		fl_DocSectionLayout* pSL = (pLeader->getDocSectionLayout());
+
+		if(m_pView->getViewMode() == VIEW_NORMAL)
+		{
+			iLeftMargin = m_pView->getTabToggleAreaWidth();
+			iRightMargin = 0;
+		}
+		else
+		{
+			iLeftMargin = pSL->getLeftMargin();
+			iRightMargin = pSL->getRightMargin();
+		}
+		
+		UT_uint32 iSpace = getWidth() - iLeftMargin - iRightMargin;
+		pSL->checkAndAdjustColumnGap(iSpace);
+
+		UT_uint32 iNumColumns = pSL->getNumColumns();
+		UT_uint32 iColumnGap = pSL->getColumnGap();
+		UT_uint32 iColWidth = (iSpace - ((iNumColumns - 1) * iColumnGap)) / iNumColumns;
+
+		UT_sint32 iX;
+		if(pSL->getColumnOrder())
+		{
+			iX = getWidth() - iRightMargin - iColWidth;
+		}
+		else
+		{
+			iX = iLeftMargin;
+		}
+
+		fp_Column* pTmpCol = pLeader;
+
+		while (pTmpCol)
+		{
+			UT_ASSERT(pTmpCol->getContainerType() == FP_CONTAINER_COLUMN);
+			pTmpCol->setX(iX);
+
+			if(pSL->getColumnOrder())
+			{
+				iX -= (iColWidth + iColumnGap);
+			}
+			else
+			{
+				iX += (iColWidth + iColumnGap);
+			}
+
+			pLastCol = pTmpCol;
+			pTmpCol = pTmpCol->getFollower();
+		}
+	}
+}
+
+
 void fp_Page::_reformat(void)
 {
 	// this is naive, because columns can cause the footnotes
@@ -1422,6 +1508,8 @@ void fp_Page::_reformatColumns(void)
 
 	UT_sint32 iLeftMargin = 0;
 	UT_sint32 iRightMargin = 0;
+	UT_sint32 iLeftMarginReal = 0;
+	UT_sint32 iRightMarginReal = 0;
 	UT_sint32 iTopMargin = pFirstSectionLayout->getTopMargin();
 	UT_sint32 iBottomMargin = pFirstSectionLayout->getBottomMargin();
 	UT_sint32 iY = iTopMargin;
@@ -1456,10 +1544,21 @@ void fp_Page::_reformatColumns(void)
 		UT_ASSERT(pLeader->getContainerType() == FP_CONTAINER_COLUMN);
 		fl_DocSectionLayout* pSL = (pLeader->getDocSectionLayout());
 
-		iLeftMargin = pSL->getLeftMargin();
-		iRightMargin = pSL->getRightMargin();
+		if(m_pView->getViewMode() == VIEW_NORMAL)
+		{
+			iLeftMargin = m_pView->getTabToggleAreaWidth();
+			iRightMargin = 0;
+		}
+		else
+		{
+			iLeftMargin = pSL->getLeftMargin();
+			iRightMargin = pSL->getRightMargin();
+		}
+		
+		iLeftMarginReal = pSL->getLeftMargin();
+		iRightMarginReal = pSL->getRightMargin();
 
-		UT_uint32 iSpace = getWidth() - iLeftMargin - iRightMargin;
+		UT_uint32 iSpace = getWidth() - iLeftMarginReal - iRightMarginReal;
 		pSL->checkAndAdjustColumnGap(iSpace);
 
 		UT_uint32 iNumColumns = pSL->getNumColumns();
@@ -1622,7 +1721,11 @@ void fp_Page::_reformatFootnotes(void)
 		fp_FootnoteContainer * pFC = getNthFootnoteContainer(i);
 		fl_DocSectionLayout* pSL = (getNthColumnLeader(0)->getDocSectionLayout());
 
-		pFC->setX(pSL->getLeftMargin());
+		if(m_pView->getViewMode() == VIEW_NORMAL)
+			pFC->setX(m_pView->getTabToggleAreaWidth());
+		else
+			pFC->setX(pSL->getLeftMargin());
+
 		pFC->setY(pageHeight);
 		pageHeight += getNthFootnoteContainer(i)->getHeight();
 	}

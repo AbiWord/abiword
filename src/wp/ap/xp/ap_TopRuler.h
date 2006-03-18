@@ -221,6 +221,11 @@ public:
 	/* for use with the prefs listener top_ruler_prefs_listener */
 	UT_Dimension	getDimension() const { return m_dim; }
 	void			setDimension( UT_Dimension newdim );
+
+	UT_uint32       getTabToggleAreaWidth() const;
+
+	static UT_uint32 getFixedWidth(){return s_iFixedWidth;}
+	
 protected:
 	void	_draw(const UT_Rect * pClipRect, AP_TopRulerInfo * pUseInfo);
 	void	_drawBar(const UT_Rect * pClipRect, AP_TopRulerInfo * pInfo,

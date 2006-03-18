@@ -275,14 +275,10 @@ void AP_UnixDialog_Options::_constructWindowContents (GladeXML *xml)
 
 		tmp = WID ("lblUserInterface");
 		localizeLabelMarkup (tmp, pSS, AP_STRING_ID_DLG_Options_Label_UI);
-
+		
 		m_checkbuttonViewCursorBlink = WID ("chkCursorBlink");
 		localizeButtonUnderline (m_checkbuttonViewCursorBlink, pSS,
 					AP_STRING_ID_DLG_Options_Label_ViewCursorBlink);
-
-		m_checkbuttonSmartQuotesEnable = WID ("chkSmartQuotes");
-		localizeButtonUnderline (m_checkbuttonSmartQuotesEnable, pSS,
-					 AP_STRING_ID_DLG_Options_Label_SmartQuotesEnable);
 
 		m_checkbuttonAllowCustomToolbars = WID ("chkCustomToolbars");
 		localizeButtonUnderline (m_checkbuttonAllowCustomToolbars, pSS,
@@ -299,13 +295,14 @@ void AP_UnixDialog_Options::_constructWindowContents (GladeXML *xml)
 		tmp = WID ("lblScreenColor");
 		localizeLabelUnderline (tmp, pSS, AP_STRING_ID_DLG_Options_Label_ChooseForTransparent);
 
+#ifndef HAVE_HILDON
 		// Application Startup
 		tmp = WID ("lblApplicationStartup");
 		localizeLabelMarkup (tmp, pSS, AP_STRING_ID_DLG_Options_Label_AppStartup);
-
 		m_checkbuttonShowSplash = WID ("chkShowSplash");
 		localizeButtonUnderline (m_checkbuttonShowSplash, pSS,
 					 AP_STRING_ID_DLG_Options_Label_ShowSplash);
+#endif
 
 		m_checkbuttonAutoLoadPlugins = WID ("chkAutoLoadPlugins");
 		localizeButtonUnderline (m_checkbuttonAutoLoadPlugins, pSS,
@@ -345,11 +342,6 @@ void AP_UnixDialog_Options::_constructWindowContents (GladeXML *xml)
 		m_checkbuttonOtherDirectionRtl = WID ("chkDefaultToRTL");
 		localizeButtonUnderline (m_checkbuttonOtherDirectionRtl, pSS,
 					 AP_STRING_ID_DLG_Options_Label_DirectionRtl);
-
-		m_checkbuttonOtherHebrewContextGlyphs = WID ("chkGlyphShapesForHebrew");
-		localizeButtonUnderline (m_checkbuttonOtherHebrewContextGlyphs, pSS,
-					 AP_STRING_ID_DLG_Options_Label_HebrewContextGlyphs);
-
 
 	// Spell Checking
 
@@ -453,7 +445,7 @@ GtkWidget* AP_UnixDialog_Options::_constructWindow ()
 	glade_path += "/ap_UnixHildonDialog_Options.glade";
 #else
 	glade_path += "/ap_UnixDialog_Options.glade";
-#endif	
+#endif
 
 	// Update member variables with the important widgets that
 	// might need to be queried or altered later.
@@ -506,7 +498,7 @@ GtkWidget* AP_UnixDialog_Options::_constructWindow ()
 					  G_CALLBACK (s_control_changed),
 					  static_cast<gpointer>(this));
 	}
-
+	
 	return mainWindow;
 }
 
@@ -539,17 +531,12 @@ GtkWidget *AP_UnixDialog_Options::_lookupWidget ( tControl id )
 
 	// - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - -
 	// other
-	case id_CHECK_SMART_QUOTES_ENABLE:
-		return m_checkbuttonSmartQuotesEnable;
-
+#ifndef HAVE_HILDON
 	case id_SHOWSPLASH:
 		return m_checkbuttonShowSplash;
-
+#endif
 	case id_CHECK_OTHER_DEFAULT_DIRECTION_RTL:
 		return m_checkbuttonOtherDirectionRtl;
-
-	case id_CHECK_OTHER_HEBREW_CONTEXT_GLYPHS:
-		return m_checkbuttonOtherHebrewContextGlyphs;
 
 	case id_CHECK_AUTO_SAVE_FILE:
 		return m_checkbuttonAutoSaveFile;
@@ -645,15 +632,15 @@ DEFINE_GET_SET_BOOL(SpellSuggest)
 DEFINE_GET_SET_BOOL(SpellMainOnly)
 DEFINE_GET_SET_BOOL(SpellUppercase)
 DEFINE_GET_SET_BOOL(SpellNumbers)
-DEFINE_GET_SET_BOOL(SmartQuotesEnable)
 DEFINE_GET_SET_BOOL(GrammarCheck)
 
 DEFINE_GET_SET_BOOL(OtherDirectionRtl)
-DEFINE_GET_SET_BOOL(OtherHebrewContextGlyphs)
 
 DEFINE_GET_SET_BOOL(AutoSaveFile)
+#ifndef HAVE_HILDON
 DEFINE_GET_SET_BOOL(ShowSplash)
-
+#endif
+	
 // dummy implementations. XP pref backend isn't very smart.
 #define DEFINE_GET_SET_BOOL_DUMMY(Bool)					\
 bool	AP_UnixDialog_Options::_gather##Bool(void) {			\

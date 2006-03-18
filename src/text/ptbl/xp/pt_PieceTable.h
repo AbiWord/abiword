@@ -29,10 +29,10 @@
 #include "ut_stack.h"
 #include "pt_Types.h"
 #include "pp_TableAttrProp.h"
-#include "px_ChangeHistory.h"
 #include "pf_Fragments.h"
 #include "pt_VarSet.h"
 #include "pp_Revision.h"
+#include "px_ChangeHistory.h"
 
 class pf_Frag_Object;
 class pf_Frag_FmtMark;
@@ -73,7 +73,7 @@ public:
 	UT_uint32                               undoCount(bool bUndo) const;
 	bool					undoCmd(void);
 	bool					redoCmd(void);
-
+    bool                    getNthUndo(PX_ChangeRecord ** ppcr, UT_sint32 iUndo) const;
 	void                    clearUndo() {m_history.clearHistory();}
 	
 	static void		s_getLocalisedStyleName(const char *szStyle, UT_UTF8String &utf8);
@@ -173,7 +173,8 @@ public:
 									   UT_uint32 &iRealDeleteCount,
 									   bool bDeleteTableStruxes,
 									   bool bDontGlob);
-
+	bool                    createAndSendCR(PT_DocPosition  dpos, 
+											UT_sint32 iType,bool bSave);
 
 	bool					deleteSpanWithTable(PT_DocPosition dpos1,
 												PT_DocPosition dpos2,
@@ -223,6 +224,7 @@ public:
 												const char * pszParentID);
     bool                    changeSectionAttsNoUpdate(pf_Frag_Strux * pfStrux, const char * attr, const char * attvalue);
 	bool                    deleteStruxNoUpdate(PL_StruxDocHandle sdh);
+	bool                    deleteStruxWithNotify(PL_StruxDocHandle sdh);
 	bool                    insertStruxNoUpdateBefore(PL_StruxDocHandle sdh, PTStruxType pts,const XML_Char ** attributes );
 	bool                    changeLastStruxFmtNoUndo(PT_DocPosition dpos, PTStruxType pts,
 													 const XML_Char ** attrs, const XML_Char ** props,
@@ -240,6 +242,8 @@ public:
 		{
 			return _insertFmtMarkFragWithNotify(ptc,dpos,p_AttrProp);
 		}
+	bool                    deleteFmtMark(PT_DocPosition dpos);
+
 	// the append- methods are only available while importing
 	// the document.
 

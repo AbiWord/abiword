@@ -44,6 +44,8 @@ public:
 	virtual bool 			hasLayoutProperties(void) const;
 	GR_EmbedManager *   getMathManager(void);
 
+	virtual void            updateVerticalMetric();
+	
 	const char *            getDataID(void) const;
 protected:
 	virtual void			_lookupProperties(const PP_AttrProp * pSpanAP,
@@ -51,12 +53,15 @@ protected:
 											  const PP_AttrProp * pSectionAP,
 											  GR_Graphics * pG = NULL);
 
+	void                    _lookupLocalProperties();
+	
 	virtual void			_draw(dg_DrawArgs*);
 	virtual void			_clearScreen(bool bFullLineHeightRect);
 	virtual bool			_letPointPass(void) const;
 	void                    _drawResizeBox(UT_Rect box);
 	UT_sint32               _getLayoutPropFromObject(const char * szProp);
     bool                    _updatePropValuesIfNeeded(void);
+	virtual	bool		    _recalcWidth(void);
 	UT_sint32               m_iPointHeight;
 	const PP_AttrProp *     m_pSpanAP;
 	UT_uint32               m_iGraphicTick;

@@ -107,6 +107,9 @@ public:
 	bool isEquivalent(const PP_AttrProp * pAP2) const;
 	bool isEquivalent(const XML_Char ** attrs, const XML_Char ** props) const;
 
+	PP_AttrProp * createExactly(const XML_Char ** attributes,
+				    const XML_Char ** properties) const;
+
 	PP_AttrProp * cloneWithReplacements(const XML_Char ** attributes,
 										const XML_Char ** properties,
 										bool bClearProps) const;

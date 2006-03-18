@@ -23,6 +23,7 @@
  * 02111-1307, USA.
  */
 
+#define GDK_PIXBUF_ENABLE_BACKEND
 #include "ie_impGraphic_GdkPixbuf.h"
 
 //------------------------------------------------------------------------------------
@@ -79,6 +80,7 @@ UT_Error IE_ImpGraphic_GdkPixbuf::importGraphic(UT_ByteBuf * pBB, FG_Graphic ** 
 
 	if (setjmp(m_pPNG->jmpbuf))
 	{
+		DELETEP(m_pPngBB);
 		g_object_unref(G_OBJECT(pixbuf));
 		png_destroy_write_struct(&m_pPNG, &m_pPNGInfo);
 		return UT_ERROR;
@@ -98,36 +100,19 @@ UT_Error IE_ImpGraphic_GdkPixbuf::importGraphic(UT_ByteBuf * pBB, FG_Graphic ** 
 	FG_GraphicRaster * pFGR = new FG_GraphicRaster();
 	if(pFGR == NULL)
 	{
+		DELETEP(m_pPngBB);
 		return UT_IE_NOMEMORY;
 	}
 
 	if(!pFGR->setRaster_PNG(m_pPngBB)) 
 	{
-		DELETEP(pFGR);		
+		DELETEP(pFGR);
+		DELETEP(m_pPngBB);
 		return UT_IE_FAKETYPE;
 	}
 
 	*ppfg = static_cast<FG_Graphic *>(pFGR);
 	return UT_OK;
-}
-
-/*!
- * Convert the data contained in the file to into a PNG-based 
- * FG_Graphic type
- */
-UT_Error IE_ImpGraphic_GdkPixbuf::importGraphic(const char * szFilename, FG_Graphic ** ppfg)
-{
-	UT_ByteBuf bb;
-
-	if ( bb.insertFromFile(0, szFilename) )
-		{
-			return importGraphic ( &bb, ppfg ) ;
-		}
-	else
-		{
-			*ppfg = 0;
-			return UT_ERROR;
-		}
 }
 
 /*!
@@ -153,6 +138,7 @@ UT_Error IE_ImpGraphic_GdkPixbuf::convertGraphic(UT_ByteBuf* pBB,
 
 	if (setjmp(m_pPNG->jmpbuf))
 	{
+		DELETEP(m_pPngBB);
 		png_destroy_write_struct(&m_pPNG, &m_pPNGInfo);
 		g_object_unref(G_OBJECT(pixbuf));
 		return UT_ERROR;
@@ -171,25 +157,6 @@ UT_Error IE_ImpGraphic_GdkPixbuf::convertGraphic(UT_ByteBuf* pBB,
 	return UT_OK;
 }
 
-#if 0
-//
-// FIXME Remove this code after we work out how to speed to image writing
-// with libpng
-//
-// Otherwise might need this code is we can work out how to make gdk-pixbuf
-// to speed up writes.
-//
-static gboolean convCallback(const gchar *buf,
-			     gsize count,
-			     GError **error,
-			     gpointer byteBuf)
-{
-  UT_ByteBuf * pBB = reinterpret_cast<UT_ByteBuf *>(byteBuf);
-  pBB->append(reinterpret_cast<const UT_Byte *>(buf),count);
-  return TRUE;
-}
-
-#endif
 /*!
  * This method fills the m_pPNG byte buffer with a PNG representation of 
  * of the supplied gdk-pixbuf.
@@ -199,28 +166,6 @@ static gboolean convCallback(const gchar *buf,
  */
 void IE_ImpGraphic_GdkPixbuf::_createPNGFromPixbuf(GdkPixbuf * pixbuf)
 {
-#if 0
-  const guchar * pixels = gdk_pixbuf_get_pixels(pixbuf);
-  DELETEP(m_pPngBB);
-	  
-  if (pixels)
-  {
-	  m_pPngBB =  new UT_ByteBuf();
-	  GError    * error =NULL;
-	  gdk_pixbuf_save_to_callback(pixbuf,
-								  convCallback,
-								  reinterpret_cast<gpointer>(m_pPngBB),
-								  "png",
-								  &error,NULL,NULL);
-	  if(error != NULL)
-      {
-		  g_error_free (error);
-      }
-  }
-#endif
-  
-#if 1
-
 	int colorType = PNG_COLOR_TYPE_RGB;
 
 	if(gdk_pixbuf_get_has_alpha(pixbuf))
@@ -263,7 +208,6 @@ void IE_ImpGraphic_GdkPixbuf::_createPNGFromPixbuf(GdkPixbuf * pixbuf)
 
 	DELETEPV (pngScanline);		
 	png_write_end(m_pPNG, m_pPNGInfo);
-#endif
 }
 
 /*!
@@ -468,6 +412,95 @@ IE_ImpGraphicGdkPixbuf_Sniffer::~IE_ImpGraphicGdkPixbuf_Sniffer()
 {
 }
 
+/**** CODE STOLEN FROM gdk-pixbuf-io.c ****/
+
+static gint 
+format_check (GdkPixbufFormat *info, const guchar *buffer, int size)
+{
+	int i, j;
+	gchar m;
+	GdkPixbufModulePattern *pattern;
+	gboolean anchored;
+	guchar *prefix;
+	gchar *mask;
+
+	for (pattern = info->signature; pattern->prefix; pattern++) {
+		if (pattern->mask && pattern->mask[0] == '*') {
+			prefix = (guchar *)pattern->prefix + 1;
+			mask = (gchar *)pattern->mask + 1;
+			anchored = FALSE;
+		}
+		else {
+			prefix = (guchar *)pattern->prefix;
+			mask = (gchar *)pattern->mask;
+			anchored = TRUE;
+		}
+		for (i = 0; i < size; i++) {
+			for (j = 0; i + j < size && prefix[j] != 0; j++) {
+				m = mask ? mask[j] : ' ';
+				if (m == ' ') {
+					if (buffer[i + j] != prefix[j])
+						break;
+				}
+				else if (m == '!') {
+					if (buffer[i + j] == prefix[j])
+						break;
+				}
+				else if (m == 'z') {
+					if (buffer[i + j] != 0)
+						break;
+				}
+				else if (m == 'n') {
+					if (buffer[i + j] == 0)
+						break;
+				}
+			} 
+
+			if (prefix[j] == 0) 
+				return pattern->relevance;
+
+			if (anchored)
+				break;
+		}
+	}
+	return 0;
+}
+
+static bool
+_gdk_pixbuf_get_module (const guchar *buffer, guint size)
+{
+	GSList *formats, *format_ptr;
+
+	gint score, best = 0;
+	GdkPixbufFormat *selected = NULL;
+
+	format_ptr = gdk_pixbuf_get_formats ();
+	for (formats = format_ptr; formats; formats = g_slist_next (formats)) {
+		GdkPixbufFormat *info = (GdkPixbufFormat *)formats->data;
+
+#if 0
+		if (info->disabled)
+			continue;
+#endif
+
+		score = format_check (info, buffer, size);
+		if (score > best) {
+			best = score; 
+			selected = info;
+		}
+		if (score >= 100) 
+			break;
+	}
+
+	g_slist_free(format_ptr);
+	if (selected != NULL)
+		return true;
+
+	return false;
+}
+
+/**** END CODE STOLEN FROM gdk-pixbuf-io.c ****/
+
 /*!
  * Sniff the byte buffer to see if it contains vaild image data recognized
  * by gdk-pixbuf
@@ -485,31 +518,7 @@ UT_Confidence_t IE_ImpGraphicGdkPixbuf_Sniffer::recognizeContents(const char * s
 		return UT_CONFIDENCE_PERFECT;
 	}
 
-	GdkPixbufLoader * ldr = gdk_pixbuf_loader_new ();
-	UT_return_val_if_fail (ldr, UT_CONFIDENCE_ZILCH);
-
-	GError * err = NULL;
-	if ( FALSE == gdk_pixbuf_loader_write (ldr, reinterpret_cast<const guchar *>(szBuf),static_cast<gsize>(iNum), &err) )
-		{
-			UT_DEBUGMSG(("No pixbuf loader created \n"));
-			gdk_pixbuf_loader_close (ldr, NULL);
-			return UT_CONFIDENCE_ZILCH;
-		}
-
-	gdk_pixbuf_loader_close (ldr, NULL);
-	GdkPixbuf * pixbuf =  gdk_pixbuf_loader_get_pixbuf (ldr);
-
-	if(pixbuf)
-	{
-		// never need to ref the pixbuf
-		return UT_CONFIDENCE_PERFECT;
-	}
-	else
-	{
-		UT_DEBUGMSG(("No pixbuf created \n"));
-		// never need to ref the pixbuf
-		return UT_CONFIDENCE_ZILCH;
-	}
+	return _gdk_pixbuf_get_module((guchar *)szBuf, iNum);
 }
 
 UT_Confidence_t IE_ImpGraphicGdkPixbuf_Sniffer::recognizeSuffix(const char * szSuffix)

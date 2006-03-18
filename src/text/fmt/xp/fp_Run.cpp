@@ -270,6 +270,11 @@ PT_DocPosition fp_Run::posSelHigh(void) const
  */
 bool fp_Run::clearIfNeeded(void)
 {
+	// only do this on runs that have not been cleared already
+	// see bug 8154
+	if(m_bIsCleared)
+		return true;
+	
 	//	if((getTmpX() == getX()) && (getTmpWidth() == getWidth()) && (getTmpY() == getY()))
 	if((getTmpX() == getX()) && (getTmpY() == getY()) && (getTmpLine() == getLine()))
 	{
@@ -1432,6 +1437,20 @@ bool fp_Run::recalcWidth(void)
 	else
 		return _recalcWidth();
 }
+
+/*!
+    update ascent, decent and height
+*/
+void fp_Run::updateVerticalMetric()
+{
+	if(m_pFont)
+	{
+		_setAscent(getGraphics()->getFontAscent(m_pFont));
+		_setDescent(getGraphics()->getFontDescent(m_pFont));
+		_setHeight(getGraphics()->getFontHeight(m_pFont));
+	}
+}
+
 
 bool fp_Run::_recalcWidth(void)
 {
@@ -4712,6 +4731,9 @@ fp_FieldFootnoteRefRun::fp_FieldFootnoteRefRun(fl_BlockLayout* pBL, UT_uint32 iO
 
 	UT_ASSERT(bRes);
 	m_iPID = atol(footid);
+
+	// see bug 9793
+	_setDirection(pBL->getDominantDirection());
 }
 
 
@@ -4745,6 +4767,7 @@ bool fp_FieldFootnoteRefRun::calculateValue(void)
 	return _setValue(sz_ucs_FieldValue);
 }
 
+
 fp_FieldFootnoteAnchorRun::fp_FieldFootnoteAnchorRun(fl_BlockLayout* pBL, UT_uint32 iOffsetFirst, UT_uint32 iLen) : fp_FieldRun(pBL, iOffsetFirst, iLen)
 {
 	const PP_AttrProp * pp = getSpanAP();
@@ -4753,6 +4776,9 @@ fp_FieldFootnoteAnchorRun::fp_FieldFootnoteAnchorRun(fl_BlockLayout* pBL, UT_uin
 
 	UT_ASSERT(bRes);
 	m_iPID = atol(footid);
+
+	// see bug 9793
+	_setDirection(pBL->getDominantDirection());
 }
 
 // Appears in the FootnoteContainer, one per footnote.
@@ -4792,6 +4818,9 @@ fp_FieldEndnoteAnchorRun::fp_FieldEndnoteAnchorRun(fl_BlockLayout* pBL, UT_uint3
 
 	UT_ASSERT(bRes);
 	m_iPID = atoi(footid);
+
+	// see bug 9793
+	_setDirection(pBL->getDominantDirection());
 }
 
 // Appears in the EndnoteSection, one per endnote.
@@ -4832,6 +4861,9 @@ fp_FieldEndnoteRefRun::fp_FieldEndnoteRefRun(fl_BlockLayout* pBL,UT_uint32 iOffs
 
 	UT_ASSERT(bRes);
 	m_iPID = atoi(footid);
+
+	// see bug 9793
+	_setDirection(pBL->getDominantDirection());
 }
 
 // Appears in the EndnoteSection, one per endnote.
@@ -4862,6 +4894,7 @@ bool fp_FieldEndnoteRefRun::calculateValue(void)
 
 	return _setValue(sz_ucs_FieldValue);
 }
+
 
 fp_FieldTimeRun::fp_FieldTimeRun(fl_BlockLayout* pBL, UT_uint32 iOffsetFirst, UT_uint32 iLen) : fp_FieldRun(pBL, iOffsetFirst, iLen)
 {
@@ -5097,17 +5130,12 @@ bool fp_FieldPageReferenceRun::calculateValue(void)
 	}
 	else
 	{
-	  static XAP_App * pApp = XAP_App::getApp();
-		// did not find the bookmark, set the field to an error value
-		XAP_Frame * pFrame = static_cast<XAP_Frame *>(pView->getParentData());
-		UT_ASSERT((pFrame));
-
-		const XAP_StringSet * pSS = pFrame->getApp()->getStringSet();
+		const XAP_StringSet * pSS = XAP_App::getApp()->getStringSet();
 		UT_String Msg1;
-		pSS->getValue(AP_STRING_ID_FIELD_Error, pApp->getDefaultEncoding(), Msg1);
+		pSS->getValue(AP_STRING_ID_FIELD_Error, XAP_App::getApp()->getDefaultEncoding(), Msg1);
 
 		UT_String Msg2;
-		pSS->getValue(AP_STRING_ID_MSG_BookmarkNotFound, pApp->getDefaultEncoding(), Msg2);
+		pSS->getValue(AP_STRING_ID_MSG_BookmarkNotFound, XAP_App::getApp()->getDefaultEncoding(), Msg2);
 		UT_String format;
 
 		UT_String_sprintf(format, "{%s: %s}", Msg1.c_str(), Msg2.c_str());

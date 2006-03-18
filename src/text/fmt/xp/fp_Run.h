@@ -33,7 +33,6 @@
 #include "ut_misc.h"
 #include "pt_Types.h"
 #include "ut_assert.h"
-#include "gr_ContextGlyph.h"
 #include "ap_Strings.h"
 #include "fl_BlockLayout.h"
 #include "pp_Revision.h"
@@ -227,6 +226,7 @@ public:
 	bool			    canContainPoint(void) const;
 	bool		        recalcWidth(void);
 	virtual void        updateOnDelete(UT_uint32 offset, UT_uint32 iLen);
+	virtual void        updateVerticalMetric();
 
     virtual UT_Rect *   getScreenRect();
     virtual void        markDirtyOverlappingRuns(UT_Rect & recScreen);
@@ -924,6 +924,7 @@ public:
 	virtual void			_draw(dg_DrawArgs* pDA) { _defaultDraw(pDA); }
 	virtual UT_uint32		needsFrequentUpdates(){return FIELD_UPDATE_ENDNOTE;};
 	UT_uint32				getPID() const {return m_iPID;}
+
 private:
 	UT_uint32 m_iPID;
 };
@@ -941,6 +942,7 @@ public:
 	virtual void			_draw(dg_DrawArgs* pDA) { _defaultDraw(pDA); }
 	virtual UT_uint32		needsFrequentUpdates(){return FIELD_UPDATE_ENDNOTE;};
 	UT_uint32				getPID() const {return m_iPID;}
+
 private:
 	UT_uint32 m_iPID;
 };
@@ -957,6 +959,7 @@ public:
 	virtual void			_draw(dg_DrawArgs* pDA) { _defaultDraw(pDA); }
 	virtual UT_uint32		needsFrequentUpdates(){return FIELD_UPDATE_ENDNOTE;};
 	UT_uint32				getPID() const {return m_iPID;}
+
 private:
 	UT_uint32 m_iPID;
 };
@@ -973,6 +976,7 @@ public:
 	virtual void			_draw(dg_DrawArgs* pDA) { _defaultDraw(pDA); }
 	virtual UT_uint32		needsFrequentUpdates(){return FIELD_UPDATE_ENDNOTE;};
 	UT_uint32				getPID() const {return m_iPID;}
+
 private:
 	UT_uint32 m_iPID;
 };

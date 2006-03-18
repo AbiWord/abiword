@@ -28,7 +28,7 @@
 class ABI_EXPORT AP_Frame : public XAP_Frame
 {
  public:
-	AP_Frame(XAP_FrameImpl *pFrameImpl, XAP_App *pApp) : XAP_Frame(pFrameImpl, pApp) {}
+	AP_Frame(XAP_FrameImpl *pFrameImpl) : XAP_Frame(pFrameImpl) {}
 	AP_Frame(AP_Frame *pFrame) : XAP_Frame(static_cast<XAP_Frame *>(pFrame)) {}
 	virtual ~AP_Frame();
 

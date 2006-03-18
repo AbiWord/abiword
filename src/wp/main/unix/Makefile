@@ -26,10 +26,10 @@ CPPSRCS=		UnixMain.cpp
 
 INCLUDES=		$(GTK_CFLAGS)
 
-PROGRAM=		$(BINDIR)/AbiWord-2.4
+PROGRAM=		$(BINDIR)/AbiWord-2.6
 # For all I care, we can allow concurrent building of staticly and dynamically linked executables
 # I simply aim for consistency with auto*, until this is phased out entirely.
-PROGRAM_S=		$(BINDIR)/AbiWord-2.4
+PROGRAM_S=		$(BINDIR)/AbiWord-2.6
 # If both build successfully, one overrides the other.
 
 # TODO the Linux linker is fussy about the ordering of libraries.

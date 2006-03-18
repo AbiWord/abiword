@@ -118,14 +118,13 @@ BeginLayout(Main,0)
 #endif
 	EndSubMenu()
 
-#if !XP_SIMPLE_MENU
 	BeginSubMenu(AP_MENU_ID_VIEW)
 		MenuItem(AP_MENU_ID_VIEW_NORMAL)
 		MenuItem(AP_MENU_ID_VIEW_WEB)
-		MenuItem(AP_MENU_ID_VIEW_PRINT)
+	  MenuItem(AP_MENU_ID_VIEW_PRINT)
+#if !XP_SIMPLE_MENU        
 		MenuItem(AP_MENU_ID_WEB_WEBPREVIEW)
-		Separator()
-
+	  Separator()
 		BeginSubMenu(AP_MENU_ID_VIEW_TOOLBARS)
 			MenuItem(AP_MENU_ID_VIEW_TB_1)
 			MenuItem(AP_MENU_ID_VIEW_TB_2)
@@ -137,16 +136,21 @@ BeginLayout(Main,0)
 			MenuItem(AP_MENU_ID_VIEW_LOCK_TB_LAYOUT)
 			MenuItem(AP_MENU_ID_VIEW_DEFAULT_TB_LAYOUT)
 #endif
+
 		EndSubMenu()
 
 		MenuItem(AP_MENU_ID_VIEW_RULER)
 		MenuItem(AP_MENU_ID_VIEW_STATUSBAR)
 		Separator()
 		MenuItem(AP_MENU_ID_VIEW_LOCKSTYLES)
-		MenuItem(AP_MENU_ID_VIEW_SHOWPARA)
-		Separator()
-		MenuItem(AP_MENU_ID_VIEW_FULLSCREEN)
+#endif
+      
+    MenuItem(AP_MENU_ID_VIEW_SHOWPARA)
+	  Separator()
 
+#if !XP_SIMPLE_MENU
+		MenuItem(AP_MENU_ID_VIEW_FULLSCREEN)
+#endif  
 		BeginSubMenu(AP_MENU_ID_VIEW_ZOOM_MENU)
 			MenuItem(AP_MENU_ID_VIEW_ZOOM)
 			MenuItem(AP_MENU_ID_VIEW_ZOOM_WIDTH)
@@ -157,7 +161,6 @@ BeginLayout(Main,0)
 			MenuItem(AP_MENU_ID_VIEW_ZOOM_50)
 		EndSubMenu()
 	EndSubMenu()
-#endif /*  XP_SIMPLE_MENU */
 	
 	BeginSubMenu(AP_MENU_ID_INSERT)
 		MenuItem(AP_MENU_ID_INSERT_BREAK)
@@ -201,7 +204,7 @@ BeginLayout(Main,0)
 		MenuItem(AP_MENU_ID_FMT_PARAGRAPH)
 		MenuItem(AP_MENU_ID_FMT_BULLETS)
 		MenuItem(AP_MENU_ID_FMT_FRAME)
-        MenuItem(AP_MENU_ID_FMT_IMAGE)
+    MenuItem(AP_MENU_ID_FMT_IMAGE)
 #if 0 // someone code and turn this back on
 		MenuItem(AP_MENU_ID_FMT_BORDERS)
 #endif
@@ -241,29 +244,17 @@ BeginLayout(Main,0)
 			MenuItem(AP_MENU_ID_FMT_BACKGROUND_PAGE_COLOR)
 		EndSubMenu()
 
-	    BeginSubMenu(AP_MENU_ID_FMT_DIRECTION)
-			MenuItem(AP_MENU_ID_FMT_DIRECTION_DD_RTL)
-        	MenuItem(AP_MENU_ID_FMT_DIRECTION_DO_LTR)
-        	MenuItem(AP_MENU_ID_FMT_DIRECTION_DO_RTL)
-    	EndSubMenu()
-
-#if XP_SIMPLE_MENU
-	BeginSubMenu(AP_MENU_ID_VIEW_ZOOM_MENU)
-		MenuItem(AP_MENU_ID_VIEW_ZOOM)
-		MenuItem(AP_MENU_ID_VIEW_ZOOM_WIDTH)
-		MenuItem(AP_MENU_ID_VIEW_ZOOM_WHOLE)
-		MenuItem(AP_MENU_ID_VIEW_ZOOM_200)
-		MenuItem(AP_MENU_ID_VIEW_ZOOM_100)
-		MenuItem(AP_MENU_ID_VIEW_ZOOM_75)
-		MenuItem(AP_MENU_ID_VIEW_ZOOM_50)
-	EndSubMenu()
-#else	
-
+    BeginSubMenu(AP_MENU_ID_FMT_DIRECTION)
+      MenuItem(AP_MENU_ID_FMT_DIRECTION_DOCD_RTL)
+      MenuItem(AP_MENU_ID_FMT_DIRECTION_SD_RTL)
+      MenuItem(AP_MENU_ID_FMT_DIRECTION_DD_RTL)
+      MenuItem(AP_MENU_ID_FMT_DIRECTION_DO_LTR)
+      MenuItem(AP_MENU_ID_FMT_DIRECTION_DO_RTL)
+    EndSubMenu()
+        
+#if !XP_SIMPLE_MENU        
 		Separator()
-
 		MenuItem(AP_MENU_ID_FMT_STYLE_DEFINE)
-	
-
 #endif
 	
 	EndSubMenu()

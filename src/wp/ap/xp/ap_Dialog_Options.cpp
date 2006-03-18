@@ -114,13 +114,13 @@ void AP_Dialog_Options::_storeWindowData(void)
 	Save_Pref_Bool( pPrefsScheme, AP_PREF_KEY_AutoGrammarCheck, _gatherGrammarCheck() );
 	Save_Pref_Bool( pPrefsScheme, AP_PREF_KEY_SpellCheckCaps, _gatherSpellUppercase() );
 	Save_Pref_Bool( pPrefsScheme, AP_PREF_KEY_SpellCheckNumbers, _gatherSpellNumbers() );
+#ifndef HAVE_HILDON
 	Save_Pref_Bool(pPrefsScheme, AP_PREF_KEY_ShowSplash,_gatherShowSplash());
-	Save_Pref_Bool( pPrefsScheme, XAP_PREF_KEY_SmartQuotesEnable, _gatherSmartQuotesEnable() );
-
+#endif
 	Save_Pref_Bool( pPrefsScheme, AP_PREF_KEY_CursorBlink, _gatherViewCursorBlink() );
 	
-// Not implemented for UNIX. No need for it.
-#if !defined(XP_UNIX_TARGET_GTK) && !defined(XP_TARGET_COCOA)
+// Not implemented for UNIX or Win32. No need for it.
+#if !defined(XP_UNIX_TARGET_GTK) && !defined(XP_TARGET_COCOA) && !defined (WIN32) 
 	Save_Pref_Bool( pPrefsScheme, AP_PREF_KEY_RulerVisible, _gatherViewShowRuler() );
 	UT_uint32 i;
 	for (i = 0; i < m_pApp->getToolbarFactory()->countToolbars(); i++) {
@@ -137,7 +137,6 @@ void AP_Dialog_Options::_storeWindowData(void)
 #endif
 	Save_Pref_Bool( pPrefsScheme, XAP_PREF_KEY_AutoLoadPlugins, _gatherAutoLoadPlugins() );
 	Save_Pref_Bool( pPrefsScheme, AP_PREF_KEY_DefaultDirectionRtl, _gatherOtherDirectionRtl() );
-	Save_Pref_Bool( pPrefsScheme, XAP_PREF_KEY_UseHebrewContextGlyphs, _gatherOtherHebrewContextGlyphs() );
 	Save_Pref_Bool( pPrefsScheme, XAP_PREF_KEY_ChangeLanguageWithKeyboard, _gatherLanguageWithKeyboard() );
 	Save_Pref_Bool( pPrefsScheme, XAP_PREF_KEY_DirMarkerAfterClosingParenthesis, _gatherDirMarkerAfterClosingParenthesis());
 	
@@ -167,7 +166,7 @@ void AP_Dialog_Options::_storeWindowData(void)
 	// If we changed whether the ruler is to be visible
 	// or hidden, then update the current window:
 	// (If we didn't change anything, leave it alone)
-#if !defined(XP_UNIX_TARGET_GTK) && !defined(XP_TARGET_COCOA)
+#if !defined(XP_UNIX_TARGET_GTK) && !defined(XP_TARGET_COCOA) && !defined (WIN32) 
 	if ( _gatherViewShowRuler() != pFrameData->m_bShowRuler )
 	{
 		pFrameData->m_bShowRuler = _gatherViewShowRuler() ;
@@ -212,14 +211,14 @@ void AP_Dialog_Options::_storeWindowData(void)
 	}
 
 
-	if ( _gatherAllowCustomToolbars() != m_pFrame->getApp()->areToolbarsCustomizable() )
+	if ( _gatherAllowCustomToolbars() != XAP_App::getApp()->areToolbarsCustomizable() )
 	{
-		m_pFrame->getApp()->setToolbarsCustomizable(_gatherAllowCustomToolbars());
+		XAP_App::getApp()->setToolbarsCustomizable(_gatherAllowCustomToolbars());
 	}
 #if defined(XP_UNIX_TARGET_GTK)
-	if ( _gatherEnableSmoothScrolling() != m_pFrame->getApp()->isSmoothScrollingEnabled() )
+	if ( _gatherEnableSmoothScrolling() != XAP_App::getApp()->isSmoothScrollingEnabled() )
 	{
-		m_pFrame->getApp()->setEnableSmoothScrolling(_gatherEnableSmoothScrolling());
+		XAP_App::getApp()->setEnableSmoothScrolling(_gatherEnableSmoothScrolling());
 	}
 #endif
 	// - - - - - - - - - - - - - - - - - - - - - - - - - - - - - -
@@ -294,19 +293,9 @@ void AP_Dialog_Options::_storeDataForControl (tControl id)
 					_gatherSpellNumbers());
 			break;
 
-		case id_CHECK_SMART_QUOTES_ENABLE:
-			Save_Pref_Bool (pPrefsScheme, XAP_PREF_KEY_SmartQuotesEnable,
-					_gatherSmartQuotesEnable());
-			break;
-
 		case id_CHECK_OTHER_DEFAULT_DIRECTION_RTL:
 			Save_Pref_Bool (pPrefsScheme, AP_PREF_KEY_DefaultDirectionRtl,
 					_gatherOtherDirectionRtl());
-			break;
-
-		case id_CHECK_OTHER_HEBREW_CONTEXT_GLYPHS:
-			Save_Pref_Bool (pPrefsScheme, XAP_PREF_KEY_UseHebrewContextGlyphs,
-					_gatherOtherHebrewContextGlyphs() );
 			break;
 
 		case id_CHECK_AUTO_SAVE_FILE:
@@ -327,7 +316,7 @@ void AP_Dialog_Options::_storeDataForControl (tControl id)
 			break;
 
 		case id_CHECK_VIEW_SHOW_RULER:
-#if !defined(XP_UNIX_TARGET_GTK) && !defined(XP_TARGET_COCOA)
+#if !defined(XP_UNIX_TARGET_GTK) && !defined(XP_TARGET_COCOA) && !defined (WIN32) 
 			{
 				bool tmpbool = _gatherViewShowRuler();
 				Save_Pref_Bool (pPrefsScheme, AP_PREF_KEY_RulerVisible, tmpbool);
@@ -351,7 +340,7 @@ void AP_Dialog_Options::_storeDataForControl (tControl id)
 					_gatherViewCursorBlink());
 
 		case id_CHECK_VIEW_SHOW_STATUS_BAR:
-#if !defined(XP_UNIX_TARGET_GTK) && !defined(XP_TARGET_COCOA)
+#if !defined(XP_UNIX_TARGET_GTK) && !defined(XP_TARGET_COCOA) && !defined (WIN32) 
 			{
 				bool tmpbool = _gatherViewShowStatusBar();
 				Save_Pref_Bool (pPrefsScheme, AP_PREF_KEY_StatusBarVisible, tmpbool);
@@ -373,12 +362,12 @@ void AP_Dialog_Options::_storeDataForControl (tControl id)
 		case id_CHECK_VIEW_UNPRINTABLE:
 			Save_Pref_Bool (pPrefsScheme, AP_PREF_KEY_ParaVisible,
 					_gatherViewUnprintable());
-
+#ifndef HAVE_HILDON
 		case id_SHOWSPLASH:
 			Save_Pref_Bool (pPrefsScheme, AP_PREF_KEY_ShowSplash,
 					_gatherShowSplash());
 			break;
-
+#endif
 		case id_CHECK_ALLOW_CUSTOM_TOOLBARS:
 			Save_Pref_Bool (pPrefsScheme, XAP_PREF_KEY_AllowCustomToolbars,
 					_gatherAllowCustomToolbars());
@@ -491,23 +480,19 @@ void AP_Dialog_Options::_populateWindowData(void)
 	if (pPrefs->getPrefsValueBool((XML_Char*)AP_PREF_KEY_AutoGrammarCheck,&b))
 		_setGrammarCheck (b);
 
-	// ------------ Smart Quotes
-	if (pPrefs->getPrefsValueBool((XML_Char*)XAP_PREF_KEY_SmartQuotesEnable,&b))
-		_setSmartQuotesEnable (b);
-
 	// ------------ Prefs
 	_setPrefsAutoSave( pPrefs->getAutoSavePrefs() );
-
+#ifndef HAVE_HILDON
 	//-------------ShowSplash
 	if (pPrefs->getPrefsValueBool((XML_Char*)AP_PREF_KEY_ShowSplash,&b))
 		_setShowSplash (b);
-
+#endif
 	// ------------ View
 	if (pPrefs->getPrefsValue((XML_Char*)AP_PREF_KEY_RulerUnits,&pszBuffer))
 		_setViewRulerUnits (UT_determineDimension(pszBuffer));
 
 
-#if !defined(XP_UNIX_TARGET_GTK) && !defined(XP_TARGET_COCOA)
+#if !defined(XP_UNIX_TARGET_GTK) && !defined(XP_TARGET_COCOA) && !defined (WIN32) 
 	if (pPrefs->getPrefsValueBool((XML_Char*)AP_PREF_KEY_RulerVisible,&b))
 		_setViewShowRuler (b);
 	UT_uint32 i;
@@ -569,8 +554,6 @@ void AP_Dialog_Options::_populateWindowData(void)
 	//------------- other
 	if (pPrefs->getPrefsValueBool(AP_PREF_KEY_DefaultDirectionRtl,&b))
 		_setOtherDirectionRtl (b);
-	if (pPrefs->getPrefsValueBool(XAP_PREF_KEY_UseHebrewContextGlyphs,&b))
-		_setOtherHebrewContextGlyphs (b);
 
 	if (pPrefs->getPrefsValueBool(XAP_PREF_KEY_ChangeLanguageWithKeyboard,&b))
 		_setLanguageWithKeyboard (b);
@@ -737,8 +720,6 @@ AP_PreferenceScheme::AP_PreferenceScheme(AP_PreferenceSchemeManager * pSchemeMan
 		m_BOData[bo_DirectionRTL	].m_original = bValue;
 	if (m_pPrefsScheme->getValueBool(XAP_PREF_KEY_SaveContextGlyphs,					&bValue))
 		m_BOData[bo_GlyphSaveVisual	].m_original = bValue;
-	if (m_pPrefsScheme->getValueBool(XAP_PREF_KEY_UseHebrewContextGlyphs,				&bValue))
-		m_BOData[bo_GlyphShaping	].m_original = bValue;
 
 	// NOT (YET?) IMPLEMENTED: if (m_pPrefsScheme->getValueBool("",&bValue)) m_BOData[bo_HighlightMisspelled].m_original = bValue;
 
@@ -762,8 +743,6 @@ AP_PreferenceScheme::AP_PreferenceScheme(AP_PreferenceSchemeManager * pSchemeMan
 
 	// TODO: if (m_pPrefsScheme->getValueBool("",&bValue)) m_BOData[bo_ScreenColor			].m_original = bValue;
 
-	if (m_pPrefsScheme->getValueBool(XAP_PREF_KEY_SmartQuotesEnable,					&bValue))
-		m_BOData[bo_SmartQuotes		].m_original = bValue;
 	if (m_pPrefsScheme->getValueBool( AP_PREF_KEY_ShowSplash,							&bValue))
 		m_BOData[bo_Splash			].m_original = bValue;
 	if (m_pPrefsScheme->getValueBool( AP_PREF_KEY_StatusBarVisible,						&bValue))
@@ -973,10 +952,6 @@ void AP_PreferenceScheme::saveChanges()
 	if (m_BOData[bo].m_current != m_BOData[bo].m_original)
 		m_pPrefsScheme->setValueBool(XAP_PREF_KEY_SaveContextGlyphs,				 m_BOData[bo].m_current);
 
-	bo = bo_GlyphShaping;
-	if (m_BOData[bo].m_current != m_BOData[bo].m_original)
-		m_pPrefsScheme->setValueBool(XAP_PREF_KEY_UseHebrewContextGlyphs,			 m_BOData[bo].m_current);
-
 	// NOT (YET?) IMPLEMENTED: m_pPrefsScheme->setValueBool("", m_BOData[bo_HighlightMisspelled	].m_current);
 
 	bo = bo_IgnoreNumbered;
@@ -1008,10 +983,6 @@ void AP_PreferenceScheme::saveChanges()
 	// NOT (YET?) IMPLEMENTED: m_pPrefsScheme->setValueBool("", m_BOData[bo_SaveScheme			].m_current);
 
 	// TODO: m_pPrefsScheme->setValueBool("", m_BOData[bo_ScreenColor				].m_current);
-
-	bo = bo_SmartQuotes;
-	if (m_BOData[bo].m_current != m_BOData[bo].m_original)
-		m_pPrefsScheme->setValueBool(XAP_PREF_KEY_SmartQuotesEnable,				 m_BOData[bo].m_current);
 
 	bo = bo_Splash;
 	if (m_BOData[bo].m_current != m_BOData[bo].m_original)
@@ -1192,7 +1163,6 @@ void AP_PreferenceScheme::lookupDefaultOptionValues()
 	pScheme->getValueBool(XAP_PREF_KEY_DirMarkerAfterClosingParenthesis,	&(m_BOData[bo_DirectionMarkers	].m_default));
 	pScheme->getValueBool( AP_PREF_KEY_DefaultDirectionRtl,					&(m_BOData[bo_DirectionRTL		].m_default));
 	pScheme->getValueBool(XAP_PREF_KEY_SaveContextGlyphs,					&(m_BOData[bo_GlyphSaveVisual	].m_default));
-	pScheme->getValueBool(XAP_PREF_KEY_UseHebrewContextGlyphs,				&(m_BOData[bo_GlyphShaping		].m_default));
 	// NOT (YET?) IMPLEMENTED: pScheme->getValueBool("",&(m_BOData[bo_HighlightMisspelled	].m_default));
 	pScheme->getValueBool( AP_PREF_KEY_SpellCheckNumbers,					&(m_BOData[bo_IgnoreNumbered	].m_default)); // TODO: Is this reversed?
 	pScheme->getValueBool( AP_PREF_KEY_SpellCheckCaps,						&(m_BOData[bo_IgnoreUppercase	].m_default)); // TODO: Is this reversed?
@@ -1203,7 +1173,6 @@ void AP_PreferenceScheme::lookupDefaultOptionValues()
 	pScheme->getValueBool( AP_PREF_KEY_RulerVisible,						&(m_BOData[bo_Ruler				].m_default));
 	// NOT (YET?) IMPLEMENTED: pScheme->getValueBool("",&(m_BOData[bo_SaveScheme			].m_default));
 	// TODO: pScheme->getValueBool("",&(m_BOData[bo_ScreenColor			].m_default));
-	pScheme->getValueBool(XAP_PREF_KEY_SmartQuotesEnable,					&(m_BOData[bo_SmartQuotes		].m_default));
 	pScheme->getValueBool( AP_PREF_KEY_ShowSplash,							&(m_BOData[bo_Splash			].m_default));
 	pScheme->getValueBool( AP_PREF_KEY_StatusBarVisible,					&(m_BOData[bo_StatusBar			].m_default));
 	// NOT (YET?) IMPLEMENTED: pScheme->getValueBool("",&(m_BOData[bo_SuggestCorrections	].m_default));

@@ -63,6 +63,7 @@ public:
 
 	void		swap(UT_Stringbuf& rhs);
 	void		clear();
+	void        reserve(size_t n);
 
 	bool				empty()		const { return m_psz == m_pEnd; }
 	size_t				size()		const { return m_pEnd - m_psz; }
@@ -124,6 +125,7 @@ public:
 	UT_UTF8Stringbuf * lowerCase ();
 	
 	void		clear ();
+	void        reserve(size_t n);
 
 	bool		empty ()	const { return m_psz == m_pEnd; }
 	size_t		byteLength ()	const { return m_pEnd - m_psz; }
@@ -214,6 +216,7 @@ public:
 
 	void		swap(UT_UCS4Stringbuf& rhs);
 	void		clear();
+	void        reserve(size_t n);
 
 	bool				empty()		const { return m_psz == m_pEnd; }
 	size_t				size()		const { return m_pEnd - m_psz; }

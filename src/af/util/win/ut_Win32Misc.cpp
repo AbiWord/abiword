@@ -415,7 +415,7 @@ bool UT_getEthernetAddress(UT_EthernetAddress &A)
 */
 class UT_Win32AssertDlg
 {
-	friend int UT_Win32ThrowAssert(const char *, const char *, int, int);
+	friend int ABI_EXPORT UT_Win32ThrowAssert(const char *, const char *, int, int);
 	
   private:
 	UT_Win32AssertDlg(const char * pCond, const char * pFile, int iLine, int iCount)
@@ -454,7 +454,7 @@ class UT_Win32AssertDlg
               > 0  ignore this time
               < 0  ignore always
 */
-int UT_Win32ThrowAssert(const char * pCond, const char * pFile, int iLine, int iCount)
+int ABI_EXPORT UT_Win32ThrowAssert(const char * pCond, const char * pFile, int iLine, int iCount)
 {
 	UT_Win32AssertDlg dlg(pCond, pFile, iLine, iCount);
 	UT_Win32AssertDlg::answer a = dlg.runModal();

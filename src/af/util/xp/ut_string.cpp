@@ -151,7 +151,7 @@ char * UT_strdup(const char * szSource)
   UT_return_val_if_fail(szSource, NULL);
 
 	int len = strlen(szSource)+1;
-	if(char * ret = static_cast<char *>(UT_calloc(len, sizeof(char))))
+	if(char * ret = static_cast<char *>(malloc(len * sizeof(char))))
 		return(static_cast<char *>(memcpy(ret, szSource, len)));
 	else
 		return(NULL);
@@ -246,6 +246,25 @@ bool UT_replaceString(char *& rszDest, const char * szSource)
 	return UT_cloneString(rszDest,szSource);
 }
 
+// determine the length of a fixed-size string
+size_t UT_strnlen(const char *s, size_t maxlen)
+{
+#ifdef HAVE_STRNLEN
+  return strnlen(s, maxlen);
+#else
+  size_t i;
+  const char *p;
+
+  if(!s)
+    return 0;
+
+  for(i = 0, p = s; (*p) && (i < maxlen); i++, p++)
+    ;
+
+  return i;
+#endif
+}
+
 // convert each character in a string to ASCII uppercase
 char * UT_upperString(char * string)
 {
@@ -283,11 +302,17 @@ UT_uint32 UT_XML_strlen(const XML_Char * sz)
 	if (!sz || !*sz)
 		return 0;
 
+#if 0
+	// this is waste of time, and we assume sizeof(XML_Char) == sizeof(char)
 	UT_uint32 k = 0;
 	while (sz[k])
 		k++;
 
 	return k;
+#else
+	UT_ASSERT_HARMLESS( sizeof(XML_Char) == sizeof(char) );
+	return strlen(sz);
+#endif
 }
 
 // Is this function implemented somewhere else?
@@ -522,14 +547,17 @@ bool UT_validXML(char * pString)
 	int bytesExpectedInSequence = 0;
 
 	UT_String s;
+	s.reserve(len);
+
 	for (UT_uint32 k=0; k<len; k++)
 	{
 		if (p[k] < 0x80)						// plain us-ascii part of latin-1
 		{
 			if(bytesInSequence != 0)
 				bChanged = true;
-			
-			if(p[k] < ' ' && p[k] >= 0 && p[k] != '\t' && p[k] != '\n' && p[k] != '\r')
+
+			// UT_Byte is unsigned char, hence p[k] always >= 0
+			if(p[k] < ' ' /*&& p[k] >= 0*/ && p[k] != '\t' && p[k] != '\n' && p[k] != '\r')
 			{
 				bChanged = true;
 			}
@@ -581,7 +609,9 @@ bool UT_validXML(char * pString)
 	}
 
 	strncpy(pString, s.c_str(), s.length());
-	
+
+	// make sure we null-terminate
+	pString[s.length()] = 0;
 	return bChanged;
 }
 

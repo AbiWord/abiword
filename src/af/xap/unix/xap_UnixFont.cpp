@@ -44,7 +44,9 @@
 float fontPoints2float(UT_uint32 iSize, FT_Face pFace,
 				     UT_uint32 iFontPoints)
 {
-	return iFontPoints * iSize * 1.0 / pFace->units_per_EM;
+        if(pFace == NULL)
+	  return 0.0;
+	return (UT_sint32)iFontPoints * (UT_sint32)iSize * 1.0 / pFace->units_per_EM;
 }
 
 /* Xft face locker impl. */
@@ -83,11 +85,13 @@ XftFaceLocker & XftFaceLocker::operator=(const XftFaceLocker & other)
 
 XAP_UnixFontHandle::XAP_UnixFontHandle():m_font(NULL), m_size(0)
 {
+	m_eType = GR_FONT_UNIX;
 }
 
 XAP_UnixFontHandle::XAP_UnixFontHandle(XAP_UnixFont * font, UT_uint32 size):m_font(font),
 																			m_size (size)
 {
+	m_eType = GR_FONT_UNIX;
 	m_hashKey = m_font->getName();
 }
 
@@ -106,6 +110,8 @@ UT_sint32 XAP_UnixFontHandle::measureUnremappedCharForCache(UT_UCSChar cChar) co
 	UT_sint32 width;
 	XftFaceLocker locker(m_font->getLayoutXftFont(GR_CharWidthsCache::CACHE_FONT_SIZE));
 	FT_Face pFace = locker.getFace();
+	if(pFace == NULL)
+	  return 0;
 	if(m_font->isDingbat())
 	{
 		FT_Select_Charmap(pFace,FT_ENCODING_ADOBE_CUSTOM);
@@ -154,25 +160,38 @@ bool XAP_UnixFontHandle::doesGlyphExist(UT_UCS4Char g)
 //
 bool  XAP_UnixFontHandle::glyphBox(UT_UCS4Char g, UT_Rect & rec, GR_Graphics * pG) 
 {
+	UT_return_val_if_fail( pG, false );
+	
 	XftFaceLocker locker(m_font->getLayoutXftFont(GR_CharWidthsCache::CACHE_FONT_SIZE));
+
 	FT_Face pFace = locker.getFace();
 
 	UT_UCS4Char cChar = g;
-	if(m_font->isSymbol()) cChar = static_cast<UT_UCS4Char>(adobeToUnicode(g));
+	
+	if(m_font->isSymbol())
+		cChar = static_cast<UT_UCS4Char>(adobeToUnicode(g));
+	
 	FT_UInt glyph_index = FT_Get_Char_Index(pFace, cChar);
-	FT_Error error =
-		FT_Load_Glyph(pFace, glyph_index,
-					FT_LOAD_LINEAR_DESIGN |
-					FT_LOAD_IGNORE_TRANSFORM |
-					FT_LOAD_NO_BITMAP | FT_LOAD_NO_SCALE);
-	if (error) {
+
+	FT_Error error = FT_Load_Glyph(pFace, glyph_index,
+								   FT_LOAD_LINEAR_DESIGN |
+								   FT_LOAD_IGNORE_TRANSFORM |
+								   FT_LOAD_NO_BITMAP |
+								   FT_LOAD_NO_SCALE);
+	if (error)
+	{
 		return false;
 	}
-	rec.left = pFace->glyph->metrics.horiBearingX;
-	rec.width = pFace->glyph->metrics.width;
-	rec.top = pFace->glyph->metrics.horiBearingY;
-	rec.height = pFace->glyph->metrics.height;
-	xxx_UT_DEBUGMSG((" left %d width %d top %d height %d \n",rec.left,rec.width,rec.top,rec.height));
+
+	UT_uint32 iSize = m_size * pG->getResolution() / pG->getDeviceResolution();
+	
+	rec.left   = static_cast<UT_sint32>(fontPoints2float(iSize, pFace, pFace->glyph->metrics.horiBearingX));
+	rec.width  = static_cast<UT_sint32>(fontPoints2float(iSize, pFace, pFace->glyph->metrics.width));
+	rec.top    = static_cast<UT_sint32>(fontPoints2float(iSize, pFace, pFace->glyph->metrics.horiBearingY));
+	rec.height = static_cast<UT_sint32>(fontPoints2float(iSize, pFace, pFace->glyph->metrics.height));
+	
+	UT_DEBUGMSG(("GlyphBox: left %d width %d top %d height %d \n",rec.left,rec.width,rec.top,rec.height));
+
 	return true;
 }
 /*******************************************************************/
@@ -610,6 +629,7 @@ bool XAP_UnixFont::_createTtfSupportFiles()
 
 bool XAP_UnixFont::embedInto(ps_Generate & ps)
 {
+#ifndef WITHOUT_PRINTING
 	if (openPFA())
 	  {
 		  signed char ch = 0;
@@ -630,7 +650,9 @@ bool XAP_UnixFont::embedInto(ps_Generate & ps)
 		  // TODO: Check for errors, and return false on error
 		  create_type42(m_fontfile, ps.getFileHandle());
 	  }
-
+#else
+	UT_ASSERT_HARMLESS( UT_SHOULD_NOT_HAPPEN );
+#endif
 	return true;
 }
 
@@ -789,7 +811,7 @@ XftFont *XAP_UnixFont::getLayoutXftFont(UT_uint32 pixelsize) const
 // returns different fonts depending on the zoom percentage
 XftFont *XAP_UnixFont::getDeviceXftFont(UT_uint32 pixelsize, UT_uint32 zoomPercentage) const
 {
-#define extra_font_size 1.5
+#define extra_font_size 0.5 // was 1.5
 	XftFont *pXftFont = getFontFromCache(static_cast<UT_sint32>(extra_font_size + static_cast<double>(pixelsize*zoomPercentage)/static_cast<double>(100.)) , false, zoomPercentage);
 	if (pXftFont)
 		return pXftFont;
@@ -848,7 +870,10 @@ void XAP_UnixFont::fetchXftFont(UT_uint32 pixelsize) const
 
 	// That means that we should should be 100% sure that,
 	// at this point, the font exists in the system
-	UT_ASSERT(pXftFont);
+	if(pXftFont == NULL)
+        {
+	  return;
+	}
 	
 	insertFontInCache(pixelsize, pXftFont);
 }
@@ -931,6 +956,8 @@ float XAP_UnixFont::getAscender(UT_uint32 iSize) const
 	// in fact, we don't care about the pixelsize of the font, as we're going to use font units here
 	XftFaceLocker locker(getLayoutXftFont(12));
 	FT_Face pFace = locker.getFace();
+	if(pFace == NULL)
+	  return 0.0;
 	FT_Short ascender = pFace->ascender;
 	float fAscender = fontPoints2float(iSize, pFace, ascender);
 	xxx_UT_DEBUGMSG(("XAP_UnixFont::getAscender(%u) -> %f\n", iSize,
@@ -944,6 +971,8 @@ float XAP_UnixFont::getDescender(UT_uint32 iSize) const
 	// in fact, we don't care about the pixelsize of the font, as we're going to use font units here
 	XftFaceLocker locker(getLayoutXftFont(12));
 	FT_Face pFace = locker.getFace();
+	if(pFace == NULL)
+	  return 0.0;
 	FT_Short descender = -pFace->descender;
 	float fDescender = fontPoints2float(iSize, pFace, descender);
 	xxx_UT_DEBUGMSG(("XAP_UnixFont::getDescender(%u) -> %f\n", iSize,

@@ -42,9 +42,9 @@ class ABI_EXPORT PX_ChangeRecord_FmtMark : public PX_ChangeRecord
 {
 public:
 	PX_ChangeRecord_FmtMark(PXType type,
-							PT_DocPosition position,
-							PT_AttrPropIndex indexAP,
-							PT_BlockOffset blockOffset);
+				PT_DocPosition position,
+				PT_AttrPropIndex indexAP,
+				PT_BlockOffset blockOffset);
 	~PX_ChangeRecord_FmtMark();
 
 	virtual PX_ChangeRecord * reverse(void) const;

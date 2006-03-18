@@ -23,9 +23,9 @@
 body {
 	text-indent:0in;
 	text-align:left;
-	font-weight:normal;
-	text-decoration:none;
 	font-variant:normal;
+	text-decoration:none;
+	font-weight:normal;
 	color:#000000;
 	font-size:12pt;
 	font-style:normal;
@@ -236,6 +236,11 @@ h3 {
    <p dir="ltr" style="text-align:left;margin-bottom:0.0000in;margin-top:0.0000in;margin-right:0.0000in"></p>
    <p dir="ltr" style="text-align:left;margin-bottom:0.0000in;margin-top:0.0000in;margin-right:0.0000in"><span xml:lang="en-GB" lang="en-GB">You will need the "zlib" library to build AbiWord. &nbsp;The zlib "compiled DLL" version can be found at </span><a href="http://www.gzip.org/zlib/"><span xml:lang="en-GB" lang="en-GB">http://www.gzip.org/zlib/</span></a><span xml:lang="en-GB" lang="en-GB">. &nbsp;</span><span xml:lang="en-US" lang="en-US">Extract the complete archive (i.e. headers, library files, and the compiled dll) to a peer directory named 'libs\zlib\'.</span></p>
    <p dir="ltr" style="text-align:left;margin-bottom:0.0000in;margin-top:0.0000in;margin-right:0.0000in"></p>
+   <br>
+   <p dir="ltr" style="text-align:left;margin-bottom:0.0000in;margin-top:0.0000in;margin-right:0.0000in">Note: As of the time of writing (Oct 2005), if you are using the Microsoft Visual C++ project&nbsp;files, you need to follow a slightly different procedure than that described above. Instead of&nbsp;obtaining zlib from&nbsp;http://www.gzip.org you need to check out the module "zlib" from CVS&nbsp;along with the modules listed above.&nbsp;You also need to check out the "psiconv" modules.</p>
+   <br>
+   <p dir="ltr" style="text-align:left;margin-bottom:0.0000in;margin-top:0.0000in;margin-right:0.0000in">WARNING: The version of zlib on the CVS server is not as up&nbsp;to&nbsp;date as the version provided by&nbsp;www.gzip.org.&nbsp;As such, it almost certainly contains security vulnerabilities.</p>
+   <br>
    <p dir="ltr" style="text-align:left;margin-bottom:0.0000in;margin-top:0.0000in;margin-right:0.0000in"><span xml:lang="en-GB" lang="en-GB">To build the distribution installer of AbiWord, you will need the latest version of NSIS 2, as well as the md5dll and untgz plugins. &nbsp;These packages can be found at </span><a href="http://nsis.sourceforge.net/"><span xml:lang="en-GB" lang="en-GB">http://nsis.sourceforge.net/</span></a><span xml:lang="en-US" lang="en-US">. &nbsp;Additionally, the command make canonical can be used to build a directory structure useful for testing spellchecking and alternate languages. </span><span xml:lang="en-GB" lang="en-GB">Install them according to the instructions. &nbsp;If you do not install NSIS to C:\Program Files\NSIS, you will need to </span><span xml:lang="en-US" lang="en-US">add makensis.exe to your PATH variable.</span></p>
    <p></p>
    <h3 id="__AbiTOC21__">1.<span xml:lang="en-US" lang="en-US">&nbsp;</span>Diving make using MSYS and MINGW</h3>
@@ -313,7 +318,7 @@ h3 {
    <p dir="ltr" style="text-align:left"></p>
    <p dir="ltr" style="text-align:left"><span xml:lang="en-US" lang="en-US">1. Prerequisites:</span></p>
    <ul>
-    <li dir="ltr" style="text-align:left"><span xml:lang="en-US" lang="en-US">&nbsp;</span><span xml:lang="en-US" lang="en-US"> &nbsp;&nbsp;pkgconfig, libiconv, gettext</span><span xml:lang="en-US" lang="en-US"> a</span><span xml:lang="en-US" lang="en-US">nd</span><span xml:lang="en-US" lang="en-US"> glib</span>    </li>
+    <li dir="ltr" style="text-align:left"><span xml:lang="en-US" lang="en-US">&nbsp;</span><span xml:lang="en-US" lang="en-US"> &nbsp;&nbsp;pkgconfig, libiconv, gettext and glib</span>    </li>
    </ul>
    <p dir="ltr" style="text-align:left;margin-left:0pt;text-indent:0in"></p>
    <p dir="ltr" style="text-align:left"><span xml:lang="en-US" lang="en-US"> &nbsp;&nbsp;&nbsp;&nbsp;Download and install the binaries and developer files from</span></p>
@@ -337,7 +342,7 @@ h3 {
     <li><span xml:lang="en-GB" lang="en-GB">&nbsp;</span>fribidi (download the source tarball from <a href="http://fribidi.org/">http://fribidi.org/</a>)    </li>
    </ul>
    <p style="margin-left:0pt"></p>
-   <p dir="ltr" style="text-align:left"><span xml:lang="en-US" lang="en-US">&nbsp;</span>NOTE: You'll need to patch the fribidi sources first if you are using<span xml:lang="en-US" lang="en-US"> v</span>ersion 0.10.4 or<span xml:lang="en-US" lang="en-US">&nbsp;</span>0.10.5. <span xml:lang="en-US" lang="en-US">T</span>o do this, open the file fribidi_benchmark.c, and simply remove the line <span xml:lang="en-US" lang="en-US">&nbsp;</span>"#include<span xml:lang="en-US" lang="en-US">&nbsp;</span>&lt;sys/times.h&gt;", around line 31.<span xml:lang="en-US" lang="en-US"> Next, </span><span xml:lang="en-US" lang="en-US">replace the contents of </span><span xml:lang="en-US" lang="en-US">t</span><span xml:lang="en-US" lang="en-US">he </span><span xml:lang="en-US" lang="en-US">function </span><span xml:lang="en-US" lang="en-US">utime (void)</span><span xml:lang="en-US" lang="en-US">&nbsp;</span><span xml:lang="en-US" lang="en-US">around line 91 </span><span xml:lang="en-US" lang="en-US">with</span><span xml:lang="en-US" lang="en-US"> t</span><span xml:lang="en-US" lang="en-US">he si</span><span xml:lang="en-US" lang="en-US">ngle line: return 0</span><span xml:lang="en-US" lang="en-US">;</span><span xml:lang="en-US" lang="en-US"> (we do</span><span xml:lang="en-US" lang="en-US">n't need it </span><span xml:lang="en-US" lang="en-US">anyway</span><span xml:lang="en-US" lang="en-US">)</span><span xml:lang="en-US" lang="en-US">.</span></p>
+   <p dir="ltr" style="text-align:left"><span xml:lang="en-US" lang="en-US">&nbsp;</span>NOTE: You'll need to patch the fribidi sources first if you are using<span xml:lang="en-US" lang="en-US"> v</span>ersion 0.10.4 or<span xml:lang="en-US" lang="en-US">&nbsp;</span>0.10.5. <span xml:lang="en-US" lang="en-US">T</span>o do this, open the file fribidi_benchmark.c, and simply remove the line <span xml:lang="en-US" lang="en-US">&nbsp;</span>"#include<span xml:lang="en-US" lang="en-US">&nbsp;</span>&lt;sys/times.h&gt;", around line 31.<span xml:lang="en-US" lang="en-US"> Next, replace the contents of the function utime (void) around line 91 with the single line: return 0; (we don't need it anyway).</span></p>
    <p dir="ltr" style="text-align:left"></p>
    <p dir="ltr" style="text-align:left"> &nbsp;&nbsp;&nbsp;&nbsp;To build fribidi, execute the following commands (where x.y.z is the fribidi version number):</p>
    <p dir="ltr" style="text-align:left"></p>
@@ -380,7 +385,7 @@ h3 {
    <p dir="ltr" style="text-align:left"><span class="command_text plain_text" style="" xml:lang="en-US" lang="en-US">&nbsp;</span><span class="command_text plain_text" style="">make install</span></p>
    <p dir="ltr" style="text-align:left"></p>
    <ul>
-    <li dir="ltr" style="text-align:left;margin-bottom:0.0000in;margin-top:0.0000in;margin-right:0.0000in">&nbsp;<span xml:lang="en-US" lang="en-US">libgsf (download the source tarball for version &gt;=</span><span xml:lang="en-US" lang="en-US">&nbsp;</span><span xml:lang="en-US" lang="en-US">1.12.1 from </span><a href="ftp://ftp.gnome.org/pub/gnome/sources/libgsf/"><span xml:lang="en-US" lang="en-US">ftp://ftp.gnome.org/pub/gnome/sources/libgsf/</span></a><span xml:lang="en-US" lang="en-US">)</span>    </li>
+    <li dir="ltr" style="text-align:left;margin-bottom:0.0000in;margin-top:0.0000in;margin-right:0.0000in">&nbsp;<span xml:lang="en-US" lang="en-US">libgsf (download the source tarball for version &gt;= 1.12.1 from </span><a href="ftp://ftp.gnome.org/pub/gnome/sources/libgsf/"><span xml:lang="en-US" lang="en-US">ftp://ftp.gnome.org/pub/gnome/sources/libgsf/</span></a><span xml:lang="en-US" lang="en-US">)</span>    </li>
    </ul>
    <p dir="ltr" style="text-align:left;margin-bottom:0.0000in;margin-top:0.0000in;margin-right:0.0000in;margin-left:0pt;text-indent:0in"></p>
    <p dir="ltr" style="text-align:left;margin-bottom:0.0000in;margin-top:0.0000in;margin-right:0.0000in"><span xml:lang="en-GB" lang="en-GB"> &nbsp;&nbsp;&nbsp;&nbsp;To build </span><span xml:lang="en-US" lang="en-US">libgsf</span><span xml:lang="en-GB" lang="en-GB">, execute the following commands (where x.y.z is the </span><span xml:lang="en-US" lang="en-US">libgsf</span><span xml:lang="en-GB" lang="en-GB"> version number):</span></p>

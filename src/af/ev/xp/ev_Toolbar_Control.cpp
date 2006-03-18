@@ -26,7 +26,12 @@
 
 /*****************************************************************/
 
-EV_Toolbar_Control::EV_Toolbar_Control(EV_Toolbar * pToolbar)
+EV_Toolbar_Control::EV_Toolbar_Control(EV_Toolbar * pToolbar):
+	// trying to set some reasonalbe defaults here -- controls can contain many items, and
+	// there are not many instances of them -- we start with reasonably small number, but
+	// will allow it to grow fast until quite a large size (see ut_vector.h for meaning of
+	// the constructor parameters).
+	m_vecContents(1024,32)
 {
 	UT_ASSERT(pToolbar);
 

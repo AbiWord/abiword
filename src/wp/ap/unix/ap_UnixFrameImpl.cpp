@@ -17,8 +17,8 @@
 #include "abiword_48.xpm"
 #endif
 
-AP_UnixFrameImpl::AP_UnixFrameImpl(AP_UnixFrame *pUnixFrame, XAP_UnixApp *pUnixApp) :
-	XAP_UnixFrameImpl(static_cast<XAP_Frame *>(pUnixFrame), static_cast<AP_App *>(pUnixApp)),
+AP_UnixFrameImpl::AP_UnixFrameImpl(AP_UnixFrame *pUnixFrame) :
+	XAP_UnixFrameImpl(static_cast<XAP_Frame *>(pUnixFrame)),
 	m_dArea(NULL),
 	m_pVadj(NULL),
 	m_pHadj(NULL),
@@ -33,17 +33,11 @@ AP_UnixFrameImpl::AP_UnixFrameImpl(AP_UnixFrame *pUnixFrame, XAP_UnixApp *pUnixA
 	UT_DEBUGMSG(("Created AP_UnixFrameImpl %x \n",this));
 }
 
-XAP_FrameImpl * AP_UnixFrameImpl::createInstance(XAP_Frame *pFrame, XAP_App *pApp)
+XAP_FrameImpl * AP_UnixFrameImpl::createInstance(XAP_Frame *pFrame)
 {
-	UT_DEBUGMSG (("AP_UnixFrameImpl::createInstance()\n"));
-	XAP_FrameImpl *pFrameImpl = new AP_UnixFrameImpl(static_cast<AP_UnixFrame *>(pFrame), static_cast<XAP_UnixApp *>(pApp));
+	XAP_FrameImpl *pFrameImpl = new AP_UnixFrameImpl(static_cast<AP_UnixFrame *>(pFrame));
 
 	return pFrameImpl;
-}
-
-GtkWidget * AP_UnixFrameImpl::getDrawingArea() const 
-{
-	return m_dArea;
 }
 
 void AP_UnixFrameImpl::_bindToolbars(AV_View * pView)
@@ -112,17 +106,11 @@ static void
 focus_in_event (GtkWidget * drawing_area, GdkEventCrossing *event, AP_UnixFrameImpl * me)
 {
   gtk_widget_grab_focus (drawing_area);
-#ifdef HAVE_HILDON
-  me->focusIMIn ();
-#endif
 }
 
 static void
 focus_out_event (GtkWidget * drawing_area, GdkEventCrossing * event, AP_UnixFrameImpl * me)
 {
-#ifdef HAVE_HILDON
-  me->focusIMOut ();
-#endif
 }
 
 GtkWidget * AP_UnixFrameImpl::_createDocumentWindow()
@@ -308,6 +296,7 @@ void AP_UnixFrameImpl::_setWindowIcon()
 
 	GdkPixbuf * icon = gdk_pixbuf_new_from_xpm_data (const_cast<const char **>(abiword_48_xpm));
 	gtk_window_set_icon (GTK_WINDOW (window), icon);
+	g_object_unref (G_OBJECT(icon));
 }
 
 void AP_UnixFrameImpl::_createWindow()

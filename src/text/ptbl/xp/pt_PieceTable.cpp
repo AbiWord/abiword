@@ -111,6 +111,97 @@ bool pt_PieceTable::deleteStruxNoUpdate(PL_StruxDocHandle sdh)
 	return true;
 }
 
+bool pt_PieceTable::createAndSendCR(PT_DocPosition iPos, UT_sint32 iType,bool bSave)
+{
+	PX_ChangeRecord::PXType cType = static_cast< PX_ChangeRecord::PXType>(iType);
+  switch(cType)
+    {
+    case PX_ChangeRecord::PXT_InsertSpan:
+    case PX_ChangeRecord::PXT_DeleteSpan:
+    case PX_ChangeRecord::PXT_ChangeSpan:
+    case PX_ChangeRecord::PXT_InsertStrux:
+    case PX_ChangeRecord::PXT_DeleteStrux:
+    case PX_ChangeRecord::PXT_ChangeStrux:
+    case PX_ChangeRecord::PXT_InsertObject:
+    case PX_ChangeRecord::PXT_ChangeObject:
+    case PX_ChangeRecord::PXT_InsertFmtMark:
+    case PX_ChangeRecord::PXT_DeleteFmtMark:
+    case PX_ChangeRecord::PXT_ChangeFmtMark:
+    case PX_ChangeRecord::PXT_ChangePoint:
+		{
+			UT_DEBUGMSG(("CR already implemented \n"));
+			UT_ASSERT(UT_SHOULD_NOT_HAPPEN);
+			return false;
+		}
+    case PX_ChangeRecord::PXT_ListUpdate:
+    case PX_ChangeRecord::PXT_StopList:
+    case PX_ChangeRecord::PXT_UpdateField:
+    case PX_ChangeRecord::PXT_RemoveList:
+    case PX_ChangeRecord::PXT_GlobMarker:
+    case PX_ChangeRecord::PXT_UpdateLayout:
+    {
+		PX_ChangeRecord * pcr= new PX_ChangeRecord(cType,iPos, 0,0);
+		if(bSave)
+			{
+				m_history.addChangeRecord(pcr);
+			}
+		m_pDocument->notifyListeners(NULL, pcr);
+		if(!bSave)
+			delete pcr;
+		return true;
+     }
+    default:
+		return false;
+    }
+}
+
+
+/*!
+ * Delete the single strux given in sdh and create and record a change record.
+ */
+bool pt_PieceTable::deleteStruxWithNotify(PL_StruxDocHandle sdh)
+{
+	pf_Frag_Strux * pfs = static_cast<pf_Frag_Strux *>(const_cast<void *>(sdh));
+	PT_DocPosition dpos = pfs->getPos();
+	pf_Frag * pfEnd = NULL;
+	UT_uint32 pfragOffsetEnd = 0;
+	bool b = _deleteStruxWithNotify(dpos,pfs,&pfEnd,&pfragOffsetEnd,true);
+	return b;
+}
+
+/*!
+ * Delete The first FmtMark found at the position given.
+ */
+bool pt_PieceTable::deleteFmtMark(PT_DocPosition dpos)
+{
+	pf_Frag * pf = NULL;
+	PT_BlockOffset pOffset= 0;
+	getFragFromPosition(dpos,&pf,&pOffset);
+	pf_Frag_FmtMark * pfm = NULL;
+	if(pf->getType() == pf_Frag::PFT_FmtMark)
+	{
+		pfm = static_cast<pf_Frag_FmtMark *>(pf);
+	}
+	if(pf->getPrev() && pf->getPrev()->getType() == pf_Frag::PFT_FmtMark)
+	{
+		pfm = static_cast<pf_Frag_FmtMark *>(pf->getPrev());
+	}
+	if(pf->getNext() && pf->getNext()->getType() == pf_Frag::PFT_FmtMark)
+	{
+		pfm = static_cast<pf_Frag_FmtMark *>(pf->getNext());
+	}
+	if(pfm == NULL)
+	{
+		return false;
+	}
+	pf_Frag_Strux * pfs = NULL;
+	if (!_getStruxFromFragSkip(pfm,&pfs))
+		return false;
+	pf_Frag * pfEnd = NULL;
+	UT_uint32 fragOff = 0;
+	bool b = _deleteFmtMarkWithNotify(dpos,pfm,pfs,&pfEnd,&fragOff);
+	return b;
+}
 /*!
  * This method inserts a strux of type pts immediately before the sdh given.
  * Attributes of the strux can be optionally passed. This method does not throw
@@ -205,6 +296,10 @@ bool  pt_PieceTable::_struxIsEmpty(pf_Frag_Strux * pfs) const
 		return true;
 	}
 	pf_Frag * pf = pfs->getNext();
+	if(pf->getType() == pf_Frag::PFT_EndOfDoc)
+	{
+		return true;
+	}
 	if(pf->getType() != pf_Frag::PFT_Strux)
 	{
 		return false;

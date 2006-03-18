@@ -197,7 +197,8 @@ bool AP_BuiltinStringSet::dumpBuiltinSet(const char * szFilename) const
 //////////////////////////////////////////////////////////////////
 
 AP_DiskStringSet::AP_DiskStringSet(XAP_App * pApp)
-	: XAP_DiskStringSet(pApp)
+	: XAP_DiskStringSet(pApp),
+	  m_vecStringsAP(AP_STRING_ID__LAST__ - AP_STRING_ID__FIRST__ + 1, 4, true)
 {
 	setValue(AP_STRING_ID__FIRST__,0);			// bogus zero element
 }
@@ -339,8 +340,10 @@ bool AP_DiskStringSet::setValue(const XML_Char * szId, const XML_Char * szString
 	UT_uint32 kLimit = NrElements(s_map);
 	UT_uint32 k;
 
+	// we use predefined IDs to access the preferences, so there is no need to do
+	// case-insensitive comparison (and it is costing us lot of time).
 	for (k=0; k<kLimit; k++)
-		if (UT_XML_stricmp(s_map[k].szName,szId) == 0)
+		if (UT_XML_strcmp(s_map[k].szName,szId) == 0)
 			return setValue(s_map[k].id,szString);
 
 	// the name (szId) is not in our table, see if the base class knows about it.

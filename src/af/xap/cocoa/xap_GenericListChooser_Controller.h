@@ -25,6 +25,7 @@
 class XAP_GenericListChooser_Proxy
 {
 public:
+	virtual ~XAP_GenericListChooser_Proxy() {}
 	virtual void okAction () = 0;
 	virtual void cancelAction () = 0;
 	virtual void selectAction () = 0;

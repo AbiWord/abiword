@@ -17,7 +17,7 @@ many copies as you like and to give them to your friends and
 colleagues.
 
 Note that AbiWord is not "shareware".  You are under no moral or legal
-obligation to pay anyone for this right to use this program.
+obligation to pay anyone for the right to use this program.
 
 If you are not familiar with this kind of software, please rest
 assured that there is no catch.  AbiWord is free, and it will always

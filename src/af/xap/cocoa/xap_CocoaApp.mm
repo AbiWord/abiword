@@ -221,12 +221,12 @@ const char * XAP_CocoaApp::getUserPrivateDirectory()
 	return upd_cache;
 }
 
-bool XAP_CocoaApp::findAbiSuiteLibFile(UT_String & path, const char * filename, const char * subdir)
+bool XAP_CocoaApp::findAbiSuiteBundleFile(UT_String & path, const char * filename, const char * subdir) // checks only bundle
 {
 	if (!filename)
+	{
 		return false;
-	if (XAP_App::findAbiSuiteLibFile(path,filename,subdir))
-		return true;
+	}
 
 	bool bFound = false;
 
@@ -242,38 +242,36 @@ bool XAP_CocoaApp::findAbiSuiteLibFile(UT_String & path, const char * filename, 
 		}
 		path += "/";
 		path += filename;
-xxx_UT_DEBUGMSG(("XAP_CocoaApp::findAbiSuiteLibFile(\"%s\",\"%s\",\"%s\")\n",path.c_str(),filename,subdir));
-		bFound = UT_isRegularFile (path.c_str ());
+xxx_UT_DEBUGMSG(("XAP_CocoaApp::findAbiSuiteBundleFile(\"%s\",\"%s\",\"%s\")\n",path.c_str(),filename,subdir));
+		bFound = UT_isRegularFile(path.c_str());
 	}
 	return bFound;
+}
+
+bool XAP_CocoaApp::findAbiSuiteLibFile(UT_String & path, const char * filename, const char * subdir)
+{
+	if (!filename)
+	{
+		return false;
+	}
+	if (XAP_App::findAbiSuiteLibFile(path, filename, subdir))
+	{
+		return true;
+	}
+	return findAbiSuiteBundleFile(path, filename, subdir);
 }
 
 bool XAP_CocoaApp::findAbiSuiteAppFile(UT_String & path, const char * filename, const char * subdir)
 {
 	if (!filename)
-		return false;
-	if (XAP_App::findAbiSuiteLibFile(path,filename,subdir))
-		return true;
-
-	bool bFound = false;
-
-	// get Bundle resource directory and use that.
-	NSString * resDir = [[NSBundle mainBundle] resourcePath];
-	if (resDir)
 	{
-		path  = [resDir UTF8String];
-		path += "/AbiWord";
-		if (subdir)
-		{
-			path += "/";
-			path += subdir;
-		}
-		path += "/";
-		path += filename;
-xxx_UT_DEBUGMSG(("XAP_CocoaApp::findAbiSuiteAppFile(\"%s\",\"%s\",\"%s\")\n",path.c_str(),filename,subdir));
-		bFound = UT_isRegularFile (path.c_str ());
+		return false;
 	}
-	return bFound;
+	if (XAP_App::findAbiSuiteLibFile(path, filename, subdir))
+	{
+		return true;
+	}
+	return findAbiSuiteBundleFile(path, filename, subdir);
 }
 
 bool XAP_CocoaApp::_loadFonts()

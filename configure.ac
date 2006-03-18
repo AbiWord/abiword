@@ -21,7 +21,7 @@ dnl 02111-1307, USA.
 dnl Process this file with autoconf to produce a configure script.
 
 AC_PREREQ(2.50)
-AC_INIT([AbiSuite],[2.4],[http://www.abisource.com/])
+AC_INIT([AbiSuite],[2.6],[http://www.abisource.com/])
 AC_CONFIG_SRCDIR([src/af/ev/xp/ev_Menu.h])
 AC_CONFIG_AUX_DIR(ac-helpers)
 dnl AC_CONFIG_HEADERS(config.h)
@@ -37,7 +37,7 @@ dnl
 # set LIBABI_BINARY_AGE and LIBABI_INTERFACE_AGE to 0.
 #
 LIBABI_MAJOR_VERSION=2
-LIBABI_MINOR_VERSION=4
+LIBABI_MINOR_VERSION=6
 LIBABI_MICRO_VERSION=0
 LIBABI_INTERFACE_AGE=0
 LIBABI_BINARY_AGE=0
@@ -60,7 +60,7 @@ AC_SUBST(LT_CURRENT)
 AC_SUBST(LT_REVISION)
 AC_SUBST(LT_AGE)
 
-AM_INIT_AUTOMAKE(AbiSuite-2.4,2.3.6)
+AM_INIT_AUTOMAKE(AbiSuite-2.6,2.5.0)
 
 if test "$srcdir" = "."; then
 	abi_rootdir=".."
@@ -109,13 +109,73 @@ with_macosx=false
 with_cocoa=false
 with_qnx=false
 with_win32=false
+
+# when cross-compiling must have perl for cdump.pl
+if test x$cross_compiling = xyes; then
+AC_MSG_CHECKING([for perl])
+if test "x$(which perl)" = "x"; then
+   AC_MSG_ERROR([not found. Must have perl when cross-compiling.])
+fi
+AC_MSG_RESULT([found])
+fi
+
+# check for embedded and print first, so we can handle gnomeprint dependency
+# correcly
+ABI_HILDON_QUICK
+
+AC_ARG_ENABLE(embedded,[  --enable-embedded    Include embedded features],[
+	case "${enableval}" in
+	   yes)	embedded=true ;;
+	   no) embedded=false ;;
+	     *)	AC_MSG_ERROR(bad value ${enableval} for --enable-embedded) ;;
+	esac
+],[	embedded=undefined
+	EMBEDDED_CFLAGS=""
+])
+
+if test "$embedded" = "true"; then
+   EMBEDDED_CFLAGS="-DEMBEDDED_TARGET=1"
+fi
+
+# by default we, of course, want Abi to be able to print, but on embedded
+# systems it might not be required and because of the dependencies, we want an
+# option to disable printing at compile time
+
+# on embedded we will make --disable-print the default if no
+# --enable/disable-printing is given
+
+AC_ARG_ENABLE(printing,[  --enable-printing    Include printing capabilities],[
+	case "${enableval}" in
+	   yes)	print=true ;
+		PRINT_CFLAGS="" ;;
+	   no) print=false ;
+		PRINT_CFLAGS="-DWITHOUT_PRINTING" ;;
+	     *)	AC_MSG_ERROR(bad value ${enableval} for --enable-printing) ;;
+	esac
+],[	print=undefined
+	PRINT_CFLAGS=""
+])
+
+
+if test "$print" = "undefined" && test "$embedded" = "true"; then
+   print=false
+   PRINT_CFLAGS="-DWITHOUT_PRINTING"
+elif test "$print" = "undefined"; then
+   print=true;
+   PRINT_CFLAGS=""
+fi
+
+AM_CONDITIONAL(WITH_PRINTING, test x$print = xtrue)
+
 if test "$PLATFORM" = "unix"; then
 	ABI_FE="Unix"
 	ABI_BE="$ABI_FE"
 	with_unix=true
 	dnl locate glib and gtk
 	ABI_GTK2
+if test $print = true; then
 	ABI_GNOMEPRINT
+fi
 	AM_BINRELOC
 elif test "$PLATFORM" = "cocoa" ; then
 	ABI_GLIB2
@@ -177,7 +237,6 @@ dnl The defined values are used mostly in includes.mk, but also in
 dnl some other places
 
 ABI_GNOME_QUICK
-ABI_HILDON_QUICK
 ABI_GUCHARMAP
 ABI_XFT_QUICK
 
@@ -353,12 +412,19 @@ fi
 if test "$PLATFORM" = "qnx"; then
 	PLATFORM_LIBS="-fexceptions"
 fi
+
+# this should be after all other platform cflags have been set
+if test "$embedded" = "true"; then
+   PLATFORM_CFLAGS="$PLATFORM_CFLAGS $EMBEDDED_CFLAGS"
+fi
+
 dnl SUBST all the variables we just defined
 AC_SUBST(ABI_FEATURE_DEFS)
 AC_SUBST(OPTIMIZE_CFLAGS)
 AC_SUBST(PROFILE_CFLAGS)
 AC_SUBST(LIBJPEG_LIBS)
 AC_SUBST(DEBUG_CFLAGS)
+AC_SUBST(PRINT_CFLAGS)
 AC_SUBST(SCRIPT_CFLAGS)
 AC_SUBST(SCRIPT_LIBS)
 AC_SUBST(PLATFORM_CFLAGS)
@@ -403,7 +469,7 @@ ABI_LIBJPEG
 dnl Checks for library functions.
 AC_FUNC_ALLOCA
 AC_TYPE_SIGNAL
-AC_CHECK_FUNCS(re_comp regcomp strdup strstr strcasecmp stricmp)
+AC_CHECK_FUNCS(re_comp regcomp strdup strstr strcasecmp stricmp strnlen)
 
 AC_CHECK_FUNC(putenv,abi_putenv=maybe,abi_putenv=no)
 AC_CHECK_FUNC(setenv,abi_setenv=maybe,abi_setenv=no)
@@ -459,9 +525,16 @@ if test "$VALGRIND" = ""; then
 	AC_MSG_WARN([Valgrind is missing. UnitTesting will run without])
 fi
 if test "$VALGRIND" != ""; then
-	VALGRIND="valgrind --tool=memcheck --leak-check=yes --num-callers=10 --logfile-fd=-1 "
+dnl due to stupid m4 I had to double the [ and ] in the regexp
+	vg_ver=`valgrind --version | sed -e  's/.*-\([[0-9]]\)\.[[0-9]].*/\1/'`
+	VALGRIND="$VALGRIND --tool=memcheck --leak-check=yes --num-callers=10"
+	if test "$vg_ver" != "3" ; then
+	   VALGRIND="$VALGRIND --logfile-fd=-1"
+	fi
 fi
 AC_SUBST(VALGRIND)
+
+AM_CONDITIONAL(CROSS_COMPILING, test x$cross_compiling = xyes)
 
 AC_CONFIG_FILES([GNUmakefile
  src/GNUmakefile
@@ -565,13 +638,9 @@ AC_CONFIG_FILES([
  src/pkg/linux/apkg/abiword-gtk.apspec
  libabipriv-1.pc.in
  src/pkg/maemo/debian/misc/abiword.desktop
- src/pkg/maemo/debian/misc/org.abisource.abiword.service
+ src/pkg/maemo/debian/misc/com.nokia.abiword.service
 ])
 AC_OUTPUT
-
-if test "$PLATFORM" = "unix" ; then
-	chmod a+x src/wp/test/unix/testwrap.sh
-fi
 
 echo " "
 
@@ -591,9 +660,26 @@ case "$gnome" in
         AC_MSG_RESULT([Configured with GNOME support.]) ;;
 esac
 
+case "$embedded" in
+     "true")
+	AC_MSG_RESULT([Configured for embedded target.]) ;;
+esac
+
+case "$hildon" in
+     "true")
+	AC_MSG_RESULT([Configured with Hildon/maemo support.]) ;;
+esac
+
 case "$debug" in
      "true" )
         AC_MSG_RESULT([Configured with debugging symbols.]) ;;
+esac
+
+case "$print" in
+	 "true" )
+        AC_MSG_RESULT([Configured with printing capabilities.]) ;;
+	 "false" )
+        AC_MSG_RESULT([Configured without printing capabilites.]) ;;
 esac
 
 case "$script" in
@@ -611,6 +697,11 @@ case "$xft" in
 	AC_MSG_RESULT([Configured with XFT support.]) ;;
 esac
 
+case "$cross_compiling" in
+     "yes" )
+	AC_MSG_RESULT([Cross compiling -- not using binary custom tools.]) ;;
+esac
+
 echo " "
 
 cat <<EOF
@@ -622,7 +713,11 @@ cat <<EOF
   iconv:           ${abi_iconv_message}
   spelling:        ${abi_spell_message}
   binreloc:        ${br_cv_binreloc}
+
+  installing in:   ${prefix}
+
 EOF
+
 
 if test "x$_abi_wv_warning" = "xyes"; then
 	ABI_WV_WARNING

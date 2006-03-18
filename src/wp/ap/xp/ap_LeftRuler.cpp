@@ -67,7 +67,7 @@ AP_LeftRuler::AP_LeftRuler(XAP_Frame * pFrame)
 	m_yGuide = 0;
 	
 	const XML_Char * szRulerUnits;
-	if (pFrame->getApp()->getPrefsValue(AP_PREF_KEY_RulerUnits,&szRulerUnits))
+	if (XAP_App::getApp()->getPrefsValue(AP_PREF_KEY_RulerUnits,&szRulerUnits))
 		m_dim = UT_determineDimension(szRulerUnits);
 	else
 		m_dim = DIM_IN;
@@ -83,7 +83,7 @@ AP_LeftRuler::AP_LeftRuler(XAP_Frame * pFrame)
 	m_draggingDocPos = 0;
 	m_bIsHidden = false;
 	// install top_ruler_prefs_listener as this lister for this func
-	pFrame->getApp()->getPrefs()->addListener( AP_LeftRuler::_prefsListener, static_cast<void *>(this) );
+	XAP_App::getApp()->getPrefs()->addListener( AP_LeftRuler::_prefsListener, static_cast<void *>(this) );
 	m_lidLeftRuler = 9999999;
 	UT_DEBUGMSG(("Created LeftRuler %x lid is %d \n",this,m_lidLeftRuler));
 }
@@ -105,7 +105,7 @@ AP_LeftRuler::~AP_LeftRuler(void)
 		m_pView = NULL;
 	}
 	// no more prefs 
-	m_pFrame->getApp()->getPrefs()->removeListener( AP_LeftRuler::_prefsListener, static_cast<void *>(this) );
+	XAP_App::getApp()->getPrefs()->removeListener( AP_LeftRuler::_prefsListener, static_cast<void *>(this) );
 	UT_DEBUGMSG(("Deleted LeftRuler %x \n",this));
 	m_lidLeftRuler = 0;
 	//UT_DEBUGMSG(("AP_LeftRuler::~AP_LeftRuler (this=%p scroll=%p)\n", this, m_pScrollObj));
@@ -130,6 +130,7 @@ void AP_LeftRuler::setView(AV_View* pView, UT_uint32 iZoom)
 
 void AP_LeftRuler::setZoom(UT_uint32 iZoom)
 {
+        m_pG->clearFont();
 	m_pG->setZoomPercentage(iZoom);
     // TODO this dimension shouldn't be hard coded.
 	// in fact, it shouldn't need to be recomputed at all anymore.
@@ -1795,10 +1796,12 @@ void AP_LeftRuler::draw(const UT_Rect * pCR, AP_LeftRulerInfo * lfi)
 				sprintf(buf, "%d", n);
 				UT_UCS4_strcpy_char(span, buf);
 				UT_uint32 len = strlen(buf);
-
 				UT_uint32 w = m_pG->measureString(span, 0, len, charWidths) * 100 / m_pG->getZoomPercentage();
-				UT_uint32 x = xLeft + (xBar-w)/2;
 
+				UT_sint32 x = xLeft;
+				
+				if(xBar > w)
+					x += (xBar-w)/2;
 				painter.drawChars(span, 0, len, x, y - iFontHeight/2);
 			}
 		}
@@ -1835,8 +1838,10 @@ void AP_LeftRuler::draw(const UT_Rect * pCR, AP_LeftRulerInfo * lfi)
 				UT_uint32 len = strlen(buf);
 
 				UT_uint32 w = m_pG->measureString(span, 0, len, charWidths) * 100 / m_pG->getZoomPercentage();
-				UT_uint32 x = xLeft + (xBar-w)/2;
+				UT_sint32 x = xLeft;
 
+				if(xBar > w)
+					x += (xBar-w)/2;
 				painter.drawChars(span, 0, len, x, y - iFontHeight/2);
 			}
 		}
@@ -1950,7 +1955,7 @@ void AP_LeftRuler::_displayStatusMessage(XAP_String_Id messageID, const ap_Ruler
 {
 	const XML_Char * pText = m_pG->invertDimension(tick.dimType, dValue);
 	char temp[100];
-	const XML_Char *pzMessageFormat = m_pFrame->getApp()->getStringSet()->getValue(messageID);
+	const XML_Char *pzMessageFormat = XAP_App::getApp()->getStringSet()->getValue(messageID);
 	sprintf(temp, pzMessageFormat, pText);
 
 	AP_FrameData * pFrameData = static_cast<AP_FrameData *>(m_pFrame->getFrameData());

@@ -99,6 +99,8 @@ bool XAP_FrameImpl::_updateTitle()
 		because that happens dynamically at menu pop-up time.  
 	*/
 
+	UT_return_val_if_fail(m_pFrame && m_pFrame->m_pDoc,false);
+
 	/* first try to use the metadata title as our title */
 	if (m_pFrame->m_pDoc->getMetaDataProp ("dc.title", m_pFrame->m_sTitle) && m_pFrame->m_sTitle.size()) {
 		m_pFrame->m_sNonDecoratedTitle = m_pFrame->m_sTitle;
@@ -126,7 +128,7 @@ bool XAP_FrameImpl::_updateTitle()
 	else
 	{
 		UT_ASSERT(m_pFrame->m_iUntitled);
-		const XAP_StringSet * pSS = m_pFrame->m_pApp->getStringSet();
+		const XAP_StringSet * pSS = XAP_App::getApp()->getStringSet();
 		UT_UTF8String s;
 		pSS->getValueUTF8(XAP_STRING_ID_UntitledDocument,s);
 		

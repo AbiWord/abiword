@@ -204,6 +204,7 @@ public:
 	static EV_EditMethod_Fn contextPosObject;
 	static EV_EditMethod_Fn contextImage;
 	static EV_EditMethod_Fn contextHyperlink;
+	static EV_EditMethod_Fn contextMath;
 	static EV_EditMethod_Fn contextMenu;
 	static EV_EditMethod_Fn contextRevision;
 	static EV_EditMethod_Fn contextTOC;
@@ -228,6 +229,7 @@ public:
 	static EV_EditMethod_Fn dragToXYword;
 	static EV_EditMethod_Fn endDrag;
 
+	static EV_EditMethod_Fn editLatexAtPos;
 	static EV_EditMethod_Fn editLatexEquation;
 	static EV_EditMethod_Fn editEmbed;
 
@@ -502,6 +504,8 @@ public:
 	static EV_EditMethod_Fn toggleDirOverrideLTR;
 	static EV_EditMethod_Fn toggleDirOverrideRTL;
 	static EV_EditMethod_Fn toggleDomDirection;
+	static EV_EditMethod_Fn toggleDomDirectionSect;
+	static EV_EditMethod_Fn toggleDomDirectionDoc;
 
 	static EV_EditMethod_Fn doBullets;
 	static EV_EditMethod_Fn doNumbers;
@@ -727,6 +731,7 @@ static EV_EditMethod s_arrayEditMethods[] =
 	EV_EditMethod(NF(contextFrame), 		0,	""),
 	EV_EditMethod(NF(contextHyperlink), 		0,	""),
 	EV_EditMethod(NF(contextImage), 0, ""),
+	EV_EditMethod(NF(contextMath),			0,	""),
 	EV_EditMethod(NF(contextMenu),			0,	""),
 	EV_EditMethod(NF(contextMisspellText),	0,	""),
 	EV_EditMethod(NF(contextPosObject), 0, ""),
@@ -819,6 +824,7 @@ static EV_EditMethod s_arrayEditMethods[] =
 	EV_EditMethod(NF(editEmbed),			0,	""),
 	EV_EditMethod(NF(editFooter),			0,	""),
 	EV_EditMethod(NF(editHeader),			0,	""),
+	EV_EditMethod(NF(editLatexAtPos),			0,	""),
 	EV_EditMethod(NF(editLatexEquation),			0,	""),
 	EV_EditMethod(NF(endDrag),				0,	""),
 	EV_EditMethod(NF(endDragHline),			0,	""),
@@ -1077,6 +1083,8 @@ static EV_EditMethod s_arrayEditMethods[] =
 	EV_EditMethod(NF(toggleDirOverrideLTR), 0,	""),
 	EV_EditMethod(NF(toggleDirOverrideRTL), 0,	""),
 	EV_EditMethod(NF(toggleDomDirection),	0,	""),
+	EV_EditMethod(NF(toggleDomDirectionDoc),	0,	""),
+	EV_EditMethod(NF(toggleDomDirectionSect),	0,	""),
 	EV_EditMethod(NF(toggleHidden),			0,	""),
 	EV_EditMethod(NF(toggleIndent),         0,  ""),
 	EV_EditMethod(NF(toggleInsertMode), 	0,  ""),
@@ -1342,7 +1350,7 @@ Defun1(toggleAutoSpell)
 	XAP_Frame * pFrame = static_cast<XAP_Frame *> ( pAV_View->getParentData());
 	UT_return_val_if_fail (pFrame, false);
 
-	XAP_App * pApp = pFrame->getApp();
+	XAP_App * pApp = XAP_App::getApp();
 	UT_return_val_if_fail (pApp, false);
 	XAP_Prefs * pPrefs = pApp->getPrefs();
 	UT_return_val_if_fail (pPrefs, false);
@@ -1458,7 +1466,7 @@ Defun1(fileNew)
 	XAP_App * pApp = XAP_App::getApp();
 	UT_return_val_if_fail (pApp, false);
 	
-#ifdef HAVE_HILDON	
+#if 0 //def HAVE_HILDON	
 	
 	XAP_Frame * pNewFrame;
 	if (pApp->getFrameCount() == 0)
@@ -1469,7 +1477,12 @@ Defun1(fileNew)
 		pNewFrame = pApp->getFrame(0);
 		if (pNewFrame->isDirty())
 		{
-			fileSave(pAV_View, NULL);
+			if(!fileSave(pAV_View, NULL))
+			{
+				// we cannot just close the dirty file when the user clicked cancel -- if
+				// she really want to loose unsaved changes, let her close it manually
+				return false;
+			}
 		}
 	}
 #else
@@ -1518,7 +1531,7 @@ static void s_LoadingCursorCallback(UT_Worker * pTimer )
 		s_bFirstDrawDone = false;
 		return;
 	}
-	const XAP_StringSet * pSS = pFrame->getApp()->getStringSet();
+	const XAP_StringSet * pSS = XAP_App::getApp()->getStringSet();
 	pFrame->setCursor(GR_Graphics::GR_CURSOR_WAIT);
 	FV_View * pView = static_cast<FV_View *>(pFrame->getCurrentView());
 	if(pView)
@@ -1836,6 +1849,7 @@ static bool s_AskForPathname(XAP_Frame * pFrame,
 			if(!bSet)
 				pDialog->setCurrentPathname(title.utf8_str());
 #else
+			UT_legalizeFileName(title);
 			pDialog->setCurrentPathname(title.utf8_str());
 #endif
 			pDialog->setSuggestFilename(true);
@@ -1888,7 +1902,7 @@ static bool s_AskForPathname(XAP_Frame * pFrame,
 	  }
 	else if (bSaveAs)
 	  {
-		XAP_App * pApp = pFrame->getApp();
+		XAP_App * pApp = XAP_App::getApp();
 		UT_return_val_if_fail (pApp, false);
 		XAP_Prefs * pPrefs = pApp->getPrefs();
 		UT_return_val_if_fail (pPrefs, false);
@@ -2393,7 +2407,7 @@ Defun(fileSave)
 
 	if (pFrame->getViewNumber() > 0)
 	{
-		XAP_App * pApp = pFrame->getApp();
+		XAP_App * pApp = XAP_App::getApp();
 		UT_return_val_if_fail (pApp, false);
 
 		pApp->updateClones(pFrame);
@@ -2437,7 +2451,7 @@ s_actuallySaveAs(AV_View * pAV_View, bool overwriteName)
 		return bOK;
 
 	// update the MRU list
-	XAP_App * pApp = pFrame->getApp();
+	XAP_App * pApp = XAP_App::getApp();
 	UT_return_val_if_fail (pApp, false);
 	free(pNewFile);
 
@@ -2810,7 +2824,7 @@ static bool _activateWindow(AV_View* pAV_View, UT_uint32 ndx)
 {
 	XAP_Frame * pFrame = static_cast<XAP_Frame *> ( pAV_View->getParentData());
 	UT_return_val_if_fail(pFrame, false);
-	XAP_App * pApp = pFrame->getApp();
+	XAP_App * pApp = XAP_App::getApp();
 	UT_return_val_if_fail (pApp, false);
 
 	UT_return_val_if_fail (ndx > 0 && ndx <= pApp->getFrameCount(), false);
@@ -3017,7 +3031,7 @@ Defun(dlgMetaData)
   XAP_Frame * pFrame = static_cast<XAP_Frame *>(pView->getParentData());
   UT_return_val_if_fail(pFrame, false);
 
-  XAP_App * pApp = pFrame->getApp();
+  XAP_App * pApp = XAP_App::getApp();
   UT_return_val_if_fail (pApp, false);
 
   pFrame->raise();
@@ -3237,7 +3251,7 @@ Defun1(cycleWindows)
 	CHECK_FRAME;
 	XAP_Frame * pFrame = static_cast<XAP_Frame *> ( pAV_View->getParentData());
 	UT_return_val_if_fail(pFrame, false);
-	XAP_App * pApp = pFrame->getApp();
+	XAP_App * pApp = XAP_App::getApp();
 	UT_return_val_if_fail (pApp, false);
 
 	UT_sint32 ndx = pApp->findFrame(pFrame);
@@ -3261,7 +3275,7 @@ Defun1(cycleWindowsBck)
 	CHECK_FRAME;
 	XAP_Frame * pFrame = static_cast<XAP_Frame *> ( pAV_View->getParentData());
 	UT_return_val_if_fail(pFrame, false);
-	XAP_App * pApp = pFrame->getApp();
+	XAP_App * pApp = XAP_App::getApp();
 	UT_return_val_if_fail (pApp, false);
 
 	UT_sint32 ndx = pApp->findFrame(pFrame);
@@ -3286,7 +3300,7 @@ s_closeWindow (AV_View * pAV_View, EV_EditMethodCallData * pCallData,
 {
 	XAP_Frame * pFrame = static_cast<XAP_Frame *> ( pAV_View->getParentData());
 	UT_return_val_if_fail(pFrame, false);
-	XAP_App * pApp = pFrame->getApp();
+	XAP_App * pApp = XAP_App::getApp();
 	UT_return_val_if_fail(pApp, false);
 
 	if(pFrame == pApp->getLastFocussedFrame())
@@ -3342,6 +3356,10 @@ s_closeWindow (AV_View * pAV_View, EV_EditMethodCallData * pCallData,
 		// in single XAPAPP mode we can't close the app when closing the last frame
 		// or reopen a new one.
 #if XAP_SINGLE_XAPAPP
+#ifdef HAVE_HILDON
+		// user initiate exit -- clear any state info from previous hibernation
+		pApp->clearStateInfo();
+#endif
 #else
 		if (bCanExit)
 		{
@@ -3373,7 +3391,7 @@ Defun(closeWindow)
 #if !defined(XP_UNIX_TARGET_GTK)
 	XAP_Frame * pFrame = static_cast<XAP_Frame *> ( pAV_View->getParentData());
 	UT_return_val_if_fail(pFrame, false);
-	XAP_App * pApp = pFrame->getApp();
+	XAP_App * pApp = XAP_App::getApp();
 	UT_return_val_if_fail(pApp, false);
 
 	XAP_Prefs * pPrefs = pApp->getPrefs();
@@ -3445,6 +3463,10 @@ Defun(querySaveAndExit)
 		pApp->closeModelessDlgs();
 
 		// TODO: this shouldn't be necessary, but just in case
+#ifdef HAVE_HILDON
+		// user initiate exit -- clear any state info from previous hibernation
+		pApp->clearStateInfo();
+#endif
 		pApp->reallyExit();
 	}
 
@@ -3489,7 +3511,7 @@ Defun1(insertClipart)
 	XAP_Frame * pFrame = static_cast<XAP_Frame *>(pView->getParentData());
 	UT_return_val_if_fail(pFrame, false);
 
-	XAP_App * pApp = pFrame->getApp();
+	XAP_App * pApp = XAP_App::getApp();
 	UT_return_val_if_fail(pApp, false);
 
 	pFrame->raise();
@@ -4216,6 +4238,96 @@ Defun1(cursorImageSize)
 	return true;
 }
 
+static bool dlgEditLatexEquation(AV_View *pAV_View, EV_EditMethodCallData * pCallData, bool bStartDlg, PT_DocPosition pos)
+{
+	CHECK_FRAME;
+	ABIWORD_VIEW;
+	FL_DocLayout * pLayout = pView->getLayout();
+	GR_EmbedManager * pMath = pLayout->getEmbedManager("mathml");
+	if(pMath->isDefault())
+	{
+	  //
+	  // No MathML plugin. We can't edit this.
+	  //
+	  UT_DEBUGMSG(("No Math Plugin! \n"));
+	     return false;
+	}
+	if(pos == 0)
+	{
+	    pos = pView->getPoint()-1;
+	}
+	fl_BlockLayout * pBlock = pView->getCurrentBlock();
+	fp_Run * pRun = NULL;
+	fp_MathRun * pMathRun = NULL;
+	UT_sint32 x1,y1,x2,y2,height;
+	bool bEOL = false;
+	bool bDir = false;
+	pRun = pBlock->findPointCoords(pos,bEOL,x1,y1,x2,y2,height,bDir);
+	while(pRun && pRun->getLength() == 0)
+	{
+	  pRun = pRun->getNextRun();
+	}
+	if(pRun == NULL)
+	{
+	  return false;
+	}
+	if(pRun->getType() != FPRUN_MATH)
+        {
+	  return false;
+	}
+	pMathRun = static_cast<fp_MathRun *>(pRun);
+	const PP_AttrProp * pSpanAP = pMathRun->getSpanAP();
+	const XML_Char * pszLatexID = NULL;
+	pSpanAP->getAttribute("latexid",pszLatexID);
+	if(pszLatexID == NULL)
+	{
+	  return false;
+	}
+	if(pszLatexID == "")
+	{
+	  return false;
+	}
+       const UT_ByteBuf * pByteBuf = NULL;
+       UT_UTF8String sLatex;
+       PD_Document * pDoc= pView->getDocument();
+       bool bFoundLatexID = pDoc->getDataItemDataByName(pszLatexID, 
+						    const_cast<const UT_ByteBuf **>(&pByteBuf),
+						    NULL, NULL);
+
+       if(!bFoundLatexID)
+       {
+	 return true;
+       }
+       UT_UCS4_mbtowc myWC;
+       sLatex.appendBuf( *pByteBuf, myWC);
+       UT_DEBUGMSG(("Loaded Latex %s from PT \n",sLatex.utf8_str()));
+       XAP_Frame * pFrame = static_cast<XAP_Frame *> ( pView->getParentData());
+       pFrame->raise();
+
+       XAP_DialogFactory * pDialogFactory
+	 = static_cast<XAP_DialogFactory *>(pFrame->getDialogFactory());
+
+       AP_Dialog_Latex * pDialog
+	 = static_cast<AP_Dialog_Latex *>(pDialogFactory->requestDialog(AP_DIALOG_ID_LATEX));
+       UT_return_val_if_fail(pDialog, false);
+       if(pDialog->isRunning())
+       {
+	   pDialog->fillLatex(sLatex);
+	   pDialog->activate();
+       }
+       else if(bStartDlg)
+       {
+	   pDialog->runModeless(pFrame);
+	   pDialog->fillLatex(sLatex);
+       }
+       else
+       {
+	   pDialogFactory->releaseDialog(pDialog);
+       }
+       return true;
+
+}
+
 /*****************************************************************/
 
 Defun1(contextMenu)
@@ -4274,6 +4386,14 @@ Defun(contextText)
 	ABIWORD_VIEW;
 	XAP_Frame * pFrame = static_cast<XAP_Frame *> (pView->getParentData());
 	UT_return_val_if_fail(pFrame, false);
+	//
+	// Look if we've right clicked on a mathrun
+	//
+	PT_DocPosition pos = 0;
+	if(pView->isMathLoaded() && pView->isMathSelected(pCallData->m_xPos, pCallData->m_yPos,pos))
+	{
+	  return s_doContextMenu(EV_EMC_MATH,pCallData->m_xPos, pCallData->m_yPos,pView,pFrame);
+	}
 	return s_doContextMenu(EV_EMC_TEXT,pCallData->m_xPos, pCallData->m_yPos,pView,pFrame);
 }
 
@@ -4284,6 +4404,11 @@ Defun(contextFrame)
 	ABIWORD_VIEW;
 	XAP_Frame * pFrame = static_cast<XAP_Frame *> (pView->getParentData());
 	UT_return_val_if_fail(pFrame, false);
+
+	// no frame context menu in normal view ...
+	if(pView->getViewMode() == VIEW_NORMAL)
+		return true;
+	
 	return s_doContextMenu(EV_EMC_FRAME,pCallData->m_xPos, pCallData->m_yPos,pView,pFrame);
 }
 
@@ -4303,6 +4428,26 @@ Defun(contextTOC)
 	XAP_Frame * pFrame = static_cast<XAP_Frame *> (pView->getParentData());
 	UT_return_val_if_fail(pFrame, false);
 	return s_doContextMenu_no_move(EV_EMC_TOC,pCallData->m_xPos, pCallData->m_yPos,pView,pFrame);
+}
+
+
+Defun(contextMath)
+{
+	CHECK_FRAME;
+	ABIWORD_VIEW;
+	XAP_Frame * pFrame = static_cast<XAP_Frame *> (pView->getParentData());
+	UT_return_val_if_fail(pFrame, false);
+	bool b = false;
+	if(pView->isMathLoaded())
+	{
+	    b = s_doContextMenu_no_move( EV_EMC_MATH,pCallData->m_xPos, pCallData->m_yPos,pView,pFrame);
+	}
+	else
+	{
+	    b = s_doContextMenu_no_move( EV_EMC_TEXT,pCallData->m_xPos, pCallData->m_yPos,pView,pFrame);
+
+	}
+	return b;
 }
 
 Defun(contextMisspellText)
@@ -4787,93 +4932,15 @@ Defun(selectTOC)
 }
 
 
-
-static bool dlgEditLatexEquation(AV_View *pAV_View, EV_EditMethodCallData * pCallData, bool bStartDlg)
+Defun(editLatexAtPos)
 {
 	CHECK_FRAME;
 	ABIWORD_VIEW;
-	FL_DocLayout * pLayout = pView->getLayout();
-	GR_EmbedManager * pMath = pLayout->getEmbedManager("mathml");
-	if(pMath->isDefault())
-	{
-	  //
-	  // No MathML plugin. We can't edit this.
-	  //
-	  UT_DEBUGMSG(("No Math Plugin! \n"));
-	     return false;
-	}
-        PT_DocPosition pos = pView->getPoint()-1;
-	fl_BlockLayout * pBlock = pView->getCurrentBlock();
-	fp_Run * pRun = NULL;
-	fp_MathRun * pMathRun = NULL;
-	UT_sint32 x1,y1,x2,y2,height;
-	bool bEOL = false;
-	bool bDir = false;
-	pRun = pBlock->findPointCoords(pos,bEOL,x1,y1,x2,y2,height,bDir);
-	while(pRun && pRun->getLength() == 0)
-	{
-	  pRun = pRun->getNextRun();
-	}
-	if(pRun == NULL)
-	{
-	  return false;
-	}
-	if(pRun->getType() != FPRUN_MATH)
-        {
-	  return false;
-	}
-	pMathRun = static_cast<fp_MathRun *>(pRun);
-	const PP_AttrProp * pSpanAP = pMathRun->getSpanAP();
-	const XML_Char * pszLatexID = NULL;
-	pSpanAP->getAttribute("latexid",pszLatexID);
-	if(pszLatexID == NULL)
-	{
-	  return false;
-	}
-	if(pszLatexID == "")
-	{
-	  return false;
-	}
-       const UT_ByteBuf * pByteBuf = NULL;
-       UT_UTF8String sLatex;
-       PD_Document * pDoc= pView->getDocument();
-       bool bFoundLatexID = pDoc->getDataItemDataByName(pszLatexID, 
-						    const_cast<const UT_ByteBuf **>(&pByteBuf),
-						    NULL, NULL);
-
-       if(!bFoundLatexID)
-       {
-	 return true;
-       }
-       UT_UCS4_mbtowc myWC;
-       sLatex.appendBuf( *pByteBuf, myWC);
-       UT_DEBUGMSG(("Loaded Latex %s from PT \n",sLatex.utf8_str()));
-       XAP_Frame * pFrame = static_cast<XAP_Frame *> ( pView->getParentData());
-       pFrame->raise();
-
-       XAP_DialogFactory * pDialogFactory
-	 = static_cast<XAP_DialogFactory *>(pFrame->getDialogFactory());
-
-       AP_Dialog_Latex * pDialog
-	 = static_cast<AP_Dialog_Latex *>(pDialogFactory->requestDialog(AP_DIALOG_ID_LATEX));
-       UT_return_val_if_fail(pDialog, false);
-       if(pDialog->isRunning())
-       {
-	   pDialog->fillLatex(sLatex);
-	   pDialog->activate();
-       }
-       else if(bStartDlg)
-       {
-	   pDialog->runModeless(pFrame);
-	   pDialog->fillLatex(sLatex);
-       }
-       else
-       {
-	   pDialogFactory->releaseDialog(pDialog);
-       }
-       return true;
-
+	UT_DEBUGMSG(("Edit Math at Pos\n"));
+        PT_DocPosition pos = pView->getDocPositionFromLastXY();
+        return dlgEditLatexEquation(pAV_View, pCallData, true,pos);
 }
+
 
 Defun(editLatexEquation)
 {
@@ -4883,7 +4950,7 @@ Defun(editLatexEquation)
         PT_DocPosition posL = pView->getDocPositionFromXY(pCallData->m_xPos, pCallData->m_yPos);
 	PT_DocPosition posH = posL+1;
 	pView->cmdSelect(posL,posH);
-        return dlgEditLatexEquation(pAV_View, pCallData, true);
+        return dlgEditLatexEquation(pAV_View, pCallData, true,0);
 }
 
 
@@ -4948,7 +5015,7 @@ Defun(selectMath)
         PT_DocPosition posL = pView->getDocPositionFromXY(pCallData->m_xPos, pCallData->m_yPos);
 	PT_DocPosition posH = posL+1;
 	pView->cmdSelect(posL,posH);
-	dlgEditLatexEquation(pAV_View, pCallData, false);
+	dlgEditLatexEquation(pAV_View, pCallData, false,0);
 	return true;
 }
 
@@ -5204,7 +5271,7 @@ static bool pView->cmdCharInsert(const UT_UCS4Char * pText, UT_uint32 iLen,
 						bool bForce = false)
 {
 	// handle automatic language formatting
-	XAP_App * pApp = pFrame->getApp();
+	XAP_App * pApp = XAP_App::getApp();
 	UT_return_val_if_fail(pApp, false);
 	XAP_Prefs * pPrefs = pApp->getPrefs();
 	UT_return_val_if_fail(pPrefs, false);
@@ -5280,7 +5347,7 @@ Defun(insertClosingParenthesis)
 	UT_return_val_if_fail(pFrame, false);
 	ABIWORD_VIEW;
 
-	XAP_App * pApp = pFrame->getApp();
+	XAP_App * pApp = XAP_App::getApp();
 	UT_return_val_if_fail(pApp, false);
 	XAP_Prefs * pPrefs = pApp->getPrefs();
 	UT_return_val_if_fail(pPrefs, false);
@@ -5334,7 +5401,7 @@ Defun(insertOpeningParenthesis)
 	UT_return_val_if_fail(pFrame, false);
 	ABIWORD_VIEW;
 
-	XAP_App * pApp = pFrame->getApp();
+	XAP_App * pApp = XAP_App::getApp();
 	UT_return_val_if_fail(pApp, false);
 	XAP_Prefs * pPrefs = pApp->getPrefs();
 	UT_return_val_if_fail(pPrefs, false);
@@ -6709,7 +6776,7 @@ static bool checkViewModeIsPrint(FV_View * pView)
 			pView->setViewMode (VIEW_PRINT);
 
 			// POLICY: make this the default for new frames, too
-			XAP_App * pApp = pFrame->getApp();
+			XAP_App * pApp = XAP_App::getApp();
 			UT_return_val_if_fail(pApp, false);
 			XAP_Prefs * pPrefs = pApp->getPrefs();
 			UT_return_val_if_fail(pPrefs, false);
@@ -6938,7 +7005,8 @@ static bool s_doLangDlg(FV_View * pView)
 
 	XAP_Dialog_Language * pDialog
 		= static_cast<XAP_Dialog_Language *>(pDialogFactory->requestDialog(id));
-UT_return_val_if_fail(pDialog, false);
+	UT_return_val_if_fail(pDialog, false);
+	
 	const XML_Char ** props_in = NULL;
 	if (pView->getCharFormat(&props_in))
 	{
@@ -6992,8 +7060,16 @@ UT_return_val_if_fail(pDialog, false);
 		if(k > 0 && bChange)								// if something changed
 			pView->setCharFormat(props_out);
 
-		if(k > 0 &&pDialog->isMakeDocumentDefault())
+		if(k > 0 && pDialog->isMakeDocumentDefault() && UT_strcmp(pLang, s))
+		{
+			FL_DocLayout* pLayout = pView->getLayout();
+			
+			if(pLayout)
+				pLayout->queueAll(FL_DocLayout::bgcrSpelling | FL_DocLayout::bgcrGrammar);
+			
 			pDoc->setProperties(props_out);
+		}
+		
 	}
 
 	pDialogFactory->releaseDialog(pDialog);
@@ -7874,6 +7950,7 @@ bool s_doPrint(FV_View * pView, bool bTryToSuppressDialog, bool bPrintDirectly);
 #else
 static bool s_doPrint(FV_View * pView, bool bTryToSuppressDialog,bool bPrintDirectly)
 {
+#ifndef WITHOUT_PRINTING
 	XAP_Frame * pFrame = static_cast<XAP_Frame *> ( pView->getParentData());
 	UT_return_val_if_fail(pFrame, false);
 
@@ -7910,7 +7987,7 @@ UT_return_val_if_fail(pDialog, false);
 // Turn on Wait cursor
 //
 		pView->setCursorWait();
-		const XAP_StringSet * pSS = pFrame->getApp()->getStringSet();
+		const XAP_StringSet * pSS = XAP_App::getApp()->getStringSet();
 		UT_String msg (pSS->getValue(AP_STRING_ID_MSG_PrintingDoc));
 
 		pFrame->setStatusMessage ( static_cast<const XML_Char *>(msg.c_str()) );
@@ -7934,7 +8011,7 @@ UT_return_val_if_fail(pDialog, false);
 		font list, we can remove the 4 lines below. - MARCM
 		*/
 		FL_DocLayout * pDocLayout = new FL_DocLayout(doc,pGraphics);
-        FV_View * pPrintView = new FV_View(pFrame->getApp(),0,pDocLayout);
+        FV_View * pPrintView = new FV_View(XAP_App::getApp(),0,pDocLayout);
 		pPrintView->getLayout()->fillLayouts();
 		pPrintView->getLayout()->formatAll();
 		pPrintView->getLayout()->recalculateTOCFields();
@@ -7952,8 +8029,10 @@ UT_return_val_if_fail(pDialog, false);
 
 		// TODO these are here temporarily to make printing work.  We'll fix the hack later.
 		// BUGBUG assumes all pages are same size and orientation
-		UT_sint32 iWidth = pLayout->getWidth();
-		UT_sint32 iHeight = pLayout->getHeight() / pLayout->countPages();
+		// Must use the layout create with printer graphics here, because the screen
+		// layout adds screen margins to the width and height
+		UT_sint32 iWidth = pDocLayout->getWidth();
+		UT_sint32 iHeight = pDocLayout->getHeight() / pLayout->countPages();
 
 		const char *pDocName = ((doc->getFilename()) ? doc->getFilename() : pFrame->getNonDecoratedTitle());
 		s_actuallyPrint(doc, pGraphics, pPrintView, pDocName, nCopies, bCollate,
@@ -7975,11 +8054,16 @@ UT_return_val_if_fail(pDialog, false);
 	pDialogFactory->releaseDialog(pDialog);
 
 	return bOK;
+#else
+	UT_DEBUGMSG(("Printing capabilities not included\n"));
+	return true;
+#endif
 }
 #endif
 
 static bool s_doPrintPreview(FV_View * pView)
 {
+#ifndef WITHOUT_PRINTING
 	XAP_Frame * pFrame = static_cast<XAP_Frame *> ( pView->getParentData());
 	UT_return_val_if_fail(pFrame, false);
 
@@ -7990,7 +8074,7 @@ static bool s_doPrintPreview(FV_View * pView)
 
 	XAP_Dialog_PrintPreview * pDialog
 		= static_cast<XAP_Dialog_PrintPreview *>(pDialogFactory->requestDialog(XAP_DIALOG_ID_PRINTPREVIEW));
-UT_return_val_if_fail(pDialog, false);
+	UT_return_val_if_fail(pDialog, false);
 	FL_DocLayout* pLayout = pView->getLayout();
 	PD_Document * doc = pLayout->getDocument();
 
@@ -8014,7 +8098,7 @@ UT_return_val_if_fail(pDialog, false);
 	font list, we can remove the 4 lines below. - MARCM
 	*/
 	FL_DocLayout * pDocLayout = new FL_DocLayout(doc,pGraphics);
-	FV_View * pPrintView = new FV_View(pFrame->getApp(),0,pDocLayout);
+	FV_View * pPrintView = new FV_View(XAP_App::getApp(),0,pDocLayout);
 	pPrintView->getLayout()->fillLayouts();
 	pPrintView->getLayout()->formatAll();
 	pPrintView->getLayout()->recalculateTOCFields();
@@ -8042,7 +8126,10 @@ UT_return_val_if_fail(pDialog, false);
 
     // Turn off wait cursor
 	pView->clearCursorWait();
-
+#else
+	UT_DEBUGMSG(("Printing capabilities not included\n"));
+#endif
+	
 	return true;
 }
 
@@ -8051,7 +8138,7 @@ static bool s_doZoomDlg(FV_View * pView)
 	UT_String tmp;
 	XAP_Frame * pFrame = static_cast<XAP_Frame *> ( pView->getParentData());
 	UT_return_val_if_fail(pFrame, false);
-	XAP_App * pApp = pFrame->getApp();
+	XAP_App * pApp = XAP_App::getApp();
 	UT_return_val_if_fail(pApp, false);
 	XAP_Prefs * pPrefs = pApp->getPrefs();
 	UT_return_val_if_fail(pPrefs, false);
@@ -8105,7 +8192,7 @@ Defun1(zoom100)
 	ABIWORD_VIEW;
 	XAP_Frame * pFrame = static_cast<XAP_Frame *> ( pView->getParentData());
 	UT_return_val_if_fail(pFrame, false);
-	XAP_App * pApp = pFrame->getApp();
+	XAP_App * pApp = XAP_App::getApp();
 	UT_return_val_if_fail(pApp, false);
 	XAP_Prefs * pPrefs = pApp->getPrefs();
 	UT_return_val_if_fail(pPrefs, false);
@@ -8128,7 +8215,7 @@ Defun1(zoom200)
 	ABIWORD_VIEW;
   XAP_Frame * pFrame = static_cast<XAP_Frame *> ( pView->getParentData());
   UT_return_val_if_fail(pFrame, false);
-	XAP_App * pApp = pFrame->getApp();
+	XAP_App * pApp = XAP_App::getApp();
 	UT_return_val_if_fail(pApp, false);
 	XAP_Prefs * pPrefs = pApp->getPrefs();
 	UT_return_val_if_fail(pPrefs, false);
@@ -8152,7 +8239,7 @@ Defun1(zoom50)
 	ABIWORD_VIEW;
   XAP_Frame * pFrame = static_cast<XAP_Frame *> ( pView->getParentData());
   UT_return_val_if_fail(pFrame, false);
-	XAP_App * pApp = pFrame->getApp();
+	XAP_App * pApp = XAP_App::getApp();
 	UT_return_val_if_fail(pApp, false);
 	XAP_Prefs * pPrefs = pApp->getPrefs();
 	UT_return_val_if_fail(pPrefs, false);
@@ -8175,7 +8262,7 @@ Defun1(zoom75)
 	ABIWORD_VIEW;
   XAP_Frame * pFrame = static_cast<XAP_Frame *> ( pView->getParentData());
   UT_return_val_if_fail(pFrame, false);
-	XAP_App * pApp = pFrame->getApp();
+	XAP_App * pApp = XAP_App::getApp();
 	UT_return_val_if_fail(pApp, false);
 	XAP_Prefs * pPrefs = pApp->getPrefs();
 	UT_return_val_if_fail(pPrefs, false);
@@ -8198,7 +8285,7 @@ Defun1(zoomWidth)
 	ABIWORD_VIEW;
   XAP_Frame * pFrame = static_cast<XAP_Frame *> ( pView->getParentData());
   UT_return_val_if_fail(pFrame, false);
-	XAP_App * pApp = pFrame->getApp();
+	XAP_App * pApp = XAP_App::getApp();
 	UT_return_val_if_fail(pApp, false);
 	XAP_Prefs * pPrefs = pApp->getPrefs();
 	UT_return_val_if_fail(pPrefs, false);
@@ -8224,7 +8311,7 @@ Defun1(zoomWhole)
 	XAP_Frame * pFrame = static_cast<XAP_Frame *> ( pView->getParentData());
 	UT_return_val_if_fail(pFrame, false);
 
-	XAP_App * pApp = pFrame->getApp();
+	XAP_App * pApp = XAP_App::getApp();
 	UT_return_val_if_fail(pApp, false);
 	XAP_Prefs * pPrefs = pApp->getPrefs();
 	UT_return_val_if_fail(pPrefs, false);
@@ -8253,7 +8340,7 @@ Defun1(zoomIn)
 	pFrame->raise();
 	UT_uint32 newZoom = UT_MIN(pFrame->getZoomPercentage() + 10, XAP_DLG_ZOOM_MAXIMUM_ZOOM);
 	UT_String tmp (UT_String_sprintf("%d",newZoom));
-	XAP_App * pApp = pFrame->getApp();
+	XAP_App * pApp = XAP_App::getApp();
 	UT_return_val_if_fail(pApp, false);
 	XAP_Prefs * pPrefs = pApp->getPrefs();
 	UT_return_val_if_fail(pPrefs, false);
@@ -8278,7 +8365,7 @@ Defun1(zoomOut)
 	
 	UT_uint32 newZoom = UT_MAX(pFrame->getZoomPercentage() - 10, XAP_DLG_ZOOM_MINIMUM_ZOOM);
 	UT_String tmp (UT_String_sprintf("%d",newZoom));
-	XAP_App * pApp = pFrame->getApp();
+	XAP_App * pApp = XAP_App::getApp();
 	UT_return_val_if_fail(pApp, false);
 	XAP_Prefs * pPrefs = pApp->getPrefs();
 	UT_return_val_if_fail(pPrefs, false);
@@ -8354,7 +8441,7 @@ static bool s_doPageSetupDlg (FV_View * pView)
 	XAP_Frame * pFrame = static_cast<XAP_Frame *> ( pView->getParentData());
 	UT_return_val_if_fail(pFrame, false);
 
-	XAP_App * pApp = pFrame->getApp();
+	XAP_App * pApp = XAP_App::getApp();
 	UT_return_val_if_fail(pApp, false);
 
 	pFrame->raise();
@@ -8803,26 +8890,41 @@ UT_return_val_if_fail(pDialog, false);
 
 Defun1(print)
 {
+#ifndef WITHOUT_PRINTING
 	CHECK_FRAME;
 	ABIWORD_VIEW;
 	return s_doPrint(pView,false,false);
+#else
+	UT_DEBUGMSG(("Printing support not included\n"));
+	return true;
+#endif
 }
 
 Defun1(printDirectly)
 {
+#ifndef WITHOUT_PRINTING
 	CHECK_FRAME;
 	ABIWORD_VIEW;
 	return s_doPrint(pView,false,true);
+#else
+	UT_DEBUGMSG(("Printing support not included\n"));
+	return true;
+#endif
 }
 
 Defun1(printTB)
 {
+#ifndef WITHOUT_PRINTING
 	CHECK_FRAME;
 // print (intended to be from the tool-bar (where we'd like to
 	// suppress the dialog if possible))
 
 	ABIWORD_VIEW;
 	return s_doPrint(pView,true,false);
+#else
+	UT_DEBUGMSG(("Printing support not included\n"));
+	return true;
+#endif
 }
 
 Defun1(printPreview)
@@ -8927,7 +9029,7 @@ _viewTBx(AV_View* pAV_View, int num)
 	pFrame->toggleBar(num, pFrameData->m_bShowBar[num] );
 
 	// POLICY: make this the default for new frames, too
-	XAP_App * pApp = pFrame->getApp();
+	XAP_App * pApp = XAP_App::getApp();
 	UT_return_val_if_fail(pApp, false);
 	XAP_Prefs * pPrefs = pApp->getPrefs();
 	UT_return_val_if_fail(pPrefs, false);
@@ -8988,7 +9090,7 @@ Defun1(viewStd)
 	pFrame->toggleBar( 0, pFrameData->m_bShowBar[0] );
 
 	// POLICY: make this the default for new frames, too
-	XAP_App * pApp = pFrame->getApp();
+	XAP_App * pApp = XAP_App::getApp();
 	UT_return_val_if_fail(pApp, false);
 	XAP_Prefs * pPrefs = pApp->getPrefs();
 	UT_return_val_if_fail(pPrefs, false);
@@ -9022,7 +9124,7 @@ Defun1(viewFormat)
 	pFrame->toggleBar( 1, pFrameData->m_bShowBar[1] );
 
 	// POLICY: make this the default for new frames, too
-	XAP_App * pApp = pFrame->getApp();
+	XAP_App * pApp = XAP_App::getApp();
 	UT_return_val_if_fail(pApp, false);
 	XAP_Prefs * pPrefs = pApp->getPrefs();
 	UT_return_val_if_fail(pPrefs, false);
@@ -9055,7 +9157,7 @@ UT_return_val_if_fail(pFrameData, false);
 	pFrame->toggleBar( 2, pFrameData->m_bShowBar[2] );
 
 	// POLICY: make this the default for new frames, too
-	XAP_App * pApp = pFrame->getApp();
+	XAP_App * pApp = XAP_App::getApp();
 	UT_return_val_if_fail(pApp, false);
 	XAP_Prefs * pPrefs = pApp->getPrefs();
 	UT_return_val_if_fail(pPrefs, false);
@@ -9087,7 +9189,7 @@ UT_return_val_if_fail(pFrameData, false);
 	pFrame->toggleBar( 3, pFrameData->m_bShowBar[3] );
 
 	// POLICY: make this the default for new frames, too
-	XAP_App * pApp = pFrame->getApp();
+	XAP_App * pApp = XAP_App::getApp();
 	UT_return_val_if_fail(pApp, false);
 	XAP_Prefs * pPrefs = pApp->getPrefs();
 	UT_return_val_if_fail(pPrefs, false);
@@ -9106,7 +9208,7 @@ Defun(lockToolbarLayout)
 	XAP_Frame * pFrame = static_cast<XAP_Frame *>(pAV_View->getParentData());
 	UT_return_val_if_fail(pFrame, false);
 
-	XAP_App * pApp = pFrame->getApp();
+	XAP_App * pApp = XAP_App::getApp();
 	UT_return_val_if_fail(pApp, false);
 
 	XAP_Prefs * pPrefs = pApp->getPrefs();
@@ -9131,7 +9233,7 @@ Defun(defaultToolbarLayout)
 	XAP_Frame * pFrame = static_cast<XAP_Frame *>(pAV_View->getParentData());
 	UT_return_val_if_fail(pFrame, false);
 
-	XAP_App * pApp = pFrame->getApp();
+	XAP_App * pApp = XAP_App::getApp();
 	UT_return_val_if_fail(pApp, false);
 
 	AP_FrameData *pFrameData = static_cast<AP_FrameData *>(pFrame->getFrameData());
@@ -9172,7 +9274,7 @@ UT_return_val_if_fail(pFrameData, false);
 	pView->setViewMode (VIEW_NORMAL);
 
 	// POLICY: make this the default for new frames, too
-	XAP_App * pApp = pFrame->getApp();
+	XAP_App * pApp = XAP_App::getApp();
 	UT_return_val_if_fail(pApp, false);
 	XAP_Prefs * pPrefs = pApp->getPrefs();
 	UT_return_val_if_fail(pPrefs, false);
@@ -9205,7 +9307,7 @@ UT_return_val_if_fail(pFrameData, false);
 	pView->setViewMode (VIEW_WEB);
 
 	// POLICY: make this the default for new frames, too
-	XAP_App * pApp = pFrame->getApp();
+	XAP_App * pApp = XAP_App::getApp();
 	UT_return_val_if_fail(pApp, false);
 	XAP_Prefs * pPrefs = pApp->getPrefs();
 	UT_return_val_if_fail(pPrefs, false);
@@ -9238,7 +9340,7 @@ UT_return_val_if_fail(pFrameData, false);
 	pView->setViewMode (VIEW_PRINT);
 
 	// POLICY: make this the default for new frames, too
-	XAP_App * pApp = pFrame->getApp();
+	XAP_App * pApp = XAP_App::getApp();
 	UT_return_val_if_fail(pApp, false);
 	XAP_Prefs * pPrefs = pApp->getPrefs();
 	UT_return_val_if_fail(pPrefs, false);
@@ -9274,7 +9376,7 @@ UT_return_val_if_fail(pFrameData, false);	// don't do anything if fullscreen
 	pFrame->toggleStatusBar(pFrameData->m_bShowStatusBar);
 
 	// POLICY: make this the default for new frames, too
-	XAP_App * pApp = pFrame->getApp();
+	XAP_App * pApp = XAP_App::getApp();
 	UT_return_val_if_fail(pApp, false);
 	XAP_Prefs * pPrefs = pApp->getPrefs();
 	UT_return_val_if_fail(pPrefs, false);
@@ -9303,7 +9405,7 @@ UT_return_val_if_fail(pFrameData, false);
 	pFrame->toggleRuler(pFrameData->m_bShowRuler);
 
 	// POLICY: make this the default for new frames, too
-	XAP_App * pApp = pFrame->getApp();
+	XAP_App * pApp = XAP_App::getApp();
 	UT_return_val_if_fail(pApp, false);
 	XAP_Prefs * pPrefs = pApp->getPrefs();
 	UT_return_val_if_fail(pPrefs, false);
@@ -9379,7 +9481,7 @@ UT_return_val_if_fail(pFrameData, false);
 	pView->setShowPara(pFrameData->m_bShowPara);
 
 	// POLICY: make this the default for new frames, too
-	XAP_App * pApp = pFrame->getApp();
+	XAP_App * pApp = XAP_App::getApp();
 	UT_return_val_if_fail(pApp, false);
 	XAP_Prefs * pPrefs = pApp->getPrefs();
 	UT_return_val_if_fail(pPrefs, false);
@@ -9418,7 +9520,7 @@ Defun(zoom)
 
 	XAP_Frame * pFrame = static_cast<XAP_Frame *> ( pAV_View->getParentData());
 	UT_return_val_if_fail(pFrame, false);
-	XAP_App * pApp = pFrame->getApp();
+	XAP_App * pApp = XAP_App::getApp();
 	UT_return_val_if_fail(pApp, false);
 	XAP_Prefs * pPrefs = pApp->getPrefs();
 	UT_return_val_if_fail(pPrefs, false);
@@ -9678,7 +9780,7 @@ Defun1(insFile)
 
 	XAP_Frame * pFrame = static_cast<XAP_Frame *>(pAV_View->getParentData());
 	UT_return_val_if_fail(pFrame, false);
-	XAP_App * pApp = pFrame->getApp();
+	XAP_App * pApp = XAP_App::getApp();
 	
 	IEFileType fType = IEFT_Unknown;
 	char *pathName = NULL;
@@ -10219,11 +10321,11 @@ UT_return_val_if_fail(pDialog, false);
 	fl_DocSectionLayout * pDSL = pBL->getDocSectionLayout();
 	UT_sint32 iColWidth = pDSL->getActualColumnWidth();
 	UT_sint32 iColHeight = pDSL->getActualColumnHeight();
-	max_width  = 0.95*iColWidth*72.0/UT_LAYOUT_RESOLUTION; // units are 1/72 of an inch
-	max_height = 0.95*iColHeight*72.0/UT_LAYOUT_RESOLUTION;
+	max_width  = 0.95*iColWidth/UT_LAYOUT_RESOLUTION;
+	max_height = 0.95*iColHeight/UT_LAYOUT_RESOLUTION;
 
-	pDialog->setMaxWidth (max_width);
-	pDialog->setMaxHeight (max_height);
+	pDialog->setMaxWidth (max_width*72.0);
+	pDialog->setMaxHeight (max_height*72.0); // units are 1/72 of an inch
 	UT_DEBUGMSG(("formatting  image: %d\n", pCallData->m_xPos));
 	PT_DocPosition pos = pView->getDocPositionFromLastXY();
 
@@ -10279,39 +10381,10 @@ UT_return_val_if_fail(pDialog, false);
 		  FREEP(description);
 	  }
 
-	  bool bDoWidth = false;
+	  double width = 0., height = 0.;
 	  if(szWidth)
-	  {
-		  double dum = UT_convertToInches(szWidth);
-		  if(dum > max_width)
-		  {
-			  dum = max_width;
-		  }
-		  if(dum > 0.0001)
-		  {
-			  bDoWidth = true;
-		  }
-	  }
-	  bool bDoHeight = false;
-	  if(szHeight)
-	  {
-		  double dum = UT_convertToInches(szHeight);
-		  if(dum > max_height)
-		  {
-			  dum = max_height;
-		  }
-		  if(dum > 0.0001)
-		  {
-			  bDoHeight = true;
-		  }
-	  }
-
-	  if(bDoWidth)
-	  {
-		  double dum = UT_convertToInches(szWidth);
-		  pDialog->setWidth( UT_convertInchesToDimensionString(dim,dum));
-	  }
-	  else
+		  width = UT_convertToInches(szWidth);
+	  if (width < 0.0001)
 	  {
 		  iWidth = 0;
 		  UT_return_val_if_fail (pRun, false);
@@ -10325,19 +10398,11 @@ UT_return_val_if_fail(pDialog, false);
 			  FREEP(props_in);
 			  return false;
 		  }
-		  double width = iWidth*72.0/UT_LAYOUT_RESOLUTION;
-		  if(width > max_width)
-		  {
-			  width = max_width;
+		  width = iWidth*72.0/UT_LAYOUT_RESOLUTION;
 		  }
-		  pDialog->setWidth(width);
-	  }
-	  if(bDoHeight)
-	  {
-		  double dum = UT_convertToInches(szHeight);
-		  pDialog->setHeight( UT_convertInchesToDimensionString(dim,dum));
-	  }
-	  else
+	  if(szHeight)
+	      height = UT_convertToInches(szHeight);
+	  if (height < 0.0001)
 	  {
 		  iHeight = 0;
 		  UT_return_val_if_fail (pRun, false);
@@ -10351,13 +10416,20 @@ UT_return_val_if_fail(pDialog, false);
 			  FREEP(props_in);
 			  return false;
 		  }
-		  double height = iHeight*72.0/UT_LAYOUT_RESOLUTION;
-		  if(height > max_height)
-		  {
-			  height = max_height;
-		  }
-		  pDialog->setHeight(height);
+		  height = iHeight*72.0/UT_LAYOUT_RESOLUTION;
 	  }
+	  if(width > max_width)
+	  {
+	    height *= max_width / width;
+	    width = max_width;
+	  }
+	  if(height > max_height)
+	  {
+	    width *= max_height / height;
+	    height = max_height;
+	  }
+	  pDialog->setWidth( UT_convertInchesToDimensionString(dim,width));
+	  pDialog->setHeight( UT_convertInchesToDimensionString(dim,height));
 	  FREEP(props_in);
 
 	  WRAPPING_TYPE oldWrap = WRAP_INLINE;
@@ -10870,7 +10942,7 @@ UT_return_val_if_fail(pDialog, false);	if(pView->isHdrFtrEdit())
 //
 // update the combo box with the new styles.
 //
-	XAP_App * pApp = pFrame->getApp();
+	XAP_App * pApp = XAP_App::getApp();
 	UT_return_val_if_fail(pApp, false);
 	//
 	// Get all clones of this frame and set styles combo box
@@ -11395,6 +11467,67 @@ Defun1(toggleDomDirection)
 }
 
 
+Defun1(toggleDomDirectionSect)
+{
+	CHECK_FRAME;
+	ABIWORD_VIEW;
+
+	const XML_Char * properties[] = { "dom-dir", NULL, 0};
+	const XML_Char drtl[]	= "rtl";
+	const XML_Char dltr[]	= "ltr";
+
+	fl_BlockLayout * pBl = pView->getCurrentBlock();
+	UT_return_val_if_fail( pBl, false );
+
+	fl_DocSectionLayout * pSL = pBl->getDocSectionLayout();
+	UT_return_val_if_fail( pSL, false );
+	
+	if(pSL->getColumnOrder())
+	{
+		properties[1] = static_cast<const XML_Char *>(&dltr[0]);
+	}
+	else
+	{
+		properties[1] = static_cast<const XML_Char *>(&drtl[0]);
+	}
+
+	pView->setSectionFormat(properties);
+
+	return true;
+}
+
+Defun1(toggleDomDirectionDoc)
+{
+	CHECK_FRAME;
+	ABIWORD_VIEW;
+
+	PD_Document * pDoc = pView->getDocument();
+	UT_return_val_if_fail(pDoc,false);
+
+	const PP_AttrProp * pAP = pDoc->getAttrProp();
+	UT_return_val_if_fail( pAP, false );
+
+	const XML_Char * properties[] = { "dom-dir", NULL, 0};
+	const XML_Char drtl[]	= "rtl";
+	const XML_Char dltr[]	= "ltr";
+	const XML_Char * szValue;
+	
+	UT_return_val_if_fail(pAP->getProperty(properties[0], szValue), false);
+	
+	if(!strcmp(szValue, drtl))
+	{
+		properties[1] = static_cast<const XML_Char *>(&dltr[0]);
+	}
+	else
+	{
+		properties[1] = static_cast<const XML_Char *>(&drtl[0]);
+	}
+
+	UT_return_val_if_fail(pDoc->setProperties(properties), false);
+
+	return true;
+}
+
 Defun1(doBullets)
 {
 	CHECK_FRAME;
@@ -11688,7 +11821,7 @@ Defun1(cycleInputMode)
 
 	XAP_Frame * pFrame = static_cast<XAP_Frame *> ( pAV_View->getParentData());
 	UT_return_val_if_fail(pFrame, false);
-	XAP_App * pApp = pFrame->getApp();
+	XAP_App * pApp = XAP_App::getApp();
 	UT_return_val_if_fail(pApp, false);
 	XAP_Prefs * pPrefs = pApp->getPrefs();
 	UT_return_val_if_fail(pPrefs, false);
@@ -11720,7 +11853,7 @@ Defun1(toggleInsertMode)
 	CHECK_FRAME;
 	XAP_Frame * pFrame = static_cast<XAP_Frame *> ( pAV_View->getParentData());
 	UT_return_val_if_fail(pFrame, false);
-	XAP_App * pApp = pFrame->getApp();
+	XAP_App * pApp = XAP_App::getApp();
 	UT_return_val_if_fail(pApp, false);
 	XAP_Prefs * pPrefs = pApp->getPrefs();
 	UT_return_val_if_fail(pPrefs, false);
@@ -13153,9 +13286,12 @@ Defun(beginVDrag)
 	CHECK_FRAME;
 	ABIWORD_VIEW;
 	AP_TopRuler * pTopRuler = pView->getTopRuler();
+
 	if(pTopRuler == NULL)
 	{
 		XAP_Frame * pFrame = static_cast<XAP_Frame *> (pView->getParentData());
+		UT_return_val_if_fail( pFrame, true );
+		
 		pTopRuler = new AP_TopRuler(pFrame);
 		AP_FrameData *pFrameData = static_cast<AP_FrameData *>(pFrame->getFrameData());
 		pFrameData->m_pTopRuler = pTopRuler;
@@ -13166,12 +13302,14 @@ Defun(beginVDrag)
 	{
 		return true;
 	}
+
 	pView->setDragTableLine(true);
 	UT_sint32 x = pCallData->m_xPos;
 	UT_sint32 y = pCallData->m_yPos;
 	PT_DocPosition pos = pView->getDocPositionFromXY(x, y);
 	xxx_UT_DEBUGMSG(("ap_EditMethods.cpp:: VDrag begin \n"));
-	sTopRulerHeight = pTopRuler->setTableLineDrag(pos,x,siFixed);
+	
+	sTopRulerHeight = pTopRuler ? pTopRuler->setTableLineDrag(pos,x,siFixed) : 0;
 	pView->getGraphics()->setCursor(GR_Graphics::GR_CURSOR_GRAB);
 	return true;
 }
@@ -13181,15 +13319,18 @@ Defun(beginHDrag)
 	CHECK_FRAME;
 	ABIWORD_VIEW;
 	AP_LeftRuler * pLeftRuler = pView->getLeftRuler();
+
 	if(pLeftRuler == NULL)
 	{
 		XAP_Frame * pFrame = static_cast<XAP_Frame *> (pView->getParentData());
+
 		pLeftRuler = new AP_LeftRuler(pFrame);
 		AP_FrameData *pFrameData = static_cast<AP_FrameData *>(pFrame->getFrameData());
 		pFrameData->m_pLeftRuler = pLeftRuler;
 		pView->setLeftRuler(pLeftRuler);
 		pLeftRuler->setViewHidden(pView);
 	}
+
 	pView->setDragTableLine(true);
 	UT_sint32 x = pCallData->m_xPos;
 	UT_sint32 y = pCallData->m_yPos;
@@ -13774,14 +13915,14 @@ Defun(btn0VisualText)
 Defun(repeatThisRow)
 {
 	CHECK_FRAME;
-	ABIWORD_VIEW;
+//	ABIWORD_VIEW;
 	return true;
 }
 
 Defun(removeThisRowRepeat)
 {
 	CHECK_FRAME;
-	ABIWORD_VIEW;
+//	ABIWORD_VIEW;
 	return true;
 }
 

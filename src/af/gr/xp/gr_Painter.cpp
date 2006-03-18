@@ -117,6 +117,16 @@ void GR_Painter::drawChars(const UT_UCSChar* pChars,
 	m_pGr->drawChars (pChars, iCharOffset, iLength, xoff, yoff, pCharWidths);
 }
 
+void GR_Painter::drawCharsRelativeToBaseline(const UT_UCSChar* pChars,
+						   int iCharOffset,
+						   int iLength,
+						   UT_sint32 xoff,
+						   UT_sint32 yoff,
+						   int* pCharWidths)
+{
+	m_pGr->drawCharsRelativeToBaseline (pChars, iCharOffset, iLength, xoff, yoff, pCharWidths);
+}
+
 void GR_Painter::renderChars(GR_RenderInfo & ri)
 {
 	m_pGr->renderChars(ri);

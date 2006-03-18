@@ -121,10 +121,10 @@ void AP_UnixTopRuler::setView(AV_View * pView)
 
 	DELETEP(m_pG);
 
-	XAP_UnixApp * app = static_cast<XAP_UnixApp *>(m_pFrame->getApp());
+	XAP_UnixApp * app = static_cast<XAP_UnixApp *>(XAP_App::getApp());
 	XAP_UnixFontManager * fontManager = app->getFontManager();
 	//GR_UnixGraphics * pG = new GR_UnixGraphics(m_wTopRuler->window, fontManager, m_pFrame->getApp());
-	GR_UnixAllocInfo ai(m_wTopRuler->window, fontManager, m_pFrame->getApp());
+	GR_UnixAllocInfo ai(m_wTopRuler->window, fontManager);
 	m_pG = (GR_UnixGraphics*) XAP_App::getApp()->newGraphics(ai);
 
 	UT_ASSERT(m_pG);

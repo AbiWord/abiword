@@ -430,7 +430,6 @@ void FV_View::_deleteSelection(PP_AttrProp *p_AttrProp_Before, bool bNoUpdate)
 		{
 			bDeleteTables = true;
 			iLow--;
-			iHigh;
 		}
 	}
 	if(!isInFrame(iLow) && isInFrame(iHigh))
@@ -2426,6 +2425,27 @@ FV_View::_computeFindPrefix(const UT_UCSChar* pFind)
 	return pPrefix;
 }
 
+static inline UT_UCS4Char s_smartQuoteToPlain(UT_UCS4Char currentChar)
+{
+	switch(currentChar)
+	{
+		case 0x201A:     //single low 9 quotation
+		case 0x201B:     //single reverse comma quotation
+		case UCS_LQUOTE:
+		case UCS_RQUOTE: return (UT_UCS4Char) '\'';
+
+		case 0x201E:     //double low 9 quotation
+		case 0x201F:     //double reverse comma quotation
+		case UCS_LDBLQUOTE:
+		case UCS_RDBLQUOTE: return (UT_UCS4Char) '\"';
+
+		default: return currentChar;
+	}
+
+	return currentChar;
+}
+
+
 /*!
  Find next occurrence of string
  \param pFind String to find
@@ -2477,14 +2497,15 @@ FV_View::_findNext(UT_uint32* pPrefix,
 	
 		while ((currentChar = buffer[i]) /*|| foundAt == -1*/)
 		{
-			// Convert smart quote apostrophe to ASCII single quote to
-			// match seach input
-			if (currentChar == UCS_RQUOTE) currentChar = '\'';
+			// Convert smart quote to plain equivalent
+			// for smart quote matching
+			UT_UCS4Char cPlainQuote = s_smartQuoteToPlain(currentChar);
+			
 			if (!m_bMatchCase) currentChar = UT_UCS4_tolower(currentChar);
 			
-			while (t > 0 && pFindStr[t] != currentChar)
+			while (t > 0 && pFindStr[t] != currentChar && pFindStr[t] != cPlainQuote)
 				t = pPrefix[t-1];
-			if (pFindStr[t] == currentChar)
+			if (pFindStr[t] == currentChar || pFindStr[t] == cPlainQuote)
 				t++;
 			i++;
 			if (t == m)
@@ -2592,13 +2613,14 @@ FV_View::_findPrev(UT_uint32* pPrefix,
 		{
 			t = 0;
 			currentChar = buffer[i];
-			if (currentChar == UCS_RQUOTE) currentChar = '\'';
+			UT_UCS4Char cPlainQuote = s_smartQuoteToPlain(currentChar);
+
 			if (!m_bMatchCase) currentChar = UT_UCS4_tolower(currentChar);
-			while ((m_sFind[t] == currentChar)&& ( t <= m))
+			while (((m_sFind[t] == currentChar)||(m_sFind[t] == cPlainQuote))&& ( t <= m))
 			{
 				t++;
 				currentChar = buffer[i + t];
-				if (currentChar == UCS_RQUOTE) currentChar = '\'';
+				cPlainQuote = s_smartQuoteToPlain(currentChar);
 				if (!m_bMatchCase) currentChar = UT_UCS4_tolower(currentChar);
 			}	
 				
@@ -3174,7 +3196,7 @@ FV_View::_findGetCurrentBlock(void)
 }
 
 PT_DocPosition
-FV_View::_findGetCurrentOffset(void)
+FV_View::_findGetCurrentOffset()
 {
 	return (m_iInsPoint - _findGetCurrentBlock()->getPosition(false));
 }
@@ -5214,7 +5236,7 @@ UT_Error FV_View::_deleteHyperlink(PT_DocPosition &pos1, bool bSignal)
 	// now reset the hyperlink member for the runs that belonged to this
 	// hyperlink
 
-	fp_Run * pRun = pRun = pH1->getNextRun();
+	fp_Run * pRun = pH1->getNextRun();
 	UT_ASSERT(pRun);
 	while(pRun && pRun->getHyperlink() != NULL)
 	{

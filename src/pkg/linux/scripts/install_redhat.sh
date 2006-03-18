@@ -67,7 +67,7 @@ mkdir -p $TARGET/bin
 
 echo "Installing program binaries to [$TARGET/bin]..."
 # Setup bins (only dynamic in RPM)
-(cp $SRCDIR/bin/AbiWord-2.4 $TARGET/bin)
+(cp $SRCDIR/bin/AbiWord-2.6 $TARGET/bin)
 chmod 755 $TARGET/bin
 
 

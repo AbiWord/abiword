@@ -389,7 +389,7 @@ cd ../abi
 * Sun Sep 29 2002 Rui M. Seabra <rms@1407.org>
 - Whole lotta changes due to the -2.0 change for launching betas
 
-* Fri Sep 5 2002 Marc Maurer <j.m.maurer@student.utwente.nl>
+* Fri Sep 5 2002 Marc Maurer <uwog@uwog.net>
 - Only generate the embeddable package when GNOME is enabled
 
 * Fri Aug 23 2002 Rui M. Silva Seabra <rms@1407.org>
@@ -407,7 +407,7 @@ cd ../abi
                   Rui M. Silva Seabra <rms@1407.org>
 - Pretty much a total rewrite of the way plugins are handled.
   
-* Wed May 14 2002 J.M. Maurer <j.m.maurer@student.utwente.nl>
+* Wed May 14 2002 J.M. Maurer <uwog@uwog.net>
 - Require libxml2 instead of libxml for the XML build
 
 * Sat Apr  6 2002 Joaquín Cuenca Abela <cuenca@ie2.u-psud.fr>

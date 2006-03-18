@@ -85,7 +85,7 @@ const int ID_BUTTON_URL		= 3000;
 void XAP_Win32Dialog_About::runModal(XAP_Frame * pFrame)
 {
 	// raise the dialog
-	XAP_Win32App * pWin32App = static_cast<XAP_Win32App *>(m_pApp);
+	XAP_Win32App * pWin32App = static_cast<XAP_Win32App *>(XAP_App::getApp());
 	m_pFrame = pFrame;
 
 	UT_ByteBuf * pBB = new UT_ByteBuf(g_pngSidebar_sizeof);
@@ -120,9 +120,9 @@ void XAP_Win32Dialog_About::runModal(XAP_Frame * pFrame)
 	pWin32App->enableAllTopLevelWindows(FALSE);
 
 	char buf[1024];
-	const XAP_StringSet*  pSS = m_pApp->getStringSet();	
+	const XAP_StringSet*  pSS = XAP_App::getApp()->getStringSet();	
 	sprintf(buf, pSS->getValue(XAP_STRING_ID_DLG_ABOUT_Title), 
-			m_pApp->getApplicationName());
+			XAP_App::getApp()->getApplicationName());
 
 	HWND hwndAbout = UT_CreateWindowEx(	0L, pClassName,
 										buf,
@@ -174,7 +174,7 @@ void XAP_Win32Dialog_About::runModal(XAP_Frame * pFrame)
 								NULL);
 
 	HWND hwndStatic_Heading = CreateWindow("STATIC",
-										   m_pApp->getApplicationName(),
+										   XAP_App::getApp()->getApplicationName(),
 										   WS_CHILD | WS_VISIBLE | SS_CENTER,
 										   iImageWidth,
 										   BUTTON_GAP,
@@ -210,7 +210,7 @@ void XAP_Win32Dialog_About::runModal(XAP_Frame * pFrame)
 											 pWin32App->getInstance(),
 											 NULL);
 
-	sprintf(buf, XAP_ABOUT_GPL_LONG, m_pApp->getApplicationName());
+	sprintf(buf, XAP_ABOUT_GPL_LONG, XAP_App::getApp()->getApplicationName());
 	HWND hwndStatic_GPL = CreateWindow("STATIC",
 									   buf,
 									   WS_CHILD | WS_VISIBLE | SS_LEFT,
@@ -340,7 +340,7 @@ BOOL CALLBACK XAP_Win32Dialog_About::s_dlgProc(HWND hWnd,UINT msg,WPARAM wParam,
 		FillRect(hdc, &r, GetSysColorBrush(COLOR_BTNFACE));
 
 
-		GR_Win32AllocInfo ai(hdc,hWnd,pThis->m_pFrame->getApp());
+		GR_Win32AllocInfo ai(hdc,hWnd);
 		GR_Win32Graphics *pGR = (GR_Win32Graphics *)XAP_App::getApp()->newGraphics(ai);
 		UT_return_val_if_fail(pGR, 0);
 		

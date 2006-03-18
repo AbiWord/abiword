@@ -28,6 +28,7 @@
 #include "ut_assert.h"
 #include "ut_string.h"
 
+#include "xap_CocoaApp.h"
 #include "xap_CocoaToolbar_Icons.h"
 
 static NSPoint s_ButtonOnPoint[12] = {
@@ -133,6 +134,48 @@ AP_CocoaToolbar_Icons::~AP_CocoaToolbar_Icons(void)
 	// TODO handed out, so that we can delete them ??
 }
 
+NSString * AP_CocoaToolbar_Icons::getPNGNameForIcon(const char * szIconID)
+{
+	const char * szIconName = NULL;
+
+	if (AP_Toolbar_Icons::_findIconNameForID(szIconID, &szIconName))
+	{
+		UT_UTF8String name(szIconName);
+
+		if (char * suffix = strstr(szIconName, "_xpm"))
+		{
+			name.assign(szIconName, suffix - szIconName);
+		}
+		name += ".png";
+
+		return [NSString stringWithUTF8String:(name.utf8_str())];
+	}
+
+	UT_ASSERT_NOT_REACHED();
+	return nil;
+}
+
+NSString * AP_CocoaToolbar_Icons::getFilenameForIcon(NSString * iconName)
+{
+	NSString * filename = iconName;
+
+	if (iconName)
+	{
+		XAP_CocoaApp * pApp = static_cast<XAP_CocoaApp *>(XAP_App::getApp());
+
+		UT_String path;
+
+		if (pApp->findAbiSuiteLibFile(path, [iconName UTF8String], "ToolbarIcons")) // I'd love to do this inside the bundle but Cocoa gets confused if I try
+		{
+			filename = [NSString stringWithUTF8String:(path.c_str())];
+		}
+		else if (pApp->findAbiSuiteBundleFile(path, [iconName UTF8String]))
+		{
+			filename = [NSString stringWithUTF8String:(path.c_str())];
+		}
+	}
+	return filename;
+}
 
 typedef struct _my_argb {
 	UT_RGBColor rgb;
@@ -146,31 +189,34 @@ typedef struct _my_argb {
 	\param szIconName the name of the icon
 	\return the newly allocated NSImage [autoreleased]
  */
-NSImage* AP_CocoaToolbar_Icons::getPixmapForIcon(const char * szIconID)
+NSImage * AP_CocoaToolbar_Icons::getPixmapForIcon(const char * szIconID)
 {
-	UT_ASSERT(szIconID && *szIconID);
-	NSImage *pixmap = nil;
-
 #if 1
-	//begin cocoa icon loading
-	const char * szIconName;
-	if (AP_Toolbar_Icons::_findIconNameForID(szIconID, &szIconName)) {
-		char *s = strdup(szIconName);
-		char *tmp = strstr(s, "_xpm");
-		if (tmp) {
-			*tmp = 0;
+	UT_ASSERT(szIconID && *szIconID);
+
+	NSImage * pixmap = nil;
+
+	NSString * path = AP_CocoaToolbar_Icons::getFilenameForIcon(AP_CocoaToolbar_Icons::getPNGNameForIcon(szIconID));
+
+	if (path)
+	{
+		pixmap = [[NSImage alloc] initWithContentsOfFile:path];
+
+		if (pixmap)
+		{
+			[pixmap autorelease];
 		}
-		NSString * str = [[NSString alloc] initWithUTF8String:s];
-		pixmap = [NSImage imageNamed:str];
-		[str release];
-		FREEP(s);
-		UT_ASSERT(pixmap);
-		return pixmap;
+		else
+		{
+			UT_ASSERT(pixmap);
+			pixmap = [NSImage imageNamed:@"NSApplicationIcon"];
+		}
 	}
-	else {
+	else
+	{
 		UT_ASSERT_NOT_REACHED();
-		return nil;
 	}
+	return pixmap;
 #else
 	UT_uint32 width, height, nrColors, charsPerPixel;
 	

@@ -25,6 +25,8 @@
 
 #import <Cocoa/Cocoa.h>
 
+#include "xap_CocoaPlugin.h"
+
 class AV_View;
 class XAP_Frame;
 
@@ -32,7 +34,6 @@ class XAP_Frame;
 
 @class XAP_CocoaFontFamilyHelper;
 @class XAP_CocoaFontReference;
-@class XAP_CocoaPlugin;
 
 @class AP_CocoaPlugin_MenuIDRef;
 
@@ -110,6 +111,8 @@ enum XAP_CocoaAppMenu_Id
 	NSMenuItem *			m_PluginsToolsSeparator;
 
 	NSMutableArray *		m_FilesRequestedDuringLaunch;
+
+	NSMutableArray *		m_ToolProviders;
 
 	BOOL			m_bApplicationLaunching;
 	BOOL			m_bAutoLoadPluginsAfterLaunch;
@@ -256,6 +259,25 @@ enum XAP_CocoaAppMenu_Id
  * with a given menu ID.
  */
 - (void)removeRefForMenuID:(NSNumber *)menuid;
+
+/**
+ * Get a list of all the tool providers.
+ * Each tool provider is of type id <NSObject, XAP_CocoaPlugin_ToolProvider>.
+ * 
+ * \return The tool providers.
+ */
+- (NSArray *)toolProviders;
+
+/**
+ * Find a tool provider by name.
+ * (TODO: If plug-ins are registering tool providers, we need to implement a notification
+ *        system to update toolbar systems.)
+ * 
+ * \param name The name of the tool provider to find.
+ * 
+ * \return The tool provider, or nil if none is registered with the given name.
+ */
+- (id <NSObject, XAP_CocoaPlugin_ToolProvider>)toolProvider:(NSString *)name;
 
 @end
 

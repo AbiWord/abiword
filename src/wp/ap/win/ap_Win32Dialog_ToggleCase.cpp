@@ -87,6 +87,7 @@ BOOL AP_Win32Dialog_ToggleCase::_onInitDialog(HWND hWnd, WPARAM wParam, LPARAM l
 	_DS(TOGGLECASE_RDO_ToggleCase,		DLG_ToggleCase_ToggleCase);
 
 	m_helper.checkButton(AP_RID_DIALOG_TOGGLECASE_RDO_SentenceCase, true);
+	XAP_Win32DialogHelper::s_centerDialog(hWnd);	
 
 	return 1;							// 1 == we did not call SetFocus()
 }

@@ -389,7 +389,7 @@ bool RTF_msword97_level::ParseLevelText(const UT_String & szLevelText,const UT_S
 	UT_sint32 icurrent = 0;
 	UT_sint32 istrlen = szLevelText.size();
 	bool bIsUnicode;
-	while (pText[0] != '\0')
+	while (pText[0] != '\0' && icurrent < 1000)
 	{
 		bIsUnicode = ((pText[0] == '\\') && (pText[1] == '\'') && UT_UCS4_isdigit(pText[2]) && UT_UCS4_isdigit(pText[3]));
 		// A broken exporter writes some junk at the beginning of the string.
@@ -530,7 +530,7 @@ RTF_msword97_listOverride::RTF_msword97_listOverride(IE_Imp_RTF * pie_rtf )
 
 	m_OverrideCount = 0;
 	m_pParaProps = NULL;
-m_pParaProps = NULL;
+	m_pCharProps = NULL;
 	m_pbParaProps = NULL;
 	m_pbCharProps = NULL;
 	m_pie_rtf = pie_rtf;
@@ -540,7 +540,7 @@ m_pParaProps = NULL;
 RTF_msword97_listOverride::~RTF_msword97_listOverride(void)
 {
 	DELETEP(m_pParaProps);
-	DELETEP(m_pParaProps);
+	DELETEP(m_pCharProps);
 	DELETEP(m_pbParaProps);
 	DELETEP(m_pbCharProps);
 }
@@ -4588,6 +4588,13 @@ bool IE_Imp_RTF::TranslateKeywordID(RTF_KEYWORD_ID keywordID,
 		break;
 	case RTF_KW_margl:
 		m_sectdProps.m_leftMargTwips = param ;
+
+		// bug 9432: the \margl is document default, and we have to adjust the current
+		// settings accordingly -- this assumes that \margl is not preceeded by \marglsxn,
+		// but since \margl is document wide setting this should be true in normal rtf
+		// documents (otherwise we would need to add m_b*Changed members to the sect props
+		// for everyting).
+		m_currentRTFState.m_sectionProps.m_leftMargTwips = param;
 		break;
 	case RTF_KW_margrsxn:
 		// Right margin of section
@@ -4595,6 +4602,13 @@ bool IE_Imp_RTF::TranslateKeywordID(RTF_KEYWORD_ID keywordID,
 		break;
 	case RTF_KW_margr:
 		m_sectdProps.m_rightMargTwips = param;
+
+		// bug 9432: the \margl is document default, and we have to adjust the current
+		// settings accordingly -- this assumes that \margl is not preceeded by \marglsxn,
+		// but since \margl is document wide setting this should be true in normal rtf
+		// documents (otherwise we would need to add m_b*Changed members to the sect props
+		// for everyting).
+		m_currentRTFState.m_sectionProps.m_rightMargTwips = param;
 		break;
 	case RTF_KW_margtsxn:
 		// top margin of section
@@ -4602,6 +4616,13 @@ bool IE_Imp_RTF::TranslateKeywordID(RTF_KEYWORD_ID keywordID,
 		break;
 	case RTF_KW_margt:
 		m_sectdProps.m_topMargTwips = param;
+
+		// bug 9432: the \margl is document default, and we have to adjust the current
+		// settings accordingly -- this assumes that \margl is not preceeded by \marglsxn,
+		// but since \margl is document wide setting this should be true in normal rtf
+		// documents (otherwise we would need to add m_b*Changed members to the sect props
+		// for everyting).
+		m_currentRTFState.m_sectionProps.m_topMargTwips = param;
 		break;
 	case RTF_KW_margbsxn:
 		// bottom margin of section
@@ -4609,6 +4630,13 @@ bool IE_Imp_RTF::TranslateKeywordID(RTF_KEYWORD_ID keywordID,
 		break;
 	case RTF_KW_margb:
 		m_sectdProps.m_bottomMargTwips = param;
+
+		// bug 9432: the \margl is document default, and we have to adjust the current
+		// settings accordingly -- this assumes that \margl is not preceeded by \marglsxn,
+		// but since \margl is document wide setting this should be true in normal rtf
+		// documents (otherwise we would need to add m_b*Changed members to the sect props
+		// for everyting).
+		m_currentRTFState.m_sectionProps.m_bottomMargTwips = param;
 		break;
 	case RTF_KW_nestrow:
 		HandleRow();
@@ -6704,15 +6732,27 @@ bool IE_Imp_RTF::ApplyParagraphAttributes(bool bDontInsert)
 			//
 			// Insert a list-label field??
 			//
-			const XML_Char* fielddef[3];
+			const XML_Char* fielddef[5];
 			fielddef[0] ="type";
 			fielddef[1] = "list_label";
 			fielddef[2] = NULL;
+			fielddef[3] = NULL;
+			fielddef[4] = NULL;
+			if(bWord97List)
+			{
+					fielddef[2] = "props";
+					fielddef[3] = "text-decoration:none";
+			}
 			bret =   getDoc()->appendObject(PTO_Field,fielddef);
 			UT_UCSChar cTab = UCS_TAB;
 //
 // Put the tab back in.
 //
+			if(bWord97List)
+			{
+					const XML_Char* attribs[3] = {"props","text-decoration:none",NULL};
+					getDoc()->appendFmt(attribs);
+			}
 			getDoc()->appendSpan(&cTab,1);
 			return bret;
 		}
@@ -7212,11 +7252,11 @@ char * IE_Imp_RTF::getCharsInsideBrace(void)
 
 	UT_sint32 count = 0;
 	UT_uint32 nesting = 1;
-	while(nesting > 0)
+	while(nesting > 0 && count < MAX_KEYWORD_LEN - 1)
 	{
 		if (!ReadCharFromFile(&ch))
 			return NULL;
-        if( nesting == 1 && (ch == '}'  || ch == ';'))
+		if( nesting == 1 && (ch == '}'  || ch == ';'))
 		{
 			nesting--;
 		}
@@ -8398,9 +8438,9 @@ bool IE_Imp_RTF::PostProcessAndValidatePanose(UT_UTF8String &Panose)
 			UT_DEBUGMSG(("RTF: Panose string too short.\n"));
 			return false;
 		}
-		// Only numeric digits are allowed so we bail if we see anything
+		// Only hex digits are allowed so we bail if we see anything
 		// else.
-		if (((*pUTF) < '0') || ((*pUTF) > '9'))
+		if (!isxdigit(*pUTF))
 		{
 			UT_DEBUGMSG(("RTF: Invalid character in panose string.\n"));
 			return false;
@@ -8596,7 +8636,7 @@ bool IE_Imp_RTF::HandleLists(_rtfListTable & rtfTable )
 					int count = 0;
 					if (!ReadCharFromFile(&ch))
 						return false;
-					while ( level != 0 || (ch != '}' && ch != ';'))
+					while ((level != 0 || (ch != '}' && ch != ';')) && count < MAX_KEYWORD_LEN - 1)
 					{
 						if (ch == '{') {
 							level++;
@@ -8614,11 +8654,13 @@ bool IE_Imp_RTF::HandleLists(_rtfListTable & rtfTable )
 					keyword[count++] = 0;
 					switch (dest) {
 					case 1:
-						strcpy(rtfTable.textafter,reinterpret_cast<char*>(&keyword[0]));
+						strncpy(rtfTable.textafter,reinterpret_cast<char*>(&keyword[0]), sizeof(rtfTable.textafter));
+						rtfTable.textafter[sizeof(rtfTable.textafter) - 1] = 0;
 						UT_DEBUGMSG(("FOUND pntxta in stream, copied %s to input  \n",keyword));
 						break;
 					case 2:
-						strcpy(rtfTable.textbefore,reinterpret_cast<char*>(&keyword[0]));
+						strncpy(rtfTable.textbefore,reinterpret_cast<char*>(&keyword[0]), sizeof(rtfTable.textbefore));
+						rtfTable.textbefore[sizeof(rtfTable.textbefore) - 1] = 0;
 						UT_DEBUGMSG(("FOUND pntxtb in stream,copied %s to input  \n",keyword));
 						break;
 					default:
@@ -9518,14 +9560,15 @@ bool IE_Imp_RTF::HandleAbiLists()
 					 int count = 0;
 					 if (!ReadCharFromFile(&ch))
 						 return false;
-					 while ( ch != '}'  && ch != ';')
+					 while ( ch != '}'  && ch != ';' && count < MAX_KEYWORD_LEN - 1)
 					 {
 						 keyword[count++] = ch;
 						 if (!ReadCharFromFile(&ch))
 							 return false;
 					 }
 					 keyword[count++] = 0;
-					 strcpy(m_currentRTFState.m_paraProps.m_pszStyle,reinterpret_cast<char*>(&keyword[0]));
+					 strncpy(m_currentRTFState.m_paraProps.m_pszStyle,reinterpret_cast<char*>(&keyword[0]), sizeof(m_currentRTFState.m_paraProps.m_pszStyle));
+					 m_currentRTFState.m_paraProps.m_pszStyle[sizeof(m_currentRTFState.m_paraProps.m_pszStyle) - 1] = 0;
 				 }
 				 else if (strcmp(reinterpret_cast<char*>(&keyword[0]), "abilistdecimal") == 0)
 				 {
@@ -9534,14 +9577,15 @@ bool IE_Imp_RTF::HandleAbiLists()
 					 int count = 0;
 					 if (!ReadCharFromFile(&ch))
 						 return false;
-					 while ( ch != '}'  && ch != ';' )
+					 while ( ch != '}'  && ch != ';' && count < MAX_KEYWORD_LEN - 1)
 					 {
 						 keyword[count++] = ch;
 						 if (!ReadCharFromFile(&ch))
 							 return false;
 					 }
 					 keyword[count++] = 0;
-					 strcpy(m_currentRTFState.m_paraProps.m_pszListDecimal,reinterpret_cast<char*>(&keyword[0]));
+					 strncpy(m_currentRTFState.m_paraProps.m_pszListDecimal,reinterpret_cast<char*>(&keyword[0]), sizeof(m_currentRTFState.m_paraProps.m_pszListDecimal));
+					 m_currentRTFState.m_paraProps.m_pszListDecimal[sizeof(m_currentRTFState.m_paraProps.m_pszListDecimal) - 1] = 0;
 				 }
 				 else if (strcmp(reinterpret_cast<char*>(&keyword[0]), "abilistdelim") == 0)
 				 {
@@ -9550,14 +9594,15 @@ bool IE_Imp_RTF::HandleAbiLists()
 					 int count = 0;
 					 if (!ReadCharFromFile(&ch))
 						 return false;
-					 while ( ch != '}'  && ch != ';' )
+					 while ( ch != '}'  && ch != ';' && count < MAX_KEYWORD_LEN - 1)
 					 {
 						 keyword[count++] = ch;
 						 if (!ReadCharFromFile(&ch))
 							 return false;
 					 }
 					 keyword[count++] = 0;
-					 strcpy(m_currentRTFState.m_paraProps.m_pszListDelim,reinterpret_cast<char*>(&keyword[0]));
+					 strncpy(m_currentRTFState.m_paraProps.m_pszListDelim,reinterpret_cast<char*>(&keyword[0]), sizeof(m_currentRTFState.m_paraProps.m_pszListDelim));
+					 m_currentRTFState.m_paraProps.m_pszListDelim[sizeof(m_currentRTFState.m_paraProps.m_pszListDelim) - 1] = 0;
 				 }
 				 else if (strcmp(reinterpret_cast<char*>(&keyword[0]), "abifieldfont") == 0)
 				 {
@@ -9566,14 +9611,15 @@ bool IE_Imp_RTF::HandleAbiLists()
 					 int count = 0;
 					 if (!ReadCharFromFile(&ch))
 						 return false;
-					 while ( ch != '}'  && ch != ';' )
+					 while ( ch != '}'  && ch != ';' && count < MAX_KEYWORD_LEN - 1)
 					 {
 						 keyword[count++] = ch;
 						 if (!ReadCharFromFile(&ch))
 							 return false;
 					 }
 					 keyword[count++] = 0;
-					 strcpy(m_currentRTFState.m_paraProps.m_pszFieldFont,reinterpret_cast<char*>(&keyword[0]));
+					 strncpy(m_currentRTFState.m_paraProps.m_pszFieldFont,reinterpret_cast<char*>(&keyword[0]), sizeof(m_currentRTFState.m_paraProps.m_pszFieldFont));
+					 m_currentRTFState.m_paraProps.m_pszFieldFont[sizeof(m_currentRTFState.m_paraProps.m_pszFieldFont) - 1] = 0;
 				 }
 				 else
 				 {
@@ -9677,10 +9723,10 @@ bool IE_Imp_RTF::HandleRevisedTextTimestamp(UT_uint32 iDttm)
 {
 	// we basically rely on the dttm keyword to follow the auth keyword -- Word outputs
 	// them in this sequence, and so do we
-	UT_return_val_if_fail( m_currentRTFState.m_charProps.m_iCurrentRevisionId > 0,false);
+	UT_return_val_if_fail( m_currentRTFState.m_charProps.m_iCurrentRevisionId > 0,true); // was false (this enables RTF spec to load)
 	
 	const UT_GenericVector<AD_Revision*> & Rtbl = getDoc()->getRevisions();
-	UT_return_val_if_fail(Rtbl.getItemCount(),false);
+	UT_return_val_if_fail(Rtbl.getItemCount(),true); // was false (This enables RTF spec to load)
 
 	// valid revision id's start at 1, but vector is 0-based
 	AD_Revision * pRev = Rtbl.getNthItem(m_currentRTFState.m_charProps.m_iCurrentRevisionId - 1);

@@ -228,7 +228,7 @@ void XAP_Win32Dialog_FileOpenSaveAs::runModal(XAP_Frame * pFrame)
 	UT_ASSERT(pFrame);
 	UT_ASSERT(pFrame->getFrameImpl());
 
-	XAP_Win32App* pWin32App = static_cast<XAP_Win32App*>(m_pApp);
+	XAP_Win32App* pWin32App = static_cast<XAP_Win32App*>(XAP_App::getApp());
 
 	HWND hFrame = static_cast<XAP_Win32FrameImpl*>(pFrame->getFrameImpl())->getTopLevelWindow();
 
@@ -339,7 +339,7 @@ void XAP_Win32Dialog_FileOpenSaveAs::runModal(XAP_Frame * pFrame)
 		}
 	}
 
-	const XAP_StringSet* pSS = m_pApp->getStringSet();
+	const XAP_StringSet* pSS = XAP_App::getApp()->getStringSet();
 
 	switch (m_id)
 	{
@@ -741,7 +741,7 @@ UINT XAP_Win32Dialog_FileOpenSaveAs::_previewPicture(HWND hDlg)
 	HDC hdc = BeginPaint(hThumbnail, &ps);
 	FillRect(hdc, &r, GetSysColorBrush(COLOR_BTNFACE));
 
-	GR_Win32AllocInfo ai(hdc,hThumbnail,XAP_App::getApp());
+	GR_Win32AllocInfo ai(hdc,hThumbnail);
 	GR_Win32Graphics *pGr = (GR_Win32Graphics *)XAP_App::getApp()->newGraphics(ai);
 	UT_return_val_if_fail(pGr, false);
 	

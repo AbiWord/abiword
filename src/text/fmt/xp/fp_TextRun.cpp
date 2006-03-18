@@ -98,6 +98,7 @@ fp_TextRun::fp_TextRun(fl_BlockLayout* pBL,
 
 fp_TextRun::~fp_TextRun()
 {
+        xxx_UT_DEBUGMSG(("!!!!!!!! Text run %x deleted \n",this));
 	DELETEP(m_pRenderInfo);
 	DELETEP(m_pItem);
 }
@@ -154,7 +155,8 @@ void fp_TextRun::_lookupProperties(const PP_AttrProp * pSpanAP,
 	/*
 	  TODO map line width to a property, not a hard-coded value
 	*/
-	bChanged |= _setLineWidth(UT_convertToLogicalUnits("0.8pt"));
+	static const UT_sint32 iLineWidth = UT_convertToLogicalUnits("0.8pt");
+	bChanged |= _setLineWidth(iLineWidth);
 
 	UT_uint32 oldDecors = _getDecorations();
 	_setDecorations(0);
@@ -247,9 +249,13 @@ void fp_TextRun::_lookupProperties(const PP_AttrProp * pSpanAP,
 	UT_Language lls;
 	const XML_Char * pszLanguage = PP_evalProperty("lang",pSpanAP,pBlockAP,pSectionAP, pDoc, true);
 
+	// NB: m_pLanguage is a pointer into static tables inside UT_Language class and as
+	// such has a guaranteed life-span same as the application; hence no strdup here and
+	// no strcmp later
 	const XML_Char * pszOldLanguage = m_pLanguage;
 	m_pLanguage = lls.getCodeFromCode(pszLanguage);
-	if(pszOldLanguage && m_pLanguage != pszOldLanguage)
+	xxx_UT_DEBUGMSG(("!!!!!!!! Language of run set to %s pointer %x run %x \n",getLanguage(),m_pLanguage,this));
+	if(pszOldLanguage && (m_pLanguage != pszOldLanguage))
 	{
 	        UT_uint32 reason =  0;
 		if( getBlock()->getDocLayout()->getAutoSpellCheck())
@@ -534,7 +540,10 @@ bool fp_TextRun::findFirstNonBlankSplitPoint(fp_RunSplitInfo& si)
 bool	fp_TextRun::findMaxLeftFitSplitPoint(UT_sint32 iMaxLeftWidth, fp_RunSplitInfo& si, bool bForce)
 {
 	UT_return_val_if_fail(m_pRenderInfo, false);
-	
+
+	// this approach suffers from rounding errors if the graphics class keeps data
+	// internally in units other than layout; it might be better to recalculate the two
+	// portions onece we found the split point
 	UT_sint32 iLeftWidth = 0;
 	UT_sint32 iRightWidth = getWidth();
 
@@ -588,11 +597,6 @@ bool	fp_TextRun::findMaxLeftFitSplitPoint(UT_sint32 iMaxLeftWidth, fp_RunSplitIn
 		if (bForce || iNext == (UT_sint32)i || bCanBreak)
 		   //	&& ((i + offset) != (getBlockOffset() + getLength() - 1))
 		{
-			UT_sint32 ispace = 0;
-			if(c == UCS_SPACE)
-			{
-				ispace = iCW;
-			}
 			if (iLeftWidth <= iMaxLeftWidth)
 			{
 				si.iLeftWidth = iLeftWidth;
@@ -642,22 +646,23 @@ bool	fp_TextRun::findMaxLeftFitSplitPoint(UT_sint32 iMaxLeftWidth, fp_RunSplitIn
 			// legal break offset is; we just scroll through the
 			// characters in between; i-th char has been processed
 			// already
-			UT_uint32 n = 0;
-			for(n= i+1; n < (UT_uint32)iNext; ++n)
-			{
-				// getTextWidth() takes LOGICAL offset
-				m_pRenderInfo->m_iOffset = n;
-				m_pRenderInfo->m_iLength = 1;
-				UT_sint32 iCW = getGraphics()->getTextWidth(*m_pRenderInfo);
-				iLeftWidth += iCW;
-				iRightWidth -= iCW;
-			}
+			UT_uint32 iAdvance = iNext - i - 1;
+			m_pRenderInfo->m_iOffset = i + 1;
+			m_pRenderInfo->m_iLength = iAdvance;
+			UT_sint32 iCW = getGraphics()->getTextWidth(*m_pRenderInfo);
+			iLeftWidth += iCW;
+			iRightWidth -= iCW;
 
 			// advance iterator and index by number of chars processed
-			UT_uint32 iAdvance = n - i - 1;
 			i += iAdvance;
 			text += iAdvance; 
 			UT_return_val_if_fail(text.getStatus()==UTIter_OK, false);
+		}
+		else if(iNext == -2)
+		{
+			// this is the case where the graphics let us know that there are no more
+			// breakpoints in this run
+			break;
 		}
 	}
 
@@ -802,10 +807,25 @@ void fp_TextRun::mapXYToPosition(UT_sint32 x, UT_sint32 y,
 	}
 	else
 	{
+#ifdef XP_UNIX_TARGET_GTK
+		// This is really for the benefit of the Pango graphics, which requires the raw
+		// text for almost anything; we do not need this on win32, and since this this
+		// called all the time, do not want it in here unless necessary
+		PD_StruxIterator text(getBlock()->getStruxDocHandle(),
+							  getBlockOffset() + fl_BLOCK_STRUX_OFFSET);
+		UT_return_if_fail(text.getStatus() == UTIter_OK);
+		m_pRenderInfo->m_pText = &text;
+#endif
+		
 		bBOL = false;
 		bEOL = false;
 		pos = getGraphics()->XYToPosition(*m_pRenderInfo, x, y);
 		pos += getBlock()->getPosition() + getBlockOffset();
+
+#ifdef XP_UNIX_TARGET_GTK
+		// reset this, so we have no stale pointers there
+		m_pRenderInfo->m_pText = NULL;
+#endif
 		return;
 	}
 	
@@ -912,11 +932,30 @@ void fp_TextRun::findPointCoords(UT_uint32 iOffset, UT_sint32& x, UT_sint32& y, 
 		y = y2 = yoff;
 		height = getHeight();
 		bDirection = (getVisDirection() != UT_BIDI_LTR);
+
+		// I am not sure why we have to subtract the 1 here, but we do -- we need to make
+		// sure we do not pass -1 down the line
 		m_pRenderInfo->m_iOffset = iOffset - getBlockOffset() - 1;
 		m_pRenderInfo->m_iLength = getLength();
+
+#ifdef XP_UNIX_TARGET_GTK
+		// This is really for the benefit of the Pango graphics, which requires the raw
+		// text for almost anything; we do not need this on win32, and since this this
+		// called all the time, do not want it in
+		PD_StruxIterator text(getBlock()->getStruxDocHandle(),
+							  getBlockOffset() + fl_BLOCK_STRUX_OFFSET);
+		UT_return_if_fail(text.getStatus() == UTIter_OK);
+		m_pRenderInfo->m_pText = &text;
+#endif
+		
 		getGraphics()->positionToXY(*m_pRenderInfo, x, y, x2, y2, height, bDirection);
 		x += xoff;
 		x2 += xoff;
+		
+#ifdef XP_UNIX_TARGET_GTK
+		// reset this, so we have no stale pointers there
+		m_pRenderInfo->m_pText = NULL;
+#endif
 	}
 }
 
@@ -940,7 +979,8 @@ bool fp_TextRun::canMergeWithNext(void)
 		|| (pNext->_getFont() != _getFont())
 		|| (getHeight() != pNext->getHeight())
 		|| (pNext->getField() != getField())
-		|| (pNext->m_pLanguage != m_pLanguage)	//this is not a bug
+		|| (pNext->m_pLanguage != m_pLanguage)	//this is not a bug; see m_pLanguage in
+												//fp_TextRun.h before modifying this line
 		|| (pNext->_getColorFG() != _getColorFG())
 		|| (pNext->_getColorHL() != _getColorHL())
 		|| (pNext->_getColorHL().isTransparent() != _getColorHL().isTransparent())
@@ -1005,7 +1045,8 @@ void fp_TextRun::mergeWithNext(void)
 	UT_ASSERT(getDescent() == pNext->getDescent());
 	UT_ASSERT(getHeight() == pNext->getHeight());
 	UT_ASSERT(_getLineWidth() == pNext->_getLineWidth());
-	UT_ASSERT(m_pLanguage == pNext->m_pLanguage); //this is not a bug
+	UT_ASSERT(m_pLanguage == pNext->m_pLanguage); //this is not a bug; see m_pLanguage in
+	                                              //fp_TextRun.h before modifying this line
 	UT_ASSERT(m_fPosition == pNext->m_fPosition);
 	UT_ASSERT(m_iDirOverride == pNext->m_iDirOverride); //#TF
 	//UT_ASSERT(m_iSpaceWidthBeforeJustification == pNext->m_iSpaceWidthBeforeJustification);
@@ -1116,7 +1157,8 @@ bool fp_TextRun::split(UT_uint32 iSplitOffset)
 	UT_ASSERT(iSplitOffset < (getBlockOffset() + getLength()));
 
 	UT_BidiCharType iVisDirection = getVisDirection();
-	fp_TextRun* pNew = new fp_TextRun(getBlock(), iSplitOffset, getLength() - (iSplitOffset - getBlockOffset()), false);
+	fp_TextRun* pNew = new fp_TextRun(getBlock(), iSplitOffset,
+									  getLength() - (iSplitOffset - getBlockOffset()), false);
 
 
 	UT_ASSERT(pNew);
@@ -1139,6 +1181,7 @@ bool fp_TextRun::split(UT_uint32 iSplitOffset)
 	pNew->_setLineWidth(this->_getLineWidth());
 	pNew->_setDirty(true);
 	pNew->m_pLanguage = this->m_pLanguage;
+	xxx_UT_DEBUGMSG(("!!!!--- Run %x gets Language pointer %x \n",pNew,pNew->m_pLanguage));
 	pNew->_setDirection(this->_getDirection()); //#TF
 	pNew->m_iDirOverride = this->m_iDirOverride;
 	// set the visual direction to same as that of the old run
@@ -1467,6 +1510,11 @@ void fp_TextRun::_clearScreen(bool /* bFullLineHeightRect */)
 					 leftClear,getWidth(),xoff,getLine()->getHeight()));
 
 }
+const XML_Char * fp_TextRun::getLanguage() const
+{ 
+  return m_pLanguage; 
+}
+
 
 void fp_TextRun::_draw(dg_DrawArgs* pDA)
 {
@@ -1861,6 +1909,22 @@ void fp_TextRun::_draw(dg_DrawArgs* pDA)
 		xxx_UT_DEBUGMSG(("_drawText segment %d off %d length %d width %d \n",iSegment,iMyOffset,m_pRenderInfo->m_iLength ,iSegmentWidth[iSegment]));
 		painter.renderChars(*m_pRenderInfo);
 		
+#if 0
+		//DEBUG
+		GR_Font * f = _getFont();
+		UT_uint32 _ascent, _descent, _height;
+		
+		_ascent = pG->getFontAscent(f);
+		_descent = pG->getFontDescent(f);
+		_height = pG->getFontHeight(f);
+		
+		UT_DEBUGMSG(("_drawText font %s ascent = %u height = %u descent = %u\n", f->hashKey().c_str(),
+			_ascent, _height, _descent));
+		painter.drawLine(iX, pDA->yoff - _ascent, iX + iSegmentWidth[iSegment], pDA->yoff - _ascent);
+		painter.drawLine(iX, pDA->yoff, iX + iSegmentWidth[iSegment], pDA->yoff);
+		painter.drawLine(iX, pDA->yoff + _descent, iX + iSegmentWidth[iSegment], pDA->yoff + _descent);
+		//end DEBUG
+#endif		
 		if(iVisDir == UT_BIDI_LTR)
 			iX += iSegmentWidth[iSegment];
 	}
@@ -2019,7 +2083,6 @@ bool fp_TextRun::_refreshDrawBuffer()
 		GR_ShapingInfo si(text,iLen, m_pLanguage, iVisDir,
 						  m_pRenderInfo ? m_pRenderInfo->m_eShapingResult : GRSR_Unknown,
 						  _getFont(), m_pItem);
-
 		getGraphics()->shape(si, m_pRenderInfo);
 		
 		UT_ASSERT(m_pRenderInfo && m_pRenderInfo->m_eShapingResult != GRSR_Error );
@@ -2581,8 +2644,9 @@ void fp_TextRun::justify(UT_sint32 iAmount, UT_uint32 iSpacesInRun)
 		// will be again removed
 		UT_uint32 iPosStart = getBlockOffset() + fl_BLOCK_STRUX_OFFSET;
 		PD_StruxIterator text(getBlock()->getStruxDocHandle(),iPosStart);
-		text.setUpperLimit(iPosStart + getLength() - 1);
+		text.setUpperLimit(text.getPosition() + getLength() - 1);
 		m_pRenderInfo->m_pText = & text;
+		m_pRenderInfo->m_iLength = getLength();
 #else
 		m_pRenderInfo->m_pText = NULL;
 #endif
@@ -2590,6 +2654,11 @@ void fp_TextRun::justify(UT_sint32 iAmount, UT_uint32 iSpacesInRun)
 		m_pRenderInfo->m_iJustificationPoints = iSpacesInRun;
 		m_pRenderInfo->m_iJustificationAmount = iAmount;
 		getGraphics()->justify(*m_pRenderInfo);
+
+#ifdef XP_UNIX_TARGET_GTK
+		// do not leave stale pointer behind
+		m_pRenderInfo->m_pText = NULL;
+#endif
 	}
 }
 
@@ -2615,14 +2684,21 @@ UT_sint32 fp_TextRun::countJustificationPoints(bool bLast) const
 	// will be again removed
 	UT_uint32 iPosStart = getBlockOffset() + fl_BLOCK_STRUX_OFFSET;
 	PD_StruxIterator text(getBlock()->getStruxDocHandle(),iPosStart);
-	text.setUpperLimit(iPosStart + getLength() - 1);
+	text.setUpperLimit(text.getPosition() + getLength() - 1);
 	m_pRenderInfo->m_pText = & text;
+	m_pRenderInfo->m_iLength = getLength();
 #else
 	m_pRenderInfo->m_pText = NULL;
 #endif
 	
 	m_pRenderInfo->m_bLastOnLine = bLast;
-	return getGraphics()->countJustificationPoints(*m_pRenderInfo);
+	UT_sint32 iCount = getGraphics()->countJustificationPoints(*m_pRenderInfo);
+
+#ifdef XP_UNIX_TARGET_GTK
+	m_pRenderInfo->m_pText = NULL;
+#endif
+
+	return iCount;
 }
 
 bool fp_TextRun::_canContainPoint(void) const

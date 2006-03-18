@@ -85,10 +85,23 @@ class GR_CocoaGraphics : public GR_Graphics
 	virtual void		setColor(const UT_RGBColor& clr);
 	virtual void		getColor(UT_RGBColor& clr);
 
-	NSColor *		HBlue() const { return m_colorBlue16x15; }
-	NSColor *		VBlue() const { return m_colorBlue11x16; }
-	NSColor *		HGrey() const { return m_colorGrey16x15; }
-	NSColor *		VGrey() const { return m_colorGrey11x16; }
+	// at least one instance of GR_CocoaGraphics must have been created...
+	static NSColor *		HBlue() 
+		{ 
+			return m_colorBlue16x15; 
+		}
+	static NSColor *		VBlue()
+		{ 
+			return m_colorBlue11x16; 
+		}
+	static NSColor *		HGrey() 
+		{ 
+			return m_colorGrey16x15; 
+		}
+	static NSColor *		VGrey() 
+		{ 
+			return m_colorGrey11x16; 
+		}
 
 	virtual GR_Font*	getGUIFont();
 
@@ -200,7 +213,7 @@ private:
 	gr_cocoa_graphics_update	m_updateCallback;
 	void 						*m_updateCBparam;
 	XAP_CocoaNSView *  			m_pWin;
-	NSMutableDictionary*		m_fontProps;
+	ATSUStyle					m_atsuStyle;
 	CGContextRef				m_CGContext;
 	UT_GenericVector<id>		m_cacheArray;
 	UT_GenericVector<NSRect*>	m_cacheRectArray;
@@ -273,9 +286,7 @@ private:
 	/*!
 	  Wrapper to draw the char.
 
-	  \param cBuf the unichar buffer for the string
-	  \param len the length of the buffer
-	  \param fontProps the properties for the NSAttributedString
+	  \param atsuLayout the ATSU layout
 	  \param x X position
 	  \param y Y position
 	  \param begin the start of the range to draw
@@ -283,8 +294,9 @@ private:
 
 	  \note the NSView must be focused prior this call
 	 */
-	void _realDrawChars(const unichar* cBuf, int len, NSDictionary *fontProps, 
-						float x, float y, int begin, int rangelen);
+	void _realDrawChars(ATSUTextLayout atsuLayout,
+						float x, float y, int begin, int rangelen,
+						float xOffset);
 	//
 	StNSViewLocker* m_viewLocker;
 	//private font metrics objects

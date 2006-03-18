@@ -385,7 +385,7 @@ static void s_LoadingCursorCallback(UT_Worker * pTimer )
 		s_bFirstDrawDone = false;
 		return;
 	}
-	const XAP_StringSet * pSS = pFrame->getApp()->getStringSet();
+	const XAP_StringSet * pSS = XAP_App::getApp()->getStringSet();
 	pFrame->setCursor(GR_Graphics::GR_CURSOR_WAIT);
 	FV_View * pView = static_cast<FV_View *>(pFrame->getCurrentView());
 	if(pView)
@@ -2409,7 +2409,7 @@ abi_intwidget_map_to_screen(AbiIntwidget * abi)
 		abi->priv->m_pApp     = pApp;
 	}
 
-	AP_UnixFrame * pFrame  = new AP_UnixFrame(abi->priv->m_pApp);
+	AP_UnixFrame * pFrame  = new AP_UnixFrame();
 
 	UT_ASSERT(pFrame);
 	static_cast<XAP_UnixFrameImpl *>(pFrame->getFrameImpl())->setTopLevelWindow(widget);

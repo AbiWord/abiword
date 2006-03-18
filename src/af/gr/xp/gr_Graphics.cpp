@@ -39,11 +39,13 @@
 #include "gr_RenderInfo.h"
 
 // static class member initializations
-UT_uint32 GR_Font::s_iAllocCount = 0;
+UT_uint32      GR_Font::s_iAllocCount = 0;
 UT_VersionInfo GR_Graphics::s_Version;
+UT_UCS4Char    GR_Graphics::s_cDefaultGlyph   = '?';
 
-GR_Font::GR_Font()
-	:m_pCharWidths(NULL)
+GR_Font::GR_Font():
+	m_eType(GR_FONT_UNSET),
+	m_pCharWidths(NULL)
 {
 	s_iAllocCount++;
 	m_iAllocNo = s_iAllocCount;
@@ -121,8 +123,7 @@ GR_CharWidths* GR_Font::newFontWidths(void) const
 }
 
 GR_Graphics::GR_Graphics()
-	: m_pApp(NULL),
-	  m_iZoomPercentage(100),
+	: m_iZoomPercentage(100),
 	  m_iFontAllocNo(0),
 	  m_pRect(NULL),
 	  m_bHave3DColors(false),
@@ -414,6 +415,27 @@ void GR_Graphics::drawImage(GR_Image* pImg, UT_sint32 xDest, UT_sint32 yDest)
    if (pImg)
      pImg->render(this, xDest, yDest);
 }
+
+/*!
+    This method is just like drawChars() except it treats yoff as position of the font
+    baseline. The default implementation simply subtracts the ascent of the current font
+    from yoff and calls drawChars(), which should work on all platforms except for win32.
+
+    On win32 because of the trickery we use to achieve wysiwyg layout the acent of the
+    font we work with is slightly smaller than that of the actual font the system uses to
+    draw on the screen. As a result, the characters end up positioned slightly higher than
+    they should and this has proved a problem in the math plugin (see screen shots in #9500)
+*/
+void GR_Graphics::drawCharsRelativeToBaseline(const UT_UCSChar* pChars,
+								 int iCharOffset,
+								 int iLength,
+								 UT_sint32 xoff,
+								 UT_sint32 yoff,
+								 int* pCharWidths)
+{
+	drawChars(pChars, iCharOffset, iLength, xoff, yoff - getFontAscent(), pCharWidths);
+}
+
 
 /*!
  * Create a new image from the Raster rgba byte buffer defined by pBB.
@@ -905,6 +927,79 @@ bool GR_Graphics::itemize(UT_TextIterator & text, GR_Itemization & I)
 }
 
 /*!
+    this function remaps a number of specialised glyphs to reasonable
+    alternatives
+*/
+static UT_UCS4Char s_remapGlyph(UT_UCS4Char g)
+{
+	// various hyphens
+	if(g >= 0x2010 && g <= 0x2015) return '-';
+
+	// various quotes
+	if(g >= 0x2018 && g <= 0x201b) return '\'';
+	if(g == 0x2039) return '<';
+	if(g == 0x203a) return '>';
+	if(g >= 0x201c && g <= 0x201f) return '\"';
+
+	// bullets
+	if(g == 0x2022 || g == 0x2023) return '*';
+
+	// miscell. punctuation
+	if(g == 0x2044) return '/';
+	if(g == 0x2045) return '[';
+	if(g == 0x2046) return ']';
+	if(g == 0x2052) return '%';
+	if(g == 0x2053) return '~';
+
+	// currency symbols
+	if(g == 0x20a3) return 'F';
+	if(g == 0x20a4) return 0x00a3;
+	if(g == 0x20ac) return 'E';
+
+	// letter like symbols
+	if(g == 0x2103) return 'C';
+	if(g == 0x2109) return 'F';
+	if(g == 0x2117) return 0x00a9;
+	if(g == 0x2122) return 'T'; // TM symbol, this is not satisfactory, but ...
+	if(g == 0x2126) return 0x03a9;
+	if(g == 0x212a) return 'K';
+
+	// dingbats
+	if(g >= 0x2715 && g <= 0x2718) return 0x00d7;
+	if(g >= 0x2719 && g <= 0x2720) return '+';
+	if(g == 0x271) return '*';
+	if(g >= 0x2722 && g <= 0x2727) return '+';
+	if(g >= 0x2728 && g <= 0x274b) return '*';
+	if(g >= 0x2758 && g <= 0x275a) return '|';
+	if(g == 0x275b || g == 0x275c) return '\'';
+	if(g == 0x275d || g == 0x275e) return '\"';
+	if(g == 0x2768 || g == 0x276a) return '(';
+	if(g == 0x2769 || g == 0x276b) return ')';
+	if(g == 0x276c || g == 0x276e || g == 0x2770) return '<';
+	if(g == 0x276d || g == 0x276f || g == 0x2771) return '>';
+	if(g == 0x2772) return '[';
+	if(g == 0x2773) return ']';
+	if(g == 0x2774) return '{';
+	if(g == 0x2775) return '}';
+	if(g >= 0x2776 && g <= 0x2793) return ((g-0x2775)%10 + '0');
+
+	return g;
+}
+
+// if the character has a mirror form, returns the mirror form,
+// otherwise returns the character itself
+static UT_UCSChar s_getMirrorChar(UT_UCSChar c)
+{
+	//got to do this, otherwise bsearch screws up
+	UT_UCS4Char mc;
+
+	if (UT_bidiGetMirrorChar(c,mc))
+		return mc;
+	else
+		return c;
+}
+
+/*!
     shape() processes the information encapsulated by GR_ShapingInfo
     si and stores results in GR_*RenderInfo* pri.
 
@@ -922,7 +1017,7 @@ bool GR_Graphics::itemize(UT_TextIterator & text, GR_Itemization & I)
 */
 bool GR_Graphics::shape(GR_ShapingInfo & si, GR_RenderInfo *& pri)
 {
-	if(!si.m_pItem || si.m_pItem->getType() == GRScriptType_Void)
+	if(!si.m_pItem || si.m_pItem->getType() == GRScriptType_Void || !si.m_pFont)
 		return false;
 
 	if(!pri)
@@ -933,8 +1028,8 @@ bool GR_Graphics::shape(GR_ShapingInfo & si, GR_RenderInfo *& pri)
 	}
 
 	GR_XPRenderInfo * pRI = (GR_XPRenderInfo *)pri;
-	GR_ContextGlyph  cg;
 
+	GR_Font *pFont = const_cast<GR_Font*>(si.m_pFont);
 	
 	// make sure that the buffers are of sufficient size ...
 	if(si.m_iLength > pRI->m_iBufferSize) //buffer too small, reallocate
@@ -955,28 +1050,38 @@ bool GR_Graphics::shape(GR_ShapingInfo & si, GR_RenderInfo *& pri)
 	pRI->m_iTotalLength = si.m_iLength;
 	pRI->m_eScriptType = si.m_pItem->getType();
 	pRI->m_pItem = si.m_pItem;
-	
-	if(si.m_eShapingRequired == GRSR_None)
-	{
-		// our run only contains non-shaping, non-ligating
-		// characters, we will process it using the much faster
-		// copyString()
-		pRI->m_eShapingResult = cg.copyString(si.m_Text,pRI->m_pChars, si.m_iLength, si.m_pLang,
-											  si.m_iVisDir,
-											  GR_Font::s_doesGlyphExist, si.m_pFont);
-	}
-	else
-	{
-		pRI->m_eShapingResult = cg.renderString(si.m_Text,pRI->m_pChars, si.m_iLength, si.m_pLang,
-												si.m_iVisDir,
-												GR_Font::s_doesGlyphExist, si.m_pFont);
-	}
 
+	UT_UCS4Char glyph, current;
+	UT_UCS4Char * dst_ptr = pRI->m_pChars;
+	
+	for(UT_sint32 i = 0; i < si.m_iLength; ++i, ++si.m_Text)
+	{
+		UT_return_val_if_fail(si.m_Text.getStatus() == UTIter_OK, false);
+		current = si.m_Text.getChar();
+
+		if(si.m_iVisDir == UT_BIDI_RTL)
+			glyph = s_getMirrorChar(current);
+		else
+			glyph = current;
+
+		if(pFont->doesGlyphExist(glyph))
+			*dst_ptr++ = glyph;
+		else
+		{
+			UT_UCS4Char t = s_remapGlyph(glyph);
+			if(pFont->doesGlyphExist(t))
+			{
+				*dst_ptr++ = t;
+			}
+			else
+			{
+				*dst_ptr++ = s_cDefaultGlyph;
+			}
+		}
+	}
+	
 	pRI->m_eState = GRSR_BufferClean;
 	
-	if(pRI->m_eShapingResult == GRSR_Error)
-		return false;
-
 	if(pRI->isJustified())
 		justify(*pRI);
 
@@ -1114,8 +1219,8 @@ bool GR_Graphics::canBreak(GR_RenderInfo & ri, UT_sint32 &iNext, bool bAfter)
 	UT_return_val_if_fail(ri.m_pText->getStatus() == UTIter_OK, false);
 
 	// Fetch a pointer to the Encoding manager.
-	UT_return_val_if_fail(getApp(), false);
-	const XAP_EncodingManager *encMan = getApp()->getEncodingManager();
+	UT_return_val_if_fail(XAP_App::getApp(), false);
+	const XAP_EncodingManager *encMan =  XAP_App::getApp()->getEncodingManager();
 	UT_return_val_if_fail(encMan, false);
 
 	// Set up c[] appropriately depending on whether we're looking
@@ -1407,8 +1512,8 @@ bool GR_GraphicsFactory::registerClass(GR_Allocator allocator, GR_Descriptor des
 		return false;
 	}
 	
-	m_vAllocators.addItem((void*)allocator);
-	m_vDescriptors.addItem((void*)descriptor);
+	m_vAllocators.addItem(allocator);
+	m_vDescriptors.addItem(descriptor);
 	m_vClassIds.addItem((UT_sint32)iClassId);
 
 	return true;
@@ -1488,7 +1593,7 @@ GR_Graphics * GR_GraphicsFactory::newGraphics(UT_uint32 iClassId, GR_AllocInfo &
 		return NULL;
 				
 					
-	GR_Allocator alloc = (GR_Allocator)m_vAllocators.getNthItem(indx);
+	GR_Allocator alloc = m_vAllocators.getNthItem(indx);
 				
 	if(!alloc)
 		return NULL;
@@ -1509,7 +1614,7 @@ const char *  GR_GraphicsFactory::getClassDescription(UT_uint32 iClassId) const
 	if(indx < 0)
 		return NULL;
 					
-	GR_Descriptor descr = (GR_Descriptor)m_vDescriptors.getNthItem(indx);
+	GR_Descriptor descr = m_vDescriptors.getNthItem(indx);
 				
 	if(!descr)
 		return NULL;

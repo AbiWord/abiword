@@ -28,7 +28,6 @@ class GR_Graphics;
 #include "ie_types.h"
 
 class XAP_UnixApp;
-class AP_UnixFrame;
 class AP_UnixFrameImpl;
 
 /*****************************************************************/
@@ -36,7 +35,7 @@ class AP_UnixFrameImpl;
 class AP_UnixFrame : public AP_Frame
 {
 public:
-	AP_UnixFrame(XAP_UnixApp * app);
+	AP_UnixFrame();
 	AP_UnixFrame(XAP_UnixApp * app, AP_UnixFrameImpl * impl);
 	AP_UnixFrame(AP_UnixFrame * f);
 	virtual ~AP_UnixFrame(void);

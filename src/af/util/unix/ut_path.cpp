@@ -19,6 +19,9 @@
 
 
 #include "ut_path.h"
+#include "ut_string_class.h"
+#include "ut_assert.h"
+
 #include <string.h>
 #include <sys/stat.h>
 #include <sys/types.h>
@@ -98,4 +101,33 @@ time_t UT_mTime(const char* path)
     }
     
     return((time_t)-1);
+}
+
+/*!
+    check that the given filename is legal and remove any illegal characters
+	\param filename [in/out] the suggested file name
+    \return false if filename is left unchanged, true otherwise
+ */
+bool UT_legalizeFileName(UT_UTF8String &filename)
+{
+	bool bRet = false;
+
+	char *tmp = strdup(filename.utf8_str());
+	char *ptr = tmp;
+
+	while (*ptr) {
+		if (*ptr == '/') {
+			*ptr = '-';
+			bRet = true;
+		}
+		ptr++;
+	}
+	
+	if(bRet) {
+		filename = tmp;
+	}
+
+	FREEP(tmp);
+
+	return bRet;
 }

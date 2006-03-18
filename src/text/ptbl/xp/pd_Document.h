@@ -39,6 +39,7 @@
 #include "fp_PageSize.h"
 #include "ut_string_class.h"
 #include "ut_misc.h"
+#include "px_ChangeRecord.h"
 
 class UT_ByteBuf;
 class UT_GrowBuf;
@@ -216,11 +217,14 @@ PT_AttrPropIndex            getAPIFromSOH(PL_ObjectHandle odh);
 									   const UT_UCSChar * p,
 									   UT_uint32 length,
 									   PP_AttrProp *p_AttrProp = NULL);
+
 	bool					deleteSpan(PT_DocPosition dpos1,
 									   PT_DocPosition dpos2,
 									   PP_AttrProp *p_AttrProp_Before,
 									   UT_uint32 &iRealDeleteCount,
 									   bool bDeleteTableStruxes = false);
+
+	bool                    deleteFmtMark( PT_DocPosition dpos);
 
 	bool					changeSpanFmt(PTChangeFmt ptc,
 										  PT_DocPosition dpos1,
@@ -230,7 +234,11 @@ PT_AttrPropIndex            getAPIFromSOH(PL_ObjectHandle odh);
 
 	bool					insertStrux(PT_DocPosition dpos,
 										PTStruxType pts, pf_Frag_Strux ** ppfs_ret = 0);
+	bool					deleteStrux(PT_DocPosition dpos,
+										PTStruxType pts,
+										bool bRecordChange);
 
+	bool                    createAndSendCR(PT_DocPosition dpos,UT_sint32 iType,bool bsave);
 
 	bool					insertStrux(PT_DocPosition dpos,
 										PTStruxType pts,
@@ -288,6 +296,8 @@ PT_AttrPropIndex            getAPIFromSOH(PL_ObjectHandle odh);
 	bool					appendObject(PTObjectType pto, const XML_Char ** attributes);
 	bool					appendFmtMark(void);
 	bool					appendStyle(const XML_Char ** attributes);
+	UT_sint32               adjustPointForCR(UT_sint32 iCRNum, PT_DocPosition pos) const;
+	UT_sint32               getAdjustment(const PX_ChangeRecord * pcr, PT_DocPosition pos) const;
 	bool                    changeStruxFormatNoUpdate(PTChangeFmt ptc ,PL_StruxDocHandle sdh,const XML_Char ** attributes);	
 	bool					insertStruxBeforeFrag(pf_Frag * pF, PTStruxType pts,
 												  const XML_Char ** attributes, pf_Frag_Strux ** ppfs_ret = 0);
@@ -639,9 +649,10 @@ PT_AttrPropIndex            getAPIFromSOH(PL_ObjectHandle odh);
 
 	void                    setVDNDinProgress(bool b) {m_bVDND = b;}
 	bool                    isVDNDinProgress() const {return m_bVDND;}
-	
+	UT_sint32               getNextCRNumber(void);
+    void                    getAllViews(UT_GenericVector<AV_View *> * vecViews);
 protected:
-	~PD_Document();
+	virtual ~PD_Document();
 
 	virtual UT_Error		_saveAs(const char * szFilename, int ieft, const char * expProps = NULL);
 	virtual UT_Error   		_saveAs(const char * szFilename, int ieft, bool cpy, const char * expProps = NULL);
@@ -712,7 +723,7 @@ private:
 	UT_GenericVector<pf_Frag *> m_vecSuspectFrags;
 
 	bool                    m_bVDND;
-
+    UT_sint32               m_iCRCounter;
 };
 
 #endif /* PD_DOCUMENT_H */

@@ -100,8 +100,8 @@ void AP_CocoaFrame::setYScrollRange(void)
 }
 
 
-AP_CocoaFrame::AP_CocoaFrame(XAP_CocoaApp * app)
-	: AP_Frame (new AP_CocoaFrameImpl(this, app), app)
+AP_CocoaFrame::AP_CocoaFrame()
+	: AP_Frame (new AP_CocoaFrameImpl(this))
 {
 	m_pData = NULL;
 //	static_cast<AP_CocoaFrameImpl *>(m_pFrameImpl)->setShowDocLocked(false);
