@@ -63,6 +63,7 @@ PX_ChangeRecord::PX_ChangeRecord(PXType type,
 {
 	// bulletproofing
 	memset(&m_MyUUID, 0, sizeof(m_MyUUID));
+	memset(&m_MyDocUUID, 0, sizeof(m_MyDocUUID));
 
 	// after 2.5 branch this should be changed to use AD_Document::getNewUID()
 	UT_return_if_fail(XAP_App::getApp() && XAP_App::getApp()->getUUIDGenerator());
@@ -89,6 +90,7 @@ bool PX_ChangeRecord::setCRNumber(void) const
       return false;
   }
   m_iCRNumber = m_pDoc->getNextCRNumber();
+  UT_DEBUGMSG(("!!!!!!!!!!Created CR ID number %d Doc UUID %s \n",m_iCRNumber,getDocUUID()));
   return true;
 }
 
@@ -100,16 +102,16 @@ PD_Document * PX_ChangeRecord::getDocument(void) const
 void PX_ChangeRecord::setDocument(const PD_Document * pDoc) const
 {
   m_pDoc = const_cast<PD_Document *>(pDoc);
+  m_pDoc->getDocUUID()->toBinary(m_MyDocUUID);
 }
 
 const char * PX_ChangeRecord::getDocUUID() const
 {
 	static char s[37];
 
-	// this is dummy code to be replaced with proper impl. once the PD_Document pointer is
-	// available after 2.5
-	strncpy(s, "00000000-0000-0000-0000-000000000000", 36);
-	s[36] = 0;
+	if(!UT_UUID::toStringFromBinary(s, sizeof(s), m_MyDocUUID))
+		return NULL;
+	
 	return s;
 }
 
@@ -158,6 +160,26 @@ PT_AttrPropIndex PX_ChangeRecord::getIndexAP(void) const
 bool PX_ChangeRecord::getPersistance(void) const
 {
 	return m_persistant;
+}
+
+bool PX_ChangeRecord::isSameDocUUID(uuid & u) const
+{
+	if(m_MyDocUUID.time_low != u.time_low)
+		return false;
+
+	if(m_MyDocUUID.time_mid != u.time_mid)
+		return false;
+	
+	if(m_MyDocUUID.time_high_and_version != u.time_high_and_version)
+		return false;
+
+	if(m_MyDocUUID.clock_seq != u.clock_seq)
+		return false;
+
+	if(memcmp(m_MyDocUUID.node , u.node, 6) != 0)
+		return false;
+
+	return true;
 }
 
 /*!

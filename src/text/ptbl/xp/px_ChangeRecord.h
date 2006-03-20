@@ -84,9 +84,12 @@ public:
 
 	const char *            getDocUUID() const;
 	const char *            getMyUUID() const;
+	
 	PD_Document *           getDocument(void) const;
 	void                    setDocument(const PD_Document * pDoc) const;
-	bool                    setCRNumber(void) const;                    
+	bool                    setCRNumber(void) const;
+	bool                    isSameDocUUID( struct uuid & u) const;
+
 #ifdef PT_TEST
 	virtual void			__dump(FILE * fp) const;
 	void					__dump_type(FILE * fp) const;
@@ -108,5 +111,6 @@ mutable	 UT_sint32               m_iCRNumber;
 mutable  PD_Document *           m_pDoc;
 private:
 	struct uuid             m_MyUUID;
+mutable	struct uuid             m_MyDocUUID;
 };
 #endif /* PX_CHANGERECORD_H */

@@ -114,7 +114,7 @@ PD_Document::PD_Document(XAP_App *pApp)
 	m_pApp = pApp;
 	
 	XAP_App::getApp()->getPrefs()->getPrefsValueBool(AP_PREF_KEY_LockStyles,&m_bLockedStyles);
-
+	
 #ifdef PT_TEST
 	m_pDoc = this;
 #endif
@@ -2778,21 +2778,54 @@ bool PD_Document::removeStyle(const XML_Char * pszName)
  * Calculate the offset from the supplied position due to the effects of
  * subsequent change record actions after the applied change record number.
  */
-UT_sint32 PD_Document::adjustPointForCR(UT_sint32 iCRNum, PT_DocPosition pos) const
+UT_sint32 PD_Document::adjustPointForCR(UT_sint32 iCRNum, PT_DocPosition pos, const UT_UTF8String & sDocUUID) const
 {
 	PX_ChangeRecord * pcr = NULL;
 	UT_sint32 iOff =0;
-	UT_sint32 iCurCr = static_cast<UT_sint32>(m_pPieceTable->undoCount(true));
-	while(iCRNum <= iCurCr)
+	UT_sint32 iCurCr =0;
+	UT_sint32 iMax = static_cast<UT_sint32>(m_pPieceTable->undoCount(true));
+    if(iMax == 0)
 	{
+			return iOff;
+	}
+	UT_DEBUGMSG(("1 - Doing Adjust: iCRNum %d iCurCr %d UUID %s \n",iCRNum, iCurCr,sDocUUID.utf8_str()));
+		//
+		// This actually returns the nth undo previous to the last
+		//
+	m_pPieceTable->getNthUndo(&pcr,iCurCr);
+	if(pcr == NULL)
+	{
+		UT_DEBUGMSG(("No CR found at %d \n",iCurCr));
+		return iOff;
+	}
+	struct uuid u;
+	UT_UUID * pUUID = XAP_App::getApp()->getUUIDGenerator()->createUUID();
+	pUUID->setUUID(sDocUUID);
+	pUUID->toBinary(u);
+	delete pUUID;
+	while(!pcr->isSameDocUUID(u) && (iCurCr < iMax))
+	{
+		//
+		// This actually returns the nth undo previous to the last
+		//
+		iOff += getAdjustment(pcr,pos);
+		UT_DEBUGMSG(("Doing Adjust: iCurCr %d CR No %d Adjust %d CR pos %d pcr UUID %s \n",iCurCr,pcr->getCRNumber(),iOff,pcr->getPosition(),pcr->getDocUUID()));
+		iCurCr++;
+		if(iCurCr >= iMax)
+		{
+			return 0;
+		}
 		m_pPieceTable->getNthUndo(&pcr,iCurCr);
 		if(pcr == NULL)
 		{
-			return iOff;
+			return 0;
 		}
-		iOff += getAdjustment(pcr,pos);
-		iCRNum--;
 	}
+	if(iCurCr >= iMax)
+	{
+		return 0;
+	}
+	UT_DEBUGMSG(("Found Same UUID at undo pos %d CR number %d doc position %d \n",iCurCr,pcr->getCRNumber(),pcr->getPosition()));
 	return iOff;
 }
 
@@ -2803,7 +2836,7 @@ UT_sint32 PD_Document::getAdjustment(const PX_ChangeRecord * pcr, PT_DocPosition
 {
 	UT_sint32 ioff = 0;
 	PT_DocPosition iCRPos = pcr->getPosition();
-	if(iCRPos > pos)
+	if(iCRPos >= pos)
 		return ioff;
 	switch(pcr->getType())
 	{
