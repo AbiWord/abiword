@@ -253,8 +253,12 @@ void XAP_UnixDialog_Insert_Symbol::New_Font(void )
 #ifndef USE_GUCHARMAP
 	XAP_Draw_Symbol * iDrawSymbol = _getCurrentSymbolMap();
 	UT_ASSERT(iDrawSymbol);
+
+	// need a fallback value here, as this can get called from one of the gtk
+	// callbacks when no font has been set.
+	iDrawSymbol->setSelectedFont( buffer && *buffer ? static_cast<const char *>(buffer) :
+		                                              "Symbol");
 	
-	iDrawSymbol->setSelectedFont( static_cast<const char *>(buffer));
 	iDrawSymbol->draw();
 	iDrawSymbol->drawarea(m_CurrentSymbol, m_PreviousSymbol);
 #else

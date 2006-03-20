@@ -147,7 +147,13 @@ void XAP_Draw_Symbol::draw(void)
 	xoff = wwidth / 64;
 	painter.clearArea(0, 0, wwidth, wheight);
 	int pos = 0;
-	
+
+	// FIXME This code needs rethink -- if I have a large Unicode font that
+	// contains thousands of glyphs, the loop below will attempt to draw every
+	// single one of them. For now, I am going to limit this to drawing 7 * 32
+	// chars, since the grid has 7*32 cells, but we should probably have a
+	// scroll bar in the symbol window and draw 7*32 chars depending on the
+	// position of the scrollbar.
 	for (i = 0; i < m_vCharSet.size(); i += 2)
 	{
 		UT_UCSChar base = static_cast<UT_UCSChar>(m_vCharSet[i]);
@@ -166,7 +172,13 @@ void XAP_Draw_Symbol::draw(void)
 			}
 			
 			++pos;
+			
+			if(pos > 7*32)
+				break;
 		}
+		
+		if(pos > 7*32)
+			break;
 	}
 
 	y = 0;

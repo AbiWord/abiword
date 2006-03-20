@@ -1370,11 +1370,68 @@ GR_Font* GR_UnixPangoGraphics::_findFont(const char* pszFontFamily,
 	return new GR_UnixPangoFont(s.c_str(), dPointSize, this);
 }
 
-	
+/*!
+ *  This is a very ugly hack, but Pango gives me no public API to find out the upper
+ *  extent of the font coverage, so I either have to do this, or have to iterate over
+ *  the entire UCS-4 space (which is a non-starter)
+ *
+ *  The struct definition below must match _PangoCoverage !!!
+ *
+ *  each block represents 256 characters, so the maximum possible character
+ *  value is n_blocks * 256;
+ */
+
+struct _MyPangoCoverage
+{
+  guint ref_count;
+  int n_blocks;
+  int data_size;
+  
+  void *blocks;
+};
+
+typedef _MyPangoCoverage MyPangoCoverage;
+
+
 void GR_UnixPangoGraphics::getCoverage(UT_NumberVector& coverage)
 {
-	// I am not sure if this is really used for anything, my grep indicates no
-	UT_ASSERT_HARMLESS( UT_NOT_IMPLEMENTED );
+	UT_return_if_fail(m_pPFont);
+	
+	PangoCoverage * pc = m_pPFont->getPangoCoverage();
+	
+	if(!pc)
+		return;
+
+	MyPangoCoverage * mpc = (MyPangoCoverage*) pc;
+	UT_uint32 iMaxChar = mpc->n_blocks * 256;
+
+	UT_DEBUGMSG(("GR_UnixPangoGraphics::getCoverage: iMaxChar %d\n", iMaxChar));
+	
+	bool bInRange = false;
+	
+	for(UT_uint32 i = 0; i < iMaxChar; ++i)
+	{
+		PangoCoverageLevel pl = pango_coverage_get(pc, i);
+
+		if(PANGO_COVERAGE_NONE == pl || PANGO_COVERAGE_FALLBACK == pl)
+		{
+			if(bInRange)
+			{
+				// according to the code in XAP_UnixFont::getCoverage(), the range is of type
+				// <x,y)
+				coverage.push_back(i);
+				bInRange = false;
+			}
+		}
+		else
+		{
+			if(!bInRange)
+			{
+				coverage.push_back(i);
+				bInRange = true;
+			}
+		}
+	}
 }
 
 UT_GenericVector<const char *> *  GR_UnixPangoGraphics::getAllFontNames(void)
@@ -1610,6 +1667,20 @@ UT_sint32 GR_UnixPangoFont::measureUnremappedCharForCache(UT_UCS4Char cChar) con
 	return 0;
 }
 
+PangoCoverage * GR_UnixPangoFont::getPangoCoverage() const
+{
+	if(!m_pCover)
+	{
+		// FIXME: need to pass the real language down to this function eventually, but since
+		// we only expect answer in yes/no terms, this will do quite well for now
+		m_pCover = pango_font_get_coverage(m_pf, pango_language_from_string("en-US"));
+		UT_return_val_if_fail(m_pCover, NULL);
+	}
+
+	return m_pCover;
+}
+
+
 /*!
     Determine if character g exists in this font.
     We assume here that coverage is not affected by font size -- since we only operate
@@ -1621,16 +1692,10 @@ bool GR_UnixPangoFont::doesGlyphExist(UT_UCS4Char g)
 {
 	UT_return_val_if_fail( m_pf, false );
 
-	if(!m_pCover)
-	{
-		// FIXME: need to pass the real language down to this function eventually, but since
-		// we only expect answer in yes/no terms, this will do quite well for now
-		m_pCover = pango_font_get_coverage(m_pf, pango_language_from_string("en-US"));
-		UT_return_val_if_fail(m_pCover, false );
-	}
+	PangoCoverage * pc = getPangoCoverage();
+	UT_return_val_if_fail(pc, false);
 	
-
-	PangoCoverageLevel eLevel = pango_coverage_get(m_pCover, g);
+	PangoCoverageLevel eLevel = pango_coverage_get(pc, g);
 
 	if(PANGO_COVERAGE_NONE == eLevel || PANGO_COVERAGE_FALLBACK == eLevel)
 		return false;

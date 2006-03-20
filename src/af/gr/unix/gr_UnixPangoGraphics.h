@@ -75,14 +75,16 @@ class ABI_EXPORT GR_UnixPangoFont : public GR_Font
 	// ascent/descent in layout units
 	UT_uint32         getAscent() const {return m_iAscent;}
 	UT_uint32         getDescent() const {return m_iDescent;}
-	
+
+	PangoCoverage *   getPangoCoverage() const;
+ 
   private:
 	UT_String              m_sDesc;
 	double                 m_dPointSize;
 	UT_uint32              m_iZoom;
 	PangoFont *            m_pf;
 	bool                   m_bGuiFont;
-	PangoCoverage *        m_pCover;
+	mutable PangoCoverage *m_pCover;
 	PangoFontDescription * m_pfd;
 
 	UT_uint32              m_iAscent;
