@@ -141,7 +141,7 @@ void XAP_UnixDialog_Insert_Symbol::runModeless(XAP_Frame * pFrame)
 	
 	{
 		//m_unixGraphics = new GR_UnixGraphics(m_SymbolMap->window, unixapp->getFontManager(), m_pApp);
-		GR_UnixAllocInfo ai(m_SymbolMap->window, unixapp->getFontManager(), m_pApp);
+		GR_UnixAllocInfo ai(m_SymbolMap->window, unixapp->getFontManager());
 		m_unixGraphics = (GR_UnixGraphics*) XAP_App::getApp()->newGraphics(ai);
 	}
 	// let the widget materialize
@@ -156,7 +156,7 @@ void XAP_UnixDialog_Insert_Symbol::runModeless(XAP_Frame * pFrame)
 	DELETEP (m_unixarea);
     {
 		//m_unixarea = new GR_UnixGraphics(m_areaCurrentSym->window, unixapp->getFontManager(), m_pApp);
-		GR_UnixAllocInfo ai(m_areaCurrentSym->window, unixapp->getFontManager(), m_pApp);
+		GR_UnixAllocInfo ai(m_areaCurrentSym->window, unixapp->getFontManager());
 		m_unixarea = (GR_UnixGraphics*) XAP_App::getApp()->newGraphics(ai);
 	}
 	// let the widget materialize
