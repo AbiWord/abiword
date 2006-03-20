@@ -887,7 +887,7 @@ gint XAP_UnixDialog_FileOpenSaveAs::previewPicture (void)
 
 	// attach and clear the area immediately
 	//GR_UnixGraphics* pGr = new GR_UnixGraphics(m_preview->window, unixapp->getFontManager(), m_pApp);
-	GR_UnixAllocInfo ai(m_preview->window, unixapp->getFontManager(), m_pApp);
+	GR_UnixAllocInfo ai(m_preview->window, unixapp->getFontManager());
 	GR_UnixGraphics* pGr = (GR_UnixGraphics*) XAP_App::getApp()->newGraphics(ai);
 
 	const gchar * file_name = gtk_file_chooser_get_filename (m_FC);
