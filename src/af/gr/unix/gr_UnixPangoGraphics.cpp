@@ -214,6 +214,9 @@ GR_UnixPangoGraphics::GR_UnixPangoGraphics(GdkWindow * win)
 #endif
 	m_pContext = pango_xft_get_context(disp, iScreen);
 	m_pFontMap = pango_xft_get_font_map(disp, iScreen);
+	
+	_setIsSymbol(false);
+	_setIsDingbat(false);
 }
 
 
@@ -231,6 +234,9 @@ GR_UnixPangoGraphics::GR_UnixPangoGraphics()
 #else
 	UT_ASSERT_HARMLESS( UT_SHOULD_NOT_HAPPEN );
 #endif
+	
+	_setIsSymbol(false);
+	_setIsDingbat(false);
 }
 
 
@@ -282,14 +288,13 @@ UT_sint32 GR_UnixPangoGraphics::measureUnRemappedChar(const UT_UCSChar c)
 
 	UT_UCS4Char newChar;
 
-	if(!isSymbol() && !isDingbat())
+	if(isSymbol())
 	{
-		newChar = c;
+		newChar = adobeToUnicode(c);
 	}
-	else if(isSymbol())
+	else if(isDingbat())
 	{
-		newChar = static_cast<UT_UCSChar>(adobeToUnicode(c));
-		xxx_UT_DEBUGMSG(("Measure width of remappedd Symbol %x \n",newChar));
+		newChar = adobeDingbatsToUnicode(c);
 	}
 	else
 	{
@@ -297,7 +302,8 @@ UT_sint32 GR_UnixPangoGraphics::measureUnRemappedChar(const UT_UCSChar c)
 	}
 
 	UT_UTF8String s;
-	s += c;
+	s += newChar;
+	
 	GList* pGL = pango_itemize(m_pContext, s.utf8_str(), 0, s.byteLength(), NULL, NULL);
 	UT_return_val_if_fail( pGL, 0 );
 	
@@ -384,7 +390,7 @@ bool GR_UnixPangoGraphics::itemize(UT_TextIterator & text, GR_Itemization & I)
 
 bool GR_UnixPangoGraphics::shape(GR_ShapingInfo & si, GR_RenderInfo *& ri)
 {
-	UT_DEBUGMSG(("GR_UnixPangoGraphics::shape\n"));
+	UT_DEBUGMSG(("GR_UnixPangoGraphics::shape, len %d\n", si.m_iLength));
 	UT_return_val_if_fail(si.m_pItem && si.m_pItem->getClassId() == GRRI_UNIX_PANGO && si.m_pFont, false);
 	GR_UnixPangoItem * pItem = (GR_UnixPangoItem *)si.m_pItem;
 
@@ -402,13 +408,21 @@ bool GR_UnixPangoGraphics::shape(GR_ShapingInfo & si, GR_RenderInfo *& ri)
 
 	GR_UnixPangoRenderInfo * RI = (GR_UnixPangoRenderInfo *)ri;
 
+	// need this so that isSymbol() and isDingbat() are correct
+	setFont(const_cast<GR_Font*>(si.m_pFont));
+	
 	UT_UTF8String utf8;
 	
 	UT_sint32 i;
 	for(i = 0; i < si.m_iLength; ++i, ++si.m_Text)
 	{
 		UT_return_val_if_fail(si.m_Text.getStatus() == UTIter_OK, false);
-		utf8 += si.m_Text.getChar();
+		if(isSymbol())
+			utf8 += adobeToUnicode(si.m_Text.getChar());
+		else if(isDingbat())
+			utf8 += adobeDingbatsToUnicode(si.m_Text.getChar());
+		else
+			utf8 += si.m_Text.getChar();
 	}
 
 	RI->m_iCharCount = si.m_iLength;
@@ -1174,7 +1188,26 @@ void GR_UnixPangoGraphics::drawChars(const UT_UCSChar* pChars,
 {
 	UT_return_if_fail(m_pXftDraw);
 
-	UT_UTF8String utf8(pChars + iCharOffset, iLength);
+	UT_UTF8String utf8;
+
+	if(isSymbol())
+	{
+		for(int i = iCharOffset; i < iCharOffset + iLength; ++i)
+		{
+			utf8 += adobeToUnicode(pChars[i]);
+		}
+	}
+	else if(isDingbat())
+	{
+		for(int i = iCharOffset; i < iCharOffset + iLength; ++i)
+		{
+			utf8 += adobeDingbatsToUnicode(pChars[i]);
+		}
+	}
+	else
+	{
+		utf8.appendUCS4(pChars + iCharOffset, iLength);
+	}
 
 	// this function expect indexes in bytes !!! (stupid)
 	GList * pItems = pango_itemize(getContext(), utf8.utf8_str(), 0, utf8.byteLength(), NULL, NULL);
@@ -1212,6 +1245,27 @@ void GR_UnixPangoGraphics::setFont(GR_Font * pFont)
 	//PangoFont * pf = (PangoFont*) pFont;
 	m_pPFont = static_cast<GR_UnixPangoFont*>(pFont);
 
+	_setIsSymbol(false);
+	_setIsDingbat(false);
+
+	char * szUnixFontName = UT_strdup(m_pPFont->getFamily());
+	const char * szLCFontName = UT_lowerString(szUnixFontName);
+
+	if (szLCFontName)
+	{
+		UT_DEBUGMSG(("GR_UnixPangoGraphics::setFont: %s\n", szLCFontName));
+		if(strstr(szLCFontName,"symbol") != NULL)
+		{
+			if(!strstr(szLCFontName,"starsymbol") &&
+			   !strstr(szLCFontName, "opensymbol"))
+				_setIsSymbol(true);
+		}
+		
+		if(strstr(szLCFontName,"dingbat"))
+			_setIsDingbat(true);
+	}
+	FREEP(szLCFontName);
+	
 	if(!m_pPFont->isGuiFont() && m_pPFont->getZoom() != getZoomPercentage())
 	{
 		m_pPFont->reloadFont(this);
@@ -1330,7 +1384,12 @@ GR_Font* GR_UnixPangoGraphics::_findFont(const char* pszFontFamily,
 	const char * pVariant = pszFontVariant;
 	const char * pWeight = pszFontWeight;
 	const char * pStretch = pszFontStretch;
-	
+
+	if(pszFontFamily && !strcmp(pszFontFamily, "Symbol"))
+	{
+		pszFontFamily = "Standard Symbols L";
+	}
+	   
 	if(pszFontStyle && *pszFontStyle == 'n')
 		pStyle = "";
 	else if(pszFontStyle == NULL)
@@ -1606,7 +1665,8 @@ GR_UnixPangoFont::GR_UnixPangoFont(const char * pDesc, double dSize,
 
 GR_UnixPangoFont::~GR_UnixPangoFont()
 {
-	pango_coverage_unref(m_pCover);
+	if(m_pCover)
+		pango_coverage_unref(m_pCover);
 	pango_font_description_free(m_pfd);
 }
 

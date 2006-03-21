@@ -207,6 +207,9 @@ class GR_UnixGraphics : public GR_Graphics
 
 	XAP_UnixFontManager * 	m_pFontManager;
 
+	void                _setIsSymbol(bool b) {m_bIsSymbol = b;}
+	void                _setIsDingbat(bool b) {m_bIsDingbat = b;}
+
 	GdkGC*       			m_pGC;
 	GdkGC*  	      		m_pXORGC;
 	GdkWindow*  	  		m_pWin;
