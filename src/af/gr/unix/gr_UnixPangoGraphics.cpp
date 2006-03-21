@@ -390,7 +390,7 @@ bool GR_UnixPangoGraphics::itemize(UT_TextIterator & text, GR_Itemization & I)
 
 bool GR_UnixPangoGraphics::shape(GR_ShapingInfo & si, GR_RenderInfo *& ri)
 {
-	UT_DEBUGMSG(("GR_UnixPangoGraphics::shape, len %d\n", si.m_iLength));
+	xxx_UT_DEBUGMSG(("GR_UnixPangoGraphics::shape, len %d\n", si.m_iLength));
 	UT_return_val_if_fail(si.m_pItem && si.m_pItem->getClassId() == GRRI_UNIX_PANGO && si.m_pFont, false);
 	GR_UnixPangoItem * pItem = (GR_UnixPangoItem *)si.m_pItem;
 
@@ -702,7 +702,7 @@ void GR_UnixPangoGraphics::renderChars(GR_RenderInfo & ri)
 		}
 
 
-		if((UT_uint32)RI.m_iOffset >= vByteOffset.getItemCount())
+		if((UT_uint32)(RI.m_iOffset + RI.m_iLength) > vByteOffset.getItemCount())
 		{
 			// it seems the iterator run out on us
 			// this should probably not happen
@@ -1167,14 +1167,44 @@ void GR_UnixPangoGraphics::positionToXY(const GR_RenderInfo & ri,
 		vByteOffset.addItem(utf8.byteLength());
 		utf8 += RI.m_pText->getChar();
 	}
-	
+
+	// NB: vByteOffset contains char length, hence the byte offset is at (position - 1)
+	UT_sint32 iByteOffset;
+	gboolean  bTrailing = TRUE;
+	if(RI.m_iOffset < 0)
+	{
+		// we translate negative offsets into leading edge of the first char
+		iByteOffset = 0;
+		bTrailing = FALSE;
+	}
+	else if(RI.m_iOffset == 0)
+	{
+		// trailing edge of the first char
+		iByteOffset = 0;
+	}
+	else if((UT_sint32) vByteOffset.getItemCount() > RI.m_iOffset)
+	{
+		// withing range of our vector -- use it
+		iByteOffset = vByteOffset.getNthItem(RI.m_iOffset);
+	}
+	else if(vByteOffset.getItemCount() > 0)
+	{
+		// if we have the byte offset of the last char, use it for out of range requests
+		iByteOffset = vByteOffset.getNthItem(vByteOffset.getItemCount() - 1 );
+	}
+	else
+	{
+		// something utterly wrong ...
+		UT_ASSERT_HARMLESS(UT_SHOULD_NOT_HAPPEN);
+		iByteOffset = 0;
+	}
+
 	pango_glyph_string_index_to_x (RI.m_pGlyphs,
 								   (char*)utf8.utf8_str(), // do not like this ...
 								   utf8.byteLength(),
 								   &(pItem->m_pi->analysis), 
-								   RI.m_iOffset >= 0 ?
-								        vByteOffset.getNthItem(RI.m_iOffset) : RI.m_iOffset,
-								   TRUE,
+								   iByteOffset,
+								   bTrailing,
 								   &x);
 
 	x = ptlu(x);
@@ -1253,7 +1283,7 @@ void GR_UnixPangoGraphics::setFont(GR_Font * pFont)
 
 	if (szLCFontName)
 	{
-		UT_DEBUGMSG(("GR_UnixPangoGraphics::setFont: %s\n", szLCFontName));
+		xxx_UT_DEBUGMSG(("GR_UnixPangoGraphics::setFont: %s\n", szLCFontName));
 		if(strstr(szLCFontName,"symbol") != NULL)
 		{
 			if(!strstr(szLCFontName,"starsymbol") &&
@@ -1622,8 +1652,9 @@ inline int GR_UnixPangoGraphics::ptlu(int p) const
 */
 inline int GR_UnixPangoGraphics::ltpu(int l) const
 {
-	double d = (double)l*(double)getDeviceResolution()*(double)PANGO_SCALE /
-		(double)getResolution() + .5;
+	double d = (double)l *
+		(double)getDeviceResolution() * (double)PANGO_SCALE * (double)getZoomPercentage()/
+		((double)getResolution() * 100.0 + .5);
 	
 	return (int) d;
 }
