@@ -22,6 +22,7 @@
 #include <stdlib.h>
 #include <math.h>
 #include <ctype.h>
+#include <glib.h>
 
 #include "ut_vector.h"
 #include "ut_string_class.h"
@@ -656,125 +657,56 @@ const char * UT_pathSuffix(const char * path)
 
 bool UT_isWordDelimiter(UT_UCSChar currentChar, UT_UCSChar followChar, UT_UCSChar prevChar)
 {
-#if 1
 	// fast track Ascii letters
 	if('a' <= currentChar && currentChar <= 'z')
 		return false;
 
 	if('A' <= currentChar && currentChar <= 'Z')
 		return false;
-	
-    switch(currentChar)
-	{
-		case 0xb7:	// Catalan middledot, like instal·lació
-			return false;
-		case ',':
-		case '.':
-			if(UT_UCS4_isdigit(followChar) && UT_UCS4_isdigit(prevChar))
-				return false;
-			else
-				return true;
-			
-		case '"': //in some languages this can be in the middle of a word (Hebrew)
-		case '\'':	// we want quotes inside words for contractions
-		case UCS_LDBLQUOTE:    // smart quote, open double /* wjc */
-		case UCS_RDBLQUOTE:    // smart quote, close double /* wjc */
-		case UCS_LQUOTE:    // smart quote, open single  /* wjc */
-		case UCS_RQUOTE:	// we want quotes inside words for contractions
-		case '-':
-			if (UT_UCS4_isalpha(followChar) && UT_UCS4_isalpha(prevChar))
-			  {
-				  return false;
-			  }
-			else
-			  {
-				  return true;
-			  }
-		case UCS_ABI_OBJECT:
-			return true;
 
-		default:
+	switch (g_unichar_type(currentChar))
+	{
+		case G_UNICODE_MODIFIER_LETTER:
+		case G_UNICODE_LOWERCASE_LETTER:
+		case G_UNICODE_TITLECASE_LETTER:
+		case G_UNICODE_UPPERCASE_LETTER:
+		case G_UNICODE_OTHER_LETTER:
+		case G_UNICODE_COMBINING_MARK:
+		case G_UNICODE_ENCLOSING_MARK:
+		case G_UNICODE_NON_SPACING_MARK:
+		case G_UNICODE_DECIMAL_NUMBER:
+		case G_UNICODE_LETTER_NUMBER:
+		case G_UNICODE_OTHER_NUMBER:
+		case G_UNICODE_CONNECT_PUNCTUATION:
+ 			return false;
+
+		case G_UNICODE_OTHER_PUNCTUATION:
+			switch (currentChar)
 			{
-				UT_BidiCharType t = UT_bidiGetCharType(currentChar);
-				if(UT_BIDI_IS_NSM(t) || UT_BIDI_IS_LETTER(t))
-					return false;
-				else
+				// some punctuation can be internal in word
+				case 0x0022:           // QUOTATION MARK
+				case 0x0027:           // APOSTROPHE
+				case UCS_LDBLQUOTE:    // smart quote, open double /* wjc */
+				case UCS_RDBLQUOTE:    // smart quote, close double /* wjc */
+				case UCS_LQUOTE:       // smart quote, open single  /* wjc */
+				case UCS_RQUOTE:	   // smart quote, close single
+				case 0x055F:           // ARMENIAN ABBREVIATION MARK
+				case 0x070A:           // SYRIAC CONTRACTION
+				case 0x070F:           // SYRIAC ABBREVIATION MARK
+				case 0x0970:           // DEVANAGARI ABBREVIATION SIGN
+					if (UT_UCS4_isalpha(followChar) &&
+						UT_UCS4_isalpha(prevChar))
+						return false;
+					else
+						return true;
+					
+				default:
 					return true;
 			}
-	}
-
-#else
-	/*
-		TODO we need a more systematic way to handle this, instead 
-		TODO of just randomly adding more whitespace & punctuation
-		TODO on an as-discovered basis
-	*/
-	switch (currentChar)
-	{
-		case ' ':
-		case ',':
-		case '.':
-		case '-':
-		case '_':
-		case '(':
-		case ')':
-		case '[':
-		case ']':
-		case '{':
-		case '}':
-		case '<':
-		case '>':
-		case '*':
-		case '/':
-		case '+':
-		case '=':
-		case '#':
-		case '$':
-		case ';':
-		case ':':
-		case '!':
-		case '?':
-		case UCS_TAB:	// tab
-		case UCS_LF:	// line break
-		case UCS_VTAB:	// column break
-		case UCS_FF:	// page break
-		case 0x00a1:    // upside-down exclamation mark
-
-		/* various currency symbols */
-		case 0x00a2:
-		case 0x00a3:
-		case 0x00a4:
-		case 0x00a5:
-
-		/* other symbols */
-		case 0x00a6:
-		case 0x00a7:
-		case 0x00a9:
-		case 0x00ab:
-		case 0x00ae:
-		case 0x00b0:
-		case 0x00b1:
-
-		return true;
-		case '"': //in some languages this can be in the middle of a word (Hebrew)
-		case '\'':	// we want quotes inside words for contractions
-		case UCS_LDBLQUOTE:    // smart quote, open double /* wjc */
-		case UCS_RDBLQUOTE:    // smart quote, close double /* wjc */
-		case UCS_LQUOTE:    // smart quote, open single  /* wjc */
-		case UCS_RQUOTE:	// we want quotes inside words for contractions
-			if (UT_UCS_isalpha(followChar))
-			  {
-				  return false;
-			  }
-			else
-			  {
-				  return true;
-			  }
-		case UCS_ABI_OBJECT:
+			
 		default:
-			return false;
-	}
-#endif
+			return true;
+	} // switch
 }
 
 const XML_Char* UT_getAttribute(const XML_Char* name, const XML_Char** atts)
