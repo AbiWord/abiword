@@ -358,14 +358,12 @@ bool GR_UnixPangoGraphics::itemize(UT_TextIterator & text, GR_Itemization & I)
 	UT_uint32 iItemCount;
 	// PangoAttrList *pAttr = pango_attr_list_new();
 
-	PangoDirection ePDir = I.getEmbedingLevel() == UT_BIDI_RTL ?
-		                         PANGO_DIRECTION_RTL : PANGO_DIRECTION_LTR;
-	
-	GList *gItems = pango_itemize_with_base_dir(m_pContext,
-												ePDir,
-												utf8.utf8_str(),
-												0, utf8.byteLength(),
-												NULL, NULL);
+	// this will result in itemization assuming base direction of 0
+	// we set the appropriate embedding level later in shape()
+	GList *gItems = pango_itemize(m_pContext,
+								  utf8.utf8_str(),
+								  0, utf8.byteLength(),
+								  NULL, NULL);
 	
 	iItemCount = g_list_length(gItems);
 
@@ -469,6 +467,9 @@ bool GR_UnixPangoGraphics::shape(GR_ShapingInfo & si, GR_RenderInfo *& ri)
 	
 	pItem->m_pi->analysis.font = pf;
 
+	// need to set the embedding level here based on the level of our run
+	pItem->m_pi->analysis.level = si.m_iVisDir == UT_BIDI_RTL ? 1 : 0;
+	
 	pango_shape(utf8.utf8_str(), utf8.byteLength(),
 				&(pItem->m_pi->analysis), RI->m_pGlyphs);
 
@@ -486,12 +487,9 @@ bool GR_UnixPangoGraphics::shape(GR_ShapingInfo & si, GR_RenderInfo *& ri)
     // for insight how this is supposeed to work and possible optimizations.
 
 	// In LTR text, the values in log_clusters are guaranteed to be increasing,
-	// so we can put the iterator outside of the loop.
-	//
-	// In RTL text, the values in log_clusters should be decreasing but to avoid
-	// endless loop in case this is not true, we check the log_cluster values
-	// for the first two chars and if they are in descending order, we process
-	// them as LTR
+	// so we can put the iterator outside of the loop; in RTL text, the values
+	// in log_clusters are decreasing so we can also put the iterator outside
+	// the loop if we loop backawards.
 	
 	if (si.m_iVisDir == UT_BIDI_LTR ||
 		(RI->m_pGlyphs->num_glyphs > 1 &&
@@ -537,7 +535,7 @@ bool GR_UnixPangoGraphics::shape(GR_ShapingInfo & si, GR_RenderInfo *& ri)
 		}
 	}
 
-#ifdef DEBUG
+#if 0 //def DEBUG -- I think this is debugged now
 	// check against old algorithm
 
 	int *pLogOffsets = new int [RI->m_pGlyphs->num_glyphs];
