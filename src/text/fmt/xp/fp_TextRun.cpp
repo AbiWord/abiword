@@ -1862,7 +1862,7 @@ void fp_TextRun::_draw(dg_DrawArgs* pDA)
 		}
 		
 		UT_uint32 iMyOffset = iVisDir == UT_BIDI_RTL ?
-			iLen-iSegmentOffset[iSegment+1]  :
+			m_pRenderInfo->m_iLength-iSegmentOffset[iSegment+1]  :
 			iSegmentOffset[iSegment];
 		
 		if(iVisDir == UT_BIDI_RTL)
