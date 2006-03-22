@@ -39,6 +39,8 @@
 #include "fp_Line.h"
 #include "fp_Column.h"
 
+#include "gr_UnixPangoGraphics.h"
+
 /*****************************************************************/
 
 static AP_UnixDialog_Lists * Current_Dialog;
@@ -1117,27 +1119,61 @@ GtkWidget *AP_UnixDialog_Lists::_constructWindowContents (void)
 
 GList *  AP_UnixDialog_Lists::_getGlistFonts (void)
 {
-	XAP_UnixApp * unixapp = static_cast<XAP_UnixApp *> (m_pApp);
-
-	UT_GenericVector<XAP_UnixFont*>* list =  XAP_UnixFontManager::pFontManager->getAllFonts();
-	UT_uint32 count = list->size();
-
+	UT_GenericVector<const char*>* names = NULL;
+	UT_GenericVector<XAP_UnixFont*>* fonts = NULL;
+	UT_uint32 count = 0;
+	
+	GR_GraphicsFactory * pGF = XAP_App::getApp()->getGraphicsFactory();
+	UT_return_val_if_fail(pGF, NULL);
+	
+	UT_uint32 iGR = pGF->getDefaultClass(true);
+	
+	if(iGR != GRID_UNIX_PANGO)
+	{
+		fonts = XAP_UnixFontManager::pFontManager->getAllFonts();
+		UT_return_val_if_fail(fonts, NULL);
+		count = fonts->size();
+	}
+	else
+	{
+		names = GR_UnixPangoGraphics::getAllFontNames();
+		UT_return_val_if_fail(names, NULL);
+		count = names->size();
+	}
+	
 	GList *glFonts = NULL;
-	gchar currentfont[50] = "\0";
-	gchar * nextfont;
+	const gchar *currentfont = NULL;
 
 	for (UT_uint32 i = 0; i < count; i++)
 	{
-		XAP_UnixFont * pFont = list->getNthItem(i);
-		const gchar * lgn  = reinterpret_cast<const gchar *>(pFont->getName());
-		if((strstr(currentfont,lgn)==NULL) || (strlen(currentfont)!=strlen(lgn)) )
+		if(iGR != GRID_UNIX_PANGO)
 		{
-			strncpy(currentfont, lgn, 50);
-			nextfont = g_strdup(currentfont);
-			glFonts = g_list_prepend(glFonts, nextfont);
+			XAP_UnixFont * pFont = fonts->getNthItem(i);
+			const gchar * lgn  = reinterpret_cast<const gchar *>(pFont->getName());
+			if(!currentfont ||
+			   strstr(currentfont,lgn)==NULL ||
+			   strlen(currentfont)!=strlen(lgn))
+			{
+				currentfont = lgn;
+				glFonts = g_list_prepend(glFonts, g_strdup(currentfont));
+			}
+		}
+		else
+		{
+			const gchar * lgn  = names->getNthItem(i);
+			if(!currentfont ||
+			   strstr(currentfont,lgn)==NULL ||
+			   strlen(currentfont)!=strlen(lgn))
+			{
+				currentfont = lgn;
+				glFonts = g_list_prepend(glFonts, g_strdup(currentfont));
+			}
 		}
 	}
-	DELETEP(list);
+		
+	DELETEP(fonts);
+	DELETEP(names);
+	
 	m_glFonts =  g_list_reverse(glFonts);
 	return m_glFonts;
 }
