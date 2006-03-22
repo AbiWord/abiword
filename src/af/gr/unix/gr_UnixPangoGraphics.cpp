@@ -333,8 +333,8 @@ UT_sint32 GR_UnixPangoGraphics::measureUnRemappedChar(const UT_UCSChar c)
 
 bool GR_UnixPangoGraphics::itemize(UT_TextIterator & text, GR_Itemization & I)
 {
-	// Performance is not of the highest priorty, as this function gets only called once
-	// on each text fragment on load or keyboard entry
+	// Performance is not of the highest priorty, as this function gets only
+	// called once on each text fragment on load or keyboard entry
 	xxx_UT_DEBUGMSG(("GR_UnixPangoGraphics::itemize\n"));
 	UT_return_val_if_fail( m_pContext, false );
  
@@ -357,14 +357,21 @@ bool GR_UnixPangoGraphics::itemize(UT_TextIterator & text, GR_Itemization & I)
 
 	UT_uint32 iItemCount;
 	// PangoAttrList *pAttr = pango_attr_list_new();
-  
-	GList *gItems = pango_itemize(m_pContext, utf8.utf8_str(), 0, utf8.byteLength(), NULL, NULL);
+
+	PangoDirection ePDir = I.getEmbedingLevel() == UT_BIDI_RTL ?
+		                         PANGO_DIRECTION_RTL : PANGO_DIRECTION_LTR;
+	
+	GList *gItems = pango_itemize_with_base_dir(m_pContext,
+												ePDir,
+												utf8.utf8_str(),
+												0, utf8.byteLength(),
+												NULL, NULL);
+	
 	iItemCount = g_list_length(gItems);
 
-	//!!!WDG haven't decided what to do about attributes yet
-	// We do not want to use these attributes, because the text we draw in a single call
-	// is always homogenous
-	// pango_attr_list_unref(pAttr);
+	//!!!WDG haven't decided what to do about attributes yet We do not want to
+	//use these attributes, because the text we draw in a single call is always
+	//homogenous pango_attr_list_unref(pAttr);
 	
 	// now we process the ouptut
 	UT_uint32 iOffset = 0;
@@ -391,13 +398,16 @@ bool GR_UnixPangoGraphics::itemize(UT_TextIterator & text, GR_Itemization & I)
 bool GR_UnixPangoGraphics::shape(GR_ShapingInfo & si, GR_RenderInfo *& ri)
 {
 	xxx_UT_DEBUGMSG(("GR_UnixPangoGraphics::shape, len %d\n", si.m_iLength));
-	UT_return_val_if_fail(si.m_pItem && si.m_pItem->getClassId() == GRRI_UNIX_PANGO && si.m_pFont, false);
+	UT_return_val_if_fail(si.m_pItem &&
+						  si.m_pItem->getClassId() == GRRI_UNIX_PANGO &&
+						  si.m_pFont, false);
+	
 	GR_UnixPangoItem * pItem = (GR_UnixPangoItem *)si.m_pItem;
 
 	if(!ri)
 	{
-		// this simply allocates new instance of the RI which this function will fill with
-		// meaningful data
+		// this simply allocates new instance of the RI which this function will
+		// fill with meaningful data
 		ri = new GR_UnixPangoRenderInfo(pItem->getType());
 		UT_return_val_if_fail(ri, false);
 	}
@@ -435,9 +445,9 @@ bool GR_UnixPangoGraphics::shape(GR_ShapingInfo & si, GR_RenderInfo *& ri)
 	
 	RI->m_pGlyphs = pango_glyph_string_new();
 
-	// !!!WDG where to get gtext and glength from ??? - the GR_ShapingInfo?
-	// The text is in pInChars, conversion to utf-8 and removal for m_text from the item
-	// is probably desirable
+	// !!!WDG where to get gtext and glength from ??? - the GR_ShapingInfo?  The
+	// text is in pInChars, conversion to utf-8 and removal for m_text from the
+	// item is probably desirable
 
 	// before we can call this, we have to set analysis.font
 	// Is this the case, or is the font set by pango_itemize()? #TF
@@ -448,7 +458,9 @@ bool GR_UnixPangoGraphics::shape(GR_ShapingInfo & si, GR_RenderInfo *& ri)
 	
 	UT_LocaleTransactor t(LC_NUMERIC, "C");
 	UT_String s;
-	UT_String_sprintf(s, "%s %f", pFont->getDescription().c_str(), pFont->getPointSize());
+	UT_String_sprintf(s, "%s %f",
+					  pFont->getDescription().c_str(),
+					  pFont->getPointSize());
 		
 	PangoFontDescription * pfd = pango_font_description_from_string(s.c_str());
 	UT_return_val_if_fail(pfd, false);
@@ -457,11 +469,12 @@ bool GR_UnixPangoGraphics::shape(GR_ShapingInfo & si, GR_RenderInfo *& ri)
 	
 	pItem->m_pi->analysis.font = pf;
 
-	pango_shape(utf8.utf8_str(), utf8.byteLength(), &(pItem->m_pi->analysis), RI->m_pGlyphs);
+	pango_shape(utf8.utf8_str(), utf8.byteLength(),
+				&(pItem->m_pi->analysis), RI->m_pGlyphs);
 
-	// the RI->m_Glyphs now contains logical cluster info, which is unfortunately indexed
-	// to bytes in the utf-8 string, not characters -- this is real pain
-	// and we have to convert it
+	// the RI->m_Glyphs now contains logical cluster info, which is
+	// unfortunately indexed to bytes in the utf-8 string, not characters --
+	// this is real pain and we have to convert it
 	if(RI->m_pLogOffsets)
 	{
 		delete [] RI->m_pLogOffsets;
@@ -469,54 +482,59 @@ bool GR_UnixPangoGraphics::shape(GR_ShapingInfo & si, GR_RenderInfo *& ri)
 
 	RI->m_pLogOffsets = new int [RI->m_pGlyphs->num_glyphs];
  
-        // See http://www.abisource.com/mailinglists/abiword-dev/2006/Feb/0081.html
-	// for insight how this is supposeed to work and possible optimizations.
- 
-	if (si.m_iVisDir == UT_BIDI_LTR)
-	{
-	  const char * p = utf8.utf8_str();
-	  UT_UTF8Stringbuf::UTF8Iterator I = utf8.getIterator();
-	  int j = 0;
+    // See http://www.abisource.com/mailinglists/abiword-dev/2006/Feb/0081.html
+    // for insight how this is supposeed to work and possible optimizations.
 
-	  for(int i = 0; i < RI->m_pGlyphs->num_glyphs; ++i)
-	    {
-
-		int iOff = RI->m_pGlyphs->log_clusters[i];
-
-		// advance the iterator until we find the offset that corresponds to the glyph
-		// byte offset
-		while(I.current() && I.current() != p + iOff)
-		{
-			I.advance();
-			++j;
-		}
-
-		RI->m_pLogOffsets[i] = j;
-
-	    }
-	}
-	else //  GR_ShapingInfo.m_iVisDir == UT_BIDI_RTL)
-	{
-	  const char * p = utf8.utf8_str();
-	  UT_UTF8Stringbuf::UTF8Iterator I = utf8.getIterator();
-	  I = I.end();
-	  int j = 0;
+	// In LTR text, the values in log_clusters are guaranteed to be increasing,
+	// so we can put the iterator outside of the loop.
+	//
+	// In RTL text, the values in log_clusters should be decreasing but to avoid
+	// endless loop in case this is not true, we check the log_cluster values
+	// for the first two chars and if they are in descending order, we process
+	// them as LTR
 	
-	  for(int i = 0; i < RI->m_pGlyphs->num_glyphs; ++i)
-	  {
-		int iOff = RI->m_pGlyphs->log_clusters[i];
+	if (si.m_iVisDir == UT_BIDI_LTR ||
+		(RI->m_pGlyphs->num_glyphs > 1 &&
+		 RI->m_pGlyphs->log_clusters[0] < RI->m_pGlyphs->log_clusters[1]))
+	{
+		const char * p = utf8.utf8_str();
+		UT_UTF8Stringbuf::UTF8Iterator I = utf8.getIterator();
+		int j = 0;
 
-		// retreat the iterator until we find the offset that corresponds to the glyph
-		// byte offset
-		while(I.current() && I.current() != p + iOff)
+		for(int i = 0; i < RI->m_pGlyphs->num_glyphs; ++i)
 		{
-			I.retreat();
-			--j;
+			int iOff = RI->m_pGlyphs->log_clusters[i];
+
+			// advance the iterator until we find the offset that corresponds to
+			// the glyph byte offset
+			while(I.current() && I.current() != p + iOff)
+			{
+				I.advance();
+				++j;
+			}
+
+			RI->m_pLogOffsets[i] = j;
+
 		}
+	}
+	else // GR_ShapingInfo.m_iVisDir == UT_BIDI_RTL)
+	{
+		const char * p = utf8.utf8_str();
+		UT_UTF8Stringbuf::UTF8Iterator I = utf8.getIterator();
+		int j = 0;
+	
+		for(int i = RI->m_pGlyphs->num_glyphs - 1; i >= 0; --i)
+		{
+			int iOff = RI->m_pGlyphs->log_clusters[i];
 
-		RI->m_pLogOffsets[i] = j;
+			while(I.current() && I.current() != p + iOff)
+			{
+				I.advance();
+				++j;
+			}
 
-	  }
+			RI->m_pLogOffsets[i] = j;
+		}
 	}
 
 #ifdef DEBUG
@@ -535,8 +553,8 @@ bool GR_UnixPangoGraphics::shape(GR_ShapingInfo & si, GR_RenderInfo *& ri)
 		int j = 0;
 		int iOff = RI->m_pGlyphs->log_clusters[i];
 
-		// advance the iterator until we find the offset that corresponds to the glyph
-		// byte offset
+		// advance the iterator until we find the offset that corresponds to the
+		// glyph byte offset
 		while(I.current() && I.current() != p + iOff)
 		{
 			I.advance();
@@ -545,10 +563,11 @@ bool GR_UnixPangoGraphics::shape(GR_ShapingInfo & si, GR_RenderInfo *& ri)
 
 		pLogOffsets[i] = j;
 
-		// set also any subsequent glyphs that have the same byte offset (to save
-		// ourselves the overhead of iterating the utf8 string againg)
+		// set also any subsequent glyphs that have the same byte offset (to
+		// save ourselves the overhead of iterating the utf8 string againg)
 		int k = i+1;
-		while(k < RI->m_pGlyphs->num_glyphs && RI->m_pGlyphs->log_clusters[k] == iOff)
+		while(k < RI->m_pGlyphs->num_glyphs &&
+			  RI->m_pGlyphs->log_clusters[k] == iOff)
 		{
 			pLogOffsets[k] = j;
 			++k;
@@ -603,8 +622,9 @@ UT_sint32 GR_UnixPangoGraphics::getTextWidth(GR_RenderInfo & ri)
 	
 	for(UT_uint32 i = 0; i < iGlyphCount; ++i)
 	{
-		// test for >= -- in case of combining characters, the requested offset might
-		// inside the cluster, which is not legal, we take the first offset given to us
+		// test for >= -- in case of combining characters, the requested offset
+		// might inside the cluster, which is not legal, we take the first
+		// offset given to us
 		if(iOffsetStart < 0 && RI.m_pLogOffsets[i] >= RI.m_iOffset)
 		{
 			iOffsetStart = i;
