@@ -3295,7 +3295,7 @@ void fl_BlockLayout::format()
 	}
 	_assertRunListIntegrity();
 	fp_Line* pLastLine = static_cast<fp_Line *>(getLastContainer());
-	if(pLastLine->getContainerType() == FP_CONTAINER_LINE)
+	if(pLastLine && pLastLine->getContainerType() == FP_CONTAINER_LINE)
 	{
 		if(	bJustifyStuff)
 		{
