@@ -1022,6 +1022,8 @@ void FV_View::setFrameFormat(const XML_Char * attribs[], const XML_Char * proper
 	if(pFrame == NULL)
 	{
 		UT_DEBUGMSG(("No frame selected. Aborting! \n"));
+		// should we assert ?
+		return;
 	}
 	PT_DocPosition posStart = pFrame->getPosition(true)+1;
 	PT_DocPosition posEnd = posStart;
