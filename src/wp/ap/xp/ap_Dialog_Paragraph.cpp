@@ -87,7 +87,7 @@ AP_Dialog_Paragraph::AP_Dialog_Paragraph(XAP_DialogFactory* pDlgFactory, XAP_Dia
 	_addPropertyItem (id_CHECK_SUPPRESS,		sControlData(check_INDETERMINATE));
 	_addPropertyItem (id_CHECK_NO_HYPHENATE,	sControlData(check_INDETERMINATE));
 	_addPropertyItem (id_CHECK_KEEP_NEXT,		sControlData(check_INDETERMINATE));
-	_addPropertyItem (id_CHECK_DOMDIRECTION,	sControlData(check_TRUE));
+	_addPropertyItem (id_CHECK_DOMDIRECTION,	sControlData(check_INDETERMINATE));
 }
 
 AP_Dialog_Paragraph::~AP_Dialog_Paragraph(void)
