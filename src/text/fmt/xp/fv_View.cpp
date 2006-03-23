@@ -9278,6 +9278,9 @@ EV_EditMouseContext FV_View::getMouseContext(UT_sint32 xPos, UT_sint32 yPos)
 	}
 	if(isInTable(pos))
 	{
+		if(!pRun)
+			return EV_EMC_UNKNOWN;
+
 		fp_Line * pLine = pRun->getLine();
 		if(pLine)
 		{
