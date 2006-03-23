@@ -1026,6 +1026,8 @@ void FV_View::setFrameFormat(const XML_Char * attribs[], const XML_Char * proper
 	if(pFrame == NULL)
 	{
 		UT_DEBUGMSG(("No frame selected. Aborting! \n"));
+		// should we assert ?
+		return;
 	}
 	PT_DocPosition posStart = pFrame->getPosition(true)+1;
 	PT_DocPosition posEnd = posStart;
@@ -9336,6 +9338,9 @@ EV_EditMouseContext FV_View::getMouseContext(UT_sint32 xPos, UT_sint32 yPos)
 	}
 	if(isInTable(pos))
 	{
+		if(!pRun)
+			return EV_EMC_UNKNOWN;
+
 		fp_Line * pLine = pRun->getLine();
 		if(pLine)
 		{
