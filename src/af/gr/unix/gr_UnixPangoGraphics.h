@@ -47,7 +47,9 @@ class ABI_EXPORT GR_UnixPangoFont : public GR_Font
 {
   public:
 	GR_UnixPangoFont(const char * pDesc, double dSize,
-					 GR_UnixPangoGraphics * pG, bool bGuiFont = false);
+					 GR_UnixPangoGraphics * pG,
+					 const char * pLang,
+					 bool bGuiFont = false);
 	
 	virtual ~GR_UnixPangoFont();
 
@@ -77,7 +79,9 @@ class ABI_EXPORT GR_UnixPangoFont : public GR_Font
 	UT_uint32         getDescent() const {return m_iDescent;}
 
 	PangoCoverage *   getPangoCoverage() const;
- 
+	PangoLanguage *   getPangoLanguage() const {return m_pPLang;}
+	void              setLanguage(const char * pLang);
+	
   private:
 	UT_String              m_sDesc;
 	double                 m_dPointSize;
@@ -86,6 +90,7 @@ class ABI_EXPORT GR_UnixPangoFont : public GR_Font
 	bool                   m_bGuiFont;
 	mutable PangoCoverage *m_pCover;
 	PangoFontDescription * m_pfd;
+	PangoLanguage *        m_pPLang;
 
 	UT_uint32              m_iAscent;
 	UT_uint32              m_iDescent;
@@ -114,7 +119,8 @@ public:
 									  UT_sint32 xoff, UT_sint32 yoff,
 									  int * pCharWidth);
                     
-	virtual GR_Font*	   getDefaultFont(UT_String& fontFamily);
+	virtual GR_Font*	   getDefaultFont(UT_String& fontFamily,
+										  const char * pszLang);
 	virtual void           setFont(GR_Font *);
 
 	virtual void           setZoomPercentage(UT_uint32 iZoom);
@@ -166,14 +172,16 @@ public:
 										const char* pszFontVariant,
 										const char* pszFontWeight,
 										const char* pszFontStretch,
-										const char* pszFontSize);
+										const char* pszFontSize,
+										const char* pszLang);
 
 	virtual GR_Font* _findFont(const char* pszFontFamily,
 							   const char* pszFontStyle,
 							   const char* pszFontVariant,
 							   const char* pszFontWeight,
 							   const char* pszFontStretch,
-							   const char* pszFontSize);
+							   const char* pszFontSize,
+							   const char* pszLang);
 	
 	virtual void getCoverage(UT_NumberVector& coverage);
 
@@ -181,7 +189,8 @@ public:
 
 	static  UT_GenericVector<const char*> *   getAllFontNames(void);
 	static  UT_uint32                         getAllFontCount();
-	virtual GR_Font * getDefaultFont(GR_Font::FontFamilyEnum f = GR_Font::FF_Roman);
+	virtual GR_Font * getDefaultFont(GR_Font::FontFamilyEnum f = GR_Font::FF_Roman,
+									 const char * pszLang = NULL);
 
 	int dtpu(int d) const;
 	int ptdu(int p) const;

@@ -90,7 +90,11 @@ void XAP_Draw_Symbol::setFontToGC(GR_Graphics *p_gc, UT_uint32 MaxWidthAllowable
 	while (!SizeOK)
 	{
 		sprintf(temp, "%ipt", PointSize);
-		font = p_gc->findFont(m_stFont.c_str(), "normal", "", "normal", "", temp);
+		font = p_gc->findFont(m_stFont.c_str(),
+							  "normal", "",
+							  "normal", "",
+							  temp,
+							  NULL);
 		/* findFont does a fuzzy match.  If the font found doesn't have the same family name
 		 * that we asked for, we retrieve the new name and we use it */
 		if (font->getFamily())

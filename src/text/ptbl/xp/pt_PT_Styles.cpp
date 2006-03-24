@@ -32,7 +32,7 @@
 #include "xap_Strings.h"
 #include "xap_App.h"
 #include "xap_App.h"
-
+#include "xap_EncodingManager.h"
 
 ///////////////////////////////////////////////////////////////////
 // Styles represent named collections of formatting properties.
@@ -143,8 +143,24 @@ bool pt_PieceTable::_loadBuiltinStyles(void)
 	UT_String stTmp;
 	const char* szFmt;
 	
-	// findNearestFont will do a fuzzy match, and return the nearest font in the system
-	const char* pszFamily = XAP_App::findNearestFont("Times New Roman", "normal", "", "normal", "", "12pt");
+	// findNearestFont will do a fuzzy match, and return the nearest font in the
+	// system -- use the locale language
+	UT_UTF8String s = XAP_EncodingManager::get_instance()->getLanguageISOName();
+
+	const char * pCountry
+		= XAP_EncodingManager::get_instance()->getLanguageISOTerritory();
+	
+	if(pCountry)
+	{
+		s += "-";
+		s += pCountry;
+	}
+	
+	const char* pszFamily = XAP_App::findNearestFont("Times New Roman",
+													 "normal", "",
+													 "normal", "", "12pt",
+													 s.utf8_str());
+	
 	UT_String_sprintf(stTmp, "font-family:%s; font-size:12pt; font-weight:normal; "
 					  "font-style:normal; font-stretch:normal; font-variant:normal; "
 					  "margin-top:0pt; margin-bottom:0pt; "
@@ -152,7 +168,8 @@ bool pt_PieceTable::_loadBuiltinStyles(void)
 					  "text-indent:0in; text-position:normal; line-height:1.0; "
 					  "color:000000; bgcolor:transparent; widows:2", pszFamily);
 
-	pszFamily = XAP_App::findNearestFont("Arial", "normal", "", "normal", "", "12pt");
+	pszFamily = XAP_App::findNearestFont("Arial", "normal", "",
+										 "normal", "", "12pt", s.utf8_str());
 
 	// used to set the dom-dir of the style here, but we do not want to do that. The
 	// dom-dir property should be inherited from the section or document (the user can, of

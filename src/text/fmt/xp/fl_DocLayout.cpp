@@ -1523,6 +1523,7 @@ const GR_Font* FL_DocLayout::findFont(const PP_AttrProp * pSpanAP,
 	const char* pszStretch	= PP_evalProperty("font-stretch",pSpanAP,pBlockAP,pSectionAP, m_pDoc, true);
 	const char* pszSize		= PP_evalProperty("font-size",pSpanAP,pBlockAP,pSectionAP, m_pDoc, true);
 	const char* pszPosition = PP_evalProperty("text-position",pSpanAP,pBlockAP,pSectionAP, m_pDoc, true);
+	const char* pszLang     = PP_evalProperty("lang",pSpanAP,pBlockAP,pSectionAP, m_pDoc, true);
 
 	if (pszField != NULL && isField && UT_strcmp(pszField, "NULL"))
 		pszFamily = pszField;
@@ -1535,7 +1536,10 @@ const GR_Font* FL_DocLayout::findFont(const PP_AttrProp * pSpanAP,
 		pszSize = UT_formatDimensionedValue(newSize,"pt",".0");
 	}
 
-	return m_pG->findFont(pszFamily, pszStyle, pszVariant, pszWeight, pszStretch, pszSize);
+	return m_pG->findFont(pszFamily, pszStyle,
+						  pszVariant, pszWeight,
+						  pszStretch, pszSize,
+						  pszLang);
 }
 
 void FL_DocLayout::changeDocSections(const PX_ChangeRecord_StruxChange * pcrx, fl_DocSectionLayout * pDSL)

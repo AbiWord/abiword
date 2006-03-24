@@ -1434,23 +1434,25 @@ void XAP_App::setDefaultGraphicsId(UT_uint32 i)
 	}
 }
 
-const char*         XAP_App::_findNearestFont(const char* pszFontFamily,
-												const char* pszFontStyle,
-												const char* pszFontVariant,
-												const char* pszFontWeight,
-												const char* pszFontStretch,
-												const char* pszFontSize)
+const char* XAP_App::_findNearestFont(const char* pszFontFamily,
+									  const char* pszFontStyle,
+									  const char* pszFontVariant,
+									  const char* pszFontWeight,
+									  const char* pszFontStretch,
+									  const char* pszFontSize,
+									  const char * pszLang)
 {
-        XAP_Frame * pFrame = getLastFocussedFrame();
-        if(pFrame == NULL)
+	XAP_Frame * pFrame = getLastFocussedFrame();
+	if(pFrame == NULL)
 	{
-	      return pszFontFamily;
+		return pszFontFamily;
 	}
 	GR_Graphics * pG = newDefaultScreenGraphics();
 	UT_return_val_if_fail( pG, pszFontFamily );
 
 	const char * pf = pG->findNearestFont(pszFontFamily, pszFontStyle, pszFontVariant,
-										   pszFontWeight, pszFontStretch, pszFontSize);
+										  pszFontWeight, pszFontStretch, pszFontSize,
+										  pszLang);
 
 	delete pG;
 	return pf;
@@ -1469,13 +1471,15 @@ const char* XAP_App::findNearestFont(const char* pszFontFamily,
 									 const char* pszFontVariant,
 									 const char* pszFontWeight,
 									 const char* pszFontStretch,
-									 const char* pszFontSize)
+									 const char* pszFontSize,
+									 const char* pszLang)
 {
 	XAP_App * pApp = XAP_App::getApp();
 	UT_return_val_if_fail( pApp, pszFontFamily );
 	
 	return pApp->_findNearestFont(pszFontFamily, pszFontStyle, pszFontVariant,
-		pszFontWeight, pszFontStretch, pszFontSize);
+								  pszFontWeight, pszFontStretch, pszFontSize,
+								  pszLang);
 }
 
 /*!

@@ -158,7 +158,8 @@ protected:
 							   const char* pszFontVariant, 
 							   const char* pszFontWeight, 
 							   const char* pszFontStretch, 
-							   const char* pszFontSize);
+							   const char* pszFontSize,
+							   const char* pszLang);
 
 	bool			_startDocument(void);
 	bool			_startPage(const char * szPageLabel, UT_uint32 pageNumber,

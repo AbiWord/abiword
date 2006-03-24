@@ -95,7 +95,8 @@ class GR_UnixGraphics : public GR_Graphics
 										const char* pszFontVariant,
 										const char* pszFontWeight,
 										const char* pszFontStretch,
-										const char* pszFontSize);
+										const char* pszFontSize,
+										const char* pszLang);
 
 	// virtual UT_uint32	measureString(const UT_UCSChar*s, int iOffset, int num, unsigned short* pWidths);
 	virtual UT_sint32 measureUnRemappedChar(const UT_UCSChar c);
@@ -201,7 +202,8 @@ class GR_UnixGraphics : public GR_Graphics
 								  const char* pszFontVariant, 
 								  const char* pszFontWeight, 
 								  const char* pszFontStretch, 
-								  const char* pszFontSize);
+								  const char* pszFontSize,
+								  const char* pszLang);
 
 	void				_setColor(GdkColor & c);
 

@@ -108,7 +108,8 @@ protected:
 												const char* pszFontVariant,
 												const char* pszFontWeight,
 												const char* pszFontStretch,
-												const char* pszFontSize);
+												const char* pszFontSize,
+												const char* pszLang);
 	bool							_loadFonts();
 	void							_setAbiSuiteLibDir();
 private:

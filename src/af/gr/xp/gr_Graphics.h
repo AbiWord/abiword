@@ -406,14 +406,16 @@ class ABI_EXPORT GR_Graphics
 					   const char* pszFontVariant,
 					   const char* pszFontWeight,
 					   const char* pszFontStretch,
-					   const char* pszFontSize);
+					   const char* pszFontSize,
+					   const char* pszLang);
 	
 	virtual const char* findNearestFont(const char* pszFontFamily,
 										const char* pszFontStyle,
 										const char* pszFontVariant,
 										const char* pszFontWeight,
 										const char* pszFontStretch,
-										const char* pszFontSize)
+										const char* pszFontSize,
+										const char* pszLang)
 	                                         {return pszFontFamily;}
 
 	const char *      invertDimension(UT_Dimension, double) const;
@@ -705,7 +707,8 @@ class ABI_EXPORT GR_Graphics
 							   const char* pszFontVariant,
 							   const char* pszFontWeight,
 							   const char* pszFontStretch,
-							   const char* pszFontSize) = 0;
+							   const char* pszFontSize,
+							   const char* pszLang) = 0;
 
 	// only called by GR_Painter
 	virtual void drawLine(UT_sint32 x1, UT_sint32 y1, UT_sint32 x2, UT_sint32 y2) = 0;

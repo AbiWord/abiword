@@ -62,7 +62,10 @@ void XAP_Preview_Zoom::setFont(XAP_Preview_Zoom::tFont f)
 	{
 	case XAP_Preview_Zoom::font_NORMAL:
 		sprintf (fontString, "%dpt", (10 * m_zoomPercent / 100));
-		found = m_gc->findFont("Times New Roman", "normal", "", "normal", "", fontString);
+		found = m_gc->findFont("Times New Roman",
+							   "normal", "", "normal",
+							   "", fontString,
+							   NULL);
 
 		if (found)
 		{

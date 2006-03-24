@@ -146,7 +146,8 @@ GR_Font* GR_Graphics::findFont(const char* pszFontFamily,
 							   const char* pszFontVariant,
 							   const char* pszFontWeight,
 							   const char* pszFontStretch,
-							   const char* pszFontSize)
+							   const char* pszFontSize,
+							   const char* pszLang)
 {
 	GR_Font * pFont = NULL;
 
@@ -161,7 +162,10 @@ GR_Font* GR_Graphics::findFont(const char* pszFontFamily,
 		// TODO -- note that we currently assume font-family to be a single name,
 		// TODO -- not a list.  This is broken.
 
-		pFont = _findFont(pszFontFamily, pszFontStyle, pszFontVariant, pszFontWeight, pszFontStretch, pszFontSize);
+		pFont = _findFont(pszFontFamily, pszFontStyle,
+						  pszFontVariant,pszFontWeight,
+						  pszFontStretch, pszFontSize,
+						  pszLang);
 		UT_ASSERT(pFont);
 		xxx_UT_DEBUGMSG(("Insert font %x in gr_Graphics cache \n",pFont));
 		// add it to the cache

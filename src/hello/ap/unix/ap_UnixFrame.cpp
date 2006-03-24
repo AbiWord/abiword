@@ -87,7 +87,7 @@ UT_Error AP_UnixFrame::loadDocument(const char * szFilename, int fileType)
 	GR_UnixAllocInfo ai(m_dArea->window, fontManager);
 	GR_UnixGraphics* pG = (GR_UnixGraphics*) XAP_App::getApp()->newGraphics(ai);
 	
-	pG->setFont(pG->findFont("times", "normal", NULL, "bold", NULL, "72pt"));
+	pG->setFont(pG->findFont("times", "normal", NULL, "bold", NULL, "72pt", NULL));
 				
 	pG->setZoomPercentage(100);
 

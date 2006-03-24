@@ -884,7 +884,8 @@ gint XAP_UnixDialog_FileOpenSaveAs::previewPicture (void)
 	UT_ASSERT(unixapp);
 
 	const XAP_StringSet * pSS = m_pApp->getStringSet();
-
+	UT_return_val_if_fail( pSS, 0 );
+	
 	// attach and clear the area immediately
 	//GR_UnixGraphics* pGr = new GR_UnixGraphics(m_preview->window, unixapp->getFontManager(), m_pApp);
 	GR_UnixAllocInfo ai(m_preview->window, unixapp->getFontManager());
@@ -892,7 +893,10 @@ gint XAP_UnixDialog_FileOpenSaveAs::previewPicture (void)
 
 	const gchar * file_name = gtk_file_chooser_get_filename (m_FC);
 	
-	GR_Font * fnt = pGr->findFont("Times New Roman", "normal", "", "normal", "", "12pt");
+	GR_Font * fnt = pGr->findFont("Times New Roman",
+								  "normal", "", "normal",
+								  "", "12pt",
+								  pSS->getLanguageName());
 	pGr->setFont(fnt);
 
 	UT_UTF8String str;

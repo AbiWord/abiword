@@ -385,7 +385,8 @@ GR_Font * GR_QNXGraphics::_findFont(const char* pszFontFamily,
 									const char* /*pszFontVariant*/,
 									const char* pszFontWeight,
 									const char* /*pszFontStretch*/,
-									const char* pszFontSize)
+									const char* pszFontSize,
+									const char* pszLang)
 {
 	UT_ASSERT(pszFontFamily);
 	UT_ASSERT(pszFontStyle);

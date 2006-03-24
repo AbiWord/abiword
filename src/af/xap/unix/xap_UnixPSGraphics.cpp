@@ -220,7 +220,8 @@ GR_Font * PS_Graphics::_findFont(const char* pszFontFamily,
 								 const char* pszFontVariant,
 								 const char* pszFontWeight,
 								 const char* pszFontStretch,
-								 const char* pszFontSize)
+								 const char* pszFontSize,
+								 const char* pszLang)
 {
 	XAP_UnixFont* pUnixFont = XAP_UnixFontManager::pFontManager->findNearestFont(pszFontFamily, pszFontStyle, pszFontVariant, pszFontWeight,
 																				 pszFontStretch, pszFontSize);

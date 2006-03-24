@@ -387,8 +387,23 @@ FV_View::FV_View(XAP_App * pApp, void* pParentData, FL_DocLayout* pLayout)
 	}
 #endif
 
+	UT_UTF8String s = XAP_EncodingManager::get_instance()->getLanguageISOName();
+
+	const char * pCountry
+		= XAP_EncodingManager::get_instance()->getLanguageISOTerritory();
+	
+	if(pCountry)
+	{
+		s += "-";
+		s += pCountry;
+	}
+		
 	// findFont will do a fuzzy match, and return the nearest font in the system
-	GR_Font* pFont = m_pG->findFont("Times New Roman", "normal", "normal", "normal", "normal", "12pt");
+	GR_Font* pFont = m_pG->findFont("Times New Roman",
+									"normal", "normal",
+									"normal", "normal",
+									"12pt", s.utf8_str());
+	
 	const char * pszFamily = pFont ? pFont->getFamily() : NULL;
 	if (pszFamily)
 		PP_setDefaultFontFamily(pszFamily);

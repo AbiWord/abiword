@@ -18,15 +18,19 @@
  */
 
 #include "gr_UnixPangoGraphics.h"
+
+#include "xap_App.h"
+#include "xap_Prefs.h"
+#include "xap_EncodingManager.h"
+
 #include "xap_UnixApp.h"
 #include "xap_UnixFontManager.h"
+
 #include "ut_debugmsg.h"
 #include "ut_misc.h"
 #include "ut_vector.h"
 #include "ut_locale.h"
 
-#include "xap_App.h"
-#include "xap_Prefs.h"
 
 // need this to include what Pango considers 'low-level' api
 #define PANGO_ENABLE_ENGINE
@@ -1331,7 +1335,7 @@ void GR_UnixPangoGraphics::setZoomPercentage(UT_uint32 iZoom)
 	}
 }
 
-GR_Font* GR_UnixPangoGraphics::getDefaultFont(UT_String& fontFamily)
+GR_Font* GR_UnixPangoGraphics::getDefaultFont(UT_String& fontFamily, const char * pLang)
 {
 	UT_return_val_if_fail( UT_NOT_IMPLEMENTED, NULL );
 }
@@ -1380,7 +1384,8 @@ const char* GR_UnixPangoGraphics::findNearestFont(const char* pszFontFamily,
 												  const char* pszFontVariant,
 												  const char* pszFontWeight,
 												  const char* pszFontStretch,
-												  const char* pszFontSize)
+												  const char* pszFontSize,
+												  const char* pszLang)
 {
 	UT_String s;
 	UT_String_sprintf(s, "%s, %s %s %s %s %s",
@@ -1421,7 +1426,8 @@ GR_Font* GR_UnixPangoGraphics::_findFont(const char* pszFontFamily,
 										 const char* pszFontVariant,
 										 const char* pszFontWeight,
 										 const char* pszFontStretch,
-										 const char* pszFontSize)
+										 const char* pszFontSize,
+										 const char* pszLang)
 {
 	double dPointSize = UT_convertToPoints(pszFontSize);
 	UT_String s;
@@ -1458,6 +1464,9 @@ GR_Font* GR_UnixPangoGraphics::_findFont(const char* pszFontFamily,
 	else if(pszFontStretch == NULL)
 	        pStretch = "";
 
+	if(!pszLang || !*pszLang)
+		pszLang = "en-US";
+	
 	UT_String_sprintf(s, "%s, %s %s %s %s",
 					  pszFontFamily,
 					  pStyle,
@@ -1474,7 +1483,7 @@ GR_Font* GR_UnixPangoGraphics::_findFont(const char* pszFontFamily,
 	char * p = pango_font_description_to_string(pfd);
 #endif
 	
-	return new GR_UnixPangoFont(s.c_str(), dPointSize, this);
+	return new GR_UnixPangoFont(s.c_str(), dPointSize, this, pszLang);
 }
 
 /*!
@@ -1569,7 +1578,8 @@ UT_uint32 GR_UnixPangoGraphics::getAllFontCount()
 	return fs->nfont;
 }
 
-GR_Font * GR_UnixPangoGraphics::getDefaultFont(GR_Font::FontFamilyEnum f)
+GR_Font * GR_UnixPangoGraphics::getDefaultFont(GR_Font::FontFamilyEnum f,
+											   const char * pszLang)
 {
 	const char* pszFontFamily = NULL;
 	const char* pszFontStyle = "normal";
@@ -1577,6 +1587,9 @@ GR_Font * GR_UnixPangoGraphics::getDefaultFont(GR_Font::FontFamilyEnum f)
 	const char* pszFontWeight = "normal";
 	const char* pszFontStretch = "normal";
 	const char* pszFontSize = "12pt";
+
+	if(!pszLang)
+		pszLang = "en-US";
 
 	switch (f)
 	{
@@ -1614,7 +1627,8 @@ GR_Font * GR_UnixPangoGraphics::getDefaultFont(GR_Font::FontFamilyEnum f)
 					pszFontVariant,
 					pszFontWeight,
 					pszFontStretch,
-					pszFontSize);
+					pszFontSize,
+					pszLang);
 }
 
 
@@ -1627,8 +1641,19 @@ GR_Font * GR_UnixPangoGraphics::getGUIFont(void)
 		const char *guiFontName = pango_font_description_get_family(tempStyle->font_desc);
 		if (!guiFontName)
 			guiFontName = "'Times New Roman'";
-	
-		m_pPFontGUI = new GR_UnixPangoFont(guiFontName, 11.0, this, true);
+
+		UT_UTF8String s = XAP_EncodingManager::get_instance()->getLanguageISOName();
+
+		const char * pCountry
+			= XAP_EncodingManager::get_instance()->getLanguageISOTerritory();
+		
+		if(pCountry)
+		{
+			s += "-";
+			s += pCountry;
+		}
+		
+		m_pPFontGUI = new GR_UnixPangoFont(guiFontName, 11.0, this, s.utf8_str(), true);
 
 		g_object_unref(G_OBJECT(tempStyle));
 		
@@ -1694,21 +1719,25 @@ inline int GR_UnixPangoGraphics::pftlu(int pf) const
 // GR_UnixPangFont implementation
 //
 GR_UnixPangoFont::GR_UnixPangoFont(const char * pDesc, double dSize,
-								   GR_UnixPangoGraphics * pG, bool bGuiFont):
+								   GR_UnixPangoGraphics * pG,
+								   const char * pLang,
+								   bool bGuiFont):
 	m_dPointSize(dSize),
 	m_iZoom(0), // forces creation of font by reloadFont()
 	m_pf(NULL),
 	m_bGuiFont(bGuiFont),
 	m_pCover(NULL),
 	m_pfd(NULL),
+	m_pPLang(NULL),
 	m_iAscent(0),
 	m_iDescent(0)
 {
 	m_eType = GR_FONT_UNIX_PANGO;
-	
-	UT_return_if_fail( pDesc && pG );
+	UT_return_if_fail( pDesc && pG && pLang);
+
 	m_sDesc = pDesc;
 	
+	setLanguage(pLang);
 	reloadFont(pG);
 }
 
@@ -1717,6 +1746,13 @@ GR_UnixPangoFont::~GR_UnixPangoFont()
 	if(m_pCover)
 		pango_coverage_unref(m_pCover);
 	pango_font_description_free(m_pfd);
+}
+
+void GR_UnixPangoFont::setLanguage(const char * pLang)
+{
+	UT_return_if_fail( pLang );
+
+	m_pPLang = pango_language_from_string(pLang); 
 }
 
 /*!
@@ -1754,7 +1790,7 @@ void GR_UnixPangoFont::reloadFont(GR_UnixPangoGraphics * pG)
 
 	UT_return_if_fail( m_pf );
 	// FIXME: we probably want the real language from somewhere
-	PangoFontMetrics * pfm = pango_font_get_metrics(m_pf, pango_language_from_string("en-US"));
+	PangoFontMetrics * pfm = pango_font_get_metrics(m_pf, m_pPLang);
 	UT_return_if_fail( pfm);
 
 	// pango_metrics_ functions return in points * PANGO_SCALE (points * 1024)
@@ -1782,7 +1818,7 @@ PangoCoverage * GR_UnixPangoFont::getPangoCoverage() const
 	{
 		// FIXME: need to pass the real language down to this function eventually, but since
 		// we only expect answer in yes/no terms, this will do quite well for now
-		m_pCover = pango_font_get_coverage(m_pf, pango_language_from_string("en-US"));
+		m_pCover = pango_font_get_coverage(m_pf, m_pPLang);
 		UT_return_val_if_fail(m_pCover, NULL);
 	}
 

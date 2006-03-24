@@ -88,7 +88,9 @@ AP_Preview_PageNumbers::AP_Preview_PageNumbers (GR_Graphics * gc)
 	char fontString [10];
 	sprintf(fontString, "%dpt", 8);
 	
-	GR_Font * found =  m_gc->findFont("Times New Roman", "normal", "", "normal", "", fontString);
+	GR_Font * found =  m_gc->findFont("Times New Roman", "normal",
+									  "", "normal", "", fontString,
+									  NULL);
 	
 	m_gc->setFont(found);
 	

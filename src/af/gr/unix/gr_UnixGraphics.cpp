@@ -514,7 +514,8 @@ const char* GR_UnixGraphics::findNearestFont(const char* pszFontFamily,
 											 const char* pszFontVariant,
 											 const char* pszFontWeight,
 											 const char* pszFontStretch,
-											 const char* pszFontSize)
+											 const char* pszFontSize,
+											 const char* pszLang)
 {
 	xxx_UT_DEBUGMSG(("Find Font findNearestFont for %s \n",pszFontFamily));
 	XAP_UnixFont* pUnixFont = XAP_UnixFontManager::pFontManager->findNearestFont(pszFontFamily, pszFontStyle,
@@ -1220,7 +1221,8 @@ GR_Font * GR_UnixGraphics::_findFont(const char* pszFontFamily,
 									 const char* pszFontVariant,
 									 const char* pszFontWeight,
 									 const char* pszFontStretch,
-									 const char* pszFontSize)
+									 const char* pszFontSize,
+									 const char* pszLang)
 {
 	xxx_UT_DEBUGMSG(("Find Font _findFont for %s \n",pszFontFamily));
 	XAP_UnixFont* pUnixFont = m_pFontManager->findNearestFont(pszFontFamily, pszFontStyle, pszFontVariant, pszFontWeight,
