@@ -4019,9 +4019,8 @@ bool FV_View::getStyle(const XML_Char ** style)
 				{
 					const XML_Char* sz = x_getStyle(pSpanAP, true);
 					bool bHere = (sz && sz[0]);
-					UT_return_val_if_fail((sz && szChar), false);
 
-					if ((bCharStyle != bHere) || (strcmp(sz, szChar)))
+					if ((bCharStyle != bHere) || ((sz && szChar && strcmp(sz, szChar))))
 					{
 						// doesn't match, so stop looking
 						bCharStyle = false;
