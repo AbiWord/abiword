@@ -102,7 +102,8 @@ UT_sint32 fb_ColumnBreaker::breakSection(fl_DocSectionLayout * pSL)
 		return 0;
 	}
 	pOuterContainer = pFirstLayout->getFirstContainer();
-	if(pOuterContainer->getContainerType() == FP_CONTAINER_FRAME)
+	if(pOuterContainer
+		&& pOuterContainer->getContainerType() == FP_CONTAINER_FRAME)
 	{
 	            fl_ContainerLayout * pCL = pOuterContainer->getSectionLayout()->getNext();
 		    if(pCL)
@@ -138,7 +139,11 @@ UT_sint32 fb_ColumnBreaker::breakSection(fl_DocSectionLayout * pSL)
 			pFirstLayout = static_cast<fl_ContainerLayout *>(pOuterContainer->getSectionLayout());
 		}
 	}
-	fp_Page * pPrevPage = pCurColumn->getPage();
+	fp_Page * pPrevPage = NULL;
+	// attachment 3627 from bug 9878 has pCurColumn == NULL
+	if (pCurColumn) {
+		pPrevPage = pCurColumn->getPage();
+	}
 	while (pCurColumn)
 	{
 		if(pCurColumn->getPage() != pPrevPage)
