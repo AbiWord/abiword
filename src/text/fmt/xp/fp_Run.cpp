@@ -4731,6 +4731,9 @@ fp_FieldFootnoteRefRun::fp_FieldFootnoteRefRun(fl_BlockLayout* pBL, UT_uint32 iO
 
 	UT_ASSERT(bRes);
 	m_iPID = atol(footid);
+
+	// see bug 9793
+	_setDirection(pBL->getDominantDirection());
 }
 
 
@@ -4764,6 +4767,7 @@ bool fp_FieldFootnoteRefRun::calculateValue(void)
 	return _setValue(sz_ucs_FieldValue);
 }
 
+
 fp_FieldFootnoteAnchorRun::fp_FieldFootnoteAnchorRun(fl_BlockLayout* pBL, UT_uint32 iOffsetFirst, UT_uint32 iLen) : fp_FieldRun(pBL, iOffsetFirst, iLen)
 {
 	const PP_AttrProp * pp = getSpanAP();
@@ -4772,6 +4776,9 @@ fp_FieldFootnoteAnchorRun::fp_FieldFootnoteAnchorRun(fl_BlockLayout* pBL, UT_uin
 
 	UT_ASSERT(bRes);
 	m_iPID = atol(footid);
+
+	// see bug 9793
+	_setDirection(pBL->getDominantDirection());
 }
 
 // Appears in the FootnoteContainer, one per footnote.
@@ -4811,6 +4818,9 @@ fp_FieldEndnoteAnchorRun::fp_FieldEndnoteAnchorRun(fl_BlockLayout* pBL, UT_uint3
 
 	UT_ASSERT(bRes);
 	m_iPID = atoi(footid);
+
+	// see bug 9793
+	_setDirection(pBL->getDominantDirection());
 }
 
 // Appears in the EndnoteSection, one per endnote.
@@ -4851,6 +4861,9 @@ fp_FieldEndnoteRefRun::fp_FieldEndnoteRefRun(fl_BlockLayout* pBL,UT_uint32 iOffs
 
 	UT_ASSERT(bRes);
 	m_iPID = atoi(footid);
+
+	// see bug 9793
+	_setDirection(pBL->getDominantDirection());
 }
 
 // Appears in the EndnoteSection, one per endnote.
@@ -4881,6 +4894,7 @@ bool fp_FieldEndnoteRefRun::calculateValue(void)
 
 	return _setValue(sz_ucs_FieldValue);
 }
+
 
 fp_FieldTimeRun::fp_FieldTimeRun(fl_BlockLayout* pBL, UT_uint32 iOffsetFirst, UT_uint32 iLen) : fp_FieldRun(pBL, iOffsetFirst, iLen)
 {

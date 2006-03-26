@@ -91,7 +91,7 @@ public:
 	virtual void errorMsgBadArg(AP_Args * Args, int nextopt);
 	virtual void errorMsgBadFile(XAP_Frame * pFrame, const char * file, 
 								 UT_Error error);
-	virtual bool doWindowlessArgs (const AP_Args *);
+	virtual bool doWindowlessArgs (const AP_Args *, bool & bSuccess);
 	virtual GR_Graphics * newDefaultScreenGraphics() const 
 		{ UT_ASSERT(UT_NOT_IMPLEMENTED); return NULL; };
 

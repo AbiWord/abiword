@@ -43,7 +43,7 @@ public:
 
 	bool getShowSplash() const { return m_bShowSplash; }
 	AP_App* getApp() const { return m_pApp; }
-	bool doWindowlessArgs();
+	bool doWindowlessArgs(bool & bSuccessful);
 
 	// Would be nice if this could be non-static.
 	const static struct poptOption const_opts[];
@@ -70,7 +70,6 @@ public:
 	static int    m_iVersion;
 	static int    m_iHelp;
 	static const char * m_sDisplay;
-	static int    m_iAbiControl;
 	static const char * m_sMerge;
 
 	static const char * m_impProps;

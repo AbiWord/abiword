@@ -1033,7 +1033,8 @@ int AP_CocoaApp::main(const char * szAppName, int argc, const char ** argv)
 
 	// Step 2: Handle all non-window args.
 
-	if (!Args.doWindowlessArgs())
+	bool windowlessArgsWereSuccessful = true;
+	if (!Args.doWindowlessArgs(windowlessArgsWereSuccessful))
 		return false;
 
     // Setup signal handlers, primarily for segfault
@@ -1111,9 +1112,11 @@ void AP_CocoaApp::errorMsgBadFile(XAP_Frame * pFrame, const char * file,
  * A callback for AP_Args's doWindowlessArgs call which handles
  * platform-specific windowless args.
  */
-bool AP_CocoaApp::doWindowlessArgs(const AP_Args *Args)
+bool AP_CocoaApp::doWindowlessArgs(const AP_Args *Args, bool & bSuccess)
 {
  	AP_CocoaApp * pMyCocoaApp = static_cast<AP_CocoaApp*>(Args->getApp());
+
+	bSuccess = true;
 
 	if(Args->m_sPlugin)
 	{
@@ -1138,6 +1141,7 @@ bool AP_CocoaApp::doWindowlessArgs(const AP_Args *Args)
 		if(!bFound)
 		{
 			printf("Plugin %s not found or loaded \n",Args->m_sPlugin);
+			bSuccess = false;
 			return false;
 		}
 //
@@ -1151,6 +1155,7 @@ bool AP_CocoaApp::doWindowlessArgs(const AP_Args *Args)
 		{
 			printf("Plugin %s invoke method %s not found \n",
 				   Args->m_sPlugin,evExecute);
+			bSuccess = false;
 			return false;
 		}
 //

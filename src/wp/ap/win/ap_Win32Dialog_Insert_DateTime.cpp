@@ -108,8 +108,22 @@ void AP_Win32Dialog_Insert_DateTime::SetFormatsList(void)
 	pTime = &wide;
 #endif
 
-	UT_LocaleInfo localeInfo;                                               
-	UT_LocaleTransactor t(LC_ALL, localeInfo.getLanguage().utf8_str());
+	UT_LocaleInfo localeInfo;
+	UT_String s;
+	char buf[100];
+
+	// 
+	// MS not recognise standard ISO language and country codes. So, here
+	// we retrieve the long language and country name for the users
+	// default locale and pass these to setlocale.
+	GetLocaleInfoA(LOCALE_USER_DEFAULT,LOCALE_SENGLANGUAGE, &buf[0], 100);
+	s += buf;
+	s += "_";
+	
+	GetLocaleInfoA(LOCALE_USER_DEFAULT,LOCALE_SENGCOUNTRY, &buf[0], 100);
+	s += buf;
+	
+	UT_LocaleTransactor t(LC_ALL, s.c_str());
 
     for (i = 0;InsertDateTimeFmts[i] != NULL;i++) {
         strftime(szCurrentDateTime, CURRENT_DATE_TIME_SIZE, InsertDateTimeFmts[i], pTime);

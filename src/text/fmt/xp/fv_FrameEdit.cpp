@@ -1954,6 +1954,7 @@ void FV_FrameEdit::drawFrame(bool bWithHandles)
 			      UT_Rect rec = m_recCurFrame;
 			      rec.left = 0;
 			      rec.top = 0;
+				  UT_return_if_fail(m_pFrameLayout->getBackgroundImage());
 			      m_pFrameImage = m_pFrameLayout->getBackgroundImage()->createImageSegment(getGraphics(),rec);
 			}
 		}

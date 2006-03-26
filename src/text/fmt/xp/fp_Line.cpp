@@ -189,6 +189,7 @@ bool fp_Line::assertLineListIntegrity(void)
 			}
 			UT_ASSERT(pRunLine == pRunBlock);
 		}
+		UT_return_val_if_fail(pRunBlock,false);
 		pRunBlock = pRunBlock->getNextRun();
 	}
 	xxx_UT_DEBUGMSG(("Line %x Width of line is %d num runs is %d \n",this,width,k)); //   UT_ASSERT(width < getMaxWidth());

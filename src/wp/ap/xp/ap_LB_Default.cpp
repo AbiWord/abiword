@@ -348,12 +348,21 @@ ap_bs_NVK NVKTable[] =
 						  "querySaveAndExit",	"",					"",				""					}},
 //	{EV_NVK_F5,			{ "",					"",					"",				"",
 //						  "",					"",					"",				""					}},
+#ifdef HAVE_HILDON						  
+	{EV_NVK_F6,			{ "viewFullScreen",					"",					"",				"",
+						  "",					"",					"",				""					}},
+	{EV_NVK_F7,			{ "zoomIn",			"",					"",				"",
+						  "",					"",					"",				""					}},
+	{EV_NVK_F8,			{ "zoomOut",					"",					"",				"",
+						  "",					"",					"",				""					}},
+#else
 //	{EV_NVK_F6,			{ "",					"",					"",				"",
-//						  "",					"",					"",				""					}},
+//						  "",					"",					"",			""					}},
 	{EV_NVK_F7,			{ "dlgSpell",			"",					"",				"",
 						  "",					"",					"",				""					}},
 //	{EV_NVK_F8,			{ "",					"",					"",				"",
 //						  "",					"",					"",				""					}},
+#endif
 //	{EV_NVK_F9,			{ "",					"",					"",				"",
 //						  "",					"",					"",				""					}},
 	{EV_NVK_F10,		{ "",					"contextMenu",		"",				"",

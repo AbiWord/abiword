@@ -55,7 +55,6 @@ int    AP_Args::m_iVersion = 0;
 int    AP_Args::m_iHelp = 0;
 const char * AP_Args::m_sDisplay = NULL;
 struct poptOption * AP_Args::options = NULL;
-int  AP_Args::m_iAbiControl = 0;
 const char * AP_Args::m_sMerge = NULL;
 
 const char * AP_Args::m_impProps=NULL;
@@ -127,8 +126,11 @@ void AP_Args::parsePoptOpts ()
  * Handles arguments which require an XAP_App but no windows.
  * It has a callback to getApp()::doWindowlessArgs().
  */
-bool AP_Args::doWindowlessArgs()
+bool AP_Args::doWindowlessArgs(bool & bSuccessful)
 {
+  // start out optimistic
+  bSuccessful = true;
+
 #ifdef DEBUG
 	if (m_iDumpstrings)
 	{
@@ -164,7 +166,7 @@ bool AP_Args::doWindowlessArgs()
 		while ((m_sFile = poptGetArg (poptcon)) != NULL)
 		{
 			UT_DEBUGMSG(("Converting file (%s) to type (%s)\n", m_sFile, m_sTo));
-			conv->convertTo(m_sFile, m_sTo);
+			bSuccessful = bSuccessful && conv->convertTo(m_sFile, m_sTo);
 		}
 		delete conv;
 		return false;
@@ -177,13 +179,16 @@ bool AP_Args::doWindowlessArgs()
 // ie_impGraphicPNG, which perhaps doesn't like you freeing the
 // returned buffer.
 	  while ((m_sFile = poptGetArg (poptcon)) != NULL)
-	    conv->convertToPNG(m_sFile);
+	    bSuccessful = bSuccessful && conv->convertToPNG(m_sFile);
 	  delete conv;
 
 	  return false;
 	}
 
-	if (!m_pApp->doWindowlessArgs(this))
+	bool appWindowlessArgsWereSuccessful = true;
+	bool res = m_pApp->doWindowlessArgs(this, appWindowlessArgsWereSuccessful);
+	bSuccessful = bSuccessful && appWindowlessArgsWereSuccessful;
+	if (!res)
 		return false;
 
 	if (m_sTo || m_iToPNG || m_sPrintTo || m_iNosplash || m_sPlugin)
@@ -217,7 +222,6 @@ const struct poptOption AP_Args::const_opts[] =
 	 {"merge", 'm', POPT_ARG_STRING, &m_sMerge, 0, "Mail-merge", "FILE"},
 	 {"imp-props", 'i', POPT_ARG_STRING, &m_impProps, 0, "Importer Arguments", "CSS String"},
 	 {"exp-props", 'e', POPT_ARG_STRING, &m_expProps, 0, "Exporter Arguments", "CSS String"},
-	 {"AbiControl", '\0', POPT_ARG_NONE, &m_iAbiControl, 0, "Execute plugin AbiControl instead of the main application", ""},
 	 {"thumb",'\0',POPT_ARG_INT,&m_iToThumb,0,"Make a thumb nail of the first page",""},
 	 {"sizeXY",'S',POPT_ARG_STRING,&m_sThumbXY,0,"Size of PNG thumb nail in pixels","VALxVAL"},
 	 {"name",'o',POPT_ARG_STRING,&m_sThumb,0,"Name of PNG thumb nail file","Output png file name"},

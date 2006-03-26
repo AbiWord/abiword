@@ -77,7 +77,7 @@ class AP_App : public XAP_App_BaseClass
 	virtual void errorMsgBadFile(XAP_Frame *, const char *, UT_Error);
 
 	/* Allow additional platform-specific windowless args. */
-	virtual bool doWindowlessArgs (const AP_Args *);
+	virtual bool doWindowlessArgs (const AP_Args *, bool & bSuccess);
 
 	bool openCmdLineFiles(AP_Args * args);
  private:

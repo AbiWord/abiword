@@ -127,6 +127,13 @@ BOOL CALLBACK AP_Win32Dialog_FormatTable::s_dlgProc(HWND hWnd,UINT msg,WPARAM wP
 			
 		return TRUE;		
 	}
+
+	case WM_DESTROY:
+	{
+		pThis = GWL(hWnd);
+		pThis->finalize();		
+		return 0;
+	}
 		
 	case WM_COMMAND:
 		pThis = GWL(hWnd);
@@ -436,8 +443,7 @@ void AP_Win32Dialog_FormatTable::setSensitivity(bool bSens)
 void AP_Win32Dialog_FormatTable::destroy(void) 
 {
 	finalize();	
-	DestroyWindow(m_hwndDlg);
-	modeless_cleanup();
+	DestroyWindow(m_hwndDlg);	
 }
 
 

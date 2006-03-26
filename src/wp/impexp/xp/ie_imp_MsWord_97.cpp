@@ -940,9 +940,6 @@ UT_Error IE_Imp_MsWord_97::importFile(const char * szFilename)
   int ret = wvInitParser (&ps, const_cast<char *>(szFilename));
   const char * password = NULL;
 
-  // HACK!!
-  bool decrypted = false ;
-
   if (ret & 0x8000)		/* Password protected? */
     {
       UT_UTF8String pass (GetPassword());
@@ -965,7 +962,6 @@ UT_Error IE_Imp_MsWord_97::importFile(const char * szFilename)
 			//ErrorMessage(AP_STRING_ID_WORD_PassInvalid);
 		  ErrCleanupAndExit(UT_IE_PROTECTED);
 		}
-	      decrypted = true ;
 	    }
 	}
       else if (((ret & 0x7fff) == WORD7) || ((ret & 0x7fff) == WORD6))
@@ -984,7 +980,6 @@ UT_Error IE_Imp_MsWord_97::importFile(const char * szFilename)
 		  //("Incorrect Password\n"));
 		  ErrCleanupAndExit(UT_IE_PROTECTED);
 		}
-	      decrypted = true ;
 	    }
 	}
     }
@@ -1006,89 +1001,14 @@ UT_Error IE_Imp_MsWord_97::importFile(const char * szFilename)
   if(!getLoadStylesOnly())
 	  getDoc()->setAttrProp(NULL);
   
-  UT_DEBUGMSG(("DOM: wvText\n"));
-
   wvText(&ps);
 
-  if(getLoadStylesOnly())
-	  return UT_OK;
-
-  // now get the summary information, if available
-  ret = wvQuerySupported (&ps.fib, NULL);
-
-#if 0
-  
-  UT_DEBUGMSG(("DOM: about to get summary information\n"));
-
-  // word 2 used an OLE like mechanism inside of a FILE*, but
-  // good luck trying to ms_ole_summary_open something using that...
-  if (WORD2 != ret)
-    {
-      MsOleSummary *summary = ms_ole_summary_open (ps.ole_file);
-      if (summary)
-	{
-	  UT_DEBUGMSG(("DOM: getting summary information\n"));
-
-	  UT_UTF8String prop_str;
-	  gboolean found = FALSE;
-
-	  // title
-	  prop_str = ms_ole_summary_get_string (summary, MS_OLE_SUMMARY_TITLE, &found);
-	  if (found && prop_str.size())
-	    getDoc()->setMetaDataProp ( PD_META_KEY_TITLE, prop_str ) ;
-
-	  // subject
-	  prop_str = ms_ole_summary_get_string (summary, MS_OLE_SUMMARY_SUBJECT, &found);
-	  if (found && prop_str.size())
-	    getDoc()->setMetaDataProp ( PD_META_KEY_SUBJECT, prop_str ) ;
-
-	  // author
-	  prop_str = ms_ole_summary_get_string (summary, MS_OLE_SUMMARY_AUTHOR, &found);
-	  if (found && prop_str.size())
-	    getDoc()->setMetaDataProp ( PD_META_KEY_CREATOR, prop_str ) ;
-
-	  prop_str = ms_ole_summary_get_string (summary, MS_OLE_SUMMARY_LASTAUTHOR, &found);
-	  if (found && prop_str.size())
-	    getDoc()->setMetaDataProp ( PD_META_KEY_CONTRIBUTOR, prop_str ) ;
-
-	  // keywords
-	  prop_str = ms_ole_summary_get_string (summary, MS_OLE_SUMMARY_KEYWORDS, &found);
-	  if (found && prop_str.size())
-	    getDoc()->setMetaDataProp ( PD_META_KEY_KEYWORDS, prop_str ) ;
-
-	  // comments
-	  prop_str = ms_ole_summary_get_string (summary, MS_OLE_SUMMARY_COMMENTS, &found);
-	  if (found && prop_str.size())
-	    getDoc()->setMetaDataProp ( PD_META_KEY_DESCRIPTION, prop_str ) ;
-
-	  // below this line are from Document Summary Information
-
-	  ms_ole_summary_close (summary);
-	  summary = ms_ole_docsummary_open(ps.ole_file);
-
-	  if(summary){
-	    // category
-	    prop_str = ms_ole_summary_get_string (summary, MS_OLE_SUMMARY_CATEGORY, &found);
-	    if (found && prop_str.size())
-	      getDoc()->setMetaDataProp ( PD_META_KEY_TYPE, prop_str ) ;
-
-	    // organization
-	    prop_str = ms_ole_summary_get_string (summary, MS_OLE_SUMMARY_COMPANY, &found);
-	    if (found && prop_str.size())
-	      getDoc()->setMetaDataProp ( PD_META_KEY_PUBLISHER, prop_str ) ;
-
-	    ms_ole_summary_close (summary);
-	  }
-	}
-    }
-
-  UT_DEBUGMSG(("DOM: finished summary info\n"));
-
-#endif
-
-  // HACK - this will do until i sort out some global stream ugliness in wv
-  if ( !decrypted && WORD2 != ret )
+  if(getLoadStylesOnly()) {
     wvOLEFree(&ps);
+    return UT_OK;
+  }
+
+  wvOLEFree(&ps);
 
   // We can't be in a good state if we didn't add any sections!
   if (m_nSections == 0)
@@ -1377,12 +1297,15 @@ XML_Char * IE_Imp_MsWord_97::_getBookmarkName(const wvParseStruct * ps, UT_uint3
 	{
 		// 16 bit stuff
 		const UT_UCS2Char * p = static_cast<const UT_UCS2Char *>(ps->Sttbfbkmk.u16strings[pos]);
-		UT_uint32 len  = UT_UCS2_strlen(static_cast<const UT_UCS2Char*>(ps->Sttbfbkmk.u16strings[pos]));
-		sUTF8.clear();
-		sUTF8.appendUCS2(p, len);
-		
-		str = new XML_Char[sUTF8.byteLength()+1];
-		strcpy(str, sUTF8.utf8_str());
+		if(p) {
+		  UT_uint32 len  = UT_UCS2_strlen(p);
+		  sUTF8.clear();
+		  sUTF8.appendUCS2(p, len);
+		  
+		  str = new XML_Char[sUTF8.byteLength()+1];
+		  strcpy(str, sUTF8.utf8_str());
+		} else
+		  str = NULL;
 	}
 	else
 	{
@@ -3075,21 +2998,27 @@ int IE_Imp_MsWord_97::_beginPara (wvParseStruct *ps, UT_uint32 tag,
 	if (myListId > 0 && !bDoNotInsertStrux)
 	  {
 		// TODO: honor more props
-		const XML_Char *list_field_fmt[3];
+		const XML_Char *list_field_fmt[5];
 		list_field_fmt[0] = "type";
 		list_field_fmt[1] = "list_label";
-		list_field_fmt[2] = 0;
+		list_field_fmt[2] = "props";
+		list_field_fmt[3] = "text-decoration:none";
+		list_field_fmt[4] = 0;
 		_appendObject(PTO_Field, static_cast<const XML_Char**>(&list_field_fmt[0]));
 		m_bInPara = true;
 
 		// the character following the list label - 0=tab, 1=space, 2=none
 		if(apap->linfo.ixchFollow == 0) // tab
 		{
+		        const XML_Char* attribs[3] = {"props","text-decoration:none",NULL};
+			getDoc()->appendFmt(attribs);
 			UT_UCSChar tab = UCS_TAB;
 			_appendSpan(&tab, 1);
 		}
 		else if(apap->linfo.ixchFollow == 1) // space
 		{
+		        const XML_Char* attribs[3] = {"props","text-decoration:none",NULL};
+			getDoc()->appendFmt(attribs);
 			UT_UCSChar space = UCS_SPACE;
 			_appendSpan(&space, 1);
 		}
@@ -3386,6 +3315,7 @@ int IE_Imp_MsWord_97::_fieldProc (wvParseStruct *ps, U16 eachchar,
 		f->argument[0] = 0;
 		f->fieldI = 0;
 		f->fieldRet = 1;
+		f->type = F_OTHER;
 		m_stackField.push((void*)f);
 	}
 	else if (eachchar == 0x14) // field trigger
@@ -3966,30 +3896,32 @@ bool IE_Imp_MsWord_97::_handleCommandField (char *command)
 					const XML_Char *new_atts[3];
 					token = strtok (NULL, "\"\" ");
 
-					// hyperlink or hyperlink to bookmark
-					new_atts[0] = "xlink:href";
-					UT_String href;
-					if ( !strcmp(token, "\\l") )
-					{
-						token = strtok (NULL, "\"\" ");
-						href = "#";
-						href += token;
+					if(token) {
+					  // hyperlink or hyperlink to bookmark
+					  new_atts[0] = "xlink:href";
+					  UT_String href;
+					  if ( !strcmp(token, "\\l") )
+					    {
+					      token = strtok (NULL, "\"\" ");
+					      href = "#";
+					      href += token;
+					    }
+					  else
+					    {
+					      href = token;
+					    }
+					  new_atts[1] = href.c_str();
+					  new_atts[2] = 0;
+					  this->_flush();
+					  
+					  if(!m_bInPara)
+					    {
+					      _appendStrux(PTX_Block, NULL);
+					      m_bInPara = true ;
+					    }
+					  
+					  _appendObject(PTO_Hyperlink, new_atts);
 					}
-					else
-					{
-						href = token;
-					}
-					new_atts[1] = href.c_str();
-					new_atts[2] = 0;
-					this->_flush();
-
-					if(!m_bInPara)
-					{
-						_appendStrux(PTX_Block, NULL);
-						m_bInPara = true ;
-					}
-
-					_appendObject(PTO_Hyperlink, new_atts);
 					return true;
 				}
 
@@ -4057,12 +3989,11 @@ static MSWord_ImageType s_determineImageType ( Blip * b )
 
 UT_Error IE_Imp_MsWord_97::_handleImage (Blip * b, long width, long height, long cropt, long cropb, long cropl, long cropr)
 {
-	const char * mimetype = UT_strdup ("image/png");
 	IE_ImpGraphic * importer	= 0;
 	FG_Graphic* pFG		= 0;
 	UT_Error error		= UT_OK;
 	UT_ByteBuf * buf		= 0;
-	UT_ByteBuf * pictData 	= new UT_ByteBuf();
+	char * mimetype = 0;
 
         UT_String propBuffer;
         UT_String propsName;
@@ -4087,8 +4018,6 @@ UT_Error IE_Imp_MsWord_97::_handleImage (Blip * b, long width, long height, long
   else
 	{
 	  UT_DEBUGMSG(("UNKNOWN IMAGE TYPE!!"));
-	  DELETEP(pictData);
-	  FREEP(mimetype);
 	  return UT_ERROR;
 	}
 
@@ -4097,6 +4026,7 @@ UT_Error IE_Imp_MsWord_97::_handleImage (Blip * b, long width, long height, long
   wvStream_rewind(pwv);
   wvStream_read(data,size,sizeof(char),pwv);
 
+  UT_ByteBuf * pictData 	= new UT_ByteBuf();
   if (decompress)
   {
 
@@ -4110,7 +4040,6 @@ UT_Error IE_Imp_MsWord_97::_handleImage (Blip * b, long width, long height, long
 	UT_DEBUGMSG(("Could not uncompress image\n"));
         DELETEP(uncompr);
 	DELETEP(pictData);
-	FREEP(mimetype);
 	goto Cleanup;
       }
       pictData->append(reinterpret_cast<const UT_Byte*>(uncompr), uncomprLen);
@@ -4132,16 +4061,15 @@ UT_Error IE_Imp_MsWord_97::_handleImage (Blip * b, long width, long height, long
 	{
 	  UT_DEBUGMSG(("Could not create image importer object\n"));
 	  DELETEP(pictData);
-	  FREEP(mimetype);
 	  goto Cleanup;
 	}
 
+  // if successful, takes ownership of pictData
   error = importer->importGraphic(pictData, &pFG);
   if ((error != UT_OK) || !pFG)
 	{
 	  UT_DEBUGMSG(("Could not import graphic\n"));
-	  // pictData is already freed in ~FG_Graphic
-	  FREEP(mimetype);
+	  DELETEP(pictData);
 	  goto Cleanup;
 	}
 
@@ -4152,8 +4080,6 @@ UT_Error IE_Imp_MsWord_97::_handleImage (Blip * b, long width, long height, long
 	{
 	  // i don't think that this could ever happen, but...
 	  UT_DEBUGMSG(("Could not convert to PNG\n"));
-	  DELETEP(pictData);
-	  FREEP(mimetype);
 	  error = UT_ERROR;
 	  goto Cleanup;
 	}
@@ -4193,20 +4119,22 @@ UT_Error IE_Imp_MsWord_97::_handleImage (Blip * b, long width, long height, long
 	{
 	  UT_DEBUGMSG (("Could not create append object\n"));
 	  error = UT_ERROR;
-	  FREEP(mimetype);
 	  goto Cleanup;
 	}
 
+  mimetype = UT_strdup("image/png");
   if (!getDoc()->createDataItem(propsName.c_str(), false,
 				buf, const_cast<void*>(static_cast<const void*>(mimetype)), NULL))
 	{
 	  UT_DEBUGMSG (("Could not create data item\n"));
+	  FREEP(mimetype);
 	  error = UT_ERROR;
 	  goto Cleanup;
 	}
 
  Cleanup:
   DELETEP(importer);
+  DELETEP(pFG);
 
   return error;
 }
@@ -4222,12 +4150,11 @@ UT_Error IE_Imp_MsWord_97::_handleImage (Blip * b, long width, long height, long
  */
 UT_Error IE_Imp_MsWord_97::_handlePositionedImage (Blip * b, UT_String & sImageName)
 {
-	const char * mimetype = UT_strdup ("image/png");
 	IE_ImpGraphic * importer	= 0;
 	FG_Graphic* pFG		= 0;
 	UT_Error error		= UT_OK;
 	UT_ByteBuf * buf		= 0;
-	UT_ByteBuf * pictData 	= new UT_ByteBuf();
+	char * mimetype = 0;
 
   // suck the data into the ByteBuffer
 
@@ -4249,8 +4176,6 @@ UT_Error IE_Imp_MsWord_97::_handlePositionedImage (Blip * b, UT_String & sImageN
   else
 	{
 	  UT_DEBUGMSG(("UNKNOWN IMAGE TYPE!!"));
-	  DELETEP(pictData);
-	  FREEP(mimetype);
 	  return UT_ERROR;
 	}
 
@@ -4258,6 +4183,8 @@ UT_Error IE_Imp_MsWord_97::_handlePositionedImage (Blip * b, UT_String & sImageN
   char *data = new char[size];
   wvStream_rewind(pwv);
   wvStream_read(data,size,sizeof(char),pwv);
+
+  UT_ByteBuf * pictData = new UT_ByteBuf();
 
   if (decompress)
   {
@@ -4272,7 +4199,6 @@ UT_Error IE_Imp_MsWord_97::_handlePositionedImage (Blip * b, UT_String & sImageN
 	UT_DEBUGMSG(("Could not uncompress image\n"));
         DELETEP(uncompr);
 	DELETEP(pictData);
-	FREEP(mimetype);
 	goto Cleanup;
       }
       pictData->append(reinterpret_cast<const UT_Byte*>(uncompr), uncomprLen);
@@ -4294,16 +4220,15 @@ UT_Error IE_Imp_MsWord_97::_handlePositionedImage (Blip * b, UT_String & sImageN
 	{
 	  UT_DEBUGMSG(("Could not create image importer object\n"));
 	  DELETEP(pictData);
-	  FREEP(mimetype);
 	  goto Cleanup;
 	}
 
+  // if successful, takes ownership of pictData
   error = importer->importGraphic(pictData, &pFG);
   if ((error != UT_OK) || !pFG)
 	{
 	  UT_DEBUGMSG(("Could not import graphic\n"));
-	  // pictData is already freed in ~FG_Graphic
-	  FREEP(mimetype);
+	  DELETEP(pictData);
 	  goto Cleanup;
 	}
 
@@ -4314,24 +4239,25 @@ UT_Error IE_Imp_MsWord_97::_handlePositionedImage (Blip * b, UT_String & sImageN
 	{
 	  // i don't think that this could ever happen, but...
 	  UT_DEBUGMSG(("Could not convert to PNG\n"));
-	  DELETEP(pictData);
-	  FREEP(mimetype);
 	  error = UT_ERROR;
 	  goto Cleanup;
 	}
 
   UT_String_sprintf(sImageName, "%d", getDoc()->getUID(UT_UniqueId::Image));
 
+  mimetype = UT_strdup ("image/png");
   if (!getDoc()->createDataItem(sImageName.c_str(), false,
 				buf, const_cast<void*>(static_cast<const void*>(mimetype)), NULL))
 	{
 	  UT_DEBUGMSG (("Could not create data item\n"));
 	  error = UT_ERROR;
+	  FREEP(mimetype);
 	  goto Cleanup;
 	}
 
- Cleanup:
+ Cleanup:  
   DELETEP(importer);
+  DELETEP(pFG);
 
   return error;
 }
@@ -5522,6 +5448,8 @@ void IE_Imp_MsWord_97::_handleNotes(const wvParseStruct *ps)
 				break;
 			default:
 				UT_ASSERT_HARMLESS(UT_NOT_REACHED);
+				props[1] = "";
+				break;
 		}
 		
 		getDoc()->setProperties(&props[0]);

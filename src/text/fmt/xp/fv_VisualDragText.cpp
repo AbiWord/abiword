@@ -318,7 +318,7 @@ void FV_VisualDragText::mouseDrag(UT_sint32 x, UT_sint32 y)
 		      m_pView->setSelectionMode(FV_SelectionMode_NONE);
 		}
 		m_pView->updateScreen(false);
-		if(m_bSelectedRow);
+		if(m_bSelectedRow)
 		{
 		      m_pView->setSelectionMode(FV_SelectionMode_TableRow);
 		}
@@ -328,12 +328,12 @@ void FV_VisualDragText::mouseDrag(UT_sint32 x, UT_sint32 y)
 	{
 	  xxx_UT_DEBUGMSG(("expY left %d top %d width %d height %d \n",expY.left,expY.top,expY.width,expY.height));
 		getGraphics()->setClipRect(&expY);
-		if(m_bSelectedRow);
+		if(m_bSelectedRow)
 		{
 		      m_pView->setSelectionMode(FV_SelectionMode_NONE);
 		}
 		m_pView->updateScreen(false);
-		if(m_bSelectedRow);
+		if(m_bSelectedRow)
 		{
 		      m_pView->setSelectionMode(FV_SelectionMode_TableRow);
 		}
@@ -343,12 +343,12 @@ void FV_VisualDragText::mouseDrag(UT_sint32 x, UT_sint32 y)
 	{
 	  xxx_UT_DEBUGMSG(("expY left %d top %d width %d height %d \n",expX.left,expX.top,expX.width,expX.height));
 		getGraphics()->setClipRect(&expX);
-		if(m_bSelectedRow);
+		if(m_bSelectedRow)
 		{
 		      m_pView->setSelectionMode(FV_SelectionMode_NONE);
 		}
 		m_pView->updateScreen(false);
-		if(m_bSelectedRow);
+		if(m_bSelectedRow)
 		{
 		      m_pView->setSelectionMode(FV_SelectionMode_TableRow);
 		}

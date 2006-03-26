@@ -9,7 +9,7 @@ Packager: Robert Staudinger <robsta@stereolyzer.net>
 Summary: AbiWord is a lightweight word processing application.
 SoftwareVersion: @VERSION@
 AutopackageTarget: 1.0
-PackageVersion: 1
+PackageVersion: 2
 
 # Only uncomment InterfaceVersion if your package exposes interfaces to other software,
 # for instance if it includes DSOs or python/perl modules. See the developer guide for more info,
@@ -29,7 +29,9 @@ if [ ! -e "configure" ] ; then
 	echo '../abi/configure $@' >> configure
 	chmod +x configure
 fi
+export APBUILD_STATIC=fribidi
 prepareBuild --enable-binreloc --enable-gnome --enable-gucharmap --disable-debug --disable-symbols
+export APBUILD_STATIC=
 ### plugins
 build_root="$orig_build_root"
 cd ../abiword-plugins

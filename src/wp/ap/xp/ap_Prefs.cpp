@@ -123,10 +123,24 @@ bool AP_Prefs::loadBuiltinPrefs(void)
 	UT_uint32 k;
 	for (k=0; k<NrElements(_t); k++)
 	{
-		XML_Char *xp = (XML_Char*)UT_XML_Decode(_t[k].m_szValue);
+		XML_Char *xp;
+		bool bDelete = true;
+
+		// do not decode empty strings
+		if(_t[k].m_szValue && !*(_t[k].m_szValue))
+		{
+			xp = _t[k].m_szValue;
+			bDelete = false;
+		}
+		else
+		{
+			xp =  (XML_Char*)UT_XML_Decode(_t[k].m_szValue);
+		}
+		
 		UT_DEBUGMSG(("DEFAULT %s |%s|%s|\n", _t[k].m_szKey, _t[k].m_szValue, xp));
 		bool bOK = pScheme->setValue(_t[k].m_szKey, xp);
-		FREEP(xp);
+		if(bDelete)
+			FREEP(xp);
 		if (!bOK)
 		{
 			goto Failed;

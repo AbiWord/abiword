@@ -34,21 +34,21 @@ class ABI_EXPORT AP_Convert
 	AP_Convert(int verbose=1);
 	~AP_Convert(void);
 
-	void convertTo(const char * szSourceFilename,
+	bool convertTo(const char * szSourceFilename,
 		       IEFileType sourceFormat,
 		       const char * szTargetFilename,
 		       IEFileType targetFormat);
 	
-	void convertTo(const char * szSourceFilename,
+	bool convertTo(const char * szSourceFilename,
 		       const char * szTargetSuffixOrFilename);
 
-	void convertToPNG ( const char * szSourceFileName ) ;
+	bool convertToPNG ( const char * szSourceFileName ) ;
 
 	void setVerbose(int level);
 	void setMergeSource (const char * source);
 
-	void print(const char * file, GR_Graphics * pGraphics, const char * szFileExtension);
-	void printFirstPage(GR_Graphics * pGraphics, PD_Document * pDoc);
+	bool print(const char * file, GR_Graphics * pGraphics, const char * szFileExtension);
+	bool printFirstPage(GR_Graphics * pGraphics, PD_Document * pDoc);
 
 	void setImpProps (const char * props) {
 		m_impProps = props;

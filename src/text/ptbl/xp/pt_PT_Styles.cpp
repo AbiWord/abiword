@@ -153,12 +153,14 @@ bool pt_PieceTable::_loadBuiltinStyles(void)
 					  "color:000000; bgcolor:transparent; widows:2", pszFamily);
 
 	pszFamily = XAP_App::findNearestFont("Arial", "normal", "", "normal", "", "12pt");
-	
-	stTmp += "; dom-dir:";
+
+	// used to set the dom-dir of the style here, but we do not want to do that. The
+	// dom-dir property should be inherited from the section or document (the user can, of
+	// course, modify the style, but that is up to them).
 #	ifdef BIDI_RTL_DOMINANT
-	stTmp += "rtl; text-align:right";
+	stTmp += "; text-align:right";
 #	else
-	stTmp += "ltr; text-align:left";
+	stTmp += "; text-align:left";
 #	endif
 
 	_s("Normal",	"P", "",       "Current Settings", stTmp.c_str());

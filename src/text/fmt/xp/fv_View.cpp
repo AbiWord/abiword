@@ -1022,6 +1022,8 @@ void FV_View::setFrameFormat(const XML_Char * attribs[], const XML_Char * proper
 	if(pFrame == NULL)
 	{
 		UT_DEBUGMSG(("No frame selected. Aborting! \n"));
+		// should we assert ?
+		return;
 	}
 	PT_DocPosition posStart = pFrame->getPosition(true)+1;
 	PT_DocPosition posEnd = posStart;
@@ -2323,6 +2325,7 @@ PT_DocPosition FV_View::saveSelectedImage (const UT_ByteBuf ** pBytes)
 	{
 		fl_FrameLayout * pFrame = getFrameLayout();
 		const PP_AttrProp* pAP = NULL;
+		UT_return_val_if_fail(pFrame, 0);
 		pFrame->getAP(pAP);
 		if(pAP == NULL)
 		{
@@ -4017,7 +4020,7 @@ bool FV_View::getStyle(const XML_Char ** style)
 					const XML_Char* sz = x_getStyle(pSpanAP, true);
 					bool bHere = (sz && sz[0]);
 
-					if ((bCharStyle != bHere) || (strcmp(sz, szChar)))
+					if ((bCharStyle != bHere) || ((sz && szChar && strcmp(sz, szChar))))
 					{
 						// doesn't match, so stop looking
 						bCharStyle = false;
@@ -9274,6 +9277,9 @@ EV_EditMouseContext FV_View::getMouseContext(UT_sint32 xPos, UT_sint32 yPos)
 	}
 	if(isInTable(pos))
 	{
+		if(!pRun)
+			return EV_EMC_UNKNOWN;
+
 		fp_Line * pLine = pRun->getLine();
 		if(pLine)
 		{

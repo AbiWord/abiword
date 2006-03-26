@@ -1472,9 +1472,10 @@ int AP_UnixApp::main(const char * szAppName, int argc, const char ** argv)
 	
     // Step 2: Handle all non-window args.
     
-    if (!Args.doWindowlessArgs()) {
+	bool windowlessArgsWereSuccessful = true;
+    if (!Args.doWindowlessArgs(windowlessArgsWereSuccessful)) {
 		delete pMyUnixApp;
-		return 0;
+		return (windowlessArgsWereSuccessful ? 0 : -1);
 	}
 
 	if (have_display) {
@@ -1536,6 +1537,9 @@ int AP_UnixApp::main(const char * szAppName, int argc, const char ** argv)
 	else {
 		UT_DEBUGMSG(("No DISPLAY: this may not be what you want.\n"));
 	}
+
+	// unload all loaded plugins (remove some of the memory leaks shown at shutdown :-)
+	XAP_ModuleManager::instance().unloadAllPlugins();
 
 	// Step 4: Destroy the App.  It should take care of deleting all frames.
 	pMyUnixApp->shutdown();
@@ -1604,8 +1608,9 @@ void AP_UnixApp::initPopt (AP_Args * Args)
  * A callback for AP_Args's doWindowlessArgs call which handles
  * platform-specific windowless args.
  */
-bool AP_UnixApp::doWindowlessArgs(const AP_Args *Args)
+bool AP_UnixApp::doWindowlessArgs(const AP_Args *Args, bool & bSuccess)
 {
+	bSuccess = true;
 	if (Args->m_sGeometry)
     {
 		// [--geometry <X geometry string>]
@@ -1671,6 +1676,7 @@ bool AP_UnixApp::doWindowlessArgs(const AP_Args *Args)
 	    {
 			// couldn't load document
 			fprintf(stderr, "Error: no file to print!\n");
+			bSuccess = false;
 	    }
 
 		return false;
@@ -1729,11 +1735,13 @@ bool AP_UnixApp::doWindowlessArgs(const AP_Args *Args)
 	    {
 			// couldn't load document
 			fprintf(stderr, "Error: no file to print!\n");
+			bSuccess = false;
 	    }
 		
 		return false;
 #else
 		fprintf(stderr,"Only works in GNOME build \n");
+		bSuccess = false;
 #endif
 	}
 
@@ -1748,7 +1756,6 @@ bool AP_UnixApp::doWindowlessArgs(const AP_Args *Args)
 		//		szRequest = poptGetArg(Args->poptcon);
 		szRequest = Args->m_sPlugin;
 		bool bFound = false;	
-		printf(" Looking for plugin name %s \n",szRequest);
 		if(Args->m_sPlugin != NULL)
 		{
 			const UT_GenericVector<XAP_Module*> * pVec = XAP_ModuleManager::instance().enumModules ();
@@ -1757,17 +1764,16 @@ bool AP_UnixApp::doWindowlessArgs(const AP_Args *Args)
 			{
 				pModule = pVec->getNthItem (i);
 				szName = pModule->getModuleInfo()->name;
-				printf("Plugin %s loaded \n",szName);
 				if(UT_strcmp(szName,szRequest) == 0)
 				{
-					printf("plugin %s found sending control there! \n",szName);
 					bFound = true;
 				}
 			}
 		}
 		if(!bFound)
 		{
-			printf("Plugin %s not found or loaded \n",szRequest);
+			fprintf(stderr, "Plugin %s not found or loaded \n",szRequest);
+			bSuccess = false;
 			return false;
 		}
 //
@@ -1779,54 +1785,9 @@ bool AP_UnixApp::doWindowlessArgs(const AP_Args *Args)
 		const EV_EditMethod * pInvoke = pEMC->findEditMethodByName(evExecute);
 		if(!pInvoke)
 		{
-			printf("Plugin %s invoke method %s not found \n",
-				   Args->m_sPlugin,evExecute);
-			return false;
-		}
-//
-// Execute the plugin, then quit
-//
-		ev_EditMethod_invoke(pInvoke, UT_String ("Called From Unix[Gnome]App"));
-		return false;
-	}
-
-
-	if(Args->m_iAbiControl)
-	{
-//
-// Start a plugin rather than the main abiword application.
-//
-	    const char * szName = NULL;
-		XAP_Module * pModule = NULL;
-		bool bFound = false;	
-		const UT_GenericVector<XAP_Module*> * pVec = XAP_ModuleManager::instance().enumModules ();
-		for (UT_uint32 i = 0; (i < pVec->size()) && !bFound; i++)
-		{
-			pModule = pVec->getNthItem (i);
-			szName = pModule->getModuleInfo()->name;
-			printf("Plugin %s loaded \n",szName);
-			if(UT_strcmp(szName,"AbiControl") == 0)
-			{
-				printf("plugin %s found sending control there! \n",szName);
-				bFound = true;
-			}
-		}
-		if(!bFound)
-		{
-			printf("Plugin %s not found or loaded \n",Args->m_sPlugin);
-			return false;
-		}
-//
-// You must put the name of the ev_EditMethod in the usage field
-// of the plugin registered information.
-//
-		const char * evExecute = pModule->getModuleInfo()->usage;
-		EV_EditMethodContainer* pEMC = pMyUnixApp->getEditMethodContainer();
-		const EV_EditMethod * pInvoke = pEMC->findEditMethodByName(evExecute);
-		if(!pInvoke)
-		{
-			printf("Plugin %s invoke method %s not found \n",
-				   Args->m_sPlugin,evExecute);
+			fprintf(stderr, "Plugin %s invoke method %s not found \n",
+					Args->m_sPlugin,evExecute);
+			bSuccess = false;
 			return false;
 		}
 //

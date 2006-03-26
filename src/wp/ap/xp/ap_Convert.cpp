@@ -185,29 +185,31 @@ private:
 	UT_uint32 m_iter;
 };
 
-static void handleMerge(const char * szMailMergeFile,
-						IE_MailMerge::IE_MailMerge_Listener & listener){
+static UT_Error handleMerge(const char * szMailMergeFile,
+			    IE_MailMerge::IE_MailMerge_Listener & listener){
 	IE_MailMerge * pie = NULL;
 	UT_Error errorCode = IE_MailMerge::constructMerger(szMailMergeFile, IEMT_Unknown, &pie);
 	if (!errorCode)
 	{
 		pie->setListener (&listener);
-		pie->mergeFile (szMailMergeFile);
+		errorCode = pie->mergeFile (szMailMergeFile);
 		DELETEP(pie);
 	}
+
+	return errorCode;
 }
 
 /////////////////////////////////////////////////////////////////
 
-void AP_Convert::convertTo(const char * szSourceFilename,
-						   IEFileType sourceFormat,
-						   const char * szTargetFilename,
-						   IEFileType targetFormat)
+bool AP_Convert::convertTo(const char * szSourceFilename,
+			   IEFileType sourceFormat,
+			   const char * szTargetFilename,
+			   IEFileType targetFormat)
 {
 	UT_Error error = UT_OK;
 
 	PD_Document * pNewDoc = new PD_Document(XAP_App::getApp());
-	UT_return_if_fail(pNewDoc);
+	UT_return_val_if_fail(pNewDoc, false);
 
 	error = pNewDoc->readFromFile(szSourceFilename, sourceFormat, m_impProps.utf8_str());
 
@@ -229,12 +231,12 @@ void AP_Convert::convertTo(const char * szSourceFilename,
 		}
 		
 		UNREFP(pNewDoc);
-		return;
+		return (error == UT_OK);
 	}
 
 	if (m_mergeSource.size()) {
 		IE_MailMerge::IE_MailMerge_Listener * listener = new Save_MailMerge_Listener (pNewDoc, szTargetFilename, targetFormat, m_expProps);
-		handleMerge (m_mergeSource.utf8_str(), *listener);
+		error = handleMerge (m_mergeSource.utf8_str(), *listener);
 		DELETEP(listener);
 	} else {
 		error = pNewDoc->saveAs(szTargetFilename, targetFormat, m_expProps.utf8_str());
@@ -259,12 +261,14 @@ void AP_Convert::convertTo(const char * szSourceFilename,
 	}
 
 	UNREFP(pNewDoc);
+
+	return (error == UT_OK);
 }
 
-void AP_Convert::convertTo(const char * szFilename, const char * szTargetSuffixOrFilename)
+bool AP_Convert::convertTo(const char * szFilename, const char * szTargetSuffixOrFilename)
 {
-  UT_return_if_fail(szTargetSuffixOrFilename);
-  UT_return_if_fail(strlen(szTargetSuffixOrFilename)>0);
+  UT_return_val_if_fail(szTargetSuffixOrFilename, false);
+  UT_return_val_if_fail(strlen(szTargetSuffixOrFilename)>0, false);
 
   UT_String file;
   IEFileType ieft = IEFT_Unknown;
@@ -299,7 +303,7 @@ void AP_Convert::convertTo(const char * szFilename, const char * szTargetSuffixO
       FREEP(fileDup);
     }
 
-  convertTo(szFilename, IEFT_Unknown, file.c_str(), ieft);
+  return convertTo(szFilename, IEFT_Unknown, file.c_str(), ieft);
 }
 
 void AP_Convert::setVerbose(int level)
@@ -308,7 +312,7 @@ void AP_Convert::setVerbose(int level)
 		m_iVerbose = level;
 }
 
-void AP_Convert::convertToPNG ( const char * szSourceFileName )
+bool AP_Convert::convertToPNG ( const char * szSourceFileName )
 {
 	// can't allocate src statically and then DELETEP.
 	// note that src goes into dest (shouldn't that be documented?)
@@ -342,7 +346,7 @@ void AP_Convert::convertToPNG ( const char * szSourceFileName )
 					// success
 					DELETEP(dest);
 					DELETEP(pGraphic);
-					return;
+					return true;
 				}
 			}
 		}
@@ -354,10 +358,11 @@ void AP_Convert::convertToPNG ( const char * szSourceFileName )
 	DELETEP (dest);
 
 	printf ("Conversion to PNG failed\n");
+	return false;
 }
 
 
-void AP_Convert::print(const char * szFile, GR_Graphics * pGraphics, const char * szFileExtension)
+bool AP_Convert::print(const char * szFile, GR_Graphics * pGraphics, const char * szFileExtension)
 {
 	// get the current document
 	PD_Document *pDoc = new PD_Document(XAP_App::getApp());
@@ -371,12 +376,12 @@ void AP_Convert::print(const char * szFile, GR_Graphics * pGraphics, const char 
 	{
 		fprintf(stderr, "AbiWord: Error importing file. [%s]  Could not print \n", szFile);
 		UNREFP(pDoc);
-		return;
+		return false;
 	}
 	if (m_mergeSource.size()){
 		IE_MailMerge::IE_MailMerge_Listener * listener = new Print_MailMerge_Listener(pDoc, pGraphics, szFile);
 		
-		handleMerge (m_mergeSource.utf8_str(), *listener);
+		err = handleMerge (m_mergeSource.utf8_str(), *listener);
 		DELETEP(listener);
 	} else {
 		
@@ -393,20 +398,23 @@ void AP_Convert::print(const char * szFile, GR_Graphics * pGraphics, const char 
 		psGr->setPageSize(printView.getPageSize().getPredefinedName());
 #endif
 		
-		s_actuallyPrint (pDoc, pGraphics, 
-						 &printView, szFile, 
-						 1, true, 
-						 pDocLayout->getWidth(), pDocLayout->getHeight() / pDocLayout->countPages(), 
-						 pDocLayout->countPages(), 1);
+		if(!s_actuallyPrint (pDoc, pGraphics, 
+				     &printView, szFile, 
+				     1, true, 
+				     pDocLayout->getWidth(), pDocLayout->getHeight() / pDocLayout->countPages(), 
+				     pDocLayout->countPages(), 1))
+		  err = UT_SAVE_WRITEERROR;
 		
 		DELETEP(pDocLayout);
 	}
 
 	UNREFP(pDoc);
+
+	return (err == UT_OK);
 }
 
 
-void AP_Convert::printFirstPage(GR_Graphics * pGraphics,PD_Document * pDoc)
+bool AP_Convert::printFirstPage(GR_Graphics * pGraphics,PD_Document * pDoc)
 {
 		// create a new layout and view object for the doc
 
@@ -422,11 +430,13 @@ void AP_Convert::printFirstPage(GR_Graphics * pGraphics,PD_Document * pDoc)
 	psGr->setPageSize(printView.getPageSize().getPredefinedName());
 #endif
 		
-	s_actuallyPrint (pDoc, pGraphics, 
-					 &printView, "pngThumb", 
-					 1, true, 
-					 pDocLayout->getWidth(), pDocLayout->getHeight() / pDocLayout->countPages(), 
-					 1, 1);
+	bool success = s_actuallyPrint (pDoc, pGraphics, 
+					&printView, "pngThumb", 
+					1, true, 
+					pDocLayout->getWidth(), pDocLayout->getHeight() / pDocLayout->countPages(), 
+					1, 1);
 		
 	DELETEP(pDocLayout);
+
+	return success;
 }
