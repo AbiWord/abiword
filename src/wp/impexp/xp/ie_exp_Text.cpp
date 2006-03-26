@@ -760,8 +760,8 @@ bool Text_Listener::populate(PL_StruxFmtHandle /*sfh*/,
 				return true;
 
 			default:
-				UT_ASSERT_NOT_REACHED();
-				return false;
+				UT_ASSERT(UT_TODO);
+				return true;
 			}
 		}
 
@@ -899,7 +899,7 @@ bool Text_Listener::populateStrux(PL_StruxDocHandle /*sdh*/,
 	    return true ;
 
 	default:
-		UT_ASSERT_NOT_REACHED();
+		UT_ASSERT(UT_TODO);
 		return true;
 	}
 }
