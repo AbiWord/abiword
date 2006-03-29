@@ -825,14 +825,14 @@ bool PD_Document::insertSpan(PT_DocPosition dpos,
 		m_pPieceTable->insertFmtMark(PTC_AddFmt, dpos, p_AttrProp);
 	}
 #if DEBUG
-#if 0
+#if 1
 	UT_uint32 ii = 0;
 	UT_String sStr;
 	for(ii=0; ii<length;ii++)
 	{
 		sStr += static_cast<const char>(pbuf[ii]);
 	}
-	UT_DEBUGMSG(("Insert span %s \n",sStr.c_str()));
+	UT_DEBUGMSG(("PD_Document Insert span |%s| pos %d \n",sStr.c_str(),dpos));
 #endif
 #endif
 	// REMOVE UNDESIRABLE CHARACTERS ...
@@ -2772,127 +2772,6 @@ bool PD_Document::removeStyle(const XML_Char * pszName)
 //
 //	signalListeners(PD_SIGNAL_REFORMAT_LAYOUT);
 	return true;
-}
-
-/*!
- * Calculate the offset from the supplied position due to the effects of
- * subsequent change record actions after the applied change record number.
- */
-UT_sint32 PD_Document::adjustPointForCR(UT_sint32 iCRNum, PT_DocPosition pos, const UT_UTF8String & sDocUUID) const
-{
-	PX_ChangeRecord * pcr = NULL;
-	UT_sint32 iOff =0;
-	UT_sint32 iCurCr =0;
-	UT_sint32 iMax = static_cast<UT_sint32>(m_pPieceTable->undoCount(true));
-    if(iMax == 0)
-	{
-			return iOff;
-	}
-	UT_DEBUGMSG(("1 - Doing Adjust: iCRNum %d iCurCr %d UUID %s \n",iCRNum, iCurCr,sDocUUID.utf8_str()));
-		//
-		// This actually returns the nth undo previous to the last
-		//
-	m_pPieceTable->getNthUndo(&pcr,iCurCr);
-	if(pcr == NULL)
-	{
-		UT_DEBUGMSG(("No CR found at %d \n",iCurCr));
-		return iOff;
-	}
-	struct uuid u;
-	UT_UUID * pUUID = XAP_App::getApp()->getUUIDGenerator()->createUUID();
-	pUUID->setUUID(sDocUUID);
-	pUUID->toBinary(u);
-	delete pUUID;
-	while(!pcr->isSameDocUUID(u) && (iCurCr < iMax))
-	{
-		//
-		// This actually returns the nth undo previous to the last
-		//
-		iOff += getAdjustment(pcr,pos);
-		UT_DEBUGMSG(("Doing Adjust: iCurCr %d CR No %d Adjust %d CR pos %d pcr UUID %s \n",iCurCr,pcr->getCRNumber(),iOff,pcr->getPosition(),pcr->getDocUUID()));
-		iCurCr++;
-		if(iCurCr >= iMax)
-		{
-			return 0;
-		}
-		m_pPieceTable->getNthUndo(&pcr,iCurCr);
-		if(pcr == NULL)
-		{
-			return 0;
-		}
-	}
-	if(iCurCr >= iMax)
-	{
-		return 0;
-	}
-	UT_DEBUGMSG(("Found Same UUID at undo pos %d CR number %d doc position %d \n",iCurCr,pcr->getCRNumber(),pcr->getPosition()));
-	return iOff;
-}
-
-/*!
- * Get the adjustment for the given changeRecord.
- */
-UT_sint32 PD_Document::getAdjustment(const PX_ChangeRecord * pcr, PT_DocPosition pos) const
-{
-	UT_sint32 ioff = 0;
-	PT_DocPosition iCRPos = pcr->getPosition();
-	if(iCRPos >= pos)
-		return ioff;
-	switch(pcr->getType())
-	{
-		case PX_ChangeRecord::PXT_GlobMarker:
-			ioff = 0;
-			break;
-		case PX_ChangeRecord::PXT_InsertSpan:
-			{
-				const PX_ChangeRecord_SpanChange * pcrc = static_cast<const PX_ChangeRecord_SpanChange *> (pcr);
-				UT_sint32 iLen = static_cast<UT_sint32>(pcrc->getLength());
-				ioff = iLen;
-			}
-			break;
-		case PX_ChangeRecord::PXT_DeleteSpan:
-			{
-				const PX_ChangeRecord_SpanChange * pcrc = static_cast<const PX_ChangeRecord_SpanChange *> (pcr);
-				UT_sint32 iLen = static_cast<UT_sint32>(pcrc->getLength());
-				ioff = -iLen;
-			}
-			break;
-		case PX_ChangeRecord::PXT_ChangeSpan:
-			ioff = 0;
-			break;
-		case PX_ChangeRecord::PXT_InsertStrux:
-			ioff = 1;
-			break;
-		case PX_ChangeRecord::PXT_DeleteStrux:
-			ioff = -1;
-			break;
-		case PX_ChangeRecord::PXT_ChangeStrux:
-			ioff = 0;
-			break;
-		case PX_ChangeRecord::PXT_InsertObject:
-			ioff = 1;
-			break;
-		case PX_ChangeRecord::PXT_DeleteObject:
-			ioff = -1;
-			break;
-		case PX_ChangeRecord::PXT_ChangeObject:
-		case PX_ChangeRecord::PXT_InsertFmtMark:
-		case PX_ChangeRecord::PXT_DeleteFmtMark:
-		case PX_ChangeRecord::PXT_ChangeFmtMark:
-		case PX_ChangeRecord::PXT_ChangePoint:
-		case PX_ChangeRecord::PXT_ListUpdate:
-		case PX_ChangeRecord::PXT_StopList:
-		case PX_ChangeRecord::PXT_UpdateField:
-		case PX_ChangeRecord::PXT_RemoveList:
-		case PX_ChangeRecord::PXT_UpdateLayout:
-			ioff = 0;
-			break;
-		default:
-			ioff = 0;
-			break;
-	}
-	return ioff;
-
 }
 
 bool PD_Document::appendStyle(const XML_Char ** attributes)
