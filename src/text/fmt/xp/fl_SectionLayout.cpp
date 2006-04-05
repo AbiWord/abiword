@@ -157,7 +157,8 @@ void fl_SectionLayout::setNeedsReformat(fl_ContainerLayout * pCL, UT_uint32 /*of
 	  m_vecFormatLayout.addItem(pCL);
 	}
 	m_bNeedsReformat = true;
-	xxx_UT_DEBUGMSG(("SetNeedsReformat in %s from %s number to format %d\n",getContainerString(),pCL->getContainerString(),m_vecFormatLayout.getItemCount()));	if(myContainingLayout() != NULL && (static_cast<fl_SectionLayout *>(myContainingLayout()) != this) && (getContainerType() != FL_CONTAINER_SHADOW))
+	xxx_UT_DEBUGMSG(("SetNeedsReformat in %s from %s number to format %d\n",getContainerString(),pCL->getContainerString(),m_vecFormatLayout.getItemCount()));
+	if(myContainingLayout() != NULL && (static_cast<fl_SectionLayout *>(myContainingLayout()) != this) && (getContainerType() != FL_CONTAINER_SHADOW))
 	{
 		static_cast<fl_SectionLayout *>(myContainingLayout())->setNeedsReformat(this);
 	}
