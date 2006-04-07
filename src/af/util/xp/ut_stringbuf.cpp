@@ -341,8 +341,10 @@ UT_UTF8Stringbuf::UCS4Char UT_UTF8Stringbuf::charCode (const char * str)
 
 void UT_UTF8Stringbuf::append (const char * sz, size_t n /* == 0 => null-termination */)
 {
-	if (sz == 0) return;
-	if (!grow (strlen (sz) + 1)) return;
+	if (sz == 0) 
+		return;
+	if (!grow ((n?n:strlen(sz)) + 1)) 
+		return;
 
 	const char * p = sz;
 	char buf[6];

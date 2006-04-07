@@ -155,7 +155,8 @@ void fp_TextRun::_lookupProperties(const PP_AttrProp * pSpanAP,
 	/*
 	  TODO map line width to a property, not a hard-coded value
 	*/
-	bChanged |= _setLineWidth(UT_convertToLogicalUnits("0.8pt"));
+	static const UT_sint32 iLineWidth = _setLineWidth(UT_convertToLogicalUnits("0.8pt"));
+	bChanged |= _setLineWidth(iLineWidth);
 
 	UT_uint32 oldDecors = _getDecorations();
 	_setDecorations(0);
@@ -1861,7 +1862,7 @@ void fp_TextRun::_draw(dg_DrawArgs* pDA)
 		}
 		
 		UT_uint32 iMyOffset = iVisDir == UT_BIDI_RTL ?
-			iLen-iSegmentOffset[iSegment+1]  :
+			m_pRenderInfo->m_iLength-iSegmentOffset[iSegment+1]  :
 			iSegmentOffset[iSegment];
 		
 		if(iVisDir == UT_BIDI_RTL)

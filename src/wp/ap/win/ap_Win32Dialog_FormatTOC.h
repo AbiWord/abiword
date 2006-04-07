@@ -67,6 +67,7 @@ public:
 	AP_Win32Dialog_FormatTOC*	getContainer(){return m_pData;};
 	static int CALLBACK			s_sheetInit(HWND hwnd,  UINT uMsg,  LPARAM lParam);
 	void						_onInitDialog(HWND hwnd);
+	virtual void				cleanup(void);
 
 private:
 

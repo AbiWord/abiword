@@ -263,16 +263,8 @@ void AP_Win32Dialog_Options::_controlEnable( tControl id, bool value )
 		EnableWindow(GetDlgItem((HWND)getPage(PG_PREF),AP_RID_DIALOG_OPTIONS_CHK_PrefsAutoSave),value);
 		return;
 
-	case id_CHECK_SMART_QUOTES_ENABLE:
-		EnableWindow(GetDlgItem((HWND)getPage(PG_LAYOUT),id_CHECK_SMART_QUOTES_ENABLE),value);
-		return;
-
 	case id_SHOWSPLASH:
 		EnableWindow(GetDlgItem((HWND)getPage(PG_PREF),AP_RID_DIALOG_OPTIONS_CHK_ShowSplash),value);
-		return;
-
-	case id_CHECK_OTHER_HEBREW_CONTEXT_GLYPHS:
-		EnableWindow(GetDlgItem((HWND)getPage(PG_LANG),AP_RID_DIALOG_OPTIONS_CHK_OtherHebrewContextGlyphs),value);
 		return;
 
 	case id_CHECK_AUTO_SAVE_FILE:
@@ -324,12 +316,10 @@ DEFINE2_GET_SET_BOOL(PG_LAYOUT,ViewCursorBlink)
 DEFINE2_GET_SET_BOOL(PG_LAYOUT,ViewAll)
 DEFINE2_GET_SET_BOOL(PG_LAYOUT,ViewHiddenText)
 DEFINE2_GET_SET_BOOL(PG_LAYOUT,ViewUnprintable)
-DEFINE2_GET_SET_BOOL(PG_LAYOUT,SmartQuotesEnable)
 
 DEFINE2_GET_SET_BOOL(PG_PREF,PrefsAutoSave)
 DEFINE2_GET_SET_BOOL(PG_PREF,ShowSplash)
 DEFINE2_GET_SET_BOOL(PG_LANG,OtherDirectionRtl)
-DEFINE2_GET_SET_BOOL(PG_LANG,OtherHebrewContextGlyphs)
 DEFINE2_GET_SET_BOOL(PG_LANG,LanguageWithKeyboard)
 DEFINE2_GET_SET_BOOL(PG_LANG,DirMarkerAfterClosingParenthesis)
 
@@ -774,6 +764,7 @@ void AP_Win32Dialog_Options_Spelling::_onInitDialog()
 	_DS2(OPTIONS_LBL_IGNOREDWORD,			DLG_Options_Label_SpellIgnoredWord);
 	_DS2(OPTIONS_BTN_IGNOREDRESET,			DLG_Options_Btn_IgnoreReset);
 	_DS2(OPTIONS_BTN_IGNOREDEDIT,			DLG_Options_Btn_IgnoreEdit);
+	_DS2(OPTIONS_CHK_GrammarCheck,			DLG_Options_Label_GrammarCheck);
 
 	// TODO need to populate values in the _COMBO_CUSTOMDICT
 	HWND hwndDict = GetDlgItem(getHandle(), AP_RID_DIALOG_OPTIONS_COMBO_CUSTOMDICT);
@@ -834,7 +825,6 @@ void AP_Win32Dialog_Options_Lang::_onInitDialog()
 
 	_DS2(OPTIONS_FRM_BidiOptions,			DLG_Options_Label_BiDiOptions);
 	_DS2(OPTIONS_CHK_OtherDirectionRtl,		DLG_Options_Label_DirectionRtl);
-	_DS2(OPTIONS_CHK_OtherHebrewContextGlyphs, DLG_Options_Label_HebrewContextGlyphs);
 	
 	_DSX2(OPTIONS_CHK_LanguageWithKeyboard,		DLG_Options_Label_LangWithKeyboard);
 	_DSX2(OPTIONS_CHK_DirMarkerAfterClosingParenthesis,	DLG_Options_Label_DirMarkerAfterClosingParenthesis);
@@ -917,7 +907,6 @@ void AP_Win32Dialog_Options_Layout::_onCommand(HWND hWnd, WPARAM wParam, LPARAM 
 		case AP_RID_DIALOG_OPTIONS_CHK_ViewHiddenText:		pParent->_enableDisableLogic(AP_Dialog_Options::id_CHECK_VIEW_HIDDEN_TEXT); 	return;
 		case AP_RID_DIALOG_OPTIONS_CHK_ViewUnprintable: 	pParent->_enableDisableLogic(AP_Dialog_Options::id_CHECK_VIEW_UNPRINTABLE); 	return;
 		case AP_RID_DIALOG_OPTIONS_COMBO_UNITS: 																return;		
-		case AP_RID_DIALOG_OPTIONS_CHK_SmartQuotesEnable:	pParent->_enableDisableLogic(AP_Dialog_Options::id_CHECK_SMART_QUOTES_ENABLE);	return;
 		case AP_RID_DIALOG_OPTIONS_CHK_BGColorEnable:
 			bChecked = (IsDlgButtonChecked( hWnd, AP_RID_DIALOG_OPTIONS_CHK_BGColorEnable ) == BST_CHECKED);
 			EnableWindow( GetDlgItem( hWnd, AP_RID_DIALOG_OPTIONS_BTN_BGColor), bChecked );
@@ -963,7 +952,6 @@ void AP_Win32Dialog_Options_Layout::_onInitDialog()
 	_DS2(OPTIONS_CHK_ViewHiddenText, 		DLG_Options_Label_ViewHiddenText);
 	_DS2(OPTIONS_CHK_ViewUnprintable,		DLG_Options_Label_ViewUnprintable);
 	_DS2(OPTIONS_LBL_UNITS,					DLG_Options_Label_ViewUnits);	
-	_DS2(OPTIONS_CHK_SmartQuotesEnable,		DLG_Options_Label_SmartQuotesEnable);
 	_DS2(OPTIONS_CHK_BGColorEnable,			DLG_Options_Label_CheckWhiteForTransparent);
 	_DS2(OPTIONS_BTN_BGColor,				DLG_Options_Label_ChooseForTransparent);
 	
@@ -1015,7 +1003,6 @@ void AP_Win32Dialog_Options_Pref::_onCommand(HWND hWnd, WPARAM wParam, LPARAM lP
 		pParent->_enableDisableLogic(AP_Dialog_Options::id_CHECK_OTHER_DEFAULT_DIRECTION_RTL);	
 		return;
 
-	case AP_RID_DIALOG_OPTIONS_CHK_OtherHebrewContextGlyphs:  pParent->_enableDisableLogic(AP_Dialog_Options::id_CHECK_OTHER_HEBREW_CONTEXT_GLYPHS);return;
 	case AP_RID_DIALOG_OPTIONS_CHK_AutoSaveFile:
 		pParent->_enableDisableLogic(AP_Dialog_Options::id_CHECK_AUTO_SAVE_FILE);
 

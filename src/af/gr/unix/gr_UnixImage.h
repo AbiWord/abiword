@@ -33,8 +33,6 @@ public:
 	GR_UnixImage(const char* pszName, GRType imageType);
 	virtual ~GR_UnixImage();
 
-	virtual UT_sint32	getDisplayWidth(void) const;
-	virtual UT_sint32	getDisplayHeight(void) const;
 	virtual bool		convertToBuffer(UT_ByteBuf** ppBB) const;
 	virtual bool		convertFromBuffer(const UT_ByteBuf* pBB, UT_sint32 iDisplayWidth, UT_sint32 iDisplayHeight);
 	bool                saveToPNG(const char * szFile);
@@ -53,15 +51,3 @@ private:
 };
 
 #endif /* GR_UNIXGNOMEIMAGE_H */
-
-
-
-
-
-
-
-
-
-
-
-

@@ -504,6 +504,8 @@ public:
 	static EV_EditMethod_Fn toggleDirOverrideLTR;
 	static EV_EditMethod_Fn toggleDirOverrideRTL;
 	static EV_EditMethod_Fn toggleDomDirection;
+	static EV_EditMethod_Fn toggleDomDirectionSect;
+	static EV_EditMethod_Fn toggleDomDirectionDoc;
 
 	static EV_EditMethod_Fn doBullets;
 	static EV_EditMethod_Fn doNumbers;
@@ -1081,6 +1083,8 @@ static EV_EditMethod s_arrayEditMethods[] =
 	EV_EditMethod(NF(toggleDirOverrideLTR), 0,	""),
 	EV_EditMethod(NF(toggleDirOverrideRTL), 0,	""),
 	EV_EditMethod(NF(toggleDomDirection),	0,	""),
+	EV_EditMethod(NF(toggleDomDirectionDoc),	0,	""),
+	EV_EditMethod(NF(toggleDomDirectionSect),	0,	""),
 	EV_EditMethod(NF(toggleHidden),			0,	""),
 	EV_EditMethod(NF(toggleIndent),         0,  ""),
 	EV_EditMethod(NF(toggleInsertMode), 	0,  ""),
@@ -10275,11 +10279,11 @@ UT_return_val_if_fail(pDialog, false);
 	fl_DocSectionLayout * pDSL = pBL->getDocSectionLayout();
 	UT_sint32 iColWidth = pDSL->getActualColumnWidth();
 	UT_sint32 iColHeight = pDSL->getActualColumnHeight();
-	max_width  = 0.95*iColWidth*72.0/UT_LAYOUT_RESOLUTION; // units are 1/72 of an inch
-	max_height = 0.95*iColHeight*72.0/UT_LAYOUT_RESOLUTION;
+	max_width  = 0.95*iColWidth/UT_LAYOUT_RESOLUTION;
+	max_height = 0.95*iColHeight/UT_LAYOUT_RESOLUTION;
 
-	pDialog->setMaxWidth (max_width);
-	pDialog->setMaxHeight (max_height);
+	pDialog->setMaxWidth (max_width*72.0);
+	pDialog->setMaxHeight (max_height*72.0); // units are 1/72 of an inch
 	UT_DEBUGMSG(("formatting  image: %d\n", pCallData->m_xPos));
 	PT_DocPosition pos = pView->getDocPositionFromLastXY();
 
@@ -10335,39 +10339,10 @@ UT_return_val_if_fail(pDialog, false);
 		  FREEP(description);
 	  }
 
-	  bool bDoWidth = false;
+	  double width = 0., height = 0.;
 	  if(szWidth)
-	  {
-		  double dum = UT_convertToInches(szWidth);
-		  if(dum > max_width)
-		  {
-			  dum = max_width;
-		  }
-		  if(dum > 0.0001)
-		  {
-			  bDoWidth = true;
-		  }
-	  }
-	  bool bDoHeight = false;
-	  if(szHeight)
-	  {
-		  double dum = UT_convertToInches(szHeight);
-		  if(dum > max_height)
-		  {
-			  dum = max_height;
-		  }
-		  if(dum > 0.0001)
-		  {
-			  bDoHeight = true;
-		  }
-	  }
-
-	  if(bDoWidth)
-	  {
-		  double dum = UT_convertToInches(szWidth);
-		  pDialog->setWidth( UT_convertInchesToDimensionString(dim,dum));
-	  }
-	  else
+		  width = UT_convertToInches(szWidth);
+	  if (width < 0.0001)
 	  {
 		  iWidth = 0;
 		  UT_return_val_if_fail (pRun, false);
@@ -10381,19 +10356,11 @@ UT_return_val_if_fail(pDialog, false);
 			  FREEP(props_in);
 			  return false;
 		  }
-		  double width = iWidth*72.0/UT_LAYOUT_RESOLUTION;
-		  if(width > max_width)
-		  {
-			  width = max_width;
+		  width = iWidth*72.0/UT_LAYOUT_RESOLUTION;
 		  }
-		  pDialog->setWidth(width);
-	  }
-	  if(bDoHeight)
-	  {
-		  double dum = UT_convertToInches(szHeight);
-		  pDialog->setHeight( UT_convertInchesToDimensionString(dim,dum));
-	  }
-	  else
+	  if(szHeight)
+	      height = UT_convertToInches(szHeight);
+	  if (height < 0.0001)
 	  {
 		  iHeight = 0;
 		  UT_return_val_if_fail (pRun, false);
@@ -10407,13 +10374,20 @@ UT_return_val_if_fail(pDialog, false);
 			  FREEP(props_in);
 			  return false;
 		  }
-		  double height = iHeight*72.0/UT_LAYOUT_RESOLUTION;
-		  if(height > max_height)
-		  {
-			  height = max_height;
-		  }
-		  pDialog->setHeight(height);
+		  height = iHeight*72.0/UT_LAYOUT_RESOLUTION;
 	  }
+	  if(width > max_width)
+	  {
+	    height *= max_width / width;
+	    width = max_width;
+	  }
+	  if(height > max_height)
+	  {
+	    width *= max_height / height;
+	    height = max_height;
+	  }
+	  pDialog->setWidth( UT_convertInchesToDimensionString(dim,width));
+	  pDialog->setHeight( UT_convertInchesToDimensionString(dim,height));
 	  FREEP(props_in);
 
 	  WRAPPING_TYPE oldWrap = WRAP_INLINE;
@@ -11450,6 +11424,67 @@ Defun1(toggleDomDirection)
 	return true;
 }
 
+
+Defun1(toggleDomDirectionSect)
+{
+	CHECK_FRAME;
+	ABIWORD_VIEW;
+
+	const XML_Char * properties[] = { "dom-dir", NULL, 0};
+	const XML_Char drtl[]	= "rtl";
+	const XML_Char dltr[]	= "ltr";
+
+	fl_BlockLayout * pBl = pView->getCurrentBlock();
+	UT_return_val_if_fail( pBl, false );
+
+	fl_DocSectionLayout * pSL = pBl->getDocSectionLayout();
+	UT_return_val_if_fail( pSL, false );
+	
+	if(pSL->getColumnOrder())
+	{
+		properties[1] = static_cast<const XML_Char *>(&dltr[0]);
+	}
+	else
+	{
+		properties[1] = static_cast<const XML_Char *>(&drtl[0]);
+	}
+
+	pView->setSectionFormat(properties);
+
+	return true;
+}
+
+Defun1(toggleDomDirectionDoc)
+{
+	CHECK_FRAME;
+	ABIWORD_VIEW;
+
+	PD_Document * pDoc = pView->getDocument();
+	UT_return_val_if_fail(pDoc,false);
+
+	const PP_AttrProp * pAP = pDoc->getAttrProp();
+	UT_return_val_if_fail( pAP, false );
+
+	const XML_Char * properties[] = { "dom-dir", NULL, 0};
+	const XML_Char drtl[]	= "rtl";
+	const XML_Char dltr[]	= "ltr";
+	const XML_Char * szValue;
+	
+	UT_return_val_if_fail(pAP->getProperty(properties[0], szValue), false);
+	
+	if(!strcmp(szValue, drtl))
+	{
+		properties[1] = static_cast<const XML_Char *>(&dltr[0]);
+	}
+	else
+	{
+		properties[1] = static_cast<const XML_Char *>(&drtl[0]);
+	}
+
+	UT_return_val_if_fail(pDoc->setProperties(properties), false);
+
+	return true;
+}
 
 Defun1(doBullets)
 {

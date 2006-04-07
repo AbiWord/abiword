@@ -399,7 +399,7 @@ void XAP_UnixGnomePrintGraphics::_drawAnyImage (GR_Image* pImg,
 {
 	UT_sint32 iDestWidth  = pImg->getDisplayWidth ();
 	UT_sint32 iDestHeight = pImg->getDisplayHeight ();
-
+	
 	GR_UnixImage * pImage = static_cast<GR_UnixImage *>(pImg);
 	GdkPixbuf * image = pImage->getData ();
 	UT_return_if_fail (image);
@@ -407,6 +407,8 @@ void XAP_UnixGnomePrintGraphics::_drawAnyImage (GR_Image* pImg,
 	gint width, height, rowstride;
 	const guchar * pixels;
 	
+	/* The pixbuf should contain unscaled (raw) image data for best results. 
+	See XAP_UnixGnomePrintGraphics::createNewImage for details */
 	width     = gdk_pixbuf_get_width (image);
 	height    = gdk_pixbuf_get_height (image);
 	rowstride = gdk_pixbuf_get_rowstride (image);
@@ -415,9 +417,9 @@ void XAP_UnixGnomePrintGraphics::_drawAnyImage (GR_Image* pImg,
 	gnome_print_gsave (m_gpc);
 	gnome_print_translate (m_gpc, xDest, yDest - iDestHeight);
 
-	float scale_x = width * static_cast<float>(iDestWidth)/width;
-	float scale_y = height * static_cast<float>(iDestHeight)/height;
-	gnome_print_scale (m_gpc, scale_x, scale_y);
+	float scale_x = static_cast<float>(iDestWidth)/width;
+	float scale_y = static_cast<float>(iDestHeight)/height;
+	gnome_print_scale (m_gpc, iDestWidth, iDestHeight);
 
 	/* Not sure about the grayimage part, but the other 2 are correct */
 	if (!rgb)
@@ -457,6 +459,12 @@ void XAP_UnixGnomePrintGraphics::drawImage(GR_Image* pImg, UT_sint32 xDest,
 	}
 }
 
+/*!
+Creates and sets up a new image for printing.
+@param iDisplayWidth the width of the image to display. Values are in layout units.
+@param iDisplayHeight the height of the image to display. Values are in layout units.
+@return a new image if successful, NULL otherwise
+*/
 GR_Image* XAP_UnixGnomePrintGraphics::createNewImage(const char* pszName, 
 													 const UT_ByteBuf* pBB, 
 													 UT_sint32 iDisplayWidth,
@@ -469,8 +477,10 @@ GR_Image* XAP_UnixGnomePrintGraphics::createNewImage(const char* pszName,
 		pImg = new GR_UnixImage(pszName,iType);
    	else if (iType == GR_Image::GRT_Vector)
 		pImg = new GR_VectorImage(pszName);
-   
-	pImg->convertFromBuffer(pBB, tdu(iDisplayWidth), tdu(iDisplayHeight));
+	
+	// make sure we don't scale the image yet to not loose any information
+	pImg->convertFromBuffer(pBB, -1, -1);
+	pImg->setDisplaySize(tdu(iDisplayWidth), tdu(iDisplayHeight));
 
 	return pImg;
 }

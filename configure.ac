@@ -26,7 +26,7 @@ AC_CONFIG_SRCDIR([src/af/ev/xp/ev_Menu.h])
 AC_CONFIG_AUX_DIR(ac-helpers)
 dnl AC_CONFIG_HEADERS(config.h)
 
-AM_INIT_AUTOMAKE(AbiSuite-2.4,2.4.2)
+AM_INIT_AUTOMAKE(AbiSuite-2.4,2.4.4)
 
 if test "$srcdir" = "."; then
 	abi_rootdir=".."
@@ -75,6 +75,33 @@ with_macosx=false
 with_cocoa=false
 with_qnx=false
 with_win32=false
+
+# when cross-compiling must have perl for cdump.pl
+if test x$cross_compiling = xyes; then
+AC_MSG_CHECKING([for perl])
+if test "x$(which perl)" = "x"; then
+   AC_MSG_ERROR([not found. Must have perl when cross-compiling.])
+fi
+AC_MSG_RESULT([found])
+fi
+
+# check for embedded
+ABI_HILDON_QUICK
+
+AC_ARG_ENABLE(embedded,[  --enable-embedded    Include embedded features],[
+	case "${enableval}" in
+	   yes)	embedded=true ;;
+	   no) embedded=false ;;
+	     *)	AC_MSG_ERROR(bad value ${enableval} for --enable-embedded) ;;
+	esac
+],[	embedded=undefined
+	EMBEDDED_CFLAGS=""
+])
+
+if test "$embedded" = "true"; then
+   EMBEDDED_CFLAGS="-DEMBEDDED_TARGET=1"
+fi
+
 if test "$PLATFORM" = "unix"; then
 	ABI_FE="Unix"
 	ABI_BE="$ABI_FE"
@@ -143,7 +170,6 @@ dnl The defined values are used mostly in includes.mk, but also in
 dnl some other places
 
 ABI_GNOME_QUICK
-ABI_HILDON_QUICK
 ABI_GUCHARMAP
 ABI_XFT_QUICK
 	
@@ -319,6 +345,12 @@ fi
 if test "$PLATFORM" = "qnx"; then
 	PLATFORM_LIBS="-fexceptions"
 fi
+
+# this should be after all other platform cflags have been set
+if test "$embedded" = "true"; then
+   PLATFORM_CFLAGS="$PLATFORM_CFLAGS $EMBEDDED_CFLAGS"
+fi
+
 dnl SUBST all the variables we just defined
 AC_SUBST(ABI_FEATURE_DEFS)
 AC_SUBST(OPTIMIZE_CFLAGS)
@@ -434,6 +466,7 @@ dnl due to stupid m4 I had to double the [ and ] in the regexp
 fi
 AC_SUBST(VALGRIND)
 
+AM_CONDITIONAL(CROSS_COMPILING, test x$cross_compiling = xyes)
 
 AC_CONFIG_FILES([GNUmakefile
  src/GNUmakefile
@@ -536,7 +569,7 @@ AC_CONFIG_FILES([
  src/pkg/linux/apkg/abiword-gnome.apspec
  src/pkg/linux/apkg/abiword-gtk.apspec
  src/pkg/maemo/debian/misc/abiword.desktop
- src/pkg/maemo/debian/misc/org.abisource.abiword.service
+ src/pkg/maemo/debian/misc/osso-abiword.service
 ])
 AC_OUTPUT
 
@@ -556,6 +589,16 @@ esac
 case "$gnome" in
      "true" )
         AC_MSG_RESULT([Configured with GNOME support.]) ;;
+esac
+
+case "$embedded" in
+     "true")
+	AC_MSG_RESULT([Configured for embedded target.]) ;;
+esac
+
+case "$hildon" in
+     "true")
+	AC_MSG_RESULT([Configured with Hildon/maemo support.]) ;;
 esac
 
 case "$debug" in

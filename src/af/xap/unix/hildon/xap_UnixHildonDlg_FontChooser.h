@@ -57,8 +57,8 @@ public:
 protected:
 	
 
-	virtual void 			fillFontInfo(PangoAttrList* list);
-	virtual void			loadFontInfo(PangoAttrList* list);
+	virtual void 			fillFontInfo();
+	virtual void			loadFontInfo();
 
 	// Gtk sets up escape key to close a GtkDialog only when
 	// the one of the button responses is GTK_RESPONSE_CANCEL

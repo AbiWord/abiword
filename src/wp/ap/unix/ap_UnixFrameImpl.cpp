@@ -302,6 +302,7 @@ void AP_UnixFrameImpl::_setWindowIcon()
 
 	GdkPixbuf * icon = gdk_pixbuf_new_from_xpm_data (const_cast<const char **>(abiword_48_xpm));
 	gtk_window_set_icon (GTK_WINDOW (window), icon);
+	g_object_unref (G_OBJECT(icon));
 }
 
 void AP_UnixFrameImpl::_createWindow()

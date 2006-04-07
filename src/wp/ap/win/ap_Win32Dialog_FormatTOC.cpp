@@ -110,6 +110,7 @@ void AP_Win32Dialog_FormatTOC::destroy(void)
 
 void AP_Win32Dialog_FormatTOC::activate(void)
 {	  	
+
 	
 }	
 
@@ -269,6 +270,13 @@ void AP_Win32Dialog_FormatTOC_Sheet::_onInitDialog(HWND hwnd)
 	SendMessage(GetDlgItem(getHandle(),IDCANCEL), WM_SETTEXT, 0, 
 		(LPARAM) (pSS->getValue(XAP_STRING_ID_DLG_Close)));
 }
+
+
+void AP_Win32Dialog_FormatTOC_Sheet::cleanup(void) 
+{		
+	getContainer()->modeless_cleanup ();
+}
+
 
 /*
 

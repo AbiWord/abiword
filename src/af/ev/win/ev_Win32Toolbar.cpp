@@ -245,11 +245,21 @@ bool EV_Win32Toolbar::toolbarEvent(XAP_Toolbar_Id id,
 #endif
 
 WHICHPROC s_lpfnDefCombo; 
-WHICHPROC s_lpfnDefComboEdit; 
+WHICHPROC s_lpfnDefToolBar;
 
 
 #define COMBO_BUF_LEN 256
 
+
+
+LRESULT CALLBACK EV_Win32Toolbar::_ToolBarWndProc (HWND hWnd, UINT uMessage, WPARAM wParam, LPARAM lParam)
+{
+	if (uMessage == WM_CTLCOLORSTATIC) {
+		return (LRESULT) GetSysColorBrush (COLOR_WINDOW);
+	}
+	
+	return (CallWindowProc(s_lpfnDefToolBar, hWnd, uMessage, wParam, lParam));
+}
 
 LRESULT CALLBACK EV_Win32Toolbar::_ComboWndProc( HWND hWnd, UINT uMessage, WPARAM wParam, LPARAM lParam)
 {
@@ -540,8 +550,11 @@ bool EV_Win32Toolbar::synthesize(void)
 
 	UT_ASSERT(m_hwnd);
 
-	// override the window procedure 	
+	// override the window procedure 		
+	s_lpfnDefToolBar = (WHICHPROC)GetWindowLong(m_hwnd, GWL_WNDPROC);
+	SetWindowLong(m_hwnd, GWL_WNDPROC, (LONG)_ToolBarWndProc);
 	SetWindowLong(m_hwnd, GWL_USERDATA, (LONG)this);
+
 
 	SendMessage(m_hwnd, TB_BUTTONSTRUCTSIZE, (WPARAM) sizeof(TBBUTTON), 0);  
 
@@ -646,7 +659,7 @@ bool EV_Win32Toolbar::synthesize(void)
 
 						// create a matching child control
 						DWORD dwStyle = WS_CHILD | WS_BORDER | WS_VISIBLE | WS_VSCROLL |
-								CBS_HASSTRINGS | CBS_DROPDOWNLIST;
+								CBS_HASSTRINGS | CBS_DROPDOWN;
 
 						if ((pControl) && (pControl->shouldSort()))
 						{
@@ -668,6 +681,15 @@ bool EV_Win32Toolbar::synthesize(void)
 
 						UT_ASSERT(hwndCombo);
 						
+						/*
+						 * Hack to create a combobox that is readonly, but which is capable of displaying text in 
+						 * the edit control which differs from that in the drop-down list like GTK combos.
+						 */
+						HWND hwndEdit = FindWindowEx(hwndCombo, 0, NULL, NULL);
+						if (!hwndEdit)
+							UT_DEBUGMSG(("Toolbar: Failed to get handle of combos edit controls. Not setting read-only.\n"));
+						else
+							SendMessage(hwndEdit, EM_SETREADONLY, (WPARAM)TRUE, (LPARAM)0);
 						SendMessage(hwndCombo, WM_SETFONT, (WPARAM)GetStockObject(DEFAULT_GUI_FONT), MAKELPARAM(TRUE, 0));
 						SendMessage(hwndCombo, CB_SETDROPPEDWIDTH,(WPARAM)pControl->getDroppedWidth(), 0);
 
@@ -1067,12 +1089,41 @@ bool EV_Win32Toolbar::_refreshItem(AV_View * pView, const EV_Toolbar_Action * pA
 					
 												
 				int idx = SendMessage(hwndCombo, CB_SELECTSTRING, (WPARAM)-1, (LPARAM)pLocalised);
+				/*
+				 * If the string didn't exist within the combos list, we handle things differently for
+				 * different combos.
+				 */
 				if (idx==CB_ERR)
 				{
-                    // String not found, if the combo box has an "Other..." string, select it
-					const XAP_StringSet * pSS = XAP_App::getApp()->getStringSet();
-					pSS->getValue(XAP_STRING_ID_TB_Zoom_Percent);
-					idx = SendMessage(hwndCombo, CB_SELECTSTRING, (WPARAM)-1, (LPARAM)pSS->getValue(XAP_STRING_ID_TB_Zoom_Percent));
+					const XAP_StringSet * pSS;
+					
+					switch (id)
+					{
+					/*
+					 * In the case of the font and font size combo, this means that the document contains a font not
+					 * installed on the system. Add it to the edit control, as is the case with the unix version.
+					 */
+					case AP_TOOLBAR_ID_FMT_SIZE:
+					case AP_TOOLBAR_ID_FMT_FONT:
+						idx = SendMessage(hwndCombo, WM_SETTEXT, (WPARAM)-1, (LPARAM)pLocalised);
+						if (idx == CB_ERR)
+							UT_DEBUGMSG(("refreshToolbar: Failed to set text for font combo.\n"));
+						break;
+					/* 
+					 * If this is the zoom combo, select the "Other..." string.
+					 */
+					case AP_TOOLBAR_ID_ZOOM:
+						pSS = XAP_App::getApp()->getStringSet();
+						idx = SendMessage(hwndCombo, CB_SELECTSTRING, (WPARAM)-1, (LPARAM)pSS->getValue(XAP_STRING_ID_TB_Zoom_Percent));
+						break;
+
+					case AP_TOOLBAR_ID_FMT_STYLE:
+						UT_DEBUGMSG(("refreshToolbar: Unknown string selected in style combo.\n"));
+						break;
+					default:
+						UT_DEBUGMSG(("refreshToolbar: Unknown string selected in unknown combo.\n"));
+						break;
+					}
 				}
 	
 				//UT_DEBUGMSG(("refreshToolbar: ComboBox [%s] is %s and %s\n",

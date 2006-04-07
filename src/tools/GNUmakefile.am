@@ -24,4 +24,11 @@ else
 TTFTOOL = 
 endif
 
-SUBDIRS = cdump po2str pfa2afm $(TTFTOOL) scripts
+# we do not build cdump but use cdump.pl when crosscompiling
+if CROSS_COMPILING
+CDUMP_DIR =
+else
+CDUMP_DIR = cdump
+endif
+
+SUBDIRS = $(CDUMP_DIR) po2str pfa2afm $(TTFTOOL) scripts

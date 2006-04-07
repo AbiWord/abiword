@@ -5381,6 +5381,113 @@ bool FV_View::cmdUpdateEmbed(UT_ByteBuf * pBuf, const char * szMime, const char 
 }
 
 /*!
+ * This method updates the Embedded object in pRun with a new
+ * object defined with the supplied bytebuffer, as well as strings to represent
+ * the MIME/Type and Object type.
+ * 
+ * eg for a GNOME-Office chart we'll have MIME-TYPE "application/chart+xml"
+ * and sProps="embed-type: GOChart";
+ */
+bool FV_View::cmdUpdateEmbed(fp_Run * pRun, UT_ByteBuf * pBuf, const char * szMime, const char * szProps)
+{
+	if(pRun == NULL || pRun->getType() != FPRUN_EMBED)
+	{
+	  return false;
+	}
+	PT_DocPosition pos;
+	bool flag;
+	pRun->mapXYToPosition(0, 0, pos, flag, flag, flag);
+	cmdSelect (pos, pos+1);
+	const XML_Char * atts[7]={"dataid",NULL,"props",NULL,NULL,NULL,NULL};
+	bool bRepeat = true;
+	UT_UTF8String sUID;
+	UT_uint32 uid = 0;
+	while(bRepeat)
+	{
+	  uid = m_pDoc->getUID(UT_UniqueId::Image);
+	  UT_UTF8String_sprintf(sUID,"%d",uid);
+	  //
+	  // Make sure data item is unique!
+	  //
+	  bRepeat = m_pDoc->getDataItemDataByName(sUID.utf8_str(),NULL,NULL,NULL);
+	}
+	atts[1] = sUID.utf8_str();
+	const char * mimetypeGOChart = UT_strdup(szMime);
+	bool bres = m_pDoc->createDataItem(sUID.utf8_str(),false,pBuf,static_cast<void *>(const_cast<char *>(mimetypeGOChart)), NULL);
+	UT_return_val_if_fail(bres,false)
+	const XML_Char *cur_style = NULL;
+	getStyle(&cur_style);
+	if((cur_style != NULL) && (*cur_style) && (strcmp(cur_style,"None") != 0))
+	{
+		atts[4] = PT_STYLE_ATTRIBUTE_NAME;
+		atts[5] = cur_style;
+	}
+	const XML_Char ** props = NULL;
+
+	// Signal PieceTable Change
+	_saveAndNotifyPieceTableChange();
+	m_pDoc->beginUserAtomicGlob();
+	getCharFormat(&props,false,pos);
+	UT_UTF8String sFullProps;
+	UT_UTF8String sProp,sVal;
+	UT_UTF8String sProps;
+	sProps = szProps;
+	UT_sint32 i = 0;
+	if(props)
+	{
+	  for(i=0;props[i] != NULL;i+=2)
+	  {
+	    sProp = props[i];
+		// Filter out size properties
+		if (sProp == "width" || sProp == "height" || sProp == "descent"
+			|| sProp == "ascent")
+			continue;
+	    sVal = props[i+1];
+	    UT_DEBUGMSG(("Update Embed Prop %s val %s \n",props[i],props[i+1]));
+	    UT_UTF8String_setProperty(sFullProps,sProp,sVal);
+	  }
+	}	
+	UT_DEBUGMSG(("Supplied props %s \n",sProps.utf8_str()));
+	UT_UTF8String_addPropertyString(sFullProps,sProps);
+	atts[3]=sFullProps.utf8_str();
+	UT_DEBUGMSG(("Property String at Update Object is %s \n",atts[3]));
+	_deleteSelection();
+	m_pDoc->insertObject(pos,PTO_Embed,atts,NULL);
+	m_pDoc->endUserAtomicGlob();
+
+	_generalUpdate();
+	_restorePieceTableState();
+	_updateInsertionPoint();
+	cmdSelect(pos,pos+1);
+	return true;
+}
+
+/*!
+ * This method deletes the Embedded object in pRun.
+ */
+bool FV_View::cmdDeleteEmbed(fp_Run * pRun)
+{
+	if(pRun == NULL || pRun->getType() != FPRUN_EMBED)
+	{
+	  return false;
+	}
+	PT_DocPosition pos;
+	bool flag;
+	pRun->mapXYToPosition(0, 0, pos, flag, flag, flag);
+	cmdSelect (pos, pos+1);
+	_saveAndNotifyPieceTableChange();
+	m_pDoc->beginUserAtomicGlob();
+	_deleteSelection();
+	m_pDoc->endUserAtomicGlob();
+
+	_generalUpdate();
+	_restorePieceTableState();
+	_updateInsertionPoint();
+	cmdSelect(pos,pos);
+	return true;
+}
+
+/*!
  * This method inserts an image at the strux of type iStruxType at the 
  * point given by ipos.
  * This is useful for speficifying images as backgrounds to pages and cells.
