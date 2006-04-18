@@ -3191,9 +3191,31 @@ UT_Error FV_View::cmdInsertTable(UT_sint32 numRows, UT_sint32 numCols, const XML
 	         e = m_pDoc->insertStrux(getPoint(),PTX_Block);
 		 bInsert = true;
 	}
+	bool bPointBreak = false;
 	if(!bInsert && !m_pDoc->isEndFootnoteAtPos(getPoint()-1) && !m_pDoc->isEndFootnoteAtPos(getPoint()-1) && !m_pDoc->isBlockAtPos(getPoint()))
 	{
 	         pointBreak--;
+		 bPointBreak = true;
+	}
+	if(!bPointBreak && m_pDoc->isBlockAtPos(getPoint()))
+	{
+	         PT_DocPosition posEnd = 0;
+		 getEditableBounds(true,posEnd);
+		 if((posEnd == getPoint()))
+		 {
+		         pointBreak--;
+			 bPointBreak = true;
+		 }
+		 else if(m_pDoc->isSectionAtPos(getPoint()-1) || m_pDoc->isEndTableAtPos(getPoint()-1) || m_pDoc->isEndFrameAtPos(getPoint() - 1))
+		 {
+		         pointBreak--;
+			 bPointBreak = true;
+		 }
+		 else if(m_pDoc->isSectionAtPos(getPoint()-2))
+		 {
+		         pointBreak--;
+			 bPointBreak = true;
+		 }
 	}
 //
 // Insert the table strux at the same spot. This will make the table link correctly in the
