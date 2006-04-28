@@ -5132,6 +5132,8 @@ void IE_Imp_MsWord_97::_handleStyleSheet(const wvParseStruct *ps)
 	char * b = NULL;
 	char * f = NULL;
 
+	UT_return_if_fail(pSTD != NULL);
+
 	for(UT_uint32 i = 0; i < iCount; i++, pSTD++)
 	{
 		iOffset = 0;
