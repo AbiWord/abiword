@@ -104,6 +104,13 @@ BOOL CALLBACK AP_Win32Dialog_MailMerge::s_dlgProc(HWND hWnd,UINT msg,WPARAM wPar
 	case WM_COMMAND:
 		pThis = GWL(hWnd);
 		return pThis->_onCommand(hWnd,wParam,lParam);
+
+	case WM_DESTROY:
+		pThis = GWL(hWnd);
+		if(pThis)
+			pThis->destroy();
+		return 0;
+
 	default:
 		return 0;
 	}
@@ -197,8 +204,7 @@ BOOL AP_Win32Dialog_MailMerge::_onCommand(HWND hWnd, WPARAM wParam, LPARAM lPara
 		case AP_RID_DIALOG_MAILMERGE_BTN_CLOSE:		
 		case IDCANCEL:		// We want to close button work
 		{			
-			DestroyWindow(m_hwndDlg);		
-			modeless_cleanup();
+			destroy();
 			return 1;
 		}	
 		
@@ -229,4 +235,10 @@ void AP_Win32Dialog_MailMerge::setFieldList()
 			0, (LPARAM)sAnsi.c_str());
 	}
 	
+}
+
+void AP_Win32Dialog_MailMerge::destroy(void)
+{
+	DestroyWindow(m_hwndDlg);
+	modeless_cleanup();
 }
