@@ -3240,6 +3240,14 @@ UT_Error FV_View::cmdInsertTable(UT_sint32 numRows, UT_sint32 numCols, const XML
 	{
 		pointBreak--;
 	}
+	//
+	// Handle special case of not putting a table in a TOC
+	//
+	if(m_pDoc->isTOCAtPos(pointBreak-1))
+	{
+		pointBreak++;
+	}
+
 	setPoint(pointBreak);
 	e |= static_cast<UT_sint32>(m_pDoc->insertStrux(getPoint(),PTX_SectionTable,NULL,pPropsArray));
 //
