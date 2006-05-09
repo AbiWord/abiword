@@ -387,7 +387,7 @@ BOOL AP_Win32Dialog_FormatFrame::_onCommand(HWND hWnd, WPARAM wParam, LPARAM lPa
 
 					
 					sThickness = UT_UTF8String_sprintf("%fin",m_dThickness[nSelected]);
-					setBorderThickness(sThickness);					
+					setBorderThicknessAll(sThickness);					
 					event_previewExposed();
 				}
 			}
