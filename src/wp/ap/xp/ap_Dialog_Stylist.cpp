@@ -150,7 +150,7 @@ void AP_Dialog_Stylist::updateDialog(void)
 			{
 				m_pDoc = pDoc;
 				m_pStyleTree->buildStyles(pDoc);
-				if(!m_bIsModal) // fill the current style if Modal
+				if(!m_bIsModal) // fill the current style if Modeless
 				{
 					const char * pszStyle;
 					pView->getStyle(&pszStyle);
