@@ -174,7 +174,7 @@ UT_UTF8String AP_Dialog_FormatTOC::getNewStyle(UT_UTF8String & sProp)
 
 	pDialog->setCurStyle(sVal);
 	pDialog->runModal(pFrame);
-	if(pDialog->isStyleChanged() && pDialog->isStyleValid())
+	if(pDialog->isStyleValid())
 	{
 		sNewStyle = pDialog->getSelectedStyle();
 	}
