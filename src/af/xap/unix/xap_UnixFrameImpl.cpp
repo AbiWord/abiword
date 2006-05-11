@@ -460,6 +460,10 @@ XAP_UnixFrameImpl::XAP_UnixFrameImpl(XAP_Frame *pFrame, XAP_UnixApp * pApp) :
 	m_pUnixMenu(NULL),
 	need_im_reset (false),
 	m_bDoZoomUpdate(false),
+	m_iNewX(0),
+	m_iNewY(0),
+	m_iNewWidth(0),
+	m_iNewHeight(0),
 	m_iZoomUpdateID(0),
 	m_iAbiRepaintID(0),
 	m_pUnixApp(pApp),
@@ -611,18 +615,63 @@ gint XAP_UnixFrameImpl::_fe::do_ZoomUpdate(gpointer /* XAP_UnixFrameImpl * */ p)
 	XAP_UnixFrameImpl * pUnixFrameImpl = static_cast<XAP_UnixFrameImpl *>(p);
 	XAP_Frame* pFrame = pUnixFrameImpl->getFrame();
 	AV_View * pView = pFrame->getCurrentView();
+	UT_sint32 prevWidth = 0;
+	UT_sint32 prevHeight = 0;
+	UT_sint32 iNewWidth = 0;
+	UT_sint32 iNewHeight = 0;
+	if(pView)
+	{
+		prevWidth = pView->getGraphics()->tdu(pView->getWindowWidth());
+		prevHeight = pView->getGraphics()->tdu(pView->getWindowHeight());
+		iNewWidth = pUnixFrameImpl->m_iNewWidth;
+		iNewHeight = pUnixFrameImpl->m_iNewHeight;
+		xxx_UT_DEBUGMSG(("OldWidth %d NewWidth %d \n",prevWidth,iNewWidth));
+	}
 	if(!pView || pFrame->isFrameLocked() ||
-	   (pUnixFrameImpl->m_bDoZoomUpdate && (pView->getGraphics()->tdu(pView->getWindowWidth()) == pUnixFrameImpl->m_iNewWidth) && (pView->getGraphics()->tdu(pView->getWindowHeight()) == pUnixFrameImpl->m_iNewHeight)))
+	   ((pUnixFrameImpl->m_bDoZoomUpdate) && (prevWidth == iNewWidth) && (prevHeight == iNewHeight)))
 	{
 		pUnixFrameImpl->m_iZoomUpdateID = 0;
 		pUnixFrameImpl->m_bDoZoomUpdate = false;
+		if(pView && !pFrame->isFrameLocked())
+		{
+				GR_Graphics * pGr = pView->getGraphics ();
+				UT_Rect rClip;
+				rClip.left = pGr->tlu(0);
+				UT_sint32 iHeight = abs(iNewHeight - prevHeight);
+				rClip.top = pGr->tlu(iNewHeight - iHeight);
+				rClip.width = pGr->tlu(iNewWidth)+1;
+				rClip.height = pGr->tlu(iHeight)+1;
+				pView->setWindowSize(iNewWidth, iNewHeight);
+				pView->draw(&rClip);
+		}
+		if(pView)
+			pView->setWindowSize(iNewWidth, iNewHeight);
+		return FALSE;
+	}
+	if(!pView || pFrame->isFrameLocked() ||
+	   ((prevWidth == iNewWidth) && (pFrame->getZoomType() != XAP_Frame::z_WHOLEPAGE)))
+	{
+		xxx_UT_DEBUGMSG(("Abandoning zoom widths are equal \n"));
+		pUnixFrameImpl->m_iZoomUpdateID = 0;
+		pUnixFrameImpl->m_bDoZoomUpdate = false;
+		if(pView && !pFrame->isFrameLocked())
+		{
+				GR_Graphics * pGr = pView->getGraphics ();
+				UT_Rect rClip;
+				rClip.left = pGr->tlu(0);
+				UT_sint32 iHeight = abs(iNewHeight - prevHeight);
+				rClip.top = pGr->tlu(iNewHeight - iHeight);
+				rClip.width = pGr->tlu(iNewWidth)+1;
+				rClip.height = pGr->tlu(iHeight)+1;
+				pView->setWindowSize(iNewWidth, iNewHeight);
+				pView->draw(&rClip);
+		}
+		if(pView)
+			pView->setWindowSize(iNewWidth, iNewHeight);
 		return FALSE;
 	}
 
 	pUnixFrameImpl->m_bDoZoomUpdate = true;
-
-	UT_sint32 iNewWidth = 0;
-	UT_sint32 iNewHeight = 0;
 	do
 	{
 		// currently, we blow away the old view.  This will change, rendering
