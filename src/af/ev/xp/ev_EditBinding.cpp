@@ -134,10 +134,10 @@ EV_EditBindingMap::EV_EditBindingMap(EV_EditMethodContainer * pemc)
 	UT_sint32 i = 0;
 	for (i=0; i<EV_COUNT_EMB; i++)
 	{
-		m_pebMT[i] = NULL;
+	  m_pebMT[i] = (ev_EB_MouseTable*) NULL;
 	}
-	m_pebNVK = NULL;
-	m_pebChar = NULL;
+	m_pebNVK = (ev_EB_NVK_Table*) NULL;
+	m_pebChar = (ev_EB_Char_Table*) NULL;
 }
 
 EV_EditBindingMap::~EV_EditBindingMap()
@@ -411,7 +411,7 @@ const char * EV_EditBindingMap::getShortcutFor(const EV_EditMethod * pEM) const
 	
 	
 	if (!bChar && !bNVK) 
-		return NULL;
+	  return (const char *) NULL;
 
 	// translate into displayable string
 	static char buf[128];
@@ -443,7 +443,7 @@ const char * EV_EditBindingMap::getShortcutFor(const EV_EditMethod * pEM) const
 	else
 	{
 		// translate NVK
-		const char * szNVK = NULL;
+	  const char * szNVK = (const char *) NULL;
 
 		// TODO: look these up from table, rather than switch
 		switch(EV_NamedKey(shortcut))
