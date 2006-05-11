@@ -1244,14 +1244,12 @@ int AP_Win32App::WinMain(const char * szAppName, HINSTANCE hInstance,
 	Args.parsePoptOpts();
 	pMyWin32App->initialize();
   
-	bShowSplash = Args.getShowSplash();
-
 	// Consider the user saved preferences for the Splash Screen
    	const XAP_Prefs * pPrefs = pMyWin32App->getPrefs();
 	UT_ASSERT_HARMLESS(pPrefs);
     if (pPrefs && pPrefs->getPrefsValueBool (AP_PREF_KEY_ShowSplash, &bSplashPref))
 	{
-		bShowSplash = bShowSplash && bSplashPref;
+		bShowSplash = bSplashPref;
 	}
 
 	// Step 2: Handle all non-window args.
@@ -1279,7 +1277,7 @@ int AP_Win32App::WinMain(const char * szAppName, HINSTANCE hInstance,
 	}
 
 #ifdef SPLASH
-	if (bShowSplash)
+	if (bShowSplash && Args.getShowSplash())
 	{
 		_showSplash(hInstance, szAppName);
 	}
