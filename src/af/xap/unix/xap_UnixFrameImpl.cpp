@@ -444,15 +444,6 @@ s_dnd_drag_end (GtkWidget  *widget, GdkDragContext *context, gpointer ppFrame)
 
 #define ENSUREP(p)		do { UT_ASSERT(p); if (!p) goto Cleanup; } while (0)
 
-static void s_gtkMenuPositionFunc(GtkMenu * /* menu */, gint * x, gint * y, gboolean * push_in, gpointer user_data)
-{
-	struct UT_Point * p = static_cast<struct UT_Point *>(user_data);
-
-	*x = p->x;
-	*y = p->y;
-	*push_in = TRUE ;
-}
-
 /****************************************************************/
 XAP_UnixFrameImpl::XAP_UnixFrameImpl(XAP_Frame *pFrame) : 
 	XAP_FrameImpl(pFrame),
@@ -1723,22 +1714,8 @@ bool XAP_UnixFrameImpl::_runModalContextMenu(AV_View * /* pView */, const char *
 		GdkEvent * event = gtk_get_current_event();
 		GdkEventButton *bevent = reinterpret_cast<GdkEventButton *>(event);
 
-		GtkRequisition req ;
-		gtk_widget_size_request (m_pUnixPopup->getMenuHandle(), &req);
-		if(w)
-		{
-			gdk_window_get_origin(w->window, &x,&y);
-		}
-		x += static_cast<UT_sint32>(bevent->x);
-		y += static_cast<UT_sint32>(bevent->y);
-
-		UT_Point pt;
-		pt.x = x;
-		pt.y = y;
-
 		gtk_menu_popup(GTK_MENU(m_pUnixPopup->getMenuHandle()), NULL, NULL,
-			       s_gtkMenuPositionFunc, &pt, bevent->button, bevent->time);
-
+			       NULL, NULL, bevent->button, bevent->time);
 
 		// We run this menu synchronously, since GTK doesn't.
 		// Popup menus have a special "unmap" function to call
