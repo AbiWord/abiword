@@ -47,6 +47,12 @@ static void s_close_clicked(GtkWidget * widget,AP_UnixDialog_Latex * dlg)
 	dlg->event_Close();
 }
 
+static void s_destroy_clicked(GtkWidget * widget,AP_UnixDialog_Latex * dlg)
+{
+	UT_ASSERT(dlg);
+	dlg->event_Close();
+}
+
 static void s_insert_clicked(GtkWidget * widget,AP_UnixDialog_Latex * dlg)
 {
 	UT_ASSERT(dlg);
@@ -194,6 +200,9 @@ void AP_UnixDialog_Latex::constructDialog(void)
 
 	g_signal_connect(G_OBJECT(m_windowMain), "delete_event",
 					   G_CALLBACK(s_delete_clicked),
+					   reinterpret_cast<gpointer>(this));
+	g_signal_connect(G_OBJECT(m_windowMain), "destroy",
+					   G_CALLBACK(s_destroy_clicked),
 					   reinterpret_cast<gpointer>(this));
 	g_signal_connect(G_OBJECT(m_wClose), "clicked",
 					   G_CALLBACK(s_close_clicked),
