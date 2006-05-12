@@ -53,11 +53,13 @@ XAP_UnixFontManager::~XAP_UnixFontManager(void)
 {
 	m_fontHash.purgeData();
 	UT_VECTOR_PURGEALL(XAP_UnixFont *,m_vecDeallocatedFonts);
+#if FC_MINOR < 3
 	if (m_pFontSet)
 		FcFontSetDestroy (m_pFontSet);
 
 	if (m_pConfig)
 		FcConfigDestroy (m_pConfig);
+#endif
 
 }
 
@@ -83,6 +85,16 @@ UT_GenericVector<XAP_UnixFont*>* XAP_UnixFontManager::getAllFonts(void)
 		pVec->qsort(compareFontNames);
 	
 	return pVec;
+}
+
+UT_GenericVector<void*>* XAP_UnixFontManager::getAllFontsAsVoid(void)
+{
+	UT_GenericVector<XAP_UnixFont*>* pVec = m_fontHash.enumerate();
+	UT_ASSERT(pVec);
+	if(pVec->getItemCount() > 1)
+		pVec->qsort(compareFontNames);
+	
+	return reinterpret_cast<UT_GenericVector<void*>* >(pVec);
 }
 
 static XAP_UnixFont* buildFont(XAP_UnixFontManager* pFM, FcPattern* fp)
