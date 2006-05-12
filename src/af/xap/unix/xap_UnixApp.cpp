@@ -133,11 +133,11 @@ XAP_UnixApp::~XAP_UnixApp()
 {
 	DELETEP(m_pUnixToolbarIcons);
 	
+	delete m_fontManager;
+
 #if FC_MINOR > 2
 	FcFini();
 #endif
-	
-	delete m_fontManager;
 }
 
 bool XAP_UnixApp::initialize(const char * szKeyBindingsKey, const char * szKeyBindingsDefaultValue)
