@@ -3221,6 +3221,12 @@ UT_Error FV_View::cmdInsertTable(UT_sint32 numRows, UT_sint32 numCols, const XML
 		         pointBreak++;
 			 bPointBreak = false;
 		 }
+		 if(bPointBreak && !m_pDoc->isBlockAtPos(pointBreak))
+		 {
+		         pointBreak++;
+			 bPointBreak = false;
+		 }
+
 	}
 //
 // Insert the table strux at the same spot. This will make the table link correctly in the
