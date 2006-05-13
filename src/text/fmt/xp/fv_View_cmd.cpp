@@ -3192,7 +3192,7 @@ UT_Error FV_View::cmdInsertTable(UT_sint32 numRows, UT_sint32 numCols, const XML
 		 bInsert = true;
 	}
 	bool bPointBreak = false;
-	if(!bInsert && !m_pDoc->isEndFootnoteAtPos(getPoint()-1) && !m_pDoc->isEndFootnoteAtPos(getPoint()-1) && !m_pDoc->isBlockAtPos(getPoint()))
+	if(!bInsert && !m_pDoc->isEndFootnoteAtPos(getPoint()-2) && !m_pDoc->isEndFootnoteAtPos(getPoint()-1) && !m_pDoc->isBlockAtPos(getPoint()))
 	{
 	         pointBreak--;
 		 bPointBreak = true;
@@ -3215,6 +3215,11 @@ UT_Error FV_View::cmdInsertTable(UT_sint32 numRows, UT_sint32 numCols, const XML
 		 {
 		         pointBreak--;
 			 bPointBreak = true;
+		 }
+		 if(m_pDoc->isEndFootnoteAtPos(pointBreak))
+		 {
+		         pointBreak++;
+			 bPointBreak = false;
 		 }
 	}
 //
