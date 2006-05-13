@@ -11462,6 +11462,17 @@ bool FV_View::insertFootnote(bool bFootnote)
 		}
 		setPoint(getPoint()-1);
 	}
+
+	_saveAndNotifyPieceTableChange();
+	m_pDoc->beginUserAtomicGlob();
+	if (!isSelectionEmpty() && !m_FrameEdit.isActive())
+	{
+		_deleteSelection();
+	}
+	else if(m_FrameEdit.isActive())
+	{
+	       m_FrameEdit.setPointInside();
+	}
 	_makePointLegal();
 	const XML_Char ** props_in = NULL;
 	getCharFormat(&props_in);
@@ -11485,6 +11496,7 @@ bool FV_View::insertFootnote(bool bFootnote)
 	/*	Apply the character style at insertion point and insert the
 		Footnote reference. */
 
+
 	PT_DocPosition FrefStart = getPoint();
 	PT_DocPosition FrefEnd = FrefStart + 1;
 	PT_DocPosition FanchStart;
@@ -11494,17 +11506,6 @@ bool FV_View::insertFootnote(bool bFootnote)
 	const XML_Char *cur_style;
 	getStyle(&cur_style);
 
-
-	_saveAndNotifyPieceTableChange();
-	m_pDoc->beginUserAtomicGlob();
-	if (!isSelectionEmpty() && !m_FrameEdit.isActive())
-	{
-		_deleteSelection();
-	}
-	else if(m_FrameEdit.isActive())
-	{
-	       m_FrameEdit.setPointInside();
-	}
 	bool bCreatedFootnoteSL = false;
 
 	PT_DocPosition dpFT = 0;
