@@ -114,6 +114,13 @@ BOOL CALLBACK AP_Win32Dialog_MergeCells::s_dlgProc(HWND hWnd,UINT msg,WPARAM wPa
 	case WM_COMMAND:
 		pThis = GWL(hWnd);
 		return pThis->_onCommand(hWnd,wParam,lParam);
+
+	case WM_DESTROY:
+		pThis = GWL(hWnd);
+		if(pThis)
+			pThis->destroy();
+		return 0;
+
 	default:
 		return 0;
 	}

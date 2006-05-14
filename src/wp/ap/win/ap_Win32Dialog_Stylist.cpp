@@ -137,6 +137,12 @@ BOOL CALLBACK AP_Win32Dialog_Stylist::s_dlgProc(HWND hWnd,UINT msg,WPARAM wParam
 				return pThis->_onCommand(hWnd,wParam,lParam);
 			else
 				return 0;
+
+		case WM_DESTROY:
+			pThis = (AP_Win32Dialog_Stylist *)GetWindowLong(hWnd,DWL_USER);
+			if (pThis)
+				pThis->destroy();
+			return 0;
 			
 		default:
 			return 0;
