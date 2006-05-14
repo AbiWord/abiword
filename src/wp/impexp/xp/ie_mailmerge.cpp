@@ -591,6 +591,7 @@ public:
 
 		UT_uint32 lineno = 0;
 		bool cont = true;
+		bool in_quotes = false;
 
 		FILE * fp = fopen(szFilename, "rb");
 		if (!fp)
@@ -605,25 +606,52 @@ public:
 		// line 2..n == Data
 
 		while (cont && (1 == fread (&ch, 1, 1, fp))){
-			if (ch == '\r')
-				continue;
-			else if (ch == '\n') {
-				defineItem (item, lineno == 0);
-				if (lineno != 0)
-					cont = fire ();
-				lineno++;
-				item.truncate (0);
-				continue;
+		  if (ch == '\r' && !in_quotes) // swallow carriage return unless in quoted block
+		    continue;
+		  else if (ch == '\n' && !in_quotes) { // newline. fire changeset
+		    defineItem (item, lineno == 0);
+		    item.truncate (0);
+		    if (lineno != 0)
+		      cont = fire ();
+		    lineno++;
+		  }
+		  else if (ch == m_delim && !in_quotes) {
+		    defineItem (item, lineno == 0);
+		    item.truncate (0);
+		  }
+		  else if (ch == '"' && in_quotes) {
+		    if (1 == fread (&ch, 1, 1, fp)) {
+		      if (ch == '"') // 2 double quotes == escaped quote
+			item.append (&ch, 1);
+		      else { // assume that it's the end of the quoted sequence and ch is the delimiter char or a newline
+			in_quotes = false;
+			defineItem (item, lineno == 0);
+			item.truncate (0);
+			
+			if (ch == '\n') {
+			  if (lineno != 0)
+			    cont = fire ();
+			  lineno++;
 			}
-			else if (ch == m_delim) {
-				defineItem (item, lineno == 0);
-				item.truncate (0);
-			}
-			else
-				item.append(&ch, 1);
+		      }
+		    } else {
+		      // eof??
+		      defineItem (item, lineno == 0);
+		      item.truncate (0);
+		      in_quotes = false;
+		    }
+		  }
+		  else if ((ch == '"') && !in_quotes && (item.getLength () == 0)) // beginning of a quoted sequence
+		    in_quotes = true;
+		  else // append whatever we're given
+		    item.append(&ch, 1);
 		}
 
 		fclose (fp);
+
+		// if there's a non-empty line that wasn't terminated by a newline, fire it off
+		if (m_items.size())
+		  fire ();
 
 		return UT_OK;
 	}
