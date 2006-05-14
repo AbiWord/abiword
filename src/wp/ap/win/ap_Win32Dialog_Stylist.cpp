@@ -191,13 +191,9 @@ void  AP_Win32Dialog_Stylist::setStyleInGUI(void)
 	for (i = 0; i < row; i++)
 		hitem = TreeView_GetNextItem(hTree, hitem, TVGN_NEXT);
 
-	// If column > 0, we're looking for a child of this node in the treeview
-	if (col > 0)
-	{
-		hitem = TreeView_GetNextItem(hTree, hitem, TVGN_CHILD);
-		for (i = 0; i < col; i++)
-			hitem = TreeView_GetNextItem(hTree, hitem, TVGN_NEXT);
-	}
+	hitem = TreeView_GetNextItem(hTree, hitem, TVGN_CHILD);
+	for (i = 0; i < col; i++)
+		hitem = TreeView_GetNextItem(hTree, hitem, TVGN_NEXT);
 
 	TreeView_SelectItem(hTree, hitem);
 
