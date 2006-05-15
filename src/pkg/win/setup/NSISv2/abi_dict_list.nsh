@@ -3,7 +3,7 @@
 
 
 ; this is the count of dictionaries available for download [count of sections defined]
-!define DICTIONARY_COUNT 27	; used to query sections & set description text
+!define DICTIONARY_COUNT 29	; used to query sections & set description text
 
 
 ; These are listed alphabetically based on English LANG-LOCALE
