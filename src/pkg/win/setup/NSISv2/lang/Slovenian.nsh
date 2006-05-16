@@ -6,21 +6,21 @@
 ${LSTR} TITLE_ssection_core                 "Osnovne komponente"
 ${LSTR} TITLE_section_abi                   "${PROGRAMEXE} (zahtevano)"
 ${LSTR} TITLE_section_abi_req               "${PRODUCT} - podporne datoteke (zahtevano)"
-${LSTR} TITLE_ssection_shortcuts            "Bli≈ænjice"
-${LSTR} TITLE_ssection_shortcuts_cu         "Bli≈ænjice (za trenutnega uporabnika)"
-${LSTR} TITLE_section_sm_shortcuts_cu       "Bli≈ænjice v meniju Start (za trenutnega uporabnika)"
-${LSTR} TITLE_section_desktop_shortcuts_cu  "Bli≈ænjica na namizju (za trenutnega uporabnika)"
-${LSTR} TITLE_ssection_shortcuts_au         "Bli≈ænjice (za vse uporabnike)"
-${LSTR} TITLE_section_sm_shortcuts_au       "Bli≈ænjice v meniju Start (za vse uporabnike)"
-${LSTR} TITLE_section_desktop_shortcuts_au  "Bli≈ænjica na namizju (za vse uporabnike)"
-${LSTR} TITLE_ssection_fa_shellupdate       "Posodobi povezave s konƒçnicami datotek"
-${LSTR} TITLE_section_fa_abw                "Pove≈æi .abw z AbiWordom"
-${LSTR} TITLE_section_fa_awt                "Pove≈æi .awt z AbiWordom"
-${LSTR} TITLE_section_fa_zabw               "Pove≈æi .zabw z AbiWordom"
-${LSTR} TITLE_section_fa_doc                "Pove≈æi .doc z AbiWordom"
-${LSTR} TITLE_section_fa_rtf                "Pove≈æi .rtf z AbiWordom"
-${LSTR} TITLE_ssection_helper_files         "Pomo≈æne datoteke"
-${LSTR} TITLE_section_help                  "Datoteke pomoƒçi"
+${LSTR} TITLE_ssection_shortcuts            "Bliûnjice"
+${LSTR} TITLE_ssection_shortcuts_cu         "Bliûnjice (za trenutnega uporabnika)"
+${LSTR} TITLE_section_sm_shortcuts_cu       "Bliûnjice v meniju Start (za trenutnega uporabnika)"
+${LSTR} TITLE_section_desktop_shortcuts_cu  "Bliûnjica na namizju (za trenutnega uporabnika)"
+${LSTR} TITLE_ssection_shortcuts_au         "Bliûnjice (za vse uporabnike)"
+${LSTR} TITLE_section_sm_shortcuts_au       "Bliûnjice v meniju Start (za vse uporabnike)"
+${LSTR} TITLE_section_desktop_shortcuts_au  "Bliûnjica na namizju (za vse uporabnike)"
+${LSTR} TITLE_ssection_fa_shellupdate       "Posodobi povezave s konËnicami datotek"
+${LSTR} TITLE_section_fa_abw                "Poveûi .abw z AbiWordom"
+${LSTR} TITLE_section_fa_awt                "Poveûi .awt z AbiWordom"
+${LSTR} TITLE_section_fa_zabw               "Poveûi .zabw z AbiWordom"
+${LSTR} TITLE_section_fa_doc                "Poveûi .doc z AbiWordom"
+${LSTR} TITLE_section_fa_rtf                "Poveûi .rtf z AbiWordom"
+${LSTR} TITLE_ssection_helper_files         "Pomoûne datoteke"
+${LSTR} TITLE_section_help                  "Datoteke pomoËi"
 ${LSTR} TITLE_section_templates             "Predloge"
 ;${LSTR} TITLE_section_samples               "Vzorci"
 ${LSTR} TITLE_section_clipart               "Izrezki"
@@ -31,50 +31,50 @@ ${LSTR} TITLE_section_crtlib_local          "CRTlib ${OPT_CRTL_FILENAME}"
 ${LSTR} TITLE_section_crtlib_dl             "Prenesi CRTlib ${OPT_CRTL_FILENAME}"
 !endif
 ${LSTR} TITLE_ssection_dictionary           "Slovarji"
-${LSTR} TITLE_section_dictinary_def_English "en-US  angle≈°ki (ZDA) (privzeto)"
+${LSTR} TITLE_section_dictinary_def_English "en-US  angleöki (ZDA) (privzeto)"
 !ifdef OPT_DICTIONARIES
 ${LSTR} TITLE_ssection_dl_opt_dict          "Prenesi dodatne slovarje"
 !endif
 !ifdef OPT_PLUGINS
-${LSTR} TITLE_ssection_plugins              "Vtiƒçniki"
+${LSTR} TITLE_ssection_plugins              "VtiËniki"
 !endif
 
 ; Section descriptions displayed to user when mouse hovers over a section
 ${LSTR} DESC_ssection_core            "Osnovni nabor komponent, da bo program AbiWord lahko deloval."
 ${LSTR} DESC_section_abi              "Zahtevano.  Namesti sam program ${PROGRAMEXE}."
-${LSTR} DESC_section_abi_req          "Zahtevano.  Namesti osnovne pomo≈æne datoteke, npr. nabore nizov, podporo za BMP odlo≈æi≈°ƒça itn."
-${LSTR} DESC_ssection_shortcuts       "Namesti bli≈ænjice na razliƒçnih mestih, ki omogoƒçajo poganjanje AbiWorda iz dodatnih mest."
-${LSTR} DESC_ssection_shortcuts_cu    "Namesti bli≈ænjice za trenutno prijavljenega uporabnika."
-${LSTR} DESC_ssection_shortcuts_au    "Namesti bli≈ænjice za vse uporabnike (ali trenutnega uporabnika na enouporabni≈°kih sistemih)."
-${LSTR} DESC_ssection_fa_shellupdate  "Doda vnose v register, kar omogoƒça Raziskovalcu z uporabo AbiWorda odpirati razliƒçne vrste dokumentov."
-${LSTR} DESC_section_fa_abw           "Doloƒça, da bo AbiWord uporabljen za odpiranje dokumentov v njegovem lastnem zapisu.  (Priporoƒçeno)"
-${LSTR} DESC_section_fa_awt           "Doloƒça, da bo AbiWord uporabljen za odpiranje predlog v njegovem lastnem zapisu.  (Priporoƒçeno)"
-${LSTR} DESC_section_fa_zabw          "Doloƒça, da bo AbiWord uporabljen za odpiranje stisnjenih dokumentov v njegovem lastnem zapisu.  (Priporoƒçeno)"
-${LSTR} DESC_section_fa_doc           "Doloƒça, da bo AbiWord uporabljen za odpiranje dokumentov v zapisu Microsoft Word (R)."
-${LSTR} DESC_section_fa_rtf           "Doloƒça, da bo AbiWord uporabljen za odpiranje datotek z obogatenim besedilom (Rich Text File), 'standardnim' zapisom urejevalnikov besedil."
-${LSTR} DESC_ssection_helper_files    "Namesti razliƒçne druge dodatne datoteke, ki pomagajo pri uporabi AbiWorda."
-${LSTR} DESC_section_help             "Namesti dokumente pomoƒçi; ƒçe to izpustite, pomoƒç ne bo na voljo."
+${LSTR} DESC_section_abi_req          "Zahtevano.  Namesti osnovne pomoûne datoteke, npr. nabore nizov, podporo za BMP odloûiöËa itn."
+${LSTR} DESC_ssection_shortcuts       "Namesti bliûnjice na razliËnih mestih, ki omogoËajo poganjanje AbiWorda iz dodatnih mest."
+${LSTR} DESC_ssection_shortcuts_cu    "Namesti bliûnjice za trenutno prijavljenega uporabnika."
+${LSTR} DESC_ssection_shortcuts_au    "Namesti bliûnjice za vse uporabnike (ali trenutnega uporabnika na enouporabniökih sistemih)."
+${LSTR} DESC_ssection_fa_shellupdate  "Doda vnose v register, kar omogoËa Raziskovalcu z uporabo AbiWorda odpirati razliËne vrste dokumentov."
+${LSTR} DESC_section_fa_abw           "DoloËa, da bo AbiWord uporabljen za odpiranje dokumentov v njegovem lastnem zapisu.  (PriporoËeno)"
+${LSTR} DESC_section_fa_awt           "DoloËa, da bo AbiWord uporabljen za odpiranje predlog v njegovem lastnem zapisu.  (PriporoËeno)"
+${LSTR} DESC_section_fa_zabw          "DoloËa, da bo AbiWord uporabljen za odpiranje stisnjenih dokumentov v njegovem lastnem zapisu.  (PriporoËeno)"
+${LSTR} DESC_section_fa_doc           "DoloËa, da bo AbiWord uporabljen za odpiranje dokumentov v zapisu Microsoft Word (R)."
+${LSTR} DESC_section_fa_rtf           "DoloËa, da bo AbiWord uporabljen za odpiranje datotek z obogatenim besedilom (Rich Text File), 'standardnim' zapisom urejevalnikov besedil."
+${LSTR} DESC_ssection_helper_files    "Namesti razliËne druge dodatne datoteke, ki pomagajo pri uporabi AbiWorda."
+${LSTR} DESC_section_help             "Namesti dokumente pomoËi; Ëe to izpustite, pomoË ne bo na voljo."
 ${LSTR} DESC_section_templates        "Namesti predloge, s katerimi si lahko pomagate pri ustvarjanju novih dokumentov z vnaprej pripravljenim oblikovanjem."
 ${LSTR} DESC_section_samples          "Vzorci so bili odstranjeni."
 ${LSTR} DESC_section_clipart          "Namesti slike (izrezke), ki jih lahko vstavite v dokumente."
 !ifdef OPT_CRTL_URL | OPT_CRTL_LOCAL
-${LSTR} DESC_section_crtlib           "Namesti izvajalno knji≈ænico C, ki jo potrebuje AbiWord; uporabno, ƒçe va≈° operacijski sistem le-tega nima."
+${LSTR} DESC_section_crtlib           "Namesti izvajalno knjiûnico C, ki jo potrebuje AbiWord; uporabno, Ëe vaö operacijski sistem le-tega nima."
 !endif
-${LSTR} DESC_ssection_dictionary      "Namesti slovarje za razliƒçne jezike, s katerimi lahko preverjate ƒçrkovanje dokumentov."
+${LSTR} DESC_ssection_dictionary      "Namesti slovarje za razliËne jezike, s katerimi lahko preverjate Ërkovanje dokumentov."
 !ifdef OPT_DICTIONARIES
 !endif
 !ifdef OPT_PLUGINS
-${LSTR} DESC_ssection_plugins         "Namesti razliƒçne dodatne vtiƒçnike."
+${LSTR} DESC_ssection_plugins         "Namesti razliËne dodatne vtiËnike."
 !endif
 
 ; Error messages and other text displayed in Detail Window or in MessageBoxes
 
 ; in the main section
-${LSTR} PROMPT_OVERWRITE                      "≈Ωelite prepisati obstojeƒço namestitev ${PRODUCT}?"
-${LSTR} PROMPT_NOMAINPROGRAM_CONTINUEANYWAY   "${PRODUCT} najverjetneje ni pravilno name≈°ƒçen!$\r$\n\
-                                               Datoteke ${MAINPROGRAM} ni mogoƒçe najti, zato bo ponovno name≈°ƒçena.$\r$\n\
-                                               ≈Ωelite nadaljevati s spreminjanjem namestitve?"
-${LSTR} MSG_ABORT                             "Zapu≈°ƒçanje namestitvenega postopka"
+${LSTR} PROMPT_OVERWRITE                      "éelite prepisati obstojeËo namestitev ${PRODUCT}?"
+${LSTR} PROMPT_NOMAINPROGRAM_CONTINUEANYWAY   "${PRODUCT} najverjetneje ni pravilno nameöËen!$\r$\n\
+                                               Datoteke ${MAINPROGRAM} ni mogoËe najti, zato bo ponovno nameöËena.$\r$\n\
+                                               éelite nadaljevati s spreminjanjem namestitve?"
+${LSTR} MSG_ABORT                             "ZapuöËanje namestitvenega postopka"
 
 ; sections involving additional downloads
 !ifndef NODOWNLOADS
@@ -82,7 +82,7 @@ ${LSTR} MSG_ABORT                             "Zapu≈°ƒçanje namestitvenega posto
 ; C Runtime Library
 !ifdef OPT_CRTL_URL
 ; CRTLError downloading
-${LSTR} PROMPT_CRTL_DL_FAILED         "Zahtevane knji≈ænice (DLL) ni mogoƒçe namestiti: ${OPT_CRTL_URL}${OPT_CRTL_FILENAME}"
+${LSTR} PROMPT_CRTL_DL_FAILED         "Zahtevane knjiûnice (DLL) ni mogoËe namestiti: ${OPT_CRTL_URL}${OPT_CRTL_FILENAME}"
 !endif ; OPT_CRTL_URL
 
 ; for dictionary stuff
@@ -90,8 +90,8 @@ ${LSTR} PROMPT_CRTL_DL_FAILED         "Zahtevane knji≈ænice (DLL) ni mogoƒçe nam
 ; Custom Download page
 ${LSTR} TEXT_IO_TITLE                 "Osnovni URL za prenos dodatnih komponent"
 ${LSTR} TEXT_IO_SUBTITLE              "Slovarji"
-${LSTR} MSG_SELECT_DL_MIRROR          "Izberite zrcalni stre≈ænik za prenos ..."
-${LSTR} MSG_ERROR_SELECTING_DL_MIRROR "Napaka pri pridobivanju zahtevanega, uporabljen bo privzeti stre≈ænik!"
+${LSTR} MSG_SELECT_DL_MIRROR          "Izberite zrcalni streûnik za prenos ..."
+${LSTR} MSG_ERROR_SELECTING_DL_MIRROR "Napaka pri pridobivanju zahtevanega, uporabljen bo privzeti streûnik!"
 !endif ; OPT_DICTIONARIES
 
 !endif ; NODOWNLOADS
@@ -100,26 +100,26 @@ ${LSTR} MSG_ERROR_SELECTING_DL_MIRROR "Napaka pri pridobivanju zahtevanega, upor
 ${LSTR} SM_PRODUCT_GROUP              "Urejevalnik besedil ${PRODUCT}"
 ${LSTR} SHORTCUT_NAME                 "${PRODUCT} ${VERSION_MAJOR}.${VERSION_MINOR}"
 ${LSTR} SHORTCUT_NAME_UNINSTALL       "Odstrani ${PRODUCT} ${VERSION_MAJOR}.${VERSION_MINOR}"
-${LSTR} SHORTCUT_NAME_HELP            "Pomoƒç (v angl.) za ${PRODUCT}"
+${LSTR} SHORTCUT_NAME_HELP            "PomoË (v angl.) za ${PRODUCT}"
 
 ; Uninstall Strings
-${LSTR} UNINSTALL_WARNING       "S tem ≈æelite izbrisati $INSTDIR in vse podmape in datoteke?"
+${LSTR} UNINSTALL_WARNING       "S tem ûelite izbrisati $INSTDIR in vse podmape in datoteke?"
 
 
 ; Localized Dictionary names (language supported by dictionary, not dictionary filename)
 ${LSTR} dict_Catalan       "katalonski"
-${LSTR} dict_Czech         "ƒçe≈°ki"
+${LSTR} dict_Czech         "Ëeöki"
 ${LSTR} dict_Danish        "danski"
-${LSTR} dict_Swiss         "≈°vicarski"
-${LSTR} dict_Deutsch       "nem≈°ki"
-${LSTR} dict_Ellhnika      "gr≈°ki"
-${LSTR} dict_English       "angle≈°ki (GB)"
-${LSTR} dict_American      "angle≈°ki (ZDA)"
+${LSTR} dict_Swiss         "övicarski"
+${LSTR} dict_Deutsch       "nemöki"
+${LSTR} dict_Ellhnika      "gröki"
+${LSTR} dict_English       "angleöki (GB)"
+${LSTR} dict_American      "angleöki (ZDA)"
 ${LSTR} dict_Esperanto     "Esperanto"
-${LSTR} dict_Espa√±ol       "≈°panski"
+${LSTR} dict_Espanol       "öpanski"
 ${LSTR} dict_Finnish       "finski"
-${LSTR} dict_Fran√ßais      "francoski"
-${LSTR} dict_Hungarian     "mad≈æarski"
+${LSTR} dict_Francais      "francoski"
+${LSTR} dict_Hungarian     "madûarski"
 ${LSTR} "dict_Irish gaelic""irski"
 ${LSTR} dict_Galician      "galicijski"
 ${LSTR} dict_Italian       "italijanski"
@@ -127,15 +127,15 @@ ${LSTR} dict_Kurdish       "kurdski"
 ${LSTR} dict_Latin         "latinski"
 ${LSTR} dict_Lietuviu      "litovski"
 ${LSTR} dict_Dutch         "nizozemski"
-${LSTR} dict_Norsk         "norve≈°ki (Bokmal)"
-${LSTR} dict_Nynorsk       "norve≈°ki (Nynorsk)"
+${LSTR} dict_Norsk         "norveöki (Bokmal)"
+${LSTR} dict_Nynorsk       "norveöki (Nynorsk)"
 ${LSTR} dict_Polish        "poljski"
 ${LSTR} dict_Portugues     "portugalski"
 ${LSTR} dict_Brazilian     "brazilski"
 ${LSTR} dict_Russian       "ruski"
 ${LSTR} dict_Sardinian     "sardinijski"
 ${LSTR} dict_Slovensko     "slovenski"
-${LSTR} dict_Svenska       "≈°vedski"
+${LSTR} dict_Svenska       "övedski"
 ${LSTR} dict_Ukrainian     "ukrajinski"
 
 
