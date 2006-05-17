@@ -329,7 +329,7 @@ dcl(LANG_BG_BG, 							"Bulgarian")
 dcl(LANG_CA_ES, 							"Catalan")
 dcl(LANG_KW_GB,								"Cornish")		// Jordi 19/10/2002
 dcl(LANG_CO_FR,								"Corsican")		// Jordi 19/10/2002
-dcl(LANG_HR,								"Croatian")		// Jordi Hipi: Why not hr-HR?
+dcl(LANG_HR_HR,								"Croatian")
 dcl(LANG_ZH_HK, 							"Chinese (Hong Kong)")
 dcl(LANG_ZH_CN, 							"Chinese (PRC)")
 dcl(LANG_ZH_SG, 							"Chinese (Singapore)")
