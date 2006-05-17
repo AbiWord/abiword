@@ -87,7 +87,7 @@ static UT_LangRecord s_Table[] =
 	{"haw-US",      NULL, XAP_STRING_ID_LANG_HAW_US,UTLANG_LTR},
 	{"he-IL",		NULL, XAP_STRING_ID_LANG_HE_IL, UTLANG_RTL},	// was iw-IL - why?
 	{"hi-IN",		NULL, XAP_STRING_ID_LANG_HI_IN, UTLANG_LTR},
-	{"hr",			NULL, XAP_STRING_ID_LANG_HR,    UTLANG_LTR},		// Hipi: Why not hr-HR?
+	{"hr-HR",		NULL, XAP_STRING_ID_LANG_HR_HR,    UTLANG_LTR},
 	{"hu-HU",		NULL, XAP_STRING_ID_LANG_HU_HU, UTLANG_LTR},
 	{"hy-AM",		NULL, XAP_STRING_ID_LANG_HY_AM, UTLANG_LTR},	// Win2K shows "hy-am"
 	{"ia",			NULL, XAP_STRING_ID_LANG_IA,    UTLANG_LTR},
