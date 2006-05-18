@@ -78,7 +78,6 @@ XAP_UnixDialog_Insert_Symbol::XAP_UnixDialog_Insert_Symbol(XAP_DialogFactory * p
 	m_windowMain = NULL;
 	m_SymbolMap = 	NULL;
 	m_InsertS_Font_list = NULL;
-	m_Insert_Symbol_no_fonts = 0;
 	m_fontlist.clear();
 
 #ifndef USE_GUCHARMAP
@@ -235,7 +234,7 @@ void XAP_UnixDialog_Insert_Symbol::event_WindowDelete(void)
 		xap_Unix_Prev_Font = iDrawSymbol->getSelectedFont();
 	g_list_free(m_InsertS_Font_list);
 	
-	for(UT_uint32 i = 0; i < m_Insert_Symbol_no_fonts; i++) 
+	for(UT_uint32 i = 0; i < m_fontlist.getItemCount(); i++) 
 	{
 		free(m_fontlist.getNthItem(i));
 	}
@@ -478,8 +477,9 @@ void XAP_UnixDialog_Insert_Symbol::CurrentSymbol_clicked(GdkEvent *event)
 void XAP_UnixDialog_Insert_Symbol::destroy(void)
 {
 	g_list_free( m_InsertS_Font_list);
-	for(UT_uint32 i = 0; i < m_Insert_Symbol_no_fonts; i++) 
-		 free( m_fontlist.getNthItem(i));
+	for(UT_uint32 i = 0; i < m_fontlist.getItemCount(); i++) 
+		 free(m_fontlist.getNthItem(i));
+	m_fontlist.clear();
 
 	modeless_cleanup();
 	
@@ -572,8 +572,6 @@ GList *XAP_UnixDialog_Insert_Symbol::_getGlistFonts (void)
 			j++;
 		}
 	}	
-
-	m_Insert_Symbol_no_fonts = j;
 
 	DELETEP(list);
 	return g_list_reverse(glFonts);
