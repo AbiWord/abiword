@@ -25,5 +25,9 @@ check_LIBRARIES = libTF_xp.a
 
 CFLAGS+=-frepo 
 
+# Valgrind defines use unsigned long longs on x86_64 architectures
+# TODO: we should only allow long long when compiling on x86_64 and
+#       when valgrind is enabled
+CXXFLAGS+=-Wno-long-long 
 
 libTF_xp_a_SOURCES= tf_test.cpp
