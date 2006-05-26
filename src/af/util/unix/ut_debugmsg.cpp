@@ -26,15 +26,17 @@
 
 #include "ut_debugmsg.h"
 
+#define BUF_SIZE 20*1024
+
 void _UT_OutputMessage(const char *s, ...)
 {
 #ifdef UT_DEBUG
-	char sBuf[20*1024];
+	char sBuf[BUF_SIZE];
 	va_list marker;
 
 	va_start(marker, s);
 
-	vsprintf(sBuf, s, marker);
+	vsnprintf(sBuf, BUF_SIZE, s, marker);
 
 	fprintf(stderr,"DEBUG: %s",sBuf);
 #endif
