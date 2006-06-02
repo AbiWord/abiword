@@ -13,6 +13,9 @@ desktopdir = $(datadir)/applications
 icon_DATA = abiword_48.png
 icondir= $(datadir)/icons
 
+mime_DATA = abiword.keys
+mimedir = $(datadir)/mime-info
+
 # Hack: make sure that the PEERS stuff is build first
 # We can not use the all target, because on parallel builds there is no
 # guarantee that the peerdirs will be built before the main tree.
