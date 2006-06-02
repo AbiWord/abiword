@@ -151,12 +151,12 @@ case "$OS_NAME" in
 		WARNING_CFLAGS=""
 		;;
 	*BSD|DragonFly)
-		WARNING_CFLAGS="-Wall -pedantic -ansi -D_BSD_SOURCE -pipe"
+		WARNING_CFLAGS="-Wall -pedantic -D_BSD_SOURCE -pipe" #-ansi 
 		;;
 	IRIX*)
 		case "$GCC" in
 			yes)
-				WARNING_CFLAGS="-Wall -pedantic -ansi -D_POSIX_SOURCE -pipe"
+				WARNING_CFLAGS="-Wall -pedantic -D_POSIX_SOURCE -pipe" #-ansi
 			;;
 			no)
 				# the default with the IRIX compiler is for warnings to be
@@ -170,7 +170,7 @@ case "$OS_NAME" in
 		case "$GCC" in
 			yes)
 				# why -D_BSD_SOURCE?
-				WARNING_CFLAGS="-Wall -pedantic -ansi -D_BSD_SOURCE -pipe"
+				WARNING_CFLAGS="-Wall -pedantic -D_BSD_SOURCE -pipe" #-ansi
 				WARNING_CFLAGS="$WARNING_CFLAGS -D__EXTENSIONS__ -DSCANDIR_MISSING -DSunOS"
 			;;
 			no)
@@ -184,7 +184,7 @@ case "$OS_NAME" in
 	OSF1)
 		case "$GCC" in
 			yes)
-				WARNING_CFLAGS="-Wall -pedantic -ansi -D_POSIX_SOURCE -D_BSD_SOURCE -D_OSF_SOURCE -D_XOPEN_SOURCE_EXTENDED -DAES_SOURCE"
+				WARNING_CFLAGS="-Wall -pedantic -D_POSIX_SOURCE -D_BSD_SOURCE -D_OSF_SOURCE -D_XOPEN_SOURCE_EXTENDED -DAES_SOURCE" #-ansi
 			;;
 			no)
 				# the DEC/Compaq compiler has a plethora of options related
@@ -206,13 +206,13 @@ case "$OS_NAME" in
 		esac
 		;;
 	QNX|procnto)
-		WARNING_CLFAGS="-w9 -ansi -D_POSIX_SOURCE"
+		WARNING_CLFAGS="-w9 -D_POSIX_SOURCE" #-ansi
 		LDFLAGS="-lph -lphrender -lAp"
 		;;
 	*)
 		case "$GCC" in
 			yes)
-				WARNING_CFLAGS="-Wall -pedantic -ansi -D_POSIX_SOURCE"
+				WARNING_CFLAGS="-Wall -pedantic -D_POSIX_SOURCE" #-ansi
 				WARNING_CFLAGS="$WARNING_CFLAGS -D_BSD_SOURCE -pipe"
 			;;
 			no)

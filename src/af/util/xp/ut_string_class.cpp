@@ -29,6 +29,8 @@
 #include <ctype.h>
 #include <stdarg.h>
 
+#include <glib.h>
+
 #include "ut_string.h"
 #include "ut_string_class.h"
 #include "ut_stringbuf.h"
@@ -347,28 +349,13 @@ UT_printf_string_upper_bound (const char* format,
   return len;
 }
 
-#if !defined (VA_COPY)
-#  if defined (__GNUC__) && defined (__PPC__) && (defined (_CALL_SYSV) || defined (_WIN32) || defined(WIN32)) || defined(__s390__) || defined(__x86_64__)
-#  define VA_COPY(ap1, ap2)	  (*(ap1) = *(ap2))
-#  elif defined (VA_COPY_AS_ARRAY)
-#  define VA_COPY(ap1, ap2)	  memmove ((ap1), (ap2), sizeof (va_list))
-#  elif defined (__GNUC__) && defined (__va_copy)
-#  define VA_COPY(ap1,ap2)     __va_copy((ap1),(ap2))
-#  else /* va_list is a pointer */
-#  define VA_COPY(ap1, ap2)	  ((ap1) = (ap2))
-#  endif /* va_list is a pointer */
-#  if defined (__GNUC__)
-#  define VA_COPY(ap1,ap2)     __va_copy((ap1),(ap2))
-#  endif
-#endif /* !VA_COPY */
-
 UT_String& UT_String_vprintf (UT_String & inStr, const char *format,
 			      va_list      args1)
 {
   char *buffer;
   va_list args2;
 
-  VA_COPY (args2, args1);
+  G_VA_COPY (args2, args1);
 
   buffer = new char [ UT_printf_string_upper_bound (format, args1) ];
   vsprintf (buffer, format, args2);
