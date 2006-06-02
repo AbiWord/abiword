@@ -437,45 +437,6 @@ AC_FUNC_ALLOCA
 AC_TYPE_SIGNAL
 AC_CHECK_FUNCS(re_comp regcomp strdup strstr strcasecmp stricmp strnlen)
 
-AC_CHECK_FUNC(putenv,abi_putenv=maybe,abi_putenv=no)
-AC_CHECK_FUNC(setenv,abi_setenv=maybe,abi_setenv=no)
-
-if test $abi_putenv = no -a $abi_setenv = no; then
-	AC_MSG_ERROR([* * * neither setenv nor putenv found! * * *])
-fi
-if test $abi_setenv = no; then
-	AC_DEFINE(SETENV_MISSING,1,[use putenv, not setenv])
-elif test $abi_putenv = maybe; then
-	_abi_cppflags=$CPPFLAGS
-	CPPFLAGS="$CPPFLAGS $WARNING_CFLAGS"
-
-	AC_MSG_CHECKING([whether setenv declared in stdlib.h (for us)])
-	AC_TRY_COMPILE([
-#include <stdlib.h>
-float setenv (int);
-	],[
-/* if this program fails then setenv isn't declared in stdlib.h 
- * or at least not for the flags we're using...
- */
-	],[	AC_MSG_RESULT(no)
-		dnl well, okay, setenv may not be missing but I'm going to
-		dnl mark it as such:
-		AC_DEFINE(SETENV_MISSING,1,[use putenv, not setenv])
-	],[	AC_MSG_RESULT(yes)
-	])
-
-	CPPFLAGS=$_abi_cppflags
-fi
-
-if test $peerconfig = "true"; then
-	for i in . $PEERDIRS; do
-		if test $i != . ; then
-			j=`basename $i`
-			ABI_PEER_CONFIG($j,$i)
-		fi
-	done
-fi
-
 # Check whether the scandir() select/filter function requires that its
 # argument is const-qualified.
 # uses the C++ compiler.

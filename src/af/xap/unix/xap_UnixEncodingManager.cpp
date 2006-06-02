@@ -540,19 +540,10 @@ void  XAP_UnixEncodingManager::initialize()
 				// by LANG
 				
 				UT_UTF8String OLDLANG (getenv("LANG"));
-#if defined(SETENV_MISSING) 
-				UT_UTF8String MYLANG ("LANG=");
-				
-				MYLANG += LanguageISOName;
-				MYLANG += "_";
-				MYLANG += LanguageISOTerritory;
-				putenv(MYLANG.utf8_str());
-#else
 				UT_UTF8String MYLANG (LanguageISOName);
 				MYLANG += "_";
 				MYLANG += LanguageISOTerritory;
-				setenv ("LANG", MYLANG.utf8_str(), 1);
-#endif
+				g_setenv ("LANG", MYLANG.utf8_str(), TRUE);
 				if (mask & COMPONENT_CODESET)
 				{
 					NativeNonUnicodeEncodingName = cs+1;
@@ -566,13 +557,7 @@ void  XAP_UnixEncodingManager::initialize()
 					}
 					xxx_UT_DEBUGMSG(("NativeNonUnicodeEncodingName (2) %s\n", NativeNonUnicodeEncodingName));
 				}
-#if defined(SETENV_MISSING)
-				MYLANG = "LANG=";
-				MYLANG += OLDLANG;
-				putenv(MYLANG.utf8_str());
-#else
-				setenv("LANG", OLDLANG.utf8_str(), 1);
-#endif			
+				g_setenv("LANG", OLDLANG.utf8_str(), TRUE);
 			}
 			
 		}
