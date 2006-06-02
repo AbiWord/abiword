@@ -5225,11 +5225,11 @@ void s_HTML_Listener::_doFootnotes () {
 	//
 	// Output footnotes
 	//
-	UT_uint32 i = 0, m_nFootnotes = getNumFootnotes();
-	if(m_nFootnotes > 0) {
+	UT_uint32 i = 0, nFootnotes = getNumFootnotes();
+	if(nFootnotes > 0) {
 		startEmbeddedStrux();
 	}
-	for(i = 0; i < m_nFootnotes; i = i + 1)
+	for(i = 0; i < nFootnotes; i = i + 1)
 	{
 		PD_DocumentRange * pDocRange = m_vecFootnotes.getNthItem(i);
 		m_bInAFENote = true;
