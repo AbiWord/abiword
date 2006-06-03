@@ -80,15 +80,16 @@ void XAP_Draw_Symbol::setFontToGC(GR_Graphics *p_gc, UT_uint32 MaxWidthAllowable
 
 	GR_Font* font = NULL;
 
-	int SizeOK = false;
+	bool SizeOK = false;
 
 	UT_UCSChar p_buffer[224];
 	for(int i = 0; i < 224; i++)
 		p_buffer[i] = i + 32;
 
-	char temp[10];
-	while (!SizeOK)
+	while (!SizeOK && (PointSize > 0))
 	{
+		char temp[10];
+
 		sprintf(temp, "%ipt", PointSize);
 		font = p_gc->findFont(m_stFont.c_str(),
 							  "normal", "",
