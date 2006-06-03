@@ -559,7 +559,7 @@ private:
 
 	void	_doEndnotes ();
 	void	_doFootnotes ();
-	void    _emitTOC ();
+	void    _emitTOC (PT_AttrPropIndex api);
 
 	PD_Document *				m_pDocument;
 	PT_AttrPropIndex			m_apiLastSpan;
@@ -5107,7 +5107,7 @@ bool s_HTML_Listener::populateStrux (PL_StruxDocHandle sdh,
 			}
 		case PTX_SectionTOC: 
 			{
-				_emitTOC (); // Change this to pass the API via which emit can then get style props from to construct style trees.
+				_emitTOC (pcr->getIndexAP());
 				return true;
 			}
 		case PTX_EndTOC:
@@ -5134,8 +5134,13 @@ bool s_HTML_Listener::endOfDocument () {
 	return true;
 }
 
-void s_HTML_Listener::_emitTOC () {
+void s_HTML_Listener::_emitTOC (PT_AttrPropIndex api) {
 	if (m_toc) {
+
+		const PP_AttrProp * pAP = 0;
+		bool bHaveProp = (api ? (m_pDocument->getAttrProp (api, &pAP)) : false);
+		const XML_Char * szValue = 0;
+		UT_UTF8String tocHeadingUTF8;
 
 		if(listDepth()) { // We don't support TOC-in-LI, but the bright side is that neither does AbiWord itself, so this matches application behaviour.
 			m_utf8_1 = "span";
@@ -5143,19 +5148,37 @@ void s_HTML_Listener::_emitTOC () {
 			m_utf8_1 = "li";
 			tagClose (TT_LI, m_utf8_1, ws_Post);
 		}
-		
-		const XAP_StringSet * pSS = XAP_App::getApp()->getStringSet();
-		UT_UTF8String tocHeadingUTF8;
-		pSS->getValueUTF8(AP_STRING_ID_TOC_TocHeading, tocHeadingUTF8);
-		
-		UT_UCS4String tocHeading(tocHeadingUTF8.utf8_str());
-		m_utf8_1 = "h1 style=\"text-align:center\"";
-		tagOpen (TT_H1, m_utf8_1);
-		m_bInBlock = true;
-		_outputData (tocHeading.ucs4_str(), tocHeading.length());
-		m_bInBlock = false;
-		tagClose (TT_H1, "h1");
-		
+
+		bool bEmitHeading = true;
+
+		if(bHaveProp && pAP && pAP->getProperty("toc-has-heading", szValue)) //check to see if the TOC heading is hidden
+		{
+			if(atoi(szValue) == 0)
+				bEmitHeading = false;
+		}
+
+		if(bEmitHeading)
+		{
+			if(bHaveProp && pAP && pAP->getProperty("toc-heading", szValue)) // user-defined TOC heading
+			{
+				tocHeadingUTF8 = szValue;
+				tocHeadingUTF8.escapeXML();
+			}
+			else
+			{ 
+				const XAP_StringSet * pSS = XAP_App::getApp()->getStringSet();
+				pSS->getValueUTF8(AP_STRING_ID_TOC_TocHeading, tocHeadingUTF8);
+			}
+
+			UT_UCS4String tocHeading(tocHeadingUTF8.utf8_str());
+			m_utf8_1 = "h1 style=\"text-align:center\"";
+			tagOpen (TT_H1, m_utf8_1);
+			m_bInBlock = true;
+			_outputData (tocHeading.ucs4_str(), tocHeading.length());
+			m_bInBlock = false;
+			tagClose (TT_H1, "h1");
+		}
+
 		int level1_depth = 0;
 		int level2_depth = 0;
 		int level3_depth = 0;
