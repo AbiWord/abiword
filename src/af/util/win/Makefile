@@ -39,7 +39,7 @@ ifneq ($(ABI_OPT_PEER_EXPAT),1)
 	CPPSRCS += ut_xml_msxml.cpp
 endif
 
-INCLUDES=		-I$(ABI_XX_ROOT)/../libiconv/include
+INCLUDES=		$(ABI_GLIB_INC)
 
 TARGETS=		$(OBJS)
 
