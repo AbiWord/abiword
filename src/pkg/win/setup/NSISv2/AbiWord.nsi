@@ -180,11 +180,21 @@ Section "$(TITLE_section_abi)" section_abi
 		; Install main executable
 		File "${PROGRAMEXE}"
 		File "..\..\..\..\libs\zlib\zlib1.dll"
+		File "libglib-2.0-0.dll"
 
 		; only for MinGW builds
 		${IfExists} "libAbiWord.dll"
 			File "libAbiWord.dll"
 		${IfExistsEnd}
+
+		; system iconv, our new friend.
+		${IfExists} "iconv.dll"
+			File "iconv.dll"
+		${IfExistsEnd}
+		${IfExists} "intl.dll"
+			File "intl.dll"
+		${IfExistsEnd}
+
 	${EndIf}
 SectionEnd
 !macro Remove_${section_abi}
