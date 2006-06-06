@@ -5,7 +5,6 @@
 ; Section titles, what user sees to select components for installation
 ${LSTR} TITLE_ssection_core                 "Osnovne komponente"
 ${LSTR} TITLE_section_abi                   "${PROGRAMEXE} (obavezno)"
-${LSTR} TITLE_section_abi                   "${PROGRAMEXE} (obavezno)"
 ${LSTR} TITLE_section_abi_req               "${PRODUCT} datoteke podrkške (obavezno)"
 ${LSTR} TITLE_ssection_shortcuts            "Preèaci"
 ${LSTR} TITLE_ssection_shortcuts_cu         "Preèaci (trenutan korisnik)"
