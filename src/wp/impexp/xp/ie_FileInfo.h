@@ -70,6 +70,7 @@ public:
 
 #define IE_MIME_GIF			"image/gif"
 #define IE_MIME_JPEG		"image/jpeg"
+#define IE_MIME_WMF		"image/wmf"
 #define IE_MIME_PNG			"image/png"
 #define IE_MIME_SVG			"image/svg+xml"
 #define IE_MIME_TIFF		"image/tiff"
