@@ -52,10 +52,21 @@
 #### this variable as an environment variable.  A full recompile
 #### must be done when switching the value of this variable.
 ####
-#### NOTE: the Makefiles use 'ifdef' rather than 'ifeq' so setting
-#### NOTE: this to **any** value will enable it.
-####
 #### ABI_OPT_PEER_EXPAT=1
+####
+
+#### To use the MSXML parser over the default
+#### build with libxml2 (aka gnome-xml version 2)
+#### add the following like back to the
+#### Makefile, add the variable to the make command line, or set
+#### this variable as an environment variable.  A full recompile
+#### must be done when switching the value of this variable.
+####
+#### NOTE: the MSXML parser is experimental and probably doesn't
+#### NOTE: work.  just maintaining compatibility for anyone who
+#### NOTE: still wants to test/develop it.
+####
+#### ABI_OPT_MSXML=1
 ####
 
 #### To get a cygwin/gcc/gtk (as opposed to a native win32) build: add
@@ -557,19 +568,15 @@ ifeq ($(ABI_OPT_PEER_EXPAT),1)
   CFLAGS += -DHAVE_EXPAT
   ABI_OPTIONS+=XML:expat
 else
-  ifeq ($(OS_NAME),WIN32)
+  ifeq ($(ABI_OPT_MSXML),1)
 	ABI_OPTIONS+=XML:msxml
   else
-  ifeq ($(OS_NAME),MINGW32)
-	ABI_OPTIONS+=XML:msxml
-  else
-  XML_CFLAGS = $(shell $(LIBXML_CONFIG) --cflags)
-  XML_LIBS	 = $(shell $(LIBXML_CONFIG) --libs)
-  CFLAGS 	 +=	$(XML_CFLAGS)
-  EXTRA_LIBS +=	$(XML_LIBS)
-  ABI_OPTIONS+=XML:libxml2
-endif
-endif
+  	XML_CFLAGS = $(shell $(LIBXML_CONFIG) --cflags)
+  	XML_LIBS	 = $(shell $(LIBXML_CONFIG) --libs)
+  	CFLAGS 	 +=	$(XML_CFLAGS)
+  	EXTRA_LIBS +=	$(XML_LIBS)
+  	ABI_OPTIONS+=XML:libxml2
+  endif
 endif
 
 ifdef LIBGLADE_CONFIG

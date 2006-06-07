@@ -70,7 +70,7 @@ CPPSRCS=	ut_base64.cpp		\
 ifeq ($(ABI_OPT_PEER_EXPAT),1)
  CPPSRCS += ut_xml_expat.cpp
 else
-	ifneq ($(ABI_NATIVE),win)
+	ifneq ($(ABI_OPT_MSXML),1)
 		CPPSRCS += ut_xml_libxml2.cpp
 	endif
 endif

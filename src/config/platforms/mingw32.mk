@@ -157,7 +157,7 @@ PLATFORM_FLAGS		+= $(IA64_ARCH_FLAGS)
 OS_ENDIAN		= LittleEndian32
 endif
 
-# LIBXML_CONFIG	= xml2-config   # yeah, so, we don't use this yet.  may or may not before 2.0
+LIBXML_CONFIG	= pkg-config libxml-2.0   # yeah, so, we don't use this yet.  may or may not before 2.0
 
 # Which links can this platform create.  Define one not both of these options.
 UNIX_CAN_BUILD_DYNAMIC=0
@@ -168,8 +168,14 @@ UNIX_CAN_BUILD_STATIC=1
 # ABI_REQUIRE_PEER_ICONV = 1
 ABI_REQUIRE_PEER_ICONV = 0
 
-# Currently hard code expat to default for Win32
-ABI_OPT_PEER_EXPAT?=1
+# Currently hard code expat to disable for Win32
+ABI_OPT_PEER_EXPAT?=0
+ABI_OPT_MSXML?=0
+
+# If user wants MSXML, explicitly disable expat
+ifeq ($(ABI_OPT_MSXML),1)
+  ABI_OPT_PEER_EXPAT=0
+endif 
 
 ## add wv's mini glib to include list
 #ABI_OTH_INCS+=	/../../wv/glib-wv

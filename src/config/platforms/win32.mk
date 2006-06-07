@@ -257,8 +257,8 @@ else
  OS_LIBS += $(ICONV_LIBS) -liconv # ICONV_LIBS is set in the environment equal to "-L/some/path" where there is /some/path/libiconv.so.  It may remain unset if the lib is already in the default search path, as it usually is.
 endif
 
-# if not specified, default to expat for xml parsing
-ABI_OPT_PEER_EXPAT ?= 1
+# if not specified, default to libxml2 for xml parsing 7 June 2006
+ABI_OPT_PEER_EXPAT ?= 0
 
 # add wv's mini glib to include list
 ABI_OTH_INCS+=	/../../wv/glib-wv

@@ -35,7 +35,7 @@ CPPSRCS=		ut_debugmsg.cpp		\
 			ut_Win32Misc.cpp
 
 
-ifneq ($(ABI_OPT_PEER_EXPAT),1)
+ifeq ($(ABI_OPT_MSXML),1)
 	CPPSRCS += ut_xml_msxml.cpp
 endif
 
