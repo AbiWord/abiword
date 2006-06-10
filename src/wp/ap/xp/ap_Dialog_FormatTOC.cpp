@@ -53,6 +53,7 @@
 
 AP_Dialog_FormatTOC::AP_Dialog_FormatTOC(XAP_DialogFactory * pDlgFactory, XAP_Dialog_Id id)
 	: XAP_Dialog_Modeless(pDlgFactory,id),
+	  m_pDoc(NULL),
 	  m_pAutoUpdater(0),
 	  m_iTick(0),
 	  m_pAP(NULL),
