@@ -5055,6 +5055,13 @@ bool	fl_BlockLayout::_doInsertTabRun(PT_BlockOffset blockOffset)
 
 bool	fl_BlockLayout::_doInsertMathRun(PT_BlockOffset blockOffset,PT_AttrPropIndex indexAP, PL_ObjectHandle oh)
 {
+	if(isContainedByTOC())
+	{
+		fp_Run * pDumRun = new fp_DummyRun(this,blockOffset);
+		xxx_UT_DEBUGMSG(("Inserting a dummy run instead of mathrun at %d \n",blockOffset));
+		return _doInsertRun(pDumRun);
+	}
+
 	fp_Run * pNewRun = NULL;
 	pNewRun = new fp_MathRun(this,blockOffset,indexAP,oh);
 	UT_ASSERT(pNewRun); // TODO check for outofmem
@@ -5065,6 +5072,13 @@ bool	fl_BlockLayout::_doInsertMathRun(PT_BlockOffset blockOffset,PT_AttrPropInde
 
 bool	fl_BlockLayout::_doInsertEmbedRun(PT_BlockOffset blockOffset,PT_AttrPropIndex indexAP, PL_ObjectHandle oh)
 {
+	if(isContainedByTOC())
+	{
+		fp_Run * pDumRun = new fp_DummyRun(this,blockOffset);
+		xxx_UT_DEBUGMSG(("Inserting a dummy run instead of embedrun at %d \n",blockOffset));
+		return _doInsertRun(pDumRun);
+	}
+
 	fp_Run * pNewRun = NULL;
 	pNewRun = new fp_EmbedRun(this,blockOffset,indexAP,oh);
 	UT_ASSERT(pNewRun); // TODO check for outofmem
@@ -5105,7 +5119,7 @@ bool	fl_BlockLayout::_doInsertImageRun(PT_BlockOffset blockOffset, FG_Graphic* p
 	if(isContainedByTOC())
 	{
 		fp_Run * pDumRun = new fp_DummyRun(this,blockOffset);
-		xxx_UT_DEBUGMSG(("Inserting a dummy run instead of iamge at %d \n",blockOffset));
+		xxx_UT_DEBUGMSG(("Inserting a dummy run instead of image at %d \n",blockOffset));
 		return _doInsertRun(pDumRun);
 	}
 
@@ -5180,7 +5194,7 @@ bool	fl_BlockLayout::_doInsertFieldRun(PT_BlockOffset blockOffset, const PX_Chan
 		if(isContainedByTOC())
 		{
 			fp_Run * pDumRun = new fp_DummyRun(this,blockOffset);
-			xxx_UT_DEBUGMSG(("Inserting a dummy run instead of endnote_ref at %d \n",blockOffset));
+			xxx_UT_DEBUGMSG(("Inserting a dummy run instead of footnote_anchor at %d \n",blockOffset));
 			return _doInsertRun(pDumRun);
 		}
 		pNewRun = new fp_FieldFootnoteAnchorRun(this,   blockOffset, 1);
@@ -5202,7 +5216,7 @@ bool	fl_BlockLayout::_doInsertFieldRun(PT_BlockOffset blockOffset, const PX_Chan
 		if(isContainedByTOC())
 		{
 			fp_Run * pDumRun = new fp_DummyRun(this,blockOffset);
-			xxx_UT_DEBUGMSG(("Inserting a dummy run instead of endnote_ref at %d \n",blockOffset));
+			xxx_UT_DEBUGMSG(("Inserting a dummy run instead of endnote_anchor at %d \n",blockOffset));
 			return _doInsertRun(pDumRun);
 		}
 		pNewRun = new fp_FieldEndnoteAnchorRun(this,   blockOffset, 1);
