@@ -19,9 +19,9 @@ ${SectionDict} "Deutsch"      "de" "DE" "i386"  2277
 ${SectionDict} "Ellhnika"     "el" "GR" "i386"  2049  ;Greek
 ${SectionDict} "English"      "en" "GB" "i386"  2109
 ${SectionDict} "Esperanto"    "eo" "Xx" "i386"   942  ;no locale...
-${SectionDict} "Español"      "es" "ES" "i386"  2632
+${SectionDict} "Espanol"      "es" "ES" "i386"  2632
 ${SectionDict} "Finnish"      "fi" "FI" "i386" 10053
-${SectionDict} "Français"     "fr" "FR" "i386"  1451
+${SectionDict} "Francais"     "fr" "FR" "i386"  1451
 ${SectionDict} "Hungarian"    "hu" "HU" "i386"  8086
 ${SectionDict} "Irish gaelic" "ga" "IE" "i386"   587
 ${SectionDict} "Galician"     "gl" "ES" "i386"   807
