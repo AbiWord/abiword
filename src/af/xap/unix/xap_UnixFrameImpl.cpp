@@ -104,6 +104,7 @@ static const GtkTargetEntry drag_types[] =
  		{"application/x-abiword", 0, TARGET_DOCUMENT},
  		{"text/xml", 0, TARGET_DOCUMENT},
  		{"text/vnd.wap.wml", 0, TARGET_DOCUMENT},
+		{"image/x-wmf", 0, TARGET_IMAGE},
  		{"image/jpeg", 0, TARGET_IMAGE},
 		{"image/png", 0, TARGET_IMAGE},
 		{"image/jpeg", 0, TARGET_IMAGE},
