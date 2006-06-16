@@ -23,19 +23,22 @@
 
 #include <stdio.h>
 #include <stdarg.h>
+#include <string.h>
 
 #include "ut_debugmsg.h"
 
 void _UT_OutputMessage(const char *s, ...)
 {
 #ifdef UT_DEBUG
-	char sBuf[20*1024];
+#define DEBUG_MSG "DEBUG: "
 	va_list marker;
 
 	va_start(marker, s);
 
-	vsprintf(sBuf, s, marker);
+	fwrite(DEBUG_MSG, 1, strlen(DEBUG_MSG), stderr);
+	vfprintf(stderr, s, marker);
 
-	fprintf(stderr,"DEBUG: %s",sBuf);
+	va_end(marker);
+#undef DEBUG_MSG
 #endif
 }
