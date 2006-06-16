@@ -26,7 +26,7 @@ ${SectionDict} "Hungarian"    "hu" "HU" "i386"  8086
 ${SectionDict} "Irish gaelic" "ga" "IE" "i386"   587
 ${SectionDict} "Galician"     "gl" "ES" "i386"   807
 ${SectionDict} "Italian"      "it" "IT" "i386"  1638
-${SectionDict} "Kurdish"      "ku" "Xx" "i386"    95
+${SectionDict} "Kurdish"      "ku" "Xx" "i386"   355
 ${SectionDict} "Latin"        "la" "IT" "i386"  2254  ;mlatin
 ${SectionDict} "Lietuviu"     "lt" "LT" "i386"  1907  ;Lithuanian
 ${SectionDict} "Dutch"        "nl" "NL" "i386"  1079  ;nederlands
@@ -36,7 +36,7 @@ ${SectionDict} "Polish"       "pl" "PL" "i386"  4143
 ${SectionDict} "Portugues"    "pt" "PT" "i386"  1117  ;Portuguese
 ${SectionDict} "Brazilian"    "pt" "BR" "i386"  1244  ;Portuguese
 ${SectionDict} "Russian"      "ru" "RU" "i386"  8307
-${SectionDict} "Sardinian"    "sc" "IT" "i386"  4171
+${SectionDict} "Sardinian"    "sc" "IT" "i386" 15968
 ${SectionDict} "Slovensko"    "sl" "SI" "i386"   857  ;Slovenian
 ${SectionDict} "Svenska"      "sv" "SE" "i386"   753  ;Swedish
 ${SectionDict} "Ukrainian"    "uk" "UA" "i386"  3490
