@@ -5885,6 +5885,9 @@ bool fl_BlockLayout::doclistener_insertSpan(const PX_ChangeRecord_Span * pcrs)
 	else if(pView && pView->getPoint() > pcrs->getPosition())
 		pView->_setPoint(pView->getPoint() + len);
 
+	if(pView)
+		pView->updateCarets(pcrs->getPosition(),len);
+
 	if (m_pLayout->hasBackgroundCheckReason(FL_DocLayout::bgcrSmartQuotes))
 	{
 		fl_BlockLayout *sq_bl = m_pLayout->getPendingBlockForSmartQuote();
@@ -6330,6 +6333,8 @@ bool fl_BlockLayout::doclistener_deleteSpan(const PX_ChangeRecord_Span * pcrs)
 			pView->_setPoint(pcrs->getPosition());
 		else pView->_setPoint(pView->getPoint() - len);
 	}
+	if(pView)
+		pView->updateCarets(pcrs->getPosition(),-len);
 
 	_assertRunListIntegrity();
 	m_iNeedsReformat = blockOffset;
@@ -6797,6 +6802,8 @@ fl_BlockLayout::doclistener_deleteStrux(const PX_ChangeRecord_Strux* pcrx)
 		{
 			pView->_setPoint(pView->getPoint() - 1);
 		}
+		if(pView)
+			pView->updateCarets(pcrx->getPosition(),-1);
 		_assertRunListIntegrity();
 	}
 
@@ -6927,6 +6934,8 @@ bool fl_BlockLayout::doclistener_insertFirstBlock(const PX_ChangeRecord_Strux * 
 	if (pView && (pView->isActive() || pView->isPreview()))
 		pView->_setPoint(pcrx->getPosition());
 	else if (pView && ((pView->getPoint() == 0) || pView->getPoint() > pcrx->getPosition()) ) pView->_setPoint(pView->getPoint() + fl_BLOCK_STRUX_OFFSET);
+	if(pView)
+		pView->updateCarets(pcrx->getPosition(),1);
 
 	// Run list should be valid now.
 	_assertRunListIntegrity();
@@ -7163,6 +7172,8 @@ bool fl_BlockLayout::doclistener_insertBlock(const PX_ChangeRecord_Strux * pcrx,
 		pView->_setPoint(pcrx->getPosition() + fl_BLOCK_STRUX_OFFSET);
 	else if(pView && pView->getPoint() > pcrx->getPosition())
 		pView->_setPoint(pView->getPoint() + fl_BLOCK_STRUX_OFFSET);
+	if(pView)
+		pView->updateCarets(pcrx->getPosition(),1);
 
 	_assertRunListIntegrity();
 	xxx_UT_DEBUGMSG(("Prev Block = %x type %d Next block = %x type %d \n",pNewBL->getPrev(),pNewBL->getContainerType(),pNewBL->getNext(),pNewBL->getContainerType()));
@@ -7453,6 +7464,8 @@ bool fl_BlockLayout::doclistener_insertSection(const PX_ChangeRecord_Strux * pcr
 			//
 			pView->_setPoint(pView->getPoint() + fl_BLOCK_STRUX_OFFSET + fl_BLOCK_STRUX_OFFSET);
 		}
+		if(pView)
+			pView->updateCarets(pcrx->getPosition(),2);
 		return true;
 	}
 	default:
@@ -7493,6 +7506,8 @@ bool fl_BlockLayout::doclistener_insertSection(const PX_ChangeRecord_Strux * pcr
 		{
 			pView->_setPoint(pView->getPoint() + fl_BLOCK_STRUX_OFFSET + fl_BLOCK_STRUX_OFFSET);
 		}
+		if(pView)
+			pView->updateCarets(pcrx->getPosition(),2);
 		return true;
 	}
 //
@@ -7626,6 +7641,8 @@ bool fl_BlockLayout::doclistener_insertSection(const PX_ChangeRecord_Strux * pcr
 	{
 		pView->_setPoint(pView->getPoint() + fl_BLOCK_STRUX_OFFSET + fl_BLOCK_STRUX_OFFSET);
 	}
+	if(pView)
+		pView->updateCarets(pcrx->getPosition(),2);
 
 	_assertRunListIntegrity();
 #if DEBUG
@@ -7700,6 +7717,8 @@ fl_SectionLayout * fl_BlockLayout::doclistener_insertTable(const PX_ChangeRecord
 	{
 		pView->_setPoint(pView->getPoint() + fl_BLOCK_STRUX_OFFSET);
 	}
+	if(pView)
+		pView->updateCarets(pcrx->getPosition(),1);
 //
 // OK that's it!
 //
@@ -7785,6 +7804,8 @@ fl_SectionLayout * fl_BlockLayout::doclistener_insertFrame(const PX_ChangeRecord
 	{
 		pView->_setPoint(pView->getPoint() + fl_BLOCK_STRUX_OFFSET);
 	}
+	if(pView)
+		pView->updateCarets(pcrx->getPosition(),1);
 //
 // OK that's it!
 //
@@ -8089,6 +8110,8 @@ bool fl_BlockLayout::doclistener_insertObject(const PX_ChangeRecord_Object * pcr
 		pView->_setPoint(pcro->getPosition() + 1);
 	else if(pView && pView->getPoint() > pcro->getPosition())
 		pView->_setPoint(pView->getPoint() + 1);
+	if(pView)
+		pView->updateCarets(pcro->getPosition(),1);
 
 	// TODO: are objects always one wide?
 	m_pSpellSquiggles->textInserted(blockOffset, 1);
@@ -8193,6 +8216,8 @@ bool fl_BlockLayout::doclistener_deleteObject(const PX_ChangeRecord_Object * pcr
 	}
 	else if(pView && pView->getPoint() > pcro->getPosition())
 		pView->_setPoint(pView->getPoint() - 1);
+	if(pView)
+		pView->updateCarets(pcro->getPosition(),-1);
 
 	// TODO: are objects always one wide?
 	if(m_pSpellSquiggles)
@@ -8734,6 +8759,8 @@ fl_BlockLayout::doclistener_insertFmtMark(const PX_ChangeRecord_FmtMark* pcrfm)
 	FV_View* pView = getView();
 	if (pView && (pView->isActive() || pView->isPreview()))
 		pView->_setPoint(pcrfm->getPosition());
+	if(pView)
+		pView->updateCarets(pcrfm->getPosition(),0);
 
 	if (pView)
 	{
@@ -8781,6 +8808,8 @@ fl_BlockLayout::doclistener_deleteFmtMark(const PX_ChangeRecord_FmtMark* pcrfm)
 		{
 			UT_ASSERT(UT_SHOULD_NOT_HAPPEN);
 		}
+		if(pView)
+			pView->updateCarets(pcrfm->getPosition(),0);
 	}
 
 	_assertRunListIntegrity();
@@ -9720,7 +9749,10 @@ void	fl_BlockLayout::StopListInBlock(void)
 	if (pView && (pView->isActive() || pView->isPreview()))
 	{
 		if(offset > 0 )
-			pView->_setPoint(pView->getPoint()+offset-2);
+			{
+				pView->_setPoint(pView->getPoint()+offset-2);
+				pView->updateCarets(0,offset-2);
+			}
 	}
 	FREEP(props);
 }
@@ -10139,6 +10171,7 @@ void fl_BlockLayout::_createListLabel(void)
 	if (pView && (pView->isActive() || pView->isPreview()))
 	{
 		pView->_setPoint(pView->getPoint()+offset);
+		pView->updateCarets(0,offset);
 	}
 	m_bListLabelCreated = true;
 }

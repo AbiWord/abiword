@@ -72,17 +72,55 @@ GR_Caret::GR_Caret(GR_Graphics * pG)
 		m_yPoint2(0),
 		m_pClr(NULL),
 		m_pG(pG),
-	    m_nDisableCount(1),
-	    m_bCursorBlink(true),
-	    m_bCursorIsOn(false),
-	    m_bPositionSet(false),
-	    m_bRecursiveDraw(false),
-	    m_bSplitCaret(false),
-	    m_bCaret1OnScreen(false),
-	    m_bCaret2OnScreen(false),
-	    m_clrInsert(0,0,0),
-	    m_clrOverwrite(255,0,0),
-	    m_insertMode (true)
+		m_nDisableCount(1),
+		m_bCursorBlink(true),
+		m_bCursorIsOn(false),
+		m_bPositionSet(false),
+		m_bRecursiveDraw(false),
+		m_bSplitCaret(false),
+		m_bCaret1OnScreen(false),
+		m_bCaret2OnScreen(false),
+		m_clrInsert(0,0,0),
+		m_clrOverwrite(255,0,0),
+		m_insertMode (true),
+		m_bRemote(false),
+		m_clrRemote(0,0,0),
+		m_sDocUUID("")
+{
+	UT_WorkerFactory::ConstructMode outMode = UT_WorkerFactory::NONE;
+	m_worker = static_cast<UT_Timer *>(UT_WorkerFactory::static_constructor
+		(s_work, this, UT_WorkerFactory::TIMER, outMode, pG));
+	m_worker->set(getCursorBlinkTime ());
+
+	m_enabler = static_cast<UT_Timer *>(UT_WorkerFactory::static_constructor
+		(s_enable, this, UT_WorkerFactory::TIMER, outMode, pG));
+	m_enabler->set(CURSOR_DELAY_TIME);
+	
+	setBlink (false);
+}
+
+
+GR_Caret::GR_Caret(GR_Graphics * pG, UT_UTF8String & sDocUUID)
+	:  	m_xPoint(0), // init the x and y point to some value, since we don't have a sane value here
+		m_yPoint(0),
+		m_xPoint2(0),
+		m_yPoint2(0),
+		m_pClr(NULL),
+		m_pG(pG),
+		m_nDisableCount(1),
+		m_bCursorBlink(true),
+		m_bCursorIsOn(false),
+		m_bPositionSet(false),
+		m_bRecursiveDraw(false),
+		m_bSplitCaret(false),
+		m_bCaret1OnScreen(false),
+		m_bCaret2OnScreen(false),
+		m_clrInsert(0,0,0),
+		m_clrOverwrite(255,0,0),
+		m_insertMode (true),
+		m_bRemote(true),
+		m_clrRemote(0,0,0),
+		m_sDocUUID(sDocUUID)
 {
 	UT_WorkerFactory::ConstructMode outMode = UT_WorkerFactory::NONE;
 	m_worker = static_cast<UT_Timer *>(UT_WorkerFactory::static_constructor
@@ -131,6 +169,17 @@ void GR_Caret::s_enable(UT_Worker * _w)
 	c->m_enabler->stop();
 }
 
+void GR_Caret::setRemoteColor(UT_RGBColor clrRemote)
+{
+        m_clrRemote = clrRemote;
+}
+
+UT_UTF8String GR_Caret::getUUID(void)
+{
+        return m_sDocUUID;
+}
+
+
 void GR_Caret::setWindowSize(UT_uint32 width, UT_uint32 height)
 {
 	m_iWindowWidth = width; m_iWindowHeight = height;
@@ -157,7 +206,10 @@ void GR_Caret::setCoords(UT_sint32 x, UT_sint32 y, UT_uint32 h,
 	m_xPoint2 = x2; m_yPoint2 = y2; m_iPointHeight2 = h2;
 	m_bPointDirection = bPointDirection; m_pClr = pClr;
 	m_bPositionSet = true;
-
+	if(m_bRemote)
+	  {
+	    UT_DEBUGMSG(("Remote caret %x set to x %d \n",this,x)); 
+	  }
 	if(x < m_pG->tlu(3)+1 || y <= 0 || x > static_cast<UT_sint32>(m_iWindowWidth) || y > static_cast<UT_sint32>(m_iWindowHeight))
 		m_bCaret1OnScreen = false;
 	else
@@ -233,7 +285,6 @@ void GR_Caret::_blink(bool bExplicit)
 		return;
 
 	m_bRecursiveDraw = true;
-	GR_Painter painter (m_pG);
 	m_bRecursiveDraw = false;
 	// After any autoblink, we want there to be BLINK_TIME 
 	// until next autoblink.
@@ -241,6 +292,14 @@ void GR_Caret::_blink(bool bExplicit)
 	{ 
 		m_worker->stop(); m_worker->start();
 	}
+	if(m_bRemote)
+	  {
+	    xxx_UT_DEBUGMSG(("Remote Caret %x blink at x %d \n",this,m_xPoint));
+	  }
+	else
+	  {
+	    xxx_UT_DEBUGMSG(("Local Caret %x blink at x %d \n",this,m_xPoint));
+	  }
 
 	// Blink if: (a) _blink explicitly called (not autoblink); or
 	//           (b) autoblink and caret blink enabled; or
@@ -315,7 +374,8 @@ void GR_Caret::_blink(bool bExplicit)
 				m_pG->setColor(m_clrInsert);
 			else
 				m_pG->setColor(m_clrOverwrite);
-
+			if(m_bRemote)
+			        m_pG->setColor(m_clrRemote);
 			if(m_bCaret1OnScreen)
 			{
 				// draw the primary caret
@@ -326,12 +386,12 @@ void GR_Caret::_blink(bool bExplicit)
 				{
 					x1 += iDelta;
 				}
-				painter.drawLine(x1,
+				m_pG->drawLine(x1,
 								 m_yPoint + m_pG->tlu(1),
 								 x1, 
 								 m_yPoint + m_iPointHeight+m_pG->tlu(1));
 				
-				painter.drawLine(x2,
+				m_pG->drawLine(x2,
 								 m_yPoint + m_pG->tlu(1),
 								 x2, 
 								 m_yPoint + m_iPointHeight + m_pG->tlu(1));
@@ -348,12 +408,12 @@ void GR_Caret::_blink(bool bExplicit)
 					if(m_bPointDirection)
 					{
 						//primary RTL caret flag
-						painter.drawLine(m_xPoint - m_pG->tlu(2),
+						m_pG->drawLine(m_xPoint - m_pG->tlu(2),
 										 m_yPoint + m_pG->tlu(1),
 										 m_xPoint /*- m_pG->tlu(1)*/,
 										 m_yPoint + m_pG->tlu(1));
 						
-						painter.drawLine(m_xPoint - m_pG->tlu(1),
+						m_pG->drawLine(m_xPoint - m_pG->tlu(1),
 										 m_yPoint + m_pG->tlu(2),
 										 m_xPoint /*- m_pG->tlu(1)*/,
 										 m_yPoint+m_pG->tlu(2));
@@ -361,12 +421,12 @@ void GR_Caret::_blink(bool bExplicit)
 					else
 					{
 						// primary LTR caret flag
-						painter.drawLine(m_xPoint + m_pG->tlu(1),
+						m_pG->drawLine(m_xPoint + m_pG->tlu(1),
 										 m_yPoint + m_pG->tlu(1),
 										 m_xPoint + m_pG->tlu(3),
 										 m_yPoint + m_pG->tlu(1));
 						
-						painter.drawLine(m_xPoint + m_pG->tlu(1),
+						m_pG->drawLine(m_xPoint + m_pG->tlu(1),
 										 m_yPoint + m_pG->tlu(2),
 										 m_xPoint + m_pG->tlu(2),
 										 m_yPoint + m_pG->tlu(2));
@@ -385,18 +445,18 @@ void GR_Caret::_blink(bool bExplicit)
 					m_pG->saveRectangle(r1,1);				
 
 					// draw the caret
-					painter.drawLine(m_xPoint2 - iDelta * m_pG->tlu(1),
+					m_pG->drawLine(m_xPoint2 - iDelta * m_pG->tlu(1),
 									 m_yPoint2 + m_pG->tlu(1), 
 									 m_xPoint2 - iDelta * m_pG->tlu(1),
 									 m_yPoint2 + m_iPointHeight + m_pG->tlu(1));
 					
-					painter.drawLine(m_xPoint2,
+					m_pG->drawLine(m_xPoint2,
 									 m_yPoint2 + m_pG->tlu(1), 
 									 m_xPoint2,
 									 m_yPoint2 + m_iPointHeight + m_pG->tlu(1));
 
 					// Now draw the line that links the two carets
-					painter.drawLine(m_xPoint,
+					m_pG->drawLine(m_xPoint,
 									 m_yPoint + m_iPointHeight, 
 									 m_xPoint2,
 									 m_yPoint2 + m_iPointHeight);
@@ -405,12 +465,12 @@ void GR_Caret::_blink(bool bExplicit)
 					if(m_bPointDirection)
 					{
 						// secondary LTR caret flag
-						painter.drawLine(m_xPoint2 + m_pG->tlu(1),
+						m_pG->drawLine(m_xPoint2 + m_pG->tlu(1),
 										 m_yPoint2 + m_pG->tlu(1), 
 										 m_xPoint2 + m_pG->tlu(3),
 										 m_yPoint2 + m_pG->tlu(1));
 						
-						painter.drawLine(m_xPoint2 + m_pG->tlu(1),
+						m_pG->drawLine(m_xPoint2 + m_pG->tlu(1),
 										 m_yPoint2 + m_pG->tlu(2), 
 										 m_xPoint2 + m_pG->tlu(2),
 										 m_yPoint2 + m_pG->tlu(2));
@@ -418,12 +478,12 @@ void GR_Caret::_blink(bool bExplicit)
 					else
 					{
 						// secondary RTL caret flag
-						painter.drawLine(m_xPoint2 - m_pG->tlu(2),
+						m_pG->drawLine(m_xPoint2 - m_pG->tlu(2),
 										 m_yPoint2 + m_pG->tlu(1), 
 										 m_xPoint2 /*- m_pG->tlu(1)*/,
 										 m_yPoint2 + m_pG->tlu(1));
 						
-						painter.drawLine(m_xPoint2 - m_pG->tlu(1),
+						m_pG->drawLine(m_xPoint2 - m_pG->tlu(1),
 										 m_yPoint2 + m_pG->tlu(2), 
 										 m_xPoint2 /*- m_pG->tlu(1)*/,
 										 m_yPoint2 + m_pG->tlu(2));

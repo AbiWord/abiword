@@ -3590,7 +3590,7 @@ XML_Char *IE_Imp_RTF::_parseFldinstBlock (UT_ByteBuf & buf, XML_Char *xmlField, 
 
 				if(m_bCellBlank || m_bEndTableOpen)
 				{
-					xxx_UT_DEBUGMSG(("Append block 15 \n"));
+					UT_DEBUGMSG(("Append block 15 \n"));
 
 					getDoc()->appendStrux(PTX_Block,NULL);
 					m_bCellBlank = false;
@@ -10271,10 +10271,10 @@ bool IE_Imp_RTF::_appendField (const XML_Char *xmlField, const XML_Char ** pszAt
 	UT_return_val_if_fail (ok, false);
 	if (!bUseInsertNotAppend() || m_bAppendAnyway)
 	{
-		xxx_UT_DEBUGMSG(("SEVIOR: Appending Object m_bCellBlank %d m_bEndTableOpen %d \n",m_bCellBlank,m_bEndTableOpen));
+		UT_DEBUGMSG(("SEVIOR: Appending Object m_bCellBlank %d m_bEndTableOpen %d \n",m_bCellBlank,m_bEndTableOpen));
 		if(m_bCellBlank || m_bEndTableOpen)
 		{
-			xxx_UT_DEBUGMSG(("Append block 5 \n"));
+			UT_DEBUGMSG(("Append block 5 \n"));
 
 			getDoc()->appendStrux(PTX_Block,NULL);
 			m_bCellBlank = false;

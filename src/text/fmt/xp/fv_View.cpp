@@ -132,6 +132,35 @@ private:
   GR_Graphics * m_pGraphics;
 };
 
+
+fv_CaretProps::fv_CaretProps(FV_View * pView, PT_DocPosition InsPoint):
+	m_iInsPoint(InsPoint),
+	m_xPoint(0),
+	m_yPoint(0),
+	m_xPoint2(0),
+	m_yPoint2(0),
+	m_bPointDirection(false),
+	m_bDefaultDirectionRtl(false),
+	m_bUseHebrewContextGlyphs(false),
+	m_bPointEOL(false),
+	m_iPointHeight(0),
+	m_caretColor(0,0,0),
+    m_sDocUUID(""),
+	m_PropCaretListner(NULL),
+	m_pCaret(NULL),
+	m_ListenerID(0),
+	m_pView(pView)
+{
+}
+
+fv_CaretProps::~fv_CaretProps(void)
+{
+	if(m_PropCaretListner != NULL)
+	{
+		DELETEP(m_PropCaretListner);
+	}
+}
+
 /****************************************************************/
 #ifdef _MSC_VER	// MSVC++ warns about using 'this' in initializer list.
 #pragma warning(disable: 4355)
@@ -232,6 +261,8 @@ FV_View::FV_View(XAP_App * pApp, void* pParentData, FL_DocLayout* pLayout)
 		m_bInsertAtTablePending(false),
 		m_iPosAtTable(0)
 {
+	if(m_pDoc)
+		m_sDocUUID = m_pDoc->getDocUUIDString();
 	m_colorRevisions[0] = UT_RGBColor(171,4,254);
 	m_colorRevisions[1] = UT_RGBColor(171,20,119);
 	m_colorRevisions[2] = UT_RGBColor(255,151,8);
@@ -491,6 +522,30 @@ FV_View::~FV_View()
 	DELETEP(m_pLocalBuf);
 }
 
+bool FV_View::isActive(void) 
+{
+	if(!couldBeActive())
+	        return false;
+	AV_View* pActiveView = NULL;
+	XAP_Frame* lff = getApp()->getLastFocussedFrame();
+	if(lff) 
+	{
+		pActiveView = lff->getCurrentView();
+	}
+	else 
+	{
+		pActiveView = this;
+	}
+	
+	bool bAct = (pActiveView == this);
+	if(!bAct)
+		return false;
+	UT_UTF8String sUUID =  m_pDoc->getDocUUIDString();
+	if(m_sDocUUID == sUUID)
+		return true;
+	return false;
+}
+
 void FV_View::setGraphics(GR_Graphics * pG)
 {
 	if(m_caretListener != NULL)
@@ -511,6 +566,56 @@ void FV_View::setGraphics(GR_Graphics * pG)
 	{
 		m_caretListener = NULL;
 	}
+}
+
+void FV_View::updateCarets(PT_DocPosition docPos, UT_sint32 iLen)
+{
+	fv_CaretProps * pCaretProps = NULL;
+	UT_sint32 iCount = static_cast<UT_sint32>(m_vecCarets.getItemCount());
+	UT_UTF8String sUUID = m_pDoc->getDocUUIDString();
+	bool bLocal = (sUUID == m_sDocUUID);
+	UT_sint32 i = 0;
+	bool bFoundUUID = false;
+	for(i=0; i<iCount;i++)
+	{
+			pCaretProps = m_vecCarets.getNthItem(i);
+			if(pCaretProps->m_sDocUUID == sUUID)
+			{
+				_setPoint(pCaretProps,docPos,0);
+			}
+			else if((docPos > 0) && (pCaretProps->m_iInsPoint >= docPos))
+			{
+				_setPoint(pCaretProps,pCaretProps->m_iInsPoint,iLen);
+			}
+			else if(docPos <= 0)
+			{
+				_setPoint(pCaretProps,pCaretProps->m_iInsPoint,iLen);
+			}
+			if(sUUID == pCaretProps->m_sDocUUID)
+				bFoundUUID = true;
+	}
+	if(!bLocal && !bFoundUUID)
+	{
+			addCaret(docPos,sUUID);
+	}
+}
+
+void FV_View::addCaret(PT_DocPosition docPos,UT_UTF8String & sDocUUID)
+{
+	fv_CaretProps * pCaretProps = new fv_CaretProps(this,docPos);
+	m_vecCarets.addItem(pCaretProps);
+	pCaretProps->m_pCaret = m_pG->createCaret( sDocUUID);
+	XAP_Frame * pFrame = static_cast<XAP_Frame*>(getParentData());
+	pCaretProps->m_PropCaretListner = new FV_Caret_Listener (pFrame);
+	addListener(pCaretProps->m_PropCaretListner,&pCaretProps->m_ListenerID);
+	pCaretProps->m_pCaret->setBlink(true);
+	pCaretProps->m_pCaret->enable();
+	pCaretProps->m_sDocUUID = sDocUUID;
+	UT_sint32 icnt = static_cast<UT_sint32>(m_vecCarets.getItemCount());
+	pCaretProps->m_caretColor = m_colorRevisions[icnt];
+	pCaretProps->m_pCaret->setRemoteColor(pCaretProps->m_caretColor);
+	_setPoint(pCaretProps,docPos,0);
+
 }
 
 UT_RGBColor	FV_View::getColorSquiggle(FL_SQUIGGLE_TYPE iSquiggleType) const

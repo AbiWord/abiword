@@ -4031,10 +4031,64 @@ void FV_View::_findPositionCoords(PT_DocPosition pos,
 	}
 }
 
+void FV_View::_fixAllInsertionPointCoords(void)
+{
+	fv_CaretProps * pCaretProps = NULL;
+	UT_sint32 iCount = static_cast<UT_sint32>(m_vecCarets.getItemCount());
+	UT_sint32 i = 0;
+	for(i=0; i<iCount;i++)
+	{
+			pCaretProps = m_vecCarets.getNthItem(i);
+			_fixInsertionPointCoords(pCaretProps);
+	}
+}
+
+void FV_View::_fixInsertionPointCoords(fv_CaretProps * pCP)
+{
+	if ((pCP->m_iInsPoint > 0) && !isLayoutFilling())
+	{
+		fl_BlockLayout * pBlock = NULL;
+		fp_Run * pRun = NULL;
+		_findPositionCoords(pCP->m_iInsPoint, pCP->m_bPointEOL, pCP->m_xPoint, 
+							pCP->m_yPoint, pCP->m_xPoint2, pCP->m_yPoint2, 
+							pCP->m_iPointHeight, pCP->m_bPointDirection, 
+							&pBlock, &pRun);
+		fp_Page * pPage = getCurrentPage();
+		UT_RGBColor * pClr = NULL;
+		if (pPage)
+			pClr = pPage->getFillType()->getColor();
+		UT_sint32 yoff = 0;
+		if(pCP->m_yPoint < 0)
+		{
+			UT_sint32 negY  = -pCP->m_yPoint;
+			yoff = negY + 1;
+			if(negY > (UT_sint32)pCP->m_iPointHeight)
+			{
+				pCP->m_iPointHeight = 0;
+				yoff = 0;
+			}
+		}
+		if(pRun && (pRun->getType() == FPRUN_IMAGE))
+		{
+			UT_DEBUGMSG(("On image run with fixPointcoords \n"));
+		}
+		xxx_UT_DEBUGMSG(("Xpoint in fixpoint %d \n",m_xPoint));
+		pCP->m_pCaret->setCoords(pCP->m_xPoint, pCP->m_yPoint+yoff, 
+								 pCP->m_iPointHeight-yoff,
+								 pCP->m_xPoint2, 
+								 pCP->m_yPoint2+yoff, 
+								 pCP->m_iPointHeight-yoff, 
+								 pCP->m_bPointDirection, pClr);
+	}
+	pCP->m_pCaret->setWindowSize(getWindowWidth(), getWindowHeight());
+
+}
+
 void FV_View::_fixInsertionPointCoords()
 {
 	if (m_pG->getCaret() == NULL)
 		return;
+	_fixAllInsertionPointCoords();
 	
 	fp_Page * pPage = NULL;
 	fl_BlockLayout * pBlock = NULL;
@@ -4465,6 +4519,17 @@ void FV_View::_draw(UT_sint32 x, UT_sint32 y,
 	}
 
 }
+
+
+void FV_View::_setPoint(fv_CaretProps * pCP,PT_DocPosition pt, UT_sint32 iLen)
+{
+
+	pCP->m_iInsPoint = pt + iLen;
+	_fixInsertionPointCoords(pCP);
+	pCP->m_pCaret->disable();
+	pCP->m_pCaret->enable();
+}
+
 
 void FV_View::_setPoint(PT_DocPosition pt, bool bEOL)
 {

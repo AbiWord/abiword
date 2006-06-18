@@ -138,18 +138,25 @@ enum FV_BIDI_Order
 
 class ABI_EXPORT fv_CaretProps
 {
- public:
-	PT_DocPosition		m_iInsPoint;
+public:
+        fv_CaretProps(FV_View * pView, PT_DocPosition InsPoint);
+	virtual ~fv_CaretProps(void);
+	PT_DocPosition		        m_iInsPoint;
 	UT_sint32			m_xPoint;
 	UT_sint32			m_yPoint;
-	//the followingare BiDi specific, but need to be in place because of the
-	//change to the signature of findPointCoords
 	UT_sint32			m_xPoint2;
 	UT_sint32			m_yPoint2;
 	bool			        m_bPointDirection;
 	bool				m_bDefaultDirectionRtl;
 	bool				m_bUseHebrewContextGlyphs;
+	bool                            m_bPointEOL;
 	UT_uint32			m_iPointHeight;
+	UT_RGBColor                     m_caretColor;
+	UT_UTF8String                   m_sDocUUID;
+	FV_Caret_Listener *             m_PropCaretListner;
+	GR_Caret *                      m_pCaret;
+	UT_uint32                       m_ListenerID;
+	FV_View *                       m_pView;
 };
 								
 class ABI_EXPORT FV_View : public AV_View
@@ -179,6 +186,7 @@ public:
 	UT_uint32       getSelectionLength(void) const;
 
 	virtual void focusChange(AV_Focus focus);
+	virtual bool    isActive(void);
 
 	virtual void	setXScrollOffset(UT_sint32);
 	virtual void	setYScrollOffset(UT_sint32);
@@ -568,7 +576,10 @@ public:
 	bool				insertPageNum(const XML_Char ** props, HdrFtrType hfType);
 	virtual void        setPoint(UT_uint32 pt);
 	void                ensureInsertionPointOnScreen(void);
-
+        void                removeCaret(UT_UTF8String & sDocUUID);
+	void                addCaret(PT_DocPosition docPos,UT_UTF8String & sDocUUID);
+	void                setPointRemote(PT_DocPosition docPos);
+	void                updateCarets(PT_DocPosition docPos, UT_sint32 iLen);
 // -----------------------
 	void                killBlink(void);
 	void				setShowPara(bool);
@@ -615,7 +626,7 @@ public:
 	void                _fixInsertionPointAfterRevision();
 	bool                _makePointLegal(void);
   public:
-	
+  
 	/* Table related functions */
 	bool                isPointLegal(PT_DocPosition pos);
 	bool                isPointLegal(void);
@@ -741,7 +752,7 @@ public:
 	// -- plugins
         bool                isMathLoaded(void);
 	bool                isGrammarLoaded(void);
-
+	// --
 protected:
 	void				_saveAndNotifyPieceTableChange(void);
 	void				_restorePieceTableState(void);
@@ -793,6 +804,9 @@ protected:
 	bool				_insertFormatPair(const XML_Char * szName, const XML_Char * properties[]);
 	void				_updateInsertionPoint();
 	void				_fixInsertionPointCoords();
+	void				_fixInsertionPointCoords(fv_CaretProps * pCP);
+	void				_fixAllInsertionPointCoords(void);
+
 	void				_drawSelection();
 	void				_swapSelectionOrientation(void);
 	void				_extSel(UT_uint32 iOldPoint);
@@ -805,6 +819,7 @@ protected:
 
 	// localize handling of insertion point logic
 	void				_setPoint(PT_DocPosition pt, bool bEOL = false);
+	void				_setPoint(fv_CaretProps * pCP, PT_DocPosition pt, UT_sint32 iLen);
 	UT_uint32			_getDataCount(UT_uint32 pt1, UT_uint32 pt2);
 	bool				_charMotion(bool bForward,UT_uint32 countChars, bool bSkipCannotContainPoint = true);
 	void				_doPaste(bool bUseClipboard, bool bHonorFormatting = true);
@@ -961,6 +976,7 @@ private:
 	bool                m_bInsertAtTablePending;
 	PT_DocPosition      m_iPosAtTable;
 	UT_GenericVector<fv_CaretProps *> m_vecCarets;
+	UT_UTF8String       m_sDocUUID;
 };
 
 #endif /* FV_VIEW_H */
