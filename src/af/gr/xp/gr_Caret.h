@@ -113,6 +113,7 @@ private:
 	bool            m_bRemote;
 	UT_RGBColor     m_clrRemote;
 	UT_UTF8String   m_sDocUUID;
+	UT_sint32       m_iCaretNumber;
 };
 
 class GR_CaretDisabler

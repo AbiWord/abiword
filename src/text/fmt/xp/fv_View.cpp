@@ -581,7 +581,14 @@ void FV_View::updateCarets(PT_DocPosition docPos, UT_sint32 iLen)
 			pCaretProps = m_vecCarets.getNthItem(i);
 			if(pCaretProps->m_sDocUUID == sUUID)
 			{
-				_setPoint(pCaretProps,docPos,0);
+				if(iLen >= 0)
+				{
+						_setPoint(pCaretProps,docPos,iLen);
+				}
+				else
+				{
+						_setPoint(pCaretProps,docPos,0);
+				}
 			}
 			else if((docPos > 0) && (pCaretProps->m_iInsPoint >= docPos))
 			{

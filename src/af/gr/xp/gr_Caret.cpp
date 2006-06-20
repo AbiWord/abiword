@@ -85,7 +85,8 @@ GR_Caret::GR_Caret(GR_Graphics * pG)
 		m_insertMode (true),
 		m_bRemote(false),
 		m_clrRemote(0,0,0),
-		m_sDocUUID("")
+		m_sDocUUID(""),
+		m_iCaretNumber(0)
 {
 	UT_WorkerFactory::ConstructMode outMode = UT_WorkerFactory::NONE;
 	m_worker = static_cast<UT_Timer *>(UT_WorkerFactory::static_constructor
@@ -120,7 +121,8 @@ GR_Caret::GR_Caret(GR_Graphics * pG, UT_UTF8String & sDocUUID)
 		m_insertMode (true),
 		m_bRemote(true),
 		m_clrRemote(0,0,0),
-		m_sDocUUID(sDocUUID)
+		m_sDocUUID(sDocUUID),
+		m_iCaretNumber(0)
 {
 	UT_WorkerFactory::ConstructMode outMode = UT_WorkerFactory::NONE;
 	m_worker = static_cast<UT_Timer *>(UT_WorkerFactory::static_constructor
@@ -130,7 +132,7 @@ GR_Caret::GR_Caret(GR_Graphics * pG, UT_UTF8String & sDocUUID)
 	m_enabler = static_cast<UT_Timer *>(UT_WorkerFactory::static_constructor
 		(s_enable, this, UT_WorkerFactory::TIMER, outMode, pG));
 	m_enabler->set(CURSOR_DELAY_TIME);
-	
+	m_iCaretNumber = static_cast<UT_sint32>(pG->m_vecCarets.getItemCount());
 	setBlink (false);
 }
 
@@ -312,13 +314,13 @@ void GR_Caret::_blink(bool bExplicit)
 
 		if (m_bCursorIsOn)
 		{
-			m_pG->restoreRectangle(0);
+			m_pG->restoreRectangle(m_iCaretNumber*3+0);
 			xxx_UT_DEBUGMSG(("blink cursor turned off \n")); 
 
 			if(m_bSplitCaret)
 			{
-				m_pG->restoreRectangle(1);
-				m_pG->restoreRectangle(2);
+				m_pG->restoreRectangle(m_iCaretNumber*3+1);
+				m_pG->restoreRectangle(m_iCaretNumber*3+2);
 				m_bSplitCaret = false;
 			}
 		}
@@ -347,7 +349,7 @@ void GR_Caret::_blink(bool bExplicit)
 					   m_pG->tlu(5),
 					   m_iPointHeight+m_pG->tlu(2));
 			
-			m_pG->saveRectangle(r0,0);
+			m_pG->saveRectangle(r0,m_iCaretNumber*3+0);
 
 			if((m_xPoint != m_xPoint2) || (m_yPoint != m_yPoint2))
 			{
@@ -365,7 +367,7 @@ void GR_Caret::_blink(bool bExplicit)
 						   xmax - xmin + m_pG->tlu(2),
 						   ymax - ymin + m_pG->tlu(1));
 				
-				m_pG->saveRectangle(r2,2);
+				m_pG->saveRectangle(r2,m_iCaretNumber*3+2);
 			}
 			else
 				m_bSplitCaret = false;
@@ -442,7 +444,7 @@ void GR_Caret::_blink(bool bExplicit)
 							   m_pG->tlu(5),
 							   m_iPointHeight);
 					
-					m_pG->saveRectangle(r1,1);				
+					m_pG->saveRectangle(r1,m_iCaretNumber*3+1);				
 
 					// draw the caret
 					m_pG->drawLine(m_xPoint2 - iDelta * m_pG->tlu(1),
