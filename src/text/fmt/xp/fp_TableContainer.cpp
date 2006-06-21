@@ -194,13 +194,17 @@ fp_TableContainer * fp_CellContainer::getBrokenTable(fp_Container * pCon)
 				fp_TableContainer * pT = static_cast<fp_TableContainer *>(pCon);
 				if(!pT->isThisBroken())
 				{
-					pT = pT->getFirstBrokenTable();
-					if(pT == NULL)
+					fp_TableContainer * pTT = pT->getFirstBrokenTable();
+					if(pTT == NULL)
 					{
 						UT_sint32 iY = pT->getY();
 						UT_DEBUGMSG(("No Broken Table!! \n"));
 						pT = static_cast<fp_TableContainer *>(pT->VBreakAt(0));
 						pT->setY(iY);
+					}
+					else
+					{
+						pT = pTT;
 					}
 				}
 				xxx_UT_DEBUGMSG(("Y of broken table %x is %d yBreak is %d height %d \n",pT,pT->getY(),pT->getYBreak(),pT->getHeight()));
