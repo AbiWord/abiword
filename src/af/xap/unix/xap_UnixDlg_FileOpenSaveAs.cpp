@@ -59,7 +59,7 @@
 #include "gr_Painter.h"
 
 #ifdef HAVE_HILDON
-#include <hildon-widgets/hildon-file-chooser-dialog.h>
+#include <hildon-fm/hildon-widgets/hildon-file-chooser-dialog.h>
 #endif
 
 
