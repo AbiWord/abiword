@@ -95,8 +95,11 @@ AC_ARG_ENABLE(embedded,[  --enable-embedded    Include embedded features],[
 	   no) embedded=false ;;
 	     *)	AC_MSG_ERROR(bad value ${enableval} for --enable-embedded) ;;
 	esac
-],[	embedded=undefined
-	EMBEDDED_CFLAGS=""
+],[	
+	if test "$embedded" != "true"; then
+	   embedded=undefined
+	   EMBEDDED_CFLAGS=""
+	fi
 ])
 
 if test "$embedded" = "true"; then
@@ -122,7 +125,6 @@ AC_ARG_ENABLE(printing,[  --enable-printing    Include printing capabilities],[
 	PRINT_CFLAGS=""
 ])
 
-
 if test "$print" = "undefined" && test "$embedded" = "true"; then
    print=false
    PRINT_CFLAGS="-DWITHOUT_PRINTING"
@@ -130,6 +132,8 @@ elif test "$print" = "undefined"; then
    print=true;
    PRINT_CFLAGS=""
 fi
+
+AC_MSG_RESULT([final printing ${print}])
 
 AM_CONDITIONAL(WITH_PRINTING, test x$print = xtrue)
 
