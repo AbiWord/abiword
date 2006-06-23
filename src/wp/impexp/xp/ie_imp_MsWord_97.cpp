@@ -283,7 +283,9 @@ static char * s_stripDangerousChars(const char *s)
 typedef UT_uint32 Doc_Color_t;
 
 //
-// A mapping between Word's colors and Abi's RGB color scheme
+// A mapping between Word's colors and Abi's RGB color scheme;
+// if you add colors, _make sure_ to increase the '16' in 
+// sMapIcoToColor() below
 //
 static Doc_Color_t word_colors [][3] = {
 	{0x00, 0x00, 0x00}, /* black */
@@ -306,14 +308,14 @@ static Doc_Color_t word_colors [][3] = {
 
 static UT_String sMapIcoToColor (UT_uint16 ico, bool bForeground)
 {
-	// need to handle the automatic colour 0
-	if(!ico && bForeground)
+	// need to handle the automatic colour 0; see bug 10261 for bounds-check
+	if((!ico && bForeground) || (ico > 16))
 	{
-		ico = 1;
+		ico = 1;  //black
 	}
 	else if(!ico && !bForeground)
 	{
-		ico = 8;
+		ico = 8;  //white
 	}
 
 	return UT_String_sprintf("%02x%02x%02x",
