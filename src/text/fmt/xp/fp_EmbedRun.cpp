@@ -155,7 +155,16 @@ void fp_EmbedRun::_lookupProperties(const PP_AttrProp * pSpanAP,
 	      }
 		  else
 		  {
-			  iDescent = UT_convertToLogicalUnits(pszHeight) - iAscent;
+			  UT_sint32 iHeight = UT_convertToLogicalUnits(pszHeight);
+			  const char * pszDescent = NULL;
+			  bool bFoundDescent = pSpanAP->getProperty("descent", pszDescent);
+			  if (bFoundDescent && pszDescent != NULL)
+			  {
+				  iDescent = UT_convertToLogicalUnits(pszDescent);
+				  if (iHeight != iAscent + iDescent)
+					  iAscent = iHeight * iAscent / (iAscent + iDescent);
+			  }
+			  iDescent = iHeight - iAscent;
 		  }
 	  }
 	}
