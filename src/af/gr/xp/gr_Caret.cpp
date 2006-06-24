@@ -132,7 +132,7 @@ GR_Caret::GR_Caret(GR_Graphics * pG, UT_UTF8String & sDocUUID)
 	m_enabler = static_cast<UT_Timer *>(UT_WorkerFactory::static_constructor
 		(s_enable, this, UT_WorkerFactory::TIMER, outMode, pG));
 	m_enabler->set(CURSOR_DELAY_TIME);
-	m_iCaretNumber = static_cast<UT_sint32>(pG->m_vecCarets.getItemCount());
+	m_iCaretNumber = static_cast<UT_sint32>(pG->m_vecCarets.getItemCount()) + 1;
 	setBlink (false);
 }
 

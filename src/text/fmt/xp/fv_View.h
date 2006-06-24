@@ -803,7 +803,7 @@ protected:
 	void				_deleteSelection(PP_AttrProp *p_AttrProp_Before = NULL, bool bNoUpdate = false);
 	bool				_insertFormatPair(const XML_Char * szName, const XML_Char * properties[]);
 	void				_updateInsertionPoint();
-	void				_fixInsertionPointCoords();
+	void				_fixInsertionPointCoords(bool bIgnoreAll = false);
 	void				_fixInsertionPointCoords(fv_CaretProps * pCP);
 	void				_fixAllInsertionPointCoords(void);
 

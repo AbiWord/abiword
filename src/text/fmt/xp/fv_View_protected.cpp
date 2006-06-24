@@ -4031,7 +4031,7 @@ void FV_View::_findPositionCoords(PT_DocPosition pos,
 	}
 }
 
-void FV_View::_fixAllInsertionPointCoords(void)
+void FV_View::_fixAllInsertionPointCoords()
 {
 	fv_CaretProps * pCaretProps = NULL;
 	UT_sint32 iCount = static_cast<UT_sint32>(m_vecCarets.getItemCount());
@@ -4084,11 +4084,12 @@ void FV_View::_fixInsertionPointCoords(fv_CaretProps * pCP)
 
 }
 
-void FV_View::_fixInsertionPointCoords()
+void FV_View::_fixInsertionPointCoords(bool bIgnoreAll)
 {
 	if (m_pG->getCaret() == NULL)
 		return;
-	_fixAllInsertionPointCoords();
+	if(!bIgnoreAll)
+		_fixAllInsertionPointCoords();
 	
 	fp_Page * pPage = NULL;
 	fl_BlockLayout * pBlock = NULL;
@@ -4564,11 +4565,11 @@ void FV_View::_setPoint(PT_DocPosition pt, bool bEOL)
 	m_Selection.checkSelectAll();
 	m_bInsertAtTablePending = false;
 	m_iPosAtTable = 0;
-	xxx_UT_DEBUGMSG(("Point set to %d in View %x \n",pt,this));
+	UT_DEBUGMSG(("Point set to %d in View %x \n",pt,this));
 	m_bPointEOL = bEOL;
 	if(!m_pDoc->isPieceTableChanging())
 	{
-		_fixInsertionPointCoords();
+		_fixInsertionPointCoords(true);
 		m_pLayout->considerPendingSmartQuoteCandidate();
 		_checkPendingWordForSpell();
 	// So, if there is a selection now, we should disable the cursor; conversely,

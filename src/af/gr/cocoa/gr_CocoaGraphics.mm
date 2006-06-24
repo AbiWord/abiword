@@ -463,7 +463,14 @@ GR_CocoaGraphics::~GR_CocoaGraphics()
 	_destroyFonts ();
 
 	UT_VECTOR_RELEASE(m_cacheArray);
-	UT_VECTOR_PURGEALL(NSRect*, m_cacheRectArray);
+
+	UT_sint32 j = 0;
+	for(j=0; j< static_cast<UT_sint32>(m_cacheRectArray.getItemCount());j++)
+	{
+	    NSRect* pRect = m_cacheRectArray.getNthItem(j);
+	    DELETEP(pRect);
+	}
+
 	[m_pWin setGraphics:NULL];
 	[m_fontForGraphics release];
 	[m_currentColor release];

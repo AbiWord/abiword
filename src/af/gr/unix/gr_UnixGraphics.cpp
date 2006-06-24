@@ -727,7 +727,12 @@ GR_UnixGraphics::~GR_UnixGraphics()
 
 	delete m_pFallBackFontHandle;
 
-	UT_VECTOR_PURGEALL(UT_Rect*, m_vSaveRect);
+	UT_sint32 i = 0;
+	for(i=0; i< static_cast<UT_sint32>(m_vSaveRect.getItemCount());i++)
+	{
+	    UT_Rect* pRect = m_vSaveRect.getNthItem(i);
+	    DELETEP(pRect);
+	}
 
 	// purge saved pixbufs
 	for (UT_uint32 i = 0; i < m_vSaveRectBuf.size (); i++)
