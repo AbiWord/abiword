@@ -201,15 +201,7 @@ GR_Win32Graphics::GR_Win32Graphics(HDC hdc, const DOCINFO * pDocInfo, HGLOBAL hD
 GR_Win32Graphics::~GR_Win32Graphics()
 {
 	_destroyFonts ();
-	UT_sint32 i = 0;
-
-
-	UT_sint32 i = 0;
-	for(i=0; i< static_cast<UT_sint32>(m_vSaveRect.getItemCount());i++)
-	{
-	    UT_Rect* pRect = m_vSaveRect.getNthItem(i);
-	    DELETEP(pRect);
-	}
+	UT_VECTOR_SPARSEPURGEALL( UT_Rect*, m_vSaveRect);
 		
 	/* Release saved bitmaps */
 	HBITMAP hBit;
