@@ -301,6 +301,8 @@ bool fl_FrameLayout::insertBlockAfter(fl_ContainerLayout* pLBlock,
 	{
 		pView->setPoint(pView->getPoint() +  fl_BLOCK_STRUX_OFFSET);
 	}
+	if(pView)
+		pView->updateCarets(pcrx->getPosition(),1);
 	return true;
 }
 
@@ -331,6 +333,8 @@ bool fl_FrameLayout::bl_doclistener_insertEndFrame(fl_ContainerLayout*,
 	{
 		pView->setPoint(pView->getPoint() +  fl_BLOCK_STRUX_OFFSET);
 	}
+	if(pView)
+		pView->updateCarets(pcrx->getPosition(),1);
 	m_bHasEndFrame = true;
 	return true;
 }

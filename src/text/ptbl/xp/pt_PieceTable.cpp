@@ -1014,6 +1014,7 @@ bool pt_PieceTable::_getStruxOfTypeFromPosition(PT_DocPosition dpos,
 			{
 				pfsTemp = static_cast<pf_Frag_Strux *>(pf);
 			}
+			UT_return_val_if_fail (pfsTemp, false);
 			if(pfsTemp->getStruxType() == PTX_EndTable)
 			{
 				numEndTable++;

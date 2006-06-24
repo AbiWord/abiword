@@ -445,6 +445,8 @@ bool fl_SectionLayout::bl_doclistener_insertSection(fl_ContainerLayout* pPrevL,
 			//
 			pView->setPoint(pView->getPoint() + fl_BLOCK_STRUX_OFFSET + fl_BLOCK_STRUX_OFFSET);
 		}
+		if(pView)
+		        pView->updateCarets(pcrx->getPosition(),1);
 		return true;
 
 	}
@@ -600,6 +602,8 @@ bool fl_SectionLayout::bl_doclistener_insertSection(fl_ContainerLayout* pPrevL,
 		{
 			pView->setPoint(pView->getPoint() + fl_BLOCK_STRUX_OFFSET + fl_BLOCK_STRUX_OFFSET);
 		}
+		if(pView)
+		  pView->updateCarets(pcrx->getPosition(),1);
 		return true;
 	}
 	return false;
@@ -678,6 +682,8 @@ fl_SectionLayout * fl_SectionLayout::bl_doclistener_insertTable(SectionType iTyp
 	{
 		pView->setPoint(pView->getPoint() + fl_BLOCK_STRUX_OFFSET);
 	}
+	if(pView)
+		pView->updateCarets(pcrx->getPosition(),1);
 //
 // OK that's it!
 //
@@ -4538,6 +4544,8 @@ fl_SectionLayout * fl_HdrFtrSectionLayout::bl_doclistener_insertTable(SectionTyp
 	{
 		pView->setPoint(pView->getPoint() + fl_BLOCK_STRUX_OFFSET);
 	}
+	if(pView)
+		pView->updateCarets(pcrx->getPosition(),1);
 
 	fl_SectionLayout::checkAndAdjustCellSize();
 //
@@ -4910,6 +4918,8 @@ bool fl_DocSectionLayout::bl_doclistener_insertFootnote(fl_ContainerLayout* pFoo
 	{
 		pView->setPoint(pView->getPoint() +  fl_BLOCK_STRUX_OFFSET);
 	}
+	if(pView)
+		pView->updateCarets(pcrx->getPosition(),1);
 	return true;
 }
 

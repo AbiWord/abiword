@@ -568,6 +568,11 @@ void FV_View::setGraphics(GR_Graphics * pG)
 	}
 }
 
+void FV_View:: fixInsertionPointCoords(void)
+{
+	_fixInsertionPointCoords();
+}
+
 void FV_View::updateCarets(PT_DocPosition docPos, UT_sint32 iLen)
 {
 	fv_CaretProps * pCaretProps = NULL;
