@@ -1,17 +1,18 @@
 # Slovenian translation file for Abiword.
 # Copyright (C) 2000 Free Software Foundation, Inc.
 # Andraz Tori <andraz.tori1@guest.arnes.si> 2000
+# Martin Srebotnjak <miles@filmsi.net> 2006
 #
 msgid ""
 msgstr ""
 "Project-Id-Version: AbiWord\n"
 "Report-Msgid-Bugs-To: \n"
 "POT-Creation-Date: 2006-04-16 05:15+0200\n"
-"PO-Revision-Date: 2006-04-21 22:35+0100\n"
+"PO-Revision-Date: 2006-06-20 22:09+0100\n"
 "Last-Translator: Martin Srebotnjak <miles@filmsi.net>\n"
-"Language-Team: Slovenian <sl@li.org>\n"
+"Language-Team: sl.openoffice.org <users@sl.openoffice.org>\n"
 "MIME-Version: 1.0\n"
-"Content-Type: text/plain; charset=iso-8859-2\n"
+"Content-Type: text/plain; charset=utf-8\n"
 "Content-Transfer-Encoding: 8bit\n"
 "X-Poedit-Language: Slovenian\n"
 "X-Poedit-Country: SLOVENIA\n"
@@ -61,7 +62,7 @@ msgstr " Samodejna posodobitev"
 #: po/tmp/ap_String_Id.h.h:29
 #, c-format
 msgid "% of normal size"
-msgstr "% obiËajne velikosti"
+msgstr "% obiƒçajne velikosti"
 
 #. MENU_LABEL_SPELL_SUGGEST_1
 #. MENU_LABEL_SPELL_SUGGEST_2
@@ -90,14 +91,14 @@ msgid ""
 "\n"
 "Otherwise, please be patient."
 msgstr ""
-"%s πe ni implementiran.\n"
+"%s ≈°e ni implementiran.\n"
 "\n"
-"»e ste programer, lahko dodate kodo v %s, vrstica %d\n"
-"in poπljete popravke na:\n"
+"ƒåe ste programer, lahko dodate kodo v %s, vrstica %d\n"
+"in po≈°ljete popravke na:\n"
 "\n"
 "\tabiword-dev@abisource.com\n"
 "\n"
-"Sicer pa bodite potrpeæljivi."
+"Sicer pa bodite potrpe≈æljivi."
 
 #. MENU_LABEL_FILE_RECENT_1
 #. MENU_LABEL_VIEW_TB_1
@@ -231,12 +232,12 @@ msgstr "&Na:"
 #. MENU_LABEL_TOOLS_AUTOSPELL
 #: po/tmp/ap_String_Id.h.h:99
 msgid "&Auto Spellcheck"
-msgstr "&Samodejno preverjanje Ërkovanja"
+msgstr "&Samodejno preverjanje ƒçrkovanja"
 
 #. MENU_LABEL_TABLE_AUTOFIT
 #: po/tmp/ap_String_Id.h.h:101
 msgid "&Autofit Table"
-msgstr "&Samodejno prilagodi tabelo"
+msgstr "Samodejno &prilagodi tabelo"
 
 #. DLG_Options_Label_PrefsAutoSave
 #: po/tmp/ap_String_Id.h.h:103
@@ -266,7 +267,7 @@ msgstr "&Spodaj:"
 #. MENU_LABEL_INSERT_BREAK
 #: po/tmp/ap_String_Id.h.h:113
 msgid "&Break"
-msgstr "&Prelomi"
+msgstr "&Prelom"
 
 #. MENU_LABEL_TABLE_SELECT_CELL
 #: po/tmp/ap_String_Id.h.h:115
@@ -338,12 +339,12 @@ msgstr "Shema &trenutnih nastavitev"
 #. MENU_LABEL_TABLE_DELETE
 #: po/tmp/ap_String_Id.h.h:143
 msgid "&Delete"
-msgstr "&Izbriπi"
+msgstr "I&zbri≈°i"
 
 #. MENU_LABEL_INSERT_DELETE_HYPERLINK
 #: po/tmp/ap_String_Id.h.h:145
 msgid "&Delete hyperlink"
-msgstr "&Izbriπi hiperpovezavo"
+msgstr "I&zbri≈°i hiperpovezavo"
 
 #. DLG_Options_Btn_CustomDict
 #: po/tmp/ap_String_Id.h.h:147
@@ -353,7 +354,7 @@ msgstr "&Slovar ..."
 #. MENU_LABEL_INSERT_DIRECTIONMARKER
 #: po/tmp/ap_String_Id.h.h:149
 msgid "&Direction Marker"
-msgstr "OznaËba &smeri"
+msgstr "Oznaƒçba sme&ri"
 
 #. MENU_LABEL_FMT_DOCUMENT
 #: po/tmp/ap_String_Id.h.h:151
@@ -389,12 +390,12 @@ msgstr "&Uredi hiperpovezavo"
 #. DLG_Options_Label_SmartQuotesEnable
 #: po/tmp/ap_String_Id.h.h:164
 msgid "&Enable smart quotes"
-msgstr "&VkljuËi pametne navedke"
+msgstr "&Vkljuƒçi pametne navedke"
 
 #. MENU_LABEL_INSERT_ENDNOTE
 #: po/tmp/ap_String_Id.h.h:166
 msgid "&Endnote"
-msgstr "&KonËne opombe"
+msgstr "&Konƒçne opombe"
 
 #. DLG_Break_EvenPage
 #: po/tmp/ap_String_Id.h.h:168
@@ -424,17 +425,17 @@ msgstr "&Datoteka"
 #. DLG_Options_Label_FileExtension
 #: po/tmp/ap_String_Id.h.h:178
 msgid "&File extension:"
-msgstr "&KonËnica datoteke:"
+msgstr "&Konƒçnica datoteke:"
 
 #. MENU_LABEL_EDIT_FIND
 #: po/tmp/ap_String_Id.h.h:180
 msgid "&Find"
-msgstr "I&πËi"
+msgstr "&Najdi"
 
 #. DLG_FR_FindNextButton
 #: po/tmp/ap_String_Id.h.h:182
 msgid "&Find Next"
-msgstr "&IπËi naprej"
+msgstr "Najdi na&slednje"
 
 #. MENU_LABEL_FMT_FONT
 #: po/tmp/ap_String_Id.h.h:184
@@ -479,13 +480,13 @@ msgstr "&Glava:"
 #. DLG_PageSetup_Height
 #: po/tmp/ap_String_Id.h.h:200
 msgid "&Height:"
-msgstr "&Viπina:"
+msgstr "&Vi≈°ina:"
 
 #. DLG_HelpButton
 #. MENU_LABEL_HELP
 #: po/tmp/ap_String_Id.h.h:203
 msgid "&Help"
-msgstr "&PomoË"
+msgstr "&Pomoƒç"
 
 #. DLG_Options_Label_ViewHiddenText
 #: po/tmp/ap_String_Id.h.h:205
@@ -495,7 +496,7 @@ msgstr "&Skrito besedilo"
 #. DLG_Options_Label_SpellHighlightMisspelledWords
 #: po/tmp/ap_String_Id.h.h:207
 msgid "&Highlight misspelled words"
-msgstr "&OznaËi napaËno Ërkovane besede"
+msgstr "&Oznaƒçi napaƒçno ƒçrkovane besede"
 
 #. MENU_LABEL_INSERT_HYPERLINK
 #: po/tmp/ap_String_Id.h.h:209
@@ -526,7 +527,7 @@ msgstr "&Uvozi sloge"
 #. MENU_LABEL_WEB_WEBPREVIEW
 #: po/tmp/ap_String_Id.h.h:220
 msgid "&In web browser"
-msgstr "&V brskalniku"
+msgstr "V spletnem &brskalniku"
 
 #. DLG_FormatTOC_InheritLabel
 #: po/tmp/ap_String_Id.h.h:222
@@ -550,12 +551,12 @@ msgstr "&Obseg:"
 #. MENU_LABEL_FMT_ITALIC
 #: po/tmp/ap_String_Id.h.h:230
 msgid "&Italic"
-msgstr "&LeæeËe"
+msgstr "&Le≈æeƒçe"
 
 #. MENU_LABEL_INSERT_GOTO_HYPERLINK
 #: po/tmp/ap_String_Id.h.h:232
 msgid "&Jump to hyperlink"
-msgstr "&SkoËi na hiperpovezavo"
+msgstr "&Skoƒçi na hiperpovezavo"
 
 #. MENU_LABEL_ALIGN_JUSTIFY
 #: po/tmp/ap_String_Id.h.h:234
@@ -575,7 +576,7 @@ msgstr "&L->D"
 #. DLG_PageSetup_Landscape
 #: po/tmp/ap_String_Id.h.h:240
 msgid "&Landscape"
-msgstr "&LeæeËe"
+msgstr "&Le≈æeƒçe"
 
 #. MENU_LABEL_TOOLS_LANGUAGE
 #: po/tmp/ap_String_Id.h.h:242
@@ -606,27 +607,27 @@ msgstr "&Zakleni postavitev"
 #. MENU_LABEL_TOOLS_MAILMERGE
 #: po/tmp/ap_String_Id.h.h:253
 msgid "&Mail Merge"
-msgstr "&Spajanje poπte"
+msgstr "&Spajanje po≈°te"
 
 #. MENU_LABEL_INSERT_MAILMERGE
 #: po/tmp/ap_String_Id.h.h:255
 msgid "&Mail Merge Field"
-msgstr "Polje &spajanja poπte"
+msgstr "Polje &spajanja po≈°te"
 
 #. MENU_LABEL_TOOLS_REVISIONS_AUTO
 #: po/tmp/ap_String_Id.h.h:257
 msgid "&Maintain Full History"
-msgstr "&Vzdræuj polno zgodovino"
+msgstr "&Vzdr≈æuj polno zgodovino"
 
 #. MENU_LABEL_TOOLS_REVISIONS_MARK
 #: po/tmp/ap_String_Id.h.h:259
 msgid "&Mark revisions while typing"
-msgstr "Med tipkanjem &oznaËi revizije"
+msgstr "Med tipkanjem &oznaƒçi revizije"
 
 #. DLG_FR_MatchCase
 #: po/tmp/ap_String_Id.h.h:261
 msgid "&Match case"
-msgstr "&Razlikuj velike in male Ërke"
+msgstr "&Razlikuj velike in male ƒçrke"
 
 #. MENU_LABEL_TABLE_MERGE_CELLS
 #: po/tmp/ap_String_Id.h.h:263
@@ -636,7 +637,7 @@ msgstr "&Spoji celice"
 #. MENU_LABEL_WINDOW_MORE
 #: po/tmp/ap_String_Id.h.h:265
 msgid "&More Documents"
-msgstr "&VeË dokumentov"
+msgstr "&Veƒç dokumentov"
 
 #. DLG_Goto_Label_Name
 #: po/tmp/ap_String_Id.h.h:267
@@ -646,7 +647,7 @@ msgstr "&Ime:"
 #. MENU_LABEL_FILE_NEW
 #: po/tmp/ap_String_Id.h.h:269
 msgid "&New"
-msgstr "&Nova"
+msgstr "&Nov"
 
 #. MENU_LABEL_WINDOW_NEW
 #: po/tmp/ap_String_Id.h.h:271
@@ -671,12 +672,12 @@ msgstr "&Navadna postavitev"
 #. DLG_Goto_Label_Number
 #: po/tmp/ap_String_Id.h.h:279
 msgid "&Number:"
-msgstr "&©tevilka:"
+msgstr "&≈†tevilka:"
 
 #. DLG_FormatTOC_NumberingType
 #: po/tmp/ap_String_Id.h.h:281
 msgid "&Numbering type:"
-msgstr "Vrsta &oπtevilËenja:"
+msgstr "Vrsta &o≈°tevilƒçenja:"
 
 #. DLG_Break_OddPage
 #: po/tmp/ap_String_Id.h.h:283
@@ -696,12 +697,12 @@ msgstr "&Odpri datoteko"
 #. MENU_LABEL_FMT_OVERLINE
 #: po/tmp/ap_String_Id.h.h:289
 msgid "&Overline"
-msgstr "Nad&Ërtano"
+msgstr "Nad&ƒçrtano"
 
 #. MENU_LABEL_VIEW_ZOOM_WIDTH
 #: po/tmp/ap_String_Id.h.h:291
 msgid "&Page Width"
-msgstr "©&irina strani"
+msgstr "≈†&irina strani"
 
 #. DLG_Break_PageBreak
 #: po/tmp/ap_String_Id.h.h:293
@@ -711,7 +712,7 @@ msgstr "&Prelom strani"
 #. DLG_FormatTOC_PageNumbering
 #: po/tmp/ap_String_Id.h.h:295
 msgid "&Page numbering:"
-msgstr "&OπtevilËevanje strani"
+msgstr "&O≈°tevilƒçevanje strani"
 
 #. MENU_LABEL_FMT_PARAGRAPH
 #: po/tmp/ap_String_Id.h.h:297
@@ -731,12 +732,12 @@ msgstr "&Slika"
 #. MENU_LABEL_TOOLS_PLUGINS
 #: po/tmp/ap_String_Id.h.h:303
 msgid "&Plugins"
-msgstr "&VtiËniki"
+msgstr "&Vtiƒçniki"
 
 #. DLG_PageSetup_Portrait
 #: po/tmp/ap_String_Id.h.h:305
 msgid "&Portrait"
-msgstr "&PokonËno"
+msgstr "&Pokonƒçno"
 
 #. MENU_LABEL_FILE_PRINT
 #: po/tmp/ap_String_Id.h.h:307
@@ -746,12 +747,12 @@ msgstr "Na&tisni"
 #. MENU_LABEL_VIEW_PRINT
 #: po/tmp/ap_String_Id.h.h:309
 msgid "&Print Layout"
-msgstr "Postavitev tisk&anja"
+msgstr "Postavitev &tiskanja"
 
 #. MENU_LABEL_TOOLS_HISTORY_PURGE
 #: po/tmp/ap_String_Id.h.h:311
 msgid "&Purge History"
-msgstr "&PoËisti zgodovino"
+msgstr "&Poƒçisti zgodovino"
 
 #. MENU_LABEL_FILE_EXIT
 #: po/tmp/ap_String_Id.h.h:313
@@ -838,7 +839,7 @@ msgstr "&Shrani spletno stran"
 #. MENU_LABEL_HELP_SEARCH
 #: po/tmp/ap_String_Id.h.h:347
 msgid "&Search for Help"
-msgstr "&IπËi po pomoËi"
+msgstr "&I≈°ƒçi po pomoƒçi"
 
 #. MENU_LABEL_TABLE_SELECT
 #: po/tmp/ap_String_Id.h.h:349
@@ -853,12 +854,12 @@ msgstr "&Izberi revizijo"
 #. MENU_LABEL_TOOLS_HISTORY_SHOW
 #: po/tmp/ap_String_Id.h.h:353
 msgid "&Show History"
-msgstr "&Pokaæi zgodovino"
+msgstr "&Poka≈æi zgodovino"
 
 #. MENU_LABEL_VIEW_STATUSBAR
 #: po/tmp/ap_String_Id.h.h:355
 msgid "&Show Status Bar"
-msgstr "&Pokaæi vrstico stanja"
+msgstr "&Poka≈æi vrstico stanja"
 
 #. DLG_Para_LabelSpecial
 #: po/tmp/ap_String_Id.h.h:357
@@ -868,12 +869,12 @@ msgstr "&Posebno:"
 #. MENU_LABEL_TOOLS_SPELLING
 #: po/tmp/ap_String_Id.h.h:359
 msgid "&Spelling"
-msgstr "»&rkovanje"
+msgstr "ƒå&rkovanje"
 
 #. DLG_FormatTOC_StartAt
 #: po/tmp/ap_String_Id.h.h:361
 msgid "&Start at:"
-msgstr "&ZaËetek pri:"
+msgstr "&Zaƒçetek pri:"
 
 #. DLG_Options_Label_ViewStatusBar
 #: po/tmp/ap_String_Id.h.h:363
@@ -888,7 +889,7 @@ msgstr "P&odpisano"
 #. DLG_Para_PushSuppressLineNumbers
 #: po/tmp/ap_String_Id.h.h:367
 msgid "&Suppress line numbers"
-msgstr "&Brez πtevilk vrstic"
+msgstr "&Brez ≈°tevilk vrstic"
 
 #. DLG_FormatTOC_TabLeader
 #: po/tmp/ap_String_Id.h.h:369
@@ -915,7 +916,7 @@ msgstr "&Zavihki ..."
 #. MENU_LABEL_VIEW_TOOLBARS
 #: po/tmp/ap_String_Id.h.h:379
 msgid "&Toolbars"
-msgstr "&Orodne vrstice"
+msgstr "Orodne &vrstice"
 
 #. MENU_LABEL_TOOLS
 #: po/tmp/ap_String_Id.h.h:381
@@ -940,12 +941,12 @@ msgstr "&Vrste:"
 #. MENU_LABEL_FMT_UNDERLINE
 #: po/tmp/ap_String_Id.h.h:389
 msgid "&Underline"
-msgstr "PodË&rtano"
+msgstr "Podƒç&rtano"
 
 #. MENU_LABEL_EDIT_UNDO
 #: po/tmp/ap_String_Id.h.h:391
 msgid "&Undo"
-msgstr "&Razveljavi"
+msgstr "Razvel&javi"
 
 #. DLG_Options_Label_ViewUnits
 #. DLG_PageSetup_Units
@@ -963,7 +964,7 @@ msgstr "Po&gled"
 #. MENU_LABEL_VIEW_WEB
 #: po/tmp/ap_String_Id.h.h:398
 msgid "&Web Layout"
-msgstr "Sp&letna postavitev"
+msgstr "&Spletna postavitev"
 
 #. MENU_LABEL_VIEW_ZOOM_WHOLE
 #: po/tmp/ap_String_Id.h.h:400
@@ -978,17 +979,17 @@ msgstr "&Cela beseda"
 #. DLG_Para_PushWidowOrphanControl
 #: po/tmp/ap_String_Id.h.h:404
 msgid "&Widow/Orphan control"
-msgstr "Nadzor &vdovelih/zapuπËenih"
+msgstr "Nadzor &vdovelih/zapu≈°ƒçenih"
 
 #. DLG_PageSetup_Width
 #: po/tmp/ap_String_Id.h.h:406
 msgid "&Width:"
-msgstr "©&irina:"
+msgstr "≈†&irina:"
 
 #. MENU_LABEL_TOOLS_WORDCOUNT
 #: po/tmp/ap_String_Id.h.h:408
 msgid "&Word Count"
-msgstr "©tetje &besed"
+msgstr "≈†tetje &besed"
 
 #. MENU_LABEL_VIEW_ZOOM_MENU
 #. MENU_LABEL_VIEW_ZOOM
@@ -999,12 +1000,12 @@ msgstr "&Zoom"
 #. DLG_ListRevisions_LevelZero
 #: po/tmp/ap_String_Id.h.h:413
 msgid "(All revisions visible)"
-msgstr "(vse razliËice vidne)"
+msgstr "(vse razliƒçice vidne)"
 
 #. DLG_Spell_NoSuggestions
 #: po/tmp/ap_String_Id.h.h:415
 msgid "(no spelling suggestions)"
-msgstr "(ni nasveta za Ërkovanje)"
+msgstr "(ni nasveta za ƒçrkovanje)"
 
 #. DLG_Para_SpecialNone
 #: po/tmp/ap_String_Id.h.h:417
@@ -1032,7 +1033,7 @@ msgstr "1,5 vrstice"
 #. TOOLBAR_TOOLTIP_MIDDLE_SPACE
 #: po/tmp/ap_String_Id.h.h:428
 msgid "1.5 spacing"
-msgstr "1.5 razmika"
+msgstr "1,5 razmika"
 
 #. TOOLBAR_LABEL_PARA_12BEFORE
 #: po/tmp/ap_String_Id.h.h:430
@@ -1064,8 +1065,8 @@ msgid ""
 "A fatal error has just occurred. Abiword is going to shutdown.\n"
 "The current document has been saved to disc with a \".saved\" extension."
 msgstr ""
-"Priπlo je do usodne napake. Abiword se bo zaprl.\n"
-"Trenutni dokument je shranjen na disku s konËnico \".saved\"."
+"Pri≈°lo je do usodne napake. Abiword se bo zaprl.\n"
+"Trenutni dokument je shranjen na disku s konƒçnico \".saved\"."
 
 #. DLG_Options_Label_SpellSuggest
 #: po/tmp/ap_String_Id.h.h:444
@@ -1081,23 +1082,23 @@ msgstr "AM/PM"
 #: po/tmp/ap_String_Id.h.h:448
 #, c-format
 msgid "AbiWord cannot open %s. It appears to be an invalid document"
-msgstr "AbiWord ne more odpreti %s. Zdi se, da gre za neveljaven dokument"
+msgstr "AbiWord ne more odpreti %s. Kot ka≈æe, gre za neveljaven dokument"
 
 #. MSG_SpellSelectionDone
 #: po/tmp/ap_String_Id.h.h:450
 msgid "AbiWord finished checking the selection."
-msgstr "AbiWord je konËal preverjanje izbire."
+msgstr "AbiWord je konƒçal preverjanje izbire."
 
 #. DLG_FR_FinishedReplace
 #: po/tmp/ap_String_Id.h.h:452
 #, c-format
 msgid "AbiWord has finished its search of the document and has made %d replacements."
-msgstr "AbiWord je konËal iskanje po dokumentu in opravil %d zamenjav."
+msgstr "AbiWord je konƒçal iskanje po dokumentu in opravil %d zamenjav."
 
 #. DLG_FR_FinishedFind
 #: po/tmp/ap_String_Id.h.h:454
 msgid "AbiWord has finished searching the document."
-msgstr "AbiWord je konËal iskanje po dokumentu."
+msgstr "AbiWord je konƒçal iskanje po dokumentu."
 
 #. WINDOWS_COMCTL_WARNING
 #: po/tmp/ap_String_Id.h.h:456
@@ -1110,10 +1111,10 @@ msgid ""
 "\n"
 "You can use the program, but the toolbar may be missing."
 msgstr ""
-"AbiWord potrebuje novejπo razliËico sistemske datoteke COMCTL32.DLL\n"
-"kot je tista, ki je trenutno v sistemu. (COMCTL32.DLL razliËico 4.72 ali \n"
-"novejπo). Reπitev tega probelma je pojasnjena v FAQ (pogosto zastavljenih \n"
-"vpraπanjih) AbiWordove spletne strani.\n"
+"AbiWord potrebuje novej≈°o razliƒçico sistemske datoteke COMCTL32.DLL\n"
+"kot je tista, ki je trenutno v sistemu. (COMCTL32.DLL razliƒçico 4.72 ali \n"
+"novej≈°o). Re≈°itev tega probelma je pojasnjena v FAQ (pogosto zastavljenih \n"
+"vpra≈°anjih) AbiWordove spletne strani.\n"
 "\n"
 "\thttp://www.abiword.com\n"
 "\n"
@@ -1148,18 +1149,18 @@ msgstr "Sprejmi predlagano spremembo"
 #. TOOLBAR_TOOLTIP_ADD_COLUMN
 #: po/tmp/ap_String_Id.h.h:467
 msgid "Add a column to this table after the current column"
-msgstr "Tej tabeli za trenutnim stolpcem dodaj πe enega"
+msgstr "Tej tabeli za trenutnim stolpcem dodaj ≈°e enega"
 
 #. TOOLBAR_STATUSLINE_ADD_ROW
 #. TOOLBAR_TOOLTIP_ADD_ROW
 #: po/tmp/ap_String_Id.h.h:470
 msgid "Add a row to this table after the current row"
-msgstr "Tej tabeli za trenutno vrstico dodaj πe eno"
+msgstr "Tej tabeli za trenutno vrstico dodaj ≈°e eno"
 
 #. MENU_STATUSLINE_FMT_BORDERS
 #: po/tmp/ap_String_Id.h.h:472
 msgid "Add borders and shading to the selection"
-msgstr "Izbiri dodaj robove in senËenje"
+msgstr "Izbiri dodaj robove in senƒçenje"
 
 #. TOOLBAR_LABEL_ADD_COLUMN
 #: po/tmp/ap_String_Id.h.h:474
@@ -1169,7 +1170,7 @@ msgstr "Dodaj stolpec za"
 #. MENU_STATUSLINE_FMT_BULLETS
 #: po/tmp/ap_String_Id.h.h:476
 msgid "Add or modify bullets and numbering for selected paragraphs"
-msgstr "Za izbrane odstavke dodaj oznaËevanje in oπtevilËevanje"
+msgstr "Za izbrane odstavke dodaj oznaƒçevanje in o≈°tevilƒçevanje"
 
 #. TOOLBAR_LABEL_ADD_ROW
 #: po/tmp/ap_String_Id.h.h:478
@@ -1270,7 +1271,7 @@ msgstr "Arabski seznam"
 #. MSG_AutoRevisionOffWarning
 #: po/tmp/ap_String_Id.h.h:516
 msgid "Are you sure you do not want to maintain full history record? If you proceed, you will not be able to restore earlier versions of this document."
-msgstr "Ste prepriËani, da ne æelite ohraniti polne zgodovine? »e nadaljujete, ne boste mogli obnoviti zgodnejπih razliËic tega dokumenta."
+msgstr "Ste prepriƒçani, da ne ≈æelite ohraniti polne zgodovine? ƒåe nadaljujete, ne boste mogli obnoviti zgodnej≈°ih razliƒçic tega dokumenta."
 
 #. DLG_Para_SpacingAtLeast
 #: po/tmp/ap_String_Id.h.h:518
@@ -1280,7 +1281,7 @@ msgstr "Vsaj"
 #. DLG_Lists_Resume
 #: po/tmp/ap_String_Id.h.h:520
 msgid "Attach to Previous List"
-msgstr "Pripni na prejπnji seznam"
+msgstr "Pripni na prej≈°nji seznam"
 
 #. DLG_MetaData_Author_LBL
 #. DLG_PLUGIN_MANAGER_AUTHOR
@@ -1297,17 +1298,17 @@ msgstr "Samodejno &shranjuj"
 #. DLG_Options_Label_AutoSaveCurrent
 #: po/tmp/ap_String_Id.h.h:526
 msgid "Auto &save current file every"
-msgstr "Samodejno &shrani trenutno datoteko vsakih"
+msgstr "To datoteko &shranjuj vsakih"
 
 #. DLG_Options_Label_AutoSave
 #: po/tmp/ap_String_Id.h.h:528
 msgid "Auto Save"
-msgstr "Samodejno shrani"
+msgstr "Samodejno shranjuj"
 
 #. DLG_Options_Label_SpellAutoReplace
 #: po/tmp/ap_String_Id.h.h:530
 msgid "Auto replace misspelled words"
-msgstr "Samodejno zamenjaj napaËno Ërkovane besede"
+msgstr "Samodejno zamenjaj napaƒçno ƒçrkovane besede"
 
 #. DLG_InsertTable_AutoFit_Capital
 #: po/tmp/ap_String_Id.h.h:532
@@ -1337,12 +1338,12 @@ msgstr "Samodejna velikost stolpca"
 #. DLG_Options_Label_CheckAutoLoadPlugins
 #: po/tmp/ap_String_Id.h.h:542
 msgid "Automatically load all plugins found"
-msgstr "Samodejno naloæi vse najdene vtiËnike"
+msgstr "Samodejno nalo≈æi vse najdene vtiƒçnike"
 
 #. MENU_STATUSLINE_TOOLS_AUTOSPELL
 #: po/tmp/ap_String_Id.h.h:544
 msgid "Automatically spell-check the document"
-msgstr "Samodejno preverjaj Ërkovanje v dokumentu"
+msgstr "Samodejno preverjaj ƒçrkovanje v dokumentu"
 
 #. DLG_Styles_ModifyAutomatic
 #: po/tmp/ap_String_Id.h.h:546
@@ -1394,7 +1395,7 @@ msgstr "Prepreka"
 #. TabToggleBarTab
 #: po/tmp/ap_String_Id.h.h:566
 msgid "Bar Tab"
-msgstr "ZaskoËni tabulator"
+msgstr "Zaskoƒçni tabulator"
 
 #. DLG_Styles_ModifyBasedOn
 #: po/tmp/ap_String_Id.h.h:568
@@ -1404,7 +1405,7 @@ msgstr "Temelji na:"
 #. DLG_Options_Label_BiDiOptions
 #: po/tmp/ap_String_Id.h.h:570
 msgid "Bi-Directional Options"
-msgstr "Dvosmerne moænosti"
+msgstr "Dvosmerne mo≈ænosti"
 
 #. TOOLBAR_LABEL_FMT_BOLD
 #. TOOLBAR_STATUSLINE_FMT_BOLD
@@ -1429,24 +1430,24 @@ msgstr "Zaznamek"
 #: po/tmp/ap_String_Id.h.h:580
 #, c-format
 msgid "Bookmark \"%s\" was not found in this document."
-msgstr "Zaznamek \"%s\" v tem dokumentu ni mogoËe najti."
+msgstr "Zaznamka \"%s\" v tem dokumentu ni mogoƒçe najti."
 
 #. DLG_FormatFrame_Border_Color
 #. DLG_FormatTable_Border_Color
 #: po/tmp/ap_String_Id.h.h:583
 msgid "Border color:"
-msgstr "Barva roba:"
+msgstr "Barva obrobe:"
 
 #. DLG_FormatFrame_Borders
 #. DLG_FormatTable_Borders
 #: po/tmp/ap_String_Id.h.h:586
 msgid "Borders"
-msgstr "Robovi"
+msgstr "Obrobe"
 
 #. MENU_LABEL_FMT_BORDERS
 #: po/tmp/ap_String_Id.h.h:588
 msgid "Borders and Shading"
-msgstr "Robovi in senËenje"
+msgstr "Obrobe in senƒçenje"
 
 #. BottomMarginStatus
 #: po/tmp/ap_String_Id.h.h:590
@@ -1462,14 +1463,14 @@ msgstr "Spodnji rob [%s]"
 #: po/tmp/ap_String_Id.h.h:595
 #: po/tmp/xap_String_Id.h.h:115
 msgid "Bottomline"
-msgstr "Spodnja Ërta"
+msgstr "Spodnja ƒçrta"
 
 #. DLG_Lists_Box_List
 #. STYLE_BOXLIST
 #: po/tmp/ap_String_Id.h.h:597
 #: po/tmp/xap_String_Id.h.h:117
 msgid "Box List"
-msgstr "©katlice"
+msgstr "≈†katlice"
 
 #. FIELD_Application_BuildId
 #: po/tmp/ap_String_Id.h.h:599
@@ -1479,7 +1480,7 @@ msgstr "ID gradnje"
 #. FIELD_Application_Options
 #: po/tmp/ap_String_Id.h.h:601
 msgid "Build Options"
-msgstr "Moænosti gradnje"
+msgstr "Mo≈ænosti gradnje"
 
 #. FIELD_Application_Target
 #: po/tmp/ap_String_Id.h.h:603
@@ -1489,14 +1490,14 @@ msgstr "Cilj gradnje"
 #. DLG_Lists_Type_bullet
 #: po/tmp/ap_String_Id.h.h:605
 msgid "Bullet"
-msgstr "VrstiËne oznake"
+msgstr "Seznamske oznake"
 
 #. DLG_Lists_Bullet_List
 #. STYLE_BULLETLIST
 #: po/tmp/ap_String_Id.h.h:607
 #: po/tmp/xap_String_Id.h.h:125
 msgid "Bullet List"
-msgstr "Kroæci"
+msgstr "Seznam z oznakami"
 
 #. TOOLBAR_LABEL_LISTS_BULLETS
 #. TOOLBAR_STATUSLINE_LISTS_BULLETS
@@ -1508,7 +1509,7 @@ msgstr "Oznake"
 #. MENU_LABEL_FMT_BULLETS
 #: po/tmp/ap_String_Id.h.h:613
 msgid "Bullets and &Numbering"
-msgstr "O&znaËevanje in oπtevilËevanje"
+msgstr "O&znaƒçevanje in o≈°tevilƒçevanje"
 
 #. DLG_Options_Label_Look
 #: po/tmp/ap_String_Id.h.h:615
@@ -1533,27 +1534,27 @@ msgstr "&Zasluge"
 #. MSG_NoBreakInsideTable
 #: po/tmp/ap_String_Id.h.h:623
 msgid "Can not insert a Break inside a table"
-msgstr "Prelom znotraj tabele ni moæen"
+msgstr "Prelom znotraj tabele ni mo≈æen"
 
 #. MSG_NoBreakInsideFrame
 #: po/tmp/ap_String_Id.h.h:625
 msgid "Can not insert a Break inside a text box"
-msgstr "Preloma znotraj okvira z besedilom ni mogoËe vstaviti"
+msgstr "Preloma znotraj okvira z besedilom ni mogoƒçe vstaviti"
 
 #. DLG_Styles_ErrStyleCantDelete
 #: po/tmp/ap_String_Id.h.h:627
 msgid "Cannot delete this style"
-msgstr "Tega sloga ni moæno izbrisati"
+msgstr "Tega sloga ni mo≈æno izbrisati"
 
 #. DLG_Styles_ErrStyleBuiltin
 #: po/tmp/ap_String_Id.h.h:629
 msgid "Cannot modify a builtin style"
-msgstr "Vgrajenega sloga ni moæno spremeniti"
+msgstr "Vgrajenega sloga ni mo≈æno spremeniti"
 
 #. PRINT_CANNOTSTARTPRINTJOB
 #: po/tmp/ap_String_Id.h.h:631
 msgid "Cannot start print job"
-msgstr "Tiskalniπkega posla ni mogoËe zagnati"
+msgstr "Tiskalni≈°kega posla ni mogoƒçe zagnati"
 
 #. DLG_MetaData_Category_LBL
 #: po/tmp/ap_String_Id.h.h:633
@@ -1606,7 +1607,7 @@ msgstr "Spremeni barvo ozadja"
 #. DLG_ToggleCase_Title
 #: po/tmp/ap_String_Id.h.h:654
 msgid "Change Case"
-msgstr "Spremeni velike/male Ërke"
+msgstr "Spremeni velike/male ƒçrke"
 
 #. DLG_Lists_Cur_Change_Start
 #: po/tmp/ap_String_Id.h.h:656
@@ -1646,7 +1647,7 @@ msgstr "Spremeni prednostno smer odstavka"
 #. MENU_STATUSLINE_FMT_TOGGLECASE
 #: po/tmp/ap_String_Id.h.h:669
 msgid "Change the case of the selected text"
-msgstr "Spremeni male/velike Ërke izbranega besedila"
+msgstr "Spremeni male/velike ƒçrke izbranega besedila"
 
 #. MENU_STATUSLINE_FMT_FONT
 #: po/tmp/ap_String_Id.h.h:671
@@ -1667,12 +1668,12 @@ msgstr "Spremeni jezik izbranega besedila"
 #. MENU_STATUSLINE_FMT_COLUMNS
 #: po/tmp/ap_String_Id.h.h:678
 msgid "Change the number of columns"
-msgstr "Spremeni πtevilo stolpcev"
+msgstr "Spremeni ≈°tevilo stolpcev"
 
 #. MENU_STATUSLINE_FILE_PAGESETUP
 #: po/tmp/ap_String_Id.h.h:680
 msgid "Change the printing options"
-msgstr "Spremeni moænosti tiskanja"
+msgstr "Spremeni mo≈ænosti tiskanja"
 
 #. MENU_STATUSLINE_FMT_FRAME
 #: po/tmp/ap_String_Id.h.h:682
@@ -1690,7 +1691,7 @@ msgstr "Spremeni lastnosti okvira z besedilom"
 #. MENU_STATUSLINE_SPELL_SUGGEST_9
 #: po/tmp/ap_String_Id.h.h:692
 msgid "Change to this suggested spelling"
-msgstr "Spremeni v priporoËeno Ërkovanje"
+msgstr "Spremeni v priporoƒçeno ƒçrkovanje"
 
 #. MENU_STATUSLINE_FMT_BACKGROUND
 #: po/tmp/ap_String_Id.h.h:694
@@ -1710,12 +1711,12 @@ msgstr "Znak"
 #. FIELD_Numbers_CharCount
 #: po/tmp/ap_String_Id.h.h:700
 msgid "Character Count"
-msgstr "©tevilo znakov"
+msgstr "≈†tevilo znakov"
 
 #. FIELD_Numbers_NbspCount
 #: po/tmp/ap_String_Id.h.h:702
 msgid "Character Count (w/o spaces)"
-msgstr "©tevilo znakov (brez presledkov)"
+msgstr "≈†tevilo znakov (brez presledkov)"
 
 #. DLG_Styles_CharPrev
 #: po/tmp/ap_String_Id.h.h:704
@@ -1735,7 +1736,7 @@ msgstr "Znakov (s presledki):"
 #. MENU_LABEL_TOOLS_SPELL
 #: po/tmp/ap_String_Id.h.h:710
 msgid "Check &Spelling"
-msgstr "Preveri Ë&rkovanje"
+msgstr "Preveri ƒç&rkovanje"
 
 #. DLG_Options_Label_GrammarCheck
 #: po/tmp/ap_String_Id.h.h:712
@@ -1755,12 +1756,12 @@ msgstr "Preveri na spletu za posodobitvami AbiWord"
 #. DLG_Options_Label_SpellCheckAsType
 #: po/tmp/ap_String_Id.h.h:718
 msgid "Check s&pelling as you type"
-msgstr "Med tipkanjem &preverjaj Ërkovanje"
+msgstr "Med tipkanjem &preverjaj ƒçrkovanje"
 
 #. MENU_STATUSLINE_TOOLS_SPELL
 #: po/tmp/ap_String_Id.h.h:720
 msgid "Check the document for incorrect spelling"
-msgstr "Preveri dokument za napaËno Ërkovanje"
+msgstr "Preveri dokument za napaƒçno ƒçrkovanje"
 
 #. DLG_NEW_Choose
 #: po/tmp/ap_String_Id.h.h:722
@@ -1780,7 +1781,7 @@ msgstr "Izberi barvo zaslona za AbiWord"
 #. MENU_STATUSLINE_TOOLS_REVISIONS_SET_VIEW_LEVEL
 #: po/tmp/ap_String_Id.h.h:728
 msgid "Choose which revision you wish to view"
-msgstr "Izberite revizijo, ki si jo æelite ogledati"
+msgstr "Izberite revizijo, ki si jo ≈æelite ogledati"
 
 #. DLG_Goto_Label_Help
 #: po/tmp/ap_String_Id.h.h:730
@@ -1789,42 +1790,42 @@ msgid ""
 "If you want to use the \"Go To\" button, just fill the Number Entry with the desired number.  You can use + and - to perform relative movement.\tI.e., if you write \"+2\" and you select \"Line\", the \"Go To\" will go 2 lines below your current position."
 msgstr ""
 "Izberite cilj na levi strani.\n"
-"»e æelite uporabiti gumb \"Pojdi na\" izpolnite vnos \"©tevilka\" z izbrano πtevilko. Lahko uporabite + in - za relativno premikanje.\tNpr.: Ëe napiπete \"+2\" in izberete \"Vrstico\", potem vas bo gumb \"Pojdi na\" postavil dve vrstici pod trenutnim poloæajem."
+"ƒåe ≈æelite uporabiti gumb \"Pojdi na\" izpolnite vnos \"≈†tevilka\" z izbrano ≈°tevilko. Lahko uporabite + in - za relativno premikanje.\tNpr.: ƒçe napi≈°ete \"+2\" in izberete \"Vrstico\", potem vas bo gumb \"Pojdi na\" postavil dve vrstici pod trenutnim polo≈æajem."
 
 #. MENU_LABEL_EDIT_CLEAR
 #: po/tmp/ap_String_Id.h.h:732
 msgid "Cle&ar"
-msgstr "PoËi&sti"
+msgstr "Po&ƒçisti"
 
 #. DLG_Tab_Button_Clear
 #: po/tmp/ap_String_Id.h.h:734
 msgid "Clear"
-msgstr "PoËisti"
+msgstr "Poƒçisti"
 
 #. DLG_Tab_Button_ClearAll
 #: po/tmp/ap_String_Id.h.h:736
 msgid "Clear &All"
-msgstr "PoËisti &vse"
+msgstr "Poƒçisti &vse"
 
 #. DLG_Background_ClearClr
 #: po/tmp/ap_String_Id.h.h:738
 msgid "Clear Background Color"
-msgstr "PoËisti barvo ozadja"
+msgstr "Poƒçisti barvo ozadja"
 
 #. DLG_Background_ClearHighlight
 #: po/tmp/ap_String_Id.h.h:740
 msgid "Clear Highlight Color"
-msgstr "PoËisti barvo osvetlitve"
+msgstr "Poƒçisti barvo osvetlitve"
 
 #. MSG_QueryExit
 #: po/tmp/ap_String_Id.h.h:742
 msgid "Close all windows and exit?"
-msgstr "Zapri vsa okna in konËaj?"
+msgstr "≈Ωelite zapreti vsa okna in konƒçati z delom?"
 
 #. MENU_STATUSLINE_FILE_EXIT
 #: po/tmp/ap_String_Id.h.h:744
 msgid "Close all windows in the application and exit"
-msgstr "Zapri vsa okna programa in konËaj"
+msgstr "Zapri vsa okna programa in konƒçaj"
 
 #. MENU_STATUSLINE_FILE_CLOSE
 #: po/tmp/ap_String_Id.h.h:746
@@ -1904,23 +1905,23 @@ msgstr "Ura prevajanja"
 #. DLG_Break_Continuous
 #: po/tmp/ap_String_Id.h.h:775
 msgid "Con&tinuous"
-msgstr "&NadaljujoË"
+msgstr "&Zvezen"
 
 #. DLG_MarkRevisions_Check1Label
 #: po/tmp/ap_String_Id.h.h:777
 #, c-format
 msgid "Continue previous revision (number %d)"
-msgstr "Nadaljuj prejπnjo revizijo (πtevilka %d)"
+msgstr "Nadaljuj prej≈°njo revizijo (≈°tevilka %d)"
 
 #. FIELD_Document_Contributor
 #: po/tmp/ap_String_Id.h.h:779
 msgid "Contributor"
-msgstr "Soavtor"
+msgstr "Avtor prispevka"
 
 #. DLG_MetaData_CoAuthor_LBL
 #: po/tmp/ap_String_Id.h.h:781
 msgid "Contributor(s):"
-msgstr "Sovator(ji):"
+msgstr "Avtor(ji) prispevkov:"
 
 #. MENU_STATUSLINE_TABLE_TEXTTOTABLE
 #: po/tmp/ap_String_Id.h.h:783
@@ -1977,46 +1978,46 @@ msgstr "Kopiraj mesto hiperpovezave"
 #. MENU_STATUSLINE_EDIT_COPY_FRAME
 #: po/tmp/ap_String_Id.h.h:805
 msgid "Copy the Text Box to the clipboard"
-msgstr "Kopiraj okvir z besedilom na odloæiπËe"
+msgstr "Kopiraj okvir z besedilom na odlo≈æi≈°ƒçe"
 
 #. MENU_STATUSLINE_EDIT_CUT_FRAME
 #: po/tmp/ap_String_Id.h.h:807
 msgid "Copy the Text Box to the clipboard then remove it"
-msgstr "Kopiraj okvir z besedilom na odloæiπËe, nato ga odstrani"
+msgstr "Kopiraj okvir z besedilom na odlo≈æi≈°ƒçe, nato ga odstrani"
 
 #. MENU_STATUSLINE_EDIT_COPY
 #: po/tmp/ap_String_Id.h.h:809
 msgid "Copy the selection and put it on the Clipboard"
-msgstr "Kopiraj izbiro in jo daj na odloæiπËe"
+msgstr "Kopiraj izbiro in jo daj na odlo≈æi≈°ƒçe"
 
 #. MSG_IE_CouldNotOpen
 #: po/tmp/ap_String_Id.h.h:811
 #, c-format
 msgid "Could not open file %s for writing"
-msgstr "Nisem mogel odpreti datoteke %s za pisanje"
+msgstr "Datoteke %s ni mogoƒçe odpreti za pisanje"
 
 #. MSG_OpenFailed
 #: po/tmp/ap_String_Id.h.h:813
 #, c-format
 msgid "Could not open file %s."
-msgstr "Nisem mogel odpreti datoteke %s."
+msgstr "Datoteke %s ni mogoƒçe odpreti."
 
 #. MSG_IE_CouldNotWrite
 #: po/tmp/ap_String_Id.h.h:815
 #, c-format
 msgid "Could not write to file %s"
-msgstr "Nisem mogel pisati v datoteko %s"
+msgstr "V datoteko %s ni mogoƒçe pisati."
 
 #. MSG_SaveFailed
 #: po/tmp/ap_String_Id.h.h:817
 #, c-format
 msgid "Could not write to the file %s."
-msgstr "Nisem mogel pisati v datoteko %s."
+msgstr "V datoteko %s ni mogoƒçe pisati."
 
 #. MENU_STATUSLINE_TOOLS_WORDCOUNT
 #: po/tmp/ap_String_Id.h.h:819
 msgid "Count the number of words in the document"
-msgstr "Preπtej πtevilo besed v dokumentu"
+msgstr "Pre≈°tej besede v dokumentu"
 
 #. FIELD_Document_Coverage
 #: po/tmp/ap_String_Id.h.h:821
@@ -2053,7 +2054,7 @@ msgstr "Ustvari nov dokument iz predloge"
 #. MENU_STATUSLINE_FILE_NEW_USING_TEMPLATE
 #: po/tmp/ap_String_Id.h.h:835
 msgid "Create a new document using a template"
-msgstr "Ustvari nov dokument iz predloge"
+msgstr "Ustvari nov dokument z uporabo predloge"
 
 #. DLG_NEW_StartEmpty
 #: po/tmp/ap_String_Id.h.h:837
@@ -2068,7 +2069,7 @@ msgstr "Avtor"
 #. MENU_LABEL_EDIT_CUT
 #: po/tmp/ap_String_Id.h.h:841
 msgid "Cu&t"
-msgstr "&Izreæi"
+msgstr "&Izre≈æi"
 
 #. FIELD_Datetime_CurrentDate
 #: po/tmp/ap_String_Id.h.h:843
@@ -2103,12 +2104,12 @@ msgstr "Trenutne nastavitve"
 #. FIELD_Datetime_CurrentTime
 #: po/tmp/ap_String_Id.h.h:855
 msgid "Current Time"
-msgstr "Trenutni Ëas"
+msgstr "Trenutni ƒças"
 
 #. DLG_Options_Label_ViewCursorBlink
 #: po/tmp/ap_String_Id.h.h:857
 msgid "Cursor &blink"
-msgstr "&Utripanje kazalca"
+msgstr "&Utripanje kazalke"
 
 #. DLG_Options_Label_SpellCustomDict
 #: po/tmp/ap_String_Id.h.h:859
@@ -2118,7 +2119,7 @@ msgstr "Slovar po meri:"
 #. FIELD_DateTime_Custom
 #: po/tmp/ap_String_Id.h.h:861
 msgid "Customizable date/time"
-msgstr "Datum/ura po meri"
+msgstr "Datum/ura po meri ..."
 
 #. DLG_Lists_Customize
 #: po/tmp/ap_String_Id.h.h:863
@@ -2130,32 +2131,32 @@ msgstr "Prilagojen seznam"
 #. TOOLBAR_TOOLTIP_EDIT_CUT
 #: po/tmp/ap_String_Id.h.h:867
 msgid "Cut"
-msgstr "Izreæi"
+msgstr "Izre≈æi"
 
 #. MENU_STATUSLINE_EDIT_CUTEMBED
 #: po/tmp/ap_String_Id.h.h:869
 msgid "Cut Embedded Object"
-msgstr "Izreæi vdelani predmet"
+msgstr "Izre≈æi vdelani predmet"
 
 #. MENU_LABEL_EDIT_CUTIMAGE
 #: po/tmp/ap_String_Id.h.h:871
 msgid "Cut Image"
-msgstr "Izreæi sliko"
+msgstr "Izre≈æi sliko"
 
 #. MENU_LABEL_EDIT_CUTEMBED
 #: po/tmp/ap_String_Id.h.h:873
 msgid "Cut Object"
-msgstr "Izreæi predmet"
+msgstr "Izre≈æi predmet"
 
 #. MENU_LABEL_EDIT_CUT_FRAME
 #: po/tmp/ap_String_Id.h.h:875
 msgid "Cut Text Box"
-msgstr "Izreæi okvir z besedilom"
+msgstr "Izre≈æi okvir z besedilom"
 
 #. MENU_STATUSLINE_EDIT_CUT
 #: po/tmp/ap_String_Id.h.h:877
 msgid "Cut the selection and put it on the Clipboard"
-msgstr "Izreæi izbiro in jo daj na odloæiπËe"
+msgstr "Izre≈æi izbiro in jo daj na odlo≈æi≈°ƒçe"
 
 #. MENU_LABEL_FMT_DIRECTION
 #: po/tmp/ap_String_Id.h.h:879
@@ -2167,7 +2168,7 @@ msgstr "&Smer"
 #: po/tmp/ap_String_Id.h.h:881
 #: po/tmp/xap_String_Id.h.h:225
 msgid "Dashed List"
-msgstr "»rtice"
+msgstr "ƒårtice"
 
 #. FIELD_Document_Date
 #. DLG_ListRevisions_Column2Label
@@ -2178,44 +2179,44 @@ msgstr "Datum"
 #. MENU_LABEL_INSERT_DATETIME
 #: po/tmp/ap_String_Id.h.h:886
 msgid "Date and &Time"
-msgstr "Datum in &Ëas"
+msgstr "Datum in &ƒças"
 
 #. FIELD_Type_Datetime
 #: po/tmp/ap_String_Id.h.h:888
 msgid "Date and Time"
-msgstr "Datum in Ëas"
+msgstr "Datum in ƒças"
 
 #. FIELD_DateTime_DOY
 #: po/tmp/ap_String_Id.h.h:890
 msgid "Day # in the year"
-msgstr "©tevilka dneva v letu"
+msgstr "≈†tevilka dneva v letu"
 
 #. DLG_Options_Btn_Default
 #: po/tmp/ap_String_Id.h.h:892
 msgid "De&faults"
-msgstr "P&rivzete vrednosti"
+msgstr "P&rivzeto"
 
 #. DLG_Tab_Radio_Decimal
 #: po/tmp/ap_String_Id.h.h:894
 msgid "Decimal"
-msgstr "Desetiπko"
+msgstr "Deseti≈°ko"
 
 #. TabToggleDecimalTab
 #: po/tmp/ap_String_Id.h.h:896
 msgid "Decimal Tab"
-msgstr "Desetiπki zamik"
+msgstr "Deseti≈°ki zamik"
 
 #. TOOLBAR_LABEL_UNINDENT
 #. TOOLBAR_STATUSLINE_UNINDENT
 #. TOOLBAR_TOOLTIP_UNINDENT
 #: po/tmp/ap_String_Id.h.h:900
 msgid "Decrease indent"
-msgstr "Zmanjπaj zamik"
+msgstr "Zmanj≈°aj zamik"
 
 #. FIELD_DateTime_DefaultDateNoTime
 #: po/tmp/ap_String_Id.h.h:902
 msgid "Default date (w/o time)"
-msgstr "Privzet datum (brez Ëasa)"
+msgstr "Privzeti datum (brez ƒçasa)"
 
 #. FIELD_DateTime_DefaultDate
 #: po/tmp/ap_String_Id.h.h:904
@@ -2240,13 +2241,13 @@ msgstr "Privzeta smer besedila od desne proti levi"
 #. DLG_FormatTOC_LevelDefs
 #: po/tmp/ap_String_Id.h.h:912
 msgid "Define Main Properties"
-msgstr "DoloËi glavne lastnosti"
+msgstr "Doloƒçi glavne lastnosti"
 
 #. MENU_STATUSLINE_FMT_STYLE
 #. MENU_STATUSLINE_FMT_STYLE_DEFINE
 #: po/tmp/ap_String_Id.h.h:915
 msgid "Define or apply style for the selection"
-msgstr "DoloËi ali uporabi slog za izbiro"
+msgstr "Doloƒçi ali uporabi slog za izbiro"
 
 #. DLG_Styles_Delete
 #. MENU_STATUSLINE_TABLE_DELETE
@@ -2254,97 +2255,97 @@ msgstr "DoloËi ali uporabi slog za izbiro"
 #: po/tmp/ap_String_Id.h.h:918
 #: po/tmp/xap_String_Id.h.h:239
 msgid "Delete"
-msgstr "Izbriπi"
+msgstr "Izbri≈°i"
 
 #. MENU_STATUSLINE_TABLE_DELETE_CELLS
 #: po/tmp/ap_String_Id.h.h:920
 msgid "Delete Cells"
-msgstr "Izbriπi celice"
+msgstr "Izbri≈°i celice"
 
 #. MENU_LABEL_TABLE_DELETECOLUMN
 #: po/tmp/ap_String_Id.h.h:922
 msgid "Delete Co&lumn"
-msgstr "Izbriπi sto&lpec"
+msgstr "Izbri≈°i sto&lpec"
 
 #. MENU_STATUSLINE_TABLE_DELETE_COLUMNS
 #. MENU_STATUSLINE_TABLE_DELETECOLUMN
 #: po/tmp/ap_String_Id.h.h:925
 msgid "Delete Column"
-msgstr "Izbriπi stolpec"
+msgstr "Izbri≈°i stolpec"
 
 #. MENU_STATUSLINE_EDIT_DELETEEMBED
 #: po/tmp/ap_String_Id.h.h:927
 msgid "Delete Embedded Object"
-msgstr "Izbriπi vdelani predmet"
+msgstr "Izbri≈°i vdelani predmet"
 
 #. MENU_LABEL_EDIT_DELETEIMAGE
 #: po/tmp/ap_String_Id.h.h:929
 msgid "Delete Image"
-msgstr "Izbriπi sliko"
+msgstr "Izbri≈°i sliko"
 
 #. MENU_LABEL_EDIT_DELETEEMBED
 #: po/tmp/ap_String_Id.h.h:931
 msgid "Delete Object"
-msgstr "Izbriπi predmet"
+msgstr "Izbri≈°i predmet"
 
 #. MENU_LABEL_TABLE_DELETEROW
 #: po/tmp/ap_String_Id.h.h:933
 msgid "Delete Ro&w"
-msgstr "Izbriπi &vrstico"
+msgstr "Izbri≈°i &vrstico"
 
 #. MENU_STATUSLINE_TABLE_DELETE_ROWS
 #. MENU_STATUSLINE_TABLE_DELETEROW
 #: po/tmp/ap_String_Id.h.h:936
 msgid "Delete Row"
-msgstr "Izbriπi vrstico"
+msgstr "Izbri≈°i vrstico"
 
 #. MENU_LABEL_TABLE_DELETETABLE
 #: po/tmp/ap_String_Id.h.h:938
 msgid "Delete Tabl&e"
-msgstr "Izbriπi tab&elo"
+msgstr "Izbri≈°i tab&elo"
 
 #. MENU_STATUSLINE_TABLE_DELETE_TABLE
 #. MENU_STATUSLINE_TABLE_DELETETABLE
 #: po/tmp/ap_String_Id.h.h:941
 msgid "Delete Table"
-msgstr "Izbriπi tabelo"
+msgstr "Izbri≈°i tabelo"
 
 #. MENU_LABEL_EDIT_DELETEFRAME
 #: po/tmp/ap_String_Id.h.h:943
 msgid "Delete Text Box"
-msgstr "Izbriπi okvir z besedilom"
+msgstr "Izbri≈°i okvir z besedilom"
 
 #. TOOLBAR_LABEL_DELETE_COLUMN
 #: po/tmp/ap_String_Id.h.h:945
 msgid "Delete column"
-msgstr "Izbriπi stolpec"
+msgstr "Izbri≈°i stolpec"
 
 #. MENU_STATUSLINE_INSERT_DELETE_HYPERLINK
 #: po/tmp/ap_String_Id.h.h:947
 msgid "Delete hyperlink"
-msgstr "Izbriπi hiperpovezavo"
+msgstr "Izbri≈°i hiperpovezavo"
 
 #. TOOLBAR_LABEL_DELETE_ROW
 #: po/tmp/ap_String_Id.h.h:949
 msgid "Delete row"
-msgstr "Izbriπi vrstico"
+msgstr "Izbri≈°i vrstico"
 
 #. MENU_STATUSLINE_EDIT_CLEAR
 #: po/tmp/ap_String_Id.h.h:951
 msgid "Delete the selection"
-msgstr "Izbriπi izbiro"
+msgstr "Izbri≈°i izbiro"
 
 #. TOOLBAR_STATUSLINE_DELETE_COLUMN
 #. TOOLBAR_TOOLTIP_DELETE_COLUMN
 #: po/tmp/ap_String_Id.h.h:954
 msgid "Delete this column from its table"
-msgstr "Izbriπi ta stoplec iz njegove tabele"
+msgstr "Izbri≈°i ta stoplec iz njegove tabele"
 
 #. TOOLBAR_STATUSLINE_DELETE_ROW
 #. TOOLBAR_TOOLTIP_DELETE_ROW
 #: po/tmp/ap_String_Id.h.h:957
 msgid "Delete this row from its table"
-msgstr "Izbriπi to vrstico iz njene tabele"
+msgstr "Izbri≈°i to vrstico iz njene tabele"
 
 #. DLG_Styles_Description
 #. DLG_Styles_ModifyDescription
@@ -2366,7 +2367,7 @@ msgstr "Opis:"
 #: po/tmp/ap_String_Id.h.h:965
 #: po/tmp/xap_String_Id.h.h:244
 msgid "Diamond List"
-msgstr "Kare"
+msgstr "Seznam s kari"
 
 #. DLG_Options_Label_SpellDictionaries
 #: po/tmp/ap_String_Id.h.h:967
@@ -2376,62 +2377,62 @@ msgstr "Slovarji"
 #. DLG_HdrFtr_FooterEven
 #: po/tmp/ap_String_Id.h.h:969
 msgid "Different footer on facing pages"
-msgstr "DrugaËni nogi na sostraneh"
+msgstr "Drugaƒçni nogi na sostraneh"
 
 #. DLG_HdrFtr_FooterFirst
 #: po/tmp/ap_String_Id.h.h:971
 msgid "Different footer on first page"
-msgstr "DrugaËna noga na prvi strani"
+msgstr "Drugaƒçna noga na prvi strani"
 
 #. DLG_HdrFtr_FooterLast
 #: po/tmp/ap_String_Id.h.h:973
 msgid "Different footer on last page"
-msgstr "DrugaËna noga na zadnji strani"
+msgstr "Drugaƒçna noga na zadnji strani"
 
 #. DLG_HdrFtr_HeaderEven
 #: po/tmp/ap_String_Id.h.h:975
 msgid "Different header on facing pages"
-msgstr "DrugaËni glavi na sostraneh"
+msgstr "Drugaƒçni glavi na sostraneh"
 
 #. DLG_HdrFtr_HeaderFirst
 #: po/tmp/ap_String_Id.h.h:977
 msgid "Different header on first page"
-msgstr "DrugaËna glava na prvi strani"
+msgstr "Drugaƒçna glava na prvi strani"
 
 #. DLG_HdrFtr_HeaderLast
 #: po/tmp/ap_String_Id.h.h:979
 msgid "Different header on last page"
-msgstr "DrugaËna glava na zadnji strani"
+msgstr "Drugaƒçna glava na zadnji strani"
 
 #. DLG_Styles_StylesLocked
 #: po/tmp/ap_String_Id.h.h:981
 msgid "Disable all formatting commands, except styles"
-msgstr "IzkljuËi vse oblikovne ukaze razen slogov"
+msgstr "Izkljuƒçi vse oblikovne ukaze razen slogov"
 
 #. MENU_STATUSLINE_HELP_CREDITS
 #: po/tmp/ap_String_Id.h.h:983
 msgid "Display Credits"
-msgstr "Pokaæi zasluge"
+msgstr "Poka≈æi zasluge"
 
 #. MENU_STATUSLINE_HELP_CONTENTS
 #: po/tmp/ap_String_Id.h.h:985
 msgid "Display Help Contents"
-msgstr "Pokaæi vsebino pomoËi"
+msgstr "Poka≈æi vsebino pomoƒçi"
 
 #. MENU_STATUSLINE_HELP_INDEX
 #: po/tmp/ap_String_Id.h.h:987
 msgid "Display Help Index"
-msgstr "Pokaæi kazalo pomoËi"
+msgstr "Poka≈æi kazalo pomoƒçi"
 
 #. MENU_STATUSLINE_VIEW_SHOWPARA
 #: po/tmp/ap_String_Id.h.h:989
 msgid "Display non-printing characters"
-msgstr "Pokaæi nenatisljive znake"
+msgstr "Poka≈æi nenatisljive znake"
 
 #. MENU_STATUSLINE_HELP_ABOUT
 #: po/tmp/ap_String_Id.h.h:991
 msgid "Display program information, version number, and copyright"
-msgstr "Kaæi podatke o programu, πtevilko razliËice in zaπËito avtorskih pravic"
+msgstr "Poka≈æi podatke o programu, ≈°tevilko razliƒçice in za≈°ƒçito avtorskih pravic"
 
 #. DLG_FormatTOC_DispStyle
 #: po/tmp/ap_String_Id.h.h:993
@@ -2441,12 +2442,12 @@ msgstr "Slog prikaza:"
 #. DLG_Options_Prompt_IgnoreResetAll
 #: po/tmp/ap_String_Id.h.h:995
 msgid "Do you want to reset ignored words in all the documents?"
-msgstr "Æelite ponastaviti prezrte besede v vseh dokumentih?"
+msgstr "≈Ωelite ponastaviti prezrte besede v vseh dokumentih?"
 
 #. DLG_Options_Prompt_IgnoreResetCurrent
 #: po/tmp/ap_String_Id.h.h:997
 msgid "Do you want to reset ignored words in the current document?"
-msgstr "Æelite ponastaviti prezrte besede v trenutnem dokumentu?"
+msgstr "≈Ωelite ponastaviti prezrte besede v trenutnem dokumentu?"
 
 #. FIELD_Type_Document
 #: po/tmp/ap_String_Id.h.h:999
@@ -2466,7 +2467,7 @@ msgstr "Dokumenti"
 #. DLG_FormatFootnotes_FootRestartNone
 #: po/tmp/ap_String_Id.h.h:1005
 msgid "Don't restart"
-msgstr "Ne zaËni znova"
+msgstr "Ne zaƒçni znova"
 
 #. DLG_Para_SpacingDouble
 #: po/tmp/ap_String_Id.h.h:1007
@@ -2487,7 +2488,7 @@ msgstr "Dvojni razmiki"
 #. MENU_LABEL_EDIT_LATEXEQUATION
 #: po/tmp/ap_String_Id.h.h:1014
 msgid "Edit Equation"
-msgstr "Uredi enaËbo"
+msgstr "Uredi enaƒçbo"
 
 #. MENU_LABEL_EDIT_EDITFOOTER
 #. TOOLBAR_LABEL_EDIT_FOOTER
@@ -2508,7 +2509,7 @@ msgstr "Uredi glavo"
 #. MENU_STATUSLINE_EDIT_LATEXEQUATION
 #: po/tmp/ap_String_Id.h.h:1026
 msgid "Edit Latex Equation"
-msgstr "Uredi enaËbo LaTeX"
+msgstr "Uredi enaƒçbo LaTeX"
 
 #. MENU_STATUSLINE_INSERT_EDIT_HYPERLINK
 #: po/tmp/ap_String_Id.h.h:1028
@@ -2533,43 +2534,43 @@ msgstr "Uredi glavo trenutne strani"
 #. MENU_LABEL_VIEW_LOCKSTYLES
 #: po/tmp/ap_String_Id.h.h:1036
 msgid "Enable F&ormatting Tools"
-msgstr "VkljuËi orodja za &oblikovanje"
+msgstr "Vkljuƒçi orodja za &oblikovanje"
 
 #. DLG_Options_Label_CheckEnableSmoothScrolling
 #: po/tmp/ap_String_Id.h.h:1038
 msgid "Enable Smooth Scrolling"
-msgstr "VkljuËi gladko drsenje"
+msgstr "Vkljuƒçi gladko drsenje"
 
 #. FIELD_Numbers_EndnoteAnchor
 #: po/tmp/ap_String_Id.h.h:1040
 msgid "Endnote anchor"
-msgstr "Sidro konËne opombe"
+msgstr "Sidro konƒçne opombe"
 
 #. FIELD_Numbers_EndnoteReference
 #: po/tmp/ap_String_Id.h.h:1042
 msgid "Endnote reference"
-msgstr "Navezava na konËno opombo"
+msgstr "Navezava na konƒçno opombo"
 
 #. DLG_FormatFootnotes_EndStyle
 #: po/tmp/ap_String_Id.h.h:1044
 msgid "Endnote style"
-msgstr "Slog konËne opombe"
+msgstr "Slog konƒçne opombe"
 
 #. MENU_LABEL_INSERT_EQUATION
 #: po/tmp/ap_String_Id.h.h:1046
 msgid "Equation"
-msgstr "EnaËba"
+msgstr "&Enaƒçba"
 
 #. FIELD_Error
 #: po/tmp/ap_String_Id.h.h:1048
 msgid "Error calculating value!"
-msgstr "Napaka pri izraËunu vrednosti!"
+msgstr "Napaka pri izraƒçunu vrednosti!"
 
 #. SCRIPT_CANTRUN
 #: po/tmp/ap_String_Id.h.h:1050
 #, c-format
 msgid "Error executing script %s"
-msgstr "Napaka pri izvajanju skripta %s"
+msgstr "Napaka pri izvajanju skripta %s."
 
 #. MSG_ImportError
 #: po/tmp/ap_String_Id.h.h:1052
@@ -2581,7 +2582,7 @@ msgstr "Napaka pri uvozu datoteke %s."
 #: po/tmp/ap_String_Id.h.h:1054
 #, c-format
 msgid "Error while attempting to save %s: could not construct exporter"
-msgstr "Napaka pri poskusu shranjevanja %s: ni mogoËe ustvariti izvoznika"
+msgstr "Napaka pri poskusu shranjevanja %s: ni mogoƒçe ustvariti izvoznika"
 
 #. MSG_SaveFailedName
 #: po/tmp/ap_String_Id.h.h:1056
@@ -2597,7 +2598,7 @@ msgstr "Izvedi skript"
 #. DLG_Para_SpacingExactly
 #: po/tmp/ap_String_Id.h.h:1060
 msgid "Exactly"
-msgstr "NatanËno"
+msgstr "Natanƒçno"
 
 #. DLG_Latex_Example
 #: po/tmp/ap_String_Id.h.h:1062
@@ -2607,7 +2608,7 @@ msgstr "Primer:"
 #. MENU_STATUSLINE_TOOLS_SCRIPTS
 #: po/tmp/ap_String_Id.h.h:1064
 msgid "Execute helper scripts"
-msgstr "Izvedi pomoæne skripte"
+msgstr "Izvedi pomo≈æne skripte"
 
 #. TOOLBAR_STATUSLINE_SCRIPT_PLAY
 #. TOOLBAR_TOOLTIP_SCRIPT_PLAY
@@ -2618,7 +2619,7 @@ msgstr "Izvedi skript"
 #. DLG_ListRevisions_Label1
 #: po/tmp/ap_String_Id.h.h:1069
 msgid "Existing revisions:"
-msgstr "ObstojeËe revizije:"
+msgstr "Obstojeƒçe revizije:"
 
 #. TB_Extra
 #: po/tmp/ap_String_Id.h.h:1071
@@ -2643,7 +2644,7 @@ msgstr "Dodatni parametri:"
 #. MENU_LABEL_INSERT_FILE
 #: po/tmp/ap_String_Id.h.h:1079
 msgid "F&ile"
-msgstr "D&atoteka"
+msgstr "&Datoteka"
 
 #. MENU_LABEL_FORMAT
 #: po/tmp/ap_String_Id.h.h:1081
@@ -2658,7 +2659,7 @@ msgstr "&Celozaslonsko"
 #. DLG_FR_FindLabel
 #: po/tmp/ap_String_Id.h.h:1085
 msgid "Fi&nd what:"
-msgstr "&IπËi besedilo:"
+msgstr "&I≈°ƒçi besedilo:"
 
 #. DLG_MailMerge_Insert_No_Colon
 #: po/tmp/ap_String_Id.h.h:1087
@@ -2692,7 +2693,7 @@ msgstr "Datoteka %s je neznane vrste"
 #: po/tmp/ap_String_Id.h.h:1097
 #, c-format
 msgid "File %s not found"
-msgstr "Datoteke %s ni mogoËe najti"
+msgstr "Datoteke %s ni mogoƒçe najti"
 
 #. FIELD_Application_Filename
 #: po/tmp/ap_String_Id.h.h:1099
@@ -2707,32 +2708,32 @@ msgstr "Slog polnila:"
 #. DLG_FR_FindTitle
 #: po/tmp/ap_String_Id.h.h:1103
 msgid "Find"
-msgstr "PoiπËi"
+msgstr "Najdi"
 
 #. MENU_LABEL_TOOLS_REVISIONS_FIND_NEXT
 #: po/tmp/ap_String_Id.h.h:1105
 msgid "Find &next revision"
-msgstr "PoiπËi &naslednjo revizijo"
+msgstr "Najdi &naslednjo revizijo"
 
 #. MENU_LABEL_TOOLS_REVISIONS_FIND_PREV
 #: po/tmp/ap_String_Id.h.h:1107
 msgid "Find &previous revision"
-msgstr "PoiπËi &prejπnjo revizijo"
+msgstr "Najdi &prej≈°njo revizijo"
 
 #. MENU_STATUSLINE_TOOLS_REVISIONS_FIND_NEXT
 #: po/tmp/ap_String_Id.h.h:1109
 msgid "Find next visible revision in the document"
-msgstr "PoiπËi naslednjo vidno revizijo v dokumentu"
+msgstr "Najdi naslednjo vidno revizijo v dokumentu"
 
 #. MENU_STATUSLINE_TOOLS_REVISIONS_FIND_PREV
 #: po/tmp/ap_String_Id.h.h:1111
 msgid "Find previous visible revision in the document"
-msgstr "PoiπËi prejπnjo vidno revizijo v dokumentu"
+msgstr "Najdi prej≈°njo vidno revizijo v dokumentu"
 
 #. MENU_STATUSLINE_EDIT_FIND
 #: po/tmp/ap_String_Id.h.h:1113
 msgid "Find the specified text"
-msgstr "IπËi navedeno besedilo"
+msgstr "Najdi navedeno besedilo"
 
 #. FirstLineIndentStatus
 #: po/tmp/ap_String_Id.h.h:1115
@@ -2748,7 +2749,7 @@ msgstr "Prva vrstica"
 #. DLG_InsertTable_FixedColSize
 #: po/tmp/ap_String_Id.h.h:1119
 msgid "Fixed column size:"
-msgstr "Nespremenljiva πirina stolpca:"
+msgstr "Nespremenljiva ≈°irina stolpca:"
 
 #. DLG_Lists_FoldingLevel1
 #: po/tmp/ap_String_Id.h.h:1121
@@ -2773,7 +2774,7 @@ msgstr "Prepogni pod ravnjo 4"
 #. DLG_Para_PreviewFollowParagraph
 #: po/tmp/ap_String_Id.h.h:1129
 msgid "Following Paragraph Following Paragraph Following Paragraph Following Paragraph Following Paragraph Following Paragraph Following Paragraph"
-msgstr "SledeËi odstavek SledeËi odstavek SledeËi odstavek SledeËi odstavek SledeËi odstavek SledeËi odstavek SledeËi odstavek SledeËi odstavek SledeËi odstavek"
+msgstr "Sledeƒçi odstavek Sledeƒçi odstavek Sledeƒçi odstavek Sledeƒçi odstavek Sledeƒçi odstavek Sledeƒçi odstavek Sledeƒçi odstavek Sledeƒçi odstavek Sledeƒçi odstavek"
 
 #. DLG_Styles_ModifyFont
 #. TOOLBAR_LABEL_FMT_FONT
@@ -2825,13 +2826,13 @@ msgstr "Pisava:"
 #. MENU_LABEL_INSERT_FOOTNOTE
 #: po/tmp/ap_String_Id.h.h:1152
 msgid "Foot&note"
-msgstr "Sprotna &opomba"
+msgstr "Sprotna opo&mba"
 
 #. DLG_PageNumbers_Footer
 #. MENU_LABEL_INSERT_FOOTER
 #: po/tmp/ap_String_Id.h.h:1155
 msgid "Footer"
-msgstr "V nogi"
+msgstr "&Noga"
 
 #. DLG_HdrFtr_FooterFrame
 #: po/tmp/ap_String_Id.h.h:1157
@@ -2862,7 +2863,7 @@ msgstr "Slog sprotne opombe"
 #. MENU_LABEL_FMT_FOOTNOTES
 #: po/tmp/ap_String_Id.h.h:1167
 msgid "Footnotes and Endnotes"
-msgstr "Sprotne in konËne opombe"
+msgstr "Sprotne in konƒçne opombe"
 
 #. TOOLBAR_STATUSLINE_FMT_DIR_OVERRIDE_LTR
 #. TOOLBAR_TOOLTIP_FMT_DIR_OVERRIDE_LTR
@@ -2910,7 +2911,7 @@ msgstr "Oblikuj vdelani predmet"
 #. DLG_FormatFootnotes_Endnotes
 #: po/tmp/ap_String_Id.h.h:1188
 msgid "Format Endnotes"
-msgstr "Oblikuj konËne opombe"
+msgstr "Oblikuj konƒçne opombe"
 
 #. DLG_FormatFootnotes_Footnotes
 #: po/tmp/ap_String_Id.h.h:1190
@@ -2920,7 +2921,7 @@ msgstr "Oblikuj sprotne opombe"
 #. DLG_FormatFootnotes_Title
 #: po/tmp/ap_String_Id.h.h:1192
 msgid "Format Footnotes and Endnotes"
-msgstr "Oblikuj sprotne in konËne opombe"
+msgstr "Oblikuj sprotne in konƒçne opombe"
 
 #. DLG_HdrFtr_Title
 #: po/tmp/ap_String_Id.h.h:1194
@@ -2997,7 +2998,7 @@ msgstr "Celozaslonsko"
 #. DLG_MetaData_TAB_General
 #: po/tmp/ap_String_Id.h.h:1225
 msgid "General"
-msgstr "Sploπno"
+msgstr "Splo≈°no"
 
 #. DLG_Goto_Btn_Goto
 #: po/tmp/ap_String_Id.h.h:1227
@@ -3029,18 +3030,18 @@ msgstr "&Besedilo naslova:"
 #: po/tmp/ap_String_Id.h.h:1237
 #: po/tmp/xap_String_Id.h.h:367
 msgid "Hand List"
-msgstr "RoËice"
+msgstr "Seznam z roƒçicami"
 
 #. DLG_Para_SpecialHanging
 #: po/tmp/ap_String_Id.h.h:1239
 msgid "Hanging"
-msgstr "ViseËe"
+msgstr "Viseƒçe"
 
 #. DLG_PageNumbers_Header
 #. MENU_LABEL_INSERT_HEADER
 #: po/tmp/ap_String_Id.h.h:1242
 msgid "Header"
-msgstr "V glavi"
+msgstr "&Glava"
 
 #. DLG_HdrFtr_HeaderFrame
 #: po/tmp/ap_String_Id.h.h:1244
@@ -3065,9 +3066,9 @@ msgid ""
 " To enter this mode choose View then Print Layout from the Menus. \n"
 " Would you like to enter Print Layout mode right now?"
 msgstr ""
-"Glave in noge so lahko ustvarjene in urejane le v tiskalniπkem naËinu pogleda. \n"
-" Za vstop v ta naËin kliknite \"Pogled\" in nato \"Tiskalniπki pogled\". \n"
-" Æelite sedaj vstopiti v tiskalniπk pogled?"
+"Glave in noge so lahko ustvarjene in urejane le v tiskalni≈°kem naƒçinu pogleda. \n"
+" Za vstop v ta naƒçin kliknite \"Pogled\" in nato \"Tiskalni≈°ki pogled\". \n"
+" ≈Ωelite sedaj vstopiti v tiskalni≈°k pogled?"
 
 #. DLG_Stylist_HeadingStyles
 #: po/tmp/ap_String_Id.h.h:1252
@@ -3084,7 +3085,7 @@ msgstr "Slog naslova:"
 #: po/tmp/ap_String_Id.h.h:1256
 #: po/tmp/xap_String_Id.h.h:383
 msgid "Heart List"
-msgstr "SrËeca"
+msgstr "Seznam s srƒçeci"
 
 #. DLG_Lists_Hebrew_List
 #: po/tmp/ap_String_Id.h.h:1258
@@ -3096,17 +3097,17 @@ msgstr "Hebrejski seznam"
 #. TOOLBAR_TOOLTIP_HELP
 #: po/tmp/ap_String_Id.h.h:1262
 msgid "Help"
-msgstr "PomoË"
+msgstr "Pomoƒç"
 
 #. MENU_LABEL_HELP_CONTENTS
 #: po/tmp/ap_String_Id.h.h:1264
 msgid "Help &Contents"
-msgstr "&Vsebina pomoËi"
+msgstr "&Vsebina pomoƒçi"
 
 #. MENU_LABEL_HELP_INDEX
 #: po/tmp/ap_String_Id.h.h:1266
 msgid "Help &Introduction"
-msgstr "&Uvod v pomoË"
+msgstr "&Uvod v pomoƒç"
 
 #. DLG_Options_Label_Hide
 #: po/tmp/ap_String_Id.h.h:1268
@@ -3116,7 +3117,7 @@ msgstr "Skrij"
 #. DLG_Options_Label_SpellHideErrors
 #: po/tmp/ap_String_Id.h.h:1270
 msgid "Hide &spelling errors in the document"
-msgstr "Skrij Ë&rkovalne napake v dokumentu"
+msgstr "Skrij ƒç&rkovalne napake v dokumentu"
 
 #. DLG_Lists_FoldingLevelexp
 #: po/tmp/ap_String_Id.h.h:1272
@@ -3181,7 +3182,7 @@ msgstr "Slika za ozadje"
 #: po/tmp/ap_String_Id.h.h:1297
 #: po/tmp/xap_String_Id.h.h:417
 msgid "Implies List"
-msgstr "PuπËice"
+msgstr "Seznam s pu≈°ƒçicami"
 
 #. MENU_STATUSLINE_FILE_IMPORTSTYLES
 #: po/tmp/ap_String_Id.h.h:1299
@@ -3196,14 +3197,14 @@ msgstr "V uporabi"
 #. WORD_PassInvalid
 #: po/tmp/ap_String_Id.h.h:1303
 msgid "Incorrect Password"
-msgstr "NapaËno geslo"
+msgstr "Napaƒçno geslo"
 
 #. TOOLBAR_LABEL_INDENT
 #. TOOLBAR_STATUSLINE_INDENT
 #. TOOLBAR_TOOLTIP_INDENT
 #: po/tmp/ap_String_Id.h.h:1307
 msgid "Increase indent"
-msgstr "PoveËaj zamik"
+msgstr "Poveƒçaj zamik"
 
 #. DLG_Para_LabelIndentation
 #: po/tmp/ap_String_Id.h.h:1309
@@ -3218,17 +3219,17 @@ msgstr "Zamiki in razmiki"
 #. DLG_ToggleCase_FirstUpperCase
 #: po/tmp/ap_String_Id.h.h:1313
 msgid "Initial Caps"
-msgstr "ZaËetne velike zaËetnice"
+msgstr "Zaƒçetne velike zaƒçetnice"
 
 #. DLG_FormatFootnotes_EndInitialVal
 #: po/tmp/ap_String_Id.h.h:1315
 msgid "Initial Endnote value"
-msgstr "ZaËetna vrednost konËne opombe"
+msgstr "Zaƒçetna vrednost konƒçne opombe"
 
 #. DLG_FormatFootnotes_FootInitialVal
 #: po/tmp/ap_String_Id.h.h:1317
 msgid "Initial Footnote value"
-msgstr "ZaËetna vrednost sprotne opombe"
+msgstr "Zaƒçetna vrednost sprotne opombe"
 
 #. DLG_Break_Insert
 #. MENU_STATUSLINE_TABLE_INSERT
@@ -3272,22 +3273,22 @@ msgstr "Vstavi celice"
 #. MENU_STATUSLINE_EDIT_PASTE
 #: po/tmp/ap_String_Id.h.h:1335
 msgid "Insert Clipboard contents"
-msgstr "Vstavi vsebino odloæiπËa"
+msgstr "Vstavi vsebino odlo≈æi≈°ƒça"
 
 #. DLG_DateTime_DateTimeTitle
 #: po/tmp/ap_String_Id.h.h:1337
 msgid "Insert Date and Time"
-msgstr "Vstavi datum in Ëas"
+msgstr "Vstavi datum in ƒças"
 
 #. MENU_LABEL_TOOLTIP_INSERT_EQUATION
 #: po/tmp/ap_String_Id.h.h:1339
 msgid "Insert Equation"
-msgstr "Vstavi enaËbo"
+msgstr "Vstavi enaƒçbo"
 
 #. MENU_LABEL_TOOLTIP_INSERT_EQUATION_LATEX
 #: po/tmp/ap_String_Id.h.h:1341
 msgid "Insert Equation from a LaTeX expression"
-msgstr "Vstavi enaËbo iz izraza LaTeX"
+msgstr "Vstavi enaƒçbo iz izraza LaTeX"
 
 #. DLG_Field_FieldTitle_Capital
 #: po/tmp/ap_String_Id.h.h:1343
@@ -3308,7 +3309,7 @@ msgstr "Vstavi sliko"
 #. DLG_MailMerge_MailMergeTitle
 #: po/tmp/ap_String_Id.h.h:1350
 msgid "Insert Mail Merge Field"
-msgstr "Vstavi polje spajanja poπto"
+msgstr "Vstavi polje spajanja po≈°to"
 
 #. MENU_LABEL_TOOLTIP_INSERT_EQUATION_FILE
 #: po/tmp/ap_String_Id.h.h:1352
@@ -3325,7 +3326,7 @@ msgstr "Vstavi tabelo"
 #. MENU_STATUSLINE_INSERT_DIRECTIONMARKER
 #: po/tmp/ap_String_Id.h.h:1358
 msgid "Insert Unicode direction marker into the document"
-msgstr "V dokument vstavi oznaËbo smeri Unicode"
+msgstr "V dokument vstavi oznaƒçbo smeri Unicode"
 
 #. MENU_STATUSLINE_INSERT_FOOTER
 #: po/tmp/ap_String_Id.h.h:1360
@@ -3356,7 +3357,7 @@ msgstr "V dokument vstavi zaznamek"
 #. MENU_STATUSLINE_INSERT_FIELD
 #: po/tmp/ap_String_Id.h.h:1371
 msgid "Insert a calculated field"
-msgstr "Vstavi raËunsko polje"
+msgstr "Vstavi raƒçunsko polje"
 
 #. MENU_STATUSLINE_TABLE_INSERT_COLUMNS_BEFORE
 #: po/tmp/ap_String_Id.h.h:1373
@@ -3383,7 +3384,7 @@ msgstr "V dokument vstavi hiperpovezaveo"
 #. MENU_STATUSLINE_INSERT_MAILMERGE
 #: po/tmp/ap_String_Id.h.h:1383
 msgid "Insert a mail merge field"
-msgstr "Vstavi polje spajanja poπte"
+msgstr "Vstavi polje spajanja po≈°te"
 
 #. TOOLBAR_STATUSLINE_INSERT_TABLE
 #. TOOLBAR_TOOLTIP_INSERT_TABLE
@@ -3420,17 +3421,17 @@ msgstr "Vstavi simbol ali drug poseben znak"
 #. MENU_STATUSLINE_INSERT_PAGENO
 #: po/tmp/ap_String_Id.h.h:1399
 msgid "Insert an automatically-updated page number"
-msgstr "Vstavi samodejno osveæeno πtevilko strani"
+msgstr "Vstavi samodejno osve≈æeno ≈°tevilko strani"
 
 #. MENU_STATUSLINE_INSERT_ENDNOTE
 #: po/tmp/ap_String_Id.h.h:1401
 msgid "Insert an endnote"
-msgstr "Vstavi konËno opombo"
+msgstr "Vstavi konƒçno opombo"
 
 #. MENU_STATUSLINE_INSERT_GRAPHIC
 #: po/tmp/ap_String_Id.h.h:1403
 msgid "Insert an existing picture from another file"
-msgstr "Vstavi obstojeËo sliko iz druge datoteke"
+msgstr "Vstavi obstojeƒço sliko iz druge datoteke"
 
 #. TOOLBAR_STATUSLINE_IMG
 #. TOOLBAR_TOOLTIP_IMG
@@ -3466,12 +3467,12 @@ msgstr "Vstavi hiperpovezavo"
 #. MENU_STATUSLINE_INSERT_DIRECTIONMARKER_LRM
 #: po/tmp/ap_String_Id.h.h:1418
 msgid "Insert left-to-right direction marker (LRM)"
-msgstr "Vstavi oznaËbo smeri z desne na levo (D->L)"
+msgstr "Vstavi oznaƒçbo smeri z desne na levo (D->L)"
 
 #. MENU_STATUSLINE_INSERT_DIRECTIONMARKER_RLM
 #: po/tmp/ap_String_Id.h.h:1420
 msgid "Insert right-to-left direction marker (RLM)"
-msgstr "Vstavi oznaËbo smeri leve na desno (L->D)"
+msgstr "Vstavi oznaƒçbo smeri leve na desno (L->D)"
 
 #. TOOLBAR_STATUSLINE_INSERT_SYMBOL
 #. TOOLBAR_TOOLTIP_INSERT_SYMBOL
@@ -3487,12 +3488,12 @@ msgstr "Vstavi tabelo"
 #. MENU_STATUSLINE_TABLE_INSERT_SUMROWS
 #: po/tmp/ap_String_Id.h.h:1427
 msgid "Insert the Sum of a Table Column"
-msgstr "Vstavi seπtevek stolpca tabele"
+msgstr "Vstavi se≈°tevek stolpca tabele"
 
 #. MENU_STATUSLINE_TABLE_INSERT_SUMCOLS
 #: po/tmp/ap_String_Id.h.h:1429
 msgid "Insert the Sum of a Table Row"
-msgstr "Vstavi seπtevek vrstice tabele"
+msgstr "Vstavi se≈°tevek vrstice tabele"
 
 #. MENU_STATUSLINE_INSERT_FILE
 #: po/tmp/ap_String_Id.h.h:1431
@@ -3502,17 +3503,17 @@ msgstr "Vstavi vsebino druge datoteke"
 #. MENU_STATUSLINE_INSERT_DATETIME
 #: po/tmp/ap_String_Id.h.h:1433
 msgid "Insert the date and/or time"
-msgstr "Vstavi datum in/ali Ëas"
+msgstr "Vstavi datum in/ali ƒças"
 
 #. MENU_STATUSLINE_EDIT_PASTE_SPECIAL
 #: po/tmp/ap_String_Id.h.h:1435
 msgid "Insert unformatted clipboard contents"
-msgstr "Vstavi neoblikovano vsebino odloæiπËa"
+msgstr "Vstavi neoblikovano vsebino odlo≈æi≈°ƒça"
 
 #. DLG_Options_Label_ViewUnprintable
 #: po/tmp/ap_String_Id.h.h:1437
 msgid "Invisible &Layout Marks"
-msgstr "Nevidne &oznaËbe postavitve"
+msgstr "Nevidne &oznaƒçbe postavitve"
 
 #. TOOLBAR_LABEL_FMT_ITALIC
 #. TOOLBAR_STATUSLINE_FMT_ITALIC
@@ -3521,12 +3522,12 @@ msgstr "Nevidne &oznaËbe postavitve"
 #: po/tmp/ap_String_Id.h.h:1441
 #: po/tmp/xap_String_Id.h.h:457
 msgid "Italic"
-msgstr "LeæeËe"
+msgstr "Le≈æeƒçe"
 
 #. MENU_STATUSLINE_INSERT_GOTO_HYPERLINK
 #: po/tmp/ap_String_Id.h.h:1443
 msgid "Jump to hyperlink"
-msgstr "SkoËi na hiperpovezavo"
+msgstr "Skoƒçi na hiperpovezavo"
 
 #. DLG_Para_AlignJustified
 #: po/tmp/ap_String_Id.h.h:1445
@@ -3536,7 +3537,7 @@ msgstr "Obojestranska"
 #. TOOLBAR_LABEL_ALIGN_JUSTIFY
 #: po/tmp/ap_String_Id.h.h:1447
 msgid "Justify"
-msgstr "Obojestranska"
+msgstr "Poravnaj obojestransko"
 
 #. TOOLBAR_STATUSLINE_ALIGN_JUSTIFY
 #. TOOLBAR_TOOLTIP_ALIGN_JUSTIFY
@@ -3552,7 +3553,7 @@ msgstr "Obojestransko poravnaj odstavek"
 #. DLG_Para_PushKeepWithNext
 #: po/tmp/ap_String_Id.h.h:1454
 msgid "Keep with ne&xt"
-msgstr "Obdræi z &naslednjim"
+msgstr "Obdr≈æi z &naslednjim"
 
 #. FIELD_PieceTable_Test
 #: po/tmp/ap_String_Id.h.h:1456
@@ -3562,18 +3563,18 @@ msgstr "Kevinov preizkus"
 #. FIELD_Document_Keywords
 #: po/tmp/ap_String_Id.h.h:1458
 msgid "Keywords"
-msgstr "KljuËne besede"
+msgstr "Kljuƒçne besede"
 
 #. DLG_MetaData_Keywords_LBL
 #: po/tmp/ap_String_Id.h.h:1460
 msgid "Keywords:"
-msgstr "KljuËne besede:"
+msgstr "Kljuƒçne besede:"
 
 #. DLG_Latex_LatexTitle
 #. DLG_Latex_LatexEquation
 #: po/tmp/ap_String_Id.h.h:1463
 msgid "LaTeX Equation"
-msgstr "EnaËba LaTeX"
+msgstr "Enaƒçba LaTeX"
 
 #. DLG_Lists_Indent
 #: po/tmp/ap_String_Id.h.h:1465
@@ -3682,7 +3683,7 @@ msgstr "Raven 4"
 #. DLG_Lists_DelimiterString
 #: po/tmp/ap_String_Id.h.h:1509
 msgid "Level Delimiter:"
-msgstr "LoËilo ravni:"
+msgstr "Loƒçilo ravni:"
 
 #. DLG_Lists_Level
 #: po/tmp/ap_String_Id.h.h:1511
@@ -3702,12 +3703,12 @@ msgstr "Vrstico"
 #. FIELD_Numbers_LineCount
 #: po/tmp/ap_String_Id.h.h:1517
 msgid "Line Count"
-msgstr "©tevilo vrstic"
+msgstr "≈†tevilo vrstic"
 
 #. MENU_STATUSLINE_FMT_TOPLINE
 #: po/tmp/ap_String_Id.h.h:1519
 msgid "Line above the selection (toggle)"
-msgstr "»rta nad izbiro (preklopi)"
+msgstr "ƒårta nad izbiro (preklopi)"
 
 #. DLG_Para_TabLabelLineAndPageBreaks
 #: po/tmp/ap_String_Id.h.h:1521
@@ -3717,12 +3718,12 @@ msgstr "Prelomi strani in vrstic"
 #. MENU_STATUSLINE_FMT_BOTTOMLINE
 #: po/tmp/ap_String_Id.h.h:1523
 msgid "Line below the selection (toggle)"
-msgstr "»rta pod izbiro (preklopi)"
+msgstr "ƒårta pod izbiro (preklopi)"
 
 #. DLG_Column_Line_Between
 #: po/tmp/ap_String_Id.h.h:1525
 msgid "Line between"
-msgstr "Vmesna Ërta"
+msgstr "Vmesna ƒçrta"
 
 #. DLG_WordCount_Lines
 #: po/tmp/ap_String_Id.h.h:1527
@@ -3764,14 +3765,14 @@ msgstr "Zakleni postavitev trenutnih orodnih vrstic"
 #: po/tmp/ap_String_Id.h.h:1541
 #: po/tmp/xap_String_Id.h.h:494
 msgid "Lower Case List"
-msgstr "Male Ërke"
+msgstr "Seznam z malimi ƒçrkami"
 
 #. DLG_Lists_Lower_Roman_List
 #. STYLE_LOWERROMANLIST
 #: po/tmp/ap_String_Id.h.h:1543
 #: po/tmp/xap_String_Id.h.h:496
 msgid "Lower Roman List"
-msgstr "Male rimske πtevilke"
+msgstr "Seznam z malimi rimskimi ≈°tevilkami"
 
 #. MENU_LABEL_TOOLS_REVISIONS_MERGE_DOCUMENTS
 #: po/tmp/ap_String_Id.h.h:1545
@@ -3782,7 +3783,7 @@ msgstr "&Spoji dokumente"
 #. MENU_STATUSLINE_TOOLS_MAILMERGE
 #: po/tmp/ap_String_Id.h.h:1548
 msgid "Mail Merge"
-msgstr "Spajanje poπte"
+msgstr "Spajanje dokumentov"
 
 #. MENU_STATUSLINE_FMT_BOLD
 #: po/tmp/ap_String_Id.h.h:1550
@@ -3792,7 +3793,7 @@ msgstr "Naredi izbiro krepko (preklopi)"
 #. MENU_STATUSLINE_FMT_ITALIC
 #: po/tmp/ap_String_Id.h.h:1552
 msgid "Make the selection italic (toggle)"
-msgstr "Naredi izbiro leæeËe (preklopi)"
+msgstr "Naredi izbiro le≈æeƒçe (preklopi)"
 
 #. MENU_STATUSLINE_FMT_SUBSCRIPT
 #: po/tmp/ap_String_Id.h.h:1554
@@ -3812,7 +3813,7 @@ msgstr "Upravljaj s spremembami dokumenta"
 #. MENU_STATUSLINE_TOOLS_PLUGINS
 #: po/tmp/ap_String_Id.h.h:1560
 msgid "Manage plugins"
-msgstr "Upravljaj z vtiËniki"
+msgstr "Upravljaj z vtiƒçniki"
 
 #. DLG_PageSetup_Margin
 #: po/tmp/ap_String_Id.h.h:1562
@@ -3822,12 +3823,12 @@ msgstr "Rob"
 #. DLG_MarkRevisions_Title
 #: po/tmp/ap_String_Id.h.h:1564
 msgid "Mark Revisions"
-msgstr "OznaËi revizije"
+msgstr "Oznaƒçi revizije"
 
 #. MENU_STATUSLINE_TOOLS_REVISIONS_MARK
 #: po/tmp/ap_String_Id.h.h:1566
 msgid "Mark changes as you type"
-msgstr "Med tipkanjem oznaËuj spremembe"
+msgstr "Med tipkanjem oznaƒçuj spremembe"
 
 #. FIELD_PieceTable_MartinTest
 #: po/tmp/ap_String_Id.h.h:1568
@@ -3837,7 +3838,7 @@ msgstr "Martinov preizkus"
 #. DLG_Column_Size
 #: po/tmp/ap_String_Id.h.h:1570
 msgid "Max Column size"
-msgstr "NajveËja velikost stolpca"
+msgstr "Najveƒçja velikost stolpca"
 
 #. DLG_MergeCells_Above
 #: po/tmp/ap_String_Id.h.h:1572
@@ -3925,7 +3926,7 @@ msgstr "Spoji s celico desno"
 #. FIELD_DateTime_MilTime
 #: po/tmp/ap_String_Id.h.h:1610
 msgid "Military Time"
-msgstr "Vojaπki Ëas"
+msgstr "Voja≈°ki ƒças"
 
 #. DLG_Options_TabLabel_Misc
 #: po/tmp/ap_String_Id.h.h:1612
@@ -3935,7 +3936,7 @@ msgstr "Razno"
 #. DLG_Stylist_MiscStyles
 #: po/tmp/ap_String_Id.h.h:1614
 msgid "Miscellaneous Styles"
-msgstr "RazliËni slogi"
+msgstr "Razliƒçni slogi"
 
 #. DLG_Styles_ModifyTitle
 #: po/tmp/ap_String_Id.h.h:1616
@@ -3955,22 +3956,22 @@ msgstr "Mesec Dan, Leto"
 #. MENU_STATUSLINE_EDIT_GOTO
 #: po/tmp/ap_String_Id.h.h:1622
 msgid "Move the insertion point to a specific location"
-msgstr "Premakni kazalec na doloËen poloæaj"
+msgstr "Premakni kazalec na doloƒçen polo≈æaj"
 
 #. FIELD_DateTime_MthDayYear
 #: po/tmp/ap_String_Id.h.h:1624
 msgid "Mth. Day, Year"
-msgstr "©t meseca. Dan, Leto"
+msgstr "Mes. Dan, Leto"
 
 #. DLG_Para_SpacingMultiple
 #: po/tmp/ap_String_Id.h.h:1626
 msgid "Multiple"
-msgstr "VeËkraten"
+msgstr "Veƒçkraten"
 
 #. TOOLBAR_LABEL_FILE_NEW
 #: po/tmp/ap_String_Id.h.h:1628
 msgid "New"
-msgstr "Nova"
+msgstr "Nov"
 
 #. DLG_NEW_Title
 #: po/tmp/ap_String_Id.h.h:1630
@@ -3997,7 +3998,7 @@ msgid ""
 "New Starting \n"
 "Value"
 msgstr ""
-"Nova zaËetna \n"
+"Nova zaƒçetna \n"
 "vrednost"
 
 #. DLG_Styles_NewTitle
@@ -4070,39 +4071,39 @@ msgstr "Slog opomb"
 #. DLG_Column_Number_Cols
 #: po/tmp/ap_String_Id.h.h:1665
 msgid "Number of Columns"
-msgstr "©tevilo stolpcev"
+msgstr "≈†tevilo stolpcev"
 
 #. FIELD_Numbers_PagesCount
 #: po/tmp/ap_String_Id.h.h:1667
 msgid "Number of Pages"
-msgstr "©tevilo strani"
+msgstr "≈†tevilo strani"
 
 #. DLG_Column_Number
 #: po/tmp/ap_String_Id.h.h:1669
 msgid "Number of columns"
-msgstr "©tevilo stolpcev"
+msgstr "≈†tevilo stolpcev"
 
 #. DLG_InsertTable_NumCols
 #: po/tmp/ap_String_Id.h.h:1671
 msgid "Number of columns:"
-msgstr "©tevilo stolpcev:"
+msgstr "≈†tevilo stolpcev:"
 
 #. DLG_InsertTable_NumRows
 #: po/tmp/ap_String_Id.h.h:1673
 msgid "Number of rows:"
-msgstr "©tevilo vrstic:"
+msgstr "≈†tevilo vrstic:"
 
 #. DLG_Lists_Type_numbered
 #: po/tmp/ap_String_Id.h.h:1675
 msgid "Numbered"
-msgstr "OπtevilËeno"
+msgstr "O≈°tevilƒçeno"
 
 #. DLG_Lists_Numbered_List
 #. STYLE_NUMBER_LIST
 #: po/tmp/ap_String_Id.h.h:1677
 #: po/tmp/xap_String_Id.h.h:538
 msgid "Numbered List"
-msgstr "OπtevilËen seznam"
+msgstr "O≈°tevilƒçen seznam"
 
 #. DLG_FormatFootnotes_FootnoteRestart
 #. DLG_Styles_ModifyNumbering
@@ -4111,12 +4112,12 @@ msgstr "OπtevilËen seznam"
 #. TOOLBAR_TOOLTIP_LISTS_NUMBERS
 #: po/tmp/ap_String_Id.h.h:1683
 msgid "Numbering"
-msgstr "OπtevilËevanje"
+msgstr "O≈°tevilƒçevanje"
 
 #. FIELD_Type_Numbers
 #: po/tmp/ap_String_Id.h.h:1685
 msgid "Numbers"
-msgstr "©tevilke"
+msgstr "≈†tevilke"
 
 #. InsertModeFieldOVR
 #: po/tmp/ap_String_Id.h.h:1687
@@ -4151,7 +4152,7 @@ msgstr "Odpri dokument z izdelavo kopije"
 #. MENU_STATUSLINE_FILE_RECENT
 #: po/tmp/ap_String_Id.h.h:1699
 msgid "Open a recently used document"
-msgstr "Odpri nedvano odprt dokument"
+msgstr "Odpri nedavno odprt dokument"
 
 #. DLG_NEW_Open
 #. MENU_STATUSLINE_FILE_OPEN
@@ -4159,12 +4160,12 @@ msgstr "Odpri nedvano odprt dokument"
 #. TOOLBAR_TOOLTIP_FILE_OPEN
 #: po/tmp/ap_String_Id.h.h:1704
 msgid "Open an existing document"
-msgstr "Odpri obstojeË dokument"
+msgstr "Odpri obstojeƒçi dokument"
 
 #. MENU_STATUSLINE_WINDOW_NEW
 #: po/tmp/ap_String_Id.h.h:1706
 msgid "Open another window for the document"
-msgstr "Odpri πe eno okno za dokument"
+msgstr "Odpri ≈°e eno okno za dokument"
 
 #. MENU_STATUSLINE_FILE_RECENT_1
 #. MENU_STATUSLINE_FILE_RECENT_2
@@ -4202,12 +4203,12 @@ msgstr "Ob poskusu odpiranja %s je zmanjkalo pomnilnika"
 #: po/tmp/ap_String_Id.h.h:1726
 #: po/tmp/xap_String_Id.h.h:552
 msgid "Overline"
-msgstr "NadËrtano"
+msgstr "Nadƒçrtano"
 
 #. MENU_STATUSLINE_FMT_OVERLINE
 #: po/tmp/ap_String_Id.h.h:1728
 msgid "Overline the selection (toggle)"
-msgstr "PreËrtaj izbiro (preklopi)"
+msgstr "Preƒçrtaj izbiro (preklopi)"
 
 #. MENU_LABEL_FILE_PROPERTIES
 #: po/tmp/ap_String_Id.h.h:1730
@@ -4217,12 +4218,12 @@ msgstr "&Lastnosti"
 #. MENU_LABEL_TOOLS_REVISIONS_PURGE
 #: po/tmp/ap_String_Id.h.h:1732
 msgid "P&urge revisions"
-msgstr "PoËisti &revizije"
+msgstr "Poƒçisti &revizije"
 
 #. MENU_LABEL_EDIT_PASTE_SPECIAL
 #: po/tmp/ap_String_Id.h.h:1734
 msgid "Pa&ste Unformatted"
-msgstr "Prilepi neo&blikovano"
+msgstr "Pri&lepi neoblikovano"
 
 #. DLG_Goto_Target_Page
 #. DLG_PageSetup_Page
@@ -4233,7 +4234,7 @@ msgstr "Stran"
 #. DLG_Para_PushPageBreakBefore
 #: po/tmp/ap_String_Id.h.h:1739
 msgid "Page &break before"
-msgstr "Prelom starni &pred"
+msgstr "Prelom strani &pred"
 
 #. MENU_LABEL_FMT_BACKGROUND
 #: po/tmp/ap_String_Id.h.h:1741
@@ -4253,22 +4254,22 @@ msgstr "Slika strani"
 #. MENU_LABEL_INSERT_PAGENO
 #: po/tmp/ap_String_Id.h.h:1747
 msgid "Page N&umbers"
-msgstr "©t&evilke strani"
+msgstr "&≈†tevilke strani"
 
 #. FIELD_Numbers_PageNumber
 #: po/tmp/ap_String_Id.h.h:1749
 msgid "Page Number"
-msgstr "©tevilka strani"
+msgstr "≈†tevilka strani"
 
 #. DLG_HdrFtr_PageNumberProperties
 #: po/tmp/ap_String_Id.h.h:1751
 msgid "Page Number Properties"
-msgstr "Lastnosti oπtevilËenja strani"
+msgstr "Lastnosti o≈°tevilƒçenja strani"
 
 #. DLG_PageNumbers_Title
 #: po/tmp/ap_String_Id.h.h:1753
 msgid "Page Numbers"
-msgstr "©tevilke strani"
+msgstr "≈†tevilke strani"
 
 #. FIELD_Numbers_PageReference
 #: po/tmp/ap_String_Id.h.h:1755
@@ -4299,7 +4300,7 @@ msgstr "Strani:"
 #. DLG_Para_LabelPagination
 #: po/tmp/ap_String_Id.h.h:1765
 msgid "Pagination"
-msgstr "OznaËbe strani"
+msgstr "O≈°tevilƒçenje strani"
 
 #. DLG_PageSetup_Paper_Size
 #: po/tmp/ap_String_Id.h.h:1767
@@ -4320,7 +4321,7 @@ msgstr "Odstavek"
 #. FIELD_Numbers_ParaCount
 #: po/tmp/ap_String_Id.h.h:1774
 msgid "Paragraph Count"
-msgstr "©tevilo odstavkov"
+msgstr "≈†tevilo odstavkov"
 
 #. TOOLBAR_LABEL_FMT_DOM_DIRECTION
 #: po/tmp/ap_String_Id.h.h:1776
@@ -4340,7 +4341,7 @@ msgstr "Odstavki:"
 #. WORD_PassRequired
 #: po/tmp/ap_String_Id.h.h:1782
 msgid "Password required, this is an encrypted document"
-msgstr "To je πifriran dokument, zato je potrebno geslo"
+msgstr "To je ≈°ifriran dokument, zato je potrebno geslo"
 
 #. TOOLBAR_LABEL_EDIT_PASTE
 #. TOOLBAR_STATUSLINE_EDIT_PASTE
@@ -4357,7 +4358,7 @@ msgstr "Dovoljenja"
 #. DLG_Goto_Target_Picture
 #: po/tmp/ap_String_Id.h.h:1790
 msgid "Picture"
-msgstr "Sliko"
+msgstr "Slika"
 
 #. FIELD_Type_PieceTable
 #: po/tmp/ap_String_Id.h.h:1792
@@ -4383,7 +4384,7 @@ msgstr "Postavitev"
 #. DLG_PageNumbers_Position_No_Colon
 #: po/tmp/ap_String_Id.h.h:1801
 msgid "Position"
-msgstr "Poloæaj"
+msgstr "Polo≈æaj"
 
 #. DLG_FormatFrame_PositionTo
 #: po/tmp/ap_String_Id.h.h:1803
@@ -4408,12 +4409,12 @@ msgstr "Postavi v odstavek"
 #. DLG_PageNumbers_Position
 #: po/tmp/ap_String_Id.h.h:1811
 msgid "Position:"
-msgstr "Poloæaj:"
+msgstr "Polo≈æaj:"
 
 #. MENU_LABEL_TOOLS_OPTIONS
 #: po/tmp/ap_String_Id.h.h:1813
 msgid "Pr&eferences"
-msgstr "N&astavitve"
+msgstr "&Nastavitve"
 
 #. DLG_Options_TabLabel_Preferences
 #. DLG_Options_Label_Schemes
@@ -4455,7 +4456,7 @@ msgstr "Predogled dokumenta pred tiskanjem"
 #. DLG_Para_PreviewPrevParagraph
 #: po/tmp/ap_String_Id.h.h:1835
 msgid "Previous Paragraph Previous Paragraph Previous Paragraph Previous Paragraph Previous Paragraph Previous Paragraph Previous Paragraph"
-msgstr "Prejπnji odstavek Prejπnji odstavek Prejπnji odstavek Prejπnji odstavek Prejπnji odstavek Prejπnji odstavek Prejπnji odstavek "
+msgstr "Prej≈°nji odstavek Prej≈°nji odstavek Prej≈°nji odstavek Prej≈°nji odstavek Prej≈°nji odstavek Prej≈°nji odstavek Prej≈°nji odstavek "
 
 #. TOOLBAR_LABEL_FILE_PRINT
 #. DLG_UP_PrintTitle
@@ -4582,7 +4583,7 @@ msgstr "Obnovi prej razveljavjeno urejanje"
 #. MENU_STATUSLINE_VIEW_ZOOM
 #: po/tmp/ap_String_Id.h.h:1886
 msgid "Reduce or enlarge the document display"
-msgstr "Zmanjπaj ali poveËaj prikaz dokumenta"
+msgstr "Zmanj≈°aj ali poveƒçaj prikaz dokumenta"
 
 #. DLG_MetaData_Relation_LBL
 #: po/tmp/ap_String_Id.h.h:1888
@@ -4648,7 +4649,7 @@ msgstr "Iz dokumenta odstrani glavo te strani"
 #. MENU_STATUSLINE_EDIT_CUTIMAGE
 #: po/tmp/ap_String_Id.h.h:1916
 msgid "Remove the Image and save a copy on the clipboard"
-msgstr "Odstrani sliko in shrani njeno kopijo na odloæiπËe"
+msgstr "Odstrani sliko in shrani njeno kopijo na odlo≈æi≈°ƒçe"
 
 #. MENU_STATUSLINE_EDIT_DELETEIMAGE
 #: po/tmp/ap_String_Id.h.h:1918
@@ -4688,17 +4689,17 @@ msgstr "Zamenjaj &vse"
 #. MENU_STATUSLINE_EDIT_REPLACE
 #: po/tmp/ap_String_Id.h.h:1932
 msgid "Replace the specified text with different text"
-msgstr "Zamenjaj navedeno besedilo z drugaËnim"
+msgstr "Zamenjaj navedeno besedilo z drugaƒçnim"
 
 #. MENU_LABEL_HELP_REPORT_BUG
 #: po/tmp/ap_String_Id.h.h:1934
 msgid "Report a &Bug"
-msgstr "PoroËaj o &hroπËu"
+msgstr "Poroƒçaj o &hro≈°ƒçu"
 
 #. MENU_STATUSLINE_HELP_REPORT_BUG
 #: po/tmp/ap_String_Id.h.h:1936
 msgid "Report a bug and help AbiWord become a better product"
-msgstr "PoroËajte o hroπËu in pomagajte pri izboljπanju AbiWorda"
+msgstr "Poroƒçajte o hro≈°ƒçu in pomagajte pri izbolj≈°anju AbiWorda"
 
 #. MENU_STATUSLINE_VIEW_DEFAULT_TB_LAYOUT
 #: po/tmp/ap_String_Id.h.h:1938
@@ -4713,28 +4714,28 @@ msgstr "Spremeni velikost te slike"
 #. DLG_HdrFtr_RestartNumbers
 #: po/tmp/ap_String_Id.h.h:1942
 msgid "Restart numbering at:"
-msgstr "Znova zaËni πteti pri:"
+msgstr "Znova zaƒçni ≈°teti pri:"
 
 #. DLG_FormatFootnotes_FootRestartPage
 #: po/tmp/ap_String_Id.h.h:1944
 msgid "Restart on each page"
-msgstr "ZaËni znova na vsaki strani"
+msgstr "Zaƒçni znova na vsaki strani"
 
 #. DLG_FormatFootnotes_FootRestartSec
 #. DLG_FormatFootnotes_EndRestartSec
 #: po/tmp/ap_String_Id.h.h:1947
 msgid "Restart on each section"
-msgstr "ZaËni znova ob vsakem odseku"
+msgstr "Zaƒçni znova ob vsakem odseku"
 
 #. DLG_HdrFtr_RestartCheck
 #: po/tmp/ap_String_Id.h.h:1949
 msgid "Restart page numbers on new sections"
-msgstr "Ob novih odsekih zaËni πteti strani od zaËetka"
+msgstr "Ob novih odsekih zaƒçni ≈°teti strani od zaƒçetka"
 
 #. DLG_Lists_Resume_Previous_List
 #: po/tmp/ap_String_Id.h.h:1951
 msgid "Resume Previous List"
-msgstr "Nadaljuj prejπnji seznam"
+msgstr "Nadaljuj prej≈°nji seznam"
 
 #. MENU_STATUSLINE_TOOLS_REVISIONS_AUTO
 #: po/tmp/ap_String_Id.h.h:1953
@@ -4744,18 +4745,18 @@ msgstr "Ohrani vse spremembe dokumenta"
 #. MSG_RevertFile
 #: po/tmp/ap_String_Id.h.h:1955
 msgid "Revert file to last saved state?"
-msgstr "Æelite povrniti datoteko v zadnje shranjeno stanje?"
+msgstr "≈Ωelite povrniti datoteko v zadnje shranjeno stanje?"
 
 #. MENU_STATUSLINE_FILE_REVERT
 #: po/tmp/ap_String_Id.h.h:1957
 msgid "Revert the document to the last saved state"
-msgstr "Povrni datoteko na zadnjo shranjeno razliËico"
+msgstr "Povrni datoteko na zadnjo shranjeno razliƒçico"
 
 #. MSG_RevertBuffer
 #: po/tmp/ap_String_Id.h.h:1959
 #, c-format
 msgid "Revert to saved copy of %s?"
-msgstr "Æelite povrniti shranjeno kopijo %s?"
+msgstr "≈Ωelite povrniti shranjeno kopijo %s?"
 
 #. DLG_ListRevisions_Column1Label
 #: po/tmp/ap_String_Id.h.h:1961
@@ -4801,7 +4802,7 @@ msgstr "Desno poravnaj odstavek"
 #. DLG_Para_DomDirection
 #: po/tmp/ap_String_Id.h.h:1979
 msgid "Right-to-left &dominant"
-msgstr "PrevladujoËa &desna proti levi"
+msgstr "Prevladujoƒça &desna proti levi"
 
 #. FIELD_Document_Rights
 #: po/tmp/ap_String_Id.h.h:1981
@@ -4836,7 +4837,7 @@ msgstr "S&kripte"
 #. MENU_LABEL_TOOLS_REVISIONS_SHOW
 #: po/tmp/ap_String_Id.h.h:1993
 msgid "S&how revisions"
-msgstr "&Pokaæi revizije"
+msgstr "&Poka≈æi revizije"
 
 #. MENU_LABEL_TABLE_SPLIT_CELLS
 #: po/tmp/ap_String_Id.h.h:1995
@@ -4876,13 +4877,13 @@ msgstr "Shrani kot"
 #. MENU_STATUSLINE_EDIT_COPYIMAGE
 #: po/tmp/ap_String_Id.h.h:2009
 msgid "Save a copy of the image on the clipboard"
-msgstr "Shrani kopijo slike v odloæiπËe"
+msgstr "Shrani kopijo slike v odlo≈æi≈°ƒçe"
 
 #. MSG_ConfirmSave
 #: po/tmp/ap_String_Id.h.h:2011
 #, c-format
 msgid "Save changes to document %s before closing?"
-msgstr "Pred zapiranjem shranim dokument %s?"
+msgstr "≈Ωelite pred zapiranjem shraniti dokument %s?"
 
 #. MENU_STATUSLINE_FILE_SAVEEMBED
 #: po/tmp/ap_String_Id.h.h:2013
@@ -4906,7 +4907,7 @@ msgstr "Shrani dokument kot predlogo"
 #. TOOLBAR_TOOLTIP_FILE_SAVEAS
 #: po/tmp/ap_String_Id.h.h:2023
 msgid "Save the document under a different name"
-msgstr "Shrani dokument pod drugaËnim imenom"
+msgstr "Shrani dokument pod drugaƒçnim imenom"
 
 #. MENU_STATUSLINE_FILE_EXPORT
 #: po/tmp/ap_String_Id.h.h:2025
@@ -4926,12 +4927,12 @@ msgstr "Shrani v datoteko"
 #. DLG_PageSetup_Scale
 #: po/tmp/ap_String_Id.h.h:2031
 msgid "Scale..."
-msgstr "PoveËava ..."
+msgstr "Poveƒçava ..."
 
 #. MENU_STATUSLINE_HELP_SEARCH
 #: po/tmp/ap_String_Id.h.h:2033
 msgid "Search for help about..."
-msgstr "IπËi pomoË za ..."
+msgstr "I≈°ƒçi pomoƒç za ..."
 
 #. DLG_WordCount_Update_Rate
 #: po/tmp/ap_String_Id.h.h:2035
@@ -4956,7 +4957,7 @@ msgstr "Prelomi odsekov"
 #. MENU_STATUSLINE_TOOLS_HISTORY
 #: po/tmp/ap_String_Id.h.h:2043
 msgid "See history of the current document"
-msgstr "Pokaæi zgodovino trenutnega dokumenta"
+msgstr "Poka≈æi zgodovino trenutnega dokumenta"
 
 #. MENU_STATUSLINE_TABLE_SELECT
 #. DLG_Select
@@ -5036,37 +5037,37 @@ msgstr "Izbira"
 #. DLG_ToggleCase_SentenceCase
 #: po/tmp/ap_String_Id.h.h:2074
 msgid "Sentence case"
-msgstr "StavËni slog"
+msgstr "Stavƒçni slog"
 
 #. MENU_STATUSLINE_TABLE_TABLETOTEXTCOMMAS
 #: po/tmp/ap_String_Id.h.h:2076
 msgid "Separate table items with commas"
-msgstr "LoËi elemente tabele z vejicami"
+msgstr "Loƒçi elemente tabele z vejicami"
 
 #. MENU_STATUSLINE_TABLE_TABLETOTEXTCOMMASTABS
 #: po/tmp/ap_String_Id.h.h:2078
 msgid "Separate table items with commas and tabs"
-msgstr "LoËi elemente tabele z vejicami in tabulatorji"
+msgstr "Loƒçi elemente tabele z vejicami in tabulatorji"
 
 #. MENU_STATUSLINE_TABLE_TABLETOTEXTTABS
 #: po/tmp/ap_String_Id.h.h:2080
 msgid "Separate table items with tabs"
-msgstr "LoËi elemente tabele s tabulatorji"
+msgstr "Loƒçi elemente tabele s tabulatorji"
 
 #. MENU_LABEL_TABLE_TABLETOTEXTCOMMAS
 #: po/tmp/ap_String_Id.h.h:2082
 msgid "Separate with commas"
-msgstr "LoËi z vejicami"
+msgstr "Loƒçi z vejicami"
 
 #. MENU_LABEL_TABLE_TABLETOTEXTCOMMASTABS
 #: po/tmp/ap_String_Id.h.h:2084
 msgid "Separate with commas and tabs"
-msgstr "LoËi z vejicami in tabulatorji"
+msgstr "Loƒçi z vejicami in tabulatorji"
 
 #. MENU_LABEL_TABLE_TABLETOTEXTTABS
 #: po/tmp/ap_String_Id.h.h:2086
 msgid "Separate with tabs"
-msgstr "LoËi s tabulatorji"
+msgstr "Loƒçi s tabulatorji"
 
 #. DLG_Tab_Button_Set
 #: po/tmp/ap_String_Id.h.h:2088
@@ -5092,12 +5093,12 @@ msgstr "Nastavi sliko"
 #. MENU_LABEL_FMT_SETPOSIMAGE
 #: po/tmp/ap_String_Id.h.h:2097
 msgid "Set Positioned Image"
-msgstr "DoloËi pozicionirano sliko"
+msgstr "Doloƒçi pozicionirano sliko"
 
 #. DLG_FormatFrame_SetTextWrapping
 #: po/tmp/ap_String_Id.h.h:2099
 msgid "Set Text Wrapping"
-msgstr "DoloËite oblivanje besedila"
+msgstr "Doloƒçite oblivanje besedila"
 
 #. MENU_STATUSLINE_FMT_BACKGROUND_PAGE_IMAGE
 #: po/tmp/ap_String_Id.h.h:2101
@@ -5133,12 +5134,12 @@ msgstr "Nastavi nov tabulator"
 #. DLG_FormatTable_NoImageBackground
 #: po/tmp/ap_String_Id.h.h:2114
 msgid "Set no image"
-msgstr "DoloËi brez slike"
+msgstr "Doloƒçi brez slike"
 
 #. MENU_STATUSLINE_TOOLS_OPTIONS
 #: po/tmp/ap_String_Id.h.h:2116
 msgid "Set preferences"
-msgstr "Nastavi moænosti"
+msgstr "Nastavi mo≈ænosti"
 
 #. MENU_STATUSLINE_FMT_TABS
 #: po/tmp/ap_String_Id.h.h:2118
@@ -5153,7 +5154,7 @@ msgstr "Nastavi vrsto in sloge kazala vsebine"
 #. MENU_STATUSLINE_FMT_FOOTNOTES
 #: po/tmp/ap_String_Id.h.h:2122
 msgid "Set the types of Footnotes and Endnotes"
-msgstr "Nastavi vrste sprotnih in konËnih opomb"
+msgstr "Nastavi vrste sprotnih in konƒçnih opomb"
 
 #. MENU_STATUSLINE_FMT_HDRFTR
 #: po/tmp/ap_String_Id.h.h:2124
@@ -5173,74 +5174,74 @@ msgstr "Nastavi to vrsto za naslovno na vsaki strani"
 #. MENU_STATUSLINE_FMT_SETPOSIMAGE
 #: po/tmp/ap_String_Id.h.h:2130
 msgid "Set this image to be positioned"
-msgstr "Nastavi to sliko na doloËeno mesto"
+msgstr "Nastavi to sliko na doloƒçeno mesto"
 
 #. MENU_STATUSLINE_TOOLS_SPELLPREFS
 #: po/tmp/ap_String_Id.h.h:2132
 msgid "Set your spelling preferences"
-msgstr "Nastavi moænosti Ërkovanja"
+msgstr "Nastavi mo≈ænosti ƒçrkovanja"
 
 #. MENU_STATUSLINE_FMT_DOCUMENT
 #: po/tmp/ap_String_Id.h.h:2134
 msgid "Setup your document's page properties such as page size and margins"
-msgstr "Nastavi lastnosti strani vaπega dokumenta kot so velikost strani in odmiki"
+msgstr "Nastavi lastnosti strani va≈°ega dokumenta kot so velikost strani in odmiki"
 
 #. DLG_Styles_ModifyShortCut
 #: po/tmp/ap_String_Id.h.h:2136
 msgid "Shortcut Key"
-msgstr "Tipka za bliænjico"
+msgstr "Tipka za bli≈ænjico"
 
 #. DLG_Options_Label_Show
 #. DLG_Show
 #: po/tmp/ap_String_Id.h.h:2138
 #: po/tmp/xap_String_Id.h.h:661
 msgid "Show"
-msgstr "Pokaæi"
+msgstr "Poka≈æi"
 
 #. MENU_LABEL_VIEW_RULER
 #: po/tmp/ap_String_Id.h.h:2140
 msgid "Show &Ruler"
-msgstr "Pokaæi &ravnilo"
+msgstr "Poka≈æi &ravnilo"
 
 #. TOOLBAR_LABEL_VIEW_SHOWPARA
 #: po/tmp/ap_String_Id.h.h:2142
 msgid "Show All"
-msgstr "Pokaæi vse"
+msgstr "Poka≈æi vse"
 
 #. MENU_LABEL_VIEW_SHOWPARA
 #: po/tmp/ap_String_Id.h.h:2144
 msgid "Show For&matting Marks"
-msgstr "Pokaæi o&blikovne oznake"
+msgstr "Poka≈æi o&blikovne oznake"
 
 #. MENU_LABEL_TOOLS_REVISIONS_SHOW_BEFORE
 #: po/tmp/ap_String_Id.h.h:2146
 msgid "Show document &before revisions"
-msgstr "Pokaæi dokument pre&d revizijami"
+msgstr "Poka≈æi dokument pre&d revizijami"
 
 #. MENU_LABEL_TOOLS_REVISIONS_SHOW_AFTER
 #: po/tmp/ap_String_Id.h.h:2148
 msgid "Show document a&fter revisions"
-msgstr "Pokaæi dokument &po revizijah"
+msgstr "Poka≈æi dokument &po revizijah"
 
 #. MENU_LABEL_TOOLS_REVISIONS_SHOW_AFTERPREV
 #: po/tmp/ap_String_Id.h.h:2150
 msgid "Show document after &previous revisions"
-msgstr "Pokaæi dokument po pred&hodnih revizijah"
+msgstr "Poka≈æi dokument po pred&hodnih revizijah"
 
 #. MENU_STATUSLINE_WINDOW_MORE
 #: po/tmp/ap_String_Id.h.h:2152
 msgid "Show full list of documents"
-msgstr "Pokaæi poln seznam dokumentov"
+msgstr "Poka≈æi poln seznam dokumentov"
 
 #. MENU_STATUSLINE_VIEW_RULER
 #: po/tmp/ap_String_Id.h.h:2154
 msgid "Show or hide the rulers"
-msgstr "Pokaæi/skrij ravnila"
+msgstr "Poka≈æi/skrij ravnila"
 
 #. MENU_STATUSLINE_VIEW_STATUSBAR
 #: po/tmp/ap_String_Id.h.h:2156
 msgid "Show or hide the status bar"
-msgstr "Pokaæi/skrij vrstico stanja"
+msgstr "Poka≈æi/skrij vrstico stanja"
 
 #. MENU_STATUSLINE_VIEW_TB_1
 #. MENU_STATUSLINE_VIEW_TB_2
@@ -5248,43 +5249,43 @@ msgstr "Pokaæi/skrij vrstico stanja"
 #. MENU_STATUSLINE_VIEW_TB_4
 #: po/tmp/ap_String_Id.h.h:2161
 msgid "Show or hide the toolbar"
-msgstr "Pokaæi ali skrij orodno vrstico"
+msgstr "Poka≈æi ali skrij orodno vrstico"
 
 #. MENU_STATUSLINE_TOOLS_REVISIONS_SHOW
 #: po/tmp/ap_String_Id.h.h:2163
 msgid "Show revisions that are present in document"
-msgstr "Pokaæi revizije, prisotne v dokumentu"
+msgstr "Poka≈æi revizije, prisotne v dokumentu"
 
 #. DLG_Options_Label_ShowSplash
 #: po/tmp/ap_String_Id.h.h:2165
 msgid "Show the AbiWord splash screen on application startup"
-msgstr "Pokaæi zaËetni zaslon AbiWorda ob zagonu aplikacije"
+msgstr "Poka≈æi zaƒçetni zaslon AbiWorda ob zagonu aplikacije"
 
 #. MENU_STATUSLINE_TOOLS_REVISIONS_SHOW_AFTERPREV
 #: po/tmp/ap_String_Id.h.h:2167
 msgid "Show what the document looks like after previous revisions"
-msgstr "Pokaæi izgled dokumenta po predhodnih revizijah"
+msgstr "Poka≈æi izgled dokumenta po predhodnih revizijah"
 
 #. MENU_STATUSLINE_TOOLS_REVISIONS_SHOW_AFTER
 #: po/tmp/ap_String_Id.h.h:2169
 msgid "Show what the document looks like after revisions"
-msgstr "Pokaæi izgled dokumenta po revizijah"
+msgstr "Poka≈æi izgled dokumenta po revizijah"
 
 #. MENU_STATUSLINE_TOOLS_REVISIONS_SHOW_BEFORE
 #: po/tmp/ap_String_Id.h.h:2171
 msgid "Show what the document looks like before revisions"
-msgstr "Pokaæi dokument pred revizijami"
+msgstr "Poka≈æi dokument pred revizijami"
 
 #. DLG_Options_Label_ViewShowHide
 #: po/tmp/ap_String_Id.h.h:2173
 msgid "Show..."
-msgstr "Pokaæi ..."
+msgstr "Poka≈æi ..."
 
 #. TOOLBAR_STATUSLINE_VIEW_SHOWPARA
 #. TOOLBAR_TOOLTIP_VIEW_SHOWPARA
 #: po/tmp/ap_String_Id.h.h:2176
 msgid "Show/hide formatting marks"
-msgstr "Pokaæi/skrij oznake oblikovanja"
+msgstr "Poka≈æi/skrij oznake oblikovanja"
 
 #. TB_Simple
 #: po/tmp/ap_String_Id.h.h:2178
@@ -5320,42 +5321,42 @@ msgstr "&Razvrsti tabelo"
 #. MENU_LABEL_TABLE_SORTCOLSASCEND
 #: po/tmp/ap_String_Id.h.h:2191
 msgid "Sort Columns in Ascending Order"
-msgstr "Razvrsti stolpce po naraπËajoËem vrstnem redu"
+msgstr "Razvrsti stolpce po nara≈°ƒçajoƒçem vrstnem redu"
 
 #. MENU_STATUSLINE_TABLE_SORTCOLSASCEND
 #: po/tmp/ap_String_Id.h.h:2193
 msgid "Sort Columns in Ascending Order based on Selected Row"
-msgstr "Razvrsti stolpce po naraπËajoËem vrstnem redu glede na izbrano vrstico"
+msgstr "Razvrsti stolpce po nara≈°ƒçajoƒçem vrstnem redu glede na izbrano vrstico"
 
 #. MENU_LABEL_TABLE_SORTCOLSDESCEND
 #: po/tmp/ap_String_Id.h.h:2195
 msgid "Sort Columns in Descending Order"
-msgstr "Razvrsti stolpce po padajoËem vrstnem redu"
+msgstr "Razvrsti stolpce po padajoƒçem vrstnem redu"
 
 #. MENU_STATUSLINE_TABLE_SORTCOLSDESCEND
 #: po/tmp/ap_String_Id.h.h:2197
 msgid "Sort Columns in Descending Order based on Selected Row"
-msgstr "Razvrsti stolpce po padajoËem vrstnem redu glede na izbrano vrstico"
+msgstr "Razvrsti stolpce po padajoƒçem vrstnem redu glede na izbrano vrstico"
 
 #. MENU_LABEL_TABLE_SORTROWSASCEND
 #: po/tmp/ap_String_Id.h.h:2199
 msgid "Sort Rows in Ascending Order"
-msgstr "Razvrsti vrstice po naraπËajoËem vrstnem redu"
+msgstr "Razvrsti vrstice po nara≈°ƒçajoƒçem vrstnem redu"
 
 #. MENU_STATUSLINE_TABLE_SORTROWSASCEND
 #: po/tmp/ap_String_Id.h.h:2201
 msgid "Sort Rows in Ascending Order based on selected Column"
-msgstr "Razvrsti vrstice po naraπËujoËem vrstnem redu glede na izbrani stolpec"
+msgstr "Razvrsti vrstice po nara≈°ƒçujoƒçem vrstnem redu glede na izbrani stolpec"
 
 #. MENU_LABEL_TABLE_SORTROWSDESCEND
 #: po/tmp/ap_String_Id.h.h:2203
 msgid "Sort Rows in Descending Order"
-msgstr "Razvrsti vrstice po padajoËem vrstnem redu"
+msgstr "Razvrsti vrstice po padajoƒçem vrstnem redu"
 
 #. MENU_STATUSLINE_TABLE_SORTROWSDESCEND
 #: po/tmp/ap_String_Id.h.h:2205
 msgid "Sort Rows in Descending Order based on Selected Column"
-msgstr "Razvrsti vrstice po padajoËem vrstnem redu glede na izbrani stolpec"
+msgstr "Razvrsti vrstice po padajoƒçem vrstnem redu glede na izbrani stolpec"
 
 #. MENU_STATUSLINE_TABLE_SORT
 #: po/tmp/ap_String_Id.h.h:2207
@@ -5392,29 +5393,29 @@ msgstr "Razmiki"
 #. DLG_Options_SpellCheckingTitle
 #: po/tmp/ap_String_Id.h.h:2221
 msgid "Spell Checking"
-msgstr "Preverjanje Ërkovanja"
+msgstr "Preverjanje ƒçrkovanja"
 
 #. TOOLBAR_LABEL_SPELLCHECK
 #: po/tmp/ap_String_Id.h.h:2223
 msgid "Spellcheck"
-msgstr "Preverjanje Ërkovanja"
+msgstr "Preverjanje ƒçrkovanja"
 
 #. TOOLBAR_STATUSLINE_SPELLCHECK
 #. TOOLBAR_TOOLTIP_SPELLCHECK
 #: po/tmp/ap_String_Id.h.h:2226
 msgid "Spellcheck the document"
-msgstr "Preveri Ërkovanje dokumenta"
+msgstr "Preveri ƒçrkovanje dokumenta"
 
 #. DLG_Spell_SpellTitle
 #. DLG_Options_TabLabel_Spelling
 #: po/tmp/ap_String_Id.h.h:2229
 msgid "Spelling"
-msgstr "»rkovanje"
+msgstr "ƒårkovanje"
 
 #. MENU_LABEL_TOOLS_SPELLPREFS
 #: po/tmp/ap_String_Id.h.h:2231
 msgid "Spelling &Options"
-msgstr "&Moænosti Ërkovanja"
+msgstr "&Mo≈ænosti ƒçrkovanja"
 
 #. MENU_LABEL_TABLE_SPLIT_TABLE
 #: po/tmp/ap_String_Id.h.h:2233
@@ -5467,12 +5468,12 @@ msgstr "Razdeli na gornji strani"
 #. MENU_STATUSLINE_TABLE_TEXTTOTABLE_NOSPACES
 #: po/tmp/ap_String_Id.h.h:2254
 msgid "Split on all delimiters except spaces"
-msgstr "Razdeli ob vseh loËilih razen ob presledkih"
+msgstr "Razdeli ob vseh loƒçilih razen ob presledkih"
 
 #. MENU_STATUSLINE_TABLE_TEXTTOTABLE_ALL
 #: po/tmp/ap_String_Id.h.h:2256
 msgid "Split on all word delimiters including spaces"
-msgstr "Razdeli ob vseh loËilih besed, vkljuËno s presledki"
+msgstr "Razdeli ob vseh loƒçilih besed, vkljuƒçno s presledki"
 
 #. MENU_LABEL_TABLE_TEXTTOTABLE_NOSPACES
 #: po/tmp/ap_String_Id.h.h:2258
@@ -5505,7 +5506,7 @@ msgstr "&Slog:"
 #. TB_Standard
 #: po/tmp/ap_String_Id.h.h:2269
 msgid "Standard"
-msgstr "Navaden"
+msgstr "Navadna"
 
 #. DLG_Options_Label_ViewStandardTB
 #: po/tmp/ap_String_Id.h.h:2271
@@ -5522,33 +5523,33 @@ msgstr "Zvezdice"
 #. DLG_Lists_Start
 #: po/tmp/ap_String_Id.h.h:2275
 msgid "Start At:"
-msgstr "ZaËni pri:"
+msgstr "Zaƒçni pri:"
 
 #. DLG_Lists_Start_New_List
 #. DLG_Lists_Start_New
 #: po/tmp/ap_String_Id.h.h:2278
 msgid "Start New List"
-msgstr "ZaËni nov seznam"
+msgstr "Zaƒçni nov seznam"
 
 #. DLG_Lists_Start_Sub
 #: po/tmp/ap_String_Id.h.h:2280
 msgid "Start Sublist"
-msgstr "ZaËni podseznam"
+msgstr "Zaƒçni podseznam"
 
 #. DLG_MarkRevisions_Check2Label
 #: po/tmp/ap_String_Id.h.h:2282
 msgid "Start a new revision"
-msgstr "ZaËni novo revizijo"
+msgstr "Zaƒçni novo revizijo"
 
 #. MENU_LABEL_TOOLS_REVISIONS_NEW_REVISION
 #: po/tmp/ap_String_Id.h.h:2284
 msgid "Start ne&w revision"
-msgstr "ZaËni &novo revizijo"
+msgstr "Zaƒçni &novo revizijo"
 
 #. MENU_STATUSLINE_TOOLS_REVISIONS_NEW_REVISION
 #: po/tmp/ap_String_Id.h.h:2286
 msgid "Start revision distinct from the current one"
-msgstr "ZaËni revizijo, razliËno od trenutne"
+msgstr "Zaƒçni revizijo, razliƒçno od trenutne"
 
 #. DLG_WordCount_Statistics
 #: po/tmp/ap_String_Id.h.h:2288
@@ -5558,12 +5559,12 @@ msgstr "Statistika:"
 #. DLG_Lists_Stop_Current_List
 #: po/tmp/ap_String_Id.h.h:2290
 msgid "Stop Current List"
-msgstr "ZakljuËi trenutni seznam"
+msgstr "Zakljuƒçi trenutni seznam"
 
 #. MENU_LABEL_FMT_STRIKE
 #: po/tmp/ap_String_Id.h.h:2292
 msgid "Stri&ke"
-msgstr "P&reËrtano"
+msgstr "P&reƒçrtano"
 
 #. TOOLBAR_LABEL_FMT_STRIKE
 #. TOOLBAR_STATUSLINE_FMT_STRIKE
@@ -5572,12 +5573,12 @@ msgstr "P&reËrtano"
 #: po/tmp/ap_String_Id.h.h:2296
 #: po/tmp/xap_String_Id.h.h:679
 msgid "Strike"
-msgstr "PreËrtano"
+msgstr "Preƒçrtano"
 
 #. MENU_STATUSLINE_FMT_STRIKE
 #: po/tmp/ap_String_Id.h.h:2298
 msgid "Strikeout the selection (toggle)"
-msgstr "PreËrtaj izbiro (preklopi)"
+msgstr "Preƒçrtaj izbiro (preklopi)"
 
 #. MENU_LABEL_FMT_STYLIST
 #: po/tmp/ap_String_Id.h.h:2300
@@ -5609,7 +5610,7 @@ msgstr "Vrsta sloga"
 #. DLG_Styles_ModifyFollowing
 #: po/tmp/ap_String_Id.h.h:2312
 msgid "Style for following paragraph"
-msgstr "Slog sledeËega odstavka"
+msgstr "Slog sledeƒçega odstavka"
 
 #. DLG_Styles_ErrBlankName
 #: po/tmp/ap_String_Id.h.h:2314
@@ -5666,22 +5667,22 @@ msgstr "Predlagaj le iz &glavnega slovarja"
 #. MENU_LABEL_TABLE_INSERT_SUMROWS
 #: po/tmp/ap_String_Id.h.h:2335
 msgid "Sum a Column"
-msgstr "Seπtej stolpec"
+msgstr "Se≈°tej stolpec"
 
 #. MENU_LABEL_TABLE_INSERT_SUMCOLS
 #: po/tmp/ap_String_Id.h.h:2337
 msgid "Sum a Row"
-msgstr "Seπtej vrstico"
+msgstr "Se≈°tej vrstico"
 
 #. FIELD_Numbers_TableSumRows
 #: po/tmp/ap_String_Id.h.h:2339
 msgid "Sum a Table Column"
-msgstr "Seπtej stolpec tabele"
+msgstr "Se≈°tej stolpec tabele"
 
 #. FIELD_Numbers_TableSumCols
 #: po/tmp/ap_String_Id.h.h:2341
 msgid "Sum a Table Row"
-msgstr "Seπtej vrstico tabele"
+msgstr "Se≈°tej vrstico tabele"
 
 #. DLG_MetaData_TAB_Summary
 #: po/tmp/ap_String_Id.h.h:2343
@@ -5710,7 +5711,7 @@ msgstr "Si&mbol"
 #. TOOLBAR_LABEL_INSERT_SYMBOL
 #: po/tmp/ap_String_Id.h.h:2353
 msgid "Symbol"
-msgstr "Simbol"
+msgstr "Poseben &znak"
 
 #. MENU_LABEL_TABLE
 #: po/tmp/ap_String_Id.h.h:2355
@@ -5731,7 +5732,7 @@ msgstr "Lega tabulatorskega mesta:"
 #. DLG_Tab_Label_TabToClear
 #: po/tmp/ap_String_Id.h.h:2361
 msgid "Tab stops to be cleared:"
-msgstr "Tabulatorska mesta, ki bodo poËiπËena:"
+msgstr "Tabulatorska mesta, ki bodo poƒçi≈°ƒçena:"
 
 #. DLG_FormatTable_Apply_To_Table
 #. MENU_STATUSLINE_TABLE
@@ -5756,7 +5757,7 @@ msgstr "Orodna vrstica tabele"
 #. MENU_LABEL_FMT_TABLEOFCONTENTS
 #: po/tmp/ap_String_Id.h.h:2373
 msgid "Table of Contents"
-msgstr "Kazalo vsebine"
+msgstr "&Kazalo vsebine"
 
 #. FIELD_Numbers_TOCListLabel
 #: po/tmp/ap_String_Id.h.h:2375
@@ -5782,7 +5783,7 @@ msgstr "Zavihki"
 #. DLG_FormatTOC_DetailsTabPage
 #: po/tmp/ap_String_Id.h.h:2384
 msgid "Tabs and Page Numbering"
-msgstr "Tabulatorji in oπtevilËevanje strani"
+msgstr "Tabulatorji in o≈°tevilƒçevanje strani"
 
 #. MENU_LABEL_FMT
 #: po/tmp/ap_String_Id.h.h:2386
@@ -5813,7 +5814,7 @@ msgstr "Poravnava besedila:"
 #. MENU_LABEL_FMT_FRAME
 #: po/tmp/ap_String_Id.h.h:2397
 msgid "Text Box"
-msgstr "Okvir z besedilom"
+msgstr "&Okvir z besedilom"
 
 #. DLG_Lists_PageFolding
 #: po/tmp/ap_String_Id.h.h:2399
@@ -5828,12 +5829,12 @@ msgstr "Oblivanje besedila"
 #. DLG_Options_Label_Both
 #: po/tmp/ap_String_Id.h.h:2403
 msgid "Text and Icon"
-msgstr "Besedilo in ikone"
+msgstr "Besedilo in ikona"
 
 #. MSG_MergeDocsNotRelated
 #: po/tmp/ap_String_Id.h.h:2405
 msgid "The documents you are trying to merge are unrelated. AbiWord will attempt to merge them, but the result might be meaningless."
-msgstr "Dokumenti, ki jih æelite spojiti, niso povezani med seboj. AbiWord jih bo poskusil spojiti, vendar pa bo rezultat morda neuporaben."
+msgstr "Dokumenti, ki jih ≈æelite spojiti, niso povezani med seboj. AbiWord jih bo poskusil spojiti, vendar pa bo rezultat morda neuporaben."
 
 #. DLG_PageSetup_ErrBigMargins
 #: po/tmp/ap_String_Id.h.h:2407
@@ -5843,12 +5844,12 @@ msgstr "Izbrani odmiki so preveliki, da bi ustrezali strani."
 #. DLG_Options_Prompt_YouMustRestart
 #: po/tmp/ap_String_Id.h.h:2409
 msgid "The new user interface language will take effect the next time that you start the application"
-msgstr "Nov jezik uporabniπkega vmesnika bo uveljavljen πele ob ponovnem zagonu aplikacije."
+msgstr "Nov jezik uporabni≈°kega vmesnika bo uveljavljen ≈°ele ob ponovnem zagonu aplikacije."
 
 #. MSG_SpellDone
 #: po/tmp/ap_String_Id.h.h:2411
 msgid "The spelling check is complete."
-msgstr "Preverjanje Ërkovanja je konËano."
+msgstr "Preverjanje ƒçrkovanja je konƒçano."
 
 #. MSG_HyperlinkCrossesBoundaries
 #: po/tmp/ap_String_Id.h.h:2413
@@ -5868,7 +5869,7 @@ msgstr "Debelina:"
 #. MSG_AfterRestartNew
 #: po/tmp/ap_String_Id.h.h:2419
 msgid "This change will only take effect when you restart AbiWord or create a new document."
-msgstr "Ta sprememba bo stopila v veljavo le z vnoviËnim zagonom AbiWorda ali ob ustvarjanju novih dokumentov."
+msgstr "Ta sprememba bo stopila v veljavo le z vnoviƒçnim zagonom AbiWorda ali ob ustvarjanju novih dokumentov."
 
 #. MSG_HiddenRevisions
 #: po/tmp/ap_String_Id.h.h:2421
@@ -5878,7 +5879,7 @@ msgstr "Ta dokument vsebuje revizije, ki so trenutno skrite pred ogledovanjem. O
 #. DLG_Para_PreviewSampleFallback
 #: po/tmp/ap_String_Id.h.h:2423
 msgid "This paragraph represents words as they might appear in your document.  To see text from your document used in this preview, position your cursor in a document paragraph with some text in it and open this dialog."
-msgstr "Ta odstavek predstavlja besede, kot bi se lahko pojavile v vaπem dokumentu. »e æelite tu videti besedilo iz vaπega dokumenta, odprite ta dialog tako, da bosteimeli oznaËeno besedilo oziroma kliknite na desni gumb in izberite \"Odstavek...\"."
+msgstr "Ta odstavek predstavlja besede, kot bi se lahko pojavile v va≈°em dokumentu. ƒåe ≈æelite tu videti besedilo iz va≈°ega dokumenta, odprite ta dialog tako, da bosteimeli oznaƒçeno besedilo oziroma kliknite na desni gumb in izberite \"Odstavek...\"."
 
 #. DLG_Styles_ErrStyleNot
 #: po/tmp/ap_String_Id.h.h:2425
@@ -5904,7 +5905,7 @@ msgstr "Kljukice"
 #. FIELD_DateTime_TimeZone
 #: po/tmp/ap_String_Id.h.h:2431
 msgid "Time Zone"
-msgstr "»asovni pas"
+msgstr "ƒåasovni pas"
 
 #. FIELD_Document_Title
 #: po/tmp/ap_String_Id.h.h:2433
@@ -5942,14 +5943,14 @@ msgstr "Zgornji rob [%s]"
 #: po/tmp/ap_String_Id.h.h:2446
 #: po/tmp/xap_String_Id.h.h:739
 msgid "Topline"
-msgstr "»rta zgoraj"
+msgstr "ƒårta zgoraj"
 
 #. DLG_Lists_Triangle_List
 #. STYLE_TRIANGLELIST
 #: po/tmp/ap_String_Id.h.h:2448
 #: po/tmp/xap_String_Id.h.h:741
 msgid "Triangle List"
-msgstr "TrikotniËki"
+msgstr "Seznam s trikotniki"
 
 #. DLG_Column_Two
 #: po/tmp/ap_String_Id.h.h:2450
@@ -5964,7 +5965,7 @@ msgstr "Vrsta"
 #. DLG_InsertBookmark_Msg
 #: po/tmp/ap_String_Id.h.h:2454
 msgid "Type a name for the bookmark, or select an existing from the list."
-msgstr "Vpiπite ime zaznamka ali izberite obstojeËega iz seznama."
+msgstr "Vpi≈°ite ime zaznamka ali izberite obstojeƒçega iz seznama."
 
 #. DLG_Lists_Type
 #: po/tmp/ap_String_Id.h.h:2456
@@ -5974,7 +5975,7 @@ msgstr "Vrsta seznama:"
 #. DLG_ToggleCase_UpperCase
 #: po/tmp/ap_String_Id.h.h:2458
 msgid "UPPERCASE"
-msgstr "VELIKE »RKE"
+msgstr "VELIKE ƒåRKE"
 
 #. TOOLBAR_LABEL_FMT_UNDERLINE
 #. TOOLBAR_STATUSLINE_FMT_UNDERLINE
@@ -5983,12 +5984,12 @@ msgstr "VELIKE »RKE"
 #: po/tmp/ap_String_Id.h.h:2462
 #: po/tmp/xap_String_Id.h.h:761
 msgid "Underline"
-msgstr "PodËrtano"
+msgstr "Podƒçrtano"
 
 #. MENU_STATUSLINE_FMT_UNDERLINE
 #: po/tmp/ap_String_Id.h.h:2464
 msgid "Underline the selection (toggle)"
-msgstr "PodËrtaj izbiro (preklopi)"
+msgstr "Podƒçrtaj izbiro (preklopi)"
 
 #. TOOLBAR_LABEL_EDIT_UNDO
 #: po/tmp/ap_String_Id.h.h:2466
@@ -6007,14 +6008,14 @@ msgstr "Razveljavi urejanje"
 #: po/tmp/ap_String_Id.h.h:2472
 #: po/tmp/xap_String_Id.h.h:795
 msgid "Upper Case List"
-msgstr "Velike Ërke"
+msgstr "Seznam z velikimi ƒçrkami"
 
 #. DLG_Lists_Upper_Roman_List
 #. STYLE_UPPERROMANLIST
 #: po/tmp/ap_String_Id.h.h:2474
 #: po/tmp/xap_String_Id.h.h:797
 msgid "Upper Roman List"
-msgstr "Velike rimske πtevilke"
+msgstr "Seznam z velikimi rimskimi ≈°tevilkami"
 
 #. DLG_Column_RtlOrder
 #: po/tmp/ap_String_Id.h.h:2476
@@ -6024,39 +6025,39 @@ msgstr "Vrstni red od desne proti levi"
 #. DLG_Options_Label_HebrewContextGlyphs
 #: po/tmp/ap_String_Id.h.h:2478
 msgid "Use glyph shaping for Hebrew"
-msgstr "Uporabi oblikovanje glifov za hebrejπËino"
+msgstr "Uporabi oblikovanje glifov za hebrej≈°ƒçino"
 
 #. DLG_Options_Label_UI
 #: po/tmp/ap_String_Id.h.h:2480
 msgid "User Interface"
-msgstr "Uporabniπki vmesnik"
+msgstr "Uporabni≈°ki vmesnik"
 
 #. DLG_Options_Label_UILang
 #: po/tmp/ap_String_Id.h.h:2482
 msgid "User Interface Language"
-msgstr "Jezik uporabniπkega vmesnika"
+msgstr "Jezik uporabni≈°kega vmesnika"
 
 #. DLG_Stylist_UserStyles
 #: po/tmp/ap_String_Id.h.h:2484
 msgid "User defined Styles"
-msgstr "Uporabniπko doloËeni slogi"
+msgstr "Uporabni≈°ko doloƒçeni slogi"
 
 #. DLG_Tab_Label_Existing
 #: po/tmp/ap_String_Id.h.h:2486
 msgid "User-defined Tabs"
-msgstr "Uporabniπko doloËeni tabulatorji"
+msgstr "Uporabni≈°ko doloƒçeni tabulatorji"
 
 #. DLG_Styles_LBL_UserDefined
 #: po/tmp/ap_String_Id.h.h:2488
 msgid "User-defined styles"
-msgstr "Uporabniπko navedeni slogi"
+msgstr "Uporabni≈°ko navedeni slogi"
 
 #. FIELD_Application_Version
 #. DLG_History_Version_Version
 #: po/tmp/ap_String_Id.h.h:2490
 #: po/tmp/xap_String_Id.h.h:803
 msgid "Version"
-msgstr "RazliËica"
+msgstr "Razliƒçica"
 
 #. DLG_Options_TabLabel_View
 #: po/tmp/ap_String_Id.h.h:2492
@@ -6066,12 +6067,12 @@ msgstr "Pogled"
 #. MENU_STATUSLINE_TOOLS_HISTORY_SHOW
 #: po/tmp/ap_String_Id.h.h:2494
 msgid "View document history"
-msgstr "Pokaæi zgodovino dokumenta"
+msgstr "Poka≈æi zgodovino dokumenta"
 
 #. MENU_STATUSLINE_VIEW_FULLSCREEN
 #: po/tmp/ap_String_Id.h.h:2496
 msgid "View the document in full screen mode"
-msgstr "Pokaæi dokument v celozaslonskem naËinu"
+msgstr "Poka≈æi dokument v celozaslonskem naƒçinu"
 
 #. MENU_STATUSLINE_WINDOW_1
 #. MENU_STATUSLINE_WINDOW_2
@@ -6084,12 +6085,12 @@ msgstr "Pokaæi dokument v celozaslonskem naËinu"
 #. MENU_STATUSLINE_WINDOW_9
 #: po/tmp/ap_String_Id.h.h:2506
 msgid "View this document"
-msgstr "Pokaæi ta dokument"
+msgstr "Poka≈æi ta dokument"
 
 #. DLG_Options_Label_ViewTooltips
 #: po/tmp/ap_String_Id.h.h:2508
 msgid "View tooltips"
-msgstr "Pokaæi nasvete"
+msgstr "Poka≈æi nasvete"
 
 #. DLG_Options_Label_ViewViewFrame
 #: po/tmp/ap_String_Id.h.h:2510
@@ -6115,7 +6116,7 @@ msgstr "Spletna postavitev"
 #. DLG_Styles_LBL_TxtMsg
 #: po/tmp/ap_String_Id.h.h:2518
 msgid "What Hath God Wrought"
-msgstr "Kar koli æe je in bo"
+msgstr "Kar koli ≈æe je in bo"
 
 #. DLG_Options_Label_WithExtension
 #: po/tmp/ap_String_Id.h.h:2520
@@ -6126,7 +6127,7 @@ msgstr "S pripono:"
 #. FIELD_Numbers_WordCount
 #: po/tmp/ap_String_Id.h.h:2523
 msgid "Word Count"
-msgstr "©tetje besed"
+msgstr "≈†tetje besed"
 
 #. DLG_NEW_Tab1
 #: po/tmp/ap_String_Id.h.h:2525
@@ -6136,17 +6137,17 @@ msgstr "Urejanje beseedila"
 #. DLG_WordCount_Words_No_Notes
 #: po/tmp/ap_String_Id.h.h:2527
 msgid "Words (no footnotes/endnotes):"
-msgstr "Besed (brez sprotnih/konËnih opomb):"
+msgstr "Besed (brez sprotnih/konƒçnih opomb):"
 
 #. DLG_Options_Label_SpellUppercase
 #: po/tmp/ap_String_Id.h.h:2529
 msgid "Words in &UPPERCASE"
-msgstr "Besede napisane z &VELIKIMI »RKAMI"
+msgstr "Besede napisane z &VELIKIMI ƒåRKAMI"
 
 #. DLG_Options_Label_SpellNumbers
 #: po/tmp/ap_String_Id.h.h:2531
 msgid "Words with num&bers"
-msgstr "Besede s π&tevilkami"
+msgstr "Besede s ≈°&tevilkami"
 
 #. DLG_WordCount_Words
 #: po/tmp/ap_String_Id.h.h:2533
@@ -6167,7 +6168,7 @@ msgstr "Spremenili ste privzeto smer."
 #. MSG_DirectionModeChg
 #: po/tmp/ap_String_Id.h.h:2539
 msgid "You have changed the direction mode."
-msgstr "Spremenili ste naËin smeri."
+msgstr "Spremenili ste naƒçin smeri."
 
 #. MSG_HyperlinkNoSelection
 #: po/tmp/ap_String_Id.h.h:2541
@@ -6236,7 +6237,7 @@ msgstr "Zoom na 75%"
 #. MENU_STATUSLINE_VIEW_ZOOM_WIDTH
 #: po/tmp/ap_String_Id.h.h:2567
 msgid "Zoom to page width"
-msgstr "Na πirino strani"
+msgstr "Na ≈°irino strani"
 
 #. MENU_STATUSLINE_VIEW_ZOOM_WHOLE
 #: po/tmp/ap_String_Id.h.h:2569
@@ -6256,7 +6257,7 @@ msgstr "dd/mm/ll"
 #. DLG_ToggleCase_LowerCase
 #: po/tmp/ap_String_Id.h.h:2575
 msgid "lowercase"
-msgstr "male Ërke"
+msgstr "male ƒçrke"
 
 #. DLG_Options_Label_Minutes
 #: po/tmp/ap_String_Id.h.h:2577
@@ -6300,7 +6301,7 @@ msgstr "&75%"
 #. DLG_Zoom_PageWidth
 #: po/tmp/xap_String_Id.h.h:17
 msgid "&Page width"
-msgstr "©&irina strani"
+msgstr "≈†&irina strani"
 
 #. DLG_ULANG_SetLangButton
 #: po/tmp/xap_String_Id.h.h:19
@@ -6320,7 +6321,7 @@ msgstr "(brez preverjanja)"
 #. DLG_DocComparison_TestSkipped
 #: po/tmp/xap_String_Id.h.h:27
 msgid "(test skipped)"
-msgstr "(preizkus preskoËen)"
+msgstr "(preizkus preskoƒçen)"
 
 #. DLG_NoSaveFile_DirNotExist
 #: po/tmp/xap_String_Id.h.h:29
@@ -6330,7 +6331,7 @@ msgstr "Imenik na dani poti ne obstaja."
 #. DLG_PLUGIN_MANAGER_TITLE
 #: po/tmp/xap_String_Id.h.h:31
 msgid "AbiWord Plugin Manager"
-msgstr "Upravljalnik vtiËnikov Abiword"
+msgstr "Upravljalnik vtiƒçnikov Abiword"
 
 #. SPELL_CANTLOAD_DLL
 #: po/tmp/xap_String_Id.h.h:33
@@ -6339,20 +6340,20 @@ msgid ""
 "AbiWord cannot find the spelling file %s.dll\n"
 "Please download and install Aspell from http://aspell.net/win32/"
 msgstr ""
-"AbiWord ne najde Ërkovalne datoteke %s.dll\n"
+"AbiWord ne najde ƒçrkovalne datoteke %s.dll\n"
 "Prosimo, prenesite in namestite si Aspell iz http://aspell.net/win32/"
 
 #. MSG_HistoryPartRestore1
 #: po/tmp/xap_String_Id.h.h:35
 #, c-format
 msgid "AbiWord cannot fully restore version %d of the document because the version information is incomplete."
-msgstr "AbiWord ne more obnoviti razliËice dokumenta %d, saj podatki o razliËici niso popolni."
+msgstr "AbiWord ne more obnoviti razliƒçice dokumenta %d, saj podatki o razliƒçici niso popolni."
 
 #. MSG_HistoryNoRestore
 #: po/tmp/xap_String_Id.h.h:37
 #, c-format
 msgid "AbiWord cannot restore version %d of the document because the version information is missing."
-msgstr "AbiWord ne more obnoviti razliËice dokumenta %d, saj so podatki razliËici pomanjkljivi."
+msgstr "AbiWord ne more obnoviti razliƒçice dokumenta %d, saj so podatki razliƒçici pomanjkljivi."
 
 #. DLG_UP_PrintPreviewTitle
 #: po/tmp/xap_String_Id.h.h:39
@@ -6368,7 +6369,7 @@ msgstr "O programu %s"
 #. DLG_PLUGIN_MANAGER_ACTIVE
 #: po/tmp/xap_String_Id.h.h:43
 msgid "Active Plugins"
-msgstr "Aktivni vtiËniki"
+msgstr "Aktivni vtiƒçniki"
 
 #. LANG_AF_ZA
 #: po/tmp/xap_String_Id.h.h:45
@@ -6403,7 +6404,7 @@ msgstr "Vse slikovne datoteke"
 #. DLG_HTMLOPT_ExpAllowAWML
 #: po/tmp/xap_String_Id.h.h:59
 msgid "Allow extra markup in AWML namespace"
-msgstr "Dovoli dodatne oznaËbe v imenskem prostoru AWML"
+msgstr "Dovoli dodatne oznaƒçbe v imenskem prostoru AWML"
 
 #. LANG_AM_ET
 #: po/tmp/xap_String_Id.h.h:61
@@ -6453,12 +6454,12 @@ msgstr "Asamski"
 #. LANG_AST_ES
 #: po/tmp/xap_String_Id.h.h:81
 msgid "Asturian (Spain)"
-msgstr "Asturijski (©panija)"
+msgstr "Asturijski (≈†panija)"
 
 #. DLG_Options_Label_DirMarkerAfterClosingParenthesis
 #: po/tmp/xap_String_Id.h.h:85
 msgid "Auto-insert direction markers"
-msgstr "Samodejno vstavi oznaËbe smeri"
+msgstr "Samodejno vstavi oznaƒçbe smeri"
 
 #. DLG_History_Version_AutoRevisioned
 #: po/tmp/xap_String_Id.h.h:87
@@ -6508,22 +6509,22 @@ msgstr "Beloruski"
 #. LANG_BN_IN
 #: po/tmp/xap_String_Id.h.h:105
 msgid "Bengali"
-msgstr "Bengalsko"
+msgstr "Bengalski"
 
 #. DLG_UP_BlackWhite
 #: po/tmp/xap_String_Id.h.h:107
 msgid "Black & White"
-msgstr "»rno belo"
+msgstr "ƒårno belo"
 
 #. STYLE_BLOCKTEXT
 #: po/tmp/xap_String_Id.h.h:109
 msgid "Block Text"
-msgstr "BloËno besedilo"
+msgstr "Bloƒçno besedilo"
 
 #. DLG_UFS_StyleBoldItalic
 #: po/tmp/xap_String_Id.h.h:113
 msgid "Bold Italic"
-msgstr "Krepko leæeËa"
+msgstr "Krepko le≈æeƒça"
 
 #. LANG_BR_FR
 #: po/tmp/xap_String_Id.h.h:119
@@ -6538,12 +6539,12 @@ msgstr "Ustvarjanje dokumenta:"
 #. LANG_BG_BG
 #: po/tmp/xap_String_Id.h.h:123
 msgid "Bulgarian"
-msgstr "Bulgarski"
+msgstr "Bolgarski"
 
 #. DLG_Cancel
 #: po/tmp/xap_String_Id.h.h:127
 msgid "Cancel"
-msgstr "PrekliËi"
+msgstr "Prekliƒçi"
 
 #. LANG_CA_ES
 #: po/tmp/xap_String_Id.h.h:129
@@ -6578,7 +6579,7 @@ msgstr "Glava poglavja"
 #. LANG_ZH_HK
 #: po/tmp/xap_String_Id.h.h:141
 msgid "Chinese (Hong Kong)"
-msgstr "Kitajski (Honk Kong)"
+msgstr "Kitajski (Hong Kong)"
 
 #. LANG_ZH_CN
 #: po/tmp/xap_String_Id.h.h:143
@@ -6658,7 +6659,7 @@ msgstr "Zapri &brez shranjevanja"
 #. DLG_UP_Collate
 #: po/tmp/xap_String_Id.h.h:173
 msgid "Collate"
-msgstr "Zdruæi enake strani"
+msgstr "Zdru≈æi enake strani"
 
 #. DLG_UP_Color
 #: po/tmp/xap_String_Id.h.h:175
@@ -6713,23 +6714,23 @@ msgstr "Kornski"
 #. LANG_CO_FR
 #: po/tmp/xap_String_Id.h.h:197
 msgid "Corsican"
-msgstr "Korziπki"
+msgstr "Korzi≈°ki"
 
 #. DLG_PLUGIN_MANAGER_COULDNT_LOAD
 #: po/tmp/xap_String_Id.h.h:199
 msgid "Could not activate/load plugin"
-msgstr "VtiËnika ni mogoËe aktivirati/naloæiti"
+msgstr "Vtiƒçnika ni mogoƒçe aktivirati/nalo≈æiti"
 
 #. DLG_PLUGIN_MANAGER_COULDNT_UNLOAD
 #: po/tmp/xap_String_Id.h.h:201
 msgid "Could not deactivate plugin"
-msgstr "VtiËnika ni mogoËe deaktivirati"
+msgstr "Vtiƒçnika ni mogoƒçe deaktivirati"
 
 #. SPELL_CANTLOAD_DICT
 #: po/tmp/xap_String_Id.h.h:203
 #, c-format
 msgid "Could not load the dictionary for the %s language"
-msgstr "Slovarja za %s jezik ni mogoËe naloæiti"
+msgstr "Slovarja za %s jezik ni mogoƒçe nalo≈æiti"
 
 #. DLG_History_Version_Started
 #: po/tmp/xap_String_Id.h.h:205
@@ -6744,37 +6745,37 @@ msgstr "Ustvaril:"
 #. LANG_HR
 #: po/tmp/xap_String_Id.h.h:209
 msgid "Croatian"
-msgstr "Hrvaπki"
+msgstr "Hrva≈°ki"
 
 #. ENC_CROA_MAC
 #: po/tmp/xap_String_Id.h.h:211
 msgid "Croatian, Macintosh"
-msgstr "Hrvaπki, Macintosh"
+msgstr "Hrva≈°ki, Macintosh"
 
 #. ENC_CYRL_ISO
 #: po/tmp/xap_String_Id.h.h:213
 msgid "Cyrillic, ISO-8859-5"
-msgstr "CiriliËni, ISO-8859-5"
+msgstr "Ciriliƒçni, ISO-8859-5"
 
 #. ENC_CYRL_KOI
 #: po/tmp/xap_String_Id.h.h:215
 msgid "Cyrillic, KOI8-R"
-msgstr "CiriliËni, KOI8-R"
+msgstr "Ciriliƒçni, KOI8-R"
 
 #. ENC_CYRL_MAC
 #: po/tmp/xap_String_Id.h.h:217
 msgid "Cyrillic, Macintosh"
-msgstr "CiriliËni, Macintosh"
+msgstr "Ciriliƒçni, Macintosh"
 
 #. ENC_CYRL_WIN
 #: po/tmp/xap_String_Id.h.h:219
 msgid "Cyrillic, Windows Code Page 1251"
-msgstr "CiriliËni, nabor znakov Windows-1251"
+msgstr "Ciriliƒçni, nabor znakov Windows-1251"
 
 #. LANG_CS_CZ
 #: po/tmp/xap_String_Id.h.h:221
 msgid "Czech"
-msgstr "»eπki"
+msgstr "ƒåe≈°ki"
 
 #. LANG_DA_DK
 #: po/tmp/xap_String_Id.h.h:223
@@ -6784,17 +6785,17 @@ msgstr "Danski"
 #. DLG_PLUGIN_MANAGER_DEACTIVATE_ALL
 #: po/tmp/xap_String_Id.h.h:227
 msgid "Deactivate all plugins"
-msgstr "Deaktiviraj vse vtiËnike"
+msgstr "Deaktiviraj vse vtiƒçnike"
 
 #. DLG_PLUGIN_MANAGER_DEACTIVATE
 #: po/tmp/xap_String_Id.h.h:229
 msgid "Deactivate plugin"
-msgstr "Deaktiviraj vtiËnik"
+msgstr "Deaktiviraj vtiƒçnik"
 
 #. DLG_HTMLOPT_ExpDeclareXML
 #: po/tmp/xap_String_Id.h.h:231
 msgid "Declare as XML (version 1.0)"
-msgstr "Deklariraj za XML (razliËica 1.0)"
+msgstr "Deklariraj za XML (razliƒçica 1.0)"
 
 #. DLG_ULANG_DefaultLangLabel
 #: po/tmp/xap_String_Id.h.h:233
@@ -6804,17 +6805,17 @@ msgstr "Privzeti jezik:"
 #. DLG_Image_Placement
 #: po/tmp/xap_String_Id.h.h:235
 msgid "Define Image Placement"
-msgstr "DoloËite postavitev slike"
+msgstr "Doloƒçite postavitev slike"
 
 #. DLG_Image_TextWrapping
 #: po/tmp/xap_String_Id.h.h:237
 msgid "Define Text Wrapping"
-msgstr "DoloËite oblivanje besedila"
+msgstr "Doloƒçite oblivanje besedila"
 
 #. DLG_Remove_Icon
 #: po/tmp/xap_String_Id.h.h:246
 msgid "Do you want to remove this icon from the toolbar?"
-msgstr "Æelite odstraniti to ikono z orodne vrstice?"
+msgstr "≈Ωelite odstraniti to ikono z orodne vrstice?"
 
 #. DLG_DocComparison_WindowLabel
 #: po/tmp/xap_String_Id.h.h:248
@@ -6849,12 +6850,12 @@ msgstr "Nizozemski (Nizozemska)"
 #. DLG_History_EditTime
 #: po/tmp/xap_String_Id.h.h:260
 msgid "Editing time:"
-msgstr "»as urejanja:"
+msgstr "ƒåas urejanja:"
 
 #. DLG_UFS_EffectsFrameLabel
 #: po/tmp/xap_String_Id.h.h:262
 msgid "Effects"
-msgstr "UËinki"
+msgstr "Uƒçinki"
 
 #. DLG_HTMLOPT_ExpEmbedCSS
 #: po/tmp/xap_String_Id.h.h:264
@@ -6884,47 +6885,47 @@ msgstr "Nabor znakov:"
 #. STYLE_ENDREFERENCE
 #: po/tmp/xap_String_Id.h.h:274
 msgid "Endnote Reference"
-msgstr "Navezava na konËno opombo"
+msgstr "Navezava na konƒçno opombo"
 
 #. STYLE_ENDTEXT
 #: po/tmp/xap_String_Id.h.h:276
 msgid "Endnote Text"
-msgstr "Besedilo konËne opombe"
+msgstr "Besedilo konƒçne opombe"
 
 #. LANG_EN_AU
 #: po/tmp/xap_String_Id.h.h:278
 msgid "English (Australia)"
-msgstr "Angleπki (Avstralija)"
+msgstr "Angle≈°ki (Avstralija)"
 
 #. LANG_EN_CA
 #: po/tmp/xap_String_Id.h.h:280
 msgid "English (Canada)"
-msgstr "Angleπki (Kanada)"
+msgstr "Angle≈°ki (Kanada)"
 
 #. LANG_EN_IE
 #: po/tmp/xap_String_Id.h.h:282
 msgid "English (Ireland)"
-msgstr "Angleπki (Irska)"
+msgstr "Angle≈°ki (Irska)"
 
 #. LANG_EN_NZ
 #: po/tmp/xap_String_Id.h.h:284
 msgid "English (New Zealand)"
-msgstr "Angleπki (Nova Zelandija)"
+msgstr "Angle≈°ki (Nova Zelandija)"
 
 #. LANG_EN_ZA
 #: po/tmp/xap_String_Id.h.h:286
 msgid "English (South Africa)"
-msgstr "Angleπki (Juæna afrika)"
+msgstr "Angle≈°ki (Ju≈æna afrika)"
 
 #. LANG_EN_GB
 #: po/tmp/xap_String_Id.h.h:288
 msgid "English (UK)"
-msgstr "Angleπki (Velika Britanija)"
+msgstr "Angle≈°ki (Velika Britanija)"
 
 #. LANG_EN_US
 #: po/tmp/xap_String_Id.h.h:290
 msgid "English (US)"
-msgstr "Angleπki (ZDA)"
+msgstr "Angle≈°ki (ZDA)"
 
 #. DLG_Password_Title
 #: po/tmp/xap_String_Id.h.h:292
@@ -6970,12 +6971,12 @@ msgstr "Datoteka"
 #: po/tmp/xap_String_Id.h.h:308
 #, c-format
 msgid "File already exists.  Overwrite file '%s'?"
-msgstr "Datoteka æe obstaja. Æelite prepisati datoteko '%s'?"
+msgstr "Datoteka ≈æe obstaja. ≈Ωelite prepisati datoteko '%s'?"
 
 #. DLG_FOSA_RecordToFileLabel
 #: po/tmp/xap_String_Id.h.h:310
 msgid "File to record editing:"
-msgstr "Datoteka za beleæenje urejanja:"
+msgstr "Datoteka za bele≈æenje urejanja:"
 
 #. DLG_FOSA_ReplayFromFileLabel
 #: po/tmp/xap_String_Id.h.h:312
@@ -7020,7 +7021,7 @@ msgstr "Francoski (Francija)"
 #. LANG_FR_CH
 #: po/tmp/xap_String_Id.h.h:335
 msgid "French (Switzerland)"
-msgstr "Francoski (©vica)"
+msgstr "Francoski (≈†vica)"
 
 #. LANG_FY_NL
 #: po/tmp/xap_String_Id.h.h:337
@@ -7055,17 +7056,17 @@ msgstr "Gruzijski, PS"
 #. LANG_DE_AT
 #: po/tmp/xap_String_Id.h.h:349
 msgid "German (Austria)"
-msgstr "Nemπki (Avstrija)"
+msgstr "Nem≈°ki (Avstrija)"
 
 #. LANG_DE_DE
 #: po/tmp/xap_String_Id.h.h:351
 msgid "German (Germany)"
-msgstr "Nemπki (NemËija)"
+msgstr "Nem≈°ki (Nemƒçija)"
 
 #. LANG_DE_CH
 #: po/tmp/xap_String_Id.h.h:353
 msgid "German (Switzerland)"
-msgstr "Nemπki (©vica)"
+msgstr "Nem≈°ki (≈†vica)"
 
 #. DLG_UP_Grayscale
 #: po/tmp/xap_String_Id.h.h:355
@@ -7075,37 +7076,37 @@ msgstr "Sivinsko"
 #. LANG_EL_GR
 #: po/tmp/xap_String_Id.h.h:357
 msgid "Greek"
-msgstr "Grπki"
+msgstr "Gr≈°ki"
 
 #. ENC_GREE_ISO
 #: po/tmp/xap_String_Id.h.h:359
 msgid "Greek, ISO-8859-7"
-msgstr "Grπki, ISO-8859-7"
+msgstr "Gr≈°ki, ISO-8859-7"
 
 #. ENC_GREE_MAC
 #: po/tmp/xap_String_Id.h.h:361
 msgid "Greek, Macintosh"
-msgstr "Grπki, Macintosh"
+msgstr "Gr≈°ki, Macintosh"
 
 #. ENC_GREE_WIN
 #: po/tmp/xap_String_Id.h.h:363
 msgid "Greek, Windows Code Page 1253"
-msgstr "Grπki, nabor znakov Windows-1253"
+msgstr "Gr≈°ki, nabor znakov Windows-1253"
 
 #. DLG_HTMLOPT_ExpTitle
 #: po/tmp/xap_String_Id.h.h:365
 msgid "HTML Export Options"
-msgstr "Moænosti izvoza HTML"
+msgstr "Mo≈ænosti izvoza HTML"
 
 #. LANG_HA_NE
 #: po/tmp/xap_String_Id.h.h:369
 msgid "Hausa (Niger)"
-msgstr "Havaπki (Niger)"
+msgstr "Hava≈°ki (Niger)"
 
 #. LANG_HA_NG
 #: po/tmp/xap_String_Id.h.h:371
 msgid "Hausa (Nigeria)"
-msgstr "Havaπki (Nigerija)"
+msgstr "Hava≈°ki (Nigerija)"
 
 #. LANG_HAW_US
 #: po/tmp/xap_String_Id.h.h:373
@@ -7155,12 +7156,12 @@ msgstr "Hebrejski, nabor znakov Windows-1255"
 #. DLG_Image_Height
 #: po/tmp/xap_String_Id.h.h:393
 msgid "Height:"
-msgstr "Viπina:"
+msgstr "Vi≈°ina:"
 
 #. DLG_IP_Height_Label
 #: po/tmp/xap_String_Id.h.h:395
 msgid "Height: "
-msgstr "Viπina: "
+msgstr "Vi≈°ina: "
 
 #. DLG_UFS_HiddenCheck
 #: po/tmp/xap_String_Id.h.h:397
@@ -7180,7 +7181,7 @@ msgstr "Hindujski"
 #. LANG_HU_HU
 #: po/tmp/xap_String_Id.h.h:403
 msgid "Hungarian"
-msgstr "Madæarski"
+msgstr "Mad≈æarski"
 
 #. LANG_IS_IS
 #: po/tmp/xap_String_Id.h.h:405
@@ -7220,7 +7221,7 @@ msgstr "Uvoz datoteke"
 #. MSG_ImportingDoc
 #: po/tmp/xap_String_Id.h.h:421
 msgid "Importing Document..."
-msgstr "Uvaæanje dokumenta ..."
+msgstr "Uva≈æanje dokumenta ..."
 
 #. LANG_ID_ID
 #: po/tmp/xap_String_Id.h.h:423
@@ -7275,7 +7276,7 @@ msgstr "Vstavi simbol"
 #. DLG_PLUGIN_MANAGER_INSTALL
 #: po/tmp/xap_String_Id.h.h:445
 msgid "Install new plugin"
-msgstr "Namesti nov vtiËnik"
+msgstr "Namesti nov vtiƒçnik"
 
 #. LANG_IA
 #: po/tmp/xap_String_Id.h.h:447
@@ -7366,7 +7367,7 @@ msgstr "Kurdski"
 #. LANG_LO_LA
 #: po/tmp/xap_String_Id.h.h:484
 msgid "Lao"
-msgstr "Laoπki"
+msgstr "Lao≈°ki"
 
 #. DLG_History_LastSaved
 #: po/tmp/xap_String_Id.h.h:486
@@ -7376,7 +7377,7 @@ msgstr "Nazadnje shranjeno:"
 #. LANG_LA_IT
 #: po/tmp/xap_String_Id.h.h:488
 msgid "Latin (Renaissance)"
-msgstr "Latinski (renesanËni)"
+msgstr "Latinski (renesanƒçni)"
 
 #. LANG_LV_LV
 #: po/tmp/xap_String_Id.h.h:490
@@ -7416,12 +7417,12 @@ msgstr "Maratski"
 #. LANG_MH_MH
 #: po/tmp/xap_String_Id.h.h:508
 msgid "Marshallese (Marshall Islands)"
-msgstr "Marπalski (Marπalovi otoki)"
+msgstr "Mar≈°alski (Mar≈°alovi otoki)"
 
 #. LANG_MH_NR
 #: po/tmp/xap_String_Id.h.h:510
 msgid "Marshallese (Nauru)"
-msgstr "Marπalski (Nauru)"
+msgstr "Mar≈°alski (Nauru)"
 
 #. DLG_Merge
 #: po/tmp/xap_String_Id.h.h:512
@@ -7451,7 +7452,7 @@ msgstr "Brez slike"
 #. DLG_PLUGIN_MANAGER_NONE_SELECTED
 #: po/tmp/xap_String_Id.h.h:522
 msgid "No plugin selected"
-msgstr "Izbran ni noben vtiËnik"
+msgstr "Izbran ni noben vtiƒçnik"
 
 #. STYLE_NORMAL
 #: po/tmp/xap_String_Id.h.h:524
@@ -7461,12 +7462,12 @@ msgstr "Navaden"
 #. LANG_NB_NO
 #: po/tmp/xap_String_Id.h.h:526
 msgid "Norwegian Bokmal"
-msgstr "Norveπki Bokmal"
+msgstr "Norve≈°ki Bokmal"
 
 #. LANG_NN_NO
 #: po/tmp/xap_String_Id.h.h:528
 msgid "Norwegian Nynorsk"
-msgstr "Norveπki Nynorsk"
+msgstr "Norve≈°ki Nynorsk"
 
 #. DLG_PLUGIN_MANAGER_NOT_AVAILABLE
 #: po/tmp/xap_String_Id.h.h:530
@@ -7476,17 +7477,17 @@ msgstr "Ni na voljo"
 #. STYLE_NUMHEAD1
 #: po/tmp/xap_String_Id.h.h:532
 msgid "Numbered Heading 1"
-msgstr "OπtevilËeni naslov 1"
+msgstr "O≈°tevilƒçeni naslov 1"
 
 #. STYLE_NUMHEAD2
 #: po/tmp/xap_String_Id.h.h:534
 msgid "Numbered Heading 2"
-msgstr "OπtevilËeni naslov 2"
+msgstr "O≈°tevilƒçeni naslov 2"
 
 #. STYLE_NUMHEAD3
 #: po/tmp/xap_String_Id.h.h:536
 msgid "Numbered Heading 3"
-msgstr "OπtevilËeni naslov 3"
+msgstr "O≈°tevilƒçeni naslov 3"
 
 #. DLG_OK
 #: po/tmp/xap_String_Id.h.h:540
@@ -7526,7 +7527,7 @@ msgstr "&Odstotkov:"
 #. TB_Zoom_PageWidth
 #: po/tmp/xap_String_Id.h.h:556
 msgid "Page Width"
-msgstr "©irina strani"
+msgstr "≈†irina strani"
 
 #. DLG_UP_PageRanges
 #: po/tmp/xap_String_Id.h.h:558
@@ -7546,12 +7547,12 @@ msgstr "Enostavno besedilo"
 #. DLG_PLUGIN_MANAGER_DETAILS
 #: po/tmp/xap_String_Id.h.h:564
 msgid "Plugin Details:"
-msgstr "Podrobnosti vtiËnika:"
+msgstr "Podrobnosti vtiƒçnika:"
 
 #. DLG_PLUGIN_MANAGER_LIST
 #: po/tmp/xap_String_Id.h.h:566
 msgid "Plugin List"
-msgstr "Seznam vtiËnikov"
+msgstr "Seznam vtiƒçnikov"
 
 #. LANG_PL_PL
 #: po/tmp/xap_String_Id.h.h:568
@@ -7571,17 +7572,17 @@ msgstr "Portugalski (Portugalska)"
 #. DLG_Image_PlaceColumn
 #: po/tmp/xap_String_Id.h.h:574
 msgid "Position relative to its Column"
-msgstr "Poloæaj, relativen glede na njegov stolpec"
+msgstr "Polo≈æaj, relativen glede na njegov stolpec"
 
 #. DLG_Image_PlacePage
 #: po/tmp/xap_String_Id.h.h:576
 msgid "Position relative to its Page"
-msgstr "Poloæaj, relativen glede na njegovo stran"
+msgstr "Polo≈æaj, relativen glede na njegovo stran"
 
 #. DLG_Image_PlaceParagraph
 #: po/tmp/xap_String_Id.h.h:578
 msgid "Position relative to nearest paragraph"
-msgstr "Poloæaj, relativen glede na najbliæji odstavek"
+msgstr "Polo≈æaj, relativen glede na najbli≈æji odstavek"
 
 #. DLG_Image_Aspect
 #: po/tmp/xap_String_Id.h.h:580
@@ -7626,22 +7627,22 @@ msgstr "Ukaz za tiskanje: "
 #. LANG_PA_IN
 #: po/tmp/xap_String_Id.h.h:601
 msgid "Punjabi (Gurmukhi)"
-msgstr "Pundæabski (Gurmukπki)"
+msgstr "Pund≈æabski (Gurmuk≈°ki)"
 
 #. LANG_PA_PK
 #: po/tmp/xap_String_Id.h.h:603
 msgid "Punjabi (Shahmukhi)"
-msgstr "Pundæabski (©amukπki)"
+msgstr "Pund≈æabski (≈†amuk≈°ki)"
 
 #. LANG_QU_BO
 #: po/tmp/xap_String_Id.h.h:605
 msgid "Quechua"
-msgstr "KveËski"
+msgstr "Kveƒçski"
 
 #. DLG_FOSA_RecordToFileTitle
 #: po/tmp/xap_String_Id.h.h:607
 msgid "Record Editing to File"
-msgstr "Beleæi urejanje v datoteko"
+msgstr "Bele≈æi urejanje v datoteko"
 
 #. DLG_UFS_StyleRegular
 #: po/tmp/xap_String_Id.h.h:609
@@ -7731,7 +7732,7 @@ msgstr "Izberi nabor znakov:"
 #. DLG_HTMLOPT_ExpLabel
 #: po/tmp/xap_String_Id.h.h:645
 msgid "Select HTML export options:"
-msgstr "Izberi moænosti izvoza HTML:"
+msgstr "Izberi mo≈ænosti izvoza HTML:"
 
 #. DLG_ULANG_LangLabel
 #: po/tmp/xap_String_Id.h.h:647
@@ -7746,12 +7747,12 @@ msgstr "Srbski"
 #. DLG_Image_ImageDesc
 #: po/tmp/xap_String_Id.h.h:653
 msgid "Set Image Name"
-msgstr "DoloËi ime slike"
+msgstr "Doloƒçi ime slike"
 
 #. DLG_Image_ImageSize
 #: po/tmp/xap_String_Id.h.h:655
 msgid "Set Image Size"
-msgstr "DoloËi velikost slike"
+msgstr "Doloƒçi velikost slike"
 
 #. DLG_ULANG_LangTitle
 #: po/tmp/xap_String_Id.h.h:657
@@ -7771,7 +7772,7 @@ msgstr "Velikost:"
 #. LANG_SK_SK
 #: po/tmp/xap_String_Id.h.h:665
 msgid "Slovak"
-msgstr "Slovaπki"
+msgstr "Slova≈°ki"
 
 #. LANG_SL_SI
 #: po/tmp/xap_String_Id.h.h:667
@@ -7781,12 +7782,12 @@ msgstr "Slovenski"
 #. LANG_ES_MX
 #: po/tmp/xap_String_Id.h.h:669
 msgid "Spanish (Mexico)"
-msgstr "©panski (Mehika)"
+msgstr "≈†panski (Mehika)"
 
 #. LANG_ES_ES
 #: po/tmp/xap_String_Id.h.h:671
 msgid "Spanish (Spain)"
-msgstr "©panski (©panija)"
+msgstr "≈†panski (≈†panija)"
 
 #. DLG_Image_SquareWrap
 #: po/tmp/xap_String_Id.h.h:675
@@ -7806,7 +7807,7 @@ msgstr "Svahilski"
 #. LANG_SV_SE
 #: po/tmp/xap_String_Id.h.h:691
 msgid "Swedish"
-msgstr "©vedski"
+msgstr "≈†vedski"
 
 #. TB_Font_Symbol
 #: po/tmp/xap_String_Id.h.h:693
@@ -7816,12 +7817,12 @@ msgstr "Simboli"
 #. LANG_SYR
 #: po/tmp/xap_String_Id.h.h:695
 msgid "Syriac"
-msgstr "Sirijaπki"
+msgstr "Sirija≈°ki"
 
 #. LANG_TL_PH
 #: po/tmp/xap_String_Id.h.h:699
 msgid "Tagalog"
-msgstr "Tagaloπki"
+msgstr "Tagalo≈°ki"
 
 #. LANG_TA_IN
 #: po/tmp/xap_String_Id.h.h:701
@@ -7831,7 +7832,7 @@ msgstr "Tamilsko"
 #. LANG_TE_IN
 #: po/tmp/xap_String_Id.h.h:703
 msgid "Telugu"
-msgstr "Teluπko"
+msgstr "Telu≈°ko"
 
 #. DLG_UFS_ColorTab
 #: po/tmp/xap_String_Id.h.h:705
@@ -7877,13 +7878,13 @@ msgstr "Tajski, nabor znakov Windows-874"
 #: po/tmp/xap_String_Id.h.h:721
 #, c-format
 msgid "The directory '%s' is write-protected."
-msgstr "Mapa '%s' je zaπËitena proti pisanju."
+msgstr "Mapa '%s' je za≈°ƒçitena proti pisanju."
 
 #. MSG_HistoryPartRestore2
 #: po/tmp/xap_String_Id.h.h:723
 #, c-format
 msgid "The nearest version that can be restored fully is %d. Would you like to restore this version instead? To partially restore version %d press No."
-msgstr "Najbliæja razliËica, ki jo lahko v celoti obnovite, je %d. Æelite obnoviti to razliËico? »e æelite delno obnoviti razliËico %d, izberite Ne."
+msgstr "Najbli≈æja razliƒçica, ki jo lahko v celoti obnovite, je %d. ≈Ωelite obnoviti to razliƒçico? ƒåe ≈æelite delno obnoviti razliƒçico %d, izberite Ne."
 
 #. DLG_UP_InvalidPrintString
 #: po/tmp/xap_String_Id.h.h:725
@@ -7893,7 +7894,7 @@ msgstr "Ukaz za tiskanje ni veljaven."
 #. MSG_NoUndo
 #: po/tmp/xap_String_Id.h.h:727
 msgid "This operation cannot be undone. Are you sure you want to proceed?"
-msgstr "Te operacije ni mogoËe povrniti. Ste prepriËani, da æelite nadaljevati?"
+msgstr "Te operacije ni mogoƒçe povrniti. Ste prepriƒçani, da ≈æelite nadaljevati?"
 
 #. DLG_Image_TightWrap
 #: po/tmp/xap_String_Id.h.h:731
@@ -7903,32 +7904,32 @@ msgstr "Tesno oblivanje besedila"
 #. MSG_HistoryPartRestore3
 #: po/tmp/xap_String_Id.h.h:735
 msgid "To continue anyway, press OK."
-msgstr "»e æelite kljub temu nadaljevati, pritisnite V redu."
+msgstr "ƒåe ≈æelite kljub temu nadaljevati, pritisnite V redu."
 
 #. MSG_HistoryPartRestore4
 #: po/tmp/xap_String_Id.h.h:737
 msgid "To quit the restoration attempt, press Cancel."
-msgstr "»e æelite poskus obnovitve zakljuËiti, pritisnite PrekliËi."
+msgstr "ƒåe ≈æelite poskus obnovitve zakljuƒçiti, pritisnite Prekliƒçi."
 
 #. LANG_TR_TR
 #: po/tmp/xap_String_Id.h.h:743
 msgid "Turkish"
-msgstr "Turπki"
+msgstr "Tur≈°ki"
 
 #. ENC_TURK_ISO
 #: po/tmp/xap_String_Id.h.h:745
 msgid "Turkish, ISO-8859-9"
-msgstr "Turπki, ISO-8859-9"
+msgstr "Tur≈°ki, ISO-8859-9"
 
 #. ENC_TURK_MAC
 #: po/tmp/xap_String_Id.h.h:747
 msgid "Turkish, Macintosh"
-msgstr "Turπki, Macintosh"
+msgstr "Tur≈°ki, Macintosh"
 
 #. ENC_TURK_WIN
 #: po/tmp/xap_String_Id.h.h:749
 msgid "Turkish, Windows Code Page 1254"
-msgstr "Turπki, nabor znakov Windows-1254"
+msgstr "Tur≈°ki, nabor znakov Windows-1254"
 
 #. DLG_Image_WrapType
 #: po/tmp/xap_String_Id.h.h:751
@@ -8044,18 +8045,18 @@ msgstr "Urdujski"
 #. LANG_UZ_UZ
 #: po/tmp/xap_String_Id.h.h:801
 msgid "Uzbek"
-msgstr "Uzbeπki"
+msgstr "Uzbe≈°ki"
 
 #. DLG_History_List_Title
 #: po/tmp/xap_String_Id.h.h:805
 msgid "Version history"
-msgstr "Zgodovina razliËic"
+msgstr "Zgodovina razliƒçic"
 
 #. DLG_PLUGIN_MANAGER_VERSION
 #. DLG_History_Version
 #: po/tmp/xap_String_Id.h.h:808
 msgid "Version:"
-msgstr "RazliËica:"
+msgstr "Razliƒçica:"
 
 #. LANG_VI_VN
 #: po/tmp/xap_String_Id.h.h:810
@@ -8080,7 +8081,7 @@ msgstr "Vietnamski, nabor znakov Windows-1258"
 #. DLG_MW_MoreWindows
 #: po/tmp/xap_String_Id.h.h:818
 msgid "View Document"
-msgstr "Pokaæi dokument"
+msgstr "Poka≈æi dokument"
 
 #. DLG_MW_Activate
 #: po/tmp/xap_String_Id.h.h:820
@@ -8090,7 +8091,7 @@ msgstr "Pogled:"
 #. LANG_CY_GB
 #: po/tmp/xap_String_Id.h.h:822
 msgid "Welsh"
-msgstr "Velπki"
+msgstr "Vel≈°ki"
 
 #. ENC_US_DOS
 #: po/tmp/xap_String_Id.h.h:824
@@ -8130,17 +8131,17 @@ msgstr "Zahodnoevropski, nabor znakov Windows-1252"
 #. TB_Zoom_WholePage
 #: po/tmp/xap_String_Id.h.h:838
 msgid "Whole Page"
-msgstr "Celo stran"
+msgstr "Celostransko"
 
 #. DLG_Image_Width
 #: po/tmp/xap_String_Id.h.h:840
 msgid "Width:"
-msgstr "©irina:"
+msgstr "≈†irina:"
 
 #. DLG_IP_Width_Label
 #: po/tmp/xap_String_Id.h.h:842
 msgid "Width:  "
-msgstr "©irina:  "
+msgstr "≈†irina:  "
 
 #. DLG_QNXMB_Yes
 #: po/tmp/xap_String_Id.h.h:844
@@ -8150,18 +8151,18 @@ msgstr "Da"
 #. LANG_YI
 #: po/tmp/xap_String_Id.h.h:846
 msgid "Yiddish"
-msgstr "Jidiπ"
+msgstr "Jidi≈°"
 
 #. MSG_HistoryConfirmSave
 #: po/tmp/xap_String_Id.h.h:848
 #, c-format
 msgid "You have to save changes to document %s before proceeding. Save now?"
-msgstr "Pred nadaljevanjem morate dokument %s shraniti. Ga æelite shraniti zdaj?"
+msgstr "Pred nadaljevanjem morate dokument %s shraniti. Ga ≈æelite shraniti zdaj?"
 
 #. DLG_Zoom_RadioFrameCaption
 #: po/tmp/xap_String_Id.h.h:852
 msgid "Zoom to"
-msgstr "PoveËaj na"
+msgstr "Poveƒçaj na"
 
 #. DLG_UnixMB_No
 #: po/tmp/xap_String_Id.h.h:854
@@ -8181,24 +8182,24 @@ msgstr "cm"
 #. DLG_DocComparison_Different
 #: po/tmp/xap_String_Id.h.h:860
 msgid "different"
-msgstr "razliËen"
+msgstr "razliƒçen"
 
 #. DLG_DocComparison_DivergingPos
 #: po/tmp/xap_String_Id.h.h:862
 #, c-format
 msgid "diverging after document position %d"
-msgstr "se razlikuje od poloæaja %d naprej"
+msgstr "se razlikuje od polo≈æaja %d naprej"
 
 #. DLG_DocComparison_Diverging
 #: po/tmp/xap_String_Id.h.h:864
 #, c-format
 msgid "diverging after version %d of %s"
-msgstr "se razlikuje od razliËice %d od %s"
+msgstr "se razlikuje od razliƒçice %d od %s"
 
 #. DLG_DocComparison_Identical
 #: po/tmp/xap_String_Id.h.h:866
 msgid "identical"
-msgstr "identiËen"
+msgstr "identiƒçen"
 
 #. DLG_Unit_inch
 #: po/tmp/xap_String_Id.h.h:868
@@ -8229,237 +8230,4 @@ msgstr "soroden"
 #: po/tmp/xap_String_Id.h.h:878
 msgid "unrelated"
 msgstr "nepovezan"
-
-#~ msgid "&As web page"
-#~ msgstr "&Kot spletno stran"
-#~ msgid "&Autotext"
-#~ msgstr "Samodejno &besedilo"
-#~ msgid "&Formatting"
-#~ msgstr "&Oblikovanje"
-#~ msgid "&Insert File"
-#~ msgstr "&Vstavi datoteko"
-#~ msgid "ATTN:"
-#~ msgstr "Pozor:"
-#~ msgid "About &GNU Free Software"
-#~ msgstr "O prostem programju &GNU"
-#~ msgid "About &Open Source"
-#~ msgstr "O &odprtem programju"
-#~ msgid "About the GNU project"
-#~ msgstr "O projektu GNU"
-#~ msgid "Attention:"
-#~ msgstr "Pozor:"
-#~ msgid "BCC:"
-#~ msgstr "BCC:"
-#~ msgid "Back&ground"
-#~ msgstr "Ozad&je"
-#~ msgid "Best regards,"
-#~ msgstr "S spoπtovanjem"
-#~ msgid "Best wishes,"
-#~ msgstr "Z najlepπimi æeljami, "
-#~ msgid "CC:"
-#~ msgstr "CC:"
-#~ msgid "CERTIFIED MAIL"
-#~ msgstr "CERTIFICIRANA PO©TA"
-#~ msgid "CONFIDENTIAL"
-#~ msgstr "ZAUPNO"
-#~ msgid "Check &Version"
-#~ msgstr "Preveri &razliËico"
-#~ msgid "Closing:"
-#~ msgstr "ZakljuËek:"
-#~ msgid "Cordially,"
-#~ msgstr "SrËno,"
-#~ msgid "Dear Mom and Dad,"
-#~ msgstr "Draga mati in oËe,"
-#~ msgid "Dear Sir or Madam:"
-#~ msgstr "Spoπtovani gospa ali gospod:"
-#~ msgid "Display information about Open Source"
-#~ msgstr "Kaæi podatke o odprtem programju"
-#~ msgid "Display program version number"
-#~ msgstr "Kaæi πtevilko razliËico programa"
-#~ msgid "Email:"
-#~ msgstr "E-poπta:"
-#~ msgid "From:"
-#~ msgstr "Od:"
-#~ msgid "Fwd:"
-#~ msgstr "Fwd:"
-#~ msgid "In reply to:"
-#~ msgstr "V odgovor na:"
-#~ msgid "Insert Footer"
-#~ msgstr "Vstavi nogo"
-#~ msgid "Internet and &file addresses"
-#~ msgstr "Internetne in &datoteËne naslove"
-#~ msgid "Ladies and Gentlemen:"
-#~ msgstr "Dame in gospodje:"
-#~ msgid "Love,"
-#~ msgstr "Z ljubeznijo,"
-#~ msgid "Mail Instructions:"
-#~ msgstr "Navodila za poπiljanje poπte:"
-#~ msgid "PERSONAL"
-#~ msgstr "OSEBNO"
-#~ msgid "RE:"
-#~ msgstr "RE:"
-#~ msgid "REGISTERED MAIL"
-#~ msgstr "REGISTRIRANA PO©TA"
-#~ msgid "Reference:"
-#~ msgstr "Referenca:"
-#~ msgid "Regards,"
-#~ msgstr "Lep pozdrav,"
-#~ msgid "Respectfully yours,"
-#~ msgstr "Vdano vaπ,"
-#~ msgid "Respectfully,"
-#~ msgstr "Vdano vaπa,"
-#~ msgid "SPECIAL DELIVERY"
-#~ msgstr "POSEBNA DOSTAVA"
-#~ msgid "Save visual glyph shapes"
-#~ msgstr "Shrani vidne oblike glifov"
-#~ msgid "Show or hide the extra toolbar"
-#~ msgstr "Kaæi ali skrij dodatno orodjarno"
-#~ msgid "Show or hide the formatting toolbar"
-#~ msgstr "Kaæi ali skrij orodjarno oblikovanja"
-#~ msgid "Show or hide the standard toolbar"
-#~ msgstr "Kaæi ali skrij obiËajno orodjarno"
-#~ msgid "Sincerely yours,"
-#~ msgstr "Iskreno vaπ(a),"
-#~ msgid "Take care,"
-#~ msgstr "Pazi nase,"
-#~ msgid "Thank you,"
-#~ msgstr "Hvala vam,"
-#~ msgid "Thanks,"
-#~ msgstr "Hvala,"
-#~ msgid "To Whom It May Concern:"
-#~ msgstr "Vsem, ki jih zadeva:"
-#~ msgid "To:"
-#~ msgstr "Za:"
-#~ msgid "VIA AIRMAIL"
-#~ msgstr "PO LETALSKI PO©TI"
-#~ msgid "VIA FACSIMILE"
-#~ msgstr "PO FAKSU"
-#~ msgid "VIA OVERNIGHT MAIL"
-#~ msgstr "Z EKSPRESNO PO©TO"
-#~ msgid "Yours truly,"
-#~ msgstr "ResniËno vaπ,"
-#~ msgid "\tFont   "
-#~ msgstr "\tPisava "
-#~ msgid ""
-#~ "Abiword is now downloading %s from:\n"
-#~ "%s"
-#~ msgstr ""
-#~ "AbiWord sedaj prenaπa %s iz:\n"
-#~ "%s"
-#~ msgid "Choose a Template"
-#~ msgstr "Izbira predloge"
-#~ msgid "Determine glyph shapes from context"
-#~ msgstr "Pravilne oblike glifov ugotovi iz konteksta"
-#~ msgid "Downloading file..."
-#~ msgstr "Prenaπam datoteko..."
-#~ msgid "Start with an empty document"
-#~ msgstr "ZaËni s praznim dokumentom"
-#~ msgid ""
-#~ "Download failed!\n"
-#~ "Would you like me to try again?\n"
-#~ "If yes, please make sure you are connected to the internet."
-#~ msgstr ""
-#~ "Prenos ni uspel!\n"
-#~ "Æelite poskusiti zanova?\n"
-#~ "»e da, se prosim prepriËajte, ali ste priklopljeni na internet."
-#~ msgid ""
-#~ "I could not find a dictionary for %s.\n"
-#~ "Would you like me to try downloading it from the internet?"
-#~ msgstr ""
-#~ "Nisem naπel slovarja za %s jezik.\n"
-#~ "Æelite, da ga poskuπam prenesti z interneta?"
-#~ msgid "I'm sorry. The wanted dictionary is not available for download."
-#~ msgstr "OproπËam se. Æelen slovar ni na voljo za prenos."
-#~ msgid ""
-#~ "I'm sorry. The wanted dictionary is not available for this release.\n"
-#~ "Please consider upgrading AbiWord."
-#~ msgstr ""
-#~ "OproπËam se. Æelen slovar za to razliËico AbiWorda ni na voljo.\n"
-#~ "Razmislite o nadgraditvi AbiWorda."
-#~ msgid ""
-#~ "I'm sorry. This feature is disabled for this release.\n"
-#~ "Please consider upgrading AbiWord."
-#~ msgstr ""
-#~ "OproπËam se. Ta moænost je v tej razliËici AbiWorda izkljuËena.\n"
-#~ "Razmislite o nadgraditvi AbiWorda."
-#~ msgid "I'm sorry. This feature is not available anymore."
-#~ msgstr "Oprostite. Ta moænost ni veË na voljo."
-#~ msgid "Name"
-#~ msgstr "Ime"
-#~ msgid "New dictionary installation"
-#~ msgstr "Namestitev novega slovarja"
-#~ msgid "Sorry! I seem unable to download the dictionary-list."
-#~ msgstr "Oprostite! Zdi se, da seznama slovarjev ne morem prenesti."
-#~ msgid "Sorry! I seem unable to download the dictionary."
-#~ msgstr "Oprostite! Zdi se, da slovarja ne morem prenesti"
-#~ msgid "Sorry! I seem unable to install the dictionary."
-#~ msgstr "Oprostite! Zdi se, da slovarja ne morem namestiti."
-#~ msgid ""
-#~ "You seem to have permission to install the dictionary system-wide.\n"
-#~ "Would you like to do that?\n"
-#~ "If yes, I will install the dictionary in %s"
-#~ msgstr ""
-#~ "Zdi se, da imate dovoljenja za namestitev slovarja za cel sistem.\n"
-#~ "Æelite to storiti?\n"
-#~ "»e da, potem bom namestil slovar v %s"
-#~ msgid "the dictionary"
-#~ msgstr "slovar"
-#~ msgid "the dictionary-list"
-#~ msgstr "seznam slovarjev"
-#~ msgid "&More Windows"
-#~ msgstr "&VeË oken"
-#~ msgid "&Preferences"
-#~ msgstr "&Nastavitve"
-#~ msgid "&Window"
-#~ msgstr "&Okno"
-#~ msgid "Break"
-#~ msgstr "Prelomi"
-#~ msgid "Camel Caps"
-#~ msgstr "Kamelje »rke"
-#~ msgid "Field"
-#~ msgstr "Polje"
-#~ msgid "Help &Index"
-#~ msgstr "&Kazalo pomoËi"
-#~ msgid "Left-justify the paragraph"
-#~ msgstr "Levo poravnaj odstavek"
-#~ msgid "Lock out non-style formatting commands"
-#~ msgstr "OnemogoËi oblikovalne ukaze, ki niso v slogu"
-#~ msgid "Raise this window"
-#~ msgstr "Dvigni okno"
-#~ msgid "Right-justify the paragraph"
-#~ msgstr "Desno poravnaj odstavek"
-#~ msgid "Save as &web"
-#~ msgstr "Shrani kot sp&let"
-#~ msgid "Save changes to %s?"
-#~ msgstr "Spremembe spremembe %s?"
-#~ msgid "We&b"
-#~ msgstr "&Splet"
-#~ msgid "Zoom to &Page Width"
-#~ msgstr "PoveËaj na &πirino strani"
-#~ msgid "Zoom to &Whole Page"
-#~ msgstr "PoveËaj na &celo stran"
-#~ msgid "AbiWord was not able to add its fonts to the X font path.\n"
-#~ msgstr "AbiWord ni mogel dodati svojih pisav v pot pisav X.\n"
-#~ msgid "Activate Window"
-#~ msgstr "Aktiviraj okno"
-#~ msgid "Activate:"
-#~ msgstr "Aktiviraj:"
-#~ msgid "Dutch (Belgium)"
-#~ msgstr "Nizozemski (Belgija)"
-#~ msgid "Modify Unix Font Path"
-#~ msgstr "Spremeni pot pisav Unix"
-#~ msgid "Show font warning at start up"
-#~ msgstr "Ob zagonu kaæi opozorilo o pisavah"
-#~ msgid "Strikeout"
-#~ msgstr "PreËrtano"
-#~ msgid "The operating system was unable to allocate a font of the\n"
-#~ msgstr "Operacijski sistem ni uspel zagotoviti pisave\n"
-#~ msgid "Width"
-#~ msgstr "©irina"
-#~ msgid "Unicode UCS-2 LE"
-#~ msgstr "Unicode UCS-2 LE"
-#~ msgid "File %s is a bogus document"
-#~ msgstr "Datoteka %s je neveljaven dokument"
-#~ msgid "English (GB)"
-#~ msgstr "AngleπËina (GB)"
 
