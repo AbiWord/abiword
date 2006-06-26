@@ -68,6 +68,8 @@ void fp_EmbedRun::_lookupProperties(const PP_AttrProp * pSpanAP,
 									const PP_AttrProp * /*pSectionAP*/,
 									GR_Graphics * pG)
 {
+	UT_return_if_fail(pSpanAP != NULL);
+
 	UT_DEBUGMSG(("fp_EmbedRun _lookupProperties span %x \n",pSpanAP));
 	m_pSpanAP = pSpanAP;
 	m_bNeedsSnapshot = true;
