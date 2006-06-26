@@ -34,3 +34,4 @@ echo ""
 ./abi-extract.pl -N ast-ES
 ./abi-extract.pl -N ku
 ./abi-extract.pl -N ms-MY
+./abi-extract.pl -N ne-NP
