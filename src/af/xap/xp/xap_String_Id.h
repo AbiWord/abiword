@@ -316,6 +316,7 @@ dcl(LANG_AF_ZA, 							"Afrikaans")
 dcl(LANG_AK_GH, 							"Akan")	// 
 dcl(LANG_SQ_AL, 							"Albanian")	// Jordi 19/10/2002
 dcl(LANG_AM_ET, 							"Amharic (Ethiopia)")
+dcl(LANG_AR, 								"Arabic")
 dcl(LANG_AR_EG, 							"Arabic (Egypt)")
 dcl(LANG_AR_SA, 							"Arabic (Saudi Arabia)")
 dcl(LANG_HY_AM, 							"Armenian")
