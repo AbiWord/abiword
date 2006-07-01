@@ -387,6 +387,7 @@ dcl(LANG_MH_MH, 							"Marshallese (Marshall Islands)")
 dcl(LANG_MH_NR, 							"Marshallese (Nauru)")
 dcl(LANG_MN_MN,                             "Mongolian")
 dcl(LANG_NB_NO, 							"Norwegian Bokmal")
+dcl(LANG_NE_NP, 							"Nepali (Nepal)")
 dcl(LANG_NN_NO, 							"Norwegian Nynorsk")
 dcl(LANG_OC_FR,								"Occitan")		// Jordi 19/10/2002
 dcl(LANG_PL_PL, 							"Polish")
