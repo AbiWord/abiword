@@ -59,7 +59,8 @@ PX_ChangeRecord::PX_ChangeRecord(PXType type,
 	m_persistant(true),
 	m_iXID(iXID),
 	m_iCRNumber(0),
-	m_pDoc(NULL)
+	m_pDoc(NULL),
+	m_iAdjust(0)
 {
 	// bulletproofing
 	memset(&m_MyUUID, 0, sizeof(m_MyUUID));
@@ -115,6 +116,24 @@ const char * PX_ChangeRecord::getDocUUID() const
 	return s;
 }
 
+/*!
+ * returns true if local UUID is the same as the document UUID. Useful 
+ * for AbiCollab
+ */
+bool PX_ChangeRecord::isFromThisDoc(void) const
+{
+  if(!m_pDoc)
+    return false;
+  struct uuid docUUID;
+  m_pDoc->getDocUUID()->toBinary(docUUID);
+  return isSameDocUUID( docUUID);
+}
+
+void PX_ChangeRecord::setAdjustment(UT_sint32 iAdj) const
+{
+  m_iAdjust = iAdj;
+}
+
 const char * PX_ChangeRecord::getMyUUID() const
 {
 	static char s[37];
@@ -141,7 +160,7 @@ PX_ChangeRecord::PXType PX_ChangeRecord::getType(void) const
 */
 PT_DocPosition PX_ChangeRecord::getPosition(void) const
 {
-	return m_position;
+  return static_cast<PT_DocPosition>(static_cast<UT_sint32>(m_position) + m_iAdjust);
 }
 
 /*!
@@ -182,6 +201,10 @@ bool PX_ChangeRecord::isSameDocUUID(uuid & u) const
 	return true;
 }
 
+UT_sint32 PX_ChangeRecord::getAdjustment(void) const
+{
+  return m_iAdjust;
+}
 /*!
   Create reverse change record of this one
   \return Reverse change record
@@ -193,6 +216,7 @@ PX_ChangeRecord * PX_ChangeRecord::reverse(void) const
 												m_indexAP,
 												m_iXID);
 	UT_ASSERT_HARMLESS(pcr);
+	pcr->setAdjustment( m_iAdjust);
 	return pcr;
 }
 

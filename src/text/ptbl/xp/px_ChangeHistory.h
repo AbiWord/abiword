@@ -36,6 +36,7 @@
 // re-apply the ChangeRecord and advance the undo position.
 
 class pt_PieceTable;
+class PD_Document;
 
 class ABI_EXPORT px_ChangeHistory
 {
@@ -76,7 +77,7 @@ public:
 	bool					isDirty(void) const;
 
 	void                    clearHistory();
-	
+	PD_Document *                           getDoc(void) const;
 
 #ifdef PT_TEST
 	void					__dump(FILE* fp) const;
@@ -89,6 +90,7 @@ protected:
 	UT_uint32				m_undoPosition;
 	UT_sint32				m_savePosition;
 	pt_PieceTable *         m_pPT;
+mutable	UT_uint32                               m_iAdjustOffset;
 };
 
 #endif /* PX_CHANGEHISTORY_H */

@@ -563,6 +563,7 @@ bool pt_PieceTable::undoCmd(void)
 	do
 	{
 		PX_ChangeRecord * pcrRev = pcr->reverse(); // we must delete this.
+		pcrRev->setAdjustment(pcr->getAdjustment());
 		UT_return_val_if_fail (pcrRev,false);
 		UT_Byte flagsRev = GETGLOBFLAGS(pcrRev);
 		bool bResult = _doTheDo(pcrRev, true);

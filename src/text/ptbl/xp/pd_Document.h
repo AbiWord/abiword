@@ -323,6 +323,7 @@ PT_AttrPropIndex            getAPIFromSOH(PL_ObjectHandle odh);
 											const PX_ChangeRecord * pcr) const;
 	void					deferNotifications(void);
 	void					processDeferredNotifications(void);
+	UT_sint32               getAdjustmentForCR(const PX_ChangeRecord * pcr) const;
 
 	// the first two of these functions just retrieve the AP with the given index; the latter two
 	// return AP that represents state of things with current revision settings

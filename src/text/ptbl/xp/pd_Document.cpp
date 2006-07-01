@@ -2972,6 +2972,69 @@ void PD_Document::deferNotifications(void)
 	}
 }
 
+UT_sint32 PD_Document::getAdjustmentForCR(const PX_ChangeRecord * pcr) const
+{
+	UT_sint32 iAdj = 0;
+	switch(pcr->getType())
+	{
+		case PX_ChangeRecord::PXT_GlobMarker:
+			break;
+		case PX_ChangeRecord::PXT_InsertSpan:
+			{
+				const PX_ChangeRecord_SpanChange * pcrc = static_cast<const PX_ChangeRecord_SpanChange *> (pcr);
+				UT_uint32 iLen = pcrc->getLength();
+				iAdj = iLen;
+			}
+			break;
+		case PX_ChangeRecord::PXT_DeleteSpan:
+			{
+				const PX_ChangeRecord_SpanChange * pcrc = static_cast<const PX_ChangeRecord_SpanChange *> (pcr);
+				UT_uint32 iLen = pcrc->getLength();
+				iAdj = -iLen;
+			}
+			break;
+		case PX_ChangeRecord::PXT_ChangeSpan:
+			break;
+		case PX_ChangeRecord::PXT_InsertStrux:
+			iAdj = 1;
+			break;
+		case PX_ChangeRecord::PXT_DeleteStrux:
+			iAdj = -1;
+			break;
+		case PX_ChangeRecord::PXT_ChangeStrux:
+			break;
+		case PX_ChangeRecord::PXT_InsertObject:
+			iAdj =  1;
+			break;
+		case PX_ChangeRecord::PXT_DeleteObject:
+			iAdj = -1;
+			break;
+		case PX_ChangeRecord::PXT_ChangeObject:
+			break;
+		case PX_ChangeRecord::PXT_InsertFmtMark:
+			break;
+		case PX_ChangeRecord::PXT_DeleteFmtMark:
+			break; 
+		case PX_ChangeRecord::PXT_ChangeFmtMark:
+			break;
+		case PX_ChangeRecord::PXT_ChangePoint:
+			break; 
+		case PX_ChangeRecord::PXT_ListUpdate:
+			break; 
+		case PX_ChangeRecord::PXT_StopList:
+			break; 
+		case PX_ChangeRecord::PXT_UpdateField:
+			break;
+		case PX_ChangeRecord::PXT_RemoveList:
+			break;
+		case PX_ChangeRecord::PXT_UpdateLayout:
+			break;
+		default:
+			break;
+	}
+	return iAdj;
+}
+
 void PD_Document::processDeferredNotifications(void)
 {
 	// notify listeners to process any deferred notifications.
