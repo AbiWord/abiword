@@ -100,10 +100,10 @@ ${LSTR} MSG_ERROR_SELECTING_DL_MIRROR "Napaka pri pridobivanju zahtevanega, upor
 ${LSTR} SM_PRODUCT_GROUP              "Urejevalnik besedil ${PRODUCT}"
 ${LSTR} SHORTCUT_NAME                 "${PRODUCT} ${VERSION_MAJOR}.${VERSION_MINOR}"
 ${LSTR} SHORTCUT_NAME_UNINSTALL       "Odstrani ${PRODUCT} ${VERSION_MAJOR}.${VERSION_MINOR}"
-${LSTR} SHORTCUT_NAME_HELP            "Pomoè (v angl.) za ${PRODUCT}"
+${LSTR} SHORTCUT_NAME_HELP            "Pomoè za ${PRODUCT} (v angl.)"
 
 ; Uninstall Strings
-${LSTR} UNINSTALL_WARNING       "S tem želite izbrisati $INSTDIR in vse podmape in datoteke?"
+${LSTR} UNINSTALL_WARNING       "Želite izbrisati $INSTDIR in vse podmape in datoteke?"
 
 
 ; Localized Dictionary names (language supported by dictionary, not dictionary filename)
