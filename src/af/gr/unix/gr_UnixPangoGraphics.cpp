@@ -1168,13 +1168,13 @@ UT_uint32 GR_UnixPangoGraphics::XYToPosition(const GR_RenderInfo & ri, UT_sint32
 								  &iTrailing);
 
 	i = vByteOffset.findItem(iPos);
-	UT_DEBUGMSG(("iPos: %d, iTrailing: %d, indx: %d\n", iPos, iTrailing, i));
-	//UT_return_val_if_fail( i >= 0, 0 );
 
-	if(iTrailing)
-		iPos++;
+	UT_return_val_if_fail( i >= 0, 0 );
 	
-	return iPos;
+	if(iTrailing)
+		i++;
+
+	return i;
 }
 
 void GR_UnixPangoGraphics::positionToXY(const GR_RenderInfo & ri,
@@ -1710,7 +1710,7 @@ inline int GR_UnixPangoGraphics::ltpu(int l) const
 {
 	double d = (double)l *
 		(double)getDeviceResolution() * (double)PANGO_SCALE * (double)getZoomPercentage()/
-		((double)getResolution() * 100.0 + .5);
+		((double)getResolution() * 100.0) + .5;
 	
 	return (int) d;
 }
