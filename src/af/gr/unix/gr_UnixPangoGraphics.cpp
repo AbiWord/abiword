@@ -1,3 +1,4 @@
+/* -*- mode: C++; tab-width: 4; c-basic-offset: 4; -*- */
 /* AbiWord
  * Copyright (C) 2004 Tomas Frydrych <tomasfrydrych@yahoo.co.uk>
  * 
@@ -621,22 +622,31 @@ UT_sint32 GR_UnixPangoGraphics::getTextWidth(GR_RenderInfo & ri)
 	// need to convert the char offset and length to glyph offsets
 	UT_uint32 iGlyphCount = RI.m_pGlyphs->num_glyphs;
 	UT_sint32 iOffsetStart = -1, iOffsetEnd = -1;
-	
+	xxx_UT_DEBUGMSG(("::getTextWidth from %d, len %d\n",
+				 RI.m_iOffset, RI.m_iLength));
+
 	for(UT_uint32 i = 0; i < iGlyphCount; ++i)
 	{
+		UT_uint32 k = (RI.m_iVisDir == UT_BIDI_RTL) ? iGlyphCount - i - 1 : i;
+
+		xxx_UT_DEBUGMSG(("::getTextWidth indx %d, char off %d, byte off %d\n",
+					 k, RI.m_pLogOffsets[k], RI.m_pGlyphs->log_clusters[k]));
+		
 		// test for >= -- in case of combining characters, the requested offset
 		// might inside the cluster, which is not legal, we take the first
 		// offset given to us
-		if(iOffsetStart < 0 && RI.m_pLogOffsets[i] >= RI.m_iOffset)
+		if(iOffsetStart < 0 && RI.m_pLogOffsets[k] >= RI.m_iOffset)
 		{
-			iOffsetStart = i;
+			// again, need to feed Pango a utf-8 byte offset !!!
+			iOffsetStart = RI.m_pGlyphs->log_clusters[k];
 			continue;
 		}
 		
 
-		if(iOffsetEnd < 0 && RI.m_pLogOffsets[i] == RI.m_iOffset + RI.m_iLength)
+		if(iOffsetEnd < 0 && RI.m_pLogOffsets[k] >= RI.m_iOffset + RI.m_iLength)
 		{
-			iOffsetEnd = i;
+			// again, need to feed Pango a utf-8 byte offset !!!
+			iOffsetEnd = RI.m_pGlyphs->log_clusters[k];
 			break;
 		}
 	}
@@ -649,6 +659,9 @@ UT_sint32 GR_UnixPangoGraphics::getTextWidth(GR_RenderInfo & ri)
 		iOffsetEnd = iGlyphCount;
 	}
 
+	xxx_UT_DEBUGMSG(("::getTextWidth start %d, end %d\n",
+				 iOffsetStart, iOffsetEnd));
+	
 	pango_glyph_string_extents_range(RI.m_pGlyphs, iOffsetStart, iOffsetEnd, pf, NULL, &LR);
 
 	return ptlu(LR.width + LR.x);
@@ -1906,8 +1919,6 @@ const char* GR_UnixPangoFont::getFamily() const
 
 bool GR_UnixPangoRenderInfo::append(GR_RenderInfo &ri, bool bReverse)
 {
-	//UT_return_val_if_fail( UT_NOT_IMPLEMENTED, false );
-
 	if(s_pOwnerUTF8 == this)
 		s_pOwnerUTF8 = NULL;
 
@@ -1970,7 +1981,7 @@ bool GR_UnixPangoRenderInfo::cut(UT_uint32 offset, UT_uint32 iLen, bool bReverse
 
 bool GR_UnixPangoRenderInfo::isJustified() const
 {
-	UT_return_val_if_fail( UT_NOT_IMPLEMENTED,false );
+    return (m_pJustify != NULL);
 }
 
 #ifndef WITHOUT_PRINTING
