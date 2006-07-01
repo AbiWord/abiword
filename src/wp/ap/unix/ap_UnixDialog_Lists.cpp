@@ -312,7 +312,6 @@ void AP_UnixDialog_Lists::destroy(void)
 	else
 	{
 		m_bDestroy_says_stopupdating = true;
-		while (m_bAutoUpdate_happening_now == true) ;
 		m_pAutoUpdateLists->stop();
 		setAnswer(AP_Dialog_Lists::a_CLOSE);
 
