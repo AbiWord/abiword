@@ -1,3 +1,4 @@
+/* -*- mode: C++; tab-width: 4; c-basic-offset: 4; -*- */
 /* AbiSource Application Framework
  * Copyright (C) 2003 Dom Lachowicz <cinamod@hotmail.com>
  * 
@@ -28,6 +29,8 @@
 #include "xap_UnixDlg_PrintPreview.h"
 #include "xap_UnixGnomePrintGraphics.h"
 
+#include "gr_UnixPangoGraphics.h"
+
 class XAP_UnixFontManager;
 
 XAP_Dialog * XAP_UnixDialog_PrintPreview::static_constructor(XAP_DialogFactory * pFactory, XAP_Dialog_Id id)
@@ -36,7 +39,7 @@ XAP_Dialog * XAP_UnixDialog_PrintPreview::static_constructor(XAP_DialogFactory *
 }
 
 XAP_UnixDialog_PrintPreview::XAP_UnixDialog_PrintPreview(XAP_DialogFactory * pDlgFactory, XAP_Dialog_Id id)
-	: XAP_Dialog_PrintPreview(pDlgFactory,id), m_pGnomePrintGraphics(NULL)  
+	: XAP_Dialog_PrintPreview(pDlgFactory,id), m_pPrintGraphics(NULL)  
 {
 }
 
@@ -46,18 +49,42 @@ XAP_UnixDialog_PrintPreview::~XAP_UnixDialog_PrintPreview(void)
 
 void XAP_UnixDialog_PrintPreview::releasePrinterGraphicsContext(GR_Graphics * pGraphics)
 {
-	UT_return_if_fail(pGraphics == m_pGnomePrintGraphics);	
-	DELETEP(m_pGnomePrintGraphics);
+	UT_return_if_fail(pGraphics == m_pPrintGraphics);	
+	DELETEP(m_pPrintGraphics);
 }
 
 GR_Graphics * XAP_UnixDialog_PrintPreview::getPrinterGraphicsContext(void)
 {	
-	return m_pGnomePrintGraphics;
+	return m_pPrintGraphics;
 }
 
 void XAP_UnixDialog_PrintPreview::runModal(XAP_Frame * pFrame) 
 {
-       m_pGnomePrintGraphics = new XAP_UnixGnomePrintGraphics(gnome_print_job_new(XAP_UnixGnomePrintGraphics::s_setup_config(pFrame)), true);
-       UT_return_if_fail(m_pGnomePrintGraphics != NULL);       
-       m_pGnomePrintGraphics->setColorSpace(GR_Graphics::GR_COLORSPACE_COLOR);
+	GR_GraphicsFactory * pGF = XAP_App::getApp()->getGraphicsFactory();
+	UT_return_if_fail( pGF );
+	
+	UT_uint32 iDefaultPrintClass = pGF->getDefaultClass(false);
+
+	GR_UnixPangoPrintGraphics * pPPG = NULL;
+
+	XAP_UnixGnomePrintGraphics * pGPG
+		= new XAP_UnixGnomePrintGraphics(gnome_print_job_new(XAP_UnixGnomePrintGraphics::s_setup_config(pFrame)), true);
+	
+	UT_return_if_fail(pGPG != NULL);
+	
+	pGPG->setColorSpace(GR_Graphics::GR_COLORSPACE_COLOR);
+	
+	if(iDefaultPrintClass == GRID_UNIX_PANGO_PRINT || iDefaultPrintClass == GRID_UNIX_PANGO)
+	{
+		pPPG = new GR_UnixPangoPrintGraphics(pGPG);
+	}
+
+	if(pPPG)
+	{
+		m_pPrintGraphics = pPPG;
+	}
+	else
+	{
+		m_pPrintGraphics = pGPG;
+	}
 }
