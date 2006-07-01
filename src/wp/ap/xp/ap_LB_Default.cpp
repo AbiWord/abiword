@@ -121,7 +121,7 @@ ap_bs_Mouse MouseTable[] =
 
 //	Button-1, Image-context
 //  { context	{ click				doubleclick		drag,		dbldrag,		release,	doublerelease }},
-	{_CI _B1,	{ "selectObject",	"selectObject",	"",			"",				"",			""	}},
+	{_CI _B1,	{ "selectObject",	"dlgFmtImage",	"",			"",				"",			""	}},
 	{_CI _B1 _C,{ "copyInlineImage",	"copyInlineImage",				"dragInlineImage","dragInlineImage",				"releaseInlineImage","releaseInlineImage"	}},
 
 	{_CF _B1,	{ "warpInsPtToXY",	"selectObject",	"",			"",				"",			""	}},
@@ -348,12 +348,21 @@ ap_bs_NVK NVKTable[] =
 						  "querySaveAndExit",	"",					"",				""					}},
 //	{EV_NVK_F5,			{ "",					"",					"",				"",
 //						  "",					"",					"",				""					}},
+#ifdef HAVE_HILDON						  
+	{EV_NVK_F6,			{ "viewFullScreen",					"",					"",				"",
+						  "",					"",					"",				""					}},
+	{EV_NVK_F7,			{ "zoomIn",			"",					"",				"",
+						  "",					"",					"",				""					}},
+	{EV_NVK_F8,			{ "zoomOut",					"",					"",				"",
+						  "",					"",					"",				""					}},
+#else
 //	{EV_NVK_F6,			{ "",					"",					"",				"",
-//						  "",					"",					"",				""					}},
+//						  "",					"",					"",			""					}},
 	{EV_NVK_F7,			{ "dlgSpell",			"",					"",				"",
 						  "",					"",					"",				""					}},
 //	{EV_NVK_F8,			{ "",					"",					"",				"",
 //						  "",					"",					"",				""					}},
+#endif
 //	{EV_NVK_F9,			{ "",					"",					"",				"",
 //						  "",					"",					"",				""					}},
 	{EV_NVK_F10,		{ "",					"contextMenu",		"",				"",

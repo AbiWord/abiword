@@ -27,6 +27,7 @@
 #include "xap_App.h"
 #include "xap_Win32App.h"
 #include "xap_Win32FrameImpl.h"
+#include "xap_Win32DialogHelper.h"
 
 #include "xap_Strings.h"
 #include "xap_Dialog_Id.h"
@@ -149,6 +150,7 @@ BOOL XAP_Win32Dialog_ListDocuments::_onInitDialog(HWND hWnd, WPARAM wParam, LPAR
 		ListView_InsertItem(h, &item);
 	}
 
+	XAP_Win32DialogHelper::s_centerDialog(hWnd);
 	return 1;							// 1 == we did not call SetFocus()
 }
 

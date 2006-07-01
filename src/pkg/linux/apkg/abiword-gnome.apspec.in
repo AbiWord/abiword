@@ -9,7 +9,7 @@ Packager: Robert Staudinger <robsta@stereolyzer.net>
 Summary: AbiWord is a lightweight word processing application.
 SoftwareVersion: @VERSION@
 AutopackageTarget: 1.0
-PackageVersion: 1
+#PackageVersion: 2
 
 # Only uncomment InterfaceVersion if your package exposes interfaces to other software,
 # for instance if it includes DSOs or python/perl modules. See the developer guide for more info,
@@ -29,25 +29,14 @@ if [ ! -e "configure" ] ; then
 	echo '../abi/configure $@' >> configure
 	chmod +x configure
 fi
+export APBUILD_STATIC=fribidi
 prepareBuild --enable-binreloc --enable-gnome --enable-gucharmap --disable-debug --disable-symbols
+export APBUILD_STATIC=
 ### plugins
 build_root="$orig_build_root"
 cd ../abiword-plugins
 make clean
-prepareBuild --disable-debug --disable-static --disable-all --enable-abigrammar --enable-wordperfect --enable-abimathview
-### the charts and ODT plugins have higher dependencies
-if [ $ABI_PLUGIN_ABIGOCHART_ENV ] ; then
-	export PATH=$ABI_PLUGIN_ABIGOCHART_ENV/bin:$PATH
-	export PKG_CONFIG_PATH=$ABI_PLUGIN_ABIGOCHART_ENV/lib/pkgconfig:/usr/lib/pkgconfig
-	# only ship ODT /importer/
-	export CFLAGS="$CFLAGS -DODT_DISABLE_EXPORTER"
-	export CXXFLAGS="$CXXFLAGS -DODT_DISABLE_EXPORTER"
-	build_root="$orig_build_root"
-	cd $build_root/../abiword-plugins
-	make clean
-	prepareBuild --disable-debug --disable-static --disable-all --enable-abigochart --enable-OpenDocument
-fi
-
+prepareBuild --disable-debug --disable-static --disable-all --enable-abigrammar --enable-wordperfect --enable-abimathview --enable-abigochart --enable-OpenDocument
 
 [BuildUnprepare]
 unprepareBuild
@@ -69,17 +58,17 @@ require @gnome.org/libgnomeui 2.0
 ### self written skeletons, maybe they have to be copied to the system
 ### skeleton location to work
 require @jig.org/libjpeg 62
-require @gnome.org/gucharmap 4
+require @gnome.org/libgucharmap 4
 require @gnome.org/libgnomeprint-2-2 0.0
 require @gnome.org/libgnomeprintui-2-2 0.0
 # actually 10.4 but the so seems not to be versioned properly
-require @freedesktop.org/fribidi 0.0	
+#require @freedesktop.org/fribidi 0.0	
 require @freedesktop.org/enchant 1.1
 ### plugin dependencies
-require @abisource.com/link-grammar 4.1
-require @libwpd.sourceforge.net/libwpd 8.0
-require @gnome.org/gtkmathview 0.7
-require @gnome.org/goffice 0.0
+#require @abisource.com/link-grammar 4.1
+#require @libwpd.sourceforge.net/libwpd 8.0
+#require @gnome.org/gtkmathview 0.7
+#require @gnome.org/goffice 0.0
 
 [Install]
 # abiword

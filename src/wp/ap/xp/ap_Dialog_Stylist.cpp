@@ -46,6 +46,7 @@
 
 AP_Dialog_Stylist::AP_Dialog_Stylist(XAP_DialogFactory * pDlgFactory, XAP_Dialog_Id id)
 	: XAP_Dialog_Modeless(pDlgFactory,id),
+	  m_pDoc(NULL),
 	  m_bIsModal(false),
 	  m_pAutoUpdater(0),
 	  m_iTick(0),
@@ -150,7 +151,7 @@ void AP_Dialog_Stylist::updateDialog(void)
 			{
 				m_pDoc = pDoc;
 				m_pStyleTree->buildStyles(pDoc);
-				if(!m_bIsModal) // fill the current style if Modal
+				if(!m_bIsModal) // fill the current style if Modeless
 				{
 					const char * pszStyle;
 					pView->getStyle(&pszStyle);

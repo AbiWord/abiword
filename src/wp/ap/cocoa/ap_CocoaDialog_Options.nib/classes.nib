@@ -17,7 +17,6 @@
                 "oBox_AutoSave" = NSBox; 
                 "oBox_BiDiOptions" = NSBox; 
                 "oBox_DocumentSetup" = NSBox; 
-                "oBox_Editing" = NSBox; 
                 "oBox_General" = NSBox; 
                 "oBox_Ignore" = NSBox; 
                 "oBox_InterfaceLanguage" = NSBox; 
@@ -50,6 +49,7 @@
                 oPreferenceSchemeManager = "AP_CocoaSchemeManager"; 
                 "oStepper_Minutes" = NSStepper; 
                 "oSwitch_AutoSave" = NSButton; 
+                "oSwitch_CheckGrammar" = NSButton; 
                 "oSwitch_CheckSpelling" = NSButton; 
                 "oSwitch_CursorBlink" = NSButton; 
                 "oSwitch_DirectionMarkers" = NSButton; 
@@ -66,7 +66,6 @@
                 "oSwitch_Ruler" = NSButton; 
                 "oSwitch_SaveScheme" = NSButton; 
                 "oSwitch_ScreenColor" = NSButton; 
-                "oSwitch_SmartQuotes" = NSButton; 
                 "oSwitch_Splash" = NSButton; 
                 "oSwitch_StatusBar" = NSButton; 
                 "oSwitch_SuggestCorrections" = NSButton; 

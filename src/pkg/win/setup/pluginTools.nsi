@@ -36,7 +36,7 @@ UninstallIcon "..\..\pkg\win\setup\setup.ico"
 OutFile "abiword-plugins-tools-${VERSION_MAJOR}.${VERSION_MINOR}.${VERSION_MICRO}.exe"
 
 ; License Information
-LicenseText "This program is Licensed under the GNU General Public License (GPL)."
+LicenseText "This program is Licensed under the GNU General Public License (GPL)." "$(^NextBtn)"
 LicenseData "..\AbiSuite\Copying"
 
 ; The default installation directory
@@ -172,11 +172,11 @@ Section "Equation Editor"
 
 	;;;;;;;;;
 	; libmathview
-	${dlFile} "http://www.abisource.com/downloads/dependencies/gtkmathview/libmathview-0.7.5-runtime.zip" "$TEMP\libmathview-0.7.5-runtime.zip" "ERROR: Dependency download failed.  Please make sure you are connected to the Internet, then click Retry.  File: http://www.abisource.com/downloads/dependencies/gtkmathview/libmathview-0.7.5-runtime.zip"
+	${dlFile} "http://www.abisource.com/downloads/dependencies/gtkmathview/libmathview-0.7.6-1-runtime.zip" "$TEMP\libmathview-0.7.6-1-runtime.zip" "ERROR: Dependency download failed.  Please make sure you are connected to the Internet, then click Retry.  File: http://www.abisource.com/downloads/dependencies/gtkmathview/libmathview-0.7.6-1-runtime.zip"
 	StrCmp $0 "success" 0 doCleanup
-	${unzipFile} "$TEMP\libmathview-0.7.5-runtime.zip" "$INSTDIR\AbiWord" "bin\libmathview-0.dll" "ERROR: failed to extract libmathview-0.dll from libmathview-0.7.5-runtime.zip"
+	${unzipFile} "$TEMP\libmathview-0.7.6-1-runtime.zip" "$INSTDIR\AbiWord" "bin\libmathview-0.dll" "ERROR: failed to extract libmathview-0.dll from libmathview-0.7.6-1-runtime.zip"
 	StrCmp $0 "success" 0 doCleanup
-	${unzipFile} "$TEMP\libmathview-0.7.5-runtime.zip" "$INSTDIR\AbiWord" "bin\libmathview_frontend_libxml2-0.dll" "ERROR: failed to extract libmathview_frontend_libxml2-0.dll from libmathview-0.7.5-runtime.zip"
+	${unzipFile} "$TEMP\libmathview-0.7.6-1-runtime.zip" "$INSTDIR\AbiWord" "bin\libmathview_frontend_libxml2-0.dll" "ERROR: failed to extract libmathview_frontend_libxml2-0.dll from libmathview-0.7.6-1-runtime.zip"
 	StrCmp $0 "success" 0 doCleanup
 
 
@@ -187,7 +187,7 @@ Section "Equation Editor"
 		Delete "$TEMP\gettext-runtime-0.13.1-runtime.zip"
 		Delete "$TEMP\glib-2.4.7-runtime.zip"
 		Delete "$TEMP\libxml2-2.6.19-runtime.zip"
-		Delete "$TEMP\libmathview-0.7.5-runtime.zip"
+		Delete "$TEMP\libmathview-0.7.6-1-runtime.zip"
 
 	;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;
 	; Set output path back to the plugins directory.
@@ -528,18 +528,20 @@ Section "Uninstall"
 	; AbiScriptHappy
 	Delete "$INSTDIR\AbiScriptHappy.dll"
 
-!ifdef 0
 	; AbiMathView
 	Delete "$INSTDIR\AbiMathView.dll"
-	Delete "$INSTDIR\..\..\math\gtkmathview.conf.xml"
+	Delete "$INSTDIR\..\bin\libmathview_frontend_libxml2-0.dll"
+	Delete "$INSTDIR\..\bin\libmathview-0.dll"
 	Delete "$INSTDIR\..\..\math\dictionary.xml"
-	Delete "$INSTDIR\..\bin\libxml2.dll"
-!endif
+	Delete "$INSTDIR\..\..\math\dictionary-local.xml"
+	Delete "$INSTDIR\..\..\math\gtkmathview.conf.xml"
+	RMDir "$INSTDIR\..\..\math\"
+	; Note: we can't remove dependencies because they may be used by imp/exp plugins
 
 	; AbiGrammar
 	Delete "$INSTDIR\AbiGrammar.dll"
 	Delete "$INSTDIR\..\bin\liblink-grammar-4.dll"
-	Delete "$INSTDIR\..\bin\en\*"
+	RMDir /r "$INSTDIR\..\bin\en\"
 
 	; remove uninstaller
 	Delete /REBOOTOK "$INSTDIR\UninstallAbiWordToolsPlugins.exe"

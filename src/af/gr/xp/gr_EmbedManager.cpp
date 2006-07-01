@@ -460,3 +460,7 @@ bool GR_EmbedManager::isResizeable(UT_sint32 uid)
 {
   return true;
 }
+
+void GR_EmbedManager::setRun (UT_sint32 uid, fp_Run * run)
+{
+}

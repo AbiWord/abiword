@@ -6732,15 +6732,27 @@ bool IE_Imp_RTF::ApplyParagraphAttributes(bool bDontInsert)
 			//
 			// Insert a list-label field??
 			//
-			const XML_Char* fielddef[3];
+			const XML_Char* fielddef[5];
 			fielddef[0] ="type";
 			fielddef[1] = "list_label";
 			fielddef[2] = NULL;
+			fielddef[3] = NULL;
+			fielddef[4] = NULL;
+			if(bWord97List)
+			{
+					fielddef[2] = "props";
+					fielddef[3] = "text-decoration:none";
+			}
 			bret =   getDoc()->appendObject(PTO_Field,fielddef);
 			UT_UCSChar cTab = UCS_TAB;
 //
 // Put the tab back in.
 //
+			if(bWord97List)
+			{
+					const XML_Char* attribs[3] = {"props","text-decoration:none",NULL};
+					getDoc()->appendFmt(attribs);
+			}
 			getDoc()->appendSpan(&cTab,1);
 			return bret;
 		}

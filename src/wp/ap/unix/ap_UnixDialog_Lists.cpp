@@ -54,6 +54,7 @@ AP_UnixDialog_Lists::AP_UnixDialog_Lists(XAP_DialogFactory * pDlgFactory,
 	m_pAutoUpdateLists = NULL;
 	m_bManualListStyle = true;
 	m_bDontUpdate = false;
+	m_bAutoUpdate_happening_now = false;
 }
 
 XAP_Dialog * AP_UnixDialog_Lists::static_constructor(XAP_DialogFactory * pFactory, XAP_Dialog_Id id)
@@ -309,7 +310,6 @@ void AP_UnixDialog_Lists::destroy(void)
 	else
 	{
 		m_bDestroy_says_stopupdating = true;
-		while (m_bAutoUpdate_happening_now == true) ;
 		m_pAutoUpdateLists->stop();
 		setAnswer(AP_Dialog_Lists::a_CLOSE);
 

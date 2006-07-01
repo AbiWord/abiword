@@ -26,7 +26,7 @@ AC_CONFIG_SRCDIR([src/af/ev/xp/ev_Menu.h])
 AC_CONFIG_AUX_DIR(ac-helpers)
 dnl AC_CONFIG_HEADERS(config.h)
 
-AM_INIT_AUTOMAKE(AbiSuite-2.4,2.4.2)
+AM_INIT_AUTOMAKE(AbiSuite-2.4,2.4.5)
 
 if test "$srcdir" = "."; then
 	abi_rootdir=".."
@@ -75,6 +75,33 @@ with_macosx=false
 with_cocoa=false
 with_qnx=false
 with_win32=false
+
+# when cross-compiling must have perl for cdump.pl
+if test x$cross_compiling = xyes; then
+AC_MSG_CHECKING([for perl])
+if test "x$(which perl)" = "x"; then
+   AC_MSG_ERROR([not found. Must have perl when cross-compiling.])
+fi
+AC_MSG_RESULT([found])
+fi
+
+# check for embedded
+ABI_HILDON_QUICK
+
+AC_ARG_ENABLE(embedded,[  --enable-embedded    Include embedded features],[
+	case "${enableval}" in
+	   yes)	embedded=true ;;
+	   no) embedded=false ;;
+	     *)	AC_MSG_ERROR(bad value ${enableval} for --enable-embedded) ;;
+	esac
+],[	embedded=undefined
+	EMBEDDED_CFLAGS=""
+])
+
+if test "$embedded" = "true"; then
+   EMBEDDED_CFLAGS="-DEMBEDDED_TARGET=1"
+fi
+
 if test "$PLATFORM" = "unix"; then
 	ABI_FE="Unix"
 	ABI_BE="$ABI_FE"
@@ -143,7 +170,6 @@ dnl The defined values are used mostly in includes.mk, but also in
 dnl some other places
 
 ABI_GNOME_QUICK
-ABI_HILDON_QUICK
 ABI_GUCHARMAP
 ABI_XFT_QUICK
 	
@@ -319,6 +345,12 @@ fi
 if test "$PLATFORM" = "qnx"; then
 	PLATFORM_LIBS="-fexceptions"
 fi
+
+# this should be after all other platform cflags have been set
+if test "$embedded" = "true"; then
+   PLATFORM_CFLAGS="$PLATFORM_CFLAGS $EMBEDDED_CFLAGS"
+fi
+
 dnl SUBST all the variables we just defined
 AC_SUBST(ABI_FEATURE_DEFS)
 AC_SUBST(OPTIMIZE_CFLAGS)
@@ -371,43 +403,13 @@ AC_FUNC_ALLOCA
 AC_TYPE_SIGNAL
 AC_CHECK_FUNCS(re_comp regcomp strdup strstr strcasecmp stricmp strnlen)
 
-AC_CHECK_FUNC(putenv,abi_putenv=maybe,abi_putenv=no)
-AC_CHECK_FUNC(setenv,abi_setenv=maybe,abi_setenv=no)
-
-if test $abi_putenv = no -a $abi_setenv = no; then
-	AC_MSG_ERROR([* * * neither setenv nor putenv found! * * *])
-fi
-if test $abi_setenv = no; then
-	AC_DEFINE(SETENV_MISSING,1,[use putenv, not setenv])
-elif test $abi_putenv = maybe; then
-	_abi_cppflags=$CPPFLAGS
-	CPPFLAGS="$CPPFLAGS $WARNING_CFLAGS"
-
-	AC_MSG_CHECKING([whether setenv declared in stdlib.h (for us)])
-	AC_TRY_COMPILE([
-#include <stdlib.h>
-float setenv (int);
-	],[
-/* if this program fails then setenv isn't declared in stdlib.h 
- * or at least not for the flags we're using...
- */
-	],[	AC_MSG_RESULT(no)
-		dnl well, okay, setenv may not be missing but I'm going to
-		dnl mark it as such:
-		AC_DEFINE(SETENV_MISSING,1,[use putenv, not setenv])
-	],[	AC_MSG_RESULT(yes)
-	])
-
-	CPPFLAGS=$_abi_cppflags
-fi
-
 if test $peerconfig = "true"; then
-	for i in . $PEERDIRS; do
-		if test $i != . ; then
-			j=`basename $i`
-			ABI_PEER_CONFIG($j,$i)
-		fi
-	done
+    for i in . $PEERDIRS; do
+        if test $i != . ; then
+            j=`basename $i`
+            ABI_PEER_CONFIG($j,$i)
+        fi
+    done
 fi
 
 # Check whether the scandir() select/filter function requires that its
@@ -434,6 +436,7 @@ dnl due to stupid m4 I had to double the [ and ] in the regexp
 fi
 AC_SUBST(VALGRIND)
 
+AM_CONDITIONAL(CROSS_COMPILING, test x$cross_compiling = xyes)
 
 AC_CONFIG_FILES([GNUmakefile
  src/GNUmakefile
@@ -536,7 +539,7 @@ AC_CONFIG_FILES([
  src/pkg/linux/apkg/abiword-gnome.apspec
  src/pkg/linux/apkg/abiword-gtk.apspec
  src/pkg/maemo/debian/misc/abiword.desktop
- src/pkg/maemo/debian/misc/org.abisource.abiword.service
+ src/pkg/maemo/debian/misc/osso-abiword.service
 ])
 AC_OUTPUT
 
@@ -556,6 +559,16 @@ esac
 case "$gnome" in
      "true" )
         AC_MSG_RESULT([Configured with GNOME support.]) ;;
+esac
+
+case "$embedded" in
+     "true")
+	AC_MSG_RESULT([Configured for embedded target.]) ;;
+esac
+
+case "$hildon" in
+     "true")
+	AC_MSG_RESULT([Configured with Hildon/maemo support.]) ;;
 esac
 
 case "$debug" in

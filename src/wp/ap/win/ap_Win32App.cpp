@@ -1244,25 +1244,24 @@ int AP_Win32App::WinMain(const char * szAppName, HINSTANCE hInstance,
 	Args.parsePoptOpts();
 	pMyWin32App->initialize();
   
-	bShowSplash = Args.getShowSplash();
-
 	// Consider the user saved preferences for the Splash Screen
    	const XAP_Prefs * pPrefs = pMyWin32App->getPrefs();
 	UT_ASSERT_HARMLESS(pPrefs);
     if (pPrefs && pPrefs->getPrefsValueBool (AP_PREF_KEY_ShowSplash, &bSplashPref))
 	{
-		bShowSplash = bShowSplash && bSplashPref;
+		bShowSplash = bSplashPref;
 	}
 
 	// Step 2: Handle all non-window args.
 	// process args (calls common arg handler, which then calls platform specific)
 	// As best I understand, it returns true to continue and show window, or
 	// false if no window should be shown (and thus we should simply exit).
-	if (!Args.doWindowlessArgs())
+	bool windowlessArgsWereSuccessful = true;
+	if (!Args.doWindowlessArgs(windowlessArgsWereSuccessful))
 	{
 		pMyWin32App->shutdown();	// properly shutdown the app 1st
 		delete pMyWin32App;
-		return 0;
+		return (windowlessArgsWereSuccessful ? 0 : -1);
 	}
 
 	// Step 3: Create windows as appropriate.
@@ -1278,7 +1277,7 @@ int AP_Win32App::WinMain(const char * szAppName, HINSTANCE hInstance,
 	}
 
 #ifdef SPLASH
-	if (bShowSplash)
+	if (bShowSplash && Args.getShowSplash())
 	{
 		_showSplash(hInstance, szAppName);
 	}
@@ -1507,8 +1506,10 @@ void AP_Win32App::errorMsgBadFile(XAP_Frame * pFrame, const char * file,
  * platform-specific windowless args.
  * return false if we should exit normally but Window should not be displayed
  */
-bool AP_Win32App::doWindowlessArgs(const AP_Args *Args)
+bool AP_Win32App::doWindowlessArgs(const AP_Args *Args, bool & bSuccess)
 {
+	bSuccess = true;
+
 	AP_Win32App * pMyWin32App = static_cast<AP_Win32App*>(Args->getApp());
 
 	if (Args->m_sGeometry)
@@ -1564,6 +1565,7 @@ bool AP_Win32App::doWindowlessArgs(const AP_Args *Args)
 		{
 			// couldn't load document
 			printf("Error: no file to print!\n");
+			bSuccess = false;
 		}
 
 		return false;
@@ -1592,6 +1594,7 @@ bool AP_Win32App::doWindowlessArgs(const AP_Args *Args)
 		if(!bFound)
 		{
 			printf("Plugin %s not found or loaded \n",Args->m_sPlugin);
+			bSuccess = false;
 			return false;
 		}
 
@@ -1606,6 +1609,7 @@ bool AP_Win32App::doWindowlessArgs(const AP_Args *Args)
 		{
 			printf("Plugin %s invoke method %s not found \n",
 				   Args->m_sPlugin,evExecute);
+			bSuccess = false;
 			return false;
 		}
 		//

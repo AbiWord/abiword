@@ -60,6 +60,9 @@
 #include "px_CR_Span.h"
 #include "px_CR_Strux.h"
 #include "ut_mbtowc.h"
+#include "xap_Frame.h"
+#include "xav_View.h"
+#include "gr_Graphics.h"
 
 #include "fd_Field.h"
 
@@ -559,6 +562,7 @@ private:
 	void    _emitTOC ();
 
 	PD_Document *				m_pDocument;
+	PT_AttrPropIndex			m_apiLastSpan;
 	IE_Exp_HTML *				m_pie;
 	bool						m_bClipBoard;
 	bool						m_bTemplateBody;
@@ -581,6 +585,7 @@ private:
 	bool			m_bInSection;
 	bool			m_bInFrame;
 	bool			m_bInTextBox; // Necessary?  Possibly not.  Convenient and safe?  Yes.
+	bool			m_bInTOC;
 	bool			m_bInBlock;
 	bool			m_bInSpan;
 	bool			m_bNextIsSpace;
@@ -903,6 +908,7 @@ void s_HTML_Listener::tagClose (UT_uint32 tagID)
 	if (i == tagID) return;
 
 	UT_DEBUGMSG(("WARNING: possible tag mis-match in XHTML output!\n"));
+	UT_DEBUGMSG(("WARNING:     Tag requested %i, tag found %i\n", tagID, i));
 }
 
 /* use with *extreme* caution! (this is used by images with data-URLs)
@@ -1881,15 +1887,30 @@ void s_HTML_Listener::_openSection (PT_AttrPropIndex api, UT_uint16 iSectionSpec
 
 void s_HTML_Listener::_closeSection (void)
 {
-	if (m_bInBlock)
-		_closeTag (); // We need to investigate the tag stack usage of this, and whether or not we really would rather specify the tag in all cases.
-
+	// When we start tracking list ideas and doing store-first-write-later on them,
+	// and then start supporting unified discontinuous lists,
+	// complications with questionable worthwhileness,
+	// we will no longer have to pop out for every section break even when there are identical listIds spanning multiple sections.
+	// Until then, this is necessary.
+	listPopToDepth(0);
+	
+	if (tagTop() == TT_SPAN) {
+		UT_DEBUGMSG(("_closeSection closing span\n"));
+		tagClose(TT_SPAN, "span");
+	}
+	
+	if (m_bInBlock && (tagTop() == TT_P)) { // If only the first is true, we have a first-order tag mismatch.  The alternative with not testing the latter is a second-order tag mismatch.
+		UT_DEBUGMSG(("_closeSection closing block\n"));
+	//		_closeTag (); // We need to investigate the tag stack usage of this, and whether or not we really would rather specify the tag in all cases.
+		tagClose(TT_P, "p");
+	}
 	// Need to investigate whether we can safely uncomment this without undoing heading work, or any other kind using unended structures like lists.
 	// _popUnendedStructures(); // Close lists, and possibly other stuff.  Even if it theoretically can span sections, we run a high risk of corrupting the document.
 
 	if (m_bInSection && (tagTop () == TT_DIV))
 	{
 		m_utf8_1 = "div";
+		UT_DEBUGMSG(("_closeSection closing div\n"));
 		tagClose (TT_DIV, m_utf8_1);
 	}
 	m_bInSection = false;
@@ -2622,10 +2643,13 @@ void s_HTML_Listener::_openSpan (PT_AttrPropIndex api)
 	const PP_AttrProp * pAP = 0;
 	bool bHaveProp = (api ? (m_pDocument->getAttrProp (api, &pAP)) : false);
 	
+	if (m_bInSpan && m_apiLastSpan == api)
+		return;
+	
 	if (!bHaveProp || (pAP == 0))
 	{
 		if (m_bInSpan) _closeSpan ();
-		return;
+			return;
 	}
 
 	const XML_Char * szA_Style = 0;
@@ -2891,7 +2915,7 @@ void s_HTML_Listener::_openSpan (PT_AttrPropIndex api)
 
 					tagOpen (TT_BDO, m_utf8_1, ws_None);
 				}
-
+		m_apiLastSpan = api;
 		m_bInSpan = true;
 	}
 	else if (m_bInSpan) _closeSpan ();
@@ -3228,7 +3252,7 @@ void s_HTML_Listener::_openTable (PT_AttrPropIndex api)
 	UT_uint32 iCCount[4] = {0,0,0,0}; // 0 - L, 1 - R, 2 - T, 3 - B
 	UT_uint32 iSCount[4] = {0,0,0,0}; // 0 - L, 1 - R, 2 - T, 3 - B
 	UT_uint32 iBMaxIndx = 0, iCMaxIndx = 0, iSMaxIndx = 0;
-	UT_sint32 i = 0;
+	UT_sint32 i = 0; // We really want this signed?
 	
 	for(i = 0; i < 4; ++i)
 	{
@@ -3395,7 +3419,7 @@ void s_HTML_Listener::_openTable (PT_AttrPropIndex api)
 		m_utf8_1 = "colgroup";
 		tagOpen(TT_COLGROUP, m_utf8_1);
 
-		for(i = 0; i< nCols;i++)
+		for(i = 0; (i< nCols) && (i<m_vecDWidths.getItemCount());i++)
 		{
 			double * pDWidth = m_vecDWidths.getNthItem(i);
 			double percent = 100.0*(*pDWidth/totWidth);
@@ -4167,6 +4191,7 @@ s_HTML_Listener::s_HTML_Listener (PD_Document * pDocument, IE_Exp_HTML * pie, bo
 								  UT_UTF8String & linkCSS,
 								  UT_UTF8String & title) :
 	m_pDocument (pDocument),
+		m_apiLastSpan(0),
 		m_pie(pie),
 		m_bClipBoard(bClipBoard),
 		m_bTemplateBody(bTemplateBody),
@@ -4175,6 +4200,7 @@ s_HTML_Listener::s_HTML_Listener (PD_Document * pDocument, IE_Exp_HTML * pie, bo
 		m_bInSection(false),
 		m_bInFrame(false),
 		m_bInTextBox(false),
+		m_bInTOC(false),
 		m_bInBlock(false),
 		m_bInSpan(false),
 		m_bNextIsSpace(false),
@@ -4614,8 +4640,8 @@ void s_HTML_Listener::_handleField (const PX_ChangeRecord_Object * pcro,
 			textUntrusted (field->getValue ());
 			m_utf8_1 = "a";
 			tagClose (TT_A, m_utf8_1, ws_None);
-			DELETEP(idAttr);
-			DELETEP(szTypeCpy);
+			DELETEPV(idAttr);
+			DELETEPV(szTypeCpy);
 		}
 		else
 		{
@@ -5081,7 +5107,7 @@ bool s_HTML_Listener::populateStrux (PL_StruxDocHandle sdh,
 			}
 		case PTX_SectionTOC: 
 			{
-				_emitTOC ();
+				_emitTOC (); // Change this to pass the API via which emit can then get style props from to construct style trees.
 				return true;
 			}
 		case PTX_EndTOC:
@@ -5111,8 +5137,14 @@ bool s_HTML_Listener::endOfDocument () {
 void s_HTML_Listener::_emitTOC () {
 	if (m_toc) {
 
+		if(listDepth()) { // We don't support TOC-in-LI, but the bright side is that neither does AbiWord itself, so this matches application behaviour.
+			m_utf8_1 = "span";
+			tagClose (TT_SPAN, m_utf8_1, ws_None);
+			m_utf8_1 = "li";
+			tagClose (TT_LI, m_utf8_1, ws_Post);
+		}
+		
 		const XAP_StringSet * pSS = XAP_App::getApp()->getStringSet();
-
 		UT_UTF8String tocHeadingUTF8;
 		pSS->getValueUTF8(AP_STRING_ID_TOC_TocHeading, tocHeadingUTF8);
 		
@@ -5123,22 +5155,53 @@ void s_HTML_Listener::_emitTOC () {
 		_outputData (tocHeading.ucs4_str(), tocHeading.length());
 		m_bInBlock = false;
 		tagClose (TT_H1, "h1");
+		
+		int level1_depth = 0;
+		int level2_depth = 0;
+		int level3_depth = 0;
+		int level4_depth = 0;
 
+		m_bInTOC = true;
 		for (int i = 0; i < m_toc->getNumTOCEntries(); i++) {
-			int tocLevel = 0;			
+			int tocLevel = 0;		
 			
 			UT_UCS4String tocText(m_toc->getNthTOCEntry(i, &tocLevel).utf8_str());
 
-			if (tocText.length()) {
-				UT_UTF8String tocLink(UT_UTF8String_sprintf("<a href=\"#__AbiTOC%d__\">", i));
-				
-				_openTag (TT_P, NULL);
-				m_pie->write(tocLink.utf8_str(), tocLink.length());
-				_outputData (tocText.ucs4_str(), tocText.length());
-				m_pie->write("</a>", 4);
-				_closeTag ();
+			{
+				UT_LocaleTransactor t(LC_NUMERIC, "C");
+				m_utf8_1 = UT_UTF8String_sprintf("p style=\"text-indent:%gin\"", ((tocLevel-1) * .5));
 			}
+			
+			UT_UCS4String tocLevelText;
+			if(tocLevel == 1) {
+				level1_depth++;
+				level2_depth = level3_depth = level4_depth = 0;
+				
+				tocLevelText = UT_UTF8String_sprintf("[%d] ", level1_depth).ucs4_str();
+			} else if(tocLevel == 2) {
+				level2_depth++;
+				level3_depth = level4_depth = 0;
+				tocLevelText = UT_UTF8String_sprintf("[%d.%d] ", level1_depth, level2_depth).ucs4_str();
+			} else if(tocLevel == 3) {
+				level3_depth++;
+				level4_depth = 0;
+				tocLevelText = UT_UTF8String_sprintf("[%d.%d.%d] ", level1_depth, level2_depth, level3_depth).ucs4_str();
+			} else if(tocLevel == 4) {
+				level4_depth++;
+				tocLevelText = UT_UTF8String_sprintf("[%d.%d.%d.%d] ", level1_depth, level2_depth, level3_depth, level4_depth).ucs4_str();
+			}
+			
+			UT_UTF8String tocLink(UT_UTF8String_sprintf("<a href=\"#__AbiTOC%d__\">", i));
+			tagOpen (TT_P, m_utf8_1);
+			m_bInBlock = true;
+			m_pie->write(tocLink.utf8_str(), tocLink.length());
+			_outputData (tocLevelText.ucs4_str(), tocLevelText.length());
+			_outputData (tocText.ucs4_str(), tocText.length());
+			m_pie->write("</a>", 4);
+			m_bInBlock = false;
+			tagClose (TT_P, "p");
 		}
+		m_bInTOC = false;
 	}
 }
 
@@ -5162,11 +5225,11 @@ void s_HTML_Listener::_doFootnotes () {
 	//
 	// Output footnotes
 	//
-	UT_uint32 i = 0;
-	if(getNumFootnotes() > 0) {
+	UT_uint32 i = 0, m_nFootnotes = getNumFootnotes();
+	if(m_nFootnotes > 0) {
 		startEmbeddedStrux();
 	}
-	for(i = 0; i < getNumFootnotes(); i = i + 1)
+	for(i = 0; i < m_nFootnotes; i = i + 1)
 	{
 		PD_DocumentRange * pDocRange = m_vecFootnotes.getNthItem(i);
 		m_bInAFENote = true;
@@ -6547,7 +6610,18 @@ bool IE_Exp_HTML::_openFile (const char * szFilename)
 	XAP_Frame * pFrame = getDoc()->getApp()->getLastFocussedFrame ();
 
 	if (m_bSuppressDialog || !pFrame) return IE_Exp::_openFile (szFilename);
-
+	if(pFrame)
+	{
+			AV_View * pView = pFrame->getCurrentView();
+			if(pView)
+			{
+				GR_Graphics * pG = pView->getGraphics();
+				if(pG && pG->queryProperties(GR_Graphics::DGP_PAPER))
+				{
+					return IE_Exp::_openFile (szFilename);
+				}
+			}
+		}
 	/* run the dialog
 	 */
 

@@ -1042,7 +1042,7 @@ bool AP_Dialog_Styles::createNewStyle(const XML_Char * szName)
 //
 	const XML_Char * attrib[] = {PT_NAME_ATTRIBUTE_NAME,szName,PT_TYPE_ATTRIBUTE_NAME,getAttsVal(PT_TYPE_ATTRIBUTE_NAME),"basedon",getAttsVal("basedon"),"followedby",getAttsVal("followedby"),"props",m_curStyleDesc.c_str(),NULL,NULL};
 	bool bres = getDoc()->appendStyle(attrib);
-	DELETEP(props);
+	FREEP(props);
 	return bres;
 }
 

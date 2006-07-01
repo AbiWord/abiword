@@ -53,6 +53,7 @@
 
 AP_Dialog_FormatTOC::AP_Dialog_FormatTOC(XAP_DialogFactory * pDlgFactory, XAP_Dialog_Id id)
 	: XAP_Dialog_Modeless(pDlgFactory,id),
+	  m_pDoc(NULL),
 	  m_pAutoUpdater(0),
 	  m_iTick(0),
 	  m_pAP(NULL),
@@ -164,8 +165,11 @@ UT_UTF8String AP_Dialog_FormatTOC::getNewStyle(UT_UTF8String & sProp)
 	XAP_DialogFactory * pDialogFactory
 		= static_cast<XAP_DialogFactory *>(pFrame->getDialogFactory());
 
+	// use justMakeTheDialog instead of requestDialog to allow modeless and modal versions of
+	// the stylist to exist
+
 	AP_Dialog_Stylist * pDialog
-		= static_cast<AP_Dialog_Stylist *>(pDialogFactory->requestDialog(AP_DIALOG_ID_STYLIST));
+		= static_cast<AP_Dialog_Stylist *>(pDialogFactory->justMakeTheDialog((AP_DIALOG_ID_STYLIST)));
 	UT_return_val_if_fail (pDialog, sNewStyle);
 	UT_UTF8String sVal = getTOCPropVal(sProp);
 

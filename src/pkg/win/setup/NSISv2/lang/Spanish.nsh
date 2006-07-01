@@ -7,7 +7,7 @@ ${LSTR} TITLE_ssection_core                 "Spanish:Primary components"
 
 
 ; Localized Dictionary names (language supported by dictionary, not dictionary filename)
-${LSTR} dict_Español       "Español"
+${LSTR} dict_Espanol       "Español"
 
 
 ; End Language descriptions

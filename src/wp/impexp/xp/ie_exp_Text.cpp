@@ -752,12 +752,16 @@ bool Text_Listener::populate(PL_StruxFmtHandle /*sfh*/,
 			
 			case PTO_Hyperlink:
 				return true;
+
 			case PTO_Embed:
 				return true;
 
+			case PTO_Math:
+				return true;
+
 			default:
-				UT_ASSERT_NOT_REACHED();
-				return false;
+				UT_ASSERT(UT_TODO);
+				return true;
 			}
 		}
 
@@ -895,7 +899,7 @@ bool Text_Listener::populateStrux(PL_StruxDocHandle /*sdh*/,
 	    return true ;
 
 	default:
-		UT_ASSERT_NOT_REACHED();
+		UT_ASSERT(UT_TODO);
 		return true;
 	}
 }

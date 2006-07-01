@@ -964,7 +964,8 @@ void PP_AttrProp::_clearEmptyProperties()
 		{
 			const PropertyPair* p = pEntry;
 
-			if(*(p->first()) == 0)
+			const char *s = p->first();
+			if(s == NULL || *s == 0)
 			{
 
 				XML_Char* tmp = const_cast<XML_Char*>(p->first());

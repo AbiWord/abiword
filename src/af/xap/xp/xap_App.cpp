@@ -133,8 +133,18 @@ XAP_App::~XAP_App()
 
 	// run thru and destroy all frames on our window list.
 	UT_VECTOR_PURGEALL(XAP_Frame *, m_vecFrames);
+	//
+	// If the Embed plugins exist but aren't used the pointers
+	// are NULL. We used code instead of getting asserts
+	// for UT_VECTOR_PURGEALL
+	//
+	UT_sint32 i = 0;
+	for(i= 0; i<  m_vecEmbedManagers.getItemCount(); i++)
+	{
+	    GR_EmbedManager  * p = m_vecEmbedManagers.getNthItem(i);
+	    DELETEP(p);
+	}
 
-	UT_VECTOR_PURGEALL(GR_EmbedManager  *, m_vecEmbedManagers);
 
 	FREEP(m_szAbiSuiteLibDir);
 	DELETEP(m_pEMC);

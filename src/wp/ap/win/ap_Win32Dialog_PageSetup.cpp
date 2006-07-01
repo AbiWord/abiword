@@ -51,6 +51,7 @@
 
 #define BUFSIZE		128
 #define SIGDIGIT	4
+#define FMT_STRING "%0.2f"
 
 float mScale[] = { 25.4f, 10.0f, 1.0f };
 
@@ -770,18 +771,21 @@ void AP_Win32Dialog_PageSetup::updatePageSize()
 
 void AP_Win32Dialog_PageSetup::updateWidth()
 {
+
 	char buf[BUFSIZE];
+
+	sprintf (buf, FMT_STRING, m_PageSize.Width (getPageUnits()));
 	SetDlgItemText( m_page.getHandle(),
-   	                AP_RID_DIALOG_PAGE_SETUP_EBX_WIDTH,
-       	            gcvt( m_PageSize.Width(getPageUnits()), SIGDIGIT, buf ) );
+			AP_RID_DIALOG_PAGE_SETUP_EBX_WIDTH, buf);
+	
 }
 
 void AP_Win32Dialog_PageSetup::updateHeight()
 {
 	char buf[BUFSIZE];
+	sprintf (buf, FMT_STRING, m_PageSize.Height(getPageUnits()));
 	SetDlgItemText( m_page.getHandle(),
-   	                AP_RID_DIALOG_PAGE_SETUP_EBX_HEIGHT,
-       	            gcvt( m_PageSize.Height(getPageUnits()), SIGDIGIT, buf ) );
+   	                AP_RID_DIALOG_PAGE_SETUP_EBX_HEIGHT, buf);
 }
 
 
