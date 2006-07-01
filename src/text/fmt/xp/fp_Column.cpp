@@ -1629,10 +1629,11 @@ void fp_VerticalContainer::bumpContainers(fp_ContainerObject* pLastContainerToKe
   \fixme I suspect BIDI does not work with multiple columns since the
          leader would then have to be the right-most column.
 */
-fp_Column::fp_Column(fl_SectionLayout* pSectionLayout) : fp_VerticalContainer(FP_CONTAINER_COLUMN, pSectionLayout)
+fp_Column::fp_Column(fl_SectionLayout* pSectionLayout) : fp_VerticalContainer(FP_CONTAINER_COLUMN, pSectionLayout),
+  m_pLeader(NULL),
+  m_pFollower(NULL),
+  m_pPage(NULL)
 {
-	m_pLeader = NULL;
-	m_pFollower = NULL;
 }
 
 fp_Column::~fp_Column()
