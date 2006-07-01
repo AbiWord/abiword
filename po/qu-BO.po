@@ -1,8 +1,8 @@
 # translation of qu-BO.po to Bolivian Quechua
 # translation of AbiWord to Bolivian Quechua.
 # This file is distributed under the same license as the PACKAGE package.
-# Copyright (C) 2004
-# Maria Elena Pozo <charlesmelo@latinmail.com>, Amos Batto <abatto@indiana.edu>
+# Copyright (C) 2004-2006
+# Maria Elena Pozo Tapia <marielenapozo@yahoo.es>, Amos Batto <abatto@indiana.edu>
 # Using some Spanish translations from Francisco Javier F. Serrador <serrador@arrakis.es>
 msgid ""
 msgstr ""
@@ -10,7 +10,7 @@ msgstr ""
 "Report-Msgid-Bugs-To: \n"
 "POT-Creation-Date: 2005-06-11 02:27+0200\n"
 "PO-Revision-Date: 2003-11-30 20:41+0100\n"
-"Last-Translator: Maria Elena Pozo <charlesmelo@latinmail.com>, Amos Batto "
+"Last-Translator: Maria Elena Pozo Tapia <marielenapozo@yahoo.es>, Amos Batto "
 "<abatto@indiana.edu>\n"
 "Language-Team: \n"
 "MIME-Version: 1.0\n"
@@ -221,9 +221,8 @@ msgstr "&Tukuy"
 
 #. DLG_ApplyButton
 #: po/tmp/ap_String_Id.h.h:95
-#, fuzzy
 msgid "&Apply"
-msgstr "Chaywan ruway"
+msgstr "&Aplicar"
 
 #. DLG_Para_LabelAt
 #: po/tmp/ap_String_Id.h.h:97
@@ -319,9 +318,8 @@ msgstr "&Suk'asqakuna"
 
 #. MENU_LABEL_TOOLS_REVISIONS_COMPARE_DOCUMENTS
 #: po/tmp/ap_String_Id.h.h:135
-#, fuzzy
 msgid "&Compare documents"
-msgstr "&Aswan documentos"
+msgstr "&Comparar documentos"
 
 #. MENU_LABEL_EDIT_COPY
 #: po/tmp/ap_String_Id.h.h:137
@@ -330,9 +328,8 @@ msgstr "&Kikinchay"
 
 #. MENU_LABEL_FMT_STYLE_DEFINE
 #: po/tmp/ap_String_Id.h.h:139
-#, fuzzy
 msgid "&Create and Modify Styles"
-msgstr "&Rikhuchiypis uqjinaychiypis"
+msgstr "&Imayna Kayninta uqjinayachiy"
 
 #. DLG_Options_Label_PrefsCurrentScheme
 #: po/tmp/ap_String_Id.h.h:141
@@ -366,9 +363,8 @@ msgstr "&Documento"
 
 #. MENU_LABEL_TOOLS_HISTORY
 #: po/tmp/ap_String_Id.h.h:153
-#, fuzzy
 msgid "&Document History"
-msgstr "&Documentos"
+msgstr "&Histórico del documentos"
 
 #. MENU_LABEL_WINDOW
 #: po/tmp/ap_String_Id.h.h:155
@@ -388,9 +384,8 @@ msgstr "&Uqjinayachiy"
 
 #. MENU_LABEL_INSERT_EDIT_HYPERLINK
 #: po/tmp/ap_String_Id.h.h:162
-#, fuzzy
 msgid "&Edit hyperlink"
-msgstr "Si&nchi laykhurakuqta chinkachiy"
+msgstr "Si&nchi laykhurakuqta uqjinayachiy"
 
 #. DLG_Options_Label_SmartQuotesEnable
 #: po/tmp/ap_String_Id.h.h:164
@@ -429,9 +424,8 @@ msgstr "&Archivo"
 
 #. DLG_Options_Label_FileExtension
 #: po/tmp/ap_String_Id.h.h:178
-#, fuzzy
 msgid "&File extension:"
-msgstr "Tukukuyninpa sutinwan:"
+msgstr "&Tukukuyninpa sutinwan:"
 
 #. MENU_LABEL_EDIT_FIND
 #: po/tmp/ap_String_Id.h.h:180
@@ -470,9 +464,8 @@ msgstr "&Riy ...man"
 
 #. DLG_FormatTOC_HasHeading
 #: po/tmp/ap_String_Id.h.h:194
-#, fuzzy
 msgid "&Has Heading"
-msgstr "Cabecera 3"
+msgstr "&Laqheq umanyoq"
 
 #. MENU_LABEL_VIEW_HEADFOOT
 #: po/tmp/ap_String_Id.h.h:196
@@ -502,14 +495,13 @@ msgstr "&Pakasqa texto"
 
 #. DLG_Options_Label_SpellHighlightMisspelledWords
 #: po/tmp/ap_String_Id.h.h:207
-#, fuzzy
 msgid "&Highlight misspelled words"
-msgstr "Pachanmanta pantasqa simikunata cheqachay"
+msgstr "&Pantasqa simikunata rikuchiy"
 
 #. MENU_LABEL_INSERT_HYPERLINK
 #: po/tmp/ap_String_Id.h.h:209
 msgid "&Hyperlink"
-msgstr "&Sinchi laykhurakuq"
+msgstr "&Sinchi-laykhurakuq"
 
 #. DLG_Spell_Ignore
 #: po/tmp/ap_String_Id.h.h:211
@@ -524,25 +516,23 @@ msgstr "&Tukuyninta saqepullay"
 #. MENU_LABEL_FMT_IMAGE
 #. MENU_LABEL_FMT_POSIMAGE
 #: po/tmp/ap_String_Id.h.h:216
-#, fuzzy
 msgid "&Image"
-msgstr "Pallaypata chhikanninta uqjinaychiy"
+msgstr "&Pallay"
 
 #. MENU_LABEL_FILE_IMPORTSTYLES
 #: po/tmp/ap_String_Id.h.h:218
 msgid "&Import Styles"
-msgstr "&Jawamanta imayna kayninta apachimuy"
+msgstr "Jawamanta imayna kayninta apa&chimuy"
 
 #. MENU_LABEL_WEB_WEBPREVIEW
 #: po/tmp/ap_String_Id.h.h:220
 msgid "&In web browser"
-msgstr ""
+msgstr "&En navegador web"
 
 #. DLG_FormatTOC_InheritLabel
 #: po/tmp/ap_String_Id.h.h:222
-#, fuzzy
 msgid "&Inherit label"
-msgstr "Tablata sat'iy"
+msgstr "&Hereda etiqueta"
 
 #. DLG_InsertButton
 #. MENU_LABEL_INSERT
@@ -555,7 +545,7 @@ msgstr "&Sat'iy"
 #. DLG_Options_Label_AutoSaveInterval
 #: po/tmp/ap_String_Id.h.h:228
 msgid "&Interval:"
-msgstr ""
+msgstr "&Intervalo:"
 
 #. MENU_LABEL_FMT_ITALIC
 #: po/tmp/ap_String_Id.h.h:230
@@ -564,9 +554,8 @@ msgstr "&Cursiva"
 
 #. MENU_LABEL_INSERT_GOTO_HYPERLINK
 #: po/tmp/ap_String_Id.h.h:232
-#, fuzzy
 msgid "&Jump to hyperlink"
-msgstr "Si&nchi laykhurakuqta chinkachiy"
+msgstr "Si&nchi-laykhurakuqman riy"
 
 #. MENU_LABEL_ALIGN_JUSTIFY
 #: po/tmp/ap_String_Id.h.h:234
@@ -627,7 +616,7 @@ msgstr "C&orreota t'inkinapaq campo"
 #. MENU_LABEL_TOOLS_REVISIONS_AUTO
 #: po/tmp/ap_String_Id.h.h:257
 msgid "&Maintain Full History"
-msgstr ""
+msgstr "&Mantener histórico completo"
 
 #. MENU_LABEL_TOOLS_REVISIONS_MARK
 #: po/tmp/ap_String_Id.h.h:259
@@ -666,9 +655,8 @@ msgstr "&Mosoq wintana"
 
 #. MENU_LABEL_FILE_NEW_USING_TEMPLATE
 #: po/tmp/ap_String_Id.h.h:273
-#, fuzzy
 msgid "&New using Template"
-msgstr "Lastruta kichay"
+msgstr "&Lastrumanta mosoq documento"
 
 #. DLG_Break_NextPage
 #: po/tmp/ap_String_Id.h.h:275
@@ -687,9 +675,8 @@ msgstr "&Yupana:"
 
 #. DLG_FormatTOC_NumberingType
 #: po/tmp/ap_String_Id.h.h:281
-#, fuzzy
 msgid "&Numbering type:"
-msgstr "Yupanapaq"
+msgstr "&Yupanaqpa layan:"
 
 #. DLG_Break_OddPage
 #: po/tmp/ap_String_Id.h.h:283
@@ -723,9 +710,8 @@ msgstr "&Laqhe phinkina"
 
 #. DLG_FormatTOC_PageNumbering
 #: po/tmp/ap_String_Id.h.h:295
-#, fuzzy
 msgid "&Page numbering:"
-msgstr "Laqheqpata yupanan"
+msgstr "&Laqheqpata yupanan:"
 
 #. MENU_LABEL_FMT_PARAGRAPH
 #: po/tmp/ap_String_Id.h.h:297
@@ -765,7 +751,7 @@ msgstr "Ñit'i&napaq qhawaynin"
 #. MENU_LABEL_TOOLS_HISTORY_PURGE
 #: po/tmp/ap_String_Id.h.h:311
 msgid "&Purge History"
-msgstr ""
+msgstr "&Purgar histórico"
 
 #. MENU_LABEL_FILE_EXIT
 #: po/tmp/ap_String_Id.h.h:313
@@ -867,7 +853,7 @@ msgstr "Revisionta &aqllay"
 #. MENU_LABEL_TOOLS_HISTORY_SHOW
 #: po/tmp/ap_String_Id.h.h:353
 msgid "&Show History"
-msgstr ""
+msgstr "&Mostrar histórico"
 
 #. MENU_LABEL_VIEW_STATUSBAR
 #: po/tmp/ap_String_Id.h.h:355
@@ -886,9 +872,8 @@ msgstr "&Qhelqenapaq kamachi"
 
 #. DLG_FormatTOC_StartAt
 #: po/tmp/ap_String_Id.h.h:361
-#, fuzzy
 msgid "&Start at:"
-msgstr "Imawan qallariy:"
+msgstr "&Maypi qallariy:"
 
 #. DLG_Options_Label_ViewStatusBar
 #: po/tmp/ap_String_Id.h.h:363
@@ -907,9 +892,8 @@ msgstr "Surk'aspata &yupayninta chinkachiy"
 
 #. DLG_FormatTOC_TabLeader
 #: po/tmp/ap_String_Id.h.h:369
-#, fuzzy
 msgid "&Tab leader:"
-msgstr "Laqheqpa u&man:"
+msgstr "&Tabulación maestra:"
 
 #. MENU_LABEL_TABLE_INSERT_TABLE
 #. MENU_LABEL_TABLE_DELETE_TABLE
@@ -1080,7 +1064,7 @@ msgid ""
 "The current document has been saved to disc with a \".saved\" extension."
 msgstr ""
 "Acaba de ocurrir un error fatal. Abiword va a cerrarse.\n"
-"El documento actual se ha guardado en el disco con una extensión \".saved\"."
+"El documento actual se ha guardado en el disco con una extensión «.saved»."
 
 #. DLG_Options_Label_SpellSuggest
 #: po/tmp/ap_String_Id.h.h:444
@@ -1096,7 +1080,7 @@ msgstr "AM/PM"
 #: po/tmp/ap_String_Id.h.h:448
 #, c-format
 msgid "AbiWord cannot open %s. It appears to be an invalid document"
-msgstr "Mana AbiWord %s archivota kicháy atinchu. Ichapis mana allinchu."
+msgstr "Mana AbiWord «%s» archivota kicháy atinchu. Ichapis mana allinchu."
 
 #. MSG_SpellSelectionDone
 #: po/tmp/ap_String_Id.h.h:450
@@ -1256,9 +1240,8 @@ msgstr "Aplicación"
 
 #. DLG_Options_Label_AppStartup
 #: po/tmp/ap_String_Id.h.h:503
-#, fuzzy
 msgid "Application Startup"
-msgstr "Aplicación"
+msgstr "Inicio de la aplicación"
 
 #. DLG_Options_Btn_Apply
 #. DLG_Apply
@@ -1293,6 +1276,9 @@ msgid ""
 "Are you sure you do not want to maintain full history record? If you "
 "proceed, you will not be able to restore earlier versions of this document."
 msgstr ""
+"¿Está seguro de que no quiere mantener un registro histórico completo? Si "
+"continúa, no será capaz de restaurar versiones más antiguas de este "
+"documento."
 
 #. DLG_Para_SpacingAtLeast
 #: po/tmp/ap_String_Id.h.h:518
@@ -1312,9 +1298,8 @@ msgstr "Ruraqe:"
 
 #. DLG_Options_Label_AutoSaveUnderline
 #: po/tmp/ap_String_Id.h.h:524
-#, fuzzy
 msgid "Auto &Save"
-msgstr "Pachanmanta jallch'ay"
+msgstr "&Pachanmanta jallch'ay"
 
 #. DLG_Options_Label_AutoSaveCurrent
 #: po/tmp/ap_String_Id.h.h:526
@@ -1349,7 +1334,7 @@ msgstr "Pachamanta tablata mat'iy"
 #. DLG_Options_Label_Grammar
 #: po/tmp/ap_String_Id.h.h:538
 msgid "Automatic Grammar Checking"
-msgstr ""
+msgstr "Comprobación automática de gramática"
 
 #. DLG_InsertTable_AutoColSize
 #: po/tmp/ap_String_Id.h.h:540
@@ -1373,9 +1358,8 @@ msgstr "Pachanmanta uqjinayanqa"
 
 #. MSG_AutoMerge
 #: po/tmp/ap_String_Id.h.h:548
-#, fuzzy
 msgid "Automerge"
-msgstr "Qhelqeq"
+msgstr "Pachanmanta t'inkiy"
 
 #. DLG_MailMerge_AvailableFields
 #: po/tmp/ap_String_Id.h.h:550
@@ -1451,7 +1435,7 @@ msgstr "Markasqa"
 #: po/tmp/ap_String_Id.h.h:580
 #, c-format
 msgid "Bookmark \"%s\" was not found in this document."
-msgstr "Mana kay documentopi \"%s\" markasqata tarikunchu."
+msgstr "Mana kay documentopi «%s» markasqata tarikunchu."
 
 #. DLG_FormatFrame_Border_Color
 #. DLG_FormatTable_Border_Color
@@ -1542,7 +1526,7 @@ msgstr "&Jatunkuná/Juch'uykuná uqjinayachiy"
 #. MENU_LABEL_EDIT_COPY_HYPERLINK_LOCATION
 #: po/tmp/ap_String_Id.h.h:619
 msgid "C&opy hyperlink location"
-msgstr ""
+msgstr "&Copiar dirrección de hiperenlace"
 
 #. MENU_LABEL_HELP_CREDITS
 #: po/tmp/ap_String_Id.h.h:621
@@ -1556,9 +1540,8 @@ msgstr "Mana tablapi phinkinata churayta atinchu"
 
 #. MSG_NoBreakInsideFrame
 #: po/tmp/ap_String_Id.h.h:625
-#, fuzzy
 msgid "Can not insert a Break inside a text box"
-msgstr "Mana tablapi phinkinata churayta atinchu"
+msgstr "Mana textoq tawak'uchunpi phinkinata churayta atinchu"
 
 #. DLG_Styles_ErrStyleCantDelete
 #: po/tmp/ap_String_Id.h.h:627
@@ -1644,9 +1627,8 @@ msgstr "Aqllanapaq waq colorta churay"
 
 #. DLG_FormatTOC_ChangeStyle
 #: po/tmp/ap_String_Id.h.h:660
-#, fuzzy
 msgid "Change Style"
-msgstr "Jatun/Juch'uy uqjinayachiy"
+msgstr "Imayna Kayninta uqjinayachiy"
 
 #. DLG_Background_TitleFore
 #: po/tmp/ap_String_Id.h.h:662
@@ -1697,9 +1679,8 @@ msgstr "Ñit'inapaq aqllasqata uqjinayachiy"
 
 #. MENU_STATUSLINE_FMT_FRAME
 #: po/tmp/ap_String_Id.h.h:682
-#, fuzzy
 msgid "Change the properties of the Text Box"
-msgstr "Waq ladupichus textota qhelqay"
+msgstr "Cambiar las propiedades de la caja de texto"
 
 #. MENU_STATUSLINE_SPELL_SUGGEST_1
 #. MENU_STATUSLINE_SPELL_SUGGEST_2
@@ -1716,9 +1697,8 @@ msgstr "Siminchayman uqjinaychiy"
 
 #. MENU_STATUSLINE_FMT_BACKGROUND
 #: po/tmp/ap_String_Id.h.h:694
-#, fuzzy
 msgid "Change your document's page background"
-msgstr "Documentoqpa laqhenpi colorta uqjinaychiy"
+msgstr "Laqheqpa ukhunta uqjinaychiy"
 
 #. MENU_STATUSLINE_FMT_BACKGROUND_PAGE_COLOR
 #: po/tmp/ap_String_Id.h.h:696
@@ -1762,20 +1742,18 @@ msgstr "&Ortografiata cheqachay"
 
 #. DLG_Options_Label_GrammarCheck
 #: po/tmp/ap_String_Id.h.h:712
-#, fuzzy
 msgid "Check &grammar as you type"
-msgstr "Qhelqeshaspa &ortografiata cheqachay"
+msgstr "Qhelqeshaspa &gramaticata cheqachay"
 
 #. MENU_LABEL_HELP_CHECKVER
 #: po/tmp/ap_String_Id.h.h:714
-#, fuzzy
 msgid "Check for &Updates"
-msgstr " Pachanmanta uqjinayanqa"
+msgstr "Comprobar &actualizaciones"
 
 #. MENU_STATUSLINE_HELP_CHECKVER
 #: po/tmp/ap_String_Id.h.h:716
 msgid "Check online for newer versions of AbiWord"
-msgstr ""
+msgstr "Comprueba si hay actualizaciones nuevas de Abiword"
 
 #. DLG_Options_Label_SpellCheckAsType
 #: po/tmp/ap_String_Id.h.h:718
@@ -1818,9 +1796,9 @@ msgid ""
 msgstr ""
 "Elija su destino en el lado izquierdo.\n"
 "\n"
-"Rellene la entrada del \"Yupana\" con el número deseado de página o línea. "
-"Puede usar + y - para hacer movimientos relativos. Ej: si escribe \"+2\" y "
-"selecciona \"Surk'a\", \"Riy ...man\" se desplazará 2 líneas por debajo."
+"Rellene la entrada del «Yupana» con el número deseado de página o línea. "
+"Puede usar + y - para hacer movimientos relativos. Ej: si escribe «+2» y "
+"selecciona «Surk'a», «Riy ...man» se desplazará 2 líneas por debajo."
 
 #. MENU_LABEL_EDIT_CLEAR
 #: po/tmp/ap_String_Id.h.h:732
@@ -1918,9 +1896,8 @@ msgstr "Comentario a ser asociado con la revisión:"
 
 #. MENU_STATUSLINE_TOOLS_REVISIONS_COMPARE_DOCUMENTS
 #: po/tmp/ap_String_Id.h.h:769
-#, fuzzy
 msgid "Compare active document to another document"
-msgstr "Mana waq sutita churaspalla documentota jallch'ay"
+msgstr "Comparar el documento activo con otro documento"
 
 #. FIELD_Application_CompileDate
 #: po/tmp/ap_String_Id.h.h:771
@@ -1955,26 +1932,23 @@ msgstr "Yanapaq(kuna):"
 
 #. MENU_STATUSLINE_TABLE_TEXTTOTABLE
 #: po/tmp/ap_String_Id.h.h:783
-#, fuzzy
 msgid "Convert Selected Text to a Table"
-msgstr "Aqllasqa imagenta archivopi jallch'ay"
+msgstr "Convertir el texto seleccionado en una tabla"
 
 #. MENU_LABEL_TABLE_TABLETOTEXT
 #: po/tmp/ap_String_Id.h.h:785
-#, fuzzy
 msgid "Convert Table to Text"
-msgstr "Tablata sat'iy"
+msgstr "Convertir tabla a texto"
 
 #. MENU_LABEL_TABLE_TEXTTOTABLE
 #: po/tmp/ap_String_Id.h.h:787
-#, fuzzy
 msgid "Convert Text to Table"
-msgstr "Mosoq tablata sat'iy"
+msgstr "Convertir texto a tabla"
 
 #. MENU_STATUSLINE_TABLE_TABLETOTEXT
 #: po/tmp/ap_String_Id.h.h:789
 msgid "Convert from a Table to Text"
-msgstr ""
+msgstr "Convierte desde una tabla a un texto"
 
 #. TOOLBAR_LABEL_EDIT_COPY
 #. TOOLBAR_STATUSLINE_EDIT_COPY
@@ -1986,67 +1960,66 @@ msgstr "Kikinchay"
 #. MENU_STATUSLINE_EDIT_COPYEMBED
 #: po/tmp/ap_String_Id.h.h:795
 msgid "Copy Embedded Object"
-msgstr ""
+msgstr "Copiar objeto incrustado"
 
 #. MENU_LABEL_EDIT_COPYIMAGE
 #: po/tmp/ap_String_Id.h.h:797
 msgid "Copy Image"
-msgstr ""
+msgstr "Copiar imagen"
 
 #. MENU_LABEL_EDIT_COPYEMBED
 #: po/tmp/ap_String_Id.h.h:799
 msgid "Copy Object"
-msgstr ""
+msgstr "Copiar objeto"
 
 #. MENU_LABEL_EDIT_COPY_FRAME
 #: po/tmp/ap_String_Id.h.h:801
 msgid "Copy Text Box"
-msgstr ""
+msgstr "Textoq tawak'uchunta kikinchay"
 
 #. MENU_STATUSLINE_EDIT_COPY_HYPERLINK_LOCATION
 #: po/tmp/ap_String_Id.h.h:803
 msgid "Copy hyperlink location"
-msgstr ""
+msgstr "Copiar la dirección del hiperenlace"
 
 #. MENU_STATUSLINE_EDIT_COPY_FRAME
 #: po/tmp/ap_String_Id.h.h:805
-#, fuzzy
 msgid "Copy the Text Box to the clipboard"
-msgstr "Aqllasqa textota kikinchaytawan Portapapelespi churay"
+msgstr "Laqhes-apaqman textoq tawak'uchunta kikinchay"
 
 #. MENU_STATUSLINE_EDIT_CUT_FRAME
 #: po/tmp/ap_String_Id.h.h:807
 msgid "Copy the Text Box to the clipboard then remove it"
-msgstr ""
+msgstr "Copiar la caja de texto al portapapeles y después la elimina"
 
 #. MENU_STATUSLINE_EDIT_COPY
 #: po/tmp/ap_String_Id.h.h:809
 msgid "Copy the selection and put it on the Clipboard"
-msgstr "Aqllasqa textota kikinchaytawan Portapapelespi churay"
+msgstr "Aqllasqa textota kikinchaytawan laqhes-apaqpi churay"
 
 #. MSG_IE_CouldNotOpen
 #: po/tmp/ap_String_Id.h.h:811
 #, c-format
 msgid "Could not open file %s for writing"
-msgstr "Mana qhelqenapaj %s archivota kichayta atinchu"
+msgstr "Mana qhelqenapaj «%s» archivota kichayta atinchu"
 
 #. MSG_OpenFailed
 #: po/tmp/ap_String_Id.h.h:813
 #, c-format
 msgid "Could not open file %s."
-msgstr "Mana %s archivota kichayta atikunchu."
+msgstr "Mana «%s» archivota kichayta atikunchu."
 
 #. MSG_IE_CouldNotWrite
 #: po/tmp/ap_String_Id.h.h:815
 #, c-format
 msgid "Could not write to file %s"
-msgstr "Mana %s archivota kichayta atinchu"
+msgstr "Mana «%s» archivota kichayta atinchu"
 
 #. MSG_SaveFailed
 #: po/tmp/ap_String_Id.h.h:817
 #, c-format
 msgid "Could not write to the file %s."
-msgstr "Mana %s archivopi qhelqeyta atikunchu."
+msgstr "Mana «%s» archivopi qhelqeyta atikunchu."
 
 #. MENU_STATUSLINE_TOOLS_WORDCOUNT
 #: po/tmp/ap_String_Id.h.h:819
@@ -2087,7 +2060,6 @@ msgstr "Lastrumanta musoq documentota rikhuchiy"
 
 #. MENU_STATUSLINE_FILE_NEW_USING_TEMPLATE
 #: po/tmp/ap_String_Id.h.h:835
-#, fuzzy
 msgid "Create a new document using a template"
 msgstr "Lastrumanta musoq documentota rikhuchiy"
 
@@ -2104,7 +2076,7 @@ msgstr "Rikhurichiq"
 #. MENU_LABEL_EDIT_CUT
 #: po/tmp/ap_String_Id.h.h:841
 msgid "Cu&t"
-msgstr "&P'itiy"
+msgstr "K&huchuy"
 
 #. FIELD_Datetime_CurrentDate
 #: po/tmp/ap_String_Id.h.h:843
@@ -2166,34 +2138,32 @@ msgstr "Sapan runapaq lista"
 #. TOOLBAR_TOOLTIP_EDIT_CUT
 #: po/tmp/ap_String_Id.h.h:867
 msgid "Cut"
-msgstr "P'itiy"
+msgstr "Khuchuy"
 
 #. MENU_STATUSLINE_EDIT_CUTEMBED
 #: po/tmp/ap_String_Id.h.h:869
 msgid "Cut Embedded Object"
-msgstr ""
+msgstr "Cortar objeto incrustado"
 
 #. MENU_LABEL_EDIT_CUTIMAGE
 #: po/tmp/ap_String_Id.h.h:871
-#, fuzzy
 msgid "Cut Image"
-msgstr "Pallayta sat'iy"
+msgstr "Pallayta khuchuy"
 
 #. MENU_LABEL_EDIT_CUTEMBED
 #: po/tmp/ap_String_Id.h.h:873
-#, fuzzy
 msgid "Cut Object"
-msgstr "Imamanta qhelqay"
+msgstr "Objetota khuchuy"
 
 #. MENU_LABEL_EDIT_CUT_FRAME
 #: po/tmp/ap_String_Id.h.h:875
 msgid "Cut Text Box"
-msgstr ""
+msgstr "Textoqpa tawak'uchunta khuchuy"
 
 #. MENU_STATUSLINE_EDIT_CUT
 #: po/tmp/ap_String_Id.h.h:877
 msgid "Cut the selection and put it on the Clipboard"
-msgstr "Aqllasqa textota p'itiytawan Portapapelespi churay"
+msgstr "Aqllasqa textota khuchuytawan laqhes-apaqpi churay"
 
 #. MENU_LABEL_FMT_DIRECTION
 #: po/tmp/ap_String_Id.h.h:879
@@ -2276,9 +2246,8 @@ msgstr "Mana aqllasqa pañamanta lloq'eman qhelqey"
 
 #. DLG_FormatTOC_LevelDefs
 #: po/tmp/ap_String_Id.h.h:912
-#, fuzzy
 msgid "Define Main Properties"
-msgstr "Kay documentomanta willaykuna"
+msgstr "Definir propiedades principales"
 
 #. MENU_STATUSLINE_FMT_STYLE
 #. MENU_STATUSLINE_FMT_STYLE_DEFINE
@@ -2312,19 +2281,17 @@ msgstr "Suk'asqata chinkachiy"
 #. MENU_STATUSLINE_EDIT_DELETEEMBED
 #: po/tmp/ap_String_Id.h.h:927
 msgid "Delete Embedded Object"
-msgstr ""
+msgstr "Borrar objeto incrustado"
 
 #. MENU_LABEL_EDIT_DELETEIMAGE
 #: po/tmp/ap_String_Id.h.h:929
-#, fuzzy
 msgid "Delete Image"
-msgstr "Tablata chinkachiy"
+msgstr "Pallayta chinkachiy"
 
 #. MENU_LABEL_EDIT_DELETEEMBED
 #: po/tmp/ap_String_Id.h.h:931
-#, fuzzy
 msgid "Delete Object"
-msgstr "Tablata chinkachiy"
+msgstr "Borrar objeto "
 
 #. MENU_LABEL_TABLE_DELETEROW
 #: po/tmp/ap_String_Id.h.h:933
@@ -2350,9 +2317,8 @@ msgstr "Tablata chinkachiy"
 
 #. MENU_LABEL_EDIT_DELETEFRAME
 #: po/tmp/ap_String_Id.h.h:943
-#, fuzzy
 msgid "Delete Text Box"
-msgstr "Tablata chinkachiy"
+msgstr "Textoq tawak'uchunta chinkachiy"
 
 #. TOOLBAR_LABEL_DELETE_COLUMN
 #: po/tmp/ap_String_Id.h.h:945
@@ -2362,7 +2328,7 @@ msgstr "Suk'asqata chinkachiy"
 #. MENU_STATUSLINE_INSERT_DELETE_HYPERLINK
 #: po/tmp/ap_String_Id.h.h:947
 msgid "Delete hyperlink"
-msgstr "Sinchi laykhurakuqta chinkachiy"
+msgstr "Sinchi-laykhurakuqta chinkachiy"
 
 #. TOOLBAR_LABEL_DELETE_ROW
 #: po/tmp/ap_String_Id.h.h:949
@@ -2408,9 +2374,8 @@ msgstr "Diamanteswan lista"
 
 #. DLG_Options_Label_SpellDictionaries
 #: po/tmp/ap_String_Id.h.h:967
-#, fuzzy
 msgid "Dictionaries"
-msgstr "&Simi watuchin..."
+msgstr "Simi watuchinkuna"
 
 #. DLG_HdrFtr_FooterEven
 #: po/tmp/ap_String_Id.h.h:969
@@ -2475,9 +2440,8 @@ msgstr ""
 
 #. DLG_FormatTOC_DispStyle
 #: po/tmp/ap_String_Id.h.h:993
-#, fuzzy
 msgid "Display style:"
-msgstr "Yanapaypaq qhepapi tukuysitun kasqanta rikuchiy"
+msgstr "Imayna kayninta rikuchiy:"
 
 #. DLG_Options_Prompt_IgnoreResetAll
 #: po/tmp/ap_String_Id.h.h:995
@@ -2504,9 +2468,8 @@ msgstr "Kay documentomanta willaykuna"
 
 #. DLG_Options_Label_Documents
 #: po/tmp/ap_String_Id.h.h:1003
-#, fuzzy
 msgid "Documents"
-msgstr "&Documentos"
+msgstr "Documentos"
 
 #. DLG_FormatFootnotes_FootRestartNone
 #: po/tmp/ap_String_Id.h.h:1005
@@ -2547,9 +2510,8 @@ msgstr "Laqheq umanta uqjinayachiy"
 
 #. MENU_STATUSLINE_INSERT_EDIT_HYPERLINK
 #: po/tmp/ap_String_Id.h.h:1024
-#, fuzzy
 msgid "Edit hyperlink"
-msgstr "Sinchi laykhurakuqta sat'iy"
+msgstr "Sinchi-laykhurakuqta uqjinayachiy"
 
 #. MENU_STATUSLINE_VIEW_HEADFOOT
 #: po/tmp/ap_String_Id.h.h:1026
@@ -2593,9 +2555,8 @@ msgstr "Imayna kayninpa tukukuypa willaynin"
 
 #. MENU_LABEL_INSERT_EQUATION
 #: po/tmp/ap_String_Id.h.h:1042
-#, fuzzy
 msgid "Equation"
-msgstr "Saludo inicial:"
+msgstr "Ecuación"
 
 #. FIELD_Error
 #: po/tmp/ap_String_Id.h.h:1044
@@ -2606,27 +2567,27 @@ msgstr "Qhawasqaman jina pantaynin."
 #: po/tmp/ap_String_Id.h.h:1046
 #, c-format
 msgid "Error executing script %s"
-msgstr "Pantay %s script apaykachashaspa"
+msgstr "Pantay «%s» script apaykachashaspa"
 
 #. MSG_ImportError
 #: po/tmp/ap_String_Id.h.h:1048
 #, c-format
 msgid "Error importing file %s."
-msgstr "Pantasqa jawamanta %s archivota apachimuspa."
+msgstr "Pantasqa jawamanta «%s» archivota apachimuspa."
 
 #. MSG_SaveFailedExport
 #: po/tmp/ap_String_Id.h.h:1050
 #, c-format
 msgid "Error while attempting to save %s: could not construct exporter"
 msgstr ""
-"%s archivota jallch'aqtiyki pantan: mana filtro nisqata apaykachayta "
+"«%s» archivota jallch'aqtiyki pantan: mana filtro nisqata apaykachayta "
 "atinkichu."
 
 #. MSG_SaveFailedName
 #: po/tmp/ap_String_Id.h.h:1052
 #, c-format
 msgid "Error while attempting to save %s: invalid name"
-msgstr "%s archivota jallch'aqjinaqa pantan: Archivoqpa sutin mana allinchu."
+msgstr "«%s» archivota jallch'aqjinaqa pantan: Archivoqpa sutin mana allinchu."
 
 #. TOOLBAR_LABEL_SCRIPT_PLAY
 #: po/tmp/ap_String_Id.h.h:1054
@@ -2640,9 +2601,8 @@ msgstr "Puchusqapuni"
 
 #. DLG_Latex_Example
 #: po/tmp/ap_String_Id.h.h:1058
-#, fuzzy
 msgid "Example:"
-msgstr "Nisunman"
+msgstr "Nisunman:"
 
 #. MENU_STATUSLINE_TOOLS_SCRIPTS
 #: po/tmp/ap_String_Id.h.h:1060
@@ -2682,9 +2642,8 @@ msgstr "Waq tupuykuna:"
 
 #. MENU_LABEL_INSERT_FILE
 #: po/tmp/ap_String_Id.h.h:1075
-#, fuzzy
 msgid "F&ile"
-msgstr "Archivo"
+msgstr "&Archivo"
 
 #. MENU_LABEL_FORMAT
 #: po/tmp/ap_String_Id.h.h:1077
@@ -2715,25 +2674,25 @@ msgstr "Campoqpa sutin:"
 #: po/tmp/ap_String_Id.h.h:1087
 #, c-format
 msgid "File %s is not of a currently supported file type"
-msgstr "Mana kay laya %s archivotaqa kicháy atinkunchu."
+msgstr "Mana kay laya «%s» archivotaqa kicháy atinkunchu."
 
 #. MSG_IE_FakeType
 #: po/tmp/ap_String_Id.h.h:1089
 #, c-format
 msgid "File %s is not of the type it claims to be"
-msgstr "Mana kay laya %s archivo nisqan jinachu"
+msgstr "Mana kay laya «%s» archivo nisqan jinachu"
 
 #. MSG_IE_UnknownType
 #: po/tmp/ap_String_Id.h.h:1091
 #, c-format
 msgid "File %s is of unknown type"
-msgstr "%s archivoqa uq layataq mana reqsisqachu"
+msgstr "«%s» archivoqa uq layataq mana reqsisqachu"
 
 #. MSG_IE_FileNotFound
 #: po/tmp/ap_String_Id.h.h:1093
 #, c-format
 msgid "File %s not found"
-msgstr "Mana %s archivota taríy atikunchu"
+msgstr "Mana «%s» archivota taríy atikunchu"
 
 #. FIELD_Application_Filename
 #: po/tmp/ap_String_Id.h.h:1095
@@ -2743,7 +2702,7 @@ msgstr "Archivoqpata sutin"
 #. DLG_FormatTOC_FillStyle
 #: po/tmp/ap_String_Id.h.h:1097
 msgid "Fill style:"
-msgstr ""
+msgstr "Estilo de relleno:"
 
 #. DLG_FR_FindTitle
 #: po/tmp/ap_String_Id.h.h:1099
@@ -2752,27 +2711,23 @@ msgstr "Mask'ay"
 
 #. MENU_LABEL_TOOLS_REVISIONS_FIND_NEXT
 #: po/tmp/ap_String_Id.h.h:1101
-#, fuzzy
 msgid "Find &next revision"
-msgstr "Revisionta &jap'ikuy"
+msgstr "&Qhepan revisionta mask'ay"
 
 #. MENU_LABEL_TOOLS_REVISIONS_FIND_PREV
 #: po/tmp/ap_String_Id.h.h:1103
-#, fuzzy
 msgid "Find &previous revision"
-msgstr "Continuar la revisión anterior (número %d)"
+msgstr "&Ñawpaq revisionta mask'ay"
 
 #. MENU_STATUSLINE_TOOLS_REVISIONS_FIND_NEXT
 #: po/tmp/ap_String_Id.h.h:1105
-#, fuzzy
 msgid "Find next visible revision in the document"
-msgstr "Ortografiaq pantayninkunata pakay"
+msgstr "Busca la siguiente revisión visible del documento"
 
 #. MENU_STATUSLINE_TOOLS_REVISIONS_FIND_PREV
 #: po/tmp/ap_String_Id.h.h:1107
-#, fuzzy
 msgid "Find previous visible revision in the document"
-msgstr "Ortografiaq pantayninkunata pakay"
+msgstr "Busca la anterior revisión visible del documento"
 
 #. MENU_STATUSLINE_EDIT_FIND
 #: po/tmp/ap_String_Id.h.h:1109
@@ -2783,7 +2738,7 @@ msgstr "Nisqan textota mask'ay"
 #: po/tmp/ap_String_Id.h.h:1111
 #, c-format
 msgid "First Line Indent [%s]"
-msgstr "Francesa puchu  [%s]"
+msgstr "Francesa puchu [%s]"
 
 #. DLG_Para_SpecialFirstLine
 #: po/tmp/ap_String_Id.h.h:1113
@@ -2798,22 +2753,22 @@ msgstr "Ma uqjinayachisqa chhikan:"
 #. DLG_Lists_FoldingLevel1
 #: po/tmp/ap_String_Id.h.h:1117
 msgid "Fold below level 1"
-msgstr ""
+msgstr "Plegar por debajo del nivel 1"
 
 #. DLG_Lists_FoldingLevel2
 #: po/tmp/ap_String_Id.h.h:1119
 msgid "Fold below level 2"
-msgstr ""
+msgstr "Plegar por debajo del nivel 2"
 
 #. DLG_Lists_FoldingLevel3
 #: po/tmp/ap_String_Id.h.h:1121
 msgid "Fold below level 3"
-msgstr ""
+msgstr "Plegar por debajo del nivel 3"
 
 #. DLG_Lists_FoldingLevel4
 #: po/tmp/ap_String_Id.h.h:1123
 msgid "Fold below level 4"
-msgstr ""
+msgstr "Plegar por debajo del nivel 4"
 
 #. DLG_Para_PreviewFollowParagraph
 #: po/tmp/ap_String_Id.h.h:1125
@@ -2942,7 +2897,7 @@ msgstr "Ukhunpi kamachi"
 #. MENU_STATUSLINE_FMT_EMBED
 #: po/tmp/ap_String_Id.h.h:1178
 msgid "Format Embedded Object"
-msgstr ""
+msgstr "Formato del objeto incrustado"
 
 #. DLG_FormatFootnotes_Endnotes
 #: po/tmp/ap_String_Id.h.h:1180
@@ -2966,9 +2921,8 @@ msgstr "Laqheq umanpapis chakinpapis kamachiy"
 
 #. MENU_LABEL_FMT_EMBED
 #: po/tmp/ap_String_Id.h.h:1188
-#, fuzzy
 msgid "Format Object"
-msgstr "Tablaq ukhunpi kamachiy"
+msgstr "Formato del objeto"
 
 #. TOOLBAR_LABEL_FMTPAINTER
 #: po/tmp/ap_String_Id.h.h:1190
@@ -2989,9 +2943,8 @@ msgstr "Tablaq ukhunpi kamachiy"
 
 #. DLG_FormatFrameTitle
 #: po/tmp/ap_String_Id.h.h:1197
-#, fuzzy
 msgid "Format Text Box"
-msgstr "Tablaq ukhunpi kamachiy"
+msgstr "textoq tawak'uchunta uqjinayachiy"
 
 #. DLG_Options_Label_ViewFormatTB
 #: po/tmp/ap_String_Id.h.h:1199
@@ -3000,14 +2953,13 @@ msgstr "Llank'anas chunpiq ukhunpi kamachiy"
 
 #. MENU_STATUSLINE_FMT_POSIMAGE
 #: po/tmp/ap_String_Id.h.h:1201
-#, fuzzy
 msgid "Format this image"
-msgstr "Pallaypata chhikanninta &uqjinaychiy"
+msgstr "Kay pallaypata ukhunpi kamachiy"
 
 #. MENU_STATUSLINE_FMT_STYLIST
 #: po/tmp/ap_String_Id.h.h:1203
 msgid "Format your document using styles"
-msgstr ""
+msgstr "Formatear el documento usando estilos"
 
 #. DLG_Lists_Format
 #. DLG_DocComparison_Fmt
@@ -3017,15 +2969,13 @@ msgstr "Ukhunpi kamachi:"
 
 #. MENU_LABEL_INSERT_EQUATION_FILE
 #: po/tmp/ap_String_Id.h.h:1207
-#, fuzzy
 msgid "From File"
-msgstr "Archi&vomanta"
+msgstr "Archivomanta"
 
 #. MENU_LABEL_INSERT_EQUATION_LATEX
 #: po/tmp/ap_String_Id.h.h:1209
-#, fuzzy
 msgid "From LaTeX"
-msgstr "...manta: "
+msgstr "LaTexmanta"
 
 #. DLG_FormatTOC_General
 #. DLG_Options_Label_General
@@ -3051,15 +3001,13 @@ msgstr "Riy ...man"
 
 #. DLG_FormatTOC_HasLabel
 #: po/tmp/ap_String_Id.h.h:1221
-#, fuzzy
 msgid "H&as label"
-msgstr "Listapaq sutin"
+msgstr "&Suti tiyan"
 
 #. DLG_FormatTOC_HeadingText
 #: po/tmp/ap_String_Id.h.h:1223
-#, fuzzy
 msgid "H&eading text:"
-msgstr "Cabecera 3"
+msgstr "&Laqheq umanpi texto:"
 
 #. DLG_Lists_Hand_List
 #. STYLE_HANDLIST
@@ -3102,21 +3050,19 @@ msgid ""
 " To enter this mode choose View then Print Layout from the Menus. \n"
 " Would you like to enter Print Layout mode right now?"
 msgstr ""
-"\"Ñit'inapaq qhawaynin\"llapi laqheq umantapis chakintapis uqjinayachiyta "
+"«Ñit'inapaq qhawaynin»llapi laqheq umantapis chakintapis uqjinayachiyta "
 "atin. \n"
-" ¿Kunitan \"Ñit'inapaq qhawaynin\"man yaykuyta munankichu?"
+" ¿Kunitan «Ñit'inapaq qhawaynin»man yaykuyta munankichu?"
 
 #. DLG_Stylist_HeadingStyles
 #: po/tmp/ap_String_Id.h.h:1240
-#, fuzzy
 msgid "Heading Styles"
-msgstr "Cabecera 3"
+msgstr "Estilos de cabeceras"
 
 #. DLG_FormatTOC_HeadingStyle
 #: po/tmp/ap_String_Id.h.h:1242
-#, fuzzy
 msgid "Heading style:"
-msgstr "Cabecera 3"
+msgstr "Estilo de cabecera:"
 
 #. DLG_Lists_Heart_List
 #. STYLE_HEARTLIST
@@ -3159,7 +3105,7 @@ msgstr "Ortografiaq pantayninkunata pakay"
 #. DLG_Lists_FoldingLevelexp
 #: po/tmp/ap_String_Id.h.h:1260
 msgid "Hide text below List Levels"
-msgstr ""
+msgstr "Ocultar texto bajo los niveles de listas"
 
 #. TOOLBAR_LABEL_COLOR_BACK
 #. TOOLBAR_STATUSLINE_COLOR_BACK
@@ -3175,9 +3121,8 @@ msgstr "T&ukuyninta saqepullay"
 
 #. DLG_FormatTOC_Indent
 #: po/tmp/ap_String_Id.h.h:1268
-#, fuzzy
 msgid "I&ndent:"
-msgstr "Qhelqenapaq puchus"
+msgstr "Q&helqenapaq puchus:"
 
 #. InsertModeFieldINS
 #: po/tmp/ap_String_Id.h.h:1270
@@ -3196,9 +3141,8 @@ msgstr "Saqepullay"
 
 #. DLG_Options_Label_SpellIgnoreWords
 #: po/tmp/ap_String_Id.h.h:1276
-#, fuzzy
 msgid "Ignore Words"
-msgstr "Mana reqsisqa simikuna:"
+msgstr "Mana simikunata reqsiychu"
 
 #. MENU_STATUSLINE_SPELL_IGNOREALL
 #: po/tmp/ap_String_Id.h.h:1278
@@ -3213,9 +3157,8 @@ msgstr "Mana reqsisqa simikuna:"
 #. DLG_FormatFrame_SetImageBackground
 #. DLG_FormatTable_SetImageBackground
 #: po/tmp/ap_String_Id.h.h:1283
-#, fuzzy
 msgid "Image For Background"
-msgstr "Ukhunpi"
+msgstr "Ukhunpaq pallay"
 
 #. DLG_Lists_Implies_List
 #. STYLE_IMPLIES_LIST
@@ -3252,7 +3195,6 @@ msgstr "Qhelqenapaq puchus"
 
 #. DLG_Para_TabLabelIndentsAndSpacing
 #: po/tmp/ap_String_Id.h.h:1299
-#, fuzzy
 msgid "Indents and Spacing"
 msgstr "&Qhelqenapaq puchutaq saqesqataq"
 
@@ -3313,7 +3255,7 @@ msgstr "Celdasta sat'iy"
 #. MENU_STATUSLINE_EDIT_PASTE
 #: po/tmp/ap_String_Id.h.h:1323
 msgid "Insert Clipboard contents"
-msgstr "Portapapelesmanta ukhunpi kasqanta churay"
+msgstr "Laqhes-apaqmanta ukhunpi kasqanta churay"
 
 #. DLG_DateTime_DateTimeTitle
 #: po/tmp/ap_String_Id.h.h:1325
@@ -3322,14 +3264,13 @@ msgstr "P'unchaytapis pachaqatapis sat'iy"
 
 #. MENU_LABEL_TOOLTIP_INSERT_EQUATION
 #: po/tmp/ap_String_Id.h.h:1327
-#, fuzzy
 msgid "Insert Equation"
-msgstr "Qhelqenapaq puchus"
+msgstr "Insertar ecuación"
 
 #. MENU_LABEL_TOOLTIP_INSERT_EQUATION_LATEX
 #: po/tmp/ap_String_Id.h.h:1329
 msgid "Insert Equation from a LaTeX expression"
-msgstr ""
+msgstr "Inserta una ecuación desde una expresión LaTeX"
 
 #. DLG_Field_FieldTitle_Capital
 #: po/tmp/ap_String_Id.h.h:1331
@@ -3340,7 +3281,7 @@ msgstr "Campota sat'iy"
 #. TOOLBAR_LABEL_FMT_HYPERLINK
 #: po/tmp/ap_String_Id.h.h:1334
 msgid "Insert Hyperlink"
-msgstr "Sinchi laykhurakuqta sat'iy"
+msgstr "Sinchi-laykhurakuqta sat'iy"
 
 #. TOOLBAR_LABEL_IMG
 #: po/tmp/ap_String_Id.h.h:1336
@@ -3354,9 +3295,8 @@ msgstr "Correota t'inkinapaq campota sat'iy"
 
 #. MENU_LABEL_TOOLTIP_INSERT_EQUATION_FILE
 #: po/tmp/ap_String_Id.h.h:1340
-#, fuzzy
 msgid "Insert MathML from a file"
-msgstr "Patapi uq sinruta sat'iy"
+msgstr "Insertar MathML desde un archivo"
 
 #. DLG_InsertTable_TableTitle
 #. MENU_STATUSLINE_TABLE_INSERT_TABLE
@@ -3383,13 +3323,12 @@ msgstr "Laqheq umanta sat'iy"
 #. MENU_STATUSLINE_INSERT_TABLEOFCONTENTS
 #: po/tmp/ap_String_Id.h.h:1352
 msgid "Insert a Table of Contents based on Headings"
-msgstr ""
+msgstr "Insertar un índice basado en las cabeceras"
 
 #. MENU_STATUSLINE_INSERT_TEXTBOX
 #: po/tmp/ap_String_Id.h.h:1354
-#, fuzzy
 msgid "Insert a Text Box"
-msgstr "Chakiqpa willayninta sat'iy"
+msgstr "Textoq tawak'uchunta sat'iy"
 
 #. TOOLBAR_STATUSLINE_FMT_BOOKMARK
 #. TOOLBAR_TOOLTIP_FMT_BOOKMARK
@@ -3422,7 +3361,7 @@ msgstr "Chakiqpa willayninta sat'iy"
 #. TOOLBAR_TOOLTIP_FMT_HYPERLINK
 #: po/tmp/ap_String_Id.h.h:1369
 msgid "Insert a hyperlink into the document"
-msgstr "Documentopi sinchi laykhurakuqta sat'iy"
+msgstr "Documentopi sinchi-laykhurakuqta sat'iy"
 
 #. MENU_STATUSLINE_INSERT_MAILMERGE
 #: po/tmp/ap_String_Id.h.h:1371
@@ -3505,7 +3444,7 @@ msgstr "Campota sat'iy"
 #. MENU_STATUSLINE_INSERT_HYPERLINK
 #: po/tmp/ap_String_Id.h.h:1404
 msgid "Insert hyperlink"
-msgstr "Sinchi laykhurakuqta sat'iy"
+msgstr "Sinchi-laykhurakuqta sat'iy"
 
 #. MENU_STATUSLINE_INSERT_DIRECTIONMARKER_LRM
 #: po/tmp/ap_String_Id.h.h:1406
@@ -3530,15 +3469,13 @@ msgstr "Tablata sat'iy"
 
 #. MENU_STATUSLINE_TABLE_INSERT_SUMROWS
 #: po/tmp/ap_String_Id.h.h:1415
-#, fuzzy
 msgid "Insert the Sum of a Table Column"
-msgstr "Suk'asqakunaqpata yupayninkuta uqjinaychiy"
+msgstr "Insertar la suma de una columna"
 
 #. MENU_STATUSLINE_TABLE_INSERT_SUMCOLS
 #: po/tmp/ap_String_Id.h.h:1417
-#, fuzzy
 msgid "Insert the Sum of a Table Row"
-msgstr "Mosoq tablata sat'iy"
+msgstr "Insertar la suma de una fila"
 
 #. MENU_STATUSLINE_INSERT_FILE
 #: po/tmp/ap_String_Id.h.h:1419
@@ -3553,7 +3490,7 @@ msgstr "P'unchaytapis pachatapis sat'iy"
 #. MENU_STATUSLINE_EDIT_PASTE_SPECIAL
 #: po/tmp/ap_String_Id.h.h:1423
 msgid "Insert unformatted clipboard contents"
-msgstr "Chay portapapelespa mana kamachiyniyuq ukhunta sat'iy"
+msgstr "Chay laqhes-apaqpa mana kamachiyniyuq ukhunta sat'iy"
 
 #. DLG_Options_Label_ViewUnprintable
 #: po/tmp/ap_String_Id.h.h:1425
@@ -3570,9 +3507,8 @@ msgstr "Cursiva"
 
 #. MENU_STATUSLINE_INSERT_GOTO_HYPERLINK
 #: po/tmp/ap_String_Id.h.h:1431
-#, fuzzy
 msgid "Jump to hyperlink"
-msgstr "Sinchi laykhurakuqta sat'iy"
+msgstr "Sinchi-laykhurakuqman riy"
 
 #. DLG_Para_AlignJustified
 #: po/tmp/ap_String_Id.h.h:1433
@@ -3619,7 +3555,7 @@ msgstr "Anchayupa simikuna:"
 #. DLG_Latex_LatexEquation
 #: po/tmp/ap_String_Id.h.h:1451
 msgid "LaTeX Equation"
-msgstr ""
+msgstr "Ecuación LaTeX"
 
 #. DLG_Lists_Indent
 #: po/tmp/ap_String_Id.h.h:1453
@@ -3629,7 +3565,7 @@ msgstr "Sutiqpata maypichus kanan:"
 #. DLG_FormatTOC_DetailsTop
 #: po/tmp/ap_String_Id.h.h:1455
 msgid "Label Definitions"
-msgstr ""
+msgstr "Definiciones de etiquetas"
 
 #. DLG_Styles_ModifyLanguage
 #. DLG_Options_Label_Language
@@ -3655,9 +3591,8 @@ msgstr "Cheqachay"
 
 #. DLG_FormatTOC_LayoutDetails
 #: po/tmp/ap_String_Id.h.h:1467
-#, fuzzy
 msgid "Layout Details"
-msgstr "Detalles del complemento:"
+msgstr "Detalles del disposición"
 
 #. DLG_Tab_Label_Leader
 #: po/tmp/ap_String_Id.h.h:1469
@@ -3708,32 +3643,28 @@ msgstr "Lloq'e chiruman phatmata churay"
 
 #. DLG_FormatTOC_Level1
 #: po/tmp/ap_String_Id.h.h:1489
-#, fuzzy
 msgid "Level 1"
-msgstr "T'aqasqa:"
+msgstr "T'aqasqa 1"
 
 #. DLG_FormatTOC_Level2
 #: po/tmp/ap_String_Id.h.h:1491
-#, fuzzy
 msgid "Level 2"
-msgstr "T'aqasqa:"
+msgstr "T'aqasqa 2"
 
 #. DLG_FormatTOC_Level3
 #: po/tmp/ap_String_Id.h.h:1493
-#, fuzzy
 msgid "Level 3"
-msgstr "T'aqasqa:"
+msgstr "T'aqasqa 3"
 
 #. DLG_FormatTOC_Level4
 #: po/tmp/ap_String_Id.h.h:1495
-#, fuzzy
 msgid "Level 4"
-msgstr "T'aqasqa:"
+msgstr "T'aqasqa 4"
 
 #. DLG_Lists_DelimiterString
 #: po/tmp/ap_String_Id.h.h:1497
 msgid "Level Delimiter:"
-msgstr "T'aqaraq:"
+msgstr "Delimitador de nivel:"
 
 #. DLG_Lists_Level
 #: po/tmp/ap_String_Id.h.h:1499
@@ -3762,9 +3693,8 @@ msgstr "Aqllasqata patanpi seqey (uqjinaychiy)"
 
 #. DLG_Para_TabLabelLineAndPageBreaks
 #: po/tmp/ap_String_Id.h.h:1509
-#, fuzzy
 msgid "Line and Page Breaks"
-msgstr "&Surk'atapis laqhetapis phinkinapaq"
+msgstr "Surk'atapis laqhetapis phinkinapaq"
 
 #. MENU_STATUSLINE_FMT_BOTTOMLINE
 #: po/tmp/ap_String_Id.h.h:1511
@@ -3793,9 +3723,8 @@ msgstr "Listapaq sutin"
 
 #. DLG_Lists_PageProperties
 #: po/tmp/ap_String_Id.h.h:1521
-#, fuzzy
 msgid "List Properties"
-msgstr "D&ocumentomanta willaykuna"
+msgstr "Propiedades de listas"
 
 #. DLG_Stylist_ListStyles
 #: po/tmp/ap_String_Id.h.h:1523
@@ -3827,9 +3756,8 @@ msgstr "Juch'uykunapi romana lista"
 
 #. MENU_LABEL_TOOLS_REVISIONS_MERGE_DOCUMENTS
 #: po/tmp/ap_String_Id.h.h:1533
-#, fuzzy
 msgid "M&erge documents"
-msgstr "&Aswan documentos"
+msgstr "&Documentosta t'inkiy"
 
 #. FIELD_Application_MailMerge
 #. MENU_STATUSLINE_TOOLS_MAILMERGE
@@ -3869,9 +3797,8 @@ msgstr "Complementosta purichiy"
 
 #. DLG_PageSetup_Margin
 #: po/tmp/ap_String_Id.h.h:1550
-#, fuzzy
 msgid "Margin"
-msgstr "&Kantusman saqerasqa"
+msgstr "Kantusman saqerasqa"
 
 #. DLG_MarkRevisions_Title
 #: po/tmp/ap_String_Id.h.h:1552
@@ -3929,6 +3856,7 @@ msgstr "Patanpi t'inkiy"
 #: po/tmp/ap_String_Id.h.h:1574
 msgid "Merge another document into the active document using revision marks"
 msgstr ""
+"Combina otro documento dentro del documento activo usando marcas de revisión"
 
 #. TOOLBAR_LABEL_MERGEBELOW
 #: po/tmp/ap_String_Id.h.h:1576
@@ -3988,9 +3916,8 @@ msgstr "Waqkuna"
 
 #. DLG_Stylist_MiscStyles
 #: po/tmp/ap_String_Id.h.h:1602
-#, fuzzy
 msgid "Miscellaneous Styles"
-msgstr "Estilosta apaykachawaq"
+msgstr "Estilos misceláneos"
 
 #. DLG_Styles_ModifyTitle
 #: po/tmp/ap_String_Id.h.h:1604
@@ -4078,7 +4005,7 @@ msgstr "Mana archivo kanchu"
 #. DLG_Lists_FoldingLevel0
 #: po/tmp/ap_String_Id.h.h:1634
 msgid "No Folding"
-msgstr ""
+msgstr "Sin plegado"
 
 #. DLG_Styles_ErrNoStyle
 #: po/tmp/ap_String_Id.h.h:1636
@@ -4121,7 +4048,7 @@ msgstr "&Mana simi watuchipi kanchu:"
 #: po/tmp/ap_String_Id.h.h:1651
 #, fuzzy
 msgid "Note Styles"
-msgstr "Mosoq imayna kaynin"
+msgstr "Imayna kaynin"
 
 #. DLG_Column_Number_Cols
 #: po/tmp/ap_String_Id.h.h:1653
@@ -4248,7 +4175,7 @@ msgstr "Waq"
 #: po/tmp/ap_String_Id.h.h:1710
 #, c-format
 msgid "Out of memory attempting to open %s"
-msgstr "%s archivota kichanapaq mana aswan memoria kanchu"
+msgstr "«%s» archivota kichanapaq mana aswan memoria kanchu"
 
 #. TOOLBAR_LABEL_FMT_OVERLINE
 #. TOOLBAR_STATUSLINE_FMT_OVERLINE
@@ -4270,14 +4197,13 @@ msgstr "D&ocumentomanta willaykuna"
 
 #. MENU_LABEL_TOOLS_REVISIONS_PURGE
 #: po/tmp/ap_String_Id.h.h:1720
-#, fuzzy
 msgid "P&urge revisions"
-msgstr "&Revisiones"
+msgstr "P&urgar revisiones"
 
 #. MENU_LABEL_EDIT_PASTE_SPECIAL
 #: po/tmp/ap_String_Id.h.h:1722
 msgid "Pa&ste Unformatted"
-msgstr "&Textoq qhelqeynillanta k'askachiy"
+msgstr "Te&xtoq qhelqeynillanta k'askachiy"
 
 #. DLG_Goto_Target_Page
 #. DLG_PageSetup_Page
@@ -4292,9 +4218,8 @@ msgstr "&Manaraq tukuspa phinkina "
 
 #. MENU_LABEL_FMT_BACKGROUND
 #: po/tmp/ap_String_Id.h.h:1729
-#, fuzzy
 msgid "Page Background"
-msgstr "Ukhunpi"
+msgstr "Laqheq ukhunpi"
 
 #. MENU_LABEL_FMT_BACKGROUND_PAGE_COLOR
 #: po/tmp/ap_String_Id.h.h:1731
@@ -4303,14 +4228,13 @@ msgstr "Laqheq &colornin"
 
 #. MENU_LABEL_FMT_BACKGROUND_PAGE_IMAGE
 #: po/tmp/ap_String_Id.h.h:1733
-#, fuzzy
 msgid "Page Image"
-msgstr "Maymantá maykama laqhes:"
+msgstr "Laqheqpa pallaynin"
 
 #. MENU_LABEL_INSERT_PAGENO
 #: po/tmp/ap_String_Id.h.h:1735
 msgid "Page N&umbers"
-msgstr "Laqheqpata &yupanasnin"
+msgstr "Laqheqpata y&upanasnin"
 
 #. FIELD_Numbers_PageNumber
 #: po/tmp/ap_String_Id.h.h:1737
@@ -4444,27 +4368,23 @@ msgstr "Maychus"
 
 #. DLG_FormatFrame_PositionTo
 #: po/tmp/ap_String_Id.h.h:1791
-#, fuzzy
 msgid "Position Text Box"
-msgstr "Maychus"
+msgstr "Maychus textoq tawak'uchun"
 
 #. DLG_FormatFrame_SetToColumn
 #: po/tmp/ap_String_Id.h.h:1793
-#, fuzzy
 msgid "Position to Column"
-msgstr "Maychus"
+msgstr "Maychus suk'asqapi"
 
 #. DLG_FormatFrame_SetToPage
 #: po/tmp/ap_String_Id.h.h:1795
-#, fuzzy
 msgid "Position to Page"
-msgstr "Maychus"
+msgstr "Maychus laqhepi"
 
 #. DLG_FormatFrame_SetToParagraph
 #: po/tmp/ap_String_Id.h.h:1797
-#, fuzzy
 msgid "Position to Paragraph"
-msgstr "Kantusnikama phatmata mast'ay"
+msgstr "Maychus phatma"
 
 #. DLG_PageNumbers_Position
 #: po/tmp/ap_String_Id.h.h:1799
@@ -4670,27 +4590,23 @@ msgstr "Imallatapis qhechuy"
 
 #. MENU_LABEL_TABLE_HEADING_ROWS_REPEAT_REMOVE
 #: po/tmp/ap_String_Id.h.h:1888
-#, fuzzy
 msgid "Remove Row as Heading"
-msgstr "Umajina wateqmanta sinrú churay"
+msgstr "Tablaq umanjina sinruta qhechuy"
 
 #. MENU_STATUSLINE_TABLE_HEADING_ROWS_REPEAT_REMOVE
 #: po/tmp/ap_String_Id.h.h:1890
-#, fuzzy
 msgid "Remove Row as the page Heading"
-msgstr "Umajina wateqmanta sinrú churay"
+msgstr "Laqheqpa umanjina sinruta qhechuy"
 
 #. MENU_STATUSLINE_TOOLS_REVISIONS_PURGE
 #: po/tmp/ap_String_Id.h.h:1892
-#, fuzzy
 msgid "Remove all revision information from the document"
-msgstr "Kay laqheq umanta qhechuy"
+msgstr "Quita toda la información de revisión del documento"
 
 #. MENU_STATUSLINE_TOOLS_HISTORY_PURGE
 #: po/tmp/ap_String_Id.h.h:1894
-#, fuzzy
 msgid "Remove full document history from the document"
-msgstr "Kay laqheq umanta qhechuy"
+msgstr "Quita todo el histórico del documento"
 
 #. MENU_STATUSLINE_EDIT_REMOVEFOOTER
 #: po/tmp/ap_String_Id.h.h:1896
@@ -4704,21 +4620,18 @@ msgstr "Kay laqheq umanta qhechuy"
 
 #. MENU_STATUSLINE_EDIT_CUTIMAGE
 #: po/tmp/ap_String_Id.h.h:1900
-#, fuzzy
 msgid "Remove the Image and save a copy on the clipboard"
-msgstr "Aqllasqa textota kikinchaytawan Portapapelespi churay"
+msgstr "Pallayta quechuy; laqhes-apaqpi pallayta jallch'ay"
 
 #. MENU_STATUSLINE_EDIT_DELETEIMAGE
 #: po/tmp/ap_String_Id.h.h:1902
-#, fuzzy
 msgid "Remove the Image from the Document"
-msgstr "Kay laqheq chakinta qhechuy"
+msgstr "Quitar la imagen del documento"
 
 #. MENU_STATUSLINE_EDIT_DELETEFRAME
 #: po/tmp/ap_String_Id.h.h:1904
-#, fuzzy
 msgid "Remove the Text Box from the Document"
-msgstr "Kay laqheq umanta qhechuy"
+msgstr "Documentomanta textoq tawak'uchunta quechuy"
 
 #. MENU_STATUSLINE_TOOLS_REVISIONS_REJECT_REVISION
 #: po/tmp/ap_String_Id.h.h:1906
@@ -4732,9 +4645,8 @@ msgstr "Umajina wateqmanta sinrú churay"
 
 #. MENU_STATUSLINE_TABLE_HEADING_ROWS_REPEAT
 #: po/tmp/ap_String_Id.h.h:1910
-#, fuzzy
 msgid "Repeat Row as Heading on each new page"
-msgstr "Umajina wateqmanta sinrú churay"
+msgstr "Repetir fila como cabecera en cada nueva página"
 
 #. DLG_FR_ReplaceTitle
 #: po/tmp/ap_String_Id.h.h:1912
@@ -4800,27 +4712,23 @@ msgstr "Ñawpaq kaq listaman yapallaypuni"
 #. MENU_STATUSLINE_TOOLS_REVISIONS_AUTO
 #: po/tmp/ap_String_Id.h.h:1937
 msgid "Retain all document changes"
-msgstr ""
+msgstr "Retener todos los cambios del documento"
 
 #. MSG_RevertFile
 #: po/tmp/ap_String_Id.h.h:1939
-#, fuzzy
 msgid "Revert file to last saved state?"
-msgstr ""
-"¿Imaynatachá qhepata archivota jallch'arqanki kikillanta taqchu kicháy "
-"munankichu?"
+msgstr "¿Ultimuta kuti jallch'asqaman documentota kutichíy munankichu?"
 
 #. MENU_STATUSLINE_FILE_REVERT
 #: po/tmp/ap_String_Id.h.h:1941
 msgid "Revert the document to the last saved state"
-msgstr "Ultimuta kuti jallch'asqajina documentota saqey"
+msgstr "Ultimuta kuti jallch'asqaman documentota kutichiy"
 
 #. MSG_RevertBuffer
 #: po/tmp/ap_String_Id.h.h:1943
 #, c-format
 msgid "Revert to saved copy of %s?"
-msgstr ""
-"¿Imaynatachá qhepata %s archivota jallch'arqanki kikillanta taqchu kichanchu?"
+msgstr "¿Ultimuta kuti jallch'asqaman «%s» archivota kutichíy munankichu?"
 
 #. DLG_ListRevisions_Column1Label
 #: po/tmp/ap_String_Id.h.h:1945
@@ -4900,9 +4808,8 @@ msgstr "S&cripts"
 
 #. MENU_LABEL_TOOLS_REVISIONS_SHOW
 #: po/tmp/ap_String_Id.h.h:1977
-#, fuzzy
 msgid "S&how revisions"
-msgstr "&Revisiones"
+msgstr "Rikuchiy &revisiones"
 
 #. MENU_LABEL_TABLE_SPLIT_CELLS
 #: po/tmp/ap_String_Id.h.h:1979
@@ -4942,18 +4849,18 @@ msgstr "Jinata jallch'ay"
 #. MENU_STATUSLINE_EDIT_COPYIMAGE
 #: po/tmp/ap_String_Id.h.h:1993
 msgid "Save a copy of the image on the clipboard"
-msgstr ""
+msgstr "Laqhes-apaqpi kay pallayta kikinchay"
 
 #. MSG_ConfirmSave
 #: po/tmp/ap_String_Id.h.h:1995
 #, c-format
 msgid "Save changes to document %s before closing?"
-msgstr "¿Uqjinayachisqaykita \"%s\" archivopi jallch'ayta munankichu?"
+msgstr "¿Uqjinayachisqaykita «%s» archivopi jallch'ayta munankichu?"
 
 #. MENU_STATUSLINE_FILE_SAVEEMBED
 #: po/tmp/ap_String_Id.h.h:1997
 msgid "Save the Embedded Object"
-msgstr ""
+msgstr "Guarda el objeto incrustado"
 
 #. MENU_STATUSLINE_FILE_SAVE
 #. TOOLBAR_STATUSLINE_FILE_SAVE
@@ -4986,9 +4893,8 @@ msgstr "Aqllasqa imagenta archivopi jallch'ay"
 
 #. MENU_LABEL_FILE_SAVEEMBED
 #: po/tmp/ap_String_Id.h.h:2013
-#, fuzzy
 msgid "Save to file"
-msgstr "Jinata archivota jallch'ay"
+msgstr "Archivoman jallch'ay"
 
 #. DLG_PageSetup_Scale
 #: po/tmp/ap_String_Id.h.h:2015
@@ -4998,7 +4904,7 @@ msgstr "Ima chhikanmanta..."
 #. MENU_STATUSLINE_HELP_SEARCH
 #: po/tmp/ap_String_Id.h.h:2017
 msgid "Search for help about..."
-msgstr "Yanapaypi mask'ay"
+msgstr "Yanapaypi mask'ay..."
 
 #. DLG_WordCount_Update_Rate
 #: po/tmp/ap_String_Id.h.h:2019
@@ -5022,9 +4928,8 @@ msgstr "Seccionpaq phinkina"
 
 #. MENU_STATUSLINE_TOOLS_HISTORY
 #: po/tmp/ap_String_Id.h.h:2027
-#, fuzzy
 msgid "See history of the current document"
-msgstr "Tukuy documentota aqllay"
+msgstr "Ver histórico del documento actual"
 
 #. MENU_STATUSLINE_TABLE_SELECT
 #. DLG_Select
@@ -5064,9 +4969,8 @@ msgstr "Tablata aqllay"
 
 #. MENU_LABEL_EDIT_SELECT_FRAME
 #: po/tmp/ap_String_Id.h.h:2043
-#, fuzzy
 msgid "Select Text Box"
-msgstr "Tablata aqllay"
+msgstr "Textoq tawak'uchunta aqllay"
 
 #. DLG_InsertHyperlink_Msg
 #: po/tmp/ap_String_Id.h.h:2045
@@ -5076,15 +4980,13 @@ msgstr "Listamanta uq markasqata aqllay."
 #. DLG_FormatFrame_SelectImage
 #. DLG_FormatTable_SelectImage
 #: po/tmp/ap_String_Id.h.h:2048
-#, fuzzy
 msgid "Select image from File"
-msgstr "Aqllasqa imagenta archivopi jallch'ay"
+msgstr "Archivomanta pallyta aqllay"
 
 #. MENU_STATUSLINE_EDIT_SELECT_FRAME
 #: po/tmp/ap_String_Id.h.h:2050
-#, fuzzy
 msgid "Select the Text Box"
-msgstr "Tukuy documentota aqllay"
+msgstr "Textoq tawak'uchunta aqllay"
 
 #. MENU_STATUSLINE_EDIT_SELECTALL
 #: po/tmp/ap_String_Id.h.h:2052
@@ -5105,33 +5007,32 @@ msgstr "Capitalización de frase"
 #. MENU_STATUSLINE_TABLE_TABLETOTEXTCOMMAS
 #: po/tmp/ap_String_Id.h.h:2058
 msgid "Separate table items with commas"
-msgstr ""
+msgstr "Separar los elementos de la tabla con comas"
 
 #. MENU_STATUSLINE_TABLE_TABLETOTEXTCOMMASTABS
 #: po/tmp/ap_String_Id.h.h:2060
 msgid "Separate table items with commas and tabs"
-msgstr ""
+msgstr "Separar los elementos de la tabla con comas y tabuladores"
 
 #. MENU_STATUSLINE_TABLE_TABLETOTEXTTABS
 #: po/tmp/ap_String_Id.h.h:2062
 msgid "Separate table items with tabs"
-msgstr ""
+msgstr "Separar los elementos de la tabla con tabuladores"
 
 #. MENU_LABEL_TABLE_TABLETOTEXTCOMMAS
 #: po/tmp/ap_String_Id.h.h:2064
 msgid "Separate with commas"
-msgstr ""
+msgstr "Separar con comas"
 
 #. MENU_LABEL_TABLE_TABLETOTEXTCOMMASTABS
 #: po/tmp/ap_String_Id.h.h:2066
 msgid "Separate with commas and tabs"
-msgstr ""
+msgstr "Separar con comas y tabuladores"
 
 #. MENU_LABEL_TABLE_TABLETOTEXTTABS
 #: po/tmp/ap_String_Id.h.h:2068
-#, fuzzy
 msgid "Separate with tabs"
-msgstr "(puchuyoq) k'illpas:"
+msgstr "Separar con tabuladores"
 
 #. DLG_Tab_Button_Set
 #: po/tmp/ap_String_Id.h.h:2070
@@ -5151,20 +5052,18 @@ msgstr "Mana aqllasqa valoresta churay"
 #. DLG_FormatFrame_SetImage
 #. DLG_FormatTable_SetImage
 #: po/tmp/ap_String_Id.h.h:2077
-#, fuzzy
 msgid "Set Image"
-msgstr "Pallayta sat'iy"
+msgstr "Pallayta churay"
 
 #. DLG_FormatFrame_SetTextWrapping
 #: po/tmp/ap_String_Id.h.h:2079
-#, fuzzy
 msgid "Set Text Wrapping"
-msgstr "Te&xtoqpata ukhunta kamachi"
+msgstr "Establecer ajuste de texto"
 
 #. MENU_STATUSLINE_FMT_BACKGROUND_PAGE_IMAGE
 #: po/tmp/ap_String_Id.h.h:2081
 msgid "Set an image as a background for your page"
-msgstr ""
+msgstr "Establecer una imagen como fondo de página"
 
 #. MENU_STATUSLINE_FMT_DIRECTION_DD_RTL
 #: po/tmp/ap_String_Id.h.h:2083
@@ -5178,16 +5077,14 @@ msgstr "Kay archivomanta willaykunata churay"
 
 #. DLG_Tab_Label_New
 #: po/tmp/ap_String_Id.h.h:2087
-#, fuzzy
 msgid "Set new Tab"
-msgstr "Mosoq tablata sat'iy"
+msgstr "Mosoq tabuladorta churay"
 
 #. DLG_FormatFrame_NoImageBackground
 #. DLG_FormatTable_NoImageBackground
 #: po/tmp/ap_String_Id.h.h:2090
-#, fuzzy
 msgid "Set no image"
-msgstr "Simita churay"
+msgstr "Ama pallayta churaychu"
 
 #. MENU_STATUSLINE_TOOLS_OPTIONS
 #: po/tmp/ap_String_Id.h.h:2092
@@ -5201,9 +5098,8 @@ msgstr "Tabuladores churay"
 
 #. MENU_STATUSLINE_FMT_TABLEOFCONTENTS
 #: po/tmp/ap_String_Id.h.h:2096
-#, fuzzy
 msgid "Set the type and styles of the Table of Contents"
-msgstr "Umataq chakitaq laqhepaq layasta churay"
+msgstr "Establecer el tipo y estilos de la tabla de contenido"
 
 #. MENU_STATUSLINE_FMT_FOOTNOTES
 #: po/tmp/ap_String_Id.h.h:2098
@@ -5217,14 +5113,13 @@ msgstr "Umataq chakitaq laqhepaq layasta churay"
 
 #. MENU_LABEL_TABLE_HEADING_ROWS_REPEAT_THIS
 #: po/tmp/ap_String_Id.h.h:2102
-#, fuzzy
 msgid "Set this Row as Heading"
-msgstr "Umajina wateqmanta sinrú churay"
+msgstr "Establecer esta fila como cabecera"
 
 #. MENU_STATUSLINE_TABLE_HEADING_ROWS_REPEAT_THIS
 #: po/tmp/ap_String_Id.h.h:2104
 msgid "Set this Row as the Heading on each page"
-msgstr ""
+msgstr "Establecer esta fila como la cabecera de cada página"
 
 #. MENU_STATUSLINE_TOOLS_SPELLPREFS
 #: po/tmp/ap_String_Id.h.h:2106
@@ -5266,19 +5161,18 @@ msgstr "Ukhunpi kamachi k'illpasta &rikuchiy"
 
 #. MENU_LABEL_TOOLS_REVISIONS_SHOW_BEFORE
 #: po/tmp/ap_String_Id.h.h:2120
-#, fuzzy
 msgid "Show document &before revisions"
-msgstr "Tukuytapis wakintapis documentomanta ñit'iy"
+msgstr "Muestra el documento &antes de las revisiones"
 
 #. MENU_LABEL_TOOLS_REVISIONS_SHOW_AFTER
 #: po/tmp/ap_String_Id.h.h:2122
 msgid "Show document a&fter revisions"
-msgstr ""
+msgstr "Muestra el documento &después de las revisiones"
 
 #. MENU_LABEL_TOOLS_REVISIONS_SHOW_AFTERPREV
 #: po/tmp/ap_String_Id.h.h:2124
 msgid "Show document after &previous revisions"
-msgstr ""
+msgstr "Muestra el documento después de las revisiones &previas"
 
 #. MENU_STATUSLINE_WINDOW_MORE
 #: po/tmp/ap_String_Id.h.h:2126
@@ -5306,7 +5200,7 @@ msgstr "Llank'ana chunpita rikuchiypis pakaypis"
 #. MENU_STATUSLINE_TOOLS_REVISIONS_SHOW
 #: po/tmp/ap_String_Id.h.h:2137
 msgid "Show revisions that are present in document"
-msgstr ""
+msgstr "Muestra las revisiones que están presentes en el documento"
 
 #. DLG_Options_Label_ShowSplash
 #: po/tmp/ap_String_Id.h.h:2139
@@ -5317,17 +5211,17 @@ msgstr "Qallariqtin AbiWordpata sinkhisqanta rikuchiy"
 #: po/tmp/ap_String_Id.h.h:2141
 msgid "Show what the document looks like after previous revisions"
 msgstr ""
+"Muestra la apariencia del documento después de las revisiones anteriores"
 
 #. MENU_STATUSLINE_TOOLS_REVISIONS_SHOW_AFTER
 #: po/tmp/ap_String_Id.h.h:2143
 msgid "Show what the document looks like after revisions"
-msgstr ""
+msgstr "Muestra la apariencia del documento después de las revisiones"
 
 #. MENU_STATUSLINE_TOOLS_REVISIONS_SHOW_BEFORE
 #: po/tmp/ap_String_Id.h.h:2145
-#, fuzzy
 msgid "Show what the document looks like before revisions"
-msgstr "Tukuytapis wakintapis documentomanta ñit'iy"
+msgstr "Muestra la apariencia del documento antes de las revisiones"
 
 #. DLG_Options_Label_ViewShowHide
 #: po/tmp/ap_String_Id.h.h:2147
@@ -5364,42 +5258,44 @@ msgstr "Tablata c&heqachay"
 #. MENU_LABEL_TABLE_SORTCOLSASCEND
 #: po/tmp/ap_String_Id.h.h:2161
 msgid "Sort Columns in Ascending Order"
-msgstr ""
+msgstr "Ordenar columnas en orden ascendente"
 
 #. MENU_STATUSLINE_TABLE_SORTCOLSASCEND
 #: po/tmp/ap_String_Id.h.h:2163
 msgid "Sort Columns in Ascending Order based on Selected Row"
-msgstr ""
+msgstr "Ordena las columnas en orden ascendente basándose en la fila seleccionada"
 
 #. MENU_LABEL_TABLE_SORTCOLSDESCEND
 #: po/tmp/ap_String_Id.h.h:2165
 msgid "Sort Columns in Descending Order"
-msgstr ""
+msgstr "Ordenar columnas en orden descendente"
 
 #. MENU_STATUSLINE_TABLE_SORTCOLSDESCEND
 #: po/tmp/ap_String_Id.h.h:2167
 msgid "Sort Columns in Descending Order based on Selected Row"
-msgstr ""
+msgstr "Ordena las filas en orden ascendente basándose en la columna seleccionada"
 
 #. MENU_LABEL_TABLE_SORTROWSASCEND
 #: po/tmp/ap_String_Id.h.h:2169
 msgid "Sort Rows in Ascending Order"
-msgstr ""
+msgstr "Ordenar filas en orden ascendente"
 
 #. MENU_STATUSLINE_TABLE_SORTROWSASCEND
 #: po/tmp/ap_String_Id.h.h:2171
 msgid "Sort Rows in Ascending Order based on selected Column"
 msgstr ""
+"Ordena las filas en orden ascendente basándose en la columna seleccionada"
 
 #. MENU_LABEL_TABLE_SORTROWSDESCEND
 #: po/tmp/ap_String_Id.h.h:2173
 msgid "Sort Rows in Descending Order"
-msgstr ""
+msgstr "Ordenar filas en orden descendente"
 
 #. MENU_STATUSLINE_TABLE_SORTROWSDESCEND
 #: po/tmp/ap_String_Id.h.h:2175
 msgid "Sort Rows in Descending Order based on Selected Column"
 msgstr ""
+"Ordena las filas en orden descendente basándose en la columna seleccionada"
 
 #. MENU_STATUSLINE_TABLE_SORT
 #: po/tmp/ap_String_Id.h.h:2177
@@ -5435,7 +5331,6 @@ msgstr "Saqerasqa"
 
 #. DLG_Options_SpellCheckingTitle
 #: po/tmp/ap_String_Id.h.h:2191
-#, fuzzy
 msgid "Spell Checking"
 msgstr "Ortografiata cheqachay"
 
@@ -5486,49 +5381,48 @@ msgstr "Celdasta rak'iy"
 #. DLG_SplitCells_HoriMid
 #. DLG_SplitCells_VertMid
 #: po/tmp/ap_String_Id.h.h:2214
-#, fuzzy
 msgid "Split in Middle"
-msgstr "Tablata rak'iy"
+msgstr "Chawpipi rak'iy"
 
 #. DLG_SplitCells_Below
 #: po/tmp/ap_String_Id.h.h:2216
 msgid "Split on Bottom Side"
-msgstr ""
+msgstr "Uraneqpi rak'iy"
 
 #. DLG_SplitCells_Left
 #: po/tmp/ap_String_Id.h.h:2218
 msgid "Split on Left Side"
-msgstr ""
+msgstr "Lloq'eneqpi rak'iy"
 
 #. DLG_SplitCells_Right
 #: po/tmp/ap_String_Id.h.h:2220
 msgid "Split on Right Side"
-msgstr ""
+msgstr "Pañaneqpi rak'iy"
 
 #. DLG_SplitCells_Above
 #: po/tmp/ap_String_Id.h.h:2222
 msgid "Split on Top Side"
-msgstr ""
+msgstr "Pataneqpi rak'iy"
 
 #. MENU_STATUSLINE_TABLE_TEXTTOTABLE_NOSPACES
 #: po/tmp/ap_String_Id.h.h:2224
 msgid "Split on all delimiters except spaces"
-msgstr ""
+msgstr "Dividir en todos los delimitadores excepto los espacios"
 
 #. MENU_STATUSLINE_TABLE_TEXTTOTABLE_ALL
 #: po/tmp/ap_String_Id.h.h:2226
 msgid "Split on all word delimiters including spaces"
-msgstr ""
+msgstr "Dividir en todos los delimitadores excepto los espacios"
 
 #. MENU_LABEL_TABLE_TEXTTOTABLE_NOSPACES
 #: po/tmp/ap_String_Id.h.h:2228
 msgid "Split text at commas or tabs"
-msgstr ""
+msgstr "Dividir el texto en las comas o tabuladores"
 
 #. MENU_LABEL_TABLE_TEXTTOTABLE_ALL
 #: po/tmp/ap_String_Id.h.h:2230
 msgid "Split text at spaces, commas, or tabs"
-msgstr ""
+msgstr "Dividir el texto en los espacios, comas o tabuladores"
 
 #. TOOLBAR_STATUSLINE_SPLIT_CELLS
 #. TOOLBAR_TOOLTIP_SPLIT_CELLS
@@ -5586,14 +5480,13 @@ msgstr "Mosoq revisionta qallariy"
 
 #. MENU_LABEL_TOOLS_REVISIONS_NEW_REVISION
 #: po/tmp/ap_String_Id.h.h:2254
-#, fuzzy
 msgid "Start ne&w revision"
-msgstr "Mosoq revisionta qallariy"
+msgstr "&Mosoq revisionta qallariy"
 
 #. MENU_STATUSLINE_TOOLS_REVISIONS_NEW_REVISION
 #: po/tmp/ap_String_Id.h.h:2256
 msgid "Start revision distinct from the current one"
-msgstr ""
+msgstr "Empieza una revisión distinta de la actual"
 
 #. DLG_WordCount_Statistics
 #: po/tmp/ap_String_Id.h.h:2258
@@ -5627,7 +5520,7 @@ msgstr "Aqllasqata ukhunpi seqey (uqjinaychiy)"
 #: po/tmp/ap_String_Id.h.h:2270
 #, fuzzy
 msgid "Sty&list"
-msgstr "Imayna Kaynin"
+msgstr "&Imayna Kaynin"
 
 #. TOOLBAR_LABEL_FMT_STYLE
 #. TOOLBAR_STATUSLINE_FMT_STYLE
@@ -5709,25 +5602,23 @@ msgstr "Qhapaq simi watuchillawan c&heqachay"
 
 #. MENU_LABEL_TABLE_INSERT_SUMROWS
 #: po/tmp/ap_String_Id.h.h:2305
-#, fuzzy
 msgid "Sum a Column"
-msgstr "1 suk'asqa"
+msgstr "Sumar una columna"
 
 #. MENU_LABEL_TABLE_INSERT_SUMCOLS
 #: po/tmp/ap_String_Id.h.h:2307
 msgid "Sum a Row"
-msgstr ""
+msgstr "Sumar una fila"
 
 #. FIELD_Numbers_TableSumRows
 #: po/tmp/ap_String_Id.h.h:2309
-#, fuzzy
 msgid "Sum a Table Column"
-msgstr "Suk'asqaq qhepanpi puchu"
+msgstr "Sumar una columna en la tabla"
 
 #. FIELD_Numbers_TableSumCols
 #: po/tmp/ap_String_Id.h.h:2311
 msgid "Sum a Table Row"
-msgstr ""
+msgstr "Sumar una fila en la tabla"
 
 #. DLG_MetaData_TAB_Summary
 #: po/tmp/ap_String_Id.h.h:2313
@@ -5801,18 +5692,17 @@ msgstr "Tablaqpa llank'ana chunpi"
 #: po/tmp/ap_String_Id.h.h:2343
 #, fuzzy
 msgid "Table of Contents"
-msgstr "Yanapaypata &ukhunpi kasqan"
+msgstr "Tablaq ukhunpi"
 
 #. FIELD_Numbers_TOCListLabel
 #: po/tmp/ap_String_Id.h.h:2345
-#, fuzzy
 msgid "Table of Contents List Label"
-msgstr "Kunan listaq sutin"
+msgstr "Lista de etiquetas del índice"
 
 #. FIELD_Numbers_TOCPageNumber
 #: po/tmp/ap_String_Id.h.h:2347
 msgid "Table of Contents Page"
-msgstr ""
+msgstr "Página del índice"
 
 #. DLG_InsertTable_TableSize
 #: po/tmp/ap_String_Id.h.h:2349
@@ -5827,9 +5717,8 @@ msgstr "Tabuladores"
 
 #. DLG_FormatTOC_DetailsTabPage
 #: po/tmp/ap_String_Id.h.h:2354
-#, fuzzy
 msgid "Tabs and Page Numbering"
-msgstr "Puntosninwan &yupanasninwan"
+msgstr "Tabuladoreswan laqheqpa yupananwan"
 
 #. MENU_LABEL_FMT
 #: po/tmp/ap_String_Id.h.h:2356
@@ -5844,13 +5733,12 @@ msgstr "Texto"
 #. DLG_FormatTOC_TextAfter
 #: po/tmp/ap_String_Id.h.h:2360
 msgid "Text &after:"
-msgstr ""
+msgstr "&Qhepan texto:"
 
 #. DLG_FormatTOC_TextBefore
 #: po/tmp/ap_String_Id.h.h:2362
-#, fuzzy
 msgid "Text &before:"
-msgstr "Ñawpaq ni mayqen"
+msgstr "Ñ&awpaq texto:"
 
 #. DLG_Lists_Align
 #: po/tmp/ap_String_Id.h.h:2364
@@ -5860,21 +5748,18 @@ msgstr "Mayqen chirumanchus texto:"
 #. MENU_LABEL_INSERT_TEXTBOX
 #. MENU_LABEL_FMT_FRAME
 #: po/tmp/ap_String_Id.h.h:2367
-#, fuzzy
 msgid "Text Box"
-msgstr "Color del texto"
+msgstr "Textoq tawak'uchun"
 
 #. DLG_Lists_PageFolding
 #: po/tmp/ap_String_Id.h.h:2369
-#, fuzzy
 msgid "Text Folding"
-msgstr "Te&xtoqpata ukhunta kamachi"
+msgstr "Plegado de texto"
 
 #. DLG_FormatFrame_TextWrapping
 #: po/tmp/ap_String_Id.h.h:2371
-#, fuzzy
 msgid "Text Wrapping"
-msgstr "Te&xtoqpata ukhunta kamachi"
+msgstr "Ajuste de texto"
 
 #. DLG_Options_Label_Both
 #: po/tmp/ap_String_Id.h.h:2373
@@ -5887,6 +5772,8 @@ msgid ""
 "The documents you are trying to merge are unrelated. AbiWord will attempt to "
 "merge them, but the result might be meaningless."
 msgstr ""
+"Los documentos que está tratando de combinar no están relacionados. AbiWord "
+"tratará de combinarlos, pero el resultado puede no ser el esperado."
 
 #. DLG_PageSetup_ErrBigMargins
 #: po/tmp/ap_String_Id.h.h:2377
@@ -5910,7 +5797,7 @@ msgstr "Tukukun ortografiata cheqachaq."
 msgid ""
 "The text to which the hyperlink is to be attached must be within a single "
 "paragraph."
-msgstr "Sinchi laykhurakuqpaq textoqa uq phatmalla kanan tiyan."
+msgstr "Sinchi-laykhurakuqpaq textoqa uq phatmallapi kanan tiyan."
 
 #. FIELD_DateTime_Wkday
 #: po/tmp/ap_String_Id.h.h:2385
@@ -5919,9 +5806,8 @@ msgstr "Junqajunaqpi p'unchay"
 
 #. DLG_FormatTable_Thickness
 #: po/tmp/ap_String_Id.h.h:2387
-#, fuzzy
 msgid "Thickness:"
-msgstr "Surk'as:"
+msgstr "Anchun:"
 
 #. MSG_AfterRestartNew
 #: po/tmp/ap_String_Id.h.h:2389
@@ -5938,6 +5824,9 @@ msgid ""
 "This document contains revisions which are currently hidden from view. "
 "Please see AbiWord documentation for information on working with revisions."
 msgstr ""
+"Este documento contiene revisiones que están ocultas de la vista. Vea la "
+"documentación de AbiWord para la información acerca del trabajo con "
+"revisiones."
 
 #. DLG_Para_PreviewSampleFallback
 #: po/tmp/ap_String_Id.h.h:2393
@@ -6092,7 +5981,6 @@ msgstr "Usar forma de glifo para hebreo"
 
 #. DLG_Options_Label_UI
 #: po/tmp/ap_String_Id.h.h:2450
-#, fuzzy
 msgid "User Interface"
 msgstr "Noqaqpa simiy"
 
@@ -6103,15 +5991,13 @@ msgstr "Noqaqpa simiy"
 
 #. DLG_Stylist_UserStyles
 #: po/tmp/ap_String_Id.h.h:2454
-#, fuzzy
 msgid "User defined Styles"
 msgstr "Noqaqpa rikhurichikusqasniy"
 
 #. DLG_Tab_Label_Existing
 #: po/tmp/ap_String_Id.h.h:2456
-#, fuzzy
 msgid "User-defined Tabs"
-msgstr "Noqaqpa rikhurichikusqasniy"
+msgstr "Noqaqpa tabuladoresniy"
 
 #. DLG_Styles_LBL_UserDefined
 #: po/tmp/ap_String_Id.h.h:2458
@@ -6131,9 +6017,8 @@ msgstr "Qhaway"
 
 #. MENU_STATUSLINE_TOOLS_HISTORY_SHOW
 #: po/tmp/ap_String_Id.h.h:2464
-#, fuzzy
 msgid "View document history"
-msgstr "Documentota rikuchiy"
+msgstr "Ver histórico del documento"
 
 #. MENU_STATUSLINE_VIEW_FULLSCREEN
 #: po/tmp/ap_String_Id.h.h:2466
@@ -6182,7 +6067,7 @@ msgstr "Webpaq qhaway"
 #. DLG_Styles_LBL_TxtMsg
 #: po/tmp/ap_String_Id.h.h:2488
 msgid "What Hath God Wrought"
-msgstr "Pachamama Tukuy Imata Rikhurichisqa"
+msgstr "Pachamama tukuy imata rikhurichisqa"
 
 #. DLG_Options_Label_WithExtension
 #: po/tmp/ap_String_Id.h.h:2490
@@ -6202,9 +6087,8 @@ msgstr "Simikunata qhelqaspa"
 
 #. DLG_WordCount_Words_No_Notes
 #: po/tmp/ap_String_Id.h.h:2497
-#, fuzzy
 msgid "Words (no footnotes/endnotes):"
-msgstr "Chakiqpatapis tukukuypatapis willayninpi ukhunta kamachiy"
+msgstr "Simikuna (mana chakeq willayninkuna):"
 
 #. DLG_Options_Label_SpellUppercase
 #: po/tmp/ap_String_Id.h.h:2499
@@ -6225,7 +6109,7 @@ msgstr "Simikuna:"
 #: po/tmp/ap_String_Id.h.h:2505
 #, c-format
 msgid "Writing error when attempting to save %s"
-msgstr "Jallch'ashaqtiyki %s archivota qhelqeyninpi pantisqa"
+msgstr "Jallch'ashaqtiyki «%s» archivota qhelqeyninpi pantisqa"
 
 #. MSG_DefaultDirectionChg
 #: po/tmp/ap_String_Id.h.h:2507
@@ -6241,7 +6125,7 @@ msgstr "Ha cambiado el modo de dirección."
 #: po/tmp/ap_String_Id.h.h:2511
 msgid "You must select a portion of the document before inserting a hyperlink."
 msgstr ""
-"Manaraq sinchi laykhurakuqta churasaspa, uq chhikata documentomanta "
+"Manaraq sinchi-laykhurakuqta churasaspa, uq chhikata documentomanta "
 "aqllanayki tiyan."
 
 #. DLG_Options_Label_InvalidRangeForAutoSave
@@ -6389,7 +6273,7 @@ msgstr "(ama cheqachaychu)"
 #. DLG_DocComparison_TestSkipped
 #: po/tmp/xap_String_Id.h.h:27
 msgid "(test skipped)"
-msgstr ""
+msgstr "(test saltado)"
 
 #. DLG_NoSaveFile_DirNotExist
 #: po/tmp/xap_String_Id.h.h:29
@@ -6418,6 +6302,8 @@ msgid ""
 "AbiWord cannot fully restore version %d of the document because the version "
 "information is incomplete."
 msgstr ""
+"AbiWord no puede restaurar completamente la versión %d del documento porque "
+"la información de versión es incompleta."
 
 #. MSG_HistoryNoRestore
 #: po/tmp/xap_String_Id.h.h:37
@@ -6426,6 +6312,8 @@ msgid ""
 "AbiWord cannot restore version %d of the document because the version "
 "information is missing."
 msgstr ""
+"AbiWord no puede restablecer la versión %d del documento porque falta la "
+"información de versión."
 
 #. DLG_UP_PrintPreviewTitle
 #: po/tmp/xap_String_Id.h.h:39
@@ -6450,9 +6338,8 @@ msgstr "Afrikaans"
 
 #. LANG_AK_GH
 #: po/tmp/xap_String_Id.h.h:47
-#, fuzzy
 msgid "Akan"
-msgstr "Afrikaans"
+msgstr "Akan"
 
 #. LANG_SQ_AL
 #: po/tmp/xap_String_Id.h.h:49
@@ -6526,9 +6413,8 @@ msgstr "Assamese"
 
 #. LANG_AST_ES
 #: po/tmp/xap_String_Id.h.h:81
-#, fuzzy
 msgid "Asturian (Spain)"
-msgstr "Español (España)"
+msgstr "Asturiano (España)"
 
 #. DLG_Options_Label_DirMarkerAfterClosingParenthesis
 #: po/tmp/xap_String_Id.h.h:85
@@ -6537,9 +6423,8 @@ msgstr "Auto-inserción de marcadores de dirección"
 
 #. DLG_History_Version_AutoRevisioned
 #: po/tmp/xap_String_Id.h.h:87
-#, fuzzy
 msgid "Auto-revision"
-msgstr "Revisionta &jap'ikuy"
+msgstr "Auto-revisión"
 
 #. DLG_FOSA_FileTypeAutoDetect
 #: po/tmp/xap_String_Id.h.h:89
@@ -6548,9 +6433,8 @@ msgstr "Pachamanta ruwanqa"
 
 #. MSG_AutoRevision
 #: po/tmp/xap_String_Id.h.h:91
-#, fuzzy
 msgid "Autorevision"
-msgstr "Revisionta &jap'ikuy"
+msgstr "Auto-revisión"
 
 #. DLG_MW_AvailableDocuments
 #: po/tmp/xap_String_Id.h.h:93
@@ -6585,7 +6469,7 @@ msgstr "Bielorruso"
 #. LANG_BN_IN
 #: po/tmp/xap_String_Id.h.h:105
 msgid "Bengali"
-msgstr ""
+msgstr "Bengalí"
 
 #. DLG_UP_BlackWhite
 #: po/tmp/xap_String_Id.h.h:107
@@ -6609,9 +6493,8 @@ msgstr "Bretón"
 
 #. MSG_BuildingDoc
 #: po/tmp/xap_String_Id.h.h:121
-#, fuzzy
 msgid "Building Document:"
-msgstr "Documentota ruwashan..."
+msgstr "Documentota ruwashan:"
 
 #. LANG_BG_BG
 #: po/tmp/xap_String_Id.h.h:123
@@ -6715,9 +6598,8 @@ msgstr "Chino tradicional, página de códigos Windows 950"
 
 #. DLG_LISTDOCS_Heading1
 #: po/tmp/xap_String_Id.h.h:165
-#, fuzzy
 msgid "Choose document from the list:"
-msgstr "Lastrumanta musoq documentota rikhuchiy"
+msgstr "Documentota aqllay:"
 
 #. DLG_CLIPART_Title
 #: po/tmp/xap_String_Id.h.h:167
@@ -6746,45 +6628,38 @@ msgstr "Color"
 
 #. DLG_Compare
 #: po/tmp/xap_String_Id.h.h:179
-#, fuzzy
 msgid "Compare"
-msgstr "Fecha de compilación"
+msgstr "Comparar"
 
 #. DLG_DocComparison_Content
 #: po/tmp/xap_String_Id.h.h:181
-#, fuzzy
 msgid "Content:"
-msgstr "Willana"
+msgstr "Ukhunpi kasqan:"
 
 #. STYLE_TOCHEADING1
 #: po/tmp/xap_String_Id.h.h:183
-#, fuzzy
 msgid "Contents 1"
-msgstr "Yanapaypata &ukhunpi kasqan"
+msgstr "Ukhunpi kasqan 1"
 
 #. STYLE_TOCHEADING2
 #: po/tmp/xap_String_Id.h.h:185
-#, fuzzy
 msgid "Contents 2"
-msgstr "Yanapaypata &ukhunpi kasqan"
+msgstr "Ukhunpi kasqan 2"
 
 #. STYLE_TOCHEADING3
 #: po/tmp/xap_String_Id.h.h:187
-#, fuzzy
 msgid "Contents 3"
-msgstr "Yanapaypata &ukhunpi kasqan"
+msgstr "Ukhunpi kasqan 3"
 
 #. STYLE_TOCHEADING4
 #: po/tmp/xap_String_Id.h.h:189
-#, fuzzy
 msgid "Contents 4"
-msgstr "Yanapaypata &ukhunpi kasqan"
+msgstr "Ukhunpi kasqan 4"
 
 #. STYLE_TOCHEADING
 #: po/tmp/xap_String_Id.h.h:191
-#, fuzzy
 msgid "Contents Header"
-msgstr "Laqheq u&manta sat'iy"
+msgstr "Cabecera del índice"
 
 #. DLG_UP_Copies
 #: po/tmp/xap_String_Id.h.h:193
@@ -6819,15 +6694,13 @@ msgstr "%s simipaq diccionariota mana apaykachayta atinchu."
 
 #. DLG_History_Version_Started
 #: po/tmp/xap_String_Id.h.h:205
-#, fuzzy
 msgid "Created"
-msgstr "Rikhurichiq"
+msgstr "Rikhurichisqa"
 
 #. DLG_History_Created
 #: po/tmp/xap_String_Id.h.h:207
-#, fuzzy
 msgid "Created:"
-msgstr "Rikhurichiq"
+msgstr "Rikhurichisqa:"
 
 #. LANG_HR
 #: po/tmp/xap_String_Id.h.h:209
@@ -6886,19 +6759,18 @@ msgstr "Declarar como XML (versión 1.0)"
 
 #. DLG_ULANG_DefaultLangLabel
 #: po/tmp/xap_String_Id.h.h:233
-#, fuzzy
 msgid "Default language: "
-msgstr "Documentospaq mana aqllasqaraq simi"
+msgstr "Mana aqllasqaraq simi:"
 
 #. DLG_Image_Placement
 #: po/tmp/xap_String_Id.h.h:235
 msgid "Define Image Placement"
-msgstr ""
+msgstr "Definir emplazamiento de la imagen"
 
 #. DLG_Image_TextWrapping
 #: po/tmp/xap_String_Id.h.h:237
 msgid "Define Text Wrapping"
-msgstr ""
+msgstr "Definir ajuste de texto"
 
 #. DLG_Remove_Icon
 #: po/tmp/xap_String_Id.h.h:246
@@ -6907,33 +6779,28 @@ msgstr "¿Chay seqesqamanta uq sinkhisqata qhechuyta munankichu?"
 
 #. DLG_DocComparison_WindowLabel
 #: po/tmp/xap_String_Id.h.h:248
-#, fuzzy
 msgid "Document Comparison"
-msgstr "Kay documentomanta willaykuna"
+msgstr "Comparación del documento"
 
 #. DLG_History_DocumentDetails
 #: po/tmp/xap_String_Id.h.h:250
-#, fuzzy
 msgid "Document Details"
 msgstr "Kay documentomanta willaykuna"
 
 #. DLG_History_WindowLabel
 #: po/tmp/xap_String_Id.h.h:252
-#, fuzzy
 msgid "Document History"
-msgstr "&Documentos"
+msgstr "Historial del documento"
 
 #. DLG_History_Path
 #: po/tmp/xap_String_Id.h.h:254
-#, fuzzy
 msgid "Document name:"
-msgstr "Documento"
+msgstr "Documentoq sutin:"
 
 #. DLG_DocComparison_DocsCompared
 #: po/tmp/xap_String_Id.h.h:256
-#, fuzzy
 msgid "Documents compared"
-msgstr "Kay documentomanta willaykuna"
+msgstr "Documentos comparados"
 
 #. LANG_NL_NL
 #: po/tmp/xap_String_Id.h.h:258
@@ -6943,7 +6810,7 @@ msgstr "Holandés (Holanda)"
 #. DLG_History_EditTime
 #: po/tmp/xap_String_Id.h.h:260
 msgid "Editing time:"
-msgstr ""
+msgstr "Tiempo de edición:"
 
 #. DLG_UFS_EffectsFrameLabel
 #: po/tmp/xap_String_Id.h.h:262
@@ -7048,7 +6915,7 @@ msgstr "Exportar como HTML 4.01"
 #. DLG_HTMLOPT_ExpAbiWebDoc
 #: po/tmp/xap_String_Id.h.h:302
 msgid "Export with PHP instructions"
-msgstr "Exportar como instrucciones PHP"
+msgstr "Exportar con instrucciones PHP"
 
 #. LANG_FA_IR
 #: po/tmp/xap_String_Id.h.h:304
@@ -7064,7 +6931,7 @@ msgstr "Archivo"
 #: po/tmp/xap_String_Id.h.h:308
 #, c-format
 msgid "File already exists.  Overwrite file '%s'?"
-msgstr "\"%s\" archivoqa kanña. ¿Uqtataq churay munankichu?"
+msgstr "«%s» archivoqa kanña. ¿Uqtataq churay munankichu?"
 
 #. LANG_FI_FI
 #: po/tmp/xap_String_Id.h.h:310
@@ -7193,9 +7060,8 @@ msgstr "Hausa (Nigeria)"
 
 #. LANG_HAW_US
 #: po/tmp/xap_String_Id.h.h:369
-#, fuzzy
 msgid "Hawaiian"
-msgstr "Gallego"
+msgstr "Hawaiano"
 
 #. STYLE_HEADING1
 #: po/tmp/xap_String_Id.h.h:371
@@ -7214,9 +7080,8 @@ msgstr "Cabecera 3"
 
 #. STYLE_HEADING4
 #: po/tmp/xap_String_Id.h.h:377
-#, fuzzy
 msgid "Heading 4"
-msgstr "Cabecera 3"
+msgstr "Cabecera 4"
 
 #. LANG_HE_IL
 #: po/tmp/xap_String_Id.h.h:381
@@ -7281,7 +7146,7 @@ msgstr "Islandés, Macintosh"
 #. DLG_History_Id
 #: po/tmp/xap_String_Id.h.h:405
 msgid "Identifier:"
-msgstr ""
+msgstr "Identificador:"
 
 #. DLG_Image_Title
 #: po/tmp/xap_String_Id.h.h:407
@@ -7291,12 +7156,12 @@ msgstr "Pallasqakunaq imayna kaynin"
 #. DLG_Image_WrappedNone
 #: po/tmp/xap_String_Id.h.h:409
 msgid "Image floats above text"
-msgstr ""
+msgstr "La imagen flota sobre el texto"
 
 #. DLG_Image_InLine
 #: po/tmp/xap_String_Id.h.h:411
 msgid "Image placed in-line (no text wrapping)"
-msgstr ""
+msgstr "Imagen colocada en línea (sin ajuste de texto)"
 
 #. DLG_FOSA_ImportTitle
 #: po/tmp/xap_String_Id.h.h:415
@@ -7320,31 +7185,28 @@ msgstr "Métodos de entrada"
 
 #. DLG_FOSA_InsertObject
 #: po/tmp/xap_String_Id.h.h:425
-#, fuzzy
 msgid "Insert Embeddable Object"
-msgstr "Tablata sat'iy"
+msgstr "Incrustar objeto"
 
 #. DLG_FOSA_FileInsertObject
 #: po/tmp/xap_String_Id.h.h:427
 msgid "Insert Embeddable Object file:"
-msgstr ""
+msgstr "Archivo de objeto incrustado:"
 
 #. DLG_FOSA_InsertTitle
 #: po/tmp/xap_String_Id.h.h:429
 msgid "Insert File"
-msgstr "Waj archivota kay documentopi sat'iy"
+msgstr "Archivota sat'iy"
 
 #. DLG_FOSA_InsertMath
 #: po/tmp/xap_String_Id.h.h:431
-#, fuzzy
 msgid "Insert Math File"
-msgstr "Waj archivota kay documentopi sat'iy"
+msgstr "Math archivota sat'iy"
 
 #. DLG_FOSA_FileInsertMath
 #: po/tmp/xap_String_Id.h.h:433
-#, fuzzy
 msgid "Insert MathML file:"
-msgstr "Waj archivota kay documentopi sat'iy"
+msgstr "MathML archivota sat'iy"
 
 #. TB_InsertNewTable
 #: po/tmp/xap_String_Id.h.h:435
@@ -7374,7 +7236,7 @@ msgstr "Interlingua"
 #. LANG_IU_CA
 #: po/tmp/xap_String_Id.h.h:445
 msgid "Inuktitut"
-msgstr ""
+msgstr "Inuktitut"
 
 #. DLG_InvalidPathname
 #: po/tmp/xap_String_Id.h.h:447
@@ -7419,7 +7281,7 @@ msgstr "Japonés, página de códigos Windows 932"
 #. LANG_KN_IN
 #: po/tmp/xap_String_Id.h.h:465
 msgid "Kannada"
-msgstr ""
+msgstr "Kannada"
 
 #. LANG_KO_KR
 #: po/tmp/xap_String_Id.h.h:467
@@ -7448,20 +7310,18 @@ msgstr "Coreano, página de códigos Windows 949"
 
 #. LANG_KU
 #: po/tmp/xap_String_Id.h.h:477
-#, fuzzy
 msgid "Kurdish"
-msgstr "Turco"
+msgstr "Kurdo"
 
 #. LANG_LO_LA
 #: po/tmp/xap_String_Id.h.h:479
-#, fuzzy
 msgid "Lao"
-msgstr "Cheqachay"
+msgstr "Lao"
 
 #. DLG_History_LastSaved
 #: po/tmp/xap_String_Id.h.h:481
 msgid "Last saved:"
-msgstr ""
+msgstr "Última vez que se guardó:"
 
 #. LANG_LA_IT
 #: po/tmp/xap_String_Id.h.h:483
@@ -7485,20 +7345,18 @@ msgstr "Macedonio"
 
 #. DLG_ULANG_DefaultLangChkbox
 #: po/tmp/xap_String_Id.h.h:495
-#, fuzzy
 msgid "Make default for document"
 msgstr "Documentospaq mana aqllasqaraq simi"
 
 #. LANG_MI_NZ
 #: po/tmp/xap_String_Id.h.h:497
-#, fuzzy
 msgid "Maori"
-msgstr "&Kantusman saqerasqa"
+msgstr "Maori"
 
 #. LANG_MR_IN
 #: po/tmp/xap_String_Id.h.h:499
 msgid "Marathi"
-msgstr ""
+msgstr "Marati"
 
 #. LANG_MH_MH
 #: po/tmp/xap_String_Id.h.h:501
@@ -7512,15 +7370,13 @@ msgstr "Marshalés (Nauru)"
 
 #. DLG_Merge
 #: po/tmp/xap_String_Id.h.h:505
-#, fuzzy
 msgid "Merge"
 msgstr "Lloq'ewan t'inkiy"
 
 #. LANG_MN_MN
 #: po/tmp/xap_String_Id.h.h:507
-#, fuzzy
 msgid "Mongolian"
-msgstr "Macedonio"
+msgstr "Mongol"
 
 #. DLG_PLUGIN_MANAGER_NAME
 #: po/tmp/xap_String_Id.h.h:509
@@ -7599,9 +7455,8 @@ msgstr "Layaqpa archivonta kichay:"
 
 #. DLG_LISTDOCS_Title
 #: po/tmp/xap_String_Id.h.h:541
-#, fuzzy
 msgid "Opened Documents"
-msgstr "Mosoq documento"
+msgstr "Kichasqa documentos"
 
 #. TB_Zoom_Percent
 #: po/tmp/xap_String_Id.h.h:543
@@ -7630,8 +7485,9 @@ msgstr "Yaykunapaq suti:"
 
 #. STYLE_PLAIN_TEXT
 #: po/tmp/xap_String_Id.h.h:555
+#, fuzzy
 msgid "Plain Text"
-msgstr "Texto plano"
+msgstr "Texto q'ala"
 
 #. DLG_PLUGIN_MANAGER_DETAILS
 #: po/tmp/xap_String_Id.h.h:557
@@ -7661,17 +7517,17 @@ msgstr "Portugués (Portugal)"
 #. DLG_Image_PlaceColumn
 #: po/tmp/xap_String_Id.h.h:567
 msgid "Position relative to its Column"
-msgstr ""
+msgstr "Posición relativa a su columna"
 
 #. DLG_Image_PlacePage
 #: po/tmp/xap_String_Id.h.h:569
 msgid "Position relative to its Page"
-msgstr ""
+msgstr "Posición relativa a su página"
 
 #. DLG_Image_PlaceParagraph
 #: po/tmp/xap_String_Id.h.h:571
 msgid "Position relative to nearest paragraph"
-msgstr ""
+msgstr "Posición relativa al parágrafo más cercano"
 
 #. DLG_Image_Aspect
 #: po/tmp/xap_String_Id.h.h:573
@@ -7716,17 +7572,17 @@ msgstr "Ñit'inapaq kamachi: "
 #. LANG_PA_IN
 #: po/tmp/xap_String_Id.h.h:594
 msgid "Punjabi (Gurmukhi)"
-msgstr ""
+msgstr "Punjabi (Gurmukhi)"
 
 #. LANG_PA_PK
 #: po/tmp/xap_String_Id.h.h:596
 msgid "Punjabi (Shahmukhi)"
-msgstr ""
+msgstr "Punjabi (Shahmukhi)"
 
 #. LANG_QU_BO
 #: po/tmp/xap_String_Id.h.h:598
 msgid "Quechua"
-msgstr ""
+msgstr "Quechua"
 
 #. DLG_UFS_StyleRegular
 #: po/tmp/xap_String_Id.h.h:600
@@ -7735,15 +7591,13 @@ msgstr "Maychus kaqlla"
 
 #. DLG_DocComparison_Relationship
 #: po/tmp/xap_String_Id.h.h:602
-#, fuzzy
 msgid "Relationship:"
 msgstr "Relación:"
 
 #. DLG_Restore
 #: po/tmp/xap_String_Id.h.h:604
-#, fuzzy
 msgid "Restore"
-msgstr "&Wateqmanta qallariy"
+msgstr "Restablecer"
 
 #. DLG_HTMLOPT_ExpRestore
 #: po/tmp/xap_String_Id.h.h:606
@@ -7752,9 +7606,8 @@ msgstr "Restaurar configuración"
 
 #. DLG_DocComparison_Results
 #: po/tmp/xap_String_Id.h.h:608
-#, fuzzy
 msgid "Results"
-msgstr "Ma &aqllasqas"
+msgstr "Resultados"
 
 #. LANG_RO_RO
 #: po/tmp/xap_String_Id.h.h:610
@@ -7789,7 +7642,7 @@ msgstr "Jinata archivota jallch'ay"
 #. DLG_HTMLOPT_ExpSave
 #: po/tmp/xap_String_Id.h.h:622
 msgid "Save Settings"
-msgstr "Configuración guardar"
+msgstr "Guardar configuración"
 
 #. DLG_FOSA_FileSaveTypeLabel
 #: po/tmp/xap_String_Id.h.h:624
@@ -7828,15 +7681,13 @@ msgstr "Servio"
 
 #. DLG_Image_ImageDesc
 #: po/tmp/xap_String_Id.h.h:642
-#, fuzzy
 msgid "Set Image Name"
-msgstr "&Pallasqata jiná jallch'ay"
+msgstr "&Pallaypa sutinta churay"
 
 #. DLG_Image_ImageSize
 #: po/tmp/xap_String_Id.h.h:644
-#, fuzzy
 msgid "Set Image Size"
-msgstr "Mana aqllasqa chhikannin laqhe"
+msgstr "Laqheqpa chhikanta churay"
 
 #. DLG_ULANG_LangTitle
 #: po/tmp/xap_String_Id.h.h:646
@@ -7876,7 +7727,7 @@ msgstr "Español (España)"
 #. DLG_Image_SquareWrap
 #: po/tmp/xap_String_Id.h.h:664
 msgid "Square text wrapping"
-msgstr ""
+msgstr "Ajuste de texto cuadrado"
 
 #. DLG_DocComparison_Styles
 #: po/tmp/xap_String_Id.h.h:672
@@ -7887,7 +7738,7 @@ msgstr "Imayna kaynin:"
 #. LANG_SW
 #: po/tmp/xap_String_Id.h.h:678
 msgid "Swahili"
-msgstr ""
+msgstr "Swahili"
 
 #. LANG_SV_SE
 #: po/tmp/xap_String_Id.h.h:680
@@ -7896,31 +7747,28 @@ msgstr "Sueco"
 
 #. TB_Font_Symbol
 #: po/tmp/xap_String_Id.h.h:682
-#, fuzzy
 msgid "Symbols"
-msgstr "K'illpa"
+msgstr "K'illpas"
 
-#. LANG_SYR
+#. "Ajuste de texto cuadrado"
 #: po/tmp/xap_String_Id.h.h:684
-#, fuzzy
 msgid "Syriac"
-msgstr "Servio"
+msgstr "Sirio"
 
 #. LANG_TL_PH
 #: po/tmp/xap_String_Id.h.h:688
 msgid "Tagalog"
-msgstr ""
+msgstr "Tagalo"
 
 #. LANG_TA_IN
 #: po/tmp/xap_String_Id.h.h:690
-#, fuzzy
 msgid "Tamil"
-msgstr "Tailandés"
+msgstr "Tamil"
 
 #. LANG_TE_IN
 #: po/tmp/xap_String_Id.h.h:692
 msgid "Telugu"
-msgstr ""
+msgstr "Telugu"
 
 #. DLG_UFS_ColorTab
 #: po/tmp/xap_String_Id.h.h:694
@@ -7930,17 +7778,17 @@ msgstr "Color del texto"
 #. DLG_Image_WrappedBoth
 #: po/tmp/xap_String_Id.h.h:696
 msgid "Text wrapped on both sides of the Image"
-msgstr ""
+msgstr "Texto ajustado a ambos lados de la imagen"
 
 #. DLG_Image_WrappedLeft
 #: po/tmp/xap_String_Id.h.h:698
 msgid "Text wrapped to the Left of the Image"
-msgstr ""
+msgstr "Texto ajustado a la derecha de la imagen"
 
 #. DLG_Image_WrappedRight
 #: po/tmp/xap_String_Id.h.h:700
 msgid "Text wrapped to the Right of the Image"
-msgstr ""
+msgstr "Texto ajustado a la derecha de la imagen"
 
 #. LANG_TH_TH
 #: po/tmp/xap_String_Id.h.h:702
@@ -7967,7 +7815,7 @@ msgstr "Tailandés, página de códigos Windows 874"
 #, c-format
 msgid "The directory '%s' is write-protected."
 msgstr ""
-"\"%s\" directoriopi qhelqeyta jarkan. Ama kaypi archivosta jallch'aychu."
+"«%s» directoriopi qhelqeyta jarkan. Ama kaypi archivosta jallch'aychu."
 
 #. MSG_HistoryPartRestore2
 #: po/tmp/xap_String_Id.h.h:712
@@ -7976,6 +7824,8 @@ msgid ""
 "The nearest version that can be restored fully is %d. Would you like to "
 "restore this version instead? To partially restore version %d press No."
 msgstr ""
+"La versión más próxima que puede ser restaurada completamente es %d. ¿quiere "
+"restaurar esta versión en su lugar? Para restaurar parcialmente la versión %"
 
 #. DLG_UP_InvalidPrintString
 #: po/tmp/xap_String_Id.h.h:714
@@ -7985,22 +7835,22 @@ msgstr "Mana ñit'inapaq kamachi valenchu."
 #. MSG_NoUndo
 #: po/tmp/xap_String_Id.h.h:716
 msgid "This operation cannot be undone. Are you sure you want to proceed?"
-msgstr ""
+msgstr "Esta operación no se puede deshacer. ¿Seguro que quiere proceder?"
 
 #. DLG_Image_TightWrap
 #: po/tmp/xap_String_Id.h.h:720
 msgid "Tight text wrapping"
-msgstr ""
+msgstr "Ajuste de texto estrecho"
 
 #. MSG_HistoryPartRestore3
 #: po/tmp/xap_String_Id.h.h:724
 msgid "To continue anyway, press OK."
-msgstr ""
+msgstr "Para continuar de todas formas pulse Jap'ikuy."
 
 #. MSG_HistoryPartRestore4
 #: po/tmp/xap_String_Id.h.h:726
 msgid "To quit the restoration attempt, press Cancel."
-msgstr ""
+msgstr "Para eliminar el intento de restauración, pulse Cancelar."
 
 #. LANG_TR_TR
 #: po/tmp/xap_String_Id.h.h:732
@@ -8025,7 +7875,7 @@ msgstr "Turco, página de códigos Windows 1254"
 #. DLG_Image_WrapType
 #: po/tmp/xap_String_Id.h.h:740
 msgid "Type of text wrapping"
-msgstr ""
+msgstr "Tipo de ajuste de texto"
 
 #. ENC_WEST_ASCII
 #: po/tmp/xap_String_Id.h.h:742
@@ -8136,13 +7986,12 @@ msgstr "Urdu"
 #. LANG_UZ_UZ
 #: po/tmp/xap_String_Id.h.h:790
 msgid "Uzbek"
-msgstr ""
+msgstr "Uzbeco"
 
 #. DLG_History_List_Title
 #: po/tmp/xap_String_Id.h.h:794
-#, fuzzy
 msgid "Version history"
-msgstr "Versión"
+msgstr "Histórico de versión"
 
 #. DLG_PLUGIN_MANAGER_VERSION
 #. DLG_History_Version
@@ -8187,15 +8036,13 @@ msgstr "Galés"
 
 #. ENC_US_DOS
 #: po/tmp/xap_String_Id.h.h:813
-#, fuzzy
 msgid "Western European, DOS/Windows Code Page 437"
-msgstr "Europeo occidental, página de códigos Windows 1252"
+msgstr "Europeo occidental, página de códigos DOS/Windows 437"
 
 #. ENC_MLNG_DOS
 #: po/tmp/xap_String_Id.h.h:815
-#, fuzzy
 msgid "Western European, DOS/Windows Code Page 850"
-msgstr "Europeo occidental, página de códigos Windows 1252"
+msgstr "Europeo occidental, página de códigos DOS/Windows 850"
 
 #. ENC_WEST_HP
 #: po/tmp/xap_String_Id.h.h:817
@@ -8249,9 +8096,9 @@ msgstr "Yiddish"
 
 #. MSG_HistoryConfirmSave
 #: po/tmp/xap_String_Id.h.h:837
-#, fuzzy, c-format
+#, c-format
 msgid "You have to save changes to document %s before proceeding. Save now?"
-msgstr "¿Uqjinayachisqaykita \"%s\" archivopi jallch'ayta munankichu?"
+msgstr "Manaraq qhatishaspa «%s» archivota jallch'anayki tiyan. ¿Kunitan jallch'aychu?"
 
 #. DLG_Zoom_RadioFrameCaption
 #: po/tmp/xap_String_Id.h.h:841
@@ -8276,24 +8123,24 @@ msgstr "centímetros"
 #. DLG_DocComparison_Different
 #: po/tmp/xap_String_Id.h.h:849
 msgid "different"
-msgstr ""
+msgstr "diferente"
 
 #. DLG_DocComparison_DivergingPos
 #: po/tmp/xap_String_Id.h.h:851
 #, c-format
 msgid "diverging after document position %d"
-msgstr ""
+msgstr "diverge después de la posición del documento %d"
 
 #. DLG_DocComparison_Diverging
 #: po/tmp/xap_String_Id.h.h:853
 #, c-format
 msgid "diverging after version %d of %s"
-msgstr ""
+msgstr "diverge después de la versión %d de %s"
 
 #. DLG_DocComparison_Identical
 #: po/tmp/xap_String_Id.h.h:855
 msgid "identical"
-msgstr ""
+msgstr "idénticos"
 
 #. DLG_Unit_inch
 #: po/tmp/xap_String_Id.h.h:857
@@ -8318,12 +8165,12 @@ msgstr "puntos"
 #. DLG_DocComparison_Siblings
 #: po/tmp/xap_String_Id.h.h:865
 msgid "siblings"
-msgstr ""
+msgstr "similares"
 
 #. DLG_DocComparison_Unrelated
 #: po/tmp/xap_String_Id.h.h:867
 msgid "unrelated"
-msgstr ""
+msgstr "no relacionados"
 
 #~ msgid "&As web page"
 #~ msgstr "W&eb laqhepi qhaway"
