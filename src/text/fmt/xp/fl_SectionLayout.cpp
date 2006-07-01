@@ -3837,7 +3837,8 @@ void fl_HdrFtrSectionLayout::addValidPages(void)
 	// Loop through all the columns in m_pDocSl and find the pages owned
 	// by m_pDocSL
 	//
-	fp_Column * pCol = static_cast<fp_Column *>(m_pDocSL->getFirstContainer());
+        fp_Column * pCol = NULL;
+	pCol = static_cast<fp_Column *>(m_pDocSL->getFirstContainer());
 	fp_Page * pOldPage = NULL;
 	fp_Page * pNewPage = NULL;
 	while(pCol)
