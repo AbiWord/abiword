@@ -160,8 +160,10 @@ bool px_ChangeHistory::getUndo(PX_ChangeRecord ** ppcr) const
 	bool bCorrect = false;
 	while(!bGotOne)
 	{
-	    if ((m_undoPosition -   m_iAdjustOffset) == 0)
+	  if ((static_cast<UT_sint32>(m_undoPosition) - static_cast<UT_sint32>(m_iAdjustOffset)) <= 0)
+	    {
 	      return false;
+	    }
 	    pcr = (PX_ChangeRecord *)m_vecChangeRecords.getNthItem(m_undoPosition-m_iAdjustOffset-1);
 	    UT_ASSERT_HARMLESS(pcr);
 	    if(pcr && !pcr->isFromThisDoc())
@@ -174,13 +176,14 @@ bool px_ChangeHistory::getUndo(PX_ChangeRecord ** ppcr) const
 		bGotOne = true;
 	    }
 	}
+	PX_ChangeRecord * pcrOrig = pcr;
 	if(bCorrect)
 	{
 	    pcr->setAdjustment(0);
 	    PT_DocPosition pos = pcr->getPosition();
-	    UT_uint32 i = 0;
+	    UT_sint32 i = static_cast<UT_sint32>(m_iAdjustOffset)-1;
 	    UT_sint32 iAdj= 0;
-	    for(i=0; i<=m_iAdjustOffset;i++)
+	    for(i=i; i>=0;i--)
 	    {
 		pcr = (PX_ChangeRecord *)m_vecChangeRecords.getNthItem(m_undoPosition-i-1);
 		if(!pcr->isFromThisDoc())
@@ -191,9 +194,9 @@ bool px_ChangeHistory::getUndo(PX_ChangeRecord ** ppcr) const
 		    }
 		}
 	    }
-	    pcr->setAdjustment(iAdj);
+	    pcrOrig->setAdjustment(iAdj);
 	}
-	*ppcr = pcr;
+	*ppcr = pcrOrig;
 	return true;
 }
 
@@ -264,6 +267,7 @@ void px_ChangeHistory::coalesceHistory(const PX_ChangeRecord * pcr)
 
 	PX_ChangeRecord * pcrUndo;
 	bool bResult;
+	UT_sint32 iAdj = m_iAdjustOffset;
 	bResult = getUndo(&pcrUndo);
 	UT_return_if_fail (bResult);
 	UT_return_if_fail (pcr->getType() == pcrUndo->getType());
@@ -271,6 +275,7 @@ void px_ChangeHistory::coalesceHistory(const PX_ChangeRecord * pcr)
 	switch (pcr->getType())
 	{
 	default:
+	        m_iAdjustOffset = iAdj;
 		UT_ASSERT_HARMLESS(0);
 		return;
 		
@@ -282,6 +287,10 @@ void px_ChangeHistory::coalesceHistory(const PX_ChangeRecord * pcr)
 
 			_invalidateRedo();
 			pcrSpanUndo->coalesce(pcrSpan);
+			if(pcr->isFromThisDoc())
+			  m_iAdjustOffset = 0;
+			else if(iAdj > 0) 
+			  m_iAdjustOffset = iAdj - 1;
 		}
 		return;
 	}
