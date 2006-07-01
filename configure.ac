@@ -441,6 +441,15 @@ AC_FUNC_ALLOCA
 AC_TYPE_SIGNAL
 AC_CHECK_FUNCS(re_comp regcomp strdup strstr strcasecmp stricmp strnlen)
 
+if test $peerconfig = "true"; then
+    for i in . $PEERDIRS; do
+        if test $i != . ; then
+            j=`basename $i`
+            ABI_PEER_CONFIG($j,$i)
+        fi
+    done
+fi
+
 # Check whether the scandir() select/filter function requires that its
 # argument is const-qualified.
 # uses the C++ compiler.
