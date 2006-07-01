@@ -273,7 +273,7 @@ public:									// we create...
 					}
 
 					// check if something actually _is_ changed... yeah yeah, another hack.. gtk sux sometimes
-					if (!strcmp(wd->m_comboEntryBuffer, buffer))
+					if (!strncmp(wd->m_comboEntryBuffer, buffer, COMBO_BUF_LEN))
 						return;
 					
 					UT_uint32 length = strlen(buffer);
@@ -286,8 +286,9 @@ public:									// we create...
 					// using GtkOptionMenu for non-changeable drop-down toolbar menus)
 					if (length > 0) 
 					{					
-						UT_ASSERT(length < 1024);				       
-						strcpy(wd->m_comboEntryBuffer, buffer);
+						UT_ASSERT(length < COMBO_BUF_LEN);
+						memset(wd->m_comboEntryBuffer, 0, COMBO_BUF_LEN);		       
+						strncpy(wd->m_comboEntryBuffer, buffer, COMBO_BUF_LEN-1);
 
 						if (wd->m_id == AP_TOOLBAR_ID_FMT_FONT && wd->m_pUnixToolbar->m_pFontPreview)
 						  {
@@ -365,7 +366,7 @@ public:									// we create...
 					
 					if (length > 0) 
 					{					
-						UT_ASSERT(length < 1024);				       
+						UT_ASSERT(length < COMBO_BUF_LEN);				       
 						
 						if (wd->m_pUnixToolbar->m_pFontPreview == NULL)
 						{
@@ -395,7 +396,7 @@ public:									// we create...
 	XAP_Toolbar_Id		m_id;
 	GtkWidget *			m_widget;
 	bool				m_blockSignal;
-	char 				m_comboEntryBuffer[1024];
+	char 				m_comboEntryBuffer[COMBO_BUF_LEN]; // TODO: make this an UT_UTF8String
 };
 
 #ifdef HAVE_GNOME
