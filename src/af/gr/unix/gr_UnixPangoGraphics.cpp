@@ -125,6 +125,7 @@ class GR_UnixPangoRenderInfo : public GR_RenderInfo
 		if(!s_iInstanceCount)
 		{
 			delete [] s_pLogAttrs;
+			s_pLogAttrs = NULL;
 		}
 	};
 
