@@ -8,7 +8,7 @@ msgstr ""
 "Project-Id-Version: AbiWord\n"
 "Report-Msgid-Bugs-To: \n"
 "POT-Creation-Date: 2006-04-16 05:15+0200\n"
-"PO-Revision-Date: 2006-06-20 22:09+0100\n"
+"PO-Revision-Date: 2006-06-05 00:31+0100\n"
 "Last-Translator: Martin Srebotnjak <miles@filmsi.net>\n"
 "Language-Team: sl.openoffice.org <users@sl.openoffice.org>\n"
 "MIME-Version: 1.0\n"
@@ -1298,7 +1298,7 @@ msgstr "Samodejno &shranjuj"
 #. DLG_Options_Label_AutoSaveCurrent
 #: po/tmp/ap_String_Id.h.h:526
 msgid "Auto &save current file every"
-msgstr "To datoteko &shranjuj vsakih"
+msgstr "Samodejno &shranjuj to datoteko vsakih"
 
 #. DLG_Options_Label_AutoSave
 #: po/tmp/ap_String_Id.h.h:528
@@ -4883,7 +4883,7 @@ msgstr "Shrani kopijo slike v odložišče"
 #: po/tmp/ap_String_Id.h.h:2011
 #, c-format
 msgid "Save changes to document %s before closing?"
-msgstr "Želite pred zapiranjem shraniti dokument %s?"
+msgstr "Pred zapiranjem shranim dokument %s?"
 
 #. MENU_STATUSLINE_FILE_SAVEEMBED
 #: po/tmp/ap_String_Id.h.h:2013
