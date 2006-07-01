@@ -6039,19 +6039,28 @@ bool FV_View::getBlockFormat(const XML_Char *** pProps,bool bExpandStyles)
 void FV_View::delTo(FV_DocPos dp)
 {
 	PT_DocPosition iPos = _getDocPos(dp);
-
+	PT_DocPosition iPoint = getPoint();
 
 	// Signal PieceTable Change
 	_saveAndNotifyPieceTableChange();
 
-	if (iPos == getPoint())
+	if (iPos == iPoint)
 	{
 		return;
 	}
 
 	_extSelToPos(iPos);
-	_deleteSelection();
 
+	bool bCaretLeft = false;
+	if(isMarkRevisions() && iPos < iPoint)
+	{
+		// move to the start of the original selection
+		bCaretLeft = true;
+	}
+	
+	_deleteSelection(NULL, false, bCaretLeft);
+
+	
 	// Signal PieceTable Changes have finished
 	_restorePieceTableState();
 
