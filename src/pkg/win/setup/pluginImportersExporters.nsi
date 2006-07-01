@@ -284,15 +284,15 @@ SectionEnd
 
 ;SectionDivider
 
-Section "Docbook/Coquille"
+Section "DocBook"
 	SectionIn 2
 
 	; Testing clause to Overwrite Existing Version - if exists
 	IfFileExists "$INSTDIR\AbiWord\plugins\AbiDocBook.dll" 0 DoInstall
 	
-	MessageBox MB_YESNO "Overwrite Existing AbiDocbook/Coquille Plugin?" IDYES DoInstall
+	MessageBox MB_YESNO "Overwrite Existing DocBook Plugin?" IDYES DoInstall
 	
-	DetailPrint "Skipping AbiDocbook/Coquille Plugin (already exists)!"
+	DetailPrint "Skipping DocBook Plugin (already exists)!"
 	Goto End
 
 	DoInstall:
