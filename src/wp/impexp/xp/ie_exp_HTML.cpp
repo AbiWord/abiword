@@ -4640,8 +4640,8 @@ void s_HTML_Listener::_handleField (const PX_ChangeRecord_Object * pcro,
 			textUntrusted (field->getValue ());
 			m_utf8_1 = "a";
 			tagClose (TT_A, m_utf8_1, ws_None);
-			DELETEP(idAttr);
-			DELETEP(szTypeCpy);
+			DELETEPV(idAttr);
+			DELETEPV(szTypeCpy);
 		}
 		else
 		{
