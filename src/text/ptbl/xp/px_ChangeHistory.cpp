@@ -62,26 +62,24 @@ void px_ChangeHistory::_invalidateRedo(void)
 {
 	UT_uint32 kLimit = m_vecChangeRecords.getItemCount();
 	UT_return_if_fail (m_undoPosition <= kLimit);
-	UT_uint32 k;
-
-	// walk backwards (most recent to oldest) from the end of the
-	// history and delete any redo records.
-	// we do the math a little odd here because they are unsigned.
-	
-	for (k=kLimit; (k > m_undoPosition); k--)
+	UT_uint32 k = 0;
+	UT_uint32 i = m_undoPosition- m_iAdjustOffset;
+	for ( k = m_undoPosition- m_iAdjustOffset; k < kLimit; k++)
 	{
-		PX_ChangeRecord * pcrTemp = (PX_ChangeRecord *)m_vecChangeRecords.getNthItem(k-1);
+		PX_ChangeRecord * pcrTemp = (PX_ChangeRecord *)m_vecChangeRecords.getNthItem(i-1);
 		if (!pcrTemp)
 			break;
-
-		// Don't remove record from remote documents
-
-		if(!pcrTemp->isFromThisDoc())
-		  continue;
-		delete pcrTemp;
-		m_vecChangeRecords.deleteNthItem(k-1);
+		if(pcrTemp->isFromThisDoc())
+		{
+		    delete pcrTemp;
+		    m_vecChangeRecords.deleteNthItem(i-1);
+		}
+		else
+		{
+		    i++;
+		}
 	}
-
+	m_undoPosition = m_vecChangeRecords.getItemCount();
 	if (m_savePosition > (UT_sint32) m_undoPosition)
 		m_savePosition = -1;
 }
@@ -100,22 +98,28 @@ bool px_ChangeHistory::addChangeRecord(PX_ChangeRecord * pcr)
 	{
 	    pcr->setDocument(getDoc());
 	}
-	if(pcr && pcr->isFromThisDoc())
-	{
-	    m_iAdjustOffset = 0;
-	}
-	else
-	{
-	    m_iAdjustOffset++;
-	}
 	if(!m_pPT->isDoingTheDo())
 	{
-		_invalidateRedo();
+	       if(pcr && pcr->isFromThisDoc())
+	       {
+		   _invalidateRedo();
 	
-		bool bResult = (m_vecChangeRecords.insertItemAt(pcr,m_undoPosition++) == 0);
-		UT_ASSERT_HARMLESS(bResult);
-		UT_DEBUGMSG(("Undo pos %d savepos %d \n",m_undoPosition,m_savePosition));
-		return bResult;
+		   bool bResult = (m_vecChangeRecords.insertItemAt(pcr,m_undoPosition++) == 0);
+		   UT_ASSERT_HARMLESS(bResult);
+		   UT_DEBUGMSG(("Undo pos %d savepos %d \n",m_undoPosition,m_savePosition));
+		   m_iAdjustOffset = 0;
+		   return bResult;
+	       }
+	       else
+	       {
+		   m_vecChangeRecords.addItem(pcr);
+		   m_undoPosition = m_vecChangeRecords.getItemCount();
+		   if(m_iAdjustOffset >0)
+		   {
+		       m_iAdjustOffset++;
+		   }
+		   return true;		
+	       }
 	}
 	else
 	{
@@ -166,6 +170,9 @@ bool px_ChangeHistory::getUndo(PX_ChangeRecord ** ppcr) const
 	    }
 	    pcr = (PX_ChangeRecord *)m_vecChangeRecords.getNthItem(m_undoPosition-m_iAdjustOffset-1);
 	    UT_ASSERT_HARMLESS(pcr);
+	    //
+	    // Do Adjustments for blocks of remote CR's
+	    //
 	    if(pcr && !pcr->isFromThisDoc())
 	    {
 		bCorrect = true;
@@ -174,7 +181,13 @@ bool px_ChangeHistory::getUndo(PX_ChangeRecord ** ppcr) const
 	    else
 	    {
 		bGotOne = true;
+		if(m_iAdjustOffset > 0)
+		{
+		     m_iAdjustOffset++;
+		     bCorrect = true;
+		}
 	    }
+	    
 	}
 	PX_ChangeRecord * pcrOrig = pcr;
 	if(bCorrect)
@@ -216,11 +229,29 @@ bool px_ChangeHistory::getRedo(PX_ChangeRecord ** ppcr) const
 {
 	if (m_undoPosition >= m_vecChangeRecords.getItemCount())
 		return false;
-	PX_ChangeRecord * pcr = (PX_ChangeRecord *)m_vecChangeRecords.getNthItem(m_undoPosition);
+	PX_ChangeRecord * pcr = (PX_ChangeRecord *)m_vecChangeRecords.getNthItem(m_undoPosition-m_iAdjustOffset);
 	if (!pcr)
 		return false;
-	*ppcr = pcr;
-	return true;
+	// leave records from external documents in place so we can correct
+
+	if(pcr && pcr->isFromThisDoc())
+	{
+	        *ppcr = pcr;
+		return true;
+	}
+	while(pcr && !pcr->isFromThisDoc() && (m_iAdjustOffset > 0))
+	{
+	        pcr = (PX_ChangeRecord *)m_vecChangeRecords.getNthItem(m_undoPosition - m_iAdjustOffset);
+		m_iAdjustOffset--;
+	}
+	if(pcr && pcr->isFromThisDoc())
+	{  
+	       *ppcr = pcr;
+	       m_iAdjustOffset += 1; // for didRedo
+	       return true;
+	}
+	*ppcr = NULL;
+	return false;
 }
 
 bool px_ChangeHistory::didUndo(void)
@@ -228,13 +259,13 @@ bool px_ChangeHistory::didUndo(void)
 	xxx_UT_DEBUGMSG((" Doing Undo void in PT undopos %d savePos pos %d \n",m_undoPosition,m_savePosition));
 	if (m_undoPosition == 0)
 		return false;
-	PX_ChangeRecord * pcr = (PX_ChangeRecord *)m_vecChangeRecords.getNthItem(m_undoPosition-1);
+	PX_ChangeRecord * pcr = (PX_ChangeRecord *)m_vecChangeRecords.getNthItem(m_undoPosition-m_iAdjustOffset-1);
 
-	// leave records from external documents in place so we can correct
 
 	if(pcr && !pcr->isFromThisDoc())
 	  return true;
-	m_undoPosition--;
+	if(m_iAdjustOffset == 0)
+	  m_undoPosition--;
 	pcr = (PX_ChangeRecord *)m_vecChangeRecords.getNthItem(m_undoPosition);
 	if (pcr && !pcr->getPersistance())
 	{
@@ -247,15 +278,22 @@ bool px_ChangeHistory::didUndo(void)
 bool px_ChangeHistory::didRedo(void)
 {
 	xxx_UT_DEBUGMSG((" Doing Redo void in PT undopos %d savePos pos %d \n",m_undoPosition,m_savePosition));
-	if (m_undoPosition >= m_vecChangeRecords.getItemCount())
+	if ((m_undoPosition - m_iAdjustOffset) >= m_vecChangeRecords.getItemCount())
 		return false;
-	PX_ChangeRecord * pcr = (PX_ChangeRecord *)m_vecChangeRecords.getNthItem(m_undoPosition);
+	PX_ChangeRecord * pcr = (PX_ChangeRecord *)m_vecChangeRecords.getNthItem(m_undoPosition - m_iAdjustOffset);
 
 	// leave records from external documents in place so we can correct
 
-	if(pcr && !pcr->isFromThisDoc())
-	  return true;
-	m_undoPosition++;
+	if(pcr && !pcr->isFromThisDoc() && (m_iAdjustOffset == 0))
+	        return false;
+	if(m_iAdjustOffset > 0)
+	{
+	        m_iAdjustOffset--;
+	}
+	else
+	{
+	        m_undoPosition++;
+	}
 	if (pcr && !pcr->getPersistance())
 		m_savePosition++;
 	return true;
@@ -285,12 +323,14 @@ void px_ChangeHistory::coalesceHistory(const PX_ChangeRecord * pcr)
 			const PX_ChangeRecord_Span * pcrSpan = static_cast<const PX_ChangeRecord_Span *>(pcr);
 			PX_ChangeRecord_Span * pcrSpanUndo = static_cast<PX_ChangeRecord_Span *>(pcrUndo);
 
-			_invalidateRedo();
-			pcrSpanUndo->coalesce(pcrSpan);
 			if(pcr->isFromThisDoc())
+			{
+			  _invalidateRedo();
 			  m_iAdjustOffset = 0;
+			}
 			else if(iAdj > 0) 
 			  m_iAdjustOffset = iAdj - 1;
+			pcrSpanUndo->coalesce(pcrSpan);
 		}
 		return;
 	}
