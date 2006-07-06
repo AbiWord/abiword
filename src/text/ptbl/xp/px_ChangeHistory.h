@@ -66,8 +66,8 @@ public:
 
 	UT_uint32                               getUndoPos(void) const;
 
-	bool					getUndo(PX_ChangeRecord ** ppcr) const;
-	bool					getUndo(PX_ChangeRecord ** ppcr, UT_uint32 undoNdx) const;
+	bool					getUndo(PX_ChangeRecord ** ppcr, bool bStatic=false) const;
+	bool					getNthUndo(PX_ChangeRecord ** ppcr, UT_uint32 undoNdx) const;
 	bool					getRedo(PX_ChangeRecord ** ppcr) const;
 	bool					didUndo(void);
 	bool					didRedo(void);

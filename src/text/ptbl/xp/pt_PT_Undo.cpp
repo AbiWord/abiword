@@ -519,11 +519,11 @@ bool pt_PieceTable::canDo(bool bUndo) const
 
 bool pt_PieceTable::getNthUndo(PX_ChangeRecord ** ppcr, UT_sint32 iUndo) const
 {
-        if(iUndo > undoCount(true))
+        if(iUndo > static_cast<UT_sint32>(undoCount(true)))
 	{
 	       return false;
 	}
-	m_history.getUndo(ppcr, iUndo);
+	m_history.getNthUndo(ppcr, iUndo);
 	return true;
 }
 
@@ -564,6 +564,7 @@ bool pt_PieceTable::undoCmd(void)
 	{
 		PX_ChangeRecord * pcrRev = pcr->reverse(); // we must delete this.
 		pcrRev->setAdjustment(pcr->getAdjustment());
+		pcrRev->setDocument(getDocument());
 		UT_return_val_if_fail (pcrRev,false);
 		UT_Byte flagsRev = GETGLOBFLAGS(pcrRev);
 		bool bResult = _doTheDo(pcrRev, true);

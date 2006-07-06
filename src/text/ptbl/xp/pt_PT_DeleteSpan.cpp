@@ -658,7 +658,7 @@ bool pt_PieceTable::_canCoalesceDeleteSpan(PX_ChangeRecord_Span * pcrSpan) const
 	UT_return_val_if_fail (pcrSpan->getType() == PX_ChangeRecord::PXT_DeleteSpan, false);
 
 	PX_ChangeRecord * pcrUndo;
-	if (!m_history.getUndo(&pcrUndo))
+	if (!m_history.getUndo(&pcrUndo,true))
 		return false;
 	if (pcrSpan->getType() != pcrUndo->getType())
 		return false;
