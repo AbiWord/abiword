@@ -60,10 +60,10 @@ void px_ChangeHistory::clearHistory()
 
 void px_ChangeHistory::_invalidateRedo(void)
 {
-	UT_uint32 kLimit = m_vecChangeRecords.getItemCount();
+        UT_sint32 kLimit = static_cast<UT_sint32>(m_vecChangeRecords.getItemCount());
 	UT_return_if_fail (m_undoPosition <= kLimit);
-	UT_uint32 k = 0;
-	UT_uint32 i = m_undoPosition- m_iAdjustOffset;
+	UT_sint32 k = 0;
+	UT_sint32 i = m_undoPosition- m_iAdjustOffset;
 	for ( k = m_undoPosition- m_iAdjustOffset; k < kLimit; k++)
 	{
 		PX_ChangeRecord * pcrTemp = (PX_ChangeRecord *)m_vecChangeRecords.getNthItem(i-1);
@@ -79,8 +79,8 @@ void px_ChangeHistory::_invalidateRedo(void)
 		    i++;
 		}
 	}
-	m_undoPosition = m_vecChangeRecords.getItemCount();
-	if (m_savePosition > (UT_sint32) m_undoPosition)
+	m_undoPosition = static_cast<UT_sint32>(m_vecChangeRecords.getItemCount());
+	if (m_savePosition > m_undoPosition)
 		m_savePosition = -1;
 }
 
@@ -114,11 +114,9 @@ bool px_ChangeHistory::addChangeRecord(PX_ChangeRecord * pcr)
 	       else
 	       {
 		   m_vecChangeRecords.addItem(pcr);
+		   UT_sint32 iPos = m_undoPosition - m_iAdjustOffset;
 		   m_undoPosition = m_vecChangeRecords.getItemCount();
-		   if(m_iAdjustOffset > 0)
-		   {
-		        m_iAdjustOffset++;
-		   }
+		   m_iAdjustOffset = m_undoPosition - iPos;
 		   return true;		
 	       }
 	}
@@ -136,7 +134,7 @@ bool px_ChangeHistory::addChangeRecord(PX_ChangeRecord * pcr)
 bool px_ChangeHistory::canDo(bool bUndo) const
 {
 	PX_ChangeRecord * pcr;
-	UT_uint32 iAdj = m_iAdjustOffset;
+	UT_sint32 iAdj = m_iAdjustOffset;
 	bool b = (bUndo ? getUndo(&pcr) : getRedo(&pcr));
 	m_iAdjustOffset = iAdj;
 	return b;
@@ -163,30 +161,30 @@ bool px_ChangeHistory::getUndo(PX_ChangeRecord ** ppcr, bool bStatic) const
 	bool bGotOne = false;
 	PX_ChangeRecord * pcr = NULL;
 	bool bCorrect = false;
-	UT_uint32 iAdjust = m_iAdjustOffset;
+	UT_sint32 iAdjust = m_iAdjustOffset;
 	while(!bGotOne)
 	{
-	  if ((static_cast<UT_sint32>(m_undoPosition) - static_cast<UT_sint32>(m_iAdjustOffset)) <= 0)
-	    {
+	  if ((m_undoPosition - m_iAdjustOffset) <= 0)
+	  {
 	      if(bStatic)
 	      {
-		m_iAdjustOffset = iAdjust;
+		    m_iAdjustOffset = iAdjust;
 	      }
 	      return false;
-	    }
-	    pcr = (PX_ChangeRecord *)m_vecChangeRecords.getNthItem(m_undoPosition-m_iAdjustOffset-1);
-	    UT_ASSERT_HARMLESS(pcr);
-	    //
-	    // Do Adjustments for blocks of remote CR's
-	    //
-	    if(pcr && !pcr->isFromThisDoc())
-	    {
+	  }
+	  pcr = (PX_ChangeRecord *)m_vecChangeRecords.getNthItem(m_undoPosition-m_iAdjustOffset-1);
+	  UT_ASSERT_HARMLESS(pcr);
+	  //
+	  // Do Adjustments for blocks of remote CR's
+	  //
+	  if(pcr && !pcr->isFromThisDoc())
+	  {
 		bCorrect = true;
 		m_iAdjustOffset++;
 		UT_DEBUGMSG(("Doing undo iAdjust incremented to %d \n",m_iAdjustOffset));
-	    }
-	    else
-	    {
+	  }
+	  else
+	  {
 		bGotOne = true;
 		if(m_iAdjustOffset > 0)
 		{
@@ -200,7 +198,7 @@ bool px_ChangeHistory::getUndo(PX_ChangeRecord ** ppcr, bool bStatic) const
 	{
 	    pcr->setAdjustment(0);
 	    PT_DocPosition pos = pcr->getPosition();
-	    UT_sint32 i = static_cast<UT_sint32>(m_iAdjustOffset-1);
+	    UT_sint32 i = m_iAdjustOffset-1;
 	    UT_sint32 iAdj= 0;
 	    for(i=i; i>=0;i--)
 	    {
@@ -230,7 +228,7 @@ bool px_ChangeHistory::getNthUndo(PX_ChangeRecord ** ppcr, UT_uint32 undoNdx) co
 	if (m_undoPosition <= undoNdx)
 		return false;
 
-	PX_ChangeRecord * pcr = (PX_ChangeRecord *)m_vecChangeRecords.getNthItem(m_undoPosition-undoNdx-1);
+	PX_ChangeRecord * pcr = (PX_ChangeRecord *)m_vecChangeRecords.getNthItem(m_undoPosition-static_cast<UT_sint32>(undoNdx)-1);
 	UT_ASSERT_HARMLESS(pcr);
 	
 	*ppcr = pcr;
@@ -251,13 +249,36 @@ bool px_ChangeHistory::getRedo(PX_ChangeRecord ** ppcr) const
 	        *ppcr = pcr;
 		return true;
 	}
-	while(pcr && !pcr->isFromThisDoc() && (m_iAdjustOffset > 0))
+	bool bIncrementAdjust = false;
+	while(pcr && !pcr->isFromThisDoc() && (m_iAdjustOffset >= 0))
 	{
-	        pcr = (PX_ChangeRecord *)m_vecChangeRecords.getNthItem(m_undoPosition - m_iAdjustOffset);
+	  pcr = (PX_ChangeRecord *)m_vecChangeRecords.getNthItem(m_undoPosition - m_iAdjustOffset);
 		m_iAdjustOffset--;
+		bIncrementAdjust = true;
 		UT_DEBUGMSG(("AdjustOffset decremented -1 %d ", m_iAdjustOffset));
 	}
-	if(pcr && pcr->isFromThisDoc())
+	if(bIncrementAdjust)
+	{
+	    PX_ChangeRecord * pcrOrig = pcr;
+	    pcr->setAdjustment(0);
+	    PT_DocPosition pos = pcr->getPosition();
+	    UT_sint32 i = m_iAdjustOffset;
+	    UT_sint32 iAdj= 0;
+	    for(i=i; i>=0;i--)
+	    {
+		pcr = (PX_ChangeRecord *)m_vecChangeRecords.getNthItem(m_undoPosition-i);
+		if(!pcr->isFromThisDoc())
+		{
+		    if(pcr->getPosition() <= static_cast<PT_DocPosition>(static_cast<UT_sint32>(pos) + iAdj))
+		    {
+			iAdj += getDoc()->getAdjustmentForCR(pcr);
+		    }
+		}
+	    }
+	    pcr = pcrOrig;
+	    pcr->setAdjustment(iAdj);
+	}
+	if(pcr && pcr->isFromThisDoc() && bIncrementAdjust)
 	{  
 	       *ppcr = pcr;
 	       m_iAdjustOffset += 1; // for didRedo
@@ -319,7 +340,7 @@ void px_ChangeHistory::coalesceHistory(const PX_ChangeRecord * pcr)
 	// coalesce this record with the current undo record.
 
 	bool bResult;
-	UT_uint32 iAdj = m_iAdjustOffset;
+	UT_sint32 iAdj = m_iAdjustOffset;
 	PX_ChangeRecord * pcrUndo = (PX_ChangeRecord *)m_vecChangeRecords.getNthItem(m_undoPosition-1);
 	UT_return_if_fail (pcrUndo);
 	UT_return_if_fail (pcr->getType() == pcrUndo->getType());
@@ -355,12 +376,12 @@ void px_ChangeHistory::coalesceHistory(const PX_ChangeRecord * pcr)
 
 void px_ChangeHistory::setClean(void)
 {
-	m_savePosition = (UT_sint32) m_undoPosition;
+	m_savePosition = m_undoPosition;
 }
 
 bool px_ChangeHistory::isDirty(void) const
 {
-	return (m_savePosition != (UT_sint32) m_undoPosition);
+	return (m_savePosition != m_undoPosition);
 }
 
 

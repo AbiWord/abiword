@@ -87,10 +87,10 @@ protected:
 	void					_invalidateRedo(void);
 	
 	UT_Vector				m_vecChangeRecords;
-	UT_uint32				m_undoPosition;
+	UT_sint32				m_undoPosition;
 	UT_sint32				m_savePosition;
 	pt_PieceTable *         m_pPT;
-mutable	UT_uint32                               m_iAdjustOffset;
+mutable	UT_sint32                               m_iAdjustOffset;
 };
 
 #endif /* PX_CHANGEHISTORY_H */
