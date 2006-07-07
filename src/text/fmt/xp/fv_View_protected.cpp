@@ -4882,6 +4882,9 @@ bool FV_View::_charMotion(bool bForward,UT_uint32 countChars, bool bSkipCannotCo
 	// indicates how many layout layers we had to step up to get valid pCL
 // 	UT_uint32 iLayoutDepth = 0;
 
+	if(iRunEnd > posEOD)
+		iRunEnd = posEOD;
+
 	if(bForward && ( m_iInsPoint > iRunEnd))
 	{
 		// the run we have got is the on left of the ins point, we
