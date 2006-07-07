@@ -1053,6 +1053,10 @@ bool pt_PieceTable::_tweakDeleteSpan(PT_DocPosition & dpos1,
 // cases where this is possible. HAndle this corner case by starting at the 
 // next strux
 //
+	if(!pf_First)
+	{
+	    return false;
+	}
 	if(pf_First->getType() == pf_Frag::PFT_Strux)
 	{
 		pf_Frag_Strux * pfs = static_cast<pf_Frag_Strux *>(pf_First);
