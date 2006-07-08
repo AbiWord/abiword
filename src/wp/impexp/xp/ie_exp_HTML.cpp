@@ -6622,6 +6622,7 @@ UT_Error IE_Exp_HTML::_writeDocument (bool bClipBoard, bool bTemplateBody)
  		pHdrFtrListener->doHdrFtr(0); // Emit footer
  	
 	DELETEP(pListener);
+	DELETEP(pHdrFtrListener);
 	
 	if ((m_error == UT_OK) && (okay == true)) return UT_OK;
 	return UT_IE_COULDNOTWRITE;
