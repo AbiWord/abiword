@@ -259,6 +259,7 @@ AP_UnixDialog_FormatTable::AP_UnixDialog_FormatTable(XAP_DialogFactory * pDlgFac
 
 AP_UnixDialog_FormatTable::~AP_UnixDialog_FormatTable(void)
 {
+	DELETEP (m_pPreviewWidget);
 }
 
 void AP_UnixDialog_FormatTable::runModeless(XAP_Frame * pFrame)
