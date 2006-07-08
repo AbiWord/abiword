@@ -283,6 +283,18 @@ PX_ChangeRecord::PXType PX_ChangeRecord::getRevType(void) const
 	case PX_ChangeRecord::PXT_ChangePoint:
 		return PX_ChangeRecord::PXT_ChangePoint;
 
+	case PX_ChangeRecord::PXT_AddStyle:
+		return PX_ChangeRecord::PXT_RemoveStyle;
+
+	case PX_ChangeRecord::PXT_RemoveStyle:
+		return PX_ChangeRecord::PXT_AddStyle;
+
+	case PX_ChangeRecord::PXT_CreateDataItem:
+		return PX_ChangeRecord::PXT_CreateDataItem;
+
+	case PX_ChangeRecord::PXT_ChangeDocProp:
+		return PX_ChangeRecord::PXT_ChangeDocProp;
+
 	default:
 		UT_ASSERT_HARMLESS(0);
 		return PX_ChangeRecord::PXT_GlobMarker;				// bogus

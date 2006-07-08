@@ -54,7 +54,11 @@ public:
 		PXT_UpdateField=15,
 		PXT_RemoveList=16,
 		PXT_UpdateLayout=17,
-		PXT__LAST__ = 18
+		PXT_AddStyle=18,
+		PXT_RemoveStyle=19,
+		PXT_CreateDataItem=20,
+		PXT_ChangeDocProp=21,
+		PXT__LAST__ = 22
 	}PXType;
 
 	PX_ChangeRecord(PXType type,
