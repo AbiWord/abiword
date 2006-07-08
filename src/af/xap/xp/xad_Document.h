@@ -220,6 +220,7 @@ public:
 	void            setDocUUID(const char * u);
 	const char *    getDocUUIDString()const;
 	const UT_UUID * getDocUUID()const {return m_pUUID;};
+	const UT_UUID * getOrigDocUUID()const {return m_pOrigUUID;};
 
 	UT_UUID *       getNewUUID()   const;
 	UT_uint32       getNewUUID32() const;
@@ -268,7 +269,7 @@ public:
 	virtual bool        acceptAllRevisions() = 0;
 
 	bool                purgeAllRevisions(AV_View * pView);
-	
+	bool                isOrigUUID(void) const;
 	
 	virtual UT_uint32   getXID() = 0;
 	virtual UT_uint32   getTopXID() const = 0;
@@ -321,7 +322,7 @@ private:
 	bool            m_bForcedDirty;
 	
 	UT_UUID *       m_pUUID;
-	UT_UUID *       m_pNewUUID;
+	UT_UUID *       m_pOrigUUID;
 	bool            m_bDoNotAdjustHistory;
 	bool            m_bAfterFirstSave;
 };

@@ -124,9 +124,17 @@ bool PX_ChangeRecord::isFromThisDoc(void) const
 {
   if(!m_pDoc)
     return false;
-  struct uuid docUUID;
-  m_pDoc->getDocUUID()->toBinary(docUUID);
-  return isSameDocUUID( docUUID);
+  UT_UTF8String sDoc;
+  m_pDoc->getOrigDocUUID()->toString(sDoc);
+  static char s[37];
+
+  if(!UT_UUID::toStringFromBinary(s, sizeof(s), m_MyDocUUID))
+		return false;
+  xxx_UT_DEBUGMSG(("Orig UUID %s \n",sDoc.utf8_str()));
+  xxx_UT_DEBUGMSG(("CR Doc UUID %s \n",s));
+  bool b=  (UT_strcmp(sDoc.utf8_str(),s) == 0);
+  xxx_UT_DEBUGMSG((" bool %d \n",b));
+  return b;
 }
 
 void PX_ChangeRecord::setAdjustment(UT_sint32 iAdj) const

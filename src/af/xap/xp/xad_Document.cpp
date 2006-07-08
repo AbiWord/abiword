@@ -69,6 +69,7 @@ AD_Document::AD_Document() :
 	m_bAutoRevisioning(false),
     m_bForcedDirty(false),
 	m_pUUID(NULL),
+	m_pOrigUUID(NULL),
 	m_bDoNotAdjustHistory(false),
 	m_bAfterFirstSave(false)
 {	// TODO: clear the ignore list
@@ -80,6 +81,20 @@ AD_Document::AD_Document() :
 	m_pUUID = XAP_App::getApp()->getUUIDGenerator()->createUUID();
 	UT_return_if_fail(m_pUUID);
 	UT_return_if_fail(m_pUUID->isValid());
+	//
+	// Make a copy with the same value so we know when we're importing
+	// a remote CR
+	//
+	m_pOrigUUID =  XAP_App::getApp()->getUUIDGenerator()->createUUID();
+	UT_return_if_fail(m_pOrigUUID);
+	UT_return_if_fail(m_pOrigUUID->isValid());
+	UT_UTF8String s;
+	m_pUUID->toString(s);
+	m_pOrigUUID->setUUID(s);
+	UT_UTF8String OrigS;
+	m_pOrigUUID->toString(OrigS);
+	UT_DEBUGMSG(("!!!!!!!!!!----------------- Created string %s \n",s.utf8_str()));
+	UT_DEBUGMSG(("!!!!!!!!!!----------------- Orig string %s \n",OrigS.utf8_str()));
 }
 
 AD_Document::~AD_Document()
@@ -101,6 +116,20 @@ AD_Document::~AD_Document()
 
 	if(m_pUUID)
 		delete m_pUUID;
+	if(m_pOrigUUID)
+		delete m_pOrigUUID;
+}
+
+bool AD_Document::isOrigUUID(void) const
+{
+  UT_UTF8String sDoc;
+  UT_UTF8String sOrig;
+  if((m_pUUID== NULL) || (m_pOrigUUID == NULL))
+	  return false;
+  m_pUUID->toString(sDoc);
+  m_pOrigUUID->toString(sOrig);
+  bool b = (UT_strcmp(sDoc.utf8_str(),sOrig.utf8_str()) == 0);
+  return b;
 }
 
 bool AD_Document::isPieceTableChanging(void)

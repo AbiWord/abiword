@@ -114,7 +114,7 @@ PD_Document::PD_Document(XAP_App *pApp)
 	m_pApp = pApp;
 	
 	XAP_App::getApp()->getPrefs()->getPrefsValueBool(AP_PREF_KEY_LockStyles,&m_bLockedStyles);
-	
+	UT_ASSERT(isOrigUUID());
 #ifdef PT_TEST
 	m_pDoc = this;
 #endif
@@ -378,7 +378,8 @@ UT_Error PD_Document::importFile(const char * szFilename, int ieft,
 						       XAP_Dialog_MessageBox::b_O, 
 							   XAP_Dialog_MessageBox::a_OK);
 	}
-	
+	UT_ASSERT(isOrigUUID());
+
 	return UT_OK;
 }
 
@@ -411,6 +412,7 @@ UT_Error PD_Document::createRawDocument(void)
 	// this also initializes m_indexAP
 	m_indexAP = 0xffffffff;
 	setAttrProp(NULL);
+	UT_ASSERT(isOrigUUID());
 	return UT_OK;
 }
 
@@ -543,6 +545,7 @@ UT_Error PD_Document::readFromFile(const char * szFilename, int ieft,
 						       XAP_Dialog_MessageBox::b_O, 
 							   XAP_Dialog_MessageBox::a_OK);
 	}
+	UT_ASSERT(isOrigUUID());
 
 	return UT_OK;
 }
@@ -652,16 +655,10 @@ UT_Error PD_Document::newDocument(void)
 	setDocVersion(0);
 	setEditTime(0);
 	setLastOpenedTime(time(NULL));
-
-	if(!getDocUUID())
-	{
-		UT_ASSERT_HARMLESS( UT_SHOULD_NOT_HAPPEN );
-	}
-	else
-		_getDocUUID()->makeUUID();
 	
 	// mark the document as not-dirty
 	_setClean();
+	UT_ASSERT(isOrigUUID());
 
 	return UT_OK;
 }
