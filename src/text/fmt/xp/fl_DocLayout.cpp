@@ -713,35 +713,75 @@ void FL_DocLayout::getStringFromFootnoteVal(UT_String & sVal, UT_sint32 iVal, Fo
 		UT_String_sprintf (sVal,"%d)", iVal);
 		break;
 	case FOOTNOTE_TYPE_LOWER:
-		UT_String_sprintf (sVal,"%s",autoCalc.dec2ascii(iVal,96));
+	{
+		char * val = autoCalc.dec2ascii(iVal,96);
+		UT_String_sprintf (sVal,"%s",val);
+		FREEP(val);
 		break;
+	}
 	case FOOTNOTE_TYPE_LOWER_PAREN:
-		UT_String_sprintf (sVal,"(%s)",autoCalc.dec2ascii(iVal,96));
+	{
+		char * val = autoCalc.dec2ascii(iVal,96);
+		UT_String_sprintf (sVal,"(%s)",val);
+		FREEP(val);
 		break;
+	}
 	case FOOTNOTE_TYPE_LOWER_OPEN_PAREN:
-		UT_String_sprintf (sVal,"%s)",autoCalc.dec2ascii(iVal,96));
+	{
+		char * val = autoCalc.dec2ascii(iVal,96);
+		UT_String_sprintf (sVal,"%s)",val);
+		FREEP(val);
 		break;
+	}
 	case FOOTNOTE_TYPE_UPPER:
-		UT_String_sprintf (sVal,"%s",autoCalc.dec2ascii(iVal,64));
+	{
+		char * val = autoCalc.dec2ascii(iVal,64);
+		UT_String_sprintf (sVal,"%s",val);
+		FREEP(val);
 		break;
+	}
 	case FOOTNOTE_TYPE_UPPER_PAREN:
-		UT_String_sprintf (sVal,"(%s)",autoCalc.dec2ascii(iVal,64));
+	{
+		char * val = autoCalc.dec2ascii(iVal,64);
+		UT_String_sprintf (sVal,"(%s)",val);
+		FREEP(val);
 		break;
+	}
 	case FOOTNOTE_TYPE_UPPER_OPEN_PAREN:
-		UT_String_sprintf (sVal,"%s)",autoCalc.dec2ascii(iVal,64));
+	{
+		char * val = autoCalc.dec2ascii(iVal,64);
+		UT_String_sprintf (sVal,"%s)",val);
+		FREEP(val);
 		break;
+	}
 	case FOOTNOTE_TYPE_LOWER_ROMAN:
-		UT_String_sprintf (sVal,"%s",autoCalc.dec2roman(iVal,true));
+	{
+		char * val = autoCalc.dec2roman(iVal,true);
+		UT_String_sprintf (sVal,"%s",val);
+		FREEP(val);
 		break;
+	}
 	case FOOTNOTE_TYPE_LOWER_ROMAN_PAREN:
-		UT_String_sprintf (sVal,"(%s)",autoCalc.dec2roman(iVal,true));
+	{
+		char * val = autoCalc.dec2roman(iVal,true);
+		UT_String_sprintf (sVal,"(%s)",val);
+		FREEP(val);
 		break;
+	}
 	case FOOTNOTE_TYPE_UPPER_ROMAN:
-		UT_String_sprintf (sVal,"%s",autoCalc.dec2roman(iVal,false));
+	{
+		char * val = autoCalc.dec2roman(iVal,false);
+		UT_String_sprintf (sVal,"%s",val);
+		FREEP(val);
 		break;
+	}
 	case FOOTNOTE_TYPE_UPPER_ROMAN_PAREN:
-		UT_String_sprintf (sVal,"(%s)",autoCalc.dec2roman(iVal,false));
+	{
+		char * val = autoCalc.dec2roman(iVal,false);
+		UT_String_sprintf (sVal,"(%s)",val);
+		FREEP(val);
 		break;
+	}
 	default:
 		UT_String_sprintf (sVal,"%d", iVal);
 	}

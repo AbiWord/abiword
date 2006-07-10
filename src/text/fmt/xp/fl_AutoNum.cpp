@@ -464,40 +464,56 @@ void    fl_AutoNum::_getLabelstr( UT_UCSChar labelStr[], UT_uint32 * insPoint,
 		break;
 
 	case UPPERCASE_LIST:
-		sprintf(p,"%s",dec2ascii(place - 1, 65));
+	{
+		char * val = dec2ascii(place - 1, 65);
+		sprintf(p,"%s",val);
+		FREEP(val);
 		psz = UT_XML_strlen( p);
 		for(i=0; i<psz; i++)
 		{
 			labelStr[(*insPoint)++] =  CONV_TO_UCS p[i];
 		}
 		break;
+	}
 
 	case LOWERCASE_LIST:
-		sprintf(p,"%s",dec2ascii(place - 1, 97));
+	{
+		char * val = dec2ascii(place - 1, 97);
+		sprintf(p,"%s",val);
+		FREEP(val);
 		psz = UT_XML_strlen( p);
 		for(i=0; i<psz; i++)
 		{
 			labelStr[(*insPoint)++] =  CONV_TO_UCS p[i];
 		}
 		break;
+	}
 
 	case UPPERROMAN_LIST:
-		sprintf(p,"%s",dec2roman(place,false));
+	{
+		char * val = dec2roman(place,false);
+		sprintf(p,"%s",val);
+		FREEP(val);
 		psz = UT_XML_strlen( p);
 		for(i=0; i<psz; i++)
 		{
 			labelStr[(*insPoint)++] =  CONV_TO_UCS p[i];
 		}
 		break;
+	}
 
 	case LOWERROMAN_LIST:
-		sprintf(p,"%s",dec2roman(place,true));
+	{
+		char * val = dec2roman(place,true);
+		sprintf(p,"%s",val);
+		FREEP(val);
 		psz = UT_XML_strlen( p);
 		for(i=0; i<psz; i++)
 		{
 			labelStr[(*insPoint)++] =  CONV_TO_UCS p[i];
 		}
 		break;
+	}
 
 	case ARABICNUMBERED_LIST:
 		sprintf(p,"%i",place);
