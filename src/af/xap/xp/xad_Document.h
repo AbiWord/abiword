@@ -219,6 +219,7 @@ public:
 	
 	void            setDocUUID(const char * u);
 	const char *    getDocUUIDString()const;
+	const char *    getOrigDocUUIDString()const;
 	const UT_UUID * getDocUUID()const {return m_pUUID;};
 	const UT_UUID * getOrigDocUUID()const {return m_pOrigUUID;};
 

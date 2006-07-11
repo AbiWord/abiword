@@ -551,6 +551,19 @@ const char * AD_Document::getDocUUIDString() const
 	return s.utf8_str();
 }
 
+
+/*!
+    Get the Original UID of this document represented as a string (this
+    function is primarily for exporters)
+*/
+const char * AD_Document::getOrigDocUUIDString() const
+{
+	UT_return_val_if_fail(m_pOrigUUID, NULL);
+	static UT_UTF8String s;
+	m_pOrigUUID->toString(s);
+	return s.utf8_str();
+}
+
 ///////////////////////////////////////////////////////////////////
 ///////////////////////////////////////////////////////////////////
 

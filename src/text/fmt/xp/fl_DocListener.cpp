@@ -1576,7 +1576,11 @@ bool fl_DocListener::change(PL_StruxFmtHandle sfh,
 		goto finish_up;
 	}
 #endif
-	
+	case PX_ChangeRecord::PXT_CreateDataItem:
+	{
+	        bResult = true;
+		goto finish_up;
+	}	
 	default:
 	{
 		UT_ASSERT(UT_SHOULD_NOT_HAPPEN);

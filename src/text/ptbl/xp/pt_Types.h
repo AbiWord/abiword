@@ -145,6 +145,8 @@ typedef const void * PL_StruxFmtHandle;
 #define PT_ID_ATTRIBUTE_NAME            (static_cast<const XML_Char *>("id"))
 #define PT_STRUX_IMAGE_DATAID           (static_cast<const XML_Char *>("strux-image-dataid"))
 #define PT_XID_ATTRIBUTE_NAME           (static_cast<const XML_Char *>("xid"))
+#define PT_DATAITEM_ATTRIBUTE_NAME           (static_cast<const XML_Char *>("dataitem"))
+#define PT_IMAGE_DATAID           (static_cast<const XML_Char *>("dataid"))
 
 
 #endif /* PT_TYPES_H */

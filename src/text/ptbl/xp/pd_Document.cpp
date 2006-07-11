@@ -3026,6 +3026,14 @@ UT_sint32 PD_Document::getAdjustmentForCR(const PX_ChangeRecord * pcr) const
 			break;
 		case PX_ChangeRecord::PXT_UpdateLayout:
 			break;
+		case PX_ChangeRecord::PXT_AddStyle:
+			break;
+		case PX_ChangeRecord::PXT_RemoveStyle:
+			break;
+		case PX_ChangeRecord::PXT_CreateDataItem:
+			break;
+		case PX_ChangeRecord::PXT_ChangeDocProp:
+			break;
 		default:
 			break;
 	}
@@ -3794,7 +3802,15 @@ bool PD_Document::createDataItem(const char * szName, bool bBase64, const UT_Byt
 		UT_return_val_if_fail (pHashEntry,false);
 		*ppHandle = const_cast<struct _dataItemPair *>(pHashEntry);
 	}
-
+	{
+		const XML_Char * szAttributes[3] = {PT_DATAITEM_ATTRIBUTE_NAME,szName,NULL};
+		PT_AttrPropIndex iAP= 0;
+		m_pPieceTable->getVarSet().storeAP(szAttributes, &iAP);
+		PX_ChangeRecord * pcr =  new PX_ChangeRecord(PX_ChangeRecord::PXT_CreateDataItem,0,iAP,getXID());
+		UT_DEBUGMSG(("indexAP %d \n",iAP)); 
+		notifyListeners(NULL, pcr);
+		delete pcr;
+	}
 	return true;
 
 Failed:
