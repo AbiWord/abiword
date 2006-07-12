@@ -860,9 +860,6 @@ Section "WordPerfect Importer" WP_IDX
         SetOutPath $INSTDIR\AbiWord\bin
         File "libwpd-0.8.dll"
 
-        SetOutPath $INSTDIR\AbiWord\bin
-        File "libwpd-stream-0.8.dll"
-
         SetOutPath $INSTDIR\AbiWord\plugins
 	  File "AbiWordPerfect.dll"
 
