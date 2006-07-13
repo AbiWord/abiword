@@ -42,11 +42,11 @@ public:
 								  UT_uint32 * pSubscript);
 	bool					createAP(UT_uint32 * pSubscript);
 
-	bool					createAP(const XML_Char ** attributes,
-									 const XML_Char ** properties,
-									 UT_uint32 * pSubscript);
+	bool					createAP(const PT_AttributePair * attributes,
+							 const PT_PropertyPair  * properties,
+							 UT_uint32 * pSubscript);
 
-	bool					createAP(const UT_GenericVector<XML_Char*>* pVector,
+	bool					createAP(const PT_AttributeVector & Vector,
 									 UT_uint32 * pSubscript);
 
 	bool					findMatch(const PP_AttrProp * pMatch,

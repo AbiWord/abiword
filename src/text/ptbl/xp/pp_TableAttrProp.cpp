@@ -122,9 +122,9 @@ bool pp_TableAttrProp::createAP(UT_uint32 * pSubscript)
 	return true;
 }
 
-bool pp_TableAttrProp::createAP(const XML_Char ** attributes,
-								   const XML_Char ** properties,
-								   UT_uint32 * pSubscript)
+bool pp_TableAttrProp::createAP(const PT_AttributePair* attributes,
+				const PT_PropertyPair * properties,
+				UT_uint32 * pSubscript)
 {
 	UT_uint32 subscript;
 	if (!createAP(&subscript))
@@ -143,8 +143,8 @@ bool pp_TableAttrProp::createAP(const XML_Char ** attributes,
 	return true;
 }
 
-bool pp_TableAttrProp::createAP(const UT_GenericVector<XML_Char*> * pVector,
-								   UT_uint32 * pSubscript)
+bool pp_TableAttrProp::createAP(const PT_AttributeVector & Vector,
+				UT_uint32 * pSubscript)
 {
 	UT_uint32 subscript;
 	if (!createAP(&subscript))
@@ -152,7 +152,7 @@ bool pp_TableAttrProp::createAP(const UT_GenericVector<XML_Char*> * pVector,
 
 	PP_AttrProp * pAP = m_vecTable.getNthItem(subscript);
 	UT_return_val_if_fail (pAP, false);
-	if (!pAP->setAttributes(pVector))
+	if (!pAP->setAttributes(Vector))
 		return false;
 	
 	pAP->markReadOnly();

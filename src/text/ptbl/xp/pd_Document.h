@@ -202,16 +202,16 @@ public:
 	void					endUserAtomicGlob(void);
 	void                    setMarginChangeOnly(bool b);
 	bool                    isMarginChangeOnly(void) const;
-	bool                    changeObjectFormatNoUpdate(PTChangeFmt ptc ,PL_ObjectHandle odh,const XML_Char ** attributes,const XML_Char ** properties );	
+	bool                    changeObjectFormatNoUpdate(PTChangeFmt ptc ,PL_ObjectHandle odh,const PT_AttributePair* attributes,const PT_PropertyPair * properties );	
 PT_AttrPropIndex            getAPIFromSOH(PL_ObjectHandle odh);	
 	bool					insertObject(PT_DocPosition dpos,
 										 PTObjectType pto,
-										 const XML_Char ** attributes,
-										 const XML_Char ** properties);
+										 const PT_AttributePair* attributes,
+										 const PT_PropertyPair* properties);
 	bool					insertObject(PT_DocPosition dpos,
 										 PTObjectType pto,
-										 const XML_Char ** attributes,
-										 const XML_Char ** properties, fd_Field ** pField );
+										 const PT_AttributePair* attributes,
+										 const PT_PropertyPair* properties, fd_Field ** pField );
 
 	bool					insertSpan(PT_DocPosition dpos,
 									   const UT_UCSChar * p,
@@ -229,8 +229,8 @@ PT_AttrPropIndex            getAPIFromSOH(PL_ObjectHandle odh);
 	bool					changeSpanFmt(PTChangeFmt ptc,
 										  PT_DocPosition dpos1,
 										  PT_DocPosition dpos2,
-										  const XML_Char ** attributes,
-										  const XML_Char ** properties);
+										  const PT_AttributePair* attributes,
+										  const PT_PropertyPair* properties);
 
 	bool					insertStrux(PT_DocPosition dpos,
 										PTStruxType pts, pf_Frag_Strux ** ppfs_ret = 0);
@@ -238,33 +238,35 @@ PT_AttrPropIndex            getAPIFromSOH(PL_ObjectHandle odh);
 										PTStruxType pts,
 										bool bRecordChange);
 
-	bool                    createAndSendCR(PT_DocPosition dpos,UT_sint32 iType,bool bsave);
+	bool                    createAndSendCR(PT_DocPosition dpos,
+											UT_sint32 iType,bool bsave);
 
 	bool					insertStrux(PT_DocPosition dpos,
 										PTStruxType pts,
-										  const XML_Char ** attributes,
-										  const XML_Char ** properties, pf_Frag_Strux ** ppfs_ret = 0);
+										const PT_AttributePair* attributes,
+										const PT_PropertyPair* properties,
+										pf_Frag_Strux ** ppfs_ret = 0);
 
 	void                    deleteHdrFtrStrux(PL_StruxDocHandle sdh);
 
 	bool					changeStruxFmt(PTChangeFmt ptc,
 										   PT_DocPosition dpos1,
 										   PT_DocPosition dpos2,
-										   const XML_Char ** attributes,
-										   const XML_Char ** properties,
+										   const PT_AttributePair* attributes,
+										   const PT_PropertyPair* properties,
 										   PTStruxType pts);
 
 	bool					changeStruxFmt(PTChangeFmt ptc,
 										   PT_DocPosition dpos1,
 										   PT_DocPosition dpos2,
-										   const XML_Char ** attributes,
-										   const XML_Char ** properties);
+										   const PT_AttributePair* attributes,
+										   const PT_PropertyPair* properties);
 
 
 	bool					changeStruxFmtNoUndo(PTChangeFmt ptc,
 										   PL_StruxDocHandle sdh,
-										   const XML_Char ** attributes,
-										   const XML_Char ** properties);
+										   const PT_AttributePair* attributes,
+										   const PT_PropertyPair* properties);
 
 	bool					changeStruxForLists(PL_StruxDocHandle sdh,
 												const char * pszParentID);
@@ -273,44 +275,62 @@ PT_AttrPropIndex            getAPIFromSOH(PL_ObjectHandle odh);
 										  PT_DocPosition dpos,
 										  PP_AttrProp *p_AttrProp);
 
-	bool                    changeLastStruxFmtNoUndo(PT_DocPosition dpos, PTStruxType pts,
-													 const XML_Char ** attrs, const XML_Char ** props,
-													 bool bSkipEmbededSections);
+	bool                    changeLastStruxFmtNoUndo(PT_DocPosition dpos,
+												PTStruxType pts,
+												const PT_AttributePair* attrs,
+												const PT_PropertyPair * props,
+												bool bSkipEmbededSections);
 	
-	bool                    changeLastStruxFmtNoUndo(PT_DocPosition dpos, PTStruxType pts,
-													 const XML_Char ** attrs, const XML_Char * props,
-													 bool bSkipEmbededSections);
+	bool                    changeLastStruxFmtNoUndo(PT_DocPosition dpos,
+												PTStruxType pts,
+												const PT_AttributePair* attrs,
+												const XML_Char * props,
+												bool bSkipEmbededSections);
 	
-	// the append- and insertBeforeFrag methods are only available while importing
-	// the document.
+	// the append- and insertBeforeFrag methods are only available while
+	// importing the document.
 
-	bool					appendStrux(PTStruxType pts, const XML_Char ** attributes, pf_Frag_Strux ** ppfs_ret = 0);
-	bool					appendStruxFmt(pf_Frag_Strux * pfs, const XML_Char ** attributes);
-	bool                    appendLastStruxFmt(PTStruxType pts, const XML_Char ** attrs, const XML_Char ** props,
+	bool					appendStrux(PTStruxType pts,
+										const PT_AttributePair* attributes,
+										pf_Frag_Strux ** ppfs_ret = 0);
+	bool					appendStruxFmt(pf_Frag_Strux * pfs,
+										   const PT_AttributePair* attributes);
+	bool                    appendLastStruxFmt(PTStruxType pts,
+											   const PT_AttributePair* attrs,
+											   const PT_PropertyPair* props,
 											   bool bSkipEmbededSections);
-	bool                    appendLastStruxFmt(PTStruxType pts, const XML_Char ** attrs, const XML_Char * props,
+	bool                    appendLastStruxFmt(PTStruxType pts,
+											   const PT_AttributePair* attrs,
+											   const XML_Char * props,
 											   bool bSkipEmbededSections);
-	bool					appendFmt(const XML_Char ** attributes);
-	bool					appendFmt(const UT_GenericVector<XML_Char*> * pVecAttributes);
+	bool					appendFmt(const PT_AttributePair* attributes);
+	bool					appendFmt(const PT_AttributeVector * pVecAttrs);
 	bool					appendSpan(const UT_UCSChar * p, UT_uint32 length);
-	bool					appendObject(PTObjectType pto, const XML_Char ** attributes);
+	bool					appendObject(PTObjectType pto, const PT_AttributePair* attributes);
 	bool					appendFmtMark(void);
-	bool					appendStyle(const XML_Char ** attributes);
-	bool                    changeStruxFormatNoUpdate(PTChangeFmt ptc ,PL_StruxDocHandle sdh,const XML_Char ** attributes);	
+	bool					appendStyle(const PT_AttributePair* attributes);
+	bool                    changeStruxFormatNoUpdate(PTChangeFmt ptc,
+													  PL_StruxDocHandle sdh,
+													  const PT_AttributePair* attributes);	
 	bool					insertStruxBeforeFrag(pf_Frag * pF, PTStruxType pts,
-												  const XML_Char ** attributes, pf_Frag_Strux ** ppfs_ret = 0);
-	bool					insertSpanBeforeFrag(pf_Frag * pF, const UT_UCSChar * p, UT_uint32 length);
-	bool					insertObjectBeforeFrag(pf_Frag * pF, PTObjectType pto,
-												   const XML_Char ** attributes);
+												  const PT_AttributePair* attributes, pf_Frag_Strux ** ppfs_ret = 0);
+	bool					insertSpanBeforeFrag(pf_Frag * pF,
+												 const UT_UCSChar * p,
+												 UT_uint32 length);
+	bool					insertObjectBeforeFrag(pf_Frag * pF,
+												   PTObjectType pto,
+												   const PT_AttributePair* attributes);
 	bool					insertFmtMarkBeforeFrag(pf_Frag * pF);
-	bool					insertFmtMarkBeforeFrag(pf_Frag * pF, const XML_Char ** attributes);
+	bool					insertFmtMarkBeforeFrag(pf_Frag * pF,
+													const PT_AttributePair* attributes);
 
-	pf_Frag *               findFragOfType(pf_Frag::PFType iType, UT_sint32 iSubtype = -1,
+	pf_Frag *               findFragOfType(pf_Frag::PFType iType,
+										   UT_sint32 iSubtype = -1,
 										   const pf_Frag * pfStart = NULL);
 	pf_Frag *               getLastFrag() const;
 	bool                    checkForSuspect(void);
 	bool                    repairDoc(void);
-	bool                    removeStyle(const XML_Char * name);
+	bool                    removeStyle(GQuark name);
 	bool					tellListener(PL_Listener * pListener);
 	bool					tellListenerSubset(PL_Listener * pListener,
 											   PD_DocumentRange * pDocRange);
@@ -376,30 +396,36 @@ PT_AttrPropIndex            getAPIFromSOH(PL_ObjectHandle odh);
 	bool					enumDataItems(UT_uint32 k,
 										  void ** ppHandle, const char ** pszName, const UT_ByteBuf ** ppByteBuf, const void** ppToken) const;
 
-    PL_StruxDocHandle       findHdrFtrStrux(const XML_Char * pszHdtFtr,
-											const XML_Char * pszHdrFtrID);
-	bool                    verifySectionID(const XML_Char * pszId);
+    PL_StruxDocHandle       findHdrFtrStrux(GQuark hdrFtr,
+											GQuark hdrFtrID);
+	bool                    verifySectionID(GQuark id);
 	PL_StruxDocHandle       getLastSectionSDH(void);
 	PL_StruxDocHandle       getLastStruxOfType(PTStruxType pts);
 
 	bool                    changeStruxAttsNoUpdate(PL_StruxDocHandle sdh, const char * attr, const char * attvalue);
 	bool                    deleteStruxNoUpdate(PL_StruxDocHandle sdh);
-	bool                    insertStruxNoUpdateBefore(PL_StruxDocHandle sdh, PTStruxType pts,const XML_Char ** attributes );
+	bool                    insertStruxNoUpdateBefore(PL_StruxDocHandle sdh, PTStruxType pts,const PT_AttributePair * attributes );
 	bool                    isStruxBeforeThis(PL_StruxDocHandle sdh,  PTStruxType pts);
 
 	// the function below does exactly what the name says -- returns the AP index; in revisions mode
 	// you would need the AP at that index to have revision attribute exploded -- use one of the
 	// functions below to retrieve props and attrs correctly reflecting revisions settings
 	PT_AttrPropIndex        getAPIFromSDH(PL_StruxDocHandle sdh);
-    bool                    getAttributeFromSDH(PL_StruxDocHandle sdh, bool bShowRevisions, UT_uint32 iRevisionLevel,
-												const char * szAttribute, const char ** pszValue);
+    bool                    getAttributeFromSDH(PL_StruxDocHandle sdh,
+												bool bShowRevisions,
+												UT_uint32 iRevisionLevel,
+												PT_Attribute attr,
+												GQuark & retValue);
 	
-    bool                    getPropertyFromSDH(PL_StruxDocHandle sdh, bool bShowRevisions, UT_uint32 iRevisionLevel,
-											   const char * szProperty, const char ** pszValue);
+    bool                    getPropertyFromSDH(PL_StruxDocHandle sdh,
+											   bool bShowRevisions,
+											   UT_uint32 iRevisionLevel,
+											   PT_Property prop,
+											   GQuark & retValue);
 	// styles
 	void                    getAllUsedStyles(UT_GenericVector<PD_Style*> * pVecStyles);
 	PL_StruxFmtHandle       getNthFmtHandle(PL_StruxDocHandle sdh, UT_uint32 n);
-	bool					getStyle(const char * szName, PD_Style ** ppStyle) const;
+	bool					getStyle(GQuark style, PD_Style ** ppStyle) const;
 	PD_Style *				getStyleFromSDH(PL_StruxDocHandle sdh);
 	PL_StruxDocHandle       getPrevNumberedHeadingStyle(PL_StruxDocHandle sdh);
 	size_t                  getStyleCount(void);
@@ -407,14 +433,20 @@ PT_AttrPropIndex            getAPIFromSOH(PL_ObjectHandle odh);
 									   const char ** pszName, const PD_Style ** ppStyle) const;
 	bool                    enumStyles(UT_GenericVector<PD_Style*> * & pStyles) const;
 	
-	bool					addStyleProperty(const XML_Char * szStyleName, const XML_Char * szPropertyName, const XML_Char * szPropertyValue);
-	bool					addStyleProperties(const XML_Char * szStyleName, const XML_Char ** pProperties);
-	bool	                setAllStyleAttributes(const XML_Char * szStyleName, const XML_Char ** pAttribs);
-	bool	                addStyleAttributes(const XML_Char * szStyleName, const XML_Char ** pAttribs);
+	bool					addStyleProperty(GQuark styleName,
+											 PT_Property propertyName,
+											 GQuark propertyValue);
+	
+	bool					addStyleProperties(GQuark styleName,
+											   const PT_PropertyPair * pProperties);
+	bool	                setAllStyleAttributes(GQuark styleName,
+												  const PT_AttributePair* pAttribs);
+	bool	                addStyleAttributes(GQuark styleName,
+											   const PT_AttributePair* pAttribs);
 
-    PL_StruxDocHandle       findPreviousStyleStrux(const XML_Char * szStyle, PT_DocPosition pos);
-    PL_StruxDocHandle       findForwardStyleStrux(const XML_Char * szStyle, PT_DocPosition pos);
-	bool					updateDocForStyleChange(const XML_Char * szStyleName,
+    PL_StruxDocHandle       findPreviousStyleStrux(GQuark style, PT_DocPosition pos);
+    PL_StruxDocHandle       findForwardStyleStrux(GQuark style, PT_DocPosition pos);
+	bool					updateDocForStyleChange(GQuark name,
 													bool isParaStyle);
 	void                    updateAllLayoutsInDoc( PL_StruxDocHandle sdh);
 	void					clearIfAtFmtMark(PT_DocPosition dpos);
@@ -427,7 +459,7 @@ PT_AttrPropIndex            getAPIFromSOH(PL_ObjectHandle odh);
 									 UT_uint32 offset,
                                      fd_Field * &pField);
 	po_Bookmark * 			getBookmark(PL_StruxDocHandle sdh, UT_uint32 offset);
-	pf_Frag *               findBookmark(const char * pName, bool bEnd = false, pf_Frag * pfStart = NULL);
+	pf_Frag *               findBookmark(GQuark qName, bool bEnd = false, pf_Frag * pfStart = NULL);
 	
 	void					setDontChangeInsPoint(void);
 	void					allowChangeInsPoint(void);
@@ -470,7 +502,7 @@ PT_AttrPropIndex            getAPIFromSOH(PL_ObjectHandle odh);
 	bool					enumLists(UT_uint32 k, fl_AutoNum ** pAutoNum);
 	UT_uint32				getListsCount(void) const;
 	void					addList(fl_AutoNum * pAutoNum);
-	bool					appendList(const XML_Char ** attributes);
+	bool					appendList(const PT_AttributePair * attributes);
 	bool					fixListHierarchy(void);
 	void					removeList(fl_AutoNum * pAutoNum,PL_StruxDocHandle sdh );
 	void					listUpdate(PL_StruxDocHandle sdh);
@@ -492,7 +524,7 @@ PT_AttrPropIndex            getAPIFromSOH(PL_ObjectHandle odh);
 	// PageSize functions
 	bool                    convertPercentToInches(const char * szPercent, UT_UTF8String & sInches);
 	fp_PageSize				m_docPageSize;
-	bool					setPageSizeFromFile(const XML_Char ** attributes);
+	bool					setPageSizeFromFile(const PT_AttributePair * attributes);
 
 	bool					isBookmarkUnique(const XML_Char * pName) const;
 	bool					isBookmarkRelativeLink(const XML_Char * pName) const;
@@ -547,21 +579,23 @@ PT_AttrPropIndex            getAPIFromSOH(PL_ObjectHandle odh);
 	// document-level property handling functions
 	const PP_AttrProp *     getAttrProp() const;
 	PT_AttrPropIndex        getAttrPropIndex() const {return m_indexAP;}
-	bool                    setAttrProp(const XML_Char ** ppAttr);
-	bool                    setAttributes(const XML_Char ** ppAttr);
-	bool                    setProperties(const XML_Char ** ppProps);
-	void                     setDontImmediatelyLayout(bool b)
+	bool                    setAttrProp(const PT_AttributePair * pAttr);
+	bool                    setAttributes(const PT_AttributePair * pAttr);
+	bool                    setProperties(const PT_PropertyPair * pProps);
+	void                    setDontImmediatelyLayout(bool b)
 		{ m_bDontImmediatelyLayout = b;}
 	bool                     isDontImmediateLayout(void)
 		{ return m_bDontImmediatelyLayout;}
 
-	/* Okay, as far as I can tell this is a non-persistent document property since it is not
-	 * written to the AbiWord file when the document is saved. In fact, it is only set if a
-	 * mail-merge source/link is given on the command line.
+	/* Okay, as far as I can tell this is a non-persistent document property
+	 * since it is not written to the AbiWord file when the document is
+	 * saved. In fact, it is only set if a mail-merge source/link is given on
+	 * the command line.
 	 * 
-	 * Mail merge fields are, naturally, saved and loaded, but the Insert->Mail Merge Field...
-	 * dialog doesn't reflect the current document's fields but rather some internal set of
-	 * fields, which is confusing if you are trying to work with muliple mail merge sources.
+	 * Mail merge fields are, naturally, saved and loaded, but the Insert->Mail
+	 * Merge Field...  dialog doesn't reflect the current document's fields but
+	 * rather some internal set of fields, which is confusing if you are trying
+	 * to work with muliple mail merge sources.
 	 */
 	// map UT_String=>UT_UTF8String*
 

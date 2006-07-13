@@ -1,3 +1,4 @@
+/* -*- mode: C++; tab-width: 4; c-basic-offset: 4; -*- */
 /* AbiWord
  * Copyright (C) 1998 AbiSource, Inc.
  *
@@ -28,6 +29,12 @@
 #include "ut_xml.h"
 #include "pp_Property.h"
 #include "pt_Types.h"
+
+#include <map>
+
+#include <glib.h>
+
+using std::map;
 
 class PD_Document;
 
@@ -71,54 +78,91 @@ class ABI_EXPORT PP_RevisionState
 class ABI_EXPORT PP_AttrProp
 {
 public:
+	class PropertyPair
+	{
+	  public:
+		
+		GQuark            first;
+		PP_PropertyType * second;
+
+		PropertyPair ():first(0), second(NULL){}
+		PropertyPair (GQuark value): first(value), second(NULL){}
+		~PropertyPair () { delete second;}
+	};
+	
+
+	typedef map <PT_Property,  PropertyPair> AP_Props;
+	typedef map <PT_Attribute, GQuark>      AP_Attrs;
+
 	PP_AttrProp();
 	virtual ~PP_AttrProp();
 
-	// The "XML_Char **" is an argv-like thing containing
-	// multiple sets of name/value pairs.  names are in the
-	// even cells; values are in the odd.  the list is
-	// terminated by a null name.
+	bool	setAttributes(const PT_AttributePair   * attributes);
+	bool    setAttributes(const PT_AttributeVector & vAttrs);
+	bool    setAttributes(const AP_Attrs * pAttrs);
+	
+	bool	setProperties(const PT_PropertyPair    * properties);
+	bool	setProperties(const PT_PropertyVector  & vProps);
+	bool    setProperties(const AP_Props * pProps);
+	
+	bool	setAttribute(PT_Attribute a, GQuark value );
+	bool	setProperty (PT_Property  p, GQuark value);
 
-	bool	setAttributes(const XML_Char ** attributes);
-	bool    setAttributes(const UT_GenericVector<XML_Char*> * pVector);
-	bool	setProperties(const XML_Char ** properties);
-	bool	setProperties(const UT_GenericVector<XML_Char*> * pVector);
+	// return true if the loop should continue, false otherwise
+	typedef bool (*PP_ForEachAttrFunc) (const PT_Attribute & a,
+										const GQuark & value,
+										UT_uint32 index,
+										void * data);
+	
+	typedef bool (*PP_ForEachPropFunc) (const PT_Property  & p,
+										const GQuark & value,
+										UT_uint32 index,
+										void * data);
+	
+	void    forEachAttribute (PP_ForEachAttrFunc f, void * data) const;
+	void    forEachProperty  (PP_ForEachPropFunc f, void * data) const;
 
-	const XML_Char ** getAttributes () const { return m_pAttributes ? m_pAttributes->list () : 0; }
-	const XML_Char ** getProperties () const;
+	bool    getAttribute(PT_Attribute a,
+						 GQuark & value) const;
+	const   AP_Attrs * getAttributes() const {return m_pAttributes;}
+	
+	bool    getProperty(PT_Property p,
+						GQuark & value) const;
+	const   AP_Props * getProperties() const {return m_pProperties;}
+	
+	const PP_PropertyType *getPropertyType(PT_Property p,
+										   tProperty_type Type) const;
 
-	bool	setAttribute(const XML_Char * szName, const XML_Char * szValue);
-	bool	setProperty(const XML_Char * szName, const XML_Char * szValue);
+	bool    hasProperties(void) const;
+	bool    hasAttributes(void) const;
+	size_t  getPropertyCount (void) const;
+	size_t  getAttributeCount (void) const;
+	
+	bool    areAlreadyPresent(const PT_AttributePair * attributes,
+							  const PT_PropertyPair  * properties) const;
+	
+	bool    areAnyOfTheseNamesPresent(const PT_AttributePair * attributes,
+									  const PT_PropertyPair * properties) const;
+	
+	bool    isExactMatch(const PP_AttrProp * pMatch) const;
+	bool    isEquivalent(const PP_AttrProp * pAP2) const;
+	bool    isEquivalent(const PT_AttributePair * attrs,
+						 const PT_PropertyPair  * props) const;
+	
+	PP_AttrProp * createExactly(const PT_AttributePair * attrs,
+								const PT_PropertyPair  * props) const;
 
-	bool	getNthAttribute(int ndx, const XML_Char *& szName, const XML_Char *& szValue) const;
-	bool	getNthProperty(int ndx, const XML_Char *& szName, const XML_Char *& szValue) const;
-
-	bool getAttribute(const XML_Char * szName, const XML_Char *& szValue) const;
-	bool getProperty(const XML_Char * szName, const XML_Char *& szValue) const;
-	const PP_PropertyType *getPropertyType(const XML_Char * szName, tProperty_type Type) const;
-
-	bool hasProperties(void) const;
-	bool hasAttributes(void) const;
-	size_t getPropertyCount (void) const;
-	size_t getAttributeCount (void) const;
-	bool areAlreadyPresent(const XML_Char ** attributes, const XML_Char ** properties) const;
-	bool areAnyOfTheseNamesPresent(const XML_Char ** attributes, const XML_Char ** properties) const;
-	bool isExactMatch(const PP_AttrProp * pMatch) const;
-	bool isEquivalent(const PP_AttrProp * pAP2) const;
-	bool isEquivalent(const XML_Char ** attrs, const XML_Char ** props) const;
-
-	PP_AttrProp * createExactly(const XML_Char ** attributes,
-				    const XML_Char ** properties) const;
-
-	PP_AttrProp * cloneWithReplacements(const XML_Char ** attributes,
-										const XML_Char ** properties,
+	PP_AttrProp * cloneWithReplacements(const PT_AttributePair * attrs,
+										const PT_PropertyPair  * props,
 										bool bClearProps) const;
-	PP_AttrProp * cloneWithElimination(const XML_Char ** attributes,
-									   const XML_Char ** properties) const;
-	PP_AttrProp * cloneWithEliminationIfEqual(const XML_Char ** attributes,
-									   const XML_Char ** properties) const;
+	
+	PP_AttrProp * cloneWithElimination(const PT_AttributePair * attrs,
+									   const PT_PropertyPair  * props) const;
+	
+	PP_AttrProp * cloneWithEliminationIfEqual(const PT_AttributePair * attrs,
+											  const PT_PropertyPair  * props) const;
 
-	void markReadOnly(void);
+	void    markReadOnly(void);
 	UT_uint32 getCheckSum(void) const;
 
 	void operator = (const PP_AttrProp &Other);
@@ -132,7 +176,11 @@ public:
 	PT_AttrPropIndex   getRevisedIndex() const {return m_iRevisedIndex;}
 	PP_RevisionState & getRevisionState() const {return m_RevisionState;}
 	
-	void               setRevisedIndex (PT_AttrPropIndex i, UT_uint32 iId, bool bShow, bool bMark, bool bHidden) const
+	void               setRevisedIndex (PT_AttrPropIndex i,
+										UT_uint32 iId,
+										bool bShow,
+										bool bMark,
+										bool bHidden) const
 	                       {
 							   m_iRevisedIndex = i; m_RevisionState.m_iId = iId;
 							   m_RevisionState.m_bShow = bShow; m_RevisionState.m_bMark = bMark;
@@ -151,16 +199,12 @@ protected:
 	void _clearEmptyProperties();
 	void _clearEmptyAttributes();
 
-
-	typedef UT_Pair<const XML_Char*,const PP_PropertyType *> PropertyPair;
-
-	UT_GenericStringMap<XML_Char*> * m_pAttributes; // of XML_Char*
-	UT_GenericStringMap<PropertyPair*> * m_pProperties; // of PropertyPair
+	AP_Attrs * m_pAttributes;
+	AP_Props * m_pProperties;
 	
-	bool				m_bIsReadOnly;
-	UT_uint32			m_checkSum;
-	UT_uint32			m_index;	//$HACK
-	mutable const XML_Char **   m_szProperties;
+	bool				        m_bIsReadOnly;
+	UT_uint32			        m_checkSum;
+	UT_uint32			        m_index;	//$HACK
 	
 	mutable PT_AttrPropIndex    m_iRevisedIndex;
 	mutable PP_RevisionState    m_RevisionState;

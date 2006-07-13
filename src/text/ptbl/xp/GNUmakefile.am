@@ -25,9 +25,14 @@ SUBDIRS = t
 noinst_LIBRARIES = libPtbl.a 
 
 libPtbl_a_SOURCES= \
+	pp_AttrProp.cpp		\
+	pp_Property.cpp		\
+	pp_Attribute.cpp	\
+	pp_PropertyMap.cpp	\
+	pp_Revision.cpp     \
+	pd_Style.cpp			\
 	pd_Document.cpp			\
 	pd_Document_TestRoutines.cpp	\
-	pd_Style.cpp			\
 	pf_Frag.cpp			\
 	pf_Frag_FmtMark.cpp		\
 	pf_Frag_Object.cpp		\
@@ -38,11 +43,7 @@ libPtbl_a_SOURCES= \
 	pf_Frag_Text.cpp		\
 	pf_Fragments.cpp		\
 	pf_Frags_TestRoutines.cpp	\
-	pp_AttrProp.cpp		\
-	pp_Property.cpp		\
-	pp_PropertyMap.cpp	\
 	pp_TableAttrProp.cpp	\
-	pp_Revision.cpp     \
 	po_Bookmark.cpp		\
 	pt_PieceTable.cpp	\
 	pt_PT_Append.cpp	\

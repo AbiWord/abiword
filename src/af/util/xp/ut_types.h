@@ -21,6 +21,7 @@
 #define UT_TYPES_H
 
 #include <stdlib.h>
+#include <glib.h>
 
 #ifdef NULL
 #undef NULL

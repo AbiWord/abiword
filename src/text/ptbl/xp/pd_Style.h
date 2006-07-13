@@ -1,3 +1,4 @@
+/* -*- mode: C++; tab-width: 4; c-basic-offset: 4; -*- */
 /* AbiWord
  * Copyright (C) 1998 AbiSource, Inc.
  * 
@@ -34,50 +35,64 @@ class pt_PieceTable;
 class ABI_EXPORT PD_Style
 {
 public:
-	PD_Style(pt_PieceTable * pPT, PT_AttrPropIndex indexAP, const char * szName = NULL);
+	PD_Style(pt_PieceTable * pPT, PT_AttrPropIndex indexAP, GQuark name = NULL);
 	virtual ~PD_Style();
 
-	inline PT_AttrPropIndex		getIndexAP(void) const	{ return m_indexAP; };
-	bool						setIndexAP(PT_AttrPropIndex indexAP);
+	const PP_PropertyType *	getPropertyType(PT_Property name,
+											tProperty_type Type) const;
+    
+	inline PT_AttrPropIndex getIndexAP(void) const	{ return m_indexAP; };
+	bool                    setIndexAP(PT_AttrPropIndex indexAP);
 
-	bool					getProperty(const XML_Char * szName, const XML_Char *& szValue) const;
-	const PP_PropertyType *	getPropertyType(const XML_Char * szName, tProperty_type Type) const;
-	bool					getAttribute(const XML_Char * szName, const XML_Char *& szValue) const;
-	bool					getPropertyExpand(const XML_Char * szName, const XML_Char *& szValue);
-	bool					getAttributeExpand(const XML_Char * szName, const XML_Char *& szValue);
+	bool                getProperty(PT_Property name,
+									GQuark & value) const;
+    
+	bool                getAttribute(PT_Attribute name,
+									 GQuark & value) const;
+    
+	bool                getPropertyExpand(PT_Property name,
+										  GQuark & value);
 	
-	PD_Style *				getBasedOn(void);
-	PD_Style *				getFollowedBy(void);
-
-	virtual bool			isUserDefined(void) const { return true; };
-	void					used(UT_sint32 count);
-	bool					isUsed(void) const;
-	bool					isCharStyle(void) const;
-	bool					isList(void);
+	bool				getAttributeExpand(PT_Attribute name,
+										   GQuark & value);
 	
-	bool					addProperty(const XML_Char * szName, const XML_Char * szValue);
-	bool					addProperties(const XML_Char ** pProperties);
-	bool					setAllAttributes(const XML_Char ** pAtts);
-	bool					addAttributes(const XML_Char ** pAtts);
-	bool                    getAllProperties( UT_Vector * vProps, UT_sint32 depth);
-	bool                    getAllAttributes( UT_Vector * vAttribs, UT_sint32 depth);
-	size_t getPropertyCount(void) const;
-	size_t getAttributeCount(void) const;
-	bool getNthProperty (int ndx, const XML_Char *&szName,
-			     const XML_Char *&szValue) const;
-	bool getNthAttribute (int ndx, const XML_Char *&szName,
-			     const XML_Char *&szValue) const;
+	PD_Style *			getBasedOn(void);
+	PD_Style *			getFollowedBy(void);
 
-	inline const char * getName (void) const {return m_szName;}
+	virtual bool		isUserDefined(void) const { return true; };
+	void				used(UT_sint32 count);
+	bool				isUsed(void) const;
+	bool				isCharStyle(void) const;
+	bool				isList(void);
+	
+	bool				addProperty(PT_Property name, GQuark);
+	bool				addProperties(const PT_PropertyPair * pProperties);
+	bool				setAllAttributes(const PT_AttributePair * pAtts);
+	bool				addAttributes(const PT_AttributePair * pAtts);
+	bool                getAllProperties( PT_PropertyVector & vProps,
+										  UT_sint32 depth);
+	
+	bool                getAllAttributes( PT_AttributeVector & vAttribs,
+										  UT_sint32 depth);
+	
+	size_t              getPropertyCount(void) const;
+	size_t              getAttributeCount(void) const;
+
+    inline GQuark       getName (void) const {return m_name;}
 
 protected:
-	bool					_getPropertyExpand(const XML_Char * szName, const XML_Char *& szValue, UT_sint32 iDepth);
-	bool					_getAttributeExpand(const XML_Char * szName, const XML_Char *& szValue, UT_sint32 iDepth);
+	bool				_getPropertyExpand(PT_Property name,
+										   GQuark & value,
+										   UT_sint32 iDepth);
+	
+	bool				_getAttributeExpand(PT_Attribute name,
+											GQuark & value,
+											UT_sint32 iDepth);
 
 	pt_PieceTable *			m_pPT;
 	PT_AttrPropIndex		m_indexAP;
 
-	char * 					m_szName;
+	GQuark 					m_name;
 	UT_sint32				m_iUsed;
 
 	// lazily-bound attribute caches to speed lookups
@@ -92,13 +107,17 @@ protected:
 class ABI_EXPORT PD_BuiltinStyle : public PD_Style
 {
 public:
-	PD_BuiltinStyle(pt_PieceTable * pPT, PT_AttrPropIndex indexAP, const char * szName);
+	PD_BuiltinStyle(pt_PieceTable * pPT,
+					PT_AttrPropIndex indexAP,
+					GQuark name);
+	
 	virtual ~PD_BuiltinStyle();
 
-	virtual bool			isUserDefined(void) const { return (m_indexAP != m_indexAPOrig); };
+	virtual bool     isUserDefined(void) const
+		                          {return (m_indexAP != m_indexAPOrig);}
 
 protected:
-	PT_AttrPropIndex		m_indexAPOrig;	// the builtin one
+	PT_AttrPropIndex m_indexAPOrig;	// the builtin one
 };
 
 #endif /* PD_STYLE_H */

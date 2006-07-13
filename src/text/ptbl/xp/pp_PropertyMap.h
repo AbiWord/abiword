@@ -33,181 +33,11 @@
 
 #include "ut_misc.h"
 #include "ut_IntStrMap.h"
+#include "pp_Property.h"
 
 class ABI_EXPORT PP_PropertyMap
 {
 public:
-	enum AbiPropertyIndex // list of all properties used internally by AbiWord
-	{		
-		abi_background_color = 0,
-		abi_background_image,
-		abi_bgcolor,
-		abi_bot_attach,
-		abi_bot_color,
-		abi_bot_style,
-		abi_bot_thickness,
-		abi_bounding_space,
-		abi_cell_margin_bottom,
-		abi_cell_margin_left,
-		abi_cell_margin_right,
-		abi_cell_margin_top,
-		abi_color,
-		abi_column_gap,
-		abi_column_line,
-		abi_columns,
-		abi_default_tab_interval,
-		abi_dir_override,
-		abi_display,
-		abi_document_endnote_initial,
-		abi_document_endnote_place_enddoc,
-		abi_document_endnote_place_endsection,
-		abi_document_endnote_restart_section,
-		abi_document_endnote_type,
-		abi_document_footnote_initial,
-		abi_document_footnote_restart_page,
-		abi_document_footnote_restart_section,
-		abi_document_footnote_type,
-		abi_dom_dir,
-		abi_field_color,
-		abi_field_font,
-		abi_font_family,
-		abi_font_size,
-		abi_font_stretch,
-		abi_font_style,
-		abi_font_variant,
-		abi_font_weight,
-		abi_footer,
-		abi_footer_even,
-		abi_footer_first,
-		abi_footer_last,
-		abi_format,
-		abi_frame_column_xpos,
-		abi_frame_column_ypos,
-		abi_frame_height,
-		abi_frame_page_xpos,
-		abi_frame_page_ypos,
-		abi_frame_position_to,
-		abi_frame_type,
-		abi_frame_width,
-		abi_frame_xpos,
-		abi_frame_ypos,
-		abi_header,
-		abi_header_even,
-		abi_header_first,
-		abi_header_last,
-		abi_height,
-		abi_homogeneous,
-		abi_keep_together,
-		abi_keep_with_next,
-		abi_lang,
-		abi_left_attach,
-		abi_left_color,
-		abi_left_style,
-		abi_left_thickness,
-		abi_line_height,
-		abi_list_decimal,
-		abi_list_delim,
-		abi_list_style,
-		abi_list_tag,
-		abi_margin_bottom,
-		abi_margin_left,
-		abi_margin_right,
-		abi_margin_top,
-		abi_orphans,
-		abi_page_margin_bottom,
-		abi_page_margin_footer,
-		abi_page_margin_header,
-		abi_page_margin_left,
-		abi_page_margin_right,
-		abi_page_margin_top,
-		abi_right_attach,
-		abi_right_color,
-		abi_right_style,
-		abi_right_thickness,
-		abi_section_footnote_line_thickness,
-		abi_section_footnote_yoff,
-		abi_section_max_column_height,
-		abi_section_restart,
-		abi_section_restart_value,
-		abi_section_space_after,
-		abi_start_value,
-		abi_table_border,
-		abi_table_col_spacing,
-		abi_table_column_leftpos,
-		abi_table_column_props,
-		abi_table_line_thickness,
-		abi_table_line_type,
-		abi_table_margin_bottom,
-		abi_table_margin_left,
-		abi_table_margin_right,
-		abi_table_margin_top,
-		abi_table_row_props,
-		abi_table_row_spacing,
-		abi_tabstops,
-		abi_text_align,
-		abi_text_decoration,
-		abi_text_folded,
-		abi_text_folded_id,
-		abi_text_indent,
-		abi_text_position,
-		abi_tight_wrap,
-	    abi_toc_dest_style1,
-	    abi_toc_dest_style2,
-	    abi_toc_dest_style3,
-	    abi_toc_dest_style4,
-        abi_toc_id,
-		abi_toc_indent1,
-		abi_toc_indent2,
-		abi_toc_indent3,
-		abi_toc_indent4,
-	    abi_toc_has_heading,
-		abi_toc_heading,
-		abi_toc_has_label1,
-		abi_toc_has_label2,
-		abi_toc_has_label3,
-		abi_toc_has_label4,
-		abi_toc_heading_style,
-		abi_toc_label_after1,
-		abi_toc_label_after2,
-		abi_toc_label_after3,
-		abi_toc_label_after4,
-		abi_toc_label_before1,
-		abi_toc_label_before2,
-		abi_toc_label_before3,
-		abi_toc_label_before4,
-		abi_toc_label_inherits1,
-		abi_toc_label_inherits2,
-		abi_toc_label_inherits3,
-		abi_toc_label_inherits4,
-		abi_toc_label_start1,
-		abi_toc_label_start2,
-		abi_toc_label_start3,
-		abi_toc_label_start4,
-		abi_toc_label_type1,
-		abi_toc_label_type2,
-		abi_toc_label_type3,
-		abi_toc_label_type4,
-		abi_toc_page_type1,
-		abi_toc_page_type2,
-		abi_toc_page_type3,
-		abi_toc_page_type4,
-	    abi_toc_source_style1,
-	    abi_toc_source_style2,
-	    abi_toc_source_style3,
-	    abi_toc_source_style4,
-		abi_toc_tab_leader1,
-		abi_toc_tab_leader2,
-		abi_toc_tab_leader3,
-		abi_toc_tab_leader4,
-		abi_top_attach,
-		abi_top_color,
-		abi_top_style,
-		abi_top_thickness,
-		abi_widows,
-		abi_width,
-		abi_wrap_mode,
-		abi__count
-	};
 	enum TypeColor
 	{
 		color__unset = 0,
@@ -281,10 +111,6 @@ public:
 		UT_RGBColor		m_color;		// in case of background_solid
 	};
 
-	static const char * abi_property_name (AbiPropertyIndex index);
-
-	static bool abi_property_lookup (const char * name, AbiPropertyIndex & index);
-
 private:
 	UT_IntStrMap	m_map;
 public:
@@ -295,33 +121,33 @@ public:
 		m_map.clear ();
 	}
 
-	bool ins (AbiPropertyIndex key, UT_UTF8String * value) // responsibility for value passes here
+	bool ins (PT_Property key, UT_UTF8String * value) // responsibility for value passes here
 	{
-		if ((value == 0) || (key == abi__count)) return false;
+		if ((value == 0) || (!PP_Property::isIndexValid(key))) return false;
 		return m_map.ins (static_cast<UT_sint32>(key), value);
 	}
-	bool ins (AbiPropertyIndex key, const char * value)
+	bool ins (PT_Property key, const char * value)
 	{
-		if ((value == 0) || (key == abi__count)) return false;
+		if ((value == 0) || (!PP_Property::isIndexValid(key))) return false;
 		return m_map.ins (static_cast<UT_sint32>(key), value);
 	}
 
 	/* returns false if no such key-value
 	 */
-	inline bool del (AbiPropertyIndex key) // value is deleted
+	inline bool del (PT_Property key) // value is deleted
 	{
-		if (key == abi__count) return false;
+		if (!PP_Property::isIndexValid(key)) return false;
 		return m_map.del (static_cast<UT_sint32>(key));
 	}
-	inline bool del (AbiPropertyIndex key, UT_UTF8String *& value) // value is passed back
+	inline bool del (PT_Property key, UT_UTF8String *& value) // value is passed back
 	{
-		if (key == abi__count) return false;
+		if (!PP_Property::isIndexValid(key)) return false;
 		return m_map.del (static_cast<UT_sint32>(key), value);
 	}
 
-	inline const UT_UTF8String * operator[] (AbiPropertyIndex key)
+	inline const UT_UTF8String * operator[] (PT_Property key)
 	{
-		if (key == abi__count) return 0;
+		if (!PP_Property::isIndexValid(key)) return 0;
 		return m_map[static_cast<UT_sint32>(key)];
 	}
 };

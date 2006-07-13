@@ -1,3 +1,4 @@
+/* -*- mode: C++; tab-width: 4; c-basic-offset: 4; -*- */
 /* AbiWord
  * Copyright (C) 1998 AbiSource, Inc.
  * Copyright (c) 2001,2002 Tomas Frydrych
@@ -37,22 +38,19 @@
 #include "pp_Revision.h"
 #include "pd_Style.h"
 #include "pd_Document.h"
-
+#include "pp_Attribute.h"
 
 /****************************************************************/
 
 /// This is the sole explicit constructor of class PP_AttrProp.
 PP_AttrProp::PP_AttrProp()
+    : m_pAttributes (NULL),
+      m_pProperties (NULL),
+      m_bIsReadOnly (false),
+      m_checkSum (0),
+      m_iRevisedIndex (0xffffffff),
+      m_bRevisionHidden (false)
 {
-	m_pAttributes = NULL;
-	m_pProperties = NULL;
-	m_szProperties = NULL;
-	m_bIsReadOnly = false;
-	m_checkSum = 0;
-	xxx_UT_DEBUGMSG(("creating pp_AttrProp %x \n",this));
-
-	m_iRevisedIndex = 0xffffffff;
-	m_bRevisionHidden = false;
 }
 
 /// This is the sole explicit destructor of class PP_AttrProp.
@@ -61,58 +59,22 @@ PP_AttrProp::~PP_AttrProp()
 	xxx_UT_DEBUGMSG(("deleting pp_AttrProp %x \n",this));
 	if (m_pAttributes)
 	{
-		UT_GenericStringMap<XML_Char*>::UT_Cursor c1(m_pAttributes);
-
-		const XML_Char * s = c1.first();
-
-		while (true) {
-			FREEP(s);
-
-			if (!c1.is_valid())
-				break;
-
-			s = c1.next();
-		}
-
 		delete m_pAttributes;
-		m_pAttributes = NULL;
 	}
 
 	// delete any PP_Property_types;
 
 	if(m_pProperties)
 	{
-		UT_GenericStringMap<PropertyPair*>::UT_Cursor c(m_pProperties);
-		const PropertyPair * entry = NULL;
-
-		for (entry = c.first(); c.is_valid(); entry = c.next())
-		{
-			if(entry)
-			{
-				// hack. don't do it.
-				XML_Char* tmp = (XML_Char*)entry->first();
-				FREEP(tmp);
-				if (entry->second())
-					delete entry->second();
-				delete entry;
-			}
-		}
-
 		delete m_pProperties;
-		m_pProperties = NULL;
 	}
-	if(m_szProperties)
-	{
-		delete [] m_szProperties;
-	}
-	m_szProperties = NULL;
 }
 
 /*!
  * Returns the number of properties in this PP_AttrProp.
  *
- * BE WEARY, BE VERY WEARY, the count can be greater than the number of valid items
- * stored in the hash -- always check the return value of getNthProperty()
+ * BE WEARY, BE VERY WEARY, the count can be greater than the number of valid
+ * items stored in the hash -- always check the return value of getNthProperty()
  */
 size_t PP_AttrProp::getPropertyCount (void) const
 {
@@ -125,8 +87,9 @@ size_t PP_AttrProp::getPropertyCount (void) const
 /*!
  * Returns the number of attributes in this PP_AttrProp.
  *
- * BE WEARY, BE VERY WEARY, the count can be greater than the number of valid items
- * stored in the hash -- always check the return value of getNthAttribute()
+ * BE WEARY, BE VERY WEARY, the count can be greater than the number of valid
+ * items stored in the hash -- always check the return value of
+ * getNthAttribute()
  */
 size_t PP_AttrProp::getAttributeCount (void) const
 {
@@ -143,17 +106,17 @@ size_t PP_AttrProp::getAttributeCount (void) const
  *
  * \param attributes An array of strings, read in (attribute, value) form.
  */
-bool	PP_AttrProp::setAttributes(const XML_Char ** attributes)
+bool PP_AttrProp::setAttributes(const PT_AttributePair * attributes)
 {
 	if (!attributes)
 		return true;
 
-	const XML_Char ** pp = attributes;
-	while (*pp)
+	const PT_AttributePair * pp = attributes;
+	while (pp)
 	{
-		if (!setAttribute(pp[0],pp[1]))
+		if (!setAttribute(pp->a,pp->v))
 			return false;
-		pp += 2;
+		pp++;
 	}
 	return true;
 }
@@ -164,34 +127,52 @@ bool	PP_AttrProp::setAttributes(const XML_Char ** attributes)
  *
  * \param attributes A UT_Vector of strings, read in (attribute, value) form.
  */
-bool PP_AttrProp::setAttributes(const UT_GenericVector<XML_Char*> * pVector)
+bool PP_AttrProp::setAttributes(const PT_AttributeVector & vAttrs)
 {
-	UT_uint32 kLimit = pVector->getItemCount();
-	for (UT_uint32 k=0; k+1<kLimit; k+=2)
+	UT_uint32 kLimit = vAttrs.getItemCount();
+	for (UT_uint32 k=0; k < kLimit; k++)
 	{
-		const XML_Char * pName = pVector->getNthItem(k);
-		const XML_Char * pValue = pVector->getNthItem(k+1);
-		if (!setAttribute(pName,pValue))
+		const PT_AttributePair & p = vAttrs.getNthItem(k);
+		if (!setAttribute(p.a, p.v))
 			return false;
 	}
 	return true;
 }
 
+
+bool PP_AttrProp::setAttributes(const AP_Attrs * pAttrs)
+{
+	if(!pAttrs)
+		return false;
+
+	AP_Attrs::const_iterator c = pAttrs->begin();
+	while (c != pAttrs->end())
+	{
+		if(!setAttribute(c->first, c->second))
+			return false;
+
+		++c;
+	}
+	
+	return true;
+}
+
+
 /*!
  * Sets attributes as given in the NULL-terminated input array
  * of (attribute, value) pairs.
  */
-bool	PP_AttrProp::setProperties(const XML_Char ** properties)
+bool	PP_AttrProp::setProperties(const PT_PropertyPair * properties)
 {
 	if (!properties)
 		return true;
 
-	const XML_Char ** pp = properties;
-	while (*pp)
+	const PT_PropertyPair * pp = properties;
+	while (pp->p)
 	{
-		if (!setProperty(pp[0],pp[1]))
+		if (!setProperty(pp->p,pp->v))
 			return false;
-		pp += 2;
+		pp++;
 	}
 	return true;
 }
@@ -202,19 +183,34 @@ bool	PP_AttrProp::setProperties(const XML_Char ** properties)
  *
  * \param pVector A UT_Vector of strings, read in (properties, value) form.
  */
-bool PP_AttrProp::setProperties(const UT_GenericVector<XML_Char*> * pVector)
+bool PP_AttrProp::setProperties(const PT_PropertyVector & vProps)
 {
-	UT_uint32 kLimit = pVector->getItemCount();
-	for (UT_uint32 k=0; k+1<kLimit; k+=2)
+	UT_uint32 kLimit = vProps.getItemCount();
+	for (UT_uint32 k=0; k < kLimit; k++)
 	{
-		const XML_Char * pName = pVector->getNthItem(k);
-		const XML_Char * pValue = pVector->getNthItem(k+1);
-		if (!setProperty(pName,pValue))
+		const PT_PropertyPair & p = vProps.getNthItem(k);
+		if (!setProperty(p.p, p.v))
 			return false;
 	}
 	return true;
 }
 
+bool PP_AttrProp::setProperties(const AP_Props * pProps)
+{
+	if (!pProps)
+		return false;
+
+	AP_Props::const_iterator c = pProps->begin();
+
+	while (c != pProps->end())
+	{
+		if(!setProperty(c->first, c->second.first))
+			return false;
+		++c;
+	}
+
+	return true;
+}
 
 /*!
  * Sets given attribute in this PP_AttrProp bundle.
@@ -224,18 +220,15 @@ bool PP_AttrProp::setProperties(const UT_GenericVector<XML_Char*> * pVector)
  * Because all mutations of attributes go through here, it is always the
  * case that the props attribute is correctly handled.
  */
-bool	PP_AttrProp::setAttribute(const XML_Char * szName, const XML_Char * szValue)
+bool PP_AttrProp::setAttribute(PT_Attribute name, GQuark value)
 {
-	// TODO when this assert fails, switch this file to use UT_XML_ version of str*() functions.
-	UT_return_val_if_fail (sizeof(char)==sizeof(XML_Char), false);
-
-	if (0 == strcmp(szName, PT_PROPS_ATTRIBUTE_NAME) && *szValue)	// PROPS -- cut value up into properties
+	if (name == PT_PROPS_ATTRIBUTE_NAME && value)	
 	{
+        // PROPS -- cut value up into properties
 		char * pOrig = NULL;
 		
-		if (!UT_cloneString(pOrig,szValue))
+		if (!UT_cloneString(pOrig,g_quark_to_string (value)))
 		{
-			UT_DEBUGMSG(("setAttribute: UT_cloneString failed on [%s]\n",szValue));
 			return false;
 		}
 
@@ -260,7 +253,6 @@ bool	PP_AttrProp::setAttribute(const XML_Char * szName, const XML_Char * szValue
 			if (!*q)
 			{
 				free(pOrig);
-				UT_DEBUGMSG(("props: %s\n", szValue));
 				return false;
 			}
 
@@ -268,7 +260,8 @@ bool	PP_AttrProp::setAttribute(const XML_Char * szName, const XML_Char * szValue
 			*q = 0;
 			q++;
 
-			// now, search ahead for the next semicolon, and separate this property from the next
+			// now, search ahead for the next semicolon, and separate this
+			// property from the next
 			z = q;
 			while (*z && (*z != ';'))
 				z++;
@@ -287,31 +280,40 @@ bool	PP_AttrProp::setAttribute(const XML_Char * szName, const XML_Char * szValue
 			while (isspace(*q))
 				q++;
 
-			setProperty(p, q);
+			setProperty(PP_Property::lookupIndex(p),
+						g_quark_from_string(q));
 		}
 
 		free(pOrig);
 		return true;
 	}
-	else if (0 == strcmp(szName, PT_XID_ATTRIBUTE_NAME) && *szValue)
+	else if (name == PT_XID_ATTRIBUTE_NAME && value)
 	{
-		// XID is a unique id for the xml element / PT frag. Its function is to facilitate
-		// comparing/merging documents and we do not want it in the AP
+		// XID is a unique id for the xml element / PT frag. Its function is to
+		// facilitate comparing/merging documents and we do not want it in the
+		// AP
 		return true;
 	}
 	else // not "PROPS" -- add to attribute list
 	{
 		UT_UTF8String url;
-		if (szValue && *szValue && (0 == strcmp(szName, "xlink:href") || 0 == strcmp(szName, "href")))
+		const char * szValue = NULL;
+		
+		if (value &&
+			(name == PT_XLINKHREF_ATTRIBUTE_NAME ||
+			 name == PT_HREF_ATTRIBUTE_NAME))
 		{
-			url = szValue;
+			url = g_quark_to_string (value);
 			url.decodeURL();
 			szValue = url.utf8_str();
 		}
+
+		if (szValue)
+			value = g_quark_from_string (szValue);
 		
 		if (!m_pAttributes)
 		{
-			m_pAttributes = new UT_GenericStringMap<XML_Char*>(5);
+			m_pAttributes = new AP_Attrs;
 			if (!m_pAttributes)
 			{
 				UT_DEBUGMSG(("setAttribute: could not allocate hash table.\n"));
@@ -319,61 +321,25 @@ bool	PP_AttrProp::setAttribute(const XML_Char * szName, const XML_Char * szValue
 			}
 		}
 
-		// make sure we store attribute names in lowercase
-		UT_ASSERT_HARMLESS(sizeof(char) == sizeof(XML_Char));
-
-		char * copy;
-		if (!UT_cloneString(copy, szName))
-		{
-			UT_DEBUGMSG(("setAttribute: could not allocate lowercase copy.\n"));
-			return false;
-		}
-
-		UT_lowerString(copy);
-		char * szDupValue = szValue ? UT_strdup(szValue) : NULL;
-
-		// get rid of any illegal chars we might have been given
-		UT_validXML(copy);
-		UT_validXML(szDupValue);
-
-		const char * pEntry = m_pAttributes->pick(copy);
-
-		if(pEntry)
-		{
-			// attribute exists, replace it
-			FREEP(pEntry);
-			m_pAttributes->set(copy, szDupValue);
-		}
-		else
-		{
-			bool bRet = m_pAttributes->insert(copy, szDupValue);
-			UT_ASSERT_HARMLESS( bRet );
-			if(!bRet)
-			{
-				FREEP(szDupValue);
-			}
-		}
+		(*m_pAttributes)[name] = value;
 		
-		FREEP(copy);
-
 		return true;
 	}
 }
 
-/*! This method inserts a new pair of property name and value into [this] APs set of
-	 properties, creating "props" if it does not already exist and overwriting the value
-	 of any property of the same name with the newly passed value.
-	 (?)It appears as though we replace the entire pair, rather than only the value.
-		 (?)Is there a reason for this?
-	 \return Whether or not the operation succeeded.
-*/
-bool	PP_AttrProp::setProperty(const XML_Char * szName, const XML_Char * szValue)
-{
-	UT_return_val_if_fail( szName, false );
+/*! This method inserts a new pair of property name and value into [this] APs
+	set of properties, creating "props" if it does not already exist and
+	overwriting the value of any property of the same name with the newly passed
+	value.  (?)It appears as though we replace the entire pair, rather than only
+	the value.  (?)Is there a reason for this?
 	
+	\return Whether or not the operation succeeded.
+*/
+bool PP_AttrProp::setProperty(PT_Property name, GQuark value)
+{
 	if (!m_pProperties)
 	{
-		m_pProperties = new UT_GenericStringMap<PropertyPair*>(5);
+		m_pProperties = new AP_Props;
 		if (!m_pProperties)
 		{
 			UT_DEBUGMSG(("setProperty: could not allocate hash table.\n"));
@@ -389,131 +355,62 @@ bool	PP_AttrProp::setProperty(const XML_Char * szName, const XML_Char * szValue)
 	//bool bRemove = (!szValue || !*szValue);
 
 	// get rid of any chars invalid in xml
-	char * szName2 = NULL;
-	if(!UT_isValidXML(szName))
+	char * szValue2 = NULL;
+	const char * szValue = g_quark_to_string (value);
+	
+	if(!UT_isValidXML(szValue))
 	{
-		szName2 = UT_strdup(szName);
+		szValue2 = UT_strdup(szValue);
 
 		// get rid of any illegal chars we were passed
-		UT_validXML(szName2);
+		UT_validXML(szValue2);
 
-		szName = szName2;
+		value = g_quark_from_string (szValue2);
+		FREEP(szValue2);
 	}
 	
-	char * szValue2 = szValue ? UT_strdup(szValue) : NULL;
-	UT_return_val_if_fail( szName && (szValue2 || !szValue), false);
+	(*m_pProperties)[name].first = value;
 
-	// get rid of any illegal chars we might have been given in the value
-	UT_validXML(szValue2);
-	
-	const PropertyPair * pEntry = m_pProperties->pick(szName);
-	if (pEntry)
-	{
-		const PropertyPair* p = pEntry;
-
-		// hack. don't do it.
-		XML_Char* tmp = (XML_Char*)p->first();
-		UT_return_val_if_fail (!m_bIsReadOnly, false);
-		if(strcmp(szName,"line-height") == 0)
-		{
-			UT_DEBUGMSG(("Found line-height, Old value %s new value is %s \n",tmp,szValue));
-		}
-
-		FREEP(tmp);
-		if (p->second())
-			delete p->second();
-		delete p;
-		m_pProperties->set(szName, new PropertyPair(szValue2, NULL));
-	}
-	else
-	{
-		m_pProperties->insert(szName, new PropertyPair(szValue2, NULL));
-	}
-
-	// free the name duplicate if necessary
-	FREEP(szName2);
-	
 	return true;
 }
 
-/*! This method finds the Nth attribute where N is
-	 \param ndx The number in order of the attribute to be found
-	 and assigns that attribute's name and value to
-	 \param szName The name of the attribute found
-	 \param szValue The value of the attribute found
-	 respectively.  The method returns
-	 \return whether or not the operation succeeded.
-
-    WARNING: Always check the return value before trying to work with szValue!
-*/
-bool	PP_AttrProp::getNthAttribute(int ndx, const XML_Char *& szName, const XML_Char *& szValue) const
+void PP_AttrProp::forEachAttribute (PP_ForEachAttrFunc func,
+									void * data) const
 {
 	if (!m_pAttributes)
-		return false;
-	if (static_cast<UT_uint32>(ndx) >= m_pAttributes->size())
-	{
-		// UT_ASSERT_HARMLESS( UT_SHOULD_NOT_HAPPEN ); -- do not assert, some code in
-		// while loops relies on this
-		return false;
-	}
+		return;
+
+	AP_Attrs::iterator c = m_pAttributes->begin();
+	UT_uint32 i = 0;
 	
-	int i = 0;
-	UT_GenericStringMap<XML_Char*>::UT_Cursor c(m_pAttributes);
-	const XML_Char * val = NULL;
-
-	for (val = c.first(); (c.is_valid() && (i < ndx)); val = c.next(), i++)
+	while (c != m_pAttributes->end())
 	{
-	  // noop
+		if (! func (c->first, c->second, i, data))
+			break;
+		i++;
+		c++;
 	}
-
-	if ((i == ndx) && c.is_valid())
-	  {
-	    szName = c.key().c_str();
-	    szValue = val;
-	    return true;
-	  }
-	return false;
 }
 
-/*! This method finds the Nth property where N is
-	 \param ndx The number in order of the property to be found
-	 and assigns that property's name and value to
-	 \param szName The name of the property found
-	 \param szValue The value of the property found
-	 respectively.  The method returns
-	 \return whether or not the operation succeeded.
-
-    WARNING: Always check the return value before trying to work with szValue!
-*/
-bool	PP_AttrProp::getNthProperty(int ndx, const XML_Char *& szName, const XML_Char *& szValue) const
+void PP_AttrProp::forEachProperty  (PP_ForEachPropFunc func,
+									void * data) const
 {
 	if (!m_pProperties)
-		return false;
+		return;
 
- 	if (static_cast<UT_uint32>(ndx) >= m_pProperties->size())
-	{
-		// UT_ASSERT_HARMLESS( UT_SHOULD_NOT_HAPPEN ); -- do not assert, some code in
-		// while loops relies on this
-  		return false;
-	}
+	AP_Props::iterator c = m_pProperties->begin();
+	UT_uint32 i = 0;
 	
- 	int i = 0;
-	UT_GenericStringMap<PropertyPair*>::UT_Cursor c(m_pProperties);
- 	const PropertyPair * val = NULL;
-
-	for (val = c.first(); (c.is_valid() && (i < ndx)); val = c.next(), i++)
- 	{
-	  // noop
- 	}
-
-	if ( (i == ndx) && c.is_valid())
- 		{
-		  szName = c.key().c_str();
-		  szValue = val->first();
-		  return true;
- 		}
-	return false;
+	while (c != m_pProperties->end())
+	{
+		if (! func(c->first, c->second.first, i, data))
+			break;
+		i++;
+		c++;
+	}
 }
+
+
 
 /*! This method finds the property indicated by name
 	 \param szName (the name of the property the value of which to find)
@@ -525,70 +422,40 @@ bool	PP_AttrProp::getNthProperty(int ndx, const XML_Char *& szName, const XML_Ch
 
 	 WARNING: Be sure to check the return value before trying to work with szValue.
 */
-bool PP_AttrProp::getProperty(const XML_Char * szName, const XML_Char *& szValue) const
+bool PP_AttrProp::getProperty(PT_Property name, GQuark & value) const
 {
 	if (!m_pProperties)
 		return false;
-	const PropertyPair * pEntry = m_pProperties->pick(szName);
 
-	if (!pEntry)
+	AP_Props::iterator c = m_pProperties->find(name);
+
+	if(c == m_pProperties->end())
 		return false;
 
-	szValue = pEntry->first();
-	return true;
-}
-/*! This method retrieves the entirety of [this] AP's "props", and returns it as an array of
-	 XML_Char * pairs (name and value).
-
-    WARNING: Do not free this memory. It's cached here.
-*/
-const XML_Char ** PP_AttrProp::getProperties () const
-{
-	if(!m_pProperties)
-		return NULL;
-	if(m_szProperties != NULL)
-	{
-		return m_szProperties;
-	}
-	UT_uint32 iPropsCount = m_pProperties->size();
-	m_szProperties = new const XML_Char * [iPropsCount*2+2];
-
-	const XML_Char ** pList = m_pProperties->list();
-	UT_uint32 i = 0;
-
+	value = c->second.first;
 	
-	// where the values should be, we actually have pointers to PropertyPair;
-	for(i = 1; i < iPropsCount * 2; i += 2)
-	{
-		PropertyPair * pP = (PropertyPair *) pList[i];
-		m_szProperties[i-1] = pList[i-1];
-		m_szProperties[i] = pP->first();
-	}
-	m_szProperties[i-1] = NULL;
-	m_szProperties[i] = NULL;
-	return m_szProperties;
+	return true;
 }
 
 /*! (?)TODO: PLEASE DOCUMENT ME!
 */
-const PP_PropertyType *PP_AttrProp::getPropertyType(const XML_Char * szName, tProperty_type Type) const
+const PP_PropertyType *PP_AttrProp::getPropertyType(PT_Property name, tProperty_type Type) const
 {
 	if (!m_pProperties)
 		return NULL;
 
-	const PropertyPair * pEntry = m_pProperties->pick(szName);
-	if (!pEntry)
+	AP_Props::iterator c = m_pProperties->find(name);
+
+	if (c == m_pProperties->end())
 		return NULL;
 
-	if(!pEntry->second())
+	if(!c->second.second)
 	{
-		m_pProperties->set(szName, new PropertyPair(pEntry->first(),
-				    PP_PropertyType::createPropertyType(Type,pEntry->first())));
-		delete pEntry;
-		pEntry = m_pProperties->pick(szName);
+		c->second.second =
+			PP_PropertyType::createPropertyType(Type,c->second.first);
 	}
 
-	return pEntry->second();
+	return c->second.second;
 }
 
 /*! This method finds the attribute indicated by name
@@ -601,20 +468,16 @@ const PP_PropertyType *PP_AttrProp::getPropertyType(const XML_Char * szName, tPr
 
 	 WARNING: Be sure to check the return value before trying to work with szValue.
 */
-bool PP_AttrProp::getAttribute(const XML_Char * szName, const XML_Char *& szValue) const
+bool PP_AttrProp::getAttribute(PT_Attribute name, GQuark & value) const
 {
 	if (!m_pAttributes)
 		return false;
 
-	const XML_Char * pEntry = m_pAttributes->pick(szName);
-	if (!pEntry)
+	AP_Attrs::iterator c = m_pAttributes->find(name);
+	if (c == m_pAttributes->end())
 		return false;
 
-	szValue = pEntry;
-
-
-	xxx_UT_DEBUGMSG(("SEVIOR: getAttribute Found value %s \n",szValue));
-
+	value = c->second;
 	return true;
 }
 
@@ -638,13 +501,11 @@ bool PP_AttrProp::hasProperties(void) const
 }
 
 /// Returns whether or not the AP has any attributes.
-/*! This method checks [this] AP for the presence of any attribute.
-	 If there is any attribute at all in the AP, m_pAttributes->size()
-	 returns positive and so does this method.  Otherwise, this method
-	 returns false.
-	 Beware that no sanity checking is done to make sure that whatever
-	 is in there (being counted by size()) is anything more legible
-	 than uninitialized memory.
+/*! This method checks [this] AP for the presence of any attribute.  If there is
+    any attribute at all in the AP, m_pAttributes->size() returns positive and
+    so does this method.  Otherwise, this method returns false.  Beware that no
+    sanity checking is done to make sure that whatever is in there (being
+    counted by size()) is anything more legible than uninitialized memory.
 */
 bool PP_AttrProp::hasAttributes(void) const
 {
@@ -654,90 +515,92 @@ bool PP_AttrProp::hasAttributes(void) const
 	return (m_pAttributes->size() > 0);
 }
 
-/// Returns whether or not the given attributes and properties are identically present in [this] AP.
-/*! This method compares the given attributes and properties with those already present.
-	 It compares the given items as inseparable pairs - if the attribute or property is
-	 present in name but contains a different value, that does not count and false is
-	 returned.
-	 \return A bool indicating (directly) both presence and equality.
+/// Returns whether or not the given attributes and properties are identically
+/// present in [this] AP.
+/*! This method compares the given attributes and properties with those already
+    present.  It compares the given items as inseparable pairs - if the
+    attribute or property is present in name but contains a different value,
+    that does not count and false is returned.
+
+    \return A bool indicating (directly) both presence and equality.
 */
-bool PP_AttrProp::areAlreadyPresent(const XML_Char ** attributes, const XML_Char ** properties) const
+bool PP_AttrProp::areAlreadyPresent(const PT_AttributePair * attributes,
+									const PT_PropertyPair  * properties) const
 {
-	if (attributes && *attributes)
+	if (attributes)
 	{
-		const XML_Char ** p = attributes;
-		while (*p)
+		const PT_AttributePair * p = attributes;
+		while (p->a)
 		{
 			/*
 			    It seems that we also want empty strings for attributes,
 				at least for the 'param' attribute which goes with fields.
 				Is this bogus too? -PL
 
-				Yes. 
-				We use empty strings and NULL in values to indicate that the
-				attribute/property should be absent. Sometimes these values filter down
-				here, so we need to handle this. TF
+				Yes.  We use empty strings and NULL in values to indicate that
+				the attribute/property should be absent. Sometimes these values
+				filter down here, so we need to handle this. TF
 			*/
-			// UT_return_val_if_fail (p[1] /* && *p[1]*/, false);	// require value for each name
+			
+			// first deal with the case where the value is set to NULL or "" --
+			// we want that attribute to be absent, not present
+			GQuark value = 0;
 
-			// first deal with the case where the value is set to NULL or "" -- we want
-			// that attribute to be absent, not present
-			const XML_Char * szValue = NULL;
-
-			if((!p[1] || !*p[1]) && getAttribute(p[0],szValue) && szValue && *szValue)
+			if((p->v == 0) && getAttribute(p->a, value) && value)
 				return false;
-			// the 'props' attribute has to be handled separatedly, since it is not
-			// returned using getAttribute() (it is not stored as attribute)
-			else if((!p[1] || !*p[1]) && !strcmp(p[0],"props") && hasProperties())
+			
+			// the 'props' attribute has to be handled separatedly, since it is
+			// not returned using getAttribute() (it is not stored as attribute)
+			else if((p->v == 0)
+					&& p->a == PT_PROPS_ATTRIBUTE_NAME
+					&& hasProperties())
 				return false;
-			else if(p[1] && *p[1])
+			
+			else if(p->v != 0)
 			{
-				if (!getAttribute(p[0],szValue))
+				if (!getAttribute(p->a, value))
 					return false;		// item not present
-				if (strcmp(p[1],szValue)!=0)
+				
+				if (p->v != value)
 					return false;		// item has different value
 			}
 					
-			p += 2;
+			p++;
 		}
 	}
 
-	if (properties && *properties)
+	if (properties)
 	{
-		const XML_Char ** p = properties;
-		while (*p)
+		const PT_PropertyPair * p = properties;
+		while (p->p)
 		{
 			/*
-				Jeff, I weakened the following assert because we
-				*want* to represent no tabstops as an empty string.
-				If this isn't safe, let me know.   -- PCR
-
 				We use empty strings and NULL in values to indicate that the
-				attribute/property should be absent. Sometimes these values filter down
-				here, so we need to handle this. TF
+				attribute/property should be absent. Sometimes these values
+				filter down here, so we need to handle this. TF
 			*/
-			// UT_return_val_if_fail (p[1] /* && *p[1]*/, false);	// require value for each name
+			// first deal with the case where the value is set to NULL or "" --
+			// we want that attribute to be absent, not present
+			GQuark value = 0;
 
-			// first deal with the case where the value is set to NULL or "" -- we want
-			// that attribute to be absent, not present
-			const XML_Char * szValue = NULL;
-
-			if((!p[1] || !*p[1]) && getProperty(p[0],szValue) && szValue && *szValue)
+			if((p->v == 0) &&
+			   getProperty(p->p, value) && value)
 				return false;
-			else if(p[1] && p[1])
+			else if(p->v != 0)
 			{
-				if (!getProperty(p[0],szValue))
+				if (!getProperty(p->p, value))
 					return false;		// item not present
-				if (strcmp(p[1],szValue)!=0)
+				if (p->v != value)
 					return false;		// item has different value
 			}
 			
-			p += 2;
+			p++;
 		}
 	}
 
 	return true;						// everything matched
 }
+
 
 /*! Find out if any attribute- or property-name is present.
 	 This is like areAlreadyPresent(), but we don't care about
@@ -745,48 +608,46 @@ bool PP_AttrProp::areAlreadyPresent(const XML_Char ** attributes, const XML_Char
 	 regardless of whether or not any other of the given names are present.
 	 \return A bool that's TRUE if any of the given attr. or prop. names is present, false otherwise.
 */
-bool PP_AttrProp::areAnyOfTheseNamesPresent(const XML_Char ** attributes, const XML_Char ** properties) const
+bool PP_AttrProp::areAnyOfTheseNamesPresent(const PT_AttributePair *attributes,
+											const PT_PropertyPair  *properties) const
 {
-	// TODO consider using the fact that we are now (Dec 12 1998) using
-	// TODO alpha-hash-table rather than just a hash-table to optimize
-	// TODO these loops somewhat.
-
-	if (attributes && *attributes)
+	if (attributes)
 	{
-		const XML_Char ** p = attributes;
-		while (*p)
+		const PT_AttributePair * p = attributes;
+		while (p->a)
 		{
-			const XML_Char * szValue = NULL;
-			if (getAttribute(p[0],szValue))
+			GQuark value;
+			if (getAttribute(p->a, value))
 				return true;
-			p += 2;						// skip over value
+			p++;						// skip over value
 		}
 	}
 
-	if (properties && *properties)
+	if (properties)
 	{
-		const XML_Char ** p = properties;
-		while (*p)
+		const PT_PropertyPair * p = properties;
+		while (p->p)
 		{
-			const XML_Char * szValue = NULL;
-			if (getProperty(p[0],szValue))
+			GQuark value;
+			if (getProperty(p->p, value))
 				return true;
-			p += 2;						// skip over value
+			p++;						// skip over value
 		}
 	}
 
 	return false;					// didn't find any
 }
 
-/*! Checks to see if the given AP is identical to itself ([this]).  It also contains
-	 some useful points of instrumentation for benchmarking table and usage characteristics.
-	 \return TRUE, if and only if we match the AP given, false otherwise.
+/*! Checks to see if the given AP is identical to itself ([this]).  It also
+	contains some useful points of instrumentation for benchmarking table and
+	usage characteristics.  \return TRUE, if and only if we match the AP given,
+	false otherwise.
 */
 bool PP_AttrProp::isExactMatch(const PP_AttrProp * pMatch) const
 {
-	// The counters below are used in testing to profile call and chksum characteristics,
-	// including collision rates.
-	// NB: I'm not sure this initialization block is in the correct place.
+	// The counters below are used in testing to profile call and chksum
+	// characteristics, including collision rates.  NB: I'm not sure this
+	// initialization block is in the correct place.
 #ifdef PT_TEST
 	static UT_uint32 s_Calls = 0;
 	static UT_uint32 s_PassedCheckSum = 0;
@@ -817,60 +678,46 @@ bool PP_AttrProp::isExactMatch(const PP_AttrProp * pMatch) const
 
 	if (countMyAttrs != 0)
 	{
-		UT_GenericStringMap<XML_Char*>::UT_Cursor ca1(m_pAttributes);
-		UT_GenericStringMap<XML_Char*>::UT_Cursor ca2(pMatch->m_pAttributes);
-
-		const XML_Char * v1 = ca1.first();
-		const XML_Char * v2 = ca2.first();
+		AP_Attrs::iterator ca1 = m_pAttributes->begin();
+		AP_Attrs::iterator ca2 = pMatch->m_pAttributes->begin();
 
 		do
 		{
-			const XML_Char *l1 = ca1.key().c_str();
-			const XML_Char *l2 = ca2.key().c_str();
-
-			if (strcmp(l1, l2) != 0)
+			// compare keys
+			if (ca1->first != ca2->first)
 				return false;
 
-			l1 = v1;
-			l2 = v2;
-
-			if (strcmp(l1,l2) != 0)
+			//compare values
+			if (ca1->second != ca2->second)
 				return false;
 
-			v1 = ca1.next();
-			v2 = ca2.next();
-		} while (ca1.is_valid() && ca2.is_valid());
+			ca1++;
+			ca2++;
+			
+		} while (ca1 != m_pAttributes->end());
 	}
 
 	if (countMyProps > 0)
 	{
-		UT_GenericStringMap<PropertyPair*>::UT_Cursor cp1(m_pProperties);
-		UT_GenericStringMap<PropertyPair*>::UT_Cursor cp2(pMatch->m_pProperties);
-
-		const PropertyPair* v1 = cp1.first();
-		const PropertyPair* v2 = cp2.first();
+		AP_Props::iterator cp1 = m_pProperties->begin();
+		AP_Props::iterator cp2 = pMatch->m_pProperties->begin();
 
 		do
 		{
-			const XML_Char *l1 = cp1.key().c_str();
-			const XML_Char *l2 = cp2.key().c_str();
-
-			if (strcmp(l1, l2) != 0)
+			if (cp1->first != cp2->first)
 				return false;
 
-			l1 = v1->first();
-			l2 = v2->first();
-
-			if (strcmp(l1,l2) != 0)
+			if (cp1->second.first != cp2->second.first)
 				return false;
 
-			v1 = cp1.next();
-			v2 = cp2.next();
-		} while (cp1.is_valid() && cp2.is_valid());
+			cp1++;
+			cp2++;
+			
+		} while (cp1 != m_pProperties->end());
 
-	#ifdef PT_TEST
+#ifdef PT_TEST
 		s_Matches++;
-	#endif
+#endif
 	}
 
 	return true;
@@ -880,18 +727,19 @@ bool PP_AttrProp::isExactMatch(const PP_AttrProp * pMatch) const
 /*! Create a new AttrProp with exactly the attributes/properties given.
   \return NULL on failure, the newly-created PP_AttrProp.
 */
-PP_AttrProp * PP_AttrProp::createExactly(const XML_Char ** attributes,
-					 const XML_Char ** properties) const
+PP_AttrProp * PP_AttrProp::createExactly(const PT_AttributePair * attrs,
+										 const PT_PropertyPair   * props) const
 {
-	bool bIgnoreProps = false; // see below
-
 	// first, create a new AttrProp using just the values given.
 
 	PP_AttrProp * papNew = new PP_AttrProp();
 	if (!papNew)
 		goto Failed;
-	if (!papNew->setAttributes(attributes) || !papNew->setProperties(properties))
+	
+	if (!papNew->setAttributes(attrs) ||
+		!papNew->setProperties(props))
 		goto Failed;
+	
 	return papNew;
 
 Failed:
@@ -899,11 +747,14 @@ Failed:
 	return NULL;
 }
 
-/*! Create a new AttrProp based upon the given one, adding or replacing the items given.
-	 \return NULL on failure, the newly-created PP_AttrProp clone otherwise.
+/*! Create a new AttrProp based upon the given one, adding or replacing the
+	 items given.
+
+	 \return NULL on failure, the newly-created PP_AttrProp clone
+	 otherwise.
 */
-PP_AttrProp * PP_AttrProp::cloneWithReplacements(const XML_Char ** attributes,
-												 const XML_Char ** properties,
+PP_AttrProp * PP_AttrProp::cloneWithReplacements(const PT_AttributePair *attrs,
+												 const PT_PropertyPair  *props,
 												 bool bClearProps) const
 {
 	bool bIgnoreProps = false; // see below
@@ -913,50 +764,54 @@ PP_AttrProp * PP_AttrProp::cloneWithReplacements(const XML_Char ** attributes,
 	PP_AttrProp * papNew = new PP_AttrProp();
 	if (!papNew)
 		goto Failed;
-	if (!papNew->setAttributes(attributes) || !papNew->setProperties(properties))
+	
+	if (!papNew->setAttributes(attrs) ||
+		!papNew->setProperties(props))
 		goto Failed;
 
 	// next, add any items that we have that are not present
 	// (have not been overridden) in the new one.
 
-	UT_uint32 k;
-	const XML_Char * n;
-	const XML_Char * v;
-	const XML_Char * vNew;
+	GQuark v;
+	GQuark vNew;
 
-	k = 0;
-	while (getNthAttribute(k++,n,v))
+	if (m_pAttributes)
 	{
-		// TODO decide if/whether to allow PT_PROPS_ATTRIBUTE_NAME here.
-		// TODO The issue is: we use it to store the CSS properties and
-		// TODO when we see it, we expand the value into one or more
-		// TODO properties.  if we allow it to be given here, should
-		// TODO we blowaway all of the existing properties and create
-		// TODO them from this?  or should we expand it and override
-		// TODO individual properties?
-		// TODO for now, we just barf on it.
-		UT_return_val_if_fail (strcmp(n,PT_PROPS_ATTRIBUTE_NAME)!=0, false); // cannot handle PROPS here
-		if (!papNew->getAttribute(n,vNew))
-			if (!papNew->setAttribute(n,v))
-				goto Failed;
+		AP_Attrs::iterator ca = m_pAttributes->begin();
+	
+		while (ca != m_pAttributes->end())
+		{
+			if (ca->first == PT_PROPS_ATTRIBUTE_NAME)
+			{
+				ca++;
+				continue;
+			}
+			
+			if (!papNew->getAttribute(ca->first,vNew))
+				if (!papNew->setAttribute(ca->first,ca->second))
+					goto Failed;
+			ca++;
+		}
 	}
-
+	
 	// we want to be able to remove all properties by setting the
 	// props attribute to ""; in order for that to work, we need to
 	// skip the following loop if props is set to ""
-	const XML_Char * szValue;
 
-	if(papNew->getAttribute("props", szValue) && !*szValue)
+	if(papNew->getAttribute(PT_PROPS_ATTRIBUTE_NAME, v) &&
+	   v == g_quark_from_string (""))
 		bIgnoreProps = true;
 
-	if (!bClearProps && !bIgnoreProps)
+	if (!bClearProps && !bIgnoreProps && m_pProperties)
 	{
-		k = 0;
-		while (getNthProperty(k++,n,v))
+		AP_Props::iterator cp = m_pProperties->begin ();
+		while (cp != m_pProperties->end())
 		{
-			if (!papNew->getProperty(n,vNew))
-				if (!papNew->setProperty(n,v))
+			if (!papNew->getProperty(cp->first,vNew))
+				if (!papNew->setProperty(cp->first,cp->second.first))
 					goto Failed;
+
+			cp++;
 		}
 	}
 
@@ -978,30 +833,39 @@ void PP_AttrProp::_clearEmptyProperties()
 	if(!m_pProperties)
 		return;
 
-	UT_GenericStringMap<PropertyPair*>::UT_Cursor _hc1(m_pProperties);
-	PropertyPair * pEntry;
+	AP_Props::iterator c = m_pProperties->begin();
 
-	for ( pEntry  = _hc1.first(); _hc1.is_valid(); pEntry = _hc1.next())
+	while (c != m_pProperties->end())
 	{
-		if (pEntry)
+		if (c->second.first == 0 ||
+			c->second.first == g_quark_from_string (""))
 		{
-			const PropertyPair* p = pEntry;
-
-			const char *s = p->first();
-			if(s == NULL || *s == 0)
-			{
-
-				XML_Char* tmp = const_cast<XML_Char*>(p->first());
-				UT_return_if_fail (!m_bIsReadOnly);
-				FREEP(tmp);
-				m_pProperties->remove(_hc1.key(),pEntry);
-				if (p->second()) {
-					delete p->second();
-				}
-				delete p;
-
-			}
+			delete c->second.second;
+			m_pProperties->erase (c);
 		}
+		
+		c++;
+	}
+}
+
+/// This function will remove all attributes that are equal to "" (*<XML_Char *> == NULL)
+void PP_AttrProp::_clearEmptyAttributes()
+{
+	if(!m_pAttributes)
+		return;
+
+	AP_Attrs::iterator c = m_pAttributes->begin();
+
+	
+	while (c != m_pAttributes->end())
+	{
+		if (c->second == 0 ||
+			c->second == g_quark_from_string (""))
+		{
+			m_pAttributes->erase (c);
+		}
+		
+		c++;
 	}
 }
 
@@ -1012,98 +876,93 @@ void PP_AttrProp::prune()
 	_clearEmptyProperties();
 }
 
-/// This function will remove all attributes that are equal to "" (*<XML_Char *> == NULL)
-void PP_AttrProp::_clearEmptyAttributes()
-{
-	if(!m_pAttributes)
-		return;
-
-	UT_GenericStringMap<XML_Char*>::UT_Cursor _hc1(m_pAttributes);
-	XML_Char * pEntry;
-
-	for ( pEntry  = _hc1.first(); _hc1.is_valid(); pEntry = _hc1.next())
-	{
-		if (pEntry && !*pEntry)
-		{
-			UT_return_if_fail (!m_bIsReadOnly);
-			m_pAttributes->remove(_hc1.key(),pEntry);
-			FREEP(pEntry);
-		}
-	}
-}
 
 /*! Create a new AttrProp based upon the given one, removing the items given
-	 regardless of their value.  See also PP_AttrProp::cloneWithEliminationIfEqual,
-	 which does similarly but only removes the items given if their value is equal
-	 to the value given.
+	 regardless of their value.  See also
+	 PP_AttrProp::cloneWithEliminationIfEqual, which does similarly but only
+	 removes the items given if their value is equal to the value given.
 	 \return NULL on failure, the newly-created PP_AttrProp clone otherwise.
 */
-PP_AttrProp * PP_AttrProp::cloneWithElimination(const XML_Char ** attributes,
-												const XML_Char ** properties) const
+PP_AttrProp * PP_AttrProp::cloneWithElimination(const PT_AttributePair * attrs,
+												const PT_PropertyPair *  props) const
 {
-
 	// first, create an empty AttrProp.
 	PP_AttrProp * papNew = new PP_AttrProp();
 	if (!papNew)
 		goto Failed;
 
-	UT_uint32 k;
-	const XML_Char * n;
-	const XML_Char * v;
-
-	k = 0;
-	while (getNthAttribute(k++,n,v))
+	if (m_pAttributes)
 	{
-		// for each attribute in the old set, add it to the
-		// new set only if it is not present in the given array.
-
-		if (attributes && *attributes)
+		AP_Attrs::iterator ca = m_pAttributes->begin();
+	
+		while (ca != m_pAttributes->end())
 		{
-			const XML_Char ** p = attributes;
-			while (*p)
+			// for each attribute in the old set, add it to the
+			// new set only if it is not present in the given array.
+
+			if(ca->first == PT_PROPS_ATTRIBUTE_NAME)
+				goto DoNotIncludeAttribute;
+			
+			// TODO optimise this by taking the if () of the loop here
+			if (attrs)
 			{
-				UT_return_val_if_fail (strcmp(p[0],PT_PROPS_ATTRIBUTE_NAME)!=0, false); // cannot handle PROPS here
-				if (strcmp(n,p[0])==0)		// found it, so we don't put it in the result.
-					goto DoNotIncludeAttribute;
-				p += 2;								// skip over value
+				const PT_AttributePair * p = attrs;
+				while (p->a)
+				{
+					if (p->a == PT_PROPS_ATTRIBUTE_NAME)
+					{
+						p++;
+						continue;
+					}
+					
+					if (ca->first == p->a)// found it - don't put it in
+						goto DoNotIncludeAttribute;
+					
+					p++;								// skip over value
+				}
 			}
+
+			// we didn't find it in the given array, add it to the new set.
+
+			if (!papNew->setAttribute(ca->first, ca->second))
+				goto Failed;
+
+		  DoNotIncludeAttribute:
+			ca++;
 		}
-
-		// we didn't find it in the given array, add it to the new set.
-
-		if (!papNew->setAttribute(n,v))
-			goto Failed;
-
-	DoNotIncludeAttribute:
-		;
 	}
 
-	k = 0;
-	while (getNthProperty(k++,n,v))
+	if (m_pProperties)
 	{
-		// for each property in the old set, add it to the
-		// new set only if it is not present in the given array.
-
-		if (properties && *properties)
+		AP_Props::iterator cp = m_pProperties->begin ();
+		
+		while (cp != m_pProperties->end ())
 		{
-			const XML_Char ** p = properties;
-			while (*p)
+			// for each property in the old set, add it to the
+			// new set only if it is not present in the given array.
+
+			if (props)
 			{
-				if (strcmp(n,p[0])==0)		// found it, so we don't put it in the result.
-					goto DoNotIncludeProperty;
-				p += 2;
+				const PT_PropertyPair * p = props;
+				while (p->p)
+				{
+					if (cp->first == p->p)// found it - don't put it in
+						goto DoNotIncludeProperty;
+					
+					p++;
+				}
 			}
+
+			// we didn't find it in the given array, add it to the new set.
+
+			if (!papNew->setProperty(cp->first,cp->second.first))
+				goto Failed;
+
+		  DoNotIncludeProperty:
+			cp++;
 		}
-
-		// we didn't find it in the given array, add it to the new set.
-
-		if (!papNew->setProperty(n,v))
-			goto Failed;
-
-	DoNotIncludeProperty:
-		;
 	}
-
+	
 	return papNew;
 
 Failed:
@@ -1123,78 +982,95 @@ void PP_AttrProp::markReadOnly(void)
 	_computeCheckSum();
 }
 
-/*! Create a new AttrProp based upon the given one, removing the items given
-	 if their value is equal to that given.  See also PP_AttrProp::cloneWithElimination,
-	 which does similarly but removes the items given regardless of whether or not
-	 their value is equal to the value given.
-	 \return NULL on failure, the newly-created PP_AttrProp clone otherwise.
+/*! Create a new AttrProp based upon the given one, removing the items given if
+    their value is equal to that given.  See also
+    PP_AttrProp::cloneWithElimination, which does similarly but removes the
+    items given regardless of whether or not their value is equal to the value
+    given.
+
+    \return NULL on failure, the newly-created PP_AttrProp clone
+    otherwise.
 */
-PP_AttrProp * PP_AttrProp::cloneWithEliminationIfEqual(const XML_Char ** attributes,
-												const XML_Char ** properties) const
+PP_AttrProp * PP_AttrProp::cloneWithEliminationIfEqual(const PT_AttributePair* attributes,
+												const PT_PropertyPair * properties) const
 {
 	// first, create an empty AttrProp.
 	PP_AttrProp * papNew = new PP_AttrProp();
 	if (!papNew)
 		goto Failed;
 
-	UT_uint32 k;
-	const XML_Char * n;
-	const XML_Char * v;
-
-	k = 0;
-	while (getNthAttribute(k++,n,v))
+	if (m_pAttributes)
 	{
-		// for each attribute in the old set, add it to the
-		// new set only if it is not present in the given array.
-
-		if (attributes && *attributes)
+		AP_Attrs::iterator ca = m_pAttributes->begin ();
+		
+		while (ca != m_pAttributes->end())
 		{
-			const XML_Char ** p = attributes;
-			while (*p)
+			// for each attribute in the old set, add it to the
+			// new set only if it is not present in the given array.
+			if(ca->first == PT_PROPS_ATTRIBUTE_NAME)
+				goto DoNotIncludeAttribute;
+
+			if (attributes)
 			{
-				if(strcmp(p[0],PT_PROPS_ATTRIBUTE_NAME)!=0)
-					goto DoNotIncludeAttribute; // cannot handle PROPS here
-				if (strcmp(n,p[0])==0 && strcmp(n,p[1])==0)		// found it, so we don't put it in the result.
-					goto DoNotIncludeAttribute;
-				p += 2;								// skip over value
+				const PT_AttributePair * p = attributes;
+				while (p->a)
+				{
+					if (p->a == PT_PROPS_ATTRIBUTE_NAME)
+					{
+						p++;
+						continue;
+					}
+					
+					if (ca->first == p->a &&
+						ca->second == p->v)// found it, don't put it in
+						goto DoNotIncludeAttribute;
+					
+					p++;								// skip over value
+				}
 			}
+
+			// we didn't find it in the given array, add it to the new set.
+
+			if (!papNew->setAttribute(ca->first,ca->second))
+				goto Failed;
+
+		  DoNotIncludeAttribute:
+			ca++;
 		}
-
-		// we didn't find it in the given array, add it to the new set.
-
-		if (!papNew->setAttribute(n,v))
-			goto Failed;
-
-	DoNotIncludeAttribute:
-		;
 	}
-
-	k = 0;
-	while (getNthProperty(k++,n,v))
+	
+	if (m_pProperties)
 	{
-		// for each property in the old set, add it to the
-		// new set only if it is not present in the given array.
-
-		if (properties && *properties)
+		AP_Props::iterator cp = m_pProperties->begin ();
+		
+		while (cp != m_pProperties->end ())
 		{
-			const XML_Char ** p = properties;
-			while (*p)
+			// for each property in the old set, add it to the
+			// new set only if it is not present in the given array.
+
+			if (properties)
 			{
-				if (strcmp(n,p[0])==0 && strcmp(n,p[1])==0)		// found it, so we don't put it in the result.
-					goto DoNotIncludeProperty;
-				p += 2;
+				const PT_PropertyPair * p = properties;
+				while (p->p)
+				{
+					if (cp->first == p->p &&
+						cp->second.first == p->v) // found it, don't put it in
+						goto DoNotIncludeProperty;
+					
+					p++;
+				}
 			}
+
+			// we didn't find it in the given array, add it to the new set.
+
+			if (!papNew->setProperty(cp->first,cp->second.first))
+				goto Failed;
+
+		  DoNotIncludeProperty:
+			cp++;
 		}
-
-		// we didn't find it in the given array, add it to the new set.
-
-		if (!papNew->setProperty(n,v))
-			goto Failed;
-
-	DoNotIncludeProperty:
-		;
 	}
-
+	
 	return papNew;
 
 Failed:
@@ -1224,9 +1100,12 @@ static UT_uint32 hashcodeBytesAP(UT_uint32 init, const void * pv, UT_uint32 cb)
  	return h;
 }
 
-/*! Compute the checksum by which we speed AP equivalence testing.  (?)To the best of my knowledge,
-	 collision is still possible.  (?)TODO: Document the algorithm/process here, and
-	 answer remaining questions about this chunk of code.
+/*! Compute the checksum by which we speed AP equivalence testing.
+	
+	(?)To the best of my knowledge, collision is still possible.
+
+	(?)TODO: Document the algorithm/process here, and answer remaining
+	questions about this chunk of code.
 */
 void PP_AttrProp::_computeCheckSum(void)
 {
@@ -1235,78 +1114,52 @@ void PP_AttrProp::_computeCheckSum(void)
  	if (!m_pAttributes && !m_pProperties)
   		return;
  
-	const XML_Char * s1, *s2;
- 	UT_uint32	cch = 0;
  	XML_Char	rgch[9];
   
  	rgch[8] = 0;
   
  	if (m_pAttributes)
   	{
- 		UT_GenericStringMap<XML_Char*>::UT_Cursor c1(m_pAttributes);
- 		const XML_Char *val = c1.first();
- 
- 		while (val != NULL)
+ 		AP_Attrs::iterator ca = m_pAttributes->begin();
+
+		while (ca != m_pAttributes->end())
  		{
- 			s1 = c1.key().c_str();
- 			s2 = val;
-  
- 			cch = UT_XML_strlen(s1);
-  
- 			m_checkSum = hashcodeBytesAP(m_checkSum, s1, cch);
- 
- 			cch = UT_XML_strlen(s2);
- 
- 			UT_XML_strncpy(rgch, 8, s2);
- 			UT_lowerString(rgch);
-  
- 			m_checkSum = hashcodeBytesAP(m_checkSum, rgch, cch);
-  
- 			if (!c1.is_valid())
- 				break;
- 			val = c1.next();
+			GQuark v = ca->first;
+ 			m_checkSum = hashcodeBytesAP(m_checkSum, &v, sizeof(GQuark));
+
+			v = ca->second;
+ 			m_checkSum = hashcodeBytesAP(m_checkSum, &v, sizeof(GQuark));
+
+			ca++;
  		}
  	}
  
  	if (m_pProperties)
   	{
- 		UT_GenericStringMap<PropertyPair*>::UT_Cursor c2(m_pProperties);
- 		const PropertyPair *val;
+ 		AP_Props::iterator cp = m_pProperties->begin();
  
- 		val = c2.first();
- 		while (val != NULL)
+ 		while (cp != m_pProperties->end())
  		{
- 			s1 = c2.key().c_str();
- 			s2 = val->first();
- 
- 			cch = UT_XML_strlen(s1);
- 
- 			UT_XML_strncpy(rgch, 8, s1);
- 			UT_lowerString(rgch);
- 
- 			m_checkSum = hashcodeBytesAP(m_checkSum, rgch, cch);
-  
- 			cch = UT_XML_strlen(s2);
-  
- 			UT_XML_strncpy(rgch, 8, s2);
- 			UT_lowerString(rgch);
- 
- 			m_checkSum = hashcodeBytesAP(m_checkSum, rgch, cch);
- 
- 			if (!c2.is_valid())
- 				break;
- 			val = c2.next();
+			GQuark v = cp->first;
+ 			m_checkSum = hashcodeBytesAP(m_checkSum, &v, sizeof(GQuark));
+
+			v = cp->second.first;
+ 			m_checkSum = hashcodeBytesAP(m_checkSum, &v, sizeof(GQuark));
+
+			cp++;
  		}
 	}
 	return;
 }
 
-/*! This is an accessor method that gets the checksum of [this] AP, by which we speed
-	 equivalence testing.  The speedup occurs when we bypass full-testing
-	 in the case of checksum mismatch when we know for sure that the APs are not
-	 equivalent.  Because collisions still occur, we do the full-testing if the
-	 checksums do match.
-	 \retval m_checkSum The unsigned 32-bit integer which serves as the AP's checksum.
+/*! This is an accessor method that gets the checksum of [this] AP, by which we
+	speed equivalence testing.  The speedup occurs when we bypass full-testing
+	in the case of checksum mismatch when we know for sure that the APs are not
+	equivalent.  Because collisions still occur, we do the full-testing if the
+	checksums do match.
+
+	\retval m_checkSum The unsigned 32-bit integer which serves as the AP's
+	checksum.
 */
 UT_uint32 PP_AttrProp::getCheckSum(void) const
 {
@@ -1318,29 +1171,29 @@ void PP_AttrProp::operator = (const PP_AttrProp &Other)
 {
 	UT_uint32 countMyAttrs = ((Other.m_pAttributes) ? Other.m_pAttributes->size() : 0);
 
-	UT_uint32 Index;
-	for(Index = 0; Index < countMyAttrs; Index++)
+	if (countMyAttrs)
 	{
-		const XML_Char * szName;
-		const XML_Char * szValue;
-		if(Other.getNthAttribute(Index, szName, szValue))
+		AP_Attrs::iterator ca = Other.m_pAttributes->begin ();
+
+		while (ca != Other.m_pAttributes->end ())
 		{
-			setAttribute(szName, szValue);
+			setAttribute (ca->first, ca->second);
+			ca++;
 		}
 	}
-
+	
 	UT_uint32 countMyProps = ((Other.m_pProperties) ? Other.m_pProperties->size() : 0);
 
-	for(Index = 0; Index < countMyProps; Index++)
+	if (countMyProps)
 	{
-		const XML_Char * szName;
-		const XML_Char * szValue;
-		if(Other.getNthProperty(Index, szName, szValue))
+		AP_Props::iterator cp = Other.m_pProperties->begin ();
+
+		while (cp != Other.m_pProperties->end ())
 		{
-			setProperty(szName, szValue);
+			setProperty (cp->first, cp->second.first);
+			cp++;
 		}
 	}
-
 }
 
 UT_uint32 PP_AttrProp::getIndex(void)
@@ -1351,22 +1204,24 @@ UT_uint32 PP_AttrProp::getIndex(void)
 void PP_AttrProp::setIndex(UT_uint32 i)
 {
 	m_index = i;
-	if(m_szProperties)
-	{
-		delete [] m_szProperties;
-	}
-	m_szProperties = NULL;
 }
 
-/*! This method checks if [this] AP and the given AP are functionally equivalent.
-    In contrast to is isExactMatch this function will return true if
-    the attrs and props are same even if they are in different order;
-    it is computationally much more involved than isExactMatch().
-	 On that note, it may be worth looking into putting some more explicit collision
-	 guarantees into the checksum computation algorithm, such to take advantage of
-	 those checksums here.  IOW, make it such to be trusted that if checksums match,
-	 APs are equivalent (but not necessarily exact matches).
-	 \retval TRUE if equivalent to given AP (regardless of order), FALSE otherwise.
+/*! This method checks if [this] AP and the given AP are functionally
+    equivalent.
+
+    In contrast to is isExactMatch this function will return true
+    if the attrs and props are same even if they are in different order; it is
+    computationally much more involved than isExactMatch().
+
+    On that note, it may be worth looking into putting some more explicit
+    collision guarantees into the checksum computation algorithm, such to take
+    advantage of those checksums here.
+
+    IOW, make it such to be trusted that if checksums match, APs are equivalent
+    (but not necessarily exact matches).
+
+    \retval TRUE if equivalent to given AP (regardless of order), FALSE
+    otherwise.
 */
 bool PP_AttrProp::isEquivalent(const PP_AttrProp * pAP2) const
 {
@@ -1377,185 +1232,205 @@ bool PP_AttrProp::isEquivalent(const PP_AttrProp * pAP2) const
 	   || getPropertyCount()  != pAP2->getPropertyCount())
 		return false;
 	
-	UT_uint32 i;
-	const XML_Char * pName, * pValue, * pValue2;
-	
-	for(i =  0; i < getAttributeCount(); ++i)
+	if(m_pAttributes)
 	{
-		UT_return_val_if_fail(getNthAttribute(i,pName,pValue),false);
-
-		if(!pAP2->getAttribute(pName,pValue2))
-			return false;
-
-		// ignore property attribute
-		if(0 == UT_strcmp(pValue, PT_PROPS_ATTRIBUTE_NAME))
-			continue;
-
-		// handle revision attribute correctly
-		if(0 == UT_strcmp(pValue, PT_REVISION_ATTRIBUTE_NAME))
+		AP_Attrs::iterator ca = m_pAttributes->begin ();
+		GQuark value2;
+		
+		while (ca != m_pAttributes->end())
 		{
-			// requires special treatment
-			PP_RevisionAttr r1(pValue);
-			PP_RevisionAttr r2 (pValue2);
-
-			if(!(r1 == r2))
-			{
+			// ignore property attribute
+			if(ca->first == PT_PROPS_ATTRIBUTE_NAME)
+				continue;
+			
+			if(!pAP2->getAttribute(ca->first, value2))
 				return false;
+ 
+
+			// handle revision attribute correctly
+			if(ca->first == PT_REVISION_ATTRIBUTE_NAME)
+			{
+				// requires special treatment
+				PP_RevisionAttr r1(ca->second);
+				PP_RevisionAttr r2 (value2);
+
+				if(!(r1 == r2))
+				{
+					return false;
+				}
 			}
+			else if(ca->second != value2)
+				return false;
+
+			ca++;
 		}
-		else if(0 != UT_strcmp(pValue,pValue2))
-			return false;
 	}
 
-	for(i =  0; i < getPropertyCount(); ++i)
+	if (m_pProperties)
 	{
-		UT_return_val_if_fail(getNthProperty(i,pName,pValue),false);
+		AP_Props::iterator cp = m_pProperties->begin ();
+		GQuark value2;
+		
+		while (cp != m_pProperties->end())
+		{
+			if(!pAP2->getProperty(cp->first,value2))
+				return false;
 
-		if(!pAP2->getProperty(pName,pValue2))
-			return false;
-
-		if(0 != UT_strcmp(pValue,pValue2))
-			return false;
+			if(cp->second.first != value2)
+				return false;
+		}
 	}
-
+	
 	return true;
 }
 
-/*! This method does the same as PP_AttrProp::isEquivalent(const PP_AttrProp *) except
-	 that instead of being passed another AP to be compared to, it is passed sets of
-	 attributes and properties which only virtually comprise another AP.
-	 \retval TRUE if equivalent (regardless of order) to given Attrs and Props, FALSE otherwise.
+/*! This method does the same as PP_AttrProp::isEquivalent(const PP_AttrProp *)
+	except that instead of being passed another AP to be compared to, it is
+	passed sets of attributes and properties which only virtually comprise
+	another AP.
+
+	\retval TRUE if equivalent (regardless of order) to given Attrs and Props,
+	FALSE otherwise.
 */
-bool PP_AttrProp::isEquivalent(const XML_Char ** attrs, const XML_Char ** props) const
+bool PP_AttrProp::isEquivalent(const PT_AttributePair * attrs,
+							   const PT_PropertyPair  * props) const
 {
 	UT_uint32 iAttrsCount  = 0;
 	UT_uint32 iPropsCount = 0;
 
-	const XML_Char ** p = attrs;
+	const PT_AttributePair * pa = attrs;
 
-	while(p && *p)
+	while(pa->a)
 	{
 		iAttrsCount++;
-		p += 2;
+		pa++;
 	}
 	
-	p = props;
+	const PT_PropertyPair * pp = props;
 
-	while(p && *p)
+	while(pp->p)
 	{
 		iPropsCount++;
-		p += 2;
+		pp++;
 	}
 
 	
 	if(   getAttributeCount() != iAttrsCount
 	   || getPropertyCount()  != iPropsCount)
 		return false;
-	
-	UT_uint32 i;
-	const XML_Char * pName, * pValue, * pValue2;
-	
-	for(i =  0; i < getAttributeCount(); ++i)
+
+	if (m_pAttributes)
 	{
-		pName = attrs[2*i];
-		pValue = attrs[2*i + 1];
-
-		if(!getAttribute(pName,pValue2))
-			return false;
-
-		// ignore property attribute
-		if(0 == UT_strcmp(pValue, PT_PROPS_ATTRIBUTE_NAME))
-			continue;
-
-		// handle revision attribute correctly
-		if(0 == UT_strcmp(pValue, PT_REVISION_ATTRIBUTE_NAME))
+		GQuark value2;
+		for(UT_uint32 i =  0; i < iAttrsCount; ++i)
 		{
-			// requires special treatment
-			PP_RevisionAttr r1(pValue);
-			PP_RevisionAttr r2 (pValue2);
+			// ignore property attribute
+			if(attrs[i].a == PT_PROPS_ATTRIBUTE_NAME)
+				continue;
 
-			if(!(r1 == r2))
-			{
+			if(!getAttribute(attrs[i].a,value2))
 				return false;
+
+			// handle revision attribute correctly
+			if(attrs[i].a == PT_REVISION_ATTRIBUTE_NAME)
+			{
+				// requires special treatment
+				PP_RevisionAttr r1(attrs[i].v);
+				PP_RevisionAttr r2 (value2);
+
+				if(!(r1 == r2))
+				{
+					return false;
+				}
 			}
+			else if(attrs[i].v != value2)
+				return false;
 		}
-		else if(0 != UT_strcmp(pValue,pValue2))
-			return false;
 	}
 
-	for(i =  0; i < getPropertyCount(); ++i)
+	if(m_pProperties)
 	{
-		pName = props[2*i];
-		pValue = props[2*i + 1];
+		GQuark value2;
+		
+		for(UT_uint32 i =  0; i < iPropsCount; ++i)
+		{
+			if(!getProperty(props[i].p,value2))
+				return false;
 
-		if(!getProperty(pName,pValue2))
-			return false;
-
-		if(0 != UT_strcmp(pValue,pValue2))
-			return false;
+			if(value2 != props[i].v)
+				return false;
+		}
 	}
-
+	
 	return true;
 }
 
-/*! \fn bool PP_AttrProp::explodeStyle(const PD_Document * pDoc, bool bOverwrite)
-	 \brief This function transfers attributes and properties defined in style into the AP.
-    \param bOverwrite indicates what happens if the property/attribute is already present. If false \
-     (default) the style definition is ignored; if true the style value overrides the present value.
+/*! \fn bool PP_AttrProp::explodeStyle(const PD_Document * pDoc, bool
+	 bOverwrite)
+
+	\brief This function transfers attributes and properties
+	defined in style into the AP.
+
+	\param bOverwrite indicates what happens if the property/attribute is
+	already present. If false (default) the style definition is ignored; if true
+	the style value overrides the present value.
 */
 bool PP_AttrProp::explodeStyle(const PD_Document * pDoc, bool bOverwrite)
 {
 	UT_return_val_if_fail(pDoc,false);
 	
 	// expand style if present
-	const XML_Char * pszStyle = NULL;
-	if(getAttribute(PT_STYLE_ATTRIBUTE_NAME, pszStyle))
+	GQuark style = 0;
+	if(getAttribute(PT_STYLE_ATTRIBUTE_NAME, style))
 	{
 		PD_Style * pStyle = NULL;
 
-        if(pszStyle && (UT_strcmp(pszStyle, "None") != 0) && pDoc->getStyle(pszStyle,&pStyle))
+        if(style &&
+		   style != PP_Q(None) &&
+		   pDoc->getStyle(style,&pStyle))
         {
-			UT_Vector vAttrs;
-			UT_Vector vProps;
+			PT_AttributeVector vAttrs;
+			PT_PropertyVector  vProps;
 
 			UT_uint32 i;
 
-			pStyle->getAllAttributes(&vAttrs, 100);
-			pStyle->getAllProperties(&vProps, 100);
+			pStyle->getAllAttributes(vAttrs, 100);
+			pStyle->getAllProperties(vProps, 100);
 
-			for(i = 0; i < vProps.getItemCount(); i += 2)
+			for(i = 0; i < vProps.getItemCount(); i++)
 			{
-				const XML_Char * pName =  (const XML_Char *)vProps.getNthItem(i);
-				const XML_Char * pValue = (const XML_Char *)vProps.getNthItem(i+1);
-				const XML_Char * p;
+				const PT_PropertyPair & pp = vProps.getNthItem(i);
+				
+				GQuark p;
 
-				bool bSet = bOverwrite || !getProperty(pName, p);
+				bool bSet = bOverwrite || !getProperty(pp.p, p);
 
 				if(bSet)
-					setProperty(pName, pValue);
+					setProperty(pp.p, pp.v);
 			}
 
-			// attributes are more complicated, because there are some style attributes that must
-			// not be transferred to the generic AP
-			for(i = 0; i < vAttrs.getItemCount(); i += 2)
+			// attributes are more complicated, because there are some style
+			// attributes that must not be transferred to the generic AP
+			for(i = 0; i < vAttrs.getItemCount(); i++)
 			{
-				const XML_Char * pName = (const XML_Char *)vAttrs.getNthItem(i);
-				if(!pName || !UT_strcmp(pName, "type")
-				          || !UT_strcmp(pName, "name")
-				          || !UT_strcmp(pName, "basedon")
-				          || !UT_strcmp(pName, "followedby")
- 				          || !UT_strcmp(pName, "props"))
+				const PT_AttributePair & pa = vAttrs.getNthItem(i);
+				/* FIXME -- tied down g_quarks for common property values */				
+				if(pa.a == 0                            ||
+				   pa.a == PT_TYPE_ATTRIBUTE_NAME       ||
+				   pa.a == PT_NAME_ATTRIBUTE_NAME       ||
+				   pa.a == PT_BASEDON_ATTRIBUTE_NAME    ||
+				   pa.a == PT_FOLLOWEDBY_ATTRIBUTE_NAME ||
+ 				   pa.a == PT_PROPS_ATTRIBUTE_NAME)
 				{
 					continue;
 				}
 
-				const XML_Char * pValue = (const XML_Char *)vAttrs.getNthItem(i+1);
-				const XML_Char * p;
+				GQuark p;
 
-				bool bSet = bOverwrite || !getAttribute(pName, p);
+				bool bSet = bOverwrite || !getAttribute(pa.a, p);
 
 				if(bSet)
-					setAttribute(pName, pValue);
+					setAttribute(pa.a, pa.v);
 			}
 		}
 	}
@@ -1569,25 +1444,36 @@ bool PP_AttrProp::explodeStyle(const PD_Document * pDoc, bool bOverwrite)
 void PP_AttrProp::miniDump(const PD_Document * pDoc) const
 {
 #ifdef DEBUG
-	const XML_Char * pName, * pValue;
-	UT_uint32 i = 0;
-	
 	UT_DEBUGMSG(("--------------------- PP_AttrProp mini dump --------------------------------\n"));
 	UT_DEBUGMSG(("Attributes:\n"));
-	while(getNthAttribute(i,pName,pValue))
-	{
-		UT_DEBUGMSG(("%s : %s\n", pName, pValue));
-		++i;
-	}
-		  
-	UT_DEBUGMSG(("Properties:\n"));
-	i = 0;
-	while(getNthProperty(i,pName,pValue))
-	{
-		UT_DEBUGMSG(("%s : %s\n", pName, pValue));
-		++i;
-	}
 
+	if (m_pAttributes)
+	{
+		AP_Attrs::iterator ca = m_pAttributes->begin();
+		while(ca != m_pAttributes->end())
+		{
+			UT_DEBUGMSG(("%s : %s\n",
+						 PP_Attribute::getName(ca->first),
+						 g_quark_to_string (ca->second)));
+			ca++;
+		}
+	}
+	
+	UT_DEBUGMSG(("Properties:\n"));
+
+	if (m_pProperties)
+	{
+		AP_Props::iterator cp = m_pProperties->begin();
+		
+		while(cp != m_pProperties->end())
+		{
+			UT_DEBUGMSG(("%s : %s\n",
+						 PP_Property::getName(cp->first),
+						 g_quark_to_string (cp->second.first)));
+			cp++;
+		}
+	}
+	
 	if(m_iRevisedIndex != 0xffffffff && pDoc)
 	{
 		UT_DEBUGMSG(("Attached revised AP:\n"));

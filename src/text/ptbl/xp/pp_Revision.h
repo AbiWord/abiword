@@ -1,3 +1,4 @@
+/* -*- mode: C++; tab-width: 4; c-basic-offset: 4; -*- */
 /* AbiWord
  * Copyright (C) 2002 Tomas Frydrych <tomas@frydrych.uklinux.net>
  *
@@ -44,14 +45,14 @@ class PP_Revision: public PP_AttrProp
 {
   public:
 	PP_Revision(UT_uint32 Id,
-				PP_RevisionType eType,
-				const XML_Char *  props,
-				const XML_Char * attrs);
+		    PP_RevisionType eType,
+		    const XML_Char * props,
+		    const XML_Char * attrs);
 
 	PP_Revision(UT_uint32 Id,
-				PP_RevisionType eType,
-				const XML_Char ** props,
-				const XML_Char ** attrs);
+		    PP_RevisionType eType,
+		    const PT_PropertyPair  * props,
+		    const PT_AttributePair * attrs);
 
 	virtual ~PP_Revision(){};
 	
@@ -65,7 +66,7 @@ class PP_Revision: public PP_AttrProp
 	const XML_Char * getAttrsString();
 
 	// this is intentionally not virtual (no need for that)
-	bool	setAttributes(const XML_Char ** attributes);
+	bool	setAttributes(const PT_AttributePair * attributes);
 	
 	bool operator == (const PP_Revision &op2) const;
 
@@ -121,48 +122,64 @@ class PP_RevisionAttr
 		:m_vRev(),m_sXMLstring(),m_bDirty(true),m_iSuperfluous(0),m_pLastRevision(NULL)
 		{};
 	PP_RevisionAttr(const XML_Char * r);
+	PP_RevisionAttr(GQuark r);
 
 	
-	PP_RevisionAttr(UT_uint32 iId, PP_RevisionType eType, const XML_Char ** pAttrs, const XML_Char ** pProps);
+	PP_RevisionAttr(UT_uint32 iId,
+			PP_RevisionType eType,
+			const PT_AttributePair * pAttrs,
+			const PT_PropertyPair  * pProps);
 	
 	~PP_RevisionAttr();
 
-	void                  setRevision(const XML_Char * r);
+	void            setRevision(const XML_Char * r);
 
-	void                  addRevision(UT_uint32 iId,
-									  PP_RevisionType eType,
-									  const XML_Char ** pAttrs,
-									  const XML_Char ** pProps);
+	void            addRevision(UT_uint32 iId,
+				    PP_RevisionType eType,
+				    const PT_AttributePair * pAttrs,
+				    const PT_PropertyPair  * pProps);
 
-	bool                  changeRevisionType(UT_uint32 iId, PP_RevisionType eType);
-	bool                  changeRevisionId(UT_uint32 iOldId, UT_uint32 iNewId);
+	bool            changeRevisionType(UT_uint32 iId,
+					   PP_RevisionType eType);
+    
+	bool            changeRevisionId(UT_uint32 iOldId, UT_uint32 iNewId);
 
-	void                  removeRevisionIdWithType(UT_uint32 iId, PP_RevisionType eType);
-	void                  removeRevisionIdTypeless(UT_uint32 iId);
-	void                  removeAllLesserOrEqualIds(UT_uint32 id);
-	void                  removeAllHigherOrEqualIds(UT_uint32 id);
-	void                  removeRevision(const PP_Revision * pRev);
+	void            removeRevisionIdWithType(UT_uint32 iId, PP_RevisionType eType);
+	void            removeRevisionIdTypeless(UT_uint32 iId);
+	void            removeAllLesserOrEqualIds(UT_uint32 id);
+	void            removeAllHigherOrEqualIds(UT_uint32 id);
+	void            removeRevision(const PP_Revision * pRev);
 
 	const PP_Revision *   getGreatestLesserOrEqualRevision(UT_uint32 id,
-														   const PP_Revision ** ppR);
+							       
+							       const PP_Revision ** ppR);
 	const PP_Revision *   getLowestGreaterOrEqualRevision(UT_uint32 id);
 	
 	const PP_Revision *   getLastRevision();
-	const PP_Revision *   getRevisionWithId(UT_uint32 iId, UT_uint32 & iMinId);
+	const PP_Revision *   getRevisionWithId(UT_uint32 iId,
+						UT_uint32 & iMinId);
 
-	UT_uint32             getRevisionsCount() const {return m_vRev.getItemCount();}
-	const PP_Revision *   getNthRevision(UT_uint32 n) const {return (const PP_Revision*)m_vRev.getNthItem(n);}
+	UT_uint32             getRevisionsCount() const
+	                                   {return m_vRev.getItemCount();}
+    
+	const PP_Revision *   getNthRevision(UT_uint32 n) const
+	                     {return (const PP_Revision*)m_vRev.getNthItem(n);}
 	
 	void                  pruneForCumulativeResult(PD_Document * pDoc);
 	
-	/*! please note that the following are convenience functions; if
-	    you need to make repeated enqueries, it is better to call
-	    getGreatestLesserOrEqualRevision() or getLastRevision() and
-	    querie the returned PP_Revision object.
-    */
+	/*! please note that the following are convenience functions; if you
+	    need to make repeated enqueries, it is better to call
+	    getGreatestLesserOrEqualRevision() or getLastRevision() and query
+	    the returned PP_Revision object.
+	*/
 	bool                  isVisible(UT_uint32 id);
-	bool                  hasProperty(UT_uint32 iId, const XML_Char * pName, const XML_Char * &pValue);
-	bool                  hasProperty(const XML_Char * pName, const XML_Char * &pValue);
+	bool                  hasProperty(UT_uint32 iId,
+					  PT_Property name,
+					  GQuark & value);
+    
+	bool                  hasProperty(PT_Property name,
+					  GQuark & value);
+    
 	PP_RevisionType       getType(UT_uint32 iId);
 	PP_RevisionType       getType();
 #if 0
@@ -182,8 +199,10 @@ class PP_RevisionAttr
 
 	UT_Vector           m_vRev;
 	UT_String           m_sXMLstring;
-	bool                m_bDirty; // indicates whether m_sXMLstring corresponds
-						          // to current state of the instance
+	bool                m_bDirty; // indicates whether m_sXMLstring
+				      // correspond to current state of
+				      // the instance
+    
 	UT_uint32           m_iSuperfluous;
 	const PP_Revision * m_pLastRevision;
 };

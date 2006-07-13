@@ -103,7 +103,11 @@ public:
 	    UT_ASSERT_HARMLESS(n<m_iCount);
 
 	    if(n >= m_iCount || !m_pEntries) {
-			return 0;
+			// returning 0 from here makes it impossible to use for anything
+			// other than pointers and ints -- need to leave the responsibility
+			// for checking bounds to the caller
+			// proper C++ way of handling is to throw and exception
+			g_assert_not_reached();
 		}
 	    return m_pEntries[n];
 	}

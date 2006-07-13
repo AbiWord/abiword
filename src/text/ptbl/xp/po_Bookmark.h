@@ -44,13 +44,13 @@ class ABI_EXPORT po_Bookmark
 		__last_field_dont_use__
 	} BookmarkType;
 	
-    po_Bookmark(pf_Frag_Object& fO, pt_PieceTable * pt, BookmarkType type, const XML_Char* name);
+    po_Bookmark(pf_Frag_Object& fO, pt_PieceTable * pt, BookmarkType type, GQuark name);
     virtual							~po_Bookmark(void);
     void							setBlock(fl_BlockLayout * pBlock);
     fl_BlockLayout *				getBlock( void);
-	BookmarkType					getBookmarkType(void) const;
-	const XML_Char *				getName(void) const;
-	void							setName(const XML_Char * szValue);
+    BookmarkType					getBookmarkType(void) const;
+    GQuark				getName(void) const;
+    void							setName(GQuark vValue);
     // probably need different types of update
     // which are overridden in the appropriate subclass
     // eg positionChangeUpdate
@@ -63,7 +63,7 @@ class ABI_EXPORT po_Bookmark
     pf_Frag_Object& m_fragObject;
     pt_PieceTable *	m_pPieceTable;
     BookmarkType m_iBookmarkType;
-	XML_Char * m_pName;
+    GQuark m_qName;
 };
 
 #endif

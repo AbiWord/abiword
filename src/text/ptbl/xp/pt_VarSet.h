@@ -1,3 +1,4 @@
+/* -*- mode: C++; tab-width: 4; c-basic-offset: 4; -*- */
 /* AbiWord
  * Copyright (C) 1998 AbiSource, Inc.
  * 
@@ -34,26 +35,51 @@ public:
 	pt_VarSet();
 	~pt_VarSet();
 	
-	void					setPieceTableState(PTState pts);
-	bool					appendBuf(const UT_UCSChar * pBuf, UT_uint32 length, PT_BufIndex * pbi);
-	bool					storeAP(const XML_Char ** attributes, PT_AttrPropIndex * papi);
-	bool					storeAP(const UT_GenericVector<XML_Char*>* pVecAttributes, PT_AttrPropIndex * papi);
-	inline const UT_UCSChar *getPointer(PT_BufIndex bi) const {  return (UT_UCSChar *)m_buffer[_varsetFromBufIndex(bi)].getPointer(_subscriptFromBufIndex(bi)); }
-	inline PT_BufIndex		getBufIndex(PT_BufIndex bi, UT_uint32 offset) const
+	void				setPieceTableState(PTState pts);
+	
+	bool				appendBuf(const UT_UCSChar * pBuf,
+								  UT_uint32 length,
+								  PT_BufIndex * pbi);
+	
+	bool				storeAP(const PT_AttributePair * attrs,
+								PT_AttrPropIndex * papi);
+	
+	bool				storeAP(const PT_AttributeVector & vAttrs,
+								PT_AttrPropIndex * papi);
+	
+	inline
+	const UT_UCS4Char * getPointer(PT_BufIndex bi) const
+	{
+		return (UT_UCS4Char*)m_buffer[_varsetFromBufIndex(bi)].getPointer(_subscriptFromBufIndex(bi));
+	}
+	
+	inline PT_BufIndex	getBufIndex(PT_BufIndex bi, UT_uint32 offset) const
 	{     return _makeBufIndex(_varsetFromBufIndex(bi),
 	                           _subscriptFromBufIndex(bi)+offset);
 	}
 
-	bool					isContiguous(PT_BufIndex bi, UT_uint32 length, PT_BufIndex bi2) const;
-	inline const PP_AttrProp *getAP(PT_AttrPropIndex api) const
+	bool				isContiguous(PT_BufIndex bi,
+									 UT_uint32 length,
+									 PT_BufIndex bi2) const;
+	
+	inline
+	const PP_AttrProp * getAP(PT_AttrPropIndex api) const
 	{
 		return m_tableAttrProp[_varsetFromAPIndex(api)].getAP(_subscriptFromAPIndex(api));
 	}
-	bool					mergeAP(PTChangeFmt ptc,PT_AttrPropIndex apiOld,
-									const XML_Char ** attributes, const XML_Char ** properties,
-									PT_AttrPropIndex * papiNew, PD_Document * pDoc);
-	bool					addIfUniqueAP(PP_AttrProp * pAP, PT_AttrPropIndex * papi);
-    bool                 overwriteBuf(UT_UCSChar * pBuf, UT_uint32 length, PT_BufIndex * pbi);
+	
+	bool				mergeAP(PTChangeFmt ptc,
+								PT_AttrPropIndex apiOld,
+								const PT_AttributePair * attributes,
+								const PT_PropertyPair  * properties,
+								PT_AttrPropIndex * papiNew,
+								PD_Document * pDoc);
+	
+	bool				addIfUniqueAP(PP_AttrProp *pAP,PT_AttrPropIndex *papi);
+	
+    bool                overwriteBuf(UT_UCSChar * pBuf,
+									 UT_uint32 length,
+									 PT_BufIndex * pbi);
 
 private:
 	inline UT_uint32 _subscriptFromBufIndex(PT_BufIndex bi) const
@@ -75,12 +101,14 @@ private:
 	    return (api >> 31);
 	}
 
-	inline PT_BufIndex _makeBufIndex(UT_uint32 varset, UT_uint32 subscript) const
+	inline PT_BufIndex _makeBufIndex(UT_uint32 varset,
+									 UT_uint32 subscript) const
 	{
 	    return ((varset<<31)|subscript);
 	}
 
-	inline PT_AttrPropIndex _makeAPIndex(UT_uint32 varset, UT_uint32 subscript) const
+	inline PT_AttrPropIndex _makeAPIndex(UT_uint32 varset,
+										 UT_uint32 subscript) const
 	{
 		return ((varset<<31)|subscript);
 	}

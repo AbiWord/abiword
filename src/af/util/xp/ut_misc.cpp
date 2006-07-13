@@ -709,25 +709,6 @@ bool UT_isWordDelimiter(UT_UCSChar currentChar, UT_UCSChar followChar, UT_UCSCha
 	} // switch
 }
 
-const XML_Char* UT_getAttribute(const XML_Char* name, const XML_Char** atts)
-{
-	UT_return_val_if_fail( atts, NULL );
-
-	const XML_Char** p = atts;
-
-	while (*p)
-	{
-		if (0 == strcmp(static_cast<const char*>(p[0]), static_cast<const char*>(name)))
-			break;
-		p += 2;
-	}
-
-	if (*p)
-		return p[1];
-	else
-		return NULL;
-}
-
 //////////////////////////////////////////////////////////////////
 
 UT_sint32 signedLoWord(UT_uint32 dw)

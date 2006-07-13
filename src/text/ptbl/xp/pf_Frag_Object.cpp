@@ -39,364 +39,156 @@ pf_Frag_Object::pf_Frag_Object(pt_PieceTable * pPT,
 	xxx_UT_DEBUGMSG(("Frag Object created indexAP %x \n",m_indexAP));
     m_pPieceTable->getAttrProp(m_indexAP,&pAP);
     UT_return_if_fail (pAP);
-    const XML_Char* pszType = NULL;
-    const XML_Char* pszName = NULL;
-	const XML_Char* pszParam = NULL;
+    GQuark qType = 0;
+    GQuark qName = 0;
+    GQuark qParam = 0;
 
-    pAP->getAttribute(static_cast<const XML_Char *>("type"), pszType);
-    pAP->getAttribute(static_cast<const XML_Char *>("name"), pszName);
-    pAP->getAttribute(static_cast<const XML_Char *>("param"), pszParam);
+    pAP->getAttribute(PT_TYPE_ATTRIBUTE_NAME, qType);
+    pAP->getAttribute(PT_NAME_ATTRIBUTE_NAME, qName);
+    pAP->getAttribute(PT_PARAM_ATTRIBUTE_NAME,qParam);
 
     fd_Field::FieldType fieldType;
 
     if (objectType==PTO_Field) 
     {
-		if(pszType == NULL)
-		{
-			UT_ASSERT(UT_SHOULD_NOT_HAPPEN);
-			pszType = "test";
-		}
-    	switch(*pszType)
+	if(!qType)
+	{
+	    UT_ASSERT(UT_SHOULD_NOT_HAPPEN);
+	    qType = PP_Q(test);
+	}
+    	switch(qType)
     	{
-    		case 'a':
-				if (0 == UT_strcmp(pszType, "app_ver"))
-				{
-					fieldType = fd_Field::FD_App_Version;
-				}
-				else if (0 == UT_strcmp(pszType, "app_id"))
-				{
-					fieldType = fd_Field::FD_App_ID;
-				}
-				else if (0 == UT_strcmp(pszType, "app_options"))
-				{
-					fieldType = fd_Field::FD_App_Options;
-				}
-				else if (0 == UT_strcmp(pszType, "app_target"))
-				{
-					fieldType = fd_Field::FD_App_Target;
-				}
-				else if (0 == UT_strcmp(pszType, "app_compiledate"))
-				{
-					fieldType = fd_Field::FD_App_CompileDate;
-				}
-				else if (0 == UT_strcmp(pszType, "app_compiletime"))
-				{
-					fieldType = fd_Field::FD_App_CompileTime;
-				}
-		        else
-        		{
-		            UT_ASSERT_HARMLESS(UT_SHOULD_NOT_HAPPEN);
-        		    //Better than segfaulting I figure
-		            fieldType = fd_Field::FD_Test;
-        		}
-				break;
-    		case 'c':
-				if (0 == UT_strcmp(pszType, "char_count"))
-				{
-					fieldType = fd_Field::FD_Doc_CharCount;
-				}
-		        else
-        		{
-		            UT_ASSERT_HARMLESS(UT_SHOULD_NOT_HAPPEN);
-        		    //Better than segfaulting I figure
-		            fieldType = fd_Field::FD_Test;
-        		}
-    			break;
-    		case 'd':
-				if (0 == UT_strcmp(pszType, "date"))
-				{
-					fieldType = fd_Field::FD_Date;
-				}
-				else if (0 == UT_strcmp(pszType, "date_mmddyy"))
-				{
-					fieldType = fd_Field::FD_Date_MMDDYY;
-				}
-				else if (0 == UT_strcmp(pszType, "date_ddmmyy"))
-				{
-					fieldType = fd_Field::FD_Date_DDMMYY;
-				}
-				else if (0 == UT_strcmp(pszType, "date_mdy"))
-				{
-					fieldType = fd_Field::FD_Date_MDY;
-				}
-				else if (0 == UT_strcmp(pszType, "date_mthdy"))
-				{
-					fieldType = fd_Field::FD_Date_MthDY;
-				}
-				else if (0 == UT_strcmp(pszType, "date_dfl"))
-				{
-					fieldType = fd_Field::FD_Date_DFL;
-				}
-				else if (0 == UT_strcmp(pszType, "date_ntdfl"))
-				{
-					fieldType = fd_Field::FD_Date_NTDFL;
-				}
-				else if (0 == UT_strcmp(pszType, "date_wkday"))
-				{
-					fieldType = fd_Field::FD_Date_Wkday;
-				}
-				else if (0 == UT_strcmp(pszType, "date_doy"))
-				{
-					fieldType = fd_Field::FD_Date_DOY;
-				}
-				else if (0 == UT_strcmp(pszType, "datetime_custom"))
-				{
-					fieldType = fd_Field::FD_DateTime_Custom;
-				}
-		        else
-        		{
-		            UT_ASSERT_HARMLESS(UT_SHOULD_NOT_HAPPEN);
-        		    //Better than segfaulting I figure
-		            fieldType = fd_Field::FD_Test;
-        		}
-				break;
-    		case 'e':
-				if (0 == UT_strcmp(pszType, "endnote_ref"))
-				{
-					fieldType = fd_Field::FD_Endnote_Ref;
-				}
-				else if (0 == UT_strcmp(pszType, "endnote_anchor"))
-				{
-					fieldType = fd_Field::FD_Endnote_Anchor;
-				}
-		        else
-        		{
-		            UT_ASSERT_HARMLESS(UT_SHOULD_NOT_HAPPEN);
-        		    //Better than segfaulting I figure
-		            fieldType = fd_Field::FD_Test;
-        		}
-				break;
-    		case 'f':
-				if (0 == UT_strcmp(pszType, "file_name"))
-				{
-					fieldType = fd_Field::FD_FileName;
-				}
-				else if (0 == UT_strcmp(pszType, "footnote_ref"))
-				{
-					fieldType = fd_Field::FD_Footnote_Ref;
-				}
-				else if (0 == UT_strcmp(pszType, "footnote_anchor"))
-				{
-					fieldType = fd_Field::FD_Footnote_Anchor;
-				}
-		        else
-        		{
-		            UT_ASSERT_HARMLESS(UT_SHOULD_NOT_HAPPEN);
-        		    //Better than segfaulting I figure
-		            fieldType = fd_Field::FD_Test;
-        		}
-				break;
-    		case 'l':
-				if (0 == UT_strcmp(pszType, "list_label"))
-		        {
-        		    fieldType = fd_Field::FD_ListLabel;
-		        }
-				else if (0 == UT_strcmp(pszType, "line_count"))
-				{
-					fieldType = fd_Field::FD_Doc_LineCount;
-				}
-		        else
-        		{
-		            UT_ASSERT_HARMLESS(UT_SHOULD_NOT_HAPPEN);
-        		    //Better than segfaulting I figure
-		            fieldType = fd_Field::FD_Test;
-        		}
-    			break;
-    		case 'm':
-		        if (0 == UT_strcmp(pszType, "mail_merge"))
-		        {
-        		    fieldType = fd_Field::FD_MailMerge;
-		        }
-			else if(0 == UT_strcmp(pszType, "meta_title"))
-			  {
-			    fieldType = fd_Field::FD_Meta_Title;
-			  }
-			else if(0 == UT_strcmp(pszType, "meta_creator"))
-			  {
-			    fieldType = fd_Field::FD_Meta_Creator;
-			  }
-			else if(0 == UT_strcmp(pszType, "meta_subject"))
-			  {
-			    fieldType = fd_Field::FD_Meta_Subject;
-			  }
-			else if(0 == UT_strcmp(pszType, "meta_publisher"))
-			  {
-			    fieldType = fd_Field::FD_Meta_Publisher;
-			  }
-			else if(0 == UT_strcmp(pszType, "meta_date"))
-			  {
-			    fieldType = fd_Field::FD_Meta_Date;
-			  }
-			else if(0 == UT_strcmp(pszType, "meta_type"))
-			  {
-			    fieldType = fd_Field::FD_Meta_Type;
-			  }
-			else if(0 == UT_strcmp(pszType, "meta_language"))
-			  {
-			    fieldType = fd_Field::FD_Meta_Language;
-			  }
-			else if(0 == UT_strcmp(pszType, "meta_rights"))
-			  {
-			    fieldType = fd_Field::FD_Meta_Rights;
-			  }
-			else if(0 == UT_strcmp(pszType, "meta_keywords"))
-			  {
-			    fieldType = fd_Field::FD_Meta_Keywords;
-			  }
-			else if(0 == UT_strcmp(pszType, "meta_contributor"))
-			  {
-			    fieldType = fd_Field::FD_Meta_Contributor;
-			  }
-			else if(0 == UT_strcmp(pszType, "meta_coverage"))
-			  {
-			    fieldType = fd_Field::FD_Meta_Coverage;
-			  }
-			else if(0 == UT_strcmp(pszType, "meta_description"))
-			  {
-			    fieldType = fd_Field::FD_Meta_Description;
-			  }
-		        else if (0 == UT_strcmp(pszType, "martin_test"))
-		        {
-        		    fieldType = fd_Field::FD_MartinTest;
-		        }
-		        else
-        		{
-		            UT_ASSERT_HARMLESS(UT_SHOULD_NOT_HAPPEN);
-        		    //Better than segfaulting I figure
-		            fieldType = fd_Field::FD_Test;
-        		}
-		        break;
-    		case 'n':
-				if (0 == UT_strcmp(pszType, "nbsp_count"))
-				{
-					fieldType = fd_Field::FD_Doc_NbspCount;
-				}
-		        else
-        		{
-		            UT_ASSERT_HARMLESS(UT_SHOULD_NOT_HAPPEN);
-        		    //Better than segfaulting I figure
-		            fieldType = fd_Field::FD_Test;
-        		}
-				break;
-    		case 'p':
-				if (0 == UT_strcmp(pszType, "page_number"))
-		        {
-        		    fieldType = fd_Field::FD_PageNumber;
-		        }
-		        else if (0 == UT_strcmp(pszType, "page_count"))
-        		{
-		            fieldType = fd_Field::FD_PageCount;
-        		}
-				else if (0 == UT_strcmp(pszType, "para_count"))
-				{
-					fieldType = fd_Field::FD_Doc_ParaCount;
-				}
-				else if (0 == UT_strcmp(pszType, "page_ref"))
-				{
-					fieldType = fd_Field::FD_PageReference;
-				}
-		        else
-        		{
-		            UT_ASSERT_HARMLESS(UT_SHOULD_NOT_HAPPEN);
-        		    //Better than segfaulting I figure
-		            fieldType = fd_Field::FD_Test;
-        		}
-        		break;
-		    case 's':
-				if(0 == UT_strcmp(pszType, "sum_rows"))
-				{
-					fieldType = fd_Field::FD_Table_sum_rows;
-				}
-				if(0 == UT_strcmp(pszType, "sum_cols"))
-				{
-					fieldType = fd_Field::FD_Table_sum_cols;
-				}
-				break;
-    		case 't':
-		        if (0 == UT_strcmp(pszType, "test"))
-        		{
-		            fieldType = fd_Field::FD_Test;
-        		}
-		        else if (0 == UT_strcmp(pszType, "time"))
-        		{
-		            fieldType = fd_Field::FD_Time;
-        		}
-				else if (0 == UT_strcmp(pszType, "time_miltime"))
-				{
-					fieldType = fd_Field::FD_Time_MilTime;
-				}
-				else if (0 == UT_strcmp(pszType, "time_ampm"))
-				{
-					fieldType = fd_Field::FD_Time_AMPM;
-				}
-				else if (0 == UT_strcmp(pszType, "time_zone"))
-				{
-					fieldType = fd_Field::FD_Time_Zone;
-				}
-				else if (0 == UT_strcmp(pszType, "time_epoch"))
-				{
-					fieldType = fd_Field::FD_Time_Epoch;
-				}
-		        else
-        		{
-		            UT_ASSERT_HARMLESS(UT_SHOULD_NOT_HAPPEN);
-        		    //Better than segfaulting I figure
-		            fieldType = fd_Field::FD_Test;
-        		}
-        		break;
-    		case 'w':
-				if (0 == UT_strcmp(pszType, "word_count"))
-				{
-					fieldType = fd_Field::FD_Doc_WordCount;
-				}
-		        else
-        		{
-		            UT_ASSERT_HARMLESS(UT_SHOULD_NOT_HAPPEN);
-        		    //Better than segfaulting I figure
-		            fieldType = fd_Field::FD_Test;
-        		}
-				break;
-#if 0
-// When adding new fields under any of these characters, please move
-// the label up where it belongs
-    		case 'b':
-    		case 'g':
-    		case 'h':
-    		case 'i':
-    		case 'j':
-    		case 'k':
-    		case 'o':
-    		case 'q':
-    		case 'r':
-    		case 's':
-    		case 'u':
-    		case 'v':
-    		case 'x':
-    		case 'y':
-    		case 'z':
-#endif
-    		default:
-    			UT_ASSERT_HARMLESS(UT_SHOULD_NOT_HAPPEN);
-       		    //Better than segfaulting I figure
-	            fieldType = fd_Field::FD_Test;
+	    if (qType == PP_Q(app_ver))
+		fieldType = fd_Field::FD_App_Version;
+	    else if (qType == PP_Q(app_id))
+		fieldType = fd_Field::FD_App_ID;
+	    else if (qType == PP_Q(app_options))
+		fieldType = fd_Field::FD_App_Options;
+	    else if (qType == PP_Q(app_target))
+		fieldType = fd_Field::FD_App_Target;
+	    else if (qType == PP_Q(app_compiledate))
+		fieldType = fd_Field::FD_App_CompileDate;
+	    else if (qType == PP_Q(app_compiletime))
+		fieldType = fd_Field::FD_App_CompileTime;
+	    else if (qType == PP_Q(char_count))
+		fieldType = fd_Field::FD_Doc_CharCount;
+	    else if (qType == PP_Q(date))
+		fieldType = fd_Field::FD_Date;
+	    else if (qType == PP_Q(date_mmddyy))
+		fieldType = fd_Field::FD_Date_MMDDYY;
+	    else if (qType == PP_Q(date_ddmmyy))
+		fieldType = fd_Field::FD_Date_DDMMYY;
+	    else if (qType == PP_Q(date_mdy))
+		fieldType = fd_Field::FD_Date_MDY;
+	    else if (qType == PP_Q(date_mthdy))
+		fieldType = fd_Field::FD_Date_MthDY;
+	    else if (qType == PP_Q(date_dfl))
+		fieldType = fd_Field::FD_Date_DFL;
+	    else if (qType == PP_Q(date_ntdfl))
+		fieldType = fd_Field::FD_Date_NTDFL;
+	    else if (qType == PP_Q(date_wkday))
+		fieldType = fd_Field::FD_Date_Wkday;
+	    else if (qType == PP_Q(date_doy))
+		fieldType = fd_Field::FD_Date_DOY;
+	    else if (qType == PP_Q(datetime_custom))
+		fieldType = fd_Field::FD_DateTime_Custom;
+	    else if (qType == PP_Q(endnote_ref))
+		fieldType = fd_Field::FD_Endnote_Ref;
+	    else if (qType == PP_Q(endnote_anchor))
+		fieldType = fd_Field::FD_Endnote_Anchor;
+	    else if (qType == PP_Q(file_name))
+		fieldType = fd_Field::FD_FileName;
+	    else if (qType == PP_Q(footnote_ref))
+		fieldType = fd_Field::FD_Footnote_Ref;
+	    else if (qType == PP_Q(footnote_anchor))
+		fieldType = fd_Field::FD_Footnote_Anchor;
+	    else if (qType == PP_Q(list_label))
+		fieldType = fd_Field::FD_ListLabel;
+	    else if (qType == PP_Q(line_count))
+		fieldType = fd_Field::FD_Doc_LineCount;
+	    else if (qType == PP_Q(mail_merge))
+		fieldType = fd_Field::FD_MailMerge;
+	    else if (qType == PP_Q(meta_title))
+		fieldType = fd_Field::FD_Meta_Title;
+	    else if (qType == PP_Q(meta_creator))
+		fieldType = fd_Field::FD_Meta_Creator;
+	    else if (qType == PP_Q(meta_subject))
+		fieldType = fd_Field::FD_Meta_Subject;
+	    else if (qType == PP_Q(meta_publisher))
+		fieldType = fd_Field::FD_Meta_Publisher;
+	    else if (qType == PP_Q(meta_date))
+		fieldType = fd_Field::FD_Meta_Date;
+	    else if (qType == PP_Q(meta_type))
+		fieldType = fd_Field::FD_Meta_Type;
+	    else if (qType == PP_Q(meta_language))
+		fieldType = fd_Field::FD_Meta_Language;
+	    else if (qType == PP_Q(meta_rights))
+		fieldType = fd_Field::FD_Meta_Rights;
+	    else if (qType == PP_Q(meta_keywords))
+		fieldType = fd_Field::FD_Meta_Keywords;
+	    else if (qType == PP_Q(meta_contributor))
+		fieldType = fd_Field::FD_Meta_Contributor;
+	    else if (qType == PP_Q(meta_coverage))
+		fieldType = fd_Field::FD_Meta_Coverage;
+	    else if (qType == PP_Q(meta_description))
+		fieldType = fd_Field::FD_Meta_Description;
+	    else if (qType == PP_Q(martin_test))
+		fieldType = fd_Field::FD_MartinTest;
+	    else if (qType == PP_Q(nbsp_count))
+		fieldType = fd_Field::FD_Doc_NbspCount;
+	    else if (qType == PP_Q(page_number))
+		fieldType = fd_Field::FD_PageNumber;
+	    else if (qType == PP_Q(page_count))
+		fieldType = fd_Field::FD_PageCount;
+	    else if (qType == PP_Q(para_count))
+		fieldType = fd_Field::FD_Doc_ParaCount;
+	    else if (qType == PP_Q(page_ref))
+		fieldType = fd_Field::FD_PageReference;
+	    else if (qType == PP_Q(sum_rows))
+		fieldType = fd_Field::FD_Table_sum_rows;
+	    else if (qType == PP_Q(sum_cols))
+		fieldType = fd_Field::FD_Table_sum_cols;
+	    else if (qType == PP_Q(test))
+		fieldType = fd_Field::FD_Test;
+	    else if (qType == PP_Q(time))
+		fieldType = fd_Field::FD_Time;
+	    else if (qType == PP_Q(time_miltime))
+		fieldType = fd_Field::FD_Time_MilTime;
+	    else if (qType == PP_Q(time_ampm))
+		fieldType = fd_Field::FD_Time_AMPM;
+	    else if (qType == PP_Q(time_zone))
+		fieldType = fd_Field::FD_Time_Zone;
+	    else if (qType == PP_Q(time_epoch))
+		fieldType = fd_Field::FD_Time_Epoch;
+	    else if (qType == PP_Q(word_count))
+		fieldType = fd_Field::FD_Doc_WordCount;
+	    else
+	    {
+		UT_ASSERT_HARMLESS(UT_SHOULD_NOT_HAPPEN);
+		//Better than segfaulting I figure
+		fieldType = fd_Field::FD_Test;
+	    }
+	    
     	}
-        m_pField = new fd_Field(*this, pPT,fieldType, pszParam);
+        m_pField = new fd_Field(*this, pPT,fieldType, g_quark_to_string (qParam));
     }
     else if (objectType==PTO_Bookmark)
     {
     	po_Bookmark::BookmarkType BT;
 		
-		if(!pszType) {
-			// see bug 6489...
-			UT_ASSERT_NOT_REACHED();
-			BT = po_Bookmark::POBOOKMARK_END;
-		} else if(0 == UT_strcmp(pszType, "end"))
-			BT = po_Bookmark::POBOOKMARK_END;
-		else
-			BT = po_Bookmark::POBOOKMARK_START;
+	if(!qType)
+	{
+	    // see bug 6489...
+	    UT_ASSERT_NOT_REACHED();
+	    BT = po_Bookmark::POBOOKMARK_END;
+	}
+	else if (qType == PP_Q(end))
+	    BT = po_Bookmark::POBOOKMARK_END;
+	else
+	    BT = po_Bookmark::POBOOKMARK_START;
 			
-		UT_return_if_fail (pszName && *pszName);
-		m_pObjectSubclass = static_cast<void *>(new po_Bookmark(*this,pPT,BT, pszName));
+	UT_return_if_fail (qName);
+	m_pObjectSubclass = static_cast<void *>(new po_Bookmark(*this,pPT,BT, qName));
     }
 
 }

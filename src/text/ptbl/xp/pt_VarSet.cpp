@@ -1,3 +1,4 @@
+/* -*- mode: C++; tab-width: 4; c-basic-offset: 4; -*- */
 /* AbiWord
  * Copyright (C) 1998 AbiSource, Inc.
  * 
@@ -68,10 +69,14 @@ void pt_VarSet::setPieceTableState(PTState pts)
 		m_currentVarSet = 1;
 }
 
-bool pt_VarSet::appendBuf(const UT_UCSChar * pBuf, UT_uint32 length, PT_BufIndex * pbi)
+bool pt_VarSet::appendBuf(const UT_UCSChar * pBuf,
+						  UT_uint32 length,
+						  PT_BufIndex * pbi)
 {
 	UT_uint32 bufOffset = m_buffer[m_currentVarSet].getLength();
-	if (m_buffer[m_currentVarSet].ins(bufOffset,(UT_GrowBufElement*)pBuf,length))
+	if (m_buffer[m_currentVarSet].ins(bufOffset,
+									  (UT_GrowBufElement*)pBuf,
+									  length))
 	{
 		*pbi = _makeBufIndex(m_currentVarSet,bufOffset);
 		return true;
@@ -81,7 +86,9 @@ bool pt_VarSet::appendBuf(const UT_UCSChar * pBuf, UT_uint32 length, PT_BufIndex
 	return false;
 }
 
-bool pt_VarSet::overwriteBuf(UT_UCSChar * pBuf, UT_uint32 length, PT_BufIndex * pbi)
+bool pt_VarSet::overwriteBuf(UT_UCSChar * pBuf,
+							 UT_uint32 length,
+							 PT_BufIndex * pbi)
 {
 	if (m_buffer[_varsetFromBufIndex(*pbi)]
         .overwrite(_subscriptFromBufIndex(*pbi),
@@ -97,7 +104,7 @@ bool pt_VarSet::overwriteBuf(UT_UCSChar * pBuf, UT_uint32 length, PT_BufIndex * 
 
 
 
-bool pt_VarSet::storeAP(const XML_Char ** attributes, PT_AttrPropIndex * papi)
+bool pt_VarSet::storeAP(const PT_AttributePair* attrs, PT_AttrPropIndex * papi)
 {
 	if (!m_bInitialized)
 		if (!_finishConstruction())
@@ -106,7 +113,7 @@ bool pt_VarSet::storeAP(const XML_Char ** attributes, PT_AttrPropIndex * papi)
 	// create an AP for this set of attributes -- iff unique.
 	// return the index for the new one (or the one we found).
 
-	if (!attributes || !*attributes)
+	if (!attrs)
 	{
 		// we preloaded the zeroth cell (of both tables)
 		// with empty attributes.  return index back to
@@ -126,7 +133,7 @@ bool pt_VarSet::storeAP(const XML_Char ** attributes, PT_AttrPropIndex * papi)
 	if (!pTemp)
 		return false;
 
-	if (pTemp->setAttributes(attributes))
+	if (pTemp->setAttributes(attrs))
 	{
 		pTemp->markReadOnly();
 		return addIfUniqueAP(pTemp,papi);
@@ -136,7 +143,8 @@ bool pt_VarSet::storeAP(const XML_Char ** attributes, PT_AttrPropIndex * papi)
 	return false;
 }
 
-bool pt_VarSet::storeAP(const UT_GenericVector<XML_Char*>* pVecAttributes, PT_AttrPropIndex * papi)
+bool pt_VarSet::storeAP(const PT_AttributeVector & vAttrs,
+						PT_AttrPropIndex * papi)
 {
 	if (!m_bInitialized)
 		if (!_finishConstruction())
@@ -145,7 +153,7 @@ bool pt_VarSet::storeAP(const UT_GenericVector<XML_Char*>* pVecAttributes, PT_At
 	// create an AP for this set of attributes -- iff unique.
 	// return the index for the new one (or the one we found).
 	
-	if (!pVecAttributes || pVecAttributes->getItemCount()==0)
+	if (vAttrs.getItemCount() == 0)
 	{
 		// we preloaded the zeroth cell (of both tables)
 		// with empty attributes.  return index back to
@@ -165,7 +173,7 @@ bool pt_VarSet::storeAP(const UT_GenericVector<XML_Char*>* pVecAttributes, PT_At
 	if (!pTemp)
 		return false;
 	
-	if (pTemp->setAttributes(pVecAttributes))
+	if (pTemp->setAttributes(vAttrs))
 	{
 		pTemp->markReadOnly();
 		return addIfUniqueAP(pTemp,papi);
@@ -175,14 +183,19 @@ bool pt_VarSet::storeAP(const UT_GenericVector<XML_Char*>* pVecAttributes, PT_At
 	return false;
 }
 
-bool pt_VarSet::isContiguous(PT_BufIndex bi, UT_uint32 length, PT_BufIndex bi2) const
+bool pt_VarSet::isContiguous(PT_BufIndex bi,
+							 UT_uint32 length,
+							 PT_BufIndex bi2) const
 {
 	return ((getPointer(bi)+length) == getPointer(bi2));
 }
 
-bool pt_VarSet::mergeAP(PTChangeFmt ptc, PT_AttrPropIndex apiOld,
-						   const XML_Char ** attributes, const XML_Char ** properties,
-						   PT_AttrPropIndex * papiNew,PD_Document * pDoc)
+bool pt_VarSet::mergeAP(PTChangeFmt ptc,
+						PT_AttrPropIndex apiOld,
+						const PT_AttributePair * attrs,
+						const PT_PropertyPair  * props,
+						PT_AttrPropIndex * papiNew,
+						PD_Document * pDoc)
 {
 	// merge the given attr/props with set referenced by apiOld
 	// under the operator ptc giving a new set to be returned in
@@ -199,7 +212,7 @@ bool pt_VarSet::mergeAP(PTChangeFmt ptc, PT_AttrPropIndex apiOld,
 	{
 	case PTC_AddFmt:
 		{
-			if (papOld->areAlreadyPresent(attributes,properties))
+			if (papOld->areAlreadyPresent(attrs,props))
 			{
 				*papiNew = apiOld;
 				return true;
@@ -209,7 +222,8 @@ bool pt_VarSet::mergeAP(PTChangeFmt ptc, PT_AttrPropIndex apiOld,
 			// one and the a/p given in the args.  we then use it
 			// to find an existing match or use the new one.
 			
-			PP_AttrProp * pNew = papOld->cloneWithReplacements(attributes,properties, false);
+			PP_AttrProp * pNew = papOld->cloneWithReplacements(attrs,props,
+															   false);
 			if (!pNew)
 				return false;
 
@@ -218,7 +232,7 @@ bool pt_VarSet::mergeAP(PTChangeFmt ptc, PT_AttrPropIndex apiOld,
 		}
 	case PTC_SetFmt:
 		{
-			if (papOld->isEquivalent(attributes,properties))
+			if (papOld->isEquivalent(attrs,props))
 			{
 				*papiNew = apiOld;
 				return true;
@@ -227,7 +241,8 @@ bool pt_VarSet::mergeAP(PTChangeFmt ptc, PT_AttrPropIndex apiOld,
 			// create a new AP that is exactly given by the atts/props
 			// presented.
 			
-			PP_AttrProp * pNew = papOld->cloneWithReplacements(attributes,properties, true);
+			PP_AttrProp * pNew = papOld->cloneWithReplacements(attrs,props,
+															   true);
 			if (!pNew)
 				return false;
 
@@ -236,7 +251,7 @@ bool pt_VarSet::mergeAP(PTChangeFmt ptc, PT_AttrPropIndex apiOld,
 		}
 	case PTC_SetExactly:
 		{
-			if (papOld->isEquivalent(attributes,properties))
+			if (papOld->isEquivalent(attrs,props))
 			{
 				*papiNew = apiOld;
 				return true;
@@ -245,7 +260,7 @@ bool pt_VarSet::mergeAP(PTChangeFmt ptc, PT_AttrPropIndex apiOld,
 			// create a new AP that is exactly given by the atts/props
 			// presented.
 			
-			PP_AttrProp * pNew = papOld->createExactly(attributes,properties);
+			PP_AttrProp * pNew = papOld->createExactly(attrs, props);
 			if (!pNew)
 				return false;
 
@@ -256,7 +271,7 @@ bool pt_VarSet::mergeAP(PTChangeFmt ptc, PT_AttrPropIndex apiOld,
 	case PTC_AddStyle:
 		{
 			if (!papOld->hasProperties() && 
-				papOld->areAlreadyPresent(attributes,properties))
+				papOld->areAlreadyPresent(attrs,props))
 			{
 				*papiNew = apiOld;
 				return true;
@@ -277,26 +292,28 @@ bool pt_VarSet::mergeAP(PTChangeFmt ptc, PT_AttrPropIndex apiOld,
 // TODO this is not right; we first have to remove any properties that we got
 // from the current style if any, only then we can proceed
 #if 1
-		const XML_Char * szStyle;
-		bool bFound = papOld->getAttribute
-			(PT_STYLE_ATTRIBUTE_NAME, szStyle);
+		GQuark value;
+		bool bFound = papOld->getAttribute (PT_STYLE_ATTRIBUTE_NAME, value);
 
-		PP_AttrProp * pNew1 = NULL;
-		PD_Style * pStyle = NULL;
+		PP_AttrProp * pNew1  = NULL;
+		PD_Style    * pStyle = NULL;
 
-        if(bFound && szStyle && (UT_strcmp(szStyle, "None") != 0))
+        if(bFound && value && value != PP_commonValueQuark (PP_COMMON_None))
         {
-	        UT_DEBUGMSG(("current style [%s]\n",szStyle));
-			pDoc->getStyle(szStyle,&pStyle);
+	        UT_DEBUGMSG(("current style [%s]\n",g_quark_to_string (value)));
+			pDoc->getStyle(value,&pStyle);
 		}
 
 		if (bFound && !pStyle)
 		{
-			UT_DEBUGMSG(("oops! tried to change from a nonexistent style [%s]!\n", szStyle));
+			UT_DEBUGMSG(("tried to change from a nonexistent style [%s]!\n",
+						 g_quark_to_string (value)));
 			UT_ASSERT_HARMLESS(UT_SHOULD_NOT_HAPPEN);
 		}
 
-        if(bFound && szStyle && UT_strcmp(szStyle, "None") && pStyle)
+        if(bFound && value &&
+		   value != PP_commonValueQuark (PP_COMMON_None) &&
+		   pStyle)
 		{
 			// first of all deal with list-attributes if the new style is not
 			// a list style and the old style is a list style
@@ -306,68 +323,60 @@ bool pt_VarSet::mergeAP(PTChangeFmt ptc, PT_AttrPropIndex apiOld,
 				// OK, old style is a list, is the new style?
 				// (the following function cares not whether we are dealing
 				//  with attributes or properties)
-				const XML_Char * pNewStyle = NULL;
+				GQuark newStyle;
 
 				if(properties)
-					pNewStyle = UT_getAttribute("list-style", properties);
+					newStyle = UT_getProperty(abi_list_style, props);
 				
 				// we do not care about the value, just about whether it is there
-				if(!pNewStyle)
+				if(!newStyle)
 				{
 					UT_DEBUGMSG(("new style is not a list style\n"));
-					
-					const XML_Char * pListAttrs[8];
-					pListAttrs[0] = "listid";
-					pListAttrs[1] = NULL;
-					pListAttrs[2] = "parentid";
-					pListAttrs[3] = NULL;
-					pListAttrs[4] = "level";
-					pListAttrs[5] = NULL;
-					pListAttrs[6] = NULL;
-					pListAttrs[7] = NULL;
 
+					PT_AttributePair listAttrs[4] = {
+						{ PT_LISTID_ATTRIBUTE_NAME,   0},
+						{ PT_PARENTID_ATTRIBUTE_NAME, 0},
+						{ PT_LEVEL_ATTRIBUTE_NAME,    0},
+						{ 0,    0},
+					}
+					
 					// we also need to explicitely clear the list formating
 					// properties, since their values are not necessarily part
 					// of the style definition, so that cloneWithEliminationIfEqual
 					// which we call later will not get rid off them
-					const XML_Char * pListProps[20];
-					pListProps[0] =  "start-value";
-					pListProps[1] =  NULL;
-					pListProps[2] =  "list-style";
-					pListProps[3] =  NULL;
-					pListProps[4] =  "margin-left";
-					pListProps[5] =  NULL;
-					pListProps[6] =  "text-indent";
-					pListProps[7] =  NULL;
-					pListProps[8] =  "field-color";
-					pListProps[9] =  NULL;
-					pListProps[10]=  "list-delim";
-					pListProps[11] =  NULL;
-					pListProps[12]=  "field-font";
-					pListProps[13] =  NULL;
-					pListProps[14]=  "list-decimal";
-					pListProps[15] =  NULL;
-					pListProps[16] =  "list-tag";
-					pListProps[17] =  NULL;
-					pListProps[18] =  NULL;
-					pListProps[19] =  NULL;
+					const PT_PropertyPair * listProps[10] = {
+						{ abi_start_value, 0},
+						{ abi_list_style , 0},
+						{ abi_margin-left, 0},
+						{ abi_text_indent, 0},
+						{ abi_field_color, 0},
+						{ abi_list_delim, 0},
+						{ abi_field_font, 0},
+						{ abi_list_decimal, 0},
+						{ abi_list_tag, 0},
+						{ 0, 0},
+					};
 					
-					pNew1 = papOld->cloneWithElimination((const XML_Char **)&pListAttrs, (const XML_Char **)&pListProps);
+					pNew1 = papOld->cloneWithElimination(&listAttrs,
+														 &listProps);
 				}
 			}
-			
-			UT_Vector vProps, vAttribs;
+
+			/* TODO profile this to see if it would be worth providing
+			 * clone methods taking vector input
+			 */
+			PT_PropertyVector  vProps;
+			PT_AttributeVector vAttribs;
 		
 			pStyle->getAllProperties(&vProps,0);
 		
 			const XML_Char ** sProps = NULL;
-			UT_uint32 countp = vProps.getItemCount() + 1;
-			sProps = new const XML_Char*[countp];
-			countp--;
+			UT_uint32 countp = vProps.getItemCount();
+			sProps = new const XML_Char*[countp + 1];
 			UT_uint32 i;
 			for(i=0; i<countp; i++)
 			{
-				sProps[i] = (const XML_Char *) vProps.getNthItem(i);
+				sProps[i] = vProps.getNthItem(i);
 			}
 			sProps[i] = NULL;
 		
@@ -375,13 +384,12 @@ bool pt_VarSet::mergeAP(PTChangeFmt ptc, PT_AttrPropIndex apiOld,
 			pStyle->getAllAttributes(&vAttribs,0);
 			
 			const XML_Char ** sAttribs = NULL;
-			countp = vAttribs.getItemCount() + 1;
-			sAttribs = new const XML_Char*[countp];
-			countp--;
+			countp = vAttribs.getItemCount();
+			sAttribs = new const XML_Char*[countp + 1];
 			
 			for(i=0; i<countp; i++)
 			{
-				sAttribs[i] = (const XML_Char *) vAttribs.getNthItem(i);
+				sAttribs[i] = vAttribs.getNthItem(i);
 			}
 			sAttribs[i] = NULL;
 		
@@ -401,29 +409,29 @@ bool pt_VarSet::mergeAP(PTChangeFmt ptc, PT_AttrPropIndex apiOld,
 			if (!pNew0)
 				return false;
 
-			pNew1 = pNew0->cloneWithReplacements(attributes,NULL, false);
+			pNew1 = pNew0->cloneWithReplacements(attrs,NULL, false);
 			delete pNew0;
 			if (!pNew1)
 				return false;
 		}
 		else
 		{
-			pNew1 = papOld->cloneWithReplacements(attributes,NULL, false);
+			pNew1 = papOld->cloneWithReplacements(attrs,NULL, false);
 			if (!pNew1)
 				return false;
 		
 		}
 		
-		PP_AttrProp * pNew = pNew1->cloneWithElimination(NULL,properties);
+		PP_AttrProp * pNew = pNew1->cloneWithElimination(NULL,props);
 		delete pNew1;
 		if (!pNew)
 			return false;
 					
 #else
-			PP_AttrProp * pNew1 = papOld->cloneWithReplacements(attributes,NULL, false);
+			PP_AttrProp * pNew1 = papOld->cloneWithReplacements(attrs,NULL, false);
 			if (!pNew1)
 				return false;
-			PP_AttrProp * pNew = pNew1->cloneWithElimination(NULL,properties);
+			PP_AttrProp * pNew = pNew1->cloneWithElimination(NULL,propers);
 			delete pNew1;
 			if (!pNew)
 				return false;
@@ -434,7 +442,7 @@ bool pt_VarSet::mergeAP(PTChangeFmt ptc, PT_AttrPropIndex apiOld,
 
 	case PTC_RemoveFmt:
 		{
-			if (!papOld->areAnyOfTheseNamesPresent(attributes,properties))
+			if (!papOld->areAnyOfTheseNamesPresent(attrs,props))
 			{
 				// none of the given attributes/properties are present in this set.
 				// the remove has no effect.
@@ -446,7 +454,7 @@ bool pt_VarSet::mergeAP(PTChangeFmt ptc, PT_AttrPropIndex apiOld,
 			// ones given in the args.  we then use it to find an
 			// existing match or use the new one.
 
-			PP_AttrProp * pNew = papOld->cloneWithElimination(attributes,properties);
+			PP_AttrProp * pNew = papOld->cloneWithElimination(attrs,props);
 			if (!pNew)
 				return false;
 

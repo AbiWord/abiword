@@ -26,19 +26,15 @@
 #include "po_Bookmark.h"
 
 po_Bookmark::po_Bookmark(pf_Frag_Object& fO, pt_PieceTable * pt,
-                   BookmarkType bookmarkType, const XML_Char* name)
-    : m_fragObject(fO),m_pPieceTable(pt),m_iBookmarkType(bookmarkType)
+                   BookmarkType bookmarkType, GQuark name)
+    : m_fragObject(fO),m_pPieceTable(pt),m_iBookmarkType(bookmarkType),m_qName(name),
+	  m_pBlock(NULL)
 {
-	m_pBlock = NULL;
-	m_pName = NULL;
-	setName(name);
 }
 
 
 po_Bookmark::~po_Bookmark(void)
 {
-	FREEP(m_pName);
-	m_pName = NULL;
 }
 
 void po_Bookmark::setBlock( fl_BlockLayout *pBlock)
@@ -56,14 +52,13 @@ po_Bookmark::BookmarkType po_Bookmark::getBookmarkType(void) const
 	return m_iBookmarkType;
 }
 
-const XML_Char* po_Bookmark::getName(void) const
+GQuark po_Bookmark::getName(void) const
 {
-	return (const XML_Char*) m_pName;
+	return m_qName;
 }
 
-void po_Bookmark::setName(const XML_Char* szValue)
+void po_Bookmark::setName(GQuark name)
 {
-	FREEP(m_pName);
-	m_pName = UT_strdup(szValue);
+	m_qName = name;
 }
 

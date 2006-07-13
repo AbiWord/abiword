@@ -1,3 +1,4 @@
+/* -*- mode: C++; tab-width: 4; c-basic-offset: 4; -*- */
 /* AbiWord
  * Copyright (C) 1998 AbiSource, Inc.
  * 
@@ -21,20 +22,24 @@
 #include "pd_Style.h"
 #include "pt_PieceTable.h"
 #include "pp_Property.h"
+#include "pp_Attribute.h"
 #include "ut_vector.h"
 #include "ut_debugmsg.h"
 
-PD_Style::PD_Style(pt_PieceTable * pPT, PT_AttrPropIndex indexAP, const char * szName) :
-  m_pPT(pPT), m_indexAP(indexAP), m_szName(NULL), m_iUsed(0),
-  m_pBasedOn(NULL), m_pFollowedBy(NULL)
+PD_Style::PD_Style(pt_PieceTable * pPT,
+				   PT_AttrPropIndex indexAP,
+				   GQuark name) :
+  m_pPT(pPT),
+  m_indexAP(indexAP),
+  m_name(name),
+  m_iUsed(0),
+  m_pBasedOn(NULL),
+  m_pFollowedBy(NULL)
 {
-  if (szName)
-    m_szName = UT_strdup (szName);
 }
 
 PD_Style::~PD_Style()
 {
-  FREEP(m_szName);
 }
 
 bool PD_Style::setIndexAP(PT_AttrPropIndex indexAP)
@@ -48,18 +53,18 @@ bool PD_Style::setIndexAP(PT_AttrPropIndex indexAP)
 	return true;
 }
 
-bool PD_Style::getProperty(const XML_Char * szName, const XML_Char *& szValue) const
+bool PD_Style::getProperty(PT_Property name, GQuark & value) const
 {
 	const PP_AttrProp * pAP = NULL;
 	
 	if (!m_pPT->getAttrProp(m_indexAP, &pAP))
 		return false;
 	else
-		return pAP->getProperty(szName, szValue);
+		return pAP->getProperty(name, value);
 }
 
 
-bool PD_Style::getPropertyExpand(const XML_Char * szName, const XML_Char *& szValue)
+bool PD_Style::getPropertyExpand(PT_Property name, GQuark & value)
 {
 	const PP_AttrProp * pAP = NULL;
 	
@@ -69,7 +74,7 @@ bool PD_Style::getPropertyExpand(const XML_Char * szName, const XML_Char *& szVa
 	}
 	else
 	{
-		if( pAP->getProperty(szName, szValue))
+		if( pAP->getProperty(name, value))
 		{
 			return true;
 		}
@@ -78,7 +83,7 @@ bool PD_Style::getPropertyExpand(const XML_Char * szName, const XML_Char *& szVa
 			PD_Style * pStyle = getBasedOn();
 			if(pStyle != NULL)
 			{
-				return pStyle->_getPropertyExpand(szName,szValue, 0);
+				return pStyle->_getPropertyExpand(name, value, 0);
 			}
 			else
 			{
@@ -90,7 +95,9 @@ bool PD_Style::getPropertyExpand(const XML_Char * szName, const XML_Char *& szVa
 }
 
 
-bool PD_Style::_getPropertyExpand(const XML_Char * szName, const XML_Char *& szValue, UT_sint32 iDepth)
+bool PD_Style::_getPropertyExpand(PT_Property name,
+								  GQuark & value,
+								  UT_sint32 iDepth)
 {
 	const PP_AttrProp * pAP = NULL;
 	
@@ -101,7 +108,7 @@ bool PD_Style::_getPropertyExpand(const XML_Char * szName, const XML_Char *& szV
 	}
 	else
 	{
-		if( pAP->getProperty(szName, szValue))
+		if( pAP->getProperty(name, value))
 		{
 			return true;
 		}
@@ -110,7 +117,7 @@ bool PD_Style::_getPropertyExpand(const XML_Char * szName, const XML_Char *& szV
 			PD_Style * pStyle = getBasedOn();
 			if((pStyle != NULL) && (iDepth < pp_BASEDON_DEPTH_LIMIT ))
 			{
-				return pStyle->_getPropertyExpand(szName,szValue, iDepth+1);
+				return pStyle->_getPropertyExpand(name, value, iDepth+1);
 			}
 			else
 			{
@@ -122,7 +129,7 @@ bool PD_Style::_getPropertyExpand(const XML_Char * szName, const XML_Char *& szV
 }
 
 
-bool PD_Style::getAttributeExpand(const XML_Char * szName, const XML_Char *& szValue)
+bool PD_Style::getAttributeExpand(PT_Attribute name, GQuark & value)
 {
 	const PP_AttrProp * pAP = NULL;
 	
@@ -133,7 +140,7 @@ bool PD_Style::getAttributeExpand(const XML_Char * szName, const XML_Char *& szV
 	}
 	else
 	{
-		if( pAP->getAttribute(szName, szValue))
+		if( pAP->getAttribute(name, value))
 		{
 			return true;
 		}
@@ -142,7 +149,7 @@ bool PD_Style::getAttributeExpand(const XML_Char * szName, const XML_Char *& szV
 			PD_Style * pStyle = getBasedOn();
 			if(pStyle != NULL )
 			{
-				return pStyle->_getAttributeExpand(szName,szValue, 0);
+				return pStyle->_getAttributeExpand(name, value, 0);
 			}
 			else
 			{
@@ -154,7 +161,7 @@ bool PD_Style::getAttributeExpand(const XML_Char * szName, const XML_Char *& szV
 }
 
 
-bool PD_Style::_getAttributeExpand(const XML_Char * szName, const XML_Char *& szValue, UT_sint32 iDepth)
+bool PD_Style::_getAttributeExpand(PT_Attribute name, GQuark & value, UT_sint32 iDepth)
 {
 	const PP_AttrProp * pAP = NULL;
 	
@@ -165,7 +172,7 @@ bool PD_Style::_getAttributeExpand(const XML_Char * szName, const XML_Char *& sz
 	}
 	else
 	{
-		if( pAP->getAttribute(szName, szValue))
+		if( pAP->getAttribute(name, value))
 		{
 			return true;
 		}
@@ -174,7 +181,7 @@ bool PD_Style::_getAttributeExpand(const XML_Char * szName, const XML_Char *& sz
 			PD_Style * pStyle = getBasedOn();
 			if((pStyle != NULL) && (iDepth < pp_BASEDON_DEPTH_LIMIT ) )
 			{
-				return pStyle->_getAttributeExpand(szName,szValue, iDepth+1);
+				return pStyle->_getAttributeExpand(name, value, iDepth+1);
 			}
 			else
 			{
@@ -185,25 +192,25 @@ bool PD_Style::_getAttributeExpand(const XML_Char * szName, const XML_Char *& sz
 	return false;
 }
 
-const PP_PropertyType *	PD_Style::getPropertyType(const XML_Char * szName, tProperty_type Type) const
+const PP_PropertyType *	PD_Style::getPropertyType(PT_Property name, tProperty_type Type) const
 {
 	const PP_AttrProp * pAP = NULL;
 	
 	if (!m_pPT->getAttrProp(m_indexAP, &pAP))
 		return NULL;
 	else
-		return pAP->getPropertyType(szName, Type);
+		return pAP->getPropertyType(name, Type);
 }
 
 
-bool PD_Style::getAttribute(const XML_Char * szName, const XML_Char *& szValue) const
+bool PD_Style::getAttribute(PT_Attribute name, GQuark & value) const
 {
 	const PP_AttrProp * pAP = NULL;
 	
 	if (!m_pPT->getAttrProp(m_indexAP, &pAP))
 		return false;
 	else
-		return pAP->getAttribute(szName, szValue);
+		return pAP->getAttribute(name, value);
 }
 
 void PD_Style::used(UT_sint32 count)
@@ -230,25 +237,20 @@ bool PD_Style::isCharStyle(void) const
 {
 	// TODO: cache this too  
 
-	const XML_Char * szValue = NULL;
-	if (getAttribute(PT_TYPE_ATTRIBUTE_NAME, szValue))
-		if (szValue && szValue[0])
-			return UT_stricmp(szValue, "C") == 0; // *PLEASE LEAVE THIS AS CASE
-                                               // *INSESITIVE. IF YOU DON'T
-                                               // * I'LL PUT YOUR EMAIL ADDRESS
-                                               // * ON SPAM BLACK LIST!
-                                               // I'm sick and tired of fixing
-                                               // this regression - MES
+	GQuark value;
+	if (getAttribute(PT_TYPE_ATTRIBUTE_NAME, value))
+		return (value == PP_Q(c) ||
+				value == PP_Q(C));
 
-	// default: no
 	return false;
 }
 
 bool PD_Style::isList(void)
 {
-	const char *szListStyle = NULL;
-	if (getPropertyExpand("list-style", szListStyle)) {
-		return UT_stricmp(szListStyle, "None") != NULL;
+	GQuark value;
+	if (getPropertyExpand(abi_list_style, value))
+	{
+		return value == PP_Q(None);
 	}
 	else {
 		return FALSE;
@@ -260,11 +262,10 @@ PD_Style * PD_Style::getBasedOn(void)
 	if (m_pBasedOn)
 		return m_pBasedOn;
 
-	const XML_Char * szStyle;
+	GQuark value;
 
-	if (getAttribute(PT_BASEDON_ATTRIBUTE_NAME, szStyle))
-		if (szStyle && szStyle[0])
-			m_pPT->getStyle((char*)szStyle, &m_pBasedOn);
+	if (getAttribute(PT_BASEDON_ATTRIBUTE_NAME, value) && value)
+		m_pPT->getStyle(value, &m_pBasedOn);
 
 	// NOTE: we silently fail if style is referenced, but not defined
 
@@ -276,11 +277,10 @@ PD_Style * PD_Style::getFollowedBy(void)
 	if (m_pFollowedBy)
 		return m_pFollowedBy;
 
-	const XML_Char * szStyle;
+	GQuark value;
 
-	if (getAttribute(PT_FOLLOWEDBY_ATTRIBUTE_NAME, szStyle))
-		if (szStyle && szStyle[0])
-			m_pPT->getStyle((char*)szStyle, &m_pFollowedBy);
+	if (getAttribute(PT_FOLLOWEDBY_ATTRIBUTE_NAME, value) && value)
+		m_pPT->getStyle(value, &m_pFollowedBy);
 
 	// NOTE: we silently fail if style is referenced, but not defined
 
@@ -290,7 +290,7 @@ PD_Style * PD_Style::getFollowedBy(void)
 /*!
  * Add a property to the style definition.
  */
-bool PD_Style::addProperty(const XML_Char * szName, const XML_Char * szValue)
+bool PD_Style::addProperty(PT_Property name, GQuark value)
 {
 	PP_AttrProp * pAP = NULL;
 	bool bres= true;
@@ -299,10 +299,10 @@ bool PD_Style::addProperty(const XML_Char * szName, const XML_Char * szValue)
 		return false;
 	else
 	{
-		const XML_Char * pProps[4] = {NULL,NULL,NULL,NULL};
-		pProps[0] = szName;
-		pProps[1] = szValue;
-		PP_AttrProp * pNewAP = pAP->cloneWithReplacements(NULL, pProps, false);
+		PT_PropertyPair Props[] = {{name, value}, {(PT_Property)0,0}};
+		
+		PP_AttrProp * pNewAP = pAP->cloneWithReplacements(NULL, &Props[0],
+														  false);
 		pNewAP->markReadOnly();
 		bres =	m_pPT->getVarSet().addIfUniqueAP(pNewAP, &m_indexAP);
 	}
@@ -315,7 +315,7 @@ bool PD_Style::addProperty(const XML_Char * szName, const XML_Char * szValue)
  * replaced.
 \param const XML_Char ** pProperties string of properties
 */
-bool PD_Style::addProperties(const XML_Char ** pProperties)
+bool PD_Style::addProperties(const PT_PropertyPair * pProperties)
 {
 	PP_AttrProp * pAP = NULL;
 	bool bres= true;
@@ -323,9 +323,12 @@ bool PD_Style::addProperties(const XML_Char ** pProperties)
 		return false;
 	else
 	{
-		PP_AttrProp * pNewAP = pAP->cloneWithReplacements(NULL, pProperties, false);
+		PP_AttrProp * pNewAP = pAP->cloneWithReplacements(NULL,
+														  pProperties,
+														  false);
+		
 		pNewAP->markReadOnly();
-		bres =	m_pPT->getVarSet().addIfUniqueAP(pNewAP, &m_indexAP);
+		bres = m_pPT->getVarSet().addIfUniqueAP(pNewAP, &m_indexAP);
 	}
 	return bres;
 }
@@ -337,7 +340,7 @@ bool PD_Style::addProperties(const XML_Char ** pProperties)
  \param const XML_Char ** pAtts list of attributes with an extended properties
  *                        string
  */
-bool PD_Style::setAllAttributes(const XML_Char ** pAtts)
+bool PD_Style::setAllAttributes(const PT_AttributePair * pAtts)
 {
 	bool bres =	m_pPT->getVarSet().storeAP(pAtts, &m_indexAP);
 	m_pFollowedBy = NULL;
@@ -346,7 +349,7 @@ bool PD_Style::setAllAttributes(const XML_Char ** pAtts)
 }
 
 
-bool PD_Style::addAttributes(const XML_Char ** pAtts)
+bool PD_Style::addAttributes(const PT_AttributePair * pAtts)
 {
 	PP_AttrProp * pAP = NULL;
 	bool bres = false;
@@ -371,9 +374,9 @@ bool PD_Style::addAttributes(const XML_Char ** pAtts)
 
 size_t PD_Style::getAttributeCount(void) const
 {
-  	PP_AttrProp * pAP = NULL;
+  	const PP_AttrProp * pAP = NULL;
 	
-	if (!m_pPT->getAttrProp(m_indexAP, (const PP_AttrProp **)&pAP))
+	if (!m_pPT->getAttrProp(m_indexAP, &pAP))
 		return 0;
 	else
 	        return pAP->getAttributeCount();
@@ -382,39 +385,14 @@ size_t PD_Style::getAttributeCount(void) const
 
 size_t PD_Style::getPropertyCount(void) const
 {
-  	PP_AttrProp * pAP = NULL;
+  	const PP_AttrProp * pAP = NULL;
 	
-	if (!m_pPT->getAttrProp(m_indexAP, (const PP_AttrProp **)&pAP))
+	if (!m_pPT->getAttrProp(m_indexAP, &pAP))
 		return 0;
 	else
 	        return pAP->getPropertyCount();
 }
 	
-bool PD_Style::getNthAttribute (int ndx, const XML_Char *&szName,
-			     const XML_Char *&szValue) const
-{
-  	PP_AttrProp * pAP = NULL;
-	
-	if (!m_pPT->getAttrProp(m_indexAP, (const PP_AttrProp **)&pAP))
-		return false;
-	else
-	  {
-	        return pAP->getNthAttribute(ndx, szName, szValue);
-	  }
-}
-
-bool PD_Style::getNthProperty (int ndx, const XML_Char *&szName,
-			       const XML_Char *&szValue) const
-{
-  	PP_AttrProp * pAP = NULL;
-	
-	if (!m_pPT->getAttrProp(m_indexAP, (const PP_AttrProp **)&pAP))
-		return false;
-	else
-	  {
-	        return pAP->getNthProperty(ndx, szName, szValue);
-	  }
-}
 
 /*!
  * This method fills a vector structure with all the attributes defined
@@ -422,35 +400,47 @@ bool PD_Style::getNthProperty (int ndx, const XML_Char *&szName,
 \param vProps the vector containing const XML_Char * (name,value) pairs
 */
 
-bool PD_Style::getAllAttributes( UT_Vector * vAttribs, UT_sint32 depth)
+static bool foreachAttr (PT_Attribute & name,
+						 GQuark & value,
+						 UT_uint32 i,
+						 PT_AttributeVector * vAttrs)
+{
+	bool bfound = false;
+//
+// Only keep the most recently defined properties
+//
+	for(UT_uint32 j = 0; (j < vAttrs->getItemCount()) && !bfound ; j++)
+	{
+		bfound = (name == vAttrs->getNthItem(j).a);
+	}
+	if(!bfound)
+	{
+		PT_AttributePair ap;
+		ap.a = name;
+		ap.v = value;
+		vAttrs->addItem(ap);
+	}
+
+	return true;
+}
+
+
+bool PD_Style::getAllAttributes( PT_AttributeVector & vAttrs, UT_sint32 depth)
 {
 //
 // This method will be recursively called to basedon style
 //
-	UT_uint32 count = getAttributeCount();
-	UT_uint32 i,j;
-	const XML_Char * szName = NULL;
-	const XML_Char * szValue = NULL;
-	for(i=0; i < count; i++)
-	{
-		getNthAttribute(i, szName, szValue);
-		bool bfound = false;
-//
-// Only keep the most recently defined properties
-//
-		for(j = 0; (j < vAttribs->getItemCount()) && !bfound ; j += 2)
-		{
-			bfound = (0 == strcmp(szName, (const char *) vAttribs->getNthItem(j)));
-		}
-		if(!bfound)
-		{
-			vAttribs->addItem((void *) szName);
-			vAttribs->addItem((void *) szValue);
-		}
-	}
+  	const PP_AttrProp * pAP = NULL;
+	
+	if (!m_pPT->getAttrProp(m_indexAP, &pAP))
+		return false;
+
+	pAP->forEachAttribute ((PP_AttrProp::PP_ForEachAttrFunc)foreachAttr,
+						   &vAttrs);
+
 	if(depth <  pp_BASEDON_DEPTH_LIMIT && getBasedOn() != NULL)
 	{
-		getBasedOn()->getAllAttributes(vAttribs,depth +1);
+		getBasedOn()->getAllAttributes(vAttrs,depth +1);
 	}
 	return true;
 }
@@ -461,36 +451,50 @@ bool PD_Style::getAllAttributes( UT_Vector * vAttribs, UT_sint32 depth)
 \param vProps the vector containing const XML_Char * (name,value) pairs
 */
 
-bool PD_Style::getAllProperties( UT_Vector * vProps, UT_sint32 depth)
+static bool foreachProp (PT_Property  & name,
+						 GQuark & value,
+						 UT_uint32 i,
+						 PT_PropertyVector * vProps)
+{
+	bool bfound = false;
+//
+// Only keep the most recently defined properties
+//
+	for(UT_uint32 j = 0; (j < vProps->getItemCount()) && !bfound ; j++)
+	{
+		bfound = (name == vProps->getNthItem(j).p);
+	}
+	if(!bfound)
+	{
+		PT_PropertyPair pp;
+		pp.p = name;
+		pp.v = value;
+		
+		vProps->addItem(pp);
+	}
+
+	return true;
+}
+
+
+bool PD_Style::getAllProperties( PT_PropertyVector & vProps, UT_sint32 depth)
 {
 //
 // This method will be recursively called to basedon style
 //
-	UT_uint32 count = getPropertyCount();
-	UT_uint32 i,j;
-	const XML_Char * szName = NULL;
-	const XML_Char * szValue = NULL;
-	for(i=0; i < count; i++)
-	{
-		getNthProperty(i, szName, szValue);
-		bool bfound = false;
-//
-// Only keep the most recently defined properties
-//
-		for(j = 0; (j < vProps->getItemCount()) && !bfound ; j += 2)
-		{
-			bfound = (0 == strcmp(szName, (const char *) vProps->getNthItem(j)));
-		}
-		if(!bfound)
-		{
-			vProps->addItem((void *) szName);
-			vProps->addItem((void *) szValue);
-		}
-	}
+  	const PP_AttrProp * pAP = NULL;
+	
+	if (!m_pPT->getAttrProp(m_indexAP, &pAP))
+		return false;
+
+	pAP->forEachProperty ((PP_AttrProp::PP_ForEachPropFunc)foreachAttr,
+						  &vProps);
+
 	if(depth <  pp_BASEDON_DEPTH_LIMIT && getBasedOn() != NULL)
 	{
 		getBasedOn()->getAllProperties(vProps,depth +1);
 	}
+	
 	return true;
 }
 
@@ -498,8 +502,11 @@ bool PD_Style::getAllProperties( UT_Vector * vProps, UT_sint32 depth)
 // a sub-class to wrap the compiled-in styles
 //////////////////////////////////////////////////////////////////
 
-PD_BuiltinStyle::PD_BuiltinStyle(pt_PieceTable * pPT, PT_AttrPropIndex indexAP, const char * szName)
-  : PD_Style(pPT, indexAP, szName), m_indexAPOrig(indexAP)
+PD_BuiltinStyle::PD_BuiltinStyle(pt_PieceTable * pPT,
+								 PT_AttrPropIndex indexAP,
+								 GQuark name)
+  : PD_Style(pPT, indexAP, name),
+	m_indexAPOrig(indexAP)
 {
 }
 
