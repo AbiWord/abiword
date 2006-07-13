@@ -10112,6 +10112,14 @@ void fl_BlockLayout::_createListLabel(void)
 		m_bListLabelCreated = true;
 		return;
 	}
+	PD_Document * pDoc = m_pLayout->getDocument();
+	//
+	// Let remote document create the list label
+	//
+	if(!pDoc->isOrigUUID())
+	{
+			return;
+	}
 	UT_ASSERT(m_pAutoNum);
 	xxx_UT_DEBUGMSG(("Doing create list label \n"));
 	FV_View* pView = getView();
@@ -10189,6 +10197,13 @@ void fl_BlockLayout::_deleteListLabel(void)
 	// label is at the first position in the block
 	//
 	PD_Document * pDoc = m_pLayout->getDocument();
+	//
+	// Let remote document create the list label
+	//
+	if(!pDoc->isOrigUUID())
+	{
+			return;
+	}
 	UT_uint32 posBlock = getPosition();
 	// Find List Label
 	fp_Run * pRun = getFirstRun();

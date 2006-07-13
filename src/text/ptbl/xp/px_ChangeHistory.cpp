@@ -93,8 +93,8 @@ bool px_ChangeHistory::addChangeRecord(PX_ChangeRecord * pcr)
 {
 	// add a change record to the history.
 	// blow away any redo, since it is now invalid.
-	UT_DEBUGMSG(("Add CR Pos %d Type %d indexAP %x \n",pcr->getPosition(),pcr->getType(),pcr->getIndexAP()));
-	UT_DEBUGMSG(("Before invalidate Undo pos %d savepos %d iAdjust %d \n",m_undoPosition,m_savePosition,m_iAdjustOffset));
+	xxx_UT_DEBUGMSG(("Add CR Pos %d Type %d indexAP %x \n",pcr->getPosition(),pcr->getType(),pcr->getIndexAP()));
+	xxx_UT_DEBUGMSG(("Before invalidate Undo pos %d savepos %d iAdjust %d \n",m_undoPosition,m_savePosition,m_iAdjustOffset));
 	if(pcr && pcr->getDocument() == NULL)
 	{
 	    pcr->setDocument(getDoc());
@@ -107,7 +107,7 @@ bool px_ChangeHistory::addChangeRecord(PX_ChangeRecord * pcr)
 	
 		   bool bResult = (m_vecChangeRecords.insertItemAt(pcr,m_undoPosition++) == 0);
 		   UT_ASSERT_HARMLESS(bResult);
-		   UT_DEBUGMSG(("After Invalidate Undo pos %d savepos %d iAdjust %d \n",m_undoPosition,m_savePosition,m_iAdjustOffset));
+		   xxx_UT_DEBUGMSG(("After Invalidate Undo pos %d savepos %d iAdjust %d \n",m_undoPosition,m_savePosition,m_iAdjustOffset));
 		   m_iAdjustOffset = 0;
 		   return bResult;
 	       }
@@ -181,7 +181,7 @@ bool px_ChangeHistory::getUndo(PX_ChangeRecord ** ppcr, bool bStatic) const
 	  {
 		bCorrect = true;
 		m_iAdjustOffset++;
-		UT_DEBUGMSG(("Doing undo iAdjust incremented to %d \n",m_iAdjustOffset));
+		xxx_UT_DEBUGMSG(("Doing undo iAdjust incremented to %d \n",m_iAdjustOffset));
 	  }
 	  else
 	  {
@@ -255,7 +255,7 @@ bool px_ChangeHistory::getRedo(PX_ChangeRecord ** ppcr) const
 	  pcr = (PX_ChangeRecord *)m_vecChangeRecords.getNthItem(m_undoPosition - m_iAdjustOffset);
 		m_iAdjustOffset--;
 		bIncrementAdjust = true;
-		UT_DEBUGMSG(("AdjustOffset decremented -1 %d ", m_iAdjustOffset));
+		xxx_UT_DEBUGMSG(("AdjustOffset decremented -1 %d ", m_iAdjustOffset));
 	}
 	if(bIncrementAdjust)
 	{
@@ -282,7 +282,7 @@ bool px_ChangeHistory::getRedo(PX_ChangeRecord ** ppcr) const
 	{  
 	       *ppcr = pcr;
 	       m_iAdjustOffset += 1; // for didRedo
-		UT_DEBUGMSG(("AdjustOffset incremented -2 %d ", m_iAdjustOffset));
+		xxx_UT_DEBUGMSG(("AdjustOffset incremented -2 %d ", m_iAdjustOffset));
 	       return true;
 	}
 	*ppcr = NULL;
@@ -327,7 +327,7 @@ bool px_ChangeHistory::didRedo(void)
 	if(m_iAdjustOffset > 0)
 	{
 	        m_iAdjustOffset--;
-		UT_DEBUGMSG(("AdjustOffset decremented -2 %d ", m_iAdjustOffset));
+		xxx_UT_DEBUGMSG(("AdjustOffset decremented -2 %d ", m_iAdjustOffset));
 	}
 	else
 	{
@@ -367,7 +367,7 @@ void px_ChangeHistory::coalesceHistory(const PX_ChangeRecord * pcr)
 			else if(iAdj > 0) 
 			{
 			    m_iAdjustOffset = iAdj - 1;
-			    UT_DEBUGMSG(("AdjustOffset decremented - 3 %d ", m_iAdjustOffset));
+			    xxx_UT_DEBUGMSG(("AdjustOffset decremented - 3 %d ", m_iAdjustOffset));
 
 			}
 			pcrSpanUndo->coalesce(pcrSpan);
