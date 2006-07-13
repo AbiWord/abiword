@@ -972,9 +972,9 @@ bool FV_View::convertPositionedToInLine(fl_FrameLayout * pFrame)
 	sProps += "; height:";
 	sProps += szHeight;
 	const XML_Char*	attributes[] = {
-		"dataid", NULL,
-		"title",NULL,
-		"alt",NULL,
+		PT_IMAGE_DATAID, NULL,
+		PT_IMAGE_TITLE,NULL,
+		PT_IMAGE_DESCRIPTION,NULL,
 		PT_PROPS_ATTRIBUTE_NAME, NULL,
 	   	NULL, NULL};
 	attributes[1] = szDataID;
