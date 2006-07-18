@@ -123,6 +123,32 @@ UT_Error IE_Imp_XML::importFile(const char * szFilename)
 	return m_error;
 }
 
+UT_Error IE_Imp_XML::importFile(const UT_ByteBuf * data)
+{
+	m_szFileName = 0;
+
+	UT_XML default_xml;
+	UT_XML * parser = &default_xml;
+	if (m_pParser) parser = m_pParser;
+
+	parser->setListener (this);
+	if (m_pReader) parser->setReader (m_pReader);
+
+	UT_Error err = parser->parse (data);
+
+	if ((err != UT_OK) && (err != UT_IE_SKIPINVALID))
+		m_error = UT_IE_BOGUSDOCUMENT;
+
+	if (m_error != UT_OK)
+	{
+		UT_DEBUGMSG(("Problem reading document\n"));
+		if(m_error != UT_IE_SKIPINVALID)
+			m_szFileName = 0;
+	}
+
+	return m_error;
+}
+
 bool IE_Imp_XML::pasteFromBuffer(PD_DocumentRange * pDocRange, const unsigned char * pData, 
 								 UT_uint32 lenData, const char * /*szEncoding*/)
 {
