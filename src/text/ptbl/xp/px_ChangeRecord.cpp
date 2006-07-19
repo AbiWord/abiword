@@ -88,6 +88,7 @@ bool PX_ChangeRecord::setCRNumber(void) const
 {
   if(m_pDoc == NULL)
   {
+      UT_ASSERT(0);
       return false;
   }
   m_iCRNumber = m_pDoc->getNextCRNumber();

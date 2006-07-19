@@ -104,7 +104,6 @@ bool px_ChangeHistory::addChangeRecord(PX_ChangeRecord * pcr)
 	       if(pcr && pcr->isFromThisDoc())
 	       {
 		   _invalidateRedo();
-	
 		   bool bResult = (m_vecChangeRecords.insertItemAt(pcr,m_undoPosition++) == 0);
 		   UT_ASSERT_HARMLESS(bResult);
 		   xxx_UT_DEBUGMSG(("After Invalidate Undo pos %d savepos %d iAdjust %d \n",m_undoPosition,m_savePosition,m_iAdjustOffset));

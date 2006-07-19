@@ -2915,7 +2915,10 @@ bool PD_Document::notifyListeners(const pf_Frag_Strux * pfs, const PX_ChangeReco
 	        pcr->setDocument(this);
 			pcr->setCRNumber();
 	}
-
+	else if(pcr->getCRNumber() == 0)
+	{
+			pcr->setCRNumber();
+	}
 	PL_ListenerId lid;
 	PL_ListenerId lidCount = m_vecListeners.getItemCount();
 
@@ -3105,6 +3108,10 @@ bool PD_Document::notifyListeners(const pf_Frag_Strux * pfs,
 	if(pcr->getDocument() == NULL)
 	{
 	        pcr->setDocument(this);
+			pcr->setCRNumber();
+	}
+	else if(pcr->getCRNumber() == 0)
+	{
 			pcr->setCRNumber();
 	}
 

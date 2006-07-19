@@ -61,6 +61,7 @@ void pt_PieceTable::beginMultiStepGlob(void)
 	// create Document UUID now
 	//
 	pcr->setDocument(getDocument());
+	pcr->setCRNumber();
 	// add record to history.  we do not attempt to coalesce these.
 	m_history.addChangeRecord(pcr);
 	m_pDocument->notifyListeners(NULL,pcr);

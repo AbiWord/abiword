@@ -565,6 +565,7 @@ bool pt_PieceTable::undoCmd(void)
 		PX_ChangeRecord * pcrRev = pcr->reverse(); // we must delete this.
 		pcrRev->setAdjustment(pcr->getAdjustment());
 		pcrRev->setDocument(getDocument());
+		pcrRev->setCRNumber();
 		UT_return_val_if_fail (pcrRev,false);
 		UT_Byte flagsRev = GETGLOBFLAGS(pcrRev);
 		bool bResult = _doTheDo(pcrRev, true);
@@ -609,6 +610,7 @@ bool pt_PieceTable::redoCmd(void)
 
 	while (m_history.getRedo(&pcr))
 	{
+	        pcr->setCRNumber(); // update the CRNumber
 		if (!_doTheDo(pcr, false))
 			return false;
 		
