@@ -13,6 +13,11 @@ desktopdir = $(datadir)/applications
 icon_DATA = abiword_48.png
 icondir= $(datadir)/icons
 
+if WITH_HILDON
+icon_DATA =
+desktop_DATA =
+endif
+
 mime_DATA = abiword.keys
 mimedir = $(datadir)/mime-info
 
