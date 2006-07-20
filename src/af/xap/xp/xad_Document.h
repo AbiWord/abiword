@@ -218,6 +218,7 @@ public:
 	virtual bool    areDocumentStylesheetsEqual(const AD_Document &d) const = 0;
 	
 	void            setDocUUID(const char * u);
+	void            setOrigUUID(const char * u);
 	const char *    getDocUUIDString()const;
 	const char *    getOrigDocUUIDString()const;
 	const UT_UUID * getDocUUID()const {return m_pUUID;};

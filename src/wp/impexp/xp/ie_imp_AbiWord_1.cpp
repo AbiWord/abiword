@@ -774,6 +774,7 @@ void IE_Imp_AbiWord_1::startElement(const XML_Char *name, const XML_Char **atts)
 		if(szS)
 		{
 			getDoc()->setDocUUID(szS);
+			getDoc()->setOrigUUID(szS);
 		}
 		
 		return;

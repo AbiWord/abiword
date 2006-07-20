@@ -540,6 +540,26 @@ void AD_Document::setDocUUID(const char * s)
 }
 
 /*!
+    Set Orig UID for the present document
+*/
+void AD_Document::setOrigUUID(const char * s)
+{
+	if(!m_pOrigUUID)
+	{
+		UT_return_if_fail(0);
+	}
+	
+	if(!m_pOrigUUID->setUUID(s))
+	{
+		// string we were passed did not contain valid uuid
+		// if our original id was valid, we will keep it, otherwise
+		// make a new one
+		if(!m_pOrigUUID->isValid())
+			m_pOrigUUID->makeUUID();
+	}
+}
+
+/*!
     Get the UID of this document represented as a string (this
     function is primarily for exporters)
 */

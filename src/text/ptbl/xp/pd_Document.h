@@ -723,6 +723,7 @@ private:
 
 	bool                    m_bVDND;
     UT_sint32               m_iCRCounter;
+	mutable UT_sint32       m_iUpdateCount;
 };
 
 #endif /* PD_DOCUMENT_H */

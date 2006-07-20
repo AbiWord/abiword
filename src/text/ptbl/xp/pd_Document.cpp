@@ -109,7 +109,8 @@ PD_Document::PD_Document(XAP_App *pApp)
 	  m_iNewFtrHeight(0),
 	  m_bMarginChangeOnly(false),
 	  m_bVDND(false),
-	  m_iCRCounter(0)
+	  m_iCRCounter(0),
+	  m_iUpdateCount(0)
 {
 	m_pApp = pApp;
 	
@@ -2850,6 +2851,18 @@ bool PD_Document::removeListener(PL_ListenerId listenerId)
 
 bool PD_Document::signalListeners(UT_uint32 iSignal) const
 {
+	if(iSignal == PD_SIGNAL_UPDATE_LAYOUT)
+	{
+			m_iUpdateCount++;
+	}
+	else
+	{
+			m_iUpdateCount = 0;
+	}
+	if(m_iUpdateCount > 1)
+  	{
+			return true;
+	}
 	PL_ListenerId lid;
 	PL_ListenerId lidCount = m_vecListeners.getItemCount();
 
@@ -2910,6 +2923,7 @@ bool PD_Document::notifyListeners(const pf_Frag_Strux * pfs, const PX_ChangeReco
 #ifdef PT_TEST
 	//pcr->__dump();
 #endif
+	m_iUpdateCount = 0;
 	if(pcr->getDocument() == NULL)
 	{
 	        pcr->setDocument(this);
@@ -3105,6 +3119,7 @@ bool PD_Document::notifyListeners(const pf_Frag_Strux * pfs,
 #ifdef PT_TEST
 	//pcr->__dump();
 #endif
+	m_iUpdateCount = 0;
 	if(pcr->getDocument() == NULL)
 	{
 	        pcr->setDocument(this);
