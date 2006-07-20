@@ -316,17 +316,42 @@ UT_sint32 GR_UnixPangoGraphics::measureUnRemappedChar(const UT_UCSChar c)
 	UT_return_val_if_fail( pGL, 0 );
 	
 	PangoItem *pItem = (PangoItem *)g_list_nth(pGL, 0)->data;
-	UT_return_val_if_fail( pItem, 0 );
+	if(!pItem)
+	{
+		UT_ASSERT(pItem);
+		g_list_free(pGL);
+		return 0;
+	}
 
 	PangoGlyphString * pGS = pango_glyph_string_new();
-	UT_return_val_if_fail( pGS, 0 );
+	if(!pGS)
+	{
+		UT_ASSERT(pGS);
+		pango_item_free(pItem);
+		g_list_free(pGL);
+		return 0;
+	}
 	
 	pango_shape(s.utf8_str(), s.byteLength(), &(pItem->analysis), pGS);
 
-	UT_return_val_if_fail( m_pPFont, 0 );
+	if(!m_pPFont)
+	{
+		UT_ASSERT(m_pPFont);
+		pango_glyph_string_free(pGS);
+		pango_item_free(pItem);
+		g_list_free(pGL);
+		return 0;
+	}
 	
 	PangoFont * pf = m_pPFont->getPangoFont();
-	UT_return_val_if_fail( pf, 0 );
+	if(!pf)
+	{
+		UT_ASSERT(pf);
+		pango_glyph_string_free(pGS);
+		pango_item_free(pItem);
+		g_list_free(pGL);
+		return 0;
+	}
 	
 	PangoRectangle LR;
 	
@@ -387,7 +412,12 @@ bool GR_UnixPangoGraphics::itemize(UT_TextIterator & text, GR_Itemization & I)
 		xxx_UT_DEBUGMSG(("itemize: creating item %d\n", i));
 		PangoItem *pItem = (PangoItem *)g_list_nth(gItems, i)->data;
 		GR_UnixPangoItem * pI = new GR_UnixPangoItem(pItem);
-		UT_return_val_if_fail(pI, false);
+		if(!pI)
+		{
+			UT_ASSERT(pI);
+			g_list_free(gItems);
+			return false;
+		}
 
 		I.addItem(iOffset, pI);
 		iOffset += pItem->num_chars;
@@ -1328,7 +1358,14 @@ void GR_UnixPangoGraphics::drawChars(const UT_UCSChar* pChars,
 	for(int i = 0; i < iItemCount; ++i)
 	{
 		PangoItem *pItem = (PangoItem *)g_list_nth(pItems, i)->data;
-		UT_return_if_fail( pItem );
+
+		if(!pItem)
+		{
+			UT_ASSERT(pItem);
+			pango_glyph_string_free(pGstring);
+			return;
+		}
+
 		pItem->analysis.font = pf;
 
 		pango_shape(utf8.utf8_str()+ pItem->offset,
