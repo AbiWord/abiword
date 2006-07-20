@@ -517,6 +517,7 @@ AC_CONFIG_FILES([GNUmakefile
  src/pkg/GNUmakefile
  src/pkg/linux/GNUmakefile
  src/pkg/linux/apkg/GNUmakefile
+ src/pkg/maemo/GNUmakefile
  src/text/GNUmakefile
  src/text/fmt/GNUmakefile
  src/text/fmt/xp/GNUmakefile
@@ -576,8 +577,6 @@ AC_CONFIG_FILES([
  src/bindings/perl/GNUmakefile
  src/pkg/linux/apkg/abiword-gnome.apspec
  src/pkg/linux/apkg/abiword-gtk.apspec
- src/pkg/maemo/debian/misc/abiword.desktop
- src/pkg/maemo/debian/misc/com.nokia.abiword.service
 ])
 AC_OUTPUT
 

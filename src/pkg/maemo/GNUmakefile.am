@@ -1,0 +1,23 @@
+
+desktopdir = 
+
+if WITH_HILDON
+desktopdir = $(datadir)/applications/hildon
+endif
+
+desktop_in_files = debian/misc/abiword.desktop.in
+desktop_DATA = $(desktop_in_files:.desktop.in=.desktop)
+
+servicedir = $(datadir)/dbus-1/services
+service_in_files = debian/misc/com.nokia.abiword.service.in
+service_DATA = $(service_in_files:.service.in=.service)
+
+
+MAINTAINERCLEANFILES = Makefile.in
+
+EXTRA_DIST = 
+
+if WITH_HILDON
+EXTRA_DIST += $(desktop_DATA) $(service_DATA)
+endif
+
