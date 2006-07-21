@@ -218,11 +218,14 @@ public:
 	virtual bool    areDocumentStylesheetsEqual(const AD_Document &d) const = 0;
 	
 	void            setDocUUID(const char * u);
-	void            setOrigUUID(const char * u);
 	const char *    getDocUUIDString()const;
-	const char *    getOrigDocUUIDString()const;
 	const UT_UUID * getDocUUID()const {return m_pUUID;};
+	void            setOrigUUID(const char * u);
+	const char *    getOrigDocUUIDString()const;
 	const UT_UUID * getOrigDocUUID()const {return m_pOrigUUID;};
+	void            setMyUUID(const char * u);
+	const char *    getMyUUIDString()const;
+	const UT_UUID * getMyUUID()const {return m_pMyUUID;};
 
 	UT_UUID *       getNewUUID()   const;
 	UT_uint32       getNewUUID32() const;
@@ -325,6 +328,7 @@ private:
 	
 	UT_UUID *       m_pUUID;
 	UT_UUID *       m_pOrigUUID;
+	UT_UUID *       m_pMyUUID;
 	bool            m_bDoNotAdjustHistory;
 	bool            m_bAfterFirstSave;
 };

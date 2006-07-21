@@ -218,7 +218,7 @@ bool pt_PieceTable::_insertSpan(pf_Frag * pf,
 		        PX_ChangeRecord * pcr = NULL;
 			getNthUndo(&pcr,0);
 			AD_Document *pDoc = static_cast<AD_Document *>(getDocument());
-			const UT_UUID * pUUID = pDoc->getDocUUID();
+			const UT_UUID * pUUID = pDoc->getMyUUID();
 			pUUID->toBinary( myUID );
 			if (   (pft->getIndexAP()==indexAP)
 			       && m_varset.isContiguous(pft->getBufIndex(),fragLen,bi) && pcr && (pcr->isSameDocUUID(myUID)))

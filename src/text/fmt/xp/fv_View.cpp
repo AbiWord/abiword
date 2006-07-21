@@ -262,7 +262,7 @@ FV_View::FV_View(XAP_App * pApp, void* pParentData, FL_DocLayout* pLayout)
 		m_iPosAtTable(0)
 {
 	if(m_pDoc)
-		m_sDocUUID = m_pDoc->getDocUUIDString();
+		m_sDocUUID = m_pDoc->getMyUUIDString();
 	m_colorRevisions[0] = UT_RGBColor(171,4,254);
 	m_colorRevisions[1] = UT_RGBColor(171,20,119);
 	m_colorRevisions[2] = UT_RGBColor(255,151,8);
@@ -540,7 +540,7 @@ bool FV_View::isActive(void)
 	bool bAct = (pActiveView == this);
 	if(!bAct)
 		return false;
-	UT_UTF8String sUUID =  m_pDoc->getDocUUIDString();
+	UT_UTF8String sUUID =  m_pDoc->getMyUUIDString();
 	if(m_sDocUUID == sUUID)
 		return true;
 	return false;
@@ -577,7 +577,7 @@ void FV_View::updateCarets(PT_DocPosition docPos, UT_sint32 iLen)
 {
 	fv_CaretProps * pCaretProps = NULL;
 	UT_sint32 iCount = static_cast<UT_sint32>(m_vecCarets.getItemCount());
-	UT_UTF8String sUUID = m_pDoc->getDocUUIDString();
+	UT_UTF8String sUUID = m_pDoc->getMyUUIDString();
 	bool bLocal = (sUUID == m_sDocUUID);
 	UT_sint32 i = 0;
 	bool bFoundUUID = false;
