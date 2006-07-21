@@ -1,10 +1,5 @@
 
-desktopdir = 
-
-if WITH_HILDON
 desktopdir = $(datadir)/applications/hildon
-endif
-
 desktop_in_files = abiword.desktop.in
 desktop_DATA = $(desktop_in_files:.desktop.in=.desktop)
 
@@ -17,9 +12,5 @@ icon_DATA = qgn_list_abiword.png
 
 MAINTAINERCLEANFILES = Makefile.in
 
-EXTRA_DIST = 
-
-if WITH_HILDON
-EXTRA_DIST += $(desktop_DATA) $(service_DATA) $(icon_DATA)
-endif
+EXTRA_DIST = $(desktop_DATA) $(service_DATA) $(icon_DATA)
 
