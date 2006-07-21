@@ -1,3 +1,7 @@
 
-SUBDIRS = linux maemo
+SUBDIRS = linux
+
+if WITH_HILDON
+SUBDIRS += maemo
+endif
 
