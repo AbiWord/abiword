@@ -518,6 +518,8 @@ AC_CONFIG_FILES([GNUmakefile
  src/pkg/linux/GNUmakefile
  src/pkg/linux/apkg/GNUmakefile
  src/pkg/maemo/GNUmakefile
+ src/pkg/maemo/abiword.desktop
+ src/pkg/maemo/com.abisource.abiword.service
  src/text/GNUmakefile
  src/text/fmt/GNUmakefile
  src/text/fmt/xp/GNUmakefile
