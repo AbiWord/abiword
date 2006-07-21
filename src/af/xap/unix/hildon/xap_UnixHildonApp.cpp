@@ -88,7 +88,7 @@ bool XAP_UnixHildonApp::initialize(const char * szKeyBindingsKey,
 	// Scratchbox you have todo
 	// 
 	// $ run-standalone.sh gdb /var/lib/install/usr/bin/AbiWord-2.6
-	m_pOsso = osso_initialize ("abiword",
+	m_pOsso = osso_initialize ("com.abisource.abiword",
 							   VERSION,
 							   FALSE, 
 							   NULL);
