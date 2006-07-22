@@ -167,12 +167,19 @@ bool XAP_UnixClipboard::addData(T_AllowGet tFrom, const char* format, const void
 		if(!m_fakeClipboard.addData(format,pData,iNumBytes))
 			return false;
 		
-		gtk_clipboard_set_with_data (gtkClipboardForTarget(TAG_ClipboardOnly),
-									 m_Targets,
-									 m_nTargets,
-									 s_clipboard_get_func,
-									 s_clipboard_clear_func,
-									 this);
+		GtkClipboard * board = gtkClipboardForTarget(TAG_ClipboardOnly);
+
+		gtk_clipboard_set_with_data (board,
+					     m_Targets,
+					     m_nTargets,
+					     s_clipboard_get_func,
+					     s_clipboard_clear_func,
+					     this);
+
+#if GTK_CHECK_VERSION(2,6,0)
+		gtk_clipboard_set_can_store (board, NULL, 0);
+#endif
+
 		return true;
     }
 }
