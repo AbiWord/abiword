@@ -2731,6 +2731,7 @@ Defun1(redo)
 Defun1(newWindow)
 {
 	CHECK_FRAME;
+	UT_return_val_if_fail(pAV_View, false);
 	XAP_Frame * pFrame = static_cast<XAP_Frame *> ( pAV_View->getParentData());
 	UT_return_val_if_fail(pFrame, false);
 	XAP_Frame * pClone = pFrame->cloneFrame();
