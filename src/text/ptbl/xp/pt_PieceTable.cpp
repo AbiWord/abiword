@@ -127,12 +127,12 @@ bool pt_PieceTable::createAndSendCR(PT_DocPosition iPos, UT_sint32 iType,bool bS
     case PX_ChangeRecord::PXT_InsertFmtMark:
     case PX_ChangeRecord::PXT_DeleteFmtMark:
     case PX_ChangeRecord::PXT_ChangeFmtMark:
-    case PX_ChangeRecord::PXT_ChangePoint:
 		{
 			UT_DEBUGMSG(("CR already implemented \n"));
 			UT_ASSERT(UT_SHOULD_NOT_HAPPEN);
 			return false;
 		}
+    case PX_ChangeRecord::PXT_ChangePoint:
     case PX_ChangeRecord::PXT_ListUpdate:
     case PX_ChangeRecord::PXT_StopList:
     case PX_ChangeRecord::PXT_UpdateField:
