@@ -96,9 +96,10 @@ public:
 	
 	virtual	XAP_Frame *			cloneFrame() = 0;
 	virtual	XAP_Frame *			buildFrame(XAP_Frame * pClone) = 0;
+	virtual UT_Error   			loadDocument(AD_Document* pDoc) = 0;
 	virtual UT_Error   			loadDocument(const char * szFilename, int ieft) = 0;
-	virtual UT_Error                        loadDocument(const char * szFileName, int ieft, bool createNew) = 0;
-	virtual UT_Error importDocument (const char * szFilename, int ieft, bool markClean = false) = 0;
+	virtual UT_Error			loadDocument(const char * szFileName, int ieft, bool createNew) = 0;
+	virtual UT_Error			importDocument (const char * szFilename, int ieft, bool markClean = false) = 0;
 
 	// thin interface functions to facilities provided by the helper
 	bool close() { return m_pFrameImpl->_close(); }

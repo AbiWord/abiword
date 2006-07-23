@@ -54,6 +54,7 @@ typedef UT_sint32 IEGraphicFileType;
 #define IE_IMPEXPNAME_AWML11	"AbiWord::AWML-1.1"
 #define IE_IMPEXPNAME_AWML11AWT	"AbiWord::AWML-1.1/template"
 #define IE_IMPEXPNAME_AWML11GZ	"AbiWord::AWML-1.1/compressed"
+#define IE_IMPEXPNAME_AWML11GZB64	"AbiWord::AWML-1.1/compressed/base64"
 #define IE_IMPEXPNAME_MSWORD97	"AbiWord::MS Word (97)"
 #define IE_IMPEXPNAME_RTF		"AbiWord::RTF"
 #define IE_IMPEXPNAME_RTFATTIC	"AbiWord::RTF (attic)"
