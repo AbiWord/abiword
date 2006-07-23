@@ -123,7 +123,7 @@ UT_Error IE_Imp_XML::importFile(const char * szFilename)
 	return m_error;
 }
 
-UT_Error IE_Imp_XML::importFile(const UT_ByteBuf * data)
+UT_Error IE_Imp_XML::importFile(const char * data, UT_uint32 length)
 {
 	m_szFileName = 0;
 
@@ -134,7 +134,7 @@ UT_Error IE_Imp_XML::importFile(const UT_ByteBuf * data)
 	parser->setListener (this);
 	if (m_pReader) parser->setReader (m_pReader);
 
-	UT_Error err = parser->parse (data);
+	UT_Error err = parser->parse (data, length);
 
 	if ((err != UT_OK) && (err != UT_IE_SKIPINVALID))
 		m_error = UT_IE_BOGUSDOCUMENT;
@@ -147,6 +147,12 @@ UT_Error IE_Imp_XML::importFile(const UT_ByteBuf * data)
 	}
 
 	return m_error;
+}
+
+
+UT_Error IE_Imp_XML::importFile(const UT_ByteBuf * data)
+{
+	return importFile(data->getPointer(), data->getLength())
 }
 
 bool IE_Imp_XML::pasteFromBuffer(PD_DocumentRange * pDocRange, const unsigned char * pData, 
