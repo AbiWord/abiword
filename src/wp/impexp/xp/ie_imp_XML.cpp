@@ -152,7 +152,7 @@ UT_Error IE_Imp_XML::importFile(const char * data, UT_uint32 length)
 
 UT_Error IE_Imp_XML::importFile(const UT_ByteBuf * data)
 {
-	return importFile(data->getPointer(), data->getLength())
+	return importFile((const char *)data->getPointer(0), data->getLength());
 }
 
 bool IE_Imp_XML::pasteFromBuffer(PD_DocumentRange * pDocRange, const unsigned char * pData, 
