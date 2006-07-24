@@ -106,5 +106,16 @@ public:
 			return PTL_UNKNOWN;
 		}
 };
-	
+
+/*!
+ * I Need this subclass so I can trigger AbiCollab to update it'self if the docuemnt changes or goes away.
+ */
+class ABI_EXPORT PL_ExportListener : public PL_Listener
+{
+public:
+ virtual         ~PL_ExportListener(){};
+ virtual void    setNewDocument(PD_Document * pDoc) =0;
+ virtual void    removeDocument(void) = 0;
+};
+
 #endif /* PL_LISTENER_H */
