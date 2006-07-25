@@ -126,6 +126,7 @@ PD_Document::~PD_Document()
 	if (m_pPieceTable)
 		delete m_pPieceTable;
 
+	removeConnections();
 	_destroyDataItemData();
 
 	UT_VECTOR_PURGEALL(fl_AutoNum*, m_vecLists);
@@ -2880,6 +2881,49 @@ bool PD_Document::signalListeners(UT_uint32 iSignal) const
 	}
 
 	return true;
+}
+
+/*!
+ * Remove all AbiCollab connections. We should do this before the document is destructed.
+ */
+void PD_Document::removeConnections(void)
+{
+	PL_ListenerId lid;
+	PL_ListenerId lidCount = m_vecListeners.getItemCount();
+	for (lid=0; lid<lidCount; lid++)
+	{
+		PL_Listener * pListener = static_cast<PL_Listener *>(m_vecListeners.getNthItem(lid));
+		if (pListener)
+		{
+			if(pListener->getType() == PTL_CollabExport)
+			{
+				static_cast<PL_ExportListener *>(pListener)->removeDocument();
+				removeListener(lid);
+			}
+		}
+	}
+}
+
+
+/*!
+ * Change all AbiCollab connections to point to the new document.
+ */
+void PD_Document::changeConnectedDocument(PD_Document * pDoc)
+{
+	PL_ListenerId lid;
+	PL_ListenerId lidCount = m_vecListeners.getItemCount();
+	for (lid=0; lid<lidCount; lid++)
+	{
+		PL_Listener * pListener = static_cast<PL_Listener *>(m_vecListeners.getNthItem(lid));
+		if (pListener)
+		{
+			if(pListener->getType() == PTL_CollabExport)
+			{
+				static_cast<PL_ExportListener *>(pListener)->setNewDocument(pDoc);
+				removeListener(lid);
+			}
+		}
+	}
 }
 
 /*!

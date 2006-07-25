@@ -1,3 +1,5 @@
+/* -*- mode: C++; tab-width: 4; c-basic-offset: 4; -*- */
+
 /* AbiWord
  * Copyright (C) 2002 Dom Lachowicz, William Lachance and others
  *
@@ -206,6 +208,7 @@ UT_Error AP_Frame::_loadDocument(const char * szFilename, IEFileType ieft,
 ReplaceDocument:
 	XAP_App::getApp()->forgetClones(this);
 	UT_DEBUGMSG(("Doing replace document \n"));
+	
 	// NOTE: prior document is discarded in _showDocument()
 	m_pDoc = pNewDoc;
 	return UT_OK;
@@ -469,7 +472,7 @@ UT_uint32 AP_Frame::getNewZoom(XAP_Frame::tZoomType * tZoom)
 UT_Error AP_Frame::_replaceDocument(AD_Document * pDoc)
 {
 	// NOTE: prior document is discarded in _showDocument()
-	m_pDoc = REFP(pDoc);
+	m_pDoc = pDoc; // This was a REFP(pDoc) but it just a caused leak
 	XAP_Frame::tZoomType iZoomType;
 	UT_uint32 iZoom = getNewZoom(&iZoomType);
 	setZoomType(iZoomType);
@@ -671,6 +674,7 @@ void AP_Frame::_replaceView(GR_Graphics * pG, FL_DocLayout *pDocLayout,
 	}
 	else if (pOldDoc != m_pDoc)
 	{
+	        static_cast<PD_Document *>(pOldDoc)->changeConnectedDocument(static_cast<PD_Document *>(m_pDoc));
 		UNREFP(pOldDoc);
 	}
 	else

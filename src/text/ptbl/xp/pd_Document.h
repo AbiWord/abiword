@@ -630,8 +630,8 @@ PT_AttrPropIndex            getAPIFromSOH(PL_ObjectHandle odh);
 	virtual UT_uint32 getTopXID() const;
 	void              fixMissingXIDs();
 	UT_uint32         getFragXIDforVersion(const pf_Frag * pf, UT_uint32 iVersion) const;
-
-	
+	void              removeConnections(void);
+	void              changeConnectedDocument(PD_Document * pDoc);
 	UT_sint32     getNewHdrHeight(void) const
 	{ return m_iNewHdrHeight;}
 	UT_sint32     getNewFtrHeight(void) const
