@@ -2897,7 +2897,7 @@ void PD_Document::removeConnections(void)
 		{
 			if(pListener->getType() == PTL_CollabExport)
 			{
-				static_cast<PL_ExportListener *>(pListener)->removeDocument();
+				static_cast<PL_DocChangeListener *>(pListener)->removeDocument();
 				removeListener(lid);
 			}
 		}
@@ -2919,7 +2919,7 @@ void PD_Document::changeConnectedDocument(PD_Document * pDoc)
 		{
 			if(pListener->getType() == PTL_CollabExport)
 			{
-				static_cast<PL_ExportListener *>(pListener)->setNewDocument(pDoc);
+				static_cast<PL_DocChangeListener *>(pListener)->setNewDocument(pDoc);
 				removeListener(lid);
 			}
 		}

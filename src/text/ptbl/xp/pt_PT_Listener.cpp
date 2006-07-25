@@ -64,14 +64,14 @@ bool pt_PieceTable::_tellAndMaybeAddListener(PL_Listener * pListener,
 	PT_DocPosition sum = 0;
 	UT_uint32 blockOffset = 0;
 	pf_Frag_Strux * pfs = NULL;
-	bool isCollab = (pListener->getType() == PTL_CollabExport);
+	bool bListensOnly = (pListener->getType() == PTL_CollabExport);
 	for (pf_Frag * pf = m_fragments.getFirst(); (pf); pf=pf->getNext())
 	{
 		switch (pf->getType())
 		{
 		case pf_Frag::PFT_Text:
 			{
-			        if(isCollab)
+			        if(bListensOnly)
 				{
 			                break;
 				}
@@ -119,7 +119,7 @@ bool pt_PieceTable::_tellAndMaybeAddListener(PL_Listener * pListener,
 				pfs = static_cast<pf_Frag_Strux *> (pf);
 				PL_StruxDocHandle sdh = (PL_StruxDocHandle)pf;
 				sfh = 0;
-			        if(isCollab)
+			        if(bListensOnly)
 				{
 					pfs->setFmtHandle(listenerId,sfh);
 			                break;
@@ -152,7 +152,7 @@ bool pt_PieceTable::_tellAndMaybeAddListener(PL_Listener * pListener,
 
 		case pf_Frag::PFT_Object:
 			{
-			        if(isCollab)
+			        if(bListensOnly)
 				{
 			                break;
 				}
@@ -199,7 +199,7 @@ bool pt_PieceTable::_tellAndMaybeAddListener(PL_Listener * pListener,
 
 		case pf_Frag::PFT_FmtMark:
 			{
-			        if(isCollab)
+			        if(bListensOnly)
 				{
 			                break;
 				}
