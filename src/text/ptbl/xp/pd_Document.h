@@ -238,7 +238,7 @@ PT_AttrPropIndex            getAPIFromSOH(PL_ObjectHandle odh);
 										PTStruxType pts,
 										bool bRecordChange);
 
-	bool                    createAndSendCR(PT_DocPosition dpos,UT_sint32 iType,bool bsave);
+	bool                    createAndSendCR(PT_DocPosition dpos,UT_sint32 iType,bool bsave,UT_Byte iGlob);
 
 	bool					insertStrux(PT_DocPosition dpos,
 										PTStruxType pts,

@@ -1480,9 +1480,9 @@ bool PD_Document::isStruxBeforeThis(PL_StruxDocHandle sdh,  PTStruxType pts)
  * Create a changerecord object and broadcast it to all the listeners.
  * If bsave is true save the CR in th eunod stack.
  */
-bool PD_Document::createAndSendCR(PT_DocPosition dpos, UT_sint32 iType,bool bSave)
+bool PD_Document::createAndSendCR(PT_DocPosition dpos, UT_sint32 iType,bool bSave,UT_Byte iGlob)
 {
-	return m_pPieceTable->createAndSendCR(dpos,iType,bSave);
+	return m_pPieceTable->createAndSendCR(dpos,iType,bSave,iGlob);
 }
 
 /*!
