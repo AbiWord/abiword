@@ -85,7 +85,7 @@ public:
 
 protected:
 	void					_invalidateRedo(void);
-	
+	void                                    _invalidateHistory(void);
 	UT_Vector				m_vecChangeRecords;
 	UT_sint32				m_undoPosition;
 	UT_sint32				m_savePosition;

@@ -695,7 +695,7 @@ UT_Error PD_Document::_saveAs(const char * szFilename, int ieft, bool cpy,
 		m_lastSavedAsType = newFileType;
 		_syncFileTypes(true);
 	}
-	if(!!XAP_App::getApp()->getPrefs()->isIgnoreRecent())
+	if(!XAP_App::getApp()->getPrefs()->isIgnoreRecent())
 	{
 		// order of these calls matters
 		_adjustHistoryOnSave();
