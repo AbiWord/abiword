@@ -690,17 +690,19 @@ UT_Error PD_Document::_saveAs(const char * szFilename, int ieft, bool cpy,
 	if (expProps && strlen(expProps))
 		pie->setProps (expProps);
 
-	if (cpy)
+	if (cpy && !XAP_App::getApp()->getPrefs()->isIgnoreRecent())
 	{
 		m_lastSavedAsType = newFileType;
 		_syncFileTypes(true);
 	}
-
-	// order of these calls matters
-	_adjustHistoryOnSave();
-
-	// see if revisions table is still needed ...
-	purgeRevisionTable();
+	if(!!XAP_App::getApp()->getPrefs()->isIgnoreRecent())
+	{
+		// order of these calls matters
+		_adjustHistoryOnSave();
+		
+		// see if revisions table is still needed ...
+		purgeRevisionTable();
+	}
 	
 	errorCode = pie->writeFile(szFilename);
 	delete pie;
@@ -711,7 +713,7 @@ UT_Error PD_Document::_saveAs(const char * szFilename, int ieft, bool cpy,
 		return (errorCode == UT_SAVE_CANCELLED) ? UT_SAVE_CANCELLED : UT_SAVE_WRITEERROR;
 	}
 
-	if (cpy) // we want to make the current settings persistent
+	if (cpy && !XAP_App::getApp()->getPrefs()->isIgnoreRecent()) // we want to make the current settings persistent
 	{
 	    // no file name currently set - make this filename the filename
 	    // stored for the doc
