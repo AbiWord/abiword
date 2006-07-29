@@ -68,6 +68,9 @@
 #include "fl_DocListener.h"
 #include "fl_DocLayout.h"
 
+#include "ut_go_file.h"
+#include <gsf/gsf-input.h>
+
 // our currently used DTD
 #define ABIWORD_FILEFORMAT_VERSION "1.1"
 
@@ -434,6 +437,7 @@ UT_Error PD_Document::readFromFile(const char * szFilename, int ieft,
 		return UT_INVALIDFILENAME;
 	}
 
+#if 0
 	if ( !UT_isRegularFile(szFilename) )
 	{
 	  UT_DEBUGMSG (("PD_Document::readFromFile -- file (%s) is not plain file\n",szFilename));
@@ -445,6 +449,7 @@ UT_Error PD_Document::readFromFile(const char * szFilename, int ieft,
 		UT_DEBUGMSG(("PD_Document::readFromFile -- file (%s) is empty\n",szFilename));
 		return UT_IE_BOGUSDOCUMENT;
 	}
+#endif
 	
 	m_pPieceTable = new pt_PieceTable(this);
 	if (!m_pPieceTable)
@@ -461,8 +466,11 @@ UT_Error PD_Document::readFromFile(const char * szFilename, int ieft,
 		buildTemplateList (template_list, "normal.awt");
 
 		bool success = false;
-		for (UT_uint32 i = 0; i < 6 && !success; i++)
-			success = (importStyles(template_list[i].c_str(), ieft, true) == UT_OK);
+		for (UT_uint32 i = 0; i < 6 && !success; i++) {
+			char * uri = UT_go_filename_to_uri (template_list[i].c_str());
+			success = (importStyles(uri, ieft, true) == UT_OK);
+			g_free (uri);
+		}
 
 		// don't worry if this fails
 	}
@@ -629,8 +637,11 @@ UT_Error PD_Document::newDocument(void)
 
 	bool success = false;
 
-	for (UT_uint32 i = 0; i < 6 && !success; i++)
-		success = (importFile (template_list[i].c_str(), IEFT_Unknown, true, false) == UT_OK);
+	for (UT_uint32 i = 0; i < 6 && !success; i++) {
+		char * uri = UT_go_filename_to_uri (template_list[i].c_str());
+		success = (importFile (uri, IEFT_Unknown, true, false) == UT_OK);
+		g_free(uri);
+	}
 
 	if (!success) {
 			m_pPieceTable = new pt_PieceTable(this);

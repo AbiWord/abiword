@@ -57,7 +57,6 @@ public:
 #endif
 	static const char * m_sGeometry;
 	static const char * m_sTo;
-	static int    m_iToPNG;
 	static const char * m_sPrintTo;
 	static int    m_iToThumb;
 	static const char * m_sThumb;

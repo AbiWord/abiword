@@ -28,6 +28,9 @@
 #include "ut_AbiObject.h"
 #include "ie_types.h"
 
+#include "ut_go_file.h"
+#include <gsf/gsf-output.h>
+
 class PD_Document;
 class PD_DocumentRange;
 class UT_ByteBuf;
@@ -145,7 +148,7 @@ protected:
 	// derived classes should use these to open/close
 	// and write data to the actual file.  this will
 	// let us handle file backups, etc.
-	virtual bool		_openFile(const char * szFilename);
+	virtual GsfOutput*	_openFile(const char * szFilename);
 	virtual UT_uint32	_writeBytes(const UT_Byte * pBytes, UT_uint32 length);
 	virtual bool		_writeBytes(const UT_Byte * sz);
 	virtual bool		_closeFile(void);
@@ -168,7 +171,7 @@ private:
 	PD_DocumentRange *	m_pDocRange;
 	UT_ByteBuf *		m_pByteBuf;
 	char *                  m_szFileName;
-	FILE *				m_fp;
+	GsfOutput *				m_fp;
 
 	bool				m_bCancelled;
 

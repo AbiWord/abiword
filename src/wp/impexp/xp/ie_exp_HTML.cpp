@@ -6628,7 +6628,7 @@ UT_Error IE_Exp_HTML::_writeDocument (bool bClipBoard, bool bTemplateBody)
 	return UT_IE_COULDNOTWRITE;
 }
 
-bool IE_Exp_HTML::_openFile (const char * szFilename)
+GsfOutput* IE_Exp_HTML::_openFile (const char * szFilename)
 {
 #ifdef HTML_DIALOG_OPTIONS
 	XAP_Frame * pFrame = getDoc()->getApp()->getLastFocussedFrame ();
@@ -6672,7 +6672,7 @@ bool IE_Exp_HTML::_openFile (const char * szFilename)
 	if (!bSave)
 	{
 		_cancelExport ();
-		return false;
+		return NULL;
 	}
 #endif
 	return IE_Exp::_openFile (szFilename);

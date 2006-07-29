@@ -1484,21 +1484,21 @@ IE_Imp_RTF::~IE_Imp_RTF()
 	FREEP (m_szFileDirName);
 }
 
-UT_Error IE_Imp_RTF::importFile(const char * szFilename)
+UT_Error IE_Imp_RTF::importFile(const char * szURI)
 {
 	m_newParaFlagged = true;
 	m_newSectionFlagged = true;
 
-	m_szFileDirName = UT_strdup (szFilename);
+	m_szFileDirName = UT_strdup (szURI);
 	// UT_basename returns a point INSIDE the passed string.
 	// the trick is to truncate the string by setting the char pointed
 	// by tmp to NULL. This IS useful code. (2 LOC)
 	char * tmp = const_cast<char *>(UT_basename (m_szFileDirName));
 	*tmp = 0;
-	FILE *fp = fopen(szFilename, "r");
+	GsfInput *fp = UT_go_file_open(szURI, NULL);
 	if (!fp)
 	{
-		UT_DEBUGMSG(("Could not open file %s\n",szFilename));
+		UT_DEBUGMSG(("Could not open file %s\n",szURI));
 		return UT_errnoToUTError ();
 	}
 
@@ -1511,7 +1511,7 @@ UT_Error IE_Imp_RTF::importFile(const char * szFilename)
 		_appendHdrFtr ();
 	}
 
-	fclose(fp);
+	g_object_unref(G_OBJECT(fp));
 
 	// check if the doc is empty or not
 	if (getDoc()->getLastFrag() == NULL)
@@ -1524,7 +1524,7 @@ UT_Error IE_Imp_RTF::importFile(const char * szFilename)
 }
 
 
-UT_Error IE_Imp_RTF::_writeHeader(FILE * /*fp*/)
+UT_Error IE_Imp_RTF::_writeHeader(GsfInput * /*fp*/)
 {
 		return UT_OK;
 }
@@ -2468,7 +2468,8 @@ UT_Error IE_Imp_RTF::_isBidiDocument()
 	char buff[8192 + 1];
 	char * token = NULL;
 	
-	size_t iBytes = fread((void*)&buff[0], 1, sizeof(buff) - 1, m_pImportFile);
+	size_t iBytes = UT_MIN(8192, gsf_input_remaining(m_pImportFile));
+	gsf_input_read(m_pImportFile, iBytes, (guint8*)buff);
 
 	UT_DEBUGMSG(("IE_Imp_RTF::_isBidiDocument: looking for RTL tokens\n"));
 	while (iBytes)
@@ -2487,8 +2488,9 @@ UT_Error IE_Imp_RTF::_isBidiDocument()
 		token = strstr(buff, "rtlch");
 		if(token)
 			break;
-
-		iBytes = fread((void*)&buff[0], 1, sizeof(buff) - 1, m_pImportFile);	
+		
+		iBytes = UT_MIN(8192, gsf_input_remaining(m_pImportFile));
+		gsf_input_read(m_pImportFile, iBytes, (guint8*)buff);
 	}
 
 	if(token)
@@ -2504,7 +2506,7 @@ UT_Error IE_Imp_RTF::_isBidiDocument()
 	
 	
 	// reset the file pointer to the beginning
-	if(fseek(m_pImportFile, 0, SEEK_SET))
+	if(gsf_input_seek(m_pImportFile, 0, G_SEEK_SET))
 		return UT_ERROR;
 
 	UT_DEBUGMSG(("IE_Imp_RTF::_isBidiDocument: looking for RTL tokens -- done\n"));
@@ -2513,7 +2515,7 @@ UT_Error IE_Imp_RTF::_isBidiDocument()
 
 
 
-UT_Error IE_Imp_RTF::_parseFile(FILE* fp)
+UT_Error IE_Imp_RTF::_parseFile(GsfInput* fp)
 {
 	m_pImportFile = fp;
 
@@ -3025,7 +3027,7 @@ bool IE_Imp_RTF::ReadCharFromFileWithCRLF(unsigned char* pCh)
 
 	if (m_pImportFile)					// if we are reading a file
 	{
-		if (fread(pCh, 1, sizeof(unsigned char), m_pImportFile) > 0)
+		if (gsf_input_read(m_pImportFile, 1, pCh) != NULL)
 		{
 			ok = true;
 		}
@@ -3105,7 +3107,7 @@ bool IE_Imp_RTF::SkipBackChar(unsigned char ch)
 	if (m_pImportFile)					// if we are reading a file
 	{
 		// TODO - I've got a sneaking suspicion that this doesn't work on the Macintosh
-		return (ungetc(ch, m_pImportFile) != EOF);
+		return (!gsf_input_seek(m_pImportFile, -1, G_SEEK_CUR));
 	}
 	else								// else we are pasting from a buffer
 	{

@@ -935,11 +935,12 @@ static void _errorMessage (XAP_Frame * pFrame, int id)
 }
 #endif
 
-UT_Error IE_Imp_MsWord_97::importFile(const char * szFilename)
+UT_Error IE_Imp_MsWord_97::importFile(const char * szURI)
 {
   wvParseStruct ps;
+  GsfInput *fp = UT_go_file_open(szURI, NULL);
 
-  int ret = wvInitParser (&ps, const_cast<char *>(szFilename));
+  int ret = wvInitParser_gsf(&ps, fp);
   const char * password = NULL;
 
   if (ret & 0x8000)		/* Password protected? */

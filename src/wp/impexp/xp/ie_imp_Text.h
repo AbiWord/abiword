@@ -61,13 +61,13 @@ class ABI_EXPORT ImportStream
 class ABI_EXPORT ImportStreamFile : public ImportStream
 {
 public:
-	ImportStreamFile(FILE *pFile);
+	ImportStreamFile(GsfInput *pFile);
 	~ImportStreamFile();
 	bool getChar();
 protected:
 	bool _getByte(unsigned char &b);
 private:
-	FILE *m_pFile;
+	GsfInput *m_pFile;
 };
 
 // Clipboard stream class
@@ -154,10 +154,10 @@ public:
 										const unsigned char * pData, UT_uint32 lenData, const char * szEncoding = 0);
 
 protected:
-	UT_Error			_recognizeEncoding(FILE * fp);
+	UT_Error			_recognizeEncoding(GsfInput * fp);
 	UT_Error			_recognizeEncoding(const char *szBuf, UT_uint32 iNumbytes);
-	virtual UT_Error	_constructStream(ImportStream *& pStream, FILE * fp);
-	UT_Error			_writeHeader(FILE * fp);
+	virtual UT_Error	_constructStream(ImportStream *& pStream, GsfInput * fp);
+	UT_Error			_writeHeader(GsfInput * fp);
 	UT_Error			_parseStream(ImportStream * pStream);
 	bool				_doEncodingDialog(const char *szEncoding);
 	void				_setEncoding(const char *szEncoding);

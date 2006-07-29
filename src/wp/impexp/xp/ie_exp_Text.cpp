@@ -250,7 +250,7 @@ UT_Error IE_Exp_Text::_writeDocument(void)
   Open the file to export to
  \param szFilename File to open
  */
-bool IE_Exp_Text::_openFile(const char * szFilename)
+GsfOutput* IE_Exp_Text::_openFile(const char * szFilename)
 {
 	// Don't call base method if user cancels encoding dialog
 	if (!m_bIsEncoded || m_bExplicitlySetEncoding || _doEncodingDialog(m_szEncoding))
@@ -258,7 +258,7 @@ bool IE_Exp_Text::_openFile(const char * szFilename)
 	else
 	{
 		_cancelExport ();
-		return false;
+		return NULL;
 	}
 }
 

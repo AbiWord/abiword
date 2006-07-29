@@ -56,8 +56,10 @@ bool AP_App::openCmdLineFiles(AP_Args * args)
 	while ((file = poptGetArg (poptcon)) != NULL) {
 		XAP_Frame * pFrame = newFrame();
 
-		UT_Error error = pFrame->loadDocument
-			(file, IEFT_Unknown, true);
+		char * uri = UT_go_shell_arg_to_uri (file);
+		UT_Error error = pFrame->loadDocument (uri, IEFT_Unknown, true);
+		g_free (uri);
+
 		if (!error)
 		{
 			kWindowsOpened++;

@@ -84,7 +84,7 @@ UT_Confidence_t IE_Imp_GZipAbiWord_Sniffer::recognizeSuffix(const char * szSuffi
 UT_Error IE_Imp_GZipAbiWord_Sniffer::constructImporter(PD_Document * pDocument,
 													   IE_Imp ** ppie)
 {
-    *ppie = new IE_Imp_GZipAbiWord(pDocument);;
+    *ppie = new IE_Imp_AbiWord_1(pDocument);;
     return UT_OK;
 }
 
@@ -100,42 +100,4 @@ bool IE_Imp_GZipAbiWord_Sniffer::getDlgLabels(const char ** pszDesc,
 #endif
     *ft = getFileType();
     return true;
-}
-
-/*****************************************************************/
-/*****************************************************************/
-
-bool IE_Imp_GZipAbiWord::openFile (const char * szFilename) 
-{
-  UT_return_val_if_fail (m_gzfp == 0, false);
-
-  m_gzfp = gzopen (szFilename, "rb");
-  return (m_gzfp != NULL);
-}
-
-UT_uint32 IE_Imp_GZipAbiWord::readBytes (char * buffer, UT_uint32 length) 
-{
-  UT_return_val_if_fail (m_gzfp, 0);
-
-  return gzread (m_gzfp, buffer, length);
-}
-
-void IE_Imp_GZipAbiWord::closeFile(void) 
-{
-  if (m_gzfp) {
-    gzclose (m_gzfp);
-    m_gzfp = 0;
-  }
-}
-
-IE_Imp_GZipAbiWord::~IE_Imp_GZipAbiWord()
-{
-  if (m_gzfp) gzclose (m_gzfp);
-}
-
-IE_Imp_GZipAbiWord::IE_Imp_GZipAbiWord(PD_Document * pDocument)
-  : IE_Imp_AbiWord_1(pDocument),
-    m_gzfp(0)
-{
-  setReader (this); // IE_Imp_GZipAbiWord derives from UT_XML::Reader
 }

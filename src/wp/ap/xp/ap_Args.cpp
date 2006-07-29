@@ -45,7 +45,6 @@ int AP_Args::m_iDumpstrings = 0;
 #endif
 const char * AP_Args::m_sGeometry = NULL;
 const char * AP_Args::m_sTo = NULL;
-int    AP_Args::m_iToPNG = 0;
 const char * AP_Args::m_sPrintTo = NULL;
 int    AP_Args::m_iVerbose = 1;
 const char * AP_Args::m_sPlugin = NULL;
@@ -170,20 +169,7 @@ bool AP_Args::doWindowlessArgs(bool & bSuccessful)
 		}
 		delete conv;
 		return false;
-	}
-	
-	if (m_iToPNG) {
-	  AP_Convert * conv = new AP_Convert();
-	  conv->setVerbose(m_iVerbose);
-// this has the problem that it calls the convertToPNG method on
-// ie_impGraphicPNG, which perhaps doesn't like you freeing the
-// returned buffer.
-	  while ((m_sFile = poptGetArg (poptcon)) != NULL)
-	    bSuccessful = bSuccessful && conv->convertToPNG(m_sFile);
-	  delete conv;
-
-	  return false;
-	}
+	}       
 
 	bool appWindowlessArgsWereSuccessful = true;
 	bool res = m_pApp->doWindowlessArgs(this, appWindowlessArgsWereSuccessful);
@@ -191,7 +177,7 @@ bool AP_Args::doWindowlessArgs(bool & bSuccessful)
 	if(!res)
 		return false;
 
-	if (m_sTo || m_iToPNG || m_sPrintTo || m_iNosplash || m_sPlugin)
+	if (m_sTo || m_sPrintTo || m_iNosplash || m_sPlugin)
 	{
 	    m_bShowSplash = false;
 	}
@@ -211,7 +197,6 @@ const struct poptOption AP_Args::const_opts[] =
 	 {"dumpstrings", 'd', POPT_ARG_NONE, &m_iDumpstrings, 0, "Dump strings to file", NULL},
 #endif
 	 {"to", 't', POPT_ARG_STRING, &m_sTo, 0, "Target format of the file (abw, zabw, rtf, txt, utf8, html, latex)", "FORMAT"},
-	 {"to-png", '\0', POPT_ARG_NONE, &m_iToPNG, 0, "Convert incoming file to a PNG image", ""},
 	 {"verbose", 'v', POPT_ARG_INT, &m_iVerbose, 0, "Set verbosity level (0, 1, 2)", "LEVEL"},
 #ifdef WIN32
 	 {"print", 'p',POPT_ARG_STRING,&m_sPrintTo,0,"Print this file to printer","'Printer name' or '-' for default printer"},

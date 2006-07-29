@@ -21,7 +21,6 @@
 #ifndef IE_EXP_GZIPABIWORD_1_H
 #define IE_EXP_GZIPABIWORD_1_H
 
-#include <zlib.h>
 #include "ie_exp_AbiWord_1.h"
 
 // The exporter/writer for GZipped AbiWord file format.
@@ -50,13 +49,7 @@ public:
 	virtual ~IE_Exp_GZipAbiWord();
 
 protected:
-	virtual bool				_openFile(const char * szFilename);
-	virtual UT_uint32			_writeBytes(const UT_Byte * pBytes, UT_uint32 length);
-	virtual bool				_closeFile(void);
-
-private:
-    
-    gzFile m_gzfp;
+	virtual GsfOutput*			_openFile(const char * szFilename);
 
 };
 

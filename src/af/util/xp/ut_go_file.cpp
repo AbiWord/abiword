@@ -26,7 +26,7 @@
 #include <glib/gi18n-lib.h>
 #endif
 
-#ifdef HAVE_GNOME_VFS
+#ifdef HAVE_GNOME
 #define GOFFICE_WITH_GNOME
 #endif
 
@@ -833,8 +833,8 @@ UT_go_get_file_permissions (char const *uri)
 
         file_info = gnome_vfs_file_info_new ();
         result = gnome_vfs_get_file_info (uri, file_info,
-					  GNOME_VFS_FILE_INFO_GET_ACCESS_RIGHTS |
-                                          GNOME_VFS_FILE_INFO_FOLLOW_LINKS);
+					  (GnomeVFSFileInfoOptions)(GNOME_VFS_FILE_INFO_GET_ACCESS_RIGHTS |
+								    GNOME_VFS_FILE_INFO_FOLLOW_LINKS));
 
         if (result == GNOME_VFS_OK) {
 		file_permissions = g_new0 (GOFilePermissions, 1);
@@ -892,42 +892,42 @@ UT_go_set_file_permissions (char const *uri, GOFilePermissions * file_permission
 	GnomeVFSResult result;
 
         file_info = gnome_vfs_file_info_new ();
-	file_info->permissions = 0;
+	file_info->permissions = (GnomeVFSFilePermissions)0;
 
 	/* Set owner permissions */
 	if (file_permissions->owner_read == TRUE)
-		file_info->permissions |= GNOME_VFS_PERM_USER_READ;
+		file_info->permissions = (GnomeVFSFilePermissions)(file_info->permissions | GNOME_VFS_PERM_USER_READ);
 
 	if (file_permissions->owner_write == TRUE)
-		file_info->permissions |= GNOME_VFS_PERM_USER_WRITE;
+		file_info->permissions = (GnomeVFSFilePermissions)(file_info->permissions | GNOME_VFS_PERM_USER_WRITE);
 
 	if (file_permissions->owner_execute == TRUE)
-		file_info->permissions |= GNOME_VFS_PERM_USER_EXEC;
+		file_info->permissions = (GnomeVFSFilePermissions)(file_info->permissions | GNOME_VFS_PERM_USER_EXEC);
 
 	/* Set group permissions */
 	if (file_permissions->group_read == TRUE)
-		file_info->permissions |= GNOME_VFS_PERM_GROUP_READ;
+		file_info->permissions = (GnomeVFSFilePermissions)(file_info->permissions | GNOME_VFS_PERM_GROUP_READ);
 
 	if (file_permissions->group_write == TRUE)
-		file_info->permissions |= GNOME_VFS_PERM_GROUP_WRITE;
+		file_info->permissions = (GnomeVFSFilePermissions)(file_info->permissions | GNOME_VFS_PERM_GROUP_WRITE);
 
 	if (file_permissions->group_execute == TRUE)
-		file_info->permissions |= GNOME_VFS_PERM_GROUP_EXEC;
+		file_info->permissions = (GnomeVFSFilePermissions)(file_info->permissions | GNOME_VFS_PERM_GROUP_EXEC);
 
 	/* Set others permissions */
 	if (file_permissions->others_read == TRUE)
-		file_info->permissions |= GNOME_VFS_PERM_OTHER_READ;
+		file_info->permissions = (GnomeVFSFilePermissions)(file_info->permissions | GNOME_VFS_PERM_OTHER_READ);
 
 	if (file_permissions->others_write == TRUE)
-		file_info->permissions |= GNOME_VFS_PERM_OTHER_WRITE;
+		file_info->permissions = (GnomeVFSFilePermissions)(file_info->permissions | GNOME_VFS_PERM_OTHER_WRITE);
 
 	if (file_permissions->others_execute == TRUE)
-		file_info->permissions |= GNOME_VFS_PERM_OTHER_EXEC;
+		file_info->permissions = (GnomeVFSFilePermissions)(file_info->permissions | GNOME_VFS_PERM_OTHER_EXEC);
 
 	result = gnome_vfs_set_file_info (uri, file_info,
-					  GNOME_VFS_FILE_INFO_GET_ACCESS_RIGHTS |
-					  GNOME_VFS_FILE_INFO_FOLLOW_LINKS |
-					  GNOME_VFS_SET_FILE_INFO_PERMISSIONS);
+					  (GnomeVFSSetFileInfoMask) (GNOME_VFS_FILE_INFO_GET_ACCESS_RIGHTS |
+								    GNOME_VFS_FILE_INFO_FOLLOW_LINKS |
+								    GNOME_VFS_SET_FILE_INFO_PERMISSIONS));
 
 	if (result != GNOME_VFS_OK)
 		g_warning ("Error setting permissions for '%s'.", uri);

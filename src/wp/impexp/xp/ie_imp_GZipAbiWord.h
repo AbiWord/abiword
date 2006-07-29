@@ -22,7 +22,6 @@
 #define IE_IMP_GZIPABIWORD_H
 
 #include <stdio.h>
-#include <zlib.h>
 #include "ie_imp_AbiWord_1.h"
 
 // The importer/reader for GZipped AbiWord file format version 1.
@@ -46,22 +45,6 @@ public:
 	virtual UT_Error constructImporter (PD_Document * pDocument,
 										IE_Imp ** ppie);
 
-};
-
-class ABI_EXPORT IE_Imp_GZipAbiWord : public IE_Imp_AbiWord_1, public UT_XML::Reader
-{
-public:
-	IE_Imp_GZipAbiWord(PD_Document * pDocument);
-	~IE_Imp_GZipAbiWord();
-
-	/* Implementation of UT_XML::Reader
-	 */
-	virtual bool      openFile (const char * szFilename);
-	virtual UT_uint32 readBytes (char * buffer, UT_uint32 length);
-	virtual void      closeFile (void);
-
-private:
-	gzFile m_gzfp;
 };
 
 #endif /* IE_IMP_GZIPABIWORD_H */

@@ -209,6 +209,7 @@ dnl some other places
 ABI_GNOME_QUICK
 ABI_GUCHARMAP
 ABI_XFT_QUICK
+ABI_GSF
 	
 abi_build_shared=yes
 abi_build_static=no
@@ -421,8 +422,7 @@ ABI_XML_PARSER
 
 dnl check for wv
 
-ABI_NEED_WV="yes"
-ABI_WV($abi_rootdir/wv)
+ABI_WV
 
 dnl check for zlib.
 ABI_ZLIB
