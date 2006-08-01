@@ -125,7 +125,9 @@
 
 
 #define AP_PREF_KEY_ToolbarLayouts					"ToolbarLayouts"
-#if XP_SIMPLE_TOOLBAR
+#if HAVE_SUGAR
+#	define AP_PREF_DEFAULT_ToolbarLayouts				"OlpcOps"
+#elif XP_SIMPLE_TOOLBAR
 #	define AP_PREF_DEFAULT_ToolbarLayouts				"SimpleOps"		/* values in BeginLayout() */
 #else
 #	define AP_PREF_DEFAULT_ToolbarLayouts				"FileEditOps FormatOps TableOps ExtraOps"		/* values in BeginLayout() */

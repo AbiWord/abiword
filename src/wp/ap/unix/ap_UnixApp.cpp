@@ -392,8 +392,9 @@ XAP_Frame * AP_UnixApp::newFrame(void)
 {
     AP_UnixFrame * pUnixFrame = new AP_UnixFrame();
 
-    if (pUnixFrame)
+    if (pUnixFrame) {
 		pUnixFrame->initialize();
+	}
 
     return pUnixFrame;
 }

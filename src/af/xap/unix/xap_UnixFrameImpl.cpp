@@ -25,6 +25,7 @@
   * Author: INdT - Renato Araujo <renato.filho@indt.org.br>
   */
 
+#include <glib/gstdio.h>
 #include <gtk/gtk.h>
 #include <gdk/gdkx.h>
 #include <stdio.h>
@@ -1235,7 +1236,34 @@ void XAP_UnixFrameImpl::_createTopLevelWindow(void)
 	
 	if(m_iFrameMode == XAP_NormalFrame)
 	{
+#if HAVE_SUGAR
+		GtkWidget* pPlugWidget = gtk_plug_new(0);
+		GtkPlug* pPlug = GTK_PLUG(pPlugWidget);
+		m_wTopLevelWindow = pPlugWidget;
+		int id = gtk_plug_get_id(pPlug);
+	
+		// We need to pass this on to Sugar automatically at some point.  Maybe
+		// use d-Bus?
+		printf("Plug ID: %d\n", id);
+
+		const gchar *prefix = PREFIX "/var/run/abiword";
+		int ret;
+		ret = g_mkdir_with_parents (prefix, 0755);
+		if (ret != -1) {
+			gchar *file = g_build_filename (prefix, "wid");
+			FILE *fp = fopen (file, "w");
+			fprintf (fp, "%d", id);
+			fclose (fp);
+			g_free (file);
+		}
+		else {
+			g_warning ("cannot create wid dir `%s'\n", prefix);
+		}
+
+#else
 		m_wTopLevelWindow = gtk_window_new(GTK_WINDOW_TOPLEVEL);
+#endif
+
 		gtk_window_set_title(GTK_WINDOW(m_wTopLevelWindow),
 				     XAP_App::getApp()->getApplicationTitleForTitleBar());
 		gtk_window_set_resizable(GTK_WINDOW(m_wTopLevelWindow), TRUE);
@@ -1316,6 +1344,7 @@ void XAP_UnixFrameImpl::_createTopLevelWindow(void)
 	g_object_set_data(G_OBJECT(m_wVBox),"user_data", this);
 	gtk_container_add(GTK_CONTAINER(m_wTopLevelWindow), m_wVBox);
 
+#if !HAVE_SUGAR
 	if (m_iFrameMode != XAP_NoMenusWindowLess) {
 		// synthesize a menu from the info in our base class.
 		m_pUnixMenu = new EV_UnixMenuBar(static_cast<XAP_UnixApp*>(XAP_App::getApp()), getFrame(), m_szMenuLayoutName,
@@ -1324,6 +1353,7 @@ void XAP_UnixFrameImpl::_createTopLevelWindow(void)
 		bResult = m_pUnixMenu->synthesizeMenuBar();
 		UT_ASSERT(bResult);
 	}
+#endif
 
 	// create a toolbar instance for each toolbar listed in our base class.
 	// TODO for some reason, the toolbar functions require the TLW to be
@@ -1581,6 +1611,7 @@ void XAP_UnixFrameImpl::_setGeometry ()
  */
 void XAP_UnixFrameImpl::_rebuildMenus(void)
 {
+#if (!HAVE_SUGAR)
 	// destroy old menu
 	m_pUnixMenu->destroy();
 	DELETEP(m_pUnixMenu);
@@ -1592,6 +1623,7 @@ void XAP_UnixFrameImpl::_rebuildMenus(void)
 	UT_ASSERT(m_pUnixMenu);
 	bool bResult = m_pUnixMenu->rebuildMenuBar();
 	UT_ASSERT(bResult);
+#endif
 }
 
 /*!

@@ -47,7 +47,6 @@ EV_Toolbar_LayoutFlags EV_Toolbar_LayoutItem::getToolbarLayoutFlags(void) const
 }
 
 /*****************************************************************/
-
 EV_Toolbar_Layout::EV_Toolbar_Layout(const char * szName, UT_uint32 nrLayoutItems)
 {
 	UT_ASSERT(nrLayoutItems > 0);

@@ -9070,7 +9070,7 @@ Defun1(viewTB4)
 Defun1(viewStd)
 {
 
-#if !XP_SIMPLE_TOOLBAR
+#if !XP_SIMPLE_TOOLBAR && !HAVE_SUGAR
 	CHECK_FRAME;
 // TODO: Share this function with viewFormat & viewExtra
 	XAP_Frame * pFrame = static_cast<XAP_Frame *> ( pAV_View->getParentData());
@@ -9105,7 +9105,7 @@ Defun1(viewStd)
 Defun1(viewFormat)
 {
 
-#if !XP_SIMPLE_TOOLBAR
+#if !XP_SIMPLE_TOOLBAR && !HAVE_SUGAR
 	CHECK_FRAME;
 	XAP_Frame * pFrame = static_cast<XAP_Frame *> ( pAV_View->getParentData());
 	UT_return_val_if_fail(pFrame, false);
@@ -9139,7 +9139,7 @@ Defun1(viewFormat)
 
 Defun1(viewTable)
 {
-#if !XP_SIMPLE_TOOLBAR
+#if !XP_SIMPLE_TOOLBAR && !HAVE_SUGAR
 	CHECK_FRAME;
 	XAP_Frame * pFrame = static_cast<XAP_Frame *> ( pAV_View->getParentData());
 	UT_return_val_if_fail(pFrame, false);
@@ -9171,7 +9171,7 @@ UT_return_val_if_fail(pFrameData, false);
 
 Defun1(viewExtra)
 {
-#if !XP_SIMPLE_TOOLBAR
+#if !XP_SIMPLE_TOOLBAR && !HAVE_SUGAR
 	CHECK_FRAME;
 	XAP_Frame * pFrame = static_cast<XAP_Frame *> ( pAV_View->getParentData());
 	UT_return_val_if_fail(pFrame, false);
