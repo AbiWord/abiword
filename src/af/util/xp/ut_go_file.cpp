@@ -97,7 +97,7 @@ UT_go_filename_to_uri (const char *filename)
 }
 
 char *
-UT_go_filename_simplify (const char *filename, GODotDot dotdot,
+UT_go_filename_simplify (const char *filename, UT_GODotDot dotdot,
 		      gboolean make_absolute)
 {
 	char *simp, *p, *q;
@@ -822,10 +822,10 @@ UT_go_file_get_group_name (char const *uri)
 	return nameutf8;
 }
 
-GOFilePermissions *
+UT_GOFilePermissions *
 UT_go_get_file_permissions (char const *uri)
 {
-	GOFilePermissions * file_permissions = NULL;
+	UT_GOFilePermissions * file_permissions = NULL;
 
 #if defined (GOFFICE_WITH_GNOME)
 	GnomeVFSFileInfo *file_info;
@@ -837,7 +837,7 @@ UT_go_get_file_permissions (char const *uri)
 								    GNOME_VFS_FILE_INFO_FOLLOW_LINKS));
 
         if (result == GNOME_VFS_OK) {
-		file_permissions = g_new0 (GOFilePermissions, 1);
+		file_permissions = g_new0 (UT_GOFilePermissions, 1);
 
 		/* Owner  Permissions */
 		file_permissions->owner_read    = ((file_info->permissions & GNOME_VFS_PERM_USER_READ) != 0);
@@ -863,7 +863,7 @@ UT_go_get_file_permissions (char const *uri)
 
 	g_free (filename);
 	if (result == 0) {
-		file_permissions = g_new0 (GOFilePermissions, 1);
+		file_permissions = g_new0 (UT_GOFilePermissions, 1);
 
 		/* Owner  Permissions */
 		file_permissions->owner_read    = ((file_stat.st_mode & S_IRUSR) != 0);
@@ -885,7 +885,7 @@ UT_go_get_file_permissions (char const *uri)
 }
 
 void
-UT_go_set_file_permissions (char const *uri, GOFilePermissions * file_permissions)
+UT_go_set_file_permissions (char const *uri, UT_GOFilePermissions * file_permissions)
 {
 #if defined (GOFFICE_WITH_GNOME)
 	GnomeVFSFileInfo *file_info;
@@ -987,10 +987,10 @@ typedef enum {
 	UT_GO_FILE_DATE_TYPE_ACCESSED = 0,
 	UT_GO_FILE_DATE_TYPE_MODIFIED,
 	UT_GO_FILE_DATE_TYPE_CHANGED
-} GOFileDateType;
+} UT_GOFileDateType;
 
 static time_t
-UT_go_file_get_date (char const *uri, GOFileDateType type)
+UT_go_file_get_date (char const *uri, UT_GOFileDateType type)
 {
 	time_t tm = -1;
 

@@ -26,9 +26,9 @@
 
 G_BEGIN_DECLS
 
-typedef struct _GOFilePermissions GOFilePermissions;
+typedef struct _UT_GOFilePermissions UT_GOFilePermissions;
 
-struct _GOFilePermissions {
+struct _UT_GOFilePermissions {
 	gboolean owner_read;
 	gboolean owner_write;
 	gboolean owner_execute;
@@ -46,9 +46,9 @@ typedef enum {
 	UT_GO_DOTDOT_SYNTACTIC,    /* Assume no symlinks.  */
 	UT_GO_DOTDOT_TEST,         /* Check.  */
 	UT_GO_DOTDOT_LEAVE         /* Leave alone.  */
-} GODotDot;
+} UT_GODotDot;
 
-char *UT_go_filename_simplify (const char *filename, GODotDot dotdot, gboolean make_absolute);
+char *UT_go_filename_simplify (const char *filename, UT_GODotDot dotdot, gboolean make_absolute);
 char *UT_go_url_simplify (const char *uri);
 
 char *UT_go_filename_from_uri (const char *uri);
@@ -70,8 +70,8 @@ GSList	  *UT_go_file_split_urls	(char const *data);
 gchar     *UT_go_file_get_owner_name (char const *uri);
 gchar     *UT_go_file_get_group_name (char const *uri);
 
-GOFilePermissions *UT_go_get_file_permissions (char const *uri);
-void UT_go_set_file_permissions (char const *uri, GOFilePermissions * file_permissions);
+UT_GOFilePermissions *UT_go_get_file_permissions (char const *uri);
+void UT_go_set_file_permissions (char const *uri, UT_GOFilePermissions * file_permissions);
 
 time_t UT_go_file_get_date_accessed (char const *uri);
 time_t UT_go_file_get_date_modified (char const *uri);
