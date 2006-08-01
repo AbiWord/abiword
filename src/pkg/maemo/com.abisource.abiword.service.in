@@ -1,0 +1,3 @@
+[D-BUS Service]
+Name=com.abisource.abiword
+Exec=@prefix@/bin/abiword
