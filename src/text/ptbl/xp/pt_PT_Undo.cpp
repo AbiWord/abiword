@@ -129,7 +129,28 @@ bool pt_PieceTable::_doTheDo(const PX_ChangeRecord * pcr, bool bUndo)
 			pf_Frag_Text * pft = static_cast<pf_Frag_Text *> (pf);
 			UNDO_return_val_if_fail (pft->getIndexAP() == pcrSpan->getIndexAP(),false);
 			xxx_UT_DEBUGMSG(("deletespan in _doTheDo length %d \n",pcrSpan->getLength()));
-			_deleteSpan(pft,fragOffset,pcrSpan->getBufIndex(),pcrSpan->getLength(),NULL,NULL);
+			UT_uint32 iLenDeleted = fragOffset + pft->getLength();
+			if(iLenDeleted >= pcrSpan->getLength())
+			{
+			    _deleteSpan(pft,fragOffset,pcrSpan->getBufIndex(),pcrSpan->getLength(),NULL,NULL);
+			}
+			else
+			{
+			    pf_Frag_Text * pftNext = static_cast<pf_Frag_Text *>(pft->getNext());
+			    UT_uint32 iLenDel = pft->getLength() - fragOffset;
+			    iLenDeleted = 0;
+			    while(pft && (pft ->getType() == pf_Frag::PFT_Text) && (iLenDeleted <pcrSpan->getLength()) )
+			    {
+				_deleteSpan(pft,fragOffset,pcrSpan->getBufIndex(),iLenDel,NULL,NULL);
+				pft = pftNext;
+				pftNext = static_cast<pf_Frag_Text *>(pft->getNext());
+				iLenDeleted += iLenDel;
+				iLenDel = pcrSpan->getLength() - iLenDeleted;
+				if(iLenDel > pft->getLength())
+				  iLenDel = pft->getLength();
+				fragOffset = 0;
+			    }
+			}
 			UT_DEBUGMSG(("newOffset %d spanBlockOffset %d \n",newOffset,pcrSpan->getBlockOffset()));
 			pcrSpan->AdjustBlockOffset(newOffset);
 			m_pDocument->notifyListeners(pfs,pcr);

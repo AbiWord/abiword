@@ -78,6 +78,8 @@ public:
 
 	void                    clearHistory();
 	PD_Document *                           getDoc(void) const;
+	bool                                    getCRRange(PX_ChangeRecord * pcr,PT_DocPosition & posLow, PT_DocPosition &posHigh) const;
+	bool                                    doesOverlap(PX_ChangeRecord * pcr, PT_DocPosition low, PT_DocPosition high) const;
 
 #ifdef PT_TEST
 	void					__dump(FILE* fp) const;
@@ -91,6 +93,8 @@ protected:
 	UT_sint32				m_savePosition;
 	pt_PieceTable *         m_pPT;
 mutable	UT_sint32                               m_iAdjustOffset;
+mutable bool                                    m_bOverlap;
+ mutable UT_sint32                              m_iMinUndo;
 };
 
 #endif /* PX_CHANGEHISTORY_H */
