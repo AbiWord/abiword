@@ -17,8 +17,8 @@
 #include "abiword_48.xpm"
 #endif
 
-AP_UnixFrameImpl::AP_UnixFrameImpl(AP_UnixFrame *pUnixFrame) :
-	XAP_UnixFrameImpl(static_cast<XAP_Frame *>(pUnixFrame)),
+AP_UnixFrameImpl::AP_UnixFrameImpl(AP_UnixFrame *pUnixFrame, UT_uint32 iGtkSocketId)
+ :	XAP_UnixFrameImpl(static_cast<XAP_Frame *>(pUnixFrame), iGtkSocketId),
 	m_dArea(NULL),
 	m_pVadj(NULL),
 	m_pHadj(NULL),

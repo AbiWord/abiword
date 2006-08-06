@@ -447,8 +447,8 @@ s_dnd_drag_end (GtkWidget  *widget, GdkDragContext *context, gpointer ppFrame)
 #define ENSUREP(p)		do { UT_ASSERT(p); if (!p) goto Cleanup; } while (0)
 
 /****************************************************************/
-XAP_UnixFrameImpl::XAP_UnixFrameImpl(XAP_Frame *pFrame) : 
-	XAP_FrameImpl(pFrame),
+XAP_UnixFrameImpl::XAP_UnixFrameImpl(XAP_Frame *pFrame, UT_uint32 iGtkSocketId) 
+  : XAP_FrameImpl(pFrame),
 	m_imContext(NULL),
 	m_pUnixMenu(NULL),
 	need_im_reset (false),
@@ -457,12 +457,12 @@ XAP_UnixFrameImpl::XAP_UnixFrameImpl(XAP_Frame *pFrame) :
 	m_iNewY(0),
 	m_iNewWidth(0),
 	m_iNewHeight(0),
+	m_iGtkSocketId(iGtkSocketId),
 	m_iZoomUpdateID(0),
 	m_iAbiRepaintID(0),
 	m_pUnixPopup(NULL),
 	m_dialogFactory(pFrame, XAP_App::getApp())
-{
-}
+{}
 
 XAP_UnixFrameImpl::~XAP_UnixFrameImpl() 
 { 	
@@ -1236,33 +1236,18 @@ void XAP_UnixFrameImpl::_createTopLevelWindow(void)
 	
 	if(m_iFrameMode == XAP_NormalFrame)
 	{
-#if HAVE_SUGAR
-		GtkWidget* pPlugWidget = gtk_plug_new(0);
-		GtkPlug* pPlug = GTK_PLUG(pPlugWidget);
-		m_wTopLevelWindow = pPlugWidget;
-		int id = gtk_plug_get_id(pPlug);
-	
-		// We need to pass this on to Sugar automatically at some point.  Maybe
-		// use d-Bus?
-		printf("Plug ID: %d\n", id);
-
-		const gchar *prefix = PREFIX "/var/run/abiword";
-		int ret;
-		ret = g_mkdir_with_parents (prefix, 0755);
-		if (ret != -1) {
-			gchar *file = g_build_filename (prefix, "wid");
-			FILE *fp = fopen (file, "w");
-			fprintf (fp, "%d", id);
-			fclose (fp);
-			g_free (file);
+		if (m_iGtkSocketId)
+		{
+			// embed into sugar desktop
+			// TODO rob
+			printf ("embedding into socket %d\n", m_iGtkSocketId);
+			m_wTopLevelWindow = gtk_plug_new(m_iGtkSocketId);
 		}
-		else {
-			g_warning ("cannot create wid dir `%s'\n", prefix);
+		else 
+		{
+			// regular application
+			m_wTopLevelWindow = gtk_window_new(GTK_WINDOW_TOPLEVEL);
 		}
-
-#else
-		m_wTopLevelWindow = gtk_window_new(GTK_WINDOW_TOPLEVEL);
-#endif
 
 		gtk_window_set_title(GTK_WINDOW(m_wTopLevelWindow),
 				     XAP_App::getApp()->getApplicationTitleForTitleBar());
@@ -1276,8 +1261,8 @@ void XAP_UnixFrameImpl::_createTopLevelWindow(void)
 		
 		g_object_set_data(G_OBJECT(m_wTopLevelWindow), "ic_attr", NULL);
 		g_object_set_data(G_OBJECT(m_wTopLevelWindow), "ic", NULL);		
-		
 	}
+
 	g_object_set_data(G_OBJECT(m_wTopLevelWindow), "toplevelWindow",
 						m_wTopLevelWindow);
 	g_object_set_data(G_OBJECT(m_wTopLevelWindow), "toplevelWindowFocus",

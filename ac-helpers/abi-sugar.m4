@@ -39,6 +39,7 @@ AC_ARG_ENABLE(sugar,[  --enable-sugar    Build for sugar framework/OLPC ],[
 ])
 
 if test "$sugar" = true ; then
+	AM_PATH_PYTHON
 	SUGAR_CFLAGS="$SUGAR_CFLAGS -DHAVE_SUGAR=1"
 	SUGAR_LIBS="$SUGAR_LIBS"
 fi

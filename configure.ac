@@ -481,7 +481,8 @@ AC_SUBST(VALGRIND)
 
 AM_CONDITIONAL(CROSS_COMPILING, test x$cross_compiling = xyes)
 
-AC_CONFIG_FILES([GNUmakefile
+AC_CONFIG_FILES([
+ Makefile
  src/GNUmakefile
  src/af/GNUmakefile
  src/af/tf/GNUmakefile
@@ -558,6 +559,7 @@ AC_CONFIG_FILES([
  src/wp/main/cocoa/AbiWord.app/Contents/Resources/English.lproj/GNUmakefile
  src/wp/main/qnx/GNUmakefile
  src/wp/main/unix/GNUmakefile
+ src/wp/main/unix/sugar/GNUmakefile
  src/wp/main/win/GNUmakefile
  src/wp/test/GNUmakefile
  src/wp/test/xp/GNUmakefile
