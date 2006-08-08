@@ -7,7 +7,7 @@ import gtk
 from sugar.activity.Activity import Activity
 
 
-class AbiWord(gtk.Socket):
+class AbiWord (gtk.Socket):
 
 	def __init__ (self):
 		gtk.Socket.__init__ (self)
@@ -27,7 +27,7 @@ class AbiWord(gtk.Socket):
 
 class AbiWordActivity (Activity):
 
-	def __init__ (self, service, args):
+	def __init__ (self, service):
 		Activity.__init__ (self, service)
 	
 		self.set_title ("AbiWord")
