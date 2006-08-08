@@ -27,15 +27,13 @@
 
 // Include each toolbar layout that we want to build.
 
-#if XP_SIMPLE_TOOLBAR
-#include "ap_TB_Layouts_SimpleOps.h"
+#if HAVE_HILDON
+#include "ap_TB_Layouts_HildonOps.h"
 #elif HAVE_SUGAR
-#include "ap_TB_Layouts_OlpcOps.h"
+#include "ap_TB_Layouts_SugarOps.h"
 #else
 #include "ap_TB_Layouts_FileEditOps.h"
 #include "ap_TB_Layouts_FormatOps.h"
 #include "ap_TB_Layouts_TableOps.h"
 #include "ap_TB_Layouts_ExtraOps.h"
 #endif
-
-

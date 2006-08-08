@@ -35,6 +35,7 @@ AC_ARG_ENABLE(sugar,[  --enable-sugar    Build for sugar framework/OLPC ],[
 			AC_MSG_ERROR([sorry: --enable-sugar supported only on UNIX platforms])
 		fi
 		sugar=true
+		embedded=true
 	fi
 ])
 

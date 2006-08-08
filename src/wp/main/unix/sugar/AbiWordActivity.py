@@ -12,10 +12,17 @@ class AbiWord(gtk.Socket):
 	def __init__ (self):
 		gtk.Socket.__init__ (self)
 
+		self.connect ('realize', self.realize_cb)
 
-	def run (self):
 
-		os.spawnvp (os.P_NOWAIT, 'abiword', ['abiword', '--gtk-socket-id=' + str (self.get_id ())])
+	def realize_cb (self, event):
+
+		params = [
+			'abiword', 
+			'--nosplash', 
+			'--gtk-socket-id=' + str (self.get_id ())
+		]
+		os.spawnvp (os.P_NOWAIT, 'abiword', params)
 
 
 class AbiWordActivity (Activity):
@@ -26,6 +33,5 @@ class AbiWordActivity (Activity):
 		self.set_title ("AbiWord")
 
 		abiword = AbiWord ()
-		abiword.run ()
-
+		self.add (abiword)
 		abiword.show_all ()

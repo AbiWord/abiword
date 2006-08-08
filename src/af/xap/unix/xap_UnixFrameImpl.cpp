@@ -1239,8 +1239,6 @@ void XAP_UnixFrameImpl::_createTopLevelWindow(void)
 		if (m_iGtkSocketId)
 		{
 			// embed into sugar desktop
-			// TODO rob
-			printf ("embedding into socket %d\n", m_iGtkSocketId);
 			m_wTopLevelWindow = gtk_plug_new(m_iGtkSocketId);
 		}
 		else 
