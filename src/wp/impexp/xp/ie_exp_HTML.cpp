@@ -4716,14 +4716,17 @@ void s_HTML_Listener::_handleBookmark (PT_AttrPropIndex api)
 
 		if (szName)
 		{
+			UT_UTF8String escape = szName;
+			escape.escapeXML();
+
 			m_utf8_1 += " name=\"";
-			m_utf8_1 += szName;
+			m_utf8_1 += escape;
 			m_utf8_1 += "\"";
 
 			if (!get_HTML4 ())
 			{
 				m_utf8_1 += " id=\"";
-				m_utf8_1 += szName;
+				m_utf8_1 += escape;
 				m_utf8_1 += "\"";
 			}
 			tagOpen (TT_A, m_utf8_1, ws_None);
