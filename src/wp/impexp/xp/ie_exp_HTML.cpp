@@ -2199,11 +2199,18 @@ void s_HTML_Listener::_openTag (PT_AttrPropIndex api, PL_StruxDocHandle sdh)
 		if (m_StyleTreeBlock)
 			if (m_StyleTreeBlock->class_list().byteLength ())
 			{
+				UT_UTF8String escape;
 				m_utf8_1 += " class=\"";
 				if(get_Class_Only())
-					m_utf8_1 += m_StyleTreeBlock->class_name ();
+				{
+					escape = m_StyleTreeBlock->class_name ();
+					m_utf8_1 += escape.escapeXML();
+				}
 				else
-					m_utf8_1 += m_StyleTreeBlock->class_list ();
+				{
+					escape = m_StyleTreeBlock->class_list ();
+					m_utf8_1 += escape.escapeXML();
+				}
 				
 				m_utf8_1 += "\"";
 			}
@@ -2403,17 +2410,25 @@ void s_HTML_Listener::_openTag (PT_AttrPropIndex api, PL_StruxDocHandle sdh)
 		if (tree && !bClassAsTag)
 			if (tree->class_list().byteLength ())
 			{
+				UT_UTF8String escape;
 				m_utf8_1 += " class=\"";
 				if(get_Class_Only())
-					m_utf8_1 += tree->class_name ();
+				{
+					escape = tree->class_name ();
+					m_utf8_1 += escape.escapeXML();
+				}
 				else
-					m_utf8_1 += tree->class_list ();
+				{
+					escape = tree->class_list ();
+					m_utf8_1 += escape.escapeXML();
+				}
 				m_utf8_1 += "\"";
 			}
 		if (bAddAWMLStyle)
 		{
+			UT_UTF8String escape = szValue;
 			m_utf8_1 += " awml:style=\"";
-			m_utf8_1 += szValue;
+			m_utf8_1 += escape.escapeXML();
 			m_utf8_1 += "\"";
 		}
 	}	
@@ -2671,11 +2686,18 @@ void s_HTML_Listener::_openSpan (PT_AttrPropIndex api)
 	if (tree)
 		if (tree->class_list().byteLength ())
 		{
+			UT_UTF8String escape;
 			m_utf8_1 = "span class=\"";
 			if(get_Class_Only())
-				m_utf8_1 += tree->class_name ();
+			{
+				escape = tree->class_name ();
+				m_utf8_1 += escape.escapeXML();
+			}
 			else
-				m_utf8_1 += tree->class_list ();
+			{
+				escape = tree->class_list ();
+				m_utf8_1 += escape.escapeXML();
+			}
 			
 			m_utf8_1 += "\"";
 			bInSpan = true;
@@ -4578,8 +4600,9 @@ void s_HTML_Listener::_handleField (const PX_ChangeRecord_Object * pcro,
 				{
 					if (tree->class_list().byteLength ())
 					{
+						UT_UTF8String escape = tree->class_name ();
 						m_utf8_1 += " class=\"";
-						m_utf8_1 += tree->class_name ();
+						m_utf8_1 += escape.escapeXML();
 						m_utf8_1 += "\"";
 					}
 				}
