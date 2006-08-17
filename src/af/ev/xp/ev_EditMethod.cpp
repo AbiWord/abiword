@@ -249,6 +249,7 @@ EV_EditMethod * EV_EditMethodContainer::findEditMethodByName(const char * szName
 	for (k=0; k<kLast; k++)
 	{
 		EV_EditMethod * pem = m_vecDynamicEditMethods.getNthItem(k);
+		UT_return_val_if_fail(pem && pem->getName(), 0);
 		if (strcmp(szName,pem->getName()) == 0)
 			return pem;
 	}
