@@ -256,7 +256,7 @@ UT_uint32 XAP_App::registerEmbeddable(GR_EmbedManager * pEmbed)
      for(i=0; !bFound && (i< static_cast<UT_sint32>(m_vecEmbedManagers.getItemCount())); i++)
      {
 		 pCur =  m_vecEmbedManagers.getNthItem(i);
-		 if(UT_strcmp(pCur->getObjectType(),pEmbed->getObjectType()) == 0)
+		 if(pCur && (UT_strcmp(pCur->getObjectType(),pEmbed->getObjectType()) == 0))
 		 {
 			 bFound = true;
 		 }
