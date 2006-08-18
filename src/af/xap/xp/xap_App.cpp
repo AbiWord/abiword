@@ -95,6 +95,8 @@ XAP_App::XAP_App(XAP_Args * pArgs, const char * szAppName)
 {
 #ifdef DEBUG
 	_fundamentalAsserts(); // see the comments in the function itself
+	UT_DEBUGMSG(("ZZZZZZZZZZZZZZZZZZZZZZZaaaaaaaaaaaaaaAbiSuite Home |%s|\n",XAP_App::s_szAbiSuite_Home ));
+
 #endif
 
 	m_pGraphicsFactory = new GR_GraphicsFactory;

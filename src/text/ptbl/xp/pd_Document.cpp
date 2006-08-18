@@ -767,7 +767,7 @@ UT_Error PD_Document::_save(void)
 	
 	errorCode = pie->writeFile(getFilename());
 	delete pie;
-
+	signalListeners(PD_SIGNAL_DOCSAVED);
 	if (errorCode)
 	{
 		UT_DEBUGMSG(("PD_Document::Save -- could not write file\n"));

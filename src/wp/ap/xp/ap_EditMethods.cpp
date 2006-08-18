@@ -2395,7 +2395,7 @@ Defun(fileSave)
 
 	UT_Error errSaved;
 	errSaved = pAV_View->cmdSave();
-
+	
 	// if it has a problematic extension save as instead
 	if (errSaved == UT_EXTENSIONERROR)
 	  return EX(fileSaveAs);

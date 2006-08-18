@@ -2361,6 +2361,10 @@ bool fl_DocListener::signal(UT_uint32 iSignal)
 	case PD_SIGNAL_DOCDIRTY_CHANGED:
 		m_pLayout->notifyListeners(AV_CHG_DIRTY);
 		break;
+	case PD_SIGNAL_DOCSAVED:
+		break;
+	case PD_SIGNAL_DOCCLOSED:
+		break;
 
 	default:
 		UT_ASSERT(UT_SHOULD_NOT_HAPPEN);
