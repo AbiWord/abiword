@@ -158,6 +158,11 @@ protected:
 
 	PD_Document * getDoc() const;
 	PD_DocumentRange * getDocRange() const;
+	/** Return the file pointer, for convenience */
+	GsfOutput*          getFp()
+		{
+			return m_fp;
+		}
 
 	bool				m_error;
 
