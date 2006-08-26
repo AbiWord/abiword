@@ -129,8 +129,11 @@ AC_ARG_ENABLE(embedded,[  --enable-embedded    Include embedded features],[
 	   no) embedded=false ;;
 	     *)	AC_MSG_ERROR(bad value ${enableval} for --enable-embedded) ;;
 	esac
-],[	embedded=undefined
-	EMBEDDED_CFLAGS=""
+],[	
+	if test "$embedded" != "true"; then
+	   embedded=undefined
+	   EMBEDDED_CFLAGS=""
+	fi
 ])
 
 if test "$embedded" = "true"; then
@@ -156,7 +159,6 @@ AC_ARG_ENABLE(printing,[  --enable-printing    Include printing capabilities],[
 	PRINT_CFLAGS=""
 ])
 
-
 if test "$print" = "undefined" && test "$embedded" = "true"; then
    print=false
    PRINT_CFLAGS="-DWITHOUT_PRINTING"
@@ -164,6 +166,8 @@ elif test "$print" = "undefined"; then
    print=true;
    PRINT_CFLAGS=""
 fi
+
+AC_MSG_RESULT([final printing ${print}])
 
 AM_CONDITIONAL(WITH_PRINTING, test x$print = xtrue)
 
@@ -239,7 +243,8 @@ dnl some other places
 ABI_GNOME_QUICK
 ABI_GUCHARMAP
 ABI_XFT_QUICK
-
+ABI_GSF
+	
 abi_build_shared=yes
 abi_build_static=no
 
@@ -451,8 +456,7 @@ ABI_XML_PARSER
 
 dnl check for wv
 
-ABI_NEED_WV="yes"
-ABI_WV($abi_rootdir/wv)
+ABI_WV
 
 dnl check for zlib.
 ABI_ZLIB
@@ -471,43 +475,13 @@ AC_FUNC_ALLOCA
 AC_TYPE_SIGNAL
 AC_CHECK_FUNCS(re_comp regcomp strdup strstr strcasecmp stricmp strnlen)
 
-AC_CHECK_FUNC(putenv,abi_putenv=maybe,abi_putenv=no)
-AC_CHECK_FUNC(setenv,abi_setenv=maybe,abi_setenv=no)
-
-if test $abi_putenv = no -a $abi_setenv = no; then
-	AC_MSG_ERROR([* * * neither setenv nor putenv found! * * *])
-fi
-if test $abi_setenv = no; then
-	AC_DEFINE(SETENV_MISSING,1,[use putenv, not setenv])
-elif test $abi_putenv = maybe; then
-	_abi_cppflags=$CPPFLAGS
-	CPPFLAGS="$CPPFLAGS $WARNING_CFLAGS"
-
-	AC_MSG_CHECKING([whether setenv declared in stdlib.h (for us)])
-	AC_TRY_COMPILE([
-#include <stdlib.h>
-float setenv (int);
-	],[
-/* if this program fails then setenv isn't declared in stdlib.h 
- * or at least not for the flags we're using...
- */
-	],[	AC_MSG_RESULT(no)
-		dnl well, okay, setenv may not be missing but I'm going to
-		dnl mark it as such:
-		AC_DEFINE(SETENV_MISSING,1,[use putenv, not setenv])
-	],[	AC_MSG_RESULT(yes)
-	])
-
-	CPPFLAGS=$_abi_cppflags
-fi
-
 if test $peerconfig = "true"; then
-	for i in . $PEERDIRS; do
-		if test $i != . ; then
-			j=`basename $i`
-			ABI_PEER_CONFIG($j,$i)
-		fi
-	done
+    for i in . $PEERDIRS; do
+        if test $i != . ; then
+            j=`basename $i`
+            ABI_PEER_CONFIG($j,$i)
+        fi
+    done
 fi
 
 # Check whether the scandir() select/filter function requires that its
@@ -577,6 +551,9 @@ AC_CONFIG_FILES([GNUmakefile
  src/pkg/GNUmakefile
  src/pkg/linux/GNUmakefile
  src/pkg/linux/apkg/GNUmakefile
+ src/pkg/maemo/GNUmakefile
+ src/pkg/maemo/abiword.desktop
+ src/pkg/maemo/com.abisource.abiword.service
  src/text/GNUmakefile
  src/text/fmt/GNUmakefile
  src/text/fmt/xp/GNUmakefile
@@ -637,8 +614,6 @@ AC_CONFIG_FILES([
  src/pkg/linux/apkg/abiword-gnome.apspec
  src/pkg/linux/apkg/abiword-gtk.apspec
  libabipriv-1.pc.in
- src/pkg/maemo/debian/misc/abiword.desktop
- src/pkg/maemo/debian/misc/com.nokia.abiword.service
 ])
 AC_OUTPUT
 

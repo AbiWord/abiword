@@ -709,7 +709,8 @@ GR_Font* XAP_UnixGnomePrintGraphics::_findFont(const char* pszFontFamily,
 											   const char* pszFontVariant,
 											   const char* pszFontWeight, 
 											   const char* pszFontStretch,
-											   const char* pszFontSize)
+											   const char* pszFontSize,
+											   const char* pszLang)
 {
 	XAP_UnixFont* pUnixFont = m_fm->findNearestFont(pszFontFamily, pszFontStyle, 
 													pszFontVariant, pszFontWeight,

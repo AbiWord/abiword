@@ -20,6 +20,7 @@ echo ""
 ./abi-extract.pl -N zh-TW 
 ./abi-extract.pl -N cy-GB 
 ./abi-extract.pl -N fi-FI 
+./abi-extract.pl -N hr-HR 
 ./abi-extract.pl -N lt-LT 
 ./abi-extract.pl -N pt-PT 
 ./abi-extract.pl -N da-DK 
@@ -34,3 +35,4 @@ echo ""
 ./abi-extract.pl -N ku
 ./abi-extract.pl -N ms-MY
 ./abi-extract.pl -N ko
+./abi-extract.pl -N ne-NP

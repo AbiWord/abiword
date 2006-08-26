@@ -27,7 +27,7 @@ include $(ABI_ROOT)/src/config/abi_defs.mk
 
 
 REQUIRE=	_ZLIB_ _LIBPNG_ 
-ifneq ($(ABI_REQUIRE_PEER_ICONV),0)
+ifeq ($(ABI_REQUIRE_PEER_ICONV),1)
 REQUIRE+=	_LIBICONV_
 endif
 REQUIRE+=	_LIBWV_ _POPT_ _FRIBIDI_

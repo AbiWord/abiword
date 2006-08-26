@@ -21,10 +21,13 @@ include $(top_srcdir)/includes.mk
 
 INCLUDES= $(AF_INCLUDES) $(OTHER_INCLUDES) $(ICONV_INCLUDES) $(LIBPNG_INCLUDES)
 
-CFLAGS += -frepo 
+check_LIBRARIES = libTF_xp.a
 
-check_LTLIBRARIES = libTF_xp.la
+CFLAGS+=-frepo 
 
-libTF_xp_la_SOURCES = $(ABI_SOURCE)
+# Valgrind defines use unsigned long longs on x86_64 architectures
+# TODO: we should only allow long long when compiling on x86_64 and
+#       when valgrind is enabled
+CXXFLAGS+=-Wno-long-long 
 
-ABI_SOURCE = tf_test.cpp
+libTF_xp_a_SOURCES= tf_test.cpp

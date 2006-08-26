@@ -62,6 +62,8 @@ public:
 	PT_BufIndex				getBufIndex(void) const;
 	PT_AttrPropIndex		getOldIndexAP(void) const;
 	PT_BlockOffset			getBlockOffset(void) const;
+	void                      AdjustBlockOffset(PT_BlockOffset iBlk) const
+	{ m_blockOffset = iBlk;}
 
 	bool                    isRevisionDelete() const {return m_bRevisionDelete;}
 	
@@ -73,7 +75,7 @@ protected:
 	PT_BufIndex				m_bufIndex;	/* bufIndex to our text */
 	UT_uint32				m_length;	/* length of our text */
 	PT_AttrPropIndex		m_indexOldAP;
-	PT_BlockOffset			m_blockOffset; /* offset of span from beginning of paragraph */
+mutable	PT_BlockOffset			m_blockOffset; /* offset of span from beginning of paragraph */
 
 	// used in revisions mode to indicate if fmt change record represents deletion
 	bool                    m_bRevisionDelete;

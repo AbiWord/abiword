@@ -59,11 +59,13 @@ public:
 	PT_BlockOffset			getBlockOffset(void) const;
 	
 	bool                    isRevisionDelete() const {return m_bRevisionDelete;}
+	void                      AdjustBlockOffset(PT_BlockOffset iBlk) const
+	{ m_blockOffset = iBlk;}
 
 protected:
 	PT_AttrPropIndex		m_indexOldAP;
 	PTObjectType			m_objectType;		/* our type (image, etc.) */
-	PT_BlockOffset			m_blockOffset; /* offset of span from beginning of paragraph */
+mutable	PT_BlockOffset			m_blockOffset; /* offset of span from beginning of paragraph */
 
 	// used in revisions mode to indicate if fmt change record represents deletion
 	bool                    m_bRevisionDelete;

@@ -337,7 +337,7 @@ bool  GR_XPRenderInfo::split (GR_RenderInfo *&pri, bool bReverse)
 	return true;
 }
 
-/*
+/**
    remove section of length iLen starting at offset from any chaches ...
    return value false indicates that simple removal was not possible
    and the caller needs to re-shape.
@@ -425,7 +425,8 @@ void GR_XPRenderInfo::prepareToRenderChars()
 }
 
 /*!
-    This function no longer does any ligature handling (use the Pango graphics for that);
+    This function no longer does any ligature handling (use the Pango 
+	graphics for that);
     It still does some preprocessing on the static buffers that is needed by
     _calculateCharacterAdvances.
 */
@@ -468,22 +469,22 @@ void GR_XPRenderInfo::_stripLigaturePlaceHolders()
 	}
 }
 
-
+/**	
+   The following code calculates the advances for individual
+   characters that are to be fed to gr_Graphics::drawChars()
+   Note, that character advances are not necessarily identical to
+   character widths; in the case of combining characters the
+   required advance depends on the width of the base character and
+   the properties of the combining character, and it can be both
+   positive and negative.
+   
+   At the moment, we calculate the advances here puting them into
+   a static array. Should this prove to be too much of a
+   performance bottleneck, we could cache this in a member array,
+   and refresh it inside refreshDrawBuffer() 
+*/
 void GR_XPRenderInfo::_calculateCharAdvances()
 {
-	// The following code calculates the advances for individual
-	// characters that are to be fed to gr_Graphics::drawChars()
-	// Note, that character advances are not necessarily identical to
-	// character widths; in the case of combining characters the
-	// required advance depends on the width of the base character and
-	// the properties of the combining character, and it can be both
-	// positive and negative.
-	//
-	// At the moment, we calculate the advances here puting them into
-	// a static array. Should this prove to be too much of a
-	// performance bottleneck, we could cache this in a member array,
-	// and refresh it inside refreshDrawBuffer()
-
 	if(m_iLength == 0)
 		return;
 

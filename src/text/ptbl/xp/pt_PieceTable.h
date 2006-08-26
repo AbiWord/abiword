@@ -174,7 +174,7 @@ public:
 									   bool bDeleteTableStruxes,
 									   bool bDontGlob);
 	bool                    createAndSendCR(PT_DocPosition  dpos, 
-											UT_sint32 iType,bool bSave);
+											UT_sint32 iType,bool bSave, UT_Byte iGlob);
 
 	bool					deleteSpanWithTable(PT_DocPosition dpos1,
 												PT_DocPosition dpos2,

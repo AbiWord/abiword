@@ -146,7 +146,8 @@ GR_Font* GR_Graphics::findFont(const char* pszFontFamily,
 							   const char* pszFontVariant,
 							   const char* pszFontWeight,
 							   const char* pszFontStretch,
-							   const char* pszFontSize)
+							   const char* pszFontSize,
+							   const char* pszLang)
 {
 	GR_Font * pFont = NULL;
 
@@ -161,7 +162,10 @@ GR_Font* GR_Graphics::findFont(const char* pszFontFamily,
 		// TODO -- note that we currently assume font-family to be a single name,
 		// TODO -- not a list.  This is broken.
 
-		pFont = _findFont(pszFontFamily, pszFontStyle, pszFontVariant, pszFontWeight, pszFontStretch, pszFontSize);
+		pFont = _findFont(pszFontFamily, pszFontStyle,
+						  pszFontVariant,pszFontWeight,
+						  pszFontStretch, pszFontSize,
+						  pszLang);
 		UT_ASSERT(pFont);
 		xxx_UT_DEBUGMSG(("Insert font %x in gr_Graphics cache \n",pFont));
 		// add it to the cache
@@ -179,12 +183,45 @@ GR_Font* GR_Graphics::findFont(const char* pszFontFamily,
 GR_Graphics::~GR_Graphics()
 {
 	DELETEP(m_pCaret);
+	UT_sint32 i = 0;
+	for(i=0; i< static_cast<UT_sint32>(m_vecCarets.getItemCount());i++)
+	{
+	    GR_Caret * pCaret = m_vecCarets.getNthItem(i);
+	    DELETEP(pCaret);
+	}
 }
 
 void GR_Graphics::_destroyFonts ()
 {
 	m_hashFontCache.purgeData();
 	m_hashFontCache.clear ();
+}
+
+GR_Caret * GR_Graphics::getNthCaret(UT_sint32 i)
+{
+        if(i>= static_cast<UT_sint32>(m_vecCarets.getItemCount()))
+	     return NULL;
+        return m_vecCarets.getNthItem(i);
+}
+
+GR_Caret * GR_Graphics::getCaret(UT_UTF8String & sDocUUID)
+{
+        UT_sint32 i= 0;
+	for(i=0; i<m_vecCarets.getItemCount();i++)
+	{
+	    if(m_vecCarets.getNthItem(i)->getUUID() == sDocUUID)
+	    {
+		return m_vecCarets.getNthItem(i);
+	    }
+	}
+	return NULL;
+}
+
+GR_Caret * GR_Graphics::createCaret(UT_UTF8String & sDocUUID)
+{
+        GR_Caret * pCaret = new GR_Caret(this,sDocUUID);
+        m_vecCarets.addItem(pCaret);
+	return pCaret;
 }
 
 /*!

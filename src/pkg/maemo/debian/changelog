@@ -1,22 +1,5 @@
-abiword (2.4.0-1maemo1) unstable; urgency=low
+abiword (2.5-cvs20060720-0maemo2) mistral; urgency=low
 
-  * Some bug fixes to make abiword work on Nokia 770
+  * Updated build system to Maemo2
 
- -- Renato Araujo Oliveira Filho <renato.filho@indt.org.br>  Wed,  6 Jul 2005 13:00:01 -0300
-
-
-  * Changes for AbiWord 2.4
-
- -- Tomas Frydrych <tomasfrydrych@yahoo.co.uk>  Wed, 6 July 2005 17:22 +0100
-
-
-  * Initial package for Abiword package by
-
- -- Rodrigo Parra Novo <rodrigo.novo@indt.org.br>  Mon, 25 May 2005 10:28:17 -0300
-
-
-Local variables:
-mode: debian-changelog
-add-log-mailing-address: "gecko@debian.org"
-End:
-
+ -- Tomas Frydrych <tf@o-hand.com>  Thu, 20 July 2006 14:43:00 +0100

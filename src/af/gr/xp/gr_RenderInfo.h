@@ -26,23 +26,23 @@
 
 class UT_TextIterator;
 
-/*
-    Identifies scripts for the shaping engine; the actual values are
-    shaper specific and of no consequence to the xp layer; the only
-    values that are defined are:
-    
-        Undefined - identifies text that requires no special processing.
-        Void      - indicates the record does not represent real item;
-                    only used with the last (dummy) record in GR_Itemization
- */
+/**
+   Identifies scripts for the shaping engine; the actual values are
+   shaper specific and of no consequence to the xp layer; the only
+   values that are defined are:
+   
+   Undefined - identifies text that requires no special processing.
+   Void      - indicates the record does not represent real item;
+   only used with the last (dummy) record in GR_Itemization
+*/
 enum GR_ScriptType
 {
 	GRScriptType_Undefined = 0,
 	GRScriptType_Void = 0xffffffff
 };
 
-// used to identify GR_RenderInfo and related classes
-// add as required
+/** used to identify GR_RenderInfo and related classes
+	add as required */
 enum GRRI_Type
 {
 	GRRI_XP = 0,
@@ -60,14 +60,14 @@ enum GRRI_Type
 };
 
 
-/*
-   Describes an item of text; graphics classes must implement a
-   derrived class
+/**
+   This is an abstract class that describes an item of text and is passed
+   to the shaper. Each platform needs to implement a derived class that
+   would hold item information required by the specific shaper.
 
-   constructor should be protected; new instances can only be created via
+   \note constructor should be protected; new instances can only be created via
    GR_Graphics::newItem()
 */
-
 class GR_Item
 {
   public:
@@ -102,7 +102,7 @@ class GR_XPItem : public GR_Item
 };
 
 
-/*
+/**
    describes itemization of text
 
    offset is where an item starts
@@ -175,15 +175,15 @@ class GR_Itemization
 	const char *    m_pLang;
 };
 
-/*
+/**
    encapsulates output of GR_Graphics::shape() which is passed as
    input to GR_Graphics::renderChars().
 
    This is abstract class and suitable functionality is to be provided
    by platform code.
 
-   Notes on append(), split() and cut()
-   ------------------------------------
+   <b>Notes on append(), split() and cut()</b>
+   
    These functions allow our fp_TextRun to merge with next or to split
    into two without having to know about various platform dependent
    chaches that speed up shaping and drawing; append()
@@ -200,7 +200,6 @@ class GR_Itemization
    always set them if the function to which GR_RenderInfo is passed is
    going to use them
 */
-
 class GR_RenderInfo
 {
   public:
@@ -251,14 +250,14 @@ class GR_RenderInfo
 	bool                m_bInvalidateFontCache;
 
  private:
-	// never to be implemented (constructor always has to set
-	// m_eScriptType to actual value)
+	/** never to be implemented (constructor always has to set
+		m_eScriptType to actual value)*/
 	GR_RenderInfo() {};
 };
 
-/*
-    This is an xp implementation of GR_RenderInfo for use with the
-    built in UT_contextGlyph class.
+/**
+   This is an xp implementation of GR_RenderInfo for use with the
+   built in UT_contextGlyph class.
 */
 class GR_XPRenderInfo : public GR_RenderInfo
 {
@@ -302,7 +301,7 @@ class GR_XPRenderInfo : public GR_RenderInfo
 };
 
 
-/*
+/**
    Encapsulates input to GR_Graphics::shape()
 */
 class GR_ShapingInfo

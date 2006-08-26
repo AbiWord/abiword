@@ -139,10 +139,7 @@ ifeq ($(ABI_REQUIRE_PEER_ICONV),1)
 OS_INCLUDES		+= -I$(ABI_ROOT)/../libiconv/include
 endif
 
-# TODO: This is true on about 1/10 platforms.  Why not use pkgconfig?
-ifeq ($(ABI_OPT_PANGO),1)
-OS_INCLUDES += -I/usr/local/include/pango-1.0 -I/usr/local/include/freetype2 -I/usr/local/include/glib-2.0
-endif
+
 
 # Architecture-specific flags
 ifeq ($(OS_ARCH), i386)
@@ -160,20 +157,49 @@ PLATFORM_FLAGS		+= $(IA64_ARCH_FLAGS)
 OS_ENDIAN		= LittleEndian32
 endif
 
-# LIBXML_CONFIG	= xml2-config   # yeah, so, we don't use this yet.  may or may not before 2.0
+LIBXML_CONFIG	= pkg-config libxml-2.0   # yeah, so, we don't use this yet.  may or may not before 2.0
 
 # Which links can this platform create.  Define one not both of these options.
 UNIX_CAN_BUILD_DYNAMIC=0
 UNIX_CAN_BUILD_STATIC=1 
 # I'm still not totally decided really...I'll need to experiment some more.
 
-ABI_REQUIRE_PEER_ICONV = 1
+# No longer hardcoding for peer iconv - 2 Jun 2006
+# ABI_REQUIRE_PEER_ICONV = 1
+ABI_REQUIRE_PEER_ICONV = 0
 
-# Currently hard code expat to default for Win32
-ABI_OPT_PEER_EXPAT?=1
+# Currently hard code expat to disable for Win32
+ABI_OPT_PEER_EXPAT?=0
+ABI_OPT_MSXML?=0
 
-# add wv's mini glib to include list
-ABI_OTH_INCS+=	/../../wv/glib-wv
+# If user wants MSXML, explicitly disable expat
+ifeq ($(ABI_OPT_MSXML),1)
+  ABI_OPT_PEER_EXPAT=0
+endif 
+
+## add wv's mini glib to include list
+#ABI_OTH_INCS+=	/../../wv/glib-wv
+
+#ifneq ($(shell which pkg-config), )
+	ABI_GSF_LIB += $(shell pkg-config --libs --silence-errors libgsf-1)
+	ABI_GSF_INC += $(shell pkg-config --cflags --silence-errors libgsf-1)
+	ABI_GLIB_LIB += $(shell pkg-config --libs --silence-errors glib-2.0)
+	ABI_GLIB_INC += $(shell pkg-config --cflags --silence-errors glib-2.0)
+#else
+#	error 
+#endif
+
+# TODO: This is true on about 1/10 platforms.  Why not use pkgconfig?
+ifeq ($(ABI_OPT_PANGO),1)
+OS_INCLUDES += -I/usr/local/include/pango-1.0 -I/usr/local/include/freetype2 $(ABI_GLIB_INC)
+endif
+
+
+# glib
+# ABI_OTH_INCS += $(GLIB_INC)
+OS_LIBS += $(ABI_GLIB_LIB)
+ABI_LIBS += glib-2.0
+OS_INCLUDES += $(ABI_GLIB_INC)
 
 # zlib
 ABI_ZLIB_ROOT = $(ABI_ROOT)/../libs/zlib
@@ -182,14 +208,11 @@ ABI_ZLIB_INC = $(ABI_ZLIB_ROOT)/include
 ABI_ZLIB_LIB = -lzdll
 ABI_LIBS += zdll 
 
-# gsf (for many of the plugins)
-ifneq ($(shell which pkg-config), )
-	ABI_GSF_LIB += $(shell pkg-config --libs --silence-errors libgsf-1)
-	ABI_GSF_INC += $(shell pkg-config --cflags --silence-errors libgsf-1)
-endif
 
 # so <fribidi.h> works
 OS_INCLUDES += -I$(ABI_ROOT)/../fribidi	
+# Do this instead for non-peer fribidi:
+#OS_INCLUDES += $(shell pkg-config --cflags --silence-errors fribidi)
 
 # Try to find where NSIS is installed, if anywhere
 # First check to see if it's in the path.  If not, check default install path.

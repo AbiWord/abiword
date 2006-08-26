@@ -121,7 +121,7 @@ ap_bs_Mouse MouseTable[] =
 
 //	Button-1, Image-context
 //  { context	{ click				doubleclick		drag,		dbldrag,		release,	doublerelease }},
-	{_CI _B1,	{ "selectObject",	"selectObject",	"",			"",				"",			""	}},
+	{_CI _B1,	{ "selectObject",	"dlgFmtImage",	"",			"",				"",			""	}},
 	{_CI _B1 _C,{ "copyInlineImage",	"copyInlineImage",				"dragInlineImage","dragInlineImage",				"releaseInlineImage","releaseInlineImage"	}},
 
 	{_CF _B1,	{ "warpInsPtToXY",	"selectObject",	"",			"",				"",			""	}},

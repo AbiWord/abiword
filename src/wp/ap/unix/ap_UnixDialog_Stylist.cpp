@@ -154,8 +154,8 @@ void AP_UnixDialog_Stylist::setStyleInGUI(void)
 	gtk_tree_view_scroll_to_cell(GTK_TREE_VIEW(m_wStyleList),gPathFull,NULL,TRUE,0.5,0.5);
 	gtk_tree_view_set_cursor(GTK_TREE_VIEW(m_wStyleList),gPathFull,NULL,TRUE);
 	setStyleChanged(false);
-	g_free(gPathRow);
-	g_free(gPathFull);
+	gtk_tree_path_free(gPathRow);
+	gtk_tree_path_free(gPathFull);
 }
 
 void AP_UnixDialog_Stylist::destroy(void)

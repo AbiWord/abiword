@@ -514,7 +514,8 @@ const char* GR_UnixGraphics::findNearestFont(const char* pszFontFamily,
 											 const char* pszFontVariant,
 											 const char* pszFontWeight,
 											 const char* pszFontStretch,
-											 const char* pszFontSize)
+											 const char* pszFontSize,
+											 const char* pszLang)
 {
 	xxx_UT_DEBUGMSG(("Find Font findNearestFont for %s \n",pszFontFamily));
 	XAP_UnixFont* pUnixFont = XAP_UnixFontManager::pFontManager->findNearestFont(pszFontFamily, pszFontStyle,
@@ -725,8 +726,7 @@ GR_UnixGraphics::~GR_UnixGraphics()
 		free(m_pXftDraw);
 
 	delete m_pFallBackFontHandle;
-
-	UT_VECTOR_PURGEALL(UT_Rect*, m_vSaveRect);
+	UT_VECTOR_SPARSEPURGEALL( UT_Rect*, m_vSaveRect);
 
 	// purge saved pixbufs
 	for (UT_uint32 i = 0; i < m_vSaveRectBuf.size (); i++)
@@ -1220,7 +1220,8 @@ GR_Font * GR_UnixGraphics::_findFont(const char* pszFontFamily,
 									 const char* pszFontVariant,
 									 const char* pszFontWeight,
 									 const char* pszFontStretch,
-									 const char* pszFontSize)
+									 const char* pszFontSize,
+									 const char* pszLang)
 {
 	xxx_UT_DEBUGMSG(("Find Font _findFont for %s \n",pszFontFamily));
 	XAP_UnixFont* pUnixFont = m_pFontManager->findNearestFont(pszFontFamily, pszFontStyle, pszFontVariant, pszFontWeight,

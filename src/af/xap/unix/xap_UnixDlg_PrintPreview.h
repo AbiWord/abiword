@@ -1,3 +1,4 @@
+/* -*- mode: C++; tab-width: 4; c-basic-offset: 4; -*- */
 /* AbiSource Application Framework
  * Copyright (C) 1998 AbiSource, Inc.
  * 
@@ -41,7 +42,7 @@ class XAP_UnixDialog_PrintPreview : public XAP_Dialog_PrintPreview
 
  protected:
 
-	XAP_UnixGnomePrintGraphics      * m_pGnomePrintGraphics;
+	GR_Graphics * m_pPrintGraphics;
 };
 
 #endif /* XAP_UNIXDIALOG_PRINTPREVIEW_H */

@@ -95,6 +95,7 @@ void XAP_FontPreview::setFontFamily(const XML_Char * pFontFamily)
 
 void XAP_FontPreview::setText(const XML_Char * pFontFamily)
 {
+	FREEP(m_drawString);
 	UT_UCS4_cloneString_char (&m_drawString, pFontFamily);
 	m_pFontPreview->setDrawString(m_drawString);
 }

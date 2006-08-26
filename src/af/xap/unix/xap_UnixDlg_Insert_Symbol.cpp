@@ -141,7 +141,7 @@ void XAP_UnixDialog_Insert_Symbol::runModeless(XAP_Frame * pFrame)
 	
 	{
 		//m_unixGraphics = new GR_UnixGraphics(m_SymbolMap->window, unixapp->getFontManager(), m_pApp);
-		GR_UnixAllocInfo ai(m_SymbolMap->window, unixapp->getFontManager(), m_pApp);
+		GR_UnixAllocInfo ai(m_SymbolMap->window, unixapp->getFontManager());
 		m_unixGraphics = (GR_UnixGraphics*) XAP_App::getApp()->newGraphics(ai);
 	}
 	// let the widget materialize
@@ -156,7 +156,7 @@ void XAP_UnixDialog_Insert_Symbol::runModeless(XAP_Frame * pFrame)
 	DELETEP (m_unixarea);
     {
 		//m_unixarea = new GR_UnixGraphics(m_areaCurrentSym->window, unixapp->getFontManager(), m_pApp);
-		GR_UnixAllocInfo ai(m_areaCurrentSym->window, unixapp->getFontManager(), m_pApp);
+		GR_UnixAllocInfo ai(m_areaCurrentSym->window, unixapp->getFontManager());
 		m_unixarea = (GR_UnixGraphics*) XAP_App::getApp()->newGraphics(ai);
 	}
 	// let the widget materialize
@@ -253,8 +253,12 @@ void XAP_UnixDialog_Insert_Symbol::New_Font(void )
 #ifndef USE_GUCHARMAP
 	XAP_Draw_Symbol * iDrawSymbol = _getCurrentSymbolMap();
 	UT_ASSERT(iDrawSymbol);
+
+	// need a fallback value here, as this can get called from one of the gtk
+	// callbacks when no font has been set.
+	iDrawSymbol->setSelectedFont( buffer && *buffer ? static_cast<const char *>(buffer) :
+		                                              "Symbol");
 	
-	iDrawSymbol->setSelectedFont( static_cast<const char *>(buffer));
 	iDrawSymbol->draw();
 	iDrawSymbol->drawarea(m_CurrentSymbol, m_PreviousSymbol);
 #else

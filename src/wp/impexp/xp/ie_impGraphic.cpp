@@ -25,6 +25,9 @@
 #include "ut_bytebuf.h"
 #include "ut_vector.h"
 
+#include "ut_go_file.h"
+#include <gsf/gsf-input.h>
+
 /*****************************************************************/
 /*****************************************************************/
 
@@ -256,11 +259,12 @@ UT_Error IE_ImpGraphic::constructImporter(const char * szFilename,
       UT_return_val_if_fail(szFilename && *szFilename, UT_ERROR);
       char szBuf[4096] = "";
       UT_uint32 iNumbytes = 0;
-      FILE *f = NULL;
-      if ( ( f= fopen( szFilename, "rb" ) ) != static_cast<FILE *>(0) )
+      GsfInput *f = NULL;
+      if ( ( f= UT_go_file_open( szFilename, NULL ) ) != NULL )
 	{
-	  iNumbytes = fread(szBuf, 1, sizeof(szBuf), f);
-	  fclose(f);
+	  iNumbytes = UT_MIN(sizeof(szBuf), gsf_input_size(f));
+	  gsf_input_read(f, iNumbytes, (guint8*)szBuf);
+	  g_object_unref(G_OBJECT(f));
 	}
       
       UT_Confidence_t   best_confidence = UT_CONFIDENCE_ZILCH;
@@ -316,7 +320,7 @@ UT_Error	IE_ImpGraphic::importGraphic(const char * szFilename,
 	if (pBB == NULL)
 		return UT_IE_NOMEMORY;
 
-	if (!pBB->insertFromFile(0, szFilename))
+	if (!pBB->insertFromURI(0, szFilename))
 	{
 		DELETEP(pBB);
 		return UT_IE_FILENOTFOUND;

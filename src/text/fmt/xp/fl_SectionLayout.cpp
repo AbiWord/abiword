@@ -157,7 +157,8 @@ void fl_SectionLayout::setNeedsReformat(fl_ContainerLayout * pCL, UT_uint32 /*of
 	  m_vecFormatLayout.addItem(pCL);
 	}
 	m_bNeedsReformat = true;
-	xxx_UT_DEBUGMSG(("SetNeedsReformat in %s from %s number to format %d\n",getContainerString(),pCL->getContainerString(),m_vecFormatLayout.getItemCount()));	if(myContainingLayout() != NULL && (static_cast<fl_SectionLayout *>(myContainingLayout()) != this) && (getContainerType() != FL_CONTAINER_SHADOW))
+	xxx_UT_DEBUGMSG(("SetNeedsReformat in %s from %s number to format %d\n",getContainerString(),pCL->getContainerString(),m_vecFormatLayout.getItemCount()));
+	if(myContainingLayout() != NULL && (static_cast<fl_SectionLayout *>(myContainingLayout()) != this) && (getContainerType() != FL_CONTAINER_SHADOW))
 	{
 		static_cast<fl_SectionLayout *>(myContainingLayout())->setNeedsReformat(this);
 	}
@@ -444,6 +445,8 @@ bool fl_SectionLayout::bl_doclistener_insertSection(fl_ContainerLayout* pPrevL,
 			//
 			pView->setPoint(pView->getPoint() + fl_BLOCK_STRUX_OFFSET + fl_BLOCK_STRUX_OFFSET);
 		}
+		if(pView)
+		        pView->updateCarets(pcrx->getPosition(),1);
 		return true;
 
 	}
@@ -599,6 +602,8 @@ bool fl_SectionLayout::bl_doclistener_insertSection(fl_ContainerLayout* pPrevL,
 		{
 			pView->setPoint(pView->getPoint() + fl_BLOCK_STRUX_OFFSET + fl_BLOCK_STRUX_OFFSET);
 		}
+		if(pView)
+		  pView->updateCarets(pcrx->getPosition(),1);
 		return true;
 	}
 	return false;
@@ -677,6 +682,8 @@ fl_SectionLayout * fl_SectionLayout::bl_doclistener_insertTable(SectionType iTyp
 	{
 		pView->setPoint(pView->getPoint() + fl_BLOCK_STRUX_OFFSET);
 	}
+	if(pView)
+		pView->updateCarets(pcrx->getPosition(),1);
 //
 // OK that's it!
 //
@@ -3830,7 +3837,8 @@ void fl_HdrFtrSectionLayout::addValidPages(void)
 	// Loop through all the columns in m_pDocSl and find the pages owned
 	// by m_pDocSL
 	//
-	fp_Column * pCol = static_cast<fp_Column *>(m_pDocSL->getFirstContainer());
+        fp_Column * pCol = NULL;
+	pCol = static_cast<fp_Column *>(m_pDocSL->getFirstContainer());
 	fp_Page * pOldPage = NULL;
 	fp_Page * pNewPage = NULL;
 	while(pCol)
@@ -4537,6 +4545,8 @@ fl_SectionLayout * fl_HdrFtrSectionLayout::bl_doclistener_insertTable(SectionTyp
 	{
 		pView->setPoint(pView->getPoint() + fl_BLOCK_STRUX_OFFSET);
 	}
+	if(pView)
+		pView->updateCarets(pcrx->getPosition(),1);
 
 	fl_SectionLayout::checkAndAdjustCellSize();
 //
@@ -4909,6 +4919,8 @@ bool fl_DocSectionLayout::bl_doclistener_insertFootnote(fl_ContainerLayout* pFoo
 	{
 		pView->setPoint(pView->getPoint() +  fl_BLOCK_STRUX_OFFSET);
 	}
+	if(pView)
+		pView->updateCarets(pcrx->getPosition(),1);
 	return true;
 }
 

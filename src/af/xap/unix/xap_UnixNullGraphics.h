@@ -136,7 +136,8 @@ protected:
 							   const char* pszFontVariant, 
 							   const char* pszFontWeight, 
 							   const char* pszFontStretch, 
-							   const char* pszFontSize);
+							   const char* pszFontSize,
+							   const char* pszLang);
 
 	virtual UT_uint32 getDeviceResolution(void) const;
 	

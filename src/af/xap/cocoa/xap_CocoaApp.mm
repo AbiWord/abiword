@@ -372,11 +372,12 @@ XAP_Frame * XAP_CocoaApp::_getFrontFrame(void)
 }
 
 const char*         XAP_CocoaApp::_findNearestFont(const char* pszFontFamily,
-												const char* pszFontStyle,
-												const char* pszFontVariant,
-												const char* pszFontWeight,
-												const char* pszFontStretch,
-												const char* pszFontSize)
+												   const char* pszFontStyle,
+												   const char* pszFontVariant,
+												   const char* pszFontWeight,
+												   const char* pszFontStretch,
+												   const char* pszFontSize,
+												   const char * pszLang)
 {
 	return pszFontFamily;
 }

@@ -321,7 +321,8 @@ void FV_View::_setSelectionAnchor(void)
 	m_Selection.setSelectionAnchor(getPoint());
 }
 
-void FV_View::_deleteSelection(PP_AttrProp *p_AttrProp_Before, bool bNoUpdate)
+void FV_View::_deleteSelection(PP_AttrProp *p_AttrProp_Before, bool bNoUpdate,
+							   bool bCaretLeft)
 {
 	// delete the current selection.
 	// NOTE: this must clear the selection.
@@ -518,10 +519,11 @@ void FV_View::_deleteSelection(PP_AttrProp *p_AttrProp_Before, bool bNoUpdate)
 	{
 		UT_ASSERT( iRealDeleteCount <= iHigh - iLow + 1 );
 
-		// if the point was on the left of the original selection, we must adjust the
-		// point so that it is on the left edge of the text to the right of what we
-		// deleted; if it is on the right edge, we do nothing
-		if(iPoint == iLow)
+		// if we are explicitely told to lef the caret on the left side of the
+		// selection we do so, otherwise, if the point was on the left of the
+		// original selection, we must adjust the point so that it is on the
+		// left edge of the text to the right of what we deleted
+		if(!bCaretLeft && iPoint == iLow)
 			_charMotion(true,iHigh - iLow - iRealDeleteCount);
 	}
 //
@@ -2512,7 +2514,9 @@ FV_View::_findNext(UT_uint32* pPrefix,
 			{
 				if (m_bWholeWord) 
 				{
-					bool start = UT_isWordDelimiter(buffer[i-m-1], UCS_UNKPUNK, UCS_UNKPUNK);
+					bool start = true;
+					if((static_cast<UT_sint32>(i) - static_cast<UT_sint32>(m)) > 0)
+						start = UT_isWordDelimiter(buffer[i-m-1], UCS_UNKPUNK, UCS_UNKPUNK);
 					bool end = UT_isWordDelimiter(buffer[i], UCS_UNKPUNK, UCS_UNKPUNK);
 					if (start && end) 
 					{
@@ -4031,10 +4035,65 @@ void FV_View::_findPositionCoords(PT_DocPosition pos,
 	}
 }
 
-void FV_View::_fixInsertionPointCoords()
+void FV_View::_fixAllInsertionPointCoords()
+{
+	fv_CaretProps * pCaretProps = NULL;
+	UT_sint32 iCount = static_cast<UT_sint32>(m_vecCarets.getItemCount());
+	UT_sint32 i = 0;
+	for(i=0; i<iCount;i++)
+	{
+			pCaretProps = m_vecCarets.getNthItem(i);
+			_fixInsertionPointCoords(pCaretProps);
+	}
+}
+
+void FV_View::_fixInsertionPointCoords(fv_CaretProps * pCP)
+{
+	if ((pCP->m_iInsPoint > 0) && !isLayoutFilling())
+	{
+		fl_BlockLayout * pBlock = NULL;
+		fp_Run * pRun = NULL;
+		_findPositionCoords(pCP->m_iInsPoint, pCP->m_bPointEOL, pCP->m_xPoint, 
+							pCP->m_yPoint, pCP->m_xPoint2, pCP->m_yPoint2, 
+							pCP->m_iPointHeight, pCP->m_bPointDirection, 
+							&pBlock, &pRun);
+		fp_Page * pPage = getCurrentPage();
+		UT_RGBColor * pClr = NULL;
+		if (pPage)
+			pClr = pPage->getFillType()->getColor();
+		UT_sint32 yoff = 0;
+		if(pCP->m_yPoint < 0)
+		{
+			UT_sint32 negY  = -pCP->m_yPoint;
+			yoff = negY + 1;
+			if(negY > (UT_sint32)pCP->m_iPointHeight)
+			{
+				pCP->m_iPointHeight = 0;
+				yoff = 0;
+			}
+		}
+		if(pRun && (pRun->getType() == FPRUN_IMAGE))
+		{
+			UT_DEBUGMSG(("On image run with fixPointcoords \n"));
+		}
+		xxx_UT_DEBUGMSG(("Xpoint in fixpoint %d \n",m_xPoint));
+		pCP->m_pCaret->setCoords(pCP->m_xPoint, pCP->m_yPoint+yoff, 
+								 pCP->m_iPointHeight-yoff,
+								 pCP->m_xPoint2, 
+								 pCP->m_yPoint2+yoff, 
+								 pCP->m_iPointHeight-yoff, 
+								 pCP->m_bPointDirection, pClr);
+	}
+	pCP->m_pCaret->setWindowSize(getWindowWidth(), getWindowHeight());
+
+}
+
+void FV_View::_fixInsertionPointCoords(bool bIgnoreAll)
 {
 	if (m_pG->getCaret() == NULL)
 		return;
+	if(!bIgnoreAll)
+		_fixAllInsertionPointCoords();
 	
 	fp_Page * pPage = NULL;
 	fl_BlockLayout * pBlock = NULL;
@@ -4466,6 +4525,17 @@ void FV_View::_draw(UT_sint32 x, UT_sint32 y,
 
 }
 
+
+void FV_View::_setPoint(fv_CaretProps * pCP,PT_DocPosition pt, UT_sint32 iLen)
+{
+
+	pCP->m_iInsPoint = pt + iLen;
+	_fixInsertionPointCoords(pCP);
+	pCP->m_pCaret->disable();
+	pCP->m_pCaret->enable();
+}
+
+
 void FV_View::_setPoint(PT_DocPosition pt, bool bEOL)
 {
 	if (!m_pDoc->getAllowChangeInsPoint())
@@ -4499,11 +4569,11 @@ void FV_View::_setPoint(PT_DocPosition pt, bool bEOL)
 	m_Selection.checkSelectAll();
 	m_bInsertAtTablePending = false;
 	m_iPosAtTable = 0;
-	xxx_UT_DEBUGMSG(("Point set to %d in View %x \n",pt,this));
+	UT_DEBUGMSG(("Point set to %d in View %x \n",pt,this));
 	m_bPointEOL = bEOL;
 	if(!m_pDoc->isPieceTableChanging())
 	{
-		_fixInsertionPointCoords();
+		_fixInsertionPointCoords(true);
 		m_pLayout->considerPendingSmartQuoteCandidate();
 		_checkPendingWordForSpell();
 	// So, if there is a selection now, we should disable the cursor; conversely,
@@ -4813,6 +4883,9 @@ bool FV_View::_charMotion(bool bForward,UT_uint32 countChars, bool bSkipCannotCo
 
 	// indicates how many layout layers we had to step up to get valid pCL
 // 	UT_uint32 iLayoutDepth = 0;
+
+	if(iRunEnd > posEOD)
+		iRunEnd = posEOD;
 
 	if(bForward && ( m_iInsPoint > iRunEnd))
 	{

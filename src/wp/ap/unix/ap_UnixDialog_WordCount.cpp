@@ -53,7 +53,9 @@ XAP_Dialog * AP_UnixDialog_WordCount::static_constructor(XAP_DialogFactory * pFa
 
 AP_UnixDialog_WordCount::AP_UnixDialog_WordCount(XAP_DialogFactory * pDlgFactory,
 												 XAP_Dialog_Id id)
-	: AP_Dialog_WordCount(pDlgFactory,id)
+	: AP_Dialog_WordCount(pDlgFactory,id),
+	  m_bDestroy_says_stopupdating(false),
+	  m_bAutoUpdate_happening_now(false)
 {
 }
 

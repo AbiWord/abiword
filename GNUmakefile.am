@@ -21,6 +21,14 @@ pkgconfig_DATA = libabipriv-1.pc
 libabipriv-1.pc: libabipriv-1.pc.in
 	sed -e "s|§OTHER_LIBS§|$(OTHER_LIBS)|g" libabipriv-1.pc.in > libabipriv-1.pc
 
+if WITH_HILDON
+icon_DATA =
+desktop_DATA =
+endif
+
+mime_DATA = abiword.keys
+mimedir = $(datadir)/mime-info
+
 # Hack: make sure that the PEERS stuff is build first
 # We can not use the all target, because on parallel builds there is no
 # guarantee that the peerdirs will be built before the main tree.

@@ -139,7 +139,7 @@ bool ImportStream::getRawChar(UT_UCSChar &ucs)
   Construct ImportStreamFile from FILE pointer
  \param pFile File to read from
  */
-ImportStreamFile::ImportStreamFile(FILE *pFile) :
+ImportStreamFile::ImportStreamFile(GsfInput *pFile) :
 	m_pFile(pFile)
 {
 }
@@ -156,7 +156,7 @@ bool ImportStreamFile::_getByte(unsigned char &b)
 {
 	UT_return_val_if_fail(m_pFile, false);
 
-	return fread(&b, 1, sizeof(b), m_pFile) > 0;
+	return (gsf_input_read(m_pFile, 1, &b) != NULL);
 }
 
 /*!
@@ -619,13 +619,13 @@ bool IE_Imp_EncodedText_Sniffer::getDlgLabels(const char ** pszDesc,
 
  Each line terminator is taken to be a paragraph break
 */
-UT_Error IE_Imp_Text::importFile(const char * szFilename)
+UT_Error IE_Imp_Text::importFile(const char * szURI)
 {
 	// We must open in binary mode for UCS-2 compatibility.
-	FILE *fp = fopen(szFilename, "rb");
+	GsfInput *fp = UT_go_file_open(szURI, NULL);
 	if (!fp)
 	{
-		UT_DEBUGMSG(("Could not open file %s\n",szFilename));
+		UT_DEBUGMSG(("Could not open file %s\n",szURI));
 		return UT_IE_FILENOTFOUND;
 	}
 
@@ -649,7 +649,7 @@ UT_Error IE_Imp_Text::importFile(const char * szFilename)
 
 Cleanup:
 	delete pStream;
-	fclose(fp);
+	g_object_unref(G_OBJECT(fp));
 	return error;
 }
 
@@ -728,13 +728,14 @@ IE_Imp_Text::~IE_Imp_Text ()
  Supports UTF-8 and UCS-2 big and little endian
  CJK encodings could be added
  */
-UT_Error IE_Imp_Text::_recognizeEncoding(FILE * fp)
+UT_Error IE_Imp_Text::_recognizeEncoding(GsfInput * fp)
 {
 	char szBuf[4096];  // 4096 ought to be enough
 	UT_sint32 iNumbytes;
 
-	iNumbytes = fread(szBuf, 1, sizeof(szBuf), fp);
-	fseek(fp, 0, SEEK_SET);
+	iNumbytes = UT_MIN(4096, gsf_input_remaining(fp));
+	gsf_input_read(fp, iNumbytes, (guint8 *)szBuf);
+	gsf_input_seek(fp, 0, G_SEEK_SET);
 
 	return _recognizeEncoding(szBuf, iNumbytes);
 }
@@ -775,7 +776,7 @@ UT_Error IE_Imp_Text::_recognizeEncoding(const char *szBuf, UT_uint32 iNumbytes)
 
  Override this virtual function to derive from the text importer
  */
-UT_Error IE_Imp_Text::_constructStream(ImportStream *& pStream, FILE * fp)
+UT_Error IE_Imp_Text::_constructStream(ImportStream *& pStream, GsfInput * fp)
 {
 	return (pStream = new ImportStreamFile(fp)) ? UT_OK : UT_IE_NOMEMORY;
 }
@@ -785,7 +786,7 @@ UT_Error IE_Imp_Text::_constructStream(ImportStream *& pStream, FILE * fp)
 
  Writes the minimum needed Section and Block before we begin import
  */
-UT_Error IE_Imp_Text::_writeHeader(FILE * /* fp */)
+UT_Error IE_Imp_Text::_writeHeader(GsfInput * /* fp */)
 {
 	// text gets applied in the Normal style
 	const XML_Char * propsArray[3];

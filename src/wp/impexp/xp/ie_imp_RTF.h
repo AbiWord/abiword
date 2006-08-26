@@ -560,8 +560,8 @@ public:
 	};
 
 protected:
-	UT_Error			_parseFile(FILE * fp);
-	UT_Error			_writeHeader(FILE * fp);
+	UT_Error			_parseFile(GsfInput * fp);
+	UT_Error			_writeHeader(GsfInput * fp);
 	UT_Error            _parseHdrFtr ();
 	UT_Error            _parseText();
 	
@@ -854,7 +854,7 @@ private:
 	bool m_bParaHasRTFList;
 	bool m_bParaHasRTFContinue;
 
-	FILE* m_pImportFile;
+	GsfInput* m_pImportFile;
 
 	const unsigned char *		m_pPasteBuffer;
 	UT_uint32 			m_lenPasteBuffer;

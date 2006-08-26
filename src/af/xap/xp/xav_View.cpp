@@ -155,24 +155,6 @@ void AV_View:: setActivityMask(bool bActive)
         m_bCouldBeActive = bActive;
 }
 
-bool AV_View::isActive(void) 
-{
-        if(!m_bCouldBeActive)
-	        return false;
-	AV_View* pActiveView = NULL;
-	XAP_Frame* lff = getApp()->getLastFocussedFrame();
-	if(lff) 
-	{
-		pActiveView = lff->getCurrentView();
-	}
-	else 
-	{
-		pActiveView = this;
-	}
-	
-	return pActiveView == this;
-}
-
 UT_uint32 AV_View::getTick(void)
 {
         return m_iTick;

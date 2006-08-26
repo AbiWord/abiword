@@ -1781,6 +1781,8 @@ void fp_TextRun::_draw(dg_DrawArgs* pDA)
 	PD_StruxIterator text(getBlock()->getStruxDocHandle(),
 						  getBlockOffset() + fl_BLOCK_STRUX_OFFSET);
 
+	UT_sint32 iIterPos = text.getPosition(); // need to remember for drawing selections
+	
 	m_pRenderInfo->m_pText = &text;
 	m_pRenderInfo->m_pFont = _getFont();
 	
@@ -1901,7 +1903,9 @@ void fp_TextRun::_draw(dg_DrawArgs* pDA)
 		
 		if(iVisDir == UT_BIDI_RTL)
 			iX -= iSegmentWidth[iSegment];
-		
+
+		// reset the iterator
+		text.setPosition(iIterPos);
 		m_pRenderInfo->m_iOffset = iMyOffset;
 		m_pRenderInfo->m_iLength = iSegmentOffset[iSegment+1]-iSegmentOffset[iSegment];
 		m_pRenderInfo->m_xoff = iX;

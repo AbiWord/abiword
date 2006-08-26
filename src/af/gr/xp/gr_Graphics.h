@@ -66,6 +66,7 @@ class GR_ShapingInfo;
 
 class GR_Graphics;
 class GR_Painter;
+class GR_Caret;
 
 typedef enum {
 	GR_FONT_UNSET=0,
@@ -346,6 +347,7 @@ enum GRShapingResult
 class ABI_EXPORT GR_Graphics
 {
 	friend class GR_Painter;
+	friend class GR_Caret;
 
  public:
 	virtual ~GR_Graphics();
@@ -406,14 +408,16 @@ class ABI_EXPORT GR_Graphics
 					   const char* pszFontVariant,
 					   const char* pszFontWeight,
 					   const char* pszFontStretch,
-					   const char* pszFontSize);
+					   const char* pszFontSize,
+					   const char* pszLang);
 	
 	virtual const char* findNearestFont(const char* pszFontFamily,
 										const char* pszFontStyle,
 										const char* pszFontVariant,
 										const char* pszFontWeight,
 										const char* pszFontStretch,
-										const char* pszFontSize)
+										const char* pszFontSize,
+										const char* pszLang)
 	                                         {return pszFontFamily;}
 
 	const char *      invertDimension(UT_Dimension, double) const;
@@ -590,6 +594,10 @@ class ABI_EXPORT GR_Graphics
 		}
 
 	GR_Caret *        getCaret() { return m_pCaret; }
+	GR_Caret *        createCaret(UT_UTF8String & sDocUUID);
+	GR_Caret *        getCaret(UT_UTF8String & sDocUUID);
+	GR_Caret *        getNthCaret(UT_sint32 i);
+	
 	virtual void	  saveRectangle(UT_Rect & r, UT_uint32 iIndx) = 0;
 	virtual void	  restoreRectangle(UT_uint32 iIndx) = 0;
 	virtual UT_uint32 getDeviceResolution(void) const = 0;
@@ -705,7 +713,8 @@ class ABI_EXPORT GR_Graphics
 							   const char* pszFontVariant,
 							   const char* pszFontWeight,
 							   const char* pszFontStretch,
-							   const char* pszFontSize) = 0;
+							   const char* pszFontSize,
+							   const char* pszLang) = 0;
 
 	// only called by GR_Painter
 	virtual void drawLine(UT_sint32 x1, UT_sint32 y1, UT_sint32 x2, UT_sint32 y2) = 0;
@@ -811,6 +820,7 @@ class ABI_EXPORT GR_Graphics
 	static UT_VersionInfo   s_Version;
 	static UT_uint32        s_iInstanceCount;
 	static UT_UCS4Char      s_cDefaultGlyph;
+	UT_GenericVector<GR_Caret *>  m_vecCarets;
 };
 
 #endif /* GR_GRAPHICS_H */

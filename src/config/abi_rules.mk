@@ -52,6 +52,9 @@ endif
 ifneq ($(ABI_OPT_LIBJPEG),1)
 ABI_OPT_LIBJPEG=0
 endif
+ifneq ($(ABI_OPT_MSXML),1)
+ABI_OPT_MSXML=0
+endif
 ifneq ($(ABI_OPT_PEER_EXPAT),1)
 ABI_OPT_PEER_EXPAT=0
 endif

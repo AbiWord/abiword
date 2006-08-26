@@ -3295,7 +3295,7 @@ void fl_BlockLayout::format()
 	}
 	_assertRunListIntegrity();
 	fp_Line* pLastLine = static_cast<fp_Line *>(getLastContainer());
-	if(pLastLine->getContainerType() == FP_CONTAINER_LINE)
+	if(pLastLine && pLastLine->getContainerType() == FP_CONTAINER_LINE)
 	{
 		if(	bJustifyStuff)
 		{
@@ -4711,7 +4711,7 @@ bool fl_BlockLayout::doclistener_populateSpan(const PX_ChangeRecord_Span * pcrs,
 
 bool	fl_BlockLayout::_doInsertTextSpan(PT_BlockOffset blockOffset, UT_uint32 len)
 {
-	xxx_UT_DEBUGMSG(("_doInsertTextSpan: Initial offset %d, len %d\n", blockOffset, len));
+	xxx_UT_DEBUGMSG(("_doInsertTextSpan: Initial offset %d, len %d bl_Length %d \n", blockOffset, len,getLength()));
 	UT_return_val_if_fail( m_pLayout, false );
 	PD_StruxIterator text(getStruxDocHandle(),
 						  blockOffset + fl_BLOCK_STRUX_OFFSET,
@@ -5055,6 +5055,13 @@ bool	fl_BlockLayout::_doInsertTabRun(PT_BlockOffset blockOffset)
 
 bool	fl_BlockLayout::_doInsertMathRun(PT_BlockOffset blockOffset,PT_AttrPropIndex indexAP, PL_ObjectHandle oh)
 {
+	if(isContainedByTOC())
+	{
+		fp_Run * pDumRun = new fp_DummyRun(this,blockOffset);
+		xxx_UT_DEBUGMSG(("Inserting a dummy run instead of mathrun at %d \n",blockOffset));
+		return _doInsertRun(pDumRun);
+	}
+
 	fp_Run * pNewRun = NULL;
 	pNewRun = new fp_MathRun(this,blockOffset,indexAP,oh);
 	UT_ASSERT(pNewRun); // TODO check for outofmem
@@ -5065,6 +5072,13 @@ bool	fl_BlockLayout::_doInsertMathRun(PT_BlockOffset blockOffset,PT_AttrPropInde
 
 bool	fl_BlockLayout::_doInsertEmbedRun(PT_BlockOffset blockOffset,PT_AttrPropIndex indexAP, PL_ObjectHandle oh)
 {
+	if(isContainedByTOC())
+	{
+		fp_Run * pDumRun = new fp_DummyRun(this,blockOffset);
+		xxx_UT_DEBUGMSG(("Inserting a dummy run instead of embedrun at %d \n",blockOffset));
+		return _doInsertRun(pDumRun);
+	}
+
 	fp_Run * pNewRun = NULL;
 	pNewRun = new fp_EmbedRun(this,blockOffset,indexAP,oh);
 	UT_ASSERT(pNewRun); // TODO check for outofmem
@@ -5105,7 +5119,7 @@ bool	fl_BlockLayout::_doInsertImageRun(PT_BlockOffset blockOffset, FG_Graphic* p
 	if(isContainedByTOC())
 	{
 		fp_Run * pDumRun = new fp_DummyRun(this,blockOffset);
-		xxx_UT_DEBUGMSG(("Inserting a dummy run instead of iamge at %d \n",blockOffset));
+		xxx_UT_DEBUGMSG(("Inserting a dummy run instead of image at %d \n",blockOffset));
 		return _doInsertRun(pDumRun);
 	}
 
@@ -5180,7 +5194,7 @@ bool	fl_BlockLayout::_doInsertFieldRun(PT_BlockOffset blockOffset, const PX_Chan
 		if(isContainedByTOC())
 		{
 			fp_Run * pDumRun = new fp_DummyRun(this,blockOffset);
-			xxx_UT_DEBUGMSG(("Inserting a dummy run instead of endnote_ref at %d \n",blockOffset));
+			xxx_UT_DEBUGMSG(("Inserting a dummy run instead of footnote_anchor at %d \n",blockOffset));
 			return _doInsertRun(pDumRun);
 		}
 		pNewRun = new fp_FieldFootnoteAnchorRun(this,   blockOffset, 1);
@@ -5202,7 +5216,7 @@ bool	fl_BlockLayout::_doInsertFieldRun(PT_BlockOffset blockOffset, const PX_Chan
 		if(isContainedByTOC())
 		{
 			fp_Run * pDumRun = new fp_DummyRun(this,blockOffset);
-			xxx_UT_DEBUGMSG(("Inserting a dummy run instead of endnote_ref at %d \n",blockOffset));
+			xxx_UT_DEBUGMSG(("Inserting a dummy run instead of endnote_anchor at %d \n",blockOffset));
 			return _doInsertRun(pDumRun);
 		}
 		pNewRun = new fp_FieldEndnoteAnchorRun(this,   blockOffset, 1);
@@ -5871,6 +5885,9 @@ bool fl_BlockLayout::doclistener_insertSpan(const PX_ChangeRecord_Span * pcrs)
 	else if(pView && pView->getPoint() > pcrs->getPosition())
 		pView->_setPoint(pView->getPoint() + len);
 
+	if(pView)
+		pView->updateCarets(pcrs->getPosition(),len);
+
 	if (m_pLayout->hasBackgroundCheckReason(FL_DocLayout::bgcrSmartQuotes))
 	{
 		fl_BlockLayout *sq_bl = m_pLayout->getPendingBlockForSmartQuote();
@@ -6316,6 +6333,8 @@ bool fl_BlockLayout::doclistener_deleteSpan(const PX_ChangeRecord_Span * pcrs)
 			pView->_setPoint(pcrs->getPosition());
 		else pView->_setPoint(pView->getPoint() - len);
 	}
+	if(pView)
+		pView->updateCarets(pcrs->getPosition(),-len);
 
 	_assertRunListIntegrity();
 	m_iNeedsReformat = blockOffset;
@@ -6783,6 +6802,8 @@ fl_BlockLayout::doclistener_deleteStrux(const PX_ChangeRecord_Strux* pcrx)
 		{
 			pView->_setPoint(pView->getPoint() - 1);
 		}
+		if(pView)
+			pView->updateCarets(pcrx->getPosition(),-1);
 		_assertRunListIntegrity();
 	}
 
@@ -6913,6 +6934,8 @@ bool fl_BlockLayout::doclistener_insertFirstBlock(const PX_ChangeRecord_Strux * 
 	if (pView && (pView->isActive() || pView->isPreview()))
 		pView->_setPoint(pcrx->getPosition());
 	else if (pView && ((pView->getPoint() == 0) || pView->getPoint() > pcrx->getPosition()) ) pView->_setPoint(pView->getPoint() + fl_BLOCK_STRUX_OFFSET);
+	if(pView)
+		pView->updateCarets(pcrx->getPosition(),1);
 
 	// Run list should be valid now.
 	_assertRunListIntegrity();
@@ -7149,6 +7172,8 @@ bool fl_BlockLayout::doclistener_insertBlock(const PX_ChangeRecord_Strux * pcrx,
 		pView->_setPoint(pcrx->getPosition() + fl_BLOCK_STRUX_OFFSET);
 	else if(pView && pView->getPoint() > pcrx->getPosition())
 		pView->_setPoint(pView->getPoint() + fl_BLOCK_STRUX_OFFSET);
+	if(pView)
+		pView->updateCarets(pcrx->getPosition(),1);
 
 	_assertRunListIntegrity();
 	xxx_UT_DEBUGMSG(("Prev Block = %x type %d Next block = %x type %d \n",pNewBL->getPrev(),pNewBL->getContainerType(),pNewBL->getNext(),pNewBL->getContainerType()));
@@ -7439,6 +7464,8 @@ bool fl_BlockLayout::doclistener_insertSection(const PX_ChangeRecord_Strux * pcr
 			//
 			pView->_setPoint(pView->getPoint() + fl_BLOCK_STRUX_OFFSET + fl_BLOCK_STRUX_OFFSET);
 		}
+		if(pView)
+			pView->updateCarets(pcrx->getPosition(),2);
 		return true;
 	}
 	default:
@@ -7479,6 +7506,8 @@ bool fl_BlockLayout::doclistener_insertSection(const PX_ChangeRecord_Strux * pcr
 		{
 			pView->_setPoint(pView->getPoint() + fl_BLOCK_STRUX_OFFSET + fl_BLOCK_STRUX_OFFSET);
 		}
+		if(pView)
+			pView->updateCarets(pcrx->getPosition(),2);
 		return true;
 	}
 //
@@ -7612,6 +7641,8 @@ bool fl_BlockLayout::doclistener_insertSection(const PX_ChangeRecord_Strux * pcr
 	{
 		pView->_setPoint(pView->getPoint() + fl_BLOCK_STRUX_OFFSET + fl_BLOCK_STRUX_OFFSET);
 	}
+	if(pView)
+		pView->updateCarets(pcrx->getPosition(),2);
 
 	_assertRunListIntegrity();
 #if DEBUG
@@ -7686,6 +7717,8 @@ fl_SectionLayout * fl_BlockLayout::doclistener_insertTable(const PX_ChangeRecord
 	{
 		pView->_setPoint(pView->getPoint() + fl_BLOCK_STRUX_OFFSET);
 	}
+	if(pView)
+		pView->updateCarets(pcrx->getPosition(),1);
 //
 // OK that's it!
 //
@@ -7771,6 +7804,8 @@ fl_SectionLayout * fl_BlockLayout::doclistener_insertFrame(const PX_ChangeRecord
 	{
 		pView->_setPoint(pView->getPoint() + fl_BLOCK_STRUX_OFFSET);
 	}
+	if(pView)
+		pView->updateCarets(pcrx->getPosition(),1);
 //
 // OK that's it!
 //
@@ -8075,6 +8110,8 @@ bool fl_BlockLayout::doclistener_insertObject(const PX_ChangeRecord_Object * pcr
 		pView->_setPoint(pcro->getPosition() + 1);
 	else if(pView && pView->getPoint() > pcro->getPosition())
 		pView->_setPoint(pView->getPoint() + 1);
+	if(pView)
+		pView->updateCarets(pcro->getPosition(),1);
 
 	// TODO: are objects always one wide?
 	m_pSpellSquiggles->textInserted(blockOffset, 1);
@@ -8179,6 +8216,8 @@ bool fl_BlockLayout::doclistener_deleteObject(const PX_ChangeRecord_Object * pcr
 	}
 	else if(pView && pView->getPoint() > pcro->getPosition())
 		pView->_setPoint(pView->getPoint() - 1);
+	if(pView)
+		pView->updateCarets(pcro->getPosition(),-1);
 
 	// TODO: are objects always one wide?
 	if(m_pSpellSquiggles)
@@ -8720,6 +8759,8 @@ fl_BlockLayout::doclistener_insertFmtMark(const PX_ChangeRecord_FmtMark* pcrfm)
 	FV_View* pView = getView();
 	if (pView && (pView->isActive() || pView->isPreview()))
 		pView->_setPoint(pcrfm->getPosition());
+	if(pView)
+		pView->updateCarets(pcrfm->getPosition(),0);
 
 	if (pView)
 	{
@@ -8767,6 +8808,8 @@ fl_BlockLayout::doclistener_deleteFmtMark(const PX_ChangeRecord_FmtMark* pcrfm)
 		{
 			UT_ASSERT(UT_SHOULD_NOT_HAPPEN);
 		}
+		if(pView)
+			pView->updateCarets(pcrfm->getPosition(),0);
 	}
 
 	_assertRunListIntegrity();
@@ -9706,7 +9749,10 @@ void	fl_BlockLayout::StopListInBlock(void)
 	if (pView && (pView->isActive() || pView->isPreview()))
 	{
 		if(offset > 0 )
-			pView->_setPoint(pView->getPoint()+offset-2);
+			{
+				pView->_setPoint(pView->getPoint()+offset-2);
+				pView->updateCarets(0,offset-2);
+			}
 	}
 	FREEP(props);
 }
@@ -10066,6 +10112,14 @@ void fl_BlockLayout::_createListLabel(void)
 		m_bListLabelCreated = true;
 		return;
 	}
+	PD_Document * pDoc = m_pLayout->getDocument();
+	//
+	// Let remote document create the list label
+	//
+	if(!pDoc->isOrigUUID())
+	{
+			return;
+	}
 	UT_ASSERT(m_pAutoNum);
 	xxx_UT_DEBUGMSG(("Doing create list label \n"));
 	FV_View* pView = getView();
@@ -10125,6 +10179,7 @@ void fl_BlockLayout::_createListLabel(void)
 	if (pView && (pView->isActive() || pView->isPreview()))
 	{
 		pView->_setPoint(pView->getPoint()+offset);
+		pView->updateCarets(0,offset);
 	}
 	m_bListLabelCreated = true;
 }
@@ -10142,6 +10197,13 @@ void fl_BlockLayout::_deleteListLabel(void)
 	// label is at the first position in the block
 	//
 	PD_Document * pDoc = m_pLayout->getDocument();
+	//
+	// Let remote document create the list label
+	//
+	if(!pDoc->isOrigUUID())
+	{
+			return;
+	}
 	UT_uint32 posBlock = getPosition();
 	// Find List Label
 	fp_Run * pRun = getFirstRun();

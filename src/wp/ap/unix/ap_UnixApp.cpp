@@ -1814,7 +1814,34 @@ bool AP_UnixApp::doWindowlessArgs(const AP_Args *Args, bool & bSuccess)
 //
 // Execute the plugin, then quit
 //
-		ev_EditMethod_invoke(pInvoke, UT_String ("Called From Unix[Gnome]App"));
+		static UT_String sCommandLine;
+		sCommandLine.clear();
+		//
+		// invoked with
+		// AbiWord-2.6 --plugin AbiCollab .....
+		UT_sint32 iCount =3;
+		while(iCount < Args->XArgs->m_argc)
+		{
+				sCommandLine += Args->XArgs->m_argv[iCount];
+				sCommandLine += " ";
+				iCount++;
+		}
+		if(!getFontManager())
+			{
+				/*
+				   need to temporarily set the Unix graphics as default to
+				   force the font loading
+				*/
+				GR_GraphicsFactory * pGF = getGraphicsFactory();
+				UT_return_val_if_fail( pGF, false );
+
+				UT_uint32 iGrId = pGF->getDefaultClass(true /*screen*/);
+				pGF->registerAsDefault(GRID_UNIX_NULL, true);
+				_loadFonts();
+				pGF->registerAsDefault(iGrId, true);
+			}
+	
+		ev_EditMethod_invoke(pInvoke, sCommandLine);
 		return false;
 	}
 

@@ -1,3 +1,5 @@
+/* -*- mode: C++; tab-width: 4; c-basic-offset: 4; -*- */
+
 /* AbiWord
  * Copyright (C) 1998-2000 AbiSource, Inc.
  * Copyright (C) 2001 Tomas Frydrych
@@ -2393,7 +2395,7 @@ Defun(fileSave)
 
 	UT_Error errSaved;
 	errSaved = pAV_View->cmdSave();
-
+	
 	// if it has a problematic extension save as instead
 	if (errSaved == UT_EXTENSIONERROR)
 	  return EX(fileSaveAs);
@@ -2731,6 +2733,7 @@ Defun1(redo)
 Defun1(newWindow)
 {
 	CHECK_FRAME;
+	UT_return_val_if_fail(pAV_View, false);
 	XAP_Frame * pFrame = static_cast<XAP_Frame *> ( pAV_View->getParentData());
 	UT_return_val_if_fail(pFrame, false);
 	XAP_Frame * pClone = pFrame->cloneFrame();

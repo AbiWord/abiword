@@ -522,15 +522,15 @@ static UT_Confidence_t s_confidence_heuristic ( UT_Confidence_t content_confiden
  This function should closely match IE_Exp::contructExporter()
 */
 UT_Error IE_Imp::constructImporter(PD_Document * pDocument,
-				   const char * szFilename,
-				   IEFileType ieft,
-				   IE_Imp ** ppie,
-				   IEFileType * pieft)
+								   const char * szURI,
+								   IEFileType ieft,
+								   IE_Imp ** ppie,
+								   IEFileType * pieft)
 {
 	bool bUseGuesswork = (ieft != IEFT_Unknown);
 	
 	UT_return_val_if_fail(pDocument, UT_ERROR);
-	UT_return_val_if_fail(ieft != IEFT_Unknown || (szFilename && *szFilename), UT_ERROR);
+	UT_return_val_if_fail(ieft != IEFT_Unknown || (szURI && *szURI), UT_ERROR);
 	UT_return_val_if_fail(ppie, UT_ERROR);
 
 	UT_uint32 nrElements = getImporterCount();
@@ -539,18 +539,19 @@ UT_Error IE_Imp::constructImporter(PD_Document * pDocument,
 	// from the contents of the file or the filename suffix
 	// the importer to use and assign that back to ieft.
 	// Give precedence to the file contents
-	if (ieft == IEFT_Unknown && szFilename && *szFilename)
+	if (ieft == IEFT_Unknown && szURI && *szURI)
 	{
 		char szBuf[4097] = "";  // 4096+nul ought to be enough
 		UT_uint32 iNumbytes = 0;
-		FILE *f = NULL;
+		GsfInput *f = NULL;
 
 		// we must open in binary mode for UCS-2 compatibility
-		if ( ( f = fopen( szFilename, "rb" ) ) != static_cast<FILE *>(0) )
+		if ( ( f = UT_go_file_open(szURI, NULL)) != NULL )
 		{
-			iNumbytes = fread(szBuf, 1, sizeof(szBuf)-1, f);
+			iNumbytes = UT_MIN(4096, gsf_input_size(f));
+			gsf_input_read(f, iNumbytes, (guint8 *)(szBuf));
 			szBuf[iNumbytes] = '\0';
-			fclose(f);
+			g_object_unref (G_OBJECT(f));
 		}
 
 		UT_Confidence_t   best_confidence = UT_CONFIDENCE_ZILCH;
@@ -566,10 +567,10 @@ UT_Error IE_Imp::constructImporter(PD_Document * pDocument,
 		    if ( iNumbytes > 0 )
 		      content_confidence = s->recognizeContents(szBuf, iNumbytes);
 		    
-		    const char * suffix = UT_pathSuffix(szFilename) ;
+		    const char * suffix = UT_pathSuffix(szURI) ;
 		    if ( suffix != NULL )
 				{
-					suffix_confidence = s->recognizeSuffix(UT_pathSuffix(szFilename));
+					suffix_confidence = s->recognizeSuffix(suffix);
 				}
 		    
 		    UT_Confidence_t confidence = s_confidence_heuristic ( content_confidence, 
@@ -593,7 +594,7 @@ UT_Error IE_Imp::constructImporter(PD_Document * pDocument,
 	{
 	   	// maybe they're trying to open an image directly?
 	   	IE_ImpGraphic *pIEG;
- 		UT_Error errorCode = IE_ImpGraphic::constructImporter(szFilename, IEGFT_Unknown, &pIEG);
+ 		UT_Error errorCode = IE_ImpGraphic::constructImporter(szURI, IEGFT_Unknown, &pIEG);
 		if (!errorCode && pIEG) 
  		{
 			// tell the caller the type of importer they got

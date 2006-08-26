@@ -132,6 +132,35 @@ private:
   GR_Graphics * m_pGraphics;
 };
 
+
+fv_CaretProps::fv_CaretProps(FV_View * pView, PT_DocPosition InsPoint):
+	m_iInsPoint(InsPoint),
+	m_xPoint(0),
+	m_yPoint(0),
+	m_xPoint2(0),
+	m_yPoint2(0),
+	m_bPointDirection(false),
+	m_bDefaultDirectionRtl(false),
+	m_bUseHebrewContextGlyphs(false),
+	m_bPointEOL(false),
+	m_iPointHeight(0),
+	m_caretColor(0,0,0),
+    m_sDocUUID(""),
+	m_PropCaretListner(NULL),
+	m_pCaret(NULL),
+	m_ListenerID(0),
+	m_pView(pView)
+{
+}
+
+fv_CaretProps::~fv_CaretProps(void)
+{
+	if(m_PropCaretListner != NULL)
+	{
+		DELETEP(m_PropCaretListner);
+	}
+}
+
 /****************************************************************/
 #ifdef _MSC_VER	// MSVC++ warns about using 'this' in initializer list.
 #pragma warning(disable: 4355)
@@ -232,6 +261,8 @@ FV_View::FV_View(XAP_App * pApp, void* pParentData, FL_DocLayout* pLayout)
 		m_bInsertAtTablePending(false),
 		m_iPosAtTable(0)
 {
+	if(m_pDoc)
+		m_sDocUUID = m_pDoc->getMyUUIDString();
 	m_colorRevisions[0] = UT_RGBColor(171,4,254);
 	m_colorRevisions[1] = UT_RGBColor(171,20,119);
 	m_colorRevisions[2] = UT_RGBColor(255,151,8);
@@ -387,8 +418,23 @@ FV_View::FV_View(XAP_App * pApp, void* pParentData, FL_DocLayout* pLayout)
 	}
 #endif
 
+	UT_UTF8String s = XAP_EncodingManager::get_instance()->getLanguageISOName();
+
+	const char * pCountry
+		= XAP_EncodingManager::get_instance()->getLanguageISOTerritory();
+	
+	if(pCountry)
+	{
+		s += "-";
+		s += pCountry;
+	}
+		
 	// findFont will do a fuzzy match, and return the nearest font in the system
-	GR_Font* pFont = m_pG->findFont("Times New Roman", "normal", "normal", "normal", "normal", "12pt");
+	GR_Font* pFont = m_pG->findFont("Times New Roman",
+									"normal", "normal",
+									"normal", "normal",
+									"12pt", s.utf8_str());
+	
 	const char * pszFamily = pFont ? pFont->getFamily() : NULL;
 	if (pszFamily)
 		PP_setDefaultFontFamily(pszFamily);
@@ -476,6 +522,30 @@ FV_View::~FV_View()
 	DELETEP(m_pLocalBuf);
 }
 
+bool FV_View::isActive(void) 
+{
+	if(!couldBeActive())
+	        return false;
+	AV_View* pActiveView = NULL;
+	XAP_Frame* lff = getApp()->getLastFocussedFrame();
+	if(lff) 
+	{
+		pActiveView = lff->getCurrentView();
+	}
+	else 
+	{
+		pActiveView = this;
+	}
+	
+	bool bAct = (pActiveView == this);
+	if(!bAct)
+		return false;
+	UT_UTF8String sUUID =  m_pDoc->getMyUUIDString();
+	if(m_sDocUUID == sUUID)
+		return true;
+	return false;
+}
+
 void FV_View::setGraphics(GR_Graphics * pG)
 {
 	if(m_caretListener != NULL)
@@ -496,6 +566,68 @@ void FV_View::setGraphics(GR_Graphics * pG)
 	{
 		m_caretListener = NULL;
 	}
+}
+
+void FV_View:: fixInsertionPointCoords(void)
+{
+	_fixInsertionPointCoords();
+}
+
+void FV_View::updateCarets(PT_DocPosition docPos, UT_sint32 iLen)
+{
+	fv_CaretProps * pCaretProps = NULL;
+	UT_sint32 iCount = static_cast<UT_sint32>(m_vecCarets.getItemCount());
+	UT_UTF8String sUUID = m_pDoc->getMyUUIDString();
+	bool bLocal = (sUUID == m_sDocUUID);
+	UT_sint32 i = 0;
+	bool bFoundUUID = false;
+	for(i=0; i<iCount;i++)
+	{
+			pCaretProps = m_vecCarets.getNthItem(i);
+			if(pCaretProps->m_sDocUUID == sUUID)
+			{
+				if(iLen >= 0)
+				{
+						_setPoint(pCaretProps,docPos,iLen);
+				}
+				else
+				{
+						_setPoint(pCaretProps,docPos,0);
+				}
+			}
+			else if((docPos > 0) && (pCaretProps->m_iInsPoint >= docPos))
+			{
+				_setPoint(pCaretProps,pCaretProps->m_iInsPoint,iLen);
+			}
+			else if(docPos <= 0)
+			{
+				_setPoint(pCaretProps,pCaretProps->m_iInsPoint,iLen);
+			}
+			if(sUUID == pCaretProps->m_sDocUUID)
+				bFoundUUID = true;
+	}
+	if(!bLocal && !bFoundUUID)
+	{
+			addCaret(docPos,sUUID);
+	}
+}
+
+void FV_View::addCaret(PT_DocPosition docPos,UT_UTF8String & sDocUUID)
+{
+	fv_CaretProps * pCaretProps = new fv_CaretProps(this,docPos);
+	m_vecCarets.addItem(pCaretProps);
+	pCaretProps->m_pCaret = m_pG->createCaret( sDocUUID);
+	XAP_Frame * pFrame = static_cast<XAP_Frame*>(getParentData());
+	pCaretProps->m_PropCaretListner = new FV_Caret_Listener (pFrame);
+	addListener(pCaretProps->m_PropCaretListner,&pCaretProps->m_ListenerID);
+	pCaretProps->m_pCaret->setBlink(true);
+	pCaretProps->m_pCaret->enable();
+	pCaretProps->m_sDocUUID = sDocUUID;
+	UT_sint32 icnt = static_cast<UT_sint32>(m_vecCarets.getItemCount());
+	pCaretProps->m_caretColor = m_colorRevisions[icnt];
+	pCaretProps->m_pCaret->setRemoteColor(pCaretProps->m_caretColor);
+	_setPoint(pCaretProps,docPos,0);
+
 }
 
 UT_RGBColor	FV_View::getColorSquiggle(FL_SQUIGGLE_TYPE iSquiggleType) const
@@ -651,6 +783,7 @@ void FV_View::copyTextToClipboard(const UT_UCS4String sIncoming, bool useClipboa
 	/* we're done, release our resources */
 	DELETEP(pCopyLinkView);
 	DELETEP(pDocLayout);
+	UNREFP(pDoc);
 }
 
 
@@ -839,9 +972,9 @@ bool FV_View::convertPositionedToInLine(fl_FrameLayout * pFrame)
 	sProps += "; height:";
 	sProps += szHeight;
 	const XML_Char*	attributes[] = {
-		"dataid", NULL,
-		"title",NULL,
-		"alt",NULL,
+		PT_IMAGE_DATAID, NULL,
+		PT_IMAGE_TITLE,NULL,
+		PT_IMAGE_DESCRIPTION,NULL,
 		PT_PROPS_ATTRIBUTE_NAME, NULL,
 	   	NULL, NULL};
 	attributes[1] = szDataID;
@@ -1026,6 +1159,8 @@ void FV_View::setFrameFormat(const XML_Char * attribs[], const XML_Char * proper
 	if(pFrame == NULL)
 	{
 		UT_DEBUGMSG(("No frame selected. Aborting! \n"));
+		// should we assert ?
+		return;
 	}
 	PT_DocPosition posStart = pFrame->getPosition(true)+1;
 	PT_DocPosition posEnd = posStart;
@@ -3051,20 +3186,37 @@ UT_sint32 FV_View::getNumRowsInSelection(void)
 	fp_CellContainer * pCellCon = NULL;
 	PT_DocPosition startpos = getPoint();
 	PT_DocPosition endpos = startpos;
-	if (m_Selection.getSelectionAnchor() > startpos)
+	if(!isSelectionEmpty())
 	{
-		endpos = m_Selection.getSelectionAnchor();
-	}
-	else
-	{
-		startpos = m_Selection.getSelectionAnchor();
+		if (m_Selection.getSelectionAnchor() > startpos)
+		{
+			endpos = m_Selection.getSelectionAnchor();
+		}
+		else
+		{
+			startpos = m_Selection.getSelectionAnchor();
+		}
 	}
 	for(i=0; i< static_cast<UT_sint32>(vecBlocks.getItemCount());i++)
 	{
 		pBlock = vecBlocks.getNthItem(i);
 		if((getNumSelections() == 0) && ((pBlock->getPosition() + pBlock->getLength() - 1) <= startpos))
 		{
-			continue;
+			if((startpos == endpos) && ((pBlock->getPosition()  <= startpos)))
+			{
+				pCell = static_cast<fl_CellLayout *>(pBlock->myContainingLayout());
+				pCellCon = static_cast<fp_CellContainer *>(pCell->getFirstContainer());
+				if(pCellCon == NULL)
+				{
+						return 0;
+				}
+				return 1;
+
+			}
+			else
+			{
+				continue;
+			}
 		}
 		if(pBlock->getPosition() > endpos)
 		{
@@ -5905,19 +6057,28 @@ bool FV_View::getBlockFormat(const XML_Char *** pProps,bool bExpandStyles)
 void FV_View::delTo(FV_DocPos dp)
 {
 	PT_DocPosition iPos = _getDocPos(dp);
-
+	PT_DocPosition iPoint = getPoint();
 
 	// Signal PieceTable Change
 	_saveAndNotifyPieceTableChange();
 
-	if (iPos == getPoint())
+	if (iPos == iPoint)
 	{
 		return;
 	}
 
 	_extSelToPos(iPos);
-	_deleteSelection();
 
+	bool bCaretLeft = false;
+	if(isMarkRevisions() && iPos < iPoint)
+	{
+		// move to the start of the original selection
+		bCaretLeft = true;
+	}
+	
+	_deleteSelection(NULL, false, bCaretLeft);
+
+	
 	// Signal PieceTable Changes have finished
 	_restorePieceTableState();
 
@@ -9210,7 +9371,7 @@ EV_EditMouseContext FV_View::getMouseContext(UT_sint32 xPos, UT_sint32 yPos)
 {
 	xxx_UT_DEBUGMSG(("layout view mouse pos x %x pos y %d \n",xPos,yPos));
 	UT_sint32 xClick, yClick;
-	PT_DocPosition pos;
+	PT_DocPosition pos = 0;
 	bool bBOL = false;
 	bool bEOL = false;
 	bool isTOC = false;
@@ -9336,6 +9497,9 @@ EV_EditMouseContext FV_View::getMouseContext(UT_sint32 xPos, UT_sint32 yPos)
 	}
 	if(isInTable(pos))
 	{
+		if(!pRun)
+			return EV_EMC_UNKNOWN;
+
 		fp_Line * pLine = pRun->getLine();
 		if(pLine)
 		{
@@ -11518,6 +11682,17 @@ bool FV_View::insertFootnote(bool bFootnote)
 		}
 		setPoint(getPoint()-1);
 	}
+
+	_saveAndNotifyPieceTableChange();
+	m_pDoc->beginUserAtomicGlob();
+	if (!isSelectionEmpty() && !m_FrameEdit.isActive())
+	{
+		_deleteSelection();
+	}
+	else if(m_FrameEdit.isActive())
+	{
+	       m_FrameEdit.setPointInside();
+	}
 	_makePointLegal();
 	const XML_Char ** props_in = NULL;
 	getCharFormat(&props_in);
@@ -11541,6 +11716,7 @@ bool FV_View::insertFootnote(bool bFootnote)
 	/*	Apply the character style at insertion point and insert the
 		Footnote reference. */
 
+
 	PT_DocPosition FrefStart = getPoint();
 	PT_DocPosition FrefEnd = FrefStart + 1;
 	PT_DocPosition FanchStart;
@@ -11550,17 +11726,6 @@ bool FV_View::insertFootnote(bool bFootnote)
 	const XML_Char *cur_style;
 	getStyle(&cur_style);
 
-
-	_saveAndNotifyPieceTableChange();
-	m_pDoc->beginUserAtomicGlob();
-	if (!isSelectionEmpty() && !m_FrameEdit.isActive())
-	{
-		_deleteSelection();
-	}
-	else if(m_FrameEdit.isActive())
-	{
-	       m_FrameEdit.setPointInside();
-	}
 	bool bCreatedFootnoteSL = false;
 
 	PT_DocPosition dpFT = 0;

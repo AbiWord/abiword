@@ -1576,7 +1576,11 @@ bool fl_DocListener::change(PL_StruxFmtHandle sfh,
 		goto finish_up;
 	}
 #endif
-	
+	case PX_ChangeRecord::PXT_CreateDataItem:
+	{
+	        bResult = true;
+		goto finish_up;
+	}	
 	default:
 	{
 		UT_ASSERT(UT_SHOULD_NOT_HAPPEN);
@@ -2356,6 +2360,10 @@ bool fl_DocListener::signal(UT_uint32 iSignal)
 		break;
 	case PD_SIGNAL_DOCDIRTY_CHANGED:
 		m_pLayout->notifyListeners(AV_CHG_DIRTY);
+		break;
+	case PD_SIGNAL_DOCSAVED:
+		break;
+	case PD_SIGNAL_DOCCLOSED:
 		break;
 
 	default:

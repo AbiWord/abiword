@@ -50,6 +50,11 @@ XAP_UnixClipboard::XAP_UnixClipboard(XAP_UnixApp * pUnixApp)
 {
 	m_clip = gtk_clipboard_get(GDK_SELECTION_CLIPBOARD);
 	m_primary = gtk_clipboard_get(GDK_SELECTION_PRIMARY);
+
+#if GTK_CHECK_VERSION(2,6,0)
+	gtk_clipboard_set_can_store (m_clip, NULL, 0);
+	gtk_clipboard_set_can_store (m_primary, NULL, 0);
+#endif
 }
 
 XAP_UnixClipboard::~XAP_UnixClipboard()
@@ -168,11 +173,12 @@ bool XAP_UnixClipboard::addData(T_AllowGet tFrom, const char* format, const void
 			return false;
 		
 		gtk_clipboard_set_with_data (gtkClipboardForTarget(TAG_ClipboardOnly),
-									 m_Targets,
-									 m_nTargets,
-									 s_clipboard_get_func,
-									 s_clipboard_clear_func,
-									 this);
+					     m_Targets,
+					     m_nTargets,
+					     s_clipboard_get_func,
+					     s_clipboard_clear_func,
+					     this);
+
 		return true;
     }
 }

@@ -30,6 +30,9 @@
 #include "ut_string_class.h"
 #include "pd_Document.h"
 
+#include "ut_go_file.h"
+#include <gsf/gsf-input.h>
+
 class PD_Document;
 class IE_Imp;
 

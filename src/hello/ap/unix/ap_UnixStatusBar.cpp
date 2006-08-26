@@ -52,7 +52,7 @@ void AP_UnixStatusBar::setView(AV_View * pView)
 	XAP_UnixApp * app = static_cast<XAP_UnixApp *>(m_pFrame->getApp());
 	XAP_UnixFontManager * fontManager = app->getFontManager();
 	//GR_UnixGraphics * pG = new GR_UnixGraphics(m_wStatusBar->window, fontManager, getApp());
-	GR_UnixAllocInfo ai(m_wStatusBar->window, fontManager, getApp());
+	GR_UnixAllocInfo ai(m_wStatusBar->window, fontManager);
 	GR_UnixGraphics* pG = (GR_UnixGraphics*) XAP_App::getApp()->newGraphics(ai);
 
 	m_pG = pG;

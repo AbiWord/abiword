@@ -57,7 +57,11 @@ void pt_PieceTable::beginMultiStepGlob(void)
 	PX_ChangeRecord * pcr = new PX_ChangeRecord_Glob(PX_ChangeRecord::PXT_GlobMarker,
 													 PX_ChangeRecord_Glob::PXF_MultiStepStart);
 	UT_return_if_fail (pcr);
-
+	//
+	// create Document UUID now
+	//
+	pcr->setDocument(getDocument());
+	pcr->setCRNumber();
 	// add record to history.  we do not attempt to coalesce these.
 	m_history.addChangeRecord(pcr);
 	m_pDocument->notifyListeners(NULL,pcr);

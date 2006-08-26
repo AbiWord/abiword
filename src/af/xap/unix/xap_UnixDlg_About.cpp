@@ -100,7 +100,7 @@ void XAP_UnixDialog_About::runModal(XAP_Frame * pFrame)
 	XAP_App *pApp = XAP_App::getApp();
   
 	//m_gc = new GR_UnixGraphics(m_drawingareaGraphic->window, NULL, pApp);
-	GR_UnixAllocInfo ai(m_drawingareaGraphic->window, NULL, pApp);
+	GR_UnixAllocInfo ai(m_drawingareaGraphic->window, NULL);
 	m_gc = (GR_UnixGraphics*) XAP_App::getApp()->newGraphics(ai);
 	
 	switch ( abiRunModalDialog ( GTK_DIALOG(mainWindow), pFrame, this, BUTTON_CLOSE, true ) )

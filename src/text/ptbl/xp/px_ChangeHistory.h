@@ -36,6 +36,7 @@
 // re-apply the ChangeRecord and advance the undo position.
 
 class pt_PieceTable;
+class PD_Document;
 
 class ABI_EXPORT px_ChangeHistory
 {
@@ -65,8 +66,8 @@ public:
 
 	UT_uint32                               getUndoPos(void) const;
 
-	bool					getUndo(PX_ChangeRecord ** ppcr) const;
-	bool					getUndo(PX_ChangeRecord ** ppcr, UT_uint32 undoNdx) const;
+	bool					getUndo(PX_ChangeRecord ** ppcr, bool bStatic=false) const;
+	bool					getNthUndo(PX_ChangeRecord ** ppcr, UT_uint32 undoNdx) const;
 	bool					getRedo(PX_ChangeRecord ** ppcr) const;
 	bool					didUndo(void);
 	bool					didRedo(void);
@@ -76,7 +77,9 @@ public:
 	bool					isDirty(void) const;
 
 	void                    clearHistory();
-	
+	PD_Document *                           getDoc(void) const;
+	bool                                    getCRRange(PX_ChangeRecord * pcr,PT_DocPosition & posLow, PT_DocPosition &posHigh) const;
+	bool                                    doesOverlap(PX_ChangeRecord * pcr, PT_DocPosition low, PT_DocPosition high) const;
 
 #ifdef PT_TEST
 	void					__dump(FILE* fp) const;
@@ -84,11 +87,14 @@ public:
 
 protected:
 	void					_invalidateRedo(void);
-	
+	void                                    _invalidateHistory(void);
 	UT_Vector				m_vecChangeRecords;
-	UT_uint32				m_undoPosition;
+	UT_sint32				m_undoPosition;
 	UT_sint32				m_savePosition;
 	pt_PieceTable *         m_pPT;
+mutable	UT_sint32                               m_iAdjustOffset;
+mutable bool                                    m_bOverlap;
+ mutable UT_sint32                              m_iMinUndo;
 };
 
 #endif /* PX_CHANGEHISTORY_H */

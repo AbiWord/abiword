@@ -250,7 +250,7 @@ UT_Error IE_Exp_Text::_writeDocument(void)
   Open the file to export to
  \param szFilename File to open
  */
-bool IE_Exp_Text::_openFile(const char * szFilename)
+GsfOutput* IE_Exp_Text::_openFile(const char * szFilename)
 {
 	// Don't call base method if user cancels encoding dialog
 	if (!m_bIsEncoded || m_bExplicitlySetEncoding || _doEncodingDialog(m_szEncoding))
@@ -258,7 +258,7 @@ bool IE_Exp_Text::_openFile(const char * szFilename)
 	else
 	{
 		_cancelExport ();
-		return false;
+		return NULL;
 	}
 }
 
@@ -760,8 +760,8 @@ bool Text_Listener::populate(PL_StruxFmtHandle /*sfh*/,
 				return true;
 
 			default:
-				UT_ASSERT_NOT_REACHED();
-				return false;
+				UT_ASSERT(UT_TODO);
+				return true;
 			}
 		}
 
@@ -899,7 +899,7 @@ bool Text_Listener::populateStrux(PL_StruxDocHandle /*sdh*/,
 	    return true ;
 
 	default:
-		UT_ASSERT_NOT_REACHED();
+		UT_ASSERT(UT_TODO);
 		return true;
 	}
 }

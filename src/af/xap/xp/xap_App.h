@@ -262,7 +262,8 @@ public:
 												const char* pszFontVariant,
 												const char* pszFontWeight,
 												const char* pszFontStretch,
-												const char* pszFontSize);
+												const char* pszFontSize,
+												const char* pszLang);
 
 	bool                        saveState(bool bQuit);
 	bool                        retrieveState();
@@ -274,7 +275,8 @@ protected:
 												 const char* pszFontVariant,
 												 const char* pszFontWeight,
 												 const char* pszFontStretch,
-												 const char* pszFontSize);
+												 const char* pszFontSize,
+												 const char* pszLang);
 	
 	void						_setAbiSuiteLibDir(const char * sz);
 	virtual const char *				_getKbdLanguage() {return NULL;}

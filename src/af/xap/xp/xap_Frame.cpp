@@ -109,6 +109,7 @@ XAP_Frame::XAP_Frame(XAP_Frame * f)
 	m_zoomType(f->m_zoomType),
 	m_pData(0),
 	m_iIdAutoSaveTimer(0),
+	m_iAutoSavePeriod(f->m_iAutoSavePeriod),
 	m_bBackupRunning(false),
 	m_isrcId(0),
 	m_isrcTBNr(0),
@@ -118,6 +119,7 @@ XAP_Frame::XAP_Frame(XAP_Frame * f)
 	m_bHasDropped(false),
 	m_bHasDroppedTB(false),
 	m_bFirstDraw(false),
+	m_bShowStatusbar(f->m_bShowStatusbar),
 	m_bIsFrameLocked(false),
 	m_pFrameImpl(f->m_pFrameImpl->createInstance(this)),
 	m_iZoomPercentage(f->m_iZoomPercentage)

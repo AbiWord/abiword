@@ -104,6 +104,7 @@ static const GtkTargetEntry drag_types[] =
  		{"application/x-abiword", 0, TARGET_DOCUMENT},
  		{"text/xml", 0, TARGET_DOCUMENT},
  		{"text/vnd.wap.wml", 0, TARGET_DOCUMENT},
+		{"image/x-wmf", 0, TARGET_IMAGE},
  		{"image/jpeg", 0, TARGET_IMAGE},
 		{"image/png", 0, TARGET_IMAGE},
 		{"image/jpeg", 0, TARGET_IMAGE},
@@ -444,15 +445,6 @@ s_dnd_drag_end (GtkWidget  *widget, GdkDragContext *context, gpointer ppFrame)
 
 #define ENSUREP(p)		do { UT_ASSERT(p); if (!p) goto Cleanup; } while (0)
 
-static void s_gtkMenuPositionFunc(GtkMenu * /* menu */, gint * x, gint * y, gboolean * push_in, gpointer user_data)
-{
-	struct UT_Point * p = static_cast<struct UT_Point *>(user_data);
-
-	*x = p->x;
-	*y = p->y;
-	*push_in = TRUE ;
-}
-
 /****************************************************************/
 XAP_UnixFrameImpl::XAP_UnixFrameImpl(XAP_Frame *pFrame) : 
 	XAP_FrameImpl(pFrame),
@@ -460,6 +452,10 @@ XAP_UnixFrameImpl::XAP_UnixFrameImpl(XAP_Frame *pFrame) :
 	m_pUnixMenu(NULL),
 	need_im_reset (false),
 	m_bDoZoomUpdate(false),
+	m_iNewX(0),
+	m_iNewY(0),
+	m_iNewWidth(0),
+	m_iNewHeight(0),
 	m_iZoomUpdateID(0),
 	m_iAbiRepaintID(0),
 	m_pUnixPopup(NULL),
@@ -615,18 +611,63 @@ gint XAP_UnixFrameImpl::_fe::do_ZoomUpdate(gpointer /* XAP_UnixFrameImpl * */ p)
 	XAP_UnixFrameImpl * pUnixFrameImpl = static_cast<XAP_UnixFrameImpl *>(p);
 	XAP_Frame* pFrame = pUnixFrameImpl->getFrame();
 	AV_View * pView = pFrame->getCurrentView();
+	UT_sint32 prevWidth = 0;
+	UT_sint32 prevHeight = 0;
+	UT_sint32 iNewWidth = 0;
+	UT_sint32 iNewHeight = 0;
+	if(pView)
+	{
+		prevWidth = pView->getGraphics()->tdu(pView->getWindowWidth());
+		prevHeight = pView->getGraphics()->tdu(pView->getWindowHeight());
+		iNewWidth = pUnixFrameImpl->m_iNewWidth;
+		iNewHeight = pUnixFrameImpl->m_iNewHeight;
+		xxx_UT_DEBUGMSG(("OldWidth %d NewWidth %d \n",prevWidth,iNewWidth));
+	}
 	if(!pView || pFrame->isFrameLocked() ||
-	   (pUnixFrameImpl->m_bDoZoomUpdate && (pView->getGraphics()->tdu(pView->getWindowWidth()) == pUnixFrameImpl->m_iNewWidth) && (pView->getGraphics()->tdu(pView->getWindowHeight()) == pUnixFrameImpl->m_iNewHeight)))
+	   ((pUnixFrameImpl->m_bDoZoomUpdate) && (prevWidth == iNewWidth) && (prevHeight == iNewHeight)))
 	{
 		pUnixFrameImpl->m_iZoomUpdateID = 0;
 		pUnixFrameImpl->m_bDoZoomUpdate = false;
+		if(pView && !pFrame->isFrameLocked())
+		{
+				GR_Graphics * pGr = pView->getGraphics ();
+				UT_Rect rClip;
+				rClip.left = pGr->tlu(0);
+				UT_sint32 iHeight = abs(iNewHeight - prevHeight);
+				rClip.top = pGr->tlu(iNewHeight - iHeight);
+				rClip.width = pGr->tlu(iNewWidth)+1;
+				rClip.height = pGr->tlu(iHeight)+1;
+				pView->setWindowSize(iNewWidth, iNewHeight);
+				pView->draw(&rClip);
+		}
+		if(pView)
+			pView->setWindowSize(iNewWidth, iNewHeight);
+		return FALSE;
+	}
+	if(!pView || pFrame->isFrameLocked() ||
+	   ((prevWidth == iNewWidth) && (pFrame->getZoomType() != XAP_Frame::z_WHOLEPAGE)))
+	{
+		xxx_UT_DEBUGMSG(("Abandoning zoom widths are equal \n"));
+		pUnixFrameImpl->m_iZoomUpdateID = 0;
+		pUnixFrameImpl->m_bDoZoomUpdate = false;
+		if(pView && !pFrame->isFrameLocked())
+		{
+				GR_Graphics * pGr = pView->getGraphics ();
+				UT_Rect rClip;
+				rClip.left = pGr->tlu(0);
+				UT_sint32 iHeight = abs(iNewHeight - prevHeight);
+				rClip.top = pGr->tlu(iNewHeight - iHeight);
+				rClip.width = pGr->tlu(iNewWidth)+1;
+				rClip.height = pGr->tlu(iHeight)+1;
+				pView->setWindowSize(iNewWidth, iNewHeight);
+				pView->draw(&rClip);
+		}
+		if(pView)
+			pView->setWindowSize(iNewWidth, iNewHeight);
 		return FALSE;
 	}
 
 	pUnixFrameImpl->m_bDoZoomUpdate = true;
-
-	UT_sint32 iNewWidth = 0;
-	UT_sint32 iNewHeight = 0;
 	do
 	{
 		// currently, we blow away the old view.  This will change, rendering
@@ -1674,22 +1715,8 @@ bool XAP_UnixFrameImpl::_runModalContextMenu(AV_View * /* pView */, const char *
 		GdkEvent * event = gtk_get_current_event();
 		GdkEventButton *bevent = reinterpret_cast<GdkEventButton *>(event);
 
-		GtkRequisition req ;
-		gtk_widget_size_request (m_pUnixPopup->getMenuHandle(), &req);
-		if(w)
-		{
-			gdk_window_get_origin(w->window, &x,&y);
-		}
-		x += static_cast<UT_sint32>(bevent->x);
-		y += static_cast<UT_sint32>(bevent->y);
-
-		UT_Point pt;
-		pt.x = x;
-		pt.y = y;
-
 		gtk_menu_popup(GTK_MENU(m_pUnixPopup->getMenuHandle()), NULL, NULL,
-			       s_gtkMenuPositionFunc, &pt, bevent->button, bevent->time);
-
+			       NULL, NULL, bevent->button, bevent->time);
 
 		// We run this menu synchronously, since GTK doesn't.
 		// Popup menus have a special "unmap" function to call

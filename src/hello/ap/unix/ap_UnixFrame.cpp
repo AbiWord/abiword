@@ -84,10 +84,10 @@ UT_Error AP_UnixFrame::loadDocument(const char * szFilename, int fileType)
 	XAP_UnixFontManager * fontManager = ((XAP_UnixApp *) getApp())->getFontManager();
 
 	//GR_UnixGraphics* pG = new GR_UnixGraphics(m_dArea->window, fontManager, getApp());
-	GR_UnixAllocInfo ai(m_dArea->window, fontManager, getApp());
+	GR_UnixAllocInfo ai(m_dArea->window, fontManager);
 	GR_UnixGraphics* pG = (GR_UnixGraphics*) XAP_App::getApp()->newGraphics(ai);
 	
-	pG->setFont(pG->findFont("times", "normal", NULL, "bold", NULL, "72pt"));
+	pG->setFont(pG->findFont("times", "normal", NULL, "bold", NULL, "72pt", NULL));
 				
 	pG->setZoomPercentage(100);
 

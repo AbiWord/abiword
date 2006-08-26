@@ -907,6 +907,9 @@ bool fl_TableLayout::bl_doclistener_insertBlock(fl_ContainerLayout* pLBlock,
 	{
 		pView->setPoint(pView->getPoint() +  fl_BLOCK_STRUX_OFFSET);
 	}
+	if(pView)
+		pView->updateCarets(pcrx->getPosition(),1);
+
 	return true;
 }
 
@@ -956,6 +959,8 @@ bool fl_TableLayout::bl_doclistener_insertTable( const PX_ChangeRecord_Strux * p
 	{
 		pView->setPoint(pView->getPoint() + fl_BLOCK_STRUX_OFFSET);
 	}
+	if(pView)
+		pView->updateCarets(pcrx->getPosition(),1);
 //
 // OK that's it!
 //
@@ -1000,6 +1005,8 @@ bool fl_TableLayout::bl_doclistener_insertCell(fl_ContainerLayout* pCell,
 	{
 		pView->setPoint(pView->getPoint() +  fl_BLOCK_STRUX_OFFSET);
 	}
+	if(pView)
+		pView->updateCarets(pcrx->getPosition(),1);
 	//
 	// Look to see if we're in a HfrFtr section
 	//
@@ -1043,6 +1050,8 @@ bool fl_TableLayout::bl_doclistener_insertEndTable(fl_ContainerLayout*,
 	{
 		pView->setPoint(pView->getPoint() +  fl_BLOCK_STRUX_OFFSET);
 	}
+	if(pView)
+		pView->updateCarets(pcrx->getPosition(),1);
 	setNeedsReformat(this,0);
 	m_bIsEndTableIn = true;
 	//
@@ -2037,6 +2046,8 @@ bool fl_CellLayout::bl_doclistener_insertCell(fl_ContainerLayout* pCell,
 	{
 		pView->setPoint(pView->getPoint() +  fl_BLOCK_STRUX_OFFSET);
 	}
+	if(pView)
+		pView->updateCarets(pcrx->getPosition(),1);
 	return true;
 }
 
@@ -2068,6 +2079,8 @@ bool fl_CellLayout::bl_doclistener_insertEndCell(fl_ContainerLayout*,
 	{
 		pView->setPoint(pView->getPoint() +  fl_BLOCK_STRUX_OFFSET);
 	}
+	if(pView)
+		pView->updateCarets(pcrx->getPosition(),1);
 	return true;
 }
 

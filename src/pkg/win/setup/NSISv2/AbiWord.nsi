@@ -180,11 +180,20 @@ Section "$(TITLE_section_abi)" section_abi
 		; Install main executable
 		File "${PROGRAMEXE}"
 		File "..\..\..\..\libs\zlib\zlib1.dll"
+		File "libglib-2.0-0.dll"
+		File "libgsf-1-114.dll"
+		File "bzip2.dll"
 
 		; only for MinGW builds
 		${IfExists} "libAbiWord.dll"
 			File "libAbiWord.dll"
 		${IfExistsEnd}
+
+		; system libs, our new 2.6 friend
+		File "iconv.dll"
+		File "intl.dll"
+		File "libxml2.dll"
+
 	${EndIf}
 SectionEnd
 !macro Remove_${section_abi}
@@ -192,10 +201,20 @@ SectionEnd
 	DetailPrint "*** Removing Main Component..."
 	Delete "$INSTDIR\${MAINPROGRAM}"
 	Delete "$INSTDIR\${PRODUCT}\bin\zlib1.dll"
+	Delete "$INSTDIR\${PRODUCT}\bin\libglib-2.0-0.dll"
 
 	; only for MinGW builds
 	${IfExists} "libAbiWord.dll"
 		Delete "$INSTDIR\${PRODUCT}\bin\libAbiWord.dll"
+	${IfExistsEnd}
+	${IfExists} "iconv.dll"
+		Delete "$INSTDIR\${PRODUCT}\bin\iconv.dll"
+	${IfExistsEnd}
+	${IfExists} "intl.dll"
+		Delete "$INSTDIR\${PRODUCT}\bin\intl.dll"
+	${IfExistsEnd}
+	${IfExists} "libxml2.dll"
+		Delete "$INSTDIR\${PRODUCT}\bin\libxml2.dll"
 	${IfExistsEnd}
 
 	; delete the BIN subdirectory

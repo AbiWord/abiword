@@ -266,6 +266,7 @@ AP_UnixDialog_FormatFrame::AP_UnixDialog_FormatFrame(XAP_DialogFactory * pDlgFac
 
 AP_UnixDialog_FormatFrame::~AP_UnixDialog_FormatFrame(void)
 {
+	DELETEP (m_pPreviewWidget);
 }
 
 void AP_UnixDialog_FormatFrame::runModeless(XAP_Frame * pFrame)
@@ -288,7 +289,7 @@ void AP_UnixDialog_FormatFrame::runModeless(XAP_Frame * pFrame)
 	// make a new Unix GC
 	DELETEP (m_pPreviewWidget);
 	//m_pPreviewWidget = new GR_UnixGraphics(m_wPreviewArea->window, unixapp->getFontManager(), m_pApp);
-	GR_UnixAllocInfo ai(m_wPreviewArea->window, unixapp->getFontManager(), m_pApp);
+	GR_UnixAllocInfo ai(m_wPreviewArea->window, unixapp->getFontManager());
 	m_pPreviewWidget = (GR_UnixGraphics*) XAP_App::getApp()->newGraphics(ai);
 
 	// Todo: we need a good widget to query with a probable

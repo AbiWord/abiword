@@ -618,7 +618,10 @@ void XAP_Preview_FontPreview::draw(void)
 	if(!pszWeight)
 		pszWeight = "normal";
 
-	m_pFont = m_gc->findFont(pszFamily, pszStyle, pszVariant, pszWeight, pszStretch, pszSize);
+	m_pFont = m_gc->findFont(pszFamily, pszStyle,
+							 pszVariant, pszWeight,
+							 pszStretch, pszSize,
+							 NULL);
 
 	UT_ASSERT(m_pFont);
 	if(!m_pFont)

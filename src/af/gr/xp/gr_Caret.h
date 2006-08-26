@@ -26,6 +26,7 @@
 #include "ut_timer.h"
 #include "ut_misc.h"
 #include "ut_assert.h"
+#include "ut_string_class.h"
 
 class GR_Graphics;
 
@@ -35,6 +36,7 @@ class ABI_EXPORT GR_Caret
 
 public:
 	explicit GR_Caret(GR_Graphics * pG);
+	explicit GR_Caret(GR_Graphics * pG, UT_UTF8String & sDocUUID);
 	~GR_Caret();
 	
 	void enable();
@@ -60,7 +62,8 @@ public:
 
 	bool getInsertMode () {return m_insertMode;}
 	void setInsertMode (bool mode) {m_insertMode = mode;}
-	
+        UT_UTF8String                   getUUID(void);
+	void                            setRemoteColor(UT_RGBColor clrRemote);
 private:
 	static void s_work(UT_Worker * w);
 	static void s_enable(UT_Worker * w);
@@ -99,14 +102,18 @@ private:
 	bool		m_bCursorIsOn;
 	bool		m_bPositionSet;
 	bool		m_bRecursiveDraw;
-	bool        m_bSplitCaret;
-	bool        m_bCaret1OnScreen;
-	bool        m_bCaret2OnScreen;
+	bool            m_bSplitCaret;
+	bool            m_bCaret1OnScreen;
+	bool            m_bCaret2OnScreen;
 
-	UT_RGBColor m_clrInsert;
-	UT_RGBColor m_clrOverwrite;
+	UT_RGBColor     m_clrInsert;
+	UT_RGBColor     m_clrOverwrite;
 	
-	bool m_insertMode;
+	bool            m_insertMode;
+	bool            m_bRemote;
+	UT_RGBColor     m_clrRemote;
+	UT_UTF8String   m_sDocUUID;
+	UT_sint32       m_iCaretNumber;
 };
 
 class GR_CaretDisabler

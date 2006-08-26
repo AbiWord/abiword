@@ -68,6 +68,9 @@
 #include "fl_DocListener.h"
 #include "fl_DocLayout.h"
 
+#include "ut_go_file.h"
+#include <gsf/gsf-input.h>
+
 // our currently used DTD
 #define ABIWORD_FILEFORMAT_VERSION "1.1"
 
@@ -109,12 +112,13 @@ PD_Document::PD_Document(XAP_App *pApp)
 	  m_iNewFtrHeight(0),
 	  m_bMarginChangeOnly(false),
 	  m_bVDND(false),
-	  m_iCRCounter(0)
+	  m_iCRCounter(0),
+	  m_iUpdateCount(0)
 {
 	m_pApp = pApp;
 	
 	XAP_App::getApp()->getPrefs()->getPrefsValueBool(AP_PREF_KEY_LockStyles,&m_bLockedStyles);
-
+	UT_ASSERT(isOrigUUID());
 #ifdef PT_TEST
 	m_pDoc = this;
 #endif
@@ -125,6 +129,7 @@ PD_Document::~PD_Document()
 	if (m_pPieceTable)
 		delete m_pPieceTable;
 
+	removeConnections();
 	_destroyDataItemData();
 
 	UT_VECTOR_PURGEALL(fl_AutoNum*, m_vecLists);
@@ -378,7 +383,8 @@ UT_Error PD_Document::importFile(const char * szFilename, int ieft,
 						       XAP_Dialog_MessageBox::b_O, 
 							   XAP_Dialog_MessageBox::a_OK);
 	}
-	
+	UT_ASSERT(isOrigUUID());
+
 	return UT_OK;
 }
 
@@ -411,6 +417,7 @@ UT_Error PD_Document::createRawDocument(void)
 	// this also initializes m_indexAP
 	m_indexAP = 0xffffffff;
 	setAttrProp(NULL);
+	UT_ASSERT(isOrigUUID());
 	return UT_OK;
 }
 
@@ -430,6 +437,7 @@ UT_Error PD_Document::readFromFile(const char * szFilename, int ieft,
 		return UT_INVALIDFILENAME;
 	}
 
+#if 0
 	if ( !UT_isRegularFile(szFilename) )
 	{
 	  UT_DEBUGMSG (("PD_Document::readFromFile -- file (%s) is not plain file\n",szFilename));
@@ -441,6 +449,7 @@ UT_Error PD_Document::readFromFile(const char * szFilename, int ieft,
 		UT_DEBUGMSG(("PD_Document::readFromFile -- file (%s) is empty\n",szFilename));
 		return UT_IE_BOGUSDOCUMENT;
 	}
+#endif
 	
 	m_pPieceTable = new pt_PieceTable(this);
 	if (!m_pPieceTable)
@@ -457,8 +466,11 @@ UT_Error PD_Document::readFromFile(const char * szFilename, int ieft,
 		buildTemplateList (template_list, "normal.awt");
 
 		bool success = false;
-		for (UT_uint32 i = 0; i < 6 && !success; i++)
-			success = (importStyles(template_list[i].c_str(), ieft, true) == UT_OK);
+		for (UT_uint32 i = 0; i < 6 && !success; i++) {
+			char * uri = UT_go_filename_to_uri (template_list[i].c_str());
+			success = (importStyles(uri, ieft, true) == UT_OK);
+			g_free (uri);
+		}
 
 		// don't worry if this fails
 	}
@@ -543,6 +555,7 @@ UT_Error PD_Document::readFromFile(const char * szFilename, int ieft,
 						       XAP_Dialog_MessageBox::b_O, 
 							   XAP_Dialog_MessageBox::a_OK);
 	}
+	UT_ASSERT(isOrigUUID());
 
 	return UT_OK;
 }
@@ -624,8 +637,11 @@ UT_Error PD_Document::newDocument(void)
 
 	bool success = false;
 
-	for (UT_uint32 i = 0; i < 6 && !success; i++)
-		success = (importFile (template_list[i].c_str(), IEFT_Unknown, true, false) == UT_OK);
+	for (UT_uint32 i = 0; i < 6 && !success; i++) {
+		char * uri = UT_go_filename_to_uri (template_list[i].c_str());
+		success = (importFile (uri, IEFT_Unknown, true, false) == UT_OK);
+		g_free(uri);
+	}
 
 	if (!success) {
 			m_pPieceTable = new pt_PieceTable(this);
@@ -652,16 +668,10 @@ UT_Error PD_Document::newDocument(void)
 	setDocVersion(0);
 	setEditTime(0);
 	setLastOpenedTime(time(NULL));
-
-	if(!getDocUUID())
-	{
-		UT_ASSERT_HARMLESS( UT_SHOULD_NOT_HAPPEN );
-	}
-	else
-		_getDocUUID()->makeUUID();
 	
 	// mark the document as not-dirty
 	_setClean();
+	UT_ASSERT(isOrigUUID());
 
 	return UT_OK;
 }
@@ -691,17 +701,19 @@ UT_Error PD_Document::_saveAs(const char * szFilename, int ieft, bool cpy,
 	if (expProps && strlen(expProps))
 		pie->setProps (expProps);
 
-	if (cpy)
+	if (cpy && !XAP_App::getApp()->getPrefs()->isIgnoreRecent())
 	{
 		m_lastSavedAsType = newFileType;
 		_syncFileTypes(true);
 	}
-
-	// order of these calls matters
-	_adjustHistoryOnSave();
-
-	// see if revisions table is still needed ...
-	purgeRevisionTable();
+	if(!XAP_App::getApp()->getPrefs()->isIgnoreRecent())
+	{
+		// order of these calls matters
+		_adjustHistoryOnSave();
+		
+		// see if revisions table is still needed ...
+		purgeRevisionTable();
+	}
 	
 	errorCode = pie->writeFile(szFilename);
 	delete pie;
@@ -712,7 +724,7 @@ UT_Error PD_Document::_saveAs(const char * szFilename, int ieft, bool cpy,
 		return (errorCode == UT_SAVE_CANCELLED) ? UT_SAVE_CANCELLED : UT_SAVE_WRITEERROR;
 	}
 
-	if (cpy) // we want to make the current settings persistent
+	if (cpy && !XAP_App::getApp()->getPrefs()->isIgnoreRecent()) // we want to make the current settings persistent
 	{
 	    // no file name currently set - make this filename the filename
 	    // stored for the doc
@@ -755,7 +767,7 @@ UT_Error PD_Document::_save(void)
 	
 	errorCode = pie->writeFile(getFilename());
 	delete pie;
-
+	signalListeners(PD_SIGNAL_DOCSAVED);
 	if (errorCode)
 	{
 		UT_DEBUGMSG(("PD_Document::Save -- could not write file\n"));
@@ -825,14 +837,14 @@ bool PD_Document::insertSpan(PT_DocPosition dpos,
 		m_pPieceTable->insertFmtMark(PTC_AddFmt, dpos, p_AttrProp);
 	}
 #if DEBUG
-#if 0
+#if 1
 	UT_uint32 ii = 0;
 	UT_String sStr;
 	for(ii=0; ii<length;ii++)
 	{
 		sStr += static_cast<const char>(pbuf[ii]);
 	}
-	UT_DEBUGMSG(("Insert span %s \n",sStr.c_str()));
+	UT_DEBUGMSG(("PD_Document Insert span |%s| pos %d \n",sStr.c_str(),dpos));
 #endif
 #endif
 	// REMOVE UNDESIRABLE CHARACTERS ...
@@ -1481,9 +1493,9 @@ bool PD_Document::isStruxBeforeThis(PL_StruxDocHandle sdh,  PTStruxType pts)
  * Create a changerecord object and broadcast it to all the listeners.
  * If bsave is true save the CR in th eunod stack.
  */
-bool PD_Document::createAndSendCR(PT_DocPosition dpos, UT_sint32 iType,bool bSave)
+bool PD_Document::createAndSendCR(PT_DocPosition dpos, UT_sint32 iType,bool bSave,UT_Byte iGlob)
 {
-	return m_pPieceTable->createAndSendCR(dpos,iType,bSave);
+	return m_pPieceTable->createAndSendCR(dpos,iType,bSave,iGlob);
 }
 
 /*!
@@ -2774,94 +2786,6 @@ bool PD_Document::removeStyle(const XML_Char * pszName)
 	return true;
 }
 
-/*!
- * Calculate the offset from the supplied position due to the effects of
- * subsequent change record actions after the applied change record number.
- */
-UT_sint32 PD_Document::adjustPointForCR(UT_sint32 iCRNum, PT_DocPosition pos) const
-{
-	PX_ChangeRecord * pcr = NULL;
-	UT_sint32 iOff =0;
-	UT_sint32 iCurCr = static_cast<UT_sint32>(m_pPieceTable->undoCount(true));
-	while(iCRNum <= iCurCr)
-	{
-		m_pPieceTable->getNthUndo(&pcr,iCurCr);
-		if(pcr == NULL)
-		{
-			return iOff;
-		}
-		iOff += getAdjustment(pcr,pos);
-		iCRNum--;
-	}
-	return iOff;
-}
-
-/*!
- * Get the adjustment for the given changeRecord.
- */
-UT_sint32 PD_Document::getAdjustment(const PX_ChangeRecord * pcr, PT_DocPosition pos) const
-{
-	UT_sint32 ioff = 0;
-	PT_DocPosition iCRPos = pcr->getPosition();
-	if(iCRPos > pos)
-		return ioff;
-	switch(pcr->getType())
-	{
-		case PX_ChangeRecord::PXT_GlobMarker:
-			ioff = 0;
-			break;
-		case PX_ChangeRecord::PXT_InsertSpan:
-			{
-				const PX_ChangeRecord_SpanChange * pcrc = static_cast<const PX_ChangeRecord_SpanChange *> (pcr);
-				UT_sint32 iLen = static_cast<UT_sint32>(pcrc->getLength());
-				ioff = iLen;
-			}
-			break;
-		case PX_ChangeRecord::PXT_DeleteSpan:
-			{
-				const PX_ChangeRecord_SpanChange * pcrc = static_cast<const PX_ChangeRecord_SpanChange *> (pcr);
-				UT_sint32 iLen = static_cast<UT_sint32>(pcrc->getLength());
-				ioff = -iLen;
-			}
-			break;
-		case PX_ChangeRecord::PXT_ChangeSpan:
-			ioff = 0;
-			break;
-		case PX_ChangeRecord::PXT_InsertStrux:
-			ioff = 1;
-			break;
-		case PX_ChangeRecord::PXT_DeleteStrux:
-			ioff = -1;
-			break;
-		case PX_ChangeRecord::PXT_ChangeStrux:
-			ioff = 0;
-			break;
-		case PX_ChangeRecord::PXT_InsertObject:
-			ioff = 1;
-			break;
-		case PX_ChangeRecord::PXT_DeleteObject:
-			ioff = -1;
-			break;
-		case PX_ChangeRecord::PXT_ChangeObject:
-		case PX_ChangeRecord::PXT_InsertFmtMark:
-		case PX_ChangeRecord::PXT_DeleteFmtMark:
-		case PX_ChangeRecord::PXT_ChangeFmtMark:
-		case PX_ChangeRecord::PXT_ChangePoint:
-		case PX_ChangeRecord::PXT_ListUpdate:
-		case PX_ChangeRecord::PXT_StopList:
-		case PX_ChangeRecord::PXT_UpdateField:
-		case PX_ChangeRecord::PXT_RemoveList:
-		case PX_ChangeRecord::PXT_UpdateLayout:
-			ioff = 0;
-			break;
-		default:
-			ioff = 0;
-			break;
-	}
-	return ioff;
-
-}
-
 bool PD_Document::appendStyle(const XML_Char ** attributes)
 {
 	UT_return_val_if_fail (m_pPieceTable, false);
@@ -2941,6 +2865,18 @@ bool PD_Document::removeListener(PL_ListenerId listenerId)
 
 bool PD_Document::signalListeners(UT_uint32 iSignal) const
 {
+	if(iSignal == PD_SIGNAL_UPDATE_LAYOUT)
+	{
+			m_iUpdateCount++;
+	}
+	else
+	{
+			m_iUpdateCount = 0;
+	}
+	if(m_iUpdateCount > 1)
+  	{
+			return true;
+	}
 	PL_ListenerId lid;
 	PL_ListenerId lidCount = m_vecListeners.getItemCount();
 
@@ -2958,6 +2894,49 @@ bool PD_Document::signalListeners(UT_uint32 iSignal) const
 	}
 
 	return true;
+}
+
+/*!
+ * Remove all AbiCollab connections. We should do this before the document is destructed.
+ */
+void PD_Document::removeConnections(void)
+{
+	PL_ListenerId lid;
+	PL_ListenerId lidCount = m_vecListeners.getItemCount();
+	for (lid=0; lid<lidCount; lid++)
+	{
+		PL_Listener * pListener = static_cast<PL_Listener *>(m_vecListeners.getNthItem(lid));
+		if (pListener)
+		{
+			if(pListener->getType() == PTL_CollabExport)
+			{
+				static_cast<PL_DocChangeListener *>(pListener)->removeDocument();
+				removeListener(lid);
+			}
+		}
+	}
+}
+
+
+/*!
+ * Change all AbiCollab connections to point to the new document.
+ */
+void PD_Document::changeConnectedDocument(PD_Document * pDoc)
+{
+	PL_ListenerId lid;
+	PL_ListenerId lidCount = m_vecListeners.getItemCount();
+	for (lid=0; lid<lidCount; lid++)
+	{
+		PL_Listener * pListener = static_cast<PL_Listener *>(m_vecListeners.getNthItem(lid));
+		if (pListener)
+		{
+			if(pListener->getType() == PTL_CollabExport)
+			{
+				static_cast<PL_DocChangeListener *>(pListener)->setNewDocument(pDoc);
+				removeListener(lid);
+			}
+		}
+	}
 }
 
 /*!
@@ -3001,12 +2980,16 @@ bool PD_Document::notifyListeners(const pf_Frag_Strux * pfs, const PX_ChangeReco
 #ifdef PT_TEST
 	//pcr->__dump();
 #endif
+	m_iUpdateCount = 0;
 	if(pcr->getDocument() == NULL)
 	{
 	        pcr->setDocument(this);
 			pcr->setCRNumber();
 	}
-
+	else if(pcr->getCRNumber() == 0)
+	{
+			pcr->setCRNumber();
+	}
 	PL_ListenerId lid;
 	PL_ListenerId lidCount = m_vecListeners.getItemCount();
 
@@ -3058,6 +3041,77 @@ void PD_Document::deferNotifications(void)
 			pListener->deferNotifications();
 		}
 	}
+}
+
+UT_sint32 PD_Document::getAdjustmentForCR(const PX_ChangeRecord * pcr) const
+{
+	UT_sint32 iAdj = 0;
+	switch(pcr->getType())
+	{
+		case PX_ChangeRecord::PXT_GlobMarker:
+			break;
+		case PX_ChangeRecord::PXT_InsertSpan:
+			{
+				const PX_ChangeRecord_SpanChange * pcrc = static_cast<const PX_ChangeRecord_SpanChange *> (pcr);
+				UT_uint32 iLen = pcrc->getLength();
+				iAdj = iLen;
+			}
+			break;
+		case PX_ChangeRecord::PXT_DeleteSpan:
+			{
+				const PX_ChangeRecord_SpanChange * pcrc = static_cast<const PX_ChangeRecord_SpanChange *> (pcr);
+				UT_uint32 iLen = pcrc->getLength();
+				iAdj = -iLen;
+			}
+			break;
+		case PX_ChangeRecord::PXT_ChangeSpan:
+			break;
+		case PX_ChangeRecord::PXT_InsertStrux:
+			iAdj = 1;
+			break;
+		case PX_ChangeRecord::PXT_DeleteStrux:
+			iAdj = -1;
+			break;
+		case PX_ChangeRecord::PXT_ChangeStrux:
+			break;
+		case PX_ChangeRecord::PXT_InsertObject:
+			iAdj =  1;
+			break;
+		case PX_ChangeRecord::PXT_DeleteObject:
+			iAdj = -1;
+			break;
+		case PX_ChangeRecord::PXT_ChangeObject:
+			break;
+		case PX_ChangeRecord::PXT_InsertFmtMark:
+			break;
+		case PX_ChangeRecord::PXT_DeleteFmtMark:
+			break; 
+		case PX_ChangeRecord::PXT_ChangeFmtMark:
+			break;
+		case PX_ChangeRecord::PXT_ChangePoint:
+			break; 
+		case PX_ChangeRecord::PXT_ListUpdate:
+			break; 
+		case PX_ChangeRecord::PXT_StopList:
+			break; 
+		case PX_ChangeRecord::PXT_UpdateField:
+			break;
+		case PX_ChangeRecord::PXT_RemoveList:
+			break;
+		case PX_ChangeRecord::PXT_UpdateLayout:
+			break;
+		case PX_ChangeRecord::PXT_AddStyle:
+			break;
+		case PX_ChangeRecord::PXT_RemoveStyle:
+			break;
+		case PX_ChangeRecord::PXT_CreateDataItem:
+			break;
+		case PX_ChangeRecord::PXT_ChangeDocProp:
+			break;
+		default:
+			break;
+	}
+	return iAdj;
 }
 
 void PD_Document::processDeferredNotifications(void)
@@ -3122,9 +3176,14 @@ bool PD_Document::notifyListeners(const pf_Frag_Strux * pfs,
 #ifdef PT_TEST
 	//pcr->__dump();
 #endif
+	m_iUpdateCount = 0;
 	if(pcr->getDocument() == NULL)
 	{
 	        pcr->setDocument(this);
+			pcr->setCRNumber();
+	}
+	else if(pcr->getCRNumber() == 0)
+	{
 			pcr->setCRNumber();
 	}
 
@@ -3822,7 +3881,15 @@ bool PD_Document::createDataItem(const char * szName, bool bBase64, const UT_Byt
 		UT_return_val_if_fail (pHashEntry,false);
 		*ppHandle = const_cast<struct _dataItemPair *>(pHashEntry);
 	}
-
+	{
+		const XML_Char * szAttributes[3] = {PT_DATAITEM_ATTRIBUTE_NAME,szName,NULL};
+		PT_AttrPropIndex iAP= 0;
+		m_pPieceTable->getVarSet().storeAP(szAttributes, &iAP);
+		PX_ChangeRecord * pcr =  new PX_ChangeRecord(PX_ChangeRecord::PXT_CreateDataItem,0,iAP,getXID());
+		UT_DEBUGMSG(("indexAP %d \n",iAP)); 
+		notifyListeners(NULL, pcr);
+		delete pcr;
+	}
 	return true;
 
 Failed:

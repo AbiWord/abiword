@@ -142,6 +142,9 @@ public:
 	void					removeRecent(UT_uint32 k);			// one-based
 	void                    setIgnoreNextRecent(void)
 		{ m_bIgnoreThisOne = true;}
+	bool                    isIgnoreRecent(void)
+	{ return m_bIgnoreThisOne;}
+
 	bool					setGeometry(UT_sint32 posx, UT_sint32 posy, UT_uint32 width, UT_uint32 height, UT_uint32 flags = 0);
 	bool					getGeometry(UT_sint32 *posx, UT_sint32 *posy, UT_uint32 *width, UT_uint32 *height, UT_uint32 *flags = 0);
 	

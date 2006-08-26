@@ -59,10 +59,12 @@ PX_ChangeRecord::PX_ChangeRecord(PXType type,
 	m_persistant(true),
 	m_iXID(iXID),
 	m_iCRNumber(0),
-	m_pDoc(NULL)
+	m_pDoc(NULL),
+	m_iAdjust(0)
 {
 	// bulletproofing
 	memset(&m_MyUUID, 0, sizeof(m_MyUUID));
+	memset(&m_MyDocUUID, 0, sizeof(m_MyDocUUID));
 
 	// after 2.5 branch this should be changed to use AD_Document::getNewUID()
 	UT_return_if_fail(XAP_App::getApp() && XAP_App::getApp()->getUUIDGenerator());
@@ -86,9 +88,11 @@ bool PX_ChangeRecord::setCRNumber(void) const
 {
   if(m_pDoc == NULL)
   {
+      UT_ASSERT(0);
       return false;
   }
   m_iCRNumber = m_pDoc->getNextCRNumber();
+  UT_DEBUGMSG(("!!!!!!!!!!Created CR ID number %d Doc UUID %s \n",m_iCRNumber,getDocUUID()));
   return true;
 }
 
@@ -100,17 +104,43 @@ PD_Document * PX_ChangeRecord::getDocument(void) const
 void PX_ChangeRecord::setDocument(const PD_Document * pDoc) const
 {
   m_pDoc = const_cast<PD_Document *>(pDoc);
+  m_pDoc->getMyUUID()->toBinary(m_MyDocUUID);
 }
 
 const char * PX_ChangeRecord::getDocUUID() const
 {
 	static char s[37];
 
-	// this is dummy code to be replaced with proper impl. once the PD_Document pointer is
-	// available after 2.5
-	strncpy(s, "00000000-0000-0000-0000-000000000000", 36);
-	s[36] = 0;
+	if(!UT_UUID::toStringFromBinary(s, sizeof(s), m_MyDocUUID))
+		return NULL;
+	
 	return s;
+}
+
+/*!
+ * returns true if local UUID is the same as the document users UUID. Useful 
+ * for AbiCollab
+ */
+bool PX_ChangeRecord::isFromThisDoc(void) const
+{
+  if(!m_pDoc)
+    return false;
+  UT_UTF8String sDoc;
+  m_pDoc->getOrigDocUUID()->toString(sDoc);
+  static char s[37];
+
+  if(!UT_UUID::toStringFromBinary(s, sizeof(s), m_MyDocUUID))
+		return false;
+  xxx_UT_DEBUGMSG(("Orig UUID %s \n",sDoc.utf8_str()));
+  xxx_UT_DEBUGMSG(("CR Doc UUID %s \n",s));
+  bool b=  (UT_strcmp(sDoc.utf8_str(),s) == 0);
+  xxx_UT_DEBUGMSG((" bool %d \n",b));
+  return b;
+}
+
+void PX_ChangeRecord::setAdjustment(UT_sint32 iAdj) const
+{
+  m_iAdjust = iAdj;
 }
 
 const char * PX_ChangeRecord::getMyUUID() const
@@ -139,7 +169,7 @@ PX_ChangeRecord::PXType PX_ChangeRecord::getType(void) const
 */
 PT_DocPosition PX_ChangeRecord::getPosition(void) const
 {
-	return m_position;
+  return static_cast<PT_DocPosition>(static_cast<UT_sint32>(m_position) + m_iAdjust);
 }
 
 /*!
@@ -160,6 +190,30 @@ bool PX_ChangeRecord::getPersistance(void) const
 	return m_persistant;
 }
 
+bool PX_ChangeRecord::isSameDocUUID(uuid & u) const
+{
+	if(m_MyDocUUID.time_low != u.time_low)
+		return false;
+
+	if(m_MyDocUUID.time_mid != u.time_mid)
+		return false;
+	
+	if(m_MyDocUUID.time_high_and_version != u.time_high_and_version)
+		return false;
+
+	if(m_MyDocUUID.clock_seq != u.clock_seq)
+		return false;
+
+	if(memcmp(m_MyDocUUID.node , u.node, 6) != 0)
+		return false;
+
+	return true;
+}
+
+UT_sint32 PX_ChangeRecord::getAdjustment(void) const
+{
+  return m_iAdjust;
+}
 /*!
   Create reverse change record of this one
   \return Reverse change record
@@ -171,6 +225,7 @@ PX_ChangeRecord * PX_ChangeRecord::reverse(void) const
 												m_indexAP,
 												m_iXID);
 	UT_ASSERT_HARMLESS(pcr);
+	pcr->setAdjustment( m_iAdjust);
 	return pcr;
 }
 
@@ -228,6 +283,18 @@ PX_ChangeRecord::PXType PX_ChangeRecord::getRevType(void) const
 
 	case PX_ChangeRecord::PXT_ChangePoint:
 		return PX_ChangeRecord::PXT_ChangePoint;
+
+	case PX_ChangeRecord::PXT_AddStyle:
+		return PX_ChangeRecord::PXT_RemoveStyle;
+
+	case PX_ChangeRecord::PXT_RemoveStyle:
+		return PX_ChangeRecord::PXT_AddStyle;
+
+	case PX_ChangeRecord::PXT_CreateDataItem:
+		return PX_ChangeRecord::PXT_CreateDataItem;
+
+	case PX_ChangeRecord::PXT_ChangeDocProp:
+		return PX_ChangeRecord::PXT_ChangeDocProp;
 
 	default:
 		UT_ASSERT_HARMLESS(0);

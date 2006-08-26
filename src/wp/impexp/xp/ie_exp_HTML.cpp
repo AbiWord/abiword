@@ -559,7 +559,7 @@ private:
 
 	void	_doEndnotes ();
 	void	_doFootnotes ();
-	void    _emitTOC ();
+	void    _emitTOC (PT_AttrPropIndex api);
 
 	PD_Document *				m_pDocument;
 	PT_AttrPropIndex			m_apiLastSpan;
@@ -2199,11 +2199,18 @@ void s_HTML_Listener::_openTag (PT_AttrPropIndex api, PL_StruxDocHandle sdh)
 		if (m_StyleTreeBlock)
 			if (m_StyleTreeBlock->class_list().byteLength ())
 			{
+				UT_UTF8String escape;
 				m_utf8_1 += " class=\"";
 				if(get_Class_Only())
-					m_utf8_1 += m_StyleTreeBlock->class_name ();
+				{
+					escape = m_StyleTreeBlock->class_name ();
+					m_utf8_1 += escape.escapeXML();
+				}
 				else
-					m_utf8_1 += m_StyleTreeBlock->class_list ();
+				{
+					escape = m_StyleTreeBlock->class_list ();
+					m_utf8_1 += escape.escapeXML();
+				}
 				
 				m_utf8_1 += "\"";
 			}
@@ -2403,17 +2410,25 @@ void s_HTML_Listener::_openTag (PT_AttrPropIndex api, PL_StruxDocHandle sdh)
 		if (tree && !bClassAsTag)
 			if (tree->class_list().byteLength ())
 			{
+				UT_UTF8String escape;
 				m_utf8_1 += " class=\"";
 				if(get_Class_Only())
-					m_utf8_1 += tree->class_name ();
+				{
+					escape = tree->class_name ();
+					m_utf8_1 += escape.escapeXML();
+				}
 				else
-					m_utf8_1 += tree->class_list ();
+				{
+					escape = tree->class_list ();
+					m_utf8_1 += escape.escapeXML();
+				}
 				m_utf8_1 += "\"";
 			}
 		if (bAddAWMLStyle)
 		{
+			UT_UTF8String escape = szValue;
 			m_utf8_1 += " awml:style=\"";
-			m_utf8_1 += szValue;
+			m_utf8_1 += escape.escapeXML();
 			m_utf8_1 += "\"";
 		}
 	}	
@@ -2671,11 +2686,18 @@ void s_HTML_Listener::_openSpan (PT_AttrPropIndex api)
 	if (tree)
 		if (tree->class_list().byteLength ())
 		{
+			UT_UTF8String escape;
 			m_utf8_1 = "span class=\"";
 			if(get_Class_Only())
-				m_utf8_1 += tree->class_name ();
+			{
+				escape = tree->class_name ();
+				m_utf8_1 += escape.escapeXML();
+			}
 			else
-				m_utf8_1 += tree->class_list ();
+			{
+				escape = tree->class_list ();
+				m_utf8_1 += escape.escapeXML();
+			}
 			
 			m_utf8_1 += "\"";
 			bInSpan = true;
@@ -4578,8 +4600,9 @@ void s_HTML_Listener::_handleField (const PX_ChangeRecord_Object * pcro,
 				{
 					if (tree->class_list().byteLength ())
 					{
+						UT_UTF8String escape = tree->class_name ();
 						m_utf8_1 += " class=\"";
-						m_utf8_1 += tree->class_name ();
+						m_utf8_1 += escape.escapeXML();
 						m_utf8_1 += "\"";
 					}
 				}
@@ -4640,8 +4663,8 @@ void s_HTML_Listener::_handleField (const PX_ChangeRecord_Object * pcro,
 			textUntrusted (field->getValue ());
 			m_utf8_1 = "a";
 			tagClose (TT_A, m_utf8_1, ws_None);
-			DELETEP(idAttr);
-			DELETEP(szTypeCpy);
+			DELETEPV(idAttr);
+			DELETEPV(szTypeCpy);
 		}
 		else
 		{
@@ -4716,14 +4739,17 @@ void s_HTML_Listener::_handleBookmark (PT_AttrPropIndex api)
 
 		if (szName)
 		{
+			UT_UTF8String escape = szName;
+			escape.escapeXML();
+
 			m_utf8_1 += " name=\"";
-			m_utf8_1 += szName;
+			m_utf8_1 += escape;
 			m_utf8_1 += "\"";
 
 			if (!get_HTML4 ())
 			{
 				m_utf8_1 += " id=\"";
-				m_utf8_1 += szName;
+				m_utf8_1 += escape;
 				m_utf8_1 += "\"";
 			}
 			tagOpen (TT_A, m_utf8_1, ws_None);
@@ -5107,7 +5133,7 @@ bool s_HTML_Listener::populateStrux (PL_StruxDocHandle sdh,
 			}
 		case PTX_SectionTOC: 
 			{
-				_emitTOC (); // Change this to pass the API via which emit can then get style props from to construct style trees.
+				_emitTOC (pcr->getIndexAP());
 				return true;
 			}
 		case PTX_EndTOC:
@@ -5134,8 +5160,13 @@ bool s_HTML_Listener::endOfDocument () {
 	return true;
 }
 
-void s_HTML_Listener::_emitTOC () {
+void s_HTML_Listener::_emitTOC (PT_AttrPropIndex api) {
 	if (m_toc) {
+
+		const PP_AttrProp * pAP = 0;
+		bool bHaveProp = (api ? (m_pDocument->getAttrProp (api, &pAP)) : false);
+		const XML_Char * szValue = 0;
+		UT_UTF8String tocHeadingUTF8;
 
 		if(listDepth()) { // We don't support TOC-in-LI, but the bright side is that neither does AbiWord itself, so this matches application behaviour.
 			m_utf8_1 = "span";
@@ -5143,19 +5174,37 @@ void s_HTML_Listener::_emitTOC () {
 			m_utf8_1 = "li";
 			tagClose (TT_LI, m_utf8_1, ws_Post);
 		}
-		
-		const XAP_StringSet * pSS = XAP_App::getApp()->getStringSet();
-		UT_UTF8String tocHeadingUTF8;
-		pSS->getValueUTF8(AP_STRING_ID_TOC_TocHeading, tocHeadingUTF8);
-		
-		UT_UCS4String tocHeading(tocHeadingUTF8.utf8_str());
-		m_utf8_1 = "h1 style=\"text-align:center\"";
-		tagOpen (TT_H1, m_utf8_1);
-		m_bInBlock = true;
-		_outputData (tocHeading.ucs4_str(), tocHeading.length());
-		m_bInBlock = false;
-		tagClose (TT_H1, "h1");
-		
+
+		bool bEmitHeading = true;
+
+		if(bHaveProp && pAP && pAP->getProperty("toc-has-heading", szValue)) //check to see if the TOC heading is hidden
+		{
+			if(atoi(szValue) == 0)
+				bEmitHeading = false;
+		}
+
+		if(bEmitHeading)
+		{
+			if(bHaveProp && pAP && pAP->getProperty("toc-heading", szValue)) // user-defined TOC heading
+			{
+				tocHeadingUTF8 = szValue;
+				//_outputdata() below makes escapeXML() redundant here
+			}
+			else
+			{ 
+				const XAP_StringSet * pSS = XAP_App::getApp()->getStringSet();
+				pSS->getValueUTF8(AP_STRING_ID_TOC_TocHeading, tocHeadingUTF8);
+			}
+
+			UT_UCS4String tocHeading(tocHeadingUTF8.utf8_str());
+			m_utf8_1 = "h1 style=\"text-align:center\"";
+			tagOpen (TT_H1, m_utf8_1);
+			m_bInBlock = true;
+			_outputData (tocHeading.ucs4_str(), tocHeading.length());
+			m_bInBlock = false;
+			tagClose (TT_H1, "h1");
+		}
+
 		int level1_depth = 0;
 		int level2_depth = 0;
 		int level3_depth = 0;
@@ -5225,11 +5274,11 @@ void s_HTML_Listener::_doFootnotes () {
 	//
 	// Output footnotes
 	//
-	UT_uint32 i = 0, m_nFootnotes = getNumFootnotes();
-	if(m_nFootnotes > 0) {
+	UT_uint32 i = 0, nFootnotes = getNumFootnotes();
+	if(nFootnotes > 0) {
 		startEmbeddedStrux();
 	}
-	for(i = 0; i < m_nFootnotes; i = i + 1)
+	for(i = 0; i < nFootnotes; i = i + 1)
 	{
 		PD_DocumentRange * pDocRange = m_vecFootnotes.getNthItem(i);
 		m_bInAFENote = true;
@@ -6599,12 +6648,13 @@ UT_Error IE_Exp_HTML::_writeDocument (bool bClipBoard, bool bTemplateBody)
  		pHdrFtrListener->doHdrFtr(0); // Emit footer
  	
 	DELETEP(pListener);
+	DELETEP(pHdrFtrListener);
 	
 	if ((m_error == UT_OK) && (okay == true)) return UT_OK;
 	return UT_IE_COULDNOTWRITE;
 }
 
-bool IE_Exp_HTML::_openFile (const char * szFilename)
+GsfOutput* IE_Exp_HTML::_openFile (const char * szFilename)
 {
 #ifdef HTML_DIALOG_OPTIONS
 	XAP_Frame * pFrame = getDoc()->getApp()->getLastFocussedFrame ();
@@ -6648,7 +6698,7 @@ bool IE_Exp_HTML::_openFile (const char * szFilename)
 	if (!bSave)
 	{
 		_cancelExport ();
-		return false;
+		return NULL;
 	}
 #endif
 	return IE_Exp::_openFile (szFilename);

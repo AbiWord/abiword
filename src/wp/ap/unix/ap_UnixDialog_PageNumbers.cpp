@@ -121,7 +121,7 @@ void AP_UnixDialog_PageNumbers::runModal(XAP_Frame * pFrame)
 	
 	// make a new Unix GC
 	//m_unixGraphics = new GR_UnixGraphics(m_previewArea->window, unixapp->getFontManager(), m_pApp);
-	GR_UnixAllocInfo ai(m_previewArea->window, unixapp->getFontManager(), m_pApp);
+	GR_UnixAllocInfo ai(m_previewArea->window, unixapp->getFontManager());
 	m_unixGraphics = (GR_UnixGraphics*) XAP_App::getApp()->newGraphics(ai);
 	
 	

@@ -64,6 +64,8 @@ public:
 	void					coalesce(const PX_ChangeRecord_Span * pcr);
 	PT_BlockOffset			getBlockOffset(void) const;
 	fd_Field *              getField(void) const {return m_pField;};
+	void                      AdjustBlockOffset(PT_BlockOffset iBlk) const
+	{ m_blockOffset = iBlk;}
 
 #ifdef PT_TEST
 	virtual void			__dump(FILE * fp) const;
@@ -72,7 +74,7 @@ public:
 protected:
 	PT_BufIndex				m_bufIndex;	/* bufIndex to our text */
 	UT_uint32				m_length;	/* length of our text */
-	PT_BlockOffset			m_blockOffset; /* offset of span from beginning of paragraph */
+mutable	PT_BlockOffset			m_blockOffset; /* offset of span from beginning of paragraph */
     fd_Field *              m_pField;
 };
 

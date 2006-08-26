@@ -463,7 +463,8 @@ GR_CocoaGraphics::~GR_CocoaGraphics()
 	_destroyFonts ();
 
 	UT_VECTOR_RELEASE(m_cacheArray);
-	UT_VECTOR_PURGEALL(NSRect*, m_cacheRectArray);
+	UT_VECTOR_SPARSEPURGEALL( NSRect*, m_cacheRectArray);
+
 	[m_pWin setGraphics:NULL];
 	[m_fontForGraphics release];
 	[m_currentColor release];
@@ -942,7 +943,8 @@ GR_Font * GR_CocoaGraphics::_findFont(const char* pszFontFamily,
 										const char* pszFontVariant,
 										const char* pszFontWeight,
 										const char* pszFontStretch,
-										const char* pszFontSize)
+										const char* pszFontSize,
+										const char* pszLang)
 {
 	UT_DEBUGMSG (("GR_CocoaGraphics::findFont(%s, %s, %s)\n", pszFontFamily, pszFontStyle, pszFontSize));
 

@@ -300,9 +300,18 @@ void AP_Win32Dialog_FormatTOC_General::_fillGUI()
 	UT_String str;
 
 	sVal = getContainer()->getTOCPropVal("toc-has-heading"); 
-	CheckDlgButton(getHandle(), AP_RID_DIALOG_FORMATTOC_GENERAL_CHECK_HASHEADING,
-		(UT_stricmp(sVal.utf8_str(),"1") == 0) ? BST_CHECKED :BST_UNCHECKED);
-
+	if(UT_stricmp(sVal.utf8_str(),"1") == 0)
+	{
+		CheckDlgButton(getHandle(), AP_RID_DIALOG_FORMATTOC_GENERAL_CHECK_HASHEADING, BST_CHECKED);
+		EnableWindow(GetDlgItem(getHandle(),AP_RID_DIALOG_FORMATTOC_GENERAL_BUTTON_HEADINGSTYLE), true);
+		EnableWindow(GetDlgItem(getHandle(),AP_RID_DIALOG_FORMATTOC_GENERAL_TEXT_HEADINGSTYLEVALUE), true);
+	}
+	else
+	{
+		CheckDlgButton(getHandle(), AP_RID_DIALOG_FORMATTOC_GENERAL_CHECK_HASHEADING, BST_UNCHECKED);
+		EnableWindow(GetDlgItem(getHandle(),AP_RID_DIALOG_FORMATTOC_GENERAL_BUTTON_HEADINGSTYLE), false);
+		EnableWindow(GetDlgItem(getHandle(),AP_RID_DIALOG_FORMATTOC_GENERAL_TEXT_HEADINGSTYLEVALUE), false);
+	}
 	
 	sVal = getContainer()->getTOCPropVal("toc-has-label", getContainer()->getMainLevel()); 	 
 	CheckDlgButton(getHandle(), AP_RID_DIALOG_FORMATTOC_GENERAL_CHECK_HASLEVEL,
@@ -390,8 +399,16 @@ void AP_Win32Dialog_FormatTOC_General::_onCommand(HWND hWnd, WPARAM wParam, LPAR
 			UT_UTF8String sVal = "1";
 
 			if (IsDlgButtonChecked(hWnd, AP_RID_DIALOG_FORMATTOC_GENERAL_CHECK_HASHEADING) != BST_CHECKED)
+			{
+				EnableWindow(GetDlgItem(hWnd,AP_RID_DIALOG_FORMATTOC_GENERAL_BUTTON_HEADINGSTYLE), false);
+				EnableWindow(GetDlgItem(hWnd,AP_RID_DIALOG_FORMATTOC_GENERAL_TEXT_HEADINGSTYLEVALUE), false);
 				sVal = "0";		
-			
+			}
+			else
+			{
+				EnableWindow(GetDlgItem(hWnd,AP_RID_DIALOG_FORMATTOC_GENERAL_BUTTON_HEADINGSTYLE), true);
+				EnableWindow(GetDlgItem(hWnd,AP_RID_DIALOG_FORMATTOC_GENERAL_TEXT_HEADINGSTYLEVALUE), true);			
+			}
 			getContainer()->setTOCProperty(sProp,sVal);			
 			break;
 		}

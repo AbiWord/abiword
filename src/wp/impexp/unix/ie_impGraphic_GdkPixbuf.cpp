@@ -537,7 +537,8 @@ UT_Confidence_t IE_ImpGraphicGdkPixbuf_Sniffer::recognizeSuffix(const char * szS
 		".ras",
 		".ico",
 		".bmp",
-		".xbm"
+		".xbm",
+		".wmf"
 	} ;
 
 	for ( unsigned int i = 0; i < NrElements(suffixes); i++ )
@@ -553,7 +554,7 @@ bool IE_ImpGraphicGdkPixbuf_Sniffer::getDlgLabels(const char ** pszDesc,
 {
 	// TODO add a more complete list of suffixes
 	*pszDesc = "All platform supported image formats";
-	*pszSuffixList = "*.jpg; *.jpeg; *.png; *.tiff; *.gif; *.xpm; *.pnm; *.ras; *.ico; *.bmp; *.xbm";
+	*pszSuffixList = "*.jpg; *.jpeg; *.png; *.tiff; *.gif; *.xpm; *.pnm; *.ras; *.ico; *.bmp; *.xbm; *.wmf";
 	*ft = getType ();
 	return true;
 }

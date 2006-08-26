@@ -83,6 +83,7 @@ private:
 
 	GR_Graphics * m_pGr;
 	GR_CaretDisabler * m_pCaretDisabler;
+	UT_GenericVector<GR_CaretDisabler *> m_vecDisablers;
 };
 
 #endif // GR_PAINTER_H

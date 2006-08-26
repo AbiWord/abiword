@@ -1,4 +1,4 @@
-/* -*- mode: C++; tab-width: 4; c-basic-offset: 4; -*- */
+//* -*- mode: C++; tab-width: 4; c-basic-offset: 4; -*- */
 
 /* AbiWord
  * Copyright (C) 2001 AbiSource, Inc.
@@ -57,6 +57,8 @@ public:
     IE_Imp_XML(PD_Document * pDocument, bool whiteSignificant);
     virtual ~IE_Imp_XML();
     virtual UT_Error	importFile(const char * szFilename);
+    virtual UT_Error	importFile(const char * data, UT_uint32 length);
+	virtual UT_Error    importFile(const UT_ByteBuf * data);
 
 	virtual bool		pasteFromBuffer(PD_DocumentRange * pDocRange,
 										const unsigned char * pData, 

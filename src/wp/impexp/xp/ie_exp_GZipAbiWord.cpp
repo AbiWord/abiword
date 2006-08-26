@@ -18,21 +18,13 @@
  */
 
 
-#include <zlib.h>
 #include "string.h"
 
 #include "ie_exp_GZipAbiWord.h"
 #include "ut_assert.h"
 #include "ut_string.h"
 
-IE_Exp_GZipAbiWord::IE_Exp_GZipAbiWord(PD_Document * pDocument)
-  : IE_Exp_AbiWord_1(pDocument), m_gzfp(0)
-{
-}
-
-IE_Exp_GZipAbiWord::~IE_Exp_GZipAbiWord()
-{
-}
+#include <gsf/gsf-output-gzip.h>
 
 /*****************************************************************/
 /*****************************************************************/
@@ -51,8 +43,7 @@ bool IE_Exp_GZipAbiWord_Sniffer::recognizeSuffix(const char * szSuffix)
 UT_Error IE_Exp_GZipAbiWord_Sniffer::constructExporter(PD_Document * pDocument,
 													 IE_Exp ** ppie)
 {
-	IE_Exp_GZipAbiWord * p = new IE_Exp_GZipAbiWord(pDocument);
-	*ppie = p;
+	*ppie = new IE_Exp_GZipAbiWord(pDocument);
 	return UT_OK;
 }
 
@@ -75,28 +66,20 @@ bool IE_Exp_GZipAbiWord_Sniffer::getDlgLabels(const char ** pszDesc,
 /*****************************************************************/
 /*****************************************************************/
 
-bool IE_Exp_GZipAbiWord::_openFile(const char * szFilename)
+IE_Exp_GZipAbiWord::IE_Exp_GZipAbiWord(PD_Document * pDocument)
+  : IE_Exp_AbiWord_1(pDocument)
 {
-    UT_return_val_if_fail(!m_gzfp, false);
-
-    m_gzfp = static_cast<gzFile>(gzopen(szFilename, "wb6"));
-    return (m_gzfp != 0);
 }
 
-UT_uint32 IE_Exp_GZipAbiWord::_writeBytes(const UT_Byte * pBytes, UT_uint32 length)
+IE_Exp_GZipAbiWord::~IE_Exp_GZipAbiWord()
 {
-    UT_return_val_if_fail(m_gzfp, 0);
-    UT_return_val_if_fail(pBytes, 0);
-    UT_return_val_if_fail(length, 0);
-
-    return gzwrite(m_gzfp, const_cast<void *>(static_cast<const void *>(pBytes)), sizeof(UT_Byte) * length);
 }
 
-bool IE_Exp_GZipAbiWord::_closeFile(void)
+GsfOutput* IE_Exp_GZipAbiWord::_openFile(const char * szFilename)
 {
-    if (m_gzfp)
-	gzclose(m_gzfp);
+  GsfOutput * output = UT_go_file_create(szFilename, NULL);
+  if(!output)
+    return NULL;
 
-    m_gzfp = 0;
-    return true;
+  return gsf_output_gzip_new(output, NULL);
 }

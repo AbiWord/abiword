@@ -1151,11 +1151,14 @@ void AP_Lists_preview::setData(XML_Char * pszFont,float fAlign,float fIndent)
 	//
 	if(!pszFont || strcmp(pszFont,"NULL")== 0)
 	{
-		m_pFont = m_gc->findFont("Times New Roman", "normal", "", "normal", "", "16pt");
+		m_pFont = m_gc->findFont("Times New Roman",
+								 "normal", "", "normal",
+								 "", "16pt", NULL);
 	}
 	else
 	{
-		m_pFont = m_gc->findFont((char *)pszFont, "normal", "", "normal", "", "16pt");
+		m_pFont = m_gc->findFont((char *)pszFont, "normal", "", "normal",
+								 "", "16pt", NULL);
 	}	
 	UT_ASSERT_HARMLESS(m_pFont);
 	

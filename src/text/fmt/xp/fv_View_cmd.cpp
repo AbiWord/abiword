@@ -3191,9 +3191,42 @@ UT_Error FV_View::cmdInsertTable(UT_sint32 numRows, UT_sint32 numCols, const XML
 	         e = m_pDoc->insertStrux(getPoint(),PTX_Block);
 		 bInsert = true;
 	}
-	if(!bInsert && !m_pDoc->isEndFootnoteAtPos(getPoint()-1) && !m_pDoc->isEndFootnoteAtPos(getPoint()-1))
+	bool bPointBreak = false;
+	if(!bInsert && !m_pDoc->isTableAtPos(getPoint()) && !m_pDoc->isEndFootnoteAtPos(getPoint()-2) && !m_pDoc->isEndFootnoteAtPos(getPoint()-1) && !m_pDoc->isBlockAtPos(getPoint()))
 	{
 	         pointBreak--;
+		 bPointBreak = true;
+	}
+	if(!bPointBreak && m_pDoc->isBlockAtPos(getPoint()))
+	{
+	         PT_DocPosition posEnd = 0;
+		 getEditableBounds(true,posEnd);
+		 if((posEnd == getPoint()))
+		 {
+		         pointBreak--;
+			 bPointBreak = true;
+		 }
+		 else if(m_pDoc->isSectionAtPos(getPoint()-1) || m_pDoc->isEndTableAtPos(getPoint()-1) || m_pDoc->isEndFrameAtPos(getPoint() - 1))
+		 {
+		         pointBreak--;
+			 bPointBreak = true;
+		 }
+		 else if(m_pDoc->isSectionAtPos(getPoint()-2))
+		 {
+		         pointBreak--;
+			 bPointBreak = true;
+		 }
+		 if(m_pDoc->isEndFootnoteAtPos(pointBreak))
+		 {
+		         pointBreak++;
+			 bPointBreak = false;
+		 }
+		 if(bPointBreak && !m_pDoc->isBlockAtPos(pointBreak))
+		 {
+		         pointBreak++;
+			 bPointBreak = false;
+		 }
+
 	}
 //
 // Insert the table strux at the same spot. This will make the table link correctly in the
@@ -3218,6 +3251,14 @@ UT_Error FV_View::cmdInsertTable(UT_sint32 numRows, UT_sint32 numCols, const XML
 	{
 		pointBreak--;
 	}
+	//
+	// Handle special case of not putting a table in a TOC
+	//
+	if(m_pDoc->isTOCAtPos(pointBreak-1))
+	{
+		pointBreak++;
+	}
+
 	setPoint(pointBreak);
 	e |= static_cast<UT_sint32>(m_pDoc->insertStrux(getPoint(),PTX_SectionTable,NULL,pPropsArray));
 //

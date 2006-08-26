@@ -56,6 +56,12 @@
 #include "gr_UnixGraphics.h"
 #include "gr_UnixPangoGraphics.h"
 
+#include <gsf/gsf-utils.h>
+
+#ifdef HAVE_GNOME
+#include <libgnomevfs/gnome-vfs.h>
+#endif
+
 #define _USE_PANGO
 
 UnixNull_Graphics * abi_unixnullgraphics_instance = 0;
@@ -158,11 +164,11 @@ XAP_UnixApp::~XAP_UnixApp()
 {
 	DELETEP(m_pUnixToolbarIcons);
 	
+	delete m_fontManager;
+
 #if FC_MINOR > 2
 	FcFini();
 #endif
-	
-	delete m_fontManager;
 }
 
 bool XAP_UnixApp::initialize(const char * szKeyBindingsKey, const char * szKeyBindingsDefaultValue)
@@ -172,6 +178,12 @@ bool XAP_UnixApp::initialize(const char * szKeyBindingsKey, const char * szKeyBi
 	// let our base class do it's thing.
 	
 	XAP_App::initialize(szKeyBindingsKey, szKeyBindingsDefaultValue);
+
+	gsf_init();
+
+#ifdef HAVE_GNOME
+	gnome_vfs_init();
+#endif
 
 	/*******************************/
 

@@ -320,6 +320,7 @@ dcl(LANG_AF_ZA, 							"Afrikaans")
 dcl(LANG_AK_GH, 							"Akan")	// 
 dcl(LANG_SQ_AL, 							"Albanian")	// Jordi 19/10/2002
 dcl(LANG_AM_ET, 							"Amharic (Ethiopia)")
+dcl(LANG_AR, 								"Arabic")
 dcl(LANG_AR_EG, 							"Arabic (Egypt)")
 dcl(LANG_AR_SA, 							"Arabic (Saudi Arabia)")
 dcl(LANG_HY_AM, 							"Armenian")
@@ -333,7 +334,7 @@ dcl(LANG_BG_BG, 							"Bulgarian")
 dcl(LANG_CA_ES, 							"Catalan")
 dcl(LANG_KW_GB,								"Cornish")		// Jordi 19/10/2002
 dcl(LANG_CO_FR,								"Corsican")		// Jordi 19/10/2002
-dcl(LANG_HR,								"Croatian")		// Jordi Hipi: Why not hr-HR?
+dcl(LANG_HR_HR,								"Croatian")
 dcl(LANG_ZH_HK, 							"Chinese (Hong Kong)")
 dcl(LANG_ZH_CN, 							"Chinese (PRC)")
 dcl(LANG_ZH_SG, 							"Chinese (Singapore)")
@@ -386,6 +387,7 @@ dcl(LANG_MH_MH, 							"Marshallese (Marshall Islands)")
 dcl(LANG_MH_NR, 							"Marshallese (Nauru)")
 dcl(LANG_MN_MN,                             "Mongolian")
 dcl(LANG_NB_NO, 							"Norwegian Bokmal")
+dcl(LANG_NE_NP, 							"Nepali (Nepal)")
 dcl(LANG_NN_NO, 							"Norwegian Nynorsk")
 dcl(LANG_OC_FR,								"Occitan")		// Jordi 19/10/2002
 dcl(LANG_PL_PL, 							"Polish")

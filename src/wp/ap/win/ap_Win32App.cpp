@@ -330,41 +330,46 @@ bool AP_Win32App::initialize(void)
 	// load the all Plugins from the correct directory
 	//////////////////////////////////////////////////////////////////
 
-	char szPath[_MAX_PATH];
-	char szPlugin[_MAX_PATH];
-	_getExeDir( szPath, _MAX_PATH);
-	strcat(szPath, "..\\Plugins\\*.dll");
+	bool bLoadPlugins = true;
+	bool bFound = getPrefsValueBool(XAP_PREF_KEY_AutoLoadPlugins,&bLoadPlugins);
 
-    struct _finddata_t cfile;
-	long findtag = _findfirst( szPath, &cfile );
-	if( findtag != -1 )
+	if(bLoadPlugins || !bFound)
 	{
-		do
-		{	
-			_getExeDir( szPlugin, _MAX_PATH );
-			strcat( szPlugin, "..\\Plugins\\" );
-			strcat( szPlugin, cfile.name );
-			XAP_ModuleManager::instance().loadModule( szPlugin );
-		} while( _findnext( findtag, &cfile ) == 0 );
-	}
-	_findclose( findtag );
+		char szPath[_MAX_PATH];
+		char szPlugin[_MAX_PATH];
+		_getExeDir( szPath, _MAX_PATH);
+		strcat(szPath, "..\\Plugins\\*.dll");
 
-	UT_String pluginName( getUserPrivateDirectory() ); 
-	UT_String pluginDir( getUserPrivateDirectory() );
-	pluginDir += "\\AbiWord\\plugins\\*.dll";
-	findtag = _findfirst( pluginDir.c_str(), &cfile );
-	if( findtag != -1 )
-	{
-		do
-		{	
-			pluginName = getUserPrivateDirectory();
-			pluginName += "\\AbiWord\\plugins\\";
-			pluginName += cfile.name;
-			XAP_ModuleManager::instance().loadModule( pluginName.c_str() );
-		} while( _findnext( findtag, &cfile ) == 0 );
-	}
-	_findclose( findtag );
+	    struct _finddata_t cfile;
+		long findtag = _findfirst( szPath, &cfile );
+		if( findtag != -1 )
+		{
+			do
+			{	
+				_getExeDir( szPlugin, _MAX_PATH );
+				strcat( szPlugin, "..\\Plugins\\" );
+				strcat( szPlugin, cfile.name );
+				XAP_ModuleManager::instance().loadModule( szPlugin );
+			} while( _findnext( findtag, &cfile ) == 0 );
+		}
+		_findclose( findtag );
 
+		UT_String pluginName( getUserPrivateDirectory() ); 
+		UT_String pluginDir( getUserPrivateDirectory() );
+		pluginDir += "\\AbiWord\\plugins\\*.dll";
+		findtag = _findfirst( pluginDir.c_str(), &cfile );
+		if( findtag != -1 )
+		{
+			do
+			{	
+				pluginName = getUserPrivateDirectory();
+				pluginName += "\\AbiWord\\plugins\\";
+				pluginName += cfile.name;
+				XAP_ModuleManager::instance().loadModule( pluginName.c_str() );
+			} while( _findnext( findtag, &cfile ) == 0 );
+		}
+		_findclose( findtag );
+	}
 	return bSuccess;
 }
 
@@ -1238,14 +1243,12 @@ int AP_Win32App::WinMain(const char * szAppName, HINSTANCE hInstance,
 	Args.parsePoptOpts();
 	pMyWin32App->initialize();
   
-	bShowSplash = Args.getShowSplash();
-
 	// Consider the user saved preferences for the Splash Screen
    	const XAP_Prefs * pPrefs = pMyWin32App->getPrefs();
 	UT_ASSERT_HARMLESS(pPrefs);
     if (pPrefs && pPrefs->getPrefsValueBool (AP_PREF_KEY_ShowSplash, &bSplashPref))
 	{
-		bShowSplash = bShowSplash && bSplashPref;
+		bShowSplash = bSplashPref;
 	}
 
 	// Step 2: Handle all non-window args.
@@ -1273,7 +1276,7 @@ int AP_Win32App::WinMain(const char * szAppName, HINSTANCE hInstance,
 	}
 
 #ifdef SPLASH
-	if (bShowSplash)
+	if (bShowSplash && Args.getShowSplash())
 	{
 		_showSplash(hInstance, szAppName);
 	}

@@ -141,14 +141,7 @@ GtkWidget * XAP_UnixDialog_Language::constructWindow(void)
 													   0,
 													   NULL);
 	gtk_tree_view_append_column( GTK_TREE_VIEW(m_pLanguageList), column);
-	
-	// connect a dbl-clicked signal to the column
-	
-	g_signal_connect_after(G_OBJECT(m_pLanguageList),
-						   "row-activated",
-						   G_CALLBACK(s_lang_dblclicked),
-						   static_cast<gpointer>(this));
-  
+	  
 	return m_windowMain;
 }
 
@@ -211,6 +204,12 @@ void XAP_UnixDialog_Language::runModal(XAP_Frame * pFrame)
 	
   _populateWindowData();
   
+  // connect a dbl-clicked signal to the column
+  g_signal_connect_after(G_OBJECT(m_pLanguageList),
+						   "row-activated",
+						   G_CALLBACK(s_lang_dblclicked),
+						   static_cast<gpointer>(this));
+
   abiRunModalDialog ( GTK_DIALOG(cf), pFrame, this, GTK_RESPONSE_CLOSE, false );
   event_setLang();
   

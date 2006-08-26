@@ -71,7 +71,9 @@ enum
 	PD_SIGNAL_DOCPROPS_CHANGED_NO_REBUILD,
 	PD_SIGNAL_REVISION_MODE_CHANGED,
 	PD_SIGNAL_DOCNAME_CHANGED,
-	PD_SIGNAL_DOCDIRTY_CHANGED
+	PD_SIGNAL_DOCDIRTY_CHANGED,
+	PD_SIGNAL_DOCSAVED,
+	PD_SIGNAL_DOCCLOSED
 };
 
 /////////////////////////////////////////////////////////
@@ -238,7 +240,7 @@ PT_AttrPropIndex            getAPIFromSOH(PL_ObjectHandle odh);
 										PTStruxType pts,
 										bool bRecordChange);
 
-	bool                    createAndSendCR(PT_DocPosition dpos,UT_sint32 iType,bool bsave);
+	bool                    createAndSendCR(PT_DocPosition dpos,UT_sint32 iType,bool bsave,UT_Byte iGlob);
 
 	bool					insertStrux(PT_DocPosition dpos,
 										PTStruxType pts,
@@ -296,8 +298,6 @@ PT_AttrPropIndex            getAPIFromSOH(PL_ObjectHandle odh);
 	bool					appendObject(PTObjectType pto, const XML_Char ** attributes);
 	bool					appendFmtMark(void);
 	bool					appendStyle(const XML_Char ** attributes);
-	UT_sint32               adjustPointForCR(UT_sint32 iCRNum, PT_DocPosition pos) const;
-	UT_sint32               getAdjustment(const PX_ChangeRecord * pcr, PT_DocPosition pos) const;
 	bool                    changeStruxFormatNoUpdate(PTChangeFmt ptc ,PL_StruxDocHandle sdh,const XML_Char ** attributes);	
 	bool					insertStruxBeforeFrag(pf_Frag * pF, PTStruxType pts,
 												  const XML_Char ** attributes, pf_Frag_Strux ** ppfs_ret = 0);
@@ -325,6 +325,7 @@ PT_AttrPropIndex            getAPIFromSOH(PL_ObjectHandle odh);
 											const PX_ChangeRecord * pcr) const;
 	void					deferNotifications(void);
 	void					processDeferredNotifications(void);
+	UT_sint32               getAdjustmentForCR(const PX_ChangeRecord * pcr) const;
 
 	// the first two of these functions just retrieve the AP with the given index; the latter two
 	// return AP that represents state of things with current revision settings
@@ -631,8 +632,8 @@ PT_AttrPropIndex            getAPIFromSOH(PL_ObjectHandle odh);
 	virtual UT_uint32 getTopXID() const;
 	void              fixMissingXIDs();
 	UT_uint32         getFragXIDforVersion(const pf_Frag * pf, UT_uint32 iVersion) const;
-
-	
+	void              removeConnections(void);
+	void              changeConnectedDocument(PD_Document * pDoc);
 	UT_sint32     getNewHdrHeight(void) const
 	{ return m_iNewHdrHeight;}
 	UT_sint32     getNewFtrHeight(void) const
@@ -724,6 +725,7 @@ private:
 
 	bool                    m_bVDND;
     UT_sint32               m_iCRCounter;
+	mutable UT_sint32       m_iUpdateCount;
 };
 
 #endif /* PD_DOCUMENT_H */

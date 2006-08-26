@@ -130,7 +130,7 @@ void IE_Exp::setProps (const char * props)
 	m_props_map.parse_properties (props);
 }
 
-bool IE_Exp::_openFile(const char * szFilename)
+GsfOutput* IE_Exp::_openFile(const char * szFilename)
 {
 	UT_return_val_if_fail(!m_fp, false);
 	UT_return_val_if_fail(szFilename, false);
@@ -138,11 +138,7 @@ bool IE_Exp::_openFile(const char * szFilename)
 	m_szFileName = new char[strlen(szFilename) + 1];
 	strcpy(m_szFileName, szFilename);
 
-	// TODO add code to make a backup of the original file, if it exists.
-
-	// Open file in binary mode or UCS-2 output will be mangled.
-	m_fp = fopen(szFilename,"wb+");
-	return (m_fp != 0);
+	return UT_go_file_create(szFilename, NULL);
 }
 
 UT_uint32 IE_Exp::_writeBytes(const UT_Byte * pBytes, UT_uint32 length)
@@ -150,7 +146,8 @@ UT_uint32 IE_Exp::_writeBytes(const UT_Byte * pBytes, UT_uint32 length)
 	if(!pBytes || !length)
 	  return 0;
 
-	return fwrite(pBytes,sizeof(UT_Byte),length,m_fp);
+	gsf_output_write(m_fp, length, pBytes);
+	return length;
 }
 
 bool IE_Exp::_writeBytes(const UT_Byte * sz)
@@ -161,8 +158,10 @@ bool IE_Exp::_writeBytes(const UT_Byte * sz)
 
 bool IE_Exp::_closeFile(void)
 {
-	if (m_fp)
-		fclose(m_fp);
+	if (m_fp) {
+		gsf_output_close(m_fp);
+		g_object_unref(G_OBJECT(m_fp));
+	}
 	m_fp = 0;
 	return true;
 }
@@ -196,7 +195,7 @@ UT_Error IE_Exp::writeFile(const char * szFilename)
 
 	m_bCancelled = false;
 
-	if (!_openFile(szFilename))
+	if (!(m_fp = _openFile(szFilename)))
 		return m_bCancelled ? UT_SAVE_CANCELLED : UT_IE_COULDNOTWRITE;
 
 	UT_Error error = _writeDocument();

@@ -497,18 +497,20 @@ AP_Preview_Paragraph::~AP_Preview_Paragraph()
 }
 
 void AP_Preview_Paragraph::setFormat(const XML_Char * pageLeftMargin,
-										const XML_Char * pageRightMargin,
-										AP_Dialog_Paragraph::tAlignState align,
-										const XML_Char * firstLineIndent,
-										AP_Dialog_Paragraph::tIndentState indent,
-										const XML_Char * leftIndent,
-										const XML_Char * rightIndent,
-										const XML_Char * beforeSpacing,
-										const XML_Char * afterSpacing,
-										const XML_Char * lineSpacing,
-										AP_Dialog_Paragraph::tSpacingState spacing)
+									 const XML_Char * pageRightMargin,
+									 AP_Dialog_Paragraph::tAlignState align,
+									 const XML_Char * firstLineIndent,
+									 AP_Dialog_Paragraph::tIndentState indent,
+									 const XML_Char * leftIndent,
+									 const XML_Char * rightIndent,
+									 const XML_Char * beforeSpacing,
+									 const XML_Char * afterSpacing,
+									 const XML_Char * lineSpacing,
+									 AP_Dialog_Paragraph::tSpacingState spacing,
+									 UT_BidiCharType dir)
 {
 	UT_return_if_fail(m_activeBlock);
+	m_dir = dir;
 	m_activeBlock->setFormat(pageLeftMargin, pageRightMargin,
 								align, firstLineIndent, indent, leftIndent,
 								rightIndent, beforeSpacing, afterSpacing,
@@ -537,7 +539,11 @@ void AP_Preview_Paragraph::draw(void)
 bool AP_Preview_Paragraph::_loadDrawFont(void)
 {
 	// we draw at 7 points in this preview
-	GR_Font * font = m_gc->findFont("Times New Roman", "normal", "", "normal", "", "7pt");
+	GR_Font * font = m_gc->findFont("Times New Roman",
+									"normal", "", "normal",
+									"", "7pt",
+									NULL); // might need to get the real lang
+										   // from somewhere
 
 	if (font)
 	{

@@ -393,11 +393,11 @@ LRESULT CALLBACK EV_Win32Toolbar::_ComboWndProc( HWND hWnd, UINT uMessage, WPARA
 					if(iSelected != -1)
 					{							
 						static UT_UCSChar ucs_buf[COMBO_BUF_LEN];
-						char buf[COMBO_BUF_LEN];
+						UT_uint32 bufLength = SendMessage(hWnd, CB_GETLBTEXTLEN, iSelected, (LPARAM)0) + 1;
+						char* buf = (char*)malloc(bufLength);
+						UT_uint32 dataLength = SendMessage(hWnd, CB_GETLBTEXT, iSelected, (LPARAM)buf);
 
-						UT_uint32 dataLength = SendMessage(hWnd, CB_GETLBTEXT, iSelected, (LPARAM)&buf);
-
-						UT_UCS4_strcpy_char(ucs_buf, buf);
+						UT_UCS4_strncpy_char(ucs_buf, buf, COMBO_BUF_LEN-1);
 						UT_UCSChar * pData = (UT_UCSChar *) ucs_buf;	// HACK: should be void *
 
 						EV_Win32Toolbar * t = (EV_Win32Toolbar *) GetWindowLong(hWnd, GWL_USERDATA);
@@ -425,7 +425,7 @@ LRESULT CALLBACK EV_Win32Toolbar::_ComboWndProc( HWND hWnd, UINT uMessage, WPARA
 
 								nData  = SendMessage(hWnd, CB_GETITEMDATA, iSelected, 0);								
 
-								UT_UCS4_strcpy_char(ucs_buf, t->m_vecOrgStylesNames.getNthItem(nData)->utf8_str());								
+								UT_UCS4_strncpy_char(ucs_buf, t->m_vecOrgStylesNames.getNthItem(nData)->utf8_str(), COMBO_BUF_LEN-1);	
 								dataLength = UT_UCS4_strlen (ucs_buf);
 
 								DELETEP(pControl);

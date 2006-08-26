@@ -713,35 +713,75 @@ void FL_DocLayout::getStringFromFootnoteVal(UT_String & sVal, UT_sint32 iVal, Fo
 		UT_String_sprintf (sVal,"%d)", iVal);
 		break;
 	case FOOTNOTE_TYPE_LOWER:
-		UT_String_sprintf (sVal,"%s",autoCalc.dec2ascii(iVal,96));
+	{
+		char * val = autoCalc.dec2ascii(iVal,96);
+		UT_String_sprintf (sVal,"%s",val);
+		FREEP(val);
 		break;
+	}
 	case FOOTNOTE_TYPE_LOWER_PAREN:
-		UT_String_sprintf (sVal,"(%s)",autoCalc.dec2ascii(iVal,96));
+	{
+		char * val = autoCalc.dec2ascii(iVal,96);
+		UT_String_sprintf (sVal,"(%s)",val);
+		FREEP(val);
 		break;
+	}
 	case FOOTNOTE_TYPE_LOWER_OPEN_PAREN:
-		UT_String_sprintf (sVal,"%s)",autoCalc.dec2ascii(iVal,96));
+	{
+		char * val = autoCalc.dec2ascii(iVal,96);
+		UT_String_sprintf (sVal,"%s)",val);
+		FREEP(val);
 		break;
+	}
 	case FOOTNOTE_TYPE_UPPER:
-		UT_String_sprintf (sVal,"%s",autoCalc.dec2ascii(iVal,64));
+	{
+		char * val = autoCalc.dec2ascii(iVal,64);
+		UT_String_sprintf (sVal,"%s",val);
+		FREEP(val);
 		break;
+	}
 	case FOOTNOTE_TYPE_UPPER_PAREN:
-		UT_String_sprintf (sVal,"(%s)",autoCalc.dec2ascii(iVal,64));
+	{
+		char * val = autoCalc.dec2ascii(iVal,64);
+		UT_String_sprintf (sVal,"(%s)",val);
+		FREEP(val);
 		break;
+	}
 	case FOOTNOTE_TYPE_UPPER_OPEN_PAREN:
-		UT_String_sprintf (sVal,"%s)",autoCalc.dec2ascii(iVal,64));
+	{
+		char * val = autoCalc.dec2ascii(iVal,64);
+		UT_String_sprintf (sVal,"%s)",val);
+		FREEP(val);
 		break;
+	}
 	case FOOTNOTE_TYPE_LOWER_ROMAN:
-		UT_String_sprintf (sVal,"%s",autoCalc.dec2roman(iVal,true));
+	{
+		char * val = autoCalc.dec2roman(iVal,true);
+		UT_String_sprintf (sVal,"%s",val);
+		FREEP(val);
 		break;
+	}
 	case FOOTNOTE_TYPE_LOWER_ROMAN_PAREN:
-		UT_String_sprintf (sVal,"(%s)",autoCalc.dec2roman(iVal,true));
+	{
+		char * val = autoCalc.dec2roman(iVal,true);
+		UT_String_sprintf (sVal,"(%s)",val);
+		FREEP(val);
 		break;
+	}
 	case FOOTNOTE_TYPE_UPPER_ROMAN:
-		UT_String_sprintf (sVal,"%s",autoCalc.dec2roman(iVal,false));
+	{
+		char * val = autoCalc.dec2roman(iVal,false);
+		UT_String_sprintf (sVal,"%s",val);
+		FREEP(val);
 		break;
+	}
 	case FOOTNOTE_TYPE_UPPER_ROMAN_PAREN:
-		UT_String_sprintf (sVal,"(%s)",autoCalc.dec2roman(iVal,false));
+	{
+		char * val = autoCalc.dec2roman(iVal,false);
+		UT_String_sprintf (sVal,"(%s)",val);
+		FREEP(val);
 		break;
+	}
 	default:
 		UT_String_sprintf (sVal,"%d", iVal);
 	}
@@ -1523,6 +1563,7 @@ const GR_Font* FL_DocLayout::findFont(const PP_AttrProp * pSpanAP,
 	const char* pszStretch	= PP_evalProperty("font-stretch",pSpanAP,pBlockAP,pSectionAP, m_pDoc, true);
 	const char* pszSize		= PP_evalProperty("font-size",pSpanAP,pBlockAP,pSectionAP, m_pDoc, true);
 	const char* pszPosition = PP_evalProperty("text-position",pSpanAP,pBlockAP,pSectionAP, m_pDoc, true);
+	const char* pszLang     = PP_evalProperty("lang",pSpanAP,pBlockAP,pSectionAP, m_pDoc, true);
 
 	if (pszField != NULL && isField && UT_strcmp(pszField, "NULL"))
 		pszFamily = pszField;
@@ -1535,7 +1576,10 @@ const GR_Font* FL_DocLayout::findFont(const PP_AttrProp * pSpanAP,
 		pszSize = UT_formatDimensionedValue(newSize,"pt",".0");
 	}
 
-	return m_pG->findFont(pszFamily, pszStyle, pszVariant, pszWeight, pszStretch, pszSize);
+	return m_pG->findFont(pszFamily, pszStyle,
+						  pszVariant, pszWeight,
+						  pszStretch, pszSize,
+						  pszLang);
 }
 
 void FL_DocLayout::changeDocSections(const PX_ChangeRecord_StruxChange * pcrx, fl_DocSectionLayout * pDSL)
