@@ -115,6 +115,10 @@ public:
 	virtual EV_Menu* getMainMenu() { return m_pFrameImpl->_getMainMenu(); }
 
 	XAP_FrameImpl * getFrameImpl() const { return m_pFrameImpl; }
+    /*!
+     * \todo maybe the default instance should be freed before it is replaced
+    */
+	void setFrameImpl(XAP_FrameImpl *pFrameImpl) { m_pFrameImpl = pFrameImpl; }
 
 	void                        nullUpdate () const { m_pFrameImpl->_nullUpdate(); }
 	AV_View *		       		getCurrentView() const;
