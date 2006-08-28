@@ -37,7 +37,11 @@ XAP_DialogFactory::XAP_DialogFactory(XAP_App * pApp, int nrElem, const struct _d
 	m_pFrame = NULL;
 	m_dialogType = XAP_DLGT_APP_PERSISTENT;
 	m_nrElementsDlgTable = nrElem;
-	m_dlg_table = pDlgTable;
+	UT_sint32 i = 0;
+	for(i=0; i< nrElem; i++)
+	{
+	  m_vec_dlg_table.addItem(const_cast<_dlg_table *>(&pDlgTable[i]));
+	}
 }
 
 XAP_DialogFactory::XAP_DialogFactory(XAP_Frame * pFrame, XAP_App * pApp, int nrElem, const struct _dlg_table * pDlgTable)
@@ -50,12 +54,17 @@ XAP_DialogFactory::XAP_DialogFactory(XAP_Frame * pFrame, XAP_App * pApp, int nrE
 	m_pFrame = pFrame;
 	m_dialogType = XAP_DLGT_FRAME_PERSISTENT;
 	m_nrElementsDlgTable = nrElem;
-	m_dlg_table = pDlgTable;
+	UT_sint32 i = 0;
+	for(i=0; i< nrElem; i++)
+	{
+	  m_vec_dlg_table.addItem(const_cast<_dlg_table *>(&pDlgTable[i]));
+	}
 }
 
 XAP_DialogFactory::~XAP_DialogFactory(void)
 {
 	UT_VECTOR_PURGEALL(XAP_Dialog *, m_vecDialogs);
+	UT_VECTOR_PURGEALL( _dlg_table *, m_vecDynamicTable);
 }
 
 bool XAP_DialogFactory::_findDialogInTable(XAP_Dialog_Id id, UT_uint32 * pIndex) const
@@ -64,9 +73,9 @@ bool XAP_DialogFactory::_findDialogInTable(XAP_Dialog_Id id, UT_uint32 * pIndex)
 
 	UT_ASSERT(pIndex);
 
-	for (UT_uint32 k=0; (k < m_nrElementsDlgTable); k++)
+	for (UT_uint32 k=0; (k < m_vec_dlg_table.getItemCount()); k++)
 	{
-		if (m_dlg_table[k].m_id == id)
+	        if (m_vec_dlg_table.getNthItem(k)->m_id == id)
 		{
 			*pIndex = k;
 			return true;
@@ -77,6 +86,24 @@ bool XAP_DialogFactory::_findDialogInTable(XAP_Dialog_Id id, UT_uint32 * pIndex)
 	return false;
 }
 
+XAP_Dialog_Id XAP_DialogFactory::getNextId(void)
+{
+        UT_uint32 i = m_vec_dlg_table.getItemCount()-1;
+	UT_sint32 id = static_cast<UT_sint32>(m_vec_dlg_table.getNthItem(i)->m_id);
+	return static_cast<XAP_Dialog_Id>(id+1);
+
+}
+
+XAP_Dialog_Id XAP_DialogFactory::registerDialog(XAP_Dialog *(* pStaticConstructor)(XAP_DialogFactory *, XAP_Dialog_Id id),XAP_Dialog_Type iDialogType)
+{
+  _dlg_table * pDlgTable = new _dlg_table;
+  pDlgTable->m_id = getNextId();
+  pDlgTable->m_type = iDialogType;
+  pDlgTable->m_pfnStaticConstructor = pStaticConstructor;
+  m_vec_dlg_table.addItem(pDlgTable);
+  m_vecDynamicTable.addItem(pDlgTable);
+  return pDlgTable->m_id;
+}
 /*****************************************************************/
 
 /*!
@@ -93,7 +120,7 @@ XAP_Dialog * XAP_DialogFactory::justMakeTheDialog(XAP_Dialog_Id id)
 	
 	if(_findDialogInTable(id,&index))
 	{
-		pDialog = (XAP_Dialog *)((m_dlg_table[index].m_pfnStaticConstructor)(this,id));
+	  pDialog = (XAP_Dialog *)((m_vec_dlg_table.getNthItem(index)->m_pfnStaticConstructor)(this,id));
 		return pDialog;
 	}
 	return NULL;
@@ -107,7 +134,7 @@ XAP_Dialog * XAP_DialogFactory::requestDialog(XAP_Dialog_Id id)
 	if(_findDialogInTable(id,&index))
 	{
 
-		switch (m_dlg_table[index].m_type)
+	        switch (m_vec_dlg_table.getNthItem(index)->m_type)
 		{
 		case XAP_DLGT_NON_PERSISTENT:	
 			// construct a non-persistent dialog and just return it.
@@ -142,7 +169,7 @@ CreateItSimple:
 	{
 		// create a fresh dialog object and return it -- no strings attached.
 		
-		pDialog = (XAP_Dialog *)((m_dlg_table[index].m_pfnStaticConstructor)(this,id));
+	        pDialog = (XAP_Dialog *)((m_vec_dlg_table.getNthItem(index)->m_pfnStaticConstructor)(this,id));
 		return pDialog;
 	}
 	
@@ -154,7 +181,7 @@ CreateItPersistent:
 		UT_sint32 indexVec = m_vecDialogIds.findItem(index+1);
 		if (indexVec < 0)				// not present, create new object and add it to vector
 		{
-			pDialog = (XAP_Dialog *)((m_dlg_table[index].m_pfnStaticConstructor)(this,id));
+		        pDialog = (XAP_Dialog *)((m_vec_dlg_table.getNthItem(index)->m_pfnStaticConstructor)(this,id));
 			m_vecDialogIds.addItem(index+1);
 			m_vecDialogs.addItem(pDialog);
 		}
@@ -191,7 +218,7 @@ void XAP_DialogFactory::releaseDialog(XAP_Dialog * pDialog)
 	UT_uint32 index;
 	_findDialogInTable(id,&index);
 
-	switch (m_dlg_table[index].m_type)
+	switch (m_vec_dlg_table.getNthItem(index)->m_type)
 	{
 	case XAP_DLGT_NON_PERSISTENT:						// for non-persistent dialog objects, we
 		delete pDialog;									// just delete it now.

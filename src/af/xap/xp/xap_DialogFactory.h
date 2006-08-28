@@ -65,7 +65,8 @@ public:
 	XAP_Dialog *		requestDialog(XAP_Dialog_Id id);
 	XAP_Dialog *		justMakeTheDialog(XAP_Dialog_Id id);
 	void				releaseDialog(XAP_Dialog * pDialog);
-
+	XAP_Dialog_Id                   getNextId(void);
+        XAP_Dialog_Id                   registerDialog(XAP_Dialog *(*pStaticConstructor)(XAP_DialogFactory *, XAP_Dialog_Id id),XAP_Dialog_Type iDialogType);
 protected:
 	bool				_findDialogInTable(XAP_Dialog_Id id, UT_uint32 * pIndex) const;
 	
@@ -76,7 +77,8 @@ protected:
 	UT_NumberVector			m_vecDialogIds;
 
 	UT_uint32					m_nrElementsDlgTable;
-	const _dlg_table *	m_dlg_table;			/* an array of elements */
+	UT_GenericVector<_dlg_table *>	m_vec_dlg_table;			/* a Vector of elements */
+	UT_GenericVector<_dlg_table *>	m_vecDynamicTable;			/* a Vector of elements */
 };
 
 #endif /* XAP_DIALOGFACTORY_H */

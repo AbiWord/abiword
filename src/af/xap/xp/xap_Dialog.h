@@ -41,6 +41,7 @@ class XAP_App;
 class XAP_Frame;
 class XAP_Widget;
 class UT_UTF8String;
+class XAP_Dialog;
 
 class AV_View;
 
@@ -60,6 +61,8 @@ typedef enum _XAP_Dialog_Type
 } XAP_Dialog_Type;
 
 typedef int xap_widget_id;
+
+typedef XAP_Dialog *(*pt2Constructor)(XAP_DialogFactory * pFactory, XAP_Dialog_Id id );
 
 class ABI_EXPORT XAP_Dialog
 {
