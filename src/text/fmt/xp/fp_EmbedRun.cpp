@@ -43,13 +43,13 @@ fp_EmbedRun::fp_EmbedRun(fl_BlockLayout* pBL,
 	m_pszDataID(NULL),
 	m_sEmbedML(""),
 	m_pEmbedManager(NULL),
-        m_iEmbedUID(-1),
-        m_iIndexAP(indexAP),
-        m_pDocLayout(NULL),
+	m_iEmbedUID(-1),
+	m_iIndexAP(indexAP),
+	m_pDocLayout(NULL),
 	m_bNeedsSnapshot(true),
 	m_OH(oh)
 {
-        m_pDocLayout = getBlock()->getDocLayout();
+	m_pDocLayout = getBlock()->getDocLayout();
 	lookupProperties(getGraphics());
 }
 
@@ -559,4 +559,11 @@ bool fp_EmbedRun::_updatePropValuesIfNeeded(void)
       return true;
     }
   return false;
+}
+
+void fp_EmbedRun::update()
+{
+	m_iIndexAP = getBlock()->getDocument()->getAPIFromSOH(m_OH);
+	m_pEmbedManager->updateData(m_iEmbedUID, m_iIndexAP);
+	m_pEmbedManager->loadEmbedData(m_iEmbedUID);
 }

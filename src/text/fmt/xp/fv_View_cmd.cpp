@@ -5482,8 +5482,9 @@ bool FV_View::cmdUpdateEmbed(fp_Run * pRun, UT_ByteBuf * pBuf, const char * szMi
 		// Filter out size properties
 		if (sProp == "width" || sProp == "height" || sProp == "descent"
 			|| sProp == "ascent")
-			continue;
-	    sVal = props[i+1];
+			sVal=NULL;
+		else
+	    	sVal = props[i+1];
 	    UT_DEBUGMSG(("Update Embed Prop %s val %s \n",props[i],props[i+1]));
 	    UT_UTF8String_setProperty(sFullProps,sProp,sVal);
 	  }
@@ -5492,8 +5493,7 @@ bool FV_View::cmdUpdateEmbed(fp_Run * pRun, UT_ByteBuf * pBuf, const char * szMi
 	UT_UTF8String_addPropertyString(sFullProps,sProps);
 	atts[3]=sFullProps.utf8_str();
 	UT_DEBUGMSG(("Property String at Update Object is %s \n",atts[3]));
-	_deleteSelection();
-	m_pDoc->insertObject(pos,PTO_Embed,atts,NULL);
+	m_pDoc->changeSpanFmt(PTC_AddFmt, pos, pos+1, atts, NULL);
 	m_pDoc->endUserAtomicGlob();
 
 	_generalUpdate();

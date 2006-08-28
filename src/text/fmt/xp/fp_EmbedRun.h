@@ -51,6 +51,7 @@ public:
 	const char *            getDataID(void) const;
 	UT_sint32               getUID(void) const
 	{ return m_iEmbedUID;}
+	void					update();
 protected:
 	virtual void			_lookupProperties(const PP_AttrProp * pSpanAP,
 											  const PP_AttrProp * pBlockAP,

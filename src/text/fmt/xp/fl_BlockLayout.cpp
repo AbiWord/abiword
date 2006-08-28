@@ -8397,6 +8397,7 @@ bool fl_BlockLayout::doclistener_changeObject(const PX_ChangeRecord_ObjectChange
 				{
 					pEmbedRun->clearScreen();
 				}
+				pEmbedRun->update ();
 				pEmbedRun->lookupProperties();
 
 				goto done;

@@ -77,6 +77,7 @@ public:
     virtual bool           isEdittable(UT_sint32 uid);
     virtual bool           isResizeable(UT_sint32 uid);
 	virtual void		   setRun (UT_sint32 uid, fp_Run * run);
+	virtual void		   updateData(UT_sint32 uid, UT_sint32 api);
 
 private:
     GR_Graphics *               m_pG;
