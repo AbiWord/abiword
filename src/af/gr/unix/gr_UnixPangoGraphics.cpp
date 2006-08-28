@@ -32,13 +32,13 @@
 #include "ut_vector.h"
 #include "ut_locale.h"
 
-
 // need this to include what Pango considers 'low-level' api
 #define PANGO_ENABLE_ENGINE
 
 #include <pango/pango-item.h>
 #include <pango/pango-engine.h>
 #include <pango/pangoxft.h>
+
 #include <math.h>
 
 #include <gdk/gdk.h>
@@ -200,6 +200,14 @@ bool GR_UnixPangoRenderInfo::getUTF8Text()
 	return true;
 }
 
+/* taken from gnomeprint */
+static void
+xft_substitute_func (FcPattern *pattern, gpointer   data)
+{
+	FcPatternDel (pattern, FC_HINTING);
+	FcPatternAddBool (pattern, FC_HINTING, FALSE);
+}
+
 GR_UnixPangoGraphics::GR_UnixPangoGraphics(GdkWindow * win)
 	:GR_UnixGraphics(win, NULL),
 	 m_pFontMap(NULL),
@@ -208,22 +216,30 @@ GR_UnixPangoGraphics::GR_UnixPangoGraphics(GdkWindow * win)
 	 m_pPFontGUI(NULL),
 	 m_iDeviceResolution(96)
 {
-	xxx_UT_DEBUGMSG(("GR_UnixPangoGraphics::GR_UnixPangoGraphics using pango (window)\n"));
 	GdkDisplay * gDisp = gdk_drawable_get_display(win);
 	GdkScreen *  gScreen = gdk_drawable_get_screen(win);
 	Display * disp = GDK_DISPLAY_XDISPLAY(gDisp);
 	int iScreen = gdk_x11_screen_get_screen_number(gScreen);
 
-	// The following does not work; it returns 74 on my system in place of 96
-	// m_iDeviceResolution = (UT_uint32)((double)gdk_screen_width() * 25.4 /
-	//								  (double)gdk_screen_width_mm());
-#if 0
-	// this is not avaliable in the gtk we require
-	m_iDeviceResolution = (UT_uint32) gdk_screen_get_resolution_libgtk_only(gScreen);
-#endif
 	m_pContext = pango_xft_get_context(disp, iScreen);
 	m_pFontMap = pango_xft_get_font_map(disp, iScreen);
-	
+
+	/* ascertain the real dpi that xft will be using */
+	FcPattern *pattern;
+	double dpi = 0.0; 
+	pattern = FcPatternCreate();
+	if (pattern)
+	{
+		XftDefaultSubstitute (GDK_SCREEN_XDISPLAY (gScreen),
+							  iScreen,
+							  pattern);
+		FcPatternGetDouble (pattern, FC_DPI, 0, &dpi); 
+		FcPatternDestroy (pattern);
+		UT_DEBUGMSG(("@@@@@@@@@@@@@@ retrieved DPI %f @@@@@@@@@@@@@@@@@@ \n", dpi));
+
+		m_iDeviceResolution = round (dpi);
+	}	
+
 	_setIsSymbol(false);
 	_setIsDingbat(false);
 }
@@ -235,7 +251,7 @@ GR_UnixPangoGraphics::GR_UnixPangoGraphics()
 	 m_pContext(NULL),
 	 m_pPFont(NULL),
 	 m_pPFontGUI(NULL),
-	 m_iDeviceResolution(96)
+	 m_iDeviceResolution(72)
 {
 #ifndef WITHOUT_PRINTING
 	m_pFontMap = gnome_print_pango_get_default_font_map();
@@ -628,6 +644,7 @@ bool GR_UnixPangoGraphics::shape(GR_ShapingInfo & si, GR_RenderInfo *& ri)
 	
 	// we did our calculations at notional 100%
 	RI->m_iZoom = 100;
+
 	return true;
 }
 
@@ -1567,15 +1584,6 @@ GR_Font* GR_UnixPangoGraphics::_findFont(const char* pszFontFamily,
 					  pVariant,
 					  pWeight,
 					  pStretch);
-#if 0
-	PangoFontDescription * pfd = pango_font_description_new();
-	pango_font_description_set_weight(pfd, PANGO_WEIGHT_BOLD);
-	pango_font_description_set_style(pfd, PANGO_STYLE_ITALIC);
-	pango_font_description_set_variant(pfd, PANGO_VARIANT_NORMAL);
-	pango_font_description_set_stretch(pfd, PANGO_STRETCH_NORMAL);
-	pango_font_description_set_size(pfd, 12*PANGO_SCALE);
-	char * p = pango_font_description_to_string(pfd);
-#endif
 	
 	return new GR_UnixPangoFont(s.c_str(), dPointSize, this, pszLang);
 }
