@@ -1544,13 +1544,13 @@ int AP_UnixApp::main(const char * szAppName, int argc, const char ** argv)
 	else {
 		UT_DEBUGMSG(("No DISPLAY: this may not be what you want.\n"));
 	}
-
 	// unload all loaded plugins (remove some of the memory leaks shown at shutdown :-)
 	XAP_ModuleManager::instance().unloadAllPlugins();
 
 	// Step 4: Destroy the App.  It should take care of deleting all frames.
 	pMyUnixApp->shutdown();
 	delete pMyUnixApp;
+
 	
 	return 0;
 }

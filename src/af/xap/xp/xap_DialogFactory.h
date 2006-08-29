@@ -67,6 +67,8 @@ public:
 	void				releaseDialog(XAP_Dialog * pDialog);
 	XAP_Dialog_Id                   getNextId(void);
         XAP_Dialog_Id                   registerDialog(XAP_Dialog *(*pStaticConstructor)(XAP_DialogFactory *, XAP_Dialog_Id id),XAP_Dialog_Type iDialogType);
+        void                            unregisterDialog(XAP_Dialog_Id id);
+
 protected:
 	bool				_findDialogInTable(XAP_Dialog_Id id, UT_uint32 * pIndex) const;
 	

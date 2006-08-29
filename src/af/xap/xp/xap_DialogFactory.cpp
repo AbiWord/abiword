@@ -63,8 +63,8 @@ XAP_DialogFactory::XAP_DialogFactory(XAP_Frame * pFrame, XAP_App * pApp, int nrE
 
 XAP_DialogFactory::~XAP_DialogFactory(void)
 {
-	UT_VECTOR_PURGEALL(XAP_Dialog *, m_vecDialogs);
-	UT_VECTOR_PURGEALL( _dlg_table *, m_vecDynamicTable);
+  UT_VECTOR_PURGEALL(XAP_Dialog *, m_vecDialogs);
+  UT_VECTOR_PURGEALL( _dlg_table *, m_vecDynamicTable);
 }
 
 bool XAP_DialogFactory::_findDialogInTable(XAP_Dialog_Id id, UT_uint32 * pIndex) const
@@ -104,6 +104,23 @@ XAP_Dialog_Id XAP_DialogFactory::registerDialog(XAP_Dialog *(* pStaticConstructo
   m_vecDynamicTable.addItem(pDlgTable);
   return pDlgTable->m_id;
 }
+
+void XAP_DialogFactory::unregisterDialog(XAP_Dialog_Id id)
+{
+  UT_uint32 i = 0;
+  for(i=0; i< m_vecDialogs.getItemCount(); i++)
+  {
+      const XAP_Dialog * pDialog = reinterpret_cast<const XAP_Dialog *>(m_vecDialogs.getNthItem(i));
+      if(pDialog && pDialog->getDialogId() == id)
+      {
+	  m_vecDialogs.deleteNthItem(i);
+	  m_vecDialogIds.deleteNthItem(i);
+	  delete pDialog;
+	  return;
+      }
+  }
+}
+
 /*****************************************************************/
 
 /*!
