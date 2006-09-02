@@ -574,13 +574,14 @@ GList *XAP_UnixDialog_Insert_Symbol::_getGlistFonts (void)
 		UT_return_val_if_fail( fonts,false );
 		iCount = fonts->size();
 	}
+#ifdef USE_PANGO
 	else
 	{
 		names = GR_UnixPangoGraphics::getAllFontNames();
 		UT_return_val_if_fail( names, false );
 		iCount = names->size();
 	}
-
+#endif
 	GList *glFonts = NULL;
 	UT_String currentfont;
 	UT_uint32 j = 0;

@@ -116,14 +116,13 @@ XAP_UnixApp::XAP_UnixApp(XAP_Args * pArgs, const char * szAppName)
 
 		
 		UT_ASSERT( bSuccess );
-
+#if defined(USE_PANGO)
 		bSuccess = pGF->registerClass(GR_UnixPangoGraphics::graphicsAllocator,
 									  GR_UnixPangoGraphics::graphicsDescriptor,
 									  GR_UnixPangoGraphics::s_getClassId());
 
 		UT_ASSERT( bSuccess );
 
-#if defined(USE_PANGO)
 		if(bSuccess)
 		{
 			pGF->registerAsDefault(GR_UnixPangoGraphics::s_getClassId(), true);

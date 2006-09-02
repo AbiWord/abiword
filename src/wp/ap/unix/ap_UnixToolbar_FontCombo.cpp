@@ -66,10 +66,12 @@ AP_UnixToolbar_FontCombo::AP_UnixToolbar_FontCombo(EV_Toolbar * pToolbar,
 		m_nLimit = list->size();
 		DELETEP(list);
 	}
+#ifdef USE_PANGO
 	else
 	{
 		m_nLimit = GR_UnixPangoGraphics::getAllFontCount();
 	}
+#endif
 }
 
 AP_UnixToolbar_FontCombo::~AP_UnixToolbar_FontCombo(void)
@@ -102,13 +104,14 @@ bool AP_UnixToolbar_FontCombo::populate(void)
 		UT_return_val_if_fail( list, false );
 		count = list->size();
 	}
+#ifdef USE_PANGO
 	else
 	{
 		names = GR_UnixPangoGraphics::getAllFontNames();
 		UT_return_val_if_fail( names, false );
 		count = names->size();
 	}
-	
+#endif
 	m_vecContents.clear();
 
 	for (UT_uint32 i = 0; i < count; i++)
@@ -121,11 +124,12 @@ bool AP_UnixToolbar_FontCombo::populate(void)
 			XAP_UnixFont * pFont = list->getNthItem(i);
 			fName = pFont->getName();
 		}
+#ifdef USE_PANGO
 		else
 		{
 			fName = names->getNthItem(i);
 		}
-		
+#endif
 		
 		int foundAt = -1;
 

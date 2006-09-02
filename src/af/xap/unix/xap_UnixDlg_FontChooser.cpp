@@ -914,13 +914,14 @@ void XAP_UnixDialog_FontChooser::runModal(XAP_Frame * pFrame)
 		UT_return_if_fail( fonts );
 		iCount = fonts->size();
 	}
+#ifdef USE_PANGO
 	else
 	{
 		names = GR_UnixPangoGraphics::getAllFontNames();
 		UT_return_if_fail( names );
 		iCount = names->size();
 	}
-	
+#endif
 	for (UT_uint32 i = 0; i < iCount; i++)
 	{
 		const char * fName = NULL;
