@@ -11196,6 +11196,7 @@ bool FV_View::getEditableBounds(bool isEnd, PT_DocPosition &posEOD, bool bOverid
 		return true;
 	}
 	pBL = static_cast<fl_BlockLayout *>(m_pEditShadow->getLastLayout());
+	UT_return_val_if_fail(pBL, false);
 	posEOD = pBL->getPosition(false);
 	fp_Run * pRun = pBL->getFirstRun();
 	while( pRun && pRun->getNextRun() != NULL)
