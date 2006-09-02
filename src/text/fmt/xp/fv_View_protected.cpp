@@ -4569,7 +4569,7 @@ void FV_View::_setPoint(PT_DocPosition pt, bool bEOL)
 	m_Selection.checkSelectAll();
 	m_bInsertAtTablePending = false;
 	m_iPosAtTable = 0;
-	UT_DEBUGMSG(("Point set to %d in View %x \n",pt,this));
+	xxx_UT_DEBUGMSG(("Point set to %d in View %x \n",pt,this));
 	m_bPointEOL = bEOL;
 	if(!m_pDoc->isPieceTableChanging())
 	{
@@ -4673,7 +4673,7 @@ bool FV_View::_charMotion(bool bForward,UT_uint32 countChars, bool bSkipCannotCo
 	UT_uint32 uheight;
 	m_bPointEOL = false;
 	UT_sint32 iOldDepth = getEmbedDepth(getPoint());
-	UT_DEBUGMSG(("_charMotion: Old Position is %d embed depth %d \n",posOld,iOldDepth));
+	xxx_UT_DEBUGMSG(("_charMotion: Old Position is %d embed depth %d \n",posOld,iOldDepth));
 	/*
 	  we don't really care about the coords.  We're calling these
 	  to get the Run pointer
@@ -4692,21 +4692,21 @@ bool FV_View::_charMotion(bool bForward,UT_uint32 countChars, bool bSkipCannotCo
 	// code.
 	UT_sint32 xold,yold,x2old,y2old=0;
 	bool bDirectionOld=false;
-	UT_DEBUGMSG(("Count Chars %d \n",countChars));
+	xxx_UT_DEBUGMSG(("Count Chars %d \n",countChars));
 	_findPositionCoords(m_iInsPoint, false, xold, yold, x2old,y2old,uheight, bDirectionOld, &pBlock, &pRun);
 	if (bForward)
 	{
-		UT_DEBUGMSG(("Just before First forward _setPoint %d \n",m_iInsPoint));
+		xxx_UT_DEBUGMSG(("Just before First forward _setPoint %d \n",m_iInsPoint));
 		_setPoint(m_iInsPoint + countChars);
-		UT_DEBUGMSG(("Just After First forward _setPoint %d \n",m_iInsPoint));
+		xxx_UT_DEBUGMSG(("Just After First forward _setPoint %d \n",m_iInsPoint));
 //
 // Scan past any strux boundaries (like table controls
 //
 		while(getPoint() < posEOD && !isPointLegal())
 		{
-			UT_DEBUGMSG(("Forward scan past illegal point pos 1 %d \n",m_iInsPoint));
+			xxx_UT_DEBUGMSG(("Forward scan past illegal point pos 1 %d \n",m_iInsPoint));
 			_setPoint(m_iInsPoint + 1);
-			UT_DEBUGMSG(("Forward scan past illegal point pos 2 %d \n",m_iInsPoint));
+			xxx_UT_DEBUGMSG(("Forward scan past illegal point pos 2 %d \n",m_iInsPoint));
 		}
 		_findPositionCoords(m_iInsPoint-1, false, x, y, x2,y2,uheight, bDirection, &pBlock, &pRun);
 //
@@ -4727,9 +4727,9 @@ bool FV_View::_charMotion(bool bForward,UT_uint32 countChars, bool bSkipCannotCo
 														 (x2 == x2old) && (y2 == y2old) &&
 														 (bDirection == bDirectionOld))*/))
 		{
-			UT_DEBUGMSG(("fv_View_protected: (2) pRun = %x pos %d\n",pRun,m_iInsPoint));
+			xxx_UT_DEBUGMSG(("fv_View_protected: (2) pRun = %x pos %d\n",pRun,m_iInsPoint));
 			_setPoint(m_iInsPoint+1);
-			UT_DEBUGMSG(("fv_View_protected: (3) pRun = %x pos %d \n",pRun,m_iInsPoint));
+			xxx_UT_DEBUGMSG(("fv_View_protected: (3) pRun = %x pos %d \n",pRun,m_iInsPoint));
 			_findPositionCoords(m_iInsPoint-1, false, x, y, x2,y2,uheight, bDirection, &pBlock, &pRun);
 			bExtra = true;
 		}
@@ -4784,7 +4784,7 @@ bool FV_View::_charMotion(bool bForward,UT_uint32 countChars, bool bSkipCannotCo
 		while(getPoint() > realBOD && !isPointLegal())
 		{
 			_setPoint(m_iInsPoint - 1);
-			UT_DEBUGMSG(("Backward scan past illegal point pos %d \n",m_iInsPoint));
+			xxx_UT_DEBUGMSG(("Backward scan past illegal point pos %d \n",m_iInsPoint));
 			if(!bGotOtherStrux && m_pDoc->isTableAtPos(getPoint()))
 			{
 				bGotTableStrux = true;
@@ -4802,7 +4802,7 @@ bool FV_View::_charMotion(bool bForward,UT_uint32 countChars, bool bSkipCannotCo
 				}
 			}
 		}
-		if(bGotOtherStrux && bGotTableStrux)
+	if(bGotOtherStrux && bGotTableStrux)
 		{
 			bInsertAtTable = true;
 		}
@@ -4899,7 +4899,7 @@ bool FV_View::_charMotion(bool bForward,UT_uint32 countChars, bool bSkipCannotCo
 		UT_uint32 iLength = 0;
 		while(pRun && ((bSkipCannotContainPoint && !pRun->canContainPoint()) || pRun->getLength() == 0))
 		{
-			UT_DEBUGMSG(("_charMotion: Sweep forward through runs %d \n",pRun->getLength()));
+			xxx_UT_DEBUGMSG(("_charMotion: Sweep forward through runs %d \n",pRun->getLength()));
 			iLength += pRun->getLength();
 			pRun = pRun->getNextRun();
 		}
@@ -4952,7 +4952,7 @@ bool FV_View::_charMotion(bool bForward,UT_uint32 countChars, bool bSkipCannotCo
 	// this is much simpler, since the findPointCoords will return the
 	// run on the left of the requested position, so we just need to move
 	// to its end if the position does not fall into that run
-	UT_DEBUGMSG(("_charMotion: iRunEnd %d \n",iRunEnd));
+	xxx_UT_DEBUGMSG(("_charMotion: iRunEnd %d \n",iRunEnd));
 	if(!bForward && (iRunEnd < m_iInsPoint) && (pRun->getBlockOffset() > 0))
 	{
 		_setPoint(iRunEnd - 1);
@@ -4976,7 +4976,7 @@ bool FV_View::_charMotion(bool bForward,UT_uint32 countChars, bool bSkipCannotCo
 
 			if(iAdjustedPos != getPoint())
 			{
-				UT_DEBUGMSG(("FV_View::_charMotion: orig pos %d, adjusted to %d\n", getPoint(), iAdjustedPos));
+				xxx_UT_DEBUGMSG(("FV_View::_charMotion: orig pos %d, adjusted to %d\n", getPoint(), iAdjustedPos));
 				_setPoint(iAdjustedPos);
 			}
 		}
@@ -4992,7 +4992,7 @@ bool FV_View::_charMotion(bool bForward,UT_uint32 countChars, bool bSkipCannotCo
 			bool bSweep = false;
 			while(m_iInsPoint <= posEOD && ( (iOldDepth < getEmbedDepth(m_iInsPoint)) || m_pDoc->isEndFootnoteAtPos(getPoint())))
 			{ 
-				UT_DEBUGMSG(("_charMotion: Sweep forward -1 %d \n",m_iInsPoint));
+				xxx_UT_DEBUGMSG(("_charMotion: Sweep forward -1 %d \n",m_iInsPoint));
 				bSweep = true;
 				m_iInsPoint++;
 			}
@@ -5010,7 +5010,7 @@ bool FV_View::_charMotion(bool bForward,UT_uint32 countChars, bool bSkipCannotCo
 			bool bSweep = false;
 			while((m_iInsPoint > posBOD) && (iOldDepth > getEmbedDepth(m_iInsPoint)) || m_pDoc->isFootnoteAtPos(getPoint()) )
 			{
-				UT_DEBUGMSG(("_charMotion: Sweep backward -1 %d \n",m_iInsPoint));
+				xxx_UT_DEBUGMSG(("_charMotion: Sweep backward -1 %d \n",m_iInsPoint));
 				m_iInsPoint--;
 				bSweep = true;
 			}
@@ -5028,7 +5028,7 @@ bool FV_View::_charMotion(bool bForward,UT_uint32 countChars, bool bSkipCannotCo
 			bool bSweep = false;
 			while(((iOldDepth < getEmbedDepth(m_iInsPoint)) || m_pDoc->isFootnoteAtPos(getPoint()) ) && (m_iInsPoint >= posBOD))
 			{ 
-				UT_DEBUGMSG(("_charMotion: Sweep backward -2 %d \n",m_iInsPoint));
+				xxx_UT_DEBUGMSG(("_charMotion: Sweep backward -2 %d \n",m_iInsPoint));
 				bSweep = true;
 				m_iInsPoint--;
 			}
@@ -5046,7 +5046,7 @@ bool FV_View::_charMotion(bool bForward,UT_uint32 countChars, bool bSkipCannotCo
 			bool bSweep = false;
 			while((m_iInsPoint < posEOD) &&((iOldDepth > getEmbedDepth(m_iInsPoint)) || m_pDoc->isEndFootnoteAtPos(getPoint())))
 			{
-				UT_DEBUGMSG(("_charMotion: Sweep forward -2 %d \n",m_iInsPoint));
+				xxx_UT_DEBUGMSG(("_charMotion: Sweep forward -2 %d \n",m_iInsPoint));
 				m_iInsPoint++;
 				bSweep = true;
 			}
@@ -5112,7 +5112,7 @@ bool FV_View::_charMotion(bool bForward,UT_uint32 countChars, bool bSkipCannotCo
 	{
 		m_FrameEdit.setMode(FV_FrameEdit_NOT_ACTIVE);
 	}
-	UT_DEBUGMSG(("SEVIOR: Point = %d \n",getPoint()));
+	xxx_UT_DEBUGMSG(("SEVIOR: Point = %d \n",getPoint()));
 	_fixInsertionPointCoords();
 	return (bRes && m_iInsPoint != posOld);
 }

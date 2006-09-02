@@ -3711,7 +3711,6 @@ fp_FieldRun::~fp_FieldRun(void)
 
 bool fp_FieldRun::_recalcWidth()
 {
-	UT_GrowBufElement aCharWidths[FPFIELD_MAX_LENGTH];
 	// TODO -- is this really needed ???
 	// this should not be needed, since lookup properties is called
 	// when formatting changes - Tomas
@@ -3719,8 +3718,12 @@ bool fp_FieldRun::_recalcWidth()
 
 	getGraphics()->setFont(_getFont());
 
-	UT_sint32 iNewWidth = getGraphics()->measureString(m_sFieldValue, 0, UT_UCS4_strlen(m_sFieldValue), aCharWidths);
-	xxx_UT_DEBUGMSG(("fp_FieldRun::recalcWidth: old width %d, new width %d\n", getWidth(), iNewWidth));
+	UT_sint32 iNewWidth =
+		getGraphics()->measureString(m_sFieldValue,
+									 0,
+									 UT_UCS4_strlen(m_sFieldValue),
+									 NULL);
+	
 	if (iNewWidth != getWidth())
 	{
 		clearScreen();
@@ -3781,8 +3784,6 @@ bool fp_FieldRun::_setValue(const UT_UCSChar *p_new_value)
 		}
 
 		{
-			UT_GrowBufElement aCharWidths[FPFIELD_MAX_LENGTH];
-
 			// TODO -- is this really needed???
 			// should not be, since lookupProperties is called on
 			// formatting changes - Tomas
@@ -3790,7 +3791,11 @@ bool fp_FieldRun::_setValue(const UT_UCSChar *p_new_value)
 
 			getGraphics()->setFont(_getFont());
 
-			UT_sint32 iNewWidth = getGraphics()->measureString(m_sFieldValue, 0, UT_UCS4_strlen(m_sFieldValue), aCharWidths);
+			UT_sint32 iNewWidth =
+				getGraphics()->measureString(m_sFieldValue,
+											 0,
+											 UT_UCS4_strlen(m_sFieldValue),
+											 NULL);
 			if (iNewWidth != getWidth())
 			{
 				_setWidth(iNewWidth);
@@ -4218,14 +4223,10 @@ void fp_FieldRun::_defaultDraw(dg_DrawArgs* pDA)
 	pG->setFont(_getFont());
 	
 
-	UT_GrowBufElement aCharWidths[FPFIELD_MAX_LENGTH];
 	UT_uint32 len = UT_UCS4_strlen(m_sFieldValue);
-	
 	UT_return_if_fail(len);
-	
-	/*UT_sint32 iNewWidth = */ getGraphics()->measureString(m_sFieldValue, 0, len, aCharWidths);
 
-	painter.drawChars(m_sFieldValue, 0, len, pDA->xoff,iYdraw, aCharWidths);
+	painter.drawChars(m_sFieldValue, 0, len, pDA->xoff,iYdraw, NULL);
 //
 // Draw underline/overline/strikethough
 //

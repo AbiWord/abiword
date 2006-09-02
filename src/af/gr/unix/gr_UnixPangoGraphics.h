@@ -120,6 +120,9 @@ public:
 									  UT_sint32 xoff, UT_sint32 yoff,
 									  int * pCharWidth);
                     
+	virtual UT_uint32      measureString(const UT_UCSChar* s, int iOffset,
+										 int num,  UT_GrowBufElement* pWidths);
+	
 	virtual GR_Font*	   getDefaultFont(UT_String& fontFamily,
 										  const char * pszLang);
 	virtual void           setFont(GR_Font *);
@@ -208,6 +211,18 @@ public:
 
 	void _scaleCharacterMetrics(GR_UnixPangoRenderInfo & RI);
 	void _scaleJustification(GR_UnixPangoRenderInfo & RI);
+
+	inline UT_uint32 _measureExtent (PangoGlyphString * pg,
+									 PangoFont * pf,
+									 UT_BidiCharType iDir,
+									 const char * pUtf8,
+									 int * & pLogOffsets,
+									 UT_sint32 & iStart,
+									 UT_sint32 & iEnd);
+	
+	inline int * _calculateLogicalOffsets (PangoGlyphString * pGlyphs,
+										   UT_BidiCharType iVisDir,
+										   const char * pUtf8);
 	
   protected:
 	PangoFontMap *    m_pFontMap;

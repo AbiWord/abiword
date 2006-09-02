@@ -492,14 +492,14 @@ void AP_TopRuler::_drawTickMark(const UT_Rect * pClipRect,
 
 		char buf[6];
 		UT_UCSChar span[6];
-		UT_GrowBufElement charWidths[6];
 		UT_ASSERT_HARMLESS(n < 10000);
 
 		sprintf(buf, "%d", n);
 		UT_UCS4_strcpy_char(span, buf);
 		UT_uint32 len = strlen(buf);
 
-		UT_sint32 w = m_pG->measureString(span, 0, len, charWidths) * 100 / m_pG->getZoomPercentage();
+		UT_sint32 w = m_pG->measureString(span, 0, len, NULL) *
+		    100 / m_pG->getZoomPercentage();
 
 //                UT_sint32 yDU = s_iFixedHeight/4 + 
 //                        (s_iFixedHeight/2 - s_iFixedHeight*m_pG->getZoomPercentage()/(4*100))/2;

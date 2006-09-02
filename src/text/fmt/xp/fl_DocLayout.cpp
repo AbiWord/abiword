@@ -2252,7 +2252,7 @@ FL_DocLayout::_toggleAutoSpell(bool bSpell)
 
 	if (bSpell)
 	{
-		UT_DEBUGMSG(("Rechecking spelling in blocks \n"));
+		xxx_UT_DEBUGMSG(("Rechecking spelling in blocks \n"));
 		queueAll(bgcrSpelling);
 	}
 	else
@@ -2321,7 +2321,7 @@ FL_DocLayout::_toggleAutoGrammar(bool bGrammar)
 
 	if (bGrammar)
 	{
-		UT_DEBUGMSG(("Rechecking Grammar in blocks \n"));
+		xxx_UT_DEBUGMSG(("Rechecking Grammar in blocks \n"));
 		queueAll(bgcrGrammar);
 	}
 	else

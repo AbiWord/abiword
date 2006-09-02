@@ -3702,7 +3702,7 @@ void FV_View::cmdCharDelete(bool bForward, UT_uint32 count)
 		getCharFormat(&props_in);
 		currentfont = UT_getAttribute("font-family",props_in);
 		properties[1] = currentfont;
-		UT_DEBUGMSG(("deleteSpan - 1: Inital pos %d count %d \n",getPoint(),count));
+		xxx_UT_DEBUGMSG(("deleteSpan - 1: Inital pos %d count %d \n",getPoint(),count));
 
 		UT_uint32 amt = count;
 		UT_uint32 posCur = getPoint();
@@ -3715,7 +3715,7 @@ void FV_View::cmdCharDelete(bool bForward, UT_uint32 count)
 			if (!_charMotion(bForward,count, false))
 			{
 				UT_ASSERT(getPoint() <= posCur);
-				UT_DEBUGMSG(("SEVIOR: posCur %d getPoint() %d \n",posCur,getPoint()));
+				xxx_UT_DEBUGMSG(("SEVIOR: posCur %d getPoint() %d \n",posCur,getPoint()));
 				amt = posCur - getPoint();
 			}
 

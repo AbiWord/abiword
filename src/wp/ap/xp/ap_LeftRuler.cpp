@@ -846,7 +846,7 @@ UT_sint32 AP_LeftRuler::setTableLineDrag(PT_DocPosition pos, UT_sint32 & iFixed,
 void AP_LeftRuler::mouseMotion(EV_EditModifierState ems, UT_sint32 x, UT_sint32 y)
 {
 	// The X and Y that are passed to this function are x and y on the application, not on the ruler.
-	UT_DEBUGMSG(("In Left mouseMotion \n"));
+	xxx_UT_DEBUGMSG(("In Left mouseMotion \n"));
 	FV_View * pView = static_cast<FV_View *>(m_pView);
 	if(pView == NULL)
 	{
@@ -876,7 +876,7 @@ void AP_LeftRuler::mouseMotion(EV_EditModifierState ems, UT_sint32 x, UT_sint32 
 	UT_ASSERT(m_infoCache.m_yTopMargin >= 0);
 
 	// if they drag vertically off the ruler, we ignore the whole thing.
-	UT_DEBUGMSG(("In Left mouseMotion x %d y %d width %d \n",x,y,getWidth()));
+	xxx_UT_DEBUGMSG(("In Left mouseMotion x %d y %d width %d \n",x,y,getWidth()));
 
 	if ((x < 0) || (x > static_cast<UT_sint32>(getWidth())))
 	{
@@ -1791,13 +1791,14 @@ void AP_LeftRuler::draw(const UT_Rect * pCR, AP_LeftRulerInfo * lfi)
 
 				char buf[6];
 				UT_UCSChar span[6];
-				UT_GrowBufElement charWidths[6];
 				UT_ASSERT(n < 10000);
 
 				sprintf(buf, "%d", n);
 				UT_UCS4_strcpy_char(span, buf);
 				UT_uint32 len = strlen(buf);
-				UT_uint32 w = m_pG->measureString(span, 0, len, charWidths) * 100 / m_pG->getZoomPercentage();
+				UT_uint32 w = m_pG->measureString(span, 0, len,
+								  NULL) *
+				    100 / m_pG->getZoomPercentage();
 
 				UT_sint32 x = xLeft;
 				
@@ -1831,14 +1832,17 @@ void AP_LeftRuler::draw(const UT_Rect * pCR, AP_LeftRulerInfo * lfi)
 
 				char buf[6];
 				UT_UCSChar span[6];
-				UT_GrowBufElement charWidths[6];
 				UT_ASSERT(n < 10000);
 
 				sprintf(buf, "%d", n);
 				UT_UCS4_strcpy_char(span, buf);
 				UT_uint32 len = strlen(buf);
 
-				UT_uint32 w = m_pG->measureString(span, 0, len, charWidths) * 100 / m_pG->getZoomPercentage();
+				UT_uint32 w = m_pG->measureString(span,
+								  0,
+								  len,
+								  NULL)
+				    * 100 / m_pG->getZoomPercentage();
 				UT_sint32 x = xLeft;
 
 				if(xBar > w)

@@ -185,7 +185,7 @@ fp_Container * fp_Page::updatePageForWrapping(fp_Column *& pNextCol)
 	m_iCountWrapPasses++;
 #if DEBUG
 	UT_sint32 iPage = getDocLayout()->findPage(this);
-	UT_DEBUGMSG(("Wrap passes = %d page %x page number %d \n",m_iCountWrapPasses,this,iPage ));
+	xxx_UT_DEBUGMSG(("Wrap passes = %d page %x page number %d \n",m_iCountWrapPasses,this,iPage ));
 #endif
 	if(m_iCountWrapPasses > 100)
         {

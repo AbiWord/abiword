@@ -507,7 +507,7 @@ gint XAP_UnixFrameImpl::_fe::focusOut(GtkWidget * /* w*/, GdkEvent * /*e*/,gpoin
 
 void XAP_UnixFrameImpl::focusIMIn ()
 {
-	UT_DEBUGMSG(("oooooooooooooooooooooooo XAP_UnixFrameImpl::focusIMIn(), this 0x%x\n", this));
+	xxx_UT_DEBUGMSG(("oooooooooooooooooooooooo XAP_UnixFrameImpl::focusIMIn(), this 0x%x\n", this));
 	need_im_reset = true;
 	gtk_im_context_focus_in(getIMContext());
 	gtk_im_context_reset (getIMContext());
@@ -515,7 +515,7 @@ void XAP_UnixFrameImpl::focusIMIn ()
 
 void XAP_UnixFrameImpl::focusIMOut ()
 {
-	UT_DEBUGMSG(("oooooooooooooooooooooooo XAP_UnixFrameImpl::focusIMOut(), this 0x%x\n", this));
+	xxx_UT_DEBUGMSG(("oooooooooooooooooooooooo XAP_UnixFrameImpl::focusIMOut(), this 0x%x\n", this));
 	need_im_reset = true;
 	gtk_im_context_focus_out(getIMContext());
 }
@@ -533,7 +533,7 @@ gboolean XAP_UnixFrameImpl::_fe::focus_in_event(GtkWidget *w,GdkEvent */*event*/
 {
 	XAP_UnixFrameImpl * pFrameImpl = static_cast<XAP_UnixFrameImpl *>(g_object_get_data(G_OBJECT(w), "user_data"));
 	UT_ASSERT(pFrameImpl);
-	UT_DEBUGMSG(("\n===========================\nfocus_in_event: frame 0x%x\n=========================\n", pFrameImpl));
+	xxx_UT_DEBUGMSG(("\n===========================\nfocus_in_event: frame 0x%x\n=========================\n", pFrameImpl));
 	
 	XAP_Frame* pFrame = pFrameImpl->getFrame();
 	g_object_set_data(G_OBJECT(w), "toplevelWindowFocus",
@@ -558,7 +558,7 @@ gboolean XAP_UnixFrameImpl::_fe::focus_out_event(GtkWidget *w,GdkEvent */*event*
 {
 	XAP_UnixFrameImpl * pFrameImpl = static_cast<XAP_UnixFrameImpl *>(g_object_get_data(G_OBJECT(w), "user_data"));
 	UT_ASSERT(pFrameImpl);
-	UT_DEBUGMSG(("\n===========================\nfocus_out_event: frame 0x%x\n=========================\n", pFrameImpl));
+	xxx_UT_DEBUGMSG(("\n===========================\nfocus_out_event: frame 0x%x\n=========================\n", pFrameImpl));
 	XAP_Frame* pFrame = pFrameImpl->getFrame();
 	g_object_set_data(G_OBJECT(w), "toplevelWindowFocus",
 						GINT_TO_POINTER(FALSE));
@@ -945,7 +945,7 @@ gint XAP_UnixFrameImpl::_fe::abi_expose_repaint(gpointer p)
 //
 // Grab our pointer so we can do useful stuff.
 //
-	UT_DEBUGMSG(("-----------------Doing Repaint----------------\n"));
+	xxx_UT_DEBUGMSG(("-----------------Doing Repaint----------------\n"));
 	UT_Rect localCopy;
 	XAP_UnixFrameImpl * pUnixFrameImpl = static_cast<XAP_UnixFrameImpl *>(p);
 	XAP_Frame* pFrame = pUnixFrameImpl->getFrame();
@@ -1372,7 +1372,7 @@ void XAP_UnixFrameImpl::_createTopLevelWindow(void)
 
 void XAP_UnixFrameImpl::_createIMContext(GdkWindow *w)
 {
-	UT_DEBUGMSG(("\n======================\nXAP_UnixFrameImp::_createIMContext(0x%x), this 0x%x\n====================\n",
+	xxx_UT_DEBUGMSG(("\n======================\nXAP_UnixFrameImp::_createIMContext(0x%x), this 0x%x\n====================\n",
 				 w, this));
 	
 	m_imContext = gtk_im_multicontext_new();
@@ -1462,7 +1462,7 @@ void XAP_UnixFrameImpl::_imCommit_cb(GtkIMContext *imc, const gchar *text, gpoin
 // Actual keyboard commit should be done here.
 void XAP_UnixFrameImpl::_imCommit(GtkIMContext *imc, const gchar * text)
 {
-	UT_DEBUGMSG(("\n<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<\nXAP_UnixFrameImpl::_imCommit(0x%x), this 0x%x\n<<<<<<<<<<<<<<<<<<\n",
+	xxx_UT_DEBUGMSG(("\n<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<\nXAP_UnixFrameImpl::_imCommit(0x%x), this 0x%x\n<<<<<<<<<<<<<<<<<<\n",
 				 imc, this));
 				
 	XAP_Frame* pFrame = getFrame();
