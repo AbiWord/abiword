@@ -62,8 +62,6 @@
 #include <libgnomevfs/gnome-vfs.h>
 #endif
 
-#define _USE_PANGO
-
 UnixNull_Graphics * abi_unixnullgraphics_instance = 0;
 
 /*****************************************************************/
@@ -125,7 +123,7 @@ XAP_UnixApp::XAP_UnixApp(XAP_Args * pArgs, const char * szAppName)
 
 		UT_ASSERT( bSuccess );
 
-#if defined(_USE_PANGO) && !defined(HAVE_HILDON)
+#if defined(USE_PANGO)
 		if(bSuccess)
 		{
 			pGF->registerAsDefault(GR_UnixPangoGraphics::s_getClassId(), true);
@@ -138,7 +136,7 @@ XAP_UnixApp::XAP_UnixApp(XAP_Args * pArgs, const char * szAppName)
 		
 		UT_ASSERT( bSuccess );
 		
-#if defined(_USE_PANGO) && !defined(WITHOUT_PRINTING) && !defined(HAVE_HILDON)
+#if defined(USE_PANGO) && !defined(WITHOUT_PRINTING)
 		if(bSuccess)
 		{
 			pGF->registerAsDefault(GR_UnixPangoPrintGraphics::s_getClassId(), false);
