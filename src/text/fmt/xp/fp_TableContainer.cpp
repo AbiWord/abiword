@@ -3365,7 +3365,7 @@ void fp_TableContainer::mapXYToPosition(UT_sint32 x, UT_sint32 y, PT_DocPosition
 	{
 		pC = pCloseTot;
 	}
-	UT_ASSERT( pC != NULL);
+	UT_return_if_fail( pC != NULL);
 	pC->mapXYToPosition(x - pC->getX(), y  - pC->getY(), pos, bBOL, bEOL,isTOC);
 }
 
