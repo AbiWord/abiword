@@ -594,6 +594,7 @@ UT_NumberVector * RTF_msword97_listOverride::getTabLeaderVect(UT_uint32 iLevel)
 bool RTF_msword97_listOverride::isTab(UT_uint32 iLevel)
 {
 	RTF_msword97_level * pLevel = m_pList->m_RTF_level[iLevel];
+	UT_return_val_if_fail(pLevel && pLevel->m_pbParaProps, false);
 	return (pLevel->m_pbParaProps->bm_tabStops);
 }
 /*!
@@ -618,6 +619,7 @@ bool RTF_msword97_listOverride::getDeleted(UT_uint32 iLevel)
 bool RTF_msword97_listOverride::isBoldChanged(UT_uint32 iLevel)
 {
 	RTF_msword97_level * pLevel = m_pList->m_RTF_level[iLevel];
+	UT_return_val_if_fail(pLevel && pLevel->m_pbCharProps, false);
 	return (pLevel->m_pbCharProps->bm_bold);
 }
 /*!
@@ -634,6 +636,7 @@ bool RTF_msword97_listOverride::getBold(UT_uint32 iLevel)
 bool RTF_msword97_listOverride::isItalicChanged(UT_uint32 iLevel)
 {
 	RTF_msword97_level * pLevel = m_pList->m_RTF_level[iLevel];
+	UT_return_val_if_fail(pLevel && pLevel->m_pbCharProps, false);
 	return (pLevel->m_pbCharProps->bm_italic);
 }
 /*!
@@ -650,6 +653,7 @@ bool RTF_msword97_listOverride::getItalic(UT_uint32 iLevel)
 bool RTF_msword97_listOverride::isUnderlineChanged(UT_uint32 iLevel)
 {
 	RTF_msword97_level * pLevel = m_pList->m_RTF_level[iLevel];
+	UT_return_val_if_fail(pLevel && pLevel->m_pbCharProps, false);
 	return (pLevel->m_pbCharProps->bm_underline);
 }
 /*!
@@ -667,6 +671,7 @@ bool RTF_msword97_listOverride::getUnderline(UT_uint32 iLevel)
 bool RTF_msword97_listOverride::isStrikeoutChanged(UT_uint32 iLevel)
 {
 	RTF_msword97_level * pLevel = m_pList->m_RTF_level[iLevel];
+	UT_return_val_if_fail(pLevel && pLevel->m_pbCharProps, false);
 	return (pLevel->m_pbCharProps->bm_strikeout);
 }
 /*!
@@ -683,6 +688,7 @@ bool RTF_msword97_listOverride::getStrikeout(UT_uint32 iLevel)
 bool RTF_msword97_listOverride::isSuperscriptChanged(UT_uint32 iLevel)
 {
 	RTF_msword97_level * pLevel = m_pList->m_RTF_level[iLevel];
+	UT_return_val_if_fail(pLevel && pLevel->m_pbCharProps, false);
 	return (pLevel->m_pbCharProps->bm_superscript);
 }
 /*!
@@ -716,6 +722,7 @@ double RTF_msword97_listOverride::getSuperscriptPos(UT_uint32 iLevel)
 bool RTF_msword97_listOverride::isSubscriptChanged(UT_uint32 iLevel)
 {
 	RTF_msword97_level * pLevel = m_pList->m_RTF_level[iLevel];
+	UT_return_val_if_fail(pLevel && pLevel->m_pbCharProps, false);
 	return (pLevel->m_pbCharProps->bm_subscript);
 }
 /*!
@@ -748,6 +755,7 @@ double RTF_msword97_listOverride::getSubscriptPos(UT_uint32 iLevel)
 bool RTF_msword97_listOverride::isFontSizeChanged(UT_uint32 iLevel)
 {
 	RTF_msword97_level * pLevel = m_pList->m_RTF_level[iLevel];
+	UT_return_val_if_fail(pLevel && pLevel->m_pbCharProps, false);
 	return (pLevel->m_pbCharProps->bm_fontSize);
 }
 /*!
@@ -764,6 +772,7 @@ double RTF_msword97_listOverride::getFontSize(UT_uint32 iLevel)
 bool RTF_msword97_listOverride::isHasColourChanged(UT_uint32 iLevel)
 {
 	RTF_msword97_level * pLevel = m_pList->m_RTF_level[iLevel];
+	UT_return_val_if_fail(pLevel && pLevel->m_pbCharProps, false);
 	return (pLevel->m_pbCharProps->bm_hasColour);
 }
 /*!
@@ -780,6 +789,7 @@ bool RTF_msword97_listOverride::getHasColour(UT_uint32 iLevel)
 bool RTF_msword97_listOverride::isColourNumberChanged(UT_uint32 iLevel)
 {
 	RTF_msword97_level * pLevel = m_pList->m_RTF_level[iLevel];
+	UT_return_val_if_fail(pLevel && pLevel->m_pbCharProps, false);
 	return (pLevel->m_pbCharProps->bm_colourNumber);
 }
 /*!
@@ -796,6 +806,7 @@ UT_uint32 RTF_msword97_listOverride::getColourNumber(UT_uint32 iLevel)
 bool RTF_msword97_listOverride::isHasBgColourChanged(UT_uint32 iLevel)
 {
 	RTF_msword97_level * pLevel = m_pList->m_RTF_level[iLevel];
+	UT_return_val_if_fail(pLevel && pLevel->m_pbCharProps, false);
 	return (pLevel->m_pbCharProps->bm_hasBgColour);
 }
 /*!
@@ -812,6 +823,7 @@ bool RTF_msword97_listOverride::getHasBgColour(UT_uint32 iLevel)
 bool RTF_msword97_listOverride::isBgColourNumberChanged(UT_uint32 iLevel)
 {
 	RTF_msword97_level * pLevel = m_pList->m_RTF_level[iLevel];
+	UT_return_val_if_fail(pLevel && pLevel->m_pbCharProps, false);
 	return (pLevel->m_pbCharProps->bm_bgcolourNumber);
 }
 /*!
@@ -828,6 +840,7 @@ UT_uint32 RTF_msword97_listOverride::getBgColourNumber(UT_uint32 iLevel)
 bool RTF_msword97_listOverride::isFontNumberChanged(UT_uint32 iLevel)
 {
 	RTF_msword97_level * pLevel = m_pList->m_RTF_level[iLevel];
+	UT_return_val_if_fail(pLevel && pLevel->m_pbCharProps, false);
 	return (pLevel->m_pbCharProps->bm_fontNumber);
 }
 /*!
