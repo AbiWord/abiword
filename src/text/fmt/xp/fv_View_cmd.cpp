@@ -5282,6 +5282,8 @@ bool FV_View::cmdInsertEmbed(UT_ByteBuf * pBuf,PT_DocPosition pos,const char * s
 		bDidGlob = true;
 		m_pDoc->beginUserAtomicGlob();
 		_deleteSelection();
+		// Reevaluate pos after deleting the selection
+		pos = getPoint();
 	}
 	getCharFormat(&props,false,pos);
 	UT_UTF8String sFullProps;
