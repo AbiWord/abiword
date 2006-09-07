@@ -36,6 +36,7 @@
 #ifndef AP_UNIXDIALOG_ALL_H
 #define AP_UNIXDIALOG_ALL_H
 
+#   include "xap_UnixDlg_About.h"
 #	include "xap_UnixDlg_MessageBox.h"
 #	include "xap_UnixDlg_WindowMore.h"
 #	include "xap_UnixDlg_Zoom.h"
@@ -101,20 +102,16 @@
 #endif
 
 #ifdef HAVE_GNOME
-#   include "xap_UnixGnomeDlg_About.h"
 #   include "xap_UnixGnomeDlg_ClipArt.h"
 #else
 #   include "xap_UnixDlg_ClipArt.h"
-#   include "xap_UnixDlg_About.h"
 #endif
 
 #else
 
 #ifdef HAVE_GNOME
-	DeclareDialog(XAP_DIALOG_ID_ABOUT,		XAP_UnixGnomeDialog_About)
 	DeclareDialog(XAP_DIALOG_ID_CLIPART,		XAP_UnixGnomeDialog_ClipArt)
 #else
-	DeclareDialog(XAP_DIALOG_ID_ABOUT,		XAP_UnixDialog_About)
 	DeclareDialog(XAP_DIALOG_ID_CLIPART,		XAP_UnixDialog_ClipArt)
 #endif
 
@@ -124,6 +121,7 @@
 	DeclareDialog(XAP_DIALOG_ID_FONT,		XAP_UnixDialog_FontChooser)
 #endif 
 
+	DeclareDialog(XAP_DIALOG_ID_ABOUT,		XAP_UnixDialog_About)
 	DeclareDialog(XAP_DIALOG_ID_FILE_OPEN,		XAP_UnixDialog_FileOpenSaveAs)
 	DeclareDialog(XAP_DIALOG_ID_FILE_SAVEAS,	XAP_UnixDialog_FileOpenSaveAs)
 #ifndef WITHOUT_PRINTING
