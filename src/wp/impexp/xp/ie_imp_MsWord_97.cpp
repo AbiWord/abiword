@@ -2607,8 +2607,11 @@ int IE_Imp_MsWord_97::_beginPara (wvParseStruct *ps, UT_uint32 tag,
 			  UT_sint32 i= 0;
 			  for(i=0;i < ps->nocellbounds; i++) 
 			  {
-				  UT_sint32 pos = ps->cellbounds[i];
-				  m_vecColumnPositions.addItem(pos);
+				  if(ps->cellbounds)
+				  {
+					  UT_sint32 pos = ps->cellbounds[i];
+					  m_vecColumnPositions.addItem(pos);
+				  }
 			  }
 		  }
 
@@ -2958,13 +2961,15 @@ int IE_Imp_MsWord_97::_beginPara (wvParseStruct *ps, UT_uint32 tag,
 			propsArray[i++] = "style";
 			
 			char * t = NULL;
-			const XML_Char * pName = s_translateStyleId(pSTD[apap->istd].sti);
+			const XML_Char * pName = NULL;
+			if(pSTD)
+				pName = s_translateStyleId(pSTD[apap->istd].sti);
 		
 			if(pName)
 			{
 				m_paraStyle = pName;
 			}
-			else
+			else if(pSTD)
 			{
 				m_paraStyle = t = s_stripDangerousChars(pSTD[apap->istd].xstzName);
 			}
@@ -3126,12 +3131,12 @@ int IE_Imp_MsWord_97::_beginChar (wvParseStruct *ps, UT_uint32 tag,
 	m_charStyle.clear();
 
 	UT_uint32 iFontType = 0;
-	if(achp->xchSym)
+	if(achp->xchSym && ps->fonts.ffn)
 	{
 		// inserting a symbol char ...
 		iFontType = ps->fonts.ffn[achp->ftcSym].chs;
 	}
-	else
+	else if(ps->fonts.ffn)
 	{
 		iFontType = ps->fonts.ffn[achp->ftcAscii].chs;
 	}
@@ -3310,8 +3315,17 @@ int IE_Imp_MsWord_97::_fieldProc (wvParseStruct *ps, U16 eachchar,
 			}
 			
 		}
-		
-		f = new field;
+
+		UT_TRY
+		{		
+			f = new field;
+		}
+		UT_CATCH(UT_CATCH_ANY)
+		{
+			f = NULL;
+		}
+		UT_END_CATCH
+
 		UT_return_val_if_fail(f,0);
 		f->fieldWhich = f->command;
 		f->command[0] = 0;
@@ -5296,7 +5310,16 @@ int IE_Imp_MsWord_97::_handleBookmarks(const wvParseStruct *ps)
 	UT_return_val_if_fail(nobkl == nobkf, 0);
 	if(m_iBookmarksCount > 0)
 	{
-		m_pBookmarks = new bookmark[m_iBookmarksCount];
+		UT_TRY
+		{
+			m_pBookmarks = new bookmark[m_iBookmarksCount];
+		}
+		UT_CATCH(UT_CATCH_ANY)
+		{
+			m_pBookmarks = NULL;
+		}
+		UT_END_CATCH
+
 		UT_return_val_if_fail(m_pBookmarks, 0);
 		for(i = 0; i < nobkf; i++)
 		{
@@ -5364,7 +5387,16 @@ void IE_Imp_MsWord_97::_handleNotes(const wvParseStruct *ps)
 	{
 		/* the docs say -1, but that is an error */
 		m_iFootnotesCount = ps->fib.lcbPlcffndTxt/4 - 2;
-		m_pFootnotes = new footnote[m_iFootnotesCount];
+		UT_TRY
+		{
+			m_pFootnotes = new footnote[m_iFootnotesCount];
+		}
+		UT_CATCH(UT_CATCH_ANY)
+		{
+			m_pFootnotes = NULL;
+		}
+		UT_END_CATCH
+
 		UT_return_if_fail(m_pFootnotes);
 		
 		// this is really quite straight forward; we retrieve the PLCF
@@ -5463,7 +5495,16 @@ void IE_Imp_MsWord_97::_handleNotes(const wvParseStruct *ps)
 	if(ps->fib.lcbPlcfendTxt)
 	{
 		m_iEndnotesCount  = ps->fib.lcbPlcfendTxt/4 - 2;
-		m_pEndnotes  = new footnote[m_iEndnotesCount];
+		UT_TRY
+		{
+			m_pEndnotes  = new footnote[m_iEndnotesCount];
+		}
+		UT_CATCH(UT_CATCH_ANY)
+		{
+			m_pEndnotes = NULL;
+		}
+		UT_END_CATCH
+
 		UT_return_if_fail(m_pEndnotes);
 
 		bNoteError = false;
@@ -6452,7 +6493,16 @@ void IE_Imp_MsWord_97::_handleHeaders(const wvParseStruct *ps)
 		/* the docs are ambiguous, at one place saying the PLCF
 		   contains n+2 entries, another n+1; I think the former is correct*/
 		m_iHeadersCount = ps->fib.lcbPlcfhdd/4 - 2;
-		m_pHeaders = new header[m_iHeadersCount];
+		UT_TRY
+		{
+			m_pHeaders = new header[m_iHeadersCount];
+		}
+		UT_CATCH(UT_CATCH_ANY)
+		{
+			m_pHeaders = NULL;
+		}
+		UT_END_CATCH
+
 		UT_return_if_fail(m_pHeaders);
 		
 		// this is really quite straight forward; we retrieve the PLCF
