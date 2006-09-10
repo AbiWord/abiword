@@ -2615,6 +2615,9 @@ Defun1(fileSaveEmbed)
 	CHECK_FRAME;
 	XAP_Frame * pFrame = static_cast<XAP_Frame *> ( pAV_View->getParentData());
 	UT_return_val_if_fail(pFrame, false);
+	FV_View * pView = static_cast<FV_View *>(pAV_View);
+	fp_EmbedRun *pRun = dynamic_cast <fp_EmbedRun*> (pView->getSelectedObject ());
+	UT_return_val_if_fail(pRun, false);
 
 	XAP_DialogFactory * pDialogFactory
 		= static_cast<XAP_DialogFactory *>(pFrame->getDialogFactory());
@@ -2628,9 +2631,9 @@ Defun1(fileSaveEmbed)
 	const char ** szSuffixList = static_cast<const char **>(UT_calloc(filterCount + 1, sizeof(char *)));
 	IEFileType * nTypeList = static_cast<IEFileType *>(UT_calloc(filterCount + 1, sizeof(IEFileType)));
 
-	// we only support saving images in png format for now
-	szDescList[0] = "Gnome Office Chart (.xml)";
-	szSuffixList[0] = "*.xml";
+	// we only support saving objects to their default format
+	szDescList[0] =  pRun->getEmbedManager()->getMimeTypeDescription();
+	szSuffixList[0] = pRun->getEmbedManager()->getMimeTypeSuffix();
 	nTypeList[0] = static_cast<IEFileType>(1);
 
 	pDialog->setFileTypeList(szDescList, szSuffixList,
@@ -2648,8 +2651,10 @@ Defun1(fileSaveEmbed)
 		const char * szResultPathname = pDialog->getPathname();
 		if (szResultPathname && *szResultPathname)
 		{
-			FV_View * pView = static_cast<FV_View *>(pAV_View);
-			pView->saveSelectedImage (szResultPathname); // FIXME write saveSelectedObject
+			const UT_ByteBuf *Buf;
+			pView->getDocument()->getDataItemDataByName(pRun->getDataID(), &Buf, NULL, NULL);
+			if (Buf)
+				Buf->writeToFile(szResultPathname);
 		}
 	}
 
@@ -4469,11 +4474,12 @@ Defun(contextImage)
 	ABIWORD_VIEW;
 	XAP_Frame * pFrame = static_cast<XAP_Frame *> (pView->getParentData());
 	UT_return_val_if_fail(pFrame, false);
+	fp_Run *pRun = NULL;
 
 	if ( pView->isSelectionEmpty () )
 	  {
-		// select the image if it isn't already
-		UT_DEBUGMSG(("Selecting image: %d\n", pCallData->m_xPos));
+		// select the object if it isn't already
+		UT_DEBUGMSG(("Selecting objec: %d\n", pCallData->m_xPos));
 		pView->warpInsPtToXY(pCallData->m_xPos, pCallData->m_yPos, true);
 		pView->extSelHorizontal (true, 1);
 	  }
@@ -4485,8 +4491,6 @@ Defun(contextImage)
 		UT_sint32 x1,x2,y1,y2,iHeight;
 		bool bEOL = false;
 		bool bDir = false;
-		
-		fp_Run * pRun = NULL;
 		
 		pRun = pBlock->findPointCoords(pos,bEOL,x1,y1,x2,y2,iHeight,bDir);
 		while(pRun && ((pRun->getType() != FPRUN_IMAGE) && (pRun->getType() != FPRUN_EMBED)))
@@ -4510,7 +4514,9 @@ Defun(contextImage)
 	{
 	     return s_doContextMenu(EV_EMC_IMAGE,pCallData->m_xPos, pCallData->m_yPos,pView,pFrame);
 	}
-	return s_doContextMenu(EV_EMC_EMBED,pCallData->m_xPos, pCallData->m_yPos,pView,pFrame);
+	// get the menu from pRun
+	fp_EmbedRun *pEmbedRun = dynamic_cast<fp_EmbedRun*>(pRun);
+	return s_doContextMenu((pRun)? pEmbedRun->getContextualMenu(): EV_EMC_EMBED, pCallData->m_xPos, pCallData->m_yPos, pView, pFrame);
 }
 
 
@@ -4530,7 +4536,45 @@ Defun(contextEmbedLayout)
 	ABIWORD_VIEW;
 	XAP_Frame * pFrame = static_cast<XAP_Frame *> (pView->getParentData());
 	UT_return_val_if_fail(pFrame, false);
-	return s_doContextMenu(EV_EMC_EMBED,pCallData->m_xPos, pCallData->m_yPos,pView,pFrame);
+	fp_Run *pRun = NULL;
+
+	if ( pView->isSelectionEmpty () )
+	  {
+		// select the image if it isn't already
+		UT_DEBUGMSG(("Selecting image: %d\n", pCallData->m_xPos));
+		pView->warpInsPtToXY(pCallData->m_xPos, pCallData->m_yPos, true);
+		pView->extSelHorizontal (true, 1);
+	  }
+	PT_DocPosition pos = pView->getDocPositionFromXY(pCallData->m_xPos, pCallData->m_yPos);
+	fl_BlockLayout * pBlock = pView->getBlockAtPosition(pos);
+	bool bDoEmbed = false;
+	if(pBlock)
+	{
+		UT_sint32 x1,x2,y1,y2,iHeight;
+		bool bEOL = false;
+		bool bDir = false;
+		
+		pRun = pBlock->findPointCoords(pos,bEOL,x1,y1,x2,y2,iHeight,bDir);
+		while(pRun && ((pRun->getType() != FPRUN_IMAGE) && (pRun->getType() != FPRUN_EMBED)))
+		{
+			pRun = pRun->getNextRun();
+		}
+		if(pRun && ((pRun->getType() == FPRUN_IMAGE) || ((pRun->getType() == FPRUN_EMBED))))
+		{
+			// Set the cursor context to image selected.
+			if(pRun->getType() == FPRUN_EMBED)
+			{
+			      bDoEmbed = true;
+			}
+		}
+		else
+		{
+			// do nothing...
+		}
+	}
+	// get the menu from pRun
+	fp_EmbedRun *pEmbedRun = dynamic_cast<fp_EmbedRun*>(pRun);
+	return s_doContextMenu((pRun)? pEmbedRun->getContextualMenu(): EV_EMC_EMBED, pCallData->m_xPos, pCallData->m_yPos, pView, pFrame);
 }
 
 Defun(contextHyperlink)
@@ -13218,7 +13262,7 @@ Defun1(revisionCompareDocuments)
 		XAP_Dialog_DocComparison * pDialog
 			= static_cast<XAP_Dialog_DocComparison *>(pDialogFactory->requestDialog(XAP_DIALOG_ID_DOCCOMPARISON));
 	
-		UT_return_val_if_fail(pDialog, NULL);
+		UT_return_val_if_fail(pDialog, false);
 
 		pDialog->calculate(pDoc, pDoc2);
 		pDialog->runModal(pFrame);

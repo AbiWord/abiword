@@ -2545,6 +2545,57 @@ PT_DocPosition FV_View::getSelectedImage(const char **dataId)
 	return 0;
 }
 
+/* If no object is selected returns NULL
+ * Otherwise returns a nonzero value indicating the position of the object
+ * and if dataId is not NULL will set value to the object's data ID
+ */
+fp_Run *FV_View::getSelectedObject()
+{
+	// if nothing selected, then an image can't be
+	if (!isSelectionEmpty())
+	{
+		PT_DocPosition pos = m_Selection.getSelectionAnchor();
+		fp_Run* pRun = NULL;
+
+		UT_GenericVector<fl_BlockLayout *> vBlock;
+		getBlocksInSelection( &vBlock);
+		UT_uint32 count = vBlock.getItemCount();
+		fl_BlockLayout * pBlock = NULL;
+		for(UT_uint32 i=0; (i< count); i++)
+		{
+			if(i==0)
+			{
+				if(getPoint() < m_Selection.getSelectionAnchor())
+				{
+					pos = getPoint();
+				}
+				UT_sint32 x,y,x2,y2;
+				UT_uint32 height;
+
+				bool bEOL = false;
+				bool bDirection;
+				_findPositionCoords(pos,bEOL,x,y,x2,y2,height,bDirection,&pBlock,&pRun);
+			}
+			else
+			{
+				pBlock = vBlock.getNthItem(i);
+				pRun = pBlock->getFirstRun();
+			}
+
+			while(pRun && pRun->getType() != FPRUN_EMBED)
+			{
+				pRun = pRun->getNextRun();
+			}
+			if(pRun && pRun->getType() == FPRUN_EMBED)
+			{
+				return pRun;
+			}
+		}
+	}
+
+	return NULL;
+}
+
 PT_DocPosition FV_View::getSelectionAnchor(void) const
 {
 	if(m_Selection.isSelected())
@@ -13010,4 +13061,3 @@ void FV_View::fontMetricsChange()
 
 	m_pLayout->rebuildFromHere(static_cast<fl_DocSectionLayout *>(m_pLayout->getFirstSection()));	
 }
-

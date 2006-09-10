@@ -160,13 +160,13 @@ void fp_EmbedRun::_lookupProperties(const PP_AttrProp * pSpanAP,
 			  UT_sint32 iHeight = UT_convertToLogicalUnits(pszHeight);
 			  const char * pszDescent = NULL;
 			  bool bFoundDescent = pSpanAP->getProperty("descent", pszDescent);
-			  if (bFoundDescent && pszDescent != NULL)
+			  if (bFoundDescent && pszDescent != NULL && iHeight >= 0)
 			  {
 				  iDescent = UT_convertToLogicalUnits(pszDescent);
-				  if (iHeight != iAscent + iDescent)
+				  if (iHeight != iAscent + iDescent && iHeight > iAscent)
 					  iAscent = iHeight * iAscent / (iAscent + iDescent);
 			  }
-			  iDescent = iHeight - iAscent;
+			  iDescent = (iHeight >= iAscent)? iHeight - iAscent: 0;
 		  }
 	  }
 	}
@@ -569,4 +569,9 @@ void fp_EmbedRun::update()
 	m_iIndexAP = getBlock()->getDocument()->getAPIFromSOH(m_OH);
 	m_pEmbedManager->updateData(m_iEmbedUID, m_iIndexAP);
 	m_pEmbedManager->loadEmbedData(m_iEmbedUID);
+}
+
+EV_EditMouseContext fp_EmbedRun::getContextualMenu(void) const
+{
+	return m_pEmbedManager->getContextualMenu();
 }

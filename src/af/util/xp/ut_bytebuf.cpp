@@ -262,6 +262,8 @@ bool UT_ByteBuf::writeToFile(const char* pszFileName) const
 {
 	UT_ASSERT(pszFileName && pszFileName[0]);
 	
+	if (!strncmp (pszFileName, "file://", 7))
+		pszFileName += 7;
 	FILE* fp = fopen(pszFileName, "wb");
 	if (!fp)
 	{

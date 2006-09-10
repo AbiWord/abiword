@@ -24,6 +24,7 @@
 #define FP_EMBEDRUN_H
 
 #include "fp_Run.h"
+#include "ev_EditBits.h"
 
 class fl_BlockLayout;
 class GR_EmbedManager;
@@ -52,6 +53,8 @@ public:
 	UT_sint32               getUID(void) const
 	{ return m_iEmbedUID;}
 	void					update();
+	EV_EditMouseContext		getContextualMenu(void) const;
+
 protected:
 	virtual void			_lookupProperties(const PP_AttrProp * pSpanAP,
 											  const PP_AttrProp * pBlockAP,
