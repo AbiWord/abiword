@@ -1,5 +1,6 @@
 /* AbiWord
  * Copyright (C) 2000 AbiSource, Inc.
+ * Copyright (C) 2006 Rob Staudinger <robert.staudinger@gmail.com>
  * 
  * This program is free software; you can redistribute it and/or
  * modify it under the terms of the GNU General Public License
@@ -20,11 +21,11 @@
 #ifndef XAP_UNIXDIALOG_CLIPART_H
 #define XAP_UNIXDIALOG_CLIPART_H
 
+#include <gtk/gtk.h>
+
 #include "xap_Dlg_ClipArt.h"
 
 class XAP_Frame;
-
-/*****************************************************************/
 
 class XAP_UnixDialog_ClipArt: public XAP_Dialog_ClipArt
 {
@@ -36,8 +37,16 @@ public:
 
 	static XAP_Dialog *		static_constructor(XAP_DialogFactory *, XAP_Dialog_Id id);
 	
-protected:
+	gboolean 	fillStore		(void);
+	void 		onItemActivated	(void);
 
+protected:
+	const gchar 	*dir_path;
+	GtkWidget		*dlg;
+	GtkWidget 		*progress;
+	GtkWidget		*icon_view;
+	GtkListStore 	*store;
+	int				 count;
 };
 
 #endif /* XAP_UNIXDIALOG_CLIPART_H */

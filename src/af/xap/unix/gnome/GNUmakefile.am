@@ -30,5 +30,4 @@ libXap_Gnome_a_SOURCES=\
 	color-palette.c				\
 	color-group.c				\
 	gal-combo-box.c				\
-	gnm-marshalers.c			\
-	xap_UnixGnomeDlg_ClipArt.cpp
+	gnm-marshalers.c
