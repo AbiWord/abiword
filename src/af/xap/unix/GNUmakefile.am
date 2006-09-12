@@ -19,19 +19,22 @@
 
 include $(top_srcdir)/includes.mk
 
-if WITH_GNOME
-SUBDIRS = gnome t
-else
 if WITH_HILDON
 SUBDIRS = hildon t
 else
 SUBDIRS = t
 endif
-endif
 
-INCLUDES= -UVERSION @GTK_CFLAGS@ @GMODULE_CFLAGS@ \
-	-DABIWORD_APP_NAME="\"$(ABIWORD_APP_NAME)\"" \
-	$(AF_INCLUDES) $(WP_INCLUDES) $(TEXT_INCLUDES) $(ICONV_INCLUDES) $(OTHER_INCLUDES)
+INCLUDES = 				\
+	-UVERSION 			\
+	$(GTK_CFLAGS) 		\
+	$(GMODULE_CFLAGS) 	\
+	$(AF_INCLUDES) 		\
+	$(WP_INCLUDES) 		\
+	$(TEXT_INCLUDES) 	\
+	$(ICONV_INCLUDES) 	\
+	$(OTHER_INCLUDES)	\
+	-DABIWORD_APP_NAME="\"$(ABIWORD_APP_NAME)\"" 
 
 noinst_LIBRARIES = libXap_unix.a
 

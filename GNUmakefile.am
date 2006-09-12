@@ -1,5 +1,9 @@
 
+if WITH_SYSTEM_GOFFICE
 SUBDIRS = src
+else
+SUBDIRS = goffice-bits src
+endif
 
 expat_peerdir=$(top_builddir)/../expat
 wv_peerdir=$(top_builddir)/../wv

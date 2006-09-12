@@ -27,6 +27,7 @@
 #undef GTK_DISABLE_DEPRECATED
 
 #include <gtk/gtk.h>
+#include <goffice/gtk/go-combo-color.h>
 #include <string.h>
 #include <stdlib.h>
 #include "ap_Features.h"
@@ -57,16 +58,8 @@
 
 // hack
 #include "ap_Toolbar_Id.h"
-
-// gal stuff
-#ifdef HAVE_GNOME
-#include "widget-color-combo.h"
-#include "color-group.h"
-#include "e-colors.h"
-// hack to get the icons we need for the color combos
 #include "../../../wp/ap/xp/ToolbarIcons/tb_text_fgcolor.xpm"
 #include "../../../wp/ap/xp/ToolbarIcons/tb_text_bgcolor.xpm"
-#endif // HAVE_GNOME
 
 #ifdef HAVE_HILDON
 #include "hildon-widgets/hildon-appview.h"
@@ -396,22 +389,23 @@ public:									// we create...
 	char 				m_comboEntryBuffer[COMBO_BUF_LEN]; // TODO: make this an UT_UTF8String
 };
 
-#ifdef HAVE_GNOME
-#define COLOR_NORMALIZE(c) (gint)(c >> 8)
-
 static void
-s_color_changed (ColorCombo * combo, GdkColor * color, gboolean custom, gboolean by_user, gboolean is_default, _wd * wd)
+s_color_changed (GOComboColor 	*cc, 
+				 GOColor 		 color,
+				 gboolean 		 custom, 
+				 gboolean 		 by_user, 
+				 gboolean 		 is_default, 
+				 _wd 			*wd)
 {
-	// if nothing has been set, color will be null
-	// and we don't want to dereference null do we ;)
-	if (!color || !combo || !wd)
-	  return;
-	UT_UTF8String str (UT_UTF8String_sprintf ("%02x%02x%02x", COLOR_NORMALIZE (color->red), COLOR_NORMALIZE (color->green), COLOR_NORMALIZE (color->blue)));
+	g_return_if_fail (wd);
+
+	UT_UTF8String str (UT_UTF8String_sprintf ("%02x%02x%02x", 
+											  UINT_RGBA_R (color),
+											  UINT_RGBA_G (color),
+											  UINT_RGBA_B (color)));
+	
 	wd->m_pUnixToolbar->toolbarEvent(wd, str.ucs4_str().ucs4_str(), str.size());
 }
-
-#undef COLOR_NORMALIZE
-#endif // HAVE_GNOME
 
 /*****************************************************************/
 
@@ -430,10 +424,6 @@ EV_UnixToolbar::EV_UnixToolbar(XAP_UnixApp * pUnixApp,
 	m_pViewListener = 0;
 	m_wToolbar = 0;
 	m_lid = 0;							// view listener id
-
-#ifdef HAVE_GNOME
-	e_color_init ();
-#endif
 }
 
 EV_UnixToolbar::~EV_UnixToolbar(void)
@@ -931,20 +921,19 @@ bool EV_UnixToolbar::synthesize(void)
 								   pLabel->getIconName(),
 								   &wPixmap);
 
-#ifdef HAVE_GNOME
-			    GtkWidget * combo;
-				GdkPixbuf * pixbuf;
+				GdkPixbuf 		* pixbuf;
+			    GtkWidget 		* combo;
+				GOColorGroup 	* cg;
 			    if (pAction->getItemType() == EV_TBIT_ColorFore) {
 					pixbuf = gdk_pixbuf_new_from_xpm_data ((const char **)(tb_text_fgcolor_xpm));
-					combo = color_combo_new (pixbuf, szToolTip, &e_black, color_group_fetch("foreground_color", NULL));
-			    }
+					cg = go_color_group_fetch ("back_color_group", m_wToolbar);
+					combo = go_combo_color_new (pixbuf, "Default", 0, cg);
+				}
 				else {
 					pixbuf = gdk_pixbuf_new_from_xpm_data ((const char **)(tb_text_bgcolor_xpm));
-					combo = color_combo_new (pixbuf, szToolTip, NULL, color_group_fetch("background_color", NULL));
+					cg = go_color_group_fetch ("fore_color_group", m_wToolbar);
+					combo = go_combo_color_new (pixbuf, "Default", 0, cg);
 				}
-			    gal_combo_box_set_title (GAL_COMBO_BOX (combo),
-										 szToolTip);
-
 				toolbar_append_with_eventbox(GTK_TOOLBAR(m_wToolbar),
 											 combo,
 											 szToolTip,
@@ -952,14 +941,7 @@ bool EV_UnixToolbar::synthesize(void)
 			    wd->m_widget = combo;
 			    g_signal_connect (G_OBJECT (combo), "color-changed",
 								  G_CALLBACK (s_color_changed), wd);
-#else
-				wd->m_widget = gtk_toolbar_append_item(GTK_TOOLBAR(m_wToolbar),
-													   pLabel->getToolbarLabel(),
-													   szToolTip,static_cast<const char *>(NULL),
-													   wPixmap,
-													   G_CALLBACK(_wd::s_ColorCallback),
-													   wd);
-#endif
+
 				//
 				// Add in a right drag method
 				//

@@ -57,6 +57,7 @@
 #include "gr_UnixPangoGraphics.h"
 
 #include <gsf/gsf-utils.h>
+#include <goffice/goffice.h>
 
 #ifdef HAVE_GNOME
 #include <libgnomevfs/gnome-vfs.h>
@@ -177,6 +178,7 @@ bool XAP_UnixApp::initialize(const char * szKeyBindingsKey, const char * szKeyBi
 	XAP_App::initialize(szKeyBindingsKey, szKeyBindingsDefaultValue);
 
 	gsf_init();
+	libgoffice_init();
 
 #ifdef HAVE_GNOME
 	gnome_vfs_init();

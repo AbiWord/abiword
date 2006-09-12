@@ -237,7 +237,8 @@ ABI_GNOME_QUICK
 ABI_GUCHARMAP
 ABI_XFT_QUICK
 ABI_GSF
-	
+ABI_GOFFICE
+
 abi_build_shared=yes
 abi_build_static=no
 
@@ -506,6 +507,9 @@ AC_SUBST(VALGRIND)
 
 AM_CONDITIONAL(CROSS_COMPILING, test x$cross_compiling = xyes)
 
+AC_CONFIG_FILES([
+ goffice-bits/GNUmakefile
+])
 AC_CONFIG_FILES([GNUmakefile
  src/GNUmakefile
  src/af/GNUmakefile
@@ -537,7 +541,6 @@ AC_CONFIG_FILES([GNUmakefile
  src/af/xap/win/GNUmakefile
  src/af/xap/unix/GNUmakefile
  src/af/xap/unix/t/GNUmakefile
- src/af/xap/unix/gnome/GNUmakefile
  src/af/xap/unix/hildon/GNUmakefile
  src/other/GNUmakefile
  src/other/spell/GNUmakefile
@@ -685,10 +688,11 @@ cat <<EOF
   XML Parser:      ${abi_xml_parser_message}
   zlib:            ${abi_zlib_message}
   PNG Library:     ${abi_libpng_message}
-  popt:		   ${abi_libpopt_message}
+  popt:	           ${abi_libpopt_message}
   WV Library:      ${abi_wv_message}
   iconv:           ${abi_iconv_message}
   spelling:        ${abi_spell_message}
+  goffice:         ${abi_goffice_message}
   binreloc:        ${br_cv_binreloc}
 
   installing in:   ${prefix}

@@ -64,7 +64,6 @@ AF_INCLUDES+=-I'$(top_srcdir)/src/af/xap/@PLATFORM@'
 endif
 endif
 
-
 if WITH_GNOME
 WP_INCLUDES=-I'$(top_srcdir)/src/wp/ap/xp'
 WP_INCLUDES+=-I'$(top_srcdir)/src/wp/impexp/xp'
@@ -112,7 +111,7 @@ ABI_CFLAGS=@WARNING_CFLAGS@ @DEBUG_CFLAGS@ @OPTIMIZE_CFLAGS@ \
 	@PROFILE_CFLAGS@ @XML_CFLAGS@ @SCRIPT_CFLAGS@ @PLUGIN_CFLAGS@ @FRIBIDI_CFLAGS@ \
 	@WV_CFLAGS@ @LIBPOPT_CFLAGS@ @XFT_CFLAGS@ @FREETYPE_CFLAGS@ \
 	@LIBPNG_CFLAGS@ @ZLIB_CFLAGS@ @THREAD_CFLAGS@ @ABI_FEATURE_DEFS@ @ABITYPES_CFLAGS@ \
-	@PRINT_CFLAGS@ @GSF_CFLAGS@
+	@PRINT_CFLAGS@ @GSF_CFLAGS@ @GOFFICE_CFLAGS@ 
 
 
 if WITH_WIN32
@@ -148,10 +147,17 @@ OTHER_LIBS=@SPELL_LIBS@ @XML_LIBS@ @SCRIPT_LIBS@ @PLUGIN_LIBS@ @FRIBIDI_LIBS@ \
 	@WV_LIBS@ @GSF_LIBS@ @GLIB_LIBS@ @ICONV_LIBS@ @LIBPNG_LIBS@ @ZLIB_LIBS@ \
 	@LIBPOPT_LIBS@ @XFT_LIBS@ @FREETYPE_LIBS@ @THREAD_LIBS@
 
+ABI_LIBS=
+if WITH_SYSTEM_GOFFICE
+OTHER_LIBS += @GOFFICE_LIBS@
+else
+ABI_LIBS += @GOFFICE_LIBS@
+endif
+
 # BiDi needs a specific lib
 #automake is TEH SILLY!
 if BUILD_TTFTOOL
-ABI_LIBS=$(top_builddir)/src/wp/ap/libAp.a
+ABI_LIBS+=$(top_builddir)/src/wp/ap/libAp.a
 ABI_LIBS+=$(top_builddir)/src/wp/impexp/libImpExp.a
 ABI_LIBS+=$(top_builddir)/src/af/xap/libXap.a
 ABI_LIBS+=$(top_builddir)/src/af/util/libUtil.a
@@ -163,7 +169,7 @@ ABI_LIBS+=$(top_builddir)/src/pkg/linux/apkg/libApkg.a
 ABI_LIBS+=$(top_builddir)/src/text/fmt/xp/libFmt.a
 ABI_LIBS+=$(top_builddir)/src/text/ptbl/xp/libPtbl.a
 else 
-ABI_LIBS=$(top_builddir)/src/wp/ap/libAp.a
+ABI_LIBS+=$(top_builddir)/src/wp/ap/libAp.a
 ABI_LIBS+=$(top_builddir)/src/wp/impexp/libImpExp.a
 ABI_LIBS+=$(top_builddir)/src/af/xap/libXap.a
 ABI_LIBS+=$(top_builddir)/src/af/util/libUtil.a
@@ -172,7 +178,6 @@ ABI_LIBS+=$(top_builddir)/src/af/ev/libEv.a
 ABI_LIBS+=$(top_builddir)/src/other/spell/xp/libSpell.a
 ABI_LIBS+=$(top_builddir)/src/pkg/linux/apkg/libApkg.a
 ABI_LIBS+=$(top_builddir)/src/text/fmt/xp/libFmt.a
-ABI_LIBS+=$(top_builddir)/src/text/ptbl/xp/libPtbl.a
 endif
 
 ABI_TEST_LIBS=$(top_builddir)/src/af/util/libTestUtil.a

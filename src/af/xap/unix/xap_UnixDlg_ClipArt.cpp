@@ -153,7 +153,7 @@ void XAP_UnixDialog_ClipArt::runModal(XAP_Frame * pFrame)
 
 	gtk_widget_show_all (this->dlg);
 
-	/* TODO rob add dirs like before */
+	/* Dom says we just use that dir for now and hope for someone to build an openclipart client */
 	this->dir_path = getInitialDir ();
 	g_idle_add ((GSourceFunc) fill_store, this);
 
