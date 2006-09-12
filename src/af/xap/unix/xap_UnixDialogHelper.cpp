@@ -47,10 +47,6 @@
 #include "xap_UnixDialogHelper.h"
 #include "xap_Dialog.h"
 
-#ifdef HAVE_GNOME
-#include <gnome.h>
-#endif
-
 /*****************************************************************/
 /*****************************************************************/
 
@@ -593,15 +589,11 @@ void centerDialog(GtkWidget * parent, GtkWidget * child, bool set_transient_for)
 	  gtk_window_set_transient_for(GTK_WINDOW(child),
 				       GTK_WINDOW(parent));
 
-#if defined(HAVE_GNOME)
-	gnome_window_icon_set_from_default (GTK_WINDOW(child));
-#elif !defined(HAVE_HILDON)
 	GdkPixbuf * icon = gtk_window_get_icon(GTK_WINDOW(parent));	
 	if ( NULL != icon )
 	{
 		gtk_window_set_icon(GTK_WINDOW(child), icon);
 	}
-#endif
 }
 
 void abiSetupModalDialog(GtkDialog * me, XAP_Frame *pFrame, XAP_Dialog * pDlg, gint dfl_response)

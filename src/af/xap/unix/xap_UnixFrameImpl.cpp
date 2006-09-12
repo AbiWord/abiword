@@ -66,7 +66,6 @@
 #include "ie_impGraphic.h"
 #include "fg_Graphic.h"
 
-#include <gnome.h>
 #include <libgnomevfs/gnome-vfs.h>
 #include <libgnomevfs/gnome-vfs-mime-utils.h>
 

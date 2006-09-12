@@ -124,7 +124,6 @@
 #include "ut_math.h"
 
 #ifdef HAVE_GNOME
-#include <gnome.h>
 #include <libbonoboui.h>
 #include <libgnomevfs/gnome-vfs.h>
 #include <bonobo/bonobo-macros.h>

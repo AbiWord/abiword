@@ -34,6 +34,7 @@
 #define GNUMERIC_WIDGET_COLOR_COMBO_H
 
 #include <gtk/gtk.h>
+#include <libgnomecanvas/gnome-canvas.h>
 #include "gal-combo-box.h"
 #include "color-palette.h"
 

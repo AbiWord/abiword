@@ -58,14 +58,11 @@
 // hack
 #include "ap_Toolbar_Id.h"
 
-#ifdef HAVE_GNOME
-#include <gnome.h>
-
 // gal stuff
+#ifdef HAVE_GNOME
 #include "widget-color-combo.h"
 #include "color-group.h"
 #include "e-colors.h"
-
 // hack to get the icons we need for the color combos
 #include "../../../wp/ap/xp/ToolbarIcons/tb_text_fgcolor.xpm"
 #include "../../../wp/ap/xp/ToolbarIcons/tb_text_bgcolor.xpm"
