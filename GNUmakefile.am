@@ -11,15 +11,16 @@ libiconv_peerdir=$(top_builddir)/../libiconv
 libpng_peerdir=@LIBPNG_PEERDIR@
 libpopt_peerdir=$(top_builddir)/../popt
 
-desktop_DATA = abiword.desktop
 desktopdir = $(datadir)/applications
 
-icon_DATA = abiword_48.png
 icondir= $(datadir)/icons
 
 if WITH_HILDON
 icon_DATA =
 desktop_DATA =
+else
+icon_DATA = abiword_48.png
+desktop_DATA = abiword.desktop
 endif
 
 mime_DATA = abiword.keys
