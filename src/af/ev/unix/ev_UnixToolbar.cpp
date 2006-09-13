@@ -1,3 +1,5 @@
+/* -*- mode: C++; tab-width: 4; c-basic-offset: 4; -*- */
+
 /* AbiSource Program Utilities
  * Copyright (C) 1998-2000 AbiSource, Inc.
  * 
@@ -21,7 +23,6 @@
  * Port to Maemo Development Platform
  * Author: INdT - Renato Araujo <renato.filho@indt.org.br>
  */
-
 
 //for GtkCombo->GtkList
 #undef GTK_DISABLE_DEPRECATED
@@ -56,8 +57,13 @@
 #include "gr_UnixGraphics.h"
 #include "ut_string_class.h"
 
+#ifdef HAVE_GNOME
+#include <gnome.h>
+#endif
+
 // hack
 #include "ap_Toolbar_Id.h"
+// TODO have these be stock icons
 #include "../../../wp/ap/xp/ToolbarIcons/tb_text_fgcolor.xpm"
 #include "../../../wp/ap/xp/ToolbarIcons/tb_text_bgcolor.xpm"
 
@@ -65,46 +71,96 @@
 #include "hildon-widgets/hildon-appview.h"
 #endif
 
-
-/*****************************************************************/
 #define COMBO_BUF_LEN 256
 
 static const GtkTargetEntry      s_AbiTBTargets[] = {{"abi-toolbars",0,0}};
 
-
 /**
- * toolbar_append_with_eventbox
- *
- * Borrowed code from gnumeric (src/gnumeric-util.c)
- *
- * @toolbar               toolbar
- * @widget                widget to insert
- * @tooltip_text          tooltip text
- * @tooltip_private_text  longer tooltip text
- *
- * Packs widget in an eventbox and adds the eventbox to toolbar.
- * This lets a windowless widget (e.g. combo box) have tooltips.
- **/
+ * Append a widget to the toolbar, 
+ * wrap it in a GtkToolItem if it isn't one already.
+ */
 static GtkWidget *
-toolbar_append_with_eventbox (GtkToolbar *toolbar, GtkWidget  *widget,
-			      const char *tooltip_text,
-			      const char *tooltip_private_text)
+toolbar_append_item (GtkToolbar *toolbar, 
+					 GtkWidget  *widget,
+					 const char *text,
+					 const char *private_text)
 {
-	GtkWidget *eventbox;
+	GtkToolItem *item;
 
 	UT_ASSERT(GTK_IS_TOOLBAR (toolbar));
 	UT_ASSERT(widget != NULL);
 
-	/* An event box to receive events - this is a requirement for having
-           tooltips */
-	eventbox = gtk_event_box_new ();
-	gtk_widget_show (widget);
-	gtk_container_add (GTK_CONTAINER (eventbox), widget);
-	gtk_widget_show (eventbox);
-	gtk_toolbar_append_widget (GTK_TOOLBAR (toolbar), eventbox,
-				   tooltip_text, tooltip_private_text);
-	return eventbox;
+	if (GTK_IS_TOOL_ITEM (widget)) {
+		item = GTK_TOOL_ITEM (widget);
+	}
+	else {
+		item = gtk_tool_item_new ();
+		gtk_container_add (GTK_CONTAINER (item), widget);
+	}
+	gtk_tool_item_set_tooltip (item, toolbar->tooltips, text, private_text);
+	gtk_toolbar_insert (toolbar, item, -1);
+	gtk_widget_show_all (GTK_WIDGET (item));
+
+	return GTK_WIDGET (item);
 }
+
+/**
+ * Append a GtkToolButton to the toolbar.
+ */
+static GtkWidget *
+toolbar_append_button (GtkToolbar 	*toolbar, 
+					   GtkWidget	*icon, 
+					   const gchar	*label, 
+					   const gchar  *private_text, 
+					   GCallback	 handler, 
+					   gpointer		 data)
+{
+	GtkToolItem *item;
+
+	item = gtk_tool_button_new (icon, label);
+	g_signal_connect (G_OBJECT (item), "clicked", handler, data);
+
+	return (GtkWidget *) toolbar_append_item (toolbar, GTK_WIDGET (item), 
+											  label, private_text);
+}
+
+/**
+ * Append a GtkToggleToolButton to the toolbar.
+ */
+static GtkWidget *
+toolbar_append_toggle (GtkToolbar 	*toolbar, 
+					   GtkWidget	*icon, 
+					   const gchar	*label, 
+					   const gchar  *private_text, 
+					   GCallback	 handler, 
+					   gpointer		 data)
+{
+	GtkToolItem *item;
+
+	item = (GtkToolItem *) g_object_new (GTK_TYPE_TOGGLE_TOOL_BUTTON, 
+										 "icon-widget", icon, 
+										 "label", label, 
+										 NULL);
+	g_signal_connect (G_OBJECT (item), "toggled", handler, data);
+
+	return (GtkWidget *) toolbar_append_item (toolbar, GTK_WIDGET (item), 
+											  label, private_text);
+}
+
+/**
+ * Append a GtkSeparatorToolItem to the toolbar.
+ */
+static GtkWidget *
+toolbar_append_separator (GtkToolbar *toolbar)
+{
+	GtkToolItem *item;
+
+	item = gtk_separator_tool_item_new ();
+	gtk_toolbar_insert (toolbar, item, -1);
+
+	return (GtkWidget *) item;
+}
+
 
 class _wd								// a private little class to help
 {										// us remember all the widgets that
@@ -197,35 +253,6 @@ public:									// we create...
 
 		XAP_Frame * pFrame = static_cast<XAP_Frame *>(wd->m_pUnixToolbar->getFrame());
 		pFrame->dragEnd(wd->m_id);
-	};
-
-	static void s_ColorCallback(GtkWidget * /* widget */, gpointer user_data)
-	{
-		// this is a static callback method and does not have a 'this' pointer.
-		// map the user_data into an object and dispatch the event.
-
-//
-// This is hardwired to popup the color picker dialog
-//	
-		_wd * wd = static_cast<_wd *>(user_data);
-		UT_ASSERT(wd);
-
-		if (!wd->m_blockSignal)
-		{
-			XAP_Toolbar_Id id = wd->m_id;
-			XAP_UnixApp * pUnixApp = wd->m_pUnixToolbar->getApp();
-			const EV_EditMethodContainer * pEMC = pUnixApp->getEditMethodContainer();
-			UT_ASSERT(pEMC);
-			EV_EditMethod * pEM = NULL;
-
-			AV_View * pView = wd->m_pUnixToolbar->getFrame()->getCurrentView();
-
-			if(id ==  AP_TOOLBAR_ID_COLOR_FORE)
-				pEM = pEMC->findEditMethodByName("dlgColorPickerFore");
-			else
-			    pEM = pEMC->findEditMethodByName("dlgColorPickerBack");
-			wd->m_pUnixToolbar->invokeToolbarMethod(pView,pEM,NULL,0);
-		}				
 	};
 
 	static void s_combo_list_changed(GtkWidget* list, GtkWidget * widget, gpointer user_data)
@@ -589,14 +616,12 @@ bool EV_UnixToolbar::getPixmapForIcon(XAP_Toolbar_Id id, GdkWindow * window, Gdk
 		case AP_TOOLBAR_ID_HELP: stock_id = GTK_STOCK_HELP ; break ;
 		case AP_TOOLBAR_ID_SCRIPT_PLAY: stock_id = GTK_STOCK_EXECUTE ; break ;
 
-#if GTK_CHECK_VERSION(2,4,0)
-	case AP_TOOLBAR_ID_UNINDENT: stock_id = GTK_STOCK_UNINDENT ; break ;
-	case AP_TOOLBAR_ID_INDENT: stock_id = GTK_STOCK_INDENT ; break ;
-#elif defined(HAVE_GNOME)
-	case AP_TOOLBAR_ID_UNINDENT: stock_id = GNOME_STOCK_TEXT_UNINDENT ; break ;
-	case AP_TOOLBAR_ID_INDENT: stock_id = GNOME_STOCK_TEXT_INDENT ; break ;
-	case AP_TOOLBAR_ID_LISTS_NUMBERS: stock_id = GNOME_STOCK_TEXT_NUMBERED_LIST ; break ;
-	case AP_TOOLBAR_ID_LISTS_BULLETS: stock_id = GNOME_STOCK_TEXT_BULLETED_LIST ; break ;
+		case AP_TOOLBAR_ID_UNINDENT: stock_id = GTK_STOCK_UNINDENT ; break ;
+		case AP_TOOLBAR_ID_INDENT: stock_id = GTK_STOCK_INDENT ; break ;
+
+#if defined(HAVE_GNOME)
+		case AP_TOOLBAR_ID_LISTS_NUMBERS: stock_id = GNOME_STOCK_TEXT_NUMBERED_LIST ; break ;
+		case AP_TOOLBAR_ID_LISTS_BULLETS: stock_id = GNOME_STOCK_TEXT_BULLETED_LIST ; break ;
 #endif
 
 		default:
@@ -664,6 +689,7 @@ GtkToolbarStyle EV_UnixToolbar::getStyle(void)
 bool EV_UnixToolbar::synthesize(void)
 {
 	// create a GTK toolbar from the info provided.
+	const XAP_StringSet * pSS = XAP_App::getApp()->getStringSet();
 
 	const EV_Toolbar_ActionSet * pToolbarActionSet = m_pUnixApp->getToolbarActionSet();
 	UT_ASSERT(pToolbarActionSet);
@@ -737,12 +763,10 @@ bool EV_UnixToolbar::synthesize(void)
 
 				if(pAction->getToolbarId() != AP_TOOLBAR_ID_INSERT_TABLE)
 				{
-					wd->m_widget = gtk_toolbar_append_item(GTK_TOOLBAR(m_wToolbar),
-														   pLabel->getToolbarLabel(),
-														   szToolTip,static_cast<const char *>(NULL),
-														   wPixmap,
-														   G_CALLBACK(_wd::s_callback),
-														   wd);
+					// TODO rob we are probably not setting the toolbar label correctly
+					wd->m_widget = toolbar_append_button (GTK_TOOLBAR (m_wToolbar), wPixmap,
+												    	  pLabel->getToolbarLabel(), NULL, 
+														  (GCallback) _wd::s_callback, (gpointer) wd);
 				}
 				else
 				{
@@ -756,7 +780,11 @@ bool EV_UnixToolbar::synthesize(void)
 											 G_CALLBACK (_wd::s_new_table), static_cast<gpointer>(wd));
 
 					UT_DEBUGMSG(("SEVIOR: Made connected to callback \n"));
-					abi_table_embed_on_toolbar(ABI_TABLE(abi_table), GTK_TOOLBAR(m_wToolbar));
+// TODO rob					abi_table_embed_on_toolbar(ABI_TABLE(abi_table), GTK_TOOLBAR(m_wToolbar));
+					UT_UTF8String s;
+					pSS->getValueUTF8(XAP_STRING_ID_TB_InsertNewTable, s);
+					toolbar_append_item (GTK_TOOLBAR (m_wToolbar), abi_table, 
+										 s.utf8_str(), NULL);
 					gtk_widget_show_all(abi_table);
 					gtk_widget_hide(ABI_TABLE(abi_table)->label);
 					wd->m_widget = abi_table;
@@ -791,14 +819,10 @@ bool EV_UnixToolbar::synthesize(void)
 									   pLabel->getIconName(),
 									   &wPixmap);
 
-					wd->m_widget = gtk_toolbar_append_element(GTK_TOOLBAR(m_wToolbar),
-															  GTK_TOOLBAR_CHILD_TOGGLEBUTTON,
-															  static_cast<GtkWidget *>(NULL),
-															  pLabel->getToolbarLabel(),
-															  szToolTip,static_cast<const char *>(NULL),
-															  wPixmap,
-															  G_CALLBACK(_wd::s_callback),
-															  wd);
+					// TODO rob we are probably not setting the toolbar label correctly
+					wd->m_widget = toolbar_append_toggle (GTK_TOOLBAR (m_wToolbar), wPixmap,
+												    	  pLabel->getToolbarLabel(), NULL, 
+														  (GCallback) _wd::s_callback, (gpointer) wd);
 					//
 					// Add in a right drag method
 					//
@@ -900,10 +924,8 @@ bool EV_UnixToolbar::synthesize(void)
 				gtk_widget_show(comboBox);
 
 				// stick it in the toolbar
-				toolbar_append_with_eventbox(GTK_TOOLBAR(m_wToolbar),
-							     comboBox,
-							     szToolTip,
-							     static_cast<const char *>(NULL));
+				toolbar_append_item (GTK_TOOLBAR (m_wToolbar), comboBox,
+									 szToolTip, static_cast<const char *>(NULL));
 				wd->m_widget = comboBox;
 
 				// for now, we never repopulate, so can just toss it
@@ -914,30 +936,29 @@ bool EV_UnixToolbar::synthesize(void)
 			case EV_TBIT_ColorFore:
 			case EV_TBIT_ColorBack:
 			{
-				UT_ASSERT(UT_stricmp(pLabel->getIconName(),"NoIcon")!=0);
-				GtkWidget * wPixmap;
-				getPixmapForIcon ( pAction->getToolbarId(), wTLW->window,
-								   &wTLW->style->bg[GTK_STATE_NORMAL],
-								   pLabel->getIconName(),
-								   &wPixmap);
+				GdkPixbuf 		*pixbuf;
+			    GtkWidget 		*combo;
+				GOColorGroup 	*cg;
+				const gchar	*label;
 
-				GdkPixbuf 		* pixbuf;
-			    GtkWidget 		* combo;
-				GOColorGroup 	* cg;
+				label = pLabel->getIconName ();
+				UT_ASSERT (UT_stricmp(label,"NoIcon") != 0);
+
 			    if (pAction->getItemType() == EV_TBIT_ColorFore) {
 					pixbuf = gdk_pixbuf_new_from_xpm_data ((const char **)(tb_text_fgcolor_xpm));
 					cg = go_color_group_fetch ("back_color_group", m_wToolbar);
-					combo = go_combo_color_new (pixbuf, "Default", 0, cg);
+					combo = go_combo_color_new (pixbuf, label, 0, cg);
 				}
 				else {
 					pixbuf = gdk_pixbuf_new_from_xpm_data ((const char **)(tb_text_bgcolor_xpm));
 					cg = go_color_group_fetch ("fore_color_group", m_wToolbar);
-					combo = go_combo_color_new (pixbuf, "Default", 0, cg);
+					combo = go_combo_color_new (pixbuf, label, 0, cg);
 				}
-				toolbar_append_with_eventbox(GTK_TOOLBAR(m_wToolbar),
-											 combo,
-											 szToolTip,
-											 static_cast<const char *>(NULL));
+				go_combo_color_set_instant_apply (GO_COMBO_COLOR (combo), TRUE);
+				g_object_unref (G_OBJECT (pixbuf)); pixbuf = NULL;
+
+				toolbar_append_item (GTK_TOOLBAR(m_wToolbar), combo, szToolTip,
+									 static_cast<const char *>(NULL));
 			    wd->m_widget = combo;
 			    g_signal_connect (G_OBJECT (combo), "color-changed",
 								  G_CALLBACK (s_color_changed), wd);
@@ -977,7 +998,7 @@ bool EV_UnixToolbar::synthesize(void)
 			UT_ASSERT(wd);
 			m_vecToolbarWidgets.addItem(wd);
 
-			gtk_toolbar_append_space(GTK_TOOLBAR(m_wToolbar));
+			toolbar_append_separator (GTK_TOOLBAR (m_wToolbar));
 			break;
 		}
 		
@@ -1034,7 +1055,7 @@ bool EV_UnixToolbar::bindListenerToView(AV_View * pView)
 	{
 		refreshToolbar(pView, AV_CHG_ALL);
 	}
-	return true;
+	return bResult;
 }
 
 bool EV_UnixToolbar::refreshToolbar(AV_View * pView, AV_ChangeMask mask)
@@ -1073,12 +1094,8 @@ bool EV_UnixToolbar::refreshToolbar(AV_View * pView, AV_ChangeMask mask)
 					bool bGrayed = EV_TIS_ShouldBeGray(tis);
 
 					_wd * wd = m_vecToolbarWidgets.getNthItem(k);
-					UT_ASSERT(wd);
-					GtkButton * item = GTK_BUTTON(wd->m_widget);
-					UT_ASSERT(item);
-						
-					// Disable/enable toolbar item
-					gtk_widget_set_sensitive(GTK_WIDGET(item), !bGrayed);     					
+					UT_ASSERT(wd && wd->m_widget);
+					gtk_widget_set_sensitive(wd->m_widget, !bGrayed);     					
 				}
 				break;
 			
@@ -1089,18 +1106,15 @@ bool EV_UnixToolbar::refreshToolbar(AV_View * pView, AV_ChangeMask mask)
 					bool bToggled = EV_TIS_ShouldBeToggled(tis);
 
 					_wd * wd = m_vecToolbarWidgets.getNthItem(k);
-					UT_ASSERT(wd);
-					GtkToggleButton * item = GTK_TOGGLE_BUTTON(wd->m_widget);
-					UT_ASSERT(item);
-						
+					UT_ASSERT(wd && wd->m_widget);
 					// Block the signal, throw the toggle event
 					bool wasBlocked = wd->m_blockSignal;
 					wd->m_blockSignal = true;
-					gtk_toggle_button_set_active(item, bToggled);
+					gtk_toggle_tool_button_set_active(GTK_TOGGLE_TOOL_BUTTON (wd->m_widget), bToggled);
 					wd->m_blockSignal = wasBlocked;
 						
 					// Disable/enable toolbar item
-					gtk_widget_set_sensitive(GTK_WIDGET(item), !bGrayed);						
+					gtk_widget_set_sensitive(wd->m_widget, !bGrayed);				
 				}
 				break;
 

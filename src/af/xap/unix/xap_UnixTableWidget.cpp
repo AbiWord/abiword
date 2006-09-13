@@ -183,32 +183,6 @@ abi_table_get_max_size (const AbiTable* abi_table, guint* rows, guint* cols)
 		*cols = abi_table->total_cols;
 }
 
-void
-abi_table_embed_on_toolbar (AbiTable* abi_table, GtkToolbar* toolbar)
-{
-	GtkReliefStyle button_relief = GTK_RELIEF_NORMAL;
-
-	g_return_if_fail (abi_table);
-	g_return_if_fail (toolbar);
-
-	gtk_widget_style_get (GTK_WIDGET (toolbar),
-						  "button_relief", &button_relief,
-						  NULL);
-
-	gtk_button_set_relief(GTK_BUTTON(abi_table), button_relief);
-	GTK_WIDGET_UNSET_FLAGS(abi_table, GTK_CAN_FOCUS);
-#if 0
-	if (gtk_toolbar_get_style(toolbar) == GTK_TOOLBAR_TEXT && abi_table->icon)
-		gtk_widget_hide(abi_table->icon);
-	else if (gtk_toolbar_get_style(toolbar) == GTK_TOOLBAR_ICONS)
-		gtk_widget_hide(abi_table->label);
-#endif
-	const XAP_StringSet * pSS = XAP_App::getApp()->getStringSet();
-	UT_UTF8String s;
-	pSS->getValueUTF8(XAP_STRING_ID_TB_InsertNewTable,s);
-	gtk_toolbar_append_widget (toolbar, GTK_WIDGET(abi_table), s.utf8_str(), NULL);
-}
-
 static gboolean
 on_drawing_area_event (GtkWidget *area, GdkEventExpose *ev, gpointer user_data)
 {
