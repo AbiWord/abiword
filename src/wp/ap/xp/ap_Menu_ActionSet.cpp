@@ -170,11 +170,17 @@ EV_Menu_ActionSet * AP_CreateMenuActionSet(void)
 	_s(AP_MENU_ID_INSERT_TABLEOFCONTENTS,	0,0,0,0,	"insTOC",	ap_GetState_TOCOK, NULL);
 	_s(AP_MENU_ID_INSERT_FOOTNOTE,	0,0,0,0,	"insFootnote",		ap_GetState_InFootnote,					NULL);
 	_s(AP_MENU_ID_INSERT_ENDNOTE,	0,0,0,0,	"insEndnote",		ap_GetState_InFootnote,					NULL);
+#ifdef HAVE_GNOME
+	_s(AP_MENU_ID_INSERT_PICTURE,   1,0,0,0,  NULL, NULL, NULL);
+#else
+	_s(AP_MENU_ID_INSERT_PICTURE,   0,1,0,0,  "fileInsertGraphic",NULL,                   NULL);
+#endif
 	_s(AP_MENU_ID_INSERT_HEADER,		0,0,0,0,	"editHeader",	ap_GetState_Changes,					NULL);
 	_s(AP_MENU_ID_INSERT_FOOTER,		0,0,0,0,	"editFooter",	ap_GetState_Changes,					NULL);
-	_s(AP_MENU_ID_INSERT_PICTURE,   1,0,0,0,  NULL, NULL, NULL);
+#ifdef HAVE_GNOME
 	_s(AP_MENU_ID_INSERT_CLIPART,   0,1,0,0,  "insertClipart",    NULL,                   NULL);
 	_s(AP_MENU_ID_INSERT_GRAPHIC,	0,1,0,0,	"fileInsertGraphic",NULL,					NULL);
+#endif
 
 	_s(AP_MENU_ID_INSERT_DIRECTIONMARKER,  1,0,0,0, NULL, NULL, NULL);
 	_s(AP_MENU_ID_INSERT_DIRECTIONMARKER_LRM,0,0,0,0, "insertLRM", NULL, NULL);
