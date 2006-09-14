@@ -174,7 +174,7 @@ void AP_UnixDialog_MarkRevisions::event_FocusToggled ()
 {
 	gboolean second_active = FALSE ;
 	
-	if ( gtk_toggle_button_get_active ( GTK_TOGGLE_BUTTON(mRadio2) ) 
+	if ( ( mRadio2 && gtk_toggle_button_get_active ( GTK_TOGGLE_BUTTON(mRadio2) ) )
 		 || getRadio1Label() == NULL )
 		second_active = TRUE ;
 	
