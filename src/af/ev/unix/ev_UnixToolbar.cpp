@@ -28,6 +28,7 @@
 #undef GTK_DISABLE_DEPRECATED
 
 #include <gtk/gtk.h>
+#include <goffice/gtk/go-combo-box.h>
 #include <goffice/gtk/go-combo-color.h>
 #include <string.h>
 #include <stdlib.h>
@@ -954,6 +955,7 @@ bool EV_UnixToolbar::synthesize(void)
 					cg = go_color_group_fetch ("fore_color_group", m_wToolbar);
 					combo = go_combo_color_new (pixbuf, label, 0, cg);
 				}
+				go_combo_box_set_relief (GO_COMBO_BOX (combo), GTK_RELIEF_NONE);
 				go_combo_color_set_instant_apply (GO_COMBO_COLOR (combo), TRUE);
 				g_object_unref (G_OBJECT (pixbuf)); pixbuf = NULL;
 
