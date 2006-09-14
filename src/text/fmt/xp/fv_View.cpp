@@ -132,6 +132,35 @@ private:
   GR_Graphics * m_pGraphics;
 };
 
+
+fv_CaretProps::fv_CaretProps(FV_View * pView, PT_DocPosition InsPoint):
+	m_iInsPoint(InsPoint),
+	m_xPoint(0),
+	m_yPoint(0),
+	m_xPoint2(0),
+	m_yPoint2(0),
+	m_bPointDirection(false),
+	m_bDefaultDirectionRtl(false),
+	m_bUseHebrewContextGlyphs(false),
+	m_bPointEOL(false),
+	m_iPointHeight(0),
+	m_caretColor(0,0,0),
+    m_sDocUUID(""),
+	m_PropCaretListner(NULL),
+	m_pCaret(NULL),
+	m_ListenerID(0),
+	m_pView(pView)
+{
+}
+
+fv_CaretProps::~fv_CaretProps(void)
+{
+	if(m_PropCaretListner != NULL)
+	{
+		DELETEP(m_PropCaretListner);
+	}
+}
+
 /****************************************************************/
 #ifdef _MSC_VER	// MSVC++ warns about using 'this' in initializer list.
 #pragma warning(disable: 4355)
@@ -172,7 +201,11 @@ FV_View::FV_View(XAP_App * pApp, void* pParentData, FL_DocLayout* pLayout)
 		m_sFind(0),
 		m_sReplace(0),
 		m_bShowPara(false),
+#ifdef EMBEDDED_TARGET
+		m_viewMode(VIEW_NORMAL),
+#else
 		m_viewMode(VIEW_PRINT),
+#endif
 		m_previewMode(PREVIEW_NONE),
 		m_bDontUpdateScreenOnGeneralUpdate(false),
 		m_iPieceTableState(0),
@@ -228,6 +261,8 @@ FV_View::FV_View(XAP_App * pApp, void* pParentData, FL_DocLayout* pLayout)
 		m_bInsertAtTablePending(false),
 		m_iPosAtTable(0)
 {
+	if(m_pDoc)
+		m_sDocUUID = m_pDoc->getDocUUIDString();
 	m_colorRevisions[0] = UT_RGBColor(171,4,254);
 	m_colorRevisions[1] = UT_RGBColor(171,20,119);
 	m_colorRevisions[2] = UT_RGBColor(255,151,8);
@@ -383,8 +418,23 @@ FV_View::FV_View(XAP_App * pApp, void* pParentData, FL_DocLayout* pLayout)
 	}
 #endif
 
+	UT_UTF8String s = XAP_EncodingManager::get_instance()->getLanguageISOName();
+
+	const char * pCountry
+		= XAP_EncodingManager::get_instance()->getLanguageISOTerritory();
+	
+	if(pCountry)
+	{
+		s += "-";
+		s += pCountry;
+	}
+		
 	// findFont will do a fuzzy match, and return the nearest font in the system
-	GR_Font* pFont = m_pG->findFont("Times New Roman", "normal", "normal", "normal", "normal", "12pt");
+	GR_Font* pFont = m_pG->findFont("Times New Roman",
+									"normal", "normal",
+									"normal", "normal",
+									"12pt", s.utf8_str());
+	
 	const char * pszFamily = pFont ? pFont->getFamily() : NULL;
 	if (pszFamily)
 		PP_setDefaultFontFamily(pszFamily);
@@ -472,6 +522,30 @@ FV_View::~FV_View()
 	DELETEP(m_pLocalBuf);
 }
 
+bool FV_View::isActive(void) 
+{
+	if(!couldBeActive())
+	        return false;
+	AV_View* pActiveView = NULL;
+	XAP_Frame* lff = getApp()->getLastFocussedFrame();
+	if(lff) 
+	{
+		pActiveView = lff->getCurrentView();
+	}
+	else 
+	{
+		pActiveView = this;
+	}
+	
+	bool bAct = (pActiveView == this);
+	if(!bAct)
+		return false;
+	UT_UTF8String sUUID =  m_pDoc->getDocUUIDString();
+	if(m_sDocUUID == sUUID)
+		return true;
+	return false;
+}
+
 void FV_View::setGraphics(GR_Graphics * pG)
 {
 	if(m_caretListener != NULL)
@@ -492,6 +566,68 @@ void FV_View::setGraphics(GR_Graphics * pG)
 	{
 		m_caretListener = NULL;
 	}
+}
+
+void FV_View:: fixInsertionPointCoords(void)
+{
+	_fixInsertionPointCoords();
+}
+
+void FV_View::updateCarets(PT_DocPosition docPos, UT_sint32 iLen)
+{
+	fv_CaretProps * pCaretProps = NULL;
+	UT_sint32 iCount = static_cast<UT_sint32>(m_vecCarets.getItemCount());
+	UT_UTF8String sUUID = m_pDoc->getDocUUIDString();
+	bool bLocal = (sUUID == m_sDocUUID);
+	UT_sint32 i = 0;
+	bool bFoundUUID = false;
+	for(i=0; i<iCount;i++)
+	{
+			pCaretProps = m_vecCarets.getNthItem(i);
+			if(pCaretProps->m_sDocUUID == sUUID)
+			{
+				if(iLen >= 0)
+				{
+						_setPoint(pCaretProps,docPos,iLen);
+				}
+				else
+				{
+						_setPoint(pCaretProps,docPos,0);
+				}
+			}
+			else if((docPos > 0) && (pCaretProps->m_iInsPoint >= docPos))
+			{
+				_setPoint(pCaretProps,pCaretProps->m_iInsPoint,iLen);
+			}
+			else if(docPos <= 0)
+			{
+				_setPoint(pCaretProps,pCaretProps->m_iInsPoint,iLen);
+			}
+			if(sUUID == pCaretProps->m_sDocUUID)
+				bFoundUUID = true;
+	}
+	if(!bLocal && !bFoundUUID)
+	{
+			addCaret(docPos,sUUID);
+	}
+}
+
+void FV_View::addCaret(PT_DocPosition docPos,UT_UTF8String & sDocUUID)
+{
+	fv_CaretProps * pCaretProps = new fv_CaretProps(this,docPos);
+	m_vecCarets.addItem(pCaretProps);
+	pCaretProps->m_pCaret = m_pG->createCaret( sDocUUID);
+	XAP_Frame * pFrame = static_cast<XAP_Frame*>(getParentData());
+	pCaretProps->m_PropCaretListner = new FV_Caret_Listener (pFrame);
+	addListener(pCaretProps->m_PropCaretListner,&pCaretProps->m_ListenerID);
+	pCaretProps->m_pCaret->setBlink(true);
+	pCaretProps->m_pCaret->enable();
+	pCaretProps->m_sDocUUID = sDocUUID;
+	UT_sint32 icnt = static_cast<UT_sint32>(m_vecCarets.getItemCount());
+	pCaretProps->m_caretColor = m_colorRevisions[icnt];
+	pCaretProps->m_pCaret->setRemoteColor(pCaretProps->m_caretColor);
+	_setPoint(pCaretProps,docPos,0);
+
 }
 
 UT_RGBColor	FV_View::getColorSquiggle(FL_SQUIGGLE_TYPE iSquiggleType) const
@@ -5779,7 +5915,9 @@ bool FV_View::getBlockFormat(const XML_Char *** pProps,bool bExpandStyles)
 	{
 		return false;
 	}
-	UT_GenericVector<_fmtPair *> v;
+
+	// currently there are 69 block level properties
+	UT_GenericVector<_fmtPair *> v(69,4,true);
 	UT_uint32 i;
 	_fmtPair * f = NULL;
 
@@ -5918,19 +6056,28 @@ bool FV_View::getBlockFormat(const XML_Char *** pProps,bool bExpandStyles)
 void FV_View::delTo(FV_DocPos dp)
 {
 	PT_DocPosition iPos = _getDocPos(dp);
-
+	PT_DocPosition iPoint = getPoint();
 
 	// Signal PieceTable Change
 	_saveAndNotifyPieceTableChange();
 
-	if (iPos == getPoint())
+	if (iPos == iPoint)
 	{
 		return;
 	}
 
 	_extSelToPos(iPos);
-	_deleteSelection();
 
+	bool bCaretLeft = false;
+	if(isMarkRevisions() && iPos < iPoint)
+	{
+		// move to the start of the original selection
+		bCaretLeft = true;
+	}
+	
+	_deleteSelection(NULL, false, bCaretLeft);
+
+	
 	// Signal PieceTable Changes have finished
 	_restorePieceTableState();
 
@@ -7824,7 +7971,7 @@ void FV_View::ensureInsertionPointOnScreen(void)
 }
 
 
-void FV_View::setPoint(PT_DocPosition pt)
+void FV_View::setPoint(UT_uint32 pt)
 {
 	_setPoint(pt, m_bPointEOL);
 }
@@ -8454,6 +8601,35 @@ void FV_View::getTopRulerInfo(AP_TopRulerInfo * pInfo)
 	getTopRulerInfo(getPoint(), pInfo);
 }
 
+UT_uint32 FV_View::getTabToggleAreaWidth() const
+{
+		if(m_pTopRuler)
+			return m_pTopRuler->getTabToggleAreaWidth();
+		else
+#ifdef EMBEDDED_TARGET
+			return (UT_uint32) ((float)m_pG->tlu(AP_TopRuler::getFixedWidth()) * 0.1);
+#else
+			return m_pG->tlu(AP_TopRuler::getFixedWidth());
+#endif
+}
+
+void FV_View::setViewMode (ViewMode vm)
+{
+	m_viewMode = vm;
+
+	UT_return_if_fail( m_pLayout );
+
+	m_pLayout->updateOnViewModeChange();
+	
+	for(UT_uint32 i = 0; i < m_pLayout->countPages(); i++)
+	{
+		fp_Page * pPage = m_pLayout->getNthPage(i);
+		UT_return_if_fail( pPage );
+
+		pPage->updateColumnX();
+	}
+}
+
 void FV_View::getTopRulerInfo(PT_DocPosition pos,AP_TopRulerInfo * pInfo)
 {
 	if(m_pDoc->isPieceTableChanging())
@@ -8540,8 +8716,17 @@ void FV_View::getTopRulerInfo(PT_DocPosition pos,AP_TopRulerInfo * pInfo)
 		pInfo->m_iCurrentColumn = nCol;
 		pInfo->m_iNumColumns = pDSL->getNumColumns();
 
-		pInfo->u.c.m_xaLeftMargin = pDSL->getLeftMargin();
-		pInfo->u.c.m_xaRightMargin = pDSL->getRightMargin();
+		if(getViewMode() == VIEW_NORMAL)
+		{
+			pInfo->u.c.m_xaLeftMargin = m_pTopRuler ? m_pTopRuler->getTabToggleAreaWidth() : 0;
+			pInfo->u.c.m_xaRightMargin = 0;
+		}
+		else
+		{
+			pInfo->u.c.m_xaLeftMargin = pDSL->getLeftMargin();
+			pInfo->u.c.m_xaRightMargin = pDSL->getRightMargin();
+		}
+		
 		pInfo->u.c.m_xColumnGap = pDSL->getColumnGap();
 		pInfo->u.c.m_xColumnWidth = pColumn->getWidth();
 		if(pSection->getContainerType() == FL_CONTAINER_FOOTNOTE)
@@ -8552,11 +8737,9 @@ void FV_View::getTopRulerInfo(PT_DocPosition pos,AP_TopRulerInfo * pInfo)
 			pInfo->u.c.m_xColumnWidth = pContainer->getWidth();
 		}
 		pInfo->m_mode = AP_TopRulerInfo::TRI_MODE_COLUMNS;
-
-		pInfo->m_xrPoint = xCaret - pContainer->getX();
-		pInfo->m_xrLeftIndent = UT_convertToLogicalUnits(pBlock->getProperty("margin-left"));
-		pInfo->m_xrRightIndent = UT_convertToLogicalUnits(pBlock->getProperty("margin-right"));
-		pInfo->m_xrFirstLineIndent = UT_convertToLogicalUnits(pBlock->getProperty("text-indent"));
+		pInfo->m_xrLeftIndent = pBlock->getLeftMargin();
+		pInfo->m_xrRightIndent = pBlock->getRightMargin();
+		pInfo->m_xrFirstLineIndent = pBlock->getTextIndent();
 		xxx_UT_DEBUGMSG(("ap_TopRuler: xrPoint %d LeftIndent %d RightIndent %d Firs %d \n",pInfo->m_xrPoint,pInfo->m_xrLeftIndent,pInfo->m_xrRightIndent,	pInfo->m_xrFirstLineIndent));
 	}
 	else if(isHdrFtrEdit() && (pSection->getContainerType() != FL_CONTAINER_CELL))
@@ -8568,16 +8751,25 @@ void FV_View::getTopRulerInfo(PT_DocPosition pos,AP_TopRulerInfo * pInfo)
 		pInfo->m_iCurrentColumn = 0;
 		pInfo->m_iNumColumns = 1;
 
-		pInfo->u.c.m_xaLeftMargin = pDSL->getLeftMargin();
-		pInfo->u.c.m_xaRightMargin = pDSL->getRightMargin();
+		if(getViewMode() == VIEW_NORMAL)
+		{
+			pInfo->u.c.m_xaLeftMargin = m_pTopRuler ? m_pTopRuler->getTabToggleAreaWidth() : 0;
+			pInfo->u.c.m_xaRightMargin = 0;
+		}
+		else
+		{
+			pInfo->u.c.m_xaLeftMargin = pDSL->getLeftMargin();
+			pInfo->u.c.m_xaRightMargin = pDSL->getRightMargin();
+		}
+		
 		pInfo->u.c.m_xColumnGap = pDSL->getColumnGap();
 		pInfo->u.c.m_xColumnWidth = pColumn->getWidth();
 		pInfo->m_mode = AP_TopRulerInfo::TRI_MODE_COLUMNS;
 
 		pInfo->m_xrPoint = xCaret - pContainer->getX();
-		pInfo->m_xrLeftIndent = UT_convertToLogicalUnits(pBlock->getProperty("margin-left"));
-		pInfo->m_xrRightIndent = UT_convertToLogicalUnits(pBlock->getProperty("margin-right"));
-		pInfo->m_xrFirstLineIndent = UT_convertToLogicalUnits(pBlock->getProperty("text-indent"));
+		pInfo->m_xrLeftIndent = pBlock->getLeftMargin();
+		pInfo->m_xrRightIndent = pBlock->getRightMargin();
+		pInfo->m_xrFirstLineIndent = pBlock->getTextIndent();
 	}
 	else if(pSection->getContainerType() == FL_CONTAINER_CELL)
 	{
@@ -8643,16 +8835,26 @@ void FV_View::getTopRulerInfo(PT_DocPosition pos,AP_TopRulerInfo * pInfo)
 				pInfo->m_iNumColumns = 1;
 
 			}
-			pInfo->u.c.m_xaLeftMargin = pDSL->getLeftMargin();
-			pInfo->u.c.m_xaRightMargin = pDSL->getRightMargin();
+
+			if(getViewMode() == VIEW_NORMAL)
+			{
+				pInfo->u.c.m_xaLeftMargin = m_pTopRuler ? m_pTopRuler->getTabToggleAreaWidth() : 0;
+				pInfo->u.c.m_xaRightMargin = 0;
+			}
+			else
+			{
+				pInfo->u.c.m_xaLeftMargin = pDSL->getLeftMargin();
+				pInfo->u.c.m_xaRightMargin = pDSL->getRightMargin();
+			}
+			
 			pInfo->u.c.m_xColumnGap = pDSL->getColumnGap();
 			pInfo->u.c.m_xColumnWidth = pColumn->getWidth();
 			pInfo->m_xrPoint = xCaret - pContainer->getX();
 		}
 		pInfo->m_mode = AP_TopRulerInfo::TRI_MODE_TABLE;
-		pInfo->m_xrLeftIndent = UT_convertToLogicalUnits(pBlock->getProperty("margin-left"));
-		pInfo->m_xrRightIndent = UT_convertToLogicalUnits(pBlock->getProperty("margin-right"));
-		pInfo->m_xrFirstLineIndent = UT_convertToLogicalUnits(pBlock->getProperty("text-indent"));
+		pInfo->m_xrLeftIndent = pBlock->getLeftMargin();
+		pInfo->m_xrRightIndent = pBlock->getRightMargin();
+		pInfo->m_xrFirstLineIndent = pBlock->getTextIndent();
 		fp_TableContainer * pTab = static_cast<fp_TableContainer *>(pCell->getContainer());
 		UT_sint32 row = pCell->getTopAttach();
 		UT_sint32 numcols = pTab->getNumCols();
@@ -8738,7 +8940,7 @@ void FV_View::getTopRulerInfo(PT_DocPosition pos,AP_TopRulerInfo * pInfo)
 			iCum += width;
 		}
 	}
-	else if(pContainer->getContainerType() == FP_CONTAINER_FRAME)
+	else if(pContainer->getContainerType() == FP_CONTAINER_FRAME && getViewMode() != VIEW_NORMAL)
 	{
 		fp_FrameContainer * pFC = static_cast<fp_FrameContainer *>(pContainer);
 		fl_FrameLayout * pFL = static_cast<fl_FrameLayout *>(pSection);
@@ -8762,9 +8964,9 @@ void FV_View::getTopRulerInfo(PT_DocPosition pos,AP_TopRulerInfo * pInfo)
 		pInfo->u.c.m_xaRightMargin = pPage->getWidth() - pFC->getFullX() - pFC->getFullWidth();
 		
 		pInfo->m_xrPoint = xCaret - pFC->getX();
-		pInfo->m_xrLeftIndent = UT_convertToLogicalUnits(pBlock->getProperty("margin-left"));
-		pInfo->m_xrRightIndent = UT_convertToLogicalUnits(pBlock->getProperty("margin-right"));
-		pInfo->m_xrFirstLineIndent = UT_convertToLogicalUnits(pBlock->getProperty("text-indent"));
+		pInfo->m_xrLeftIndent = pBlock->getLeftMargin();
+		pInfo->m_xrRightIndent = pBlock->getRightMargin();
+		pInfo->m_xrFirstLineIndent = pBlock->getTextIndent();
 		
 	}
 	else
