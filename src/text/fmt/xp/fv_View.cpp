@@ -12189,6 +12189,9 @@ void FV_View::setShowRevisions(bool bShow)
 		// now we have to re-do document layout from bottom up
 		m_pLayout->rebuildFromHere(static_cast<fl_DocSectionLayout *>(m_pLayout->getFirstSection()));
 
+		/* have to force redraw -- see 10486 */
+		draw(NULL);
+		
 		_fixInsertionPointCoords();
 	}
 }
@@ -12203,7 +12206,7 @@ void FV_View::toggleShowRevisions()
  */
 void FV_View::setRevisionLevel(UT_uint32 i)
 {
-	UT_return_if_fail( i < PD_MAX_REVISION );
+	UT_return_if_fail( i <= PD_MAX_REVISION );
 	m_pDoc->setShowRevisionId(i);
 	m_iViewRevision = i;
 }
