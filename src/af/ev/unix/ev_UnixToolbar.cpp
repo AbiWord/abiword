@@ -46,7 +46,6 @@
 #include "ev_Toolbar_Control.h"
 #include "ev_EditEventMapper.h"
 #include "xap_UnixTableWidget.h"
-#include "xap_UnixToolbar_Icons.h"
 #include "ev_UnixToolbar_ViewListener.h"
 #include "xav_View.h"
 #include "xap_Prefs.h"
@@ -64,9 +63,8 @@
 
 // hack
 #include "ap_Toolbar_Id.h"
-// TODO have these be stock icons
-#include "../../../wp/ap/xp/ToolbarIcons/tb_text_fgcolor.xpm"
-#include "../../../wp/ap/xp/ToolbarIcons/tb_text_bgcolor.xpm"
+// hack, icons are in wp
+#include "../../../wp/ap/unix/ap_UnixStockIcons.h"
 
 #ifdef HAVE_HILDON
 #include "hildon-widgets/hildon-appview.h"
@@ -75,6 +73,43 @@
 #define COMBO_BUF_LEN 256
 
 static const GtkTargetEntry      s_AbiTBTargets[] = {{"abi-toolbars",0,0}};
+
+/**
+ * Get stock id from icon name.
+ */
+static gchar *
+toolbar_get_stock_id (const gchar *icon_name)
+{
+	// HACK: the toolbar icons are named like that: "FILE_NEW_de-AT"
+	gchar 	 *stock_id = g_strdup (ABIWORD_STOCK_PREFIX);
+	gchar	**tokens;
+	gchar	**iter;
+	gchar 	 *tmp;
+	gint	  off;
+
+	tmp = g_ascii_strdown (icon_name, -1);
+	off = strlen (tmp) - 6;
+	tmp[off] = '\0';
+	tokens = g_strsplit (tmp, "_", 0);
+	g_free (tmp);
+
+	iter = tokens;
+	while (*iter) {
+		tmp = stock_id;
+		stock_id = g_strdup_printf ("%s-%s", stock_id, *iter);
+		g_free (tmp);
+		iter++;
+	}
+	g_strfreev (tokens);
+
+	tmp = abiword_get_gtk_stock_id (stock_id);
+	if (tmp) {
+		g_free (stock_id);
+		stock_id = tmp;
+	}
+
+	return stock_id;
+}
 
 /**
  * Append a widget to the toolbar, 
@@ -110,15 +145,20 @@ toolbar_append_item (GtkToolbar *toolbar,
  */
 static GtkWidget *
 toolbar_append_button (GtkToolbar 	*toolbar, 
-					   GtkWidget	*icon, 
+					   const gchar	*icon_name, 
 					   const gchar	*label, 
 					   const gchar  *private_text, 
 					   GCallback	 handler, 
 					   gpointer		 data)
 {
 	GtkToolItem *item;
+	gchar		*stock_id;
 
-	item = gtk_tool_button_new (icon, label);
+	stock_id = toolbar_get_stock_id (icon_name);
+	item = gtk_tool_button_new_from_stock (stock_id);
+	g_free (stock_id);
+	stock_id = NULL;
+	gtk_tool_button_set_label (GTK_TOOL_BUTTON (item), label);
 	g_signal_connect (G_OBJECT (item), "clicked", handler, data);
 
 	return (GtkWidget *) toolbar_append_item (toolbar, GTK_WIDGET (item), 
@@ -130,18 +170,20 @@ toolbar_append_button (GtkToolbar 	*toolbar,
  */
 static GtkWidget *
 toolbar_append_toggle (GtkToolbar 	*toolbar, 
-					   GtkWidget	*icon, 
+					   const gchar	*icon_name, 
 					   const gchar	*label, 
 					   const gchar  *private_text, 
 					   GCallback	 handler, 
 					   gpointer		 data)
 {
 	GtkToolItem *item;
+	gchar		*stock_id;
 
-	item = (GtkToolItem *) g_object_new (GTK_TYPE_TOGGLE_TOOL_BUTTON, 
-										 "icon-widget", icon, 
-										 "label", label, 
-										 NULL);
+	stock_id = toolbar_get_stock_id (icon_name);
+	item = gtk_toggle_tool_button_new_from_stock (stock_id);
+	g_free (stock_id);
+	stock_id = NULL;
+	gtk_tool_button_set_label (GTK_TOOL_BUTTON (item), label);
 	g_signal_connect (G_OBJECT (item), "toggled", handler, data);
 
 	return (GtkWidget *) toolbar_append_item (toolbar, GTK_WIDGET (item), 
@@ -151,17 +193,15 @@ toolbar_append_toggle (GtkToolbar 	*toolbar,
 /**
  * Append a GtkSeparatorToolItem to the toolbar.
  */
-static GtkWidget *
+static void
 toolbar_append_separator (GtkToolbar *toolbar)
 {
 	GtkToolItem *item;
 
 	item = gtk_separator_tool_item_new ();
 	gtk_toolbar_insert (toolbar, item, -1);
-
-	return (GtkWidget *) item;
+	gtk_widget_show (GTK_WIDGET (item));
 }
-
 
 class _wd								// a private little class to help
 {										// us remember all the widgets that
@@ -583,64 +623,6 @@ void EV_UnixToolbar::rebuildToolbar(UT_sint32 oldpos)
 #endif	
 }
 
-bool EV_UnixToolbar::getPixmapForIcon(XAP_Toolbar_Id id, GdkWindow * window, GdkColor * background,
-				      const char * szIconName, GtkWidget ** pwPixmap)
-{
-	const char * stock_id = NULL ;
-
-	switch ( id )
-	{
-		case AP_TOOLBAR_ID_FILE_NEW: stock_id = GTK_STOCK_NEW ; break ;
-		case AP_TOOLBAR_ID_FILE_OPEN: stock_id = GTK_STOCK_OPEN ; break ;
-		case AP_TOOLBAR_ID_FILE_SAVE: stock_id = GTK_STOCK_SAVE ; break ;
-		case AP_TOOLBAR_ID_FILE_SAVEAS: stock_id = GTK_STOCK_SAVE_AS ; break ;
-		case AP_TOOLBAR_ID_FILE_PRINT: stock_id = GTK_STOCK_PRINT ; break ;
-		case AP_TOOLBAR_ID_FILE_PRINT_PREVIEW: stock_id = GTK_STOCK_PRINT_PREVIEW ; break ;
-			
-		case AP_TOOLBAR_ID_EDIT_UNDO: stock_id = GTK_STOCK_UNDO ; break ;
-		case AP_TOOLBAR_ID_EDIT_REDO: stock_id = GTK_STOCK_REDO ; break ;
-		case AP_TOOLBAR_ID_EDIT_CUT: stock_id = GTK_STOCK_CUT ; break ;
-		case AP_TOOLBAR_ID_EDIT_COPY: stock_id = GTK_STOCK_COPY ; break ;
-		case AP_TOOLBAR_ID_EDIT_PASTE: stock_id = GTK_STOCK_PASTE ; break ;
-						
-		case AP_TOOLBAR_ID_FMT_BOLD: stock_id = GTK_STOCK_BOLD ; break ;
-		case AP_TOOLBAR_ID_FMT_ITALIC: stock_id = GTK_STOCK_ITALIC ; break ;
-		case AP_TOOLBAR_ID_FMT_UNDERLINE: stock_id = GTK_STOCK_UNDERLINE ; break ;
-		case AP_TOOLBAR_ID_FMT_STRIKE: stock_id = GTK_STOCK_STRIKETHROUGH ; break ;
-			
-		case AP_TOOLBAR_ID_ALIGN_LEFT: stock_id = GTK_STOCK_JUSTIFY_LEFT ; break ;
-		case AP_TOOLBAR_ID_ALIGN_CENTER: stock_id = GTK_STOCK_JUSTIFY_CENTER ; break ;
-		case AP_TOOLBAR_ID_ALIGN_RIGHT: stock_id = GTK_STOCK_JUSTIFY_RIGHT ; break ;
-		case AP_TOOLBAR_ID_ALIGN_JUSTIFY: stock_id = GTK_STOCK_JUSTIFY_FILL ; break ;
-			
-		case AP_TOOLBAR_ID_SPELLCHECK: stock_id = GTK_STOCK_SPELL_CHECK ; break ;
-		case AP_TOOLBAR_ID_HELP: stock_id = GTK_STOCK_HELP ; break ;
-		case AP_TOOLBAR_ID_SCRIPT_PLAY: stock_id = GTK_STOCK_EXECUTE ; break ;
-
-		case AP_TOOLBAR_ID_UNINDENT: stock_id = GTK_STOCK_UNINDENT ; break ;
-		case AP_TOOLBAR_ID_INDENT: stock_id = GTK_STOCK_INDENT ; break ;
-
-#if defined(HAVE_GNOME)
-		case AP_TOOLBAR_ID_LISTS_NUMBERS: stock_id = GNOME_STOCK_TEXT_NUMBERED_LIST ; break ;
-		case AP_TOOLBAR_ID_LISTS_BULLETS: stock_id = GNOME_STOCK_TEXT_BULLETED_LIST ; break ;
-#endif
-
-		default:
-			break ;
-	}
-	
-	if ( stock_id == NULL )
-	{
-		return m_pUnixToolbarIcons.getPixmapForIcon ( window, background, szIconName, pwPixmap ) ;
-	}
-	else
-	{
-		*pwPixmap = gtk_image_new_from_stock ( stock_id, GTK_ICON_SIZE_LARGE_TOOLBAR ) ;
-		gtk_widget_show ( *pwPixmap ) ;
-		return true ;
-	}
-}
-
 static void setDragIcon(GtkWidget * wwd, GtkImage * img)
 {
   if (GTK_IMAGE_PIXMAP == gtk_image_get_storage_type(img))
@@ -701,7 +683,6 @@ bool EV_UnixToolbar::synthesize(void)
 	UT_uint32 nrLabelItemsInLayout = m_pToolbarLayout->getLayoutItemCount();
 	UT_ASSERT(nrLabelItemsInLayout > 0);
 
-	GtkWidget * wTLW = static_cast<XAP_UnixFrameImpl *>(m_pFrame->getFrameImpl())->getTopLevelWindow();
 #ifdef HAVE_HILDON	
 #else
 	GtkWidget * wVBox = static_cast<XAP_UnixFrameImpl *>(m_pFrame->getFrameImpl())->getVBoxWidget();
@@ -756,16 +737,9 @@ bool EV_UnixToolbar::synthesize(void)
 			case EV_TBIT_PushButton:
 			{
 				UT_ASSERT(UT_stricmp(pLabel->getIconName(),"NoIcon")!=0);
-				GtkWidget * wPixmap;
-				getPixmapForIcon ( pAction->getToolbarId(), wTLW->window,
-								   &wTLW->style->bg[GTK_STATE_NORMAL],
-								   pLabel->getIconName(),
-								   &wPixmap);
-
 				if(pAction->getToolbarId() != AP_TOOLBAR_ID_INSERT_TABLE)
 				{
-					// TODO rob we are probably not setting the toolbar label correctly
-					wd->m_widget = toolbar_append_button (GTK_TOOLBAR (m_wToolbar), wPixmap,
+					wd->m_widget = toolbar_append_button (GTK_TOOLBAR (m_wToolbar), pLabel->getIconName(),
 												    	  pLabel->getToolbarLabel(), NULL, 
 														  (GCallback) _wd::s_callback, (gpointer) wd);
 				}
@@ -781,7 +755,6 @@ bool EV_UnixToolbar::synthesize(void)
 											 G_CALLBACK (_wd::s_new_table), static_cast<gpointer>(wd));
 
 					UT_DEBUGMSG(("SEVIOR: Made connected to callback \n"));
-// TODO rob					abi_table_embed_on_toolbar(ABI_TABLE(abi_table), GTK_TOOLBAR(m_wToolbar));
 					UT_UTF8String s;
 					pSS->getValueUTF8(XAP_STRING_ID_TB_InsertNewTable, s);
 					toolbar_append_item (GTK_TOOLBAR (m_wToolbar), abi_table, 
@@ -799,7 +772,7 @@ bool EV_UnixToolbar::synthesize(void)
 				gtk_drag_source_set(wwd,GDK_BUTTON3_MASK,
 									s_AbiTBTargets,1,
 									GDK_ACTION_COPY);
-				setDragIcon(wwd, GTK_IMAGE(wPixmap));
+				setDragIcon(wwd, (GtkImage*)gtk_image_new_from_stock(ABIWORD_INSERT_TABLE, GTK_ICON_SIZE_DND));
 				gtk_drag_dest_set(wwd, GTK_DEST_DEFAULT_ALL,
 									s_AbiTBTargets,1,
 									GDK_ACTION_COPY);
@@ -814,14 +787,7 @@ bool EV_UnixToolbar::synthesize(void)
 			case EV_TBIT_GroupButton:
 				{
 					UT_ASSERT(UT_stricmp(pLabel->getIconName(),"NoIcon")!=0);
-					GtkWidget * wPixmap;
-					getPixmapForIcon ( pAction->getToolbarId(), wTLW->window,
-									   &wTLW->style->bg[GTK_STATE_NORMAL],
-									   pLabel->getIconName(),
-									   &wPixmap);
-
-					// TODO rob we are probably not setting the toolbar label correctly
-					wd->m_widget = toolbar_append_toggle (GTK_TOOLBAR (m_wToolbar), wPixmap,
+					wd->m_widget = toolbar_append_toggle (GTK_TOOLBAR (m_wToolbar), pLabel->getIconName(),
 												    	  pLabel->getToolbarLabel(), NULL, 
 														  (GCallback) _wd::s_callback, (gpointer) wd);
 					//
@@ -834,7 +800,10 @@ bool EV_UnixToolbar::synthesize(void)
 				gtk_drag_source_set(wwd,GDK_BUTTON3_MASK,
 									s_AbiTBTargets,1,
 									GDK_ACTION_COPY);
-				setDragIcon(wwd, GTK_IMAGE(wPixmap));
+				gchar *stock_id = toolbar_get_stock_id(pLabel->getIconName());
+				setDragIcon(wwd, (GtkImage*)gtk_image_new_from_stock(stock_id, GTK_ICON_SIZE_DND));
+				g_free (stock_id);
+				stock_id = NULL;
 				gtk_drag_dest_set(wwd,static_cast<GtkDestDefaults>(GTK_DEST_DEFAULT_ALL),
 									s_AbiTBTargets,1,
 									GDK_ACTION_COPY);
@@ -940,24 +909,24 @@ bool EV_UnixToolbar::synthesize(void)
 				GdkPixbuf 		*pixbuf;
 			    GtkWidget 		*combo;
 				GOColorGroup 	*cg;
-				const gchar	*label;
 
-				label = pLabel->getIconName ();
-				UT_ASSERT (UT_stricmp(label,"NoIcon") != 0);
+				UT_ASSERT (UT_stricmp(pLabel->getIconName(),"NoIcon") != 0);
 
 			    if (pAction->getItemType() == EV_TBIT_ColorFore) {
-					pixbuf = gdk_pixbuf_new_from_xpm_data ((const char **)(tb_text_fgcolor_xpm));
+					pixbuf = gtk_widget_render_icon (m_wToolbar, ABIWORD_COLOR_FORE, 
+													 GTK_ICON_SIZE_LARGE_TOOLBAR, NULL);
 					cg = go_color_group_fetch ("back_color_group", m_wToolbar);
-					combo = go_combo_color_new (pixbuf, label, 0, cg);
+					combo = go_combo_color_new (pixbuf, pLabel->getToolbarLabel(), 0, cg);
 				}
 				else {
-					pixbuf = gdk_pixbuf_new_from_xpm_data ((const char **)(tb_text_bgcolor_xpm));
+					pixbuf = gtk_widget_render_icon (m_wToolbar, ABIWORD_COLOR_BACK, 
+													 GTK_ICON_SIZE_LARGE_TOOLBAR, NULL);
 					cg = go_color_group_fetch ("fore_color_group", m_wToolbar);
-					combo = go_combo_color_new (pixbuf, label, 0, cg);
+					combo = go_combo_color_new (pixbuf, pLabel->getToolbarLabel(), 0, cg);
 				}
 				go_combo_box_set_relief (GO_COMBO_BOX (combo), GTK_RELIEF_NONE);
 				go_combo_color_set_instant_apply (GO_COMBO_COLOR (combo), TRUE);
-				g_object_unref (G_OBJECT (pixbuf)); pixbuf = NULL;
+				g_object_unref (G_OBJECT (pixbuf));
 
 				toolbar_append_item (GTK_TOOLBAR(m_wToolbar), combo, szToolTip,
 									 static_cast<const char *>(NULL));
@@ -1011,11 +980,11 @@ bool EV_UnixToolbar::synthesize(void)
 
 #ifdef HAVE_HILDON	
 	
+	GtkWidget * wTLW = static_cast<XAP_UnixFrameImpl *>(m_pFrame->getFrameImpl())->getTopLevelWindow();
 	gtk_box_pack_end(GTK_BOX(HILDON_APPVIEW(wTLW)->vbox), m_wToolbar, FALSE, FALSE, 0);
 	gtk_widget_show_all(m_wToolbar);	
 	gtk_widget_show_all(wTLW);			
-	
-	
+
 #else
 	// show the complete thing
 	gtk_widget_show(m_wToolbar);

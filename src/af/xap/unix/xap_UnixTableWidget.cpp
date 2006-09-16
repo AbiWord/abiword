@@ -35,7 +35,6 @@
 #include "xap_Strings.h"
 #include "ap_Strings.h"
 #include "xap_App.h"
-#include "xap_UnixToolbar_Icons.h"
 #include "ut_debugmsg.h"
 
 /* NONE:UINT,UINT (/dev/stdin:1) */

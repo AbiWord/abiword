@@ -1,3 +1,5 @@
+/* -*- mode: C++; tab-width: 4; c-basic-offset: 4; -*- */
+
 /* AbiSource Application Framework
  * Copyright (C) 1998 AbiSource, Inc.
  * 
@@ -45,7 +47,6 @@
 #include "xap_UnixApp.h"
 #include "xap_FakeClipboard.h"
 #include "gr_UnixImage.h"
-#include "xap_UnixToolbar_Icons.h"
 #include "xap_Unix_TB_CFactory.h"
 #include "xap_Prefs.h"
 #include "xap_UnixEncodingManager.h"
@@ -79,9 +80,6 @@ XAP_UnixApp::XAP_UnixApp(XAP_Args * pArgs, const char * szAppName)
 #else
 	XftInit(NULL);
 #endif
-
-	m_pUnixToolbarIcons = 0;
-
 	_setAbiSuiteLibDir();
 
 	memset(&m_geometry, 0, sizeof(m_geometry));
@@ -160,8 +158,6 @@ XAP_UnixApp::XAP_UnixApp(XAP_Args * pArgs, const char * szAppName)
 
 XAP_UnixApp::~XAP_UnixApp()
 {
-	DELETEP(m_pUnixToolbarIcons);
-	
 	delete m_fontManager;
 
 #if FC_MINOR > 2
@@ -193,10 +189,6 @@ bool XAP_UnixApp::initialize(const char * szKeyBindingsKey, const char * szKeyBi
 	UT_DEBUGMSG(("Fonts Loaded \n"));
 	
 	/*******************************/
-	
-	// load only one copy of the platform-specific icons.
-	
-	m_pUnixToolbarIcons = new AP_UnixToolbar_Icons();
 	
 	// do any thing we need here...
 

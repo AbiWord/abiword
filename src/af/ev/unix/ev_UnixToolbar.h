@@ -1,3 +1,5 @@
+/* -*- mode: C++; tab-width: 4; c-basic-offset: 4; -*- */
+
 /* AbiSource Program Utilities
  * Copyright (C) 1998 AbiSource, Inc.
  * 
@@ -29,7 +31,6 @@
 #include "ap_Toolbar_Id.h"
 #include "ap_UnixToolbar_StyleCombo.h"
 #include "xap_FontPreview.h"
-#include "xap_UnixToolbar_Icons.h"
 
 class XAP_UnixApp;
 class XAP_Frame;
@@ -68,18 +69,14 @@ protected:
 
 	void							_releaseListener(void);
 
-	bool getPixmapForIcon(XAP_Toolbar_Id id, GdkWindow * window, GdkColor * background,
-						  const char * szIconName, GtkWidget ** pwPixmap) ;
-
 	XAP_UnixApp *					m_pUnixApp;
-	XAP_Frame *					m_pFrame;
+	XAP_Frame *						m_pFrame;
 	EV_UnixToolbar_ViewListener *	m_pViewListener;
 	AV_ListenerId					m_lid;	/* view listener id */
 
 	GdkEvent *                      m_eEvent;
 	GtkWidget *						m_wToolbar;
 	GtkWidget * 					m_wHandleBox;
-	AP_UnixToolbar_Icons 			m_pUnixToolbarIcons;
 	UT_GenericVector<_wd*>			m_vecToolbarWidgets;
 };
 
