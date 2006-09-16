@@ -507,7 +507,7 @@ AC_SUBST(VALGRIND)
 
 AM_CONDITIONAL(CROSS_COMPILING, test x$cross_compiling = xyes)
 
-#AC_CONFIG_FILES([goffice-bits/GNUmakefile])
+AC_CONFIG_FILES([goffice-bits/GNUmakefile])
 
 AC_CONFIG_FILES([GNUmakefile
  src/GNUmakefile
