@@ -163,7 +163,7 @@ public:
 
 	EV_Toolbar *                getToolbar(UT_uint32 ibar);
 	UT_sint32                   findToolbarNr(EV_Toolbar * pTB);
-	virtual void                rebuildMenus(void) {}
+	virtual void                rebuildMenus(void) { m_pFrameImpl->_rebuildMenus();}
 	bool                        repopulateCombos();
 
 	void                        rebuildAllToolbars(void);
