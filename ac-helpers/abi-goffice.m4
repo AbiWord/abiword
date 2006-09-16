@@ -21,7 +21,7 @@
 
 AC_DEFUN([ABI_GOFFICE], [
 
-PKG_CHECK_MODULES(GOFFICE, libgoffice-0.3, HAVE_SYSTEM_GOFFICE=yes, HAVE_SYSTEM_GOFFICE=no)
+PKG_CHECK_MODULES(GOFFICE, [libgoffice-1 >= 0.2], HAVE_SYSTEM_GOFFICE=yes, HAVE_SYSTEM_GOFFICE=no)
 
 if test "x$HAVE_SYSTEM_GOFFICE" = "xyes" ; then
 	abi_goffice_message="system"
@@ -45,7 +45,6 @@ fi
 AM_CONDITIONAL(WITH_SYSTEM_GOFFICE, test "x$HAVE_SYSTEM_GOFFICE" = "xyes")
 AC_SUBST(GOFFICE_CFLAGS)
 AC_SUBST(GOFFICE_LIBS)
-
 ])
 # 
 # end: abi/ac-helpers/abi-goffice.m4
