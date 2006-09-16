@@ -159,10 +159,6 @@ XAP_UnixApp::XAP_UnixApp(XAP_Args * pArgs, const char * szAppName)
 XAP_UnixApp::~XAP_UnixApp()
 {
 	delete m_fontManager;
-
-#if FC_MINOR > 2
-	FcFini();
-#endif
 }
 
 bool XAP_UnixApp::initialize(const char * szKeyBindingsKey, const char * szKeyBindingsDefaultValue)
