@@ -74,44 +74,7 @@
 
 static const GtkTargetEntry      s_AbiTBTargets[] = {{"abi-toolbars",0,0}};
 
-/**
- * Get stock id from icon name.
- */
-static gchar *
-toolbar_get_stock_id (const gchar *icon_name)
-{
-	// HACK: the toolbar icons are named like that: "FILE_NEW_de-AT"
-	gchar 	 *stock_id = g_strdup (ABIWORD_STOCK_PREFIX);
-	gchar	**tokens;
-	gchar	**iter;
-	gchar 	 *tmp;
-	gint	  off;
-
-	tmp = g_ascii_strdown (icon_name, -1);
-	off = strlen (tmp) - 6;
-	tmp[off] = '\0';
-	tokens = g_strsplit (tmp, "_", 0);
-	g_free (tmp);
-
-	iter = tokens;
-	while (*iter) {
-		tmp = stock_id;
-		stock_id = g_strdup_printf ("%s-%s", stock_id, *iter);
-		g_free (tmp);
-		iter++;
-	}
-	g_strfreev (tokens);
-
-	tmp = abiword_get_gtk_stock_id (stock_id);
-	if (tmp) {
-		g_free (stock_id);
-		stock_id = tmp;
-	}
-
-	return stock_id;
-}
-
-/**
+/*!
  * Append a widget to the toolbar, 
  * wrap it in a GtkToolItem if it isn't one already.
  */
@@ -140,7 +103,7 @@ toolbar_append_item (GtkToolbar *toolbar,
 	return GTK_WIDGET (item);
 }
 
-/**
+/*!
  * Append a GtkToolButton to the toolbar.
  */
 static GtkWidget *
@@ -154,7 +117,7 @@ toolbar_append_button (GtkToolbar 	*toolbar,
 	GtkToolItem *item;
 	gchar		*stock_id;
 
-	stock_id = toolbar_get_stock_id (icon_name);
+	stock_id = abi_stock_from_toolbar_id (icon_name);
 	item = gtk_tool_button_new_from_stock (stock_id);
 	g_free (stock_id);
 	stock_id = NULL;
@@ -165,7 +128,7 @@ toolbar_append_button (GtkToolbar 	*toolbar,
 											  label, private_text);
 }
 
-/**
+/*!
  * Append a GtkToggleToolButton to the toolbar.
  */
 static GtkWidget *
@@ -179,7 +142,7 @@ toolbar_append_toggle (GtkToolbar 	*toolbar,
 	GtkToolItem *item;
 	gchar		*stock_id;
 
-	stock_id = toolbar_get_stock_id (icon_name);
+	stock_id = abi_stock_from_toolbar_id (icon_name);
 	item = gtk_toggle_tool_button_new_from_stock (stock_id);
 	g_free (stock_id);
 	stock_id = NULL;
@@ -190,7 +153,7 @@ toolbar_append_toggle (GtkToolbar 	*toolbar,
 											  label, private_text);
 }
 
-/**
+/*!
  * Append a GtkSeparatorToolItem to the toolbar.
  */
 static void
@@ -800,7 +763,7 @@ bool EV_UnixToolbar::synthesize(void)
 				gtk_drag_source_set(wwd,GDK_BUTTON3_MASK,
 									s_AbiTBTargets,1,
 									GDK_ACTION_COPY);
-				gchar *stock_id = toolbar_get_stock_id(pLabel->getIconName());
+				gchar *stock_id = abi_stock_from_toolbar_id(pLabel->getIconName());
 				setDragIcon(wwd, (GtkImage*)gtk_image_new_from_stock(stock_id, GTK_ICON_SIZE_DND));
 				g_free (stock_id);
 				stock_id = NULL;

@@ -60,6 +60,8 @@ EV_Menu_ActionSet * AP_CreateMenuActionSet(void)
 	//              a null string, we temporarily hide/remove this item from the layout.
 	//              (this feature is used by the window list manager.)
 
+// TODO rob: Martin says we could try removing the seemingly double entries, INSERT_TABLE/INSERTTABLE etc.
+
 #define _s(id,bHoldsSubMenu,bRaisesDialog,bCheckable,bRadio,szMethodName,pfnGetState,pfnGetLabel)	\
 	pActionSet->setAction(id,bHoldsSubMenu,bRaisesDialog,bCheckable,bRadio,szMethodName,pfnGetState,pfnGetLabel)
 

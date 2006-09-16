@@ -52,37 +52,11 @@
 #include "ut_string_class.h"
 #include "xap_UnixDialogHelper.h"
 #include "ap_Menu_Id.h"
+// hack, icons are in wp
+#include "../../../wp/ap/unix/ap_UnixStockIcons.h"
 #ifdef HAVE_HILDON
 #include <hildon-widgets/hildon-appview.h>
 #endif
-
-
-// set up these replacement icons
-#include "stock/menu_about.xpm"
-#include "stock/menu_add_column.xpm"
-#include "stock/menu_add_row.xpm"
-#include "stock/menu_book.xpm"
-#include "stock/menu_credits.xpm"
-#include "stock/menu_delete_column.xpm"
-#include "stock/menu_delete_row.xpm"
-#include "stock/menu_delete_table.xpm"
-#include "stock/menu_import.xpm"
-#include "stock/menu_insert_hyperlink.xpm"
-#include "stock/menu_insert_symbol.xpm"
-#include "stock/menu_insert_table.xpm"
-#include "stock/menu_merge_cells.xpm"
-#include "stock/menu_new_window.xpm"
-#include "stock/menu_split_cells.xpm"
-#include "stock/stock_insert_graphic-16.xpm"
-#include "stock/stock_list_bulet-16.xpm"
-#include "stock/tb_insert-fields-16.xpm"
-#include "stock/tb_save-template-16.xpm"
-#include "stock/tb_select-all-16.xpm"
-#include "stock/tb_select-row-16.xpm"
-#include "stock/tb_select-table-16.xpm"
-#include "stock/stock_form-time-field-16.xpm"
-
-static bool s_init = false;
 
 #define ACTIVATE_ACCEL "activate"
 #define ACCEL_FLAGS (GtkAccelFlags)(GTK_ACCEL_LOCKED)
@@ -319,90 +293,6 @@ EV_UnixMenu::EV_UnixMenu(XAP_UnixApp * pUnixApp,
 	  m_vecCallbacks(189,4, true)
 {
 	m_accelGroup = gtk_accel_group_new();
-	
-	if (!s_init)
-	{
-		/* register non-standard pixmaps with the gtk-stock engine */
-		s_init = true;
-		
-		// NOTE: KEEP THE ORDER OF THESE TWO STATIC ARRAYS THE SAME
-		static const GtkStockItem items[] = {
-			{ "Menu_AbiWord_About", "_GTK!", static_cast<GdkModifierType>(0), 0, NULL },
-			{ "Menu_AbiWord_Add_Column", "_GTK!", static_cast<GdkModifierType>(0), 0, NULL },
-			{ "Menu_AbiWord_Add_Row", "_GTK!", static_cast<GdkModifierType>(0), 0, NULL },
-			{ "Menu_AbiWord_Book", "_GTK!", static_cast<GdkModifierType>(0), 0, NULL },
-			{ "Menu_AbiWord_Credits", "_GTK!", static_cast<GdkModifierType>(0), 0, NULL },
-			{ "Menu_AbiWord_Delete_Table", "_GTK!", static_cast<GdkModifierType>(0), 0, NULL },
-			{ "Menu_AbiWord_Delete_Column", "_GTK!", static_cast<GdkModifierType>(0), 0, NULL },
-			{ "Menu_AbiWord_Delete_Row", "_GTK!", static_cast<GdkModifierType>(0), 0, NULL },
-			{ "Menu_AbiWord_Export", "_GTK!", static_cast<GdkModifierType>(0), 0, NULL },
-			{ "Menu_AbiWord_Import", "_GTK!", static_cast<GdkModifierType>(0), 0, NULL },
-			{ "Menu_AbiWord_Insert_Hyperlink", "_GTK!", static_cast<GdkModifierType>(0), 0, NULL },
-			{ "Menu_AbiWord_Insert_Image", "_GTK!", static_cast<GdkModifierType>(0), 0, NULL },
-			{ "Menu_AbiWord_Insert_Symbol", "_GTK!", static_cast<GdkModifierType>(0), 0, NULL },
-			{ "Menu_AbiWord_Insert_Table", "_GTK!", static_cast<GdkModifierType>(0), 0, NULL },
-			{ "Menu_AbiWord_Merge_Cells", "_GTK!", static_cast<GdkModifierType>(0), 0, NULL },
-			{ "Menu_AbiWord_New_Window", "_GTK!", static_cast<GdkModifierType>(0), 0, NULL },
-			{ "Menu_AbiWord_Split_Cells", "_GTK!", static_cast<GdkModifierType>(0), 0, NULL },
-			{ "Menu_AbiWord_List_Bullet", "_GTK!", static_cast<GdkModifierType>(0), 0, NULL },
-			{ "Menu_AbiWord_Insert_Field", "_GTK!", static_cast<GdkModifierType>(0), 0, NULL },
-			{ "Menu_AbiWord_Select_All", "_GTK!", static_cast<GdkModifierType>(0), 0, NULL },
-			{ "Menu_AbiWord_Select_Row", "_GTK!", static_cast<GdkModifierType>(0), 0, NULL },
-			{ "Menu_AbiWord_Select_Table", "_GTK!", static_cast<GdkModifierType>(0), 0, NULL },
-			{ "Menu_AbiWord_Insert_Date", "_GTK!", static_cast<GdkModifierType>(0), 0, NULL }
-		};
-		static struct AbiWordStockPixmap{
-			const char * name;
-			char ** xpm_data;
-		} const item_names [] = {
-			{ "Menu_AbiWord_About", menu_about_xpm },
-			{ "Menu_AbiWord_Add_Column", menu_add_column_xpm },
-			{ "Menu_AbiWord_Add_Row", menu_add_row_xpm },
-			{ "Menu_AbiWord_Book", menu_book_xpm },
-			{ "Menu_AbiWord_Credits", menu_credits_xpm },
-			{ "Menu_AbiWord_Delete_Table", menu_delete_table_xpm },
-			{ "Menu_AbiWord_Delete_Column", menu_delete_column_xpm },
-			{ "Menu_AbiWord_Delete_Row", menu_delete_row_xpm },
-			{ "Menu_AbiWord_Export", tb_save_template_16_xpm },
-			{ "Menu_AbiWord_Import", menu_import_xpm },
-			{ "Menu_AbiWord_Insert_Hyperlink", menu_insert_hyperlink_xpm },
-			{ "Menu_AbiWord_Insert_Image", stock_insert_graphic_16_xpm },
-			{ "Menu_AbiWord_Insert_Symbol", menu_insert_symbol_xpm },
-			{ "Menu_AbiWord_Insert_Table", menu_insert_table_xpm },
-			{ "Menu_AbiWord_Merge_Cells", menu_merge_cells_xpm },
-			{ "Menu_AbiWord_New_Window", menu_new_window_xpm },
-			{ "Menu_AbiWord_Split_Cells", menu_split_cells_xpm },
-			{ "Menu_AbiWord_List_Bullet", stock_list_bulet_16_xpm },
-			{ "Menu_AbiWord_Insert_Field", tb_insert_fields_16_xpm },
-			{ "Menu_AbiWord_Select_All", tb_select_all_16_xpm },
-			{ "Menu_AbiWord_Select_Row", tb_select_row_16_xpm },
-			{ "Menu_AbiWord_Select_Table", tb_select_table_16_xpm },
-			{ "Menu_AbiWord_Insert_Date", stock_form_time_field_16_xpm },
-			{ NULL, NULL }
-		};
-
-		// register our stock items
-		gtk_stock_add (items, G_N_ELEMENTS (items));
-
-		// create a new icon factory which holds the non-standard pixmaps
-		GtkIconFactory * factory = gtk_icon_factory_new();
-		// add our factory to the default icon factories
-		gtk_icon_factory_add_default(factory);
-
-		// create the stock items to add to our factory
-		for (UT_sint32 i = 0; item_names[i].name != NULL; i++)
-		{
-			GdkPixbuf * pixbuf = gdk_pixbuf_new_from_xpm_data(const_cast<const char **>(item_names[i].xpm_data));
-			UT_ASSERT(pixbuf);
-			GtkIconSet *icon_set = gtk_icon_set_new_from_pixbuf (pixbuf);
-			gtk_icon_factory_add (factory, item_names[i].name, icon_set);
-			gtk_icon_set_unref (icon_set);
-			g_object_unref (G_OBJECT (pixbuf));
-		}
-		
-		// drop our reference to the factory, GTK will hold a reference.
-		g_object_unref (G_OBJECT (factory));
-	}
 }
 
 EV_UnixMenu::~EV_UnixMenu()
@@ -510,142 +400,6 @@ static void _ev_convert(char * bufResult,
 	*dest = 0;
 }
 
-struct mapping {
-	int id;
-	char * const gtk_stock_item;
-};
-
-const char * EV_UnixMenu::s_getStockPixmapFromId (int id)
-{
-	static const struct mapping gtk_stock_mapping[] = {
-		{AP_MENU_ID_FILE_NEW, GTK_STOCK_NEW},
-		{AP_MENU_ID_FILE_OPEN, GTK_STOCK_OPEN},
-		{AP_MENU_ID_FILE_IMPORT, "Menu_AbiWord_Import"},
-		{AP_MENU_ID_FILE_SAVE, GTK_STOCK_SAVE},
-		{AP_MENU_ID_FILE_SAVEAS, GTK_STOCK_SAVE_AS},
-		{AP_MENU_ID_FILE_SAVE_TEMPLATE, GTK_STOCK_SAVE_AS},
-		{AP_MENU_ID_FILE_EXPORT, "Menu_AbiWord_Export"},
-		{AP_MENU_ID_FILE_CLOSE, GTK_STOCK_CLOSE},
-		{AP_MENU_ID_FILE_PROPERTIES, GTK_STOCK_PROPERTIES},
-		{AP_MENU_ID_FILE_PAGESETUP, GTK_STOCK_PRINT},
-		{AP_MENU_ID_FILE_PRINT, GTK_STOCK_PRINT},
-		{AP_MENU_ID_FILE_PRINT_PREVIEW, GTK_STOCK_PRINT_PREVIEW},
-		{AP_MENU_ID_FILE_EXIT, GTK_STOCK_QUIT},
-		{AP_MENU_ID_FILE_REVERT, GTK_STOCK_REVERT_TO_SAVED},
-
-		{AP_MENU_ID_EDIT_UNDO, GTK_STOCK_UNDO},
-		{AP_MENU_ID_EDIT_REDO, GTK_STOCK_REDO},
-		{AP_MENU_ID_EDIT_CUT, GTK_STOCK_CUT},
-		{AP_MENU_ID_EDIT_COPY, GTK_STOCK_COPY},
-		{AP_MENU_ID_EDIT_PASTE, GTK_STOCK_PASTE},
-		{AP_MENU_ID_EDIT_PASTE_SPECIAL, GTK_STOCK_PASTE},
-		{AP_MENU_ID_EDIT_CLEAR, GTK_STOCK_CLEAR},
-		{AP_MENU_ID_EDIT_FIND, GTK_STOCK_FIND},
-		{AP_MENU_ID_EDIT_REPLACE, GTK_STOCK_FIND_AND_REPLACE},
-		{AP_MENU_ID_EDIT_GOTO, GTK_STOCK_JUMP_TO},
-		
-		{AP_MENU_ID_INSERT_SYMBOL, "Menu_AbiWord_Insert_Symbol"},
-		{AP_MENU_ID_INSERT_PICTURE, "Menu_AbiWord_Insert_Image"},
-		{AP_MENU_ID_INSERT_GRAPHIC, "Menu_AbiWord_Insert_Image"},
-		{AP_MENU_ID_INSERT_HYPERLINK, "Menu_AbiWord_Insert_Hyperlink"},
-
-		{AP_MENU_ID_FMT_FONT, GTK_STOCK_SELECT_FONT},
-		{AP_MENU_ID_FMT_BOLD, GTK_STOCK_BOLD},
-		{AP_MENU_ID_FMT_ITALIC, GTK_STOCK_ITALIC},
-		{AP_MENU_ID_FMT_UNDERLINE, GTK_STOCK_UNDERLINE},
-		{AP_MENU_ID_FMT_STRIKE, GTK_STOCK_STRIKETHROUGH},
-		{AP_MENU_ID_ALIGN_LEFT, GTK_STOCK_JUSTIFY_LEFT},
-		{AP_MENU_ID_ALIGN_RIGHT, GTK_STOCK_JUSTIFY_RIGHT},
-		{AP_MENU_ID_ALIGN_CENTER, GTK_STOCK_JUSTIFY_CENTER},
-		{AP_MENU_ID_ALIGN_JUSTIFY, GTK_STOCK_JUSTIFY_FILL},
-		{AP_MENU_ID_FMT_BACKGROUND, GTK_STOCK_SELECT_COLOR},
-
-		{AP_MENU_ID_TOOLS_SPELL, GTK_STOCK_SPELL_CHECK},
-		{AP_MENU_ID_TOOLS_OPTIONS, GTK_STOCK_PREFERENCES},
-		{AP_MENU_ID_TOOLS_SCRIPTS, GTK_STOCK_EXECUTE},
-
-		{AP_MENU_ID_WEB_SAVEASWEB, GTK_STOCK_SAVE_AS},
-		{AP_MENU_ID_WEB_WEBPREVIEW, GTK_STOCK_INDEX},
-
-		{AP_MENU_ID_WINDOW_1, GTK_STOCK_NEW},
-		{AP_MENU_ID_WINDOW_2, GTK_STOCK_NEW},
-		{AP_MENU_ID_WINDOW_3, GTK_STOCK_NEW},
-		{AP_MENU_ID_WINDOW_4, GTK_STOCK_NEW},
-		{AP_MENU_ID_WINDOW_5, GTK_STOCK_NEW},
-		{AP_MENU_ID_WINDOW_6, GTK_STOCK_NEW},
-		{AP_MENU_ID_WINDOW_7, GTK_STOCK_NEW},
-		{AP_MENU_ID_WINDOW_8, GTK_STOCK_NEW},
-		{AP_MENU_ID_WINDOW_9, GTK_STOCK_NEW},
-		{AP_MENU_ID_WINDOW_NEW, "Menu_AbiWord_New_Window"},
-
-		{AP_MENU_ID_TOOLS_LANGUAGE, "Menu_AbiWord_Book"},
-		{AP_MENU_ID_FMT_LANGUAGE, "Menu_AbiWord_Book"},
-		
-		{AP_MENU_ID_TABLE_INSERT_TABLE, "Menu_AbiWord_Insert_Table"},
-		{AP_MENU_ID_TABLE_DELETE_TABLE, "Menu_AbiWord_Delete_Table"},
-
-		{AP_MENU_ID_TABLE_INSERT_COLUMNS_BEFORE, "Menu_AbiWord_Add_Column"},
-		{AP_MENU_ID_TABLE_INSERT_COLUMNS_AFTER, "Menu_AbiWord_Add_Column"},
-		{AP_MENU_ID_TABLE_INSERT_ROWS_BEFORE, "Menu_AbiWord_Add_Row"},
-		{AP_MENU_ID_TABLE_INSERT_ROWS_AFTER, "Menu_AbiWord_Add_Row"},
-
-		{AP_MENU_ID_TABLE_DELETE_COLUMNS, "Menu_AbiWord_Delete_Column"},
-		{AP_MENU_ID_TABLE_DELETE_ROWS, "Menu_AbiWord_Delete_Row"},
-		{AP_MENU_ID_TABLE_MERGE_CELLS, "Menu_AbiWord_Merge_Cells"},
-		{AP_MENU_ID_TABLE_SPLIT_CELLS, "Menu_AbiWord_Split_Cells"},
-		
-		{AP_MENU_ID_TABLE_INSERTTABLE, "Menu_AbiWord_Insert_Table"},
-		{AP_MENU_ID_TABLE_DELETETABLE, "Menu_AbiWord_Delete_Table"},
-
-		{AP_MENU_ID_TABLE_INSERTCOLUMN, "Menu_AbiWord_Add_Column"},
-		{AP_MENU_ID_TABLE_INSERTROW, "Menu_AbiWord_Add_Row"},
-
-		{AP_MENU_ID_TABLE_DELETECOLUMN, "Menu_AbiWord_Delete_Column"},
-		{AP_MENU_ID_TABLE_DELETEROW, "Menu_AbiWord_Delete_Row"},
-
-		{AP_MENU_ID_HELP_CONTENTS, GTK_STOCK_HELP},
-		{AP_MENU_ID_HELP_INDEX, GTK_STOCK_INDEX},
-		{AP_MENU_ID_HELP_SEARCH, GTK_STOCK_FIND},
-		{AP_MENU_ID_HELP_ABOUT, "Menu_AbiWord_About"},
-		{AP_MENU_ID_HELP_CREDITS, "Menu_AbiWord_Credits"},
-		
-		{AP_MENU_ID_SPELL_ADD, GTK_STOCK_ADD},
-		
-		{ AP_MENU_ID_TABLE_SPLIT_CELLS, "Menu_AbiWord_Split_Cells"},
-		{ AP_MENU_ID_FMT_BULLETS, "Menu_AbiWord_List_Bullet"},
-		{ AP_MENU_ID_FILE_SAVE_TEMPLATE, "Menu_AbiWord_Save_Template"},
-		{ AP_MENU_ID_INSERT_FIELD, "Menu_AbiWord_Insert_Field"},
-		{ AP_MENU_ID_EDIT_SELECTALL, "Menu_AbiWord_Select_All"},
-		{ AP_MENU_ID_TABLE_SELECT_ROW, "Menu_AbiWord_Select_Row"},
-		{ AP_MENU_ID_TABLE_SELECT_TABLE, "Menu_AbiWord_Select_Table"},
-		{ AP_MENU_ID_INSERT_DATETIME, "Menu_AbiWord_Insert_Date"},
-
-		// textbox
-		{ AP_MENU_ID_EDIT_CUT_FRAME, GTK_STOCK_CUT},
-		{ AP_MENU_ID_EDIT_COPY_FRAME, GTK_STOCK_COPY},
-		{ AP_MENU_ID_EDIT_SELECT_FRAME, "Menu_AbiWord_Select_All"},
-		{ AP_MENU_ID_EDIT_DELETEFRAME, GTK_STOCK_DELETE},
-
-		// "wrapped" image
-		{ AP_MENU_ID_FILE_SAVEIMAGE, GTK_STOCK_SAVE_AS}, 
-		{ AP_MENU_ID_EDIT_CUTIMAGE, GTK_STOCK_CUT}, 
-		{ AP_MENU_ID_EDIT_COPYIMAGE, GTK_STOCK_COPY}, 
-		{ AP_MENU_ID_EDIT_DELETEIMAGE, GTK_STOCK_DELETE}, 
-
-		{AP_MENU_ID__BOGUS2__, NULL}
-	};
-	
-	UT_sint32 i = 0;
-	do {
-		if (id == gtk_stock_mapping[i].id)
-			return gtk_stock_mapping[i].gtk_stock_item;
-		else
-			i++;
-	} while (gtk_stock_mapping[i].id != AP_MENU_ID__BOGUS2__);
-	
-	return NULL;
-}
-
 bool EV_UnixMenu::synthesizeMenu(GtkWidget * wMenuRoot)
 {
 	// create a GTK menu from the info provided.
@@ -714,7 +468,7 @@ bool EV_UnixMenu::synthesizeMenu(GtkWidget * wMenuRoot)
 		{
 			const char ** data = _ev_GetLabelName(m_pUnixApp, m_pFrame, pAction, pLabel);
 			szLabelName = data[0];
-			
+
 			if (szLabelName && *szLabelName)
 			{				
 				char buf[1024];
@@ -1297,11 +1051,11 @@ GtkWidget * EV_UnixMenu::s_createNormalMenuEntry(int id, const bool isCheckable,
 
 	if ( !isCheckable && !isRadio )
 	  {
-		  const char * stock_item = s_getStockPixmapFromId(id);
-		  if (stock_item != NULL)
+		  const char * stock_id = abi_stock_from_menu_id(id);
+		  if (stock_id != NULL)
 		    {
 			    // if this is not a checkable menu item, then we'll create an image menu item, if a stock item is available
-			    w = gtk_image_menu_item_new_from_stock(s_getStockPixmapFromId(id), NULL);
+			    w = gtk_image_menu_item_new_from_stock(stock_id, NULL);
 			    // reset the label to what we want it to be
 			    GtkWidget * child = gtk_bin_get_child(GTK_BIN(w));
 			    UT_ASSERT(child);

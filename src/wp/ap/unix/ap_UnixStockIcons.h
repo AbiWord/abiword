@@ -19,14 +19,11 @@
  * 02111-1307, USA.
  */
 
-/*
- * TODO rob: get rid of UnixToolbarIcons, this should replace it
- */
-
 #ifndef AP_UNIXSTOCKICONS_H
 #define AP_UNIXSTOCKICONS_H
 
 #include <gtk/gtk.h>
+#include "xap_Types.h"
 
 #define ABIWORD_STOCK_PREFIX			"abiword"
 
@@ -105,6 +102,9 @@
 #define ABIWORD_EDIT_REMOVEHEADER		"abiword-edit-removeheader"
 #define ABIWORD_EDIT_REMOVEFOOTER		"abiword-edit-removefooter"
 
-gchar * abiword_get_gtk_stock_id (const gchar * abi_stock_id);
+void		  abi_stock_init 				(void);
+const gchar * abi_stock_from_menu_id 		(XAP_Menu_Id menu_id);
+gchar * 	  abi_stock_from_toolbar_id 	(const gchar *toolbar_id);
+const gchar * abi_stock_get_gtk_stock_id 	(const gchar *abi_stock_id);
 
 #endif /* AP_UNIXSTOCKICONS_H */
