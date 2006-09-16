@@ -1150,18 +1150,29 @@ UT_uint32 GR_UnixPangoGraphics::XYToPosition(const GR_RenderInfo & ri, UT_sint32
 	}
 	
 	int x_pos = ltpu(x);
-	int iPos;
+	int len = utf8.byteLength();
+	int iPos = len;
 	int iTrailing;
 	const char * pUtf8 = utf8.utf8_str();
-	
+
+	/* Another jolly pango function:
+	 * if x is greater than the width of the string, it will happily read
+	 * pass the end of it.
+	 */
 	pango_glyph_string_x_to_index(RI.m_pGlyphs,
 								  (char*)pUtf8, // do not like this ...
-								  utf8.byteLength(),
+								  len,
 								  &(pItem->m_pi->analysis), 
 								  x_pos,
 								  &iPos,
 								  &iTrailing);
 
+	/* if at the end (or pass) the end of the string, just return the length*/
+	if (iPos >= len)
+	{
+		return RI.m_iLength;
+	}
+	
 	i = g_utf8_pointer_to_offset(pUtf8, pUtf8 + iPos);
 	
 	if(iTrailing)

@@ -815,6 +815,7 @@ void fp_TextRun::mapXYToPosition(UT_sint32 x, UT_sint32 y,
 							  getBlockOffset() + fl_BLOCK_STRUX_OFFSET);
 		UT_return_if_fail(text.getStatus() == UTIter_OK);
 		m_pRenderInfo->m_pText = &text;
+		m_pRenderInfo->m_iLength = getLength();
 #endif
 		
 		bBOL = false;
