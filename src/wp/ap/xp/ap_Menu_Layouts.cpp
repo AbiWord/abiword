@@ -113,6 +113,7 @@
 						m_Vec_lt.deleteNthItem(i);
 						delete plt;
 						bFound = true;
+						break;
 					}
 				}
 				UT_ASSERT_HARMLESS(bFound);

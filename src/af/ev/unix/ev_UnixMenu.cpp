@@ -195,7 +195,6 @@ static const char ** _ev_GetLabelName(XAP_UnixApp * pUnixApp,
 	{
 		// see if this has an associated keybinding
 		const char * szMethodName = pAction->getMethodName();
-
 		if (szMethodName)
 		{
 			const EV_EditMethodContainer * pEMC = pUnixApp->getEditMethodContainer();
@@ -685,7 +684,6 @@ bool EV_UnixMenu::_refreshMenu(AV_View * pView, GtkWidget * wMenuRoot)
 		XAP_Menu_Id id = pLayoutItem->getMenuId();
 		const EV_Menu_Action * pAction = pMenuActionSet->getAction(id);
 		const EV_Menu_Label * pLabel = m_pMenuLabelSet->getLabel(id);
-
 		switch (pLayoutItem->getMenuLayoutFlags())
 		{
 		case EV_MLF_Normal:
