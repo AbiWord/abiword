@@ -2185,20 +2185,17 @@ void GR_UnixPangoPrintGraphics::drawChars(const UT_UCSChar* pChars,
 	// we cannot call XAP_UnixGnomePrintGraphic::drawChars() here because the fonts this
 	// class uses are pango fonts, not the PS fonts the class expects
 
-	GR_UnixPangoFont * pFont = (GR_UnixPangoFont *)m_pPFont;
 	UT_UTF8String utf8(pChars + iCharOffset, iLength);
 	
-	GList * pLogItems = pango_itemize(m_pContext, utf8.utf8_str(), 0, utf8.byteLength(),
+	GList * pLogItems = pango_itemize(m_pContext, utf8.utf8_str(),
+									  0, utf8.byteLength(),
 									  NULL, NULL);
 
 	GList * pItems = pango_reorder_items(pLogItems);
 	g_list_free(pLogItems);
 	
 	xoff = _tduX(xoff);
-	yoff = m_pGnomePrint->scale_ydir(_tduY(yoff + getFontAscent(pFont)));
-
-	xxx_UT_DEBUGMSG(("about to gnome_print_pango_gplyph_string render xoff %d yoff %d\n",
-				 xoff, yoff));
+	yoff = m_pGnomePrint->scale_ydir(_tduY(yoff + getFontAscent(m_pPFont)));
 
 	GnomePrintContext * gpc = m_pGnomePrint->getGnomePrintContext();
 	UT_return_if_fail( gpc );
@@ -2206,16 +2203,18 @@ void GR_UnixPangoPrintGraphics::drawChars(const UT_UCSChar* pChars,
 	gnome_print_gsave(gpc);
 	gnome_print_moveto(gpc, xoff, yoff);
 	
-
+	PangoFont * pf = m_pPFont->getPangoFont();
+	
 	for(unsigned int i = 0; i < g_list_length(pItems); ++i)
 	{
 		PangoGlyphString * pGlyphs = pango_glyph_string_new();
 		PangoItem *pItem = (PangoItem *)g_list_nth(pItems, i)->data;
+		pItem->analysis.font = pf;
 
 		pango_shape(utf8.utf8_str() + pItem->offset, pItem->length,
 					& pItem->analysis, pGlyphs);
 
-		gnome_print_pango_glyph_string(gpc, pFont->getPangoFont(), pGlyphs);
+		gnome_print_pango_glyph_string(gpc, pf, pGlyphs);
 
 		pango_glyph_string_free(pGlyphs);
 	}
