@@ -226,7 +226,7 @@ XAP_Menu_Factory::XAP_Menu_Factory(XAP_App * pApp) :
 
 XAP_Menu_Factory::~XAP_Menu_Factory()
 {
-    UT_VECTOR_PURGEALL(_vectt *,m_vecTT);
+    UT_VECTOR_SPARSEPURGEALL(_vectt *,m_vecTT);
 	DELETEP(m_pEnglishLabelSet);
 	DELETEP(m_pBSS);
 	DELETEP(m_pLabelSet);
@@ -519,6 +519,34 @@ XAP_Menu_Id XAP_Menu_Factory::addNewMenuBefore(const char * szMenu,
 	  pVectt->insertItemAt((void *) plt, beforeID);
 	}
 	return (XAP_Menu_Id) newID;
+}
+
+/*!
+ * Remove the menu item with id nukeID from the menu labelled szMenu in the
+ * Language set szLanguage
+ */
+XAP_Menu_Id XAP_Menu_Factory::removeMenuItem(const char * szMenu, 
+							  const char * szLanguage,  
+							  XAP_Menu_Id nukeID)
+{
+	UT_return_val_if_fail (szMenu && *szMenu, 0);		// no defaults
+	UT_uint32 k = 0;
+	bool bFoundMenu = false;
+	_vectt * pVectt = NULL;
+	for (k=0; (k< m_vecTT.getItemCount()) && !bFoundMenu; k++)
+	{
+		pVectt = (_vectt *)m_vecTT.getNthItem(k);
+		if (pVectt == NULL)
+			continue;
+		bFoundMenu = (UT_stricmp(szMenu,pVectt->m_name)==0);
+	}
+	if(!bFoundMenu)
+	{
+		UT_ASSERT_HARMLESS(UT_SHOULD_NOT_HAPPEN);
+		return 0;
+	}
+	pVectt->removeItem(nukeID);
+	return nukeID;
 }
 
 /*!

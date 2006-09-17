@@ -61,6 +61,9 @@ public:
 	XAP_Menu_Id        getNewID(void);
     XAP_Menu_Id        removeMenuItem(const char * szMenu, 
 									  const char * szLanguage,  
+									  XAP_Menu_Id nukeID);
+    XAP_Menu_Id        removeMenuItem(const char * szMenu, 
+									  const char * szLanguage,  
 									  const char * szNuke);
 	void         resetMenusToDefault(void);
 	UT_uint32    GetMenuLabelSetLanguageCount(void);
