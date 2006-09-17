@@ -399,7 +399,7 @@ static void _ev_convert(char * bufResult,
 	*dest = 0;
 }
 
-bool EV_UnixMenu::synthesizeMenu(GtkWidget * wMenuRoot)
+bool EV_UnixMenu::synthesizeMenu(GtkWidget * wMenuRoot, bool isPopup)
 {
 	// create a GTK menu from the info provided.
 	const EV_Menu_ActionSet * pMenuActionSet = m_pUnixApp->getMenuActionSet();
@@ -442,7 +442,8 @@ bool EV_UnixMenu::synthesizeMenu(GtkWidget * wMenuRoot)
 			
 			if (szLabelName && *szLabelName)
 			{
-				w = s_createNormalMenuEntry(id, pAction->isCheckable(), pAction->isRadio(), szLabelName, szMnemonicName);
+				w = s_createNormalMenuEntry(id, pAction->isCheckable(), pAction->isRadio(), 
+											isPopup, szLabelName, szMnemonicName);
 				// find parent menu item
 				GtkWidget * wParent;
 				bResult = stack.viewTop(reinterpret_cast<void **>(&wParent));
@@ -550,7 +551,7 @@ bool EV_UnixMenu::synthesizeMenu(GtkWidget * wMenuRoot)
 					FREEP(dup);
 				}
 				
-				if ((keyCode != GDK_VoidSymbol))
+				if ((keyCode != GDK_VoidSymbol) && !isPopup)
 				  {
 					  // bind to top level if parent is top level
  					  if (wParent == wMenuRoot)
@@ -724,7 +725,8 @@ bool EV_UnixMenu::_refreshMenu(AV_View * pView, GtkWidget * wMenuRoot)
 
 					// create the item with the underscored label
 					GtkWidget * w = s_createNormalMenuEntry(id, pAction->isCheckable () && bCheck, 
-															pAction->isRadio () && bCheck, szLabelName, szMnemonicName);
+															pAction->isRadio () && bCheck, 
+															false, szLabelName, szMnemonicName);
 					UT_ASSERT(w);
 
 					// find parent menu item
@@ -948,7 +950,7 @@ bool EV_UnixMenuBar::synthesizeMenuBar()
 	m_wMenuBar = gtk_menu_bar_new();
 #endif
 
-	synthesizeMenu(m_wMenuBar);
+	synthesizeMenu(m_wMenuBar, false);
 	gtk_widget_show_all(m_wMenuBar);
 
 #ifdef HAVE_HILDON	 /* in hildon no need */
@@ -968,7 +970,7 @@ bool EV_UnixMenuBar::rebuildMenuBar()
 	// to a 3D handle box and shown
 	m_wMenuBar = gtk_menu_bar_new();
 
-	synthesizeMenu(m_wMenuBar);
+	synthesizeMenu(m_wMenuBar, false);
 
 	// show up the properly connected menu structure
 	gtk_widget_show(m_wMenuBar);
@@ -1023,7 +1025,7 @@ bool EV_UnixMenuPopup::synthesizeMenuPopup()
 	g_signal_connect(G_OBJECT(m_wMenuPopup), "unmap",
 					   G_CALLBACK(_wd::s_onDestroyPopupMenu), wd);
 	m_vecCallbacks.addItem(static_cast<void *>(wd));
-	synthesizeMenu(m_wMenuPopup);
+	synthesizeMenu(m_wMenuPopup, true);
 
 	return true;
 }
@@ -1039,7 +1041,12 @@ bool EV_UnixMenuPopup::refreshMenu(AV_View * pView)
 	return true;
 }
 
-GtkWidget * EV_UnixMenu::s_createNormalMenuEntry(int id, const bool isCheckable, const bool isRadio, const char *szLabelName, const char *szMnemonicName)
+GtkWidget * EV_UnixMenu::s_createNormalMenuEntry(int 		id, 
+												 const bool isCheckable, 
+												 const bool isRadio, 
+												 const bool isPopup,
+												 const char *szLabelName, 
+												 const char *szMnemonicName)
 {
 	// create the item with the underscored label
 	GtkWidget * w;
@@ -1076,7 +1083,7 @@ GtkWidget * EV_UnixMenu::s_createNormalMenuEntry(int id, const bool isCheckable,
 	
 #ifdef HAVE_HILDON /* not necessary in hildon */		
 #else
-	if (szMnemonicName && *szMnemonicName)
+	if (szMnemonicName && *szMnemonicName && !isPopup)
 	  {
 		  guint accelKey = 0;
 		  GdkModifierType acMods = (GdkModifierType)0;
