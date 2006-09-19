@@ -1,3 +1,5 @@
+/* -*- mode: C++; tab-width: 4; c-basic-offset: 4; -*- */
+
 /* AbiWord
  * Copyright (C) 1998-2000 AbiSource, Inc.
  * 
@@ -30,33 +32,22 @@ BeginLayout(FileEditOps, AP_STRING_ID_TB_Standard, AP_PREF_KEY_StandardBarVisibl
 	ToolbarItem(AP_TOOLBAR_ID_FILE_NEW)
 	ToolbarItem(AP_TOOLBAR_ID_FILE_OPEN)
 	ToolbarItem(AP_TOOLBAR_ID_FILE_SAVE)
-	ToolbarItem(AP_TOOLBAR_ID_FILE_SAVEAS)
 
 	Spacer()
-	ToolbarItem(AP_TOOLBAR_ID_FILE_PRINT)
 #ifdef XP_UNIX_TARGET_GTK
 	ToolbarItem(AP_TOOLBAR_ID_FILE_PRINT_PREVIEW)
 #endif
-	ToolbarItem(AP_TOOLBAR_ID_SPELLCHECK)
-
-	Spacer()
-	ToolbarItem(AP_TOOLBAR_ID_EDIT_CUT)
-	ToolbarItem(AP_TOOLBAR_ID_EDIT_COPY)
-	ToolbarItem(AP_TOOLBAR_ID_EDIT_PASTE)
-        ToolbarItem(AP_TOOLBAR_ID_FMTPAINTER)
+	ToolbarItem(AP_TOOLBAR_ID_FILE_PRINT)
 
 	Spacer()
 	ToolbarItem(AP_TOOLBAR_ID_EDIT_UNDO)
 	ToolbarItem(AP_TOOLBAR_ID_EDIT_REDO)
 
 	Spacer()
-	ToolbarItem(AP_TOOLBAR_ID_1COLUMN)
-	ToolbarItem(AP_TOOLBAR_ID_2COLUMN)
-	ToolbarItem(AP_TOOLBAR_ID_3COLUMN)
+	ToolbarItem(AP_TOOLBAR_ID_EDIT_CUT)
+	ToolbarItem(AP_TOOLBAR_ID_EDIT_COPY)
+	ToolbarItem(AP_TOOLBAR_ID_EDIT_PASTE)
 
 	Spacer()
-	ToolbarItem(AP_TOOLBAR_ID_IMG)
-	ToolbarItem(AP_TOOLBAR_ID_VIEW_SHOWPARA)
 	ToolbarItem(AP_TOOLBAR_ID_ZOOM)
-	ToolbarItem(AP_TOOLBAR_ID_HELP)
 EndLayout()
