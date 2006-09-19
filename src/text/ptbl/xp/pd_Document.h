@@ -652,6 +652,11 @@ PT_AttrPropIndex            getAPIFromSOH(PL_ObjectHandle odh);
 	bool                    isVDNDinProgress() const {return m_bVDND;}
 	UT_sint32               getNextCRNumber(void);
     void                    getAllViews(UT_GenericVector<AV_View *> * vecViews);
+	void                    ignoreSignals(void)
+	{ m_bIgnoreSignals = true;}
+	void                    dontIgnoreSignals(void)
+	{ m_bIgnoreSignals = false;}
+
 protected:
 	virtual ~PD_Document();
 
@@ -726,6 +731,7 @@ private:
 	bool                    m_bVDND;
     UT_sint32               m_iCRCounter;
 	mutable UT_sint32       m_iUpdateCount;
+	bool                    m_bIgnoreSignals;
 };
 
 #endif /* PD_DOCUMENT_H */

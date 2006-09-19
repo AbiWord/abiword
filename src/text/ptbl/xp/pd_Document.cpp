@@ -113,7 +113,8 @@ PD_Document::PD_Document(XAP_App *pApp)
 	  m_bMarginChangeOnly(false),
 	  m_bVDND(false),
 	  m_iCRCounter(0),
-	  m_iUpdateCount(0)
+	  m_iUpdateCount(0),
+	  m_bIgnoreSignals(false)
 {
 	m_pApp = pApp;
 	
@@ -735,6 +736,7 @@ UT_Error PD_Document::_saveAs(const char * szFilename, int ieft, bool cpy,
 	    _setClean(); // only mark as clean if we're saving under a new name
 		signalListeners(PD_SIGNAL_DOCNAME_CHANGED);	
 	}
+	signalListeners(PD_SIGNAL_DOCSAVED);
 
 	//if (strstr(szFilename, "normal.awt") == NULL)
 	XAP_App::getApp()->getPrefs()->addRecent(szFilename);
@@ -2865,6 +2867,8 @@ bool PD_Document::removeListener(PL_ListenerId listenerId)
 
 bool PD_Document::signalListeners(UT_uint32 iSignal) const
 {
+	if(m_bIgnoreSignals)
+		return true;
 	if(iSignal == PD_SIGNAL_UPDATE_LAYOUT)
 	{
 			m_iUpdateCount++;
