@@ -126,7 +126,7 @@ XAP_UnixApp::XAP_UnixApp(XAP_Args * pArgs, const char * szAppName)
 		{
 			pGF->registerAsDefault(GR_UnixPangoGraphics::s_getClassId(), true);
 		}
-		
+
 		bSuccess = pGF->registerClass(GR_UnixPangoPrintGraphics::graphicsAllocator,
 									  GR_UnixPangoPrintGraphics::graphicsDescriptor,
 									  GR_UnixPangoPrintGraphics::s_getClassId());

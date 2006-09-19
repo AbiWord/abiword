@@ -1,3 +1,5 @@
+/* -*- mode: C++; tab-width: 4; c-basic-offset: 4; -*- */
+
 /* AbiWord
  * Copyright (C) 2006 Rob Staudinger <robert.staudinger@gmail.com>
  * 
@@ -210,7 +212,7 @@ gboolean XAP_UnixDialog_ClipArt::fillStore(void)
 		return FALSE;
 	}
 
-	gtk_progress_set_percentage (GTK_PROGRESS (this->progress), 0.);
+	gtk_progress_bar_set_fraction (GTK_PROGRESS_BAR (this->progress), 0.);
 	count = 0;
 	name = g_dir_read_name (dir);
 	while (name != NULL) {
@@ -247,8 +249,8 @@ gboolean XAP_UnixDialog_ClipArt::fillStore(void)
 		g_object_unref (G_OBJECT (pixbuf)); pixbuf = NULL;
 
 		if (clipartCount) {
-			gtk_progress_set_percentage (GTK_PROGRESS (this->progress), 
-										 count / clipartCount * 100.);
+			gtk_progress_bar_set_fraction (GTK_PROGRESS_BAR (this->progress), 
+										   count / clipartCount * 100.);
 		}
 		else {
 			gtk_progress_bar_pulse (GTK_PROGRESS_BAR (this->progress));
