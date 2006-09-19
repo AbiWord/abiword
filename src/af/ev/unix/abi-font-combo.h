@@ -47,7 +47,8 @@ struct _AbiFontComboClass {
 
 GType abi_font_combo_get_type (void);
 
-GtkWidget * abi_font_combo_new (void);
+GtkWidget * 	abi_font_combo_new (void);
+void		abi_font_combo_append_font (AbiFontCombo *self, const gchar *font);
 
 G_END_DECLS
 

@@ -414,7 +414,9 @@ EV_UnixToolbar::EV_UnixToolbar(XAP_UnixApp 	*pUnixApp,
 	m_pViewListener(NULL),
 	m_eEvent(NULL),
 	m_wToolbar(NULL),
-	m_wHandleBox(NULL)
+	m_wHandleBox(NULL),
+	m_wHSizeGroup(NULL),
+	m_wVSizeGroup(NULL)
 {}
 
 EV_UnixToolbar::~EV_UnixToolbar(void)
@@ -622,6 +624,9 @@ bool EV_UnixToolbar::synthesize(void)
 	gtk_toolbar_set_tooltips(GTK_TOOLBAR(m_wToolbar), TRUE);
 	gtk_toolbar_set_show_arrow(GTK_TOOLBAR(m_wToolbar), TRUE);
 
+	m_wHSizeGroup = gtk_size_group_new(GTK_SIZE_GROUP_HORIZONTAL);
+	m_wVSizeGroup = gtk_size_group_new(GTK_SIZE_GROUP_VERTICAL);
+
 #ifdef HAVE_HILDON /* In Hildon its not posible */
 #else
 //
@@ -767,7 +772,8 @@ bool EV_UnixToolbar::synthesize(void)
 					combo = gtk_combo_box_entry_new_text();
 					GtkEntry *entry = GTK_ENTRY(gtk_bin_get_child(GTK_BIN(combo)));
 					g_object_set (G_OBJECT(entry), "can-focus", TRUE, NULL);
-					gtk_entry_set_width_chars (entry, 3);
+					gtk_entry_set_width_chars (entry, 4);
+					gtk_size_group_add_widget (m_wHSizeGroup, combo);
 				}
 				else if (wd->m_id == AP_TOOLBAR_ID_FMT_FONT) {
 					gulong *handler_id = new gulong;
@@ -779,6 +785,8 @@ bool EV_UnixToolbar::synthesize(void)
 									  G_CALLBACK(_wd::s_font_popup_closed), 
 									  wd);
 					g_object_set_data (G_OBJECT (combo), PROP_HANDLER_ID, handler_id);
+					gtk_widget_set_size_request (combo, 0, -1);
+					gtk_size_group_add_widget (m_wHSizeGroup, combo);
 				}
 				else {
 					combo = gtk_combo_box_new_text();
@@ -796,13 +804,21 @@ bool EV_UnixToolbar::synthesize(void)
 						UT_uint32 items = v->getItemCount();
 						for (UT_uint32 m=0; m < items; m++) {
 							const char * sz = v->getNthItem(m);
-							gtk_combo_box_append_text (GTK_COMBO_BOX (combo), sz);
+							if (ABI_IS_FONT_COMBO (combo)) {
+								abi_font_combo_append_font (ABI_FONT_COMBO (combo), sz);
+							}
+							else {
+								gtk_combo_box_append_text (GTK_COMBO_BOX (combo), sz);
+							}
 						}
 					}
 				}
  
+				gtk_size_group_add_widget (m_wVSizeGroup, combo);
 				gtk_widget_show(combo);
-				toolbar_append_item (GTK_TOOLBAR (m_wToolbar), combo,
+				GtkWidget *alignment = gtk_alignment_new (0, 0.5, 1, 0);
+				gtk_container_add (GTK_CONTAINER (alignment), combo);
+				toolbar_append_item (GTK_TOOLBAR (m_wToolbar), alignment,
 									 szToolTip, static_cast<const char *>(NULL), 
 									 TRUE);
 				wd->m_widget = combo;
@@ -1185,7 +1201,12 @@ bool EV_UnixToolbar::repopulateStyles(void)
 	for (UT_uint32 m=0; m < items; m++)
 	{
 		const char * sz = v->getNthItem(m);
-		gtk_combo_box_append_text (GTK_COMBO_BOX (combo), sz);
+		if (ABI_IS_FONT_COMBO (combo)) {
+			abi_font_combo_append_font (ABI_FONT_COMBO (combo), sz);
+		}
+		else {
+			gtk_combo_box_append_text (GTK_COMBO_BOX (combo), sz);
+		}
 	}
 
 	wd->m_blockSignal = wasBlocked;

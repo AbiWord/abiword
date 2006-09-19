@@ -77,6 +77,8 @@ protected:
 	GdkEvent *                      m_eEvent;
 	GtkWidget *						m_wToolbar;
 	GtkWidget * 					m_wHandleBox;
+	GtkSizeGroup *					m_wHSizeGroup;
+	GtkSizeGroup *					m_wVSizeGroup;
 	UT_GenericVector<_wd*>			m_vecToolbarWidgets;
 };
 

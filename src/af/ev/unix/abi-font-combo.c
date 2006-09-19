@@ -19,7 +19,6 @@
 #include "abi-font-combo.h"
 
 
-
 /* builtin GtkCellRendererText subclass */
 
 #define ABI_TYPE_CELL_RENDERER_FONT                  (abi_cell_renderer_font_get_type ())
@@ -183,6 +182,17 @@ enum {
 	LAST_SIGNAL
 };
 
+/* TreeModel columns */
+enum {
+	FONT, 
+	PREVIEW, 
+	SIZE,
+	WEIGHT,
+	FAMILY_VISIBLE,
+	PREVIEW_VISIBLE,
+	NUM_COLS
+};
+
 static guint font_combo_signals[LAST_SIGNAL] = { 0 };
 
 static GtkComboBoxClass *abi_font_combo_parent_class = NULL;
@@ -267,6 +277,21 @@ abi_font_combo_get_type (void)
         return type;
 }
 
+void
+changed_cb (AbiFontCombo *self)
+{
+	GtkTreeModel 	*model;
+	GtkTreeIter	 iter;
+
+	if (gtk_combo_box_get_active_iter (GTK_COMBO_BOX (self), &iter)) {
+		model = gtk_combo_box_get_model (GTK_COMBO_BOX (self));
+		gtk_list_store_set (GTK_LIST_STORE (model), &iter, 
+				    PREVIEW_VISIBLE, TRUE, 
+				    FAMILY_VISIBLE, FALSE, 
+				    -1);
+	}
+}
+
 GtkWidget *
 abi_font_combo_new (void)
 {
@@ -275,14 +300,27 @@ abi_font_combo_new (void)
 	GtkCellRenderer *cell;
 
 	self = (GtkWidget *) g_object_new (ABI_TYPE_FONT_COMBO, NULL);
-	store = gtk_list_store_new (1, G_TYPE_STRING);
+	g_signal_connect (G_OBJECT (self), "changed", G_CALLBACK (changed_cb), NULL); 
+	store = gtk_list_store_new (NUM_COLS, G_TYPE_STRING, G_TYPE_STRING, G_TYPE_INT, G_TYPE_INT, G_TYPE_BOOLEAN, G_TYPE_BOOLEAN);
 	gtk_combo_box_set_model (GTK_COMBO_BOX (self), GTK_TREE_MODEL (store));
 	g_object_unref (store);
 
 	cell = abi_cell_renderer_font_new (self);
-	gtk_cell_layout_pack_start (GTK_CELL_LAYOUT (self), cell, TRUE);
+	gtk_cell_layout_pack_start (GTK_CELL_LAYOUT (self), cell, FALSE);
 	gtk_cell_layout_set_attributes (GTK_CELL_LAYOUT (self), cell,
-					"text", 0,
+					"text", PREVIEW,
+					"family", FONT,
+					"visible", PREVIEW_VISIBLE,
+					NULL);
+
+	g_signal_connect_swapped (G_OBJECT (cell), "render-closed", 
+				  G_CALLBACK (render_closed_cb), (gpointer) self);
+
+	cell = abi_cell_renderer_font_new (self);
+	gtk_cell_layout_pack_start (GTK_CELL_LAYOUT (self), cell, FALSE);
+	gtk_cell_layout_set_attributes (GTK_CELL_LAYOUT (self), cell,
+					"text", FONT,
+					"visible", FAMILY_VISIBLE,
 					NULL);
 
 	g_signal_connect_swapped (G_OBJECT (cell), "prelight-popup", 
@@ -291,4 +329,21 @@ abi_font_combo_new (void)
 				  G_CALLBACK (render_closed_cb), (gpointer) self);
 
 	return self;
+}
+
+void
+abi_font_combo_append_font (AbiFontCombo 	*self, 
+			    const gchar		*font)
+{
+	GtkTreeModel 	*model;
+	GtkTreeIter	 iter;
+
+	model = gtk_combo_box_get_model (GTK_COMBO_BOX (self));
+	gtk_list_store_append (GTK_LIST_STORE (model), &iter);
+	gtk_list_store_set (GTK_LIST_STORE (model), &iter, 
+			    FONT, font, 
+			    PREVIEW, "AaBb", 
+			    FAMILY_VISIBLE, TRUE,
+			    PREVIEW_VISIBLE, FALSE,
+			    -1);
 }
