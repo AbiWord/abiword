@@ -42,6 +42,7 @@ struct _AbiFontComboClass {
 
 	void (* prelight) (AbiFontCombo	*self, 
 			   const gchar	*text);
+	void (* popup_closed) (AbiFontCombo *self);
 };
 
 GType abi_font_combo_get_type (void);

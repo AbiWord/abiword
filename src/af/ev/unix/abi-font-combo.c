@@ -33,19 +33,24 @@ typedef struct _AbiCellRendererFont 		AbiCellRendererFont;
 typedef struct _AbiCellRendererFontClass 	AbiCellRendererFontClass;
 
 struct _AbiCellRendererFont {
-	GtkCellRendererText parent;
+	GtkCellRendererText 	 parent;
+	GtkWidget		*parent_widget;
 };
 
 struct _AbiCellRendererFontClass {
 	GtkCellRendererTextClass parent;
 
-	void (* render) (GtkCellRenderer *cell, 
-			 const gchar 	 *text);
+	void (* prelight_popup) (GtkCellRenderer *cell, 
+				 const gchar 	 *text);
+	void (* render_closed)  (GtkCellRenderer *cell);
 };
+
+GType abi_cell_renderer_font_get_type (void);
 
 /* Signal IDs */
 enum {
-	RENDER,
+	PRELIGHT_POPUP,
+	RENDER_CLOSED,
 	RENDERER_LAST_SIGNAL
 };
 
@@ -54,7 +59,7 @@ static guint cell_renderer_font_signals[RENDERER_LAST_SIGNAL] = { 0 };
 static GtkCellRendererTextClass *abi_cell_renderer_font_parent_class = NULL;
 
 void
-abi_cell_renderer_font_render (GtkCellRenderer      *self,
+abi_cell_renderer_font_render (GtkCellRenderer      *cell,
 			       GdkDrawable          *window,
 			       GtkWidget            *widget,
 			       GdkRectangle         *background_area,
@@ -62,21 +67,33 @@ abi_cell_renderer_font_render (GtkCellRenderer      *self,
 			       GdkRectangle         *expose_area,
 			       GtkCellRendererState  flags)
 {
-	gchar *text;
+	AbiCellRendererFont	*self;
+	gchar 			*text;
+
+	self = ABI_CELL_RENDERER_FONT (cell);
 
 	text = NULL;
-	g_object_get (G_OBJECT (self), 
+	g_object_get (G_OBJECT (cell), 
 		      "text", &text, 
 		      NULL);
 
 	GTK_CELL_RENDERER_CLASS (abi_cell_renderer_font_parent_class)->render (
-					self, window, widget, background_area, 
+					cell, window, widget, background_area, 
 					cell_area, expose_area, flags);
 
 	if ((GTK_CELL_RENDERER_PRELIT | GTK_CELL_RENDERER_PRELIT) & flags) {
-		g_signal_emit (G_OBJECT (self), cell_renderer_font_signals[RENDER],
-			       0, text);
-		g_free (text);
+
+		/* only fire prelight event if popup is open */
+		if (!gtk_widget_is_ancestor (widget, self->parent_widget)) {
+			g_signal_emit (G_OBJECT (cell), 
+				       cell_renderer_font_signals[PRELIGHT_POPUP],
+				       0, text);
+		}
+	}
+	else if (gtk_widget_is_ancestor (widget, self->parent_widget)) {
+		g_signal_emit (G_OBJECT (cell), 
+			       cell_renderer_font_signals[RENDER_CLOSED],
+			       0);
 	}
 }
 
@@ -102,15 +119,24 @@ abi_cell_renderer_font_class_init (AbiCellRendererFontClass *klass)
 
 	cell_renderer_class->render = abi_cell_renderer_font_render;
 
-	cell_renderer_font_signals[RENDER] =
-		g_signal_new ("render",
+	cell_renderer_font_signals[PRELIGHT_POPUP] =
+		g_signal_new ("prelight-popup",
 			G_OBJECT_CLASS_TYPE (klass),
 			G_SIGNAL_RUN_LAST,
-			G_STRUCT_OFFSET (AbiCellRendererFontClass, render),
+			G_STRUCT_OFFSET (AbiCellRendererFontClass, prelight_popup),
 			NULL, NULL,
 			g_cclosure_marshal_VOID__POINTER,
 			G_TYPE_NONE, 1,
 			G_TYPE_STRING);
+
+	cell_renderer_font_signals[RENDER_CLOSED] =
+		g_signal_new ("render-closed",
+			G_OBJECT_CLASS_TYPE (klass),
+			G_SIGNAL_RUN_LAST,
+			G_STRUCT_OFFSET (AbiCellRendererFontClass, render_closed),
+			NULL, NULL,
+			g_cclosure_marshal_VOID__VOID,
+			G_TYPE_NONE, 0);
 }
 
 GType
@@ -137,10 +163,13 @@ abi_cell_renderer_font_get_type (void)
 }
 
 GtkCellRenderer *
-abi_cell_renderer_font_new (void)
+abi_cell_renderer_font_new (GtkWidget *parent)
 {
-	return (GtkCellRenderer *) g_object_new (ABI_TYPE_CELL_RENDERER_FONT, 
+	GtkCellRenderer *self;
+	self = (GtkCellRenderer *) g_object_new (ABI_TYPE_CELL_RENDERER_FONT, 
 						 NULL);
+	ABI_CELL_RENDERER_FONT (self)->parent_widget = parent;
+	return self;
 }
 
 
@@ -150,6 +179,7 @@ abi_cell_renderer_font_new (void)
 /* Signal IDs */
 enum {
 	PRELIGHT,
+	POPUP_CLOSED,
 	LAST_SIGNAL
 };
 
@@ -158,12 +188,20 @@ static guint font_combo_signals[LAST_SIGNAL] = { 0 };
 static GtkComboBoxClass *abi_font_combo_parent_class = NULL;
 
 static void
-prelight_cb (AbiFontCombo	*self, 
-	     const gchar	*text, 
-	     GtkCellRenderer 	*renderer)
+prelight_popup_cb (AbiFontCombo		*self, 
+		   const gchar		*text, 
+		   GtkCellRenderer 	*renderer)
 {
 	g_signal_emit (G_OBJECT (self), font_combo_signals[PRELIGHT],
 		       0, text);
+}
+
+static void
+render_closed_cb (AbiFontCombo		*self, 
+		  GtkCellRenderer 	*renderer)
+{
+	g_signal_emit (G_OBJECT (self), font_combo_signals[POPUP_CLOSED],
+		       0);
 }
 
 static void
@@ -195,6 +233,15 @@ abi_font_combo_class_init (AbiFontComboClass *klass)
 			g_cclosure_marshal_VOID__POINTER,
 			G_TYPE_NONE, 1,
 			G_TYPE_STRING);
+
+	font_combo_signals[POPUP_CLOSED] =
+		g_signal_new ("popup-closed",
+			G_OBJECT_CLASS_TYPE (klass),
+			G_SIGNAL_RUN_LAST,
+			G_STRUCT_OFFSET (AbiFontComboClass, popup_closed),
+			NULL, NULL,
+			g_cclosure_marshal_VOID__VOID,
+			G_TYPE_NONE, 0);
 }
 
 GType
@@ -232,14 +279,16 @@ abi_font_combo_new (void)
 	gtk_combo_box_set_model (GTK_COMBO_BOX (self), GTK_TREE_MODEL (store));
 	g_object_unref (store);
 
-	cell = abi_cell_renderer_font_new ();
+	cell = abi_cell_renderer_font_new (self);
 	gtk_cell_layout_pack_start (GTK_CELL_LAYOUT (self), cell, TRUE);
 	gtk_cell_layout_set_attributes (GTK_CELL_LAYOUT (self), cell,
 					"text", 0,
 					NULL);
 
-	g_signal_connect_swapped (G_OBJECT (cell), "render", 
-				  G_CALLBACK (prelight_cb), (gpointer) self);
+	g_signal_connect_swapped (G_OBJECT (cell), "prelight-popup", 
+				  G_CALLBACK (prelight_popup_cb), (gpointer) self);
+	g_signal_connect_swapped (G_OBJECT (cell), "render-closed", 
+				  G_CALLBACK (render_closed_cb), (gpointer) self);
 
 	return self;
 }

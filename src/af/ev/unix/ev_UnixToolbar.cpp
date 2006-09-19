@@ -74,7 +74,8 @@ static GtkWidget *
 toolbar_append_item (GtkToolbar *toolbar, 
 					 GtkWidget  *widget,
 					 const char *text,
-					 const char *private_text)
+					 const char *private_text, 
+					 gboolean	 show)
 {
 	GtkToolItem *item;
 
@@ -90,7 +91,9 @@ toolbar_append_item (GtkToolbar *toolbar,
 	}
 	gtk_tool_item_set_tooltip (item, toolbar->tooltips, text, private_text);
 	gtk_toolbar_insert (toolbar, item, -1);
-	gtk_widget_show_all (GTK_WIDGET (item));
+	if (show) {
+		gtk_widget_show_all (GTK_WIDGET (item));
+	}
 
 	return GTK_WIDGET (item);
 }
@@ -118,7 +121,7 @@ toolbar_append_button (GtkToolbar 	*toolbar,
 	*handler_id = g_signal_connect (G_OBJECT (item), "clicked", handler, data);
 
 	return (GtkWidget *) toolbar_append_item (toolbar, GTK_WIDGET (item), 
-											  label, private_text);
+											  label, private_text, TRUE);
 }
 
 /*!
@@ -131,6 +134,7 @@ toolbar_append_toggle (GtkToolbar 	*toolbar,
 					   const gchar  *private_text, 
 					   GCallback	 handler, 
 					   gpointer		 data, 
+					   gboolean		 show,
 					   gulong		*handler_id)
 {
 	GtkToolItem *item;
@@ -144,7 +148,7 @@ toolbar_append_toggle (GtkToolbar 	*toolbar,
 	*handler_id = g_signal_connect (G_OBJECT (item), "toggled", handler, data);
 
 	return (GtkWidget *) toolbar_append_item (toolbar, GTK_WIDGET (item), 
-											  label, private_text);
+											  label, private_text, show);
 }
 
 /*!
@@ -325,6 +329,17 @@ public:									// we create...
 		wd->m_pUnixToolbar->m_pFontPreview->setFontFamily(text);
 		wd->m_pUnixToolbar->m_pFontPreview->setText(text);
 		wd->m_pUnixToolbar->m_pFontPreview->draw();
+	};
+
+	static void s_font_popup_closed(GtkComboBox * combo, _wd * wd)
+	{
+		if (wd && 
+			wd->m_pUnixToolbar &&
+			wd->m_pUnixToolbar->m_pFontPreview) {
+				UT_DEBUGMSG(("ev_UnixToolbar - deleting FontPreview %x \n",wd->m_pUnixToolbar));
+			    delete wd->m_pUnixToolbar->m_pFontPreview;
+				wd->m_pUnixToolbar->m_pFontPreview = NULL;
+		}
 	};
 
 	// TODO: should this move out of wd?  It's convenient here; maybe I'll make
@@ -598,13 +613,13 @@ bool EV_UnixToolbar::synthesize(void)
 
 	m_wHandleBox = gtk_alignment_new(0, 0, 1, 1);
 	
-	GtkToolbarStyle style = getStyle();
-
 	m_wToolbar = gtk_toolbar_new();
 	UT_ASSERT(m_wToolbar);
+
+	GtkToolbarStyle style = getStyle();
+	gtk_toolbar_set_style(GTK_TOOLBAR(m_wToolbar), style );
 	
 	gtk_toolbar_set_tooltips(GTK_TOOLBAR(m_wToolbar), TRUE);
-	gtk_toolbar_set_style(GTK_TOOLBAR(m_wToolbar), style );
 	gtk_toolbar_set_show_arrow(GTK_TOOLBAR(m_wToolbar), TRUE);
 
 #ifdef HAVE_HILDON /* In Hildon its not posible */
@@ -668,7 +683,7 @@ bool EV_UnixToolbar::synthesize(void)
 					UT_UTF8String s;
 					pSS->getValueUTF8(XAP_STRING_ID_TB_InsertNewTable, s);
 					toolbar_append_item (GTK_TOOLBAR (m_wToolbar), abi_table, 
-										 s.utf8_str(), NULL);
+										 s.utf8_str(), NULL, TRUE);
 					gtk_widget_show_all(abi_table);
 					gtk_widget_hide(ABI_TABLE(abi_table)->label);
 					wd->m_widget = abi_table;
@@ -697,10 +712,22 @@ bool EV_UnixToolbar::synthesize(void)
 			case EV_TBIT_GroupButton:
 				{
 					UT_ASSERT(UT_stricmp(pLabel->getIconName(),"NoIcon")!=0);
+
+					gboolean show = TRUE;
+					if (0 == strncmp("ALIGN_RIGHT", pLabel->getIconName(), strlen("ALIGN_RIGHT")) && 
+						GTK_TEXT_DIR_RTL != gtk_widget_get_direction(m_wToolbar)) {
+						/* only show in rtl mode */
+						show = FALSE;
+					}
+					else if (0 == strncmp("ALIGN_LEFT", pLabel->getIconName(), strlen("ALIGN_LEFT")) && 
+						GTK_TEXT_DIR_RTL == gtk_widget_get_direction(m_wToolbar)) {
+						/* only show in ltr mode */
+						show = FALSE;
+					}
 					wd->m_widget = toolbar_append_toggle (GTK_TOOLBAR (m_wToolbar), pLabel->getIconName(),
 												    	  pLabel->getToolbarLabel(), NULL, 
 														  (GCallback) _wd::s_callback, (gpointer) wd, 
-														  &(wd->m_handlerId));
+														  show, &(wd->m_handlerId));
 					//
 					// Add in a right drag method
 					//
@@ -748,6 +775,9 @@ bool EV_UnixToolbar::synthesize(void)
 					*handler_id = g_signal_connect (G_OBJECT(combo), "prelight", 
 												    G_CALLBACK(_wd::s_font_prelight), 
 												    wd);
+					g_signal_connect (G_OBJECT(combo), "popup-closed", 
+									  G_CALLBACK(_wd::s_font_popup_closed), 
+									  wd);
 					g_object_set_data (G_OBJECT (combo), PROP_HANDLER_ID, handler_id);
 				}
 				else {
@@ -773,7 +803,8 @@ bool EV_UnixToolbar::synthesize(void)
  
 				gtk_widget_show(combo);
 				toolbar_append_item (GTK_TOOLBAR (m_wToolbar), combo,
-									 szToolTip, static_cast<const char *>(NULL));
+									 szToolTip, static_cast<const char *>(NULL), 
+									 TRUE);
 				wd->m_widget = combo;
 				// for now, we never repopulate, so can just toss it
 				DELETEP(pControl);
@@ -806,7 +837,8 @@ bool EV_UnixToolbar::synthesize(void)
 				g_object_unref (G_OBJECT (pixbuf));
 
 				toolbar_append_item (GTK_TOOLBAR(m_wToolbar), combo, szToolTip,
-									 static_cast<const char *>(NULL));
+									 static_cast<const char *>(NULL), 
+									 TRUE);
 			    wd->m_widget = combo;
 			    g_signal_connect (G_OBJECT (combo), "color-changed",
 								  G_CALLBACK (s_color_changed), wd);
