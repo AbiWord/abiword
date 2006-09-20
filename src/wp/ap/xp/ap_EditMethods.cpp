@@ -2388,7 +2388,27 @@ Defun(fileSave)
 	CHECK_FRAME;
 	XAP_Frame * pFrame = static_cast<XAP_Frame *> (pAV_View->getParentData());
 	UT_return_val_if_fail (pFrame, false);
+	//
+	// If we're connected to CAC just save back to CAC
+	// We do this with the docsaved signal
+	//
+	FV_View * pView = static_cast<FV_View *>(pFrame->getCurrentView());
+	if(pView)
+	{
+		PD_Document * pDoc = pView->getDocument();
+		if(pDoc && pDoc->isCACConnected())
+		{
+			pDoc->signalListeners(PD_SIGNAL_DOCSAVED);
+		}
+		if (pFrame->getViewNumber() > 0)
+		{
+			XAP_App * pApp = XAP_App::getApp();
+			UT_return_val_if_fail (pApp, false);
 
+			pApp->updateClones(pFrame);
+		}
+		return true;
+	}
 	// can only save without prompting if filename already known
 	if (!pFrame->getFilename())
 		return EX(fileSaveAs);

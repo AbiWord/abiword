@@ -193,7 +193,7 @@ public:
 
 	virtual bool			isDirty(void) const;
 	virtual void            forceDirty();
-	
+	bool                    isCACConnected(void);
 	virtual bool			canDo(bool bUndo) const;
 	virtual UT_uint32		undoCount(bool bUndo) const;
 	virtual bool			undoCmd(UT_uint32 repeatCount);

@@ -2912,7 +2912,7 @@ void PD_Document::removeConnections(void)
 		PL_Listener * pListener = static_cast<PL_Listener *>(m_vecListeners.getNthItem(lid));
 		if (pListener)
 		{
-			if(pListener->getType() == PTL_CollabExport)
+			if(pListener->getType() >= PTL_CollabExport)
 			{
 				static_cast<PL_DocChangeListener *>(pListener)->removeDocument();
 				removeListener(lid);
@@ -2934,7 +2934,7 @@ void PD_Document::changeConnectedDocument(PD_Document * pDoc)
 		PL_Listener * pListener = static_cast<PL_Listener *>(m_vecListeners.getNthItem(lid));
 		if (pListener)
 		{
-			if(pListener->getType() == PTL_CollabExport)
+			if(pListener->getType() >= PTL_CollabExport )
 			{
 				static_cast<PL_DocChangeListener *>(pListener)->setNewDocument(pDoc);
 				removeListener(lid);
@@ -3007,14 +3007,14 @@ bool PD_Document::notifyListeners(const pf_Frag_Strux * pfs, const PX_ChangeReco
 		if (pListener)
 		{
 			PL_StruxFmtHandle sfh = 0;
-			if (pfs && (pListener->getType() != PTL_CollabExport))
+			if (pfs && (pListener->getType() < PTL_CollabExport))
 				sfh = pfs->getFmtHandle(lid);
 
 			// some pt elements have no corresponding layout elements (for example a
 			// hdr/ftr section that was deleted in revisions mode)
-			if(sfh && (pListener->getType() != PTL_CollabExport ))
+			if(sfh && (pListener->getType() < PTL_CollabExport ))
 				pListener->change(sfh,pcr);
-			else if(pListener->getType() == PTL_CollabExport)
+			else if(pListener->getType() >= PTL_CollabExport)
 				pListener->change(NULL,pcr);	
 		}
 	}
@@ -3205,12 +3205,12 @@ bool PD_Document::notifyListeners(const pf_Frag_Strux * pfs,
 		{
 			PL_StruxDocHandle sdhNew = static_cast<PL_StruxDocHandle>(pfsNew);
 			PL_StruxFmtHandle sfh = NULL;
-			if(pListener->getType() != PTL_CollabExport)
+			if(pListener->getType() < PTL_CollabExport)
 				sfh = pfs->getFmtHandle(lid);
 			if (pListener->insertStrux(sfh,pcr,sdhNew,lid,s_BindHandles))
 			{
 				// verify that the listener used our callback
-				if(pListener->getType() != PTL_CollabExport)
+				if(pListener->getType() < PTL_CollabExport)
 					UT_ASSERT_HARMLESS(pfsNew->getFmtHandle(lid));
 			}
 		}
@@ -3219,6 +3219,27 @@ bool PD_Document::notifyListeners(const pf_Frag_Strux * pfs,
 	return true;
 }
 
+/*!
+ * Return true if the document has a C.A.C. connection
+ */
+bool PD_Document::isCACConnected(void)
+{
+	PL_ListenerId lid;
+	PL_ListenerId lidCount = m_vecListeners.getItemCount();
+	for (lid=0; lid<lidCount; lid++)
+	{
+		PL_Listener * pListener = m_vecListeners.getNthItem(lid);
+		if (pListener)
+		{
+			if(pListener->getType() == PTL_CollabServiceExport)
+			{
+				return true;
+			}
+		}
+	}
+	return false;
+
+}
 //////////////////////////////////////////////////////////////////
 //////////////////////////////////////////////////////////////////
 /*!
