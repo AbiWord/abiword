@@ -62,6 +62,7 @@ public:
 	virtual void hide(void);
 	
 	XAP_FontPreview *				m_pFontPreview;	
+	gint							m_pFontPreviewPositionX;
 protected:
 	virtual GtkToolbarStyle 		getStyle(void);
 	virtual bool 					getDetachable(void) { return true; }

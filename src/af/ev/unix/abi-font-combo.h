@@ -40,6 +40,8 @@ struct _AbiFontCombo {
 struct _AbiFontComboClass {
 	GtkComboBoxClass parent;
 
+	void (* popup_opened) (GtkCellRenderer 	*cell, 
+			       GdkRectangle	*position);
 	void (* prelight) (AbiFontCombo	*self, 
 			   const gchar	*text);
 	void (* popup_closed) (AbiFontCombo *self);

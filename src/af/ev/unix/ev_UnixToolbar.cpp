@@ -319,7 +319,12 @@ public:									// we create...
 
 			widget = GTK_WIDGET(combo);
 			gdk_window_get_origin(widget->window, &x,&y);
-			x += widget->allocation.x + widget->allocation.width;
+			if (wd->m_pUnixToolbar->m_pFontPreviewPositionX > -1) {
+				x = wd->m_pUnixToolbar->m_pFontPreviewPositionX;
+			}
+			else {
+				x += widget->allocation.x + widget->allocation.width;
+			}
 			y += widget->allocation.y + widget->allocation.height;
 			XAP_Frame * pFrame = static_cast<XAP_Frame *>(wd->m_pUnixToolbar->getFrame());
 			wd->m_pUnixToolbar->m_pFontPreview = new XAP_UnixFontPreview(pFrame, x, y);
@@ -331,6 +336,16 @@ public:									// we create...
 		wd->m_pUnixToolbar->m_pFontPreview->draw();
 	};
 
+	static void s_font_popup_opened(GtkComboBox * combo, GdkRectangle *position, _wd * wd)
+	{
+		if (wd && 
+			wd->m_pUnixToolbar) {
+				UT_DEBUGMSG(("ev_UnixToolbar - position \n"));
+				// TODO check if within screen
+				wd->m_pUnixToolbar->m_pFontPreviewPositionX = position->x + position->width;
+		}
+	};
+
 	static void s_font_popup_closed(GtkComboBox * combo, _wd * wd)
 	{
 		if (wd && 
@@ -339,6 +354,7 @@ public:									// we create...
 				UT_DEBUGMSG(("ev_UnixToolbar - deleting FontPreview %x \n",wd->m_pUnixToolbar));
 			    delete wd->m_pUnixToolbar->m_pFontPreview;
 				wd->m_pUnixToolbar->m_pFontPreview = NULL;
+				wd->m_pUnixToolbar->m_pFontPreviewPositionX = -1;
 		}
 	};
 
@@ -366,6 +382,7 @@ public:									// we create...
 				UT_DEBUGMSG(("ev_UnixToolbar - deleting FontPreview %x \n",wd->m_pUnixToolbar));
 			    delete wd->m_pUnixToolbar->m_pFontPreview;
 				wd->m_pUnixToolbar->m_pFontPreview = NULL;
+				wd->m_pUnixToolbar->m_pFontPreviewPositionX = -1;
 			}
 		}
 
@@ -409,6 +426,7 @@ EV_UnixToolbar::EV_UnixToolbar(XAP_UnixApp 	*pUnixApp,
 			   szToolbarLayoutName,
 			   szToolbarLabelSetName), 
 	m_pFontPreview(NULL),
+	m_pFontPreviewPositionX(-1),
 	m_pUnixApp(pUnixApp),
 	m_pFrame(pFrame),
 	m_pViewListener(NULL),
@@ -781,6 +799,9 @@ bool EV_UnixToolbar::synthesize(void)
 					*handler_id = g_signal_connect (G_OBJECT(combo), "prelight", 
 												    G_CALLBACK(_wd::s_font_prelight), 
 												    wd);
+					g_signal_connect (G_OBJECT(combo), "popup-opened", 
+									  G_CALLBACK(_wd::s_font_popup_opened), 
+									  wd);
 					g_signal_connect (G_OBJECT(combo), "popup-closed", 
 									  G_CALLBACK(_wd::s_font_popup_closed), 
 									  wd);
@@ -1054,6 +1075,7 @@ bool EV_UnixToolbar::refreshToolbar(AV_View * pView, AV_ChangeMask mask)
 							UT_DEBUGMSG(("ev_UnixToolbar - deleting FontPreview %x \n",wd->m_pUnixToolbar));
 						    delete wd->m_pUnixToolbar->m_pFontPreview;
 							wd->m_pUnixToolbar->m_pFontPreview = NULL;
+							wd->m_pUnixToolbar->m_pFontPreviewPositionX = 0;
 						}
 					}
 					wd->m_blockSignal = wasBlocked;					
