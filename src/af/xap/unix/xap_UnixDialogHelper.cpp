@@ -1,3 +1,5 @@
+/* -*- mode: C++; tab-width: 4; c-basic-offset: 4; -*- */
+
 /* AbiSource Program Utilities
  * Copyright (C) 1998-2000 AbiSource, Inc.
  * 
@@ -562,15 +564,20 @@ static void sAddHelpButton (GtkDialog * me, XAP_Dialog * pDlg)
 	  return;
 
   if (pDlg && pDlg->getHelpUrl().size () > 0) {
-    GtkWidget * button = gtk_button_new_from_stock (GTK_STOCK_HELP);
+
+    GtkWidget * image = gtk_image_new_from_stock(GTK_STOCK_HELP, GTK_ICON_SIZE_BUTTON);
+	GtkWidget * button = gtk_button_new();
+	gtk_container_add(GTK_CONTAINER(button), image);
+	GtkWidget * alignment = gtk_alignment_new (0, 0.5, 0, 0);
+	gtk_container_add (GTK_CONTAINER(alignment), button);
 
     gtk_box_pack_start(GTK_BOX(me->action_area),
-		       button, TRUE, FALSE, 0);
+		       alignment, FALSE, FALSE, 0);
     gtk_button_box_set_child_secondary (GTK_BUTTON_BOX(me->action_area),
-					button, TRUE);
+					alignment, TRUE);
     g_signal_connect (G_OBJECT (button), "clicked",
 		      G_CALLBACK(help_button_cb), pDlg);
-    gtk_widget_show (button);
+    gtk_widget_show_all (alignment);
 
     g_object_set_data (G_OBJECT (me), "has-help-button", GINT_TO_POINTER (1));
   }
