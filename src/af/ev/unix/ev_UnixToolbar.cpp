@@ -64,7 +64,11 @@
 
 #define PROP_HANDLER_ID "handler-id"
 
-static const GtkTargetEntry      s_AbiTBTargets[] = {{"abi-toolbars",0,0}};
+class _wd;
+
+static void s_proxy_activated(GtkAction * action, _wd * wd);
+
+static const GtkTargetEntry s_AbiTBTargets[] = {{"abi-toolbars",0,0}};
 
 /*!
  * Append a widget to the toolbar, 
@@ -75,27 +79,41 @@ toolbar_append_item (GtkToolbar *toolbar,
 					 GtkWidget  *widget,
 					 const char *text,
 					 const char *private_text, 
-					 gboolean	 show)
+					 gboolean	 show,
+					 /* for the proxy action */
+					 const char	*action_name,
+					 const char	*stock_id,
+					 gpointer	 data)
 {
-	GtkToolItem *item;
+	GtkToolItem *tool_item;
 
 	UT_ASSERT(GTK_IS_TOOLBAR (toolbar));
 	UT_ASSERT(widget != NULL);
 
 	if (GTK_IS_TOOL_ITEM (widget)) {
-		item = GTK_TOOL_ITEM (widget);
+		tool_item = GTK_TOOL_ITEM (widget);
 	}
 	else {
-		item = gtk_tool_item_new ();
-		gtk_container_add (GTK_CONTAINER (item), widget);
+		tool_item = gtk_tool_item_new ();
+		gtk_container_add (GTK_CONTAINER (tool_item), widget);
+		if (action_name && data) {
+			GtkAction	*proxy_action;
+			GtkWidget 	*menu_item;
+			proxy_action = gtk_action_new (action_name, text, private_text, stock_id);
+			g_signal_connect (proxy_action, "activate", 
+							  G_CALLBACK (s_proxy_activated), data);
+			menu_item = gtk_action_create_menu_item (proxy_action);
+			gtk_tool_item_set_proxy_menu_item (tool_item, text, menu_item);
+			g_object_unref (G_OBJECT (proxy_action));
+		}
 	}
-	gtk_tool_item_set_tooltip (item, toolbar->tooltips, text, private_text);
-	gtk_toolbar_insert (toolbar, item, -1);
+	gtk_tool_item_set_tooltip (tool_item, toolbar->tooltips, text, private_text);
+	gtk_toolbar_insert (toolbar, tool_item, -1);
 	if (show) {
-		gtk_widget_show_all (GTK_WIDGET (item));
+		gtk_widget_show_all (GTK_WIDGET (tool_item));
 	}
 
-	return GTK_WIDGET (item);
+	return GTK_WIDGET (tool_item);
 }
 
 /*!
@@ -121,7 +139,8 @@ toolbar_append_button (GtkToolbar 	*toolbar,
 	*handler_id = g_signal_connect (G_OBJECT (item), "clicked", handler, data);
 
 	return (GtkWidget *) toolbar_append_item (toolbar, GTK_WIDGET (item), 
-											  label, private_text, TRUE);
+											  label, private_text, TRUE,
+											  NULL, NULL, NULL);
 }
 
 /*!
@@ -148,7 +167,8 @@ toolbar_append_toggle (GtkToolbar 	*toolbar,
 	*handler_id = g_signal_connect (G_OBJECT (item), "toggled", handler, data);
 
 	return (GtkWidget *) toolbar_append_item (toolbar, GTK_WIDGET (item), 
-											  label, private_text, show);
+											  label, private_text, show,
+											  NULL, NULL, NULL);
 }
 
 /*!
@@ -358,8 +378,6 @@ public:									// we create...
 		}
 	};
 
-	// TODO: should this move out of wd?  It's convenient here; maybe I'll make
-	// a microclass for combo boxes.
 	static void s_combo_changed(GtkComboBox * combo, _wd * wd)
 	{
 		UT_ASSERT(wd);
@@ -389,7 +407,7 @@ public:									// we create...
 		UT_UCS4String ucsText(buffer);
 		wd->m_pUnixToolbar->toolbarEvent(wd, ucsText.ucs4_str(), ucsText.length());
 		g_free (buffer);
-	}
+	};
 
 	EV_UnixToolbar *	m_pUnixToolbar;
 	XAP_Toolbar_Id		m_id;
@@ -416,7 +434,18 @@ s_color_changed (GOComboColor 	*cc,
 	wd->m_pUnixToolbar->toolbarEvent(wd, str.ucs4_str().ucs4_str(), str.size());
 }
 
-/*****************************************************************/
+static void s_proxy_activated(GtkAction * action, _wd * wd)
+{
+		const gchar * editMethod = gtk_action_get_name(action);
+		XAP_UnixApp * pUnixApp = wd->m_pUnixToolbar->getApp();
+		const EV_EditMethodContainer * pEMC = pUnixApp->getEditMethodContainer();
+		UT_ASSERT(pEMC);
+		EV_EditMethod * pEM = NULL;
+
+		AV_View * pView = wd->m_pUnixToolbar->getFrame()->getCurrentView();
+		pEM = pEMC->findEditMethodByName(editMethod);
+		wd->m_pUnixToolbar->invokeToolbarMethod(pView, pEM, NULL, 0);
+}
 
 EV_UnixToolbar::EV_UnixToolbar(XAP_UnixApp 	*pUnixApp, 
 							   XAP_Frame 	*pFrame, 
@@ -706,7 +735,7 @@ bool EV_UnixToolbar::synthesize(void)
 					UT_UTF8String s;
 					pSS->getValueUTF8(XAP_STRING_ID_TB_InsertNewTable, s);
 					toolbar_append_item (GTK_TOOLBAR (m_wToolbar), abi_table, 
-										 s.utf8_str(), NULL, TRUE);
+										 s.utf8_str(), NULL, TRUE, NULL, NULL, NULL);
 					gtk_widget_show_all(abi_table);
 					gtk_widget_hide(ABI_TABLE(abi_table)->label);
 					wd->m_widget = abi_table;
@@ -786,12 +815,15 @@ bool EV_UnixToolbar::synthesize(void)
 				UT_ASSERT(pControl);
 
 				GtkWidget *combo;
+				const gchar *proxy_action_name;
+				const gchar *proxy_action_stock = NULL;
 				if (wd->m_id == AP_TOOLBAR_ID_FMT_SIZE) {
 					combo = gtk_combo_box_entry_new_text();
 					GtkEntry *entry = GTK_ENTRY(gtk_bin_get_child(GTK_BIN(combo)));
 					g_object_set (G_OBJECT(entry), "can-focus", TRUE, NULL);
 					gtk_entry_set_width_chars (entry, 4);
 					gtk_size_group_add_widget (m_wHSizeGroup, combo);
+					proxy_action_name = "dlgFont";
 				}
 				else if (wd->m_id == AP_TOOLBAR_ID_FMT_FONT) {
 					gulong *handler_id = new gulong;
@@ -808,10 +840,21 @@ bool EV_UnixToolbar::synthesize(void)
 					g_object_set_data (G_OBJECT (combo), PROP_HANDLER_ID, handler_id);
 					gtk_widget_set_size_request (combo, 0, -1);
 					gtk_size_group_add_widget (m_wHSizeGroup, combo);
+					proxy_action_name = "dlgFont";
+					proxy_action_stock = GTK_STOCK_SELECT_FONT;
+				}
+				else if (wd->m_id == AP_TOOLBAR_ID_ZOOM) {
+					combo = gtk_combo_box_new_text();
+					proxy_action_name = "dlgZoom";
+				}
+				else if (wd->m_id == AP_TOOLBAR_ID_FMT_STYLE) {
+					combo = gtk_combo_box_new_text();
+					proxy_action_name = "dlgStyle";
 				}
 				else {
-					combo = gtk_combo_box_new_text();
+					g_assert_not_reached();
 				}
+
 				wd->m_handlerId = g_signal_connect (G_OBJECT(combo), "changed", 
 													G_CALLBACK(_wd::s_combo_changed), 
 													wd);
@@ -841,7 +884,7 @@ bool EV_UnixToolbar::synthesize(void)
 				gtk_container_add (GTK_CONTAINER (alignment), combo);
 				toolbar_append_item (GTK_TOOLBAR (m_wToolbar), alignment,
 									 szToolTip, static_cast<const char *>(NULL), 
-									 TRUE);
+									 TRUE, proxy_action_name, proxy_action_stock, wd);
 				wd->m_widget = combo;
 				// for now, we never repopulate, so can just toss it
 				DELETEP(pControl);
@@ -854,16 +897,22 @@ bool EV_UnixToolbar::synthesize(void)
 				GdkPixbuf 		*pixbuf;
 			    GtkWidget 		*combo;
 				GOColorGroup 	*cg;
+				const gchar		*action_name;
+				const gchar		*stock_id;
 
 				UT_ASSERT (UT_stricmp(pLabel->getIconName(),"NoIcon") != 0);
 
 			    if (pAction->getItemType() == EV_TBIT_ColorFore) {
+					action_name = "dlgColorPickerFore";
+					stock_id = ABIWORD_COLOR_FORE;
 					pixbuf = gtk_widget_render_icon (m_wToolbar, ABIWORD_COLOR_FORE, 
 													 GTK_ICON_SIZE_LARGE_TOOLBAR, NULL);
 					cg = go_color_group_fetch ("back_color_group", m_wToolbar);
 					combo = go_combo_color_new (pixbuf, pLabel->getToolbarLabel(), 0, cg);
 				}
 				else {
+					action_name = "dlgColorPickerBack";
+					stock_id = ABIWORD_COLOR_BACK;
 					pixbuf = gtk_widget_render_icon (m_wToolbar, ABIWORD_COLOR_BACK, 
 													 GTK_ICON_SIZE_LARGE_TOOLBAR, NULL);
 					cg = go_color_group_fetch ("fore_color_group", m_wToolbar);
@@ -875,7 +924,7 @@ bool EV_UnixToolbar::synthesize(void)
 
 				toolbar_append_item (GTK_TOOLBAR(m_wToolbar), combo, szToolTip,
 									 static_cast<const char *>(NULL), 
-									 TRUE);
+									 TRUE, action_name, stock_id, wd);
 			    wd->m_widget = combo;
 			    g_signal_connect (G_OBJECT (combo), "color-changed",
 								  G_CALLBACK (s_color_changed), wd);
