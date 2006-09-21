@@ -45,15 +45,14 @@
 #include <gsf-gnome/gsf-output-gnomevfs.h>
 #include <libgnome/gnome-url.h>
 #elif defined G_OS_WIN32
-#include <urlmon.h>
+#include <windows.h>
+#include <shellapi.h>
 #include <io.h>
 #endif
 
 #include <string.h>
 #include <stdlib.h>
 #include <unistd.h>
-#include <pwd.h>
-#include <grp.h>
 #include <time.h>
 
 #ifndef _
@@ -684,144 +683,6 @@ UT_go_file_split_urls (const char *data)
   return uris;
 }
 
-/*
- * Return the real name of the owner of a URI.  The result will be in
- * UTF-8 and the caller must free the result.
- */
-gchar *
-UT_go_file_get_owner_name (char const *uri)
-{
-	gboolean error = FALSE;
-	guint uid = 0;
-	struct passwd *password_info;
-	const char *name;
-	gsize namelen;
-	char *nameutf8;
-	gboolean islocal = FALSE;
-
-#ifdef GOFFICE_WITH_GNOME
-	GnomeVFSFileInfo *file_info;
-
-	GnomeVFSResult result;
-
-        file_info = gnome_vfs_file_info_new ();
-        result = gnome_vfs_get_file_info (uri, file_info,
-                                          GNOME_VFS_FILE_INFO_FOLLOW_LINKS);
-
-        if (result == GNOME_VFS_OK) {
-		uid = file_info->uid;
-		islocal = GNOME_VFS_FILE_INFO_LOCAL (file_info);
-	} else
-		error = TRUE;
-
-	gnome_vfs_file_info_unref (file_info);
-#else
-	struct stat file_stat;
-	char *filename = UT_go_filename_from_uri (uri);
-	int result = filename ? g_stat (filename, &file_stat) : -1;
-
-	g_free (filename);
-	if (result == 0) {
-		uid = file_stat.st_uid;
-		islocal = TRUE;
-	} else
-		error = TRUE;
-#endif
-
-	if (error)
-		return NULL;
-
-	if (!islocal) {
-		/* xgettext: generic fake user name for non-local files. */
-		return g_strdup (_("remote user"));
-	}
-
-	password_info = getpwuid (uid);
-
-	if (password_info == NULL)
-		return NULL;
-
-	name = password_info->pw_gecos;
-	(void) UT_go_guess_encoding (name, strlen (name),
-				  NULL, &nameutf8);
-	if (!nameutf8)
-		return NULL;
-	namelen = strlen (nameutf8);
-
-	/*
-	 * What about magic characters used instead of user name?
-	 */
-
-	/* Strip comma characters at the end of the string.  */
-	while (namelen > 0 && nameutf8[namelen - 1] == ',')
-		nameutf8[--namelen] = 0;
-
-	return nameutf8;
-}
-
-/*
- * Return the group name of the owner of a URI.  The result will be in
- * UTF-8 and the caller must free the result.
- */
-gchar *
-UT_go_file_get_group_name (char const *uri)
-{
-	gboolean error = FALSE;
-	guint gid = 0;
-	struct group *group_info;
-	gboolean islocal = FALSE;
-	const char *name;
-	char *nameutf8;
-
-#ifdef GOFFICE_WITH_GNOME
-	GnomeVFSFileInfo *file_info;
-
-	GnomeVFSResult result;
-
-        file_info = gnome_vfs_file_info_new ();
-        result = gnome_vfs_get_file_info (uri, file_info,
-                                          GNOME_VFS_FILE_INFO_FOLLOW_LINKS);
-
-        if (result == GNOME_VFS_OK) {
-		gid = file_info->gid;
-		islocal = GNOME_VFS_FILE_INFO_LOCAL (file_info);
-	} else
-		error = TRUE;
-
-	gnome_vfs_file_info_unref (file_info);
-#else
-	struct stat file_stat;
-	char *filename = UT_go_filename_from_uri (uri);
-	int result = filename ? g_stat (filename, &file_stat) : -1;
-
-	g_free (filename);
-
-	if (result == 0) {
-		gid = file_stat.st_gid;
-		islocal = TRUE;
-	} else
-		error = TRUE;
-#endif
-
-	if (error)
-		return NULL;
-
-	if (!islocal) {
-		/* xgettext: generic fake group name for non-local files. */
-		return g_strdup (_("remote"));
-	}
-
-	group_info = getgrgid (gid);
-
-	if (group_info == NULL)
-		return NULL;
-
-	name = group_info->gr_name;
-	(void) UT_go_guess_encoding (name, strlen (name),
-				  NULL, &nameutf8);
-	return nameutf8;
-}
-
 UT_GOFilePermissions *
 UT_go_get_file_permissions (char const *uri)
 {
@@ -1273,7 +1134,7 @@ UT_go_get_mime_type (gchar const *uri)
 {
 #ifdef GOFFICE_WITH_GNOME
 	return gnome_vfs_get_mime_type (uri);
-#elif defined(G_OS_WIN32)
+#elif 0 /* defined(G_OS_WIN32) */
 	LPWSTR wuri, mime_type;
 
 	wuri = g_utf8_to_utf16 (uri, -1, NULL, NULL, NULL);

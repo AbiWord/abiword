@@ -67,9 +67,6 @@ GsfInput  *UT_go_file_open		(char const *uri, GError **err);
 GsfOutput *UT_go_file_create	(char const *uri, GError **err);
 GSList	  *UT_go_file_split_urls	(char const *data);
 
-gchar     *UT_go_file_get_owner_name (char const *uri);
-gchar     *UT_go_file_get_group_name (char const *uri);
-
 UT_GOFilePermissions *UT_go_get_file_permissions (char const *uri);
 void UT_go_set_file_permissions (char const *uri, UT_GOFilePermissions * file_permissions);
 
