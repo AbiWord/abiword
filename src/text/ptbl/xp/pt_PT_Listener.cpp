@@ -64,7 +64,7 @@ bool pt_PieceTable::_tellAndMaybeAddListener(PL_Listener * pListener,
 	PT_DocPosition sum = 0;
 	UT_uint32 blockOffset = 0;
 	pf_Frag_Strux * pfs = NULL;
-	bool bListensOnly = (pListener->getType() == PTL_CollabExport);
+	bool bListensOnly = (pListener->getType() >= PTL_CollabExport);
 	for (pf_Frag * pf = m_fragments.getFirst(); (pf); pf=pf->getNext())
 	{
 		switch (pf->getType())
