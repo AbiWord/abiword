@@ -260,8 +260,12 @@ endif
 # if not specified, default to libxml2 for xml parsing 7 June 2006
 ABI_OPT_PEER_EXPAT ?= 0
 
+ifeq($(HAVE_WV_PEER),1)
 # add wv's mini glib to include list
 ABI_OTH_INCS+=	/../../wv/glib-wv
+else
+HAVE_WV_PEER=0
+endif
 
 ifndef ENABLE_UNICODE
 UNICODE_CFLAGS =

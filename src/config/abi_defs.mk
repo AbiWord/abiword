@@ -310,8 +310,12 @@ endif
 ABI_OTH_INCS=	/other/spell/xp \
 				/other/pango
 
+# Peer wv no longer supported
+HAVE_WV_PEER := $(shell if [ -r /../../wv/wv.h ]; then echo 1; fi)
+ifneq ($(USING_PEER_WV),1)
 ABI_PEER_INCS+=/../../wv/exporter
 ABI_PEER_INCS+=/../../popt
+endif
 
 # Test for iconv in system locations
 HAVE_ICONV_SYSTEM := $(shell if [ -r /usr/include/iconv.h -o -r /usr/local/include/iconv.h ] ; then echo 1 ; fi)
