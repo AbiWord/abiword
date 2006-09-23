@@ -534,7 +534,7 @@ XAP_Menu_Id XAP_Menu_Factory::addNewMenuBefore(const char * szMenu,
 	plt->m_flags = flags;
 	if(beforeID > 0)
 	{
-	  pVectt->insertItemBefroe((void *) plt, beforeID);
+	  pVectt->insertItemBefore((void *) plt, beforeID);
 	}
 	else
 	{
