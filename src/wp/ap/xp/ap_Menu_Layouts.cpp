@@ -101,6 +101,28 @@
 				}
 				UT_ASSERT_HARMLESS(bFound);
 			};
+		void insertItemBefore(void * p, XAP_Menu_Id id)
+			{
+				UT_uint32 i = 0;
+				bool bFound = false;
+				for(i=0; i< m_Vec_lt.getItemCount() && !bFound; i++)
+				{
+					_lt * plt = (_lt *) m_Vec_lt.getNthItem(i);
+					if(plt->m_id == id)
+					{
+						if((i+1) == m_Vec_lt.getItemCount())
+						{
+							m_Vec_lt.addItem(p);
+						}
+						else
+						{
+							m_Vec_lt.insertItemAt(p,i);
+						}
+						bFound = true;
+					}
+				}
+				UT_ASSERT_HARMLESS(bFound);
+			};
 		void removeItem(XAP_Menu_Id id)
 			{
 				UT_uint32 i = 0;
@@ -441,7 +463,7 @@ XAP_Menu_Id XAP_Menu_Factory::addNewMenuBefore(const char * szMenu,
 	plt->m_flags = flags;
 	if(beforeID > 0)
 	{
-	  pVectt->insertItemAt((void *) plt, beforeID-1);
+	  pVectt->insertItemBefore((void *) plt, beforeID);
 	}
 	else
 	{
@@ -512,7 +534,7 @@ XAP_Menu_Id XAP_Menu_Factory::addNewMenuBefore(const char * szMenu,
 	plt->m_flags = flags;
 	if(beforeID > 0)
 	{
-	  pVectt->insertItemAt((void *) plt, beforeID-1);
+	  pVectt->insertItemBefroe((void *) plt, beforeID);
 	}
 	else
 	{
