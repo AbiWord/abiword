@@ -33,6 +33,7 @@
 #define ABIWORD_FILE_SAVEAS				"abiword-file-saveas"
 #define ABIWORD_FILE_PRINT				"abiword-file-print"
 #define ABIWORD_FILE_PRINT_PREVIEW		"abiword-file-print-preview"
+#define ABIWORD_FILE_CLOSE				"abiword-file-close"
 
 #define ABIWORD_SPELLCHECK				"abiword-spellcheck"
 
