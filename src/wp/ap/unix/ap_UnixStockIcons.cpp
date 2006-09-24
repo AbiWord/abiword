@@ -81,7 +81,7 @@ static struct AbiStockEntry {
   { ABIWORD_3COLUMN,								0,
 	AP_STRING_ID_TOOLBAR_LABEL_3COLUMN,				(const gchar **) tb_3column_xpm },
 
-  { ABIWORD_IMG,									AP_MENU_ID_INSERT_PICTURE, 		
+  { ABIWORD_IMG,									AP_MENU_ID_INSERT_GRAPHIC, 		
 	AP_STRING_ID_TOOLBAR_LABEL_IMG,					(const gchar **) tb_insert_graphic_xpm },
   { ABIWORD_VIEW_SHOWPARA,							AP_MENU_ID_VIEW_SHOWPARA, 			
 	AP_STRING_ID_TOOLBAR_LABEL_VIEW_SHOWPARA,		(const gchar **) tb_view_showpara_xpm },
@@ -186,6 +186,7 @@ static struct AbiStockMapping {
   { ABIWORD_EDIT_REDO,				AP_MENU_ID_EDIT_REDO,			GTK_STOCK_REDO },
 
   { ABIWORD_HELP,					AP_MENU_ID_HELP_CONTENTS,		GTK_STOCK_HELP },
+  { ABIWORD_FMT_FONT,				AP_MENU_ID_FMT_FONT,			GTK_STOCK_SELECT_FONT },
   { ABIWORD_FMT_BOLD,				AP_MENU_ID_FMT_BOLD,			GTK_STOCK_BOLD },
   { ABIWORD_FMT_ITALIC,				AP_MENU_ID_FMT_ITALIC,			GTK_STOCK_ITALIC },
   { ABIWORD_FMT_UNDERLINE,			AP_MENU_ID_FMT_UNDERLINE,		GTK_STOCK_UNDERLINE },
@@ -240,8 +241,7 @@ abi_stock_init (void)
 const gchar *
 abi_stock_from_menu_id (XAP_Menu_Id menu_id)
 {
-	const gchar *stock_id;
-	gint 		 i;
+	gint i;
 
 	/* does it map to a gtk stock icon? */
 	i = 0;

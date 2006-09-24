@@ -1,3 +1,5 @@
+/* -*- mode: C++; tab-width: 4; c-basic-offset: 4; -*- */
+
 /* AbiWord
  * Copyright (C) 1998 AbiSource, Inc.
  *
@@ -182,16 +184,11 @@ BeginLayout(Main,0)
 		MenuItem(AP_MENU_ID_INSERT_FOOTNOTE)
 		MenuItem(AP_MENU_ID_INSERT_ENDNOTE)
 
-#ifdef HAVE_GNOME
+		MenuItem(AP_MENU_ID_INSERT_CLIPART)
+		MenuItem(AP_MENU_ID_INSERT_GRAPHIC)
+
 		Separator()
 
-		BeginSubMenu(AP_MENU_ID_INSERT_PICTURE)
-			MenuItem(AP_MENU_ID_INSERT_CLIPART)
-			MenuItem(AP_MENU_ID_INSERT_GRAPHIC)
-		EndSubMenu()
-#else
-		MenuItem(AP_MENU_ID_INSERT_PICTURE)
-#endif
 		BeginSubMenu(AP_MENU_ID_INSERT_DIRECTIONMARKER)
  	        MenuItem(AP_MENU_ID_INSERT_DIRECTIONMARKER_LRM)
 	        MenuItem(AP_MENU_ID_INSERT_DIRECTIONMARKER_RLM)

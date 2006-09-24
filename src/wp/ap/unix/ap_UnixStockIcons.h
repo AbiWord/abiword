@@ -50,6 +50,7 @@
 #define ABIWORD_IMG						"abiword-img"
 #define ABIWORD_VIEW_SHOWPARA			"abiword-view-showpara"
 #define ABIWORD_HELP					"abiword-help"
+#define ABIWORD_FMT_FONT				"abiword-fmt-font"
 #define ABIWORD_FMT_BOLD				"abiword-fmt-bold"
 #define ABIWORD_FMT_ITALIC				"abiword-fmt-italic"
 #define ABIWORD_FMT_UNDERLINE			"abiword-fmt-underline"
