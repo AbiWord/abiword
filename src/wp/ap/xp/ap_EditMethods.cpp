@@ -2399,15 +2399,15 @@ Defun(fileSave)
 		if(pDoc && pDoc->isCACConnected())
 		{
 			pDoc->signalListeners(PD_SIGNAL_DOCSAVED);
-		}
-		if (pFrame->getViewNumber() > 0)
-		{
-			XAP_App * pApp = XAP_App::getApp();
-			UT_return_val_if_fail (pApp, false);
+			if (pFrame->getViewNumber() > 0)
+			{
+				XAP_App * pApp = XAP_App::getApp();
+				UT_return_val_if_fail (pApp, false);
 
-			pApp->updateClones(pFrame);
+				pApp->updateClones(pFrame);
+			}
+			return true;
 		}
-		return true;
 	}
 	// can only save without prompting if filename already known
 	if (!pFrame->getFilename())
