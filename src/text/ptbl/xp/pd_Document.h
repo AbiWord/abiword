@@ -656,7 +656,8 @@ PT_AttrPropIndex            getAPIFromSOH(PL_ObjectHandle odh);
 	{ m_bIgnoreSignals = true;}
 	void                    dontIgnoreSignals(void)
 	{ m_bIgnoreSignals = false;}
-
+	void                    setClean(void)
+	{ _setClean();}
 protected:
 	virtual ~PD_Document();
 
