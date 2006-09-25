@@ -296,7 +296,6 @@ void AP_UnixDialog_Options::_constructWindowContents (GladeXML *xml)
 		
 		gtk_notebook_append_page(GTK_NOTEBOOK(m_notebook), 
 								 page, label);
-		gtk_widget_show_all(page);
 		item = item->next;
 	}
 
