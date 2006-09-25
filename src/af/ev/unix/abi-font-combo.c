@@ -16,8 +16,10 @@
  *  Foundation, Inc., 59 Temple Place - Suite 330, Boston, MA 02111-1307, USA.
  */
 
+#include <string.h>
 #include "abi-font-combo.h"
 
+#define PREVIEW_TEXT "AaBb"
 
 /* builtin GtkCellRendererText subclass */
 
@@ -112,14 +114,12 @@ abi_cell_renderer_font_render (GtkCellRenderer      *cell,
 			       GtkCellRendererState  flags)
 {
 	AbiCellRendererFont	*self;
+	GtkTreeModel		*model;
+	GtkTreeIter		 iter;
 	gchar 			*text;
 
 	self = ABI_CELL_RENDERER_FONT (cell);
-
 	text = NULL;
-	g_object_get (G_OBJECT (cell), 
-		      "text", &text, 
-		      NULL);
 
 	GTK_CELL_RENDERER_CLASS (abi_cell_renderer_font_parent_class)->render (
 					cell, window, widget, background_area, 
@@ -144,6 +144,21 @@ abi_cell_renderer_font_render (GtkCellRenderer      *cell,
 					       0, background_area);
 			}
 
+			g_object_get (G_OBJECT (cell), 
+					      "text", &text, 
+					      NULL);
+
+			if (0 == strcmp (text, PREVIEW_TEXT)) {
+				g_free (text);
+				text = NULL;
+				gtk_combo_box_get_active_iter (GTK_COMBO_BOX (self->parent_widget), &iter);
+				model = gtk_combo_box_get_model (GTK_COMBO_BOX (self->parent_widget));
+				g_assert (model);
+				gtk_tree_model_get (model, &iter, 
+						    FONT, &text, 
+						    -1);
+			}
+
 			g_signal_emit (G_OBJECT (cell), 
 				       cell_renderer_font_signals[RENDERER_PRELIGHT],
 				       0, text);
@@ -154,6 +169,10 @@ abi_cell_renderer_font_render (GtkCellRenderer      *cell,
 			       cell_renderer_font_signals[RENDERER_POPUP_CLOSED],
 			       0);
 		self->is_popped_up = FALSE;
+	}
+
+	if (text) {
+		g_free (text);
 	}
 }
 
@@ -421,7 +440,7 @@ abi_font_combo_append_font (AbiFontCombo 	*self,
 	gtk_list_store_append (GTK_LIST_STORE (model), &iter);
 	gtk_list_store_set (GTK_LIST_STORE (model), &iter, 
 			    FONT, font, 
-			    PREVIEW, "AaBb", 
+			    PREVIEW, PREVIEW_TEXT, 
 			    FAMILY_VISIBLE, TRUE,
 			    PREVIEW_VISIBLE, FALSE,
 			    -1);
