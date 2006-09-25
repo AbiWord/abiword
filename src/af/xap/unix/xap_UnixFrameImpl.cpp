@@ -458,7 +458,7 @@ XAP_UnixFrameImpl::XAP_UnixFrameImpl(XAP_Frame *pFrame) :
 	m_iZoomUpdateID(0),
 	m_iAbiRepaintID(0),
 	m_pUnixPopup(NULL),
-	m_dialogFactory(pFrame, XAP_App::getApp())
+	m_dialogFactory(XAP_App::getApp(), pFrame)
 {
 }
 

@@ -1,3 +1,5 @@
+/* -*- mode: C++; tab-width: 4; c-basic-offset: 4; -*- */
+
 /* AbiSource Application Framework
  * Copyright (C) 1998 AbiSource, Inc.
  * 
@@ -32,9 +34,13 @@
  * so even if it's commented out in-file that's still a lot of work for
  * the preprocessor to do...
  */
+
+#include <map>
+
 #ifndef UT_TYPES_H
 #include "ut_types.h"
 #endif
+#include "ut_misc.h"
 #include "ut_vector.h"
 
 #include "xap_Dialog.h"
@@ -54,10 +60,10 @@ public:
 		XAP_Dialog_Id	m_id;
 		XAP_Dialog_Type	m_type;
 		XAP_Dialog *	(*m_pfnStaticConstructor)(XAP_DialogFactory *, XAP_Dialog_Id id);
+		bool			m_tabbed;
 	};
 
-	XAP_DialogFactory(XAP_App * pApp, int nrElem, const struct _dlg_table * pDlgTable);
-	XAP_DialogFactory(XAP_Frame * pFrame, XAP_App * pApp, int nrElem, const struct _dlg_table * pDlgTable);
+	XAP_DialogFactory(XAP_App * pApp, int nrElem, const struct _dlg_table * pDlgTable, XAP_Frame * pFrame = NULL);
 	virtual ~XAP_DialogFactory(void);
 
 	inline XAP_App *	getApp(void) const	{ return m_pApp; };
@@ -65,9 +71,12 @@ public:
 	XAP_Dialog *		requestDialog(XAP_Dialog_Id id);
 	XAP_Dialog *		justMakeTheDialog(XAP_Dialog_Id id);
 	void				releaseDialog(XAP_Dialog * pDialog);
-	XAP_Dialog_Id                   getNextId(void);
-        XAP_Dialog_Id                   registerDialog(XAP_Dialog *(*pStaticConstructor)(XAP_DialogFactory *, XAP_Dialog_Id id),XAP_Dialog_Type iDialogType);
-        void                            unregisterDialog(XAP_Dialog_Id id);
+	XAP_Dialog_Id		getNextId(void);
+	XAP_Dialog_Id		registerDialog(XAP_Dialog *(*pStaticConstructor)(XAP_DialogFactory *, XAP_Dialog_Id id),XAP_Dialog_Type iDialogType);
+	void				unregisterDialog(XAP_Dialog_Id id);
+
+	bool				registerNotebookPage(XAP_Dialog_Id dialog, const XAP_NotebookDialog::Page * page);
+	bool				unregisterNotebookPage(XAP_Dialog_Id dialog, const XAP_NotebookDialog::Page * page);
 
 protected:
 	bool				_findDialogInTable(XAP_Dialog_Id id, UT_uint32 * pIndex) const;
@@ -76,11 +85,14 @@ protected:
 	XAP_Frame *			m_pFrame;
 	XAP_Dialog_Type		m_dialogType;
 	UT_Vector			m_vecDialogs;
-	UT_NumberVector			m_vecDialogIds;
+	UT_NumberVector		m_vecDialogIds;
 
-	UT_uint32					m_nrElementsDlgTable;
+	UT_uint32						m_nrElementsDlgTable;
 	UT_GenericVector<_dlg_table *>	m_vec_dlg_table;			/* a Vector of elements */
 	UT_GenericVector<_dlg_table *>	m_vecDynamicTable;			/* a Vector of elements */
+
+private:
+	void addPages(XAP_NotebookDialog * pDialog, XAP_Dialog_Id id);
 };
 
 #endif /* XAP_DIALOGFACTORY_H */

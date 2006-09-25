@@ -30,6 +30,7 @@
 #include "ut_types.h"
 #endif
 
+#include "ut_misc.h"
 #include "ut_assert.h"
 
 #include "xap_Types.h"
@@ -67,6 +68,7 @@ typedef XAP_Dialog *(*pt2Constructor)(XAP_DialogFactory * pFactory, XAP_Dialog_I
 class ABI_EXPORT XAP_Dialog
 {
 public:
+
 	XAP_Dialog(XAP_DialogFactory * pDlgFactory, XAP_Dialog_Id id,
 		   const char * helpUrl = NULL );
 	virtual ~XAP_Dialog(void);
@@ -159,8 +161,8 @@ public:
 	XAP_TabbedDialog_NonPersistent(XAP_DialogFactory * pDlgFactory, XAP_Dialog_Id id, const char * helpUrl = NULL );
 	virtual ~XAP_TabbedDialog_NonPersistent(void);
 
-	virtual void			setInitialPageNum (int which) { m_pageNum = which; } // support for dialogs with pages (tabs?)
-	virtual int				getInitialPageNum () { return m_pageNum; }
+	virtual void			setInitialPageNum 	(int which) { m_pageNum = which; } // support for dialogs with pages (tabs?)
+	virtual int				getInitialPageNum 	() { return m_pageNum; }
 
 protected:
 	int		m_pageNum;
@@ -247,11 +249,32 @@ protected:
         XAP_Dialog_Modeless *                    m_pDialog;
 };
 
+
+/*!
+ * Interface for a tabbed dialog to be extensible by plugins.
+ */
+class ABI_EXPORT XAP_NotebookDialog
+{
+public:
+
+	class Page {
+	public:
+		Page() {}
+		Page(const gchar *title, AbiNativeWidget * widget) 
+		{ 
+			this->title = g_strdup(title);
+			this->widget = widget;
+		}
+		~Page() 
+		{
+			g_free(this->title);
+		}
+		gchar 			* title;
+		AbiNativeWidget * widget;
+	};
+
+	virtual ~XAP_NotebookDialog() {}
+	virtual void addPage (const XAP_NotebookDialog::Page *page) = 0;
+};
+
 #endif /* XAP_DIALOG_H */
-
-
-
-
-
-
-
