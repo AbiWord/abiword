@@ -80,44 +80,90 @@ enum {
 	TARGET_URI_LIST,
 	TARGET_URL,
 	TARGET_UNKNOWN
-} DragDropTypes;
+};
 
-// FIXME Rob: this should be split into a static and a dynamic part.
-// At least the image formats could be added dynamically based on gdk_pixbuf_get_formats ()
-// but we should be able to also dynamically determine document formats by looking at the
-// loaded importers.
-static const GtkTargetEntry drag_types[] =
+// TODO rob: get document mimetypes from installed imp filters
+// that would require the filters do declare one or more supported mimetypes
+static const GtkTargetEntry static_drag_types[] =
 	{
- 		{"text/uri-list", 0, TARGET_URI_LIST},
- 		{"application/rtf", 0, TARGET_DOCUMENT},
- 		{"text/richtext", 0, TARGET_DOCUMENT},
- 		{"text/rtf", 0, TARGET_DOCUMENT},
- 		{"application/msword", 0, TARGET_DOCUMENT},
- 		{"application/vnd.ms-word", 0, TARGET_DOCUMENT},
- 		{"application/vnd.sun.xml.writer", 0, TARGET_DOCUMENT},
- 		{"application/x-applix-word", 0, TARGET_DOCUMENT},
- 		{"application/x-palm-database", 0, TARGET_DOCUMENT},
- 		{"application/vnd.palm", 0, TARGET_DOCUMENT},
- // 		{"text/plain", 0, TARGET_DOCUMENT},
- 		{"text/abiword", 0, TARGET_DOCUMENT},
- 		{"application/x-abiword", 0, TARGET_DOCUMENT},
- 		{"text/xml", 0, TARGET_DOCUMENT},
- 		{"text/vnd.wap.wml", 0, TARGET_DOCUMENT},
-		{"image/x-wmf", 0, TARGET_IMAGE},
- 		{"image/jpeg", 0, TARGET_IMAGE},
-		{"image/png", 0, TARGET_IMAGE},
-		{"image/jpeg", 0, TARGET_IMAGE},
-		{"image/gif", 0, TARGET_IMAGE},
-		{"image/x-xpixmap", 0, TARGET_IMAGE},
-		{"image/bmp", 0, TARGET_IMAGE},
-		{"image/x-bmp", 0, TARGET_IMAGE},
-		{"image/x-cmu-raster", 0, TARGET_IMAGE},
-		{"image/tiff", 0, TARGET_IMAGE},
-		{"image/svg+xml", 0, TARGET_IMAGE},
-		{"text/html", 0, TARGET_URL}, // hack
-		{"text/html+xml", 0, TARGET_URL}, // hack
-		{"_NETSCAPE_URL", 0, TARGET_URL}
+ 		{"text/uri-list", 					0, TARGET_URI_LIST},
+ 		{"application/rtf",					0, TARGET_DOCUMENT},
+ 		{"text/richtext", 					0, TARGET_DOCUMENT},
+ 		{"text/rtf", 						0, TARGET_DOCUMENT},
+ 		{"application/msword", 				0, TARGET_DOCUMENT},
+ 		{"application/vnd.ms-word", 		0, TARGET_DOCUMENT},
+ 		{"application/vnd.sun.xml.writer", 	0, TARGET_DOCUMENT},
+ 		{"application/x-applix-word", 		0, TARGET_DOCUMENT},
+ 		{"application/x-palm-database", 	0, TARGET_DOCUMENT},
+ 		{"application/vnd.palm", 			0, TARGET_DOCUMENT},
+//		{"text/plain", 						0, TARGET_DOCUMENT},
+ 		{"text/abiword", 					0, TARGET_DOCUMENT},
+ 		{"application/x-abiword", 			0, TARGET_DOCUMENT},
+ 		{"text/xml", 						0, TARGET_DOCUMENT},
+ 		{"text/vnd.wap.wml", 				0, TARGET_DOCUMENT},
+		{"text/html", 						0, TARGET_URL}, // hack
+		{"text/html+xml", 					0, TARGET_URL}, // hack
+		{"_NETSCAPE_URL", 					0, TARGET_URL}
 	};
+
+static GtkTargetEntry *drag_types = NULL;
+static guint 		   n_drag_types = 0;
+
+/*!
+ * Query gdk-pixbuf for image formats and set up the accepted dnd mime formats.
+ */
+static void
+s_init_drag_types (void)
+{
+	GSList 		 	  *format_list = gdk_pixbuf_get_formats ();
+	GSList 		 	  *list_item;
+	GSList 		 	  *tmp;
+	GdkPixbufFormat   *format;
+	gchar 			**mime_types;
+	gsize			  idx;
+
+	UT_ASSERT(drag_types == NULL);
+
+	// dry run to count entries
+	list_item = format_list;
+	n_drag_types = NrElements (static_drag_types);
+	while (list_item) {
+		format = (GdkPixbufFormat *) list_item->data;
+		mime_types = gdk_pixbuf_format_get_mime_types (format);
+		while (*mime_types) {
+			n_drag_types++;
+			mime_types++;
+		}
+		list_item = list_item->next;
+	}
+
+	drag_types = new GtkTargetEntry[n_drag_types];
+
+	// static types
+	for (idx = 0; idx < NrElements (static_drag_types); idx++) {
+		drag_types[idx].target = static_drag_types[idx].target;
+		drag_types[idx].flags = static_drag_types[idx].flags;
+		drag_types[idx].info = static_drag_types[idx].info;
+	}
+
+	// dynamic types from gdk-pixbuf
+	list_item = format_list;
+	while (list_item) {
+		UT_ASSERT (idx < n_drag_types);
+		format = (GdkPixbufFormat *) list_item->data;
+		mime_types = gdk_pixbuf_format_get_mime_types (format);
+		while (*mime_types) {
+			drag_types[idx].target = *mime_types;
+			drag_types[idx].flags = 0;
+			drag_types[idx].info = TARGET_IMAGE;
+			idx++;
+			mime_types++;
+		}
+		tmp = list_item;
+		list_item = list_item->next;
+		g_slist_free1 (tmp);
+	}
+}
 
 static int
 s_mapMimeToUriType (const char * uri)
@@ -130,7 +176,7 @@ s_mapMimeToUriType (const char * uri)
 
 	int target = TARGET_UNKNOWN;
 
-	for (size_t i = 0; i < NrElements (drag_types); i++)
+	for (size_t i = 0; i < n_drag_types; i++)
 		if (!UT_stricmp (mime, drag_types[i].target)) {
 			target = drag_types[i].info;
 			break;
@@ -364,7 +410,7 @@ s_load_uri_list (XAP_Frame * pFrame, const char * uriList)
 	for ( ; names != NULL; names = names->next) 
 		{
 			GnomeVFSURI * hndl = static_cast<GnomeVFSURI *>(names->data);
-			char * uri = gnome_vfs_uri_to_string (hndl, GNOME_VFS_URI_HIDE_NONE);
+			gchar * uri = gnome_vfs_uri_to_string (hndl, GNOME_VFS_URI_HIDE_NONE);
 			s_load_uri (pFrame, uri);
 			g_free (uri);
 		}
@@ -1270,10 +1316,13 @@ void XAP_UnixFrameImpl::_createTopLevelWindow(void)
 					   G_CALLBACK(_fe::focusOut), NULL);
 
 #ifdef HAVE_GNOME
+	if (drag_types == NULL) {
+		s_init_drag_types();
+	}
 	gtk_drag_dest_set (m_wTopLevelWindow,
 					   GTK_DEST_DEFAULT_ALL,
 					   drag_types, 
-					   NrElements(drag_types), 
+					   n_drag_types, 
 					   GDK_ACTION_COPY);
 
 	g_signal_connect (G_OBJECT (m_wTopLevelWindow),
