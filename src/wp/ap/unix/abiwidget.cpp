@@ -21,6 +21,7 @@
  */
 
 #include <string.h>
+#include <glib/gi18n.h>
 
 #include "abiwidget.h"
 #include "gr_UnixGraphics.h"
@@ -34,7 +35,6 @@
 #include "ie_imp.h"
 #include "ie_exp.h"
 #include "xap_UnixDialogHelper.h"
-#include <glib-object.h>
 #include "ap_UnixApp.h"
 #include "ut_sleep.h"
 #include "fv_View.h"
