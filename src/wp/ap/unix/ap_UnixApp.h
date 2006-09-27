@@ -79,6 +79,8 @@ public:
 	virtual void					copyToClipboard(PD_DocumentRange * pDocRange, bool bUseClipboard = true);
 	virtual void					pasteFromClipboard(PD_DocumentRange * pDocRange, bool bUseClipboard, bool bHonorFormatting = true);
 	virtual bool					canPasteFromClipboard(void);
+	virtual void					addClipboardFmt (const char * szFormat) {m_pClipboard->addFormat(szFormat);}
+	virtual void					deleteClipboardFmt (const char * szFormat) {m_pClipboard->deleteFormat(szFormat);}
 
 	virtual void					setSelectionStatus(AV_View * pView);
 
@@ -138,4 +140,3 @@ protected:	// JCA: Why in the hell we have so many (any) protected variables?
 void signalWrapper(int);
 
 #endif /* AP_UNIXAPP_H */
-

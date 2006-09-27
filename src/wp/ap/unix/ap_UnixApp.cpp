@@ -668,6 +668,18 @@ void AP_UnixApp::pasteFromClipboard(PD_DocumentRange * pDocRange, bool bUseClipb
 			DELETEP(pImpHTML);
 		}
 	}
+	else if (AP_UnixClipboard::isDynamicTag (szFormatFound))
+	{
+		UT_DEBUGMSG(("Format Found = %s \n",szFormatFound));
+		IE_Imp * pImp = NULL;
+		IEFileType ieft = IE_Imp::fileTypeForContents(reinterpret_cast<char *>(const_cast<unsigned char *>(pData)),iLen);
+		UT_DEBUGMSG(("found file type %d\n",ieft));
+		IE_Imp::constructImporter(pDocRange->m_pDoc,NULL,ieft,&pImp);
+		if(pImp == NULL)
+			 goto retry_text;
+		bSuccess = pImp->pasteFromBuffer(pDocRange,pData,iLen);
+		DELETEP(pImp);
+	}
     else if (AP_UnixClipboard::isImageTag(szFormatFound))
       {
 		  UT_DEBUGMSG(("Format Found = %s \n",szFormatFound));

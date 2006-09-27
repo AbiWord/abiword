@@ -73,6 +73,15 @@ void XAP_UnixClipboard::AddFmt(const char * szFormat)
 	m_vecFormat_GdkAtom.addItem(gdk_atom_intern(szFormat,FALSE));
 }
 
+void XAP_UnixClipboard::deleteFmt(const char * szFormat)
+{
+	UT_return_if_fail(szFormat && strlen(szFormat));
+	UT_sint32 item = m_vecFormat_AP_Name.findItem(szFormat);
+	m_vecFormat_AP_Name.deleteNthItem(item);
+	m_vecFormat_GdkAtom.findItem(gdk_atom_intern(szFormat,FALSE));
+	m_vecFormat_GdkAtom.deleteNthItem(item);
+}
+
 void XAP_UnixClipboard::initialize()
 {
 	m_nTargets = m_vecFormat_AP_Name.getItemCount();
@@ -304,7 +313,7 @@ bool XAP_UnixClipboard::_getDataFromServer(T_AllowGet tFrom, const char** format
 			gtk_selection_data_free(selection);
 		}
     }
-	
+
 	return rval;
 }
 
