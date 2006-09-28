@@ -179,8 +179,7 @@ bool  AP_UnixClipboard::getSupportedData(T_AllowGet tFrom,
 		return true;
 	else if (getData (tFrom, htmlszFormatsAccepted, (void**)ppData, pLen, pszFormatFound))
 		return true;
-	else if (vec_DynamicFormatsAccepted.size() &&
-				getData(tFrom, &vec_DynamicFormatsAccepted.front(), (void**)ppData, pLen, pszFormatFound))
+	else if (getData(tFrom, &vec_DynamicFormatsAccepted[0], (void**)ppData, pLen, pszFormatFound))
 		return true;  
 	else if (getData(tFrom, imgszFormatsAccepted, (void**)ppData, pLen, pszFormatFound))
 		return true;  
@@ -216,7 +215,7 @@ bool AP_UnixClipboard::getDynamicData(T_AllowGet tFrom,
 			  const void ** ppData, UT_uint32 * pLen,
 			  const char **pszFormatFound)
 {
-  return getData ( tFrom, &vec_DynamicFormatsAccepted.front(), (void**)ppData, pLen, pszFormatFound );
+  return getData ( tFrom, &vec_DynamicFormatsAccepted[0], (void**)ppData, pLen, pszFormatFound );
 }
 
 bool AP_UnixClipboard::isTextTag ( const char * tag )
