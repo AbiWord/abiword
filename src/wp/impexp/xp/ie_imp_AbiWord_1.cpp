@@ -41,7 +41,7 @@
 #include "pd_Document.h"
 #include "pd_Style.h"
 
-#include "ie_impexp_AbiWord.h"
+#include "ie_impexp_AbiWord_1.h"
 #include "ie_imp_AbiWord_1.h"
 #include "ie_types.h"
 

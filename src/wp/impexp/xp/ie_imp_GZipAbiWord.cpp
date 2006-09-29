@@ -26,7 +26,7 @@
 #include "ut_string.h"
 #include "ut_types.h"
 
-#include "ie_impexp_AbiWord.h"
+#include "ie_impexp_AbiWord_1.h"
 #include "ie_imp_GZipAbiWord.h"
 #include "ie_FileInfo.h"
 
