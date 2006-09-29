@@ -1,3 +1,5 @@
+/* -*- mode: C++; tab-width: 4; c-basic-offset: 4; -*- */
+
 /* AbiWord
  * Copyright (C) 1998 AbiSource, Inc.
  * 
@@ -23,11 +25,26 @@
 #include "ie_impGraphic_PNG.h"
 #include "fg_GraphicRaster.h"
 
-UT_Confidence_t IE_ImpGraphicPNG_Sniffer::recognizeSuffix(const char * szSuffix)
+// supported suffixes
+static IE_SuffixConfidence IE_ImpGraphicPNG_Sniffer__SuffixConfidence[] = {
+	{ "png", 	UT_CONFIDENCE_PERFECT 	},
+	{ NULL, 	UT_CONFIDENCE_ZILCH 	}
+};
+
+const IE_SuffixConfidence * IE_ImpGraphicPNG_Sniffer::getSuffixConfidence ()
 {
-	if (UT_stricmp(szSuffix,".png") == 0)
-	  return UT_CONFIDENCE_PERFECT;
-	return UT_CONFIDENCE_ZILCH;
+	return IE_ImpGraphicPNG_Sniffer__SuffixConfidence;
+}
+
+// supported mimetypes
+static IE_MimeConfidence IE_ImpGraphicPNG_Sniffer__MimeConfidence[] = {
+	{ IE_MIME_MATCH_FULL, 	"image/png",	UT_CONFIDENCE_GOOD 	}, 
+	{ IE_MIME_MATCH_BOGUS, 	NULL, 			UT_CONFIDENCE_ZILCH }
+};
+
+const IE_MimeConfidence * IE_ImpGraphicPNG_Sniffer::getMimeConfidence ()
+{
+	return IE_ImpGraphicPNG_Sniffer__MimeConfidence;
 }
 
 UT_Confidence_t IE_ImpGraphicPNG_Sniffer::recognizeContents(const char * szBuf, UT_uint32 iNumbytes)

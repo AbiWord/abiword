@@ -96,13 +96,12 @@ public:
 	IE_Imp_Text_Sniffer();
 	virtual ~IE_Imp_Text_Sniffer();
 
-	UT_Confidence_t supportsMIME (const char * szMIME);
-
+	virtual const IE_SuffixConfidence * getSuffixConfidence ();
+	virtual const IE_MimeConfidence * getMimeConfidence ();
 	virtual UT_Confidence_t recognizeContents (const char * szBuf,
 									UT_uint32 iNumbytes);
 	const char * recognizeContentsType (const char * szBuf,
 									UT_uint32 iNumbytes);
-	virtual UT_Confidence_t recognizeSuffix (const char * szSuffix);
 	virtual bool getDlgLabels (const char ** szDesc,
 							   const char ** szSuffixList,
 							   IEFileType * ft);
@@ -130,9 +129,11 @@ public:
 	IE_Imp_EncodedText_Sniffer();
 	virtual ~IE_Imp_EncodedText_Sniffer();
 
+	virtual const IE_SuffixConfidence * getSuffixConfidence ();
+	virtual const IE_MimeConfidence * getMimeConfidence () { return NULL; }
+
 	virtual UT_Confidence_t recognizeContents (const char * szBuf,
 					    UT_uint32 iNumbytes);
-	virtual UT_Confidence_t recognizeSuffix (const char * szSuffix);
 	virtual bool getDlgLabels (const char ** szDesc,
 							   const char ** szSuffixList,
 							   IEFileType * ft);

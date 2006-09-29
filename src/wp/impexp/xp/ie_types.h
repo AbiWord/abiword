@@ -30,6 +30,7 @@
   NOTE:  to (or less than) the number below.
 */
 
+#include <glib.h>
 #include "ut_types.h"
 
 typedef UT_sint32 IEFileType;
@@ -51,22 +52,48 @@ typedef UT_sint32 IEGraphicFileType;
 /* plug-ins adding new importers/exporters should give them names
  * such as "<plug-in name>::<format description>"
  */	
-#define IE_IMPEXPNAME_AWML11	"AbiWord::AWML-1.1"
-#define IE_IMPEXPNAME_AWML11AWT	"AbiWord::AWML-1.1/template"
-#define IE_IMPEXPNAME_AWML11GZ	"AbiWord::AWML-1.1/compressed"
+#define IE_IMPEXPNAME_AWML11		"AbiWord::AWML-1.1"
+#define IE_IMPEXPNAME_AWML11AWT		"AbiWord::AWML-1.1/template"
+#define IE_IMPEXPNAME_AWML11GZ		"AbiWord::AWML-1.1/compressed"
 #define IE_IMPEXPNAME_AWML11GZB64	"AbiWord::AWML-1.1/compressed/base64"
-#define IE_IMPEXPNAME_MSWORD97	"AbiWord::MS Word (97)"
-#define IE_IMPEXPNAME_RTF		"AbiWord::RTF"
-#define IE_IMPEXPNAME_RTFATTIC	"AbiWord::RTF (attic)"
-#define IE_IMPEXPNAME_RTFMSDOC	"AbiWord::RTF (!MSWord)"
-#define IE_IMPEXPNAME_TEXT		"AbiWord::Text"
-#define IE_IMPEXPNAME_TEXTENC	"AbiWord::Text/encoded"
-#define IE_IMPEXPNAME_HTML		"AbiWord::HTML"
-#define IE_IMPEXPNAME_XHTML		"AbiWord::HTML (XHTML)"
-#define IE_IMPEXPNAME_PHTML		"AbiWord::HTML (XHTML+PHP)"
-#define IE_IMPEXPNAME_MHTML		"AbiWord::HTML/multipart"
-#define IE_IMPEXPNAME_MATHML    "AbiWord::MathML"
-#define IE_IMPEXPNAME_GOCHART   "AbiWord::GNOME Office Chart"
+#define IE_IMPEXPNAME_MSWORD97		"AbiWord::MS Word (97)"
+#define IE_IMPEXPNAME_RTF			"AbiWord::RTF"
+#define IE_IMPEXPNAME_RTFATTIC		"AbiWord::RTF (attic)"
+#define IE_IMPEXPNAME_RTFMSDOC		"AbiWord::RTF (!MSWord)"
+#define IE_IMPEXPNAME_TEXT			"AbiWord::Text"
+#define IE_IMPEXPNAME_TEXTENC		"AbiWord::Text/encoded"
+#define IE_IMPEXPNAME_HTML			"AbiWord::HTML"
+#define IE_IMPEXPNAME_XHTML			"AbiWord::HTML (XHTML)"
+#define IE_IMPEXPNAME_PHTML			"AbiWord::HTML (XHTML+PHP)"
+#define IE_IMPEXPNAME_MHTML			"AbiWord::HTML/multipart"
+#define IE_IMPEXPNAME_MATHML    	"AbiWord::MathML"
+#define IE_IMPEXPNAME_GOCHART   	"AbiWord::GNOME Office Chart"
 #define IE_IMPEXPNAME_GOCOMPONENT   "AbiWord::GNOME Office Component"
+
+/*!
+ * How to match mimetypes that plugins support.
+ */
+enum IE_MimeMatch {
+	IE_MIME_MATCH_BOGUS,	/*!< Terminator for mime match entry array */
+	IE_MIME_MATCH_CLASS, 	/*!< Matches only the mime class, e.g. "text" from mimetype "text/plain" */
+	IE_MIME_MATCH_FULL		/*!< Matches the whole mimetype */
+};
+
+/*!
+ * Entry for mimetypes supported by a filter.
+ */
+struct IE_MimeConfidence {
+	IE_MimeMatch	 match;			/*!< Match class or full mimetype. */
+	const gchar 	*mimetype;		/*!< Mimetype string itself. */
+	UT_Confidence_t	 confidence;	/*!< Confidence for supporting that mimetype. */
+};
+
+/*!
+ * Entry for filename suffixes supported by a filter.
+ */
+struct IE_SuffixConfidence {
+	const gchar		*suffix;		/*!< Filename suffix to match. */
+	UT_Confidence_t	 confidence;	/*!< Confidence for supporting that mimetype. */
+};
 
 #endif /* IE_TYPES_H */

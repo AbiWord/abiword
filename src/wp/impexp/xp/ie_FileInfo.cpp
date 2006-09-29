@@ -53,43 +53,10 @@ struct AliasMIME
 	const char * equiv;
 };
 
-const struct AliasMIME s_list[] = {
-	{ "application/abiword",					IE_MIME_AbiWord	},
-	{ "application/abiword-compressed",			IE_MIME_AbiWord	},
-	{ "application/abiword-template",			IE_MIME_AbiWord	},
-	{ "application/mathml",						IE_MIME_MathML	},
-	{ "application/xhtml",						IE_MIME_XHTML	},
-	{ "application/x-kword",					IE_MIME_KWord	},
-	{ "application/x-staroffice-word",			IE_MIME_SDW		},
-	{ "application/x-staroffice-words",			IE_MIME_SDW		},
-	{ "application/x-starwriter",				IE_MIME_SDW		},
-	{ "application/x-vnd.AbiSource.AbiWord",	IE_MIME_AbiWord	},
-	{ "image/bmp",								IE_MIME_BMP		},
-	{ "image/svg",								IE_MIME_SVG		},
-	{ "image/svg+xml",							IE_MIME_SVG		},
-	{ "text/abiword",							IE_MIME_AbiWord	},
-	{ "text/doc",								IE_MIME_MSWord	}, // or is it? [TODO: check!]
-	{ "application/mathxml+xml",				IE_MIME_MathML	},
-	{ "text/rtf",								IE_MIME_RTF		},
-	{ "text/xml",								IE_MIME_XML		}, // but what is this?
-	{ "text/x-abiword",							IE_MIME_AbiWord	}
-};
-const UT_uint32 s_list_count = (UT_uint32) (sizeof s_list / sizeof (struct AliasMIME));
 
-/* TODO: optimize this...
+/* TODO rob: do away with this
  */
 const char * IE_FileInfo::mapAlias (const char * alias) // may return alias itself
 {
-	const char * match = alias;
-
-	if ( match == 0) return match; // hmm...
-	if (*match == 0) return match; // hmm...
-
-	for (UT_uint32 i = 0; i < s_list_count; i++)
-		if (UT_strcmp (s_list[i].alias, alias) == 0)
-			{
-				match = s_list[i].equiv;
-				break;
-			}
-	return match;
+	return alias;
 }

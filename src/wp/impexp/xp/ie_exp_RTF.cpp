@@ -1,3 +1,5 @@
+/* -*- mode: C++; tab-width: 4; c-basic-offset: 4; -*- */
+
 /* AbiWord
  * Copyright (C) 1998 AbiSource, Inc.
  *
@@ -26,6 +28,7 @@
 #include "ut_vector.h"
 #include "ut_endian.h"
 #include "pt_Types.h"
+#include "ie_impexp_RTF.h"
 #include "ie_exp_RTF.h"
 #include "pd_Document.h"
 #include "pp_AttrProp.h"
@@ -95,7 +98,7 @@ IE_Exp_RTF_Sniffer::IE_Exp_RTF_Sniffer ()
 
 UT_Confidence_t IE_Exp_RTF_Sniffer::supportsMIME (const char * szMIME)
 {
-	if (UT_strcmp (szMIME, IE_MIME_RTF) == 0)
+	if (UT_strcmp (szMIME, IE_MIMETYPE_RTF) == 0)
 		{
 			return UT_CONFIDENCE_GOOD;
 		}

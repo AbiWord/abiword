@@ -1,3 +1,5 @@
+/* -*- mode: C++; tab-width: 4; c-basic-offset: 4; -*- */
+
 /* AbiWord
  * Copyright (C) 1998 AbiSource, Inc.
  * 
@@ -31,12 +33,14 @@
 /*****************************************************************/
 /*****************************************************************/
 
-static UT_GenericVector<IE_ImpGraphicSniffer*> s_impGraphicTable ( 6 );
+static UT_GenericVector<IE_ImpGraphicSniffer*> 	IE_IMP_GraphicSniffers (6);
+static std::vector<const std::string *> 		IE_IMP_GraphicMimeTypes;
+static std::vector<const std::string *> 		IE_IMP_GraphicMimeClasses;
 
 void IE_ImpGraphic::registerImporter (IE_ImpGraphicSniffer * s)
 {
 	UT_uint32 ndx = 0;
-	UT_Error err = s_impGraphicTable.addItem (s, &ndx);
+	UT_Error err = IE_IMP_GraphicSniffers.addItem (s, &ndx);
 
 	UT_return_if_fail(err == UT_OK);
 	UT_return_if_fail(ndx >= 0);
@@ -50,15 +54,15 @@ void IE_ImpGraphic::unregisterImporter (IE_ImpGraphicSniffer * s)
 
 	UT_return_if_fail(ndx >= 0);
 
-	s_impGraphicTable.deleteNthItem (ndx-1);
+	IE_IMP_GraphicSniffers.deleteNthItem (ndx-1);
 
 	// Refactor the indexes
 	IE_ImpGraphicSniffer * pSniffer = 0;
-	UT_uint32 size  = s_impGraphicTable.size();
+	UT_uint32 size  = IE_IMP_GraphicSniffers.size();
 	UT_uint32 i     = 0;
 	for( i = ndx-1; i < size; i++)
 	{
-		pSniffer = s_impGraphicTable.getNthItem(i);
+		pSniffer = IE_IMP_GraphicSniffers.getNthItem(i);
 		if (pSniffer)
         	pSniffer->setType(i+1);
 	}
@@ -67,14 +71,62 @@ void IE_ImpGraphic::unregisterImporter (IE_ImpGraphicSniffer * s)
 void IE_ImpGraphic::unregisterAllImporters ()
 {
 	IE_ImpGraphicSniffer * pSniffer = 0;
-	UT_uint32 size = s_impGraphicTable.size();
+	UT_uint32 size = IE_IMP_GraphicSniffers.size();
 
 	for (UT_uint32 i = 0; i < size; i++)
 	{
-		pSniffer = s_impGraphicTable.getNthItem(i);
+		pSniffer = IE_IMP_GraphicSniffers.getNthItem(i);
 		if (pSniffer)
 			pSniffer->unref();
 	}
+}
+
+/*!
+ * Get supported mimetypes by builtin- and plugin-filters.
+ */
+std::vector<const std::string *> IE_ImpGraphic::getSupportedMimeTypes ()
+{
+	if (IE_IMP_GraphicMimeTypes.size() > 0) {
+		return IE_IMP_GraphicMimeTypes;
+	}
+
+	const IE_MimeConfidence *mc;
+	for (guint i = 0; i < IE_IMP_GraphicSniffers.size(); i++) {
+		mc = IE_IMP_GraphicSniffers.getNthItem(i)->getMimeConfidence();
+		while (mc && mc->match) {
+			if (mc->match == IE_MIME_MATCH_FULL) {
+				IE_IMP_GraphicMimeTypes.push_back(new std::string(mc->mimetype));
+			}
+			mc++;
+		}
+	}
+
+	/* TODO rob: unique */
+	return IE_IMP_GraphicMimeTypes;
+}
+
+/*!
+ * Get supported mime classes by builtin- and plugin-filters.
+ */
+std::vector<const std::string *> IE_ImpGraphic::getSupportedMimeClasses ()
+{
+	if (IE_IMP_GraphicMimeClasses.size() > 0) {
+		return IE_IMP_GraphicMimeClasses;
+	}
+
+	const IE_MimeConfidence *mc;
+	for (guint i = 0; i < IE_IMP_GraphicSniffers.size(); i++) {
+		mc = IE_IMP_GraphicSniffers.getNthItem(i)->getMimeConfidence();
+		while (mc && mc->match) {
+			if (mc->match == IE_MIME_MATCH_CLASS) {
+				IE_IMP_GraphicMimeClasses.push_back(new std::string(mc->mimetype));
+			}
+			mc++;
+		}
+	}
+
+	/* TODO rob: unique */
+	return IE_IMP_GraphicMimeClasses;
 }
 
 /*****************************************************************/
@@ -95,8 +147,19 @@ IEGraphicFileType IE_ImpGraphic::fileTypeForSuffix(const char * szSuffix)
 
 	for (UT_uint32 k=0; k < nrElements; k++)
 	{
-		IE_ImpGraphicSniffer * s = s_impGraphicTable.getNthItem(k);
-		UT_Confidence_t confidence = s->recognizeSuffix(szSuffix);
+		IE_ImpGraphicSniffer * s = IE_IMP_GraphicSniffers.getNthItem(k);
+
+		const IE_SuffixConfidence * sc = s->getSuffixConfidence();
+		UT_Confidence_t confidence = UT_CONFIDENCE_ZILCH;
+		while (sc && sc->suffix) {
+			/* suffixes do not have a leading '.' */
+			if (0 == UT_stricmp(sc->suffix, szSuffix+1) && 
+				sc->confidence > confidence) {
+				confidence = sc->confidence;
+			}
+			sc++;
+		}
+
 		if ((confidence > 0) && ((IEGFT_Unknown == best) || (confidence >= best_confidence)))
 		{
 		        best_confidence = confidence;
@@ -130,7 +193,7 @@ IEGraphicFileType IE_ImpGraphic::fileTypeForContents(const char * szBuf, UT_uint
 
 	for (UT_uint32 k=0; k < nrElements; k++)
 	{
-		IE_ImpGraphicSniffer * s = s_impGraphicTable.getNthItem (k);
+		IE_ImpGraphicSniffer * s = IE_IMP_GraphicSniffers.getNthItem (k);
 		UT_Confidence_t confidence = s->recognizeContents(szBuf, iNumbytes);
 		if ((confidence > 0) && ((IEGFT_Unknown == best) || (confidence >= best_confidence)))
 		{
@@ -161,7 +224,7 @@ bool IE_ImpGraphic::enumerateDlgLabels(UT_uint32 ndx,
 	UT_uint32 nrElements = getImporterCount();
 	if (ndx < nrElements)
 	{
-		IE_ImpGraphicSniffer * s = s_impGraphicTable.getNthItem (ndx);
+		IE_ImpGraphicSniffer * s = IE_IMP_GraphicSniffers.getNthItem (ndx);
 		return s->getDlgLabels(pszDesc,pszSuffixList,ft);
 	}
 
@@ -170,7 +233,7 @@ bool IE_ImpGraphic::enumerateDlgLabels(UT_uint32 ndx,
 
 UT_uint32 IE_ImpGraphic::getImporterCount(void)
 {
-	return s_impGraphicTable.size ();
+	return IE_IMP_GraphicSniffers.size ();
 }
 
 UT_Error IE_ImpGraphic::constructImporterWithDescription(const char * szDesc, IE_ImpGraphic ** ppieg)
@@ -180,7 +243,7 @@ UT_Error IE_ImpGraphic::constructImporterWithDescription(const char * szDesc, IE
 
 	UT_Error err = UT_ERROR;
 
-	UT_uint32 count = s_impGraphicTable.size();
+	UT_uint32 count = IE_IMP_GraphicSniffers.size();
 
 	for (UT_uint32 i = 0; i < count; i++)
 	{
@@ -189,7 +252,7 @@ UT_Error IE_ImpGraphic::constructImporterWithDescription(const char * szDesc, IE
 
 		IEGraphicFileType ft = 0;
 
-		IE_ImpGraphicSniffer * s = s_impGraphicTable.getNthItem(i);
+		IE_ImpGraphicSniffer * s = IE_IMP_GraphicSniffers.getNthItem(i);
 
 		if (s->getDlgLabels(&szDescription, &szSuffixList, &ft))
 			if (szDescription)
@@ -222,9 +285,9 @@ UT_Error IE_ImpGraphic:: constructImporter(const UT_ByteBuf * bytes,
 	}
 
 	// use the importer for the specified file type
-	for (UT_uint32 k=0; (k < s_impGraphicTable.size()); k++)
+	for (UT_uint32 k=0; (k < IE_IMP_GraphicSniffers.size()); k++)
 	{
-		IE_ImpGraphicSniffer * s = s_impGraphicTable[k];
+		IE_ImpGraphicSniffer * s = IE_IMP_GraphicSniffers[k];
 		if (s->supportsType(ft))
 			return s->constructImporter(ppieg);
 	}
@@ -249,7 +312,7 @@ UT_Error IE_ImpGraphic::constructImporter(const char * szFilename,
   // when finished with it.
   UT_return_val_if_fail(ppieg, UT_ERROR);
   
-  UT_uint32 nrElements = s_impGraphicTable.size();
+  UT_uint32 nrElements = IE_IMP_GraphicSniffers.size();
   
   // no filter will support IEGFT_Unknown, so we detect from the
   // suffix of the filename and the contents of the file, the real 
@@ -271,7 +334,7 @@ UT_Error IE_ImpGraphic::constructImporter(const char * szFilename,
       
       for (UT_uint32 k=0; k < nrElements; k++)
 	{
-	  IE_ImpGraphicSniffer * s = s_impGraphicTable[k];
+	  IE_ImpGraphicSniffer * s = IE_IMP_GraphicSniffers[k];
 	  
 	  UT_Confidence_t content_confidence = UT_CONFIDENCE_ZILCH;
 	  UT_Confidence_t suffix_confidence = UT_CONFIDENCE_ZILCH;
@@ -279,10 +342,19 @@ UT_Error IE_ImpGraphic::constructImporter(const char * szFilename,
 	  if ( iNumbytes > 0 )
 	    content_confidence = s->recognizeContents(szBuf, iNumbytes);
 	  
-	  const char * suffix = UT_pathSuffix(szFilename) ;
-	  if ( suffix != NULL )
-	    suffix_confidence = s->recognizeSuffix(UT_pathSuffix(szFilename));
-	  
+	  const char * suffix = UT_pathSuffix(szFilename);
+	    if (suffix) {
+			const IE_SuffixConfidence * sc = s->getSuffixConfidence();
+			while (sc && sc->suffix) {
+				/* suffixes do not have a leading '.' */
+				if (0 == UT_stricmp(sc->suffix, suffix+1) && 
+					sc->confidence > suffix_confidence) {
+					suffix_confidence = sc->confidence;
+				}
+				sc++;
+			}
+		}
+
 	  UT_Confidence_t confidence = s_condfidence_heuristic ( content_confidence, 
 								 suffix_confidence ) ;
 	  
@@ -297,7 +369,7 @@ UT_Error IE_ImpGraphic::constructImporter(const char * szFilename,
   // use the importer for the specified file type
   for (UT_uint32 k=0; (k < nrElements); k++)
     {
-      IE_ImpGraphicSniffer * s = s_impGraphicTable[k];
+      IE_ImpGraphicSniffer * s = IE_IMP_GraphicSniffers[k];
       if (s->supportsType(ft))
 	return s->constructImporter(ppieg);
     }

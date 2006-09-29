@@ -1,4 +1,5 @@
 /* -*- c-basic-offset: 4; tab-width: 4; indent-tabs-mode: t -*- */
+
 /* AbiWord
  * Copyright (C) 1999 AbiSource, Inc.
  * Copyright (C) 2003 Tomas Frydrych <tomas@frydrych.uklinux.net>
@@ -43,6 +44,7 @@
 #include "ut_string_class.h"
 #include "ut_units.h"
 #include "ie_types.h"
+#include "ie_impexp_RTF.h"
 #include "ie_imp_RTF.h"
 #include "pd_Document.h"
 #include "xap_EncodingManager.h"
@@ -105,13 +107,31 @@ IE_Imp_RTF_Sniffer::IE_Imp_RTF_Sniffer ()
 	// 
 }
 
-UT_Confidence_t IE_Imp_RTF_Sniffer::supportsMIME (const char * szMIME)
+// supported suffixes
+static IE_SuffixConfidence IE_Imp_RTF_Sniffer__SuffixConfidence[] = {
+	{ "rtf", 	UT_CONFIDENCE_PERFECT 	},
+	{ "doc", 	UT_CONFIDENCE_SOSO 		},
+	{ NULL, 	UT_CONFIDENCE_ZILCH 	}
+};
+
+const IE_SuffixConfidence * IE_Imp_RTF_Sniffer::getSuffixConfidence ()
 {
-	if (UT_strcmp (IE_FileInfo::mapAlias (szMIME), IE_MIME_RTF) == 0)
-		{
-			return UT_CONFIDENCE_GOOD;
-		}
-	return UT_CONFIDENCE_ZILCH;
+	return IE_Imp_RTF_Sniffer__SuffixConfidence;
+}
+
+
+// supported mimetypes
+static IE_MimeConfidence IE_Imp_RTF_Sniffer__MimeConfidence[] = {
+	{ IE_MIME_MATCH_FULL, 	IE_MIMETYPE_RTF, 		UT_CONFIDENCE_GOOD 	}, 
+	{ IE_MIME_MATCH_FULL, 	"application/richtext",	UT_CONFIDENCE_GOOD 	}, 
+	{ IE_MIME_MATCH_FULL, 	"text/richtext", 		UT_CONFIDENCE_GOOD 	}, 
+	{ IE_MIME_MATCH_FULL, 	"text/rtf", 			UT_CONFIDENCE_GOOD 	}, 
+	{ IE_MIME_MATCH_BOGUS, 	NULL, 					UT_CONFIDENCE_ZILCH }
+};
+
+const IE_MimeConfidence * IE_Imp_RTF_Sniffer::getMimeConfidence ()
+{
+	return IE_Imp_RTF_Sniffer__MimeConfidence;
 }
 
 UT_Confidence_t IE_Imp_RTF_Sniffer::recognizeContents(const char * szBuf,
@@ -126,19 +146,6 @@ UT_Confidence_t IE_Imp_RTF_Sniffer::recognizeContents(const char * szBuf,
 		return(UT_CONFIDENCE_PERFECT) ;
 	}
 	return(UT_CONFIDENCE_ZILCH);
-}
-
-UT_Confidence_t IE_Imp_RTF_Sniffer::recognizeSuffix(const char * szSuffix)
-{
-	if (!UT_stricmp(szSuffix, ".rtf"))
-	{
-		return UT_CONFIDENCE_PERFECT;
-	}
-	if (!UT_stricmp(szSuffix, ".doc"))
-	{
-		return UT_CONFIDENCE_SOSO;
-	}
-	return UT_CONFIDENCE_ZILCH;
 }
 
 UT_Error IE_Imp_RTF_Sniffer::constructImporter(PD_Document * pDocument,

@@ -1,3 +1,5 @@
+/* -*- mode: C++; tab-width: 4; c-basic-offset: 4; -*- */
+
 /* AbiWord
  * Copyright (C) 2000 AbiSource, Inc.
  * 
@@ -26,9 +28,9 @@
 class IE_ImpGraphicSVG_Sniffer : public IE_ImpGraphicSniffer
 {
  public:
+	virtual const IE_SuffixConfidence * getSuffixConfidence ();
 	virtual UT_Confidence_t recognizeContents (const char * szBuf, 
 					UT_uint32 iNumbytes);
-	virtual UT_Confidence_t recognizeSuffix (const char * szSuffix);
 	virtual bool getDlgLabels (const char ** szDesc,
 				   const char ** szSuffixList,
 				   IEGraphicFileType * ft);

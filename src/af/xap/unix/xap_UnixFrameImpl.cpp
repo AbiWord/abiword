@@ -32,6 +32,7 @@
 #include <unistd.h>
 #include <sys/stat.h>
 #include <string.h>
+#include <vector>
 
 #include "ap_Features.h"
 
@@ -82,87 +83,67 @@ enum {
 	TARGET_UNKNOWN
 };
 
-// TODO rob: get document mimetypes from installed imp filters
-// that would require the filters do declare one or more supported mimetypes
-static const GtkTargetEntry static_drag_types[] =
-	{
- 		{"text/uri-list", 					0, TARGET_URI_LIST},
- 		{"application/rtf",					0, TARGET_DOCUMENT},
- 		{"text/richtext", 					0, TARGET_DOCUMENT},
- 		{"text/rtf", 						0, TARGET_DOCUMENT},
- 		{"application/msword", 				0, TARGET_DOCUMENT},
- 		{"application/vnd.ms-word", 		0, TARGET_DOCUMENT},
- 		{"application/vnd.sun.xml.writer", 	0, TARGET_DOCUMENT},
- 		{"application/x-applix-word", 		0, TARGET_DOCUMENT},
- 		{"application/x-palm-database", 	0, TARGET_DOCUMENT},
- 		{"application/vnd.palm", 			0, TARGET_DOCUMENT},
-//		{"text/plain", 						0, TARGET_DOCUMENT},
- 		{"text/abiword", 					0, TARGET_DOCUMENT},
- 		{"application/x-abiword", 			0, TARGET_DOCUMENT},
- 		{"text/xml", 						0, TARGET_DOCUMENT},
- 		{"text/vnd.wap.wml", 				0, TARGET_DOCUMENT},
-		{"text/html", 						0, TARGET_URL}, // hack
-		{"text/html+xml", 					0, TARGET_URL}, // hack
-		{"_NETSCAPE_URL", 					0, TARGET_URL}
-	};
+static const GtkTargetEntry static_drag_types[] = {
+	{"text/uri-list", 	0, TARGET_URI_LIST},
+	{"text/html", 		0, TARGET_URL}, // hack
+	{"text/html+xml", 	0, TARGET_URL}, // hack
+	{"_NETSCAPE_URL", 	0, TARGET_URL}
+};
 
 static GtkTargetEntry *drag_types = NULL;
 static guint 		   n_drag_types = 0;
 
 /*!
- * Query gdk-pixbuf for image formats and set up the accepted dnd mime formats.
+ * Build targets table from supported mime types.
  */
 static void
 s_init_drag_types (void)
 {
-	GSList 		 	  *format_list = gdk_pixbuf_get_formats ();
-	GSList 		 	  *list_item;
-	GSList 		 	  *tmp;
-	GdkPixbufFormat   *format;
-	gchar 			**mime_types;
-	gsize			  idx;
+	std::vector<const std::string *> mimeTypes;
+	std::vector<const std::string *>::iterator iter;
+	std::vector<const std::string *>::iterator end;
+	guint idx;
 
 	UT_ASSERT(drag_types == NULL);
 
-	// dry run to count entries
-	list_item = format_list;
-	n_drag_types = NrElements (static_drag_types);
-	while (list_item) {
-		format = (GdkPixbufFormat *) list_item->data;
-		mime_types = gdk_pixbuf_format_get_mime_types (format);
-		while (*mime_types) {
-			n_drag_types++;
-			mime_types++;
-		}
-		list_item = list_item->next;
-	}
+	n_drag_types = G_N_ELEMENTS(static_drag_types) + 
+				   IE_Imp::getSupportedMimeTypes().size() + 
+				   IE_ImpGraphic::getSupportedMimeTypes().size();
 
 	drag_types = new GtkTargetEntry[n_drag_types];
 
 	// static types
-	for (idx = 0; idx < NrElements (static_drag_types); idx++) {
+	for (idx = 0; idx < G_N_ELEMENTS(static_drag_types); idx++) {
 		drag_types[idx].target = static_drag_types[idx].target;
 		drag_types[idx].flags = static_drag_types[idx].flags;
 		drag_types[idx].info = static_drag_types[idx].info;
 	}
 
-	// dynamic types from gdk-pixbuf
-	list_item = format_list;
-	while (list_item) {
-		UT_ASSERT (idx < n_drag_types);
-		format = (GdkPixbufFormat *) list_item->data;
-		mime_types = gdk_pixbuf_format_get_mime_types (format);
-		while (*mime_types) {
-			drag_types[idx].target = *mime_types;
-			drag_types[idx].flags = 0;
-			drag_types[idx].info = TARGET_IMAGE;
-			idx++;
-			mime_types++;
-		}
-		tmp = list_item;
-		list_item = list_item->next;
-		g_slist_free1 (tmp);
+	// document types
+	mimeTypes = IE_Imp::getSupportedMimeTypes();
+	iter = mimeTypes.begin();
+	end = mimeTypes.end();
+	while (iter != end) {
+		drag_types[idx].target = const_cast<gchar *>((*iter)->c_str());
+		drag_types[idx].flags = 0;
+		drag_types[idx].info = TARGET_DOCUMENT;
+		iter++;
+		idx++;
 	}
+	
+	// image types
+	mimeTypes = IE_ImpGraphic::getSupportedMimeTypes();
+	iter = mimeTypes.begin();
+	end = mimeTypes.end();
+	while (iter != end) {
+		drag_types[idx].target = const_cast<gchar *>((*iter)->c_str());
+		drag_types[idx].flags = 0;
+		drag_types[idx].info = TARGET_IMAGE;
+		iter++;
+		idx++;
+	}
+
+	UT_ASSERT(idx < n_drag_types);
 }
 
 static int

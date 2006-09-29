@@ -55,6 +55,7 @@
 
 #include "fp_PageSize.h"
 
+#include "ie_impexp_AbiWord.h"
 #include "ie_exp_AbiWord_1.h"
 
 #include "ap_Prefs.h"
@@ -73,7 +74,7 @@ IE_Exp_AbiWord_1_Sniffer::IE_Exp_AbiWord_1_Sniffer ()
 
 UT_Confidence_t IE_Exp_AbiWord_1_Sniffer::supportsMIME (const char * szMIME)
 {
-	if (UT_strcmp (szMIME, IE_MIME_AbiWord) == 0)
+	if (UT_strcmp (szMIME, IE_MIMETYPE_AbiWord) == 0)
 		{
 			return UT_CONFIDENCE_GOOD;
 		}
@@ -1330,7 +1331,7 @@ void s_AbiWord_1_Listener::_handleMetaData(void)
   // set all of the important meta-data props
 
   m_pDocument->setMetaDataProp ( PD_META_KEY_GENERATOR, UT_UTF8String("AbiWord") ) ;
-  m_pDocument->setMetaDataProp ( PD_META_KEY_FORMAT,    UT_UTF8String(IE_MIME_AbiWord) ) ;
+  m_pDocument->setMetaDataProp ( PD_META_KEY_FORMAT,    UT_UTF8String(IE_MIMETYPE_AbiWord) ) ;
 
 #if 0
   // get the saved time, remove trailing newline

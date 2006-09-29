@@ -68,6 +68,7 @@
 
 #include "fl_AutoNum.h"
 
+#include "ie_types.h"
 #include "ie_TOC.h"
 #include "ie_impexp_HTML.h"
 #include "ie_exp_HTML.h"
@@ -80,16 +81,6 @@
 
 #ifdef HTML_TABLES_SUPPORTED
 #include "ie_Table.h"
-#endif
-
-#ifndef IE_MIME_XHTML
-#define IE_MIME_XHTML		"application/xhtml+xml"
-#endif
-#ifndef IE_MIME_HTML
-#define IE_MIME_HTML		"text/html"
-#endif
-#ifndef IE_MIME_CSS
-#define IE_MIME_CSS			"text/css"
 #endif
 
 #define MYEOL "\n"
@@ -1256,9 +1247,9 @@ void s_HTML_Listener::multiHeader (const UT_UTF8String & title)
 	m_utf8_1 += "\";" MYEOL "\ttype=\"";
 
 	if (get_HTML4 ())
-		m_utf8_1 += IE_MIME_HTML;
+		m_utf8_1 += IE_MIMETYPE_HTML;
 	else
-		m_utf8_1 += IE_MIME_XHTML;
+		m_utf8_1 += IE_MIMETYPE_XHTML;
 
 	m_utf8_1 += "\"";
 
@@ -1266,9 +1257,9 @@ void s_HTML_Listener::multiHeader (const UT_UTF8String & title)
 	multiBoundary ();
 
 	if (get_HTML4 ())
-		m_utf8_1 = IE_MIME_HTML;
+		m_utf8_1 = IE_MIMETYPE_HTML;
 	else
-		m_utf8_1 = IE_MIME_XHTML;
+		m_utf8_1 = IE_MIMETYPE_XHTML;
 
 	m_utf8_1 += ";charset=\"UTF-8\"";
 
@@ -1536,7 +1527,7 @@ bool s_HTML_Listener::_openStyleSheet (UT_UTF8String & css_path)
 	{
 		multiBoundary ();
 
-		m_utf8_1  = IE_MIME_CSS;
+		m_utf8_1  = IE_MIMETYPE_CSS;
 		m_utf8_1 += ";charset=\"UTF-8\"";
 
 		multiField ("Content-Type",     m_utf8_1);

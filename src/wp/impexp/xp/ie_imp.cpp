@@ -38,7 +38,9 @@
 #include "ut_string_class.h"
 
 static const UT_uint32 importer_size_guess = 20;
-static UT_GenericVector<IE_ImpSniffer *> m_sniffers (importer_size_guess);
+static UT_GenericVector<IE_ImpSniffer *> 	IE_IMP_Sniffers (importer_size_guess);
+static std::vector<const std::string *> 	IE_IMP_MimeTypes;
+static std::vector<const std::string *> 	IE_IMP_MimeClasses;
 
 #include "ie_imp_XML.h"
 IE_Imp_XML * abi_ie_imp_xml_instance = 0;
@@ -226,7 +228,7 @@ IE_ImpSniffer::~IE_ImpSniffer()
 void IE_Imp::registerImporter (IE_ImpSniffer * s)
 {
 	UT_uint32 ndx = 0;
-	UT_Error err = m_sniffers.addItem (s, &ndx);
+	UT_Error err = IE_IMP_Sniffers.addItem (s, &ndx);
 
 	UT_return_if_fail(err == UT_OK);
 	UT_return_if_fail(ndx >= 0);
@@ -240,15 +242,15 @@ void IE_Imp::unregisterImporter (IE_ImpSniffer * s)
 
 	UT_return_if_fail(ndx >= 0);
 
-	m_sniffers.deleteNthItem (ndx-1);
+	IE_IMP_Sniffers.deleteNthItem (ndx-1);
 
 	// Refactor the indexes
 	IE_ImpSniffer * pSniffer = 0;
-	UT_uint32 size  = m_sniffers.size();
+	UT_uint32 size  = IE_IMP_Sniffers.size();
 	UT_uint32 i     = 0;
 	for( i = ndx-1; i < size; i++)
 	{
-		pSniffer = m_sniffers.getNthItem(i);
+		pSniffer = IE_IMP_Sniffers.getNthItem(i);
 		if (pSniffer)
         	pSniffer->setFileType(i+1);
 	}
@@ -257,14 +259,62 @@ void IE_Imp::unregisterImporter (IE_ImpSniffer * s)
 void IE_Imp::unregisterAllImporters ()
 {
 	IE_ImpSniffer * pSniffer = 0;
-	UT_uint32 size = m_sniffers.size();
+	UT_uint32 size = IE_IMP_Sniffers.size();
 
 	for (UT_uint32 i = 0; i < size; i++)
 	{
-		pSniffer = m_sniffers.getNthItem(i);
+		pSniffer = IE_IMP_Sniffers.getNthItem(i);
 		if (pSniffer)
 			pSniffer->unref();
 	}
+}
+
+/*!
+ * Get supported mimetypes by builtin- and plugin-filters.
+ */
+std::vector<const std::string *> IE_Imp::getSupportedMimeTypes ()
+{
+	if (IE_IMP_MimeTypes.size() > 0) {
+		return IE_IMP_MimeTypes;
+	}
+
+	const IE_MimeConfidence *mc;
+	for (guint i = 0; i < IE_IMP_Sniffers.size(); i++) {
+		mc = IE_IMP_Sniffers.getNthItem(i)->getMimeConfidence();
+		while (mc && mc->match) {
+			if (mc->match == IE_MIME_MATCH_FULL) {
+				IE_IMP_MimeTypes.push_back(new std::string(mc->mimetype));
+			}
+			mc++;
+		}
+	}
+
+	/* TODO rob: unique */
+	return IE_IMP_MimeTypes;
+}
+
+/*!
+ * Get supported mime classes by builtin- and plugin-filters.
+ */
+std::vector<const std::string *> IE_Imp::getSupportedMimeClasses ()
+{
+	if (IE_IMP_MimeClasses.size() > 0) {
+		return IE_IMP_MimeClasses;
+	}
+
+	const IE_MimeConfidence *mc;
+	for (guint i = 0; i < IE_IMP_Sniffers.size(); i++) {
+		mc = IE_IMP_Sniffers.getNthItem(i)->getMimeConfidence();
+		while (mc && mc->match) {
+			if (mc->match == IE_MIME_MATCH_CLASS) {
+				IE_IMP_MimeClasses.push_back(new std::string(mc->mimetype));
+			}
+			mc++;
+		}
+	}
+
+	/* TODO rob: unique */
+	return IE_IMP_MimeClasses;
 }
 
 /*****************************************************************/
@@ -282,7 +332,7 @@ IEFileType IE_Imp::fileTypeForContents(const char * szBuf, UT_uint32 iNumbytes)
 
 	for (UT_uint32 k=0; k < nrElements; k++)
 	{
-		IE_ImpSniffer * s = m_sniffers.getNthItem (k);
+		IE_ImpSniffer * s = IE_IMP_Sniffers.getNthItem (k);
 		UT_Confidence_t confidence = s->recognizeContents(szBuf, iNumbytes);
 		if ((confidence > 0) && ((IEFT_Unknown == best) || (confidence >= best_confidence)))
 		{
@@ -333,12 +383,20 @@ IEFileType IE_Imp::fileTypeForSuffix(const char * szSuffix)
 
 	for (UT_uint32 k=0; k < nrElements; k++)
 	{
-		IE_ImpSniffer * s = m_sniffers.getNthItem(k);
-
-		UT_Confidence_t confidence = s->recognizeSuffix(szSuffix);
+		IE_ImpSniffer * s = IE_IMP_Sniffers.getNthItem(k);
+		const IE_SuffixConfidence * sc = s->getSuffixConfidence();
+		UT_Confidence_t confidence = UT_CONFIDENCE_ZILCH;
+		while (sc && sc->suffix) {
+			/* suffixes do not have a leading '.' */
+			if (0 == UT_stricmp(sc->suffix, szSuffix+1) && 
+				sc->confidence > confidence) {
+				confidence = sc->confidence;
+			}
+			sc++;
+		}
 		if ((confidence > 0) && ((IEFT_Unknown == best) || (confidence >= best_confidence)))
 		  {
-		        best_confidence = confidence;
+			best_confidence = confidence;
 			for (UT_sint32 a = 0; a < static_cast<int>(nrElements); a++)
 			{
 				if (s->supportsFileType(static_cast<IEFileType>(a+1)))
@@ -378,7 +436,7 @@ IEFileType IE_Imp::fileTypeForDescription(const char * szDescription)
 
 	for (UT_uint32 k=0; k < nrElements; k++)
 	{
-		IE_ImpSniffer * pSniffer = static_cast<IE_ImpSniffer *>(m_sniffers.getNthItem(k));
+		IE_ImpSniffer * pSniffer = static_cast<IE_ImpSniffer *>(IE_IMP_Sniffers.getNthItem(k));
 
 		const char * szDummy;
 		const char * szDescription2 = 0;
@@ -446,7 +504,7 @@ IE_ImpSniffer * IE_Imp::snifferForFileType(IEFileType ieft)
 
 	for (UT_uint32 k=0; k < nrElements; k++)
 	{
-		IE_ImpSniffer * s = m_sniffers.getNthItem(k);
+		IE_ImpSniffer * s = IE_IMP_Sniffers.getNthItem(k);
 		if (s->supportsFileType(ieft))
 			return s;
 	}
@@ -559,7 +617,7 @@ UT_Error IE_Imp::constructImporter(PD_Document * pDocument,
 
 		for (UT_uint32 k=0; k < nrElements; k++)
 		  {
-		    IE_ImpSniffer * s = m_sniffers.getNthItem (k);
+		    IE_ImpSniffer * s = IE_IMP_Sniffers.getNthItem (k);
 
 		    UT_Confidence_t content_confidence = UT_CONFIDENCE_ZILCH;
 		    UT_Confidence_t suffix_confidence = UT_CONFIDENCE_ZILCH;
@@ -568,11 +626,18 @@ UT_Error IE_Imp::constructImporter(PD_Document * pDocument,
 		      content_confidence = s->recognizeContents(szBuf, iNumbytes);
 		    
 		    const char * suffix = UT_pathSuffix(szURI) ;
-		    if ( suffix != NULL )
-				{
-					suffix_confidence = s->recognizeSuffix(suffix);
+		    if (suffix) {
+				const IE_SuffixConfidence * sc = s->getSuffixConfidence();
+				while (sc && sc->suffix) {
+					/* suffixes do not have a leading '.' */
+					if (0 == UT_stricmp(sc->suffix, suffix+1) && 
+						sc->confidence > suffix_confidence) {
+						suffix_confidence = sc->confidence;
+					}
+					sc++;
 				}
-		    
+			}
+
 		    UT_Confidence_t confidence = s_confidence_heuristic ( content_confidence, 
 																  suffix_confidence ) ;
 		    
@@ -626,7 +691,7 @@ UT_Error IE_Imp::constructImporter(PD_Document * pDocument,
 
 	for (UT_uint32 k=0; k < nrElements; k++)
 	{
-		IE_ImpSniffer * s = m_sniffers.getNthItem (k);
+		IE_ImpSniffer * s = IE_IMP_Sniffers.getNthItem (k);
 		if (s->supportsFileType(ieft))
 			return s->constructImporter(pDocument,ppie);
 	}
@@ -652,7 +717,7 @@ bool IE_Imp::enumerateDlgLabels(UT_uint32 ndx,
 	UT_uint32 nrElements = getImporterCount();
 	if (ndx < nrElements)
 	{
-		IE_ImpSniffer * s = m_sniffers.getNthItem (ndx);
+		IE_ImpSniffer * s = IE_IMP_Sniffers.getNthItem (ndx);
 		return s->getDlgLabels(pszDesc,pszSuffixList,ft);
 	}
 
@@ -661,5 +726,5 @@ bool IE_Imp::enumerateDlgLabels(UT_uint32 ndx,
 
 UT_uint32 IE_Imp::getImporterCount(void)
 {
-	return m_sniffers.size();
+	return IE_IMP_Sniffers.size();
 }

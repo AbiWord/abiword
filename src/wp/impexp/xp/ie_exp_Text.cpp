@@ -1,3 +1,5 @@
+/* -*- mode: C++; tab-width: 4; c-basic-offset: 4; -*- */
+
 /* AbiWord
  * Copyright (C) 1998-2000 AbiSource, Inc.
  * Copyright (C) 2003 Tomas Frydrych <tomas@frydrych.uklinux.net> 
@@ -24,6 +26,7 @@
 #include "ut_bytebuf.h"
 #include "ut_base64.h"
 #include "pt_Types.h"
+#include "ie_impexp_Text.h"
 #include "ie_exp_Text.h"
 #include "fd_Field.h"
 #include "pd_Document.h"
@@ -115,7 +118,7 @@ IE_Exp_Text_Sniffer::~IE_Exp_Text_Sniffer ()
 
 UT_Confidence_t IE_Exp_Text_Sniffer::supportsMIME (const char * szMIME)
 {
-	if (UT_strcmp (szMIME, IE_MIME_Text) == 0)
+	if (UT_strcmp (szMIME, IE_MIMETYPE_Text) == 0)
 		{
 			return UT_CONFIDENCE_GOOD;
 		}

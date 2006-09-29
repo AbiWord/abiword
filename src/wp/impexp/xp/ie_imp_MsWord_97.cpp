@@ -1,3 +1,5 @@
+/* -*- mode: C++; tab-width: 4; c-basic-offset: 4; -*- */
+
 /* AbiWord
  * Copyright (C) 1998-2000 AbiSource, Inc.
  * Copyright (C) 2001 Dom Lachowicz <dominicl@seas.upenn.edu>
@@ -49,6 +51,7 @@
 
 #include "pd_Document.h"
 
+#include "ie_impexp_MsWord_97.h"
 #include "ie_imp_MsWord_97.h"
 #include "ie_impGraphic.h"
 
@@ -649,13 +652,29 @@ IE_Imp_MsWord_97_Sniffer::IE_Imp_MsWord_97_Sniffer ()
 	//
 }
 
-UT_Confidence_t IE_Imp_MsWord_97_Sniffer::supportsMIME (const char * szMIME)
+// supported suffixes
+static IE_SuffixConfidence IE_Imp_MsWord_97_Sniffer__SuffixConfidence[] = {
+	{ "doc", 	UT_CONFIDENCE_PERFECT 	},
+	{ "dot", 	UT_CONFIDENCE_PERFECT 	},
+	{ NULL, 	UT_CONFIDENCE_ZILCH 	}
+};
+
+const IE_SuffixConfidence * IE_Imp_MsWord_97_Sniffer::getSuffixConfidence ()
 {
-	if (UT_strcmp (IE_FileInfo::mapAlias (szMIME), IE_MIME_MSWord) == 0)
-		{
-			return UT_CONFIDENCE_GOOD;
-		}
-	return UT_CONFIDENCE_ZILCH;
+	return IE_Imp_MsWord_97_Sniffer__SuffixConfidence;
+}
+
+// supported mimetypes
+static IE_MimeConfidence IE_Imp_MsWord_97_Sniffer__MimeConfidence[] = {
+	{ IE_MIME_MATCH_FULL, 	IE_MIMETYPE_MSWord, 		UT_CONFIDENCE_GOOD 	},
+	{ IE_MIME_MATCH_FULL, 	"application/vnd.ms-word",	UT_CONFIDENCE_GOOD 	},
+	{ IE_MIME_MATCH_FULL, 	"text/doc", 				UT_CONFIDENCE_GOOD 	}, // or is it? [TODO: check!]
+	{ IE_MIME_MATCH_BOGUS, 	NULL, 						UT_CONFIDENCE_ZILCH }
+};
+
+const IE_MimeConfidence * IE_Imp_MsWord_97_Sniffer::getMimeConfidence ()
+{
+	return IE_Imp_MsWord_97_Sniffer__MimeConfidence;
 }
 
 UT_Confidence_t IE_Imp_MsWord_97_Sniffer::recognizeContents (const char * szBuf,
@@ -741,15 +760,6 @@ UT_Confidence_t IE_Imp_MsWord_97_Sniffer::recognizeContents (const char * szBuf,
 			return UT_CONFIDENCE_POOR;
 		}
 	}
-	return UT_CONFIDENCE_ZILCH;
-}
-
-UT_Confidence_t IE_Imp_MsWord_97_Sniffer::recognizeSuffix (const char * szSuffix)
-{
-	// We recognize both word documents and their template versions
-	if (!UT_stricmp(szSuffix,".doc") ||
-			!UT_stricmp(szSuffix,".dot"))
-	  return UT_CONFIDENCE_PERFECT;
 	return UT_CONFIDENCE_ZILCH;
 }
 

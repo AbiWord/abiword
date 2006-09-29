@@ -1,3 +1,5 @@
+/* -*- mode: C++; tab-width: 4; c-basic-offset: 4; -*- */
+
 /* AbiWord
  * Copyright (C) 1998 AbiSource, Inc.
  * 
@@ -34,11 +36,10 @@ public:
 	IE_Imp_GZipAbiWord_Sniffer();
 	virtual ~IE_Imp_GZipAbiWord_Sniffer() {}
 
-	UT_Confidence_t supportsMIME (const char * szMIME);
-
+	virtual const IE_SuffixConfidence * getSuffixConfidence ();
+	virtual const IE_MimeConfidence * getMimeConfidence ();
 	virtual UT_Confidence_t recognizeContents (const char * szBuf, 
 									UT_uint32 iNumbytes);
-	virtual UT_Confidence_t recognizeSuffix (const char * szSuffix);
 	virtual bool getDlgLabels (const char ** szDesc,
 							   const char ** szSuffixList,
 							   IEFileType * ft);

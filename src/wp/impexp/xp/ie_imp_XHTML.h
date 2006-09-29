@@ -63,11 +63,10 @@ public:
 	IE_Imp_XHTML_Sniffer();
 	virtual ~IE_Imp_XHTML_Sniffer() {}
 
-	UT_Confidence_t supportsMIME (const char * szMIME);
-
+	virtual const IE_SuffixConfidence * getSuffixConfidence ();
+	virtual const IE_MimeConfidence * getMimeConfidence ();
 	virtual UT_Confidence_t recognizeContents (const char * szBuf, 
 									UT_uint32 iNumbytes);
-	virtual UT_Confidence_t recognizeSuffix (const char * szSuffix);
 	virtual bool getDlgLabels (const char ** szDesc,
 							   const char ** szSuffixList,
 							   IEFileType * ft);

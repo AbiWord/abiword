@@ -1,4 +1,5 @@
 /* -*- mode: C++; tab-width: 4; c-basic-offset: 4; -*- */
+
 /* AbiWord
  * Copyright (C) 1998 AbiSource, Inc.
  * 
@@ -32,17 +33,21 @@
 
 #include "ut_go_file.h"
 #include <gsf/gsf-input.h>
+#include <string>
+#include <vector>
 
 class PD_Document;
 class IE_Imp;
 
-// IE_Imp defines the abstract base class for file importers.
-
+/*!
+ * IE_Imp defines the abstract base class for file importers.
+ */
 class ABI_EXPORT IE_ImpSniffer : public UT_AbiObject
 {
 	friend class IE_Imp;
 	
 public:
+
 	virtual ~IE_ImpSniffer();
 	
 	// these you get for free
@@ -58,19 +63,18 @@ public:
 	 */
 	virtual UT_Confidence_t recognizeContents (const char * szBuf, 
 						   UT_uint32 iNumbytes) = 0;
-	/*!
-	 * Return a number in the range [0,255] as to your confidence
-	 * that you recognize the suffix. 0 being the least, 127 being
-	 * so-so, 255 being absolutely sure
-	 */
-	virtual UT_Confidence_t recognizeSuffix (const char * szSuffix) = 0;
 
 	/*!
-	 * Return a number in the range [0,255] as to your confidence
-	 * that you can import this MIME type. 0 being the least, 127 being
-	 * so-so, 255 being absolutely sure
+	 * Return a zero terminated array of IE_SuffixConfidence.
+	 * This deprecates recognizeSuffix().
 	 */
-	virtual UT_Confidence_t supportsMIME (const char * szMIME) { return UT_CONFIDENCE_ZILCH; }
+	virtual const IE_SuffixConfidence * getSuffixConfidence () = 0;
+
+	/*!
+	 * Return a zero terminated array of IE_MimeConfidence.
+	 * This deprecates supportsMIME().
+	 */
+	virtual const IE_MimeConfidence * getMimeConfidence () = 0;
 
 	virtual bool getDlgLabels (const char ** szDesc,
 				   const char ** szSuffixList,
@@ -132,6 +136,8 @@ public:
 	static void registerImporter (IE_ImpSniffer * sniffer);
 	static void unregisterImporter (IE_ImpSniffer * sniffer);
 	static void unregisterAllImporters ();
+	static std::vector<const std::string *> getSupportedMimeTypes ();
+	static std::vector<const std::string *> getSupportedMimeClasses ();
 
 	virtual ~IE_Imp();
 	virtual UT_Error	importFile(const char * szFilename) = 0;

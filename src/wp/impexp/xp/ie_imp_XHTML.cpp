@@ -75,15 +75,31 @@ IE_Imp_XHTML_Sniffer::IE_Imp_XHTML_Sniffer ()
   // 
 }
 
+// supported suffixes
+static IE_SuffixConfidence IE_Imp_XHTML_Sniffer__SuffixConfidence[] = {
+	{ "xhtml", 	UT_CONFIDENCE_PERFECT 	},
+	{ "html", 	UT_CONFIDENCE_GOOD 		},
+	{ "htm", 	UT_CONFIDENCE_GOOD 		},
+	{ NULL, 	UT_CONFIDENCE_ZILCH 	}
+};
+
+const IE_SuffixConfidence * IE_Imp_XHTML_Sniffer::getSuffixConfidence ()
+{
+	return IE_Imp_XHTML_Sniffer__SuffixConfidence;
+}
+
 #ifdef XHTML_NAMED_CONSTRUCTORS
 
-UT_Confidence_t IE_Imp_XHTML_Sniffer::supportsMIME (const char * szMIME)
+// supported mimetypes
+static IE_MimeConfidence IE_Imp_XHTML_Sniffer__MimeConfidence[] = {
+	{ IE_MIME_MATCH_FULL, 	IE_MIMETYPE_XHTML, 		UT_CONFIDENCE_GOOD 	}, 
+	{ IE_MIME_MATCH_FULL, 	"application/xhtml", 	UT_CONFIDENCE_GOOD 	}, 
+	{ IE_MIME_MATCH_BOGUS, 	NULL, 					UT_CONFIDENCE_ZILCH }
+};
+
+const IE_MimeConfidence * IE_Imp_XHTML_Sniffer::getMimeConfidence ()
 {
-  if (UT_strcmp (IE_FileInfo::mapAlias (szMIME), IE_MIME_XHTML) == 0)
-    {
-      return UT_CONFIDENCE_GOOD;
-    }
-  return UT_CONFIDENCE_ZILCH;
+	return IE_Imp_XHTML_Sniffer__MimeConfidence;
 }
 
 #endif /* XHTML_NAMED_CONSTRUCTORS */
@@ -125,15 +141,6 @@ UT_Confidence_t IE_Imp_XHTML_Sniffer::recognizeContents(const char * szBuf,
 		}
 	}
 	return UT_CONFIDENCE_ZILCH;
-}
-
-UT_Confidence_t IE_Imp_XHTML_Sniffer::recognizeSuffix(const char * szSuffix)
-{
-	if (UT_stricmp(szSuffix,".xhtml") == 0)
-		return UT_CONFIDENCE_PERFECT;
-	if ((UT_stricmp(szSuffix,".html") == 0) || (UT_stricmp(szSuffix,".htm") == 0))
-		return UT_CONFIDENCE_GOOD;
-	return UT_CONFIDENCE_ZILCH;    
 }
 
 UT_Error IE_Imp_XHTML_Sniffer::constructImporter(PD_Document * pDocument,
