@@ -39,6 +39,7 @@
 #include "ut_types.h"
 #include "ut_assert.h"
 #include "ut_files.h"
+#include "ut_misc.h"
 #include "ut_sleep.h"
 #include "xap_ViewListener.h"
 #include "xap_UnixApp.h"
@@ -60,20 +61,16 @@
 
 #include "fv_View.h"
 
-#ifdef HAVE_GNOME
-// sorry about the XAP/AP separation breakage, but this is more important
 #include "ie_types.h"
 #include "ie_imp.h"
 #include "ie_impGraphic.h"
 #include "fg_Graphic.h"
 
+#ifdef HAVE_GNOME
 #include <libgnomevfs/gnome-vfs.h>
 #include <libgnomevfs/gnome-vfs-mime-utils.h>
-
 #include "ev_GnomeToolbar.h"
 #endif
-
-#ifdef HAVE_GNOME
 
 enum {
 	TARGET_DOCUMENT,
@@ -83,40 +80,46 @@ enum {
 	TARGET_UNKNOWN
 };
 
-static const GtkTargetEntry static_drag_types[] = {
+static const GtkTargetEntry XAP_UnixFrameImpl__knownDragTypes[] = {
 	{"text/uri-list", 	0, TARGET_URI_LIST},
 	{"text/html", 		0, TARGET_URL}, // hack
 	{"text/html+xml", 	0, TARGET_URL}, // hack
 	{"_NETSCAPE_URL", 	0, TARGET_URL}
 };
 
-static GtkTargetEntry *drag_types = NULL;
-static guint 		   n_drag_types = 0;
+typedef struct {
+	GtkTargetEntry * entries;
+	guint			 count;
+} DragInfo;
 
 /*!
  * Build targets table from supported mime types.
  */
-static void
-s_init_drag_types (void)
+static DragInfo * s_getDragInfo ()
 {
+	static DragInfo dragInfo = { NULL, 0 };
+	bool			isInitialized = FALSE;
+
+	if (isInitialized) {
+		return &dragInfo;
+	}
+
 	std::vector<const std::string *> mimeTypes;
 	std::vector<const std::string *>::iterator iter;
 	std::vector<const std::string *>::iterator end;
 	guint idx;
 
-	UT_ASSERT(drag_types == NULL);
+	dragInfo.count = G_N_ELEMENTS(XAP_UnixFrameImpl__knownDragTypes) + 
+								  IE_Imp::getSupportedMimeTypes().size() + 
+								  IE_ImpGraphic::getSupportedMimeTypes().size();
 
-	n_drag_types = G_N_ELEMENTS(static_drag_types) + 
-				   IE_Imp::getSupportedMimeTypes().size() + 
-				   IE_ImpGraphic::getSupportedMimeTypes().size();
-
-	drag_types = new GtkTargetEntry[n_drag_types];
+	dragInfo.entries = new GtkTargetEntry[dragInfo.count];
 
 	// static types
-	for (idx = 0; idx < G_N_ELEMENTS(static_drag_types); idx++) {
-		drag_types[idx].target = static_drag_types[idx].target;
-		drag_types[idx].flags = static_drag_types[idx].flags;
-		drag_types[idx].info = static_drag_types[idx].info;
+	for (idx = 0; idx < G_N_ELEMENTS(XAP_UnixFrameImpl__knownDragTypes); idx++) {
+		dragInfo.entries[idx].target = XAP_UnixFrameImpl__knownDragTypes[idx].target;
+		dragInfo.entries[idx].flags = XAP_UnixFrameImpl__knownDragTypes[idx].flags;
+		dragInfo.entries[idx].info = XAP_UnixFrameImpl__knownDragTypes[idx].info;
 	}
 
 	// document types
@@ -124,9 +127,9 @@ s_init_drag_types (void)
 	iter = mimeTypes.begin();
 	end = mimeTypes.end();
 	while (iter != end) {
-		drag_types[idx].target = const_cast<gchar *>((*iter)->c_str());
-		drag_types[idx].flags = 0;
-		drag_types[idx].info = TARGET_DOCUMENT;
+		dragInfo.entries[idx].target = const_cast<gchar *>((*iter)->c_str());
+		dragInfo.entries[idx].flags = 0;
+		dragInfo.entries[idx].info = TARGET_DOCUMENT;
 		iter++;
 		idx++;
 	}
@@ -136,147 +139,63 @@ s_init_drag_types (void)
 	iter = mimeTypes.begin();
 	end = mimeTypes.end();
 	while (iter != end) {
-		drag_types[idx].target = const_cast<gchar *>((*iter)->c_str());
-		drag_types[idx].flags = 0;
-		drag_types[idx].info = TARGET_IMAGE;
+		dragInfo.entries[idx].target = const_cast<gchar *>((*iter)->c_str());
+		dragInfo.entries[idx].flags = 0;
+		dragInfo.entries[idx].info = TARGET_IMAGE;
 		iter++;
 		idx++;
 	}
 
-	UT_ASSERT(idx < n_drag_types);
+	UT_ASSERT(idx == dragInfo.count);
+	isInitialized = TRUE;
+
+	return &dragInfo;
 }
 
-static int
-s_mapMimeToUriType (const char * uri)
+static int s_mapMimeToUriType (const char * uri)
 {
 	if (!uri || !strlen(uri))
 		return TARGET_UNKNOWN;
 
-	char * mime = gnome_vfs_get_mime_type (uri);
-	UT_DEBUGMSG(("DOM: mime %s dropped into AbiWord(%s)\n", mime, uri));
-
 	int target = TARGET_UNKNOWN;
 
-	for (size_t i = 0; i < n_drag_types; i++)
-		if (!UT_stricmp (mime, drag_types[i].target)) {
-			target = drag_types[i].info;
+	gchar *mimeType;
+#ifdef HAVE_GNOME
+	mimeType = gnome_vfs_get_mime_type (uri);
+#else
+	const gchar * suffix = UT_pathSuffix(uri);
+	if (suffix) {
+		const gchar *mt = IE_Imp::getMimeTypeForSuffix(suffix);
+		if (!mt) {
+			mt = IE_ImpGraphic::getMimeTypeForSuffix(suffix);
+		}
+		if (mt) {
+			/* we to free that later */
+			mimeType = g_strdup(mt);
+		}
+		else {
+			return target;
+		}
+	}
+	else {
+		return target;
+	}
+#endif
+	UT_DEBUGMSG(("DOM: mimeType %s dropped into AbiWord(%s)\n", mimeType, uri));
+
+	DragInfo * dragInfo = s_getDragInfo();
+	for (size_t i = 0; i < dragInfo->count; i++)
+		if (!UT_stricmp (mimeType, dragInfo->entries[i].target)) {
+			target = dragInfo->entries[i].info;
 			break;
 		}
 	
-	g_free (mime);
+	g_free (mimeType);
 	return target;
 }
 
-static bool
-s_ensure_uri_on_disk (const gchar * uri, UT_UTF8String & outName)
-{
-	GnomeVFSResult    result = GNOME_VFS_OK;
-	GnomeVFSHandle   *handle = NULL;
-	gchar             buffer[1024];
-	GnomeVFSFileSize  bytes_read;
-	GnomeVFSURI 	 *hndl = NULL;	
-	outName = "";
-	hndl = gnome_vfs_uri_new (uri);
-	if (hndl == NULL) 
-		{
-			UT_DEBUGMSG(("DOM: Invalid uri was %s \n", uri));
-			return false;
-		}
-
-	if (gnome_vfs_uri_is_local (hndl)) {
-		char * short_name = gnome_vfs_uri_to_string (hndl, static_cast<GnomeVFSURIHideOptions>(GNOME_VFS_URI_HIDE_USER_NAME | GNOME_VFS_URI_HIDE_PASSWORD |
-													 GNOME_VFS_URI_HIDE_HOST_NAME | GNOME_VFS_URI_HIDE_HOST_PORT |
-													 GNOME_VFS_URI_HIDE_TOPLEVEL_METHOD | GNOME_VFS_URI_HIDE_FRAGMENT_IDENTIFIER));
-		UT_uint32 i = 0;
-		UT_uint32 len = strlen(short_name);
-		UT_UTF8String left = "";
-		while(i < len)
-		{
-			if(short_name[i] != '%')
-			{
-				left += short_name[i];
-				i += 1;
-			}
-			else if(i+2 < len)
-			{
-				char c = 16*(short_name[i+1] - '0') +  short_name[i+2] - '0';
-				left += c;
-				i += 3;
-			}
-			else
-			{
-				left += short_name[i];
-				i +=1;
-			}
-		}
-		outName = left;
-		UT_DEBUGMSG(("short_name %s szTmp %s \n",short_name,outName.utf8_str()));
-		g_free (short_name);
-		gnome_vfs_uri_unref (hndl);
-		return true;
-	}
-
-	char * outCName;
-	int fd = g_file_open_tmp ("XXXXXX", &outCName, NULL);
-	if (fd == -1) {
-		UT_DEBUGMSG(("DOM: no temp dir\n"));
-		gnome_vfs_uri_unref (hndl);
-		return false;
-	}
-	UT_uint32 i = 0;
-	UT_uint32 len = strlen(outCName);
-	UT_UTF8String left = "";
-	while(i < len)
-	{
-		if(outCName[i] != '%')
-		{
-			left += outCName[i];
-			i += 1;
-		}
-		else if(i+2 < len)
-		{
-			char c = 16*(outCName[i+1] - '0') +  outCName[i+2] - '0';
-			left += c;
-			i += 3;
-		}
-		else
-		{
-			left += outCName[i];
-			i +=1;
-		}
-	}
-	outName = left;
-	UT_DEBUGMSG(("outCName %s szTmp %s \n",outCName,outName.utf8_str()));
-	g_free (outCName);
-
-	FILE * onDisk = fdopen (fd, "r");
-	result = gnome_vfs_open_uri (&handle, hndl, GNOME_VFS_OPEN_READ);
-	
-	if(result != GNOME_VFS_OK)
-		{
-			UT_DEBUGMSG(("DOM: couldn't open handle\n"));
-			gnome_vfs_uri_unref (hndl);
-			fclose (onDisk);
-			return false;
-		}
-
-	while (true) {
-		result = gnome_vfs_read (handle, buffer, sizeof(buffer) - 1,
-								 &bytes_read);
-		if(!bytes_read || result != GNOME_VFS_OK) 
-			break;
-		fwrite (buffer, sizeof (char), bytes_read, onDisk);
-	}
-
-	fclose (onDisk);
-	gnome_vfs_close (handle);
-	gnome_vfs_uri_unref (hndl);
-
-	return true;
-}
-
 static void
-s_load_image (const UT_UTF8String & file, XAP_Frame * pFrame, FV_View * pView)
+s_loadImage (const UT_UTF8String & file, XAP_Frame * pFrame, FV_View * pView)
 {
 	IE_ImpGraphic * pIEG = 0;
 	FG_Graphic    * pFG  = 0;
@@ -302,7 +221,7 @@ s_load_image (const UT_UTF8String & file, XAP_Frame * pFrame, FV_View * pView)
 }
 
 static void
-s_load_image (UT_ByteBuf * bytes, XAP_Frame * pFrame, FV_View * pView)
+s_loadImage (UT_ByteBuf * bytes, XAP_Frame * pFrame, FV_View * pView)
 {
 	IE_ImpGraphic * pIEG = 0;
 	FG_Graphic    * pFG  = 0;
@@ -328,7 +247,7 @@ s_load_image (UT_ByteBuf * bytes, XAP_Frame * pFrame, FV_View * pView)
 }
 
 static void
-s_load_document (const UT_UTF8String & file, XAP_Frame * pFrame)
+s_loadDocument (const UT_UTF8String & file, XAP_Frame * pFrame)
 {
 	XAP_Frame * pNewFrame = 0;
 	if (pFrame->isDirty() || pFrame->getFilename() || 
@@ -350,9 +269,9 @@ s_load_document (const UT_UTF8String & file, XAP_Frame * pFrame)
 }
 
 static void
-s_load_uri (XAP_Frame * pFrame, const char * uri)
+s_loadUri (XAP_Frame * pFrame, const char * uri)
 {
-	FV_View   * pView  = static_cast<FV_View*>(pFrame->getCurrentView ());
+	FV_View * pView  = static_cast<FV_View*>(pFrame->getCurrentView ());
 
 	int type = s_mapMimeToUriType (uri);
 	if (type == TARGET_UNKNOWN)
@@ -361,46 +280,33 @@ s_load_uri (XAP_Frame * pFrame, const char * uri)
 			return;
 		}
 
-	UT_UTF8String onDisk;
-	if (!s_ensure_uri_on_disk (uri, onDisk))
-		{
-			UT_DEBUGMSG(("DOM: couldn't ensure %s on disk\n", uri));
-			return;
-		}
-
-	UT_DEBUGMSG(("DOM: %s on disk\n", onDisk.utf8_str()));
-
 	if (type == TARGET_IMAGE)
 		{
-			s_load_image (onDisk, pFrame, pView);
+			s_loadImage (uri, pFrame, pView);
 			return;
 		}
 	else
 		{
-			s_load_document (onDisk, pFrame);
+			s_loadDocument (uri, pFrame);
 			return;
 		}
 }
 
 static void
-s_load_uri_list (XAP_Frame * pFrame, const char * uriList)
+s_loadUriList (XAP_Frame * pFrame, const char * uriList)
 {
-	GList * names = gnome_vfs_uri_list_parse (uriList);
+	gchar ** uris = g_uri_list_extract_uris(uriList);
+	gchar ** uriIter = uris;
 
-	// multiple URIs
-	for ( ; names != NULL; names = names->next) 
-		{
-			GnomeVFSURI * hndl = static_cast<GnomeVFSURI *>(names->data);
-			gchar * uri = gnome_vfs_uri_to_string (hndl, GNOME_VFS_URI_HIDE_NONE);
-			s_load_uri (pFrame, uri);
-			g_free (uri);
-		}
-
-	gnome_vfs_uri_list_free (names);
+	while (uriIter && *uriIter) {
+		s_loadUri(pFrame, *uriIter);
+		uriIter++;
+	}
+	g_strfreev(uris);
 }
 
 static void 
-s_dnd_drop_event(GtkWidget        *widget,
+s_dndDropEvent(GtkWidget        *widget,
 				 GdkDragContext   *context,
 				 gint              /*x*/,
 				 gint              /*y*/,
@@ -421,37 +327,33 @@ s_dnd_drop_event(GtkWidget        *widget,
 	g_free (targetName);
 
 	if (info == TARGET_URI_LIST) 
-		{
-			const char * rawChar = reinterpret_cast<const char *>(selection_data->data);
-			UT_DEBUGMSG(("DOM: text in selection = %s \n", rawChar));
-			s_load_uri_list (pFrame, rawChar);
-		} 
+	{
+		const char * rawChar = reinterpret_cast<const char *>(selection_data->data);
+		UT_DEBUGMSG(("DOM: text in selection = %s \n", rawChar));
+		s_loadUriList (pFrame, rawChar);
+	} 
 	else if (info == TARGET_DOCUMENT) 
-		{
-			UT_DEBUGMSG(("JK: Document target as data buffer\n"));
-		}
+	{
+		UT_DEBUGMSG(("JK: Document target as data buffer\n"));
+	}
 	else if (info == TARGET_IMAGE) 
-		{
-			UT_ByteBuf * bytes = new UT_ByteBuf( selection_data->length );
-		  
-			UT_DEBUGMSG(("JK: Image target\n"));
-			bytes->append (selection_data->data, selection_data->length);
-			s_load_image (bytes, pFrame, pView);
-		}
+	{
+		UT_ByteBuf * bytes = new UT_ByteBuf( selection_data->length );
+	  
+		UT_DEBUGMSG(("JK: Image target\n"));
+		bytes->append (selection_data->data, selection_data->length);
+		s_loadImage (bytes, pFrame, pView);
+	}
 	else if (info == TARGET_URL)
-		{
-			const char * uri = reinterpret_cast<const char *>(selection_data->data);
-			UT_DEBUGMSG(("DOM: hyperlink: %s\n", uri));
-			pView->cmdInsertHyperlink(uri);
-		}
-	else if (info == TARGET_URI_LIST) 
-		{
-			UT_DEBUGMSG(("JK: 'URI List' target\n"));
-		}
+	{
+		const char * uri = reinterpret_cast<const char *>(selection_data->data);
+		UT_DEBUGMSG(("DOM: hyperlink: %s\n", uri));
+		pView->cmdInsertHyperlink(uri);
+	}
 }
 
 static void
-s_dnd_real_drop_event (GtkWidget *widget, GdkDragContext * context, 
+s_dndRealDropEvent (GtkWidget *widget, GdkDragContext * context, 
 					   gint x, gint y, guint time, gpointer ppFrame)
 {
 	UT_DEBUGMSG(("DOM: dnd drop event\n"));
@@ -460,18 +362,11 @@ s_dnd_real_drop_event (GtkWidget *widget, GdkDragContext * context,
 }
 
 static void
-s_dnd_drag_end (GtkWidget  *widget, GdkDragContext *context, gpointer ppFrame)
+s_dndDragEnd (GtkWidget  *widget, GdkDragContext *context, gpointer ppFrame)
 {
 	UT_DEBUGMSG(("DOM: dnd end event\n"));
 }
 
-#endif // HAVE_GNOME
-
-/*****************************************************************/
-
-#define ENSUREP(p)		do { UT_ASSERT(p); if (!p) goto Cleanup; } while (0)
-
-/****************************************************************/
 XAP_UnixFrameImpl::XAP_UnixFrameImpl(XAP_Frame *pFrame) : 
 	XAP_FrameImpl(pFrame),
 	m_imContext(NULL),
@@ -1296,34 +1191,31 @@ void XAP_UnixFrameImpl::_createTopLevelWindow(void)
 	g_signal_connect(G_OBJECT(m_wTopLevelWindow), "focus_out_event",
 					   G_CALLBACK(_fe::focusOut), NULL);
 
-#ifdef HAVE_GNOME
-	if (drag_types == NULL) {
-		s_init_drag_types();
-	}
+	DragInfo * dragInfo = s_getDragInfo();
+
 	gtk_drag_dest_set (m_wTopLevelWindow,
 					   GTK_DEST_DEFAULT_ALL,
-					   drag_types, 
-					   n_drag_types, 
+					   dragInfo->entries, 
+					   dragInfo->count, 
 					   GDK_ACTION_COPY);
 
 	g_signal_connect (G_OBJECT (m_wTopLevelWindow),
 					  "drag_data_get",
-					  G_CALLBACK (s_dnd_drop_event), 
+					  G_CALLBACK (s_dndDropEvent), 
 					  static_cast<gpointer>(this));
 	g_signal_connect (G_OBJECT (m_wTopLevelWindow), 
 					  "drag_data_received",
-					  G_CALLBACK (s_dnd_drop_event), 
+					  G_CALLBACK (s_dndDropEvent), 
 					  static_cast<gpointer>(this));	
   	g_signal_connect (G_OBJECT (m_wTopLevelWindow), 
 					  "drag_drop",
-					  G_CALLBACK (s_dnd_real_drop_event), 
+					  G_CALLBACK (s_dndRealDropEvent), 
 					  static_cast<gpointer>(this));
 	
   	g_signal_connect (G_OBJECT (m_wTopLevelWindow), 
 					  "drag_end",
-					  G_CALLBACK (s_dnd_drag_end), 
+					  G_CALLBACK (s_dndDragEnd), 
 					  static_cast<gpointer>(this));
-#endif
 
 	g_signal_connect(G_OBJECT(m_wTopLevelWindow), "delete_event",
 					   G_CALLBACK(_fe::delete_event), NULL);

@@ -41,6 +41,7 @@ static const UT_uint32 importer_size_guess = 20;
 static UT_GenericVector<IE_ImpSniffer *> 	IE_IMP_Sniffers (importer_size_guess);
 static std::vector<const std::string *> 	IE_IMP_MimeTypes;
 static std::vector<const std::string *> 	IE_IMP_MimeClasses;
+static std::vector<const std::string *> 	IE_IMP_Suffixes;
 
 #include "ie_imp_XML.h"
 IE_Imp_XML * abi_ie_imp_xml_instance = 0;
@@ -272,7 +273,7 @@ void IE_Imp::unregisterAllImporters ()
 /*!
  * Get supported mimetypes by builtin- and plugin-filters.
  */
-std::vector<const std::string *> IE_Imp::getSupportedMimeTypes ()
+std::vector<const std::string *> & IE_Imp::getSupportedMimeTypes ()
 {
 	if (IE_IMP_MimeTypes.size() > 0) {
 		return IE_IMP_MimeTypes;
@@ -296,7 +297,7 @@ std::vector<const std::string *> IE_Imp::getSupportedMimeTypes ()
 /*!
  * Get supported mime classes by builtin- and plugin-filters.
  */
-std::vector<const std::string *> IE_Imp::getSupportedMimeClasses ()
+std::vector<const std::string *> & IE_Imp::getSupportedMimeClasses ()
 {
 	if (IE_IMP_MimeClasses.size() > 0) {
 		return IE_IMP_MimeClasses;
@@ -315,6 +316,58 @@ std::vector<const std::string *> IE_Imp::getSupportedMimeClasses ()
 
 	/* TODO rob: unique */
 	return IE_IMP_MimeClasses;
+}
+
+/*!
+ * Get supported suffixes by builtin- and plugin-filters.
+ */
+std::vector<const std::string *> & IE_Imp::getSupportedSuffixes()
+{
+	if (IE_IMP_Suffixes.size() > 0) {
+		return IE_IMP_Suffixes;
+	}
+
+	const IE_SuffixConfidence *sc;
+	for (guint i = 0; i < IE_IMP_Sniffers.size(); i++) {
+		sc = IE_IMP_Sniffers.getNthItem(i)->getSuffixConfidence();
+		while (sc && sc->suffix) {
+			IE_IMP_Suffixes.push_back(new std::string(sc->suffix));
+			sc++;
+		}
+	}
+	
+	/* TODO rob: unique */
+	return IE_IMP_Suffixes;
+}
+
+/*!
+ * Map mime type to a suffix. Returns NULL if not found.
+ */
+const char * IE_Imp::getMimeTypeForSuffix(const char * suffix)
+{
+	if (suffix[0] == '.') {
+		suffix++;
+	}
+
+	const IE_SuffixConfidence *sc;
+	for (guint i = 0; i < IE_IMP_Sniffers.size(); i++) {
+		IE_ImpSniffer *sniffer = IE_IMP_Sniffers.getNthItem(i);
+		sc = sniffer->getSuffixConfidence();
+		while (sc && sc->suffix) {
+			if (0 == UT_stricmp(suffix, sc->suffix)) {
+				const IE_MimeConfidence *mc = sniffer->getMimeConfidence();
+				if (mc) {
+					return mc->mimetype;
+				}
+				else {
+					return NULL;
+				}
+			}
+			sc++;
+		}
+	}
+
+	return NULL;
 }
 
 /*****************************************************************/

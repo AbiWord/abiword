@@ -36,6 +36,7 @@
 static UT_GenericVector<IE_ImpGraphicSniffer*> 	IE_IMP_GraphicSniffers (6);
 static std::vector<const std::string *> 		IE_IMP_GraphicMimeTypes;
 static std::vector<const std::string *> 		IE_IMP_GraphicMimeClasses;
+static std::vector<const std::string *> 		IE_IMP_GraphicSuffixes;
 
 void IE_ImpGraphic::registerImporter (IE_ImpGraphicSniffer * s)
 {
@@ -84,7 +85,7 @@ void IE_ImpGraphic::unregisterAllImporters ()
 /*!
  * Get supported mimetypes by builtin- and plugin-filters.
  */
-std::vector<const std::string *> IE_ImpGraphic::getSupportedMimeTypes ()
+std::vector<const std::string *> & IE_ImpGraphic::getSupportedMimeTypes ()
 {
 	if (IE_IMP_GraphicMimeTypes.size() > 0) {
 		return IE_IMP_GraphicMimeTypes;
@@ -108,7 +109,7 @@ std::vector<const std::string *> IE_ImpGraphic::getSupportedMimeTypes ()
 /*!
  * Get supported mime classes by builtin- and plugin-filters.
  */
-std::vector<const std::string *> IE_ImpGraphic::getSupportedMimeClasses ()
+std::vector<const std::string *> & IE_ImpGraphic::getSupportedMimeClasses ()
 {
 	if (IE_IMP_GraphicMimeClasses.size() > 0) {
 		return IE_IMP_GraphicMimeClasses;
@@ -127,6 +128,58 @@ std::vector<const std::string *> IE_ImpGraphic::getSupportedMimeClasses ()
 
 	/* TODO rob: unique */
 	return IE_IMP_GraphicMimeClasses;
+}
+
+/*!
+ * Get supported suffixes by builtin- and plugin-filters.
+ */
+std::vector<const std::string *> & IE_ImpGraphic::getSupportedSuffixes()
+{
+	if (IE_IMP_GraphicSuffixes.size() > 0) {
+		return IE_IMP_GraphicSuffixes;
+	}
+
+	const IE_SuffixConfidence *sc;
+	for (guint i = 0; i < IE_IMP_GraphicSniffers.size(); i++) {
+		sc = IE_IMP_GraphicSniffers.getNthItem(i)->getSuffixConfidence();
+		while (sc && sc->suffix) {
+			IE_IMP_GraphicSuffixes.push_back(new std::string(sc->suffix));
+			sc++;
+		}
+	}
+	
+	/* TODO rob: unique */
+	return IE_IMP_GraphicSuffixes;
+}
+
+/*!
+ * Map mime type to a suffix. Returns NULL if not found.
+ */
+const char * IE_ImpGraphic::getMimeTypeForSuffix(const char * suffix)
+{
+	if (suffix[0] == '.') {
+		suffix++;
+	}
+
+	const IE_SuffixConfidence *sc;
+	for (guint i = 0; i < IE_IMP_GraphicSniffers.size(); i++) {
+		IE_ImpGraphicSniffer *sniffer = IE_IMP_GraphicSniffers.getNthItem(i);
+		sc = sniffer->getSuffixConfidence();
+		while (sc && sc->suffix) {
+			if (0 == UT_stricmp(suffix, sc->suffix)) {
+				const IE_MimeConfidence *mc = sniffer->getMimeConfidence();
+				if (mc) {
+					return mc->mimetype;
+				}
+				else {
+					return NULL;
+				}
+			}
+			sc++;
+		}
+	}
+
+	return NULL;
 }
 
 /*****************************************************************/
