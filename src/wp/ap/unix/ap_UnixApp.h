@@ -34,15 +34,6 @@
 #include "ap_UnixClipboard.h"
 #include "pt_Types.h"
 
-#if 0//def HAVE_GNOME
-#include "xap_UnixGnomeApp.h"
-#define XAP_UNIXBASEAPP XAP_UnixGnomeApp
-#else
-#include "xap_UnixApp.h"
-#define XAP_UNIXBASEAPP XAP_UnixApp
-#endif
-	
-
 //#define LOGFILE
 /* Define if your user name is msevior */
 /* #undef LOGFILE */

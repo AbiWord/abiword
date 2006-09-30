@@ -925,7 +925,7 @@ EV_UnixMenuBar::EV_UnixMenuBar(XAP_UnixApp * pUnixApp,
 							   XAP_Frame * pFrame,
 							   const char * szMenuLayoutName,
 							   const char * szMenuLabelSetName)
-	: EV_UNIXBASEMENU(pUnixApp, pFrame, szMenuLayoutName, szMenuLabelSetName)
+	: EV_UnixMenu(pUnixApp, pFrame, szMenuLayoutName, szMenuLabelSetName)
 {
 }
 
@@ -998,7 +998,7 @@ EV_UnixMenuPopup::EV_UnixMenuPopup(XAP_UnixApp * pUnixApp,
 								   XAP_Frame * pFrame,
 								   const char * szMenuLayoutName,
 								   const char * szMenuLabelSetName)
-	: EV_UNIXBASEMENU(pUnixApp, pFrame, szMenuLayoutName, szMenuLabelSetName)
+	: EV_UnixMenu(pUnixApp, pFrame, szMenuLayoutName, szMenuLabelSetName)
 {
 }
 

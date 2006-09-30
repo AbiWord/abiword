@@ -615,11 +615,7 @@ void XAP_UnixDialog_FileOpenSaveAs::runModal(XAP_Frame * pFrame)
 							);
 #endif	
 
-#ifdef HAVE_GNOME
 	gtk_file_chooser_set_local_only(m_FC, FALSE);
-#else
-	gtk_file_chooser_set_local_only(m_FC, TRUE);
-#endif
 
 	abiSetupModalDialog(GTK_DIALOG(m_FC), pFrame, this, GTK_RESPONSE_ACCEPT);
 	GtkWidget * filetypes_pulldown = NULL;

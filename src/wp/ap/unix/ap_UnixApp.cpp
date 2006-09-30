@@ -1631,16 +1631,16 @@ bool AP_UnixApp::doWindowlessArgs(const AP_Args *Args, bool & bSuccess)
 		XParseGeometry(Args->m_sGeometry, &x, &y, &width, &height);
 		
 		// use both by default
-		UT_uint32 f = (XAP_UNIXBASEAPP::GEOMETRY_FLAG_SIZE
-					   | XAP_UNIXBASEAPP::GEOMETRY_FLAG_POS);
+		UT_uint32 f = (XAP_UnixApp::GEOMETRY_FLAG_SIZE
+					   | XAP_UnixApp::GEOMETRY_FLAG_POS);
 		
 		// if pos (x and y) weren't provided just use size
 		if (x == dummy || y == dummy)
-			f = XAP_UNIXBASEAPP::GEOMETRY_FLAG_SIZE;
+			f = XAP_UnixApp::GEOMETRY_FLAG_SIZE;
 		
 		// if size (width and height) weren't provided just use pos
 		if (width == 0 || height == 0)
-			f = XAP_UNIXBASEAPP::GEOMETRY_FLAG_POS;
+			f = XAP_UnixApp::GEOMETRY_FLAG_POS;
 		
 		// set the xap-level geometry for future frame use
 		Args->getApp()->setGeometry(x, y, width, height, f);

@@ -22,20 +22,13 @@
 
 #include "ev_UnixMenu.h"
 
-#if 0 //def HAVE_GNOME
-#include "gnome/ev_UnixGnomeMenu.h"
-#define EV_UNIXBASEMENU EV_UnixGnomeMenu
-#else
-#define EV_UNIXBASEMENU EV_UnixMenu
-#endif
-
 class AV_View;
 class XAP_UnixApp;
 class XAP_UnixFrame;
 
 /*****************************************************************/
 
-class EV_UnixMenuPopup : public EV_UNIXBASEMENU
+class EV_UnixMenuPopup : public EV_UnixMenu
 {
 public:
 	EV_UnixMenuPopup(XAP_UnixApp * pUnixApp,
