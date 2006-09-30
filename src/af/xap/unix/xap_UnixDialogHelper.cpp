@@ -584,6 +584,98 @@ static void sAddHelpButton (GtkDialog * me, XAP_Dialog * pDlg)
 #endif
 }
 
+#if !GTK_CHECK_VERSION(2,8,0)
+/* This is public from 2.8 onwards.   */
+static gint
+gtk_dialog_get_response_for_widget (GtkDialog *dialog, GtkWidget *widget)
+{
+	const struct _response {
+		gint response_id;
+	} *rd;
+
+	rd = (const struct _response *)g_object_get_data (G_OBJECT (widget),
+													  "gtk-dialog-response-data");
+	if (!rd)
+		return GTK_RESPONSE_NONE;
+	else
+		return rd->response_id;
+}
+#endif
+
+
+/**
+ * go_dialog_guess_alternative_button_order:
+ * @dialog :
+ *
+ * This function inspects the buttons in the dialog and comes up
+ * with a reasonable alternative dialog order.
+ **/
+static void
+go_dialog_guess_alternative_button_order (GtkDialog *dialog)
+{
+	GList *children, *tmp;
+	int i, nchildren;
+	int *new_order;
+	int i_yes = -1, i_no = -1, i_ok = -1, i_cancel = -1, i_apply = -1;
+	gboolean again;
+	gboolean any = FALSE;
+	int loops = 0;
+
+	children = gtk_container_get_children (GTK_CONTAINER (dialog->action_area));
+	if (!children)
+		return;
+
+	nchildren = g_list_length (children);
+	new_order = g_new (int, nchildren);
+
+	for (tmp = children, i = 0; tmp; tmp = tmp->next, i++) {
+		GtkWidget *child = (GtkWidget *)tmp->data;
+		int res = gtk_dialog_get_response_for_widget (dialog, child);
+		new_order[i] = res;
+		switch (res) {
+		case GTK_RESPONSE_YES: i_yes = i; break;
+		case GTK_RESPONSE_NO: i_no = i; break;
+		case GTK_RESPONSE_OK: i_ok = i; break;
+		case GTK_RESPONSE_CANCEL: i_cancel = i; break;
+		case GTK_RESPONSE_APPLY: i_apply = i; break;
+		}
+	}
+	g_list_free (children);
+
+#define MAYBE_SWAP(ifirst,ilast)				\
+	if (ifirst >= 0 && ilast >= 0 && ifirst < ilast) {	\
+		int tmp;					\
+								\
+		tmp = new_order[ifirst];			\
+		new_order[ifirst] = new_order[ilast];		\
+		new_order[ilast] = tmp;				\
+								\
+		tmp = ifirst;					\
+		ifirst = ilast;					\
+		ilast = tmp;					\
+								\
+		again = TRUE;					\
+		any = TRUE;					\
+	}
+
+	do {
+		again = FALSE;
+		MAYBE_SWAP (i_yes, i_no);
+		MAYBE_SWAP (i_ok, i_cancel);
+		MAYBE_SWAP (i_cancel, i_apply);
+		MAYBE_SWAP (i_no, i_cancel);
+	} while (again && ++loops < 2);
+
+#undef MAYBE_SWAP
+
+	if (any)
+		gtk_dialog_set_alternative_button_order_from_array (dialog,
+								    nchildren,
+								    new_order);
+	g_free (new_order);
+}
+
+
 /*!
  * Centers a dialog, makes it transient, sets up the right window icon
  */
@@ -591,6 +683,8 @@ void centerDialog(GtkWidget * parent, GtkWidget * child, bool set_transient_for)
 {
 	UT_return_if_fail(parent);
 	UT_return_if_fail(child);
+
+	go_dialog_guess_alternative_button_order(GTK_DIALOG(child));
 
 	if (set_transient_for)
 	  gtk_window_set_transient_for(GTK_WINDOW(child),
