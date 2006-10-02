@@ -472,9 +472,9 @@ EV_UnixToolbar::~EV_UnixToolbar(void)
 	_releaseListener();
 }
 
-bool EV_UnixToolbar::toolbarEvent(_wd * wd,
-								  const UT_UCSChar * pData,
-								  UT_uint32 dataLength)
+bool EV_UnixToolbar::toolbarEvent(_wd 				* wd,
+								  const UT_UCSChar 	* pData,
+								  UT_uint32 		  dataLength)
 
 {
 	// user selected something from this toolbar.
@@ -507,8 +507,8 @@ bool EV_UnixToolbar::toolbarEvent(_wd * wd,
 			// Block the signal, throw the button back up/down
 			bool wasBlocked = wd->m_blockSignal;
 			wd->m_blockSignal = true;
-			gtk_toggle_button_set_active(GTK_TOGGLE_BUTTON(wd->m_widget),
-						     !GTK_TOGGLE_BUTTON(wd->m_widget)->active);
+			gtk_toggle_tool_button_set_active(GTK_TOGGLE_TOOL_BUTTON(wd->m_widget),
+						     !gtk_toggle_tool_button_get_active(GTK_TOGGLE_TOOL_BUTTON(wd->m_widget)));
 			wd->m_blockSignal = wasBlocked;
 
 			// can safely ignore this event
