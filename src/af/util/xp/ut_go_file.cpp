@@ -26,10 +26,6 @@
 #include <glib/gi18n-lib.h>
 #endif
 
-#ifdef HAVE_GNOME
-#define GOFFICE_WITH_GNOME
-#endif
-
 #include "ut_go_file.h"
 #include <gsf/gsf-input-memory.h>
 #include <gsf/gsf-input-stdio.h>
@@ -37,18 +33,23 @@
 #include <glib/gstdio.h>
 #include <libxml/encoding.h>
 
-#ifdef GOFFICE_WITH_GNOME
+#ifdef HAVE_GNOMEVFS
+#define GOFFICE_WITH_GNOME
 #include <libgnomevfs/gnome-vfs-utils.h>
 #include <libgnomevfs/gnome-vfs-mime-utils.h>
 #include <libgnomevfs/gnome-vfs-mime-handlers.h>
 #include <gsf-gnome/gsf-input-gnomevfs.h>
 #include <gsf-gnome/gsf-output-gnomevfs.h>
+#endif
+
+#ifdef HAVE_GNOME
 #include <libgnome/gnome-url.h>
-#elif defined G_OS_WIN32
+#endif
+
+#if defined G_OS_WIN32
 #include <windows.h>
 #include <shellapi.h>
 #include <io.h>
-
 #endif
 
 #include <string.h>
@@ -993,7 +994,7 @@ UT_go_url_encode (gchar const *text, int type)
 	return g_string_free (result, FALSE);
 }
 
-#ifndef GOFFICE_WITH_GNOME
+#ifndef HAVE_GNOME
 static char *
 check_program (char const *prog)
 {
@@ -1017,7 +1018,7 @@ UT_go_url_show (gchar const *url)
 	return NULL;
 #else
 	GError *err = NULL;
-#ifdef GOFFICE_WITH_GNOME
+#ifdef HAVE_GNOME
 	gnome_url_show (url, &err);
 	return err;
 #else

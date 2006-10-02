@@ -53,6 +53,7 @@ AC_SUBST(GNOME_LIBS)
 AM_CONDITIONAL(WITH_GNOME, test "x$gnome" = "xtrue")
 
 ])
+
 # 
 # end: abi/ac-helpers/abi-gnome.m4
 # 

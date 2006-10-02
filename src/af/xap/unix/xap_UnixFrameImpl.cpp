@@ -66,9 +66,12 @@
 #include "ie_impGraphic.h"
 #include "fg_Graphic.h"
 
-#ifdef HAVE_GNOME
+#ifdef HAVE_GNOMEVFS
 #include <libgnomevfs/gnome-vfs.h>
 #include <libgnomevfs/gnome-vfs-mime-utils.h>
+#endif
+
+#ifdef HAVE_GNOME
 #include "ev_GnomeToolbar.h"
 #endif
 
@@ -160,7 +163,7 @@ static int s_mapMimeToUriType (const char * uri)
 	int target = TARGET_UNKNOWN;
 
 	gchar *mimeType;
-#ifdef HAVE_GNOME
+#ifdef HAVE_GNOMEVFS
 	mimeType = gnome_vfs_get_mime_type (uri);
 #else
 	const gchar * suffix = UT_pathSuffix(uri);

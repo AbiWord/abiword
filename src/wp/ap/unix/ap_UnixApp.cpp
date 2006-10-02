@@ -123,15 +123,17 @@
 #include "ie_impGraphic.h"
 #include "ut_math.h"
 
-#ifdef HAVE_GNOME
-#include <libbonoboui.h>
-#include <libgnomevfs/gnome-vfs.h>
-#include <bonobo/bonobo-macros.h>
-#include <bonobo/bonobo-object.h>
+#ifndef WITHOUT_PRINTING
 #include <libart_lgpl/art_affine.h>
 #include "xap_UnixGnomePrintGraphics.h"
-#include "ap_EditMethods.h"
 #include <libgnomeprint/gnome-print.h>
+#endif
+
+#ifdef HAVE_GNOME
+#include <libbonoboui.h>
+#include <bonobo/bonobo-macros.h>
+#include <bonobo/bonobo-object.h>
+#include "ap_EditMethods.h"
 static int mainBonobo(int argc, const char ** argv);
 #endif
 #ifdef LOGFILE
@@ -1427,14 +1429,9 @@ int AP_UnixApp::main(const char * szAppName, int argc, const char ** argv)
 #ifdef LOGFILE
 	fprintf(logfile,"g_object_get completed \n");
 #endif
-      gnome_vfs_init ();
-#ifdef LOGFILE
-	fprintf(logfile,"gnome_vfs_init completed \n");
-#endif
 #ifdef LOGFILE
 	fprintf(logfile,"About to init bonobo \n");
-#endif
-	  
+#endif	  
 	  bonobo_init (&XArgs.m_argc, const_cast<char **>(XArgs.m_argv));
 #ifdef LOGFILE
 	fprintf(logfile,"bonobo initialized \n");

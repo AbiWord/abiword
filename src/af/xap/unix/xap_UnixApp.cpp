@@ -60,7 +60,7 @@
 #include <gsf/gsf-utils.h>
 #include <goffice/goffice.h>
 
-#ifdef HAVE_GNOME
+#ifdef HAVE_GNOMEVFS
 #include <libgnomevfs/gnome-vfs.h>
 #endif
 
@@ -172,7 +172,7 @@ bool XAP_UnixApp::initialize(const char * szKeyBindingsKey, const char * szKeyBi
 	gsf_init();
 	libgoffice_init();
 
-#ifdef HAVE_GNOME
+#ifdef HAVE_GNOMEVFS
 	gnome_vfs_init();
 #endif
 
