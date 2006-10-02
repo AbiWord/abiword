@@ -28,10 +28,8 @@
 #include "ap_UnixApp.h"
 #endif
 
-#ifdef HAVE_GNOME
-#include <gnome.h>
+#ifdef HAVE_BONOBO
 #include <libbonoboui.h>
-#include <libgnomevfs/gnome-vfs.h>
 #include <bonobo/bonobo-macros.h>
 #include <bonobo/bonobo-object.h>
 #endif
@@ -218,7 +216,7 @@ extern "C" {
   gboolean abi_widget_save ( AbiWidget * w, const char * fname );
   gboolean abi_widget_save_ext ( AbiWidget * w, const char * fname,
 				 const char * extension ) ;
-#ifdef HAVE_GNOME
+#ifdef HAVE_BONOBO
 	void        abi_widget_set_Bonobo_uic(AbiWidget * abi,BonoboUIComponent * uic);
     BonoboUIComponent * abi_widget_get_Bonobo_uic(AbiWidget * abi);  
 #endif
@@ -234,12 +232,3 @@ extern "C" {
 #endif /* c++ */
 
 #endif /* ABI_WIDGET_H */
-
-
-
-
-
-
-
-
-

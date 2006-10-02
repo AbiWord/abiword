@@ -153,7 +153,7 @@ abi_cell_renderer_font_render (GtkCellRenderer      *cell,
 				text = NULL;
 				gtk_combo_box_get_active_iter (GTK_COMBO_BOX (self->parent_widget), &iter);
 				model = gtk_combo_box_get_model (GTK_COMBO_BOX (self->parent_widget));
-				g_assert (model);
+				g_return_if_fail (model);
 				gtk_tree_model_get (model, &iter, 
 						    FONT, &text, 
 						    -1);

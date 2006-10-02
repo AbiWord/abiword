@@ -71,7 +71,7 @@
 #include <libgnomevfs/gnome-vfs-mime-utils.h>
 #endif
 
-#ifdef HAVE_GNOME
+#ifdef HAVE_GCONF
 #include "ev_GnomeToolbar.h"
 #endif
 
@@ -1684,7 +1684,7 @@ EV_Toolbar * XAP_UnixFrameImpl::_newToolbar(XAP_Frame *pFrame,
 											const char *szLanguage)
 {
 	EV_UnixToolbar *pToolbar = NULL;
-#ifdef HAVE_GNOME
+#ifdef HAVE_GCONF
 	pToolbar = new EV_GnomeToolbar(static_cast<XAP_UnixApp *>(XAP_App::getApp()), pFrame, szLayout, szLanguage);
 #else
 	pToolbar = new EV_UnixToolbar(static_cast<XAP_UnixApp *>(XAP_App::getApp()), pFrame, szLayout, szLanguage);

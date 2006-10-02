@@ -222,7 +222,6 @@ AC_SUBST(ABIWORD_APP_LIBDIR)
 
 dnl ./configure command line arguments
 dnl currently, we have:
-dnl   --enable-gnome
 dnl   --enable-debug
 dnl   --enable-extra-optimization
 dnl   --enable-profile
@@ -233,19 +232,20 @@ dnl   --with-libxml2
 dnl The defined values are used mostly in includes.mk, but also in
 dnl some other places
 
-ABI_GNOME_QUICK
 ABI_GUCHARMAP
 ABI_XFT_QUICK
 ABI_GSF
 ABI_GOFFICE
+ABI_BONOBO
 ABI_GNOMEVFS
+ABI_GNOMEUI
 
 abi_build_shared=yes
 abi_build_static=no
 
 AC_ARG_ENABLE(shared,[  --disable-shared   don't build shared AbiWord (UNIX/GTK builds only)],[
 	if test "x$enableval" = "xno"; then
-		if test "$PLATFORM" = "unix" -a "$gnome" != "true"; then
+		if test "$PLATFORM" = "unix" -a "$gnomeui" != "true"; then
 			abi_build_shared=no
 			abi_build_static=yes
 		fi
@@ -253,7 +253,7 @@ AC_ARG_ENABLE(shared,[  --disable-shared   don't build shared AbiWord (UNIX/GTK 
 ])
 AC_ARG_ENABLE(static,[  --enable-static          build static AbiWord (UNIX/GTK builds only)],[
 	if test "x$enableval" != "xno"; then
-		if test "$PLATFORM" = "unix" -a "$gnome" != "true"; then
+		if test "$PLATFORM" = "unix" -a "$gnomeui" != "true"; then
 			abi_build_static=yes
 		fi
 	fi
@@ -385,19 +385,13 @@ case "$script" in
 esac
 
 if test "$PLATFORM" = "unix"; then
-	if test "$gnome" = "true"; then
-		PLATFORM_CFLAGS="$GTK_CFLAGS $GNOME_CFLAGS $GMODULE_CFLAGS $GUCHARMAP_CFLAGS $GNOMEPRINT_CFLAGS $GOFFICE_CFLAGS $GNOMEVFS_CFLAGS -DSUPPORTS_UT_IDLE=1"
-		PLATFORM_LIBS="$GTK_LIBS $GNOME_LIBS $GMODULE_LIBS $GUCHARMAP_LIBS $GNOMEPRINT_LIBS $GNOMEVFS_LIBS"
-	else
-		PLATFORM_CFLAGS="$GTK_CFLAGS $GMODULE_CFLAGS $GUCHARMAP_CFLAGS $GNOMEPRINT_CFLAGS $GOFFICE_CFLAGS $GNOMEVFS_CFLAGS -DSUPPORTS_UT_IDLE=1"
-		PLATFORM_LIBS="$GTK_LIBS $GMODULE_LIBS $GUCHARMAP_LIBS $GNOMEPRINT_LIBS $GNOMEVFS_LIBS"
-	fi
+	PLATFORM_CFLAGS="$GTK_CFLAGS $GMODULE_CFLAGS $GUCHARMAP_CFLAGS $GNOMEPRINT_CFLAGS $GOFFICE_CFLAGS $BONOBO_CFLAGS $GNOMEVFS_CFLAGS $GNOMEUI_CFLAGS -DSUPPORTS_UT_IDLE=1"
+	PLATFORM_LIBS="$GTK_LIBS $GMODULE_LIBS $GUCHARMAP_LIBS $GNOMEPRINT_LIBS $BONOBO_LIBS $GNOMEVFS_LIBS $GNOMEUI_LIBS"
 	
 	if test "$hildon" = "true"; then
 		PLATFORM_CFLAGS="$PLATFORM_CFLAGS $HILDON_CFLAGS"
 		PLATFORM_LIBS="$PLATFORM_LIBS $HILDON_LIBS"
-	fi
-		
+	fi		
 fi
 dnl AUTOCONF SUCKS
 if test "$PLATFORM" = "cocoa"; then
@@ -628,11 +622,6 @@ case "$PLATFORM" in
        AC_MSG_RESULT([Configured to build on a Mac OS X platform using Cocoa.]) ;;
 esac
 
-case "$gnome" in
-     "true" )
-        AC_MSG_RESULT([Configured with GNOME support.]) ;;
-esac
-
 case "$embedded" in
      "true")
 	AC_MSG_RESULT([Configured for embedded target.]) ;;
@@ -693,7 +682,9 @@ cat <<EOF
   iconv:           ${abi_iconv_message}
   spelling:        ${abi_spell_message}
   goffice:         ${abi_goffice_message}
+  bonobo:          ${abi_bonobo_message}
   gnome-vfs:       ${abi_gnomevfs_message}
+  gnome-ui:        ${abi_gnomeui_message}
   binreloc:        ${br_cv_binreloc}
 
   installing in:   ${prefix}

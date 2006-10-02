@@ -23,21 +23,7 @@
 # the tree can just include this and then use some variables.  This
 # makes the job of dealing with regular make files much simpler.  
 
-# automake complains at us if we just if out the gnome-specific parts
-if WITH_GNOME
-AF_INCLUDES=-I'$(top_srcdir)/src/af/util/xp' 
-AF_INCLUDES+=-I'$(top_srcdir)/src/af/tf/xp'
-AF_INCLUDES+=-I'$(top_srcdir)/src/af/ev/xp'
-AF_INCLUDES+=-I'$(top_srcdir)/src/af/ev/xp'
-AF_INCLUDES+=-I'$(top_srcdir)/src/af/gr/xp'
-AF_INCLUDES+=-I'$(top_srcdir)/src/af/xap/xp'
-AF_INCLUDES+=-I'$(top_srcdir)/src/af/util/@BE_PLATFORM@'
-AF_INCLUDES+=-I'$(top_srcdir)/src/af/ev/@PLATFORM@'
-AF_INCLUDES+=-I'$(top_srcdir)/src/af/gr/@PLATFORM@'
-AF_INCLUDES+=-I'$(top_srcdir)/src/af/xap/@PLATFORM@'
-AF_INCLUDES+=-I'$(top_srcdir)/src/af/xap/@PLATFORM@/gnome'
-AF_INCLUDES+=-I'$(top_srcdir)/src/af/ev/@PLATFORM@/gnome'
-else
+# automake complains at us if we just if out the hildon-specific parts
 if WITH_HILDON
 AF_INCLUDES=-I'$(top_srcdir)/src/af/util/xp' 
 AF_INCLUDES+=-I'$(top_srcdir)/src/af/tf/xp' 
@@ -62,16 +48,7 @@ AF_INCLUDES+=-I'$(top_srcdir)/src/af/ev/@PLATFORM@'
 AF_INCLUDES+=-I'$(top_srcdir)/src/af/gr/@PLATFORM@'
 AF_INCLUDES+=-I'$(top_srcdir)/src/af/xap/@PLATFORM@'
 endif
-endif
 
-if WITH_GNOME
-WP_INCLUDES=-I'$(top_srcdir)/src/wp/ap/xp'
-WP_INCLUDES+=-I'$(top_srcdir)/src/wp/impexp/xp'
-WP_INCLUDES+=-I'$(top_srcdir)/src/wp/ap/@PLATFORM@'
-WP_INCLUDES+=-I'$(top_srcdir)/src/wp/ap/xp/ToolbarIcons'
-WP_INCLUDES+=-I'$(top_srcdir)/src/wp/ap/@PLATFORM@/gnome'
-WP_INCLUDES+=-I'$(top_srcdir)/src/pkg/linux/apkg'
-else
 if WITH_HILDON
 WP_INCLUDES=-I'$(top_srcdir)/src/wp/ap/xp'
 WP_INCLUDES+=-I'$(top_srcdir)/src/wp/impexp/xp'
@@ -85,7 +62,6 @@ WP_INCLUDES+=-I'$(top_srcdir)/src/wp/impexp/xp'
 WP_INCLUDES+=-I'$(top_srcdir)/src/wp/ap/@PLATFORM@'
 WP_INCLUDES+=-I'$(top_srcdir)/src/wp/ap/xp/ToolbarIcons'
 WP_INCLUDES+=-I'$(top_srcdir)/src/pkg/linux/apkg'
-endif
 endif
 
 OTHER_INCLUDES=-I'$(top_srcdir)/src/other/spell/xp'
@@ -184,12 +160,6 @@ ABI_TEST_LIBS=$(top_builddir)/src/af/util/libTestUtil.a
 ABI_TEST_LIBS+=$(top_builddir)/src/text/ptbl/xp/t/libTestPtbl.a
 ABI_TEST_LIBS+=$(top_builddir)/src/af/tf/libTF.a
 ABI_TEST_LIBS+=$(top_builddir)/src/af/xap/libTestXap.a
-
-# we don't assume that WITH_GNOME => unix, on the off chance that
-# someday it won't
-if WITH_GNOME
-ABI_GNOME_OBJECTS=xp/*.o @PLATFORM@/*.o @PLATFORM@/gnome/*.o
-endif 
 
 if WITH_HILDON
 ABI_HILDON_OBJECTS=xp/*.o @PLATFORM@/*.o @PLATFORM@/hildon/*.o

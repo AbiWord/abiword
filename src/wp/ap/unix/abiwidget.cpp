@@ -1,3 +1,5 @@
+/* -*- mode: C++; tab-width: 4; c-basic-offset: 4; -*- */
+
 /* The AbiWord Widget 
  *
  * Copyright (C) 2001 AbiSource, Inc.
@@ -81,7 +83,7 @@ struct _AbiPrivData {
 	bool                 m_bMappedEventProcessed;
     bool                 m_bUnlinkFileAfterLoad;
 	gint                 m_iNumFileLoads;
-#ifdef HAVE_GNOME
+#ifdef HAVE_BONOBO
 	BonoboUIComponent    * m_uic;
 #endif
 };
@@ -1329,7 +1331,7 @@ abi_widget_realize (GtkWidget * widget)
 //					 (gpointer) abi);
 }
 
-#ifdef HAVE_GNOME
+#ifdef HAVE_BONOBO
 #if 0
 static void
 abi_widget_finalize(GObject *object)
@@ -1468,7 +1470,7 @@ abi_widget_destroy_gtk (GtkObject *object)
 			gtk_main_quit();
 		}
 	}
-#ifdef HAVE_GNOME
+#ifdef HAVE_BONOBO
 	else
 	{
 		
@@ -1484,7 +1486,7 @@ abi_widget_destroy_gtk (GtkObject *object)
 #endif
 }
 
-#ifdef HAVE_GNOME
+#ifdef HAVE_BONOBO
 
 static void
 abi_widget_bonobo_destroy (BonoboObject *object)
@@ -1545,7 +1547,7 @@ abi_widget_class_init (AbiWidgetClass *abi_class)
 	GObjectClass *gobject_class = G_OBJECT_CLASS(abi_class);
 
 	// we need our own special destroy function
-#ifdef HAVE_GNOME
+#ifdef HAVE_BONOBO
 	if(XAP_App::getApp()->isBonoboRunning())
 	{
 		BonoboObjectClass *bonobo_object_class = (BonoboObjectClass *)abi_class;
@@ -2547,7 +2549,7 @@ abi_widget_get_frame ( AbiWidget * w )
   return w->priv->m_pFrame ;
 }
 
-#ifdef HAVE_GNOME
+#ifdef HAVE_BONOBO
 extern "C" void
 abi_widget_set_Bonobo_uic(AbiWidget * w, BonoboUIComponent * uic)
 {

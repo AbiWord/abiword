@@ -97,7 +97,9 @@ bonobodir = $(libdir)/bonobo/servers
 
 # Install the datafiles. This is quick-and-dirty.
 install-data-local:
+if WITH_BONOBO
 	@$(mkinstalldirs) $(DESTDIR)$(bonobodir)
+endif
 	if test -d $(top_srcdir)/../abidistfiles ; then \
 	  for dir in `cd $(top_srcdir)/../abidistfiles; find . -type d ! -name CVS` ; do \
 	    $(mkinstalldirs) $(DESTDIR)$(pkgdatadir)/$$dir ;\
@@ -111,7 +113,9 @@ install-data-local:
 	        if test -f $$file ; then \
 		  sfile=`echo "$$file" | sed 's/\.[^.]*$$//'`; \
 		  if test "$$sfile.server" = $$file; then \
+if WITH_BONOBO
 		    $(INSTALL_DATA) $$file $(DESTDIR)$(bonobodir); \
+endif
 		  else \
 		    $(INSTALL_DATA) $$file $(DESTDIR)$(pkgdatadir)/$$dir; \
 		  fi; \
@@ -122,10 +126,7 @@ install-data-local:
 	else \
 	  echo "Warning: abidistfiles package not found." ;\
 	fi
-if WITH_GNOME
-else
-	rm -f $(DESTDIR)$(pkgdatadir)/icons/abiword_logo.xpm #XXX this is very dirty
-endif
+
 	@$(mkinstalldirs) $(DESTDIR)$(pkgdatadir)/AbiWord
 	@for dir in `cd $(top_srcdir)/user/wp; find . -type d ! -name CVS` ; do \
 	  $(mkinstalldirs) $(DESTDIR)$(pkgdatadir)/AbiWord/$$dir ;\

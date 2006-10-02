@@ -42,7 +42,7 @@
 #include <gsf-gnome/gsf-output-gnomevfs.h>
 #endif
 
-#ifdef HAVE_GNOME
+#ifdef HAVE_GNOMEUI
 #include <libgnome/gnome-url.h>
 #endif
 
@@ -994,7 +994,7 @@ UT_go_url_encode (gchar const *text, int type)
 	return g_string_free (result, FALSE);
 }
 
-#ifndef HAVE_GNOME
+#ifndef HAVE_GNOMEUI
 static char *
 check_program (char const *prog)
 {
@@ -1018,7 +1018,7 @@ UT_go_url_show (gchar const *url)
 	return NULL;
 #else
 	GError *err = NULL;
-#ifdef HAVE_GNOME
+#ifdef HAVE_GNOMEUI
 	gnome_url_show (url, &err);
 	return err;
 #else
