@@ -31,9 +31,12 @@
 #define ABIWORD_FILE_OPEN				"abiword-file-open"
 #define ABIWORD_FILE_SAVE				"abiword-file-save"
 #define ABIWORD_FILE_SAVEAS				"abiword-file-saveas"
+#define ABIWORD_FILE_REVERT				"abiword-file-revert"		// GTK_STOCK_REVERT_TO_SAVED
 #define ABIWORD_FILE_PRINT				"abiword-file-print"
 #define ABIWORD_FILE_PRINT_PREVIEW		"abiword-file-print-preview"
+#define ABIWORD_FILE_PROPERTIES			"abiword-file-properties"	// GTK_STOCK_PROPERTIES
 #define ABIWORD_FILE_CLOSE				"abiword-file-close"
+#define ABIWORD_FILE_EXIT				"abiword-file-exit"			// GTK_STOCK_QUIT
 
 #define ABIWORD_SPELLCHECK				"abiword-spellcheck"
 
@@ -43,6 +46,11 @@
 #define ABIWORD_FMTPAINTER				"abiword-fmtpainter"
 #define ABIWORD_EDIT_UNDO				"abiword-edit-undo"
 #define ABIWORD_EDIT_REDO				"abiword-edit-redo"
+#define ABIWORD_EDIT_CLEAR				"abiword-edit-clear"		// GTK_STOCK_CLEAR
+#define ABIWORD_EDIT_FIND				"abiword-edit-find"			// GTK_STOCK_FIND
+#define ABIWORD_EDIT_REPLACE 			"abiword-edit-replace"		// GTK_STOCK_FIND_AND_REPLACE
+#define ABIWORD_EDIT_GOTO				"abiword-edit-goto"			// GTK_STOCK_JUMP_TO
+#define ABIWORD_TOOLS_OPTIONS			"abiword-tools-options"		// GTK_STOCK_PREFERENCES
 
 #define ABIWORD_1COLUMN					"abiword-1column"
 #define ABIWORD_2COLUMN					"abiword-2column"
@@ -51,6 +59,7 @@
 #define ABIWORD_IMG						"abiword-img"
 #define ABIWORD_VIEW_SHOWPARA			"abiword-view-showpara"
 #define ABIWORD_HELP					"abiword-help"
+#define ABIWORD_HELP_ABOUT				"abiword-help-about"		// GTK_STOCK_ABOUT
 #define ABIWORD_FMT_FONT				"abiword-fmt-font"
 #define ABIWORD_FMT_BOLD				"abiword-fmt-bold"
 #define ABIWORD_FMT_ITALIC				"abiword-fmt-italic"
