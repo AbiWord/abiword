@@ -978,7 +978,7 @@ go_pixbuf_new_from_file (char const *filename)
 	return pixbuf;
 }
 
-#ifndef HAVE_GTK_DIALOG_GET_RESPONSE_FOR_WIDGET
+#if !GTK_CHECK_VERSION(2,8,0)
 /* This is public from 2.8 onwards.   */
 static gint
 gtk_dialog_get_response_for_widget (GtkDialog *dialog, GtkWidget *widget)
