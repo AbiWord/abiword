@@ -97,9 +97,7 @@ bonobodir = $(libdir)/bonobo/servers
 
 # Install the datafiles. This is quick-and-dirty.
 install-data-local:
-if WITH_BONOBO
 	@$(mkinstalldirs) $(DESTDIR)$(bonobodir)
-endif
 	if test -d $(top_srcdir)/../abidistfiles ; then \
 	  for dir in `cd $(top_srcdir)/../abidistfiles; find . -type d ! -name CVS` ; do \
 	    $(mkinstalldirs) $(DESTDIR)$(pkgdatadir)/$$dir ;\
@@ -113,9 +111,7 @@ endif
 	        if test -f $$file ; then \
 		  sfile=`echo "$$file" | sed 's/\.[^.]*$$//'`; \
 		  if test "$$sfile.server" = $$file; then \
-if WITH_BONOBO
 		    $(INSTALL_DATA) $$file $(DESTDIR)$(bonobodir); \
-endif
 		  else \
 		    $(INSTALL_DATA) $$file $(DESTDIR)$(pkgdatadir)/$$dir; \
 		  fi; \
