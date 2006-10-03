@@ -703,19 +703,26 @@ void abiSetupModalDialog(GtkDialog * dialog, XAP_Frame *pFrame, XAP_Dialog * pDl
 	GtkWidget * parentWindow = pUnixFrameImpl->getTopLevelWindow();
 #endif	
 
+	GtkWidget *popup;
 #ifdef HAVE_SDI
-	g_object_set (G_OBJECT (dialog), "accept-focus", TRUE, NULL);	
-	gtk_widget_set_app_paintable (GTK_WIDGET(dialog), TRUE);
-//	gtk_window_set_type_hint (GTK_WINDOW (dialog), GDK_WINDOW_TYPE_HINT_DOCK);
-//	gtk_window_set_type_hint (GTK_WINDOW (dialog), GDK_WINDOW_TYPE_HINT_MENU);
-	gtk_widget_show (GTK_WIDGET(dialog));
-	gtk_window_set_decorated (GTK_WINDOW (dialog), FALSE);
-	gtk_window_set_title (GTK_WINDOW (parentWindow), gtk_window_get_title (GTK_WINDOW (dialog)));
-	placeModalDialog (GTK_WIDGET (dialog), parentWindow);
-	g_signal_connect (G_OBJECT (parentWindow), "configure-event", G_CALLBACK (moveModalDialogCb), dialog);
-	g_signal_connect (G_OBJECT (dialog), "expose-event", G_CALLBACK (exposeModalDialogCb), NULL);
-	g_signal_connect (G_OBJECT (dialog), "focus-in-event", G_CALLBACK (focusInCb), parentWindow);
-	g_signal_connect (G_OBJECT (dialog), "destroy", G_CALLBACK (destroyModalDialogCb), pFrame);
+//	popup = gtk_window_new (GTK_WINDOW_POPUP);
+//	gtk_widget_reparent (gtk_bin_get_child (GTK_BIN (dialog)), popup);
+	popup = GTK_WIDGET (dialog);
+	g_object_set (G_OBJECT (popup), "accept-focus", TRUE, NULL);	
+	gtk_widget_set_app_paintable (GTK_WIDGET(popup), TRUE);
+	gtk_widget_show (GTK_WIDGET(popup));
+	gtk_window_set_decorated (GTK_WINDOW (popup), FALSE);
+	const gchar *s = gtk_window_get_title (GTK_WINDOW (parentWindow));
+	UT_UTF8String title = s ? s : "";
+	title += ": ";
+	s = gtk_window_get_title (GTK_WINDOW (popup));
+	title += s ? s : "";
+	gtk_window_set_title (GTK_WINDOW (parentWindow), title.utf8_str());
+	placeModalDialog (GTK_WIDGET (popup), parentWindow);
+	g_signal_connect (G_OBJECT (parentWindow), "configure-event", G_CALLBACK (moveModalDialogCb), popup);
+	g_signal_connect (G_OBJECT (popup), "expose-event", G_CALLBACK (exposeModalDialogCb), NULL);
+	g_signal_connect (G_OBJECT (popup), "focus-in-event", G_CALLBACK (focusInCb), parentWindow);
+	g_signal_connect (G_OBJECT (popup), "destroy", G_CALLBACK (destroyModalDialogCb), pFrame);
 	gtk_widget_set_sensitive (parentWindow, FALSE);
 	// this could be done for the non-sdi case as well
 /*
@@ -725,25 +732,26 @@ void abiSetupModalDialog(GtkDialog * dialog, XAP_Frame *pFrame, XAP_Dialog * pDl
 		group = gtk_window_group_new ();
 		g_object_set_data (G_OBJECT (parentWindow), WINDOW_GROUP, group);
 	}
-	gtk_window_group_add_window (group, GTK_WINDOW (dialog));
+	gtk_window_group_add_window (group, GTK_WINDOW (popup));
 */
 #else
-	connectFocus (GTK_WIDGET(dialog), pFrame);
+	popup = GTK_WIDGET (dialog);
+	connectFocus (GTK_WIDGET(popup), pFrame);
+	gtk_dialog_set_default_response (GTK_DIALOG (popup), defaultResponse);
 #endif
 
-	centerDialog (parentWindow, GTK_WIDGET(dialog));
-	gtk_window_set_modal (GTK_WINDOW(dialog), TRUE);
+	centerDialog (parentWindow, GTK_WIDGET(popup));
+	gtk_window_set_modal (GTK_WINDOW(popup), TRUE);
 
 	// connect F1 to the help subsystem
-	g_signal_connect (G_OBJECT(dialog), "key-press-event",
+	g_signal_connect (G_OBJECT(popup), "key-press-event",
 					  G_CALLBACK(modal_keypress_cb), pDlg);
 	
 	// set the default response
-	gtk_dialog_set_default_response (dialog, defaultResponse);
-	sAddHelpButton (dialog, pDlg);
+	sAddHelpButton (GTK_DIALOG (popup), pDlg);
 
 	// show the window
-	gtk_widget_show (GTK_WIDGET(dialog));
+	gtk_widget_show (GTK_WIDGET (popup));
 }
 
 gint abiRunModalDialog(GtkDialog * me, bool destroyDialog, AtkRole role)
