@@ -589,24 +589,6 @@ static void sAddHelpButton (GtkDialog * me, XAP_Dialog * pDlg)
 #endif
 }
 
-#if !GTK_CHECK_VERSION(2,8,0)
-/* This is public from 2.8 onwards.   */
-static gint
-gtk_dialog_get_response_for_widget (GtkDialog *dialog, GtkWidget *widget)
-{
-	const struct _response {
-		gint response_id;
-	} *rd;
-
-	rd = (const struct _response *)g_object_get_data (G_OBJECT (widget),
-													  "gtk-dialog-response-data");
-	if (!rd)
-		return GTK_RESPONSE_NONE;
-	else
-		return rd->response_id;
-}
-#endif
-
 /*!
  * Centers a dialog, makes it transient, sets up the right window icon
  */
