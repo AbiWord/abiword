@@ -60,6 +60,7 @@ BeginLayout(Main,0)
 		MenuItem(AP_MENU_ID_FILE_PRINT)
 		Separator()
 		MenuItem(AP_MENU_ID_FILE_PROPERTIES)
+#ifndef HAVE_SDI
 		Separator()
 #ifdef XP_UNIX_TARGET_GTK
 		// GNOME HIG style recent files 
@@ -82,10 +83,13 @@ BeginLayout(Main,0)
 #endif
 #endif
 		Separator()
+#endif
 #if  !XP_SIMPLE_MENU
 		MenuItem(AP_MENU_ID_FILE_CLOSE)
 #endif
+#ifndef HAVE_SDI
 		MenuItem(AP_MENU_ID_FILE_EXIT)
+#endif
 	EndSubMenu()
 
 	BeginSubMenu(AP_MENU_ID_EDIT)
@@ -387,7 +391,8 @@ BeginLayout(Main,0)
 #endif
 	EndSubMenu()
 
-#if !XP_SIMPLE_MENU
+#if !XP_SIMPLE_MENU 
+#ifndef HAVE_SDI
 	BeginSubMenu(AP_MENU_ID_WINDOW)
 		MenuItem(AP_MENU_ID_WINDOW_NEW)
 		Separator()
@@ -402,7 +407,7 @@ BeginLayout(Main,0)
 		MenuItem(AP_MENU_ID_WINDOW_9)
 		MenuItem(AP_MENU_ID_WINDOW_MORE)
 	EndSubMenu()
-
+#endif
 	BeginSubMenu(AP_MENU_ID_HELP)
 		MenuItem(AP_MENU_ID_HELP_CONTENTS)
 		MenuItem(AP_MENU_ID_HELP_INDEX)

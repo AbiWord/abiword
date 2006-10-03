@@ -148,6 +148,7 @@ abi_cell_renderer_font_render (GtkCellRenderer      *cell,
 					      "text", &text, 
 					      NULL);
 
+			g_return_if_fail (text);
 			if (0 == strcmp (text, PREVIEW_TEXT)) {
 				g_free (text);
 				text = NULL;

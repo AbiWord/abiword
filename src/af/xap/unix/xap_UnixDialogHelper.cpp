@@ -565,12 +565,16 @@ static void sAddHelpButton (GtkDialog * me, XAP_Dialog * pDlg)
 
   if (pDlg && pDlg->getHelpUrl().size () > 0) {
 
+#ifdef HAVE_SDI
     GtkWidget * image = gtk_image_new_from_stock(GTK_STOCK_HELP, GTK_ICON_SIZE_BUTTON);
 	GtkWidget * button = gtk_button_new();
 	gtk_container_add(GTK_CONTAINER(button), image);
 	GtkWidget * alignment = gtk_alignment_new (0, 0.5, 0, 0);
 	gtk_container_add (GTK_CONTAINER(alignment), button);
-
+#else
+	GtkWidget * alignment = gtk_button_new_from_stock (GTK_STOCK_HELP);
+	GtkWidget * button = alignment;
+#endif
     gtk_box_pack_start(GTK_BOX(me->action_area),
 		       alignment, FALSE, FALSE, 0);
     gtk_button_box_set_child_secondary (GTK_BUTTON_BOX(me->action_area),
