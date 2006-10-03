@@ -95,6 +95,7 @@ public:
 	// with it.
 
 	static IEFileType	fileTypeForSuffix(const char * szSuffix);
+	static IEFileType	fileTypeForMimetype(const char * szMimetype);
 	static IEFileType	fileTypeForDescription(const char * szSuffix);
 	static IEFileType fileTypeForSuffixes(const char * suffixList);
 	static IE_ExpSniffer * snifferForFileType(IEFileType ieft);

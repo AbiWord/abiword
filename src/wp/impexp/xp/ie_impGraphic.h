@@ -90,6 +90,7 @@ public:
   // with it.
   
   static IEGraphicFileType	fileTypeForSuffix(const char * szSuffix);
+  static IEGraphicFileType	fileTypeForMimetype(const char * szMimetype);
   static IEGraphicFileType	fileTypeForContents(const char * szBuf, UT_uint32 iNumbytes);
   
   static bool		enumerateDlgLabels(UT_uint32 ndx,

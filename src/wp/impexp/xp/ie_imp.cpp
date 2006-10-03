@@ -469,6 +469,64 @@ IEFileType IE_Imp::fileTypeForSuffix(const char * szSuffix)
 }
 
 /*! 
+  Find the filetype for the given mimetype.
+ \param szMimetype File mimetype
+
+ Returns IEFT_Unknown if no importer knows this mimetype.
+ Note that more than one importer may support a mimetype.
+ We return the first one we find.
+ This function should closely resemble IE_Exp::fileTypeForSuffix()
+*/
+IEFileType IE_Imp::fileTypeForMimetype(const char * szMimetype)
+{
+	if (!szMimetype)
+		return IEFT_Unknown;
+
+	IEFileType best = IEFT_Unknown;
+	UT_Confidence_t   best_confidence = UT_CONFIDENCE_ZILCH;
+
+	// we have to construct the loop this way because a
+	// given filter could support more than one file type,
+	// so we must query a mimetype match for all file types
+	UT_uint32 nrElements = getImporterCount();
+
+	for (UT_uint32 k=0; k < nrElements; k++)
+	{
+		IE_ImpSniffer * s = IE_IMP_Sniffers.getNthItem(k);
+		const IE_MimeConfidence * mc = s->getMimeConfidence();
+		UT_Confidence_t confidence = UT_CONFIDENCE_ZILCH;
+		while (mc && mc->match) {
+			if (mc->match == IE_MIME_MATCH_FULL) {
+				if (0 == UT_stricmp(mc->mimetype, szMimetype) && 
+					mc->confidence > confidence) {
+					confidence = mc->confidence;
+				}
+			}
+			mc++;
+		}
+
+		if ((confidence > 0) && ((IEFT_Unknown == best) || (confidence >= best_confidence)))
+		  {
+			best_confidence = confidence;
+			for (UT_sint32 a = 0; a < static_cast<int>(nrElements); a++)
+			{
+				if (s->supportsFileType(static_cast<IEFileType>(a+1)))
+				{
+				  best = static_cast<IEFileType>(a+1);
+				  
+				  // short-circuit if we're 100% sure
+				  if ( UT_CONFIDENCE_PERFECT == best_confidence )
+				    return best;
+				  break;
+				}
+			}
+		}
+	}
+
+	return best;	
+}
+
+/*! 
   Find the filetype for the given filetype description.
  \param szDescription Filetype description
 
@@ -484,7 +542,7 @@ IEFileType IE_Imp::fileTypeForDescription(const char * szDescription)
 	
 	// we have to construct the loop this way because a
 	// given filter could support more than one file type,
-	// so we must query a suffix match for all file types
+	// so we must query a mimetype match for all file types
 	UT_uint32 nrElements = getImporterCount();
 
 	for (UT_uint32 k=0; k < nrElements; k++)

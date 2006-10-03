@@ -185,6 +185,56 @@ const char * IE_ImpGraphic::getMimeTypeForSuffix(const char * suffix)
 /*****************************************************************/
 /*****************************************************************/
 
+IEGraphicFileType IE_ImpGraphic::fileTypeForMimetype(const char * szMimetype)
+{
+	if (!szMimetype || !strlen(szMimetype))
+		return IEGFT_Unknown;
+	
+	// we have to construct the loop this way because a
+	// given filter could support more than one file type,
+	// so we must query a mimetype match for all file types
+	UT_uint32 nrElements = getImporterCount();
+
+	IEGraphicFileType best = IEGFT_Unknown;
+	UT_Confidence_t   best_confidence = UT_CONFIDENCE_ZILCH;
+
+	for (UT_uint32 k=0; k < nrElements; k++)
+	{
+		IE_ImpGraphicSniffer * s = IE_IMP_GraphicSniffers.getNthItem(k);
+
+		const IE_MimeConfidence * mc = s->getMimeConfidence();
+		UT_Confidence_t confidence = UT_CONFIDENCE_ZILCH;
+		while (mc && mc->match) {
+			if (mc->match == IE_MIME_MATCH_FULL) {
+				if (0 == UT_stricmp(mc->mimetype, szMimetype) && 
+					mc->confidence > confidence) {
+					confidence = mc->confidence;
+				}
+			}
+			mc++;
+		}
+
+		if ((confidence > 0) && ((IEGFT_Unknown == best) || (confidence >= best_confidence)))
+		{
+			best_confidence = confidence;
+			for (UT_sint32 a = 0; a < static_cast<int>(nrElements); a++)
+			{
+				if (s->supportsType(static_cast<IEGraphicFileType>(a+1)))
+				  {
+				    best = static_cast<IEGraphicFileType>(a+1);
+				    
+				    // short-circuit if we're 100% sure
+				    if ( UT_CONFIDENCE_PERFECT == best_confidence )
+				      return best;
+				    break;
+				  }
+			}
+		}
+	}
+
+	return best;	
+}
+
 IEGraphicFileType IE_ImpGraphic::fileTypeForSuffix(const char * szSuffix)
 {
 	if (!szSuffix || !strlen(szSuffix))

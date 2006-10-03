@@ -84,7 +84,7 @@ UT_Confidence_t IE_Imp_GZipAbiWord_Sniffer::recognizeContents(const char * szBuf
 UT_Error IE_Imp_GZipAbiWord_Sniffer::constructImporter(PD_Document * pDocument,
 													   IE_Imp ** ppie)
 {
-    *ppie = new IE_Imp_AbiWord_1(pDocument);;
+    *ppie = new IE_Imp_AbiWord_1(pDocument);
     return UT_OK;
 }
 

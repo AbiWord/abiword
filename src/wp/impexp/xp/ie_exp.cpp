@@ -281,6 +281,52 @@ void IE_Exp::write(const char * sz, UT_uint32 length)
 /*****************************************************************/
 
 /*! 
+  Find the filetype for the given mimetype.
+ \param szMimetype File mimetype
+
+ Returns IEFT_AbiWord_1 if no exporter knows this mimetype.
+ Note that more than one exporter may support a mimetype.
+ We return the first one we find.
+ This function should closely resemble IE_Exp::fileTypeForMimetype()
+*/
+IEFileType IE_Exp::fileTypeForMimetype(const char * szMimetype)
+{
+	if (!szMimetype)
+		return IE_Exp::fileTypeForSuffix(".abw");
+
+	// we have to construct the loop this way because a
+	// given filter could support more than one file type,
+	// so we must query a mimetype match for all file types
+	UT_uint32 nrElements = getExporterCount();
+
+	for (UT_uint32 k=0; k < nrElements; k++)
+	{
+		IE_ExpSniffer * s = m_sniffers.getNthItem(k);
+		UT_return_val_if_fail (s, IEFT_Unknown);
+		if (s->supportsMIME(szMimetype))
+		{
+			for (UT_uint32 a = 0; a < nrElements; a++)
+			{
+				if (s->supportsFileType(static_cast<IEFileType>(a+1)))
+					return static_cast<IEFileType>(a+1);
+			}
+
+			// UT_ASSERT_HARMLESS(UT_SHOULD_NOT_HAPPEN);
+			// Hm... an exporter has registered for the given mimetype,
+			// but refuses to support any file type we request.
+			
+			// bug 9548 -- do not return native format
+			// return IE_Exp::fileTypeForMimetype(".abw");
+			return IEFT_Unknown;
+		}
+	}
+
+	// bug 9548 -- returning type IEFT_Unknown causes Save to fail and brings up Save As dlg
+	// return IE_Exp::fileTypeForMimetype(".abw");
+	return IEFT_Unknown;
+}
+
+/*! 
   Find the filetype for the given suffix.
  \param szSuffix File suffix
 
