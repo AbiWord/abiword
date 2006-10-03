@@ -701,7 +701,70 @@ void centerDialog(GtkWidget * parent, GtkWidget * child, bool set_transient_for)
 	}
 }
 
-void abiSetupModalDialog(GtkDialog * me, XAP_Frame *pFrame, XAP_Dialog * pDlg, gint dfl_response)
+#ifdef HAVE_SDI
+static void 
+placeModalDialog (GtkWidget	*dialog, 
+				  GtkWidget *parent)
+{
+	gint ox, oy, x;
+	gdk_window_get_origin (parent->window, &ox, &oy);
+	x = ox + (parent->allocation.width - GTK_WIDGET(dialog)->allocation.width) / 2;
+	gtk_window_move (GTK_WINDOW (dialog), x, oy);
+}
+
+static gboolean
+exposeModalDialogCb (GtkWidget      *widget,
+					 GdkEventExpose *event,
+					 gpointer        data)
+{
+	gtk_paint_shadow (widget->style, 
+					  widget->window,
+					  GTK_STATE_ACTIVE,
+					  GTK_SHADOW_OUT,
+					  NULL,
+					  widget,
+					  NULL,
+					  widget->allocation.x,
+					  widget->allocation.y,
+					  widget->allocation.width,
+					  widget->allocation.height);
+	return FALSE;
+}
+
+static gboolean
+moveModalDialogCb(GtkWidget			*widget,
+				  GdkEventConfigure	*event,
+				  GtkWidget 		*dialog)
+{
+	if (GDK_CONFIGURE == event->type) {
+		placeModalDialog (dialog, widget);
+	}
+	return FALSE;
+}
+
+static gboolean
+focusInCb (GtkWidget     	*widget,
+		   GdkEventFocus 	*event,
+		   GtkWidget		*parent)
+{
+	if (!gtk_window_is_active (GTK_WINDOW (parent))) {
+		gtk_widget_grab_focus (parent);
+	}
+}
+
+static void
+destroyModalDialogCb (GtkObject *dialog,
+					  XAP_Frame *pFrame)
+{
+	XAP_UnixFrameImpl 	*pUnixFrameImpl = static_cast<XAP_UnixFrameImpl *>(pFrame->getFrameImpl());
+	GtkWidget 			*parent = pUnixFrameImpl->getTopLevelWindow();
+
+	gtk_widget_set_sensitive (parent, TRUE);
+	pFrame->updateTitle ();
+}
+#endif
+
+void abiSetupModalDialog(GtkDialog * dialog, XAP_Frame *pFrame, XAP_Dialog * pDlg, gint defaultResponse)
 {
 	// To center the dialog, we need the frame of its parent.
 	XAP_UnixFrameImpl * pUnixFrameImpl = static_cast<XAP_UnixFrameImpl *>(pFrame->getFrameImpl());
@@ -712,26 +775,48 @@ void abiSetupModalDialog(GtkDialog * me, XAP_Frame *pFrame, XAP_Dialog * pDlg, g
 #else	
 	GtkWidget * parentWindow = pUnixFrameImpl->getTopLevelWindow();
 #endif	
-	
-	// connect focus to our parent frame
-	connectFocus(GTK_WIDGET(me),pFrame);
 
-	// center the dialog
-	centerDialog ( parentWindow, GTK_WIDGET(me) ) ;
-	
+#ifdef HAVE_SDI
+	g_object_set (G_OBJECT (dialog), "accept-focus", TRUE, NULL);	
+	gtk_widget_set_app_paintable (GTK_WIDGET(dialog), TRUE);
+	gtk_window_set_type_hint (GTK_WINDOW (dialog), GDK_WINDOW_TYPE_HINT_DOCK);
+//	gtk_window_set_type_hint (GTK_WINDOW (dialog), GDK_WINDOW_TYPE_HINT_MENU);
+	gtk_widget_show (GTK_WIDGET(dialog));
+	gtk_window_set_decorated (GTK_WINDOW (dialog), FALSE);
+	gtk_window_set_title (GTK_WINDOW (parentWindow), gtk_window_get_title (GTK_WINDOW (dialog)));
+	placeModalDialog (GTK_WIDGET (dialog), parentWindow);
+	g_signal_connect (G_OBJECT (parentWindow), "configure-event", G_CALLBACK (moveModalDialogCb), dialog);
+	g_signal_connect (G_OBJECT (dialog), "expose-event", G_CALLBACK (exposeModalDialogCb), NULL);
+	g_signal_connect (G_OBJECT (dialog), "focus-in-event", G_CALLBACK (focusInCb), parentWindow);
+	g_signal_connect (G_OBJECT (dialog), "destroy", G_CALLBACK (destroyModalDialogCb), pFrame);
+	gtk_widget_set_sensitive (parentWindow, FALSE);
+	// this could be done for the non-sdi case as well
+/*
+	#define WINDOW_GROUP "window-group"
+	GtkWindowGroup *group = (GtkWindowGroup *) g_object_get_data (G_OBJECT (parentWindow), WINDOW_GROUP);
+	if (!group) {
+		group = gtk_window_group_new ();
+		g_object_set_data (G_OBJECT (parentWindow), WINDOW_GROUP, group);
+	}
+	gtk_window_group_add_window (group, GTK_WINDOW (dialog));
+*/
+#else
+	centerDialog (parentWindow, GTK_WIDGET(dialog));
+	connectFocus (GTK_WIDGET(dialog), pFrame);
+#endif
+
+	gtk_window_set_modal (GTK_WINDOW(dialog), TRUE);
+
 	// connect F1 to the help subsystem
-	g_signal_connect (G_OBJECT(me), "key-press-event",
+	g_signal_connect (G_OBJECT(dialog), "key-press-event",
 					  G_CALLBACK(modal_keypress_cb), pDlg);
 	
 	// set the default response
-	gtk_dialog_set_default_response ( me, dfl_response ) ;
-	sAddHelpButton (me, pDlg);
-
-	// and make it modal
-	gtk_window_set_modal ( GTK_WINDOW(me), TRUE ) ;
+	gtk_dialog_set_default_response (dialog, defaultResponse);
+	sAddHelpButton (dialog, pDlg);
 
 	// show the window
-	gtk_widget_show ( GTK_WIDGET(me) ) ;
+	gtk_widget_show (GTK_WIDGET(dialog));
 }
 
 gint abiRunModalDialog(GtkDialog * me, bool destroyDialog, AtkRole role)
@@ -754,14 +839,14 @@ gint abiRunModalDialog(GtkDialog * me, bool destroyDialog, AtkRole role)
  * 2) Centers dialog over toplevel window
  * 3) Connects F1 to help system
  * 4) Makes dialog modal
- * 5) Sets the default button to dfl_response, sets ESC to close
+ * 5) Sets the default button to defaultResponse, sets ESC to close
  * 6) Returns value of gtk_dialog_run(me)
  * 7) If \destroyDialog is true, destroys the dialog, else you have to call abiDestroyWidget()
  */
 gint abiRunModalDialog(GtkDialog * me, XAP_Frame *pFrame, XAP_Dialog * pDlg,
-					   gint dfl_response, bool destroyDialog, AtkRole role)
+					   gint defaultResponse, bool destroyDialog, AtkRole role)
 {
-  abiSetupModalDialog(me, pFrame, pDlg, dfl_response);
+  abiSetupModalDialog(me, pFrame, pDlg, defaultResponse);
   return abiRunModalDialog(me, destroyDialog, role);
 }
 
@@ -773,10 +858,10 @@ gint abiRunModalDialog(GtkDialog * me, XAP_Frame *pFrame, XAP_Dialog * pDlg,
  * 4) Connects F1 to help system
  * 5) Makes dialog non-modal (modeless)
  * 
-6) Sets the default button to dfl_response, sets ESC to close
+6) Sets the default button to defaultResponse, sets ESC to close
  */
 void abiSetupModelessDialog(GtkDialog * me, XAP_Frame * pFrame, XAP_Dialog * pDlg,
-							gint dfl_response, bool abi_modeless, AtkRole role )
+							gint defaultResponse, bool abi_modeless, AtkRole role )
 {
 	// To center the dialog, we need the frame of its parent.
 	XAP_UnixFrameImpl * pUnixFrameImpl = static_cast<XAP_UnixFrameImpl *>(pFrame->getFrameImpl());
@@ -800,7 +885,7 @@ void abiSetupModelessDialog(GtkDialog * me, XAP_Frame * pFrame, XAP_Dialog * pDl
 					  G_CALLBACK(nonmodal_keypress_cb), pDlg);
 	
 	// set the default response
-	gtk_dialog_set_default_response ( me, dfl_response ) ;
+	gtk_dialog_set_default_response ( me, defaultResponse ) ;
 	sAddHelpButton (me, pDlg);
 
 	// and mark it as modeless

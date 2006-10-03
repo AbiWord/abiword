@@ -41,16 +41,15 @@ BeginLayout(Main,0)
 #if !XP_SIMPLE_MENU	
 		MenuItem(AP_MENU_ID_FILE_IMPORTSTYLES)
 #endif	
-
+#ifndef HAVE_SDI
 		Separator()
-
 		MenuItem(AP_MENU_ID_FILE_SAVE)
 		MenuItem(AP_MENU_ID_FILE_SAVEAS)
 //		MenuItem(AP_MENU_ID_FILE_SAVE_TEMPLATE)
 //		MenuItem(AP_MENU_ID_FILE_IMPORT)
 		MenuItem(AP_MENU_ID_FILE_EXPORT)
 		MenuItem(AP_MENU_ID_FILE_REVERT)
-
+#endif
 #if !XP_SIMPLE_MENU
 		Separator()
 		MenuItem(AP_MENU_ID_FILE_PAGESETUP)
