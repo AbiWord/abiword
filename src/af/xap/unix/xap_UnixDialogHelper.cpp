@@ -38,6 +38,7 @@
 #include <gdk/gdk.h>
 #include <gdk/gdkx.h>
 #include <gdk/gdkkeysyms.h>
+#include <goffice/gtk/goffice-gtk.h>
 
 #include "ut_debugmsg.h"
 #include "ut_assert.h"
@@ -606,80 +607,6 @@ gtk_dialog_get_response_for_widget (GtkDialog *dialog, GtkWidget *widget)
 }
 #endif
 
-
-/**
- * go_dialog_guess_alternative_button_order:
- * @dialog :
- *
- * This function inspects the buttons in the dialog and comes up
- * with a reasonable alternative dialog order.
- **/
-static void
-go_dialog_guess_alternative_button_order (GtkDialog *dialog)
-{
-	GList *children, *tmp;
-	int i, nchildren;
-	int *new_order;
-	int i_yes = -1, i_no = -1, i_ok = -1, i_cancel = -1, i_apply = -1;
-	gboolean again;
-	gboolean any = FALSE;
-	int loops = 0;
-
-	children = gtk_container_get_children (GTK_CONTAINER (dialog->action_area));
-	if (!children)
-		return;
-
-	nchildren = g_list_length (children);
-	new_order = g_new (int, nchildren);
-
-	for (tmp = children, i = 0; tmp; tmp = tmp->next, i++) {
-		GtkWidget *child = (GtkWidget *)tmp->data;
-		int res = gtk_dialog_get_response_for_widget (dialog, child);
-		new_order[i] = res;
-		switch (res) {
-		case GTK_RESPONSE_YES: i_yes = i; break;
-		case GTK_RESPONSE_NO: i_no = i; break;
-		case GTK_RESPONSE_OK: i_ok = i; break;
-		case GTK_RESPONSE_CANCEL: i_cancel = i; break;
-		case GTK_RESPONSE_APPLY: i_apply = i; break;
-		}
-	}
-	g_list_free (children);
-
-#define MAYBE_SWAP(ifirst,ilast)				\
-	if (ifirst >= 0 && ilast >= 0 && ifirst < ilast) {	\
-		int tmp;					\
-								\
-		tmp = new_order[ifirst];			\
-		new_order[ifirst] = new_order[ilast];		\
-		new_order[ilast] = tmp;				\
-								\
-		tmp = ifirst;					\
-		ifirst = ilast;					\
-		ilast = tmp;					\
-								\
-		again = TRUE;					\
-		any = TRUE;					\
-	}
-
-	do {
-		again = FALSE;
-		MAYBE_SWAP (i_yes, i_no);
-		MAYBE_SWAP (i_ok, i_cancel);
-		MAYBE_SWAP (i_cancel, i_apply);
-		MAYBE_SWAP (i_no, i_cancel);
-	} while (again && ++loops < 2);
-
-#undef MAYBE_SWAP
-
-	if (any)
-		gtk_dialog_set_alternative_button_order_from_array (dialog,
-								    nchildren,
-								    new_order);
-	g_free (new_order);
-}
-
-
 /*!
  * Centers a dialog, makes it transient, sets up the right window icon
  */
@@ -779,7 +706,7 @@ void abiSetupModalDialog(GtkDialog * dialog, XAP_Frame *pFrame, XAP_Dialog * pDl
 #ifdef HAVE_SDI
 	g_object_set (G_OBJECT (dialog), "accept-focus", TRUE, NULL);	
 	gtk_widget_set_app_paintable (GTK_WIDGET(dialog), TRUE);
-	gtk_window_set_type_hint (GTK_WINDOW (dialog), GDK_WINDOW_TYPE_HINT_DOCK);
+//	gtk_window_set_type_hint (GTK_WINDOW (dialog), GDK_WINDOW_TYPE_HINT_DOCK);
 //	gtk_window_set_type_hint (GTK_WINDOW (dialog), GDK_WINDOW_TYPE_HINT_MENU);
 	gtk_widget_show (GTK_WIDGET(dialog));
 	gtk_window_set_decorated (GTK_WINDOW (dialog), FALSE);
@@ -801,10 +728,10 @@ void abiSetupModalDialog(GtkDialog * dialog, XAP_Frame *pFrame, XAP_Dialog * pDl
 	gtk_window_group_add_window (group, GTK_WINDOW (dialog));
 */
 #else
-	centerDialog (parentWindow, GTK_WIDGET(dialog));
 	connectFocus (GTK_WIDGET(dialog), pFrame);
 #endif
 
+	centerDialog (parentWindow, GTK_WIDGET(dialog));
 	gtk_window_set_modal (GTK_WINDOW(dialog), TRUE);
 
 	// connect F1 to the help subsystem
