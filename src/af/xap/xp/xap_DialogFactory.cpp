@@ -89,6 +89,7 @@ XAP_Dialog_Id XAP_DialogFactory::registerDialog(XAP_Dialog *(* pStaticConstructo
   pDlgTable->m_id = getNextId();
   pDlgTable->m_type = iDialogType;
   pDlgTable->m_pfnStaticConstructor = pStaticConstructor;
+  pDlgTable->m_tabbed = FALSE;
   m_vec_dlg_table.addItem(pDlgTable);
   m_vecDynamicTable.addItem(pDlgTable);
   return pDlgTable->m_id;
