@@ -680,7 +680,7 @@ void AP_UnixApp::pasteFromClipboard(PD_DocumentRange * pDocRange, bool bUseClipb
 	{
 		UT_DEBUGMSG(("Format Found = %s \n",szFormatFound));
 		IE_Imp * pImp = NULL;
-		IEFileType ieft = IE_Imp::fileTypeForContents(reinterpret_cast<char *>(const_cast<unsigned char *>(pData)),iLen);
+		IEFileType ieft = IE_Imp::fileTypeForMimetype(szFormatFound);
 		UT_DEBUGMSG(("found file type %d\n",ieft));
 		IE_Imp::constructImporter(pDocRange->m_pDoc,NULL,ieft,&pImp);
 		if(pImp == NULL)
@@ -694,7 +694,7 @@ void AP_UnixApp::pasteFromClipboard(PD_DocumentRange * pDocRange, bool bUseClipb
 		  if(strncmp(szFormatFound,"application",11) == 0) // embedded object
 		  {
 			  IE_Imp * pImp = NULL;
-			  IEGraphicFileType iegft = IE_Imp::fileTypeForContents(reinterpret_cast<char *>(const_cast<unsigned char *>(pData)),iLen);
+			  IEGraphicFileType iegft = IE_Imp::fileTypeForMimetype(szFormatFound);
 			  IE_Imp::constructImporter(pDocRange->m_pDoc,NULL,iegft,&pImp);
 			  if(pImp == NULL)
 			  {
