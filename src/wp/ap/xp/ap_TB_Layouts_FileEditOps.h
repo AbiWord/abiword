@@ -29,12 +29,12 @@
 
 BeginLayout(FileEditOps, AP_STRING_ID_TB_Standard, AP_PREF_KEY_StandardBarVisible)
 
+#ifndef HAVE_SDI
 	ToolbarItem(AP_TOOLBAR_ID_FILE_NEW)
 	ToolbarItem(AP_TOOLBAR_ID_FILE_OPEN)
-#ifndef HAVE_SDI
 	ToolbarItem(AP_TOOLBAR_ID_FILE_SAVE)
-#endif
 	Spacer()
+#endif
 #ifdef XP_UNIX_TARGET_GTK
 	ToolbarItem(AP_TOOLBAR_ID_FILE_PRINT_PREVIEW)
 #endif

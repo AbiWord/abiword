@@ -828,7 +828,11 @@ dcl(WINDOWS_COMCTL_WARNING,	"AbiWord is designed for a newer version of the syst
 dcl(MENU_LABEL__BOGUS1__," ")
 dcl(MENU_LABEL__BOGUS2__," ")
 dcl(MENU_LABEL_OPEN_TEMPLATE,"Open Template")
+#ifdef HAVE_SDI
+dcl(MENU_LABEL_FILE,"&Document")
+#else
 dcl(MENU_LABEL_FILE,"&File")
+#endif
 dcl(MENU_LABEL_FILE_NEW,"&New")
 dcl(MENU_LABEL_FILE_NEW_USING_TEMPLATE,"&New using Template")
 dcl(MENU_LABEL_FILE_OPEN,"&Open")
