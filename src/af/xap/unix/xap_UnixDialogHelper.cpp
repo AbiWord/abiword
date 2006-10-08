@@ -706,21 +706,21 @@ void abiSetupModalDialog(GtkDialog * dialog, XAP_Frame *pFrame, XAP_Dialog * pDl
 	g_signal_connect (G_OBJECT (popup), "focus-in-event", G_CALLBACK (focusInCb), parentWindow);
 	g_signal_connect (G_OBJECT (popup), "destroy", G_CALLBACK (destroyModalDialogCb), pFrame);
 	gtk_widget_set_sensitive (parentWindow, FALSE);
-	// this could be done for the non-sdi case as well
-/*
-	#define WINDOW_GROUP "window-group"
-	GtkWindowGroup *group = (GtkWindowGroup *) g_object_get_data (G_OBJECT (parentWindow), WINDOW_GROUP);
-	if (!group) {
-		group = gtk_window_group_new ();
-		g_object_set_data (G_OBJECT (parentWindow), WINDOW_GROUP, group);
-	}
-	gtk_window_group_add_window (group, GTK_WINDOW (popup));
-*/
 #else
 	popup = GTK_WIDGET (dialog);
 	connectFocus (GTK_WIDGET(popup), pFrame);
 	gtk_dialog_set_default_response (GTK_DIALOG (popup), defaultResponse);
 #endif
+
+	#define WINDOW_GROUP "window-group"
+	GtkWindowGroup *group = (GtkWindowGroup *) g_object_get_data (G_OBJECT (parentWindow), WINDOW_GROUP);
+	if (!group) {
+		group = gtk_window_group_new ();
+		gtk_window_group_add_window (group, GTK_WINDOW (parentWindow));
+		g_object_set_data (G_OBJECT (parentWindow), WINDOW_GROUP, group);
+	}
+	gtk_window_group_add_window (group, GTK_WINDOW (popup));
+	g_signal_connect_swapped (G_OBJECT (popup), "destroy", G_CALLBACK (gtk_window_group_remove_window), group);
 
 	centerDialog (parentWindow, GTK_WIDGET(popup));
 	gtk_window_set_modal (GTK_WINDOW(popup), TRUE);
