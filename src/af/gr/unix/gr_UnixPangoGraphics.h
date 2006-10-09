@@ -261,6 +261,8 @@ class ABI_EXPORT GR_UnixPangoPrintGraphics : public GR_UnixPangoGraphics
 	static const char *    graphicsDescriptor(){return "Unix Pango Print";}
 	static GR_Graphics *   graphicsAllocator(GR_AllocInfo&);
 
+	GnomePrintContext *    getGnomePrintContext() const;
+	
 	virtual void setColor(const UT_RGBColor& clr);
 	virtual void getColor(UT_RGBColor& clr);
 	

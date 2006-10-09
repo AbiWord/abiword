@@ -2177,6 +2177,12 @@ GR_Graphics * GR_UnixPangoPrintGraphics::graphicsAllocator(GR_AllocInfo& info)
 	}
 }
 
+GnomePrintContext * GR_UnixPangoPrintGraphics::getGnomePrintContext() const
+{
+	return m_pGnomePrint->getGnomePrintContext();
+}
+
+
 void GR_UnixPangoPrintGraphics::drawChars(const UT_UCSChar* pChars, 
 										   int iCharOffset, int iLength,
 										   UT_sint32 xoff, UT_sint32 yoff,
