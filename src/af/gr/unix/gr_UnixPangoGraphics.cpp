@@ -2183,6 +2183,17 @@ GnomePrintContext * GR_UnixPangoPrintGraphics::getGnomePrintContext() const
 }
 
 
+UT_sint32 GR_UnixPangoPrintGraphics::scale_ydir (UT_sint32 in) const
+{
+	return m_pGnomePrint->scale_ydir (in);
+}
+
+UT_sint32 GR_UnixPangoPrintGraphics::scale_xdir (UT_sint32 in) const
+{
+	return m_pGnomePrint->scale_xdir (in);
+}
+
+
 void GR_UnixPangoPrintGraphics::drawChars(const UT_UCSChar* pChars, 
 										   int iCharOffset, int iLength,
 										   UT_sint32 xoff, UT_sint32 yoff,

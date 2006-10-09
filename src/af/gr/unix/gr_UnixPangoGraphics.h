@@ -262,6 +262,8 @@ class ABI_EXPORT GR_UnixPangoPrintGraphics : public GR_UnixPangoGraphics
 	static GR_Graphics *   graphicsAllocator(GR_AllocInfo&);
 
 	GnomePrintContext *    getGnomePrintContext() const;
+	UT_sint32              scale_ydir (UT_sint32 in) const;
+	UT_sint32              scale_xdir (UT_sint32 in) const;
 	
 	virtual void setColor(const UT_RGBColor& clr);
 	virtual void getColor(UT_RGBColor& clr);
