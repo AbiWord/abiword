@@ -171,7 +171,6 @@ bool AP_UnixToolbar_StyleCombo::repopulate(void)
 			UT_DEBUGMSG(("no style instance for '%s'\n", szName));
 		}
 
-printf ("%s disp:%d in:%d list:%d used:%d\n", szName, pStyle->isDisplayed(), dynamic_cast<PD_BuiltinStyle *>(pStyle), pStyle->isList(), pStyle->isUsed());
 		if (!pStyle->isDisplayed() && 
 		    !(dynamic_cast<PD_BuiltinStyle *>(pStyle) && pStyle->isList() && pStyle->isUsed())) {
 			continue;

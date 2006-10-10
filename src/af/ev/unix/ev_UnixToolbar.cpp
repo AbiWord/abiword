@@ -1121,7 +1121,6 @@ bool EV_UnixToolbar::refreshToolbar(AV_View * pView, AV_ChangeMask mask)
 					}
 					else if (wd->m_id == AP_TOOLBAR_ID_FMT_STYLE) {
 #define BUILTIN_INDEX "builtin-index"
-printf ("style: '%s'\n", szState);
 						gint idx = GPOINTER_TO_INT(g_object_steal_data(G_OBJECT(combo), BUILTIN_INDEX));
 						if (idx > 0) {
 							gtk_combo_box_remove_text(combo, idx);
