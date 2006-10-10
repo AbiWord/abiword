@@ -1119,6 +1119,29 @@ bool EV_UnixToolbar::refreshToolbar(AV_View * pView, AV_ChangeMask mask)
 											   szState);
 						}
 					}
+					else if (wd->m_id == AP_TOOLBAR_ID_FMT_STYLE) {
+#define BUILTIN_INDEX "builtin-index"
+printf ("style: '%s'\n", szState);
+						gint idx = GPOINTER_TO_INT(g_object_steal_data(G_OBJECT(combo), BUILTIN_INDEX));
+						if (idx > 0) {
+							gtk_combo_box_remove_text(combo, idx);
+						}
+						gboolean ret = combo_box_set_active_text(combo, szState, wd->m_handlerId);
+						if (!ret) {
+							// try again
+							repopulateStyles();
+							ret = combo_box_set_active_text(combo, szState, wd->m_handlerId);
+							if (!ret) {
+								// still not, hmm, this seems to be an internal style
+								// we'll just display it and remove the entry when the carent moves away
+								gtk_combo_box_append_text (combo, szState);
+								combo_box_set_active_text(combo, szState, wd->m_handlerId);
+								g_object_set_data (G_OBJECT (combo), BUILTIN_INDEX, 
+												   GINT_TO_POINTER(gtk_combo_box_get_active(combo)));
+							}
+						}
+#undef BUILTIN_INDEX
+					}
 					else {
 						combo_box_set_active_text(combo, szState, wd->m_handlerId);
 					} 

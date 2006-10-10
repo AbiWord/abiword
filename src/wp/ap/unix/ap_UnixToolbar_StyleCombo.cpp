@@ -1,3 +1,5 @@
+/* -*- mode: C++; tab-width: 4; c-basic-offset: 4; -*- */
+
 /* AbiWord
  * Copyright (C) 1998 AbiSource, Inc.
  * 
@@ -102,7 +104,9 @@ bool AP_UnixToolbar_StyleCombo::populate(void)
 
 	for (UT_uint32 k=0; (pDocument->enumStyles(k,&szName,&pStyle)); k++)
 	{
-		m_vecContents.addItem(szName);
+		if (pStyle && pStyle->isDisplayed()) {
+			m_vecContents.addItem(szName);
+		}
 	}
 #endif 
 
@@ -167,10 +171,11 @@ bool AP_UnixToolbar_StyleCombo::repopulate(void)
 			UT_DEBUGMSG(("no style instance for '%s'\n", szName));
 		}
 
-		/* TODO Numbered Headings are also lists, we need to show them tough
-		if (pStyle->isList())
+printf ("%s disp:%d in:%d list:%d used:%d\n", szName, pStyle->isDisplayed(), dynamic_cast<PD_BuiltinStyle *>(pStyle), pStyle->isList(), pStyle->isUsed());
+		if (!pStyle->isDisplayed() && 
+		    !(dynamic_cast<PD_BuiltinStyle *>(pStyle) && pStyle->isList() && pStyle->isUsed())) {
 			continue;
-		*/
+		}
 
 		list = g_slist_prepend (list, (char *)szName);
 

@@ -1,3 +1,5 @@
+/* -*- mode: C++; tab-width: 4; c-basic-offset: 4; -*- */
+
 /* AbiWord
  * Copyright (C) 1998 AbiSource, Inc.
  * 
@@ -24,8 +26,8 @@
 #include "ut_vector.h"
 #include "ut_debugmsg.h"
 
-PD_Style::PD_Style(pt_PieceTable * pPT, PT_AttrPropIndex indexAP, const char * szName) :
-  m_pPT(pPT), m_indexAP(indexAP), m_szName(NULL), m_iUsed(0),
+PD_Style::PD_Style(pt_PieceTable * pPT, PT_AttrPropIndex indexAP, const char * szName, bool bDisplayed) :
+  m_pPT(pPT), m_indexAP(indexAP), m_szName(NULL), m_bDisplayed(bDisplayed), m_iUsed(0),
   m_pBasedOn(NULL), m_pFollowedBy(NULL)
 {
   if (szName)
@@ -498,8 +500,8 @@ bool PD_Style::getAllProperties( UT_Vector * vProps, UT_sint32 depth)
 // a sub-class to wrap the compiled-in styles
 //////////////////////////////////////////////////////////////////
 
-PD_BuiltinStyle::PD_BuiltinStyle(pt_PieceTable * pPT, PT_AttrPropIndex indexAP, const char * szName)
-  : PD_Style(pPT, indexAP, szName), m_indexAPOrig(indexAP)
+PD_BuiltinStyle::PD_BuiltinStyle(pt_PieceTable * pPT, PT_AttrPropIndex indexAP, const char * szName, bool bDisplayed)
+  : PD_Style(pPT, indexAP, szName, bDisplayed), m_indexAPOrig(indexAP)
 {
 }
 

@@ -534,7 +534,7 @@ protected:
 	UT_uint32				_computeBlockOffset(pf_Frag_Strux * pfs,pf_Frag * pfTarget) const;
 
 	bool					_loadBuiltinStyles(void);
-	bool					_createBuiltinStyle(const char * szName, const XML_Char ** attributes);
+	bool					_createBuiltinStyle(const char * szName, bool bDisplayed, const XML_Char ** attributes);
 
 	bool					_insertFmtMarkFragWithNotify(PTChangeFmt ptc,
 														 PT_DocPosition dpos,
