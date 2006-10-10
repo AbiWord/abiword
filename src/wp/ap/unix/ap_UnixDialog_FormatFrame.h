@@ -51,8 +51,8 @@ public:
 protected:
 	typedef enum
 	{
-		BUTTON_APPLY,
-	    BUTTON_CLOSE
+	  BUTTON_APPLY = GTK_RESPONSE_APPLY,
+	  BUTTON_CLOSE = GTK_RESPONSE_CLOSE
 	} ResponseId ;
 		
 	virtual GtkWidget *		_constructWindow(void);

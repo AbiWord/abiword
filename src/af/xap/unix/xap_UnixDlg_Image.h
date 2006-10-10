@@ -46,8 +46,8 @@ class XAP_UnixDialog_Image: public XAP_Dialog_Image
 
 	typedef enum
 	  {
-	    BUTTON_OK,
-	    BUTTON_CANCEL
+	    BUTTON_OK = GTK_RESPONSE_OK,
+	    BUTTON_CANCEL = GTK_RESPONSE_CANCEL
 	  } ResponseId ;
 
 	void event_Ok ();

@@ -53,7 +53,7 @@ public:
 	typedef enum
 		{
 		  BUTTON_INSERT,
-		  BUTTON_CLOSE
+		  BUTTON_CLOSE = GTK_RESPONSE_CLOSE
 		} ResponseId ;
 	
 #ifndef USE_GUCHARMAP

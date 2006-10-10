@@ -45,7 +45,7 @@ public:
 protected:
 	typedef enum
 	{
-	    BUTTON_CLOSE
+	    BUTTON_CLOSE = GTK_RESPONSE_CLOSE
 	} ResponseId ;
 
 		

@@ -93,10 +93,10 @@ protected:
 
 	enum
 	  {
-	    BUTTON_APPLY,
-	    BUTTON_CLOSE,
-	    BUTTON_MODIFY_OK,
-	    BUTTON_MODIFY_CANCEL
+	    BUTTON_APPLY = GTK_RESPONSE_APPLY,
+	    BUTTON_CLOSE = GTK_RESPONSE_CLOSE,
+	    BUTTON_MODIFY_OK = GTK_RESPONSE_OK,
+	    BUTTON_MODIFY_CANCEL = GTK_RESPONSE_CANCEL
 	  } ResponseId;
 
 	// private construction functions

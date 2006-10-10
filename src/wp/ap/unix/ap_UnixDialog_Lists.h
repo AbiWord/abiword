@@ -85,10 +85,10 @@ class AP_UnixDialog_Lists: public AP_Dialog_Lists
  private:
 	typedef enum
 	{
-		BUTTON_OK,
-		BUTTON_CANCEL,
-		BUTTON_CLOSE,
-		BUTTON_APPLY, 
+		BUTTON_OK = GTK_RESPONSE_OK,
+		BUTTON_CANCEL = GTK_RESPONSE_CANCEL,
+		BUTTON_CLOSE = GTK_RESPONSE_CLOSE,
+		BUTTON_APPLY = GTK_RESPONSE_APPLY, 
 		BUTTON_RESET
 	} ResponseId ;	
 	

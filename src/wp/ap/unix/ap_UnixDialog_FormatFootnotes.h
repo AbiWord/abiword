@@ -53,8 +53,8 @@ private:
 
 	enum
 	  {
-	    BUTTON_CANCEL,
-	    BUTTON_OK,
+	    BUTTON_CANCEL = GTK_RESPONSE_CANCEL,
+	    BUTTON_OK = GTK_RESPONSE_OK,
 	    BUTTON_DELETE
 	  } ResponseId ;
 
