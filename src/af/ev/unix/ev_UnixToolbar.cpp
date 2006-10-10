@@ -828,6 +828,7 @@ bool EV_UnixToolbar::synthesize(void)
 				else if (wd->m_id == AP_TOOLBAR_ID_FMT_FONT) {
 					gulong *handler_id = new gulong;
 					combo = abi_font_combo_new ();
+					gtk_widget_set_name (combo, "AbiFontCombo");
 					*handler_id = g_signal_connect (G_OBJECT(combo), "prelight", 
 												    G_CALLBACK(_wd::s_font_prelight), 
 												    wd);
@@ -845,10 +846,12 @@ bool EV_UnixToolbar::synthesize(void)
 				}
 				else if (wd->m_id == AP_TOOLBAR_ID_ZOOM) {
 					combo = gtk_combo_box_new_text();
+					gtk_widget_set_name (combo, "AbiZoomCombo");
 					proxy_action_name = "dlgZoom";
 				}
 				else if (wd->m_id == AP_TOOLBAR_ID_FMT_STYLE) {
 					combo = gtk_combo_box_new_text();
+					gtk_widget_set_name (combo, "AbiStyleCombo");
 					proxy_action_name = "dlgStyle";
 				}
 				else {
