@@ -159,10 +159,9 @@ abi_cell_renderer_font_render (GtkCellRenderer      *cell,
 						    FONT, &text, 
 						    -1);
 			}
-
 			g_signal_emit (G_OBJECT (cell), 
 				       cell_renderer_font_signals[RENDERER_PRELIGHT],
-				       0, text);
+				       1, text);
 		}
 	}
 	else if (gtk_widget_is_ancestor (widget, self->parent_widget)) {
