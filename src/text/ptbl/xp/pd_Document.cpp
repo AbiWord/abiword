@@ -3965,9 +3965,9 @@ bool PD_Document::getDataItemDataByName(const char * szName,
 	const void *pHashEntry = m_hashDataItems.pick(szName);
 	if (!pHashEntry)
 		return false;
-
 	struct _dataItemPair* pPair = const_cast<struct _dataItemPair*>(static_cast<const struct _dataItemPair*>(pHashEntry));
 	UT_return_val_if_fail (pPair, false);
+	UT_DEBUGMSG(("Found data item name %s buf %x \n",szName,pPair->pBuf));
 
 	if (ppByteBuf)
 	{

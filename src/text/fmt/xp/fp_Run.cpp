@@ -3375,7 +3375,7 @@ void fp_ImageRun::_lookupProperties(const PP_AttrProp * pSpanAP,
 	{
 		maxH = pG->tlu(3);
 	}
-
+	UT_DEBUGMSG(("Image szWidth %s Image szHeight %s \n",szWidth,szHeight));
 	if((strcmp(m_sCachedWidthProp.c_str(),szWidth) != 0) ||
 	   (strcmp(m_sCachedHeightProp.c_str(),szHeight) != 0) ||
 		UT_convertToLogicalUnits(szHeight) > maxH ||
@@ -3384,6 +3384,18 @@ void fp_ImageRun::_lookupProperties(const PP_AttrProp * pSpanAP,
 		m_sCachedWidthProp = szWidth;
 		m_sCachedHeightProp = szHeight;
 		DELETEP(m_pImage);
+		UT_sint32 iH = UT_convertToLogicalUnits(szHeight);
+		UT_sint32 iW =  UT_convertToLogicalUnits(szWidth);
+		if((iW < maxW) && (iW > 30))
+		{
+			maxW = iW;
+			UT_DEBUGMSG(("Change Image Width to %d \n",maxW));
+		}
+		if((iH < maxH) && (iH > 30))
+		{
+			maxH = iH;
+			UT_DEBUGMSG(("Change Image Height to %d \n",maxH));
+		}
 		m_pImage = m_pFGraphic->generateImage(pG, pSpanAP, maxW, maxH);
 		markAsDirty();
 		if(getLine())
