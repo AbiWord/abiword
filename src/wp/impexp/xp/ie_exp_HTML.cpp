@@ -5246,7 +5246,7 @@ void s_HTML_Listener::_emitTOC (PT_AttrPropIndex api) {
 		m_utf8_1 = "td";
 		tagOpen (TT_TD, m_utf8_1);
 
-		m_utf8_1 = "div id=\"toctitle\"";
+		m_utf8_1 = "div class=\"toctitle\"";
 		tagOpen (TT_DIV, m_utf8_1);
 
 		if(bEmitHeading)
