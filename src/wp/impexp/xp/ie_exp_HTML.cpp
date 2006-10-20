@@ -5231,7 +5231,7 @@ void s_HTML_Listener::_emitTOC (PT_AttrPropIndex api) {
 				bEmitHeading = false;
 		}
 
-		m_utf8_1 = UT_UTF8String_sprintf("table id=\"toc\" class=\"toc\" summary=\"%s\"", tocHeadingUTF8.utf8_str());
+		m_utf8_1 = UT_UTF8String_sprintf("table class=\"toc\" summary=\"%s\"", tocHeadingUTF8.utf8_str());
 		tagOpen (TT_TABLE, m_utf8_1);
 
 		m_utf8_1 = "tr";
