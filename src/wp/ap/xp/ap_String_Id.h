@@ -26,7 +26,7 @@
 ******************************************************************
 *****************************************************************/
 // Default Heading used in TOC
-dcl(TOC_TocHeading, "Table of Contents")
+dcl(TOC_TocHeading, "Contents")
 // Message Boxes used in AP_EditMethods
 dcl(MSG_SaveFailed, 	"Could not write to the file %s.")
 dcl(MSG_SaveFailedWrite,		"Writing error when attempting to save %s")

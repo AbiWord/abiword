@@ -1641,6 +1641,46 @@ void s_HTML_Listener::_outputStyles (const PP_AttrProp * pAP)
 		styleText (m_utf8_1);
 	}
 
+	// stylesheet stolen from wikipedia
+	styleText("#toc,\n"
+".toc,\n"
+".mw-warning {\n"
+"	border: 1px solid #aaa;\n"
+"	background-color: #f9f9f9;\n"
+"	padding: 5px;\n"
+"	font-size: 95%;\n"
+"}\n"
+"#toc h2,\n"
+".toc h2 {\n"
+"	display: inline;\n"
+"	border: none;\n"
+"	padding: 0;\n"
+"	font-size: 100%;\n"
+"	font-weight: bold;\n"
+"}\n"
+"#toc #toctitle,\n"
+".toc #toctitle,\n"
+"#toc .toctitle,\n"
+".toc .toctitle {\n"
+"	text-align: center;\n"
+"}\n"
+"#toc ul,\n"
+".toc ul {\n"
+"	list-style-type: none;\n"
+"	list-style-image: none;\n"
+"	margin-left: 0;\n"
+"	padding-left: 0;\n"
+"	text-align: left;\n"
+"}\n"
+"#toc ul ul,\n"
+".toc ul ul {\n"
+"	margin: 0 0 0 2em;\n"
+"}\n"
+"#toc .toctoggle,\n"
+".toc .toctoggle {\n"
+"	font-size: 94%;\n"
+"}");
+
 	/* global page styles refer to the <body> tag
 	 */
 	PD_Style * pStyle = 0;
@@ -2224,7 +2264,7 @@ void s_HTML_Listener::_openTag (PT_AttrPropIndex api, PL_StruxDocHandle sdh)
 			bClassAsTag = true;
 
 			if (m_toc) {
-				m_utf8_1 = UT_UTF8String_sprintf("h1 id=\"__AbiTOC%d__\"", m_heading_count);
+				m_utf8_1 = UT_UTF8String_sprintf("h1 id=\"AbiTOC%d__\"", m_heading_count);
 				m_heading_count++;
 			}
 			else
@@ -2242,7 +2282,7 @@ void s_HTML_Listener::_openTag (PT_AttrPropIndex api, PL_StruxDocHandle sdh)
 			bClassAsTag = true;
 
 			if (m_toc) {
-				m_utf8_1 = UT_UTF8String_sprintf("h2 id=\"__AbiTOC%d__\"", m_heading_count);
+				m_utf8_1 = UT_UTF8String_sprintf("h2 id=\"AbiTOC%d__\"", m_heading_count);
 				m_heading_count++;
 			}
 			else
@@ -2260,7 +2300,7 @@ void s_HTML_Listener::_openTag (PT_AttrPropIndex api, PL_StruxDocHandle sdh)
 			bClassAsTag = true;
 
 			if (m_toc) {
-				m_utf8_1 = UT_UTF8String_sprintf("h3 id=\"__AbiTOC%d__\"", m_heading_count);
+				m_utf8_1 = UT_UTF8String_sprintf("h3 id=\"AbiTOC%d__\"", m_heading_count);
 				m_heading_count++;
 			}
 			else
@@ -2321,7 +2361,7 @@ void s_HTML_Listener::_openTag (PT_AttrPropIndex api, PL_StruxDocHandle sdh)
 			bClassAsTag = true;
 
 			if (m_toc) {
-				m_utf8_1 = UT_UTF8String_sprintf("h1 id=\"__AbiTOC%d__\"", m_heading_count);
+				m_utf8_1 = UT_UTF8String_sprintf("h1 id=\"AbiTOC%d__\"", m_heading_count);
 				m_heading_count++;
 			} else {
 				m_utf8_1 = "h1";
@@ -2335,7 +2375,7 @@ void s_HTML_Listener::_openTag (PT_AttrPropIndex api, PL_StruxDocHandle sdh)
 			bClassAsTag = true;
 
 			if (m_toc) {
-				m_utf8_1 = UT_UTF8String_sprintf("h2 id=\"__AbiTOC%d__\"", m_heading_count);
+				m_utf8_1 = UT_UTF8String_sprintf("h2 id=\"AbiTOC%d__\"", m_heading_count);
 				m_heading_count++;
 			} else {
 				m_utf8_1 = "h2";
@@ -2349,7 +2389,7 @@ void s_HTML_Listener::_openTag (PT_AttrPropIndex api, PL_StruxDocHandle sdh)
 			bClassAsTag = true;
 
 			if (m_toc) {
-				m_utf8_1 = UT_UTF8String_sprintf("h3 id=\"__AbiTOC%d__\"", m_heading_count);
+				m_utf8_1 = UT_UTF8String_sprintf("h3 id=\"AbiTOC%d__\"", m_heading_count);
 				m_heading_count++;
 			} else {
 				m_utf8_1 = "h3";
@@ -2378,7 +2418,7 @@ void s_HTML_Listener::_openTag (PT_AttrPropIndex api, PL_StruxDocHandle sdh)
 			tagPending = true;
 
 			if (m_toc && m_toc->isTOCStyle(szValue)) {
-				m_utf8_1 = UT_UTF8String_sprintf("p id=\"__AbiTOC%d__\"", m_heading_count);
+				m_utf8_1 = UT_UTF8String_sprintf("p id=\"AbiTOC%d__\"", m_heading_count);
 				m_heading_count++;
 			} else {
 				m_utf8_1 = "p";
@@ -2391,7 +2431,7 @@ void s_HTML_Listener::_openTag (PT_AttrPropIndex api, PL_StruxDocHandle sdh)
 			tagPending = true;
 
 			if (m_toc && m_toc->isTOCStyle(szValue)) {
-				m_utf8_1 = UT_UTF8String_sprintf("p id=\"__AbiTOC%d__\"", m_heading_count);
+				m_utf8_1 = UT_UTF8String_sprintf("p id=\"AbiTOC%d__\"", m_heading_count);
 				m_heading_count++;
 			} else {
 				m_utf8_1 = "p";
@@ -5159,12 +5199,29 @@ void s_HTML_Listener::_emitTOC (PT_AttrPropIndex api) {
 		const XML_Char * szValue = 0;
 		UT_UTF8String tocHeadingUTF8;
 
-		if(listDepth()) { // We don't support TOC-in-LI, but the bright side is that neither does AbiWord itself, so this matches application behaviour.
-			m_utf8_1 = "span";
-			tagClose (TT_SPAN, m_utf8_1, ws_None);
-			m_utf8_1 = "li";
-			tagClose (TT_LI, m_utf8_1, ws_Post);
+		listPopToDepth(0);
+		
+		if (tagTop() == TT_SPAN) {
+			UT_DEBUGMSG(("_closeSection closing span\n"));
+			tagClose(TT_SPAN, "span");
 		}
+		
+		if (m_bInBlock && (tagTop() == TT_P)) { // If only the first is true, we have a first-order tag mismatch.  The alternative with not testing the latter is a second-order tag mismatch.
+			UT_DEBUGMSG(("_closeSection closing block\n"));
+			//		_closeTag (); // We need to investigate the tag stack usage of this, and whether or not we really would rather specify the tag in all cases.
+			tagClose(TT_P, "p");
+		}
+		
+		if(bHaveProp && pAP && pAP->getProperty("toc-heading", szValue)) // user-defined TOC heading
+			{
+				tocHeadingUTF8 = szValue;
+				//_outputdata() below makes escapeXML() redundant here
+			}
+		else
+			{ 
+				const XAP_StringSet * pSS = XAP_App::getApp()->getStringSet();
+				pSS->getValueUTF8(AP_STRING_ID_TOC_TocHeading, tocHeadingUTF8);
+			}
 
 		bool bEmitHeading = true;
 
@@ -5174,27 +5231,30 @@ void s_HTML_Listener::_emitTOC (PT_AttrPropIndex api) {
 				bEmitHeading = false;
 		}
 
+		m_utf8_1 = UT_UTF8String_sprintf("table id=\"toc\" class=\"toc\" summary=\"%s\"", tocHeadingUTF8.utf8_str());
+		tagOpen (TT_TABLE, m_utf8_1);
+
+		m_utf8_1 = "tr";
+		tagOpen (TT_TR, m_utf8_1);
+		
+		m_utf8_1 = "td";
+		tagOpen (TT_TD, m_utf8_1);
+
+		m_utf8_1 = "div id=\"toctitle\"";
+		tagOpen (TT_DIV, m_utf8_1);
+
 		if(bEmitHeading)
 		{
-			if(bHaveProp && pAP && pAP->getProperty("toc-heading", szValue)) // user-defined TOC heading
-			{
-				tocHeadingUTF8 = szValue;
-				//_outputdata() below makes escapeXML() redundant here
-			}
-			else
-			{ 
-				const XAP_StringSet * pSS = XAP_App::getApp()->getStringSet();
-				pSS->getValueUTF8(AP_STRING_ID_TOC_TocHeading, tocHeadingUTF8);
-			}
-
 			UT_UCS4String tocHeading(tocHeadingUTF8.utf8_str());
-			m_utf8_1 = "h1 style=\"text-align:center\"";
-			tagOpen (TT_H1, m_utf8_1);
+			m_utf8_1 = "h2";
+			tagOpen (TT_H2, m_utf8_1);
 			m_bInBlock = true;
 			_outputData (tocHeading.ucs4_str(), tocHeading.length());
 			m_bInBlock = false;
-			tagClose (TT_H1, "h1");
+			tagClose (TT_H2, "h2");
 		}
+		
+		tagClose (TT_DIV, "div");
 
 		int level1_depth = 0;
 		int level2_depth = 0;
@@ -5231,7 +5291,7 @@ void s_HTML_Listener::_emitTOC (PT_AttrPropIndex api) {
 				tocLevelText = UT_UTF8String_sprintf("[%d.%d.%d.%d] ", level1_depth, level2_depth, level3_depth, level4_depth).ucs4_str();
 			}
 			
-			UT_UTF8String tocLink(UT_UTF8String_sprintf("<a href=\"#__AbiTOC%d__\">", i));
+			UT_UTF8String tocLink(UT_UTF8String_sprintf("<a href=\"#AbiTOC%d__\">", i));
 			tagOpen (TT_P, m_utf8_1);
 			m_bInBlock = true;
 			m_pie->write(tocLink.utf8_str(), tocLink.length());
@@ -5241,6 +5301,11 @@ void s_HTML_Listener::_emitTOC (PT_AttrPropIndex api) {
 			m_bInBlock = false;
 			tagClose (TT_P, "p");
 		}
+
+		tagClose (TT_TD, "td");
+		tagClose (TT_TT, "tr");
+		tagClose (TT_TABLE, "table");
+
 		m_bInTOC = false;
 	}
 }
