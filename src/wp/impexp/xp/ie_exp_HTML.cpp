@@ -5231,7 +5231,13 @@ void s_HTML_Listener::_emitTOC (PT_AttrPropIndex api) {
 				bEmitHeading = false;
 		}
 
-		m_utf8_1 = UT_UTF8String_sprintf("table class=\"toc\" summary=\"%s\"", tocHeadingUTF8.utf8_str());
+		// We can't use escapeXML() on tocHeadingUTF8 here because it will
+		// cause values to be doubly escaped, e.g. " will become &amp;quot;.
+		// Instead, just use a new variable, tocSummary.
+
+		UT_UTF8String tocSummary = tocHeadingUTF8;
+		m_utf8_1 = UT_UTF8String_sprintf("table class=\"toc\" summary=\"%s\"", tocSummary.escapeXML().utf8_str());
+
 		tagOpen (TT_TABLE, m_utf8_1);
 
 		m_utf8_1 = "tr";
