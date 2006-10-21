@@ -647,6 +647,7 @@ void FV_View::copyTextToClipboard(const UT_UCS4String sIncoming, bool useClipboa
 	/* we're done, release our resources */
 	DELETEP(pCopyLinkView);
 	DELETEP(pDocLayout);
+	UNREFP(pDoc);
 }
 
 
