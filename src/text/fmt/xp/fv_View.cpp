@@ -8710,6 +8710,7 @@ void FV_View::getTopRulerInfo(PT_DocPosition pos,AP_TopRulerInfo * pInfo)
 		}
 		xxx_UT_DEBUGMSG(("Initial X %d \n",ioff_x));
 		pCur = pTab->getCellAtRowColumn(0,0);
+		UT_return_if_fail(pCur);
 		ioff_x += pCur->getLeftPos();
 		pRC = pTab->getNthCol(0);
 		xxx_UT_DEBUGMSG(("Tab X %d LeftPos %d Spacing %d \n",pTab->getX(),pCur->getLeftPos(),pRC->spacing));
