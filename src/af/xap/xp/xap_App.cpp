@@ -302,7 +302,7 @@ GR_EmbedManager * XAP_App:: getEmbeddableManager(GR_Graphics * pG, const char * 
        pCur =  m_vecEmbedManagers.getNthItem(i);
        UT_DEBUGMSG(("Look at Manager for Object type %s requested %s strcmp %d UT_strcmp %d \n",pCur->getObjectType(),szObjectType,UT_strcmp(pCur->getObjectType(),szObjectType),strcmp(pCur->getObjectType(),szObjectType) ));
 
-       if(UT_strcmp(pCur->getObjectType(),szObjectType) == 0)
+       if(pCur && (UT_strcmp(pCur->getObjectType(),szObjectType) == 0))
        {
 	 bFound = true;
        }
