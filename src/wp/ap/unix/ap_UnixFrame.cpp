@@ -316,7 +316,7 @@ void AP_UnixFrame::translateDocumentToScreen(UT_sint32 &x, UT_sint32 &y)
 
 void AP_UnixFrame::setStatusMessage(const char * szMsg)
 {
-	if(getFrameMode() == XAP_NormalFrame)
+	if((getFrameMode() == XAP_NormalFrame) && (m_pData))
 	{
 		static_cast<AP_FrameData *>(m_pData)->m_pStatusBar->setStatusMessage(szMsg);
 	}
