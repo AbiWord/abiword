@@ -363,6 +363,8 @@ void AP_UnixFrameImpl::_setScrollRange(apufi_ScrollType scrollType, int iValue, 
 
 UT_RGBColor AP_UnixFrameImpl::getColorSelBackground () const
 {
+  UT_return_val_if_fail(m_dArea, UT_RGBColor(0,0,0));
+
   // owen says that any widget should be ok, not just text widgets
   GdkColor clr = m_dArea->style->base[GTK_STATE_SELECTED];
   return UT_RGBColor (clr.red >> 8, clr.green >> 8, clr.blue >> 8);
