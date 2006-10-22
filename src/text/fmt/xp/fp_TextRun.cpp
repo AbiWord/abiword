@@ -216,8 +216,8 @@ void fp_TextRun::_lookupProperties(const PP_AttrProp * pSpanAP,
 
 	GR_Font * pFont;
 
-	pFont = const_cast<GR_Font *>(pLayout->findFont(pSpanAP,pBlockAP,pSectionAP));
-	xxx_UT_DEBUGMSG(("Old font %x new font %x \n",_getFont(),pFont));
+	pFont = const_cast<GR_Font *>(pLayout->findFont(pSpanAP,pBlockAP,pSectionAP,pG));
+	UT_DEBUGMSG(("Old font %x new font %x \n",_getFont(),pFont));
 	if (_getFont() != pFont)
 	{
 		_setFont(pFont);
@@ -1568,6 +1568,7 @@ void fp_TextRun::_draw(dg_DrawArgs* pDA)
 //
 	m_bKeepWidths = true;
 	UT_sint32 iWidth = getWidth();
+	xxx_UT_DEBUGMSG(("textRun Xoff %d width %d \n",pDA->xoff,iWidth));
 //
 // This code makes sure we don't fill past the right edge of text.
 // Full Justified text often as a space at the right edge of the text.

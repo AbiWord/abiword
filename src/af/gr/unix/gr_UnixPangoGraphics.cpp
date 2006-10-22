@@ -538,8 +538,10 @@ UT_sint32 GR_UnixPangoGraphics::getTextWidth(GR_RenderInfo & ri)
 	UT_sint32 iStart = RI.m_iOffset;
 	UT_sint32 iEnd   = RI.m_iOffset + RI.m_iLength;
 	
-	return _measureExtent (RI.m_pGlyphs, pf, RI.m_iVisDir, NULL,
+	UT_sint32 iwidth =  _measureExtent (RI.m_pGlyphs, pf, RI.m_iVisDir, NULL,
 						   RI.m_pLogOffsets, iStart, iEnd);
+	xxx_UT_DEBUGMSG(("TextWidths Pango Font %x height %d text width %d \n",pFont,pFont->getAscent(),iwidth));
+	return iwidth;
 }
 
 /*!
@@ -675,7 +677,7 @@ void GR_UnixPangoGraphics::renderChars(GR_RenderInfo & ri)
 	if(RI.m_iLength == 0)
 		return;
 
-	xxx_UT_DEBUGMSG(("renderChars: xoff %d yoff %d\n", RI.m_xoff, RI.m_yoff));
+	xxx_UT_DEBUGMSG(("Pango renderChars: xoff %d yoff %d\n", RI.m_xoff, RI.m_yoff));
 	UT_sint32 xoff = _tduX(RI.m_xoff);
 	UT_sint32 yoff = _tduY(RI.m_yoff + getFontAscent(pFont));
 
@@ -1553,6 +1555,8 @@ const char* GR_UnixPangoGraphics::findNearestFont(const char* pszFontFamily,
 	if(!UT_strcmp(cs, "pt"))
 	   s[s.length()-2] = 0;
 
+	UT_DEBUGMSG(("---FinfFont size %s \n",pszFontSize));
+
 	PangoFontDescription * pfd = pango_font_description_from_string(s.c_str());
 	UT_return_val_if_fail( pfd, NULL );
 
@@ -1940,6 +1944,7 @@ void GR_UnixPangoFont::reloadFont(GR_UnixPangoGraphics * pG)
 	// pango_metrics_ functions return in points * PANGO_SCALE (points * 1024)
 	m_iAscent = (UT_uint32) pG->ptlu(pango_font_metrics_get_ascent(pfm));
 	m_iDescent = (UT_uint32) pG->ptlu(pango_font_metrics_get_descent(pfm));
+	UT_DEBUGMSG(("Font Ascent %d point size %f zoom %d \n",m_iAscent, m_dPointSize, m_iZoom));
 	pango_font_metrics_unref(pfm);
 }
 
@@ -2145,6 +2150,7 @@ GR_UnixPangoPrintGraphics::GR_UnixPangoPrintGraphics(XAP_UnixGnomePrintGraphics 
 	m_pFontMap = gnome_print_pango_get_default_font_map ();
 #endif
 	m_pContext = gnome_print_pango_create_context(m_pFontMap);
+	//	gnome_print_scale (m_pGnomePrint->getGnomePrintContext(), 72./96., 72./96.);
 	
 }
 
@@ -2253,7 +2259,7 @@ void GR_UnixPangoPrintGraphics::renderChars(GR_RenderInfo & ri)
 	if(RI.m_iLength == 0)
 		return;
 
-	xxx_UT_DEBUGMSG(("renderChars: xoff %d yoff %d\n", RI.m_xoff, RI.m_yoff));
+	xxx_UT_DEBUGMSG(("PangoPrint renderChars: xoff %d yoff %d\n", RI.m_xoff, RI.m_yoff));
 	UT_sint32 xoff = _tduX(RI.m_xoff);
 	UT_sint32 yoff = m_pGnomePrint->scale_ydir(_tduY(RI.m_yoff + getFontAscent(pFont)));
 

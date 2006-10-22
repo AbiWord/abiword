@@ -106,7 +106,6 @@ class ABI_EXPORT GR_Font
 	 */
 	virtual UT_sint32 measureUnremappedCharForCache(UT_UCSChar cChar) const = 0;
 	virtual const UT_String & hashKey(void) const;
-	
 	UT_sint32 getCharWidthFromCache (UT_UCSChar c) const;
 
 	/*reimplement if you want to instanciate something else */	
@@ -383,7 +382,7 @@ class ABI_EXPORT GR_Graphics
 	virtual UT_uint32 getFontDescent() = 0;
 	virtual UT_uint32 getFontHeight() = 0;
 	void              invalidateCache(void);
-
+	virtual bool      canQuickPrint(void) { return false;}
 	virtual UT_uint32 measureString(const UT_UCSChar*s,
 									int iOffset,
 									int num,

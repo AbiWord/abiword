@@ -8077,11 +8077,23 @@ UT_return_val_if_fail(pDialog, false);
 		get it's font list filled. When we find a better way to fill the UnixPSGraphics
 		font list, we can remove the 4 lines below. - MARCM
 		*/
-		FL_DocLayout * pDocLayout = new FL_DocLayout(doc,pGraphics);
-        FV_View * pPrintView = new FV_View(XAP_App::getApp(),0,pDocLayout);
-		pPrintView->getLayout()->fillLayouts();
-		pPrintView->getLayout()->formatAll();
-		pPrintView->getLayout()->recalculateTOCFields();
+		//
+		FL_DocLayout * pDocLayout = NULL;
+		FV_View * pPrintView = NULL;
+		if(!pGraphics->canQuickPrint())
+		{
+				pDocLayout = new FL_DocLayout(doc,pGraphics);
+				pPrintView = new FV_View(XAP_App::getApp(),0,pDocLayout);
+				pPrintView->getLayout()->fillLayouts();
+				pPrintView->getLayout()->formatAll();
+				pPrintView->getLayout()->recalculateTOCFields();
+		}
+		else
+		{
+				pDocLayout = pLayout;
+				pPrintView = pView;
+		}
+
 		UT_uint32 nFromPage, nToPage;
 		static_cast<void>(pDialog->getDoPrintRange(&nFromPage,&nToPage));
 
@@ -8105,8 +8117,11 @@ UT_return_val_if_fail(pDialog, false);
 		s_actuallyPrint(doc, pGraphics, pPrintView, pDocName, nCopies, bCollate,
 				iWidth,  iHeight, nToPage, nFromPage);
 
-		delete pDocLayout;
-		delete pPrintView;
+		if(!pGraphics->canQuickPrint())
+		 {
+			 delete pDocLayout;
+			 delete pPrintView;
+		 }
 		
 		pDialog->releasePrinterGraphicsContext(pGraphics);
 
@@ -8164,12 +8179,21 @@ static bool s_doPrintPreview(FV_View * pView)
 	get it's font list filled. When we find a better way to fill the UnixPSGraphics
 	font list, we can remove the 4 lines below. - MARCM
 	*/
-	FL_DocLayout * pDocLayout = new FL_DocLayout(doc,pGraphics);
-	FV_View * pPrintView = new FV_View(XAP_App::getApp(),0,pDocLayout);
-	pPrintView->getLayout()->fillLayouts();
-	pPrintView->getLayout()->formatAll();
-	pPrintView->getLayout()->recalculateTOCFields();
-	
+	FL_DocLayout * pDocLayout = NULL;
+	FV_View * pPrintView = NULL;
+	if(!pGraphics->canQuickPrint())
+	{
+			pDocLayout = new FL_DocLayout(doc,pGraphics);
+			pPrintView = new FV_View(XAP_App::getApp(),0,pDocLayout);
+			pPrintView->getLayout()->fillLayouts();
+			pPrintView->getLayout()->formatAll();
+			pPrintView->getLayout()->recalculateTOCFields();
+	}
+	else
+	{
+			pDocLayout = pLayout;
+			pPrintView = pView;
+	}
 	
 	UT_uint32 nFromPage = 1, nToPage = pLayout->countPages(), nCopies = 1;
 	bool bCollate  = false;
@@ -8184,9 +8208,11 @@ static bool s_doPrintPreview(FV_View * pView)
 	s_actuallyPrint(doc, pGraphics, pPrintView, pDocName, nCopies, bCollate,
 					iWidth,  iHeight, nToPage, nFromPage);
 
-	delete pDocLayout;
-	delete pPrintView;
-
+	if(!pGraphics->canQuickPrint())
+	{
+			delete pDocLayout;
+			delete pPrintView;
+	}
 	pDialog->releasePrinterGraphicsContext(pGraphics);
 
 	pDialogFactory->releaseDialog(pDialog);

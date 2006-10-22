@@ -432,7 +432,13 @@ void fp_Run::lookupProperties(GR_Graphics * pG)
 	// and draw with background color
 	if(pG == NULL)
 	{
+		m_bPrinting = false;
 		pG = getGraphics();
+	}
+	else if(pG->queryProperties(GR_Graphics::DGP_PAPER))
+	{
+		m_bPrinting = true;
+		m_pG = pG;
 	}
 	if(!m_pBL->isContainedByTOC())
 	{
@@ -528,7 +534,7 @@ fp_Run::_inheritProperties(void)
 
 		FL_DocLayout * pLayout = getBlock()->getDocLayout();
 
-		GR_Font * pFont = const_cast<GR_Font *>(pLayout->findFont(pSpanAP,pBlockAP,pSectionAP));
+		GR_Font * pFont = const_cast<GR_Font *>(pLayout->findFont(pSpanAP,pBlockAP,pSectionAP,m_pG));
 
 		if ((pFont != _getFont()) || (getType() == FPRUN_ENDOFPARAGRAPH))
 		{
@@ -1157,6 +1163,7 @@ void fp_Run::draw(dg_DrawArgs* pDA)
 	{
 		m_bPrinting = true;
 		m_pG = pG;
+		lookupProperties(pG);
 	}
 	pG->setColor(getFGColor());
 	UT_Rect clip(0,0,0,0);
@@ -1298,6 +1305,7 @@ void fp_Run::draw(dg_DrawArgs* pDA)
 	{
 		m_bPrinting = false;
 		m_pG = NULL;
+		lookupProperties(NULL);
 	}
 }
 
@@ -1843,7 +1851,7 @@ void fp_TabRun::_lookupProperties(const PP_AttrProp * pSpanAP,
 
 	// look for fonts in this DocLayout's font cache
 	FL_DocLayout * pLayout = getBlock()->getDocLayout();
-	GR_Font * pFont = const_cast<GR_Font *>(pLayout->findFont(pSpanAP,pBlockAP,pSectionAP));
+	GR_Font * pFont = const_cast<GR_Font *>(pLayout->findFont(pSpanAP,pBlockAP,pSectionAP,getGraphics()));
 
 	if (pFont != _getFont())
 	{
@@ -2302,7 +2310,7 @@ void fp_ForcedLineBreakRun::_lookupProperties(const PP_AttrProp * pSpanAP,
 			// look for fonts in this DocLayout's font cache
 			FL_DocLayout * pLayout = getBlock()->getDocLayout();
 
-			GR_Font * pFont = const_cast<GR_Font *>(pLayout->findFont(pSpanAP,pBlockAP,pSectionAP));
+			GR_Font * pFont = const_cast<GR_Font *>(pLayout->findFont(pSpanAP,pBlockAP,pSectionAP,getGraphics()));
 			getGraphics()->setFont(pFont);
 		}
 		_setWidth(getGraphics()->measureString(pEOP, 0, iTextLen, NULL));
@@ -2451,7 +2459,7 @@ void fp_ForcedLineBreakRun::_draw(dg_DrawArgs* pDA)
 		// look for fonts in this DocLayout's font cache
 		FL_DocLayout * pLayout = getBlock()->getDocLayout();
 
-		GR_Font * pFont = const_cast<GR_Font *>(pLayout->findFont(pSpanAP,pBlockAP,pSectionAP));
+		GR_Font * pFont = const_cast<GR_Font *>(pLayout->findFont(pSpanAP,pBlockAP,pSectionAP,getGraphics()));
 		getGraphics()->setFont(pFont);
 		iAscent = getGraphics()->getFontAscent();
     }
@@ -3036,7 +3044,7 @@ void fp_EndOfParagraphRun::_lookupProperties(const PP_AttrProp * pSpanAP,
 			// look for fonts in this DocLayout's font cache
 			FL_DocLayout * pLayout = getBlock()->getDocLayout();
 
-			GR_Font * pFont = const_cast<GR_Font *>(pLayout->findFont(pSpanAP,pBlockAP,pSectionAP));
+			GR_Font * pFont = const_cast<GR_Font *>(pLayout->findFont(pSpanAP,pBlockAP,pSectionAP,getGraphics()));
 			pG->setFont(pFont);
 		}
 		m_iDrawWidth  = pG->measureString(pEOP, 0, iTextLen, NULL);
@@ -3216,7 +3224,7 @@ void fp_EndOfParagraphRun::_draw(dg_DrawArgs* pDA)
 		// look for fonts in this DocLayout's font cache
 		FL_DocLayout * pLayout = getBlock()->getDocLayout();
 
-		GR_Font * pFont = const_cast<GR_Font *>(pLayout->findFont(pSpanAP,pBlockAP,pSectionAP));
+		GR_Font * pFont = const_cast<GR_Font *>(pLayout->findFont(pSpanAP,pBlockAP,pSectionAP,getGraphics()));
 		getGraphics()->setFont(pFont);
 		iAscent = getGraphics()->getFontAscent();
 	}
@@ -3431,7 +3439,7 @@ void fp_ImageRun::_lookupProperties(const PP_AttrProp * pSpanAP,
 	getBlockAP(pBlockAP);
 
 	FL_DocLayout * pLayout = getBlock()->getDocLayout();
-	GR_Font * pFont = const_cast<GR_Font *>(pLayout->findFont(pSpanAP,pBlockAP,pSectionAP));
+	GR_Font * pFont = const_cast<GR_Font *>(pLayout->findFont(pSpanAP,pBlockAP,pSectionAP,getGraphics()));
 
 	if (pFont != _getFont())
 	{
@@ -3931,7 +3939,7 @@ void fp_FieldRun::_lookupProperties(const PP_AttrProp * pSpanAP,
 	}
 	else
 	{
-		_setFont(const_cast<GR_Font *>(pLayout->findFont(pSpanAP,pBlockAP,pSectionAP, false)));
+		_setFont(const_cast<GR_Font *>(pLayout->findFont(pSpanAP,pBlockAP,pSectionAP, getGraphics())));
 	}
 
 	_setAscent(pG->getFontAscent(_getFont()));
