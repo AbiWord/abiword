@@ -5620,9 +5620,17 @@ bool s_StyleTree::add (const char * style_name, PD_Document * pDoc)
 			basis->getAttribute (PT_NAME_ATTRIBUTE_NAME, basis_name);
 			if (!basis_name) return false;
 
-			if (!add (basis_name, pDoc)) return false;
+			if (basis->getBasedOn() && basis->getBasedOn()->getName() &&
+				!UT_strcmp(style_name, basis->getBasedOn()->getName()))
+			{
+				parent = this;
+			}
+			else
+			{
+				if (!add (basis_name, pDoc)) return false;
 
-			parent = const_cast<s_StyleTree *>(find (basis));
+				parent = const_cast<s_StyleTree *>(find (basis));
+			}
 		}
 	}
 	else parent = this;
