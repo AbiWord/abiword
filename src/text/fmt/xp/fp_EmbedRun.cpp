@@ -447,7 +447,10 @@ void fp_EmbedRun::_draw(dg_DrawArgs* pDA)
 	if(bIsSelected)
 	{
 	  UT_Rect myrec = rec;
-	  myrec.top -= getAscent();
+	  if(!getEmbedManager()->isDefault())
+	  {
+	    myrec.top -= getAscent();
+	  }
 	  _drawResizeBox(myrec);
 	}
 }
