@@ -273,6 +273,7 @@ class ABI_EXPORT GR_UnixPangoPrintGraphics : public GR_UnixPangoGraphics
 						   UT_sint32 xoff, UT_sint32 yoff,
 						   int * pCharWidths = NULL);
 	
+	virtual bool shape(GR_ShapingInfo & si, GR_RenderInfo *& ri);
 	virtual void renderChars(GR_RenderInfo & ri);
 
 	virtual void drawLine(UT_sint32 x1, UT_sint32 y1, UT_sint32 x2, UT_sint32 y2);
@@ -326,6 +327,10 @@ class ABI_EXPORT GR_UnixPangoPrintGraphics : public GR_UnixPangoGraphics
 
 	
 	XAP_UnixGnomePrintGraphics * m_pGnomePrint;
+	
+	PangoFontMap *    m_pGPFontMap;
+	PangoContext *    m_pGPContext;
+	UT_uint32         m_iScreenResolution;
 };
 #endif // ifndef WHITOUT_PRINTING
 

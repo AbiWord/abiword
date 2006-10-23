@@ -2121,18 +2121,22 @@ bool GR_UnixPangoRenderInfo::isJustified() const
 #ifndef WITHOUT_PRINTING
 GR_UnixPangoPrintGraphics::GR_UnixPangoPrintGraphics(XAP_UnixGnomePrintGraphics * pGPG):
 	GR_UnixPangoGraphics(),
-	m_pGnomePrint(pGPG)
+	m_pGnomePrint(pGPG),
+	m_pGPFontMap(NULL),
+	m_pGPContext(NULL),
+	m_iScreenResolution(96)
 {
-#if 0
 	/* ascertain the real dpi that xft will be using, so we can match that
 	 * for our
 	 * gnome-print font map
 	 */
-	GdkScreen *  gScreen = gdk_screen_get_default();
+	GdkScreen *  gScreen  = gdk_screen_get_default();
+	GdkDisplay*  gDisplay = gdk_display_get_default();
 	int iScreen = gdk_x11_screen_get_screen_number(gScreen);
-
+	Display * disp = GDK_DISPLAY_XDISPLAY(gDisplay);
 	FcPattern *pattern;
-	double dpi = 0.0; 
+	double dpi = 72.;
+	
 	pattern = FcPatternCreate();
 	if (pattern)
 	{
@@ -2143,15 +2147,24 @@ GR_UnixPangoPrintGraphics::GR_UnixPangoPrintGraphics(XAP_UnixGnomePrintGraphics 
 		FcPatternDestroy (pattern);
 		UT_DEBUGMSG(("@@@@@@@@@@@@@@ retrieved DPI %f @@@@@@@@@@@@@@@@@@ \n",
 					 dpi));
-		m_iDeviceResolution = (UT_uint32)round (dpi);
+
+		m_iScreenResolution = (int)dpi;
 	}	
-	m_pFontMap = gnome_print_pango_font_map_new_for_dpi(96, FALSE);
-#else
-	m_pFontMap = gnome_print_pango_get_default_font_map ();
+
+	m_pContext = pango_xft_get_context(disp, iScreen);
+	m_pFontMap = pango_xft_get_font_map(disp, iScreen);
+
+	m_iDeviceResolution = 72; // hardcoded in GnomePrint
+ 	
+	m_pGPFontMap = gnome_print_pango_get_default_font_map ();
+	m_pGPContext = gnome_print_pango_create_context(m_pGPFontMap);
+#if 0
+	/* This does not seem to do anything, and I think in principle it is not
+	 * correct -- we pass in coords in layout units and the tdu() functions
+	 * scale them correctly to the GP resolution.
+	 */
+	gnome_print_scale (m_pGnomePrint->getGnomePrintContext(), 72./dpi,72./dpi);
 #endif
-	m_pContext = gnome_print_pango_create_context(m_pFontMap);
-	gnome_print_scale (m_pGnomePrint->getGnomePrintContext(), 72./96., 72./96.);
-	
 }
 
 
@@ -2225,8 +2238,11 @@ void GR_UnixPangoPrintGraphics::drawChars(const UT_UCSChar* pChars,
 
 	gnome_print_gsave(gpc);
 	gnome_print_moveto(gpc, xoff, yoff);
-	
-	PangoFont * pf = m_pPFont->getPangoFont();
+
+	PangoFontDescription * pdf = pango_font_describe (m_pPFont->getPangoFont());
+	PangoFont * pf = pango_context_load_font (m_pGPContext, pdf);
+	pango_font_description_free (pdf);
+	UT_return_if_fail( pf );
 	
 	for(unsigned int i = 0; i < g_list_length(pItems); ++i)
 	{
@@ -2246,6 +2262,33 @@ void GR_UnixPangoPrintGraphics::drawChars(const UT_UCSChar* pChars,
 	g_list_free(pItems);
 }
 
+bool GR_UnixPangoPrintGraphics::shape(GR_ShapingInfo & si, GR_RenderInfo *& ri)
+{
+	
+	if (!GR_UnixPangoGraphics::shape(si,ri))
+		return false;
+
+	UT_return_val_if_fail( ri, false );
+
+	GR_UnixPangoRenderInfo & RI = (GR_UnixPangoRenderInfo &)*ri;
+
+	for(int i = 0; i < RI.m_pGlyphs->num_glyphs; ++i)
+	{
+		RI.m_pGlyphs->glyphs[i].geometry.x_offset =
+			(int)((double)RI.m_pGlyphs->glyphs[i].geometry.x_offset *
+				  (double)m_iDeviceResolution / (double)m_iScreenResolution + 0.5) ;
+
+		RI.m_pGlyphs->glyphs[i].geometry.y_offset =
+			(int)((double)RI.m_pGlyphs->glyphs[i].geometry.y_offset *
+				  (double)m_iDeviceResolution / (double)m_iScreenResolution + 0.5);
+
+		RI.m_pGlyphs->glyphs[i].geometry.width =
+			(int)((double)RI.m_pGlyphs->glyphs[i].geometry.width *
+				  (double)m_iDeviceResolution / (double)m_iScreenResolution + 0.5);
+	}
+
+	return true;
+}
 
 void GR_UnixPangoPrintGraphics::renderChars(GR_RenderInfo & ri)
 {
@@ -2271,8 +2314,22 @@ void GR_UnixPangoPrintGraphics::renderChars(GR_RenderInfo & ri)
 
 	gnome_print_gsave(gpc);
 	gnome_print_moveto(gpc, xoff, yoff);
+
+	PangoFontDescription * pfd = pango_font_describe (pFont->getPangoFont());
+	PangoFont * pf = pango_context_load_font (m_pContext, pfd);
+#ifdef DEBUG
+	char * psz = pango_font_description_to_string (pfd);
+	UT_DEBUGMSG(("XXXX Loaded GP font [%s] XXXX\n", psz));
+	g_free (psz);
+#endif
 	
-	gnome_print_pango_glyph_string(gpc, pFont->getPangoFont(), RI.m_pGlyphs);
+	pango_font_description_free (pfd);
+
+#define _N 1440
+	UT_DEBUGMSG(("@@@@ tdu(%d)== %d, _tduX(%d) == %d, _tduY(%d) == %d\n",
+				 _N, tdu(_N), _N, _tduX(_N), _N, _tduY(_N)));
+#undef _N
+	gnome_print_pango_glyph_string(gpc, pf, RI.m_pGlyphs);
 
 	gnome_print_grestore (gpc);
 }
