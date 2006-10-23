@@ -2150,7 +2150,7 @@ GR_UnixPangoPrintGraphics::GR_UnixPangoPrintGraphics(XAP_UnixGnomePrintGraphics 
 	m_pFontMap = gnome_print_pango_get_default_font_map ();
 #endif
 	m_pContext = gnome_print_pango_create_context(m_pFontMap);
-	//	gnome_print_scale (m_pGnomePrint->getGnomePrintContext(), 72./96., 72./96.);
+	gnome_print_scale (m_pGnomePrint->getGnomePrintContext(), 72./96., 72./96.);
 	
 }
 
