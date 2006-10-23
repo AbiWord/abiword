@@ -2046,7 +2046,7 @@ inline void fp_Line::_calculateWidthOfRun(	UT_sint32 &iX,
 			else //this is not a Tab run, or we are using fixed width tabs
 			{
 				iWidth = pRun->getAscent()*iFixedWidthMlt / iFixedWidthDiv;
-
+				iX += iWidth;
 
 				xxx_UT_DEBUGMSG(("run[%d] (type %d) width=%d\n", i,pRun->getType(),iWidth));
 			}
