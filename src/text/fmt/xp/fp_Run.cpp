@@ -3277,18 +3277,22 @@ void fp_EndOfParagraphRun::_draw(dg_DrawArgs* pDA)
 //////////////////////////////////////////////////////////////////
 
 
-fp_ImageRun::fp_ImageRun(fl_BlockLayout* pBL, UT_uint32 iOffsetFirst, UT_uint32 iLen, FG_Graphic * pFG) : fp_Run(pBL, iOffsetFirst, iLen, FPRUN_IMAGE)
+fp_ImageRun::fp_ImageRun(fl_BlockLayout* pBL,
+						 UT_uint32 iOffsetFirst,
+						 UT_uint32 iLen, FG_Graphic * pFG) :
+	fp_Run(pBL, iOffsetFirst, iLen, FPRUN_IMAGE),
+	m_pFGraphic(pFG),
+	m_iPointHeight(0),
+	m_pSpanAP(NULL),
+	m_bImageForPrinter (false)
 {
 #if 0	// put this back later
 	UT_ASSERT(pImage);
 #endif
 
-	m_pFGraphic = pFG;
 	m_pImage = pFG->generateImage(getGraphics(), NULL, 0, 0);
 	m_sCachedWidthProp = pFG->getWidthProp();
 	m_sCachedHeightProp = pFG->getHeightProp();
-	m_iPointHeight = 0;
-	m_pSpanAP = NULL;
 	m_iGraphicTick = pBL->getDocLayout()->getGraphicTick();
 	lookupProperties();
 }
@@ -3309,6 +3313,7 @@ void fp_ImageRun::regenerateImage(GR_Graphics * pG)
 {
 	DELETEP(m_pImage);
 	m_pImage = m_pFGraphic->regenerateImage(pG);
+	m_bImageForPrinter = pG->queryProperties(GR_Graphics::DGP_PAPER);
 	m_iGraphicTick = getBlock()->getDocLayout()->getGraphicTick();
 
 }
@@ -3384,7 +3389,8 @@ void fp_ImageRun::_lookupProperties(const PP_AttrProp * pSpanAP,
 		maxH = pG->tlu(3);
 	}
 	UT_DEBUGMSG(("Image szWidth %s Image szHeight %s \n",szWidth,szHeight));
-	if((strcmp(m_sCachedWidthProp.c_str(),szWidth) != 0) ||
+	if((pG->queryProperties(GR_Graphics::DGP_PAPER) != m_bImageForPrinter) ||
+		(strcmp(m_sCachedWidthProp.c_str(),szWidth) != 0) ||
 	   (strcmp(m_sCachedHeightProp.c_str(),szHeight) != 0) ||
 		UT_convertToLogicalUnits(szHeight) > maxH ||
 		UT_convertToLogicalUnits(szWidth) > maxW)
@@ -3405,6 +3411,7 @@ void fp_ImageRun::_lookupProperties(const PP_AttrProp * pSpanAP,
 			UT_DEBUGMSG(("Change Image Height to %d \n",maxH));
 		}
 		m_pImage = m_pFGraphic->generateImage(pG, pSpanAP, maxW, maxH);
+		m_bImageForPrinter = pG->queryProperties(GR_Graphics::DGP_PAPER);
 		markAsDirty();
 		if(getLine())
 		{
