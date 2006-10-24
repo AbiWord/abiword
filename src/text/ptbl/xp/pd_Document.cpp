@@ -221,6 +221,14 @@ bool PD_Document::isMarginChangeOnly(void) const
 //////////////////////////////////////////////////////////////////
 //////////////////////////////////////////////////////////////////
 
+static UT_String UT_filenameToUri(const UT_String & rhs) {
+	char * uri = UT_go_filename_to_uri (rhs.c_str());
+	UT_String res(uri);
+	g_free (uri);
+
+	return res;
+}
+
 static void buildTemplateList(UT_String *template_list, const UT_String & base)
 {
 	UT_LocaleInfo locale(UT_LocaleInfo::system());
@@ -270,6 +278,10 @@ static void buildTemplateList(UT_String *template_list, const UT_String & base)
 
 	if (!XAP_App::getApp()->findAbiSuiteLibFile(template_list[3],xbase.c_str(),"templates"))
 		template_list[3] = UT_String_sprintf ("%s-%s_%s", global_template_base.c_str(), lang.utf8_str(), terr.utf8_str());
+
+	for(int i = 0; i < 6; i++) {
+		template_list[i] = UT_filenameToUri(template_list[i]);
+	}
 }
 
 UT_Error PD_Document::importFile(const char * szFilename, int ieft,
@@ -467,11 +479,8 @@ UT_Error PD_Document::readFromFile(const char * szFilename, int ieft,
 		buildTemplateList (template_list, "normal.awt");
 
 		bool success = false;
-		for (UT_uint32 i = 0; i < 6 && !success; i++) {
-			char * uri = UT_go_filename_to_uri (template_list[i].c_str());
-			success = (importStyles(uri, ieft, true) == UT_OK);
-			g_free (uri);
-		}
+		for (UT_uint32 i = 0; i < 6 && !success; i++)
+			success = (importStyles(template_list[i].c_str(), ieft, true) == UT_OK);
 
 		// don't worry if this fails
 	}
@@ -638,11 +647,8 @@ UT_Error PD_Document::newDocument(void)
 
 	bool success = false;
 
-	for (UT_uint32 i = 0; i < 6 && !success; i++) {
-		char * uri = UT_go_filename_to_uri (template_list[i].c_str());
-		success = (importFile (uri, IEFT_Unknown, true, false) == UT_OK);
-		g_free(uri);
-	}
+	for (UT_uint32 i = 0; i < 6 && !success; i++) 
+		success = (importFile (template_list[i].c_str(), IEFT_Unknown, true, false) == UT_OK);
 
 	if (!success) {
 			m_pPieceTable = new pt_PieceTable(this);
