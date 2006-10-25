@@ -66,6 +66,11 @@
 
 #include "ut_Language.h"
 
+#include <gsf/gsf-infile.h>
+#include <gsf/gsf-msole-utils.h>
+#include <gsf/gsf-docprop-vector.h>
+#include <gsf/gsf-meta-names.h>
+
 #ifdef DEBUG
 #define IE_IMP_MSWORD_DUMP
 #include "ie_imp_MsWord_dump.h"
@@ -945,6 +950,115 @@ static void _errorMessage (XAP_Frame * pFrame, int id)
 }
 #endif
 
+static const struct {
+  char * metadata_key;
+  char * abi_metadata_name;
+} metadata_names[] = {
+  { GSF_META_NAME_TITLE, PD_META_KEY_TITLE },
+  { GSF_META_NAME_DESCRIPTION, PD_META_KEY_DESCRIPTION },
+  { GSF_META_NAME_SUBJECT, PD_META_KEY_SUBJECT },
+  { GSF_META_NAME_DATE_MODIFIED, PD_META_KEY_DATE_LAST_CHANGED },
+  { GSF_META_NAME_DATE_CREATED, PD_META_KEY_DATE },
+  { GSF_META_NAME_KEYWORDS, PD_META_KEY_KEYWORDS },
+  { GSF_META_NAME_LANGUAGE, PD_META_KEY_LANGUAGE },
+  { GSF_META_NAME_REVISION_COUNT, NULL },
+  { GSF_META_NAME_EDITING_DURATION, NULL },
+  { GSF_META_NAME_TABLE_COUNT, NULL },
+  { GSF_META_NAME_IMAGE_COUNT, NULL },
+  { GSF_META_NAME_OBJECT_COUNT, NULL },
+  { GSF_META_NAME_PAGE_COUNT, NULL },
+  { GSF_META_NAME_PARAGRAPH_COUNT, NULL },
+  { GSF_META_NAME_WORD_COUNT, NULL },
+  { GSF_META_NAME_CHARACTER_COUNT, NULL },
+  { GSF_META_NAME_CELL_COUNT, NULL },
+  { GSF_META_NAME_SPREADSHEET_COUNT, NULL },
+  { GSF_META_NAME_CREATOR, PD_META_KEY_CREATOR },
+  { GSF_META_NAME_TEMPLATE, NULL },
+  { GSF_META_NAME_LAST_SAVED_BY, NULL },
+  { GSF_META_NAME_LAST_PRINTED, NULL },
+  { GSF_META_NAME_SECURITY, NULL },
+  { GSF_META_NAME_CATEGORY, NULL },
+  { GSF_META_NAME_PRESENTATION_FORMAT, NULL },
+  { GSF_META_NAME_THUMBNAIL, NULL },
+  { GSF_META_NAME_GENERATOR, PD_META_KEY_GENERATOR },
+  { GSF_META_NAME_LINE_COUNT, NULL },
+  { GSF_META_NAME_SLIDE_COUNT, NULL },
+  { GSF_META_NAME_NOTE_COUNT, NULL },
+  { GSF_META_NAME_HIDDEN_SLIDE_COUNT, NULL },
+  { GSF_META_NAME_MM_CLIP_COUNT, NULL },
+  { GSF_META_NAME_BYTE_COUNT, NULL },
+  { GSF_META_NAME_SCALE, NULL },
+  { GSF_META_NAME_HEADING_PAIRS, NULL },
+  { GSF_META_NAME_DOCUMENT_PARTS, NULL },
+  { GSF_META_NAME_MANAGER, PD_META_KEY_CONTRIBUTOR },
+  { GSF_META_NAME_COMPANY, PD_META_KEY_PUBLISHER },
+  { GSF_META_NAME_LINKS_DIRTY, NULL },
+  { GSF_META_NAME_MSOLE_UNKNOWN_17, NULL },
+  { GSF_META_NAME_MSOLE_UNKNOWN_18, NULL },
+  { GSF_META_NAME_MSOLE_UNKNOWN_19, NULL },
+  { GSF_META_NAME_MSOLE_UNKNOWN_20, NULL },
+  { GSF_META_NAME_MSOLE_UNKNOWN_21, NULL },
+  { GSF_META_NAME_MSOLE_UNKNOWN_22, NULL },
+  { GSF_META_NAME_MSOLE_UNKNOWN_23, NULL },
+  { GSF_META_NAME_DICTIONARY, NULL },
+  { GSF_META_NAME_LOCALE_SYSTEM_DEFAULT, NULL },
+  { GSF_META_NAME_CASE_SENSITIVE, NULL }
+};
+static const gsize nr_metadata_names = G_N_ELEMENTS(metadata_names);
+
+static void
+cb_print_property (char const *name, GsfDocProp const *prop, PD_Document * doc)
+{
+  GValue const *val = gsf_doc_prop_get_val  (prop);
+
+  if (! VAL_IS_GSF_DOCPROP_VECTOR ((GValue *)val)) {
+
+	  // just scan over the table. consider optimizing if we really care to.
+	  for(gsize i = 0; i < nr_metadata_names; i++) {
+		  if(strcmp(metadata_names[i].metadata_key, name) == 0) {
+			  char const * abi_metadata_name = metadata_names[i].abi_metadata_name;
+			
+			  if(abi_metadata_name != NULL) {
+				  char * tmp = g_strdup_value_contents (val);
+
+				  // TODO: it seems that the contents are oft inside of quotes. strip the quotes
+				  doc->setMetaDataProp(abi_metadata_name, tmp);
+				  g_free (tmp);			  
+			  }
+		  }
+	  }
+  }
+}
+
+static void print_summary_stream (GsfInfile * msole,
+								  const char * stream_name,
+								  PD_Document * doc)
+{
+  GsfInput * stream = gsf_infile_child_by_name (msole, stream_name);
+  if (stream != NULL) {
+    GsfDocMetaData *meta_data = gsf_doc_meta_data_new ();
+    GError    *err = NULL;    
+
+    err = gsf_msole_metadata_read (stream, meta_data);
+    if (err != NULL) {
+      g_warning ("Error getting metadata for %s: %s", stream_name, err->message);
+      g_error_free (err);
+      err = NULL;
+    } else
+      gsf_doc_meta_data_foreach (meta_data,
+								 (GHFunc) cb_print_property, doc);
+    
+    g_object_unref (meta_data);
+    g_object_unref (G_OBJECT (stream));
+  }
+}
+
+void IE_Imp_MsWord_97::_handleMetaData(wvParseStruct *ps)
+{
+	print_summary_stream (GSF_INFILE(ps->ole_file), "\05SummaryInformation", getDoc());
+	print_summary_stream (GSF_INFILE(ps->ole_file), "\05DocumentSummaryInformation", getDoc());
+}
+
 UT_Error IE_Imp_MsWord_97::importFile(const char * szURI)
 {
   wvParseStruct ps;
@@ -1014,6 +1128,7 @@ UT_Error IE_Imp_MsWord_97::importFile(const char * szURI)
   if(!getLoadStylesOnly())
 	  getDoc()->setAttrProp(NULL);
   
+  _handleMetaData(&ps);
   wvText(&ps);
 
   if(getLoadStylesOnly()) {
@@ -3883,7 +3998,11 @@ bool IE_Imp_MsWord_97::_handleCommandField (char *command)
 				atts[1] = "time";
 				break;
 
-			case F_DateTimePicture: // this isn't totally correct, but it's close
+			case F_DateTimePicture:
+				//seems similar to a creation date
+				atts[1] = "meta_date";
+				break;
+
 			case F_DATE:
 				atts[1] = "date";
 				break;

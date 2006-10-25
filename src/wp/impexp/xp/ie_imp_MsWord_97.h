@@ -173,6 +173,8 @@ public:
 
 private:
 
+	void       _handleMetaData(wvParseStruct *ps);
+
 	int 	   _beginSect (wvParseStruct *ps, UT_uint32 tag,
 						   void *props, int dirty);
 	int 	   _endSect (wvParseStruct *ps, UT_uint32 tag,
