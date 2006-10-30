@@ -2512,7 +2512,9 @@ FV_View::_findNext(UT_uint32* pPrefix,
 			{
 				if (m_bWholeWord) 
 				{
-					bool start = UT_isWordDelimiter(buffer[i-m-1], UCS_UNKPUNK, UCS_UNKPUNK);
+					bool start = true;
+					if((static_cast<UT_sint32>(i) - static_cast<UT_sint32>(m)) > 0)
+						start = UT_isWordDelimiter(buffer[i-m-1], UCS_UNKPUNK, UCS_UNKPUNK);
 					bool end = UT_isWordDelimiter(buffer[i], UCS_UNKPUNK, UCS_UNKPUNK);
 					if (start && end) 
 					{
