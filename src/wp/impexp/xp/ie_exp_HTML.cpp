@@ -5188,7 +5188,7 @@ void s_HTML_Listener::_emitTOC (PT_AttrPropIndex api) {
 			if(bHaveProp && pAP && pAP->getProperty("toc-heading", szValue)) // user-defined TOC heading
 			{
 				tocHeadingUTF8 = szValue;
-				tocHeadingUTF8.escapeXML();
+				//_outputdata() below makes escapeXML() redundant here
 			}
 			else
 			{ 
