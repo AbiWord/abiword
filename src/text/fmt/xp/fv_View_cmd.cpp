@@ -5912,6 +5912,9 @@ void FV_View::cmdSetRevisionLevel(UT_uint32 i)
 
 		// need to rebuild the doc to reflect the new level ...
 		m_pLayout->rebuildFromHere(static_cast<fl_DocSectionLayout *>(m_pLayout->getFirstSection()));
+
+		// we have to force redraw here, see bug 10486
+		draw(NULL);
 	}
 }
 

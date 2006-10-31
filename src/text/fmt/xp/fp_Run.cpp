@@ -169,7 +169,7 @@ UT_sint32 fp_Run::getHeight() const
 {
 	if(isHidden() == FP_VISIBLE)
 		return m_iHeight;
-
+	
 	return 0;
 }
 
@@ -177,7 +177,7 @@ UT_sint32 fp_Run::getWidth() const
 {
 	if(isHidden() == FP_VISIBLE)
 		return m_iWidth;
-
+	
 	return 0;
 }
 
@@ -1379,6 +1379,12 @@ void fp_Run::setVisibility(FPVisibility eVis)
 	m_bDirty = true;
 	m_bRecalcWidth = true;
 	m_eVisibility = eVis;
+
+	/* recalculate width immediately so that any calls to getWidth() are
+	 * accurate
+	 */
+	_recalcWidth();
+	
 	return;
 }
 
