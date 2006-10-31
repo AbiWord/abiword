@@ -1067,6 +1067,7 @@ void AP_Dialog_FormatFrame::_createPreviewFromGC(GR_Graphics * gc,
 {
 	UT_return_if_fail (gc);
 
+	DELETEP(m_pFormatFramePreview);
 	m_pFormatFramePreview = new AP_FormatFrame_preview(gc,this);
 	UT_return_if_fail (m_pFormatFramePreview);
 
