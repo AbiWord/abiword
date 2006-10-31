@@ -419,7 +419,7 @@ void fp_EmbedRun::_draw(dg_DrawArgs* pDA)
 	}
 	else
 	{
-		Fill(getGraphics(),pDA->xoff, pDA->yoff - getAscent(), getWidth(), iLineHeight);
+		Fill(getGraphics(),pDA->xoff, pDA->yoff - getAscent(), getWidth()+getGraphics()->tlu(1), iLineHeight+getGraphics()->tlu(1));
 		getEmbedManager()->setColor(m_iEmbedUID,getFGColor());
 	}
 
