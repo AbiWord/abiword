@@ -13,7 +13,7 @@ msgstr ""
 "Last-Translator: shai sztern <mykitzo@gmail.com>\n"
 "Language-Team: unknown <email@address>\n"
 "MIME-Version: 1.1\n"
-"Content-Type: text/plain; charset=iso-8859-8\n"
+"Content-Type: text/plain; charset=utf-8\n"
 "Content-Transfer-Encoding: 8bit\n"
 
 #.
@@ -5995,7 +5995,7 @@ msgstr "שפת ממשק המשתמש "
 #. DLG_Stylist_UserStyles
 #: po/tmp/ap_String_Id.h.h:2484
 msgid "User defined Styles"
-msgstr "סגנונות שנקבעו ע"י המשתמש "
+msgstr "סגנונות שנקבעו ע&quot;י המשתמש "
 
 #. DLG_Tab_Label_Existing
 #: po/tmp/ap_String_Id.h.h:2486
@@ -6005,7 +6005,7 @@ msgstr ""
 #. DLG_Styles_LBL_UserDefined
 #: po/tmp/ap_String_Id.h.h:2488
 msgid "User-defined styles"
-msgstr "סגנונות שנקבעו ע"י המשתמש "
+msgstr "סגנונות שנקבעו ע&quot;י המשתמש "
 
 #. FIELD_Application_Version
 #. DLG_History_Version_Version
