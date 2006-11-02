@@ -772,7 +772,9 @@ protected:
 	void				_clearSelection(void);
 	void				_resetSelection(void);
 	void				_setSelectionAnchor(void);
-	void				_deleteSelection(PP_AttrProp *p_AttrProp_Before = NULL, bool bNoUpdate = false);
+	void				_deleteSelection(PP_AttrProp *p_AttrProp_Before = NULL,
+							 bool bNoUpdate = false,
+							 bool bCaretLeft = false);
 	bool				_insertFormatPair(const XML_Char * szName, const XML_Char * properties[]);
 	void				_updateInsertionPoint();
 	void				_fixInsertionPointCoords();

@@ -321,7 +321,8 @@ void FV_View::_setSelectionAnchor(void)
 	m_Selection.setSelectionAnchor(getPoint());
 }
 
-void FV_View::_deleteSelection(PP_AttrProp *p_AttrProp_Before, bool bNoUpdate)
+void FV_View::_deleteSelection(PP_AttrProp *p_AttrProp_Before, bool bNoUpdate,
+							   bool bCaretLeft)
 {
 	// delete the current selection.
 	// NOTE: this must clear the selection.
@@ -518,10 +519,11 @@ void FV_View::_deleteSelection(PP_AttrProp *p_AttrProp_Before, bool bNoUpdate)
 	{
 		UT_ASSERT( iRealDeleteCount <= iHigh - iLow + 1 );
 
-		// if the point was on the left of the original selection, we must adjust the
-		// point so that it is on the left edge of the text to the right of what we
-		// deleted; if it is on the right edge, we do nothing
-		if(iPoint == iLow)
+		// if we are explicitely told to lef the caret on the left side of the
+		// selection we do so, otherwise, if the point was on the left of the
+		// original selection, we must adjust the point so that it is on the
+		// left edge of the text to the right of what we deleted
+		if(!bCaretLeft && iPoint == iLow)
 			_charMotion(true,iHigh - iLow - iRealDeleteCount);
 	}
 //
