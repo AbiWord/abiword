@@ -141,8 +141,7 @@ bool IE_Exp_Text_Sniffer::recognizeSuffix(const char * szSuffix)
 UT_Error IE_Exp_Text_Sniffer::constructExporter(PD_Document * pDocument,
 											   IE_Exp ** ppie)
 {
-	IE_Exp_Text * p = new IE_Exp_Text(pDocument,false);
-	*ppie = p;
+	*ppie = new IE_Exp_Text(pDocument,"UTF-8");
 	return UT_OK;
 }
 
