@@ -24,8 +24,11 @@
 #include "ie_exp_PDF.h"
 #include "pd_Document.h"
 #include "xap_UnixGnomePrintGraphics.h"
+#include "gr_UnixPangoGraphics.h"
 #include "fv_View.h"
 #include "ap_EditMethods.h"
+
+#include <gsf/gsf-output-memory.h>
 
 /*****************************************************************/
 /*****************************************************************/
@@ -51,6 +54,19 @@ public:
 
   }
 
+  virtual GsfOutput* _openFile(const char * szFilename)
+  {
+    // gnome-print limitation: ensure that it's a local file
+    char * filename = UT_go_filename_from_uri (szFilename);
+    if(!filename) 
+      return NULL;
+
+    g_free(filename);
+
+    // hack - return some GsfOuput just to shut up ie_exp
+    return gsf_output_memory_new();
+  }
+
   virtual UT_Error _writeDocument(void)
   {
     UT_Error exit_status = UT_ERROR;
@@ -59,7 +75,7 @@ public:
     GnomePrintConfig *config = NULL;
     FL_DocLayout *pDocLayout = NULL;
     FV_View * printView = NULL;
-    XAP_UnixGnomePrintGraphics * print_graphics = NULL;
+    GR_Graphics * print_graphics = NULL;
     job = gnome_print_job_new (NULL);
     if(!job)
       goto exit_writeDocument;
@@ -79,10 +95,32 @@ public:
 	goto exit_writeDocument;
     }
     
-    if (gnome_print_job_print_to_file (job, getFileName()) != GNOME_PRINT_OK)
+    char * filename = UT_go_filename_from_uri (getFileName());
+    if(!filename) { // shouldn't ever fail, but be pedantic
+      UT_ASSERT(UT_SHOULD_NOT_HAPPEN);
+      goto exit_writeDocument;
+    }
+
+    bool bRes = (gnome_print_job_print_to_file (job, filename) == GNOME_PRINT_OK);
+    g_free (filename);
+    if (!bRes)
       goto exit_writeDocument;
 
-    print_graphics = new XAP_UnixGnomePrintGraphics(job);
+    GR_GraphicsFactory * pGF = XAP_App::getApp()->getGraphicsFactory();
+    if (!pGF)
+      goto exit_writeDocument;
+    
+    XAP_UnixGnomePrintGraphics * gnome_print_graphics = new XAP_UnixGnomePrintGraphics(job);
+    UT_uint32 iDefaultPrintClass = pGF->getDefaultClass(false);
+    
+    if(iDefaultPrintClass == GRID_UNIX_PANGO_PRINT || iDefaultPrintClass == GRID_UNIX_PANGO)
+      {
+	print_graphics = new GR_UnixPangoPrintGraphics(gnome_print_graphics);
+      }
+    else
+      {
+	print_graphics = gnome_print_graphics;
+      }
 
     // create a new layout and view object for the doc
     pDocLayout = new FL_DocLayout(getDoc(), print_graphics);
