@@ -130,7 +130,7 @@ void IE_Exp::setProps (const char * props)
 	m_props_map.parse_properties (props);
 }
 
-GsfOutput* IE_Exp::_openFile(const char * szFilename)
+GsfOutput* IE_Exp::openFile(const char * szFilename)
 {
 	UT_return_val_if_fail(!m_fp, false);
 	UT_return_val_if_fail(szFilename, false);
@@ -138,6 +138,11 @@ GsfOutput* IE_Exp::_openFile(const char * szFilename)
 	m_szFileName = new char[strlen(szFilename) + 1];
 	strcpy(m_szFileName, szFilename);
 
+	return _openFile(szFilename);
+}
+
+GsfOutput* IE_Exp::_openFile(const char * szFilename)
+{
 	return UT_go_file_create(szFilename, NULL);
 }
 
@@ -196,7 +201,7 @@ UT_Error IE_Exp::writeFile(const char * szFilename)
 
 	m_bCancelled = false;
 
-	if (!(m_fp = _openFile(szFilename)))
+	if (!(m_fp = openFile(szFilename)))
 		return m_bCancelled ? UT_SAVE_CANCELLED : UT_IE_COULDNOTWRITE;
 
 	UT_Error error = _writeDocument();

@@ -146,6 +146,8 @@ protected:
 	IE_Exp(PD_Document * pDocument, UT_Confidence_t fidelity = 0);
 	virtual UT_Error	_writeDocument(void) = 0;
 	
+	GsfOutput*	openFile(const char * szFilename);
+
 	// derived classes should use these to open/close
 	// and write data to the actual file.  this will
 	// let us handle file backups, etc.
