@@ -1079,7 +1079,7 @@ msgstr "AM/PM"
 #: po/tmp/ap_String_Id.h.h:448
 #, c-format
 msgid "AbiWord cannot open %s. It appears to be an invalid document"
-msgstr "AbiWord ne peut pas ouvrir %s. Le fichier %s est un document invalide"
+msgstr "AbiWord ne peut pas ouvrir %s. Le fichier semble être un document invalide"
 
 #. MSG_SpellSelectionDone
 #: po/tmp/ap_String_Id.h.h:450
@@ -8238,4 +8238,3 @@ msgstr "enfants"
 #: po/tmp/xap_String_Id.h.h:878
 msgid "unrelated"
 msgstr "indépendant"
-
