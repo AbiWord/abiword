@@ -107,9 +107,8 @@ static DragInfo * s_getDragInfo ()
 		return &dragInfo;
 	}
 
-	std::vector<const std::string *> mimeTypes;
-	std::vector<const std::string *>::iterator iter;
-	std::vector<const std::string *>::iterator end;
+	std::vector<std::string>::iterator iter;
+	std::vector<std::string>::iterator end;
 	guint idx;
 
 	dragInfo.count = G_N_ELEMENTS(XAP_UnixFrameImpl__knownDragTypes) + 
@@ -126,11 +125,11 @@ static DragInfo * s_getDragInfo ()
 	}
 
 	// document types
-	mimeTypes = IE_Imp::getSupportedMimeTypes();
+	std::vector<std::string> &mimeTypes = IE_Imp::getSupportedMimeTypes();
 	iter = mimeTypes.begin();
 	end = mimeTypes.end();
 	while (iter != end) {
-		dragInfo.entries[idx].target = const_cast<gchar *>((*iter)->c_str());
+		dragInfo.entries[idx].target = const_cast<gchar *>((*iter).c_str());
 		dragInfo.entries[idx].flags = 0;
 		dragInfo.entries[idx].info = TARGET_DOCUMENT;
 		iter++;
@@ -142,7 +141,7 @@ static DragInfo * s_getDragInfo ()
 	iter = mimeTypes.begin();
 	end = mimeTypes.end();
 	while (iter != end) {
-		dragInfo.entries[idx].target = const_cast<gchar *>((*iter)->c_str());
+		dragInfo.entries[idx].target = const_cast<gchar *>((*iter).c_str());
 		dragInfo.entries[idx].flags = 0;
 		dragInfo.entries[idx].info = TARGET_IMAGE;
 		iter++;

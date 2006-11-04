@@ -39,9 +39,9 @@
 
 static const UT_uint32 importer_size_guess = 20;
 static UT_GenericVector<IE_ImpSniffer *> 	IE_IMP_Sniffers (importer_size_guess);
-static std::vector<const std::string *> 	IE_IMP_MimeTypes;
-static std::vector<const std::string *> 	IE_IMP_MimeClasses;
-static std::vector<const std::string *> 	IE_IMP_Suffixes;
+static std::vector<std::string> 	IE_IMP_MimeTypes;
+static std::vector<std::string> 	IE_IMP_MimeClasses;
+static std::vector<std::string> 	IE_IMP_Suffixes;
 
 #include "ie_imp_XML.h"
 IE_Imp_XML * abi_ie_imp_xml_instance = 0;
@@ -255,6 +255,10 @@ void IE_Imp::unregisterImporter (IE_ImpSniffer * s)
 		if (pSniffer)
         	pSniffer->setFileType(i+1);
 	}
+	// Delete the supported types lists
+	IE_IMP_MimeTypes.clear();
+	IE_IMP_MimeClasses.clear();
+	IE_IMP_Suffixes.clear();
 }
 
 void IE_Imp::unregisterAllImporters ()
@@ -273,7 +277,7 @@ void IE_Imp::unregisterAllImporters ()
 /*!
  * Get supported mimetypes by builtin- and plugin-filters.
  */
-std::vector<const std::string *> & IE_Imp::getSupportedMimeTypes ()
+std::vector<std::string> & IE_Imp::getSupportedMimeTypes ()
 {
 	if (IE_IMP_MimeTypes.size() > 0) {
 		return IE_IMP_MimeTypes;
@@ -284,7 +288,7 @@ std::vector<const std::string *> & IE_Imp::getSupportedMimeTypes ()
 		mc = IE_IMP_Sniffers.getNthItem(i)->getMimeConfidence();
 		while (mc && mc->match) {
 			if (mc->match == IE_MIME_MATCH_FULL) {
-				IE_IMP_MimeTypes.push_back(new std::string(mc->mimetype));
+				IE_IMP_MimeTypes.push_back(mc->mimetype);
 			}
 			mc++;
 		}
@@ -297,7 +301,7 @@ std::vector<const std::string *> & IE_Imp::getSupportedMimeTypes ()
 /*!
  * Get supported mime classes by builtin- and plugin-filters.
  */
-std::vector<const std::string *> & IE_Imp::getSupportedMimeClasses ()
+std::vector<std::string> & IE_Imp::getSupportedMimeClasses ()
 {
 	if (IE_IMP_MimeClasses.size() > 0) {
 		return IE_IMP_MimeClasses;
@@ -308,7 +312,7 @@ std::vector<const std::string *> & IE_Imp::getSupportedMimeClasses ()
 		mc = IE_IMP_Sniffers.getNthItem(i)->getMimeConfidence();
 		while (mc && mc->match) {
 			if (mc->match == IE_MIME_MATCH_CLASS) {
-				IE_IMP_MimeClasses.push_back(new std::string(mc->mimetype));
+				IE_IMP_MimeClasses.push_back(mc->mimetype);
 			}
 			mc++;
 		}
@@ -321,7 +325,7 @@ std::vector<const std::string *> & IE_Imp::getSupportedMimeClasses ()
 /*!
  * Get supported suffixes by builtin- and plugin-filters.
  */
-std::vector<const std::string *> & IE_Imp::getSupportedSuffixes()
+std::vector<std::string> & IE_Imp::getSupportedSuffixes()
 {
 	if (IE_IMP_Suffixes.size() > 0) {
 		return IE_IMP_Suffixes;
@@ -331,7 +335,7 @@ std::vector<const std::string *> & IE_Imp::getSupportedSuffixes()
 	for (guint i = 0; i < IE_IMP_Sniffers.size(); i++) {
 		sc = IE_IMP_Sniffers.getNthItem(i)->getSuffixConfidence();
 		while (sc && sc->suffix) {
-			IE_IMP_Suffixes.push_back(new std::string(sc->suffix));
+			IE_IMP_Suffixes.push_back(sc->suffix);
 			sc++;
 		}
 	}

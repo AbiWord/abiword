@@ -34,9 +34,9 @@
 /*****************************************************************/
 
 static UT_GenericVector<IE_ImpGraphicSniffer*> 	IE_IMP_GraphicSniffers (6);
-static std::vector<const std::string *> 		IE_IMP_GraphicMimeTypes;
-static std::vector<const std::string *> 		IE_IMP_GraphicMimeClasses;
-static std::vector<const std::string *> 		IE_IMP_GraphicSuffixes;
+static std::vector<std::string> 		IE_IMP_GraphicMimeTypes;
+static std::vector<std::string> 		IE_IMP_GraphicMimeClasses;
+static std::vector<std::string> 		IE_IMP_GraphicSuffixes;
 
 void IE_ImpGraphic::registerImporter (IE_ImpGraphicSniffer * s)
 {
@@ -67,6 +67,10 @@ void IE_ImpGraphic::unregisterImporter (IE_ImpGraphicSniffer * s)
 		if (pSniffer)
         	pSniffer->setType(i+1);
 	}
+	// Delete the supported types lists
+	IE_IMP_GraphicMimeTypes.clear();
+	IE_IMP_GraphicMimeClasses.clear();
+	IE_IMP_GraphicSuffixes.clear();
 }
 
 void IE_ImpGraphic::unregisterAllImporters ()
@@ -85,7 +89,7 @@ void IE_ImpGraphic::unregisterAllImporters ()
 /*!
  * Get supported mimetypes by builtin- and plugin-filters.
  */
-std::vector<const std::string *> & IE_ImpGraphic::getSupportedMimeTypes ()
+std::vector<std::string> & IE_ImpGraphic::getSupportedMimeTypes ()
 {
 	if (IE_IMP_GraphicMimeTypes.size() > 0) {
 		return IE_IMP_GraphicMimeTypes;
@@ -96,7 +100,7 @@ std::vector<const std::string *> & IE_ImpGraphic::getSupportedMimeTypes ()
 		mc = IE_IMP_GraphicSniffers.getNthItem(i)->getMimeConfidence();
 		while (mc && mc->match) {
 			if (mc->match == IE_MIME_MATCH_FULL) {
-				IE_IMP_GraphicMimeTypes.push_back(new std::string(mc->mimetype));
+				IE_IMP_GraphicMimeTypes.push_back(mc->mimetype);
 			}
 			mc++;
 		}
@@ -109,7 +113,7 @@ std::vector<const std::string *> & IE_ImpGraphic::getSupportedMimeTypes ()
 /*!
  * Get supported mime classes by builtin- and plugin-filters.
  */
-std::vector<const std::string *> & IE_ImpGraphic::getSupportedMimeClasses ()
+std::vector<std::string> & IE_ImpGraphic::getSupportedMimeClasses ()
 {
 	if (IE_IMP_GraphicMimeClasses.size() > 0) {
 		return IE_IMP_GraphicMimeClasses;
@@ -120,7 +124,7 @@ std::vector<const std::string *> & IE_ImpGraphic::getSupportedMimeClasses ()
 		mc = IE_IMP_GraphicSniffers.getNthItem(i)->getMimeConfidence();
 		while (mc && mc->match) {
 			if (mc->match == IE_MIME_MATCH_CLASS) {
-				IE_IMP_GraphicMimeClasses.push_back(new std::string(mc->mimetype));
+				IE_IMP_GraphicMimeClasses.push_back(mc->mimetype);
 			}
 			mc++;
 		}
@@ -133,7 +137,7 @@ std::vector<const std::string *> & IE_ImpGraphic::getSupportedMimeClasses ()
 /*!
  * Get supported suffixes by builtin- and plugin-filters.
  */
-std::vector<const std::string *> & IE_ImpGraphic::getSupportedSuffixes()
+std::vector<std::string> & IE_ImpGraphic::getSupportedSuffixes()
 {
 	if (IE_IMP_GraphicSuffixes.size() > 0) {
 		return IE_IMP_GraphicSuffixes;
@@ -143,7 +147,7 @@ std::vector<const std::string *> & IE_ImpGraphic::getSupportedSuffixes()
 	for (guint i = 0; i < IE_IMP_GraphicSniffers.size(); i++) {
 		sc = IE_IMP_GraphicSniffers.getNthItem(i)->getSuffixConfidence();
 		while (sc && sc->suffix) {
-			IE_IMP_GraphicSuffixes.push_back(new std::string(sc->suffix));
+			IE_IMP_GraphicSuffixes.push_back(sc->suffix);
 			sc++;
 		}
 	}

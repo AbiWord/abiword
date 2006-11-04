@@ -137,9 +137,9 @@ public:
 	static void registerImporter (IE_ImpSniffer * sniffer);
 	static void unregisterImporter (IE_ImpSniffer * sniffer);
 	static void unregisterAllImporters ();
-	static std::vector<const std::string *> & getSupportedMimeTypes ();
-	static std::vector<const std::string *> & getSupportedMimeClasses ();
-	static std::vector<const std::string *> & getSupportedSuffixes ();
+	static std::vector<std::string> & getSupportedMimeTypes ();
+	static std::vector<std::string> & getSupportedMimeClasses ();
+	static std::vector<std::string> & getSupportedSuffixes ();
 	static const char * getMimeTypeForSuffix (const char * suffix);
 
 	virtual ~IE_Imp();
