@@ -159,10 +159,11 @@ bool IE_Exp::_writeBytes(const UT_Byte * sz)
 bool IE_Exp::_closeFile(void)
 {
 	if (m_fp) {
-		gsf_output_close(m_fp);
+		if(!gsf_output_is_closed(m_fp))
+			gsf_output_close(m_fp);
 		g_object_unref(G_OBJECT(m_fp));
+		m_fp = 0;
 	}
-	m_fp = 0;
 	return true;
 }
 
