@@ -77,7 +77,13 @@ public:
     FV_View * printView = NULL;
     GR_Graphics * print_graphics = NULL;
     job = gnome_print_job_new (NULL);
-    if(!job)
+	bool bRes;
+	XAP_UnixGnomePrintGraphics * gnome_print_graphics;
+    GR_GraphicsFactory * pGF;
+	UT_uint32 iDefaultPrintClass;
+	char *filename;
+
+	if(!job)
       goto exit_writeDocument;
 
     config = gnome_print_job_get_config (job);
@@ -95,23 +101,23 @@ public:
 	goto exit_writeDocument;
     }
     
-    char * filename = UT_go_filename_from_uri (getFileName());
+    filename = UT_go_filename_from_uri (getFileName());
     if(!filename) { // shouldn't ever fail, but be pedantic
       UT_ASSERT(UT_SHOULD_NOT_HAPPEN);
       goto exit_writeDocument;
     }
 
-    bool bRes = (gnome_print_job_print_to_file (job, filename) == GNOME_PRINT_OK);
+    bRes = (gnome_print_job_print_to_file (job, filename) == GNOME_PRINT_OK);
     g_free (filename);
     if (!bRes)
       goto exit_writeDocument;
 
-    GR_GraphicsFactory * pGF = XAP_App::getApp()->getGraphicsFactory();
+    pGF = XAP_App::getApp()->getGraphicsFactory();
     if (!pGF)
       goto exit_writeDocument;
     
-    XAP_UnixGnomePrintGraphics * gnome_print_graphics = new XAP_UnixGnomePrintGraphics(job);
-    UT_uint32 iDefaultPrintClass = pGF->getDefaultClass(false);
+    gnome_print_graphics = new XAP_UnixGnomePrintGraphics(job);
+    iDefaultPrintClass = pGF->getDefaultClass(false);
     
     if(iDefaultPrintClass == GRID_UNIX_PANGO_PRINT || iDefaultPrintClass == GRID_UNIX_PANGO)
       {
