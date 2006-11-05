@@ -122,7 +122,8 @@ class GR_UnixPangoRenderInfo : public GR_RenderInfo
 	virtual ~GR_UnixPangoRenderInfo()
 	{
 		delete [] m_pJustify; delete [] m_pLogOffsets;
-		pango_glyph_string_free(m_pGlyphs);
+		if(m_pGlyphs)
+			pango_glyph_string_free(m_pGlyphs);
 		s_iInstanceCount--;
 
 		if(!s_iInstanceCount)
@@ -1305,7 +1306,8 @@ void GR_UnixPangoGraphics::drawChars(const UT_UCSChar* pChars,
 		if(!pItem)
 		{
 			UT_ASSERT(pItem);
-			pango_glyph_string_free(pGstring);
+			if(pGstring)
+				pango_glyph_string_free(pGstring);
 			return;
 		}
 
@@ -1323,7 +1325,8 @@ void GR_UnixPangoGraphics::drawChars(const UT_UCSChar* pChars,
 		xoffD += PANGO_PIXELS(LR.width);
 	}
 
-	pango_glyph_string_free(pGstring);
+	if(pGstring)
+		pango_glyph_string_free(pGstring);
 }
 
 UT_uint32 GR_UnixPangoGraphics::measureString(const UT_UCSChar * pChars,
@@ -1373,7 +1376,8 @@ UT_uint32 GR_UnixPangoGraphics::measureString(const UT_UCSChar * pChars,
 		if(!pItem)
 		{
 			UT_ASSERT(pItem);
-			pango_glyph_string_free(pGstring);
+			if(pGstring)
+				pango_glyph_string_free(pGstring);
 			return 0;
 		}
 
@@ -1438,7 +1442,8 @@ UT_uint32 GR_UnixPangoGraphics::measureString(const UT_UCSChar * pChars,
 		delete [] pLogOffsets;
 	}
 
-	pango_glyph_string_free(pGstring);
+	if(pGstring)
+		pango_glyph_string_free(pGstring);
 	return iWidth;
 }
 
@@ -2255,7 +2260,8 @@ void GR_UnixPangoPrintGraphics::drawChars(const UT_UCSChar* pChars,
 
 		gnome_print_pango_glyph_string(gpc, pf, pGlyphs);
 
-		pango_glyph_string_free(pGlyphs);
+		if(pGlyphs)
+			pango_glyph_string_free(pGlyphs);
 	}
 
 	gnome_print_grestore (gpc);
