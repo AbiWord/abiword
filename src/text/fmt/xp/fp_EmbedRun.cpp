@@ -68,6 +68,8 @@ void fp_EmbedRun::_lookupProperties(const PP_AttrProp * pSpanAP,
 									const PP_AttrProp * /*pSectionAP*/,
 									GR_Graphics * pG)
 {
+	UT_return_if_fail(pSpanAP != NULL);
+
 	UT_DEBUGMSG(("fp_EmbedRun _lookupProperties span %x \n",pSpanAP));
 	m_pSpanAP = pSpanAP;
 	m_bNeedsSnapshot = true;
@@ -109,6 +111,7 @@ void fp_EmbedRun::_lookupProperties(const PP_AttrProp * pSpanAP,
 	  m_iEmbedUID = getEmbedManager()->makeEmbedView(pDoc,m_iIndexAP,m_pszDataID);
 	  UT_DEBUGMSG((" EmbedRun %x UID is %d \n",this,m_iEmbedUID));
 	  getEmbedManager()->initializeEmbedView(m_iEmbedUID);
+	  getEmbedManager()->setRun (m_iEmbedUID, this);
 	  getEmbedManager()->loadEmbedData(m_iEmbedUID);
 	}
 	getEmbedManager()->setDefaultFontSize(m_iEmbedUID,atoi(pszSize));
@@ -154,7 +157,16 @@ void fp_EmbedRun::_lookupProperties(const PP_AttrProp * pSpanAP,
 	      }
 		  else
 		  {
-			  iDescent = UT_convertToLogicalUnits(pszHeight) - iAscent;
+			  UT_sint32 iHeight = UT_convertToLogicalUnits(pszHeight);
+			  const char * pszDescent = NULL;
+			  bool bFoundDescent = pSpanAP->getProperty("descent", pszDescent);
+			  if (bFoundDescent && pszDescent != NULL)
+			  {
+				  iDescent = UT_convertToLogicalUnits(pszDescent);
+				  if (iHeight != iAscent + iDescent)
+					  iAscent = iHeight * iAscent / (iAscent + iDescent);
+			  }
+			  iDescent = iHeight - iAscent;
 		  }
 	  }
 	}
@@ -407,7 +419,7 @@ void fp_EmbedRun::_draw(dg_DrawArgs* pDA)
 	}
 	else
 	{
-		Fill(getGraphics(),pDA->xoff, pDA->yoff - getAscent(), getWidth(), iLineHeight);
+		Fill(getGraphics(),pDA->xoff, pDA->yoff - getAscent(), getWidth()+getGraphics()->tlu(1), iLineHeight+getGraphics()->tlu(1));
 		getEmbedManager()->setColor(m_iEmbedUID,getFGColor());
 	}
 
@@ -435,7 +447,10 @@ void fp_EmbedRun::_draw(dg_DrawArgs* pDA)
 	if(bIsSelected)
 	{
 	  UT_Rect myrec = rec;
-	  myrec.top -= getAscent();
+	  if(!getEmbedManager()->isDefault())
+	  {
+	    myrec.top -= getAscent();
+	  }
 	  _drawResizeBox(myrec);
 	}
 }

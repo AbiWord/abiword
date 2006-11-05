@@ -46,7 +46,7 @@ UninstallIcon "..\..\pkg\win\setup\setup.ico"
 OutFile "abiword-plugins-impexp-${VERSION_MAJOR}.${VERSION_MINOR}.${VERSION_MICRO}.exe"
 
 ; License Information
-LicenseText "This program is Licensed under the GNU General Public License (GPL)."
+LicenseText "This program is Licensed under the GNU General Public License (GPL)." "$(^NextBtn)"
 LicenseData "..\AbiSuite\Copying"
 
 ; The default installation directory
@@ -284,15 +284,15 @@ SectionEnd
 
 ;SectionDivider
 
-Section "Docbook/Coquille"
+Section "DocBook"
 	SectionIn 2
 
 	; Testing clause to Overwrite Existing Version - if exists
 	IfFileExists "$INSTDIR\AbiWord\plugins\AbiDocBook.dll" 0 DoInstall
 	
-	MessageBox MB_YESNO "Overwrite Existing AbiDocbook/Coquille Plugin?" IDYES DoInstall
+	MessageBox MB_YESNO "Overwrite Existing DocBook Plugin?" IDYES DoInstall
 	
-	DetailPrint "Skipping AbiDocbook/Coquille Plugin (already exists)!"
+	DetailPrint "Skipping DocBook Plugin (already exists)!"
 	Goto End
 
 	DoInstall:
@@ -734,9 +734,9 @@ Section "Download glib 2.4 - Required for this group" GLIB_IDX
 
 	;;;;;;;;
 	; libgsf
-	${dlFile} "http://www.abisource.com/downloads/dependencies/libgsf/libgsf-1.8.2-20040121.zip" "$TEMP\libgsf-1.8.2-20040121.zip" "ERROR: Dependency download failed.  Please make sure you are connected to the Internet, then click Retry.  File: http://www.abisource.com/downloads/dependencies/libgsf/libgsf-1.8.2-20040121.zip"
+	${dlFile} "http://www.abisource.com/downloads/dependencies/libgsf/libgsf-1.11.1.zip" "$TEMP\libgsf-1.11.1.zip" "ERROR: Dependency download failed.  Please make sure you are connected to the Internet, then click Retry.  File: http://www.abisource.com/downloads/dependencies/libgsf/libgsf-1.11.1.zip"
 	StrCmp $0 "success" 0 doCleanup
-	${unzipFile} "$TEMP\libgsf-1.8.2-20040121.zip" "$INSTDIR\AbiWord" "bin\libgsf-1-1.dll" "ERROR: failed to extract libgsf-1-1.dll from libgsf-1.8.2-20040121.zip"
+	${unzipFile} "$TEMP\libgsf-1.11.1.zip" "$INSTDIR\AbiWord" "bin\libgsf-1-1.dll" "ERROR: failed to extract libgsf-1-1.dll from libgsf-1.11.1.zip"
 	StrCmp $0 "success" 0 doCleanup
 
 	;;;;;;;;;
@@ -752,7 +752,7 @@ Section "Download glib 2.4 - Required for this group" GLIB_IDX
 		Delete "$TEMP\libiconv-1.9.1-runtime.zip"
 		Delete "$TEMP\gettext-runtime-0.13.1-runtime.zip"
 		Delete "$TEMP\glib-2.4.7-runtime.zip"
-		Delete "$TEMP\libgsf-1.8.2-20040121.zip"
+		Delete "$TEMP\libgsf-1.11.1.zip"
 		Delete "$TEMP\libxml2-2.6.19-runtime.zip"
 
 	;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;

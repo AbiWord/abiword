@@ -302,6 +302,7 @@ void AP_UnixFrameImpl::_setWindowIcon()
 
 	GdkPixbuf * icon = gdk_pixbuf_new_from_xpm_data (const_cast<const char **>(abiword_48_xpm));
 	gtk_window_set_icon (GTK_WINDOW (window), icon);
+	g_object_unref (G_OBJECT(icon));
 }
 
 void AP_UnixFrameImpl::_createWindow()
@@ -368,6 +369,8 @@ void AP_UnixFrameImpl::_setScrollRange(apufi_ScrollType scrollType, int iValue, 
 
 UT_RGBColor AP_UnixFrameImpl::getColorSelBackground () const
 {
+  UT_return_val_if_fail(m_dArea, UT_RGBColor(0,0,0));
+
   // owen says that any widget should be ok, not just text widgets
   GdkColor clr = m_dArea->style->base[GTK_STATE_SELECTED];
   return UT_RGBColor (clr.red >> 8, clr.green >> 8, clr.blue >> 8);

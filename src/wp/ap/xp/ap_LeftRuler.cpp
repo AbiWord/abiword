@@ -58,6 +58,7 @@ AP_LeftRuler::AP_LeftRuler(XAP_Frame * pFrame)
 	m_pG = NULL;
 	m_iHeight = 0;
 	m_iWidth = 0;
+	m_oldY = 0;
 	m_yScrollOffset = 0;
 	m_yScrollLimit = 0;
 	m_bValidMouseClick = false;

@@ -48,16 +48,16 @@ class AP_Preview_Paragraph_Block
 	void setText(const UT_UCSChar * text);
 
 	void setFormat(const XML_Char * pageLeftMargin,
-						const XML_Char * pageRightMargin,
-						AP_Dialog_Paragraph::tAlignState align,
-						const XML_Char * firstLineIndent,
-						AP_Dialog_Paragraph::tIndentState indent,
-						const XML_Char * leftIndent,
-						const XML_Char * rightIndent,
-						const XML_Char * beforeSpacing,
-						const XML_Char * afterSpacing,
-						const XML_Char * lineSpacing,
-						AP_Dialog_Paragraph::tSpacingState spacing);
+				   const XML_Char * pageRightMargin,
+				   AP_Dialog_Paragraph::tAlignState align,
+				   const XML_Char * firstLineIndent,
+				   AP_Dialog_Paragraph::tIndentState indent,
+				   const XML_Char * leftIndent,
+				   const XML_Char * rightIndent,
+				   const XML_Char * beforeSpacing,
+				   const XML_Char * afterSpacing,
+				   const XML_Char * lineSpacing,
+				   AP_Dialog_Paragraph::tSpacingState spacing);
 
 	// absolute pixel positions (relative to respective sides)
 	// at which we'll start/stop drawing.  The firstLine element
@@ -104,16 +104,17 @@ class AP_Preview_Paragraph : public XAP_Preview
 	virtual ~AP_Preview_Paragraph(void);
 
 	void setFormat(const XML_Char * pageLeftMargin,
-						const XML_Char * pageRightMargin,
-						AP_Dialog_Paragraph::tAlignState align,
-						const XML_Char * firstLineIndent,
-						AP_Dialog_Paragraph::tIndentState indent,
-						const XML_Char * leftIndent,
-						const XML_Char * rightIndent,
-						const XML_Char * beforeSpacing,
-						const XML_Char * afterSpacing,
-						const XML_Char * lineSpacing,
-						AP_Dialog_Paragraph::tSpacingState spacing);
+				   const XML_Char * pageRightMargin,
+				   AP_Dialog_Paragraph::tAlignState align,
+				   const XML_Char * firstLineIndent,
+				   AP_Dialog_Paragraph::tIndentState indent,
+				   const XML_Char * leftIndent,
+				   const XML_Char * rightIndent,
+				   const XML_Char * beforeSpacing,
+				   const XML_Char * afterSpacing,
+				   const XML_Char * lineSpacing,
+				   AP_Dialog_Paragraph::tSpacingState spacing,
+				   UT_BidiCharType dir = UT_BIDI_LTR);
 
 	virtual void draw(void);
 

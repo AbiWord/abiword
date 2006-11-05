@@ -80,6 +80,7 @@ UT_Error IE_ImpGraphic_GdkPixbuf::importGraphic(UT_ByteBuf * pBB, FG_Graphic ** 
 
 	if (setjmp(m_pPNG->jmpbuf))
 	{
+		DELETEP(m_pPngBB);
 		g_object_unref(G_OBJECT(pixbuf));
 		png_destroy_write_struct(&m_pPNG, &m_pPNGInfo);
 		return UT_ERROR;
@@ -99,36 +100,19 @@ UT_Error IE_ImpGraphic_GdkPixbuf::importGraphic(UT_ByteBuf * pBB, FG_Graphic ** 
 	FG_GraphicRaster * pFGR = new FG_GraphicRaster();
 	if(pFGR == NULL)
 	{
+		DELETEP(m_pPngBB);
 		return UT_IE_NOMEMORY;
 	}
 
 	if(!pFGR->setRaster_PNG(m_pPngBB)) 
 	{
-		DELETEP(pFGR);		
+		DELETEP(pFGR);
+		DELETEP(m_pPngBB);
 		return UT_IE_FAKETYPE;
 	}
 
 	*ppfg = static_cast<FG_Graphic *>(pFGR);
 	return UT_OK;
-}
-
-/*!
- * Convert the data contained in the file to into a PNG-based 
- * FG_Graphic type
- */
-UT_Error IE_ImpGraphic_GdkPixbuf::importGraphic(const char * szFilename, FG_Graphic ** ppfg)
-{
-	UT_ByteBuf bb;
-
-	if ( bb.insertFromFile(0, szFilename) )
-		{
-			return importGraphic ( &bb, ppfg ) ;
-		}
-	else
-		{
-			*ppfg = 0;
-			return UT_ERROR;
-		}
 }
 
 /*!
@@ -154,6 +138,7 @@ UT_Error IE_ImpGraphic_GdkPixbuf::convertGraphic(UT_ByteBuf* pBB,
 
 	if (setjmp(m_pPNG->jmpbuf))
 	{
+		DELETEP(m_pPngBB);
 		png_destroy_write_struct(&m_pPNG, &m_pPNGInfo);
 		g_object_unref(G_OBJECT(pixbuf));
 		return UT_ERROR;
@@ -552,7 +537,8 @@ UT_Confidence_t IE_ImpGraphicGdkPixbuf_Sniffer::recognizeSuffix(const char * szS
 		".ras",
 		".ico",
 		".bmp",
-		".xbm"
+		".xbm",
+		".wmf"
 	} ;
 
 	for ( unsigned int i = 0; i < NrElements(suffixes); i++ )
@@ -568,7 +554,7 @@ bool IE_ImpGraphicGdkPixbuf_Sniffer::getDlgLabels(const char ** pszDesc,
 {
 	// TODO add a more complete list of suffixes
 	*pszDesc = "All platform supported image formats";
-	*pszSuffixList = "*.jpg; *.jpeg; *.png; *.tiff; *.gif; *.xpm; *.pnm; *.ras; *.ico; *.bmp; *.xbm";
+	*pszSuffixList = "*.jpg; *.jpeg; *.png; *.tiff; *.gif; *.xpm; *.pnm; *.ras; *.ico; *.bmp; *.xbm; *.wmf";
 	*ft = getType ();
 	return true;
 }

@@ -18,9 +18,13 @@
  */
 
 
-#include <gdk/gdk.h>
-#include <gdk/gdkkeysyms.h>
+#include <stdio.h>
 #include <string.h>
+#include <X11/keysym.h>
+#include <gdk/gdk.h>
+#include <gdk/gdkx.h>
+#include <gdk/gdkkeysyms.h>
+
 #include "ut_types.h"
 #include "ut_assert.h"
 #include "ev_EditBinding.h"
@@ -29,7 +33,6 @@
 #include "xav_View.h"
 #include "ev_NamedVirtualKey.h"
 #include "ev_UnixKeyboard.h"
-#include "ev_UnixKeysym2ucs.cpp"
 #include "ut_mbtowc.h"
 #include "ut_string_class.h"
 
@@ -77,7 +80,21 @@ bool ev_UnixKeyboard::keyPressEvent(AV_View* pView, GdkEventKey* e)
 	if (e->state & GDK_SHIFT_MASK)
 		state |= EV_EMS_SHIFT;
 	if (e->state & GDK_CONTROL_MASK)
+	{
 		state |= EV_EMS_CONTROL;
+
+		// Gdk does us the favour of working out a translated keyvalue for us,
+		// but with the Ctrl keys, we do not want that -- see bug 9545
+		Display * display = GDK_DISPLAY();
+		KeySym sym = XKeycodeToKeysym(display,
+									  e->hardware_keycode,
+									  e->state & GDK_SHIFT_MASK ? 1 : 0);
+		xxx_UT_DEBUGMSG(("ev_UnixKeyboard::keyPressEvent: keyval %d, hardware_keycode %d\n"
+					 "                                sym: 0x%x\n",
+					 e->keyval, e->hardware_keycode, sym));
+
+		charData = sym;
+	}
 	if (e->state & (s_alt_mask))
 		state |= EV_EMS_ALT;
 
@@ -259,7 +276,7 @@ static const EV_EditBits s_Table_NVK_0xff[] =
 	0,
 	EV_NVK__IGNORE__,    // GDK_Undo 0xFF65
 	EV_NVK__IGNORE__,    // GDK_Redo 0xFF66
-	EV_NVK__IGNORE__,    // GDK_Menu 0xFF67
+	EV_NVK_MENU_SHORTCUT,    // GDK_Menu 0xFF67
 	EV_NVK__IGNORE__,    // GDK_Find 0xFF68
 	EV_NVK__IGNORE__,    // GDK_Cancel 0xFF69
 	EV_NVK__IGNORE__,    // GDK_Help 0xFF6A
@@ -456,11 +473,6 @@ static EV_EditBits s_mapVirtualKeyCodeToNVK(guint keyval)
 //////////////////////////////////////////////////////////////////
 // deal with keyboard mapping oddities
 //////////////////////////////////////////////////////////////////
-
-#include <stdio.h>
-#include <gdk/gdk.h>
-#include <gdk/gdkx.h>
-#include <X11/keysym.h>
 
 static GdkModifierType s_getAltMask(void)
 {

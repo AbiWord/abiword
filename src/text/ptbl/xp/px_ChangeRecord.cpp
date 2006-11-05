@@ -59,6 +59,10 @@ PX_ChangeRecord::PX_ChangeRecord(PXType type,
 	m_iXID(iXID),
 	m_iCRNumber(0)
 {
+  // DAL: since 2.4.x doesn't use this code and it causes a major load-time
+  // regressions, comment it out for now.
+  // http://www.abisource.com/mailinglists/abiword-dev/2005/Oct/0046.html
+#if 0
 	// bulletproofing
 	memset(&m_MyUUID, 0, sizeof(m_MyUUID));
 
@@ -71,6 +75,7 @@ PX_ChangeRecord::PX_ChangeRecord(PXType type,
 
 	pUUID->toBinary(m_MyUUID);
 	delete pUUID;
+#endif
 }
 
 /*!

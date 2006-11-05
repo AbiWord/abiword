@@ -138,8 +138,7 @@ bool IE_Exp_Text_Sniffer::recognizeSuffix(const char * szSuffix)
 UT_Error IE_Exp_Text_Sniffer::constructExporter(PD_Document * pDocument,
 											   IE_Exp ** ppie)
 {
-	IE_Exp_Text * p = new IE_Exp_Text(pDocument,false);
-	*ppie = p;
+	*ppie = new IE_Exp_Text(pDocument,"UTF-8");
 	return UT_OK;
 }
 
@@ -752,12 +751,16 @@ bool Text_Listener::populate(PL_StruxFmtHandle /*sfh*/,
 			
 			case PTO_Hyperlink:
 				return true;
+
 			case PTO_Embed:
 				return true;
 
+			case PTO_Math:
+				return true;
+
 			default:
-				UT_ASSERT_NOT_REACHED();
-				return false;
+				UT_ASSERT(UT_TODO);
+				return true;
 			}
 		}
 
@@ -895,7 +898,7 @@ bool Text_Listener::populateStrux(PL_StruxDocHandle /*sdh*/,
 	    return true ;
 
 	default:
-		UT_ASSERT_NOT_REACHED();
+		UT_ASSERT(UT_TODO);
 		return true;
 	}
 }

@@ -227,7 +227,6 @@ public:
 
 	SET_GATHER			(ShowSplash,		bool );
 
-	SET_GATHER			(SmartQuotesEnable, bool );	
 	SET_GATHER			(PrefsAutoSave, 	bool );
 
 	SET_GATHER			(ViewShowRuler, 	bool );
@@ -247,7 +246,6 @@ public:
 	SET_GATHER			(AutoLoadPlugins, bool);
 
 	SET_GATHER			(OtherDirectionRtl, bool );
-	SET_GATHER			(OtherHebrewContextGlyphs,bool );
 
 	SET_GATHER			(AutoSaveFile, bool);
 	virtual void _gatherAutoSaveFilePeriod(UT_String &stRetVal);

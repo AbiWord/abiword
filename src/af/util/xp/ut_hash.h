@@ -895,14 +895,16 @@ const UT_String& UT_GenericStringMap<T>::_key(UT_Cursor& c) const
 {
 	hash_slot<T> & slot = m_pMapping[c._get_index()];
 
-	if (!slot.empty() && !slot.deleted())
-	{
-		return slot.m_key.value();
-	}
-	// should never happen
-	UT_ASSERT_HARMLESS(UT_SHOULD_NOT_HAPPEN);
-	static UT_String bad;
-	return bad;
+	// we used to return a reference to a static variable here in case the
+	// following conditions failed, but that breaks some compilers (the
+	// variable has to be instantiated somewhere for each template instance
+	// and this can lead to multiple instances of it in different abi
+	// modules (for example with the cs2005q3.2 compiler for Maemo 2) --
+	// the caller must ensure that the cursor is valid; that is not that
+	// much to ask
+	UT_ASSERT_HARMLESS(!slot.empty() && !slot.deleted());
+
+	return slot.m_key.value();
 }
 
 template <class T>

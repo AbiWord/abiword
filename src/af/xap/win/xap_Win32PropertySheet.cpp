@@ -199,6 +199,8 @@ int CALLBACK XAP_Win32PropertySheet::s_sheetWndProc(HWND hWnd, UINT msg, WPARAM 
 			if (!pThis->m_modeless)
 				PostQuitMessage(0);
 
+			pThis->cleanup ();
+
 			return 0;
 		} 
 
@@ -418,10 +420,15 @@ void XAP_Win32PropertySheet::destroy(void)
 
 		DestroyWindow(m_hWnd);
 	}
+
+	cleanup ();	
 	
+}
+
+void XAP_Win32PropertySheet::cleanup(void)
+{	
 	if (m_pages) {
 		delete m_pages;
 		m_pages = NULL;
 	}	
 }
-

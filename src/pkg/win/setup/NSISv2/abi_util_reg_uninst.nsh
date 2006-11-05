@@ -14,7 +14,7 @@
 
 ; simply control panel reg writing
 !macro WRSU name value
-  WriteRegStr HKLM  "${REG_UNINSTALL_KEY}" "${name}" '"${value}"'
+  WriteRegStr HKLM  "${REG_UNINSTALL_KEY}" "${name}" "${value}"
 !macroend
 !define WRSU "!insertmacro WRSU"
 

@@ -157,7 +157,8 @@ void fl_SectionLayout::setNeedsReformat(fl_ContainerLayout * pCL, UT_uint32 /*of
 	  m_vecFormatLayout.addItem(pCL);
 	}
 	m_bNeedsReformat = true;
-	xxx_UT_DEBUGMSG(("SetNeedsReformat in %s from %s number to format %d\n",getContainerString(),pCL->getContainerString(),m_vecFormatLayout.getItemCount()));	if(myContainingLayout() != NULL && (static_cast<fl_SectionLayout *>(myContainingLayout()) != this) && (getContainerType() != FL_CONTAINER_SHADOW))
+	xxx_UT_DEBUGMSG(("SetNeedsReformat in %s from %s number to format %d\n",getContainerString(),pCL->getContainerString(),m_vecFormatLayout.getItemCount()));
+	if(myContainingLayout() != NULL && (static_cast<fl_SectionLayout *>(myContainingLayout()) != this) && (getContainerType() != FL_CONTAINER_SHADOW))
 	{
 		static_cast<fl_SectionLayout *>(myContainingLayout())->setNeedsReformat(this);
 	}
@@ -1956,8 +1957,42 @@ bool fl_DocSectionLayout::doclistener_changeStrux(const PX_ChangeRecord_StruxCha
 {
 	UT_ASSERT(pcrxc->getType()==PX_ChangeRecord::PXT_ChangeStrux);
 
-
+	PT_AttrPropIndex IndexOld = getAttrPropIndex();
+	
 	setAttrPropIndex(pcrxc->getIndexAP());
+
+	const PP_AttrProp * pAP1;
+	getDocument()->getAttrProp(IndexOld, &pAP1);
+
+	const PP_AttrProp * pAP2;
+	getDocument()->getAttrProp(pcrxc->getIndexAP(), &pAP2);
+
+	if(!pAP1 || !pAP2)
+	{
+		getDocLayout()->rebuildFromHere(this);
+	}
+
+	const XML_Char * prop = "dom-dir";
+	const XML_Char * val1 = NULL;
+	const XML_Char * val2 = NULL;
+
+	pAP1->getProperty(prop, val1);
+	pAP2->getProperty(prop, val2);
+
+	if(!val1 || !val2 || strcmp(val1, val2))
+	{
+		lookupProperties();
+		fl_ContainerLayout * pCL = getFirstLayout();
+		while(pCL)
+		{
+			pCL->lookupProperties();
+			pCL = pCL->getNext();
+		}
+		
+		getDocLayout()->rebuildFromHere(this);
+	}
+	
+	
 	return true;
 }
 
@@ -3772,7 +3807,8 @@ void fl_HdrFtrSectionLayout::addValidPages(void)
 	// Loop through all the columns in m_pDocSl and find the pages owned
 	// by m_pDocSL
 	//
-	fp_Column * pCol = static_cast<fp_Column *>(m_pDocSL->getFirstContainer());
+        fp_Column * pCol = NULL;
+	pCol = static_cast<fp_Column *>(m_pDocSL->getFirstContainer());
 	fp_Page * pOldPage = NULL;
 	fp_Page * pNewPage = NULL;
 	while(pCol)

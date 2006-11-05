@@ -15,7 +15,7 @@ Icon "setup.ico"
 OutFile "AbiWord_Dictionary_Ukrainian.exe"
 
 ; License Information
-LicenseText "This program is Licensed under the GNU General Public License (GPL)."
+LicenseText "This program is Licensed under the GNU General Public License (GPL)." "$(^NextBtn)"
 LicenseData "..\..\..\..\COPYING"
 
 ; The default installation directory

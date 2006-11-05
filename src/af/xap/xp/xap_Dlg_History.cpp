@@ -132,7 +132,7 @@ char * XAP_Dialog_History::getHeaderValue(UT_uint32 indx) const
 				UT_uint32 iMinutes = (iEditTime % 3600)/60;
 				UT_uint32 iSeconds = (iEditTime % 3600) % 60;
 				
-				UT_String_sprintf(S,"%d:%d:%d", iHours, iMinutes, iSeconds);
+				UT_String_sprintf(S,"%.2d:%.2d:%.2d", iHours, iMinutes, iSeconds);
 				return UT_strdup(S.c_str());
 			}
 

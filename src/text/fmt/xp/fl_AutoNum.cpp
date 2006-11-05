@@ -372,7 +372,8 @@ void    fl_AutoNum::findAndSetParentItem(void)
 void    fl_AutoNum::_getLabelstr( UT_UCSChar labelStr[], UT_uint32 * insPoint,
 								  UT_uint32 depth, PL_StruxDocHandle pLayout) const
 {
-    char p[100], leftDelim[10], rightDelim[10];
+	// Keep these arrays the same length to prevent overflows; see Bug 10580
+	char p[100], leftDelim[100], rightDelim[100];
 	UT_uint32 i,psz;
 	//
 	// Don't get the next level if we don't have a list
@@ -396,9 +397,10 @@ void    fl_AutoNum::_getLabelstr( UT_UCSChar labelStr[], UT_uint32 * insPoint,
 
 	i = 0;
 
-	while (i < NrElements(p) && p[i] && p[i] != '%' && p[i+1] != 'L')
+	while (((i + 1) < NrElements(p)) && p[i] && p[i] != '%' && p[i+1] != 'L')
 	{
 		// FIXME check the bounds to not overflow leftDelim
+		// Update: the arrays are now the same length to prevent overflows
 		leftDelim[i] = p[i];
 		i++;
 	}
@@ -414,6 +416,7 @@ void    fl_AutoNum::_getLabelstr( UT_UCSChar labelStr[], UT_uint32 * insPoint,
 	while (i < NrElements(p) && p[i] || p[i] != '\0')
 	{
 		// FIXME check the bounds to not overflow rightDelim
+		// Update: the arrays are now the same length to prevent overflows
 		rightDelim[i - rTmp] = p[i];
 		i++;
 	}
@@ -464,40 +467,56 @@ void    fl_AutoNum::_getLabelstr( UT_UCSChar labelStr[], UT_uint32 * insPoint,
 		break;
 
 	case UPPERCASE_LIST:
-		sprintf(p,"%s",dec2ascii(place - 1, 65));
+	{
+		char * val = dec2ascii(place - 1, 65);
+		sprintf(p,"%s",val);
+		FREEP(val);
 		psz = UT_XML_strlen( p);
 		for(i=0; i<psz; i++)
 		{
 			labelStr[(*insPoint)++] =  CONV_TO_UCS p[i];
 		}
 		break;
+	}
 
 	case LOWERCASE_LIST:
-		sprintf(p,"%s",dec2ascii(place - 1, 97));
+	{
+		char * val = dec2ascii(place - 1, 97);
+		sprintf(p,"%s",val);
+		FREEP(val);
 		psz = UT_XML_strlen( p);
 		for(i=0; i<psz; i++)
 		{
 			labelStr[(*insPoint)++] =  CONV_TO_UCS p[i];
 		}
 		break;
+	}
 
 	case UPPERROMAN_LIST:
-		sprintf(p,"%s",dec2roman(place,false));
+	{
+		char * val = dec2roman(place,false);
+		sprintf(p,"%s",val);
+		FREEP(val);
 		psz = UT_XML_strlen( p);
 		for(i=0; i<psz; i++)
 		{
 			labelStr[(*insPoint)++] =  CONV_TO_UCS p[i];
 		}
 		break;
+	}
 
 	case LOWERROMAN_LIST:
-		sprintf(p,"%s",dec2roman(place,true));
+	{
+		char * val = dec2roman(place,true);
+		sprintf(p,"%s",val);
+		FREEP(val);
 		psz = UT_XML_strlen( p);
 		for(i=0; i<psz; i++)
 		{
 			labelStr[(*insPoint)++] =  CONV_TO_UCS p[i];
 		}
 		break;
+	}
 
 	case ARABICNUMBERED_LIST:
 		sprintf(p,"%i",place);

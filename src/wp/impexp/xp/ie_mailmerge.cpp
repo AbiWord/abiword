@@ -582,91 +582,105 @@ public:
 			UT_VECTOR_PURGEALL(UT_UTF8String*, m_headers);
 			UT_VECTOR_PURGEALL(UT_UTF8String*, m_items);
 		}
-	
-	virtual UT_Error mergeFile(const char * szFilename) {
 
-		UT_ByteBuf item;
+	UT_Error mergeFile(const char * szFilename, bool justHeaders) 
+		{
+		  UT_ByteBuf item;
 
-		UT_Byte ch;
+		  UT_Byte ch;
+		  
+		  UT_uint32 lineno = 0;
+		  bool cont = true;
+		  bool in_quotes = false;
+		  
+		  FILE * fp = fopen(szFilename, "rb");
+		  if (!fp)
+		    return UT_ERROR;
+		  
+		  UT_VECTOR_PURGEALL(UT_UTF8String *, m_headers);
+		  m_headers.clear();
+		  UT_VECTOR_PURGEALL(UT_UTF8String *, m_items);
+		  m_items.clear();
+		  
+		  // line 1 == Headings/titles
+		  // line 2..n == Data
+		  
+		  while (cont && (1 == fread (&ch, 1, 1, fp))){
+		    if (ch == '\r' && !in_quotes) // swallow carriage return unless in quoted block
+		      continue;
+		    else if (ch == '\n' && !in_quotes) { // newline. fire changeset
+		      defineItem (item, lineno == 0);
+		      item.truncate (0);
 
-		UT_uint32 lineno = 0;
-		bool cont = true;
+		      if(justHeaders)
+			break;
 
-		FILE * fp = fopen(szFilename, "rb");
-		if (!fp)
-			return UT_ERROR;
+		      if (lineno != 0)
+			cont = fire ();
 
-		UT_VECTOR_PURGEALL(UT_UTF8String *, m_headers);
-		m_headers.clear();
-		UT_VECTOR_PURGEALL(UT_UTF8String *, m_items);
-		m_items.clear();
+		      lineno++;
+		    }
+		    else if (ch == m_delim && !in_quotes) {
+		      defineItem (item, lineno == 0);
+		      item.truncate (0);
+		    }
+		    else if (ch == '"' && in_quotes) {
+		      if (1 == fread (&ch, 1, 1, fp)) {
+			if (ch == '"') // 2 double quotes == escaped quote
+			  item.append (&ch, 1);
+			else { // assume that it's the end of the quoted sequence and ch is the delimiter char or a newline
+			  in_quotes = false;
+			  defineItem (item, lineno == 0);
+			  item.truncate (0);
+			  
+			  if (ch == '\n') {
+			    if(justHeaders)
+			      break;
 
-		// line 1 == Headings/titles
-		// line 2..n == Data
-
-		while (cont && (1 == fread (&ch, 1, 1, fp))){
-			if (ch == '\r')
-				continue;
-			else if (ch == '\n') {
-				defineItem (item, lineno == 0);
-				if (lineno != 0)
-					cont = fire ();
-				lineno++;
-				item.truncate (0);
-				continue;
+			    if (lineno != 0)
+			      cont = fire ();
+			    lineno++;
+			  }
 			}
-			else if (ch == m_delim) {
-				defineItem (item, lineno == 0);
-				item.truncate (0);
-			}
-			else
-				item.append(&ch, 1);
+		      } else {
+			// eof??
+			defineItem (item, lineno == 0);
+			item.truncate (0);
+			in_quotes = false;
+		      }
+		    }
+		    else if ((ch == '"') && !in_quotes && (item.getLength () == 0)) // beginning of a quoted sequence
+		      in_quotes = true;
+		    else // append whatever we're given
+		      item.append(&ch, 1);
+		  }
+		  
+		  fclose (fp);
+		  
+		  // if there's a non-empty line that wasn't terminated by a newline, fire it off
+		  if (m_items.size())
+		    fire ();
+		  
+		  return UT_OK;
 		}
 
-		fclose (fp);
-
-		return UT_OK;
+	virtual UT_Error mergeFile(const char * szFilename) {
+	  return mergeFile(szFilename, false);
 	}
 
 	virtual UT_Error getHeaders (const char * szFilename, UT_Vector & out_vec) {
+	  UT_VECTOR_PURGEALL(UT_UTF8String *, out_vec);
+	  out_vec.clear();
+	  UT_Error err = mergeFile(szFilename, true);
 
-		UT_ByteBuf item;
-
-		UT_Byte ch;
-
-		FILE * fp = fopen(szFilename, "rb");
-		if (!fp)
-			return UT_ERROR;
-
-		UT_VECTOR_PURGEALL(UT_UTF8String *, m_headers);
-		m_headers.clear();
-
-		// line 1 == Headings/titles
-		// line 2..n == Data
-
-		while ((1 == fread (&ch, 1, 1, fp))){
-			if (ch == '\r')
-				continue;
-			else if (ch == '\n') {
-				defineItem (item, true);
-				break;
-			}
-			else if (ch == m_delim) {
-				defineItem (item, true);
-				item.truncate (0);
-			}
-			else
-			  item.append (&ch, 1);
-		}
-		
-		fclose (fp);
-
+	  if (err == UT_OK) {
 		for (UT_uint32 i = 0; i < m_headers.size(); i++) {
 			UT_UTF8String * clone = new UT_UTF8String (*(UT_UTF8String *)m_headers[i]);
 			out_vec.addItem (clone);
 		}
+	  }
 
-		return UT_OK;
+	  return err;
 	}
 	
 private:

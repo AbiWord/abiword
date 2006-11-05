@@ -133,8 +133,18 @@ XAP_App::~XAP_App()
 
 	// run thru and destroy all frames on our window list.
 	UT_VECTOR_PURGEALL(XAP_Frame *, m_vecFrames);
+	//
+	// If the Embed plugins exist but aren't used the pointers
+	// are NULL. We used code instead of getting asserts
+	// for UT_VECTOR_PURGEALL
+	//
+	UT_sint32 i = 0;
+	for(i= 0; i<  m_vecEmbedManagers.getItemCount(); i++)
+	{
+	    GR_EmbedManager  * p = m_vecEmbedManagers.getNthItem(i);
+	    DELETEP(p);
+	}
 
-	UT_VECTOR_PURGEALL(GR_EmbedManager  *, m_vecEmbedManagers);
 
 	FREEP(m_szAbiSuiteLibDir);
 	DELETEP(m_pEMC);
@@ -250,7 +260,7 @@ UT_uint32 XAP_App::registerEmbeddable(GR_EmbedManager * pEmbed)
      for(i=0; !bFound && (i< static_cast<UT_sint32>(m_vecEmbedManagers.getItemCount())); i++)
      {
 		 pCur =  m_vecEmbedManagers.getNthItem(i);
-		 if(UT_strcmp(pCur->getObjectType(),pEmbed->getObjectType()) == 0)
+		 if(pCur && (UT_strcmp(pCur->getObjectType(),pEmbed->getObjectType()) == 0))
 		 {
 			 bFound = true;
 		 }
@@ -292,7 +302,7 @@ GR_EmbedManager * XAP_App:: getEmbeddableManager(GR_Graphics * pG, const char * 
        pCur =  m_vecEmbedManagers.getNthItem(i);
        UT_DEBUGMSG(("Look at Manager for Object type %s requested %s strcmp %d UT_strcmp %d \n",pCur->getObjectType(),szObjectType,UT_strcmp(pCur->getObjectType(),szObjectType),strcmp(pCur->getObjectType(),szObjectType) ));
 
-       if(UT_strcmp(pCur->getObjectType(),szObjectType) == 0)
+       if(pCur && (UT_strcmp(pCur->getObjectType(),szObjectType) == 0))
        {
 	 bFound = true;
        }

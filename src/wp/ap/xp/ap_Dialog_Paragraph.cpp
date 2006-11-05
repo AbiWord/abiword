@@ -87,7 +87,7 @@ AP_Dialog_Paragraph::AP_Dialog_Paragraph(XAP_DialogFactory* pDlgFactory, XAP_Dia
 	_addPropertyItem (id_CHECK_SUPPRESS,		sControlData(check_INDETERMINATE));
 	_addPropertyItem (id_CHECK_NO_HYPHENATE,	sControlData(check_INDETERMINATE));
 	_addPropertyItem (id_CHECK_KEEP_NEXT,		sControlData(check_INDETERMINATE));
-	_addPropertyItem (id_CHECK_DOMDIRECTION,	sControlData(check_TRUE));
+	_addPropertyItem (id_CHECK_DOMDIRECTION,	sControlData(check_INDETERMINATE));
 }
 
 AP_Dialog_Paragraph::~AP_Dialog_Paragraph(void)
@@ -1192,6 +1192,20 @@ void AP_Dialog_Paragraph::_syncControls(tControl changed, bool bAll /* = false *
 
 	// the preview needs to suck in the changed data (to cache it
 	// for subsequent draws)
+	UT_BidiCharType iDir;
+	if(_getCheckItemValue(id_CHECK_DOMDIRECTION) == check_TRUE)
+		iDir = UT_BIDI_RTL;
+	else if(_getCheckItemValue(id_CHECK_DOMDIRECTION) == check_FALSE)
+		iDir = UT_BIDI_LTR;
+	else
+	{
+		// nothing given -- default to LTR
+		UT_DEBUGMSG(("AP_Dialog_Paragraph::_syncControls: no value of dom-dir,"
+					 " defaulting to LTR\n"));
+		iDir = UT_BIDI_LTR;
+	}
+	
+		
 	m_paragraphPreview->setFormat(m_pageLeftMargin,
 									m_pageRightMargin,
 									(AP_Dialog_Paragraph::tAlignState) _getMenuItemValue(id_MENU_ALIGNMENT),
@@ -1202,7 +1216,8 @@ void AP_Dialog_Paragraph::_syncControls(tControl changed, bool bAll /* = false *
 									_getSpinItemValue(id_SPIN_BEFORE_SPACING),
 									_getSpinItemValue(id_SPIN_AFTER_SPACING),
 									_getSpinItemValue(id_SPIN_SPECIAL_SPACING),
-									(AP_Dialog_Paragraph::tSpacingState) _getMenuItemValue(id_MENU_SPECIAL_SPACING));
+									(AP_Dialog_Paragraph::tSpacingState) _getMenuItemValue(id_MENU_SPECIAL_SPACING),
+								  iDir);
 
 	m_paragraphPreview->draw();
 }

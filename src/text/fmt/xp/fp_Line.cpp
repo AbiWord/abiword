@@ -189,6 +189,7 @@ bool fp_Line::assertLineListIntegrity(void)
 			}
 			UT_ASSERT(pRunLine == pRunBlock);
 		}
+		UT_return_val_if_fail(pRunBlock,false);
 		pRunBlock = pRunBlock->getNextRun();
 	}
 	xxx_UT_DEBUGMSG(("Line %x Width of line is %d num runs is %d \n",this,width,k)); //   UT_ASSERT(width < getMaxWidth());
@@ -2020,7 +2021,7 @@ inline void fp_Line::_calculateWidthOfRun(	UT_sint32 &iX,
 			else //this is not a Tab run, or we are using fixed width tabs
 			{
 				iWidth = pRun->getAscent()*iFixedWidthMlt / iFixedWidthDiv;
-
+				iX += iWidth;
 
 				xxx_UT_DEBUGMSG(("run[%d] (type %d) width=%d\n", i,pRun->getType(),iWidth));
 			}

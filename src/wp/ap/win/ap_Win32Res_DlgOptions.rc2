@@ -70,7 +70,6 @@
 #define AP_RID_DIALOG_OPTIONS_CHK_ViewUnprintable		1307
 #define AP_RID_DIALOG_OPTIONS_LBL_UNITS 				1308
 #define AP_RID_DIALOG_OPTIONS_COMBO_UNITS				1309
-#define AP_RID_DIALOG_OPTIONS_CHK_SmartQuotesEnable 	1312
 #define AP_RID_DIALOG_OPTIONS_CHK_BGColorEnable 		1313
 #define AP_RID_DIALOG_OPTIONS_BTN_BGColor				1314
 
@@ -89,7 +88,6 @@
 #define AP_RID_DIALOG_OPTIONS_LBL_AutoSaveExtension 	1413
 #define AP_RID_DIALOG_OPTIONS_TXT_AutoSaveExtension 	1414
 #define AP_RID_DIALOG_OPTIONS_CHK_ShowSplash			1415
-#define AP_RID_DIALOG_OPTIONS_CHK_OtherHebrewContextGlyphs	  1416
 #define AP_RID_DIALOG_OPTIONS_CHK_DirMarkerAfterClosingParenthesis	  1417
 
 // Language
@@ -196,8 +194,6 @@ BEGIN
 					5,65,140,12,SS_CENTERIMAGE
 	COMBOBOX		AP_RID_DIALOG_OPTIONS_COMBO_UNITS,152,65,140,75,
 					CBS_DROPDOWNLIST | WS_VSCROLL | WS_TABSTOP
-	AUTOCHECKBOX	"Enable smart quotes",
-					AP_RID_DIALOG_OPTIONS_CHK_SmartQuotesEnable, 5, 100, 175, 10
 	AUTOCHECKBOX	"Allow screen colors other than white",
 					AP_RID_DIALOG_OPTIONS_CHK_BGColorEnable,  5, 115, 175, 10
 	PUSHBUTTON		"Choose Screen Color",AP_RID_DIALOG_OPTIONS_BTN_BGColor,201,111,90,14
@@ -257,16 +253,13 @@ BEGIN
                     AP_RID_DIALOG_OPTIONS_CHK_LanguageWithKeyboard,"Button",
                     BS_AUTOCHECKBOX | WS_TABSTOP,5,36,280,8
     GROUPBOX        "Bi-Directional Options...",
-                    AP_RID_DIALOG_OPTIONS_FRM_BidiOptions,2,57,290,57
+                    AP_RID_DIALOG_OPTIONS_FRM_BidiOptions,2,57,290,46
     CONTROL         "Default to right-to-left direction of text:",
                     AP_RID_DIALOG_OPTIONS_CHK_OtherDirectionRtl,"Button",
                     BS_AUTOCHECKBOX | WS_TABSTOP,5,67,278,10
-    CONTROL         "Use glyph shaping for Hebrew:",
-                    AP_RID_DIALOG_OPTIONS_CHK_OtherHebrewContextGlyphs,
-                    "Button",BS_AUTOCHECKBOX | WS_TABSTOP,5,78,280,10
     CONTROL         "Auto-insert direction marker",
                     AP_RID_DIALOG_OPTIONS_CHK_DirMarkerAfterClosingParenthesis,
-                    "Button",BS_AUTOCHECKBOX | WS_TABSTOP,5,100,280,10
+                    "Button",BS_AUTOCHECKBOX | WS_TABSTOP,5,89,280,10
 END
 
 #endif /* RC_INVOKED */

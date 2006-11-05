@@ -1694,6 +1694,28 @@ UT_UCS4Char * UT_UCS4_strcpy_char(UT_UCS4Char * dest, const char * src)
 	return dest;
 }
 
+UT_UCS4Char * UT_UCS4_strncpy_char(UT_UCS4Char * dest, const char * src, int n)
+{
+	UT_ASSERT(dest);
+	UT_ASSERT(src);
+
+	UT_UCS4Char * d 		= dest;
+	const char * s	= static_cast<const char *>(src);
+
+	static UT_UCS4_mbtowc m(XAP_EncodingManager::get_instance()->getNative8BitEncodingName());
+	UT_UCS4Char wc;
+
+	while (*s != 0 && n > 0)
+	  {
+		if(m.mbtowc(wc,*s))*d++=wc;
+		s++;
+		n--;
+	  }
+	*d = 0;
+
+	return dest;
+}
+
 UT_UCS4Char * UT_UCS4_strcpy_utf8_char(UT_UCS4Char * dest, const char * src)
 {
 	// FIXME: This could be more efficient than it is, on the other

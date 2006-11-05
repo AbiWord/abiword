@@ -1850,6 +1850,7 @@ GR_Image * GR_UnixGraphics::genImageFromRectangle(const UT_Rect &rec)
 	UT_sint32 idy = _tduY(rec.top);
 	UT_sint32 idw = _tduR(rec.width);
 	UT_sint32 idh = _tduR(rec.height);
+	UT_return_val_if_fail (idw > 0 && idh > 0 && idx >= 0 && idy >= 0, NULL);
 	GdkColormap* cmp = gdk_colormap_get_system();
 	GdkPixbuf * pix = gdk_pixbuf_get_from_drawable(NULL,
 												   m_pWin,
@@ -1861,6 +1862,7 @@ GR_Image * GR_UnixGraphics::genImageFromRectangle(const UT_Rect &rec)
 
 	GR_UnixImage * pImg = new GR_UnixImage("ScreenShot");
 	pImg->m_image = pix;
+	pImg->setDisplaySize(idw,idh);
 	return static_cast<GR_Image *>(pImg);
 }
 

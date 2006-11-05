@@ -133,10 +133,6 @@ XAP_UnixApp::~XAP_UnixApp()
 {
 	DELETEP(m_pUnixToolbarIcons);
 	
-#if FC_MINOR > 2
-	FcFini();
-#endif
-	
 	delete m_fontManager;
 }
 

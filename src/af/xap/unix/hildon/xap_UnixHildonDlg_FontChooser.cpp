@@ -69,50 +69,39 @@ XAP_UnixHildonDialog_FontChooser::~XAP_UnixHildonDialog_FontChooser(void)
 }
 
 		
-void XAP_UnixHildonDialog_FontChooser::fillFontInfo(PangoAttrList* list)
+void XAP_UnixHildonDialog_FontChooser::fillFontInfo()
 {
-	PangoFontDescription *font = pango_font_description_new();
-	
-	//font family
-    pango_font_description_set_family(font, getVal("font-family"));
-
-	//font underline
-	if (m_bUnderline) {
-		PangoAttribute *pattrUnderline = pango_attr_underline_new(PANGO_UNDERLINE_SINGLE);
-		pattrUnderline->start_index = 0;
-    	pattrUnderline->end_index = 1;
-		pango_attr_list_insert(list, pattrUnderline);
-	}		
-	
-	//font strikeout
-	if (m_bStrikeout) {
-		PangoAttribute *pattrStrike = pango_attr_strikethrough_new(PANGO_UNDERLINE_SINGLE);
-		pattrStrike->start_index = 0;
-    	pattrStrike->end_index = 1;
-		pango_attr_list_insert(list,pattrStrike);		
-	}
-	
-	//font color
+	GdkColor color;
 	UT_RGBColor c;
-    UT_parseColor(getVal("color"), c);
+	gchar* pszFontName;
+	PangoFontDescription *ptrFontDescNew;
+	
+	UT_parseColor (getVal("color"), c);
+	color.red = static_cast<guint16> ((c.m_red / 255.0) * 65535.0);
+	color.green = static_cast<guint16> ((c.m_grn / 255.0) * 65535.0);
+	color.blue = static_cast<guint16> ((c.m_blu / 255.0) * 65535.0);
 
-	gdouble color[3];
-	color[RED] = static_cast<double> (c.m_red) / 255.0;
-	color[GREEN] = static_cast<double> (c.m_grn) / 255.0;
-	color[BLUE] = static_cast<double> (c.m_blu) / 255.0;	
-	PangoAttribute *pattrColor = pango_attr_foreground_new(static_cast<unsigned int> (color[RED] * 65535.0), 
-														   static_cast<unsigned int> (color[GREEN] * 65535.0), 
-														   static_cast<unsigned int> (color[BLUE] * 65535.0));
 	
-	pattrColor->start_index = 0;
-    pattrColor->end_index = 1;	
-	pango_attr_list_insert(list, pattrColor);
-	
-	
-	//font size
-	char sizeString[50];	
-	g_snprintf(sizeString, 50, "%s", std_size_string(UT_convertToPoints(getVal("font-size"))));
-	pango_font_description_set_size(font, atoi(std_size_string(UT_convertToPoints(getVal("font-size")))) * PANGO_SCALE);
+       	pszFontName = g_strdup_printf ("%s %d", getVal("font-family"), 
+						atoi(std_size_string(UT_convertToPoints(getVal("font-size")))));
+						
+	PangoFontDescription* ptrFontDesc = pango_font_description_from_string (pszFontName);
+
+	PangoFont *fnt = pango_context_load_font (gtk_widget_get_pango_context (GTK_WIDGET(m_Widget)), 
+						  ptrFontDesc);
+
+	ptrFontDescNew = pango_font_describe  (fnt);
+					     
+	g_object_set (G_OBJECT (m_Widget), "family", pango_font_description_get_family (ptrFontDescNew),
+					   "underline", m_bUnderline,
+					   "strikethrough", m_bStrikeout,
+					   "color", &color,
+					   "size", atoi(std_size_string(UT_convertToPoints(getVal("font-size")))),
+					   NULL);
+
+	pango_font_description_free (ptrFontDesc);
+	pango_font_description_free (ptrFontDescNew);
+	g_free (pszFontName);
 	
 	//font style
 	listStyle st = LIST_STYLE_NORMAL;
@@ -137,140 +126,108 @@ void XAP_UnixHildonDialog_FontChooser::fillFontInfo(PangoAttrList* list)
 	switch (st)
 	{
 	case LIST_STYLE_NORMAL:
-		pango_font_description_set_style(font, PANGO_STYLE_NORMAL);
+		g_object_set (G_OBJECT (m_Widget), 
+					"bold", FALSE,
+					"italic", FALSE,
+					NULL);
 		break;
 	case LIST_STYLE_BOLD:
-		pango_font_description_set_style(font, PANGO_STYLE_NORMAL);
-		pango_font_description_set_weight(font, PANGO_WEIGHT_BOLD);
+		g_object_set (G_OBJECT (m_Widget), 
+					"bold", TRUE,
+					"italic", FALSE,
+					NULL);
 		break;
 	case LIST_STYLE_ITALIC:
-		pango_font_description_set_style(font, PANGO_STYLE_ITALIC);
+		g_object_set (G_OBJECT (m_Widget), 
+					"bold", FALSE,
+					"italic", TRUE,
+					NULL);
 		break;
 	case LIST_STYLE_BOLD_ITALIC:
-		pango_font_description_set_style(font, PANGO_STYLE_ITALIC);
-		pango_font_description_set_weight(font, PANGO_WEIGHT_BOLD);
+		g_object_set (G_OBJECT (m_Widget), 
+					"bold", TRUE,
+					"italic", TRUE,
+					NULL);
 		break;		
 	default:
 		break;
 	}
-	
-	PangoAttribute *pattrFont = pango_attr_font_desc_new(font);
-	pattrFont->start_index = 0;
-    	pattrFont->end_index = 1;
-	pango_attr_list_insert(list, pattrFont);			
 }
 		
 /* Gets PangoFontDescription from iterator */
-void XAP_UnixHildonDialog_FontChooser::loadFontInfo(PangoAttrList* list)
+void XAP_UnixHildonDialog_FontChooser::loadFontInfo()
 {
-    PangoFontDescription *font = NULL;
-    PangoAttribute *pattr = NULL;
-    PangoAttrIterator *iter = NULL;
-    GSList *attrs = NULL;
-    GSList *curattr = NULL;
-
-    font = pango_font_description_new();
-    if (font == NULL) {
-        return;
-    }
-    iter = pango_attr_list_get_iterator( list );
-    if ( iter == NULL ) {
-        return;
-    }
-    attrs = pango_attr_iterator_get_attrs( iter );
-    if ( attrs == NULL ) {
-        return;
-    }
+	const gchar* cszFontFamily;
+	GdkColor *ptrFontColor;
+	gboolean bFontBold;
+	gboolean bFontItalic;
+	gboolean bFontUnderline;
+	gboolean bFontStrikethrough;
+	gint iFontSize;
 	
-	m_bStrikeout = m_bUnderline = false;
+ 	m_bStrikeout = m_bUnderline = false;
 	m_bChangedUnderline = !m_bChangedUnderline;	
 	m_bChangedStrikeOut = !m_bChangedStrikeOut;
 	
-    /* Search needed desc from list's attributes */
-    for (curattr = attrs; curattr != NULL; curattr = curattr->next) {
-        pattr = (PangoAttribute *) curattr->data;
-
-        switch (pattr->klass->type) {
-		case PANGO_ATTR_FOREGROUND:
-			{
-			gchar *buf_color = (gchar *) g_new(gchar, 8);
-			PangoAttrColor *pattrColor = (PangoAttrColor *) pattr;
-				
-			m_currentFGColor[RED]   = static_cast<double> (pattrColor->color.red) / 65535.0;
-			m_currentFGColor[GREEN] = static_cast<double> (pattrColor->color.green) / 65535.0;
-			m_currentFGColor[BLUE]  = static_cast<double> (pattrColor->color.blue) /  65535.0;
-				
-			sprintf(buf_color, "%02x%02x%02x",
-                                static_cast<unsigned int>(m_currentFGColor[RED] * static_cast<gdouble>(255.0)),
-                                static_cast<unsigned int>(m_currentFGColor[GREEN] * static_cast<gdouble>(255.0)),
-                                static_cast<unsigned int>(m_currentFGColor[BLUE] * static_cast<gdouble>(255.0)));
-
-			addOrReplaceVecProp("color",static_cast<XML_Char *>(buf_color));
-			break;			
-			}
-        case PANGO_ATTR_FONT_DESC:
-			{
-            pango_attr_iterator_get_font(iter, font, NULL, NULL);
+	/* Search needed desc from list's attributes */
+	g_object_get (G_OBJECT (m_Widget),
+		      "color", &ptrFontColor,
+		      "family", &cszFontFamily,
+		      "bold", &bFontBold,
+		      "italic", &bFontItalic,
+		      "underline", &bFontUnderline,
+		      "strikethrough", &bFontStrikethrough,
+		      "size", &iFontSize,
+		      NULL);
+		      
+	//font color
+	gchar *buf_color = (gchar *) g_new(gchar, 8);
 		
-			//font family
-			const char *cszFontFamily = pango_font_description_get_family(font);		
-			char *szFontFamily = new char[strlen(cszFontFamily)  + 1 ];
-			sprintf(szFontFamily, cszFontFamily);		
-			addOrReplaceVecProp("font-family",static_cast<XML_Char *> (szFontFamily) );		
-				
-			//font size
-			gint iFontSize = pango_font_description_get_size(font) / PANGO_SCALE;
-			char *szFontSize = new char[50];
-			memset(szFontSize, '\0', 50);
-			g_snprintf(szFontSize, 50, "%dpt", iFontSize);		
-			addOrReplaceVecProp("font-size", static_cast<XML_Char *> (szFontSize) );
-				
-			//font style
-			PangoStyle fontStyle = pango_font_description_get_style(font);
-			PangoWeight fontWeight = pango_font_description_get_weight(font);
-
-			if (fontStyle == PANGO_STYLE_NORMAL)
-			{
-				addOrReplaceVecProp("font-style","normal");
-				
-			}
-			else if (fontStyle == PANGO_STYLE_OBLIQUE)
-			{
-				addOrReplaceVecProp("font-style","normal");
-			}
-			else if (fontStyle == PANGO_STYLE_ITALIC)
-			{
-				addOrReplaceVecProp("font-style","italic");
-			}
-			else
-					UT_ASSERT(0);
-			
-			if (fontWeight == PANGO_WEIGHT_BOLD)
-			{
-				addOrReplaceVecProp("font-weight","bold");
-			}
-			else
-			{
-				addOrReplaceVecProp("font-weight","normal");
-			}
-			
-			
-			//bgcolor
-			addOrReplaceVecProp("bgcolor","transparent");
-          	break;
-			}
-		case PANGO_ATTR_UNDERLINE:
-			m_bUnderline = true;
-			break;		
-		case PANGO_ATTR_STRIKETHROUGH:		
-			m_bStrikeout  = true;			
-			break;		
-        default:
-            break;
-        }
-		setFontDecoration(m_bUnderline,m_bOverline,m_bStrikeout,m_bTopline,m_bBottomline);		
+	m_currentFGColor[RED]   = static_cast<double> (ptrFontColor->red) / 65535.0;
+	m_currentFGColor[GREEN] = static_cast<double> (ptrFontColor->green) / 65535.0;
+	m_currentFGColor[BLUE]  = static_cast<double> (ptrFontColor->blue) /  65535.0;
 		
-    }
+	sprintf(buf_color, "%02x%02x%02x",
+		static_cast<unsigned int>(m_currentFGColor[RED] * static_cast<gdouble>(255.0)),
+		static_cast<unsigned int>(m_currentFGColor[GREEN] * static_cast<gdouble>(255.0)),
+		static_cast<unsigned int>(m_currentFGColor[BLUE] * static_cast<gdouble>(255.0)));
+
+	addOrReplaceVecProp("color",static_cast<XML_Char *>(buf_color));
+	
+	
+	//font family
+	char *szFontFamily = new char[strlen(cszFontFamily)  + 1 ];
+	sprintf(szFontFamily, cszFontFamily);		
+	addOrReplaceVecProp("font-family",static_cast<XML_Char *> (szFontFamily) );		
+				
+	//font size
+	char *szFontSize = new char[50];
+	memset(szFontSize, '\0', 50);
+	g_snprintf(szFontSize, 50, "%dpt", iFontSize);		
+	addOrReplaceVecProp("font-size", static_cast<XML_Char *> (szFontSize) );
+				
+	//font style
+	if (bFontItalic)
+		addOrReplaceVecProp("font-style","italic");
+	else
+		addOrReplaceVecProp("font-style","normal");
+
+	if (bFontBold)
+		addOrReplaceVecProp("font-weight","bold");
+	else
+		addOrReplaceVecProp("font-weight","normal");
+			
+			
+	//bgcolor
+	//TODO
+	
+	//font underline
+	m_bUnderline = bFontUnderline;
+
+	//font srtrikethrough
+	m_bStrikeout = bFontStrikethrough;			
+	
+	setFontDecoration(m_bUnderline,m_bOverline,m_bStrikeout,m_bTopline,m_bBottomline);		
 }
 
 
@@ -278,10 +235,10 @@ void XAP_UnixHildonDialog_FontChooser::loadFontInfo(PangoAttrList* list)
 void XAP_UnixHildonDialog_FontChooser::runModal(XAP_Frame * pFrame)
 {
 	GtkWidget *pTopLevel = (static_cast<XAP_UnixFrameImpl*> (pFrame->getFrameImpl()))->getTopLevelWindow();
-	PangoAttrList *default_list = pango_attr_list_new();	
+	//PangoAttrList *default_list = pango_attr_list_new();	
 
-	m_Widget = GTK_WIDGET(hildon_font_selection_dialog_new(GTK_WINDOW(gtk_widget_get_parent(GTK_WIDGET(pTopLevel))),
-					    	NULL));		
+        m_Widget = GTK_WIDGET(hildon_font_selection_dialog_new(GTK_WINDOW(gtk_widget_get_parent(GTK_WIDGET(pTopLevel))),
+		                                               NULL));
 	
 	gtk_widget_show_all(GTK_WIDGET(m_Widget));
 	
@@ -289,15 +246,13 @@ void XAP_UnixHildonDialog_FontChooser::runModal(XAP_Frame * pFrame)
 	
 	m_doneFirstFont = true;
 	
-	fillFontInfo(default_list);
-	
-	hildon_font_selection_dialog_set_font(HILDON_FONT_SELECTION_DIALOG(m_Widget), default_list);
+	fillFontInfo();
 	
 	if (gtk_dialog_run(GTK_DIALOG(m_Widget)) == GTK_RESPONSE_OK)
 	{
 		
-		default_list = hildon_font_selection_dialog_get_font ( HILDON_FONT_SELECTION_DIALOG ( m_Widget ) );		
-		loadFontInfo(default_list);
+		//default_list = hildon_font_selection_dialog_get_font ( HILDON_FONT_SELECTION_DIALOG ( m_Widget ) );		
+		loadFontInfo();
 		m_answer = a_OK;			
 		
 		//TODO

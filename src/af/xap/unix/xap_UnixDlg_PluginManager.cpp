@@ -268,6 +268,7 @@ void XAP_UnixDialog_PluginManager::_refresh ()
 			gint rowNumber = gtk_tree_path_get_indices (path)[0];
 			
 			pModule = static_cast<XAP_Module *>(XAP_ModuleManager::instance().enumModules()->getNthItem(rowNumber));
+			gtk_tree_path_free(path);
 		} 
 	}
 	

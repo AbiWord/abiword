@@ -71,7 +71,7 @@ void AP_Win32Dialog_Stylist::runModal(XAP_Frame * pFrame)
 	
 	UT_ASSERT(m_id == AP_DIALOG_ID_STYLIST);
 
-	m_modeless = FALSE;
+	m_bIsModal = true;
 
 	// raise the dialog
 	XAP_Win32App * pWin32App = static_cast<XAP_Win32App *>(m_pApp);	
@@ -93,7 +93,7 @@ void AP_Win32Dialog_Stylist::runModeless(XAP_Frame * pFrame)
 	XAP_Win32App * pWin32App = static_cast<XAP_Win32App *>(m_pApp);
 
 	LPCTSTR lpTemplate = NULL;
-	m_modeless = TRUE;
+	m_bIsModal = false;
 
 	UT_return_if_fail (m_id == AP_DIALOG_ID_STYLIST);
 
@@ -137,6 +137,12 @@ BOOL CALLBACK AP_Win32Dialog_Stylist::s_dlgProc(HWND hWnd,UINT msg,WPARAM wParam
 				return pThis->_onCommand(hWnd,wParam,lParam);
 			else
 				return 0;
+
+		case WM_DESTROY:
+			pThis = (AP_Win32Dialog_Stylist *)GetWindowLong(hWnd,DWL_USER);
+			if (pThis)
+				pThis->destroy();
+			return 0;
 			
 		default:
 			return 0;
@@ -145,7 +151,7 @@ BOOL CALLBACK AP_Win32Dialog_Stylist::s_dlgProc(HWND hWnd,UINT msg,WPARAM wParam
 
 void  AP_Win32Dialog_Stylist::destroy(void)
 {
-	if (m_modeless) 
+	if (!m_bIsModal)
 	{
 		int iResult = DestroyWindow( m_hWnd );
 
@@ -185,13 +191,9 @@ void  AP_Win32Dialog_Stylist::setStyleInGUI(void)
 	for (i = 0; i < row; i++)
 		hitem = TreeView_GetNextItem(hTree, hitem, TVGN_NEXT);
 
-	// If column > 0, we're looking for a child of this node in the treeview
-	if (col > 0)
-	{
-		hitem = TreeView_GetNextItem(hTree, hitem, TVGN_CHILD);
-		for (i = 0; i < col; i++)
-			hitem = TreeView_GetNextItem(hTree, hitem, TVGN_NEXT);
-	}
+	hitem = TreeView_GetNextItem(hTree, hitem, TVGN_CHILD);
+	for (i = 0; i < col; i++)
+		hitem = TreeView_GetNextItem(hTree, hitem, TVGN_NEXT);
 
 	TreeView_SelectItem(hTree, hitem);
 

@@ -94,6 +94,7 @@ enum AP_CocoaDialog_OptionsSwitch_ID
 	{
 		CDO_Switch_AutoSave = 0,
 		CDO_Switch_CheckSpelling,
+		CDO_Switch_CheckGrammar,
 		CDO_Switch_CursorBlink,
 		CDO_Switch_DirectionMarkers,
 		CDO_Switch_DirectionRTL,
@@ -109,7 +110,6 @@ enum AP_CocoaDialog_OptionsSwitch_ID
 		CDO_Switch_Ruler,
 		CDO_Switch_SaveScheme,
 		CDO_Switch_ScreenColor,
-		CDO_Switch_SmartQuotes,
 		CDO_Switch_Splash,
 		CDO_Switch_StatusBar,
 		CDO_Switch_SuggestCorrections,
@@ -143,7 +143,6 @@ enum AP_CocoaDialog_OptionsSwitch_ID
 	IBOutlet NSBox *			oBox_AutoSave;
 	IBOutlet NSBox *			oBox_BiDiOptions;
 	IBOutlet NSBox *			oBox_DocumentSetup;
-	IBOutlet NSBox *			oBox_Editing;
 	IBOutlet NSBox *			oBox_General;
 	IBOutlet NSBox *			oBox_Ignore;
 	IBOutlet NSBox *			oBox_InterfaceLanguage;
@@ -183,6 +182,7 @@ enum AP_CocoaDialog_OptionsSwitch_ID
 
 	IBOutlet NSButton *			oSwitch_AutoSave;
 	IBOutlet NSButton *			oSwitch_CheckSpelling;
+	IBOutlet NSButton *			oSwitch_CheckGrammar;
 	IBOutlet NSButton *			oSwitch_CursorBlink;
 	IBOutlet NSButton *			oSwitch_DirectionMarkers;
 	IBOutlet NSButton *			oSwitch_DirectionRTL;
@@ -198,7 +198,6 @@ enum AP_CocoaDialog_OptionsSwitch_ID
 	IBOutlet NSButton *			oSwitch_Ruler;
 	IBOutlet NSButton *			oSwitch_SaveScheme;
 	IBOutlet NSButton *			oSwitch_ScreenColor;
-	IBOutlet NSButton *			oSwitch_SmartQuotes;
 	IBOutlet NSButton *			oSwitch_Splash;
 	IBOutlet NSButton *			oSwitch_StatusBar;
 	IBOutlet NSButton *			oSwitch_SuggestCorrections;

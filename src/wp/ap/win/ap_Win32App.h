@@ -90,7 +90,7 @@ public:
 
 	virtual void 					errorMsgBadArg(AP_Args * Args, int nextopt);
 	virtual void 					errorMsgBadFile(XAP_Frame * pFrame, const char * file, UT_Error error);
-	virtual bool 					doWindowlessArgs (const AP_Args *);
+	virtual bool 					doWindowlessArgs (const AP_Args *, bool & bSuccess);
 	
 	static int WinMain (const char * szAppName, HINSTANCE hInstance, 
 						HINSTANCE hPrevInstance, PSTR szCmdLine, int iCmdShow);

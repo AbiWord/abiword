@@ -169,7 +169,7 @@ UT_sint32 fp_Run::getHeight() const
 {
 	if(isHidden() == FP_VISIBLE)
 		return m_iHeight;
-
+	
 	return 0;
 }
 
@@ -177,7 +177,7 @@ UT_sint32 fp_Run::getWidth() const
 {
 	if(isHidden() == FP_VISIBLE)
 		return m_iWidth;
-
+	
 	return 0;
 }
 
@@ -1379,6 +1379,12 @@ void fp_Run::setVisibility(FPVisibility eVis)
 	m_bDirty = true;
 	m_bRecalcWidth = true;
 	m_eVisibility = eVis;
+
+	/* recalculate width immediately so that any calls to getWidth() are
+	 * accurate
+	 */
+	_recalcWidth();
+	
 	return;
 }
 
@@ -4731,6 +4737,9 @@ fp_FieldFootnoteRefRun::fp_FieldFootnoteRefRun(fl_BlockLayout* pBL, UT_uint32 iO
 
 	UT_ASSERT(bRes);
 	m_iPID = atol(footid);
+
+	// see bug 9793
+	_setDirection(pBL->getDominantDirection());
 }
 
 
@@ -4764,6 +4773,7 @@ bool fp_FieldFootnoteRefRun::calculateValue(void)
 	return _setValue(sz_ucs_FieldValue);
 }
 
+
 fp_FieldFootnoteAnchorRun::fp_FieldFootnoteAnchorRun(fl_BlockLayout* pBL, UT_uint32 iOffsetFirst, UT_uint32 iLen) : fp_FieldRun(pBL, iOffsetFirst, iLen)
 {
 	const PP_AttrProp * pp = getSpanAP();
@@ -4772,6 +4782,9 @@ fp_FieldFootnoteAnchorRun::fp_FieldFootnoteAnchorRun(fl_BlockLayout* pBL, UT_uin
 
 	UT_ASSERT(bRes);
 	m_iPID = atol(footid);
+
+	// see bug 9793
+	_setDirection(pBL->getDominantDirection());
 }
 
 // Appears in the FootnoteContainer, one per footnote.
@@ -4811,6 +4824,9 @@ fp_FieldEndnoteAnchorRun::fp_FieldEndnoteAnchorRun(fl_BlockLayout* pBL, UT_uint3
 
 	UT_ASSERT(bRes);
 	m_iPID = atoi(footid);
+
+	// see bug 9793
+	_setDirection(pBL->getDominantDirection());
 }
 
 // Appears in the EndnoteSection, one per endnote.
@@ -4851,6 +4867,9 @@ fp_FieldEndnoteRefRun::fp_FieldEndnoteRefRun(fl_BlockLayout* pBL,UT_uint32 iOffs
 
 	UT_ASSERT(bRes);
 	m_iPID = atoi(footid);
+
+	// see bug 9793
+	_setDirection(pBL->getDominantDirection());
 }
 
 // Appears in the EndnoteSection, one per endnote.
@@ -4881,6 +4900,7 @@ bool fp_FieldEndnoteRefRun::calculateValue(void)
 
 	return _setValue(sz_ucs_FieldValue);
 }
+
 
 fp_FieldTimeRun::fp_FieldTimeRun(fl_BlockLayout* pBL, UT_uint32 iOffsetFirst, UT_uint32 iLen) : fp_FieldRun(pBL, iOffsetFirst, iLen)
 {

@@ -173,7 +173,7 @@ bool EV_Menu::invokeMenuMethod(AV_View * pView,
 							   EV_EditMethod * pEM,
 							   const UT_String& stScriptName)
 {
-	UT_ASSERT(pEM);
+	UT_return_val_if_fail(pEM,false);
 	EV_EditMethodType t = pEM->getType();
 	if (!(t & EV_EMT_APP_METHOD)) {
 		UT_ASSERT(pView);

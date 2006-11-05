@@ -49,6 +49,11 @@
 #include <hildon-widgets/hildon-app.h>
 #include <hildon-widgets/hildon-appview.h>
 
+/**
+ * A Constructor
+ * @param pUnixFrame the pointer of frame
+ * @param pUnixApp the pointer of App
+ */
 AP_UnixHildonFrameImpl::AP_UnixHildonFrameImpl(AP_UnixFrame *pUnixFrame, XAP_UnixApp * pUnixApp) 
 :AP_UnixFrameImpl(pUnixFrame, pUnixApp),
 m_pUnixApp(pUnixApp)
@@ -56,10 +61,17 @@ m_pUnixApp(pUnixApp)
 	UT_DEBUGMSG(("Created AP_UnixHildonFrameImpl %x \n",this));
 }
 
+/**
+ * A Destructor
+ */
 AP_UnixHildonFrameImpl::~AP_UnixHildonFrameImpl() 
 { 	
 }
 
+/**
+ * Create a new frame instance
+ * @return the pointer of new frame
+ */
 XAP_FrameImpl * AP_UnixHildonFrameImpl::createInstance(XAP_Frame *pFrame, XAP_App *pApp)
 {
 	XAP_FrameImpl *pFrameImpl = new AP_UnixHildonFrameImpl(static_cast<AP_UnixFrame *>(pFrame), static_cast<XAP_UnixApp *>(pApp));

@@ -297,10 +297,10 @@ UT_UTF8String IE_TOCHelper::getNthTOCEntry(int nth, int * out_level) const
 
 void IE_TOCHelper::_defineTOC(const UT_UTF8String & toc_text, int level)
 {
-  mHasTOC = true;
-
-  mTOCStrings.push_back(new UT_UTF8String(toc_text));
-  mTOCLevels.push_back(level);
-
-  UT_DEBUGMSG(("Defining TOC: %s => %d\n", toc_text.utf8_str(), level));
+  if(toc_text.length() > 0) {
+    mHasTOC = true;
+    
+    mTOCStrings.push_back(new UT_UTF8String(toc_text));
+    mTOCLevels.push_back(level);
+  }
 }

@@ -565,9 +565,10 @@ int AP_QNXApp::main(const char * szAppName, int argc, const char ** argv)
   sigaction(SIGQUIT, &sa, NULL);
   sigaction(SIGFPE, &sa, NULL);
 
-  if (!Args.doWindowlessArgs()) {
+  bool windowlessArgsWereSuccessful = true;
+  if (!Args.doWindowlessArgs(windowlessArgsWereSuccessful)) {
 		delete pMyQNXApp;
-		return 0;
+		return (windowlessArgsWereSuccessful ? 0 : -1);
 	}
 
 	spwin = PtAppInit(NULL, &XArgs.m_argc,(char **)XArgs.m_argv, 0, NULL);
@@ -789,9 +790,9 @@ void AP_QNXApp::errorMsgBadFile(XAP_Frame * pFrame, const char * file,
 {
 }
 
-bool AP_QNXApp::doWindowlessArgs(const AP_Args *Args)
+bool AP_QNXApp::doWindowlessArgs(const AP_Args *Args, bool & bSuccess)
 {
-
+bSuccess = true;
 return true;
 }
 

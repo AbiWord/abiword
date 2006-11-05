@@ -150,7 +150,7 @@ void XAP_UnixClipboard::clipboard_get_func(GtkClipboard *clipboard,
 
 bool XAP_UnixClipboard::assertSelection()
 {
-	return (gtk_clipboard_set_with_data (gtkClipboardForTarget(TAG_PrimaryOnly),
+  return (gtk_clipboard_set_with_data (gtkClipboardForTarget(TAG_PrimaryOnly),
 										 m_Targets,
 										 m_nTargets,
 										 s_primary_get_func,
@@ -168,11 +168,16 @@ bool XAP_UnixClipboard::addData(T_AllowGet tFrom, const char* format, const void
 			return false;
 		
 		gtk_clipboard_set_with_data (gtkClipboardForTarget(TAG_ClipboardOnly),
-									 m_Targets,
-									 m_nTargets,
-									 s_clipboard_get_func,
-									 s_clipboard_clear_func,
-									 this);
+					     m_Targets,
+					     m_nTargets,
+					     s_clipboard_get_func,
+					     s_clipboard_clear_func,
+					     this);
+
+#if GTK_CHECK_VERSION(2,6,0)
+		gtk_clipboard_set_can_store (gtkClipboardForTarget(TAG_ClipboardOnly), m_Targets, m_nTargets);
+#endif
+
 		return true;
     }
 }

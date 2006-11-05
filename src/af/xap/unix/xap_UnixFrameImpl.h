@@ -151,6 +151,8 @@ protected:
 
  private:
 	bool                        m_bDoZoomUpdate;
+	UT_sint32                   m_iNewX;
+	UT_sint32                   m_iNewY;
 	UT_sint32                   m_iNewWidth;
 	UT_sint32                   m_iNewHeight;
 	guint                       m_iZoomUpdateID;

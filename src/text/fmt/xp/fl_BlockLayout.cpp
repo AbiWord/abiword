@@ -521,6 +521,22 @@ void fl_BlockLayout::_lookupProperties(const PP_AttrProp* pBlockAP)
 				pRun->setVisDirection(m_iDomDirection);
 				pRun = pRun->getNextRun();
 			}
+			else if(pRun->getType() == FPRUN_FIELD)
+			{
+				fp_FieldRun * pFR = static_cast<fp_FieldRun*>(pRun);
+				if(pFR->getFieldType() == FPFIELD_endnote_anch  ||
+				   pFR->getFieldType() == FPFIELD_endnote_ref   ||
+				   pFR->getFieldType() == FPFIELD_footnote_anch ||
+				   pFR->getFieldType() == FPFIELD_footnote_ref)
+				{
+					// need to set the direction correctly
+					pRun->setDirection(m_iDomDirection);
+					pRun->setVisDirection(m_iDomDirection);
+					pRun = pRun->getNextRun();
+				}
+
+				pRun = pRun->getNextRun();
+			}
 			else
 				pRun = pRun->getNextRun();
 		}
@@ -3100,7 +3116,7 @@ void fl_BlockLayout::format()
 	}
 	_assertRunListIntegrity();
 	fp_Line* pLastLine = static_cast<fp_Line *>(getLastContainer());
-	if(pLastLine->getContainerType() == FP_CONTAINER_LINE)
+	if(pLastLine && pLastLine->getContainerType() == FP_CONTAINER_LINE)
 	{
 		if(	bJustifyStuff)
 		{
@@ -3330,7 +3346,7 @@ fp_Container* fl_BlockLayout::getNewContainer(fp_Container * /* pCon*/)
 				if(ppPrev && ((ppPrev->getContainerType() == FP_CONTAINER_ENDNOTE) || (ppPrev->getContainerType() == FP_CONTAINER_FOOTNOTE) || (ppPrev->getContainerType() == FP_CONTAINER_FRAME) ))
 				{
 					fl_ContainerLayout * pCL = static_cast<fl_ContainerLayout *>(ppPrev->getSectionLayout());
-					while(pCL && (pCL->getContainerType() == FL_CONTAINER_FOOTNOTE) || (pCL->getContainerType() == FL_CONTAINER_ENDNOTE)|| (pCL->getContainerType() == FL_CONTAINER_FRAME))
+					while(pCL && ((pCL->getContainerType() == FL_CONTAINER_FOOTNOTE) || (pCL->getContainerType() == FL_CONTAINER_ENDNOTE)|| (pCL->getContainerType() == FL_CONTAINER_FRAME)))
 					{
 						pCL = pCL->getPrev();
 					}
@@ -4542,7 +4558,7 @@ bool	fl_BlockLayout::_doInsertTextSpan(PT_BlockOffset blockOffset, UT_uint32 len
 	
 	m_pLayout->getGraphics()->itemize(text, I);
 
-	for(UT_uint32 i = 0; i < I.getItemCount() - 1; ++i)
+	for(UT_sint32 i = 0; i < static_cast<UT_sint32>(I.getItemCount()) - 1; ++i)
 	{
 		UT_uint32 iRunOffset = I.getNthOffset(i);
 		UT_uint32 iRunLength = I.getNthLength(i);
@@ -4860,6 +4876,13 @@ bool	fl_BlockLayout::_doInsertTabRun(PT_BlockOffset blockOffset)
 
 bool	fl_BlockLayout::_doInsertMathRun(PT_BlockOffset blockOffset,PT_AttrPropIndex indexAP, PL_ObjectHandle oh)
 {
+	if(isContainedByTOC())
+	{
+		fp_Run * pDumRun = new fp_DummyRun(this,blockOffset);
+		xxx_UT_DEBUGMSG(("Inserting a dummy run instead of mathrun at %d \n",blockOffset));
+		return _doInsertRun(pDumRun);
+	}
+
 	fp_Run * pNewRun = NULL;
 	pNewRun = new fp_MathRun(this,blockOffset,indexAP,oh);
 	UT_ASSERT(pNewRun); // TODO check for outofmem
@@ -4870,6 +4893,13 @@ bool	fl_BlockLayout::_doInsertMathRun(PT_BlockOffset blockOffset,PT_AttrPropInde
 
 bool	fl_BlockLayout::_doInsertEmbedRun(PT_BlockOffset blockOffset,PT_AttrPropIndex indexAP, PL_ObjectHandle oh)
 {
+	if(isContainedByTOC())
+	{
+		fp_Run * pDumRun = new fp_DummyRun(this,blockOffset);
+		xxx_UT_DEBUGMSG(("Inserting a dummy run instead of embedrun at %d \n",blockOffset));
+		return _doInsertRun(pDumRun);
+	}
+
 	fp_Run * pNewRun = NULL;
 	pNewRun = new fp_EmbedRun(this,blockOffset,indexAP,oh);
 	UT_ASSERT(pNewRun); // TODO check for outofmem
@@ -4910,7 +4940,7 @@ bool	fl_BlockLayout::_doInsertImageRun(PT_BlockOffset blockOffset, FG_Graphic* p
 	if(isContainedByTOC())
 	{
 		fp_Run * pDumRun = new fp_DummyRun(this,blockOffset);
-		xxx_UT_DEBUGMSG(("Inserting a dummy run instead of iamge at %d \n",blockOffset));
+		xxx_UT_DEBUGMSG(("Inserting a dummy run instead of image at %d \n",blockOffset));
 		return _doInsertRun(pDumRun);
 	}
 
@@ -4985,7 +5015,7 @@ bool	fl_BlockLayout::_doInsertFieldRun(PT_BlockOffset blockOffset, const PX_Chan
 		if(isContainedByTOC())
 		{
 			fp_Run * pDumRun = new fp_DummyRun(this,blockOffset);
-			xxx_UT_DEBUGMSG(("Inserting a dummy run instead of endnote_ref at %d \n",blockOffset));
+			xxx_UT_DEBUGMSG(("Inserting a dummy run instead of footnote_anchor at %d \n",blockOffset));
 			return _doInsertRun(pDumRun);
 		}
 		pNewRun = new fp_FieldFootnoteAnchorRun(this,   blockOffset, 1);
@@ -5007,7 +5037,7 @@ bool	fl_BlockLayout::_doInsertFieldRun(PT_BlockOffset blockOffset, const PX_Chan
 		if(isContainedByTOC())
 		{
 			fp_Run * pDumRun = new fp_DummyRun(this,blockOffset);
-			xxx_UT_DEBUGMSG(("Inserting a dummy run instead of endnote_ref at %d \n",blockOffset));
+			xxx_UT_DEBUGMSG(("Inserting a dummy run instead of endnote_anchor at %d \n",blockOffset));
 			return _doInsertRun(pDumRun);
 		}
 		pNewRun = new fp_FieldEndnoteAnchorRun(this,   blockOffset, 1);

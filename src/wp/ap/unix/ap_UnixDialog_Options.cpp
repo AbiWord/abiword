@@ -280,10 +280,6 @@ void AP_UnixDialog_Options::_constructWindowContents (GladeXML *xml)
 		localizeButtonUnderline (m_checkbuttonViewCursorBlink, pSS,
 					AP_STRING_ID_DLG_Options_Label_ViewCursorBlink);
 
-		m_checkbuttonSmartQuotesEnable = WID ("chkSmartQuotes");
-		localizeButtonUnderline (m_checkbuttonSmartQuotesEnable, pSS,
-					 AP_STRING_ID_DLG_Options_Label_SmartQuotesEnable);
-
 		m_checkbuttonAllowCustomToolbars = WID ("chkCustomToolbars");
 		localizeButtonUnderline (m_checkbuttonAllowCustomToolbars, pSS,
 					 AP_STRING_ID_DLG_Options_Label_CheckAllowCustomToolbars);
@@ -345,11 +341,6 @@ void AP_UnixDialog_Options::_constructWindowContents (GladeXML *xml)
 		m_checkbuttonOtherDirectionRtl = WID ("chkDefaultToRTL");
 		localizeButtonUnderline (m_checkbuttonOtherDirectionRtl, pSS,
 					 AP_STRING_ID_DLG_Options_Label_DirectionRtl);
-
-		m_checkbuttonOtherHebrewContextGlyphs = WID ("chkGlyphShapesForHebrew");
-		localizeButtonUnderline (m_checkbuttonOtherHebrewContextGlyphs, pSS,
-					 AP_STRING_ID_DLG_Options_Label_HebrewContextGlyphs);
-
 
 	// Spell Checking
 
@@ -539,17 +530,11 @@ GtkWidget *AP_UnixDialog_Options::_lookupWidget ( tControl id )
 
 	// - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - -
 	// other
-	case id_CHECK_SMART_QUOTES_ENABLE:
-		return m_checkbuttonSmartQuotesEnable;
-
 	case id_SHOWSPLASH:
 		return m_checkbuttonShowSplash;
 
 	case id_CHECK_OTHER_DEFAULT_DIRECTION_RTL:
 		return m_checkbuttonOtherDirectionRtl;
-
-	case id_CHECK_OTHER_HEBREW_CONTEXT_GLYPHS:
-		return m_checkbuttonOtherHebrewContextGlyphs;
 
 	case id_CHECK_AUTO_SAVE_FILE:
 		return m_checkbuttonAutoSaveFile;
@@ -645,11 +630,9 @@ DEFINE_GET_SET_BOOL(SpellSuggest)
 DEFINE_GET_SET_BOOL(SpellMainOnly)
 DEFINE_GET_SET_BOOL(SpellUppercase)
 DEFINE_GET_SET_BOOL(SpellNumbers)
-DEFINE_GET_SET_BOOL(SmartQuotesEnable)
 DEFINE_GET_SET_BOOL(GrammarCheck)
 
 DEFINE_GET_SET_BOOL(OtherDirectionRtl)
-DEFINE_GET_SET_BOOL(OtherHebrewContextGlyphs)
 
 DEFINE_GET_SET_BOOL(AutoSaveFile)
 DEFINE_GET_SET_BOOL(ShowSplash)

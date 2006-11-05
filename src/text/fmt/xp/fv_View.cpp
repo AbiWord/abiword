@@ -647,6 +647,7 @@ void FV_View::copyTextToClipboard(const UT_UCS4String sIncoming, bool useClipboa
 	/* we're done, release our resources */
 	DELETEP(pCopyLinkView);
 	DELETEP(pDocLayout);
+	UNREFP(pDoc);
 }
 
 
@@ -1022,6 +1023,8 @@ void FV_View::setFrameFormat(const XML_Char * attribs[], const XML_Char * proper
 	if(pFrame == NULL)
 	{
 		UT_DEBUGMSG(("No frame selected. Aborting! \n"));
+		// should we assert ?
+		return;
 	}
 	PT_DocPosition posStart = pFrame->getPosition(true)+1;
 	PT_DocPosition posEnd = posStart;
@@ -2323,6 +2326,7 @@ PT_DocPosition FV_View::saveSelectedImage (const UT_ByteBuf ** pBytes)
 	{
 		fl_FrameLayout * pFrame = getFrameLayout();
 		const PP_AttrProp* pAP = NULL;
+		UT_return_val_if_fail(pFrame, 0);
 		pFrame->getAP(pAP);
 		if(pAP == NULL)
 		{
@@ -3046,20 +3050,37 @@ UT_sint32 FV_View::getNumRowsInSelection(void)
 	fp_CellContainer * pCellCon = NULL;
 	PT_DocPosition startpos = getPoint();
 	PT_DocPosition endpos = startpos;
-	if (m_Selection.getSelectionAnchor() > startpos)
+	if(!isSelectionEmpty())
 	{
-		endpos = m_Selection.getSelectionAnchor();
-	}
-	else
-	{
-		startpos = m_Selection.getSelectionAnchor();
+		if (m_Selection.getSelectionAnchor() > startpos)
+		{
+			endpos = m_Selection.getSelectionAnchor();
+		}
+		else
+		{
+			startpos = m_Selection.getSelectionAnchor();
+		}
 	}
 	for(i=0; i< static_cast<UT_sint32>(vecBlocks.getItemCount());i++)
 	{
 		pBlock = vecBlocks.getNthItem(i);
 		if((getNumSelections() == 0) && ((pBlock->getPosition() + pBlock->getLength() - 1) <= startpos))
 		{
-			continue;
+			if((startpos == endpos) && ((pBlock->getPosition()  <= startpos)))
+			{
+				pCell = static_cast<fl_CellLayout *>(pBlock->myContainingLayout());
+				pCellCon = static_cast<fp_CellContainer *>(pCell->getFirstContainer());
+				if(pCellCon == NULL)
+				{
+						return 0;
+				}
+				return 1;
+
+			}
+			else
+			{
+				continue;
+			}
 		}
 		if(pBlock->getPosition() > endpos)
 		{
@@ -4017,7 +4038,7 @@ bool FV_View::getStyle(const XML_Char ** style)
 					const XML_Char* sz = x_getStyle(pSpanAP, true);
 					bool bHere = (sz && sz[0]);
 
-					if ((bCharStyle != bHere) || (strcmp(sz, szChar)))
+					if ((bCharStyle != bHere) || ((sz && szChar && strcmp(sz, szChar))))
 					{
 						// doesn't match, so stop looking
 						bCharStyle = false;
@@ -5898,19 +5919,28 @@ bool FV_View::getBlockFormat(const XML_Char *** pProps,bool bExpandStyles)
 void FV_View::delTo(FV_DocPos dp)
 {
 	PT_DocPosition iPos = _getDocPos(dp);
-
+	PT_DocPosition iPoint = getPoint();
 
 	// Signal PieceTable Change
 	_saveAndNotifyPieceTableChange();
 
-	if (iPos == getPoint())
+	if (iPos == iPoint)
 	{
 		return;
 	}
 
 	_extSelToPos(iPos);
-	_deleteSelection();
 
+	bool bCaretLeft = false;
+	if(isMarkRevisions() && iPos < iPoint)
+	{
+		// move to the start of the original selection
+		bCaretLeft = true;
+	}
+	
+	_deleteSelection(NULL, false, bCaretLeft);
+
+	
 	// Signal PieceTable Changes have finished
 	_restorePieceTableState();
 
@@ -8690,6 +8720,7 @@ void FV_View::getTopRulerInfo(PT_DocPosition pos,AP_TopRulerInfo * pInfo)
 		}
 		xxx_UT_DEBUGMSG(("Initial X %d \n",ioff_x));
 		pCur = pTab->getCellAtRowColumn(0,0);
+		UT_return_if_fail(pCur);
 		ioff_x += pCur->getLeftPos();
 		pRC = pTab->getNthCol(0);
 		xxx_UT_DEBUGMSG(("Tab X %d LeftPos %d Spacing %d \n",pTab->getX(),pCur->getLeftPos(),pRC->spacing));
@@ -9148,7 +9179,7 @@ EV_EditMouseContext FV_View::getMouseContext(UT_sint32 xPos, UT_sint32 yPos)
 {
 	xxx_UT_DEBUGMSG(("layout view mouse pos x %x pos y %d \n",xPos,yPos));
 	UT_sint32 xClick, yClick;
-	PT_DocPosition pos;
+	PT_DocPosition pos = 0;
 	bool bBOL = false;
 	bool bEOL = false;
 	bool isTOC = false;
@@ -9274,6 +9305,9 @@ EV_EditMouseContext FV_View::getMouseContext(UT_sint32 xPos, UT_sint32 yPos)
 	}
 	if(isInTable(pos))
 	{
+		if(!pRun)
+			return EV_EMC_UNKNOWN;
+
 		fp_Line * pLine = pRun->getLine();
 		if(pLine)
 		{
@@ -10970,6 +11004,7 @@ bool FV_View::getEditableBounds(bool isEnd, PT_DocPosition &posEOD, bool bOverid
 		return true;
 	}
 	pBL = static_cast<fl_BlockLayout *>(m_pEditShadow->getLastLayout());
+	UT_return_val_if_fail(pBL, false);
 	posEOD = pBL->getPosition(false);
 	fp_Run * pRun = pBL->getFirstRun();
 	while( pRun && pRun->getNextRun() != NULL)
@@ -11456,6 +11491,17 @@ bool FV_View::insertFootnote(bool bFootnote)
 		}
 		setPoint(getPoint()-1);
 	}
+
+	_saveAndNotifyPieceTableChange();
+	m_pDoc->beginUserAtomicGlob();
+	if (!isSelectionEmpty() && !m_FrameEdit.isActive())
+	{
+		_deleteSelection();
+	}
+	else if(m_FrameEdit.isActive())
+	{
+	       m_FrameEdit.setPointInside();
+	}
 	_makePointLegal();
 	const XML_Char ** props_in = NULL;
 	getCharFormat(&props_in);
@@ -11479,6 +11525,7 @@ bool FV_View::insertFootnote(bool bFootnote)
 	/*	Apply the character style at insertion point and insert the
 		Footnote reference. */
 
+
 	PT_DocPosition FrefStart = getPoint();
 	PT_DocPosition FrefEnd = FrefStart + 1;
 	PT_DocPosition FanchStart;
@@ -11488,17 +11535,6 @@ bool FV_View::insertFootnote(bool bFootnote)
 	const XML_Char *cur_style;
 	getStyle(&cur_style);
 
-
-	_saveAndNotifyPieceTableChange();
-	m_pDoc->beginUserAtomicGlob();
-	if (!isSelectionEmpty() && !m_FrameEdit.isActive())
-	{
-		_deleteSelection();
-	}
-	else if(m_FrameEdit.isActive())
-	{
-	       m_FrameEdit.setPointInside();
-	}
 	bool bCreatedFootnoteSL = false;
 
 	PT_DocPosition dpFT = 0;
@@ -11910,6 +11946,9 @@ void FV_View::setShowRevisions(bool bShow)
 		// now we have to re-do document layout from bottom up
 		m_pLayout->rebuildFromHere(static_cast<fl_DocSectionLayout *>(m_pLayout->getFirstSection()));
 
+		/* have to force redraw -- see 10486 */
+		draw(NULL);
+		
 		_fixInsertionPointCoords();
 	}
 }
@@ -11924,7 +11963,7 @@ void FV_View::toggleShowRevisions()
  */
 void FV_View::setRevisionLevel(UT_uint32 i)
 {
-	UT_return_if_fail( i < PD_MAX_REVISION );
+	UT_return_if_fail( i <= PD_MAX_REVISION );
 	m_pDoc->setShowRevisionId(i);
 	m_iViewRevision = i;
 }
