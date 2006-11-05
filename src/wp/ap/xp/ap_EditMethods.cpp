@@ -1347,6 +1347,7 @@ static void _sFrequentRepeat(UT_Worker * pWorker)
 Defun1(toggleAutoSpell)
 {
 	CHECK_FRAME;
+	UT_return_val_if_fail (pAV_View, false);
 	XAP_Frame * pFrame = static_cast<XAP_Frame *> ( pAV_View->getParentData());
 	UT_return_val_if_fail (pFrame, false);
 
@@ -1367,6 +1368,7 @@ Defun1(toggleAutoSpell)
 Defun1(scrollPageDown)
 {
 	CHECK_FRAME;
+	UT_return_val_if_fail (pAV_View, false);
 	pAV_View->cmdScroll(AV_SCROLLCMD_PAGEDOWN);
 
 	return true;
@@ -1375,6 +1377,7 @@ Defun1(scrollPageDown)
 Defun1(scrollPageUp)
 {
 	CHECK_FRAME;
+	UT_return_val_if_fail (pAV_View, false);
 	pAV_View->cmdScroll(AV_SCROLLCMD_PAGEUP);
 
 	return true;
@@ -1383,6 +1386,7 @@ Defun1(scrollPageUp)
 Defun1(scrollPageLeft)
 {
 	CHECK_FRAME;
+	UT_return_val_if_fail (pAV_View, false);
 	pAV_View->cmdScroll(AV_SCROLLCMD_PAGELEFT);
 
 	return true;
@@ -1391,6 +1395,7 @@ Defun1(scrollPageLeft)
 Defun1(scrollPageRight)
 {
 	CHECK_FRAME;
+	UT_return_val_if_fail (pAV_View, false);
 	pAV_View->cmdScroll(AV_SCROLLCMD_PAGERIGHT);
 
 	return true;
@@ -1399,6 +1404,7 @@ Defun1(scrollPageRight)
 Defun1(scrollLineDown)
 {
 	CHECK_FRAME;
+	UT_return_val_if_fail (pAV_View, false);
 	pAV_View->cmdScroll(AV_SCROLLCMD_LINEDOWN);
 
 	return true;
@@ -1407,6 +1413,7 @@ Defun1(scrollLineDown)
 Defun1(scrollLineUp)
 {
 	CHECK_FRAME;
+	UT_return_val_if_fail (pAV_View, false);
 	pAV_View->cmdScroll(AV_SCROLLCMD_LINEUP);
 
 	return true;
@@ -1415,6 +1422,7 @@ Defun1(scrollLineUp)
 Defun1(scrollWheelMouseDown)
 {
 	CHECK_FRAME;
+	UT_return_val_if_fail (pAV_View, false);
 	pAV_View->cmdScroll(AV_SCROLLCMD_LINEDOWN, pAV_View->getGraphics()->tlu(60));
 
 	return true;
@@ -1423,6 +1431,7 @@ Defun1(scrollWheelMouseDown)
 Defun1(scrollWheelMouseUp)
 {
 	CHECK_FRAME;
+	UT_return_val_if_fail (pAV_View, false);
 	pAV_View->cmdScroll(AV_SCROLLCMD_LINEUP, pAV_View->getGraphics()->tlu (60));
 
 	return true;
@@ -1431,6 +1440,7 @@ Defun1(scrollWheelMouseUp)
 Defun1(scrollLineLeft)
 {
 	CHECK_FRAME;
+	UT_return_val_if_fail (pAV_View, false);
 	pAV_View->cmdScroll(AV_SCROLLCMD_LINELEFT);
 
 	return true;
@@ -1439,6 +1449,7 @@ Defun1(scrollLineLeft)
 Defun1(scrollLineRight)
 {
 	CHECK_FRAME;
+	UT_return_val_if_fail (pAV_View, false);
 	pAV_View->cmdScroll(AV_SCROLLCMD_LINERIGHT);
 
 	return true;
@@ -1447,6 +1458,7 @@ Defun1(scrollLineRight)
 Defun1(scrollToTop)
 {
 	CHECK_FRAME;
+	UT_return_val_if_fail (pAV_View, false);
 	pAV_View->cmdScroll(AV_SCROLLCMD_TOTOP);
 
 	return true;
@@ -1455,6 +1467,7 @@ Defun1(scrollToTop)
 Defun1(scrollToBottom)
 {
 	CHECK_FRAME;
+	UT_return_val_if_fail (pAV_View, false);
 	pAV_View->cmdScroll(AV_SCROLLCMD_TOBOTTOM);
 
 	return true;
@@ -2241,6 +2254,7 @@ UT_Error fileOpen(XAP_Frame * pFrame, const char * pNewFile, IEFileType ieft)
 Defun1(importStyles)
 {
 	CHECK_FRAME;
+	UT_return_val_if_fail (pAV_View, false);
 	XAP_Frame * pFrame = static_cast<XAP_Frame *> (pAV_View->getParentData());
 	UT_return_val_if_fail(pFrame,false);
 
@@ -2358,6 +2372,7 @@ s_importFile (XAP_Frame * pFrame, const char * pNewFile, IEFileType ieft)
 Defun1(openTemplate)
 {
 	CHECK_FRAME;
+	UT_return_val_if_fail (pAV_View, false);
 	XAP_Frame * pFrame = static_cast<XAP_Frame *> ( pAV_View->getParentData());
 	UT_return_val_if_fail (pFrame, false);
 
@@ -2379,6 +2394,7 @@ Defun1(openTemplate)
 Defun(fileSave)
 {
 	CHECK_FRAME;
+	UT_return_val_if_fail (pAV_View, false);
 	XAP_Frame * pFrame = static_cast<XAP_Frame *> (pAV_View->getParentData());
 	UT_return_val_if_fail (pFrame, false);
 
@@ -2414,6 +2430,7 @@ Defun(fileSave)
 static bool
 s_actuallySaveAs(AV_View * pAV_View, bool overwriteName)
 {
+	UT_return_val_if_fail (pAV_View, false);
 	XAP_Frame * pFrame = static_cast<XAP_Frame *> ( pAV_View->getParentData());
 	UT_return_val_if_fail (pFrame, false);
 
@@ -2468,6 +2485,7 @@ Defun1(fileExport)
 Defun1(fileImport)
 {
 	CHECK_FRAME;
+	UT_return_val_if_fail (pAV_View, false);
 	XAP_Frame * pFrame = static_cast<XAP_Frame *> ( pAV_View->getParentData());
 	UT_return_val_if_fail (pFrame, false);
 
@@ -2496,6 +2514,7 @@ Defun1(fileSaveTemplate)
 {
   CHECK_FRAME;
 
+  UT_return_val_if_fail (pAV_View, false);
   XAP_Frame * pFrame = static_cast<XAP_Frame *> ( pAV_View->getParentData());
   UT_return_val_if_fail (pFrame, false);
 
@@ -2529,6 +2548,7 @@ Defun1(fileSaveTemplate)
 Defun1(fileSaveAsWeb)
 {
 	CHECK_FRAME;
+	UT_return_val_if_fail (pAV_View, false);
 	XAP_Frame * pFrame = static_cast<XAP_Frame *>(pAV_View->getParentData());
   IEFileType ieft = IE_Exp::fileTypeForSuffix (".xhtml");
   char * pNewFile = NULL;
@@ -2553,6 +2573,7 @@ Defun1(fileSaveAsWeb)
 Defun1(fileSaveImage)
 {
 	CHECK_FRAME;
+	UT_return_val_if_fail (pAV_View, false);
 	XAP_Frame * pFrame = static_cast<XAP_Frame *> ( pAV_View->getParentData());
 	UT_return_val_if_fail(pFrame, false);
 
@@ -2606,6 +2627,7 @@ Defun1(fileSaveImage)
 Defun1(fileSaveEmbed)
 {
 	CHECK_FRAME;
+	UT_return_val_if_fail (pAV_View, false);
 	XAP_Frame * pFrame = static_cast<XAP_Frame *> ( pAV_View->getParentData());
 	UT_return_val_if_fail(pFrame, false);
 
@@ -2658,6 +2680,7 @@ Defun1(fileSaveEmbed)
 Defun1(filePreviewWeb)
 {
 	CHECK_FRAME;
+	UT_return_val_if_fail (pAV_View, false);
 	XAP_Frame * pFrame = static_cast<XAP_Frame *>(pAV_View->getParentData());
   char szTempFileName[ 2048 ];
 
@@ -2712,6 +2735,7 @@ Defun1(filePreviewWeb)
 Defun1(undo)
 {
 	CHECK_FRAME;
+	UT_return_val_if_fail (pAV_View, false);
 	pAV_View->cmdUndo(1);
 	return true;
 }
@@ -2719,6 +2743,7 @@ Defun1(undo)
 Defun1(redo)
 {
 	CHECK_FRAME;
+	UT_return_val_if_fail (pAV_View, false);
 	pAV_View->cmdRedo(1);
 	return true;
 }
@@ -2818,6 +2843,7 @@ Defun1(openRecent_9)
 
 static bool _activateWindow(AV_View* pAV_View, UT_uint32 ndx)
 {
+	UT_return_val_if_fail(pAV_View, false);
 	XAP_Frame * pFrame = static_cast<XAP_Frame *> ( pAV_View->getParentData());
 	UT_return_val_if_fail(pFrame, false);
 	XAP_App * pApp = pFrame->getApp();
@@ -2914,6 +2940,7 @@ static bool s_doMoreWindowsDlg(XAP_Frame* pFrame, XAP_Dialog_Id id)
 Defun1(dlgMoreWindows)
 {
 	CHECK_FRAME;
+	UT_return_val_if_fail(pAV_View, false);
 	XAP_Frame * pFrame = static_cast<XAP_Frame *> ( pAV_View->getParentData());
 	UT_return_val_if_fail(pFrame, false);
 
@@ -2988,6 +3015,7 @@ static bool s_doToggleCase(XAP_Frame * pFrame, FV_View * pView, XAP_Dialog_Id id
 Defun1(dlgToggleCase)
 {
 	CHECK_FRAME;
+	UT_return_val_if_fail (pAV_View, false);
 	XAP_Frame * pFrame = static_cast<XAP_Frame *> ( pAV_View->getParentData());
 	UT_return_val_if_fail(pFrame, false);
 
@@ -2997,6 +3025,7 @@ Defun1(dlgToggleCase)
 Defun1(rotateCase)
 {
 	CHECK_FRAME;
+	UT_return_val_if_fail (pAV_View, false);
 	FV_View * pView = static_cast<FV_View *>(pAV_View);
 	pView->toggleCase(CASE_ROTATE);
 
@@ -3021,7 +3050,7 @@ Defun1(dlgAbout)
 Defun(dlgMetaData)
 {
   CHECK_FRAME;
-
+  UT_return_val_if_fail (pAV_View, false);
   FV_View * pView = static_cast<FV_View *>(pAV_View);
 
   XAP_Frame * pFrame = static_cast<XAP_Frame *>(pView->getParentData());
@@ -3245,6 +3274,7 @@ Defun0(helpAboutGnomeOffice)
 Defun1(cycleWindows)
 {
 	CHECK_FRAME;
+	UT_return_val_if_fail (pAV_View, false);
 	XAP_Frame * pFrame = static_cast<XAP_Frame *> ( pAV_View->getParentData());
 	UT_return_val_if_fail(pFrame, false);
 	XAP_App * pApp = pFrame->getApp();
@@ -3269,6 +3299,7 @@ Defun1(cycleWindows)
 Defun1(cycleWindowsBck)
 {
 	CHECK_FRAME;
+	UT_return_val_if_fail (pAV_View, false);
 	XAP_Frame * pFrame = static_cast<XAP_Frame *> ( pAV_View->getParentData());
 	UT_return_val_if_fail(pFrame, false);
 	XAP_App * pApp = pFrame->getApp();
@@ -3294,6 +3325,7 @@ static bool
 s_closeWindow (AV_View * pAV_View, EV_EditMethodCallData * pCallData,
 		   bool bCanExit)
 {
+	UT_return_val_if_fail (pAV_View, false);
 	XAP_Frame * pFrame = static_cast<XAP_Frame *> ( pAV_View->getParentData());
 	UT_return_val_if_fail(pFrame, false);
 	XAP_App * pApp = pFrame->getApp();
@@ -3381,6 +3413,7 @@ Defun(closeWindow)
 {
 	CHECK_FRAME;
 #if !defined(XP_UNIX_TARGET_GTK)
+	UT_return_val_if_fail (pAV_View, false);
 	XAP_Frame * pFrame = static_cast<XAP_Frame *> ( pAV_View->getParentData());
 	UT_return_val_if_fail(pFrame, false);
 	XAP_App * pApp = pFrame->getApp();
@@ -3479,6 +3512,7 @@ Defun(fileRevert)
 	CHECK_FRAME;
 	ABIWORD_VIEW;
 
+  UT_return_val_if_fail (pAV_View, false);
   XAP_Frame * pFrame = static_cast<XAP_Frame *> (pAV_View->getParentData());
 
   if (XAP_Dialog_MessageBox::a_YES == pFrame->showMessageBox(AP_STRING_ID_MSG_RevertFile,
@@ -3496,6 +3530,7 @@ Defun1(insertClipart)
 
 	UT_DEBUGMSG(("DOM: insert clipart\n"));
 
+	UT_return_val_if_fail (pView, false);
 	XAP_Frame * pFrame = static_cast<XAP_Frame *>(pView->getParentData());
 	UT_return_val_if_fail(pFrame, false);
 
@@ -3568,6 +3603,7 @@ UT_return_val_if_fail(pDialog, false);
 Defun1(fileInsertGraphic)
 {
 	CHECK_FRAME;
+	UT_return_val_if_fail (pAV_View, false);
 	XAP_Frame * pFrame = static_cast<XAP_Frame *> ( pAV_View->getParentData());
 	UT_return_val_if_fail(pFrame, false);
 
@@ -3629,6 +3665,7 @@ Defun1(fileInsertGraphic)
 Defun1(fileInsertPageBackgroundGraphic)
 {
 	CHECK_FRAME;
+	UT_return_val_if_fail (pAV_View, false);
 	XAP_Frame * pFrame = static_cast<XAP_Frame *> ( pAV_View->getParentData());
 	UT_return_val_if_fail(pFrame, false);
 
@@ -3696,6 +3733,7 @@ Defun(selectObject)
 	CHECK_FRAME;
 	ABIWORD_VIEW;
 	
+	UT_return_val_if_fail (pView, false);
 	// check if the run to select is a fp_ImageRun. If, so, don't move the view
 	PT_DocPosition pos = pView->getDocPositionFromXY(pCallData->m_xPos, pCallData->m_yPos);
 	fl_BlockLayout * pBlock = pView->getBlockAtPosition(pos);
@@ -3737,6 +3775,7 @@ Defun(warpInsPtToXY)
 {
 	CHECK_FRAME;
 	ABIWORD_VIEW;
+	UT_return_val_if_fail (pView, false);
 	pView->warpInsPtToXY(pCallData->m_xPos, pCallData->m_yPos, true);
 
 	return true;
@@ -3745,6 +3784,7 @@ Defun(warpInsPtToXY)
 static void sActualMoveLeft(AV_View *  pAV_View, EV_EditMethodCallData * pCallData)
 {
 	ABIWORD_VIEW;
+	UT_return_if_fail (pView);
 	bool bRTL = false;
 	fl_BlockLayout * pBL = pView->getCurrentBlock();
 	if(pBL)
@@ -3770,6 +3810,7 @@ Defun1(warpInsPtLeft)
 //
 // This code sets things up to handle the warp right in an idle loop.
 //
+	UT_return_val_if_fail (pView, false);
 	int inMode = UT_WorkerFactory::IDLE | UT_WorkerFactory::TIMER;
 	UT_WorkerFactory::ConstructMode outMode = UT_WorkerFactory::NONE;
 	GR_Graphics * pG = pView->getGraphics();
@@ -3793,6 +3834,7 @@ Defun1(warpInsPtLeft)
 static void sActualMoveRight(AV_View *  pAV_View, EV_EditMethodCallData * pCallData)
 {
 	ABIWORD_VIEW;
+	UT_return_if_fail (pView);
 	bool bRTL = false;
 	fl_BlockLayout * pBL = pView->getCurrentBlock();
 	if(pBL)
@@ -3819,6 +3861,7 @@ Defun1(warpInsPtRight)
 //
 // This code sets things up to handle the warp right in an idle loop.
 //
+	UT_return_val_if_fail (pView, false);
 	int inMode = UT_WorkerFactory::IDLE | UT_WorkerFactory::TIMER;
 	UT_WorkerFactory::ConstructMode outMode = UT_WorkerFactory::NONE;
 	GR_Graphics * pG = pView->getGraphics();
@@ -3843,6 +3886,7 @@ Defun1(warpInsPtBOP)
 {
 	CHECK_FRAME;
 	ABIWORD_VIEW;
+	UT_return_val_if_fail (pView, false);
 	pView->moveInsPtTo(FV_DOCPOS_BOP);
 	return true;
 }
@@ -3851,6 +3895,7 @@ Defun1(warpInsPtEOP)
 {
 	CHECK_FRAME;
 	ABIWORD_VIEW;
+	UT_return_val_if_fail (pView, false);
 	pView->moveInsPtTo(FV_DOCPOS_EOP);
 	return true;
 }
@@ -3859,6 +3904,7 @@ Defun1(warpInsPtBOL)
 {
 	CHECK_FRAME;
 	ABIWORD_VIEW;
+	UT_return_val_if_fail (pView, false);
 	pView->moveInsPtTo(FV_DOCPOS_BOL);
 	return true;
 }
@@ -3867,6 +3913,7 @@ Defun1(warpInsPtEOL)
 {
 	CHECK_FRAME;
 	ABIWORD_VIEW;
+	UT_return_val_if_fail (pView, false);
 	pView->moveInsPtTo(FV_DOCPOS_EOL);
 	return true;
 }
@@ -3875,6 +3922,7 @@ Defun1(warpInsPtBOW)
 {
 	CHECK_FRAME;
 	ABIWORD_VIEW;
+	UT_return_val_if_fail (pView, false);
 	bool bRTL = false;
 	fl_BlockLayout * pBL = pView->getCurrentBlock();
 	if(pBL)
@@ -3893,6 +3941,7 @@ Defun1(warpInsPtEOW)
 {
 	CHECK_FRAME;
 	ABIWORD_VIEW;
+	UT_return_val_if_fail (pView, false);
 	bool bRTL = false;
 	fl_BlockLayout * pBL = pView->getCurrentBlock();
 	if(pBL)
@@ -3923,6 +3972,7 @@ Defun1(warpInsPtBOB)
 {
 	CHECK_FRAME;
 	ABIWORD_VIEW;
+	UT_return_val_if_fail (pView, false);
 	pView->moveInsPtTo(FV_DOCPOS_BOB);
 	return true;
 }
@@ -3931,6 +3981,7 @@ Defun1(warpInsPtEOB)
 {
 	CHECK_FRAME;
 	ABIWORD_VIEW;
+	UT_return_val_if_fail (pView, false);
 	pView->moveInsPtTo(FV_DOCPOS_EOB);
 	return true;
 }
@@ -3939,6 +3990,7 @@ Defun1(warpInsPtBOD)
 {
 	CHECK_FRAME;
 	ABIWORD_VIEW;
+	UT_return_val_if_fail (pView, false);
 	pView->moveInsPtTo(FV_DOCPOS_BOD);
 	return true;
 }
@@ -3951,6 +4003,7 @@ Defun1(warpInsPtEOD)
 // This is called on cntrl-End. If called from within a footnote/endnote
 // jump back to just after the insertion point
 //
+	UT_return_val_if_fail (pView, false);
 	if(pView->isInFootnote())
 	{
 		fl_FootnoteLayout * pFL = pView->getClosestFootnote(pView->getPoint());
@@ -3976,6 +4029,7 @@ Defun1(warpInsPtPrevPage)
 {
 	CHECK_FRAME;
 	ABIWORD_VIEW;
+	UT_return_val_if_fail (pView, false);
 	pView->warpInsPtNextPrevPage(false);
 	return true;
 }
@@ -3984,6 +4038,7 @@ Defun1(warpInsPtNextPage)
 {
 	CHECK_FRAME;
 	ABIWORD_VIEW;
+	UT_return_val_if_fail (pView, false);
 	pView->warpInsPtNextPrevPage(true);
 	return true;
 }
@@ -3992,6 +4047,7 @@ Defun1(warpInsPtPrevScreen)
 {
 	CHECK_FRAME;
 	ABIWORD_VIEW;
+	UT_return_val_if_fail (pView, false);
 	pView->warpInsPtNextPrevScreen(false);
 	return true;
 }
@@ -4000,6 +4056,7 @@ Defun1(warpInsPtNextScreen)
 {
 	CHECK_FRAME;
 	ABIWORD_VIEW;
+	UT_return_val_if_fail (pView, false);
 	pView->warpInsPtNextPrevScreen(true);
 	return true;
 }
@@ -4011,6 +4068,7 @@ Defun1(warpInsPtPrevLine)
 //
 // Finish handling current expose before doing the next movement
 //
+	UT_return_val_if_fail (pView, false);
 	GR_Graphics * pG = pView->getGraphics();
 	if(pG && pG->isExposePending())
 	{
@@ -4034,6 +4092,7 @@ Defun1(warpInsPtNextLine)
 //
 // Finish handling current expose before doing the next movement
 //
+	UT_return_val_if_fail (pView, false);
 	GR_Graphics * pG = pView->getGraphics();
 	if(pG && pG->isExposePending())
 	{
@@ -4058,6 +4117,7 @@ Defun1(cursorDefault)
 	ABIWORD_VIEW;
 
 	// clear status bar of any lingering messages
+	UT_return_val_if_fail (pView, false);
 	XAP_Frame * pFrame = static_cast<XAP_Frame *> (pView->getParentData());
 	pFrame->setStatusMessage(NULL);
 
@@ -4075,6 +4135,7 @@ Defun1(cursorIBeam)
 	ABIWORD_VIEW;
 
 	// clear status bar of any lingering messages
+	UT_return_val_if_fail (pView, false);
 	XAP_Frame * pFrame = static_cast<XAP_Frame *> (pView->getParentData());
 	pFrame->setStatusMessage(NULL);
 
@@ -4092,6 +4153,7 @@ Defun1(cursorTOC)
 	ABIWORD_VIEW;
 
 	// clear status bar of any lingering messages
+	UT_return_val_if_fail (pView, false);
 	XAP_Frame * pFrame = static_cast<XAP_Frame *> (pView->getParentData());
 	pFrame->setStatusMessage(NULL);
 
@@ -4109,6 +4171,7 @@ Defun1(cursorRightArrow)
 	ABIWORD_VIEW;
 
 	// clear status bar of any lingering messages
+	UT_return_val_if_fail (pView, false);
 	XAP_Frame * pFrame = static_cast<XAP_Frame *> (pView->getParentData());
 	pFrame->setStatusMessage(NULL);
 
@@ -4127,6 +4190,7 @@ Defun1(cursorVline)
 	ABIWORD_VIEW;
 
 	// clear status bar of any lingering messages
+	UT_return_val_if_fail (pView, false);
 	XAP_Frame * pFrame = static_cast<XAP_Frame *> (pView->getParentData());
 	pFrame->setStatusMessage(NULL);
 
@@ -4145,6 +4209,7 @@ Defun1(cursorTopCell)
 	ABIWORD_VIEW;
 
 	// clear status bar of any lingering messages
+	UT_return_val_if_fail (pView, false);
 	XAP_Frame * pFrame = static_cast<XAP_Frame *> (pView->getParentData());
 	pFrame->setStatusMessage(NULL);
 
@@ -4163,6 +4228,7 @@ Defun1(cursorHline)
 	ABIWORD_VIEW;
 
 	// clear status bar of any lingering messages
+	UT_return_val_if_fail (pView, false);
 	XAP_Frame * pFrame = static_cast<XAP_Frame *> (pView->getParentData());
 	pFrame->setStatusMessage(NULL);
 
@@ -4180,6 +4246,7 @@ Defun1(cursorLeftArrow)
 	ABIWORD_VIEW;
 
 	// clear status bar of any lingering messages
+	UT_return_val_if_fail (pView, false);
 	XAP_Frame * pFrame = static_cast<XAP_Frame *> (pView->getParentData());
 	pFrame->setStatusMessage(NULL);
 
@@ -4197,6 +4264,7 @@ Defun1(cursorImage)
 	ABIWORD_VIEW;
 
 	// clear status bar of any lingering messages
+	UT_return_val_if_fail (pView, false);
 	XAP_Frame * pFrame = static_cast<XAP_Frame *> (pView->getParentData());
 	pFrame->setStatusMessage(NULL);
 
@@ -4214,6 +4282,7 @@ Defun1(cursorImageSize)
 	ABIWORD_VIEW;
 
 	// clear status bar of any lingering messages
+	UT_return_val_if_fail (pView, false);
 	XAP_Frame * pFrame = static_cast<XAP_Frame *> (pView->getParentData());
 	pFrame->setStatusMessage(NULL);
 
@@ -4230,6 +4299,7 @@ static bool dlgEditLatexEquation(AV_View *pAV_View, EV_EditMethodCallData * pCal
 {
 	CHECK_FRAME;
 	ABIWORD_VIEW;
+	UT_return_val_if_fail (pView, false);
 	FL_DocLayout * pLayout = pView->getLayout();
 	GR_EmbedManager * pMath = pLayout->getEmbedManager("mathml");
 	if(pMath->isDefault())
@@ -4327,6 +4397,7 @@ Defun1(contextMenu)
 	// to the mouse.
 
 	ABIWORD_VIEW;
+	UT_return_val_if_fail (pView, false);
 	XAP_Frame * pFrame = static_cast<XAP_Frame *> (pView->getParentData());
 	UT_return_val_if_fail(pFrame, false);
 
@@ -4372,6 +4443,7 @@ Defun(contextText)
 {
 	CHECK_FRAME;
 	ABIWORD_VIEW;
+	UT_return_val_if_fail (pView, false);
 	XAP_Frame * pFrame = static_cast<XAP_Frame *> (pView->getParentData());
 	UT_return_val_if_fail(pFrame, false);
 	//
@@ -4390,6 +4462,7 @@ Defun(contextFrame)
 {
 	CHECK_FRAME;
 	ABIWORD_VIEW;
+	UT_return_val_if_fail (pView, false);
 	XAP_Frame * pFrame = static_cast<XAP_Frame *> (pView->getParentData());
 	UT_return_val_if_fail(pFrame, false);
 	return s_doContextMenu(EV_EMC_FRAME,pCallData->m_xPos, pCallData->m_yPos,pView,pFrame);
@@ -4399,6 +4472,7 @@ Defun(contextRevision)
 {
 	CHECK_FRAME;
 	ABIWORD_VIEW;
+	UT_return_val_if_fail (pView, false);
 	XAP_Frame * pFrame = static_cast<XAP_Frame *> (pView->getParentData());
 	UT_return_val_if_fail(pFrame, false);
 	return s_doContextMenu(EV_EMC_REVISION,pCallData->m_xPos, pCallData->m_yPos,pView,pFrame);
@@ -4408,6 +4482,7 @@ Defun(contextTOC)
 {
 	CHECK_FRAME;
 	ABIWORD_VIEW;
+	UT_return_val_if_fail (pView, false);
 	XAP_Frame * pFrame = static_cast<XAP_Frame *> (pView->getParentData());
 	UT_return_val_if_fail(pFrame, false);
 	return s_doContextMenu_no_move(EV_EMC_TOC,pCallData->m_xPos, pCallData->m_yPos,pView,pFrame);
@@ -4418,6 +4493,7 @@ Defun(contextMath)
 {
 	CHECK_FRAME;
 	ABIWORD_VIEW;
+	UT_return_val_if_fail (pView, false);
 	XAP_Frame * pFrame = static_cast<XAP_Frame *> (pView->getParentData());
 	UT_return_val_if_fail(pFrame, false);
 	bool b = false;
@@ -4437,6 +4513,7 @@ Defun(contextMisspellText)
 {
 	CHECK_FRAME;
 	ABIWORD_VIEW;
+	UT_return_val_if_fail (pView, false);
 	XAP_Frame * pFrame = static_cast<XAP_Frame *> (pView->getParentData());
 	UT_return_val_if_fail(pFrame, false);
 	UT_DEBUGMSG(("Doing Misspelt text \n"));
@@ -4447,6 +4524,7 @@ Defun(contextImage)
 {
 	CHECK_FRAME;
 	ABIWORD_VIEW;
+	UT_return_val_if_fail (pView, false);
 	XAP_Frame * pFrame = static_cast<XAP_Frame *> (pView->getParentData());
 	UT_return_val_if_fail(pFrame, false);
 
@@ -4498,6 +4576,7 @@ Defun(contextPosObject)
 {
 	CHECK_FRAME;
 	ABIWORD_VIEW;
+	UT_return_val_if_fail (pView, false);
 	XAP_Frame * pFrame = static_cast<XAP_Frame *> (pView->getParentData());
 	UT_return_val_if_fail(pFrame, false);
 	return s_doContextMenu_no_move(EV_EMC_POSOBJECT,pCallData->m_xPos, pCallData->m_yPos,pView,pFrame);
@@ -4508,6 +4587,7 @@ Defun(contextEmbedLayout)
 {
 	CHECK_FRAME;
 	ABIWORD_VIEW;
+	UT_return_val_if_fail (pView, false);
 	XAP_Frame * pFrame = static_cast<XAP_Frame *> (pView->getParentData());
 	UT_return_val_if_fail(pFrame, false);
 	return s_doContextMenu(EV_EMC_EMBED,pCallData->m_xPos, pCallData->m_yPos,pView,pFrame);
@@ -4517,6 +4597,7 @@ Defun(contextHyperlink)
 {
 	CHECK_FRAME;
 	ABIWORD_VIEW;
+	UT_return_val_if_fail (pView, false);
 	XAP_Frame * pFrame = static_cast<XAP_Frame *> (pView->getParentData());
 	UT_return_val_if_fail(pFrame, false);
 
@@ -4534,6 +4615,7 @@ Defun(contextHyperlink)
 static bool _spellSuggest(AV_View* pAV_View, UT_uint32 ndx)
 {
 	ABIWORD_VIEW;
+	UT_return_val_if_fail (pView, false);
 	pView->cmdContextSuggest(ndx);
 	return true;
 }
@@ -4589,6 +4671,7 @@ Defun1(spellIgnoreAll)
 	CHECK_FRAME;
 	ABIWORD_VIEW;
 
+	UT_return_val_if_fail (pView, false);
 	pView->cmdContextIgnoreAll();
 	return true;
 }
@@ -4598,6 +4681,7 @@ Defun1(spellAdd)
 	CHECK_FRAME;
 	ABIWORD_VIEW;
 
+	UT_return_val_if_fail (pView, false);
 	pView->cmdContextAdd();
 	return true;
 }
@@ -4609,6 +4693,7 @@ Defun1(spellAdd)
 static void sActualDragToXY(AV_View *  pAV_View, EV_EditMethodCallData * pCallData)
 {
 	ABIWORD_VIEW;
+	UT_return_if_fail (pView);
 	pView->extSelToXY(pCallData->m_xPos, pCallData->m_yPos, true);
 	return;
 }
@@ -4623,6 +4708,7 @@ Defun(dragToXY)
 //
 // This code sets things up to handle the warp right in an idle loop.
 //
+	UT_return_val_if_fail (pView, false);
 	int inMode = UT_WorkerFactory::IDLE | UT_WorkerFactory::TIMER;
 	UT_WorkerFactory::ConstructMode outMode = UT_WorkerFactory::NONE;
 	GR_Graphics * pG = pView->getGraphics();
@@ -4650,6 +4736,7 @@ Defun(dragToXYword)
 {
 	CHECK_FRAME;
 	ABIWORD_VIEW;
+	UT_return_val_if_fail (pView, false);
 	pView->extSelToXYword(pCallData->m_xPos, pCallData->m_yPos, true);
 	return true;
 }
@@ -4658,8 +4745,8 @@ Defun(endDrag)
 {
 	CHECK_FRAME;
 	ABIWORD_VIEW;
-
-pView->endDrag(pCallData->m_xPos, pCallData->m_yPos);
+	UT_return_val_if_fail (pView, false);
+	pView->endDrag(pCallData->m_xPos, pCallData->m_yPos);
 	return true;
 }
 
@@ -4667,6 +4754,7 @@ Defun(extSelToXY)
 {
 	CHECK_FRAME;
 	ABIWORD_VIEW;
+	UT_return_val_if_fail (pView, false);
 	pView->extSelToXY(pCallData->m_xPos, pCallData->m_yPos, false);
 	return true;
 }
@@ -4675,6 +4763,7 @@ Defun1(extSelLeft)
 {
 	CHECK_FRAME;
 	ABIWORD_VIEW;
+	UT_return_val_if_fail (pView, false);
 	bool bRTL = false;
 	fl_BlockLayout * pBL = pView->getCurrentBlock();
 	if(pBL)
@@ -4690,6 +4779,7 @@ Defun1(extSelRight)
 {
 	CHECK_FRAME;
 	ABIWORD_VIEW;
+	UT_return_val_if_fail (pView, false);
 	bool bRTL = false;
 	fl_BlockLayout * pBL = pView->getCurrentBlock();
 	if(pBL)
@@ -4705,6 +4795,7 @@ Defun1(extSelBOL)
 {
 	CHECK_FRAME;
 	ABIWORD_VIEW;
+	UT_return_val_if_fail (pView, false);
 	pView->extSelTo(FV_DOCPOS_BOL);
 	return true;
 }
@@ -4713,6 +4804,7 @@ Defun1(extSelEOL)
 {
 	CHECK_FRAME;
 	ABIWORD_VIEW;
+	UT_return_val_if_fail (pView, false);
 	pView->extSelTo(FV_DOCPOS_EOL);
 	return true;
 }
@@ -4721,6 +4813,7 @@ Defun1(extSelBOW)
 {
 	CHECK_FRAME;
 	ABIWORD_VIEW;
+	UT_return_val_if_fail (pView, false);
 	bool bRTL = false;
 	fl_BlockLayout * pBL = pView->getCurrentBlock();
 	if(pBL)
@@ -4739,6 +4832,7 @@ Defun1(extSelEOW)
 {
 	CHECK_FRAME;
 	ABIWORD_VIEW;
+	UT_return_val_if_fail (pView, false);
 	bool bRTL = false;
 	fl_BlockLayout * pBL = pView->getCurrentBlock();
 	if(pBL)
@@ -4769,6 +4863,7 @@ Defun1(extSelBOB)
 {
 	CHECK_FRAME;
 	ABIWORD_VIEW;
+	UT_return_val_if_fail (pView, false);
 	pView->extSelTo(FV_DOCPOS_BOB);
 	return true;
 }
@@ -4777,6 +4872,7 @@ Defun1(extSelEOB)
 {
 	CHECK_FRAME;
 	ABIWORD_VIEW;
+	UT_return_val_if_fail (pView, false);
 	pView->extSelTo(FV_DOCPOS_EOB);
 	return true;
 }
@@ -4785,6 +4881,7 @@ Defun1(extSelBOD)
 {
 	CHECK_FRAME;
 	ABIWORD_VIEW;
+	UT_return_val_if_fail (pView, false);
 	pView->extSelTo(FV_DOCPOS_BOD);
 	return true;
 }
@@ -4793,6 +4890,7 @@ Defun1(extSelEOD)
 {
 	CHECK_FRAME;
 	ABIWORD_VIEW;
+	UT_return_val_if_fail (pView, false);
 	pView->extSelTo(FV_DOCPOS_EOD);
 	return true;
 }
@@ -4801,6 +4899,7 @@ Defun1(extSelPrevLine)
 {
 	CHECK_FRAME;
 	ABIWORD_VIEW;
+	UT_return_val_if_fail (pView, false);
 	pView->extSelNextPrevLine(false);
 	return true;
 }
@@ -4809,6 +4908,7 @@ Defun1(extSelNextLine)
 {
 	CHECK_FRAME;
 	ABIWORD_VIEW;
+	UT_return_val_if_fail (pView, false);
 	pView->extSelNextPrevLine(true);
 	return true;
 }
@@ -4817,6 +4917,7 @@ Defun1(extSelPageDown)
 {
 	CHECK_FRAME;
 	ABIWORD_VIEW;
+	UT_return_val_if_fail (pView, false);
 	pView->extSelNextPrevPage(true);
 	return true;
 }
@@ -4825,6 +4926,7 @@ Defun1(extSelPageUp)
 {
 	CHECK_FRAME;
 	ABIWORD_VIEW;
+	UT_return_val_if_fail (pView, false);
 	pView->extSelNextPrevPage(false);
 	return true;
 }
@@ -4833,6 +4935,7 @@ Defun1(extSelScreenDown)
 {
 	CHECK_FRAME;
 	ABIWORD_VIEW;
+	UT_return_val_if_fail (pView, false);
 	pView->extSelNextPrevScreen(true);
 	return true;
 }
@@ -4841,6 +4944,7 @@ Defun1(extSelScreenUp)
 {
 	CHECK_FRAME;
 	ABIWORD_VIEW;
+	UT_return_val_if_fail (pView, false);
 	pView->extSelNextPrevScreen(false);
 	return true;
 }
@@ -4849,6 +4953,7 @@ Defun(selectAll)
 {
 	CHECK_FRAME;
 	ABIWORD_VIEW;
+	UT_return_val_if_fail (pView, false);
 	pView->cmdSelect(pCallData->m_xPos, pCallData->m_yPos, FV_DOCPOS_BOD, FV_DOCPOS_EOD);
 	return true;
 }
@@ -4857,6 +4962,7 @@ Defun(selectWord)
 {
 	CHECK_FRAME;
 	ABIWORD_VIEW;
+	UT_return_val_if_fail (pView, false);
 	pView->cmdSelect(pCallData->m_xPos, pCallData->m_yPos, FV_DOCPOS_BOW, FV_DOCPOS_EOW_SELECT);
 	return true;
 }
@@ -4865,6 +4971,7 @@ Defun(selectLine)
 {
 	CHECK_FRAME;
 	ABIWORD_VIEW;
+	UT_return_val_if_fail (pView, false);
 	pView->cmdSelect(pCallData->m_xPos, pCallData->m_yPos, FV_DOCPOS_BOL, FV_DOCPOS_EOL);
 	return true;
 }
@@ -4873,6 +4980,7 @@ Defun(selectBlock)
 {
 	CHECK_FRAME;
 	ABIWORD_VIEW;
+	UT_return_val_if_fail (pView, false);
 	pView->cmdSelect(pCallData->m_xPos, pCallData->m_yPos, FV_DOCPOS_BOB, FV_DOCPOS_EOB);
 	return true;
 }
@@ -4881,6 +4989,7 @@ Defun1(selectTable)
 {
 	CHECK_FRAME;
 	ABIWORD_VIEW;
+	UT_return_val_if_fail (pView, false);
 	PT_DocPosition posStartTab,posEndTab;
 	PL_StruxDocHandle tableSDH,endTableSDH;
 	PD_Document * pDoc = pView->getDocument();
@@ -4910,6 +5019,7 @@ Defun(selectTOC)
 	CHECK_FRAME;
 	ABIWORD_VIEW;
 	UT_DEBUGMSG(("Select TOC \n"));
+	UT_return_val_if_fail (pView, false);
 	pView->cmdSelectTOC(pCallData->m_xPos, pCallData->m_yPos);
 	return true;
 }
@@ -4920,6 +5030,7 @@ Defun(editLatexAtPos)
 	CHECK_FRAME;
 	ABIWORD_VIEW;
 	UT_DEBUGMSG(("Edit Math at Pos\n"));
+	UT_return_val_if_fail (pView, false);
         PT_DocPosition pos = pView->getDocPositionFromLastXY();
         return dlgEditLatexEquation(pAV_View, pCallData, true,pos);
 }
@@ -4930,6 +5041,7 @@ Defun(editLatexEquation)
 	CHECK_FRAME;
 	ABIWORD_VIEW;
 	UT_DEBUGMSG(("Select and Edit Math \n"));
+	UT_return_val_if_fail (pView, false);
         PT_DocPosition posL = pView->getDocPositionFromXY(pCallData->m_xPos, pCallData->m_yPos);
 	PT_DocPosition posH = posL+1;
 	pView->cmdSelect(posL,posH);
@@ -4942,6 +5054,7 @@ Defun(editEmbed)
 	CHECK_FRAME;
 	ABIWORD_VIEW;
 	UT_DEBUGMSG(("Select and Edit an Embedded Object \n"));
+	UT_return_val_if_fail (pView, false);
         PT_DocPosition posL = pView->getPoint();
 	PT_DocPosition posH = pView->getSelectionAnchor();
 	PT_DocPosition posTemp = 0;
@@ -4995,6 +5108,7 @@ Defun(selectMath)
 	CHECK_FRAME;
 	ABIWORD_VIEW;
 	UT_DEBUGMSG(("Select Math \n"));
+	UT_return_val_if_fail (pView, false);
         PT_DocPosition posL = pView->getDocPositionFromXY(pCallData->m_xPos, pCallData->m_yPos);
 	PT_DocPosition posH = posL+1;
 	pView->cmdSelect(posL,posH);
@@ -5007,6 +5121,7 @@ Defun1(selectRow)
 {
 	CHECK_FRAME;
 	ABIWORD_VIEW;
+	UT_return_val_if_fail (pView, false);
 	PT_DocPosition posTable,posStartRow,posEndRow;
 	PL_StruxDocHandle rowSDH,endRowSDH,tableSDH;
 	UT_sint32 iLeft,iRight,iTop,iBot;
@@ -5050,6 +5165,7 @@ Defun1(selectCell)
 {
 	CHECK_FRAME;
 	ABIWORD_VIEW;
+	UT_return_val_if_fail (pView, false);
 	PT_DocPosition posStartCell,posEndCell;
 	PL_StruxDocHandle cellSDH,endCellSDH;
 	PD_Document * pDoc = pView->getDocument();
@@ -5074,6 +5190,7 @@ Defun1(selectColumn)
 {
 	CHECK_FRAME;
 	ABIWORD_VIEW;
+	UT_return_val_if_fail (pView, false);
 	if(!pView->isInTable())
 	{
 		return false;
@@ -5087,6 +5204,7 @@ Defun(selectColumnClick)
 {
 	CHECK_FRAME;
 	ABIWORD_VIEW;
+	UT_return_val_if_fail (pView, false);
 	UT_sint32 y = pCallData->m_yPos;
 	UT_sint32 x = pCallData->m_xPos;
 	PT_DocPosition pos = pView->getDocPositionFromXY(x,y);
@@ -5102,6 +5220,7 @@ Defun(selectColumnClick)
 static void sActualDelLeft(AV_View *  pAV_View, EV_EditMethodCallData * pCallData)
 {
 	ABIWORD_VIEW;
+	UT_return_if_fail (pView);
 	pView->cmdCharDelete(false,1);
 }
 
@@ -5115,6 +5234,7 @@ Defun1(delLeft)
 //
 // This code sets things up to handle the warp right in an idle loop.
 //
+	UT_return_val_if_fail (pView, false);
 	int inMode = UT_WorkerFactory::IDLE | UT_WorkerFactory::TIMER;
 	UT_WorkerFactory::ConstructMode outMode = UT_WorkerFactory::NONE;
 	GR_Graphics * pG = pView->getGraphics();
@@ -5139,6 +5259,7 @@ Defun1(delLeft)
 static void sActualDelRight(AV_View *  pAV_View, EV_EditMethodCallData * pCallData)
 {
 	ABIWORD_VIEW;
+	UT_return_if_fail (pView);
 	pView->cmdCharDelete(true,1);
 }
 
@@ -5152,6 +5273,7 @@ Defun1(delRight)
 //
 // This code sets things up to handle the warp right in an idle loop.
 //
+	UT_return_val_if_fail (pView, false);
 	int inMode = UT_WorkerFactory::IDLE | UT_WorkerFactory::TIMER;
 	UT_WorkerFactory::ConstructMode outMode = UT_WorkerFactory::NONE;
 	GR_Graphics * pG = pView->getGraphics();
@@ -5176,6 +5298,7 @@ Defun1(delBOL)
 {
 	CHECK_FRAME;
 	ABIWORD_VIEW;
+	UT_return_val_if_fail (pView, false);
 	pView->delTo(FV_DOCPOS_BOL);
 	return true;
 }
@@ -5184,6 +5307,7 @@ Defun1(delEOL)
 {
 	CHECK_FRAME;
 	ABIWORD_VIEW;
+	UT_return_val_if_fail (pView, false);
 	pView->delTo(FV_DOCPOS_EOL);
 	return true;
 }
@@ -5192,6 +5316,7 @@ Defun1(delBOW)
 {
 	CHECK_FRAME;
 	ABIWORD_VIEW;
+	UT_return_val_if_fail (pView, false);
 	pView->delTo(FV_DOCPOS_BOW);
 	return true;
 }
@@ -5200,6 +5325,7 @@ Defun1(delEOW)
 {
 	CHECK_FRAME;
 	ABIWORD_VIEW;
+	UT_return_val_if_fail (pView, false);
 	pView->delTo(FV_DOCPOS_EOW_MOVE);
 	return true;
 }
@@ -5220,6 +5346,7 @@ Defun1(delBOB)
 {
 	CHECK_FRAME;
 	ABIWORD_VIEW;
+	UT_return_val_if_fail(pView, false);
 	pView->delTo(FV_DOCPOS_BOB);
 	return true;
 }
@@ -5228,6 +5355,7 @@ Defun1(delEOB)
 {
 	CHECK_FRAME;
 	ABIWORD_VIEW;
+	UT_return_val_if_fail(pView, false);
 	pView->delTo(FV_DOCPOS_EOB);
 	return true;
 }
@@ -5236,6 +5364,7 @@ Defun1(delBOD)
 {
 	CHECK_FRAME;
 	ABIWORD_VIEW;
+	UT_return_val_if_fail (pView, false);
 	pView->delTo(FV_DOCPOS_BOD);
 	return true;
 }
@@ -5244,6 +5373,7 @@ Defun1(delEOD)
 {
 	CHECK_FRAME;
 	ABIWORD_VIEW;
+	UT_return_val_if_fail (pView, false);
 	pView->delTo(FV_DOCPOS_EOD);
 	return true;
 }
@@ -5284,6 +5414,7 @@ static bool pView->cmdCharInsert(const UT_UCS4Char * pText, UT_uint32 iLen,
 static void sActualInsertData(AV_View *  pAV_View, EV_EditMethodCallData * pCallData)
 {
 	ABIWORD_VIEW;
+	UT_return_val_if_fail (pView, false);
 	pView->cmdCharInsert(pCallData->m_pData, pCallData->m_dataLength);
 	return;
 }
@@ -5292,6 +5423,7 @@ Defun(insertData)
 {
 	CHECK_FRAME;
 	ABIWORD_VIEW;
+	UT_return_val_if_fail (pView, false);
 	pView->cmdCharInsert(pCallData->m_pData, pCallData->m_dataLength);
 #if 0
 //
@@ -5326,6 +5458,7 @@ Defun(insertData)
 Defun(insertClosingParenthesis)
 {
 	CHECK_FRAME;
+	UT_return_val_if_fail (pAV_View, false);
 	XAP_Frame * pFrame = static_cast<XAP_Frame *> ( pAV_View->getParentData());
 	UT_return_val_if_fail(pFrame, false);
 	ABIWORD_VIEW;
@@ -5380,6 +5513,7 @@ Defun(insertClosingParenthesis)
 Defun(insertOpeningParenthesis)
 {
 	CHECK_FRAME;
+	UT_return_val_if_fail (pAV_View, false);
 	XAP_Frame * pFrame = static_cast<XAP_Frame *> ( pAV_View->getParentData());
 	UT_return_val_if_fail(pFrame, false);
 	ABIWORD_VIEW;
@@ -5436,6 +5570,7 @@ Defun1(insertLRM)
 	CHECK_FRAME;
 	ABIWORD_VIEW;
 	
+	UT_return_val_if_fail (pView, false);
 	UT_UCS4Char cM = UCS_LRM;
 	pView->cmdCharInsert(&cM, 1);
 	return true;
@@ -5446,6 +5581,7 @@ Defun1(insertRLM)
 	CHECK_FRAME;
 	ABIWORD_VIEW;
 
+	UT_return_val_if_fail (pView, false);
 	UT_UCS4Char cM = UCS_RLM;
 	pView->cmdCharInsert(&cM, 1);
 	return true;
@@ -5458,6 +5594,7 @@ Defun1(insertRLM)
 
 static bool s_doBookmarkDlg(FV_View * pView, bool /*bInsert*/)
 {
+	UT_return_val_if_fail(pView, false);
 	XAP_Frame * pFrame = static_cast<XAP_Frame *> ( pView->getParentData());
 	UT_return_val_if_fail(pFrame, false);
 
@@ -5514,6 +5651,7 @@ Defun1(deleteBookmark)
 /*****************************************************************/
 static bool s_doHyperlinkDlg(FV_View * pView)
 {
+	UT_return_val_if_fail(pView, false);
 	XAP_Frame * pFrame = static_cast<XAP_Frame *> ( pView->getParentData());
 	UT_return_val_if_fail(pFrame, false);
 
@@ -5621,6 +5759,7 @@ Defun1(insertHyperlink)
 {
 	CHECK_FRAME;
 	ABIWORD_VIEW;
+	UT_return_val_if_fail(pView, false);
 	if(pView->isSelectionEmpty())
 	{
 		if(!pView->getHyperLinkRun(pView->getPoint()))
@@ -5656,6 +5795,7 @@ Defun1(insertParagraphBreak)
 {
 	CHECK_FRAME;
 	ABIWORD_VIEW;
+	UT_return_val_if_fail(pView, false);
 	pView->insertParagraphBreak();
 	return true;
 }
@@ -5664,6 +5804,8 @@ Defun1(insertSectionBreak)
 {
 	CHECK_FRAME;
 	ABIWORD_VIEW;
+
+	UT_return_val_if_fail(pView, false);
 //
 // No section breaks in header/Footers
 //
@@ -5705,6 +5847,7 @@ Defun1(insertTab)
 {
 	CHECK_FRAME;
 	ABIWORD_VIEW;
+	UT_return_val_if_fail(pView, false);
 	UT_UCSChar c = UCS_TAB;
 	if(!pView->isInTable())
 	{
@@ -5722,6 +5865,7 @@ Defun1(insertTabShift)
 {
 	CHECK_FRAME;
 	ABIWORD_VIEW;
+	UT_return_val_if_fail(pView, false);
 	if(!pView->isInTable())
 	{
 		return true;
@@ -5738,6 +5882,7 @@ Defun1(insertLineBreak)
 {
 	CHECK_FRAME;
 	ABIWORD_VIEW;
+	UT_return_val_if_fail(pView, false);
 	UT_UCSChar c = UCS_LF;
 	if(pView->isInTable())
 	{
@@ -5764,6 +5909,7 @@ Defun1(insertColumnBreak)
 {
 	CHECK_FRAME;
 	ABIWORD_VIEW;
+	UT_return_val_if_fail(pView, false);
 //
 // No column breaks in header/Footers
 //
@@ -5797,6 +5943,7 @@ Defun1(insertColsBefore)
 {
 	CHECK_FRAME;
 	ABIWORD_VIEW;
+	UT_return_val_if_fail(pView, false);
 	PT_DocPosition insPoint;
 	PT_DocPosition insAnchor;
 	if(pView->isSelectionEmpty())
@@ -5822,6 +5969,7 @@ Defun1(insertColsAfter)
 {
 	CHECK_FRAME;
 	ABIWORD_VIEW;
+	UT_return_val_if_fail(pView, false);
 	PT_DocPosition insPoint;
 	PT_DocPosition insAnchor;
 	if(pView->isSelectionEmpty())
@@ -5847,6 +5995,7 @@ Defun1(insertRowsBefore)
 {
 	CHECK_FRAME;
 	ABIWORD_VIEW;
+	UT_return_val_if_fail(pView, false);
 	PT_DocPosition insPoint;
 	PT_DocPosition insAnchor;
 	if(pView->isSelectionEmpty())
@@ -5871,6 +6020,7 @@ Defun1(insertRowsAfter)
 {
 	CHECK_FRAME;
 	ABIWORD_VIEW;
+	UT_return_val_if_fail(pView, false);
 	PT_DocPosition insPoint;
 	PT_DocPosition insAnchor;
 	if(pView->isSelectionEmpty())
@@ -5894,6 +6044,7 @@ Defun1(insertRowsAfter)
 
 static bool s_doMergeCellsDlg(FV_View * pView)
 {
+	UT_return_val_if_fail(pView, false);
 	XAP_Frame * pFrame = static_cast<XAP_Frame *> ( pView->getParentData());
 	UT_return_val_if_fail(pFrame, false);
 
@@ -5929,6 +6080,7 @@ Defun1(mergeCells)
 
 static bool s_doSplitCellsDlg(FV_View * pView)
 {
+	UT_return_val_if_fail(pView, false);
 	XAP_Frame * pFrame = static_cast<XAP_Frame *> ( pView->getParentData());
 	UT_return_val_if_fail(pFrame, false);
 
@@ -5965,6 +6117,7 @@ Defun1(splitCells)
 
 static bool s_doFormatTableDlg(FV_View * pView)
 {
+	UT_return_val_if_fail(pView, false);
 	XAP_Frame * pFrame = static_cast<XAP_Frame *> ( pView->getParentData());
 	UT_return_val_if_fail(pFrame, false);
 
@@ -6006,6 +6159,7 @@ Defun1(formatTOC)
 {
 	CHECK_FRAME;
 	ABIWORD_VIEW;
+	UT_return_val_if_fail(pView, false);
 	XAP_Frame * pFrame = static_cast<XAP_Frame *> ( pView->getParentData());
 
 	pFrame->raise();
@@ -6034,6 +6188,7 @@ Defun1(deleteCell)
 	CHECK_FRAME;
 	ABIWORD_VIEW;
 
+	UT_return_val_if_fail(pView, false);
 	pView->cmdDeleteCell(pView->getPoint());
 	return true;
 }
@@ -6044,6 +6199,7 @@ Defun1(deleteColumns)
 	CHECK_FRAME;
 	ABIWORD_VIEW;
 
+	UT_return_val_if_fail(pView, false);
 	pView->cmdDeleteCol(pView->getPoint());
 	return true;
 }
@@ -6053,6 +6209,7 @@ Defun1(deleteRows)
 {
 	CHECK_FRAME;
 	ABIWORD_VIEW;
+	UT_return_val_if_fail(pView, false);
 	PT_DocPosition pos = pView->getPoint();
 	if(pos > pView->getSelectionAnchor())
 	{
@@ -6066,6 +6223,7 @@ Defun1(deleteTable)
 {
 	CHECK_FRAME;
 	ABIWORD_VIEW;
+	UT_return_val_if_fail(pView, false);
 	PT_DocPosition pos = pView->getPoint();
 	if(!pView->isInTable(pos))
 	{
@@ -6086,6 +6244,8 @@ Defun1(insertPageBreak)
 {
 	CHECK_FRAME;
 	ABIWORD_VIEW;
+
+	UT_return_val_if_fail(pView, false);
 
 	UT_UCSChar c = UCS_FF;
 //
@@ -6119,6 +6279,7 @@ Defun1(insertSpace)
 {
 	CHECK_FRAME;
 	ABIWORD_VIEW;
+	UT_return_val_if_fail(pView, false);
 	UT_UCSChar c = UCS_SPACE;
 	pView->cmdCharInsert(&c,1);
 	return true;
@@ -6128,6 +6289,7 @@ Defun1(insertNBSpace)
 {
 	CHECK_FRAME;
 	ABIWORD_VIEW;
+	UT_return_val_if_fail(pView, false);
 	UT_UCSChar c = UCS_NBSP;			// decimal 160 is NBS
 	pView->cmdCharInsert(&c,1);
 	return true;
@@ -6138,6 +6300,7 @@ Defun1(insertNBZWSpace)
 {
 	CHECK_FRAME;
 	ABIWORD_VIEW;
+	UT_return_val_if_fail(pView, false);
 	UT_UCSChar c = 0xFEFF;
 	pView->cmdCharInsert(&c,1);
 	return true;
@@ -6148,6 +6311,7 @@ Defun1(insertZWJoiner)
 {
 	CHECK_FRAME;
 	ABIWORD_VIEW;
+	UT_return_val_if_fail(pView, false);
 	UT_UCSChar c = 0x200D;
 	pView->cmdCharInsert(&c,1);
 	return true;
@@ -6661,6 +6825,7 @@ Defun1(cut)
 {
 	CHECK_FRAME;
 	ABIWORD_VIEW;
+	UT_return_val_if_fail(pView, false);
 	pView->cmdCut();
 
 	return true;
@@ -6670,6 +6835,7 @@ Defun1(copy)
 {
 	CHECK_FRAME;
 	ABIWORD_VIEW;
+	UT_return_val_if_fail(pView, false);
 	pView->cmdCopy();
 
 	return true;
@@ -6692,6 +6858,7 @@ Defun1(paste)
 //
 // This code sets things up to handle the warp right in an idle loop.
 //
+	UT_return_val_if_fail(pView, false);
 	int inMode = UT_WorkerFactory::IDLE | UT_WorkerFactory::TIMER;
 	UT_WorkerFactory::ConstructMode outMode = UT_WorkerFactory::NONE;
 	GR_Graphics * pG = pView->getGraphics();
@@ -6718,6 +6885,7 @@ Defun(pasteSelection)
 	CHECK_FRAME;
 // this is intended for the X11 middle mouse thing.
 	ABIWORD_VIEW;
+	UT_return_val_if_fail(pView, false);
 	pView->cmdPasteSelectionAt(pCallData->m_xPos, pCallData->m_yPos);
 
 	return true;
@@ -6727,6 +6895,7 @@ Defun1(pasteSpecial)
 {
 	CHECK_FRAME;
 	ABIWORD_VIEW;
+	UT_return_val_if_fail(pView, false);
 	pView->cmdPaste(false);
 
 	return true;
@@ -6734,6 +6903,7 @@ Defun1(pasteSpecial)
 
 static bool checkViewModeIsPrint(FV_View * pView)
 {
+	UT_return_val_if_fail(pView, false);
 	if(pView->getViewMode() != VIEW_PRINT)
 	{
 		XAP_Frame * pFrame = static_cast<XAP_Frame *> (pView->getParentData());
@@ -6779,6 +6949,7 @@ Defun1(editFooter)
 {
 	CHECK_FRAME;
 	ABIWORD_VIEW;
+	UT_return_val_if_fail(pView, false);
 	if(checkViewModeIsPrint(pView))
 	{
 		pView->cmdEditFooter();
@@ -6790,6 +6961,7 @@ Defun1(removeHeader)
 {
 	CHECK_FRAME;
 	ABIWORD_VIEW;
+	UT_return_val_if_fail(pView, false);
 	if(checkViewModeIsPrint(pView))
 	{
 		pView->cmdRemoveHdrFtr(true);
@@ -6801,6 +6973,7 @@ Defun1(removeFooter)
 {
 	CHECK_FRAME;
 	ABIWORD_VIEW;
+	UT_return_val_if_fail(pView, false);
 	if(checkViewModeIsPrint(pView))
 	{
 		pView->cmdRemoveHdrFtr(false);
@@ -6812,6 +6985,8 @@ Defun1(editHeader)
 {
 	CHECK_FRAME;
 	ABIWORD_VIEW;
+
+	UT_return_val_if_fail(pView, false);
 	if(checkViewModeIsPrint(pView))
 	{
 		pView->cmdEditHeader();
@@ -6823,6 +6998,7 @@ Defun1(editHeader)
 
 static bool s_doGotoDlg(FV_View * pView, XAP_Dialog_Id id)
 {
+	UT_return_val_if_fail(pView, false);
 	XAP_Frame * pFrame = static_cast<XAP_Frame *> ( pView->getParentData());
 	UT_return_val_if_fail(pFrame, false);
 
@@ -6860,6 +7036,7 @@ Defun1(go)
 
 static bool s_doSpellDlg(FV_View * pView, XAP_Dialog_Id id)
 {
+   UT_return_val_if_fail(pView,false);
    XAP_Frame * pFrame = static_cast<XAP_Frame *> ( pView->getParentData());
    UT_return_val_if_fail(pFrame, false);
 
@@ -6899,6 +7076,7 @@ Defun1(dlgSpell)
 
 static bool s_doFindOrFindReplaceDlg(FV_View * pView, XAP_Dialog_Id id)
 {
+	UT_return_val_if_fail(pView,false);
 	XAP_Frame * pFrame = static_cast<XAP_Frame *> ( pView->getParentData());
 	UT_return_val_if_fail(pFrame, false);
 
@@ -6960,6 +7138,7 @@ Defun1(findAgain)
 	CHECK_FRAME;
 	ABIWORD_VIEW;
 
+	UT_return_val_if_fail(pView, false);
 	return pView->findAgain();
 }
 
@@ -6976,6 +7155,7 @@ Defun1(replace)
 
 static bool s_doLangDlg(FV_View * pView)
 {
+	UT_return_val_if_fail(pView,false);
 	XAP_Frame * pFrame = static_cast<XAP_Frame *> ( pView->getParentData());
 	UT_return_val_if_fail(pFrame, false);
 
@@ -7064,6 +7244,7 @@ static bool s_doLangDlg(FV_View * pView)
 
 static bool s_doFontDlg(FV_View * pView)
 {
+	UT_return_val_if_fail(pView,false);
 	XAP_Frame * pFrame = static_cast<XAP_Frame *> ( pView->getParentData());
 	UT_return_val_if_fail(pFrame, false);
 
@@ -7357,7 +7538,7 @@ s_TabSaveCallBack (AP_Dialog_Tab * pDlg, FV_View * pView,
 bool s_doTabDlg(FV_View * pView)
 {
 
-
+	UT_return_val_if_fail(pView, false);
 	XAP_Frame * pFrame = static_cast<XAP_Frame *>(pView->getParentData());
 	UT_return_val_if_fail(pFrame, false);
 
@@ -7402,6 +7583,7 @@ bool s_doTabDlg(FV_View * pView)
 
 static bool s_doParagraphDlg(FV_View * pView)
 {
+	UT_return_val_if_fail(pView, false);
 	XAP_Frame * pFrame = static_cast<XAP_Frame *> ( pView->getParentData());
 	UT_return_val_if_fail(pFrame, false);
 
@@ -7491,6 +7673,7 @@ UT_return_val_if_fail(pDialog, false);
 static bool s_doOptionsDlg(FV_View * pView, int which = -1)
 {
 #ifndef XP_TARGET_COCOA
+	UT_return_val_if_fail(pView, false);
 	XAP_Frame * pFrame = static_cast<XAP_Frame *> ( pView->getParentData());
 	UT_return_val_if_fail(pFrame, false);
 
@@ -7535,6 +7718,7 @@ Defun(language)
 {
 	CHECK_FRAME;
 	ABIWORD_VIEW;
+	UT_return_val_if_fail(pView, false);
 	const XML_Char * properties[] = { "lang", NULL, 0};
 
 	char lang[10];
@@ -7557,6 +7741,7 @@ Defun1(dlgFont)
 	CHECK_FRAME;
 	ABIWORD_VIEW;
 
+	UT_return_val_if_fail(pView, false);
 	if (pView->getDocument()->areStylesLocked())
 		return true;
 
@@ -7568,6 +7753,7 @@ Defun(fontFamily)
 	CHECK_FRAME;
 	ABIWORD_VIEW;
 	
+	UT_return_val_if_fail(pView, false);
 	const XML_Char * properties[] = { "font-family", NULL, 0};
 	UT_UTF8String utf8(pCallData->m_pData, pCallData->m_dataLength);
 	properties[1] = reinterpret_cast<const XML_Char *>(utf8.utf8_str());
@@ -7580,7 +7766,8 @@ Defun(fontSize)
 {
 	CHECK_FRAME;
 	ABIWORD_VIEW;
-	
+
+	UT_return_val_if_fail(pView, false);	
 	const XML_Char * properties[] = { "font-size", NULL, 0};
 	UT_UTF8String utf8(pCallData->m_pData, pCallData->m_dataLength);	
 	const XML_Char * sz = reinterpret_cast<const XML_Char *>(utf8.utf8_str());
@@ -7598,6 +7785,7 @@ Defun(fontSize)
 
 static bool _fontSizeChange(FV_View * pView, bool bIncrease)
 {
+	UT_return_val_if_fail(pView, false);
 	const XML_Char ** span_props = NULL;
 	const XML_Char * properties[] = { "font-size", NULL, 0};
 	
@@ -7679,6 +7867,7 @@ Defun(formatPainter)
   // prereqs: !pView->isSelectionEmpty() && XAP_App::getApp()->canPasteFromClipboard()
   // taken care of in ap_Toolbar_Functions.cpp::ap_ToolbarGetState_Clipboard
 
+  UT_return_val_if_fail(pView, false);
   const XML_Char ** block_properties = 0;
   const XML_Char ** span_properties  = 0;
 
@@ -7740,6 +7929,7 @@ static bool _toggleSpanOrBlock(FV_View * pView,
 				  bool bMultiple,
 				  bool isSpan)
 {
+	UT_return_val_if_fail(pView, false);
 	if (pView->getDocument()->areStylesLocked())
 		return true;
 
@@ -7933,6 +8123,7 @@ bool s_doPrint(FV_View * pView, bool bTryToSuppressDialog, bool bPrintDirectly);
 #else
 static bool s_doPrint(FV_View * pView, bool bTryToSuppressDialog,bool bPrintDirectly)
 {
+	UT_return_val_if_fail (pView, false);
 	XAP_Frame * pFrame = static_cast<XAP_Frame *> ( pView->getParentData());
 	UT_return_val_if_fail(pFrame, false);
 
@@ -8041,6 +8232,7 @@ UT_return_val_if_fail(pDialog, false);
 
 static bool s_doPrintPreview(FV_View * pView)
 {
+	UT_return_val_if_fail(pView, false);
 	XAP_Frame * pFrame = static_cast<XAP_Frame *> ( pView->getParentData());
 	UT_return_val_if_fail(pFrame, false);
 
@@ -8109,6 +8301,7 @@ UT_return_val_if_fail(pDialog, false);
 
 static bool s_doZoomDlg(FV_View * pView)
 {
+	UT_return_val_if_fail(pView, false);
 	UT_String tmp;
 	XAP_Frame * pFrame = static_cast<XAP_Frame *> ( pView->getParentData());
 	UT_return_val_if_fail(pFrame, false);
@@ -8164,6 +8357,7 @@ Defun1(zoom100)
 {
 	CHECK_FRAME;
 	ABIWORD_VIEW;
+	UT_return_val_if_fail(pView, false);
 	XAP_Frame * pFrame = static_cast<XAP_Frame *> ( pView->getParentData());
 	UT_return_val_if_fail(pFrame, false);
 	XAP_App * pApp = pFrame->getApp();
@@ -8187,6 +8381,7 @@ Defun1(zoom200)
 {
 	CHECK_FRAME;
 	ABIWORD_VIEW;
+	UT_return_val_if_fail(pView, false);
   XAP_Frame * pFrame = static_cast<XAP_Frame *> ( pView->getParentData());
   UT_return_val_if_fail(pFrame, false);
 	XAP_App * pApp = pFrame->getApp();
@@ -8211,6 +8406,7 @@ Defun1(zoom50)
 {
 	CHECK_FRAME;
 	ABIWORD_VIEW;
+	UT_return_val_if_fail(pView, false);
   XAP_Frame * pFrame = static_cast<XAP_Frame *> ( pView->getParentData());
   UT_return_val_if_fail(pFrame, false);
 	XAP_App * pApp = pFrame->getApp();
@@ -8234,6 +8430,7 @@ Defun1(zoom75)
 {
 	CHECK_FRAME;
 	ABIWORD_VIEW;
+	UT_return_val_if_fail(pView, false);
   XAP_Frame * pFrame = static_cast<XAP_Frame *> ( pView->getParentData());
   UT_return_val_if_fail(pFrame, false);
 	XAP_App * pApp = pFrame->getApp();
@@ -8257,6 +8454,7 @@ Defun1(zoomWidth)
 {
 	CHECK_FRAME;
 	ABIWORD_VIEW;
+	UT_return_val_if_fail(pView, false);
   XAP_Frame * pFrame = static_cast<XAP_Frame *> ( pView->getParentData());
   UT_return_val_if_fail(pFrame, false);
 	XAP_App * pApp = pFrame->getApp();
@@ -8282,6 +8480,7 @@ Defun1(zoomWhole)
 {
 	CHECK_FRAME;
 	ABIWORD_VIEW;
+	UT_return_val_if_fail(pView, false);
 	XAP_Frame * pFrame = static_cast<XAP_Frame *> ( pView->getParentData());
 	UT_return_val_if_fail(pFrame, false);
 
@@ -8308,6 +8507,7 @@ Defun1(zoomIn)
 {
 	CHECK_FRAME;
 	ABIWORD_VIEW;
+	UT_return_val_if_fail(pView, false);
 	XAP_Frame * pFrame = static_cast<XAP_Frame *> ( pView->getParentData());
 	UT_return_val_if_fail(pFrame, false);
 	
@@ -8332,6 +8532,7 @@ Defun1(zoomOut)
 {
 	CHECK_FRAME;
 	ABIWORD_VIEW;
+	UT_return_val_if_fail(pView, false);
 	XAP_Frame * pFrame = static_cast<XAP_Frame *> ( pView->getParentData());
 	UT_return_val_if_fail(pFrame, false);
 	
@@ -8355,6 +8556,7 @@ UT_return_val_if_fail(pPrefsScheme, false);	pPrefsScheme->setValue(static_cast<c
 
 static bool s_doBreakDlg(FV_View * pView)
 {
+	UT_return_val_if_fail(pView, false);
 	XAP_Frame * pFrame = static_cast<XAP_Frame *> ( pView->getParentData());
 	UT_return_val_if_fail(pFrame, false);
 
@@ -8412,6 +8614,7 @@ static bool s_doBreakDlg(FV_View * pView)
 
 static bool s_doPageSetupDlg (FV_View * pView)
 {
+	UT_return_val_if_fail(pView, false);
 	XAP_Frame * pFrame = static_cast<XAP_Frame *> ( pView->getParentData());
 	UT_return_val_if_fail(pFrame, false);
 
@@ -8836,6 +9039,7 @@ static	FV_View_Insert_symbol_listener symbol_Listener;
 
 static bool s_InsertSymbolDlg(FV_View * pView, XAP_Dialog_Id id  )
 {
+	UT_return_val_if_fail(pView, false);
 	XAP_Frame * pFrame = static_cast<XAP_Frame *> ( pView->getParentData());
 	UT_return_val_if_fail(pFrame, false);
 
@@ -8903,6 +9107,7 @@ Defun1(pageSetup)
 Defun1(dlgPlugins)
 {
 	CHECK_FRAME;
+	UT_return_val_if_fail(pAV_View, false);
 	XAP_Frame * pFrame = static_cast<XAP_Frame *> (pAV_View->getParentData());
 	UT_return_val_if_fail(pFrame, false);
 
@@ -8971,6 +9176,7 @@ static bool
 _viewTBx(AV_View* pAV_View, int num) 
 {
 	CHECK_FRAME;
+	UT_return_val_if_fail(pAV_View, false);
 	XAP_Frame * pFrame = static_cast<XAP_Frame *> ( pAV_View->getParentData());
 	UT_return_val_if_fail(pFrame, false);
 
@@ -9032,6 +9238,7 @@ Defun1(viewStd)
 #if !XP_SIMPLE_TOOLBAR
 	CHECK_FRAME;
 // TODO: Share this function with viewFormat & viewExtra
+	UT_return_val_if_fail(pAV_View, false);
 	XAP_Frame * pFrame = static_cast<XAP_Frame *> ( pAV_View->getParentData());
 	UT_return_val_if_fail(pFrame, false);
 
@@ -9066,6 +9273,7 @@ Defun1(viewFormat)
 
 #if !XP_SIMPLE_TOOLBAR
 	CHECK_FRAME;
+	UT_return_val_if_fail(pAV_View, false);
 	XAP_Frame * pFrame = static_cast<XAP_Frame *> ( pAV_View->getParentData());
 	UT_return_val_if_fail(pFrame, false);
 
@@ -9100,6 +9308,7 @@ Defun1(viewTable)
 {
 #if !XP_SIMPLE_TOOLBAR
 	CHECK_FRAME;
+	UT_return_val_if_fail(pAV_View, false);
 	XAP_Frame * pFrame = static_cast<XAP_Frame *> ( pAV_View->getParentData());
 	UT_return_val_if_fail(pFrame, false);
 
@@ -9132,6 +9341,7 @@ Defun1(viewExtra)
 {
 #if !XP_SIMPLE_TOOLBAR
 	CHECK_FRAME;
+	UT_return_val_if_fail(pAV_View, false);
 	XAP_Frame * pFrame = static_cast<XAP_Frame *> ( pAV_View->getParentData());
 	UT_return_val_if_fail(pFrame, false);
 
@@ -9164,6 +9374,7 @@ UT_return_val_if_fail(pScheme, false);
 Defun(lockToolbarLayout)
 {
 	CHECK_FRAME;
+	UT_return_val_if_fail(pAV_View, false);
 	XAP_Frame * pFrame = static_cast<XAP_Frame *>(pAV_View->getParentData());
 	UT_return_val_if_fail(pFrame, false);
 
@@ -9189,6 +9400,7 @@ UT_return_val_if_fail(pScheme, false);
 Defun(defaultToolbarLayout)
 {
 	CHECK_FRAME;
+	UT_return_val_if_fail(pAV_View, false);
 	XAP_Frame * pFrame = static_cast<XAP_Frame *>(pAV_View->getParentData());
 	UT_return_val_if_fail(pFrame, false);
 
@@ -9216,6 +9428,7 @@ UT_return_val_if_fail(pFrameData, false);
 Defun(viewNormalLayout)
 {
 	CHECK_FRAME;
+	UT_return_val_if_fail(pAV_View, false);
 	XAP_Frame * pFrame = static_cast<XAP_Frame *> ( pAV_View->getParentData());
 	UT_return_val_if_fail(pFrame, false);
 	FV_View * pView = static_cast<FV_View *>(pAV_View);
@@ -9254,6 +9467,7 @@ UT_return_val_if_fail(pScheme, false);
 Defun(viewWebLayout)
 {
 	CHECK_FRAME;
+	UT_return_val_if_fail(pAV_View, false);
 	XAP_Frame * pFrame = static_cast<XAP_Frame *> ( pAV_View->getParentData());
 	UT_return_val_if_fail(pFrame, false);
 
@@ -9286,6 +9500,7 @@ UT_return_val_if_fail(pScheme, false);
 Defun(viewPrintLayout)
 {
 	CHECK_FRAME;
+	UT_return_val_if_fail(pAV_View, false);
 	XAP_Frame * pFrame = static_cast<XAP_Frame *> ( pAV_View->getParentData());
 	UT_return_val_if_fail(pFrame, false);
 
@@ -9319,6 +9534,7 @@ UT_return_val_if_fail(pScheme, false);
 Defun1(viewStatus)
 {
 	CHECK_FRAME;
+	UT_return_val_if_fail(pAV_View, false);
 	XAP_Frame * pFrame = static_cast<XAP_Frame *> ( pAV_View->getParentData());
 	UT_return_val_if_fail(pFrame, false);
 
@@ -9348,6 +9564,7 @@ UT_return_val_if_fail(pScheme, false);
 Defun1(viewRuler)
 {
 	CHECK_FRAME;
+	UT_return_val_if_fail(pAV_View, false);
 	XAP_Frame * pFrame = static_cast<XAP_Frame *> ( pAV_View->getParentData());
 	UT_return_val_if_fail(pFrame, false);
 
@@ -9377,6 +9594,7 @@ UT_return_val_if_fail(pScheme, false);	pScheme->setValueBool(static_cast<const X
 Defun1(viewFullScreen)
 {
 	CHECK_FRAME;
+	UT_return_val_if_fail(pAV_View, false);
 	XAP_Frame * pFrame = static_cast<XAP_Frame *> ( pAV_View->getParentData());
 	AP_FrameData *pFrameData = static_cast<AP_FrameData *>(pFrame->getFrameData());
 	
@@ -9429,6 +9647,7 @@ Defun1(viewFullScreen)
 Defun1(viewPara)
 {
 	CHECK_FRAME;
+	UT_return_val_if_fail(pAV_View, false);
 	XAP_Frame * pFrame = static_cast<XAP_Frame *> ( pAV_View->getParentData());
 	UT_return_val_if_fail(pFrame, false);
 
@@ -9455,6 +9674,7 @@ UT_return_val_if_fail(pScheme, false);
 Defun1(viewHeadFoot)
 {
 	CHECK_FRAME;
+	UT_return_val_if_fail(pAV_View, false);
 	XAP_Frame * pFrame = static_cast<XAP_Frame *> ( pAV_View->getParentData());
 	UT_return_val_if_fail(pFrame, false);
 
@@ -9467,6 +9687,7 @@ Defun1(viewLockStyles)
 {
 	CHECK_FRAME;
 	ABIWORD_VIEW;
+	UT_return_val_if_fail(pView, false);
 	pView->getDocument()->lockStyles( !pView->getDocument()->areStylesLocked() );
 	pView->notifyListeners(AV_CHG_ALL);
  	return true;
@@ -9477,6 +9698,7 @@ Defun(zoom)
 	CHECK_FRAME;
 	ABIWORD_VIEW;
 
+	UT_return_val_if_fail(pAV_View, false);
 	XAP_Frame * pFrame = static_cast<XAP_Frame *> ( pAV_View->getParentData());
 	UT_return_val_if_fail(pFrame, false);
 	XAP_App * pApp = pFrame->getApp();
@@ -9551,6 +9773,7 @@ Defun1(dlgZoom)
 
 static bool s_doInsertDateTime(FV_View * pView)
 {
+	UT_return_val_if_fail(pView, false);
 	XAP_Frame * pFrame = static_cast<XAP_Frame *> ( pView->getParentData());
 	UT_return_val_if_fail(pFrame, false);
 
@@ -9596,6 +9819,7 @@ Defun1(insBreak)
 {
 	CHECK_FRAME;
 	ABIWORD_VIEW;
+	UT_return_val_if_fail(pView, false);
 	if(pView->isInTable(pView->getPoint()-1) && pView->isInTable())
 	{
 		XAP_Frame * pFrame = static_cast<XAP_Frame *> (pAV_View->getParentData());
@@ -9609,6 +9833,8 @@ Defun1(insBreak)
 
 static bool s_doInsertPageNumbers(FV_View * pView)
 {
+	UT_return_val_if_fail(pView,false);
+
 	const XML_Char * right_attributes [] = {
 	  "text-align", "right", NULL, NULL
 	};
@@ -9664,6 +9890,7 @@ Defun1(insPageNo)
 
 static bool s_doField(FV_View * pView)
 {
+	UT_return_val_if_fail(pView, false);
 	XAP_Frame * pFrame = static_cast<XAP_Frame *> ( pView->getParentData());
 	UT_return_val_if_fail(pFrame, false);
 
@@ -9709,6 +9936,7 @@ Defun1(insMailMerge)
 	CHECK_FRAME;
 	ABIWORD_VIEW;
 
+	UT_return_val_if_fail(pView, false);
 	XAP_Frame * pFrame = static_cast<XAP_Frame *> ( pView->getParentData());
 	UT_return_val_if_fail(pFrame, false);
 
@@ -9737,6 +9965,7 @@ Defun1(insFile)
 	CHECK_FRAME;
 	ABIWORD_VIEW;
 
+	UT_return_val_if_fail(pAV_View, false);
 	XAP_Frame * pFrame = static_cast<XAP_Frame *>(pAV_View->getParentData());
 	UT_return_val_if_fail(pFrame, false);
 	XAP_App * pApp = pFrame->getApp();
@@ -9797,6 +10026,7 @@ Defun1(insTextBox)
 	CHECK_FRAME;
 
 	ABIWORD_VIEW;
+	UT_return_val_if_fail(pView,false);
 	static_cast<FV_View *>(pView)->getFrameEdit()->setMode(FV_FrameEdit_WAIT_FOR_FIRST_CLICK_INSERT);
 	static_cast<FV_View *>(pView)->getGraphics()->setCursor(GR_Graphics::GR_CURSOR_CROSSHAIR);
 	return true;
@@ -9806,7 +10036,7 @@ Defun1(insFootnote)
 {
 	CHECK_FRAME;
 	ABIWORD_VIEW;
-
+	UT_return_val_if_fail(pView, false);
 	return pView->insertFootnote(true);
 }
 
@@ -9815,7 +10045,7 @@ Defun1(insTOC)
 {
 	CHECK_FRAME;
 	ABIWORD_VIEW;
-
+	UT_return_val_if_fail(pView, false);
 	pView->cmdInsertTOC();
 	return true;
 }
@@ -9825,7 +10055,7 @@ Defun1(insEndnote)
 {
 	CHECK_FRAME;
 	ABIWORD_VIEW;
-
+	UT_return_val_if_fail(pView, false);
 	return pView->insertFootnote(false);
 	return true;
 }
@@ -9839,6 +10069,7 @@ Defun1(dlgParagraph)
 	CHECK_FRAME;
 	ABIWORD_VIEW;
 
+	UT_return_val_if_fail(pView, false);
 	if (pView->getDocument()->areStylesLocked())
 		return true;
 
@@ -9847,6 +10078,7 @@ Defun1(dlgParagraph)
 
 static bool s_doBullets(FV_View *pView)
 {
+	UT_return_val_if_fail(pView, false);
 	XAP_Frame * pFrame = static_cast<XAP_Frame *> ( pView->getParentData());
 	UT_return_val_if_fail(pFrame, false);
 
@@ -9876,6 +10108,7 @@ Defun1(dlgBullets)
   // Dialog for Bullets and Lists
   //
 #if defined(__QNXTO__) || defined(TARGET_OS_MAC)
+	UT_return_val_if_fail(pAV_View, false);
 	XAP_Frame * pFrame = static_cast<XAP_Frame *> ( pAV_View->getParentData());
 	UT_return_val_if_fail(pFrame, false);
 
@@ -9890,6 +10123,7 @@ Defun1(dlgBullets)
 Defun1(dlgBorders)
 {
 	CHECK_FRAME;
+	UT_return_val_if_fail(pAV_View, false);
 	XAP_Frame * pFrame = static_cast<XAP_Frame *> ( pAV_View->getParentData());
 	UT_return_val_if_fail(pFrame, false);
 
@@ -9902,6 +10136,7 @@ Defun(setPosImage)
 	CHECK_FRAME;
 	ABIWORD_VIEW;
 
+	UT_return_val_if_fail(pView, false);
 	PT_DocPosition pos = pView->getDocPositionFromLastXY();
 
 	fl_BlockLayout * pBlock = pView->getBlockAtPosition(pos);
@@ -10030,6 +10265,7 @@ Defun (dlgFmtPosImage)
 	CHECK_FRAME;
 	ABIWORD_VIEW;
 
+	UT_return_val_if_fail(pView, false);
 	XAP_Frame * pFrame = static_cast<XAP_Frame *>(pView->getParentData());
 	UT_return_val_if_fail(pFrame, false);
 
@@ -10234,6 +10470,7 @@ Defun(dlgFmtImage)
 {
 	CHECK_FRAME;
 	ABIWORD_VIEW;
+	UT_return_val_if_fail(pView, false);
 	if(pView->getFrameEdit()->isActive())
 	{
 	  fl_FrameLayout * pFL = pView->getFrameLayout();
@@ -10707,6 +10944,7 @@ Defun(dlgColumns)
 	CHECK_FRAME;
 	ABIWORD_VIEW;
 
+	UT_return_val_if_fail(pView, false);
 	XAP_Frame * pFrame = static_cast<XAP_Frame *>(pView->getParentData());
 	UT_return_val_if_fail(pFrame, false);
 
@@ -10868,6 +11106,7 @@ Defun(style)
 	CHECK_FRAME;
 	ABIWORD_VIEW;
 	
+	UT_return_val_if_fail(pView, false);
 	UT_UTF8String utf8(pCallData->m_pData, pCallData->m_dataLength);
 	const XML_Char * style = reinterpret_cast<const XML_Char *>(utf8.utf8_str());
 	pView->setStyle(style,false);
@@ -10878,6 +11117,7 @@ Defun(style)
 
 static bool s_doStylesDlg(FV_View * pView)
 {
+	UT_return_val_if_fail(pView, false);
 	XAP_Frame * pFrame = static_cast<XAP_Frame *>(pView->getParentData());
 	UT_return_val_if_fail(pFrame, false);
 
@@ -10936,6 +11176,7 @@ Defun1(formatFootnotes)
 {
 	CHECK_FRAME;
 	ABIWORD_VIEW;
+	UT_return_val_if_fail(pAV_View, false);
 	XAP_Frame * pFrame = static_cast<XAP_Frame *> ( pAV_View->getParentData());
 	UT_return_val_if_fail(pFrame, false);
 	pFrame->raise();
@@ -10968,6 +11209,7 @@ Defun1(formatFootnotes)
 Defun1(dlgStyle)
 {
 	CHECK_FRAME;
+	UT_return_val_if_fail(pAV_View, false);
 	XAP_Frame * pFrame = static_cast<XAP_Frame *> ( pAV_View->getParentData());
 	UT_return_val_if_fail(pFrame, false);
 	ABIWORD_VIEW;
@@ -10979,6 +11221,7 @@ Defun1(dlgStylist)
 {
 	CHECK_FRAME;
 
+	UT_return_val_if_fail(pAV_View, false);
 	XAP_Frame * pFrame = static_cast<XAP_Frame *> (pAV_View->getParentData());
 	UT_return_val_if_fail(pFrame, false);
 
@@ -11020,6 +11263,7 @@ Defun0(noop)
 
 static bool s_doWordCountDlg(FV_View * pView)
 {
+	UT_return_val_if_fail(pView,false);
 	XAP_Frame * pFrame = static_cast<XAP_Frame *> ( pView->getParentData());
 	UT_return_val_if_fail(pFrame, false);
 
@@ -11058,6 +11302,7 @@ Defun1(dlgWordCount)
 
 static bool s_doInsertTableDlg(FV_View * pView)
 {
+	UT_return_val_if_fail(pView, false);
 	XAP_Frame * pFrame = static_cast<XAP_Frame *> ( pView->getParentData());
 	UT_return_val_if_fail(pFrame, false);
 
@@ -11138,6 +11383,7 @@ Defun1(textToTable)
 {
 	CHECK_FRAME;
 	ABIWORD_VIEW;
+	UT_return_val_if_fail(pView,false);
 	pView->cmdTextToTable(false);
 	return true;
 }
@@ -11146,6 +11392,7 @@ Defun1(textToTableNoSpaces)
 {
 	CHECK_FRAME;
 	ABIWORD_VIEW;
+	UT_return_val_if_fail(pView,false);
 	pView->cmdTextToTable(true);
 	return true;
 }
@@ -11156,6 +11403,7 @@ Defun1(insertSumRows)
 {
 	CHECK_FRAME;
 	ABIWORD_VIEW;
+	UT_return_val_if_fail(pView,false);
 	const XML_Char * atts[3]={"param","",NULL};
 	pView->cmdInsertField("sum_rows",atts,NULL);
 	return true;
@@ -11165,6 +11413,7 @@ Defun1(insertSumCols)
 {
 	CHECK_FRAME;
 	ABIWORD_VIEW;
+	UT_return_val_if_fail(pView,false);
 	const XML_Char * atts[3]={"param","",NULL};
 	pView->cmdInsertField("sum_cols",atts,NULL);
 	return true;
@@ -11244,6 +11493,7 @@ void s_getPageMargins(FV_View * pView,
 					  double &page_margin_left,
 					  double &page_margin_right)
 {
+  UT_return_if_fail(pView);
   // get current char properties from pView
   const XML_Char * prop = NULL;
   const XML_Char ** props_in = NULL;
@@ -11289,6 +11539,7 @@ Defun1(toggleIndent)
 {
 	CHECK_FRAME;
 	ABIWORD_VIEW;
+	UT_return_val_if_fail(pView,false);
   bool doLists = true;
   double page_size = pView->getPageSize().Width (DIM_IN);
 
@@ -11314,6 +11565,7 @@ Defun1(toggleUnIndent)
 {
 	CHECK_FRAME;
 	ABIWORD_VIEW;
+	UT_return_val_if_fail(pView,false);
   bool ret;
   double page_size = pView->getPageSize().Width (DIM_IN);
   bool doLists = true;
@@ -11377,6 +11629,8 @@ Defun1(toggleDomDirection)
 	CHECK_FRAME;
 	ABIWORD_VIEW;
 
+	UT_return_val_if_fail(pView,false);
+
 	const XML_Char * properties[] = { "dom-dir", NULL, "text-align", NULL, 0};
 	const XML_Char drtl[]	= "rtl";
 	const XML_Char dltr[]	= "ltr";
@@ -11431,6 +11685,8 @@ Defun1(toggleDomDirectionSect)
 	CHECK_FRAME;
 	ABIWORD_VIEW;
 
+	UT_return_val_if_fail(pView,false);
+
 	const XML_Char * properties[] = { "dom-dir", NULL, 0};
 	const XML_Char drtl[]	= "rtl";
 	const XML_Char dltr[]	= "ltr";
@@ -11460,6 +11716,7 @@ Defun1(toggleDomDirectionDoc)
 	CHECK_FRAME;
 	ABIWORD_VIEW;
 
+	UT_return_val_if_fail(pView,false);
 	PD_Document * pDoc = pView->getDocument();
 	UT_return_val_if_fail(pDoc,false);
 
@@ -11491,6 +11748,7 @@ Defun1(doBullets)
 {
 	CHECK_FRAME;
 	ABIWORD_VIEW;
+	UT_return_val_if_fail(pView,false);
 	pView->processSelectedBlocks(BULLETED_LIST);
 	return true;
 }
@@ -11499,6 +11757,7 @@ Defun1(doNumbers)
 {
 	CHECK_FRAME;
 	ABIWORD_VIEW;
+	UT_return_val_if_fail(pView,false);
 	pView->processSelectedBlocks(NUMBERED_LIST);
 	return true;
 }
@@ -11508,6 +11767,7 @@ Defun(colorForeTB)
 	CHECK_FRAME;
 	ABIWORD_VIEW;
 	
+	UT_return_val_if_fail(pView,false);
 	const XML_Char * properties[] = { "color", NULL, 0};
 	UT_UTF8String utf8(pCallData->m_pData, pCallData->m_dataLength);
 	properties[1] = reinterpret_cast<const XML_Char *>(utf8.utf8_str());
@@ -11520,7 +11780,8 @@ Defun(colorBackTB)
 {
 	CHECK_FRAME;
 	ABIWORD_VIEW;
-	
+
+	UT_return_val_if_fail(pView,false);	
 	const XML_Char * properties[] = { "bgcolor", NULL, 0};
 	UT_UTF8String utf8(pCallData->m_pData, pCallData->m_dataLength);
 	properties[1] = reinterpret_cast<const XML_Char *>(utf8.utf8_str());
@@ -11536,6 +11797,7 @@ Defun1(togglePlain)
 	CHECK_FRAME;
 	ABIWORD_VIEW;
 
+	UT_return_val_if_fail(pView,false);
 	if (pView->getDocument()->areStylesLocked())
 		return true;
 
@@ -11549,6 +11811,7 @@ Defun1(alignLeft)
 	CHECK_FRAME;
 	ABIWORD_VIEW;
 
+	UT_return_val_if_fail(pView,false);
 	if (pView->getDocument()->areStylesLocked())
 		return true;
 
@@ -11562,6 +11825,7 @@ Defun1(alignCenter)
 	CHECK_FRAME;
 	ABIWORD_VIEW;
 
+	UT_return_val_if_fail(pView,false);
 	if (pView->getDocument()->areStylesLocked())
 		return true;
 
@@ -11575,6 +11839,7 @@ Defun1(alignRight)
 	CHECK_FRAME;
 	ABIWORD_VIEW;
 
+	UT_return_val_if_fail(pView,false);
 	if (pView->getDocument()->areStylesLocked())
 		return true;
 
@@ -11588,6 +11853,7 @@ Defun1(alignJustify)
 	CHECK_FRAME;
 	ABIWORD_VIEW;
 
+	UT_return_val_if_fail(pView,false);
 	if (pView->getDocument()->areStylesLocked())
 		return true;
 
@@ -11600,6 +11866,7 @@ Defun1(setStyleHeading1)
 {
 	CHECK_FRAME;
 	ABIWORD_VIEW;
+	UT_return_val_if_fail(pView,false);
 	const XML_Char * style = "Heading 1";
 	pView->setStyle(style,false);
 	pView->notifyListeners(AV_CHG_MOTION | AV_CHG_HDRFTR);
@@ -11611,6 +11878,7 @@ Defun1(setStyleHeading2)
 {
 	CHECK_FRAME;
 	ABIWORD_VIEW;
+	UT_return_val_if_fail(pView,false);
 	const XML_Char * style = "Heading 2";
 	pView->setStyle(style,false);
 	pView->notifyListeners(AV_CHG_MOTION | AV_CHG_HDRFTR);
@@ -11621,6 +11889,7 @@ Defun1(setStyleHeading3)
 {
 	CHECK_FRAME;
 	ABIWORD_VIEW;
+	UT_return_val_if_fail(pView,false);
 	const XML_Char * style = "Heading 3";
 	pView->setStyle(style,false);
 	pView->notifyListeners(AV_CHG_MOTION | AV_CHG_HDRFTR);
@@ -11631,6 +11900,7 @@ Defun1(sectColumns1)
 {
 	CHECK_FRAME;
 	ABIWORD_VIEW;
+	UT_return_val_if_fail(pView,false);
 	if(pView->isHdrFtrEdit())
 		return false;
 
@@ -11643,6 +11913,7 @@ Defun1(sectColumns2)
 {
 	CHECK_FRAME;
 	ABIWORD_VIEW;
+	UT_return_val_if_fail(pView,false);
 	if(pView->isHdrFtrEdit())
 		return false;
 
@@ -11655,6 +11926,7 @@ Defun(sectColumns3)
 {
 	CHECK_FRAME;
 	ABIWORD_VIEW;
+	UT_return_val_if_fail(pView,false);
 	if(pView->isHdrFtrEdit())
 		return false;
 	const XML_Char * properties[] = { "columns", "3", 0};
@@ -11667,6 +11939,7 @@ Defun1(paraBefore0)
 	CHECK_FRAME;
 	ABIWORD_VIEW;
 
+	UT_return_val_if_fail(pView,false);
 	if (pView->getDocument()->areStylesLocked())
 		return true;
 
@@ -11680,6 +11953,7 @@ Defun1(paraBefore12)
 	CHECK_FRAME;
 	ABIWORD_VIEW;
 
+	UT_return_val_if_fail(pView,false);
 	if (pView->getDocument()->areStylesLocked())
 		return true;
 
@@ -11693,6 +11967,7 @@ Defun1(singleSpace)
 	CHECK_FRAME;
 	ABIWORD_VIEW;
 
+	UT_return_val_if_fail(pView,false);
 	if (pView->getDocument()->areStylesLocked())
 		return true;
 
@@ -11706,6 +11981,7 @@ Defun1(middleSpace)
 	CHECK_FRAME;
 	ABIWORD_VIEW;
 
+	UT_return_val_if_fail(pView,false);
 	if (pView->getDocument()->areStylesLocked())
 		return true;
 
@@ -11719,6 +11995,7 @@ Defun1(doubleSpace)
 	CHECK_FRAME;
 	ABIWORD_VIEW;
 
+	UT_return_val_if_fail(pView,false);
 	if (pView->getDocument()->areStylesLocked())
 		return true;
 
@@ -11732,6 +12009,7 @@ Defun1(Test_Dump)
 {
 	CHECK_FRAME;
 //	ABIWORD_VIEW;
+//	UT_return_val_if_fail(pView,false);
 //	pView->Test_Dump();
 	return true;
 }
@@ -11740,6 +12018,7 @@ Defun1(Test_Ftr)
 {
 	CHECK_FRAME;
 	ABIWORD_VIEW;
+	UT_return_val_if_fail(pView,false);
 	pView->insertPageNum(NULL, FL_HDRFTR_FOOTER);
 	return true;
 }
@@ -11750,7 +12029,7 @@ Defun1(setEditVI)
 	CHECK_FRAME;
 	ABIWORD_VIEW;
 	// enter "VI Edit Mode" (only valid when VI keys are loaded)
-
+	UT_return_val_if_fail(pAV_View, false);
 	XAP_Frame * pFrame = static_cast<XAP_Frame *> ( pAV_View->getParentData());
 	UT_return_val_if_fail(pFrame, false);
 
@@ -11765,7 +12044,7 @@ Defun1(setInputVI)
 {
 	CHECK_FRAME;
 // enter "VI Input Mode" (only valid when VI keys are loaded)
-
+	UT_return_val_if_fail(pAV_View, false);
 	XAP_Frame * pFrame = static_cast<XAP_Frame *> ( pAV_View->getParentData());
 	UT_return_val_if_fail(pFrame, false);
 
@@ -11777,7 +12056,7 @@ Defun1(cycleInputMode)
 {
 	CHECK_FRAME;
 // switch to the next input mode { default, emacs, vi, ... }
-
+	UT_return_val_if_fail(pAV_View, false);
 	XAP_Frame * pFrame = static_cast<XAP_Frame *> ( pAV_View->getParentData());
 	UT_return_val_if_fail(pFrame, false);
 	XAP_App * pApp = pFrame->getApp();
@@ -11810,6 +12089,7 @@ UT_return_val_if_fail(pScheme, false);
 Defun1(toggleInsertMode)
 {
 	CHECK_FRAME;
+	UT_return_val_if_fail(pAV_View, false);
 	XAP_Frame * pFrame = static_cast<XAP_Frame *> ( pAV_View->getParentData());
 	UT_return_val_if_fail(pFrame, false);
 	XAP_App * pApp = pFrame->getApp();
@@ -12239,6 +12519,7 @@ private:
 Defun1(mailMerge)
 {
   CHECK_FRAME;
+  UT_return_val_if_fail(pAV_View, false);
   XAP_Frame * pFrame = static_cast<XAP_Frame *> (pAV_View->getParentData());
   UT_return_val_if_fail(pFrame, false);
 
@@ -12299,6 +12580,7 @@ Defun1(mailMerge)
 Defun1(scriptPlay)
 {
 	CHECK_FRAME;
+	UT_return_val_if_fail(pAV_View, false);
 	XAP_Frame * pFrame = static_cast<XAP_Frame *> (pAV_View->getParentData());
 	UT_return_val_if_fail(pFrame, false);
 
@@ -12344,6 +12626,7 @@ Defun1(scriptPlay)
 Defun(executeScript)
 {
 	CHECK_FRAME;
+	UT_return_val_if_fail(pAV_View, false);
 	XAP_Frame* pFrame = static_cast<XAP_Frame *> (pAV_View->getParentData());
 	UT_return_val_if_fail(pFrame, false);
 	UT_DEBUGMSG(("executeScript (trying to execute [%s])\n", pCallData->getScriptName().c_str()));
@@ -12371,8 +12654,9 @@ Defun(executeScript)
 Defun(dlgColorPickerFore)
 {
 	CHECK_FRAME;
+	UT_return_val_if_fail(pAV_View, false);
 	FV_View * pView = static_cast<FV_View *>(pAV_View);
-
+	UT_return_val_if_fail(pView, false);
 	XAP_Frame * pFrame = static_cast<XAP_Frame *>(pView->getParentData());
 	UT_return_val_if_fail(pFrame, false);
 
@@ -12416,6 +12700,7 @@ UT_return_val_if_fail(pDialog, false);//
 Defun(dlgColorPickerBack)
 {
 	CHECK_FRAME;
+	UT_return_val_if_fail(pAV_View, false);
 	FV_View * pView = static_cast<FV_View *>(pAV_View);
 
 	XAP_Frame * pFrame = static_cast<XAP_Frame *>(pView->getParentData());
@@ -12460,6 +12745,7 @@ UT_return_val_if_fail(pDialog, false);//
 Defun(dlgBackground)
 {
 	CHECK_FRAME;
+	UT_return_val_if_fail(pAV_View, false);
 	FV_View * pView = static_cast<FV_View *>(pAV_View);
 
 	XAP_Frame * pFrame = static_cast<XAP_Frame *>(pView->getParentData());
@@ -12503,6 +12789,7 @@ UT_return_val_if_fail(pDialog, false);
 Defun(dlgHdrFtr)
 {
 	CHECK_FRAME;
+	UT_return_val_if_fail(pAV_View, false);
 	FV_View * pView = static_cast<FV_View *>(pAV_View);
 
 	XAP_Frame * pFrame = static_cast<XAP_Frame *>(pView->getParentData());
@@ -12729,6 +13016,7 @@ Defun(hyperlinkCopyLocation)
 {
 	CHECK_FRAME;
 	ABIWORD_VIEW;
+	UT_return_val_if_fail(pView,false);
 	pView->cmdHyperlinkCopyLocation(pView->getPoint());
 	return true;
 }
@@ -12737,6 +13025,7 @@ Defun(hyperlinkJump)
 {
 	CHECK_FRAME;
 	ABIWORD_VIEW;
+	UT_return_val_if_fail(pView,false);
 	pView->cmdHyperlinkJump(pCallData->m_xPos, pCallData->m_yPos);
 	return true;
 }
@@ -12746,6 +13035,7 @@ Defun(hyperlinkJumpPos)
 {
 	CHECK_FRAME;
 	ABIWORD_VIEW;
+	UT_return_val_if_fail(pView,false);
 	pView->cmdHyperlinkJump(pView->getPoint());
 	return true;
 }
@@ -12754,6 +13044,7 @@ Defun1(deleteHyperlink)
 {
 	CHECK_FRAME;
 	ABIWORD_VIEW;
+	UT_return_val_if_fail(pView,false);
 	pView->cmdDeleteHyperlink();
 	return true;
 }
@@ -12762,6 +13053,9 @@ Defun(hyperlinkStatusBar)
 {
 	CHECK_FRAME;
 	ABIWORD_VIEW;
+
+	UT_return_val_if_fail(pView,false);
+
 	GR_Graphics * pG = pView->getGraphics();
 	if (pG)
 		pG->setCursor(GR_Graphics::GR_CURSOR_LINK);
@@ -12826,6 +13120,7 @@ Defun1(purgeAllRevisions)
 	CHECK_FRAME;
 	ABIWORD_VIEW;
 
+	UT_return_val_if_fail(pView,false);
 	PD_Document * pDoc = pView->getDocument();
 	UT_return_val_if_fail(pDoc,false);
 
@@ -12838,6 +13133,7 @@ Defun1(toggleAutoRevision)
 	CHECK_FRAME;
 	ABIWORD_VIEW;
 
+	UT_return_val_if_fail(pView,false);
 	PD_Document * pDoc = pView->getDocument();
 	UT_return_val_if_fail(pDoc,false);
 	
@@ -12879,6 +13175,8 @@ Defun1(toggleMarkRevisions)
 	CHECK_FRAME;
 	ABIWORD_VIEW;
 
+	UT_return_val_if_fail(pView,false);
+
 	if(!pView->isMarkRevisions())
 	{
 		// set view level to all
@@ -12910,6 +13208,8 @@ Defun1(startNewRevision)
 	CHECK_FRAME;
 	ABIWORD_VIEW;
 
+	UT_return_val_if_fail(pView,false);
+
 	if(!pView->isMarkRevisions())
 	{
 		// only do this when marking revisions is on
@@ -12929,6 +13229,7 @@ Defun1(toggleShowRevisions)
 	CHECK_FRAME;
 	ABIWORD_VIEW;
 
+	UT_return_val_if_fail(pView,false);
 	pView->toggleShowRevisions();
 	return true;
 }
@@ -12938,6 +13239,7 @@ Defun1(toggleShowRevisionsBefore)
 	CHECK_FRAME;
 	ABIWORD_VIEW;
 
+	UT_return_val_if_fail(pView,false);
 	bool bShow = pView->isShowRevisions();
 	UT_uint32 iLevel = pView->getRevisionLevel();
 	
@@ -12961,6 +13263,7 @@ Defun1(toggleShowRevisionsAfter)
 	CHECK_FRAME;
 	ABIWORD_VIEW;
 
+	UT_return_val_if_fail(pView,false);
 	bool bShow = pView->isShowRevisions();
 	bool bMark = pView->isMarkRevisions();
 	UT_uint32 iLevel = pView->getRevisionLevel();
@@ -12996,6 +13299,7 @@ Defun1(toggleShowRevisionsAfterPrevious)
 	CHECK_FRAME;
 	ABIWORD_VIEW;
 
+	UT_return_val_if_fail(pView,false);
 	UT_uint32 iLevel = pView->getRevisionLevel();
 	UT_uint32 iDocLevel = pView->getDocument()->getHighestRevisionId();
 
@@ -13019,6 +13323,7 @@ Defun(revisionAccept)
 {
 	CHECK_FRAME;
 	ABIWORD_VIEW;
+	UT_return_val_if_fail(pView,false);
 	pView->cmdAcceptRejectRevision(false, pCallData->m_xPos, pCallData->m_yPos);
 	return true;
 }
@@ -13027,6 +13332,7 @@ Defun(revisionReject)
 {
 	CHECK_FRAME;
 	ABIWORD_VIEW;
+	UT_return_val_if_fail(pView,false);
 	pView->cmdAcceptRejectRevision(true, pCallData->m_xPos, pCallData->m_yPos);
 	return true;
 }
@@ -13035,6 +13341,7 @@ Defun(revisionFindNext)
 {
 	CHECK_FRAME;
 	ABIWORD_VIEW;
+	UT_return_val_if_fail(pView,false);
 	pView->cmdFindRevision(true, pCallData->m_xPos, pCallData->m_yPos);
 	return true;
 }
@@ -13043,6 +13350,7 @@ Defun(revisionFindPrev)
 {
 	CHECK_FRAME;
 	ABIWORD_VIEW;
+	UT_return_val_if_fail(pView,false);
 	pView->cmdFindRevision(false, pCallData->m_xPos, pCallData->m_yPos);
 	return true;
 }
@@ -13078,6 +13386,7 @@ Defun1(revisionSetViewLevel)
 {
 	CHECK_FRAME;
 	ABIWORD_VIEW;
+	UT_return_val_if_fail(pView,false);
 	PD_Document * pDoc = pView->getDocument();
 	UT_return_val_if_fail(pDoc,false);
 
@@ -13093,6 +13402,7 @@ Defun1(history)
 {
 	CHECK_FRAME;
 	ABIWORD_VIEW;
+	UT_return_val_if_fail(pView,false);
 	AD_Document * pDoc = (AD_Document *) pView->getDocument();
 	UT_return_val_if_fail(pDoc,false);
 
@@ -13156,6 +13466,7 @@ Defun1(revisionCompareDocuments)
 {
 	CHECK_FRAME;
 	ABIWORD_VIEW;
+	UT_return_val_if_fail(pView,false);
 	PD_Document * pDoc = pView->getDocument();
 	UT_return_val_if_fail(pDoc,false);
 
@@ -13187,6 +13498,7 @@ Defun1(revisionMergeDocuments)
 {
 	CHECK_FRAME;
 	ABIWORD_VIEW;
+	UT_return_val_if_fail(pView,false);
 	PD_Document * pDoc = pView->getDocument();
 	UT_return_val_if_fail(pDoc,false);
 
@@ -13244,6 +13556,8 @@ Defun(beginVDrag)
 {
 	CHECK_FRAME;
 	ABIWORD_VIEW;
+
+	UT_return_val_if_fail(pView, false);
 	AP_TopRuler * pTopRuler = pView->getTopRuler();
 	if(pTopRuler == NULL)
 	{
@@ -13272,6 +13586,7 @@ Defun(beginHDrag)
 {
 	CHECK_FRAME;
 	ABIWORD_VIEW;
+	UT_return_val_if_fail(pView, false);
 	AP_LeftRuler * pLeftRuler = pView->getLeftRuler();
 	if(pLeftRuler == NULL)
 	{
@@ -13296,6 +13611,7 @@ Defun(clearSetCols)
 {
 	CHECK_FRAME;
 	ABIWORD_VIEW;
+	UT_return_val_if_fail(pView, false);
 	bool bres = pView->cmdAutoSizeCols();
 	pView->setDragTableLine(false);
 	return bres;
@@ -13306,6 +13622,7 @@ Defun(autoFitTable)
 {
 	CHECK_FRAME;
 	ABIWORD_VIEW;
+	UT_return_val_if_fail(pView, false);
 	bool bres = pView->cmdAutoFitTable();
 	return bres;
 }
@@ -13314,6 +13631,7 @@ Defun(clearSetRows)
 {
 	CHECK_FRAME;
 	ABIWORD_VIEW;
+	UT_return_val_if_fail(pView, false);
 	bool bres = pView->cmdAutoSizeRows();
 	pView->setDragTableLine(false);
 	return bres;
@@ -13325,6 +13643,7 @@ Defun(dragVline)
 	ABIWORD_VIEW;
 	UT_DEBUGMSG(("Doing Vertical Line drag \n"));
 
+	UT_return_val_if_fail(pView, false);
 	AP_TopRuler * pTopRuler = pView->getTopRuler();
 	if(pTopRuler == NULL)
 	{
@@ -13347,6 +13666,7 @@ Defun(dragHline)
 	CHECK_FRAME;
 	ABIWORD_VIEW;
 	UT_DEBUGMSG(("Doing Hline Line drag \n"));
+	UT_return_val_if_fail(pView, false);
 	AP_LeftRuler * pLeftRuler = pView->getLeftRuler();
 	if(!pLeftRuler)
 	{
@@ -13367,6 +13687,8 @@ Defun(endDragVline)
 {
 	CHECK_FRAME;
 	ABIWORD_VIEW;
+
+	UT_return_val_if_fail(pView, false);
 	AP_TopRuler * pTopRuler = pView->getTopRuler();
 	if(!pTopRuler)
 	{
@@ -13389,6 +13711,7 @@ Defun(endDragHline)
 {
 	CHECK_FRAME;
 	ABIWORD_VIEW;
+	UT_return_val_if_fail(pView, false);
 	AP_LeftRuler * pLeftRuler = pView->getLeftRuler();
 	if(!pLeftRuler)
 	{
@@ -13409,6 +13732,7 @@ Defun(btn0InlineImage)
 	CHECK_FRAME;
 	ABIWORD_VIEW;
 	xxx_UT_DEBUGMSG(("Hover on Inline Image \n"));
+	UT_return_val_if_fail(pView, false);
 	UT_sint32 y = pCallData->m_yPos;
 	UT_sint32 x = pCallData->m_xPos;
 	pView->btn0InlineImage(x,y);
@@ -13420,6 +13744,7 @@ Defun(btn1InlineImage)
 {
 	CHECK_FRAME;
 	ABIWORD_VIEW;
+	UT_return_val_if_fail(pView, false);
 	UT_DEBUGMSG(("Click on InlineImage \n"));
 	UT_sint32 y = pCallData->m_yPos;
 	UT_sint32 x = pCallData->m_xPos;
@@ -13458,6 +13783,7 @@ Defun(copyInlineImage)
 	CHECK_FRAME;
 	ABIWORD_VIEW;
 	UT_DEBUGMSG(("Copy InlineImage \n"));
+	UT_return_val_if_fail(pView, false);
 	UT_sint32 y = pCallData->m_yPos;
 	UT_sint32 x = pCallData->m_xPos;
 	pView->getGraphics()->setCursor(GR_Graphics::GR_CURSOR_GRAB);
@@ -13470,6 +13796,7 @@ static bool sReleaseInlineImage = false;
 static void sActualDragInlineImage(AV_View *  pAV_View, EV_EditMethodCallData * pCallData)
 {
 	ABIWORD_VIEW;
+	UT_return_if_fail(pView);
 	UT_sint32 y = pCallData->m_yPos;
 	UT_sint32 x = pCallData->m_xPos;
 	if(sReleaseInlineImage)
@@ -13492,6 +13819,7 @@ Defun(dragInlineImage)
 //
 // This code sets things up to handle the warp right in an idle loop.
 //
+	UT_return_val_if_fail(pView, false);
 	int inMode = UT_WorkerFactory::IDLE | UT_WorkerFactory::TIMER;
 	UT_WorkerFactory::ConstructMode outMode = UT_WorkerFactory::NONE;
 	GR_Graphics * pG = pView->getGraphics();
@@ -13522,6 +13850,7 @@ Defun(releaseInlineImage)
 	CHECK_FRAME;
 	ABIWORD_VIEW;
 	UT_DEBUGMSG(("Release Inline Image \n"));
+	UT_return_val_if_fail(pView, false);
 	UT_sint32 y = pCallData->m_yPos;
 	UT_sint32 x = pCallData->m_xPos;
 	sReleaseInlineImage = false;
@@ -13535,6 +13864,7 @@ Defun(btn0Frame)
 	CHECK_FRAME;
 	ABIWORD_VIEW;
 	xxx_UT_DEBUGMSG(("Hover on Frame \n"));
+	UT_return_val_if_fail(pView, false);
 	UT_sint32 y = pCallData->m_yPos;
 	UT_sint32 x = pCallData->m_xPos;
 	pView->btn0Frame(x,y);
@@ -13547,6 +13877,7 @@ Defun(btn1Frame)
 	CHECK_FRAME;
 	ABIWORD_VIEW;
 	UT_DEBUGMSG(("Click on Frame \n"));
+	UT_return_val_if_fail(pView, false);
 	UT_sint32 y = pCallData->m_yPos;
 	UT_sint32 x = pCallData->m_xPos;
 	pView->getGraphics()->setCursor(GR_Graphics::GR_CURSOR_GRAB);
@@ -13559,6 +13890,7 @@ static bool sReleaseFrame = false;
 static void sActualDragFrame(AV_View *  pAV_View, EV_EditMethodCallData * pCallData)
 {
 	ABIWORD_VIEW;
+	UT_return_if_fail(pView);
 	UT_sint32 y = pCallData->m_yPos;
 	UT_sint32 x = pCallData->m_xPos;
 	if(sReleaseFrame)
@@ -13581,6 +13913,7 @@ Defun(dragFrame)
 //
 // This code sets things up to handle the warp right in an idle loop.
 //
+	UT_return_val_if_fail(pView, false);
 	int inMode = UT_WorkerFactory::IDLE | UT_WorkerFactory::TIMER;
 	UT_WorkerFactory::ConstructMode outMode = UT_WorkerFactory::NONE;
 	GR_Graphics * pG = pView->getGraphics();
@@ -13611,6 +13944,7 @@ Defun(releaseFrame)
 	CHECK_FRAME;
 	ABIWORD_VIEW;
 	UT_DEBUGMSG(("Release Frame \n"));
+	UT_return_val_if_fail(pView, false);
 	UT_sint32 y = pCallData->m_yPos;
 	UT_sint32 x = pCallData->m_xPos;
 	sReleaseFrame = false;
@@ -13624,6 +13958,7 @@ Defun(deleteFrame)
 	CHECK_FRAME;
 	ABIWORD_VIEW;
 	UT_DEBUGMSG(("Delete Frame \n"));
+	UT_return_val_if_fail(pView, false);
 	pView->deleteFrame();
 	return true;
 }
@@ -13633,6 +13968,7 @@ Defun(cutFrame)
 	CHECK_FRAME;
 	ABIWORD_VIEW;
 	UT_DEBUGMSG(("Cut Frame \n"));
+	UT_return_val_if_fail(pView, false);
 	pView->cutFrame();
 	return true;
 }
@@ -13643,6 +13979,7 @@ Defun(copyFrame)
 	CHECK_FRAME;
 	ABIWORD_VIEW;
 	UT_DEBUGMSG(("Copy Frame \n"));
+	UT_return_val_if_fail(pView, false);
 	fl_FrameLayout * pFL = pView->getFrameLayout();
 	if(pFL == NULL)
 	{
@@ -13663,6 +14000,7 @@ Defun(selectFrame)
 	CHECK_FRAME;
 	UT_DEBUGMSG(("Select Frame \n"));
 	ABIWORD_VIEW;
+	UT_return_val_if_fail(pView, false);
 	pView->selectFrame();
 	return true;
 }
@@ -13672,6 +14010,7 @@ Defun(dlgFormatFrame)
 	CHECK_FRAME;
 	ABIWORD_VIEW;
 	UT_DEBUGMSG(("Format Frame \n"));
+	UT_return_val_if_fail(pView, false);
 	XAP_Frame * pFrame = static_cast<XAP_Frame *> ( pView->getParentData());
 	UT_return_val_if_fail(pFrame, false);
 
@@ -13699,6 +14038,7 @@ Defun(cutVisualText)
 {
 	CHECK_FRAME;
 	ABIWORD_VIEW;
+	UT_return_val_if_fail(pView, false);
 	XAP_Frame * pFrame = static_cast<XAP_Frame *>(pView->getParentData()); 
 	UT_DEBUGMSG(("Cut on Selection \n"));
 	UT_sint32 y = pCallData->m_yPos;
@@ -13726,6 +14066,7 @@ Defun(copyVisualText)
 {
 	CHECK_FRAME;
 	ABIWORD_VIEW;
+	UT_return_val_if_fail(pView, false);
 	XAP_Frame * pFrame = static_cast<XAP_Frame *>(pView->getParentData()); 
 	xxx_UT_DEBUGMSG(("Copy on Selection \n"));
 	UT_sint32 y = pCallData->m_yPos;
@@ -13753,6 +14094,7 @@ static bool sEndVisualDrag = false;
 static void sActualVisualDrag(AV_View *  pAV_View, EV_EditMethodCallData * pCallData)
 {
 	ABIWORD_VIEW;
+	UT_return_if_fail(pView);
 	XAP_Frame * pFrame = static_cast<XAP_Frame *>(pView->getParentData()); 
 	UT_sint32 y = pCallData->m_yPos;
 	UT_sint32 x = pCallData->m_xPos;
@@ -13785,6 +14127,7 @@ Defun(dragVisualText)
 	ABIWORD_VIEW;
 	sEndVisualDrag = false;
 	xxx_UT_DEBUGMSG(("Drag Visual Text \n"));
+	UT_return_val_if_fail(pView, false);
 	PT_DocPosition posLow = pView->getSelectionAnchor();
 	PT_DocPosition posHigh = pView->getPoint();
 	if(posLow > posHigh)
@@ -13845,6 +14188,7 @@ Defun(pasteVisualText)
 	CHECK_FRAME;
 	ABIWORD_VIEW;
 	UT_DEBUGMSG(("Drop Visual Text \n"));
+	UT_return_val_if_fail(pView, false);
 	UT_sint32 y = pCallData->m_yPos;
 	UT_sint32 x = pCallData->m_xPos;
     sEndVisualDrag = false;
@@ -13859,6 +14203,7 @@ Defun(btn0VisualText)
 	CHECK_FRAME;
 	ABIWORD_VIEW;
 	xxx_UT_DEBUGMSG(("In Visual Text \n"));
+	UT_return_val_if_fail(pView, false);
 	pView->btn0VisualDrag(pCallData->m_xPos,pCallData->m_yPos);
 	return true;
 }
@@ -13881,6 +14226,7 @@ Defun(tableToTextCommas)
 {
 	CHECK_FRAME;
 	ABIWORD_VIEW;
+	UT_return_val_if_fail(pView, false);
 	pView->cmdTableToText(pView->getPoint(),0);
 	return true;
 }
@@ -13890,6 +14236,7 @@ Defun(tableToTextTabs)
 {
 	CHECK_FRAME;
 	ABIWORD_VIEW;
+	UT_return_val_if_fail(pView, false);
 	pView->cmdTableToText(pView->getPoint(),1);
 	return true;
 }
@@ -13898,6 +14245,7 @@ Defun(tableToTextCommasTabs)
 {
 	CHECK_FRAME;
 	ABIWORD_VIEW;
+	UT_return_val_if_fail(pView, false);
 	pView->cmdTableToText(pView->getPoint(),2);
 	return true;
 }
@@ -13907,6 +14255,7 @@ Defun(doEscape)
 	CHECK_FRAME;
 	ABIWORD_VIEW;
 	UT_DEBUGMSG(("Escape Pressed. \n"));
+	UT_return_val_if_fail(pView, false);
 	FV_VisualDragText * pVis = pView->getVisualText();
 	if(pVis->isActive())
 	{
