@@ -1,5 +1,0 @@
-[Activity]
-name = AbiWord
-id = org.abisource.AbiWord
-python_module = abisource.AbiWordActivity.AbiWordActivity
-show_launcher = yes
