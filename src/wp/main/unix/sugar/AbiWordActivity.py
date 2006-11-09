@@ -27,8 +27,8 @@ class AbiWord (gtk.Socket):
 
 class AbiWordActivity (Activity):
 
-	def __init__ (self, service):
-		Activity.__init__ (self, service)
+	def __init__ (self):
+		Activity.__init__ (self)
 	
 		self.set_title ("AbiWord")
 
