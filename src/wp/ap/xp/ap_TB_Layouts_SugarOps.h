@@ -30,6 +30,8 @@
  */
 BeginLayout(OlpcOps, AP_STRING_ID_TB_Simple, AP_PREF_KEY_StandardBarVisible)
 
+	ToolbarItem(AP_TOOLBAR_ID_FILE_OPEN)
+	ToolbarItem(AP_TOOLBAR_ID_FILE_SAVE)
 	ToolbarItem(AP_TOOLBAR_ID_FMT_BOLD)
 	ToolbarItem(AP_TOOLBAR_ID_FMT_ITALIC)
 	ToolbarItem(AP_TOOLBAR_ID_FMT_UNDERLINE)
