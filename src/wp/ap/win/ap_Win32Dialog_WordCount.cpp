@@ -152,7 +152,7 @@ void AP_Win32Dialog_WordCount::event_Update(void)
 void AP_Win32Dialog_WordCount::destroy(void)
 {
 	m_bDestroy_says_stopupdating = true;
-	while (m_bAutoUpdate_happening_now == true) ;
+
 	m_pAutoUpdateWC->stop();
 
 	int iResult = DestroyWindow( m_hWnd );
