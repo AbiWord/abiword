@@ -735,6 +735,7 @@ bool fl_DocListener::populateStrux(PL_StruxDocHandle sdh,
 		
 		// Append a new CallLayout to the Current TableLayout
 		fl_ContainerLayout * pCon = getTopContainerLayout();
+		UT_return_val_if_fail(pCon, false);
 		if(pCon->getContainerType() != FL_CONTAINER_TABLE)
 		{
 #ifdef DEBUG
