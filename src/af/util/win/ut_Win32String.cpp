@@ -32,12 +32,12 @@
 
 char * UT_catPathname(const char * szPath, const char * szFile)
 {
-	UT_ASSERT((szPath) && (*szPath));
-	UT_ASSERT((szFile) && (*szFile));
-	
+	UT_return_val_if_fail((szPath) && (*szPath), NULL);
+	UT_return_val_if_fail((szFile) && (*szFile), NULL);
+
 	char * szPathname = (char *)UT_calloc(sizeof(char),strlen(szPath)+strlen(szFile)+2);
-	UT_ASSERT(szPathname);
-	
+	UT_return_val_if_fail(szPathname, NULL);
+
 	sprintf(szPathname,"%s%s%s",
 			szPath,
 			((szPath[strlen(szPath)-1]=='\\') ? "" : "\\"),
