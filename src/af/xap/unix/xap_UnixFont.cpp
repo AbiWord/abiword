@@ -631,6 +631,7 @@ bool XAP_UnixFont::_createTtfSupportFiles()
 
 bool XAP_UnixFont::embedInto(ps_Generate & ps)
 {
+#ifndef WITHOUT_PRINTING
 	if (openPFA())
 	  {
 		  signed char ch = 0;
@@ -651,7 +652,9 @@ bool XAP_UnixFont::embedInto(ps_Generate & ps)
 		  // TODO: Check for errors, and return false on error
 		  create_type42(m_fontfile, ps.getFileHandle());
 	  }
-
+#else
+	UT_ASSERT_HARMLESS( UT_SHOULD_NOT_HAPPEN );
+#endif
 	return true;
 }
 

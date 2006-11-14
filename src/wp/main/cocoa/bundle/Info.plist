@@ -355,7 +355,7 @@
 	<key>CFBundleExecutable</key>
 	<string>AbiWord</string>
 	<key>CFBundleGetInfoString</key>
-	<string>AbiWord 2.4.6</string>
+	<string>AbiWord 2.4.7</string>
 	<key>CFBundleIconFile</key>
 	<string>AbiWord.icns</string>
 	<key>CFBundleIdentifier</key>
@@ -363,11 +363,11 @@
 	<key>CFBundlePackageType</key>
 	<string>APPL</string>
 	<key>CFBundleShortVersionString</key>
-	<string>2.4.6</string>
+	<string>2.4.7</string>
 	<key>CFBundleSignature</key>
 	<string>ABIW</string>
 	<key>CFBundleVersion</key>
-	<string>2.4.6</string>
+	<string>2.4.7</string>
 	<key>NSMainNibFile</key>
 	<string>MainMenu</string>
 	<key>NSPrincipalClass</key>

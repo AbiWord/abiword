@@ -1,0 +1,9 @@
+
+if EMBEDDED
+scripts=
+else
+scripts=*.pl
+endif
+
+scriptdir=$(pkgdatadir)/AbiWord/scripts
+script_DATA=$(scripts)

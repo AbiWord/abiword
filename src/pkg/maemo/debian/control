@@ -1,13 +1,13 @@
 Source: abiword
-Section: editors
+Section: user/office
 Priority: optional
-Maintainer: Rodrigo Parra Novo <rodrigo.novo@indt.org.br>
-Uploaders: Rodrigo Parra Novo <rodrigo.novo@indt.org.br>
+Maintainer: Tomas Frydrych <tf@o-hand.com>
+Uploaders: Tomas Frydrych <tf@o-hand.com>
 Build-Depends: debhelper (>> 4.0.0), libfribidi-dev, libglib2.0-dev, libgtk2.0-dev, libjpeg62-dev, libpng12-dev, libreadline4-dev
 Standards-Version: 3.6.1
 
 Package: abiword
-Section: editors
+Section: user/office
 Architecture: any
-Depends: libfribidi0, libgsf-1, libgnomeprintui2.2-0, libgnomeprint2.2-0
+Depends: ${shlibs:Depends}
 Description: AbiWord is a free word processing program similar to Microsoft® Word. It is suitable for typing papers, letters, reports, memos, and so forth.

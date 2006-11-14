@@ -51,12 +51,17 @@
 #include "xap_UnixEncodingManager.h"
 #include "xap_UnixFontManager.h"
 
+#ifndef WITHOUT_PRINTING
 #include "xap_UnixNullGraphics.h"
 #include "xap_UnixPSGraphics.h"
+#endif
+
 #include "gr_UnixGraphics.h"
 #include "gr_UnixPangoGraphics.h"
 
+#ifndef WITHOUT_PRINTING
 UnixNull_Graphics * abi_unixnullgraphics_instance = 0;
+#endif
 
 /*****************************************************************/
 // #include <sys/time.h> // tmp just to measure the time that XftInit takes
@@ -92,22 +97,21 @@ XAP_UnixApp::XAP_UnixApp(XAP_Args * pArgs, const char * szAppName)
 		// we are in deep trouble if this did not succeed
 		UT_ASSERT( bSuccess );
 		pGF->registerAsDefault(GR_UnixGraphics::s_getClassId(), true);
-
+#ifndef WITHOUT_PRINTING
 		bSuccess = pGF->registerClass(PS_Graphics::graphicsAllocator,
 									  PS_Graphics::graphicsDescriptor,
 									  PS_Graphics::s_getClassId());
 
 		UT_ASSERT( bSuccess );
 		pGF->registerAsDefault(PS_Graphics::s_getClassId(), false);
-		
-
 		bSuccess = pGF->registerClass(UnixNull_Graphics::graphicsAllocator,
 									  UnixNull_Graphics::graphicsDescriptor,
 									  UnixNull_Graphics::s_getClassId());
 
 		
+#endif
 		UT_ASSERT( bSuccess );
-#if 1
+#if !defined(HAVE_HILDON)
 		bSuccess = pGF->registerClass(GR_UnixPangoGraphics::graphicsAllocator,
 									  GR_UnixPangoGraphics::graphicsDescriptor,
 									  GR_UnixPangoGraphics::s_getClassId());
@@ -119,6 +123,7 @@ XAP_UnixApp::XAP_UnixApp(XAP_Args * pArgs, const char * szAppName)
 	/* We need to link UnixNull_Graphics because the AbiCommand
 	 * plugin uses it.
 	 */
+#ifndef WITHOUT_PRINTING
 	if (abi_unixnullgraphics_instance)
 	  {
 	    delete abi_unixnullgraphics_instance;
@@ -126,7 +131,7 @@ XAP_UnixApp::XAP_UnixApp(XAP_Args * pArgs, const char * szAppName)
 		XAP_UnixNullGraphicsAllocInfo ai(NULL, NULL);
 		abi_unixnullgraphics_instance = (UnixNull_Graphics*) XAP_App::getApp()->newGraphics(GRID_UNIX_NULL, ai);
 	  }
-	  
+#endif
 }
 
 XAP_UnixApp::~XAP_UnixApp()
@@ -311,4 +316,3 @@ void XAP_UnixApp::setTimeOfLastEvent(UT_uint32 eventTime)
 {
 	m_eventTime = eventTime;
 }
-

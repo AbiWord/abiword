@@ -86,8 +86,12 @@
 #   include "ap_UnixDialog_FormatTOC.h"
 #   include "ap_UnixDialog_MailMerge.h"
 #   include "ap_UnixDialog_Latex.h"
+
+#ifndef WITHOUT_PRINTING
 #   include "xap_UnixDlg_Print.h"
 #   include "xap_UnixDlg_PrintPreview.h"
+#endif
+
 #if 0
 #	include "ap_UnixDialog_Download_File.h"
 #endif
@@ -124,10 +128,12 @@
 
 	DeclareDialog(XAP_DIALOG_ID_FILE_OPEN,		XAP_UnixDialog_FileOpenSaveAs)
 	DeclareDialog(XAP_DIALOG_ID_FILE_SAVEAS,	XAP_UnixDialog_FileOpenSaveAs)
+#ifndef WITHOUT_PRINTING
 	DeclareDialog(XAP_DIALOG_ID_PRINT,		XAP_UnixDialog_Print)
 	DeclareDialog(XAP_DIALOG_ID_PRINTPREVIEW,	XAP_UnixDialog_PrintPreview)
-	DeclareDialog(XAP_DIALOG_ID_MESSAGE_BOX,	XAP_UnixDialog_MessageBox)
 	DeclareDialog(XAP_DIALOG_ID_PRINTTOFILE,	XAP_UnixDialog_FileOpenSaveAs)
+#endif
+	DeclareDialog(XAP_DIALOG_ID_MESSAGE_BOX,	XAP_UnixDialog_MessageBox)
 	DeclareDialog(XAP_DIALOG_ID_LANGUAGE,		XAP_UnixDialog_Language)
 	DeclareDialog(XAP_DIALOG_ID_WINDOWMORE,		XAP_UnixDialog_WindowMore)
 	DeclareDialog(XAP_DIALOG_ID_ZOOM,			XAP_UnixDialog_Zoom)

@@ -35,6 +35,20 @@ INCLUDES= -UVERSION @GTK_CFLAGS@ @GMODULE_CFLAGS@ \
 
 noinst_LIBRARIES = libXap_unix.a
 
+if WITH_PRINTING
+print_src = xap_UnixPSFont.cpp				\
+			xap_UnixPSGenerate.cpp			\
+			xap_UnixPSParseAFM.c			\
+			xap_UnixPSImage.cpp				\
+			xap_UnixPSGraphics.cpp			\
+			xap_UnixGnomePrintGraphics.cpp	\
+			xap_UnixDlg_PrintPreview.cpp	\
+			xap_UnixDlg_Print.cpp		\
+			xap_UnixNullGraphics.cpp
+else
+print_src =
+endif
+
 gladedir=$(datadir)/$(PACKAGE)/AbiWord/glade
 
 glade_DATA = \
@@ -50,7 +64,7 @@ glade_DATA = \
 	xap_UnixDlg_DocComparison.glade \
 	xap_UnixDlg_ListDocuments.glade
 
-libXap_unix_a_SOURCES=\
+libXap_unix_a_SOURCES=$(print_src)\
 	xap_UnixApp.cpp				\
 	xap_UnixAppImpl.cpp			\
 	xap_UnixClipboard.cpp			\
@@ -64,8 +78,6 @@ libXap_unix_a_SOURCES=\
 	xap_UnixDlg_HTMLOptions.cpp		\
 	xap_UnixDlg_Language.cpp		\
 	xap_UnixDlg_MessageBox.cpp		\
-	xap_UnixDlg_Print.cpp			\
-	xap_UnixDlg_PrintPreview.cpp		\
 	xap_UnixDlg_WindowMore.cpp		\
 	xap_UnixDlg_Zoom.cpp			\
 	xap_UnixDlg_Insert_Symbol.cpp		\
@@ -77,13 +89,6 @@ libXap_unix_a_SOURCES=\
 	xap_UnixToolbar_Icons.cpp		\
 	xap_UnixDlg_Password.cpp		\
 	xap_UnixDlg_PluginManager.cpp		\
-	xap_UnixPSFont.cpp			\
-	xap_UnixPSGenerate.cpp			\
-	xap_UnixPSParseAFM.c			\
-	xap_UnixPSImage.cpp			\
-	xap_UnixNullGraphics.cpp		\
-	xap_UnixPSGraphics.cpp			\
-	xap_UnixGnomePrintGraphics.cpp		\
 	xap_UnixEncodingManager.cpp		\
 	xap_UnixFrameImpl.cpp			\
 	xap_UnixTableWidget.cpp \

@@ -94,13 +94,49 @@ AC_ARG_ENABLE(embedded,[  --enable-embedded    Include embedded features],[
 	   no) embedded=false ;;
 	     *)	AC_MSG_ERROR(bad value ${enableval} for --enable-embedded) ;;
 	esac
-],[	embedded=undefined
-	EMBEDDED_CFLAGS=""
+],[	
+	if test "$embedded" != "true"; then
+	   embedded=undefined
+	   EMBEDDED_CFLAGS=""
+	fi
 ])
 
 if test "$embedded" = "true"; then
    EMBEDDED_CFLAGS="-DEMBEDDED_TARGET=1"
 fi
+
+AM_CONDITIONAL(EMBEDDED, test "x$embedded" = "xtrue")
+
+# by default we, of course, want Abi to be able to print, but on embedded
+# systems it might not be required and because of the dependencies, we want an
+# option to disable printing at compile time
+
+# on embedded we will make --disable-print the default if no
+# --enable/disable-printing is given
+
+AC_ARG_ENABLE(printing,[  --enable-printing    Include printing capabilities],[
+	case "${enableval}" in
+	   yes)	print=true ;
+		PRINT_CFLAGS="" ;;
+	   no) print=false ;
+		PRINT_CFLAGS="-DWITHOUT_PRINTING" ;;
+	     *)	AC_MSG_ERROR(bad value ${enableval} for --enable-printing) ;;
+	esac
+],[	print=undefined
+	PRINT_CFLAGS=""
+])
+
+if test "$print" = "undefined" && test "$embedded" = "true"; then
+   print=false
+   PRINT_CFLAGS="-DWITHOUT_PRINTING"
+elif test "$print" = "undefined"; then
+   print=true;
+   PRINT_CFLAGS=""
+fi
+
+AC_MSG_RESULT([final printing ${print}])
+
+AM_CONDITIONAL(WITH_PRINTING, test x$print = xtrue)
 
 if test "$PLATFORM" = "unix"; then
 	ABI_FE="Unix"
@@ -108,7 +144,9 @@ if test "$PLATFORM" = "unix"; then
 	with_unix=true
 	dnl locate glib and gtk
 	ABI_GTK2
+if test $print = true; then
 	ABI_GNOMEPRINT
+fi
 	AM_BINRELOC
 elif test "$PLATFORM" = "cocoa" ; then
 	ABI_GLIB2
@@ -357,11 +395,13 @@ AC_SUBST(OPTIMIZE_CFLAGS)
 AC_SUBST(PROFILE_CFLAGS)
 AC_SUBST(LIBJPEG_LIBS)
 AC_SUBST(DEBUG_CFLAGS)
+AC_SUBST(PRINT_CFLAGS)
 AC_SUBST(SCRIPT_CFLAGS)
 AC_SUBST(SCRIPT_LIBS)
 AC_SUBST(PLATFORM_CFLAGS)
 AC_SUBST(PLATFORM_LIBS)
 AC_SUBST(XSUBPPDIR)
+AC_SUBST(embedded)
 
 dnl Checks for header files.
 AC_HEADER_STDC
@@ -439,6 +479,10 @@ AC_SUBST(VALGRIND)
 AM_CONDITIONAL(CROSS_COMPILING, test x$cross_compiling = xyes)
 
 AC_CONFIG_FILES([GNUmakefile
+ user/GNUmakefile
+ user/wp/GNUmakefile
+ user/wp/scripts/GNUmakefile
+ user/wp/strings/GNUmakefile
  src/GNUmakefile
  src/af/GNUmakefile
  src/af/tf/GNUmakefile
@@ -538,8 +582,9 @@ AC_CONFIG_FILES([
  src/bindings/perl/GNUmakefile
  src/pkg/linux/apkg/abiword-gnome.apspec
  src/pkg/linux/apkg/abiword-gtk.apspec
- src/pkg/maemo/debian/misc/abiword.desktop
- src/pkg/maemo/debian/misc/osso-abiword.service
+ src/pkg/maemo/GNUmakefile
+ src/pkg/maemo/abiword.desktop
+ src/pkg/maemo/com.abisource.abiword.service
 ])
 AC_OUTPUT
 
@@ -574,6 +619,13 @@ esac
 case "$debug" in
      "true" )
         AC_MSG_RESULT([Configured with debugging symbols.]) ;;
+esac
+
+case "$print" in
+	 "true" )
+        AC_MSG_RESULT([Configured with printing capabilities.]) ;;
+	 "false" )
+        AC_MSG_RESULT([Configured without printing capabilites.]) ;;
 esac
 
 case "$script" in

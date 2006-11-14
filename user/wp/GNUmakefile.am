@@ -1,0 +1,12 @@
+
+SUBDIRS=scripts strings
+
+if EMBEDDED
+profiles=system.profile
+else
+profiles=*.profile
+endif
+
+profiledir=$(pkgdatadir)/AbiWord/
+profile_DATA=$(profiles)
+

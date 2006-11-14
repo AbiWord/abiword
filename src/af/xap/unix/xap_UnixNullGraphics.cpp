@@ -32,8 +32,11 @@
 #include "ut_endian.h"
 
 #include "xap_UnixNullGraphics.h"
-#include "xap_UnixPSFont.h"
-#include "xap_UnixPSImage.h"
+
+#ifndef WITHOUT_PRINTING
+#  include "xap_UnixPSFont.h"
+#  include "xap_UnixPSImage.h"
+#endif
 
 #include "xap_UnixFont.h"
 #include "xap_UnixFontManager.h"
@@ -81,7 +84,7 @@ UnixNull_Graphics::~UnixNull_Graphics()
 	GR_Image* pImg = NULL;
    
    	if (iType == GR_Image::GRT_Raster)
-     		pImg = new PS_Image(pszName);
+	    pImg = new PS_Image(pszName);
    	else if (iType == GR_Image::GRT_Vector)
      		pImg = new GR_VectorImage(pszName);
    
@@ -264,7 +267,6 @@ GR_Font* UnixNull_Graphics::_findFont(const char* pszFontFamily,
 		}
 		item = new XAP_UnixFontHandle(pFont,iSize);
 	}
-
 	xxx_UT_DEBUGMSG(("SEVIOR: Using PS Font Size %d \n",iSize));
 	PSFont * pFont = new PSFont(item->getUnixFont(), iSize);
 	UT_ASSERT(pFont);

@@ -138,7 +138,7 @@ protected:
 							   const char* pszFontStretch, 
 							   const char* pszFontSize);
 
-	virtual UT_uint32 getDeviceResolution(void) const;	
+	virtual UT_uint32 getDeviceResolution(void) const;
 	PSFont *		m_pCurrentFont;
 	UT_RGBColor		m_currentColor;
 	

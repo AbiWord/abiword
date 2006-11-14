@@ -1,0 +1,6 @@
+
+if EMBEDDED
+else
+stringdir=$(pkgdatadir)/AbiWord/strings
+string_DATA=*.strings
+endif

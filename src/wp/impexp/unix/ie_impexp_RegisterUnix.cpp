@@ -32,6 +32,8 @@
 void IE_ImpExp_RegisterPlatform ()
 {
     IE_ImpGraphic::registerImporter(new IE_ImpGraphicGdkPixbuf_Sniffer ());
+#ifndef WITHOUT_PRINTING
     IE_Exp::registerExporter(new IE_Exp_PDF_Sniffer());
+#endif
     //IE_Exp::registerExporter(new IE_Exp_PS_Sniffer());
 }

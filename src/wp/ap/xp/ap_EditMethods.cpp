@@ -8123,6 +8123,7 @@ bool s_doPrint(FV_View * pView, bool bTryToSuppressDialog, bool bPrintDirectly);
 #else
 static bool s_doPrint(FV_View * pView, bool bTryToSuppressDialog,bool bPrintDirectly)
 {
+#ifndef WITHOUT_PRINTING
 	UT_return_val_if_fail (pView, false);
 	XAP_Frame * pFrame = static_cast<XAP_Frame *> ( pView->getParentData());
 	UT_return_val_if_fail(pFrame, false);
@@ -8227,11 +8228,16 @@ UT_return_val_if_fail(pDialog, false);
 	pDialogFactory->releaseDialog(pDialog);
 
 	return bOK;
+#else
+	UT_DEBUGMSG(("Printing capabilities not included\n"));
+	return true;
+#endif
 }
 #endif
 
 static bool s_doPrintPreview(FV_View * pView)
 {
+#ifndef WITHOUT_PRINTING
 	UT_return_val_if_fail(pView, false);
 	XAP_Frame * pFrame = static_cast<XAP_Frame *> ( pView->getParentData());
 	UT_return_val_if_fail(pFrame, false);
@@ -8297,6 +8303,10 @@ UT_return_val_if_fail(pDialog, false);
 	pView->clearCursorWait();
 
 	return true;
+#else
+	UT_DEBUGMSG(("Printing capabilities not included\n"));
+	return true;
+#endif
 }
 
 static bool s_doZoomDlg(FV_View * pView)
@@ -9068,33 +9078,53 @@ UT_return_val_if_fail(pDialog, false);
 
 Defun1(print)
 {
+#ifndef WITHOUT_PRINTING
 	CHECK_FRAME;
 	ABIWORD_VIEW;
 	return s_doPrint(pView,false,false);
+#else
+	UT_DEBUGMSG(("Printing capabilities not included\n"));
+	return true;
+#endif
 }
 
 Defun1(printDirectly)
 {
+#ifndef WITHOUT_PRINTING
 	CHECK_FRAME;
 	ABIWORD_VIEW;
 	return s_doPrint(pView,false,true);
+#else
+	UT_DEBUGMSG(("Printing capabilities not included\n"));
+	return true;
+#endif
 }
 
 Defun1(printTB)
 {
+#ifndef WITHOUT_PRINTING
 	CHECK_FRAME;
 // print (intended to be from the tool-bar (where we'd like to
 	// suppress the dialog if possible))
 
 	ABIWORD_VIEW;
 	return s_doPrint(pView,true,false);
+#else
+	UT_DEBUGMSG(("Printing capabilities not included\n"));
+	return true;
+#endif
 }
 
 Defun1(printPreview)
 {
+#ifndef WITHOUT_PRINTING
 	CHECK_FRAME;
 	ABIWORD_VIEW;
 	return s_doPrintPreview(pView);
+#else
+	UT_DEBUGMSG(("Printing capabilities not included\n"));
+	return true;
+#endif
 }
 
 Defun1(pageSetup)

@@ -18,10 +18,12 @@
 
 DIST_SUBDIRS = cdump po2str pfa2afm ttftool scripts
 
+if WITH_PRINTING 
 if BUILD_TTFTOOL
 TTFTOOL = ttftool
 else
 TTFTOOL = 
+endif
 endif
 
 # we do not build cdump but use cdump.pl when crosscompiling
