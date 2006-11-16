@@ -10702,8 +10702,15 @@ bool IE_Imp_RTF::HandleStyleDefinition(void)
 			}
 			char * buffer  = UT_strdup(styleName.utf8_str());
 			char * oldbuffer;
-			m_styleTable.setNthItem(styleNumber,buffer,&oldbuffer);
-			FREEP(oldbuffer);
+			if(styleNumber >= 0)
+			{
+				m_styleTable.setNthItem(styleNumber,buffer,&oldbuffer);
+				FREEP(oldbuffer);
+			}
+			else
+			{
+				FREEP(buffer);
+			}
 			break;
 		}
 
