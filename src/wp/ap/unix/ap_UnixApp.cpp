@@ -594,7 +594,10 @@ void AP_UnixApp::copyToClipboard(PD_DocumentRange * pDocRange, bool bUseClipboar
 
 	{
 		// TODO: we have to make a good way to tell if the current selection is just an image
-		FV_View * pView = static_cast<FV_View*>(getLastFocussedFrame()->getCurrentView());
+		FV_View * pView = NULL;
+		if(getLastFocussedFrame())
+			pView = static_cast<FV_View*>(getLastFocussedFrame()->getCurrentView());
+
 		if (pView && !pView->isSelectionEmpty())
 			{
 				// don't own, don't free
