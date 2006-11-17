@@ -28,13 +28,23 @@
 // Mapping sof ID, to default icons		
 toolbariconmap(_BOGUS1__,NoIcon)
 toolbariconmap(FILE_NEW,tb_new_xpm)
+#if HAVE_SUGAR
+toolbariconmap(FILE_OPEN,sugar_document_open_48_xpm)
+toolbariconmap(FILE_SAVE,sugar_document_save_48_xpm)
+#else
 toolbariconmap(FILE_OPEN,tb_open_xpm)
 toolbariconmap(FILE_SAVE,tb_save_xpm)
+#endif
 toolbariconmap(FILE_SAVEAS,tb_save_as_xpm)
 toolbariconmap(FILE_PRINT,tb_print_xpm)
 toolbariconmap(FILE_PRINT_PREVIEW,tb_print_preview_xpm)
+#if HAVE_SUGAR
+toolbariconmap(EDIT_UNDO,sugar_edit_undo_48_xpm)
+toolbariconmap(EDIT_REDO,sugar_edit_redo_48_xpm)
+#else
 toolbariconmap(EDIT_UNDO,tb_undo_xpm)
 toolbariconmap(EDIT_REDO,tb_redo_xpm)
+#endif
 toolbariconmap(EDIT_CUT,tb_cut_xpm)
 toolbariconmap(EDIT_COPY,tb_copy_xpm)
 toolbariconmap(EDIT_PASTE,tb_paste_xpm)
@@ -51,9 +61,15 @@ toolbariconmap(FMT_FONT,NoIcon)
 toolbariconmap(FMT_HYPERLINK,tb_hyperlink_xpm)
 toolbariconmap(FMT_BOOKMARK,tb_anchor)
 toolbariconmap(FMT_SIZE,NoIcon)
+#if HAVE_SUGAR
+toolbariconmap(FMT_BOLD,sugar_text_bold_48_xpm)
+toolbariconmap(FMT_ITALIC,sugar_text_italic_48_xpm)
+toolbariconmap(FMT_UNDERLINE,sugar_text_underline_48_xpm)
+#else
 toolbariconmap(FMT_BOLD,tb_text_bold_xpm)
 toolbariconmap(FMT_ITALIC,tb_text_italic_xpm)
 toolbariconmap(FMT_UNDERLINE,tb_text_underline_xpm)
+#endif
 toolbariconmap(FMT_OVERLINE,tb_text_overline_xpm)
 toolbariconmap(FMT_STRIKE,tb_text_strikeout_xpm)
 toolbariconmap(FMT_TOPLINE,tb_text_topline_xpm)
@@ -62,10 +78,17 @@ toolbariconmap(HELP,tb_help_xpm)
 toolbariconmap(FMT_SUPERSCRIPT,tb_text_superscript_xpm)
 toolbariconmap(FMT_SUBSCRIPT,tb_text_subscript_xpm)
 toolbariconmap(INSERT_SYMBOL,tb_symbol_xpm)
+#if HAVE_SUGAR
+toolbariconmap(ALIGN_LEFT,sugar_format_justify_left_48_xpm)
+toolbariconmap(ALIGN_CENTER,sugar_format_justify_center_48_xpm)
+toolbariconmap(ALIGN_RIGHT,sugar_format_justify_right_48_xpm)
+toolbariconmap(ALIGN_JUSTIFY,sugar_format_justify_fill_48_xpm)
+#else
 toolbariconmap(ALIGN_LEFT,tb_text_align_left_xpm)
 toolbariconmap(ALIGN_CENTER,tb_text_center_xpm)
 toolbariconmap(ALIGN_RIGHT,tb_text_align_right_xpm)
 toolbariconmap(ALIGN_JUSTIFY,tb_text_justify_xpm)
+#endif
 toolbariconmap(PARA_0BEFORE,tb_para_0before_xpm)
 toolbariconmap(PARA_12BEFORE,tb_para_12before_xpm)
 toolbariconmap(SINGLE_SPACE,tb_line_single_space_xpm)
