@@ -1,3 +1,5 @@
+/* -*- mode: C++; tab-width: 4; c-basic-offset: 4; -*- */
+
 /* AbiWord
  * Copyright (C) 1998 AbiSource, Inc.
  * 
@@ -34,7 +36,7 @@ class pt_PieceTable;
 class ABI_EXPORT PD_Style
 {
 public:
-	PD_Style(pt_PieceTable * pPT, PT_AttrPropIndex indexAP, const char * szName = NULL);
+	PD_Style(pt_PieceTable * pPT, PT_AttrPropIndex indexAP, const char * szName = NULL, bool bDisplayed = true);
 	virtual ~PD_Style();
 
 	inline PT_AttrPropIndex		getIndexAP(void) const	{ return m_indexAP; };
@@ -54,7 +56,8 @@ public:
 	bool					isUsed(void) const;
 	bool					isCharStyle(void) const;
 	bool					isList(void);
-	
+	bool					isDisplayed(void) const { return m_bDisplayed; }
+
 	bool					addProperty(const XML_Char * szName, const XML_Char * szValue);
 	bool					addProperties(const XML_Char ** pProperties);
 	bool					setAllAttributes(const XML_Char ** pAtts);
@@ -78,6 +81,7 @@ protected:
 	PT_AttrPropIndex		m_indexAP;
 
 	char * 					m_szName;
+	bool					m_bDisplayed;
 	UT_sint32				m_iUsed;
 
 	// lazily-bound attribute caches to speed lookups
@@ -92,7 +96,7 @@ protected:
 class ABI_EXPORT PD_BuiltinStyle : public PD_Style
 {
 public:
-	PD_BuiltinStyle(pt_PieceTable * pPT, PT_AttrPropIndex indexAP, const char * szName);
+	PD_BuiltinStyle(pt_PieceTable * pPT, PT_AttrPropIndex indexAP, const char * szName, bool bDisplayed);
 	virtual ~PD_BuiltinStyle();
 
 	virtual bool			isUserDefined(void) const { return (m_indexAP != m_indexAPOrig); };

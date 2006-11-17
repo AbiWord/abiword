@@ -1,5 +1,6 @@
+/* -*- mode: C++; tab-width: 4; c-basic-offset: 4; -*- */
 /* AbiWord
- * Copyright (C) 2004 Tomas Frydrych <tomasfrydrych@yahoo.co.uk>
+ * Copyright (C) 2004-6 Tomas Frydrych <dr.tomas@yahoo.co.uk>
  * 
  * This program is free software; you can redistribute it and/or
  * modify it under the terms of the GNU General Public License
@@ -119,6 +120,9 @@ public:
 									  UT_sint32 xoff, UT_sint32 yoff,
 									  int * pCharWidth);
                     
+	virtual UT_uint32      measureString(const UT_UCSChar* s, int iOffset,
+										 int num,  UT_GrowBufElement* pWidths);
+	
 	virtual GR_Font*	   getDefaultFont(UT_String& fontFamily,
 										  const char * pszLang);
 	virtual void           setFont(GR_Font *);
@@ -207,6 +211,18 @@ public:
 
 	void _scaleCharacterMetrics(GR_UnixPangoRenderInfo & RI);
 	void _scaleJustification(GR_UnixPangoRenderInfo & RI);
+
+	inline UT_uint32 _measureExtent (PangoGlyphString * pg,
+									 PangoFont * pf,
+									 UT_BidiCharType iDir,
+									 const char * pUtf8,
+									 int * & pLogOffsets,
+									 UT_sint32 & iStart,
+									 UT_sint32 & iEnd);
+	
+	inline int * _calculateLogicalOffsets (PangoGlyphString * pGlyphs,
+										   UT_BidiCharType iVisDir,
+										   const char * pUtf8);
 	
   protected:
 	PangoFontMap *    m_pFontMap;
@@ -245,6 +261,10 @@ class ABI_EXPORT GR_UnixPangoPrintGraphics : public GR_UnixPangoGraphics
 	static const char *    graphicsDescriptor(){return "Unix Pango Print";}
 	static GR_Graphics *   graphicsAllocator(GR_AllocInfo&);
 
+	GnomePrintContext *    getGnomePrintContext() const;
+	UT_sint32              scale_ydir (UT_sint32 in) const;
+	UT_sint32              scale_xdir (UT_sint32 in) const;
+	virtual bool           canQuickPrint(void) { return true;}
 	virtual void setColor(const UT_RGBColor& clr);
 	virtual void getColor(UT_RGBColor& clr);
 	
@@ -253,6 +273,7 @@ class ABI_EXPORT GR_UnixPangoPrintGraphics : public GR_UnixPangoGraphics
 						   UT_sint32 xoff, UT_sint32 yoff,
 						   int * pCharWidths = NULL);
 	
+	virtual bool shape(GR_ShapingInfo & si, GR_RenderInfo *& ri);
 	virtual void renderChars(GR_RenderInfo & ri);
 
 	virtual void drawLine(UT_sint32 x1, UT_sint32 y1, UT_sint32 x2, UT_sint32 y2);
@@ -306,6 +327,10 @@ class ABI_EXPORT GR_UnixPangoPrintGraphics : public GR_UnixPangoGraphics
 
 	
 	XAP_UnixGnomePrintGraphics * m_pGnomePrint;
+	
+	PangoFontMap *    m_pGPFontMap;
+	PangoContext *    m_pGPContext;
+	UT_uint32         m_iScreenResolution;
 };
 #endif // ifndef WHITOUT_PRINTING
 

@@ -70,6 +70,7 @@ AD_Document::AD_Document() :
     m_bForcedDirty(false),
 	m_pUUID(NULL),
 	m_pOrigUUID(NULL),
+	m_pMyUUID(NULL),
 	m_bDoNotAdjustHistory(false),
 	m_bAfterFirstSave(false)
 {	// TODO: clear the ignore list
@@ -85,12 +86,17 @@ AD_Document::AD_Document() :
 	// Make a copy with the same value so we know when we're importing
 	// a remote CR
 	//
+	m_pMyUUID =  XAP_App::getApp()->getUUIDGenerator()->createUUID();
+	UT_return_if_fail(m_pMyUUID);
+	UT_return_if_fail(m_pMyUUID->isValid());
+
 	m_pOrigUUID =  XAP_App::getApp()->getUUIDGenerator()->createUUID();
 	UT_return_if_fail(m_pOrigUUID);
 	UT_return_if_fail(m_pOrigUUID->isValid());
 	UT_UTF8String s;
 	m_pUUID->toString(s);
 	m_pOrigUUID->setUUID(s);
+	m_pMyUUID->setUUID(s);
 	UT_UTF8String OrigS;
 	m_pOrigUUID->toString(OrigS);
 	UT_DEBUGMSG(("!!!!!!!!!!----------------- Created string %s \n",s.utf8_str()));
@@ -118,15 +124,17 @@ AD_Document::~AD_Document()
 		delete m_pUUID;
 	if(m_pOrigUUID)
 		delete m_pOrigUUID;
+	if(m_pMyUUID)
+		delete m_pMyUUID;
 }
 
 bool AD_Document::isOrigUUID(void) const
 {
   UT_UTF8String sDoc;
   UT_UTF8String sOrig;
-  if((m_pUUID== NULL) || (m_pOrigUUID == NULL))
+  if((m_pMyUUID== NULL) || (m_pOrigUUID == NULL))
 	  return false;
-  m_pUUID->toString(sDoc);
+  m_pMyUUID->toString(sDoc);
   m_pOrigUUID->toString(sOrig);
   bool b = (UT_strcmp(sDoc.utf8_str(),sOrig.utf8_str()) == 0);
   return b;
@@ -540,6 +548,47 @@ void AD_Document::setDocUUID(const char * s)
 }
 
 /*!
+    Set Orig UID for the present document
+*/
+void AD_Document::setOrigUUID(const char * s)
+{
+	if(!m_pOrigUUID)
+	{
+		UT_return_if_fail(0);
+	}
+	
+	if(!m_pOrigUUID->setUUID(s))
+	{
+		// string we were passed did not contain valid uuid
+		// if our original id was valid, we will keep it, otherwise
+		// make a new one
+		if(!m_pOrigUUID->isValid())
+			m_pOrigUUID->makeUUID();
+	}
+}
+
+
+/*!
+    Set Orig UID for the present document
+*/
+void AD_Document::setMyUUID(const char * s)
+{
+	if(!m_pMyUUID)
+	{
+		UT_return_if_fail(0);
+	}
+	
+	if(!m_pMyUUID->setUUID(s))
+	{
+		// string we were passed did not contain valid uuid
+		// if our original id was valid, we will keep it, otherwise
+		// make a new one
+		if(!m_pMyUUID->isValid())
+			m_pMyUUID->makeUUID();
+	}
+}
+
+/*!
     Get the UID of this document represented as a string (this
     function is primarily for exporters)
 */
@@ -561,6 +610,19 @@ const char * AD_Document::getOrigDocUUIDString() const
 	UT_return_val_if_fail(m_pOrigUUID, NULL);
 	static UT_UTF8String s;
 	m_pOrigUUID->toString(s);
+	return s.utf8_str();
+}
+
+
+/*!
+    Get the UID of the users of this document represented as a string (this
+    function is primarily for exporters)
+*/
+const char * AD_Document::getMyUUIDString() const
+{
+	UT_return_val_if_fail(m_pMyUUID, NULL);
+	static UT_UTF8String s;
+	m_pMyUUID->toString(s);
 	return s.utf8_str();
 }
 

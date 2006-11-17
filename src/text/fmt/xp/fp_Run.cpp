@@ -169,7 +169,7 @@ UT_sint32 fp_Run::getHeight() const
 {
 	if(isHidden() == FP_VISIBLE)
 		return m_iHeight;
-
+	
 	return 0;
 }
 
@@ -177,7 +177,7 @@ UT_sint32 fp_Run::getWidth() const
 {
 	if(isHidden() == FP_VISIBLE)
 		return m_iWidth;
-
+	
 	return 0;
 }
 
@@ -432,7 +432,13 @@ void fp_Run::lookupProperties(GR_Graphics * pG)
 	// and draw with background color
 	if(pG == NULL)
 	{
+		m_bPrinting = false;
 		pG = getGraphics();
+	}
+	else if(pG->queryProperties(GR_Graphics::DGP_PAPER))
+	{
+		m_bPrinting = true;
+		m_pG = pG;
 	}
 	if(!m_pBL->isContainedByTOC())
 	{
@@ -528,7 +534,7 @@ fp_Run::_inheritProperties(void)
 
 		FL_DocLayout * pLayout = getBlock()->getDocLayout();
 
-		GR_Font * pFont = const_cast<GR_Font *>(pLayout->findFont(pSpanAP,pBlockAP,pSectionAP));
+		GR_Font * pFont = const_cast<GR_Font *>(pLayout->findFont(pSpanAP,pBlockAP,pSectionAP,m_pG));
 
 		if ((pFont != _getFont()) || (getType() == FPRUN_ENDOFPARAGRAPH))
 		{
@@ -1157,6 +1163,7 @@ void fp_Run::draw(dg_DrawArgs* pDA)
 	{
 		m_bPrinting = true;
 		m_pG = pG;
+		lookupProperties(pG);
 	}
 	pG->setColor(getFGColor());
 	UT_Rect clip(0,0,0,0);
@@ -1298,6 +1305,7 @@ void fp_Run::draw(dg_DrawArgs* pDA)
 	{
 		m_bPrinting = false;
 		m_pG = NULL;
+		lookupProperties(NULL);
 	}
 }
 
@@ -1379,6 +1387,12 @@ void fp_Run::setVisibility(FPVisibility eVis)
 	m_bDirty = true;
 	m_bRecalcWidth = true;
 	m_eVisibility = eVis;
+
+	/* recalculate width immediately so that any calls to getWidth() are
+	 * accurate
+	 */
+	_recalcWidth();
+	
 	return;
 }
 
@@ -1837,7 +1851,7 @@ void fp_TabRun::_lookupProperties(const PP_AttrProp * pSpanAP,
 
 	// look for fonts in this DocLayout's font cache
 	FL_DocLayout * pLayout = getBlock()->getDocLayout();
-	GR_Font * pFont = const_cast<GR_Font *>(pLayout->findFont(pSpanAP,pBlockAP,pSectionAP));
+	GR_Font * pFont = const_cast<GR_Font *>(pLayout->findFont(pSpanAP,pBlockAP,pSectionAP,getGraphics()));
 
 	if (pFont != _getFont())
 	{
@@ -2296,7 +2310,7 @@ void fp_ForcedLineBreakRun::_lookupProperties(const PP_AttrProp * pSpanAP,
 			// look for fonts in this DocLayout's font cache
 			FL_DocLayout * pLayout = getBlock()->getDocLayout();
 
-			GR_Font * pFont = const_cast<GR_Font *>(pLayout->findFont(pSpanAP,pBlockAP,pSectionAP));
+			GR_Font * pFont = const_cast<GR_Font *>(pLayout->findFont(pSpanAP,pBlockAP,pSectionAP,getGraphics()));
 			getGraphics()->setFont(pFont);
 		}
 		_setWidth(getGraphics()->measureString(pEOP, 0, iTextLen, NULL));
@@ -2445,7 +2459,7 @@ void fp_ForcedLineBreakRun::_draw(dg_DrawArgs* pDA)
 		// look for fonts in this DocLayout's font cache
 		FL_DocLayout * pLayout = getBlock()->getDocLayout();
 
-		GR_Font * pFont = const_cast<GR_Font *>(pLayout->findFont(pSpanAP,pBlockAP,pSectionAP));
+		GR_Font * pFont = const_cast<GR_Font *>(pLayout->findFont(pSpanAP,pBlockAP,pSectionAP,getGraphics()));
 		getGraphics()->setFont(pFont);
 		iAscent = getGraphics()->getFontAscent();
     }
@@ -3030,7 +3044,7 @@ void fp_EndOfParagraphRun::_lookupProperties(const PP_AttrProp * pSpanAP,
 			// look for fonts in this DocLayout's font cache
 			FL_DocLayout * pLayout = getBlock()->getDocLayout();
 
-			GR_Font * pFont = const_cast<GR_Font *>(pLayout->findFont(pSpanAP,pBlockAP,pSectionAP));
+			GR_Font * pFont = const_cast<GR_Font *>(pLayout->findFont(pSpanAP,pBlockAP,pSectionAP,getGraphics()));
 			pG->setFont(pFont);
 		}
 		m_iDrawWidth  = pG->measureString(pEOP, 0, iTextLen, NULL);
@@ -3210,7 +3224,7 @@ void fp_EndOfParagraphRun::_draw(dg_DrawArgs* pDA)
 		// look for fonts in this DocLayout's font cache
 		FL_DocLayout * pLayout = getBlock()->getDocLayout();
 
-		GR_Font * pFont = const_cast<GR_Font *>(pLayout->findFont(pSpanAP,pBlockAP,pSectionAP));
+		GR_Font * pFont = const_cast<GR_Font *>(pLayout->findFont(pSpanAP,pBlockAP,pSectionAP,getGraphics()));
 		getGraphics()->setFont(pFont);
 		iAscent = getGraphics()->getFontAscent();
 	}
@@ -3263,18 +3277,22 @@ void fp_EndOfParagraphRun::_draw(dg_DrawArgs* pDA)
 //////////////////////////////////////////////////////////////////
 
 
-fp_ImageRun::fp_ImageRun(fl_BlockLayout* pBL, UT_uint32 iOffsetFirst, UT_uint32 iLen, FG_Graphic * pFG) : fp_Run(pBL, iOffsetFirst, iLen, FPRUN_IMAGE)
+fp_ImageRun::fp_ImageRun(fl_BlockLayout* pBL,
+						 UT_uint32 iOffsetFirst,
+						 UT_uint32 iLen, FG_Graphic * pFG) :
+	fp_Run(pBL, iOffsetFirst, iLen, FPRUN_IMAGE),
+	m_pFGraphic(pFG),
+	m_iPointHeight(0),
+	m_pSpanAP(NULL),
+	m_bImageForPrinter (false)
 {
 #if 0	// put this back later
 	UT_ASSERT(pImage);
 #endif
 
-	m_pFGraphic = pFG;
 	m_pImage = pFG->generateImage(getGraphics(), NULL, 0, 0);
 	m_sCachedWidthProp = pFG->getWidthProp();
 	m_sCachedHeightProp = pFG->getHeightProp();
-	m_iPointHeight = 0;
-	m_pSpanAP = NULL;
 	m_iGraphicTick = pBL->getDocLayout()->getGraphicTick();
 	lookupProperties();
 }
@@ -3295,6 +3313,7 @@ void fp_ImageRun::regenerateImage(GR_Graphics * pG)
 {
 	DELETEP(m_pImage);
 	m_pImage = m_pFGraphic->regenerateImage(pG);
+	m_bImageForPrinter = pG->queryProperties(GR_Graphics::DGP_PAPER);
 	m_iGraphicTick = getBlock()->getDocLayout()->getGraphicTick();
 
 }
@@ -3369,8 +3388,9 @@ void fp_ImageRun::_lookupProperties(const PP_AttrProp * pSpanAP,
 	{
 		maxH = pG->tlu(3);
 	}
-
-	if((strcmp(m_sCachedWidthProp.c_str(),szWidth) != 0) ||
+	UT_DEBUGMSG(("Image szWidth %s Image szHeight %s \n",szWidth,szHeight));
+	if((pG->queryProperties(GR_Graphics::DGP_PAPER) != m_bImageForPrinter) ||
+		(strcmp(m_sCachedWidthProp.c_str(),szWidth) != 0) ||
 	   (strcmp(m_sCachedHeightProp.c_str(),szHeight) != 0) ||
 		UT_convertToLogicalUnits(szHeight) > maxH ||
 		UT_convertToLogicalUnits(szWidth) > maxW)
@@ -3378,7 +3398,20 @@ void fp_ImageRun::_lookupProperties(const PP_AttrProp * pSpanAP,
 		m_sCachedWidthProp = szWidth;
 		m_sCachedHeightProp = szHeight;
 		DELETEP(m_pImage);
+		UT_sint32 iH = UT_convertToLogicalUnits(szHeight);
+		UT_sint32 iW =  UT_convertToLogicalUnits(szWidth);
+		if((iW < maxW) && (iW > 30))
+		{
+			maxW = iW;
+			UT_DEBUGMSG(("Change Image Width to %d \n",maxW));
+		}
+		if((iH < maxH) && (iH > 30))
+		{
+			maxH = iH;
+			UT_DEBUGMSG(("Change Image Height to %d \n",maxH));
+		}
 		m_pImage = m_pFGraphic->generateImage(pG, pSpanAP, maxW, maxH);
+		m_bImageForPrinter = pG->queryProperties(GR_Graphics::DGP_PAPER);
 		markAsDirty();
 		if(getLine())
 		{
@@ -3413,7 +3446,7 @@ void fp_ImageRun::_lookupProperties(const PP_AttrProp * pSpanAP,
 	getBlockAP(pBlockAP);
 
 	FL_DocLayout * pLayout = getBlock()->getDocLayout();
-	GR_Font * pFont = const_cast<GR_Font *>(pLayout->findFont(pSpanAP,pBlockAP,pSectionAP));
+	GR_Font * pFont = const_cast<GR_Font *>(pLayout->findFont(pSpanAP,pBlockAP,pSectionAP,getGraphics()));
 
 	if (pFont != _getFont())
 	{
@@ -3711,7 +3744,6 @@ fp_FieldRun::~fp_FieldRun(void)
 
 bool fp_FieldRun::_recalcWidth()
 {
-	UT_GrowBufElement aCharWidths[FPFIELD_MAX_LENGTH];
 	// TODO -- is this really needed ???
 	// this should not be needed, since lookup properties is called
 	// when formatting changes - Tomas
@@ -3719,8 +3751,12 @@ bool fp_FieldRun::_recalcWidth()
 
 	getGraphics()->setFont(_getFont());
 
-	UT_sint32 iNewWidth = getGraphics()->measureString(m_sFieldValue, 0, UT_UCS4_strlen(m_sFieldValue), aCharWidths);
-	xxx_UT_DEBUGMSG(("fp_FieldRun::recalcWidth: old width %d, new width %d\n", getWidth(), iNewWidth));
+	UT_sint32 iNewWidth =
+		getGraphics()->measureString(m_sFieldValue,
+									 0,
+									 UT_UCS4_strlen(m_sFieldValue),
+									 NULL);
+	
 	if (iNewWidth != getWidth())
 	{
 		clearScreen();
@@ -3781,8 +3817,6 @@ bool fp_FieldRun::_setValue(const UT_UCSChar *p_new_value)
 		}
 
 		{
-			UT_GrowBufElement aCharWidths[FPFIELD_MAX_LENGTH];
-
 			// TODO -- is this really needed???
 			// should not be, since lookupProperties is called on
 			// formatting changes - Tomas
@@ -3790,7 +3824,11 @@ bool fp_FieldRun::_setValue(const UT_UCSChar *p_new_value)
 
 			getGraphics()->setFont(_getFont());
 
-			UT_sint32 iNewWidth = getGraphics()->measureString(m_sFieldValue, 0, UT_UCS4_strlen(m_sFieldValue), aCharWidths);
+			UT_sint32 iNewWidth =
+				getGraphics()->measureString(m_sFieldValue,
+											 0,
+											 UT_UCS4_strlen(m_sFieldValue),
+											 NULL);
 			if (iNewWidth != getWidth())
 			{
 				_setWidth(iNewWidth);
@@ -3908,7 +3946,7 @@ void fp_FieldRun::_lookupProperties(const PP_AttrProp * pSpanAP,
 	}
 	else
 	{
-		_setFont(const_cast<GR_Font *>(pLayout->findFont(pSpanAP,pBlockAP,pSectionAP, false)));
+		_setFont(const_cast<GR_Font *>(pLayout->findFont(pSpanAP,pBlockAP,pSectionAP, getGraphics())));
 	}
 
 	_setAscent(pG->getFontAscent(_getFont()));
@@ -4218,14 +4256,10 @@ void fp_FieldRun::_defaultDraw(dg_DrawArgs* pDA)
 	pG->setFont(_getFont());
 	
 
-	UT_GrowBufElement aCharWidths[FPFIELD_MAX_LENGTH];
 	UT_uint32 len = UT_UCS4_strlen(m_sFieldValue);
-	
 	UT_return_if_fail(len);
-	
-	/*UT_sint32 iNewWidth = */ getGraphics()->measureString(m_sFieldValue, 0, len, aCharWidths);
 
-	painter.drawChars(m_sFieldValue, 0, len, pDA->xoff,iYdraw, aCharWidths);
+	painter.drawChars(m_sFieldValue, 0, len, pDA->xoff,iYdraw, NULL);
 //
 // Draw underline/overline/strikethough
 //

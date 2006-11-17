@@ -111,7 +111,8 @@ typedef enum _PLListenerType
 {
 	PTL_UNKNOWN,
 	PTL_DocLayout,
-	PTL_CollabExport
+	PTL_CollabExport,
+	PTL_CollabServiceExport
 	/* add more types here ONLY as necessary */
 } PLListenerType;
 

@@ -62,9 +62,12 @@ public:
       { return  m_OH;}
     void                    setObjectHandle(pf_Frag_Object * pfo) const
     { m_OH = static_cast<PL_ObjectHandle>(pfo);}
+    void                      AdjustBlockOffset(PT_BlockOffset iBlk) const
+	{ m_blockOffset = iBlk;}
+
 protected:
 	PTObjectType			m_objectType;		/* our type (image, etc.) */
-	PT_BlockOffset			m_blockOffset; /* offset of span from beginning of paragraph */
+mutable	PT_BlockOffset			m_blockOffset; /* offset of span from beginning of paragraph */
     // this only serves as a unique identifier of a field
     // it should not be thought of as a valid pointer
     fd_Field *              m_field; 

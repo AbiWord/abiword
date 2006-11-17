@@ -138,6 +138,37 @@ AC_MSG_RESULT([final printing ${print}])
 
 AM_CONDITIONAL(WITH_PRINTING, test x$print = xtrue)
 
+# disable pango for embedded targets by default, but provide --enable-pango
+# parameter to overrided if desired
+AC_ARG_ENABLE(pango,[  --enable-pango    Use Pango for text layout],[
+	case "${enableval}" in
+	   yes)	usepango=true ;
+		PANGO_CFLAGS="-DUSE_PANGO" ;;
+	   no)  usepango=false ;
+		PANGO_CFLAGS="" ;;
+	     *)	AC_MSG_ERROR(bad value ${enableval} for --enable-printing) ;;
+	esac
+],[	usepango=undefined
+	PANGO_CFLAGS=""
+])
+
+if test "$usepango" = "undefined" && test "$embedded" = "true"; then
+   usepango=false
+   PANGO_CFLAGS=""
+elif test "$usepango" = "undefined"; then
+   usepango=true;
+   PANGO_CFLAGS="-DUSE_PANGO"
+fi
+
+if test  "$sugar" = "true"; then
+   usepango=true;
+   PANGO_CFLAGS="-DUSE_PANGO"
+fi
+
+AC_MSG_RESULT([${usepango}])
+
+AM_CONDITIONAL(WITH_PANGO, test x$usepango = xtrue)
+
 if test "$PLATFORM" = "unix"; then
 	ABI_FE="Unix"
 	ABI_BE="$ABI_FE"

@@ -4711,7 +4711,7 @@ bool fl_BlockLayout::doclistener_populateSpan(const PX_ChangeRecord_Span * pcrs,
 
 bool	fl_BlockLayout::_doInsertTextSpan(PT_BlockOffset blockOffset, UT_uint32 len)
 {
-	xxx_UT_DEBUGMSG(("_doInsertTextSpan: Initial offset %d, len %d\n", blockOffset, len));
+	xxx_UT_DEBUGMSG(("_doInsertTextSpan: Initial offset %d, len %d bl_Length %d \n", blockOffset, len,getLength()));
 	UT_return_val_if_fail( m_pLayout, false );
 	PD_StruxIterator text(getStruxDocHandle(),
 						  blockOffset + fl_BLOCK_STRUX_OFFSET,
@@ -8397,6 +8397,7 @@ bool fl_BlockLayout::doclistener_changeObject(const PX_ChangeRecord_ObjectChange
 				{
 					pEmbedRun->clearScreen();
 				}
+				pEmbedRun->update ();
 				pEmbedRun->lookupProperties();
 
 				goto done;

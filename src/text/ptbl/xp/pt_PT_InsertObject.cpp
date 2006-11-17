@@ -63,12 +63,13 @@ bool pt_PieceTable::insertObject(PT_DocPosition dpos,
 		_translateRevisionAttribute(Revisions, indexAP, PP_REVISION_ADDITION,
 									ppRevAttrs, ppRevProps, NULL, NULL);
 
-		// count original attributes and the revision-inherited attributes and add them to the revision attribute
+		// count original attributes and the revision-inherited
+		// attributes and add them to the revision attribute
 		UT_uint32 iAttrCount = 0;
-		for (; attributes && attributes[iAttrCount+1]; iAttrCount+=2){}
+		for (; attributes && attributes[iAttrCount]; iAttrCount+=2){}
 
 		UT_uint32 iRevAttrCount = 0;
-		for (; ppRevAttrs && ppRevAttrs[iRevAttrCount+1]; iRevAttrCount+=2){}
+		for (; ppRevAttrs && ppRevAttrs[iRevAttrCount]; iRevAttrCount+=2){}
 
 		const XML_Char ** ppRevAttrib = NULL;
 		if(iAttrCount + iRevAttrCount > 0)
@@ -133,10 +134,10 @@ bool pt_PieceTable::insertObject(PT_DocPosition dpos,
 		
 		// count original attributes and the revision-inherited attributes and add them to the revision attribute
 		UT_uint32 iAttrCount = 0;
-		for (; attributes && attributes[iAttrCount+1]; iAttrCount+=2){}
+		for (; attributes && attributes[iAttrCount]; iAttrCount+=2){}
 
 		UT_uint32 iRevAttrCount = 0;
-		for (; ppRevAttrs && ppRevAttrs[iRevAttrCount+1]; iRevAttrCount+=2){}
+		for (; ppRevAttrs && ppRevAttrs[iRevAttrCount]; iRevAttrCount+=2){}
 
 		const XML_Char ** ppRevAttrib = NULL;
 		if(iAttrCount + iRevAttrCount > 0)
@@ -250,9 +251,36 @@ bool pt_PieceTable::_realInsertObject(PT_DocPosition dpos,
 	UT_return_val_if_fail (m_pts==PTS_Editing,false);
 
 	// store the attributes and properties and get an index to them.
-
+	UT_UTF8String sProps;
+	UT_sint32 i = 0;
+	sProps.clear();
+	if(properties != NULL)
+	{
+	    for(i=0;(properties[i] != NULL);i+=2)
+	    {
+		UT_DEBUGMSG(("Image: szProps = |%s| \n",properties[i]));
+		sProps +=properties[i];
+		sProps += ":";
+		sProps += properties[i+1];
+		if(properties[i+2] != NULL)
+		{
+		    sProps += ";";
+		}
+	    }
+	}
+	UT_GenericVector<XML_Char*>  Atts;
+	Atts.clear();
+	for(i=0; attributes[i] != 0; i++)
+	{
+	    Atts.addItem(static_cast<XML_Char *>(const_cast<char *>(attributes[i])));
+	}
+	if(sProps.size() > 0)
+	{
+	    Atts.addItem(static_cast<XML_Char *>("props"));
+	    Atts.addItem(static_cast<XML_Char *>(const_cast<char *>(sProps.utf8_str())));
+	}
 	PT_AttrPropIndex indexAP;
-	if (!m_varset.storeAP(attributes,&indexAP))
+	if (!m_varset.storeAP(&Atts,&indexAP))
 		return false;
 
 	// get the fragment at the given document position.

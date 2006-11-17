@@ -59,17 +59,22 @@ bool pt_PieceTable::_tellAndMaybeAddListener(PL_Listener * pListener,
 {
 	// walk document and for each fragment, send a notification
 	// to each layout.
-
+  
 	PL_StruxFmtHandle sfh = 0;
 	PT_DocPosition sum = 0;
 	UT_uint32 blockOffset = 0;
 	pf_Frag_Strux * pfs = NULL;
+	bool bListensOnly = (pListener->getType() >= PTL_CollabExport);
 	for (pf_Frag * pf = m_fragments.getFirst(); (pf); pf=pf->getNext())
 	{
 		switch (pf->getType())
 		{
 		case pf_Frag::PFT_Text:
 			{
+			        if(bListensOnly)
+				{
+			                break;
+				}
 				pf_Frag_Text * pft = static_cast<pf_Frag_Text *> (pf);
 				PX_ChangeRecord * pcr = NULL;
 				bool bStatus1 = false;
@@ -114,6 +119,11 @@ bool pt_PieceTable::_tellAndMaybeAddListener(PL_Listener * pListener,
 				pfs = static_cast<pf_Frag_Strux *> (pf);
 				PL_StruxDocHandle sdh = (PL_StruxDocHandle)pf;
 				sfh = 0;
+			        if(bListensOnly)
+				{
+					pfs->setFmtHandle(listenerId,sfh);
+			                break;
+				}
 				PX_ChangeRecord * pcr = NULL;
 				bool bStatus1 = pfs->createSpecialChangeRecord(&pcr,sum);
 				UT_return_val_if_fail (bStatus1, false);
@@ -142,6 +152,10 @@ bool pt_PieceTable::_tellAndMaybeAddListener(PL_Listener * pListener,
 
 		case pf_Frag::PFT_Object:
 			{
+			        if(bListensOnly)
+				{
+			                break;
+				}
 				pf_Frag_Object * pfo = static_cast<pf_Frag_Object *> (pf);
 				PX_ChangeRecord * pcr = NULL;
 				bool bStatus1 = false;
@@ -185,6 +199,10 @@ bool pt_PieceTable::_tellAndMaybeAddListener(PL_Listener * pListener,
 
 		case pf_Frag::PFT_FmtMark:
 			{
+			        if(bListensOnly)
+				{
+			                break;
+				}
 				pf_Frag_FmtMark * pffm = static_cast<pf_Frag_FmtMark *> (pf);
 				PX_ChangeRecord * pcr = NULL;
 				bool bStatus1 = false;

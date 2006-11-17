@@ -735,6 +735,7 @@ bool fl_DocListener::populateStrux(PL_StruxDocHandle sdh,
 		
 		// Append a new CallLayout to the Current TableLayout
 		fl_ContainerLayout * pCon = getTopContainerLayout();
+		UT_return_val_if_fail(pCon, false);
 		if(pCon->getContainerType() != FL_CONTAINER_TABLE)
 		{
 #ifdef DEBUG
@@ -2360,6 +2361,10 @@ bool fl_DocListener::signal(UT_uint32 iSignal)
 		break;
 	case PD_SIGNAL_DOCDIRTY_CHANGED:
 		m_pLayout->notifyListeners(AV_CHG_DIRTY);
+		break;
+	case PD_SIGNAL_DOCSAVED:
+		break;
+	case PD_SIGNAL_DOCCLOSED:
 		break;
 
 	default:

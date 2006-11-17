@@ -39,7 +39,7 @@
 #include "px_CR_SpanChange.h"
 #include "px_CR_Strux.h"
 #include "pd_Style.h"
-
+#include "px_CR_Glob.h"
 
 // TODO: calculate this from pf_FRAG_STRUX_*_LENGTH instead?
 #define pt_BOD_POSITION 2
@@ -111,7 +111,7 @@ bool pt_PieceTable::deleteStruxNoUpdate(PL_StruxDocHandle sdh)
 	return true;
 }
 
-bool pt_PieceTable::createAndSendCR(PT_DocPosition iPos, UT_sint32 iType,bool bSave)
+bool pt_PieceTable::createAndSendCR(PT_DocPosition iPos, UT_sint32 iType,bool bSave,UT_Byte iGlob)
 {
 	PX_ChangeRecord::PXType cType = static_cast< PX_ChangeRecord::PXType>(iType);
   switch(cType)
@@ -127,17 +127,29 @@ bool pt_PieceTable::createAndSendCR(PT_DocPosition iPos, UT_sint32 iType,bool bS
     case PX_ChangeRecord::PXT_InsertFmtMark:
     case PX_ChangeRecord::PXT_DeleteFmtMark:
     case PX_ChangeRecord::PXT_ChangeFmtMark:
-    case PX_ChangeRecord::PXT_ChangePoint:
 		{
 			UT_DEBUGMSG(("CR already implemented \n"));
 			UT_ASSERT(UT_SHOULD_NOT_HAPPEN);
 			return false;
 		}
+    case PX_ChangeRecord::PXT_GlobMarker:
+	{
+		PX_ChangeRecord * pcr= static_cast<PX_ChangeRecord *>(new PX_ChangeRecord_Glob(cType,iGlob));
+		if(bSave)
+		{
+				m_history.addChangeRecord(pcr);
+		}
+		m_pDocument->notifyListeners(NULL, pcr);
+		if(!bSave)
+			delete pcr;
+		return true;
+
+	}
+    case PX_ChangeRecord::PXT_ChangePoint:
     case PX_ChangeRecord::PXT_ListUpdate:
     case PX_ChangeRecord::PXT_StopList:
     case PX_ChangeRecord::PXT_UpdateField:
     case PX_ChangeRecord::PXT_RemoveList:
-    case PX_ChangeRecord::PXT_GlobMarker:
     case PX_ChangeRecord::PXT_UpdateLayout:
     {
 		PX_ChangeRecord * pcr= new PX_ChangeRecord(cType,iPos, 0,0);

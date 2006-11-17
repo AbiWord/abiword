@@ -3702,7 +3702,7 @@ void FV_View::cmdCharDelete(bool bForward, UT_uint32 count)
 		getCharFormat(&props_in);
 		currentfont = UT_getAttribute("font-family",props_in);
 		properties[1] = currentfont;
-		UT_DEBUGMSG(("deleteSpan - 1: Inital pos %d count %d \n",getPoint(),count));
+		xxx_UT_DEBUGMSG(("deleteSpan - 1: Inital pos %d count %d \n",getPoint(),count));
 
 		UT_uint32 amt = count;
 		UT_uint32 posCur = getPoint();
@@ -3715,7 +3715,7 @@ void FV_View::cmdCharDelete(bool bForward, UT_uint32 count)
 			if (!_charMotion(bForward,count, false))
 			{
 				UT_ASSERT(getPoint() <= posCur);
-				UT_DEBUGMSG(("SEVIOR: posCur %d getPoint() %d \n",posCur,getPoint()));
+				xxx_UT_DEBUGMSG(("SEVIOR: posCur %d getPoint() %d \n",posCur,getPoint()));
 				amt = posCur - getPoint();
 			}
 
@@ -5282,6 +5282,8 @@ bool FV_View::cmdInsertEmbed(UT_ByteBuf * pBuf,PT_DocPosition pos,const char * s
 		bDidGlob = true;
 		m_pDoc->beginUserAtomicGlob();
 		_deleteSelection();
+		// Reevaluate pos after deleting the selection
+		pos = getPoint();
 	}
 	getCharFormat(&props,false,pos);
 	UT_UTF8String sFullProps;
@@ -5482,8 +5484,9 @@ bool FV_View::cmdUpdateEmbed(fp_Run * pRun, UT_ByteBuf * pBuf, const char * szMi
 		// Filter out size properties
 		if (sProp == "width" || sProp == "height" || sProp == "descent"
 			|| sProp == "ascent")
-			continue;
-	    sVal = props[i+1];
+			sVal=NULL;
+		else
+	    	sVal = props[i+1];
 	    UT_DEBUGMSG(("Update Embed Prop %s val %s \n",props[i],props[i+1]));
 	    UT_UTF8String_setProperty(sFullProps,sProp,sVal);
 	  }
@@ -5492,8 +5495,7 @@ bool FV_View::cmdUpdateEmbed(fp_Run * pRun, UT_ByteBuf * pBuf, const char * szMi
 	UT_UTF8String_addPropertyString(sFullProps,sProps);
 	atts[3]=sFullProps.utf8_str();
 	UT_DEBUGMSG(("Property String at Update Object is %s \n",atts[3]));
-	_deleteSelection();
-	m_pDoc->insertObject(pos,PTO_Embed,atts,NULL);
+	m_pDoc->changeSpanFmt(PTC_AddFmt, pos, pos+1, atts, NULL);
 	m_pDoc->endUserAtomicGlob();
 
 	_generalUpdate();
@@ -5910,6 +5912,9 @@ void FV_View::cmdSetRevisionLevel(UT_uint32 i)
 
 		// need to rebuild the doc to reflect the new level ...
 		m_pLayout->rebuildFromHere(static_cast<fl_DocSectionLayout *>(m_pLayout->getFirstSection()));
+
+		// we have to force redraw here, see bug 10486
+		draw(NULL);
 	}
 }
 

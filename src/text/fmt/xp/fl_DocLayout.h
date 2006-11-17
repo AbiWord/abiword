@@ -132,6 +132,14 @@ public:
 							 const PP_AttrProp * pSectionAP,
 							 bool isField = false
 		);
+
+	const GR_Font*	findFont(const PP_AttrProp * pSpanAP,
+				 const PP_AttrProp * pBlockAP,
+				 const PP_AttrProp * pSectionAP,
+				 GR_Graphics * pG,
+				 bool isField = false
+		);
+
 	void        changeDocSections(const PX_ChangeRecord_StruxChange * pcrx, fl_DocSectionLayout * pDSL);
 	fp_Page*	addNewPage(fl_DocSectionLayout* pOwner, bool bNoUpdate=false);
 	fp_Page*	getFirstPage();

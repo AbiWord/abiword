@@ -1,3 +1,5 @@
+/* -*- mode: C++; tab-width: 4; c-basic-offset: 4; -*- */
+
 /* AbiWord
  * Copyright (C) 1998 AbiSource, Inc.
  *
@@ -37,16 +39,16 @@
 ///////////////////////////////////////////////////////////////////
 // Styles represent named collections of formatting properties.
 
-#define _s(name, type, base, follow, props)		\
-	do { const XML_Char * a[] = {				\
-			PT_NAME_ATTRIBUTE_NAME, name,		\
-			PT_TYPE_ATTRIBUTE_NAME, type,		\
-			PT_BASEDON_ATTRIBUTE_NAME, base,	\
-			PT_FOLLOWEDBY_ATTRIBUTE_NAME, follow,	\
-			PT_PROPS_ATTRIBUTE_NAME, props,		\
-			0};									\
-		if (!_createBuiltinStyle(name, a))		\
-			goto Failed;						\
+#define _s(name, displayed, type, base, follow, props)	\
+	do { const XML_Char * a[] = {						\
+			PT_NAME_ATTRIBUTE_NAME, name,				\
+			PT_TYPE_ATTRIBUTE_NAME, type,				\
+			PT_BASEDON_ATTRIBUTE_NAME, base,			\
+			PT_FOLLOWEDBY_ATTRIBUTE_NAME, follow,		\
+			PT_PROPS_ATTRIBUTE_NAME, props,				\
+			0};											\
+		if (!_createBuiltinStyle(name, displayed, a))	\
+			goto Failed;								\
 	} while(0)
 
 typedef struct
@@ -180,65 +182,65 @@ bool pt_PieceTable::_loadBuiltinStyles(void)
 	stTmp += "; text-align:left";
 #	endif
 
-	_s("Normal",	"P", "",       "Current Settings", stTmp.c_str());
+	_s("Normal", true,	"P", "",       "Current Settings", stTmp.c_str());
 	
 	szFmt = "font-family:%s; font-size:%dpt; font-weight:bold; margin-top:22pt; margin-bottom:3pt; keep-with-next:1";
 	UT_String_sprintf(stTmp, szFmt, pszFamily, 17);
-	_s("Heading 1",	"P", "Normal", "Normal", stTmp.c_str());
+	_s("Heading 1", true,	"P", "Normal", "Normal", stTmp.c_str());
 	UT_String_sprintf(stTmp, szFmt, pszFamily, 14);
-	_s("Heading 2",	"P", "Normal", "Normal", stTmp.c_str());
+	_s("Heading 2", true,	"P", "Normal", "Normal", stTmp.c_str());
 	UT_String_sprintf(stTmp, szFmt, pszFamily, 12);
-	_s("Heading 3",	"P", "Normal", "Normal", stTmp.c_str());
-	_s("Heading 4",	"P", "Normal", "Normal", stTmp.c_str());
-	_s("Plain Text","P", "Normal", "Current Settings", "font-family:Courier New");
-	_s("Block Text","P", "Normal", "Current Settings", "margin-left:1in; margin-right:1in; margin-bottom:6pt");
+	_s("Heading 3", true,	"P", "Normal", "Normal", stTmp.c_str());
+	_s("Heading 4", true,	"P", "Normal", "Normal", stTmp.c_str());
+	_s("Plain Text", true,"P", "Normal", "Current Settings", "font-family:Courier New");
+	_s("Block Text", true,"P", "Normal", "Current Settings", "margin-left:1in; margin-right:1in; margin-bottom:6pt");
 
 	UT_String_sprintf(stTmp, list_fmt, "Numbered List", "1",LIST_DEFAULT_INDENT, LIST_DEFAULT_INDENT_LABEL, "transparent", "%L.", "NULL", ".");
-	_s("Numbered List","P", "", "Current Settings", stTmp.c_str());
+	_s("Numbered List",true,"P", "", "Current Settings", stTmp.c_str());
 
 	UT_String_sprintf(stTmp, list_fmt, "Lower Case List","1", LIST_DEFAULT_INDENT, LIST_DEFAULT_INDENT_LABEL, "transparent", "%L)", "NULL", ".");
-	_s("Lower Case List","P", "Numbered List", "Current Settings", stTmp.c_str());
+	_s("Lower Case List",true,"P", "Numbered List", "Current Settings", stTmp.c_str());
 	UT_String_sprintf(stTmp, list_fmt, "Upper Case List","1", LIST_DEFAULT_INDENT, LIST_DEFAULT_INDENT_LABEL, "transparent", "%L)", "NULL", ".");
-	_s("Upper Case List","P", "Numbered List", "Current Settings", stTmp.c_str());
+	_s("Upper Case List",false,"P", "Numbered List", "Current Settings", stTmp.c_str());
 
 	UT_String_sprintf(stTmp, list_fmt, "Lower Roman List","1", LIST_DEFAULT_INDENT, LIST_DEFAULT_INDENT_LABEL, "transparent", "%L", "NULL", ".");
-	_s("Lower Roman List","P", "Normal", "Current Settings", stTmp.c_str());
+	_s("Lower Roman List",false,"P", "Normal", "Current Settings", stTmp.c_str());
 
 	UT_String_sprintf(stTmp, list_fmt,"Upper Roman List","1", LIST_DEFAULT_INDENT, LIST_DEFAULT_INDENT_LABEL, "transparent", "%L", "NULL", ".");
-	_s("Upper Roman List","P", "Numbered List", "Current Settings", stTmp.c_str());
+	_s("Upper Roman List",false,"P", "Numbered List", "Current Settings", stTmp.c_str());
 
 	UT_String_sprintf(stTmp, list_fmt, "Bullet List","0", LIST_DEFAULT_INDENT, LIST_DEFAULT_INDENT_LABEL, "transparent", "%L", "Symbol", "NULL");
 
-	_s("Bullet List", "P", "", "Current Settings", stTmp.c_str());
+	_s("Bullet List",true, "P", "", "Current Settings", stTmp.c_str());
 	UT_String_sprintf(stTmp, list_fmt, "Implies List","0", LIST_DEFAULT_INDENT, LIST_DEFAULT_INDENT_LABEL, "transparent", "%L", "Symbol", "NULL");
-	_s("Implies List", "P", "", "Current Settings", stTmp.c_str());
+	_s("Implies List",false, "P", "", "Current Settings", stTmp.c_str());
 
 	UT_String_sprintf(stTmp, list_fmt, "Dashed List","0", LIST_DEFAULT_INDENT, LIST_DEFAULT_INDENT_LABEL, "transparent", "%L", "NULL", "NULL");
-	_s("Dashed List", "P", "", "Current Settings", stTmp.c_str());
+	_s("Dashed List",true, "P", "", "Current Settings", stTmp.c_str());
 
 	UT_String_sprintf(stTmp, list_fmt, "Square List","0", LIST_DEFAULT_INDENT, LIST_DEFAULT_INDENT_LABEL, "transparent", "%L", "Dingbats", "NULL");
-	_s("Square List", "P", "", "Current Settings", stTmp.c_str());
+	_s("Square List",false, "P", "", "Current Settings", stTmp.c_str());
 
 	UT_String_sprintf(stTmp, list_fmt, "Triangle List","0", LIST_DEFAULT_INDENT, LIST_DEFAULT_INDENT_LABEL, "transparent", "%L", "Dingbats", "NULL");
-	_s("Triangle List", "P", "", "Current Settings", stTmp.c_str());
+	_s("Triangle List",false, "P", "", "Current Settings", stTmp.c_str());
 
 	UT_String_sprintf(stTmp, list_fmt, "Diamond List","0", LIST_DEFAULT_INDENT, LIST_DEFAULT_INDENT_LABEL, "transparent", "%L", "Dingbats", "NULL");
-	_s("Diamond List", "P", "", "Current Settings", stTmp.c_str());
+	_s("Diamond List",false, "P", "", "Current Settings", stTmp.c_str());
 
 	UT_String_sprintf(stTmp, list_fmt, "Star List","0", LIST_DEFAULT_INDENT, LIST_DEFAULT_INDENT_LABEL, "transparent", "%L", "Dingbats", "NULL");
-	_s("Star List", "P", "", "Current Settings", stTmp.c_str());
+	_s("Star List",false, "P", "", "Current Settings", stTmp.c_str());
 
 	UT_String_sprintf(stTmp, list_fmt, "Tick List","0", LIST_DEFAULT_INDENT, LIST_DEFAULT_INDENT_LABEL, "transparent", "%L", "Dingbats", "NULL");
-	_s("Tick List", "P", "", "Current Settings", stTmp.c_str());
+	_s("Tick List",false, "P", "", "Current Settings", stTmp.c_str());
 
 	UT_String_sprintf(stTmp, list_fmt, "Box List","0", LIST_DEFAULT_INDENT, LIST_DEFAULT_INDENT_LABEL, "transparent", "%L", "Dingbats", "NULL");
-	_s("Box List", "P", "", "Current Settings", stTmp.c_str());
+	_s("Box List",false, "P", "", "Current Settings", stTmp.c_str());
 
 	UT_String_sprintf(stTmp, list_fmt, "Hand List","0", LIST_DEFAULT_INDENT, LIST_DEFAULT_INDENT_LABEL, "transparent", "%L", "Dingbats", "NULL");
-	_s("Hand List", "P", "", "Current Settings", stTmp.c_str());
+	_s("Hand List",false, "P", "", "Current Settings", stTmp.c_str());
 
 	UT_String_sprintf(stTmp, list_fmt, "Heart List","0", LIST_DEFAULT_INDENT, LIST_DEFAULT_INDENT_LABEL, "transparent", "%L", "Dingbats", "NULL");
-	_s("Heart List", "P", "", "Current Settings", stTmp.c_str());
+	_s("Heart List",false, "P", "", "Current Settings", stTmp.c_str());
 
 	// pszFamily is the nearest font to Arial found in the system
 	UT_String_sprintf(stTmp, "tabstops:0.3in/L0; list-style:Numbered List; "
@@ -247,27 +249,27 @@ bool pt_PieceTable::_loadBuiltinStyles(void)
 					  "list-decimal:", pszFamily);
 
 
-    _s("Numbered Heading 1","P","Heading 1","Normal", stTmp.c_str());
-    _s("Numbered Heading 2","P","Heading 2","Normal", stTmp.c_str());
-    _s("Numbered Heading 3","P","Heading 3","Normal", stTmp.c_str());
+    _s("Numbered Heading 1",true,"P","Heading 1","Normal", stTmp.c_str());
+    _s("Numbered Heading 2",true,"P","Heading 2","Normal", stTmp.c_str());
+    _s("Numbered Heading 3",true,"P","Heading 3","Normal", stTmp.c_str());
 
 	// pszFamily is the nearest font to Arial found in the system
 
 	UT_String_sprintf(stTmp, list_fmt, "Numbered List", "1",LIST_DEFAULT_INDENT, LIST_DEFAULT_INDENT_LABEL, "transparent", "%L.", "NULL", ".");
 
-    _s("Contents 1","P","Normal","Normal", stTmp.c_str());
+    _s("Contents 1",false,"P","Normal","Normal", stTmp.c_str());
 
 	UT_String_sprintf(stTmp, list_fmt, "Numbered List", "1",2*LIST_DEFAULT_INDENT, LIST_DEFAULT_INDENT_LABEL, "transparent", "%L.", "NULL", ".");
-    _s("Contents 2","P","Normal","Normal", stTmp.c_str());
+    _s("Contents 2",false,"P","Normal","Normal", stTmp.c_str());
 	UT_String_sprintf(stTmp, list_fmt, "Numbered List", "1",3*LIST_DEFAULT_INDENT, LIST_DEFAULT_INDENT_LABEL, "transparent", "%L.", "NULL", ".");
-    _s("Contents 3","P","Normal","Normal", stTmp.c_str());
+    _s("Contents 3",false,"P","Normal","Normal", stTmp.c_str());
 	UT_String_sprintf(stTmp, list_fmt, "Numbered List", "1",4*LIST_DEFAULT_INDENT, LIST_DEFAULT_INDENT_LABEL, "transparent", "%L.", "NULL", ".");
-    _s("Contents 4","P","Normal","Normal", stTmp.c_str());
+    _s("Contents 4",false,"P","Normal","Normal", stTmp.c_str());
 
 	
 	szFmt = "font-family:%s; font-size:%dpt; font-weight:bold; margin-top:12pt; margin-bottom:6pt; text-align:center; keep-with-next:1";
 	UT_String_sprintf(stTmp, szFmt, pszFamily, 16);
-    _s("Contents Header","P","Normal","Normal", stTmp.c_str());
+    _s("Contents Header",false,"P","Normal","Normal", stTmp.c_str());
 
 
 	szFmt = "tabstops:1.1in/L0; list-style:Numbered List; "
@@ -276,16 +278,16 @@ bool pt_PieceTable::_loadBuiltinStyles(void)
 		"field-font:%s; list-decimal:";
 	UT_String_sprintf(stTmp, szFmt, "Chapter", pszFamily);
 
-    _s("Chapter Heading","P","Numbered Heading 1","Normal", stTmp.c_str());
+    _s("Chapter Heading",true,"P","Numbered Heading 1","Normal", stTmp.c_str());
 
 	UT_String_sprintf(stTmp, szFmt, "Section", pszFamily);
-    _s("Section Heading","P","Numbered Heading 1","Normal", stTmp.c_str());
+    _s("Section Heading",true,"P","Numbered Heading 1","Normal", stTmp.c_str());
 
-	_s("Endnote Reference","C", "None", "Current Settings", "text-position:superscript; font-size:10pt");
-	_s("Endnote Text","C", "Normal", "Current Settings", "text-position:normal");
+	_s("Endnote Reference",false,"C", "None", "Current Settings", "text-position:superscript; font-size:10pt");
+	_s("Endnote Text",false,"C", "Normal", "Current Settings", "text-position:normal");
 
-	_s("Footnote Reference","C", "None", "Current Settings", "text-position:superscript; font-size:10pt");
-	_s("Footnote Text","C", "Normal", "Current Settings", "text-position:normal; font-size:10pt");
+	_s("Footnote Reference",false,"C", "None", "Current Settings", "text-position:superscript; font-size:10pt");
+	_s("Footnote Text",false,"C", "Normal", "Current Settings", "text-position:normal; font-size:10pt");
 
 	return true;
 
@@ -293,7 +295,7 @@ Failed:
 	return false;
 }
 
-bool pt_PieceTable::_createBuiltinStyle(const char * szName, const XML_Char ** attributes)
+bool pt_PieceTable::_createBuiltinStyle(const char * szName, bool bDisplayed, const XML_Char ** attributes)
 {
 	// this function can only be called before loading the document.
 	UT_return_val_if_fail (m_pts==PTS_Create, false);
@@ -307,7 +309,7 @@ bool pt_PieceTable::_createBuiltinStyle(const char * szName, const XML_Char ** a
 	if (getStyle(szName,&pStyle) == true)
 		return false;		// duplicate name
 
-	pStyle = new PD_BuiltinStyle(this, indexAP, szName);
+	pStyle = new PD_BuiltinStyle(this, indexAP, szName, bDisplayed);
 	if (pStyle)
 		m_hashStyles.insert(szName, pStyle);
 

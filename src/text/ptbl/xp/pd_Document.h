@@ -71,7 +71,9 @@ enum
 	PD_SIGNAL_DOCPROPS_CHANGED_NO_REBUILD,
 	PD_SIGNAL_REVISION_MODE_CHANGED,
 	PD_SIGNAL_DOCNAME_CHANGED,
-	PD_SIGNAL_DOCDIRTY_CHANGED
+	PD_SIGNAL_DOCDIRTY_CHANGED,
+	PD_SIGNAL_DOCSAVED,
+	PD_SIGNAL_DOCCLOSED
 };
 
 /////////////////////////////////////////////////////////
@@ -191,7 +193,7 @@ public:
 
 	virtual bool			isDirty(void) const;
 	virtual void            forceDirty();
-	
+	bool                    isCACConnected(void);
 	virtual bool			canDo(bool bUndo) const;
 	virtual UT_uint32		undoCount(bool bUndo) const;
 	virtual bool			undoCmd(UT_uint32 repeatCount);
@@ -238,7 +240,7 @@ PT_AttrPropIndex            getAPIFromSOH(PL_ObjectHandle odh);
 										PTStruxType pts,
 										bool bRecordChange);
 
-	bool                    createAndSendCR(PT_DocPosition dpos,UT_sint32 iType,bool bsave);
+	bool                    createAndSendCR(PT_DocPosition dpos,UT_sint32 iType,bool bsave,UT_Byte iGlob);
 
 	bool					insertStrux(PT_DocPosition dpos,
 										PTStruxType pts,
@@ -630,8 +632,8 @@ PT_AttrPropIndex            getAPIFromSOH(PL_ObjectHandle odh);
 	virtual UT_uint32 getTopXID() const;
 	void              fixMissingXIDs();
 	UT_uint32         getFragXIDforVersion(const pf_Frag * pf, UT_uint32 iVersion) const;
-
-	
+	void              removeConnections(void);
+	void              changeConnectedDocument(PD_Document * pDoc);
 	UT_sint32     getNewHdrHeight(void) const
 	{ return m_iNewHdrHeight;}
 	UT_sint32     getNewFtrHeight(void) const
@@ -650,6 +652,12 @@ PT_AttrPropIndex            getAPIFromSOH(PL_ObjectHandle odh);
 	bool                    isVDNDinProgress() const {return m_bVDND;}
 	UT_sint32               getNextCRNumber(void);
     void                    getAllViews(UT_GenericVector<AV_View *> * vecViews);
+	void                    ignoreSignals(void)
+	{ m_bIgnoreSignals = true;}
+	void                    dontIgnoreSignals(void)
+	{ m_bIgnoreSignals = false;}
+	void                    setClean(void)
+	{ _setClean();}
 protected:
 	virtual ~PD_Document();
 
@@ -723,6 +731,8 @@ private:
 
 	bool                    m_bVDND;
     UT_sint32               m_iCRCounter;
+	mutable UT_sint32       m_iUpdateCount;
+	bool                    m_bIgnoreSignals;
 };
 
 #endif /* PD_DOCUMENT_H */

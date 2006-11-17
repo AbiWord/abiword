@@ -28,12 +28,6 @@ else
 SCRIPT_OBJ=
 endif
 
-if HAVE_EXPAT
-XML_OBJ=ut_xml_expat.cpp
-else
-XML_OBJ=ut_xml_libxml2.cpp
-endif
-
 if HAVE_THREADS
 THREAD_OBJ=ut_thread.cpp
 else
@@ -85,10 +79,11 @@ libUtil_xp_a_SOURCES=\
 	ut_Encoding.cpp		\
 	ut_iconv.cpp		\
 	ut_rand.cpp		\
-	$(XML_OBJ)		\
+	ut_xml_libxml2.cpp	\
 	$(SCRIPT_OBJ)		\
 	$(THREAD_OBJ)		\
 	ut_xml.cpp		\
 	ut_IntStrMap.cpp \
         ut_crc32.cpp \
-	ut_uuid.cpp
+	ut_uuid.cpp \
+	ut_go_file.cpp
