@@ -1557,12 +1557,25 @@ void fp_Line::draw(dg_DrawArgs* pDA)
 	UT_sint32 count = m_vecRuns.getItemCount();
 	if(count <= 0)
 		return;
-
+	bool bQuickPrint = pDA->pG->canQuickPrint();
+	UT_sint32 i = 0;
+	if(bQuickPrint)
+        {
+	      for (i=0; i<count; i++)
+	      {
+		   fp_Run* pRun = static_cast<fp_Run*>(m_vecRuns.getNthItem(i));
+		   pRun->lookupProperties(pDA->pG);
+	      }
+	      if(getBlock()->getAlignment() && getBlock()->getAlignment()->getType() == FB_ALIGNMENT_JUSTIFY)
+	      {
+		  getBlock()->getAlignment()->initialize(this);
+	      }
+	}
 	xxx_UT_DEBUGMSG(("Drawing line %x in line pDA, width %d \n",this,getWidth()));
 	pDA->yoff += m_iAscent;
 	const UT_Rect* pRect = pDA->pG->getClipRect();
 
-	for (int i=0; i<count; i++)
+	for (i=0; i<count; i++)
 	{
 #if 0
 		// This is no longer necessary, and drawing in visual order
@@ -1609,6 +1622,18 @@ void fp_Line::draw(dg_DrawArgs* pDA)
 			xxx_UT_DEBUGMSG(("Run not in clip, pRect top %d height %d run top %d height %d \n",pRect->top,pRect->height,runRect.top,runRect.height));
 		}
 		da.yoff -= pRun->getY();
+	}
+	if(bQuickPrint)
+        {
+	      for (i=0; i<count; i++)
+	      {
+		   fp_Run* pRun = static_cast<fp_Run*>(m_vecRuns.getNthItem(i));
+		   pRun->lookupProperties(NULL);
+	      }
+	      if(getBlock()->getAlignment() && getBlock()->getAlignment()->getType() == FB_ALIGNMENT_JUSTIFY)
+	      {
+		  getBlock()->getAlignment()->initialize(this);
+	      }
 	}
 //
 // Check if this is in a cell, if so redraw the lines around it.
@@ -2021,7 +2046,7 @@ inline void fp_Line::_calculateWidthOfRun(	UT_sint32 &iX,
 			else //this is not a Tab run, or we are using fixed width tabs
 			{
 				iWidth = pRun->getAscent()*iFixedWidthMlt / iFixedWidthDiv;
-
+				iX += iWidth;
 
 				xxx_UT_DEBUGMSG(("run[%d] (type %d) width=%d\n", i,pRun->getType(),iWidth));
 			}

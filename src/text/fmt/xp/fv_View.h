@@ -272,6 +272,7 @@ public:
 	PT_DocPosition saveSelectedImage (const char * toFile );
 	PT_DocPosition saveSelectedImage (const UT_ByteBuf ** outByteBuf);
 	PT_DocPosition getSelectedImage(const char **dataId);
+	fp_Run *getSelectedObject(void);
 
 	void            getTextInCurrentBlock(UT_GrowBuf & buf);
 	void            getTextInCurrentSection(UT_GrowBuf & buf);

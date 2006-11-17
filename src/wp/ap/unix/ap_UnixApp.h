@@ -115,6 +115,8 @@ public:
 	AP_DiskStringSet * loadStringsFromDisk(const char 		   * szStringSet, 
 										   AP_BuiltinStringSet * pFallbackStringSet);
 
+	void setGtkSocketId (UT_uint32 id) { m_iGtkSocketId = id; }
+
 protected:	// JCA: Why in the hell we have so many (any) protected variables?
 	static GR_Image*		_showSplash(UT_uint32);
 
@@ -129,6 +131,9 @@ protected:	// JCA: Why in the hell we have so many (any) protected variables?
 	XAP_Frame *				m_pFrameSelection;
 	UT_ByteBuf				m_selectionByteBuf;
 	PD_DocumentRange		m_cacheDocumentRangeOfSelection;
+
+private:
+	UT_uint32 				m_iGtkSocketId;
 };
 
 // HACK What follows is an ugly hack. It is neccessitated by the 

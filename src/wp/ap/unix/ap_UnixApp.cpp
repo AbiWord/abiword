@@ -390,10 +390,11 @@ bool AP_UnixApp::initialize(bool has_display)
 */
 XAP_Frame * AP_UnixApp::newFrame(void)
 {
-    AP_UnixFrame * pUnixFrame = new AP_UnixFrame();
+    AP_UnixFrame * pUnixFrame = new AP_UnixFrame(m_iGtkSocketId);
 
-    if (pUnixFrame)
+    if (pUnixFrame) {
 		pUnixFrame->initialize();
+	}
 
     return pUnixFrame;
 }
@@ -1394,6 +1395,7 @@ int AP_UnixApp::main(const char * szAppName, int argc, const char ** argv)
 #ifndef HAVE_GNOME
       gtk_init (&XArgs.m_argc,const_cast<char ***>(&XArgs.m_argv));
 	  Args.parsePoptOpts();
+	  pMyUnixApp->setGtkSocketId(AP_Args::m_iGtkSocketId);
 #else
 #ifdef LOGFILE
 	fprintf(logfile,"About to start gnome_program_init \n");

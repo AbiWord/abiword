@@ -132,12 +132,11 @@ void AP_UnixFrame::setYScrollRange(void)
 	}
 }
 
-
-AP_UnixFrame::AP_UnixFrame()
+AP_UnixFrame::AP_UnixFrame(UT_uint32 iGtkSocketId)
 #ifdef HAVE_HILDON
 : AP_Frame(new AP_UnixHildonFrameImpl(this))
 #else
-: AP_Frame(new AP_UnixFrameImpl(this))
+: AP_Frame(new AP_UnixFrameImpl(this, iGtkSocketId))
 #endif
 {
 	m_pData = NULL;
@@ -149,7 +148,7 @@ AP_UnixFrame::AP_UnixFrame()
 }
 
 AP_UnixFrame::AP_UnixFrame(AP_UnixFrame * f)
-	: AP_Frame(static_cast<AP_Frame *>(f))
+: AP_Frame(static_cast<AP_Frame *>(f))
 {
 	m_pData = NULL;
 #ifdef LOGFILE

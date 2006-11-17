@@ -174,7 +174,7 @@ public:
 									   bool bDeleteTableStruxes,
 									   bool bDontGlob);
 	bool                    createAndSendCR(PT_DocPosition  dpos, 
-											UT_sint32 iType,bool bSave);
+											UT_sint32 iType,bool bSave, UT_Byte iGlob);
 
 	bool					deleteSpanWithTable(PT_DocPosition dpos1,
 												PT_DocPosition dpos2,
@@ -534,7 +534,7 @@ protected:
 	UT_uint32				_computeBlockOffset(pf_Frag_Strux * pfs,pf_Frag * pfTarget) const;
 
 	bool					_loadBuiltinStyles(void);
-	bool					_createBuiltinStyle(const char * szName, const XML_Char ** attributes);
+	bool					_createBuiltinStyle(const char * szName, bool bDisplayed, const XML_Char ** attributes);
 
 	bool					_insertFmtMarkFragWithNotify(PTChangeFmt ptc,
 														 PT_DocPosition dpos,

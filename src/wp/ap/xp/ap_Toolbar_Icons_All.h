@@ -126,6 +126,19 @@
 #       include "tb_stock_font.xpm"
 #	include "tb_view_full_screen.xpm"
 
+#       include "sugar_document_open_48.xpm"
+#       include "sugar_format_justify_left_48.xpm"
+#       include "sugar_document_save_48.xpm"
+#       include "sugar_format_justify_right_48.xpm"
+#       include "sugar_edit_redo_48.xpm"
+#       include "sugar_text_bold_48.xpm"
+#       include "sugar_edit_undo_48.xpm"
+#       include "sugar_text_italic_48.xpm"
+#       include "sugar_format_justify_center_48.xpm"
+#       include "sugar_text_underline_48.xpm"
+#       include "sugar_format_justify_fill_48.xpm"
+
+
 	// ... add new icons here (don't forget to add below the #else) ...
 
 #	include "menu_copy.xpm"
@@ -283,11 +296,24 @@
     DefineToolbarIcon(tb_transparent_xpm)
 	DefineToolbarIcon(tb_WrapButton_xpm)
 
+	  DefineToolbarIcon(sugar_document_open_48_xpm)
+	  DefineToolbarIcon(sugar_document_save_48_xpm)
+	  DefineToolbarIcon(sugar_format_justify_left_48_xpm)
+	  DefineToolbarIcon(sugar_format_justify_right_48_xpm)
+	  DefineToolbarIcon(sugar_format_justify_center_48_xpm)
+	  DefineToolbarIcon(sugar_format_justify_fill_48_xpm)
+	  DefineToolbarIcon(sugar_edit_redo_48_xpm)
+	  DefineToolbarIcon(sugar_edit_undo_48_xpm)
+	  DefineToolbarIcon(sugar_text_bold_48_xpm)
+	  DefineToolbarIcon(sugar_text_italic_48_xpm)
+	  DefineToolbarIcon(sugar_text_underline_48_xpm)
+
+
 	DefineToolbarIcon(menu_copy_xpm)
 	DefineToolbarIcon(menu_cut_xpm)
 	DefineToolbarIcon(menu_exit_xpm)
 	DefineToolbarIcon(menu_new_xpm)
- 	DefineToolbarIcon(menu_open_xpm)
+	DefineToolbarIcon(menu_open_xpm)
 	DefineToolbarIcon(menu_paste_xpm)
 	DefineToolbarIcon(menu_print_xpm)
 	DefineToolbarIcon(menu_print_preview_xpm)

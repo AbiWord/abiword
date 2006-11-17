@@ -25,6 +25,7 @@
   * Author: INdT - Renato Araujo <renato.filho@indt.org.br>
   */
 
+#include <glib/gstdio.h>
 #include <gtk/gtk.h>
 #include <gdk/gdkx.h>
 #include <stdio.h>
@@ -446,8 +447,8 @@ s_dnd_drag_end (GtkWidget  *widget, GdkDragContext *context, gpointer ppFrame)
 #define ENSUREP(p)		do { UT_ASSERT(p); if (!p) goto Cleanup; } while (0)
 
 /****************************************************************/
-XAP_UnixFrameImpl::XAP_UnixFrameImpl(XAP_Frame *pFrame) : 
-	XAP_FrameImpl(pFrame),
+XAP_UnixFrameImpl::XAP_UnixFrameImpl(XAP_Frame *pFrame, UT_uint32 iGtkSocketId) 
+  : XAP_FrameImpl(pFrame),
 	m_imContext(NULL),
 	m_pUnixMenu(NULL),
 	need_im_reset (false),
@@ -456,12 +457,12 @@ XAP_UnixFrameImpl::XAP_UnixFrameImpl(XAP_Frame *pFrame) :
 	m_iNewY(0),
 	m_iNewWidth(0),
 	m_iNewHeight(0),
+	m_iGtkSocketId(iGtkSocketId),
 	m_iZoomUpdateID(0),
 	m_iAbiRepaintID(0),
 	m_pUnixPopup(NULL),
 	m_dialogFactory(pFrame, XAP_App::getApp())
-{
-}
+{}
 
 XAP_UnixFrameImpl::~XAP_UnixFrameImpl() 
 { 	
@@ -1235,7 +1236,17 @@ void XAP_UnixFrameImpl::_createTopLevelWindow(void)
 	
 	if(m_iFrameMode == XAP_NormalFrame)
 	{
-		m_wTopLevelWindow = gtk_window_new(GTK_WINDOW_TOPLEVEL);
+		if (m_iGtkSocketId)
+		{
+			// embed into sugar desktop
+			m_wTopLevelWindow = gtk_plug_new(m_iGtkSocketId);
+		}
+		else 
+		{
+			// regular application
+			m_wTopLevelWindow = gtk_window_new(GTK_WINDOW_TOPLEVEL);
+		}
+
 		gtk_window_set_title(GTK_WINDOW(m_wTopLevelWindow),
 				     XAP_App::getApp()->getApplicationTitleForTitleBar());
 		gtk_window_set_resizable(GTK_WINDOW(m_wTopLevelWindow), TRUE);
@@ -1248,8 +1259,8 @@ void XAP_UnixFrameImpl::_createTopLevelWindow(void)
 		
 		g_object_set_data(G_OBJECT(m_wTopLevelWindow), "ic_attr", NULL);
 		g_object_set_data(G_OBJECT(m_wTopLevelWindow), "ic", NULL);		
-		
 	}
+
 	g_object_set_data(G_OBJECT(m_wTopLevelWindow), "toplevelWindow",
 						m_wTopLevelWindow);
 	g_object_set_data(G_OBJECT(m_wTopLevelWindow), "toplevelWindowFocus",
@@ -1316,6 +1327,7 @@ void XAP_UnixFrameImpl::_createTopLevelWindow(void)
 	g_object_set_data(G_OBJECT(m_wVBox),"user_data", this);
 	gtk_container_add(GTK_CONTAINER(m_wTopLevelWindow), m_wVBox);
 
+#if !HAVE_SUGAR
 	if (m_iFrameMode != XAP_NoMenusWindowLess) {
 		// synthesize a menu from the info in our base class.
 		m_pUnixMenu = new EV_UnixMenuBar(static_cast<XAP_UnixApp*>(XAP_App::getApp()), getFrame(), m_szMenuLayoutName,
@@ -1324,6 +1336,7 @@ void XAP_UnixFrameImpl::_createTopLevelWindow(void)
 		bResult = m_pUnixMenu->synthesizeMenuBar();
 		UT_ASSERT(bResult);
 	}
+#endif
 
 	// create a toolbar instance for each toolbar listed in our base class.
 	// TODO for some reason, the toolbar functions require the TLW to be
@@ -1581,6 +1594,7 @@ void XAP_UnixFrameImpl::_setGeometry ()
  */
 void XAP_UnixFrameImpl::_rebuildMenus(void)
 {
+#if (!HAVE_SUGAR)
 	// destroy old menu
 	m_pUnixMenu->destroy();
 	DELETEP(m_pUnixMenu);
@@ -1592,6 +1606,7 @@ void XAP_UnixFrameImpl::_rebuildMenus(void)
 	UT_ASSERT(m_pUnixMenu);
 	bool bResult = m_pUnixMenu->rebuildMenuBar();
 	UT_ASSERT(bResult);
+#endif
 }
 
 /*!

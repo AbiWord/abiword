@@ -43,13 +43,13 @@ fp_EmbedRun::fp_EmbedRun(fl_BlockLayout* pBL,
 	m_pszDataID(NULL),
 	m_sEmbedML(""),
 	m_pEmbedManager(NULL),
-        m_iEmbedUID(-1),
-        m_iIndexAP(indexAP),
-        m_pDocLayout(NULL),
+	m_iEmbedUID(-1),
+	m_iIndexAP(indexAP),
+	m_pDocLayout(NULL),
 	m_bNeedsSnapshot(true),
 	m_OH(oh)
 {
-        m_pDocLayout = getBlock()->getDocLayout();
+	m_pDocLayout = getBlock()->getDocLayout();
 	lookupProperties(getGraphics());
 }
 
@@ -160,13 +160,13 @@ void fp_EmbedRun::_lookupProperties(const PP_AttrProp * pSpanAP,
 			  UT_sint32 iHeight = UT_convertToLogicalUnits(pszHeight);
 			  const char * pszDescent = NULL;
 			  bool bFoundDescent = pSpanAP->getProperty("descent", pszDescent);
-			  if (bFoundDescent && pszDescent != NULL)
+			  if (bFoundDescent && pszDescent != NULL && iHeight >= 0)
 			  {
 				  iDescent = UT_convertToLogicalUnits(pszDescent);
-				  if (iHeight != iAscent + iDescent)
+				  if (iHeight != iAscent + iDescent && iHeight > iAscent)
 					  iAscent = iHeight * iAscent / (iAscent + iDescent);
 			  }
-			  iDescent = iHeight - iAscent;
+			  iDescent = (iHeight >= iAscent)? iHeight - iAscent: 0;
 		  }
 	  }
 	}
@@ -424,7 +424,7 @@ void fp_EmbedRun::_draw(dg_DrawArgs* pDA)
 	}
 	else
 	{
-		Fill(getGraphics(),pDA->xoff, pDA->yoff - getAscent(), getWidth(), iLineHeight);
+		Fill(getGraphics(),pDA->xoff, pDA->yoff - getAscent(), getWidth()+getGraphics()->tlu(1), iLineHeight+getGraphics()->tlu(1));
 		getEmbedManager()->setColor(m_iEmbedUID,getFGColor());
 	}
 
@@ -452,7 +452,10 @@ void fp_EmbedRun::_draw(dg_DrawArgs* pDA)
 	if(bIsSelected)
 	{
 	  UT_Rect myrec = rec;
-	  myrec.top -= getAscent();
+	  if(!getEmbedManager()->isDefault())
+	  {
+	    myrec.top -= getAscent();
+	  }
 	  _drawResizeBox(myrec);
 	}
 }
@@ -559,4 +562,16 @@ bool fp_EmbedRun::_updatePropValuesIfNeeded(void)
       return true;
     }
   return false;
+}
+
+void fp_EmbedRun::update()
+{
+	m_iIndexAP = getBlock()->getDocument()->getAPIFromSOH(m_OH);
+	m_pEmbedManager->updateData(m_iEmbedUID, m_iIndexAP);
+	m_pEmbedManager->loadEmbedData(m_iEmbedUID);
+}
+
+EV_EditMouseContext fp_EmbedRun::getContextualMenu(void) const
+{
+	return m_pEmbedManager->getContextualMenu();
 }

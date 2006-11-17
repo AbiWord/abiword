@@ -24,6 +24,7 @@
 #include "ut_types.h"
 #include "ut_vector.h"
 #include "ut_misc.h"
+#include "ev_EditBits.h"
 
 class GR_Graphics;
 class GR_Image;
@@ -55,6 +56,9 @@ public:
     GR_EmbedManager(GR_Graphics * pG);
     virtual ~GR_EmbedManager();
     virtual const char *   getObjectType(void) const;
+    virtual const char *   getMimeType(void) const;
+    virtual const char *   getMimeTypeDescription(void) const;
+    virtual const char *   getMimeTypeSuffix(void) const;
     virtual GR_EmbedManager *  create(GR_Graphics * pG);
     virtual void           initialize(void);
     GR_Graphics *          getGraphics(void);
@@ -77,6 +81,9 @@ public:
     virtual bool           isEdittable(UT_sint32 uid);
     virtual bool           isResizeable(UT_sint32 uid);
 	virtual void		   setRun (UT_sint32 uid, fp_Run * run);
+	virtual void		   updateData(UT_sint32 uid, UT_sint32 api);
+	virtual EV_EditMouseContext		getContextualMenu(void) const
+		{ return EV_EMC_EMBED; }
 
 private:
     GR_Graphics *               m_pG;

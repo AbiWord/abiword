@@ -22,13 +22,15 @@
 #ifndef UTUNIXMISC_H
 #define UTUNIXMISC_H
 
-#ifndef XP_TARGET_COCOA
+#ifdef XP_UNIX_TARGET_GTK
 #include <gdk/gdk.h>
+#include <gtk/gtk.h>
+typedef GtkWidget AbiNativeWidget;
+
+#ifndef UTMISC_H
+#include "ut_misc.h"
 #endif
 
-#include "ut_misc.h"
-
-#ifndef XP_TARGET_COCOA
 UT_RGBColor* UT_UnixGdkColorToRGBColor(const GdkColor &color);
 GdkColor* UT_UnixRGBColorToGdkColor(const UT_RGBColor &rgb);
 #endif

@@ -46,7 +46,7 @@ class EV_UnixMenuPopup;
 class XAP_UnixFrameImpl : public XAP_FrameImpl
 {
  public:
-	XAP_UnixFrameImpl(XAP_Frame *pFrame);
+	XAP_UnixFrameImpl(XAP_Frame *pFrame, UT_uint32 iGtkSocketId = 0);
 	friend class XAP_Frame;
 	
 	virtual ~XAP_UnixFrameImpl();
@@ -162,9 +162,9 @@ protected:
 	UT_sint32                   m_iNewY;
 	UT_sint32                   m_iNewWidth;
 	UT_sint32                   m_iNewHeight;
+	UT_uint32 					m_iGtkSocketId;
 	guint                       m_iZoomUpdateID;
 	guint                       m_iAbiRepaintID;
-
 
 	EV_UnixMenuPopup *			m_pUnixPopup; /* only valid while a context popup is up */
 	AP_UnixDialogFactory        m_dialogFactory;

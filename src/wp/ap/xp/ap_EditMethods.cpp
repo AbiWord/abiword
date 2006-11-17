@@ -3322,6 +3322,11 @@ s_closeWindow (AV_View * pAV_View, EV_EditMethodCallData * pCallData,
 	if ((pFrame->getViewNumber() == 0) &&
 		(pFrame->isDirty()))
 	{
+#if HAVE_SUGAR
+	        bool bRet = EX(fileSave);
+		if (!bRet)  // didn't successfully save,
+		    return false;
+#else
 		XAP_Dialog_MessageBox::tAnswer ans = s_AskSaveFile(pFrame);
 
 		switch (ans)
@@ -3344,6 +3349,7 @@ s_closeWindow (AV_View * pAV_View, EV_EditMethodCallData * pCallData,
 			UT_ASSERT_HARMLESS(UT_SHOULD_NOT_HAPPEN);
 			return false;
 		}
+#endif
 	}
 
 	// are we the last window?
@@ -3359,6 +3365,13 @@ s_closeWindow (AV_View * pAV_View, EV_EditMethodCallData * pCallData,
 #ifdef HAVE_HILDON
 		// user initiate exit -- clear any state info from previous hibernation
 		pApp->clearStateInfo();
+#endif
+#if HAVE_SUGAR
+		if (bCanExit)
+		{
+			pApp->reallyExit();
+		}
+
 #endif
 #else
 		if (bCanExit)

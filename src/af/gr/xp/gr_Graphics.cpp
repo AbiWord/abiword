@@ -1148,7 +1148,19 @@ UT_sint32 GR_Graphics::getTextWidth(GR_RenderInfo & ri)
 	UT_sint32 iWidth = 0;
 	for (UT_sint32 i = ri.m_iOffset; i < ri.m_iLength + ri.m_iOffset; ++i)
 	{
-		UT_uint32 k = bReverse ? RI.m_iTotalLength - i - 1 : i;
+		UT_uint32 k = i;
+
+		if(bReverse)
+		{
+			if((static_cast<UT_sint32>(RI.m_iTotalLength) - i - 1) < 0)
+			{
+				UT_ASSERT_HARMLESS(UT_SHOULD_NOT_HAPPEN);
+				continue;
+			}
+
+			k = RI.m_iTotalLength - i - 1;
+		}
+
 		UT_uint32 iCW = RI.m_pWidths[k] > 0 ? RI.m_pWidths[k] : 0;
 		iWidth += iCW;
 	}

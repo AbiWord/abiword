@@ -262,7 +262,7 @@ FV_View::FV_View(XAP_App * pApp, void* pParentData, FL_DocLayout* pLayout)
 		m_iPosAtTable(0)
 {
 	if(m_pDoc)
-		m_sDocUUID = m_pDoc->getDocUUIDString();
+		m_sDocUUID = m_pDoc->getMyUUIDString();
 	m_colorRevisions[0] = UT_RGBColor(171,4,254);
 	m_colorRevisions[1] = UT_RGBColor(171,20,119);
 	m_colorRevisions[2] = UT_RGBColor(255,151,8);
@@ -540,7 +540,7 @@ bool FV_View::isActive(void)
 	bool bAct = (pActiveView == this);
 	if(!bAct)
 		return false;
-	UT_UTF8String sUUID =  m_pDoc->getDocUUIDString();
+	UT_UTF8String sUUID =  m_pDoc->getMyUUIDString();
 	if(m_sDocUUID == sUUID)
 		return true;
 	return false;
@@ -577,7 +577,7 @@ void FV_View::updateCarets(PT_DocPosition docPos, UT_sint32 iLen)
 {
 	fv_CaretProps * pCaretProps = NULL;
 	UT_sint32 iCount = static_cast<UT_sint32>(m_vecCarets.getItemCount());
-	UT_UTF8String sUUID = m_pDoc->getDocUUIDString();
+	UT_UTF8String sUUID = m_pDoc->getMyUUIDString();
 	bool bLocal = (sUUID == m_sDocUUID);
 	UT_sint32 i = 0;
 	bool bFoundUUID = false;
@@ -2543,6 +2543,57 @@ PT_DocPosition FV_View::getSelectedImage(const char **dataId)
 	// if we made it here, then run type is not an image
 	if (dataId != NULL) *dataId = NULL;
 	return 0;
+}
+
+/* If no object is selected returns NULL
+ * Otherwise returns a nonzero value indicating the position of the object
+ * and if dataId is not NULL will set value to the object's data ID
+ */
+fp_Run *FV_View::getSelectedObject()
+{
+	// if nothing selected, then an image can't be
+	if (!isSelectionEmpty())
+	{
+		PT_DocPosition pos = m_Selection.getSelectionAnchor();
+		fp_Run* pRun = NULL;
+
+		UT_GenericVector<fl_BlockLayout *> vBlock;
+		getBlocksInSelection( &vBlock);
+		UT_uint32 count = vBlock.getItemCount();
+		fl_BlockLayout * pBlock = NULL;
+		for(UT_uint32 i=0; (i< count); i++)
+		{
+			if(i==0)
+			{
+				if(getPoint() < m_Selection.getSelectionAnchor())
+				{
+					pos = getPoint();
+				}
+				UT_sint32 x,y,x2,y2;
+				UT_uint32 height;
+
+				bool bEOL = false;
+				bool bDirection;
+				_findPositionCoords(pos,bEOL,x,y,x2,y2,height,bDirection,&pBlock,&pRun);
+			}
+			else
+			{
+				pBlock = vBlock.getNthItem(i);
+				pRun = pBlock->getFirstRun();
+			}
+
+			while(pRun && pRun->getType() != FPRUN_EMBED)
+			{
+				pRun = pRun->getNextRun();
+			}
+			if(pRun && pRun->getType() == FPRUN_EMBED)
+			{
+				return pRun;
+			}
+		}
+	}
+
+	return NULL;
 }
 
 PT_DocPosition FV_View::getSelectionAnchor(void) const
@@ -8913,6 +8964,7 @@ void FV_View::getTopRulerInfo(PT_DocPosition pos,AP_TopRulerInfo * pInfo)
 		}
 		xxx_UT_DEBUGMSG(("Initial X %d \n",ioff_x));
 		pCur = pTab->getCellAtRowColumn(0,0);
+		UT_return_if_fail(pCur);
 		ioff_x += pCur->getLeftPos();
 		pRC = pTab->getNthCol(0);
 		xxx_UT_DEBUGMSG(("Tab X %d LeftPos %d Spacing %d \n",pTab->getX(),pCur->getLeftPos(),pRC->spacing));
@@ -11196,6 +11248,7 @@ bool FV_View::getEditableBounds(bool isEnd, PT_DocPosition &posEOD, bool bOverid
 		return true;
 	}
 	pBL = static_cast<fl_BlockLayout *>(m_pEditShadow->getLastLayout());
+	UT_return_val_if_fail(pBL, false);
 	posEOD = pBL->getPosition(false);
 	fp_Run * pRun = pBL->getFirstRun();
 	while( pRun && pRun->getNextRun() != NULL)
@@ -12137,6 +12190,9 @@ void FV_View::setShowRevisions(bool bShow)
 		// now we have to re-do document layout from bottom up
 		m_pLayout->rebuildFromHere(static_cast<fl_DocSectionLayout *>(m_pLayout->getFirstSection()));
 
+		/* have to force redraw -- see 10486 */
+		draw(NULL);
+		
 		_fixInsertionPointCoords();
 	}
 }
@@ -12151,7 +12207,7 @@ void FV_View::toggleShowRevisions()
  */
 void FV_View::setRevisionLevel(UT_uint32 i)
 {
-	UT_return_if_fail( i < PD_MAX_REVISION );
+	UT_return_if_fail( i <= PD_MAX_REVISION );
 	m_pDoc->setShowRevisionId(i);
 	m_iViewRevision = i;
 }
@@ -13009,4 +13065,3 @@ void FV_View::fontMetricsChange()
 
 	m_pLayout->rebuildFromHere(static_cast<fl_DocSectionLayout *>(m_pLayout->getFirstSection()));	
 }
-

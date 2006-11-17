@@ -912,7 +912,7 @@ const UT_UTF8String & UT_UTF8String::escape (const UT_UTF8String & str1, const U
 	return *this;
 }
 
-/* escapes '<', '>' & '&' in the current string
+/* escapes '<', '>', '"', & '&' in the current string
  */
 const UT_UTF8String & UT_UTF8String::escapeXML ()
 {

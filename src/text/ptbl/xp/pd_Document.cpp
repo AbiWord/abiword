@@ -68,6 +68,9 @@
 #include "fl_DocListener.h"
 #include "fl_DocLayout.h"
 
+#include "ut_go_file.h"
+#include <gsf/gsf-input.h>
+
 // our currently used DTD
 #define ABIWORD_FILEFORMAT_VERSION "1.1"
 
@@ -109,7 +112,9 @@ PD_Document::PD_Document(XAP_App *pApp)
 	  m_iNewFtrHeight(0),
 	  m_bMarginChangeOnly(false),
 	  m_bVDND(false),
-	  m_iCRCounter(0)
+	  m_iCRCounter(0),
+	  m_iUpdateCount(0),
+	  m_bIgnoreSignals(false)
 {
 	m_pApp = pApp;
 	
@@ -125,6 +130,7 @@ PD_Document::~PD_Document()
 	if (m_pPieceTable)
 		delete m_pPieceTable;
 
+	removeConnections();
 	_destroyDataItemData();
 
 	UT_VECTOR_PURGEALL(fl_AutoNum*, m_vecLists);
@@ -215,6 +221,14 @@ bool PD_Document::isMarginChangeOnly(void) const
 //////////////////////////////////////////////////////////////////
 //////////////////////////////////////////////////////////////////
 
+static UT_String UT_filenameToUri(const UT_String & rhs) {
+	char * uri = UT_go_filename_to_uri (rhs.c_str());
+	UT_String res(uri);
+	g_free (uri);
+
+	return res;
+}
+
 static void buildTemplateList(UT_String *template_list, const UT_String & base)
 {
 	UT_LocaleInfo locale(UT_LocaleInfo::system());
@@ -264,6 +278,10 @@ static void buildTemplateList(UT_String *template_list, const UT_String & base)
 
 	if (!XAP_App::getApp()->findAbiSuiteLibFile(template_list[3],xbase.c_str(),"templates"))
 		template_list[3] = UT_String_sprintf ("%s-%s_%s", global_template_base.c_str(), lang.utf8_str(), terr.utf8_str());
+
+	for(int i = 0; i < 6; i++) {
+		template_list[i] = UT_filenameToUri(template_list[i]);
+	}
 }
 
 UT_Error PD_Document::importFile(const char * szFilename, int ieft,
@@ -432,6 +450,7 @@ UT_Error PD_Document::readFromFile(const char * szFilename, int ieft,
 		return UT_INVALIDFILENAME;
 	}
 
+#if 0
 	if ( !UT_isRegularFile(szFilename) )
 	{
 	  UT_DEBUGMSG (("PD_Document::readFromFile -- file (%s) is not plain file\n",szFilename));
@@ -443,6 +462,7 @@ UT_Error PD_Document::readFromFile(const char * szFilename, int ieft,
 		UT_DEBUGMSG(("PD_Document::readFromFile -- file (%s) is empty\n",szFilename));
 		return UT_IE_BOGUSDOCUMENT;
 	}
+#endif
 	
 	m_pPieceTable = new pt_PieceTable(this);
 	if (!m_pPieceTable)
@@ -627,7 +647,7 @@ UT_Error PD_Document::newDocument(void)
 
 	bool success = false;
 
-	for (UT_uint32 i = 0; i < 6 && !success; i++)
+	for (UT_uint32 i = 0; i < 6 && !success; i++) 
 		success = (importFile (template_list[i].c_str(), IEFT_Unknown, true, false) == UT_OK);
 
 	if (!success) {
@@ -688,17 +708,19 @@ UT_Error PD_Document::_saveAs(const char * szFilename, int ieft, bool cpy,
 	if (expProps && strlen(expProps))
 		pie->setProps (expProps);
 
-	if (cpy)
+	if (cpy && !XAP_App::getApp()->getPrefs()->isIgnoreRecent())
 	{
 		m_lastSavedAsType = newFileType;
 		_syncFileTypes(true);
 	}
-
-	// order of these calls matters
-	_adjustHistoryOnSave();
-
-	// see if revisions table is still needed ...
-	purgeRevisionTable();
+	if(!XAP_App::getApp()->getPrefs()->isIgnoreRecent())
+	{
+		// order of these calls matters
+		_adjustHistoryOnSave();
+		
+		// see if revisions table is still needed ...
+		purgeRevisionTable();
+	}
 	
 	errorCode = pie->writeFile(szFilename);
 	delete pie;
@@ -709,7 +731,7 @@ UT_Error PD_Document::_saveAs(const char * szFilename, int ieft, bool cpy,
 		return (errorCode == UT_SAVE_CANCELLED) ? UT_SAVE_CANCELLED : UT_SAVE_WRITEERROR;
 	}
 
-	if (cpy) // we want to make the current settings persistent
+	if (cpy && !XAP_App::getApp()->getPrefs()->isIgnoreRecent()) // we want to make the current settings persistent
 	{
 	    // no file name currently set - make this filename the filename
 	    // stored for the doc
@@ -720,6 +742,7 @@ UT_Error PD_Document::_saveAs(const char * szFilename, int ieft, bool cpy,
 	    _setClean(); // only mark as clean if we're saving under a new name
 		signalListeners(PD_SIGNAL_DOCNAME_CHANGED);	
 	}
+	signalListeners(PD_SIGNAL_DOCSAVED);
 
 	//if (strstr(szFilename, "normal.awt") == NULL)
 	XAP_App::getApp()->getPrefs()->addRecent(szFilename);
@@ -752,7 +775,7 @@ UT_Error PD_Document::_save(void)
 	
 	errorCode = pie->writeFile(getFilename());
 	delete pie;
-
+	signalListeners(PD_SIGNAL_DOCSAVED);
 	if (errorCode)
 	{
 		UT_DEBUGMSG(("PD_Document::Save -- could not write file\n"));
@@ -1478,9 +1501,9 @@ bool PD_Document::isStruxBeforeThis(PL_StruxDocHandle sdh,  PTStruxType pts)
  * Create a changerecord object and broadcast it to all the listeners.
  * If bsave is true save the CR in th eunod stack.
  */
-bool PD_Document::createAndSendCR(PT_DocPosition dpos, UT_sint32 iType,bool bSave)
+bool PD_Document::createAndSendCR(PT_DocPosition dpos, UT_sint32 iType,bool bSave,UT_Byte iGlob)
 {
-	return m_pPieceTable->createAndSendCR(dpos,iType,bSave);
+	return m_pPieceTable->createAndSendCR(dpos,iType,bSave,iGlob);
 }
 
 /*!
@@ -2850,6 +2873,20 @@ bool PD_Document::removeListener(PL_ListenerId listenerId)
 
 bool PD_Document::signalListeners(UT_uint32 iSignal) const
 {
+	if(m_bIgnoreSignals)
+		return true;
+	if(iSignal == PD_SIGNAL_UPDATE_LAYOUT)
+	{
+			m_iUpdateCount++;
+	}
+	else
+	{
+			m_iUpdateCount = 0;
+	}
+	if(m_iUpdateCount > 1)
+  	{
+			return true;
+	}
 	PL_ListenerId lid;
 	PL_ListenerId lidCount = m_vecListeners.getItemCount();
 
@@ -2867,6 +2904,49 @@ bool PD_Document::signalListeners(UT_uint32 iSignal) const
 	}
 
 	return true;
+}
+
+/*!
+ * Remove all AbiCollab connections. We should do this before the document is destructed.
+ */
+void PD_Document::removeConnections(void)
+{
+	PL_ListenerId lid;
+	PL_ListenerId lidCount = m_vecListeners.getItemCount();
+	for (lid=0; lid<lidCount; lid++)
+	{
+		PL_Listener * pListener = static_cast<PL_Listener *>(m_vecListeners.getNthItem(lid));
+		if (pListener)
+		{
+			if(pListener->getType() >= PTL_CollabExport)
+			{
+				static_cast<PL_DocChangeListener *>(pListener)->removeDocument();
+				removeListener(lid);
+			}
+		}
+	}
+}
+
+
+/*!
+ * Change all AbiCollab connections to point to the new document.
+ */
+void PD_Document::changeConnectedDocument(PD_Document * pDoc)
+{
+	PL_ListenerId lid;
+	PL_ListenerId lidCount = m_vecListeners.getItemCount();
+	for (lid=0; lid<lidCount; lid++)
+	{
+		PL_Listener * pListener = static_cast<PL_Listener *>(m_vecListeners.getNthItem(lid));
+		if (pListener)
+		{
+			if(pListener->getType() >= PTL_CollabExport )
+			{
+				static_cast<PL_DocChangeListener *>(pListener)->setNewDocument(pDoc);
+				removeListener(lid);
+			}
+		}
+	}
 }
 
 /*!
@@ -2910,12 +2990,16 @@ bool PD_Document::notifyListeners(const pf_Frag_Strux * pfs, const PX_ChangeReco
 #ifdef PT_TEST
 	//pcr->__dump();
 #endif
+	m_iUpdateCount = 0;
 	if(pcr->getDocument() == NULL)
 	{
 	        pcr->setDocument(this);
 			pcr->setCRNumber();
 	}
-
+	else if(pcr->getCRNumber() == 0)
+	{
+			pcr->setCRNumber();
+	}
 	PL_ListenerId lid;
 	PL_ListenerId lidCount = m_vecListeners.getItemCount();
 
@@ -2929,14 +3013,14 @@ bool PD_Document::notifyListeners(const pf_Frag_Strux * pfs, const PX_ChangeReco
 		if (pListener)
 		{
 			PL_StruxFmtHandle sfh = 0;
-			if (pfs && (pListener->getType() != PTL_CollabExport))
+			if (pfs && (pListener->getType() < PTL_CollabExport))
 				sfh = pfs->getFmtHandle(lid);
 
 			// some pt elements have no corresponding layout elements (for example a
 			// hdr/ftr section that was deleted in revisions mode)
-			if(sfh && (pListener->getType() != PTL_CollabExport ))
+			if(sfh && (pListener->getType() < PTL_CollabExport ))
 				pListener->change(sfh,pcr);
-			else if(pListener->getType() == PTL_CollabExport)
+			else if(pListener->getType() >= PTL_CollabExport)
 				pListener->change(NULL,pcr);	
 		}
 	}
@@ -3102,9 +3186,14 @@ bool PD_Document::notifyListeners(const pf_Frag_Strux * pfs,
 #ifdef PT_TEST
 	//pcr->__dump();
 #endif
+	m_iUpdateCount = 0;
 	if(pcr->getDocument() == NULL)
 	{
 	        pcr->setDocument(this);
+			pcr->setCRNumber();
+	}
+	else if(pcr->getCRNumber() == 0)
+	{
 			pcr->setCRNumber();
 	}
 
@@ -3122,12 +3211,12 @@ bool PD_Document::notifyListeners(const pf_Frag_Strux * pfs,
 		{
 			PL_StruxDocHandle sdhNew = static_cast<PL_StruxDocHandle>(pfsNew);
 			PL_StruxFmtHandle sfh = NULL;
-			if(pListener->getType() != PTL_CollabExport)
+			if(pListener->getType() < PTL_CollabExport)
 				sfh = pfs->getFmtHandle(lid);
 			if (pListener->insertStrux(sfh,pcr,sdhNew,lid,s_BindHandles))
 			{
 				// verify that the listener used our callback
-				if(pListener->getType() != PTL_CollabExport)
+				if(pListener->getType() < PTL_CollabExport)
 					UT_ASSERT_HARMLESS(pfsNew->getFmtHandle(lid));
 			}
 		}
@@ -3136,6 +3225,27 @@ bool PD_Document::notifyListeners(const pf_Frag_Strux * pfs,
 	return true;
 }
 
+/*!
+ * Return true if the document has a C.A.C. connection
+ */
+bool PD_Document::isCACConnected(void)
+{
+	PL_ListenerId lid;
+	PL_ListenerId lidCount = m_vecListeners.getItemCount();
+	for (lid=0; lid<lidCount; lid++)
+	{
+		PL_Listener * pListener = m_vecListeners.getNthItem(lid);
+		if (pListener)
+		{
+			if(pListener->getType() == PTL_CollabServiceExport)
+			{
+				return true;
+			}
+		}
+	}
+	return false;
+
+}
 //////////////////////////////////////////////////////////////////
 //////////////////////////////////////////////////////////////////
 /*!
@@ -3861,9 +3971,9 @@ bool PD_Document::getDataItemDataByName(const char * szName,
 	const void *pHashEntry = m_hashDataItems.pick(szName);
 	if (!pHashEntry)
 		return false;
-
 	struct _dataItemPair* pPair = const_cast<struct _dataItemPair*>(static_cast<const struct _dataItemPair*>(pHashEntry));
 	UT_return_val_if_fail (pPair, false);
+	UT_DEBUGMSG(("Found data item name %s buf %x \n",szName,pPair->pBuf));
 
 	if (ppByteBuf)
 	{

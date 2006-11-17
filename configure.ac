@@ -88,6 +88,7 @@ fi
 # check for embedded and print first, so we can handle gnomeprint dependency
 # correcly
 ABI_HILDON_QUICK
+ABI_SUGAR
 
 AC_ARG_ENABLE(embedded,[  --enable-embedded    Include embedded features],[
 	case "${enableval}" in
@@ -136,6 +137,37 @@ fi
 AC_MSG_RESULT([final printing ${print}])
 
 AM_CONDITIONAL(WITH_PRINTING, test x$print = xtrue)
+
+# disable pango for embedded targets by default, but provide --enable-pango
+# parameter to overrided if desired
+AC_ARG_ENABLE(pango,[  --enable-pango    Use Pango for text layout],[
+	case "${enableval}" in
+	   yes)	usepango=true ;
+		PANGO_CFLAGS="-DUSE_PANGO" ;;
+	   no)  usepango=false ;
+		PANGO_CFLAGS="" ;;
+	     *)	AC_MSG_ERROR(bad value ${enableval} for --enable-printing) ;;
+	esac
+],[	usepango=undefined
+	PANGO_CFLAGS=""
+])
+
+if test "$usepango" = "undefined" && test "$embedded" = "true"; then
+   usepango=false
+   PANGO_CFLAGS=""
+elif test "$usepango" = "undefined"; then
+   usepango=true;
+   PANGO_CFLAGS="-DUSE_PANGO"
+fi
+
+if test  "$sugar" = "true"; then
+   usepango=true;
+   PANGO_CFLAGS="-DUSE_PANGO"
+fi
+
+AC_MSG_RESULT([${usepango}])
+
+AM_CONDITIONAL(WITH_PANGO, test x$usepango = xtrue)
 
 if test "$PLATFORM" = "unix"; then
 	ABI_FE="Unix"
@@ -362,12 +394,16 @@ if test "$PLATFORM" = "unix"; then
 		PLATFORM_CFLAGS="$GTK_CFLAGS $GMODULE_CFLAGS $GUCHARMAP_CFLAGS $GNOMEPRINT_CFLAGS -DSUPPORTS_UT_IDLE=1"
 		PLATFORM_LIBS="$GTK_LIBS $GMODULE_LIBS $GUCHARMAP_LIBS $GNOMEPRINT_LIBS"
 	fi
-	
+
 	if test "$hildon" = "true"; then
 		PLATFORM_CFLAGS="$PLATFORM_CFLAGS $HILDON_CFLAGS"
 		PLATFORM_LIBS="$PLATFORM_LIBS $HILDON_LIBS"
 	fi
-		
+
+	if test "$sugar" = "true"; then
+		PLATFORM_CFLAGS="$PLATFORM_CFLAGS $SUGAR_CFLAGS"
+		PLATFORM_LIBS="$PLATFORM_LIBS $SUGAR_LIBS"
+	fi		
 fi
 dnl AUTOCONF SUCKS
 if test "$PLATFORM" = "cocoa"; then
@@ -476,7 +512,8 @@ AC_SUBST(VALGRIND)
 
 AM_CONDITIONAL(CROSS_COMPILING, test x$cross_compiling = xyes)
 
-AC_CONFIG_FILES([GNUmakefile
+AC_CONFIG_FILES([
+ Makefile
  src/GNUmakefile
  src/af/GNUmakefile
  src/af/tf/GNUmakefile

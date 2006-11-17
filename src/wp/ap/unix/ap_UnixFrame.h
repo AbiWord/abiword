@@ -35,7 +35,7 @@ class AP_UnixFrame;
 class AP_UnixFrame : public AP_Frame
 {
 public:
-	AP_UnixFrame();
+	AP_UnixFrame(UT_uint32 iGtkSocketId = 0);
 	AP_UnixFrame(AP_UnixFrame * f);
 	virtual ~AP_UnixFrame(void);
 
@@ -69,7 +69,6 @@ protected:
 	// scrolling function
 	static void _scrollFuncX(void * pData, UT_sint32 xoff, UT_sint32 xlimit);
 	static void _scrollFuncY(void * pData, UT_sint32 yoff, UT_sint32 ylimit);
-
 };
 
 #endif /* AP_UNIXFRAME_H */

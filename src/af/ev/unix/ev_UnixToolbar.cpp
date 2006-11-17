@@ -576,28 +576,38 @@ bool EV_UnixToolbar::getPixmapForIcon(XAP_Toolbar_Id id, GdkWindow * window, Gdk
 	switch ( id )
 	{
 		case AP_TOOLBAR_ID_FILE_NEW: stock_id = GTK_STOCK_NEW ; break ;
+#if HAVE_SUGAR
+#else
 		case AP_TOOLBAR_ID_FILE_OPEN: stock_id = GTK_STOCK_OPEN ; break ;
 		case AP_TOOLBAR_ID_FILE_SAVE: stock_id = GTK_STOCK_SAVE ; break ;
+#endif
 		case AP_TOOLBAR_ID_FILE_SAVEAS: stock_id = GTK_STOCK_SAVE_AS ; break ;
 		case AP_TOOLBAR_ID_FILE_PRINT: stock_id = GTK_STOCK_PRINT ; break ;
 		case AP_TOOLBAR_ID_FILE_PRINT_PREVIEW: stock_id = GTK_STOCK_PRINT_PREVIEW ; break ;
+#if HAVE_SUGAR
+#else
 			
 		case AP_TOOLBAR_ID_EDIT_UNDO: stock_id = GTK_STOCK_UNDO ; break ;
 		case AP_TOOLBAR_ID_EDIT_REDO: stock_id = GTK_STOCK_REDO ; break ;
+#endif
 		case AP_TOOLBAR_ID_EDIT_CUT: stock_id = GTK_STOCK_CUT ; break ;
 		case AP_TOOLBAR_ID_EDIT_COPY: stock_id = GTK_STOCK_COPY ; break ;
 		case AP_TOOLBAR_ID_EDIT_PASTE: stock_id = GTK_STOCK_PASTE ; break ;
+#if HAVE_SUGAR
+#else
 						
 		case AP_TOOLBAR_ID_FMT_BOLD: stock_id = GTK_STOCK_BOLD ; break ;
 		case AP_TOOLBAR_ID_FMT_ITALIC: stock_id = GTK_STOCK_ITALIC ; break ;
 		case AP_TOOLBAR_ID_FMT_UNDERLINE: stock_id = GTK_STOCK_UNDERLINE ; break ;
+#endif
 		case AP_TOOLBAR_ID_FMT_STRIKE: stock_id = GTK_STOCK_STRIKETHROUGH ; break ;
-			
+#if HAVE_SUGAR
+#else			
 		case AP_TOOLBAR_ID_ALIGN_LEFT: stock_id = GTK_STOCK_JUSTIFY_LEFT ; break ;
 		case AP_TOOLBAR_ID_ALIGN_CENTER: stock_id = GTK_STOCK_JUSTIFY_CENTER ; break ;
 		case AP_TOOLBAR_ID_ALIGN_RIGHT: stock_id = GTK_STOCK_JUSTIFY_RIGHT ; break ;
 		case AP_TOOLBAR_ID_ALIGN_JUSTIFY: stock_id = GTK_STOCK_JUSTIFY_FILL ; break ;
-			
+#endif			
 		case AP_TOOLBAR_ID_SPELLCHECK: stock_id = GTK_STOCK_SPELL_CHECK ; break ;
 		case AP_TOOLBAR_ID_HELP: stock_id = GTK_STOCK_HELP ; break ;
 		case AP_TOOLBAR_ID_SCRIPT_PLAY: stock_id = GTK_STOCK_EXECUTE ; break ;

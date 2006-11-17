@@ -53,10 +53,12 @@ public:
 	virtual PX_ChangeRecord * reverse(void) const;
 	PT_AttrPropIndex		getOldIndexAP(void) const;
 	PT_BlockOffset			getBlockOffset(void) const;
+	void                      AdjustBlockOffset(PT_BlockOffset iBlk) const
+	{ m_blockOffset = iBlk;}
 	
 protected:
 	PT_AttrPropIndex		m_indexOldAP;
-	PT_BlockOffset			m_blockOffset; /* offset of span from beginning of paragraph */
+mutable	PT_BlockOffset			m_blockOffset; /* offset of span from beginning of paragraph */
 };
 
 #endif /* PX_CHANGERECORD_FMTMARKCHANGE_H */

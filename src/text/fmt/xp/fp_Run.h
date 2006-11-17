@@ -797,6 +797,7 @@ private:
 	UT_sint32               m_iPointHeight;
 	const PP_AttrProp *     m_pSpanAP;
 	UT_uint32               m_iGraphicTick;
+	bool                    m_bImageForPrinter;
 };
 
 #define FPFIELD_MAX_LENGTH	127

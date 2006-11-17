@@ -88,6 +88,7 @@ bool PX_ChangeRecord::setCRNumber(void) const
 {
   if(m_pDoc == NULL)
   {
+      UT_ASSERT(0);
       return false;
   }
   m_iCRNumber = m_pDoc->getNextCRNumber();
@@ -103,7 +104,7 @@ PD_Document * PX_ChangeRecord::getDocument(void) const
 void PX_ChangeRecord::setDocument(const PD_Document * pDoc) const
 {
   m_pDoc = const_cast<PD_Document *>(pDoc);
-  m_pDoc->getDocUUID()->toBinary(m_MyDocUUID);
+  m_pDoc->getMyUUID()->toBinary(m_MyDocUUID);
 }
 
 const char * PX_ChangeRecord::getDocUUID() const
@@ -117,7 +118,7 @@ const char * PX_ChangeRecord::getDocUUID() const
 }
 
 /*!
- * returns true if local UUID is the same as the document UUID. Useful 
+ * returns true if local UUID is the same as the document users UUID. Useful 
  * for AbiCollab
  */
 bool PX_ChangeRecord::isFromThisDoc(void) const

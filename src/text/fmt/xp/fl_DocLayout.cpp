@@ -1552,8 +1552,9 @@ UT_sint32 FL_DocLayout::getWidth()
 
 const GR_Font* FL_DocLayout::findFont(const PP_AttrProp * pSpanAP,
 									  const PP_AttrProp * pBlockAP,
-									  const PP_AttrProp * pSectionAP,
-									  bool isField)
+				      const PP_AttrProp * pSectionAP,
+				      GR_Graphics * pG,
+				      bool isField)
 {
 	const char* pszFamily	= PP_evalProperty("font-family",pSpanAP,pBlockAP,pSectionAP, m_pDoc, true);
 	const char* pszField	= PP_evalProperty("field-font",NULL,pBlockAP,NULL, m_pDoc, true);
@@ -1575,11 +1576,53 @@ const GR_Font* FL_DocLayout::findFont(const PP_AttrProp * pSpanAP,
 		double newSize = UT_convertToPoints(pszSize) * 2.0 / 3.0;
 		pszSize = UT_formatDimensionedValue(newSize,"pt",".0");
 	}
-
-	return m_pG->findFont(pszFamily, pszStyle,
+	if(pG==NULL)
+	{
+	    return m_pG->findFont(pszFamily, pszStyle,
 						  pszVariant, pszWeight,
 						  pszStretch, pszSize,
 						  pszLang);
+	}
+	else
+	{
+	    
+	    return pG->findFont(pszFamily, pszStyle,
+			      pszVariant, pszWeight,
+			      pszStretch, pszSize,
+			      pszLang);
+	}
+}
+
+
+const GR_Font* FL_DocLayout::findFont(const PP_AttrProp * pSpanAP,
+									  const PP_AttrProp * pBlockAP,
+				      const PP_AttrProp * pSectionAP,
+				      bool isField)
+{
+	const char* pszFamily	= PP_evalProperty("font-family",pSpanAP,pBlockAP,pSectionAP, m_pDoc, true);
+	const char* pszField	= PP_evalProperty("field-font",NULL,pBlockAP,NULL, m_pDoc, true);
+	const char* pszStyle	= PP_evalProperty("font-style",pSpanAP,pBlockAP,pSectionAP, m_pDoc, true);
+	const char* pszVariant	= PP_evalProperty("font-variant",pSpanAP,pBlockAP,pSectionAP, m_pDoc, true);
+	const char* pszWeight	= PP_evalProperty("font-weight",pSpanAP,pBlockAP,pSectionAP, m_pDoc, true);
+	const char* pszStretch	= PP_evalProperty("font-stretch",pSpanAP,pBlockAP,pSectionAP, m_pDoc, true);
+	const char* pszSize		= PP_evalProperty("font-size",pSpanAP,pBlockAP,pSectionAP, m_pDoc, true);
+	const char* pszPosition = PP_evalProperty("text-position",pSpanAP,pBlockAP,pSectionAP, m_pDoc, true);
+	const char* pszLang     = PP_evalProperty("lang",pSpanAP,pBlockAP,pSectionAP, m_pDoc, true);
+
+	if (pszField != NULL && isField && UT_strcmp(pszField, "NULL"))
+		pszFamily = pszField;
+
+	// for superscripts and subscripts, we'll automatically shrink the font size
+	if ((0 == UT_strcmp(pszPosition, "superscript")) ||
+		(0 == UT_strcmp(pszPosition, "subscript")))
+	{
+		double newSize = UT_convertToPoints(pszSize) * 2.0 / 3.0;
+		pszSize = UT_formatDimensionedValue(newSize,"pt",".0");
+	}
+	return m_pG->findFont(pszFamily, pszStyle,
+			      pszVariant, pszWeight,
+			      pszStretch, pszSize,
+			      pszLang);
 }
 
 void FL_DocLayout::changeDocSections(const PX_ChangeRecord_StruxChange * pcrx, fl_DocSectionLayout * pDSL)
@@ -2252,7 +2295,7 @@ FL_DocLayout::_toggleAutoSpell(bool bSpell)
 
 	if (bSpell)
 	{
-		UT_DEBUGMSG(("Rechecking spelling in blocks \n"));
+		xxx_UT_DEBUGMSG(("Rechecking spelling in blocks \n"));
 		queueAll(bgcrSpelling);
 	}
 	else
@@ -2321,7 +2364,7 @@ FL_DocLayout::_toggleAutoGrammar(bool bGrammar)
 
 	if (bGrammar)
 	{
-		UT_DEBUGMSG(("Rechecking Grammar in blocks \n"));
+		xxx_UT_DEBUGMSG(("Rechecking Grammar in blocks \n"));
 		queueAll(bgcrGrammar);
 	}
 	else
