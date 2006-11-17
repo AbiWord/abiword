@@ -77,6 +77,7 @@ public:
 	static const char * m_sUserProfile;
 
 	static const char * m_sFileExtension;
+	static long	    m_iGtkSocketId;
 private:
 	bool          m_bShowSplash;
 	AP_App*       m_pApp;

@@ -25,15 +25,25 @@
 ******************************************************************
 *****************************************************************/
 
-// Include each toolbar layout that we want to build.
+/*
+ * Should I create a new preference key like AP_PREF_KEY_OlpcBarVisible?
+ */
+BeginLayout(OlpcOps, AP_STRING_ID_TB_Simple, AP_PREF_KEY_StandardBarVisible)
 
-#if HAVE_HILDON
-#include "ap_TB_Layouts_HildonOps.h"
-#elif HAVE_SUGAR
-#include "ap_TB_Layouts_SugarOps.h"
-#else
-#include "ap_TB_Layouts_FileEditOps.h"
-#include "ap_TB_Layouts_FormatOps.h"
-#include "ap_TB_Layouts_TableOps.h"
-#include "ap_TB_Layouts_ExtraOps.h"
-#endif
+	ToolbarItem(AP_TOOLBAR_ID_FILE_OPEN)
+	ToolbarItem(AP_TOOLBAR_ID_FILE_SAVE)
+	ToolbarItem(AP_TOOLBAR_ID_FMT_BOLD)
+	ToolbarItem(AP_TOOLBAR_ID_FMT_ITALIC)
+	ToolbarItem(AP_TOOLBAR_ID_FMT_UNDERLINE)
+
+	Spacer()
+	ToolbarItem(AP_TOOLBAR_ID_ALIGN_LEFT)
+	ToolbarItem(AP_TOOLBAR_ID_ALIGN_CENTER)
+	ToolbarItem(AP_TOOLBAR_ID_ALIGN_RIGHT)
+	ToolbarItem(AP_TOOLBAR_ID_ALIGN_JUSTIFY)
+	
+	Spacer()
+	ToolbarItem(AP_TOOLBAR_ID_EDIT_UNDO)
+	ToolbarItem(AP_TOOLBAR_ID_EDIT_REDO)
+	
+EndLayout()

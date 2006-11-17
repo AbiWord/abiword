@@ -124,10 +124,12 @@ XAP_UnixApp::XAP_UnixApp(XAP_Args * pArgs, const char * szAppName)
 		{
 			pGF->registerAsDefault(GR_UnixPangoGraphics::s_getClassId(), true);
 		}
-		
+
+#if !defined(WITHOUT_PRINTING)
 		bSuccess = pGF->registerClass(GR_UnixPangoPrintGraphics::graphicsAllocator,
 									  GR_UnixPangoPrintGraphics::graphicsDescriptor,
 									  GR_UnixPangoPrintGraphics::s_getClassId());
+#endif
 #endif
 		
 		UT_ASSERT( bSuccess );

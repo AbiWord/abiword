@@ -64,6 +64,8 @@ const char * AP_Args::m_sUserProfile = NULL;
 
 const char * AP_Args::m_sFileExtension = NULL;
 
+long AP_Args::m_iGtkSocketId = 0;
+
 int AP_Args::m_iToThumb = 0;
 const char * AP_Args::m_sThumb = NULL; // name of output pn
 const char *  AP_Args::m_sThumbXY = "100x120"; // number of pixels in thumbnail by default
@@ -226,6 +228,7 @@ const struct poptOption AP_Args::const_opts[] =
 	 {"sizeXY",'S',POPT_ARG_STRING,&m_sThumbXY,0,"Size of PNG thumb nail in pixels","VALxVAL"},
 	 {"name",'o',POPT_ARG_STRING,&m_sThumb,0,"Name of PNG thumb nail file","Output png file name"},
 	 {"import-extension", '\0', POPT_ARG_STRING, &m_sFileExtension, 0, "Override document type detection by specifying a file extension", NULL},
+	 {"gtk-socket-id", '\0', POPT_ARG_LONG, &m_iGtkSocketId, 0, "Gtk socket id to use for embedding", NULL},
 	 // GNOME build kills everything after "version"
 	 {"version", '\0', POPT_ARG_NONE, &m_iVersion, 0, "Print AbiWord version", NULL},
  	 {"help", '?', POPT_ARG_NONE, &m_iHelp, 0, "Display help", NULL},

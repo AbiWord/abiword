@@ -8,6 +8,9 @@
 #       and we can state that dev people need Perl on their machine
 #
 
+srcdir=`dirname $0`
+test -z "$srcdir" && srcdir=.
+
 rm -rf autom4te.cache
 rm -f autogen.err
 
@@ -87,8 +90,14 @@ autoconf 2>> autogen.err || {
     echo ""
 }
 
-echo ""
-echo "You can run ./configure now."
-echo ""
-
 rm -rf autom4te.cache
+
+conf_flags="--enable-maintainer-mode"
+
+if test x$NOCONFIGURE = x; then
+  echo Running $srcdir/configure $conf_flags "$@" ...
+  $srcdir/configure $conf_flags "$@" \
+  && echo Now type \`make\' to compile. || exit 1
+else
+  echo Skipping configure process.
+fi

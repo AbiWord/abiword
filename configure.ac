@@ -88,6 +88,7 @@ fi
 # check for embedded and print first, so we can handle gnomeprint dependency
 # correcly
 ABI_HILDON_QUICK
+ABI_SUGAR
 
 AC_ARG_ENABLE(embedded,[  --enable-embedded    Include embedded features],[
 	case "${enableval}" in
@@ -362,12 +363,16 @@ if test "$PLATFORM" = "unix"; then
 		PLATFORM_CFLAGS="$GTK_CFLAGS $GMODULE_CFLAGS $GUCHARMAP_CFLAGS $GNOMEPRINT_CFLAGS -DSUPPORTS_UT_IDLE=1"
 		PLATFORM_LIBS="$GTK_LIBS $GMODULE_LIBS $GUCHARMAP_LIBS $GNOMEPRINT_LIBS"
 	fi
-	
+
 	if test "$hildon" = "true"; then
 		PLATFORM_CFLAGS="$PLATFORM_CFLAGS $HILDON_CFLAGS"
 		PLATFORM_LIBS="$PLATFORM_LIBS $HILDON_LIBS"
 	fi
-		
+
+	if test "$sugar" = "true"; then
+		PLATFORM_CFLAGS="$PLATFORM_CFLAGS $SUGAR_CFLAGS"
+		PLATFORM_LIBS="$PLATFORM_LIBS $SUGAR_LIBS"
+	fi		
 fi
 dnl AUTOCONF SUCKS
 if test "$PLATFORM" = "cocoa"; then
@@ -476,7 +481,8 @@ AC_SUBST(VALGRIND)
 
 AM_CONDITIONAL(CROSS_COMPILING, test x$cross_compiling = xyes)
 
-AC_CONFIG_FILES([GNUmakefile
+AC_CONFIG_FILES([
+ Makefile
  src/GNUmakefile
  src/af/GNUmakefile
  src/af/tf/GNUmakefile

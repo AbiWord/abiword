@@ -1,0 +1,7 @@
+
+What to do before merging this branch:
+
+Review/refactor use of XP_SIMPLE_TOOLBAR and maybe split into
+  + HILDON_TOOLBAR or just use HAVE_HILDON
+  + SUGAR_TOOLBAR and maybe a common 
+  + SIMPLE_TOOLBAR define.

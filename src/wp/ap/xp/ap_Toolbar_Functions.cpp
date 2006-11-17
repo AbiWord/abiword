@@ -200,8 +200,10 @@ Defun_EV_GetToolbarItemState_Fn(ap_ToolbarGetState_Spelling)
 Defun_EV_GetToolbarItemState_Fn(ap_ToolbarGetState_Changes)
 {
 	ABIWORD_VIEW;
+#if HAVE_SUGAR
+#else
 	CHECK_INC_LOAD;
-
+#endif
 	EV_Toolbar_ItemState s = EV_TIS_ZERO;
 	
 	if(!pView)

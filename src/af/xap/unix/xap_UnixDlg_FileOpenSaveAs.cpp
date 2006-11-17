@@ -783,6 +783,10 @@ void XAP_UnixDialog_FileOpenSaveAs::runModal(XAP_Frame * pFrame)
 			// no initial pathname given and we don't have
 			// a pathname from a previous use, so just let
 			// it come up in the current working directory.
+#ifdef HAVE_SUGAR
+			szPersistDirectory = UT_strdup(getenv("HOME"));
+			gtk_file_chooser_set_current_folder(m_FC, szPersistDirectory);
+#endif
 		}
 	}
 	else
