@@ -595,14 +595,6 @@ UT_Error IE_Imp_XHTML::importFile(const char * szFilename)
 	if ( szFilename == 0) return UT_IE_BOGUSDOCUMENT;
 	if (*szFilename == 0) return UT_IE_BOGUSDOCUMENT;
 
-	int path_length = strlen (szFilename);
-	int name_length = strlen (UT_basename (szFilename));
-
-	if (path_length > name_length)
-		m_dirname = UT_String(szFilename,path_length-name_length);
-	else
-		m_dirname = "";
-
 	UT_Error e = IE_Imp_XML::importFile(szFilename);
 	// m_parseState = _PS_Sec; // no point having another sections the end
  	if (!requireBlock ()) e = UT_IE_BOGUSDOCUMENT;
@@ -1779,50 +1771,27 @@ FG_Graphic * IE_Imp_XHTML::importImage (const XML_Char * szSrc)
 {
 	const char * szFile = static_cast<const char *>(szSrc);
 
-	if (strncmp (szFile, "http://", 7) == 0)
-		{
-			UT_DEBUGMSG(("found web image reference (%s) - skipping...\n",szFile));
-			return 0;
-		}
-	if (strncmp (szFile, "file://", 7) == 0)
-		szFile += 7;
-	else if (strncmp (szFile, "file:", 5) == 0)
-		szFile += 5;
+	char * relative_file = UT_go_url_resolve_relative(m_szFileName, szFile);
+	if(!relative_file)
+		return 0;
 
-	// TODO: this is a URL and may be encoded using %AC%BE%C1 etc.
-
-	UT_String extended_path;
-
-	if (*szFile != '/')
-		{
-			/* since this is a URL, directories should be delimited by '/'
-			 * anyway, this looks like a relative link, so prefix the dirname
-			 */
-			extended_path = m_dirname;
-		}
-	extended_path += szFile;
-
-	szFile = extended_path.c_str ();
-
-	if (!UT_isRegularFile (szFile))
-		{
-			UT_DEBUGMSG(("found image reference (%s) - not found! skipping... \n",szFile));
-			return 0;
-		}
-	UT_DEBUGMSG(("found image reference (%s) - loading... \n",szFile));
+	UT_DEBUGMSG(("found image reference (%s) - loading... \n", relative_file));
 
 	IE_ImpGraphic * pieg = 0;
-	if (IE_ImpGraphic::constructImporter (szFile, IEGFT_Unknown, &pieg) != UT_OK)
+	UT_Error err = IE_ImpGraphic::constructImporter (relative_file, IEGFT_Unknown, &pieg);
+
+	if (err != UT_OK || !pieg)
 		{
 			UT_DEBUGMSG(("unable to construct image importer!\n"));
+			g_free(relative_file);
 			return 0;
 		}
-	if (pieg == 0) return 0;
 
 	FG_Graphic * pfg = 0;
-	UT_Error import_status = pieg->importGraphic (szFile, &pfg);
+	err = pieg->importGraphic (relative_file, &pfg);
+	g_free(relative_file);
 	delete pieg;
-	if (import_status != UT_OK)
+	if (err != UT_OK)
 		{
 			UT_DEBUGMSG(("unable to import image!\n"));
 			return 0;

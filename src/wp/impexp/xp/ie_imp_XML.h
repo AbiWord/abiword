@@ -152,7 +152,6 @@ protected:
     XML_Char *		m_currentDataItemMimeType;
     bool			m_currentDataItemEncoded;
 
-    FILE *			m_fp;
 	const char *	m_szFileName;
 
     UT_String		m_currentMetaDataName;

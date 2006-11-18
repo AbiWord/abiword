@@ -129,8 +129,6 @@ private:
 
 	UT_uint16	m_iPreCount;
 
-	UT_String	m_dirname;
-
 	UT_Vector	m_divClasses;
 	UT_GenericVector<UT_UTF8String *>	m_divStyles;
 	bool        bInTable(void);
