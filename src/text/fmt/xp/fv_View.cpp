@@ -7677,7 +7677,7 @@ void FV_View::getPageYOffset(fp_Page* pThePage, UT_sint32& yoff) const
 	UT_sint32 iDiff = pPage->getHeight() + getPageViewSep();
 	if(getViewMode() != VIEW_PRINT)
 	{
-		iDiff = iDiff - pDSL->getTopMargin() - pDSL->getBottomMargin() -getPageViewSep();
+		iDiff = iDiff - pDSL->getTopMargin() - pDSL->getBottomMargin();
 	}
 	if(iPage > 0)
 	{
