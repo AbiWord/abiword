@@ -786,8 +786,8 @@ void XAP_UnixDialog_FileOpenSaveAs::runModal(XAP_Frame * pFrame)
 			// extract the directory portion and start
 			// the dialog there (but without a filename).
 
-			szPersistDirectory = g_path_get_dirname(m_szPersistPathname);
-			gtk_file_chooser_set_current_folder(m_FC, szPersistDirectory);
+			szPersistDirectory = UT_go_dirname_from_uri(m_szPersistPathname, FALSE);
+			gtk_file_chooser_set_current_folder_uri(m_FC, szPersistDirectory);
 		}
 		else
 		{
@@ -806,10 +806,12 @@ void XAP_UnixDialog_FileOpenSaveAs::runModal(XAP_Frame * pFrame)
 
 		if (m_bSuggestName)
 		{
-			if (!g_path_is_absolute (m_szInitialPathname)) {
+			if (!g_path_is_absolute (m_szInitialPathname)) { // DAL: todo: is this correct?
 				gchar *dir = g_get_current_dir ();
 				gchar *file = m_szInitialPathname;
-				m_szInitialPathname = g_build_filename (dir, file, (gchar *)NULL);
+				gchar *filename = g_build_filename (dir, file, (gchar *)NULL);
+				m_szInitialPathname = UT_go_filename_to_uri(filename);
+				g_free(filename);
 				g_free (dir);
 				g_free (file);
 			}
@@ -845,8 +847,8 @@ void XAP_UnixDialog_FileOpenSaveAs::runModal(XAP_Frame * pFrame)
 		else
 		{
 			// use directory(m_szInitialPathname)
-			szPersistDirectory = g_path_get_dirname(m_szInitialPathname);
-			gtk_file_chooser_set_current_folder(m_FC, szPersistDirectory);
+			szPersistDirectory = UT_go_dirname_from_uri(m_szInitialPathname, FALSE);
+			gtk_file_chooser_set_current_folder_uri(m_FC, szPersistDirectory);
 		}
 	}
 
