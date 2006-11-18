@@ -241,7 +241,7 @@ bool IE_Exp_MHTML_Sniffer::getDlgLabels(const char ** pszDesc,
 
 /* TODO: is there a better way to do this?
  */
-static UT_UTF8String s_string_to_url (UT_String & str)
+static UT_UTF8String s_string_to_url (const UT_String & str)
 {
 	UT_UTF8String url;
 
@@ -281,6 +281,12 @@ static UT_UTF8String s_string_to_url (UT_String & str)
 		ptr++;
 	}
 	return url;
+}
+
+static UT_UTF8String s_string_to_url (const UT_UTF8String & str)
+{
+	UT_String s(str.utf8_str());
+	return s_string_to_url(s);
 }
 
 static const char * s_prop_list[] = {
@@ -534,7 +540,7 @@ private:
  	void	_populateFooterStyle ();
 
 	void	_writeImage (const UT_ByteBuf * pByteBuf,
-						 const UT_String & imagedir, const UT_String & filename);
+						 const UT_UTF8String & imagedir, const UT_UTF8String & filename);
 	void	_writeImageBase64 (const UT_ByteBuf * pByteBuf);
 	void	_handleImage (PT_AttrPropIndex api);
 	void	_handlePendingImages ();
@@ -685,7 +691,7 @@ private:
 
 	UT_uint32		m_styleIndent;
 
-	FILE *			m_fdCSS;
+	GsfOutput *		m_fdCSS;
 
 	UT_GenericStringMap<UT_UTF8String*>	m_SavedURLs;
 
@@ -1115,7 +1121,7 @@ void s_HTML_Listener::styleOpen (const UT_UTF8String & rule)
 		m_utf8_0 += MYEOL;
 
 	if (m_fdCSS)
-		fwrite (m_utf8_0.utf8_str (), 1, m_utf8_0.byteLength (), m_fdCSS);
+		gsf_output_write (m_fdCSS, m_utf8_0.byteLength (), (const guint8*)m_utf8_0.utf8_str ());
 	else
 		tagRaw (m_utf8_0);
 
@@ -1138,7 +1144,7 @@ void s_HTML_Listener::styleClose ()
 		m_utf8_0 += MYEOL;
 
 	if (m_fdCSS)
-		fwrite (m_utf8_0.utf8_str (), 1, m_utf8_0.byteLength (), m_fdCSS);
+		gsf_output_write (m_fdCSS, m_utf8_0.byteLength (), (const guint8*)m_utf8_0.utf8_str ());
 	else
 		tagRaw (m_utf8_0);
 }
@@ -1155,7 +1161,7 @@ void s_HTML_Listener::styleNameValue (const char * name, const UT_UTF8String & v
 		m_utf8_0 += MYEOL;
 
 	if (m_fdCSS)
-		fwrite (m_utf8_0.utf8_str (), 1, m_utf8_0.byteLength (), m_fdCSS);
+		gsf_output_write (m_fdCSS, m_utf8_0.byteLength (), (const guint8*)m_utf8_0.utf8_str ());
 	else
 		tagRaw (m_utf8_0);
 }
@@ -1163,7 +1169,7 @@ void s_HTML_Listener::styleNameValue (const char * name, const UT_UTF8String & v
 void s_HTML_Listener::styleText (const UT_UTF8String & content)
 {
 	if (m_fdCSS)
-		fwrite (content.utf8_str (), 1, content.byteLength (), m_fdCSS);
+		gsf_output_write (m_fdCSS, content.byteLength (), (const guint8*)content.utf8_str ());
 	else
 	{
 		m_utf8_0 = content;
@@ -1514,14 +1520,15 @@ void s_HTML_Listener::_outputEnd ()
 
 bool s_HTML_Listener::_openStyleSheet (UT_UTF8String & css_path)
 {
-	UT_String imagebasedir = UT_basename (m_pie->getFileName ());
-	imagebasedir += "_files";
-	UT_String imagedir = m_pie->getFileName ();
-	imagedir += "_files";
+	char * base_name = UT_go_basename_from_uri (m_pie->getFileName ());
 
-	m_pDocument->getApp()->makeDirectory (imagedir.c_str (), 0750);
+	UT_UTF8String cssdir(m_pie->getFileName ());
+	cssdir += "_files";
 
-	imagedir += "/style.css";
+	UT_go_directory_create (cssdir.utf8_str(), 0750, NULL);
+
+	css_path = cssdir;
+	css_path += "/style.css";
 
 	if (m_utf8_css_path.byteLength ()) // Multipart HTML: style-sheet segment
 	{
@@ -1541,20 +1548,22 @@ bool s_HTML_Listener::_openStyleSheet (UT_UTF8String & css_path)
 	}
 	else if (!get_Multipart ())
 	{
-		m_fdCSS = fopen (imagedir.c_str (), "wb");
+		m_fdCSS = UT_go_file_create (css_path.utf8_str (), NULL);
 		if (m_fdCSS == NULL) return false;
 	}
 
-	css_path  = s_string_to_url (imagebasedir);
-	css_path += "/style.css";
+	g_free(base_name);
 
 	return true;
 }
 
 void s_HTML_Listener::_closeStyleSheet ()
 {
-	if (m_fdCSS) fclose (m_fdCSS);
-	m_fdCSS = 0;
+	if (m_fdCSS) { 
+		gsf_output_close (m_fdCSS); 
+		g_object_unref (G_OBJECT (m_fdCSS));
+		m_fdCSS = 0;
+	}
 }
 
 // TODO: Use the styleIndent code to clean up this output
@@ -4311,24 +4320,25 @@ s_HTML_Listener::~s_HTML_Listener()
  * url      is the URL which we'll use
  */
 void s_HTML_Listener::_writeImage (const UT_ByteBuf * pByteBuf,
-								   const UT_String & imagedir,
-								   const UT_String & filename)
+								   const UT_UTF8String & imagedir,
+								   const UT_UTF8String & filename)
 {
 	/* hmm, bit lazy this - attempt to create directory whether or not
 	 * it exists already... if it does, well hey. if this fails to
 	 * create a directory then fopen() will fail as well, so no biggie
 	 */
-	m_pDocument->getApp()->makeDirectory (imagedir.c_str (), 0750);
+	UT_go_directory_create(imagedir.utf8_str(), 0750, NULL);
 
-	UT_String path(imagedir);
+	UT_UTF8String path(imagedir);
 	path += "/";
 	path += filename;
 
-	FILE * out = fopen (path.c_str (), "wb+");
+	GsfOutput * out = UT_go_file_create (path.utf8_str (), NULL);
 	if (out)
 	{
-		fwrite (pByteBuf->getPointer (0), sizeof (UT_Byte), pByteBuf->getLength (), out);
-		fclose (out);
+		gsf_output_write (out, pByteBuf->getLength (), (const guint8*)pByteBuf->getPointer (0));
+		gsf_output_close (out);
+		g_object_unref (G_OBJECT (out));
 	}
 }
 
@@ -4421,18 +4431,22 @@ void s_HTML_Listener::_handleImage (PT_AttrPropIndex api)
 		}
 	if (dataid == suffix) return;
 
+	char * base_name = UT_go_basename_from_uri (m_pie->getFileName ());
+
 	/* hmm; who knows what locale the system uses
 	 */
-	UT_String imagebasedir = "clipboard";
-	if (m_pie->getFileName ())
-		imagebasedir = UT_basename (m_pie->getFileName ());
+	UT_UTF8String imagebasedir = "clipboard";
+	if (base_name)
+		imagebasedir = base_name;
 	imagebasedir += "_files";
-	UT_String imagedir = m_pie->getFileName ();
+	UT_UTF8String imagedir = m_pie->getFileName ();
 	imagedir += "_files";
 
-	UT_String filename(dataid,suffix-dataid);
+	UT_UTF8String filename(dataid,suffix-dataid);
 	filename += suffid;
 	filename += ".png";
+
+	g_free (base_name);
 
 	UT_UTF8String url;
 
