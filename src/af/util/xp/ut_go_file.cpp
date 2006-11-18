@@ -516,6 +516,38 @@ UT_go_dirname_from_uri (const char *uri, gboolean brief)
 	return dirname_utf8;
 }
 
+
+gboolean 
+UT_go_directory_create (char const *uri, int mode, GError **error)
+{
+#ifdef GOFFICE_WITH_GNOME
+	GnomeVFSResult vfs_result;
+
+	vfs_result = gnome_vfs_make_directory (uri, mode);
+	if(vfs_result != GNOME_VFS_OK) {
+		g_set_error (error, gsf_output_error_id (), (gint) vfs_result,
+			     gnome_vfs_result_to_string (vfs_result));
+
+		return FALSE;
+	}
+
+	return TRUE;
+#else
+	char *filename;
+
+	filename = UT_go_filename_from_uri (uri);
+	if (filename) {
+		int result;
+
+		result = g_mkdir(filename, mode);
+		g_free (filename);
+		return (result == 0);
+	}
+
+	return FALSE;
+#endif
+}
+
 /* ------------------------------------------------------------------------- */
 
 static gboolean
@@ -1348,3 +1380,4 @@ UT_go_utf8_collate_casefold (const char *a, const char *b)
 	g_free (b2);
 	return res;
 }
+
