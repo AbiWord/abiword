@@ -2696,7 +2696,7 @@ Defun1(fileSaveEmbed)
 			const UT_ByteBuf *Buf;
 			pView->getDocument()->getDataItemDataByName(pRun->getDataID(), &Buf, NULL, NULL);
 			if (Buf)
-				Buf->writeToFile(szResultPathname);
+				Buf->writeToURI(szResultPathname);
 		}
 	}
 

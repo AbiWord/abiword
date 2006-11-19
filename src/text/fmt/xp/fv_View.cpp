@@ -2440,7 +2440,7 @@ PT_DocPosition FV_View::saveSelectedImage (const char * toFile)
 
   if ( pBytes )
 	{
-	  pBytes->writeToFile ( toFile ) ;
+	  pBytes->writeToURI ( toFile ) ;
 	}
 
   return dPos ;
