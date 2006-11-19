@@ -28,6 +28,7 @@
 
 #include "ut_go_file.h"
 #include <gsf/gsf-input.h>
+#include <gsf/gsf-output.h>
 
 #define DEFAULT_CHUNK		1024
 #define MIN_CHUNK			256
@@ -280,4 +281,20 @@ bool UT_ByteBuf::writeToFile(const char* pszFileName) const
 	fclose(fp);
 
 	return true;
+}
+
+bool UT_ByteBuf::writeToURI(const char* pszURI) const
+{
+	UT_ASSERT(pszURI && pszURI[0]);
+	
+	GsfOutput *fp = UT_go_file_create(pszURI, NULL);
+	if (!fp)
+	  return false;
+
+	bool res = gsf_output_write(fp, m_iSize, (guint8*)m_pBuf);
+
+	gsf_output_close(fp);
+	g_object_unref(G_OBJECT(fp));
+
+	return res;
 }
