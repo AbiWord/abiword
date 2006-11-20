@@ -1,3 +1,5 @@
+/* -*- mode: C++; tab-width: 4; c-basic-offset: 4; -*- */
+
 ## AbiSource Applications
 ## Copyright (C) 2001 Sam Tobin-Hochstadt
 ## Copyright (C) 2005 Hubert Figuiere
@@ -19,20 +21,22 @@
 
 include $(top_srcdir)/includes.mk
 
-if WITH_GNOME
-SUBDIRS = gnome t
-else
 if WITH_HILDON
 SUBDIRS = hildon t
 else
 SUBDIRS = t
 endif
-endif
 
-INCLUDES= -UVERSION @GTK_CFLAGS@ @GMODULE_CFLAGS@ 	\
-	-DABIWORD_APP_NAME="\"$(ABIWORD_APP_NAME)\"" 	\
-	-DPREFIX=\"$(prefix)\"				\
-	$(AF_INCLUDES) $(WP_INCLUDES) $(TEXT_INCLUDES) $(ICONV_INCLUDES) $(OTHER_INCLUDES)
+INCLUDES = 				\
+	-UVERSION 			\
+	$(GTK_CFLAGS) 		\
+	$(GMODULE_CFLAGS) 	\
+	$(AF_INCLUDES) 		\
+	$(WP_INCLUDES) 		\
+	$(TEXT_INCLUDES) 	\
+	$(ICONV_INCLUDES) 	\
+	$(OTHER_INCLUDES)	\
+	-DABIWORD_APP_NAME="\"$(ABIWORD_APP_NAME)\"" 
 
 noinst_LIBRARIES = libXap_unix.a
 
@@ -52,7 +56,6 @@ print_src =
 endif
 
 glade_DATA = \
-	xap_UnixDlg_About.glade 		\
 	xap_UnixDlg_Encoding.glade 		\
 	xap_UnixDlg_Language.glade 		\
 	xap_UnixDlg_Password.glade		\
@@ -86,7 +89,6 @@ libXap_unix_a_SOURCES= $(print_src)	\
 	xap_UnixFontManager.cpp			\
 	xap_UnixFontPreview.cpp			\
 	xap_UnixModule.cpp				\
-	xap_UnixToolbar_Icons.cpp		\
 	xap_UnixDlg_Password.cpp		\
 	xap_UnixDlg_PluginManager.cpp	\
 	xap_UnixNullGraphics.cpp		\

@@ -558,6 +558,14 @@ void fp_VerticalContainer::getOffsets(fp_ContainerObject* pContainer, UT_sint32&
 		xoff = 0;
 		yoff = 0;
 	}
+	if(pCon && pCon->getContainerType() == FP_CONTAINER_FOOTNOTE)
+	{
+	        if(getPage() && getView() && (getView()->getViewMode() != VIEW_PRINT))
+		{
+		       fl_DocSectionLayout * pDSL = getPage()->getOwningSection();
+		       yoff -= pDSL->getTopMargin();
+		}
+	}
 }
 
 
@@ -775,6 +783,11 @@ void fp_VerticalContainer::getScreenOffsets(fp_ContainerObject* pContainer,
 
 		xoff += col_x;
 		yoff += col_y;
+	        if(pFC->getPage() && getView() && (getView()->getViewMode() != VIEW_PRINT))
+		{
+		       fl_DocSectionLayout * pDSL = getPage()->getOwningSection();
+		       yoff -= pDSL->getTopMargin();
+		}
 	}
 	else if(pCon->getContainerType() == FP_CONTAINER_FRAME)
 	{

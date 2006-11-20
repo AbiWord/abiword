@@ -181,23 +181,18 @@ Section "$(TITLE_section_abi)" section_abi
 		File "${PROGRAMEXE}"
 		File "..\..\..\..\libs\zlib\zlib1.dll"
 		File "libglib-2.0-0.dll"
+		File "libgsf-1-114.dll"
+		File "bzip2.dll"
 
 		; only for MinGW builds
 		${IfExists} "libAbiWord.dll"
 			File "libAbiWord.dll"
 		${IfExistsEnd}
 
-		; system iconv, our new friend.
-		${IfExists} "iconv.dll"
-			File "iconv.dll"
-		${IfExistsEnd}
-		${IfExists} "intl.dll"
-			File "intl.dll"
-		${IfExistsEnd}
-		; libxml2 - perhaps this should be mandatory?
-		${IfExists} "libxml2.dll"
-			File "libxml2.dll"
-		${IfExistsEnd}
+		; system libs, our new 2.6 friend
+		File "iconv.dll"
+		File "intl.dll"
+		File "libxml2.dll"
 
 	${EndIf}
 SectionEnd

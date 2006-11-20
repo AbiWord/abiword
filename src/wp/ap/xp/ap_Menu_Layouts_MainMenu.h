@@ -1,3 +1,5 @@
+/* -*- mode: C++; tab-width: 4; c-basic-offset: 4; -*- */
+
 /* AbiWord
  * Copyright (C) 1998 AbiSource, Inc.
  *
@@ -39,16 +41,15 @@ BeginLayout(Main,0)
 #if !XP_SIMPLE_MENU	
 		MenuItem(AP_MENU_ID_FILE_IMPORTSTYLES)
 #endif	
-
+#ifndef HAVE_SDI
 		Separator()
-
 		MenuItem(AP_MENU_ID_FILE_SAVE)
 		MenuItem(AP_MENU_ID_FILE_SAVEAS)
 //		MenuItem(AP_MENU_ID_FILE_SAVE_TEMPLATE)
 //		MenuItem(AP_MENU_ID_FILE_IMPORT)
 		MenuItem(AP_MENU_ID_FILE_EXPORT)
 		MenuItem(AP_MENU_ID_FILE_REVERT)
-
+#endif
 #if !XP_SIMPLE_MENU
 		Separator()
 		MenuItem(AP_MENU_ID_FILE_PAGESETUP)
@@ -58,6 +59,7 @@ BeginLayout(Main,0)
 		MenuItem(AP_MENU_ID_FILE_PRINT)
 		Separator()
 		MenuItem(AP_MENU_ID_FILE_PROPERTIES)
+#ifndef HAVE_SDI
 		Separator()
 #ifdef XP_UNIX_TARGET_GTK
 		// GNOME HIG style recent files 
@@ -80,10 +82,13 @@ BeginLayout(Main,0)
 #endif
 #endif
 		Separator()
+#endif
 #if  !XP_SIMPLE_MENU
 		MenuItem(AP_MENU_ID_FILE_CLOSE)
 #endif
+#ifndef HAVE_SDI
 		MenuItem(AP_MENU_ID_FILE_EXIT)
+#endif
 	EndSubMenu()
 
 	BeginSubMenu(AP_MENU_ID_EDIT)
@@ -182,16 +187,11 @@ BeginLayout(Main,0)
 		MenuItem(AP_MENU_ID_INSERT_FOOTNOTE)
 		MenuItem(AP_MENU_ID_INSERT_ENDNOTE)
 
-#ifdef HAVE_GNOME
+		MenuItem(AP_MENU_ID_INSERT_CLIPART)
+		MenuItem(AP_MENU_ID_INSERT_GRAPHIC)
+
 		Separator()
 
-		BeginSubMenu(AP_MENU_ID_INSERT_PICTURE)
-			MenuItem(AP_MENU_ID_INSERT_CLIPART)
-			MenuItem(AP_MENU_ID_INSERT_GRAPHIC)
-		EndSubMenu()
-#else
-		MenuItem(AP_MENU_ID_INSERT_PICTURE)
-#endif
 		BeginSubMenu(AP_MENU_ID_INSERT_DIRECTIONMARKER)
  	        MenuItem(AP_MENU_ID_INSERT_DIRECTIONMARKER_LRM)
 	        MenuItem(AP_MENU_ID_INSERT_DIRECTIONMARKER_RLM)
@@ -390,7 +390,8 @@ BeginLayout(Main,0)
 #endif
 	EndSubMenu()
 
-#if !XP_SIMPLE_MENU
+#if !XP_SIMPLE_MENU 
+#ifndef HAVE_SDI
 	BeginSubMenu(AP_MENU_ID_WINDOW)
 		MenuItem(AP_MENU_ID_WINDOW_NEW)
 		Separator()
@@ -405,7 +406,7 @@ BeginLayout(Main,0)
 		MenuItem(AP_MENU_ID_WINDOW_9)
 		MenuItem(AP_MENU_ID_WINDOW_MORE)
 	EndSubMenu()
-
+#endif
 	BeginSubMenu(AP_MENU_ID_HELP)
 		MenuItem(AP_MENU_ID_HELP_CONTENTS)
 		MenuItem(AP_MENU_ID_HELP_INDEX)
@@ -413,12 +414,7 @@ BeginLayout(Main,0)
 		MenuItem(AP_MENU_ID_HELP_CHECKVER)
 		MenuItem(AP_MENU_ID_HELP_REPORT_BUG)
 		Separator()
-#ifdef HAVE_GNOME
 		MenuItem(AP_MENU_ID_HELP_ABOUT_GNOMEOFFICE)
-#endif
-#ifndef HAVE_GNOME
-		MenuItem(AP_MENU_ID_HELP_CREDITS)
-#endif
 		MenuItem(AP_MENU_ID_HELP_ABOUT)
 	EndSubMenu()
 #endif

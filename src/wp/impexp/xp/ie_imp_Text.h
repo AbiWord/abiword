@@ -61,13 +61,13 @@ class ABI_EXPORT ImportStream
 class ABI_EXPORT ImportStreamFile : public ImportStream
 {
 public:
-	ImportStreamFile(FILE *pFile);
+	ImportStreamFile(GsfInput *pFile);
 	~ImportStreamFile();
 	bool getChar();
 protected:
 	bool _getByte(unsigned char &b);
 private:
-	FILE *m_pFile;
+	GsfInput *m_pFile;
 };
 
 // Clipboard stream class
@@ -96,13 +96,12 @@ public:
 	IE_Imp_Text_Sniffer();
 	virtual ~IE_Imp_Text_Sniffer();
 
-	UT_Confidence_t supportsMIME (const char * szMIME);
-
+	virtual const IE_SuffixConfidence * getSuffixConfidence ();
+	virtual const IE_MimeConfidence * getMimeConfidence ();
 	virtual UT_Confidence_t recognizeContents (const char * szBuf,
 									UT_uint32 iNumbytes);
 	const char * recognizeContentsType (const char * szBuf,
 									UT_uint32 iNumbytes);
-	virtual UT_Confidence_t recognizeSuffix (const char * szSuffix);
 	virtual bool getDlgLabels (const char ** szDesc,
 							   const char ** szSuffixList,
 							   IEFileType * ft);
@@ -130,9 +129,11 @@ public:
 	IE_Imp_EncodedText_Sniffer();
 	virtual ~IE_Imp_EncodedText_Sniffer();
 
+	virtual const IE_SuffixConfidence * getSuffixConfidence ();
+	virtual const IE_MimeConfidence * getMimeConfidence () { return NULL; }
+
 	virtual UT_Confidence_t recognizeContents (const char * szBuf,
 					    UT_uint32 iNumbytes);
-	virtual UT_Confidence_t recognizeSuffix (const char * szSuffix);
 	virtual bool getDlgLabels (const char ** szDesc,
 							   const char ** szSuffixList,
 							   IEFileType * ft);
@@ -154,10 +155,10 @@ public:
 										const unsigned char * pData, UT_uint32 lenData, const char * szEncoding = 0);
 
 protected:
-	UT_Error			_recognizeEncoding(FILE * fp);
+	UT_Error			_recognizeEncoding(GsfInput * fp);
 	UT_Error			_recognizeEncoding(const char *szBuf, UT_uint32 iNumbytes);
-	virtual UT_Error	_constructStream(ImportStream *& pStream, FILE * fp);
-	UT_Error			_writeHeader(FILE * fp);
+	virtual UT_Error	_constructStream(ImportStream *& pStream, GsfInput * fp);
+	UT_Error			_writeHeader(GsfInput * fp);
 	UT_Error			_parseStream(ImportStream * pStream);
 	bool				_doEncodingDialog(const char *szEncoding);
 	void				_setEncoding(const char *szEncoding);

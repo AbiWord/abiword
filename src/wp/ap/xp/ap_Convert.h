@@ -42,8 +42,6 @@ class ABI_EXPORT AP_Convert
 	bool convertTo(const char * szSourceFilename,
 		       const char * szTargetSuffixOrFilename);
 
-	bool convertToPNG ( const char * szSourceFileName ) ;
-
 	void setVerbose(int level);
 	void setMergeSource (const char * source);
 

@@ -18,10 +18,6 @@
 
 include $(top_srcdir)/includes.mk
 
-if WITH_GNOME
-#SUBDIRS = gnome
-endif
-
 if WITH_HILDON
 SUBDIRS= hildon
 endif
@@ -118,6 +114,7 @@ libWpAp_unix_a_SOURCES=\
 	ap_@ABI_FE@LeftRuler.cpp		\
 	ap_@ABI_FE@TopRuler.cpp			\
 	ap_@ABI_FE@ViewListener.cpp		\
-	abiwidget.cpp				\
-	ap_@ABI_FE@Dialog_PageSetup.cpp \
-	ap_@ABI_FE@Dialog_Latex.cpp 
+	ap_@ABI_FE@Dialog_PageSetup.cpp 	\
+	ap_@ABI_FE@Dialog_Latex.cpp 		\
+	ap_@ABI_FE@StockIcons.cpp 		\
+	abiwidget.cpp				

@@ -31,7 +31,7 @@
 # include "xap_CocoaFeatures.h"
 #elif defined(WIN32)
 # include "xap_Win32Features.h"
-#elif defined(HAVE_HILDON)
+#elif defined(EMBEDDED_TARGET)
 # include "xap_EmbeddedFeatures.h"
 #elif defined(HAVE_SUGAR)
 # include "xap_EmbeddedFeatures.h"

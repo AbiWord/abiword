@@ -130,7 +130,7 @@ void IE_Exp::setProps (const char * props)
 	m_props_map.parse_properties (props);
 }
 
-bool IE_Exp::_openFile(const char * szFilename)
+GsfOutput* IE_Exp::openFile(const char * szFilename)
 {
 	UT_return_val_if_fail(!m_fp, false);
 	UT_return_val_if_fail(szFilename, false);
@@ -138,11 +138,12 @@ bool IE_Exp::_openFile(const char * szFilename)
 	m_szFileName = new char[strlen(szFilename) + 1];
 	strcpy(m_szFileName, szFilename);
 
-	// TODO add code to make a backup of the original file, if it exists.
+	return _openFile(szFilename);
+}
 
-	// Open file in binary mode or UCS-2 output will be mangled.
-	m_fp = fopen(szFilename,"wb+");
-	return (m_fp != 0);
+GsfOutput* IE_Exp::_openFile(const char * szFilename)
+{
+	return UT_go_file_create(szFilename, NULL);
 }
 
 UT_uint32 IE_Exp::_writeBytes(const UT_Byte * pBytes, UT_uint32 length)
@@ -150,7 +151,8 @@ UT_uint32 IE_Exp::_writeBytes(const UT_Byte * pBytes, UT_uint32 length)
 	if(!pBytes || !length)
 	  return 0;
 
-	return fwrite(pBytes,sizeof(UT_Byte),length,m_fp);
+	gsf_output_write(m_fp, length, pBytes);
+	return length;
 }
 
 bool IE_Exp::_writeBytes(const UT_Byte * sz)
@@ -161,9 +163,12 @@ bool IE_Exp::_writeBytes(const UT_Byte * sz)
 
 bool IE_Exp::_closeFile(void)
 {
-	if (m_fp)
-		fclose(m_fp);
-	m_fp = 0;
+	if (m_fp) {
+		if(!gsf_output_is_closed(m_fp))
+			gsf_output_close(m_fp);
+		g_object_unref(G_OBJECT(m_fp));
+		m_fp = 0;
+	}
 	return true;
 }
 
@@ -196,7 +201,7 @@ UT_Error IE_Exp::writeFile(const char * szFilename)
 
 	m_bCancelled = false;
 
-	if (!_openFile(szFilename))
+	if (!(m_fp = openFile(szFilename)))
 		return m_bCancelled ? UT_SAVE_CANCELLED : UT_IE_COULDNOTWRITE;
 
 	UT_Error error = _writeDocument();
@@ -280,6 +285,52 @@ void IE_Exp::write(const char * sz, UT_uint32 length)
 
 /*****************************************************************/
 /*****************************************************************/
+
+/*! 
+  Find the filetype for the given mimetype.
+ \param szMimetype File mimetype
+
+ Returns IEFT_AbiWord_1 if no exporter knows this mimetype.
+ Note that more than one exporter may support a mimetype.
+ We return the first one we find.
+ This function should closely resemble IE_Exp::fileTypeForMimetype()
+*/
+IEFileType IE_Exp::fileTypeForMimetype(const char * szMimetype)
+{
+	if (!szMimetype)
+		return IE_Exp::fileTypeForSuffix(".abw");
+
+	// we have to construct the loop this way because a
+	// given filter could support more than one file type,
+	// so we must query a mimetype match for all file types
+	UT_uint32 nrElements = getExporterCount();
+
+	for (UT_uint32 k=0; k < nrElements; k++)
+	{
+		IE_ExpSniffer * s = m_sniffers.getNthItem(k);
+		UT_return_val_if_fail (s, IEFT_Unknown);
+		if (s->supportsMIME(szMimetype))
+		{
+			for (UT_uint32 a = 0; a < nrElements; a++)
+			{
+				if (s->supportsFileType(static_cast<IEFileType>(a+1)))
+					return static_cast<IEFileType>(a+1);
+			}
+
+			// UT_ASSERT_HARMLESS(UT_SHOULD_NOT_HAPPEN);
+			// Hm... an exporter has registered for the given mimetype,
+			// but refuses to support any file type we request.
+			
+			// bug 9548 -- do not return native format
+			// return IE_Exp::fileTypeForMimetype(".abw");
+			return IEFT_Unknown;
+		}
+	}
+
+	// bug 9548 -- returning type IEFT_Unknown causes Save to fail and brings up Save As dlg
+	// return IE_Exp::fileTypeForMimetype(".abw");
+	return IEFT_Unknown;
+}
 
 /*! 
   Find the filetype for the given suffix.

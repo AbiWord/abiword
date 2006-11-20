@@ -41,6 +41,7 @@
 #include "pd_Document.h"
 #include "pd_Style.h"
 
+#include "ie_impexp_AbiWord_1.h"
 #include "ie_imp_AbiWord_1.h"
 #include "ie_types.h"
 
@@ -76,23 +77,34 @@ IE_Imp_AbiWord_1_Sniffer::IE_Imp_AbiWord_1_Sniffer ()
 	// 
 }
 
-UT_Confidence_t IE_Imp_AbiWord_1_Sniffer::supportsMIME (const char * szMIME)
+// supported suffixes
+static IE_SuffixConfidence IE_Imp_AbiWord_1_Sniffer__SuffixConfidence[] = {
+	{ "abw", 	UT_CONFIDENCE_PERFECT 	},
+	{ "awt", 	UT_CONFIDENCE_PERFECT 	},
+	{ NULL, 	UT_CONFIDENCE_ZILCH 	}
+};
+
+const IE_SuffixConfidence * IE_Imp_AbiWord_1_Sniffer::getSuffixConfidence ()
 {
-	if (UT_strcmp (szMIME, "application/abiword-compressed") == 0)
-		{
-			/* slightly odd case, since if we're using libxml2 then the compression
-			 * doesn't really matter; GZipAbiWord should return a higher confidence
-			 * here...
-			 */
-			return UT_CONFIDENCE_POOR;
-		}
-	if (UT_strcmp (IE_FileInfo::mapAlias (szMIME), IE_MIME_AbiWord) == 0)
-		{
-			/* MIME types don't normally distinguish compression, so let's be cautious
-			 */
-			return UT_CONFIDENCE_GOOD;
-		}
-	return UT_CONFIDENCE_ZILCH;
+	return IE_Imp_AbiWord_1_Sniffer__SuffixConfidence;
+}
+
+// supported mimetypes
+static IE_MimeConfidence IE_Imp_AbiWord_1_Sniffer__MimeConfidence[] = {
+	{ IE_MIME_MATCH_FULL, 	IE_MIMETYPE_AbiWord, 					UT_CONFIDENCE_GOOD 	},
+	/* aliases */
+	{ IE_MIME_MATCH_FULL, 	"application/abiword",					UT_CONFIDENCE_GOOD	},
+	{ IE_MIME_MATCH_FULL, 	"application/abiword-template",			UT_CONFIDENCE_GOOD	},
+	{ IE_MIME_MATCH_FULL, 	"application/x-vnd.AbiSource.AbiWord",	UT_CONFIDENCE_GOOD	},
+	{ IE_MIME_MATCH_FULL, 	"text/abiword",							UT_CONFIDENCE_GOOD	},
+	{ IE_MIME_MATCH_FULL, 	"text/x-abiword",						UT_CONFIDENCE_GOOD	},
+	{ IE_MIME_MATCH_FULL,	"application/abiword-compressed", 		UT_CONFIDENCE_POOR 	}, 
+	{ IE_MIME_MATCH_BOGUS, 	NULL, 									UT_CONFIDENCE_ZILCH }
+};
+
+const IE_MimeConfidence * IE_Imp_AbiWord_1_Sniffer::getMimeConfidence ()
+{
+	return IE_Imp_AbiWord_1_Sniffer__MimeConfidence;
 }
 
 UT_Confidence_t IE_Imp_AbiWord_1_Sniffer::recognizeContents (const char * szBuf,
@@ -133,13 +145,6 @@ UT_Confidence_t IE_Imp_AbiWord_1_Sniffer::recognizeContents (const char * szBuf,
 		}
 	}
 	return UT_CONFIDENCE_ZILCH;
-}
-
-UT_Confidence_t IE_Imp_AbiWord_1_Sniffer::recognizeSuffix (const char * szSuffix)
-{
-  if (!UT_stricmp(szSuffix, ".abw") || !UT_stricmp(szSuffix, ".awt"))
-    return UT_CONFIDENCE_PERFECT;
-  return UT_CONFIDENCE_ZILCH;
 }
 
 bool IE_Imp_AbiWord_1_Sniffer::getDlgLabels (const char ** szDesc,

@@ -2440,7 +2440,7 @@ PT_DocPosition FV_View::saveSelectedImage (const char * toFile)
 
   if ( pBytes )
 	{
-	  pBytes->writeToFile ( toFile ) ;
+	  pBytes->writeToURI ( toFile ) ;
 	}
 
   return dPos ;
@@ -11554,9 +11554,13 @@ bool FV_View::isPointLegal(PT_DocPosition pos)
 	PT_DocPosition nextPos =0;
 	
 //
-// Special case which would otherwise fail..
+// Special cases which would otherwise fail..
 //
 	if(m_pDoc->isEndFootnoteAtPos(pos))
+	{
+		return true;
+	}
+	if(m_pDoc->isFootnoteAtPos(pos))
 	{
 		return true;
 	}

@@ -502,6 +502,11 @@ private:
 	UT_sint32               m_iBrokenTop;
 	UT_sint32               m_iBrokenBottom;
 	bool                    m_bRedrawLines;
+	//
+	// Variable for a repeated row and it's height
+	//
+	UT_sint32               m_iRepeatedRowNumber;
+	UT_sint32               m_iRepeatedRowHeight;
 //
 // Global Table properties
 //

@@ -181,6 +181,8 @@ public:
 	virtual void					pasteFromClipboard(PD_DocumentRange * pDocRange, bool bUseClipboard, bool bHonorFormatting = true) = 0;
 	virtual bool					canPasteFromClipboard() = 0;
 	virtual void					cacheCurrentSelection(AV_View *) = 0;
+	virtual void				addClipboardFmt (const char * szFormat) {}
+	virtual void				deleteClipboardFmt (const char * szFormat) {}
 	void						rememberFocussedFrame(void * pJustFocussedFrame);
 	XAP_Frame *					getLastFocussedFrame() const;
 	XAP_Frame *					findValidFrame() const;
@@ -334,4 +336,3 @@ private:
 };
 
 #endif /* XAP_APP_H */
-

@@ -1,3 +1,5 @@
+/* -*- mode: C++; tab-width: 4; c-basic-offset: 4; -*- */
+
 /* AbiWord
  * Copyright (C) 1998 AbiSource, Inc.
  * 
@@ -34,7 +36,6 @@ BeginLayout(FormatOps, AP_STRING_ID_TB_Format, AP_PREF_KEY_FormatBarVisible)
 	Spacer()
 	ToolbarItem(AP_TOOLBAR_ID_FMT_BOLD)
 	ToolbarItem(AP_TOOLBAR_ID_FMT_ITALIC)
-	ToolbarItem(AP_TOOLBAR_ID_FMT_UNDERLINE)
 
 	Spacer()
 	ToolbarItem(AP_TOOLBAR_ID_ALIGN_LEFT)
@@ -43,15 +44,10 @@ BeginLayout(FormatOps, AP_STRING_ID_TB_Format, AP_PREF_KEY_FormatBarVisible)
 	ToolbarItem(AP_TOOLBAR_ID_ALIGN_JUSTIFY)
 
 	Spacer()
-	ToolbarItem(AP_TOOLBAR_ID_LISTS_NUMBERS)
-	ToolbarItem(AP_TOOLBAR_ID_LISTS_BULLETS)
+	ToolbarItem(AP_TOOLBAR_ID_COLOR_BACK)
+	ToolbarItem(AP_TOOLBAR_ID_COLOR_FORE)
 
-        ToolbarItem(AP_TOOLBAR_ID_UNINDENT)
-        ToolbarItem(AP_TOOLBAR_ID_INDENT)
+	Spacer()
+	ToolbarItem(AP_TOOLBAR_ID_FMTPAINTER)
 
-     /* TODO: these should be moved out into the general public */
-     Spacer()
-     ToolbarItem(AP_TOOLBAR_ID_COLOR_BACK)
-     ToolbarItem(AP_TOOLBAR_ID_COLOR_FORE)
-	
 EndLayout()

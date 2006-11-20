@@ -1,4 +1,5 @@
 /* -*- c-basic-offset: 4; tab-width: 4; indent-tabs-mode: t -*- */
+
 /* AbiWord Graphic importer employing GdkPixbuf
  * Copyright (C) 2001 Martin Sevior
  * Copyright (C) 2002 Dom Lachowicz
@@ -69,8 +70,9 @@ public:
 	IE_ImpGraphicGdkPixbuf_Sniffer();
 	virtual ~IE_ImpGraphicGdkPixbuf_Sniffer();
 
+	virtual const IE_SuffixConfidence * getSuffixConfidence ();
+	virtual const IE_MimeConfidence * getMimeConfidence ();
 	virtual UT_Confidence_t recognizeContents(const char * szBuf, UT_uint32 iNum);
-	virtual UT_Confidence_t recognizeSuffix(const char * szSuffix);
 	virtual bool getDlgLabels(const char ** pszDesc,
 							  const char ** pszSuffixList,
 							  IEGraphicFileType * ft);

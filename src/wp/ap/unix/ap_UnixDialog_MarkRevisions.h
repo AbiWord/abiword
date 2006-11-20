@@ -41,8 +41,8 @@ class AP_UnixDialog_MarkRevisions: public AP_Dialog_MarkRevisions
  protected:
 	typedef enum
 	{
-		BUTTON_OK,
-		BUTTON_CANCEL
+		BUTTON_OK = GTK_RESPONSE_OK,
+		BUTTON_CANCEL = GTK_RESPONSE_CANCEL
 	} ResponseId ;
 	
 	virtual GtkWidget * constructWindow () ;

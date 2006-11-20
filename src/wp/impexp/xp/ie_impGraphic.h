@@ -1,3 +1,5 @@
+/* -*- c-basic-offset: 4; tab-width: 4; indent-tabs-mode: t -*- */
+
 /* AbiWord
  * Copyright (C) 1998 AbiSource, Inc.
  * 
@@ -23,7 +25,10 @@
 
 #include "ut_types.h"
 #include "ie_types.h"
+#include "ie_imp.h"
 #include "ut_AbiObject.h"
+#include <string>
+#include <vector>
 
 class FG_Graphic;
 class UT_ByteBuf;
@@ -42,11 +47,12 @@ public:
 	// these you get for free
 	inline bool supportsType (IEGraphicFileType type) {return m_type == type;}
 	inline IEGraphicFileType getType() const {return m_type;}
-	
+
 	// these you must override these
+	virtual const IE_SuffixConfidence * getSuffixConfidence () = 0;
+	virtual const IE_MimeConfidence * getMimeConfidence () = 0;
 	virtual UT_Confidence_t recognizeContents (const char * szBuf, 
 					UT_uint32 iNumbytes) = 0;
-	virtual UT_Confidence_t recognizeSuffix (const char * szSuffix) = 0;
 	virtual bool getDlgLabels (const char ** szDesc,
 				   const char ** szSuffixList,
 				   IEGraphicFileType * ft) = 0;
@@ -84,6 +90,7 @@ public:
   // with it.
   
   static IEGraphicFileType	fileTypeForSuffix(const char * szSuffix);
+  static IEGraphicFileType	fileTypeForMimetype(const char * szMimetype);
   static IEGraphicFileType	fileTypeForContents(const char * szBuf, UT_uint32 iNumbytes);
   
   static bool		enumerateDlgLabels(UT_uint32 ndx,
@@ -94,6 +101,10 @@ public:
   static void registerImporter (IE_ImpGraphicSniffer * sniffer);
   static void unregisterImporter (IE_ImpGraphicSniffer * sniffer);
   static void unregisterAllImporters ();  
+  static std::vector<std::string> & getSupportedMimeTypes ();
+  static std::vector<std::string> & getSupportedMimeClasses ();
+  static std::vector<std::string> & getSupportedSuffixes ();
+  static const char * getMimeTypeForSuffix (const char * suffix);
 
   static UT_Error               constructImporterWithDescription(const char * szDesc, IE_ImpGraphic ** ppieg);
 

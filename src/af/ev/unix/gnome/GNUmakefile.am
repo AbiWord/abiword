@@ -18,10 +18,12 @@
 
 include $(top_srcdir)/includes.mk
 
-if WITH_GNOME
+# TODO rob: this only depends on gconf
+
+if WITH_GNOMEUI
 
 INCLUDES= @GTK_CFLAGS@ @GMODULE_CFLAGS@ \
-	$(AF_INCLUDES) $(WP_INCLUDES) $(TEXT_INCLUDES) $(ICONV_INCLUDES) @GNOME_CFLAGS@
+	$(AF_INCLUDES) $(WP_INCLUDES) $(TEXT_INCLUDES) $(ICONV_INCLUDES)
 
 noinst_LIBRARIES = libEv_gnome.a
 

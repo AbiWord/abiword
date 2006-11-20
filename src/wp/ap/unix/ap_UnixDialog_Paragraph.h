@@ -69,8 +69,8 @@ public:
 	enum
 	  {
 	    BUTTON_OK = GTK_RESPONSE_OK,
-	    BUTTON_TABS = 0,
-	    BUTTON_CANCEL = GTK_RESPONSE_CANCEL
+	    BUTTON_CANCEL = GTK_RESPONSE_CANCEL,
+	    BUTTON_TABS = 0
 	  } ResponseId;
 
 	GR_UnixGraphics	* 		m_unixGraphics;

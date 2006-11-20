@@ -6199,7 +6199,7 @@ bool fl_BlockLayout::_delete(PT_BlockOffset blockOffset, UT_uint32 len)
 					}
 						
 				}
-
+				
 				if ((blockOffset + len) < (iRunBlockOffset + iRunLength))
 				{
 					if(pTR_del1)

@@ -25,6 +25,9 @@
 #include "ut_assert.h"
 #include "ut_debugmsg.h"
 
+#include "ut_go_file.h"
+#include <gsf/gsf-input.h>
+
 static const UT_uint32 merge_size_guess = 3;
 static UT_GenericVector<IE_MergeSniffer *> m_sniffers (merge_size_guess);
 
@@ -301,14 +304,15 @@ UT_Error IE_MailMerge::constructMerger(const char * szFilename,
 	{
 		char szBuf[4097] = "";  // 4096 ought to be enough
 		UT_uint32 iNumbytes = 0;
-		FILE *f = NULL;
+		GsfInput *f = NULL;
 		
 		// we must open in binary mode for UCS-2 compatibility
-		if ( ( f = fopen( szFilename, "rb" ) ) != static_cast<FILE *>(0) )
+		if ( ( f = UT_go_file_open( szFilename, NULL ) ) != static_cast<GsfInput *>(0) )
 		{
-			iNumbytes = fread(szBuf, 1, sizeof(szBuf)-1, f);
-			fclose(f);
-			szBuf[iNumbytes] = '\0';
+		  iNumbytes = UT_MIN(sizeof(szBuf) - 1, gsf_input_size(f));
+		  gsf_input_read(f, iNumbytes, (guint8*)szBuf);
+		  g_object_unref(G_OBJECT(f));
+		  szBuf[iNumbytes] = '\0';
 		}
 		
 		UT_Confidence_t   best_confidence = UT_CONFIDENCE_ZILCH;
@@ -593,7 +597,7 @@ public:
 		  bool cont = true;
 		  bool in_quotes = false;
 		  
-		  FILE * fp = fopen(szFilename, "rb");
+		  GsfInput * fp = UT_go_file_open(szFilename, NULL);
 		  if (!fp)
 		    return UT_ERROR;
 		  
@@ -605,7 +609,7 @@ public:
 		  // line 1 == Headings/titles
 		  // line 2..n == Data
 		  
-		  while (cont && (1 == fread (&ch, 1, 1, fp))){
+		  while (cont && (NULL != gsf_input_read (fp, 1, &ch))){
 		    if (ch == '\r' && !in_quotes) // swallow carriage return unless in quoted block
 		      continue;
 		    else if (ch == '\n' && !in_quotes) { // newline. fire changeset
@@ -625,7 +629,7 @@ public:
 		      item.truncate (0);
 		    }
 		    else if (ch == '"' && in_quotes) {
-		      if (1 == fread (&ch, 1, 1, fp)) {
+		      if (NULL != gsf_input_read (fp, 1, &ch)) {
 			if (ch == '"') // 2 double quotes == escaped quote
 			  item.append (&ch, 1);
 			else { // assume that it's the end of the quoted sequence and ch is the delimiter char or a newline
@@ -655,7 +659,7 @@ public:
 		      item.append(&ch, 1);
 		  }
 		  
-		  fclose (fp);
+		  g_object_unref (G_OBJECT(fp));
 		  
 		  // if there's a non-empty line that wasn't terminated by a newline, fire it off
 		  if (m_items.size())

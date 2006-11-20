@@ -1,5 +1,9 @@
 
+if WITH_SYSTEM_GOFFICE
 SUBDIRS = src
+else
+SUBDIRS = goffice-bits src
+endif
 
 expat_peerdir=$(top_builddir)/../expat
 wv_peerdir=$(top_builddir)/../wv
@@ -7,11 +11,17 @@ libiconv_peerdir=$(top_builddir)/../libiconv
 libpng_peerdir=@LIBPNG_PEERDIR@
 libpopt_peerdir=$(top_builddir)/../popt
 
-desktop_DATA = abiword.desktop
 desktopdir = $(datadir)/applications
 
-icon_DATA = abiword_48.png
 icondir= $(datadir)/icons
+
+if WITH_HILDON
+icon_DATA =
+desktop_DATA =
+else
+icon_DATA = abiword_48.png
+desktop_DATA = abiword.desktop
+endif
 
 mime_DATA = abiword.keys
 mimedir = $(datadir)/mime-info
@@ -112,10 +122,7 @@ install-data-local:
 	else \
 	  echo "Warning: abidistfiles package not found." ;\
 	fi
-if WITH_GNOME
-else
-	rm -f $(DESTDIR)$(pkgdatadir)/icons/abiword_logo.xpm #XXX this is very dirty
-endif
+
 	@$(mkinstalldirs) $(DESTDIR)$(pkgdatadir)/AbiWord
 	@for dir in `cd $(top_srcdir)/user/wp; find . -type d ! -name CVS` ; do \
 	  $(mkinstalldirs) $(DESTDIR)$(pkgdatadir)/AbiWord/$$dir ;\

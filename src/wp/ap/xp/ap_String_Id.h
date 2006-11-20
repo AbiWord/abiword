@@ -1,3 +1,5 @@
+/* -*- mode: C++; tab-width: 4; c-basic-offset: 4; -*- */
+
 /* AbiWord
  * Copyright (C) 1998-2000 AbiSource, Inc.
  *
@@ -24,7 +26,7 @@
 ******************************************************************
 *****************************************************************/
 // Default Heading used in TOC
-dcl(TOC_TocHeading, "Table of Contents")
+dcl(TOC_TocHeading, "Contents")
 // Message Boxes used in AP_EditMethods
 dcl(MSG_SaveFailed, 	"Could not write to the file %s.")
 dcl(MSG_SaveFailedWrite,		"Writing error when attempting to save %s")
@@ -826,7 +828,11 @@ dcl(WINDOWS_COMCTL_WARNING,	"AbiWord is designed for a newer version of the syst
 dcl(MENU_LABEL__BOGUS1__," ")
 dcl(MENU_LABEL__BOGUS2__," ")
 dcl(MENU_LABEL_OPEN_TEMPLATE,"Open Template")
+#ifdef HAVE_SDI
+dcl(MENU_LABEL_FILE,"&Document")
+#else
 dcl(MENU_LABEL_FILE,"&File")
+#endif
 dcl(MENU_LABEL_FILE_NEW,"&New")
 dcl(MENU_LABEL_FILE_NEW_USING_TEMPLATE,"&New using Template")
 dcl(MENU_LABEL_FILE_OPEN,"&Open")
@@ -922,9 +928,8 @@ dcl(MENU_LABEL_INSERT_SYMBOL,"Sy&mbol")
 dcl(MENU_LABEL_INSERT_ENDNOTE,"&Endnote")
 dcl(MENU_LABEL_INSERT_FOOTNOTE,"Foot&note")
 dcl(MENU_LABEL_INSERT_TABLEOFCONTENTS,"Table of Contents")
-dcl(MENU_LABEL_INSERT_PICTURE,"&Picture")
 dcl(MENU_LABEL_INSERT_CLIPART,"&Clip Art")
-dcl(MENU_LABEL_INSERT_GRAPHIC,"&From File")
+dcl(MENU_LABEL_INSERT_GRAPHIC,"&Picture")
 dcl(MENU_LABEL_INSERT_BOOKMARK,"Boo&kmark")
 dcl(MENU_LABEL_INSERT_HYPERLINK,"&Hyperlink")
 dcl(MENU_LABEL_INSERT_GOTO_HYPERLINK,"&Jump to hyperlink")
@@ -1194,7 +1199,6 @@ dcl(MENU_STATUSLINE_INSERT_SYMBOL,"Insert a symbol or other special character")
 dcl(MENU_STATUSLINE_INSERT_FOOTNOTE,"Insert a footnote")
 dcl(MENU_STATUSLINE_INSERT_TABLEOFCONTENTS,"Insert a Table of Contents based on Headings")
 dcl(MENU_STATUSLINE_INSERT_ENDNOTE,"Insert an endnote")
-dcl(MENU_STATUSLINE_INSERT_PICTURE,"Insert a picture")
 dcl(MENU_STATUSLINE_INSERT_CLIPART,"Insert clipart")
 dcl(MENU_STATUSLINE_INSERT_HEADER,"Insert a Header")
 dcl(MENU_STATUSLINE_INSERT_FOOTER,"Insert a Footer")

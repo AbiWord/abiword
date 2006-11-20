@@ -544,6 +544,45 @@ bool XAP_Win32FrameImpl::_RegisterClass(XAP_Win32App * app)
 	return true;
 }
 
+/*!
+ * This code is used by the dynamic menu API to rebuild the menus after a
+ * a change in the menu structure.
+ */
+void XAP_Win32FrameImpl::_rebuildMenus(void)
+{
+	
+	// FIXME - This should do as advertized!  RP
+	/*
+	// destroy old menu
+	
+	m_pWin32Menu->destroy();
+	DELETEP(m_pWin32Menu);
+	
+	// build new one.
+	m_pWin32Menu = new EV_Win32MenuBar(static_cast<XAP_Win32App*>(XAP_App::getApp()), getFrame(),
+					 m_szMenuLayoutName,
+					 m_szMenuLabelSetName);
+	UT_ASSERT(m_pUnixMenu);
+	bool bResult = m_pUnixMenu->rebuildMenuBar();
+	UT_ASSERT(bResult);
+	*/
+
+	return;
+	/* Unix version:
+	// destroy old menu
+	m_pUnixMenu->destroy();
+	DELETEP(m_pUnixMenu);
+	
+	// build new one.
+	m_pUnixMenu = new EV_UnixMenuBar(static_cast<XAP_UnixApp*>(XAP_App::getApp()), getFrame(),
+					 m_szMenuLayoutName,
+					 m_szMenuLabelSetName);
+	UT_ASSERT(m_pUnixMenu);
+	bool bResult = m_pUnixMenu->rebuildMenuBar();
+	UT_ASSERT(bResult);
+	*/
+}
+
 /*****************************************************************/
 
 

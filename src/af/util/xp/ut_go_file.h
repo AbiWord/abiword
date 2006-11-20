@@ -60,6 +60,7 @@ char *UT_go_url_make_relative (const char *uri, const char *ref_uri);
 char *UT_go_shell_arg_to_uri (const char *arg);
 char *UT_go_basename_from_uri (const char *uri);
 char *UT_go_dirname_from_uri (const char *uri, gboolean brief);
+gboolean UT_go_directory_create (char const *uri, int mode, GError **err);
 gchar const **UT_go_shell_argv_to_glib_encoding (gint argc, gchar const **argv);
 void UT_go_shell_argv_to_glib_encoding_free (void);
 

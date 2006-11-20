@@ -1,5 +1,5 @@
-/* AbiSource Application Framework
- * Copyright (C) 1998-2000 AbiSource, Inc.
+/* 
+ * Copyright (C) 2006 Rob Staudinger <robert.staudinger@gmail.com>
  * 
  * This program is free software; you can redistribute it and/or
  * modify it under the terms of the GNU General Public License
@@ -21,12 +21,8 @@
 #define XAP_UNIXDIALOG_ABOUT_H
 
 #include "xap_Dlg_About.h"
-#include "gr_UnixGraphics.h"
-#include "gr_UnixImage.h"
 
 class XAP_Frame;
-
-/*****************************************************************/
 
 class XAP_UnixDialog_About: public XAP_Dialog_About
 {
@@ -38,37 +34,6 @@ public:
 
 	virtual void			runModal(XAP_Frame * pFrame);
 	
- private:
-
-	// callbacks can fire these events
-
-	static gint s_drawingarea_expose(GtkWidget * /* widget */,
-					 GdkEventExpose * /* pExposeEvent */,
-					 XAP_UnixDialog_About * dlg) ;
-
-	virtual void	event_URL(void);
-	virtual void	event_DrawingAreaExpose(void);
-
- 	// create some response id's, since GTK can't provide for them all
- 	// NOTE: the enum values should match the ones in the glade file!
-	typedef enum
-	{
-	    BUTTON_CLOSE = 0,
-	    BUTTON_URL
-	} ResponseId ;
-
-	GtkWidget *           _constructWindow(void);
-
-	void		      _populateWindowData(void);
-	void		      _preparePicture(void);
-	
-	GtkWidget * m_windowMain;
-	GtkWidget * m_drawingareaGraphic;
-
-	GR_UnixGraphics * m_gc;
-
-	GR_UnixImage  * m_pGrImageSidebar;
-	XAP_Frame * m_pFrame;
 };
 
 #endif /* XAP_UNIXDIALOG_ABOUT_H */

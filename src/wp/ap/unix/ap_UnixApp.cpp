@@ -54,6 +54,7 @@
 #include "ap_Strings.h"
 #include "xap_EditMethods.h"
 #include "ap_LoadBindings.h"
+#include "ap_UnixStockIcons.h"
 #include "xap_DialogFactory.h"
 #include "xap_Dlg_MessageBox.h"
 #include "xap_Dialog_Id.h"
@@ -106,7 +107,6 @@
 #include "gr_Painter.h"
 #include "ap_Preview_Abi.h"
 #include "xap_UnixDialogHelper.h"
-//#include <gtk/gtk.h>
 
 #ifdef ENABLE_BINRELOC
 #include "prefix.h"
@@ -123,16 +123,23 @@
 #include "ie_impGraphic.h"
 #include "ut_math.h"
 
-#ifdef HAVE_GNOME
-#include <gnome.h>
-#include <libbonoboui.h>
-#include <libgnomevfs/gnome-vfs.h>
-#include <bonobo/bonobo-macros.h>
-#include <bonobo/bonobo-object.h>
+#ifndef WITHOUT_PRINTING
 #include <libart_lgpl/art_affine.h>
 #include "xap_UnixGnomePrintGraphics.h"
-#include "ap_EditMethods.h"
 #include <libgnomeprint/gnome-print.h>
+#endif
+
+#ifdef HAVE_GNOMEUI
+#include <libgnome/libgnome.h>
+#include <libgnomeui/libgnomeui.h>
+#endif
+
+#ifdef HAVE_BONOBO
+#include <libbonoboui.h>
+#include <bonobo/bonobo-macros.h>
+#include <bonobo/bonobo-object.h>
+#include "ap_EditMethods.h"
+#include "abiwidget.h"
 static int mainBonobo(int argc, const char ** argv);
 #endif
 #ifdef LOGFILE
@@ -144,8 +151,6 @@ extern FILE * getlogfile(void)
 #endif
 // quick hack - this is defined in ap_EditMethods.cpp
 extern XAP_Dialog_MessageBox::tAnswer s_CouldNotLoadFileMessage(XAP_Frame * pFrame, const char * pNewFile, UT_Error errorCode);
-
-/*****************************************************************/
 
 /*!
   Construct an AP_UnixApp.
@@ -164,7 +169,7 @@ AP_UnixApp::AP_UnixApp(XAP_Args * pArgs, const char * szAppName)
 	  m_cacheSelectionView(0),
 	  m_pFrameSelection(0)
 {
-#ifndef HAVE_GNOME
+#ifndef HAVE_BONOBO
     // hack to link abi_widget - thanks fjf
 	if(this == 0)
 		/*GtkWidget * pUn =*/ abi_widget_new_with_file("fred.abw");
@@ -323,6 +328,8 @@ bool AP_UnixApp::initialize(bool has_display)
 		m_pClipboard = new AP_UnixClipboard(this);
 		UT_ASSERT(m_pClipboard);
 		m_pClipboard->initialize();
+
+		abi_stock_init ();
     }
 
     m_pEMC = AP_GetEditMethods();
@@ -588,7 +595,10 @@ void AP_UnixApp::copyToClipboard(PD_DocumentRange * pDocRange, bool bUseClipboar
 
 	{
 		// TODO: we have to make a good way to tell if the current selection is just an image
-		FV_View * pView = static_cast<FV_View*>(getLastFocussedFrame()->getCurrentView());
+		FV_View * pView = NULL;
+		if(getLastFocussedFrame())
+			pView = static_cast<FV_View*>(getLastFocussedFrame()->getCurrentView());
+
 		if (pView && !pView->isSelectionEmpty())
 			{
 				// don't own, don't free
@@ -670,13 +680,25 @@ void AP_UnixApp::pasteFromClipboard(PD_DocumentRange * pDocRange, bool bUseClipb
 			DELETEP(pImpHTML);
 		}
 	}
+	else if (AP_UnixClipboard::isDynamicTag (szFormatFound))
+	{
+		UT_DEBUGMSG(("Format Found = %s \n",szFormatFound));
+		IE_Imp * pImp = NULL;
+		IEFileType ieft = IE_Imp::fileTypeForMimetype(szFormatFound);
+		UT_DEBUGMSG(("found file type %d\n",ieft));
+		IE_Imp::constructImporter(pDocRange->m_pDoc,NULL,ieft,&pImp);
+		if(pImp == NULL)
+			 goto retry_text;
+		bSuccess = pImp->pasteFromBuffer(pDocRange,pData,iLen);
+		DELETEP(pImp);
+	}
     else if (AP_UnixClipboard::isImageTag(szFormatFound))
       {
 		  UT_DEBUGMSG(("Format Found = %s \n",szFormatFound));
 		  if(strncmp(szFormatFound,"application",11) == 0) // embedded object
 		  {
 			  IE_Imp * pImp = NULL;
-			  IEGraphicFileType iegft = IE_Imp::fileTypeForContents(reinterpret_cast<char *>(const_cast<unsigned char *>(pData)),iLen);
+			  IEGraphicFileType iegft = IE_Imp::fileTypeForMimetype(szFormatFound);
 			  IE_Imp::constructImporter(pDocRange->m_pDoc,NULL,iegft,&pImp);
 			  if(pImp == NULL)
 			  {
@@ -1392,7 +1414,7 @@ int AP_UnixApp::main(const char * szAppName, int argc, const char ** argv)
 #endif
 
     if (have_display > 0) {
-#ifndef HAVE_GNOME
+#ifndef HAVE_GNOMEUI
       gtk_init (&XArgs.m_argc,const_cast<char ***>(&XArgs.m_argv));
 	  Args.parsePoptOpts();
 	  pMyUnixApp->setGtkSocketId(AP_Args::m_iGtkSocketId);
@@ -1418,25 +1440,18 @@ int AP_UnixApp::main(const char * szAppName, int argc, const char ** argv)
 #ifdef LOGFILE
 	fprintf(logfile,"g_object_get completed \n");
 #endif
-      gnome_vfs_init ();
-#ifdef LOGFILE
-	fprintf(logfile,"gnome_vfs_init completed \n");
-#endif
+
+#ifdef HAVE_BONOBO
 #ifdef LOGFILE
 	fprintf(logfile,"About to init bonobo \n");
-#endif
-	  
+#endif	  
 	  bonobo_init (&XArgs.m_argc, const_cast<char **>(XArgs.m_argv));
 #ifdef LOGFILE
 	fprintf(logfile,"bonobo initialized \n");
 #endif
+#endif
 	  // GNOME handles 'parsePoptOpts'.  Isn't it grand?
 #endif
-
-	// Fix the GtkToolbar style properties, so our size is sane
-	gtk_rc_parse_string ("style \"abi-defaults\" {\n"
-						 "  GtkToolbar::internal-padding = 2\n"
-						 "} class \"GtkToolbar\" style \"abi-defaults\"\n");
     }
 	else {
 		// no display, but we still need to at least parse our own arguments, damnit, for --to, --to-png, and --print
@@ -1483,7 +1498,7 @@ int AP_UnixApp::main(const char * szAppName, int argc, const char ** argv)
 
 	if (have_display) {
 
-#ifdef HAVE_GNOME
+#ifdef HAVE_BONOBO
 		//
 		// Check to see if we've been activated as a control by OAF
 		//
@@ -1546,13 +1561,13 @@ int AP_UnixApp::main(const char * szAppName, int argc, const char ** argv)
 	else {
 		UT_DEBUGMSG(("No DISPLAY: this may not be what you want.\n"));
 	}
-
 	// unload all loaded plugins (remove some of the memory leaks shown at shutdown :-)
 	XAP_ModuleManager::instance().unloadAllPlugins();
 
 	// Step 4: Destroy the App.  It should take care of deleting all frames.
 	pMyUnixApp->shutdown();
 	delete pMyUnixApp;
+
 	
 	return 0;
 }
@@ -1576,7 +1591,7 @@ void AP_UnixApp::errorMsgBadFile(XAP_Frame * pFrame, const char * file,
  */
 void AP_UnixApp::initPopt (AP_Args * Args)
 {
-#ifdef HAVE_GNOME
+#ifdef HAVE_GNOMEUI
 	UT_sint32 v = -1, i;
 
 	// stop at --version.
@@ -1627,16 +1642,16 @@ bool AP_UnixApp::doWindowlessArgs(const AP_Args *Args, bool & bSuccess)
 		XParseGeometry(Args->m_sGeometry, &x, &y, &width, &height);
 		
 		// use both by default
-		UT_uint32 f = (XAP_UNIXBASEAPP::GEOMETRY_FLAG_SIZE
-					   | XAP_UNIXBASEAPP::GEOMETRY_FLAG_POS);
+		UT_uint32 f = (XAP_UnixApp::GEOMETRY_FLAG_SIZE
+					   | XAP_UnixApp::GEOMETRY_FLAG_POS);
 		
 		// if pos (x and y) weren't provided just use size
 		if (x == dummy || y == dummy)
-			f = XAP_UNIXBASEAPP::GEOMETRY_FLAG_SIZE;
+			f = XAP_UnixApp::GEOMETRY_FLAG_SIZE;
 		
 		// if size (width and height) weren't provided just use pos
 		if (width == 0 || height == 0)
-			f = XAP_UNIXBASEAPP::GEOMETRY_FLAG_POS;
+			f = XAP_UnixApp::GEOMETRY_FLAG_POS;
 		
 		// set the xap-level geometry for future frame use
 		Args->getApp()->setGeometry(x, y, width, height, f);
@@ -1707,7 +1722,7 @@ bool AP_UnixApp::doWindowlessArgs(const AP_Args *Args, bool & bSuccess)
 	if (Args->m_iToThumb > 0) 
 	{
 
-#ifdef HAVE_GNOME
+#ifndef WITHOUT_PRINTING
 
 		if ((Args->m_sFile = poptGetArg (Args->poptcon)) != NULL)
 	    {
@@ -1922,7 +1937,7 @@ void AP_UnixApp::catchSignals(int sig_num)
     abort();
 }
 
-#ifdef HAVE_GNOME
+#ifdef HAVE_BONOBO
 
 //-------------------------------------------------------------------
 // Bonobo Control factory stuff
@@ -2777,4 +2792,4 @@ static int mainBonobo(int argc, const char ** argv)
 										bonobo_AbiWidget_factory, NULL);
 }
 
-#endif /* HAVE_GNOME */
+#endif /* HAVE_BONOBO */

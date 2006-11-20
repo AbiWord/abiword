@@ -1,3 +1,5 @@
+/* -*- mode: C++; tab-width: 4; c-basic-offset: 4; -*- */
+
 /* AbiWord
  * Copyright (C) 1998-2000 AbiSource, Inc.
  * Copyright (C) 2003 Tomas Frydrych <tomas@frydrych.uklinux.net> 
@@ -24,6 +26,7 @@
 #include "ut_bytebuf.h"
 #include "ut_base64.h"
 #include "pt_Types.h"
+#include "ie_impexp_Text.h"
 #include "ie_exp_Text.h"
 #include "fd_Field.h"
 #include "pd_Document.h"
@@ -115,7 +118,7 @@ IE_Exp_Text_Sniffer::~IE_Exp_Text_Sniffer ()
 
 UT_Confidence_t IE_Exp_Text_Sniffer::supportsMIME (const char * szMIME)
 {
-	if (UT_strcmp (szMIME, IE_MIME_Text) == 0)
+	if (UT_strcmp (szMIME, IE_MIMETYPE_Text) == 0)
 		{
 			return UT_CONFIDENCE_GOOD;
 		}
@@ -138,8 +141,7 @@ bool IE_Exp_Text_Sniffer::recognizeSuffix(const char * szSuffix)
 UT_Error IE_Exp_Text_Sniffer::constructExporter(PD_Document * pDocument,
 											   IE_Exp ** ppie)
 {
-	IE_Exp_Text * p = new IE_Exp_Text(pDocument,false);
-	*ppie = p;
+	*ppie = new IE_Exp_Text(pDocument,"UTF-8");
 	return UT_OK;
 }
 
@@ -250,7 +252,7 @@ UT_Error IE_Exp_Text::_writeDocument(void)
   Open the file to export to
  \param szFilename File to open
  */
-bool IE_Exp_Text::_openFile(const char * szFilename)
+GsfOutput* IE_Exp_Text::_openFile(const char * szFilename)
 {
 	// Don't call base method if user cancels encoding dialog
 	if (!m_bIsEncoded || m_bExplicitlySetEncoding || _doEncodingDialog(m_szEncoding))
@@ -258,7 +260,7 @@ bool IE_Exp_Text::_openFile(const char * szFilename)
 	else
 	{
 		_cancelExport ();
-		return false;
+		return NULL;
 	}
 }
 

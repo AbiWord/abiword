@@ -1,3 +1,5 @@
+/* -*- mode: C++; tab-width: 4; c-basic-offset: 4; -*- */
+
 /* AbiSource Application Framework
  * Copyright (C) 1998 AbiSource, Inc.
  * 
@@ -16,8 +18,6 @@
  * Foundation, Inc., 59 Temple Place - Suite 330, Boston, MA  
  * 02111-1307, USA.
  */
-
-#undef GTK_DISABLE_DEPRECATED
 
 #ifdef USE_GUCHARMAP
 #include <gucharmap/gucharmap.h>
@@ -574,13 +574,14 @@ GList *XAP_UnixDialog_Insert_Symbol::_getGlistFonts (void)
 		UT_return_val_if_fail( fonts,false );
 		iCount = fonts->size();
 	}
+#ifdef USE_PANGO
 	else
 	{
 		names = GR_UnixPangoGraphics::getAllFontNames();
 		UT_return_val_if_fail( names, false );
 		iCount = names->size();
 	}
-
+#endif
 	GList *glFonts = NULL;
 	UT_String currentfont;
 	UT_uint32 j = 0;

@@ -1,3 +1,5 @@
+/* -*- mode: C++; tab-width: 4; c-basic-offset: 4; -*- */
+
 /* AbiWord
  * Copyright (C) 1998 AbiSource, Inc.
  * 
@@ -22,7 +24,6 @@
 #define IE_IMP_GZIPABIWORD_H
 
 #include <stdio.h>
-#include <zlib.h>
 #include "ie_imp_AbiWord_1.h"
 
 // The importer/reader for GZipped AbiWord file format version 1.
@@ -35,33 +36,16 @@ public:
 	IE_Imp_GZipAbiWord_Sniffer();
 	virtual ~IE_Imp_GZipAbiWord_Sniffer() {}
 
-	UT_Confidence_t supportsMIME (const char * szMIME);
-
+	virtual const IE_SuffixConfidence * getSuffixConfidence ();
+	virtual const IE_MimeConfidence * getMimeConfidence ();
 	virtual UT_Confidence_t recognizeContents (const char * szBuf, 
 									UT_uint32 iNumbytes);
-	virtual UT_Confidence_t recognizeSuffix (const char * szSuffix);
 	virtual bool getDlgLabels (const char ** szDesc,
 							   const char ** szSuffixList,
 							   IEFileType * ft);
 	virtual UT_Error constructImporter (PD_Document * pDocument,
 										IE_Imp ** ppie);
 
-};
-
-class ABI_EXPORT IE_Imp_GZipAbiWord : public IE_Imp_AbiWord_1, public UT_XML::Reader
-{
-public:
-	IE_Imp_GZipAbiWord(PD_Document * pDocument);
-	~IE_Imp_GZipAbiWord();
-
-	/* Implementation of UT_XML::Reader
-	 */
-	virtual bool      openFile (const char * szFilename);
-	virtual UT_uint32 readBytes (char * buffer, UT_uint32 length);
-	virtual void      closeFile (void);
-
-private:
-	gzFile m_gzfp;
 };
 
 #endif /* IE_IMP_GZIPABIWORD_H */

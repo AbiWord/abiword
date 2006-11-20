@@ -76,6 +76,7 @@ protected:
 	virtual XAP_DialogFactory * _getDialogFactory(void);
 	virtual EV_Toolbar * _newToolbar(XAP_Frame *frame, const char *szLayout, const char *szLanguage);
 	virtual EV_Menu* _getMainMenu(void);
+	virtual void _rebuildMenus(void);
 
 	// Useful to refresh the size of the Frame.  For instance,
 	// when the user selects hide statusbar, the Frame has to be

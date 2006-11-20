@@ -1,3 +1,5 @@
+/* -*- mode: C++; tab-width: 4; c-basic-offset: 4; -*- */
+
 /* AbiSource Application Framework
  * Copyright (C) 1998 AbiSource, Inc.
  * 
@@ -25,8 +27,7 @@
 class AP_UnixDialogFactory : public XAP_DialogFactory
 {
 public:
-	AP_UnixDialogFactory(XAP_App * pApp);
-	AP_UnixDialogFactory(XAP_Frame * pFrame, XAP_App * pApp);
+	AP_UnixDialogFactory(XAP_App * pApp, XAP_Frame * pFrame = NULL);
 	virtual ~AP_UnixDialogFactory(void);
 
 protected:

@@ -27,6 +27,7 @@
 #include "ut_vector.h"
 #include "ap_UnixClipboard.h"
 #include "ap_UnixApp.h"
+#include <vector>
 
 //////////////////////////////////////////////////////////////////
 //////////////////////////////////////////////////////////////////
@@ -95,6 +96,8 @@ static const char * imgszFormatsAccepted[] = {
   AP_CLIPBOARD_IMAGE_SVG_XML,
   0 } ;
 
+std::vector<const char*> vec_DynamicFormatsAccepted;
+
 AP_UnixClipboard::AP_UnixClipboard(AP_UnixApp * pApp)
   : XAP_UnixClipboard(pApp)
 {
@@ -132,6 +135,7 @@ AP_UnixClipboard::AP_UnixClipboard(AP_UnixApp * pApp)
   // hypertext types
   AddFmt ( AP_CLIPBOARD_TXT_HTML ) ; // actually XHTML, but who's counting?
   AddFmt ( AP_CLIPBOARD_APPLICATION_XHTML ) ;
+  vec_DynamicFormatsAccepted.insert(vec_DynamicFormatsAccepted.begin(), NULL);
 }
 
 bool AP_UnixClipboard::addTextData(T_AllowGet tTo, const void* pData, UT_sint32 iNumBytes)
@@ -173,10 +177,12 @@ bool  AP_UnixClipboard::getSupportedData(T_AllowGet tFrom,
 {
 	if (getData(tFrom, rtfszFormatsAccepted, (void**)ppData, pLen, pszFormatFound))
 		return true;
-	else if (getData(tFrom, imgszFormatsAccepted, (void**)ppData, pLen, pszFormatFound))
-		return true;  
 	else if (getData (tFrom, htmlszFormatsAccepted, (void**)ppData, pLen, pszFormatFound))
 		return true;
+	else if (getData(tFrom, &vec_DynamicFormatsAccepted[0], (void**)ppData, pLen, pszFormatFound))
+		return true;  
+	else if (getData(tFrom, imgszFormatsAccepted, (void**)ppData, pLen, pszFormatFound))
+		return true;  
 	else if (getTextData (tFrom, ppData, pLen, pszFormatFound))
 		return true;
 	return false;
@@ -203,6 +209,13 @@ bool AP_UnixClipboard::getImageData(T_AllowGet tFrom,
 									const char **pszFormatFound)
 {
   return getData ( tFrom, imgszFormatsAccepted, (void**)ppData, pLen, pszFormatFound );
+}
+
+bool AP_UnixClipboard::getDynamicData(T_AllowGet tFrom,
+			  const void ** ppData, UT_uint32 * pLen,
+			  const char **pszFormatFound)
+{
+  return getData ( tFrom, &vec_DynamicFormatsAccepted[0], (void**)ppData, pLen, pszFormatFound );
 }
 
 bool AP_UnixClipboard::isTextTag ( const char * tag )
@@ -252,4 +265,28 @@ bool AP_UnixClipboard::isImageTag ( const char * tag )
   if ( !strncmp ( tag, "application/x-goffice", 21 ) )
     return true ;
   return false ;
+}
+
+bool AP_UnixClipboard::isDynamicTag ( const char * tag )
+{
+	std::vector<const char*>::iterator i = vec_DynamicFormatsAccepted.begin();
+	while (*i && strcmp (tag, *i))
+		i++;
+	return *i != NULL;
+}
+
+void AP_UnixClipboard::addFormat(const char * fmt)
+{
+	AddFmt(fmt);
+	vec_DynamicFormatsAccepted.insert(vec_DynamicFormatsAccepted.begin(), fmt);
+}
+
+void AP_UnixClipboard::deleteFormat(const char * fmt)
+{
+	deleteFmt(fmt);
+	std::vector<const char*>::iterator i = vec_DynamicFormatsAccepted.begin();
+	while (*i && strcmp (fmt, *i))
+		i++;
+	if (*i)
+		vec_DynamicFormatsAccepted.erase(i);
 }

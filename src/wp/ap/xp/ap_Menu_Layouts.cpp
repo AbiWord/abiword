@@ -1,3 +1,5 @@
+/* -*- mode: C++; tab-width: 4; c-basic-offset: 4; -*- */
+
 /* AbiWord
  * Copyright (C) 1998 AbiSource, Inc.
  * 
@@ -83,7 +85,7 @@
 			{
 				UT_uint32 i = 0;
 				bool bFound = false;
-				for(i=0; i< m_Vec_lt.getItemCount(); i++)
+				for(i=0; i< m_Vec_lt.getItemCount() && !bFound; i++)
 				{
 					_lt * plt = (_lt *) m_Vec_lt.getNthItem(i);
 					if(plt->m_id == id)
@@ -95,6 +97,28 @@
 						else
 						{
 							m_Vec_lt.insertItemAt(p,i+1);
+						}
+						bFound = true;
+					}
+				}
+				UT_ASSERT_HARMLESS(bFound);
+			};
+		void insertItemBefore(void * p, XAP_Menu_Id id)
+			{
+				UT_uint32 i = 0;
+				bool bFound = false;
+				for(i=0; i< m_Vec_lt.getItemCount() && !bFound; i++)
+				{
+					_lt * plt = (_lt *) m_Vec_lt.getNthItem(i);
+					if(plt->m_id == id)
+					{
+						if((i+1) == m_Vec_lt.getItemCount())
+						{
+							m_Vec_lt.addItem(p);
+						}
+						else
+						{
+							m_Vec_lt.insertItemAt(p,i);
 						}
 						bFound = true;
 					}
@@ -113,6 +137,7 @@
 						m_Vec_lt.deleteNthItem(i);
 						delete plt;
 						bFound = true;
+						break;
 					}
 				}
 				UT_ASSERT_HARMLESS(bFound);
@@ -220,11 +245,12 @@ XAP_Menu_Factory::XAP_Menu_Factory(XAP_App * pApp) :
 	}
 	m_pEnglishLabelSet = NULL;
 	m_pBSS = NULL;
+	m_NextContext = EV_EMC_AVAIL;
 }
 
 XAP_Menu_Factory::~XAP_Menu_Factory()
 {
-    UT_VECTOR_PURGEALL(_vectt *,m_vecTT);
+    UT_VECTOR_SPARSEPURGEALL(_vectt *,m_vecTT);
 	DELETEP(m_pEnglishLabelSet);
 	DELETEP(m_pBSS);
 	DELETEP(m_pLabelSet);
@@ -241,6 +267,8 @@ XAP_Menu_Id XAP_Menu_Factory::getNewID(void)
 	for(i=0; i < m_vecTT.getItemCount(); i++)
 	{
 		_vectt * pTT = (_vectt *) m_vecTT.getNthItem(i);
+		if (pTT == NULL)
+			continue;
 		for(j=0; j < pTT->getNrEntries(); j++)
 		{
 			_lt * plt = (_lt *) pTT->getNth_lt(j);
@@ -262,6 +290,8 @@ EV_Menu_Layout * XAP_Menu_Factory::CreateMenuLayout(const char * szName)
 	for (UT_uint32 k=0; k< m_vecTT.getItemCount(); k++)
 	{
 		_vectt * pVectt = (_vectt *)m_vecTT.getNthItem(k);
+		if (pVectt == NULL)
+			continue;
 		if (UT_stricmp(szName,pVectt->m_name)==0)
 		{
 			UT_uint32 NrEntries = pVectt->getNrEntries();
@@ -288,6 +318,8 @@ const char * XAP_Menu_Factory::FindContextMenu(EV_EditMouseContext emc)
 	for (UT_uint32 k=0; k< m_vecTT.getItemCount(); k++)
 	{
 		_vectt * pVectt = (_vectt *) m_vecTT.getNthItem(k);
+		if (pVectt == NULL)
+			continue;
 		UT_DEBUGMSG(("Look menu %s id %x requested %x  \n",pVectt->m_name,pVectt->m_emc,emc));
 		if (emc == pVectt->m_emc)
 		{
@@ -296,6 +328,45 @@ const char * XAP_Menu_Factory::FindContextMenu(EV_EditMouseContext emc)
 	}
 	UT_ASSERT_HARMLESS(UT_NOT_IMPLEMENTED);
 	return NULL;
+}
+
+XAP_Menu_Id XAP_Menu_Factory::addNewMenuAfter(const char * szMenu, 
+											   const char * szLanguage,
+											   const XAP_Menu_Id afterID, 
+											   EV_Menu_LayoutFlags flags, XAP_Menu_Id newID)
+{
+	UT_return_val_if_fail (szMenu && *szMenu, 0);		// no defaults
+	UT_uint32 k = 0;
+	bool bFoundMenu = false;
+	_vectt * pVectt = NULL;
+	for (k=0; (k< m_vecTT.getItemCount()) && !bFoundMenu; k++)
+	{
+		pVectt = (_vectt *)m_vecTT.getNthItem(k);
+		if (pVectt == NULL)
+			continue;
+		bFoundMenu = (UT_stricmp(szMenu,pVectt->m_name)==0);
+	}
+	if(!bFoundMenu)
+	{
+		UT_ASSERT_HARMLESS(UT_SHOULD_NOT_HAPPEN);
+		return 0;
+	}
+	
+//
+// OK got the menu ID at last, insert the new id here.
+//
+	if(newID == 0)
+	{
+		newID = getNewID();
+	}
+//
+// Now insert our new ID
+//
+	_lt * plt = new _lt;
+	plt->m_id = newID;
+	plt->m_flags = flags;
+	pVectt->insertItemAt((void *) plt, afterID);
+	return (XAP_Menu_Id) newID;
 }
 
 XAP_Menu_Id XAP_Menu_Factory::addNewMenuAfter(const char * szMenu, 
@@ -311,6 +382,8 @@ XAP_Menu_Id XAP_Menu_Factory::addNewMenuAfter(const char * szMenu,
 	for (k=0; (k< m_vecTT.getItemCount()) && !bFoundMenu; k++)
 	{
 		pVectt = (_vectt *)m_vecTT.getNthItem(k);
+		if (pVectt == NULL)
+			continue;
 		bFoundMenu = (UT_stricmp(szMenu,pVectt->m_name)==0);
 	}
 	if(!bFoundMenu)
@@ -355,10 +428,9 @@ XAP_Menu_Id XAP_Menu_Factory::addNewMenuAfter(const char * szMenu,
 	return (XAP_Menu_Id) newID;
 }
 
-
 XAP_Menu_Id XAP_Menu_Factory::addNewMenuBefore(const char * szMenu, 
 											   const char * szLanguage,
-											   const char * szBefore, 
+											   const XAP_Menu_Id beforeID, 
 											   EV_Menu_LayoutFlags flags, XAP_Menu_Id newID)
 {
 	UT_return_val_if_fail (szMenu && *szMenu, 0);		// no defaults
@@ -368,6 +440,8 @@ XAP_Menu_Id XAP_Menu_Factory::addNewMenuBefore(const char * szMenu,
 	for (k=0; (k< m_vecTT.getItemCount()) && !bFoundMenu; k++)
 	{
 		pVectt = (_vectt *)m_vecTT.getNthItem(k);
+		if (pVectt == NULL)
+			continue;
 		bFoundMenu = (UT_stricmp(szMenu,pVectt->m_name)==0);
 	}
 	if(!bFoundMenu)
@@ -376,25 +450,6 @@ XAP_Menu_Id XAP_Menu_Factory::addNewMenuBefore(const char * szMenu,
 		return 0;
 	}
 	
-// next we need to find the id of the label name
-//
-// OK now search for this label
-//
-	UT_String Before = szBefore;
-	XAP_Menu_Id beforeID = EV_searchMenuLabel( m_pLabelSet, Before);
-	if(beforeID == 0)
-	{
-		if(m_pEnglishLabelSet == NULL)
-		{
-			buildBuiltInMenuLabelSet( m_pEnglishLabelSet);
-		}
-		beforeID = EV_searchMenuLabel( m_pEnglishLabelSet, Before);
-		if(beforeID == 0)
-		{	
-			UT_ASSERT_HARMLESS(UT_SHOULD_NOT_HAPPEN);
-			return 0;
-		}
-	}
 //
 // OK got the menu ID at last, insert the new id here.
 //
@@ -410,13 +465,112 @@ XAP_Menu_Id XAP_Menu_Factory::addNewMenuBefore(const char * szMenu,
 	plt->m_flags = flags;
 	if(beforeID > 0)
 	{
-	  pVectt->insertItemAt((void *) plt, beforeID-1);
+	  pVectt->insertItemBefore((void *) plt, beforeID);
 	}
 	else
 	{
 	  pVectt->insertItemAt((void *) plt, beforeID);
 	}
 	return (XAP_Menu_Id) newID;
+}
+
+XAP_Menu_Id XAP_Menu_Factory::addNewMenuBefore(const char * szMenu, 
+											   const char * szLanguage,
+											   const char * szBefore, 
+											   EV_Menu_LayoutFlags flags, XAP_Menu_Id newID)
+{
+	UT_return_val_if_fail (szMenu && *szMenu, 0);		// no defaults
+	UT_uint32 k = 0;
+	bool bFoundMenu = false;
+	_vectt * pVectt = NULL;
+	for (k=0; (k< m_vecTT.getItemCount()) && !bFoundMenu; k++)
+	{
+		pVectt = (_vectt *)m_vecTT.getNthItem(k);
+		if (pVectt == NULL)
+			continue;
+		bFoundMenu = (UT_stricmp(szMenu,pVectt->m_name)==0);
+	}
+	if(!bFoundMenu)
+	{
+		UT_ASSERT_HARMLESS(UT_SHOULD_NOT_HAPPEN);
+		return 0;
+	}
+	
+	XAP_Menu_Id beforeID;
+// next we need to find the id of the label name
+//
+// OK now search for this label
+//
+	if (szBefore)
+	{
+		UT_String Before = szBefore;
+		beforeID = EV_searchMenuLabel( m_pLabelSet, Before);
+		if(beforeID == 0)
+		{
+			if(m_pEnglishLabelSet == NULL)
+			{
+				buildBuiltInMenuLabelSet( m_pEnglishLabelSet);
+			}
+			beforeID = EV_searchMenuLabel( m_pEnglishLabelSet, Before);
+			if(beforeID == 0)
+			{	
+				UT_ASSERT_HARMLESS(UT_SHOULD_NOT_HAPPEN);
+				return 0;
+			}
+		}
+	}
+	else
+		beforeID = 0;
+//
+// OK got the menu ID at last, insert the new id here.
+//
+	if(newID == 0)
+	{
+		newID = getNewID();
+	}
+//
+// Now insert our new ID
+//
+	_lt * plt = new _lt;
+	plt->m_id = newID;
+	plt->m_flags = flags;
+	if(beforeID > 0)
+	{
+	  pVectt->insertItemBefore((void *) plt, beforeID);
+	}
+	else
+	{
+	  pVectt->insertItemAt((void *) plt, beforeID);
+	}
+	return (XAP_Menu_Id) newID;
+}
+
+/*!
+ * Remove the menu item with id nukeID from the menu labelled szMenu in the
+ * Language set szLanguage
+ */
+XAP_Menu_Id XAP_Menu_Factory::removeMenuItem(const char * szMenu, 
+							  const char * szLanguage,  
+							  XAP_Menu_Id nukeID)
+{
+	UT_return_val_if_fail (szMenu && *szMenu, 0);		// no defaults
+	UT_uint32 k = 0;
+	bool bFoundMenu = false;
+	_vectt * pVectt = NULL;
+	for (k=0; (k< m_vecTT.getItemCount()) && !bFoundMenu; k++)
+	{
+		pVectt = (_vectt *)m_vecTT.getNthItem(k);
+		if (pVectt == NULL)
+			continue;
+		bFoundMenu = (UT_stricmp(szMenu,pVectt->m_name)==0);
+	}
+	if(!bFoundMenu)
+	{
+		UT_ASSERT_HARMLESS(UT_SHOULD_NOT_HAPPEN);
+		return 0;
+	}
+	pVectt->removeItem(nukeID);
+	return nukeID;
 }
 
 /*!
@@ -434,6 +588,8 @@ XAP_Menu_Id XAP_Menu_Factory::removeMenuItem(const char * szMenu,
 	for (k=0; (k< m_vecTT.getItemCount()) && !bFoundMenu; k++)
 	{
 		pVectt = (_vectt *)m_vecTT.getNthItem(k);
+		if (pVectt == NULL)
+			continue;
 		bFoundMenu = (UT_stricmp(szMenu,pVectt->m_name)==0);
 	}
 	if(!bFoundMenu)
@@ -611,3 +767,46 @@ void XAP_Menu_Factory::resetLabelsToDefault(void)
 	// TODO - do nothing as extra labels in set don't hurt operation
 }
 
+EV_EditMouseContext XAP_Menu_Factory::createContextMenu(const char * szMenu)
+{
+	struct _lt items[2] =
+	{{EV_MLF_BeginPopupMenu,AP_MENU_ID__BOGUS1__ },
+	{EV_MLF_EndPopupMenu,AP_MENU_ID__BOGUS1__ }};
+	struct _tt newtt;
+	newtt.m_name = szMenu;
+	newtt.m_nrEntries = 2;
+	newtt.m_lt = items;
+	newtt.m_emc = EV_EMC_AVAIL;
+	/*
+		We have several possibilities here:
+		- replace the first NULL instance with scanning of all values,
+		if any or add to the end;
+		- add to the end in all cases;
+		- any better algorithm ?
+		I (jbrefort) choosed arbitrarily the first option.
+	*/
+	while (newtt.m_emc < m_NextContext)
+	{
+		if (m_vecTT.getNthItem (newtt.m_emc) == NULL)
+			break;
+		newtt.m_emc++;
+	}
+	newtt.m_emc = m_NextContext;
+	_vectt * pVectt = new _vectt(&newtt);
+	if (newtt.m_emc == m_NextContext)
+	{
+		m_vecTT.addItem((void *) pVectt);
+		m_NextContext++;
+	}
+	else
+		m_vecTT.setNthItem (newtt.m_emc, pVectt, NULL);
+	return newtt.m_emc;
+}
+
+void XAP_Menu_Factory::removeContextMenu(EV_EditMouseContext menuID)
+{
+	_vectt * pVectt;
+	m_vecTT.setNthItem (menuID, NULL, (const void**)&pVectt);
+	if (pVectt)
+		delete pVectt;
+}

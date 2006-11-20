@@ -27,6 +27,10 @@
 #ifndef IE_IMPEXP_HTML_H
 #define IE_IMPEXP_HTML_H
 
+#define IE_MIMETYPE_XHTML			"application/xhtml+xml"
+#define IE_MIMETYPE_HTML			"text/html"
+#define IE_MIMETYPE_CSS				"text/css"
+
 #define TT_OTHER	0	// ?		Tag not recognized (not an error, though)
 
 #define TT_HTML		1	// <html>	Document main/first tag

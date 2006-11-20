@@ -1,3 +1,5 @@
+/* -*- mode: C++; tab-width: 4; c-basic-offset: 4; -*- */
+
 /* AbiSource Program Utilities
  * Copyright (C) 1998-2000 AbiSource, Inc.
  * 
@@ -41,7 +43,7 @@ public:
 		    const char * szMenuLabelSetName);
 	virtual ~EV_UnixMenu();
 
-	bool				synthesizeMenu(GtkWidget * wMenuRoot);
+	bool				synthesizeMenu(GtkWidget * wMenuRoot, bool isPopup);
 	bool				menuEvent(XAP_Menu_Id id);
 	virtual bool		refreshMenu(AV_View * pView) = 0;
 	
@@ -63,8 +65,12 @@ protected: // FIXME! These variables should be private.
 	UT_GenericVector<GtkWidget*> m_vecMenuWidgets;
 private:	
         void _convertStringToAccel(const char *s, guint &accel_key, GdkModifierType &ac_mods);   
-        const char * s_getStockPixmapFromId (int id);
-        GtkWidget * s_createNormalMenuEntry(const XAP_Menu_Id id, const bool isCheckable,const bool isRadio, const char *szLabelName, const char *szMnemonicName);
+        GtkWidget * s_createNormalMenuEntry(const XAP_Menu_Id id, 
+											const bool isCheckable,
+											const bool isRadio, 
+											const bool isPopup,
+											const char *szLabelName, 
+											const char *szMnemonicName);
 	UT_Vector           m_vecCallbacks;
 };
 

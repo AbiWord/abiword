@@ -185,6 +185,10 @@ endif
 	ABI_GSF_INC += $(shell pkg-config --cflags --silence-errors libgsf-1)
 	ABI_GLIB_LIB += $(shell pkg-config --libs --silence-errors glib-2.0)
 	ABI_GLIB_INC += $(shell pkg-config --cflags --silence-errors glib-2.0)
+ifneq ($(HAVE_WV_PEER),1)
+	ABI_WV_LIB += $(shell pkg-config --libs --silence-errors wv-1.0)
+	ABI_WV_INC += $(shell pkg-config --cflags --silence-errors wv-1.0)
+endif
 #else
 #	error 
 #endif
@@ -194,12 +198,23 @@ ifeq ($(ABI_OPT_PANGO),1)
 OS_INCLUDES += -I/usr/local/include/pango-1.0 -I/usr/local/include/freetype2 $(ABI_GLIB_INC)
 endif
 
+# libgsf
+OS_LIBS += $(ABI_GSF_LIB)
+ABI_LIBS += libgsf-1
+OS_INCLUDES += $(ABI_GSF_INC)
 
 # glib
 # ABI_OTH_INCS += $(GLIB_INC)
 OS_LIBS += $(ABI_GLIB_LIB)
 ABI_LIBS += glib-2.0
 OS_INCLUDES += $(ABI_GLIB_INC)
+
+# wv
+ifneq ($(HAVE_WV_PEER),1)
+OS_LIBS += $(ABI_WV_LIB)
+ABI_LIBS += wv-1.0
+OS_INCLUDES += $(ABI_WV_INC)
+endif
 
 # zlib
 ABI_ZLIB_ROOT = $(ABI_ROOT)/../libs/zlib

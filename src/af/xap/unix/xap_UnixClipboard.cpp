@@ -68,6 +68,15 @@ void XAP_UnixClipboard::AddFmt(const char * szFormat)
 	m_vecFormat_GdkAtom.addItem(gdk_atom_intern(szFormat,FALSE));
 }
 
+void XAP_UnixClipboard::deleteFmt(const char * szFormat)
+{
+	UT_return_if_fail(szFormat && strlen(szFormat));
+	UT_sint32 item = m_vecFormat_AP_Name.findItem(szFormat);
+	m_vecFormat_AP_Name.deleteNthItem(item);
+	m_vecFormat_GdkAtom.findItem(gdk_atom_intern(szFormat,FALSE));
+	m_vecFormat_GdkAtom.deleteNthItem(item);
+}
+
 void XAP_UnixClipboard::initialize()
 {
 	m_nTargets = m_vecFormat_AP_Name.getItemCount();
@@ -150,7 +159,7 @@ void XAP_UnixClipboard::clipboard_get_func(GtkClipboard *clipboard,
 
 bool XAP_UnixClipboard::assertSelection()
 {
-	return (gtk_clipboard_set_with_data (gtkClipboardForTarget(TAG_PrimaryOnly),
+  return (gtk_clipboard_set_with_data (gtkClipboardForTarget(TAG_PrimaryOnly),
 										 m_Targets,
 										 m_nTargets,
 										 s_primary_get_func,
@@ -168,11 +177,16 @@ bool XAP_UnixClipboard::addData(T_AllowGet tFrom, const char* format, const void
 			return false;
 		
 		gtk_clipboard_set_with_data (gtkClipboardForTarget(TAG_ClipboardOnly),
-									 m_Targets,
-									 m_nTargets,
-									 s_clipboard_get_func,
-									 s_clipboard_clear_func,
-									 this);
+					     m_Targets,
+					     m_nTargets,
+					     s_clipboard_get_func,
+					     s_clipboard_clear_func,
+					     this);
+
+#if GTK_CHECK_VERSION(2,6,0)
+		gtk_clipboard_set_can_store (gtkClipboardForTarget(TAG_ClipboardOnly), m_Targets, m_nTargets);
+#endif
+
 		return true;
     }
 }
@@ -298,7 +312,7 @@ bool XAP_UnixClipboard::_getDataFromServer(T_AllowGet tFrom, const char** format
 			gtk_selection_data_free(selection);
 		}
     }
-	
+
 	return rval;
 }
 

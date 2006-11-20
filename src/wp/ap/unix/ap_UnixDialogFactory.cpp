@@ -1,3 +1,5 @@
+/* -*- mode: C++; tab-width: 4; c-basic-offset: 4; -*- */
+
 /* AbiWord
  * Copyright (C) 1998 AbiSource, Inc.
  * 
@@ -30,7 +32,7 @@
 
 static struct XAP_DialogFactory::_dlg_table s_dlg_table[] = {
 	
-#define DeclareDialog(id,cls)	{ id, cls::s_getPersistence(), cls::static_constructor },
+#define DeclareDialog(id,cls,tabbed)	{ id, cls::s_getPersistence(), cls::static_constructor, tabbed },
 #include "ap_UnixDialog_All.h"
 #undef DeclareDialog
 };
@@ -38,17 +40,11 @@ static struct XAP_DialogFactory::_dlg_table s_dlg_table[] = {
 
 /*****************************************************************/
   
-AP_UnixDialogFactory::AP_UnixDialogFactory(XAP_App * pApp)
-	: XAP_DialogFactory(pApp, NrElements(s_dlg_table), s_dlg_table)
-{
-}
-
-AP_UnixDialogFactory::AP_UnixDialogFactory(XAP_Frame * pFrame, XAP_App * pApp)
-	: XAP_DialogFactory(pFrame, pApp, NrElements(s_dlg_table), s_dlg_table)
+AP_UnixDialogFactory::AP_UnixDialogFactory(XAP_App * pApp, XAP_Frame * pFrame)
+	: XAP_DialogFactory(pApp, NrElements(s_dlg_table), s_dlg_table, pFrame)
 {
 }
 
 AP_UnixDialogFactory::~AP_UnixDialogFactory(void)
 {
 }
-

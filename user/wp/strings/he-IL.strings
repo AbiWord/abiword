@@ -1,4 +1,4 @@
-<?xml version="1.0" encoding="iso-8859-8"?>
+<?xml version="1.0" encoding="utf-8"?>
 <!-- ==============================================================  -->
 <!-- This file contains AbiWord Strings.  AbiWord is an Open Source  -->
 <!-- word processor developed by AbiSource, Inc.  Information about  -->
@@ -966,7 +966,7 @@ DLG_Styles_ErrStyleCantDelete="אין באפשרותך למחוק את העיצ�
 DLG_Styles_ErrStyleNot=""
 DLG_Styles_LBL_InUse="בשימוש "
 DLG_Styles_LBL_TxtMsg=""
-DLG_Styles_LBL_UserDefined="סגנונות שנקבעו ע"י המשתמש "
+DLG_Styles_LBL_UserDefined="סגנונות שנקבעו ע&amp;quot;י המשתמש "
 DLG_Styles_List="רשימה "
 DLG_Styles_Modify=""
 DLG_Styles_ModifyAutomatic="עידכון אוטומטי "
@@ -997,7 +997,7 @@ DLG_Stylist_ListStyles=""
 DLG_Stylist_MiscStyles=""
 DLG_Stylist_Styles="סיגנונות "
 DLG_Stylist_Title=""
-DLG_Stylist_UserStyles="סגנונות שנקבעו ע"י המשתמש "
+DLG_Stylist_UserStyles="סגנונות שנקבעו ע&amp;quot;י המשתמש "
 DLG_Tab_Button_Clear="מחק "
 DLG_Tab_Button_ClearAll="מחק הכל "
 DLG_Tab_Button_Set="הגדר "

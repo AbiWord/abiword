@@ -134,7 +134,7 @@ elif test "$print" = "undefined"; then
    PRINT_CFLAGS=""
 fi
 
-AC_MSG_RESULT([final printing ${print}])
+AC_MSG_RESULT([${print}])
 
 AM_CONDITIONAL(WITH_PRINTING, test x$print = xtrue)
 
@@ -160,14 +160,10 @@ elif test "$usepango" = "undefined"; then
    PANGO_CFLAGS="-DUSE_PANGO"
 fi
 
-if test  "$sugar" = "true"; then
-   usepango=true;
-   PANGO_CFLAGS="-DUSE_PANGO"
-fi
-
 AC_MSG_RESULT([${usepango}])
 
 AM_CONDITIONAL(WITH_PANGO, test x$usepango = xtrue)
+
 
 if test "$PLATFORM" = "unix"; then
 	ABI_FE="Unix"
@@ -227,7 +223,6 @@ AC_SUBST(ABIWORD_APP_LIBDIR)
 
 dnl ./configure command line arguments
 dnl currently, we have:
-dnl   --enable-gnome
 dnl   --enable-debug
 dnl   --enable-extra-optimization
 dnl   --enable-profile
@@ -238,16 +233,21 @@ dnl   --with-libxml2
 dnl The defined values are used mostly in includes.mk, but also in
 dnl some other places
 
-ABI_GNOME_QUICK
 ABI_GUCHARMAP
 ABI_XFT_QUICK
-	
+ABI_GSF
+ABI_GOFFICE
+ABI_BONOBO
+ABI_GNOMEVFS
+ABI_GNOMEUI
+ABI_SDI
+
 abi_build_shared=yes
 abi_build_static=no
 
 AC_ARG_ENABLE(shared,[  --disable-shared   don't build shared AbiWord (UNIX/GTK builds only)],[
 	if test "x$enableval" = "xno"; then
-		if test "$PLATFORM" = "unix" -a "$gnome" != "true"; then
+		if test "$PLATFORM" = "unix" -a "$gnomeui" != "true"; then
 			abi_build_shared=no
 			abi_build_static=yes
 		fi
@@ -255,7 +255,7 @@ AC_ARG_ENABLE(shared,[  --disable-shared   don't build shared AbiWord (UNIX/GTK 
 ])
 AC_ARG_ENABLE(static,[  --enable-static          build static AbiWord (UNIX/GTK builds only)],[
 	if test "x$enableval" != "xno"; then
-		if test "$PLATFORM" = "unix" -a "$gnome" != "true"; then
+		if test "$PLATFORM" = "unix" -a "$gnomeui" != "true"; then
 			abi_build_static=yes
 		fi
 	fi
@@ -387,14 +387,9 @@ case "$script" in
 esac
 
 if test "$PLATFORM" = "unix"; then
-	if test "$gnome" = "true"; then
-		PLATFORM_CFLAGS="$GTK_CFLAGS $GNOME_CFLAGS $GMODULE_CFLAGS $GUCHARMAP_CFLAGS $GNOMEPRINT_CFLAGS -DSUPPORTS_UT_IDLE=1"
-		PLATFORM_LIBS="$GTK_LIBS $GNOME_LIBS $GMODULE_LIBS $GUCHARMAP_LIBS $GNOMEPRINT_LIBS"
-	else
-		PLATFORM_CFLAGS="$GTK_CFLAGS $GMODULE_CFLAGS $GUCHARMAP_CFLAGS $GNOMEPRINT_CFLAGS -DSUPPORTS_UT_IDLE=1"
-		PLATFORM_LIBS="$GTK_LIBS $GMODULE_LIBS $GUCHARMAP_LIBS $GNOMEPRINT_LIBS"
-	fi
-
+	PLATFORM_CFLAGS="$GTK_CFLAGS $GMODULE_CFLAGS $GUCHARMAP_CFLAGS $GNOMEPRINT_CFLAGS $GOFFICE_CFLAGS $SDI_CFLAGS $BONOBO_CFLAGS $GNOMEVFS_CFLAGS $GNOMEUI_CFLAGS -DSUPPORTS_UT_IDLE=1"
+	PLATFORM_LIBS="$GTK_LIBS $GMODULE_LIBS $GUCHARMAP_LIBS $GNOMEPRINT_LIBS $BONOBO_LIBS $GNOMEVFS_LIBS $GNOMEUI_LIBS"
+	
 	if test "$hildon" = "true"; then
 		PLATFORM_CFLAGS="$PLATFORM_CFLAGS $HILDON_CFLAGS"
 		PLATFORM_LIBS="$PLATFORM_LIBS $HILDON_LIBS"
@@ -418,6 +413,9 @@ fi
 if test "$PLATFORM" = "qnx"; then
 	PLATFORM_LIBS="-fexceptions"
 fi
+
+#add any Pango flags
+PLATFORM_CFLAGS="$PLATFORM_CFLAGS $PANGO_CFLAGS"
 
 # this should be after all other platform cflags have been set
 if test "$embedded" = "true"; then
@@ -457,8 +455,7 @@ ABI_XML_PARSER
 
 dnl check for wv
 
-ABI_NEED_WV="yes"
-ABI_WV($abi_rootdir/wv)
+ABI_WV
 
 dnl check for zlib.
 ABI_ZLIB
@@ -512,8 +509,9 @@ AC_SUBST(VALGRIND)
 
 AM_CONDITIONAL(CROSS_COMPILING, test x$cross_compiling = xyes)
 
-AC_CONFIG_FILES([
- Makefile
+AC_CONFIG_FILES([goffice-bits/GNUmakefile])
+
+AC_CONFIG_FILES([Makefile
  src/GNUmakefile
  src/af/GNUmakefile
  src/af/tf/GNUmakefile
@@ -544,7 +542,6 @@ AC_CONFIG_FILES([
  src/af/xap/win/GNUmakefile
  src/af/xap/unix/GNUmakefile
  src/af/xap/unix/t/GNUmakefile
- src/af/xap/unix/gnome/GNUmakefile
  src/af/xap/unix/hildon/GNUmakefile
  src/other/GNUmakefile
  src/other/spell/GNUmakefile
@@ -554,6 +551,9 @@ AC_CONFIG_FILES([
  src/pkg/GNUmakefile
  src/pkg/linux/GNUmakefile
  src/pkg/linux/apkg/GNUmakefile
+ src/pkg/maemo/GNUmakefile
+ src/pkg/maemo/abiword.desktop
+ src/pkg/maemo/com.abisource.abiword.service
  src/text/GNUmakefile
  src/text/fmt/GNUmakefile
  src/text/fmt/xp/GNUmakefile
@@ -613,8 +613,6 @@ AC_CONFIG_FILES([
  src/bindings/perl/GNUmakefile
  src/pkg/linux/apkg/abiword-gnome.apspec
  src/pkg/linux/apkg/abiword-gtk.apspec
- src/pkg/maemo/debian/misc/abiword.desktop
- src/pkg/maemo/debian/misc/com.nokia.abiword.service
 ])
 AC_OUTPUT
 
@@ -631,11 +629,6 @@ case "$PLATFORM" in
        AC_MSG_RESULT([Configured to build on a Mac OS X platform using Cocoa.]) ;;
 esac
 
-case "$gnome" in
-     "true" )
-        AC_MSG_RESULT([Configured with GNOME support.]) ;;
-esac
-
 case "$embedded" in
      "true")
 	AC_MSG_RESULT([Configured for embedded target.]) ;;
@@ -649,6 +642,13 @@ esac
 case "$debug" in
      "true" )
         AC_MSG_RESULT([Configured with debugging symbols.]) ;;
+esac
+
+case "$usepango" in
+         "true")
+	AC_MSG_RESULT([Pango backend enabled.]) ;;
+	 "false")     
+	AC_MSG_RESULT([Pango backend disabled.]) ;;
 esac
 
 case "$print" in
@@ -684,10 +684,15 @@ cat <<EOF
   XML Parser:      ${abi_xml_parser_message}
   zlib:            ${abi_zlib_message}
   PNG Library:     ${abi_libpng_message}
-  popt:		   ${abi_libpopt_message}
+  popt:	           ${abi_libpopt_message}
   WV Library:      ${abi_wv_message}
   iconv:           ${abi_iconv_message}
   spelling:        ${abi_spell_message}
+  goffice:         ${abi_goffice_message}
+  bonobo:          ${abi_bonobo_message}
+  gnome-vfs:       ${abi_gnomevfs_message}
+  gnome-ui:        ${abi_gnomeui_message}
+  SDI:             ${abi_sdi_message}
   binreloc:        ${br_cv_binreloc}
 
   installing in:   ${prefix}

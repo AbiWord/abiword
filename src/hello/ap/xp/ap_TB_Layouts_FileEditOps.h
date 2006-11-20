@@ -1,3 +1,5 @@
+/* -*- mode: C++; tab-width: 4; c-basic-offset: 4; -*- */
+
 /* AbiHello
  * Copyright (C) 1999 AbiSource, Inc.
  * 

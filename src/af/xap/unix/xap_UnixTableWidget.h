@@ -86,8 +86,6 @@ void	   abi_table_set_max_size   (AbiTable* abi_table, guint rows, guint cols);
 /* gets the maximum number of selected rows & cols */
 void	   abi_table_get_max_size   (const AbiTable* abi_table, guint* rows, guint* cols);
 
-void	   abi_table_embed_on_toolbar (AbiTable* abi_table, GtkToolbar* toolbar);
-
 #ifdef __cplusplus
 }
 #endif

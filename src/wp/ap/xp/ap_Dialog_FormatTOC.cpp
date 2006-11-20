@@ -255,10 +255,12 @@ void AP_Dialog_FormatTOC::setTOCProperty(const char * szProp, const char * szVal
 {
 	UT_UTF8String sProp = szProp;
 	UT_UTF8String sVal = szVal;
+/*	don't return on empty prop strings - see Bug 9141
 	if(sVal.size() == 0)
 	{
 		return;
 	}
+*/
 	UT_DEBUGMSG((" Prop: %s Val: %s \n",sProp.utf8_str(),sVal.utf8_str()));
 	UT_UTF8String_setProperty(m_sTOCProps,sProp,sVal);
 //	m_sTOCProps.dump();
@@ -266,10 +268,12 @@ void AP_Dialog_FormatTOC::setTOCProperty(const char * szProp, const char * szVal
 
 void AP_Dialog_FormatTOC::setTOCProperty(UT_UTF8String & sProp, UT_UTF8String & sVal)
 {
+/*	don't return on empty prop strings - see Bug 9141
 	if(sVal.size() == 0)
 	{
 		return;
 	}
+*/
 	UT_DEBUGMSG((" Prop: %s Val: %s \n",sProp.utf8_str(),sVal.utf8_str()));
 	UT_UTF8String_setProperty(m_sTOCProps,sProp,sVal);
 //	m_sTOCProps.dump();

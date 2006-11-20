@@ -55,10 +55,18 @@ public:
 			  const void ** ppData, UT_uint32 * pLen,
 			  const char **pszFormatFound);
 
+	bool getDynamicData(T_AllowGet tFrom,
+			  const void ** ppData, UT_uint32 * pLen,
+			  const char **pszFormatFound);
+
+	void addFormat(const char * fmt);
+	void deleteFormat(const char * fmt);
+
 	static bool isTextTag ( const char * tag ) ;
 	static bool isRichTextTag ( const char * tag ) ;
 	static bool isHTMLTag ( const char * tag ) ;
 	static bool isImageTag ( const char * tag ) ;
+	static bool isDynamicTag ( const char * tag ) ;
 };
 
 #endif /* AP_UNIXCLIPBOARD_H */

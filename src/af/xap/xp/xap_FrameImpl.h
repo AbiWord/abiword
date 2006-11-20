@@ -77,6 +77,7 @@ protected:
 	virtual XAP_DialogFactory * _getDialogFactory() = 0;
 	virtual EV_Toolbar * _newToolbar(XAP_Frame *frame, const char *szLayout, const char *szLanguage) = 0;
 	virtual EV_Menu* _getMainMenu() = 0;
+	virtual void _rebuildMenus(void)= 0;
 	virtual void _createToolbars();
 	virtual void _refillToolbarsInFrameData() = 0;
 	virtual void _rebuildToolbar(UT_uint32 ibar) = 0;

@@ -1,3 +1,5 @@
+/* -*- mode: C++; tab-width: 4; c-basic-offset: 4; -*- */
+
 /* AbiSource Application Framework
  * Copyright (C) 1998 AbiSource, Inc.
  * 
@@ -105,7 +107,6 @@ protected:
 	
 	void							_setAbiSuiteLibDir();
 
-	AP_UnixToolbar_Icons *			m_pUnixToolbarIcons;
 	AP_UnixDialogFactory			m_dialogFactory;
 	AP_UnixToolbar_ControlFactory	m_controlFactory;
 	XAP_UnixFontManager *			m_fontManager;

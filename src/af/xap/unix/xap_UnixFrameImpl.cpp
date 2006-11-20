@@ -33,12 +33,14 @@
 #include <unistd.h>
 #include <sys/stat.h>
 #include <string.h>
+#include <vector>
 
 #include "ap_Features.h"
 
 #include "ut_types.h"
 #include "ut_assert.h"
 #include "ut_files.h"
+#include "ut_misc.h"
 #include "ut_sleep.h"
 #include "xap_ViewListener.h"
 #include "xap_UnixApp.h"
@@ -60,21 +62,19 @@
 
 #include "fv_View.h"
 
-#ifdef HAVE_GNOME
-// sorry about the XAP/AP separation breakage, but this is more important
 #include "ie_types.h"
 #include "ie_imp.h"
 #include "ie_impGraphic.h"
 #include "fg_Graphic.h"
 
-#include <gnome.h>
+#ifdef HAVE_GNOMEVFS
 #include <libgnomevfs/gnome-vfs.h>
 #include <libgnomevfs/gnome-vfs-mime-utils.h>
-
-#include "ev_GnomeToolbar.h"
 #endif
 
-#ifdef HAVE_GNOME
+#ifdef HAVE_GCONF
+#include "ev_GnomeToolbar.h"
+#endif
 
 enum {
 	TARGET_DOCUMENT,
@@ -82,176 +82,123 @@ enum {
 	TARGET_URI_LIST,
 	TARGET_URL,
 	TARGET_UNKNOWN
-} DragDropTypes;
+};
 
-// FIXME Rob: this should be split into a static and a dynamic part.
-// At least the image formats could be added dynamically based on gdk_pixbuf_get_formats ()
-// but we should be able to also dynamically determine document formats by looking at the
-// loaded importers.
-static const GtkTargetEntry drag_types[] =
-	{
- 		{"text/uri-list", 0, TARGET_URI_LIST},
- 		{"application/rtf", 0, TARGET_DOCUMENT},
- 		{"text/richtext", 0, TARGET_DOCUMENT},
- 		{"text/rtf", 0, TARGET_DOCUMENT},
- 		{"application/msword", 0, TARGET_DOCUMENT},
- 		{"application/vnd.ms-word", 0, TARGET_DOCUMENT},
- 		{"application/vnd.sun.xml.writer", 0, TARGET_DOCUMENT},
- 		{"application/x-applix-word", 0, TARGET_DOCUMENT},
- 		{"application/x-palm-database", 0, TARGET_DOCUMENT},
- 		{"application/vnd.palm", 0, TARGET_DOCUMENT},
- // 		{"text/plain", 0, TARGET_DOCUMENT},
- 		{"text/abiword", 0, TARGET_DOCUMENT},
- 		{"application/x-abiword", 0, TARGET_DOCUMENT},
- 		{"text/xml", 0, TARGET_DOCUMENT},
- 		{"text/vnd.wap.wml", 0, TARGET_DOCUMENT},
-		{"image/x-wmf", 0, TARGET_IMAGE},
- 		{"image/jpeg", 0, TARGET_IMAGE},
-		{"image/png", 0, TARGET_IMAGE},
-		{"image/jpeg", 0, TARGET_IMAGE},
-		{"image/gif", 0, TARGET_IMAGE},
-		{"image/x-xpixmap", 0, TARGET_IMAGE},
-		{"image/bmp", 0, TARGET_IMAGE},
-		{"image/x-bmp", 0, TARGET_IMAGE},
-		{"image/x-cmu-raster", 0, TARGET_IMAGE},
-		{"image/tiff", 0, TARGET_IMAGE},
-		{"image/svg+xml", 0, TARGET_IMAGE},
-		{"text/html", 0, TARGET_URL}, // hack
-		{"text/html+xml", 0, TARGET_URL}, // hack
-		{"_NETSCAPE_URL", 0, TARGET_URL}
-	};
+static const GtkTargetEntry XAP_UnixFrameImpl__knownDragTypes[] = {
+	{"text/uri-list", 	0, TARGET_URI_LIST},
+	{"text/html", 		0, TARGET_URL}, // hack
+	{"text/html+xml", 	0, TARGET_URL}, // hack
+	{"_NETSCAPE_URL", 	0, TARGET_URL}
+};
 
-static int
-s_mapMimeToUriType (const char * uri)
+typedef struct {
+	GtkTargetEntry * entries;
+	guint			 count;
+} DragInfo;
+
+/*!
+ * Build targets table from supported mime types.
+ */
+static DragInfo * s_getDragInfo ()
+{
+	static DragInfo dragInfo = { NULL, 0 };
+	bool			isInitialized = FALSE;
+
+	if (isInitialized) {
+		return &dragInfo;
+	}
+
+	std::vector<std::string>::iterator iter;
+	std::vector<std::string>::iterator end;
+	guint idx;
+
+	dragInfo.count = G_N_ELEMENTS(XAP_UnixFrameImpl__knownDragTypes) + 
+								  IE_Imp::getSupportedMimeTypes().size() + 
+								  IE_ImpGraphic::getSupportedMimeTypes().size();
+
+	dragInfo.entries = new GtkTargetEntry[dragInfo.count];
+
+	// static types
+	for (idx = 0; idx < G_N_ELEMENTS(XAP_UnixFrameImpl__knownDragTypes); idx++) {
+		dragInfo.entries[idx].target = XAP_UnixFrameImpl__knownDragTypes[idx].target;
+		dragInfo.entries[idx].flags = XAP_UnixFrameImpl__knownDragTypes[idx].flags;
+		dragInfo.entries[idx].info = XAP_UnixFrameImpl__knownDragTypes[idx].info;
+	}
+
+	// document types
+	std::vector<std::string> &mimeTypes = IE_Imp::getSupportedMimeTypes();
+	iter = mimeTypes.begin();
+	end = mimeTypes.end();
+	while (iter != end) {
+		dragInfo.entries[idx].target = const_cast<gchar *>((*iter).c_str());
+		dragInfo.entries[idx].flags = 0;
+		dragInfo.entries[idx].info = TARGET_DOCUMENT;
+		iter++;
+		idx++;
+	}
+	
+	// image types
+	mimeTypes = IE_ImpGraphic::getSupportedMimeTypes();
+	iter = mimeTypes.begin();
+	end = mimeTypes.end();
+	while (iter != end) {
+		dragInfo.entries[idx].target = const_cast<gchar *>((*iter).c_str());
+		dragInfo.entries[idx].flags = 0;
+		dragInfo.entries[idx].info = TARGET_IMAGE;
+		iter++;
+		idx++;
+	}
+
+	UT_ASSERT(idx == dragInfo.count);
+	isInitialized = TRUE;
+
+	return &dragInfo;
+}
+
+static int s_mapMimeToUriType (const char * uri)
 {
 	if (!uri || !strlen(uri))
 		return TARGET_UNKNOWN;
 
-	char * mime = gnome_vfs_get_mime_type (uri);
-	UT_DEBUGMSG(("DOM: mime %s dropped into AbiWord(%s)\n", mime, uri));
-
 	int target = TARGET_UNKNOWN;
 
-	for (size_t i = 0; i < NrElements (drag_types); i++)
-		if (!UT_stricmp (mime, drag_types[i].target)) {
-			target = drag_types[i].info;
+	gchar *mimeType;
+#ifdef HAVE_GNOMEVFS
+	mimeType = gnome_vfs_get_mime_type (uri);
+#else
+	const gchar * suffix = UT_pathSuffix(uri);
+	if (suffix) {
+		const gchar *mt = IE_Imp::getMimeTypeForSuffix(suffix);
+		if (!mt) {
+			mt = IE_ImpGraphic::getMimeTypeForSuffix(suffix);
+		}
+		if (mt) {
+			/* we to free that later */
+			mimeType = g_strdup(mt);
+		}
+		else {
+			return target;
+		}
+	}
+	else {
+		return target;
+	}
+#endif
+	UT_DEBUGMSG(("DOM: mimeType %s dropped into AbiWord(%s)\n", mimeType, uri));
+
+	DragInfo * dragInfo = s_getDragInfo();
+	for (size_t i = 0; i < dragInfo->count; i++)
+		if (!UT_stricmp (mimeType, dragInfo->entries[i].target)) {
+			target = dragInfo->entries[i].info;
 			break;
 		}
 	
-	g_free (mime);
+	g_free (mimeType);
 	return target;
 }
 
-static bool
-s_ensure_uri_on_disk (const gchar * uri, UT_UTF8String & outName)
-{
-	GnomeVFSResult    result = GNOME_VFS_OK;
-	GnomeVFSHandle   *handle = NULL;
-	gchar             buffer[1024];
-	GnomeVFSFileSize  bytes_read;
-	GnomeVFSURI 	 *hndl = NULL;	
-	outName = "";
-	hndl = gnome_vfs_uri_new (uri);
-	if (hndl == NULL) 
-		{
-			UT_DEBUGMSG(("DOM: Invalid uri was %s \n", uri));
-			return false;
-		}
-
-	if (gnome_vfs_uri_is_local (hndl)) {
-		char * short_name = gnome_vfs_uri_to_string (hndl, static_cast<GnomeVFSURIHideOptions>(GNOME_VFS_URI_HIDE_USER_NAME | GNOME_VFS_URI_HIDE_PASSWORD |
-													 GNOME_VFS_URI_HIDE_HOST_NAME | GNOME_VFS_URI_HIDE_HOST_PORT |
-													 GNOME_VFS_URI_HIDE_TOPLEVEL_METHOD | GNOME_VFS_URI_HIDE_FRAGMENT_IDENTIFIER));
-		UT_uint32 i = 0;
-		UT_uint32 len = strlen(short_name);
-		UT_UTF8String left = "";
-		while(i < len)
-		{
-			if(short_name[i] != '%')
-			{
-				left += short_name[i];
-				i += 1;
-			}
-			else if(i+2 < len)
-			{
-				char c = 16*(short_name[i+1] - '0') +  short_name[i+2] - '0';
-				left += c;
-				i += 3;
-			}
-			else
-			{
-				left += short_name[i];
-				i +=1;
-			}
-		}
-		outName = left;
-		UT_DEBUGMSG(("short_name %s szTmp %s \n",short_name,outName.utf8_str()));
-		g_free (short_name);
-		gnome_vfs_uri_unref (hndl);
-		return true;
-	}
-
-	char * outCName;
-	int fd = g_file_open_tmp ("XXXXXX", &outCName, NULL);
-	if (fd == -1) {
-		UT_DEBUGMSG(("DOM: no temp dir\n"));
-		gnome_vfs_uri_unref (hndl);
-		return false;
-	}
-	UT_uint32 i = 0;
-	UT_uint32 len = strlen(outCName);
-	UT_UTF8String left = "";
-	while(i < len)
-	{
-		if(outCName[i] != '%')
-		{
-			left += outCName[i];
-			i += 1;
-		}
-		else if(i+2 < len)
-		{
-			char c = 16*(outCName[i+1] - '0') +  outCName[i+2] - '0';
-			left += c;
-			i += 3;
-		}
-		else
-		{
-			left += outCName[i];
-			i +=1;
-		}
-	}
-	outName = left;
-	UT_DEBUGMSG(("outCName %s szTmp %s \n",outCName,outName.utf8_str()));
-	g_free (outCName);
-
-	FILE * onDisk = fdopen (fd, "r");
-	result = gnome_vfs_open_uri (&handle, hndl, GNOME_VFS_OPEN_READ);
-	
-	if(result != GNOME_VFS_OK)
-		{
-			UT_DEBUGMSG(("DOM: couldn't open handle\n"));
-			gnome_vfs_uri_unref (hndl);
-			fclose (onDisk);
-			return false;
-		}
-
-	while (true) {
-		result = gnome_vfs_read (handle, buffer, sizeof(buffer) - 1,
-								 &bytes_read);
-		if(!bytes_read || result != GNOME_VFS_OK) 
-			break;
-		fwrite (buffer, sizeof (char), bytes_read, onDisk);
-	}
-
-	fclose (onDisk);
-	gnome_vfs_close (handle);
-	gnome_vfs_uri_unref (hndl);
-
-	return true;
-}
-
 static void
-s_load_image (const UT_UTF8String & file, XAP_Frame * pFrame, FV_View * pView)
+s_loadImage (const UT_UTF8String & file, XAP_Frame * pFrame, FV_View * pView)
 {
 	IE_ImpGraphic * pIEG = 0;
 	FG_Graphic    * pFG  = 0;
@@ -277,7 +224,7 @@ s_load_image (const UT_UTF8String & file, XAP_Frame * pFrame, FV_View * pView)
 }
 
 static void
-s_load_image (UT_ByteBuf * bytes, XAP_Frame * pFrame, FV_View * pView)
+s_loadImage (UT_ByteBuf * bytes, XAP_Frame * pFrame, FV_View * pView)
 {
 	IE_ImpGraphic * pIEG = 0;
 	FG_Graphic    * pFG  = 0;
@@ -303,7 +250,7 @@ s_load_image (UT_ByteBuf * bytes, XAP_Frame * pFrame, FV_View * pView)
 }
 
 static void
-s_load_document (const UT_UTF8String & file, XAP_Frame * pFrame)
+s_loadDocument (const UT_UTF8String & file, XAP_Frame * pFrame)
 {
 	XAP_Frame * pNewFrame = 0;
 	if (pFrame->isDirty() || pFrame->getFilename() || 
@@ -325,9 +272,9 @@ s_load_document (const UT_UTF8String & file, XAP_Frame * pFrame)
 }
 
 static void
-s_load_uri (XAP_Frame * pFrame, const char * uri)
+s_loadUri (XAP_Frame * pFrame, const char * uri)
 {
-	FV_View   * pView  = static_cast<FV_View*>(pFrame->getCurrentView ());
+	FV_View * pView  = static_cast<FV_View*>(pFrame->getCurrentView ());
 
 	int type = s_mapMimeToUriType (uri);
 	if (type == TARGET_UNKNOWN)
@@ -336,46 +283,33 @@ s_load_uri (XAP_Frame * pFrame, const char * uri)
 			return;
 		}
 
-	UT_UTF8String onDisk;
-	if (!s_ensure_uri_on_disk (uri, onDisk))
-		{
-			UT_DEBUGMSG(("DOM: couldn't ensure %s on disk\n", uri));
-			return;
-		}
-
-	UT_DEBUGMSG(("DOM: %s on disk\n", onDisk.utf8_str()));
-
 	if (type == TARGET_IMAGE)
 		{
-			s_load_image (onDisk, pFrame, pView);
+			s_loadImage (uri, pFrame, pView);
 			return;
 		}
 	else
 		{
-			s_load_document (onDisk, pFrame);
+			s_loadDocument (uri, pFrame);
 			return;
 		}
 }
 
 static void
-s_load_uri_list (XAP_Frame * pFrame, const char * uriList)
+s_loadUriList (XAP_Frame * pFrame, const char * uriList)
 {
-	GList * names = gnome_vfs_uri_list_parse (uriList);
+	gchar ** uris = g_uri_list_extract_uris(uriList);
+	gchar ** uriIter = uris;
 
-	// multiple URIs
-	for ( ; names != NULL; names = names->next) 
-		{
-			GnomeVFSURI * hndl = static_cast<GnomeVFSURI *>(names->data);
-			char * uri = gnome_vfs_uri_to_string (hndl, GNOME_VFS_URI_HIDE_NONE);
-			s_load_uri (pFrame, uri);
-			g_free (uri);
-		}
-
-	gnome_vfs_uri_list_free (names);
+	while (uriIter && *uriIter) {
+		s_loadUri(pFrame, *uriIter);
+		uriIter++;
+	}
+	g_strfreev(uris);
 }
 
 static void 
-s_dnd_drop_event(GtkWidget        *widget,
+s_dndDropEvent(GtkWidget        *widget,
 				 GdkDragContext   *context,
 				 gint              /*x*/,
 				 gint              /*y*/,
@@ -396,37 +330,33 @@ s_dnd_drop_event(GtkWidget        *widget,
 	g_free (targetName);
 
 	if (info == TARGET_URI_LIST) 
-		{
-			const char * rawChar = reinterpret_cast<const char *>(selection_data->data);
-			UT_DEBUGMSG(("DOM: text in selection = %s \n", rawChar));
-			s_load_uri_list (pFrame, rawChar);
-		} 
+	{
+		const char * rawChar = reinterpret_cast<const char *>(selection_data->data);
+		UT_DEBUGMSG(("DOM: text in selection = %s \n", rawChar));
+		s_loadUriList (pFrame, rawChar);
+	} 
 	else if (info == TARGET_DOCUMENT) 
-		{
-			UT_DEBUGMSG(("JK: Document target as data buffer\n"));
-		}
+	{
+		UT_DEBUGMSG(("JK: Document target as data buffer\n"));
+	}
 	else if (info == TARGET_IMAGE) 
-		{
-			UT_ByteBuf * bytes = new UT_ByteBuf( selection_data->length );
-		  
-			UT_DEBUGMSG(("JK: Image target\n"));
-			bytes->append (selection_data->data, selection_data->length);
-			s_load_image (bytes, pFrame, pView);
-		}
+	{
+		UT_ByteBuf * bytes = new UT_ByteBuf( selection_data->length );
+	  
+		UT_DEBUGMSG(("JK: Image target\n"));
+		bytes->append (selection_data->data, selection_data->length);
+		s_loadImage (bytes, pFrame, pView);
+	}
 	else if (info == TARGET_URL)
-		{
-			const char * uri = reinterpret_cast<const char *>(selection_data->data);
-			UT_DEBUGMSG(("DOM: hyperlink: %s\n", uri));
-			pView->cmdInsertHyperlink(uri);
-		}
-	else if (info == TARGET_URI_LIST) 
-		{
-			UT_DEBUGMSG(("JK: 'URI List' target\n"));
-		}
+	{
+		const char * uri = reinterpret_cast<const char *>(selection_data->data);
+		UT_DEBUGMSG(("DOM: hyperlink: %s\n", uri));
+		pView->cmdInsertHyperlink(uri);
+	}
 }
 
 static void
-s_dnd_real_drop_event (GtkWidget *widget, GdkDragContext * context, 
+s_dndRealDropEvent (GtkWidget *widget, GdkDragContext * context, 
 					   gint x, gint y, guint time, gpointer ppFrame)
 {
 	UT_DEBUGMSG(("DOM: dnd drop event\n"));
@@ -435,20 +365,13 @@ s_dnd_real_drop_event (GtkWidget *widget, GdkDragContext * context,
 }
 
 static void
-s_dnd_drag_end (GtkWidget  *widget, GdkDragContext *context, gpointer ppFrame)
+s_dndDragEnd (GtkWidget  *widget, GdkDragContext *context, gpointer ppFrame)
 {
 	UT_DEBUGMSG(("DOM: dnd end event\n"));
 }
 
-#endif // HAVE_GNOME
-
-/*****************************************************************/
-
-#define ENSUREP(p)		do { UT_ASSERT(p); if (!p) goto Cleanup; } while (0)
-
-/****************************************************************/
-XAP_UnixFrameImpl::XAP_UnixFrameImpl(XAP_Frame *pFrame, UT_uint32 iGtkSocketId) 
-  : XAP_FrameImpl(pFrame),
+XAP_UnixFrameImpl::XAP_UnixFrameImpl(XAP_Frame *pFrame, UT_uint32 iGtkSocketId)
+  :	XAP_FrameImpl(pFrame),
 	m_imContext(NULL),
 	m_pUnixMenu(NULL),
 	need_im_reset (false),
@@ -461,7 +384,7 @@ XAP_UnixFrameImpl::XAP_UnixFrameImpl(XAP_Frame *pFrame, UT_uint32 iGtkSocketId)
 	m_iZoomUpdateID(0),
 	m_iAbiRepaintID(0),
 	m_pUnixPopup(NULL),
-	m_dialogFactory(pFrame, XAP_App::getApp())
+	m_dialogFactory(XAP_App::getApp(), pFrame)
 {}
 
 XAP_UnixFrameImpl::~XAP_UnixFrameImpl() 
@@ -508,7 +431,7 @@ gint XAP_UnixFrameImpl::_fe::focusOut(GtkWidget * /* w*/, GdkEvent * /*e*/,gpoin
 
 void XAP_UnixFrameImpl::focusIMIn ()
 {
-	UT_DEBUGMSG(("oooooooooooooooooooooooo XAP_UnixFrameImpl::focusIMIn(), this 0x%x\n", this));
+	xxx_UT_DEBUGMSG(("oooooooooooooooooooooooo XAP_UnixFrameImpl::focusIMIn(), this 0x%x\n", this));
 	need_im_reset = true;
 	gtk_im_context_focus_in(getIMContext());
 	gtk_im_context_reset (getIMContext());
@@ -516,7 +439,7 @@ void XAP_UnixFrameImpl::focusIMIn ()
 
 void XAP_UnixFrameImpl::focusIMOut ()
 {
-	UT_DEBUGMSG(("oooooooooooooooooooooooo XAP_UnixFrameImpl::focusIMOut(), this 0x%x\n", this));
+	xxx_UT_DEBUGMSG(("oooooooooooooooooooooooo XAP_UnixFrameImpl::focusIMOut(), this 0x%x\n", this));
 	need_im_reset = true;
 	gtk_im_context_focus_out(getIMContext());
 }
@@ -534,7 +457,7 @@ gboolean XAP_UnixFrameImpl::_fe::focus_in_event(GtkWidget *w,GdkEvent */*event*/
 {
 	XAP_UnixFrameImpl * pFrameImpl = static_cast<XAP_UnixFrameImpl *>(g_object_get_data(G_OBJECT(w), "user_data"));
 	UT_ASSERT(pFrameImpl);
-	UT_DEBUGMSG(("\n===========================\nfocus_in_event: frame 0x%x\n=========================\n", pFrameImpl));
+	xxx_UT_DEBUGMSG(("\n===========================\nfocus_in_event: frame 0x%x\n=========================\n", pFrameImpl));
 	
 	XAP_Frame* pFrame = pFrameImpl->getFrame();
 	g_object_set_data(G_OBJECT(w), "toplevelWindowFocus",
@@ -559,7 +482,7 @@ gboolean XAP_UnixFrameImpl::_fe::focus_out_event(GtkWidget *w,GdkEvent */*event*
 {
 	XAP_UnixFrameImpl * pFrameImpl = static_cast<XAP_UnixFrameImpl *>(g_object_get_data(G_OBJECT(w), "user_data"));
 	UT_ASSERT(pFrameImpl);
-	UT_DEBUGMSG(("\n===========================\nfocus_out_event: frame 0x%x\n=========================\n", pFrameImpl));
+	xxx_UT_DEBUGMSG(("\n===========================\nfocus_out_event: frame 0x%x\n=========================\n", pFrameImpl));
 	XAP_Frame* pFrame = pFrameImpl->getFrame();
 	g_object_set_data(G_OBJECT(w), "toplevelWindowFocus",
 						GINT_TO_POINTER(FALSE));
@@ -946,7 +869,7 @@ gint XAP_UnixFrameImpl::_fe::abi_expose_repaint(gpointer p)
 //
 // Grab our pointer so we can do useful stuff.
 //
-	UT_DEBUGMSG(("-----------------Doing Repaint----------------\n"));
+	xxx_UT_DEBUGMSG(("-----------------Doing Repaint----------------\n"));
 	UT_Rect localCopy;
 	XAP_UnixFrameImpl * pUnixFrameImpl = static_cast<XAP_UnixFrameImpl *>(p);
 	XAP_Frame* pFrame = pUnixFrameImpl->getFrame();
@@ -1281,31 +1204,31 @@ void XAP_UnixFrameImpl::_createTopLevelWindow(void)
 	g_signal_connect(G_OBJECT(m_wTopLevelWindow), "focus_out_event",
 					   G_CALLBACK(_fe::focusOut), NULL);
 
-#ifdef HAVE_GNOME
+	DragInfo * dragInfo = s_getDragInfo();
+
 	gtk_drag_dest_set (m_wTopLevelWindow,
 					   GTK_DEST_DEFAULT_ALL,
-					   drag_types, 
-					   NrElements(drag_types), 
+					   dragInfo->entries, 
+					   dragInfo->count, 
 					   GDK_ACTION_COPY);
 
 	g_signal_connect (G_OBJECT (m_wTopLevelWindow),
 					  "drag_data_get",
-					  G_CALLBACK (s_dnd_drop_event), 
+					  G_CALLBACK (s_dndDropEvent), 
 					  static_cast<gpointer>(this));
 	g_signal_connect (G_OBJECT (m_wTopLevelWindow), 
 					  "drag_data_received",
-					  G_CALLBACK (s_dnd_drop_event), 
+					  G_CALLBACK (s_dndDropEvent), 
 					  static_cast<gpointer>(this));	
   	g_signal_connect (G_OBJECT (m_wTopLevelWindow), 
 					  "drag_drop",
-					  G_CALLBACK (s_dnd_real_drop_event), 
+					  G_CALLBACK (s_dndRealDropEvent), 
 					  static_cast<gpointer>(this));
 	
   	g_signal_connect (G_OBJECT (m_wTopLevelWindow), 
 					  "drag_end",
-					  G_CALLBACK (s_dnd_drag_end), 
+					  G_CALLBACK (s_dndDragEnd), 
 					  static_cast<gpointer>(this));
-#endif
 
 	g_signal_connect(G_OBJECT(m_wTopLevelWindow), "delete_event",
 					   G_CALLBACK(_fe::delete_event), NULL);
@@ -1385,7 +1308,7 @@ void XAP_UnixFrameImpl::_createTopLevelWindow(void)
 
 void XAP_UnixFrameImpl::_createIMContext(GdkWindow *w)
 {
-	UT_DEBUGMSG(("\n======================\nXAP_UnixFrameImp::_createIMContext(0x%x), this 0x%x\n====================\n",
+	xxx_UT_DEBUGMSG(("\n======================\nXAP_UnixFrameImp::_createIMContext(0x%x), this 0x%x\n====================\n",
 				 w, this));
 	
 	m_imContext = gtk_im_multicontext_new();
@@ -1475,7 +1398,7 @@ void XAP_UnixFrameImpl::_imCommit_cb(GtkIMContext *imc, const gchar *text, gpoin
 // Actual keyboard commit should be done here.
 void XAP_UnixFrameImpl::_imCommit(GtkIMContext *imc, const gchar * text)
 {
-	UT_DEBUGMSG(("\n<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<\nXAP_UnixFrameImpl::_imCommit(0x%x), this 0x%x\n<<<<<<<<<<<<<<<<<<\n",
+	xxx_UT_DEBUGMSG(("\n<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<\nXAP_UnixFrameImpl::_imCommit(0x%x), this 0x%x\n<<<<<<<<<<<<<<<<<<\n",
 				 imc, this));
 				
 	XAP_Frame* pFrame = getFrame();
@@ -1775,7 +1698,7 @@ EV_Toolbar * XAP_UnixFrameImpl::_newToolbar(XAP_Frame *pFrame,
 											const char *szLanguage)
 {
 	EV_UnixToolbar *pToolbar = NULL;
-#ifdef HAVE_GNOME
+#ifdef HAVE_GCONF
 	pToolbar = new EV_GnomeToolbar(static_cast<XAP_UnixApp *>(XAP_App::getApp()), pFrame, szLayout, szLanguage);
 #else
 	pToolbar = new EV_UnixToolbar(static_cast<XAP_UnixApp *>(XAP_App::getApp()), pFrame, szLayout, szLanguage);

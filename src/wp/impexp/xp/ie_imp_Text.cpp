@@ -27,6 +27,7 @@
 #include "ut_debugmsg.h"
 #include "ut_string.h"
 #include "ut_iconv.h"
+#include "ie_impexp_Text.h"
 #include "ie_imp_Text.h"
 #include "pd_Document.h"
 #include "ut_growbuf.h"
@@ -139,7 +140,7 @@ bool ImportStream::getRawChar(UT_UCSChar &ucs)
   Construct ImportStreamFile from FILE pointer
  \param pFile File to read from
  */
-ImportStreamFile::ImportStreamFile(FILE *pFile) :
+ImportStreamFile::ImportStreamFile(GsfInput *pFile) :
 	m_pFile(pFile)
 {
 }
@@ -156,7 +157,7 @@ bool ImportStreamFile::_getByte(unsigned char &b)
 {
 	UT_return_val_if_fail(m_pFile, false);
 
-	return fread(&b, 1, sizeof(b), m_pFile) > 0;
+	return (gsf_input_read(m_pFile, 1, &b) != NULL);
 }
 
 /*!
@@ -322,17 +323,29 @@ IE_Imp_Text_Sniffer::~IE_Imp_Text_Sniffer ()
 {
 }
 
-UT_Confidence_t IE_Imp_Text_Sniffer::supportsMIME (const char * szMIME)
+// supported suffixes
+static IE_SuffixConfidence IE_Imp_Text_Sniffer__SuffixConfidence[] = {
+	{ "txt", 	UT_CONFIDENCE_PERFECT 	},
+	{ "text", 	UT_CONFIDENCE_PERFECT 	},
+	{ "doc", 	UT_CONFIDENCE_POOR 		},
+	{ NULL, 	UT_CONFIDENCE_ZILCH 	}
+};
+
+const IE_SuffixConfidence * IE_Imp_Text_Sniffer::getSuffixConfidence ()
 {
-	if (UT_strcmp (IE_FileInfo::mapAlias (szMIME), IE_MIME_Text) == 0)
-		{
-			return UT_CONFIDENCE_GOOD;
-		}
-	if (strncmp (szMIME, "text/", 5) == 0)
-		{
-			return UT_CONFIDENCE_SOSO;
-		}
-	return UT_CONFIDENCE_ZILCH;
+	return IE_Imp_Text_Sniffer__SuffixConfidence;
+}
+
+// supported mimetypes
+static IE_MimeConfidence IE_Imp_Text_Sniffer__MimeConfidence[] = {
+	{ IE_MIME_MATCH_FULL, 	IE_MIMETYPE_Text, 	UT_CONFIDENCE_GOOD 	},
+	{ IE_MIME_MATCH_CLASS, 	"text", 			UT_CONFIDENCE_SOSO 	}, 
+	{ IE_MIME_MATCH_BOGUS, 	NULL, 				UT_CONFIDENCE_ZILCH }
+};
+
+const IE_MimeConfidence * IE_Imp_Text_Sniffer::getMimeConfidence ()
+{
+	return IE_Imp_Text_Sniffer__MimeConfidence;
 }
 
 /*!
@@ -526,20 +539,6 @@ IE_Imp_Text_Sniffer::UCS2_Endian IE_Imp_Text_Sniffer::_recognizeUCS2(const char 
 	return eResult;
 }
 
-/*!
-  Check filename extension for filetypes we support
- \param szSuffix Filename extension
- */
-UT_Confidence_t IE_Imp_Text_Sniffer::recognizeSuffix(const char * szSuffix)
-{
-  if (!UT_stricmp (szSuffix, ".txt") || !UT_stricmp(szSuffix, ".text"))
-    return UT_CONFIDENCE_PERFECT;
-  if (!UT_stricmp (szSuffix, ".doc"))
-    return UT_CONFIDENCE_POOR;
-
-  return UT_CONFIDENCE_ZILCH;
-}
-
 UT_Error IE_Imp_Text_Sniffer::constructImporter(PD_Document * pDocument,
 												IE_Imp ** ppie)
 {
@@ -568,6 +567,19 @@ IE_Imp_EncodedText_Sniffer::~IE_Imp_EncodedText_Sniffer ()
 {
 }
 
+// supported suffixes
+// We don't attempt to recognize.  User must specifically choose Encoded Text.
+static IE_SuffixConfidence IE_Imp_EncodedText_Sniffer__SuffixConfidence[] = {
+	{ "txt", 	UT_CONFIDENCE_POOR 		},
+	{ "text", 	UT_CONFIDENCE_POOR 		},
+	{ NULL, 	UT_CONFIDENCE_ZILCH 	}
+};
+
+const IE_SuffixConfidence * IE_Imp_EncodedText_Sniffer::getSuffixConfidence ()
+{
+	return IE_Imp_EncodedText_Sniffer__SuffixConfidence;
+}
+
 /*!
   Check if buffer contains data meant for this importer.
 
@@ -577,17 +589,6 @@ UT_Confidence_t IE_Imp_EncodedText_Sniffer::recognizeContents(const char * /* sz
 															  UT_uint32 /* iNumbytes */)
 {
 	return UT_CONFIDENCE_ZILCH;
-}
-
-/*!
-  Check filename extension for filetypes we support
- \param szSuffix Filename extension
- */
-UT_Confidence_t IE_Imp_EncodedText_Sniffer::recognizeSuffix(const char * szSuffix)
-{
-  if (!UT_stricmp (szSuffix, ".txt") || !UT_stricmp(szSuffix, ".text"))
-    return UT_CONFIDENCE_POOR;
-  return UT_CONFIDENCE_ZILCH;
 }
 
 UT_Error IE_Imp_EncodedText_Sniffer::constructImporter(PD_Document * pDocument,
@@ -619,13 +620,13 @@ bool IE_Imp_EncodedText_Sniffer::getDlgLabels(const char ** pszDesc,
 
  Each line terminator is taken to be a paragraph break
 */
-UT_Error IE_Imp_Text::importFile(const char * szFilename)
+UT_Error IE_Imp_Text::importFile(const char * szURI)
 {
 	// We must open in binary mode for UCS-2 compatibility.
-	FILE *fp = fopen(szFilename, "rb");
+	GsfInput *fp = UT_go_file_open(szURI, NULL);
 	if (!fp)
 	{
-		UT_DEBUGMSG(("Could not open file %s\n",szFilename));
+		UT_DEBUGMSG(("Could not open file %s\n",szURI));
 		return UT_IE_FILENOTFOUND;
 	}
 
@@ -649,7 +650,7 @@ UT_Error IE_Imp_Text::importFile(const char * szFilename)
 
 Cleanup:
 	delete pStream;
-	fclose(fp);
+	g_object_unref(G_OBJECT(fp));
 	return error;
 }
 
@@ -728,13 +729,14 @@ IE_Imp_Text::~IE_Imp_Text ()
  Supports UTF-8 and UCS-2 big and little endian
  CJK encodings could be added
  */
-UT_Error IE_Imp_Text::_recognizeEncoding(FILE * fp)
+UT_Error IE_Imp_Text::_recognizeEncoding(GsfInput * fp)
 {
 	char szBuf[4096];  // 4096 ought to be enough
 	UT_sint32 iNumbytes;
 
-	iNumbytes = fread(szBuf, 1, sizeof(szBuf), fp);
-	fseek(fp, 0, SEEK_SET);
+	iNumbytes = UT_MIN(4096, gsf_input_remaining(fp));
+	gsf_input_read(fp, iNumbytes, (guint8 *)szBuf);
+	gsf_input_seek(fp, 0, G_SEEK_SET);
 
 	return _recognizeEncoding(szBuf, iNumbytes);
 }
@@ -775,7 +777,7 @@ UT_Error IE_Imp_Text::_recognizeEncoding(const char *szBuf, UT_uint32 iNumbytes)
 
  Override this virtual function to derive from the text importer
  */
-UT_Error IE_Imp_Text::_constructStream(ImportStream *& pStream, FILE * fp)
+UT_Error IE_Imp_Text::_constructStream(ImportStream *& pStream, GsfInput * fp)
 {
 	return (pStream = new ImportStreamFile(fp)) ? UT_OK : UT_IE_NOMEMORY;
 }
@@ -785,7 +787,7 @@ UT_Error IE_Imp_Text::_constructStream(ImportStream *& pStream, FILE * fp)
 
  Writes the minimum needed Section and Block before we begin import
  */
-UT_Error IE_Imp_Text::_writeHeader(FILE * /* fp */)
+UT_Error IE_Imp_Text::_writeHeader(GsfInput * /* fp */)
 {
 	// text gets applied in the Normal style
 	const XML_Char * propsArray[3];

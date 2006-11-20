@@ -60,9 +60,10 @@ public:
 
 	bool canPaste(T_AllowGet tFrom);
 
- protected:
-	
-	void                            AddFmt(const char * fmt);
+protected:
+
+	void				AddFmt(const char * fmt);
+	void				deleteFmt(const char * fmt);
 
  private:
 

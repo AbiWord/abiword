@@ -1134,13 +1134,14 @@ GList *  AP_UnixDialog_Lists::_getGlistFonts (void)
 		UT_return_val_if_fail(fonts, NULL);
 		count = fonts->size();
 	}
+#ifdef USE_PANGO
 	else
 	{
 		names = GR_UnixPangoGraphics::getAllFontNames();
 		UT_return_val_if_fail(names, NULL);
 		count = names->size();
 	}
-	
+#endif
 	GList *glFonts = NULL;
 	const gchar *currentfont = NULL;
 

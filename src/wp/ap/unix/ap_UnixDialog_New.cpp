@@ -1,3 +1,5 @@
+/* -*- mode: C++; tab-width: 4; c-basic-offset: 4; -*- */
+
 /* AbiWord
  * Copyright (C) 2001, 2002 Dom Lachowicz
  * 
@@ -121,7 +123,9 @@ void AP_UnixDialog_New::event_Ok ()
 			UT_UTF8String * tmpl = (UT_UTF8String*)mTemplates[mRow] ;
 			if (tmpl && tmpl->utf8_str())
 			{
-				setFileName (tmpl->utf8_str());
+				char * uri = UT_go_filename_to_uri (tmpl->utf8_str());
+				setFileName (uri);
+				g_free (uri);
 				setOpenType(AP_Dialog_New::open_Template);
 			}
 			else

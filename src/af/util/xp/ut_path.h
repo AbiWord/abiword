@@ -30,9 +30,24 @@
 #include "ut_types.h"
 #endif
 
+#include "ut_string_class.h"
+#include "ut_go_file.h"
+
 class UT_UTF8String;
 
+// todo: deprecate me
 ABI_EXPORT const char* UT_basename(const char* path);
+
+static inline UT_UTF8String UT_go_basename(const char* uri)
+{
+  UT_UTF8String _base_name;
+  char *base_name = UT_go_basename_from_uri(uri);
+  if(base_name) {
+    _base_name = base_name;
+    g_free(base_name);
+  }
+  return _base_name;
+}
 
 ABI_EXPORT bool UT_directoryExists(const char* dir);
 

@@ -123,7 +123,7 @@ bool pt_PieceTable::_doTheDo(const PX_ChangeRecord * pcr, bool bUndo)
 				UNDO_return_val_if_fail (bFoundStrux, false);
 			}
 			UNDO_return_val_if_fail (bFoundStrux, false);
-			UT_sint32 newOffset = pcrSpan->getPosition() - pfs->getPos() -2;
+			UT_sint32 newOffset = pcrSpan->getPosition() - pfs->getPos() -1; //was -2 
 			if(newOffset < 0)
 			  newOffset = 0;
 			pf_Frag_Text * pft = static_cast<pf_Frag_Text *> (pf);
@@ -350,7 +350,7 @@ bool pt_PieceTable::_doTheDo(const PX_ChangeRecord * pcr, bool bUndo)
 				bool bFoundStrux = _getStruxFromFragSkip(static_cast<pf_Frag *>(pfs),&pfs);
 				UNDO_return_val_if_fail (bFoundStrux,false);
 			}
-			UT_sint32 newOffset = pcrObject->getPosition() - pfs->getPos() -2;
+			UT_sint32 newOffset = pcrObject->getPosition() - pfs->getPos() -1; // was -2
 			if(newOffset < 0)
 			  newOffset = 0;
 			pf_Frag_Object * pfo = static_cast<pf_Frag_Object *> (pf);

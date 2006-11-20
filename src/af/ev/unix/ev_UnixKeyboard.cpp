@@ -277,7 +277,7 @@ static const EV_EditBits s_Table_NVK_0xff[] =
 	0,
 	EV_NVK__IGNORE__,    // GDK_Undo 0xFF65
 	EV_NVK__IGNORE__,    // GDK_Redo 0xFF66
-	EV_NVK__IGNORE__,    // GDK_Menu 0xFF67
+	EV_NVK_MENU_SHORTCUT,    // GDK_Menu 0xFF67
 	EV_NVK__IGNORE__,    // GDK_Find 0xFF68
 	EV_NVK__IGNORE__,    // GDK_Cancel 0xFF69
 	EV_NVK__IGNORE__,    // GDK_Help 0xFF6A

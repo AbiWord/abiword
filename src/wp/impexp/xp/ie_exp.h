@@ -28,6 +28,9 @@
 #include "ut_AbiObject.h"
 #include "ie_types.h"
 
+#include "ut_go_file.h"
+#include <gsf/gsf-output.h>
+
 class PD_Document;
 class PD_DocumentRange;
 class UT_ByteBuf;
@@ -92,6 +95,7 @@ public:
 	// with it.
 
 	static IEFileType	fileTypeForSuffix(const char * szSuffix);
+	static IEFileType	fileTypeForMimetype(const char * szMimetype);
 	static IEFileType	fileTypeForDescription(const char * szSuffix);
 	static IEFileType fileTypeForSuffixes(const char * suffixList);
 	static IE_ExpSniffer * snifferForFileType(IEFileType ieft);
@@ -142,10 +146,12 @@ protected:
 	IE_Exp(PD_Document * pDocument, UT_Confidence_t fidelity = 0);
 	virtual UT_Error	_writeDocument(void) = 0;
 	
+	GsfOutput*	openFile(const char * szFilename);
+
 	// derived classes should use these to open/close
 	// and write data to the actual file.  this will
 	// let us handle file backups, etc.
-	virtual bool		_openFile(const char * szFilename);
+	virtual GsfOutput*	_openFile(const char * szFilename);
 	virtual UT_uint32	_writeBytes(const UT_Byte * pBytes, UT_uint32 length);
 	virtual bool		_writeBytes(const UT_Byte * sz);
 	virtual bool		_closeFile(void);
@@ -155,6 +161,11 @@ protected:
 
 	PD_Document * getDoc() const;
 	PD_DocumentRange * getDocRange() const;
+	/** Return the file pointer, for convenience */
+	GsfOutput*          getFp()
+		{
+			return m_fp;
+		}
 
 	bool				m_error;
 
@@ -168,7 +179,7 @@ private:
 	PD_DocumentRange *	m_pDocRange;
 	UT_ByteBuf *		m_pByteBuf;
 	char *                  m_szFileName;
-	FILE *				m_fp;
+	GsfOutput *				m_fp;
 
 	bool				m_bCancelled;
 

@@ -211,7 +211,9 @@ bool AP_Convert::convertTo(const char * szSourceFilename,
 	PD_Document * pNewDoc = new PD_Document(XAP_App::getApp());
 	UT_return_val_if_fail(pNewDoc, false);
 
-	error = pNewDoc->readFromFile(szSourceFilename, sourceFormat, m_impProps.utf8_str());
+	char * uri = UT_go_shell_arg_to_uri (szSourceFilename);
+	error = pNewDoc->readFromFile(uri, sourceFormat, m_impProps.utf8_str());
+	g_free (uri);
 
 	if (error != UT_OK) {
 		switch (error) {
@@ -235,11 +237,19 @@ bool AP_Convert::convertTo(const char * szSourceFilename,
 	}
 
 	if (m_mergeSource.size()) {
-		IE_MailMerge::IE_MailMerge_Listener * listener = new Save_MailMerge_Listener (pNewDoc, szTargetFilename, targetFormat, m_expProps);
-		error = handleMerge (m_mergeSource.utf8_str(), *listener);
+		uri = UT_go_shell_arg_to_uri (szTargetFilename);
+		IE_MailMerge::IE_MailMerge_Listener * listener = new Save_MailMerge_Listener (pNewDoc, uri, targetFormat, m_expProps);
+		g_free(uri);
+
+		uri = UT_go_shell_arg_to_uri (m_mergeSource.utf8_str());
+		handleMerge (uri, *listener);
+		g_free (uri);
 		DELETEP(listener);
 	} else {
-		error = pNewDoc->saveAs(szTargetFilename, targetFormat, m_expProps.utf8_str());
+		uri = UT_go_shell_arg_to_uri (szTargetFilename);
+		error = pNewDoc->saveAs(uri, targetFormat, m_expProps.utf8_str());
+		g_free(uri);
+
 		switch (error) {
 		case UT_OK:
 			if (m_iVerbose > 1)
@@ -312,65 +322,18 @@ void AP_Convert::setVerbose(int level)
 		m_iVerbose = level;
 }
 
-bool AP_Convert::convertToPNG ( const char * szSourceFileName )
-{
-	// can't allocate src statically and then DELETEP.
-	// note that src goes into dest (shouldn't that be documented?)
-	// for consistency, we allocate UT_ByteBuf explicitly.
-	UT_ByteBuf *src = new UT_ByteBuf();
-	UT_ByteBuf *dest = NULL ;
-
-	if (szSourceFileName && src->insertFromFile (0, szSourceFileName))
-    {
-		IE_ImpGraphic * pGraphic = NULL;
-
-		if (UT_OK == IE_ImpGraphic::constructImporter (src,
-													   IEGFT_Unknown,
-													   &pGraphic))
-		{
-			if (UT_OK == pGraphic->convertGraphic (src, &dest))
-			{
-				// generate new filename with .png extension
-				char * fileDup = UT_strdup (szSourceFileName);
-				char * tmp = strrchr(fileDup, '.');
-				if (tmp != NULL)
-					*tmp = '\0';
-
-				UT_String szDestFileName (fileDup);
-				szDestFileName += ".png";
-
-				FREEP(fileDup);
-
-				if ( dest->writeToFile ( szDestFileName.c_str() ) )
-				{
-					// success
-					DELETEP(dest);
-					DELETEP(pGraphic);
-					return true;
-				}
-			}
-		}
-
-		DELETEP (pGraphic);
-    }
-
-	// failure
-	DELETEP (dest);
-
-	printf ("Conversion to PNG failed\n");
-	return false;
-}
-
-
 bool AP_Convert::print(const char * szFile, GR_Graphics * pGraphics, const char * szFileExtension)
 {
 	// get the current document
 	PD_Document *pDoc = new PD_Document(XAP_App::getApp());
 	UT_Error err;
+	char * uri = UT_go_shell_arg_to_uri (szFile);
+
 	if( !szFileExtension )
-		err = pDoc->readFromFile(szFile, IEFT_Unknown, m_impProps.utf8_str());
+		err = pDoc->readFromFile(uri, IEFT_Unknown, m_impProps.utf8_str());
 	else
-		err = pDoc->readFromFile(szFile, IE_Imp::fileTypeForSuffix(szFileExtension), m_impProps.utf8_str());
+		err = pDoc->readFromFile(uri, IE_Imp::fileTypeForSuffix(szFileExtension), m_impProps.utf8_str());
+	g_free(uri);
 
 	if( err != UT_OK)
 	{
@@ -380,8 +343,11 @@ bool AP_Convert::print(const char * szFile, GR_Graphics * pGraphics, const char 
 	}
 	if (m_mergeSource.size()){
 		IE_MailMerge::IE_MailMerge_Listener * listener = new Print_MailMerge_Listener(pDoc, pGraphics, szFile);
+
+		uri = UT_go_shell_arg_to_uri (m_mergeSource.utf8_str());
+		handleMerge (uri, *listener);
+		g_free (uri);
 		
-		err = handleMerge (m_mergeSource.utf8_str(), *listener);
 		DELETEP(listener);
 	} else {
 		

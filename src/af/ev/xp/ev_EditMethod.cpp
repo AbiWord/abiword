@@ -179,6 +179,7 @@ bool EV_EditMethodContainer::addEditMethod(EV_EditMethod * pem)
 bool EV_EditMethodContainer::removeEditMethod(EV_EditMethod * pem)
 {
 	UT_ASSERT(pem);
+	xxx_UT_DEBUGMSG(("Bsearch for name \n"));
 
 	UT_sint32 pos = m_vecDynamicEditMethods.findItem ( pem ) ;
 
@@ -221,11 +222,9 @@ EV_EditMethod * EV_EditMethodContainer::findEditMethodByName(const char * szName
 	// first, see if it's in our hashtable
 	// TODO: should this be class-wide instead of static here?
 	static UT_GenericStringMap<EV_EditMethod *> emHash (m_countStatic);
-
 	EV_EditMethod * entry = emHash.pick (szName);
 	if (entry)
 	    return entry;
-
 	// nope, bsearch for it in our private array
 	mthd = static_cast<EV_EditMethod *>(bsearch(szName, 
 					m_arrayStaticEditMethods, 
@@ -244,11 +243,16 @@ EV_EditMethod * EV_EditMethodContainer::findEditMethodByName(const char * szName
 	// else do a linear search through our dynamic method vector
 
 	UT_uint32 k, kLast;
-
+	xxx_UT_DEBUGMSG(("Linear search for it \n"));
 	kLast = m_vecDynamicEditMethods.getItemCount();
 	for (k=0; k<kLast; k++)
 	{
+		xxx_UT_DEBUGMSG(("Looking at method %d \n",k));
 		EV_EditMethod * pem = m_vecDynamicEditMethods.getNthItem(k);
+		if(pem == NULL)
+			continue;
+		if(pem->getName() == NULL)
+			continue;
 		if (strcmp(szName,pem->getName()) == 0)
 			return pem;
 	}

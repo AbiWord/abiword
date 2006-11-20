@@ -109,8 +109,8 @@ protected:
 	void setTimeOfLastEvent(guint32 eventTime);
 	
 	virtual void _queue_resize();
-	void _rebuildMenus(void);
-	void _rebuildToolbar(UT_uint32 ibar);
+	virtual void _rebuildMenus(void);
+	virtual void _rebuildToolbar(UT_uint32 ibar);
 	GtkWidget * _getSunkenBox(void) {return m_wSunkenBox;}
 
 	virtual void _setFullScreen(bool changeToFullScreen);

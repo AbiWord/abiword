@@ -1,4 +1,5 @@
 /* -*- c-basic-offset: 4; tab-width: 4; indent-tabs-mode: t -*- */
+
 /* AbiWord Graphic importer employing GdkPixbuf
  * Copyright (C) 2001 Martin Sevior
  * Copyright (C) 2002 Dom Lachowicz
@@ -42,8 +43,68 @@ static void _write_png( png_structp png_ptr,
 	return;
 }
 
-
 //static void _write_flush(png_structp png_ptr) { } // Empty Fuction.
+
+typedef struct {
+	const gchar **suffixes;
+	gint		  count;
+} SuffixInfo;
+
+/*!
+ * Get the null terminated array of recognized suffixes.
+ */
+static const SuffixInfo *
+s_getSuffixInfo (void)
+{
+	static SuffixInfo	suffixInfo = { NULL, 0 };
+	static gboolean 	isInitialized = FALSE;
+
+	if (isInitialized) {
+		return &suffixInfo;
+	}
+
+	GSList 		 	 *formatList = gdk_pixbuf_get_formats ();
+	GSList 		 	 *formatIter;
+	GSList 		 	 *tmp;
+	GdkPixbufFormat	 *format;
+	gchar 			**extensions;
+	gsize			  idx;
+
+	// dry run to count entries
+	formatIter = formatList;
+	while (formatIter) {
+		format = (GdkPixbufFormat *) formatIter->data;
+		extensions = gdk_pixbuf_format_get_extensions (format);
+		while (*extensions) {
+			suffixInfo.count++;
+			extensions++;
+		}
+		formatIter = formatIter->next;
+	}
+
+	suffixInfo.suffixes = (const gchar **) new gchar*[suffixInfo.count + 1];
+
+	// build list
+	formatIter = formatList;
+	idx = 0;
+	while (formatIter) {
+		format = (GdkPixbufFormat *) formatIter->data;
+		extensions = gdk_pixbuf_format_get_extensions (format);
+		while (*extensions) {
+			suffixInfo.suffixes[idx] = *extensions;
+			idx++;
+			extensions++;
+		}
+		tmp = formatIter;
+		formatIter = formatIter->next;
+		g_slist_free1 (tmp);
+	}
+
+	// null-terminator
+	suffixInfo.suffixes[idx] = NULL;
+	isInitialized = TRUE;
+	return &suffixInfo;
+}
 
 //------------------------------------------------------------------------------------
 
@@ -501,6 +562,93 @@ _gdk_pixbuf_get_module (const guchar *buffer, guint size)
 
 /**** END CODE STOLEN FROM gdk-pixbuf-io.c ****/
 
+const IE_MimeConfidence * IE_ImpGraphicGdkPixbuf_Sniffer::getMimeConfidence ()
+{
+	static IE_MimeConfidence *mimeConfidence = NULL;
+
+	if (mimeConfidence) {
+		return mimeConfidence;
+	}
+
+	GSList 		 	 *formatList = gdk_pixbuf_get_formats ();
+	GSList 		 	 *formatIter;
+	GSList 		 	 *tmp;
+	GdkPixbufFormat	 *format;
+	gchar 			**mime_types;
+	gsize			  n_mime_types;
+	gsize			  idx;
+
+	// dry run to count entries
+	formatIter = formatList;
+	n_mime_types = 0;
+	while (formatIter) {
+		format = (GdkPixbufFormat *) formatIter->data;
+		mime_types = gdk_pixbuf_format_get_mime_types (format);
+		while (*mime_types) {
+			n_mime_types++;
+			mime_types++;
+		}
+		formatIter = formatIter->next;
+	}
+
+	mimeConfidence = new IE_MimeConfidence[n_mime_types + 1];
+
+	// build list
+	formatIter = formatList;
+	idx = 0;
+	while (formatIter) {
+		format = (GdkPixbufFormat *) formatIter->data;
+		mime_types = gdk_pixbuf_format_get_mime_types (format);
+		while (*mime_types) {
+			mimeConfidence[idx].match = IE_MIME_MATCH_FULL;
+			mimeConfidence[idx].mimetype = *mime_types;
+			mimeConfidence[idx].confidence = UT_CONFIDENCE_PERFECT;
+			idx++;
+			mime_types++;
+		}
+		tmp = formatIter;
+		formatIter = formatIter->next;
+		g_slist_free1 (tmp);
+	}
+
+	// null-terminator
+	mimeConfidence[idx].match = IE_MIME_MATCH_BOGUS;
+	mimeConfidence[idx].mimetype = NULL;
+	mimeConfidence[idx].confidence = UT_CONFIDENCE_ZILCH;
+
+	return mimeConfidence;
+}
+
+const IE_SuffixConfidence * IE_ImpGraphicGdkPixbuf_Sniffer::getSuffixConfidence ()
+{
+	static IE_SuffixConfidence *suffixConfidence = NULL;
+
+	if (suffixConfidence) {
+		return suffixConfidence;
+	}
+
+	const SuffixInfo *suffixInfo = s_getSuffixInfo ();
+	const gchar		**suffixIter;
+	gsize			  idx;
+
+	suffixConfidence = new IE_SuffixConfidence[suffixInfo->count + 1];
+
+	suffixIter = suffixInfo->suffixes;
+	idx = 0;
+	while (*suffixIter) {
+		suffixConfidence[idx].suffix = *suffixIter;
+		suffixConfidence[idx].confidence = UT_CONFIDENCE_PERFECT;
+		suffixIter++;
+		idx++;
+	}
+
+	// NULL-terminator
+	suffixConfidence[idx].suffix = NULL;
+	suffixConfidence[idx].confidence = UT_CONFIDENCE_ZILCH;
+	
+	return suffixConfidence;
+}
+
 /*!
  * Sniff the byte buffer to see if it contains vaild image data recognized
  * by gdk-pixbuf
@@ -521,44 +669,33 @@ UT_Confidence_t IE_ImpGraphicGdkPixbuf_Sniffer::recognizeContents(const char * s
 	return _gdk_pixbuf_get_module((guchar *)szBuf, iNum);
 }
 
-UT_Confidence_t IE_ImpGraphicGdkPixbuf_Sniffer::recognizeSuffix(const char * szSuffix)
-{
-	// FIXME: get the supported formats from GdkPixbuf somehow
-	static const char * suffixes[] =  
-	{
-		".jpg",
-		".jpeg",
-		".png",
-		".tif",
-		".tiff",
-		".gif",
-		".xpm",
-		".pnm",
-		".ras",
-		".ico",
-		".bmp",
-		".xbm",
-		".wmf"
-	} ;
-
-	for ( unsigned int i = 0; i < NrElements(suffixes); i++ )
-		if ( UT_stricmp(szSuffix, suffixes[i] ) == 0 )
-			return UT_CONFIDENCE_PERFECT;
-
-	return UT_CONFIDENCE_ZILCH;
-}
-
 bool IE_ImpGraphicGdkPixbuf_Sniffer::getDlgLabels(const char ** pszDesc,
 						  const char ** pszSuffixList,
 						  IEGraphicFileType * ft)
 {
-	// TODO add a more complete list of suffixes
+	static gchar *suffixString = "";
+
+	if (!*suffixString) {
+		const SuffixInfo *suffixInfo = s_getSuffixInfo ();
+		const gchar 	**suffixIter = suffixInfo->suffixes;
+		gchar		 	*tmp = "";
+		while (*suffixIter) {
+			tmp = suffixString;
+			suffixString = g_strdup_printf ("%s*.%s;", suffixString, *suffixIter);
+			if (*tmp) {
+				g_free (tmp);
+			}
+			suffixIter++;
+		}
+		// cut off trailing ';'
+		suffixString[g_utf8_strlen(suffixString,-1)-1] = '\0';
+	}
 	*pszDesc = "All platform supported image formats";
-	*pszSuffixList = "*.jpg; *.jpeg; *.png; *.tiff; *.gif; *.xpm; *.pnm; *.ras; *.ico; *.bmp; *.xbm; *.wmf";
+	*pszSuffixList = suffixString;
 	*ft = getType ();
 	return true;
 }
-	
+
 UT_Error IE_ImpGraphicGdkPixbuf_Sniffer::constructImporter(IE_ImpGraphic **ppieg)
 {
 	*ppieg = new IE_ImpGraphic_GdkPixbuf();

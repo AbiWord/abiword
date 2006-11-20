@@ -14,6 +14,11 @@ test -z "$srcdir" && srcdir=.
 rm -rf autom4te.cache
 rm -f autogen.err
 
+srcdir=`dirname $0`
+test -z "$srcdir" && srcdir=.
+
+pushd $srcdir
+
 automake --version | perl -ne 'if (/\(GNU automake\) ([0-9].[0-9])/) {print;  if ($1 < 1.4) {exit 1;}}'
 
 if [ $? -ne 0 ]; then
@@ -90,7 +95,7 @@ autoconf 2>> autogen.err || {
     echo ""
 }
 
-rm -rf autom4te.cache
+popd
 
 conf_flags="--enable-maintainer-mode"
 

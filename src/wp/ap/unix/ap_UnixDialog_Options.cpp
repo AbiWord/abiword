@@ -1,3 +1,5 @@
+/* -*- mode: C++; tab-width: 4; c-basic-offset: 4; -*- */
+
 /* AbiWord
  * Copyright (C) 1998 AbiSource, Inc.
  * Copyright (C) 2003 Hubert Figuiere
@@ -67,9 +69,9 @@ XAP_Dialog * AP_UnixDialog_Options::static_constructor (XAP_DialogFactory * pFac
 
 AP_UnixDialog_Options::AP_UnixDialog_Options (XAP_DialogFactory * pDlgFactory,
 					      XAP_Dialog_Id id)
-  : AP_Dialog_Options(pDlgFactory,id)
-{
-}
+  : AP_Dialog_Options(pDlgFactory, id), 
+	m_extraPages(NULL)
+{}
 
 AP_UnixDialog_Options::~AP_UnixDialog_Options(void)
 {
@@ -96,6 +98,24 @@ void AP_UnixDialog_Options::runModal(XAP_Frame * pFrame)
 		response = abiRunModalDialog (GTK_DIALOG (mainWindow), pFrame,
 										this, GTK_RESPONSE_CLOSE, FALSE);
 	} while (response != GTK_RESPONSE_CLOSE && response != GTK_RESPONSE_DELETE_EVENT);
+
+	// unhook extra pages
+	GSList *item = m_extraPages;
+	while (item) {
+
+		const XAP_NotebookDialog::Page *p = static_cast<const XAP_NotebookDialog::Page*>(item->data);
+		GtkWidget *page = GTK_WIDGET(p->widget);
+		gint i;
+
+		i = gtk_notebook_page_num(GTK_NOTEBOOK(m_notebook), page);
+		if (i > -1) {
+			gtk_notebook_remove_page(GTK_NOTEBOOK(m_notebook), i);
+		}
+
+		GSList *tmp = item;
+		item = item->next;
+		g_slist_free_1(tmp);
+	}
 
 	abiDestroyWidget (mainWindow);
 }
@@ -197,6 +217,11 @@ void AP_UnixDialog_Options::event_ChooseTransparentColor(void)
 	abiDestroyWidget(dlg);
 }
 
+void AP_UnixDialog_Options::addPage (const XAP_NotebookDialog::Page *page)
+{
+	// the page stays owned by the factory
+	m_extraPages = g_slist_prepend(m_extraPages, (gpointer) page);
+}
 
 /*****************************************************************/
 #define CONNECT_MENU_ITEM_SIGNAL_ACTIVATE(w)			\
@@ -260,7 +285,19 @@ void AP_UnixDialog_Options::_constructWindowContents (GladeXML *xml)
 	// Dialog
 
 	m_windowMain = WID ("ap_UnixDialog_Options");
+
 	m_notebook = WID ("ntbMain");
+	GSList *item = m_extraPages;
+	while (item) {
+
+		const XAP_NotebookDialog::Page *p = static_cast<const XAP_NotebookDialog::Page*>(item->data);
+		GtkWidget *label = gtk_label_new(p->title);
+		GtkWidget *page = GTK_WIDGET(p->widget);
+		
+		gtk_notebook_append_page(GTK_NOTEBOOK(m_notebook), 
+								 page, label);
+		item = item->next;
+	}
 
 	m_buttonDefaults = WID ("btnDefaults");
 	m_buttonClose = WID ("btnClose");

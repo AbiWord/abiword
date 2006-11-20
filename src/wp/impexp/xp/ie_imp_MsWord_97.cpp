@@ -1,3 +1,5 @@
+/* -*- mode: C++; tab-width: 4; c-basic-offset: 4; -*- */
+
 /* AbiWord
  * Copyright (C) 1998-2000 AbiSource, Inc.
  * Copyright (C) 2001 Dom Lachowicz <dominicl@seas.upenn.edu>
@@ -49,6 +51,7 @@
 
 #include "pd_Document.h"
 
+#include "ie_impexp_MsWord_97.h"
 #include "ie_imp_MsWord_97.h"
 #include "ie_impGraphic.h"
 
@@ -62,6 +65,11 @@
 #include "fp_PageSize.h"
 
 #include "ut_Language.h"
+
+#include <gsf/gsf-infile.h>
+#include <gsf/gsf-msole-utils.h>
+#include <gsf/gsf-docprop-vector.h>
+#include <gsf/gsf-meta-names.h>
 
 #ifdef DEBUG
 #define IE_IMP_MSWORD_DUMP
@@ -649,13 +657,29 @@ IE_Imp_MsWord_97_Sniffer::IE_Imp_MsWord_97_Sniffer ()
 	//
 }
 
-UT_Confidence_t IE_Imp_MsWord_97_Sniffer::supportsMIME (const char * szMIME)
+// supported suffixes
+static IE_SuffixConfidence IE_Imp_MsWord_97_Sniffer__SuffixConfidence[] = {
+	{ "doc", 	UT_CONFIDENCE_PERFECT 	},
+	{ "dot", 	UT_CONFIDENCE_PERFECT 	},
+	{ NULL, 	UT_CONFIDENCE_ZILCH 	}
+};
+
+const IE_SuffixConfidence * IE_Imp_MsWord_97_Sniffer::getSuffixConfidence ()
 {
-	if (UT_strcmp (IE_FileInfo::mapAlias (szMIME), IE_MIME_MSWord) == 0)
-		{
-			return UT_CONFIDENCE_GOOD;
-		}
-	return UT_CONFIDENCE_ZILCH;
+	return IE_Imp_MsWord_97_Sniffer__SuffixConfidence;
+}
+
+// supported mimetypes
+static IE_MimeConfidence IE_Imp_MsWord_97_Sniffer__MimeConfidence[] = {
+	{ IE_MIME_MATCH_FULL, 	IE_MIMETYPE_MSWord, 		UT_CONFIDENCE_GOOD 	},
+	{ IE_MIME_MATCH_FULL, 	"application/vnd.ms-word",	UT_CONFIDENCE_GOOD 	},
+	{ IE_MIME_MATCH_FULL, 	"text/doc", 				UT_CONFIDENCE_GOOD 	}, // or is it? [TODO: check!]
+	{ IE_MIME_MATCH_BOGUS, 	NULL, 						UT_CONFIDENCE_ZILCH }
+};
+
+const IE_MimeConfidence * IE_Imp_MsWord_97_Sniffer::getMimeConfidence ()
+{
+	return IE_Imp_MsWord_97_Sniffer__MimeConfidence;
 }
 
 UT_Confidence_t IE_Imp_MsWord_97_Sniffer::recognizeContents (const char * szBuf,
@@ -741,15 +765,6 @@ UT_Confidence_t IE_Imp_MsWord_97_Sniffer::recognizeContents (const char * szBuf,
 			return UT_CONFIDENCE_POOR;
 		}
 	}
-	return UT_CONFIDENCE_ZILCH;
-}
-
-UT_Confidence_t IE_Imp_MsWord_97_Sniffer::recognizeSuffix (const char * szSuffix)
-{
-	// We recognize both word documents and their template versions
-	if (!UT_stricmp(szSuffix,".doc") ||
-			!UT_stricmp(szSuffix,".dot"))
-	  return UT_CONFIDENCE_PERFECT;
 	return UT_CONFIDENCE_ZILCH;
 }
 
@@ -935,11 +950,121 @@ static void _errorMessage (XAP_Frame * pFrame, int id)
 }
 #endif
 
-UT_Error IE_Imp_MsWord_97::importFile(const char * szFilename)
+static const struct {
+  char * metadata_key;
+  char * abi_metadata_name;
+} metadata_names[] = {
+  { GSF_META_NAME_TITLE, PD_META_KEY_TITLE },
+  { GSF_META_NAME_DESCRIPTION, PD_META_KEY_DESCRIPTION },
+  { GSF_META_NAME_SUBJECT, PD_META_KEY_SUBJECT },
+  { GSF_META_NAME_DATE_MODIFIED, PD_META_KEY_DATE_LAST_CHANGED },
+  { GSF_META_NAME_DATE_CREATED, PD_META_KEY_DATE },
+  { GSF_META_NAME_KEYWORDS, PD_META_KEY_KEYWORDS },
+  { GSF_META_NAME_LANGUAGE, PD_META_KEY_LANGUAGE },
+  { GSF_META_NAME_REVISION_COUNT, NULL },
+  { GSF_META_NAME_EDITING_DURATION, NULL },
+  { GSF_META_NAME_TABLE_COUNT, NULL },
+  { GSF_META_NAME_IMAGE_COUNT, NULL },
+  { GSF_META_NAME_OBJECT_COUNT, NULL },
+  { GSF_META_NAME_PAGE_COUNT, NULL },
+  { GSF_META_NAME_PARAGRAPH_COUNT, NULL },
+  { GSF_META_NAME_WORD_COUNT, NULL },
+  { GSF_META_NAME_CHARACTER_COUNT, NULL },
+  { GSF_META_NAME_CELL_COUNT, NULL },
+  { GSF_META_NAME_SPREADSHEET_COUNT, NULL },
+  { GSF_META_NAME_CREATOR, PD_META_KEY_CREATOR },
+  { GSF_META_NAME_TEMPLATE, NULL },
+  { GSF_META_NAME_LAST_SAVED_BY, NULL },
+  { GSF_META_NAME_LAST_PRINTED, NULL },
+  { GSF_META_NAME_SECURITY, NULL },
+  { GSF_META_NAME_CATEGORY, NULL },
+  { GSF_META_NAME_PRESENTATION_FORMAT, NULL },
+  { GSF_META_NAME_THUMBNAIL, NULL },
+  { GSF_META_NAME_GENERATOR, PD_META_KEY_GENERATOR },
+  { GSF_META_NAME_LINE_COUNT, NULL },
+  { GSF_META_NAME_SLIDE_COUNT, NULL },
+  { GSF_META_NAME_NOTE_COUNT, NULL },
+  { GSF_META_NAME_HIDDEN_SLIDE_COUNT, NULL },
+  { GSF_META_NAME_MM_CLIP_COUNT, NULL },
+  { GSF_META_NAME_BYTE_COUNT, NULL },
+  { GSF_META_NAME_SCALE, NULL },
+  { GSF_META_NAME_HEADING_PAIRS, NULL },
+  { GSF_META_NAME_DOCUMENT_PARTS, NULL },
+  { GSF_META_NAME_MANAGER, PD_META_KEY_CONTRIBUTOR },
+  { GSF_META_NAME_COMPANY, PD_META_KEY_PUBLISHER },
+  { GSF_META_NAME_LINKS_DIRTY, NULL },
+  { GSF_META_NAME_MSOLE_UNKNOWN_17, NULL },
+  { GSF_META_NAME_MSOLE_UNKNOWN_18, NULL },
+  { GSF_META_NAME_MSOLE_UNKNOWN_19, NULL },
+  { GSF_META_NAME_MSOLE_UNKNOWN_20, NULL },
+  { GSF_META_NAME_MSOLE_UNKNOWN_21, NULL },
+  { GSF_META_NAME_MSOLE_UNKNOWN_22, NULL },
+  { GSF_META_NAME_MSOLE_UNKNOWN_23, NULL },
+  { GSF_META_NAME_DICTIONARY, NULL },
+  { GSF_META_NAME_LOCALE_SYSTEM_DEFAULT, NULL },
+  { GSF_META_NAME_CASE_SENSITIVE, NULL }
+};
+static const gsize nr_metadata_names = G_N_ELEMENTS(metadata_names);
+
+static void
+cb_print_property (char const *name, GsfDocProp const *prop, PD_Document * doc)
+{
+  GValue const *val = gsf_doc_prop_get_val  (prop);
+
+  if (! VAL_IS_GSF_DOCPROP_VECTOR ((GValue *)val)) {
+
+	  // just scan over the table. consider optimizing if we really care to.
+	  for(gsize i = 0; i < nr_metadata_names; i++) {
+		  if(strcmp(metadata_names[i].metadata_key, name) == 0) {
+			  char const * abi_metadata_name = metadata_names[i].abi_metadata_name;
+			
+			  if(abi_metadata_name != NULL) {
+				  char * tmp = g_strdup_value_contents (val);
+
+				  // TODO: it seems that the contents are oft inside of quotes. strip the quotes
+				  doc->setMetaDataProp(abi_metadata_name, tmp);
+				  g_free (tmp);			  
+			  }
+		  }
+	  }
+  }
+}
+
+static void print_summary_stream (GsfInfile * msole,
+								  const char * stream_name,
+								  PD_Document * doc)
+{
+  GsfInput * stream = gsf_infile_child_by_name (msole, stream_name);
+  if (stream != NULL) {
+    GsfDocMetaData *meta_data = gsf_doc_meta_data_new ();
+    GError    *err = NULL;    
+
+    err = gsf_msole_metadata_read (stream, meta_data);
+    if (err != NULL) {
+      g_warning ("Error getting metadata for %s: %s", stream_name, err->message);
+      g_error_free (err);
+      err = NULL;
+    } else
+      gsf_doc_meta_data_foreach (meta_data,
+								 (GHFunc) cb_print_property, doc);
+    
+    g_object_unref (meta_data);
+    g_object_unref (G_OBJECT (stream));
+  }
+}
+
+void IE_Imp_MsWord_97::_handleMetaData(wvParseStruct *ps)
+{
+	print_summary_stream (GSF_INFILE(ps->ole_file), "\05SummaryInformation", getDoc());
+	print_summary_stream (GSF_INFILE(ps->ole_file), "\05DocumentSummaryInformation", getDoc());
+}
+
+UT_Error IE_Imp_MsWord_97::importFile(const char * szURI)
 {
   wvParseStruct ps;
+  GsfInput *fp = UT_go_file_open(szURI, NULL);
 
-  int ret = wvInitParser (&ps, const_cast<char *>(szFilename));
+  int ret = wvInitParser_gsf(&ps, fp);
   const char * password = NULL;
 
   if (ret & 0x8000)		/* Password protected? */
@@ -1003,6 +1128,7 @@ UT_Error IE_Imp_MsWord_97::importFile(const char * szFilename)
   if(!getLoadStylesOnly())
 	  getDoc()->setAttrProp(NULL);
   
+  _handleMetaData(&ps);
   wvText(&ps);
 
   if(getLoadStylesOnly()) {
@@ -2606,8 +2732,11 @@ int IE_Imp_MsWord_97::_beginPara (wvParseStruct *ps, UT_uint32 tag,
 			  UT_sint32 i= 0;
 			  for(i=0;i < ps->nocellbounds; i++) 
 			  {
-				  UT_sint32 pos = ps->cellbounds[i];
-				  m_vecColumnPositions.addItem(pos);
+				  if(ps->cellbounds)
+				  {
+					  UT_sint32 pos = ps->cellbounds[i];
+					  m_vecColumnPositions.addItem(pos);
+				  }
 			  }
 		  }
 
@@ -2957,13 +3086,15 @@ int IE_Imp_MsWord_97::_beginPara (wvParseStruct *ps, UT_uint32 tag,
 			propsArray[i++] = "style";
 			
 			char * t = NULL;
-			const XML_Char * pName = s_translateStyleId(pSTD[apap->istd].sti);
+			const XML_Char * pName = NULL;
+			if(pSTD)
+				pName = s_translateStyleId(pSTD[apap->istd].sti);
 		
 			if(pName)
 			{
 				m_paraStyle = pName;
 			}
-			else
+			else if(pSTD)
 			{
 				m_paraStyle = t = s_stripDangerousChars(pSTD[apap->istd].xstzName);
 			}
@@ -3125,12 +3256,12 @@ int IE_Imp_MsWord_97::_beginChar (wvParseStruct *ps, UT_uint32 tag,
 	m_charStyle.clear();
 
 	UT_uint32 iFontType = 0;
-	if(achp->xchSym)
+	if(achp->xchSym && ps->fonts.ffn)
 	{
 		// inserting a symbol char ...
 		iFontType = ps->fonts.ffn[achp->ftcSym].chs;
 	}
-	else
+	else if(ps->fonts.ffn)
 	{
 		iFontType = ps->fonts.ffn[achp->ftcAscii].chs;
 	}
@@ -3309,8 +3440,17 @@ int IE_Imp_MsWord_97::_fieldProc (wvParseStruct *ps, U16 eachchar,
 			}
 			
 		}
-		
-		f = new field;
+
+		UT_TRY
+		{		
+			f = new field;
+		}
+		UT_CATCH(UT_CATCH_ANY)
+		{
+			f = NULL;
+		}
+		UT_END_CATCH
+
 		UT_return_val_if_fail(f,0);
 		f->fieldWhich = f->command;
 		f->command[0] = 0;
@@ -3858,7 +3998,11 @@ bool IE_Imp_MsWord_97::_handleCommandField (char *command)
 				atts[1] = "time";
 				break;
 
-			case F_DateTimePicture: // this isn't totally correct, but it's close
+			case F_DateTimePicture:
+				//seems similar to a creation date
+				atts[1] = "meta_date";
+				break;
+
 			case F_DATE:
 				atts[1] = "date";
 				break;
@@ -5295,7 +5439,16 @@ int IE_Imp_MsWord_97::_handleBookmarks(const wvParseStruct *ps)
 	UT_return_val_if_fail(nobkl == nobkf, 0);
 	if(m_iBookmarksCount > 0)
 	{
-		m_pBookmarks = new bookmark[m_iBookmarksCount];
+		UT_TRY
+		{
+			m_pBookmarks = new bookmark[m_iBookmarksCount];
+		}
+		UT_CATCH(UT_CATCH_ANY)
+		{
+			m_pBookmarks = NULL;
+		}
+		UT_END_CATCH
+
 		UT_return_val_if_fail(m_pBookmarks, 0);
 		for(i = 0; i < nobkf; i++)
 		{
@@ -5363,7 +5516,16 @@ void IE_Imp_MsWord_97::_handleNotes(const wvParseStruct *ps)
 	{
 		/* the docs say -1, but that is an error */
 		m_iFootnotesCount = ps->fib.lcbPlcffndTxt/4 - 2;
-		m_pFootnotes = new footnote[m_iFootnotesCount];
+		UT_TRY
+		{
+			m_pFootnotes = new footnote[m_iFootnotesCount];
+		}
+		UT_CATCH(UT_CATCH_ANY)
+		{
+			m_pFootnotes = NULL;
+		}
+		UT_END_CATCH
+
 		UT_return_if_fail(m_pFootnotes);
 		
 		// this is really quite straight forward; we retrieve the PLCF
@@ -5462,7 +5624,16 @@ void IE_Imp_MsWord_97::_handleNotes(const wvParseStruct *ps)
 	if(ps->fib.lcbPlcfendTxt)
 	{
 		m_iEndnotesCount  = ps->fib.lcbPlcfendTxt/4 - 2;
-		m_pEndnotes  = new footnote[m_iEndnotesCount];
+		UT_TRY
+		{
+			m_pEndnotes  = new footnote[m_iEndnotesCount];
+		}
+		UT_CATCH(UT_CATCH_ANY)
+		{
+			m_pEndnotes = NULL;
+		}
+		UT_END_CATCH
+
 		UT_return_if_fail(m_pEndnotes);
 
 		bNoteError = false;
@@ -6451,7 +6622,16 @@ void IE_Imp_MsWord_97::_handleHeaders(const wvParseStruct *ps)
 		/* the docs are ambiguous, at one place saying the PLCF
 		   contains n+2 entries, another n+1; I think the former is correct*/
 		m_iHeadersCount = ps->fib.lcbPlcfhdd/4 - 2;
-		m_pHeaders = new header[m_iHeadersCount];
+		UT_TRY
+		{
+			m_pHeaders = new header[m_iHeadersCount];
+		}
+		UT_CATCH(UT_CATCH_ANY)
+		{
+			m_pHeaders = NULL;
+		}
+		UT_END_CATCH
+
 		UT_return_if_fail(m_pHeaders);
 		
 		// this is really quite straight forward; we retrieve the PLCF

@@ -59,7 +59,7 @@
 #include "gr_Painter.h"
 
 #ifdef HAVE_HILDON
-#include <hildon-fm/hildon-widgets/hildon-file-chooser-dialog.h>
+#include <hildon-widgets/hildon-file-chooser-dialog.h>
 #endif
 
 
@@ -195,7 +195,6 @@ bool XAP_UnixDialog_FileOpenSaveAs::_run_gtk_main(XAP_Frame * pFrame,
 	char * szFinalPathnameCopy = NULL;	// one to mangle when looking for dirs, etc.
 
 	char * pLastSlash;
-	struct stat buf;
 	int err;
 
 	// if m_bSave is not set, we're looking to OPEN a file.
@@ -208,7 +207,7 @@ bool XAP_UnixDialog_FileOpenSaveAs::_run_gtk_main(XAP_Frame * pFrame,
 			if (m_answer == a_CANCEL)			// The easy way out
 				return false;
 
-			UT_cloneString(m_szFinalPathnameCandidate, gtk_file_chooser_get_filename(m_FC));
+			UT_cloneString(m_szFinalPathnameCandidate, gtk_file_chooser_get_uri(m_FC));
 			UT_ASSERT(m_szFinalPathnameCandidate);
 			return (m_answer == a_OK);
 		}
@@ -223,7 +222,7 @@ bool XAP_UnixDialog_FileOpenSaveAs::_run_gtk_main(XAP_Frame * pFrame,
 	
 			// Give us a filename we can mangle
 	
-			UT_cloneString(szDialogFilename, gtk_file_chooser_get_filename(m_FC));
+			UT_cloneString(szDialogFilename, gtk_file_chooser_get_uri(m_FC));
 			if (!szDialogFilename)
 				continue;
 	
@@ -266,11 +265,14 @@ bool XAP_UnixDialog_FileOpenSaveAs::_run_gtk_main(XAP_Frame * pFrame,
 				pPrefs->getPrefsValueBool(static_cast<const XML_Char *>(XAP_PREF_KEY_UseSuffix), &wantSuffix);
 	
 				UT_DEBUGMSG(("UseSuffix: %d\n", wantSuffix));
-	
+
+#if 0	
+				struct stat buf;
 				// do not want suffix for directory names
 				err = stat(szDialogFilename, &buf);
 				if ((err == 0) && (S_ISDIR(buf.st_mode)))
 					wantSuffix = false;
+#endif
 	
 				// if the file doesn't have a suffix already, and the file type
 				// is normal (special types are negative, like auto detect),
@@ -306,9 +308,13 @@ bool XAP_UnixDialog_FileOpenSaveAs::_run_gtk_main(XAP_Frame * pFrame,
 				
 				FREEP(szDialogFilename);
 			}
-			
+		
+			UT_cloneString(m_szFinalPathnameCandidate, szFinalPathname);
+			goto ReturnTrue;	
+
+#if 0			
 			UT_cloneString(szFinalPathnameCopy, szFinalPathname);
-			
+
 			err = stat(szFinalPathnameCopy, &buf);
 			UT_ASSERT(err == 0 || err == -1);
 				
@@ -374,6 +380,8 @@ bool XAP_UnixDialog_FileOpenSaveAs::_run_gtk_main(XAP_Frame * pFrame,
 				goto ReturnTrue;
 			}
 	
+#endif
+
 			// complain about write permission on the directory.
 			// lop off ugly trailing slash only if we don't have
 			// the root dir ('/') for a path
@@ -435,7 +443,7 @@ void XAP_UnixDialog_FileOpenSaveAs::fileTypeChanged(GtkWidget * w)
 	{
 		return;
 	}
-	UT_String sFileName = 	gtk_file_chooser_get_filename(m_FC);
+	UT_String sFileName = 	gtk_file_chooser_get_uri(m_FC);
 	UT_String sSuffix = m_szSuffixes[nFileType-1];
 	sSuffix = sSuffix.substr(1,sSuffix.length()-1);
 	UT_sint32 i = 0;
@@ -607,7 +615,8 @@ void XAP_UnixDialog_FileOpenSaveAs::runModal(XAP_Frame * pFrame)
 							);
 #endif	
 
-	gtk_file_chooser_set_local_only(m_FC, TRUE);
+	gtk_file_chooser_set_local_only(m_FC, FALSE);
+
 	abiSetupModalDialog(GTK_DIALOG(m_FC), pFrame, this, GTK_RESPONSE_ACCEPT);
 	GtkWidget * filetypes_pulldown = NULL;
 
@@ -624,6 +633,7 @@ void XAP_UnixDialog_FileOpenSaveAs::runModal(XAP_Frame * pFrame)
 	gtk_widget_show(pulldown_hbox);
 	gtk_file_chooser_set_extra_widget (GTK_FILE_CHOOSER(m_FC), pulldown_hbox);
 
+#if 0
 	if (m_id == XAP_DIALOG_ID_INSERT_PICTURE)
 	{
 		GtkWidget * preview = createDrawingArea ();
@@ -647,6 +657,7 @@ void XAP_UnixDialog_FileOpenSaveAs::runModal(XAP_Frame * pFrame)
 		g_signal_connect (preview, "expose_event",
 								G_CALLBACK (s_preview_exposed), static_cast<gpointer>(this));
 	}
+#endif
 
 	// pulldown label
 	GtkWidget * filetypes_label = gtk_label_new(szFileTypeLabel.utf8_str());
@@ -775,8 +786,8 @@ void XAP_UnixDialog_FileOpenSaveAs::runModal(XAP_Frame * pFrame)
 			// extract the directory portion and start
 			// the dialog there (but without a filename).
 
-			szPersistDirectory = g_path_get_dirname(m_szPersistPathname);
-			gtk_file_chooser_set_current_folder(m_FC, szPersistDirectory);
+			szPersistDirectory = UT_go_dirname_from_uri(m_szPersistPathname, FALSE);
+			gtk_file_chooser_set_current_folder_uri(m_FC, szPersistDirectory);
 		}
 		else
 		{
@@ -799,10 +810,12 @@ void XAP_UnixDialog_FileOpenSaveAs::runModal(XAP_Frame * pFrame)
 
 		if (m_bSuggestName)
 		{
-			if (!g_path_is_absolute (m_szInitialPathname)) {
+			if (!g_path_is_absolute (m_szInitialPathname)) { // DAL: todo: is this correct?
 				gchar *dir = g_get_current_dir ();
 				gchar *file = m_szInitialPathname;
-				m_szInitialPathname = g_build_filename (dir, file, (gchar *)NULL);
+				gchar *filename = g_build_filename (dir, file, (gchar *)NULL);
+				m_szInitialPathname = UT_go_filename_to_uri(filename);
+				g_free(filename);
 				g_free (dir);
 				g_free (file);
 			}
@@ -838,8 +851,8 @@ void XAP_UnixDialog_FileOpenSaveAs::runModal(XAP_Frame * pFrame)
 		else
 		{
 			// use directory(m_szInitialPathname)
-			szPersistDirectory = g_path_get_dirname(m_szInitialPathname);
-			gtk_file_chooser_set_current_folder(m_FC, szPersistDirectory);
+			szPersistDirectory = UT_go_dirname_from_uri(m_szInitialPathname, FALSE);
+			gtk_file_chooser_set_current_folder_uri(m_FC, szPersistDirectory);
 		}
 	}
 
@@ -896,7 +909,7 @@ gint XAP_UnixDialog_FileOpenSaveAs::previewPicture (void)
 	GR_UnixAllocInfo ai(m_preview->window, unixapp->getFontManager());
 	GR_UnixGraphics* pGr = (GR_UnixGraphics*) XAP_App::getApp()->newGraphics(ai);
 
-	const gchar * file_name = gtk_file_chooser_get_filename (m_FC);
+	const gchar * file_name = gtk_file_chooser_get_uri (m_FC);
 	
 	GR_Font * fnt = pGr->findFont("Times New Roman",
 								  "normal", "", "normal",

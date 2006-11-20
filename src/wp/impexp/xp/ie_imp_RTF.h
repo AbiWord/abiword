@@ -516,11 +516,10 @@ public:
 	IE_Imp_RTF_Sniffer();
 	virtual ~IE_Imp_RTF_Sniffer() {}
 
-	UT_Confidence_t supportsMIME (const char * szMIME);
-
+	virtual const IE_SuffixConfidence * getSuffixConfidence ();
+	virtual const IE_MimeConfidence * getMimeConfidence ();
 	virtual UT_Confidence_t recognizeContents (const char * szBuf,
 									UT_uint32 iNumbytes);
-	virtual UT_Confidence_t recognizeSuffix (const char * szSuffix);
 	virtual bool getDlgLabels (const char ** szDesc,
 							   const char ** szSuffixList,
 							   IEFileType * ft);
@@ -560,8 +559,8 @@ public:
 	};
 
 protected:
-	UT_Error			_parseFile(FILE * fp);
-	UT_Error			_writeHeader(FILE * fp);
+	UT_Error			_parseFile(GsfInput * fp);
+	UT_Error			_writeHeader(GsfInput * fp);
 	UT_Error            _parseHdrFtr ();
 	UT_Error            _parseText();
 	
@@ -854,7 +853,7 @@ private:
 	bool m_bParaHasRTFList;
 	bool m_bParaHasRTFContinue;
 
-	FILE* m_pImportFile;
+	GsfInput* m_pImportFile;
 
 	const unsigned char *		m_pPasteBuffer;
 	UT_uint32 			m_lenPasteBuffer;

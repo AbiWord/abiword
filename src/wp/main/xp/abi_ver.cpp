@@ -16,7 +16,7 @@
  * Foundation, Inc., 59 Temple Place - Suite 330, Boston, MA  
  * 02111-1307, USA.
  */
-
+#include <stdio.h>
 #ifdef ENABLE_BINRELOC
 #include "prefix.h"
 #endif // ENABLE_BINRELOC
@@ -53,4 +53,3 @@ const char* XAP_App::s_szBuild_Options = ABI_BUILD_OPTIONS;
 const char* XAP_App::s_szBuild_Target = ABI_BUILD_TARGET;
 const char* XAP_App::s_szBuild_CompileTime = __TIME__;
 const char* XAP_App::s_szBuild_CompileDate = __DATE__;
-

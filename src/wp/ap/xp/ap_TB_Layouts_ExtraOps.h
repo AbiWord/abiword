@@ -30,6 +30,7 @@ BeginLayout(ExtraOps, AP_STRING_ID_TB_Extra, AP_PREF_KEY_ExtraBarVisible)
      ToolbarItem(AP_TOOLBAR_ID_FMT_BOOKMARK)
      Spacer ()
 
+	ToolbarItem(AP_TOOLBAR_ID_FMT_UNDERLINE)
 	ToolbarItem(AP_TOOLBAR_ID_FMT_OVERLINE)
 	ToolbarItem(AP_TOOLBAR_ID_FMT_STRIKE)
 	//ToolbarItem(AP_TOOLBAR_ID_FMT_TOPLINE)

@@ -1,3 +1,5 @@
+/* -*- mode: C++; tab-width: 4; c-basic-offset: 4; -*- */
+
 /* AbiWord
  * Copyright (C) 2000 AbiSource, Inc.
  * 
@@ -23,11 +25,15 @@
 #include "ie_impGraphic_SVG.h"
 #include "fg_GraphicVector.h"
 
-UT_Confidence_t IE_ImpGraphicSVG_Sniffer::recognizeSuffix(const char * szSuffix)
+// supported suffixes
+static IE_SuffixConfidence IE_ImpGraphicSVG_Sniffer__SuffixConfidence[] = {
+	{ "svg", 	UT_CONFIDENCE_PERFECT 	},
+	{ NULL, 	UT_CONFIDENCE_ZILCH 	}
+};
+
+const IE_SuffixConfidence * IE_ImpGraphicSVG_Sniffer::getSuffixConfidence ()
 {
-	if (UT_stricmp(szSuffix,".svg") == 0)
-	  return UT_CONFIDENCE_PERFECT;
-	return UT_CONFIDENCE_ZILCH;
+	return IE_ImpGraphicSVG_Sniffer__SuffixConfidence;
 }
 
 UT_Confidence_t IE_ImpGraphicSVG_Sniffer::recognizeContents(const char * szBuf, UT_uint32 iNumbytes)

@@ -1,3 +1,5 @@
+/* -*- mode: C++; tab-width: 4; c-basic-offset: 4; -*- */
+
 /* AbiWord
  * Copyright (C) 1998 AbiSource, Inc.
  *
@@ -26,7 +28,8 @@
 class XAP_UnixFrame;
 
 /*****************************************************************/
-class AP_UnixDialog_Options: public AP_Dialog_Options
+class AP_UnixDialog_Options : public AP_Dialog_Options,
+							  public XAP_NotebookDialog
 {
 public:
 	AP_UnixDialog_Options(XAP_DialogFactory * pDlgFactory, XAP_Dialog_Id id);
@@ -36,6 +39,9 @@ public:
 
 	static XAP_Dialog *		static_constructor(XAP_DialogFactory *, XAP_Dialog_Id id);
 	void event_ChooseTransparentColor(void);
+
+	// tabbed dialog interface
+	virtual void addPage (const XAP_NotebookDialog::Page *page);
 
  protected:
 
@@ -207,6 +213,8 @@ private:
 
 	// callbacks can fire these events
 	virtual void _storeWindowData(void);
+
+	GSList	*m_extraPages;
 };
 
 #endif /* AP_UNIXDIALOG_OPTIONS_H */

@@ -1,3 +1,5 @@
+/* -*- mode: C++; tab-width: 4; c-basic-offset: 4; -*- */
+
 /* AbiWord
  * Copyright (C) 2002 Dom Lachowicz
  * 
@@ -27,17 +29,44 @@
 
 BeginLayout(TableOps, AP_STRING_ID_TB_Table, AP_PREF_KEY_TableBarVisible)
 
-     ToolbarItem(AP_TOOLBAR_ID_INSERT_TABLE)
-     ToolbarItem(AP_TOOLBAR_ID_ADD_ROW)
-     ToolbarItem(AP_TOOLBAR_ID_ADD_COLUMN)
+	ToolbarItem(AP_TOOLBAR_ID_INSERT_TABLE)
+	ToolbarItem(AP_TOOLBAR_ID_ADD_ROW)
+	ToolbarItem(AP_TOOLBAR_ID_ADD_COLUMN)
 
-     Spacer()
+	Spacer()
 
-     ToolbarItem(AP_TOOLBAR_ID_DELETE_ROW)
-     ToolbarItem(AP_TOOLBAR_ID_DELETE_COLUMN)
+	ToolbarItem(AP_TOOLBAR_ID_DELETE_ROW)
+	ToolbarItem(AP_TOOLBAR_ID_DELETE_COLUMN)
 
-     Spacer()
+	Spacer()
 
-     ToolbarItem(AP_TOOLBAR_ID_MERGE_CELLS)
-     ToolbarItem(AP_TOOLBAR_ID_SPLIT_CELLS)
+	ToolbarItem(AP_TOOLBAR_ID_MERGE_CELLS)
+	ToolbarItem(AP_TOOLBAR_ID_SPLIT_CELLS)
+
+	Spacer()
+
+	ToolbarItem(AP_TOOLBAR_ID_FILE_SAVEAS)
+
+	Spacer()
+
+	ToolbarItem(AP_TOOLBAR_ID_1COLUMN)
+	ToolbarItem(AP_TOOLBAR_ID_2COLUMN)
+	ToolbarItem(AP_TOOLBAR_ID_3COLUMN)
+
+	Spacer()
+
+	ToolbarItem(AP_TOOLBAR_ID_IMG)
+	ToolbarItem(AP_TOOLBAR_ID_VIEW_SHOWPARA)
+	ToolbarItem(AP_TOOLBAR_ID_HELP)
+
+	Spacer()
+
+	ToolbarItem(AP_TOOLBAR_ID_LISTS_NUMBERS)
+	ToolbarItem(AP_TOOLBAR_ID_LISTS_BULLETS)
+
+	Spacer()
+
+	ToolbarItem(AP_TOOLBAR_ID_UNINDENT)
+	ToolbarItem(AP_TOOLBAR_ID_INDENT)
+
 EndLayout()

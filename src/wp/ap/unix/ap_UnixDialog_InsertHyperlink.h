@@ -54,8 +54,8 @@ public:
 
 	enum
 	  {
-	    BUTTON_OK,
-	    BUTTON_CANCEL
+	    BUTTON_OK = GTK_RESPONSE_OK,
+	    BUTTON_CANCEL = GTK_RESPONSE_CANCEL
 	  } ResponseId ;
 
 	//GtkWidget * m_comboEntry;

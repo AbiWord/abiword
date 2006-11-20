@@ -140,11 +140,14 @@ void AP_Dialog_MailMerge::addClicked()
 	UT_return_if_fail (pView);
 	
 	const XML_Char * pParam = getMergeField().utf8_str();
-	const XML_Char * pAttr[3];
-	const XML_Char param_name[] = "param";
-	pAttr[0] = static_cast<const XML_Char *>(&param_name[0]);
-	pAttr[1] = pParam;
-	pAttr[2] = 0;
-	
-	pView->cmdInsertField("mail_merge",static_cast<const XML_Char **>(&pAttr[0]));
+
+	if(pParam && *pParam) {
+	  const XML_Char * pAttr[3];
+	  const XML_Char param_name[] = "param";
+	  pAttr[0] = static_cast<const XML_Char *>(&param_name[0]);
+	  pAttr[1] = pParam;
+	  pAttr[2] = 0;
+	  
+	  pView->cmdInsertField("mail_merge",static_cast<const XML_Char **>(&pAttr[0]));
+	}
 }

@@ -34,15 +34,6 @@
 #include "ap_UnixClipboard.h"
 #include "pt_Types.h"
 
-#if 0//def HAVE_GNOME
-#include "xap_UnixGnomeApp.h"
-#define XAP_UNIXBASEAPP XAP_UnixGnomeApp
-#else
-#include "xap_UnixApp.h"
-#define XAP_UNIXBASEAPP XAP_UnixApp
-#endif
-	
-
 //#define LOGFILE
 /* Define if your user name is msevior */
 /* #undef LOGFILE */
@@ -79,6 +70,8 @@ public:
 	virtual void					copyToClipboard(PD_DocumentRange * pDocRange, bool bUseClipboard = true);
 	virtual void					pasteFromClipboard(PD_DocumentRange * pDocRange, bool bUseClipboard, bool bHonorFormatting = true);
 	virtual bool					canPasteFromClipboard(void);
+	virtual void					addClipboardFmt (const char * szFormat) {m_pClipboard->addFormat(szFormat);}
+	virtual void					deleteClipboardFmt (const char * szFormat) {m_pClipboard->deleteFormat(szFormat);}
 
 	virtual void					setSelectionStatus(AV_View * pView);
 
@@ -143,4 +136,3 @@ private:
 void signalWrapper(int);
 
 #endif /* AP_UNIXAPP_H */
-

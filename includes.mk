@@ -23,21 +23,7 @@
 # the tree can just include this and then use some variables.  This
 # makes the job of dealing with regular make files much simpler.  
 
-# automake complains at us if we just if out the gnome-specific parts
-if WITH_GNOME
-AF_INCLUDES=-I'$(top_srcdir)/src/af/util/xp' 
-AF_INCLUDES+=-I'$(top_srcdir)/src/af/tf/xp'
-AF_INCLUDES+=-I'$(top_srcdir)/src/af/ev/xp'
-AF_INCLUDES+=-I'$(top_srcdir)/src/af/ev/xp'
-AF_INCLUDES+=-I'$(top_srcdir)/src/af/gr/xp'
-AF_INCLUDES+=-I'$(top_srcdir)/src/af/xap/xp'
-AF_INCLUDES+=-I'$(top_srcdir)/src/af/util/@BE_PLATFORM@'
-AF_INCLUDES+=-I'$(top_srcdir)/src/af/ev/@PLATFORM@'
-AF_INCLUDES+=-I'$(top_srcdir)/src/af/gr/@PLATFORM@'
-AF_INCLUDES+=-I'$(top_srcdir)/src/af/xap/@PLATFORM@'
-AF_INCLUDES+=-I'$(top_srcdir)/src/af/xap/@PLATFORM@/gnome'
-AF_INCLUDES+=-I'$(top_srcdir)/src/af/ev/@PLATFORM@/gnome'
-else
+# automake complains at us if we just if out the hildon-specific parts
 if WITH_HILDON
 AF_INCLUDES=-I'$(top_srcdir)/src/af/util/xp' 
 AF_INCLUDES+=-I'$(top_srcdir)/src/af/tf/xp' 
@@ -62,17 +48,7 @@ AF_INCLUDES+=-I'$(top_srcdir)/src/af/ev/@PLATFORM@'
 AF_INCLUDES+=-I'$(top_srcdir)/src/af/gr/@PLATFORM@'
 AF_INCLUDES+=-I'$(top_srcdir)/src/af/xap/@PLATFORM@'
 endif
-endif
 
-
-if WITH_GNOME
-WP_INCLUDES=-I'$(top_srcdir)/src/wp/ap/xp'
-WP_INCLUDES+=-I'$(top_srcdir)/src/wp/impexp/xp'
-WP_INCLUDES+=-I'$(top_srcdir)/src/wp/ap/@PLATFORM@'
-WP_INCLUDES+=-I'$(top_srcdir)/src/wp/ap/xp/ToolbarIcons'
-WP_INCLUDES+=-I'$(top_srcdir)/src/wp/ap/@PLATFORM@/gnome'
-WP_INCLUDES+=-I'$(top_srcdir)/src/pkg/linux/apkg'
-else
 if WITH_HILDON
 WP_INCLUDES=-I'$(top_srcdir)/src/wp/ap/xp'
 WP_INCLUDES+=-I'$(top_srcdir)/src/wp/impexp/xp'
@@ -86,7 +62,6 @@ WP_INCLUDES+=-I'$(top_srcdir)/src/wp/impexp/xp'
 WP_INCLUDES+=-I'$(top_srcdir)/src/wp/ap/@PLATFORM@'
 WP_INCLUDES+=-I'$(top_srcdir)/src/wp/ap/xp/ToolbarIcons'
 WP_INCLUDES+=-I'$(top_srcdir)/src/pkg/linux/apkg'
-endif
 endif
 
 OTHER_INCLUDES=-I'$(top_srcdir)/src/other/spell/xp'
@@ -112,7 +87,7 @@ ABI_CFLAGS=@WARNING_CFLAGS@ @DEBUG_CFLAGS@ @OPTIMIZE_CFLAGS@ \
 	@PROFILE_CFLAGS@ @XML_CFLAGS@ @SCRIPT_CFLAGS@ @PLUGIN_CFLAGS@ @FRIBIDI_CFLAGS@ \
 	@WV_CFLAGS@ @LIBPOPT_CFLAGS@ @XFT_CFLAGS@ @FREETYPE_CFLAGS@ \
 	@LIBPNG_CFLAGS@ @ZLIB_CFLAGS@ @THREAD_CFLAGS@ @ABI_FEATURE_DEFS@ @ABITYPES_CFLAGS@ \
-	@PRINT_CFLAGS@
+	@PRINT_CFLAGS@ @GSF_CFLAGS@ @GOFFICE_CFLAGS@ 
 
 
 if WITH_WIN32
@@ -145,13 +120,20 @@ ABI_BE = @ABI_BE@
 ABI_GNOME_PREFIX = Gnome
 
 OTHER_LIBS=@SPELL_LIBS@ @XML_LIBS@ @SCRIPT_LIBS@ @PLUGIN_LIBS@ @FRIBIDI_LIBS@ \
-	@WV_LIBS@ @GLIB_LIBS@ @ICONV_LIBS@ @LIBPNG_LIBS@ @ZLIB_LIBS@ \
+	@WV_LIBS@ @GSF_LIBS@ @GLIB_LIBS@ @ICONV_LIBS@ @LIBPNG_LIBS@ @ZLIB_LIBS@ \
 	@LIBPOPT_LIBS@ @XFT_LIBS@ @FREETYPE_LIBS@ @THREAD_LIBS@
+
+ABI_LIBS=
+if WITH_SYSTEM_GOFFICE
+OTHER_LIBS += @GOFFICE_LIBS@
+else
+ABI_LIBS += @GOFFICE_LIBS@
+endif
 
 # BiDi needs a specific lib
 #automake is TEH SILLY!
 if BUILD_TTFTOOL
-ABI_LIBS=$(top_builddir)/src/wp/ap/libAp.a
+ABI_LIBS+=$(top_builddir)/src/wp/ap/libAp.a
 ABI_LIBS+=$(top_builddir)/src/wp/impexp/libImpExp.a
 ABI_LIBS+=$(top_builddir)/src/af/xap/libXap.a
 ABI_LIBS+=$(top_builddir)/src/af/util/libUtil.a
@@ -163,7 +145,7 @@ ABI_LIBS+=$(top_builddir)/src/pkg/linux/apkg/libApkg.a
 ABI_LIBS+=$(top_builddir)/src/text/fmt/xp/libFmt.a
 ABI_LIBS+=$(top_builddir)/src/text/ptbl/xp/libPtbl.a
 else 
-ABI_LIBS=$(top_builddir)/src/wp/ap/libAp.a
+ABI_LIBS+=$(top_builddir)/src/wp/ap/libAp.a
 ABI_LIBS+=$(top_builddir)/src/wp/impexp/libImpExp.a
 ABI_LIBS+=$(top_builddir)/src/af/xap/libXap.a
 ABI_LIBS+=$(top_builddir)/src/af/util/libUtil.a
@@ -172,19 +154,12 @@ ABI_LIBS+=$(top_builddir)/src/af/ev/libEv.a
 ABI_LIBS+=$(top_builddir)/src/other/spell/xp/libSpell.a
 ABI_LIBS+=$(top_builddir)/src/pkg/linux/apkg/libApkg.a
 ABI_LIBS+=$(top_builddir)/src/text/fmt/xp/libFmt.a
-ABI_LIBS+=$(top_builddir)/src/text/ptbl/xp/libPtbl.a
 endif
 
 ABI_TEST_LIBS=$(top_builddir)/src/af/util/libTestUtil.a
 ABI_TEST_LIBS+=$(top_builddir)/src/text/ptbl/xp/t/libTestPtbl.a
 ABI_TEST_LIBS+=$(top_builddir)/src/af/tf/libTF.a
 ABI_TEST_LIBS+=$(top_builddir)/src/af/xap/libTestXap.a
-
-# we don't assume that WITH_GNOME => unix, on the off chance that
-# someday it won't
-if WITH_GNOME
-ABI_GNOME_OBJECTS=xp/*.o @PLATFORM@/*.o @PLATFORM@/gnome/*.o
-endif 
 
 if WITH_HILDON
 ABI_HILDON_OBJECTS=xp/*.o @PLATFORM@/*.o @PLATFORM@/hildon/*.o

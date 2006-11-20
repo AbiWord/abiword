@@ -194,7 +194,7 @@ private:
 	void				_buildStyleTree ();
 	void                _buildTOC ();
 protected:
-	virtual bool		_openFile (const char * szFilename);
+	virtual GsfOutput*		_openFile (const char * szFilename);
 	virtual UT_Error	_writeDocument ();
 public:
 	virtual UT_Error	_writeDocument (bool bClipBoard, bool bTemplateBody);

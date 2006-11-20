@@ -95,6 +95,8 @@ XAP_App::XAP_App(XAP_Args * pArgs, const char * szAppName)
 {
 #ifdef DEBUG
 	_fundamentalAsserts(); // see the comments in the function itself
+	UT_DEBUGMSG(("ZZZZZZZZZZZZZZZZZZZZZZZaaaaaaaaaaaaaaAbiSuite Home |%s|\n",XAP_App::s_szAbiSuite_Home ));
+
 #endif
 
 	m_pGraphicsFactory = new GR_GraphicsFactory;
@@ -256,7 +258,7 @@ UT_uint32 XAP_App::registerEmbeddable(GR_EmbedManager * pEmbed)
      for(i=0; !bFound && (i< static_cast<UT_sint32>(m_vecEmbedManagers.getItemCount())); i++)
      {
 		 pCur =  m_vecEmbedManagers.getNthItem(i);
-		 if(UT_strcmp(pCur->getObjectType(),pEmbed->getObjectType()) == 0)
+		 if(pCur && (UT_strcmp(pCur->getObjectType(),pEmbed->getObjectType()) == 0))
 		 {
 			 bFound = true;
 		 }
@@ -298,7 +300,7 @@ GR_EmbedManager * XAP_App:: getEmbeddableManager(GR_Graphics * pG, const char * 
        pCur =  m_vecEmbedManagers.getNthItem(i);
        UT_DEBUGMSG(("Look at Manager for Object type %s requested %s strcmp %d UT_strcmp %d \n",pCur->getObjectType(),szObjectType,UT_strcmp(pCur->getObjectType(),szObjectType),strcmp(pCur->getObjectType(),szObjectType) ));
 
-       if(UT_strcmp(pCur->getObjectType(),szObjectType) == 0)
+       if(pCur && (UT_strcmp(pCur->getObjectType(),szObjectType) == 0))
        {
 	 bFound = true;
        }

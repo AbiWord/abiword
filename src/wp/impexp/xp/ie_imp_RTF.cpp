@@ -1,4 +1,5 @@
 /* -*- c-basic-offset: 4; tab-width: 4; indent-tabs-mode: t -*- */
+
 /* AbiWord
  * Copyright (C) 1999 AbiSource, Inc.
  * Copyright (C) 2003 Tomas Frydrych <tomas@frydrych.uklinux.net>
@@ -43,6 +44,7 @@
 #include "ut_string_class.h"
 #include "ut_units.h"
 #include "ie_types.h"
+#include "ie_impexp_RTF.h"
 #include "ie_imp_RTF.h"
 #include "pd_Document.h"
 #include "xap_EncodingManager.h"
@@ -105,13 +107,31 @@ IE_Imp_RTF_Sniffer::IE_Imp_RTF_Sniffer ()
 	// 
 }
 
-UT_Confidence_t IE_Imp_RTF_Sniffer::supportsMIME (const char * szMIME)
+// supported suffixes
+static IE_SuffixConfidence IE_Imp_RTF_Sniffer__SuffixConfidence[] = {
+	{ "rtf", 	UT_CONFIDENCE_PERFECT 	},
+	{ "doc", 	UT_CONFIDENCE_SOSO 		},
+	{ NULL, 	UT_CONFIDENCE_ZILCH 	}
+};
+
+const IE_SuffixConfidence * IE_Imp_RTF_Sniffer::getSuffixConfidence ()
 {
-	if (UT_strcmp (IE_FileInfo::mapAlias (szMIME), IE_MIME_RTF) == 0)
-		{
-			return UT_CONFIDENCE_GOOD;
-		}
-	return UT_CONFIDENCE_ZILCH;
+	return IE_Imp_RTF_Sniffer__SuffixConfidence;
+}
+
+
+// supported mimetypes
+static IE_MimeConfidence IE_Imp_RTF_Sniffer__MimeConfidence[] = {
+	{ IE_MIME_MATCH_FULL, 	IE_MIMETYPE_RTF, 		UT_CONFIDENCE_GOOD 	}, 
+	{ IE_MIME_MATCH_FULL, 	"application/richtext",	UT_CONFIDENCE_GOOD 	}, 
+	{ IE_MIME_MATCH_FULL, 	"text/richtext", 		UT_CONFIDENCE_GOOD 	}, 
+	{ IE_MIME_MATCH_FULL, 	"text/rtf", 			UT_CONFIDENCE_GOOD 	}, 
+	{ IE_MIME_MATCH_BOGUS, 	NULL, 					UT_CONFIDENCE_ZILCH }
+};
+
+const IE_MimeConfidence * IE_Imp_RTF_Sniffer::getMimeConfidence ()
+{
+	return IE_Imp_RTF_Sniffer__MimeConfidence;
 }
 
 UT_Confidence_t IE_Imp_RTF_Sniffer::recognizeContents(const char * szBuf,
@@ -126,19 +146,6 @@ UT_Confidence_t IE_Imp_RTF_Sniffer::recognizeContents(const char * szBuf,
 		return(UT_CONFIDENCE_PERFECT) ;
 	}
 	return(UT_CONFIDENCE_ZILCH);
-}
-
-UT_Confidence_t IE_Imp_RTF_Sniffer::recognizeSuffix(const char * szSuffix)
-{
-	if (!UT_stricmp(szSuffix, ".rtf"))
-	{
-		return UT_CONFIDENCE_PERFECT;
-	}
-	if (!UT_stricmp(szSuffix, ".doc"))
-	{
-		return UT_CONFIDENCE_SOSO;
-	}
-	return UT_CONFIDENCE_ZILCH;
 }
 
 UT_Error IE_Imp_RTF_Sniffer::constructImporter(PD_Document * pDocument,
@@ -594,6 +601,7 @@ UT_NumberVector * RTF_msword97_listOverride::getTabLeaderVect(UT_uint32 iLevel)
 bool RTF_msword97_listOverride::isTab(UT_uint32 iLevel)
 {
 	RTF_msword97_level * pLevel = m_pList->m_RTF_level[iLevel];
+	UT_return_val_if_fail(pLevel && pLevel->m_pbParaProps, false);
 	return (pLevel->m_pbParaProps->bm_tabStops);
 }
 /*!
@@ -618,6 +626,7 @@ bool RTF_msword97_listOverride::getDeleted(UT_uint32 iLevel)
 bool RTF_msword97_listOverride::isBoldChanged(UT_uint32 iLevel)
 {
 	RTF_msword97_level * pLevel = m_pList->m_RTF_level[iLevel];
+	UT_return_val_if_fail(pLevel && pLevel->m_pbCharProps, false);
 	return (pLevel->m_pbCharProps->bm_bold);
 }
 /*!
@@ -634,6 +643,7 @@ bool RTF_msword97_listOverride::getBold(UT_uint32 iLevel)
 bool RTF_msword97_listOverride::isItalicChanged(UT_uint32 iLevel)
 {
 	RTF_msword97_level * pLevel = m_pList->m_RTF_level[iLevel];
+	UT_return_val_if_fail(pLevel && pLevel->m_pbCharProps, false);
 	return (pLevel->m_pbCharProps->bm_italic);
 }
 /*!
@@ -650,6 +660,7 @@ bool RTF_msword97_listOverride::getItalic(UT_uint32 iLevel)
 bool RTF_msword97_listOverride::isUnderlineChanged(UT_uint32 iLevel)
 {
 	RTF_msword97_level * pLevel = m_pList->m_RTF_level[iLevel];
+	UT_return_val_if_fail(pLevel && pLevel->m_pbCharProps, false);
 	return (pLevel->m_pbCharProps->bm_underline);
 }
 /*!
@@ -667,6 +678,7 @@ bool RTF_msword97_listOverride::getUnderline(UT_uint32 iLevel)
 bool RTF_msword97_listOverride::isStrikeoutChanged(UT_uint32 iLevel)
 {
 	RTF_msword97_level * pLevel = m_pList->m_RTF_level[iLevel];
+	UT_return_val_if_fail(pLevel && pLevel->m_pbCharProps, false);
 	return (pLevel->m_pbCharProps->bm_strikeout);
 }
 /*!
@@ -683,6 +695,7 @@ bool RTF_msword97_listOverride::getStrikeout(UT_uint32 iLevel)
 bool RTF_msword97_listOverride::isSuperscriptChanged(UT_uint32 iLevel)
 {
 	RTF_msword97_level * pLevel = m_pList->m_RTF_level[iLevel];
+	UT_return_val_if_fail(pLevel && pLevel->m_pbCharProps, false);
 	return (pLevel->m_pbCharProps->bm_superscript);
 }
 /*!
@@ -716,6 +729,7 @@ double RTF_msword97_listOverride::getSuperscriptPos(UT_uint32 iLevel)
 bool RTF_msword97_listOverride::isSubscriptChanged(UT_uint32 iLevel)
 {
 	RTF_msword97_level * pLevel = m_pList->m_RTF_level[iLevel];
+	UT_return_val_if_fail(pLevel && pLevel->m_pbCharProps, false);
 	return (pLevel->m_pbCharProps->bm_subscript);
 }
 /*!
@@ -748,6 +762,7 @@ double RTF_msword97_listOverride::getSubscriptPos(UT_uint32 iLevel)
 bool RTF_msword97_listOverride::isFontSizeChanged(UT_uint32 iLevel)
 {
 	RTF_msword97_level * pLevel = m_pList->m_RTF_level[iLevel];
+	UT_return_val_if_fail(pLevel && pLevel->m_pbCharProps, false);
 	return (pLevel->m_pbCharProps->bm_fontSize);
 }
 /*!
@@ -764,6 +779,7 @@ double RTF_msword97_listOverride::getFontSize(UT_uint32 iLevel)
 bool RTF_msword97_listOverride::isHasColourChanged(UT_uint32 iLevel)
 {
 	RTF_msword97_level * pLevel = m_pList->m_RTF_level[iLevel];
+	UT_return_val_if_fail(pLevel && pLevel->m_pbCharProps, false);
 	return (pLevel->m_pbCharProps->bm_hasColour);
 }
 /*!
@@ -780,6 +796,7 @@ bool RTF_msword97_listOverride::getHasColour(UT_uint32 iLevel)
 bool RTF_msword97_listOverride::isColourNumberChanged(UT_uint32 iLevel)
 {
 	RTF_msword97_level * pLevel = m_pList->m_RTF_level[iLevel];
+	UT_return_val_if_fail(pLevel && pLevel->m_pbCharProps, false);
 	return (pLevel->m_pbCharProps->bm_colourNumber);
 }
 /*!
@@ -796,6 +813,7 @@ UT_uint32 RTF_msword97_listOverride::getColourNumber(UT_uint32 iLevel)
 bool RTF_msword97_listOverride::isHasBgColourChanged(UT_uint32 iLevel)
 {
 	RTF_msword97_level * pLevel = m_pList->m_RTF_level[iLevel];
+	UT_return_val_if_fail(pLevel && pLevel->m_pbCharProps, false);
 	return (pLevel->m_pbCharProps->bm_hasBgColour);
 }
 /*!
@@ -812,6 +830,7 @@ bool RTF_msword97_listOverride::getHasBgColour(UT_uint32 iLevel)
 bool RTF_msword97_listOverride::isBgColourNumberChanged(UT_uint32 iLevel)
 {
 	RTF_msword97_level * pLevel = m_pList->m_RTF_level[iLevel];
+	UT_return_val_if_fail(pLevel && pLevel->m_pbCharProps, false);
 	return (pLevel->m_pbCharProps->bm_bgcolourNumber);
 }
 /*!
@@ -828,6 +847,7 @@ UT_uint32 RTF_msword97_listOverride::getBgColourNumber(UT_uint32 iLevel)
 bool RTF_msword97_listOverride::isFontNumberChanged(UT_uint32 iLevel)
 {
 	RTF_msword97_level * pLevel = m_pList->m_RTF_level[iLevel];
+	UT_return_val_if_fail(pLevel && pLevel->m_pbCharProps, false);
 	return (pLevel->m_pbCharProps->bm_fontNumber);
 }
 /*!
@@ -1484,21 +1504,21 @@ IE_Imp_RTF::~IE_Imp_RTF()
 	FREEP (m_szFileDirName);
 }
 
-UT_Error IE_Imp_RTF::importFile(const char * szFilename)
+UT_Error IE_Imp_RTF::importFile(const char * szURI)
 {
 	m_newParaFlagged = true;
 	m_newSectionFlagged = true;
 
-	m_szFileDirName = UT_strdup (szFilename);
+	m_szFileDirName = UT_strdup (szURI);
 	// UT_basename returns a point INSIDE the passed string.
 	// the trick is to truncate the string by setting the char pointed
 	// by tmp to NULL. This IS useful code. (2 LOC)
 	char * tmp = const_cast<char *>(UT_basename (m_szFileDirName));
 	*tmp = 0;
-	FILE *fp = fopen(szFilename, "r");
+	GsfInput *fp = UT_go_file_open(szURI, NULL);
 	if (!fp)
 	{
-		UT_DEBUGMSG(("Could not open file %s\n",szFilename));
+		UT_DEBUGMSG(("Could not open file %s\n",szURI));
 		return UT_errnoToUTError ();
 	}
 
@@ -1511,7 +1531,7 @@ UT_Error IE_Imp_RTF::importFile(const char * szFilename)
 		_appendHdrFtr ();
 	}
 
-	fclose(fp);
+	g_object_unref(G_OBJECT(fp));
 
 	// check if the doc is empty or not
 	if (getDoc()->getLastFrag() == NULL)
@@ -1524,7 +1544,7 @@ UT_Error IE_Imp_RTF::importFile(const char * szFilename)
 }
 
 
-UT_Error IE_Imp_RTF::_writeHeader(FILE * /*fp*/)
+UT_Error IE_Imp_RTF::_writeHeader(GsfInput * /*fp*/)
 {
 		return UT_OK;
 }
@@ -2468,7 +2488,8 @@ UT_Error IE_Imp_RTF::_isBidiDocument()
 	char buff[8192 + 1];
 	char * token = NULL;
 	
-	size_t iBytes = fread((void*)&buff[0], 1, sizeof(buff) - 1, m_pImportFile);
+	size_t iBytes = UT_MIN(8192, gsf_input_remaining(m_pImportFile));
+	gsf_input_read(m_pImportFile, iBytes, (guint8*)buff);
 
 	UT_DEBUGMSG(("IE_Imp_RTF::_isBidiDocument: looking for RTL tokens\n"));
 	while (iBytes)
@@ -2487,8 +2508,9 @@ UT_Error IE_Imp_RTF::_isBidiDocument()
 		token = strstr(buff, "rtlch");
 		if(token)
 			break;
-
-		iBytes = fread((void*)&buff[0], 1, sizeof(buff) - 1, m_pImportFile);	
+		
+		iBytes = UT_MIN(8192, gsf_input_remaining(m_pImportFile));
+		gsf_input_read(m_pImportFile, iBytes, (guint8*)buff);
 	}
 
 	if(token)
@@ -2504,7 +2526,7 @@ UT_Error IE_Imp_RTF::_isBidiDocument()
 	
 	
 	// reset the file pointer to the beginning
-	if(fseek(m_pImportFile, 0, SEEK_SET))
+	if(gsf_input_seek(m_pImportFile, 0, G_SEEK_SET))
 		return UT_ERROR;
 
 	UT_DEBUGMSG(("IE_Imp_RTF::_isBidiDocument: looking for RTL tokens -- done\n"));
@@ -2513,7 +2535,7 @@ UT_Error IE_Imp_RTF::_isBidiDocument()
 
 
 
-UT_Error IE_Imp_RTF::_parseFile(FILE* fp)
+UT_Error IE_Imp_RTF::_parseFile(GsfInput* fp)
 {
 	m_pImportFile = fp;
 
@@ -3025,7 +3047,7 @@ bool IE_Imp_RTF::ReadCharFromFileWithCRLF(unsigned char* pCh)
 
 	if (m_pImportFile)					// if we are reading a file
 	{
-		if (fread(pCh, 1, sizeof(unsigned char), m_pImportFile) > 0)
+		if (gsf_input_read(m_pImportFile, 1, pCh) != NULL)
 		{
 			ok = true;
 		}
@@ -3105,7 +3127,7 @@ bool IE_Imp_RTF::SkipBackChar(unsigned char ch)
 	if (m_pImportFile)					// if we are reading a file
 	{
 		// TODO - I've got a sneaking suspicion that this doesn't work on the Macintosh
-		return (ungetc(ch, m_pImportFile) != EOF);
+		return (!gsf_input_seek(m_pImportFile, -1, G_SEEK_CUR));
 	}
 	else								// else we are pasting from a buffer
 	{
@@ -10680,8 +10702,15 @@ bool IE_Imp_RTF::HandleStyleDefinition(void)
 			}
 			char * buffer  = UT_strdup(styleName.utf8_str());
 			char * oldbuffer;
-			m_styleTable.setNthItem(styleNumber,buffer,&oldbuffer);
-			FREEP(oldbuffer);
+			if(styleNumber >= 0)
+			{
+				m_styleTable.setNthItem(styleNumber,buffer,&oldbuffer);
+				FREEP(oldbuffer);
+			}
+			else
+			{
+				FREEP(buffer);
+			}
 			break;
 		}
 

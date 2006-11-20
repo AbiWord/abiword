@@ -1,3 +1,5 @@
+/* -*- mode: C++; tab-width: 4; c-basic-offset: 4; -*- */
+
 /* AbiSource Application Framework
  * Copyright (C) 1998 AbiSource, Inc.
  * 
@@ -45,7 +47,6 @@
 #include "xap_UnixApp.h"
 #include "xap_FakeClipboard.h"
 #include "gr_UnixImage.h"
-#include "xap_UnixToolbar_Icons.h"
 #include "xap_Unix_TB_CFactory.h"
 #include "xap_Prefs.h"
 #include "xap_UnixEncodingManager.h"
@@ -56,7 +57,12 @@
 #include "gr_UnixGraphics.h"
 #include "gr_UnixPangoGraphics.h"
 
-#define _USE_PANGO
+#include <gsf/gsf-utils.h>
+#include <goffice/goffice.h>
+
+#ifdef HAVE_GNOMEVFS
+#include <libgnomevfs/gnome-vfs.h>
+#endif
 
 UnixNull_Graphics * abi_unixnullgraphics_instance = 0;
 
@@ -74,9 +80,6 @@ XAP_UnixApp::XAP_UnixApp(XAP_Args * pArgs, const char * szAppName)
 #else
 	XftInit(NULL);
 #endif
-
-	m_pUnixToolbarIcons = 0;
-
 	_setAbiSuiteLibDir();
 
 	memset(&m_geometry, 0, sizeof(m_geometry));
@@ -112,29 +115,25 @@ XAP_UnixApp::XAP_UnixApp(XAP_Args * pArgs, const char * szAppName)
 
 		
 		UT_ASSERT( bSuccess );
-
+#if defined(USE_PANGO)
 		bSuccess = pGF->registerClass(GR_UnixPangoGraphics::graphicsAllocator,
 									  GR_UnixPangoGraphics::graphicsDescriptor,
 									  GR_UnixPangoGraphics::s_getClassId());
 
 		UT_ASSERT( bSuccess );
 
-#if defined(_USE_PANGO) && !defined(HAVE_HILDON)
 		if(bSuccess)
 		{
 			pGF->registerAsDefault(GR_UnixPangoGraphics::s_getClassId(), true);
 		}
-
-#if !defined(WITHOUT_PRINTING)
 		bSuccess = pGF->registerClass(GR_UnixPangoPrintGraphics::graphicsAllocator,
 									  GR_UnixPangoPrintGraphics::graphicsDescriptor,
 									  GR_UnixPangoPrintGraphics::s_getClassId());
 #endif
-#endif
 		
 		UT_ASSERT( bSuccess );
 		
-#if defined(_USE_PANGO) && !defined(WITHOUT_PRINTING) && !defined(HAVE_HILDON)
+#if defined(USE_PANGO) && !defined(WITHOUT_PRINTING)
 		if(bSuccess)
 		{
 			pGF->registerAsDefault(GR_UnixPangoPrintGraphics::s_getClassId(), false);
@@ -158,13 +157,7 @@ XAP_UnixApp::XAP_UnixApp(XAP_Args * pArgs, const char * szAppName)
 
 XAP_UnixApp::~XAP_UnixApp()
 {
-	DELETEP(m_pUnixToolbarIcons);
-	
 	delete m_fontManager;
-
-#if FC_MINOR > 2
-	FcFini();
-#endif
 }
 
 bool XAP_UnixApp::initialize(const char * szKeyBindingsKey, const char * szKeyBindingsDefaultValue)
@@ -175,6 +168,13 @@ bool XAP_UnixApp::initialize(const char * szKeyBindingsKey, const char * szKeyBi
 	
 	XAP_App::initialize(szKeyBindingsKey, szKeyBindingsDefaultValue);
 
+	gsf_init();
+	libgoffice_init();
+
+#ifdef HAVE_GNOMEVFS
+	gnome_vfs_init();
+#endif
+
 	/*******************************/
 
 	// load the font stuff from the font directory
@@ -184,10 +184,6 @@ bool XAP_UnixApp::initialize(const char * szKeyBindingsKey, const char * szKeyBi
 	UT_DEBUGMSG(("Fonts Loaded \n"));
 	
 	/*******************************/
-	
-	// load only one copy of the platform-specific icons.
-	
-	m_pUnixToolbarIcons = new AP_UnixToolbar_Icons();
 	
 	// do any thing we need here...
 
