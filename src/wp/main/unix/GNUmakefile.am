@@ -20,7 +20,7 @@ include $(top_srcdir)/includes.mk
 
 CLEANFILES = abi_ver.cpp
 
-bin_PROGRAMS = AbiWord-2.6
+ABIWORD_EXECUTABLE = AbiWord-$(PACKAGE_VERSION)
 
 INCLUDES = \
 	-DABIWORD_APP_NAME="\"$(ABIWORD_APP_NAME)\"" \
@@ -31,18 +31,21 @@ INCLUDES = \
 
 REPEAT_LIBS = $(ABI_LIBS) $(ABI_LIBS) $(ABI_LIBS) $(ABI_LIBS)
 
-AbiWord_2_6_LDADD = @PLUGIN_LIST@ $(REPEAT_LIBS) $(PLATFORM_LIBS) $(OTHER_LIBS) 
+noinst_PROGRAMS = abiword
 
-AbiWord_2_6_SOURCES = abi_ver.cpp UnixMain.cpp
+abiword_LDADD = @PLUGIN_LIST@ $(REPEAT_LIBS) $(PLATFORM_LIBS) $(OTHER_LIBS) 
+
+abiword_SOURCES = abi_ver.cpp UnixMain.cpp
 
 abi_ver.cpp:	@PLUGIN_LIST@
 	cp $(srcdir)/../xp/abi_ver.cpp .
 
-install-exec-local:	
+install-exec-local:
+	cp abiword $(DESTDIR)/$(bindir)/$(ABIWORD_EXECUTABLE)
 	@if test -f $(DESTDIR)/$(bindir)/abiword; then \
 	  echo "$(DESTDIR)/$(bindir)/abiword is a regular file - I'm not going to create a link."; \
 	else \
-	  (cd $(DESTDIR)/$(bindir) && ln -sf AbiWord-2.6 abiword); \
+	  (cd $(DESTDIR)/$(bindir) && ln -sf $(ABIWORD_EXECUTABLE) abiword); \
 	fi
 
 abiword_plugins = ../../../../../abiword-plugins
