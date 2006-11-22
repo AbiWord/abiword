@@ -271,6 +271,7 @@ private:
 	bool m_bLTRParaContext;
 	UT_BidiCharType  m_iOverrideIssued;
 	bool m_bBidiMode;
+	bool m_bInLink;
 	bookmark * m_pBookmarks;
 	UT_uint32  m_iBookmarksCount;
 	footnote * m_pFootnotes;

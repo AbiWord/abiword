@@ -838,6 +838,7 @@ IE_Imp_MsWord_97::IE_Imp_MsWord_97(PD_Document * pDocument)
 	m_bLTRParaContext(true),
 	m_iOverrideIssued(UT_BIDI_UNSET),
 	m_bBidiMode(false),
+	m_bInLink(false),
 	m_pBookmarks(NULL),
 	m_iBookmarksCount(0),
 	m_pFootnotes(NULL),
@@ -3588,6 +3589,7 @@ bool IE_Imp_MsWord_97::_handleFieldEnd (char *command, UT_uint32 iDocPosition)
 					}
 
 					_appendObject(PTO_Hyperlink,NULL);
+					m_bInLink = false;
 					break;
 				}
 			case F_TOC:             
@@ -4065,8 +4067,16 @@ bool IE_Imp_MsWord_97::_handleCommandField (char *command)
 					      _appendStrux(PTX_Block, NULL);
 					      m_bInPara = true ;
 					    }
+
+					  if(m_bInLink)
+					    {
+					      UT_ASSERT_HARMLESS(UT_SHOULD_NOT_HAPPEN);
+					      _appendObject(PTO_Hyperlink, NULL);
+					      m_bInLink = false;
+					    }
 					  
 					  _appendObject(PTO_Hyperlink, new_atts);
+					  m_bInLink = true;
 					}
 					return true;
 				}
