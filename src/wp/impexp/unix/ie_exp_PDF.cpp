@@ -70,7 +70,8 @@ public:
     GR_GraphicsFactory * pGF;
     UT_uint32 iDefaultPrintClass;
     char *filename = NULL;
-    
+    int fd;
+
     if(!job)
       goto exit_writeDocument;
     
@@ -89,7 +90,7 @@ public:
     }
     
     // acts kinda like tempnam()
-    int fd = g_file_open_tmp(NULL, &filename, NULL);
+    fd = g_file_open_tmp(NULL, &filename, NULL);
     if(!filename || fd == -1) { // shouldn't ever fail, but be pedantic
       UT_ASSERT(UT_SHOULD_NOT_HAPPEN);
       goto exit_writeDocument;
