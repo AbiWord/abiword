@@ -101,12 +101,16 @@
 #include "ap_Prefs_SchemeIds.h"
 #include "gr_Image.h"
 
-#include "xap_UnixPSGraphics.h"
 #include "abiwidget.h"
 #include "ut_sleep.h"
 #include "gr_Painter.h"
 #include "ap_Preview_Abi.h"
 #include "xap_UnixDialogHelper.h"
+
+#ifndef WITHOUT_PRINTING
+#include "xap_UnixGnomePrintGraphics.h"
+#include "gr_UnixPangoGraphics.h"
+#endif
 
 #ifdef ENABLE_BINRELOC
 #include "prefix.h"
@@ -1658,6 +1662,7 @@ bool AP_UnixApp::doWindowlessArgs(const AP_Args *Args, bool & bSuccess)
  	AP_UnixApp * pMyUnixApp = static_cast<AP_UnixApp*>(Args->getApp());
 	if (Args->m_sPrintTo) 
 	{
+#ifndef WITHOUT_PRINTING
 		if ((Args->m_sFile = poptGetArg (Args->poptcon)) != NULL)
 	    {
 			AP_Convert conv ;
@@ -1670,43 +1675,40 @@ bool AP_UnixApp::doWindowlessArgs(const AP_Args *Args, bool & bSuccess)
 			if (Args->m_expProps)
 				conv.setExpProps (Args->m_expProps);
 
-			/*
-			   if we are running with the Pango graphics as default, we do
-			   not create the XAP font manager, but the PS graphics which we
-			   use here needs it, so we have to make sure it is there
-
-			   When/if we change this to using gnomeprint, this should be
-			   removed
-			*/
-			if(!getFontManager())
-			{
-				/*
-				   need to temporarily set the Unix graphics as default to
-				   force the font loading
-				*/
-				GR_GraphicsFactory * pGF = getGraphicsFactory();
-				UT_return_val_if_fail( pGF, false );
-
-				UT_uint32 iGrId = pGF->getDefaultClass(true /*screen*/);
-				pGF->registerAsDefault(GRID_UNIX, true);
-				_loadFonts();
-				pGF->registerAsDefault(iGrId, true);
-			}
-			
-			PS_GraphicsAllocInfo ai((Args->m_sPrintTo[0] == '|' ?
-									 Args->m_sPrintTo+1 : Args->m_sPrintTo),
-									Args->m_sPrintTo, 
-									pMyUnixApp->getApplicationName(),
-									pMyUnixApp->getFontManager(),
-									(Args->m_sPrintTo[0] != '|'));
-			
-			PS_Graphics * pGraphics =
-				(PS_Graphics*) XAP_App::getApp()->newGraphics(GRID_UNIX_PS,ai);
-			
 			conv.setVerbose(Args->m_iVerbose);
-			conv.print (Args->m_sFile, pGraphics, Args->m_sFileExtension);
 
-			delete pGraphics;
+			GR_GraphicsFactory * pGF;
+
+			pGF = XAP_App::getApp()->getGraphicsFactory();
+			UT_return_val_if_fail(pGF, false);
+
+			UT_uint32 iDefaultPrintClass = pGF->getDefaultClass(false);		   
+			
+			GnomePrintJob *job = gnome_print_job_new (NULL);
+			UT_return_val_if_fail(job, false);
+
+			GnomePrintConfig *config = gnome_print_job_get_config (job);
+			UT_return_val_if_fail(config, false);
+
+			// Args->m_sPrintTo is a printer name, and "-" is our special name for the default printer.
+			if(strcmp(Args->m_sPrintTo, "-") != 0) {
+				// should we set 'Settings.Transport.Backend.Printer''? It looks deprecated, but maybe GnomePrint's lpr backend uses it...
+				gnome_print_config_set(config, reinterpret_cast<const guchar*>("Settings.Transport.Backend.Printer"), 
+									   reinterpret_cast<const guchar*>(Args->m_sPrintTo));
+				gnome_print_config_set(config, reinterpret_cast<const guchar*>("Printer"), reinterpret_cast<const guchar*>(Args->m_sPrintTo));
+			}
+			GR_Graphics *print_graphics;
+			XAP_UnixGnomePrintGraphics * gnome_print_graphics;
+
+			gnome_print_graphics = new XAP_UnixGnomePrintGraphics(job);
+			if(iDefaultPrintClass == GRID_UNIX_PANGO_PRINT || iDefaultPrintClass == GRID_UNIX_PANGO)
+				print_graphics = new GR_UnixPangoPrintGraphics(gnome_print_graphics);
+			else
+				print_graphics = gnome_print_graphics;
+
+			bSuccess = conv.print (Args->m_sFile, print_graphics, Args->m_sFileExtension);
+
+			delete print_graphics;
 	    }
 		else
 	    {
@@ -1714,6 +1716,10 @@ bool AP_UnixApp::doWindowlessArgs(const AP_Args *Args, bool & bSuccess)
 			fprintf(stderr, "Error: no file to print!\n");
 			bSuccess = false;
 	    }
+#else
+		fprintf(stderr,"Only works in GNOME build \n");
+		bSuccess = false;
+#endif
 
 		return false;
 	}

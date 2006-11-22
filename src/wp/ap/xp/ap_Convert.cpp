@@ -42,11 +42,6 @@
 #include "ut_bytebuf.h"
 #include "ie_mailmerge.h"
 
-#ifdef XP_UNIX_TARGET_GTK
-// needed for unix printing
-#include "xap_UnixPSGraphics.h"
-#endif
-
 //////////////////////////////////////////////////////////////////
 
 AP_Convert::AP_Convert(int inVerbose)
@@ -140,14 +135,6 @@ public:
 			pDocLayout->fillLayouts();
 			pDocLayout->formatAll();
 			pDocLayout->recalculateTOCFields();			
-
-#ifdef XP_UNIX_TARGET_GTK
-			if (!m_bPrintedFirstPage) {
-				PS_Graphics *psGr = static_cast<PS_Graphics*>(m_pGraphics);
-				psGr->setColorSpace(GR_Graphics::GR_COLORSPACE_COLOR);
-				psGr->setPageSize(printView.getPageSize().getPredefinedName());
-			}
-#endif
 				
 			if (!m_bPrintedFirstPage)
 				if (m_pGraphics->startPrint())
@@ -357,13 +344,7 @@ bool AP_Convert::print(const char * szFile, GR_Graphics * pGraphics, const char 
 		pDocLayout->setView (&printView);
 		pDocLayout->fillLayouts();
 		pDocLayout->formatAll();
-		
-#ifdef XP_UNIX_TARGET_GTK
-		PS_Graphics *psGr = static_cast<PS_Graphics*>(pGraphics);
-		psGr->setColorSpace(GR_Graphics::GR_COLORSPACE_COLOR);
-		psGr->setPageSize(printView.getPageSize().getPredefinedName());
-#endif
-		
+				
 		if(!s_actuallyPrint (pDoc, pGraphics, 
 				     &printView, szFile, 
 				     1, true, 
@@ -389,12 +370,6 @@ bool AP_Convert::printFirstPage(GR_Graphics * pGraphics,PD_Document * pDoc)
 	pDocLayout->setView (&printView);
 	pDocLayout->fillLayouts();
 	pDocLayout->formatAll();
-		
-#ifdef XP_UNIX_TARGET_GTK
-	PS_Graphics *psGr = static_cast<PS_Graphics*>(pGraphics);
-	psGr->setColorSpace(GR_Graphics::GR_COLORSPACE_COLOR);
-	psGr->setPageSize(printView.getPageSize().getPredefinedName());
-#endif
 		
 	bool success = s_actuallyPrint (pDoc, pGraphics, 
 					&printView, "pngThumb", 

@@ -198,11 +198,7 @@ const struct poptOption AP_Args::const_opts[] =
 #endif
 	 {"to", 't', POPT_ARG_STRING, &m_sTo, 0, "Target format of the file (abw, zabw, rtf, txt, utf8, html, latex)", "FORMAT"},
 	 {"verbose", 'v', POPT_ARG_INT, &m_iVerbose, 0, "Set verbosity level (0, 1, 2)", "LEVEL"},
-#ifdef WIN32
 	 {"print", 'p',POPT_ARG_STRING,&m_sPrintTo,0,"Print this file to printer","'Printer name' or '-' for default printer"},
-#else
-	 {"print", 'p', POPT_ARG_STRING, &m_sPrintTo, 0, "Print this file to FILE or printer", "FILE or '|lpr -Pprinter'"},
-#endif
 	 {"plugin", 'E', POPT_ARG_STRING, &m_sPlugin, 0, "Execute plugin NAME instead of the main application", NULL},
 	 {"merge", 'm', POPT_ARG_STRING, &m_sMerge, 0, "Mail-merge", "FILE"},
 	 {"imp-props", 'i', POPT_ARG_STRING, &m_impProps, 0, "Importer Arguments", "CSS String"},
