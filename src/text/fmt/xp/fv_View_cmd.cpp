@@ -695,6 +695,7 @@ void  FV_View::cmdSelectTOC(UT_sint32 x, UT_sint32 y)
 	UT_sint32 xClick=0,yClick = 0;
 	fp_Page* pPage = _getPageForXY(x,y,xClick,yClick);
 	fl_TOCLayout * pTOCL = pPage->getLastMappedTOC();
+	UT_return_if_fail(pTOCL);
 	m_Selection.setTOCSelected(pTOCL);
 	PT_DocPosition pos = pTOCL->getPosition();
 	m_iInsPoint = pos+1;
