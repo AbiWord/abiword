@@ -836,7 +836,7 @@ void fp_VerticalContainer::removeContainer(fp_Container* pContainer,bool bClear)
  */
 bool fp_VerticalContainer::insertContainer(fp_Container* pNewContainer)
 {
-	UT_ASSERT(pNewContainer);
+	UT_return_val_if_fail(pNewContainer,false);
 	pNewContainer->clearScreen();
 	xxx_UT_DEBUGMSG(("Insert  Container after CS %x in column %x \n",pNewContainer,this));
 	insertConAt(pNewContainer, 0);
@@ -861,7 +861,7 @@ UT_sint32	fp_VerticalContainer::getColumnGap(void) const
  */
 bool fp_VerticalContainer::addContainer(fp_Container* pNewContainer)
 {
-	UT_ASSERT(pNewContainer);
+	UT_return_val_if_fail(pNewContainer,false);
 	if(pNewContainer->getContainer() != NULL)
 	{
 		pNewContainer->clearScreen();
@@ -955,16 +955,9 @@ void fp_VerticalContainer::_drawBoundaries(dg_DrawArgs* pDA)
 	{
 		return;
 	}
-	UT_ASSERT(getPage());
-	UT_ASSERT(getPage()->getDocLayout()->getView());
-	if(getPage() == NULL)
-	{
-		return;
-	}
-	if(getPage()->getDocLayout()->getView() == NULL)
-	{
-		return;
-	}
+	UT_return_if_fail(getPage());
+	UT_return_if_fail(getPage()->getDocLayout()->getView());
+
     if(getPage()->getDocLayout()->getView()->getShowPara() && getGraphics()->queryProperties(GR_Graphics::DGP_SCREEN)){
         UT_sint32 xoffBegin = pDA->xoff - getGraphics()->tlu(1);
         UT_sint32 yoffBegin = pDA->yoff - getGraphics()->tlu(1);
