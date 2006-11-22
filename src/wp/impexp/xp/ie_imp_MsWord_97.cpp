@@ -1961,8 +1961,8 @@ int IE_Imp_MsWord_97::_specCharProc (wvParseStruct *ps, U16 eachchar, CHP *achp)
 // FIXME! Put some code in here to make this use Sectionframes!!
 //
 					UT_DEBUGMSG(("!!!!Found a blip in a fspa!!!!!!!!!! \n"));
-					this->_handlePositionedImage(&blip, sImageName);
-					bPositionObject = true;
+					if(UT_OK == this->_handlePositionedImage(&blip, sImageName))
+					   bPositionObject = true;
 				}
 				bool isTextBox = false;
 				UT_uint32 textOff = 0;
@@ -1997,7 +1997,7 @@ int IE_Imp_MsWord_97::_specCharProc (wvParseStruct *ps, U16 eachchar, CHP *achp)
 //				if(answer != NULL)
 //				{
 					const char * atts[] = {NULL,NULL,NULL,NULL,NULL,NULL};
-					if(bPositionObject)
+					if(bPositionObject && sImageName.size())
 					{
 					  atts[0] =  PT_STRUX_IMAGE_DATAID;
 					  atts[1] = sImageName.c_str();
