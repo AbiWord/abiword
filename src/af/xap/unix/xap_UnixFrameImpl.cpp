@@ -161,11 +161,6 @@ static DragInfo * s_getDragInfo ()
 		iter++;
 	}
 
-	for(gsize i = 0; i < dragInfo.count; i++)
-		{
-			UT_DEBUGMSG(("DRAG TARGET #%d: %s\n", i, dragInfo.entries[i].target));
-		}
-
 	isInitialized = TRUE;
 
 	return &dragInfo;
