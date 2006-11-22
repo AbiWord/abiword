@@ -90,38 +90,57 @@ static const GtkTargetEntry XAP_UnixFrameImpl__knownDragTypes[] = {
 	{"_NETSCAPE_URL", 	0, TARGET_URL}
 };
 
-typedef struct {
+struct DragInfo {
 	GtkTargetEntry * entries;
 	guint			 count;
-} DragInfo;
+
+	DragInfo()
+		: entries(NULL), count(0)
+	{		
+	}
+
+	~DragInfo()
+	{
+		for(guint i = 0; i < count; i++)
+			g_free(entries[i].target);
+
+		g_free(entries);
+	}
+
+	void addEntry(const char * target, guint flags, guint info)
+	{
+		count++;
+		entries = (GtkTargetEntry *)g_realloc(entries, count * sizeof(GtkTargetEntry));
+		entries[count - 1].target = g_strdup(target);
+		entries[count - 1].flags = flags;
+		entries[count - 1].info = info;
+	}
+
+private:
+	DragInfo& operator=(const DragInfo & rhs);
+	DragInfo(const DragInfo & rhs);
+};
 
 /*!
  * Build targets table from supported mime types.
  */
 static DragInfo * s_getDragInfo ()
 {
-	static DragInfo dragInfo = { NULL, 0 };
+	static DragInfo dragInfo;
 	bool			isInitialized = FALSE;
 
 	if (isInitialized) {
 		return &dragInfo;
 	}
 
-	std::vector<std::string>::iterator iter;
-	std::vector<std::string>::iterator end;
-	guint idx;
-
-	dragInfo.count = G_N_ELEMENTS(XAP_UnixFrameImpl__knownDragTypes) + 
-								  IE_Imp::getSupportedMimeTypes().size() + 
-								  IE_ImpGraphic::getSupportedMimeTypes().size();
-
-	dragInfo.entries = new GtkTargetEntry[dragInfo.count];
+	std::vector<std::string>::const_iterator iter;
+	std::vector<std::string>::const_iterator end;
 
 	// static types
-	for (idx = 0; idx < G_N_ELEMENTS(XAP_UnixFrameImpl__knownDragTypes); idx++) {
-		dragInfo.entries[idx].target = XAP_UnixFrameImpl__knownDragTypes[idx].target;
-		dragInfo.entries[idx].flags = XAP_UnixFrameImpl__knownDragTypes[idx].flags;
-		dragInfo.entries[idx].info = XAP_UnixFrameImpl__knownDragTypes[idx].info;
+	for (gsize idx = 0; idx < G_N_ELEMENTS(XAP_UnixFrameImpl__knownDragTypes); idx++) {
+		dragInfo.addEntry(XAP_UnixFrameImpl__knownDragTypes[idx].target,
+						   XAP_UnixFrameImpl__knownDragTypes[idx].flags,
+						   XAP_UnixFrameImpl__knownDragTypes[idx].info);
 	}
 
 	// document types
@@ -129,11 +148,8 @@ static DragInfo * s_getDragInfo ()
 	iter = mimeTypes.begin();
 	end = mimeTypes.end();
 	while (iter != end) {
-		dragInfo.entries[idx].target = const_cast<gchar *>((*iter).c_str());
-		dragInfo.entries[idx].flags = 0;
-		dragInfo.entries[idx].info = TARGET_DOCUMENT;
+		dragInfo.addEntry((*iter).c_str(), 0, TARGET_DOCUMENT);
 		iter++;
-		idx++;
 	}
 	
 	// image types
@@ -141,14 +157,15 @@ static DragInfo * s_getDragInfo ()
 	iter = mimeTypes.begin();
 	end = mimeTypes.end();
 	while (iter != end) {
-		dragInfo.entries[idx].target = const_cast<gchar *>((*iter).c_str());
-		dragInfo.entries[idx].flags = 0;
-		dragInfo.entries[idx].info = TARGET_IMAGE;
+		dragInfo.addEntry((*iter).c_str(), 0, TARGET_IMAGE);
 		iter++;
-		idx++;
 	}
 
-	UT_ASSERT(idx == dragInfo.count);
+	for(gsize i = 0; i < dragInfo.count; i++)
+		{
+			UT_DEBUGMSG(("DRAG TARGET #%d: %s\n", i, dragInfo.entries[i].target));
+		}
+
 	isInitialized = TRUE;
 
 	return &dragInfo;
