@@ -9,7 +9,6 @@ libgoffice_a_SOURCES = 					\
 	goffice/goffice-config.h			\
 	goffice/goffice-features.h			\
 	goffice/goffice-priv.h				\
-	goffice/goffice-paths.h				\
 	goffice/goffice.h					\
 	goffice/goffice.c					\
 	goffice/app/goffice-app.h			\
