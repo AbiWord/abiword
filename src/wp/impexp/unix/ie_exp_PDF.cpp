@@ -29,6 +29,8 @@
 #include "ap_EditMethods.h"
 
 #include <gsf/gsf-output-memory.h>
+#include <gsf/gsf-input-stdio.h>
+#include <glib/gstdio.h>
 
 /*****************************************************************/
 /*****************************************************************/
@@ -41,77 +43,63 @@ public:
       BACKEND_PS,
       BACKEND_PDF
     } Format;
-
+  
   IE_Exp_PDF::Format mFormat;
-
+  
   IE_Exp_PDF(PD_Document * pDocument, IE_Exp_PDF::Format format)
     : IE_Exp(pDocument), mFormat(format)
   {
   }
-
+  
   virtual ~IE_Exp_PDF()
   {
-
-  }
-
-  virtual GsfOutput* _openFile(const char * szFilename)
-  {
-    // gnome-print limitation: ensure that it's a local file
-    char * filename = UT_go_filename_from_uri (szFilename);
-    if(!filename) 
-      return NULL;
-
-    g_free(filename);
-
-    // hack - return some GsfOuput just to shut up ie_exp
-    return gsf_output_memory_new();
   }
 
   virtual UT_Error _writeDocument(void)
   {
     UT_Error exit_status = UT_ERROR;
-
+    
     GnomePrintJob *job = NULL;
     GnomePrintConfig *config = NULL;
     FL_DocLayout *pDocLayout = NULL;
     FV_View * printView = NULL;
     GR_Graphics * print_graphics = NULL;
     job = gnome_print_job_new (NULL);
-	bool bRes;
-	XAP_UnixGnomePrintGraphics * gnome_print_graphics;
+    bool bRes;
+    XAP_UnixGnomePrintGraphics * gnome_print_graphics;
     GR_GraphicsFactory * pGF;
-	UT_uint32 iDefaultPrintClass;
-	char *filename;
-
-	if(!job)
+    UT_uint32 iDefaultPrintClass;
+    char *filename = NULL;
+    
+    if(!job)
       goto exit_writeDocument;
-
+    
     config = gnome_print_job_get_config (job);
     if(!config)
       goto exit_writeDocument;
-
+    
     if(mFormat == BACKEND_PS) {
-      if (!gnome_print_config_set (config, (const guchar *)"Printer", (const guchar *)"GENERIC")) {
+      if (!gnome_print_config_set (config, (const guchar *)"Printer", (const guchar *)"GENERIC"))
 	goto exit_writeDocument;
-      }
     }
-
+    
     if(mFormat == BACKEND_PDF) {
       if (!gnome_print_config_set (config, (const guchar *)"Printer", (const guchar *)"PDF"))
 	goto exit_writeDocument;
     }
     
-    filename = UT_go_filename_from_uri (getFileName());
-    if(!filename) { // shouldn't ever fail, but be pedantic
+    // acts kinda like tempnam()
+    int fd = g_file_open_tmp(NULL, &filename, NULL);
+    if(!filename || fd == -1) { // shouldn't ever fail, but be pedantic
       UT_ASSERT(UT_SHOULD_NOT_HAPPEN);
       goto exit_writeDocument;
     }
-
+    
+    close(fd);
     bRes = (gnome_print_job_print_to_file (job, filename) == GNOME_PRINT_OK);
-    g_free (filename);
     if (!bRes)
       goto exit_writeDocument;
-
+    
     pGF = XAP_App::getApp()->getGraphicsFactory();
     if (!pGF)
       goto exit_writeDocument;
@@ -141,22 +129,55 @@ public:
 		     pDocLayout->getWidth(), pDocLayout->getHeight() / pDocLayout->countPages(), 
 		     pDocLayout->countPages(), 1);
     
-
+    // copy filename back into getFp()
+    if(_copyFile(filename))
+      exit_status = UT_OK;
+    
     /* free()'d for us by GnomePrint */
     config = NULL;
     job = NULL;
-    exit_status = UT_OK;
-
+    
   exit_writeDocument:
+    if(filename)
+      {
+	// clean up temporary file
+	g_remove(filename);
+	g_free (filename);
+      }
+    
     if(config)
       g_object_unref (G_OBJECT (config));
     if(job)
       g_object_unref (G_OBJECT (job));
-
+    
     DELETEP(pDocLayout);
     DELETEP(printView);
     DELETEP(print_graphics);
     return exit_status;
+  }
+  
+private:
+  bool _copyFile(const char * filename)
+  {
+    GsfInput * printed_file = gsf_input_stdio_new(filename, NULL);
+    if(printed_file)
+      {
+	size_t remaining = gsf_input_size(printed_file);
+	guint8 buf[1024];
+	
+	while(remaining > 0)
+	  {
+	    size_t nread = MIN(remaining, sizeof(buf));
+	    gsf_output_write(getFp(), nread, gsf_input_read(printed_file, nread, buf));
+	    remaining -= nread;
+	  }
+	
+	g_object_unref(G_OBJECT(printed_file));
+
+	return true;
+      }
+
+    return false;
   }
 };
 
