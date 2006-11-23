@@ -240,7 +240,6 @@ ABI_BONOBO
 ABI_GNOMEVFS
 ABI_GNOMEUI
 ABI_LIB
-ABI_SDI
 
 abi_build_shared=yes
 abi_build_static=no
@@ -387,7 +386,7 @@ case "$script" in
 esac
 
 if test "$PLATFORM" = "unix"; then
-	PLATFORM_CFLAGS="$GTK_CFLAGS $GMODULE_CFLAGS $GUCHARMAP_CFLAGS $GNOMEPRINT_CFLAGS $GOFFICE_CFLAGS $SDI_CFLAGS $BONOBO_CFLAGS $GNOMEVFS_CFLAGS $GNOMEUI_CFLAGS -DSUPPORTS_UT_IDLE=1"
+	PLATFORM_CFLAGS="$GTK_CFLAGS $GMODULE_CFLAGS $GUCHARMAP_CFLAGS $GNOMEPRINT_CFLAGS $GOFFICE_CFLAGS $BONOBO_CFLAGS $GNOMEVFS_CFLAGS $GNOMEUI_CFLAGS -DSUPPORTS_UT_IDLE=1"
 	PLATFORM_LIBS="$GTK_LIBS $GMODULE_LIBS $GUCHARMAP_LIBS $GNOMEPRINT_LIBS $BONOBO_LIBS $GNOMEVFS_LIBS $GNOMEUI_LIBS"
 	
 	if test "$hildon" = "true"; then
@@ -688,7 +687,6 @@ cat <<EOF
   gnome-vfs:       ${abi_gnomevfs_message}
   gnome-ui:        ${abi_gnomeui_message}
   libabiword:      ${abi_lib_message}
-  SDI:             ${abi_sdi_message}
   binreloc:        ${br_cv_binreloc}
 
   installing in:   ${prefix}
