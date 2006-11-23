@@ -414,7 +414,12 @@ BeginLayout(Main,0)
 		MenuItem(AP_MENU_ID_HELP_CHECKVER)
 		MenuItem(AP_MENU_ID_HELP_REPORT_BUG)
 		Separator()
+#ifdef HAVE_GNOME
 		MenuItem(AP_MENU_ID_HELP_ABOUT_GNOMEOFFICE)
+#endif
+#ifndef HAVE_GNOME
+		MenuItem(AP_MENU_ID_HELP_CREDITS)
+#endif
 		MenuItem(AP_MENU_ID_HELP_ABOUT)
 	EndSubMenu()
 #endif
