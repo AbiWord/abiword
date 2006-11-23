@@ -55,7 +55,7 @@ FV_VisualDragText::FV_VisualDragText (FV_View * pView)
 	  m_bNotDraggingImage(false),
 	  m_bSelectedRow(false)
 {
-	UT_ASSERT (pView);
+	UT_ASSERT_HARMLESS(pView);
 }
 
 FV_VisualDragText::~FV_VisualDragText()
@@ -94,12 +94,12 @@ void FV_VisualDragText::setMode(FV_VisualDragMode iEditMode)
 
 void FV_VisualDragText::_autoScroll(UT_Worker * pWorker)
 {
-	UT_ASSERT(pWorker);
+	UT_return_if_fail(pWorker);
 
 	// this is a static callback method and does not have a 'this' pointer.
 
 	FV_VisualDragText * pVis = static_cast<FV_VisualDragText *>(pWorker->getInstanceData());
-	UT_ASSERT(pVis);
+	UT_return_if_fail(pVis);
 	FV_View * pView = pVis->m_pView;
 	pVis->getGraphics()->setClipRect(&pVis->m_recCurFrame);
 	pView->updateScreen(false);
@@ -506,7 +506,7 @@ void FV_VisualDragText::clearCursor(void)
 		}
 		else
 		{
-			UT_ASSERT(UT_SHOULD_NOT_HAPPEN);
+			UT_ASSERT_HARMLESS(UT_SHOULD_NOT_HAPPEN);
 		}
 	}
 }
@@ -868,7 +868,7 @@ void FV_VisualDragText::getImageFromSelection(UT_sint32 x, UT_sint32 y)
 		if(pNext == NULL)
 		{
 			UT_DEBUGMSG(("Last line of selection not found! \n"));
-			UT_ASSERT(UT_SHOULD_NOT_HAPPEN);
+			UT_ASSERT_HARMLESS(UT_SHOULD_NOT_HAPPEN);
 			return;
 		}
 		pRun = pLineHigh->getFirstRun();
@@ -884,7 +884,7 @@ void FV_VisualDragText::getImageFromSelection(UT_sint32 x, UT_sint32 y)
 		if(pDSL == NULL)
 		{
 			UT_DEBUGMSG(("No DocSectionLayout \n"));
-			UT_ASSERT(UT_SHOULD_NOT_HAPPEN);
+			UT_ASSERT_HARMLESS(UT_SHOULD_NOT_HAPPEN);
 			return;
 		}
 			
@@ -1127,7 +1127,7 @@ void FV_VisualDragText::drawImage(void)
 	}
 	if(m_pDragImage == NULL)
 	{
-		UT_ASSERT(UT_SHOULD_NOT_HAPPEN);
+		UT_ASSERT_HARMLESS(UT_SHOULD_NOT_HAPPEN);
 		return;
 	}
 	GR_Painter painter(getGraphics());

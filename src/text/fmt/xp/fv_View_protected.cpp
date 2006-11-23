@@ -1339,11 +1339,11 @@ PT_DocPosition FV_View::_getDocPosFromPoint(PT_DocPosition iPoint, FV_DocPos dp,
 
 	case FV_DOCPOS_BOS:
 	case FV_DOCPOS_EOS:
-		UT_ASSERT(UT_TODO);
+		UT_ASSERT_HARMLESS(UT_TODO);
 		break;
 
 	default:
-		UT_ASSERT(UT_SHOULD_NOT_HAPPEN);
+		UT_ASSERT_HARMLESS(UT_SHOULD_NOT_HAPPEN);
 		break;
 	}
 
@@ -2262,12 +2262,12 @@ void FV_View::_moveInsPtToPage(fp_Page *page)
 
 void FV_View::_autoScroll(UT_Worker * pWorker)
 {
-	UT_ASSERT(pWorker);
+	UT_return_if_fail(pWorker);
 
 	// this is a static callback method and does not have a 'this' pointer.
 
 	FV_View * pView = static_cast<FV_View *>(pWorker->getInstanceData());
-	UT_ASSERT(pView);
+	UT_return_if_fail(pView);
 
 	if(pView->getLayout()->getDocument()->isPieceTableChanging())
 	{
@@ -2396,7 +2396,7 @@ FV_View::_computeFindPrefix(const UT_UCSChar* pFind)
 	UT_uint32 m = UT_UCS4_strlen(pFind);
 	UT_uint32 k = 0, q = 1;
 	UT_uint32 *pPrefix = (UT_uint32*) UT_calloc(m + 1, sizeof(UT_uint32));
-	UT_ASSERT(pPrefix);
+	UT_return_val_if_fail(pPrefix, NULL);
 
 	pPrefix[0] = 0; // Must be this regardless of the string
 
@@ -2473,9 +2473,8 @@ FV_View::_findNext(UT_uint32* pPrefix,
 	// Clone the search string, converting it to lowercase is search
 	// should ignore case.
 	UT_UCSChar* pFindStr = (UT_UCSChar*) UT_calloc(m, sizeof(UT_UCSChar));
-	UT_ASSERT(pFindStr);
-	if (!pFindStr)
-		return false;
+	UT_return_val_if_fail(pFindStr,false);
+
 	UT_uint32 j;
 	if (m_bMatchCase)
 	{
@@ -2577,9 +2576,8 @@ FV_View::_findPrev(UT_uint32* pPrefix,
 	// Clone the search string, converting it to lowercase is search
 	// should ignore case.
 	UT_UCSChar* pFindStr = (UT_UCSChar*) UT_calloc(m, sizeof(UT_UCSChar));
-	UT_ASSERT(pFindStr);
-	if (!pFindStr)
-		return false;
+	UT_return_val_if_fail(pFindStr,false);
+
 	UT_uint32 j;
 	if (m_bMatchCase)
 	{
@@ -2687,7 +2685,7 @@ FV_View::_findPrev(UT_uint32* pPrefix,
 PT_DocPosition
 FV_View::_BlockOffsetToPos(fl_BlockLayout * block, PT_DocPosition offset)
 {
-	UT_ASSERT(block);
+	UT_return_val_if_fail(block, 0);
 	return block->getPosition(false) + offset;
 }
 
@@ -3210,7 +3208,7 @@ UT_sint32
 FV_View::_findBlockSearchRegexp(const UT_UCSChar* /* haystack */,
 								const UT_UCSChar* /* needle */)
 {
-	UT_ASSERT(UT_NOT_IMPLEMENTED);
+	UT_ASSERT_HARMLESS(UT_NOT_IMPLEMENTED);
 
 	return -1;
 }
@@ -3503,7 +3501,7 @@ bool FV_View::_drawOrClearBetweenPositions(PT_DocPosition iPos1, PT_DocPosition 
 //			break;
 		}
 		xxx_UT_DEBUGMSG(("draw_between positions pos is %d width is %d \n",curpos,pCurRun->getWidth()));
-		UT_ASSERT(pBlock);
+		UT_return_val_if_fail(pBlock,false);
 //
 // Look to see if the Block is in a table.
 //
@@ -3559,7 +3557,7 @@ bool FV_View::_drawOrClearBetweenPositions(PT_DocPosition iPos1, PT_DocPosition 
 				}
 				else
 				{
-					UT_ASSERT(UT_SHOULD_NOT_HAPPEN);
+					UT_ASSERT_HARMLESS(UT_SHOULD_NOT_HAPPEN);
 					pCurRun = NULL;
 					continue;
 				}
@@ -5258,16 +5256,12 @@ fp_HyperlinkRun * FV_View::_getHyperlinkInRange(PT_DocPosition &posStart,
 	while(pRun && pRun->getBlockOffset() <= curPos)
 		pRun = pRun->getNextRun();
 
-	UT_ASSERT(pRun);
-	if(!pRun)
-		return NULL;
+	UT_return_val_if_fail(pRun,NULL);
 
 	// now we have the run immediately after the run in question, so
 	// we step back
 	pRun = pRun->getPrevRun();
-	UT_ASSERT(pRun);
-	if(!pRun)
-		return NULL;
+	UT_return_val_if_fail(pRun,NULL);
 
 	if (pRun->getHyperlink() != NULL)
 		return pRun->getHyperlink();
@@ -5297,9 +5291,7 @@ UT_Error FV_View::_deleteHyperlink(PT_DocPosition &pos1, bool bSignal)
 {
 	fp_HyperlinkRun * pH1 = _getHyperlinkInRange(pos1, pos1);
 
-	UT_ASSERT(pH1);
-	if(!pH1)
-		return false;
+	UT_return_val_if_fail(pH1,false);
 
 	if (!isSelectionEmpty())
 		_clearSelection();
@@ -5310,7 +5302,7 @@ UT_Error FV_View::_deleteHyperlink(PT_DocPosition &pos1, bool bSignal)
 	// hyperlink
 
 	fp_Run * pRun = pH1->getNextRun();
-	UT_ASSERT(pRun);
+	UT_ASSERT_HARMLESS(pRun);
 	while(pRun && pRun->getHyperlink() != NULL)
 	{
 		UT_DEBUGMSG(("fv_View::_deleteHyperlink: reseting run 0x%x\n", pRun));
@@ -5318,7 +5310,7 @@ UT_Error FV_View::_deleteHyperlink(PT_DocPosition &pos1, bool bSignal)
 		pRun = pRun->getNextRun();
 	}
 
-	UT_ASSERT(pRun);
+	UT_ASSERT_HARMLESS(pRun);
 
 	// Signal PieceTable Change
 	if(bSignal)
@@ -5344,11 +5336,9 @@ UT_Error FV_View::_deleteHyperlink(PT_DocPosition &pos1, bool bSignal)
 
 UT_Error FV_View::_insertGraphic(FG_Graphic* pFG, const char* szName)
 {
-	UT_ASSERT(pFG);
+	UT_return_val_if_fail(pFG,UT_ERROR);
 	UT_ASSERT(szName);
 
-	if (!pFG)
-	  return UT_ERROR;
 	if(!isPointLegal(getPoint()))
 	{
 		_makePointLegal();
@@ -5608,7 +5598,7 @@ void FV_View::_prefsListener( XAP_App * /*pApp*/, XAP_Prefs *pPrefs, UT_StringPt
 			notify the user about that.
 		*/
 		XAP_Frame * pFrame = static_cast<XAP_Frame *>(pView->getParentData());
-		UT_ASSERT((pFrame));
+		UT_return_if_fail((pFrame));
 
 		pFrame->showMessageBox(AP_STRING_ID_MSG_AfterRestartNew, XAP_Dialog_MessageBox::b_O, XAP_Dialog_MessageBox::a_OK);
 		pView->m_bWarnedThatRestartNeeded = true;
@@ -5699,7 +5689,7 @@ void FV_View::_cmdEditHdrFtr(HdrFtrType hfType)
 	if(isHdrFtrEdit())
 		clearHdrFtrEdit();
 	pShadow = pHFCon->getShadow();
-	UT_ASSERT(pShadow);
+	UT_return_if_fail(pShadow);
 //
 // Put the insertion point at the beginning of the header
 //
