@@ -394,7 +394,9 @@ static Doc_Field_Mapping_t s_Tokens[] =
 	{"FILENAME",   F_FILENAME},
 	{"\\filename", F_FILENAME},
 	{"PAGE",	   F_PAGE},
+	{"\\*Arabisch",F_PAGE},
 	{"NUMCHARS",   F_NUMCHARS},
+	{"NUMPAGES",   F_NUMPAGES},
 	{"NUMWORDS",   F_NUMWORDS},
 
 	// these below aren't handled by AbiWord, but they're known about
