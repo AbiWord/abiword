@@ -83,6 +83,7 @@ libUtil_xp_a_SOURCES=\
 	$(SCRIPT_OBJ)		\
 	$(THREAD_OBJ)		\
 	ut_xml.cpp		\
+	ut_html.cpp		\
 	ut_IntStrMap.cpp \
         ut_crc32.cpp \
 	ut_uuid.cpp \
