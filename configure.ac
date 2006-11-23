@@ -239,6 +239,7 @@ ABI_GOFFICE
 ABI_BONOBO
 ABI_GNOMEVFS
 ABI_GNOMEUI
+ABI_LIB
 ABI_SDI
 
 abi_build_shared=yes
@@ -686,6 +687,7 @@ cat <<EOF
   bonobo:          ${abi_bonobo_message}
   gnome-vfs:       ${abi_gnomevfs_message}
   gnome-ui:        ${abi_gnomeui_message}
+  libabiword:      ${abi_lib_message}
   SDI:             ${abi_sdi_message}
   binreloc:        ${br_cv_binreloc}
 
