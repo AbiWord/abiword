@@ -79,8 +79,8 @@ IE_Imp_XHTML_Sniffer::IE_Imp_XHTML_Sniffer ()
 // supported suffixes
 static IE_SuffixConfidence IE_Imp_XHTML_Sniffer__SuffixConfidence[] = {
 	{ "xhtml", 	UT_CONFIDENCE_PERFECT 	},
-	{ "html", 	UT_CONFIDENCE_GOOD 		},
-	{ "htm", 	UT_CONFIDENCE_GOOD 		},
+	{ "html", 	UT_CONFIDENCE_PERFECT	},
+	{ "htm", 	UT_CONFIDENCE_PERFECT	},
 	{ NULL, 	UT_CONFIDENCE_ZILCH 	}
 };
 
@@ -93,9 +93,9 @@ const IE_SuffixConfidence * IE_Imp_XHTML_Sniffer::getSuffixConfidence ()
 
 // supported mimetypes
 static IE_MimeConfidence IE_Imp_XHTML_Sniffer__MimeConfidence[] = {
-	{ IE_MIME_MATCH_FULL, 	IE_MIMETYPE_XHTML, 		UT_CONFIDENCE_GOOD 	}, 
-	{ IE_MIME_MATCH_FULL, 	"application/xhtml", 	UT_CONFIDENCE_GOOD 	}, 
-	{ IE_MIME_MATCH_FULL, 	"text/html", 	 	 	UT_CONFIDENCE_GOOD 	},
+	{ IE_MIME_MATCH_FULL, 	IE_MIMETYPE_XHTML, 		UT_CONFIDENCE_PERFECT 	}, 
+	{ IE_MIME_MATCH_FULL, 	"application/xhtml", 	UT_CONFIDENCE_PERFECT 	}, 
+	{ IE_MIME_MATCH_FULL, 	"text/html", 	 	 	UT_CONFIDENCE_PERFECT 	},
 	{ IE_MIME_MATCH_BOGUS, 	NULL, 					UT_CONFIDENCE_ZILCH }
 };
 
@@ -118,14 +118,14 @@ UT_Confidence_t IE_Imp_XHTML_Sniffer::recognizeContents(const char * szBuf,
 	{
 		magic = "<html" ;
 		if ( (iNumbytes - iBytesScanned) < strlen(magic) ) return(UT_CONFIDENCE_ZILCH);
-		if ( strncmp(p, magic, strlen(magic)) == 0 ) return(UT_CONFIDENCE_GOOD);
+		if ( strncmp(p, magic, strlen(magic)) == 0 ) return(UT_CONFIDENCE_PERFECT);
 		magic = "<!DOCTYPE html" ;
 		if ( (iNumbytes - iBytesScanned) < strlen(magic) ) return(UT_CONFIDENCE_ZILCH);
-		if ( strncmp(p, magic, strlen(magic)) == 0 ) return(UT_CONFIDENCE_GOOD);
+		if ( strncmp(p, magic, strlen(magic)) == 0 ) return(UT_CONFIDENCE_PERFECT);
 
 		magic = "<!DOCTYPE HTML" ;
 		if ( (iNumbytes - iBytesScanned) < strlen(magic) ) return(UT_CONFIDENCE_ZILCH);
-		if ( strncmp(p, magic, strlen(magic)) == 0 ) return(UT_CONFIDENCE_GOOD);
+		if ( strncmp(p, magic, strlen(magic)) == 0 ) return(UT_CONFIDENCE_PERFECT);
 		/*  Seek to the next newline:  */
 		while ( *p != '\n' && *p != '\r' )
 		{
