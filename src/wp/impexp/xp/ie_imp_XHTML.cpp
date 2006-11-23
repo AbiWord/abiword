@@ -46,6 +46,7 @@
 #include "ie_Table.h"
 #include "ie_impexp_HTML.h"
 #include "ie_imp_XHTML.h"
+#include "ut_html.h"
 
 typedef enum section_class
 {
@@ -94,6 +95,7 @@ const IE_SuffixConfidence * IE_Imp_XHTML_Sniffer::getSuffixConfidence ()
 static IE_MimeConfidence IE_Imp_XHTML_Sniffer__MimeConfidence[] = {
 	{ IE_MIME_MATCH_FULL, 	IE_MIMETYPE_XHTML, 		UT_CONFIDENCE_GOOD 	}, 
 	{ IE_MIME_MATCH_FULL, 	"application/xhtml", 	UT_CONFIDENCE_GOOD 	}, 
+	{ IE_MIME_MATCH_FULL, 	"text/html", 	 	 	UT_CONFIDENCE_GOOD 	},
 	{ IE_MIME_MATCH_BOGUS, 	NULL, 					UT_CONFIDENCE_ZILCH }
 };
 
@@ -155,7 +157,7 @@ bool	IE_Imp_XHTML_Sniffer::getDlgLabels(const char ** pszDesc,
 										   const char ** pszSuffixList,
 										   IEFileType * ft)
 {
-	*pszDesc = "XHTML (.html, .htm, .xhtml)";
+	*pszDesc = "HTML (.html, .htm, .xhtml)";
 	*pszSuffixList = "*.html; *.htm; *.xhtml";
 	*ft = getFileType();
 	return true;
@@ -595,7 +597,13 @@ UT_Error IE_Imp_XHTML::importFile(const char * szFilename)
 	if ( szFilename == 0) return UT_IE_BOGUSDOCUMENT;
 	if (*szFilename == 0) return UT_IE_BOGUSDOCUMENT;
 
+	UT_HTML parser;
+	setParser (&parser);
+
 	UT_Error e = IE_Imp_XML::importFile(szFilename);
+
+	setParser(0);
+
 	// m_parseState = _PS_Sec; // no point having another sections the end
  	if (!requireBlock ()) e = UT_IE_BOGUSDOCUMENT;
 	return e;
