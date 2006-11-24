@@ -14,7 +14,8 @@ rm -f autogen.err
 srcdir=`dirname $0`
 test -z "$srcdir" && srcdir=.
 
-pushd $srcdir
+olddir=`pwd`
+cd $srcdir
 
 automake --version | perl -ne 'if (/\(GNU automake\) ([0-9].[0-9])/) {print;  if ($1 < 1.4) {exit 1;}}'
 
@@ -92,7 +93,7 @@ autoconf 2>> autogen.err || {
     echo ""
 }
 
-popd
+cd $olddir
 
 conf_flags="--enable-maintainer-mode"
 
