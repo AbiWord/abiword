@@ -56,7 +56,7 @@ FV_FrameEdit::FV_FrameEdit (FV_View * pView)
 	  m_iFirstEverY(0),
 	  m_iGlobCount(0)
 {
-	UT_ASSERT (pView);
+	UT_ASSERT_HARMLESS(pView);
 }
 
 FV_FrameEdit::~FV_FrameEdit()
@@ -126,12 +126,12 @@ void FV_FrameEdit::setMode(FV_FrameEditMode iEditMode)
 
 void FV_FrameEdit::_autoScroll(UT_Worker * pWorker)
 {
-	UT_ASSERT(pWorker);
+	UT_return_if_fail(pWorker);
 
 	// this is a static callback method and does not have a 'this' pointer.
 
 	FV_FrameEdit * pFE = static_cast<FV_FrameEdit *>(pWorker->getInstanceData());
-	UT_ASSERT(pFE);
+	UT_return_if_fail(pFE);
 	FV_View * pView = pFE->m_pView;
 	UT_sint32 x = pFE->m_xLastMouse;
 	UT_sint32 y = pFE->m_yLastMouse;
@@ -714,11 +714,7 @@ void FV_FrameEdit::setDragType(UT_sint32 x, UT_sint32 y, bool bDrawFrame)
 		{
 			pCL = pCL->myContainingLayout();
 		}
-		UT_ASSERT(pCL);
-		if(pCL == NULL)
-		{
-			return;
-		}
+		UT_return_if_fail(pCL);
 		if(pCL->getContainerType() != FL_CONTAINER_FRAME)
 		{
 			return;
@@ -1293,11 +1289,7 @@ void FV_FrameEdit::mouseRelease(UT_sint32 x, UT_sint32 y)
 		{
 			pCL = pCL->myContainingLayout();
 		}
-		UT_ASSERT(pCL);
-		if(pCL == NULL)
-		{
-			return;
-		}
+		UT_return_if_fail(pCL);
 		if(pCL->getContainerType() != FL_CONTAINER_FRAME)
 		{
 			return;
@@ -1773,7 +1765,7 @@ void FV_FrameEdit::mouseRelease(UT_sint32 x, UT_sint32 y)
 		{
 			m_pFrameLayout = m_pView->getFrameLayout(posFrame);
 		}
-		UT_ASSERT(m_pFrameLayout);
+		UT_return_if_fail(m_pFrameLayout);
 
 // Set the point back to the same position on the screen
 
@@ -1843,7 +1835,7 @@ void FV_FrameEdit::deleteFrame(fl_FrameLayout * pFL)
 	        m_pFrameLayout = pFL;
 		if(m_pFrameLayout == NULL)
 		{
-		  UT_ASSERT(UT_SHOULD_NOT_HAPPEN);
+		  UT_ASSERT_HARMLESS(UT_SHOULD_NOT_HAPPEN);
 		  return;
 		}
 	}
@@ -1923,7 +1915,7 @@ void FV_FrameEdit::drawFrame(bool bWithHandles)
 {
 	if(m_pFrameContainer == NULL)
 	{
-		UT_ASSERT(UT_SHOULD_NOT_HAPPEN);
+		UT_ASSERT_HARMLESS(UT_SHOULD_NOT_HAPPEN);
 		return;
 	}
 	fp_Page * pPage = m_pFrameContainer->getPage();

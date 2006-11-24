@@ -576,7 +576,7 @@ void    fl_AutoNum::_getLabelstr( UT_UCSChar labelStr[], UT_uint32 * insPoint,
 		break;
 
 	default:
-		UT_ASSERT(UT_SHOULD_NOT_HAPPEN);
+		UT_ASSERT_HARMLESS(UT_SHOULD_NOT_HAPPEN);
 		break;
 	}
 	
@@ -824,7 +824,7 @@ void fl_AutoNum::removeItem(PL_StruxDocHandle pItem)
 				}
 				else
 				{
-					UT_ASSERT(UT_SHOULD_NOT_HAPPEN);
+					UT_ASSERT_HARMLESS(UT_SHOULD_NOT_HAPPEN);
 				}
 				pAuto->setLevel(level);
 				pAuto->_setParent(getParent());
@@ -1144,8 +1144,8 @@ void fl_AutoNum::_updateItems(UT_uint32 start, PL_StruxDocHandle notMe)
 			for(j=0; j<numlists; j++)
 			{
 				fl_AutoNum * pAuto = m_pDoc->getNthList(j);
-				UT_ASSERT(pAuto);
-				if( pItem == pAuto->getParentItem() && pItem != notMe)
+				UT_ASSERT_HARMLESS(pAuto);
+				if( pAuto && (pItem == pAuto->getParentItem()) && (pItem != notMe))
 				{
 					pAuto->_updateItems(0,pItem);
 				}

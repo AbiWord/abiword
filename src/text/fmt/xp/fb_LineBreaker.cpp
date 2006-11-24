@@ -282,7 +282,7 @@ fb_LineBreaker::breakParagraph(fl_BlockLayout* pBlock,
 				}
 				default:
 				{
-					UT_ASSERT(UT_SHOULD_NOT_HAPPEN);
+					UT_ASSERT_HARMLESS(UT_SHOULD_NOT_HAPPEN);
 					break;
 				}
 				} // switch
@@ -593,7 +593,7 @@ void fb_LineBreaker::_breakTheLineAtLastRunToKeep(fp_Line *pLine,
 		if (pCurrentRun->getLine() != pLine)
 		{
 			fp_Line* pOtherLine = pCurrentRun->getLine();
-			UT_ASSERT(pOtherLine);
+			UT_return_if_fail(pOtherLine);
 
 			pOtherLine->removeRun(pCurrentRun, true);
 			pLine->addRun(pCurrentRun);

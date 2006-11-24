@@ -319,7 +319,7 @@ void FL_DocLayout::_lookupProperties(void)
 {
 	const XML_Char * pszFootnoteType = NULL;
 	const PP_AttrProp* pDocAP = getDocument()->getAttrProp();
-	UT_ASSERT(pDocAP);
+	UT_return_if_fail(pDocAP);
 	pDocAP->getProperty("document-footnote-type", (const XML_Char *&)pszFootnoteType);
 	m_FootnoteType = FootnoteTypeFromString(pszFootnoteType);
 
@@ -482,7 +482,7 @@ void FL_DocLayout::fillLayouts(void)
 // Make a document listner to get info pumped into the layouts.
 //
 	m_pDocListener = new fl_DocListener(m_pDoc, this);
-	UT_ASSERT(m_pDocListener);
+	UT_return_if_fail(m_pDocListener);
 //
 // The act of adding the listner to the document also causes the
 // the document to pump it's content into the layout classes.
@@ -658,9 +658,9 @@ void FL_DocLayout::setView(FV_View* pView)
 	if (m_pView && !m_pPrefs )
 	{
 		XAP_App * pApp = m_pView->getApp();
-		UT_ASSERT(pApp);
+		UT_return_if_fail(pApp);
 		XAP_Prefs *pPrefs= pApp->getPrefs();
-		UT_ASSERT(pPrefs);
+		UT_ASSERT_HARMLESS(pPrefs);
 
 		if (pPrefs)
 		{
@@ -1010,7 +1010,7 @@ void FL_DocLayout::insertEndnoteContainer(fp_EndnoteContainer * pECon)
 		if(pETmp)
 		{
 			pETmpL = static_cast<fl_EndnoteLayout *>(pETmp->getSectionLayout());
-			UT_ASSERT(pETmpL);
+			UT_return_if_fail(pETmpL);
 			bBefore = (pEL->getPosition() < pETmpL->getPosition());
 		}
 	}
@@ -1827,14 +1827,14 @@ fl_BlockLayout* FL_DocLayout::findBlockAtPosition(PT_DocPosition pos) const
 
 		case PTX_Section:
 		default:
-			UT_ASSERT(UT_SHOULD_NOT_HAPPEN);
+			UT_ASSERT_HARMLESS(UT_SHOULD_NOT_HAPPEN);
 			// We asked for a block, and we got a section.  Bad
 			return NULL;
 		}
 	}
 	else
 	{
-		UT_ASSERT(0);
+		UT_ASSERT_HARMLESS(0);
 		return NULL;
 	}
 
@@ -1980,14 +1980,14 @@ fl_BlockLayout* FL_DocLayout::findBlockAtPositionReverse(PT_DocPosition pos)
 
 		case PTX_Section:
 		default:
-			UT_ASSERT(UT_SHOULD_NOT_HAPPEN);
+			UT_ASSERT_HARMLESS(UT_SHOULD_NOT_HAPPEN);
 			// We asked for a block, and we got a section.  Bad
 			return NULL;
 		}
 	}
 	else
 	{
-		UT_ASSERT(0);
+		UT_ASSERT_HARMLESS(0);
 		return NULL;
 	}
 
@@ -2017,7 +2017,7 @@ fl_BlockLayout* FL_DocLayout::findBlockAtPositionReverse(PT_DocPosition pos)
 				// It might be OK if pos-1 is in here, though...
 				if (!pShadow->getHdrFtrSectionLayout()->isPointInHere(pos-1))
 				{
-					UT_ASSERT(UT_SHOULD_NOT_HAPPEN);
+					UT_ASSERT_HARMLESS(UT_SHOULD_NOT_HAPPEN);
 				}
 			}
 
@@ -2033,7 +2033,7 @@ fl_BlockLayout* FL_DocLayout::findBlockAtPositionReverse(PT_DocPosition pos)
 		{
 			if(!isLayoutFilling())
 			{
-				UT_ASSERT(UT_SHOULD_NOT_HAPPEN);
+				UT_ASSERT_HARMLESS(UT_SHOULD_NOT_HAPPEN);
 			}
 		}
 		
@@ -2065,7 +2065,7 @@ void FL_DocLayout::deleteEmptyPages( bool bDontNotify /* default false */)
 	for (i=iCountPages - 1; i>=0; i--)
 	{
 		fp_Page* p = m_vecPages.getNthItem(i);
-		UT_ASSERT(p);
+		UT_ASSERT_HARMLESS(p);
 		if (p && p->isEmpty())
 		{
 			deletePage(p, bDontNotify);
@@ -2090,7 +2090,7 @@ void FL_DocLayout::updateOnViewModeChange()
 
 void FL_DocLayout::formatAll()
 {
-	UT_ASSERT(m_pDoc);
+	UT_return_if_fail(m_pDoc);
 	m_pDoc->enableListUpdates();
 	fl_SectionLayout* pSL = m_pFirstSection;
 //  	while (pSL)
@@ -2421,11 +2421,11 @@ void FL_DocLayout::_toggleAutoSmartQuotes(bool bSQ)
 void
 FL_DocLayout::_backgroundCheck(UT_Worker * pWorker)
 {
-	UT_ASSERT(pWorker);
+	UT_return_if_fail(pWorker);
 
 	// Get the doclayout
 	FL_DocLayout * pDocLayout = static_cast<FL_DocLayout *>(pWorker->getInstanceData());
-	UT_ASSERT(pDocLayout);
+	UT_return_if_fail(pDocLayout);
 
 	// Win32 timers can fire prematurely on asserts (the dialog's
 	// message pump releases the timers)
@@ -2909,7 +2909,7 @@ FL_DocLayout::touchesPendingWordForSpell(fl_BlockLayout *pBlock,
 	if (m_pPendingBlockForSpell != pBlock)
 		return false;
 
-	UT_ASSERT(m_pPendingWordForSpell);
+	UT_return_val_if_fail(m_pPendingWordForSpell,false);
 
 	return m_pPendingWordForSpell->doesTouch(iOffset, len);
 }
@@ -2978,7 +2978,7 @@ void FL_DocLayout::insertSectionAfter(fl_DocSectionLayout* pAfter, fl_DocSection
 
 void FL_DocLayout::removeSection(fl_DocSectionLayout * pSL)
 {
-	UT_ASSERT(pSL);
+	UT_return_if_fail(pSL);
 	UT_ASSERT(m_pFirstSection);
 
 	if (pSL->getPrev())
@@ -3059,7 +3059,7 @@ void FL_DocLayout::addHdrFtrSection(fl_SectionLayout* pHdrFtrSL)
 */
 void FL_DocLayout::removeHdrFtrSection(fl_SectionLayout * pHdrFtrSL)
 {
-	UT_ASSERT(pHdrFtrSL);
+	UT_return_if_fail(pHdrFtrSL);
 
 	if(pHdrFtrSL->getPrev())
 	{
@@ -3261,12 +3261,12 @@ void FL_DocLayout::recheckIgnoredWords()
 
 void FL_DocLayout::_redrawUpdate(UT_Worker * pWorker)
 {
-	UT_ASSERT(pWorker);
+	UT_return_if_fail(pWorker);
 
 	// this is a static callback method and does not have a 'this' pointer.
 
 	FL_DocLayout * pDocLayout = static_cast<FL_DocLayout *>(pWorker->getInstanceData());
-	UT_ASSERT(pDocLayout);
+	UT_return_if_fail(pDocLayout);
 
 	if (!pDocLayout->m_pView || pDocLayout->isLayoutFilling())
 	{

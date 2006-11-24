@@ -262,7 +262,7 @@ GR_Image* FG_GraphicRaster::generateImage(GR_Graphics* pG,
 UT_Error FG_GraphicRaster::insertIntoDocument(PD_Document* pDoc, UT_uint32 res,
 											  UT_uint32 iPos, const char* szName)
 {
-	UT_ASSERT(pDoc);
+	UT_return_val_if_fail(pDoc, UT_ERROR);
 	UT_ASSERT(szName);
 
 	/*
@@ -305,7 +305,7 @@ UT_Error FG_GraphicRaster::insertAtStrux(PD_Document* pDoc,
 										 PTStruxType iStruxType,
 										 const char* szName)
 {
-	UT_ASSERT(pDoc);
+	UT_return_val_if_fail(pDoc, UT_ERROR);
 	UT_ASSERT(szName);
 
 	/*

@@ -105,7 +105,7 @@ UT_uint32 fl_EmbedLayout::getLength(void)
 	}
 	else
 	{
-		UT_ASSERT(UT_SHOULD_NOT_HAPPEN);
+		UT_ASSERT_HARMLESS(UT_SHOULD_NOT_HAPPEN);
 		return 0;
 	}
 	UT_ASSERT(bres && sdhEnd);
@@ -365,10 +365,10 @@ void fl_FootnoteLayout::_createFootnoteContainer(void)
 		pCL = pCL->myContainingLayout();
 	}
 	fl_DocSectionLayout * pDSL = static_cast<fl_DocSectionLayout *>(pCL);
-	UT_ASSERT(pDSL != NULL);
+	UT_return_if_fail(pDSL != NULL);
 
 	fp_Container * pCon = pCL->getLastContainer();
-	UT_ASSERT(pCon);
+	UT_return_if_fail(pCon);
 	UT_sint32 iWidth = pCon->getPage()->getWidth();
 	iWidth = iWidth - pDSL->getLeftMargin() - pDSL->getRightMargin();
 	pFootnoteContainer->setWidth(iWidth);

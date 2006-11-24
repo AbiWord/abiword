@@ -144,7 +144,7 @@ void 	fl_FrameLayout::setContainerProperties(void)
 	fp_FrameContainer * pFrame = static_cast<fp_FrameContainer *>(getLastContainer());
 	if(pFrame == NULL)
 	{
-		UT_ASSERT(UT_SHOULD_NOT_HAPPEN);
+		UT_ASSERT_HARMLESS(UT_SHOULD_NOT_HAPPEN);
 		return;
 	}
 	pFrame->setBackground(m_background  );
@@ -701,7 +701,7 @@ void fl_FrameLayout::format(void)
 		if(pCL == NULL)
 		{
 			UT_DEBUGMSG(("No BlockLayout before this frame! \n"));
-			UT_ASSERT(UT_SHOULD_NOT_HAPPEN);
+			UT_ASSERT_HARMLESS(UT_SHOULD_NOT_HAPPEN);
 			return;
 		}
 		fl_BlockLayout * pBL = NULL;
@@ -719,7 +719,7 @@ void fl_FrameLayout::format(void)
 		if(count == 0)
 		{
 			UT_DEBUGMSG(("BlockLayout does not contain this frame! \n"));
-			UT_ASSERT(UT_SHOULD_NOT_HAPPEN);
+			UT_ASSERT_HARMLESS(UT_SHOULD_NOT_HAPPEN);
 			return;
 		}
 		UT_sint32 i =0;
@@ -734,7 +734,7 @@ void fl_FrameLayout::format(void)
 		if(count == i)
 		{
 			UT_DEBUGMSG(("BlockLayout does not contain this frame! \n"));
-			UT_ASSERT(UT_SHOULD_NOT_HAPPEN);
+			UT_ASSERT_HARMLESS(UT_SHOULD_NOT_HAPPEN);
 			return;
 		}
 		if(!pBL->isCollapsed())

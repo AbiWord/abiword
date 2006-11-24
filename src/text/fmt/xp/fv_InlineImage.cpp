@@ -65,7 +65,7 @@ FV_VisualInlineImage::FV_VisualInlineImage (FV_View * pView)
 	  m_bFirstDragDone(false),
 	  m_bIsEmbedded(false)
 {
-	UT_ASSERT (pView);
+	UT_ASSERT_HARMLESS(pView);
 }
 
 FV_VisualInlineImage::~FV_VisualInlineImage()
@@ -97,12 +97,12 @@ void FV_VisualInlineImage::setMode(FV_InlineDragMode iEditMode)
 
 void FV_VisualInlineImage::_autoScroll(UT_Worker * pWorker)
 {
-	UT_ASSERT(pWorker);
+	UT_return_if_fail(pWorker);
 
 	// this is a static callback method and does not have a 'this' pointer.
 
 	FV_VisualInlineImage * pVis = static_cast<FV_VisualInlineImage *>(pWorker->getInstanceData());
-	UT_ASSERT(pVis);
+	UT_return_if_fail(pVis);
 	FV_View * pView = pVis->m_pView;
 	pVis->getGraphics()->setClipRect(&pVis->m_recCurFrame);
 	pView->updateScreen(false);
@@ -660,7 +660,7 @@ void FV_VisualInlineImage::clearCursor(void)
 		}
 		else
 		{
-			UT_ASSERT(UT_SHOULD_NOT_HAPPEN);
+			UT_ASSERT_HARMLESS(UT_SHOULD_NOT_HAPPEN);
 		}
 	}
 }
@@ -1176,7 +1176,7 @@ void FV_VisualInlineImage::mouseCopy(UT_sint32 x, UT_sint32 y)
 	m_pView->getSelectedImage(&dataId);
 	if(dataId == NULL)
 	{
-	  UT_ASSERT(UT_SHOULD_NOT_HAPPEN);
+	  UT_ASSERT_HARMLESS(UT_SHOULD_NOT_HAPPEN);
 	  cleanUP();
 	  return;
 	}
@@ -1439,7 +1439,7 @@ bool FV_VisualInlineImage::drawImage(void)
 {
 	if(m_pDragImage == NULL)
 	{
-		UT_ASSERT(UT_SHOULD_NOT_HAPPEN);
+		UT_ASSERT_HARMLESS(UT_SHOULD_NOT_HAPPEN);
 		return false;
 	}
 	GR_Painter painter(getGraphics());
