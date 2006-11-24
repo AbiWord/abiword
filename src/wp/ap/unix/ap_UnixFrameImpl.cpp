@@ -372,6 +372,8 @@ UT_RGBColor AP_UnixFrameImpl::getColorSelBackground () const
 
 UT_RGBColor AP_UnixFrameImpl::getColorSelForeground () const
 {
+  UT_return_val_if_fail(m_dArea, UT_RGBColor(0,0,0));
+
   // owen says that any widget should be ok, not just text widgets
   gint state;
   
