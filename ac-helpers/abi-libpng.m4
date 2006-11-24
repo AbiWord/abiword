@@ -51,6 +51,7 @@ if test $abi_libpng = check; then
 	PKG_CHECK_MODULES(LIBPNG,libpng12,[
 		abi_libpng=pkg
 		abi_png=sys
+		ABIWORD_REQUIRED_PKGS="$ABIWORD_REQUIRED_PKGS libpng12"
 	],[	abi_libpng=check
 	])
 fi

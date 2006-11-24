@@ -22,8 +22,15 @@
 AC_DEFUN([ABI_GOFFICE], [
 
 GOFFICE_VERSION_REQUIRED='0.3.1'
+goffice_modules="libgoffice-0.3 >= $GOFFICE_VERSION_REQUIRED"
 
-PKG_CHECK_MODULES(GOFFICE, [libgoffice-0.3 >= $GOFFICE_VERSION_REQUIRED], HAVE_SYSTEM_GOFFICE=yes, HAVE_SYSTEM_GOFFICE=no)
+PKG_CHECK_MODULES(GOFFICE, [ $goffice_modules ], 
+[
+	HAVE_SYSTEM_GOFFICE=yes
+	ABIWORD_REQUIRED_PKGS="$ABIWORD_REQUIRED_PKGS $goffice_modules"
+], [
+	HAVE_SYSTEM_GOFFICE=no
+])
 
 if test "x$HAVE_SYSTEM_GOFFICE" = "xyes" ; then
 	abi_goffice_message="system"

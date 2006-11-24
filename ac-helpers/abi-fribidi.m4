@@ -25,6 +25,7 @@ FRIBIDI_LIBS=""
 
 PKG_CHECK_MODULES(FRIBIDI,[fribidi >= 0.10.4],[
 	abi_fribidi=yes
+	ABIWORD_REQUIRED_PKGS="$ABIWORD_REQUIRED_PKGS fribidi >= 0.10.4"
 ],[	echo ""
 	echo "fribidi sources can be downloaded from SourceForge"
 	echo ""

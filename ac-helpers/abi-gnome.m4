@@ -27,9 +27,7 @@ gnomeui=false
 GNOMEUI_CFLAGS=""
 GNOMEUI_LIBS=""
 
-gnomeui_modules="
-	libgnomeui-2.0 >= $GNOMEUI_REQUIRED_VERSION
-"
+gnomeui_modules="libgnomeui-2.0 >= $GNOMEUI_REQUIRED_VERSION"
 
 AC_ARG_ENABLE(gnomeui,[  --enable-gnomeui    Enable use of GnomeProgram ],
 [
@@ -58,8 +56,9 @@ AC_ARG_ENABLE(gnomeui,[  --enable-gnomeui    Enable use of GnomeProgram ],
 ])
 
 if test "$gnomeui" = true ; then
-	PKG_CHECK_MODULES(GNOMEUI,[
-		$gnomeui_modules
+	PKG_CHECK_MODULES(GNOMEUI,[ $gnomeui_modules ], 
+	[
+		ABIWORD_REQUIRED_PKGS="$ABIWORD_REQUIRED_PKGS $gnomeui_modules"		
 	])
 	GNOMEUI_CFLAGS="$GNOMEUI_CFLAGS -DHAVE_GNOMEUI=1"
 	abi_gnomeui_message="yes ($abi_gnomeui_message)"
@@ -85,9 +84,7 @@ bonobo=false
 BONOBO_CFLAGS=""
 BONOBO_LIBS=""
 
-bonobo_modules="
-	libbonoboui-2.0 >= $BONOBO_REQUIRED_VERSION
-"
+bonobo_modules="libbonoboui-2.0 >= $BONOBO_REQUIRED_VERSION"
 
 AC_ARG_ENABLE(bonobo,[  --enable-bonobo    Build bonobo widget ],
 [
@@ -116,8 +113,9 @@ AC_ARG_ENABLE(bonobo,[  --enable-bonobo    Build bonobo widget ],
 ])
 
 if test "$bonobo" = true ; then
-	PKG_CHECK_MODULES(BONOBO,[
-		$bonobo_modules
+	PKG_CHECK_MODULES(BONOBO,[ $bonobo_modules ],
+	[
+		ABIWORD_REQUIRED_PKGS="$ABIWORD_REQUIRED_PKGS $bonobo_modules"
 	])
 	BONOBO_CFLAGS="$BONOBO_CFLAGS -DHAVE_BONOBO=1"
 	abi_bonobo_message="yes ($abi_bonobo_message)"

@@ -15,7 +15,10 @@
 AC_DEFUN([ABI_WV], [
 
 	# Thank goodness, or fjf, for using pkgconfig now.
-	PKG_CHECK_MODULES(WV,[wv-1.0 >= 1.2.0])
+	PKG_CHECK_MODULES(WV,[wv-1.0 >= 1.2.0], 
+	[
+		ABIWORD_REQUIRED_PKGS="$ABIWORD_REQUIRED_PKGS wv-1.0 >= 1.2.0"
+	])
 
 	AC_SUBST(WV_LIBS)
 	AC_SUBST(WV_CFLAGS)

@@ -4,6 +4,7 @@ AC_DEFUN([ABI_GLIB2],[
 	PKG_CHECK_MODULES(GLIB,glib-2.0 >= 2.0,[
 	dnl do we need to set these?
 		abi_glib2=yes
+		ABIWORD_REQUIRED_PKGS="$ABIWORD_REQUIRED_PKGS glib-2.0 >= 2.0"
 	],[	abi_glib2=no
 	])
 	if test $abi_glib2 = no; then
@@ -13,6 +14,7 @@ AC_DEFUN([ABI_GLIB2],[
 	PKG_CHECK_MODULES(GMODULE,gmodule-2.0 >= 2.0,[
 	dnl do we need to set these?
 		abi_gmodule2=yes
+		ABIWORD_REQUIRED_PKGS="$ABIWORD_REQUIRED_PKGS gmodule-2.0 >= 2.0"
 	],[	abi_gmodule2=no
 	])
 	if test $abi_gmodule2 = no; then
@@ -22,6 +24,7 @@ AC_DEFUN([ABI_GLIB2],[
 	PKG_CHECK_MODULES(GTHREAD,gthread-2.0,[
 	dnl do we need to set these?
 		abi_gthread2=yes
+		ABIWORD_REQUIRED_PKGS="$ABIWORD_REQUIRED_PKGS gthread-2.0"
 	],[	abi_gthread2=no
 	])
 	if test $abi_gthread2 = no; then
@@ -45,7 +48,9 @@ AC_DEFUN([ABI_GTK2],[
 		gtk+-2.0 >= 2.6.0
 		pangoxft >= 1.2.0
 		libglade-2.0 >= 2.0.0
-	],[	abi_gtk2=yes
+	],[	
+		abi_gtk2=yes
+		ABIWORD_REQUIRED_PKGS="$ABIWORD_REQUIRED_PKGS gtk+-2.0 >= 2.6.0 pangoxft >= 1.2.0 libglade-2.0 >= 2.0.0"
 	],[	abi_gtk2=no
 	])
 	if test $abi_gtk2 = no; then

@@ -312,7 +312,7 @@ UT_uint32 UT_hash32(const char * p, UT_uint32 bytelen = 0);
 
 // Hack so we get AbiNativeWidget with an xp include
 #ifdef XP_UNIX_TARGET_GTK
-#include "../unix/ut_unixMisc.h"
+#include "ut_unixMisc.h"
 #else
 // TODO maintainers please fix their platform
 typedef void AbiNativeWidget;

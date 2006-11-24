@@ -48,7 +48,7 @@ abi_ver.cpp:	@PLUGIN_LIST@
 
 if WITH_LIBABIWORD
 
-ABIWORD_LIBRARY = libabiword.so
+ABIWORD_LIBRARY = libabiword-$(PACKAGE_VERSION).so
 ABIWORD_SODIR = $(shell pwd)
 ABIWORD_DYNBINARY = abiword-dynamic
 
@@ -65,7 +65,7 @@ $(ABIWORD_DYNBINARY): $(ABIWORD_LIBRARY) $(srcdir)/UnixMain.cpp
 		$(CPPFLAGS) $(CXXFLAGS) $(INCLUDES) 	\
 		$(srcdir)/UnixMain.cpp 			\
 		$(PLATFORM_LIBS) $(OTHER_LIBS) 		\
-		-L$(ABIWORD_SODIR) -labiword
+		-L$(ABIWORD_SODIR) -labiword-$(PACKAGE_VERSION)
 
 CLEANFILES += $(ABIWORD_DYNBINARY) $(ABIWORD_LIBRARY)
 ALL_LOCAL_DEPS += $(ABIWORD_DYNBINARY)

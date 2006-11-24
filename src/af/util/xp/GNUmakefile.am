@@ -18,7 +18,12 @@
 
 include $(top_srcdir)/includes.mk
 
-INCLUDES= $(AF_INCLUDES) $(OTHER_INCLUDES) $(ICONV_INCLUDES) $(LIBPNG_INCLUDES)
+INCLUDES = 			\
+	$(AF_INCLUDES) 		\
+	$(OTHER_INCLUDES) 	\
+	$(ICONV_INCLUDES) 	\
+	$(LIBPNG_INCLUDES)	\
+	$(srcdir)/../unix
 
 noinst_LIBRARIES = libUtil_xp.a
 
@@ -37,6 +42,9 @@ endif
 CFLAGS+=-frepo
 
 SUBDIRS = t
+
+headersdir = $(includedir)/abiword-$(PACKAGE_VERSION)
+headers_DATA = $(wildcard $(srcdir)/*.h)
 
 libUtil_xp_a_SOURCES=\
 	ut_AdobeEncoding.cpp 	\

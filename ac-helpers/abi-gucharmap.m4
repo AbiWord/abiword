@@ -33,7 +33,13 @@ AC_ARG_ENABLE(gucharmap,[  --disable-gucharmap  Turn off gucharmap ], [
 ])
 
 if test "x$test_cmap" = "xtrue" ; then
-	PKG_CHECK_MODULES(GUCHARMAP,[gucharmap >= 1.4], [have_cmap=true], [have_cmap=false])
+	PKG_CHECK_MODULES(GUCHARMAP,[gucharmap >= 1.4], 
+	[
+		have_cmap=true
+		ABIWORD_REQUIRED_PKGS="$ABIWORD_REQUIRED_PKGS gucharmap >= 1.4"
+	], [
+		have_cmap=false
+	])
 fi
 
 if test "x$have_cmap" = "xtrue" ; then

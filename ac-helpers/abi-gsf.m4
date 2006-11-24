@@ -17,7 +17,10 @@ AC_DEFUN([ABI_GSF], [
 	GSF_REQUIRED_VERSION='1.12.0'
 	GSF_MODULES="libgsf-1 >= $GSF_REQUIRED_VERSION"
 
-	PKG_CHECK_MODULES(GSF,[$GSF_MODULES])
+	PKG_CHECK_MODULES(GSF, [$GSF_MODULES], 
+	[
+		ABIWORD_REQUIRED_PKGS="$ABIWORD_REQUIRED_PKGS $GSF_MODULES"
+	])
 
 	AC_SUBST(GSF_CFLAGS)
 	AC_SUBST(GSF_LIBS)
@@ -65,8 +68,9 @@ AC_ARG_ENABLE(gnomevfs,[  --enable-gnomevfs    Turn on gnomevfs ],
 ])
 
 if test "$gnomevfs" = true ; then
-	PKG_CHECK_MODULES(GNOMEVFS,[
-		$gnomevfs_modules
+	PKG_CHECK_MODULES(GNOMEVFS,[ $gnomevfs_modules ], 
+	[
+		ABIWORD_REQUIRED_PKGS="$ABIWORD_REQUIRED_PKGS $gnomevfs_modules"
 	])
 	GNOMEVFS_CFLAGS="$GNOMEVFS_CFLAGS -DHAVE_GNOMEVFS=1"
 	abi_gnomevfs_message="yes ($abi_gnomevfs_message)"

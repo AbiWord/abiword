@@ -38,8 +38,13 @@ if test "$PLATFORM" != unix; then
 	xft=false
 fi
 
+xft_modules='xft >= 2.0 fontconfig >= 1.0'
+
 if test "x$xft" = "xtrue" ; then
-	PKG_CHECK_MODULES(XFT,[xft >= 2.0 fontconfig >= 1.0])
+	PKG_CHECK_MODULES(XFT,[ $xft_modules ], 
+	[
+		ABIWORD_REQUIRED_PKGS="$ABIWORD_REQUIRED_PKGS $xft_modules"
+	])
 	XFT_CFLAGS="$XFT_CFLAGS"
 fi
 

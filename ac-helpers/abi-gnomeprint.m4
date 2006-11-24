@@ -22,10 +22,12 @@ dnl detects gnomeprint
 
 GNOMEPRINT_CFLAGS=""
 GNOMEPRINT_LIBS=""
+gnomeprint_modules='libgnomeprint-2.2 >= 2.2.0 libgnomeprintui-2.2 >= 2.2.0'
 
-PKG_CHECK_MODULES(GNOMEPRINT,[libgnomeprint-2.2 >= 2.2.0 libgnomeprintui-2.2 >= 2.2.0],[
+PKG_CHECK_MODULES(GNOMEPRINT,[$gnomeprint_modules],[
 	abi_gnomeprint=yes
-],[	AC_MSG_ERROR([Error: libgnomeprint-2.2 >= 2.2.0 libgnomeprintui-2.2 >= 2.2.0 required])
+	ABIWORD_REQUIRED_PKGS="$ABIWORD_REQUIRED_PKGS $gnomeprint_modules"
+],[	AC_MSG_ERROR([Error: $gnomeprint_modules required])
 ])
 GNOMEPRINT_CFLAGS="$GNOMEPRINT_CFLAGS"
 

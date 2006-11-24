@@ -76,6 +76,10 @@ with_cocoa=false
 with_qnx=false
 with_win32=false
 
+# this variable accumulates all the required pkg-config
+# packages for the current configuration
+ABIWORD_REQUIRED_PKGS=''
+
 # when cross-compiling must have perl for cdump.pl
 if test x$cross_compiling = xyes; then
 AC_MSG_CHECKING([for perl])
@@ -503,9 +507,14 @@ AC_SUBST(VALGRIND)
 
 AM_CONDITIONAL(CROSS_COMPILING, test x$cross_compiling = xyes)
 
+# this must stay after all custrom m4 macros
+AC_SUBST(ABIWORD_REQUIRED_PKGS)
+
 AC_CONFIG_FILES([goffice-bits/GNUmakefile])
 
-AC_CONFIG_FILES([GNUmakefile
+AC_CONFIG_FILES([
+ abiword.pc
+ GNUmakefile
  src/GNUmakefile
  src/af/GNUmakefile
  src/af/tf/GNUmakefile

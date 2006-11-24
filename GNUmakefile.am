@@ -23,8 +23,32 @@ icon_DATA = abiword_48.png
 desktop_DATA = abiword.desktop
 endif
 
-mime_DATA = abiword.keys
 mimedir = $(datadir)/mime-info
+mime_DATA = abiword.keys
+
+pkgconfigdir = $(libdir)/pkgconfig
+pkgconfig_DATA = abiword-$(PACKAGE_VERSION).pc
+
+abiword-$(PACKAGE_VERSION).pc: abiword.pc
+	cp abiword.pc abiword-$(PACKAGE_VERSION).pc
+
+EXTRA_DIST = 			\
+	abi2po.pl		\
+	abiword.pc.in		\
+	abiword_48.png		\
+	abiword.desktop		\
+	abiword.keys		\
+	abiword.prj		\
+	autogen.sh		\
+	BiDiReadme.txt		\
+	BUILD.TXT		\
+	COPYING			\
+	COPYRIGHT.TXT		\
+	CREDITS.TXT		\
+	Doxyfile		\
+	dumpstrings.pl		\
+	includes.mk		\
+	README.TXT
 
 # Hack: make sure that the PEERS stuff is build first
 # We can not use the all target, because on parallel builds there is no
