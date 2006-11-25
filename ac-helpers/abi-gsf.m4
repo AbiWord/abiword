@@ -36,10 +36,7 @@ gnomevfs=false
 GNOMEVFS_CFLAGS=""
 GNOMEVFS_LIBS=""
 
-gnomevfs_modules="
-	gnome-vfs-2.0 	>= $GNOMEVFS_REQUIRED_VERSION
-	libgsf-gnome-1 	>= $GSF_REQUIRED_VERSION
-"
+gnomevfs_modules="gnome-vfs-2.0 >= $GNOMEVFS_REQUIRED_VERSION libgsf-gnome-1 >= $GSF_REQUIRED_VERSION"
 
 AC_ARG_ENABLE(gnomevfs,[  --enable-gnomevfs    Turn on gnomevfs ],
 [
