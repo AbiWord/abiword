@@ -60,6 +60,7 @@ public:
 	EV_Toolbar *		m_pToolbar[4]; // TODO: 4 = NB_OF_TOOLBARS...
 	AP_StatusBar *		m_pStatusBar;
 	ViewMode            m_pViewMode;
+        bool                m_bIsWidget;
 };
 
 #endif /* AP_FRAMEDATA_H */

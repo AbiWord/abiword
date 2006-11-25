@@ -473,6 +473,13 @@ FV_View::FV_View(XAP_App * pApp, void* pParentData, FL_DocLayout* pLayout)
 		{
 			m_caretListener = new FV_Caret_Listener (pFrame);
 			addListener(m_caretListener, &m_CaretListID);
+			AP_FrameData *pFrameData = static_cast<AP_FrameData *>(pFrame->getFrameData());		
+			if(pFrameData && pFrameData->m_bIsWidget)
+			{
+				setViewMode(VIEW_NORMAL);
+				//pFrame->toggleRuler(false);
+					//pFrame->toggleLeftRuler(false);
+			}
 		}
 		else
 		{

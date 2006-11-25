@@ -546,11 +546,18 @@ abi_widget_load_file(AbiWidget * abi, const char * pszFile)
 //
 // First draw blank document
 //
+	AP_FrameData *pFrameData = static_cast<AP_FrameData *>(pFrame->getFrameData());
+	UT_return_val_if_fail(pFrameData, false);
+	pFrameData->m_pViewMode = VIEW_NORMAL;
+	pFrameData->m_bShowRuler = false;
+	pFrameData->m_bIsWidget = true;
 	pFrame->loadDocument(NULL,IEFT_Unknown ,true);
+	pFrame->toggleRuler(false);
 	pFrame->setCursor(GR_Graphics::GR_CURSOR_WAIT);
 //
 //Now load the file
 //
+	UT_DEBUGMSG(("ATTempting to load %s \n",abi->priv->m_szFilename));
 	/*bool res=*/ ( UT_OK == pFrame->loadDocument(abi->priv->m_szFilename,IEFT_Unknown ,true));
 	s_StartStopLoadingCursor( false, pFrame);
 	abi->priv->m_bPendingFile = false;
