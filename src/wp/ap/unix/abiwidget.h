@@ -38,11 +38,11 @@
 extern "C" {
 #endif /* c++ */
 	
-#define ABI_WIDGET_TYPE        (abi_widget_get_type ())
-#define ABI_WIDGET(obj)        (GTK_CHECK_CAST((obj), ABI_WIDGET_TYPE, AbiWidget))
-#define IS_ABI_WIDGET(obj)     (GTK_CHECK_TYPE((obj), ABI_WIDGET_TYPE))
-#define IS_ABI_WIDGET_CLASS(k) (GTK_CHECK_CLASS_TYPE ((k), ABI_WIDGET_TYPE))
-#define ABI_WIDGET_CLASS(k)    (GTK_CHECK_CLASS_CAST ((k), ABI_WIDGET_TYPE, AbiWidgetClass))
+#define ABI_TYPE_WIDGET        (abi_widget_get_type ())
+#define ABI_WIDGET(obj)        (GTK_CHECK_CAST((obj), ABI_TYPE_WIDGET, AbiWidget))
+#define IS_ABI_WIDGET(obj)     (GTK_CHECK_TYPE((obj), ABI_TYPE_WIDGET))
+#define IS_ABI_WIDGET_CLASS(k) (GTK_CHECK_CLASS_TYPE ((k), ABI_TYPE_WIDGET))
+#define ABI_WIDGET_CLASS(k)    (GTK_CHECK_CLASS_CAST ((k), ABI_TYPE_WIDGET, AbiWidgetClass))
 	
   /* forward declarations */
   typedef struct _AbiWidget      AbiWidget;

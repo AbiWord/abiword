@@ -1224,6 +1224,19 @@ abiwidget_child_type (GtkContainer *container)
 static void
 abi_widget_init (AbiWidget * abi)
 {
+	AbiPrivData * priv = g_new0 (AbiPrivData, 1);
+	priv->m_pFrame = NULL;
+	priv->m_szFilename = NULL;
+	priv->m_bMappedToScreen = false;
+	priv->m_bPendingFile = false;
+	priv->m_bMappedEventProcessed = false;
+	priv->m_bUnlinkFileAfterLoad = false;
+	priv->m_iNumFileLoads = 0;
+	priv->m_pApp = NULL;
+	priv->externalApp = false;
+
+	abi->priv = priv;
+
 	// this isn't really needed, since each widget is
 	// guaranteed to be created with g_new0 and we just
 	// want everything to be 0/NULL/FALSE anyway right now
@@ -2340,31 +2353,17 @@ abi_widget_class_init (AbiWidgetClass *abi_class)
 static void
 abi_widget_construct (AbiWidget * abi, const char * file, AP_UnixApp * pApp)
 {
-	AbiPrivData * priv = g_new0 (AbiPrivData, 1);
-	priv->m_pFrame = NULL;
-	priv->m_szFilename = NULL;
-	priv->m_bMappedToScreen = false;
-	priv->m_bPendingFile = false;
-	priv->m_bMappedEventProcessed = false;
-	priv->m_bUnlinkFileAfterLoad = false;
-	priv->m_iNumFileLoads = 0;
-	if(pApp == NULL)
+	if(pApp != NULL)
 	{
-		priv->m_pApp = NULL;
-		priv->externalApp = false;
-	}
-	else
-	{
-		priv->m_pApp = pApp;
-		priv->externalApp = true;
+		abi->priv->m_pApp = pApp;
+		abi->priv->externalApp = true;
 	}
 	// this is all that we can do here, because we can't draw until we're
 	// realized and have a GdkWindow pointer
 
 	if (file)
-		priv->m_szFilename = g_strdup (file);
-
-	abi->priv = priv;
+		abi->priv->m_szFilename = g_strdup (file);
+		
 #ifdef LOGFILE
 	fprintf(getlogfile(),"AbiWidget Constructed %x \n",abi);
 #endif
