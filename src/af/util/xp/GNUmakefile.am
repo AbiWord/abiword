@@ -23,7 +23,7 @@ INCLUDES = 			\
 	$(OTHER_INCLUDES) 	\
 	$(ICONV_INCLUDES) 	\
 	$(LIBPNG_INCLUDES)	\
-	$(srcdir)/../unix
+	-I$(srcdir)/../unix
 
 noinst_LIBRARIES = libUtil_xp.a
 
