@@ -91,6 +91,7 @@ AP_FrameData::AP_FrameData()
 			default: m_pViewMode = VIEW_PRINT;  break;
 		}
 	}
+	m_bIsWidget = false;
 }
 
 AP_FrameData::~AP_FrameData()
