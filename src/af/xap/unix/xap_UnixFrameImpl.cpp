@@ -664,14 +664,12 @@ gint XAP_UnixFrameImpl::_fe::configure_event(GtkWidget* w, GdkEventConfigure *e)
 #ifdef HAVE_HILDON
 #else
         GtkWindow * pWin = NULL;
-		if(pFrame->getFrameMode() == XAP_NormalFrame)
+		if(pFrame->getFrameMode() == XAP_NormalFrame) {
 			pWin = GTK_WINDOW(pUnixFrameImpl->m_wTopLevelWindow);
-        else
-            pWin = GTK_WINDOW(pUnixFrameImpl->m_wTopLevelWindow->window);
-
-        gint gwidth,gheight;
-        gtk_window_get_size(pWin,&gwidth,&gheight);
-        pApp->setGeometry(e->x,e->y,gwidth,gheight,flags);
+	        gint gwidth,gheight;
+	        gtk_window_get_size(pWin,&gwidth,&gheight);
+	        pApp->setGeometry(e->x,e->y,gwidth,gheight,flags);
+		}
 #endif
 
 		// Dynamic Zoom Implementation
