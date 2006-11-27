@@ -119,7 +119,7 @@ libWpAp_unix_a_SOURCES=\
 	ap_@ABI_FE@StockIcons.cpp 		\
 	abiwidget.cpp				
 
-EXTRA_DIST = $(headers_DATA)
+EXTRA_DIST = $(glade_DATA) $(headers_DATA)
 
 headersdir = $(includedir)/abiword-$(PACKAGE_VERSION)/ap/unix
 headers_DATA = \
