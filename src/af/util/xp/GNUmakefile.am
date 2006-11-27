@@ -96,7 +96,7 @@ libUtil_xp_a_SOURCES= \
 
 EXTRA_DIST = $(headers_DATA)
 
-headersdir = $(includedir)/abiword-$(PACKAGE_VERSION)/util/xp
+headersdir = $(includedir)/$(PACKAGE)-$(ABIWORD_SERIES)/util/xp
 headers_DATA = \
 	ut_AbiObject.h \
 	ut_AdobeEncoding.h \

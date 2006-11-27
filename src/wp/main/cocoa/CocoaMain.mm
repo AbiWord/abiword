@@ -32,7 +32,7 @@ int main (int argc, const char **argv)
 	UT_DEBUGMSG(("activating NSDebug\n"));
 	NSDebugEnabled = NSZombieEnabled = NO;
 #endif
-	int ret = AP_CocoaApp::main(ABIWORD_APP_NAME, argc, argv);
+	int ret = AP_CocoaApp::main(PACKAGE_NAME, argc, argv);
 	
 	return ret;
 }

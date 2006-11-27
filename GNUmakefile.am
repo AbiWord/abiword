@@ -29,10 +29,10 @@ mimedir = $(datadir)/mime-info
 mime_DATA = abiword.keys
 
 pkgconfigdir = $(libdir)/pkgconfig
-pkgconfig_DATA = abiword-$(PACKAGE_VERSION).pc
+pkgconfig_DATA = abiword-$(ABIWORD_SERIES).pc
 
-abiword-$(PACKAGE_VERSION).pc: abiword.pc
-	cp abiword.pc abiword-$(PACKAGE_VERSION).pc
+abiword-$(ABIWORD_SERIES).pc: abiword.pc
+	cp abiword.pc abiword-$(ABIWORD_SERIES).pc
 
 # 'shots' are not distributed on purpose as they
 # should be removed from the source tree anyways.
@@ -143,11 +143,11 @@ install-data-local:
 	@$(mkinstalldirs) $(DESTDIR)$(bonobodir)
 	if test -d $(top_srcdir)/../abidistfiles ; then \
 	  for dir in `cd $(top_srcdir)/../abidistfiles; find . -type d ! -name CVS` ; do \
-	    $(mkinstalldirs) $(DESTDIR)$(pkgdatadir)/$$dir ;\
+	    $(mkinstalldirs) $(DESTDIR)$(ABIWORD_DATADIR)/$$dir ;\
 	    if test "$$dir" = "./dictionary"; then \
 	      if test "$(INSTALLDICTIONARY)" != "no" ; then \
-	        $(INSTALL_DATA) $(dictionary) $(DESTDIR)$(pkgdatadir)/$$dir/american.hash; \
-	        $(INSTALL_DATA) $(dictionary_list) $(DESTDIR)$(pkgdatadir)/$$dir/ispell_dictionary_list.xml; \
+	        $(INSTALL_DATA) $(dictionary) $(DESTDIR)$(ABIWORD_DATADIR)/$$dir/american.hash; \
+	        $(INSTALL_DATA) $(dictionary_list) $(DESTDIR)$(ABIWORD_DATADIR)/$$dir/ispell_dictionary_list.xml; \
 	      fi; \
 	    else \
 	      for file in `echo $(top_srcdir)/../abidistfiles/$$dir/* | grep -v MANIFEST`; do \
@@ -156,7 +156,7 @@ install-data-local:
 		  if test "$$sfile.server" = $$file; then \
 		    $(INSTALL_DATA) $$file $(DESTDIR)$(bonobodir); \
 		  else \
-		    $(INSTALL_DATA) $$file $(DESTDIR)$(pkgdatadir)/$$dir; \
+		    $(INSTALL_DATA) $$file $(DESTDIR)$(ABIWORD_DATADIR)/$$dir; \
 		  fi; \
 	        fi; \
 	      done; \
@@ -166,12 +166,12 @@ install-data-local:
 	  echo "Warning: abidistfiles package not found." ;\
 	fi
 
-	@$(mkinstalldirs) $(DESTDIR)$(pkgdatadir)/AbiWord
+	@$(mkinstalldirs) $(DESTDIR)$(ABIWORD_DATADIR)
 	@for dir in `cd $(top_srcdir)/user/wp; find . -type d ! -name CVS` ; do \
-	  $(mkinstalldirs) $(DESTDIR)$(pkgdatadir)/AbiWord/$$dir ;\
+	  $(mkinstalldirs) $(DESTDIR)$(ABIWORD_DATADIR)/$$dir ;\
 	  for file in $(top_srcdir)/user/wp/$$dir/* ; do \
 	    if test -f $$file ; then \
-	      $(INSTALL_DATA) $$file $(DESTDIR)$(pkgdatadir)/AbiWord/$$dir; \
+	      $(INSTALL_DATA) $$file $(DESTDIR)$(ABIWORD_DATADIR)/$$dir; \
 	    fi ; \
 	  done; \
 	done

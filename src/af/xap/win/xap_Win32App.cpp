@@ -312,9 +312,9 @@ void XAP_Win32App::_setAbiSuiteLibDir(void)
 			return;
 		}
 
-	// if not, see if ABISUITE_HOME was set in the environment
+	// if not, see if ABIWORD_DATADIR was set in the environment
 
-	if (GetEnvironmentVariableA("ABISUITE_HOME",buf,sizeof(buf)) > 0) //!TODO Using ANSI function
+	if (GetEnvironmentVariableA("ABIWORD_DATADIR",buf,sizeof(buf)) > 0) //!TODO Using ANSI function
 	{
 		char * p = buf;
 		int len = strlen(p);

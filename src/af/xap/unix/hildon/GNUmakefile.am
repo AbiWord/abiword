@@ -19,7 +19,6 @@
 include $(top_srcdir)/includes.mk
 
 INCLUDES= @GTK_CFLAGS@ \
-	-DABIWORD_APP_NAME="\"$(ABIWORD_APP_NAME)\"" \
 	$(AF_INCLUDES) $(WP_INCLUDES) $(TEXT_INCLUDES) $(ICONV_INCLUDES) $(OTHER_INCLUDES) $(HILDON_CFLAGS)
 
 noinst_LIBRARIES = libXap_hildon.a

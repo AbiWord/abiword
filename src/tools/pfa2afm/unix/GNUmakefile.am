@@ -32,7 +32,7 @@ pfa2afm_SOURCES = pfa2afm.c          \
 EXTRA_DIST = README.TXT \
 	$(headers_DATA)
 
-headersdir = $(includedir)/abiword-$(PACKAGE_VERSION)/pfa2afm/unix
+headersdir = $(includedir)/$(PACKAGE)-$(ABIWORD_SERIES)/pfa2afm/unix
 headers_DATA = \
 	basics.h \
 	charset.h \

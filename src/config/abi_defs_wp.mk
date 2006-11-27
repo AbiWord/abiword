@@ -40,23 +40,7 @@ ABI_APPLIBS+=		AbiWordVer AbiUtil AbiImpExp AbiPTbl AbiFmt AbiEv \
 ##
 
 ifeq ($(ABI_ESCAPE_QUOTES),YES)
-ABI_NAMEDEFS=	-DABIWORD_APP_NAME=\"\"AbiWord$(BIDI_STRING)\"\"
+ABI_NAMEDEFS=	-DPACKAGE_NAME=\"\"abiword$(BIDI_STRING)\"\"
 else
-ABI_NAMEDEFS=	-DABIWORD_APP_NAME="\"AbiWord$(BIDI_STRING)\""
+ABI_NAMEDEFS=	-DPACKAGE_NAME="\"abiword$(BIDI_STRING)\""
 endif
-
-################################################################
-## ABI_APPLIBDIR defines the name of the root of the app-specific
-##               library directory in the canonical layout.
-## ABI_APPLIBDIRDEF is the same value properly quoted for use
-##                  within the application.
-
-ABI_APPLIBDIR=AbiWord
-ifeq ($(ABI_ESCAPE_QUOTES),YES)
-ABI_APPLIBDIRDEF= -DABIWORD_APP_LIBDIR=\"\"AbiWord\"\"
-else
-ABI_APPLIBDIRDEF= -DABIWORD_APP_LIBDIR="\"AbiWord\""
-endif
-
-##################################################################
-

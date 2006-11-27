@@ -3,9 +3,9 @@ exec_prefix=@exec_prefix@
 libdir=@libdir@
 includedir=@includedir@
 
-Name: abiword-@PACKAGE_VERSION@
+Name: abiword-@ABIWORD_SERIES@
 Description: AbiWord word processing library
 Version: @VERSION@
 Requires: @ABIWORD_REQUIRED_PKGS@
-Libs: -L${libdir} -labiword-@PACKAGE_VERSION@
-Cflags: -I${includedir}/abiword-@PACKAGE_VERSION@
+Libs: -L${libdir} -labiword-@ABIWORD_SERIES@
+Cflags: -I${includedir}/abiword-@ABIWORD_SERIES@

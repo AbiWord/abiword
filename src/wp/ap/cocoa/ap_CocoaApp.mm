@@ -526,9 +526,9 @@ const char * AP_CocoaApp::getAbiSuiteAppDir(void) const
     // we return a static string, use it quickly.
 	
     static XML_Char buf[1024];
-    UT_ASSERT((strlen(getAbiSuiteLibDir()) + strlen(ABIWORD_APP_LIBDIR) + 2) < sizeof(buf));
+    UT_ASSERT((strlen(getAbiSuiteLibDir()) + strlen(PACKAGE_NAME) + 2) < sizeof(buf));
 
-    sprintf(buf,"%s/%s",getAbiSuiteLibDir(),ABIWORD_APP_LIBDIR);
+    sprintf(buf,"%s/%s",getAbiSuiteLibDir(),PACKAGE_NAME);
     return buf;
 #endif
 }

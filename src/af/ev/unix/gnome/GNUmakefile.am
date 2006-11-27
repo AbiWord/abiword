@@ -34,6 +34,6 @@ endif
 
 EXTRA_DIST = $(headers_DATA)
 
-headersdir = $(includedir)/abiword-$(PACKAGE_VERSION)/ev/unix/gnome
+headersdir = $(includedir)/$(PACKAGE)-$(ABIWORD_SERIES)/ev/unix/gnome
 headers_DATA = \
 	ev_GnomeToolbar.h

@@ -7,11 +7,11 @@
 # If it were up to me, I'd not even include the lines relating to them.
 
 # Change this if you move the AbiSuite tree.
-ABISUITE_HOME=/usr/share/abisuite
-export ABISUITE_HOME
+ABIWORD_DATADIR=/usr/share/abiword
+export ABIWORD_DATADIR
 
 # Change this if you move your fonts
-ABISUITE_FONT_HOME=$ABISUITE_HOME/fonts
+ABISUITE_FONT_HOME=$ABIWORD_DATADIR/fonts
 
 # Hard coded for a Debian system
 # We dont have both!

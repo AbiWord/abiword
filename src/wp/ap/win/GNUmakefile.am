@@ -23,9 +23,7 @@ INCLUDES= \
 	-DABIWORD_PREFIX=\""$(prefix)"\"			\
 	-DABIWORD_SYSCONFDIR=\""$(sysconfdir)"\"			\
 	-DABIWORD_DATADIR=\""$(datadir)"\"			\
-	-DABIWORD_APP_NAME="\"$(ABIWORD_APP_NAME)\"" \
-	-DABIWORD_APP_LIBDIR="\"$(ABIWORD_APP_LIBDIR)\"" \
-	-DABIWORD_PLUGINDIR="\"$(libdir)/AbiWord-2.6/plugins/\"" \
+	-DABIWORD_PLUGINSDIR="\"$(ABIWORD_PLUGINSDIR)\"" \
 	$(AF_INCLUDES) $(TEXT_INCLUDES) $(WP_INCLUDES) \
 	$(OTHER_INCLUDES) $(ICONV_INCLUDES)
 
@@ -84,7 +82,7 @@ libWpAp_win_a_SOURCES=\
 
 EXTRA_DIST = $(headers_DATA)
 
-headersdir = $(includedir)/abiword-$(PACKAGE_VERSION)/ap/win
+headersdir = $(includedir)/$(PACKAGE)-$(ABIWORD_SERIES)/ap/win
 headers_DATA = \
 	ap_Win32App.h \
 	ap_Win32AppImpl.h \

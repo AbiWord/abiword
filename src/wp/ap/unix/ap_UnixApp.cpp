@@ -479,13 +479,7 @@ bool AP_UnixApp::getPrefsValueDirectory(bool bAppSpecific,
 */
 const char * AP_UnixApp::getAbiSuiteAppDir(void) const
 {
-    // we return a static string, use it quickly.
-	
-    static XML_Char buf[1024];
-    UT_ASSERT((strlen(getAbiSuiteLibDir()) + strlen(ABIWORD_APP_LIBDIR) + 2) < sizeof(buf));
-
-    sprintf(buf,"%s/%s",getAbiSuiteLibDir(),ABIWORD_APP_LIBDIR);
-    return buf;
+    return getAbiSuiteLibDir();
 }
 
 /*!
@@ -494,14 +488,16 @@ const char * AP_UnixApp::getAbiSuiteAppDir(void) const
 */
 const char * AP_UnixApp::getAbiSuiteAppGladeDir(void) const
 {
-    // we return a static string, use it quickly.
-	
-    static XML_Char buf[1024];
-    // FIXME: remove the hardcoded "/glade" location and get it from the makefile
-    UT_ASSERT((strlen(getAbiSuiteLibDir()) + strlen(ABIWORD_APP_LIBDIR) + strlen("/glade") + 3) < sizeof(buf));
+	static const gchar *dir = NULL;
 
-    sprintf(buf,"%s/%s/glade",getAbiSuiteLibDir(),ABIWORD_APP_LIBDIR);
-    return buf;
+	if (!dir) {
+		UT_UTF8String s ("");
+		s += getAbiSuiteLibDir();
+		s += "/glade";
+		dir = g_strdup (s.utf8_str ());
+	}
+	
+    return dir;
 }
 
 
@@ -816,16 +812,8 @@ void AP_UnixApp::loadAllPlugins ()
   UT_String pluginDir;
 
   // the global plugin directory
-#ifdef ENABLE_BINRELOC
-  pluginDir = LIBDIR;
-#else
-  pluginDir = ABIWORD_LIBDIR;
-#endif
-  pluginDir += "/";
-  pluginDir += ABIWORD_APP_NAME;
-  pluginDir += "-";
-  pluginDir += PACKAGE_VERSION;
-  pluginDir += "/plugins/";
+  // TODO Rob: re-enable binreloc
+  pluginDir += ABIWORD_PLUGINSDIR "/";
 
   UT_DEBUGMSG(("pluginDir: '%s'\n", pluginDir.c_str ()));
 
@@ -833,11 +821,7 @@ void AP_UnixApp::loadAllPlugins ()
 
   // the user-local plugin directory
   pluginDir = getUserPrivateDirectory ();
-  pluginDir += "/";
-  pluginDir += ABIWORD_APP_NAME;
-  pluginDir += "-";
-  pluginDir += PACKAGE_VERSION;
-  pluginDir += "/plugins/";
+  pluginDir += "/" PACKAGE_NAME "/plugins/";
   UT_DEBUGMSG (("ROB: private plugins in '%s'\n", pluginDir.c_str ()));
   pluginList[1] = pluginDir;
 
@@ -1424,12 +1408,12 @@ int AP_UnixApp::main(const char * szAppName, int argc, const char ** argv)
 #ifdef LOGFILE
 	fprintf(logfile,"About to start gnome_program_init \n");
 #endif
-	  GnomeProgram * program = gnome_program_init ("AbiWord-" PACKAGE_VERSION, ABI_BUILD_VERSION, 
+	  GnomeProgram * program = gnome_program_init (PACKAGE, VERSION, 
 												   LIBGNOMEUI_MODULE, XArgs.m_argc, const_cast<char **>(XArgs.m_argv),
-												   GNOME_PARAM_APP_PREFIX, ABIWORD_PREFIX,
-												   GNOME_PARAM_APP_SYSCONFDIR, ABIWORD_SYSCONFDIR,
-												   GNOME_PARAM_APP_DATADIR,	ABIWORD_DATADIR,
-												   GNOME_PARAM_APP_LIBDIR, ABIWORD_APP_LIBDIR,
+												   GNOME_PARAM_APP_PREFIX, PREFIX,
+												   GNOME_PARAM_APP_SYSCONFDIR, SYSCONFDIR,
+												   GNOME_PARAM_APP_DATADIR,	PREFIX "/" PACKAGE "-" ABIWORD_SERIES,
+												   GNOME_PARAM_APP_LIBDIR, PREFIX "/" PACKAGE "-" ABIWORD_SERIES,
 												   GNOME_PARAM_POPT_TABLE, AP_Args::options, 
 												   GNOME_PARAM_NONE);
 #ifdef LOGFILE

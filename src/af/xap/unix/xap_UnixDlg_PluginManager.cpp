@@ -153,9 +153,9 @@ void XAP_UnixDialog_PluginManager::event_Load ()
 	// could also set to: XAP_App::getApp()->getAbiSuiteLibDir()/plugins
 	UT_String pluginDir (XAP_App::getApp()->getUserPrivateDirectory());
 	pluginDir += "/";
-	pluginDir += ABIWORD_APP_NAME;
+	pluginDir += PACKAGE_NAME;
 	pluginDir += "-";
-	pluginDir += PACKAGE_VERSION;
+	pluginDir += ABIWORD_SERIES;
 	pluginDir += "/plugins/";
 	pDialog->setCurrentPathname (pluginDir.c_str());
 	pDialog->setSuggestFilename(false);

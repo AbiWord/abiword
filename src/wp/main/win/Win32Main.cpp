@@ -23,5 +23,5 @@
 int WINAPI WinMain (HINSTANCE hInstance, HINSTANCE hPrevInstance,
                     PSTR szCmdLine, int iCmdShow)
 {
-	return AP_Win32App::WinMain(ABIWORD_APP_NAME, hInstance, hPrevInstance, szCmdLine, iCmdShow);
+	return AP_Win32App::WinMain(PACKAGE_NAME, hInstance, hPrevInstance, szCmdLine, iCmdShow);
 }

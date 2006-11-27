@@ -19,8 +19,7 @@
 
 include $(top_srcdir)/includes.mk
 
-INCLUDES= -DABIWORD_APP_NAME="\"$(ABIWORD_APP_NAME)\"" \
-	-DABIWORD_APP_LIBDIR="\"$(ABIWORD_APP_LIBDIR)\"" \
+INCLUDES= \
 	$(AF_INCLUDES) $(TEXT_INCLUDES) $(WP_INCLUDES) \
 	$(WV_INCLUDES) $(OTHER_INCLUDES)
 
@@ -82,7 +81,7 @@ EXTRA_DIST = \
 	abiword_48.xpm \
 	$(headers_DATA)
 
-headersdir = $(includedir)/abiword-$(PACKAGE_VERSION)/ap/qnx
+headersdir = $(includedir)/$(PACKAGE)-$(ABIWORD_SERIES)/ap/qnx
 headers_DATA = \
 	ap_QNXApp.h \
 	ap_QNXAppImpl.h \

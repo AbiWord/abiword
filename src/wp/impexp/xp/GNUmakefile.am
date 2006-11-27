@@ -58,7 +58,7 @@ libImpExp_xp_a_SOURCES=\
 
 EXTRA_DIST = $(headers_DATA)
 
-headersdir = $(includedir)/abiword-$(PACKAGE_VERSION)/impexp/xp
+headersdir = $(includedir)/$(PACKAGE)-$(ABIWORD_SERIES)/impexp/xp
 headers_DATA = \
 	ie_exp_AbiWord_1.h \
 	ie_exp_AWT.h \

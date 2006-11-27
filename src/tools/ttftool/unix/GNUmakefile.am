@@ -31,7 +31,7 @@ install-exec-local:
 
 EXTRA_DIST = $(headers_DATA)
 
-headersdir = $(includedir)/abiword-$(PACKAGE_VERSION)/tools/ttftool/unix
+headersdir = $(includedir)/$(PACKAGE)-$(ABIWORD_SERIES)/tools/ttftool/unix
 headers_DATA = \
 	encoding.h \
 	externs.h \

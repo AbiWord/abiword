@@ -82,7 +82,7 @@ CPPSRCS=		ap_$(ABI_FE)App.cpp			\
 
 TARGETS=		$(OBJS)
 
-INCLUDES+= -I$(ABI_ROOT)/../wv -I$(ABI_ROOT)/../wv/exporter -I$(ABI_ROOT)/../wv/libole2 -I$(ABI_ROOT)/../libpng -I$(ABI_ROOT)/../psiconv -DABIWORD_PLUGINDIR="\"$(prefix)/lib/AbiWord-2.6/plugins/\""
+INCLUDES+= -I$(ABI_ROOT)/../wv -I$(ABI_ROOT)/../wv/exporter -I$(ABI_ROOT)/../wv/libole2 -I$(ABI_ROOT)/../libpng -I$(ABI_ROOT)/../psiconv -DABIWORD_PLUGINSDIR="\"$(prefix)/lib/abiword-2.5/plugins/\""
 
 include $(ABI_ROOT)/src/config/abi_rules.mk
 

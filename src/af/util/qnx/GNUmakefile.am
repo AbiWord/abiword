@@ -36,7 +36,7 @@ libUtil_qnx_a_SOURCES=		\
 
 EXTRA_DIST = $(headers_DATA)
 
-headersdir = $(includedir)/abiword-$(PACKAGE_VERSION)/util/qnx
+headersdir = $(includedir)/$(PACKAGE)-$(ABIWORD_SERIES)/util/qnx
 headers_DATA = \
 	ut_files.h \
 	ut_mutexImpl.h \

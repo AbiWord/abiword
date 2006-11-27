@@ -85,12 +85,12 @@ require @gnome.org/goffice 0.0
 
 [Install]
 # abiword
-installExe ./bin/AbiWord-@PACKAGE_VERSION@
-ln -s "$PREFIX/bin/AbiWord-@PACKAGE_VERSION@" "$PREFIX/bin/abiword"
-installData ./share/AbiSuite-@PACKAGE_VERSION@
+installExe ./bin/AbiWord-@ABIWORD_SERIES@
+ln -s "$PREFIX/bin/AbiWord-@ABIWORD_SERIES@" "$PREFIX/bin/abiword"
+installData ./share/AbiSuite-@ABIWORD_SERIES@
 installDesktop "Word Processing" share/applications/abiword.desktop
 # plugins
-PLUGINPREFIX="lib/AbiWord-@PACKAGE_VERSION@/plugins"
+PLUGINPREFIX="lib/AbiWord-@ABIWORD_SERIES@/plugins"
 if [ ! -e "$PREFIX/$PLUGINPREFIX" ] ; then
   mkdir -p "$PREFIX/$PLUGINPREFIX"
 fi

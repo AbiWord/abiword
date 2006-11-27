@@ -24,8 +24,7 @@ CLEANFILES = abi_ver.cpp
 bin_PROGRAMS = AbiWord-2.6
 
 INCLUDES = \
-	-DABIWORD_APP_NAME="\"$(ABIWORD_APP_NAME)\"" \
-	-DABISUITE_HOME="\"$(pkgdatadir)\"" \
+	-DABIWORD_DATADIR="\"$(ABIWORD_DATADIR)\"" \
 	$(AF_INCLUDES) $(WP_INCLUDES) $(OTHER_INCLUDES) $(TEXT_INCLUDES) \
 	$(PLUGIN_DEFS) -I$(top_srcdir)/../abiword-plugins
 

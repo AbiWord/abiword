@@ -91,7 +91,7 @@ OBJ_DIR_SFX := $(OBJ_DIR_SFX)_armle
 endif
 
 # Compiler flags
-PORT_FLAGS	= -DABISUITE_HOME="\"/opt/AbiSuite/\""
+PORT_FLAGS	= -DABIWORD_DATADIR="\"/opt/abiword/\""
 OS_CFLAGS	= $(DSO_CFLAGS) $(PLATFORM_FLAGS) $(PORT_FLAGS)
 
 # ...

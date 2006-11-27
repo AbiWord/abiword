@@ -327,7 +327,7 @@ const char * AP_QNXApp::getAbiSuiteAppDir(void) const
 	
 	static XML_Char buf[1024];
 
-	sprintf(buf,"%s/%s",getAbiSuiteLibDir(),ABIWORD_APP_LIBDIR);
+	sprintf(buf,"%s/%s",getAbiSuiteLibDir(),PACKAGE_NAME);
 	return buf;
 }
 

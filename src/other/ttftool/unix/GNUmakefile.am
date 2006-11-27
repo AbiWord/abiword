@@ -26,7 +26,7 @@ libTtfTool_a_SOURCES = parse.c ps.c ttfutils.c
 
 EXTRA_DIST = $(headers_DATA)
 
-headersdir = $(includedir)/abiword-$(PACKAGE_VERSION)/ttftool/unix
+headersdir = $(includedir)/$(PACKAGE)-$(ABIWORD_SERIES)/ttftool/unix
 headers_DATA = \
 	encoding.h \
 	externs.h \

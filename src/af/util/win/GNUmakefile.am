@@ -37,7 +37,7 @@ libUtil_win_a_SOURCES=\
 
 EXTRA_DIST = $(headers_DATA)
 
-headersdir = $(includedir)/abiword-$(PACKAGE_VERSION)/util/win
+headersdir = $(includedir)/$(PACKAGE)-$(ABIWORD_SERIES)/util/win
 headers_DATA = \
 	ut_mutexImpl.h \
 	ut_sleep.h \

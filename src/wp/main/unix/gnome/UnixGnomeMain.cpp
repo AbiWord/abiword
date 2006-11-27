@@ -23,7 +23,7 @@
 
 int main(int argc, const char ** argv)
 {
-	return AP_UnixApp::main(ABIWORD_APP_NAME, argc, argv);
+	return AP_UnixApp::main(PACKAGE_NAME, argc, argv);
 }
 
 #endif

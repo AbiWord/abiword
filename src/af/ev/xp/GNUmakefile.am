@@ -41,7 +41,7 @@ libEv_xp_a_SOURCES=	\
 
 EXTRA_DIST = $(headers_DATA)
 
-headersdir = $(includedir)/abiword-$(PACKAGE_VERSION)/ev/xp
+headersdir = $(includedir)/$(PACKAGE)-$(ABIWORD_SERIES)/ev/xp
 headers_DATA = \
 	ev_EditBinding.h \
 	ev_EditBits.h \

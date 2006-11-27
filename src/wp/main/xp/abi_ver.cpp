@@ -40,13 +40,13 @@
 #endif /* ABI_BUILD_TARGET */
 
 const char* XAP_App::s_szBuild_ID = ABI_BUILD_ID;
-#ifndef ABISUITE_HOME
+#ifndef ABIWORD_DATADIR
 #error CRASH
 #endif
 #ifdef ENABLE_BINRELOC
-const char* XAP_App::s_szAbiSuite_Home = BR_DATADIR( "/" PACKAGE );
+const char* XAP_App::s_szAbiSuite_Home = BR_DATADIR( "/" PACKAGE "-" ABIWORD_SERIES );
 #else
-const char* XAP_App::s_szAbiSuite_Home = ABISUITE_HOME;
+const char* XAP_App::s_szAbiSuite_Home = ABIWORD_DATADIR;
 #endif // ENABLE_BINRELOC
 const char* XAP_App::s_szBuild_Version = ABI_BUILD_VERSION;
 const char* XAP_App::s_szBuild_Options = ABI_BUILD_OPTIONS;

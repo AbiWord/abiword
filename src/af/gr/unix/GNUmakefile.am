@@ -34,7 +34,7 @@ libGr_unix_a_SOURCES= $(pango_src)              \
 
 EXTRA_DIST = $(headers_DATA)
 
-headersdir = $(includedir)/abiword-$(PACKAGE_VERSION)/gr/unix
+headersdir = $(includedir)/$(PACKAGE)-$(ABIWORD_SERIES)/gr/unix
 headers_DATA = \
 	gr_UnixGraphics.h \
 	gr_UnixImage.h \

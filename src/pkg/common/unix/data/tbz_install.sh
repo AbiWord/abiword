@@ -171,11 +171,11 @@ cat >$INSTALL_BASE/bin/AbiWord<<EOF
 # AbiWord wrapper script.
 
 # Change this if you move the AbiSuite tree.
-ABISUITE_HOME=$INSTALL_BASE
-export ABISUITE_HOME
+ABIWORD_DATADIR=$INSTALL_BASE
+export ABIWORD_DATADIR
 
 # Change this if you move your fonts
-ABISUITE_FONT_HOME=\$ABISUITE_HOME/fonts
+ABISUITE_FONT_HOME=\$ABIWORD_DATADIR/fonts
 
 #locale-specific dirs could be added to it.
 ABISUITE_FONT_PATH=\$ABISUITE_FONT_HOME
@@ -213,17 +213,17 @@ then
 fi
 
 # Figure out which binary to run
-if [ -f \$ABISUITE_HOME/bin/AbiWord-2.6 ]
+if [ -f \$ABIWORD_DATADIR/bin/AbiWord-2.6 ]
 then
-    \$ABISUITE_HOME/bin/AbiWord-2.6 "\$@"
-#elif [ -f \$ABISUITE_HOME/bin/AbiWord-2.6 ]
+    \$ABIWORD_DATADIR/bin/AbiWord-2.6 "\$@"
+#elif [ -f \$ABIWORD_DATADIR/bin/AbiWord-2.6 ]
 #then
-#    \$ABISUITE_HOME/bin/AbiWord-2.6 "\$@"
+#    \$ABIWORD_DATADIR/bin/AbiWord-2.6 "\$@"
 else
     $ECHO "Error: can't find AbiWord executables:"
-    $ECHO "    \$ABISUITE_HOME/bin/AbiWord-2.6"
+    $ECHO "    \$ABIWORD_DATADIR/bin/AbiWord-2.6"
 #    $ECHO "    -or-"
-#    $ECHO "    \$ABISUITE_HOME/bin/AbiWord-2.6"
+#    $ECHO "    \$ABIWORD_DATADIR/bin/AbiWord-2.6"
     $ECHO ""
     exit
 fi

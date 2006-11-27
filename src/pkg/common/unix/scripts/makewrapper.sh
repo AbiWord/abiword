@@ -69,8 +69,8 @@ fi
 
 cat >>${DESTDIR}$SCRIPT_PATH <<EOF
 # Change this if you move the AbiSuite tree.
-ABISUITE_HOME=$INSTALL_BASE
-export ABISUITE_HOME
+ABIWORD_DATADIR=$INSTALL_BASE
+export ABIWORD_DATADIR
 
 # Change this if you move the AbiSuite binaries.
 ABISUITE_LIBEXEC=$LIBEXECDIR

@@ -35,7 +35,7 @@ libUtil_unix_a_SOURCES=\
 
 EXTRA_DIST = $(headers_DATA)
 
-headersdir = $(includedir)/abiword-$(PACKAGE_VERSION)/util/unix
+headersdir = $(includedir)/$(PACKAGE)-$(ABIWORD_SERIES)/util/unix
 headers_DATA = \
 	ut_files.h \
 	ut_mutexImpl.h \

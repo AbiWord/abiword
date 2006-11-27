@@ -227,27 +227,20 @@ esac
 case "$OS_NAME" in 
 	WIN32)
 		PLATFORM="win"
-		ABISUITE_HOME="\$(pkgdatadir)"
 		;;
 	Linux|AIX|*BSD|IRIX*|HP|OSF1|SunOS|DragonFly)
 		PLATFORM="unix"
-		ABISUITE_HOME="\$(pkgdatadir)"
 		;;
 	QNX|procnto)
 		PLATFORM="qnx"
-		ABISUITE_HOME="\$(pkgdatadir)"
 		;;
 	MACOSX)
 		PLATFORM=$abi_gui
-		ABISUITE_HOME="\$(pkgdatadir)"
 		;;
 	*)
 	       PLATFORM="unix"
-		ABISUITE_HOME="\$(pkgdatadir)"
 		;;
 esac
-
-AC_SUBST(ABISUITE_HOME)
 
 if test "$PLATFORM" = "cocoa"; then
 	BE_PLATFORM="unix"

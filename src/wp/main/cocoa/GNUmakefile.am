@@ -31,7 +31,7 @@ include $(top_srcdir)/includes.mk
 #macos_PROGRAMS = AbiWord
 noinst_PROGRAMS = AbiWord
 
-DEFS = @DEFS@ -DABIWORD_APP_NAME="\"$(ABIWORD_APP_NAME)\""
+DEFS = @DEFS@
 
 INCLUDES = $(AF_INCLUDES) $(WP_INCLUDES) $(OTHER_INCLUDES) $(TEXT_INCLUDES)
 

@@ -40,7 +40,7 @@ libImpExp_unix_a_SOURCES = \
 
 EXTRA_DIST = $(headers_DATA)
 
-headersdir = $(includedir)/abiword-$(PACKAGE_VERSION)/impexp/unix
+headersdir = $(includedir)/$(PACKAGE)-$(ABIWORD_SERIES)/impexp/unix
 headers_DATA = \
 	ie_exp_PDF.h \
 	ie_impGraphic_GdkPixbuf.h 

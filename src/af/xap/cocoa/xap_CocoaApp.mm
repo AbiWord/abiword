@@ -304,9 +304,9 @@ void XAP_CocoaApp::_setAbiSuiteLibDir()
 			return;
 		}
 	
-	// if not, see if ABISUITE_HOME was set in the environment
+	// if not, see if ABIWORD_DATADIR was set in the environment
 
-	const char * sz = getenv("ABISUITE_HOME");
+	const char * sz = getenv("ABIWORD_DATADIR");
 	if (sz && *sz)
 	{
 		strcpy(buf,sz);

@@ -32,7 +32,7 @@ libEv_qnx_a_SOURCES=		\
 
 EXTRA_DIST = $(headers_DATA)
 
-headersdir = $(includedir)/abiword-$(PACKAGE_VERSION)/ev/qnx
+headersdir = $(includedir)/$(PACKAGE)-$(ABIWORD_SERIES)/ev/qnx
 headers_DATA = \
 	ev_QNXKeyboard.h \
 	ev_QNXMenu.h \

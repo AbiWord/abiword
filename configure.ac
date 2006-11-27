@@ -21,12 +21,27 @@ dnl 02111-1307, USA.
 dnl Process this file with autoconf to produce a configure script.
 
 AC_PREREQ(2.50)
-AC_INIT([AbiSuite],[2.6],[http://www.abisource.com/])
+
+m4_define([abiword_version_major], [2])
+m4_define([abiword_version_minor], [5])
+m4_define([abiword_version_micro], [0])
+m4_define([abiword_series], [abiword_version_major.abiword_version_minor])
+m4_define([abiword_version], [abiword_version_major.abiword_version_minor.abiword_version_micro])
+
+AC_INIT([abiword],[abiword_version],[http://www.abisource.com/])
 AC_CONFIG_SRCDIR([src/af/ev/xp/ev_Menu.h])
 AC_CONFIG_AUX_DIR(ac-helpers)
 dnl AC_CONFIG_HEADERS(config.h)
+AM_INIT_AUTOMAKE
 
-AM_INIT_AUTOMAKE(AbiSuite-2.6,2.5.0)
+ABIWORD_SERIES="abiword_series"
+AC_SUBST(ABIWORD_SERIES)
+AC_DEFINE_UNQUOTED([ABIWORD_SERIES], [ "${ABIWORD_SERIES}" ])
+AC_SUBST(ABIWORD_DATADIR,    "${datadir}/${PACKAGE_NAME}-${ABIWORD_SERIES}")
+AC_SUBST(ABIWORD_GLADEDIR,   "${ABIWORD_DATADIR}/glade")
+AC_SUBST(ABIWORD_HEADERSDIR, "${includedir}/${PACKAGE_NAME}-${ABIWORD_SERIES}")
+AC_SUBST(ABIWORD_LIBDIR,     "${libdir}/${PACKAGE_NAME}-${ABIWORD_SERIES}")
+AC_SUBST(ABIWORD_PLUGINSDIR, "${ABIWORD_LIBDIR}/plugins")
 
 if test "$srcdir" = "."; then
 	abi_rootdir=".."
@@ -89,6 +104,10 @@ fi
 AC_MSG_RESULT([found])
 fi
 
+# libabiword, this triggers "embedded"
+# because of the smaller margins
+ABI_LIB
+
 # check for embedded and print first, so we can handle gnomeprint dependency
 # correcly
 ABI_HILDON_QUICK
@@ -117,6 +136,8 @@ fi
 # on embedded we will make --disable-print the default if no
 # --enable/disable-printing is given
 
+AC_MSG_CHECKING([for printing support])
+
 AC_ARG_ENABLE(printing,[  --enable-printing    Include printing capabilities],[
 	case "${enableval}" in
 	   yes)	print=true ;
@@ -143,6 +164,9 @@ AM_CONDITIONAL(WITH_PRINTING, test x$print = xtrue)
 
 # disable pango for embedded targets by default, but provide --enable-pango
 # parameter to overrided if desired
+
+AC_MSG_CHECKING([whether to use pango])
+
 AC_ARG_ENABLE(pango,[  --enable-pango    Use Pango for text layout],[
 	case "${enableval}" in
 	   yes)	usepango=true ;
@@ -219,11 +243,6 @@ AC_SUBST(ABI_BE)
 
 ABI_DETECT_ICONV
 
-ABIWORD_APP_NAME="AbiWord"
-AC_SUBST(ABIWORD_APP_NAME)
-ABIWORD_APP_LIBDIR="AbiWord"
-AC_SUBST(ABIWORD_APP_LIBDIR)
-
 dnl ./configure command line arguments
 dnl currently, we have:
 dnl   --enable-debug
@@ -243,7 +262,6 @@ ABI_GOFFICE
 ABI_BONOBO
 ABI_GNOMEVFS
 ABI_GNOMEUI
-ABI_LIB
 
 abi_build_shared=yes
 abi_build_static=no

@@ -610,69 +610,6 @@ void centerDialog(GtkWidget * parent, GtkWidget * child, bool set_transient_for)
 	}
 }
 
-#ifdef HAVE_SDI
-static void 
-placeModalDialog (GtkWidget	*dialog, 
-				  GtkWidget *parent)
-{
-	gint ox, oy, x;
-	gdk_window_get_origin (parent->window, &ox, &oy);
-	x = ox + (parent->allocation.width - GTK_WIDGET(dialog)->allocation.width) / 2;
-	gtk_window_move (GTK_WINDOW (dialog), x, oy);
-}
-
-static gboolean
-exposeModalDialogCb (GtkWidget      *widget,
-					 GdkEventExpose *event,
-					 gpointer        data)
-{
-	gtk_paint_shadow (widget->style, 
-					  widget->window,
-					  GTK_STATE_ACTIVE,
-					  GTK_SHADOW_OUT,
-					  NULL,
-					  widget,
-					  NULL,
-					  widget->allocation.x,
-					  widget->allocation.y,
-					  widget->allocation.width,
-					  widget->allocation.height);
-	return FALSE;
-}
-
-static gboolean
-moveModalDialogCb(GtkWidget			*widget,
-				  GdkEventConfigure	*event,
-				  GtkWidget 		*dialog)
-{
-	if (GDK_CONFIGURE == event->type) {
-		placeModalDialog (dialog, widget);
-	}
-	return FALSE;
-}
-
-static gboolean
-focusInCb (GtkWidget     	*widget,
-		   GdkEventFocus 	*event,
-		   GtkWidget		*parent)
-{
-	if (!gtk_window_is_active (GTK_WINDOW (parent))) {
-		gtk_widget_grab_focus (parent);
-	}
-}
-
-static void
-destroyModalDialogCb (GtkObject *dialog,
-					  XAP_Frame *pFrame)
-{
-	XAP_UnixFrameImpl 	*pUnixFrameImpl = static_cast<XAP_UnixFrameImpl *>(pFrame->getFrameImpl());
-	GtkWidget 			*parent = pUnixFrameImpl->getTopLevelWindow();
-
-	gtk_widget_set_sensitive (parent, TRUE);
-	pFrame->updateTitle ();
-}
-#endif
-
 void abiSetupModalDialog(GtkDialog * dialog, XAP_Frame *pFrame, XAP_Dialog * pDlg, gint defaultResponse)
 {
 	// To center the dialog, we need the frame of its parent.
@@ -686,41 +623,10 @@ void abiSetupModalDialog(GtkDialog * dialog, XAP_Frame *pFrame, XAP_Dialog * pDl
 #endif	
 
 	GtkWidget *popup;
-#ifdef HAVE_SDI
-//	popup = gtk_window_new (GTK_WINDOW_POPUP);
-//	gtk_widget_reparent (gtk_bin_get_child (GTK_BIN (dialog)), popup);
-	popup = GTK_WIDGET (dialog);
-	g_object_set (G_OBJECT (popup), "accept-focus", TRUE, NULL);	
-	gtk_widget_set_app_paintable (GTK_WIDGET(popup), TRUE);
-	gtk_widget_show (GTK_WIDGET(popup));
-	gtk_window_set_decorated (GTK_WINDOW (popup), FALSE);
-	const gchar *s = gtk_window_get_title (GTK_WINDOW (parentWindow));
-	UT_UTF8String title = s ? s : "";
-	title += ": ";
-	s = gtk_window_get_title (GTK_WINDOW (popup));
-	title += s ? s : "";
-	gtk_window_set_title (GTK_WINDOW (parentWindow), title.utf8_str());
-	placeModalDialog (GTK_WIDGET (popup), parentWindow);
-	g_signal_connect (G_OBJECT (parentWindow), "configure-event", G_CALLBACK (moveModalDialogCb), popup);
-	g_signal_connect (G_OBJECT (popup), "expose-event", G_CALLBACK (exposeModalDialogCb), NULL);
-	g_signal_connect (G_OBJECT (popup), "focus-in-event", G_CALLBACK (focusInCb), parentWindow);
-	g_signal_connect (G_OBJECT (popup), "destroy", G_CALLBACK (destroyModalDialogCb), pFrame);
-	gtk_widget_set_sensitive (parentWindow, FALSE);
-#else
+
 	popup = GTK_WIDGET (dialog);
 	connectFocus (GTK_WIDGET(popup), pFrame);
 	gtk_dialog_set_default_response (GTK_DIALOG (popup), defaultResponse);
-#endif
-
-	#define WINDOW_GROUP "window-group"
-	GtkWindowGroup *group = (GtkWindowGroup *) g_object_get_data (G_OBJECT (parentWindow), WINDOW_GROUP);
-	if (!group) {
-		group = gtk_window_group_new ();
-		gtk_window_group_add_window (group, GTK_WINDOW (parentWindow));
-		g_object_set_data (G_OBJECT (parentWindow), WINDOW_GROUP, group);
-	}
-	gtk_window_group_add_window (group, GTK_WINDOW (popup));
-	g_signal_connect_swapped (G_OBJECT (popup), "destroy", G_CALLBACK (gtk_window_group_remove_window), group);
 
 	centerDialog (parentWindow, GTK_WIDGET(popup));
 	gtk_window_set_modal (GTK_WINDOW(popup), TRUE);

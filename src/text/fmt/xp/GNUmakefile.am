@@ -74,7 +74,7 @@ libFmt_a_SOURCES= \
 
 EXTRA_DIST = $(headers_DATA)
 
-headersdir = $(includedir)/abiword-$(PACKAGE_VERSION)/text/fmt/xp
+headersdir = $(includedir)/$(PACKAGE)-$(ABIWORD_SERIES)/text/fmt/xp
 headers_DATA = \
 	fb_Alignment.h \
 	fb_ColumnBreaker.h \

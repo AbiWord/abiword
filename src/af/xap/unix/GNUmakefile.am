@@ -27,6 +27,8 @@ else
 SUBDIRS = t
 endif
 
+DIST_SUBDIRS = hildon t
+
 INCLUDES = 				\
 	-UVERSION 			\
 	$(GTK_CFLAGS) 		\
@@ -35,12 +37,11 @@ INCLUDES = 				\
 	$(WP_INCLUDES) 		\
 	$(TEXT_INCLUDES) 	\
 	$(ICONV_INCLUDES) 	\
-	$(OTHER_INCLUDES)	\
-	-DABIWORD_APP_NAME="\"$(ABIWORD_APP_NAME)\"" 
+	$(OTHER_INCLUDES)
 
 noinst_LIBRARIES = libXap_unix.a
 
-gladedir=$(datadir)/$(PACKAGE)/AbiWord/glade
+gladedir=$(ABIWORD_GLADEDIR)
 
 if WITH_PRINTING
 print_src = xap_UnixPSFont.cpp				\
@@ -103,7 +104,7 @@ libXap_unix_a_SOURCES= $(print_src)	\
 EXTRA_DIST = $(glade_DATA) $(headers_DATA)
 
 # TODO Rob: conditionally install print headers
-headersdir = $(includedir)/abiword-$(PACKAGE_VERSION)/xap/unix
+headersdir = $(includedir)/$(PACKAGE)-$(ABIWORD_SERIES)/xap/unix
 headers_DATA = \
 	gtkintl.h \
 	xap_EmbeddedFeatures.h \

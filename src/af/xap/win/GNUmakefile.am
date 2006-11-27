@@ -64,7 +64,7 @@ libXap_win_a_SOURCES=\
 
 EXTRA_DIST = $(headers_DATA)
 
-headersdir = $(includedir)/abiword-$(PACKAGE_VERSION)/xap/win
+headersdir = $(includedir)/$(PACKAGE)-$(ABIWORD_SERIES)/xap/win
 headers_DATA = \
 	winezmouse.h \
 	xap_Win32App.h \
