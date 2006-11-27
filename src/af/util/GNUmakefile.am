@@ -26,6 +26,7 @@ ABI_BE_OBJECTS=$(ABI_OBJECTS)
 endif
 
 SUBDIRS = xp @BE_PLATFORM@
+DIST_SUBDIRS = qnx unix win xp
 
 noinst_LIBRARIES = libUtil.a 
 check_LIBRARIES = libTestUtil.a

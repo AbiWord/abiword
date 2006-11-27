@@ -5,6 +5,8 @@ else
 SUBDIRS = goffice-bits src
 endif
 
+DIST_SUBDIRS = goffice-bits src
+
 expat_peerdir=$(top_builddir)/../expat
 wv_peerdir=$(top_builddir)/../wv
 libiconv_peerdir=$(top_builddir)/../libiconv
@@ -33,6 +35,10 @@ abiword-$(PACKAGE_VERSION).pc: abiword.pc
 	cp abiword.pc abiword-$(PACKAGE_VERSION).pc
 
 EXTRA_DIST = 			\
+	docs			\
+	po			\
+	user			\
+	\
 	abi2po.pl		\
 	abiword.pc.in		\
 	abiword_48.png		\
@@ -49,6 +55,16 @@ EXTRA_DIST = 			\
 	dumpstrings.pl		\
 	includes.mk		\
 	README.TXT
+
+# Ok, if we add 'test' to EXTRA_DIST, make dist will run the tests and exit.
+# So here we go with this hack (maybe it should just be renamed to 'tests')
+# Yours, - Rob
+dist-hook:
+	rm -rf `find $(distdir)/docs -name CVS`
+	rm -rf `find $(distdir)/po -name CVS`
+	rm -rf `find $(distdir)/user -name CVS`
+	cp -r $(srcdir)/test $(distdir)
+	rm -rf `find $(distdir)/test -name CVS`
 
 # Hack: make sure that the PEERS stuff is build first
 # We can not use the all target, because on parallel builds there is no

@@ -24,5 +24,4 @@ check_LIBRARIES= libTF.a
 
 libTF_a_SOURCES = 
 
-libTF_a_LIBADD = $(ABI_OBJECTS) 
-
+libTF_a_LIBADD = xp/*.o

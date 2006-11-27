@@ -19,3 +19,5 @@
 
 include $(top_srcdir)/includes.mk
 
+EXTRA_DIST = \
+	main.cpp

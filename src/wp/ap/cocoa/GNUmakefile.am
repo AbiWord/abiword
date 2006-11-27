@@ -82,6 +82,7 @@ libWpAp_cocoa_a_SOURCES=\
 	ap_PrintingDelegate.mm
 
 EXTRA_DIST = \
+	$(headers_DATA) \
 	ap_CocoaDialog_Background.nib \
 	ap_CocoaDialog_Break.nib \
 	ap_CocoaDialog_Columns.nib \
@@ -99,8 +100,6 @@ EXTRA_DIST = \
 	ap_CocoaDialog_ToggleCase.nib \
 	ap_CocoaDialog_WordCount.nib \
 	ap_CocoaFrame.nib
-
-EXTRA_DIST = $(headers_DATA)
 
 headersdir = $(includedir)/abiword-$(PACKAGE_VERSION)/ap/cocoa
 headers_DATA = \

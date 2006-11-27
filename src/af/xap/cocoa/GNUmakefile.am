@@ -69,8 +69,6 @@ libXap_cocoa_a_SOURCES =		\
 	xap_PrintingNSView.mm
 
 EXTRA_DIST = \
-	xap_CocoaDlg_MessageBox.nib \
-	xap_CocoaToolbarWindow.nib \
 	xap_GenericListChooser_Controller.nib \
 	$(headers_DATA)
 

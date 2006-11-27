@@ -19,5 +19,4 @@
 include $(top_srcdir)/includes.mk
 
 SUBDIRS= xp @PLATFORM@
-
-
+DIST_SUBDIRS = unix win xp

@@ -19,6 +19,7 @@
 include $(top_srcdir)/includes.mk
 
 SUBDIRS= xp @PLATFORM@
+DIST_SUBDIRS = cocoa qnx unix win xp
 
 noinst_LIBRARIES= libGr.a
 

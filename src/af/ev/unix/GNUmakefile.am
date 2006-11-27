@@ -38,7 +38,13 @@ libEv_unix_a_SOURCES =			\
 	ev_UnixToolbar.cpp		\
 	ev_UnixToolbar_ViewListener.cpp
 
-EXTRA_DIST = $(headers_DATA)
+EXTRA_DIST = \
+	stock \
+	\
+	$(headers_DATA)
+
+dist-hook:
+	rm -rf `find $(distdir)/stock -name CVS`
 
 headersdir = $(includedir)/abiword-$(PACKAGE_VERSION)/ev/unix
 headers_DATA = \

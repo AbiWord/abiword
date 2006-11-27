@@ -19,8 +19,10 @@
 include $(top_srcdir)/includes.mk
 
 if WITH_HILDON
-SUBDIRS= hildon
+SUBDIRS = hildon
 endif
+
+DIST_SUBDIRS = gnome hildon
 
 INCLUDES= \
 	-DABIWORD_PREFIX=\""$(prefix)"\"			\
@@ -66,60 +68,63 @@ glade_DATA = \
 	ap_UnixDialog_HdrFtr.glade
 
 libWpAp_unix_a_SOURCES=\
-	ap_@ABI_FE@App.cpp			\
-	ap_@ABI_FE@AppImpl.cpp			\
-	ap_@ABI_FE@Clipboard.cpp		\
-	ap_@ABI_FE@DialogFactory.cpp		\
-	ap_@ABI_FE@Dialog_Break.cpp		\
-	ap_@ABI_FE@Dialog_InsertTable.cpp	\
-	ap_@ABI_FE@Dialog_FormatTable.cpp	\
-	ap_@ABI_FE@Dialog_FormatFrame.cpp	\
-	ap_@ABI_FE@Dialog_New.cpp		\
-	ap_@ABI_FE@Dialog_Background.cpp	\
-	ap_@ABI_FE@Dialog_HdrFtr.cpp		\
-	ap_@ABI_FE@Dialog_Columns.cpp		\
-	ap_@ABI_FE@Dialog_Field.cpp		\
-	ap_@ABI_FE@Dialog_Goto.cpp		\
-	ap_@ABI_FE@Dialog_Insert_DateTime.cpp	\
-	ap_@ABI_FE@Dialog_Lists.cpp		\
-	ap_@ABI_FE@Dialog_Options.cpp		\
-	ap_@ABI_FE@Dialog_Paragraph.cpp		\
-	ap_@ABI_FE@Dialog_Replace.cpp		\
-	ap_@ABI_FE@Dialog_Spell.cpp		\
-	ap_@ABI_FE@Dialog_Styles.cpp		\
-	ap_@ABI_FE@Dialog_WordCount.cpp		\
-	ap_@ABI_FE@Dialog_ToggleCase.cpp	\
-	ap_@ABI_FE@Dialog_Tab.cpp		\
-	ap_@ABI_FE@Dialog_PageNumbers.cpp	\
-	ap_@ABI_FE@Dialog_InsertBookmark.cpp	\
-	ap_@ABI_FE@Dialog_FormatFootnotes.cpp	\
-	ap_@ABI_FE@Dialog_FormatTOC.cpp	\
-	ap_@ABI_FE@Dialog_InsertHyperlink.cpp	\
-	ap_@ABI_FE@Dialog_MarkRevisions.cpp	\
-	ap_@ABI_FE@Dialog_ListRevisions.cpp	\
-	ap_@ABI_FE@Dialog_MergeCells.cpp	\
-	ap_@ABI_FE@Dialog_SplitCells.cpp	\
-	ap_@ABI_FE@Dialog_MetaData.cpp		\
-	ap_@ABI_FE@Dialog_MailMerge.cpp		\
-	ap_@ABI_FE@Prefs.cpp			\
-	ap_@ABI_FE@StatusBar.cpp		\
-	ap_@ABI_FE@Toolbar_FontCombo.cpp	\
-	ap_@ABI_FE@Toolbar_SizeCombo.cpp	\
-	ap_@ABI_FE@Toolbar_StyleCombo.cpp	\
-	ap_@ABI_FE@Toolbar_ZoomCombo.cpp	\
-	ap_@ABI_FE@_TB_CFactory.cpp		\
-	ap_@ABI_FE@Frame.cpp			\
-	ap_@ABI_FE@Dialog_Stylist.cpp		\
-	ap_@ABI_FE@FrameImpl.cpp		\
-	ap_@ABI_FE@LeftRuler.cpp		\
-	ap_@ABI_FE@TopRuler.cpp			\
-	ap_@ABI_FE@ViewListener.cpp		\
-	ap_@ABI_FE@Dialog_PageSetup.cpp 	\
-	ap_@ABI_FE@Dialog_Latex.cpp 		\
-	ap_@ABI_FE@StockIcons.cpp 		\
+	ap_UnixApp.cpp			\
+	ap_UnixAppImpl.cpp			\
+	ap_UnixClipboard.cpp		\
+	ap_UnixDialogFactory.cpp		\
+	ap_UnixDialog_Break.cpp		\
+	ap_UnixDialog_InsertTable.cpp	\
+	ap_UnixDialog_FormatTable.cpp	\
+	ap_UnixDialog_FormatFrame.cpp	\
+	ap_UnixDialog_New.cpp		\
+	ap_UnixDialog_Background.cpp	\
+	ap_UnixDialog_HdrFtr.cpp		\
+	ap_UnixDialog_Columns.cpp		\
+	ap_UnixDialog_Field.cpp		\
+	ap_UnixDialog_Goto.cpp		\
+	ap_UnixDialog_Insert_DateTime.cpp	\
+	ap_UnixDialog_Lists.cpp		\
+	ap_UnixDialog_Options.cpp		\
+	ap_UnixDialog_Paragraph.cpp		\
+	ap_UnixDialog_Replace.cpp		\
+	ap_UnixDialog_Spell.cpp		\
+	ap_UnixDialog_Styles.cpp		\
+	ap_UnixDialog_WordCount.cpp		\
+	ap_UnixDialog_ToggleCase.cpp	\
+	ap_UnixDialog_Tab.cpp		\
+	ap_UnixDialog_PageNumbers.cpp	\
+	ap_UnixDialog_InsertBookmark.cpp	\
+	ap_UnixDialog_FormatFootnotes.cpp	\
+	ap_UnixDialog_FormatTOC.cpp	\
+	ap_UnixDialog_InsertHyperlink.cpp	\
+	ap_UnixDialog_MarkRevisions.cpp	\
+	ap_UnixDialog_ListRevisions.cpp	\
+	ap_UnixDialog_MergeCells.cpp	\
+	ap_UnixDialog_SplitCells.cpp	\
+	ap_UnixDialog_MetaData.cpp		\
+	ap_UnixDialog_MailMerge.cpp		\
+	ap_UnixPrefs.cpp			\
+	ap_UnixStatusBar.cpp		\
+	ap_UnixToolbar_FontCombo.cpp	\
+	ap_UnixToolbar_SizeCombo.cpp	\
+	ap_UnixToolbar_StyleCombo.cpp	\
+	ap_UnixToolbar_ZoomCombo.cpp	\
+	ap_Unix_TB_CFactory.cpp		\
+	ap_UnixFrame.cpp			\
+	ap_UnixDialog_Stylist.cpp		\
+	ap_UnixFrameImpl.cpp		\
+	ap_UnixLeftRuler.cpp		\
+	ap_UnixTopRuler.cpp			\
+	ap_UnixViewListener.cpp		\
+	ap_UnixDialog_PageSetup.cpp 	\
+	ap_UnixDialog_Latex.cpp 		\
+	ap_UnixStockIcons.cpp 		\
 	abiwidget.cpp				
 
-EXTRA_DIST = $(glade_DATA) $(headers_DATA)
+EXTRA_DIST = \
+	abiword_48.xpm \
+	$(glade_DATA) \
+	$(headers_DATA)
 
 headersdir = $(includedir)/abiword-$(PACKAGE_VERSION)/ap/unix
 headers_DATA = \

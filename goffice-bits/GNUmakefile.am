@@ -26,6 +26,7 @@ libgoffice_a_SOURCES = 					\
 	goffice/gtk/go-combo-box.c			\
 	goffice/gtk/go-combo-color.h		\
 	goffice/gtk/go-combo-color.c		\
+	goffice/utils/goffice-utils.h		\
 	goffice/utils/go-glib-extras.h		\
 	goffice/utils/go-glib-extras.c		\
 	goffice/utils/go-image.h			\
