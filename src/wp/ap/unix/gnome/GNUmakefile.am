@@ -26,29 +26,11 @@ INCLUDES= -DABIWORD_APP_NAME="\"$(ABIWORD_APP_NAME)\"" \
 
 noinst_LIBRARIES = libWpAp_Gnome.a
 
-libWpAp_Gnome_a_SOURCES=\
-		ap_@ABI_FE@GnomeApp.cpp				\
-		ap_@ABI_FE@GnomeDialog_Break.cpp		\
-		ap_@ABI_FE@GnomeDialog_InsertTable.cpp		\
-		ap_@ABI_FE@GnomeDialog_Columns.cpp		\
-		ap_@ABI_FE@GnomeDialog_InsertBookmark.cpp	\
-		ap_@ABI_FE@GnomeDialog_InsertHyperlink.cpp	\
-		ap_@ABI_FE@GnomeDialog_Field.cpp		\
-		ap_@ABI_FE@GnomeDialog_Goto.cpp			\
-		ap_@ABI_FE@GnomeDialog_Insert_DateTime.cpp	\
-		ap_@ABI_FE@GnomeDialog_Replace.cpp		\
-		ap_@ABI_FE@GnomeDialog_WordCount.cpp		\
-		ap_@ABI_FE@GnomeDialog_New.cpp			\
-		ap_@ABI_FE@GnomeDialog_PageNumbers.cpp		\
-		ap_@ABI_FE@GnomeDialog_PageSetup.cpp		\
-		ap_@ABI_FE@GnomeDialog_Paragraph.cpp		\
-		ap_@ABI_FE@GnomeDialog_Lists.cpp		\
-		ap_@ABI_FE@GnomeDialog_Spell.cpp		\
-		ap_@ABI_FE@GnomeDialog_ToggleCase.cpp		\
-		ap_@ABI_FE@GnomeDialog_Styles.cpp		\
-		ap_@ABI_FE@GnomeDialog_Tab.cpp			\
-		ap_@ABI_FE@GnomeDialog_Background.cpp		\
-		ap_@ABI_FE@GnomeDialog_HdrFtr.cpp		\
-		ap_@ABI_FE@GnomeDialog_MetaData.cpp		\
-		ap_NautilusView.cpp				\
-		ap_@ABI_FE@GnomeDialog_Options.cpp
+libWpAp_Gnome_a_SOURCES = \
+	ap_NautilusView.cpp
+
+EXTRA_DIST = $(headers_DATA)
+
+headersdir = $(includedir)/abiword-$(PACKAGE_VERSION)/ap/unix/gnome
+headers_DATA = \
+	ap_NautilusView.h

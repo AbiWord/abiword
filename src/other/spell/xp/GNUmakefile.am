@@ -37,3 +37,17 @@ ISPELLSOURCES =
 endif
 
 libSpell_a_SOURCES = $(COMMONSOURCES) $(ENCHANTSOURCES) $(ISPELLSOURCES)
+
+EXTRA_DIST = $(headers_DATA)
+
+# TODO Rob: conditional header install
+headersdir = $(includedir)/abiword-$(PACKAGE_VERSION)/spell/xp
+headers_DATA = \
+	barbarisms.h \
+	enchant_checker.h \
+	ispell_checker.h \
+	ispell_def.h \
+	ispell.h \
+	msgs.h \
+	spell_manager.h \
+	sp_spell.h

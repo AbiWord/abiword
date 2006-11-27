@@ -62,5 +62,47 @@ libXap_win_a_SOURCES=\
 	xap_Win32Dlg_History.cpp \
 	xap_Win32Dlg_DocComparison.cpp
 
+EXTRA_DIST = $(headers_DATA)
 
-
+headersdir = $(includedir)/abiword-$(PACKAGE_VERSION)/xap/win
+headers_DATA = \
+	winezmouse.h \
+	xap_Win32App.h \
+	xap_Win32AppImpl.h \
+	xap_Win32Clipboard.h \
+	xap_Win32ColourButton.h \
+	xap_Win32DialogBase.h \
+	xap_Win32DialogFactory.h \
+	xap_Win32DialogHelper.h \
+	xap_Win32Dlg_About.h \
+	xap_Win32Dlg_ClipArt.h \
+	xap_Win32Dlg_DocComparison.h \
+	xap_Win32Dlg_Encoding.h \
+	xap_Win32Dlg_FileOpenSaveAs.h \
+	xap_Win32Dlg_FontChooser.h \
+	xap_Win32Dlg_History.h \
+	xap_Win32Dlg_HTMLOptions.h \
+	xap_Win32Dlg_Image.h \
+	xap_Win32Dlg_Insert_Symbol.h \
+	xap_Win32Dlg_Language.h \
+	xap_Win32Dlg_ListDocuments.h \
+	xap_Win32Dlg_MessageBox.h \
+	xap_Win32Dlg_Password.h \
+	xap_Win32Dlg_PluginManager.h \
+	xap_Win32Dlg_Print.h \
+	xap_Win32Dlg_PrintPreview.h \
+	xap_Win32Dlg_Stub.h \
+	xap_Win32Dlg_WindowMore.h \
+	xap_Win32Dlg_Zoom.h \
+	xap_Win32DragAndDrop.h \
+	xap_Win32EncodingManager.h \
+	xap_Win32Features.h \
+	xap_Win32FontPreview.h \
+	xap_Win32FrameImpl.h \
+	xap_Win32LabelledSeparator.h \
+	xap_Win32Module.h \
+	xap_Win32PreviewWidget.h \
+	xap_Win32PropertySheet.h \
+	xap_Win32Slurp.h \
+	xap_Win32_TB_CFactory.h \
+	xap_Win32Toolbar_Icons.h 

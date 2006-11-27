@@ -18,7 +18,6 @@
 
 include $(top_srcdir)/includes.mk
 
-
 INCLUDES= $(PSICONV_INCLUDES) $(WP_INCLUDES) \
 	$(TEXT_INCLUDES) $(AF_INCLUDES)  $(ICONV_INCLUDES) \
 	$(LIBPNG_INCLUDES) $(OTHER_INCLUDES)  \
@@ -28,3 +27,9 @@ noinst_LIBRARIES = libImpExp_cocoa.a
 
 libImpExp_cocoa_a_SOURCES = ie_impexp_RegisterCocoa.cpp \
 		ie_impGraphic_Cocoa.mm
+
+EXTRA_DIST = $(headers_DATA)
+
+headersdir = $(includedir)/abiword-$(PACKAGE_VERSION)/impexp/cocoa
+headers_DATA = \
+	ie_impGraphic_Cocoa.h 

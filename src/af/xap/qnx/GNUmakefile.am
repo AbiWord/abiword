@@ -50,6 +50,37 @@ libXap_qnx_a_SOURCES=		\
 	xap_QNXDlg_History.cpp \
 	xap_QNXDlg_DocComparison.cpp 
 
+EXTRA_DIST = $(headers_DATA)
 
-
-
+headersdir = $(includedir)/abiword-$(PACKAGE_VERSION)/xap/qnx
+headers_DATA = \
+	xap_QNXApp.h \
+	xap_QNXAppImpl.h \
+	xap_QNXClipboard.h \
+	xap_QNXDialogFactory.h \
+	xap_QNXDlg_About.h \
+	xap_QNXDlg_ClipArt.h \
+	xap_QNXDlg_DocComparison.h \
+	xap_QNXDlg_Encoding.h \
+	xap_QNXDlg_FileOpenSaveAs.h \
+	xap_QNXDlg_FontChooser.h \
+	xap_QNXDlg_History.h \
+	xap_QNXDlg_HTMLOptions.h \
+	xap_QNXDlg_Image.h \
+	xap_QNXDlg_Insert_Symbol.h \
+	xap_QNXDlg_Language.h \
+	xap_QNXDlg_ListDocuments.h \
+	xap_QNXDlg_MessageBox.h \
+	xap_QNXDlg_Password.h \
+	xap_QNXDlg_PluginManager.h \
+	xap_QNXDlg_Print.h \
+	xap_QNXDlg_PrintPreview.h \
+	xap_QNXDlg_Stub.h \
+	xap_QNXDlg_WindowMore.h \
+	xap_QNXDlg_Zoom.h \
+	xap_QNXEncodingManager.h \
+	xap_QNXFontPreview.h \
+	xap_QNXFrameImpl.h \
+	xap_QNXModule.h \
+	xap_QNX_TB_CFactory.h \
+	xap_QNXToolbar_Icons.h

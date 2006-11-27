@@ -20,5 +20,16 @@ include $(top_srcdir)/includes.mk
 
 noinst_LIBRARIES = libApkg.a
 
-libApkg_a_SOURCES=\
-	prefix.c
+libApkg_a_SOURCES = 	\
+	prefix.c	\
+	prefix.h
+
+EXTRA_DIST = 			\
+	abiword-gnome.apspec.in	\
+	@abisource.com		\
+	@freedesktop.org	\
+	@gnome.org		\
+	@libwpd.sourceforge.net
+
+dist-hook:
+	rm -rf `find $(distdir) -name CVS`

@@ -29,3 +29,11 @@ ttftool_SOURCES = ttftool.c ps.c parse.c ttfutils.c
 install-exec-local:
 	@mkdir -p $(DESTDIR)/$(bindir) && cp -f ttftool $(DESTDIR)/$(bindir)/ttftool
 
+EXTRA_DIST = $(headers_DATA)
+
+headersdir = $(includedir)/abiword-$(PACKAGE_VERSION)/tools/ttftool/unix
+headers_DATA = \
+	encoding.h \
+	externs.h \
+	proto.h \
+	types.h 

@@ -72,5 +72,50 @@ libFmt_a_SOURCES= \
 	fp_MathRun.cpp \
 	fp_EmbedRun.cpp
 
+EXTRA_DIST = $(headers_DATA)
 
-
+headersdir = $(includedir)/abiword-$(PACKAGE_VERSION)/text/fmt/xp
+headers_DATA = \
+	fb_Alignment.h \
+	fb_ColumnBreaker.h \
+	fb_LineBreaker.h \
+	fg_Graphic.h \
+	fg_GraphicRaster.h \
+	fg_GraphicVector.h \
+	fl_AutoLists.h \
+	fl_AutoNum.h \
+	fl_BlockLayout.h \
+	fl_ContainerLayout.h \
+	fl_DocLayout.h \
+	fl_DocListener.h \
+	fl_FootnoteLayout.h \
+	fl_FrameLayout.h \
+	fl_Layout.h \
+	fl_SectionLayout.h \
+	fl_SelectionPreserver.h \
+	fl_Squiggles.h \
+	fl_TableLayout.h \
+	fl_TOCLayout.h \
+	fp_Column.h \
+	fp_ContainerObject.h \
+	fp_DirectionMarkerRun.h \
+	fp_EmbedRun.h \
+	fp_FieldListLabelRun.h \
+	fp_Fields.h \
+	fp_FieldTOCNum.h \
+	fp_FootnoteContainer.h \
+	fp_FrameContainer.h \
+	fp_Line.h \
+	fp_MathRun.h \
+	fp_Page.h \
+	fp_PageSize.h \
+	fp_Run.h \
+	fp_TableContainer.h \
+	fp_TextRun.h \
+	fp_TOCContainer.h \
+	fp_types.h \
+	fv_FrameEdit.h \
+	fv_InlineImage.h \
+	fv_Selection.h \
+	fv_View.h \
+	fv_VisualDragText.h

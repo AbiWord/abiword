@@ -27,3 +27,10 @@ noinst_LIBRARIES = libXap_hildon.a
 libXap_hildon_a_SOURCES=\
 	xap_UnixHildonDlg_FontChooser.cpp \
 	xap_UnixHildonApp.cpp
+
+EXTRA_DIST = $(headers_DATA)
+
+headersdir = $(includedir)/abiword-$(PACKAGE_VERSION)/xap/unix/hildon
+headers_DATA = \
+	xap_UnixHildonApp.h \
+	xap_UnixHildonDlg_FontChooser.h

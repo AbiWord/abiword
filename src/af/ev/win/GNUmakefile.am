@@ -30,4 +30,12 @@ libEv_win_a_SOURCES=		\
 	 ev_Win32Toolbar.cpp		\
 	 ev_Win32Toolbar_ViewListener.cpp
 
+EXTRA_DIST = $(headers_DATA)
 
+headersdir = $(includedir)/abiword-$(PACKAGE_VERSION)/ev/win
+headers_DATA = \
+	ev_Win32Keyboard.h \
+	ev_Win32Menu.h \
+	ev_Win32Mouse.h \
+	ev_Win32Toolbar.h \
+	ev_Win32Toolbar_ViewListener.h

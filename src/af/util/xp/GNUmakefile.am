@@ -43,10 +43,7 @@ CFLAGS+=-frepo
 
 SUBDIRS = t
 
-headersdir = $(includedir)/abiword-$(PACKAGE_VERSION)
-headers_DATA = $(wildcard $(srcdir)/*.h)
-
-libUtil_xp_a_SOURCES=\
+libUtil_xp_a_SOURCES= \
 	ut_AdobeEncoding.cpp 	\
 	ut_allocator.cpp	\
 	ut_base64.cpp		\
@@ -96,3 +93,66 @@ libUtil_xp_a_SOURCES=\
         ut_crc32.cpp \
 	ut_uuid.cpp \
 	ut_go_file.cpp
+
+EXTRA_DIST = $(headers_DATA)
+
+headersdir = $(includedir)/abiword-$(PACKAGE_VERSION)/util/xp
+headers_DATA = \
+	ut_AbiObject.h \
+	ut_AdobeEncoding.h \
+	ut_allocator.h \
+	ut_assert.h \
+	ut_base64.h \
+	ut_bijection.h \
+	ut_bytebuf.h \
+	ut_case.h \
+	ut_crc32.h \
+	ut_debugmsg.h \
+	ut_decompress.h \
+	ut_Encoding.h \
+	ut_endian.h \
+	ut_exception.h \
+	ut_go_file.h \
+	ut_growbuf.h \
+	ut_hash.h \
+	ut_html.h \
+	ut_iconv.h \
+	ut_idle.h \
+	ut_IntStrMap.h \
+	ut_Language.h \
+	ut_locale.h \
+	ut_map.h \
+	ut_math.h \
+	ut_mbtowc.h \
+	ut_misc.h \
+	ut_mutex.h \
+	ut_OverstrikingChars.h \
+	ut_pair.h \
+	ut_path.h \
+	ut_PerlBindings.h \
+	ut_png.h \
+	ut_PropVector.h \
+	ut_queue.h \
+	ut_rand.h \
+	ut_rbtree.h \
+	ut_regex.h \
+	ut_Script.h \
+	ut_set.h \
+	ut_stack.h \
+	ut_stringbuf.h \
+	ut_string_class.h \
+	ut_string.h \
+	ut_svg.h \
+	ut_test.h \
+	ut_TextIterator.h \
+	ut_thread.h \
+	ut_timer.h \
+	ut_tree.h \
+	ut_types.h \
+	ut_units.h \
+	ut_uuid.h \
+	ut_vector.h \
+	ut_warning.h \
+	ut_wctomb.h \
+	ut_worker.h \
+	ut_xml.h

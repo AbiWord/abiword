@@ -77,3 +77,58 @@ libWpAp_qnx_a_SOURCES=\
 	ap_@ABI_FE@Toolbar_ZoomCombo.cpp	\
 	ap_@ABI_FE@_TB_CFactory.cpp		\
 	ap_@ABI_FE@TopRuler.cpp
+
+EXTRA_DIST = $(headers_DATA)
+
+headersdir = $(includedir)/abiword-$(PACKAGE_VERSION)/ap/qnx
+headers_DATA = \
+	ap_QNXApp.h \
+	ap_QNXAppImpl.h \
+	ap_QNXClipboard.h \
+	ap_QNXDialog_All.h \
+	ap_QNXDialog_Background.h \
+	ap_QNXDialog_Break.h \
+	ap_QNXDialog_Columns.h \
+	ap_QNXDialog_Field.h \
+	ap_QNXDialog_FormatFootnotes.h \
+	ap_QNXDialog_FormatFrame.h \
+	ap_QNXDialog_FormatTable.h \
+	ap_QNXDialog_FormatTOC.h \
+	ap_QNXDialog_Goto.h \
+	ap_QNXDialog_HdrFtr.h \
+	ap_QNXDialog_InsertBookmark.h \
+	ap_QNXDialog_Insert_DateTime.h \
+	ap_QNXDialog_InsertHyperlink.h \
+	ap_QNXDialog_InsertTable.h \
+	ap_QNXDialog_ListRevisions.h \
+	ap_QNXDialog_Lists.h \
+	ap_QNXDialog_MailMerge.h \
+	ap_QNXDialog_MarkRevisions.h \
+	ap_QNXDialog_MergeCells.h \
+	ap_QNXDialog_MetaData.h \
+	ap_QNXDialog_New.h \
+	ap_QNXDialog_Options.h \
+	ap_QNXDialog_PageNumbers.h \
+	ap_QNXDialog_PageSetup.h \
+	ap_QNXDialog_Paragraph.h \
+	ap_QNXDialog_Replace.h \
+	ap_QNXDialog_Spell.h \
+	ap_QNXDialog_SplitCells.h \
+	ap_QNXDialog_Stub.h \
+	ap_QNXDialog_Styles.h \
+	ap_QNXDialog_Stylist.h \
+	ap_QNXDialog_Tab.h \
+	ap_QNXDialog_ToggleCase.h \
+	ap_QNXDialog_WordCount.h \
+	ap_QNXFrame.h \
+	ap_QNXFrameImpl.h \
+	ap_QNXLeftRuler.h \
+	ap_QNXPrefs.h \
+	ap_QNXStatusBar.h \
+	ap_QNXToolbar_Control_All.h \
+	ap_QNXToolbar_FontCombo.h \
+	ap_QNXToolbar_SizeCombo.h \
+	ap_QNXToolbar_StyleCombo.h \
+	ap_QNXToolbar_ZoomCombo.h \
+	ap_QNXTopRuler.h \
+	ap_QNXViewListener.h

@@ -27,3 +27,10 @@ noinst_LIBRARIES = libGr_cocoa.a
 libGr_cocoa_a_SOURCES=\
 	gr_CocoaGraphics.mm	\
 	gr_CocoaImage.mm
+
+EXTRA_DIST = $(headers_DATA)
+
+headersdir = $(includedir)/abiword-$(PACKAGE_VERSION)/gr/cocoa
+headers_DATA = \
+	gr_CocoaGraphics.h \
+	gr_CocoaImage.h

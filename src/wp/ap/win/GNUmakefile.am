@@ -81,3 +81,58 @@ libWpAp_win_a_SOURCES=\
 	ap_@ABI_FE@LeftRuler.cpp		\
 	ap_@ABI_FE@TopRuler.cpp			\
 	ap_@ABI_FE@Dialog_PageSetup.cpp
+
+EXTRA_DIST = $(headers_DATA)
+
+headersdir = $(includedir)/abiword-$(PACKAGE_VERSION)/ap/win
+headers_DATA = \
+	ap_Win32App.h \
+	ap_Win32AppImpl.h \
+	ap_Win32Clipboard.h \
+	ap_Win32Dialog_All.h \
+	ap_Win32Dialog_Background.h \
+	ap_Win32Dialog_Break.h \
+	ap_Win32Dialog_Columns.h \
+	ap_Win32Dialog_Field.h \
+	ap_Win32Dialog_FormatFootnotes.h \
+	ap_Win32Dialog_FormatFrame.h \
+	ap_Win32Dialog_FormatTable.h \
+	ap_Win32Dialog_FormatTOC.h \
+	ap_Win32Dialog_Goto.h \
+	ap_Win32Dialog_HdrFtr.h \
+	ap_Win32Dialog_InsertBookmark.h \
+	ap_Win32Dialog_Insert_DateTime.h \
+	ap_Win32Dialog_InsertHyperlink.h \
+	ap_Win32Dialog_InsertTable.h \
+	ap_Win32Dialog_Latex.h \
+	ap_Win32Dialog_ListRevisions.h \
+	ap_Win32Dialog_Lists.h \
+	ap_Win32Dialog_MailMerge.h \
+	ap_Win32Dialog_MarkRevisions.h \
+	ap_Win32Dialog_MergeCells.h \
+	ap_Win32Dialog_MetaData.h \
+	ap_Win32Dialog_New.h \
+	ap_Win32Dialog_Options.h \
+	ap_Win32Dialog_PageNumbers.h \
+	ap_Win32Dialog_PageSetup.h \
+	ap_Win32Dialog_Paragraph.h \
+	ap_Win32Dialog_Replace.h \
+	ap_Win32Dialog_Spell.h \
+	ap_Win32Dialog_SplitCells.h \
+	ap_Win32Dialog_Stub.h \
+	ap_Win32Dialog_Styles.h \
+	ap_Win32Dialog_Stylist.h \
+	ap_Win32Dialog_Tab.h \
+	ap_Win32Dialog_ToggleCase.h \
+	ap_Win32Dialog_WordCount.h \
+	ap_Win32Frame.h \
+	ap_Win32FrameImpl.h \
+	ap_Win32LeftRuler.h \
+	ap_Win32Prefs.h \
+	ap_Win32StatusBar.h \
+	ap_Win32Toolbar_Control_All.h \
+	ap_Win32Toolbar_FontCombo.h \
+	ap_Win32Toolbar_SizeCombo.h \
+	ap_Win32Toolbar_StyleCombo.h \
+	ap_Win32Toolbar_ZoomCombo.h \
+	ap_Win32TopRuler.h 

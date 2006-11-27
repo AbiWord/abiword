@@ -615,7 +615,6 @@ AC_CONFIG_FILES([
  src/bindings/GNUmakefile
  src/bindings/perl/GNUmakefile
  src/pkg/linux/apkg/abiword-gnome.apspec
- src/pkg/linux/apkg/abiword-gtk.apspec
 ])
 AC_OUTPUT
 

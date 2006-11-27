@@ -55,3 +55,47 @@ libImpExp_xp_a_SOURCES=\
 	ie_imp_PasteListener.cpp	\
 	ie_mailmerge.cpp		\
 	ie_TOC.cpp
+
+EXTRA_DIST = $(headers_DATA)
+
+headersdir = $(includedir)/abiword-$(PACKAGE_VERSION)/impexp/xp
+headers_DATA = \
+	ie_exp_AbiWord_1.h \
+	ie_exp_AWT.h \
+	ie_exp_GZipAbiWord.h \
+	ie_exp.h \
+	ie_exp_HTML.h \
+	ie_exp_MsWord_97.h \
+	ie_exp_RTF_AttrProp.h \
+	ie_exp_RTF.h \
+	ie_exp_RTF_listenerGetProps.h \
+	ie_exp_RTF_listenerWriteDoc.h \
+	ie_exp_Text.h \
+	ie_FileInfo.h \
+	ie_imp_AbiWord_1.h \
+	ie_impexp_AbiWord_1.h \
+	ie_impexp_HTML.h \
+	ie_impexp_MsWord_97.h \
+	ie_impexp_Register.h \
+	ie_impexp_RTF.h \
+	ie_impexp_Text.h \
+	ie_imp_GraphicAsDocument.h \
+	ie_impGraphic.h \
+	ie_impGraphic_PNG.h \
+	ie_impGraphic_SVG.h \
+	ie_imp_GZipAbiWord.h \
+	ie_imp.h \
+	ie_imp_MsWord_97.h \
+	ie_imp_MsWord_dump.h \
+	ie_imp_PasteListener.h \
+	ie_imp_RTF.h \
+	ie_imp_RTFKeywordIDs.h \
+	ie_imp_RTFKeywords.h \
+	ie_imp_RTFParse.h \
+	ie_imp_Text.h \
+	ie_imp_XHTML.h \
+	ie_imp_XML.h \
+	ie_mailmerge.h \
+	ie_Table.h \
+	ie_TOC.h \
+	ie_types.h 

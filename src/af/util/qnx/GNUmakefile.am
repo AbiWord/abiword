@@ -34,3 +34,15 @@ libUtil_qnx_a_SOURCES=		\
 	ut_qnxAssert.cpp \
 	ut_qnxMisc.cpp
 
+EXTRA_DIST = $(headers_DATA)
+
+headersdir = $(includedir)/abiword-$(PACKAGE_VERSION)/util/qnx
+headers_DATA = \
+	ut_files.h \
+	ut_mutexImpl.h \
+	ut_qnxAssert.h \
+	ut_qnxHelper.h \
+	ut_qnxTimer.h \
+	ut_sleep.h \
+	ut_threadImpl.h \
+	ut_Xpm2Bitmap.h

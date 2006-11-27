@@ -80,3 +80,45 @@ libPtbl_a_SOURCES= \
 	px_CR_TestRoutines.cpp  \
 	fd_Field.cpp	\
 	pd_Iterator.cpp
+
+EXTRA_DIST = $(headers_DATA)
+
+headersdir = $(includedir)/abiword-$(PACKAGE_VERSION)/text/ptbl/xp
+headers_DATA = \
+	fd_Field.h \
+	pd_Document.h \
+	pd_Iterator.h \
+	pd_Style.h \
+	pd_XyDiff.h \
+	pf_Frag_FmtMark.h \
+	pf_Frag.h \
+	pf_Fragments.h \
+	pf_Frag_Object.h \
+	pf_Frag_Strux_Block.h \
+	pf_Frag_Strux.h \
+	pf_Frag_Strux_Section.h \
+	pf_Frag_Text.h \
+	pl_Listener.h \
+	po_Bookmark.h \
+	pp_AttrProp.h \
+	pp_Property.h \
+	pp_PropertyMap.h \
+	pp_Revision.h \
+	pp_TableAttrProp.h \
+	pt_PieceTable.h \
+	pt_Types.h \
+	pt_VarSet.h \
+	px_ChangeHistory.h \
+	px_ChangeRecord.h \
+	px_CR_DataItem.h \
+	px_CR_DocProp.h \
+	px_CR_FmtMarkChange.h \
+	px_CR_FmtMark.h \
+	px_CR_Glob.h \
+	px_CR_ObjectChange.h \
+	px_CR_Object.h \
+	px_CR_SpanChange.h \
+	px_CR_Span.h \
+	px_CR_StruxChange.h \
+	px_CR_Strux.h \
+	px_CR_Style.h

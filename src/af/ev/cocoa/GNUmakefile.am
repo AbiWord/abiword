@@ -30,4 +30,14 @@ libEv_cocoa_a_SOURCES=		\
 	 ev_CocoaToolbar.mm		\
 	 ev_CocoaToolbar_ViewListener.mm
 
+EXTRA_DIST = $(headers_DATA)
 
+headersdir = $(includedir)/abiword-$(PACKAGE_VERSION)/ev/cocoa
+headers_DATA = \
+	ev_CocoaKeyboard.h \
+	ev_CocoaMenuBar.h \
+	ev_CocoaMenu.h \
+	ev_CocoaMenuPopup.h \
+	ev_CocoaMouse.h \
+	ev_CocoaToolbar.h \
+	ev_CocoaToolbar_ViewListener.h

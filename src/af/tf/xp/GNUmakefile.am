@@ -31,3 +31,9 @@ CFLAGS+=-frepo
 CXXFLAGS+=-Wno-long-long 
 
 libTF_xp_a_SOURCES= tf_test.cpp
+
+EXTRA_DIST = $(headers_DATA)
+
+headersdir = $(includedir)/abiword-$(PACKAGE_VERSION)/tf/xp
+headers_DATA = \
+	tf_test.h

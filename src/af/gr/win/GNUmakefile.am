@@ -27,3 +27,13 @@ libGr_win_a_SOURCES=\
 	gr_Win32Graphics.cpp	\
 	gr_Win32Image.cpp       \
 	gr_Win32USPGraphics.cpp
+
+EXTRA_DIST = $(headers_DATA)
+
+headersdir = $(includedir)/abiword-$(PACKAGE_VERSION)/gr/win
+headers_DATA = \
+	gr_Win32CharWidths.h \
+	gr_Win32Graphics.h \
+	gr_Win32Image.h \
+	gr_Win32Uniscribe.h \
+	gr_Win32USPGraphics.h

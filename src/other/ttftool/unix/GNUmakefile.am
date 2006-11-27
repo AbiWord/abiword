@@ -23,3 +23,13 @@ INCLUDES = $(AF_INCLUDES) $(ICONV_INCLUDES)
 noinst_LIBRARIES = libTtfTool.a
 
 libTtfTool_a_SOURCES = parse.c ps.c ttfutils.c
+
+EXTRA_DIST = $(headers_DATA)
+
+headersdir = $(includedir)/abiword-$(PACKAGE_VERSION)/ttftool/unix
+headers_DATA = \
+	encoding.h \
+	externs.h \
+	proto.h \
+	ttftool.h \
+	types.h

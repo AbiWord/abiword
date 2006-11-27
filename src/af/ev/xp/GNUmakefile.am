@@ -39,3 +39,23 @@ libEv_xp_a_SOURCES=	\
 	ev_Toolbar_Labels.cpp	\
 	ev_Toolbar_Layouts.cpp
 
+EXTRA_DIST = $(headers_DATA)
+
+headersdir = $(includedir)/abiword-$(PACKAGE_VERSION)/ev/xp
+headers_DATA = \
+	ev_EditBinding.h \
+	ev_EditBits.h \
+	ev_EditEventMapper.h \
+	ev_EditMethod.h \
+	ev_Keyboard.h \
+	ev_Menu_Actions.h \
+	ev_Menu.h \
+	ev_Menu_Labels.h \
+	ev_Menu_Layouts.h \
+	ev_Mouse.h \
+	ev_NamedVirtualKey.h \
+	ev_Toolbar_Actions.h \
+	ev_Toolbar_Control.h \
+	ev_Toolbar.h \
+	ev_Toolbar_Labels.h \
+	ev_Toolbar_Layouts.h

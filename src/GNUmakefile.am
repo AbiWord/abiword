@@ -1,16 +1,2 @@
 
 SUBDIRS = tools af text other pkg wp bindings
-
-# install all headers
-# yeah, ok, it's a bit hackish but also minimally invasive
-headersdir = $(includedir)/abiword-$(PACKAGE_VERSION)
-headers_DATA = $(shell find ./$(srcdir) -name '*.h')
-
-### ok, something like that we might use when fixing "make dist"
-#dist-hook: 
-#	pfx="$(srcdir)" && 							\
-#	for header in `find ./$(srcdir) -name '*.h'`; do			\
-#		dir=`dirname $(top_distdir)/s$${header:$${#pfx}}` 	&&	\
-#		$(mkdir_p) "$$dir" 					&&	\
-#		cp "$$header" "$$dir/";						\
-#	done

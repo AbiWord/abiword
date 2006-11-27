@@ -32,3 +32,17 @@ libUtil_unix_a_SOURCES=\
 	ut_unixIdle.cpp		\
 	ut_path.cpp	\
 	ut_unixMisc.cpp
+
+EXTRA_DIST = $(headers_DATA)
+
+headersdir = $(includedir)/abiword-$(PACKAGE_VERSION)/util/unix
+headers_DATA = \
+	ut_files.h \
+	ut_mutexImpl.h \
+	ut_sleep.h \
+	ut_threadImpl.h \
+	ut_unixAssert.h \
+	ut_unixDirent.h \
+	ut_unixIdle.h \
+	ut_unixMisc.h \
+	ut_unixTimer.h

@@ -100,3 +100,52 @@ libXap_unix_a_SOURCES= $(print_src)	\
 	xap_UnixDlg_DocComparison.cpp 	\
 	xap_UnixWidget.cpp
 
+EXTRA_DIST = $(headers_DATA)
+
+# TODO Rob: conditionally install print headers
+headersdir = $(includedir)/abiword-$(PACKAGE_VERSION)/xap/unix
+headers_DATA = \
+	gtkintl.h \
+	xap_EmbeddedFeatures.h \
+	xap_UnixApp.h \
+	xap_UnixAppImpl.h \
+	xap_UnixClipboard.h \
+	xap_UnixDialogFactory.h \
+	xap_UnixDialogHelper.h \
+	xap_UnixDlg_About.h \
+	xap_UnixDlg_ClipArt.h \
+	xap_UnixDlg_DocComparison.h \
+	xap_UnixDlg_Encoding.h \
+	xap_UnixDlg_FileOpenSaveAs.h \
+	xap_UnixDlg_FontChooser.h \
+	xap_UnixDlg_History.h \
+	xap_UnixDlg_HTMLOptions.h \
+	xap_UnixDlg_Image.h \
+	xap_UnixDlg_Insert_Symbol.h \
+	xap_UnixDlg_Language.h \
+	xap_UnixDlg_ListDocuments.h \
+	xap_UnixDlg_MessageBox.h \
+	xap_UnixDlg_Password.h \
+	xap_UnixDlg_PluginManager.h \
+	xap_UnixDlg_Print.h \
+	xap_UnixDlg_PrintPreview.h \
+	xap_UnixDlg_Stub.h \
+	xap_UnixDlg_WindowMore.h \
+	xap_UnixDlg_Zoom.h \
+	xap_UnixEncodingManager.h \
+	xap_UnixFont.h \
+	xap_UnixFontManager.h \
+	xap_UnixFontPreview.h \
+	xap_UnixFontXLFD.h \
+	xap_UnixFrameImpl.h \
+	xap_UnixGnomePrintGraphics.h \
+	xap_UnixModule.h \
+	xap_UnixNullGraphics.h \
+	xap_UnixPSFont.h \
+	xap_UnixPSGenerate.h \
+	xap_UnixPSGraphics.h \
+	xap_UnixPSImage.h \
+	xap_UnixPSParseAFM.h \
+	xap_UnixTableWidget.h \
+	xap_Unix_TB_CFactory.h \
+	xap_UnixWidget.h 

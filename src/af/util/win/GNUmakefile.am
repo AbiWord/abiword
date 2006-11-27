@@ -35,3 +35,16 @@ libUtil_win_a_SOURCES=\
 	ut_Win32Misc.cpp	\
 	ut_Win32Uuid.cpp
 
+EXTRA_DIST = $(headers_DATA)
+
+headersdir = $(includedir)/abiword-$(PACKAGE_VERSION)/util/win
+headers_DATA = \
+	ut_mutexImpl.h \
+	ut_sleep.h \
+	ut_threadImpl.h \
+	ut_Win32Idle.h \
+	ut_Win32Locale.h \
+	ut_Win32OS.h \
+	ut_Win32Timer.h \
+	ut_Win32Uuid.h \
+	ut_Xpm2Bmp.h

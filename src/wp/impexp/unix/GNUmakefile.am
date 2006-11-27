@@ -37,3 +37,10 @@ libImpExp_unix_a_SOURCES = \
 			$(print_src) \
 			ie_impexp_RegisterUnix.cpp \
 			ie_impGraphic_GdkPixbuf.cpp
+
+EXTRA_DIST = $(headers_DATA)
+
+headersdir = $(includedir)/abiword-$(PACKAGE_VERSION)/impexp/unix
+headers_DATA = \
+	ie_exp_PDF.h \
+	ie_impGraphic_GdkPixbuf.h 

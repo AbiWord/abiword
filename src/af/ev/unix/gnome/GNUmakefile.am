@@ -31,3 +31,9 @@ libEv_gnome_a_SOURCES=		\
 		ev_GnomeToolbar.cpp
 
 endif
+
+EXTRA_DIST = $(headers_DATA)
+
+headersdir = $(includedir)/abiword-$(PACKAGE_VERSION)/ev/unix/gnome
+headers_DATA = \
+	ev_GnomeToolbar.h

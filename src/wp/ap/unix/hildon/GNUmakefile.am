@@ -34,3 +34,10 @@ glade_DATA = \
 libWpAp_unixHildon_a_SOURCES=\
 	ap_@ABI_FE@HildonFrameImpl.cpp
 
+EXTRA_DIST = $(headers_DATA)
+
+headersdir = $(includedir)/abiword-$(PACKAGE_VERSION)/ap/unix/hildon
+headers_DATA = \
+	ap_UnixHildonFrameImpl.h \
+	xap_EmbeddedFeatures.h \
+	xp_EmbeddedFeatures.h
