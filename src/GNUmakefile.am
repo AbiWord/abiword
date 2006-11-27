@@ -1,2 +1,4 @@
 
 SUBDIRS = tools af text other pkg wp bindings
+
+EXTRA_DIST = README.TXT

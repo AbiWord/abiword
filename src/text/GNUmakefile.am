@@ -18,3 +18,4 @@
 
 SUBDIRS = fmt ptbl
 
+EXTRA_DIST = README.TXT

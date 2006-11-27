@@ -34,6 +34,9 @@ pkgconfig_DATA = abiword-$(PACKAGE_VERSION).pc
 abiword-$(PACKAGE_VERSION).pc: abiword.pc
 	cp abiword.pc abiword-$(PACKAGE_VERSION).pc
 
+# 'shots' are not distributed on purpose as they
+# should be removed from the source tree anyways.
+# - Rob
 EXTRA_DIST = 			\
 	docs			\
 	po			\

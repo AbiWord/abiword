@@ -18,5 +18,4 @@
 
 SUBDIRS = ap impexp main test
 
-
-
+EXTRA_DIST = README.TXT

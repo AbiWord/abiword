@@ -17,3 +17,5 @@
 ## 02111-1307, USA.
 
 SUBDIRS = spell ttftool
+
+EXTRA_DIST = README.TXT

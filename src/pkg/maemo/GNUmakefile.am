@@ -12,5 +12,4 @@ icon_DATA = qgn_list_abiword.png
 
 MAINTAINERCLEANFILES = Makefile.in
 
-EXTRA_DIST = $(desktop_DATA) $(service_DATA) $(icon_DATA)
-
+EXTRA_DIST = $(desktop_DATA) $(service_DATA) $(icon_DATA) README.TXT

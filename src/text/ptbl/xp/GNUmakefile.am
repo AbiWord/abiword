@@ -81,7 +81,8 @@ libPtbl_a_SOURCES= \
 	fd_Field.cpp	\
 	pd_Iterator.cpp
 
-EXTRA_DIST = $(headers_DATA)
+EXTRA_DIST = README.TXT \
+	$(headers_DATA)
 
 headersdir = $(includedir)/abiword-$(PACKAGE_VERSION)/text/ptbl/xp
 headers_DATA = \

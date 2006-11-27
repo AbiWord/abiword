@@ -32,3 +32,5 @@ endif
 libAp_a_SOURCES = 
 
 libAp_a_LIBADD = $(objects) 
+
+EXTRA_DIST = README.TXT
