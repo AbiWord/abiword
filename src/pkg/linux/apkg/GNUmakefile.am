@@ -25,7 +25,7 @@ libApkg_a_SOURCES = 	\
 	prefix.h
 
 EXTRA_DIST = 			\
-	abiword-gnome.apspec.in	\
+	abiword.apspec.in	\
 	@abisource.com		\
 	@freedesktop.org	\
 	@gnome.org		\

@@ -57,7 +57,8 @@ $(ABIWORD_LIBRARY): $(ABI_LIBS) abi_ver.cpp
 		abi_ver.cpp						\
 		-Wl,--whole-archive $(ABI_LIBS) 			\
 		-Wl,--no-whole-archive $(PLATFORM_LIBS) $(OTHER_LIBS)	\
-		-Wl,--export-dynamic
+		-Wl,--export-dynamic					\
+		-Wl,--no-undefined
 
 $(ABIWORD_DYNBINARY): $(ABIWORD_LIBRARY) $(srcdir)/UnixMain.cpp
 	$(CXX) -o $@					\
