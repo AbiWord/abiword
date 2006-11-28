@@ -254,6 +254,7 @@ public:
 	static EV_EditMethod_Fn extSelPageUp;
 	static EV_EditMethod_Fn extSelScreenUp;
 	static EV_EditMethod_Fn extSelScreenDown;
+	static EV_EditMethod_Fn saveImmediate;
 	static EV_EditMethod_Fn selectAll;
 	static EV_EditMethod_Fn selectWord;
 	static EV_EditMethod_Fn selectLine;
@@ -1017,6 +1018,7 @@ static EV_EditMethod s_arrayEditMethods[] =
 
 	// s
 
+	EV_EditMethod(NF(saveImmediate),			0,	""),
 	EV_EditMethod(NF(scriptPlay),			0,	""),
 	EV_EditMethod(NF(scrollLineDown),		0,	""),
 	EV_EditMethod(NF(scrollLineLeft),		0,	""),
@@ -2398,6 +2400,63 @@ Defun1(openTemplate)
 	return E2B(error);
 }
 
+Defun(saveImmediate)
+{
+	CHECK_FRAME;
+	UT_return_val_if_fail (pAV_View, false);
+	XAP_Frame * pFrame = static_cast<XAP_Frame *> (pAV_View->getParentData());
+	UT_return_val_if_fail (pFrame, false);
+	//
+	// If we're connected to CAC just save back to CAC
+	// We do this with the docsaved signal
+	//
+	FV_View * pView = static_cast<FV_View *>(pFrame->getCurrentView());
+	if(pView)
+	{
+		PD_Document * pDoc = pView->getDocument();
+		if(pDoc && pDoc->isCACConnected())
+		{
+			pDoc->signalListeners(PD_SIGNAL_DOCSAVED);
+			if (pFrame->getViewNumber() > 0)
+			{
+				XAP_App * pApp = XAP_App::getApp();
+				UT_return_val_if_fail (pApp, false);
+
+				pApp->updateClones(pFrame);
+			}
+			return true;
+		}
+	}
+	// can only save without prompting if filename already known
+
+	if (!pFrame->getFilename())
+   		return EX(fileSaveAs);
+
+	UT_Error errSaved;
+	errSaved = pAV_View->cmdSave();
+	
+	// if it has a problematic extension save as instead
+	//	if (errSaved == UT_EXTENSIONERROR)
+	//  return EX(fileSaveAs);
+
+	if (errSaved)
+	{
+		// throw up a dialog
+		s_TellSaveFailed(pFrame, pFrame->getFilename(), errSaved);
+		return false;
+	}
+
+	if (pFrame->getViewNumber() > 0)
+	{
+		XAP_App * pApp = XAP_App::getApp();
+		UT_return_val_if_fail (pApp, false);
+
+		pApp->updateClones(pFrame);
+	}
+
+	return true;
+}
+
 Defun(fileSave)
 {
 	CHECK_FRAME;
@@ -2426,15 +2485,16 @@ Defun(fileSave)
 		}
 	}
 	// can only save without prompting if filename already known
+
 	if (!pFrame->getFilename())
-		return EX(fileSaveAs);
+   		return EX(fileSaveAs);
 
 	UT_Error errSaved;
 	errSaved = pAV_View->cmdSave();
 	
 	// if it has a problematic extension save as instead
 	if (errSaved == UT_EXTENSIONERROR)
-	  return EX(fileSaveAs);
+		return EX(fileSaveAs);
 
 	if (errSaved)
 	{

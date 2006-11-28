@@ -114,8 +114,14 @@ extern "C" {
     
     Abi_Void__Bool_EditMethod edit_header;
     Abi_Void__Bool_EditMethod edit_footer;
+
+    Abi_Void__Bool_EditMethod file_open;
+    Abi_Void__Bool_EditMethod file_save;
+
     Abi_Void__Bool_EditMethod remove_header;
     Abi_Void__Bool_EditMethod remove_footer;
+    
+    Abi_Void__Bool_EditMethod save_immediate;
     
     Abi_Void__Bool_EditMethod select_bob;
     Abi_Void__Bool_EditMethod select_bod;
@@ -136,6 +142,7 @@ extern "C" {
     Abi_Int_Int__Bool_EditMethod select_to_xy;
     
     Abi_Void__Bool_EditMethod toggle_bold;
+    Abi_Void__Bool_EditMethod toggle_underline;
     Abi_Void__Bool_EditMethod toggle_bottomline;
     Abi_Void__Bool_EditMethod toggle_insert_mode;
     Abi_Void__Bool_EditMethod toggle_italic;
@@ -145,7 +152,6 @@ extern "C" {
     Abi_Void__Bool_EditMethod toggle_sub;
     Abi_Void__Bool_EditMethod toggle_super;
     Abi_Void__Bool_EditMethod toggle_topline;
-    Abi_Void__Bool_EditMethod toggle_underline;
     Abi_Void__Bool_EditMethod toggle_unindent;
     
     Abi_Void__Bool_EditMethod view_formatting_marks;

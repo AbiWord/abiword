@@ -147,6 +147,9 @@ enum {
   EXTSELPREVLINE,
   EXTSELSCREENDOWN,
   EXTSELSCREENUP,
+  FILEOPEN,
+  FILESAVE,
+  SAVEIMMEDIATE,
   TOGGLEBOLD,
   TOGGLEBOTTOMLINE,
   TOGGLEINSERTMODE,
@@ -261,6 +264,10 @@ EM_VOID__BOOL(selectAll)
 EM_VOID__BOOL(selectBlock)
 EM_VOID__BOOL(selectLine)
 EM_VOID__BOOL(selectWord)
+
+EM_VOID__BOOL(fileOpen)
+EM_VOID__BOOL(fileSave)
+EM_VOID__BOOL(saveImmediate)
 
 EM_VOID__BOOL(undo)
 EM_VOID__BOOL(redo)
@@ -942,6 +949,21 @@ static void abi_widget_set_prop (GObject  *object,
 		  abi_klazz->select_screen_up (abi);
 		  break;
 		}
+	    case FILEOPEN:
+		{
+		  abi_klazz->file_open (abi);
+		  break;
+		}
+	    case FILESAVE:
+		{
+		  abi_klazz->file_save (abi);
+		  break;
+		}
+	    case SAVEIMMEDIATE:
+		{
+		  abi_klazz->save_immediate (abi);
+		  break;
+		}
 	    case TOGGLEBOLD:
 		{
 		  abi_klazz->toggle_bold (abi);
@@ -1601,9 +1623,9 @@ abi_widget_class_init (AbiWidgetClass *abi_class)
 
 	// assign handles to Abi's edit methods
 	abi_class->align_center  = EM_NAME(alignCenter);
-	abi_class->align_justify = EM_NAME(alignLeft);
-	abi_class->align_left    = EM_NAME(alignRight);
-	abi_class->align_right   = EM_NAME(alignJustify);
+	abi_class->align_justify = EM_NAME(alignJustify);
+	abi_class->align_left    = EM_NAME(alignLeft);
+	abi_class->align_right   = EM_NAME(alignRight);
 	
 	abi_class->copy          = EM_NAME(copy);
 	abi_class->cut           = EM_NAME(cut);
@@ -1613,6 +1635,10 @@ abi_widget_class_init (AbiWidgetClass *abi_class)
 	abi_class->select_block  = EM_NAME(selectBlock);
 	abi_class->select_line   = EM_NAME(selectLine);	
 	abi_class->select_word   = EM_NAME(selectWord);	
+
+	abi_class->file_open   = EM_NAME(fileOpen);	
+	abi_class->file_save   = EM_NAME(fileSave);	
+	abi_class->save_immediate   = EM_NAME(saveImmediate);	
 	
 	abi_class->undo = EM_NAME(undo);
 	abi_class->redo = EM_NAME(redo);
@@ -1829,8 +1855,29 @@ abi_widget_class_init (AbiWidgetClass *abi_class)
 														  FALSE,
 														  (GParamFlags) G_PARAM_READWRITE));
 	g_object_class_install_property (gobject_class,
+									 FILEOPEN,
+									 g_param_spec_boolean("file-open",
+														  NULL,
+														  NULL,
+														  FALSE,
+														  (GParamFlags) G_PARAM_READWRITE));
+	g_object_class_install_property (gobject_class,
+									 FILESAVE,
+									 g_param_spec_boolean("file-save",
+														  NULL,
+														  NULL,
+														  FALSE,
+														  (GParamFlags) G_PARAM_READWRITE));
+	g_object_class_install_property (gobject_class,
+									 SAVEIMMEDIATE,
+									 g_param_spec_boolean("save-immediate",
+														  NULL,
+														  NULL,
+														  FALSE,
+														  (GParamFlags) G_PARAM_READWRITE));
+	g_object_class_install_property (gobject_class,
 									 SELECTALL,
-									 g_param_spec_boolean("selec-tall",
+									 g_param_spec_boolean("select-all",
 														  NULL,
 														  NULL,
 														  FALSE,
