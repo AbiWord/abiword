@@ -543,11 +543,13 @@ private:
 						 const UT_UTF8String & imagedir, const UT_UTF8String & filename);
 	void	_writeImageBase64 (const UT_ByteBuf * pByteBuf);
 	void	_handleImage (PT_AttrPropIndex api);
+	void	_handleImage (const PP_AttrProp * pAP, const char * szDataID);
 	void	_handlePendingImages ();
 	void	_handleField (const PX_ChangeRecord_Object * pcro, PT_AttrPropIndex api);
 	void	_handleHyperlink (PT_AttrPropIndex api);
 	void	_handleBookmark (PT_AttrPropIndex api);
 	void	_handleMath (PT_AttrPropIndex api);
+	void    _handleEmbedded (PT_AttrPropIndex api);
 
 #ifdef HTML_META_SUPPORTED
 	void    _handleMetaTag (const char * key, UT_UTF8String & value);
@@ -4367,19 +4369,44 @@ void s_HTML_Listener::_writeImageBase64 (const UT_ByteBuf * pByteBuf)
 	}
 }
 
-void s_HTML_Listener::_handleImage (PT_AttrPropIndex api)
+void s_HTML_Listener::_handleEmbedded (PT_AttrPropIndex api)
 {
 	const PP_AttrProp * pAP = 0;
 	bool bHaveProp = m_pDocument->getAttrProp (api, &pAP);
 
 	if (!bHaveProp || (pAP == 0)) return;
 
-	UT_LocaleTransactor t(LC_NUMERIC, "C");
+	const XML_Char * szDataID = 0;
+	pAP->getAttribute ("dataid", szDataID);
+
+	if (szDataID == 0) return;
+
+	UT_UTF8String dataID("snapshot-png-");
+	dataID += szDataID;
+
+	// TODO: Put code to export the embedded object as an <embed>
+	_handleImage (pAP, dataID.utf8_str());
+}
+
+
+void s_HTML_Listener::_handleImage (PT_AttrPropIndex api)
+{
+	const PP_AttrProp * pAP = 0;
+	bool bHaveProp = m_pDocument->getAttrProp (api, &pAP);
+
+	if (!bHaveProp || (pAP == 0)) return;
 	
 	const XML_Char * szDataID = 0;
 	pAP->getAttribute ("dataid", szDataID);
 
 	if (szDataID == 0) return;
+
+	_handleImage (pAP, szDataID);
+}
+
+void s_HTML_Listener::_handleImage (const PP_AttrProp * pAP, const char * szDataID)
+{
+	UT_LocaleTransactor t(LC_NUMERIC, "C");
 
 	const char * szName = 0;
 	const char * szMimeType = 0;
@@ -4957,7 +4984,7 @@ bool s_HTML_Listener::populate (PL_StruxFmtHandle /*sfh*/, const PX_ChangeRecord
 							return true;
 
 						case PTO_Embed:
-							// FIXME Put code to export the png here!
+							_handleEmbedded (api);
 							return true;
 	
 						default:
