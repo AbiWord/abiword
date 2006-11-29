@@ -597,7 +597,8 @@ void centerDialog(GtkWidget * parent, GtkWidget * child, bool set_transient_for)
 	UT_return_if_fail(parent);
 	UT_return_if_fail(child);
 
-	go_dialog_guess_alternative_button_order(GTK_DIALOG(child));
+	if (GTK_IS_DIALOG(child))
+	  go_dialog_guess_alternative_button_order(GTK_DIALOG(child));
 
 	if (set_transient_for)
 	  gtk_window_set_transient_for(GTK_WINDOW(child),

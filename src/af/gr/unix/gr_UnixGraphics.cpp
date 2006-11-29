@@ -735,8 +735,10 @@ GR_UnixGraphics::~GR_UnixGraphics()
 			g_object_unref (G_OBJECT (pix));
 		}
 
-	g_object_unref (G_OBJECT(m_pGC));
-	g_object_unref (G_OBJECT(m_pXORGC));
+	if (G_IS_OBJECT(m_pGC))
+		g_object_unref (G_OBJECT(m_pGC));
+	if (G_IS_OBJECT(m_pXORGC))
+		g_object_unref (G_OBJECT(m_pXORGC));
 }
 
 bool GR_UnixGraphics::queryProperties(GR_Graphics::Properties gp) const
