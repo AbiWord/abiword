@@ -1371,6 +1371,7 @@ abi_widget_realize (GtkWidget * widget)
 //	g_signal_connect(G_OBJECT(widget),"destroy", 
 //					 G_CALLBACK (s_abi_widget_delete),
 //					 (gpointer) abi);
+	abi_widget_map_to_screen( abi);
 }
 
 #ifdef HAVE_BONOBO
