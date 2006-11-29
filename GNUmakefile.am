@@ -122,50 +122,9 @@ realrealclean: realclean
                $(top_srcdir)/install-sh $(top_srcdir)/missing \
                $(top_srcdir)/mkinstalldirs $(top_srcdir)/INSTALL
 
-if BIGENDIAN
-dictionary = $(top_srcdir)/../abidistfiles/dictionary/BigEndian32.american.hash
-else
-dictionary = $(top_srcdir)/../abidistfiles/dictionary/LittleEndian32.american.hash
-endif
-
-if WITH_ISPELL
-INSTALLDICTIONARY = yes
-else
-INSTALLDICTIONARY = no
-endif
-
-dictionary_list=$(top_srcdir)/../abidistfiles/dictionary/ispell_dictionary_list.xml
-
-bonobodir = $(libdir)/bonobo/servers
 
 # Install the datafiles. This is quick-and-dirty.
 install-data-local:
-	@$(mkinstalldirs) $(DESTDIR)$(bonobodir)
-	if test -d $(top_srcdir)/../abidistfiles ; then \
-	  for dir in `cd $(top_srcdir)/../abidistfiles; find . -type d ! -name CVS` ; do \
-	    $(mkinstalldirs) $(DESTDIR)$(ABIWORD_DATADIR)/$$dir ;\
-	    if test "$$dir" = "./dictionary"; then \
-	      if test "$(INSTALLDICTIONARY)" != "no" ; then \
-	        $(INSTALL_DATA) $(dictionary) $(DESTDIR)$(ABIWORD_DATADIR)/$$dir/american.hash; \
-	        $(INSTALL_DATA) $(dictionary_list) $(DESTDIR)$(ABIWORD_DATADIR)/$$dir/ispell_dictionary_list.xml; \
-	      fi; \
-	    else \
-	      for file in `echo $(top_srcdir)/../abidistfiles/$$dir/* | grep -v MANIFEST`; do \
-	        if test -f $$file ; then \
-		  sfile=`echo "$$file" | sed 's/\.[^.]*$$//'`; \
-		  if test "$$sfile.server" = $$file; then \
-		    $(INSTALL_DATA) $$file $(DESTDIR)$(bonobodir); \
-		  else \
-		    $(INSTALL_DATA) $$file $(DESTDIR)$(ABIWORD_DATADIR)/$$dir; \
-		  fi; \
-	        fi; \
-	      done; \
-	    fi; \
-	  done; \
-	else \
-	  echo "Warning: abidistfiles package not found." ;\
-	fi
-
 	@$(mkinstalldirs) $(DESTDIR)$(ABIWORD_DATADIR)
 	@for dir in `cd $(top_srcdir)/user/wp; find . -type d ! -name CVS` ; do \
 	  $(mkinstalldirs) $(DESTDIR)$(ABIWORD_DATADIR)/$$dir ;\

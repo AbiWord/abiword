@@ -28,8 +28,12 @@ noinst_LIBRARIES = libWpAp_Gnome.a
 libWpAp_Gnome_a_SOURCES = \
 	ap_NautilusView.cpp
 
-EXTRA_DIST = $(headers_DATA)
+EXTRA_DIST = \
+	$(bonobo_DATA) \
+	$(headers_DATA)
 
 headersdir = $(includedir)/$(PACKAGE)-$(ABIWORD_SERIES)/ap/unix/gnome
-headers_DATA = \
-	ap_NautilusView.h
+headers_DATA = ap_NautilusView.h
+
+bonobodir = $(libdir)/bonobo/servers
+bonobo_DATA = GNOME_AbiWord_Control_2_4.server
