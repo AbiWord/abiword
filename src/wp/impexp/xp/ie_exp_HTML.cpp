@@ -4381,13 +4381,179 @@ void s_HTML_Listener::_handleEmbedded (PT_AttrPropIndex api)
 
 	if (szDataID == 0) return;
 
-	UT_UTF8String dataID("snapshot-png-");
-	dataID += szDataID;
+	UT_UTF8String imgDataID("snapshot-png-");
+	imgDataID += szDataID;
 
-	// TODO: Put code to export the embedded object as an <embed>
-	_handleImage (pAP, dataID.utf8_str());
+	// Code to export the embedded object as an <object>
+	// with an <img> inside it, as a rendering fallback
+	// http://www.w3.org/TR/1999/REC-html401-19991224/struct/objects.html#h-13.3
+	UT_LocaleTransactor t(LC_NUMERIC, "C");
+
+	const char * szName = 0;
+	const char * szMimeType = 0;
+
+	const UT_ByteBuf * pByteBuf = 0;
+		
+	UT_uint32 k = 0;
+	while (m_pDocument->enumDataItems (k, 0, &szName, &pByteBuf, reinterpret_cast<const void**>(&szMimeType)))
+		{
+			k++;
+			if (szName == 0) continue;
+			if (UT_strcmp (szDataID, szName) == 0) break;
+				
+			szName = 0;
+			szMimeType = 0;
+			pByteBuf = 0;
+		}
+	if ((pByteBuf == 0) || (szMimeType == 0)) return; // ??
+		
+
+	const char * dataid = UT_basename (static_cast<const char *>(szDataID));
+		
+	const char * suffix = dataid + strlen (dataid);
+	const char * suffid = suffix;
+	const char * ptr = 0;
+		
+	/* Question: What does the DataID look like for objects pasted
+	 *           from the clipboard?
+	 */
+	ptr = suffix;
+	while (ptr > dataid)
+		if (*--ptr == '_')
+			{
+				suffix = ptr;
+				suffid = suffix;
+				break;
+			}
+	ptr = suffix;
+	while (ptr > dataid)
+		if (*--ptr == '.')
+			{
+				suffix = ptr;
+				// break;
+			}
+	if (dataid == suffix) return;
+
+	char * base_name = UT_go_basename_from_uri (m_pie->getFileName ());
+		
+	/* hmm; who knows what locale the system uses
+	 */
+	UT_UTF8String objectbasedir = "clipboard";
+	if (base_name)
+		objectbasedir = base_name;
+	objectbasedir += "_files";
+	UT_UTF8String objectdir = m_pie->getFileName ();
+	objectdir += "_files";
+		
+	UT_UTF8String filename(dataid,suffix-dataid);
+	filename += suffid;
+	filename += ".obj";
+
+	g_free (base_name);
+		
+	UT_UTF8String url;
+		
+	url += s_string_to_url (objectbasedir);
+	url += "/";
+	url += s_string_to_url (filename);
+		
+	if (get_Multipart ())
+		{
+			UT_UTF8String * save_url = new UT_UTF8String(url);
+			if (save_url == 0) return;
+				
+			if (!m_SavedURLs.insert (szDataID, save_url)) // arg. failed. skip object
+				{
+					DELETEP(save_url);
+					return;
+				}
+		}
+
+	/* szDataID is the raw string with the data ID
+	 * objectdir is the name of the directory in which we'll write the object
+	 * filename is the name of the file to which we'll write the object
+	 * url      is the URL which we'll use
+	 */
+	if (!get_Embed_Images () && !get_Multipart ())
+		{
+			_writeImage (pByteBuf, objectdir, filename);
+		}
+		
+	m_utf8_1 = "object";
+		
+	const XML_Char * szWidth  = 0;
+		
+	pAP->getProperty ("width",  szWidth);
+		
+	double dWidth = UT_convertToInches(szWidth);
+	double total = 0;
+	if(m_TableHelper.getNestDepth() > 0)
+		{
+			total = m_dCellWidthInches;
+		}
+	else
+		{
+			total =  m_dPageWidthInches - m_dSecLeftMarginInches - m_dSecRightMarginInches;
+		}
+	double percent = 100.0*dWidth/total;
+	if(percent > 100.)
+		{
+			percent = 100.0;
+		}
+	UT_UTF8String tmp;
+	UT_DEBUGMSG(("Width of Object %s \n",szWidth ? szWidth : "(null)"));
+		
+	UT_sint32 iObjectWidth, iObjectHeight;
+	UT_PNG_getDimensions(pByteBuf, iObjectWidth, iObjectHeight);
+	UT_DEBUGMSG(("Real object dimensions: (%d x %d)\n", iObjectWidth, iObjectHeight));
+		
+	if (szWidth)
+		{
+			m_utf8_1 += " width=\"";
+			if (get_Scale_Units())
+				{
+					UT_sint32 iPercent = (UT_sint32)(percent + 0.5);
+					tmp = UT_UTF8String_sprintf("%d%%",iPercent);
+				} else // Abi stores the orig file, but abs or unitless must be true to dims set in abi
+					{
+						double dMM = UT_convertToDimension(szWidth, DIM_MM);
+						tmp = UT_UTF8String_sprintf("%.1fmm",dMM);
+					}
+			m_utf8_1 += tmp;
+			m_utf8_1 += "\"";
+		}
+
+	m_utf8_1 += UT_UTF8String_sprintf(" type=\"%s\"", szMimeType);
+
+	m_tagStack.push (TT_OBJECT);
+	if (!get_Embed_Images () || get_Multipart ())
+		{
+			m_utf8_1 += " data=\"";
+			m_utf8_1 += url;
+			m_utf8_1 += "\"";
+
+			tagOpenBroken (m_utf8_1, ws_None);
+
+			m_utf8_1 = "";
+			tagCloseBroken (m_utf8_1, true, ws_None);
+		}
+	else
+		{
+			m_utf8_1 += UT_UTF8String_sprintf(" data=\"data:%s;base64,", szMimeType);
+			tagOpenBroken (m_utf8_1, ws_None);
+
+			_writeImageBase64 (pByteBuf);
+			
+			m_utf8_1 = "\"";
+			tagCloseBroken (m_utf8_1, true, ws_None);
+		}
+
+	// embed an <img> version of the object, as a rendering fallback
+	_handleImage (pAP, imgDataID.utf8_str());
+
+	m_utf8_1 = "object";
+	tagClose(TT_OBJECT, m_utf8_1);
 }
-
 
 void s_HTML_Listener::_handleImage (PT_AttrPropIndex api)
 {
