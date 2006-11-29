@@ -408,11 +408,11 @@ void fp_EmbedRun::_draw(dg_DrawArgs* pDA)
 
 	UT_sint32 iLineHeight = getLine()->getHeight();
 	bool bIsSelected = false;
-	if ( isInSelectedTOC() ||
+	if ( !pG->queryProperties(GR_Graphics::DGP_PAPER) && (isInSelectedTOC() ||
 	    /* pView->getFocus()!=AV_FOCUS_NONE && */
 		(iSel1 <= iRunBase)
 		&& (iSel2 > iRunBase)
-		)
+		))
 	{
 	  // Need the painter lock to be released at the end of this block
 	        GR_Painter painter(pG);

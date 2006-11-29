@@ -5174,6 +5174,7 @@ bool FV_View::cmdInsertLatexMath(UT_UTF8String & sLatex,
 	    UT_UTF8String_setProperty(sNewProps,sProp,sVal);
 	    i +=2;
 	  }
+	  free(props);
 	}
 	atts[5] = sNewProps.utf8_str();
 	m_pDoc->insertObject(pos,PTO_Math,atts,NULL);
@@ -5299,6 +5300,7 @@ bool FV_View::cmdInsertEmbed(UT_ByteBuf * pBuf,PT_DocPosition pos,const char * s
 	    sVal = props[i+1];
 	    UT_UTF8String_setProperty(sFullProps,sProp,sVal);
 	  }
+	  free(props);
 	}
 	sProps = szProps;
 	UT_DEBUGMSG(("Supplied props %s \n",sProps.utf8_str()));
@@ -5408,6 +5410,7 @@ bool FV_View::cmdUpdateEmbed(UT_ByteBuf * pBuf, const char * szMime, const char 
 	    UT_DEBUGMSG(("Update Embed Prop %s val %s \n",props[i],props[i+1]));
 	    UT_UTF8String_setProperty(sFullProps,sProp,sVal);
 	  }
+	  free(props);
 	}	
 	UT_DEBUGMSG(("Supplied props %s \n",sProps.utf8_str()));
 	UT_UTF8String_addPropertyString(sFullProps,sProps);
@@ -5491,6 +5494,7 @@ bool FV_View::cmdUpdateEmbed(fp_Run * pRun, UT_ByteBuf * pBuf, const char * szMi
 	    UT_DEBUGMSG(("Update Embed Prop %s val %s \n",props[i],props[i+1]));
 	    UT_UTF8String_setProperty(sFullProps,sProp,sVal);
 	  }
+	  free(props);
 	}	
 	UT_DEBUGMSG(("Supplied props %s \n",sProps.utf8_str()));
 	UT_UTF8String_addPropertyString(sFullProps,sProps);
