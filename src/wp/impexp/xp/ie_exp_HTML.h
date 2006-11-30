@@ -78,6 +78,8 @@ public:
 							   IEFileType * ft);
 	virtual UT_Error constructExporter (PD_Document * pDocument,
 										IE_Exp ** ppie);
+
+	virtual UT_Confidence_t supportsMIME (const char * szMimeType);
 };
 
 #ifdef HTML_ENABLE_HTML4
@@ -96,6 +98,8 @@ public:
 							   IEFileType * ft);
 	virtual UT_Error constructExporter (PD_Document * pDocument,
 										IE_Exp ** ppie);
+
+	virtual UT_Confidence_t supportsMIME (const char * szMimeType);
 };
 
 #endif /* HTML_ENABLE_HTML4 */

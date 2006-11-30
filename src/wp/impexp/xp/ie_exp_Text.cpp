@@ -120,7 +120,7 @@ UT_Confidence_t IE_Exp_Text_Sniffer::supportsMIME (const char * szMIME)
 {
 	if (UT_strcmp (szMIME, IE_MIMETYPE_Text) == 0)
 		{
-			return UT_CONFIDENCE_GOOD;
+			return UT_CONFIDENCE_PERFECT;
 		}
 	if (strncmp (szMIME, "text/", 5) == 0)
 		{

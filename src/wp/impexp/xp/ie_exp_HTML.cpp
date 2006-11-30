@@ -122,6 +122,15 @@ bool IE_Exp_HTML_Sniffer::getDlgLabels (const char ** pszDesc,
 	return true;
 }
 
+UT_Confidence_t IE_Exp_HTML_Sniffer::supportsMIME (const char * szMimeType)
+{
+	if(!strcmp(szMimeType, IE_MIMETYPE_XHTML) ||
+	   !strcmp(szMimeType, "application/xhtml") ||
+	   !strcmp(szMimeType, "text/html"))
+		return UT_CONFIDENCE_PERFECT;
+	return UT_CONFIDENCE_ZILCH;
+}
+
 #ifdef HTML_ENABLE_HTML4
 
 // HTML 4
@@ -156,6 +165,13 @@ bool IE_Exp_HTML4_Sniffer::getDlgLabels (const char ** pszDesc,
 	*pszSuffixList = "*.html; *.htm";
 	*ft = getFileType ();
 	return true;
+}
+
+UT_Confidence_t IE_Exp_HTML_Sniffer::supportsMIME (const char * szMimeType)
+{
+	if(!strcmp(szMimeType, "text/html"))
+		return UT_CONFIDENCE_PERFECT;
+	return UT_CONFIDENCE_ZILCH;
 }
 
 #endif /* HTML_ENABLE_HTML4 */

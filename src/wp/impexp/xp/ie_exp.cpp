@@ -309,7 +309,7 @@ IEFileType IE_Exp::fileTypeForMimetype(const char * szMimetype)
 	{
 		IE_ExpSniffer * s = m_sniffers.getNthItem(k);
 		UT_return_val_if_fail (s, IEFT_Unknown);
-		if (s->supportsMIME(szMimetype))
+		if (s->supportsMIME(szMimetype) == UT_CONFIDENCE_PERFECT)
 		{
 			for (UT_uint32 a = 0; a < nrElements; a++)
 			{
