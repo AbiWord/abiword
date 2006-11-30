@@ -17,7 +17,7 @@
 
 AC_DEFUN([ABI_FREETYPE],[
 
-dnl detects gnomeprint
+dnl detects freetype2
 
 FREETYPE_CFLAGS=""
 FREETYPE_LIBS=""
