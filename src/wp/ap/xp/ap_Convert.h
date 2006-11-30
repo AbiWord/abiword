@@ -40,7 +40,7 @@ class ABI_EXPORT AP_Convert
 		       IEFileType targetFormat);
 	
 	bool convertTo(const char * szSourceFilename,
-		       const char * szTargetSuffixOrFilename);
+		       const char * szTargetSuffixOrMime);
 
 	void setVerbose(int level);
 	void setMergeSource (const char * source);

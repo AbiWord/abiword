@@ -262,43 +262,48 @@ bool AP_Convert::convertTo(const char * szSourceFilename,
 	return (error == UT_OK);
 }
 
-bool AP_Convert::convertTo(const char * szFilename, const char * szTargetSuffixOrFilename)
+bool AP_Convert::convertTo(const char * szFilename, const char * szTargetSuffixOrMime)
 {
-  UT_return_val_if_fail(szTargetSuffixOrFilename, false);
-  UT_return_val_if_fail(strlen(szTargetSuffixOrFilename)>0, false);
+  UT_return_val_if_fail(szTargetSuffixOrMime, false);
+  UT_return_val_if_fail(strlen(szTargetSuffixOrMime)>0, false);
 
-  UT_String file;
+  UT_String ext;
   IEFileType ieft = IEFT_Unknown;
 
-  char *tmp = NULL;
+  // maybe it is a mime type. try that first
+  ieft = IE_Exp::fileTypeForMimetype(szTargetSuffixOrMime);
+  if(ieft != IEFT_Unknown) {
+    UT_String suffixes(IE_Exp::suffixesForFileType(ieft));
 
-  if(NULL != (tmp = strrchr(const_cast<char *>(szTargetSuffixOrFilename), '.')))
-    {
-      // found an extension. use that instead, else just use AbiWord native format
-      if(strlen(tmp) > 1)
-		  ieft = IE_Exp::fileTypeForSuffix(tmp);
-      else
-		  ieft = IE_Exp::fileTypeForSuffix(".abw");
-      file = szTargetSuffixOrFilename;
-    }
+    // semicolon-delimited list of suffixes
+    size_t first_suffix_end = UT_String_findCh(suffixes, ';');
+    if(first_suffix_end == (size_t)-1)
+      first_suffix_end = suffixes.size();
+
+    // strip of the '*'
+    ext = suffixes.substr(1, first_suffix_end - 1);
+  } 
   else
     {
-      char * fileDup = UT_strdup ( szFilename );
-      
-      UT_String ext(".");
-
-      ext += szTargetSuffixOrFilename;
+      ext = ".";
+      ext += szTargetSuffixOrMime;
       ieft = IE_Exp::fileTypeForSuffix(ext.c_str());
-      
-      tmp = strrchr(fileDup, '.');
-      if (tmp != NULL)
-		  *tmp = '\0';
 
-      file = fileDup;
-      file += ext;
-  
-      FREEP(fileDup);
+      // unknown suffix and mime type
+      if(ieft == IEFT_Unknown)
+	return false;
     }
+
+  char * fileDup = UT_strdup ( szFilename );
+      
+  char *tmp = strrchr(fileDup, '.');
+  if (tmp != NULL)
+    *tmp = '\0';
+  
+  UT_String file = fileDup;
+  file += ext;
+  
+  FREEP(fileDup);
 
   return convertTo(szFilename, IEFT_Unknown, file.c_str(), ieft);
 }
