@@ -48,7 +48,6 @@ print_src = xap_UnixPSFont.cpp				\
 			xap_UnixPSGenerate.cpp			\
 			xap_UnixPSParseAFM.c			\
 			xap_UnixPSImage.cpp				\
-			xap_UnixPSGraphics.cpp			\
 			xap_UnixGnomePrintGraphics.cpp	\
 			xap_UnixDlg_PrintPreview.cpp	\
 			xap_UnixDlg_Print.cpp			
@@ -144,7 +143,6 @@ headers_DATA = \
 	xap_UnixNullGraphics.h \
 	xap_UnixPSFont.h \
 	xap_UnixPSGenerate.h \
-	xap_UnixPSGraphics.h \
 	xap_UnixPSImage.h \
 	xap_UnixPSParseAFM.h \
 	xap_UnixTableWidget.h \

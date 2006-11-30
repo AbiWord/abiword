@@ -66,7 +66,6 @@ endif
 
 OTHER_INCLUDES=-I'$(top_srcdir)/src/other/spell/xp'
 OTHER_INCLUDES+=-I'$(top_srcdir)/src/other/fribidi/xp'
-OTHER_INCLUDES+=-I'$(top_srcdir)/src/other/ttftool/unix'
 TEXT_INCLUDES=-I'$(top_srcdir)/src/text/ptbl/xp'
 TEXT_INCLUDES+=-I'$(top_srcdir)/src/text/fmt/xp'
 
@@ -131,7 +130,6 @@ endif
 
 # BiDi needs a specific lib
 #automake is TEH SILLY!
-if BUILD_TTFTOOL
 ABI_LIBS+=$(top_builddir)/src/wp/ap/libAp.a
 ABI_LIBS+=$(top_builddir)/src/wp/impexp/libImpExp.a
 ABI_LIBS+=$(top_builddir)/src/af/xap/libXap.a
@@ -139,21 +137,9 @@ ABI_LIBS+=$(top_builddir)/src/af/util/libUtil.a
 ABI_LIBS+=$(top_builddir)/src/af/gr/libGr.a
 ABI_LIBS+=$(top_builddir)/src/af/ev/libEv.a
 ABI_LIBS+=$(top_builddir)/src/other/spell/xp/libSpell.a
-ABI_LIBS+=$(top_builddir)/src/other/ttftool/unix/libTtfTool.a
 ABI_LIBS+=$(top_builddir)/src/pkg/linux/apkg/libApkg.a
 ABI_LIBS+=$(top_builddir)/src/text/fmt/xp/libFmt.a
 ABI_LIBS+=$(top_builddir)/src/text/ptbl/xp/libPtbl.a
-else 
-ABI_LIBS+=$(top_builddir)/src/wp/ap/libAp.a
-ABI_LIBS+=$(top_builddir)/src/wp/impexp/libImpExp.a
-ABI_LIBS+=$(top_builddir)/src/af/xap/libXap.a
-ABI_LIBS+=$(top_builddir)/src/af/util/libUtil.a
-ABI_LIBS+=$(top_builddir)/src/af/gr/libGr.a
-ABI_LIBS+=$(top_builddir)/src/af/ev/libEv.a
-ABI_LIBS+=$(top_builddir)/src/other/spell/xp/libSpell.a
-ABI_LIBS+=$(top_builddir)/src/pkg/linux/apkg/libApkg.a
-ABI_LIBS+=$(top_builddir)/src/text/fmt/xp/libFmt.a
-endif
 
 ABI_TEST_LIBS=$(top_builddir)/src/af/util/libTestUtil.a
 ABI_TEST_LIBS+=$(top_builddir)/src/text/ptbl/xp/t/libTestPtbl.a

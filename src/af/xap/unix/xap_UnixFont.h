@@ -114,7 +114,6 @@ class ABI_EXPORT XAP_UnixFont
 	const char * 			getXLFD(void) const;
 	bool                    isSymbol(void)
 		{ return m_bIsSymbol;}
-	bool					embedInto(ps_Generate& ps);
 	bool					openPFA(void);
 	char					getPFAChar(void);
 	bool					closePFA(void);	
@@ -143,7 +142,6 @@ private:
 	XAP_UnixFont ();
 	XAP_UnixFont & operator= (const XAP_UnixFont & rhs);
 
-	bool					_createTtfSupportFiles();
 	bool					_createPsSupportFiles();
 	struct allocFont
 	{

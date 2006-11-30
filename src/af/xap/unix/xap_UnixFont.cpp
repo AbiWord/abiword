@@ -32,7 +32,6 @@
 #include "xap_UnixFont.h"
 #include "xap_EncodingManager.h"
 #include "xap_App.h"
-#include "ttftool.h"
 #include "xap_UnixPSGenerate.h"
 #include "xap_UnixFontManager.h"
 #include "gr_UnixGraphics.h"
@@ -570,89 +569,6 @@ bool XAP_UnixFont::_createPsSupportFiles()
 	  }
 	pclose(p);
 
-	return true;
-}
-
-bool XAP_UnixFont::_createTtfSupportFiles()
-{
-	if (!is_TTF_font())
-		return false;
-	char fontfile[100];
-	char buff[256];
-	const char *enc;
-	const char *libdir = XAP_App::getApp()->getAbiSuiteLibDir();
-	const char latin1[] = "ISO-8859-1";
-
-	if (XAP_EncodingManager::get_instance()->isUnicodeLocale())
-		enc = latin1;
-	else
-		enc = XAP_EncodingManager::get_instance()->
-			getNativeEncodingName();
-
-	char *dot = strrchr(m_fontfile, '.');
-	strcpy(fontfile, m_fontfile);
-	fontfile[dot - m_fontfile + 1] = 0;
-
-	char *cmdline =
-		new char[strlen(libdir) + 4 * strlen(fontfile) + strlen(enc) +
-			 50];
-	/*      now open a pipe to the ttftool program, and examine the output for
-	   presence of error messages
-	 */
-	sprintf(cmdline,
-		"%s/bin/ttftool -f %sttf -a %safm -u %su2g -p %st42 -e %s",
-		libdir, fontfile, fontfile, fontfile, fontfile, enc);
-
-	UT_DEBUGMSG(("XAP_UnixFont::_createTtfSupportFiles: \n\t%s",
-		     cmdline));
-	FILE *p = popen(cmdline, "r");
-	if (!p)
-	  {
-		  UT_DEBUGMSG(("XAP_UnixFont::_createTtfSupportFiles: unable to run ttftool\n"));
-		  return false;
-	  }
-
-	while (!feof(p))
-	  {
-		  fgets(buff, 256, p);
-		  if (strstr(buff, "Error"))
-		    {
-			    UT_DEBUGMSG(("XAP_UnixFont::_createTtfSupportFiles: ttftool error:\n%s\n", buff));
-			    return false;
-		    }
-	  }
-	pclose(p);
-
-	delete[]cmdline;
-	return true;
-}
-
-bool XAP_UnixFont::embedInto(ps_Generate & ps)
-{
-#ifndef WITHOUT_PRINTING
-	if (openPFA())
-	  {
-		  signed char ch = 0;
-
-		  while ((ch = getPFAChar()) != EOF)
-			  if (!ps.writeBytes(reinterpret_cast<UT_Byte *>(&ch), 1))
-			    {
-				    closePFA();
-				    return false;
-			    }
-
-		  closePFA();
-	  }
-	else
-	  {
-		  // PFA file doesn't exists.  Maybe a TrueType font not converted to type 42.
-		  // We generate the type 42 in the fly, and we embed it in the postscript file.
-		  // TODO: Check for errors, and return false on error
-		  create_type42(m_fontfile, ps.getFileHandle());
-	  }
-#else
-	UT_ASSERT_HARMLESS( UT_SHOULD_NOT_HAPPEN );
-#endif
 	return true;
 }
 

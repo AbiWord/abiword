@@ -53,7 +53,6 @@
 #include "xap_UnixFontManager.h"
 
 #include "xap_UnixNullGraphics.h"
-#include "xap_UnixPSGraphics.h"
 #include "gr_UnixGraphics.h"
 #include "gr_UnixPangoGraphics.h"
 
@@ -100,14 +99,6 @@ XAP_UnixApp::XAP_UnixApp(XAP_Args * pArgs, const char * szAppName)
 		// we are in deep trouble if this did not succeed
 		UT_ASSERT( bSuccess );
 		pGF->registerAsDefault(GR_UnixGraphics::s_getClassId(), true);
-#ifndef WITHOUT_PRINTING
-		bSuccess = pGF->registerClass(PS_Graphics::graphicsAllocator,
-									  PS_Graphics::graphicsDescriptor,
-									  PS_Graphics::s_getClassId());
-
-		UT_ASSERT( bSuccess );
-		pGF->registerAsDefault(PS_Graphics::s_getClassId(), false);
-#endif
 
 		bSuccess = pGF->registerClass(UnixNull_Graphics::graphicsAllocator,
 									  UnixNull_Graphics::graphicsDescriptor,

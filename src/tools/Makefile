@@ -21,7 +21,7 @@
 ABI_ROOT:=$(shell pwd)/../..
 include $(ABI_ROOT)/src/config/abi_defs_wp.mk
 
-DIRS=		cdump po2str ttftool pfa2afm scripts
+DIRS=		cdump po2str scripts
 
 include $(ABI_ROOT)/src/config/abi_rules.mk
 

@@ -567,8 +567,6 @@ AC_CONFIG_FILES([
  src/other/GNUmakefile
  src/other/spell/GNUmakefile
  src/other/spell/xp/GNUmakefile
- src/other/ttftool/GNUmakefile
- src/other/ttftool/unix/GNUmakefile
  src/pkg/GNUmakefile
  src/pkg/linux/GNUmakefile
  src/pkg/linux/apkg/GNUmakefile
@@ -621,12 +619,8 @@ AC_CONFIG_FILES([
  src/tools/GNUmakefile
  src/tools/cdump/GNUmakefile
  src/tools/cdump/xp/GNUmakefile
- src/tools/pfa2afm/GNUmakefile
- src/tools/pfa2afm/unix/GNUmakefile
  src/tools/po2str/GNUmakefile
  src/tools/po2str/xp/GNUmakefile
- src/tools/ttftool/GNUmakefile
- src/tools/ttftool/unix/GNUmakefile
  src/tools/scripts/GNUmakefile
  src/tools/scripts/unix/GNUmakefile
  src/bindings/GNUmakefile

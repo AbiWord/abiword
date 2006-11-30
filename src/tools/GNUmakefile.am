@@ -16,13 +16,7 @@
 ## Foundation, Inc., 59 Temple Place - Suite 330, Boston, MA  
 ## 02111-1307, USA.
 
-DIST_SUBDIRS = cdump po2str pfa2afm ttftool scripts
-
-if BUILD_TTFTOOL
-TTFTOOL = ttftool
-else
-TTFTOOL = 
-endif
+DIST_SUBDIRS = cdump po2str scripts
 
 # we do not build cdump but use cdump.pl when crosscompiling
 if CROSS_COMPILING
@@ -31,4 +25,4 @@ else
 CDUMP_DIR = cdump
 endif
 
-SUBDIRS = $(CDUMP_DIR) po2str pfa2afm $(TTFTOOL) scripts
+SUBDIRS = $(CDUMP_DIR) po2str scripts
