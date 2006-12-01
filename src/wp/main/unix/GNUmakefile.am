@@ -51,8 +51,6 @@ headersdir = $(includedir)/$(PACKAGE)-$(ABIWORD_SERIES)
 headers_DATA = \
 	libabiword.h
 
-EXTRA_DIST = $(headers_DATA)
-
 ABIWORD_LIBRARY = libabiword-$(ABIWORD_SERIES).so
 ABIWORD_SODIR = $(shell pwd)
 ABIWORD_DYNBINARY = abiword-dynamic
@@ -85,6 +83,10 @@ install-libabiword:
 	cp $(ABIWORD_LIBRARY) $(DESTDIR)/$(libdir)/$(ABIWORD_LIBRARY)
 
 endif
+
+EXTRA_DIST = \
+	libabiword.cpp \
+	libabiword.h
 
 ###
 
