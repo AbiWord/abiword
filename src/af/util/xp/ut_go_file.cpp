@@ -27,7 +27,9 @@
 #endif
 
 #include "ut_go_file.h"
+#include <gsf/gsf-impl-utils.h>
 #include <gsf/gsf-input-memory.h>
+#include <gsf/gsf-output-memory.h>
 #include <gsf/gsf-input-stdio.h>
 #include <gsf/gsf-output-stdio.h>
 #include <glib/gstdio.h>
@@ -60,6 +62,206 @@
 #ifndef _
 #define _(X) X
 #endif
+
+/* ------------------------------------------------------------------------- */
+
+/* TODO: push this up into libgsf proper */
+
+#define GSF_OUTPUT_SINK_TYPE	(gsf_output_sink_get_type ())
+#define GSF_OUTPUT_SINK(o)	(G_TYPE_CHECK_INSTANCE_CAST ((o), GSF_OUTPUT_SINK_TYPE, GsfOutputSink))
+#define GSF_IS_OUTPUT_SINK(o)	(G_TYPE_CHECK_INSTANCE_TYPE ((o), GSF_OUTPUT_SINK_TYPE))
+
+typedef struct _GsfOutputSink GsfOutputSink;
+
+GType gsf_output_sink_get_type      (void) G_GNUC_CONST;
+void  gsf_output_sink_register_type (GTypeModule *module);
+
+GsfOutput *gsf_output_sink_new      (GsfOutput * sink);
+
+enum {
+	PROP_0,
+	PROP_SINK
+};
+
+static GsfOutputClass *parent_class;
+
+struct _GsfOutputSink {
+	GsfOutput output;
+	GsfOutput *memory_output;
+	GsfOutput *sink;
+};
+
+typedef struct {
+	GsfOutputClass output_class;
+} GsfOutputSinkClass;
+
+/**
+ * gsf_output_sink_new :
+ *
+ * Returns a new file or NULL.
+ **/
+GsfOutput *
+gsf_output_sink_new (GsfOutput * sink)
+{
+	g_return_val_if_fail (sink != NULL, NULL);
+	g_return_val_if_fail (GSF_IS_OUTPUT (sink), NULL);
+
+	return (GsfOutput *)g_object_new (GSF_OUTPUT_SINK_TYPE, "sink", sink, (void *)NULL);	
+}
+
+static gboolean
+gsf_output_sink_close (GsfOutput *object)
+{
+	GsfOutputSink *sink = (GsfOutputSink *)object;
+
+	if(gsf_output_close (sink->memory_output))
+		{
+			const guint8 *bytes;
+			size_t num_bytes;
+
+			bytes = gsf_output_memory_get_bytes (GSF_OUTPUT_MEMORY (sink->memory_output));
+			num_bytes = gsf_output_size (sink->memory_output);
+
+			if (gsf_output_write (sink->sink, num_bytes, bytes))
+				return gsf_output_close (sink->sink);
+		}
+
+	return FALSE;
+}
+
+static void
+gsf_output_sink_finalize (GObject *object)
+{
+	GsfOutputSink *sink = (GsfOutputSink *)object;
+	
+	g_object_unref (sink->memory_output);
+	g_object_unref (sink->sink);
+
+	G_OBJECT_CLASS (parent_class)->finalize (object);
+}
+
+static gboolean
+gsf_output_sink_seek (GsfOutput *object,
+		      gsf_off_t offset,
+		      GSeekType whence)
+{
+	GsfOutputSink *sink = (GsfOutputSink *)object;
+
+	return gsf_output_seek (sink->memory_output, offset, whence);
+}
+
+
+static gboolean
+gsf_output_sink_write (GsfOutput *object,
+		       size_t num_bytes,
+		       guint8 const *buffer)
+{
+	GsfOutputSink *sink = (GsfOutputSink *)object;
+	
+	return gsf_output_write (sink->memory_output, num_bytes, buffer);
+}
+
+static gsf_off_t gsf_output_sink_vprintf (GsfOutput *object,
+					  char const *format, va_list args) G_GNUC_PRINTF (2, 0);
+
+static gsf_off_t
+gsf_output_sink_vprintf (GsfOutput *object, char const *format, va_list args)
+{
+	GsfOutputSink *sink = (GsfOutputSink *)object;
+
+	return gsf_output_vprintf (sink->memory_output, format, args);
+}
+
+static void
+gsf_output_sink_get_property (GObject     *object,
+			      guint        property_id,
+			      GValue      *value,
+			      GParamSpec  *pspec)
+{
+	GsfOutputSink *sink = (GsfOutputSink *)object;
+
+	switch (property_id) {
+	case PROP_SINK:
+		g_value_set_object (value, sink->sink);
+		break;
+	default:
+		G_OBJECT_WARN_INVALID_PROPERTY_ID (object, property_id, pspec);
+		break;
+	}
+}
+
+static void
+gsf_output_sink_set_sink (GsfOutputSink *proxy, GsfOutput *sink)
+{
+	g_return_if_fail (GSF_IS_OUTPUT (sink));
+	g_object_ref (sink);
+	if (proxy->sink)
+		g_object_unref (proxy->sink);
+	proxy->sink = sink;
+}
+
+static void
+gsf_output_sink_set_property (GObject      *object,
+			      guint         property_id,
+			      GValue const *value,
+			      GParamSpec   *pspec)
+{
+	GsfOutputSink *sink = (GsfOutputSink *)object;
+
+	switch (property_id) {
+	case PROP_SINK:
+		gsf_output_sink_set_sink (sink, (GsfOutput *)g_value_get_object (value));
+		break;
+	default:
+		G_OBJECT_WARN_INVALID_PROPERTY_ID (object, property_id, pspec);
+		break;
+	}
+}
+
+static void
+gsf_output_sink_init (GObject *object)
+{
+	GsfOutputSink *sink = (GsfOutputSink *)object;
+
+	sink->memory_output = gsf_output_memory_new ();
+	sink->sink = NULL;
+}
+
+static void
+gsf_output_sink_class_init (GObjectClass *gobject_class)
+{
+	GsfOutputClass *output_class = GSF_OUTPUT_CLASS (gobject_class);
+	
+	gobject_class->finalize = gsf_output_sink_finalize;
+	gobject_class->set_property = gsf_output_sink_set_property;
+	gobject_class->get_property = gsf_output_sink_get_property;
+	output_class->Close     = gsf_output_sink_close;
+	output_class->Seek      = gsf_output_sink_seek;
+	output_class->Write     = gsf_output_sink_write;
+	output_class->Vprintf   = gsf_output_sink_vprintf;
+
+	g_object_class_install_property
+		(gobject_class,
+		 PROP_SINK,
+		 g_param_spec_object ("sink", "Sink",
+				      "Where the converted data is written.",
+				      GSF_OUTPUT_TYPE,
+				      (GParamFlags)(GSF_PARAM_STATIC |
+						    G_PARAM_READWRITE |
+						    G_PARAM_CONSTRUCT_ONLY)));
+
+	parent_class = GSF_OUTPUT_CLASS (g_type_class_peek_parent (gobject_class));
+}
+
+/* GSF_DYNAMIC_CLASS once we move this back into libgsf */
+GSF_CLASS (GsfOutputSink, gsf_output_sink,
+	   gsf_output_sink_class_init, gsf_output_sink_init,
+	   GSF_OUTPUT_TYPE)
+
+/* ------------------------------------------------------------------------- */
+
+static gboolean
+is_fd_uri (const char *uri, int *fd);
 
 /* ------------------------------------------------------------------------- */
 
@@ -416,6 +618,9 @@ UT_go_shell_arg_to_uri (const char *arg)
 {
 	gchar *tmp;
 
+	if (is_fd_uri (arg, NULL))
+		return g_strdup (arg);
+
 	if (g_path_is_absolute (arg) || strchr (arg, ':') == NULL)
 		return UT_go_filename_to_uri (arg);
 
@@ -566,7 +771,8 @@ is_fd_uri (const char *uri, int *fd)
 	if (*end != 0 || ul > INT_MAX)
 		return FALSE;
 
-	*fd = (int)ul;
+	if (fd != NULL)
+		*fd = (int)ul;
 	return TRUE;
 }
 
@@ -652,10 +858,14 @@ UT_go_file_create (char const *uri, GError **err)
 		FILE *fil = fd2 != -1 ? fdopen (fd2, "wb") : NULL;
 		GsfOutput *result = fil ? gsf_output_stdio_new_FILE (uri, fil, FALSE) : NULL;
 
-		if (!result)
+		if (!result) {
 			g_set_error (err, gsf_output_error_id (), 0,
 				     "Unable to write to %s", uri);
-		return result;
+			return NULL;
+		}
+
+		/* guarantee that file descriptors will be seekable */
+		return gsf_output_sink_new (result);
 	}
 
 #ifdef GOFFICE_WITH_GNOME
