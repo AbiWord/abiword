@@ -2164,6 +2164,38 @@ UT_Error fileOpen(XAP_Frame * pFrame, const char * pNewFile, IEFileType ieft)
 		return errorCode;
 	}
 
+	// For widgetized AbiWord, if there is a prexisting document in the 
+	// Frame, we save it then open a the new document in the same frame
+
+	if(pFrame)
+	{
+		AP_FrameData *pFrameData = static_cast<AP_FrameData *>(pFrame->getFrameData());		
+		if(pFrameData && pFrameData->m_bIsWidget)
+		 {
+			 if(pFrame->isDirty())
+			 {
+				 AV_View * pAV_View = pFrame->getCurrentView();
+				 EV_EditMethodCallData * pCallData = NULL;
+				 EX(saveImmediate);
+			 }
+
+
+			 s_StartStopLoadingCursor( true,pFrame);
+			 errorCode = pFrame->loadDocument(pNewFile, ieft);
+			 if (!errorCode)
+			 {
+				 pFrame->updateZoom();
+				 pFrame->show();
+			 }
+			 else
+			 {
+				 s_CouldNotLoadFileMessage(pFrame,pNewFile, errorCode);
+			 }
+			 s_StartStopLoadingCursor( false,NULL);
+			 return errorCode;
+		 } 
+	}
+
 	// We generally open documents in a new frame, which keeps the
 	// contents of the current frame available.
 	// However, as a convenience we do replace the contents of the
