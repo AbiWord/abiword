@@ -4373,6 +4373,7 @@ void FV_View::_draw(UT_sint32 x, UT_sint32 y,
 			da.bDirtyRunsOnly = bDirtyRunsOnly;
 			da.pG = m_pG;
 			da.xoff = getPageViewLeftMargin() - m_xScrollOffset;
+			xxx_UT_DEBUGMSG(("Drawing page da.xoff %d getPageViewLeftMargin() %d \n",da.xoff,getPageViewLeftMargin())); 
 			da.yoff = adjustedTop;
 			UT_sint32 adjustedLeft	= getPageViewLeftMargin() - m_xScrollOffset;
 			UT_sint32 adjustedRight = adjustedLeft + iPageWidth;

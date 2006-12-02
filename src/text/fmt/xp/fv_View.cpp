@@ -12133,7 +12133,25 @@ UT_uint32 FV_View::calculateZoomPercentForPageWidth()
 	double scale = (getWindowWidth() - (2 * getPageViewLeftMargin())) /
 		(pageWidth * (static_cast<double>(getGraphics()->getResolution()) / 
 								   static_cast<double>(getGraphics()->getZoomPercentage()) * 100.0));
-
+	//
+	// Fill the whole width for widgetized abiword
+	//
+	XAP_Frame * pFrame = static_cast<XAP_Frame*>(getParentData());
+	if(pFrame)
+	{
+		AP_FrameData *pFrameData = static_cast<AP_FrameData *>(pFrame->getFrameData());		
+		if(pFrameData && pFrameData->m_bIsWidget && m_pLayout && (getViewMode() == VIEW_NORMAL) )
+		{
+				fl_DocSectionLayout *pDSL = m_pLayout->getFirstSection();
+				UT_sint32 iLeft = pDSL->getLeftMargin();
+				UT_sint32 iRight = pDSL->getRightMargin();
+				UT_sint32 iExtra = getGraphics()->tlu(10); // extra 10 pixels for rounding errors
+				xxx_UT_DEBUGMSG(("Doing extra calculation Left %d Right %d \n",iLeft,iRight));
+				scale = (getWindowWidth() - 2 * getPageViewLeftMargin() + iLeft +iRight - iExtra) /
+					(pageWidth * (static_cast<double>(getGraphics()->getResolution()) / 
+								  static_cast<double>(getGraphics()->getZoomPercentage()) * 100.0));
+		}
+	}
 	return static_cast<UT_uint32>(scale * 100.0);
 }
 

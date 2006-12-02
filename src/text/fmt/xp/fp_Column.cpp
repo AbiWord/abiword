@@ -1083,6 +1083,7 @@ void fp_VerticalContainer::draw(dg_DrawArgs* pDA)
 		da.xoff = pDA->xoff + pContainer->getX();
 		da.yoff = pDA->yoff + pContainer->getY();
 		xxx_UT_DEBUGMSG(("Draw container %x yoff %d\n",pContainer,da.yoff));
+		xxx_UT_DEBUGMSG(("Draw container %x xoff %d\n",pContainer,da.xoff));
 #if 0
 		if(pContainer->getContainerType() == FP_CONTAINER_LINE)
 		{

@@ -1477,7 +1477,7 @@ void fp_Line::draw(GR_Graphics* pG)
 	UT_sint32 my_xoff = 0, my_yoff = 0;
 	fp_VerticalContainer * pVCon= (static_cast<fp_VerticalContainer *>(getContainer()));
 	pVCon->getScreenOffsets(this, my_xoff, my_yoff);
-	xxx_UT_DEBUGMSG(("SEVIOR: Drawing line in line pG, my_yoff=%d \n",my_yoff));
+	xxx_UT_DEBUGMSG(("SEVIOR: Drawing line in line pG, my_yoff=%d  my_xoff %d \n",my_yoff,my_xoff));
 
 	if(((my_yoff < -128000) || (my_yoff > 128000)) && pG->queryProperties(GR_Graphics::DGP_SCREEN))
 	{
@@ -1612,7 +1612,7 @@ void fp_Line::draw(dg_DrawArgs* pDA)
 
 		da.yoff += pRun->getY();
 		UT_Rect runRect(da.xoff, da.yoff - pRun->getAscent(), pRun->getWidth(), pRun->getHeight());
-
+		xxx_UT_DEBUGMSG(("Draw run in line at xoff %d \n",da.xoff));
 		if (pRect == NULL || pRect->intersectsRect(&runRect))
 		{
 			pRun->draw(&da);
