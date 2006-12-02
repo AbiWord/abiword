@@ -1450,6 +1450,20 @@ gchar
 {
 #ifdef GOFFICE_WITH_GNOME
 	return g_strdup (gnome_vfs_get_mime_type_for_data (data, data_size));
+#elif 0 /* defined G_OS_WIN32 */
+	LPWSTR mime_type;
+
+	if (FindMimeFromData (NULL, NULL, (LPVOID)data, (DWORD)data_size, NULL, 0, &mime_type, 0) == NOERROR)
+	{
+		return g_utf16_to_utf8 (mime_type, -1, NULL, NULL, NULL);
+	}
+
+	/* We try to determine mime using FindMimeFromData().
+	 * However, we are not sure whether the functions will know about
+	 * the necessary mime types. In the worst wase we fall back to
+	 * "text/plain"
+	 */
+	return g_strdup ("text/plain");
 #else
 	return g_strdup ("application/octet-stream");
 #endif
