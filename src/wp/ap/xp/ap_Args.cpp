@@ -44,7 +44,7 @@ const char * AP_Args::m_sScript = NULL;
 int AP_Args::m_iDumpstrings = 0;
 #endif
 const char * AP_Args::m_sGeometry = NULL;
-const char * AP_Args::m_sTo = NULL;
+const char * AP_Args::m_sToFormat = NULL;
 const char * AP_Args::m_sPrintTo = NULL;
 int    AP_Args::m_iVerbose = 1;
 const char * AP_Args::m_sPlugin = NULL;
@@ -64,7 +64,7 @@ const char * AP_Args::m_sUserProfile = NULL;
 const char * AP_Args::m_sFileExtension = NULL;
 
 int AP_Args::m_iToThumb = 0;
-const char * AP_Args::m_sThumb = NULL; // name of output pn
+const char * AP_Args::m_sName = NULL; // name of output file
 const char *  AP_Args::m_sThumbXY = "100x120"; // number of pixels in thumbnail by default
 
 AP_Args::AP_Args(XAP_Args * pArgs, const char * szAppName, AP_App * pApp)
@@ -152,7 +152,7 @@ bool AP_Args::doWindowlessArgs(bool & bSuccessful)
 	}
 #endif
 
-	if (m_sTo) 
+	if (m_sToFormat) 
 	{
 		AP_Convert * conv = new AP_Convert();
 		conv->setVerbose(m_iVerbose);
@@ -164,8 +164,11 @@ bool AP_Args::doWindowlessArgs(bool & bSuccessful)
 			conv->setExpProps (m_expProps);
 		while ((m_sFile = poptGetArg (poptcon)) != NULL)
 		{
-			UT_DEBUGMSG(("Converting file (%s) to type (%s)\n", m_sFile, m_sTo));
-			bSuccessful = bSuccessful && conv->convertTo(m_sFile, m_sTo);
+			UT_DEBUGMSG(("Converting file (%s) to type (%s)\n", m_sFile, m_sToFormat));
+			if(m_sName)
+			  bSuccessful = bSuccessful && conv->convertTo(m_sFile, m_sFileExtension, m_sName, m_sToFormat);
+			else
+			  bSuccessful = bSuccessful && conv->convertTo(m_sFile, m_sFileExtension, m_sToFormat);
 		}
 		delete conv;
 		return false;
@@ -177,7 +180,7 @@ bool AP_Args::doWindowlessArgs(bool & bSuccessful)
 	if(!res)
 		return false;
 
-	if (m_sTo || m_sPrintTo || m_iNosplash || m_sPlugin)
+	if (m_sToFormat || m_sPrintTo || m_iNosplash || m_sPlugin)
 	{
 	    m_bShowSplash = false;
 	}
@@ -196,7 +199,7 @@ const struct poptOption AP_Args::const_opts[] =
 #ifdef DEBUG
 	 {"dumpstrings", 'd', POPT_ARG_NONE, &m_iDumpstrings, 0, "Dump strings to file", NULL},
 #endif
-	 {"to", 't', POPT_ARG_STRING, &m_sTo, 0, "Target format of the file (abw, zabw, rtf, txt, utf8, html, latex)", "FORMAT"},
+	 {"to", 't', POPT_ARG_STRING, &m_sToFormat, 0, "Target format of the file (abw, zabw, rtf, txt, utf8, html, latex)", "FORMAT"},
 	 {"verbose", 'v', POPT_ARG_INT, &m_iVerbose, 0, "Set verbosity level (0, 1, 2)", "LEVEL"},
 	 {"print", 'p',POPT_ARG_STRING,&m_sPrintTo,0,"Print this file to printer","'Printer name' or '-' for default printer"},
 	 {"plugin", 'E', POPT_ARG_STRING, &m_sPlugin, 0, "Execute plugin NAME instead of the main application", NULL},
@@ -205,7 +208,7 @@ const struct poptOption AP_Args::const_opts[] =
 	 {"exp-props", 'e', POPT_ARG_STRING, &m_expProps, 0, "Exporter Arguments", "CSS String"},
 	 {"thumb",'\0',POPT_ARG_INT,&m_iToThumb,0,"Make a thumb nail of the first page",""},
 	 {"sizeXY",'S',POPT_ARG_STRING,&m_sThumbXY,0,"Size of PNG thumb nail in pixels","VALxVAL"},
-	 {"name",'o',POPT_ARG_STRING,&m_sThumb,0,"Name of PNG thumb nail file","Output png file name"},
+	 {"to-name",'o',POPT_ARG_STRING,&m_sName,0,"Name of output file",NULL},
 	 {"import-extension", '\0', POPT_ARG_STRING, &m_sFileExtension, 0, "Override document type detection by specifying a file extension", NULL},
 	 // GNOME build kills everything after "version"
 	 {"version", '\0', POPT_ARG_NONE, &m_iVersion, 0, "Print AbiWord version", NULL},

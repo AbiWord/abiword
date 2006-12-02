@@ -1753,7 +1753,7 @@ bool AP_UnixApp::doWindowlessArgs(const AP_Args *Args, bool & bSuccess)
 													  8, iX, iY, bpp * iX, 
 													  NULL, NULL);
 			GError * err;
-			gdk_pixbuf_save(pb,Args->m_sThumb,"png",&err);
+			gdk_pixbuf_save(pb,Args->m_sName,"png",&err);
 #endif
 			return true;
 	    }

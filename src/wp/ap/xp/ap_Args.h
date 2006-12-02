@@ -56,10 +56,10 @@ public:
 	static int    m_iDumpstrings;
 #endif
 	static const char * m_sGeometry;
-	static const char * m_sTo;
+	static const char * m_sToFormat;
 	static const char * m_sPrintTo;
+	static const char * m_sName;
 	static int    m_iToThumb;
-	static const char * m_sThumb;
 	static const char * m_sThumbXY;
 	static int	  m_iVerbose;
 	static int	  m_iShow;

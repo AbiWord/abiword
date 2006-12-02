@@ -188,12 +188,54 @@ static UT_Error handleMerge(const char * szMailMergeFile,
 
 /////////////////////////////////////////////////////////////////
 
+static IEFileType getImportFileType(const char * szSuffixOrMime)
+{
+  IEFileType ieft = IEFT_Unknown;
+
+  if(szSuffixOrMime && *szSuffixOrMime) {
+    IE_Imp::fileTypeForMimetype(szSuffixOrMime);
+    if(ieft == IEFT_Unknown) {
+      UT_String suffix;
+
+      if(*szSuffixOrMime != '.')
+	suffix = ".";
+      suffix += szSuffixOrMime;
+      ieft = IE_Imp::fileTypeForSuffix(suffix.c_str());
+    }
+  }
+
+  return ieft;
+}
+
+static IEFileType getExportFileType(const char * szSuffixOrMime)
+{
+  IEFileType ieft = IEFT_Unknown;
+
+  if(szSuffixOrMime && *szSuffixOrMime) {
+    IE_Exp::fileTypeForMimetype(szSuffixOrMime);
+    if(ieft == IEFT_Unknown) {
+      UT_String suffix;
+
+      if(*szSuffixOrMime != '.')
+	suffix = ".";
+      suffix += szSuffixOrMime;
+      ieft = IE_Exp::fileTypeForSuffix(suffix.c_str());
+    }
+  }
+
+  return ieft;
+}
+
 bool AP_Convert::convertTo(const char * szSourceFilename,
 			   IEFileType sourceFormat,
 			   const char * szTargetFilename,
 			   IEFileType targetFormat)
 {
 	UT_Error error = UT_OK;
+
+	UT_return_val_if_fail(targetFormat != IEFT_Unknown, false);
+	UT_return_val_if_fail(szSourceFilename != NULL, false);
+	UT_return_val_if_fail(szTargetFilename != NULL, false);
 
 	PD_Document * pNewDoc = new PD_Document(XAP_App::getApp());
 	UT_return_val_if_fail(pNewDoc, false);
@@ -262,7 +304,17 @@ bool AP_Convert::convertTo(const char * szSourceFilename,
 	return (error == UT_OK);
 }
 
-bool AP_Convert::convertTo(const char * szFilename, const char * szTargetSuffixOrMime)
+bool AP_Convert::convertTo(const char * szFilename, 
+			   const char * szSourceSuffixOrMime, 
+			   const char * szTargetFilename,
+			   const char * szTargetSuffixOrMime)
+{
+  return convertTo(szFilename, getImportFileType(szSourceSuffixOrMime), szTargetFilename, getExportFileType(szTargetSuffixOrMime));
+}
+
+bool AP_Convert::convertTo(const char * szFilename, 
+			   const char * szSourceSuffixOrMime,
+			   const char * szTargetSuffixOrMime)
 {
   UT_return_val_if_fail(szTargetSuffixOrMime, false);
   UT_return_val_if_fail(strlen(szTargetSuffixOrMime)>0, false);
@@ -305,7 +357,7 @@ bool AP_Convert::convertTo(const char * szFilename, const char * szTargetSuffixO
   
   FREEP(fileDup);
 
-  return convertTo(szFilename, IEFT_Unknown, file.c_str(), ieft);
+  return convertTo(szFilename, getImportFileType(szSourceSuffixOrMime), file.c_str(), ieft);
 }
 
 void AP_Convert::setVerbose(int level)
@@ -314,17 +366,16 @@ void AP_Convert::setVerbose(int level)
 		m_iVerbose = level;
 }
 
-bool AP_Convert::print(const char * szFile, GR_Graphics * pGraphics, const char * szFileExtension)
+bool AP_Convert::print(const char * szFile, GR_Graphics * pGraphics, const char * szFileExtensionOrMime)
 {
 	// get the current document
 	PD_Document *pDoc = new PD_Document(XAP_App::getApp());
 	UT_Error err;
 	char * uri = UT_go_shell_arg_to_uri (szFile);
 
-	if( !szFileExtension )
-		err = pDoc->readFromFile(uri, IEFT_Unknown, m_impProps.utf8_str());
-	else
-		err = pDoc->readFromFile(uri, IE_Imp::fileTypeForSuffix(szFileExtension), m_impProps.utf8_str());
+	IEFileType ieft = getImportFileType(szFileExtensionOrMime);
+	
+	err = pDoc->readFromFile(uri, ieft, m_impProps.utf8_str());
 	g_free(uri);
 
 	if( err != UT_OK)

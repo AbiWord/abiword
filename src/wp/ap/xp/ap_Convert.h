@@ -38,14 +38,20 @@ class ABI_EXPORT AP_Convert
 		       IEFileType sourceFormat,
 		       const char * szTargetFilename,
 		       IEFileType targetFormat);
-	
+
+	bool convertTo(const char * szFilename, 
+		       const char * szSourceSuffixOrMime, 
+		       const char * szTargetFilename,
+		       const char * szTargetSuffixOrMime);
+
 	bool convertTo(const char * szSourceFilename,
+		       const char * szSourceSuffixOrMime,
 		       const char * szTargetSuffixOrMime);
 
 	void setVerbose(int level);
 	void setMergeSource (const char * source);
 
-	bool print(const char * file, GR_Graphics * pGraphics, const char * szFileExtension);
+	bool print(const char * file, GR_Graphics * pGraphics, const char * szFileExtension = NULL);
 	bool printFirstPage(GR_Graphics * pGraphics, PD_Document * pDoc);
 
 	void setImpProps (const char * props) {
