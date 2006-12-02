@@ -67,16 +67,52 @@
 
 /* TODO: push this up into libgsf proper */
 
-#define GSF_OUTPUT_SINK_TYPE	(gsf_output_sink_get_type ())
-#define GSF_OUTPUT_SINK(o)	(G_TYPE_CHECK_INSTANCE_CAST ((o), GSF_OUTPUT_SINK_TYPE, GsfOutputSink))
-#define GSF_IS_OUTPUT_SINK(o)	(G_TYPE_CHECK_INSTANCE_TYPE ((o), GSF_OUTPUT_SINK_TYPE))
+GsfInput *
+gsf_input_memory_new_from_input (GsfInput * input)
+{
+	GsfOutput *memory_output;
+	GsfInput  *memory_input;
 
-typedef struct _GsfOutputSink GsfOutputSink;
+	g_return_val_if_fail (input != NULL, NULL);
+	g_return_val_if_fail (GSF_IS_INPUT (input), NULL);
 
-GType gsf_output_sink_get_type      (void) G_GNUC_CONST;
-void  gsf_output_sink_register_type (GTypeModule *module);
+	g_object_ref (G_OBJECT (input));
 
-GsfOutput *gsf_output_sink_new      (GsfOutput * sink);
+	memory_output = gsf_output_memory_new ();
+	while (TRUE) {
+		guint8 buf[1024];
+		size_t nread;
+
+		nread = MIN(sizeof(buf), gsf_input_remaining (input));
+		if (gsf_input_read (input, nread, buf))
+			gsf_output_write (memory_output, nread, buf);
+	}
+
+	gsf_output_close (memory_output);
+	g_object_unref (G_OBJECT (input));
+
+	memory_input = gsf_input_memory_new_clone (gsf_output_memory_get_bytes (GSF_OUTPUT_MEMORY (memory_output)),
+						   gsf_output_size (memory_output));
+
+	g_object_unref (G_OBJECT (memory_output));
+
+	return memory_input;
+}
+
+/* ------------------------------------------------------------------------- */
+
+/* TODO: push this up into libgsf proper */
+
+#define GSF_OUTPUT_PROXY_TYPE	(gsf_output_proxy_get_type ())
+#define GSF_OUTPUT_PROXY(o)	(G_TYPE_CHECK_INSTANCE_CAST ((o), GSF_OUTPUT_PROXY_TYPE, GsfOutputProxy))
+#define GSF_IS_OUTPUT_PROXY(o)	(G_TYPE_CHECK_INSTANCE_TYPE ((o), GSF_OUTPUT_PROXY_TYPE))
+
+typedef struct _GsfOutputProxy GsfOutputProxy;
+
+GType gsf_output_proxy_get_type      (void) G_GNUC_CONST;
+void  gsf_output_proxy_register_type (GTypeModule *module);
+
+GsfOutput *gsf_output_proxy_new      (GsfOutput * sink);
 
 enum {
 	PROP_0,
@@ -85,7 +121,7 @@ enum {
 
 static GsfOutputClass *parent_class;
 
-struct _GsfOutputSink {
+struct _GsfOutputProxy {
 	GsfOutput output;
 	GsfOutput *memory_output;
 	GsfOutput *sink;
@@ -93,96 +129,96 @@ struct _GsfOutputSink {
 
 typedef struct {
 	GsfOutputClass output_class;
-} GsfOutputSinkClass;
+} GsfOutputProxyClass;
 
 /**
- * gsf_output_sink_new :
+ * gsf_output_proxy_new :
  *
  * Returns a new file or NULL.
  **/
 GsfOutput *
-gsf_output_sink_new (GsfOutput * sink)
+gsf_output_proxy_new (GsfOutput * sink)
 {
 	g_return_val_if_fail (sink != NULL, NULL);
 	g_return_val_if_fail (GSF_IS_OUTPUT (sink), NULL);
 
-	return (GsfOutput *)g_object_new (GSF_OUTPUT_SINK_TYPE, "sink", sink, (void *)NULL);	
+	return (GsfOutput *)g_object_new (GSF_OUTPUT_PROXY_TYPE, "sink", sink, (void *)NULL);	
 }
 
 static gboolean
-gsf_output_sink_close (GsfOutput *object)
+gsf_output_proxy_close (GsfOutput *object)
 {
-	GsfOutputSink *sink = (GsfOutputSink *)object;
+	GsfOutputProxy *proxy = (GsfOutputProxy *)object;
 
-	if(gsf_output_close (sink->memory_output))
+	if(gsf_output_close (proxy->memory_output))
 		{
 			const guint8 *bytes;
 			size_t num_bytes;
 
-			bytes = gsf_output_memory_get_bytes (GSF_OUTPUT_MEMORY (sink->memory_output));
-			num_bytes = gsf_output_size (sink->memory_output);
+			bytes = gsf_output_memory_get_bytes (GSF_OUTPUT_MEMORY (proxy->memory_output));
+			num_bytes = gsf_output_size (proxy->memory_output);
 
-			if (gsf_output_write (sink->sink, num_bytes, bytes))
-				return gsf_output_close (sink->sink);
+			if (gsf_output_write (proxy->sink, num_bytes, bytes))
+				return gsf_output_close (proxy->sink);
 		}
 
 	return FALSE;
 }
 
 static void
-gsf_output_sink_finalize (GObject *object)
+gsf_output_proxy_finalize (GObject *object)
 {
-	GsfOutputSink *sink = (GsfOutputSink *)object;
+	GsfOutputProxy *proxy = (GsfOutputProxy *)object;
 	
-	g_object_unref (sink->memory_output);
-	g_object_unref (sink->sink);
+	g_object_unref (proxy->memory_output);
+	g_object_unref (proxy->sink);
 
 	G_OBJECT_CLASS (parent_class)->finalize (object);
 }
 
 static gboolean
-gsf_output_sink_seek (GsfOutput *object,
-		      gsf_off_t offset,
-		      GSeekType whence)
+gsf_output_proxy_seek (GsfOutput *object,
+		       gsf_off_t offset,
+		       GSeekType whence)
 {
-	GsfOutputSink *sink = (GsfOutputSink *)object;
+	GsfOutputProxy *proxy = (GsfOutputProxy *)object;
 
-	return gsf_output_seek (sink->memory_output, offset, whence);
+	return gsf_output_seek (proxy->memory_output, offset, whence);
 }
 
 
 static gboolean
-gsf_output_sink_write (GsfOutput *object,
-		       size_t num_bytes,
-		       guint8 const *buffer)
+gsf_output_proxy_write (GsfOutput *object,
+			size_t num_bytes,
+			guint8 const *buffer)
 {
-	GsfOutputSink *sink = (GsfOutputSink *)object;
+	GsfOutputProxy *proxy = (GsfOutputProxy *)object;
 	
-	return gsf_output_write (sink->memory_output, num_bytes, buffer);
+	return gsf_output_write (proxy->memory_output, num_bytes, buffer);
 }
 
-static gsf_off_t gsf_output_sink_vprintf (GsfOutput *object,
+static gsf_off_t gsf_output_proxy_vprintf (GsfOutput *object,
 					  char const *format, va_list args) G_GNUC_PRINTF (2, 0);
 
 static gsf_off_t
-gsf_output_sink_vprintf (GsfOutput *object, char const *format, va_list args)
+gsf_output_proxy_vprintf (GsfOutput *object, char const *format, va_list args)
 {
-	GsfOutputSink *sink = (GsfOutputSink *)object;
+	GsfOutputProxy *proxy = (GsfOutputProxy *)object;
 
-	return gsf_output_vprintf (sink->memory_output, format, args);
+	return gsf_output_vprintf (proxy->memory_output, format, args);
 }
 
 static void
-gsf_output_sink_get_property (GObject     *object,
-			      guint        property_id,
-			      GValue      *value,
-			      GParamSpec  *pspec)
+gsf_output_proxy_get_property (GObject     *object,
+			       guint        property_id,
+			       GValue      *value,
+			       GParamSpec  *pspec)
 {
-	GsfOutputSink *sink = (GsfOutputSink *)object;
+	GsfOutputProxy *proxy = (GsfOutputProxy *)object;
 
 	switch (property_id) {
 	case PROP_SINK:
-		g_value_set_object (value, sink->sink);
+		g_value_set_object (value, proxy->sink);
 		break;
 	default:
 		G_OBJECT_WARN_INVALID_PROPERTY_ID (object, property_id, pspec);
@@ -191,7 +227,7 @@ gsf_output_sink_get_property (GObject     *object,
 }
 
 static void
-gsf_output_sink_set_sink (GsfOutputSink *proxy, GsfOutput *sink)
+gsf_output_proxy_set_sink (GsfOutputProxy *proxy, GsfOutput *sink)
 {
 	g_return_if_fail (GSF_IS_OUTPUT (sink));
 	g_object_ref (sink);
@@ -201,16 +237,16 @@ gsf_output_sink_set_sink (GsfOutputSink *proxy, GsfOutput *sink)
 }
 
 static void
-gsf_output_sink_set_property (GObject      *object,
-			      guint         property_id,
-			      GValue const *value,
-			      GParamSpec   *pspec)
+gsf_output_proxy_set_property (GObject      *object,
+			       guint         property_id,
+			       GValue const *value,
+			       GParamSpec   *pspec)
 {
-	GsfOutputSink *sink = (GsfOutputSink *)object;
+	GsfOutputProxy *proxy = (GsfOutputProxy *)object;
 
 	switch (property_id) {
 	case PROP_SINK:
-		gsf_output_sink_set_sink (sink, (GsfOutput *)g_value_get_object (value));
+		gsf_output_proxy_set_sink (proxy, (GsfOutput *)g_value_get_object (value));
 		break;
 	default:
 		G_OBJECT_WARN_INVALID_PROPERTY_ID (object, property_id, pspec);
@@ -219,26 +255,26 @@ gsf_output_sink_set_property (GObject      *object,
 }
 
 static void
-gsf_output_sink_init (GObject *object)
+gsf_output_proxy_init (GObject *object)
 {
-	GsfOutputSink *sink = (GsfOutputSink *)object;
+	GsfOutputProxy *proxy = (GsfOutputProxy *)object;
 
-	sink->memory_output = gsf_output_memory_new ();
-	sink->sink = NULL;
+	proxy->memory_output = gsf_output_memory_new ();
+	proxy->sink = NULL;
 }
 
 static void
-gsf_output_sink_class_init (GObjectClass *gobject_class)
+gsf_output_proxy_class_init (GObjectClass *gobject_class)
 {
 	GsfOutputClass *output_class = GSF_OUTPUT_CLASS (gobject_class);
 	
-	gobject_class->finalize = gsf_output_sink_finalize;
-	gobject_class->set_property = gsf_output_sink_set_property;
-	gobject_class->get_property = gsf_output_sink_get_property;
-	output_class->Close     = gsf_output_sink_close;
-	output_class->Seek      = gsf_output_sink_seek;
-	output_class->Write     = gsf_output_sink_write;
-	output_class->Vprintf   = gsf_output_sink_vprintf;
+	gobject_class->finalize = gsf_output_proxy_finalize;
+	gobject_class->set_property = gsf_output_proxy_set_property;
+	gobject_class->get_property = gsf_output_proxy_get_property;
+	output_class->Close     = gsf_output_proxy_close;
+	output_class->Seek      = gsf_output_proxy_seek;
+	output_class->Write     = gsf_output_proxy_write;
+	output_class->Vprintf   = gsf_output_proxy_vprintf;
 
 	g_object_class_install_property
 		(gobject_class,
@@ -254,8 +290,8 @@ gsf_output_sink_class_init (GObjectClass *gobject_class)
 }
 
 /* GSF_DYNAMIC_CLASS once we move this back into libgsf */
-GSF_CLASS (GsfOutputSink, gsf_output_sink,
-	   gsf_output_sink_class_init, gsf_output_sink_init,
+GSF_CLASS (GsfOutputProxy, gsf_output_proxy,
+	   gsf_output_proxy_class_init, gsf_output_proxy_init,
 	   GSF_OUTPUT_TYPE)
 
 /* ------------------------------------------------------------------------- */
@@ -788,7 +824,6 @@ open_plain_file (const char *path, GError **err)
 	return gsf_input_stdio_new (path, err);
 }
 
-
 /**
  * UT_go_file_open :
  * @uri :
@@ -821,11 +856,19 @@ UT_go_file_open (char const *uri, GError **err)
 	if (is_fd_uri (uri, &fd)) {
 		int fd2 = dup (fd);
 		FILE *fil = fd2 != -1 ? fdopen (fd2, "rb") : NULL;
-		GsfInput *result = fil ? gsf_input_stdio_new_FILE (uri, fil, FALSE) : NULL;
+		GsfInput *sink = fil ? gsf_input_stdio_new_FILE (uri, fil, FALSE) : NULL;
+		GsfInput *result;
 
-		if (!result)
+		if (!sink) {
 			g_set_error (err, gsf_output_error_id (), 0,
 				     "Unable to read from %s", uri);
+			return NULL;
+		}
+
+		/* guarantee that file descriptors will be seekable */
+		result = gsf_input_memory_new_from_input (sink);
+		g_object_unref (G_OBJECT (sink));
+
 		return result;
 	}
 
@@ -865,7 +908,7 @@ UT_go_file_create (char const *uri, GError **err)
 		}
 
 		/* guarantee that file descriptors will be seekable */
-		return gsf_output_sink_new (result);
+		return gsf_output_proxy_new (result);
 	}
 
 #ifdef GOFFICE_WITH_GNOME
