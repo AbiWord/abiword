@@ -30,5 +30,8 @@ DEB_CONFIGURE_EXTRA_FLAGS := 	\
 	--prefix=/usr 		\
 	--sysconfdir=/etc	\
 	--with-sys-wv		\
+	--disable-spellcheck	\
 	--enable-hildon
 
+debian/stamp-autotools-files: debian/stamp-patched
+	./autogen.sh
