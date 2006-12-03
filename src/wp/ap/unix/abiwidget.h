@@ -80,7 +80,7 @@ extern "C" {
     gboolean (*invoke_ex) (AbiWidget *, const char * mthdName,
 			   const char * data, gint32 x, gint32 y);
     
-    /* a list of our more useful edit methods */
+    /* a list of some of our more useful edit methods */
     Abi_Void__Bool_EditMethod align_center;
     Abi_Void__Bool_EditMethod align_justify;
     Abi_Void__Bool_EditMethod align_left;
@@ -198,20 +198,11 @@ extern "C" {
   };
 	
   /* the public API */
-	GtkWidget * abi_widget_new (void);
-	GtkWidget * abi_widget_new_with_file (const gchar * file);
-	GtkType     abi_widget_get_type	(void);
-	void        abi_widget_map_to_screen(AbiWidget * widget);
-	void        abi_widget_turn_on_cursor(AbiWidget * widget);
-	void abi_widget_set_property(GObject  *object,
-								 guint	arg_id,
-								 const GValue *arg,
-								 GParamSpec *pspec);
- 
-	void abi_widget_get_property(GObject  *object,
-								 guint arg_id,
-								 GValue     *arg,
-								 GParamSpec *pspec);
+  GtkWidget * abi_widget_new (void);
+  GtkWidget * abi_widget_new_with_file (const gchar * file);
+  GtkType     abi_widget_get_type	(void);
+  void        abi_widget_turn_on_cursor(AbiWidget * widget);
+  gboolean    abi_widget_load_file(AbiWidget * abi, const char * pszFile);
 
   gboolean    abi_widget_invoke(AbiWidget * w, const char * mthdName);    
   gboolean    abi_widget_invoke_ex (AbiWidget * w, const char *mthdName, 
@@ -222,17 +213,136 @@ extern "C" {
   gboolean abi_widget_save ( AbiWidget * w, const char * fname );
   gboolean abi_widget_save_ext ( AbiWidget * w, const char * fname,
 				 const char * extension ) ;
+
+
+  void abi_widget_map_to_screen(AbiWidget * abi);
+  void abi_widget_set_property(GObject  *object,
+			       guint	arg_id,
+			       const GValue *arg,
+			       GParamSpec *pspec);  
+  void abi_widget_get_property(GObject  *object,
+			       guint arg_id,
+			       GValue     *arg,
+			       GParamSpec *pspec);
+  
+  /* bindings to our more useful edit methods */
+  gboolean abi_widget_align_center (AbiWidget * w);
+  gboolean abi_widget_align_justify (AbiWidget * w);
+  gboolean abi_widget_align_left (AbiWidget * w);
+  gboolean abi_widget_align_right (AbiWidget * w);
+    
+  gboolean abi_widget_copy (AbiWidget * w);
+  gboolean abi_widget_cut (AbiWidget * w);
+  gboolean abi_widget_paste (AbiWidget * w);
+  gboolean abi_widget_paste_special (AbiWidget * w);
+  gboolean abi_widget_select_all (AbiWidget * w);
+  gboolean abi_widget_select_block (AbiWidget * w);
+  gboolean abi_widget_select_line (AbiWidget * w);	
+  gboolean abi_widget_select_word (AbiWidget * w);	
+    
+  gboolean abi_widget_undo (AbiWidget * w);
+  gboolean abi_widget_redo (AbiWidget * w);
+
+  gboolean abi_widget_insert_data (AbiWidget * w, const char * str);
+  gboolean abi_widget_insert_space (AbiWidget * w);		
+        
+  gboolean abi_widget_delete_bob (AbiWidget * w);
+  gboolean abi_widget_delete_bod (AbiWidget * w);
+  gboolean abi_widget_delete_bol (AbiWidget * w);
+  gboolean abi_widget_delete_bow (AbiWidget * w);
+  gboolean abi_widget_delete_eob (AbiWidget * w);
+  gboolean abi_widget_delete_eod (AbiWidget * w);
+  gboolean abi_widget_delete_eol (AbiWidget * w);
+  gboolean abi_widget_delete_eow (AbiWidget * w);
+  gboolean abi_widget_delete_left (AbiWidget * w);
+  gboolean abi_widget_delete_right (AbiWidget * w);
+    
+  gboolean abi_widget_edit_header (AbiWidget * w);
+  gboolean abi_widget_edit_footer (AbiWidget * w);
+
+  gboolean abi_widget_file_open (AbiWidget * w);
+  gboolean abi_widget_file_save (AbiWidget * w);
+
+  gboolean abi_widget_remove_header (AbiWidget * w);
+  gboolean abi_widget_remove_footer (AbiWidget * w);
+    
+  gboolean abi_widget_save_immediate (AbiWidget * w);
+    
+  gboolean abi_widget_select_bob (AbiWidget * w);
+  gboolean abi_widget_select_bod (AbiWidget * w);
+  gboolean abi_widget_select_bol (AbiWidget * w);
+  gboolean abi_widget_select_bow (AbiWidget * w);
+  gboolean abi_widget_select_eob (AbiWidget * w);
+  gboolean abi_widget_select_eod (AbiWidget * w);
+  gboolean abi_widget_select_eol (AbiWidget * w);
+  gboolean abi_widget_select_eow (AbiWidget * w);    
+  gboolean abi_widget_select_left (AbiWidget * w);
+  gboolean abi_widget_select_next_line (AbiWidget * w);
+  gboolean abi_widget_select_page_down (AbiWidget * w);
+  gboolean abi_widget_select_page_up (AbiWidget * w);
+  gboolean abi_widget_select_prev_line (AbiWidget * w);
+  gboolean abi_widget_select_right (AbiWidget * w);
+  gboolean abi_widget_select_screen_down (AbiWidget * w);
+  gboolean abi_widget_select_screen_up (AbiWidget * w);
+  gboolean abi_widget_select_to_xy (AbiWidget * w, gint32 x, gint32 y);
+    
+  gboolean abi_widget_toggle_bold (AbiWidget * w);
+  gboolean abi_widget_toggle_underline (AbiWidget * w);
+  gboolean abi_widget_toggle_bottomline (AbiWidget * w);
+  gboolean abi_widget_toggle_insert_mode (AbiWidget * w);
+  gboolean abi_widget_toggle_italic (AbiWidget * w);
+  gboolean abi_widget_toggle_overline (AbiWidget * w);
+  gboolean abi_widget_toggle_plain (AbiWidget * w);
+  gboolean abi_widget_toggle_strike (AbiWidget * w);
+  gboolean abi_widget_toggle_sub (AbiWidget * w);
+  gboolean abi_widget_toggle_super (AbiWidget * w);
+  gboolean abi_widget_toggle_topline (AbiWidget * w);
+  gboolean abi_widget_toggle_unindent (AbiWidget * w);
+    
+  gboolean abi_widget_view_formatting_marks (AbiWidget * w);
+  gboolean abi_widget_view_print_layout (AbiWidget * w);
+  gboolean abi_widget_view_normal_layout (AbiWidget * w);
+  gboolean abi_widget_view_online_layout (AbiWidget * w);
+
+  gboolean abi_widget_moveto_bob (AbiWidget * w);
+  gboolean abi_widget_moveto_bod (AbiWidget * w);
+  gboolean abi_widget_moveto_bol (AbiWidget * w);
+  gboolean abi_widget_moveto_bop (AbiWidget * w);
+  gboolean abi_widget_moveto_bow (AbiWidget * w);
+  gboolean abi_widget_moveto_eob (AbiWidget * w);
+  gboolean abi_widget_moveto_eod (AbiWidget * w);
+  gboolean abi_widget_moveto_eol (AbiWidget * w);
+  gboolean abi_widget_moveto_eop (AbiWidget * w);
+  gboolean abi_widget_moveto_eow (AbiWidget * w);
+  gboolean abi_widget_moveto_left (AbiWidget * w);
+  gboolean abi_widget_moveto_next_line (AbiWidget * w);
+  gboolean abi_widget_moveto_next_page (AbiWidget * w);
+  gboolean abi_widget_moveto_next_screen (AbiWidget * w);
+  gboolean abi_widget_moveto_prev_line (AbiWidget * w);
+  gboolean abi_widget_moveto_prev_page (AbiWidget * w);
+  gboolean abi_widget_moveto_prev_screen (AbiWidget * w);
+  gboolean abi_widget_moveto_right (AbiWidget * w);
+  gboolean abi_widget_moveto_to_xy (AbiWidget * w, gint32 x, gint32 y);
+
+  gboolean abi_widget_zoom_100 (AbiWidget * w);
+  gboolean abi_widget_zoom_200 (AbiWidget * w);
+  gboolean abi_widget_zoom_50 (AbiWidget * w);
+  gboolean abi_widget_zoom_75 (AbiWidget * w);
+  gboolean abi_widget_zoom_whole (AbiWidget * w);
+  gboolean abi_widget_zoom_width (AbiWidget * w);
+
 #ifdef HAVE_BONOBO
-	void        abi_widget_set_Bonobo_uic(AbiWidget * abi,BonoboUIComponent * uic);
-    BonoboUIComponent * abi_widget_get_Bonobo_uic(AbiWidget * abi);  
+  void        abi_widget_set_Bonobo_uic(AbiWidget * abi,BonoboUIComponent * uic);
+  BonoboUIComponent * abi_widget_get_Bonobo_uic(AbiWidget * abi);  
 #endif
+
 #ifdef ABIWORD_INTERNAL
   /* these functions are used by abiword internally and really aren't exported to the rest of the world */
   GtkWidget * abi_widget_new_with_app (AP_UnixApp * pApp);
   GtkWidget * abi_widget_new_with_app_file (AP_UnixApp * pApp,const gchar * file);
   XAP_Frame * abi_widget_get_frame ( AbiWidget * w ) ;
 #endif
-  
+
 #ifdef __cplusplus
 }
 #endif /* c++ */

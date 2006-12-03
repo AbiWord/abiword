@@ -97,101 +97,11 @@ struct _AbiPrivData {
 enum {
   ARG_0,
   CURSOR_ON,
-  INVOKE_NOARGS,
-  MAP_TO_SCREEN,
-  IS_ABI_WIDGET,
   UNLINK_AFTER_LOAD,
-  DRAW,
-  LOAD_FILE,
-  ALIGNCENTER,
-  ALIGNLEFT,
-  ALIGNRIGHT,
-  ALIGNJUSTIFY,
-  COPY,
-  CUT,
-  PASTE,
-  PASTESPECIAL,
-  SELECTBLOCK,
-  SELECTLINE,
-  SELECTWORD,
-  SELECTALL,
-  INSERTDATA,
-  INSERTSPACE,
-  DELBOB,
-  DELBOD,
-  DELBOL,
-  DELBOW,
-  DELEOB,
-  DELEOD,
-  DELEOL,
-  DELEOW,
-  DELLEFT,
-  DELRIGHT,
-  EDITHEADER,
-  EDITFOOTER,
-  REMOVEHEADER,
-  REMOVEFOOTER,
-  EXTSELBOB,
-  EXTSELBOD,
-  EXTSELBOL,
-  EXTSELBOW,
-  EXTSELEOB,
-  EXTSELEOD,
-  EXTSELEOL,
-  EXTSELEOW,
-  EXTSELLEFT,
-  EXTSELRIGHT,
-  EXTSELNEXTLINE,
-  EXTSELPAGEDOWN,
-  EXTSELPAGEUP,
-  EXTSELPREVLINE,
-  EXTSELSCREENDOWN,
-  EXTSELSCREENUP,
-  FILEOPEN,
-  FILESAVE,
-  SAVEIMMEDIATE,
-  TOGGLEBOLD,
-  TOGGLEBOTTOMLINE,
-  TOGGLEINSERTMODE,
-  TOGGLEITALIC,
-  TOGGLEOLINE,
-  TOGGLEPLAIN,
-  TOGGLESTRIKE,
-  TOGGLESUB,
-  TOGGLESUPER,
-  TOGGLETOPLINE,
-  TOGGLEULINE,
-  TOGGLEUNINDENT,
   VIEWPARA,
   VIEWPRINTLAYOUT,
   VIEWNORMALLAYOUT,
   VIEWWEBLAYOUT,
-  UNDO,
-  REDO,
-  WARPINSPTBOB,
-  WARPINSPTBOD,
-  WARPINSPTBOL,
-  WARPINSPTBOP,
-  WARPINSPTBOW,
-  WARPINSPTEOB,
-  WARPINSPTEOD,
-  WARPINSPTEOL,
-  WARPINSPTEOP,
-  WARPINSPTEOW,
-  WARPINSPTLEFT,
-  WARPINSPTNEXTLINE,
-  WARPINSPTNEXTPAGE,
-  WARPINSPTNEXTSCREEN,
-  WARPINSPTPREVLINE,
-  WARPINSPTPREVPAGE,
-  WARPINSPTPREVSCREEN,
-  WARPINSPTPREVRIGHT, 
-  ZOOM100,
-  ZOOM200,
-  ZOOM50,
-  ZOOM75,
-  ZOOMWHOLE,
-  ZOOMWIDTH,
   ARG_LAST
 };
 
@@ -200,16 +110,10 @@ static GtkBinClass * parent_class = 0;
 
 static void s_abi_widget_map_cb(GObject * w,  GdkEvent *event,gpointer p);
 
-#if 0
-static void s_abi_widget_destroy(GObject * w, gpointer abi);
-
-static void s_abi_widget_delete(GObject * w, gpointer abi);
-
-static void abi_widget_destroy (GObject *object);
-#endif
-
 /**************************************************************************/
 /**************************************************************************/
+
+#define GET_CLASS(instance) G_TYPE_INSTANCE_GET_CLASS (instance, ABI_WIDGET_TYPE, AbiWidgetClass)
 
 // Here, we have some macros that:
 // 1) Define the desired name for an EditMethod (EM_NAME)
@@ -219,30 +123,47 @@ static void abi_widget_destroy (GObject *object);
 // All that these functions do is marshall data into and out of
 // the AbiWord application
 
-#define EM_NAME(n) abi_em_##n
+#define EM_NAME(n) _abi_em_##n
+#define PUBLIC_EM_NAME(n) abi_widget_##n
 
-#define EM_CHARPTR_INT_INT__BOOL(n) \
+#define EM_CHARPTR_INT_INT__BOOL(n, p) \
 static gboolean EM_NAME(n) (AbiWidget * w, const char * str, gint32 x, gint32 y) \
 { \
 return abi_widget_invoke_ex (w, #n, str, x, y); \
+} \
+extern "C" gboolean PUBLIC_EM_NAME(p) (AbiWidget * w, const char * str, gint32 x, gint32 y) \
+{ \
+return GET_CLASS (w)->p (w, str, x, y); \
 }
 
-#define EM_VOID__BOOL(n) \
+#define EM_VOID__BOOL(n, p) \
 static gboolean EM_NAME(n) (AbiWidget * w)\
 { \
 return abi_widget_invoke_ex (w, #n, 0, 0, 0); \
+}\
+extern "C" gboolean PUBLIC_EM_NAME(p) (AbiWidget * w)\
+{ \
+return GET_CLASS (w)->p (w); \
 }
 
-#define EM_INT_INT__BOOL(n) \
+#define EM_INT_INT__BOOL(n, p) \
 static gboolean EM_NAME(n) (AbiWidget * w, gint32 x, gint32 y) \
 { \
 return abi_widget_invoke_ex (w, #n, 0, x, y); \
+} \
+extern "C" gboolean PUBLIC_EM_NAME(p) (AbiWidget * w, gint32 x, gint32 y) \
+{ \
+return GET_CLASS (w)->p (w, x, y); \
 }
 
-#define EM_CHARPTR__BOOL(n) \
+#define EM_CHARPTR__BOOL(n, p) \
 static gboolean EM_NAME(n) (AbiWidget * w, const char * str) \
 { \
 return abi_widget_invoke_ex (w, #n, str, 0, 0); \
+} \
+extern "C" gboolean PUBLIC_EM_NAME(p) (AbiWidget * w, const char * str) \
+{ \
+return GET_CLASS (w)->p (w, str); \
 }
 
 /**************************************************************************/
@@ -251,108 +172,108 @@ return abi_widget_invoke_ex (w, #n, str, 0, 0); \
 // Here we define our EditMethods which will later be mapped back onto
 // Our AbiWidgetClass' member functions
 
-EM_VOID__BOOL(alignCenter)
-EM_VOID__BOOL(alignLeft)
-EM_VOID__BOOL(alignRight)
-EM_VOID__BOOL(alignJustify)
+EM_VOID__BOOL(alignCenter, align_center)
+EM_VOID__BOOL(alignLeft, align_left)
+EM_VOID__BOOL(alignRight, align_right)
+EM_VOID__BOOL(alignJustify, align_justify)
 
-EM_VOID__BOOL(copy)
-EM_VOID__BOOL(cut)
-EM_VOID__BOOL(paste)
-EM_VOID__BOOL(pasteSpecial)
-EM_VOID__BOOL(selectAll)
-EM_VOID__BOOL(selectBlock)
-EM_VOID__BOOL(selectLine)
-EM_VOID__BOOL(selectWord)
+EM_VOID__BOOL(copy, copy)
+EM_VOID__BOOL(cut, cut)
+EM_VOID__BOOL(paste, paste)
+EM_VOID__BOOL(pasteSpecial, paste_special)
+EM_VOID__BOOL(selectAll, select_all)
+EM_VOID__BOOL(selectBlock, select_block)
+EM_VOID__BOOL(selectLine, select_line)
+EM_VOID__BOOL(selectWord, select_word)
 
-EM_VOID__BOOL(fileOpen)
-EM_VOID__BOOL(fileSave)
-EM_VOID__BOOL(saveImmediate)
+EM_VOID__BOOL(fileOpen, file_open)
+EM_VOID__BOOL(fileSave, file_save)
+EM_VOID__BOOL(saveImmediate, save_immediate)
 
-EM_VOID__BOOL(undo)
-EM_VOID__BOOL(redo)
+EM_VOID__BOOL(undo, undo)
+EM_VOID__BOOL(redo, redo)
 
-EM_CHARPTR__BOOL(insertData)
-EM_VOID__BOOL(insertSpace)
+EM_CHARPTR__BOOL(insertData, insert_data)
+EM_VOID__BOOL(insertSpace, insert_space)
 
-EM_VOID__BOOL(delBOB)
-EM_VOID__BOOL(delBOD)
-EM_VOID__BOOL(delBOL)
-EM_VOID__BOOL(delBOW)
-EM_VOID__BOOL(delEOB)
-EM_VOID__BOOL(delEOD)
-EM_VOID__BOOL(delEOL)
-EM_VOID__BOOL(delEOW)
-EM_VOID__BOOL(delLeft)
-EM_VOID__BOOL(delRight)
+EM_VOID__BOOL(delBOB, delete_bob)
+EM_VOID__BOOL(delBOD, delete_bod)
+EM_VOID__BOOL(delBOL, delete_bol)
+EM_VOID__BOOL(delBOW, delete_bow)
+EM_VOID__BOOL(delEOB, delete_eob)
+EM_VOID__BOOL(delEOD, delete_eod)
+EM_VOID__BOOL(delEOL, delete_eol)
+EM_VOID__BOOL(delEOW, delete_eow)
+EM_VOID__BOOL(delLeft, delete_left)
+EM_VOID__BOOL(delRight, delete_right)
 
-EM_VOID__BOOL(editHeader)
-EM_VOID__BOOL(editFooter)
-EM_VOID__BOOL(removeHeader)
-EM_VOID__BOOL(removeFooter)
+EM_VOID__BOOL(editHeader, edit_header)
+EM_VOID__BOOL(editFooter, edit_footer)
+EM_VOID__BOOL(removeHeader, remove_header)
+EM_VOID__BOOL(removeFooter, remove_footer)
 
-EM_VOID__BOOL(extSelBOB)
-EM_VOID__BOOL(extSelBOD)
-EM_VOID__BOOL(extSelBOL)
-EM_VOID__BOOL(extSelBOW)
-EM_VOID__BOOL(extSelEOB)
-EM_VOID__BOOL(extSelEOD)
-EM_VOID__BOOL(extSelEOL)
-EM_VOID__BOOL(extSelEOW)
-EM_VOID__BOOL(extSelLeft)
-EM_VOID__BOOL(extSelNextLine)
-EM_VOID__BOOL(extSelPageDown)
-EM_VOID__BOOL(extSelPageUp)
-EM_VOID__BOOL(extSelPrevLine)
-EM_VOID__BOOL(extSelRight)
-EM_VOID__BOOL(extSelScreenDown)
-EM_VOID__BOOL(extSelScreenUp)
-EM_INT_INT__BOOL(extSelToXY)
+EM_VOID__BOOL(extSelBOB, select_bob)
+EM_VOID__BOOL(extSelBOD, select_bod)
+EM_VOID__BOOL(extSelBOL, select_bol)
+EM_VOID__BOOL(extSelBOW, select_bow)
+EM_VOID__BOOL(extSelEOB, select_eob)
+EM_VOID__BOOL(extSelEOD, select_eod)
+EM_VOID__BOOL(extSelEOL, select_eol)
+EM_VOID__BOOL(extSelEOW, select_eow)
+EM_VOID__BOOL(extSelLeft, select_left)
+EM_VOID__BOOL(extSelNextLine, select_next_line)
+EM_VOID__BOOL(extSelPageDown, select_page_down)
+EM_VOID__BOOL(extSelPageUp, select_page_up)
+EM_VOID__BOOL(extSelPrevLine, select_prev_line)
+EM_VOID__BOOL(extSelRight, select_right)
+EM_VOID__BOOL(extSelScreenDown, select_screen_down)
+EM_VOID__BOOL(extSelScreenUp, select_screen_up)
+EM_INT_INT__BOOL(extSelToXY, select_to_xy)
 
-EM_VOID__BOOL(toggleBold)
-EM_VOID__BOOL(toggleBottomline)
-EM_VOID__BOOL(toggleInsertMode)
-EM_VOID__BOOL(toggleItalic)
-EM_VOID__BOOL(toggleOline)
-EM_VOID__BOOL(togglePlain)
-EM_VOID__BOOL(toggleStrike)
-EM_VOID__BOOL(toggleSub)
-EM_VOID__BOOL(toggleSuper)
-EM_VOID__BOOL(toggleTopline)
-EM_VOID__BOOL(toggleUline)
-EM_VOID__BOOL(toggleUnIndent)
+EM_VOID__BOOL(toggleBold, toggle_bold)
+EM_VOID__BOOL(toggleBottomline, toggle_bottomline)
+EM_VOID__BOOL(toggleInsertMode, toggle_insert_mode)
+EM_VOID__BOOL(toggleItalic, toggle_italic)
+EM_VOID__BOOL(toggleOline, toggle_overline)
+EM_VOID__BOOL(togglePlain, toggle_plain)
+EM_VOID__BOOL(toggleStrike, toggle_strike)
+EM_VOID__BOOL(toggleSub, toggle_sub)
+EM_VOID__BOOL(toggleSuper, toggle_super)
+EM_VOID__BOOL(toggleTopline, toggle_topline)
+EM_VOID__BOOL(toggleUline, toggle_underline)
+EM_VOID__BOOL(toggleUnIndent, toggle_unindent)
 
-EM_VOID__BOOL(viewPara)
-EM_VOID__BOOL(viewPrintLayout)
-EM_VOID__BOOL(viewNormalLayout)
-EM_VOID__BOOL(viewWebLayout)
+EM_VOID__BOOL(viewPara, view_formatting_marks)
+EM_VOID__BOOL(viewPrintLayout, view_print_layout)
+EM_VOID__BOOL(viewNormalLayout, view_normal_layout)
+EM_VOID__BOOL(viewWebLayout, view_online_layout)
 
-EM_VOID__BOOL(warpInsPtBOB)
-EM_VOID__BOOL(warpInsPtBOD)
-EM_VOID__BOOL(warpInsPtBOL)
-EM_VOID__BOOL(warpInsPtBOP)
-EM_VOID__BOOL(warpInsPtBOW)
-EM_VOID__BOOL(warpInsPtEOB)
-EM_VOID__BOOL(warpInsPtEOD)
-EM_VOID__BOOL(warpInsPtEOL)
-EM_VOID__BOOL(warpInsPtEOP)
-EM_VOID__BOOL(warpInsPtEOW)
-EM_VOID__BOOL(warpInsPtLeft)
-EM_VOID__BOOL(warpInsPtNextLine)
-EM_VOID__BOOL(warpInsPtNextPage)
-EM_VOID__BOOL(warpInsPtNextScreen)
-EM_VOID__BOOL(warpInsPtPrevLine)
-EM_VOID__BOOL(warpInsPtPrevPage)
-EM_VOID__BOOL(warpInsPtPrevScreen)
-EM_VOID__BOOL(warpInsPtRight)
-EM_INT_INT__BOOL(warpInsPtToXY)
+EM_VOID__BOOL(warpInsPtBOB, moveto_bob)
+EM_VOID__BOOL(warpInsPtBOD, moveto_bod)
+EM_VOID__BOOL(warpInsPtBOL, moveto_bol)
+EM_VOID__BOOL(warpInsPtBOP, moveto_bop)
+EM_VOID__BOOL(warpInsPtBOW, moveto_bow)
+EM_VOID__BOOL(warpInsPtEOB, moveto_eob)
+EM_VOID__BOOL(warpInsPtEOD, moveto_eod)
+EM_VOID__BOOL(warpInsPtEOL, moveto_eol)
+EM_VOID__BOOL(warpInsPtEOP, moveto_eop)
+EM_VOID__BOOL(warpInsPtEOW, moveto_eow)
+EM_VOID__BOOL(warpInsPtLeft, moveto_left)
+EM_VOID__BOOL(warpInsPtNextLine, moveto_next_line)
+EM_VOID__BOOL(warpInsPtNextPage, moveto_next_page)
+EM_VOID__BOOL(warpInsPtNextScreen, moveto_next_screen)
+EM_VOID__BOOL(warpInsPtPrevLine, moveto_prev_line)
+EM_VOID__BOOL(warpInsPtPrevPage, moveto_prev_page)
+EM_VOID__BOOL(warpInsPtPrevScreen, moveto_prev_screen)
+EM_VOID__BOOL(warpInsPtRight, moveto_right)
+EM_INT_INT__BOOL(warpInsPtToXY, moveto_to_xy)
 
-EM_VOID__BOOL(zoom100)
-EM_VOID__BOOL(zoom200)
-EM_VOID__BOOL(zoom50)
-EM_VOID__BOOL(zoom75)
-EM_VOID__BOOL(zoomWhole)
-EM_VOID__BOOL(zoomWidth)
+EM_VOID__BOOL(zoom100, zoom_100)
+EM_VOID__BOOL(zoom200, zoom_200)
+EM_VOID__BOOL(zoom50, zoom_50)
+EM_VOID__BOOL(zoom75, zoom_75)
+EM_VOID__BOOL(zoomWhole, zoom_whole)
+EM_VOID__BOOL(zoomWidth, zoom_width)
 
 /**************************************************************************/
 /**************************************************************************/
@@ -529,8 +450,7 @@ static void s_StartStopLoadingCursor( bool bStartStop, XAP_Frame * pFrame)
 	}
 }
 
-
-static bool
+extern "C" gboolean
 abi_widget_load_file(AbiWidget * abi, const char * pszFile)
 {
 	if(abi->priv->m_szFilename)
@@ -539,16 +459,16 @@ abi_widget_load_file(AbiWidget * abi, const char * pszFile)
 	if(!abi->priv->m_bMappedToScreen)
 	{
 	  abi->priv->m_bPendingFile = true;
-	  return false;
+	  return FALSE;
 	}
 	if(abi->priv->m_iNumFileLoads > 0)
 	{
-		return false;
+		return FALSE;
 	}
 
 	AP_UnixFrame * pFrame = (AP_UnixFrame *) abi->priv->m_pFrame;
 	if(pFrame == NULL)
-		return false;
+		return FALSE;
 	s_StartStopLoadingCursor( true, pFrame);
 //
 // First draw blank document
@@ -571,10 +491,10 @@ abi_widget_load_file(AbiWidget * abi, const char * pszFile)
 	abi->priv->m_iNumFileLoads += 1;
 	if(abi->priv->m_bUnlinkFileAfterLoad)
 	{
-	  unlink(pszFile);
+	  remove(pszFile);
 	  abi->priv->m_bUnlinkFileAfterLoad = false;
 	}
-	return FALSE;
+	return TRUE;
 }
 
 static gint s_abi_widget_load_file(gpointer p)
@@ -609,29 +529,6 @@ static void s_abi_widget_map_cb(GObject * w,  GdkEvent *event,gpointer p)
   }
 }
 
-
-#if 0
-static void s_abi_widget_destroy(GObject * w, gpointer p)
-{
-
-#ifdef LOGFILE
-	fprintf(getlogfile(),"abiwidget destroyed \n");
-#endif
-  abi_widget_destroy(G_OBJECT(p));
-}
-
-
-static void s_abi_widget_delete(GObject * w, gpointer p)
-{
-
-#ifdef LOGFILE
-	fprintf(getlogfile(),"abiwidget deleted\n");
-#endif
-
-  abi_widget_destroy(G_OBJECT(p));
-}
-#endif
-
 //
 // arguments to abiwidget
 //
@@ -643,16 +540,6 @@ static void abi_widget_get_prop (GObject  *object,
     AbiWidget * abi = ABI_WIDGET(object);
 	switch(arg_id)
 	{
-	    case MAP_TO_SCREEN:
-		{
-			g_value_set_boolean(arg, (gboolean) abi->priv->m_bMappedToScreen);
-			break;
-		}
-	    case IS_ABI_WIDGET:
-		{
-			g_value_set_boolean(arg,(gboolean) true);
-			break;
-		}
 	    case UNLINK_AFTER_LOAD:
 		{
 			g_value_set_boolean(arg,(gboolean) abi->priv->m_bUnlinkFileAfterLoad);
@@ -663,10 +550,11 @@ static void abi_widget_get_prop (GObject  *object,
 	}
 }
 
-void abi_widget_get_property(GObject  *object,
-								 guint arg_id,
-								 GValue     *arg,
-								 GParamSpec *pspec)
+extern "C" void
+abi_widget_get_property(GObject  *object,
+						guint arg_id,
+						GValue     *arg,
+						GParamSpec *pspec)
 {
 	abi_widget_get_prop(object,	arg_id,	arg, pspec);
 }
@@ -696,18 +584,6 @@ static void abi_widget_set_prop (GObject  *object,
 			      abi_widget_turn_on_cursor(abi);
 			 break;
 		}
-	    case INVOKE_NOARGS:
-		{
-		     const char * psz= g_value_get_string( arg);
-		     abi_widget_invoke_ex(abi,psz,0,0,0);
-			 break;
-		}
-	    case MAP_TO_SCREEN:
-		{
-		     if(g_value_get_boolean(arg) == TRUE)
-			      abi_widget_map_to_screen(abi);
-			 break;
-		}
 	    case UNLINK_AFTER_LOAD:
 		{
 		     if(g_value_get_boolean(arg) == TRUE)
@@ -715,314 +591,6 @@ static void abi_widget_set_prop (GObject  *object,
 			 else
 			      abi->priv->m_bUnlinkFileAfterLoad = false;
 			 break;
-		}
-	    case DRAW:
-		{
-		     if(g_value_get_boolean(arg) == TRUE)
-			      abi_widget_draw(abi);
-			 break;
-		}
-	    case LOAD_FILE:
-		{
-		     const char * pszFile= g_value_get_string(arg);
-			 abi_widget_load_file(abi,pszFile);
-			 break;
-		}
-	    case ALIGNCENTER:
-		{
-		  abi_klazz->align_center (abi);
-		  break;
-		}
-	    case ALIGNLEFT:
-		{
-		  abi_klazz->align_left (abi);
-		  break;
-		}
-	    case ALIGNRIGHT:
-	      {
-			  abi_klazz->align_right (abi);
-			  break;
-	      }
-	    case ALIGNJUSTIFY:
-		{
-		  abi_klazz->align_justify (abi);
-		  break;
-		}
-	    case COPY:
-		{
-		  abi_klazz->copy (abi);
-		  break;
-		}
-	    case CUT:
-	      {
-		abi_klazz->cut (abi);
-		break;
-	      }
-	    case PASTE:
-		{
-		  abi_klazz->paste (abi);
-		  break;
-		}
-	    case PASTESPECIAL:
-		{
-		  abi_klazz->paste_special (abi);
-		  break;
-		}
-	    case SELECTALL:
-		{
-		  abi_klazz->select_all (abi);
-		  break;
-		}
-	    case SELECTBLOCK:
-		{
-		  abi_klazz->select_block (abi);
-		  break;
-		}
-	    case SELECTLINE:
-		{
-		  abi_klazz->select_line (abi);
-		  break;
-		}
-	    case SELECTWORD:
-		{
-		  abi_klazz->select_word (abi);
-		  break;
-		}
-	    case INSERTDATA:
-		{
-		     const char * pszstr= g_value_get_string(arg);
-			 abi_klazz->insert_data (abi, pszstr);
-			 break;
-		}
-	    case  INSERTSPACE:
-		{
-		  abi_klazz->insert_space (abi);
-		  break;
-		}
-	    case DELBOB:
-		{
-		  abi_klazz->delete_bob (abi);
-		  break;
-		}
-	    case DELBOD:
-		{
-		  abi_klazz->delete_bod (abi);
-		  break;
-		}
-	    case DELBOL:
-		{
-		  abi_klazz->delete_bol (abi);		  
-		  break;
-		}
-	    case DELBOW:
-		{
-		  abi_klazz->delete_bow (abi);
-		  break;
-		}
-	case DELEOB:
-	  {
-	    abi_klazz->delete_eob (abi);
-	    break;
-	  }
-	case DELEOD:
-	  {
-	    abi_klazz->delete_eod (abi);
-	    break;
-	  }
-	case DELEOL:
-	  {
-	    abi_klazz->delete_eol (abi);
-	    break;
-	  }
-	case DELEOW:
-	  {
-	    abi_klazz->delete_eow (abi);
-	    break;
-	  }
-	case DELLEFT:
-	  {
-	    abi_klazz->delete_left (abi);
-	    break;
-	  }
-	    case DELRIGHT:
-	      {
-		abi_klazz->delete_right (abi);
-		break;
-	      }
-	    case EDITHEADER:
-		{
-		  abi_klazz->edit_header (abi);
-		  break;
-		}
-	    case EDITFOOTER:
-		{
-		  abi_klazz->edit_footer (abi);
-		  break;
-		}
-	    case REMOVEHEADER:
-		{
-		  abi_klazz->remove_header (abi);
-		  break;
-		}
-	    case REMOVEFOOTER:
-		{
-		  abi_klazz->remove_footer (abi);
-		  break;
-		}
-	    case EXTSELBOB:
-		{
-		  abi_klazz->select_bob (abi);
-		  break;
-		}
-	    case EXTSELBOD:
-		{
-		  abi_klazz->select_bod (abi);
-		  break;
-		}
-	    case EXTSELBOL:
-		{
-		  abi_klazz->select_bol (abi);
-		  break;
-		}
-	    case EXTSELBOW:
-		{
-		  abi_klazz->select_bow (abi);
-		  break;
-		}
-	    case EXTSELEOB:
-		{
-		  abi_klazz->select_eob (abi);
-		  break;
-		}
-	    case EXTSELEOD:
-		{
-		  abi_klazz->select_eod (abi);
-		  break;
-		}
-	    case EXTSELEOL:
-		{
-		  abi_klazz->select_eol (abi);
-		  break;
-		}
-	    case EXTSELEOW:
-		{
-		  abi_klazz->select_eow (abi);
-		  break;
-		}
-	    case EXTSELLEFT:
-		{
-		  abi_klazz->select_left (abi);
-		  break;
-		}
-	case EXTSELRIGHT:
-	  {
-	    abi_klazz->select_right (abi);
-	    break;
-	  }
-	    case EXTSELNEXTLINE:
-		{
-		  abi_klazz->select_next_line (abi);
-		  break;
-		}
-	    case EXTSELPAGEDOWN:
-		{
-		  abi_klazz->select_page_down (abi);
-		  break;
-		}
-	    case EXTSELPAGEUP:
-		{
-		  abi_klazz->select_page_up (abi);
-		  break;
-		}
-	    case EXTSELPREVLINE:
-		{
-		  abi_klazz->select_prev_line (abi);
-		  break;
-		}
-	    case EXTSELSCREENDOWN:
-		{
-		  abi_klazz->select_screen_down (abi);
-		  break;
-		}
-	    case EXTSELSCREENUP:
-		{
-		  abi_klazz->select_screen_up (abi);
-		  break;
-		}
-	    case FILEOPEN:
-		{
-		  abi_klazz->file_open (abi);
-		  break;
-		}
-	    case FILESAVE:
-		{
-		  abi_klazz->file_save (abi);
-		  break;
-		}
-	    case SAVEIMMEDIATE:
-		{
-		  abi_klazz->save_immediate (abi);
-		  break;
-		}
-	    case TOGGLEBOLD:
-		{
-		  abi_klazz->toggle_bold (abi);
-		  break;
-		}
-	    case TOGGLEBOTTOMLINE:
-		{
-		  abi_klazz->toggle_bottomline (abi);
-		  break;
-		}
-	    case TOGGLEINSERTMODE:
-		{
-		  abi_klazz->toggle_insert_mode (abi);
-		  break;
-		}
-	    case TOGGLEITALIC:
-		{
-		  abi_klazz->toggle_italic (abi);
-		  break;
-		}
-	    case TOGGLEOLINE:
-		{
-		  abi_klazz->toggle_overline (abi);
-		  break;
-		}
-	    case TOGGLEPLAIN:
-		{
-		  abi_klazz->toggle_plain (abi);
-		  break;
-		}
-	    case TOGGLESTRIKE:
-		{
-		  abi_klazz->toggle_strike (abi);
-		  break;
-		}
-	    case TOGGLESUB:
-	      {
-		abi_klazz->toggle_sub (abi);
-		break;
-	      }
-	    case TOGGLESUPER:
-		{
-		  abi_klazz->toggle_super (abi);
-		  break;
-		}
-	    case TOGGLETOPLINE:
-	      {
-		abi_klazz->toggle_topline (abi);
-		break;
-		}
-	    case TOGGLEULINE:
-		{
-		  abi_klazz->toggle_underline (abi);
-		  break;
-		}
-	    case TOGGLEUNINDENT:
-		{
-		  abi_klazz->toggle_unindent (abi);
-		  break;
 		}
 	    case VIEWPARA:
 		{
@@ -1044,146 +612,16 @@ static void abi_widget_set_prop (GObject  *object,
 		abi_klazz->view_online_layout (abi);
 		break;
 		}
-	    case UNDO:
-	      {
-		  abi_klazz->undo (abi);
-		  break;
-		}
-	    case REDO:
-		{
-		  abi_klazz->redo (abi);
-		  break;
-		}
-
-	    case WARPINSPTBOB:
-		{
-		  abi_klazz->moveto_bob (abi);
-		  break;
-		}
-	    case WARPINSPTBOD:
-		{
-		  abi_klazz->moveto_bod (abi);
-		  break;
-		}
-	    case WARPINSPTBOL:
-		{
-		  abi_klazz->moveto_bol (abi);
-		  break;
-		}
-	    case WARPINSPTBOP:
-		{
-		  abi_klazz->moveto_bop (abi);
-		  break;
-		}
-	    case WARPINSPTBOW:
-		{
-		  abi_klazz->moveto_bow (abi);
-		  break;
-		}
-	    case WARPINSPTEOB:
-		{
-		  abi_klazz->moveto_eob (abi);
-		  break;
-		}
-	    case WARPINSPTEOD:
-		{
-		  abi_klazz->moveto_eod (abi);
-		  break;
-		}
-	    case WARPINSPTEOL:
-		{
-		  abi_klazz->moveto_eol (abi);
-		  break;
-		}
-	    case WARPINSPTEOP:
-		{
-		  abi_klazz->moveto_eop (abi);
-		  break;
-		}
-	    case WARPINSPTEOW:
-		{
-		  abi_klazz->moveto_eow (abi);
-		  break;
-		}
-	    case WARPINSPTLEFT:
-		{
-		  abi_klazz->moveto_left (abi);
-		  break;
-		}
-	    case WARPINSPTNEXTLINE:
-		{
-		  abi_klazz->moveto_next_line (abi);
-		  break;
-		}
-	    case WARPINSPTNEXTPAGE:
-		{
-		  abi_klazz->moveto_next_page (abi);
-		  break;
-		}
-	    case WARPINSPTNEXTSCREEN:
-		{
-		  abi_klazz->moveto_next_screen (abi);
-		  break;
-		}
-	    case WARPINSPTPREVLINE:
-		{
-		  abi_klazz->moveto_prev_line (abi);
-		  break;
-		}
-	    case WARPINSPTPREVPAGE:
-		{
-		  abi_klazz->moveto_prev_page (abi);
-		  break;
-		}
-	    case WARPINSPTPREVSCREEN:
-		{
-		  abi_klazz->moveto_prev_screen (abi);
-		  break;
-		}
-	    case WARPINSPTPREVRIGHT:
-		{
-		  abi_klazz->moveto_right (abi);
-		  break;
-		}
-	    case ZOOM100:
-		{
-		  abi_klazz->zoom_100 (abi);
-		  break;
-		}
-	    case ZOOM200:
-		{
-		  abi_klazz->zoom_200 (abi);
-		  break;
-		}
-	    case ZOOM50:
-		{
-		  abi_klazz->zoom_50 (abi);
-		  break;
-		}
-	    case ZOOM75:
-		{
-		  abi_klazz->zoom_75 (abi);
-		  break;
-		}
-	    case ZOOMWHOLE:
-		{
-		  abi_klazz->zoom_whole (abi);		  
-		  break;
-		}
-	    case ZOOMWIDTH:
-		{
-		  abi_klazz->zoom_width (abi);
-		  break;
-		}
 	    default:
 			break;
 	}
 }
 
-void abi_widget_set_property(GObject  *object,
-							 guint	arg_id,
-							 const GValue *arg,
-							 GParamSpec *pspec)
+extern "C" void 
+abi_widget_set_property(GObject  *object,
+						guint	arg_id,
+						const GValue *arg,
+						GParamSpec *pspec)
 {
 	abi_widget_set_prop(object, arg_id, arg, pspec);
 }
@@ -1373,89 +811,6 @@ abi_widget_realize (GtkWidget * widget)
 //					 (gpointer) abi);
 	abi_widget_map_to_screen( abi);
 }
-
-#ifdef HAVE_BONOBO
-#if 0
-static void
-abi_widget_finalize(GObject *object)
-{
-	AbiWidget * abi;
-	
-	g_return_if_fail (object != NULL);
-	g_return_if_fail (IS_ABI_WIDGET(object));
-
-	// here we free any self-created data
-	abi = ABI_WIDGET(object);
-
-	// order of deletion is important here
-
-	if(abi->priv->m_pApp)
-	{
-		if(abi->priv->m_pFrame)
-		{
-			abi->priv->m_pApp->forgetFrame(abi->priv->m_pFrame);
-			delete abi->priv->m_pFrame;
-		}
-		if(!abi->priv->externalApp)
-		{
-			abi->priv->m_pApp->shutdown();
-			delete abi->priv->m_pApp;
-		}
-		abi->priv->m_pApp = NULL;
-	}
-	g_free (abi->priv->m_szFilename);
-
-	g_free (abi->priv);
-
-#ifdef LOGFILE
-	fprintf(getlogfile(),"abiwidget finalized\n");
-#endif
-	// chain up
-	BONOBO_CALL_PARENT (G_OBJECT_CLASS, finalize, (object));
-}
-#endif
-#endif
-
-
-#if 0
-static void
-abi_widget_destroy (GObject *object)
-{
-	AbiWidget * abi;
-	
-	g_return_if_fail (object != NULL);
-	g_return_if_fail (IS_ABI_WIDGET(object));
-
-	// here we free any self-created data
-	abi = ABI_WIDGET(object);
-
-	// order of deletion is important here
-
-	if(abi->priv->m_pApp)
-	{
-		if(abi->priv->m_pFrame)
-		{
-			abi->priv->m_pApp->forgetFrame(abi->priv->m_pFrame);
-			delete abi->priv->m_pFrame;
-		}
-		if(!abi->priv->externalApp)
-		{
-			abi->priv->m_pApp->shutdown();
-			delete abi->priv->m_pApp;
-		}
-		abi->priv->m_pApp = NULL;
-		g_free (abi->priv->m_szFilename);
-		g_free (abi->priv);
-		if (GTK_OBJECT_CLASS(parent_class)->destroy)
-			GTK_OBJECT_CLASS(parent_class)->destroy (GTK_OBJECT(object));
-	}
-
-#ifdef LOGFILE
-	fprintf(getlogfile(),"abiwidget destroyed in abi_widget_destroy \n");
-#endif
-}
-#endif
-
 
 static void
 abi_widget_destroy_gtk (GtkObject *object)
@@ -1737,462 +1092,12 @@ abi_widget_class_init (AbiWidgetClass *abi_class)
 														  FALSE,
 														  (GParamFlags) G_PARAM_READWRITE));
 	g_object_class_install_property (gobject_class,
-									 INVOKE_NOARGS,
-									 g_param_spec_string("invoke-noargs",
-														 NULL,
-														 NULL,
-														 NULL,
-														 (GParamFlags) G_PARAM_READWRITE));
-	g_object_class_install_property (gobject_class,
-									 MAP_TO_SCREEN,
-									 g_param_spec_boolean("map-to-screen",
-														  NULL,
-														  NULL,
-														  FALSE,
-														  (GParamFlags) G_PARAM_READWRITE));
-	g_object_class_install_property (gobject_class,
 									 UNLINK_AFTER_LOAD,
 									 g_param_spec_boolean("unlink-after-load",
 														  NULL,
 														  NULL,
 														  FALSE,
 														  (GParamFlags) G_PARAM_READWRITE));
-	g_object_class_install_property (gobject_class,
-									 IS_ABI_WIDGET,
-									 g_param_spec_boolean("is-abi-widget",
-														  NULL,
-														  NULL,
-														  FALSE,
-														  (GParamFlags) G_PARAM_READWRITE));
-	g_object_class_install_property (gobject_class,
-									 DRAW,
-									 g_param_spec_boolean("draw",
-														  NULL,
-														  NULL,
-														  FALSE,
-														  (GParamFlags) G_PARAM_READWRITE));
-	g_object_class_install_property (gobject_class,
-									 LOAD_FILE,
-									 g_param_spec_string("load-file",
-														 NULL,
-														 NULL,
-													   NULL,
-														 (GParamFlags) G_PARAM_READWRITE));
-	g_object_class_install_property (gobject_class,
-									 ALIGNCENTER,
-									 g_param_spec_boolean("align-center",
-														  NULL,
-														  NULL,
-														  FALSE,
-														  (GParamFlags) G_PARAM_READWRITE));
-	g_object_class_install_property (gobject_class,
-									 ALIGNLEFT,
-									 g_param_spec_boolean("align-left",
-														  NULL,
-														  NULL,
-														  FALSE,
-														  (GParamFlags) G_PARAM_READWRITE));
-	g_object_class_install_property (gobject_class,
-									 ALIGNRIGHT,
-									 g_param_spec_boolean("align-right",
-														  NULL,
-														  NULL,
-														  FALSE,
-														  (GParamFlags) G_PARAM_READWRITE));
-	g_object_class_install_property (gobject_class,
-									 ALIGNJUSTIFY,
-									 g_param_spec_boolean("align-justify",
-														  NULL,
-														  NULL,
-														  FALSE,
-														  (GParamFlags) G_PARAM_READWRITE));
-	g_object_class_install_property (gobject_class,
-									 COPY,
-									 g_param_spec_boolean("copy",
-														  NULL,
-														  NULL,
-														  FALSE,
-														  (GParamFlags) G_PARAM_READWRITE));
-	g_object_class_install_property (gobject_class,
-									 CUT,
-									 g_param_spec_boolean("cut",
-														  NULL,
-														  NULL,
-														  FALSE,
-														  (GParamFlags) G_PARAM_READWRITE));
-	g_object_class_install_property (gobject_class,
-									 PASTE,
-									 g_param_spec_boolean("paste",
-														  NULL,
-														  NULL,
-														  FALSE,
-														  (GParamFlags) G_PARAM_READWRITE));
-	g_object_class_install_property (gobject_class,
-									 PASTESPECIAL,
-									 g_param_spec_boolean("paste-special",
-														  NULL,
-														  NULL,
-														  FALSE,
-														  (GParamFlags) G_PARAM_READWRITE));
-	g_object_class_install_property (gobject_class,
-									 SELECTBLOCK,
-									 g_param_spec_boolean("select-block",
-														  NULL,
-														  NULL,
-														  FALSE,
-														  (GParamFlags) G_PARAM_READWRITE));
-	g_object_class_install_property (gobject_class,
-									 SELECTLINE,
-									 g_param_spec_boolean("select-line",
-														  NULL,
-														  NULL,
-														  FALSE,
-														  (GParamFlags) G_PARAM_READWRITE));
-	g_object_class_install_property (gobject_class,
-									 SELECTWORD,
-									 g_param_spec_boolean("select-word",
-														  NULL,
-														  NULL,
-														  FALSE,
-														  (GParamFlags) G_PARAM_READWRITE));
-	g_object_class_install_property (gobject_class,
-									 FILEOPEN,
-									 g_param_spec_boolean("file-open",
-														  NULL,
-														  NULL,
-														  FALSE,
-														  (GParamFlags) G_PARAM_READWRITE));
-	g_object_class_install_property (gobject_class,
-									 FILESAVE,
-									 g_param_spec_boolean("file-save",
-														  NULL,
-														  NULL,
-														  FALSE,
-														  (GParamFlags) G_PARAM_READWRITE));
-	g_object_class_install_property (gobject_class,
-									 SAVEIMMEDIATE,
-									 g_param_spec_boolean("save-immediate",
-														  NULL,
-														  NULL,
-														  FALSE,
-														  (GParamFlags) G_PARAM_READWRITE));
-	g_object_class_install_property (gobject_class,
-									 SELECTALL,
-									 g_param_spec_boolean("select-all",
-														  NULL,
-														  NULL,
-														  FALSE,
-														  (GParamFlags) G_PARAM_READWRITE));
-
-	g_object_class_install_property (gobject_class,
-									 INSERTDATA,
-									 g_param_spec_string("insert-data",
-														 NULL,
-														 NULL,
-													   NULL,
-														 (GParamFlags) G_PARAM_READWRITE));
-
-	  g_object_class_install_property(gobject_class,
-									  INSERTSPACE,
-									  g_param_spec_boolean("insert-space",
-														   NULL,
-														   NULL,
-														   FALSE,
-														   (GParamFlags) G_PARAM_READWRITE));
-  g_object_class_install_property(gobject_class,
-								  DELBOB,
-								  g_param_spec_boolean("del-bob",
-													   NULL,
-													   NULL,
-													   FALSE,
-													   (GParamFlags) G_PARAM_READWRITE));
-  g_object_class_install_property(gobject_class,
-								  DELBOD,
-								  g_param_spec_boolean("del-bod",
-													   NULL,
-													   NULL,
-													   FALSE,
-													   (GParamFlags) G_PARAM_READWRITE));
-  g_object_class_install_property(gobject_class,
-								  DELBOL,
-								  g_param_spec_boolean("del-bol",
-													   NULL,
-													   NULL,
-													   FALSE,
-													   (GParamFlags) G_PARAM_READWRITE));
-  g_object_class_install_property(gobject_class,
-								  DELBOW,
-								  g_param_spec_boolean("del-bow",
-													   NULL,
-													   NULL,
-													   FALSE,
-													   (GParamFlags) G_PARAM_READWRITE));
-  g_object_class_install_property(gobject_class,
-								  DELEOB,
-								  g_param_spec_boolean("del-eob",
-													   NULL,
-													   NULL,
-													   FALSE,
-													   (GParamFlags) G_PARAM_READWRITE));
-  g_object_class_install_property(gobject_class,
-								  DELEOD,
-								  g_param_spec_boolean("del-eod",
-													   NULL,
-													   NULL,
-													   FALSE,
-													   (GParamFlags) G_PARAM_READWRITE));
-  g_object_class_install_property(gobject_class,
-								  DELEOL,
-								  g_param_spec_boolean("del-eol",
-													   NULL,
-													   NULL,
-													   FALSE,
-													   (GParamFlags) G_PARAM_READWRITE));
-  g_object_class_install_property(gobject_class,
-								  DELEOW,
-								  g_param_spec_boolean("del-eow",
-													   NULL,
-													   NULL,
-													   FALSE,
-													   (GParamFlags) G_PARAM_READWRITE));
-  g_object_class_install_property(gobject_class,
-								  DELLEFT,
-								  g_param_spec_boolean("del-left",
-													   NULL,
-													   NULL,
-													   FALSE,
-													   (GParamFlags) G_PARAM_READWRITE));
-  g_object_class_install_property(gobject_class,
-								  DELRIGHT,
-								  g_param_spec_boolean("del-right",
-													   NULL,
-													   NULL,
-													   FALSE,
-													   (GParamFlags) G_PARAM_READWRITE));
-  g_object_class_install_property(gobject_class,
-								  EDITHEADER,
-								  g_param_spec_boolean("edit-header",
-													   NULL,
-													   NULL,
-													   FALSE,
-													   (GParamFlags) G_PARAM_READWRITE));
-  g_object_class_install_property(gobject_class,
-								  EDITFOOTER,
-								  g_param_spec_boolean("edit-footer",
-													   NULL,
-													   NULL,
-													   FALSE,
-													   (GParamFlags) G_PARAM_READWRITE));
-  g_object_class_install_property(gobject_class,
-								  REMOVEHEADER,
-								  g_param_spec_boolean("remove-header",
-													   NULL,
-													   NULL,
-													   FALSE,
-													   (GParamFlags) G_PARAM_READWRITE));
-  g_object_class_install_property(gobject_class,
-								  REMOVEFOOTER,
-								  g_param_spec_boolean("remove-footer",
-													   NULL,
-													   NULL,
-													   FALSE,
-													   (GParamFlags) G_PARAM_READWRITE));
-  g_object_class_install_property(gobject_class,
-								  EXTSELBOB,
-								  g_param_spec_boolean("ext-sel-bob",
-													   NULL,
-													   NULL,
-													   FALSE,
-													   (GParamFlags) G_PARAM_READWRITE));
-  g_object_class_install_property(gobject_class,
-								  EXTSELBOL,
-								  g_param_spec_boolean("ext-sel-bol",
-													   NULL,
-													   NULL,
-													   FALSE,
-													   (GParamFlags) G_PARAM_READWRITE));
-  g_object_class_install_property(gobject_class,
-								  EXTSELBOD,
-								  g_param_spec_boolean("ext-sel-bod",
-													   NULL,
-													   NULL,
-													   FALSE,
-													   (GParamFlags) G_PARAM_READWRITE));
-  g_object_class_install_property(gobject_class,
-								  EXTSELBOW,
-								  g_param_spec_boolean("ext-sel-bow",
-													   NULL,
-													   NULL,
-													   FALSE,
-													   (GParamFlags) G_PARAM_READWRITE));
-  g_object_class_install_property(gobject_class,
-								  EXTSELEOB,
-								  g_param_spec_boolean("ext-sel-eob",
-													   NULL,
-													   NULL,
-													   FALSE,
-													   (GParamFlags) G_PARAM_READWRITE));
-  g_object_class_install_property(gobject_class,
-								  EXTSELEOD,
-								  g_param_spec_boolean("ext-sel-eod",
-													   NULL,
-													   NULL,
-													   FALSE,
-													   (GParamFlags) G_PARAM_READWRITE));
-  g_object_class_install_property(gobject_class,
-								  EXTSELEOL,
-								  g_param_spec_boolean("ext-sel-eol",
-													   NULL,
-													   NULL,
-													   FALSE,
-													   (GParamFlags) G_PARAM_READWRITE));
-  g_object_class_install_property(gobject_class,
-								  EXTSELEOW,
-								  g_param_spec_boolean("ext-sel-eow",
-													   NULL,
-													   NULL,
-													   FALSE,
-													   (GParamFlags) G_PARAM_READWRITE));
-  g_object_class_install_property(gobject_class,
-								  EXTSELLEFT,
-								  g_param_spec_boolean("ext-sel-left",
-													   NULL,
-													   NULL,
-													   FALSE,
-													   (GParamFlags) G_PARAM_READWRITE));
-  g_object_class_install_property(gobject_class,
-								  EXTSELRIGHT,
-								  g_param_spec_boolean("ext-sel-right",
-													   NULL,
-													   NULL,
-													   FALSE,
-													   (GParamFlags) G_PARAM_READWRITE));
-  g_object_class_install_property(gobject_class,
-								  EXTSELNEXTLINE,
-								  g_param_spec_boolean("ext-sel-next-line",
-													   NULL,
-													   NULL,
-													   FALSE,
-													   (GParamFlags) G_PARAM_READWRITE));
-  g_object_class_install_property(gobject_class,
-								  EXTSELPAGEDOWN,
-								  g_param_spec_boolean("ext-sel-page-down",
-													   NULL,
-													   NULL,
-													   FALSE,
-													   (GParamFlags) G_PARAM_READWRITE));
-  g_object_class_install_property(gobject_class,
-								  EXTSELPAGEUP,
-								  g_param_spec_boolean("ext-sel-page-up",
-													   NULL,
-													   NULL,
-													   FALSE,
-													   (GParamFlags) G_PARAM_READWRITE));
-  g_object_class_install_property(gobject_class,
-								  EXTSELPREVLINE,
-								  g_param_spec_boolean("ext-sel-prev-line",
-													   NULL,
-													   NULL,
-													   FALSE,
-													   (GParamFlags) G_PARAM_READWRITE));
-  g_object_class_install_property(gobject_class,
-								  EXTSELSCREENDOWN,
-								  g_param_spec_boolean("ext-sel-screen-down",
-													   NULL,
-													   NULL,
-													   FALSE,
-													   (GParamFlags) G_PARAM_READWRITE));
-  g_object_class_install_property(gobject_class,
-								  EXTSELSCREENUP,
-								  g_param_spec_boolean("ext-sel-screen-up",
-													   NULL,
-													   NULL,
-													   FALSE,
-													   (GParamFlags) G_PARAM_READWRITE));
-  g_object_class_install_property(gobject_class,
-								  TOGGLEBOLD,
-								  g_param_spec_boolean("toggle-bold",
-													   NULL,
-													   NULL,
-													   FALSE,
-													   (GParamFlags) G_PARAM_READWRITE));
-  g_object_class_install_property(gobject_class,
-								  TOGGLEBOTTOMLINE,
-								  g_param_spec_boolean("toggle-bottom-line",
-													   NULL,
-													   NULL,
-													   FALSE,
-													   (GParamFlags) G_PARAM_READWRITE));
-  g_object_class_install_property(gobject_class,
-								  TOGGLEINSERTMODE,
-								  g_param_spec_boolean("toggle-insert-mode",
-													   NULL,
-													   NULL,
-													   FALSE,
-													   (GParamFlags) G_PARAM_READWRITE));
-  g_object_class_install_property(gobject_class,
-								  TOGGLEITALIC,
-								  g_param_spec_boolean("toggle-italic",
-													   NULL,
-													   NULL,
-													   FALSE,
-													   (GParamFlags) G_PARAM_READWRITE));
-  g_object_class_install_property(gobject_class,
-								  TOGGLEOLINE,
-								  g_param_spec_boolean("toggle-oline",
-													   NULL,
-													   NULL,
-													   FALSE,
-													   (GParamFlags) G_PARAM_READWRITE));
-  g_object_class_install_property(gobject_class,
-								  TOGGLEPLAIN,
-								  g_param_spec_boolean("toggle-plain",
-													   NULL,
-													   NULL,
-													   FALSE,
-													   (GParamFlags) G_PARAM_READWRITE));
-  g_object_class_install_property(gobject_class,
-								  TOGGLESTRIKE,
-								  g_param_spec_boolean("toggle-strike",
-													   NULL,
-													   NULL,
-													   FALSE,
-													   (GParamFlags) G_PARAM_READWRITE));
-  g_object_class_install_property(gobject_class,
-								  TOGGLESUB,
-								  g_param_spec_boolean("toggle-sub",
-													   NULL,
-													   NULL,
-													   FALSE,
-													   (GParamFlags) G_PARAM_READWRITE));
-  g_object_class_install_property(gobject_class,
-								  TOGGLESUPER,
-								  g_param_spec_boolean("toggle-super",
-													   NULL,
-													   NULL,
-													   FALSE,
-													   static_cast<GParamFlags>(G_PARAM_READWRITE)));
-  g_object_class_install_property(gobject_class,
-								  TOGGLETOPLINE,
-								  g_param_spec_boolean("toggle-top-line",
-													   NULL,
-													   NULL,
-													   FALSE,
-													   static_cast<GParamFlags>(G_PARAM_READWRITE)));
-  g_object_class_install_property(gobject_class,
-								  TOGGLEULINE,
-								  g_param_spec_boolean("toggle-uline",
-													   NULL,
-													   NULL,
-													   FALSE,
-													   static_cast<GParamFlags>(G_PARAM_READWRITE)));
-  g_object_class_install_property(gobject_class,
-								  TOGGLEUNINDENT,
-								  g_param_spec_boolean("toggle-unindent",
-													   NULL,
-													   NULL,
-													   FALSE,
-													   static_cast<GParamFlags>(G_PARAM_READWRITE)));
   g_object_class_install_property(gobject_class,
 								  VIEWPARA,
 								  g_param_spec_boolean("view-para",
@@ -2217,188 +1122,6 @@ abi_widget_class_init (AbiWidgetClass *abi_class)
   g_object_class_install_property(gobject_class,
 								  VIEWWEBLAYOUT,
 								  g_param_spec_boolean("view-web-layout",
-													   NULL,
-													   NULL,
-													   FALSE,
-													   static_cast<GParamFlags>(G_PARAM_READWRITE)));
-  g_object_class_install_property(gobject_class,
-								  UNDO,
-								  g_param_spec_boolean("undo",
-													   NULL,
-													   NULL,
-													   FALSE,
-													   static_cast<GParamFlags>(G_PARAM_READWRITE)));
-  g_object_class_install_property(gobject_class,
-								  REDO,
-								  g_param_spec_boolean("redo",
-													   NULL,
-													   NULL,
-													   FALSE,
-													   static_cast<GParamFlags>(G_PARAM_READWRITE)));
-  g_object_class_install_property(gobject_class,
-								  WARPINSPTBOB,
-								  g_param_spec_boolean("warp-ins-pt-bob",
-													   NULL,
-													   NULL,
-													   FALSE,
-													   static_cast<GParamFlags>(G_PARAM_READWRITE)));
-  g_object_class_install_property(gobject_class,
-								  WARPINSPTBOD,
-								  g_param_spec_boolean("warp-ins-pt-bod",
-													   NULL,
-													   NULL,
-													   FALSE,
-													   static_cast<GParamFlags>(G_PARAM_READWRITE)));
-  g_object_class_install_property(gobject_class,
-								  WARPINSPTBOL,
-								  g_param_spec_boolean("warp-ins-pt-bol",
-													   NULL,
-													   NULL,
-													   FALSE,
-													   static_cast<GParamFlags>(G_PARAM_READWRITE)));
-  g_object_class_install_property(gobject_class,
-								  WARPINSPTBOP,
-								  g_param_spec_boolean("warp-ins-pt-bop",
-													   NULL,
-													   NULL,
-													   FALSE,
-													   static_cast<GParamFlags>(G_PARAM_READWRITE)));
-  g_object_class_install_property(gobject_class,
-								  WARPINSPTBOW,
-								  g_param_spec_boolean("warp-ins-pt-bow",
-													   NULL,
-													   NULL,
-													   FALSE,
-													   static_cast<GParamFlags>(G_PARAM_READWRITE)));
-  g_object_class_install_property(gobject_class,
-								  WARPINSPTEOB,
-								  g_param_spec_boolean("warp-ins-pt-eob",
-													   NULL,
-													   NULL,
-													   FALSE,
-													   static_cast<GParamFlags>(G_PARAM_READWRITE)));
-  g_object_class_install_property(gobject_class,
-								  WARPINSPTEOD,
-								  g_param_spec_boolean("warp-ins-pt-eod",
-													   NULL,
-													   NULL,
-													   FALSE,
-													   static_cast<GParamFlags>(G_PARAM_READWRITE)));
-  g_object_class_install_property(gobject_class,
-								  WARPINSPTEOL,
-								  g_param_spec_boolean("warp-ins-pt-eol",
-													   NULL,
-													   NULL,
-													   FALSE,
-													   static_cast<GParamFlags>(G_PARAM_READWRITE)));
-  g_object_class_install_property(gobject_class,
-								  WARPINSPTEOP,
-								  g_param_spec_boolean("warp-ins-pt-eop",
-													   NULL,
-													   NULL,
-													   FALSE,
-													   static_cast<GParamFlags>(G_PARAM_READWRITE)));
-  g_object_class_install_property(gobject_class,
-								  WARPINSPTEOW,
-								  g_param_spec_boolean("warp-ins-pt-eow",
-													   NULL,
-													   NULL,
-													   FALSE,
-													   static_cast<GParamFlags>(G_PARAM_READWRITE)));
-  g_object_class_install_property(gobject_class,
-								  WARPINSPTLEFT,
-								  g_param_spec_boolean("warp-ins-pt-left",
-													   NULL,
-													   NULL,
-													   FALSE,
-													   static_cast<GParamFlags>(G_PARAM_READWRITE)));
-  g_object_class_install_property(gobject_class,
-								  WARPINSPTNEXTLINE,
-								  g_param_spec_boolean("warp-ins-pt-next-line",
-													   NULL,
-													   NULL,
-													   FALSE,
-													   static_cast<GParamFlags>(G_PARAM_READWRITE)));
-  g_object_class_install_property(gobject_class,
-								  WARPINSPTNEXTPAGE,
-								  g_param_spec_boolean("warp-ins-pt-next-page",
-													   NULL,
-													   NULL,
-													   FALSE,
-													   static_cast<GParamFlags>(G_PARAM_READWRITE)));
-  g_object_class_install_property(gobject_class,
-								  WARPINSPTNEXTSCREEN,
-								  g_param_spec_boolean("warp-ins-pt-next-screen",
-													   NULL,
-													   NULL,
-													   FALSE,
-													   static_cast<GParamFlags>(G_PARAM_READWRITE)));
-  g_object_class_install_property(gobject_class,
-								  WARPINSPTPREVLINE,
-								  g_param_spec_boolean("warp-ins-pt-prev-line",
-													   NULL,
-													   NULL,
-													   FALSE,
-													   static_cast<GParamFlags>(G_PARAM_READWRITE)));
-  g_object_class_install_property(gobject_class,
-								  WARPINSPTPREVPAGE,
-								  g_param_spec_boolean("warp-ins-pt-prev-page",
-													   NULL,
-													   NULL,
-													   FALSE,
-													   static_cast<GParamFlags>(G_PARAM_READWRITE)));
-  g_object_class_install_property(gobject_class,
-								  WARPINSPTPREVSCREEN,
-								  g_param_spec_boolean("warp-ins-pt-prev-screen",
-													   NULL,
-													   NULL,
-													   FALSE,
-													   static_cast<GParamFlags>(G_PARAM_READWRITE)));
-  g_object_class_install_property(gobject_class,
-								  WARPINSPTPREVRIGHT,
-								  g_param_spec_boolean("warp-ins-pt-prev-right",
-													   NULL,
-													   NULL,
-													   FALSE,
-													   static_cast<GParamFlags>(G_PARAM_READWRITE)));
-  g_object_class_install_property(gobject_class,
-								  ZOOM100,
-								  g_param_spec_boolean("zoom-100",
-													   NULL,
-													   NULL,
-													   FALSE,
-													   static_cast<GParamFlags>(G_PARAM_READWRITE)));
-  g_object_class_install_property(gobject_class,
-								  ZOOM200,
-								  g_param_spec_boolean("zoom-200",
-													   NULL,
-													   NULL,
-													   FALSE,
-													   static_cast<GParamFlags>(G_PARAM_READWRITE)));
-  g_object_class_install_property(gobject_class,
-								  ZOOM50,
-								  g_param_spec_boolean("zoom-50",
-													   NULL,
-													   NULL,
-													   FALSE,
-													   static_cast<GParamFlags>(G_PARAM_READWRITE)));
-  g_object_class_install_property(gobject_class,
-								  ZOOM75,
-								  g_param_spec_boolean("zoom-75",
-													   NULL,
-													   NULL,
-													   FALSE,
-													   static_cast<GParamFlags>(G_PARAM_READWRITE)));
-  g_object_class_install_property(gobject_class,
-								  ZOOMWHOLE,
-								  g_param_spec_boolean("zoom-whole",
-													   NULL,
-													   NULL,
-													   FALSE,
-													   static_cast<GParamFlags>(G_PARAM_READWRITE)));
-  g_object_class_install_property(gobject_class,
-								  ZOOMWIDTH,
-								  g_param_spec_boolean("zoom-width",
 													   NULL,
 													   NULL,
 													   FALSE,
