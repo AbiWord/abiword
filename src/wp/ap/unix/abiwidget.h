@@ -191,7 +191,10 @@ extern "C" {
     Abi_EditMethod em_pad3;
     
     /* signals */
-    
+    void (* __bogus_signal_begin);
+
+    void (* signal_bold) (AbiWidget * widget, gboolean bold);
+
     AbiSignal sig_pad1;
     AbiSignal sig_pad2;
     AbiSignal sig_pad3;

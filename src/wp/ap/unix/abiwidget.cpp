@@ -68,6 +68,8 @@
 /**************************************************************************/
 /**************************************************************************/
 
+class AbiWidget_ViewListener;
+
 // Our widget's private storage data
 // UnixApp and UnixFrame already properly inherit from either
 // Their GTK+ or GNOME XAP equivalents, so we don't need to worry
@@ -83,6 +85,7 @@ struct _AbiPrivData {
 	bool                 m_bMappedEventProcessed;
     bool                 m_bUnlinkFileAfterLoad;
 	gint                 m_iNumFileLoads;
+	AbiWidget_ViewListener * m_pViewListener;
 #ifdef HAVE_BONOBO
 	BonoboUIComponent    * m_uic;
 #endif
@@ -290,6 +293,180 @@ EM_VOID__BOOL(zoomWidth, zoom_width)
 
 static const guint32 ABI_DEFAULT_WIDTH  = 250 ;
 static const guint32 ABI_DEFAULT_HEIGHT = 250 ;
+
+/**************************************************************************/
+/**************************************************************************/
+
+// widget to emit signal on, view that fired the signal, and the integer index into abiwidget_actions below
+typedef void ( *AbiWidgetAction_fireSignal ) (AbiWidget * widget, AV_View * pAV_View, int item_number);
+
+struct WidgetAction
+{
+	// refers to the type being marshalled to the signal. for example, if you wanted a toggle-able
+	// "bold" signal, this would be G_TYPE_BOOLEAN, and the signal would be 'void bold(gboolean)'
+	// if you wanted "font-name", use G_TYPE_STRING and 'void font_name(char *)'
+	// if you wanted "font size", use G_TYPE_INT and 'void font_size(int)'
+	// etc...
+	int    item_type;
+
+	// gtk signal name that users connect to
+	char * gtk_signal_name;
+
+	// see ap_Toolbar_ActionSet.cpp - what view events are we interested in
+	int    interest_mask;
+
+	// function whose task is to fire the signal
+	AbiWidgetAction_fireSignal fire_signal;
+};
+
+static void fire_bold (AbiWidget * widget, AV_View * pAV_View, int item_number);
+
+static const struct WidgetAction abiwidget_actions [] = {
+	{ G_TYPE_BOOLEAN, "bold", AV_CHG_FMTCHAR | AV_CHG_MOTION, fire_bold}
+};
+
+static guint abiwidget_signals [G_N_ELEMENTS(abiwidget_actions) + 1];
+
+#define ABIWORD_VIEW  	FV_View * pView = static_cast<FV_View *>(pAV_View)
+static void fire_bold (AbiWidget * widget, AV_View * pAV_View, int item_number)
+{
+	// todo: this can be made more generic. see ap_Toolbar_Functions.cpp for what i mean
+	ABIWORD_VIEW;
+
+	const XML_Char * prop = NULL;
+	const XML_Char * val  = NULL;
+
+	prop = "font-weight";
+	val = "bold";
+
+	if (prop && val)
+	{
+		// get current char properties from pView
+		const XML_Char ** props_in = NULL;
+		const XML_Char * sz = NULL;
+
+		if (!pView->getCharFormat(&props_in))
+			return;
+
+		// NB: maybe *no* properties are consistent across the selection
+		if (props_in && props_in[0])
+			sz = UT_getAttribute(prop, props_in);
+
+		if (sz)
+			{
+				gboolean value = (0 == UT_strcmp(sz, val));
+				g_signal_emit (G_OBJECT(widget), abiwidget_signals[item_number], 0, value);
+			}
+	}
+}
+
+/**************************************************************************/
+/**************************************************************************/
+
+static void _abi_widget_class_install_signals (AbiWidgetClass * klazz)
+{
+	for(size_t i = 0; i < G_N_ELEMENTS(abiwidget_actions); i++)
+		{
+			// switch on the type of signal we're going to emit, and install a new signal handler
+			if(abiwidget_actions[i].item_type == G_TYPE_BOOLEAN)
+				{
+					abiwidget_signals[i] =
+						g_signal_new (abiwidget_actions[i].gtk_signal_name,
+									  G_TYPE_FROM_CLASS (klazz),
+									  G_SIGNAL_RUN_LAST,
+									  /* clever hack to hook up abiwidget_actions to gtk+ signals autmatically without needing
+										 the function name - start with some base offset, then add i * sizeof(function_pointer) */
+									  G_STRUCT_OFFSET (AbiWidgetClass, __bogus_signal_begin) + (i * sizeof(AbiWidgetAction_fireSignal)),
+									  NULL, NULL,
+									  g_cclosure_marshal_VOID__BOOLEAN,
+									  G_TYPE_NONE, 1, G_TYPE_BOOLEAN);
+				}
+		}
+}
+
+static bool _abi_widget_fire_signals (AbiWidget * widget, AV_View * pView, const AV_ChangeMask mask)
+{
+	for(size_t i = 0; i < G_N_ELEMENTS(abiwidget_actions); i++)
+		{
+			// if this item doesn't care about changes of this type, skip it..
+			if ((abiwidget_actions[i].interest_mask & mask) == 0)
+				continue;
+
+			// item cares about this type of change. fire the signal
+			if(abiwidget_actions[i].fire_signal)
+				(*abiwidget_actions[i].fire_signal) (widget, pView, i);
+		}
+
+	return true;
+}
+
+class AbiWidget_ViewListener : public AV_Listener
+{
+public:
+	AbiWidget_ViewListener(AbiWidget * pWidget,
+						   AV_View * pView)
+	{
+		m_pWidget = pWidget;
+		m_pView = pView;
+	}
+
+	virtual ~AbiWidget_ViewListener(void)
+	{
+		m_pView->removeListener(m_lid);
+	}
+	
+	virtual bool notify(AV_View * pView, const AV_ChangeMask mask)
+	{
+		UT_ASSERT(pView == m_pView);
+		
+		return _abi_widget_fire_signals (m_pWidget, pView, mask);
+	}
+
+    virtual AV_ListenerType getType(void) 
+	{ 
+		// i don't feel like creating a new type if i don't have to. this is semantically
+		// similar enough that i don't care
+		return AV_LISTENER_PLUGIN;
+	}
+
+	void setLID(AV_ListenerId lid)
+	{
+		m_lid = lid;
+	}
+
+protected:
+	AbiWidget *         m_pWidget;
+	AV_View *			m_pView;
+	AV_ListenerId       m_lid;
+};
+
+static void _abi_widget_releaseListener(AbiWidget *widget)
+{
+	// remove a FV_View listener from the widget. see _abi_widget_bindListenerToView() for more details.
+	AbiPrivData * private_data = (AbiPrivData *)widget->priv;
+	if (!private_data->m_pViewListener)
+		return;
+	DELETEP(private_data->m_pViewListener);
+	private_data->m_pViewListener = 0;
+}
+
+static bool _abi_widget_bindListenerToView(AbiWidget *widget, AV_View * pView)
+{
+	// hook up a FV_View listener to the widget. This will let the widget
+	// fire GObject signals when things in the view change
+	AbiPrivData * private_data = (AbiPrivData *)widget->priv;
+	_abi_widget_releaseListener(widget);
+	
+	private_data->m_pViewListener = new AbiWidget_ViewListener(widget, pView);
+	UT_ASSERT(private_data->m_pViewListener);
+
+	AV_ListenerId lid;
+	bool bResult = pView->addListener(static_cast<AV_Listener *>(private_data->m_pViewListener), &lid);
+	UT_ASSERT(bResult);
+	private_data->m_pViewListener->setLID(lid);
+
+	return bResult;
+}
 
 /**************************************************************************/
 /**************************************************************************/
@@ -823,6 +1000,8 @@ abi_widget_destroy_gtk (GtkObject *object)
 	// here we free any self-created data
 	abi = ABI_WIDGET(object);
 
+	_abi_widget_releaseListener(abi);
+
 	// order of deletion is important here
 	bool bBonobo = false;
 	bool bKillApp = false;
@@ -1126,6 +1305,8 @@ abi_widget_class_init (AbiWidgetClass *abi_class)
 													   NULL,
 													   FALSE,
 													   static_cast<GParamFlags>(G_PARAM_READWRITE)));
+
+  _abi_widget_class_install_signals (abi_class);
 }
 
 static void
@@ -1192,12 +1373,14 @@ abi_widget_map_to_screen(AbiWidget * abi)
 	UT_ASSERT(pFrame);
 	static_cast<XAP_UnixFrameImpl *>(pFrame->getFrameImpl())->setTopLevelWindow(widget);
 	pFrame->initialize(XAP_NoMenusWindowLess);
-	abi->priv->m_pFrame   = pFrame;
+	abi->priv->m_pFrame = pFrame;
 	if(!abi->priv->externalApp)
 		delete pArgs;
 
 	abi->priv->m_pApp->rememberFrame ( pFrame ) ;
 	abi->priv->m_pApp->rememberFocussedFrame ( pFrame ) ;
+
+	_abi_widget_bindListenerToView(abi, pFrame->getCurrentView());
 
 #ifdef LOGFILE
 	fprintf(getlogfile(),"AbiWidget After Finished map_to_screen ref_count %d \n",G_OBJECT(abi)->ref_count);
