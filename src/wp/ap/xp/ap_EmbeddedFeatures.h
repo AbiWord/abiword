@@ -18,9 +18,14 @@
  */
  
  
-#ifndef __XP_EMBEDDED_FEATURES_H__
-#define __XP_EMBEDDED_FEATURES_H__
+#ifndef _AP_EMBEDDED_FEATURES_H__
+#define _AP_EMBEDDED_FEATURES_H__
 
-#include "xap_EmbeddedFeatures.h"
+#if defined (HAVE_HILDON)
+#include "ap_UnixHildonFeatures.h"
+#else
+#define XP_SIMPLE_MENU 1
+#define XP_SIMPLE_TOOLBAR 1
+#endif
 
 #endif

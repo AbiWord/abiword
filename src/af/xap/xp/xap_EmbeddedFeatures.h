@@ -21,8 +21,11 @@
  
  
 #ifndef __XAP_EMBEDDED_FEATURES_H__
-#define __XAP_EMBEDDED_FEATURES_H__
+#define __XAP_EMBEDDED__FEATURES_H__
 
-#define EMBEDDED_TARGET 1
+#if defined (HAVE_HILDON)
+#include "xap_UnixHildonFeatures.h"
+#else
+#endif
 
 #endif
