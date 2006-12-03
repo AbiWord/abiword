@@ -32,7 +32,7 @@ libEv_cocoa_a_SOURCES=		\
 
 EXTRA_DIST = $(headers_DATA)
 
-headersdir = $(includedir)/$(PACKAGE)-$(ABIWORD_SERIES)/ev/cocoa
+headersdir = $(ABIWORD_HEADERSDIR)/ev/cocoa
 headers_DATA = \
 	ev_CocoaKeyboard.h \
 	ev_CocoaMenuBar.h \

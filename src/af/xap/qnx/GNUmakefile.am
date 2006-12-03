@@ -52,7 +52,7 @@ libXap_qnx_a_SOURCES=		\
 
 EXTRA_DIST = $(headers_DATA)
 
-headersdir = $(includedir)/$(PACKAGE)-$(ABIWORD_SERIES)/xap/qnx
+headersdir = $(ABIWORD_HEADERSDIR)/xap/qnx
 headers_DATA = \
 	xap_QNXApp.h \
 	xap_QNXAppImpl.h \

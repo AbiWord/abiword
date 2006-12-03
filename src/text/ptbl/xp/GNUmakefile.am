@@ -84,7 +84,7 @@ libPtbl_a_SOURCES= \
 EXTRA_DIST = README.TXT \
 	$(headers_DATA)
 
-headersdir = $(includedir)/$(PACKAGE)-$(ABIWORD_SERIES)/text/ptbl/xp
+headersdir = $(ABIWORD_HEADERSDIR)/text/ptbl/xp
 headers_DATA = \
 	fd_Field.h \
 	pd_Document.h \

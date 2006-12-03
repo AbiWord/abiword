@@ -85,7 +85,7 @@ libXap_xp_a_SOURCES= $(print_src) \
 
 EXTRA_DIST = $(headers_DATA)
 
-headersdir = $(includedir)/$(PACKAGE)-$(ABIWORD_SERIES)/xap/xp
+headersdir = $(ABIWORD_HEADERSDIR)/xap/xp
 headers_DATA = \
 	xad_Document.h \
 	xap_App.h \

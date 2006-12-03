@@ -32,7 +32,7 @@ libEv_win_a_SOURCES=		\
 
 EXTRA_DIST = $(headers_DATA)
 
-headersdir = $(includedir)/$(PACKAGE)-$(ABIWORD_SERIES)/ev/win
+headersdir = $(ABIWORD_HEADERSDIR)/ev/win
 headers_DATA = \
 	ev_Win32Keyboard.h \
 	ev_Win32Menu.h \

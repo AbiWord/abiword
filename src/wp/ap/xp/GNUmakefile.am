@@ -136,7 +136,7 @@ EXTRA_DIST = \
 dist-hook:
 	rm -rf `find $(distdir)/ToolbarIcons -name CVS`
 
-headersdir = $(includedir)/$(PACKAGE)-$(ABIWORD_SERIES)/ap/xp
+headersdir = $(ABIWORD_HEADERSDIR)/ap/xp
 headers_DATA = \
 	ap_App.h \
 	ap_Args.h \

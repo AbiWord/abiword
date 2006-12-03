@@ -30,7 +30,7 @@ libGr_win_a_SOURCES=\
 
 EXTRA_DIST = $(headers_DATA)
 
-headersdir = $(includedir)/$(PACKAGE)-$(ABIWORD_SERIES)/gr/win
+headersdir = $(ABIWORD_HEADERSDIR)/gr/win
 headers_DATA = \
 	gr_Win32CharWidths.h \
 	gr_Win32Graphics.h \

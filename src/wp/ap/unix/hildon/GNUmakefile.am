@@ -35,7 +35,7 @@ libWpAp_unixHildon_a_SOURCES=\
 
 EXTRA_DIST = $(glade_DATA) $(headers_DATA)
 
-headersdir = $(includedir)/$(PACKAGE)-$(ABIWORD_SERIES)/ap/unix/hildon
+headersdir = $(ABIWORD_HEADERSDIR)/ap/unix/hildon
 headers_DATA = \
 	ap_UnixHildonFrameImpl.h \
 	xap_EmbeddedFeatures.h \

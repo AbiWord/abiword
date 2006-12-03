@@ -34,6 +34,6 @@ libTF_xp_a_SOURCES= tf_test.cpp
 
 EXTRA_DIST = $(headers_DATA)
 
-headersdir = $(includedir)/$(PACKAGE)-$(ABIWORD_SERIES)/tf/xp
+headersdir = $(ABIWORD_HEADERSDIR)/tf/xp
 headers_DATA = \
 	tf_test.h

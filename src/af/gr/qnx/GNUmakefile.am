@@ -29,7 +29,7 @@ libGr_qnx_a_SOURCES=		\
 
 EXTRA_DIST = $(headers_DATA)
 
-headersdir = $(includedir)/$(PACKAGE)-$(ABIWORD_SERIES)/gr/qnx
+headersdir = $(ABIWORD_HEADERSDIR)/gr/qnx
 headers_DATA = \
 	gr_QNXGraphics.h \
 	gr_QNXImage.h

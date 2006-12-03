@@ -72,7 +72,7 @@ EXTRA_DIST = \
 	xap_GenericListChooser_Controller.nib \
 	$(headers_DATA)
 
-headersdir = $(includedir)/$(PACKAGE)-$(ABIWORD_SERIES)/xap/cocoa
+headersdir = $(ABIWORD_HEADERSDIR)/xap/cocoa
 headers_DATA = \
 	xap_CocoaAbiConversions.h \
 	xap_CocoaAppController.h \

@@ -46,7 +46,7 @@ EXTRA_DIST = \
 dist-hook:
 	rm -rf `find $(distdir)/stock -name CVS`
 
-headersdir = $(includedir)/$(PACKAGE)-$(ABIWORD_SERIES)/ev/unix
+headersdir = $(ABIWORD_HEADERSDIR)/ev/unix
 headers_DATA = \
 	abi-font-combo.h \
 	ev_UnixKeyboard.h \

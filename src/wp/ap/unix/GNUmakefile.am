@@ -123,7 +123,7 @@ EXTRA_DIST = \
 	$(glade_DATA) \
 	$(headers_DATA)
 
-headersdir = $(includedir)/$(PACKAGE)-$(ABIWORD_SERIES)/ap/unix
+headersdir = $(ABIWORD_HEADERSDIR)/ap/unix
 headers_DATA = \
 	abiwidget.h \
 	ap_UnixApp.h \

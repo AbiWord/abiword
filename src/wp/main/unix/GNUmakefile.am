@@ -47,7 +47,7 @@ abi_ver.cpp:	@PLUGIN_LIST@
 
 if WITH_LIBABIWORD
 
-headersdir = $(includedir)/$(PACKAGE)-$(ABIWORD_SERIES)
+headersdir = $(ABIWORD_HEADERSDIR)
 headers_DATA = \
 	libabiword.h
 

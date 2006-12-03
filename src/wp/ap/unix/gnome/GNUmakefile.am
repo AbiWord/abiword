@@ -32,7 +32,7 @@ EXTRA_DIST = \
 	$(bonobo_DATA) \
 	$(headers_DATA)
 
-headersdir = $(includedir)/$(PACKAGE)-$(ABIWORD_SERIES)/ap/unix/gnome
+headersdir = $(ABIWORD_HEADERSDIR)/ap/unix/gnome
 headers_DATA = ap_NautilusView.h
 
 bonobodir = $(libdir)/bonobo/servers

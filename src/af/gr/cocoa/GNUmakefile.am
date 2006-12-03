@@ -30,7 +30,7 @@ libGr_cocoa_a_SOURCES=\
 
 EXTRA_DIST = $(headers_DATA)
 
-headersdir = $(includedir)/$(PACKAGE)-$(ABIWORD_SERIES)/gr/cocoa
+headersdir = $(ABIWORD_HEADERSDIR)/gr/cocoa
 headers_DATA = \
 	gr_CocoaGraphics.h \
 	gr_CocoaImage.h

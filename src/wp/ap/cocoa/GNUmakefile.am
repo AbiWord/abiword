@@ -100,7 +100,7 @@ EXTRA_DIST = \
 	ap_CocoaDialog_WordCount.nib \
 	ap_CocoaFrame.nib
 
-headersdir = $(includedir)/$(PACKAGE)-$(ABIWORD_SERIES)/ap/cocoa
+headersdir = $(ABIWORD_HEADERSDIR)/ap/cocoa
 headers_DATA = \
 	ap_CocoaApp.h \
 	ap_CocoaAppImpl.h \

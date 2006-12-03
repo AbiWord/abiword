@@ -103,7 +103,7 @@ libXap_unix_a_SOURCES= $(print_src)	\
 EXTRA_DIST = $(glade_DATA) $(headers_DATA)
 
 # TODO Rob: conditionally install print headers
-headersdir = $(includedir)/$(PACKAGE)-$(ABIWORD_SERIES)/xap/unix
+headersdir = $(ABIWORD_HEADERSDIR)/xap/unix
 headers_DATA = \
 	gtkintl.h \
 	xap_EmbeddedFeatures.h \

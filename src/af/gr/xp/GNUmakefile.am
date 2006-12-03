@@ -37,7 +37,7 @@ libGr_xp_a_SOURCES=\
 
 EXTRA_DIST = $(headers_DATA)
 
-headersdir = $(includedir)/$(PACKAGE)-$(ABIWORD_SERIES)/gr/xp
+headersdir = $(ABIWORD_HEADERSDIR)/gr/xp
 headers_DATA = \
 	gr_Caret.h \
 	gr_CharWidthsCache.h \

@@ -82,7 +82,7 @@ libWpAp_win_a_SOURCES=\
 
 EXTRA_DIST = $(headers_DATA)
 
-headersdir = $(includedir)/$(PACKAGE)-$(ABIWORD_SERIES)/ap/win
+headersdir = $(ABIWORD_HEADERSDIR)/ap/win
 headers_DATA = \
 	ap_Win32App.h \
 	ap_Win32AppImpl.h \
