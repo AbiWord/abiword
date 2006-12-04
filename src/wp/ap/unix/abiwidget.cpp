@@ -375,8 +375,8 @@ static void _abi_widget_class_install_signals (AbiWidgetClass * klazz)
 									  G_TYPE_FROM_CLASS (klazz),
 									  G_SIGNAL_RUN_LAST,
 									  /* clever hack to hook up abiwidget_actions to gtk+ signals autmatically without needing
-										 the function name - start with some base offset, then add i * sizeof(function_pointer) */
-									  G_STRUCT_OFFSET (AbiWidgetClass, __bogus_signal_begin) + (i * sizeof(AbiWidgetAction_fireSignal)),
+										 the function name - start with some base offset, then add (i+1) * sizeof(function_pointer) */
+									  G_STRUCT_OFFSET (AbiWidgetClass, __bogus_signal_begin) + ((i + 1) * sizeof(AbiWidgetAction_fireSignal)),
 									  NULL, NULL,
 									  g_cclosure_marshal_VOID__BOOLEAN,
 									  G_TYPE_NONE, 1, G_TYPE_BOOLEAN);
