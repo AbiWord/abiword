@@ -270,9 +270,12 @@ bool pt_PieceTable::_realInsertObject(PT_DocPosition dpos,
 	}
 	UT_GenericVector<XML_Char*>  Atts;
 	Atts.clear();
-	for(i=0; attributes[i] != 0; i++)
+	if(attributes)
 	{
-	    Atts.addItem(static_cast<XML_Char *>(const_cast<char *>(attributes[i])));
+		for(i=0; attributes[i] != 0; i++)
+		{
+		    Atts.addItem(static_cast<XML_Char *>(const_cast<char *>(attributes[i])));
+		}
 	}
 	if(sProps.size() > 0)
 	{
