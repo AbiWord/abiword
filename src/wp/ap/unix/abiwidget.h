@@ -186,18 +186,26 @@ extern "C" {
     Abi_Void__Bool_EditMethod zoom_whole;
     Abi_Void__Bool_EditMethod zoom_width;
 
-    Abi_EditMethod em_pad1;
-    Abi_EditMethod em_pad2;
-    Abi_EditMethod em_pad3;
+    Abi_EditMethod em_pad[20];
     
     /* signals */
     void (* __bogus_signal_begin);
 
-    void (* signal_bold) (AbiWidget * widget, gboolean bold);
+    void (* signal_bold) (AbiWidget * widget, gboolean value);
+    void (* signal_italic) (AbiWidget * widget, gboolean value);
+    void (* signal_underline) (AbiWidget * widget, gboolean value);
+    void (* signal_overline) (AbiWidget * widget, gboolean value);
+    void (* signal_line_through) (AbiWidget * widget, gboolean value);
+    void (* signal_topline) (AbiWidget * widget, gboolean value);
+    void (* signal_bottomline) (AbiWidget * widget, gboolean value);
+    void (* signal_superscript) (AbiWidget * widget, gboolean value);
+    void (* signal_subscript) (AbiWidget * widget, gboolean value);
+    void (* signal_font_size) (AbiWidget * widget, double value);
+    void (* signal_font_family) (AbiWidget * widget, const char * value);
+    void (* signal_can_undo) (AbiWidget * widget, gboolean value);
+    void (* signal_can_redo) (AbiWidget * widget, gboolean value);
 
-    AbiSignal sig_pad1;
-    AbiSignal sig_pad2;
-    AbiSignal sig_pad3;
+    AbiSignal sig_pad[20];
   };
 	
   /* the public API */

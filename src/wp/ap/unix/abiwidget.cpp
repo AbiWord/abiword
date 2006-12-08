@@ -297,6 +297,8 @@ static const guint32 ABI_DEFAULT_HEIGHT = 250 ;
 /**************************************************************************/
 /**************************************************************************/
 
+#define ABIWORD_VIEW  	FV_View * pView = static_cast<FV_View *>(pAV_View)
+
 // widget to emit signal on, view that fired the signal, and the integer index into abiwidget_actions below
 typedef void ( *AbiWidgetAction_fireSignal ) (AbiWidget * widget, AV_View * pAV_View, int item_number);
 
@@ -319,25 +321,169 @@ struct WidgetAction
 	AbiWidgetAction_fireSignal fire_signal;
 };
 
-static void fire_bold (AbiWidget * widget, AV_View * pAV_View, int item_number);
+static void fire_bool_char_prop (AbiWidget * widget, AV_View * pAV_View, int item_number);
+static void fire_double_char_prop (AbiWidget * widget, AV_View * pAV_View, int item_number);
+static void fire_string_char_prop (AbiWidget * widget, AV_View * pAV_View, int item_number);
+static void fire_undo_redo (AbiWidget * widget, AV_View * pAV_View, int item_number);
 
 static const struct WidgetAction abiwidget_actions [] = {
-	{ G_TYPE_BOOLEAN, "bold", AV_CHG_FMTCHAR | AV_CHG_MOTION, fire_bold}
+	{ G_TYPE_BOOLEAN, "bold", AV_CHG_FMTCHAR | AV_CHG_MOTION, fire_bool_char_prop},
+	{ G_TYPE_BOOLEAN, "italic", AV_CHG_FMTCHAR | AV_CHG_MOTION, fire_bool_char_prop},
+	{ G_TYPE_BOOLEAN, "underline", AV_CHG_FMTCHAR | AV_CHG_MOTION, fire_bool_char_prop},
+	{ G_TYPE_BOOLEAN, "overline", AV_CHG_FMTCHAR | AV_CHG_MOTION, fire_bool_char_prop},
+	{ G_TYPE_BOOLEAN, "line-through", AV_CHG_FMTCHAR | AV_CHG_MOTION, fire_bool_char_prop},
+	{ G_TYPE_BOOLEAN, "topline", AV_CHG_FMTCHAR | AV_CHG_MOTION, fire_bool_char_prop},
+	{ G_TYPE_BOOLEAN, "bottomline", AV_CHG_FMTCHAR | AV_CHG_MOTION, fire_bool_char_prop},
+	{ G_TYPE_BOOLEAN, "subscript", AV_CHG_FMTCHAR | AV_CHG_MOTION, fire_bool_char_prop},
+	{ G_TYPE_BOOLEAN, "superscript", AV_CHG_FMTCHAR | AV_CHG_MOTION, fire_bool_char_prop},
+	{ G_TYPE_DOUBLE,  "font-size", AV_CHG_FMTCHAR | AV_CHG_MOTION, fire_double_char_prop},
+	{ G_TYPE_STRING,  "font-family", AV_CHG_FMTCHAR | AV_CHG_MOTION, fire_string_char_prop},
+	{ G_TYPE_BOOLEAN, "can-undo", AV_CHG_ALL, fire_undo_redo},
+	{ G_TYPE_BOOLEAN, "can-redo", AV_CHG_ALL, fire_undo_redo}
 };
 
 static guint abiwidget_signals [G_N_ELEMENTS(abiwidget_actions) + 1];
 
-#define ABIWORD_VIEW  	FV_View * pView = static_cast<FV_View *>(pAV_View)
-static void fire_bold (AbiWidget * widget, AV_View * pAV_View, int item_number)
+static void fire_undo_redo (AbiWidget * widget, AV_View * pAV_View, int item_number)
+{
+	ABIWORD_VIEW;
+	gboolean value;
+
+	if (0 == strcmp(abiwidget_actions[item_number].gtk_signal_name, "can-undo"))
+		value = pView->canDo(true);
+	else
+		value = pView->canDo(false);
+
+	g_signal_emit (G_OBJECT(widget), abiwidget_signals[item_number], 0, value);
+}
+
+static void fire_double_char_prop (AbiWidget * widget, AV_View * pAV_View, int item_number)
+{
+	// todo: this can be made more generic. see ap_Toolbar_Functions.cpp for what i mean
+	ABIWORD_VIEW;
+
+	const XML_Char * prop = NULL;
+
+	if (0 == strcmp(abiwidget_actions[item_number].gtk_signal_name, "font-size"))
+		{
+			prop = "font-size";
+		}
+
+	if (prop)
+	{
+		// get current char properties from pView
+		const XML_Char ** props_in = NULL;
+		const XML_Char * sz = NULL;
+
+		if (!pView->getCharFormat(&props_in))
+			return;
+
+		// NB: maybe *no* properties are consistent across the selection
+		if (props_in && props_in[0])
+			sz = UT_getAttribute(prop, props_in);
+
+		if (sz)
+			{
+				double value;
+
+				value = atof(sz);
+
+				g_signal_emit (G_OBJECT(widget), abiwidget_signals[item_number], 0, value);
+			}
+	}
+}
+
+static void fire_string_char_prop (AbiWidget * widget, AV_View * pAV_View, int item_number)
+{
+	// todo: this can be made more generic. see ap_Toolbar_Functions.cpp for what i mean
+	ABIWORD_VIEW;
+
+	const XML_Char * prop = NULL;
+
+	if (0 == strcmp(abiwidget_actions[item_number].gtk_signal_name, "font-family"))
+		{
+			prop = "font-family";
+		}
+
+	if (prop)
+	{
+		// get current char properties from pView
+		const XML_Char ** props_in = NULL;
+		const XML_Char * sz = NULL;
+
+		if (!pView->getCharFormat(&props_in))
+			return;
+
+		// NB: maybe *no* properties are consistent across the selection
+		if (props_in && props_in[0])
+			sz = UT_getAttribute(prop, props_in);
+
+		if (sz)
+			{
+				g_signal_emit (G_OBJECT(widget), abiwidget_signals[item_number], 0, sz);
+			}
+	}
+}
+
+static void fire_bool_char_prop (AbiWidget * widget, AV_View * pAV_View, int item_number)
 {
 	// todo: this can be made more generic. see ap_Toolbar_Functions.cpp for what i mean
 	ABIWORD_VIEW;
 
 	const XML_Char * prop = NULL;
 	const XML_Char * val  = NULL;
+	bool bMultiple = false;
 
-	prop = "font-weight";
-	val = "bold";
+	if (0 == strcmp(abiwidget_actions[item_number].gtk_signal_name, "bold"))
+		{
+			prop = "font-weight";
+			val = "bold";
+		}
+	else if (0 == strcmp(abiwidget_actions[item_number].gtk_signal_name, "italic"))
+		{
+			prop = "font-style";
+			val  = "italic";
+		}
+	else if (0 == strcmp(abiwidget_actions[item_number].gtk_signal_name, "underline"))
+		{
+			prop = "text-decoration";
+			val = "underline";
+			bMultiple = true;
+		}
+	else if (0 == strcmp(abiwidget_actions[item_number].gtk_signal_name, "overline"))
+		{
+			prop = "text-decoration";
+			val = "overline";
+			bMultiple = true;
+		}
+	else if (0 == strcmp(abiwidget_actions[item_number].gtk_signal_name, "line-through"))
+		{
+			prop = "text-decoration";
+			val = "line-through";
+			bMultiple = true;
+		}
+	else if (0 == strcmp(abiwidget_actions[item_number].gtk_signal_name, "topline"))
+		{
+			prop = "text-decoration";
+			val = "topline";
+			bMultiple = true;
+		}
+	else if (0 == strcmp(abiwidget_actions[item_number].gtk_signal_name, "bottomline"))
+		{
+			prop = "text-decoration";
+			val = "bottomline";
+			bMultiple = true;
+		}
+	else if (0 == strcmp(abiwidget_actions[item_number].gtk_signal_name, "superscript"))
+		{
+			prop = "text-position";
+			val = "superscript";
+		}
+	else if (0 == strcmp(abiwidget_actions[item_number].gtk_signal_name, "subscript"))
+		{
+			prop = "text-position";
+			val = "subscript";
+		}
 
 	if (prop && val)
 	{
@@ -354,7 +500,13 @@ static void fire_bold (AbiWidget * widget, AV_View * pAV_View, int item_number)
 
 		if (sz)
 			{
-				gboolean value = (0 == UT_strcmp(sz, val));
+				gboolean value;
+
+				if (bMultiple)
+					value = (NULL != strstr(sz, val));
+				else
+					value = (0 == UT_strcmp(sz, val));
+
 				g_signal_emit (G_OBJECT(widget), abiwidget_signals[item_number], 0, value);
 			}
 	}
@@ -380,6 +532,39 @@ static void _abi_widget_class_install_signals (AbiWidgetClass * klazz)
 									  NULL, NULL,
 									  g_cclosure_marshal_VOID__BOOLEAN,
 									  G_TYPE_NONE, 1, G_TYPE_BOOLEAN);
+				}
+			else if(abiwidget_actions[i].item_type == G_TYPE_DOUBLE)
+				{
+					abiwidget_signals[i] =
+						g_signal_new (abiwidget_actions[i].gtk_signal_name,
+									  G_TYPE_FROM_CLASS (klazz),
+									  G_SIGNAL_RUN_LAST,
+									  G_STRUCT_OFFSET (AbiWidgetClass, __bogus_signal_begin) + ((i + 1) * sizeof(AbiWidgetAction_fireSignal)),
+									  NULL, NULL,
+									  g_cclosure_marshal_VOID__DOUBLE,
+									  G_TYPE_NONE, 1, G_TYPE_DOUBLE);
+				}
+			else if(abiwidget_actions[i].item_type == G_TYPE_INT)
+				{
+					abiwidget_signals[i] =
+						g_signal_new (abiwidget_actions[i].gtk_signal_name,
+									  G_TYPE_FROM_CLASS (klazz),
+									  G_SIGNAL_RUN_LAST,
+									  G_STRUCT_OFFSET (AbiWidgetClass, __bogus_signal_begin) + ((i + 1) * sizeof(AbiWidgetAction_fireSignal)),
+									  NULL, NULL,
+									  g_cclosure_marshal_VOID__INT,
+									  G_TYPE_NONE, 1, G_TYPE_INT);
+				}
+			else if(abiwidget_actions[i].item_type == G_TYPE_STRING)
+				{
+					abiwidget_signals[i] =
+						g_signal_new (abiwidget_actions[i].gtk_signal_name,
+									  G_TYPE_FROM_CLASS (klazz),
+									  G_SIGNAL_RUN_LAST,
+									  G_STRUCT_OFFSET (AbiWidgetClass, __bogus_signal_begin) + ((i + 1) * sizeof(AbiWidgetAction_fireSignal)),
+									  NULL, NULL,
+									  g_cclosure_marshal_VOID__STRING,
+									  G_TYPE_NONE, 1, G_TYPE_STRING);
 				}
 		}
 }
@@ -671,6 +856,10 @@ abi_widget_load_file(AbiWidget * abi, const char * pszFile)
 	  remove(pszFile);
 	  abi->priv->m_bUnlinkFileAfterLoad = false;
 	}
+
+	// todo: this doesn't belong here. it should be bound as soon as the frame has a view,
+	// todo: or whenever the frame changes its view, such as a document load
+	_abi_widget_bindListenerToView(abi, pFrame->getCurrentView());
 	return TRUE;
 }
 
@@ -1124,7 +1313,7 @@ abi_widget_class_init (AbiWidgetClass *abi_class)
 	GObjectClass *gobject_class = G_OBJECT_CLASS(abi_class);
 
 	// we need our own special destroy function
-#ifdef HAVE_BONOBO
+#if 0 //def HAVE_BONOBO
 	if(XAP_App::getApp()->isBonoboRunning())
 	{
 		BonoboObjectClass *bonobo_object_class = (BonoboObjectClass *)abi_class;
@@ -1380,7 +1569,7 @@ abi_widget_map_to_screen(AbiWidget * abi)
 	abi->priv->m_pApp->rememberFrame ( pFrame ) ;
 	abi->priv->m_pApp->rememberFocussedFrame ( pFrame ) ;
 
-	_abi_widget_bindListenerToView(abi, pFrame->getCurrentView());
+	//_abi_widget_bindListenerToView(abi, pFrame->getCurrentView());
 
 #ifdef LOGFILE
 	fprintf(getlogfile(),"AbiWidget After Finished map_to_screen ref_count %d \n",G_OBJECT(abi)->ref_count);
