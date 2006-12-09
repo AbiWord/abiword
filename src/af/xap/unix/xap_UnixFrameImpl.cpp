@@ -1742,6 +1742,11 @@ bool XAP_UnixFrameImpl::_runModalContextMenu(AV_View * /* pView */, const char *
 		//
 		GdkEvent * event = gtk_get_current_event();
 		GdkEventButton *bevent = reinterpret_cast<GdkEventButton *>(event);
+		if(!bevent)
+		{
+			DELETEP(m_pUnixPopup);
+			return false;
+		}
 
 		gtk_menu_popup(GTK_MENU(m_pUnixPopup->getMenuHandle()), NULL, NULL,
 			       NULL, NULL, bevent->button, bevent->time);
