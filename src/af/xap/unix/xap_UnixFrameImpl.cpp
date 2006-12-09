@@ -76,7 +76,7 @@
 #endif
 
 enum {
-	TARGET_DOCUMENT,
+	TARGET_DOCUMENT, // 0, to sync with gtk_drag_dest_add_text_target's default info value
  	TARGET_IMAGE,
 	TARGET_URI_LIST,
 	TARGET_URL,
@@ -85,8 +85,6 @@ enum {
 
 static const GtkTargetEntry XAP_UnixFrameImpl__knownDragTypes[] = {
 	{"text/uri-list", 	0, TARGET_URI_LIST},
-	{"text/html", 		0, TARGET_URL}, // hack
-	{"text/html+xml", 	0, TARGET_URL}, // hack
 	{"_NETSCAPE_URL", 	0, TARGET_URL}
 };
 
@@ -319,6 +317,33 @@ s_loadUriList (XAP_Frame * pFrame, const char * uriList)
 	g_strfreev(uris);
 }
 
+static void
+s_pasteText (XAP_Frame * pFrame, const char * target_name,
+			 const unsigned char * data, UT_uint32 data_length)
+{
+	FV_View   * pView  = static_cast<FV_View*>(pFrame->getCurrentView ());
+	PD_Document * pDoc = pView->getDocument ();
+
+	IEFileType file_type = IEFT_Unknown;
+
+	file_type = IE_Imp::fileTypeForMimetype (target_name);
+	if (file_type == IEFT_Unknown)
+		file_type = IE_Imp::fileTypeForContents (reinterpret_cast<const char *>(data), data_length);
+
+	if (file_type != IEFT_Unknown)
+		{
+			IE_Imp * importer = NULL;
+
+			if (UT_OK == IE_Imp::constructImporter (pDoc, NULL, file_type, &importer) && importer)
+				{
+					PD_DocumentRange dr(pDoc, pView->getPoint(), pView->getPoint());
+					importer->pasteFromBuffer(&dr, data, data_length);
+
+					delete importer;
+				}
+		}
+}
+
 static void 
 s_dndDropEvent(GtkWidget        *widget,
 				 GdkDragContext   *context,
@@ -338,7 +363,6 @@ s_dndDropEvent(GtkWidget        *widget,
 
 	char *targetName = gdk_atom_name(selection_data->target);
 	UT_DEBUGMSG(("JK: target in selection = %s \n", targetName));
-	g_free (targetName);
 
 	if (info == TARGET_URI_LIST) 
 	{
@@ -349,6 +373,7 @@ s_dndDropEvent(GtkWidget        *widget,
 	else if (info == TARGET_DOCUMENT) 
 	{
 		UT_DEBUGMSG(("JK: Document target as data buffer\n"));
+		s_pasteText (pFrame, targetName, selection_data->data, selection_data->length);
 	}
 	else if (info == TARGET_IMAGE) 
 	{
@@ -364,6 +389,8 @@ s_dndDropEvent(GtkWidget        *widget,
 		UT_DEBUGMSG(("DOM: hyperlink: %s\n", uri));
 		pView->cmdInsertHyperlink(uri);
 	}
+
+	g_free (targetName);
 }
 
 static void
@@ -1210,6 +1237,8 @@ void XAP_UnixFrameImpl::_createTopLevelWindow(void)
 					   dragInfo->entries, 
 					   dragInfo->count, 
 					   GDK_ACTION_COPY);
+
+	gtk_drag_dest_add_text_targets (m_wTopLevelWindow);
 
 	g_signal_connect (G_OBJECT (m_wTopLevelWindow),
 					  "drag_data_get",
