@@ -412,7 +412,7 @@ if(info->reason_subtype == Ph_EV_DND_DROP)
 			FV_View *pView = pDocLy->getView();
 			PD_DocumentRange dr(pView->getDocument(),pView->getPoint(),pView->getPoint());
 	
-			IE_Imp::constructImporter(dr.m_pDoc,0,IE_Imp::fileTypeForSuffix(".txt"),&pImp,0);
+			IE_Imp::constructImporter(dr.m_pDoc,IE_Imp::fileTypeForSuffix(".txt"),&pImp,0);
 			if(pImp)
 			{
 				const char * szEncoding = pApp->getDefaultEncoding();

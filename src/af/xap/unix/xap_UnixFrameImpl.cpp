@@ -335,7 +335,7 @@ s_pasteText (XAP_Frame * pFrame, const char * target_name,
 		{
 			IE_Imp * importer = NULL;
 
-			if (UT_OK == IE_Imp::constructImporter (pDoc, NULL, file_type, &importer) && importer)
+			if (UT_OK == IE_Imp::constructImporter (pDoc, file_type, &importer) && importer)
 				{
 					PD_DocumentRange dr(pDoc, pView->getPoint(), pView->getPoint());
 					importer->pasteFromBuffer(&dr, data, data_length);

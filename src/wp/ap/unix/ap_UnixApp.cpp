@@ -685,7 +685,7 @@ void AP_UnixApp::pasteFromClipboard(PD_DocumentRange * pDocRange, bool bUseClipb
 		IE_Imp * pImp = NULL;
 		IEFileType ieft = IE_Imp::fileTypeForMimetype(szFormatFound);
 		UT_DEBUGMSG(("found file type %d\n",ieft));
-		IE_Imp::constructImporter(pDocRange->m_pDoc,NULL,ieft,&pImp);
+		IE_Imp::constructImporter(pDocRange->m_pDoc,ieft,&pImp);
 		if(pImp == NULL)
 			 goto retry_text;
 		bSuccess = pImp->pasteFromBuffer(pDocRange,pData,iLen);
@@ -698,7 +698,7 @@ void AP_UnixApp::pasteFromClipboard(PD_DocumentRange * pDocRange, bool bUseClipb
 		  {
 			  IE_Imp * pImp = NULL;
 			  IEGraphicFileType iegft = IE_Imp::fileTypeForMimetype(szFormatFound);
-			  IE_Imp::constructImporter(pDocRange->m_pDoc,NULL,iegft,&pImp);
+			  IE_Imp::constructImporter(pDocRange->m_pDoc,iegft,&pImp);
 			  if(pImp == NULL)
 			  {
 					  goto retry_text;

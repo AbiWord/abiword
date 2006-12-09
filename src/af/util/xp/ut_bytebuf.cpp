@@ -27,7 +27,6 @@
 #include "ut_bytebuf.h"
 
 #include "ut_go_file.h"
-#include <gsf/gsf-input.h>
 #include <gsf/gsf-output.h>
 
 #define DEFAULT_CHUNK		1024
@@ -199,6 +198,16 @@ bool UT_ByteBuf::insertFromURI(UT_uint32 iPosition, const char *szURI)
   if(!fp)
     return false;
 
+  bool res = insertFromInput (0, fp);
+  
+  g_object_unref (fp);
+  return res;
+}
+
+bool UT_ByteBuf::insertFromInput(UT_uint32 iPosition, GsfInput * fp)
+{
+  UT_return_val_if_fail (fp != NULL, false);
+
   UT_uint32 iLengthOfFile = gsf_input_size(fp);
 
   // create a lot of space initialized to 0s
@@ -208,7 +217,6 @@ bool UT_ByteBuf::insertFromURI(UT_uint32 iPosition, const char *szURI)
 
   gsf_input_read(fp, iLengthOfFile, pBuf);
 
-  g_object_unref(G_OBJECT(fp));
   return true;
 }
 

@@ -236,42 +236,6 @@ UT_Confidence_t IE_ImpSniffer::recognizeContents (GsfInput * input)
 /*****************************************************************/
 /*****************************************************************/
 
-class GsfInputMarker
-{
-	GsfInput *m_input;
-	gsf_off_t m_position;
-	bool m_reset;
-
-	GsfInputMarker();
-	GsfInputMarker(const GsfInputMarker & rhs);
-	GsfInputMarker& operator=(const GsfInputMarker &rhs);
-
-public:
-	GsfInputMarker(GsfInput * input)
-		: m_input(input), m_position(gsf_input_tell(input)), m_reset(false)
-	{
-		g_object_ref(G_OBJECT(m_input));
-	}
-
-	~GsfInputMarker()
-	{
-		reset();
-		g_object_unref(G_OBJECT(m_input));
-	}
-
-	void reset()
-	{
-		if(!m_reset)
-			{
-				gsf_input_seek(m_input, m_position, G_SEEK_SET);
-				m_reset = true;
-			}
-	}
-};
-
-/*****************************************************************/
-/*****************************************************************/
-
 void IE_Imp::registerImporter (IE_ImpSniffer * s)
 {
 	UT_uint32 ndx = 0;
@@ -689,6 +653,8 @@ const char * IE_Imp::suffixesForFileType(IEFileType ieft)
 
 	IE_ImpSniffer * pSniffer = snifferForFileType(ieft);
 
+	UT_return_val_if_fail(pSniffer != NULL, 0);
+
 	if (pSniffer->getDlgLabels(&szDummy,&szSuffixes,&ieftDummy))
 		return szSuffixes;
 	else
@@ -731,6 +697,25 @@ static UT_Confidence_t s_confidence_heuristic ( UT_Confidence_t content_confiden
 /*! 
   Construct an importer of the right type.
  \param pDocument Document
+ \param ieft Desired filetype - pass IEFT_Unknown for best guess
+ \param ppie Pointer to return importer in
+ \param pieft Pointer to fill in actual filetype
+
+ Caller is responsible for deleting the importer object
+ when finished with it.
+ This function should closely match IE_Exp::contructExporter()
+*/
+UT_Error IE_Imp::constructImporter(PD_Document * pDocument,
+								   IEFileType ieft,
+								   IE_Imp ** ppie,
+								   IEFileType * pieft)
+{
+	return constructImporter(pDocument, (const char *)NULL, ieft, ppie, pieft);
+}
+
+/*! 
+  Construct an importer of the right type.
+ \param pDocument Document
  \param szFilename Name of file - optional
  \param ieft Desired filetype - pass IEFT_Unknown for best guess
  \param ppie Pointer to return importer in
@@ -741,7 +726,42 @@ static UT_Confidence_t s_confidence_heuristic ( UT_Confidence_t content_confiden
  This function should closely match IE_Exp::contructExporter()
 */
 UT_Error IE_Imp::constructImporter(PD_Document * pDocument,
-								   const char * szURI,
+								   const char * szFilename,
+								   IEFileType ieft,
+								   IE_Imp ** ppie,
+								   IEFileType * pieft)
+{
+	GsfInput * input = NULL;
+
+	if (szFilename)
+		input = UT_go_file_open (szFilename, NULL);
+
+	if (input || szFilename == NULL)
+		{
+			UT_Error result = constructImporter(pDocument, input, ieft, ppie, pieft);
+			g_object_unref (G_OBJECT (input));
+			return result;
+		}
+
+	return UT_IE_FILENOTFOUND;
+}
+
+#define CONFIDENCE_THRESHOLD 72
+
+/*! 
+  Construct an importer of the right type.
+ \param pDocument Document
+ \param input:
+ \param ieft Desired filetype - pass IEFT_Unknown for best guess
+ \param ppie Pointer to return importer in
+ \param pieft Pointer to fill in actual filetype
+
+ Caller is responsible for deleting the importer object
+ when finished with it.
+ This function should closely match IE_Exp::contructExporter()
+*/
+UT_Error IE_Imp::constructImporter(PD_Document * pDocument,
+								   GsfInput * input,
 								   IEFileType ieft,
 								   IE_Imp ** ppie,
 								   IEFileType * pieft)
@@ -749,7 +769,7 @@ UT_Error IE_Imp::constructImporter(PD_Document * pDocument,
 	bool bUseGuesswork = (ieft != IEFT_Unknown);
 	
 	UT_return_val_if_fail(pDocument, UT_ERROR);
-	UT_return_val_if_fail(ieft != IEFT_Unknown || (szURI && *szURI), UT_ERROR);
+	UT_return_val_if_fail(ieft != IEFT_Unknown || (input), UT_ERROR);
 	UT_return_val_if_fail(ppie, UT_ERROR);
 
 	UT_uint32 nrElements = getImporterCount();
@@ -758,21 +778,8 @@ UT_Error IE_Imp::constructImporter(PD_Document * pDocument,
 	// from the contents of the file or the filename suffix
 	// the importer to use and assign that back to ieft.
 	// Give precedence to the file contents
-	if (ieft == IEFT_Unknown && szURI && *szURI)
+	if (ieft == IEFT_Unknown && input)
 	{
-		char szBuf[4097] = "";  // 4096+nul ought to be enough
-		UT_uint32 iNumbytes = 0;
-		GsfInput *f = NULL;
-
-		// we must open in binary mode for UCS-2 compatibility
-		if ( ( f = UT_go_file_open(szURI, NULL)) != NULL )
-		{
-			iNumbytes = UT_MIN(4096, gsf_input_size(f));
-			gsf_input_read(f, iNumbytes, (guint8 *)(szBuf));
-			szBuf[iNumbytes] = '\0';
-			g_object_unref (G_OBJECT(f));
-		}
-
 		UT_Confidence_t   best_confidence = UT_CONFIDENCE_ZILCH;
 		IE_ImpSniffer * best_sniffer = 0;
 
@@ -783,10 +790,12 @@ UT_Error IE_Imp::constructImporter(PD_Document * pDocument,
 		    UT_Confidence_t content_confidence = UT_CONFIDENCE_ZILCH;
 		    UT_Confidence_t suffix_confidence = UT_CONFIDENCE_ZILCH;
 
-		    if ( iNumbytes > 0 )
-		      content_confidence = s->recognizeContents(szBuf, iNumbytes);
-		    
-		    const char * suffix = UT_pathSuffix(szURI) ;
+			{
+				GsfInputMarker marker(input);
+				content_confidence = s->recognizeContents(input);
+			}
+
+		    const char * suffix = UT_pathSuffix(gsf_input_name (input)) ;
 		    if (suffix) {
 				const IE_SuffixConfidence * sc = s->getSuffixConfidence();
 				while (sc && sc->suffix) {
@@ -802,7 +811,7 @@ UT_Error IE_Imp::constructImporter(PD_Document * pDocument,
 		    UT_Confidence_t confidence = s_confidence_heuristic ( content_confidence, 
 																  suffix_confidence ) ;
 		    
-		    if ( confidence != 0 && confidence >= best_confidence )
+		    if ( confidence > CONFIDENCE_THRESHOLD && confidence >= best_confidence )
 				{
 					best_sniffer = s;
 					best_confidence = confidence;
@@ -820,7 +829,7 @@ UT_Error IE_Imp::constructImporter(PD_Document * pDocument,
 	{
 	   	// maybe they're trying to open an image directly?
 	   	IE_ImpGraphic *pIEG;
- 		UT_Error errorCode = IE_ImpGraphic::constructImporter(szURI, IEGFT_Unknown, &pIEG);
+ 		UT_Error errorCode = IE_ImpGraphic::constructImporter(input, IEGFT_Unknown, &pIEG);
 		if (!errorCode && pIEG) 
  		{
 			// tell the caller the type of importer they got
@@ -888,4 +897,38 @@ bool IE_Imp::enumerateDlgLabels(UT_uint32 ndx,
 UT_uint32 IE_Imp::getImporterCount(void)
 {
 	return IE_IMP_Sniffers.size();
+}
+
+UT_Error IE_Imp::_importFile(PD_Document * doc, const char * szFilename, IEFileType ieft)
+{
+	GsfInput * input;
+
+	input = UT_go_file_open (szFilename, NULL);
+
+	if (!input)
+		return UT_IE_FILENOTFOUND;
+
+	UT_Error result = _importFile (doc, input, ieft);
+	g_object_unref (G_OBJECT (input));
+	
+	return result;
+}
+
+UT_Error IE_Imp::_importFile(PD_Document * doc, GsfInput * input, IEFileType ieft)
+{
+	UT_return_val_if_fail (input != NULL, UT_IE_FILENOTFOUND);
+
+	UT_Error result = UT_ERROR;
+
+	IE_Imp * importer = NULL;
+
+	result = constructImporter(doc, input, ieft, &importer);
+	if (result != UT_OK || !importer)
+		return UT_ERROR;
+
+	result = importer->_importFile (input);
+
+	delete importer;
+
+	return result;
 }

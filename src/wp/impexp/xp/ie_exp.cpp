@@ -494,6 +494,8 @@ const char * IE_Exp::suffixesForFileType(IEFileType ieft)
 
 	IE_ExpSniffer * pSniffer = snifferForFileType(ieft);
 
+	UT_return_val_if_fail (pSniffer != NULL, 0);
+
 	if (pSniffer->getDlgLabels(&szDummy,&szSuffixes,&ieftDummy))
 		return szSuffixes;
 	else

@@ -513,7 +513,7 @@ bool AP_Win32App::_cacheClipboardDoc(PD_DocumentRange *pDocRange)
 	PD_DocumentRange DocRange(pDoc, 2, 2);
 	
 	IE_Imp * pImp = 0;
-	IE_Imp::constructImporter(pDoc, 0, IE_Imp::fileTypeForSuffix(".rtf"),&pImp,0);
+	IE_Imp::constructImporter(pDoc, IE_Imp::fileTypeForSuffix(".rtf"),&pImp,0);
 
 	if(pImp)
 	{
@@ -979,7 +979,7 @@ bool AP_Win32App::_pasteFormatFromClipboard(PD_DocumentRange * pDocRange, const 
 
 		
 		IE_Imp * pImp = 0;
-		IE_Imp::constructImporter(pDocRange->m_pDoc, 0, IE_Imp::fileTypeForSuffix(szType), &pImp, 0);
+		IE_Imp::constructImporter(pDocRange->m_pDoc, IE_Imp::fileTypeForSuffix(szType), &pImp, 0);
 		if (pImp)
 		{
 			const char * szEncoding = 0;

@@ -163,7 +163,7 @@ STDMETHODIMP XAP_Win32DropTarget::Drop (LPDATAOBJECT pDataObj, DWORD grfKeyState
 	PD_DocumentRange dr(pView->getDocument(),pView->getPoint(),pView->getPoint());
 			
 	// Import RTF	
-	IE_Imp::constructImporter(dr.m_pDoc, 0, IE_Imp::fileTypeForSuffix(".rtf"), &pImp, 0);
+	IE_Imp::constructImporter(dr.m_pDoc, IE_Imp::fileTypeForSuffix(".rtf"), &pImp, 0);
 	if (pImp)
 	{		
 		szEncoding = XAP_EncodingManager::get_instance()->getNative8BitEncodingName();		

@@ -130,10 +130,21 @@ public:
 	static const char * descriptionForFileType(IEFileType ieft);
 	
 	static UT_Error	constructImporter(PD_Document * pDocument,
-					  const char * szFilename,
-					  IEFileType ieft,
-					  IE_Imp ** ppie, 
-					  IEFileType * pieft = NULL);
+									  const char * szFilename,
+									  IEFileType ieft,
+									  IE_Imp ** ppie, 
+									  IEFileType * pieft = NULL);
+
+	static UT_Error	constructImporter(PD_Document * pDocument,
+									  GsfInput * input,
+									  IEFileType ieft,
+									  IE_Imp ** ppie, 
+									  IEFileType * pieft = NULL);
+
+	static UT_Error	constructImporter(PD_Document * pDocument,
+									  IEFileType ieft,
+									  IE_Imp ** ppie, 
+									  IEFileType * pieft = NULL);
 	
 	static bool	    enumerateDlgLabels(UT_uint32 ndx,
 					       const char ** pszDesc,
@@ -150,7 +161,11 @@ public:
 	static const char * getMimeTypeForSuffix (const char * suffix);
 
 	virtual ~IE_Imp();
-	virtual UT_Error	importFile(const char * szFilename) = 0;
+
+	virtual UT_Error importFile(const char * szFilename) = 0;
+
+	static UT_Error _importFile(PD_Document * doc, const char * szFilename, IEFileType ieft = IEFT_Unknown);
+	static UT_Error _importFile(PD_Document * doc, GsfInput * input, IEFileType ieft = IEFT_Unknown);
 
 	// default impl
 	virtual  bool		pasteFromBuffer(PD_DocumentRange * pDocRange,
@@ -189,6 +204,8 @@ public:
 	virtual bool appendFmt(const XML_Char ** attributes);
 	virtual bool appendFmt(const UT_GenericVector<XML_Char*>* pVecAttributes);
 
+	virtual UT_Error _importFile (GsfInput * input) { return UT_ERROR; } // = 0;
+
 public:
 	const UT_UTF8String * getProperty (const char * key) {
 		return m_props_map[key];
@@ -204,6 +221,39 @@ public:
 	UT_UTF8Hash   m_props_map;
 
 	UT_Confidence_t m_fidelity;
+};
+
+class GsfInputMarker
+{
+	GsfInput *m_input;
+	gsf_off_t m_position;
+	bool m_reset;
+
+	GsfInputMarker();
+	GsfInputMarker(const GsfInputMarker & rhs);
+	GsfInputMarker& operator=(const GsfInputMarker &rhs);
+
+public:
+	GsfInputMarker(GsfInput * input)
+		: m_input(input), m_position(gsf_input_tell(input)), m_reset(false)
+	{
+		g_object_ref(G_OBJECT(m_input));
+	}
+
+	~GsfInputMarker()
+	{
+		reset();
+		g_object_unref(G_OBJECT(m_input));
+	}
+
+	void reset()
+	{
+		if(!m_reset)
+			{
+				gsf_input_seek(m_input, m_position, G_SEEK_SET);
+				m_reset = true;
+			}
+	}
 };
 
 

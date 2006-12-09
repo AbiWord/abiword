@@ -27,6 +27,7 @@
 *****************************************************************/
 
 #include <stdio.h>
+#include <gsf/gsf-input.h>
 
 /* pre-emptive dismissal; ut_types.h is needed by just about everything,
  * so even if it's commented out in-file that's still a lot of work for
@@ -68,6 +69,7 @@ public:
 	bool				writeToURI(const char* pszURI) const;
 	bool				insertFromFile(UT_uint32 iPosition, const char* pszFilename);
 	bool                            insertFromURI(UT_uint32 iPosition, const char* pszURI);
+	bool                            insertFromInput(UT_uint32 iPosition, GsfInput * fp);
 	bool                insertFromFile(UT_uint32 iPosition, FILE * fp);
 	
 private:

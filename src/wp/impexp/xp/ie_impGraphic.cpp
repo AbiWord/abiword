@@ -29,6 +29,7 @@
 
 #include "ut_go_file.h"
 #include <gsf/gsf-input.h>
+#include <gsf/gsf-input-memory.h>
 
 /*****************************************************************/
 /*****************************************************************/
@@ -290,6 +291,10 @@ IEGraphicFileType IE_ImpGraphic::fileTypeForSuffix(const char * szSuffix)
 	
 IEGraphicFileType IE_ImpGraphic::fileTypeForContents(const char * szBuf, UT_uint32 iNumbytes)
 {
+	GsfInput * input = gsf_input_memory_new ((guint8 *)szBuf, (gsf_off_t)iNumbytes, FALSE);
+	if (!input)
+		return IEGFT_Unknown;
+
 	// we have to construct the loop this way because a
 	// given filter could support more than one file type,
 	// so we must query a match for all file types
@@ -301,7 +306,7 @@ IEGraphicFileType IE_ImpGraphic::fileTypeForContents(const char * szBuf, UT_uint
 	for (UT_uint32 k=0; k < nrElements; k++)
 	{
 		IE_ImpGraphicSniffer * s = IE_IMP_GraphicSniffers.getNthItem (k);
-		UT_Confidence_t confidence = s->recognizeContents(szBuf, iNumbytes);
+		UT_Confidence_t confidence = s->recognizeContents(input);
 		if ((confidence > 0) && ((IEGFT_Unknown == best) || (confidence >= best_confidence)))
 		{
 		        best_confidence = confidence;
@@ -319,6 +324,8 @@ IEGraphicFileType IE_ImpGraphic::fileTypeForContents(const char * szBuf, UT_uint
 			}
 		}
 	}
+
+	g_object_unref (G_OBJECT (input));
 
 	return best;
 }
@@ -411,8 +418,27 @@ static UT_Confidence_t s_condfidence_heuristic ( UT_Confidence_t content_confide
 }
 
 UT_Error IE_ImpGraphic::constructImporter(const char * szFilename,
-					  IEGraphicFileType ft,
-					  IE_ImpGraphic **ppieg)
+										  IEGraphicFileType ft,
+										  IE_ImpGraphic **ppieg)
+{
+	GsfInput * input;
+
+	input = UT_go_file_open (szFilename, NULL);
+	if (!input)
+		return UT_IE_FILENOTFOUND;
+
+	UT_Error result = constructImporter (input, ft, ppieg);
+
+	g_object_unref (G_OBJECT (input));
+
+	return result;
+}
+
+#define CONFIDENCE_THRESHOLD 72
+
+UT_Error IE_ImpGraphic::constructImporter(GsfInput * input,
+										  IEGraphicFileType ft,
+										  IE_ImpGraphic **ppieg)
 {
   // construct an importer of the right type.
   // caller is responsible for deleting the importer object
@@ -425,61 +451,54 @@ UT_Error IE_ImpGraphic::constructImporter(const char * szFilename,
   // suffix of the filename and the contents of the file, the real 
   // importer to use and assign that back to ft.
   if (ft == IEGFT_Unknown)
-    {
-      UT_return_val_if_fail(szFilename && *szFilename, UT_ERROR);
-      char szBuf[4096] = "";
-      UT_uint32 iNumbytes = 0;
-      GsfInput *f = NULL;
-      if ( ( f= UT_go_file_open( szFilename, NULL ) ) != NULL )
-	{
-	  iNumbytes = UT_MIN(sizeof(szBuf), gsf_input_size(f));
-	  gsf_input_read(f, iNumbytes, (guint8*)szBuf);
-	  g_object_unref(G_OBJECT(f));
-	}
-      
-      UT_Confidence_t   best_confidence = UT_CONFIDENCE_ZILCH;
-      
-      for (UT_uint32 k=0; k < nrElements; k++)
-	{
-	  IE_ImpGraphicSniffer * s = IE_IMP_GraphicSniffers[k];
-	  
-	  UT_Confidence_t content_confidence = UT_CONFIDENCE_ZILCH;
-	  UT_Confidence_t suffix_confidence = UT_CONFIDENCE_ZILCH;
-	  
-	  if ( iNumbytes > 0 )
-	    content_confidence = s->recognizeContents(szBuf, iNumbytes);
-	  
-	  const char * suffix = UT_pathSuffix(szFilename);
-	    if (suffix) {
-			const IE_SuffixConfidence * sc = s->getSuffixConfidence();
-			while (sc && sc->suffix) {
-				/* suffixes do not have a leading '.' */
-				if (0 == UT_stricmp(sc->suffix, suffix+1) && 
-					sc->confidence > suffix_confidence) {
-					suffix_confidence = sc->confidence;
-				}
-				sc++;
-			}
-		}
+    { 
+		UT_return_val_if_fail (input != NULL, UT_IE_FILENOTFOUND);
 
-	  UT_Confidence_t confidence = s_condfidence_heuristic ( content_confidence, 
-								 suffix_confidence ) ;
-	  
-	  if ( confidence != 0 && confidence >= best_confidence )
-	    {
-	      best_confidence = confidence;
-	      ft = (IEGraphicFileType)(k+1);
-	    }
-	}
+		UT_Confidence_t   best_confidence = UT_CONFIDENCE_ZILCH;
+		
+		for (UT_uint32 k=0; k < nrElements; k++)
+			{
+				IE_ImpGraphicSniffer * s = IE_IMP_GraphicSniffers[k];
+				
+				UT_Confidence_t content_confidence = UT_CONFIDENCE_ZILCH;
+				UT_Confidence_t suffix_confidence = UT_CONFIDENCE_ZILCH;
+				
+				{
+					GsfInputMarker marker(input);
+					content_confidence = s->recognizeContents(input);
+				}
+
+				const char * suffix = UT_pathSuffix(gsf_input_name (input));
+				if (suffix) {
+					const IE_SuffixConfidence * sc = s->getSuffixConfidence();
+					while (sc && sc->suffix) {
+						/* suffixes do not have a leading '.' */
+						if (0 == UT_stricmp(sc->suffix, suffix+1) && 
+							sc->confidence > suffix_confidence) {
+							suffix_confidence = sc->confidence;
+						}
+						sc++;
+					}
+				}
+				
+				UT_Confidence_t confidence = s_condfidence_heuristic ( content_confidence, 
+																	   suffix_confidence ) ;
+				
+				if ( confidence > CONFIDENCE_THRESHOLD && confidence >= best_confidence )
+					{
+						best_confidence = confidence;
+						ft = (IEGraphicFileType)(k+1);
+					}
+			}
     }
-   
+  
   // use the importer for the specified file type
   for (UT_uint32 k=0; (k < nrElements); k++)
-    {
+	  {
       IE_ImpGraphicSniffer * s = IE_IMP_GraphicSniffers[k];
       if (s->supportsType(ft))
-	return s->constructImporter(ppieg);
-    }
+		  return s->constructImporter(ppieg);
+	  }
   
   // if we got here, no registered importer handles the
   // type of file we're supposed to be reading.
@@ -491,22 +510,49 @@ UT_Error IE_ImpGraphic::constructImporter(const char * szFilename,
 //  the other importGraphic function.  Used as a convenience for importing
 //  graphics from a file on disk.
 
-UT_Error	IE_ImpGraphic::importGraphic(const char * szFilename,
-										 FG_Graphic ** ppfg)
+UT_Error IE_ImpGraphic::importGraphic(GsfInput * input,
+									  FG_Graphic ** ppfg)
 {
+	UT_return_val_if_fail (input != NULL, UT_IE_FILENOTFOUND);
+
 	UT_ByteBuf* pBB = new UT_ByteBuf();
 
 	if (pBB == NULL)
 		return UT_IE_NOMEMORY;
 
-	if (!pBB->insertFromURI(0, szFilename))
-	{
-		DELETEP(pBB);
-		return UT_IE_FILENOTFOUND;
-	}
+	if (!pBB->insertFromInput(0, input))
+		{
+			DELETEP(pBB);
+			return UT_IE_FILENOTFOUND;
+		}
 
 	//  The ownership of pBB changes here.  The subclass of IE_ImpGraphic
 	//  should either delete pBB when it is done importing, or give it
 	//  to the FG_Graphic object which is eventually constructed.
 	return importGraphic(pBB, ppfg);
+}
+
+UT_Error IE_ImpGraphic::importGraphic(const char * szFilename,
+									  FG_Graphic ** ppfg)
+{
+	GsfInput * input;
+
+	input = UT_go_file_open (szFilename, NULL);
+	if (!input)
+		return UT_IE_FILENOTFOUND;
+
+	UT_Error res = importGraphic(input, ppfg);
+
+	g_object_unref (G_OBJECT (input));
+	return res;
+}
+
+UT_Confidence_t IE_ImpGraphicSniffer::recognizeContents (GsfInput * input)
+{
+	char szBuf[4097] = "";  // 4096+nul ought to be enough
+	UT_uint32 iNumbytes = UT_MIN(4096, gsf_input_size(input));
+	gsf_input_read(input, iNumbytes, (guint8 *)(szBuf));
+	szBuf[iNumbytes] = '\0';
+
+	return recognizeContents(szBuf, iNumbytes);
 }

@@ -53,6 +53,7 @@ public:
 	virtual const IE_MimeConfidence * getMimeConfidence () = 0;
 	virtual UT_Confidence_t recognizeContents (const char * szBuf, 
 					UT_uint32 iNumbytes) = 0;
+	virtual UT_Confidence_t recognizeContents (GsfInput * input);
 	virtual bool getDlgLabels (const char ** szDesc,
 				   const char ** szSuffixList,
 				   IEGraphicFileType * ft) = 0;
@@ -114,20 +115,28 @@ public:
   static UT_Error		constructImporter(const char * szFilename,
 						  IEGraphicFileType ft,
 						  IE_ImpGraphic **ppieg);
+  static UT_Error		constructImporter(GsfInput * input,
+						  IEGraphicFileType ft,
+						  IE_ImpGraphic **ppieg);
   
   virtual ~IE_ImpGraphic() {}
   
   //  Note subclassers:  ownership of pBB is passes here, so
   //  free pBB if you don't need it.
   virtual UT_Error	importGraphic(UT_ByteBuf* pBB, 
-				      FG_Graphic ** ppfg) = 0;
-  
-  virtual UT_Error	importGraphic(const char * szFilename,
-				      FG_Graphic ** ppfg);
-  
+								  FG_Graphic ** ppfg) = 0;
+    
   virtual UT_Error	convertGraphic(UT_ByteBuf* pBB,
-				       UT_ByteBuf** ppBB) = 0;
+								   UT_ByteBuf** ppBB) = 0;
   
+  virtual UT_Error  importGraphic(GsfInput * input,
+								  FG_Graphic ** ppfg);
+
+  UT_Error	importGraphic(const char * szFilename,
+						  FG_Graphic ** ppfg);
+
+
+
 private:
 
 };
