@@ -65,6 +65,13 @@ public:
 						   UT_uint32 iNumbytes) = 0;
 
 	/*!
+	 * Return a number in the range [0,255] as to your confidence
+	 * that you recognize the contents. 0 being the least, 127 being
+	 * so-so, 255 being absolutely sure
+	 */
+	virtual UT_Confidence_t recognizeContents (GsfInput * input);
+
+	/*!
 	 * Return a zero terminated array of IE_SuffixConfidence.
 	 * This deprecates recognizeSuffix().
 	 */

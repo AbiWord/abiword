@@ -56,6 +56,7 @@
 #include "xad_Document.h"
 #include "gr_Graphics.h"
 #include "xap_UnixDialogHelper.h"
+#include "xap_UnixClipboard.h"
 #include "xap_Strings.h"
 #include "xap_Prefs.h"
 
@@ -344,6 +345,41 @@ s_pasteText (XAP_Frame * pFrame, const char * target_name,
 		}
 }
 
+static void
+s_drag_data_get_cb (GtkWidget        *widget,
+					GdkDragContext   *context,
+					GtkSelectionData *selection,
+					guint             _info,
+					guint             _time,
+					gpointer          user_data)
+{
+	void * data = NULL;
+	UT_uint32 dataLen = 0;
+	const char * formatFound = NULL;
+
+	char *targetName = gdk_atom_name(selection->target);
+	char *formatList[2];
+
+	formatList[0] = targetName;
+	formatList[1] = 0;
+
+	XAP_UnixApp * pApp = static_cast<XAP_UnixApp *>(XAP_App::getApp ());
+
+	UT_DEBUGMSG(("DOM: s_drag_data_get_cb(%s)\n", targetName));
+
+	if (pApp->getCurrentSelection((const char **)formatList, &data, &dataLen, &formatFound))
+		{
+			UT_DEBUGMSG(("DOM: s_drag_data_get_cb SUCCESS!\n"));
+			gtk_selection_data_set (selection,
+									selection->target,
+									8,
+									(guchar *)data,
+									dataLen);
+		}
+
+	g_free (targetName);
+}
+
 static void 
 s_dndDropEvent(GtkWidget        *widget,
 				 GdkDragContext   *context,
@@ -406,6 +442,33 @@ static void
 s_dndDragEnd (GtkWidget  *widget, GdkDragContext *context, gpointer ppFrame)
 {
 	UT_DEBUGMSG(("DOM: dnd end event\n"));
+}
+
+static void
+s_dndDragBegin (GtkWidget  *widget, GdkDragContext *context, gpointer ppFrame)
+{
+	UT_DEBUGMSG(("DOM: dnd begin event\n"));
+}
+
+void XAP_UnixFrameImpl::dragText()
+{
+#if 0
+	UT_DEBUGMSG(("DOM: XAP_UnixFrameImpl::dragText()\n"));
+
+	// todo: this requires an extra click in the target application. find a way to make that not suck
+
+	XAP_UnixClipboard *clipboard = static_cast<XAP_UnixApp *>(XAP_App::getApp())->getClipboard();
+
+	GtkTargetList *target_list = gtk_target_list_new (clipboard->getTargets(), clipboard->getNumTargets());
+
+	GdkDragContext *context = gtk_drag_begin (m_wTopLevelWindow,
+											  target_list,
+											  GDK_ACTION_COPY,
+											  1,
+											  NULL);
+
+	gtk_target_list_unref (target_list);
+#endif
 }
 
 XAP_UnixFrameImpl::XAP_UnixFrameImpl(XAP_Frame *pFrame) : 
@@ -1240,10 +1303,6 @@ void XAP_UnixFrameImpl::_createTopLevelWindow(void)
 
 	gtk_drag_dest_add_text_targets (m_wTopLevelWindow);
 
-	g_signal_connect (G_OBJECT (m_wTopLevelWindow),
-					  "drag_data_get",
-					  G_CALLBACK (s_dndDropEvent), 
-					  static_cast<gpointer>(this));
 	g_signal_connect (G_OBJECT (m_wTopLevelWindow), 
 					  "drag_data_received",
 					  G_CALLBACK (s_dndDropEvent), 
@@ -1257,6 +1316,13 @@ void XAP_UnixFrameImpl::_createTopLevelWindow(void)
 					  "drag_end",
 					  G_CALLBACK (s_dndDragEnd), 
 					  static_cast<gpointer>(this));
+
+	g_signal_connect (G_OBJECT (m_wTopLevelWindow), 
+					  "drag_begin",
+					  G_CALLBACK (s_dndDragBegin), 
+					  static_cast<gpointer>(this));
+	g_signal_connect (G_OBJECT (m_wTopLevelWindow), "drag_data_get",
+					  G_CALLBACK (s_drag_data_get_cb), this);
 
 	g_signal_connect(G_OBJECT(m_wTopLevelWindow), "delete_event",
 					   G_CALLBACK(_fe::delete_event), NULL);

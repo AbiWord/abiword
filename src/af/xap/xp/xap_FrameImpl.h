@@ -110,6 +110,8 @@ protected:
 	const char * m_szMenuLayoutName;
 	const char * m_szMenuLabelSetName;		/* language for menus */
 
+	virtual void dragText() {}
+
 private:
 	XAP_Frame * m_pFrame;
 };

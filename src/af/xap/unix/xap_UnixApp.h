@@ -38,6 +38,7 @@ class XAP_Args;
 class AP_UnixToolbar_Icons;
 class AV_View;
 class XAP_UnixFontManager;
+class XAP_UnixClipboard;
 
 /*****************************************************************
 ******************************************************************
@@ -79,6 +80,8 @@ public:
 
 	XAP_UnixFontManager *					getFontManager() const;
 	
+	virtual XAP_UnixClipboard * getClipboard () = 0;
+
 	enum
 	{
 		GEOMETRY_FLAG_POS = 	1 << 0,

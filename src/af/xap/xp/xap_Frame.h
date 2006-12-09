@@ -222,6 +222,8 @@ public:
 	UT_RGBColor getColorSelBackground () const;
 	UT_RGBColor getColorSelForeground () const;
 
+	void dragText();
+
 protected:
 	friend class XAP_FrameImpl;
 

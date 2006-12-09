@@ -60,6 +60,9 @@ public:
 
 	bool canPaste(T_AllowGet tFrom);
 
+	GtkTargetEntry * getTargets () const { return m_Targets ; }
+	UT_uint32 getNumTargets () const { return m_nTargets; }
+
 protected:
 
 	void				AddFmt(const char * fmt);

@@ -108,6 +108,8 @@ public:
 	AP_DiskStringSet * loadStringsFromDisk(const char 		   * szStringSet, 
 										   AP_BuiltinStringSet * pFallbackStringSet);
 
+	virtual XAP_UnixClipboard * getClipboard () { return m_pClipboard; }
+
 protected:	// JCA: Why in the hell we have so many (any) protected variables?
 	static GR_Image*		_showSplash(UT_uint32);
 

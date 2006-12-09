@@ -1065,3 +1065,7 @@ void XAP_Frame::setFrameMode(XAP_FrameMode iFrameMode)
 	m_pFrameImpl->m_iFrameMode = iFrameMode;
 }
 
+void XAP_Frame::dragText()
+{
+  m_pFrameImpl->dragText();
+}

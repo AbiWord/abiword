@@ -223,6 +223,52 @@ IE_ImpSniffer::~IE_ImpSniffer()
 {
 }
 
+UT_Confidence_t IE_ImpSniffer::recognizeContents (GsfInput * input)
+{
+	char szBuf[4097] = "";  // 4096+nul ought to be enough
+	UT_uint32 iNumbytes = UT_MIN(4096, gsf_input_size(input));
+	gsf_input_read(input, iNumbytes, (guint8 *)(szBuf));
+	szBuf[iNumbytes] = '\0';
+
+	return recognizeContents(szBuf, iNumbytes);
+}
+
+/*****************************************************************/
+/*****************************************************************/
+
+class GsfInputMarker
+{
+	GsfInput *m_input;
+	gsf_off_t m_position;
+	bool m_reset;
+
+	GsfInputMarker();
+	GsfInputMarker(const GsfInputMarker & rhs);
+	GsfInputMarker& operator=(const GsfInputMarker &rhs);
+
+public:
+	GsfInputMarker(GsfInput * input)
+		: m_input(input), m_position(gsf_input_tell(input)), m_reset(false)
+	{
+		g_object_ref(G_OBJECT(m_input));
+	}
+
+	~GsfInputMarker()
+	{
+		reset();
+		g_object_unref(G_OBJECT(m_input));
+	}
+
+	void reset()
+	{
+		if(!m_reset)
+			{
+				gsf_input_seek(m_input, m_position, G_SEEK_SET);
+				m_reset = true;
+			}
+	}
+};
+
 /*****************************************************************/
 /*****************************************************************/
 

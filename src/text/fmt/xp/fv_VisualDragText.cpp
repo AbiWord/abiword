@@ -30,6 +30,7 @@
 #include "fp_TableContainer.h"
 #include "fv_View.h"
 #include "gr_Painter.h"
+#include "xap_Frame.h"
 
 #define MIN_DRAG_PIXELS 8
 
@@ -200,7 +201,11 @@ void FV_VisualDragText::mouseDrag(UT_sint32 x, UT_sint32 y)
           }
 	  else
 	  {
-	    m_iVisualDragMode = FV_VisualDrag_START_DRAGGING;	    
+	    m_iVisualDragMode = FV_VisualDrag_START_DRAGGING;
+
+	    XAP_Frame * pFrame = static_cast<XAP_Frame*>(m_pView->getParentData());
+	    if (pFrame)
+	      pFrame->dragText();
 	  }
         }
 	if((m_iVisualDragMode != FV_VisualDrag_DRAGGING) && (m_iVisualDragMode != FV_VisualDrag_WAIT_FOR_MOUSE_DRAG) && !m_bDoingCopy)
@@ -1073,43 +1078,45 @@ void FV_VisualDragText::mouseRelease(UT_sint32 x, UT_sint32 y)
 	  oldPoint = 2;
 	}
 	bool bInFrame = m_pView->isInFrame(oldPoint);
+
 	bool bPasteTableCol = (m_pView->getPrevSelectionMode() == FV_SelectionMode_TableColumn);
 	if(!bPasteTableCol)
-	{
-		m_pView->pasteFromLocalTo(m_pView->getPoint());
-	}
+	  {
+	    m_pView->pasteFromLocalTo(m_pView->getPoint());
+	  }
 	else
-	{
-		m_pView->cmdPaste();
-	}
+	  {
+	    m_pView->cmdPaste();
+	  }
+	
 	m_bSelectedRow = false;
 	PT_DocPosition newPoint = m_pView->getPoint();
 	DELETEP(m_pDragImage);
 	if(m_bTextCut)
-	{
-		m_pView->getDocument()->endUserAtomicGlob(); // End the big undo block
-	}
+	  {
+	    m_pView->getDocument()->endUserAtomicGlob(); // End the big undo block
+	  }
 	if(m_pView->getDocument()->isEndFootnoteAtPos(newPoint))
-	{
-	        newPoint++;
-	}
+	  {
+	    newPoint++;
+	  }
 	bool bFinalFrame = m_pView->isInFrame(newPoint) && !m_pView->getDocument()->isFrameAtPos(newPoint);
 	bool bDoSelect = true;
 	if(bInFrame && !bFinalFrame)
-	{
-	     bDoSelect = false;
-	}
+	  {
+	    bDoSelect = false;
+	  }
 	if(bDoSelect)
-	{
-	      if(!bPasteTableCol)
+	  {
+	    if(!bPasteTableCol)
 	      {
-	            m_pView->cmdSelect(oldPoint,newPoint);
+		m_pView->cmdSelect(oldPoint,newPoint);
 	      }
-	      else
+	    else
 	      {
-		    m_pView->cmdSelectColumn(newPoint);
+		m_pView->cmdSelectColumn(newPoint);
 	      }
-	}
+	  }
 	m_bTextCut = false;
 }
 

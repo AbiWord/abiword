@@ -117,6 +117,8 @@ protected:
 
 	void _imCommit (GtkIMContext * imc, const gchar * text);
 
+	virtual void dragText();
+
 #ifdef HAVE_HILDON
 	// need to be able to get at this from XAP_UnixHildonApp
   public:
