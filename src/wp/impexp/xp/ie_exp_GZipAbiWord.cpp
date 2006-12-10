@@ -81,5 +81,8 @@ GsfOutput* IE_Exp_GZipAbiWord::_openFile(const char * szFilename)
   if(!output)
     return NULL;
 
-  return gsf_output_gzip_new(output, NULL);
+  GsfOutput * gzip = gsf_output_gzip_new(output, NULL);
+  g_object_unref (G_OBJECT (output));
+
+  return gzip;
 }

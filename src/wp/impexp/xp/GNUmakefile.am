@@ -42,7 +42,6 @@ libImpExp_xp_a_SOURCES=\
 	ie_impGraphic.cpp		\
 	ie_impGraphic_PNG.cpp		\
 	ie_impGraphic_SVG.cpp		\
-	ie_imp_GZipAbiWord.cpp		\
 	ie_imp_MsWord_97.cpp		\
 	ie_imp_RTF.cpp			\
 	ie_imp_RTFParse.cpp		\
@@ -83,7 +82,6 @@ headers_DATA = \
 	ie_impGraphic.h \
 	ie_impGraphic_PNG.h \
 	ie_impGraphic_SVG.h \
-	ie_imp_GZipAbiWord.h \
 	ie_imp.h \
 	ie_imp_MsWord_97.h \
 	ie_imp_MsWord_dump.h \
