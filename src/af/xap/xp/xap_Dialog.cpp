@@ -113,13 +113,13 @@ XAP_Dialog_Persistent::~XAP_Dialog_Persistent(void)
 
 void XAP_Dialog_Persistent::useStart(void)
 {
-	UT_ASSERT(!m_bInUse);
+	UT_ASSERT_HARMLESS(!m_bInUse);
 	m_bInUse = true;
 }
 
 void XAP_Dialog_Persistent::useEnd(void)
 {
-	UT_ASSERT(m_bInUse);
+	UT_ASSERT_HARMLESS(m_bInUse);
 	m_bInUse = false;
 }
 
@@ -170,14 +170,14 @@ void XAP_Dialog_AppPersistent::useEnd(void)
 XAP_Dialog_Modeless::XAP_Dialog_Modeless(XAP_DialogFactory * pDlgFactory, XAP_Dialog_Id id, const char * helpUrl)
 	: XAP_Dialog_AppPersistent(pDlgFactory,id, helpUrl)
 {
-	UT_ASSERT(pDlgFactory);
+	UT_return_if_fail(pDlgFactory);
 
 	m_pDlgFactory = pDlgFactory;
 	m_id = id;
 	m_pApp = pDlgFactory->getApp();
         m_pDialog = (XAP_Dialog_Modeless *) this;
 
-	UT_ASSERT(m_pApp);
+	UT_ASSERT_HARMLESS(m_pApp);
 }
 
 XAP_Dialog_Modeless::~XAP_Dialog_Modeless(void)

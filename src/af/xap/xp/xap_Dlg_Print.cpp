@@ -58,7 +58,7 @@ XAP_Dialog_Print::XAP_Dialog_Print(XAP_DialogFactory * pDlgFactory, XAP_Dialog_I
 
 XAP_Dialog_Print::~XAP_Dialog_Print(void)
 {
-	UT_ASSERT(!m_bInUse);
+	UT_ASSERT_HARMLESS(!m_bInUse);
 }
 
 void XAP_Dialog_Print::useStart(void)
@@ -215,7 +215,7 @@ GR_Graphics::ColorSpace XAP_Dialog_Print::getColorSpace(void) const
 bool XAP_Dialog_Print::_getPrintToFilePathname(XAP_Frame * pFrame,
 												 const char * szSuggestedName)
 {
-	UT_ASSERT(pFrame);
+	UT_return_val_if_fail(pFrame,false);
 	UT_ASSERT(szSuggestedName && *szSuggestedName);
 
 	XAP_Dialog_Id id = XAP_DIALOG_ID_PRINTTOFILE;
@@ -225,7 +225,7 @@ bool XAP_Dialog_Print::_getPrintToFilePathname(XAP_Frame * pFrame,
 
 	XAP_Dialog_FileOpenSaveAs * pDialog
 		= (XAP_Dialog_FileOpenSaveAs *)(pDialogFactory->requestDialog(id));
-	UT_ASSERT(pDialog);
+	UT_return_val_if_fail(pDialog,false);
 
 	pDialog->setCurrentPathname(szSuggestedName);
 	pDialog->setSuggestFilename(true);

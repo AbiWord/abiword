@@ -513,7 +513,11 @@ XAP_PrefsScheme * XAP_Prefs::getScheme(const XML_Char * szSchemeName) const
 	for (k=0; k<kLimit; k++)
 	{
 		XAP_PrefsScheme * p = getNthScheme(k);
-		UT_ASSERT(p);
+		if(!p)
+		{
+			UT_ASSERT_HARMLESS(p);
+			continue;
+		}
 		if (strcmp(static_cast<const char*>(szSchemeName),static_cast<const char*>(p->getSchemeName())) == 0)
 			return p;
 	}
@@ -529,7 +533,11 @@ XAP_PrefsScheme * XAP_Prefs::getPluginScheme(const XML_Char * szSchemeName) cons
 	for (k=0; k<kLimit; k++)
 	{
 		XAP_PrefsScheme * p = getNthPluginScheme(k);
-		UT_ASSERT(p);
+		if(!p)
+		{
+			UT_ASSERT_HARMLESS(p);
+			continue;
+		}
 		if (strcmp(static_cast<const char*>(szSchemeName),static_cast<const char*>(p->getSchemeName())) == 0)
 			return p;
 	}
@@ -571,7 +579,7 @@ XAP_PrefsScheme * XAP_Prefs::getCurrentScheme(bool bCreate)
 			if (setCurrentScheme(new_name))
 			{
 				// unused _custom_ scheme is lying around, so recycle it
-				UT_ASSERT(UT_TODO);
+				UT_ASSERT_HARMLESS(UT_TODO);
 
 				// HYP: reset the current scheme's hash table contents?
 				// ALT: replace the existing scheme with new empty one
@@ -614,7 +622,7 @@ bool XAP_Prefs::getPrefsValue(const XML_Char * szKey, const XML_Char ** pszValue
 {
 	// a convenient routine to get a name/value pair from the current scheme
 
-	UT_ASSERT(m_currentScheme);
+	UT_return_val_if_fail(m_currentScheme,false);
 
 	if (m_currentScheme->getValue(szKey,pszValue))
 		return true;
@@ -629,13 +637,13 @@ bool XAP_Prefs::getPrefsValue(const XML_Char * szKey, const XML_Char ** pszValue
 		return true;
 	}
 
-	UT_ASSERT(UT_SHOULD_NOT_HAPPEN);
+	UT_ASSERT_HARMLESS(UT_SHOULD_NOT_HAPPEN);
 	return false;
 }
 
 bool XAP_Prefs::getPrefsValue(const UT_String &stKey, UT_String &stValue) const
 {
-	UT_ASSERT(m_currentScheme);
+	UT_return_val_if_fail(m_currentScheme,false);
 
 	if (m_currentScheme->getValue(stKey, stValue))
 		return true;
@@ -652,7 +660,7 @@ bool XAP_Prefs::getPrefsValue(const UT_String &stKey, UT_String &stValue) const
 	}
 
 	UT_DEBUGMSG(("JCA: key: [%s] Value: [%s]", stKey.c_str(), stValue.c_str()));
-	UT_ASSERT(UT_SHOULD_NOT_HAPPEN);
+	UT_ASSERT_HARMLESS(UT_SHOULD_NOT_HAPPEN);
 	return false;
 }
 
@@ -660,7 +668,7 @@ bool XAP_Prefs::getPrefsValueBool(const XML_Char * szKey, bool * pbValue) const
 {
 	// a convenient routine to get a name/value pair from the current scheme
 
-	UT_ASSERT(m_currentScheme);
+	UT_return_val_if_fail(m_currentScheme,false);
 
 	if (m_currentScheme->getValueBool(szKey,pbValue))
 		return true;
@@ -675,7 +683,7 @@ bool XAP_Prefs::getPrefsValueBool(const XML_Char * szKey, bool * pbValue) const
 		return true;
 	}
 
-	UT_ASSERT(UT_SHOULD_NOT_HAPPEN);
+	UT_ASSERT_HARMLESS(UT_SHOULD_NOT_HAPPEN);
 	return false;
 }
 
@@ -719,7 +727,7 @@ void XAP_Prefs::startElement(const XML_Char *name, const XML_Char **atts)
 	if (!id)
 	{
 		UT_DEBUGMSG(("Didin't find it! Abort! \n"));
-		UT_ASSERT(0);
+		UT_ASSERT_HARMLESS(0);
 		return;
 	}
 	switch (id->m_type)
@@ -1224,7 +1232,11 @@ bool XAP_Prefs::savePrefsFile(void)
 		for (k=0; k<kLimit; k++)
 		{
 			XAP_PrefsScheme * p = getNthScheme(k);
-			UT_ASSERT(p);
+			if(!p)
+			{
+				UT_ASSERT_HARMLESS(p);
+				continue;
+			}
 
 			const XML_Char * szThisSchemeName = p->getSchemeName();
 			bool bIsBuiltin = (p == m_builtinScheme);
@@ -1315,7 +1327,11 @@ bool XAP_Prefs::savePrefsFile(void)
 		for (k=0; k<kLimit; k++)
 		{
 			XAP_PrefsScheme * p = getNthPluginScheme(k);
-			UT_ASSERT(p);
+			if(!p)
+			{
+				UT_ASSERT_HARMLESS(p);
+				continue;
+			}
 
 			const XML_Char * szThisSchemeName = p->getSchemeName();
 			fprintf(fp,"\n\t<Plugin\n\t\tname=\"%s\"\n",szThisSchemeName);
@@ -1494,7 +1510,7 @@ void XAP_Prefs::addListener	  ( PrefsListener pFunc, void *data )
 {
 	tPrefsListenersPair *pPair = new tPrefsListenersPair;	
 
-	UT_ASSERT(pPair);
+	UT_return_if_fail(pPair);
 	UT_ASSERT(pFunc);
 
 	pPair->m_pFunc = pFunc;
@@ -1513,7 +1529,7 @@ void XAP_Prefs::removeListener ( PrefsListener pFunc, void *data )
 	for ( index = 0; index < m_vecPrefsListeners.getItemCount(); index++ )
 	{
 		pPair = m_vecPrefsListeners.getNthItem(index);
-		UT_ASSERT(pPair);
+		UT_ASSERT_HARMLESS(pPair);
 		if ( pPair ) {
 			if ( pPair->m_pFunc == pFunc && (!data || pPair->m_pData == data) ) {
 				m_vecPrefsListeners.deleteNthItem(index);
@@ -1566,7 +1582,9 @@ void XAP_Prefs::_sendPrefsSignal( UT_StringPtrMap *hash  )
 	{
 		tPrefsListenersPair *p = m_vecPrefsListeners.getNthItem( index );
 
-		UT_ASSERT(p && p->m_pFunc);
+		UT_ASSERT_HARMLESS(p && p->m_pFunc);
+		if(!p)
+			continue;
 	
 		(p->m_pFunc)(m_pApp, this, hash, p->m_pData);
 	}

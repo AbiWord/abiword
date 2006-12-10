@@ -71,7 +71,7 @@ bool XAP_DialogFactory::_findDialogInTable(XAP_Dialog_Id id, UT_uint32 * pIndex)
 		}
 	}
 	UT_DEBUGMSG(("Could not find a match for id %d \n",id));
-	UT_ASSERT(UT_NOT_IMPLEMENTED);
+	UT_ASSERT_HARMLESS(UT_NOT_IMPLEMENTED);
 	return false;
 }
 
@@ -229,7 +229,7 @@ void XAP_DialogFactory::releaseDialog(XAP_Dialog * pDialog)
 	// can just delete it.  otherwise, we should just store it for later
 	// reuse.
 
-	UT_ASSERT(pDialog);
+	UT_return_if_fail(pDialog);
 	XAP_Dialog_Id id = pDialog->getDialogId();
 	
 	UT_uint32 index;
@@ -261,7 +261,7 @@ void XAP_DialogFactory::releaseDialog(XAP_Dialog * pDialog)
 		break;
 	}
 
-	UT_ASSERT(UT_SHOULD_NOT_HAPPEN);
+	UT_ASSERT_HARMLESS(UT_SHOULD_NOT_HAPPEN);
 	return;
 
 FinishedUsingObject:
@@ -290,7 +290,7 @@ bool XAP_DialogFactory::registerNotebookPage(XAP_Dialog_Id dialog, const XAP_Not
 	std::pair<NotebookPagesIter, NotebookPagesIter> bounds = s_mapNotebookPages.equal_range(dialog);
 	while (bounds.first != bounds.second) {
 		if (bounds.first->second == page) {
-			UT_ASSERT(UT_SHOULD_NOT_HAPPEN);
+			UT_ASSERT_HARMLESS(UT_SHOULD_NOT_HAPPEN);
 			return FALSE;
 		}
 		bounds.first++;

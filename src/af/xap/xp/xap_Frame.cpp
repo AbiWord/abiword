@@ -93,7 +93,7 @@ XAP_Frame::XAP_Frame(XAP_FrameImpl *pFrameImpl)
 {
 	XAP_App::getApp()->rememberFrame(this);
 //	UT_DEBUGMSG(("Remembering UnCloned Frame \n"));
-//	UT_ASSERT(0);
+//	UT_ASSERT_HARMLESS(0);
 }
 
 XAP_Frame::XAP_Frame(XAP_Frame * f)
@@ -126,7 +126,7 @@ XAP_Frame::XAP_Frame(XAP_Frame * f)
 {
 	XAP_App::getApp()->rememberFrame(this, f);
 //	UT_DEBUGMSG(("Remembering Cloned Frame \n"));
-//	UT_ASSERT(0);
+//	UT_ASSERT_HARMLESS(0);
 }
 
 XAP_Frame::~XAP_Frame(void)
@@ -592,11 +592,11 @@ void XAP_Frame::setZoomPercentage(UT_uint32 iZoom)
 {
 	m_iZoomPercentage = iZoom;
 	XAP_App * pApp = XAP_App::getApp();
-	UT_ASSERT(pApp);
+	UT_return_if_fail(pApp);
 	XAP_Prefs * pPrefs = pApp->getPrefs();
-	UT_ASSERT(pPrefs);
+	UT_return_if_fail(pPrefs);
 	XAP_PrefsScheme * pScheme = pPrefs->getCurrentScheme(true);
-	UT_ASSERT(pScheme);
+	UT_return_if_fail(pScheme);
 	UT_String sZoom;
 	UT_String_sprintf(sZoom,"%d",iZoom);
 	if(getZoomType() == z_PAGEWIDTH)
@@ -653,7 +653,11 @@ void XAP_FrameImpl::_createToolbars(void)
 		EV_Toolbar * pToolbar = m_pFrame->_newToolbar(m_pFrame,
 							      reinterpret_cast<const char *>(m_vecToolbarLayoutNames.getNthItem(k)),
 							      reinterpret_cast<const char *>(m_szToolbarLabelSetName));
-		UT_ASSERT(pToolbar);
+		if(!pToolbar)
+		{
+			UT_ASSERT_HARMLESS(pToolbar);
+			continue;
+		}
 		bResult = pToolbar->synthesize();
 		UT_ASSERT(bResult);
 		
@@ -739,7 +743,7 @@ XAP_Dialog_MessageBox * XAP_Frame::createMessageBox(XAP_String_Id id,
 
 	XAP_Dialog_MessageBox * pDialog
 		= static_cast<XAP_Dialog_MessageBox *>(pDialogFactory->requestDialog(XAP_DIALOG_ID_MESSAGE_BOX));
-	UT_ASSERT(pDialog);
+	UT_return_val_if_fail(pDialog, NULL);
 
 	if (id > 0) {
 		char * szNewMessage = static_cast<char *>(malloc(sizeof(char) * 256));

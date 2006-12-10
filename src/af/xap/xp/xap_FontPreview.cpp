@@ -50,7 +50,7 @@ void XAP_FontPreview::_createFontPreviewFromGC(GR_Graphics * gc,
 	UT_ASSERT(gc);
 	UT_DEBUGMSG(("SEVIOR!!!!!!!!!!! font priview created!!!!!\n"));
 	m_pFontPreview = new XAP_Preview_FontPreview(gc,m_pColorBackground);
-	UT_ASSERT(m_pFontPreview);
+	UT_return_if_fail(m_pFontPreview);
 	
 	m_pFontPreview->setDrawString(m_drawString);
 	m_pFontPreview->setVecProperties(&m_vecProps);

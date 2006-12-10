@@ -346,7 +346,7 @@ bool XAP_App::initialize(const char * szKeyBindingsKey, const char * szKeyBindin
 	UT_ASSERT(szPathname);
 	m_pDict = new XAP_Dictionary(szPathname);
 	FREEP(szPathname);
-	UT_ASSERT(m_pDict);
+	UT_return_val_if_fail(m_pDict,false);
 	m_pDict->load();
 	clearIdTable();
 //
@@ -636,7 +636,7 @@ EV_EditMethodContainer * XAP_App::getEditMethodContainer() const
 
 EV_EditBindingMap * XAP_App::getBindingMap(const char * szName)
 {
-	UT_ASSERT(m_pBindingSet);
+	UT_return_val_if_fail(m_pBindingSet,NULL);
 	return m_pBindingSet->getMap(szName);
 }
 
@@ -676,7 +676,7 @@ bool XAP_App::rememberFrame(XAP_Frame * pFrame, XAP_Frame * pCloneOf)
 			{
 				// nothing there, so create a new one
 				pvClones = new UT_GenericVector<XAP_Frame*>();
-				UT_ASSERT(pvClones);
+				UT_return_val_if_fail(pvClones,false);
 
 				pvClones->addItem(pCloneOf);
 
@@ -688,7 +688,7 @@ bool XAP_App::rememberFrame(XAP_Frame * pFrame, XAP_Frame * pCloneOf)
 		{
 			// create a new one
 			pvClones = new UT_GenericVector<XAP_Frame*>();
-			UT_ASSERT(pvClones);
+			UT_return_val_if_fail(pvClones,false);
 
 			pvClones->addItem(pCloneOf);
 
@@ -702,7 +702,11 @@ bool XAP_App::rememberFrame(XAP_Frame * pFrame, XAP_Frame * pCloneOf)
 		for (UT_uint32 j=0; j<pvClones->getItemCount(); j++)
 		{
 			XAP_Frame * f = pvClones->getNthItem(j);
-			UT_ASSERT(f);
+			if(!f)
+			{
+				UT_ASSERT_HARMLESS(f);
+				continue;
+			}
 
 			f->setViewNumber(j+1);
 
@@ -718,7 +722,7 @@ bool XAP_App::rememberFrame(XAP_Frame * pFrame, XAP_Frame * pCloneOf)
 
 bool XAP_App::forgetFrame(XAP_Frame * pFrame)
 {
-	UT_ASSERT(pFrame);
+	UT_return_val_if_fail(pFrame,false);
 
 	// If this frame is the currently focussed frame write in NULL
 	// until another frame appears
@@ -737,7 +741,7 @@ bool XAP_App::forgetFrame(XAP_Frame * pFrame)
 		if (pEntry)
 		{
 			UT_GenericVector<XAP_Frame*> * pvClones = pEntry;
-			UT_ASSERT(pvClones);
+			UT_return_val_if_fail(pvClones,false);
 
 			// remove this frame from the vector
 			UT_sint32 i = pvClones->findItem(pFrame);
@@ -757,7 +761,7 @@ bool XAP_App::forgetFrame(XAP_Frame * pFrame)
 			{
 				// remaining clone is now a singleton
 				f = pvClones->getNthItem(count-1);
-				UT_ASSERT(f);
+				UT_return_val_if_fail(f,false);
 
 				f->setViewNumber(0);
 				f->updateTitle();
@@ -773,7 +777,11 @@ bool XAP_App::forgetFrame(XAP_Frame * pFrame)
 				for (UT_uint32 j=0; j<count; j++)
 				{
 					f = static_cast<XAP_Frame *>(pvClones->getNthItem(j));
-					UT_ASSERT(f);
+					if(!f)
+					{
+						UT_ASSERT_HARMLESS(f);
+						continue;
+					}
 
 					f->setViewNumber(j+1);
 					f->updateTitle();
@@ -784,7 +792,7 @@ bool XAP_App::forgetFrame(XAP_Frame * pFrame)
 
 	// remove this frame from our window list
 	UT_sint32 ndx = m_vecFrames.findItem(pFrame);
-	UT_ASSERT(ndx >= 0);
+	UT_ASSERT_HARMLESS(ndx >= 0);
 
 	if (ndx >= 0)
 	{
@@ -801,7 +809,7 @@ bool XAP_App::forgetFrame(XAP_Frame * pFrame)
 
 bool XAP_App::forgetClones(XAP_Frame * pFrame)
 {
-	UT_ASSERT(pFrame);
+	UT_return_val_if_fail(pFrame,false);
 
 	if (pFrame->getViewNumber() == 0)
 	{
@@ -823,7 +831,7 @@ bool XAP_App::forgetClones(XAP_Frame * pFrame)
 bool XAP_App::getClones(UT_GenericVector<XAP_Frame*> *pvClonesCopy, XAP_Frame * pFrame)
 {
 	UT_ASSERT(pvClonesCopy);
-	UT_ASSERT(pFrame);
+	UT_return_val_if_fail(pFrame,false);
 	UT_ASSERT(pFrame->getViewNumber() > 0);
 
 	// locate vector of this frame's clones
@@ -836,17 +844,17 @@ bool XAP_App::getClones(UT_GenericVector<XAP_Frame*> *pvClonesCopy, XAP_Frame * 
 
 bool XAP_App::updateClones(XAP_Frame * pFrame)
 {
-	UT_ASSERT(pFrame);
+	UT_return_val_if_fail(pFrame,false);
 	UT_ASSERT(pFrame->getViewNumber() > 0);
 
 	// locate vector of this frame's clones
 	UT_GenericVector<XAP_Frame*>* pEntry = m_hashClones.pick(pFrame->getViewKey());
-	UT_ASSERT(pEntry);
+	UT_ASSERT_HARMLESS(pEntry);
 
 	if (pEntry)
 	{
 		UT_GenericVector<XAP_Frame*>* pvClones = pEntry;
-		UT_ASSERT(pvClones);
+		UT_return_val_if_fail(pvClones,false);
 
 		UT_uint32 count = pvClones->getItemCount();
 		UT_ASSERT(count > 0);
@@ -855,7 +863,11 @@ bool XAP_App::updateClones(XAP_Frame * pFrame)
 		for (UT_uint32 j=0; j<count; j++)
 		{
 			f = pvClones->getNthItem(j);
-			UT_ASSERT(f);
+			if(!f)
+			{
+				UT_ASSERT_HARMLESS(f);
+				continue;
+			}
 
 			f->updateTitle();
 		}
@@ -899,7 +911,11 @@ UT_sint32 XAP_App::findFrame(const char * szFilename)
 	for (UT_uint32 i=0; i<getFrameCount(); i++)
 	{
 		XAP_Frame * f = getFrame(i);
-		UT_ASSERT(f);
+		if(!f)
+		{
+			UT_ASSERT_HARMLESS(f);
+			continue;
+		}
 		const char * s = f->getFilename();
 
 		if (s && *s && (0 == UT_stricmp(szFilename, s)))
@@ -1354,7 +1370,7 @@ void XAP_App::enumerateDocuments(UT_Vector & v, const AD_Document * pExclude)
 
 EV_EditEventMapper * XAP_App::getEditEventMapper(void) const
 {
-	UT_ASSERT(m_pInputModes);
+	UT_return_val_if_fail(m_pInputModes,NULL);
 	return m_pInputModes->getCurrentMap();
 }
 
@@ -1362,7 +1378,7 @@ UT_sint32 XAP_App::setInputMode(const char * szName)
 {
 	UT_uint32 i;
 	
-	UT_ASSERT(m_pInputModes);
+	UT_return_val_if_fail(m_pInputModes,-1);
 	const char * szCurrentName = m_pInputModes->getCurrentMapName();
 	if (UT_stricmp(szName,szCurrentName) == 0)
 		return -1;					// already set, no change required

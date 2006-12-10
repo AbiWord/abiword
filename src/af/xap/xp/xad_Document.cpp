@@ -447,7 +447,7 @@ AD_HISTORY_STATE AD_Document::verifyHistoryState(UT_uint32 &iVersion) const
 
 		if(!v)
 		{
-			UT_ASSERT(UT_SHOULD_NOT_HAPPEN);
+			UT_ASSERT_HARMLESS(UT_SHOULD_NOT_HAPPEN);
 			continue;
 		}
 
@@ -492,7 +492,7 @@ AD_HISTORY_STATE AD_Document::verifyHistoryState(UT_uint32 &iVersion) const
 
 			if(!v)
 			{
-				UT_ASSERT(UT_SHOULD_NOT_HAPPEN);
+				UT_ASSERT_HARMLESS(UT_SHOULD_NOT_HAPPEN);
 				continue;
 			}
 
@@ -1060,7 +1060,7 @@ bool AD_Document::_restoreVersion(XAP_Frame * pFrame, UT_uint32 iVersion)
 			AD_VersionData * v = (AD_VersionData *)m_vHistory.getNthItem(j);
 			if(!v)
 			{
-				UT_ASSERT(UT_SHOULD_NOT_HAPPEN);
+				UT_ASSERT_HARMLESS(UT_SHOULD_NOT_HAPPEN);
 				continue;
 			}
 
@@ -1115,9 +1115,7 @@ bool AD_Document::showHistory(AV_View * pView)
 	XAP_Dialog_History * pDialog
 	  = static_cast<XAP_Dialog_History *>(pDialogFactory->requestDialog(XAP_DIALOG_ID_HISTORY));
 	
-	UT_ASSERT(pDialog);
-	if (!pDialog)
-		return false;
+	UT_return_val_if_fail(pDialog,false);
 
 	pDialog->setDocument(this);
 	pDialog->runModal(pFrame);
@@ -1176,7 +1174,7 @@ bool AD_Document::showHistory(AV_View * pView)
 									break;
 
 								default:
-									UT_ASSERT(UT_SHOULD_NOT_HAPPEN);
+									UT_ASSERT_HARMLESS(UT_SHOULD_NOT_HAPPEN);
 							}
 							
 						}
@@ -1208,7 +1206,7 @@ bool AD_Document::showHistory(AV_View * pView)
 									break;
 
 								default:
-									UT_ASSERT(UT_SHOULD_NOT_HAPPEN);
+									UT_ASSERT_HARMLESS(UT_SHOULD_NOT_HAPPEN);
 							}
 							
 						}
@@ -1239,7 +1237,7 @@ bool AD_Document::showHistory(AV_View * pView)
 					break;
 					
 				default:
-					UT_ASSERT(UT_SHOULD_NOT_HAPPEN);
+					UT_ASSERT_HARMLESS(UT_SHOULD_NOT_HAPPEN);
 			}
 		}
 	}
@@ -1313,7 +1311,7 @@ AD_VersionData::AD_VersionData(UT_uint32 v, time_t start, bool autorev, UT_uint3
 	UT_return_if_fail(pGen);
 	
 	m_pUUID = pGen->createUUID();
-	UT_ASSERT(m_pUUID);
+	UT_return_if_fail(m_pUUID);
 	m_tStart = m_pUUID->getTime();
 }
 
@@ -1326,7 +1324,7 @@ AD_VersionData::AD_VersionData(UT_uint32 v, UT_UTF8String &uuid, time_t start, b
 	UT_return_if_fail(pGen);
 	
 	m_pUUID = pGen->createUUID(uuid);
-	UT_ASSERT(m_pUUID);
+	UT_ASSERT_HARMLESS(m_pUUID);
 }
 
 AD_VersionData::AD_VersionData(UT_uint32 v, const char *uuid, time_t start, bool autorev, UT_uint32 iTopXID):
@@ -1336,7 +1334,7 @@ AD_VersionData::AD_VersionData(UT_uint32 v, const char *uuid, time_t start, bool
 	UT_return_if_fail(pGen);
 	
 	m_pUUID = pGen->createUUID(uuid);
-	UT_ASSERT(m_pUUID);
+	UT_ASSERT_HARMLESS(m_pUUID);
 }
 
 // copy constructor

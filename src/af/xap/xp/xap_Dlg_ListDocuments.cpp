@@ -68,7 +68,7 @@ void XAP_Dialog_ListDocuments::_init()
 AD_Document * XAP_Dialog_ListDocuments::getDocument(void) const
 {
 	UT_ASSERT(m_answer == a_OK);
-	UT_ASSERT(m_pApp);
+	UT_ASSERT_HARMLESS(m_pApp);
 
 	if (m_pApp && (m_ndxSelDoc >= 0))
 	{

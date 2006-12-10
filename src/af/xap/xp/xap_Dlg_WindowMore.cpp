@@ -54,7 +54,7 @@ XAP_Frame * XAP_Dialog_WindowMore::getSelFrame(void) const
 	XAP_Frame * pSelFrame = NULL;
 
 	UT_ASSERT(m_answer == a_OK);
-	UT_ASSERT(m_pApp);
+	UT_ASSERT_HARMLESS(m_pApp);
 
 	if (m_pApp && (m_ndxSelFrame >= 0))
 	{

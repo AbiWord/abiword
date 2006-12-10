@@ -63,7 +63,7 @@ bool XAP_Dialog_DocComparison::calculate(AD_Document * pDoc1, AD_Document * pDoc
 			}
 			else
 			{
-				UT_ASSERT(UT_SHOULD_NOT_HAPPEN);
+				UT_ASSERT_HARMLESS(UT_SHOULD_NOT_HAPPEN);
 				m_iVersionOfDiff = 0;
 			}
 		}
@@ -158,7 +158,7 @@ const char * XAP_Dialog_DocComparison::getResultLabel(UT_uint32 indx) const
 		default:;
 	}
 
-	UT_ASSERT(UT_SHOULD_NOT_HAPPEN);
+	UT_ASSERT_HARMLESS(UT_SHOULD_NOT_HAPPEN);
 	return NULL;
 }
 
@@ -260,7 +260,7 @@ char * XAP_Dialog_DocComparison::getResultValue(UT_uint32 indx) const
 		default:;
 	}
 
-	UT_ASSERT(UT_SHOULD_NOT_HAPPEN);
+	UT_ASSERT_HARMLESS(UT_SHOULD_NOT_HAPPEN);
 	return NULL;
 }
 

@@ -69,7 +69,7 @@ XAP_Dialog_Encoding::~XAP_Dialog_Encoding(void)
 // the string disappearing on us, nor do we need to clone it
 void XAP_Dialog_Encoding::setEncoding(const XML_Char * pEncoding)
 {
-	UT_ASSERT(m_pEncTable);
+	UT_return_if_fail(m_pEncTable);
 	m_iSelIndex		= m_pEncTable->getIndxFromEncoding(pEncoding);
 	m_pDescription	= m_pEncTable->getNthDescription(m_iSelIndex);
 	m_pEncoding		= m_pEncTable->getNthEncoding(m_iSelIndex);
@@ -79,7 +79,7 @@ void XAP_Dialog_Encoding::setEncoding(const XML_Char * pEncoding)
 // since we call it only internally, always referring back to m_pEncTable
 void XAP_Dialog_Encoding::_setEncoding(const XML_Char * pDesc)
 {
-	UT_ASSERT(m_pEncTable);
+	UT_return_if_fail(m_pEncTable);
 	m_pDescription	= pDesc;
 	m_pEncoding		= m_pEncTable->getEncodingFromDescription(pDesc);
 }

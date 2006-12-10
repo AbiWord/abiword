@@ -112,7 +112,7 @@ void XAP_Dialog_FontChooser::_createFontPreviewFromGC(GR_Graphics * gc,
 	UT_ASSERT(gc);
 
 	m_pFontPreview = new XAP_Preview_FontPreview(gc,m_pColorBackground);
-	UT_ASSERT(m_pFontPreview);
+	UT_return_if_fail(m_pFontPreview);
 
 	m_pFontPreview->setWindowSize(width, height);
 	m_pFontPreview->setVecProperties( & m_vecProps);
@@ -623,7 +623,7 @@ void XAP_Preview_FontPreview::draw(void)
 							 pszStretch, pszSize,
 							 NULL);
 
-	UT_ASSERT(m_pFont);
+	UT_ASSERT_HARMLESS(m_pFont);
 	if(!m_pFont)
 	{
 		clearScreen();
