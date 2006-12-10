@@ -25,7 +25,6 @@
 
 #include "ie_exp_AbiWord_1.h"
 #include "ie_exp_AWT.h"
-#include "ie_exp_GZipAbiWord.h"
 #include "ie_exp_RTF.h"
 #include "ie_exp_Text.h"
 #include "ie_exp_HTML.h"
@@ -93,7 +92,6 @@ void IE_ImpExp_RegisterXP ()
 	IE_Exp::registerExporter(new IE_Exp_RTF_attic_Sniffer ());
 	IE_Exp::registerExporter(new IE_Exp_Text_Sniffer ());
 	IE_Exp::registerExporter(new IE_Exp_EncodedText_Sniffer ());
-	IE_Exp::registerExporter(new IE_Exp_GZipAbiWord_Sniffer ());
 
 	/* Register platform specific. */
 	IE_ImpExp_RegisterPlatform ();

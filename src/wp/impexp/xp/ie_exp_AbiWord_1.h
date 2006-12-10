@@ -49,14 +49,16 @@ public:
 class ABI_EXPORT IE_Exp_AbiWord_1 : public IE_Exp
 {
 public:
-	IE_Exp_AbiWord_1(PD_Document * pDocument, bool isTemplate = false);
+	IE_Exp_AbiWord_1(PD_Document * pDocument, bool isTemplate = false, bool isCompressed = true);
 	virtual ~IE_Exp_AbiWord_1();
 
 protected:
 	virtual UT_Error	_writeDocument(void);
+	virtual GsfOutput*	_openFile(const char * szFilename);
 
  private:	
 	bool m_bIsTemplate;
+	bool m_bIsCompressed;
 	s_AbiWord_1_Listener *	m_pListener;
 };
 

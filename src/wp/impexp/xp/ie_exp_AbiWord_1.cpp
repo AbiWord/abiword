@@ -60,6 +60,8 @@
 
 #include "ap_Prefs.h"
 
+#include <gsf/gsf-output-gzip.h>
+
 // the fileformat that used to be defined here is now defined at the
 // top of pd_Document.cpp
 
@@ -83,14 +85,13 @@ UT_Confidence_t IE_Exp_AbiWord_1_Sniffer::supportsMIME (const char * szMIME)
 
 bool IE_Exp_AbiWord_1_Sniffer::recognizeSuffix(const char * szSuffix)
 {
-	return (!UT_stricmp(szSuffix,".abw"));
+	return (!UT_stricmp(szSuffix,".abw") || !UT_stricmp(szSuffix,".zabw") || !UT_stricmp(szSuffix, ".abw.gz"));
 }
 
 UT_Error IE_Exp_AbiWord_1_Sniffer::constructExporter(PD_Document * pDocument,
 													 IE_Exp ** ppie)
 {
-	IE_Exp_AbiWord_1 * p = new IE_Exp_AbiWord_1(pDocument);
-	*ppie = p;
+	*ppie = new IE_Exp_AbiWord_1(pDocument);
 	return UT_OK;
 }
 
@@ -98,8 +99,8 @@ bool IE_Exp_AbiWord_1_Sniffer::getDlgLabels(const char ** pszDesc,
 											const char ** pszSuffixList,
 											IEFileType * ft)
 {
-	*pszDesc = "AbiWord (.abw)";
-	*pszSuffixList = "*.abw";
+	*pszDesc = "AbiWord (.abw,.zabw)";
+	*pszSuffixList = "*.abw.gz; *.zabw; *.abw";
 	*ft = getFileType();
 	return true;
 }
@@ -107,8 +108,8 @@ bool IE_Exp_AbiWord_1_Sniffer::getDlgLabels(const char ** pszDesc,
 /*****************************************************************/
 /*****************************************************************/
 
-IE_Exp_AbiWord_1::IE_Exp_AbiWord_1(PD_Document * pDocument, bool isTemplate)
-	: IE_Exp(pDocument), m_bIsTemplate(isTemplate), m_pListener(0)
+IE_Exp_AbiWord_1::IE_Exp_AbiWord_1(PD_Document * pDocument, bool isTemplate, bool isCompressed)
+	: IE_Exp(pDocument), m_bIsTemplate(isTemplate), m_bIsCompressed(isCompressed), m_pListener(0)
 {
 	m_error = 0;
 
@@ -122,6 +123,32 @@ IE_Exp_AbiWord_1::IE_Exp_AbiWord_1(PD_Document * pDocument, bool isTemplate)
 
 IE_Exp_AbiWord_1::~IE_Exp_AbiWord_1()
 {
+}
+
+GsfOutput* IE_Exp_AbiWord_1::_openFile(const char * szFilename)
+{
+  GsfOutput * output = UT_go_file_create(szFilename, NULL);
+  if(!output)
+    return NULL;
+  
+  const UT_UTF8String * prop = 0;
+  
+  // allow people to override this on the command line or otherwise
+  prop = getProperty ("compress");
+  if (prop)
+	  m_bIsCompressed = UT_parseBool (prop->utf8_str (), m_bIsCompressed);
+
+  if (m_bIsCompressed)
+	  {
+		  GsfOutput * gzip = gsf_output_gzip_new(output, NULL);
+		  g_object_unref (G_OBJECT (output));
+
+		  return gzip;
+	  }
+  else
+	  {
+		  return output;
+	  }
 }
 
 /*****************************************************************/
