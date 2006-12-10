@@ -162,10 +162,11 @@ public:
 
 	virtual ~IE_Imp();
 
-	virtual UT_Error importFile(const char * szFilename) = 0;
+	// kept around for backwards compat
+	UT_Error importFile(const char * szFilename);
 
-	static UT_Error loadFile(PD_Document * doc, const char * szFilename, IEFileType ieft = IEFT_Unknown);
-	static UT_Error loadFile(PD_Document * doc, GsfInput * input, IEFileType ieft = IEFT_Unknown);
+	static UT_Error loadFile(PD_Document * doc, const char * szFilename, IEFileType ieft = IEFT_Unknown, const char * props = NULL, IEFileType * savedAsType = NULL);
+	static UT_Error loadFile(PD_Document * doc, GsfInput * input, IEFileType ieft = IEFT_Unknown, const char * props = NULL, IEFileType * savedAsType = NULL);
 
 	// default impl
 	virtual  bool		pasteFromBuffer(PD_DocumentRange * pDocRange,
@@ -204,7 +205,7 @@ public:
 	virtual bool appendFmt(const XML_Char ** attributes);
 	virtual bool appendFmt(const UT_GenericVector<XML_Char*>* pVecAttributes);
 
-	virtual UT_Error _loadFile (GsfInput * input) { return UT_ERROR; } // = 0;
+	virtual UT_Error _loadFile (GsfInput * input) = 0;
 
 public:
 	const UT_UTF8String * getProperty (const char * key) {

@@ -159,7 +159,6 @@ public:
 	IE_Imp_MsWord_97 (PD_Document * pDocument);
 	~IE_Imp_MsWord_97 ();
 
-	UT_Error			importFile (const char * szFilename);
 	virtual bool        supportsLoadStylesOnly() {return true;}
 
 	// wv's callbacks need access to these, so they have to be public
@@ -170,6 +169,10 @@ public:
 	int 			_docProc  (wvParseStruct *ps, UT_uint32 tag);
 	int 			_eleProc  (wvParseStruct *ps, UT_uint32 tag,
 							   void *props, int dirty);
+
+protected:
+
+	UT_Error			_loadFile (GsfInput * input);
 
 private:
 

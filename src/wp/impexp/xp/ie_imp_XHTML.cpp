@@ -592,15 +592,12 @@ static void s_append_color (UT_UTF8String & style, const char * color, const cha
 /*****************************************************************/
 /*****************************************************************/
 
-UT_Error IE_Imp_XHTML::importFile(const char * szFilename)
+UT_Error IE_Imp_XHTML::_loadFile(GsfInput * input)
 {
-	if ( szFilename == 0) return UT_IE_BOGUSDOCUMENT;
-	if (*szFilename == 0) return UT_IE_BOGUSDOCUMENT;
-
 	UT_HTML parser;
 	setParser (&parser);
 
-	UT_Error e = IE_Imp_XML::importFile(szFilename);
+	UT_Error e = IE_Imp_XML::_loadFile(input);
 
 	setParser(0);
 

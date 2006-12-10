@@ -620,16 +620,8 @@ bool IE_Imp_EncodedText_Sniffer::getDlgLabels(const char ** pszDesc,
 
  Each line terminator is taken to be a paragraph break
 */
-UT_Error IE_Imp_Text::importFile(const char * szURI)
+UT_Error IE_Imp_Text::_loadFile(GsfInput * fp)
 {
-	// We must open in binary mode for UCS-2 compatibility.
-	GsfInput *fp = UT_go_file_open(szURI, NULL);
-	if (!fp)
-	{
-		UT_DEBUGMSG(("Could not open file %s\n",szURI));
-		return UT_IE_FILENOTFOUND;
-	}
-
 	ImportStream *pStream = 0;
 	UT_Error error;
 
@@ -650,7 +642,6 @@ UT_Error IE_Imp_Text::importFile(const char * szURI)
 
 Cleanup:
 	delete pStream;
-	g_object_unref(G_OBJECT(fp));
 	return error;
 }
 

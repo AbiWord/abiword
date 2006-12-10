@@ -82,8 +82,6 @@ public:
 
 	virtual ~IE_Imp_XHTML ();
 
-	virtual UT_Error		importFile (const char * szFilename);
-
 	void					startElement (const XML_Char * name, const XML_Char ** atts);
 	void					endElement (const XML_Char * name);
 
@@ -102,6 +100,7 @@ public:
 
 
 protected:
+	virtual UT_Error        _loadFile (GsfInput * input);
 	virtual FG_Graphic *	importImage (const XML_Char * szSrc);
 
 private:

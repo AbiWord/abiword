@@ -43,7 +43,7 @@
 /*****************************************************************/
 /*****************************************************************/
 
-UT_Error IE_Imp_GraphicAsDocument::importFile(const char * szFilename)
+UT_Error IE_Imp_GraphicAsDocument::_loadFile(GsfInput * input)
 {
 	UT_Error error;
 
@@ -54,7 +54,7 @@ UT_Error IE_Imp_GraphicAsDocument::importFile(const char * szFilename)
      		return UT_IE_NOMEMORY;
    
    	FG_Graphic* pFG;
-   	error = m_pGraphicImporter->importGraphic(szFilename, &pFG);
+   	error = m_pGraphicImporter->importGraphic(input, &pFG);
    	DELETEP(m_pGraphicImporter);
 
    	if (error != UT_OK) return error;

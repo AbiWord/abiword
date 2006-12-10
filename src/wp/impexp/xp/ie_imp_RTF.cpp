@@ -1504,23 +1504,17 @@ IE_Imp_RTF::~IE_Imp_RTF()
 	FREEP (m_szFileDirName);
 }
 
-UT_Error IE_Imp_RTF::importFile(const char * szURI)
+UT_Error IE_Imp_RTF::_loadFile(GsfInput * fp)
 {
 	m_newParaFlagged = true;
 	m_newSectionFlagged = true;
 
-	m_szFileDirName = UT_strdup (szURI);
+	m_szFileDirName = UT_strdup (gsf_input_name (fp));
 	// UT_basename returns a point INSIDE the passed string.
 	// the trick is to truncate the string by setting the char pointed
 	// by tmp to NULL. This IS useful code. (2 LOC)
 	char * tmp = const_cast<char *>(UT_basename (m_szFileDirName));
 	*tmp = 0;
-	GsfInput *fp = UT_go_file_open(szURI, NULL);
-	if (!fp)
-	{
-		UT_DEBUGMSG(("Could not open file %s\n",szURI));
-		return UT_errnoToUTError ();
-	}
 
 	UT_Error error = _writeHeader(fp);
 
@@ -1531,14 +1525,11 @@ UT_Error IE_Imp_RTF::importFile(const char * szURI)
 		_appendHdrFtr ();
 	}
 
-	g_object_unref(G_OBJECT(fp));
-
 	// check if the doc is empty or not
 	if (getDoc()->getLastFrag() == NULL)
 	{
 		error = UT_IE_BOGUSDOCUMENT;
 	}
-
 
 	return error;
 }

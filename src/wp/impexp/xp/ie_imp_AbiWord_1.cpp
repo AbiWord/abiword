@@ -201,13 +201,6 @@ IE_Imp_AbiWord_1::IE_Imp_AbiWord_1(PD_Document * pDocument)
 {
 }
 
-/* Quick hack for GZipAbiWord */
-UT_Error IE_Imp_AbiWord_1::importFile(const char * szFilename)
-{
-	return IE_Imp_XML::importFile(szFilename);
-}
-
-
 /*****************************************************************/
 /*****************************************************************/
 

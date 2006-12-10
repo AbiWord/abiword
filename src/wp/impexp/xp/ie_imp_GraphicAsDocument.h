@@ -34,10 +34,12 @@ public:
 	IE_Imp_GraphicAsDocument(PD_Document * pDocument);
 	~IE_Imp_GraphicAsDocument();
 
-	virtual UT_Error	importFile(const char * szFilename);
-
 	void 		setGraphicImporter(IE_ImpGraphic* importer) 
 	     { DELETEP(m_pGraphicImporter); m_pGraphicImporter = importer; }
+
+ protected:
+
+	virtual UT_Error _loadFile(GsfInput * input);
 
 private:
 

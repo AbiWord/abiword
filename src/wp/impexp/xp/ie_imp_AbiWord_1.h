@@ -71,10 +71,10 @@ public:
     void				startElement(const XML_Char *name, const XML_Char **atts);
     void				endElement(const XML_Char *name);
 
-    virtual UT_Error	importFile(const char * szFilename);
 	virtual bool        supportsLoadStylesOnly() {return true;}
 
 protected:
+
     const XML_Char *	_getDataItemName(const XML_Char ** atts);
     const XML_Char *	_getDataItemMimeType(const XML_Char ** atts);
     bool				_getDataItemEncoded(const XML_Char ** atts);

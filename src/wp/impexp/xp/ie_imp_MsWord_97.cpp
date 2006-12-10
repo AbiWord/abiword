@@ -1062,10 +1062,9 @@ void IE_Imp_MsWord_97::_handleMetaData(wvParseStruct *ps)
 	print_summary_stream (GSF_INFILE(ps->ole_file), "\05DocumentSummaryInformation", getDoc());
 }
 
-UT_Error IE_Imp_MsWord_97::importFile(const char * szURI)
+UT_Error IE_Imp_MsWord_97::_loadFile(GsfInput * fp)
 {
   wvParseStruct ps;
-  GsfInput *fp = UT_go_file_open(szURI, NULL);
 
   int ret = wvInitParser_gsf(&ps, fp);
   const char * password = NULL;

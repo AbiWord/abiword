@@ -56,7 +56,6 @@ class ABI_EXPORT IE_Imp_XML : public IE_Imp, public UT_XML::Listener
 public:
     IE_Imp_XML(PD_Document * pDocument, bool whiteSignificant);
     virtual ~IE_Imp_XML();
-    virtual UT_Error	importFile(const char * szFilename);
     virtual UT_Error	importFile(const char * data, UT_uint32 length);
 	virtual UT_Error    importFile(const UT_ByteBuf * data);
 
@@ -98,6 +97,8 @@ public:
     UT_uint32		getOperationCount(void) const { return m_iOperationCount; }
 
 protected:
+
+    virtual UT_Error	_loadFile(GsfInput * input);
     int             _mapNameToToken (const char * name, xmlToIdMapping * idlist, int len);
 
     const XML_Char* _getXMLPropValue(const XML_Char *name, const XML_Char **atts);

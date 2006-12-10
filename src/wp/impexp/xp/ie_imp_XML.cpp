@@ -97,9 +97,9 @@ int IE_Imp_XML::_mapNameToToken (const char * name,
 /*****************************************************************/
 /*****************************************************************/
 
-UT_Error IE_Imp_XML::importFile(const char * szFilename)
+UT_Error IE_Imp_XML::_loadFile(GsfInput * input)
 {
-	m_szFileName = szFilename;
+	m_szFileName = gsf_input_name (input);
 
 	UT_XML default_xml;
 	UT_XML * parser = &default_xml;
@@ -108,31 +108,22 @@ UT_Error IE_Imp_XML::importFile(const char * szFilename)
 	parser->setListener (this);
 	if (m_pReader) parser->setReader (m_pReader);
 
-	GsfInput * input = UT_go_file_open(szFilename, NULL);
-	if(input) {
-		input = gsf_input_uncompress(input);
+	// hack!!!
+	size_t num_bytes = gsf_input_size(input);
+	char * bytes = (char *)gsf_input_read(input, num_bytes, NULL);
 
-		// hack!!!
-		size_t num_bytes = gsf_input_size(input);
-		char * bytes = (char *)gsf_input_read(input, num_bytes, NULL);
-
-	   	UT_Error err = parser->parse (bytes, num_bytes);
-		
-		if ((err != UT_OK) && (err != UT_IE_SKIPINVALID))
-			m_error = UT_IE_BOGUSDOCUMENT;
-		
-		if (m_error != UT_OK)
-			{
-				UT_DEBUGMSG(("Problem reading document\n"));
-				if(m_error != UT_IE_SKIPINVALID)
-					m_szFileName = 0;
-			}
-
-		g_object_unref(G_OBJECT(input));
-	} else {
+	UT_Error err = parser->parse (bytes, num_bytes);
+	
+	if ((err != UT_OK) && (err != UT_IE_SKIPINVALID))
 		m_error = UT_IE_BOGUSDOCUMENT;
-	}
-
+	
+	if (m_error != UT_OK)
+		{
+			UT_DEBUGMSG(("Problem reading document\n"));
+			if(m_error != UT_IE_SKIPINVALID)
+				m_szFileName = 0;
+		}
+	
 	return m_error;
 }
 

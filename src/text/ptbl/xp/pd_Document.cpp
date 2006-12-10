@@ -316,27 +316,16 @@ UT_Error PD_Document::importFile(const char * szFilename, int ieft,
 		// don't worry if this fails
 	}
 
-	IE_Imp * pie = NULL;
 	UT_Error errorCode;
-
-	IEFileType savedAsType;
-	errorCode = IE_Imp::constructImporter(this, szFilename, static_cast<IEFileType>(ieft), &pie, &savedAsType);
-	if (errorCode)
-	{
-		UT_DEBUGMSG(("PD_Document::importFile -- could not construct importer\n"));
-		DELETEP(m_pPieceTable);
-		return errorCode;
-	}
-	if (impProps && strlen(impProps))
-		pie->setProps (impProps);
 
 	// set standard document properties and attributes, such as dtd,
 	// lang, dom-dir, etc., which the importer can then overwite this
 	// also initializes m_indexAP
 	m_indexAP = 0xffffffff;
 	setAttrProp(NULL);
-	errorCode = pie->importFile(szFilename);
-	delete pie;
+
+	IEFileType savedAsType;
+	errorCode = IE_Imp::loadFile (this, szFilename, static_cast<IEFileType>(ieft), impProps, &savedAsType);
 	repairDoc();
 	
 	m_bLoading = false;
@@ -485,19 +474,7 @@ UT_Error PD_Document::readFromFile(const char * szFilename, int ieft,
 		// don't worry if this fails
 	}
 
-	IE_Imp * pie = NULL;
 	UT_Error errorCode;
-
-	errorCode = IE_Imp::constructImporter(this, szFilename, static_cast<IEFileType>(ieft), &pie, &m_lastOpenedType);
-	if (errorCode)
-	{
-		UT_DEBUGMSG(("PD_Document::readFromFile -- could not construct importer\n"));
-		return errorCode;
-	}
-	if (impProps && strlen(impProps))
-		pie->setProps (impProps);
-
-	_syncFileTypes(false);
 
 	// set standard document properties and attributes, such as dtd, lang,
 	// dom-dir, etc., which the importer can then overwite
@@ -505,8 +482,8 @@ UT_Error PD_Document::readFromFile(const char * szFilename, int ieft,
 	m_indexAP = 0xffffffff;
 	setAttrProp(NULL);
 
-	errorCode = pie->importFile(szFilename);
-	delete pie;
+	errorCode = IE_Imp::loadFile(this, szFilename, static_cast<IEFileType>(ieft), impProps, &m_lastOpenedType);
+	_syncFileTypes(false);
 	repairDoc();
 
 	if (errorCode)
@@ -593,6 +570,7 @@ UT_Error PD_Document::importStyles(const char * szFilename, int ieft, bool bDocP
 	IE_Imp * pie = NULL;
 	UT_Error errorCode;
 
+	// don't use IE_Imp::loadFile () here, because of the setLoadStylesOnly below. it doesn't do us much good anyway
 	errorCode = IE_Imp::constructImporter(this, szFilename, static_cast<IEFileType>(ieft), &pie);
 	if (errorCode)
 	{

@@ -908,7 +908,7 @@ UT_uint32 IE_Imp::getImporterCount(void)
 	return IE_IMP_Sniffers.size();
 }
 
-UT_Error IE_Imp::loadFile(PD_Document * doc, const char * szFilename, IEFileType ieft)
+UT_Error IE_Imp::loadFile(PD_Document * doc, const char * szFilename, IEFileType ieft, const char * props, IEFileType * savedAsType)
 {
 	GsfInput * input;
 
@@ -917,13 +917,13 @@ UT_Error IE_Imp::loadFile(PD_Document * doc, const char * szFilename, IEFileType
 	if (!input)
 		return UT_IE_FILENOTFOUND;
 
-	UT_Error result = loadFile (doc, input, ieft);
+	UT_Error result = loadFile (doc, input, ieft, props, savedAsType);
 	g_object_unref (G_OBJECT (input));
-	
+   	
 	return result;
 }
 
-UT_Error IE_Imp::loadFile(PD_Document * doc, GsfInput * input, IEFileType ieft)
+UT_Error IE_Imp::loadFile(PD_Document * doc, GsfInput * input, IEFileType ieft, const char * props, IEFileType * savedAsType)
 {
 	UT_return_val_if_fail (input != NULL, UT_IE_FILENOTFOUND);
 
@@ -931,13 +931,31 @@ UT_Error IE_Imp::loadFile(PD_Document * doc, GsfInput * input, IEFileType ieft)
 
 	IE_Imp * importer = NULL;
 
-	result = constructImporter(doc, input, ieft, &importer);
+	result = constructImporter(doc, input, ieft, &importer, savedAsType);
 	if (result != UT_OK || !importer)
 		return UT_ERROR;
+
+	if (props && *props)
+		importer->setProps (props);
 
 	result = importer->_loadFile (input);
 
 	delete importer;
+
+	return result;
+}
+
+UT_Error IE_Imp::importFile (const char * szFilename)
+{
+	GsfInput * input;
+
+	input = UT_go_file_open (szFilename, NULL);
+	if (!input)
+		return UT_IE_FILENOTFOUND;
+
+	UT_Error result = _loadFile (input);
+
+	g_object_unref (G_OBJECT (input));
 
 	return result;
 }

@@ -150,11 +150,11 @@ public:
 	IE_Imp_Text(PD_Document * pDocument, const char * encoding);
 	virtual ~IE_Imp_Text();
 
-	virtual UT_Error	importFile(const char * szFilename);
 	virtual bool		pasteFromBuffer(PD_DocumentRange * pDocRange,
 										const unsigned char * pData, UT_uint32 lenData, const char * szEncoding = 0);
 
 protected:
+	virtual UT_Error	_loadFile(GsfInput * fp);
 	UT_Error			_recognizeEncoding(GsfInput * fp);
 	UT_Error			_recognizeEncoding(const char *szBuf, UT_uint32 iNumbytes);
 	virtual UT_Error	_constructStream(ImportStream *& pStream, GsfInput * fp);

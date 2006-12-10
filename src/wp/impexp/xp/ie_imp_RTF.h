@@ -535,7 +535,6 @@ public:
 	~IE_Imp_RTF();
 
 	virtual bool supportsLoadStylesOnly() {return true;}
-	virtual UT_Error	importFile(const char * szFilename);
 	virtual bool		pasteFromBuffer(PD_DocumentRange * pDocRange,
 										const unsigned char * pData, 
                                         UT_uint32 lenData, 
@@ -559,6 +558,7 @@ public:
 	};
 
 protected:
+	virtual UT_Error	_loadFile(GsfInput * input);
 	UT_Error			_parseFile(GsfInput * fp);
 	UT_Error			_writeHeader(GsfInput * fp);
 	UT_Error            _parseHdrFtr ();
