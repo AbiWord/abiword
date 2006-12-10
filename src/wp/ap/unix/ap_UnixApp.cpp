@@ -707,7 +707,7 @@ void AP_UnixApp::pasteFromClipboard(PD_DocumentRange * pDocRange, bool bUseClipb
 			  DELETEP(pImp);
 			  return;
 		  }
-		  IE_ImpGraphic * pIEG = NULL;
+
 		  FG_Graphic * pFG = NULL;
 		  IEGraphicFileType iegft = IEGFT_Unknown;
 		  UT_Error error = UT_OK;
@@ -716,28 +716,16 @@ void AP_UnixApp::pasteFromClipboard(PD_DocumentRange * pDocRange, bool bUseClipb
 		  
 		  bytes->append (pData, iLen);
 		  
-		  error = IE_ImpGraphic::constructImporter(bytes, iegft, &pIEG);
-		  if(error)
-		  {
-			  UT_DEBUGMSG(("DOM: could not construct importer (%d)\n", 
-						   error));
-			  DELETEP(bytes);
-			  goto retry_text;
-		  }
-		  
-		  error = pIEG->importGraphic(bytes, &pFG);
+		  error = IE_ImpGraphic::loadGraphic(bytes, iegft, &pFG);
 		  if(!pFG || error)
 		  {
 			  UT_DEBUGMSG(("DOM: could not import graphic (%d)\n", error));
 			  DELETEP(bytes);
-			  DELETEP(pIEG);
 			  goto retry_text;
 		  }
 		  
 		  // at this point, 'bytes' is owned by pFG
 		  FV_View * pView = static_cast<FV_View*>(getLastFocussedFrame ()->getCurrentView());
-		  
-		  DELETEP(pIEG);
 		  
 		  error = pView->cmdInsertGraphic(pFG);
 		  DELETEP(pFG);

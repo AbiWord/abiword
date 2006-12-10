@@ -918,9 +918,7 @@ gint XAP_UnixDialog_FileOpenSaveAs::previewPicture (void)
 
 	int answer = 0;
 
-	UT_ByteBuf *pBB = NULL;
 	FG_Graphic * pGraphic = 0;
-	IE_ImpGraphic* pIEG = NULL;
 	UT_Error errorCode = UT_OK;
 	GR_Image *pImage = NULL;
 
@@ -951,21 +949,8 @@ gint XAP_UnixDialog_FileOpenSaveAs::previewPicture (void)
 		goto Cleanup;
 	}
 
-	// Load File into memory
-	pBB     = new UT_ByteBuf(0);
-	pBB->insertFromFile(0, file_name);
-
 	// Build an Import Graphic based on file type
-	errorCode = IE_ImpGraphic::constructImporter(file_name, IEGFT_Unknown, &pIEG);
-	if ((errorCode != UT_OK) || !pIEG)
-	{
-		DELETEP(pBB);
-		painter.drawChars (str.ucs4_str().ucs4_str(), 0, str.size(), pGr->tlu(12), pGr->tlu(static_cast<int>(m_preview->allocation.height / 2)) - pGr->getFontHeight(fnt)/2);
-		goto Cleanup;
-	}
-
-	errorCode = pIEG->importGraphic (pBB, &pGraphic);
-
+	errorCode = IE_ImpGraphic::loadGraphic(file_name, IEGFT_Unknown, &pGraphic);
 	if ((errorCode != UT_OK) || !pGraphic)
 	  {
 		painter.drawChars (str.ucs4_str().ucs4_str(), 0, str.size(), pGr->tlu(12), pGr->tlu(static_cast<int>(m_preview->allocation.height / 2)) - pGr->getFontHeight(fnt)/2);
@@ -1005,7 +990,6 @@ gint XAP_UnixDialog_FileOpenSaveAs::previewPicture (void)
  Cleanup:
 	DELETEP(pImage);
 	DELETEP(pGr);
-	DELETEP(pIEG);
 	DELETEP(pGraphic);
 
 	return answer;

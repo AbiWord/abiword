@@ -240,27 +240,17 @@ void AP_Dialog_FormatFrame::askForGraphicPathName(void)
 		return;
 	}
 
-	IE_ImpGraphic *pIEG = NULL;
 	FG_Graphic* pFG = NULL;
 
 	UT_Error errorCode;
 
-	errorCode = IE_ImpGraphic::constructImporter(m_sImagePath.c_str(), m_iGraphicType, &pIEG);
-	if(errorCode != UT_OK)
-	{
-		ShowErrorBox(m_sImagePath, errorCode);
-		return;
-	}
-
-	errorCode = pIEG->importGraphic( m_sImagePath.c_str(), &pFG);
+	errorCode = IE_ImpGraphic::loadGraphic(m_sImagePath.c_str(), m_iGraphicType, &pFG);
 	if(errorCode != UT_OK || !pFG)
 	{
 		ShowErrorBox(m_sImagePath, errorCode);
-		DELETEP(pIEG);
 		return;
 	}
 
-	DELETEP(pIEG);
 	DELETEP(m_pGraphic);
 	DELETEP(m_pImage);
 	m_pGraphic = pFG->clone();

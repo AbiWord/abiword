@@ -62,7 +62,7 @@ public:
 	 * so-so, 255 being absolutely sure
 	 */
 	virtual UT_Confidence_t recognizeContents (const char * szBuf, 
-						   UT_uint32 iNumbytes) = 0;
+											   UT_uint32 iNumbytes);
 
 	/*!
 	 * Return a number in the range [0,255] as to your confidence
@@ -164,8 +164,8 @@ public:
 
 	virtual UT_Error importFile(const char * szFilename) = 0;
 
-	static UT_Error _importFile(PD_Document * doc, const char * szFilename, IEFileType ieft = IEFT_Unknown);
-	static UT_Error _importFile(PD_Document * doc, GsfInput * input, IEFileType ieft = IEFT_Unknown);
+	static UT_Error loadFile(PD_Document * doc, const char * szFilename, IEFileType ieft = IEFT_Unknown);
+	static UT_Error loadFile(PD_Document * doc, GsfInput * input, IEFileType ieft = IEFT_Unknown);
 
 	// default impl
 	virtual  bool		pasteFromBuffer(PD_DocumentRange * pDocRange,
@@ -204,7 +204,7 @@ public:
 	virtual bool appendFmt(const XML_Char ** attributes);
 	virtual bool appendFmt(const UT_GenericVector<XML_Char*>* pVecAttributes);
 
-	virtual UT_Error _importFile (GsfInput * input) { return UT_ERROR; } // = 0;
+	virtual UT_Error _loadFile (GsfInput * input) { return UT_ERROR; } // = 0;
 
 public:
 	const UT_UTF8String * getProperty (const char * key) {

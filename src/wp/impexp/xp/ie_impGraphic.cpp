@@ -547,6 +547,59 @@ UT_Error IE_ImpGraphic::importGraphic(const char * szFilename,
 	return res;
 }
 
+UT_Error IE_ImpGraphic::loadGraphic(const char * szFilename,
+									IEGraphicFileType iegft,
+									FG_Graphic ** ppfg)
+{
+	GsfInput *input;
+	
+	input = UT_go_file_open (szFilename, NULL);
+	if (!input)
+		return UT_IE_FILENOTFOUND;
+
+	UT_Error result = loadGraphic (input, iegft, ppfg);
+
+	g_object_unref (G_OBJECT (input));
+
+	return result;
+}
+
+UT_Error IE_ImpGraphic::loadGraphic(GsfInput * input,
+									IEGraphicFileType iegft,
+									FG_Graphic ** ppfg)
+{
+	UT_return_val_if_fail (input != NULL, UT_IE_FILENOTFOUND);
+
+	IE_ImpGraphic *importer;
+	
+	UT_Error result = constructImporter(input, iegft, &importer);
+	if (result != UT_OK || !importer)
+		return UT_ERROR;
+
+	result = importer->importGraphic (input, ppfg);
+
+	delete importer;
+
+	return result;
+}
+
+UT_Error IE_ImpGraphic::loadGraphic(UT_ByteBuf *pBB,
+									IEGraphicFileType iegft,
+									FG_Graphic ** ppfg)
+{
+	GsfInput * input;
+
+	input = gsf_input_memory_new (pBB->getPointer (0), pBB->getLength(), FALSE);
+	if (!input)
+		return UT_IE_NOMEMORY;
+
+	UT_Error result = loadGraphic (input, iegft, ppfg);
+
+	g_object_unref (G_OBJECT (input));
+
+	return result;
+}
+
 UT_Confidence_t IE_ImpGraphicSniffer::recognizeContents (GsfInput * input)
 {
 	char szBuf[4097] = "";  // 4096+nul ought to be enough
@@ -555,4 +608,13 @@ UT_Confidence_t IE_ImpGraphicSniffer::recognizeContents (GsfInput * input)
 	szBuf[iNumbytes] = '\0';
 
 	return recognizeContents(szBuf, iNumbytes);
+}
+
+UT_Confidence_t IE_ImpGraphicSniffer::recognizeContents (const char * szBuf, 
+														 UT_uint32 iNumbytes)
+{
+	// should be explicitly overriden, or not return anything
+	UT_ASSERT_HARMLESS(UT_SHOULD_NOT_HAPPEN);
+
+	return UT_CONFIDENCE_ZILCH;
 }

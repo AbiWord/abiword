@@ -3785,16 +3785,13 @@ XML_Char *IE_Imp_RTF::_parseFldinstBlock (UT_ByteBuf & buf, XML_Char *xmlField, 
 				{
 					// insert the image in the piece table AFTER flushing
 					// current output
-					IE_ImpGraphic * pGraphicImporter = NULL;
 					FG_Graphic* pFG;
-					UT_Error error = IE_ImpGraphic::constructImporter(fileName, IEGFT_JPEG, &pGraphicImporter);
+					UT_Error error = IE_ImpGraphic::loadGraphic(fileName, IEGFT_JPEG, &pFG);
 
 					// load file to buffer
-					if (error == UT_OK)
+					if (error == UT_OK && pFG)
 					{
 						RTFProps_ImageProps imgProps;
-						error = pGraphicImporter->importGraphic(fileName, &pFG);
-						DELETEP(pGraphicImporter);
 						UT_ByteBuf * buf;
 						buf = static_cast<FG_GraphicRaster *>(pFG)->getRaster_PNG();
 						ok = InsertImage (buf, fileName, imgProps);

@@ -68,28 +68,25 @@
 /* TODO: push this up into libgsf proper */
 
 GsfInput *
-gsf_input_memory_new_from_input (GsfInput * input)
+gsf_input_memory_new_from_file (FILE * input)
 {
 	GsfOutput *memory_output;
 	GsfInput  *memory_input;
 
 	g_return_val_if_fail (input != NULL, NULL);
-	g_return_val_if_fail (GSF_IS_INPUT (input), NULL);
-
-	g_object_ref (G_OBJECT (input));
 
 	memory_output = gsf_output_memory_new ();
 	while (TRUE) {
 		guint8 buf[1024];
 		size_t nread;
 
-		nread = MIN(sizeof(buf), gsf_input_remaining (input));
-		if (gsf_input_read (input, nread, buf))
-			gsf_output_write (memory_output, nread, buf);
+		nread = fread (buf, 1, sizeof(buf), input);
+		gsf_output_write (memory_output, nread, buf);
+		if ((nread < sizeof(buf)) && (ferror (input) || feof (input)))
+		    break;
 	}
 
 	gsf_output_close (memory_output);
-	g_object_unref (G_OBJECT (input));
 
 	memory_input = gsf_input_memory_new_clone (gsf_output_memory_get_bytes (GSF_OUTPUT_MEMORY (memory_output)),
 						   gsf_output_size (memory_output));
@@ -856,18 +853,17 @@ UT_go_file_open (char const *uri, GError **err)
 	if (is_fd_uri (uri, &fd)) {
 		int fd2 = dup (fd);
 		FILE *fil = fd2 != -1 ? fdopen (fd2, "rb") : NULL;
-		GsfInput *sink = fil ? gsf_input_stdio_new_FILE (uri, fil, FALSE) : NULL;
 		GsfInput *result;
 
-		if (!sink) {
+		if (!fil) {
 			g_set_error (err, gsf_output_error_id (), 0,
 				     "Unable to read from %s", uri);
 			return NULL;
 		}
 
 		/* guarantee that file descriptors will be seekable */
-		result = gsf_input_memory_new_from_input (sink);
-		g_object_unref (G_OBJECT (sink));
+		result = gsf_input_memory_new_from_file (fil);
+		fclose (fil);
 
 		return result;
 	}

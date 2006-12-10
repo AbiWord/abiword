@@ -233,6 +233,15 @@ UT_Confidence_t IE_ImpSniffer::recognizeContents (GsfInput * input)
 	return recognizeContents(szBuf, iNumbytes);
 }
 
+UT_Confidence_t IE_ImpSniffer::recognizeContents (const char * szBuf, 
+												  UT_uint32 iNumbytes)
+{
+	// should be explicitly overriden, or not return anything
+	UT_ASSERT_HARMLESS(UT_SHOULD_NOT_HAPPEN);
+
+	return UT_CONFIDENCE_ZILCH;
+}
+
 /*****************************************************************/
 /*****************************************************************/
 
@@ -899,7 +908,7 @@ UT_uint32 IE_Imp::getImporterCount(void)
 	return IE_IMP_Sniffers.size();
 }
 
-UT_Error IE_Imp::_importFile(PD_Document * doc, const char * szFilename, IEFileType ieft)
+UT_Error IE_Imp::loadFile(PD_Document * doc, const char * szFilename, IEFileType ieft)
 {
 	GsfInput * input;
 
@@ -908,13 +917,13 @@ UT_Error IE_Imp::_importFile(PD_Document * doc, const char * szFilename, IEFileT
 	if (!input)
 		return UT_IE_FILENOTFOUND;
 
-	UT_Error result = _importFile (doc, input, ieft);
+	UT_Error result = loadFile (doc, input, ieft);
 	g_object_unref (G_OBJECT (input));
 	
 	return result;
 }
 
-UT_Error IE_Imp::_importFile(PD_Document * doc, GsfInput * input, IEFileType ieft)
+UT_Error IE_Imp::loadFile(PD_Document * doc, GsfInput * input, IEFileType ieft)
 {
 	UT_return_val_if_fail (input != NULL, UT_IE_FILENOTFOUND);
 
@@ -926,7 +935,7 @@ UT_Error IE_Imp::_importFile(PD_Document * doc, GsfInput * input, IEFileType ief
 	if (result != UT_OK || !importer)
 		return UT_ERROR;
 
-	result = importer->_importFile (input);
+	result = importer->_loadFile (input);
 
 	delete importer;
 

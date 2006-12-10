@@ -210,19 +210,8 @@ static int s_mapMimeToUriType (const char * uri)
 static void
 s_loadImage (const UT_UTF8String & file, XAP_Frame * pFrame, FV_View * pView)
 {
-	IE_ImpGraphic * pIEG = 0;
 	FG_Graphic    * pFG  = 0;
-	UT_Error error = IE_ImpGraphic::constructImporter(file.utf8_str(), 0, &pIEG);
-	if (error != UT_OK || !pIEG)
-		{
-			UT_DEBUGMSG(("Couldn't construct importer for %s\n", file.utf8_str()));
-			return;
-		}
-
-	error = pIEG->importGraphic(file.utf8_str(), &pFG);
-
-	DELETEP(pIEG);
-
+	UT_Error error = IE_ImpGraphic::loadGraphic (file.utf8_str(), 0, &pFG);
 	if (error != UT_OK || !pFG)
 		{
 			UT_DEBUGMSG(("Dom: could not import graphic (%s)\n", file.utf8_str()));
@@ -236,19 +225,8 @@ s_loadImage (const UT_UTF8String & file, XAP_Frame * pFrame, FV_View * pView)
 static void
 s_loadImage (UT_ByteBuf * bytes, XAP_Frame * pFrame, FV_View * pView)
 {
-	IE_ImpGraphic * pIEG = 0;
 	FG_Graphic    * pFG  = 0;
-	UT_Error error = IE_ImpGraphic::constructImporter(bytes, 0, &pIEG);
-	if (error != UT_OK || !pIEG)
-		{
-			UT_DEBUGMSG(("Couldn't construct importer for data buffer\n"));
-			return;
-		}
-
-	error = pIEG->importGraphic(bytes, &pFG);
-
-	DELETEP(pIEG);
-
+	UT_Error error = IE_ImpGraphic::loadGraphic(bytes, 0, &pFG);
 	if (error != UT_OK || !pFG)
 		{
 			UT_DEBUGMSG(("JK: could not import graphic from data buffer\n"));

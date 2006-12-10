@@ -88,7 +88,7 @@ bool IE_Imp_RTF::LoadPictData(PictFormat format, const char * image_name,
 	UT_ByteBuf *pictData = new UT_ByteBuf();
 	UT_uint16 chLeft = chars_per_byte;
 	UT_Byte pic_byte = 0;
-	IE_ImpGraphic * pGraphicImporter = NULL;
+	FG_Graphic* pFG = NULL;
 	UT_Error error = UT_OK;
 	unsigned char ch;
 
@@ -139,24 +139,13 @@ bool IE_Imp_RTF::LoadPictData(PictFormat format, const char * image_name,
 
 	// TODO: investigate whether pictData is leaking memory or not
 
-	error = IE_ImpGraphic::constructImporter(pictData, iegftForRTF(format), &pGraphicImporter);
+	error = IE_ImpGraphic::loadGraphic(pictData, iegftForRTF(format), &pFG);
 
-	if ((error == UT_OK) && pGraphicImporter)
+	if ((error == UT_OK) && pFG)
 	{
-		FG_Graphic* pFG = NULL;
-
 		// TODO: according with IE_ImpGraphic header, we shouldn't free
 		// TODO: the buffer. Confirm that.
-		error = pGraphicImporter->importGraphic(pictData, &pFG);
-		DELETEP(pGraphicImporter);
 		pictData = NULL;
-
-		if (error != UT_OK || !pFG)
-		{
-			UT_DEBUGMSG(("Error parsing embedded PNG\n"));
-			// Memory for pictData was destroyed if not properly loaded.
-			return false;
-		}
 
 		UT_ByteBuf * buf = NULL;
 		buf = static_cast<FG_GraphicRaster *>(pFG)->getRaster_PNG();

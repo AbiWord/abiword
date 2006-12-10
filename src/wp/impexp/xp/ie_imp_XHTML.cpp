@@ -1754,20 +1754,10 @@ FG_Graphic * IE_Imp_XHTML::importDataURLImage (const XML_Char * szData)
 	pBB->ins (0, reinterpret_cast<const UT_Byte *>(binbuffer), binlength);
 	FREEP(binbuffer);
 
-	IE_ImpGraphic * pieg = 0;
-	if (IE_ImpGraphic::constructImporter (pBB, IEGFT_Unknown, &pieg) != UT_OK)
+	FG_Graphic * pfg = 0;
+	if (IE_ImpGraphic::loadGraphic (pBB, IEGFT_Unknown, &pfg) != UT_OK || !pfg)
 		{
 			UT_DEBUGMSG(("unable to construct image importer!\n"));
-			return 0;
-		}
-	if (pieg == 0) return 0;
-
-	FG_Graphic * pfg = 0;
-	UT_Error import_status = pieg->importGraphic (pBB, &pfg);
-	delete pieg;
-	if (import_status != UT_OK)
-		{
-			UT_DEBUGMSG(("unable to import image!\n"));
 			return 0;
 		}
 	UT_DEBUGMSG(("image loaded successfully\n"));
@@ -1785,25 +1775,17 @@ FG_Graphic * IE_Imp_XHTML::importImage (const XML_Char * szSrc)
 
 	UT_DEBUGMSG(("found image reference (%s) - loading... \n", relative_file));
 
-	IE_ImpGraphic * pieg = 0;
-	UT_Error err = IE_ImpGraphic::constructImporter (relative_file, IEGFT_Unknown, &pieg);
+	FG_Graphic * pfg = 0;
+	UT_Error err = IE_ImpGraphic::loadGraphic (relative_file, IEGFT_Unknown, &pfg);
 
-	if (err != UT_OK || !pieg)
+	if (err != UT_OK || !pfg)
 		{
-			UT_DEBUGMSG(("unable to construct image importer!\n"));
+			UT_DEBUGMSG(("unable to import image\n"));
 			g_free(relative_file);
 			return 0;
 		}
 
-	FG_Graphic * pfg = 0;
-	err = pieg->importGraphic (relative_file, &pfg);
 	g_free(relative_file);
-	delete pieg;
-	if (err != UT_OK)
-		{
-			UT_DEBUGMSG(("unable to import image!\n"));
-			return 0;
-		}
 	UT_DEBUGMSG(("image loaded successfully\n"));
 
 	return pfg;

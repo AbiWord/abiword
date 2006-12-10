@@ -4147,7 +4147,6 @@ static MSWord_ImageType s_determineImageType ( Blip * b )
 
 UT_Error IE_Imp_MsWord_97::_handleImage (Blip * b, long width, long height, long cropt, long cropb, long cropl, long cropr)
 {
-	IE_ImpGraphic * importer	= 0;
 	FG_Graphic* pFG		= 0;
 	UT_Error error		= UT_OK;
 	UT_ByteBuf * buf		= 0;
@@ -4213,17 +4212,8 @@ UT_Error IE_Imp_MsWord_97::_handleImage (Blip * b, long width, long height, long
   if(!pictData->getPointer(0))
 	  error =  UT_ERROR;
   else
-	  error = IE_ImpGraphic::constructImporter (pictData, IEGFT_Unknown, &importer);
+	  error = IE_ImpGraphic::loadGraphic (pictData, IEGFT_Unknown, &pFG);
 
-  if ((error != UT_OK) || !importer)
-	{
-	  UT_DEBUGMSG(("Could not create image importer object\n"));
-	  DELETEP(pictData);
-	  goto Cleanup;
-	}
-
-  // if successful, takes ownership of pictData
-  error = importer->importGraphic(pictData, &pFG);
   if ((error != UT_OK) || !pFG)
 	{
 	  UT_DEBUGMSG(("Could not import graphic\n"));
@@ -4291,7 +4281,6 @@ UT_Error IE_Imp_MsWord_97::_handleImage (Blip * b, long width, long height, long
 	}
 
  Cleanup:
-  DELETEP(importer);
   DELETEP(pFG);
 
   return error;
@@ -4308,7 +4297,6 @@ UT_Error IE_Imp_MsWord_97::_handleImage (Blip * b, long width, long height, long
  */
 UT_Error IE_Imp_MsWord_97::_handlePositionedImage (Blip * b, UT_String & sImageName)
 {
-	IE_ImpGraphic * importer	= 0;
 	FG_Graphic* pFG		= 0;
 	UT_Error error		= UT_OK;
 	UT_ByteBuf * buf		= 0;
@@ -4372,17 +4360,9 @@ UT_Error IE_Imp_MsWord_97::_handlePositionedImage (Blip * b, UT_String & sImageN
   if(!pictData->getPointer(0))
 	  error =  UT_ERROR;
   else
-	  error = IE_ImpGraphic::constructImporter (pictData, IEGFT_Unknown, &importer);
-
-  if ((error != UT_OK) || !importer)
-	{
-	  UT_DEBUGMSG(("Could not create image importer object\n"));
-	  DELETEP(pictData);
-	  goto Cleanup;
-	}
+	  error = IE_ImpGraphic::loadGraphic (pictData, IEGFT_Unknown, &pFG);
 
   // if successful, takes ownership of pictData
-  error = importer->importGraphic(pictData, &pFG);
   if ((error != UT_OK) || !pFG)
 	{
 	  UT_DEBUGMSG(("Could not import graphic\n"));
@@ -4414,7 +4394,6 @@ UT_Error IE_Imp_MsWord_97::_handlePositionedImage (Blip * b, UT_String & sImageN
 	}
 
  Cleanup:  
-  DELETEP(importer);
   DELETEP(pFG);
 
   return error;

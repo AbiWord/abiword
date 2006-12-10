@@ -3692,27 +3692,16 @@ UT_return_val_if_fail(pDialog, false);
 	if (bOK && pNewFile)
 	{
 		IEGraphicFileType iegft = IEGFT_Unknown;
-		IE_ImpGraphic *pIEG;
 		FG_Graphic* pFG;
 
 		UT_Error errorCode;
 
-		errorCode = IE_ImpGraphic::constructImporter(pNewFile, iegft, &pIEG);
+		errorCode = IE_ImpGraphic::loadGraphic(pNewFile, iegft, &pFG);
 		if(errorCode)
 		{
 			s_CouldNotLoadFileMessage(pFrame, pNewFile, errorCode);
 			goto Cleanup;
 		}
-
-		errorCode = pIEG->importGraphic(pNewFile, &pFG);
-		if(errorCode)
-		{
-			s_CouldNotLoadFileMessage(pFrame, pNewFile, errorCode);
-			DELETEP(pIEG);
-			goto Cleanup;
-		}
-
-		DELETEP(pIEG);
 
 		errorCode = pView->cmdInsertGraphic(pFG);
 		if (errorCode)
@@ -3751,29 +3740,17 @@ Defun1(fileInsertGraphic)
 	// we own storage for pNewFile and must free it.
 	UT_DEBUGMSG(("fileInsertGraphic: loading [%s]\n",pNewFile));
 
-	IE_ImpGraphic *pIEG;
 	FG_Graphic* pFG;
 
 	UT_Error errorCode;
 
-	errorCode = IE_ImpGraphic::constructImporter(pNewFile, iegft, &pIEG);
-	if(errorCode != UT_OK)
-	  {
-		s_CouldNotLoadFileMessage(pFrame, pNewFile, errorCode);
-		FREEP(pNewFile);
-		return false;
-	  }
-
-	errorCode = pIEG->importGraphic(pNewFile, &pFG);
+	errorCode = IE_ImpGraphic::loadGraphic(pNewFile, iegft, &pFG);
 	if(errorCode != UT_OK || !pFG)
 	  {
 		s_CouldNotLoadFileMessage(pFrame, pNewFile, errorCode);
 		FREEP(pNewFile);
-		DELETEP(pIEG);
 		return false;
 	  }
-
-	DELETEP(pIEG);
 
 	ABIWORD_VIEW;
 
@@ -3813,29 +3790,17 @@ Defun1(fileInsertPageBackgroundGraphic)
 	// we own storage for pNewFile and must free it.
 	UT_DEBUGMSG(("fileInsertBackgroundGraphic: loading [%s]\n",pNewFile));
 
-	IE_ImpGraphic *pIEG;
 	FG_Graphic* pFG;
 
 	UT_Error errorCode;
 
-	errorCode = IE_ImpGraphic::constructImporter(pNewFile, iegft, &pIEG);
-	if(errorCode != UT_OK)
-	  {
-		s_CouldNotLoadFileMessage(pFrame, pNewFile, errorCode);
-		FREEP(pNewFile);
-		return false;
-	  }
-
-	errorCode = pIEG->importGraphic(pNewFile, &pFG);
+	errorCode = IE_ImpGraphic::loadGraphic(pNewFile, iegft, &pFG);
 	if(errorCode != UT_OK || !pFG)
 	  {
 		s_CouldNotLoadFileMessage(pFrame, pNewFile, errorCode);
 		FREEP(pNewFile);
-		DELETEP(pIEG);
 		return false;
 	  }
-
-	DELETEP(pIEG);
 
 	ABIWORD_VIEW;
 	fl_BlockLayout * pBlock = pView->getCurrentBlock();
