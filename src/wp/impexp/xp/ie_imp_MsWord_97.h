@@ -140,6 +140,7 @@ public:
 	virtual const IE_MimeConfidence * getMimeConfidence ();
 	virtual UT_Confidence_t recognizeContents (const char * szBuf,
 									UT_uint32 iNumbytes);
+	virtual UT_Confidence_t recognizeContents (GsfInput * input);
 	virtual bool getDlgLabels (const char ** szDesc,
 							   const char ** szSuffixList,
 							   IEFileType * ft);

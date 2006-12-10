@@ -67,6 +67,7 @@
 #include "ut_Language.h"
 
 #include <gsf/gsf-infile.h>
+#include <gsf/gsf-infile-msole.h>
 #include <gsf/gsf-msole-utils.h>
 #include <gsf/gsf-docprop-vector.h>
 #include <gsf/gsf-meta-names.h>
@@ -684,8 +685,32 @@ const IE_MimeConfidence * IE_Imp_MsWord_97_Sniffer::getMimeConfidence ()
 	return IE_Imp_MsWord_97_Sniffer__MimeConfidence;
 }
 
+UT_Confidence_t IE_Imp_MsWord_97_Sniffer::recognizeContents (GsfInput * input)
+{
+	GsfInfile * ole;
+
+	ole = gsf_infile_msole_new (input, NULL);
+
+	// invokes the old recognizeContents below, in hopes of identifying
+	// pre-OLE files
+	if (!ole)
+		return IE_ImpSniffer::recognizeContents (input);
+
+	UT_Confidence_t confidence = UT_CONFIDENCE_ZILCH;
+	GsfInput * stream = gsf_infile_child_by_name (ole, "WordDocument");
+	if (stream)
+		{
+			g_object_unref (G_OBJECT (stream));
+			confidence = UT_CONFIDENCE_PERFECT;
+		}
+
+	g_object_unref (G_OBJECT (ole));
+
+	return confidence;
+}
+
 UT_Confidence_t IE_Imp_MsWord_97_Sniffer::recognizeContents (const char * szBuf,
-												  UT_uint32 iNumbytes)
+															 UT_uint32 iNumbytes)
 {
 	char * magic	= 0;
 	int magicoffset = 0;
