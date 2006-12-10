@@ -246,7 +246,7 @@ void XAP_Win32FrameImpl::_createTopLevelWindow(void)
 							 XAP_App::getApp()->getEditEventMapper(),
 							m_szMenuLayoutName,
 							m_szMenuLabelSetName);
-	UT_ASSERT(m_pWin32Menu);
+	UT_return_if_fail(m_pWin32Menu);
 	bool bResult = m_pWin32Menu->synthesizeMenuBar(getFrame());
 	UT_ASSERT(bResult);
 
@@ -844,13 +844,13 @@ LRESULT CALLBACK XAP_Win32FrameImpl::_FrameWndProc(HWND hwnd, UINT iMsg, WPARAM 
 	case WM_CLOSE:
 	{
 		XAP_App * pApp = f->getApp();
-		UT_ASSERT(pApp);
+		UT_return_val_if_fail(pApp,0);
 
 		const EV_EditMethodContainer * pEMC = pApp->getEditMethodContainer();
-		UT_ASSERT(pEMC);
+		UT_return_val_if_fail(pEMC,0);
 
 		EV_EditMethod * pEM = pEMC->findEditMethodByName("closeWindowX");
-		UT_ASSERT(pEM);						// make sure it's bound to something
+		UT_ASSERT_HARMLESS(pEM);						// make sure it's bound to something
 
 		if (pEM)
 		{
@@ -873,7 +873,7 @@ LRESULT CALLBACK XAP_Win32FrameImpl::_FrameWndProc(HWND hwnd, UINT iMsg, WPARAM 
 
 		// set the language
 		XAP_Win32App *pWin32App = static_cast<XAP_Win32App *>(XAP_App::getApp());
-		UT_ASSERT( pWin32App );
+		UT_ASSERT_HARMLESS( pWin32App );
 
 		if(pWin32App)
 			pWin32App->setKbdLanguage((HKL)lParam);

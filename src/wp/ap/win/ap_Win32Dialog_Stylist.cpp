@@ -82,7 +82,7 @@ void AP_Win32Dialog_Stylist::runModal(XAP_Frame * pFrame)
 						static_cast<XAP_Win32FrameImpl*>(pFrame->getFrameImpl())->getTopLevelWindow(),
 						(DLGPROC)s_dlgProc,(LPARAM)this);
 
-	UT_ASSERT((result != -1));	
+	UT_ASSERT_HARMLESS((result != -1));	
 
 }
 
@@ -319,7 +319,7 @@ void AP_Win32Dialog_Stylist::_fillTree(void)
 	{
 		if(!pStyleTree->getNameOfRow(sTmp,row))
 		{
-			UT_ASSERT(UT_SHOULD_NOT_HAPPEN);
+			UT_ASSERT_HARMLESS(UT_SHOULD_NOT_HAPPEN);
 			break;
 		}
 		
@@ -350,7 +350,7 @@ void AP_Win32Dialog_Stylist::_fillTree(void)
 			{
 				if(!pStyleTree->getStyleAtRowCol(sTmp,row,col))
 				{
-					UT_ASSERT(UT_SHOULD_NOT_HAPPEN);
+					UT_ASSERT_HARMLESS(UT_SHOULD_NOT_HAPPEN);
 					break;
 				}
 				xxx_UT_DEBUGMSG(("Adding style %s at row %d col %d \n",sTmp.utf8_str(),row,col+1));

@@ -76,7 +76,7 @@ static void _png_read(png_structp png_ptr, png_bytep data, png_size_t length)
  */
 bool	GR_Win32Image::isTransparentAt(UT_sint32 x, UT_sint32 y)
 {
-	UT_ASSERT(0);
+	UT_ASSERT_HARMLESS(0);
 	return false;
 }
 
@@ -85,7 +85,7 @@ bool	GR_Win32Image::isTransparentAt(UT_sint32 x, UT_sint32 y)
  */ 
 bool	GR_Win32Image::hasAlpha(void) const
 {
-	UT_ASSERT(0);
+	UT_ASSERT_HARMLESS(0);
 	return false;
 }
 
@@ -448,7 +448,7 @@ bool GR_Win32Image::convertToBuffer(UT_ByteBuf** ppBB) const
 
 	default:
 		// there are DIB formats we do not support.
-		UT_ASSERT(UT_TODO);
+		UT_ASSERT_HARMLESS(UT_TODO);
 		break;
 	}
 

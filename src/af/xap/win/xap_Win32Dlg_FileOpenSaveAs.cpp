@@ -225,8 +225,8 @@ BOOL  XAP_Win32Dialog_FileOpenSaveAs::GetSaveFileName_Hooked(OPENFILENAME_WIN50*
 
 void XAP_Win32Dialog_FileOpenSaveAs::runModal(XAP_Frame * pFrame)
 {
-	UT_ASSERT(pFrame);
-	UT_ASSERT(pFrame->getFrameImpl());
+	UT_return_if_fail(pFrame);
+	UT_return_if_fail(pFrame->getFrameImpl());
 
 	XAP_Win32App* pWin32App = static_cast<XAP_Win32App*>(m_pApp);
 
@@ -409,7 +409,7 @@ void XAP_Win32Dialog_FileOpenSaveAs::runModal(XAP_Frame * pFrame)
 		break;
 
 	default:
-		UT_ASSERT(UT_SHOULD_NOT_HAPPEN);
+		UT_ASSERT_HARMLESS(UT_SHOULD_NOT_HAPPEN);
 		break;
 	}
 

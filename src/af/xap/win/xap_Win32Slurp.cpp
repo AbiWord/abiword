@@ -77,7 +77,7 @@ XAP_Win32Slurp::XAP_Win32Slurp(XAP_Win32App * pApp)
 
 XAP_Win32Slurp::~XAP_Win32Slurp(void)
 {
-	UT_ASSERT(s_Slurp);
+	UT_ASSERT_HARMLESS(s_Slurp);
 	s_Slurp = NULL;
 }
 

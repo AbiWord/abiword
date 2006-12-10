@@ -56,9 +56,7 @@ XAP_Win32PreviewWidget::XAP_Win32PreviewWidget(XAP_Win32App * pWin32App, HWND hw
 													  _wndProc, m_pWin32App->getInstance(),
 													  NULL, LoadCursor(NULL, IDC_ARROW), (HBRUSH)(COLOR_BTNFACE+1), NULL,
 													  NULL, m_bufClassName);
-		UT_ASSERT(m_atomPreviewWidgetClass);
-		if (!m_atomPreviewWidgetClass)
-			return;
+		UT_return_if_fail(m_atomPreviewWidgetClass);
 	}
 
 	RECT rParent;
@@ -96,7 +94,7 @@ XAP_Win32PreviewWidget::~XAP_Win32PreviewWidget(void)
 	{
 		m_atomPreviewWidgetClass = NULL;
 		bool bResult = (UnregisterClass(m_bufClassName,m_pWin32App->getInstance()) == TRUE);
-		UT_ASSERT(bResult);
+		UT_ASSERT_HARMLESS(bResult);
 	}
 
 	DELETEP(m_pGraphics);

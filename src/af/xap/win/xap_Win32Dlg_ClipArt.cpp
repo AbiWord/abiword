@@ -55,7 +55,7 @@ XAP_Win32Dialog_ClipArt::~XAP_Win32Dialog_ClipArt(void)
 
 void XAP_Win32Dialog_ClipArt::runModal(XAP_Frame * pFrame)
 {
-	UT_ASSERT(pFrame);
+	UT_return_if_fail(pFrame);
 
 /*
 	NOTE: This template can be used to create a working stub for a 
@@ -82,6 +82,6 @@ void XAP_Win32Dialog_ClipArt::runModal(XAP_Frame * pFrame)
 	from another working dialog.  
 */	
 
-	UT_ASSERT(UT_NOT_IMPLEMENTED);
+	UT_ASSERT_HARMLESS(UT_NOT_IMPLEMENTED);
 }
 

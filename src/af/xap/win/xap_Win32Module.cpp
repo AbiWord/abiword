@@ -152,7 +152,7 @@ public:
 XAP_Win32Module::XAP_Win32Module()
 :	pimpl(new XAP_Win32ModuleImpl)
 {
-	UT_ASSERT(pimpl);
+	UT_ASSERT_HARMLESS(pimpl);
 }
 
 XAP_Win32Module::~XAP_Win32Module()

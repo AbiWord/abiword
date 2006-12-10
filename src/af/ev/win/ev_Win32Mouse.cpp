@@ -89,7 +89,7 @@ void EV_Win32Mouse::onButtonDown(AV_View * pView,
 		// TODO What to do ?? Should we beep at them or just be quiet ??
 		return;
 	default:
-		UT_ASSERT(0);
+		UT_ASSERT_HARMLESS(0);
 		return;
 	}
 }
@@ -137,7 +137,7 @@ void EV_Win32Mouse::onButtonMove(AV_View * pView,
 	}
 	else
 	{
-		UT_ASSERT(UT_SHOULD_NOT_HAPPEN);
+		UT_ASSERT_HARMLESS(UT_SHOULD_NOT_HAPPEN);
 		return;
 	}
 
@@ -156,7 +156,7 @@ void EV_Win32Mouse::onButtonMove(AV_View * pView,
 		// TODO What to do ?? Should we beep at them or just be quiet ??
 		return;
 	default:
-		UT_ASSERT(0);
+		UT_ASSERT_HARMLESS(0);
 		return;
 	}
 }
@@ -210,7 +210,7 @@ void EV_Win32Mouse::onButtonUp(AV_View * pView,
 		// TODO What to do ?? Should we beep at them or just be quiet ??
 		return;
 	default:
-		UT_ASSERT(0);
+		UT_ASSERT_HARMLESS(0);
 		return;
 	}
 }
@@ -264,7 +264,7 @@ void EV_Win32Mouse::onDoubleClick(AV_View * pView,
 		// TODO What to do ?? Should we beep at them or just be quiet ??
 		return;
 	default:
-		UT_ASSERT(0);
+		UT_ASSERT_HARMLESS(0);
 		return;
 	}
 }
