@@ -959,3 +959,8 @@ UT_Error IE_Imp::importFile (const char * szFilename)
 
 	return result;
 }
+
+UT_Error IE_Imp::importFile (GsfInput * input)
+{
+	return _loadFile (input);
+}

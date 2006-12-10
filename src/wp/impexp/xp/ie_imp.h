@@ -164,6 +164,7 @@ public:
 
 	// kept around for backwards compat
 	UT_Error importFile(const char * szFilename);
+	UT_Error importFile(GsfInput * input);
 
 	static UT_Error loadFile(PD_Document * doc, const char * szFilename, IEFileType ieft = IEFT_Unknown, const char * props = NULL, IEFileType * savedAsType = NULL);
 	static UT_Error loadFile(PD_Document * doc, GsfInput * input, IEFileType ieft = IEFT_Unknown, const char * props = NULL, IEFileType * savedAsType = NULL);
