@@ -83,6 +83,8 @@ static IE_SuffixConfidence IE_Imp_AbiWord_1_Sniffer__SuffixConfidence[] = {
 	{ "awt", 	UT_CONFIDENCE_PERFECT 	},
 	{ "zabw", 	UT_CONFIDENCE_PERFECT 	},
 	{ "abw.gz", UT_CONFIDENCE_PERFECT 	},
+	{ "bzabw", 		UT_CONFIDENCE_PERFECT 	},
+	{ "abw.bz2", 	UT_CONFIDENCE_PERFECT 	},
 	{ NULL, 	UT_CONFIDENCE_ZILCH 	}
 };
 
@@ -154,7 +156,7 @@ bool IE_Imp_AbiWord_1_Sniffer::getDlgLabels (const char ** szDesc,
 											 IEFileType * ft)
 {
 	*szDesc = "AbiWord Documents (.abw, .awt, .zabw)";
-	*szSuffixList = "*.abw; *.awt; *.zabw; *.abw.gz;";
+	*szSuffixList = "*.abw; *.awt; *.zabw; *.abw.gz; *.bzabw; *.abw.bz2";
 	*ft = getFileType();
 	return true;
 }
