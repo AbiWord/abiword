@@ -46,7 +46,7 @@
 
 PSFont::PSFont(XAP_UnixFont * pFont, UT_uint32 size)
 {
-	UT_ASSERT(pFont);
+	UT_ASSERT_HARMLESS(pFont);
   
 	m_hFont = pFont;
 	m_pointSize = size;
@@ -59,7 +59,7 @@ PSFont::~PSFont(void)
 
 XAP_UnixFont * PSFont::getUnixFont(void)
 {
-	UT_ASSERT(m_hFont);
+	UT_ASSERT_HARMLESS(m_hFont);
 	return m_hFont;
 }
 

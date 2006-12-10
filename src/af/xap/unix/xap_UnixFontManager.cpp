@@ -80,7 +80,7 @@ static UT_sint32 compareFontNames(const void * vF1, const void * vF2)
 UT_GenericVector<XAP_UnixFont*>* XAP_UnixFontManager::getAllFonts(void)
 {
 	UT_GenericVector<XAP_UnixFont*>* pVec = m_fontHash.enumerate();
-	UT_ASSERT(pVec);
+	UT_return_val_if_fail(pVec,NULL);
 	if(pVec->getItemCount() > 1)
 		pVec->qsort(compareFontNames);
 	
@@ -90,7 +90,7 @@ UT_GenericVector<XAP_UnixFont*>* XAP_UnixFontManager::getAllFonts(void)
 UT_GenericVector<void*>* XAP_UnixFontManager::getAllFontsAsVoid(void)
 {
 	UT_GenericVector<XAP_UnixFont*>* pVec = m_fontHash.enumerate();
-	UT_ASSERT(pVec);
+	UT_return_val_if_fail(pVec,NULL);
 	if(pVec->getItemCount() > 1)
 		pVec->qsort(compareFontNames);
 	
@@ -350,7 +350,7 @@ XAP_UnixFont* XAP_UnixFontManager::getDefaultFont(GR_Font::FontFamilyEnum f)
 			break;
 			
 		default:
-			UT_ASSERT(UT_SHOULD_NOT_HAPPEN);
+			UT_ASSERT_HARMLESS(UT_SHOULD_NOT_HAPPEN);
 		}
 
 		if (m_f[f].getFont() == NULL)

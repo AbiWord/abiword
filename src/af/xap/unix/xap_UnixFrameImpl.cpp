@@ -535,7 +535,7 @@ void XAP_UnixFrameImpl::resetIMContext()
 gboolean XAP_UnixFrameImpl::_fe::focus_in_event(GtkWidget *w,GdkEvent */*event*/,gpointer /*user_data*/)
 {
 	XAP_UnixFrameImpl * pFrameImpl = static_cast<XAP_UnixFrameImpl *>(g_object_get_data(G_OBJECT(w), "user_data"));
-	UT_ASSERT(pFrameImpl);
+	UT_return_val_if_fail(pFrameImpl,FALSE);
 	xxx_UT_DEBUGMSG(("\n===========================\nfocus_in_event: frame 0x%x\n=========================\n", pFrameImpl));
 	
 	XAP_Frame* pFrame = pFrameImpl->getFrame();
@@ -560,7 +560,7 @@ gboolean XAP_UnixFrameImpl::_fe::focus_in_event(GtkWidget *w,GdkEvent */*event*/
 gboolean XAP_UnixFrameImpl::_fe::focus_out_event(GtkWidget *w,GdkEvent */*event*/,gpointer /*user_data*/)
 {
 	XAP_UnixFrameImpl * pFrameImpl = static_cast<XAP_UnixFrameImpl *>(g_object_get_data(G_OBJECT(w), "user_data"));
-	UT_ASSERT(pFrameImpl);
+	UT_return_val_if_fail(pFrameImpl,FALSE);
 	xxx_UT_DEBUGMSG(("\n===========================\nfocus_out_event: frame 0x%x\n=========================\n", pFrameImpl));
 	XAP_Frame* pFrame = pFrameImpl->getFrame();
 	g_object_set_data(G_OBJECT(w), "toplevelWindowFocus",
@@ -883,7 +883,7 @@ gint XAP_UnixFrameImpl::_fe::delete_event(GtkWidget * w, GdkEvent * /*event*/, g
 	XAP_UnixFrameImpl * pUnixFrameImpl = static_cast<XAP_UnixFrameImpl *>(g_object_get_data(G_OBJECT(w), "user_data"));
 	XAP_Frame* pFrame = pUnixFrameImpl->getFrame();
 	XAP_App * pApp = XAP_App::getApp();
-	UT_ASSERT(pApp);
+	UT_return_val_if_fail(pApp,FALSE);
 	if(pApp->isBonoboRunning())
 		return FALSE;
 
@@ -891,11 +891,11 @@ gint XAP_UnixFrameImpl::_fe::delete_event(GtkWidget * w, GdkEvent * /*event*/, g
 	UT_ASSERT(pMenuActionSet);
 
 	const EV_EditMethodContainer * pEMC = pApp->getEditMethodContainer();
-	UT_ASSERT(pEMC);
+	UT_return_val_if_fail(pEMC,FALSE);
 
 	// was "closeWindow", TRUE, FALSE
 	const EV_EditMethod * pEM = pEMC->findEditMethodByName("closeWindowX");
-	UT_ASSERT(pEM);
+	UT_ASSERT_HARMLESS(pEM);
 
 	if (pEM)
 	{
@@ -1068,7 +1068,7 @@ void XAP_UnixFrameImpl::_setCursor(GR_Graphics::Cursor c)
 	switch (c)
 	{
 	default:
-		UT_ASSERT(UT_NOT_IMPLEMENTED);
+		UT_ASSERT_HARMLESS(UT_NOT_IMPLEMENTED);
 		/*FALLTHRU*/
 	case GR_Graphics::GR_CURSOR_DEFAULT:
 		cursor_number = GDK_LEFT_PTR;
@@ -1326,7 +1326,7 @@ void XAP_UnixFrameImpl::_createTopLevelWindow(void)
 		// synthesize a menu from the info in our base class.
 		m_pUnixMenu = new EV_UnixMenuBar(static_cast<XAP_UnixApp*>(XAP_App::getApp()), getFrame(), m_szMenuLayoutName,
 										 m_szMenuLabelSetName);
-		UT_ASSERT(m_pUnixMenu);
+		UT_return_if_fail(m_pUnixMenu);
 		bResult = m_pUnixMenu->synthesizeMenuBar();
 		UT_ASSERT(bResult);
 	}
@@ -1595,9 +1595,9 @@ void XAP_UnixFrameImpl::_rebuildMenus(void)
 	m_pUnixMenu = new EV_UnixMenuBar(static_cast<XAP_UnixApp*>(XAP_App::getApp()), getFrame(),
 					 m_szMenuLayoutName,
 					 m_szMenuLabelSetName);
-	UT_ASSERT(m_pUnixMenu);
+	UT_return_if_fail(m_pUnixMenu);
 	bool bResult = m_pUnixMenu->rebuildMenuBar();
-	UT_ASSERT(bResult);
+	UT_ASSERT_HARMLESS(bResult);
 }
 
 /*!
@@ -1675,7 +1675,7 @@ bool XAP_UnixFrameImpl::_runModalContextMenu(AV_View * /* pView */, const char *
 	XAP_Frame*	pFrame = getFrame();
 	bool bResult = true;
 
-	UT_ASSERT(!m_pUnixPopup);
+	UT_ASSERT_HARMLESS(!m_pUnixPopup);
 
 	// WL_REFACTOR: we DON'T want to do this
 	m_pUnixPopup = new EV_UnixMenuPopup(static_cast<XAP_UnixApp*>(XAP_App::getApp()),

@@ -452,7 +452,7 @@ void XAP_UnixGnomePrintGraphics::drawImage(GR_Image* pImg, UT_sint32 xDest,
 				_drawAnyImage(pImg, xDest, yDest, false);
 				break;
 			default:
-				UT_ASSERT(UT_SHOULD_NOT_HAPPEN);
+				UT_ASSERT_HARMLESS(UT_SHOULD_NOT_HAPPEN);
 			}
 	}
 }
@@ -719,10 +719,10 @@ GR_Font* XAP_UnixGnomePrintGraphics::_findFont(const char* pszFontFamily,
 	UT_uint32 iSize = static_cast<UT_uint32>(UT_convertToPoints(pszFontSize)*getDeviceResolution()/72.);
 
 	XAP_UnixFontHandle* item = new XAP_UnixFontHandle(pUnixFont, iSize);
-	UT_ASSERT(item);
+	UT_return_val_if_fail(item,NULL);
 
 	PSFont * pFont = new PSFont(item->getUnixFont(), iSize);
-	UT_ASSERT(pFont);
+	UT_ASSERT_HARMLESS(pFont);
 	delete item;
 
 	return pFont;
@@ -775,7 +775,7 @@ dashToPS (GR_Graphics::LineStyle ls, gint & n_values, double &offset)
 		case GR_Graphics::LINE_DOUBLE_DASH: 
 			offset = 0.; n_values = 2; return double_dash;
 		case GR_Graphics::LINE_DOTTED: 
-			UT_ASSERT(UT_TODO);
+			UT_ASSERT_HARMLESS(UT_TODO);
 			offset = 0.; n_values = 0; return NULL;
 		}
 	

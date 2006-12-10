@@ -105,7 +105,7 @@ void XAP_UnixDialog_Insert_Symbol::runModal(XAP_Frame * pFrame)
 
 void XAP_UnixDialog_Insert_Symbol::activate(void)
 {
-	UT_ASSERT(m_windowMain);
+	UT_return_if_fail(m_windowMain);
 	ConstructWindowName();
 	gtk_window_set_title (GTK_WINDOW (m_windowMain), m_WindowName);
 	gdk_window_raise(m_windowMain->window);
@@ -252,7 +252,7 @@ void XAP_UnixDialog_Insert_Symbol::New_Font(void )
 
 #ifndef USE_GUCHARMAP
 	XAP_Draw_Symbol * iDrawSymbol = _getCurrentSymbolMap();
-	UT_ASSERT(iDrawSymbol);
+	UT_return_if_fail(iDrawSymbol);
 
 	// need a fallback value here, as this can get called from one of the gtk
 	// callbacks when no font has been set.
@@ -346,7 +346,7 @@ static gboolean s_keypressed(GtkWidget * widget, GdkEventKey * e,  XAP_UnixDialo
 void XAP_UnixDialog_Insert_Symbol::SymbolMap_exposed(void )
 {
 	XAP_Draw_Symbol * iDrawSymbol = _getCurrentSymbolMap();
-	UT_ASSERT(iDrawSymbol);
+	UT_return_if_fail(iDrawSymbol);
 	iDrawSymbol->draw();
 	UT_DEBUGMSG(("main symbol area exposed \n"));
 	/*
@@ -358,7 +358,7 @@ void XAP_UnixDialog_Insert_Symbol::SymbolMap_exposed(void )
 void XAP_UnixDialog_Insert_Symbol::Symbolarea_exposed(void )
 {
 	XAP_Draw_Symbol * iDrawSymbol = _getCurrentSymbolMap();
-	UT_ASSERT(iDrawSymbol);
+	UT_return_if_fail(iDrawSymbol);
 	iDrawSymbol->drawarea(m_CurrentSymbol, m_PreviousSymbol);
 }
 
@@ -422,7 +422,7 @@ gboolean XAP_UnixDialog_Insert_Symbol::Key_Pressed(GdkEventKey * e)
 	if (move != 0)
 	{
 		XAP_Draw_Symbol * iDrawSymbol = _getCurrentSymbolMap();
-		UT_ASSERT(iDrawSymbol);
+		UT_return_val_if_fail(iDrawSymbol,FALSE);
 		m_PreviousSymbol = m_CurrentSymbol;
 		m_CurrentSymbol = iDrawSymbol->calcSymbolFromCoords(m_ix, m_iy);
 		UT_DEBUGMSG(("m_CurrentSymbol %x \n",m_CurrentSymbol));
@@ -443,7 +443,7 @@ void XAP_UnixDialog_Insert_Symbol::SymbolMap_clicked( GdkEvent * event)
 	y = static_cast<UT_uint32>(event->button.y);
 	
 	XAP_Draw_Symbol * iDrawSymbol = _getCurrentSymbolMap();
-	UT_ASSERT(iDrawSymbol);
+	UT_return_if_fail(iDrawSymbol);
 	m_PreviousSymbol = m_CurrentSymbol;
 	m_CurrentSymbol = iDrawSymbol->calcSymbol(x, y);
 	iDrawSymbol->calculatePosition(m_CurrentSymbol,m_ix,m_iy);

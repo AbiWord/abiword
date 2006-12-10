@@ -35,7 +35,7 @@ ps_Generate::ps_Generate(const char * szFilename)
 
 ps_Generate::~ps_Generate()
 {
-	UT_ASSERT(!m_fp);					// somebody didn't close the file
+	UT_ASSERT_HARMLESS(!m_fp);					// somebody didn't close the file
 }
 
 bool ps_Generate::openFile(bool bIsFile)

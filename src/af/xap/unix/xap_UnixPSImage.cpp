@@ -203,7 +203,7 @@ PS_Image::~PS_Image()
 
 bool PS_Image::convertToBuffer(UT_ByteBuf ** /* ppBB */) const
 {
-	UT_ASSERT(UT_SHOULD_NOT_HAPPEN);
+	UT_ASSERT_HARMLESS(UT_SHOULD_NOT_HAPPEN);
 	
 	return false;
 }
@@ -268,7 +268,7 @@ bool PS_Image::convertFromBuffer(const UT_ByteBuf* pBB, UT_sint32 iDisplayWidth,
 	rowstride = (rowstride + 3) & ~3;
 	
 	// should NOT already be set
-	UT_ASSERT(!m_image);
+	UT_ASSERT_HARMLESS(!m_image);
 	
 	if (m_image)
 	  {
@@ -323,7 +323,7 @@ bool PS_Image::convertFromBuffer(const UT_ByteBuf* pBB, UT_sint32 iDisplayWidth,
 
 bool PS_Image::isTransparentAt(UT_sint32 x, UT_sint32 y)
 {
-  UT_ASSERT(0);
+  UT_ASSERT_HARMLESS(0);
   if(!hasAlpha())
   {
     return false;

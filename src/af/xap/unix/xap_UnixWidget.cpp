@@ -73,7 +73,7 @@ void XAP_UnixWidget::setValueInt(int val)
 	  gtk_entry_set_text(GTK_ENTRY(m_widget), str.utf8_str());
 	}
 	else {
-		UT_ASSERT(UT_SHOULD_NOT_HAPPEN);
+		UT_ASSERT_HARMLESS(UT_SHOULD_NOT_HAPPEN);
 	}
 }
 
@@ -87,7 +87,7 @@ int XAP_UnixWidget::getValueInt(void)
 		return atoi(gtk_entry_get_text(GTK_ENTRY(m_widget)));
 	}
 	else {
-		UT_ASSERT(UT_SHOULD_NOT_HAPPEN);
+		UT_ASSERT_HARMLESS(UT_SHOULD_NOT_HAPPEN);
 	}
 	return 0;
 }
@@ -103,7 +103,7 @@ void XAP_UnixWidget::setValueString(const UT_UTF8String &val)
 		gtk_label_set_text(GTK_LABEL(m_widget), val.utf8_str());
 	}
 	else {
-		UT_ASSERT(UT_SHOULD_NOT_HAPPEN);
+		UT_ASSERT_HARMLESS(UT_SHOULD_NOT_HAPPEN);
 	}
 }
 
@@ -117,7 +117,7 @@ void XAP_UnixWidget::getValueString(UT_UTF8String &val)
 		val.assign(gtk_label_get_text(GTK_LABEL(m_widget)));
 	}
 	else {
-		UT_ASSERT(UT_SHOULD_NOT_HAPPEN);
+		UT_ASSERT_HARMLESS(UT_SHOULD_NOT_HAPPEN);
 	}
 }
 
@@ -134,7 +134,7 @@ void XAP_UnixWidget::setValueFloat(float val)
 /** get the widget value as float */
 float XAP_UnixWidget::getValueFloat(void)
 {
-	UT_ASSERT(UT_NOT_IMPLEMENTED);
+	UT_ASSERT_HARMLESS(UT_NOT_IMPLEMENTED);
 	return 0;
 }
 
@@ -152,6 +152,6 @@ void XAP_UnixWidget::setLabel(const UT_UTF8String &val)
 		gtk_window_set_title(GTK_WINDOW(m_widget), val.utf8_str());
 	}
 	else {
-		UT_ASSERT(UT_SHOULD_NOT_HAPPEN);
+		UT_ASSERT_HARMLESS(UT_SHOULD_NOT_HAPPEN);
 	}
 }

@@ -93,7 +93,7 @@ void XAP_UnixFontXLFD::setXLFD(const char * xlfd)
 	UT_ASSERT(xlfd);
 	
 	gchar ** fields = g_strsplit(xlfd, "-", 15);
-	UT_ASSERT(fields);
+	UT_return_if_fail(fields);
 
 	// perhaps a better way to check this at run-time?
 	UT_ASSERT(fields[0] && fields[1] && fields[2] && fields[3] && fields[4] &&

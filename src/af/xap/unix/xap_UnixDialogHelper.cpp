@@ -56,8 +56,8 @@
 static gboolean focus_in_event(GtkWidget *widget,GdkEvent */*event*/,gpointer /*user_data*/)
 {
       XAP_Frame *pFrame=static_cast<XAP_Frame *>(g_object_get_data(G_OBJECT(widget), "frame"));
-      UT_ASSERT(pFrame);
-	  if (pFrame->getCurrentView())
+      UT_ASSERT_HARMLESS(pFrame);
+	  if (pFrame && pFrame->getCurrentView())
 		  pFrame->getCurrentView()->focusChange(AV_FOCUS_NEARBY);
       return FALSE;
 }
@@ -97,7 +97,7 @@ static gboolean focus_out_event_Modeless(GtkWidget *widget,GdkEvent */*event*/,g
       }
       if(pFrame == static_cast<XAP_Frame *>(NULL)) return FALSE;
       AV_View * pView = pFrame->getCurrentView();
-      UT_ASSERT(pView);
+      UT_ASSERT_HARMLESS(pView);
       if(pView!= NULL)
       {
 	     pView->focusChange(AV_FOCUS_NONE);
@@ -887,7 +887,7 @@ void localizeLabel(GtkWidget * widget, const XAP_StringSet * pSS, XAP_String_Id 
 
 void convertMnemonics(XML_Char * s)
 {
-	UT_ASSERT(s);
+	UT_return_if_fail(s);
 
 	for (UT_uint32 i = 0; s[i] != 0; i++) 
 	{

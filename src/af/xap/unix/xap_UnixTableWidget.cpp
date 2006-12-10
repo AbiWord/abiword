@@ -592,7 +592,7 @@ register_stock_icon(void)
 		}
 		else
 		{
-			UT_ASSERT(UT_SHOULD_NOT_HAPPEN);
+			UT_ASSERT_HARMLESS(UT_SHOULD_NOT_HAPPEN);
 		}
 				
 		/* Drop our reference to the factory, GTK will hold a reference. */
@@ -670,7 +670,7 @@ abi_table_init (AbiTable* table)
 	{
 		/* it should not happen... */
 		UT_DEBUGMSG(("abi-table icon did not load !\n"));
-		UT_ASSERT(UT_SHOULD_NOT_HAPPEN);
+		UT_ASSERT_HARMLESS(UT_SHOULD_NOT_HAPPEN);
 		table->label = gtk_label_new_with_mnemonic("_Table");
 		gtk_box_pack_end(GTK_BOX(table->button_box), table->label, FALSE, FALSE, 0);
 	}

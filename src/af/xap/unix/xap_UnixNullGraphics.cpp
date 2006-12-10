@@ -112,7 +112,7 @@ bool UnixNull_Graphics::queryProperties(GR_Graphics::Properties gp) const
 	case DGP_PAPER:
 		return true;
 	default:
-		UT_ASSERT(0);
+		UT_ASSERT_HARMLESS(0);
 		return false;
 	}
 }
@@ -286,7 +286,7 @@ GR_Font* UnixNull_Graphics::_findFont(const char* pszFontFamily,
 	}
 	else
 	{
-		UT_ASSERT(UT_SHOULD_NOT_HAPPEN);
+		UT_ASSERT_HARMLESS(UT_SHOULD_NOT_HAPPEN);
 	}
 
 	// Request the appropriate XAP_UnixFont::, and bury it in an

@@ -166,7 +166,7 @@ XAP_UnixDialog_FontChooser::~XAP_UnixDialog_FontChooser(void)
 static gint s_color_update(GtkWidget * /* widget */,
 			   XAP_UnixDialog_FontChooser * dlg)
 {
-	UT_ASSERT(dlg);
+	UT_return_val_if_fail(dlg,FALSE);
 	dlg->fgColorChanged();
 	return FALSE;
 }
@@ -174,14 +174,14 @@ static gint s_color_update(GtkWidget * /* widget */,
 static gint s_bgcolor_update(GtkWidget * /* widget */,
 						   XAP_UnixDialog_FontChooser * dlg)
 {
-	UT_ASSERT(dlg);
+	UT_return_val_if_fail(dlg,FALSE);
 	dlg->bgColorChanged();
 	return FALSE;
 }
 
 static void s_select_row_font(GtkWidget * /* widget */, XAP_UnixDialog_FontChooser * dlg)
 {
-	UT_ASSERT(dlg);
+	UT_return_if_fail(dlg);
     // update the row number and show the changed preview
 	// redisplay the preview text
 	dlg->fontRowChanged();
@@ -190,7 +190,7 @@ static void s_select_row_font(GtkWidget * /* widget */, XAP_UnixDialog_FontChoos
 
 static void s_select_row_style(GtkWidget * /* widget */, XAP_UnixDialog_FontChooser * dlg)
 {
-	UT_ASSERT(dlg);
+	UT_return_if_fail(dlg);
 
 	// redisplay the preview text
 	dlg->styleRowChanged();
@@ -198,7 +198,7 @@ static void s_select_row_style(GtkWidget * /* widget */, XAP_UnixDialog_FontChoo
 
 static void s_select_row_size(GtkWidget * /* widget */, XAP_UnixDialog_FontChooser * dlg)
 {
-	UT_ASSERT(dlg);
+	UT_return_if_fail(dlg);
 
 	// redisplay the preview text
 	dlg->sizeRowChanged();
@@ -352,7 +352,7 @@ void XAP_UnixDialog_FontChooser::styleRowChanged(void)
 		}
 		else
 		{
-			UT_ASSERT(0);
+			UT_ASSERT_HARMLESS(0);
 		}
 	}
 	updatePreview();
@@ -984,7 +984,7 @@ void XAP_UnixDialog_FontChooser::runModal(XAP_Frame * pFrame)
 		st = LIST_STYLE_BOLD_ITALIC;
 	else
 	{
-		UT_ASSERT(UT_SHOULD_NOT_HAPPEN);
+		UT_ASSERT_HARMLESS(UT_SHOULD_NOT_HAPPEN);
 	}
 
 	// select and scroll to style name

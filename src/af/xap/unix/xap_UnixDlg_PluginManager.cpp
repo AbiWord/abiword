@@ -147,7 +147,7 @@ void XAP_UnixDialog_PluginManager::event_Load ()
 	
 	XAP_Dialog_FileOpenSaveAs * pDialog
 		= static_cast<XAP_Dialog_FileOpenSaveAs *>(pDialogFactory->requestDialog(XAP_DIALOG_ID_FILE_OPEN));
-	UT_ASSERT(pDialog);
+	UT_return_if_fail(pDialog);
 	
 	// set the intial plugin directory to the user-local plugin directory
 	// could also set to: XAP_App::getApp()->getAbiSuiteLibDir()/plugins
