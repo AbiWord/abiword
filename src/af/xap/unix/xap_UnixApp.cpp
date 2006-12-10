@@ -160,7 +160,6 @@ bool XAP_UnixApp::initialize(const char * szKeyBindingsKey, const char * szKeyBi
 	
 	XAP_App::initialize(szKeyBindingsKey, szKeyBindingsDefaultValue);
 
-	gsf_init();
 	libgoffice_init();
 
 #ifdef HAVE_GNOMEVFS

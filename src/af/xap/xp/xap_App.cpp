@@ -23,6 +23,8 @@
 #include <signal.h>
 #include <time.h>
 
+#include <gsf/gsf-utils.h>
+
 #include "ut_types.h"
 #include "ut_assert.h"
 #include "ut_path.h"
@@ -315,6 +317,8 @@ GR_EmbedManager * XAP_App:: getEmbeddableManager(GR_Graphics * pG, const char * 
  
 bool XAP_App::initialize(const char * szKeyBindingsKey, const char * szKeyBindingsDefaultValue)
 {
+	gsf_init();
+
 	// create application-wide resources that
 	// are shared by everything.
 
