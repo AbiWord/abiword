@@ -2180,7 +2180,7 @@ bool IE_Imp_TableHelper::trStart (const char * style)
 	if(m_bCaptionOn)
 		{
 			UT_DEBUGMSG(("Row start with caption on \n"));
-			UT_ASSERT(UT_SHOULD_NOT_HAPPEN);
+			UT_ASSERT_HARMLESS(UT_SHOULD_NOT_HAPPEN);
 			m_bCaptionOn = false;
 		}
 	// TODO ??
@@ -2555,7 +2555,7 @@ bool IE_Imp_TableHelper::setCaptionOn(void)
 	if(m_bCaptionOn)
 		{
 			UT_DEBUGMSG(("Attempt to open a caption without closing the last \n"));
-			UT_ASSERT(UT_SHOULD_NOT_HAPPEN);
+			UT_ASSERT_HARMLESS(UT_SHOULD_NOT_HAPPEN);
 			return false;
 		}
 	m_bCaptionOn = true;
@@ -2569,7 +2569,7 @@ bool IE_Imp_TableHelper::setCaptionOff(void)
 	if(!m_bCaptionOn)
 		{
 			UT_DEBUGMSG(("Attempt to close a caption without openning \n"));
-			UT_ASSERT(UT_SHOULD_NOT_HAPPEN);
+			UT_ASSERT_HARMLESS(UT_SHOULD_NOT_HAPPEN);
 			return false;
 		}
 	m_bCaptionOn = false;

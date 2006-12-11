@@ -92,7 +92,7 @@ public:
     // acts kinda like tempnam()
     fd = g_file_open_tmp(NULL, &filename, NULL);
     if(!filename || fd == -1) { // shouldn't ever fail, but be pedantic
-      UT_ASSERT(UT_SHOULD_NOT_HAPPEN);
+      UT_ASSERT_HARMLESS(UT_SHOULD_NOT_HAPPEN);
       goto exit_writeDocument;
     }
     

@@ -5171,7 +5171,7 @@ bool s_HTML_Listener::populate (PL_StruxFmtHandle /*sfh*/, const PX_ChangeRecord
 	
 						default:
 							UT_DEBUGMSG(("WARNING: ie_exp_HTML.cpp: unhandled object type: %d!\n", pcro->getObjectType ()));
-							UT_ASSERT(UT_TODO);
+							UT_ASSERT_HARMLESS(UT_TODO);
 							return true;
 					}
 				}
@@ -5396,7 +5396,7 @@ bool s_HTML_Listener::populateStrux (PL_StruxDocHandle sdh,
 			}
 		default:
 			UT_DEBUGMSG(("WARNING: ie_exp_HTML.cpp: unhandled strux type: %d!\n", pcrx->getStruxType ()));
-			UT_ASSERT(UT_TODO);
+			UT_ASSERT_HARMLESS(UT_TODO);
 			return true;
 	}
 

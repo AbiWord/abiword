@@ -895,7 +895,7 @@ void s_RTF_ListenerWriteDoc::_openFrame(PT_AttrPropIndex apiFrame)
 	else 
 	{
 		UT_DEBUGMSG(("Unknown wrap-mode %s \n",pszWrapMode));
-		UT_ASSERT(UT_SHOULD_NOT_HAPPEN);
+		UT_ASSERT_HARMLESS(UT_SHOULD_NOT_HAPPEN);
 		iFrameWrapMode = FL_FRAME_ABOVE_TEXT;
 	}
 
@@ -1389,7 +1389,7 @@ void s_RTF_ListenerWriteDoc::_openSpan(PT_AttrPropIndex apiSpan,  const PP_AttrP
             //get the style from the styleName
             PD_Style* pStyle = NULL;
 			m_pDocument->getStyle(styleSzValue,&pStyle);
-            UT_ASSERT(pStyle);
+            UT_ASSERT_HARMLESS(pStyle);
             if (pStyle && pStyle->isCharStyle()) 
 			{
                 styleType = "cs";

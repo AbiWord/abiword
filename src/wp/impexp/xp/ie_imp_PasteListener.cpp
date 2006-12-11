@@ -99,7 +99,7 @@ bool  IE_Imp_PasteListener::populate(PL_StruxFmtHandle /* sfh */,
 		return true;
 	}
 	default:
-		UT_ASSERT(UT_SHOULD_NOT_HAPPEN);
+		UT_ASSERT_HARMLESS(UT_SHOULD_NOT_HAPPEN);
 		return false;
 	}
 	return true;
@@ -254,7 +254,7 @@ bool  IE_Imp_PasteListener::populateStrux(PL_StruxDocHandle sdh,
 	{
 		m_pPasteDocument->insertStrux(m_insPoint,pcrx->getStruxType(),atts,props);
 		m_insPoint++;
-		UT_ASSERT(UT_SHOULD_NOT_HAPPEN);
+		UT_ASSERT_HARMLESS(UT_SHOULD_NOT_HAPPEN);
 		return true;
 	}
 	}

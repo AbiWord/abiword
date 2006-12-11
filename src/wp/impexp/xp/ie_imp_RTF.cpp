@@ -9177,7 +9177,7 @@ bool IE_Imp_RTF:: HandleAbiEndTable(void)
 	}
 	if(pPaste->m_bPasteAfterRow)
 	{
-		UT_ASSERT(UT_SHOULD_NOT_HAPPEN);
+		UT_ASSERT_HARMLESS(UT_SHOULD_NOT_HAPPEN);
 		UT_sint32 numRows = pPaste->m_iCurTopCell -pPaste->m_iRowNumberAtPaste;
 		PL_StruxDocHandle sdhCell = NULL;
 		PL_StruxDocHandle sdhTable = NULL;
@@ -11366,7 +11366,7 @@ bool IE_Imp_RTF::HandlePCData(UT_UTF8String & str)
 			}
 			case RTF_KW_uc:
 				// A little bit evil, but I'd like to know if this happens! - R.Kay
-				UT_ASSERT(UT_SHOULD_NOT_HAPPEN);
+				UT_ASSERT_HARMLESS(UT_SHOULD_NOT_HAPPEN);
 				break;
 			default:
 				bStop = true; // regular keyword stop reading data and handle it
@@ -11386,7 +11386,7 @@ bool IE_Imp_RTF::HandlePCData(UT_UTF8String & str)
 			break;
 		case RTF_TOKEN_OPEN_BRACE:
 			// A little bit evil, but I'd like to know if this happens! - R.Kay
-			UT_ASSERT(UT_SHOULD_NOT_HAPPEN);
+			UT_ASSERT_HARMLESS(UT_SHOULD_NOT_HAPPEN);
 			break;
 		case RTF_TOKEN_CLOSE_BRACE:
 			SkipBackChar('}');
