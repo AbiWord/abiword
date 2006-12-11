@@ -9394,6 +9394,8 @@ _viewTBx(AV_View* pAV_View, int num)
 
 	pScheme->setValueBool(static_cast<XML_Char*>(s_TBPrefsKeys[num]), pFrameData->m_bShowBar[num]);
 
+	//	FV_View * pView = static_cast<FV_View *>(pAV_View);
+	//	pView->draw(NULL);
 	return true;
 }
 

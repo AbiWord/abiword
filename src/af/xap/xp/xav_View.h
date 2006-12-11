@@ -163,6 +163,10 @@ public:
 	virtual UT_uint32	  getPoint(void) const =0;
 	virtual void setCursorWait(void) = 0;
 	virtual void clearCursorWait(void) = 0;
+	bool   isConfigureChanged(void)
+	{ return m_bConfigureChanged;}
+	void   setConfigure(bool b)
+	{ m_bConfigureChanged = b;}
 
 protected:
 	XAP_App *			m_pApp;
@@ -186,6 +190,7 @@ private:
 	UT_sint32			m_iWindowWidth;
 	double				m_dOneTDU;
 	bool                            m_bCouldBeActive;
+	bool                            m_bConfigureChanged;
 };
 
 #endif /* AV_VIEW_H */

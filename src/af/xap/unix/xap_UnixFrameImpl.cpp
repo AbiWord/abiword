@@ -640,8 +640,17 @@ gint XAP_UnixFrameImpl::_fe::do_ZoomUpdate(gpointer /* XAP_UnixFrameImpl * */ p)
 				rClip.top = pGr->tlu(iNewHeight - iHeight);
 				rClip.width = pGr->tlu(iNewWidth)+1;
 				rClip.height = pGr->tlu(iHeight)+1;
+				xxx_UT_DEBUGMSG(("Drawing in zoom at x %d y %d height %d width %d \n",rClip.left,rClip.top,rClip.height,rClip.width));
 				pView->setWindowSize(iNewWidth, iNewHeight);
-				pView->draw(&rClip);
+				if(!pView->isConfigureChanged())
+				{
+						pView->draw(&rClip);
+				}
+				else
+				{
+						pView->draw();
+						pView->setConfigure(false);
+				}
 		}
 		if(pView)
 			pView->setWindowSize(iNewWidth, iNewHeight);
@@ -662,8 +671,17 @@ gint XAP_UnixFrameImpl::_fe::do_ZoomUpdate(gpointer /* XAP_UnixFrameImpl * */ p)
 				rClip.top = pGr->tlu(iNewHeight - iHeight);
 				rClip.width = pGr->tlu(iNewWidth)+1;
 				rClip.height = pGr->tlu(iHeight)+1;
+				xxx_UT_DEBUGMSG(("Drawing in zoom at x %d y %d height %d width %d \n",rClip.left,rClip.top,rClip.height,rClip.width));
 				pView->setWindowSize(iNewWidth, iNewHeight);
-				pView->draw(&rClip);
+				if(!pView->isConfigureChanged())
+				{
+						pView->draw(&rClip);
+				}
+				else
+				{
+						pView->draw();
+						pView->setConfigure(false);
+				}
 		}
 		if(pView)
 			pView->setWindowSize(iNewWidth, iNewHeight);
@@ -717,6 +735,9 @@ gint XAP_UnixFrameImpl::_fe::configure_event(GtkWidget* w, GdkEventConfigure *e)
 	{
 		pUnixFrameImpl->m_iNewWidth = e->width;
 		pUnixFrameImpl->m_iNewHeight = e->height;
+		pUnixFrameImpl->m_iNewY = e->y;
+		pUnixFrameImpl->m_iNewX = e->x;
+		xxx_UT_DEBUGMSG(("Drawing in zoom at x %d y %d height %d width %d \n",e->x,e->y,e->height,e->width));
 		XAP_App * pApp = XAP_App::getApp();
 		UT_sint32 x,y;
 		UT_uint32 width,height,flags;

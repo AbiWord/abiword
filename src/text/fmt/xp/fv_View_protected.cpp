@@ -5584,9 +5584,13 @@ void FV_View::_prefsListener( XAP_App * /*pApp*/, XAP_Prefs *pPrefs, UT_StringPt
 		UT_parseColor(pszTmpColor, pView->m_colorRevisions[9]);
 	}
 	pView->m_bgColorInitted = false; // force refresh/update on next getColorSelBackground () call
+	//
+	// Set this true to redraw the entire screen during the configure event
+	// Other we get lefover crap at the top of the window
+	//
+	pView->setConfigure(true);
 
 	// FIXME:jskov: is it necessary to do something here to cause a full redraw?
-
 	if (!pView->m_bWarnedThatRestartNeeded &&
 		( pPrefs->getPrefsValueBool(static_cast<const XML_Char*>(AP_PREF_KEY_DefaultDirectionRtl), &b) && b != pView->m_bDefaultDirectionRtl)
 		 || (pPrefs->getPrefsValueBool(static_cast<const XML_Char*>(XAP_PREF_KEY_UseHebrewContextGlyphs), &b) && b != pView->m_bUseHebrewContextGlyphs)
