@@ -174,11 +174,14 @@ void AP_Dialog_FormatFrame::autoUpdateMC(UT_Worker * pTimer)
  */
 void AP_Dialog_FormatFrame::askForGraphicPathName(void)
 {
+	UT_return_if_fail(m_pApp);
 	XAP_Frame * pFrame = m_pApp->getLastFocussedFrame();
 
+	UT_return_if_fail(pFrame);
 	XAP_DialogFactory * pDialogFactory
 		= static_cast<XAP_DialogFactory *>(pFrame->getDialogFactory());
 
+	UT_return_if_fail(pDialogFactory);
 	XAP_Dialog_FileOpenSaveAs * pDialog
 		= static_cast<XAP_Dialog_FileOpenSaveAs *>(pDialogFactory->requestDialog(XAP_DIALOG_ID_INSERT_PICTURE));
 	UT_return_if_fail (pDialog);
