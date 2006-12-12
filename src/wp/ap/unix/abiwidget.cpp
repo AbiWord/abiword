@@ -570,6 +570,9 @@ static bool _abi_widget_bindListenerToView(AbiWidget *widget, AV_View * pView)
 	UT_ASSERT(bResult);
 	private_data->m_pViewListener->setLID(lid);
 
+	// notify the listener that a new view has been bound
+	private_data->m_pViewListener->notify(pView, AV_CHG_ALL);
+
 	return bResult;
 }
 
