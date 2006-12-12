@@ -297,305 +297,114 @@ static const guint32 ABI_DEFAULT_HEIGHT = 250 ;
 /**************************************************************************/
 /**************************************************************************/
 
-#define ABIWORD_VIEW  	FV_View * pView = static_cast<FV_View *>(pAV_View)
+#define INSTALL_BOOL_SIGNAL(signal_offset, signal_name, signal_func) do { \
+	abiwidget_signals[signal_offset] = \
+		g_signal_new (signal_name, \
+					  G_TYPE_FROM_CLASS (klazz), \
+					  G_SIGNAL_RUN_LAST, \
+					  G_STRUCT_OFFSET (AbiWidgetClass, signal_func), \
+									  NULL, NULL, \
+									  g_cclosure_marshal_VOID__BOOLEAN, \
+									  G_TYPE_NONE, 1, G_TYPE_BOOLEAN); } while(0)
 
-// widget to emit signal on, view that fired the signal, and the integer index into abiwidget_actions below
-typedef void ( *AbiWidgetAction_fireSignal ) (AbiWidget * widget, AV_View * pAV_View, int item_number);
+#define INSTALL_INT_SIGNAL(signal_offset, signal_name, signal_func) do { \
+	abiwidget_signals[signal_offset] = \
+		g_signal_new (signal_name, \
+					  G_TYPE_FROM_CLASS (klazz), \
+					  G_SIGNAL_RUN_LAST, \
+					  G_STRUCT_OFFSET (AbiWidgetClass, signal_func), \
+									  NULL, NULL, \
+									  g_cclosure_marshal_VOID__INT, \
+									  G_TYPE_NONE, 1, G_TYPE_INT); } while(0)
 
-struct WidgetAction
-{
-	// refers to the type being marshalled to the signal. for example, if you wanted a toggle-able
-	// "bold" signal, this would be G_TYPE_BOOLEAN, and the signal would be 'void bold(gboolean)'
-	// if you wanted "font-name", use G_TYPE_STRING and 'void font_name(char *)'
-	// if you wanted "font size", use G_TYPE_INT and 'void font_size(int)'
-	// etc...
-	int    item_type;
+#define INSTALL_DOUBLE_SIGNAL(signal_offset, signal_name, signal_func) do { \
+	abiwidget_signals[signal_offset] = \
+		g_signal_new (signal_name, \
+					  G_TYPE_FROM_CLASS (klazz), \
+					  G_SIGNAL_RUN_LAST, \
+					  G_STRUCT_OFFSET (AbiWidgetClass, signal_func), \
+									  NULL, NULL, \
+									  g_cclosure_marshal_VOID__DOUBLE, \
+									  G_TYPE_NONE, 1, G_TYPE_DOUBLE); } while(0)
 
-	// gtk signal name that users connect to
-	char * gtk_signal_name;
+#define INSTALL_STRING_SIGNAL(signal_offset, signal_name, signal_func) do { \
+	abiwidget_signals[signal_offset] = \
+		g_signal_new (signal_name, \
+					  G_TYPE_FROM_CLASS (klazz), \
+					  G_SIGNAL_RUN_LAST, \
+					  G_STRUCT_OFFSET (AbiWidgetClass, signal_func), \
+									  NULL, NULL, \
+									  g_cclosure_marshal_VOID__STRING, \
+									  G_TYPE_NONE, 1, G_TYPE_STRING); } while(0)
 
-	// see ap_Toolbar_ActionSet.cpp - what view events are we interested in
-	int    interest_mask;
-
-	// function whose task is to fire the signal
-	AbiWidgetAction_fireSignal fire_signal;
+enum {
+	SIGNAL_BOLD,
+	SIGNAL_ITALIC,
+	SIGNAL_UNDERLINE,
+	SIGNAL_OVERLINE,
+	SIGNAL_LINE_THROUGH,
+	SIGNAL_TOPLINE,
+	SIGNAL_BOTTOMLINE,
+	SIGNAL_SUPERSCRIPT,
+	SIGNAL_SUBSCRIPT,
+	SIGNAL_CAN_UNDO,
+	SIGNAL_CAN_REDO,
+	SIGNAL_FONT_SIZE,
+	SIGNAL_FONT_FAMILY,
+	SIGNAL_LAST
 };
 
-static void fire_bool_char_prop (AbiWidget * widget, AV_View * pAV_View, int item_number);
-static void fire_double_char_prop (AbiWidget * widget, AV_View * pAV_View, int item_number);
-static void fire_string_char_prop (AbiWidget * widget, AV_View * pAV_View, int item_number);
-static void fire_undo_redo (AbiWidget * widget, AV_View * pAV_View, int item_number);
-
-static const struct WidgetAction abiwidget_actions [] = {
-	{ G_TYPE_BOOLEAN, "bold", AV_CHG_FMTCHAR | AV_CHG_MOTION, fire_bool_char_prop},
-	{ G_TYPE_BOOLEAN, "italic", AV_CHG_FMTCHAR | AV_CHG_MOTION, fire_bool_char_prop},
-	{ G_TYPE_BOOLEAN, "underline", AV_CHG_FMTCHAR | AV_CHG_MOTION, fire_bool_char_prop},
-	{ G_TYPE_BOOLEAN, "overline", AV_CHG_FMTCHAR | AV_CHG_MOTION, fire_bool_char_prop},
-	{ G_TYPE_BOOLEAN, "line-through", AV_CHG_FMTCHAR | AV_CHG_MOTION, fire_bool_char_prop},
-	{ G_TYPE_BOOLEAN, "topline", AV_CHG_FMTCHAR | AV_CHG_MOTION, fire_bool_char_prop},
-	{ G_TYPE_BOOLEAN, "bottomline", AV_CHG_FMTCHAR | AV_CHG_MOTION, fire_bool_char_prop},
-	{ G_TYPE_BOOLEAN, "subscript", AV_CHG_FMTCHAR | AV_CHG_MOTION, fire_bool_char_prop},
-	{ G_TYPE_BOOLEAN, "superscript", AV_CHG_FMTCHAR | AV_CHG_MOTION, fire_bool_char_prop},
-	{ G_TYPE_DOUBLE,  "font-size", AV_CHG_FMTCHAR | AV_CHG_MOTION, fire_double_char_prop},
-	{ G_TYPE_STRING,  "font-family", AV_CHG_FMTCHAR | AV_CHG_MOTION, fire_string_char_prop},
-	{ G_TYPE_BOOLEAN, "can-undo", AV_CHG_ALL, fire_undo_redo},
-	{ G_TYPE_BOOLEAN, "can-redo", AV_CHG_ALL, fire_undo_redo}
-};
-
-static guint abiwidget_signals [G_N_ELEMENTS(abiwidget_actions) + 1];
-
-static void fire_undo_redo (AbiWidget * widget, AV_View * pAV_View, int item_number)
-{
-	ABIWORD_VIEW;
-	gboolean value;
-
-	if (0 == strcmp(abiwidget_actions[item_number].gtk_signal_name, "can-undo"))
-		value = pView->canDo(true);
-	else
-		value = pView->canDo(false);
-
-	g_signal_emit (G_OBJECT(widget), abiwidget_signals[item_number], 0, value);
-}
-
-static void fire_double_char_prop (AbiWidget * widget, AV_View * pAV_View, int item_number)
-{
-	// todo: this can be made more generic. see ap_Toolbar_Functions.cpp for what i mean
-	ABIWORD_VIEW;
-
-	const XML_Char * prop = NULL;
-
-	if (0 == strcmp(abiwidget_actions[item_number].gtk_signal_name, "font-size"))
-		{
-			prop = "font-size";
-		}
-
-	if (prop)
-	{
-		// get current char properties from pView
-		const XML_Char ** props_in = NULL;
-		const XML_Char * sz = NULL;
-
-		if (!pView->getCharFormat(&props_in))
-			return;
-
-		// NB: maybe *no* properties are consistent across the selection
-		if (props_in && props_in[0])
-			sz = UT_getAttribute(prop, props_in);
-
-		if (sz)
-			{
-				double value;
-
-				value = atof(sz);
-
-				g_signal_emit (G_OBJECT(widget), abiwidget_signals[item_number], 0, value);
-			}
-	}
-}
-
-static void fire_string_char_prop (AbiWidget * widget, AV_View * pAV_View, int item_number)
-{
-	// todo: this can be made more generic. see ap_Toolbar_Functions.cpp for what i mean
-	ABIWORD_VIEW;
-
-	const XML_Char * prop = NULL;
-
-	if (0 == strcmp(abiwidget_actions[item_number].gtk_signal_name, "font-family"))
-		{
-			prop = "font-family";
-		}
-
-	if (prop)
-	{
-		// get current char properties from pView
-		const XML_Char ** props_in = NULL;
-		const XML_Char * sz = NULL;
-
-		if (!pView->getCharFormat(&props_in))
-			return;
-
-		// NB: maybe *no* properties are consistent across the selection
-		if (props_in && props_in[0])
-			sz = UT_getAttribute(prop, props_in);
-
-		if (sz)
-			{
-				g_signal_emit (G_OBJECT(widget), abiwidget_signals[item_number], 0, sz);
-			}
-	}
-}
-
-static void fire_bool_char_prop (AbiWidget * widget, AV_View * pAV_View, int item_number)
-{
-	// todo: this can be made more generic. see ap_Toolbar_Functions.cpp for what i mean
-	ABIWORD_VIEW;
-
-	const XML_Char * prop = NULL;
-	const XML_Char * val  = NULL;
-	bool bMultiple = false;
-
-	if (0 == strcmp(abiwidget_actions[item_number].gtk_signal_name, "bold"))
-		{
-			prop = "font-weight";
-			val = "bold";
-		}
-	else if (0 == strcmp(abiwidget_actions[item_number].gtk_signal_name, "italic"))
-		{
-			prop = "font-style";
-			val  = "italic";
-		}
-	else if (0 == strcmp(abiwidget_actions[item_number].gtk_signal_name, "underline"))
-		{
-			prop = "text-decoration";
-			val = "underline";
-			bMultiple = true;
-		}
-	else if (0 == strcmp(abiwidget_actions[item_number].gtk_signal_name, "overline"))
-		{
-			prop = "text-decoration";
-			val = "overline";
-			bMultiple = true;
-		}
-	else if (0 == strcmp(abiwidget_actions[item_number].gtk_signal_name, "line-through"))
-		{
-			prop = "text-decoration";
-			val = "line-through";
-			bMultiple = true;
-		}
-	else if (0 == strcmp(abiwidget_actions[item_number].gtk_signal_name, "topline"))
-		{
-			prop = "text-decoration";
-			val = "topline";
-			bMultiple = true;
-		}
-	else if (0 == strcmp(abiwidget_actions[item_number].gtk_signal_name, "bottomline"))
-		{
-			prop = "text-decoration";
-			val = "bottomline";
-			bMultiple = true;
-		}
-	else if (0 == strcmp(abiwidget_actions[item_number].gtk_signal_name, "superscript"))
-		{
-			prop = "text-position";
-			val = "superscript";
-		}
-	else if (0 == strcmp(abiwidget_actions[item_number].gtk_signal_name, "subscript"))
-		{
-			prop = "text-position";
-			val = "subscript";
-		}
-
-	if (prop && val)
-	{
-		// get current char properties from pView
-		const XML_Char ** props_in = NULL;
-		const XML_Char * sz = NULL;
-
-		if (!pView->getCharFormat(&props_in))
-			return;
-
-		// NB: maybe *no* properties are consistent across the selection
-		if (props_in && props_in[0])
-			sz = UT_getAttribute(prop, props_in);
-
-		if (sz)
-			{
-				gboolean value;
-
-				if (bMultiple)
-					value = (NULL != strstr(sz, val));
-				else
-					value = (0 == UT_strcmp(sz, val));
-
-				g_signal_emit (G_OBJECT(widget), abiwidget_signals[item_number], 0, value);
-			}
-	}
-}
-
-/**************************************************************************/
-/**************************************************************************/
+static guint abiwidget_signals[SIGNAL_LAST] = { 0 };
 
 static void _abi_widget_class_install_signals (AbiWidgetClass * klazz)
 {
-	for(size_t i = 0; i < G_N_ELEMENTS(abiwidget_actions); i++)
-		{
-			// switch on the type of signal we're going to emit, and install a new signal handler
-			if(abiwidget_actions[i].item_type == G_TYPE_BOOLEAN)
-				{
-					abiwidget_signals[i] =
-						g_signal_new (abiwidget_actions[i].gtk_signal_name,
-									  G_TYPE_FROM_CLASS (klazz),
-									  G_SIGNAL_RUN_LAST,
-									  /* clever hack to hook up abiwidget_actions to gtk+ signals autmatically without needing
-										 the function name - start with some base offset, then add (i+1) * sizeof(function_pointer) */
-									  G_STRUCT_OFFSET (AbiWidgetClass, __bogus_signal_begin) + ((i + 1) * sizeof(AbiWidgetAction_fireSignal)),
-									  NULL, NULL,
-									  g_cclosure_marshal_VOID__BOOLEAN,
-									  G_TYPE_NONE, 1, G_TYPE_BOOLEAN);
-				}
-			else if(abiwidget_actions[i].item_type == G_TYPE_DOUBLE)
-				{
-					abiwidget_signals[i] =
-						g_signal_new (abiwidget_actions[i].gtk_signal_name,
-									  G_TYPE_FROM_CLASS (klazz),
-									  G_SIGNAL_RUN_LAST,
-									  G_STRUCT_OFFSET (AbiWidgetClass, __bogus_signal_begin) + ((i + 1) * sizeof(AbiWidgetAction_fireSignal)),
-									  NULL, NULL,
-									  g_cclosure_marshal_VOID__DOUBLE,
-									  G_TYPE_NONE, 1, G_TYPE_DOUBLE);
-				}
-			else if(abiwidget_actions[i].item_type == G_TYPE_INT)
-				{
-					abiwidget_signals[i] =
-						g_signal_new (abiwidget_actions[i].gtk_signal_name,
-									  G_TYPE_FROM_CLASS (klazz),
-									  G_SIGNAL_RUN_LAST,
-									  G_STRUCT_OFFSET (AbiWidgetClass, __bogus_signal_begin) + ((i + 1) * sizeof(AbiWidgetAction_fireSignal)),
-									  NULL, NULL,
-									  g_cclosure_marshal_VOID__INT,
-									  G_TYPE_NONE, 1, G_TYPE_INT);
-				}
-			else if(abiwidget_actions[i].item_type == G_TYPE_STRING)
-				{
-					abiwidget_signals[i] =
-						g_signal_new (abiwidget_actions[i].gtk_signal_name,
-									  G_TYPE_FROM_CLASS (klazz),
-									  G_SIGNAL_RUN_LAST,
-									  G_STRUCT_OFFSET (AbiWidgetClass, __bogus_signal_begin) + ((i + 1) * sizeof(AbiWidgetAction_fireSignal)),
-									  NULL, NULL,
-									  g_cclosure_marshal_VOID__STRING,
-									  G_TYPE_NONE, 1, G_TYPE_STRING);
-				}
-		}
+	INSTALL_BOOL_SIGNAL(SIGNAL_BOLD, "bold", signal_bold);
+	INSTALL_BOOL_SIGNAL(SIGNAL_ITALIC, "italic", signal_italic);
+	INSTALL_BOOL_SIGNAL(SIGNAL_UNDERLINE, "underline", signal_underline);
+	INSTALL_BOOL_SIGNAL(SIGNAL_OVERLINE, "overline", signal_overline);
+	INSTALL_BOOL_SIGNAL(SIGNAL_LINE_THROUGH, "line-through", signal_line_through);
+	INSTALL_BOOL_SIGNAL(SIGNAL_TOPLINE, "topline", signal_topline);
+	INSTALL_BOOL_SIGNAL(SIGNAL_BOTTOMLINE, "bottomline", signal_bottomline);
+	INSTALL_BOOL_SIGNAL(SIGNAL_SUPERSCRIPT, "superscript", signal_superscript);
+	INSTALL_BOOL_SIGNAL(SIGNAL_SUBSCRIPT, "subscript", signal_subscript);
+	INSTALL_BOOL_SIGNAL(SIGNAL_CAN_UNDO, "can-undo", signal_can_undo);
+	INSTALL_BOOL_SIGNAL(SIGNAL_CAN_REDO, "can-redo", signal_can_redo);
+
+	INSTALL_DOUBLE_SIGNAL(SIGNAL_FONT_SIZE, "font-size", signal_font_size);
+	INSTALL_STRING_SIGNAL(SIGNAL_FONT_FAMILY, "font-family", signal_font_family);
 }
 
-static bool _abi_widget_fire_signals (AbiWidget * widget, AV_View * pView, const AV_ChangeMask mask)
-{
-	for(size_t i = 0; i < G_N_ELEMENTS(abiwidget_actions); i++)
-		{
-			// if this item doesn't care about changes of this type, skip it..
-			if ((abiwidget_actions[i].interest_mask & mask) == 0)
-				continue;
+#define FIRE_BOOL(query, var, fire) do { bool val = (query); if (val != var) { var = val; fire(val); } } while(0)
 
-			// item cares about this type of change. fire the signal
-			if(abiwidget_actions[i].fire_signal)
-				(*abiwidget_actions[i].fire_signal) (widget, pView, i);
-		}
+#define FIRE_BOOL_CHARFMT(prop, prop_val, multiple, var, fire) do {\
+const XML_Char * sz = UT_getAttribute(prop, props_in); \
+if (sz) \
+{ bool val; \
+if (multiple) \
+val = (NULL != strstr(sz, prop_val)); \
+else \
+val = (0 == UT_strcmp(sz, prop_val)); \
+if (val != var) { \
+var = val; \
+fire(var); \
+} \
+} \
+} while(0)
 
-	return true;
-}
+#define FIRE_DOUBLE_CHARFMT(prop, var, fire) do { const XML_Char * sz = UT_getAttribute(prop, props_in); if (sz) { double val = atof(sz); if (val != var) { var = val; fire(val); } } } while(0) 
 
-class AbiWidget_ViewListener : public AV_Listener
+#define FIRE_STRING_CHARFMT(prop, var, fire) do { const XML_Char * sz = UT_getAttribute(prop, props_in); if (sz) { if (strcmp(var.utf8_str(), sz) != 0) { var = sz; fire(sz); } } } while(0) 
+
+class Stateful_ViewListener : public AV_Listener
 {
 public:
-	AbiWidget_ViewListener(AbiWidget * pWidget,
-						   AV_View * pView)
+	Stateful_ViewListener(AV_View * pView)
+		: m_pView(static_cast<FV_View *>(pView))
 	{
-		m_pWidget = pWidget;
-		m_pView = pView;
+		init();
 	}
 
-	virtual ~AbiWidget_ViewListener(void)
+	virtual ~Stateful_ViewListener(void)
 	{
 		m_pView->removeListener(m_lid);
 	}
@@ -603,8 +412,50 @@ public:
 	virtual bool notify(AV_View * pView, const AV_ChangeMask mask)
 	{
 		UT_ASSERT(pView == m_pView);
-		
-		return _abi_widget_fire_signals (m_pWidget, pView, mask);
+
+		if ((AV_CHG_FMTCHAR | AV_CHG_MOTION) & mask)
+			{
+				// get current char properties from pView
+				const XML_Char ** props_in = NULL;
+				
+				if (!m_pView->getCharFormat(&props_in))
+					return true;
+
+				// NB: maybe *no* properties are consistent across the selection
+				if (props_in && props_in[0])
+					{
+						FIRE_BOOL_CHARFMT("font-weight", "bold", false, bold_, bold);
+						FIRE_BOOL_CHARFMT("font-style", "italic", false, italic_, italic);
+						FIRE_BOOL_CHARFMT("text-decoration", "underline", true, underline_, underline);
+						FIRE_BOOL_CHARFMT("text-decoration", "overline", true, overline_, overline);
+						FIRE_BOOL_CHARFMT("text-decoration", "line-through", true, line_through_, line_through);
+						FIRE_BOOL_CHARFMT("text-decoration", "topline", true, topline_, topline);
+						FIRE_BOOL_CHARFMT("text-decoration", "bottomline", true, bottomline_, bottomline);
+						FIRE_BOOL_CHARFMT("text-position", "superscript", true, superscript_, superscript);
+						FIRE_BOOL_CHARFMT("text-position", "subscript", true, subscript_, subscript);
+
+						FIRE_DOUBLE_CHARFMT("font-size", font_size_, font_size);
+						
+						do { 
+							const XML_Char * sz = UT_getAttribute("font-family", props_in); 
+							if (sz) { 
+								if (strcmp(font_family_.utf8_str(), sz) != 0) 
+									{ 
+										font_family_ = sz; 
+										font_family(sz); 
+									} 
+							} 
+						} while(0); 
+							//FIRE_STRING_CHARFMT("font-family", font_family_, font_family);
+					}
+			}
+		else if ((AV_CHG_ALL) & mask)
+			{
+				FIRE_BOOL(m_pView->canDo(true), can_undo_, can_undo);
+				FIRE_BOOL(m_pView->canDo(false), can_redo_, can_redo);
+			}
+
+		return true;
 	}
 
     virtual AV_ListenerType getType(void) 
@@ -619,10 +470,82 @@ public:
 		m_lid = lid;
 	}
 
-protected:
-	AbiWidget *         m_pWidget;
-	AV_View *			m_pView;
+	virtual void bold(bool value) {}
+	virtual void italic(bool value) {}
+	virtual void underline(bool value) {}
+	virtual void overline(bool value) {}
+	virtual void line_through(bool value) {}
+	virtual void topline(bool value) {}
+	virtual void bottomline(bool value) {}
+	virtual void subscript(bool value) {}
+	virtual void superscript(bool value) {}
+	virtual void font_size(double value) {}
+	virtual void font_family(const char * value) {}
+	virtual void can_undo(bool value) {}
+	virtual void can_redo(bool value) {}
+
+private:
+
+	void init()
+	{
+		bold_ = false;
+		italic_ = false;
+		underline_ = false;
+		overline_ = false;
+		line_through_ = false;
+		topline_ = false;
+		bottomline_ = false;
+		subscript_ = false;
+		superscript_ = false;
+		font_size_ = 0.;
+		font_family_ = "";
+		can_undo_ = false;
+		can_redo_ = false;
+	}
+
+	bool bold_;
+	bool italic_;
+	bool underline_;
+	bool overline_;
+	bool line_through_;
+	bool topline_;
+	bool bottomline_;
+	bool subscript_;
+	bool superscript_;
+	double font_size_;
+	UT_UTF8String font_family_;
+	bool can_undo_;
+	bool can_redo_;
+
+	FV_View *			m_pView;
 	AV_ListenerId       m_lid;
+};
+
+class AbiWidget_ViewListener : public Stateful_ViewListener
+{
+public:
+	AbiWidget_ViewListener(AbiWidget * pWidget,
+						   AV_View * pView)
+		: Stateful_ViewListener(pView), m_pWidget(pWidget)
+	{
+	}
+
+	virtual void bold(bool value) {g_signal_emit (G_OBJECT(m_pWidget), abiwidget_signals[SIGNAL_BOLD], 0, (gboolean)value);}
+	virtual void italic(bool value) {g_signal_emit (G_OBJECT(m_pWidget), abiwidget_signals[SIGNAL_ITALIC], 0, (gboolean)value);}
+	virtual void underline(bool value) {g_signal_emit (G_OBJECT(m_pWidget), abiwidget_signals[SIGNAL_UNDERLINE], 0, (gboolean)value);}
+	virtual void overline(bool value) {g_signal_emit (G_OBJECT(m_pWidget), abiwidget_signals[SIGNAL_OVERLINE], 0, (gboolean)value);}
+	virtual void line_through(bool value) {g_signal_emit (G_OBJECT(m_pWidget), abiwidget_signals[SIGNAL_LINE_THROUGH], 0, (gboolean)value);}
+	virtual void topline(bool value) {g_signal_emit (G_OBJECT(m_pWidget), abiwidget_signals[SIGNAL_TOPLINE], 0, (gboolean)value);}
+	virtual void bottomline(bool value) {g_signal_emit (G_OBJECT(m_pWidget), abiwidget_signals[SIGNAL_BOTTOMLINE], 0, (gboolean)value);}
+	virtual void subscript(bool value) {g_signal_emit (G_OBJECT(m_pWidget), abiwidget_signals[SIGNAL_SUBSCRIPT], 0, (gboolean)value);}
+	virtual void superscript(bool value) {g_signal_emit (G_OBJECT(m_pWidget), abiwidget_signals[SIGNAL_SUPERSCRIPT], 0, (gboolean)value);}
+	virtual void font_size(double value) {g_signal_emit (G_OBJECT(m_pWidget), abiwidget_signals[SIGNAL_FONT_SIZE], 0, value);}
+	virtual void font_family(const char * value) {g_signal_emit (G_OBJECT(m_pWidget), abiwidget_signals[SIGNAL_FONT_FAMILY], 0, value);}
+	virtual void can_undo(bool value) {g_signal_emit (G_OBJECT(m_pWidget), abiwidget_signals[SIGNAL_CAN_UNDO], 0, (gboolean)value);}
+	virtual void can_redo(bool value) {g_signal_emit (G_OBJECT(m_pWidget), abiwidget_signals[SIGNAL_CAN_REDO], 0, (gboolean)value);}
+
+private:
+	AbiWidget *         m_pWidget;
 };
 
 static void _abi_widget_releaseListener(AbiWidget *widget)

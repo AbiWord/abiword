@@ -189,8 +189,6 @@ extern "C" {
     Abi_EditMethod em_pad[20];
     
     /* signals */
-    void (* __bogus_signal_begin);
-
     void (* signal_bold) (AbiWidget * widget, gboolean value);
     void (* signal_italic) (AbiWidget * widget, gboolean value);
     void (* signal_underline) (AbiWidget * widget, gboolean value);
