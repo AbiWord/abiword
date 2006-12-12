@@ -1086,15 +1086,6 @@ abi_widget_realize (GtkWidget * widget)
 	g_signal_connect_after(G_OBJECT(widget),"map_event", 
 			       G_CALLBACK (s_abi_widget_map_cb),
 			       (gpointer) abi);
-	//
-	// connect a signal handler to the destroy signal of the window
-	//
-// 	g_signal_connect(G_OBJECT(widget),"delete_event", 
-//					 G_CALLBACK (s_abi_widget_delete),
-//					 (gpointer) abi);
-//	g_signal_connect(G_OBJECT(widget),"destroy", 
-//					 G_CALLBACK (s_abi_widget_delete),
-//					 (gpointer) abi);
 	abi_widget_map_to_screen( abi);
 }
 
@@ -1109,40 +1100,45 @@ abi_widget_destroy_gtk (GtkObject *object)
 	// here we free any self-created data
 	abi = ABI_WIDGET(object);
 
-	_abi_widget_releaseListener(abi);
-
 	// order of deletion is important here
 	bool bBonobo = false;
 	bool bKillApp = false;
-	if(abi->priv->m_pApp)
-	{
-		bBonobo = abi->priv->m_pApp->isBonoboRunning();
-		if(abi->priv->m_pFrame)
-		{
-#ifdef LOGFILE
-	fprintf(getlogfile(),"frame count before forgetting = %d \n",abi->priv->m_pApp->getFrameCount());
-#endif
-			if(abi->priv->m_pApp->getFrameCount() <= 1)
-			{
-				bKillApp = true;
-			}
-			abi->priv->m_pApp->forgetFrame(abi->priv->m_pFrame);
-			abi->priv->m_pFrame->close();
-			delete abi->priv->m_pFrame;
-#ifdef LOGFILE
-	fprintf(getlogfile(),"frame count = %d \n",abi->priv->m_pApp->getFrameCount());
-#endif
-		}
-		if(!abi->priv->externalApp)
-		{
-			abi->priv->m_pApp->shutdown();
-			delete abi->priv->m_pApp;
-			bKillApp = true;
-		}
-	}
-	g_free (abi->priv->m_szFilename);
 
-	g_free (abi->priv);
+	if(abi->priv) 
+		{
+			_abi_widget_releaseListener(abi);
+
+			if(abi->priv->m_pApp)
+				{
+					bBonobo = abi->priv->m_pApp->isBonoboRunning();
+					if(abi->priv->m_pFrame)
+						{
+#ifdef LOGFILE
+							fprintf(getlogfile(),"frame count before forgetting = %d \n",abi->priv->m_pApp->getFrameCount());
+#endif
+							if(abi->priv->m_pApp->getFrameCount() <= 1)
+								{
+									bKillApp = true;
+								}
+							abi->priv->m_pApp->forgetFrame(abi->priv->m_pFrame);
+							abi->priv->m_pFrame->close();
+							delete abi->priv->m_pFrame;
+#ifdef LOGFILE
+							fprintf(getlogfile(),"frame count = %d \n",abi->priv->m_pApp->getFrameCount());
+#endif
+						}
+					if(!abi->priv->externalApp)
+						{
+							abi->priv->m_pApp->shutdown();
+							delete abi->priv->m_pApp;
+							bKillApp = true;
+						}
+				}
+			g_free (abi->priv->m_szFilename);
+
+			g_free (abi->priv);
+			abi->priv = NULL;
+		}
 
 #ifdef LOGFILE
 	fprintf(getlogfile(),"abiwidget destroyed in abi_widget_destroy_gtk\n");
@@ -1172,47 +1168,6 @@ abi_widget_destroy_gtk (GtkObject *object)
 #endif
 }
 
-#ifdef HAVE_BONOBO
-
-static void
-abi_widget_bonobo_destroy (BonoboObject *object)
-{
-	AbiWidget * abi;
-	g_return_if_fail (object != NULL);
-	g_return_if_fail (IS_ABI_WIDGET(object));
-
-	// here we free any self-created data
-	abi = ABI_WIDGET(object);
-
-	// order of deletion is important here
-
-	if(abi->priv->m_pApp)
-	{
-		if(abi->priv->m_pFrame)
-		{
-			abi->priv->m_pApp->forgetFrame(abi->priv->m_pFrame);
-			delete abi->priv->m_pFrame;
-		}
-		if(!abi->priv->externalApp)
-		{
-			abi->priv->m_pApp->shutdown();
-			delete abi->priv->m_pApp;
-		}
-		abi->priv->m_pApp = NULL;
-	}
-	g_free (abi->priv->m_szFilename);
-
-	g_free (abi->priv);
-
-#ifdef LOGFILE
-	fprintf(getlogfile(),"abiwidget destroyed in bonobo_destroy \n");
-#endif
-	// chain up
-	BONOBO_CALL_PARENT (BONOBO_OBJECT_CLASS, destroy, BONOBO_OBJECT(object));
-}
-#endif
-
-
 static void
 abi_widget_class_init (AbiWidgetClass *abi_class)
 {
@@ -1221,26 +1176,15 @@ abi_widget_class_init (AbiWidgetClass *abi_class)
 	fprintf(getlogfile(),"Abi_widget class init \n");
 #endif
 
+	GObjectClass * gobject_class;
 	GtkObjectClass * object_class;
 	GtkWidgetClass * widget_class;
 	GtkContainerClass *container_class;
 	container_class = (GtkContainerClass*) abi_class;
 
+	gobject_class = (GObjectClass *)abi_class;
 	object_class = (GtkObjectClass *)abi_class;
 	widget_class = (GtkWidgetClass *)abi_class;
-//
-// Next to install properties to the object class too
-	GObjectClass *gobject_class = G_OBJECT_CLASS(abi_class);
-
-	// we need our own special destroy function
-#if 0 //def HAVE_BONOBO
-	if(XAP_App::getApp()->isBonoboRunning())
-	{
-		BonoboObjectClass *bonobo_object_class = (BonoboObjectClass *)abi_class;
-		bonobo_object_class->destroy = abi_widget_bonobo_destroy;
-//		gobject_class->finalize = abi_widget_finalize;
-	}
-#endif
 
 	// set our parent class
 	parent_class = (GtkBinClass *)
