@@ -441,7 +441,7 @@ public:
 						FIRE_STRING_CHARFMT("font-family", font_family_, font_family);
 					}
 			}
-		else if ((AV_CHG_ALL) & mask)
+		if ((AV_CHG_ALL) & mask)
 			{
 				FIRE_BOOL(m_pView->canDo(true), can_undo_, can_undo);
 				FIRE_BOOL(m_pView->canDo(false), can_redo_, can_redo);
