@@ -202,6 +202,7 @@ extern "C" {
     void (* signal_font_family) (AbiWidget * widget, const char * value);
     void (* signal_can_undo) (AbiWidget * widget, gboolean value);
     void (* signal_can_redo) (AbiWidget * widget, gboolean value);
+    void (* signal_is_dirty) (AbiWidget * widget, gboolean value);
 
     AbiSignal sig_pad[20];
   };

@@ -351,6 +351,7 @@ enum {
 	SIGNAL_CAN_REDO,
 	SIGNAL_FONT_SIZE,
 	SIGNAL_FONT_FAMILY,
+	SIGNAL_IS_DIRTY,
 	SIGNAL_LAST
 };
 
@@ -369,6 +370,7 @@ static void _abi_widget_class_install_signals (AbiWidgetClass * klazz)
 	INSTALL_BOOL_SIGNAL(SIGNAL_SUBSCRIPT, "subscript", signal_subscript);
 	INSTALL_BOOL_SIGNAL(SIGNAL_CAN_UNDO, "can-undo", signal_can_undo);
 	INSTALL_BOOL_SIGNAL(SIGNAL_CAN_REDO, "can-redo", signal_can_redo);
+	INSTALL_BOOL_SIGNAL(SIGNAL_IS_DIRTY, "is-dirty", signal_is_dirty);
 
 	INSTALL_DOUBLE_SIGNAL(SIGNAL_FONT_SIZE, "font-size", signal_font_size);
 	INSTALL_STRING_SIGNAL(SIGNAL_FONT_FAMILY, "font-family", signal_font_family);
@@ -443,6 +445,7 @@ public:
 			{
 				FIRE_BOOL(m_pView->canDo(true), can_undo_, can_undo);
 				FIRE_BOOL(m_pView->canDo(false), can_redo_, can_redo);
+				FIRE_BOOL(m_pView->getDocument()->isDirty(), is_dirty_, is_dirty);
 			}
 
 		return true;
@@ -473,6 +476,7 @@ public:
 	virtual void font_family(const char * value) {}
 	virtual void can_undo(bool value) {}
 	virtual void can_redo(bool value) {}
+	virtual void is_dirty(bool value) {}
 
 private:
 
@@ -491,6 +495,7 @@ private:
 		font_family_ = "";
 		can_undo_ = false;
 		can_redo_ = false;
+		is_dirty_ = false;
 	}
 
 	bool bold_;
@@ -506,6 +511,7 @@ private:
 	UT_UTF8String font_family_;
 	bool can_undo_;
 	bool can_redo_;
+	bool is_dirty_;
 
 	FV_View *			m_pView;
 	AV_ListenerId       m_lid;
@@ -533,6 +539,7 @@ public:
 	virtual void font_family(const char * value) {g_signal_emit (G_OBJECT(m_pWidget), abiwidget_signals[SIGNAL_FONT_FAMILY], 0, value);}
 	virtual void can_undo(bool value) {g_signal_emit (G_OBJECT(m_pWidget), abiwidget_signals[SIGNAL_CAN_UNDO], 0, (gboolean)value);}
 	virtual void can_redo(bool value) {g_signal_emit (G_OBJECT(m_pWidget), abiwidget_signals[SIGNAL_CAN_REDO], 0, (gboolean)value);}
+	virtual void is_dirty(bool value) {g_signal_emit (G_OBJECT(m_pWidget), abiwidget_signals[SIGNAL_IS_DIRTY], 0, (gboolean)value);}
 
 private:
 	AbiWidget *         m_pWidget;
