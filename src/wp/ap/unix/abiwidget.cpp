@@ -436,17 +436,7 @@ public:
 
 						FIRE_DOUBLE_CHARFMT("font-size", font_size_, font_size);
 						
-						do { 
-							const XML_Char * sz = UT_getAttribute("font-family", props_in); 
-							if (sz) { 
-								if (strcmp(font_family_.utf8_str(), sz) != 0) 
-									{ 
-										font_family_ = sz; 
-										font_family(sz); 
-									} 
-							} 
-						} while(0); 
-							//FIRE_STRING_CHARFMT("font-family", font_family_, font_family);
+						FIRE_STRING_CHARFMT("font-family", font_family_, font_family);
 					}
 			}
 		else if ((AV_CHG_ALL) & mask)
