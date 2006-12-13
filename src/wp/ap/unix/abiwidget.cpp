@@ -352,6 +352,10 @@ enum {
 	SIGNAL_FONT_SIZE,
 	SIGNAL_FONT_FAMILY,
 	SIGNAL_IS_DIRTY,
+	SIGNAL_LEFT_ALIGN,
+	SIGNAL_RIGHT_ALIGN,
+	SIGNAL_CENTER_ALIGN,
+	SIGNAL_JUSTIFY_ALIGN,
 	SIGNAL_LAST
 };
 
@@ -371,6 +375,11 @@ static void _abi_widget_class_install_signals (AbiWidgetClass * klazz)
 	INSTALL_BOOL_SIGNAL(SIGNAL_CAN_UNDO, "can-undo", signal_can_undo);
 	INSTALL_BOOL_SIGNAL(SIGNAL_CAN_REDO, "can-redo", signal_can_redo);
 	INSTALL_BOOL_SIGNAL(SIGNAL_IS_DIRTY, "is-dirty", signal_is_dirty);
+	INSTALL_BOOL_SIGNAL(SIGNAL_LEFT_ALIGN, "left-align", signal_left_align);
+	INSTALL_BOOL_SIGNAL(SIGNAL_RIGHT_ALIGN, "right-align", signal_right_align);
+	INSTALL_BOOL_SIGNAL(SIGNAL_CENTER_ALIGN, "center-align", signal_center_align);
+	INSTALL_BOOL_SIGNAL(SIGNAL_JUSTIFY_ALIGN, "justify-align", signal_justify_align);
+
 
 	INSTALL_DOUBLE_SIGNAL(SIGNAL_FONT_SIZE, "font-size", signal_font_size);
 	INSTALL_STRING_SIGNAL(SIGNAL_FONT_FAMILY, "font-family", signal_font_family);
@@ -441,6 +450,25 @@ public:
 						FIRE_STRING_CHARFMT("font-family", font_family_, font_family);
 					}
 			}
+
+		if ((AV_CHG_FMTBLOCK | AV_CHG_MOTION) & mask)
+			{
+				// get current char properties from pView
+				const XML_Char ** props_in = NULL;
+				
+				if (!m_pView->getBlockFormat(&props_in))
+					return true;
+
+				// NB: maybe *no* properties are consistent across the selection
+				if (props_in && props_in[0])
+					{
+						FIRE_BOOL_CHARFMT("text-align", "left", false, leftAlign_, leftAlign);
+						FIRE_BOOL_CHARFMT("text-align", "right", false, rightAlign_, rightAlign);
+						FIRE_BOOL_CHARFMT("text-align", "center", false, centerAlign_, centerAlign);
+						FIRE_BOOL_CHARFMT("text-align", "justify", false, justifyAlign_, justifyAlign);
+
+					}
+			}
 		if ((AV_CHG_ALL) & mask)
 			{
 				FIRE_BOOL(m_pView->canDo(true), can_undo_, can_undo);
@@ -477,6 +505,10 @@ public:
 	virtual void can_undo(bool value) {}
 	virtual void can_redo(bool value) {}
 	virtual void is_dirty(bool value) {}
+	virtual void leftAlign(bool value) {}
+	virtual void rightAlign(bool value) {}
+	virtual void centerAlign(bool value) {}
+	virtual void justifyAlign(bool value) {}
 
 private:
 
@@ -496,6 +528,10 @@ private:
 		can_undo_ = false;
 		can_redo_ = false;
 		is_dirty_ = false;
+		leftAlign_ = false;
+		rightAlign_ = false;
+		centerAlign_ = false;
+		justifyAlign_ = false;
 	}
 
 	bool bold_;
@@ -512,6 +548,10 @@ private:
 	bool can_undo_;
 	bool can_redo_;
 	bool is_dirty_;
+	bool leftAlign_;
+	bool rightAlign_;
+	bool centerAlign_;
+	bool justifyAlign_;
 
 	FV_View *			m_pView;
 	AV_ListenerId       m_lid;
@@ -540,6 +580,10 @@ public:
 	virtual void can_undo(bool value) {g_signal_emit (G_OBJECT(m_pWidget), abiwidget_signals[SIGNAL_CAN_UNDO], 0, (gboolean)value);}
 	virtual void can_redo(bool value) {g_signal_emit (G_OBJECT(m_pWidget), abiwidget_signals[SIGNAL_CAN_REDO], 0, (gboolean)value);}
 	virtual void is_dirty(bool value) {g_signal_emit (G_OBJECT(m_pWidget), abiwidget_signals[SIGNAL_IS_DIRTY], 0, (gboolean)value);}
+	virtual void leftAlign(bool value) {g_signal_emit (G_OBJECT(m_pWidget), abiwidget_signals[SIGNAL_LEFT_ALIGN], 0, (gboolean)value);}
+	virtual void rightAlign(bool value) {g_signal_emit (G_OBJECT(m_pWidget), abiwidget_signals[SIGNAL_RIGHT_ALIGN], 0, (gboolean)value);}
+	virtual void centerAlign(bool value) {g_signal_emit (G_OBJECT(m_pWidget), abiwidget_signals[SIGNAL_CENTER_ALIGN], 0, (gboolean)value);}
+	virtual void justifyAlign(bool value) {g_signal_emit (G_OBJECT(m_pWidget), abiwidget_signals[SIGNAL_JUSTIFY_ALIGN], 0, (gboolean)value);}
 
 private:
 	AbiWidget *         m_pWidget;

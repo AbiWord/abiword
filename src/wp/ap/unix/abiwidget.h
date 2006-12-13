@@ -203,6 +203,10 @@ extern "C" {
     void (* signal_can_undo) (AbiWidget * widget, gboolean value);
     void (* signal_can_redo) (AbiWidget * widget, gboolean value);
     void (* signal_is_dirty) (AbiWidget * widget, gboolean value);
+    void (* signal_left_align) (AbiWidget * widget, gboolean value);
+    void (* signal_right_align) (AbiWidget * widget, gboolean value);
+    void (* signal_center_align) (AbiWidget * widget, gboolean value);
+    void (* signal_justify_align) (AbiWidget * widget, gboolean value);
 
     AbiSignal sig_pad[20];
   };
