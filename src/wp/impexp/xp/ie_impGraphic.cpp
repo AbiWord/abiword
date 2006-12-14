@@ -31,6 +31,10 @@
 #include <gsf/gsf-input.h>
 #include <gsf/gsf-input-memory.h>
 
+#include "fg_Graphic.h"
+#include "fg_GraphicRaster.h"
+#include "fg_GraphicVector.h"
+
 /*****************************************************************/
 /*****************************************************************/
 
@@ -510,6 +514,26 @@ UT_Error IE_ImpGraphic::constructImporter(GsfInput * input,
 //  the other importGraphic function.  Used as a convenience for importing
 //  graphics from a file on disk.
 
+UT_Error IE_ImpGraphic::importGraphic(UT_ByteBuf * byteBuf,
+									  FG_Graphic ** ppfg)
+{
+	UT_return_val_if_fail (byteBuf != NULL, UT_IE_FILENOTFOUND);
+
+	GsfInput * input = gsf_input_memory_new_clone (byteBuf->getPointer(0), byteBuf->getLength());
+
+	// method assumes that we take ownership of the byteBuf
+	DELETEP(byteBuf);
+
+	if (!input)
+		return UT_IE_NOMEMORY;
+
+	UT_Error result = importGraphic(input, ppfg);
+
+	g_object_unref (G_OBJECT (input));
+
+	return result;
+}
+
 UT_Error IE_ImpGraphic::importGraphic(GsfInput * input,
 									  FG_Graphic ** ppfg)
 {
@@ -545,6 +569,55 @@ UT_Error IE_ImpGraphic::importGraphic(const char * szFilename,
 
 	g_object_unref (G_OBJECT (input));
 	return res;
+}
+
+UT_Error IE_ImpGraphic::convertGraphic(UT_ByteBuf* pBB,
+									   UT_ByteBuf** ppBB)
+{
+	UT_return_val_if_fail(pBB != NULL, UT_IE_FILENOTFOUND);
+	UT_return_val_if_fail(ppBB != NULL, UT_ERROR);
+
+	FG_Graphic * graphic = NULL;
+	UT_Error result;
+
+	result = IE_ImpGraphic::loadGraphic(pBB, IEGFT_Unknown, &graphic);
+
+	// method assumes that we take ownership of pBB
+	DELETEP(pBB);
+
+	if (result != UT_OK)
+		return result;
+
+	UT_ByteBuf * graphic_bytebuf;
+
+	if (graphic->getType() == FGT_Raster) {
+		graphic_bytebuf = static_cast<FG_GraphicRaster *>(graphic)->getRaster_PNG();
+	} else if (graphic->getType() == FGT_Vector) {
+		graphic_bytebuf = static_cast<FG_GraphicVector *>(graphic)->getVector_SVG();
+	} else {
+		UT_ASSERT_HARMLESS(UT_SHOULD_NOT_HAPPEN);
+		DELETEP(graphic);
+		return UT_ERROR;
+	}
+
+
+	UT_ByteBuf *out_graphic = new UT_ByteBuf();
+	if (!out_graphic) {
+		DELETEP(graphic);
+		return UT_IE_NOMEMORY;
+	}
+		
+	if (!out_graphic->ins (0, graphic_bytebuf->getPointer(0), graphic_bytebuf->getLength()))
+		{
+			DELETEP(graphic);
+			DELETEP(out_graphic);
+			return UT_IE_NOMEMORY;
+		}
+
+	DELETEP(graphic);
+	*ppBB = out_graphic;
+
+	return UT_OK;
 }
 
 UT_Error IE_ImpGraphic::loadGraphic(const char * szFilename,

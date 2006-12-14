@@ -133,15 +133,16 @@ public:
 
   //  Note subclassers:  ownership of pBB is passes here, so
   //  free pBB if you don't need it.
+
+  // you must override at least one of the importGraphic calls
   virtual UT_Error	importGraphic(UT_ByteBuf* pBB, 
-								  FG_Graphic ** ppfg) = 0;
-    
-  virtual UT_Error	convertGraphic(UT_ByteBuf* pBB,
-								   UT_ByteBuf** ppBB) = 0;
-  
+								  FG_Graphic ** ppfg);  
   virtual UT_Error  importGraphic(GsfInput * input,
 								  FG_Graphic ** ppfg);
-
+  
+  virtual UT_Error	convertGraphic(UT_ByteBuf* pBB,
+								   UT_ByteBuf** ppBB);
+  
   UT_Error	importGraphic(const char * szFilename,
 						  FG_Graphic ** ppfg);
 
