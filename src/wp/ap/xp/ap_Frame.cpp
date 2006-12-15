@@ -561,17 +561,21 @@ UT_Error AP_Frame::_showDocument(UT_uint32 iZoom)
 	if ( static_cast<AP_FrameData*>(m_pData)->m_bShowRuler  ) 
 	{
 		if ( static_cast<AP_FrameData*>(m_pData)->m_pTopRuler )
+		{
+			static_cast<AP_FrameData*>(m_pData)->m_pTopRuler->setZoom(iZoom);
 			static_cast<AP_FrameData*>(m_pData)->m_pTopRuler->draw(NULL);
-
+		}
 		if ( static_cast<AP_FrameData*>(m_pData)->m_pLeftRuler )
+		{
+			static_cast<AP_FrameData*>(m_pData)->m_pLeftRuler->setZoom(iZoom);
 			static_cast<AP_FrameData*>(m_pData)->m_pLeftRuler->draw(NULL);
+		}
 	}
 	if(isStatusBarShown())
 	{
 		if (static_cast<AP_FrameData*>(m_pData)->m_pStatusBar)
 			static_cast<AP_FrameData*>(m_pData)->m_pStatusBar->notify(m_pView, AV_CHG_ALL);
 	}
-
 	m_pView->notifyListeners(AV_CHG_ALL);
 	m_pView->focusChange(AV_FOCUS_HERE);
 

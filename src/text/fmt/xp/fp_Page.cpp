@@ -995,8 +995,10 @@ void fp_Page::draw(dg_DrawArgs* pDA, bool bAlwaysUseWhiteBackground)
 		while (pCol)
 		{
 			dg_DrawArgs da = *pDA;
+			UT_DEBUGMSG(("Draw in page page X offset %d \n",pDA->xoff));
 			da.xoff += pCol->getX();
 			da.yoff += pCol->getY(pDA->pG);
+			UT_DEBUGMSG(("Draw in page col X offset %d \n",da.xoff));
 			pCol->draw(&da);
 
 			fp_Column *pNextCol = pCol->getFollower();
@@ -1438,7 +1440,7 @@ void fp_Page::updateColumnX()
 
 		if(m_pView->getViewMode() == VIEW_NORMAL)
 		{
-			iLeftMargin = m_pView->getTabToggleAreaWidth();
+			iLeftMargin = m_pView->getNormalModeXOffset();
 			iRightMargin = 0;
 		}
 		else
@@ -1546,7 +1548,7 @@ void fp_Page::_reformatColumns(void)
 
 		if(m_pView->getViewMode() == VIEW_NORMAL)
 		{
-			iLeftMargin = m_pView->getTabToggleAreaWidth();
+			iLeftMargin = m_pView->getNormalModeXOffset();
 			iRightMargin = 0;
 		}
 		else

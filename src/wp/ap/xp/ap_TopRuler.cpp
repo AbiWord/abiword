@@ -543,7 +543,7 @@ void AP_TopRuler::_drawTicks(const UT_Rect * pClipRect,
 	// if xTo is less than xFrom we draw with values increasing to the left.
 
 	UT_ASSERT_HARMLESS(xFrom != xTo);
-	UT_ASSERT_HARMLESS(xFrom >= 0);
+	//	UT_ASSERT_HARMLESS(xFrom >= 0); can have xFrom <0 for normal mode
 	UT_ASSERT_HARMLESS(xTo >= 0);
 
 	UT_sint32 xFixed = static_cast<UT_sint32>(m_pG->tlu(UT_MAX(m_iLeftRulerWidth,s_iFixedWidth)));

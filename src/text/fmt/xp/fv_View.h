@@ -598,6 +598,7 @@ public:
 	PreViewMode 		getPreviewMode(void) { return m_previewMode;}
 
 	UT_uint32           getTabToggleAreaWidth() const;
+	UT_sint32           getNormalModeXOffset() const;
 	
 	void				setScreenUpdateOnGeneralUpdate( bool bDoit)
 		{m_bDontUpdateScreenOnGeneralUpdate = !bDoit;}

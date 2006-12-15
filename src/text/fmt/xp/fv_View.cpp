@@ -8660,6 +8660,22 @@ void FV_View::getTopRulerInfo(AP_TopRulerInfo * pInfo)
 	getTopRulerInfo(getPoint(), pInfo);
 }
 
+UT_sint32 FV_View::getNormalModeXOffset(void) const
+{
+	UT_ASSERT(getViewMode() != VIEW_PRINT);  
+	UT_sint32 iX = getTabToggleAreaWidth();
+	XAP_Frame * pFrame = static_cast<XAP_Frame*>(getParentData());
+	if(pFrame)
+	{
+			AP_FrameData *pFrameData = static_cast<AP_FrameData *>(pFrame->getFrameData());		
+			if(pFrameData && pFrameData->m_bIsWidget)
+			{
+				iX += 144; // add 0.1 inch for a left border to click in
+			}
+	}
+	return iX;
+}
+
 UT_uint32 FV_View::getTabToggleAreaWidth() const
 {
 		if(m_pTopRuler)
@@ -8777,8 +8793,9 @@ void FV_View::getTopRulerInfo(PT_DocPosition pos,AP_TopRulerInfo * pInfo)
 
 		if(getViewMode() == VIEW_NORMAL)
 		{
-			pInfo->u.c.m_xaLeftMargin = m_pTopRuler ? m_pTopRuler->getTabToggleAreaWidth() : 0;
-			pInfo->u.c.m_xaRightMargin = 0;
+			pInfo->u.c.m_xaLeftMargin = getNormalModeXOffset();
+			UT_sint32 iExtra = 72; 
+			pInfo->u.c.m_xaRightMargin = iExtra;
 		}
 		else
 		{
@@ -8812,8 +8829,9 @@ void FV_View::getTopRulerInfo(PT_DocPosition pos,AP_TopRulerInfo * pInfo)
 
 		if(getViewMode() == VIEW_NORMAL)
 		{
-			pInfo->u.c.m_xaLeftMargin = m_pTopRuler ? m_pTopRuler->getTabToggleAreaWidth() : 0;
-			pInfo->u.c.m_xaRightMargin = 0;
+			pInfo->u.c.m_xaLeftMargin = getNormalModeXOffset();
+			UT_sint32 iExtra = 72; 
+			pInfo->u.c.m_xaRightMargin = iExtra;
 		}
 		else
 		{
@@ -12134,23 +12152,19 @@ UT_uint32 FV_View::calculateZoomPercentForPageWidth()
 		(pageWidth * (static_cast<double>(getGraphics()->getResolution()) / 
 								   static_cast<double>(getGraphics()->getZoomPercentage()) * 100.0));
 	//
-	// Fill the whole width for widgetized abiword
+	// Fill the whole width for non-Print view
 	//
-	XAP_Frame * pFrame = static_cast<XAP_Frame*>(getParentData());
-	if(pFrame)
+	if(getViewMode() != VIEW_PRINT) 
 	{
-		AP_FrameData *pFrameData = static_cast<AP_FrameData *>(pFrame->getFrameData());		
-		if(pFrameData && pFrameData->m_bIsWidget && m_pLayout && (getViewMode() == VIEW_NORMAL) )
-		{
-				fl_DocSectionLayout *pDSL = m_pLayout->getFirstSection();
-				UT_sint32 iLeft = pDSL->getLeftMargin();
-				UT_sint32 iRight = pDSL->getRightMargin();
-				UT_sint32 iExtra = getGraphics()->tlu(10); // extra 10 pixels for rounding errors
-				xxx_UT_DEBUGMSG(("Doing extra calculation Left %d Right %d \n",iLeft,iRight));
-				scale = (getWindowWidth() - 2 * getPageViewLeftMargin() + iLeft +iRight - iExtra) /
-					(pageWidth * (static_cast<double>(getGraphics()->getResolution()) / 
-								  static_cast<double>(getGraphics()->getZoomPercentage()) * 100.0));
-		}
+		fl_DocSectionLayout *pDSL = m_pLayout->getFirstSection();
+		UT_sint32 iLeft = pDSL->getLeftMargin();
+		UT_sint32 iRight = pDSL->getRightMargin();
+		UT_sint32 iNormalOffset = getNormalModeXOffset();
+		UT_sint32 iExtra = 72; // extra 0.5 inches for rounding errors
+		xxx_UT_DEBUGMSG(("Doing extra calculation Left %d Right %d \n",iLeft,iRight));
+		scale = (getWindowWidth() - 2 * getPageViewLeftMargin() + iLeft +iRight - iExtra - iNormalOffset) /
+			(pageWidth * (static_cast<double>(getGraphics()->getResolution()) / 
+						  static_cast<double>(getGraphics()->getZoomPercentage()) * 100.0));
 	}
 	return static_cast<UT_uint32>(scale * 100.0);
 }
