@@ -1053,10 +1053,13 @@ cb_print_property (char const *name, GsfDocProp const *prop, PD_Document * doc)
 				  if(meta && UT_strcmp(meta,"\"\"")) { // ignore '""' props
 					  if(meta[0] == '"')
 						  meta++;
-					  if(meta && (strlen(meta) > 0) && meta[strlen(meta)-1] == '"')
-						  meta[strlen(meta)-1] = '\0';
-					  if(meta)
+					  int len = strlen(meta);
+					  if ((len > 0) && meta[len - 1] == '"') {
+						  meta[len - 1] = '\0';
+					  }
+					  if (*meta) {
 						  doc->setMetaDataProp(abi_metadata_name, meta);
+					  }
 				  }
 				  g_free (tmp);			  
 			  }
