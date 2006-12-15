@@ -1048,9 +1048,16 @@ cb_print_property (char const *name, GsfDocProp const *prop, PD_Document * doc)
 			
 			  if(abi_metadata_name != NULL) {
 				  char * tmp = g_strdup_value_contents (val);
-
-				  // TODO: it seems that the contents are oft inside of quotes. strip the quotes
-				  doc->setMetaDataProp(abi_metadata_name, tmp);
+				  char * meta = tmp;
+				  // strip beginning and ending quotes
+				  if(meta && UT_strcmp(meta,"\"\"")) { // ignore '""' props
+					  if(meta[0] == '"')
+						  meta++;
+					  if(meta && (strlen(meta) > 0) && meta[strlen(meta)-1] == '"')
+						  meta[strlen(meta)-1] = '\0';
+					  if(meta)
+						  doc->setMetaDataProp(abi_metadata_name, meta);
+				  }
 				  g_free (tmp);			  
 			  }
 		  }
