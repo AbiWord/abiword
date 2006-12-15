@@ -1583,7 +1583,7 @@ void XAP_Prefs::_sendPrefsSignal( UT_StringPtrMap *hash  )
 		tPrefsListenersPair *p = m_vecPrefsListeners.getNthItem( index );
 
 		UT_ASSERT_HARMLESS(p && p->m_pFunc);
-		if(!p)
+		if(!p || !p->m_pFunc)
 			continue;
 	
 		(p->m_pFunc)(m_pApp, this, hash, p->m_pData);
