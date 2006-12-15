@@ -4335,7 +4335,7 @@ UT_Error FV_View::cmdSaveAs(const char * szFilename, int ieft, bool cpy)
 	m_pDoc->setProperties(ppProps);
 
 	UT_Error tmpVar;
-	tmpVar = m_pDoc->saveAs(szFilename, ieft, cpy);
+	tmpVar = static_cast<AD_Document*>(m_pDoc)->saveAs(szFilename, ieft, cpy);
 	if (!tmpVar && cpy)
 	{
 		notifyListeners(AV_CHG_SAVE);

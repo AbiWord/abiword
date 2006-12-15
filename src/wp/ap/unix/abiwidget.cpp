@@ -1747,5 +1747,5 @@ abi_widget_save_ext ( AbiWidget * w, const char * fname,
   if ( extension != NULL && strlen ( extension ) > 0 && extension[0] == '.' )
     ieft = IE_Exp::fileTypeForSuffix ( extension ) ;
 
-  return ( doc->saveAs ( fname, ieft ) == UT_OK ? TRUE : FALSE ) ;
+  return ( static_cast<AD_Document*>(doc)->saveAs ( fname, ieft ) == UT_OK ? TRUE : FALSE ) ;
 }

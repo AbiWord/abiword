@@ -91,7 +91,7 @@ public:
 														  m_szFile.utf8_str(),
 														  m_count++));
 
-			if (UT_OK == m_doc->saveAs (out_file.utf8_str(), m_ieft, m_expProps.utf8_str()))
+			if (UT_OK == static_cast<AD_Document*>(m_doc)->saveAs (out_file.utf8_str(), m_ieft, m_expProps.utf8_str()))
 				return true;
 			return false;
 		}
@@ -276,7 +276,7 @@ bool AP_Convert::convertTo(const char * szSourceFilename,
 		DELETEP(listener);
 	} else {
 		uri = UT_go_shell_arg_to_uri (szTargetFilename);
-		error = pNewDoc->saveAs(uri, targetFormat, m_expProps.utf8_str());
+		error = static_cast<AD_Document*>(pNewDoc)->saveAs(uri, targetFormat, m_expProps.utf8_str());
 		g_free(uri);
 
 		switch (error) {

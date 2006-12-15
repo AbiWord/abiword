@@ -107,6 +107,11 @@ public:
 										  IEFileType ieft,
 										  IE_Exp ** ppie,
 										  IEFileType * pieft = NULL);
+	static UT_Error		constructExporter(PD_Document * pDocument,
+										  GsfOutput * output,
+										  IEFileType ieft,
+										  IE_Exp ** ppie,
+										  IEFileType * pieft = NULL);
 	static bool		    enumerateDlgLabels(UT_uint32 ndx,
 										   const char ** pszDesc,
 										   const char ** pszSuffixList,
@@ -120,6 +125,7 @@ public:
 	virtual ~IE_Exp();
 
 	UT_Error		writeFile(const char * szFilename);
+	UT_Error        writeFile(GsfOutput * fp);
 	virtual UT_Error	copyToBuffer(PD_DocumentRange * pDocRange, UT_ByteBuf * pBuf);
 	virtual void		write(const char * sz);
 	virtual void		write(const char * sz, UT_uint32 length);
@@ -180,6 +186,7 @@ private:
 	UT_ByteBuf *		m_pByteBuf;
 	char *                  m_szFileName;
 	GsfOutput *				m_fp;
+	bool                m_bOwnsFp;
 
 	bool				m_bCancelled;
 

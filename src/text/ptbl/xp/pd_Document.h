@@ -41,6 +41,9 @@
 #include "ut_misc.h"
 #include "px_ChangeRecord.h"
 
+#include <gsf/gsf-input.h>
+#include <gsf/gsf-output.h>
+
 class UT_ByteBuf;
 class UT_GrowBuf;
 class pt_PieceTable;
@@ -184,9 +187,15 @@ public:
 	virtual UT_Error		readFromFile(const char * szFilename, int ieft, const char * impProps = NULL);
 	virtual UT_Error		importFile(const char * szFilename, int ieft, bool markClean = false, bool bImportStylesFirst = true,
 									   const char * impProps = NULL);
+	UT_Error		readFromFile(GsfInput *input, int ieft, const char * impProps = NULL);
+	UT_Error		importFile(GsfInput *input, int ieft, bool markClean = false, bool bImportStylesFirst = true,
+							   const char * impProps = NULL);
 	virtual UT_Error		importStyles(const char * szFilename, int ieft, bool bDocProps = false);
 
 	virtual UT_Error		newDocument(void);
+
+	UT_Error  		saveAs(GsfOutput * output, int ieft, bool cpy = false, const char * expProps = NULL);
+
 
 	UT_Error                createRawDocument(void);
 	void                    finishRawCreation(void);
@@ -663,6 +672,7 @@ protected:
 
 	virtual UT_Error		_saveAs(const char * szFilename, int ieft, const char * expProps = NULL);
 	virtual UT_Error   		_saveAs(const char * szFilename, int ieft, bool cpy, const char * expProps = NULL);
+	virtual UT_Error        _saveAs(GsfOutput *output, int ieft, bool cpy, const char * expProps);
 	virtual UT_Error		_save(void);
 	
 	
@@ -680,6 +690,9 @@ protected:
 	UT_Error _importFile(const char * szFilename, int ieft,
 						 bool markClean, bool bImportStylesFirst,
 						 bool isImportFile, const char* impProps);
+	UT_Error _importFile(GsfInput * input, int ieft,
+						 bool markClean, bool bImportStylesFirst,
+						 bool bIsImportFile, const char* impProps);
 	
 public:
 	// these functions allow us to retrieve visual direction at document

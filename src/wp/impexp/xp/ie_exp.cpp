@@ -108,7 +108,7 @@ void IE_Exp::unregisterAllExporters ()
 IE_Exp::IE_Exp(PD_Document * pDocument, UT_Confidence_t fidelity)
 	: m_error(false), m_pDocument(pDocument),
 	  m_pDocRange (0), m_pByteBuf(0),
-	  m_szFileName(0), m_fp(0), m_fidelity(fidelity)
+	  m_szFileName(0), m_fp(0), m_bOwnsFp(false), m_fidelity(fidelity)
 {
 	m_pDocument->invalidateCache();
 }
@@ -163,7 +163,7 @@ bool IE_Exp::_writeBytes(const UT_Byte * sz)
 
 bool IE_Exp::_closeFile(void)
 {
-	if (m_fp) {
+	if (m_fp && m_bOwnsFp) {
 		if(!gsf_output_is_closed(m_fp))
 			gsf_output_close(m_fp);
 		g_object_unref(G_OBJECT(m_fp));
@@ -194,6 +194,15 @@ PD_DocumentRange * IE_Exp::getDocRange() const
   return m_pDocRange;
 }
 
+UT_Error IE_Exp::writeFile(GsfOutput * fp)
+{
+	UT_return_val_if_fail(m_pDocument, UT_IE_COULDNOTWRITE);
+	UT_return_val_if_fail(fp, UT_IE_COULDNOTWRITE);
+
+	m_fp = fp;
+	return _writeDocument();
+}
+
 UT_Error IE_Exp::writeFile(const char * szFilename)
 {
 	UT_return_val_if_fail(m_pDocument, UT_IE_COULDNOTWRITE);
@@ -203,6 +212,8 @@ UT_Error IE_Exp::writeFile(const char * szFilename)
 
 	if (!(m_fp = openFile(szFilename)))
 		return m_bCancelled ? UT_SAVE_CANCELLED : UT_IE_COULDNOTWRITE;
+
+	m_bOwnsFp = true;
 
 	UT_Error error = _writeDocument();
 
@@ -527,6 +538,17 @@ const char * IE_Exp::descriptionForFileType(IEFileType ieft)
 
 	// The passed in filetype is invalid.
 	return 0;
+}
+
+UT_Error IE_Exp::constructExporter(PD_Document * pDocument,
+								   GsfOutput * output,
+								   IEFileType ieft,
+								   IE_Exp ** ppie,
+								   IEFileType * pieft)
+{
+	UT_return_val_if_fail(output != NULL, UT_ERROR);
+
+	return constructExporter(pDocument, gsf_output_name(output), ieft, ppie, pieft);
 }
 
 /*! 

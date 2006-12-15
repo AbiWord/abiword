@@ -69,7 +69,6 @@
 #include "fl_DocLayout.h"
 
 #include "ut_go_file.h"
-#include <gsf/gsf-input.h>
 
 // our currently used DTD
 #define ABIWORD_FILEFORMAT_VERSION "1.1"
@@ -291,15 +290,44 @@ UT_Error PD_Document::importFile(const char * szFilename, int ieft,
 	return _importFile(szFilename, ieft, markClean, bImportStylesFirst, true, impProps);
 }
 
+UT_Error PD_Document::importFile(GsfInput * input, int ieft,
+								 bool markClean, bool bImportStylesFirst,
+								 const char* impProps)
+{
+	return _importFile(input, ieft, markClean, bImportStylesFirst, true, impProps);
+}
+
 UT_Error PD_Document::_importFile(const char * szFilename, int ieft,
 								  bool markClean, bool bImportStylesFirst,
 								  bool bIsImportFile, const char* impProps)
 {
-	if (!szFilename || !*szFilename)
+	GsfInput * input;
+
+	input = UT_go_file_open(szFilename, NULL);
+	if (!input)
+	{
+		UT_DEBUGMSG(("PD_Document::importFile -- invalid filename\n"));
+		return UT_INVALIDFILENAME;
+	}	
+
+	UT_Error result = _importFile(input, ieft, markClean, bImportStylesFirst, bIsImportFile, impProps);
+
+	g_object_unref (G_OBJECT (input));
+
+	return result;
+}
+
+UT_Error PD_Document::_importFile(GsfInput * input, int ieft,
+								  bool markClean, bool bImportStylesFirst,
+								  bool bIsImportFile, const char* impProps)
+{
+	if (!input)
 	{
 		UT_DEBUGMSG(("PD_Document::importFile -- invalid filename\n"));
 		return UT_INVALIDFILENAME;
 	}
+
+	const char * szFilename = gsf_input_name (input);
 
 	m_pPieceTable = new pt_PieceTable(this);
 	if (!m_pPieceTable)
@@ -334,11 +362,11 @@ UT_Error PD_Document::_importFile(const char * szFilename, int ieft,
 	if(bIsImportFile)
 		{
 			IEFileType savedAsType;
-			errorCode = IE_Imp::loadFile (this, szFilename, static_cast<IEFileType>(ieft), impProps, &savedAsType);
+			errorCode = IE_Imp::loadFile (this, input, static_cast<IEFileType>(ieft), impProps, &savedAsType);
 		}
 	else
 		{
-			errorCode = IE_Imp::loadFile(this, szFilename, static_cast<IEFileType>(ieft), impProps, &m_lastOpenedType);
+			errorCode = IE_Imp::loadFile(this, input, static_cast<IEFileType>(ieft), impProps, &m_lastOpenedType);
 			_syncFileTypes(false);
 
 			UT_ASSERT_HARMLESS(!getFilename());
@@ -452,6 +480,12 @@ UT_Error PD_Document::readFromFile(const char * szFilename, int ieft,
 								   const char * impProps)
 {
 	return _importFile(szFilename, ieft, true, true, false, impProps);
+}
+
+UT_Error PD_Document::readFromFile(GsfInput *input, int ieft,
+								   const char * impProps)
+{
+	return _importFile(input, ieft, true, true, false, impProps);
 }
 
 UT_Error PD_Document::importStyles(const char * szFilename, int ieft, bool bDocProps)
@@ -568,6 +602,11 @@ UT_Error PD_Document::newDocument(void)
 	return UT_OK;
 }
 
+UT_Error PD_Document::saveAs(GsfOutput *output, int ieft, bool cpy, const char * expProps)
+{
+	return _saveAs(output, ieft, cpy, expProps);
+}
+
 UT_Error PD_Document::_saveAs(const char * szFilename, int ieft,
 							 const char * expProps)
 {
@@ -577,14 +616,32 @@ UT_Error PD_Document::_saveAs(const char * szFilename, int ieft,
 UT_Error PD_Document::_saveAs(const char * szFilename, int ieft, bool cpy,
 							 const char * expProps)
 {
-	if (!szFilename)
+	GsfOutput * output;
+
+	output = UT_go_file_create (szFilename, NULL);
+	if(!output)
 		return UT_SAVE_NAMEERROR;
+
+	UT_Error result = _saveAs(output, ieft, cpy, expProps);
+
+	gsf_output_close(output);
+	g_object_unref(G_OBJECT(output));
+
+	return result;
+}
+
+UT_Error PD_Document::_saveAs(GsfOutput *output, int ieft, bool cpy, const char * expProps)
+{
+	if (!output)
+		return UT_SAVE_NAMEERROR;
+
+	const char * szFilename = gsf_output_name(output);
 
 	IE_Exp * pie = NULL;
 	UT_Error errorCode;
 	IEFileType newFileType;
 
-	errorCode = IE_Exp::constructExporter(this, szFilename, static_cast<IEFileType>(ieft), &pie, &newFileType);
+	errorCode = IE_Exp::constructExporter(this, output, static_cast<IEFileType>(ieft), &pie, &newFileType);
 	if (errorCode)
 	{
 		UT_DEBUGMSG(("PD_Document::Save -- could not construct exporter\n"));
@@ -607,7 +664,7 @@ UT_Error PD_Document::_saveAs(const char * szFilename, int ieft, bool cpy,
 		purgeRevisionTable();
 	}
 	
-	errorCode = pie->writeFile(szFilename);
+	errorCode = pie->writeFile(output);
 	delete pie;
 
 	if (errorCode)
