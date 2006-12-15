@@ -677,6 +677,9 @@ protected:
 
 	virtual void            _clearUndo();
 	
+	UT_Error _importFile(const char * szFilename, int ieft,
+						 bool markClean, bool bImportStylesFirst,
+						 bool isImportFile, const char* impProps);
 	
 public:
 	// these functions allow us to retrieve visual direction at document

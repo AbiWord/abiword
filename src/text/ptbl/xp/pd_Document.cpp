@@ -288,6 +288,13 @@ UT_Error PD_Document::importFile(const char * szFilename, int ieft,
 								 bool markClean, bool bImportStylesFirst,
 								 const char* impProps)
 {
+	return _importFile(szFilename, ieft, markClean, bImportStylesFirst, true, impProps);
+}
+
+UT_Error PD_Document::_importFile(const char * szFilename, int ieft,
+								  bool markClean, bool bImportStylesFirst,
+								  bool bIsImportFile, const char* impProps)
+{
 	if (!szFilename || !*szFilename)
 	{
 		UT_DEBUGMSG(("PD_Document::importFile -- invalid filename\n"));
@@ -324,8 +331,19 @@ UT_Error PD_Document::importFile(const char * szFilename, int ieft,
 	m_indexAP = 0xffffffff;
 	setAttrProp(NULL);
 
-	IEFileType savedAsType;
-	errorCode = IE_Imp::loadFile (this, szFilename, static_cast<IEFileType>(ieft), impProps, &savedAsType);
+	if(bIsImportFile)
+		{
+			IEFileType savedAsType;
+			errorCode = IE_Imp::loadFile (this, szFilename, static_cast<IEFileType>(ieft), impProps, &savedAsType);
+		}
+	else
+		{
+			errorCode = IE_Imp::loadFile(this, szFilename, static_cast<IEFileType>(ieft), impProps, &m_lastOpenedType);
+			_syncFileTypes(false);
+
+			UT_ASSERT_HARMLESS(!getFilename());
+			_setFilename(UT_strdup(szFilename));
+		}
 	repairDoc();
 	
 	m_bLoading = false;
@@ -377,7 +395,7 @@ UT_Error PD_Document::importFile(const char * szFilename, int ieft,
 	XAP_Frame * pFrame = XAP_App::getApp()->getLastFocussedFrame();
 
 	bool bHidden = (isMarkRevisions() && (getHighestRevisionId() <= getShowRevisionId()));
-	bHidden |= (!isMarkRevisions() && !isShowRevisions());
+	bHidden |= (!isMarkRevisions() && !isShowRevisions() && getRevisions().getItemCount());
 
 	if(pFrame && bHidden)
 	{
@@ -433,118 +451,7 @@ void PD_Document::finishRawCreation(void)
 UT_Error PD_Document::readFromFile(const char * szFilename, int ieft,
 								   const char * impProps)
 {
-	if (!szFilename || !*szFilename)
-	{
-		UT_DEBUGMSG(("PD_Document::readFromFile -- invalid filename\n"));
-		return UT_INVALIDFILENAME;
-	}
-
-#if 0
-	if ( !UT_isRegularFile(szFilename) )
-	{
-	  UT_DEBUGMSG (("PD_Document::readFromFile -- file (%s) is not plain file\n",szFilename));
-	  return UT_INVALIDFILENAME;
-	}
-
-	if (!UT_fileSize(szFilename))
-	{
-		UT_DEBUGMSG(("PD_Document::readFromFile -- file (%s) is empty\n",szFilename));
-		return UT_IE_BOGUSDOCUMENT;
-	}
-#endif
-	
-	m_pPieceTable = new pt_PieceTable(this);
-	if (!m_pPieceTable)
-	{
-		UT_DEBUGMSG(("PD_Document::readFromFile -- could not construct piece table\n"));
-		return UT_NOPIECETABLE;
-	}
-
-	m_pPieceTable->setPieceTableState(PTS_Loading);
-
-	{
-		UT_String template_list[6];
-		
-		buildTemplateList (template_list, "normal.awt");
-
-		bool success = false;
-		for (UT_uint32 i = 0; i < 6 && !success; i++)
-			success = (importStyles(template_list[i].c_str(), ieft, true) == UT_OK);
-
-		// don't worry if this fails
-	}
-
-	UT_Error errorCode;
-
-	// set standard document properties and attributes, such as dtd, lang,
-	// dom-dir, etc., which the importer can then overwite
-	// this also initializes m_indexAP
-	m_indexAP = 0xffffffff;
-	setAttrProp(NULL);
-
-	errorCode = IE_Imp::loadFile(this, szFilename, static_cast<IEFileType>(ieft), impProps, &m_lastOpenedType);
-	_syncFileTypes(false);
-	repairDoc();
-
-	if (errorCode)
-	{
-		UT_DEBUGMSG(("PD_Document::readFromFile -- could not import file\n"));
-		return errorCode;
-	}
-
-	UT_ASSERT_HARMLESS(!getFilename());
-	_setFilename(UT_strdup(szFilename));
-	
-	if (!getFilename())
-	{
-		UT_DEBUGMSG(("PD_Document::readFromFile -- no memory\n"));
-		return UT_IE_NOMEMORY;
-	}
-
-	setLastOpenedTime(time(NULL));
-	
-	// get document-wide settings from the AP
-	const PP_AttrProp * pAP = getAttrProp();
-	
-	if(pAP)
-	{
-		const XML_Char * pA = NULL;
-
-		if(pAP->getAttribute("styles", pA))
-		{
-			m_bLockedStyles = !(strcmp(pA, "locked"));
-		}
-
-		if(pAP->getAttribute("xid-max", pA))
-		{
-			UT_uint32 i = (UT_uint32)atoi(pA);
-			m_pPieceTable->setXIDThreshold(i);
-		}
-	}
-
-	m_pPieceTable->setPieceTableState(PTS_Editing);
-	updateFields();
-	_setClean();							// mark the document as not-dirty
-
-	if (strstr(szFilename, "normal.awt") == NULL)
-		XAP_App::getApp()->getPrefs()->addRecent(szFilename);
-
-	// show warning if document contains revisions and they are hidden
-	// from view ...
-	XAP_Frame * pFrame = XAP_App::getApp()->getLastFocussedFrame();
-
-	bool bHidden = (isMarkRevisions() && (getHighestRevisionId() <= getShowRevisionId()));
-	bHidden |= (!isMarkRevisions() && !isShowRevisions() && getRevisions().getItemCount());
-
-	if(pFrame && bHidden)
-	{
-		pFrame->showMessageBox(AP_STRING_ID_MSG_HiddenRevisions, 
-						       XAP_Dialog_MessageBox::b_O, 
-							   XAP_Dialog_MessageBox::a_OK);
-	}
-	UT_ASSERT(isOrigUUID());
-
-	return UT_OK;
+	return _importFile(szFilename, ieft, true, true, false, impProps);
 }
 
 UT_Error PD_Document::importStyles(const char * szFilename, int ieft, bool bDocProps)
