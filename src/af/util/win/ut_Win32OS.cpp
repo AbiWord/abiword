@@ -264,7 +264,7 @@ ATOM UT_RegisterClassEx(UINT style, WNDPROC wndproc, HINSTANCE hInstance,
 		const char * p = name;
 		UT_uint32 i = 0;
 		
-		while(p && *p && i < 100)
+		while(p && *p && i < 99) //don't overflow buff1 below
 		{
 			buff1[i] = *p;
 			++p;
@@ -275,7 +275,7 @@ ATOM UT_RegisterClassEx(UINT style, WNDPROC wndproc, HINSTANCE hInstance,
 		p = menu;
 		i = 0;
 		
-		while(p && *p && i < 100)
+		while(p && *p && i < 99) //don't overflow buff2 below
 		{
 			buff2[i] = *p;
 			++p;
@@ -334,7 +334,7 @@ HWND UT_CreateWindowEx(DWORD dwExStyle, const char * pszClassName, const char * 
 		const char * p = pszClassName;
 		UT_uint32 i = 0;
 		
-		while(p && *p && i < 100)
+		while(p && *p && i < 99) //don't overflow buff1 below
 		{
 			buff1[i] = *p;
 			++p;
