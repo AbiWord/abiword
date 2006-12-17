@@ -405,7 +405,6 @@ void AP_Win32Dialog_Lists::destroy(void)
 	// Check that our hWnd still is valid. This is not always the case,
 	// such as when shutting down the application.
 	m_bDestroy_says_stopupdating = true;
-	while (m_bAutoUpdate_happening_now == true) ;
 	m_pAutoUpdateLists->stop();
 	setAnswer(AP_Dialog_Lists::a_CLOSE);
 	if (IsWindow(m_hThisDlg))

@@ -167,7 +167,6 @@ void AP_QNXDialog_Lists::destroy()
 		return;
 	}
 	m_bDestroy_says_stopupdating = true;
-	while (m_bAutoUpdate_happening_now == true) ;
 	m_pAutoUpdateLists->stop();
 	setAnswer(AP_Dialog_Lists::a_CLOSE);
 	modeless_cleanup();

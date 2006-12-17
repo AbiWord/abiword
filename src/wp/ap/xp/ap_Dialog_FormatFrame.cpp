@@ -144,8 +144,6 @@ void AP_Dialog_FormatFrame::stopUpdater(void)
 		return;
 	}
 	m_bDestroy_says_stopupdating = true;
-	while (m_bAutoUpdate_happening_now == true) 
-	  ;
 	m_pAutoUpdaterMC->stop();
 	DELETEP(m_pAutoUpdaterMC);
 	m_pAutoUpdaterMC = NULL;
