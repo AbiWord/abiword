@@ -318,7 +318,7 @@ bool GR_Win32Image::convertToBuffer(UT_ByteBuf** ppBB) const
 	UT_Byte* pBits = ((unsigned char*) m_pDIB) + m_pDIB->bmiHeader.biSize + iSizeOfColorData;
 	
 	UT_Byte* pData = (UT_Byte*) malloc(iWidth * iHeight * 3);
-	UT_ASSERT(pData); // TODO outofmem
+	UT_return_val_if_fail(pData, false); // TODO outofmem
 		
 	UT_uint32 	iRow;
 	UT_uint32 	iCol;
