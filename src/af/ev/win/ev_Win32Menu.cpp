@@ -438,7 +438,7 @@ bool EV_Win32Menu::synthesizeMenu(XAP_Frame * pFrame, HMENU menuRoot)
 			break;
 
 		default:
-			UT_ASSERT(0);
+			UT_ASSERT_HARMLESS(0);
 			break;
 		}
 	}
@@ -617,7 +617,7 @@ bool EV_Win32Menu::onInitMenu(XAP_Frame * pFrame, AV_View * pView, HWND hWnd, HM
 			break;
 			
 		default:
-			UT_ASSERT(0);
+			UT_ASSERT_HARMLESS(0);
 			break;
 		}
 	}

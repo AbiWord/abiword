@@ -173,7 +173,7 @@ bool EV_Win32Toolbar::toolbarEvent(XAP_Toolbar_Id id,
 		{
 			// if this assert fires, you got a click while the button is down
 			// if your widget set won't let you prevent this, handle it here
-			UT_ASSERT(UT_TODO);
+			UT_ASSERT_HARMLESS(UT_TODO);
 			
 			// can safely ignore this event
 			return true;
@@ -274,7 +274,7 @@ LRESULT CALLBACK EV_Win32Toolbar::_ComboWndProc( HWND hWnd, UINT uMessage, WPARA
 						
 			if (id!=AP_TOOLBAR_ID_FMT_FONT)	/* Only owner draw the font selection*/
 			{
-				UT_ASSERT(0);
+				UT_ASSERT_HARMLESS(0);
 				break;
 			}
 								
@@ -494,7 +494,7 @@ bool EV_Win32Toolbar::synthesize(void)
 	bool bText = false;
 	const XML_Char * szValue = NULL;
 	m_pWin32App->getPrefsValue(XAP_PREF_KEY_ToolbarAppearance,&szValue);
-	UT_ASSERT((szValue) && (*szValue));
+	UT_return_val_if_fail((szValue) && (*szValue),false);
 
 	if (UT_XML_stricmp(szValue,"icon") == 0)
 	{
@@ -767,7 +767,7 @@ bool EV_Win32Toolbar::synthesize(void)
 				case EV_TBIT_Spacer:
 				case EV_TBIT_BOGUS:
 				default:
-					UT_ASSERT(0);
+					UT_ASSERT_HARMLESS(0);
 					break;
 				}
 
@@ -843,7 +843,7 @@ bool EV_Win32Toolbar::synthesize(void)
 			break;
 			
 		default:
-			UT_ASSERT(0);
+			UT_ASSERT_HARMLESS(0);
 		}
 
 		// add this button to the bar
@@ -988,7 +988,11 @@ bool EV_Win32Toolbar::refreshToolbar(AV_View * pView, AV_ChangeMask mask)
 
 		XAP_Toolbar_Id id = pLayoutItem->getToolbarId();
 		EV_Toolbar_Action * pAction = pToolbarActionSet->getAction(id);
-		UT_ASSERT(pAction);
+		if(!pAction)
+		{
+			UT_ASSERT_HARMLESS(pAction);
+			continue;
+		}
 
 		AV_ChangeMask maskOfInterest = pAction->getChangeMaskOfInterest();
 		if ((maskOfInterest & mask) == 0)					// if this item doesn't care about
@@ -1006,7 +1010,7 @@ bool EV_Win32Toolbar::refreshToolbar(AV_View * pView, AV_ChangeMask mask)
 			break;
 			
 		default:
-			UT_ASSERT(0);
+			UT_ASSERT_HARMLESS(0);
 			break;
 		}
 	}
@@ -1155,7 +1159,7 @@ bool EV_Win32Toolbar::_refreshItem(AV_View * pView, const EV_Toolbar_Action * pA
 
 		case EV_TBIT_BOGUS:
 		default:
-			UT_ASSERT(UT_SHOULD_NOT_HAPPEN);
+			UT_ASSERT_HARMLESS(UT_SHOULD_NOT_HAPPEN);
 			break;
 	}
 
@@ -1340,7 +1344,7 @@ bool EV_Win32Toolbar::repopulateStyles(void)
 // Now the combo box has to be refilled from this
 //						
 	const UT_GenericVector<const char*> * v = pControl->getContents();
-	UT_ASSERT(v);
+	UT_return_val_if_fail(v,false);
 	
 //
 // Now  we must remove and delete the old data so we add the new
@@ -1421,7 +1425,7 @@ void	EV_Win32Toolbar::onDropArrow(UINT cmd)
 		//
 
 		const EV_Toolbar_ActionSet * pToolbarActionSet = m_pWin32App->getToolbarActionSet();
-		UT_ASSERT(pToolbarActionSet);
+		UT_return_if_fail(pToolbarActionSet);
 
 		const EV_Toolbar_Action * pAction = pToolbarActionSet->getAction(id);
 		if (!pAction)	return;

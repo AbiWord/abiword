@@ -58,7 +58,7 @@ void  AP_Win32Dialog_Latex::activate(void)
 	iResult = ShowWindow( m_hDlg, SW_SHOW );
 	iResult = BringWindowToTop( m_hDlg );
 
-	UT_ASSERT((iResult != 0));
+	UT_ASSERT_HARMLESS((iResult != 0));
 }
 
 void AP_Win32Dialog_Latex::runModeless(XAP_Frame * pFrame)

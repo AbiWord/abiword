@@ -241,7 +241,7 @@ bool GR_Win32Graphics::queryProperties(GR_Graphics::Properties gp) const
 	case DGP_OPAQUEOVERLAY:
 		return true;
 	default:
-		UT_ASSERT(0);
+		UT_ASSERT_HARMLESS(0);
 		return false;
 	}
 }
@@ -359,7 +359,7 @@ GR_Font* GR_Win32Graphics::_findFont(const char* pszFontFamily,
 
 void GR_Win32Graphics::drawGlyph(UT_uint32 Char, UT_sint32 xoff, UT_sint32 yoff)
 {
-	UT_ASSERT(UT_TODO);
+	UT_ASSERT_HARMLESS(UT_TODO);
 }
 
 void GR_Win32Graphics::drawChar(UT_UCSChar Char, UT_sint32 xoff, UT_sint32 yoff)
@@ -595,7 +595,7 @@ void GR_Win32Graphics::drawChars(const UT_UCSChar* pChars,
 			}
 			else
 			{
-				UT_ASSERT(UT_SHOULD_NOT_HAPPEN);
+				UT_ASSERT_HARMLESS(UT_SHOULD_NOT_HAPPEN);
 				goto simple_exttextout;
 			}
 		}
@@ -699,7 +699,7 @@ UT_sint32 GR_Win32Graphics::measureUnRemappedChar(const UT_UCSChar c)
 	UT_DEBUGMSG(("GR_Win32Graphics::measureUnRemappedChar\n"));	
 	#endif
 
-	UT_ASSERT(m_pFont);
+	UT_return_val_if_fail(m_pFont,0);
 	UT_sint32 iWidth = m_pFont->measureUnRemappedChar(c);
 
 	if (iWidth==GR_CW_UNKNOWN || iWidth==GR_CW_ABSENT)
@@ -762,7 +762,7 @@ void GR_Win32Graphics::drawLine(UT_sint32 x1, UT_sint32 y1, UT_sint32 x2, UT_sin
 		case LINE_DOTTED:           penStyle = PS_DOT;   break;
 
 		default:
-			UT_ASSERT(UT_NOT_IMPLEMENTED);
+			UT_ASSERT_HARMLESS(UT_NOT_IMPLEMENTED);
 			penStyle = PS_SOLID;
 	}
 	
@@ -1117,7 +1117,7 @@ void GR_Win32Graphics::setClipRect(const UT_Rect* pRect)
 	else		// stop clipping
 		res = SelectClipRgn(m_hdc, NULL);
 
-	UT_ASSERT(res != ERROR);
+	UT_ASSERT_HARMLESS(res != ERROR);
 }
 
 GR_Image* GR_Win32Graphics::createNewImage(const char* pszName, const UT_ByteBuf* pBB,
@@ -1140,7 +1140,7 @@ GR_Image* GR_Win32Graphics::createNewImage(const char* pszName, const UT_ByteBuf
 
 void GR_Win32Graphics::drawImage(GR_Image* pImg, UT_sint32 xDest, UT_sint32 yDest)
 {
-	UT_ASSERT(pImg);
+	UT_return_if_fail(pImg);
 	
 	xDest = (UT_sint32)((double)_tduX(xDest) * m_fXYRatio);
 	yDest = _tduY(yDest);
@@ -1219,7 +1219,7 @@ HWND GR_Win32Graphics::getHwnd(void) const
 void GR_Win32Graphics::setColorSpace(GR_Graphics::ColorSpace c)
 {
 	// TODO:  maybe?
-	UT_ASSERT(UT_SHOULD_NOT_HAPPEN);
+	UT_ASSERT_HARMLESS(UT_SHOULD_NOT_HAPPEN);
 }
 
 GR_Graphics::ColorSpace GR_Win32Graphics::getColorSpace(void) const
@@ -1261,7 +1261,7 @@ void GR_Win32Graphics::handleSetCursorMessage(void)
 		if(!bDoneThisAlready)
 		{
 			bDoneThisAlready = true;
-			UT_ASSERT(UT_NOT_IMPLEMENTED);
+			UT_ASSERT_HARMLESS(UT_NOT_IMPLEMENTED);
 		}
 		
 	}
@@ -2085,7 +2085,7 @@ void GR_Win32Graphics::restoreRectangle(UT_uint32 iIndx)
 	UT_Rect * r = (UT_Rect*)m_vSaveRect.getNthItem(iIndx);
 	HBITMAP hBit = (HBITMAP)m_vSaveRectBuf.getNthItem(iIndx);
 	
-	UT_ASSERT(r);
+	UT_return_if_fail(r);
 	UT_ASSERT(hBit);
 	
 	UT_uint32 iWidth = (UT_sint32)((double)_tduR(r->width) * m_fXYRatio);
