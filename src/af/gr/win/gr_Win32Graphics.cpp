@@ -945,6 +945,7 @@ bool GR_Win32Graphics::startPage(const char * szPageLabel, UT_uint32 pageNumber,
 	if (m_hDevMode)
 	{
 		DEVMODE *pDevMode = (DEVMODE*) GlobalLock(m_hDevMode);
+		UT_return_val_if_fail(pDevMode, false); //GlobalLock can return NULL
 		pDevMode->dmFields = DM_ORIENTATION | DM_PAPERLENGTH | DM_PAPERWIDTH;
 		pDevMode->dmOrientation = (bPortrait) ? DMORIENT_PORTRAIT : DMORIENT_LANDSCAPE;
 		pDevMode->dmPaperSize = 0;
