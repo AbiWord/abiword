@@ -154,7 +154,7 @@ bool EV_Win32Toolbar::toolbarEvent(XAP_Toolbar_Id id,
 	
 
 	const EV_Toolbar_ActionSet * pToolbarActionSet = m_pWin32App->getToolbarActionSet();
-	UT_ASSERT(pToolbarActionSet);
+	UT_return_val_if_fail(pToolbarActionSet,false);
 
 	const EV_Toolbar_Action * pAction = pToolbarActionSet->getAction(id);
 	if (!pAction)
@@ -193,7 +193,7 @@ bool EV_Win32Toolbar::toolbarEvent(XAP_Toolbar_Id id,
 		UT_ASSERT(id== AP_TOOLBAR_ID_COLOR_BACK || id== AP_TOOLBAR_ID_COLOR_FORE);
 		
 		const EV_Toolbar_ActionSet * pToolbarActionSet = m_pWin32App->getToolbarActionSet();
-		UT_ASSERT(pToolbarActionSet);
+		UT_return_val_if_fail(pToolbarActionSet,false);
 
 		const EV_Toolbar_Action * pAction = pToolbarActionSet->getAction(id);
 
@@ -226,7 +226,7 @@ bool EV_Win32Toolbar::toolbarEvent(XAP_Toolbar_Id id,
 		return false;
 	
 	const EV_EditMethodContainer * pEMC = m_pWin32App->getEditMethodContainer();
-	UT_ASSERT(pEMC);
+	UT_return_val_if_fail(pEMC,false);
 
 	EV_EditMethod * pEM = pEMC->findEditMethodByName(szMethodName);
 	UT_ASSERT(pEM);						// make sure it's bound to something
@@ -588,7 +588,11 @@ bool EV_Win32Toolbar::synthesize(void)
 	for (UT_uint32 k=0; (k < nrLabelItemsInLayout); k++)
 	{
 		EV_Toolbar_LayoutItem * pLayoutItem = m_pToolbarLayout->getLayoutItem(k);
-		UT_ASSERT(pLayoutItem);
+		if(!pLayoutItem)
+		{
+			UT_ASSERT_HARMLESS(pLayoutItem);
+			continue;
+		}
 
 		XAP_Toolbar_Id id = pLayoutItem->getToolbarId();
 		EV_Toolbar_Action * pAction = pToolbarActionSet->getAction(id);
@@ -644,7 +648,7 @@ bool EV_Win32Toolbar::synthesize(void)
 				case EV_TBIT_ComboBox:
 					{
 						EV_Toolbar_Control * pControl = pFactory->getControl(this, id);
-						UT_ASSERT(pControl);
+						UT_ASSERT_HARMLESS(pControl);
 
 						int iWidth = 100;
 
@@ -699,7 +703,7 @@ bool EV_Win32Toolbar::synthesize(void)
 							pControl->populate();
 
 							const UT_GenericVector<const char*> * v = pControl->getContents();
-							UT_ASSERT(v);
+							UT_ASSERT_HARMLESS(v);
 
 							SendMessage(hwndCombo, WM_SETREDRAW, FALSE,0);
 
@@ -855,7 +859,11 @@ bool EV_Win32Toolbar::synthesize(void)
 		for (UT_uint32 k=0; (k < nrLabelItemsInLayout); k++)
 		{
 			EV_Toolbar_LayoutItem * pLayoutItem = m_pToolbarLayout->getLayoutItem(k);
-			UT_ASSERT(pLayoutItem);
+			if(!pLayoutItem)
+			{
+				UT_ASSERT_HARMLESS(pLayoutItem);
+				continue;
+			}
 
 			XAP_Toolbar_Id id = pLayoutItem->getToolbarId();
 			EV_Toolbar_Action * pAction = pToolbarActionSet->getAction(id);
@@ -972,7 +980,11 @@ bool EV_Win32Toolbar::refreshToolbar(AV_View * pView, AV_ChangeMask mask)
 	for (UT_uint32 k=0; (k < nrLabelItemsInLayout); k++)
 	{
 		EV_Toolbar_LayoutItem * pLayoutItem = m_pToolbarLayout->getLayoutItem(k);
-		UT_ASSERT(pLayoutItem);
+		if(!pLayoutItem)
+		{
+			UT_ASSERT_HARMLESS(pLayoutItem);
+			continue;
+		}
 
 		XAP_Toolbar_Id id = pLayoutItem->getToolbarId();
 		EV_Toolbar_Action * pAction = pToolbarActionSet->getAction(id);
@@ -1005,7 +1017,7 @@ bool EV_Win32Toolbar::refreshToolbar(AV_View * pView, AV_ChangeMask mask)
 bool EV_Win32Toolbar::_refreshID(XAP_Toolbar_Id id)
 {
 	const EV_Toolbar_ActionSet * pToolbarActionSet = m_pWin32App->getToolbarActionSet();
-	UT_ASSERT(pToolbarActionSet);
+	UT_return_val_if_fail(pToolbarActionSet,false);
 
 	EV_Toolbar_Action * pAction = pToolbarActionSet->getAction(id);
 	UT_ASSERT(pAction);
@@ -1191,7 +1203,7 @@ bool EV_Win32Toolbar::getToolTip(LPARAM lParam)
 
 void EV_Win32Toolbar::show(void)
 {
-	UT_ASSERT(m_pWin32Frame);
+	UT_return_if_fail(m_pWin32Frame);
 	HWND hRebar = static_cast<XAP_Win32FrameImpl*>(m_pWin32Frame->getFrameImpl())->getToolbarWindow();
 	UT_ASSERT(hRebar);
 	const int iBand = _getBandForHwnd(m_hwnd);
@@ -1203,7 +1215,7 @@ void EV_Win32Toolbar::show(void)
 
 void EV_Win32Toolbar::hide(void)
 {
-	UT_ASSERT(m_pWin32Frame);
+	UT_return_if_fail(m_pWin32Frame);
 	HWND hRebar = static_cast<XAP_Win32FrameImpl*>(m_pWin32Frame->getFrameImpl())->getToolbarWindow();
 	UT_ASSERT(hRebar);
 	const int iBand = _getBandForHwnd(m_hwnd);
@@ -1315,7 +1327,7 @@ bool EV_Win32Toolbar::repopulateStyles(void)
 //
   //	UT_ASSERT(wd->m_id == AP_TOOLBAR_ID_FMT_STYLE);
 	XAP_Toolbar_ControlFactory * pFactory = m_pWin32App->getControlFactory();
-	UT_ASSERT(pFactory);
+	UT_return_val_if_fail(pFactory,false);
 	EV_Toolbar_Control * pControl = pFactory->getControl(this, id);
 	AP_Win32Toolbar_StyleCombo * pStyleC = static_cast<AP_Win32Toolbar_StyleCombo *>(pControl);
 	pStyleC->repopulate();
@@ -1389,7 +1401,7 @@ void	EV_Win32Toolbar::onDropArrow(UINT cmd)
 {
 	AV_View * pView = m_pWin32Frame->getCurrentView();
 	XAP_Frame * pFrame = (XAP_Frame *) pView->getParentData();
-	UT_ASSERT(pFrame);
+	UT_return_if_fail(pFrame);
 
 	UT_UCS4String ucs4color;
 	int id = ItemIdFromWmCommand(cmd);
@@ -1401,7 +1413,7 @@ void	EV_Win32Toolbar::onDropArrow(UINT cmd)
 
 	AP_Dialog_Background * pDialog
 		= (AP_Dialog_Background *)(pDialogFactory->requestDialog(AP_DIALOG_ID_BACKGROUND));
-	UT_ASSERT(pDialog);
+	UT_ASSERT_HARMLESS(pDialog);
 	if (pDialog)
 	{
 		//

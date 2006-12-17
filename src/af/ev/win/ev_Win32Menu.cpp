@@ -155,7 +155,7 @@ static const char * _ev_GetLabelName(XAP_Win32App * pWin32App,
 		if (szMethodName)
 		{
 			const EV_EditMethodContainer * pEMC = pWin32App->getEditMethodContainer();
-			UT_ASSERT(pEMC);
+			UT_return_val_if_fail(pEMC, NULL);
 
 			EV_EditMethod * pEM = pEMC->findEditMethodByName(szMethodName);
 			UT_ASSERT(pEM);					// make sure it's bound to something
@@ -280,19 +280,17 @@ bool EV_Win32Menu::onCommand(AV_View * pView,
 	// return true iff handled.
 
 	const EV_Menu_ActionSet * pMenuActionSet = m_pWin32App->getMenuActionSet();
-	UT_ASSERT(pMenuActionSet);
+	UT_return_val_if_fail(pMenuActionSet, false);
 
 	const EV_Menu_Action * pAction = pMenuActionSet->getAction(id);
 	if (!pAction)
 		return false;
 
 	const char * szMethodName = pAction->getMethodName();
-	UT_ASSERT(szMethodName);
-	if (!szMethodName)
-		return false;
+	UT_return_val_if_fail(szMethodName, false);
 	
 	const EV_EditMethodContainer * pEMC = m_pWin32App->getEditMethodContainer();
-	UT_ASSERT(pEMC);
+	UT_return_val_if_fail(pEMC, false);
 
 	EV_EditMethod * pEM = pEMC->findEditMethodByName(szMethodName);
 	UT_ASSERT(pEM);						// make sure it's bound to something
@@ -329,7 +327,11 @@ bool EV_Win32Menu::synthesizeMenu(XAP_Frame * pFrame, HMENU menuRoot)
 	{
 		
 		EV_Menu_LayoutItem * pLayoutItem = m_pMenuLayout->getLayoutItem(k);
-		UT_ASSERT(pLayoutItem);
+		if(!pLayoutItem)
+		{
+			UT_ASSERT_HARMLESS(pLayoutItem);
+			continue;
+		}
 		
 		XAP_Menu_Id id = pLayoutItem->getMenuId();
 		const EV_Menu_Action * pAction = pMenuActionSet->getAction(id);
