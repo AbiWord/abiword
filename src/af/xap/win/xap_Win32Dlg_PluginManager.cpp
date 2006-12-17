@@ -188,11 +188,24 @@ void XAP_Win32Dialog_PluginManager::event_Load()
 	UT_uint32 filterCount = 1;
 	const char ** szDescList = (const char **) UT_calloc(filterCount + 1,
 													  sizeof(char *));
+	UT_return_if_fail(szDescList);
 	const char ** szSuffixList = (const char **) UT_calloc(filterCount + 1,
 														sizeof(char *));
+	if(!szSuffixList)
+	{
+		UT_ASSERT_HARMLESS(szSuffixList);
+		FREEP(szDescList);
+		return;
+	}
 	IEFileType * nTypeList = (IEFileType *) UT_calloc(filterCount + 1,
 												   sizeof(IEFileType));
-	
+	if(!nTypeList)
+	{
+		UT_ASSERT_HARMLESS(nTypeList);
+		FREEP(szDescList);
+		FREEP(szSuffixList);
+		return;
+	}
 	// we probably shouldn't hardcode this
 	// HP-UX uses .sl, for instance
 	szDescList[0] = "AbiWord Plugin (.dll)";
