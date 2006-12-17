@@ -839,6 +839,8 @@ void AP_Win32Dialog_Lists::_updateCaption()
 
 void AP_Win32Dialog_Lists::_previewExposed()
 {
+	UT_return_if_fail(IsWindow(m_hThisDlg));
+
 	if (m_pPreviewWidget)
 	{
 		setbisCustomized(true);
