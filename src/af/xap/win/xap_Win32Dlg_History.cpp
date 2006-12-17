@@ -64,7 +64,7 @@ XAP_Win32Dialog_History::~XAP_Win32Dialog_History(void)
 
 void XAP_Win32Dialog_History::runModal(XAP_Frame * pFrame)
 {
-	UT_ASSERT(pFrame);
+	UT_return_if_fail(pFrame);
 	// raise the dialog
 	XAP_Win32App * pWin32App = static_cast<XAP_Win32App *>(m_pApp);
 
@@ -79,7 +79,7 @@ void XAP_Win32Dialog_History::runModal(XAP_Frame * pFrame)
 	int result = DialogBoxParam(pWin32App->getInstance(),lpTemplate,
 						static_cast<XAP_Win32FrameImpl*>(pFrame->getFrameImpl())->getTopLevelWindow(),
 						(DLGPROC)s_dlgProc,(LPARAM)this);
-	UT_ASSERT((result != -1));
+	UT_ASSERT_HARMLESS((result != -1));
 	if(result == -1)
 		UT_DEBUGMSG(( "XAP_Win32Dialog_History::runModal error %d\n", GetLastError() ));
 

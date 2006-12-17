@@ -123,7 +123,7 @@ void  XAP_Win32EncodingManager::initialize()
 	}
 	else
 	{
-		UT_ASSERT(UT_SHOULD_NOT_HAPPEN);
+		UT_ASSERT_HARMLESS(UT_SHOULD_NOT_HAPPEN);
 	}
 	if (UT_getISO3166Country(szTerritory))
 	{

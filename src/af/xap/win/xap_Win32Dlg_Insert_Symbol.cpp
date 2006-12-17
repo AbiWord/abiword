@@ -309,7 +309,7 @@ void XAP_Win32Dialog_Insert_Symbol::_setFontFromCombo(UT_sint32 Index)
 		}
 		else
 		{
-			UT_ASSERT(UT_SHOULD_NOT_HAPPEN);
+			UT_ASSERT_HARMLESS(UT_SHOULD_NOT_HAPPEN);
 		}
 	}
 }

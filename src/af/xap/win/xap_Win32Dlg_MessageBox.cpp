@@ -46,9 +46,9 @@ XAP_Win32Dialog_MessageBox::~XAP_Win32Dialog_MessageBox(void)
 
 void XAP_Win32Dialog_MessageBox::runModal(XAP_Frame * pFrame)
 {
-	UT_ASSERT(pFrame);
+	UT_return_if_fail(pFrame);
 	XAP_Win32App * pApp = static_cast<XAP_Win32App *>(XAP_App::getApp());
-	UT_ASSERT(pApp);
+	UT_return_if_fail(pApp);
 
 	const char * szCaption = pApp->getApplicationTitleForTitleBar();
 
@@ -82,7 +82,7 @@ void XAP_Win32Dialog_MessageBox::runModal(XAP_Frame * pFrame)
 		break;
 
 	default:
-		UT_ASSERT(UT_SHOULD_NOT_HAPPEN);
+		UT_ASSERT_HARMLESS(UT_SHOULD_NOT_HAPPEN);
 	}
 
 	int res = MessageBox(hwnd, getApp()->getEncodingManager()->strToNative(m_szMessage, "UTF-8"), szCaption, flags);
@@ -109,7 +109,7 @@ void XAP_Win32Dialog_MessageBox::runModal(XAP_Frame * pFrame)
 	case IDIGNORE:
 	case IDRETRY:
 	default:
-		UT_ASSERT(UT_SHOULD_NOT_HAPPEN);
+		UT_ASSERT_HARMLESS(UT_SHOULD_NOT_HAPPEN);
 	}
 
 	// the caller can get the answer from getAnswer().
