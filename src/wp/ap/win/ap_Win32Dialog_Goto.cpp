@@ -166,6 +166,7 @@ BOOL CALLBACK AP_Win32Dialog_Goto::s_dlgProc(HWND hWnd,UINT msg,WPARAM wParam,LP
 void AP_Win32Dialog_Goto::GoTo (const char *number)
 {
 	UT_UCSChar *ucsnumber = (UT_UCSChar *) malloc (sizeof (UT_UCSChar) * (strlen(number) + 1));
+	UT_return_if_fail(ucsnumber);
 	UT_UCS4_strcpy_char (ucsnumber, number);
 	int target = this->getSelectedRow ();
 	this->getView()->gotoTarget ((AP_JumpTarget) target, ucsnumber);
@@ -290,8 +291,7 @@ BOOL AP_Win32Dialog_Goto::_onCommand(HWND hWnd, WPARAM wParam, LPARAM lParam)
 				int nIndex = SendMessage( hWndCtrl, LB_GETCURSEL, 0, 0);
 				if( nIndex != LB_ERR )
 				{
-					if( m_pszOldValue )
-						DELETEP(m_pszOldValue);
+					DELETEP(m_pszOldValue);
 					m_pszOldValue = new char[1024];
 
 					SendMessage( hWndCtrl, LB_GETTEXT, (WPARAM) nIndex, (LPARAM) m_pszOldValue );
@@ -310,8 +310,7 @@ BOOL AP_Win32Dialog_Goto::_onCommand(HWND hWnd, WPARAM wParam, LPARAM lParam)
 	case AP_RID_DIALOG_GOTO_BTN_PREV:
 		if( m_iRow == (short) AP_JUMPTARGET_BOOKMARK )
 		{
-			if( m_pszOldValue )
-				DELETEP(m_pszOldValue);
+			DELETEP(m_pszOldValue);
 
 			m_pszOldValue = new char[1024];
 			*m_pszOldValue = 0;
@@ -343,8 +342,7 @@ BOOL AP_Win32Dialog_Goto::_onCommand(HWND hWnd, WPARAM wParam, LPARAM lParam)
 	case AP_RID_DIALOG_GOTO_BTN_NEXT:
 		if( m_iRow == (short) AP_JUMPTARGET_BOOKMARK )
 		{
-			if( m_pszOldValue )
-				DELETEP(m_pszOldValue);
+			DELETEP(m_pszOldValue);
 			m_pszOldValue = new char[1024];
 			*m_pszOldValue = NULL;
 
@@ -421,8 +419,7 @@ BOOL AP_Win32Dialog_Goto::_onCommand(HWND hWnd, WPARAM wParam, LPARAM lParam)
 	
 					if( bValueOK )
 					{
-						if( m_pszOldValue != NULL )
-							DELETEP( m_pszOldValue );
+						DELETEP( m_pszOldValue );
 	
 						m_pszOldValue = pBuf;
 	
@@ -438,11 +435,7 @@ BOOL AP_Win32Dialog_Goto::_onCommand(HWND hWnd, WPARAM wParam, LPARAM lParam)
 				}
 				else
 				{
-					if( m_pszOldValue != NULL )
-						DELETEP( m_pszOldValue );
-
-					m_pszOldValue = NULL;
-	
+					DELETEP( m_pszOldValue );
 					EnableWindow( GetDlgItem(hWnd,AP_RID_DIALOG_GOTO_BTN_GOTO), FALSE );
 				}
 			}
@@ -452,8 +445,7 @@ BOOL AP_Win32Dialog_Goto::_onCommand(HWND hWnd, WPARAM wParam, LPARAM lParam)
 				if( dwTextLength )
 				{
 					EnableWindow( GetDlgItem(hWnd,AP_RID_DIALOG_GOTO_BTN_GOTO), TRUE ); 	
-					if( m_pszOldValue )
-						DELETEP( m_pszOldValue );
+					DELETEP( m_pszOldValue );
 					m_pszOldValue = new char[dwTextLength+1];
 					GetWindowText( hWndCtrl, m_pszOldValue, dwTextLength + 1 );
 				}

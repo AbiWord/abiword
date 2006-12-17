@@ -1484,6 +1484,7 @@ bool AP_Win32App::handleModelessDialogMessage( MSG * msg )
 void AP_Win32App::errorMsgBadArg(AP_Args * Args, int nextopt)
 {
 	char *pszMessage = (char*)malloc( 500 );
+	UT_return_if_fail(pszMessage);
 	strcpy( pszMessage, "Error on option " );
 	strcat( pszMessage, poptBadOption (Args->poptcon, 0) );
 	strcat( pszMessage, ": " );
