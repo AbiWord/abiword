@@ -147,7 +147,8 @@ GR_Graphics * XAP_Win32Dialog_Print::getPrinterGraphicsContext(void)
 {
 	UT_ASSERT(m_answer == a_OK);
 
-	if (!m_pPersistPrintDlg->hDC) return NULL; /* Prevents from passing NULL to GR_Win32Graphics*/
+	if (!m_pPersistPrintDlg || !m_pPersistPrintDlg->hDC)
+		return NULL; /* Prevents from passing NULL to GR_Win32Graphics*/
 
 	memset(&m_DocInfo,0,sizeof(m_DocInfo));
 	m_DocInfo.cbSize = sizeof(DOCINFO);
@@ -172,7 +173,8 @@ void XAP_Win32Dialog_Print::releasePrinterGraphicsContext(GR_Graphics * pGraphic
 	// delete it when no longer needed. Tomas
 	DeleteDC(m_pPersistPrintDlg->hDC);
 #endif
-	m_pPersistPrintDlg->hDC = 0;
+	if(m_pPersistPrintDlg)
+		m_pPersistPrintDlg->hDC = 0;
 
 	memset(&m_DocInfo, 0, sizeof(m_DocInfo));
 }
@@ -182,6 +184,7 @@ void XAP_Win32Dialog_Print::releasePrinterGraphicsContext(GR_Graphics * pGraphic
 void XAP_Win32Dialog_Print::runModal(XAP_Frame * pFrame)
 {
 	UT_return_if_fail(pFrame);
+	UT_return_if_fail(m_pPersistPrintDlg);
 
 	HWND hwnd = static_cast<XAP_Win32FrameImpl*>(pFrame->getFrameImpl())->getTopLevelWindow();
 
@@ -281,6 +284,8 @@ void XAP_Win32Dialog_Print::runModal(XAP_Frame * pFrame)
 
 void XAP_Win32Dialog_Print::_extractResults(XAP_Frame *pFrame)
 {
+	UT_return_if_fail(m_pPersistPrintDlg);
+
 	m_bDoPrintRange		= ((m_pPersistPrintDlg->Flags & PD_PAGENUMS) != 0);
 	m_bDoPrintSelection = ((m_pPersistPrintDlg->Flags & PD_SELECTION) != 0);
 	m_bDoPrintToFile	= ((m_pPersistPrintDlg->Flags & PD_PRINTTOFILE) != 0);	
