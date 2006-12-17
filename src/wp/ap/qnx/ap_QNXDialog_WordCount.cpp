@@ -115,7 +115,6 @@ void AP_QNXDialog_WordCount::destroy(void)
 	}
 
 	m_bDestroy_says_stopupdating = true;
-	while (m_bAutoUpdate_happening_now == true) ;
 	m_pAutoUpdateWC->stop();
 	m_answer = AP_Dialog_WordCount::a_CANCEL;	
 	modeless_cleanup();
