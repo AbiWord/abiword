@@ -236,6 +236,7 @@ void XAP_Win32Dialog_Print::runModal(XAP_Frame * pFrame)
 			
 			DEVMODE * pDevMode = (DEVMODE *)GlobalLock(m_pPersistPrintDlg->hDevMode);
 			DEVNAMES * pDevNames = (DEVNAMES *)GlobalLock(m_pPersistPrintDlg->hDevNames);
+			UT_return_if_fail(pDevNames); //GlobalLock can return NULL
 
 			char * p = (char *)pDevNames;
 			m_pPersistPrintDlg->hDC = CreateDC(p + pDevNames->wDriverOffset,
@@ -285,6 +286,7 @@ void XAP_Win32Dialog_Print::runModal(XAP_Frame * pFrame)
 void XAP_Win32Dialog_Print::_extractResults(XAP_Frame *pFrame)
 {
 	UT_return_if_fail(m_pPersistPrintDlg);
+	UT_return_if_fail(m_pPersistPrintDlg->hDevMode!=NULL);
 
 	m_bDoPrintRange		= ((m_pPersistPrintDlg->Flags & PD_PAGENUMS) != 0);
 	m_bDoPrintSelection = ((m_pPersistPrintDlg->Flags & PD_SELECTION) != 0);
@@ -292,11 +294,10 @@ void XAP_Win32Dialog_Print::_extractResults(XAP_Frame *pFrame)
 	m_nFirstPage		= m_pPersistPrintDlg->nFromPage;
 	m_nLastPage			= m_pPersistPrintDlg->nToPage;
 
-	UT_ASSERT (m_pPersistPrintDlg->hDevMode!=NULL);
-				
 	// Most Win32 printer drivers support multicopies and collating, 
 	//however we want Abi to do both by himself, like in the rest of platforms		
 	DEVMODE *pDevMode=(DEVMODE *)GlobalLock(m_pPersistPrintDlg->hDevMode);
+	UT_return_if_fail(pDevMode); //GlobalLock can return NULL
 	m_nCopies = pDevMode->dmCopies;
 	m_bCollate	= ((pDevMode->dmCollate  & DMCOLLATE_TRUE) != 0);		
 	pDevMode->dmCopies = 1;

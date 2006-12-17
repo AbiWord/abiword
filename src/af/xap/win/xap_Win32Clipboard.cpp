@@ -79,6 +79,12 @@ bool XAP_Win32Clipboard::addData(const char * format, void* pData, UT_sint32 iNu
 		return false;
 	
 	void* p = GlobalLock(hData);
+	if(!p) //GlobalLock can return NULL
+	{
+		UT_ASSERT_HARMLESS(p);
+		GlobalFree(hData);
+		return false;
+	}
 	memcpy(p, pData, iNumBytes);
 	GlobalUnlock(hData);
 
