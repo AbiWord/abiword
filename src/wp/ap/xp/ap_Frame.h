@@ -28,8 +28,8 @@
 class ABI_EXPORT AP_Frame : public XAP_Frame
 {
  public:
-	AP_Frame(XAP_FrameImpl *pFrameImpl) : XAP_Frame(pFrameImpl) {}
-	AP_Frame(AP_Frame *pFrame) : XAP_Frame(static_cast<XAP_Frame *>(pFrame)) {}
+  AP_Frame(XAP_FrameImpl *pFrameImpl) : XAP_Frame(pFrameImpl),m_bShowMargin(false) {}
+    AP_Frame(AP_Frame *pFrame) : XAP_Frame(static_cast<XAP_Frame *>(pFrame)),m_bShowMargin(false){}
 	virtual ~AP_Frame();
 
 	virtual bool				initialize(XAP_FrameMode frameMode=XAP_NormalFrame) = 0;
@@ -44,6 +44,11 @@ class ABI_EXPORT AP_Frame : public XAP_Frame
 	virtual void				setZoomPercentage(UT_uint32 iZoom);
 	virtual UT_uint32			getZoomPercentage(void);
 	virtual void                quickZoom(UT_uint32 iZoom);
+	bool                        isShowMargin(void) const
+	{ return m_bShowMargin;}
+	void                        setShowMargin(bool b)
+	{ m_bShowMargin = b;}
+	  
  protected:
 
 	UT_Error _loadDocument(const char * szFilename, IEFileType ieft, bool createNew);
@@ -72,5 +77,6 @@ class ABI_EXPORT AP_Frame : public XAP_Frame
 	virtual UT_sint32 _getDocumentAreaHeight() = 0;
 
  private:
+	bool    m_bShowMargin;
 };
 #endif // AP_FRAME_H

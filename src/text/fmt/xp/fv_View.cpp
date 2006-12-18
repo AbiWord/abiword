@@ -8667,11 +8667,10 @@ UT_sint32 FV_View::getNormalModeXOffset(void) const
 	XAP_Frame * pFrame = static_cast<XAP_Frame*>(getParentData());
 	if(pFrame)
 	{
-			AP_FrameData *pFrameData = static_cast<AP_FrameData *>(pFrame->getFrameData());		
-			if(pFrameData && pFrameData->m_bIsWidget)
-			{
-				iX += 144; // add 0.1 inch for a left border to click in
-			}
+		if(static_cast<AP_Frame *>(pFrame)->isShowMargin())
+		{
+			iX += 144; // add 0.1 inch for a left border to click in
+		}
 	}
 	return iX;
 }

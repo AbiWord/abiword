@@ -86,6 +86,7 @@ struct _AbiPrivData {
     bool                 m_bUnlinkFileAfterLoad;
 	gint                 m_iNumFileLoads;
 	AbiWidget_ViewListener * m_pViewListener;
+	bool                 m_bShowMargin;
 #ifdef HAVE_BONOBO
 	BonoboUIComponent    * m_uic;
 #endif
@@ -779,6 +780,36 @@ static void s_StartStopLoadingCursor( bool bStartStop, XAP_Frame * pFrame)
 	}
 }
 
+
+extern "C" gboolean
+abi_widget_set_show_margin(AbiWidget * abi, gboolean gb)
+{
+	bool b = static_cast<bool>(gb);
+	if(abi->priv->m_bShowMargin == b)
+		return gb;
+	abi->priv->m_bShowMargin = b;
+	if(!abi->priv->m_bMappedToScreen)
+	{
+		return gb;
+	}
+	AP_UnixFrame * pFrame = (AP_UnixFrame *) abi->priv->m_pFrame;
+	if(pFrame == NULL)
+		return gb;
+	FV_View * pView = static_cast<FV_View *>(pFrame->getCurrentView());
+	if(!pView)
+		return gb;
+	static_cast<AP_Frame *>(pFrame)->setShowMargin(b);
+	pView->setViewMode(pView->getViewMode());
+	return gb;
+}
+
+
+extern "C" gboolean
+abi_widget_get_show_margin(AbiWidget * abi)
+{
+	return static_cast<gboolean>(abi->priv->m_bShowMargin);
+}
+
 extern "C" gboolean
 abi_widget_load_file(AbiWidget * abi, const char * pszFile)
 {
@@ -807,6 +838,11 @@ abi_widget_load_file(AbiWidget * abi, const char * pszFile)
 	pFrameData->m_pViewMode = VIEW_NORMAL;
 	pFrameData->m_bShowRuler = false;
 	pFrameData->m_bIsWidget = true;
+	if(abi->priv->m_bShowMargin)
+		static_cast<AP_Frame *>(pFrame)->setShowMargin(true);
+	else
+		static_cast<AP_Frame *>(pFrame)->setShowMargin(false);
+
 	pFrame->loadDocument(NULL,IEFT_Unknown ,true);
 	pFrame->toggleRuler(false);
 	pFrame->setCursor(GR_Graphics::GR_CURSOR_WAIT);
@@ -1034,7 +1070,7 @@ abi_widget_init (AbiWidget * abi)
 	priv->m_iNumFileLoads = 0;
 	priv->m_pApp = NULL;
 	priv->externalApp = false;
-
+	priv->m_bShowMargin = true;
 	abi->priv = priv;
 
 	// this isn't really needed, since each widget is

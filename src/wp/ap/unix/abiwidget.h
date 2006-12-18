@@ -345,6 +345,9 @@ extern "C" {
   gboolean abi_widget_zoom_whole (AbiWidget * w);
   gboolean abi_widget_zoom_width (AbiWidget * w);
 
+  gboolean abi_widget_set_show_margin (AbiWidget * w, gboolean b);
+  gboolean abi_widget_get_show_margin (AbiWidget * w);
+
 #ifdef HAVE_BONOBO
   void        abi_widget_set_Bonobo_uic(AbiWidget * abi,BonoboUIComponent * uic);
   BonoboUIComponent * abi_widget_get_Bonobo_uic(AbiWidget * abi);  
