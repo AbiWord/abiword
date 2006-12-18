@@ -6800,18 +6800,85 @@ void FV_View::extSelToXYword(UT_sint32 xPos, UT_sint32 yPos, bool bDrag)
 
 	//UT_ASSERT(!isSelectionEmpty());
 
-	if (iNewPoint <= m_Selection.getSelectionLeftAnchor())
+	xxx_UT_DEBUGMSG(("left anchor %d right %d \n",m_Selection.getSelectionLeftAnchor(),m_Selection.getSelectionRightAnchor()));
+
+	PT_DocPosition iNewPointWord = 0;
+	/*
+Here is the Logic.
+If No selection present:
+
+If iNewPoint > getSelectionAnchor()
+then:
+1. Make sure selection anchor is at nearest Beginning of Word (BOW)
+2. Make iNewPoint go to nearest End of Word (EOW)
+else
+1. Make selection anchor go to nearest End of Word (EOW)
+2. Make iNewPoint go to nearest BOW
+endif
+
+else selection is present:
+
+if oldpoint >= anchor and iNewPoint >= anchor then
+ iNewPoint goes to nearest BOW
+else if oldpoint > anchor and (iNewPoint < anchor) then
+
+clear selection
+iNewPoint goes to nearest BOW before anchor
+anchor goes to nearest EOW to iNewPoint
+
+else if oldpoint < anchor and iNewPoint < anchor then
+
+iNewPoint goes to nears BOW
+
+else if oldpoint < anchor and iNewPoint >= anchor then
+
+clear selection
+anchor goes to nearest BOW > iNewPoint
+iNewPoint goes to nearest EOW > anchor
+
+endif
+	*/
+	if(isSelectionEmpty())
 	{
-		m_Selection.setSelectionAnchor(m_Selection.getSelectionRightAnchor());
+		if(iNewPoint > getPoint())
+		{
+			iNewPointWord = _getDocPosFromPoint(getPoint(), FV_DOCPOS_BOW, false);
+			m_Selection.setSelectionAnchor(iNewPointWord);
+			iNewPointWord = _getDocPosFromPoint(iNewPoint, FV_DOCPOS_EOW_SELECT, false);
+		}
+		else
+		{
+			iNewPointWord = _getDocPosFromPoint(getPoint(), FV_DOCPOS_EOW_SELECT, false);
+			m_Selection.setSelectionAnchor(iNewPointWord);
+			iNewPointWord = _getDocPosFromPoint(iNewPoint, FV_DOCPOS_BOW, false);
+		}
 	}
 	else
 	{
-		m_Selection.setSelectionAnchor(m_Selection.getSelectionLeftAnchor());
+		if((getPoint() > m_Selection.getSelectionAnchor()) && (iNewPoint >=   m_Selection.getSelectionAnchor()))
+		{
+			iNewPointWord = _getDocPosFromPoint(iNewPoint, FV_DOCPOS_EOW_SELECT, false);	
+		}
+		else if ((getPoint() > m_Selection.getSelectionAnchor()) && (iNewPoint <   m_Selection.getSelectionAnchor()))
+		{
+			iNewPointWord = _getDocPosFromPoint(m_Selection.getSelectionAnchor(), FV_DOCPOS_BOW, false);			
+			_clearSelection();
+			iNewPointWord = _getDocPosFromPoint(iNewPointWord, FV_DOCPOS_EOW_SELECT, false);			
+			m_Selection.setSelectionAnchor(iNewPointWord);
+			iNewPointWord = _getDocPosFromPoint(iNewPointWord, FV_DOCPOS_BOW, false);			
+		}
+		else if ((getPoint() <= m_Selection.getSelectionAnchor()) && (iNewPoint <   m_Selection.getSelectionAnchor()))
+		{
+			iNewPointWord = _getDocPosFromPoint(iNewPoint, FV_DOCPOS_BOW, false);	
+		}
+		else
+		{
+			iNewPointWord = _getDocPosFromPoint(iNewPoint, FV_DOCPOS_BOW, false);			
+			_clearSelection();
+			m_Selection.setSelectionAnchor(iNewPointWord);
+			iNewPointWord = _getDocPosFromPoint(iNewPointWord, FV_DOCPOS_EOW_SELECT, false);			
+		}
 	}
-
-	const FV_DocPos argDocPos =
-		iNewPoint > m_Selection.getSelectionAnchor() ? FV_DOCPOS_EOW_SELECT : FV_DOCPOS_BOW;
-	const PT_DocPosition iNewPointWord = _getDocPosFromPoint(iNewPoint, argDocPos,false);
 
 	bool bPostpone = false;
 
@@ -6855,12 +6922,23 @@ void FV_View::extSelToXYword(UT_sint32 xPos, UT_sint32 yPos, bool bDrag)
 			bPostpone = true;
 		}
 	}
-
+	xxx_UT_DEBUGMSG(("anchor %d extend to point %d \n",getSelectionAnchor(), iNewPointWord));
 	if (!bPostpone)
 	{
 		_extSelToPos(iNewPointWord);
 		notifyListeners(AV_CHG_MOTION);
 	}
+	if(getPoint() > getSelectionAnchor())
+	{
+		m_Selection.setSelectionLeftAnchor(getSelectionAnchor());
+		m_Selection.setSelectionRightAnchor(getPoint());
+	}
+	else
+	{
+		m_Selection.setSelectionRightAnchor(m_Selection.getSelectionAnchor());
+		m_Selection.setSelectionLeftAnchor(getPoint());
+	}
+	xxx_UT_DEBUGMSG(("final selection anchor %d extend to point %d \n",getSelectionAnchor(), iNewPointWord));
 }
 
 void FV_View::endDrag(UT_sint32 xPos, UT_sint32 yPos)

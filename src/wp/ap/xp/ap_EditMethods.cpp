@@ -100,6 +100,7 @@
 #include "fp_MathRun.h"
 #include "ut_mbtowc.h"
 #include "fp_EmbedRun.h"
+#include "ap_Frame.h"
 
 #include "xad_Document.h"
 #include "xap_App.h"
@@ -4835,6 +4836,12 @@ static void sActualDragToXY(AV_View *  pAV_View, EV_EditMethodCallData * pCallDa
 {
 	ABIWORD_VIEW;
 	UT_return_if_fail (pView);
+	AP_Frame *pFrame = static_cast<AP_Frame *>(pAV_View->getParentData());
+	if(pFrame->isShowMargin())
+	{
+		pView->extSelToXYword(pCallData->m_xPos, pCallData->m_yPos, true);
+		return;
+	}
 	pView->extSelToXY(pCallData->m_xPos, pCallData->m_yPos, true);
 	return;
 }
@@ -5113,6 +5120,15 @@ Defun(selectLine)
 	CHECK_FRAME;
 	ABIWORD_VIEW;
 	UT_return_val_if_fail (pView, false);
+	if(pView->getMouseContext(pCallData->m_xPos, pCallData->m_yPos) == EV_EMC_LEFTOFTEXT)
+	{
+		AP_Frame *pFrame = static_cast<AP_Frame *>(pAV_View->getParentData());
+		if(pFrame->isShowMargin())
+		{
+			pView->cmdSelect(pCallData->m_xPos, pCallData->m_yPos, FV_DOCPOS_BOB, FV_DOCPOS_EOB);
+			return true;
+		}
+	}
 	pView->cmdSelect(pCallData->m_xPos, pCallData->m_yPos, FV_DOCPOS_BOL, FV_DOCPOS_EOL);
 	return true;
 }

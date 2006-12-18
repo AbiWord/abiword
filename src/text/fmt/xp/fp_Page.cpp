@@ -72,7 +72,7 @@ fp_Page::fp_Page(FL_DocLayout* pLayout,
 	m_rDamageRect.top = 0;
 	m_rDamageRect.width = 0;
 	m_rDamageRect.height = 0;
-	UT_DEBUGMSG(("!!!!!!!!!!!!!!!!!!!!!!!!!!Created Page %x \n",this));
+	xxx_UT_DEBUGMSG(("!!!!!!!!!!!!!!!!!!!!!!!!!!Created Page %x \n",this));
 }
 
 fp_Page::~fp_Page()
@@ -995,10 +995,10 @@ void fp_Page::draw(dg_DrawArgs* pDA, bool bAlwaysUseWhiteBackground)
 		while (pCol)
 		{
 			dg_DrawArgs da = *pDA;
-			UT_DEBUGMSG(("Draw in page page X offset %d \n",pDA->xoff));
+			xxx_UT_DEBUGMSG(("Draw in page page X offset %d \n",pDA->xoff));
 			da.xoff += pCol->getX();
 			da.yoff += pCol->getY(pDA->pG);
-			UT_DEBUGMSG(("Draw in page col X offset %d \n",da.xoff));
+			xxx_UT_DEBUGMSG(("Draw in page col X offset %d \n",da.xoff));
 			pCol->draw(&da);
 
 			fp_Column *pNextCol = pCol->getFollower();

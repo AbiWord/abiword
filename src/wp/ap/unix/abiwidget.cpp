@@ -800,6 +800,11 @@ abi_widget_set_show_margin(AbiWidget * abi, gboolean gb)
 		return gb;
 	static_cast<AP_Frame *>(pFrame)->setShowMargin(b);
 	pView->setViewMode(pView->getViewMode());
+	if(pFrame->getZoomType() == XAP_Frame::z_PAGEWIDTH)
+	{
+		UT_uint32 iZoom =  pView->calculateZoomPercentForPageHeight();
+		pFrame->quickZoom(iZoom);
+	}
 	return gb;
 }
 
@@ -863,6 +868,12 @@ abi_widget_load_file(AbiWidget * abi, const char * pszFile)
 	// todo: this doesn't belong here. it should be bound as soon as the frame has a view,
 	// todo: or whenever the frame changes its view, such as a document load
 	_abi_widget_bindListenerToView(abi, pFrame->getCurrentView());
+	FV_View * pView = static_cast<FV_View *>(pFrame->getCurrentView());
+	if(pFrame->getZoomType() == XAP_Frame::z_PAGEWIDTH)
+	{
+		UT_uint32 iZoom =  pView->calculateZoomPercentForPageWidth();
+		pFrame->quickZoom(iZoom);
+	}
 	return TRUE;
 }
 
