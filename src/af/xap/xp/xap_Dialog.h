@@ -30,6 +30,8 @@
 #include "ut_types.h"
 #endif
 
+#include <glib.h>
+
 #include "ut_misc.h"
 #include "ut_assert.h"
 
