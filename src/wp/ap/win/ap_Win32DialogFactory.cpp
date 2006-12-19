@@ -49,7 +49,7 @@ AP_Win32DialogFactory::AP_Win32DialogFactory(XAP_App * pApp)
 }
 
 AP_Win32DialogFactory::AP_Win32DialogFactory(XAP_Frame * pFrame, XAP_App * pApp)
-	: XAP_DialogFactory(pFrame, pApp, NrElements(s_dlg_table), s_dlg_table)
+	: XAP_DialogFactory(pApp, NrElements(s_dlg_table), s_dlg_table, pFrame)
 {
 }
 

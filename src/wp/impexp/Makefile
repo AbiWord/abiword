@@ -39,7 +39,6 @@ OBJS=	$(PLATFORM_OBJS)	\
         $(OBJDIR)/ie_exp.$(OBJ_SUFFIX)                              \
         $(OBJDIR)/ie_exp_AbiWord_1.$(OBJ_SUFFIX)                    \
         $(OBJDIR)/ie_exp_AWT.$(OBJ_SUFFIX)                          \
-        $(OBJDIR)/ie_exp_GZipAbiWord.$(OBJ_SUFFIX)                  \
         $(OBJDIR)/ie_exp_HTML.$(OBJ_SUFFIX)                         \
         $(OBJDIR)/ie_exp_Text.$(OBJ_SUFFIX)                         \
         $(OBJDIR)/ie_exp_RTF.$(OBJ_SUFFIX)                          \
@@ -50,7 +49,6 @@ OBJS=	$(PLATFORM_OBJS)	\
         $(OBJDIR)/ie_imp_XHTML.$(OBJ_SUFFIX)                        \
         $(OBJDIR)/ie_imp_XML.$(OBJ_SUFFIX)                          \
         $(OBJDIR)/ie_imp_AbiWord_1.$(OBJ_SUFFIX)                    \
-        $(OBJDIR)/ie_imp_GZipAbiWord.$(OBJ_SUFFIX)                  \
         $(OBJDIR)/ie_imp_MsWord_97.$(OBJ_SUFFIX)                    \
         $(OBJDIR)/ie_imp_RTF.$(OBJ_SUFFIX)                          \
         $(OBJDIR)/ie_imp_RTFParse.$(OBJ_SUFFIX)                     \

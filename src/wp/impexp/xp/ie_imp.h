@@ -33,6 +33,15 @@
 
 #include "ut_go_file.h"
 #include <gsf/gsf-input.h>
+
+#if defined(__MINGW32__)
+#undef snprintf
+#endif
+
+#if defined(__MINGW32__) && !defined(snprintf)
+#define _GLIBCXX_USE_C99_DYNAMIC 1
+#endif
+
 #include <string>
 #include <vector>
 
