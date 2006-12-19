@@ -728,7 +728,7 @@ UINT XAP_Win32Dialog_FileOpenSaveAs::_previewPicture(HWND hDlg)
 	if (r.right >= iImageWidth && r.bottom >= iImageHeight)
 		scale_factor = 1.0;
 	else
-		scale_factor = min( (double) r.right/iImageWidth,
+		scale_factor = UT_MIN( (double) r.right/iImageWidth,
 							(double) r.bottom/iImageHeight );
 
 	scaled_width  = (int) (scale_factor * iImageWidth);
