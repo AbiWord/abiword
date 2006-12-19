@@ -81,7 +81,7 @@ static const EV_Menu_Bitmap s_bitmaps[] =
 
 	// Insert
 	{AP_MENU_ID_INSERT_SYMBOL,	"Menu_AbiWord_Insert_Symbol"},
-	{AP_MENU_ID_INSERT_PICTURE, "Menu_AbiWord_Img"},
+	{AP_MENU_ID_INSERT_GRAPHIC, "Menu_AbiWord_Img"},
 	{AP_MENU_ID_INSERT_HYPERLINK,	"Menu_AbiWord_Hyperlink"},	
 
 	// Format
