@@ -35,6 +35,14 @@
  * the preprocessor to do...
  */
 
+#if defined(__MINGW32__)
+#undef snprintf
+#endif
+
+#if defined(__MINGW32__) && !defined(snprintf)
+#define _GLIBCXX_USE_C99_DYNAMIC 1
+#endif
+
 #include <map>
 
 #ifndef UT_TYPES_H
