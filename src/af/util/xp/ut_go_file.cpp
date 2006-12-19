@@ -841,6 +841,7 @@ UT_go_file_open_impl (char const *uri, GError **err)
 	filename = UT_go_filename_from_uri (uri);
 	if (filename) {
 		GsfInput *result = open_plain_file (filename, err);
+		gsf_input_set_name (result, filename);
 		g_free (filename);
 		return result;
 	}
@@ -888,8 +889,12 @@ UT_go_file_open (char const *uri, GError **err)
 
 	input = UT_go_file_open_impl (uri, err);
 	if (input != NULL)
-		return gsf_input_uncompress (input);
-
+	{
+		const char * szF = gsf_input_name (input);		
+		GsfInput * uncompress = gsf_input_uncompress (input);
+		gsf_input_set_name (uncompress, szF);
+		return uncompress;
+	}
 	return NULL;
 }
 
