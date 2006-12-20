@@ -30,6 +30,7 @@
 #include <gsf/gsf-impl-utils.h>
 #include <gsf/gsf-input.h>
 #include <gsf/gsf-input-impl.h>
+#include <gsf/gsf-output-impl.h>
 #include <gsf/gsf-input-memory.h>
 #include <gsf/gsf-output-memory.h>
 #include <gsf/gsf-input-stdio.h>
@@ -841,7 +842,6 @@ UT_go_file_open_impl (char const *uri, GError **err)
 	filename = UT_go_filename_from_uri (uri);
 	if (filename) {
 		GsfInput *result = open_plain_file (filename, err);
-		gsf_input_set_name (result, filename);
 		g_free (filename);
 		return result;
 	}
@@ -859,8 +859,6 @@ UT_go_file_open_impl (char const *uri, GError **err)
 
 		/* guarantee that file descriptors will be seekable */
 		result = gsf_input_memory_new_from_file (fil);
-		if (result != NULL)
-			gsf_input_set_name (result, uri);
 		fclose (fil);
 
 		return result;
@@ -890,16 +888,15 @@ UT_go_file_open (char const *uri, GError **err)
 	input = UT_go_file_open_impl (uri, err);
 	if (input != NULL)
 	{
-		const char * szF = gsf_input_name (input);		
 		GsfInput * uncompress = gsf_input_uncompress (input);
-		gsf_input_set_name (uncompress, szF);
+		gsf_input_set_name (uncompress, uri);
 		return uncompress;
 	}
 	return NULL;
 }
 
-GsfOutput *
-UT_go_file_create (char const *uri, GError **err)
+static GsfOutput *
+UT_go_file_create_impl (char const *uri, GError **err)
 {
 	char *filename;
 	int fd;
@@ -935,6 +932,20 @@ UT_go_file_create (char const *uri, GError **err)
 		     "Invalid or non-supported URI");
 	return NULL;
 #endif
+}
+
+GsfOutput *
+UT_go_file_create (char const *uri, GError **err)
+{
+	GsfOutput * output;
+
+	output = UT_go_file_create_impl (uri, err);
+	if (output != NULL)
+	{
+		gsf_output_set_name (output, uri);
+		return output;
+	}
+	return NULL;
 }
 
 /* ------------------------------------------------------------------------- */
