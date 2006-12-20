@@ -19,6 +19,7 @@
  */
 
 #include <windows.h>
+#include <math.h>
 //#include <commdlg.h>
 //#include <commctrl.h>
 
@@ -52,6 +53,7 @@
 #define BUFSIZE		128
 #define SIGDIGIT	4
 #define FMT_STRING "%0.2f"
+#define EPSILON 1.0e-7
 
 float mScale[] = { 25.4f, 10.0f, 1.0f };
 
@@ -350,7 +352,7 @@ void AP_Win32Dialog_PageSetup_Page::_onCommand(HWND hWnd, WPARAM wParam, LPARAM 
 		{
 			char buf[BUFSIZE];
 			GetDlgItemText( hWnd, wId, buf, BUFSIZE );
-			if( atoi(buf) >= 1.0 && atoi(buf) <= 1000.0 && atoi(buf) != m_pParent->getPageScale() )
+			if( (atoi(buf) >= 1) && (atoi(buf) <= 1000) && (atoi(buf) != m_pParent->getPageScale()) )
 			{
 				m_pParent->setPageScale( atoi(buf) );
 
@@ -560,7 +562,7 @@ void AP_Win32Dialog_PageSetup_Margin::_onCommand(HWND hWnd, WPARAM wParam, LPARA
 		{
 			char buf[BUFSIZE];
 			GetDlgItemText( hWnd, wId, buf, BUFSIZE );
-			if( atof( buf ) > 0 && atof(buf) != (double) m_pParent->getMarginTop() )
+			if( (atof( buf ) > -EPSILON) && (fabs(atof(buf) - (double) m_pParent->getMarginTop()) > EPSILON ) )
 			{
 				m_pParent->setMarginTop( (float) atof(buf) );
 				m_pParent->updatePreview();
@@ -574,7 +576,7 @@ void AP_Win32Dialog_PageSetup_Margin::_onCommand(HWND hWnd, WPARAM wParam, LPARA
 		{
 			char buf[BUFSIZE];
 			GetDlgItemText( hWnd, wId, buf, BUFSIZE );
-			if( atof( buf ) > 0 && atof(buf) != (double) m_pParent->getMarginBottom() )
+			if( (atof( buf ) > -EPSILON) && (fabs(atof(buf) - (double) m_pParent->getMarginBottom()) > EPSILON ) )
 			{
 				m_pParent->setMarginBottom( (float) atof(buf) );
 				m_pParent->updatePreview();
@@ -588,7 +590,7 @@ void AP_Win32Dialog_PageSetup_Margin::_onCommand(HWND hWnd, WPARAM wParam, LPARA
 		{
 			char buf[BUFSIZE];
 			GetDlgItemText( hWnd, wId, buf, BUFSIZE );
-			if( atof( buf ) > 0 && atof(buf) != (double) m_pParent->getMarginLeft() )
+			if( (atof( buf ) > -EPSILON) && (fabs(atof(buf) - (double) m_pParent->getMarginLeft()) > EPSILON ) )
 			{
 				m_pParent->setMarginLeft( (float) atof(buf) );
 				m_pParent->updatePreview();
@@ -602,7 +604,7 @@ void AP_Win32Dialog_PageSetup_Margin::_onCommand(HWND hWnd, WPARAM wParam, LPARA
 		{
 			char buf[BUFSIZE];
 			GetDlgItemText( hWnd, wId, buf, BUFSIZE );
-			if( atof( buf ) > 0 && atof(buf) != (double) m_pParent->getMarginRight() )
+			if( (atof( buf ) > -EPSILON) && (fabs(atof(buf) - (double) m_pParent->getMarginRight()) > EPSILON ) )
 			{
 				m_pParent->setMarginRight( (float) atof(buf) );
 				m_pParent->updatePreview();
@@ -616,7 +618,7 @@ void AP_Win32Dialog_PageSetup_Margin::_onCommand(HWND hWnd, WPARAM wParam, LPARA
 		{
 			char buf[BUFSIZE];
 			GetDlgItemText( hWnd, wId, buf, BUFSIZE );
-			if( atof( buf ) > 0 && atof(buf) != (double) m_pParent->getMarginHeader() )
+			if( (atof( buf ) > -EPSILON) && (fabs(atof(buf) - (double) m_pParent->getMarginHeader()) > EPSILON ) )
 			{
 				m_pParent->setMarginHeader( (float) atof(buf) );
 				m_pParent->updatePreview();
@@ -630,7 +632,7 @@ void AP_Win32Dialog_PageSetup_Margin::_onCommand(HWND hWnd, WPARAM wParam, LPARA
 		{
 			char buf[BUFSIZE];
 			GetDlgItemText( hWnd, wId, buf, BUFSIZE );
-			if( atof( buf ) > 0 && atof(buf) != (double) m_pParent->getMarginFooter() )
+			if( (atof( buf ) > -EPSILON) && (fabs(atof(buf) - (double) m_pParent->getMarginFooter()) > EPSILON ) )
 			{
 				m_pParent->setMarginFooter( (float) atof(buf) );
 				m_pParent->updatePreview();
