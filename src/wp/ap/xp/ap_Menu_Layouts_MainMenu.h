@@ -181,7 +181,9 @@ BeginLayout(Main,0)
 		MenuItem(AP_MENU_ID_INSERT_FOOTNOTE)
 		MenuItem(AP_MENU_ID_INSERT_ENDNOTE)
 
+#ifdef XP_UNIX_TARGET_GTK
 		MenuItem(AP_MENU_ID_INSERT_CLIPART)
+#endif
 		MenuItem(AP_MENU_ID_INSERT_GRAPHIC)
 
 		Separator()
