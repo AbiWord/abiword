@@ -4837,7 +4837,7 @@ static void sActualDragToXY(AV_View *  pAV_View, EV_EditMethodCallData * pCallDa
 	ABIWORD_VIEW;
 	UT_return_if_fail (pView);
 	AP_Frame *pFrame = static_cast<AP_Frame *>(pAV_View->getParentData());
-	if(pFrame->isShowMargin())
+	if(pFrame->isOlpcSelections())
 	{
 		pView->extSelToXYword(pCallData->m_xPos, pCallData->m_yPos, true);
 		return;
@@ -5123,7 +5123,7 @@ Defun(selectLine)
 	if(pView->getMouseContext(pCallData->m_xPos, pCallData->m_yPos) == EV_EMC_LEFTOFTEXT)
 	{
 		AP_Frame *pFrame = static_cast<AP_Frame *>(pAV_View->getParentData());
-		if(pFrame->isShowMargin())
+		if(pFrame->isOlpcSelections())
 		{
 			pView->cmdSelect(pCallData->m_xPos, pCallData->m_yPos, FV_DOCPOS_BOB, FV_DOCPOS_EOB);
 			return true;

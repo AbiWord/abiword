@@ -87,6 +87,7 @@ struct _AbiPrivData {
 	gint                 m_iNumFileLoads;
 	AbiWidget_ViewListener * m_pViewListener;
 	bool                 m_bShowMargin;
+	bool                 m_bOlpcSelections;
 #ifdef HAVE_BONOBO
 	BonoboUIComponent    * m_uic;
 #endif
@@ -190,7 +191,6 @@ EM_VOID__BOOL(selectBlock, select_block)
 EM_VOID__BOOL(selectLine, select_line)
 EM_VOID__BOOL(selectWord, select_word)
 
-EM_VOID__BOOL(fileOpen, file_open)
 EM_VOID__BOOL(fileSave, file_save)
 EM_VOID__BOOL(saveImmediate, save_immediate)
 
@@ -815,6 +815,48 @@ abi_widget_get_show_margin(AbiWidget * abi)
 	return static_cast<gboolean>(abi->priv->m_bShowMargin);
 }
 
+
+extern "C" gboolean
+abi_widget_set_olpc_selections(AbiWidget * abi, gboolean gb)
+{
+	bool b = static_cast<bool>(gb);
+	if(abi->priv->m_bOlpcSelections == b)
+		return gb;
+	abi->priv->m_bOlpcSelections = b;
+	if(!abi->priv->m_bMappedToScreen)
+	{
+		return gb;
+	}
+	AP_Frame * pFrame = (AP_Frame *) abi->priv->m_pFrame;
+	if(pFrame == NULL)
+		return gb;
+	pFrame->setOlpcSelections(b);
+	return gb;
+}
+
+
+
+extern "C" gboolean
+abi_widget_get_olpc_selections(AbiWidget * abi)
+{
+	return static_cast<gboolean>(abi->priv->m_bOlpcSelections);
+}
+
+
+extern "C" gboolean
+abi_widget_file_open(AbiWidget * abi)
+{
+	//
+	// Need to release the listner first because it's View pointer
+	// will be invalidated once the new document is loaded.
+	//
+	_abi_widget_releaseListener(abi);
+	abi_widget_invoke(abi,"fileOpen");
+	AP_UnixFrame * pFrame = static_cast<AP_UnixFrame *>(abi->priv->m_pFrame);
+	_abi_widget_bindListenerToView(abi, pFrame->getCurrentView());
+	return TRUE;
+}
+
 extern "C" gboolean
 abi_widget_load_file(AbiWidget * abi, const char * pszFile)
 {
@@ -847,6 +889,10 @@ abi_widget_load_file(AbiWidget * abi, const char * pszFile)
 		static_cast<AP_Frame *>(pFrame)->setShowMargin(true);
 	else
 		static_cast<AP_Frame *>(pFrame)->setShowMargin(false);
+	if(abi->priv->m_bOlpcSelections)
+		static_cast<AP_Frame *>(pFrame)->setOlpcSelections(true);
+	else
+		static_cast<AP_Frame *>(pFrame)->setOlpcSelections(false);
 
 	pFrame->loadDocument(NULL,IEFT_Unknown ,true);
 	pFrame->toggleRuler(false);
@@ -1082,6 +1128,7 @@ abi_widget_init (AbiWidget * abi)
 	priv->m_pApp = NULL;
 	priv->externalApp = false;
 	priv->m_bShowMargin = true;
+	priv->m_bOlpcSelections = true;
 	abi->priv = priv;
 
 	// this isn't really needed, since each widget is
@@ -1262,6 +1309,7 @@ abi_widget_destroy_gtk (GtkObject *object)
 #endif
 }
 
+
 static void
 abi_widget_class_init (AbiWidgetClass *abi_class)
 {
@@ -1318,7 +1366,7 @@ abi_widget_class_init (AbiWidgetClass *abi_class)
 	abi_class->select_line   = EM_NAME(selectLine);	
 	abi_class->select_word   = EM_NAME(selectWord);	
 
-	abi_class->file_open   = EM_NAME(fileOpen);	
+	abi_class->file_open   = abi_widget_file_open;
 	abi_class->file_save   = EM_NAME(fileSave);	
 	abi_class->save_immediate   = EM_NAME(saveImmediate);	
 	
