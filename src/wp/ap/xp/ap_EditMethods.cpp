@@ -2830,7 +2830,11 @@ Defun1(filePreviewWeb)
 
   // we do this because we don't want to change the default
   // document extension or rename what we're working on
-  errSaved = pAV_View->cmdSaveAs(szTempFileName, IE_Exp::fileTypeForSuffix(".xhtml"), false);
+  char *uri = UT_go_filename_to_uri(szTempFileName);
+  if(uri)
+    errSaved = pAV_View->cmdSaveAs(uri, IE_Exp::fileTypeForSuffix(".xhtml"), false);
+  else
+    errSaved = UT_IE_COULDNOTWRITE;
 
   if(errSaved != UT_OK)
 	{
@@ -2839,15 +2843,8 @@ Defun1(filePreviewWeb)
 	  return false;
 	}
 
-  char * tmpUrl = NULL;
-
-  if (szTempFileName[0] == '/')
-	  tmpUrl = UT_catPathname("file://", szTempFileName);
-  else
-	  tmpUrl = UT_catPathname("file:///", szTempFileName);
-
-  bool bOk = _openURL(tmpUrl);
-  FREEP(tmpUrl);
+  bool bOk = _openURL(uri);
+  g_free(uri);
 
 #if 0
   // ugly race condition
