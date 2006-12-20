@@ -39,6 +39,10 @@
 #include <pango/pango-engine.h>
 #include <pango/pangoxft.h>
 
+#ifdef HAVE_PANGOFT2
+#include <pango/pangoft2.h>
+#endif
+
 #include <math.h>
 
 #include <gdk/gdk.h>
@@ -213,6 +217,7 @@ GR_UnixPangoGraphics::GR_UnixPangoGraphics(GdkWindow * win)
 	:GR_UnixGraphics(win, NULL),
 	 m_pFontMap(NULL),
 	 m_pContext(NULL),
+	 m_bOwnsFontMap(false),
 	 m_pPFont(NULL),
 	 m_pPFontGUI(NULL),
 	 m_iDeviceResolution(96)
@@ -250,6 +255,7 @@ GR_UnixPangoGraphics::GR_UnixPangoGraphics()
 	:GR_UnixGraphics(NULL, NULL),
 	 m_pFontMap(NULL),
 	 m_pContext(NULL),
+	 m_bOwnsFontMap(false),
 	 m_pPFont(NULL),
 	 m_pPFontGUI(NULL),
 	 m_iDeviceResolution(96)
@@ -266,7 +272,9 @@ GR_UnixPangoGraphics::GR_UnixPangoGraphics()
 GR_UnixPangoGraphics::~GR_UnixPangoGraphics()
 {
 	g_object_unref(m_pContext);
-	// NB: m_pFontMap is owned by Pango
+	// NB: m_pFontMap is oft owned by Pango
+	if (m_bOwnsFontMap)
+		g_object_unref (G_OBJECT (m_pFontMap));
 
 	_destroyFonts();
 	delete m_pPFontGUI;
@@ -744,7 +752,7 @@ void GR_UnixPangoGraphics::renderChars(GR_RenderInfo & ri)
 		UT_sint32 iGlyphsEnd = -1;
 		
 		i = 0;
-		while(i < RI.m_pGlyphs->num_glyphs)
+		while(i < (UT_uint32)RI.m_pGlyphs->num_glyphs)
 		{
 			if(iGlyphsStart < 0 && RI.m_pGlyphs->log_clusters[i] == iOffsetStart)
 				iGlyphsStart = i;
@@ -2137,29 +2145,43 @@ GR_UnixPangoPrintGraphics::GR_UnixPangoPrintGraphics(XAP_UnixGnomePrintGraphics 
 	 */
 	GdkScreen *  gScreen  = gdk_screen_get_default();
 	GdkDisplay*  gDisplay = gdk_display_get_default();
-	int iScreen = gdk_x11_screen_get_screen_number(gScreen);
-	Display * disp = GDK_DISPLAY_XDISPLAY(gDisplay);
-	FcPattern *pattern;
-	double dpi = 72.;
-	
-	pattern = FcPatternCreate();
-	if (pattern)
-	{
-		XftDefaultSubstitute (GDK_SCREEN_XDISPLAY (gScreen),
-							  iScreen,
-							  pattern);
-		FcPatternGetDouble (pattern, FC_DPI, 0, &dpi); 
-		FcPatternDestroy (pattern);
-		UT_DEBUGMSG(("@@@@@@@@@@@@@@ retrieved DPI %f @@@@@@@@@@@@@@@@@@ \n",
-					 dpi));
-
-		m_iScreenResolution = (int)dpi;
-	}	
-
-	m_pContext = pango_xft_get_context(disp, iScreen);
-	m_pFontMap = pango_xft_get_font_map(disp, iScreen);
 
 	m_iDeviceResolution = 72; // hardcoded in GnomePrint
+
+	if (gScreen && gDisplay)
+		{
+			int iScreen = gdk_x11_screen_get_screen_number(gScreen);
+			Display * disp = GDK_DISPLAY_XDISPLAY(gDisplay);
+			FcPattern *pattern;
+			double dpi = 72.;
+			
+			pattern = FcPatternCreate();
+			if (pattern)
+				{
+					XftDefaultSubstitute (GDK_SCREEN_XDISPLAY (gScreen),
+										  iScreen,
+										  pattern);
+					FcPatternGetDouble (pattern, FC_DPI, 0, &dpi); 
+					FcPatternDestroy (pattern);
+					UT_DEBUGMSG(("@@@@@@@@@@@@@@ retrieved DPI %f @@@@@@@@@@@@@@@@@@ \n",
+								 dpi));
+					
+					m_iScreenResolution = (int)dpi;
+				}	
+			
+			m_pContext = pango_xft_get_context(disp, iScreen);
+			m_pFontMap = pango_xft_get_font_map(disp, iScreen);
+		}
+#ifdef HAVE_PANGOFT2
+	else
+		{
+			m_iScreenResolution = m_iDeviceResolution;
+
+			m_pContext = pango_ft2_get_context(m_iScreenResolution, m_iScreenResolution);
+			m_pFontMap = pango_ft2_font_map_new ();
+			m_bOwnsFontMap = true;
+		}
+#endif
  	
 	m_pGPFontMap = gnome_print_pango_get_default_font_map ();
 	m_pGPContext = gnome_print_pango_create_context(m_pGPFontMap);

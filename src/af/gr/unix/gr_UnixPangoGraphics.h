@@ -227,6 +227,7 @@ public:
   protected:
 	PangoFontMap *    m_pFontMap;
 	PangoContext *    m_pContext;
+	bool              m_bOwnsFontMap;
 	GR_UnixPangoFont* m_pPFont;
 	GR_UnixPangoFont* m_pPFontGUI;
 

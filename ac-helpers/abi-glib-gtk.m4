@@ -55,10 +55,21 @@ AC_DEFUN([ABI_GTK2],[
 	])
 	if test $abi_gtk2 = no; then
 		AC_MSG_ERROR([$GTK_PKG_ERRORS])
-	else
-		GTK_CFLAGS="$GTK_CFLAGS" #place holder
-	       #GTK_CFLAGS="$GTK_CFLAGS -DG_DISABLE_DEPRECATED -DGDK_DISABLE_DEPRECATED -DGDK_PIXBUF_DISABLE_DEPRECATED -DGTK_DISABLE_DEPRECATED"
-		AC_SUBST(GTK_CFLAGS)
+	fi
+
+	PKG_CHECK_MODULES(PANGOFT2,[
+		pangoft2 >= 1.2.0
+	],[	
+		pango_ft2=yes
+		ABIWORD_REQUIRED_PKGS="$ABIWORD_REQUIRED_PKGS pangoft2 >= 1.2.0"
+	],[	pango_ft2=no
+	])
+
+	if test $pango_ft2 = yes; then
+		GTK_CFLAGS="$GTK_CFLAGS $PANGOFT2_CFLAGS"
+		GTK_LIBS="$GTK_LIBS $PANGOFT2_LIBS"
+
+		AC_DEFINE(HAVE_PANGOFT2, 1, [Define if you have PangFT2])
 	fi
 
 	dnl since gtk+ doesn't add the X libraries into its dependency list we
@@ -69,6 +80,7 @@ AC_DEFUN([ABI_GTK2],[
 
 	GTK_LIBS="$GTK_LIBS $X_LIBS $X_PRE_LIBS -lX11 $X_EXTRA_LIBS"
 	AC_SUBST(GTK_LIBS)
+	AC_SUBST(GTK_CFLAGS)
 ])
 
 # Check for optional glib
