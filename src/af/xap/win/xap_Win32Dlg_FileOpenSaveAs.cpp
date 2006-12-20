@@ -450,7 +450,17 @@ void XAP_Win32Dialog_FileOpenSaveAs::runModal(XAP_Frame * pFrame)
 		}
 		else
 		{
-			UT_cloneString(m_szFinalPathname,szFile);
+			char *uri = UT_go_filename_to_uri(szFile);
+			if(uri)
+			{
+				UT_cloneString(m_szFinalPathname,uri);
+			}
+			else
+			{
+				UT_ASSERT_HARMLESS(UT_SHOULD_NOT_HAPPEN);
+				m_szFinalPathname = NULL;
+			}
+			g_free(uri);
 		}
 
 		m_answer = a_OK;
