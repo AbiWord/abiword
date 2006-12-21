@@ -99,8 +99,8 @@ bool IE_Exp_AbiWord_1_Sniffer::getDlgLabels(const char ** pszDesc,
 											const char ** pszSuffixList,
 											IEFileType * ft)
 {
-	*pszDesc = "AbiWord (.abw,.zabw)";
-	*pszSuffixList = "*.abw.gz; *.zabw; *.abw";
+	*pszDesc = "AbiWord (.abw, .zabw, abw.gz)";
+	*pszSuffixList = "*.abw; *.zabw; *.abw.gz";
 	*ft = getFileType();
 	return true;
 }
@@ -118,7 +118,8 @@ IE_Exp_AbiWord_1::IE_Exp_AbiWord_1(PD_Document * pDocument, bool isTemplate, boo
 	// depending on how this document came to be, it might contain fragments without xid;
 	// this is legitimate and desirable while the doc is loade, but once we are saving to
 	// disk, we want to assing xids to any frags that should have them and do not
-	pDocument->fixMissingXIDs();
+	if(pDocument)
+		pDocument->fixMissingXIDs();
 }
 
 IE_Exp_AbiWord_1::~IE_Exp_AbiWord_1()
