@@ -105,6 +105,8 @@ void AP_Win32Dialog_Options::_initEnableControlsPlatformSpecific()
 {
 	_controlEnable( id_CHECK_LANG_WITH_KEYBOARD, true); 
 	_controlEnable( id_CHECK_DIR_MARKER_AFTER_CLOSING_PARENTHESIS,_gatherLanguageWithKeyboard());  
+	//TODO: remove the following line when Windows has support for custom toolbars (Bug 1717)
+	EnableWindow(GetDlgItem((HWND)getPage(PG_GENERAL),AP_RID_DIALOG_OPTIONS_CHK_AllowCustomToolbars),false);
 }
 
 
@@ -211,7 +213,8 @@ void AP_Win32Dialog_Options::_controlEnable( tControl id, bool value )
 			return;
 
 		case id_CHECK_ALLOW_CUSTOM_TOOLBARS:
-			EnableWindow(GetDlgItem((HWND)getPage(PG_GENERAL),AP_RID_DIALOG_OPTIONS_CHK_AllowCustomToolbars),value);
+			//TODO: enable this when Windows has support for custom toolbars (Bug 1717)
+			//EnableWindow(GetDlgItem((HWND)getPage(PG_GENERAL),AP_RID_DIALOG_OPTIONS_CHK_AllowCustomToolbars),value);
 			return;			
 		
 		case id_CHECK_AUTO_LOAD_PLUGINS:
