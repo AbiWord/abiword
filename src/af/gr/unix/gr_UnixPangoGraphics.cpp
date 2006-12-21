@@ -222,32 +222,7 @@ GR_UnixPangoGraphics::GR_UnixPangoGraphics(GdkWindow * win)
 	 m_pPFontGUI(NULL),
 	 m_iDeviceResolution(96)
 {
-	GdkDisplay * gDisp = gdk_drawable_get_display(win);
-	GdkScreen *  gScreen = gdk_drawable_get_screen(win);
-	Display * disp = GDK_DISPLAY_XDISPLAY(gDisp);
-	int iScreen = gdk_x11_screen_get_screen_number(gScreen);
-
-	m_pContext = pango_xft_get_context(disp, iScreen);
-	m_pFontMap = pango_xft_get_font_map(disp, iScreen);
-
-	/* ascertain the real dpi that xft will be using */
-	FcPattern *pattern;
-	double dpi = 0.0; 
-	pattern = FcPatternCreate();
-	if (pattern)
-	{
-		XftDefaultSubstitute (GDK_SCREEN_XDISPLAY (gScreen),
-							  iScreen,
-							  pattern);
-		FcPatternGetDouble (pattern, FC_DPI, 0, &dpi); 
-		FcPatternDestroy (pattern);
-		UT_DEBUGMSG(("@@@@@@@@@@@@@@ retrieved DPI %f @@@@@@@@@@@@@@@@@@ \n", dpi));
-
-		m_iDeviceResolution = (UT_uint32)round (dpi);
-	}	
-
-	_setIsSymbol(false);
-	_setIsDingbat(false);
+	init ();
 }
 
 
@@ -260,12 +235,7 @@ GR_UnixPangoGraphics::GR_UnixPangoGraphics()
 	 m_pPFontGUI(NULL),
 	 m_iDeviceResolution(96)
 {
-#ifdef WITHOUT_PRINTING
-	UT_ASSERT_HARMLESS( UT_SHOULD_NOT_HAPPEN );
-#endif
-	
-	_setIsSymbol(false);
-	_setIsDingbat(false);
+	init ();
 }
 
 
@@ -278,6 +248,44 @@ GR_UnixPangoGraphics::~GR_UnixPangoGraphics()
 
 	_destroyFonts();
 	delete m_pPFontGUI;
+}
+
+void GR_UnixPangoGraphics::init()
+{
+	GdkWindow * win = getWindow();
+
+	GdkDisplay * gDisplay;
+	GdkScreen *  gScreen;
+
+	if (win)
+		{
+			gDisplay = gdk_drawable_get_display(win);
+			gScreen = gdk_drawable_get_screen(win);
+		}
+	else
+		{
+			gDisplay = gdk_display_get_default();
+			gScreen = gdk_screen_get_default();
+		}
+
+	if (gScreen && gDisplay)
+		{
+			int iScreen = gdk_x11_screen_get_screen_number(gScreen);
+			Display * disp = GDK_DISPLAY_XDISPLAY(gDisplay);
+			m_pContext = pango_xft_get_context(disp, iScreen);
+			m_pFontMap = pango_xft_get_font_map(disp, iScreen);
+		}
+#ifdef HAVE_PANGOFT2
+	else
+		{
+			m_pContext = pango_ft2_get_context(m_iDeviceResolution, m_iDeviceResolution);
+			m_pFontMap = pango_ft2_font_map_new ();
+			m_bOwnsFontMap = true;
+		}
+#endif
+
+	_setIsSymbol(false);
+	_setIsDingbat(false);
 }
 
 GR_Graphics *   GR_UnixPangoGraphics::graphicsAllocator(GR_AllocInfo& info)

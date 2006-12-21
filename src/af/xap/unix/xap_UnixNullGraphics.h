@@ -21,11 +21,10 @@
 #define XAP_UNIXNULLGRAPHICS_H
 
 #include "ut_vector.h"
-#include "gr_Graphics.h"
+#include "gr_UnixPangoGraphics.h"
 #include "gr_Image.h"
 #include "ut_misc.h"
 
-class PSFont;
 class XAP_UnixFontHandle;
 class XAP_UnixFontManager;
 class UT_ByteBuf;
@@ -35,18 +34,16 @@ class UT_ByteBuf;
 class XAP_UnixNullGraphicsAllocInfo : public GR_AllocInfo
 {
 public:
- 	XAP_UnixNullGraphicsAllocInfo(XAP_UnixFontManager * fontManager)
-		: m_fontManager(fontManager) {};
+ 	XAP_UnixNullGraphicsAllocInfo() 
+	  {}
 
-	virtual GR_GraphicsId getType() const {return GRID_UNIX_NULL;};
-	virtual bool isPrinterGraphics() const {return false; };
-
-	XAP_UnixFontManager * m_fontManager;
+	virtual GR_GraphicsId getType() const {return GRID_UNIX_NULL;}
+	virtual bool isPrinterGraphics() const {return false;}
 };
 
 
 
-class ABI_EXPORT UnixNull_Graphics : public GR_Graphics
+class ABI_EXPORT UnixNull_Graphics : public GR_UnixPangoGraphics
 {
 	// all constructors are protected; instances must be created via
 	// GR_GraphicsFactory
@@ -60,26 +57,11 @@ public:
 	static const char *    graphicsDescriptor(void) { return "Unix Null Graphics";}
 	static GR_Graphics *   graphicsAllocator(GR_AllocInfo&);
 
-	virtual void drawGlyph(UT_uint32 Char, UT_sint32 xoff, UT_sint32 yoff);
 	virtual void drawChars(const UT_UCSChar* pChars, 
-						   int iCharOffset, int iLength,
-						   UT_sint32 xoff, UT_sint32 yoff,
-						   int * pCharWidths = NULL);
-	virtual void setFont(GR_Font* pFont);
-	virtual void clearFont(void) {}
-	virtual UT_uint32 getFontAscent();
-	virtual UT_uint32 getFontDescent();
-	virtual UT_uint32 getFontHeight();
+			       int iCharOffset, int iLength,
+			       UT_sint32 xoff, UT_sint32 yoff,
+			       int * pCharWidths = NULL);
 
-	virtual void getCoverage(UT_NumberVector& converage);
-	
-	virtual UT_uint32 getFontAscent(GR_Font *);
-	virtual UT_uint32 getFontDescent(GR_Font *);
-	virtual UT_uint32 getFontHeight(GR_Font *);
-
-	// virtual UT_uint32 measureString(const UT_UCSChar*s, int iOffset, int num, unsigned short* pWidths);
-	virtual UT_sint32 measureUnRemappedChar(const UT_UCSChar c);
-	
 	virtual void setColor(const UT_RGBColor& clr);
 	virtual void getColor(UT_RGBColor& clr);
 	virtual GR_Font* getGUIFont();
@@ -129,30 +111,7 @@ public:
 
 protected:
 	// all instances have to be created via GR_GraphicsFactory; see gr_Graphics.h
-	UnixNull_Graphics(XAP_UnixFontManager * fontManager);
-	
-	virtual GR_Font* _findFont(const char* pszFontFamily, 
-							   const char* pszFontStyle, 
-							   const char* pszFontVariant, 
-							   const char* pszFontWeight, 
-							   const char* pszFontStretch, 
-							   const char* pszFontSize,
-							   const char* pszLang);
-
-	virtual UT_uint32 getDeviceResolution(void) const;
-	
-#ifndef WITHOUT_PRINTING
-	PSFont *		m_pCurrentFont;
-#else
-	XAP_UnixFontHandle *  m_pCurrentFont;
-#endif
-	
-	UT_RGBColor		m_currentColor;
-	
-	GR_Graphics::Cursor m_cursor;
-	GR_Graphics::ColorSpace	m_cs;
-	
-	XAP_UnixFontManager *	m_fm;
+	UnixNull_Graphics();
 };
 
 #endif /* XAP_UNIXPSGRAPHICS_H */

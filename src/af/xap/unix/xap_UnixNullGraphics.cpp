@@ -48,9 +48,6 @@
 #include "xap_Prefs.h"
 #include "xap_App.h"
 
-// the resolution that we report to the application (pixels per inch).
-#define PS_RESOLUTION		360
-
 /*****************************************************************
 ******************************************************************
 ** This is a null graphics class to enable document editting with
@@ -60,15 +57,9 @@
 ******************************************************************
 *****************************************************************/
 
-UnixNull_Graphics::UnixNull_Graphics( XAP_UnixFontManager * fontManager )
+UnixNull_Graphics::UnixNull_Graphics()
+  : GR_UnixPangoGraphics()
 {
-	m_pCurrentFont = 0;
-	m_cs = GR_Graphics::GR_COLORSPACE_COLOR;	
-	m_fm = fontManager;
-
-	m_currentColor.m_red = 0;
-	m_currentColor.m_grn = 0;
-	m_currentColor.m_blu = 0;
 }
 
 UnixNull_Graphics::~UnixNull_Graphics()
@@ -77,28 +68,9 @@ UnixNull_Graphics::~UnixNull_Graphics()
 	_destroyFonts ();
 }
 
- GR_Image* UnixNull_Graphics::createNewImage(const char* pszName, const UT_ByteBuf* pBB, UT_sint32 iDisplayWidth, UT_sint32 iDisplayHeight, GR_Image::GRType iType)
+GR_Image* UnixNull_Graphics::createNewImage(const char* pszName, const UT_ByteBuf* pBB, UT_sint32 iDisplayWidth, UT_sint32 iDisplayHeight, GR_Image::GRType iType)
 {
-	GR_Image* pImg = NULL;
-   
-   	if (iType == GR_Image::GRT_Raster)
-#ifndef WITHOUT_PRINTING
-	{
-		
-		pImg = new PS_Image(pszName);
-	}
-#else
-	{
-		UT_ASSERT_HARMLESS( UT_SHOULD_NOT_HAPPEN );
-		return NULL;
-	}
-#endif
-   	else if (iType == GR_Image::GRT_Vector)
-     		pImg = new GR_VectorImage(pszName);
-   
-	pImg->convertFromBuffer(pBB, tdu(iDisplayWidth), tdu(iDisplayHeight));
-
-	return pImg;
+	return NULL;
 }
 
 
@@ -106,231 +78,31 @@ bool UnixNull_Graphics::queryProperties(GR_Graphics::Properties gp) const
 {
 	switch (gp)
 	{
-	case DGP_SCREEN:
-	case DGP_OPAQUEOVERLAY:
-		return false;
 	case DGP_PAPER:
 		return true;
+	case DGP_SCREEN:
+	case DGP_OPAQUEOVERLAY:
 	default:
-		UT_ASSERT_HARMLESS(0);
 		return false;
 	}
-}
-
-void UnixNull_Graphics::setFont(GR_Font* pFont)
-{
-	UT_ASSERT(pFont);
-#ifndef WITHOUT_PRINTING
-	PSFont * pNewFont = static_cast<PSFont*> (pFont);
-#else
-	XAP_UnixFontHandle * pNewFont = static_cast<XAP_UnixFontHandle*>(pFont);
-#endif
-	// TODO Not always what we want, i.e., start of a new page.
-	// TODO I added a call directly to _startPage to call _emit_SetFont();
-	// TODO I would rather do it all here.
-	if (pNewFont == m_pCurrentFont ) 
-		return;
-
-	UT_ASSERT(pFont);
-
-	m_pCurrentFont = pNewFont;
-}
-
-UT_uint32 UnixNull_Graphics::getFontAscent(GR_Font * fnt)
-{
-#ifndef WITHOUT_PRINTING
-	PSFont*	hndl = static_cast<PSFont*> (fnt);
-	// FIXME we should really be getting stuff fromt he font in layout units,
-	// FIXME but we're not smart enough to do that yet
-	// we call getDeviceResolution() to avoid zoom
-	return static_cast<UT_uint32>(hndl->getUnixFont()->getAscender(hndl->getSize()) *
-								  getResolution() / getDeviceResolution() + 0.5);
-#else
-	UT_ASSERT(fnt);
-	XAP_UnixFontHandle * hndl = static_cast<XAP_UnixFontHandle *>(fnt);
-	
-	// FIXME we should really be getting stuff fromt he font in layout units,
-	// FIXME but we're not smart enough to do that yet
-    // we call getDeviceResolution() to avoid zoom
-	return static_cast<UT_uint32>(hndl->getUnixFont()->getAscender(hndl->getSize()) *
-								  getResolution() / getDeviceResolution() ); // +0.5);
-#endif
-}
-
-UT_uint32 UnixNull_Graphics::getFontAscent()
-{
-	return getFontAscent(m_pCurrentFont);
-}
-
-UT_uint32 UnixNull_Graphics::getFontDescent(GR_Font * fnt)
-{
-#ifndef WITHOUT_PRINTING
-	PSFont*				psfnt = static_cast<PSFont*> (fnt);
-	// FIXME we should really be getting stuff fromt he font in layout units,
-	// FIXME but we're not smart enough to do that yet
-	return static_cast<UT_uint32>(psfnt->getUnixFont()->getDescender(psfnt->getSize()) * getResolution() / getDeviceResolution() + 0.5);
-#else
-	UT_ASSERT(fnt);
-	XAP_UnixFontHandle * hndl = static_cast<XAP_UnixFontHandle *>(fnt);
-
-	XAP_UnixFont* pFont = hndl->getUnixFont();
-	// FIXME we should really be getting stuff fromt he font in layout units,
-	// FIXME but we're not smart enough to do that yet
-	return static_cast<UT_uint32>(pFont->getDescender(hndl->getSize()) *
-								  getResolution() / getDeviceResolution() );  // +0.5);
-#endif
-}
-
-UT_uint32 UnixNull_Graphics::getFontDescent()
-{
-	return getFontDescent(m_pCurrentFont);
-}
-
-UT_uint32 UnixNull_Graphics::getFontHeight(GR_Font * fnt)
-{
-	return getFontAscent(fnt) + getFontDescent(fnt);
-}
-
-void UnixNull_Graphics::getCoverage(UT_NumberVector& coverage)
-{
-}
-
-UT_uint32 UnixNull_Graphics::getFontHeight()
-{
-	return getFontAscent(static_cast<GR_Font *>(m_pCurrentFont)) + getFontDescent(static_cast<GR_Font *>(m_pCurrentFont));
-}
-	
-UT_sint32 UnixNull_Graphics::measureUnRemappedChar(const UT_UCSChar c)
-{
-#ifndef WITHOUT_PRINTING
-	// FIXME we should really be getting stuff fromt he font in layout units,
-	// FIXME but we're not smart enough to do that yet
-	float fWidth = m_pCurrentFont->measureUnRemappedChar(c, m_pCurrentFont->getSize()) 
-		* ((double)getResolution() / (double)getDeviceResolution());
-	return static_cast<UT_uint32>(rint(fWidth));
-#else
-	// taken from gr_UnixGraphics.cpp
-	float fWidth = m_pCurrentFont->measureUnRemappedChar(c, m_pCurrentFont->getSize())
-		* ((double)getResolution() / (double)getDeviceResolution());
-	
-	xxx_UT_DEBUGMSG(("char %d width = %d \n",c,rint(fWidth)));
-	return static_cast<UT_uint32>(rint(fWidth));
-#endif
-}
-
-UT_uint32 UnixNull_Graphics::getDeviceResolution(void) const
-{
-	return PS_RESOLUTION;
 }
 
 void UnixNull_Graphics::setColor(const UT_RGBColor& clr)
 {
-	if (m_currentColor == clr)
-		return;
-
-	// NOTE : we always set our color to something RGB, even if the color
-	// NOTE : space is b&w or grayscale
-	m_currentColor = clr;
 }
 
 void UnixNull_Graphics::getColor(UT_RGBColor& clr)
 {
-	clr = m_currentColor;
 }
 
 GR_Font* UnixNull_Graphics::getGUIFont()
 {
-	// getGUIFont is only used for drawing UI widgets, which does not apply on paper.
-//
-// Better put something here...
-
 	return NULL;
 }
 
-GR_Font* UnixNull_Graphics::_findFont(const char* pszFontFamily, 
-									  const char* pszFontStyle, 
-									  const char* /* pszFontVariant */,
-									  const char* pszFontWeight, 
-									  const char* /* pszFontStretch */,
-									  const char* pszFontSize,
-									  const char* pszLang)
-{
-	UT_ASSERT(pszFontFamily);
-	UT_ASSERT(pszFontStyle);
-	UT_ASSERT(pszFontWeight);
-	UT_ASSERT(pszFontSize);
-	
-	// convert styles to XAP_UnixFont:: formats
-	XAP_UnixFont::style s = XAP_UnixFont::STYLE_NORMAL;
-
-	// this is kind of sloppy
-	if (!UT_strcmp(pszFontStyle, "normal") &&
-		!UT_strcmp(pszFontWeight, "normal"))
-	{
-		s = XAP_UnixFont::STYLE_NORMAL;
-	}
-	else if (!UT_strcmp(pszFontStyle, "normal") &&
-			 !UT_strcmp(pszFontWeight, "bold"))
-	{
-		s = XAP_UnixFont::STYLE_BOLD;
-	}
-	else if (!UT_strcmp(pszFontStyle, "italic") &&
-			 !UT_strcmp(pszFontWeight, "normal"))
-	{
-		s = XAP_UnixFont::STYLE_ITALIC;
-	}
-	else if (!UT_strcmp(pszFontStyle, "italic") &&
-			 !UT_strcmp(pszFontWeight, "bold"))
-	{
-		s = XAP_UnixFont::STYLE_BOLD_ITALIC;
-	}
-	else
-	{
-		UT_ASSERT_HARMLESS(UT_SHOULD_NOT_HAPPEN);
-	}
-
-	// Request the appropriate XAP_UnixFont::, and bury it in an
-	// instance of a UnixFont:: with the correct size.
-	XAP_UnixFont * unixfont = m_fm->getFont(pszFontFamily, s);
-	XAP_UnixFontHandle * item = NULL;
-
-	UT_uint32 iSize = static_cast<UT_uint32>(UT_convertToPoints(pszFontSize));
-	if (unixfont)
-	{
-		// Make a handle on the unixfont.
-		item = new XAP_UnixFontHandle(unixfont,iSize);
-	}
-	else
-	{
-		// Oops!  We don't have that font here.  substitute something
-		// we know we have (get smarter about this later)]
-	        XAP_UnixFont *pFont = m_fm->getFont("Times", s);
-		if(pFont == NULL)
-		{
-		    pFont = m_fm->findNearestFont("Times","normal",NULL,NULL,NULL,pszFontSize,this);
-		}
-		item = new XAP_UnixFontHandle(pFont,iSize);
-	}
-#ifndef WITHOUT_PRINTING
-	xxx_UT_DEBUGMSG(("SEVIOR: Using PS Font Size %d \n",iSize));
-	PSFont * pFont = new PSFont(item->getUnixFont(), iSize);
-	UT_ASSERT(pFont);
-	delete item;
-
-	return pFont;
-#else
-	return item;
-#endif
-}
-
-void UnixNull_Graphics::drawGlyph(UT_uint32 Char, UT_sint32 xoff, UT_sint32 yoff)
-{
-}
-
-
 void UnixNull_Graphics::drawChars(const UT_UCSChar* pChars, int iCharOffset,
-								  int iLength, UT_sint32 xoff, UT_sint32 yoff,
-								  int * pCharWidths)
+				  int iLength, UT_sint32 xoff, UT_sint32 yoff,
+				  int * pCharWidths)
 {
 }
 
@@ -374,13 +146,12 @@ void UnixNull_Graphics::scroll(UT_sint32, UT_sint32)
 }
 
 void UnixNull_Graphics::scroll(UT_sint32 /* x_dest */,
-						 UT_sint32 /* y_dest */,
-						 UT_sint32 /* x_src */,
-						 UT_sint32 /* y_src */,
-						 UT_sint32 /* width */,
-						 UT_sint32 /* height */)
+			       UT_sint32 /* y_dest */,
+			       UT_sint32 /* x_src */,
+			       UT_sint32 /* y_src */,
+			       UT_sint32 /* width */,
+			       UT_sint32 /* height */)
 {
-
 }
 
 bool UnixNull_Graphics::startPrint(void)
@@ -389,7 +160,7 @@ bool UnixNull_Graphics::startPrint(void)
 }
 
 bool UnixNull_Graphics::startPage(const char * szPageLabel, UT_uint32 pageNumber,
-							   bool bPortrait, UT_uint32 iWidth, UT_uint32 iHeight)
+				  bool bPortrait, UT_uint32 iWidth, UT_uint32 iHeight)
 {
 	return true;
 }
@@ -420,25 +191,20 @@ void UnixNull_Graphics::drawBWImage(GR_Image* pImg, UT_sint32 xDest, UT_sint32 y
 
 void UnixNull_Graphics::setColorSpace(GR_Graphics::ColorSpace c)
 {
-	m_cs = c;
 }
 
 GR_Graphics::ColorSpace UnixNull_Graphics::getColorSpace(void) const
 {
-	return m_cs;
+  return GR_COLORSPACE_COLOR;
 }
 
 void UnixNull_Graphics::setCursor(GR_Graphics::Cursor c)
 {
-	if (m_cursor == c)
-		return;
-	m_cursor = c;
-	return;
 }
 
 GR_Graphics::Cursor UnixNull_Graphics::getCursor(void) const
 {
-	return m_cursor;
+	return GR_CURSOR_INVALID;
 }
 
 void UnixNull_Graphics::setColor3D(GR_Color3D /*c*/)
@@ -466,7 +232,5 @@ void UnixNull_Graphics::setPageSize(char* pageSizeName, UT_uint32 iwidth, UT_uin
 
 GR_Graphics *   UnixNull_Graphics::graphicsAllocator(GR_AllocInfo& info)
 {
-	XAP_UnixNullGraphicsAllocInfo &allocator = (XAP_UnixNullGraphicsAllocInfo&)info;
-
-	return new UnixNull_Graphics(allocator.m_fontManager);
+	return new UnixNull_Graphics();
 }

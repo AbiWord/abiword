@@ -232,6 +232,9 @@ public:
 	GR_UnixPangoFont* m_pPFontGUI;
 
 	UT_uint32         m_iDeviceResolution;
+
+	void init();
+
 private:
 	static UT_uint32 s_iInstanceCount;
 	static UT_VersionInfo s_Version;
