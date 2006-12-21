@@ -273,7 +273,7 @@ void XAP_Win32Dialog_FileOpenSaveAs::runModal(XAP_Frame * pFrame)
 
 			// use directory(m_szPersistPathname)
 			strcpy(szDir,m_szPersistPathname);
-			char * pLastSlash = strrchr(szDir, '\\');
+			char * pLastSlash = strrchr(szDir, '/');
 			if (pLastSlash)
 				pLastSlash[1] = 0;
 			ofn.lpstrInitialDir = szDir;
@@ -297,7 +297,7 @@ void XAP_Win32Dialog_FileOpenSaveAs::runModal(XAP_Frame * pFrame)
 		// parts -- directory and file -- for the common dlg.
 
 		strcpy(szDir,m_szInitialPathname);
-		char * pLastSlash = strrchr(szDir, '\\');
+		char * pLastSlash = strrchr(szDir, '/');
 		if (pLastSlash)
 			pLastSlash[1] = 0;
 		ofn.lpstrInitialDir = szDir;
