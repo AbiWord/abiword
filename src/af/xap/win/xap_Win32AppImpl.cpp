@@ -44,6 +44,9 @@ bool XAP_Win32AppImpl::openURL(const char * szURL)
 		if (sURL.substr(0, 2) == "/\\")
 			sURL = sURL.substr(2, sURL.size() - 2);
 
+		if (sURL.substr(0, 1) == "/")
+			sURL = sURL.substr(1, sURL.size() - 1);
+		
 		// Convert all forwardslashes to backslashes
 		for (unsigned int i=0; i<sURL.length();i++)	
 			if (sURL[i]=='/')	sURL[i]='\\';
@@ -54,7 +57,14 @@ bool XAP_Win32AppImpl::openURL(const char * szURL)
 		longpath = new char[MAX_PATH];
 		shortpath = new char[MAX_PATH];
 		strcpy(longpath, sURL.c_str());
-		GetShortPathName(longpath, shortpath, MAX_PATH);
+		DWORD retval = GetShortPathName(longpath, shortpath, MAX_PATH);
+		if((retval == 0) || (retval > MAX_PATH))
+		{
+			UT_ASSERT_HARMLESS(UT_SHOULD_NOT_HAPPEN);
+			DELETEP(longpath);
+			DELETEP(shortpath);
+			return false;
+		}
 		sURL = shortpath;
 		DELETEP(longpath);
 		DELETEP(shortpath);
