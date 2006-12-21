@@ -22,6 +22,7 @@
 
 #include "ut_vector.h"
 #include "ut_assert.h"
+#include "ut_go_file.h"
 
 XAP_Dialog_PluginManager::XAP_Dialog_PluginManager (XAP_DialogFactory * pDlgFactory, 
 													XAP_Dialog_Id id)
@@ -33,16 +34,22 @@ XAP_Dialog_PluginManager::~XAP_Dialog_PluginManager ()
 {
 }
 
-bool XAP_Dialog_PluginManager::activatePlugin (const char * szName) const
+bool XAP_Dialog_PluginManager::activatePlugin (const char * szURI) const
 {
-	UT_ASSERT (szName);
-	bool loaded = XAP_ModuleManager::instance ().loadModule (szName);
-	return loaded;
+	UT_return_val_if_fail (szURI, false);
+
+	char * szName = UT_go_filename_from_uri(szURI);
+	if(szName) {
+	  bool loaded = XAP_ModuleManager::instance ().loadModule (szName);
+	  g_free(szName);
+	  return loaded;
+	}
+	return false;
 }
 
 bool XAP_Dialog_PluginManager::deactivatePlugin (XAP_Module * which) const
 {
-	UT_ASSERT (which);
+	UT_return_val_if_fail (which, false);
 	XAP_ModuleManager::instance ().unloadModule (which);
 	return true;
 }
