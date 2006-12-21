@@ -212,7 +212,7 @@ OS_INCLUDES += $(ABI_GLIB_INC)
 # wv
 ifneq ($(HAVE_WV_PEER),1)
 OS_LIBS += $(ABI_WV_LIB)
-ABI_LIBS += wv-1.0
+#ABI_LIBS += wv-1.0
 OS_INCLUDES += $(ABI_WV_INC)
 endif
 
