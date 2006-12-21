@@ -666,8 +666,11 @@ UINT XAP_Win32Dialog_FileOpenSaveAs::_previewPicture(HWND hDlg)
 	// Build an Import Graphic based on file type
 	IEGraphicFileType iegft = IEGFT_Unknown;
 	IE_ImpGraphic* pIEG;
-	UT_Error errorCode;
-	errorCode = IE_ImpGraphic::constructImporter(buf, iegft, &pIEG);
+	UT_Error errorCode = UT_ERROR;
+	char *uri = UT_go_filename_to_uri(buf);
+	if(uri)
+		errorCode = IE_ImpGraphic::constructImporter(uri, iegft, &pIEG);
+
 	if (errorCode)
 	{
 		DELETEP(pBB);
@@ -687,13 +690,14 @@ UINT XAP_Win32Dialog_FileOpenSaveAs::_previewPicture(HWND hDlg)
 			DELETEP(pIEG);
 			DELETEP(pBB);
 			DELETEP(pTempBB);
+			g_free(uri);
 			return false;
 		}
 	}
 	// Reset file type based on conversion
 	iegft = pIEG->fileTypeForContents( (const char *) pBB->getPointer(0), 50);
 	DELETEP(pIEG);
-
+	g_free(uri);
 
 	double		scale_factor = 0.0;
 	UT_sint32	scaled_width,scaled_height;
