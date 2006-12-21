@@ -966,7 +966,7 @@ LRESULT CALLBACK XAP_Win32FrameImpl::_FrameWndProc(HWND hwnd, UINT iMsg, WPARAM 
 				{
 					DragQueryFile(hDrop, i, szFileName, _MAX_PATH);
 					XAP_App * pApp = XAP_App::getApp();
-					UT_ASSERT(pApp);
+					UT_return_val_if_fail(pApp, 0);
 					FV_View* pView = (FV_View *) f->getCurrentView();
 					XAP_Frame * pNewFrame = 0;
 					IEGraphicFileType iegft = IEGFT_Unknown;					
@@ -980,10 +980,13 @@ LRESULT CALLBACK XAP_Win32FrameImpl::_FrameWndProc(HWND hwnd, UINT iMsg, WPARAM 
 						in the document, if not we assume that it's a document 		
 					*/								
 					// If there is no import graphic, it's a document...
-					errorCode = IE_ImpGraphic::constructImporter(szFileName, iegft, &pIEG);
+					char * uri = UT_go_filename_to_uri(szFileName);
+					if(uri)
+						errorCode = IE_ImpGraphic::constructImporter(uri, iegft, &pIEG);
+
 					if(errorCode == UT_OK)
 					{						
-						errorCode = pIEG->importGraphic(szFileName, &pFG);
+						errorCode = pIEG->importGraphic(uri, &pFG);
 
 						DELETEP(pIEG);
 						if(errorCode == UT_OK && pFG)
@@ -1004,6 +1007,7 @@ LRESULT CALLBACK XAP_Win32FrameImpl::_FrameWndProc(HWND hwnd, UINT iMsg, WPARAM 
 							{
 							  errorCode = UT_ERROR;
 							  f->setStatusMessage("Could not open another window");
+							  g_free(uri);
 							  return 0;
 							}
 						}
@@ -1012,7 +1016,9 @@ LRESULT CALLBACK XAP_Win32FrameImpl::_FrameWndProc(HWND hwnd, UINT iMsg, WPARAM 
 							pNewFrame = f;
 						}
 
-						errorCode = pNewFrame->loadDocument(szFileName, IEFT_Unknown);
+						if(uri)
+							errorCode = pNewFrame->loadDocument(uri, IEFT_Unknown);
+
 						if (errorCode != UT_OK)
 						{
 							if (f != pNewFrame)
@@ -1026,8 +1032,9 @@ LRESULT CALLBACK XAP_Win32FrameImpl::_FrameWndProc(HWND hwnd, UINT iMsg, WPARAM 
 
 					if (errorCode != UT_OK)
 					  {
-					    s_CouldNotLoadFileMessage(f, szFileName, errorCode);
+					    s_CouldNotLoadFileMessage(f, uri, errorCode);
 					  }
+					g_free(uri);
 				}
 				else
 				{
