@@ -12644,23 +12644,12 @@ UT_return_val_if_fail(pDialog, false);
 
 	if (bOK)
 	{
-#ifdef WIN32
 		const char* szResultPathname = pDialog->getPathname();
 
 		if (szResultPathname && *szResultPathname)
 		{
-			stPathname = "\"";
-			stPathname += szResultPathname;
-			stPathname += "\"";
-		}
-#else
-	const char* szResultPathname = pDialog->getPathname();
-
-		if (szResultPathname && *szResultPathname)
-		{
 			stPathname += szResultPathname;
 		}
-#endif
 
 		UT_sint32 type = pDialog->getFileType();
 		dflFileType = type;
@@ -12813,6 +12802,17 @@ Defun1(scriptPlay)
 	char * scriptName = UT_go_filename_from_uri(pNewFile.c_str());
 	UT_return_val_if_fail (scriptName != NULL, false);
 
+#ifdef WIN32
+	// we need to add quotes to the script name _after_ the UT_go_filename_from_uri() call above;
+	// if not, it will return NULL and the script won't play.
+
+	UT_UTF8String script = "\"";
+	script += scriptName;
+	script += "\"";
+	g_free(scriptName);
+	scriptName = g_strdup(script.utf8_str());
+#endif
+
 	UT_DEBUGMSG(("scriptPlay (trying to play [%s])\n", pNewFile.c_str()));
 
 	if (UT_OK != instance.execute(scriptName, ieft))
@@ -12848,6 +12848,17 @@ Defun(executeScript)
 	// we have no expectations of executing a remote program
 	char * scriptName = UT_go_filename_from_uri (pCallData->getScriptName().c_str());
 	UT_return_val_if_fail (scriptName != NULL, false);
+
+#ifdef WIN32
+	// we need to add quotes to the script name _after_ the UT_go_filename_from_uri() call above;
+	// if not, it will return NULL and the script won't execute.
+
+	UT_UTF8String script = "\"";
+	script += scriptName;
+	script += "\"";
+	g_free(scriptName);
+	scriptName = g_strdup(script.utf8_str());
+#endif
 
 	if (UT_OK != instance.execute(scriptName))
 	{
