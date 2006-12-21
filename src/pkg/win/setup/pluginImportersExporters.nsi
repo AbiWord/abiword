@@ -227,44 +227,6 @@ SectionEnd
 
 ;SectionDivider
 
-SubSection "BZ2ABW AbiWord Compression (*.bzabw)"
-Section "BZ2ABW Support"
-	SectionIn 1 2
-
-	; Testing clause to Overwrite Existing Version - if exists
-	IfFileExists "$INSTDIR\AbiWord\plugins\AbiBZ2Abw.dll" 0 DoInstall
-	
-	MessageBox MB_YESNO "Overwrite Existing BZ2ABW Plugin?" IDYES DoInstall
-	
-	DetailPrint "Skipping AbiBZ2ABW Plugin (already exists)!"
-	Goto End
-
-	DoInstall:
-	;SetOutPath $INSTDIR\AbiWord\bin
-	;File "libbz2.dll" 
-	SetOutPath $INSTDIR\AbiWord\plugins
-	File "AbiBZ2Abw.dll"
-
-	End:
-SectionEnd
-
-; OPTIONAL Registry Settings
-Section "Use AbiWord to open .bzabw files by default"
-	SectionIn 1 2
-
-	; Skip adding registry entries if plugin doesn't exist
-	IfFileExists "$INSTDIR\AbiWord\plugins\AbiBZ2Abw.dll" 0 End
-
-	; Write File Associations
-	WriteRegStr HKCR ".bzabw" "" "AbiSuite.AbiWord"
-	WriteRegStr HKCR ".bzabw" "Content Type" "application/abiword-compressed"
-
-	End:
-SectionEnd
-SubSectionEnd
-
-;SectionDivider
-
 Section "ClarisWorks"
 	SectionIn 2
 
@@ -940,11 +902,9 @@ Section "Uninstall"
 
 	; remove file assoications
 	;DeleteRegKey HKCR ".ext"
-	DeleteRegKey HKCR ".bzabw"
 
 	; remove files used
 	Delete "$INSTDIR\AbiApplix.dll"
-	Delete "$INSTDIR\AbiBZ2Abw.dll"
 	Delete "$INSTDIR\AbiClarisWorks.dll"
 	Delete "$INSTDIR\AbiDocBook.dll"
 	Delete "$INSTDIR\AbiEML.dll"
@@ -968,7 +928,6 @@ Section "Uninstall"
 
 	Delete "$INSTDIR\..\bin\iconv.dll"
 	Delete "$INSTDIR\..\bin\intl.dll"
-	Delete "$INSTDIR\..\bin\libbz2.dll"
 	Delete "$INSTDIR\..\bin\libglib-2.0-0.dll"
 	Delete "$INSTDIR\..\bin\libgobject-2.0-0.dll"
 	Delete "$INSTDIR\..\bin\libgsf-1-1.dll"
