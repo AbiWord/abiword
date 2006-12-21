@@ -49,7 +49,7 @@ public:
 class ABI_EXPORT IE_Exp_AbiWord_1 : public IE_Exp
 {
 public:
-	IE_Exp_AbiWord_1(PD_Document * pDocument, bool isTemplate = false, bool isCompressed = true);
+	IE_Exp_AbiWord_1(PD_Document * pDocument, bool isTemplate = false, bool isCompressed = false);
 	virtual ~IE_Exp_AbiWord_1();
 
 protected:
