@@ -31,7 +31,7 @@
 #include "xap_UnixDialogHelper.h"
 #include "ut_endian.h"
 
-#include "xap_UnixNullGraphics.h"
+#include "gr_UnixNullGraphics.h"
 
 #ifndef WITHOUT_PRINTING
 #  include "xap_UnixPSFont.h"

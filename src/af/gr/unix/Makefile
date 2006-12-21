@@ -23,7 +23,8 @@ ABI_ROOT:=$(shell pwd)/../../../..
 include $(ABI_ROOT)/src/config/abi_defs.mk
 
 CPPSRCS=		gr_UnixGraphics.cpp	\
-			gr_UnixImage.cpp
+			gr_UnixImage.cpp	\
+			gr_UnixNullGraphics.cpp
 
 INCLUDES=		-I/usr/X11R6/include
 

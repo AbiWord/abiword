@@ -28,10 +28,10 @@
 #include "xap_UnixApp.h"
 #include "xap_UnixFontManager.h"
 #include "xap_UnixFont.h"
-#include "xap_UnixNullGraphics.h"
 
 #include "gr_UnixGraphics.h"
 #include "gr_UnixImage.h"
+#include "gr_UnixNullGraphics.h"
 #include "ut_sleep.h"
 #include "xap_Strings.h"
 

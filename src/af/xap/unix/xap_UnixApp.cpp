@@ -52,7 +52,7 @@
 #include "xap_UnixEncodingManager.h"
 #include "xap_UnixFontManager.h"
 
-#include "xap_UnixNullGraphics.h"
+#include "gr_UnixNullGraphics.h"
 #include "gr_UnixGraphics.h"
 #include "gr_UnixPangoGraphics.h"
 
@@ -140,7 +140,7 @@ XAP_UnixApp::XAP_UnixApp(XAP_Args * pArgs, const char * szAppName)
 	  {
 	    delete abi_unixnullgraphics_instance;
 	    //abi_unixnullgraphics_instance = new UnixNull_Graphics(0,0);
-		XAP_UnixNullGraphicsAllocInfo ai;
+		GR_UnixNullGraphicsAllocInfo ai;
 		abi_unixnullgraphics_instance =
 			(UnixNull_Graphics*) XAP_App::getApp()->newGraphics((UT_uint32)GRID_UNIX_NULL, ai);
 	  }

@@ -31,10 +31,10 @@ class UT_ByteBuf;
 
 /*****************************************************************/
 /*****************************************************************/
-class XAP_UnixNullGraphicsAllocInfo : public GR_AllocInfo
+class GR_UnixNullGraphicsAllocInfo : public GR_AllocInfo
 {
 public:
- 	XAP_UnixNullGraphicsAllocInfo() 
+ 	GR_UnixNullGraphicsAllocInfo() 
 	  {}
 
 	virtual GR_GraphicsId getType() const {return GRID_UNIX_NULL;}
@@ -114,4 +114,4 @@ protected:
 	UnixNull_Graphics();
 };
 
-#endif /* XAP_UNIXPSGRAPHICS_H */
+#endif /* GR_UNIXPSGRAPHICS_H */

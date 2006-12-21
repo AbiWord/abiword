@@ -29,6 +29,7 @@ pango_src =
 endif
 
 libGr_unix_a_SOURCES= $(pango_src)              \
+		      gr_UnixNullGraphics.cpp   \   
 	              gr_UnixGraphics.cpp	\
 	              gr_UnixImage.cpp
 
@@ -38,4 +39,5 @@ headersdir = $(ABIWORD_HEADERSDIR)/gr/unix
 headers_DATA = \
 	gr_UnixGraphics.h \
 	gr_UnixImage.h \
-	gr_UnixPangoGraphics.h
+	gr_UnixPangoGraphics.h \
+	gr_UnixNullGraphics.h

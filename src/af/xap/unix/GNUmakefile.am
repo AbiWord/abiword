@@ -91,7 +91,6 @@ libXap_unix_a_SOURCES= $(print_src)	\
 	xap_UnixModule.cpp				\
 	xap_UnixDlg_Password.cpp		\
 	xap_UnixDlg_PluginManager.cpp	\
-	xap_UnixNullGraphics.cpp		\
 	xap_UnixEncodingManager.cpp		\
 	xap_UnixFrameImpl.cpp			\
 	xap_UnixTableWidget.cpp 		\
@@ -140,7 +139,6 @@ headers_DATA = \
 	xap_UnixFrameImpl.h \
 	xap_UnixGnomePrintGraphics.h \
 	xap_UnixModule.h \
-	xap_UnixNullGraphics.h \
 	xap_UnixPSFont.h \
 	xap_UnixPSGenerate.h \
 	xap_UnixPSImage.h \
