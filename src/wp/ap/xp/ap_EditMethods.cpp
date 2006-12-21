@@ -12809,9 +12809,13 @@ Defun1(scriptPlay)
 	if (!bOK || pNewFile.empty())
 		return false;
 
+	// we have no expectations of executing a remote program
+	char * scriptName = UT_go_filename_from_uri(pNewFile.c_str());
+	UT_return_val_if_fail (scriptName != NULL, false);
+
 	UT_DEBUGMSG(("scriptPlay (trying to play [%s])\n", pNewFile.c_str()));
 
-	if (UT_OK != instance.execute(pNewFile.c_str(), ieft))
+	if (UT_OK != instance.execute(scriptName, ieft))
 	{
 		if (instance.errmsg().size() > 0)
 		{
@@ -12823,8 +12827,10 @@ Defun1(scriptPlay)
 			pFrame->showMessageBox(AP_STRING_ID_SCRIPT_CANTRUN,
 					       XAP_Dialog_MessageBox::b_O,
 					       XAP_Dialog_MessageBox::a_OK,
-					       pNewFile.c_str());
+					       scriptName);
 	}
+
+	g_free (scriptName);
 
 	return true;
 }
@@ -12839,7 +12845,11 @@ Defun(executeScript)
 
 	UT_ScriptLibrary &instance = UT_ScriptLibrary::instance ();
 
-	if (UT_OK != instance.execute(pCallData->getScriptName().c_str()))
+	// we have no expectations of executing a remote program
+	char * scriptName = UT_go_filename_from_uri (pCallData->getScriptName().c_str());
+	UT_return_val_if_fail (scriptName != NULL, false);
+
+	if (UT_OK != instance.execute(scriptName))
 	{
 		if (instance.errmsg().size() > 0)
 			pFrame->showMessageBox(instance.errmsg().c_str(),
@@ -12850,8 +12860,10 @@ Defun(executeScript)
 			pFrame->showMessageBox(AP_STRING_ID_SCRIPT_CANTRUN,
 								   XAP_Dialog_MessageBox::b_O,
 								   XAP_Dialog_MessageBox::a_OK,
-								   pCallData->getScriptName().c_str());
+								   scriptName);
 	}
+
+	g_free (scriptName);
 
 	return true;
 }
