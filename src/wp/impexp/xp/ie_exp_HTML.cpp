@@ -1538,8 +1538,6 @@ void s_HTML_Listener::_outputEnd ()
 
 bool s_HTML_Listener::_openStyleSheet (UT_UTF8String & css_path)
 {
-	char * base_name = UT_go_basename_from_uri (m_pie->getFileName ());
-
 	UT_UTF8String cssdir(m_pie->getFileName ());
 	cssdir += "_files";
 
@@ -1569,8 +1567,6 @@ bool s_HTML_Listener::_openStyleSheet (UT_UTF8String & css_path)
 		m_fdCSS = UT_go_file_create (css_path.utf8_str (), NULL);
 		if (m_fdCSS == NULL) return false;
 	}
-
-	g_free(base_name);
 
 	return true;
 }
