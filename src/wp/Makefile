@@ -34,7 +34,7 @@ include $(ABI_ROOT)/src/config/abi_rules.mk
 
 ## CANON_AppDir is where we put application-specific stuff in the
 ## canonical layout.
-CANON_AppDir=	$(CANONDIR)/$(ABI_APPLIBDIR)
+CANON_AppDir=	$(CANONDIR)/AbiWord
 
 ## CANON_Lang is a wildcard to match language strings like "en-US"
 ## and "no-BOK" (and not "CVS").
