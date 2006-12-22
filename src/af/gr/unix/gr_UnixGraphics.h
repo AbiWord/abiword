@@ -148,7 +148,7 @@ class GR_UnixGraphics : public GR_Graphics
 
 	void                createPixmapFromXPM( char ** pXPM,GdkPixmap *source,
 											 GdkBitmap * mask);
-	GdkWindow*  	  	getWindow(void)
+	GdkWindow*  	  	getWindow(void) const
 	{ return m_pWin;}
 
 
@@ -212,6 +212,8 @@ class GR_UnixGraphics : public GR_Graphics
 	void                _setIsSymbol(bool b) {m_bIsSymbol = b;}
 	void                _setIsDingbat(bool b) {m_bIsDingbat = b;}
 
+	void                _setDeviceResolution(void);
+
 	GdkGC*       			m_pGC;
 	GdkGC*  	      		m_pXORGC;
 	GdkWindow*  	  		m_pWin;
@@ -245,6 +247,8 @@ class GR_UnixGraphics : public GR_Graphics
 protected:	
 	XftDraw*				m_pXftDraw;
 	XftColor				m_XftColor;
+
+	UT_uint32               m_iDeviceResolution;
 	
 private:	
 	XftFont*				m_pXftFontL;

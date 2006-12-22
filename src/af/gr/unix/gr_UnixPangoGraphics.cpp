@@ -2152,54 +2152,38 @@ GR_UnixPangoPrintGraphics::GR_UnixPangoPrintGraphics(XAP_UnixGnomePrintGraphics 
 	 * gnome-print font map
 	 */
 	GdkScreen *  gScreen  = gdk_screen_get_default();
-	GdkDisplay*  gDisplay = gdk_display_get_default();
 
 	m_iDeviceResolution = 72; // hardcoded in GnomePrint
 
-	if (gScreen && gDisplay)
+	if (gScreen)
 		{
 			int iScreen = gdk_x11_screen_get_screen_number(gScreen);
-			Display * disp = GDK_DISPLAY_XDISPLAY(gDisplay);
-			FcPattern *pattern;
-			double dpi = 72.;
-			
-			pattern = FcPatternCreate();
-			if (pattern)
-				{
-					XftDefaultSubstitute (GDK_SCREEN_XDISPLAY (gScreen),
-										  iScreen,
-										  pattern);
-					FcPatternGetDouble (pattern, FC_DPI, 0, &dpi); 
-					FcPatternDestroy (pattern);
-					UT_DEBUGMSG(("@@@@@@@@@@@@@@ retrieved DPI %f @@@@@@@@@@@@@@@@@@ \n",
-								 dpi));
-					
-					m_iScreenResolution = (int)dpi;
-				}	
-			
+			Display * disp = GDK_SCREEN_XDISPLAY (gScreen);
+
+			// the parent class' device resolution is the screen's resolution
+			m_iScreenResolution = GR_UnixGraphics::getDeviceResolution();
+
 			m_pContext = pango_xft_get_context(disp, iScreen);
 			m_pFontMap = pango_xft_get_font_map(disp, iScreen);
 		}
-#ifdef HAVE_PANGOFT2
 	else
 		{
+#ifdef HAVE_PANGOFT2
+			// hardcode to something sane-ish. printing and unixnull graphics will use this
+			// fallback case
 			m_iScreenResolution = m_iDeviceResolution;
 
 			m_pContext = pango_ft2_get_context(m_iScreenResolution, m_iScreenResolution);
 			m_pFontMap = pango_ft2_font_map_new ();
 			m_bOwnsFontMap = true;
-		}
+#else
+			UT_DEBUGMSG(("No screen, no display, and no PangoFT2. We're screwed.\n"));
+			UT_ASSERT(UT_SHOULD_NOT_HAPPEN);
 #endif
+		}
  	
 	m_pGPFontMap = gnome_print_pango_get_default_font_map ();
 	m_pGPContext = gnome_print_pango_create_context(m_pGPFontMap);
-#if 0
-	/* This does not seem to do anything, and I think in principle it is not
-	 * correct -- we pass in coords in layout units and the tdu() functions
-	 * scale them correctly to the GP resolution.
-	 */
-	gnome_print_scale (m_pGnomePrint->getGnomePrintContext(), 72./dpi,72./dpi);
-#endif
 }
 
 

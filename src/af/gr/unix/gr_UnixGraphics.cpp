@@ -622,6 +622,8 @@ GR_UnixGraphics::GR_UnixGraphics(GdkWindow * win, XAP_UnixFontManager * fontMana
 													   FALLBACK_FONT_SIZE);
 	else
 		m_pFallBackFontHandle = NULL;
+
+	_setDeviceResolution();
 }
 
 bool GR_UnixGraphics::isDingbat(void) const
@@ -713,6 +715,8 @@ GR_UnixGraphics::GR_UnixGraphics(GdkPixmap * win, XAP_UnixFontManager * fontMana
 													   FALLBACK_FONT_SIZE);
 	else
 		m_pFallBackFontHandle = NULL;
+
+	_setDeviceResolution();
 }
 
 GR_UnixGraphics::~GR_UnixGraphics()
@@ -1143,7 +1147,57 @@ UT_sint32 GR_UnixGraphics::measureUnRemappedChar(const UT_UCSChar c)
 
 UT_uint32 GR_UnixGraphics::getDeviceResolution(void) const
 {
-	return 72;
+	return m_iDeviceResolution;
+}
+
+void GR_UnixGraphics::_setDeviceResolution(void)
+{
+	GdkScreen *  gScreen;
+
+	GdkWindow * win = getWindow();
+
+	if (win)
+		gScreen = gdk_drawable_get_screen(win);
+	else
+		gScreen = gdk_screen_get_default();
+
+	bool got_resolution = false;
+
+	if (gScreen)
+		{
+			// try getting the global DPI setting from Xft2
+			int iScreen = gdk_x11_screen_get_screen_number(gScreen);
+			FcPattern *pattern;
+			
+			pattern = FcPatternCreate();
+			if (pattern)
+				{
+					double dpi;
+					XftDefaultSubstitute (GDK_SCREEN_XDISPLAY (gScreen),
+										  iScreen,
+										  pattern);
+
+					if(FcResultMatch == FcPatternGetDouble (pattern, FC_DPI, 0, &dpi))
+						{
+							m_iDeviceResolution = (UT_uint32)round(dpi);
+							got_resolution = true;
+						}
+
+					FcPatternDestroy (pattern);
+				}
+			
+			if (!got_resolution)
+				{
+					// that didn't work. try getting it from the screen
+					m_iDeviceResolution = (UT_uint32)round((gdk_screen_get_width(gScreen) * 25.4) / gdk_screen_get_width_mm (gScreen));
+					got_resolution = true;
+				}
+		}
+
+	if (!got_resolution)
+		m_iDeviceResolution = 72; // no screen or display. we're hosed. hardcode some sane-ish default
+
+	UT_DEBUGMSG(("@@@@@@@@@@@@@@ retrieved DPI %d @@@@@@@@@@@@@@@@@@ \n", m_iDeviceResolution));
 }
 
 void GR_UnixGraphics::getColor(UT_RGBColor& clr)
