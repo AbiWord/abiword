@@ -52,7 +52,6 @@
 #include "xap_UnixEncodingManager.h"
 #include "xap_UnixFontManager.h"
 
-#include "gr_UnixNullGraphics.h"
 #include "gr_UnixGraphics.h"
 #include "gr_UnixPangoGraphics.h"
 
@@ -63,7 +62,10 @@
 #include <libgnomevfs/gnome-vfs.h>
 #endif
 
-UnixNull_Graphics * abi_unixnullgraphics_instance = 0;
+#if defined(USE_PANGO)
+#include "gr_UnixNullGraphics.h"
+static UnixNull_Graphics * abi_unixnullgraphics_instance = 0;
+#endif
 
 /*****************************************************************/
 // #include <sys/time.h> // tmp just to measure the time that XftInit takes
@@ -100,13 +102,12 @@ XAP_UnixApp::XAP_UnixApp(XAP_Args * pArgs, const char * szAppName)
 		UT_ASSERT( bSuccess );
 		pGF->registerAsDefault(GR_UnixGraphics::s_getClassId(), true);
 
+#if defined(USE_PANGO)
 		bSuccess = pGF->registerClass(UnixNull_Graphics::graphicsAllocator,
 									  UnixNull_Graphics::graphicsDescriptor,
-									  UnixNull_Graphics::s_getClassId());
-
-		
+									  UnixNull_Graphics::s_getClassId());		
 		UT_ASSERT( bSuccess );
-#if defined(USE_PANGO)
+
 		bSuccess = pGF->registerClass(GR_UnixPangoGraphics::graphicsAllocator,
 									  GR_UnixPangoGraphics::graphicsDescriptor,
 									  GR_UnixPangoGraphics::s_getClassId());
@@ -118,9 +119,12 @@ XAP_UnixApp::XAP_UnixApp(XAP_Args * pArgs, const char * szAppName)
 			pGF->registerAsDefault(GR_UnixPangoGraphics::s_getClassId(), true);
 		}
 
+#if !defined(WITHOUT_PRINTING)
 		bSuccess = pGF->registerClass(GR_UnixPangoPrintGraphics::graphicsAllocator,
 									  GR_UnixPangoPrintGraphics::graphicsDescriptor,
 									  GR_UnixPangoPrintGraphics::s_getClassId());
+#endif
+
 #endif
 		
 		UT_ASSERT( bSuccess );
@@ -133,6 +137,7 @@ XAP_UnixApp::XAP_UnixApp(XAP_Args * pArgs, const char * szAppName)
 #endif
 	}
 
+#if defined(USE_PANGO)
 	/* We need to link UnixNull_Graphics because the AbiCommand
 	 * plugin uses it.
 	 */
@@ -144,7 +149,7 @@ XAP_UnixApp::XAP_UnixApp(XAP_Args * pArgs, const char * szAppName)
 		abi_unixnullgraphics_instance =
 			(UnixNull_Graphics*) XAP_App::getApp()->newGraphics((UT_uint32)GRID_UNIX_NULL, ai);
 	  }
-	  
+#endif	  
 }
 
 XAP_UnixApp::~XAP_UnixApp()

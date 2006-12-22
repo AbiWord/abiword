@@ -146,6 +146,7 @@ void XAP_UnixDialog_Print::_getGraphics(void)
 	
 	UT_uint32 iDefaultPrintClass = pGF->getDefaultClass(false);
 
+#if defined(USE_PANGO)
 	GR_UnixPangoPrintGraphics * pPPG = NULL;
 	
 	if(iDefaultPrintClass == GRID_UNIX_PANGO_PRINT || iDefaultPrintClass == GRID_UNIX_PANGO)
@@ -158,6 +159,7 @@ void XAP_UnixDialog_Print::_getGraphics(void)
 		m_pPrintGraphics = pPPG;
 	}
 	else
+#endif
 	{
 		m_pPrintGraphics = pGPG;
 	}

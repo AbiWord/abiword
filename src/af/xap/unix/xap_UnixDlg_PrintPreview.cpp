@@ -65,14 +65,15 @@ void XAP_UnixDialog_PrintPreview::runModal(XAP_Frame * pFrame)
 	
 	UT_uint32 iDefaultPrintClass = pGF->getDefaultClass(false);
 
-	GR_UnixPangoPrintGraphics * pPPG = NULL;
-
 	XAP_UnixGnomePrintGraphics * pGPG
 		= new XAP_UnixGnomePrintGraphics(gnome_print_job_new(XAP_UnixGnomePrintGraphics::s_setup_config(pFrame)), true);
 	
 	UT_return_if_fail(pGPG != NULL);
 	
 	pGPG->setColorSpace(GR_Graphics::GR_COLORSPACE_COLOR);
+
+#if defined(USE_PANGO)
+	GR_UnixPangoPrintGraphics * pPPG = NULL;
 	
 	if(iDefaultPrintClass == GRID_UNIX_PANGO_PRINT || iDefaultPrintClass == GRID_UNIX_PANGO)
 	{
@@ -84,6 +85,7 @@ void XAP_UnixDialog_PrintPreview::runModal(XAP_Frame * pFrame)
 		m_pPrintGraphics = pPPG;
 	}
 	else
+#endif
 	{
 		m_pPrintGraphics = pGPG;
 	}

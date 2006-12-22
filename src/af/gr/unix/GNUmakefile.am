@@ -23,13 +23,13 @@ INCLUDES= @GTK_CFLAGS@ @GMODULE_CFLAGS@ $(AF_INCLUDES) $(ICONV_INCLUDES)
 noinst_LIBRARIES = libGr_unix.a
 
 if WITH_PANGO
-pango_src = gr_UnixPangoGraphics.cpp
+pango_src = gr_UnixPangoGraphics.cpp \
+	gr_UnixNullGraphics.cpp
 else
 pango_src =
 endif
 
 libGr_unix_a_SOURCES= $(pango_src)              \
-		      gr_UnixNullGraphics.cpp   \   
 	              gr_UnixGraphics.cpp	\
 	              gr_UnixImage.cpp
 

@@ -1986,11 +1986,12 @@ void GR_UnixGraphics::_endPaint ()
 
 GR_Graphics *   GR_UnixGraphics::graphicsAllocator(GR_AllocInfo& allocInfo)
 {
-
+#if defined(USE_PANGO)
 	if (allocInfo.getType() == GRID_UNIX_NULL)
 		{
 			return UnixNull_Graphics::graphicsAllocator(allocInfo);
 		}
+#endif
 	GR_UnixAllocInfo &allocator = (GR_UnixAllocInfo&)allocInfo;
 	if (allocator.m_win) 
 		{

@@ -107,12 +107,14 @@ public:
     
     gnome_print_graphics = new XAP_UnixGnomePrintGraphics(job);
     iDefaultPrintClass = pGF->getDefaultClass(false);
-    
+
+#if defined(USE_PANGO)    
     if(iDefaultPrintClass == GRID_UNIX_PANGO_PRINT || iDefaultPrintClass == GRID_UNIX_PANGO)
       {
 	print_graphics = new GR_UnixPangoPrintGraphics(gnome_print_graphics);
       }
     else
+#endif
       {
 	print_graphics = gnome_print_graphics;
       }

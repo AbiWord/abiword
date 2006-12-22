@@ -1673,9 +1673,11 @@ bool AP_UnixApp::doWindowlessArgs(const AP_Args *Args, bool & bSuccess)
 			XAP_UnixGnomePrintGraphics * gnome_print_graphics;
 
 			gnome_print_graphics = new XAP_UnixGnomePrintGraphics(job);
+#if defined(USE_PANGO)
 			if(iDefaultPrintClass == GRID_UNIX_PANGO_PRINT || iDefaultPrintClass == GRID_UNIX_PANGO)
 				print_graphics = new GR_UnixPangoPrintGraphics(gnome_print_graphics);
 			else
+#endif
 				print_graphics = gnome_print_graphics;
 
 			bSuccess = conv.print (Args->m_sFile, print_graphics, Args->m_sFileExtension);
