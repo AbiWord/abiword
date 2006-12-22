@@ -17,6 +17,13 @@
  * 02111-1307, USA.
  */
 
+// TODO Rob: hunt down all ocurrences of PATH_MAX, MAX_PATH
+// and put something like this in ut_types.h
+#include <glib.h>
+#ifdef MAXPATHLEN
+#define PATH_MAX MAXPATHLEN
+#endif
+
 #include <string.h>
 #include <stdlib.h>
 #include <stdio.h>
@@ -101,11 +108,13 @@ Defun_EV_GetMenuItemComputedLabel_Fn(ap_GetLabel_Recent)
 	if (ndx <= pPrefs->getRecentCount())
 	{
 		const char * szFormat = pLabel->getMenuLabel();
-		static char buf[128];	// BUGBUG: possible buffer overflow
+		static char buf[PATH_MAX];
 
-		const char * szRecent = pPrefs->getRecent(ndx);
+		const char * szURI = pPrefs->getRecent(ndx);
+		char *szRecent = g_filename_from_uri(szURI, NULL, NULL);
 
-		sprintf(buf,szFormat,szRecent);
+		snprintf(buf, PATH_MAX, szFormat, szRecent);
+		g_free (szRecent);
 		return buf;
 	}
 
