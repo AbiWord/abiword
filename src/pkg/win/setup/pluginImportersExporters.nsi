@@ -394,8 +394,9 @@ Section "WML Wireless Markup"
   
 	End:
 SectionEnd
+;DISABLED TEMPORARILY UNTIL BUILD FIXED
 
-
+!ifdef 0
 Section "WordPerfect Importer" WP_IDX
 	SectionIn 2
 
@@ -417,6 +418,7 @@ Section "WordPerfect Importer" WP_IDX
   
 	End:
 SectionEnd
+!endif
 
 ;XML/XSL Formatting objects, meant to be similar in scope to LaTeX
 Section "XSL-FO"
