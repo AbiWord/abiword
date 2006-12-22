@@ -134,6 +134,7 @@ GsfOutput* IE_Exp::openFile(const char * szFilename)
 	UT_return_val_if_fail(!m_fp, false);
 	UT_return_val_if_fail(szFilename, false);
 
+	g_free(m_szFileName);
 	m_szFileName = g_new(char, strlen(szFilename) + 1);
 	strcpy(m_szFileName, szFilename);
 
@@ -199,6 +200,8 @@ UT_Error IE_Exp::writeFile(GsfOutput * fp)
 	UT_return_val_if_fail(fp, UT_IE_COULDNOTWRITE);
 
 	m_fp = fp;
+
+	g_free(m_szFileName);
 	m_szFileName = g_strdup(gsf_output_name (fp));
 	return _writeDocument();
 }
