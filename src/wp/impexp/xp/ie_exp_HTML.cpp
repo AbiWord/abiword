@@ -1536,14 +1536,14 @@ void s_HTML_Listener::_outputEnd ()
 	}
 }
 
-bool s_HTML_Listener::_openStyleSheet (UT_UTF8String & css_path)
+bool s_HTML_Listener::_openStyleSheet (UT_UTF8String & css_relative_path)
 {
 	UT_UTF8String cssdir(m_pie->getFileName ());
 	cssdir += "_files";
 
 	UT_go_directory_create (cssdir.utf8_str(), 0750, NULL);
 
-	css_path = cssdir;
+	UT_UTF8String css_path = cssdir;
 	css_path += "/style.css";
 
 	if (m_utf8_css_path.byteLength ()) // Multipart HTML: style-sheet segment
@@ -1567,6 +1567,12 @@ bool s_HTML_Listener::_openStyleSheet (UT_UTF8String & css_path)
 		m_fdCSS = UT_go_file_create (css_path.utf8_str (), NULL);
 		if (m_fdCSS == NULL) return false;
 	}
+
+	char * base_name = UT_go_basename_from_uri (m_pie->getFileName ());
+	if (base_name)
+		css_relative_path = base_name;
+	css_relative_path += "/styles.css";
+	g_free(base_name);
 
 	return true;
 }
