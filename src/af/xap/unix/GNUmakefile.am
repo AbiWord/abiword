@@ -37,7 +37,8 @@ INCLUDES = 				\
 	$(WP_INCLUDES) 		\
 	$(TEXT_INCLUDES) 	\
 	$(ICONV_INCLUDES) 	\
-	$(OTHER_INCLUDES)
+	$(OTHER_INCLUDES)	\
+	-DDATADIR="\"$(datadir)\""
 
 noinst_LIBRARIES = libXap_unix.a
 

@@ -68,7 +68,7 @@ void XAP_UnixDialog_About::runModal(XAP_Frame * pFrame)
 	GtkWidget * parent;
 
 	if (!logo) {
-		UT_String str (XAP_App::getApp()->getAbiSuiteLibDir());
+		UT_String str (DATADIR);
 		str += "/icons/abiword_48.png";
 		logo = gdk_pixbuf_new_from_file (str.c_str(), NULL); // ignore errors
 	}
