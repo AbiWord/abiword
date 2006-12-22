@@ -225,7 +225,7 @@ Section "ApplixWare"
 	End:
 SectionEnd
 
-;SectionDivider
+
 
 Section "ClarisWorks"
 	SectionIn 2
@@ -244,7 +244,7 @@ Section "ClarisWorks"
 	End:
 SectionEnd
 
-;SectionDivider
+
 
 Section "DocBook"
 	SectionIn 2
@@ -263,7 +263,45 @@ Section "DocBook"
 	End:
 SectionEnd
 
-;SectionDivider
+
+
+Section "OpenDocument (*.odt) Import" ODT_IDX
+	SectionIn 2
+
+	; Testing clause to Overwrite Existing Version - if exists
+	IfFileExists "$INSTDIR\AbiWord\plugins\AbiOpenDocument.dll" 0 DoInstall
+	
+	MessageBox MB_YESNO "Overwrite Existing AbiOpenDocument Plugin?" IDYES DoInstall
+	
+	DetailPrint "Skipping AbiOpenDocument Plugin (already exists)!"
+	Goto End
+
+	DoInstall:
+	File "AbiOpenDocument.dll"
+  
+	End:
+SectionEnd
+
+
+
+Section "OpenWriter (*.sxw) Import/Export" SXW_IDX
+	SectionIn 2
+
+	; Testing clause to Overwrite Existing Version - if exists
+	IfFileExists "$INSTDIR\AbiWord\plugins\AbiOpenWriter.dll" 0 DoInstall
+	
+	MessageBox MB_YESNO "Overwrite Existing AbiOpenWriter Plugin?" IDYES DoInstall
+	
+	DetailPrint "Skipping AbiOpenWriter Plugin (already exists)!"
+	Goto End
+
+	DoInstall:
+	File "AbiOpenWriter.dll"
+  
+	End:
+SectionEnd
+
+
 
 Section "Outlook Express .EML email format"
 	SectionIn 1 2
@@ -281,7 +319,6 @@ Section "Outlook Express .EML email format"
   
 	End:
 SectionEnd
-
 
 
 
@@ -303,15 +340,6 @@ Section "ISCII (Indic script) Text"
 SectionEnd
 
 
-
-
-
-
-;SectionDivider
-
-
-
-
 Section "Palm .pdb DOC"
 	SectionIn 2
 
@@ -328,6 +356,26 @@ Section "Palm .pdb DOC"
   
 	End:
 SectionEnd
+
+
+Section "Star Office Writer 5.1 .sdw Importer" SDW_IDX
+	SectionIn 2
+
+	; Testing clause to Overwrite Existing Version - if exists
+	IfFileExists "$INSTDIR\AbiWord\plugins\AbiSDW.dll" 0 DoInstall
+	
+	MessageBox MB_YESNO "Overwrite Existing AbiSDW Plugin?" IDYES DoInstall
+	
+	DetailPrint "Skipping AbiSDW Plugin (already exists)!"
+	Goto End
+
+	DoInstall:
+	File "AbiSDW.dll"
+  
+	End:
+SectionEnd
+
+
 
 ;Wireless Markup Language (old HTML replacement for mobile devices)
 Section "WML Wireless Markup"
@@ -347,7 +395,28 @@ Section "WML Wireless Markup"
 	End:
 SectionEnd
 
-;SectionDivider
+
+Section "WordPerfect Importer" WP_IDX
+	SectionIn 2
+
+	; Testing clause to Overwrite Existing Version - if exists
+	IfFileExists "$INSTDIR\AbiWord\plugins\AbiWordPerfect.dll" 0 DoInstall
+	
+	MessageBox MB_YESNO "Overwrite Existing AbiWordPerfect Plugin?" IDYES DoInstall
+	
+	DetailPrint "Skipping AbiWordPerfect Plugin (already exists)!"
+	Goto End
+
+	DoInstall:
+        SetOutPath $INSTDIR\AbiWord\bin
+        File "libwpd-0.8.dll"
+
+        SetOutPath $INSTDIR\AbiWord\plugins
+	  File "AbiWordPerfect.dll"
+
+  
+	End:
+SectionEnd
 
 ;XML/XSL Formatting objects, meant to be similar in scope to LaTeX
 Section "XSL-FO"
@@ -615,117 +684,8 @@ SectionEnd
 
 
 
-;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;
-;;;;;; GLIB based
 
-
-;SectionDivider
-
-
-SubSection /e "Other Importers/Exporters (GLIB-based)"
-
-!macro dlFileMacro remoteFname localFname errMsg
-	!define retryDLlbl retryDL_${__FILE__}${__LINE__}
-	!define dlDonelbl dlDoneDL_${__FILE__}${__LINE__}
-
-	;Call ConnectInternet	; try to establish connection if not connected
-	;StrCmp $0 "online" 0 ${dlDonelbl}
-
-	${retryDLlbl}:
-	NSISdl::download "${remoteFname}" "${localFname}"
-	Pop $0 ;Get the return value
-	StrCmp $0 "success" ${dlDonelbl}
-		; Couldn't download the file
-		DetailPrint "${errMsg}"
-		DetailPrint "Remote URL: ${remoteFname}"
-		DetailPrint "Local File: ${localFname}"
-		DetailPrint "NSISdl::download returned $0"
-		MessageBox MB_RETRYCANCEL|MB_ICONEXCLAMATION|MB_DEFBUTTON1 "${errMsg}" IDRETRY ${retryDLlbl}
-	${dlDonelbl}:
-	!undef retryDLlbl
-	!undef dlDonelbl
-!macroend
-!define dlFile "!insertmacro dlFileMacro"
-
-;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;
-; Macro for unzipping a file from an archive with error reporting
-!macro unzipFileMacro archiveFname destinationPath fnameToExtract errMsg
-	!define uzDonelbl uzDone_${__FILE__}${__LINE__}
-
-	ZipDLL::extractfile "${archiveFname}" "${destinationPath}" "${fnameToExtract}"
-	Pop $0 ; Get return value
-	StrCmp $0 "success" ${uzDonelbl}
-		; Couldn't unzip the file
-		DetailPrint "${errMsg}"
-		MessageBox MB_OK|MB_ICONEXCLAMATION|MB_DEFBUTTON1 "${errMsg}" IDOK
-	${uzDonelbl}:
-	!undef uzDonelbl
-!macroend
-!define unzipFile "!insertmacro unzipFileMacro"
-
-; Not required if Glib is already available, otherwise is required
-Section "Download glib 2.4 - Required for this group" GLIB_IDX
-	SectionIn 2
-
-	;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;
-	; Unzip glib and its dependencies into same directory as AbiWord.exe
-	SetOutPath $INSTDIR\AbiWord
-
-	;;;;;;;
-	; iconv
-	${dlFile} "http://www.abisource.com/downloads/dependencies/libiconv/libiconv-1.9.1-runtime.zip" "$TEMP\libiconv-1.9.1-runtime.zip" "ERROR: Dependency download failed.  Please make sure you are connected to the Internet, then click Retry.  File: http://www.abisource.com/downloads/dependencies/libiconv/libiconv-1.9.1-runtime.zip"
-	StrCmp $0 "success" 0 doCleanup
-	${unzipFile} "$TEMP\libiconv-1.9.1-runtime.zip" "$INSTDIR\AbiWord" "bin\iconv.dll" "ERROR: failed to extract iconv.dll from libiconv-1.9.1.bin.win32.zip"
-	StrCmp $0 "success" 0 doCleanup
-
-	;;;;;;
-	; intl
-	${dlFile} "http://www.abisource.com/downloads/dependencies/gettext/gettext-runtime-0.13.1-runtime.zip" "$TEMP\gettext-runtime-0.13.1-runtime.zip" "ERROR: Dependency download failed.  Please make sure you are connected to the Internet, then click Retry.  File: http://www.abisource.com/downloads/dependencies/gettext/gettext-runtime-0.13.1-runtime.zip"
-	StrCmp $0 "success" 0 doCleanup
-	${unzipFile} "$TEMP\gettext-runtime-0.13.1-runtime.zip" "$INSTDIR\AbiWord" "bin\intl.dll" "ERROR: failed to extract intl.dll from gettext-runtime-0.13.1-runtime.zip"
-	StrCmp $0 "success" 0 doCleanup
-
-	;;;;;;;;;;;;;;;;;;
-	; glib and gobject
-	${dlFile} "http://www.abisource.com/downloads/dependencies/glib/glib-2.4.7-runtime.zip" "$TEMP\glib-2.4.7-runtime.zip" "ERROR: Dependency download failed.  Please make sure you are connected to the Internet, then click Retry.  File: http://www.abisource.com/downloads/dependencies/glib/glib-2.4.7-runtime.zip"
-	StrCmp $0 "success" 0 doCleanup
-	${unzipFile} "$TEMP\glib-2.4.7-runtime.zip" "$INSTDIR\AbiWord" "bin\libglib-2.0-0.dll" "ERROR: failed to extract libglib-2.0-0.dll from glib-2.4.7-runtime.zip"
-	StrCmp $0 "success" 0 doCleanup
-	${unzipFile} "$TEMP\glib-2.4.7-runtime.zip" "$INSTDIR\AbiWord" "bin\libgobject-2.0-0.dll" "ERROR: failed to extract libgobject-2.0-0.dll from glib-2.4.7-runtime.zip"
-	StrCmp $0 "success" 0 doCleanup
-
-	;;;;;;;;
-	; libgsf
-	${dlFile} "http://www.abisource.com/downloads/dependencies/libgsf/libgsf-1.8.2-20040121.zip" "$TEMP\libgsf-1.8.2-20040121.zip" "ERROR: Dependency download failed.  Please make sure you are connected to the Internet, then click Retry.  File: http://www.abisource.com/downloads/dependencies/libgsf/libgsf-1.8.2-20040121.zip"
-	StrCmp $0 "success" 0 doCleanup
-	${unzipFile} "$TEMP\libgsf-1.8.2-20040121.zip" "$INSTDIR\AbiWord" "bin\libgsf-1-1.dll" "ERROR: failed to extract libgsf-1-1.dll from libgsf-1.8.2-20040121.zip"
-	StrCmp $0 "success" 0 doCleanup
-
-	;;;;;;;;;
-	; libxml2
-	${dlFile} "http://www.abisource.com/downloads/dependencies/libxml2/libxml2-2.6.19-runtime.zip" "$TEMP\libxml2-2.6.19-runtime.zip" "ERROR: Dependency download failed.  Please make sure you are connected to the Internet, then click Retry.  File: http://www.abisource.com/downloads/dependencies/libxml2/libxml2-2.6.19-runtime.zip"
-	StrCmp $0 "success" 0 doCleanup
-	${unzipFile} "$TEMP\libxml2-2.6.19-runtime.zip" "$INSTDIR\AbiWord" "bin\libxml2.dll" "ERROR: failed to extract libxml2.dll from libxml2-2.6.19-runtime.zip"
-	StrCmp $0 "success" 0 doCleanup
-
-
-	doCleanup:
-		; Delete temporary files
-		Delete "$TEMP\libiconv-1.9.1-runtime.zip"
-		Delete "$TEMP\gettext-runtime-0.13.1-runtime.zip"
-		Delete "$TEMP\glib-2.4.7-runtime.zip"
-		Delete "$TEMP\libgsf-1.8.2-20040121.zip"
-		Delete "$TEMP\libxml2-2.6.19-runtime.zip"
-
-	;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;
-	; Set output path back to the plugins directory.
-	SetOutPath $INSTDIR\AbiWord\plugins
-SectionEnd
-
-;SectionDivider
 !ifdef 0
-; OPTIONAL
-SubSection /e "Image Manipulation"
 
 Section "AbiRSVG Plugin"
 	SectionIn 2
@@ -744,92 +704,8 @@ Section "AbiRSVG Plugin"
 	End:
 SectionEnd
 
-;SectionDivider
-SubSectionEnd
 !endif
 
-SubSection /e "File Format Importers/Exporters"
-
-Section "OpenDocument (*.odt) Import" ODT_IDX
-	SectionIn 2
-
-	; Testing clause to Overwrite Existing Version - if exists
-	IfFileExists "$INSTDIR\AbiWord\plugins\AbiOpenDocument.dll" 0 DoInstall
-	
-	MessageBox MB_YESNO "Overwrite Existing AbiOpenDocument Plugin?" IDYES DoInstall
-	
-	DetailPrint "Skipping AbiOpenDocument Plugin (already exists)!"
-	Goto End
-
-	DoInstall:
-	File "AbiOpenDocument.dll"
-  
-	End:
-SectionEnd
-
-;SectionDivider
-
-Section "OpenWriter (*.sxw) Import/Export" SXW_IDX
-	SectionIn 2
-
-	; Testing clause to Overwrite Existing Version - if exists
-	IfFileExists "$INSTDIR\AbiWord\plugins\AbiOpenWriter.dll" 0 DoInstall
-	
-	MessageBox MB_YESNO "Overwrite Existing AbiOpenWriter Plugin?" IDYES DoInstall
-	
-	DetailPrint "Skipping AbiOpenWriter Plugin (already exists)!"
-	Goto End
-
-	DoInstall:
-	File "AbiOpenWriter.dll"
-  
-	End:
-SectionEnd
-
-;SectionDivider
-
-Section "Star Office Writer 5.1 .sdw Importer" SDW_IDX
-	SectionIn 2
-
-	; Testing clause to Overwrite Existing Version - if exists
-	IfFileExists "$INSTDIR\AbiWord\plugins\AbiSDW.dll" 0 DoInstall
-	
-	MessageBox MB_YESNO "Overwrite Existing AbiSDW Plugin?" IDYES DoInstall
-	
-	DetailPrint "Skipping AbiSDW Plugin (already exists)!"
-	Goto End
-
-	DoInstall:
-	File "AbiSDW.dll"
-  
-	End:
-SectionEnd
-
-;SectionDivider
-
-Section "WordPerfect Importer" WP_IDX
-	SectionIn 2
-
-	; Testing clause to Overwrite Existing Version - if exists
-	IfFileExists "$INSTDIR\AbiWord\plugins\AbiWordPerfect.dll" 0 DoInstall
-	
-	MessageBox MB_YESNO "Overwrite Existing AbiWordPerfect Plugin?" IDYES DoInstall
-	
-	DetailPrint "Skipping AbiWordPerfect Plugin (already exists)!"
-	Goto End
-
-	DoInstall:
-        SetOutPath $INSTDIR\AbiWord\bin
-        File "libwpd-0.8.dll"
-
-        SetOutPath $INSTDIR\AbiWord\plugins
-	  File "AbiWordPerfect.dll"
-
-  
-	End:
-SectionEnd
-
-;SectionDivider
 
 !ifdef 0
 Section "AbiXHTML (*.xhtml) Plugin"
@@ -849,12 +725,8 @@ Section "AbiXHTML (*.xhtml) Plugin"
 	End:
 SectionEnd
 
-;SectionDivider
 !endif
 
-SubSectionEnd  ; Additional File Format importer/exporters
-
-SubSectionEnd  ; glib based plugins
 
 ; uncomment [here and in uninstall] & change .ext if this plugin adds support for new type (with new extension)
 ; OPTIONAL Registry Settings
@@ -926,14 +798,8 @@ Section "Uninstall"
 	Delete "$INSTDIR\AbiWordPerfect.dll"
 	Delete "$INSTDIR\AbiXSLFO.dll"
 
-	Delete "$INSTDIR\..\bin\iconv.dll"
-	Delete "$INSTDIR\..\bin\intl.dll"
-	Delete "$INSTDIR\..\bin\libglib-2.0-0.dll"
-	Delete "$INSTDIR\..\bin\libgobject-2.0-0.dll"
-	Delete "$INSTDIR\..\bin\libgsf-1-1.dll"
 	Delete "$INSTDIR\..\bin\libwpd-0.8.dll"
 	Delete "$INSTDIR\..\bin\libwpd-stream-0.8.dll"
-	Delete "$INSTDIR\..\bin\libxml2.dll"
 
 !ifdef 0
 	Delete "$INSTDIR\AbiMagick.dll"

@@ -141,53 +141,19 @@ Section "Equation Editor"
 	SetOutPath $INSTDIR\AbiWord
 
 	;;;;;;;;;
-	; libxml2
-	${dlFile} "http://www.abisource.com/downloads/dependencies/libxml2/libxml2-2.6.19-runtime.zip" "$TEMP\libxml2-2.6.19-runtime.zip" "ERROR: Dependency download failed.  Please make sure you are connected to the Internet, then click Retry.  File: http://www.abisource.com/downloads/dependencies/libxml2/libxml2-2.6.19-runtime.zip"
-	StrCmp $0 "success" 0 doCleanup
-	${unzipFile} "$TEMP\libxml2-2.6.19-runtime.zip" "$INSTDIR\AbiWord" "bin\libxml2.dll" "ERROR: failed to extract libxml2.dll from libxml2-2.6.19-runtime.zip"
-	StrCmp $0 "success" 0 doCleanup
-
-	;;;;;;;
-	; iconv
-	${dlFile} "http://www.abisource.com/downloads/dependencies/libiconv/libiconv-1.9.1-runtime.zip" "$TEMP\libiconv-1.9.1-runtime.zip" "ERROR: Dependency download failed.  Please make sure you are connected to the Internet, then click Retry.  File:  http://www.abisource.com/downloads/dependencies/libiconv/libiconv-1.9.1-runtime.zip"
-	StrCmp $0 "success" 0 doCleanup
-	${unzipFile} "$TEMP\libiconv-1.9.1-runtime.zip" "$INSTDIR\AbiWord" "bin\iconv.dll" "ERROR: failed to extract iconv.dll from libiconv-1.9.1-runtime.zip"
-	StrCmp $0 "success" 0 doCleanup
-
-	;;;;;;
-	; intl
-	${dlFile} "http://www.abisource.com/downloads/dependencies/gettext/gettext-runtime-0.13.1-runtime.zip" "$TEMP\gettext-runtime-0.13.1-runtime.zip" "ERROR: Dependency download failed.  Please make sure you are connected to the Internet, then click Retry.  File: http://www.abisource.com/downloads/dependencies/gettext/gettext-runtime-0.13.1-runtime.zip"
-	StrCmp $0 "success" 0 doCleanup
-	${unzipFile} "$TEMP\gettext-runtime-0.13.1-runtime.zip" "$INSTDIR\AbiWord" "bin\intl.dll" "ERROR: failed to extract intl.dll from gettext-runtime-0.13.1-runtime.zip"
-	StrCmp $0 "success" 0 doCleanup
-
-	;;;;;;;;;;;;;;;;;;
-	; glib and gobject
-	${dlFile} "http://www.abisource.com/downloads/dependencies/glib/glib-2.4.7-runtime.zip" "$TEMP\glib-2.4.7-runtime.zip" "ERROR: Dependency download failed.  Please make sure you are connected to the Internet, then click Retry.  File: http://www.abisource.com/downloads/dependencies/glib/glib-2.4.7-runtime.zip"
-	StrCmp $0 "success" 0 doCleanup
-	${unzipFile} "$TEMP\glib-2.4.7-runtime.zip" "$INSTDIR\AbiWord" "bin\libglib-2.0-0.dll" "ERROR: failed to extract libglib-2.0-0.dll from glib-2.4.7-runtime.zip"
-	StrCmp $0 "success" 0 doCleanup
-	${unzipFile} "$TEMP\glib-2.4.7-runtime.zip" "$INSTDIR\AbiWord" "bin\libgobject-2.0-0.dll" "ERROR: failed to extract libgobject-2.0-0.dll from glib-2.4.7-runtime.zip"
-	StrCmp $0 "success" 0 doCleanup
-
-	;;;;;;;;;
 	; libmathview
 	${dlFile} "http://www.abisource.com/downloads/dependencies/gtkmathview/libmathview-0.7.6-1-runtime.zip" "$TEMP\libmathview-0.7.6-1-runtime.zip" "ERROR: Dependency download failed.  Please make sure you are connected to the Internet, then click Retry.  File: http://www.abisource.com/downloads/dependencies/gtkmathview/libmathview-0.7.6-1-runtime.zip"
 	StrCmp $0 "success" 0 doCleanup
-	${unzipFile} "$TEMP\libmathview-0.7.6-1-runtime.zip" "$INSTDIR\AbiWord" "bin\libmathview-0.dll" "ERROR: failed to extract libmathview-0.dll from libmathview-0.7.6-1-runtime.zip"
+	${unzipFile} "$TEMP\libmathview-0.7.7-runtime.zip" "$INSTDIR\AbiWord" "bin\libmathview-0.dll" "ERROR: failed to extract libmathview-0.dll from libmathview-0.7.7-runtime.zip"
 	StrCmp $0 "success" 0 doCleanup
-	${unzipFile} "$TEMP\libmathview-0.7.6-1-runtime.zip" "$INSTDIR\AbiWord" "bin\libmathview_frontend_libxml2-0.dll" "ERROR: failed to extract libmathview_frontend_libxml2-0.dll from libmathview-0.7.6-1-runtime.zip"
+	${unzipFile} "$TEMP\libmathview-0.7.7-runtime.zip" "$INSTDIR\AbiWord" "bin\libmathview_frontend_libxml2-0.dll" "ERROR: failed to extract libmathview_frontend_libxml2-0.dll from libmathview-0.7.7-runtime.zip"
 	StrCmp $0 "success" 0 doCleanup
 
 
 	doCleanup:
 		; Delete temporary files
 		
-		Delete "$TEMP\libiconv-1.9.1-runtime.zip"
-		Delete "$TEMP\gettext-runtime-0.13.1-runtime.zip"
-		Delete "$TEMP\glib-2.4.7-runtime.zip"
-		Delete "$TEMP\libxml2-2.6.19-runtime.zip"
-		Delete "$TEMP\libmathview-0.7.6-1-runtime.zip"
+		Delete "$TEMP\libmathview-0.7.7-runtime.zip"
 
 	;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;
 	; Set output path back to the plugins directory.
@@ -536,7 +502,6 @@ Section "Uninstall"
 	Delete "$INSTDIR\..\..\math\dictionary-local.xml"
 	Delete "$INSTDIR\..\..\math\gtkmathview.conf.xml"
 	RMDir "$INSTDIR\..\..\math\"
-	; Note: we can't remove dependencies because they may be used by imp/exp plugins
 
 	; AbiGrammar
 	Delete "$INSTDIR\AbiGrammar.dll"
