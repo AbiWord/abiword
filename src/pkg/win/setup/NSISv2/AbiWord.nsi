@@ -181,6 +181,7 @@ Section "$(TITLE_section_abi)" section_abi
 		File "${PROGRAMEXE}"
 		File "..\..\..\..\libs\zlib\zlib1.dll"
 		File "libglib-2.0-0.dll"
+		File "libgobject-2.0-0.dll"
 		File "libgsf-1-114.dll"
 		File "bzip2.dll"
 
@@ -202,6 +203,9 @@ SectionEnd
 	Delete "$INSTDIR\${MAINPROGRAM}"
 	Delete "$INSTDIR\${PRODUCT}\bin\zlib1.dll"
 	Delete "$INSTDIR\${PRODUCT}\bin\libglib-2.0-0.dll"
+	Delete "$INSTDIR\${PRODUCT}\bin\libgojbect-2.0-0.dll"
+	Delete "$INSTDIR\${PRODUCT}\bin\libgsf-1-114.dll"
+	Delete "$INSTDIR\${PRODUCT}\bin\bzip2.dll"
 
 	; only for MinGW builds
 	${IfExists} "libAbiWord.dll"
