@@ -104,8 +104,7 @@ fi
 AC_MSG_RESULT([found])
 fi
 
-# libabiword, this triggers "embedded"
-# because of the smaller margins
+# libabiword support
 ABI_LIB
 
 # check for embedded and print first, so we can handle gnomeprint dependency

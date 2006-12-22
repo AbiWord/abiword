@@ -33,7 +33,6 @@ AC_ARG_ENABLE(libabiword,[  --enable-libabiword    Build libabiword ],[
 			AC_MSG_ERROR([sorry: --enable-libabiword supported only on UNIX platforms])
 		fi
 		libabiword=true
-		embedded=true
 		abi_lib_message="yes"
 	fi
 ])
