@@ -1816,10 +1816,10 @@ bool PD_Document::isEndFootnoteAtPos(PT_DocPosition pos)
 	pf_Frag * pf = NULL;
 	/*bool bRes = */m_pPieceTable->getFragFromPosition(pos,&pf,&pOffset);
 	while(pf && (pf->getLength() == 0))
-    {
+	{
 		pf = pf->getPrev();
-    }
-	if(pf->getPos() < pos)
+	}
+	if(!pf || pf->getPos() < pos)
 	{
 		return false;
 	}
