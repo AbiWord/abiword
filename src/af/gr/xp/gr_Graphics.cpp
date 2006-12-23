@@ -182,6 +182,7 @@ GR_Font* GR_Graphics::findFont(const char* pszFontFamily,
 
 GR_Graphics::~GR_Graphics()
 {
+        xxx_UT_DEBUGMSG(("Deleting graphics class %x \n",this));
 	DELETEP(m_pCaret);
 	UT_sint32 i = 0;
 	for(i=0; i< static_cast<UT_sint32>(m_vecCarets.getItemCount());i++)

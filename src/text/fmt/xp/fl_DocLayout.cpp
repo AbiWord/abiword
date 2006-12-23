@@ -125,7 +125,7 @@ FL_DocLayout::FL_DocLayout(PD_Document* doc, GR_Graphics* pG)
 #endif
         setLayoutIsFilling(false),
 	m_pRedrawUpdateTimer = UT_Timer::static_constructor(_redrawUpdate, this, m_pG);
-	if (m_pRedrawUpdateTimer)
+	if (m_pRedrawUpdateTimer && !pG->queryProperties(GR_Graphics::DGP_PAPER))
 	{
 		m_pRedrawUpdateTimer->set(REDRAW_UPDATE_MSECS);
 		m_pRedrawUpdateTimer->start();
