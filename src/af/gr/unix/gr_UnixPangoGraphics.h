@@ -326,7 +326,7 @@ class ABI_EXPORT GR_UnixPangoPrintGraphics : public GR_UnixPangoGraphics
 
 	virtual UT_uint32 getDeviceResolution(void) const;
 	virtual bool      canQuickPrint(void)
-	{ return true;}
+	{ return false;}
   protected:
 
 	
