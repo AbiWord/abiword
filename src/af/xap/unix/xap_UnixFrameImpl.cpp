@@ -1661,7 +1661,8 @@ bool XAP_UnixFrameImpl::_close()
 bool XAP_UnixFrameImpl::_raise()
 {
 	UT_ASSERT(m_wTopLevelWindow);
-	gtk_window_present(GTK_WINDOW (m_wTopLevelWindow));	
+	if (GTK_IS_WINDOW (m_wTopLevelWindow))
+		gtk_window_present(GTK_WINDOW (m_wTopLevelWindow));	
 	return true;
 }
 
@@ -1684,8 +1685,11 @@ bool XAP_UnixFrameImpl::_updateTitle()
 
 	if(getFrame()->getFrameMode() == XAP_NormalFrame)
 	{
-		const char * szTitle = getFrame()->getTitle(MAX_TITLE_LENGTH);
-		gtk_window_set_title(GTK_WINDOW(m_wTopLevelWindow), szTitle);
+		if (GTK_IS_WINDOW (m_wTopLevelWindow))
+			{
+				const char * szTitle = getFrame()->getTitle(MAX_TITLE_LENGTH);
+				gtk_window_set_title(GTK_WINDOW(m_wTopLevelWindow), szTitle);
+			}
 	}
 	return true;
 }
@@ -1781,6 +1785,8 @@ EV_Menu* XAP_UnixFrameImpl::_getMainMenu()
 
 void XAP_UnixFrameImpl::_setFullScreen(bool changeToFullScreen)
 {
+	if (!GTK_IS_WINDOW(m_wTopLevelWindow)) return;
+
 	if (changeToFullScreen)
 		gtk_window_fullscreen (GTK_WINDOW(m_wTopLevelWindow));
 	else
