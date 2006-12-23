@@ -1546,7 +1546,7 @@ void fp_Page::_reformatColumns(void)
 		UT_ASSERT(pLeader->getContainerType() == FP_CONTAINER_COLUMN);
 		fl_DocSectionLayout* pSL = (pLeader->getDocSectionLayout());
 
-		if(m_pView->getViewMode() == VIEW_NORMAL)
+		if(m_pView->getViewMode() == VIEW_NORMAL &&  !m_pLayout->getGraphics()->queryProperties(GR_Graphics::DGP_PAPER) )
 		{
 			iLeftMargin = m_pView->getNormalModeXOffset();
 			iRightMargin = 0;

@@ -325,7 +325,8 @@ class ABI_EXPORT GR_UnixPangoPrintGraphics : public GR_UnixPangoGraphics
 	virtual void	  restoreRectangle(UT_uint32 iIndx) {}
 
 	virtual UT_uint32 getDeviceResolution(void) const;
-	
+	virtual bool      canQuickPrint(void)
+	{ return true;}
   protected:
 
 	

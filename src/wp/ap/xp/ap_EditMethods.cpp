@@ -8443,10 +8443,11 @@ static bool s_doPrintPreview(FV_View * pView)
 	*/
 	FL_DocLayout * pDocLayout = NULL;
 	FV_View * pPrintView = NULL;
-	if(!pGraphics->canQuickPrint())
+	if(!pGraphics->canQuickPrint() || (pView->getViewMode() != VIEW_PRINT))
 	{
 			pDocLayout = new FL_DocLayout(doc,pGraphics);
 			pPrintView = new FV_View(XAP_App::getApp(),0,pDocLayout);
+			pPrintView->setViewMode(VIEW_PRINT);
 			pPrintView->getLayout()->fillLayouts();
 			pPrintView->getLayout()->formatAll();
 			pPrintView->getLayout()->recalculateTOCFields();
