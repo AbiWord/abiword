@@ -595,49 +595,54 @@ void FL_DocLayout::fillLayouts(void)
 	if(m_pView)
 	{
 	        fl_DocSectionLayout * pLastSec = getLastSection();
-		fl_ContainerLayout * pCL = pLastSec->getLastLayout();
-		fl_BlockLayout * pBL = NULL;
-		bool bRebreak = false;
-		if(pCL->getContainerType() == FL_CONTAINER_BLOCK)
+		if(pLastSec)
 		{
-	              pBL = static_cast<fl_BlockLayout *>(pCL);
+			fl_ContainerLayout * pCL = pLastSec->getLastLayout();
+			fl_BlockLayout * pBL = NULL;
+			bool bRebreak = false;
+			if(pCL->getContainerType() == FL_CONTAINER_BLOCK)
+			{
+		              pBL = static_cast<fl_BlockLayout *>(pCL);
+			}
+			else
+			{
+		              pBL = pCL->getPrevBlockInDocument();
+			}
+			if(pBL)
+			{
+			      fp_Line * pLine = static_cast<fp_Line *>(pBL->getLastContainer());
+			      if(pLine == NULL)
+			      {
+				    bRebreak = true;
+			      }
+			      else if(pLine->getPage() == NULL)
+			      {
+				    bRebreak = true;
+			      }
+			      else
+			      {
+				    fp_Page * pPage = getFirstPage();
+				    while(pPage && pPage != pLine->getPage())
+				    {
+				         pPage = pPage->getNext();
+				    }
+				    if(pLine->getPage() != pPage)
+				    {
+				         bRebreak = true;
+				    }
+				    if(pLine->getPage() == getFirstPage())
+				    {
+					bRebreak = true;
+				    }
+			      }
+			}
+			if(bRebreak)
+			{
+			      getFirstSection()->completeBreakSection();
+			}
 		}
 		else
-		{
-	              pBL = pCL->getPrevBlockInDocument();
-		}
-		if(pBL)
-		{
-		      fp_Line * pLine = static_cast<fp_Line *>(pBL->getLastContainer());
-		      if(pLine == NULL)
-		      {
-			    bRebreak = true;
-		      }
-		      else if(pLine->getPage() == NULL)
-		      {
-			    bRebreak = true;
-		      }
-		      else
-		      {
-			    fp_Page * pPage = getFirstPage();
-			    while(pPage && pPage != pLine->getPage())
-			    {
-			         pPage = pPage->getNext();
-			    }
-			    if(pLine->getPage() != pPage)
-			    {
-			         bRebreak = true;
-			    }
-			    if(pLine->getPage() == getFirstPage())
-			    {
-				bRebreak = true;
-			    }
-		      }
-		}
-		if(bRebreak)
-		{
-		      getFirstSection()->completeBreakSection();
-		}
+			UT_ASSERT(UT_SHOULD_NOT_HAPPEN);
 	}
 }
 
