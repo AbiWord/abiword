@@ -93,6 +93,7 @@ EXTRA_DIST = \
 all-local: $(ALL_LOCAL_DEPS)
 
 install-exec-local: $(INSTALL_EXEC_LOCAL_DEPS)
+	@mkdir -p $(DESTDIR)/$(bindir)
 	cp abiword $(DESTDIR)/$(bindir)/$(ABIWORD_BINARY)
 	@if test -f $(DESTDIR)/$(bindir)/abiword; then \
 	  echo "$(DESTDIR)/$(bindir)/abiword is a regular file - I'm not going to create a link."; \
