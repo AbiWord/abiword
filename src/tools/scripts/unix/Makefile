@@ -23,13 +23,8 @@ include $(ABI_ROOT)/src/config/abi_defs_wp.mk
 
 build:: $(TARGETS)
 
-TTFADMIN= $(BINDIR)/ttfadmin.sh
-TARGETS= $(TTFADMIN)
+TARGETS= 
 
 include $(ABI_ROOT)/src/config/abi_rules.mk
-
-# just copy any scripts to the bin directory
-$(TTFADMIN):
-	(cp -f ttfadmin.sh $(BINDIR)/ttfadmin.sh; chmod 755 $(BINDIR)/ttfadmin.sh )
 
 build:: $(TARGETS)
