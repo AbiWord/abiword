@@ -115,12 +115,17 @@ void fp_TextRun::_lookupProperties(const PP_AttrProp * pSpanAP,
 {
 	// we should only need this if the props have changed
 	//clearScreen();
+	bool bChanged = false;
+	bool bDontClear = false;
 	if(pG == NULL)
 	{
 		pG = getGraphics();
+		bDontClear = true;
 	}
-	bool bChanged = false;
-	bool bDontClear = false;
+	if(pG != getGraphics() || isPrinting())
+	{
+	        bDontClear = true;
+	}
 	if(_getFont() == NULL)
 	{
 		bDontClear = true;

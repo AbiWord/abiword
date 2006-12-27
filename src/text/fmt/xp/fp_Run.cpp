@@ -430,10 +430,12 @@ void fp_Run::lookupProperties(GR_Graphics * pG)
 	_setColorHL(pszBGcolor);
 	//	m_FillType.setColor(pszBGcolor); // we should clear with screen color
 	// and draw with background color
+	bool bGraphicsNull = false;
 	if(pG == NULL)
 	{
 		m_bPrinting = false;
 		pG = getGraphics();
+		bGraphicsNull = true;
 	}
 	else if(pG->queryProperties(GR_Graphics::DGP_PAPER))
 	{
@@ -442,7 +444,11 @@ void fp_Run::lookupProperties(GR_Graphics * pG)
 	}
 	if(!m_pBL->isContainedByTOC())
 	{
-		_lookupProperties(pSpanAP, pBlockAP, pSectionAP,pG);
+		if((getType() != FPRUN_TEXT) && !bGraphicsNull)
+			_lookupProperties(pSpanAP, pBlockAP, pSectionAP,pG);
+		else
+			_lookupProperties(pSpanAP, pBlockAP, pSectionAP,NULL);
+
 	}
 	else
 	{
