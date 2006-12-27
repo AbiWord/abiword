@@ -21,6 +21,7 @@
 #include "string.h"
 #include "locale.h"
 #include "ctype.h"
+#include "ut_path.h"
 #include "ut_string.h"
 #include "ut_debugmsg.h"
 #include "ap_QNXPrefs.h"
@@ -38,10 +39,6 @@ const char * AP_QNXPrefs::_getPrefsPathname(void) const
 
 	const char * szDirectory = m_pApp->getUserPrivateDirectory();
 	char * szFile = "AbiWord.Profile";
-
-#ifndef PATH_MAX
-#define PATH_MAX 4096
-#endif
 
 	static char buf[PATH_MAX];
 	memset(buf,0,sizeof(buf));

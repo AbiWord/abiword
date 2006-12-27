@@ -35,6 +35,7 @@
 #include <signal.h>
 
 #include "ut_debugmsg.h"
+#include "ut_path.h"
 #include "ut_string.h"
 #include "ut_misc.h"
 #include "ut_locale.h"
@@ -1232,10 +1233,6 @@ const char * _getUserPrivateDirectory(void)
 {
 	/* return a pointer to a static buffer */
 	
-#ifndef PATH_MAX
-#define PATH_MAX 4096
-#endif
-
 	char * szAbiDir = ".AbiSuite";
 	
 	static char buf[PATH_MAX];

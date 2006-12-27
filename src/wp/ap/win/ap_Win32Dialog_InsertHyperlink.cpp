@@ -19,6 +19,7 @@
 
 #include <windows.h>
 
+#include "ut_path.h"
 #include "ut_string.h"
 #include "ut_assert.h"
 #include "ut_debugmsg.h"
@@ -117,10 +118,10 @@ BOOL AP_Win32Dialog_InsertHyperlink::_onCommand(HWND hWnd, WPARAM wParam, LPARAM
 
 	case IDOK:
 		{
-			char buf[_MAX_PATH];
+			char buf[PATH_MAX];
 			getControlText( AP_RID_DIALOG_INSERTHYPERLINK_EBX_LINK,
                 			buf,
-                            _MAX_PATH );
+                            PATH_MAX );
 			setHyperlink(buf);
 		}
 		setAnswer( a_OK );
@@ -132,7 +133,7 @@ BOOL AP_Win32Dialog_InsertHyperlink::_onCommand(HWND hWnd, WPARAM wParam, LPARAM
 			UT_sint32 result = getListSelectedIndex( wId );
 			if( result != LB_ERR )
 			{
-				char buf[_MAX_PATH];
+				char buf[PATH_MAX];
 				getListText( wId, result, buf );
 				setControlText(AP_RID_DIALOG_INSERTHYPERLINK_EBX_LINK, buf);
 			}

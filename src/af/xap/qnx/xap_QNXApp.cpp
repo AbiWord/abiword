@@ -27,6 +27,7 @@
 #include "ut_debugmsg.h"
 #include "ut_uuid.h"
 
+#include "ut_path.h"
 #include "ut_string.h"
 #include "xap_Args.h"
 #include "xap_QNXApp.h"
@@ -117,13 +118,7 @@ void * XAP_QNXApp::getFontManager(void)
 const char * XAP_QNXApp::getUserPrivateDirectory(void)
 {
 	/* return a pointer to a static buffer */
-	
-#ifndef PATH_MAX
-#define PATH_MAX 4096
-#endif
-
 	char * szAbiDir = ".AbiSuite";
-	
 	static char buf[PATH_MAX];
 	memset(buf,0,sizeof(buf));
 	

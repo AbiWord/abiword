@@ -200,11 +200,7 @@ const char * XAP_CocoaApp::getUserPrivateDirectory()
 {
 	static const char * szAbiDir = "Library/Application Support/AbiSuite";
 	
-#ifndef PATH_MAX
-#define PATH_MAX 1024
-#endif
 	static char upd_buffer[PATH_MAX];
-
 	static char * upd_cache = 0;
 	if (upd_cache) return upd_cache; // points to the static buffer
 	

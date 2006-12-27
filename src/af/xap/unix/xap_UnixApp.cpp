@@ -38,10 +38,11 @@
 #include <sys/stat.h>
 
 #include "ut_debugmsg.h"
-#include "xap_UnixDialogHelper.h"
+#include "ut_path.h"
 #include "ut_string.h"
 #include "ut_uuid.h"
 
+#include "xap_UnixDialogHelper.h"
 #include "xap_Strings.h"
 #include "xap_Args.h"
 #include "xap_UnixApp.h"
@@ -238,12 +239,7 @@ const char * XAP_UnixApp::getUserPrivateDirectory()
 {
 	/* return a pointer to a static buffer */
 	
-#ifndef PATH_MAX
-#define PATH_MAX 4096
-#endif
-
 	char * szAbiDir = ".AbiSuite";
-	
 	static char buf[PATH_MAX];
 	memset(buf,0,sizeof(buf));
 	

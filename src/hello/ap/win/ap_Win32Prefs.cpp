@@ -22,6 +22,7 @@
 #include <string.h>
 
 #include "ut_debugmsg.h"
+#include "ut_path.h"
 #include "ap_Win32Prefs.h"
 
 /*****************************************************************/
@@ -38,10 +39,6 @@ const char * AP_Win32Prefs::getPrefsPathname(void) const
 	const char * szDirectory = m_pApp->getUserPrivateDirectory();
 	char * szFile = "AbiHello.Profile";
 	
-#ifndef PATH_MAX
-#define PATH_MAX 4096
-#endif
-
 	static char buf[PATH_MAX];
 	memset(buf,0,sizeof(buf));
 

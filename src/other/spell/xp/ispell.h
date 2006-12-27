@@ -47,7 +47,11 @@
 
 /*
  * $Log$
+ * Revision 1.11  2006/12/27 16:26:44  robsta
+ * use PATH_MAX from ut_path.h everywhere, no more local #ifndef
+ *
  * Revision 1.10  2003/01/24 05:52:33  hippietrail
+ *
  * Refactored ispell code. Old ispell global variables had been put into
  * an allocated structure, a pointer to which was passed to many functions.
  * I have now made all such functions and variables private members of the
@@ -316,11 +320,6 @@ extern int		gnMaskBits;
 #ifndef MAX_CAPS
 #define MAX_CAPS	10
 #endif /* MAX_CAPS */
-
-/* buffer size to use for file names if not in sys/param.h */
-#ifndef MAXPATHLEN
-#define MAXPATHLEN 512
-#endif
 
 /*
 ** Maximum language-table search size.  Smaller numbers make ispell
@@ -730,7 +729,7 @@ INIT (int prefstringchar, -1);		/* Preferred string character type */
 
 INIT (int terse, 0);			/* NZ for "terse" mode */
 
-INIT (char tempfile[MAXPATHLEN], "");	/* Name of file we're spelling into */
+INIT (char tempfile[PATH_MAX], "");	/* Name of file we're spelling into */
 
 INIT (int minword, MINWORD);		/* Longest always-legal word */
 INIT (int sortit, 1);			/* Sort suggestions alphabetically */

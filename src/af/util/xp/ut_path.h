@@ -20,7 +20,18 @@
 #ifndef UT_PATH_H
 #define UT_PATH_H
 
+#include <glib.h>
 #include <time.h>
+
+#ifdef MAXPATHLEN
+#define PATH_MAX MAXPATHLEN
+#else
+#include <limits.h>
+#endif
+
+#if !defined(PATH_MAX)
+#error Huh, neither MAXPATHLEN nor PATH_MAX available, fix for this platform needed.
+#endif
 
 /* pre-emptive dismissal; ut_types.h is needed by just about everything,
  * so even if it's commented out in-file that's still a lot of work for

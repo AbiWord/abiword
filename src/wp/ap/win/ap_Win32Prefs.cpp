@@ -21,6 +21,7 @@
 #include <stdlib.h>
 #include <string.h>
 
+#include "ut_path.h"
 #include "ut_types.h"
 #include "ut_units.h"
 #include "ut_locale.h"
@@ -93,10 +94,6 @@ bool AP_Win32Prefs::loadBuiltinPrefs(void)
 
 const char * AP_Win32Prefs::_getPrefsPathname(void) const
 {
-#ifndef PATH_MAX
-#define PATH_MAX 4096
-#endif
-
 	static char buf[PATH_MAX];
 	memset(buf,0,sizeof(buf));
 

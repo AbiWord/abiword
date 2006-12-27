@@ -45,9 +45,9 @@
 #include <ole2.h>
 
 #include "ut_debugmsg.h"
+#include "ut_path.h"
 #include "ut_bytebuf.h"
 #include "ut_string.h"
-#include "xap_Args.h"
 #include "ap_Args.h"
 #include "ap_Convert.h"
 #include "ap_Win32Frame.h"
@@ -335,9 +335,9 @@ bool AP_Win32App::initialize(void)
 
 	if(bLoadPlugins || !bFound)
 	{
-		char szPath[_MAX_PATH];
-		char szPlugin[_MAX_PATH];
-		_getExeDir( szPath, _MAX_PATH);
+		char szPath[PATH_MAX];
+		char szPlugin[PATH_MAX];
+		_getExeDir( szPath, PATH_MAX);
 		strcat(szPath, "..\\Plugins\\*.dll");
 
 	    struct _finddata_t cfile;
@@ -346,7 +346,7 @@ bool AP_Win32App::initialize(void)
 		{
 			do
 			{	
-				_getExeDir( szPlugin, _MAX_PATH );
+				_getExeDir( szPlugin, PATH_MAX );
 				strcat( szPlugin, "..\\Plugins\\" );
 				strcat( szPlugin, cfile.name );
 				XAP_ModuleManager::instance().loadModule( szPlugin );
@@ -1268,7 +1268,7 @@ int AP_Win32App::WinMain(const char * szAppName, HINSTANCE hInstance,
 	// continue out the door.
 	// We used to check for bShowApp here.  It shouldn't be needed
 	// anymore, because doWindowlessArgs was supposed to bail already. -PL
-	if (!pMyWin32App->openCmdLineFiles(&Args))
+	if (!pMyWin32App->openCmdLineFiles())
 	{
 		pMyWin32App->shutdown();	// properly shutdown the app 1st
 		delete pMyWin32App;
@@ -1481,6 +1481,8 @@ bool AP_Win32App::handleModelessDialogMessage( MSG * msg )
 }
 
 // cmdline processing call back I reckon
+<<<<<<< ap_Win32App.cpp
+=======
 void AP_Win32App::errorMsgBadArg(AP_Args * Args, int nextopt)
 {
 	char *pszMessage = (char*)malloc( 500 );
@@ -1495,6 +1497,7 @@ void AP_Win32App::errorMsgBadArg(AP_Args * Args, int nextopt)
 }
 
 // cmdline processing call back I reckon
+>>>>>>> 1.172
 void AP_Win32App::errorMsgBadFile(XAP_Frame * pFrame, const char * file, 
 							 UT_Error error)
 {
@@ -1512,7 +1515,7 @@ bool AP_Win32App::doWindowlessArgs(const AP_Args *Args, bool & bSuccess)
 
 	AP_Win32App * pMyWin32App = static_cast<AP_Win32App*>(Args->getApp());
 
-	if (Args->m_sGeometry)
+	if (Args->getGeometry())
 	{
 		// [--geometry <X geometry string>]
 		#if 0
@@ -1521,13 +1524,13 @@ bool AP_Win32App::doWindowlessArgs(const AP_Args *Args, bool & bSuccess)
 		guint width = 0;
 		guint height = 0;
 		
-		XParseGeometry(Args->m_sGeometry, &x, &y, &width, &height);
+		XParseGeometry(Args->getGeometry(), &x, &y, &width, &height);
 
 		// set the xap-level geometry for future frame use
 		Args->getApp()->setGeometry(x, y, width, height, f);
 		#endif
 
-		parseAndSetGeometry(Args->m_sGeometry);
+		parseAndSetGeometry(Args->getGeometry());
 	}
 	else
 	if (Args->m_sPrintTo) 
@@ -1537,13 +1540,13 @@ bool AP_Win32App::doWindowlessArgs(const AP_Args *Args, bool & bSuccess)
 			UT_DEBUGMSG(("DOM: Printing file %s\n", Args->m_sFile));
 			AP_Convert conv ;
 
-			if (Args->m_sMerge)
-				conv.setMergeSource (Args->m_sMerge);
+			if (Args->getMerge())
+				conv.setMergeSource (Args->getMerge());
 
-			if (Args->m_impProps)
-				conv.setImpProps (Args->m_impProps);
-			if (Args->m_expProps)
-				conv.setExpProps (Args->m_expProps);
+			if (Args->getImpProps())
+				conv.setImpProps (Args->getImpProps());
+			if (Args->getExpProps())
+				conv.setExpProps (Args->getExpProps());
 			
 			UT_String s = "AbiWord: ";
 			s+= Args->m_sFile;
@@ -1556,8 +1559,8 @@ bool AP_Win32App::doWindowlessArgs(const AP_Args *Args, bool & bSuccess)
 				return false;
 			}
 			
-			conv.setVerbose(Args->m_iVerbose);
-			conv.print (Args->m_sFile, pG, Args->m_sFileExtension);
+			conv.setVerbose(Args->getVerbose());
+			conv.print (Args->m_sFile, pG, Args->getFileExtension());
 	      
 			delete pG;
 		}
@@ -1571,29 +1574,29 @@ bool AP_Win32App::doWindowlessArgs(const AP_Args *Args, bool & bSuccess)
 		return false;
 	}
 
-	if(Args->m_sPlugin)
+	if(Args->getPlugin())
 	{
 	//
 	// Start a plugin rather than the main abiword application.
 	//
 		const char * szName = NULL;
 		XAP_Module * pModule = NULL;
-		Args->m_sPlugin = poptGetArg(Args->poptcon);
+		Args->getPlugin() = poptGetArg(Args->poptcon);
 		bool bFound = false;
-		if(Args->m_sPlugin != NULL)
+		if(Args->getPlugin() != NULL)
 		{
 			const UT_GenericVector<class XAP_Module *> *pVec = XAP_ModuleManager::instance().enumModules ();
 			for (UT_uint32 i = 0; (i < pVec->size()) && !bFound; i++)
 			{
 				pModule = (XAP_Module *)pVec->getNthItem (i);
 				szName = pModule->getModuleInfo()->name;
-				if(UT_strcmp(szName,Args->m_sPlugin) == 0)
+				if(UT_strcmp(szName,Args->getPlugin()) == 0)
 					bFound = true;
 			}
 		}
 		if(!bFound)
 		{
-			printf("Plugin %s not found or loaded \n",Args->m_sPlugin);
+			printf("Plugin %s not found or loaded \n",Args->getPlugin());
 			bSuccess = false;
 			return false;
 		}
@@ -1608,7 +1611,7 @@ bool AP_Win32App::doWindowlessArgs(const AP_Args *Args, bool & bSuccess)
 		if(!pInvoke)
 		{
 			printf("Plugin %s invoke method %s not found \n",
-				   Args->m_sPlugin,evExecute);
+				   Args->getPlugin(),evExecute);
 			bSuccess = false;
 			return false;
 		}

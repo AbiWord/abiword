@@ -23,6 +23,7 @@
 #include <direct.h>
 #include "ut_assert.h"
 #include "ut_debugmsg.h"
+#include "ut_path.h"
 #include "ut_Win32Uuid.h"
 #include "xap_Args.h"
 #include "xap_Win32App.h"
@@ -213,10 +214,6 @@ const char * XAP_Win32App::getUserPrivateDirectory(void) // ansi only dirs for n
 	/* return a pointer to a static buffer */
 
 	char * szAbiDir = "AbiSuite";
-
-#ifndef PATH_MAX
-#define PATH_MAX 4096
-#endif
 
 	static char buf[PATH_MAX];
 	memset(buf,0,sizeof(buf));

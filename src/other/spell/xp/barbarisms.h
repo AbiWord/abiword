@@ -23,8 +23,6 @@
 
 #include "ut_string_class.h"
 
-#define MAX_PATHNM 512
-
 class BarbarismChecker : public UT_XML::Listener
 {
 public:	

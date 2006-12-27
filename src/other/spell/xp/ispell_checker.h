@@ -3,6 +3,7 @@
 
 #include "ispell.h"
 #include "spell_manager.h"
+#include "ut_path.h"
 #include "ut_string_class.h"
 #include "ut_vector.h"
 #include "ut_hash.h"
@@ -264,7 +265,7 @@ private:
 			m_hashtbl;	/* Main hash table, for dictionary */
 	int	m_hashsize;	/* Size of main hash table */
 
-	char	m_hashname[MAXPATHLEN]; /* Name of hash table file */
+	char	m_hashname[PATH_MAX]; /* Name of hash table file */
 
 	int	m_aflag;		/* NZ if -a or -A option specified */
 	int	m_cflag;		/* NZ if -c (crunch) option */

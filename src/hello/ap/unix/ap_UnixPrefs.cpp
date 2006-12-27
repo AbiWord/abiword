@@ -20,6 +20,7 @@
 #include <stdlib.h>
 #include <string.h>
 
+#include "ut_path.h"
 #include "ap_UnixPrefs.h"
 
 AP_UnixPrefs::AP_UnixPrefs(XAP_App* pApp)
@@ -33,10 +34,6 @@ const char* AP_UnixPrefs::getPrefsPathname(void) const
 
 	const char * szDirectory = m_pApp->getUserPrivateDirectory();
 	char * szFile = "AbiHello.Profile";
-	
-#ifndef PATH_MAX
-#define PATH_MAX 4096
-#endif
 	
 	static char buf[PATH_MAX];
 	memset(buf,0,sizeof(buf));

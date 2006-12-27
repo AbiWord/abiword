@@ -313,7 +313,7 @@ void AP_Win32Dialog_New::_setFileName( UT_sint32 nIndex )
 	HWND hControl = GetDlgItem(m_hThisDlg, AP_RID_DIALOG_NEW_LBX_TEMPLATE);
 	if( nIndex != LB_ERR )
 	{
-		char buf[_MAX_PATH];
+		char buf[PATH_MAX];
 		_win32Dialog.getListText( AP_RID_DIALOG_NEW_LBX_TEMPLATE, nIndex, buf );
 		UT_String templateName; 
 		switch ( SendMessage( hControl, LB_GETITEMDATA, nIndex, 0 ) )

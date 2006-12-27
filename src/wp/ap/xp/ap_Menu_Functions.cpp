@@ -17,17 +17,12 @@
  * 02111-1307, USA.
  */
 
-// TODO Rob: hunt down all ocurrences of PATH_MAX, MAX_PATH
-// and put something like this in ut_types.h
 #include <glib.h>
-#ifdef MAXPATHLEN
-#define PATH_MAX MAXPATHLEN
-#endif
-
 #include <string.h>
 #include <stdlib.h>
 #include <stdio.h>
 #include "ap_Features.h"
+#include "ut_path.h"
 #include "ut_types.h"
 #include "ut_assert.h"
 #include "ut_string.h"

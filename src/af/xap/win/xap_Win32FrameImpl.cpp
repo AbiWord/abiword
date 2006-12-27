@@ -29,6 +29,7 @@
 #endif
 
 #include "ut_debugmsg.h"
+#include "ut_path.h"
 #include "ut_Win32OS.h"
 #include "xap_ViewListener.h"
 #include "ev_EditMethod.h"
@@ -956,15 +957,14 @@ LRESULT CALLBACK XAP_Win32FrameImpl::_FrameWndProc(HWND hwnd, UINT iMsg, WPARAM 
 			HDROP hDrop = (HDROP) wParam; 
 			// How many files were dropped?
 			int count = DragQueryFile(hDrop, 0xFFFFFFFF, NULL, 0);
-			#define _MAX_PATH 260 // FIXME: fixed array length bad
-			char szFileName[_MAX_PATH];
+			char szFileName[PATH_MAX];
 			int i,pathlength;
 			for (i=0; i<count; i++)
 			{
 				pathlength = DragQueryFile(hDrop, i, NULL, 0);
-				if (pathlength < _MAX_PATH)
+				if (pathlength < PATH_MAX)
 				{
-					DragQueryFile(hDrop, i, szFileName, _MAX_PATH);
+					DragQueryFile(hDrop, i, szFileName, PATH_MAX);
 					XAP_App * pApp = XAP_App::getApp();
 					UT_return_val_if_fail(pApp, 0);
 					FV_View* pView = (FV_View *) f->getCurrentView();

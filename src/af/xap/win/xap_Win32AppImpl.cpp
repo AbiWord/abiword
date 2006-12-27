@@ -24,6 +24,7 @@
 
 #include "xap_Win32AppImpl.h"
 #include "ut_string_class.h"
+#include "ut_path.h"
 #include "xap_Frame.h"
 #include "xap_App.h"
 #include "xap_Win32FrameImpl.h"
@@ -54,11 +55,11 @@ bool XAP_Win32AppImpl::openURL(const char * szURL)
 		// Convert from longpath to 8.3 shortpath, in case of spaces in the path
 		char* longpath = NULL;
 		char* shortpath = NULL;
-		longpath = new char[MAX_PATH];
-		shortpath = new char[MAX_PATH];
+		longpath = new char[PATH_MAX];
+		shortpath = new char[PATH_MAX];
 		strcpy(longpath, sURL.c_str());
-		DWORD retval = GetShortPathName(longpath, shortpath, MAX_PATH);
-		if((retval == 0) || (retval > MAX_PATH))
+		DWORD retval = GetShortPathName(longpath, shortpath, PATH_MAX);
+		if((retval == 0) || (retval > PATH_MAX))
 		{
 			UT_ASSERT_HARMLESS(UT_SHOULD_NOT_HAPPEN);
 			DELETEP(longpath);
