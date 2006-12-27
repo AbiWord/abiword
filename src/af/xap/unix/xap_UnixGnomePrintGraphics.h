@@ -37,7 +37,7 @@ class UT_ByteBuf;
 /*   Take notice that we don't derive from xap_UnixPSGraphics    */
 /*****************************************************************/
 
-class XAP_UnixGnomePrintGraphics : public GR_Graphics
+class ABI_EXPORT XAP_UnixGnomePrintGraphics : public GR_Graphics
 {
  public:
 
@@ -122,7 +122,7 @@ class XAP_UnixGnomePrintGraphics : public GR_Graphics
 	static GnomePrintConfig * s_setup_config (XAP_Frame * pFrame);
 	UT_sint32 scale_ydir (UT_sint32 in);
 	UT_sint32 scale_xdir (UT_sint32 in);
-	
+
 protected:
 
 	virtual GR_Font* _findFont(const char* pszFontFamily, 
@@ -131,7 +131,7 @@ protected:
 							   const char* pszFontWeight, 
 							   const char* pszFontStretch, 
 							   const char* pszFontSize,
-							   const char* pszLang);
+							   const char* pszLang);	
 
 	virtual UT_uint32 _getResolution() const;
 

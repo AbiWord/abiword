@@ -326,7 +326,15 @@ class ABI_EXPORT GR_UnixPangoPrintGraphics : public GR_UnixPangoGraphics
 
 	virtual UT_uint32 getDeviceResolution(void) const;
 	virtual bool      canQuickPrint(void)
-	{ return false;}
+	{ return true;}
+	virtual UT_uint32 getFontAscent();
+	virtual UT_uint32 getFontDescent();
+	virtual UT_uint32 getFontHeight();
+	
+	virtual UT_uint32 getFontAscent(GR_Font *);
+	virtual UT_uint32 getFontDescent(GR_Font *);
+	virtual UT_uint32 getFontHeight(GR_Font *);
+
   protected:
 
 	
@@ -335,6 +343,7 @@ class ABI_EXPORT GR_UnixPangoPrintGraphics : public GR_UnixPangoGraphics
 	PangoFontMap *    m_pGPFontMap;
 	PangoContext *    m_pGPContext;
 	UT_uint32         m_iScreenResolution;
+	double            m_dResRatio;
 };
 #endif // ifndef WHITOUT_PRINTING
 

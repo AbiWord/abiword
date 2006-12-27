@@ -253,7 +253,7 @@ GR_UnixPangoGraphics::~GR_UnixPangoGraphics()
 void GR_UnixPangoGraphics::init()
 {
 	GdkWindow * win = getWindow();
-
+	xxx_UT_DEBUGMSG(("Initializing UnixPangoGraphics %x \n",this));
 	GdkDisplay * gDisplay;
 	GdkScreen *  gScreen;
 
@@ -1551,6 +1551,7 @@ UT_uint32 GR_UnixPangoGraphics::getFontHeight(GR_Font *pFont)
 	UT_return_val_if_fail( pFont, 0 );
 
 	GR_UnixPangoFont * pFP = (GR_UnixPangoFont*) pFont;
+	xxx_UT_DEBUGMSG(("Font Height Pango %d \n",pFP->getAscent() + pFP->getDescent()));
 	return pFP->getAscent() + pFP->getDescent();
 }
 	
@@ -1576,7 +1577,7 @@ const char* GR_UnixPangoGraphics::findNearestFont(const char* pszFontFamily,
 	if(!UT_strcmp(cs, "pt"))
 	   s[s.length()-2] = 0;
 
-	UT_DEBUGMSG(("---FinfFont size %s \n",pszFontSize));
+	xxx_UT_DEBUGMSG(("---FinfFont size %s \n",pszFontSize));
 
 	PangoFontDescription * pfd = pango_font_description_from_string(s.c_str());
 	UT_return_val_if_fail( pfd, NULL );
@@ -1689,7 +1690,7 @@ void GR_UnixPangoGraphics::getCoverage(UT_NumberVector& coverage)
 	MyPangoCoverage * mpc = (MyPangoCoverage*) pc;
 	UT_uint32 iMaxChar = mpc->n_blocks * 256;
 
-	UT_DEBUGMSG(("GR_UnixPangoGraphics::getCoverage: iMaxChar %d\n", iMaxChar));
+	xxx_UT_DEBUGMSG(("GR_UnixPangoGraphics::getCoverage: iMaxChar %d\n", iMaxChar));
 	
 	bool bInRange = false;
 	
@@ -1965,7 +1966,7 @@ void GR_UnixPangoFont::reloadFont(GR_UnixPangoGraphics * pG)
 	// pango_metrics_ functions return in points * PANGO_SCALE (points * 1024)
 	m_iAscent = (UT_uint32) pG->ptlu(pango_font_metrics_get_ascent(pfm));
 	m_iDescent = (UT_uint32) pG->ptlu(pango_font_metrics_get_descent(pfm));
-	UT_DEBUGMSG(("Font Ascent %d point size %f zoom %d \n",m_iAscent, m_dPointSize, m_iZoom));
+	xxx_UT_DEBUGMSG(("Font Ascent %d point size %f zoom %d \n",m_iAscent, m_dPointSize, m_iZoom));
 	pango_font_metrics_unref(pfm);
 }
 
@@ -2145,7 +2146,8 @@ GR_UnixPangoPrintGraphics::GR_UnixPangoPrintGraphics(XAP_UnixGnomePrintGraphics 
 	m_pGnomePrint(pGPG),
 	m_pGPFontMap(NULL),
 	m_pGPContext(NULL),
-	m_iScreenResolution(96)
+	m_iScreenResolution(96),
+	m_dResRatio(1.0)
 {
 	/* ascertain the real dpi that xft will be using, so we can match that
 	 * for our
@@ -2165,6 +2167,7 @@ GR_UnixPangoPrintGraphics::GR_UnixPangoPrintGraphics(XAP_UnixGnomePrintGraphics 
 
 			m_pContext = pango_xft_get_context(disp, iScreen);
 			m_pFontMap = pango_xft_get_font_map(disp, iScreen);
+			m_dResRatio = static_cast<double>(m_iDeviceResolution)/static_cast<double>(m_iScreenResolution);
 		}
 	else
 		{
@@ -2221,6 +2224,36 @@ GnomePrintContext * GR_UnixPangoPrintGraphics::getGnomePrintContext() const
 }
 
 
+UT_uint32 GR_UnixPangoPrintGraphics::getFontAscent()
+{
+	return static_cast<UT_uint32>(static_cast<double>(GR_UnixPangoGraphics::getFontAscent())*m_dResRatio);
+}
+
+UT_uint32 GR_UnixPangoPrintGraphics::getFontDescent()
+{
+	return static_cast<UT_uint32>(static_cast<double>(GR_UnixPangoGraphics::getFontDescent())*m_dResRatio);
+}
+
+UT_uint32 GR_UnixPangoPrintGraphics::getFontHeight()
+{
+	return static_cast<UT_uint32>(static_cast<double>(GR_UnixPangoGraphics::getFontHeight())*m_dResRatio);
+}
+
+UT_uint32 GR_UnixPangoPrintGraphics::getFontAscent(GR_Font * fnt)
+{
+	return static_cast<UT_uint32>(static_cast<double>(GR_UnixPangoGraphics::getFontAscent(fnt))*m_dResRatio);
+}
+
+UT_uint32 GR_UnixPangoPrintGraphics::getFontDescent(GR_Font * fnt )
+{
+	return static_cast<UT_uint32>(static_cast<double>(GR_UnixPangoGraphics::getFontDescent(fnt))*m_dResRatio);
+}
+
+UT_uint32 GR_UnixPangoPrintGraphics::getFontHeight(GR_Font * fnt)
+{
+	return static_cast<UT_uint32>(static_cast<double>(GR_UnixPangoGraphics::getFontHeight(fnt))*m_dResRatio);
+}
+
 UT_sint32 GR_UnixPangoPrintGraphics::scale_ydir (UT_sint32 in) const
 {
 	return m_pGnomePrint->scale_ydir (in);
@@ -2230,7 +2263,6 @@ UT_sint32 GR_UnixPangoPrintGraphics::scale_xdir (UT_sint32 in) const
 {
 	return m_pGnomePrint->scale_xdir (in);
 }
-
 
 void GR_UnixPangoPrintGraphics::drawChars(const UT_UCSChar* pChars, 
 										   int iCharOffset, int iLength,

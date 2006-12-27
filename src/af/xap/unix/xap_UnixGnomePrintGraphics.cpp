@@ -701,6 +701,7 @@ UT_uint32 XAP_UnixGnomePrintGraphics::getFontHeight()
 
 UT_uint32 XAP_UnixGnomePrintGraphics::getFontHeight(GR_Font *fnt)
 {
+	UT_DEBUGMSG(("Font height %d \n",getFontAscent(fnt) + getFontDescent(fnt)));
 	return (getFontAscent(fnt) + getFontDescent(fnt));
 }
 
