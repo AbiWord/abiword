@@ -47,6 +47,9 @@
 
 /*
  * $Log$
+ * Revision 1.12  2006/12/28 17:31:29  robsta
+ * bug#10693 "Build Broken due to PATH_MAX stuff (Windows)"
+ *
  * Revision 1.11  2006/12/27 16:26:44  robsta
  * use PATH_MAX from ut_path.h everywhere, no more local #ifndef
  *
@@ -215,6 +218,7 @@
 /*  #include "ut_types.h" */
 
 #include "ispell_def.h"
+#include "ut_path.h"
 #include "ut_iconv.h"
 
 #ifdef __cplusplus
