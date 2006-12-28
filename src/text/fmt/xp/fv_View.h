@@ -1,3 +1,4 @@
+/* -*- mode: C++; tab-width: 4; c-basic-offset: 4; -*- */
 /* AbiWord
  * Copyright (C) 1998-2000 AbiSource, Inc.
  * Copyright (c) 2001,2002 Tomas Frydrych
@@ -180,7 +181,7 @@ public:
 	virtual inline GR_Graphics*    getGraphics(void) const { return m_pG; }
 	void  setGraphics(GR_Graphics *pG);
 	void  replaceGraphics(GR_Graphics *pG);
-	
+
 	virtual inline PT_DocPosition   getPoint(void) const { return m_iInsPoint; }
 	PT_DocPosition	getSelectionAnchor(void) const;
 	UT_uint32       getSelectionLength(void) const;

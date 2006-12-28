@@ -8780,6 +8780,9 @@ void FV_View::setViewMode (ViewMode vm)
 
 		pPage->updateColumnX();
 	}
+
+	_fixInsertionPointCoords();
+	
 }
 
 void FV_View::getTopRulerInfo(PT_DocPosition pos,AP_TopRulerInfo * pInfo)
@@ -13185,3 +13188,4 @@ void FV_View::fontMetricsChange()
 
 	m_pLayout->rebuildFromHere(static_cast<fl_DocSectionLayout *>(m_pLayout->getFirstSection()));	
 }
+
