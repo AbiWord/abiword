@@ -472,6 +472,11 @@ EV_UnixToolbar::~EV_UnixToolbar(void)
 	_releaseListener();
 }
 
+GtkBox* EV_UnixToolbar::_getContainer()
+{
+	return GTK_BOX(static_cast<XAP_UnixFrameImpl *>(m_pFrame->getFrameImpl())->getVBoxWidget());
+}
+
 bool EV_UnixToolbar::toolbarEvent(_wd 				* wd,
 								  const UT_UCSChar 	* pData,
 								  UT_uint32 		  dataLength)
@@ -537,14 +542,14 @@ bool EV_UnixToolbar::toolbarEvent(_wd 				* wd,
  */
 UT_sint32 EV_UnixToolbar::destroy(void)
 {
-	GtkWidget * wVBox = static_cast<XAP_UnixFrameImpl *>(m_pFrame->getFrameImpl())->getVBoxWidget();
+	GtkBox * wBox = _getContainer();
 	UT_sint32  pos = 0;
 //
 // Code gratutiously stolen from gtkbox.c
 //
 	GList *list = NULL;
 	bool bFound = false;
-	for( list = GTK_BOX(wVBox)->children; !bFound && list; list = list->next)
+	for( list = wBox->children; !bFound && list; list = list->next)
 	{
 		GtkBoxChild * child = static_cast<GtkBoxChild *>(list->data);
 		if(child->widget == m_wHandleBox)
@@ -585,8 +590,8 @@ void EV_UnixToolbar::rebuildToolbar(UT_sint32 oldpos)
     synthesize();
 #ifdef HAVE_HILDON
 #else
-	GtkWidget * wVBox = static_cast<XAP_UnixFrameImpl *>(m_pFrame->getFrameImpl())->getVBoxWidget();
-	gtk_box_reorder_child(GTK_BOX(wVBox), m_wHandleBox, oldpos);
+	GtkBox * wBox = _getContainer();
+	gtk_box_reorder_child(wBox, m_wHandleBox, oldpos);
 //
 // bind  view listener
 //
@@ -654,11 +659,6 @@ bool EV_UnixToolbar::synthesize(void)
 	
 	UT_uint32 nrLabelItemsInLayout = m_pToolbarLayout->getLayoutItemCount();
 	UT_ASSERT(nrLabelItemsInLayout > 0);
-
-#ifdef HAVE_HILDON	
-#else
-	GtkWidget * wVBox = static_cast<XAP_UnixFrameImpl *>(m_pFrame->getFrameImpl())->getVBoxWidget();
-#endif
 
 	m_wHandleBox = gtk_alignment_new(0, 0, 1, 1);
 	
@@ -984,6 +984,8 @@ bool EV_UnixToolbar::synthesize(void)
 	gtk_widget_show_all(wTLW);			
 
 #else
+	GtkBox * wBox = _getContainer();
+
 	// show the complete thing
 	gtk_widget_show(m_wToolbar);
 
@@ -991,7 +993,7 @@ bool EV_UnixToolbar::synthesize(void)
 	gtk_container_add(GTK_CONTAINER(m_wHandleBox), m_wToolbar);
 	// put it in the vbox
 	gtk_widget_show(m_wHandleBox);
-	gtk_box_pack_start(GTK_BOX(wVBox), m_wHandleBox, FALSE, FALSE, 0);
+	gtk_box_pack_start(wBox, m_wHandleBox, FALSE, FALSE, 0);
 
 	setDetachable(getDetachable());
 #endif /* HAVE_HILDON */

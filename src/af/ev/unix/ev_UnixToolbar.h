@@ -68,6 +68,8 @@ protected:
 	virtual bool 					getDetachable(void) { return true; }
 	virtual void 					setDetachable(gboolean detachable) { /* only the GNOME version does that ATM */ }
 
+	virtual GtkBox*					_getContainer();
+
 	void							_releaseListener(void);
 
 	XAP_UnixApp *					m_pUnixApp;
