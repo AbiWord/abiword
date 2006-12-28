@@ -8279,6 +8279,18 @@ static bool s_doPrint(FV_View * pView, bool bTryToSuppressDialog,bool bPrintDire
 {
 #ifndef WITHOUT_PRINTING
 	UT_return_val_if_fail (pView, false);
+
+	if (pView->getViewMode() == VIEW_NORMAL)
+	{
+		/* if the current view is in normal mode, switch to print layout
+		 * first, this ensure that the printed layout is as it should be.
+		 * We force screen update here, otherwise the screen is messed up
+		 * under the print dialog
+		 */
+		pView->setViewMode (VIEW_PRINT);
+		pView->updateScreen (false);
+	}
+	
 	XAP_Frame * pFrame = static_cast<XAP_Frame *> ( pView->getParentData());
 	UT_return_val_if_fail(pFrame, false);
 
