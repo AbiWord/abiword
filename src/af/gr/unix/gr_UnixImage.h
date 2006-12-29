@@ -26,7 +26,7 @@
 
 class GR_UnixImage : public GR_RasterImage
 {
-	friend class GR_UnixGraphics;
+	friend class GR_UnixPangoGraphics;
 public:
 	GR_UnixImage(const char* pszName);
 	GR_UnixImage(const char* pszName, GdkPixbuf * pPixbif);

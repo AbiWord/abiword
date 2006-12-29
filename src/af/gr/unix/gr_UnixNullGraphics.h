@@ -25,8 +25,6 @@
 #include "gr_Image.h"
 #include "ut_misc.h"
 
-class XAP_UnixFontHandle;
-class XAP_UnixFontManager;
 class UT_ByteBuf;
 
 /*****************************************************************/

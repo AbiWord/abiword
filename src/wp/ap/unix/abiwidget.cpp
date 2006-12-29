@@ -34,7 +34,8 @@
 #include <gsf/gsf-output-memory.h>
 #include <gsf/gsf-utils.h>
 
-#include "gr_UnixGraphics.h"
+#include "gr_UnixPangoGraphics.h"
+
 #include "ev_EditMethod.h"
 #include "ut_assert.h"
 #include "fv_View.h"

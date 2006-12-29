@@ -22,9 +22,9 @@
 
 #include "ap_Dialog_Lists.h"
 #include "ut_timer.h"
-#include "gr_UnixGraphics.h"
 
 class XAP_UnixFrame;
+class GR_UnixPangoGraphics;
 
 /*****************************************************************/
 
@@ -93,7 +93,7 @@ class AP_UnixDialog_Lists: public AP_Dialog_Lists
 	} ResponseId ;	
 	
 	GList *					m_glFonts;
-	GR_UnixGraphics *		m_pPreviewWidget;
+	GR_UnixPangoGraphics *		        m_pPreviewWidget;
 
 	bool					m_bManualListStyle;
 	bool					m_bDestroy_says_stopupdating;

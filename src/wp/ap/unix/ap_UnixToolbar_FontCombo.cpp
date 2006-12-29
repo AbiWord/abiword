@@ -30,9 +30,6 @@
 #include "ut_hash.h"
 #include "ut_debugmsg.h"
 
-#include "xap_UnixFont.h"
-#include "xap_UnixFontManager.h"
-
 #include "ap_UnixToolbar_FontCombo.h"
 #include "ap_Toolbar_Id.h"
 #include "xap_UnixApp.h"
@@ -58,22 +55,7 @@ AP_UnixToolbar_FontCombo::AP_UnixToolbar_FontCombo(EV_Toolbar * pToolbar,
 	m_nPixels = 150;
 
 	GR_GraphicsFactory * pGF = XAP_App::getApp()->getGraphicsFactory();
-	UT_uint32 iGR = pGF->getDefaultClass(true);
-	
-	if(iGR != GRID_UNIX_PANGO)
-	{
-		UT_GenericVector<XAP_UnixFont*>* list = NULL;
-		list = XAP_UnixFontManager::pFontManager->getAllFonts();
-		UT_return_if_fail( list );
-		m_nLimit = list->size();
-		DELETEP(list);
-	}
-#ifdef USE_PANGO
-	else
-	{
-		m_nLimit = GR_UnixPangoGraphics::getAllFontCount();
-	}
-#endif
+	m_nLimit = GR_UnixPangoGraphics::getAllFontCount();
 }
 
 AP_UnixToolbar_FontCombo::~AP_UnixToolbar_FontCombo(void)
@@ -95,25 +77,14 @@ bool AP_UnixToolbar_FontCombo::populate(void)
 
 	UT_uint32 iGR = pGF->getDefaultClass(true);
 	
-	UT_GenericVector<XAP_UnixFont*>* list = NULL;
 	UT_GenericVector<const char*>* names = NULL;
 
 	UT_uint32 count = 0;
 	
-	if(iGR != GRID_UNIX_PANGO)
-	{
-		list = XAP_UnixFontManager::pFontManager->getAllFonts();
-		UT_return_val_if_fail( list, false );
-		count = list->size();
-	}
-#ifdef USE_PANGO
-	else
-	{
-		names = GR_UnixPangoGraphics::getAllFontNames();
-		UT_return_val_if_fail( names, false );
-		count = names->size();
-	}
-#endif
+	names = GR_UnixPangoGraphics::getAllFontNames();
+	UT_return_val_if_fail( names, false );
+	count = names->size();
+
 	m_vecContents.clear();
 
 	for (UT_uint32 i = 0; i < count; i++)
@@ -121,17 +92,7 @@ bool AP_UnixToolbar_FontCombo::populate(void)
 		const char * fName = NULL;
 		
 		// sort-out duplicates
-		if(iGR != GRID_UNIX_PANGO)
-		{
-			XAP_UnixFont * pFont = list->getNthItem(i);
-			fName = pFont->getName();
-		}
-#ifdef USE_PANGO
-		else
-		{
-			fName = names->getNthItem(i);
-		}
-#endif
+		fName = names->getNthItem(i);
 		
 		int foundAt = -1;
 
@@ -149,7 +110,6 @@ bool AP_UnixToolbar_FontCombo::populate(void)
 		if (foundAt == -1)
 			m_vecContents.addItem(fName);
 	}
-	DELETEP(list);
 	DELETEP(names);
 	
 	return true;

@@ -24,7 +24,7 @@
 #include "xap_Frame.h"
 #include "xap_UnixFrameImpl.h"
 #include "ap_UnixLeftRuler.h"
-#include "gr_UnixGraphics.h"
+#include "gr_UnixPangoGraphics.h"
 #include "xap_UnixDialogHelper.h"
 #include "fv_View.h"
 #include "ut_sleep.h"
@@ -125,17 +125,14 @@ void AP_UnixLeftRuler::setView(AV_View * pView)
 	
 	DELETEP(m_pG);
 
-	XAP_UnixApp * app = static_cast<XAP_UnixApp *>(XAP_App::getApp());
-	XAP_UnixFontManager * fontManager = app->getFontManager();
-	//GR_UnixGraphics * pG = new GR_UnixGraphics(m_wLeftRuler->window, fontManager, m_pFrame->getApp());
-	GR_UnixAllocInfo ai(m_wLeftRuler->window, fontManager);
-	m_pG = (GR_UnixGraphics*) XAP_App::getApp()->newGraphics(ai);
+	GR_UnixAllocInfo ai(m_wLeftRuler->window);
+	m_pG = XAP_App::getApp()->newGraphics(ai);
 
 	UT_ASSERT(m_pG);
 	m_pG->setZoomPercentage(pView->getGraphics()->getZoomPercentage());
 
 	GtkWidget * ruler = gtk_vruler_new ();
-	((GR_UnixGraphics*)m_pG)->init3dColors(get_ensured_style (ruler));
+	((GR_UnixPangoGraphics*)m_pG)->init3dColors(get_ensured_style (ruler));
 }
 
 void AP_UnixLeftRuler::getWidgetPosition(gint * x, gint * y)

@@ -30,7 +30,6 @@
 #include "xap_UnixApp.h"
 #include "xap_Frame.h"
 #include "xap_UnixFrameImpl.h"
-#include "gr_UnixGraphics.h"
 
 
 XAP_Dialog * XAP_UnixDialog_Language::static_constructor(XAP_DialogFactory * pFactory,

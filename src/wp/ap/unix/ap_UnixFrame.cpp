@@ -35,14 +35,13 @@
 #include "fv_View.h"
 #include "fl_DocLayout.h"
 #include "pd_Document.h"
-#include "gr_UnixGraphics.h"
+#include "gr_UnixPangoGraphics.h"
 #include "xap_Scrollbar_ViewListener.h"
 #include "ap_UnixFrame.h"
 #include "ap_UnixFrameImpl.h"
 #include "xap_UnixApp.h"
 #include "ap_UnixTopRuler.h"
 #include "ap_UnixLeftRuler.h"
-#include "xap_UnixFontManager.h"
 #include "ap_UnixStatusBar.h"
 #include "ap_UnixViewListener.h"
 #include "xap_UnixDialogHelper.h"
@@ -468,18 +467,16 @@ void AP_UnixFrame::toggleStatusBar(bool bStatusBarOn)
 
 bool AP_UnixFrame::_createViewGraphics(GR_Graphics *& pG, UT_uint32 iZoom)
 {
-	XAP_UnixFontManager * fontManager = (static_cast<XAP_UnixApp *>(XAP_App::getApp())->getFontManager());
 	//WL: experimentally hiding this
 	//gtk_widget_show(static_cast<AP_UnixFrameImpl *>(m_pFrameImpl)->m_dArea);
 	AP_UnixFrameImpl * pImpl = static_cast<AP_UnixFrameImpl *>(getFrameImpl());
 	UT_ASSERT(pImpl);
 	UT_DEBUGMSG(("Got FrameImpl %x area %x \n",pImpl,pImpl->m_dArea));
-	//pG = new GR_UnixGraphics(pImpl->m_dArea->window, fontManager, getApp());
-	GR_UnixAllocInfo ai(pImpl->m_dArea->window, fontManager);
-	pG = (GR_UnixGraphics*) XAP_App::getApp()->newGraphics(ai);
+	GR_UnixAllocInfo ai(pImpl->m_dArea->window);
+	pG = (GR_UnixPangoGraphics*) XAP_App::getApp()->newGraphics(ai);
 
 	GtkWidget *widget = GTK_WIDGET(static_cast<AP_UnixFrameImpl *>(getFrameImpl())->m_dArea);
-	GR_UnixGraphics *pUnixGraphics = static_cast<GR_UnixGraphics *>(pG);
+	GR_UnixPangoGraphics *pUnixGraphics = static_cast<GR_UnixPangoGraphics *>(pG);
 	pUnixGraphics->init3dColors(widget->style);
 
 	ENSUREP_RF(pG);

@@ -51,9 +51,7 @@
 #include "xap_Unix_TB_CFactory.h"
 #include "xap_Prefs.h"
 #include "xap_UnixEncodingManager.h"
-#include "xap_UnixFontManager.h"
 
-#include "gr_UnixGraphics.h"
 #include "gr_UnixPangoGraphics.h"
 
 #include <gsf/gsf-utils.h>
@@ -63,10 +61,8 @@
 #include <libgnomevfs/gnome-vfs.h>
 #endif
 
-#if defined(USE_PANGO)
 #include "gr_UnixNullGraphics.h"
-static UnixNull_Graphics * abi_unixnullgraphics_instance = 0;
-#endif
+static UnixNull_Graphics * nullgraphics = NULL;
 
 /*****************************************************************/
 // #include <sys/time.h> // tmp just to measure the time that XftInit takes
@@ -74,8 +70,7 @@ static UnixNull_Graphics * abi_unixnullgraphics_instance = 0;
 XAP_UnixApp::XAP_UnixApp(XAP_Args * pArgs, const char * szAppName)
 	: XAP_App(pArgs, szAppName),
 	  m_dialogFactory(this),
-	  m_controlFactory(),
-	  m_fontManager(NULL)
+	  m_controlFactory()
 {
 #if FC_MINOR > 2
 	FcInit();
@@ -95,20 +90,7 @@ XAP_UnixApp::XAP_UnixApp(XAP_Args * pArgs, const char * szAppName)
 
 	if(pGF)
 	{
-		bool bSuccess = pGF->registerClass(GR_UnixGraphics::graphicsAllocator,
-										   GR_UnixGraphics::graphicsDescriptor,
-										   GR_UnixGraphics::s_getClassId());
-
-		// we are in deep trouble if this did not succeed
-		UT_ASSERT( bSuccess );
-		pGF->registerAsDefault(GR_UnixGraphics::s_getClassId(), true);
-
-#if defined(USE_PANGO)
-		bSuccess = pGF->registerClass(UnixNull_Graphics::graphicsAllocator,
-									  UnixNull_Graphics::graphicsDescriptor,
-									  UnixNull_Graphics::s_getClassId());		
-		UT_ASSERT( bSuccess );
-
+		bool bSuccess;
 		bSuccess = pGF->registerClass(GR_UnixPangoGraphics::graphicsAllocator,
 									  GR_UnixPangoGraphics::graphicsDescriptor,
 									  GR_UnixPangoGraphics::s_getClassId());
@@ -120,42 +102,46 @@ XAP_UnixApp::XAP_UnixApp(XAP_Args * pArgs, const char * szAppName)
 			pGF->registerAsDefault(GR_UnixPangoGraphics::s_getClassId(), true);
 		}
 
+		bSuccess = pGF->registerClass(UnixNull_Graphics::graphicsAllocator,
+									  UnixNull_Graphics::graphicsDescriptor,
+									  UnixNull_Graphics::s_getClassId());
+		UT_ASSERT( bSuccess );
+		
 #if !defined(WITHOUT_PRINTING)
 		bSuccess = pGF->registerClass(GR_UnixPangoPrintGraphics::graphicsAllocator,
 									  GR_UnixPangoPrintGraphics::graphicsDescriptor,
 									  GR_UnixPangoPrintGraphics::s_getClassId());
 #endif
-
-#endif
 		
 		UT_ASSERT( bSuccess );
 		
-#if defined(USE_PANGO) && !defined(WITHOUT_PRINTING)
+#if !defined(WITHOUT_PRINTING)
 		if(bSuccess)
 		{
 			pGF->registerAsDefault(GR_UnixPangoPrintGraphics::s_getClassId(), false);
 		}
 #endif
-	}
 
-#if defined(USE_PANGO)
-	/* We need to link UnixNull_Graphics because the AbiCommand
-	 * plugin uses it.
-	 */
-	if (abi_unixnullgraphics_instance)
-	  {
-	    delete abi_unixnullgraphics_instance;
-	    //abi_unixnullgraphics_instance = new UnixNull_Graphics(0,0);
-		GR_UnixNullGraphicsAllocInfo ai;
-		abi_unixnullgraphics_instance =
-			(UnixNull_Graphics*) XAP_App::getApp()->newGraphics((UT_uint32)GRID_UNIX_NULL, ai);
-	  }
-#endif	  
+		/* We need to link UnixNull_Graphics because the AbiCommand
+		 * plugin uses it.
+		 *
+		 * We do not need to keep an instance of it around though, as the
+		 * plugin constructs its own (I wonder if there is a more elegant way
+		 * to force the linker into including it).
+		 */
+		{
+			GR_UnixNullGraphicsAllocInfo ai;
+			nullgraphics =
+				(UnixNull_Graphics*) XAP_App::getApp()->newGraphics((UT_uint32)GRID_UNIX_NULL, ai);
+
+			delete nullgraphics;
+			nullgraphics = NULL;
+		}
+	}
 }
 
 XAP_UnixApp::~XAP_UnixApp()
 {
-	delete m_fontManager;
 }
 
 bool XAP_UnixApp::initialize(const char * szKeyBindingsKey, const char * szKeyBindingsDefaultValue)
@@ -172,16 +158,6 @@ bool XAP_UnixApp::initialize(const char * szKeyBindingsKey, const char * szKeyBi
 	gnome_vfs_init();
 #endif
 
-	/*******************************/
-
-	// load the font stuff from the font directory
-	UT_DEBUGMSG(("Loading Fonts\n"));
-	if (!_loadFonts())
-		return false;
-	UT_DEBUGMSG(("Fonts Loaded \n"));
-	
-	/*******************************/
-	
 	// do any thing we need here...
 
 	return true;
@@ -206,11 +182,6 @@ XAP_DialogFactory * XAP_UnixApp::getDialogFactory()
 XAP_Toolbar_ControlFactory * XAP_UnixApp::getControlFactory()
 {
 	return &m_controlFactory;
-}
-
-XAP_UnixFontManager * XAP_UnixApp::getFontManager() const
-{
-	return m_fontManager;
 }
 
 void XAP_UnixApp::setWinGeometry(int x, int y, UT_uint32 width, UT_uint32 height,
@@ -257,38 +228,6 @@ const char * XAP_UnixApp::getUserPrivateDirectory()
 	return buf;
 }
 
-bool XAP_UnixApp::_loadFonts()
-{
-	/*
-	   The Pango graphics factory does not use the fontmanager, and creating it and
-	   loading the fonts represents a significant resource waste. Eventually, I think we
-	   should make the Pango graphics independent of GR_UnixGraphics class, and make the
-	   latter a compile-time option only, or get rid of it altogether.
-	*/
-	
-	GR_GraphicsFactory * pGF = getGraphicsFactory();
-	UT_return_val_if_fail( pGF, false );
-
-	UT_uint32 iGrId = pGF->getDefaultClass(true /*screen*/);
-	
-	
-	if(iGrId != GRID_UNIX_PANGO)
-	{
-		// create a font manager for our app to use
-		m_fontManager = new XAP_UnixFontManager();
-		XAP_UnixFontManager::pFontManager = m_fontManager; // set the static variable pFontManager, so we can access our fontmanager from a static context
-		UT_ASSERT(m_fontManager);
-
-		// let it loose
-		UT_DEBUGMSG(("Scavange Fonts started \n"));
-		if (!m_fontManager->scavengeFonts())
-			return false;
-	
-		UT_DEBUGMSG(("Scavange Fonts finished \n"));
-	}
-	
-	return true;
-}
 
 void XAP_UnixApp::_setAbiSuiteLibDir()
 {

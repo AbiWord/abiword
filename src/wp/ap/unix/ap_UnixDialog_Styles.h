@@ -21,8 +21,6 @@
 #define AP_UnixDialog_Styles_H
 
 #include "ap_Dialog_Columns.h"
-#include "xap_UnixFontManager.h"
-#include "gr_UnixGraphics.h"
 
 #include "ut_types.h"
 #include "ut_string.h"
@@ -30,6 +28,7 @@
 
 
 class XAP_UnixFrame;
+class GR_UnixPangoGraphics;
 
 /*****************************************************************/
 
@@ -109,8 +108,8 @@ protected:
 	virtual const char * getCurrentStyle (void) const;
 	virtual void setDescription (const char * desc) const;
 
-	GR_UnixGraphics	* 		m_pParaPreviewWidget;
-	GR_UnixGraphics	* 		m_pCharPreviewWidget;
+	GR_UnixPangoGraphics	* m_pParaPreviewWidget;
+	GR_UnixPangoGraphics	* m_pCharPreviewWidget;
 
 	// pointers to widgets we need to query/set
 	GtkWidget * m_windowMain;
@@ -145,7 +144,7 @@ protected:
 	virtual void setModifyDescription( const char * desc);
 	bool        _populateModify(void);
 
-	GR_UnixGraphics	* 		m_pAbiPreviewWidget;
+	GR_UnixPangoGraphics	* m_pAbiPreviewWidget;
 
 	GtkWidget *	m_wModifyDialog;
 	GtkWidget *	m_wStyleNameEntry;

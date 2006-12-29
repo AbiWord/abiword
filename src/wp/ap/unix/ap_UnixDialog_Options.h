@@ -22,7 +22,6 @@
 #ifndef AP_UNIXDIALOG_OPTIONS_H
 #define AP_UNIXDIALOG_OPTIONS_H
 
-#include "xap_UnixFontManager.h"
 #include "ap_Dialog_Options.h"
 
 class XAP_UnixFrame;

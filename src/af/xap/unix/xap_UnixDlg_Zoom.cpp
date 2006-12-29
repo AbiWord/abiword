@@ -24,8 +24,6 @@
 #include "ut_assert.h"
 #include "ut_debugmsg.h"
 
-#include "gr_UnixGraphics.h"
-
 #include "xav_View.h"
 
 // This header defines some functions for Unix dialogs,

@@ -52,7 +52,6 @@
 #include "xap_UnixDialogHelper.h"
 #include "xap_UnixFontPreview.h"
 #include "xap_FontPreview.h"
-#include "gr_UnixGraphics.h"
 #include "ut_string_class.h"
 #include "ap_Toolbar_Id.h"
 #include "ap_UnixStockIcons.h"

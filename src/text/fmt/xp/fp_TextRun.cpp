@@ -222,7 +222,7 @@ void fp_TextRun::_lookupProperties(const PP_AttrProp * pSpanAP,
 	GR_Font * pFont;
 
 	pFont = const_cast<GR_Font *>(pLayout->findFont(pSpanAP,pBlockAP,pSectionAP,pG));
-	UT_DEBUGMSG(("Old font %x new font %x \n",_getFont(),pFont));
+	xxx_UT_DEBUGMSG(("Old font %x new font %x \n",_getFont(),pFont));
 	if (_getFont() != pFont)
 	{
 		_setFont(pFont);

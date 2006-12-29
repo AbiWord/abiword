@@ -96,17 +96,33 @@ void XAP_Draw_Symbol::setFontToGC(GR_Graphics *p_gc, UT_uint32 MaxWidthAllowable
 							  "normal", "",
 							  temp,
 							  NULL);
-		/* findFont does a fuzzy match.  If the font found doesn't have the same family name
-		 * that we asked for, we retrieve the new name and we use it */
+		/* findFont does a fuzzy match.  If the font found doesn't
+		 * have the same family name that we asked for, we retrieve
+		 * the new name and we use it
+		 */
 		if (font->getFamily())
 			m_stFont = font->getFamily();
 		
 		p_gc->setFont(font);
 		
 		UT_uint32 MaxWidth = p_gc->getMaxCharacterWidth(p_buffer, 224);
-			
+
 		if (MaxWidth < MaxWidthAllowable)
 			SizeOK = true;
+		else if (PointSize < 14 &&
+			 !strcmp(m_stFont.c_str(), "Standard Symbols L"))
+		{
+		    /* The Standard Symbol L font (or the way Pango handles it)
+		     * seems broken and cannot be scaled properly (it returns
+		     * the same metrics between 14-12pt, and after that we are
+		     * getting numbers that are all over the place).
+		     *
+		     * This HACK stops us reducing the font size all the way
+		     * to 0, but the metrics of the inserted characters is
+		     * still screwed up.
+		     */
+		    SizeOK = true;
+		}
 		else
 		{
 			PointSize--;
@@ -133,7 +149,13 @@ void XAP_Draw_Symbol::setSelectedFont(const char *font)
 
 void XAP_Draw_Symbol::setFontStringarea(void)
 {
-	setFontToGC(m_areagc, m_drawareaWidth, 32);
+    int PointSize = 33;
+    do
+    {
+	PointSize--;
+	setFontToGC(m_areagc, m_drawareaWidth, PointSize);
+    }while (m_areagc->getFontHeight() > m_drawareaHeight &&
+	    PointSize > 6);
 }
 
 void XAP_Draw_Symbol::draw(void)

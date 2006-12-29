@@ -208,7 +208,7 @@ public:
 							m_eRefreshDrawBuffer = (GRShapingResult)((UT_uint32)m_eRefreshDrawBuffer
 																	 |(UT_uint32)eR);
 }
-	bool                isPrinting(void)
+	bool                isPrinting(void) const
 	{ return m_bPrinting;}
 	virtual void		draw(dg_DrawArgs*);
 	virtual void        clearScreen(void);

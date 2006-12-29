@@ -45,12 +45,7 @@ noinst_LIBRARIES = libXap_unix.a
 gladedir=$(ABIWORD_GLADEDIR)
 
 if WITH_PRINTING
-print_src = xap_UnixPSFont.cpp				\
-			xap_UnixPSGenerate.cpp			\
-			xap_UnixPSParseAFM.c			\
-			xap_UnixPSImage.cpp				\
-			xap_UnixGnomePrintGraphics.cpp	\
-			xap_UnixDlg_PrintPreview.cpp	\
+print_src = xap_UnixDlg_PrintPreview.cpp	\
 			xap_UnixDlg_Print.cpp			
 else
 print_src =
@@ -85,9 +80,6 @@ libXap_unix_a_SOURCES= $(print_src)	\
 	xap_UnixDlg_WindowMore.cpp		\
 	xap_UnixDlg_Zoom.cpp			\
 	xap_UnixDlg_Insert_Symbol.cpp	\
-	xap_UnixFontXLFD.cpp			\
-	xap_UnixFont.cpp				\
-	xap_UnixFontManager.cpp			\
 	xap_UnixFontPreview.cpp			\
 	xap_UnixModule.cpp				\
 	xap_UnixDlg_Password.cpp		\
@@ -133,17 +125,9 @@ headers_DATA = \
 	xap_UnixDlg_WindowMore.h \
 	xap_UnixDlg_Zoom.h \
 	xap_UnixEncodingManager.h \
-	xap_UnixFont.h \
-	xap_UnixFontManager.h \
 	xap_UnixFontPreview.h \
-	xap_UnixFontXLFD.h \
 	xap_UnixFrameImpl.h \
-	xap_UnixGnomePrintGraphics.h \
 	xap_UnixModule.h \
-	xap_UnixPSFont.h \
-	xap_UnixPSGenerate.h \
-	xap_UnixPSImage.h \
-	xap_UnixPSParseAFM.h \
 	xap_UnixTableWidget.h \
 	xap_Unix_TB_CFactory.h \
 	xap_UnixWidget.h 

@@ -18,7 +18,6 @@
  */
 
 #include "xap_UnixDlg_Print.h"
-#include "xap_UnixGnomePrintGraphics.h"
 
 #include <gtk/gtk.h>
 #include <libgnomeprintui/gnome-print-dialog.h>
@@ -26,8 +25,13 @@
 #include "ut_assert.h"
 #include "xap_UnixDialogHelper.h"
 #include "xap_Dialog_Id.h"
+#include "xap_App.h"
 #include "xap_Strings.h"
+#include "xap_Frame.h"
+
 #include "gr_UnixPangoGraphics.h"
+
+#include "fv_View.h"
 
 XAP_Dialog * XAP_UnixDialog_Print::static_constructor(XAP_DialogFactory * pFactory,
 														   XAP_Dialog_Id id)
@@ -79,9 +83,27 @@ void XAP_UnixDialog_Print::_raisePrintDialog(XAP_Frame * pFrame)
 	int copies = 1, collate = FALSE;
 	int first = 1, end = 0, range;
 
-	const XAP_StringSet * pSS = XAP_App::getApp()->getStringSet();
+	double mrgnTop, mrgnBottom, mrgnLeft, mrgnRight, width, height;
+	bool portrait;
 
-	GnomePrintJob * job = gnome_print_job_new(XAP_UnixGnomePrintGraphics::s_setup_config (pFrame));
+	FV_View * pView = static_cast<FV_View*>(pFrame->getCurrentView());
+
+	mrgnTop = pView->getPageSize().MarginTop(DIM_MM);
+	mrgnBottom = pView->getPageSize().MarginBottom(DIM_MM);
+	mrgnLeft = pView->getPageSize().MarginLeft(DIM_MM);
+	mrgnRight = pView->getPageSize().MarginRight(DIM_MM);
+
+	portrait = pView->getPageSize().isPortrait();
+	
+	width = pView->getPageSize().Width (DIM_MM);
+	height = pView->getPageSize().Height (DIM_MM);
+
+	GnomePrintJob * job =
+	    gnome_print_job_new(GR_UnixPangoPrintGraphics::s_setup_config (
+				    mrgnTop, mrgnBottom, mrgnLeft, mrgnRight,
+				    width, height, copies, portrait));
+
+	const XAP_StringSet * pSS = XAP_App::getApp()->getStringSet();
 
 	// 1.  Create the dialog widget
 	gpd = gnome_print_dialog_new (job,
@@ -137,33 +159,10 @@ void XAP_UnixDialog_Print::_getGraphics(void)
 {
 	UT_ASSERT(m_answer == a_OK);
 
-	XAP_UnixGnomePrintGraphics * pGPG = new XAP_UnixGnomePrintGraphics(m_gpm, m_bIsPreview);
-	UT_return_if_fail( pGPG );
-	pGPG->setColorSpace(m_cColorSpace);
-
-	GR_GraphicsFactory * pGF = XAP_App::getApp()->getGraphicsFactory();
-	UT_return_if_fail( pGF );
+	m_pPrintGraphics = new GR_UnixPangoPrintGraphics(m_gpm, m_bIsPreview);
+	UT_return_if_fail(m_pPrintGraphics);
 	
-	UT_uint32 iDefaultPrintClass = pGF->getDefaultClass(false);
-
-#if defined(USE_PANGO)
-	GR_UnixPangoPrintGraphics * pPPG = NULL;
-	
-	if(iDefaultPrintClass == GRID_UNIX_PANGO_PRINT || iDefaultPrintClass == GRID_UNIX_PANGO)
-	{
-		pPPG = new GR_UnixPangoPrintGraphics(pGPG);
-	}
-
-	if(pPPG)
-	{
-		m_pPrintGraphics = pPPG;
-	}
-	else
-#endif
-	{
-		m_pPrintGraphics = pGPG;
-	}
-	
+	m_pPrintGraphics->setColorSpace(m_cColorSpace);
 	m_answer = a_OK;
 }
 

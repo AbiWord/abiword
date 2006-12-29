@@ -37,7 +37,6 @@
 #include "xap_UnixFrameImpl.h"
 #include "xap_EncodingManager.h"
 #include "xav_View.h"
-#include "gr_UnixGraphics.h"
 #include "gr_UnixPangoGraphics.h"
 
 #define PREVIEW_BOX_BORDER_WIDTH_PIXELS 8
@@ -128,7 +127,6 @@ XAP_UnixDialog_FontChooser::XAP_UnixDialog_FontChooser(XAP_DialogFactory * pDlgF
 												   XAP_Dialog_Id id)
 	: XAP_Dialog_FontChooser(pDlgFactory,id)
 {
-	m_fontManager = NULL;
 	m_fontList = NULL;
 	m_styleList = NULL;
 	m_sizeList = NULL;
@@ -141,7 +139,6 @@ XAP_UnixDialog_FontChooser::XAP_UnixDialog_FontChooser(XAP_DialogFactory * pDlgF
 	m_bgcolorSelector = NULL;
 	m_preview = NULL;
 
-	m_lastFont = NULL;
 	m_gc = NULL;
 	m_pFrame = NULL;
 	m_doneFirstFont = false;
@@ -157,7 +154,6 @@ XAP_UnixDialog_FontChooser::XAP_UnixDialog_FontChooser(XAP_DialogFactory * pDlgF
 XAP_UnixDialog_FontChooser::~XAP_UnixDialog_FontChooser(void)
 {
 	DELETEP(m_gc);
-	DELETEP(m_lastFont);
 }
 
 
@@ -873,14 +869,6 @@ void XAP_UnixDialog_FontChooser::runModal(XAP_Frame * pFrame)
 	// used similarly to convert between text and numeric arguments
 	static char sizeString[50];
 
-	// Set up our own color space so we work well on 8-bit
-	// displays.
-
-	// establish the font manager before dialog creation
-	XAP_App * app = XAP_App::getApp();
-	XAP_UnixApp * unixapp = static_cast<XAP_UnixApp *> (app);
-	m_fontManager = unixapp->getFontManager();
-
 	// build the dialog
 	GtkWidget * cf = constructWindow();
 
@@ -902,41 +890,17 @@ void XAP_UnixDialog_FontChooser::runModal(XAP_Frame * pFrame)
 		return;
 	}
 
-	UT_uint32 iGR = pGF->getDefaultClass(true);
-	
-	UT_GenericVector<XAP_UnixFont*>* fonts = NULL;
 	UT_GenericVector<const char*>* names = NULL;
 	UT_uint32 iCount = 0;
 	
-	if(iGR != GRID_UNIX_PANGO)
-	{
-		fonts = XAP_UnixFontManager::pFontManager->getAllFonts();
-		UT_return_if_fail( fonts );
-		iCount = fonts->size();
-	}
-#ifdef USE_PANGO
-	else
-	{
-		names = GR_UnixPangoGraphics::getAllFontNames();
-		UT_return_if_fail( names );
-		iCount = names->size();
-	}
-#endif
+	names = GR_UnixPangoGraphics::getAllFontNames();
+	UT_return_if_fail( names );
+	iCount = names->size();
+		
 	for (UT_uint32 i = 0; i < iCount; i++)
 	{
-		const char * fName = NULL;
-		
-		if(iGR != GRID_UNIX_PANGO)
-		{
-			const XAP_UnixFont * pFont = fonts->getNthItem(i);
-			fName = pFont->getName();
-		}
-		else
-		{
-			fName = names->getNthItem(i);
-		}
-		
-		
+		const char * fName = names->getNthItem(i);
+			
 		if (!fontHash.contains(fName, NULL))
 		{
 		    fontHash.insert(fName,
@@ -949,7 +913,6 @@ void XAP_UnixDialog_FontChooser::runModal(XAP_Frame * pFrame)
 		  }
 	}
 
-	DELETEP(fonts);
 	DELETEP(names);
 
 	// Set the defaults in the list boxes according to dialog data
@@ -1059,10 +1022,9 @@ void XAP_UnixDialog_FontChooser::runModal(XAP_Frame * pFrame)
 
 	// attach a new graphics context
 	gtk_widget_show ( cf ) ;
-	XAP_App *pApp = XAP_App::getApp();
-	//m_gc = new GR_UnixGraphics(m_preview->window, m_fontManager, pApp);
-	GR_UnixAllocInfo ai(m_preview->window, m_fontManager);
-	m_gc = (GR_UnixGraphics*) XAP_App::getApp()->newGraphics(ai);
+	
+	GR_UnixAllocInfo ai(m_preview->window);
+	m_gc = (GR_UnixPangoGraphics*) XAP_App::getApp()->newGraphics(ai);
 
 	_createFontPreviewFromGC(m_gc,m_preview->allocation.width,m_preview->allocation.height);
 //

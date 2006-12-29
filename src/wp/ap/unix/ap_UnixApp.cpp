@@ -66,7 +66,6 @@
 #include "xav_View.h"
 #include <gdk/gdk.h>
 #include "gr_Graphics.h"
-#include "gr_UnixGraphics.h"
 #include "gr_Image.h"
 #include "gr_UnixImage.h"
 #include "ut_bytebuf.h"
@@ -107,11 +106,7 @@
 #include "gr_Painter.h"
 #include "ap_Preview_Abi.h"
 #include "xap_UnixDialogHelper.h"
-
-#ifndef WITHOUT_PRINTING
-#include "xap_UnixGnomePrintGraphics.h"
 #include "gr_UnixPangoGraphics.h"
-#endif
 
 #ifdef ENABLE_BINRELOC
 #include "prefix.h"
@@ -130,7 +125,6 @@
 
 #ifndef WITHOUT_PRINTING
 #include <libart_lgpl/art_affine.h>
-#include "xap_UnixGnomePrintGraphics.h"
 #include <libgnomeprint/gnome-print.h>
 #endif
 
@@ -1124,11 +1118,11 @@ bool AP_UnixApp:: makePngPreview(const char * pszInFile, const char * pszPNGFile
 	gint attributes_mask = GDK_WA_X | GDK_WA_Y | GDK_WA_COLORMAP | GDK_WA_VISUAL;
 	GdkWindow*  pWindow = gdk_window_new (NULL, &attributes,
                                              attributes_mask);
+#if 0
 	GdkPixmap * pMap =  gdk_pixmap_new(pWindow,iWidth,iHeight,-1); 	
-
-	//GR_UnixGraphics * pG =  new GR_UnixGraphics(pMap, getFontManager(), this,true);
-	GR_UnixAllocInfo ai(pMap, getFontManager(), true);
-	GR_UnixGraphics * pG = (GR_UnixGraphics*) XAP_App::getApp()->newGraphics(ai);
+#endif
+	GR_UnixAllocInfo ai(pWindow);
+	GR_UnixPangoGraphics * pG = (GR_UnixPangoGraphics*) XAP_App::getApp()->newGraphics(ai);
 
 	pG->createCaret();
 	UT_Error error = UT_OK;
@@ -1156,7 +1150,9 @@ bool AP_UnixApp:: makePngPreview(const char * pszInFile, const char * pszPNGFile
 	DELETEP(pImage);
 	DELETEP(pG);
 	delete pWindow;
+#if 0
 	delete pMap;
+#endif
 	delete visColorMap;
 	DELETEP(pPrevAbi); // This deletes pNewDoc
 	return true;
@@ -1167,7 +1163,7 @@ bool AP_UnixApp:: makePngPreview(const char * pszInFile, const char * pszPNGFile
 
 static GtkWidget * wSplash = NULL;
 static GR_Image * pSplashImage = NULL;
-static GR_UnixGraphics * pUnixGraphics = NULL;
+static GR_UnixPangoGraphics * pUnixGraphics = NULL;
 static bool firstExpose = FALSE;
 static UT_uint32 splashTimeoutValue = 0;
 
@@ -1319,12 +1315,14 @@ GR_Image * AP_UnixApp::_showSplash(UT_uint32 delay)
 		gtk_widget_show(wSplash);
 		
 		// create image context
-		//pUnixGraphics = new GR_UnixGraphics(da->window, NULL, m_pApp);
-		GR_UnixAllocInfo ai(da->window, NULL);
-		pUnixGraphics = (GR_UnixGraphics*) XAP_App::getApp()->newGraphics(ai);
+		GR_UnixAllocInfo ai(da->window);
+		pUnixGraphics =
+			(GR_UnixPangoGraphics*) XAP_App::getApp()->newGraphics(ai);
 		
-		pSplashImage = pUnixGraphics->createNewImage("splash", pBB, pUnixGraphics->tlu(iSplashWidth), 
-													 pUnixGraphics->tlu(iSplashHeight));
+		pSplashImage =
+			pUnixGraphics->createNewImage("splash", pBB,
+										  pUnixGraphics->tlu(iSplashWidth), 
+										  pUnixGraphics->tlu(iSplashHeight));
 
 		// another for luck (to bring it up forward and paint)
 		gtk_widget_show(wSplash);
@@ -1349,7 +1347,7 @@ GR_Graphics * AP_UnixApp::newDefaultScreenGraphics() const
 	GtkWidget * da = pFI->getDrawingArea();
 	UT_return_val_if_fail( da, NULL );
 	
-	GR_UnixAllocInfo ai(da->window, getFontManager());
+	GR_UnixAllocInfo ai(da->window);
 	return XAP_App::getApp()->newGraphics(ai);
 }
 
@@ -1666,18 +1664,11 @@ bool AP_UnixApp::doWindowlessArgs(const AP_Args *Args, bool & bSuccess)
 									   reinterpret_cast<const guchar*>(Args->m_sPrintTo));
 				gnome_print_config_set(config, reinterpret_cast<const guchar*>("Printer"), reinterpret_cast<const guchar*>(Args->m_sPrintTo));
 			}
-			GR_Graphics *print_graphics;
-			XAP_UnixGnomePrintGraphics * gnome_print_graphics;
+			GR_UnixPangoPrintGraphics * print_graphics;
 
-			gnome_print_graphics = new XAP_UnixGnomePrintGraphics(job);
-#if defined(USE_PANGO)
-			if(iDefaultPrintClass == GRID_UNIX_PANGO_PRINT || iDefaultPrintClass == GRID_UNIX_PANGO)
-				print_graphics = new GR_UnixPangoPrintGraphics(gnome_print_graphics);
-			else
-#endif
-				print_graphics = gnome_print_graphics;
-
-			bSuccess = conv.print (Args->m_sFile, print_graphics, Args->m_sFileExtension);
+			print_graphics = new GR_UnixPangoPrintGraphics(job);
+			bSuccess = conv.print (Args->m_sFile, print_graphics,
+								   Args->m_sFileExtension);
 
 			delete print_graphics;
 	    }
@@ -1818,20 +1809,6 @@ bool AP_UnixApp::doWindowlessArgs(const AP_Args *Args, bool & bSuccess)
 				sCommandLine += " ";
 				iCount++;
 		}
-		if(!getFontManager())
-			{
-				/*
-				   need to temporarily set the Unix graphics as default to
-				   force the font loading
-				*/
-				GR_GraphicsFactory * pGF = getGraphicsFactory();
-				UT_return_val_if_fail( pGF, false );
-
-				UT_uint32 iGrId = pGF->getDefaultClass(true /*screen*/);
-				pGF->registerAsDefault(GRID_UNIX_NULL, true);
-				_loadFonts();
-				pGF->registerAsDefault(iGrId, true);
-			}
 	
 		ev_EditMethod_invoke(pInvoke, sCommandLine);
 		return false;

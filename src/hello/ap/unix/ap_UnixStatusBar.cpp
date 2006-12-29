@@ -23,7 +23,6 @@
 #include "ut_debugmsg.h"
 #include "xap_Frame.h"
 #include "xap_UnixFrame.h"
-#include "gr_UnixGraphics.h"
 #include "ap_UnixStatusBar.h"
 
 //////////////////////////////////////////////////////////////////
@@ -50,10 +49,8 @@ void AP_UnixStatusBar::setView(AV_View * pView)
 
 	DELETEP(m_pG);	
 	XAP_UnixApp * app = static_cast<XAP_UnixApp *>(m_pFrame->getApp());
-	XAP_UnixFontManager * fontManager = app->getFontManager();
-	//GR_UnixGraphics * pG = new GR_UnixGraphics(m_wStatusBar->window, fontManager, getApp());
-	GR_UnixAllocInfo ai(m_wStatusBar->window, fontManager);
-	GR_UnixGraphics* pG = (GR_UnixGraphics*) XAP_App::getApp()->newGraphics(ai);
+	GR_UnixAllocInfo ai(m_wStatusBar->window);
+	GR_UnixPangoGraphics* pG = (GR_UnixPangoGraphics*) XAP_App::getApp()->newGraphics(ai);
 
 	m_pG = pG;
 	UT_ASSERT(m_pG);

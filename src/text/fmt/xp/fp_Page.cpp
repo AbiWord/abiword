@@ -1,3 +1,4 @@
+/* -*- mode: C++; tab-width: 4; c-basic-offset: 4; -*- */
 /* AbiWord
  * Copyright (C) 1998-2000 AbiSource, Inc.
  *
@@ -998,6 +999,7 @@ void fp_Page::draw(dg_DrawArgs* pDA, bool bAlwaysUseWhiteBackground)
 			xxx_UT_DEBUGMSG(("Draw in page page X offset %d \n",pDA->xoff));
 			da.xoff += pCol->getX();
 			da.yoff += pCol->getY(pDA->pG);
+
 			xxx_UT_DEBUGMSG(("Draw in page col X offset %d \n",da.xoff));
 			pCol->draw(&da);
 
@@ -1438,7 +1440,8 @@ void fp_Page::updateColumnX()
 		UT_ASSERT(pLeader->getContainerType() == FP_CONTAINER_COLUMN);
 		fl_DocSectionLayout* pSL = (pLeader->getDocSectionLayout());
 
-		if(m_pView->getViewMode() == VIEW_NORMAL)
+		if(m_pView->getViewMode() == VIEW_NORMAL &&
+		   !m_pLayout->getGraphics()->queryProperties(GR_Graphics::DGP_PAPER))
 		{
 			iLeftMargin = m_pView->getNormalModeXOffset();
 			iRightMargin = 0;
@@ -1546,7 +1549,8 @@ void fp_Page::_reformatColumns(void)
 		UT_ASSERT(pLeader->getContainerType() == FP_CONTAINER_COLUMN);
 		fl_DocSectionLayout* pSL = (pLeader->getDocSectionLayout());
 
-		if(m_pView->getViewMode() == VIEW_NORMAL &&  !m_pLayout->getGraphics()->queryProperties(GR_Graphics::DGP_PAPER) )
+		if(m_pView->getViewMode() == VIEW_NORMAL &&
+		   !m_pLayout->getGraphics()->queryProperties(GR_Graphics::DGP_PAPER))
 		{
 			iLeftMargin = m_pView->getNormalModeXOffset();
 			iRightMargin = 0;
@@ -1723,7 +1727,8 @@ void fp_Page::_reformatFootnotes(void)
 		fp_FootnoteContainer * pFC = getNthFootnoteContainer(i);
 		fl_DocSectionLayout* pSL = (getNthColumnLeader(0)->getDocSectionLayout());
 
-		if(m_pView->getViewMode() == VIEW_NORMAL)
+		if(m_pView->getViewMode() == VIEW_NORMAL &&
+		   !m_pLayout->getGraphics()->queryProperties(GR_Graphics::DGP_PAPER))
 			pFC->setX(m_pView->getTabToggleAreaWidth());
 		else
 			pFC->setX(pSL->getLeftMargin());

@@ -32,7 +32,6 @@
 #include "ut_vector.h"
 #include "ut_hash.h"
 
-#include "gr_UnixGraphics.h"
 #include "gr_UnixPangoGraphics.h"
 
 // This header defines some functions for Unix dialogs,
@@ -43,9 +42,6 @@
 #include "xap_UnixApp.h"
 #include "xap_Frame.h"
 #include "xap_UnixFrameImpl.h"
-
-#include "xap_UnixFont.h"
-#include "xap_UnixFontManager.h"
 
 #include "xap_Dialog_Id.h"
 #include "xap_Dlg_Insert_Symbol.h"
@@ -140,9 +136,9 @@ void XAP_UnixDialog_Insert_Symbol::runModeless(XAP_Frame * pFrame)
 	DELETEP (m_unixGraphics);
 	
 	{
-		//m_unixGraphics = new GR_UnixGraphics(m_SymbolMap->window, unixapp->getFontManager(), m_pApp);
-		GR_UnixAllocInfo ai(m_SymbolMap->window, unixapp->getFontManager());
-		m_unixGraphics = (GR_UnixGraphics*) XAP_App::getApp()->newGraphics(ai);
+		GR_UnixAllocInfo ai(m_SymbolMap->window);
+		m_unixGraphics =
+			(GR_UnixPangoGraphics*) XAP_App::getApp()->newGraphics(ai);
 	}
 	// let the widget materialize
 	_createSymbolFromGC(m_unixGraphics,
@@ -155,9 +151,9 @@ void XAP_UnixDialog_Insert_Symbol::runModeless(XAP_Frame * pFrame)
 	// make a new Unix GC
 	DELETEP (m_unixarea);
     {
-		//m_unixarea = new GR_UnixGraphics(m_areaCurrentSym->window, unixapp->getFontManager(), m_pApp);
-		GR_UnixAllocInfo ai(m_areaCurrentSym->window, unixapp->getFontManager());
-		m_unixarea = (GR_UnixGraphics*) XAP_App::getApp()->newGraphics(ai);
+		GR_UnixAllocInfo ai(m_areaCurrentSym->window);
+		m_unixarea =
+			(GR_UnixPangoGraphics*) XAP_App::getApp()->newGraphics(ai);
 	}
 	// let the widget materialize
 	_createSymbolareaFromGC(m_unixarea,
@@ -441,7 +437,7 @@ void XAP_UnixDialog_Insert_Symbol::SymbolMap_clicked( GdkEvent * event)
 	UT_uint32 x,y;
 	x = static_cast<UT_uint32>(event->button.x);
 	y = static_cast<UT_uint32>(event->button.y);
-	
+
 	XAP_Draw_Symbol * iDrawSymbol = _getCurrentSymbolMap();
 	UT_return_if_fail(iDrawSymbol);
 	m_PreviousSymbol = m_CurrentSymbol;
@@ -562,26 +558,13 @@ GList *XAP_UnixDialog_Insert_Symbol::_getGlistFonts (void)
 		return NULL;
 	}
 
-	UT_uint32 iGR = pGF->getDefaultClass(true);
-	
-	UT_GenericVector<XAP_UnixFont*>* fonts = NULL;
 	UT_GenericVector<const char*>* names = NULL;
 	UT_uint32 iCount = 0;
 	
-	if(iGR != GRID_UNIX_PANGO)
-	{
-		fonts = XAP_UnixFontManager::pFontManager->getAllFonts();
-		UT_return_val_if_fail( fonts,false );
-		iCount = fonts->size();
-	}
-#ifdef USE_PANGO
-	else
-	{
-		names = GR_UnixPangoGraphics::getAllFontNames();
-		UT_return_val_if_fail( names, false );
-		iCount = names->size();
-	}
-#endif
+	names = GR_UnixPangoGraphics::getAllFontNames();
+	UT_return_val_if_fail( names, false );
+	iCount = names->size();
+		
 	GList *glFonts = NULL;
 	UT_String currentfont;
 	UT_uint32 j = 0;
@@ -589,17 +572,10 @@ GList *XAP_UnixDialog_Insert_Symbol::_getGlistFonts (void)
 	for (UT_uint32 i = 0; i < iCount; i++)
 	{
 		const gchar * lgn = NULL;
-		if(iGR != GRID_UNIX_PANGO)
-		{
-			XAP_UnixFont * pFont = fonts->getNthItem(i);
-			lgn = static_cast<const gchar *>(pFont->getName());
-		}
-		else
-		{
-			lgn = static_cast<const gchar *>(names->getNthItem(i));
-		}
+		lgn = static_cast<const gchar *>(names->getNthItem(i));
 		
-		if((strstr(currentfont.c_str(),lgn)==NULL) || (currentfont.size() !=strlen(lgn)) )
+		if((strstr(currentfont.c_str(),lgn)==NULL) ||
+		   (currentfont.size() !=strlen(lgn)) )
 		{
 			currentfont = lgn;
 			m_fontlist.addItem(static_cast<gchar*>(UT_strdup(currentfont.c_str())));
@@ -610,7 +586,6 @@ GList *XAP_UnixDialog_Insert_Symbol::_getGlistFonts (void)
 
 	m_Insert_Symbol_no_fonts = j;
 
-	DELETEP(fonts);
 	DELETEP(names);
 	return g_list_reverse(glFonts);
 }

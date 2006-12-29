@@ -33,14 +33,6 @@
 
 #include "gr_UnixNullGraphics.h"
 
-#ifndef WITHOUT_PRINTING
-#  include "xap_UnixPSFont.h"
-#  include "xap_UnixPSImage.h"
-#endif
-
-#include "xap_UnixFont.h"
-#include "xap_UnixFontManager.h"
-#include "xap_UnixFontXLFD.h"
 #include "xap_EncodingManager.h"
 #include "ut_OverstrikingChars.h"
 

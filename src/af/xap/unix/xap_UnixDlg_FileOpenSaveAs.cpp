@@ -51,12 +51,12 @@
 #include "ut_png.h"
 #include "ut_svg.h"
 #include "ut_misc.h"
-#include "gr_UnixGraphics.h"
 #include "fg_Graphic.h"
 #include "fg_GraphicRaster.h"
 
 #include "gr_UnixImage.h"
 #include "gr_Painter.h"
+#include "gr_UnixPangoGraphics.h"
 
 #ifdef HAVE_HILDON
 #include <hildon-widgets/hildon-file-chooser-dialog.h>
@@ -195,7 +195,6 @@ bool XAP_UnixDialog_FileOpenSaveAs::_run_gtk_main(XAP_Frame * pFrame,
 	char * szFinalPathnameCopy = NULL;	// one to mangle when looking for dirs, etc.
 
 	char * pLastSlash;
-	int err;
 
 	// if m_bSave is not set, we're looking to OPEN a file.
 	// otherwise we are looking to SAVE a file.
@@ -391,7 +390,6 @@ bool XAP_UnixDialog_FileOpenSaveAs::_run_gtk_main(XAP_Frame * pFrame,
 	
 			_notifyError_OKOnly(pFrame,XAP_STRING_ID_DLG_NoSaveFile_DirNotWriteable,
 								szFinalPathname);
-		ContinueLoop:
 			FREEP(szFinalPathnameCopy);
 		}
 	} /* if m_bSave */
@@ -901,9 +899,9 @@ gint XAP_UnixDialog_FileOpenSaveAs::previewPicture (void)
 	UT_return_val_if_fail( pSS, 0 );
 	
 	// attach and clear the area immediately
-	//GR_UnixGraphics* pGr = new GR_UnixGraphics(m_preview->window, unixapp->getFontManager(), m_pApp);
-	GR_UnixAllocInfo ai(m_preview->window, unixapp->getFontManager());
-	GR_UnixGraphics* pGr = (GR_UnixGraphics*) XAP_App::getApp()->newGraphics(ai);
+	GR_UnixAllocInfo ai(m_preview->window);
+	GR_UnixPangoGraphics* pGr =
+		(GR_UnixPangoGraphics*) XAP_App::getApp()->newGraphics(ai);
 
 	const gchar * file_name = gtk_file_chooser_get_uri (m_FC);
 	

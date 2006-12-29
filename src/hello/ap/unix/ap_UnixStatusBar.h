@@ -26,7 +26,6 @@
 #include <gtk/gtk.h>
 #include "ut_types.h"
 #include "ap_StatusBar.h"
-#include "gr_UnixGraphics.h"
 class XAP_Frame;
 
 //////////////////////////////////////////////////////////////////

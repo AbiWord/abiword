@@ -37,7 +37,6 @@
 #include "xap_Frame.h"
 #include "xap_UnixFrameImpl.h"
 #include "xap_EncodingManager.h"
-#include "gr_UnixGraphics.h"
 
 //
 // For Screen color picker

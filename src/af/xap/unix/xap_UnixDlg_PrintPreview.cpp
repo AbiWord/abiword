@@ -24,12 +24,14 @@
 #include "ut_assert.h"
 #include "xap_Dialog_Id.h"
 #include "xap_DialogFactory.h"
-#include "xap_UnixApp.h"
+#include "xap_Frame.h"
 
+#include "xap_UnixApp.h"
 #include "xap_UnixDlg_PrintPreview.h"
-#include "xap_UnixGnomePrintGraphics.h"
 
 #include "gr_UnixPangoGraphics.h"
+
+#include "fv_View.h"
 
 class XAP_UnixFontManager;
 
@@ -60,33 +62,29 @@ GR_Graphics * XAP_UnixDialog_PrintPreview::getPrinterGraphicsContext(void)
 
 void XAP_UnixDialog_PrintPreview::runModal(XAP_Frame * pFrame) 
 {
-	GR_GraphicsFactory * pGF = XAP_App::getApp()->getGraphicsFactory();
-	UT_return_if_fail( pGF );
-	
-	UT_uint32 iDefaultPrintClass = pGF->getDefaultClass(false);
+	double mrgnTop, mrgnBottom, mrgnLeft, mrgnRight, width, height;
+	bool portrait;
 
-	XAP_UnixGnomePrintGraphics * pGPG
-		= new XAP_UnixGnomePrintGraphics(gnome_print_job_new(XAP_UnixGnomePrintGraphics::s_setup_config(pFrame)), true);
-	
-	UT_return_if_fail(pGPG != NULL);
-	
-	pGPG->setColorSpace(GR_Graphics::GR_COLORSPACE_COLOR);
+	FV_View * pView = static_cast<FV_View*>(pFrame->getCurrentView());
 
-#if defined(USE_PANGO)
-	GR_UnixPangoPrintGraphics * pPPG = NULL;
-	
-	if(iDefaultPrintClass == GRID_UNIX_PANGO_PRINT || iDefaultPrintClass == GRID_UNIX_PANGO)
-	{
-		pPPG = new GR_UnixPangoPrintGraphics(pGPG);
-	}
+	mrgnTop = pView->getPageSize().MarginTop(DIM_MM);
+	mrgnBottom = pView->getPageSize().MarginBottom(DIM_MM);
+	mrgnLeft = pView->getPageSize().MarginLeft(DIM_MM);
+	mrgnRight = pView->getPageSize().MarginRight(DIM_MM);
 
-	if(pPPG)
-	{
-		m_pPrintGraphics = pPPG;
-	}
-	else
-#endif
-	{
-		m_pPrintGraphics = pGPG;
-	}
+	portrait = pView->getPageSize().isPortrait();
+	
+	width = pView->getPageSize().Width (DIM_MM);
+	height = pView->getPageSize().Height (DIM_MM);
+
+	GnomePrintJob * job =
+	    gnome_print_job_new(GR_UnixPangoPrintGraphics::s_setup_config (
+				    mrgnTop, mrgnBottom, mrgnLeft, mrgnRight,
+				    width, height, 1, portrait));
+	
+	m_pPrintGraphics = new GR_UnixPangoPrintGraphics(job, true);
+
+	UT_return_if_fail( m_pPrintGraphics );
+	
+	m_pPrintGraphics->setColorSpace(GR_Graphics::GR_COLORSPACE_COLOR);
 }

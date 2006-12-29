@@ -27,8 +27,6 @@
 #include "ap_UnixToolbar_StyleCombo.h"
 #include "ap_Toolbar_Id.h"
 #include "xap_Frame.h"
-#include "xap_UnixFontManager.h"
-#include "xap_UnixFont.h"
 #include "pd_Style.h"
 #include "xad_Document.h"
 #include "xap_App.h"
@@ -142,23 +140,10 @@ bool AP_UnixToolbar_StyleCombo::repopulate(void)
 	// defaults for style combo
 	if (m_pDefaultDesc == NULL)
 	{
-		if(iGR != GRID_UNIX_PANGO)
-		{
-			XAP_UnixFont *pDefaultFont = XAP_UnixFontManager::pFontManager->getDefaultFont ();
-			m_pDefaultDesc = pango_font_description_new ();
-			pango_font_description_set_family (m_pDefaultDesc, pDefaultFont->getName ());
-			// TODO hardcoded default size
-			pango_font_description_set_size (m_pDefaultDesc, 12 * PANGO_SCALE);
-			pango_font_description_set_style (m_pDefaultDesc, pDefaultFont->getPangoStyle ());
-			pango_font_description_set_weight (m_pDefaultDesc, pDefaultFont->getPangoWeight ());
-		}
-		else
-		{
-			// for now this is hardcoded
-			m_pDefaultDesc = pango_font_description_new ();
-			pango_font_description_set_family (m_pDefaultDesc, "Times");
-			pango_font_description_set_size (m_pDefaultDesc, 12 * PANGO_SCALE);
-		}
+		// for now this is hardcoded
+		m_pDefaultDesc = pango_font_description_new ();
+		pango_font_description_set_family (m_pDefaultDesc, "Times");
+		pango_font_description_set_size (m_pDefaultDesc, 12 * PANGO_SCALE);
 	}
 
 	const char * szName;

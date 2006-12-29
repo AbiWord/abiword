@@ -30,7 +30,6 @@
 #include "ut_misc.h"
 
 class XAP_Frame;
-class GR_UnixGraphics;
 
 /*****************************************************************/
 

@@ -23,9 +23,14 @@
 #include "xap_App.h"
 #include "xap_Prefs.h"
 #include "xap_EncodingManager.h"
+#include "xap_Strings.h"
+#include "xap_Frame.h"
 
 #include "xap_UnixApp.h"
-#include "xap_UnixFontManager.h"
+#include "xap_UnixFrameImpl.h"
+#include "xap_UnixDialogHelper.h"
+
+#include "gr_UnixImage.h"
 
 #include "ut_debugmsg.h"
 #include "ut_misc.h"
@@ -46,15 +51,24 @@
 #include <math.h>
 
 #include <gdk/gdk.h>
+#include <gdk/gdkx.h>
 
 #ifndef WITHOUT_PRINTING
 #include <libgnomeprint/gnome-print-pango.h>
+#include <libgnomeprint/gnome-print-paper.h>
+#include <libgnomeprintui/gnome-print-job-preview.h>
 #endif
 
-// found in xap_UnixFont.cpp
-extern float fontPoints2float(UT_uint32 iSize,
-							  FT_Face pFace,
-							  UT_uint32 iFontPoints);
+UT_uint32 adobeDingbatsToUnicode(UT_uint32 iAdobe);
+UT_uint32 adobeToUnicode(UT_uint32 iAdobe);
+
+float fontPoints2float(UT_uint32 iSize, FT_Face pFace, UT_uint32 iFontPoints)
+{
+	if(pFace == NULL)
+		return 0.0;
+	return (UT_sint32)iFontPoints * (UT_sint32)iSize * 1.0 /
+		pFace->units_per_EM;
+}
 
 UT_uint32      GR_UnixPangoGraphics::s_iInstanceCount = 0;
 UT_VersionInfo GR_UnixPangoGraphics::s_Version;
@@ -205,35 +219,45 @@ bool GR_UnixPangoRenderInfo::getUTF8Text()
 	return true;
 }
 
-/* taken from gnomeprint */
-static void
-xft_substitute_func (FcPattern *pattern, gpointer   data)
-{
-	FcPatternDel (pattern, FC_HINTING);
-	FcPatternAddBool (pattern, FC_HINTING, FALSE);
-}
-
 GR_UnixPangoGraphics::GR_UnixPangoGraphics(GdkWindow * win)
-	:GR_UnixGraphics(win, NULL),
+	:
 	 m_pFontMap(NULL),
 	 m_pContext(NULL),
 	 m_bOwnsFontMap(false),
 	 m_pPFont(NULL),
 	 m_pPFontGUI(NULL),
-	 m_iDeviceResolution(96)
+	 m_iDeviceResolution(96),
+	 m_pWin (win),
+ 	 m_pGC (NULL),
+	 m_pXORGC (NULL),
+	 m_pVisual (NULL),
+	 m_pXftDraw (NULL),
+	 m_iXoff (0),
+	 m_iYoff (0),
+	 m_bIsSymbol (false),
+	 m_bIsDingbat (false)
 {
 	init ();
 }
 
 
 GR_UnixPangoGraphics::GR_UnixPangoGraphics()
-	:GR_UnixGraphics(NULL, NULL),
+	:
 	 m_pFontMap(NULL),
 	 m_pContext(NULL),
 	 m_bOwnsFontMap(false),
 	 m_pPFont(NULL),
 	 m_pPFontGUI(NULL),
-	 m_iDeviceResolution(96)
+	 m_iDeviceResolution(96),
+	 m_pWin (NULL),
+ 	 m_pGC (NULL),
+	 m_pXORGC (NULL),
+	 m_pVisual (NULL),
+	 m_pXftDraw (NULL),
+	 m_iXoff (0),
+	 m_iYoff (0),
+	 m_bIsSymbol (false),
+	 m_bIsDingbat (false)
 {
 	init ();
 }
@@ -248,67 +272,443 @@ GR_UnixPangoGraphics::~GR_UnixPangoGraphics()
 
 	_destroyFonts();
 	delete m_pPFontGUI;
+
+	if (m_pXftDraw)
+		free(m_pXftDraw);
+
+	UT_VECTOR_SPARSEPURGEALL( UT_Rect*, m_vSaveRect);
+
+	// purge saved pixbufs
+	for (UT_uint32 i = 0; i < m_vSaveRectBuf.size (); i++)
+	{
+		GdkPixbuf * pix = static_cast<GdkPixbuf *>(m_vSaveRectBuf.getNthItem(i));
+		g_object_unref (G_OBJECT (pix));
+	}
+
+	if (G_IS_OBJECT(m_pGC))
+		g_object_unref (G_OBJECT(m_pGC));
+	if (G_IS_OBJECT(m_pXORGC))
+		g_object_unref (G_OBJECT(m_pXORGC));
+	
 }
 
 void GR_UnixPangoGraphics::init()
 {
-	GdkWindow * win = getWindow();
 	xxx_UT_DEBUGMSG(("Initializing UnixPangoGraphics %x \n",this));
-	GdkDisplay * gDisplay;
-	GdkScreen *  gScreen;
+	GdkDisplay * gDisplay = NULL;
+	GdkScreen *  gScreen = NULL;
 
-	if (win)
-		{
-			gDisplay = gdk_drawable_get_display(win);
-			gScreen = gdk_drawable_get_screen(win);
-		}
+	if (m_pWin)
+	{
+		m_pColormap = gdk_rgb_get_colormap();
+		m_Colormap = GDK_COLORMAP_XCOLORMAP(m_pColormap);
+
+		gDisplay = gdk_drawable_get_display(m_pWin);
+		gScreen = gdk_drawable_get_screen(m_pWin);
+
+		GdkDrawable * realDraw;
+		gdk_window_get_internal_paint_info (m_pWin, &realDraw,
+											&m_iXoff, &m_iYoff);
+
+		//
+		// Martin's attempt to make double buffering work.with xft
+		//
+		m_pGC = gdk_gc_new(realDraw);
+		m_pXORGC = gdk_gc_new(realDraw);
+		m_pVisual = GDK_VISUAL_XVISUAL( gdk_drawable_get_visual(realDraw));
+		m_Drawable = gdk_x11_drawable_get_xid(realDraw);
+
+		m_pXftDraw = XftDrawCreate(GDK_DISPLAY(), m_Drawable,
+								   m_pVisual, m_Colormap);
+			
+		gdk_gc_set_function(m_pXORGC, GDK_XOR);
+
+		GdkColor clrWhite;
+		clrWhite.red = clrWhite.green = clrWhite.blue = 65535;
+		gdk_colormap_alloc_color (m_pColormap, &clrWhite, FALSE, TRUE);
+		gdk_gc_set_foreground(m_pXORGC, &clrWhite);
+
+		GdkColor clrBlack;
+		clrBlack.red = clrBlack.green = clrBlack.blue = 0;
+		gdk_colormap_alloc_color (m_pColormap, &clrBlack, FALSE, TRUE);
+		gdk_gc_set_foreground(m_pGC, &clrBlack);
+
+		m_XftColor.color.red = clrBlack.red;
+		m_XftColor.color.green = clrBlack.green;
+		m_XftColor.color.blue = clrBlack.blue;
+		m_XftColor.color.alpha = 0xffff;
+		m_XftColor.pixel = clrBlack.pixel;
+
+		// I only want to set CAP_NOT_LAST, but the call takes all
+		// arguments (and doesn't have a default value).  Set the
+		// line attributes to not draw the last pixel.
+
+		// We force the line width to be zero because the CAP_NOT_LAST
+		// stuff does not seem to work correctly when the width is set
+		// to one.
+
+		gdk_gc_set_line_attributes(m_pGC, 0,
+								   GDK_LINE_SOLID,
+								   GDK_CAP_NOT_LAST,
+								   GDK_JOIN_MITER);
+			
+		gdk_gc_set_line_attributes(m_pXORGC, 0,
+								   GDK_LINE_SOLID,
+								   GDK_CAP_NOT_LAST,
+								   GDK_JOIN_MITER);
+
+		// Set GraphicsExposes so that XCopyArea() causes an expose on
+		// obscured regions rather than just tiling in the default background.
+		gdk_gc_set_exposures(m_pGC, 1);
+		gdk_gc_set_exposures(m_pXORGC, 1);
+
+		m_cs = GR_Graphics::GR_COLORSPACE_COLOR;
+		m_cursor = GR_CURSOR_INVALID;
+		setCursor(GR_CURSOR_DEFAULT);
+		
+	}
 	else
-		{
-			gDisplay = gdk_display_get_default();
-			gScreen = gdk_screen_get_default();
-		}
+	{
+		gDisplay = gdk_display_get_default();
+		gScreen = gdk_screen_get_default();
+	}
 
+	
+	m_bIsSymbol = false;
+	m_bIsDingbat = false;
+
+	bool bGotResolution = false;
+	
 	if (gScreen && gDisplay)
 		{
 			int iScreen = gdk_x11_screen_get_screen_number(gScreen);
 			Display * disp = GDK_DISPLAY_XDISPLAY(gDisplay);
 			m_pContext = pango_xft_get_context(disp, iScreen);
 			m_pFontMap = pango_xft_get_font_map(disp, iScreen);
+
+			FcPattern *pattern = FcPatternCreate();
+			if (pattern)
+			{
+				double dpi;
+				XftDefaultSubstitute (GDK_SCREEN_XDISPLAY (gScreen),
+									  iScreen,
+									  pattern);
+
+				if(FcResultMatch == FcPatternGetDouble (pattern,
+														FC_DPI, 0, &dpi))
+				{
+					m_iDeviceResolution = (UT_uint32)round(dpi);
+					bGotResolution = true;
+				}
+
+				FcPatternDestroy (pattern);
+			}
+			
+			if (!bGotResolution)
+			{
+				// that didn't work. try getting it from the screen
+				m_iDeviceResolution =
+					(UT_uint32)round((gdk_screen_get_width(gScreen) * 25.4) /
+									 gdk_screen_get_width_mm (gScreen));
+			}
+
+			UT_DEBUGMSG(("@@@@@@@@@@@@@ retrieved DPI %d @@@@@@@@@@@@@@@@@ \n",
+						 m_iDeviceResolution));
+			
 		}
 #ifdef HAVE_PANGOFT2
 	else
-		{
-			m_pContext = pango_ft2_get_context(m_iDeviceResolution, m_iDeviceResolution);
-			m_pFontMap = pango_ft2_font_map_new ();
-			m_bOwnsFontMap = true;
-		}
+	{
+		m_iDeviceResolution = 72;
+		m_pContext = pango_ft2_get_context(m_iDeviceResolution,
+										   m_iDeviceResolution);
+		m_pFontMap = pango_ft2_font_map_new ();
+		m_bOwnsFontMap = true;
+	}
 #endif
+}
 
-	_setIsSymbol(false);
-	_setIsDingbat(false);
+bool GR_UnixPangoGraphics::queryProperties(GR_Graphics::Properties gp) const
+{
+	switch (gp)
+	{
+		case DGP_SCREEN:
+		case DGP_OPAQUEOVERLAY:
+			return true;
+		case DGP_PAPER:
+			return false;
+		default:
+			UT_ASSERT(0);
+			return false;
+	}
 }
 
 GR_Graphics *   GR_UnixPangoGraphics::graphicsAllocator(GR_AllocInfo& info)
 {
 	UT_return_val_if_fail(info.getType() == GRID_UNIX, NULL);
 	xxx_UT_DEBUGMSG(("GR_UnixPangoGraphics::graphicsAllocator\n"));
-	
+
+	UT_return_val_if_fail(!info.isPrinterGraphics(), NULL);
 	GR_UnixAllocInfo &AI = (GR_UnixAllocInfo&)info;
 
-	//!!!WDG might be right
-	if(AI.m_usePixmap || AI.m_pixmap)
+	return new GR_UnixPangoGraphics(AI.m_win);
+}
+
+void GR_UnixPangoGraphics::scroll(UT_sint32 dx, UT_sint32 dy)
+{
+	GR_CaretDisabler caretDisabler(getCaret());
+	UT_sint32 oldDY = tdu(getPrevYOffset());
+	UT_sint32 oldDX = tdu(getPrevXOffset());
+	UT_sint32 newY = getPrevYOffset() + dy;
+	UT_sint32 newX = getPrevXOffset() + dx;
+	UT_sint32 ddx = -(tdu(newX) - oldDX);
+	UT_sint32 ddy = -(tdu(newY) - oldDY);
+	setPrevYOffset(newY);
+	setPrevXOffset(newX);
+	if(ddx == 0 && ddy == 0)
 	{
-		// printer graphics required This class does not provide printing
-		// services -- we need a separate derrived class for that
-		UT_ASSERT_HARMLESS( UT_SHOULD_NOT_HAPPEN );
-		return NULL;
+		return;
+	}
+	UT_sint32 iddy = labs(ddy);
+	bool bEnableSmooth = XAP_App::getApp()->isSmoothScrollingEnabled();
+	bEnableSmooth = bEnableSmooth && (iddy < 30) && (ddx == 0);
+	if(bEnableSmooth)
+	{
+		if(ddy < 0)
+		{
+			UT_sint32 i = 0;
+			for(i = 0; i< iddy; i++)
+			{
+				gdk_window_scroll(m_pWin,0,-1);
+			}
+		}
+		else
+		{
+			UT_sint32 i = 0;
+			for(i = 0; i< iddy; i++)
+			{
+				gdk_window_scroll(m_pWin,0,1);
+			}
+		}
 	}
 	else
 	{
-		// screen graphics required
-		return new GR_UnixPangoGraphics(AI.m_win);
+		gdk_window_scroll(m_pWin,ddx,ddy);
 	}
+	setExposePending(true);
 }
+
+bool GR_UnixPangoGraphics::startPrint(void)
+{
+	UT_ASSERT(0);
+	return false;
+}
+
+bool GR_UnixPangoGraphics::startPage(const char * /*szPageLabel*/, UT_uint32 /*pageNumber*/,
+								bool /*bPortrait*/, UT_uint32 /*iWidth*/, UT_uint32 /*iHeight*/)
+{
+	UT_ASSERT(0);
+	return false;
+}
+
+bool GR_UnixPangoGraphics::endPrint(void)
+{
+	UT_ASSERT(0);
+	return false;
+}
+
+void GR_UnixPangoGraphics::drawGlyph(UT_uint32 Char, UT_sint32 xoff, UT_sint32 yoff)
+{
+	drawChars(&Char, 0, 1, xoff, yoff, NULL);
+}
+
+void GR_UnixPangoGraphics::setColorSpace(GR_Graphics::ColorSpace /* c */)
+{
+	// we only use ONE color space here now (GdkRGB's space)
+	// and we don't let people change that on us.
+	UT_ASSERT(UT_SHOULD_NOT_HAPPEN);
+}
+
+GR_Graphics::ColorSpace GR_UnixPangoGraphics::getColorSpace(void) const
+{
+	return m_cs;
+}
+
+void GR_UnixPangoGraphics::setCursor(GR_Graphics::Cursor c)
+{
+	if (m_cursor == c)
+		return;
+
+	m_cursor = c;
+
+	GdkCursorType cursor_number;
+
+	switch (c)
+	{
+	default:
+		UT_ASSERT(UT_NOT_IMPLEMENTED);
+		/*FALLTHRU*/
+	case GR_CURSOR_DEFAULT:
+		cursor_number = GDK_LEFT_PTR;
+		break;
+
+	case GR_CURSOR_IBEAM:
+		cursor_number = GDK_XTERM;
+		break;
+
+	//I have changed the shape of the arrow so get a consistent
+	//behaviour in the bidi build; I think the new arrow is better
+	//for the purpose anyway
+
+	case GR_CURSOR_RIGHTARROW:
+		cursor_number = GDK_SB_RIGHT_ARROW; //GDK_ARROW;
+		break;
+
+	case GR_CURSOR_LEFTARROW:
+		cursor_number = GDK_SB_LEFT_ARROW; //GDK_LEFT_PTR;
+		break;
+
+	case GR_CURSOR_IMAGE:
+		cursor_number = GDK_FLEUR;
+		break;
+
+	case GR_CURSOR_IMAGESIZE_NW:
+		cursor_number = GDK_TOP_LEFT_CORNER;
+		break;
+
+	case GR_CURSOR_IMAGESIZE_N:
+		cursor_number = GDK_TOP_SIDE;
+		break;
+
+	case GR_CURSOR_IMAGESIZE_NE:
+		cursor_number = GDK_TOP_RIGHT_CORNER;
+		break;
+
+	case GR_CURSOR_IMAGESIZE_E:
+		cursor_number = GDK_RIGHT_SIDE;
+		break;
+
+	case GR_CURSOR_IMAGESIZE_SE:
+		cursor_number = GDK_BOTTOM_RIGHT_CORNER;
+		break;
+
+	case GR_CURSOR_IMAGESIZE_S:
+		cursor_number = GDK_BOTTOM_SIDE;
+		break;
+
+	case GR_CURSOR_IMAGESIZE_SW:
+		cursor_number = GDK_BOTTOM_LEFT_CORNER;
+		break;
+
+	case GR_CURSOR_IMAGESIZE_W:
+		cursor_number = GDK_LEFT_SIDE;
+		break;
+
+	case GR_CURSOR_LEFTRIGHT:
+		cursor_number = GDK_SB_H_DOUBLE_ARROW;
+		break;
+
+	case GR_CURSOR_UPDOWN:
+		cursor_number = GDK_SB_V_DOUBLE_ARROW;
+		break;
+
+	case GR_CURSOR_EXCHANGE:
+		cursor_number = GDK_EXCHANGE;
+		break;
+
+	case GR_CURSOR_GRAB:
+		cursor_number = GDK_HAND1;
+		break;
+
+	case GR_CURSOR_LINK:
+		cursor_number = GDK_HAND2;
+		break;
+
+	case GR_CURSOR_WAIT:
+		cursor_number = GDK_WATCH;
+		break;
+
+	case GR_CURSOR_HLINE_DRAG:
+		cursor_number = GDK_SB_V_DOUBLE_ARROW;
+		break;
+
+	case GR_CURSOR_VLINE_DRAG:
+		cursor_number = GDK_SB_H_DOUBLE_ARROW;
+		break;
+
+	case GR_CURSOR_CROSSHAIR:
+		cursor_number = GDK_CROSSHAIR;
+		break;
+
+	case GR_CURSOR_DOWNARROW:
+		cursor_number = GDK_SB_DOWN_ARROW;
+		break;
+
+	case GR_CURSOR_DRAGTEXT:
+		cursor_number = GDK_TARGET;
+		break;
+
+	case GR_CURSOR_COPYTEXT:
+		cursor_number = GDK_DRAPED_BOX;
+		break;
+	}
+	xxx_UT_DEBUGMSG(("cursor set to %d  gdk %d \n",c,cursor_number));
+	GdkCursor * cursor = gdk_cursor_new(cursor_number);
+	gdk_window_set_cursor(m_pWin, cursor);
+	gdk_cursor_unref(cursor);
+}
+
+void GR_UnixPangoGraphics::createPixmapFromXPM( char ** pXPM,GdkPixmap *source,
+										   GdkBitmap * mask)
+{
+	source
+		= gdk_pixmap_colormap_create_from_xpm_d(m_pWin,NULL,
+							&mask, NULL,
+							pXPM);
+}
+
+GR_Graphics::Cursor GR_UnixPangoGraphics::getCursor(void) const
+{
+	return m_cursor;
+}
+
+void GR_UnixPangoGraphics::setColor3D(GR_Color3D c)
+{
+	UT_ASSERT(c < COUNT_3D_COLORS);
+	_setColor(m_3dColors[c]);
+}
+
+bool GR_UnixPangoGraphics::getColor3D(GR_Color3D name, UT_RGBColor &color)
+{
+	if (m_bHave3DColors) {
+		color.m_red = m_3dColors[name].red >> 8;
+		color.m_grn = m_3dColors[name].green >> 8;
+		color.m_blu =m_3dColors[name].blue >> 8;
+		return true;
+	}
+	return false;
+}
+
+void GR_UnixPangoGraphics::init3dColors(GtkStyle * pStyle)
+{
+	m_3dColors[CLR3D_Foreground] = pStyle->text[GTK_STATE_NORMAL];
+	m_3dColors[CLR3D_Background] = pStyle->bg[GTK_STATE_NORMAL];
+	m_3dColors[CLR3D_BevelUp]    = pStyle->light[GTK_STATE_NORMAL];
+	m_3dColors[CLR3D_BevelDown]  = pStyle->dark[GTK_STATE_NORMAL];
+	m_3dColors[CLR3D_Highlight]  = pStyle->bg[GTK_STATE_PRELIGHT];
+
+	m_bHave3DColors = true;
+}
+
+void GR_UnixPangoGraphics::scroll(UT_sint32 x_dest, UT_sint32 y_dest,
+						  UT_sint32 x_src, UT_sint32 y_src,
+						  UT_sint32 width, UT_sint32 height)
+{
+	GR_CaretDisabler caretDisabler(getCaret());
+   	gdk_draw_drawable(m_pWin, m_pGC, m_pWin, tdu(x_src), tdu(y_src),
+   				  tdu(x_dest), tdu(y_dest), tdu(width), tdu(height));
+}
+
 
 UT_uint32 GR_UnixPangoGraphics::getDeviceResolution(void) const
 {
@@ -319,12 +719,7 @@ UT_uint32 GR_UnixPangoGraphics::getDeviceResolution(void) const
 
 UT_sint32 GR_UnixPangoGraphics::measureUnRemappedChar(const UT_UCSChar c)
 {
-	/* This function should never be called whe the Pango graphics is in use
-	 * -- if you get this assert, please file a bug.
-	 * Tomas
-	 */
-	UT_ASSERT_HARMLESS( UT_NOT_REACHED );
-	return 0;
+	return measureString(&c, 0, 1, NULL);
 }
 
 bool GR_UnixPangoGraphics::itemize(UT_TextIterator & text, GR_Itemization & I)
@@ -1376,16 +1771,16 @@ UT_uint32 GR_UnixPangoGraphics::measureString(const UT_UCSChar * pChars,
 								   0, utf8.byteLength(),
 								   NULL, NULL);
 	
-	int iItemCount = g_list_length(pItems);
 	PangoGlyphString * pGstring = pango_glyph_string_new();
 
 	PangoFont * pf = m_pPFont->getPangoFont();
 	PangoRectangle LR;
 	UT_uint32 iOffset = 0;
+	GList * l = pItems;
 	
-	for(int i = 0; i < iItemCount; ++i)
+	while (l)
 	{
-		PangoItem *pItem = (PangoItem *)g_list_nth(pItems, i)->data;
+		PangoItem *pItem = (PangoItem*)l->data;
 
 		if(!pItem)
 		{
@@ -1412,8 +1807,14 @@ UT_uint32 GR_UnixPangoGraphics::measureString(const UT_UCSChar * pChars,
 		 */
 		if (pWidths)
 		{
-			int charLength = g_utf8_strlen (utf8.utf8_str()+ pItem->offset,
-											-1);
+			int charLength =
+				UT_MIN(g_utf8_strlen(utf8.utf8_str() + pItem->offset, -1),
+					   pItem->num_chars);
+
+			xxx_UT_DEBUGMSG(("*** strlen %d, num-chars %d ***\n",
+						 g_utf8_strlen(utf8.utf8_str() + pItem->offset, -1),
+						 pItem->num_chars));
+			
 			for (int j = 0; j < charLength; /*increment manually in loop*/)
 			{
 				UT_sint32 iStart = j;
@@ -1454,13 +1855,149 @@ UT_uint32 GR_UnixPangoGraphics::measureString(const UT_UCSChar * pChars,
 		}
 
 		delete [] pLogOffsets;
+
+		l = l->next;
 	}
 
+	if (pWidths)
+	{
+		/* This is a bit weird, possibly a Pango bug, but it is better
+		 * to set any dangling widths to 0 than leave them at randomn values
+		 */
+		while (iOffset < iLength)
+		{
+			pWidths[iOffset++] = 0;
+		}
+	}
+	
+	xxx_UT_DEBUGMSG(("Length %d, Offset %d\n", iLength, iOffset));
+	
 	if(pGstring)
 		pango_glyph_string_free(pGstring);
 	return iWidth;
 }
 
+void GR_UnixPangoGraphics::saveRectangle(UT_Rect & r, UT_uint32 iIndx)
+{
+	UT_Rect* oldR = NULL;	
+
+	m_vSaveRect.setNthItem(iIndx, new UT_Rect(r),&oldR);
+	if(oldR) {
+		delete oldR;
+	}
+
+	GdkPixbuf * oldC = NULL;
+	UT_sint32 idx = _tduX(r.left);
+	UT_sint32 idy = _tduY(r.top);
+	UT_sint32 idw = _tduR(r.width);
+	UT_sint32 idh = _tduR(r.height);
+
+	GdkPixbuf * pix = gdk_pixbuf_get_from_drawable(NULL,
+												   m_pWin,
+												   NULL,
+												   idx, idy, 0, 0,
+												   idw, idh);
+	m_vSaveRectBuf.setNthItem(iIndx, pix, &oldC);
+
+	if(oldC)
+		g_object_unref (G_OBJECT (oldC));
+}
+
+void GR_UnixPangoGraphics::restoreRectangle(UT_uint32 iIndx)
+{
+	UT_Rect * r = m_vSaveRect.getNthItem(iIndx);
+	GdkPixbuf *p = m_vSaveRectBuf.getNthItem(iIndx);
+	UT_sint32 idx = _tduX(r->left);
+	UT_sint32 idy = _tduY(r->top);
+
+
+	if (p && r)
+		gdk_draw_pixbuf (m_pWin, NULL, p, 0, 0,
+						 idx, idy,
+						 -1, -1, GDK_RGB_DITHER_NONE, 0, 0);
+}
+
+/*!
+ * Take a screenshot of the graphics and convert it to an image.
+ */
+GR_Image * GR_UnixPangoGraphics::genImageFromRectangle(const UT_Rect &rec)
+{
+	UT_sint32 idx = _tduX(rec.left);
+	UT_sint32 idy = _tduY(rec.top);
+	UT_sint32 idw = _tduR(rec.width);
+	UT_sint32 idh = _tduR(rec.height);
+	UT_return_val_if_fail (idw > 0 && idh > 0 && idx >= 0 && idy >= 0, NULL);
+	GdkColormap* cmp = gdk_colormap_get_system();
+	GdkPixbuf * pix = gdk_pixbuf_get_from_drawable(NULL,
+												   m_pWin,
+												   cmp,
+												   idx, idy, 0, 0,
+												   idw, idh);
+	
+	UT_return_val_if_fail(pix, NULL);
+
+	GR_UnixImage * pImg = new GR_UnixImage("ScreenShot");
+	pImg->m_image = pix;
+	pImg->setDisplaySize(idw,idh);
+	return static_cast<GR_Image *>(pImg);
+}
+
+/*!
+ * Create a new image from the Raster rgba byte buffer defined by pBB.
+ * The dimensions of iWidth and iHeight are in logical units but the image
+ * doesn't scale if the resolution or zoom changes. Instead you must create
+ * a new image.
+ */
+GR_Image* GR_UnixPangoGraphics::createNewImage (const char* pszName,
+											    const UT_ByteBuf* pBB,
+												UT_sint32 iWidth,
+												UT_sint32 iHeight,
+												GR_Image::GRType iType)
+{
+   	GR_Image* pImg = NULL;
+
+	pImg = new GR_UnixImage(pszName);
+	pImg->convertFromBuffer(pBB, tdu(iWidth), tdu(iHeight));
+   	return pImg;
+}
+
+
+/*!
+ * Draw the specified image at the location specified in local units 
+ * (xDest,yDest). xDest and yDest are in logical units.
+ */
+void GR_UnixPangoGraphics::drawImage(GR_Image* pImg,
+									 UT_sint32 xDest, UT_sint32 yDest)
+{
+	UT_ASSERT(pImg);
+
+   	GR_UnixImage * pUnixImage = static_cast<GR_UnixImage *>(pImg);
+
+	GdkPixbuf * image = pUnixImage->getData();
+	UT_return_if_fail(image);
+
+   	UT_sint32 iImageWidth = pUnixImage->getDisplayWidth();
+   	UT_sint32 iImageHeight = pUnixImage->getDisplayHeight();
+
+	UT_DEBUGMSG(("Drawing image %d x %d\n", iImageWidth, iImageHeight));
+	UT_sint32 idx = _tduX(xDest);
+	UT_sint32 idy = _tduY(yDest);
+
+	xDest = idx; yDest = idy;
+
+	if (gdk_pixbuf_get_has_alpha (image))
+		gdk_draw_pixbuf (m_pWin, NULL, image,
+						 0, 0, xDest, yDest,
+						 iImageWidth, iImageHeight,
+						 GDK_RGB_DITHER_NORMAL,
+						 0, 0);
+	else
+		gdk_draw_pixbuf (m_pWin, m_pGC, image,
+						 0, 0, xDest, yDest,
+						 iImageWidth, iImageHeight,
+						 GDK_RGB_DITHER_NORMAL,
+						 0, 0);
+}
 
 void GR_UnixPangoGraphics::setFont(GR_Font * pFont)
 {
@@ -1679,7 +2216,10 @@ typedef _MyPangoCoverage MyPangoCoverage;
 void GR_UnixPangoGraphics::getCoverage(UT_NumberVector& coverage)
 {
 	UT_return_if_fail(m_pPFont);
-	
+#if 0
+	/* the PangoCoverage info seems broken -- it is telling me that
+	 * Times New Roman does not have a glyph for the " character :/
+	 */
 	PangoCoverage * pc = m_pPFont->getPangoCoverage();
 	
 	if(!pc)
@@ -1691,18 +2231,19 @@ void GR_UnixPangoGraphics::getCoverage(UT_NumberVector& coverage)
 	xxx_UT_DEBUGMSG(("GR_UnixPangoGraphics::getCoverage: iMaxChar %d\n", iMaxChar));
 	
 	bool bInRange = false;
+	UT_uint32 iRangeStart = 0;
 	
 	for(UT_uint32 i = 0; i < iMaxChar; ++i)
 	{
 		PangoCoverageLevel pl = pango_coverage_get(pc, i);
-
+		
 		if(PANGO_COVERAGE_NONE == pl || PANGO_COVERAGE_FALLBACK == pl)
 		{
 			if(bInRange)
 			{
 				// according to the code in XAP_UnixFont::getCoverage(), the
 				// range is of type <x,y)
-				coverage.push_back(i);
+				coverage.push_back(i - iRangeStart);
 				bInRange = false;
 			}
 		}
@@ -1711,10 +2252,66 @@ void GR_UnixPangoGraphics::getCoverage(UT_NumberVector& coverage)
 			if(!bInRange)
 			{
 				coverage.push_back(i);
+				iRangeStart = i;
 				bInRange = true;
 			}
 		}
 	}
+#else
+	FcChar32 coverage_map[FC_CHARSET_MAP_SIZE];
+	FcChar32 next;
+	const FcChar32 invalid = (FcChar32) - 1;
+	FcChar32 base_range = invalid;
+	coverage.clear();
+
+	XftFont*  xft_fnt =  pango_xft_font_get_font (m_pPFont->getPangoFont());
+	int i;
+
+	for (FcChar32 ucs4 =
+	     FcCharSetFirstPage(xft_fnt->charset, coverage_map, &next);
+	     ucs4 != FC_CHARSET_DONE;
+	     ucs4 =
+	     FcCharSetNextPage(xft_fnt->charset, coverage_map, &next))
+	  {
+		  for (i = 0; i < FC_CHARSET_MAP_SIZE; i++)
+		    {
+			    FcChar32 bits = coverage_map[i];
+			    FcChar32 base = ucs4 + (i << 5);
+			    int b = 0;
+
+			    if (base_range != invalid && bits == 0xFFFFFFFF)
+				    continue;
+
+			    while (bits)
+			      {
+				      if (bits & 1)
+					{
+						if (base_range == invalid)
+							base_range = base + b;
+					}
+				      else
+					{
+						if (base_range != invalid)
+						  {
+							  coverage.push_back(base_range);
+							  coverage.push_back(base + b - base_range);
+							  base_range = invalid;
+						  }
+					}
+
+				      bits >>= 1;
+				      b++;
+			      }
+
+			    if (b < 32 && base_range != invalid)
+			      {
+				      coverage.push_back(base_range);
+				      coverage.push_back(base + b - base_range);
+				      base_range = invalid;
+			      }
+		    }
+	  }
+#endif
 }
 
 UT_GenericVector<const char *> *  GR_UnixPangoGraphics::getAllFontNames(void)
@@ -1796,6 +2393,270 @@ GR_Font * GR_UnixPangoGraphics::getDefaultFont(GR_Font::FontFamilyEnum f,
 					pszFontStretch,
 					pszFontSize,
 					pszLang);
+}
+
+void GR_UnixPangoGraphics::getColor(UT_RGBColor& clr)
+{
+	clr = m_curColor;
+}
+
+void GR_UnixPangoGraphics::setColor(const UT_RGBColor& clr)
+{
+	UT_ASSERT(m_pGC);
+	GdkColor c;
+
+	if (m_curColor == clr)
+		return;
+
+	m_curColor = clr;
+	c.red = clr.m_red << 8;
+	c.blue = clr.m_blu << 8;
+	c.green = clr.m_grn << 8;
+
+	_setColor(c);
+}
+
+void GR_UnixPangoGraphics::_setColor(GdkColor & c)
+{
+	gint ret = gdk_colormap_alloc_color(m_pColormap, &c, FALSE, TRUE);
+
+	UT_ASSERT(ret == TRUE);
+
+	gdk_gc_set_foreground(m_pGC, &c);
+
+	m_XftColor.color.red = c.red;
+	m_XftColor.color.green = c.green;
+	m_XftColor.color.blue = c.blue;
+	m_XftColor.color.alpha = 0xffff;
+	m_XftColor.pixel = c.pixel;
+	
+	/* Set up the XOR gc */
+	gdk_gc_set_foreground(m_pXORGC, &c);
+	gdk_gc_set_function(m_pXORGC, GDK_XOR);
+}
+
+void GR_UnixPangoGraphics::drawLine(UT_sint32 x1, UT_sint32 y1,
+							   UT_sint32 x2, UT_sint32 y2)
+{
+	GdkGCValues gcV;
+	gdk_gc_get_values(m_pGC, &gcV);
+	
+	UT_sint32 idx1 = _tduX(x1);
+	UT_sint32 idx2 = _tduX(x2);
+
+	UT_sint32 idy1 = _tduY(y1);
+	UT_sint32 idy2 = _tduY(y2);
+	
+	gdk_draw_line(m_pWin, m_pGC, idx1, idy1, idx2, idy2);
+}
+
+void GR_UnixPangoGraphics::setLineWidth(UT_sint32 iLineWidth)
+{
+	m_iLineWidth = tdu(iLineWidth);
+
+	// Get the current values of the line attributes
+
+	GdkGCValues cur_line_att;
+	gdk_gc_get_values(m_pGC, &cur_line_att);
+	GdkLineStyle cur_line_style = cur_line_att.line_style;
+	GdkCapStyle   cur_cap_style = cur_line_att.cap_style;
+	GdkJoinStyle  cur_join_style = cur_line_att.join_style;
+
+	// Set the new line width
+	gdk_gc_set_line_attributes(m_pGC,m_iLineWidth,cur_line_style,cur_cap_style,cur_join_style);
+
+}
+
+static GdkCapStyle mapCapStyle ( GR_Graphics::CapStyle in )
+{
+	switch ( in )
+    {
+		case GR_Graphics::CAP_ROUND :
+			return GDK_CAP_ROUND ;
+		case GR_Graphics::CAP_PROJECTING :
+			return GDK_CAP_PROJECTING ;
+		case GR_Graphics::CAP_BUTT :
+		default:
+			return GDK_CAP_BUTT ;
+    }
+}
+
+static GdkLineStyle mapLineStyle ( GdkGC				  * pGC, 
+								   GR_Graphics::LineStyle 	in, 
+								   gint 					iWidth )
+{
+	iWidth = iWidth == 0 ? 1 : iWidth;
+	switch ( in )
+    {
+		case GR_Graphics::LINE_ON_OFF_DASH :
+			{
+				gint8 dash_list[2] = { 4*iWidth, 4*iWidth };
+				gdk_gc_set_dashes(pGC, 0, dash_list, 2);
+			}
+			return GDK_LINE_ON_OFF_DASH ;
+		case GR_Graphics::LINE_DOUBLE_DASH :
+			{
+				gint8 dash_list[2] = { 4*iWidth, 4*iWidth };
+				gdk_gc_set_dashes(pGC, 0, dash_list, 2);
+			}
+			return GDK_LINE_DOUBLE_DASH ;
+		case GR_Graphics::LINE_DOTTED:
+			{
+				/* strange but 1/3 ratio looks dotted */
+				gint8 dash_list[2] = { iWidth, 3*iWidth };
+				gdk_gc_set_dashes(pGC, 0, dash_list, 2);
+			}
+			return GDK_LINE_ON_OFF_DASH;
+		case GR_Graphics::LINE_SOLID :
+		default:
+			return GDK_LINE_SOLID ;
+    }
+}
+
+static GdkJoinStyle mapJoinStyle ( GR_Graphics::JoinStyle in )
+{
+	switch ( in )
+    {
+		case GR_Graphics::JOIN_ROUND :
+			return GDK_JOIN_ROUND ;
+		case GR_Graphics::JOIN_BEVEL :
+			return GDK_JOIN_BEVEL ;
+		case GR_Graphics::JOIN_MITER :
+		default:
+			return GDK_JOIN_MITER ;
+    }
+}
+
+
+void GR_UnixPangoGraphics::setLineProperties ( double inWidth, 
+										  GR_Graphics::JoinStyle inJoinStyle,
+										  GR_Graphics::CapStyle inCapStyle,
+										  GR_Graphics::LineStyle inLineStyle )
+{
+	gint iWidth = static_cast<gint>(tduD(inWidth));
+	gdk_gc_set_line_attributes ( m_pGC, iWidth,
+								 mapLineStyle ( m_pGC, inLineStyle, iWidth ),
+								 mapCapStyle ( inCapStyle ),
+								 mapJoinStyle ( inJoinStyle ) ) ;
+	gdk_gc_set_line_attributes ( m_pXORGC, iWidth,
+								 mapLineStyle ( m_pXORGC, inLineStyle, iWidth ), /* this was m_pGC before */
+								 mapCapStyle ( inCapStyle ),
+								 mapJoinStyle ( inJoinStyle ) ) ;
+}
+
+void GR_UnixPangoGraphics::xorLine(UT_sint32 x1, UT_sint32 y1, UT_sint32 x2,
+							  UT_sint32 y2)
+{
+	UT_sint32 idx1 = _tduX(x1);
+	UT_sint32 idx2 = _tduX(x2);
+
+	UT_sint32 idy1 = _tduY(y1);
+	UT_sint32 idy2 = _tduY(y2);
+
+	gdk_draw_line(m_pWin, m_pXORGC, idx1, idy1, idx2, idy2);
+}
+
+void GR_UnixPangoGraphics::polyLine(UT_Point * pts, UT_uint32 nPoints)
+{
+	// see bug #303 for what this is about
+
+	GdkPoint * points = static_cast<GdkPoint *>(calloc(nPoints, sizeof(GdkPoint)));
+	UT_ASSERT(points);
+
+	for (UT_uint32 i = 0; i < nPoints; i++)
+	{
+		UT_sint32 idx = _tduX(pts[i].x);
+		points[i].x = idx;
+		// It seems that Windows draws each pixel along the the Y axis
+		// one pixel beyond where GDK draws it (even though both coordinate
+		// systems start at 0,0 (?)).  Subtracting one clears this up so
+		// that the poly line is in the correct place relative to where
+		// the rest of GR_UnixPangoGraphics:: does things (drawing text, clearing
+		// areas, etc.).
+		UT_sint32 idy1 = _tduY(pts[i].y);
+
+		points[i].y = idy1 - 1;
+	}
+
+	gdk_draw_lines(m_pWin, m_pGC, points, nPoints);
+
+	FREEP(points);
+}
+
+void GR_UnixPangoGraphics::invertRect(const UT_Rect* pRect)
+{
+	UT_ASSERT(pRect);
+
+	UT_sint32 idy = _tduY(pRect->top);
+	UT_sint32 idx = _tduX(pRect->left);
+	UT_sint32 idw = _tduR(pRect->width);
+	UT_sint32 idh = _tduR(pRect->height);
+
+	gdk_draw_rectangle(m_pWin, m_pXORGC, 1, idx, idy,
+			   idw, idh);
+}
+
+void GR_UnixPangoGraphics::setClipRect(const UT_Rect* pRect)
+{
+	m_pRect = pRect;
+	if (pRect)
+	{
+		GdkRectangle r;
+		UT_sint32 idy = _tduY(pRect->top);
+		UT_sint32 idx = _tduX(pRect->left);
+		r.x = idx;
+		r.y = idy;
+		r.width = _tduR(pRect->width);
+		r.height = _tduR(pRect->height);
+		gdk_gc_set_clip_rectangle(m_pGC, &r);
+		gdk_gc_set_clip_rectangle(m_pXORGC, &r);
+		XRectangle xRect;
+		xRect.x = r.x;
+		xRect.y = r.y;
+		xRect.width = r.width;
+		xRect.height = r.height;
+		XftDrawSetClipRectangles (m_pXftDraw,0,0,&xRect,1);
+	}
+	else
+	{
+		gdk_gc_set_clip_rectangle(m_pGC, NULL);
+		gdk_gc_set_clip_rectangle(m_pXORGC, NULL);
+
+		xxx_UT_DEBUGMSG(("Setting clipping rectangle NULL\n"));
+		XftDrawSetClip(m_pXftDraw, 0);
+	}
+}
+
+void GR_UnixPangoGraphics::fillRect(const UT_RGBColor& c, UT_sint32 x, UT_sint32 y,
+							   UT_sint32 w, UT_sint32 h)
+{
+	// save away the current color, and restore it after we fill the rect
+	GdkGCValues gcValues;
+	GdkColor oColor;
+
+	memset(&oColor, 0, sizeof(GdkColor));
+
+	gdk_gc_get_values(m_pGC, &gcValues);
+
+	oColor.pixel = gcValues.foreground.pixel;
+
+	// get the new color
+	GdkColor nColor;
+
+	nColor.red = c.m_red << 8;
+	nColor.blue = c.m_blu << 8;
+	nColor.green = c.m_grn << 8;
+
+	gdk_colormap_alloc_color(m_pColormap, &nColor, FALSE, TRUE);
+
+	gdk_gc_set_foreground(m_pGC, &nColor);
+	UT_sint32 idx = _tduX(x);
+	UT_sint32 idy = _tduY(y);
+	UT_sint32 idw = _tduR(w);
+	UT_sint32 idh = _tduR(h);
+ 	gdk_draw_rectangle(m_pWin, m_pGC, 1, idx, idy, idw, idh);
+
+	gdk_gc_set_foreground(m_pGC, &oColor);
 }
 
 
@@ -2139,33 +3000,80 @@ bool GR_UnixPangoRenderInfo::isJustified() const
 }
 
 #ifndef WITHOUT_PRINTING
-GR_UnixPangoPrintGraphics::GR_UnixPangoPrintGraphics(XAP_UnixGnomePrintGraphics * pGPG):
+GR_UnixPangoPrintGraphics::GR_UnixPangoPrintGraphics(GnomePrintJob *gpm,
+													 bool isPreview):
 	GR_UnixPangoGraphics(),
-	m_pGnomePrint(pGPG),
 	m_pGPFontMap(NULL),
 	m_pGPContext(NULL),
-	m_iScreenResolution(96),
-	m_dResRatio(1.0)
+	m_dResRatio(1.0),
+	m_bIsPreview (isPreview),
+	m_bStartPrint (false),
+	m_bStartPage (false),
+	m_gpm (gpm),
+	m_gpc (NULL)
 {
+	_constructorCommon();
+
+	m_gpc = gnome_print_job_get_context(gpm);
+	
+	GnomePrintConfig * cfg = gnome_print_job_get_config (gpm);
+
+	const GnomePrintUnit *from;
+	const GnomePrintUnit *to = gnome_print_unit_get_by_abbreviation (reinterpret_cast<const guchar*>("Pt"));
+
+	gnome_print_config_get_length (cfg, reinterpret_cast<const guchar*>(GNOME_PRINT_KEY_PAPER_WIDTH), &m_width, &from);
+	gnome_print_convert_distance (&m_width, from, to);
+
+	gnome_print_config_get_length (cfg, reinterpret_cast<const guchar*>(GNOME_PRINT_KEY_PAPER_HEIGHT), &m_height, &from);
+	gnome_print_convert_distance (&m_height, from, to);
+	m_height = getDeviceResolution()*m_height/72.;
+	m_width = getDeviceResolution()*m_width/72.;
+}
+
+GR_UnixPangoPrintGraphics::GR_UnixPangoPrintGraphics(GnomePrintContext *ctx,
+													 double inWidthDevice,
+													 double inHeightDevice):
+	GR_UnixPangoGraphics(),
+	m_pGPFontMap(NULL),
+	m_pGPContext(NULL),
+	m_dResRatio(1.0),
+	m_bIsPreview(false),
+	m_bStartPrint(false),
+	m_bStartPage(false),
+	m_gpm(NULL),
+	m_gpc(ctx),
+	m_width(inWidthDevice),
+	m_height(inHeightDevice)
+{
+	_constructorCommon();
+}
+
+void GR_UnixPangoPrintGraphics::_constructorCommon()
+{
+	setColorSpace(GR_Graphics::GR_COLORSPACE_COLOR);
+	
 	/* ascertain the real dpi that xft will be using, so we can match that
 	 * for our
 	 * gnome-print font map
 	 */
 	GdkScreen *  gScreen  = gdk_screen_get_default();
 
+	// the parent class' device resolution is the screen's resolution
+	m_iScreenResolution = m_iDeviceResolution;
 	m_iDeviceResolution = 72; // hardcoded in GnomePrint
+	m_dResRatio = static_cast<double>(m_iDeviceResolution)/
+		static_cast<double>(m_iScreenResolution);
+
+	UT_DEBUGMSG(("@@@@@@ Screen %d dpi printer %d dpi \n",
+				 m_iScreenResolution, m_iDeviceResolution));
 
 	if (gScreen)
 		{
 			int iScreen = gdk_x11_screen_get_screen_number(gScreen);
 			Display * disp = GDK_SCREEN_XDISPLAY (gScreen);
 
-			// the parent class' device resolution is the screen's resolution
-			m_iScreenResolution = GR_UnixGraphics::getDeviceResolution();
-
 			m_pContext = pango_xft_get_context(disp, iScreen);
 			m_pFontMap = pango_xft_get_font_map(disp, iScreen);
-			m_dResRatio = static_cast<double>(m_iDeviceResolution)/static_cast<double>(m_iScreenResolution);
 		}
 	else
 		{
@@ -2188,37 +3096,63 @@ GR_UnixPangoPrintGraphics::GR_UnixPangoPrintGraphics(XAP_UnixGnomePrintGraphics 
 }
 
 
+GnomePrintConfig * GR_UnixPangoPrintGraphics::s_setup_config (double mrgnTop,
+															  double mrgnBottom,
+															  double mrgnLeft,
+															  double mrgnRight,
+															  double width,
+															  double height,
+															  int copies,
+															  bool portrait)
+{
+	GnomePrintConfig * cfg = gnome_print_config_default();
+	
+	const GnomePrintUnit *unit =
+		gnome_print_unit_get_by_abbreviation (reinterpret_cast<const guchar*>("mm"));
+	
+	gnome_print_config_set (cfg, reinterpret_cast<const guchar *>(GNOME_PRINT_KEY_PAPER_SIZE), reinterpret_cast<const guchar *>("Custom"));
+	gnome_print_config_set_length (cfg, reinterpret_cast<const guchar*>(GNOME_PRINT_KEY_PAGE_MARGIN_TOP), mrgnTop, unit);
+	gnome_print_config_set_length (cfg, reinterpret_cast<const guchar*>(GNOME_PRINT_KEY_PAGE_MARGIN_BOTTOM), mrgnBottom, unit);
+	gnome_print_config_set_length (cfg, reinterpret_cast<const guchar*>(GNOME_PRINT_KEY_PAGE_MARGIN_LEFT), mrgnLeft, unit);
+	gnome_print_config_set_length (cfg, reinterpret_cast<const guchar*>(GNOME_PRINT_KEY_PAGE_MARGIN_RIGHT), mrgnRight, unit);
+	gnome_print_config_set_int (cfg, reinterpret_cast<const guchar*>(GNOME_PRINT_KEY_NUM_COPIES), copies);	
+
+	if (portrait)
+	{
+		gnome_print_config_set_length (cfg, reinterpret_cast<const guchar*>(GNOME_PRINT_KEY_PAPER_WIDTH), width, unit);
+		gnome_print_config_set_length (cfg, reinterpret_cast<const guchar*>(GNOME_PRINT_KEY_PAPER_HEIGHT), height, unit);
+
+		gnome_print_config_set (cfg, reinterpret_cast<const guchar *>(GNOME_PRINT_KEY_PAGE_ORIENTATION) , reinterpret_cast<const guchar *>("R0"));
+	}
+	else
+	{
+		gnome_print_config_set_length (cfg, reinterpret_cast<const guchar*>(GNOME_PRINT_KEY_PAPER_WIDTH), height, unit);
+		gnome_print_config_set_length (cfg, reinterpret_cast<const guchar*>(GNOME_PRINT_KEY_PAPER_HEIGHT), width, unit);
+
+		gnome_print_config_set (cfg, reinterpret_cast<const guchar *>(GNOME_PRINT_KEY_PAGE_ORIENTATION) , reinterpret_cast<const guchar *>("R90"));
+	}
+
+	return cfg;
+}
+
 GR_UnixPangoPrintGraphics::~GR_UnixPangoPrintGraphics()
 {
-	delete m_pGnomePrint;
 }
 
 GR_Graphics * GR_UnixPangoPrintGraphics::graphicsAllocator(GR_AllocInfo& info)
 {
 	UT_return_val_if_fail(info.getType() == GRID_UNIX, NULL);
 	xxx_UT_DEBUGMSG(("GR_UnixPangoGraphics::graphicsAllocator\n"));
-	
+
+	UT_return_val_if_fail(info.isPrinterGraphics(), NULL);
 	GR_UnixAllocInfo &AI = (GR_UnixAllocInfo&)info;
 
-	//!!!WDG might be right
-	if(AI.m_pGnomePrint)
-	{
-		// printer graphics required
-		// This class does not provide printing services -- we need a separate derrived
-		// class for that
-		return new GR_UnixPangoPrintGraphics(AI.m_pGnomePrint);
-	}
-	else
-	{
-		// screen graphics required
-		UT_ASSERT_HARMLESS( UT_SHOULD_NOT_HAPPEN );
-		return NULL;
-	}
+	return new GR_UnixPangoPrintGraphics(AI.m_gpm, AI.m_bPreview);
 }
 
 GnomePrintContext * GR_UnixPangoPrintGraphics::getGnomePrintContext() const
 {
-	return m_pGnomePrint->getGnomePrintContext();
+	return m_gpc;
 }
 
 
@@ -2254,12 +3188,18 @@ UT_uint32 GR_UnixPangoPrintGraphics::getFontHeight(GR_Font * fnt)
 
 UT_sint32 GR_UnixPangoPrintGraphics::scale_ydir (UT_sint32 in) const
 {
-	return m_pGnomePrint->scale_ydir (in);
+	double height;
+
+	if (isPortrait())
+		height = m_height;
+	else
+		height = m_width;
+	return static_cast<UT_sint32>(height - static_cast<double>(in));
 }
 
 UT_sint32 GR_UnixPangoPrintGraphics::scale_xdir (UT_sint32 in) const
 {
-	return m_pGnomePrint->scale_xdir (in);
+	return in;
 }
 
 void GR_UnixPangoPrintGraphics::drawChars(const UT_UCSChar* pChars, 
@@ -2267,10 +3207,26 @@ void GR_UnixPangoPrintGraphics::drawChars(const UT_UCSChar* pChars,
 										   UT_sint32 xoff, UT_sint32 yoff,
 										   int * pCharWidths)
 {
-	// we cannot call XAP_UnixGnomePrintGraphic::drawChars() here because the fonts this
-	// class uses are pango fonts, not the PS fonts the class expects
+	UT_UTF8String utf8;
 
-	UT_UTF8String utf8(pChars + iCharOffset, iLength);
+	if(isSymbol())
+	{
+		for(int i = iCharOffset; i < iCharOffset + iLength; ++i)
+		{
+			utf8 += adobeToUnicode(pChars[i]);
+		}
+	}
+	else if(isDingbat())
+	{
+		for(int i = iCharOffset; i < iCharOffset + iLength; ++i)
+		{
+			utf8 += adobeDingbatsToUnicode(pChars[i]);
+		}
+	}
+	else
+	{
+		utf8.appendUCS4(pChars + iCharOffset, iLength);
+	}
 	
 	GList * pLogItems = pango_itemize(m_pContext, utf8.utf8_str(),
 									  0, utf8.byteLength(),
@@ -2280,13 +3236,12 @@ void GR_UnixPangoPrintGraphics::drawChars(const UT_UCSChar* pChars,
 	g_list_free(pLogItems);
 	
 	xoff = _tduX(xoff);
-	yoff = m_pGnomePrint->scale_ydir(_tduY(yoff + getFontAscent(m_pPFont)));
+	yoff = scale_ydir(_tduY(yoff + getFontAscent(m_pPFont)));
 
-	GnomePrintContext * gpc = m_pGnomePrint->getGnomePrintContext();
-	UT_return_if_fail( gpc );
+	UT_return_if_fail( m_gpc );
 
-	gnome_print_gsave(gpc);
-	gnome_print_moveto(gpc, xoff, yoff);
+	gnome_print_gsave(m_gpc);
+	gnome_print_moveto(m_gpc, xoff, yoff);
 
 	PangoFontDescription * pdf = pango_font_describe (m_pPFont->getPangoFont());
 	PangoFont * pf = pango_context_load_font (m_pGPContext, pdf);
@@ -2302,13 +3257,13 @@ void GR_UnixPangoPrintGraphics::drawChars(const UT_UCSChar* pChars,
 		pango_shape(utf8.utf8_str() + pItem->offset, pItem->length,
 					& pItem->analysis, pGlyphs);
 
-		gnome_print_pango_glyph_string(gpc, pf, pGlyphs);
+		gnome_print_pango_glyph_string(m_gpc, pf, pGlyphs);
 
 		if(pGlyphs)
 			pango_glyph_string_free(pGlyphs);
 	}
 
-	gnome_print_grestore (gpc);
+	gnome_print_grestore (m_gpc);
 	g_list_free(pItems);
 }
 
@@ -2347,117 +3302,260 @@ void GR_UnixPangoPrintGraphics::renderChars(GR_RenderInfo & ri)
 	GR_UnixPangoRenderInfo & RI = (GR_UnixPangoRenderInfo &)ri;
 	GR_UnixPangoFont * pFont = (GR_UnixPangoFont *)RI.m_pFont;
 	GR_UnixPangoItem * pItem = (GR_UnixPangoItem *)RI.m_pItem;
-	UT_return_if_fail(pItem && pFont && pFont->getPangoFont() && m_pGnomePrint);
+	UT_return_if_fail(pItem && pFont && pFont->getPangoFont());
 
 	if(RI.m_iLength == 0)
 		return;
 
 	xxx_UT_DEBUGMSG(("PangoPrint renderChars: xoff %d yoff %d\n", RI.m_xoff, RI.m_yoff));
 	UT_sint32 xoff = _tduX(RI.m_xoff);
-	UT_sint32 yoff = m_pGnomePrint->scale_ydir(_tduY(RI.m_yoff + getFontAscent(pFont)));
+	UT_sint32 yoff = scale_ydir(_tduY(RI.m_yoff + getFontAscent(pFont)));
 
 	xxx_UT_DEBUGMSG(("about to gnome_print_pango_gplyph_string render xoff %d yoff %d\n",
 				 xoff, yoff));
 
-	GnomePrintContext * gpc = m_pGnomePrint->getGnomePrintContext();
-	UT_return_if_fail( gpc );
+	UT_return_if_fail(m_gpc);
 
-	gnome_print_gsave(gpc);
-	gnome_print_moveto(gpc, xoff, yoff);
+	gnome_print_gsave(m_gpc);
+	gnome_print_moveto(m_gpc, xoff, yoff);
 
 	PangoFontDescription * pfd = pango_font_describe (pFont->getPangoFont());
 	PangoFont * pf = pango_context_load_font (m_pContext, pfd);
 #ifdef DEBUG
 	char * psz = pango_font_description_to_string (pfd);
-	UT_DEBUGMSG(("XXXX Loaded GP font [%s] XXXX\n", psz));
+	xxx_UT_DEBUGMSG(("XXXX Loaded GP font [%s] XXXX\n", psz));
 	g_free (psz);
 #endif
 	
 	pango_font_description_free (pfd);
 
 #define _N 1440
-	UT_DEBUGMSG(("@@@@ tdu(%d)== %d, _tduX(%d) == %d, _tduY(%d) == %d\n",
+	xxx_UT_DEBUGMSG(("@@@@ tdu(%d)== %d, _tduX(%d) == %d, _tduY(%d) == %d\n",
 				 _N, tdu(_N), _N, _tduX(_N), _N, _tduY(_N)));
 #undef _N
-	gnome_print_pango_glyph_string(gpc, pf, RI.m_pGlyphs);
+	gnome_print_pango_glyph_string(m_gpc, pf, RI.m_pGlyphs);
 
-	gnome_print_grestore (gpc);
+	gnome_print_grestore (m_gpc);
 }
 
 void GR_UnixPangoPrintGraphics::drawLine (UT_sint32 x1, UT_sint32 y1,
 										   UT_sint32 x2, UT_sint32 y2)
 {
-	UT_return_if_fail( m_pGnomePrint );
-	m_pGnomePrint->drawLine(x1, y1, x2, y2);
+	if (!m_bStartPage)
+		return;
+
+	gnome_print_moveto (m_gpc, scale_xdir (tdu(x1)), scale_ydir (tdu(y1)));
+	gnome_print_lineto (m_gpc, scale_xdir (tdu(x2)), scale_ydir (tdu(y2)));
+	gnome_print_stroke (m_gpc);
 }
 
 bool GR_UnixPangoPrintGraphics::queryProperties(GR_Graphics::Properties gp) const
 {
-	UT_return_val_if_fail( m_pGnomePrint, false );
-	return m_pGnomePrint->queryProperties(gp);
+	switch (gp)
+	{
+		case DGP_SCREEN:
+		case DGP_OPAQUEOVERLAY:
+			return false;
+		case DGP_PAPER:
+			return true;
+		default:
+			UT_ASSERT_NOT_REACHED ();
+			return false;
+	}
 }
 
 void GR_UnixPangoPrintGraphics::getColor(UT_RGBColor& clr)
 {
-	UT_return_if_fail( m_pGnomePrint );
-	m_pGnomePrint->getColor(clr);
+	clr = m_curColor;
 }
 
 void GR_UnixPangoPrintGraphics::setColor(const UT_RGBColor& clr)
 {
-	UT_return_if_fail( m_pGnomePrint );
-	m_pGnomePrint->setColor(clr);
+	if (!m_bStartPrint || m_curColor == clr)
+		return;
+
+	m_curColor = clr;
+
+	double red   = static_cast<double>(m_curColor.m_red / 255.0);
+	double green = static_cast<double>(m_curColor.m_grn / 255.0);
+	double blue  = static_cast<double>(m_curColor.m_blu / 255.0);
+	gnome_print_setrgbcolor(m_gpc,red,green,blue);
 }
 
 void GR_UnixPangoPrintGraphics::setLineWidth(UT_sint32 iLineWidth)
 {
-	UT_return_if_fail( m_pGnomePrint );
-	m_pGnomePrint->setLineWidth(iLineWidth);
+	if (!m_bStartPage)
+		return;
+
+ 	m_dLineWidth = tduD(static_cast<double>(iLineWidth));
+	gnome_print_setlinewidth (m_gpc, m_dLineWidth); 
+}
+
+bool GR_UnixPangoPrintGraphics::_startDocument(void)
+{
+	return true;
+}
+
+bool GR_UnixPangoPrintGraphics::_startPage(const char * szPageLabel)
+{
+	if (!m_gpc)
+		return true;
+	
+	gnome_print_beginpage(m_gpc, reinterpret_cast<const guchar *>(szPageLabel));
+
+	return true;
+}
+
+bool GR_UnixPangoPrintGraphics::_endPage(void)
+{
+	if(m_bNeedStroked)
+		gnome_print_stroke(m_gpc);
+	
+	if (!m_gpc)
+		return true;
+
+	gnome_print_showpage(m_gpc);
+	return true;
+}
+
+bool GR_UnixPangoPrintGraphics::_endDocument(void)
+{
+	if(!m_gpm)
+		return true;
+
+	gnome_print_job_close(m_gpm);
+		
+	if(!m_bIsPreview)
+		gnome_print_job_print(m_gpm);
+	else
+		{
+			const XAP_StringSet * pSS = XAP_App::getApp()->getStringSet();
+			GtkWidget * preview = gnome_print_job_preview_new (m_gpm, 
+															   reinterpret_cast<const guchar *>(pSS->getValue(XAP_STRING_ID_DLG_UP_PrintPreviewTitle)));
+			gtk_widget_show(GTK_WIDGET(preview));
+
+			// To center the dialog, we need the frame of its parent.
+			XAP_UnixFrameImpl * pUnixFrameImpl = static_cast<XAP_UnixFrameImpl *>(XAP_App::getApp()->getLastFocussedFrame()->getFrameImpl());
+			
+			// Get the GtkWindow of the parent frame
+			GtkWidget * parentWindow = pUnixFrameImpl->getTopLevelWindow();
+
+			centerDialog(parentWindow, preview);
+		}
+	
+	g_object_unref(G_OBJECT(m_gpm));
+	return true;
+}
+
+UT_uint32 GR_UnixPangoPrintGraphics::_getResolution(void) const
+{
+	return 72; // was 72
 }
 
 bool GR_UnixPangoPrintGraphics::startPrint(void)
 {
-	UT_return_val_if_fail( m_pGnomePrint, false );
-	return m_pGnomePrint->startPrint();
+	UT_ASSERT(!m_bStartPrint || !m_gpm);
+	m_bStartPrint = true;
+	return _startDocument();
 }
 
 bool GR_UnixPangoPrintGraphics::startPage (const char *szPageLabel,
 											UT_uint32 pageNo, bool portrait, 
 											UT_uint32 width, UT_uint32 height)
 {
-	UT_return_val_if_fail( m_pGnomePrint, false );
-	return m_pGnomePrint->startPage(szPageLabel, pageNo, portrait, width, height);	
+	if (m_bStartPage)
+		_endPage();
+	m_bStartPage = true;
+	m_bNeedStroked = false;
+	return _startPage(szPageLabel);
 }
 
 bool GR_UnixPangoPrintGraphics::endPrint()
 {
-	UT_return_val_if_fail( m_pGnomePrint, false );
-	return m_pGnomePrint->endPrint();
+	if (m_bStartPage)
+		_endPage();
+	return _endDocument();
 }
 
 void GR_UnixPangoPrintGraphics::setColorSpace(GR_Graphics::ColorSpace c)
 {
-	UT_return_if_fail( m_pGnomePrint );
-	m_pGnomePrint->setColorSpace(c);
+	m_cs = c;
 }
 
 GR_Graphics::ColorSpace GR_UnixPangoPrintGraphics::getColorSpace(void) const
 {
-	UT_return_val_if_fail( m_pGnomePrint, getColorSpace() );
-	return m_pGnomePrint->getColorSpace();
+	return m_cs;
 }
 
 UT_uint32 GR_UnixPangoPrintGraphics::getDeviceResolution(void) const
 {
-	UT_return_val_if_fail( m_pGnomePrint, 0 );
-	return m_pGnomePrint->getDeviceResolution();
+	return _getResolution();
+}
+
+void GR_UnixPangoPrintGraphics::_drawAnyImage (GR_Image* pImg, 
+												UT_sint32 xDest, 
+												UT_sint32 yDest, bool rgb)
+{
+	UT_sint32 iDestWidth  = pImg->getDisplayWidth ();
+	UT_sint32 iDestHeight = pImg->getDisplayHeight ();
+	
+	GR_UnixImage * pImage = static_cast<GR_UnixImage *>(pImg);
+	GdkPixbuf * image = pImage->getData ();
+	UT_return_if_fail (image);
+	
+	gint width, height, rowstride;
+	const guchar * pixels;
+	
+	/* The pixbuf should contain unscaled (raw) image data for best results. 
+	See XAP_UnixGnomePrintGraphics::createNewImage for details */
+	width     = gdk_pixbuf_get_width (image);
+	height    = gdk_pixbuf_get_height (image);
+	rowstride = gdk_pixbuf_get_rowstride (image);
+	pixels    = gdk_pixbuf_get_pixels (image);
+
+	gnome_print_gsave (m_gpc);
+	gnome_print_translate (m_gpc, xDest, yDest - iDestHeight);
+
+	//float scale_x = static_cast<float>(iDestWidth)/width;
+	//float scale_y = static_cast<float>(iDestHeight)/height;
+	gnome_print_scale (m_gpc, iDestWidth, iDestHeight);
+
+	/* Not sure about the grayimage part, but the other 2 are correct */
+	if (!rgb)
+		gnome_print_grayimage (m_gpc, pixels, width, height, rowstride);
+	else if (gdk_pixbuf_get_has_alpha (image))
+		gnome_print_rgbaimage (m_gpc, pixels, width, height, rowstride);
+	else
+		gnome_print_rgbimage (m_gpc, pixels, width, height, rowstride);
+
+	gnome_print_grestore(m_gpc);
 }
 
 void GR_UnixPangoPrintGraphics::drawImage(GR_Image* pImg, UT_sint32 xDest, 
 										   UT_sint32 yDest)
 {
-	UT_return_if_fail( m_pGnomePrint );
-	m_pGnomePrint->drawImage(pImg, xDest, yDest);
+	if (!m_bStartPage)
+		return;
+
+	xDest = scale_xdir (tdu(xDest));
+	yDest = scale_ydir (tdu(yDest));
+
+   	if (pImg->getType() != GR_Image::GRT_Raster) 
+	    pImg->render(this, xDest, yDest);
+	else {
+		switch(m_cs)
+			{
+			case GR_Graphics::GR_COLORSPACE_COLOR:
+				_drawAnyImage(pImg, xDest, yDest, true);
+				break;
+			case GR_Graphics::GR_COLORSPACE_GRAYSCALE:
+			case GR_Graphics::GR_COLORSPACE_BW:
+				_drawAnyImage(pImg, xDest, yDest, false);
+				break;
+			default:
+				UT_ASSERT_HARMLESS(UT_SHOULD_NOT_HAPPEN);
+			}
+	}
 }
 
 GR_Image* GR_UnixPangoPrintGraphics::createNewImage(const char* pszName, 
@@ -2466,61 +3564,145 @@ GR_Image* GR_UnixPangoPrintGraphics::createNewImage(const char* pszName,
 													 UT_sint32 iDisplayHeight, 
 													 GR_Image::GRType iType)
 {
-	UT_return_val_if_fail( m_pGnomePrint, NULL );
-	return m_pGnomePrint->createNewImage(pszName, pBB, iDisplayWidth, iDisplayHeight, iType);	
+	GR_Image* pImg = NULL;
+
+   	if (iType == GR_Image::GRT_Raster)
+		pImg = new GR_UnixImage(pszName,iType);
+   	else if (iType == GR_Image::GRT_Vector)
+		pImg = new GR_VectorImage(pszName);
+	
+	// make sure we don't scale the image yet to not loose any information
+	pImg->convertFromBuffer(pBB, -1, -1);
+	pImg->setDisplaySize(tdu(iDisplayWidth), tdu(iDisplayHeight));
+
+	return pImg;
 }
 
 void GR_UnixPangoPrintGraphics::fillRect(const UT_RGBColor& c, 
 										  UT_sint32 x, UT_sint32 y, 
 										  UT_sint32 w, UT_sint32 h)
 {
-	UT_return_if_fail( m_pGnomePrint );
-	m_pGnomePrint->fillRect(c, x, y, w, h);
+	if (!m_bStartPage)
+		return;
+
+	// set the bgcolor
+	UT_RGBColor old (m_curColor);
+	setColor (c);
+	double dx,dy,dw,dh;
+	dx = tduD(x); dy = static_cast<double>(scale_ydir (tdu(y))); dw = tduD(w); dh = tduD(h);
+
+	gnome_print_newpath (m_gpc);
+	gnome_print_moveto (m_gpc, dx,   dy);		
+	gnome_print_lineto (m_gpc, dx+dw, dy);
+	gnome_print_lineto (m_gpc, dx+dw, dy-dh);
+	gnome_print_lineto (m_gpc, dx,   dy-dh);
+	gnome_print_lineto (m_gpc, dx,   dy);
+	gnome_print_closepath (m_gpc);
+	gnome_print_fill (m_gpc);
+	
+	// reset color to its original state
+	setColor (old);
+}
+
+void GR_UnixPangoGraphics::fillRect(GR_Color3D c, UT_Rect &r)
+{
+	UT_ASSERT(c < COUNT_3D_COLORS);
+	fillRect(c,r.left,r.top,r.width,r.height);
+}
+
+void GR_UnixPangoGraphics::fillRect(GR_Color3D c, UT_sint32 x, UT_sint32 y, UT_sint32 w, UT_sint32 h)
+{
+	UT_ASSERT(c < COUNT_3D_COLORS);
+	gdk_gc_set_foreground(m_pGC, &m_3dColors[c]);
+	gdk_draw_rectangle(m_pWin, m_pGC, 1, tdu(x), tdu(y), tdu(w), tdu(h));
+}
+
+void GR_UnixPangoGraphics::polygon(UT_RGBColor& c, UT_Point *pts,
+								   UT_uint32 nPoints)
+{
+	// save away the current color, and restore it after we draw the polygon
+	GdkGCValues gcValues;
+	GdkColor oColor;
+
+	memset(&oColor, 0, sizeof(GdkColor));
+
+	gdk_gc_get_values(m_pGC, &gcValues);
+
+	oColor.pixel = gcValues.foreground.pixel;
+
+	// get the new color
+	GdkColor nColor;
+
+	nColor.red = c.m_red << 8;
+	nColor.blue = c.m_blu << 8;
+	nColor.green = c.m_grn << 8;
+
+	gdk_colormap_alloc_color(m_pColormap, &nColor, FALSE, TRUE);
+
+	gdk_gc_set_foreground(m_pGC, &nColor);
+
+	GdkPoint* points = new GdkPoint[nPoints];
+    UT_ASSERT(points);
+
+    for (UT_uint32 i = 0;i < nPoints;i++){
+		UT_sint32 idx = _tduX(pts[i].x);
+        points[i].x = idx;
+		UT_sint32 idy = _tduY(pts[i].y);
+        points[i].y = idy;
+    }
+	gdk_draw_polygon(m_pWin, m_pGC, 1, points, nPoints);
+	delete[] points;
+
+	gdk_gc_set_foreground(m_pGC, &oColor);
+}
+
+void GR_UnixPangoGraphics::clearArea(UT_sint32 x, UT_sint32 y,
+									 UT_sint32 width, UT_sint32 height)
+{
+	if (width > 0)
+	{
+		static const UT_RGBColor clrWhite(255,255,255);
+		fillRect(clrWhite, x, y, width, height);
+	}
 }
 
 void GR_UnixPangoPrintGraphics::setCursor(GR_Graphics::Cursor c)
 {
-	UT_return_if_fail( m_pGnomePrint);
-	m_pGnomePrint->setCursor(c);
+	UT_ASSERT_NOT_REACHED ();
 }
 
 GR_Graphics::Cursor GR_UnixPangoPrintGraphics::getCursor(void) const
 {
-	UT_return_val_if_fail( m_pGnomePrint, GR_CURSOR_INVALID );
-	return m_pGnomePrint->getCursor();	
+	UT_ASSERT_NOT_REACHED ();
+	return GR_CURSOR_INVALID;
 }
 
 void GR_UnixPangoPrintGraphics::xorLine(UT_sint32 x1, UT_sint32 y1, UT_sint32 x2, 
 										 UT_sint32 y2)
 {
-	UT_return_if_fail( m_pGnomePrint );
-	m_pGnomePrint->xorLine(x1, y1, x2, y2);
+	UT_ASSERT_NOT_REACHED ();
 }
 
 void GR_UnixPangoPrintGraphics::polyLine(UT_Point * pts, 
 										  UT_uint32 nPoints)
 {
-	UT_return_if_fail( m_pGnomePrint );
-	m_pGnomePrint->polyLine(pts, nPoints);
+	UT_ASSERT_NOT_REACHED ();
 }
 
 void GR_UnixPangoPrintGraphics::invertRect(const UT_Rect* pRect)
 {
-	UT_return_if_fail( m_pGnomePrint );
-	m_pGnomePrint->invertRect(pRect);
+	UT_ASSERT_NOT_REACHED ();
 }
 
 void GR_UnixPangoPrintGraphics::clearArea(UT_sint32 x, UT_sint32 y,
 										   UT_sint32 width, UT_sint32 height)
 {
-	UT_return_if_fail( m_pGnomePrint );
-	m_pGnomePrint->clearArea(x, y, width, height);
+	UT_ASSERT_NOT_REACHED ();
 }
 
 void GR_UnixPangoPrintGraphics::scroll(UT_sint32 x, UT_sint32 y)
 {
-	UT_return_if_fail( m_pGnomePrint );
-	m_pGnomePrint->scroll(x,y);
+	UT_ASSERT_NOT_REACHED ();
 }
 
 void GR_UnixPangoPrintGraphics::scroll(UT_sint32 x_dest,
@@ -2530,52 +3712,99 @@ void GR_UnixPangoPrintGraphics::scroll(UT_sint32 x_dest,
 										UT_sint32 width,
 										UT_sint32 height)
 {
-	UT_return_if_fail( m_pGnomePrint );
-	m_pGnomePrint->scroll(x_dest, y_dest, x_src, y_src, width, height);
+	UT_ASSERT_NOT_REACHED ();
 }
 
 UT_RGBColor * GR_UnixPangoPrintGraphics::getColor3D(GR_Color3D c)
 {
-	UT_return_val_if_fail( m_pGnomePrint, NULL );
-	return m_pGnomePrint->getColor3D(c);
+	UT_ASSERT_NOT_REACHED ();
+	return NULL;
 }
 
 void GR_UnixPangoPrintGraphics::setColor3D(GR_Color3D c)
 {
-	UT_return_if_fail( m_pGnomePrint );
-	m_pGnomePrint->setColor3D(c);
+	UT_ASSERT_NOT_REACHED ();
 }
 
 GR_Font* GR_UnixPangoPrintGraphics::getGUIFont()
 {
-	UT_return_val_if_fail( m_pGnomePrint, NULL );
-	return m_pGnomePrint->getGUIFont();
+	UT_ASSERT_NOT_REACHED ();
+	return NULL;
 }
 
 void GR_UnixPangoPrintGraphics::fillRect(GR_Color3D c, UT_sint32 x, UT_sint32 y,
 										  UT_sint32 w, UT_sint32 h)
 {
-	UT_return_if_fail( m_pGnomePrint );
-	m_pGnomePrint->fillRect(c, x, y, w, h);
+	UT_ASSERT_NOT_REACHED ();
 }
 
 void GR_UnixPangoPrintGraphics::fillRect(GR_Color3D c, UT_Rect &r)
 {
-	UT_return_if_fail( m_pGnomePrint );
-	m_pGnomePrint->fillRect(c, r);
+	UT_ASSERT_NOT_REACHED ();
 }
 
 void GR_UnixPangoPrintGraphics::setPageSize(char* pageSizeName,
-											 UT_uint32 iwidth, UT_uint32 iheight)
+											UT_uint32 iwidth, UT_uint32 iheight)
 {
-	UT_return_if_fail( m_pGnomePrint );
-	m_pGnomePrint->setPageSize(pageSizeName, iwidth, iheight);
+	UT_ASSERT_NOT_REACHED ();
 }
 
 void GR_UnixPangoPrintGraphics::setClipRect(const UT_Rect* pRect)
 {
-	UT_return_if_fail( m_pGnomePrint );
-	m_pGnomePrint->setClipRect(pRect);
+}
+
+static int
+joinToPS (GR_Graphics::JoinStyle js)
+{
+  switch(js)
+    {
+    case GR_Graphics::JOIN_MITER: 
+      return 0;
+    case GR_Graphics::JOIN_ROUND: 
+      return 1;
+    case GR_Graphics::JOIN_BEVEL: 
+      return 2;
+    }
+
+  return 1;
+}
+
+static int
+capToPS (GR_Graphics::CapStyle cs)
+{
+  switch (cs)
+    {
+    case GR_Graphics::CAP_BUTT: 
+      return 0;
+    case GR_Graphics::CAP_ROUND: 
+      return 1;
+    case GR_Graphics::CAP_PROJECTING: 
+      return 2;
+    }
+
+  return 1;
+}
+
+static const double*
+dashToPS (GR_Graphics::LineStyle ls, gint & n_values, double &offset)
+{
+	static const double on_off_dash [] = {1., 1.};
+	static const double double_dash [] = {1., 2.};
+
+	switch(ls)
+		{
+		case GR_Graphics::LINE_SOLID:
+			offset = 0.; n_values = 0; return NULL;
+		case GR_Graphics::LINE_ON_OFF_DASH: 
+			offset = 0.; n_values = 2; return on_off_dash;
+		case GR_Graphics::LINE_DOUBLE_DASH: 
+			offset = 0.; n_values = 2; return double_dash;
+		case GR_Graphics::LINE_DOTTED: 
+			UT_ASSERT_HARMLESS(UT_TODO);
+			offset = 0.; n_values = 0; return NULL;
+		}
+	
+	n_values = 0; offset = 0.; return NULL;
 }
 
 void GR_UnixPangoPrintGraphics::setLineProperties (double inWidth,
@@ -2583,8 +3812,496 @@ void GR_UnixPangoPrintGraphics::setLineProperties (double inWidth,
 												   CapStyle inCapStyle,
 												   LineStyle inLineStyle)
 {
-	UT_return_if_fail( m_pGnomePrint );
-	m_pGnomePrint->setLineProperties(inWidth, inJoinStyle, inCapStyle, inLineStyle);
+	if (!m_bStartPage)
+		return;
+
+	gnome_print_setlinejoin (m_gpc, joinToPS(inJoinStyle));
+	gnome_print_setlinecap (m_gpc, capToPS(inCapStyle));
+
+	gint n_values = 0;
+	double offset = 0;
+	const double * dash = NULL;
+
+	dash = dashToPS (inLineStyle, n_values, offset);
+	gnome_print_setdash (m_gpc, n_values, dash, offset);
 }
 
 #endif
+
+static const UT_uint32 adobeDUni[/*202*/][2] =
+	{
+		{0x0020,0x0020},
+		{0x0021,0x2701},
+		{0x0022,0x2702},
+		{0x0023,0x2703},
+		{0x0024,0x2704},
+		{0x0025,0x260E},
+		{0x0026,0x2706},
+		{0x0027,0x2707},
+		{0x0028,0x2708},
+		{0x0029,0x2709},
+		{0x002A,0x261B},
+		{0x002B,0x261E},
+		{0x002C,0x270C},
+		{0x002D,0x270D},
+		{0x002E,0x270E},
+		{0x002F,0x270F},
+		{0x0030,0x2710},
+		{0x0031,0x2711},
+		{0x0032,0x2712},
+		{0x0033,0x2713},
+		{0x0034,0x2714},
+		{0x0035,0x2715},
+		{0x0036,0x2716},
+		{0x0037,0x2717},
+		{0x0038,0x2718},
+		{0x0039,0x2719},
+		{0x003A,0x271A},
+		{0x003B,0x271B},
+		{0x003C,0x271C},
+		{0x003D,0x271D},
+		{0x003E,0x271E},
+		{0x003F,0x271F},
+		{0x0040,0x2720},
+		{0x0041,0x2721},
+		{0x0042,0x2722},
+		{0x0043,0x2723},
+		{0x0044,0x2724},
+		{0x0045,0x2725},
+		{0x0046,0x2726},
+		{0x0047,0x2727},
+		{0x0048,0x2605},
+		{0x0049,0x2729},
+		{0x004A,0x272A},
+		{0x004B,0x272B},
+		{0x004C,0x272C},
+		{0x004D,0x272D},
+		{0x004E,0x272E},
+		{0x004F,0x272F},
+		{0x0050,0x2730},
+		{0x0051,0x2731},
+		{0x0052,0x2732},
+		{0x0053,0x2733},
+		{0x0054,0x2734},
+		{0x0055,0x2735},
+		{0x0056,0x2736},
+		{0x0057,0x2737},
+		{0x0058,0x2738},
+		{0x0059,0x2739},
+		{0x005A,0x273A},
+		{0x005B,0x273B},
+		{0x005C,0x273C},
+		{0x005D,0x273D},
+		{0x005E,0x273E},
+		{0x005F,0x273F},
+		{0x0060,0x2740},
+		{0x0061,0x2741},
+		{0x0062,0x2742},
+		{0x0063,0x2743},
+		{0x0064,0x2744},
+		{0x0065,0x2745},
+		{0x0066,0x2746},
+		{0x0067,0x2747},
+		{0x0068,0x2748},
+		{0x0069,0x2749},
+		{0x006A,0x274A},
+		{0x006B,0x274B},
+		{0x006C,0x25CF},
+		{0x006D,0x274D},
+		{0x006E,0x25A0},
+		{0x006F,0x274F},
+		{0x0070,0x2750},
+		{0x0071,0x2751},
+		{0x0072,0x2752},
+		{0x0073,0x25B2},
+		{0x0074,0x25BC},
+		{0x0075,0x25C6},
+		{0x0076,0x2756},
+		{0x0077,0x25D7},
+		{0x0078,0x2758},
+		{0x0079,0x2759},
+		{0x007A,0x275A},
+		{0x007B,0x275B},
+		{0x007C,0x275C},
+		{0x007D,0x275D},
+		{0x007E,0x275E},
+		{0x0080,0xF8D7},
+		{0x0081,0xF8D8},
+		{0x0082,0xF8D9},
+		{0x0083,0xF8DA},
+		{0x0084,0xF8DB},
+		{0x0085,0xF8DC},
+		{0x0086,0xF8DD},
+		{0x0087,0xF8DE},
+		{0x0088,0xF8DF},
+		{0x0089,0xF8E0},
+		{0x008A,0xF8E1},
+		{0x008B,0xF8E2},
+		{0x008C,0xF8E3},
+		{0x008D,0xF8E4},
+		{0x00A1,0x2761},
+		{0x00A2,0x2762},
+		{0x00A3,0x2763},
+		{0x00A4,0x2764},
+		{0x00A5,0x2765},
+		{0x00A6,0x2766},
+		{0x00A7,0x2767},
+		{0x00A8,0x2663},
+		{0x00A9,0x2666},
+		{0x00AA,0x2665},
+		{0x00AB,0x2660},
+		{0x00AC,0x2460},
+		{0x00AD,0x2461},
+		{0x00AE,0x2462},
+		{0x00AF,0x2463},
+		{0x00B0,0x2464},
+		{0x00B1,0x2465},
+		{0x00B2,0x2466},
+		{0x00B3,0x2467},
+		{0x00B4,0x2468},
+		{0x00B5,0x2469},
+		{0x00B6,0x2776},
+		{0x00B7,0x2777},
+		{0x00B8,0x2778},
+		{0x00B9,0x2779},
+		{0x00BA,0x277A},
+		{0x00BB,0x277B},
+		{0x00BC,0x277C},
+		{0x00BD,0x277D},
+		{0x00BE,0x277E},
+		{0x00BF,0x277F},
+		{0x00C0,0x2780},
+		{0x00C1,0x2781},
+		{0x00C2,0x2782},
+		{0x00C3,0x2783},
+		{0x00C4,0x2784},
+		{0x00C5,0x2785},
+		{0x00C6,0x2786},
+		{0x00C7,0x2787},
+		{0x00C8,0x2788},
+		{0x00C9,0x2789},
+		{0x00CA,0x278A},
+		{0x00CB,0x278B},
+		{0x00CC,0x278C},
+		{0x00CD,0x278D},
+		{0x00CE,0x278E},
+		{0x00CF,0x278F},
+		{0x00D0,0x2790},
+		{0x00D1,0x2791},
+		{0x00D2,0x2792},
+		{0x00D3,0x2793},
+		{0x00D4,0x2794},
+		{0x00D5,0x2192},
+		{0x00D6,0x2194},
+		{0x00D7,0x2195},
+		{0x00D8,0x2798},
+		{0x00D9,0x2799},
+		{0x00DA,0x279A},
+		{0x00DB,0x279B},
+		{0x00DC,0x279C},
+		{0x00DD,0x279D},
+		{0x00DE,0x279E},
+		{0x00DF,0x279F},
+		{0x00E0,0x27A0},
+		{0x00E1,0x27A1},
+		{0x00E2,0x27A2},
+		{0x00E3,0x27A3},
+		{0x00E4,0x27A4},
+		{0x00E5,0x27A5},
+		{0x00E6,0x27A6},
+		{0x00E7,0x27A7},
+		{0x00E8,0x27A8},
+		{0x00E9,0x27A9},
+		{0x00EA,0x27AA},
+		{0x00EB,0x27AB},
+		{0x00EC,0x27AC},
+		{0x00ED,0x27AD},
+		{0x00EE,0x27AE},
+		{0x00EF,0x27AF},
+		{0x00F1,0x27B1},
+		{0x00F2,0x27B2},
+		{0x00F3,0x27B3},
+		{0x00F4,0x27B4},
+		{0x00F5,0x27B5},
+		{0x00F6,0x27B6},
+		{0x00F7,0x27B7},
+		{0x00F8,0x27B8},
+		{0x00F9,0x27B9},
+		{0x00FA,0x27BA},
+		{0x00FB,0x27BB},
+		{0x00FC,0x27BC},
+		{0x00FD,0x27BD},
+		{0x00FE,0x27BE},
+		{255,100000}
+	};
+
+static const UT_uint32 adobeSUni[/*185*/][2] =
+	{
+		{32,32},
+		{33,33},
+		{34,8704},
+		{35,35},
+		{36,8707},
+		{37,37},
+		{38,38},
+		{39,8715},
+		{40,40},
+		{41,41},
+		{42,8727},
+		{43,43},
+		{44,44},
+		{45,8722},
+		{46,46},
+		{47,47},
+		{48,48},
+		{49,49},
+		{50,50},
+		{51,51},
+		{52,52},
+		{53,53},
+		{54,54},
+		{55,55},
+		{56,56},
+		{57,57},
+		{58,58},
+		{59,59},
+		{60,60},
+		{61,61},
+		{62,62},
+		{63,63},
+		{64,8773},
+		{65,913},
+		{66,914},
+		{67,935},
+		{68,8710},
+		{69,917},
+		{70,934},
+		{71,915},
+		{72,919},
+		{73,921},
+		{74,977},
+		{75,922},
+		{76,923},
+		{77,924},
+		{78,925},
+		{79,927},
+		{80,928},
+		{81,920},
+		{82,929},
+		{83,931},
+		{84,932},
+		{85,933},
+		{86,962},
+		{87,8486},
+		{88,926},
+		{89,936},
+		{90,918},
+		{91,91},
+		{92,8756},
+		{93,93},
+		{94,8869},
+		{95,95},
+		{96,63717},
+		{97,945},
+		{98,946},
+		{99,967},
+		{100,948},
+		{101,949},
+		{102,966},
+		{103,947},
+		{104,951},
+		{105,953},
+		{106,981},
+		{107,954},
+		{108,955},
+		{109,181},
+		{110,957},
+		{111,959},
+		{112,960},
+		{113,952},
+		{114,961},
+		{115,963},
+		{116,964},
+		{117,965},
+		{119,969},
+		{120,958},
+		{121,968},
+		{122,950},
+		{123,123},
+		{124,124},
+		{125,125},
+		{126,8764},
+		{163,8804},
+		{164,8260},
+		{165,8734},
+		{166,402},
+		{167,9827},
+		{168,9830},
+		{169,9829},
+		{170,9824},
+		{171,8596},
+		{172,8592},
+		{173,8593},
+		{174,8594},
+		{175,8595},
+		{176,176},
+		{177,177},
+		{179,8805},
+		{180,215},
+		{181,8733},
+		{182,8706},
+		{183,8226},
+		{184,247},
+		{185,8800},
+		{186,8801},
+		{187,8776},
+		{188,8230},
+		{189,63718},
+		{190,63719},
+		{191,8629},
+		{192,8501},
+		{193,8465},
+		{194,8476},
+		{195,8472},
+		{196,8855},
+		{197,8853},
+		{198,8709},
+		{199,8745},
+		{200,8746},
+		{201,8835},
+		{202,8839},
+		{203,8836},
+		{204,8834},
+		{205,8838},
+		{206,8712},
+		{207,8713},
+		{208,8736},
+		{209,8711},
+		{210,0},
+		{211,63193},
+		{212,63195},
+		{213,8719},
+		{214,8730},
+		{215,8901},
+		{216,172},
+		{217,8743},
+		{218,8744},
+		{219,8660},
+		{220,8656},
+		{221,8657},
+		{222,8658},
+		{223,8659},
+		{224,9674},
+		{225,9001},
+		{226,0},
+		{227,63721},
+		{228,63722},
+		{229,8721},
+		{230,63723},
+		{231,63724},
+		{232,63725},
+		{233,63726},
+		{234,63727},
+		{235,63728},
+		{236,63729},
+		{237,63730},
+		{238,0},
+		{239,63732},
+		{241,9002},
+		{242,8747},
+		{243,8992},
+		{244,63733},
+		{245,8993},
+		{246,63734},
+		{247,63735},
+		{248,63736},
+		{249,63737},
+		{250,63738},
+		{251,63739},
+		{252,63740},
+		{253,63741},
+		{254,63742},
+		{255,100000}
+	};
+
+UT_uint32 adobeToUnicode(UT_uint32 iAdobe)
+{
+	UT_uint32 low = adobeSUni[0][0];
+	UT_uint32 high = adobeSUni[183][0];
+	if(iAdobe < low)
+	{
+		return iAdobe;
+	}
+	if(iAdobe > high)
+	{
+		return iAdobe;
+	}
+	UT_sint32 slow = static_cast<UT_sint32>(iAdobe) - 72;
+	if(slow < 0)
+	{ 
+		slow = 0;
+	}
+	while(adobeSUni[slow][0] != iAdobe && slow < 255)
+	{
+		xxx_UT_DEBUGMSG(("char at %d is %d value %d \n",slow,adobeSUni[slow][0],adobeSUni[slow][1]));
+		slow++;
+	}
+	xxx_UT_DEBUGMSG(("Input %d return %d \n",iAdobe,adobeSUni[slow][1]));
+	if(slow > 255)
+	{
+		return iAdobe;
+	}
+	return adobeSUni[slow][1];
+}
+
+UT_uint32 adobeDingbatsToUnicode(UT_uint32 iAdobe)
+{
+	
+#if 1
+	UT_uint32 low = adobeDUni[0][0];
+	UT_uint32 high = adobeDUni[202][0];
+	if(iAdobe < low)
+	{
+		return iAdobe;
+	}
+	if(iAdobe > high)
+	{
+		return iAdobe;
+	}
+	UT_sint32 slow = static_cast<UT_sint32>(iAdobe) - 32;
+	if(slow < 0)
+	{ 
+		slow = 0;
+	}
+	while(adobeDUni[slow][0] != iAdobe && slow < 255)
+	{
+		xxx_UT_DEBUGMSG(("char at %d is %d value %d \n",slow,adobeDUni[slow][0],adobeSUni[slow][1]));
+		slow++;
+	}
+	xxx_UT_DEBUGMSG(("Input %d return %d \n",iAdobe,adobeDUni[slow][1]));
+	if(slow > 255)
+	{
+		return iAdobe;
+	}
+	return adobeDUni[slow][1];
+#endif
+}
+
+void GR_Font::s_getGenericFontProperties(const char * /*szFontName*/,
+										 FontFamilyEnum * pff,
+										 FontPitchEnum * pfp,
+										 bool * pbTrueType)
+{
+	// describe in generic terms the named font.
+
+	// Note: most of the unix font handling code is in abi/src/af/xap/unix
+	// Note: rather than in the graphics class.  i'm not sure this matters,
+	// Note: but it is just different....
+
+	// TODO add code to map the given font name into one of the
+	// TODO enums in GR_Font and set *pff and *pft.
+
+	*pff = FF_Unknown;
+	*pfp = FP_Unknown;
+	*pbTrueType = true;
+}

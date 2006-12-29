@@ -21,8 +21,7 @@
 #define AP_UnixDialog_Columns_H
 
 #include "ap_Dialog_Columns.h"
-#include "xap_UnixFontManager.h"
-#include "gr_UnixGraphics.h"
+#include "gr_UnixPangoGraphics.h"
 
 #include "ut_types.h"
 #include "ut_string.h"
@@ -175,7 +174,7 @@ protected:
 	void 		_storeWindowData(void);
 	void            _connectsignals(void);
 
-	GR_UnixGraphics	* 		m_pPreviewWidget;
+	GR_UnixPangoGraphics	* 		m_pPreviewWidget;
 
 	// pointers to widgets we need to query/set
 	GtkWidget * m_windowMain;

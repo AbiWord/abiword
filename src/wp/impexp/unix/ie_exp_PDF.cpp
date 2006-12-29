@@ -23,14 +23,16 @@
 #include "ut_string.h"
 #include "ie_exp_PDF.h"
 #include "pd_Document.h"
-#include "xap_UnixGnomePrintGraphics.h"
 #include "gr_UnixPangoGraphics.h"
 #include "fv_View.h"
 #include "ap_EditMethods.h"
+#include "xap_App.h"
 
 #include <gsf/gsf-output-memory.h>
 #include <gsf/gsf-input-stdio.h>
 #include <glib/gstdio.h>
+
+#include <unistd.h>
 
 /*****************************************************************/
 /*****************************************************************/
@@ -66,9 +68,6 @@ public:
     GR_Graphics * print_graphics = NULL;
     job = gnome_print_job_new (NULL);
     bool bRes;
-    XAP_UnixGnomePrintGraphics * gnome_print_graphics;
-    GR_GraphicsFactory * pGF;
-    UT_uint32 iDefaultPrintClass;
     char *filename = NULL;
     int fd;
 
@@ -101,23 +100,7 @@ public:
     if (!bRes)
       goto exit_writeDocument;
     
-    pGF = XAP_App::getApp()->getGraphicsFactory();
-    if (!pGF)
-      goto exit_writeDocument;
-    
-    gnome_print_graphics = new XAP_UnixGnomePrintGraphics(job);
-    iDefaultPrintClass = pGF->getDefaultClass(false);
-
-#if defined(USE_PANGO)    
-    if(iDefaultPrintClass == GRID_UNIX_PANGO_PRINT || iDefaultPrintClass == GRID_UNIX_PANGO)
-      {
-	print_graphics = new GR_UnixPangoPrintGraphics(gnome_print_graphics);
-      }
-    else
-#endif
-      {
-	print_graphics = gnome_print_graphics;
-      }
+    print_graphics = new GR_UnixPangoPrintGraphics(job);
 
     // create a new layout and view object for the doc
     pDocLayout = new FL_DocLayout(getDoc(), print_graphics);

@@ -37,7 +37,6 @@
 class XAP_Args;
 class AP_UnixToolbar_Icons;
 class AV_View;
-class XAP_UnixFontManager;
 class XAP_UnixClipboard;
 
 /*****************************************************************
@@ -78,8 +77,6 @@ public:
 																const char **pszFormatFound) = 0;
 	virtual void							cacheCurrentSelection(AV_View *) = 0;
 
-	XAP_UnixFontManager *					getFontManager() const;
-	
 	virtual XAP_UnixClipboard * getClipboard () = 0;
 
 	enum
@@ -106,13 +103,10 @@ public:
     virtual XAP_App::BidiSupportType  theOSHasBidiSupport() const {return BIDI_SUPPORT_GUI;}
 
 protected:
-	bool							_loadFonts();
-	
 	void							_setAbiSuiteLibDir();
 
 	AP_UnixDialogFactory			m_dialogFactory;
 	AP_UnixToolbar_ControlFactory	m_controlFactory;
-	XAP_UnixFontManager *			m_fontManager;
 	
 	windowGeometry			m_geometry;
 	UT_uint32					m_eventTime; // e->time field of a recent X event

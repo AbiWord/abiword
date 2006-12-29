@@ -29,7 +29,6 @@
 #include <gdk/gdk.h>
 #include "ut_types.h"
 #include "ap_LeftRuler.h"
-#include "gr_UnixGraphics.h"
 class XAP_Frame;
 
 

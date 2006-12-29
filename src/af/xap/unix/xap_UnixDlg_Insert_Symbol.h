@@ -21,13 +21,12 @@
 #define XAP_UNIXDIALOG_INSERT_SYMBOL_H
 
 #include "xap_Dlg_Insert_Symbol.h"
-#include "xap_UnixFontManager.h"
-#include "gr_UnixGraphics.h"
 #include <gdk/gdkkeysyms.h>
 
 #define DEFAULT_UNIX_SYMBOL_FONT "Symbol"
 
 class XAP_Frame;
+class GR_UnixPangoGraphics;
 
 /*****************************************************************/
 
@@ -85,8 +84,8 @@ private:
 	GtkWidget * _previewNew(int w, int h);
 
 	GtkWidget * m_areaCurrentSym;
-	GR_UnixGraphics	* 		m_unixGraphics;
-	GR_UnixGraphics *       m_unixarea;
+	GR_UnixPangoGraphics * m_unixGraphics;
+	GR_UnixPangoGraphics * m_unixarea;
 	UT_uint32 m_ix;
 	UT_uint32 m_iy;
 #endif /* USE_GUCHARMAP */

@@ -22,22 +22,14 @@ INCLUDES= @GTK_CFLAGS@ @GMODULE_CFLAGS@ $(AF_INCLUDES) $(ICONV_INCLUDES)
 
 noinst_LIBRARIES = libGr_unix.a
 
-if WITH_PANGO
-pango_src = gr_UnixPangoGraphics.cpp \
-	gr_UnixNullGraphics.cpp
-else
-pango_src =
-endif
-
-libGr_unix_a_SOURCES= $(pango_src)              \
-	              gr_UnixGraphics.cpp	\
+libGr_unix_a_SOURCES= gr_UnixPangoGraphics.cpp	\
+		      gr_UnixNullGraphics.cpp   \
 	              gr_UnixImage.cpp
 
 EXTRA_DIST = $(headers_DATA)
 
 headersdir = $(ABIWORD_HEADERSDIR)/gr/unix
 headers_DATA = \
-	gr_UnixGraphics.h \
 	gr_UnixImage.h \
 	gr_UnixPangoGraphics.h \
 	gr_UnixNullGraphics.h

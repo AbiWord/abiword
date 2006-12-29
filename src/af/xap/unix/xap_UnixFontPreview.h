@@ -23,10 +23,9 @@
 #include <gtk/gtk.h>
 #include "xap_App.h"
 #include "xap_FontPreview.h"
-#include "xap_UnixFontManager.h"
 
 class XAP_Frame;
-class GR_UnixGraphics;
+class GR_UnixPangoGraphics;
 
 class XAP_UnixFontPreview : public XAP_FontPreview
 {
@@ -34,7 +33,7 @@ public:
 	XAP_UnixFontPreview(XAP_Frame * pFrame, UT_sint32 left, UT_uint32 top);
 	virtual ~XAP_UnixFontPreview(void);
 	
-	GR_UnixGraphics * 		m_gc;
+	GR_UnixPangoGraphics * 		m_gc;
 protected:
 private:
 	// parent frame

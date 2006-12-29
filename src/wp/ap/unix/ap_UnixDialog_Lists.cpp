@@ -30,7 +30,6 @@
 #include "xap_Dialog_Id.h"
 #include "xap_UnixApp.h"
 #include "xap_Frame.h"
-#include "xap_UnixFontManager.h"
 
 #include "ap_Strings.h"
 #include "ap_Dialog_Id.h"
@@ -199,9 +198,9 @@ void AP_UnixDialog_Lists::runModal( XAP_Frame * pFrame)
 	UT_ASSERT(m_wPreviewArea && m_wPreviewArea->window);
 
 	// make a new Unix GC
-	//m_pPreviewWidget = new GR_UnixGraphics(m_wPreviewArea->window, unixapp->getFontManager(), m_pApp);
-	GR_UnixAllocInfo ai(m_wPreviewArea->window, unixapp->getFontManager());
-	m_pPreviewWidget = (GR_UnixGraphics*) XAP_App::getApp()->newGraphics(ai);
+	GR_UnixAllocInfo ai(m_wPreviewArea->window);
+	m_pPreviewWidget =
+	    (GR_UnixPangoGraphics*) XAP_App::getApp()->newGraphics(ai);
 
 	// let the widget materialize
 	_createPreviewFromGC(m_pPreviewWidget,
@@ -247,8 +246,9 @@ void AP_UnixDialog_Lists::runModeless (XAP_Frame * pFrame)
 	UT_ASSERT(m_wPreviewArea && m_wPreviewArea->window);
 
 	// make a new Unix GC
-	GR_UnixAllocInfo ai(m_wPreviewArea->window, unixapp->getFontManager());
-	m_pPreviewWidget = (GR_UnixGraphics*) XAP_App::getApp()->newGraphics(ai);
+	GR_UnixAllocInfo ai(m_wPreviewArea->window);
+	m_pPreviewWidget =
+	    (GR_UnixPangoGraphics*) XAP_App::getApp()->newGraphics(ai);
 
 	// let the widget materialize
 
@@ -1120,59 +1120,30 @@ GtkWidget *AP_UnixDialog_Lists::_constructWindowContents (void)
 GList *  AP_UnixDialog_Lists::_getGlistFonts (void)
 {
 	UT_GenericVector<const char*>* names = NULL;
-	UT_GenericVector<XAP_UnixFont*>* fonts = NULL;
 	UT_uint32 count = 0;
 	
 	GR_GraphicsFactory * pGF = XAP_App::getApp()->getGraphicsFactory();
 	UT_return_val_if_fail(pGF, NULL);
 	
-	UT_uint32 iGR = pGF->getDefaultClass(true);
-	
-	if(iGR != GRID_UNIX_PANGO)
-	{
-		fonts = XAP_UnixFontManager::pFontManager->getAllFonts();
-		UT_return_val_if_fail(fonts, NULL);
-		count = fonts->size();
-	}
-#ifdef USE_PANGO
-	else
-	{
-		names = GR_UnixPangoGraphics::getAllFontNames();
-		UT_return_val_if_fail(names, NULL);
-		count = names->size();
-	}
-#endif
+	names = GR_UnixPangoGraphics::getAllFontNames();
+	UT_return_val_if_fail(names, NULL);
+	count = names->size();
+
 	GList *glFonts = NULL;
 	const gchar *currentfont = NULL;
 
 	for (UT_uint32 i = 0; i < count; i++)
 	{
-		if(iGR != GRID_UNIX_PANGO)
-		{
-			XAP_UnixFont * pFont = fonts->getNthItem(i);
-			const gchar * lgn  = reinterpret_cast<const gchar *>(pFont->getName());
-			if(!currentfont ||
-			   strstr(currentfont,lgn)==NULL ||
-			   strlen(currentfont)!=strlen(lgn))
-			{
-				currentfont = lgn;
-				glFonts = g_list_prepend(glFonts, g_strdup(currentfont));
-			}
-		}
-		else
-		{
-			const gchar * lgn  = names->getNthItem(i);
-			if(!currentfont ||
-			   strstr(currentfont,lgn)==NULL ||
-			   strlen(currentfont)!=strlen(lgn))
-			{
-				currentfont = lgn;
-				glFonts = g_list_prepend(glFonts, g_strdup(currentfont));
-			}
-		}
+	    const gchar * lgn  = names->getNthItem(i);
+	    if(!currentfont ||
+	       strstr(currentfont,lgn)==NULL ||
+	       strlen(currentfont)!=strlen(lgn))
+	    {
+		currentfont = lgn;
+		glFonts = g_list_prepend(glFonts, g_strdup(currentfont));
+	    }
 	}
 		
-	DELETEP(fonts);
 	DELETEP(names);
 	
 	m_glFonts =  g_list_reverse(glFonts);

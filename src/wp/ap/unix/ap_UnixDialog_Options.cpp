@@ -32,8 +32,6 @@
 // like centering them, measuring them, etc.
 #include "xap_UnixDialogHelper.h"
 
-#include "gr_UnixGraphics.h"
-
 #include "xap_App.h"
 #include "xap_UnixApp.h"
 #include "xap_Frame.h"

@@ -21,7 +21,6 @@
 #define XAP_UNIXDIALOG_ZOOM_H
 
 #include "xap_Dlg_Zoom.h"
-#include "xap_UnixFontManager.h"
 
 class XAP_Frame;
 

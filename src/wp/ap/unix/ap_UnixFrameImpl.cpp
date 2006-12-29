@@ -8,7 +8,6 @@
 #include "xap_UnixApp.h"
 #include "xap_UnixDialogHelper.h"
 #include "ap_UnixStatusBar.h"
-#include "gr_UnixGraphics.h"
 #include "ut_debugmsg.h"
 
 #ifdef ABISOURCE_LICENSED_TRADEMARKS

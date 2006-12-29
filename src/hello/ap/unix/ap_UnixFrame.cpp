@@ -29,14 +29,10 @@
 #include "ev_UnixToolbar.h"
 #include "ap_Prefs_SchemeIds.h"
 #include "xav_View.h"
-#include "gr_UnixGraphics.h"
 #include "ap_UnixFrame.h"
 #include "xap_UnixApp.h"
-#include "xap_UnixFontManager.h"
 #include "ap_View.h"
 #include "ap_UnixStatusBar.h"
-
-#include "gr_UnixGraphics.h"
 
 #define ENSUREP(p)      do { UT_ASSERT(p); if (!p) goto Cleanup; } while (0)
 
@@ -83,9 +79,8 @@ UT_Error AP_UnixFrame::loadDocument(const char * szFilename, int fileType)
 {
 	XAP_UnixFontManager * fontManager = ((XAP_UnixApp *) getApp())->getFontManager();
 
-	//GR_UnixGraphics* pG = new GR_UnixGraphics(m_dArea->window, fontManager, getApp());
-	GR_UnixAllocInfo ai(m_dArea->window, fontManager);
-	GR_UnixGraphics* pG = (GR_UnixGraphics*) XAP_App::getApp()->newGraphics(ai);
+	GR_UnixAllocInfo ai(m_dArea->window);
+	GR_UnixPangoGraphics* pG = (GR_UnixPangoGraphics*) XAP_App::getApp()->newGraphics(ai);
 	
 	pG->setFont(pG->findFont("times", "normal", NULL, "bold", NULL, "72pt", NULL));
 				

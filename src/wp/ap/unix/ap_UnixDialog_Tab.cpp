@@ -30,7 +30,6 @@
 // like centering them, measuring them, etc.
 #include "xap_UnixDialogHelper.h"
 
-#include "gr_UnixGraphics.h"
 #include "fl_BlockLayout.h"
 
 #include "xap_App.h"

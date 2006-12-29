@@ -21,12 +21,11 @@
 #define XAP_UNIXDIALOG_FONTCHOOSER_H
 
 #include "xap_App.h"
-#include "xap_UnixFontManager.h"
 #include "xap_Dlg_FontChooser.h"
 #include "ut_misc.h"
 
 class XAP_Frame;
-class GR_UnixGraphics;
+class GR_UnixPangoGraphics;
 
 /*****************************************************************/
 
@@ -53,8 +52,6 @@ public:
 
 	// the state of what data is hidden and what is public is
 	// pretty grave here.
-	XAP_UnixFontManager * 	m_fontManager;
-
 	GtkWidget * 			m_fontList;
 	GtkWidget * 			m_styleList;
 	GtkWidget * 			m_sizeList;
@@ -67,7 +64,7 @@ public:
 	GtkWidget *				m_bgcolorSelector;
 	GtkWidget * 			m_preview;
 	bool					getEntryString(char ** string);
-	GR_UnixGraphics * 		m_gc;
+	GR_UnixPangoGraphics * 		m_gc;
 
 	bool		 			m_blockUpdate;
 	bool		 			m_doneFirstFont;
@@ -97,10 +94,6 @@ protected:
 	GtkWidget * 			get_widget(GtkWidget * widget, gchar * widget_name);
 	virtual GtkWidget *             constructWindow(void);
 	GtkWidget *                     constructWindowContents(GtkWidget *);
-
-	// a temporary font to hold dynamically allocated "rented"
-	// fonts between style changes
-	XAP_UnixFontHandle * 	m_lastFont;
 
 	// parent frame
 	XAP_Frame *			m_pFrame;

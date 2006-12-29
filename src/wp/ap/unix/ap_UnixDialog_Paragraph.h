@@ -20,11 +20,10 @@
 #ifndef AP_UNIXDIALOG_PARAGRAPH_H
 #define AP_UNIXDIALOG_PARAGRAPH_H
 
-#include "xap_UnixFontManager.h"
-
 #include "ap_Dialog_Paragraph.h"
 
 class XAP_UnixFrame;
+class GR_UnixPangoGraphics;
 
 /*****************************************************************/
 
@@ -73,7 +72,7 @@ public:
 	    BUTTON_TABS = 0
 	  } ResponseId;
 
-	GR_UnixGraphics	* 		m_unixGraphics;
+	GR_UnixPangoGraphics	* 		m_unixGraphics;
 	bool					m_bEditChanged;
 
 	// private construction functions
