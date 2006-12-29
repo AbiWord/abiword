@@ -1920,7 +1920,7 @@ void fp_TextRun::_draw(dg_DrawArgs* pDA)
 		xxx_UT_DEBUGMSG(("_drawText segment %d off %d length %d width %d \n",iSegment,iMyOffset,m_pRenderInfo->m_iLength ,iSegmentWidth[iSegment]));
 		painter.renderChars(*m_pRenderInfo);
 		
-#if 0
+#if 0 
 		//DEBUG
 		GR_Font * f = _getFont();
 		UT_uint32 _ascent, _descent, _height;

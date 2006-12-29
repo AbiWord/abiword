@@ -351,6 +351,9 @@ extern "C" {
   gboolean abi_widget_set_olpc_selections (AbiWidget * w, gboolean b);
   gboolean abi_widget_get_olpc_selections (AbiWidget * w);
 
+  gchar * abi_widget_get_content_all(AbiWidget * w, gchar * mimetype);
+  gchar * abi_widget_get_content_selection(AbiWidget * w, gchar * mimetype);
+
 #ifdef HAVE_BONOBO
   void        abi_widget_set_Bonobo_uic(AbiWidget * abi,BonoboUIComponent * uic);
   BonoboUIComponent * abi_widget_get_Bonobo_uic(AbiWidget * abi);  

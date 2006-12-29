@@ -1163,8 +1163,6 @@ void fp_Run::draw(dg_DrawArgs* pDA)
 	if (((pDA->yoff < -imax) || (pDA->yoff > imax)) && pG->queryProperties(GR_Graphics::DGP_SCREEN))
 	     return;
 
-	GR_Painter painter(pG);
-
 	if(pG->queryProperties(GR_Graphics::DGP_PAPER))
 	{
 		m_bPrinting = true;
@@ -1240,6 +1238,7 @@ void fp_Run::draw(dg_DrawArgs* pDA)
 	
 	if(m_pRevisions && bShowRevs)
 	{
+		GR_Painter painter(pG);
 		const PP_Revision * r = m_pRevisions->getLastRevision();
 		UT_ASSERT(r != NULL);
 
@@ -1285,6 +1284,7 @@ void fp_Run::draw(dg_DrawArgs* pDA)
 	{
 		// have to set the colour again, since fp_TextRun::_draw can set it to red
 		// for drawing sguiggles
+		GR_Painter painter(pG);
 		pG->setColor(_getView()->getColorHyperLink());
 		pG->setLineProperties(pG->tluD(1.0),
 								GR_Graphics::JOIN_MITER,
@@ -1296,6 +1296,7 @@ void fp_Run::draw(dg_DrawArgs* pDA)
 
 	if(m_eVisibility == FP_HIDDEN_TEXT || m_eVisibility == FP_HIDDEN_REVISION_AND_TEXT)
 	{
+		GR_Painter painter(pG);
 		pG->setColor(getFGColor());
 		pG->setLineProperties(pG->tluD(1.0),
 								GR_Graphics::JOIN_MITER,

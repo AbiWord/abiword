@@ -24,8 +24,16 @@
 
 #include <string.h>
 #include <glib/gi18n.h>
+#include <stdio.h>
+#include <stdlib.h>
+#include <string.h>
+#include "abiwidget.h":
+#include <gsf/gsf-input.h>
+#include <gsf/gsf-output.h>
+#include <gsf/gsf-input-memory.h>
+#include <gsf/gsf-output-memory.h>
+#include <gsf/gsf-utils.h>
 
-#include "abiwidget.h"
 #include "gr_UnixGraphics.h"
 #include "ev_EditMethod.h"
 #include "ut_assert.h"
@@ -41,6 +49,7 @@
 #include "ut_sleep.h"
 #include "fv_View.h"
 #include "fl_DocLayout.h"
+#include "ut_go_file.h"
 
 /**************************************************************************/
 /**************************************************************************/
@@ -855,6 +864,95 @@ abi_widget_file_open(AbiWidget * abi)
 	AP_UnixFrame * pFrame = static_cast<AP_UnixFrame *>(abi->priv->m_pFrame);
 	_abi_widget_bindListenerToView(abi, pFrame->getCurrentView());
 	return TRUE;
+}
+
+/*!
+ * Extract all the content in the document.
+ * Caller must free the memory.
+ */
+extern "C" gchar *
+abi_widget_get_content_all(AbiWidget * w, char * mimetype)
+{
+	// Don't put this auto-save in the most recent list.
+	XAP_App::getApp()->getPrefs()->setIgnoreNextRecent();
+	GsfOutputMemory* sink = GSF_OUTPUT_MEMORY(gsf_output_memory_new());
+
+	IEFileType ieft = IE_Exp::fileTypeForMimetype(mimetype);
+	if(IEFT_Unknown == ieft)
+		ieft = IE_Exp::fileTypeForSuffix(mimetype);
+	if(IEFT_Unknown == ieft)
+		ieft = IE_Exp::fileTypeForSuffix(".abw");
+
+	XAP_Frame * pFrame = w->priv->m_pFrame;
+	if(!pFrame)
+		return NULL;
+	FV_View * view = reinterpret_cast<FV_View *>(pFrame->getCurrentView());
+	if(view == NULL)
+		return NULL;
+	PD_Document * doc = view->getDocument () ;
+	UT_Error result = const_cast<PD_Document*>(doc)->saveAs(GSF_OUTPUT(sink),ieft, true);
+	if(result != UT_OK)
+		return NULL;
+	gsf_output_close(GSF_OUTPUT(sink));
+	guint32 size = gsf_output_size (GSF_OUTPUT(sink));
+	const guint8* ibytes = gsf_output_memory_get_bytes (sink);
+	gchar * szOut = new gchar[size+1];
+	memcpy(szOut,ibytes,size);
+	szOut[size] = 0;
+	g_object_unref(G_OBJECT(sink));
+	return szOut;
+}
+
+
+/*!
+ * Extract all the content in the selection
+ * Caller must free the memory.
+ */
+extern "C" gchar *
+abi_widget_get_content_selection(AbiWidget * w, gchar * mimetype)
+{
+	// Don't put this auto-save in the most recent list.
+	XAP_App::getApp()->getPrefs()->setIgnoreNextRecent();
+	GsfOutputMemory* sink = GSF_OUTPUT_MEMORY(gsf_output_memory_new());
+
+	IEFileType ieft = IE_Exp::fileTypeForMimetype(mimetype);
+	if(IEFT_Unknown == ieft)
+		ieft = IE_Exp::fileTypeForSuffix(mimetype);
+	if(IEFT_Unknown == ieft)
+		ieft = IE_Exp::fileTypeForSuffix(".abw");
+
+	XAP_Frame * pFrame = w->priv->m_pFrame;
+	if(!pFrame)
+		return NULL;
+	FV_View * view = reinterpret_cast<FV_View *>(pFrame->getCurrentView());
+	if(view == NULL)
+		return NULL;
+	PD_Document * doc = view->getDocument () ;
+	if(view->isSelectionEmpty())
+		return NULL;
+	PT_DocPosition low = view->getSelectionAnchor();
+	PT_DocPosition high = view->getPoint();
+	if(high < low)
+	{
+			PT_DocPosition swap = low;
+			low = high;
+			high = swap;
+	}
+	PD_DocumentRange * pDocRange = new 	PD_DocumentRange(doc,low,high);
+	UT_ByteBuf buf;
+	IE_Exp * pie = NULL;
+	UT_Error errorCode;	
+	IEFileType newFileType;
+	errorCode = IE_Exp::constructExporter(doc,GSF_OUTPUT(sink), ieft, &pie, &newFileType);
+	if (errorCode)
+		return NULL;
+	pie->copyToBuffer(pDocRange,&buf);
+	guint32 size = buf.getLength();
+	gchar * szOut = new gchar[size+1];
+	memcpy(szOut,buf.getPointer(0),size);
+	szOut[size] = 0;
+	g_object_unref(G_OBJECT(sink));
+	return szOut;
 }
 
 extern "C" gboolean
