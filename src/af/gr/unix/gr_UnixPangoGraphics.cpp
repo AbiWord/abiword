@@ -684,12 +684,12 @@ void GR_UnixPangoGraphics::prepareToRenderChars(GR_RenderInfo & ri)
 */
 void GR_UnixPangoGraphics::renderChars(GR_RenderInfo & ri)
 {
-	xxx_UT_DEBUGMSG(("GR_UnixPangoGraphics::renderChars\n"));
 	UT_return_if_fail(ri.getType() == GRRI_UNIX_PANGO);
 	GR_UnixPangoRenderInfo & RI = (GR_UnixPangoRenderInfo &)ri;
 	GR_UnixPangoFont * pFont = (GR_UnixPangoFont *)RI.m_pFont;
 	GR_UnixPangoItem * pItem = (GR_UnixPangoItem *)RI.m_pItem;
 	UT_return_if_fail(pItem && pFont && pFont->getPangoFont());
+	xxx_UT_DEBUGMSG(("GR_UnixPangoGraphics::renderChars length %d \n",RI.m_iLength));
 
 	if(RI.m_iLength == 0)
 		return;
@@ -698,7 +698,6 @@ void GR_UnixPangoGraphics::renderChars(GR_RenderInfo & ri)
 	UT_sint32 xoff = _tduX(RI.m_xoff);
 	UT_sint32 yoff = _tduY(RI.m_yoff + getFontAscent(pFont));
 
-	xxx_UT_DEBUGMSG(("about to pango_xft_render xoff %d yoff %d\n", xoff, yoff));
 	UT_return_if_fail(m_pXftDraw && RI.m_pGlyphs);
 
 	// TODO -- test here for the endpoint as well
@@ -1333,7 +1332,6 @@ void GR_UnixPangoGraphics::drawChars(const UT_UCSChar* pChars,
 					pItem->length,
 					&(pItem->analysis),
 					pGstring);
-
 		pango_xft_render(m_pXftDraw, &m_XftColor, pf, pGstring, xoffD, yoffD);
 
 		// now advance xoff
