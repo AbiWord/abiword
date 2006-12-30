@@ -1,3 +1,4 @@
+/* -*- mode: C++; tab-width: 4; c-basic-offset: 4; -*- */
  /* AbiWord
  * Copyright (C) 1998,1999 AbiSource, Inc.
  * Copyright (c) 2001,2002 Tomas Frydrych
@@ -356,19 +357,20 @@ void fp_TextRun::printText(void)
 #endif
 bool fp_TextRun::canBreakAfter(void) const
 {
-	if (getLength() > 0)
+	if (getNextRun() && getNextRun()->getType () != FPRUN_TEXT)
+		return getNextRun()->canBreakBefore();
+	else if (!getNextRun())
+		return true;
+	else if (getLength() > 0)
 	{
 		PD_StruxIterator text(getBlock()->getStruxDocHandle(),
 							  getBlockOffset() + fl_BLOCK_STRUX_OFFSET);
 		UT_return_val_if_fail(text.getStatus() == UTIter_OK, false);
 
-		// in order to allow proper decision on breaking at the end of run, we will try to
-		// set the upper limit one character pass the end of this run
-
-		if(getNextRun())
-			text.setUpperLimit(text.getPosition() + getLength());
-		else
-			text.setUpperLimit(text.getPosition() + getLength() - 1);
+		// in order to allow proper decision on breaking at the end of run, we
+		// set the upper limit one character pass the end of this run -- we
+		// know there is a text run following us
+		text.setUpperLimit(text.getPosition() + getLength());
 		
 		UT_return_val_if_fail(m_pRenderInfo, false);
 		m_pRenderInfo->m_pText = &text;
@@ -377,18 +379,7 @@ bool fp_TextRun::canBreakAfter(void) const
 
 		UT_sint32 iNext;
 		if (getGraphics()->canBreak(*m_pRenderInfo, iNext, true))
-		{
 			return true;
-		}
-	}
-	else if (!getNextRun())
-	{
-		return true;
-	}
-
-	if (getNextRun())
-	{
-		return getNextRun()->canBreakBefore();
 	}
 
 	return false;
@@ -555,7 +546,7 @@ bool	fp_TextRun::findMaxLeftFitSplitPoint(UT_sint32 iMaxLeftWidth, fp_RunSplitIn
 	// in order to allow proper decision on breaking at the end of run, we will try to
 	// set the upper limit one character pass the end of this run
 
-	if(getNextRun())
+	if(getNextRun() && getNextRun()->getType() == FPRUN_TEXT)
 		text.setUpperLimit(text.getPosition() + getLength());
 	else
 		text.setUpperLimit(text.getPosition() + getLength() - 1);
