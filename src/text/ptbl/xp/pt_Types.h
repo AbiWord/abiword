@@ -143,7 +143,6 @@ typedef const void * PL_StruxFmtHandle;
 #define PT_FOOTERFIRST_ATTRIBUTE_NAME	(static_cast<const XML_Char *>("footer-first"))
 #define PT_FOOTERLAST_ATTRIBUTE_NAME	(static_cast<const XML_Char *>("footer-last"))
 #define PT_REVISION_ATTRIBUTE_NAME      (static_cast<const XML_Char *>("revision"))
-#define PT_ID_ATTRIBUTE_NAME            (static_cast<const XML_Char *>("id"))
 #define PT_STRUX_IMAGE_DATAID           (static_cast<const XML_Char *>("strux-image-dataid"))
 #define PT_XID_ATTRIBUTE_NAME           (static_cast<const XML_Char *>("xid"))
 #define PT_DATAITEM_ATTRIBUTE_NAME           (static_cast<const XML_Char *>("dataitem"))
