@@ -1872,7 +1872,20 @@ static bool s_AskForPathname(XAP_Frame * pFrame,
 #endif
 			pDialog->setSuggestFilename(true);
 		} else {
-			pDialog->setCurrentPathname(pFrame->getFilename());
+			//
+			// If OLPC selection are set, set the path name to the users
+			// home directory.
+			//
+			if(static_cast<AP_Frame *>(pFrame)->isOlpcSelections())
+			{
+				UT_UTF8String sHome = getenv("HOME");
+				sHome += "/";
+				pDialog->setCurrentPathname(sHome.utf8_str());
+			}
+			else
+			{
+				pDialog->setCurrentPathname(pFrame->getFilename());
+			}
 			pDialog->setSuggestFilename(false);
 		}
 	}
