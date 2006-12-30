@@ -924,6 +924,7 @@ public:
 	virtual ~fp_FieldEndnoteRefRun(){}
 
 	virtual bool			calculateValue(void);
+	virtual bool		    canBreakBefore(void) const;
 	virtual void			_draw(dg_DrawArgs* pDA) { _defaultDraw(pDA); }
 	virtual UT_uint32		needsFrequentUpdates(){return FIELD_UPDATE_ENDNOTE;};
 	UT_uint32				getPID() const {return m_iPID;}
@@ -959,6 +960,7 @@ public:
 	virtual ~fp_FieldFootnoteRefRun(){}
 
 	virtual bool			calculateValue(void);
+	virtual bool		    canBreakBefore(void) const;
 	virtual void			_draw(dg_DrawArgs* pDA) { _defaultDraw(pDA); }
 	virtual UT_uint32		needsFrequentUpdates(){return FIELD_UPDATE_ENDNOTE;};
 	UT_uint32				getPID() const {return m_iPID;}

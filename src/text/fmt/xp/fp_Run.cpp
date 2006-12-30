@@ -4808,6 +4808,10 @@ bool fp_FieldFootnoteRefRun::calculateValue(void)
 	return _setValue(sz_ucs_FieldValue);
 }
 
+bool fp_FieldFootnoteRefRun::canBreakBefore(void) const
+{
+	return false;
+}
 
 fp_FieldFootnoteAnchorRun::fp_FieldFootnoteAnchorRun(fl_BlockLayout* pBL, UT_uint32 iOffsetFirst, UT_uint32 iLen) : fp_FieldRun(pBL, iOffsetFirst, iLen)
 {
@@ -4936,6 +4940,10 @@ bool fp_FieldEndnoteRefRun::calculateValue(void)
 	return _setValue(sz_ucs_FieldValue);
 }
 
+bool fp_FieldEndnoteRefRun::canBreakBefore(void) const
+{
+	return false;
+}
 
 fp_FieldTimeRun::fp_FieldTimeRun(fl_BlockLayout* pBL, UT_uint32 iOffsetFirst, UT_uint32 iLen) : fp_FieldRun(pBL, iOffsetFirst, iLen)
 {
