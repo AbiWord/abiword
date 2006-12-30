@@ -6803,6 +6803,7 @@ void FV_View::extSelToXYword(UT_sint32 xPos, UT_sint32 yPos, bool bDrag)
 	xxx_UT_DEBUGMSG(("left anchor %d right %d \n",m_Selection.getSelectionLeftAnchor(),m_Selection.getSelectionRightAnchor()));
 
 	PT_DocPosition iNewPointWord = 0;
+	PT_DocPosition iTmpPointWord = 0;
 	/*
 Here is the Logic.
 If No selection present:
@@ -6858,6 +6859,13 @@ endif
 		if((getPoint() > m_Selection.getSelectionAnchor()) && (iNewPoint >=   m_Selection.getSelectionAnchor()))
 		{
 			iNewPointWord = _getDocPosFromPoint(iNewPoint, FV_DOCPOS_EOW_SELECT, false);	
+			iTmpPointWord = getSelectionAnchor();
+			iTmpPointWord = _getDocPosFromPoint(iTmpPointWord, FV_DOCPOS_BOW, false);
+			if(iTmpPointWord != getSelectionAnchor())
+			{
+				_clearSelection();
+				m_Selection.setSelectionAnchor(iTmpPointWord);
+			}
 		}
 		else if ((getPoint() > m_Selection.getSelectionAnchor()) && (iNewPoint <   m_Selection.getSelectionAnchor()))
 		{
@@ -6870,6 +6878,13 @@ endif
 		else if ((getPoint() <= m_Selection.getSelectionAnchor()) && (iNewPoint <   m_Selection.getSelectionAnchor()))
 		{
 			iNewPointWord = _getDocPosFromPoint(iNewPoint, FV_DOCPOS_BOW, false);	
+			iTmpPointWord = getSelectionAnchor();
+			iTmpPointWord = _getDocPosFromPoint(iTmpPointWord, FV_DOCPOS_EOW_SELECT, false);
+			if(iTmpPointWord != getSelectionAnchor())
+			{
+				_clearSelection();
+				m_Selection.setSelectionAnchor(iTmpPointWord);
+			}
 		}
 		else
 		{
