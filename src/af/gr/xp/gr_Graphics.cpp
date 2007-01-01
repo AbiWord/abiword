@@ -1641,8 +1641,7 @@ GR_Graphics * GR_GraphicsFactory::newGraphics(UT_uint32 iClassId, GR_AllocInfo &
 
 	if(indx < 0)
 		return NULL;
-				
-					
+
 	GR_Allocator alloc = m_vAllocators.getNthItem(indx);
 				
 	if(!alloc)

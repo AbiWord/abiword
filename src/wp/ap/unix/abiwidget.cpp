@@ -27,7 +27,7 @@
 #include <stdio.h>
 #include <stdlib.h>
 #include <string.h>
-#include "abiwidget.h":
+#include "abiwidget.h"
 #include <gsf/gsf-input.h>
 #include <gsf/gsf-output.h>
 #include <gsf/gsf-input-memory.h>
@@ -98,6 +98,8 @@ struct _AbiPrivData {
 	AbiWidget_ViewListener * m_pViewListener;
 	bool                 m_bShowMargin;
 	bool                 m_bOlpcSelections;
+	UT_UTF8String *      m_sMIMETYPE;
+	gint                 m_iDataLength;
 #ifdef HAVE_BONOBO
 	BonoboUIComponent    * m_uic;
 #endif
@@ -117,6 +119,10 @@ enum {
   VIEWPRINTLAYOUT,
   VIEWNORMALLAYOUT,
   VIEWWEBLAYOUT,
+  MIMETYPE,
+  CONTENT,
+  SELECTION,
+  DATALENGTH,
   ARG_LAST
 };
 
@@ -870,9 +876,10 @@ abi_widget_file_open(AbiWidget * abi)
 /*!
  * Extract all the content in the document.
  * Caller must free the memory.
+ * Number of bytes is returned in iLength
  */
 extern "C" gchar *
-abi_widget_get_content_all(AbiWidget * w, char * mimetype)
+abi_widget_get_content_all(AbiWidget * w, char * mimetype, gint * iLength)
 {
 	// Don't put this auto-save in the most recent list.
 	XAP_App::getApp()->getPrefs()->setIgnoreNextRecent();
@@ -901,6 +908,8 @@ abi_widget_get_content_all(AbiWidget * w, char * mimetype)
 	memcpy(szOut,ibytes,size);
 	szOut[size] = 0;
 	g_object_unref(G_OBJECT(sink));
+	*iLength = size+1;
+	w->priv->m_iDataLength = size+1;
 	return szOut;
 }
 
@@ -908,9 +917,10 @@ abi_widget_get_content_all(AbiWidget * w, char * mimetype)
 /*!
  * Extract all the content in the selection
  * Caller must free the memory.
+ * Number of bytes is returned in iLength
  */
 extern "C" gchar *
-abi_widget_get_content_selection(AbiWidget * w, gchar * mimetype)
+abi_widget_get_content_selection(AbiWidget * w, gchar * mimetype,gint * iLength)
 {
 	// Don't put this auto-save in the most recent list.
 	XAP_App::getApp()->getPrefs()->setIgnoreNextRecent();
@@ -953,6 +963,8 @@ abi_widget_get_content_selection(AbiWidget * w, gchar * mimetype)
 	memcpy(szOut,buf.getPointer(0),size);
 	szOut[size] = 0;
 	g_object_unref(G_OBJECT(sink));
+	*iLength = size+1;
+	w->priv->m_iDataLength = size+1;
 	return szOut;
 }
 
@@ -1070,6 +1082,30 @@ static void abi_widget_get_prop (GObject  *object,
 			g_value_set_boolean(arg,(gboolean) abi->priv->m_bUnlinkFileAfterLoad);
 			break;
 		}
+	    case MIMETYPE:
+		{
+			g_value_set_string(arg,(gchar *) abi->priv->m_sMIMETYPE->utf8_str());
+			break;
+		}
+	    case CONTENT:
+		{
+			gint i;
+			gchar * bytes = abi_widget_get_content_all(abi,(gchar *) abi->priv->m_sMIMETYPE->utf8_str() , &i);
+			g_value_set_string(arg,bytes);
+			break;
+		}
+	    case SELECTION:
+		{
+			gint i;
+			gchar * bytes = abi_widget_get_content_selection(abi,(gchar *) abi->priv->m_sMIMETYPE->utf8_str() , &i);
+			g_value_set_string(arg,bytes);
+			break;
+		}
+	    case DATALENGTH:
+		{
+			g_value_set_int(arg,abi->priv->m_iDataLength);
+			break;
+		}
 	    default:
 			break;
 	}
@@ -1133,10 +1169,14 @@ static void abi_widget_set_prop (GObject  *object,
 		  break;
 		}
 	    case VIEWWEBLAYOUT:
-	      {
-		abi_klazz->view_online_layout (abi);
-		break;
+	    {
+			abi_klazz->view_online_layout (abi);
+			break;
 		}
+		case MIMETYPE:
+		{
+			*(abi->priv->m_sMIMETYPE) = g_value_get_string(arg);
+		}  
 	    default:
 			break;
 	}
@@ -1228,6 +1268,8 @@ abi_widget_init (AbiWidget * abi)
 	priv->externalApp = false;
 	priv->m_bShowMargin = true;
 	priv->m_bOlpcSelections = true;
+	priv->m_sMIMETYPE = new UT_UTF8String(".abw");
+	priv->m_iDataLength = 0;
 	abi->priv = priv;
 
 	// this isn't really needed, since each widget is
@@ -1375,7 +1417,7 @@ abi_widget_destroy_gtk (GtkObject *object)
 						}
 				}
 			g_free (abi->priv->m_szFilename);
-
+			delete abi->priv->m_sMIMETYPE;
 			g_free (abi->priv);
 			abi->priv = NULL;
 		}
@@ -1600,6 +1642,38 @@ abi_widget_class_init (AbiWidgetClass *abi_class)
 													   FALSE,
 													   static_cast<GParamFlags>(G_PARAM_READWRITE)));
 
+  g_object_class_install_property(gobject_class,
+								  MIMETYPE,
+								  g_param_spec_string("mimetype",
+													   NULL,
+													   NULL,
+													   FALSE,
+													   static_cast<GParamFlags>(G_PARAM_READWRITE)));
+
+  g_object_class_install_property(gobject_class,
+								  CONTENT,
+								  g_param_spec_string("content",
+													   NULL,
+													   NULL,
+													   FALSE,
+													   static_cast<GParamFlags>(G_PARAM_READABLE)));
+
+  g_object_class_install_property(gobject_class,
+								  SELECTION,
+								  g_param_spec_string("selection",
+													   NULL,
+													   NULL,
+													   FALSE,
+													   static_cast<GParamFlags>(G_PARAM_READABLE)));
+
+  g_object_class_install_property(gobject_class,
+								  DATALENGTH,
+								  g_param_spec_string("data_length",
+													   NULL,
+													   NULL,
+													   FALSE,
+													   static_cast<GParamFlags>(G_PARAM_READABLE)));
+
   _abi_widget_class_install_signals (abi_class);
 }
 
@@ -1617,6 +1691,7 @@ abi_widget_construct (AbiWidget * abi, const char * file, AP_UnixApp * pApp)
 	if (file)
 		abi->priv->m_szFilename = g_strdup (file);
 		
+	UT_DEBUGMSG(("AbiWidget Constructed Now %x \n",abi->priv->m_pApp));
 #ifdef LOGFILE
 	fprintf(getlogfile(),"AbiWidget Constructed %x \n",abi);
 #endif
@@ -1727,7 +1802,7 @@ extern "C" GtkWidget *
 abi_widget_new (void)
 {
 	AbiWidget * abi;
-
+	UT_DEBUGMSG(("Constructing AbiWidget \n"));
 	abi = static_cast<AbiWidget *>(g_object_new (abi_widget_get_type (), NULL));
 	abi_widget_construct (abi, 0, NULL);
 

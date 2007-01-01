@@ -271,7 +271,6 @@ bool AP_UnixApp::initialize(bool has_display)
 {
     const char * szUserPrivateDirectory = getUserPrivateDirectory();
     bool bVerified = s_createDirectoryIfNecessary(szUserPrivateDirectory);
-
     if (!bVerified)
       {
 		  UT_ASSERT(UT_SHOULD_NOT_HAPPEN);
@@ -1340,7 +1339,7 @@ GR_Graphics * AP_UnixApp::newDefaultScreenGraphics() const
 {
 	XAP_Frame * pFrame = findValidFrame();
 	UT_return_val_if_fail( pFrame, NULL );
-	
+	UT_DEBUGMSG(("AP_UnixApp::newDefaultScreenGraphics() \n"));
 	AP_UnixFrameImpl * pFI = static_cast<AP_UnixFrameImpl *>(pFrame->getFrameImpl());
 	UT_return_val_if_fail( pFI, NULL );
 
