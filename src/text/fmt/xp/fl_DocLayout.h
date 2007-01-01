@@ -306,6 +306,11 @@ public:
 	UT_uint32       getLID(void) const
 		{ return m_lid;}
 	void            notifyListeners(AV_ChangeMask mask);
+	void            setQuickPrint(GR_Graphics * pGraphics);
+	bool            isQuickPrint(void)
+	{ return m_bIsQuickPrint;}
+	GR_EmbedManager * getQuickPrintEmbedManager(const char * szEmbedType);
+	
 #ifdef FMT_TEST
 	//! Pointer to last instatiated FL_DocLayout. Used for debugging.
 	static		FL_DocLayout* m_pDocLayout;
@@ -385,6 +390,9 @@ private:
 	UT_sint32           m_iGrammarCount;
 	bool                m_bFinishedInitialCheck;
 	PT_DocPosition      m_iPrevPos;
+	UT_GenericVector<GR_EmbedManager *> m_vecQuickPrintEmbedManager;
+	GR_Graphics *       m_pQuickPrintGraphics;
+	bool                m_bIsQuickPrint;
 };
 
 #endif /* DOCLAYOUT_H */

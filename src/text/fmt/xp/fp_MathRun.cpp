@@ -76,7 +76,6 @@ void fp_MathRun::_lookupProperties(const PP_AttrProp * pSpanAP,
 	const XML_Char * pszFontSize = NULL;
 	pSpanAP->getProperty("font-size", pszFontSize);
 	UT_DEBUGMSG(("Font-size %s \n",pszFontSize));
-	m_pMathManager = m_pDocLayout->getEmbedManager("mathml");
 
 // Load this into MathView
 
@@ -85,17 +84,40 @@ void fp_MathRun::_lookupProperties(const PP_AttrProp * pSpanAP,
 	const PP_AttrProp * pBlockAP = NULL;
 	const PP_AttrProp * pSectionAP = NULL;
 
+	if(pG == NULL)
+	{
+	     pG = getGraphics();
+	     if((m_iMathUID >= 0) && getMathManager() )
+	     {
+		 getMathManager()->releaseEmbedView(m_iMathUID);
+		 m_iMathUID = -1;
+	     }
+	     m_iMathUID = -1;
+	}
 	getBlockAP(pBlockAP);
 
 	FL_DocLayout * pLayout = getBlock()->getDocLayout();
-	GR_Font * pFont = const_cast<GR_Font *>(pLayout->findFont(pSpanAP,pBlockAP,pSectionAP));
-
+	GR_Font * pFont = const_cast<GR_Font *>(pLayout->findFont(pSpanAP,pBlockAP,pSectionAP,pG));
+	if(pLayout->isQuickPrint() && pG->queryProperties(GR_Graphics::DGP_PAPER))
+	{
+	     if(m_iMathUID >= 0 && getMathManager())
+	     {
+		 getMathManager()->releaseEmbedView(m_iMathUID);
+		 m_iMathUID = -1;
+	     }
+	     m_iMathUID = - 1;
+	     m_pMathManager = m_pDocLayout->getQuickPrintEmbedManager("mathml");
+	}
+	else
+	{
+	    m_pMathManager = m_pDocLayout->getEmbedManager("mathml");
+	}
 	if (pFont != _getFont())
 	{
 	  UT_DEBUGMSG(("Font is set here... %x \n",pFont));
 		_setFont(pFont);
 	}
-	m_iPointHeight = pG->getFontAscent(pFont) + getGraphics()->getFontDescent(pFont);
+	m_iPointHeight = pG->getFontAscent(pFont) + pG->getFontDescent(pFont);
 	const char* pszSize = PP_evalProperty("font-size",pSpanAP,pBlockAP,pSectionAP,
 					      getBlock()->getDocument(), true);
 

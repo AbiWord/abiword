@@ -118,7 +118,9 @@ FL_DocLayout::FL_DocLayout(PD_Document* doc, GR_Graphics* pG)
     m_PendingBlockForGrammar(NULL),
     m_iGrammarCount(0),
     m_bFinishedInitialCheck(false),
-    m_iPrevPos(0)
+    m_iPrevPos(0),
+    m_pQuickPrintGraphics(NULL),
+    m_bIsQuickPrint(false)
 {
 #ifdef FMT_TEST
         m_pDocLayout = this;
@@ -197,8 +199,62 @@ FL_DocLayout::~FL_DocLayout()
 		m_pFirstSection = pNext;
 	}
 	UT_VECTOR_PURGEALL(GR_EmbedManager *,m_vecEmbedManager);
+	UT_VECTOR_PURGEALL(GR_EmbedManager *,m_vecQuickPrintEmbedManager);
 }
 
+/*!
+ * Set the variables needed for a QuickPrint
+ */
+void  FL_DocLayout::setQuickPrint(GR_Graphics * pGraphics)
+{
+	UT_VECTOR_PURGEALL(GR_EmbedManager *,m_vecQuickPrintEmbedManager);
+	m_vecQuickPrintEmbedManager.clear();
+	if(pGraphics != NULL)
+	{
+	    m_bIsQuickPrint = true;
+	    m_pQuickPrintGraphics = pGraphics;
+	}
+	else
+	{
+	    m_bIsQuickPrint = false;
+	    m_pQuickPrintGraphics = NULL;
+	}
+}
+
+
+/*!
+ * Get an embedManager of the requested Type.for a quickPrint
+ */
+GR_EmbedManager * FL_DocLayout::getQuickPrintEmbedManager(const char * szEmbedType)
+{
+  // Look in the current collection first.
+  UT_uint32 i = 0;
+  GR_EmbedManager * pDefault = NULL;
+  GR_EmbedManager * pEmbed = NULL;
+  for(i=0; i< m_vecQuickPrintEmbedManager.getItemCount(); i++)
+    {
+      pEmbed = m_vecQuickPrintEmbedManager.getNthItem(i);
+      if(UT_strcmp(pEmbed->getObjectType(),szEmbedType) == 0)
+	{
+	  return pEmbed;
+	}
+      if(UT_strcmp(pEmbed->getObjectType(),"default") == 0)
+	{
+	  pDefault = pEmbed;
+	}
+    }
+  pEmbed = XAP_App::getApp()->getEmbeddableManager(m_pQuickPrintGraphics,szEmbedType);
+  if((UT_strcmp(pEmbed->getObjectType(),"default") == 0) && pDefault != NULL)
+    {
+      delete pEmbed;
+      return pDefault;
+    }
+  UT_DEBUGMSG(("Got mamanger of type %s \n",pEmbed->getObjectType()));
+  m_vecQuickPrintEmbedManager.addItem(pEmbed);
+  pEmbed->initialize();
+  
+  return pEmbed;
+}
 
 /*!
  * Get an embedManager of the requested Type.

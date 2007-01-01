@@ -372,7 +372,7 @@ void fp_Run::lookupProperties(GR_Graphics * pG)
 	const PP_AttrProp * pSpanAP = NULL;
 	const PP_AttrProp * pBlockAP = NULL;
 	const PP_AttrProp * pSectionAP = NULL; // TODO do we care about section-level inheritance?
-
+	bool bGraphicsNull = false;
 	getBlockAP(pBlockAP);
 
 	PD_Document * pDoc = m_pBL->getDocument();
@@ -430,7 +430,6 @@ void fp_Run::lookupProperties(GR_Graphics * pG)
 	_setColorHL(pszBGcolor);
 	//	m_FillType.setColor(pszBGcolor); // we should clear with screen color
 	// and draw with background color
-	bool bGraphicsNull = false;
 	if(pG == NULL)
 	{
 		m_bPrinting = false;
@@ -444,15 +443,17 @@ void fp_Run::lookupProperties(GR_Graphics * pG)
 	}
 	if(!m_pBL->isContainedByTOC())
 	{
-		if((getType() != FPRUN_TEXT) && !bGraphicsNull)
-			_lookupProperties(pSpanAP, pBlockAP, pSectionAP,pG);
-		else
+		if(bGraphicsNull)
 			_lookupProperties(pSpanAP, pBlockAP, pSectionAP,NULL);
-
+		else
+			_lookupProperties(pSpanAP, pBlockAP, pSectionAP,pG);
 	}
 	else
 	{
-		_lookupProperties(NULL, pBlockAP, NULL,pG);
+		if(bGraphicsNull)
+			_lookupProperties(NULL, pBlockAP, pSectionAP,NULL);
+		else
+			_lookupProperties(NULL, pBlockAP, pSectionAP,pG);
 	}
 
 	// here we used to set revision-based visibility, but that has to
@@ -516,6 +517,10 @@ fp_Run::_findPrevPropertyRun(void) const
 void
 fp_Run::_inheritProperties(void)
 {
+	if(m_pG == NULL)
+	{
+		m_pG = getGraphics();
+	}
 	fp_Run* pRun = _findPrevPropertyRun();
 	if (pRun)
 	{
@@ -539,7 +544,6 @@ fp_Run::_inheritProperties(void)
 		getBlockAP(pBlockAP);
 
 		FL_DocLayout * pLayout = getBlock()->getDocLayout();
-
 		GR_Font * pFont = const_cast<GR_Font *>(pLayout->findFont(pSpanAP,pBlockAP,pSectionAP,m_pG));
 
 		if ((pFont != _getFont()) || (getType() == FPRUN_ENDOFPARAGRAPH))
@@ -3949,11 +3953,11 @@ void fp_FieldRun::_lookupProperties(const PP_AttrProp * pSpanAP,
 	xxx_UT_DEBUGMSG(("FieldRun: Lookup Properties  field type %d \n",m_iFieldType));
 	if(m_iFieldType == FPFIELD_list_label)
 	{
-		_setFont(const_cast<GR_Font *>(pLayout->findFont(pSpanAP,pBlockAP,pSectionAP, true)));
+		_setFont(const_cast<GR_Font *>(pLayout->findFont(pSpanAP,pBlockAP,pSectionAP,pG, true)));
 	}
 	else
 	{
-		_setFont(const_cast<GR_Font *>(pLayout->findFont(pSpanAP,pBlockAP,pSectionAP, getGraphics())));
+		_setFont(const_cast<GR_Font *>(pLayout->findFont(pSpanAP,pBlockAP,pSectionAP, pG)));
 	}
 
 	_setAscent(pG->getFontAscent(_getFont()));

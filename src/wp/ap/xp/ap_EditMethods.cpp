@@ -8364,6 +8364,7 @@ UT_return_val_if_fail(pDialog, false);
 		font list, we can remove the 4 lines below. - MARCM
 		*/
 		//
+		bool bDoingQuickPrint = false;
 		FL_DocLayout * pDocLayout = NULL;
 		FV_View * pPrintView = NULL;
 		if(!pGraphics->canQuickPrint())
@@ -8378,6 +8379,8 @@ UT_return_val_if_fail(pDialog, false);
 		{
 				pDocLayout = pLayout;
 				pPrintView = pView;
+				pDocLayout->setQuickPrint(pGraphics);
+				bDoingQuickPrint = true;
 		}
 
 		UT_uint32 nFromPage, nToPage;
@@ -8408,7 +8411,10 @@ UT_return_val_if_fail(pDialog, false);
 			 delete pDocLayout;
 			 delete pPrintView;
 		 }
-		
+		else
+		{
+				pDocLayout->setQuickPrint(NULL);
+		}
 		pDialog->releasePrinterGraphicsContext(pGraphics);
 
 //
@@ -8481,6 +8487,7 @@ static bool s_doPrintPreview(FV_View * pView)
 	{
 			pDocLayout = pLayout;
 			pPrintView = pView;
+			pDocLayout->setQuickPrint(pGraphics);
 	}
 	
 	UT_uint32 nFromPage = 1, nToPage = pLayout->countPages(), nCopies = 1;
@@ -8500,6 +8507,10 @@ static bool s_doPrintPreview(FV_View * pView)
 	{
 			delete pDocLayout;
 			delete pPrintView;
+	}
+	else
+	{
+		pDocLayout->setQuickPrint(NULL);
 	}
 	pDialog->releasePrinterGraphicsContext(pGraphics);
 

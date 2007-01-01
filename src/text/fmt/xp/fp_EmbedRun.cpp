@@ -79,25 +79,47 @@ void fp_EmbedRun::_lookupProperties(const PP_AttrProp * pSpanAP,
 	UT_ASSERT(pszEmbedType);
 	UT_DEBUGMSG(("Embed Type %s \n",pszEmbedType));
 
-	m_pEmbedManager = m_pDocLayout->getEmbedManager(pszEmbedType);
-
 // Load this into EmbedView
 
 	// LUCA: chunk of code moved up here from the bottom of the method
 	// 'cause we need to retrieve the font-size
 	const PP_AttrProp * pBlockAP = NULL;
 	const PP_AttrProp * pSectionAP = NULL;
-
+	if(pG == NULL)
+	{
+	     pG = getGraphics();
+	     if((m_iEmbedUID >= 0) && getEmbedManager())
+	     {
+		 getEmbedManager()->releaseEmbedView(m_iEmbedUID);
+		 m_iEmbedUID = -1;
+	     }
+	     m_iEmbedUID = -1;
+	}
+	
 	getBlockAP(pBlockAP);
 
 	FL_DocLayout * pLayout = getBlock()->getDocLayout();
-	GR_Font * pFont = const_cast<GR_Font *>(pLayout->findFont(pSpanAP,pBlockAP,pSectionAP));
+	GR_Font * pFont = const_cast<GR_Font *>(pLayout->findFont(pSpanAP,pBlockAP,pSectionAP,pG));
+	if(pLayout->isQuickPrint() && pG->queryProperties(GR_Graphics::DGP_PAPER))
 
+	{
+	     if(m_iEmbedUID >= 0 )
+	     {
+		 getEmbedManager()->releaseEmbedView(m_iEmbedUID);
+		 m_iEmbedUID = -1;
+	     }
+	     m_iEmbedUID = - 1;
+	     m_pEmbedManager = m_pDocLayout->getQuickPrintEmbedManager(pszEmbedType);
+	}
+	else
+	{
+	    m_pEmbedManager = m_pDocLayout->getEmbedManager(pszEmbedType);
+	}
 	if (pFont != _getFont())
 	{
 		_setFont(pFont);
 	}
-	m_iPointHeight = pG->getFontAscent(pFont) + getGraphics()->getFontDescent(pFont);
+	m_iPointHeight = pG->getFontAscent(pFont) + pG->getFontDescent(pFont);
 	const char* pszSize = PP_evalProperty("font-size",pSpanAP,pBlockAP,pSectionAP,
 					      getBlock()->getDocument(), true);
 
