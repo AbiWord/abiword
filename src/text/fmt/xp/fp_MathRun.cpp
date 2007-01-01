@@ -93,6 +93,7 @@ void fp_MathRun::_lookupProperties(const PP_AttrProp * pSpanAP,
 		 m_iMathUID = -1;
 	     }
 	     m_iMathUID = -1;
+	     UT_DEBUGMSG(("---Recoved from QuickPrint!! \n"));
 	}
 	getBlockAP(pBlockAP);
 
@@ -100,6 +101,7 @@ void fp_MathRun::_lookupProperties(const PP_AttrProp * pSpanAP,
 	GR_Font * pFont = const_cast<GR_Font *>(pLayout->findFont(pSpanAP,pBlockAP,pSectionAP,pG));
 	if(pLayout->isQuickPrint() && pG->queryProperties(GR_Graphics::DGP_PAPER))
 	{
+	  UT_DEBUGMSG(("---Doing a QuickPrint!! \n"));
 	     if(m_iMathUID >= 0 && getMathManager())
 	     {
 		 getMathManager()->releaseEmbedView(m_iMathUID);
@@ -114,7 +116,7 @@ void fp_MathRun::_lookupProperties(const PP_AttrProp * pSpanAP,
 	}
 	if (pFont != _getFont())
 	{
-	  UT_DEBUGMSG(("Font is set here... %x \n",pFont));
+	  UT_DEBUGMSG(("!!!!Font is set here... %x \n",pFont));
 		_setFont(pFont);
 	}
 	m_iPointHeight = pG->getFontAscent(pFont) + pG->getFontDescent(pFont);
@@ -422,9 +424,13 @@ void fp_MathRun::_draw(dg_DrawArgs* pDA)
 	{
 	  rec.top -= getAscent();
 	}
-	UT_DEBUGMSG((" Mathrun Left %d top %d width %d height %d \n",rec.left,rec.top,rec.height,rec.width)); 
+	if(getBlock()->getDocLayout()->isQuickPrint() && pG->queryProperties(GR_Graphics::DGP_PAPER))
+	  {
+	    UT_DEBUGMSG(("!! Doing a draw in QuickPrint !! \n"));
+	  }
+	UT_DEBUGMSG((" Mathrun Left %d top %d width %d height %d \n",rec.left,rec.top,rec.width,rec.height)); 
 	getMathManager()->render(m_iMathUID,rec);
-	if(m_bNeedsSnapshot && !getMathManager()->isDefault() && getGraphics()->queryProperties(GR_Graphics::DGP_SCREEN)  )
+	if(m_bNeedsSnapshot && !getMathManager()->isDefault() && pG->queryProperties(GR_Graphics::DGP_SCREEN)  )
 	{
 	  rec.top -= getAscent();
 	  if(!bIsSelected)

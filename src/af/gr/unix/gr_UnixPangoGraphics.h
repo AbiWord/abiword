@@ -460,7 +460,10 @@ class ABI_EXPORT GR_UnixPangoPrintGraphics : public GR_UnixPangoGraphics
 	virtual UT_uint32 getFontAscent(GR_Font *);
 	virtual UT_uint32 getFontDescent(GR_Font *);
 	virtual UT_uint32 getFontHeight(GR_Font *);
-
+	double  getResolutionRatio(void)
+	{
+		return m_dResRatio;
+	}
 	GnomePrintContext * getGnomePrintContext(void) { return m_gpc;}
 
 	static GnomePrintConfig * s_setup_config (double mrgnTop,

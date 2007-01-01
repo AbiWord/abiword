@@ -1568,7 +1568,7 @@ void fp_Line::draw(dg_DrawArgs* pDA)
 	      }
 	      if(getBlock()->getAlignment() && getBlock()->getAlignment()->getType() == FB_ALIGNMENT_JUSTIFY)
 	      {
-		  getBlock()->getAlignment()->initialize(this);
+		   getBlock()->getAlignment()->initialize(this);
 	      }
 	}
 	xxx_UT_DEBUGMSG(("Drawing line %x in line pDA, width %d \n",this,getWidth()));
@@ -1625,14 +1625,9 @@ void fp_Line::draw(dg_DrawArgs* pDA)
 	}
 	if(bQuickPrint)
         {
-	      for (i=0; i<count; i++)
-	      {
-		   fp_Run* pRun = static_cast<fp_Run*>(m_vecRuns.getNthItem(i));
-		   pRun->lookupProperties(NULL);
-	      }
 	      if(getBlock()->getAlignment() && getBlock()->getAlignment()->getType() == FB_ALIGNMENT_JUSTIFY)
 	      {
-		  getBlock()->getAlignment()->initialize(this);
+		   getBlock()->getAlignment()->initialize(this);
 	      }
 	}
 //

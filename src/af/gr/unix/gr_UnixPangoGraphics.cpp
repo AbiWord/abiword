@@ -2883,6 +2883,11 @@ bool GR_UnixPangoFont::glyphBox(UT_UCS4Char g, UT_Rect & rec, GR_Graphics * pG)
 	guint iGlyphIndx = pango_fc_font_get_glyph (PANGO_FC_FONT(m_pf), g);
 	FT_Face pFace = pango_fc_font_lock_face(PANGO_FC_FONT(m_pf));
 
+	double resRatio = 1.0;
+	if(pG->canQuickPrint())
+	{
+			resRatio = static_cast<GR_UnixPangoPrintGraphics *>(pG)->getResolutionRatio();
+	}
 	FT_Error error = FT_Load_Glyph(pFace, iGlyphIndx,
 								   FT_LOAD_LINEAR_DESIGN |
 								   FT_LOAD_IGNORE_TRANSFORM |
@@ -2896,7 +2901,7 @@ bool GR_UnixPangoFont::glyphBox(UT_UCS4Char g, UT_Rect & rec, GR_Graphics * pG)
 		return false;
 	}
 
-	UT_uint32 iSize = (UT_uint32)(m_dPointSize * (double)pG->getResolution() /
+	UT_uint32 iSize = (UT_uint32)(m_dPointSize * resRatio *(double)pG->getResolution() /
 		(double)pG->getDeviceResolution());
 	
 	rec.left   = static_cast<UT_sint32>(fontPoints2float(iSize, pFace,
