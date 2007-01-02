@@ -34,7 +34,10 @@ typedef struct _AbiFontCombo 		AbiFontCombo;
 typedef struct _AbiFontComboClass 	AbiFontComboClass;
 
 struct _AbiFontCombo {
-	GtkComboBox parent;
+	GtkComboBox 		 parent;
+	GtkTreeModel		*model;
+	GtkTreeModelSort	*sort;
+	gboolean		 is_disposed;
 };
 
 struct _AbiFontComboClass {

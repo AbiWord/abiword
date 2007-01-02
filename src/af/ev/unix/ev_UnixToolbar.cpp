@@ -361,7 +361,7 @@ public:									// we create...
 			wd->m_pUnixToolbar) {
 				UT_DEBUGMSG(("ev_UnixToolbar - position \n"));
 				// TODO check if within screen
-				wd->m_pUnixToolbar->m_pFontPreviewPositionX = position->x + position->width;
+				wd->m_pUnixToolbar->m_pFontPreviewPositionX = position->x /*+ position->width*/;
 		}
 	};
 
@@ -386,7 +386,22 @@ public:									// we create...
 			return;
 		}
 
-		gchar * buffer = gtk_combo_box_get_active_text(combo);
+		// TODO Rob: move this into abi-font-combo
+		gchar *buffer = NULL;
+		GtkTreeModel *model = gtk_combo_box_get_model (combo);
+		if (GTK_IS_TREE_MODEL_SORT (model)) {
+
+			GtkTreeIter sort_iter;
+			gtk_combo_box_get_active_iter (combo, &sort_iter);
+
+			GtkTreeIter iter;		
+			gtk_tree_model_sort_convert_iter_to_child_iter (GTK_TREE_MODEL_SORT (model), &iter, &sort_iter);
+
+			GtkTreeModel *store = gtk_tree_model_sort_get_model (GTK_TREE_MODEL_SORT (model));
+			gtk_tree_model_get (store, &iter, 0, &buffer, -1);
+		} else {
+			buffer = gtk_combo_box_get_active_text(combo);
+		}
 
 		if (wd->m_id == AP_TOOLBAR_ID_FMT_FONT) {
 			const gchar *font;
@@ -670,7 +685,7 @@ bool EV_UnixToolbar::synthesize(void)
 	gtk_toolbar_set_tooltips(GTK_TOOLBAR(m_wToolbar), TRUE);
 	gtk_toolbar_set_show_arrow(GTK_TOOLBAR(m_wToolbar), TRUE);
 
-	m_wHSizeGroup = gtk_size_group_new(GTK_SIZE_GROUP_HORIZONTAL);
+	//m_wHSizeGroup = gtk_size_group_new(GTK_SIZE_GROUP_HORIZONTAL);
 	m_wVSizeGroup = gtk_size_group_new(GTK_SIZE_GROUP_VERTICAL);
 
 #ifdef HAVE_HILDON /* In Hildon its not posible */
@@ -821,7 +836,8 @@ bool EV_UnixToolbar::synthesize(void)
 					GtkEntry *entry = GTK_ENTRY(gtk_bin_get_child(GTK_BIN(combo)));
 					g_object_set (G_OBJECT(entry), "can-focus", TRUE, NULL);
 					gtk_entry_set_width_chars (entry, 4);
-					gtk_size_group_add_widget (m_wHSizeGroup, combo);
+					// same size for font and font-size combos
+					// gtk_size_group_add_widget (m_wHSizeGroup, combo);
 					proxy_action_name = "dlgFont";
 				}
 				else if (wd->m_id == AP_TOOLBAR_ID_FMT_FONT) {
@@ -838,8 +854,9 @@ bool EV_UnixToolbar::synthesize(void)
 									  G_CALLBACK(_wd::s_font_popup_closed), 
 									  wd);
 					g_object_set_data (G_OBJECT (combo), PROP_HANDLER_ID, handler_id);
-					gtk_widget_set_size_request (combo, 0, -1);
-					gtk_size_group_add_widget (m_wHSizeGroup, combo);
+					// same size for font and font-size combos
+					// gtk_widget_set_size_request (combo, 0, -1);
+					// gtk_size_group_add_widget (m_wHSizeGroup, combo);
 					proxy_action_name = "dlgFont";
 					proxy_action_stock = GTK_STOCK_SELECT_FONT;
 				}
