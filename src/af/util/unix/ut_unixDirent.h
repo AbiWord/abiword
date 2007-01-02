@@ -34,10 +34,10 @@ extern "C" {
 int 
 scandir(const char *dirname, struct dirent ***namelist, 
         int (*select) (const struct dirent *), 
-        int (*dcomp) (const void *, const void *));
+        int (*dcomp) (const dirent **, const dirent **));
 
 int 
-alphasort(const void *d1, const void *d2);
+alphasort(const dirent **d1, const dirent **d2);
 
 #ifdef __cplusplus
 }
