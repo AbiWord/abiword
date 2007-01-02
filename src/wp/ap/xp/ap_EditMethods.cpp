@@ -4241,7 +4241,7 @@ Defun1(cursorIBeam)
 {
 	CHECK_FRAME;
 	ABIWORD_VIEW;
-
+	xxx_UT_DEBUGMSG((" CursorIBeam \n"));
 	// clear status bar of any lingering messages
 	UT_return_val_if_fail (pView, false);
 	XAP_Frame * pFrame = static_cast<XAP_Frame *> (pView->getParentData());
@@ -4252,6 +4252,7 @@ Defun1(cursorIBeam)
 	{
 		pG->setCursor(GR_Graphics::GR_CURSOR_IBEAM);
 	}
+	static_cast<AV_View *>(pView)->notifyListeners(AV_CHG_MOUSEPOS);
 	return true;
 }
 
@@ -14479,6 +14480,7 @@ Defun(btn0VisualText)
 	xxx_UT_DEBUGMSG(("In Visual Text \n"));
 	UT_return_val_if_fail(pView, false);
 	pView->btn0VisualDrag(pCallData->m_xPos,pCallData->m_yPos);
+	static_cast<AV_View *>(pView)->notifyListeners(AV_CHG_MOUSEPOS);
 	return true;
 }
 

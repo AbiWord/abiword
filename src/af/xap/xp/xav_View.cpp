@@ -116,7 +116,7 @@ bool AV_View::notifyListeners(const AV_ChangeMask hint, void * pPrivateData)
 	{
 		return false;
 	}
-	if(hint != AV_CHG_FOCUS)
+	if((hint != AV_CHG_FOCUS) && (hint != AV_CHG_MOUSEPOS) )
 	{
 		xxx_UT_DEBUGMSG(("hint mask = %x \n",hint));
 		m_iTick++;
