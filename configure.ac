@@ -427,6 +427,7 @@ AC_C_CONST
 ABI_C_INLINE
 AC_TYPE_SIZE_T
 AC_C_BIGENDIAN
+AC_DEFINE(CHECKED_ENDIANNESS)
 AM_CONDITIONAL(BIGENDIAN,[ test "x$ac_cv_c_bigendian" = "xyes" ])
 
 dnl Currently, we need all of the following, but in the future we
