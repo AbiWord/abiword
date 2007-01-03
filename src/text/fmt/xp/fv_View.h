@@ -184,6 +184,8 @@ public:
 
 	virtual inline PT_DocPosition   getPoint(void) const { return m_iInsPoint; }
 	PT_DocPosition	getSelectionAnchor(void) const;
+	PT_DocPosition	getSelectionLeftAnchor(void);
+	PT_DocPosition	getSelectionRightAnchor(void) ;
 	UT_uint32       getSelectionLength(void) const;
 
 	virtual void focusChange(AV_Focus focus);

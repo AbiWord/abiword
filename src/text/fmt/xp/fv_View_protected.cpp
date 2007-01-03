@@ -3299,6 +3299,17 @@ void FV_View::_extSel(UT_uint32 iOldPoint)
 	{
 		_drawBetweenPositions(iNewPoint,iOldPoint);
 	}
+	if(getPoint() > getSelectionAnchor())
+	{
+		m_Selection.setSelectionLeftAnchor(getSelectionAnchor());
+		m_Selection.setSelectionRightAnchor(getPoint());
+	}
+	else
+	{
+		m_Selection.setSelectionRightAnchor(m_Selection.getSelectionAnchor());
+		m_Selection.setSelectionLeftAnchor(getPoint());
+	}
+	
 }
 
 void FV_View::_extSelToPos(PT_DocPosition iNewPoint)

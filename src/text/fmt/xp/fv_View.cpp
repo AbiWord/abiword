@@ -2612,6 +2612,16 @@ PT_DocPosition FV_View::getSelectionAnchor(void) const
 	return m_iInsPoint;
 }
 
+PT_DocPosition	FV_View::getSelectionLeftAnchor(void)
+{
+	return m_Selection.getSelectionLeftAnchor();
+}
+
+PT_DocPosition	FV_View::getSelectionRightAnchor(void)
+{
+	return m_Selection.getSelectionRightAnchor();
+}
+
 /*!
  * Returns true if a TOC is selected.
  */
@@ -6715,6 +6725,7 @@ PT_DocPosition FV_View::getDocPositionFromXY(UT_sint32 xpos, UT_sint32 ypos, boo
 		bUseHdrFtr = false;
 	}
 	pPage->mapXYToPosition(bNotFrames,xClick, yClick, iNewPoint, bBOL, bEOL,isTOC, bUseHdrFtr,NULL);
+	xxx_UT_DEBUGMSG((" point at (%d,%d) is docpos %d \n",xpos,ypos,iNewPoint));
 	return iNewPoint;
 }
 
@@ -6942,16 +6953,6 @@ endif
 	{
 		_extSelToPos(iNewPointWord);
 		notifyListeners(AV_CHG_MOTION);
-	}
-	if(getPoint() > getSelectionAnchor())
-	{
-		m_Selection.setSelectionLeftAnchor(getSelectionAnchor());
-		m_Selection.setSelectionRightAnchor(getPoint());
-	}
-	else
-	{
-		m_Selection.setSelectionRightAnchor(m_Selection.getSelectionAnchor());
-		m_Selection.setSelectionLeftAnchor(getPoint());
 	}
 	xxx_UT_DEBUGMSG(("final selection anchor %d extend to point %d \n",getSelectionAnchor(), iNewPointWord));
 }
@@ -9541,7 +9542,7 @@ fp_Run * FV_View::getHyperLinkRun(PT_DocPosition pos)
 
 EV_EditMouseContext FV_View::getMouseContext(UT_sint32 xPos, UT_sint32 yPos)
 {
-	xxx_UT_DEBUGMSG(("layout view mouse pos x %x pos y %d \n",xPos,yPos));
+	xxx_UT_DEBUGMSG(("layout view mouse pos x %d pos y %d \n",xPos,yPos));
 	UT_sint32 xClick, yClick;
 	PT_DocPosition pos = 0;
 	bool bBOL = false;
@@ -9567,7 +9568,6 @@ EV_EditMouseContext FV_View::getMouseContext(UT_sint32 xPos, UT_sint32 yPos)
 		m_prevMouseContext = EV_EMC_UNKNOWN;
 		return EV_EMC_UNKNOWN;
 	}
-
 
 	if (   (yClick < 0)
 		   || (xClick < 0)
@@ -10078,7 +10078,7 @@ void FV_View::setCursorToContext()
 	if (!getGraphics()->queryProperties(GR_Graphics::DGP_SCREEN))
 		return;
 
-	EV_EditMouseContext evMC = getMouseContext(m_iMouseY,m_iMouseY);
+	EV_EditMouseContext evMC = getMouseContext(m_iMouseX,m_iMouseY);
 	GR_Graphics::Cursor cursor = GR_Graphics::GR_CURSOR_DEFAULT;
 	switch (evMC)
 	{
