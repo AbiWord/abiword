@@ -529,6 +529,233 @@ UT_go_url_simplify (const char *uri)
 }
 
 
+#ifndef GOFFICE_WITH_GNOME
+
+/* code borrowed from gnome-vfs' gnome-vfs-uri.c */
+
+static gboolean
+is_uri_relative (const char *uri)
+{
+        const char *current;
+
+        /* RFC 2396 section 3.1 */
+        for (current = uri ;
+                *current
+		     &&      ((*current >= 'a' && *current <= 'z')
+			      || (*current >= 'A' && *current <= 'Z')
+			      || (*current >= '0' && *current <= '9')
+			      || ('-' == *current)
+			      || ('+' == *current)
+			      || ('.' == *current)) ;
+             current++);
+
+        return  !(':' == *current);
+}
+
+static void
+remove_internal_relative_components (char *uri_current)
+{
+	char *segment_prev, *segment_cur;
+	gsize len_prev, len_cur;
+
+	len_prev = len_cur = 0;
+	segment_prev = NULL;
+
+	segment_cur = uri_current;
+
+	while (*segment_cur) {
+		len_cur = strcspn (segment_cur, "/");
+
+		if (len_cur == 1 && segment_cur[0] == '.') {
+			/* Remove "." 's */
+			if (segment_cur[1] == '\0') {
+				segment_cur[0] = '\0';
+				break;
+			} else {
+				memmove (segment_cur, segment_cur + 2, strlen (segment_cur + 2) + 1);
+				continue;
+			}
+		} else if (len_cur == 2 && segment_cur[0] == '.' && segment_cur[1] == '.' ) {
+			/* Remove ".."'s (and the component to the left of it) that aren't at the
+			 * beginning or to the right of other ..'s
+			 */
+			if (segment_prev) {
+				if (! (len_prev == 2
+				       && segment_prev[0] == '.'
+				       && segment_prev[1] == '.')) {
+				       	if (segment_cur[2] == '\0') {
+						segment_prev[0] = '\0';
+						break;
+				       	} else {
+						memmove (segment_prev, segment_cur + 3, strlen (segment_cur + 3) + 1);
+
+						segment_cur = segment_prev;
+						len_cur = len_prev;
+
+						/* now we find the previous segment_prev */
+						if (segment_prev == uri_current) {
+							segment_prev = NULL;
+						} else if (segment_prev - uri_current >= 2) {
+							segment_prev -= 2;
+							for ( ; segment_prev > uri_current && segment_prev[0] != '/' 
+							      ; segment_prev-- );
+							if (segment_prev[0] == '/') {
+								segment_prev++;
+							}
+						}
+						continue;
+					}
+				}
+			}
+		}
+
+		/*Forward to next segment */
+
+		if (segment_cur [len_cur] == '\0') {
+			break;
+		}
+		 
+		segment_prev = segment_cur;
+		len_prev = len_cur;
+		segment_cur += len_cur + 1;	
+	}
+	
+}
+
+static char *
+make_full_uri_from_relative (const char *base_uri, const char *uri)
+{
+	char *result = NULL;
+
+	char *mutable_base_uri;
+	char *mutable_uri;
+	
+	char *uri_current;
+	gsize base_uri_length;
+	char *separator;
+	
+	/* We may need one extra character
+	 * to append a "/" to uri's that have no "/"
+	 * (such as help:)
+	 */
+
+	mutable_base_uri = (char *)g_malloc(strlen(base_uri)+2);
+	strcpy (mutable_base_uri, base_uri);
+		
+	uri_current = mutable_uri = g_strdup (uri);
+
+	/* Chew off Fragment and Query from the base_url */
+
+	separator = strrchr (mutable_base_uri, '#'); 
+
+	if (separator) {
+		*separator = '\0';
+	}
+
+	separator = strrchr (mutable_base_uri, '?');
+
+	if (separator) {
+		*separator = '\0';
+	}
+
+	if ('/' == uri_current[0] && '/' == uri_current [1]) {
+		/* Relative URI's beginning with the authority
+		 * component inherit only the scheme from their parents
+		 */
+
+		separator = strchr (mutable_base_uri, ':');
+
+		if (separator) {
+			separator[1] = '\0';
+		}			  
+	} else if ('/' == uri_current[0]) {
+		/* Relative URI's beginning with '/' absolute-path based
+		 * at the root of the base uri
+		 */
+
+		separator = strchr (mutable_base_uri, ':');
+
+		/* g_assert (separator), really */
+		if (separator) {
+			/* If we start with //, skip past the authority section */
+			if ('/' == separator[1] && '/' == separator[2]) {
+				separator = strchr (separator + 3, '/');
+				if (separator) {
+					separator[0] = '\0';
+				}
+			} else {
+				/* If there's no //, just assume the scheme is the root */
+				separator[1] = '\0';
+			}
+		}
+	} else if ('#' != uri_current[0]) {
+		/* Handle the ".." convention for relative uri's */
+
+		/* If there's a trailing '/' on base_url, treat base_url
+		 * as a directory path.
+		 * Otherwise, treat it as a file path, and chop off the filename
+		 */
+
+		base_uri_length = strlen (mutable_base_uri);
+		if ('/' == mutable_base_uri[base_uri_length-1]) {
+			/* Trim off '/' for the operation below */
+			mutable_base_uri[base_uri_length-1] = 0;
+		} else {
+			separator = strrchr (mutable_base_uri, '/');
+			if (separator) {
+				/* Make sure we don't eat a domain part */
+				char *tmp = separator - 1;
+				if ((separator != mutable_base_uri) && (*tmp != '/')) {
+					*separator = '\0';
+				} else {
+					/* Maybe there is no domain part and this is a toplevel URI's child */
+					char *tmp2 = strstr (mutable_base_uri, ":///");
+					if (tmp2 != NULL && tmp2 + 3 == separator) {
+						*(separator + 1) = '\0';
+					}
+				}
+			}
+		}
+
+		remove_internal_relative_components (uri_current);
+
+		/* handle the "../"'s at the beginning of the relative URI */
+		while (0 == strncmp ("../", uri_current, 3)) {
+			uri_current += 3;
+			separator = strrchr (mutable_base_uri, '/');
+			if (separator) {
+				*separator = '\0';
+			} else {
+				/* <shrug> */
+				break;
+			}
+		}
+
+		/* handle a ".." at the end */
+		if (uri_current[0] == '.' && uri_current[1] == '.' 
+		    && uri_current[2] == '\0') {
+
+			uri_current += 2;
+			separator = strrchr (mutable_base_uri, '/');
+			if (separator) {
+				*separator = '\0';
+			}
+		}
+
+		/* Re-append the '/' */
+		mutable_base_uri [strlen(mutable_base_uri)+1] = '\0';
+		mutable_base_uri [strlen(mutable_base_uri)] = '/';
+	}
+
+	result = g_strconcat (mutable_base_uri, uri_current, NULL);
+	g_free (mutable_base_uri); 
+	g_free (mutable_uri); 
+	
+	return result;
+}
+
+#endif
+
 /*
  * More or less the same as gnome_vfs_uri_make_full_from_relative.
  */
@@ -540,25 +767,15 @@ UT_go_url_resolve_relative (const char *ref_uri, const char *rel_uri)
 #ifdef GOFFICE_WITH_GNOME
 	uri = gnome_vfs_uri_make_full_from_relative (ref_uri, rel_uri);
 #else
-	size_t len;
-
 	g_return_val_if_fail (ref_uri != NULL, NULL);
 	g_return_val_if_fail (rel_uri != NULL, NULL);
 
-	len = strlen (ref_uri);
-
-	/* FIXME: This doesn't work if rel_uri starts with a slash.  */
-
-	uri = g_new (char, len + strlen (rel_uri) + 1);
-	memcpy (uri, rel_uri, len + 1);
-	while (len > 0 && uri[len - 1] != '/')
-		len--;
-	if (len == 0) {
-		g_free (uri);
-		return NULL;
+	if (is_uri_relative (rel_uri)) {
+		uri = make_full_uri_from_relative (ref_uri, 
+						   rel_uri);
+	} else {
+		uri = g_strdup (rel_uri);
 	}
-
-	strcpy (uri + len, rel_uri);
 #endif
 
 	simp = UT_go_url_simplify (uri);
