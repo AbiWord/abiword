@@ -7668,9 +7668,13 @@ void FV_View::draw(const UT_Rect* pClipRect)
 	if(getPoint() == 0) {
 		return;
 	}
-
 	if (pClipRect)
 	{
+		xxx_UT_DEBUGMSG(("Draw clip left %d width %d top %d height %d \n",
+					 pClipRect->left,
+					 pClipRect->width,
+					 pClipRect->top,
+					 pClipRect->height));
 		_draw(pClipRect->left,
 			  pClipRect->top,
 			  pClipRect->width,
@@ -7679,6 +7683,7 @@ void FV_View::draw(const UT_Rect* pClipRect)
 	}
 	else
 	{
+		xxx_UT_DEBUGMSG(("Draw clip full \n"));
 		_draw(0,0,getWindowWidth(),getWindowHeight(),false,false);
 	}
 	_fixInsertionPointCoords();
@@ -9714,7 +9719,7 @@ void FV_View::setCursorToContext()
 	if (!getGraphics()->queryProperties(GR_Graphics::DGP_SCREEN))
 		return;
 
-	EV_EditMouseContext evMC = getMouseContext(m_iMouseY,m_iMouseY);
+	EV_EditMouseContext evMC = getMouseContext(m_iMouseX,m_iMouseY);
 	GR_Graphics::Cursor cursor = GR_Graphics::GR_CURSOR_DEFAULT;
 	switch (evMC)
 	{
