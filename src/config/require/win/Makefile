@@ -62,13 +62,13 @@ _ZLIB_:
 			echo "Found zlib in peer directory";				\
 			echo "Building zlib DLL, NOT for redistribution!" ;	\
 			echo "For redistribution, Please obtain official win32 zlib DLL";	\
-			echo "[zlib121dll.zip] from http://www.gzip.org/zlib/ and unzip into"; \
+			echo "from http://www.gzip.org/zlib/ and unzip into"; \
 			echo "$(ABI_ROOT)/../libs/zlib/ ";	\
 			$(MAKE) ABI_ROOT=$(ABI_ROOT) -C $(ABI_ROOT)/../zlib -fmakefile.abi;		\
 		else									\
 			echo peer zlib not found.  You can check it out of cvs by; \
 			echo cvs -d :pserver:anoncvs:anoncvs@anoncvs.abisource.com:/cvsroot checkout zlib; \
-			echo or preferably, download the precompiled zlib121dll.zip; \
+			echo or preferably, download the precompiled zlib DLL; \
 			echo from http://www.gzip.org/zlib/ and unzip into; \
 			echo $(ABI_ROOT)/../libs/zlib/ ;	\
 			exit 1;						\
