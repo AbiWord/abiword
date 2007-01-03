@@ -52,6 +52,7 @@ class XAP_Frame;
 
 class ABI_EXPORT GR_UnixPangoFont : public GR_Font
 {
+
   public:
 	GR_UnixPangoFont(const char * pDesc, double dSize,
 					 GR_UnixPangoGraphics * pG,
@@ -377,6 +378,7 @@ private:
 */
 class ABI_EXPORT GR_UnixPangoPrintGraphics : public GR_UnixPangoGraphics
 {
+	friend class GR_UnixPangoFont;
   public:
 	
 	GR_UnixPangoPrintGraphics(GnomePrintJob *gpm, bool isPreview = false);
@@ -461,10 +463,6 @@ class ABI_EXPORT GR_UnixPangoPrintGraphics : public GR_UnixPangoGraphics
 	virtual UT_uint32 getFontAscent(GR_Font *);
 	virtual UT_uint32 getFontDescent(GR_Font *);
 	virtual UT_uint32 getFontHeight(GR_Font *);
-	double  getResolutionRatio(void)
-	{
-		return m_dResRatio;
-	}
 	GnomePrintContext * getGnomePrintContext(void) { return m_gpc;}
 
 	static GnomePrintConfig * s_setup_config (double mrgnTop,
@@ -475,6 +473,10 @@ class ABI_EXPORT GR_UnixPangoPrintGraphics : public GR_UnixPangoGraphics
 											  int copies, bool portrait);
 
   protected:
+	double  _getResolutionRatio(void)
+	{
+		return m_dResRatio;
+	}
 
 	UT_uint32 _getResolution(void) const;
 	void      _drawAnyImage (GR_Image* pImg, UT_sint32 xDest,

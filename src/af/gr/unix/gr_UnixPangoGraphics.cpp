@@ -2888,7 +2888,7 @@ bool GR_UnixPangoFont::glyphBox(UT_UCS4Char g, UT_Rect & rec, GR_Graphics * pG)
 
 	if(pG->canQuickPrint())
 	{
-	  		resRatio = static_cast<GR_UnixPangoPrintGraphics *>(pG)->getResolutionRatio();
+	  		resRatio = static_cast<GR_UnixPangoPrintGraphics *>(pG)->_getResolutionRatio();
 	}
 	FT_Error error = FT_Load_Glyph(pFace, iGlyphIndx,
 								   FT_LOAD_LINEAR_DESIGN |
