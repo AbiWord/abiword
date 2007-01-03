@@ -31,7 +31,7 @@ INCLUDES = 			\
 noinst_LIBRARIES = libEv_unix.a
 
 libEv_unix_a_SOURCES =			\
-	abi-font-combo.c		\
+	ev_UnixFontCombo.c		\
 	ev_UnixKeyboard.cpp		\
 	ev_UnixMenu.cpp			\
 	ev_UnixMouse.cpp		\
@@ -48,7 +48,7 @@ dist-hook:
 
 headersdir = $(ABIWORD_HEADERSDIR)/ev/unix
 headers_DATA = \
-	abi-font-combo.h \
+	ev_UnixFontCombo.h \
 	ev_UnixKeyboard.h \
 	ev_UnixKeysym2ucs.h \
 	ev_UnixMenuBar.h \

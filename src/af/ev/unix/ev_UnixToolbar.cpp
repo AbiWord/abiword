@@ -55,7 +55,7 @@
 #include "ut_string_class.h"
 #include "ap_Toolbar_Id.h"
 #include "ap_UnixStockIcons.h"
-#include "abi-font-combo.h"
+#include "ev_UnixFontCombo.h"
 
 #ifdef HAVE_HILDON
 #include "hildon-widgets/hildon-appview.h"
@@ -386,7 +386,7 @@ public:									// we create...
 			return;
 		}
 
-		// TODO Rob: move this into abi-font-combo
+		// TODO Rob: move this into ev_UnixFontCombo
 		gchar *buffer = NULL;
 		GtkTreeModel *model = gtk_combo_box_get_model (combo);
 		if (GTK_IS_TREE_MODEL_SORT (model)) {

@@ -17,7 +17,7 @@
  */
 
 #include <string.h>
-#include "abi-font-combo.h"
+#include "ev_UnixFontCombo.h"
 
 #define PREVIEW_TEXT "AaBb"
 
@@ -311,7 +311,7 @@ abi_font_combo_class_init (AbiFontComboClass *klass)
 
 	abi_font_combo_parent_class = (GtkComboBoxClass*) gtk_type_class (GTK_TYPE_COMBO_BOX);
 
-	g_object_class = (GtkObjectClass *)klass;
+	g_object_class = (GObjectClass *) klass;
 	g_object_class->dispose = abi_font_combo_dispose;
 	g_object_class->finalize = abi_font_combo_finalize;
 
@@ -372,7 +372,6 @@ GtkWidget *
 abi_font_combo_new (void)
 {
 	AbiFontCombo 	 *self;
-	GtkListStore 	 *store;
 	GtkCellRenderer  *cell;
 
 	self = (AbiFontCombo *) g_object_new (ABI_TYPE_FONT_COMBO, NULL);
@@ -381,7 +380,7 @@ abi_font_combo_new (void)
 	gtk_tree_sortable_set_sort_column_id (GTK_TREE_SORTABLE (self->sort), FONT, GTK_SORT_ASCENDING);
 	gtk_combo_box_set_model (GTK_COMBO_BOX (self), self->sort);
 
-	cell = abi_cell_renderer_font_new (self);
+	cell = abi_cell_renderer_font_new (GTK_WIDGET (self));
 	gtk_cell_layout_pack_start (GTK_CELL_LAYOUT (self), cell, FALSE);
 	gtk_cell_layout_set_attributes (GTK_CELL_LAYOUT (self), cell,
 					"text", FONT,
@@ -394,7 +393,7 @@ abi_font_combo_new (void)
 	g_signal_connect_swapped (G_OBJECT (cell), "renderer-popup-closed", 
 				  G_CALLBACK (renderer_popup_closed_cb), (gpointer) self);
 
-	return self;
+	return GTK_WIDGET (self);
 }
 
 void
