@@ -6954,7 +6954,17 @@ endif
 		_extSelToPos(iNewPointWord);
 		notifyListeners(AV_CHG_MOTION);
 	}
-	xxx_UT_DEBUGMSG(("final selection anchor %d extend to point %d \n",getSelectionAnchor(), iNewPointWord));
+	if(getPoint() > getSelectionAnchor())
+	{
+		m_Selection.setSelectionLeftAnchor(getSelectionAnchor());
+		m_Selection.setSelectionRightAnchor(getPoint());
+	}
+	else
+	{
+		m_Selection.setSelectionRightAnchor(m_Selection.getSelectionAnchor());
+		m_Selection.setSelectionLeftAnchor(getPoint());
+	}
+  	xxx_UT_DEBUGMSG(("final selection anchor %d extend to point %d \n",getSelectionAnchor(), iNewPointWord));
 }
 
 void FV_View::endDrag(UT_sint32 xPos, UT_sint32 yPos)
