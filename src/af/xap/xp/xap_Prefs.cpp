@@ -618,7 +618,7 @@ bool XAP_Prefs::setCurrentScheme(const XML_Char * szSchemeName)
 static const XML_Char DEBUG_PREFIX[] = "DeBuG";  // case insensitive
 static const XML_Char NO_PREF_VALUE[] = "";
 
-bool XAP_Prefs::getPrefsValue(const XML_Char * szKey, const XML_Char ** pszValue) const
+bool XAP_Prefs::getPrefsValue(const XML_Char * szKey, const XML_Char ** pszValue, bool bAllowBuiltin) const
 {
 	// a convenient routine to get a name/value pair from the current scheme
 
@@ -626,7 +626,7 @@ bool XAP_Prefs::getPrefsValue(const XML_Char * szKey, const XML_Char ** pszValue
 
 	if (m_currentScheme->getValue(szKey,pszValue))
 		return true;
-	if (m_builtinScheme->getValue(szKey,pszValue))
+	if (bAllowBuiltin && m_builtinScheme->getValue(szKey,pszValue))
 		return true;
 	// It is legal for there to be arbitrary preference tags that start with 
 	// "Debug", and Abi apps won't choke.  The idea is that developers can use
@@ -641,13 +641,13 @@ bool XAP_Prefs::getPrefsValue(const XML_Char * szKey, const XML_Char ** pszValue
 	return false;
 }
 
-bool XAP_Prefs::getPrefsValue(const UT_String &stKey, UT_String &stValue) const
+bool XAP_Prefs::getPrefsValue(const UT_String &stKey, UT_String &stValue, bool bAllowBuiltin) const
 {
 	UT_return_val_if_fail(m_currentScheme,false);
 
 	if (m_currentScheme->getValue(stKey, stValue))
 		return true;
-	if (m_builtinScheme->getValue(stKey, stValue))
+	if (bAllowBuiltin && m_builtinScheme->getValue(stKey, stValue))
 		return true;
 	
 	// It is legal for there to be arbitrary preference tags that start with 
@@ -664,7 +664,7 @@ bool XAP_Prefs::getPrefsValue(const UT_String &stKey, UT_String &stValue) const
 	return false;
 }
 
-bool XAP_Prefs::getPrefsValueBool(const XML_Char * szKey, bool * pbValue) const
+bool XAP_Prefs::getPrefsValueBool(const XML_Char * szKey, bool * pbValue, bool bAllowBuiltin) const
 {
 	// a convenient routine to get a name/value pair from the current scheme
 
@@ -672,7 +672,7 @@ bool XAP_Prefs::getPrefsValueBool(const XML_Char * szKey, bool * pbValue) const
 
 	if (m_currentScheme->getValueBool(szKey,pbValue))
 		return true;
-	if (m_builtinScheme->getValueBool(szKey,pbValue))
+	if (bAllowBuiltin && m_builtinScheme->getValueBool(szKey,pbValue))
 		return true;
 	// It is legal for there to be arbitrary preference tags that start with 
 	// "Debug", and Abi apps won't choke.  The idea is that developers can use

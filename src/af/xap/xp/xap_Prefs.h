@@ -124,9 +124,9 @@ public:
 	XAP_PrefsScheme *		getCurrentScheme(bool bCreate = false);
 	bool					setCurrentScheme(const XML_Char * szSchemeName);
 
-	bool					getPrefsValue(const XML_Char * szKey, const XML_Char ** pszValue) const;
-	bool					getPrefsValue(const UT_String &stKey, UT_String &stValue) const;
-	bool					getPrefsValueBool(const XML_Char * szKey, bool * pbValue) const;
+	bool					getPrefsValue(const XML_Char * szKey, const XML_Char ** pszValue, bool bAllowBuiltin = true) const;
+	bool					getPrefsValue(const UT_String &stKey, UT_String &stValue, bool bAllowBuiltin = true) const;
+	bool					getPrefsValueBool(const XML_Char * szKey, bool * pbValue, bool bAllowBuiltin = true) const;
 
 	bool					getAutoSavePrefs(void) const;
 	void					setAutoSavePrefs(bool bAuto);

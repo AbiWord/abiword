@@ -1940,13 +1940,13 @@ static bool s_AskForPathname(XAP_Frame * pFrame,
 
 		const XML_Char * ftype = 0;
 
-		pPrefs->getPrefsValue (static_cast<const XML_Char *>(AP_PREF_KEY_DefaultSaveFormat), &ftype);
-		if (!ftype)
-		  ftype = ".abw";
-
-		// load the default file format
-		dflFileType = IE_Exp::fileTypeForSuffix (ftype);
-		UT_DEBUGMSG(("DOM: reverting to default file type: %s (%d)\n", ftype, dflFileType));
+		pPrefs->getPrefsValue (static_cast<const XML_Char *>(AP_PREF_KEY_DefaultSaveFormat), &ftype, false);
+		if (ftype)
+			{
+				// load the default file format
+				dflFileType = IE_Exp::fileTypeForSuffix (ftype);
+				UT_DEBUGMSG(("DOM: reverting to default file type: %s (%d)\n", ftype, dflFileType));
+			}
 	  }
 	else
 	  {
@@ -8294,7 +8294,8 @@ static bool s_doPrint(FV_View * pView, bool bTryToSuppressDialog,bool bPrintDire
 #ifndef WITHOUT_PRINTING
 	UT_return_val_if_fail (pView, false);
 
-	if (pView->getViewMode() == VIEW_NORMAL)
+	if (pView->getViewMode() != VIEW_PRINT
+)
 	{
 		/* if the current view is in normal mode, switch to print layout
 		 * first, this ensure that the printed layout is as it should be.

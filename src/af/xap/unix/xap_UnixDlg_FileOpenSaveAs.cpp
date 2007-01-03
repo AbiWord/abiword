@@ -702,7 +702,7 @@ void XAP_UnixDialog_FileOpenSaveAs::runModal(XAP_Frame * pFrame)
 	gtk_widget_show(thismenuitem);
 	gtk_menu_shell_append(GTK_MENU_SHELL(menu), thismenuitem);
 
-	UT_uint32 activeItemIndex = 0;
+	UT_sint32 activeItemIndex = -1;
 	
 	// add list items
 	{
