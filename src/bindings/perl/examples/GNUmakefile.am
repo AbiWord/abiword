@@ -1,0 +1,11 @@
+
+EXTRA_DIST = \
+	duplicate_selection.pl \
+	dynamic_menu.pl \
+	fax.pl \
+	find.pl \
+	GNUmakefile.am
+	print.pl \
+	test_header_footer_body.pl \
+	test_random_words.pl \
+	test_scroll.pl

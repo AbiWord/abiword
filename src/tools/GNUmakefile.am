@@ -26,3 +26,4 @@ CDUMP_DIR = cdump
 endif
 
 SUBDIRS = $(CDUMP_DIR) po2str scripts
+DIST_SUBDIRS = cdump po2str scripts

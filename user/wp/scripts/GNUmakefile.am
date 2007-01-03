@@ -1,0 +1,4 @@
+
+scriptsdir = $(ABIWORD_DATADIR)/scripts
+scripts_DATA = \
+	abw2html.pl

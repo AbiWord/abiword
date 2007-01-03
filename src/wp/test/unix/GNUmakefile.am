@@ -38,3 +38,6 @@ AbiWord_test_SOURCES = test_main.cpp
 testwrap.sh-stamp: testwrap.sh
 	chmod a+x testwrap.sh
 	touch $@
+
+CLEANFILES = \
+	testwrap.sh-stamp

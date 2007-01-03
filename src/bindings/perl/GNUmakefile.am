@@ -5,6 +5,8 @@
 
 # XSUBPPDIR = /usr/lib/perl5/5.6.0/ExtUtils
 
+DIST_SUBDIRS = examples
+
 include $(top_srcdir)/includes.mk
 
 noinst_LIBRARIES = libabiperl.a
@@ -36,6 +38,16 @@ INCLUDES=\
 AbiWord.cpp: AbiWord.xs $(srcdir)/typemap
 	@perl $(XSUBPP) -typemap $(XSUBPPDIR)/typemap -typemap typemap \
 		$(srcdir)/AbiWord.xs > $(perldir)/AbiWord.xsc && mv $(perldir)/AbiWord.xsc  $(perldir)/AbiWord.cpp
+
+EXTRA_DIST = \
+	AbiWord.pm \
+	AbiWord.xs \
+	Changes \
+	Makefile.PL \
+	MANIFEST \
+	test.pl \
+	typemap
+
 
 install-exec-local:
 	@perl -we '%m=@ARGV;for (keys %m){' \

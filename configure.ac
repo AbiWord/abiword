@@ -593,7 +593,12 @@ AC_CONFIG_FILES([
  src/tools/scripts/unix/GNUmakefile
  src/bindings/GNUmakefile
  src/bindings/perl/GNUmakefile
+ src/bindings/perl/examples/GNUmakefile
  src/pkg/linux/apkg/abiword.apspec
+ user/GNUmakefile
+ user/wp/GNUmakefile
+ user/wp/scripts/GNUmakefile
+ user/wp/strings/GNUmakefile
 ])
 AC_OUTPUT
 

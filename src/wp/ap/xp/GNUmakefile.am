@@ -104,9 +104,11 @@ libWpAp_xp_a_SOURCES=	ap_Args.cpp		\
 		ap_App.cpp			\
 		ap_Frame.cpp			\
 		ap_Dialog_Stylist.cpp		\
+		$(BUILT_SOURCES)
+
+nodist_libWpAp_xp_a_SOURCES = 			\
 		ap_wp_splash.cpp		\
 		ap_wp_sidebar.cpp
-
 
 if CROSS_COMPILING
 CDUMP=

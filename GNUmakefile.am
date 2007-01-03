@@ -5,7 +5,7 @@ else
 SUBDIRS = goffice-bits src
 endif
 
-DIST_SUBDIRS = goffice-bits src
+DIST_SUBDIRS = goffice-bits src user
 
 expat_peerdir=$(top_builddir)/../expat
 wv_peerdir=$(top_builddir)/../wv
@@ -40,7 +40,6 @@ abiword-$(ABIWORD_SERIES).pc: abiword.pc
 EXTRA_DIST = 			\
 	docs			\
 	po			\
-	user			\
 	\
 	abi2po.pl		\
 	abiword.pc.in		\
@@ -59,13 +58,16 @@ EXTRA_DIST = 			\
 	includes.mk		\
 	README.TXT
 
+CLEANFILES = \
+	abiword.pc \
+	abiword-$(ABIWORD_SERIES).pc
+
 # Ok, if we add 'test' to EXTRA_DIST, make dist will run the tests and exit.
 # So here we go with this hack (maybe it should just be renamed to 'tests')
 # Yours, - Rob
 dist-hook:
 	rm -rf `find $(distdir)/docs -name CVS`
 	rm -rf `find $(distdir)/po -name CVS`
-	rm -rf `find $(distdir)/user -name CVS`
 	cp -r $(srcdir)/test $(distdir)
 	rm -rf `find $(distdir)/test -name CVS`
 
@@ -95,7 +97,7 @@ test: check
 distclean-generic: distclean-stop
 distclean-stop:
 	@echo "Please use \`make realclean' or \`make realrealclean' instead"
-	@exit 1
+	@exit 0 # TODO Rob exit val of 1 obviously stops make distcheck
 
 clean-local:
 	for i in . $(expat_peerdir)  $(wv_peerdir) \
@@ -121,16 +123,3 @@ realrealclean: realclean
 	@rm -f $(top_srcdir)/aclocal.m4 $(top_srcdir)/configure \
                $(top_srcdir)/install-sh $(top_srcdir)/missing \
                $(top_srcdir)/mkinstalldirs $(top_srcdir)/INSTALL
-
-
-# Install the datafiles. This is quick-and-dirty.
-install-data-local:
-	@$(mkinstalldirs) $(DESTDIR)$(ABIWORD_DATADIR)
-	@for dir in `cd $(top_srcdir)/user/wp; find . -type d ! -name CVS` ; do \
-	  $(mkinstalldirs) $(DESTDIR)$(ABIWORD_DATADIR)/$$dir ;\
-	  for file in $(top_srcdir)/user/wp/$$dir/* ; do \
-	    if test -f $$file ; then \
-	      $(INSTALL_DATA) $$file $(DESTDIR)$(ABIWORD_DATADIR)/$$dir; \
-	    fi ; \
-	  done; \
-	done
