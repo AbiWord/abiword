@@ -99,7 +99,8 @@ struct _AbiPrivData {
 	bool                 m_bShowMargin;
 	bool                 m_bOlpcSelections;
 	UT_UTF8String *      m_sMIMETYPE;
-	gint                 m_iDataLength;
+	gint                 m_iContentLength;
+	gint                 m_iSelectionLength;
 #ifdef HAVE_BONOBO
 	BonoboUIComponent    * m_uic;
 #endif
@@ -122,7 +123,8 @@ enum {
   MIMETYPE,
   CONTENT,
   SELECTION,
-  DATALENGTH,
+  CONTENTLENGTH,
+  SELECTIONLENGTH,
   ARG_LAST
 };
 
@@ -870,6 +872,11 @@ abi_widget_file_open(AbiWidget * abi)
 	abi_widget_invoke(abi,"fileOpen");
 	AP_UnixFrame * pFrame = static_cast<AP_UnixFrame *>(abi->priv->m_pFrame);
 	_abi_widget_bindListenerToView(abi, pFrame->getCurrentView());
+	FV_View * pView = static_cast<FV_View *>(abi->priv->m_pFrame->getCurrentView());
+	
+	PD_Document *pDoc = pView->getDocument();
+	IEFileType ieft  = pDoc->getLastOpenedType();
+	*(abi->priv->m_sMIMETYPE) =  IE_Exp::descriptionForFileType(ieft);
 	return TRUE;
 }
 
@@ -890,6 +897,8 @@ abi_widget_get_content_all(AbiWidget * w, char * mimetype, gint * iLength)
 		ieft = IE_Exp::fileTypeForSuffix(mimetype);
 	if(IEFT_Unknown == ieft)
 		ieft = IE_Exp::fileTypeForSuffix(".abw");
+	*(w->priv->m_sMIMETYPE) =  IE_Exp::descriptionForFileType(ieft);
+
 
 	XAP_Frame * pFrame = w->priv->m_pFrame;
 	if(!pFrame)
@@ -909,7 +918,7 @@ abi_widget_get_content_all(AbiWidget * w, char * mimetype, gint * iLength)
 	szOut[size] = 0;
 	g_object_unref(G_OBJECT(sink));
 	*iLength = size+1;
-	w->priv->m_iDataLength = size+1;
+	w->priv->m_iContentLength = size+1;
 	return szOut;
 }
 
@@ -931,6 +940,7 @@ abi_widget_get_content_selection(AbiWidget * w, gchar * mimetype,gint * iLength)
 		ieft = IE_Exp::fileTypeForSuffix(mimetype);
 	if(IEFT_Unknown == ieft)
 		ieft = IE_Exp::fileTypeForSuffix(".abw");
+	*(w->priv->m_sMIMETYPE) =  IE_Exp::descriptionForFileType(ieft);
 
 	XAP_Frame * pFrame = w->priv->m_pFrame;
 	if(!pFrame)
@@ -964,7 +974,7 @@ abi_widget_get_content_selection(AbiWidget * w, gchar * mimetype,gint * iLength)
 	szOut[size] = 0;
 	g_object_unref(G_OBJECT(sink));
 	*iLength = size+1;
-	w->priv->m_iDataLength = size+1;
+	w->priv->m_iSelectionLength = size+1;
 	return szOut;
 }
 
@@ -1031,6 +1041,10 @@ abi_widget_load_file(AbiWidget * abi, const char * pszFile)
 		UT_uint32 iZoom =  pView->calculateZoomPercentForPageWidth();
 		pFrame->quickZoom(iZoom);
 	}
+	PD_Document *pDoc = pView->getDocument();
+	IEFileType ieft  = pDoc->getLastOpenedType();
+	*(abi->priv->m_sMIMETYPE) =  IE_Exp::descriptionForFileType(ieft);
+
 	return TRUE;
 }
 
@@ -1084,6 +1098,17 @@ static void abi_widget_get_prop (GObject  *object,
 		}
 	    case MIMETYPE:
 		{
+			if(abi->priv->m_sMIMETYPE->size() == 0)
+			{
+				    if(abi->priv->m_pFrame)
+					{
+						FV_View * pView = static_cast<FV_View *>(abi->priv->m_pFrame->getCurrentView());
+						
+						PD_Document *pDoc = pView->getDocument();
+						IEFileType ieft  = pDoc->getLastOpenedType();
+						*(abi->priv->m_sMIMETYPE) =  IE_Exp::descriptionForFileType(ieft);
+					}
+			}
 			g_value_set_string(arg,(gchar *) abi->priv->m_sMIMETYPE->utf8_str());
 			break;
 		}
@@ -1101,9 +1126,14 @@ static void abi_widget_get_prop (GObject  *object,
 			g_value_set_string(arg,bytes);
 			break;
 		}
-	    case DATALENGTH:
+	    case CONTENTLENGTH:
 		{
-			g_value_set_int(arg,abi->priv->m_iDataLength);
+			g_value_set_int(arg,abi->priv->m_iContentLength);
+			break;
+		}
+	    case SELECTIONLENGTH:
+		{
+			g_value_set_int(arg,abi->priv->m_iSelectionLength);
 			break;
 		}
 	    default:
@@ -1268,8 +1298,9 @@ abi_widget_init (AbiWidget * abi)
 	priv->externalApp = false;
 	priv->m_bShowMargin = true;
 	priv->m_bOlpcSelections = true;
-	priv->m_sMIMETYPE = new UT_UTF8String(".abw");
-	priv->m_iDataLength = 0;
+	priv->m_sMIMETYPE = new UT_UTF8String("");
+	priv->m_iContentLength = 0;
+	priv->m_iSelectionLength = 0;
 	abi->priv = priv;
 
 	// this isn't really needed, since each widget is
@@ -1667,8 +1698,16 @@ abi_widget_class_init (AbiWidgetClass *abi_class)
 													   static_cast<GParamFlags>(G_PARAM_READABLE)));
 
   g_object_class_install_property(gobject_class,
-								  DATALENGTH,
-								  g_param_spec_string("data_length",
+								  CONTENTLENGTH,
+								  g_param_spec_string("content_length",
+													   NULL,
+													   NULL,
+													   FALSE,
+													   static_cast<GParamFlags>(G_PARAM_READABLE)));
+
+ g_object_class_install_property(gobject_class,
+								  SELECTIONLENGTH,
+								  g_param_spec_string("selection_length",
 													   NULL,
 													   NULL,
 													   FALSE,
@@ -2015,6 +2054,7 @@ abi_widget_save_ext ( AbiWidget * w, const char * fname,
 
   if ( extension != NULL && strlen ( extension ) > 0 && extension[0] == '.' )
     ieft = IE_Exp::fileTypeForSuffix ( extension ) ;
+  *(w->priv->m_sMIMETYPE) =  IE_Exp::descriptionForFileType(ieft);
 
   return ( static_cast<AD_Document*>(doc)->saveAs ( fname, ieft ) == UT_OK ? TRUE : FALSE ) ;
 }
