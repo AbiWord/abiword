@@ -66,7 +66,8 @@ float fontPoints2float(UT_uint32 iSize, FT_Face pFace, UT_uint32 iFontPoints)
 {
 	if(pFace == NULL)
 		return 0.0;
-	return (UT_sint32)iFontPoints * (UT_sint32)iSize * 1.0 /
+	float rat = 1.44; // convert from points to inches
+	return static_cast<float>(iFontPoints) * static_cast<float>(iSize) * rat  /
 		pFace->units_per_EM;
 }
 
@@ -2884,9 +2885,10 @@ bool GR_UnixPangoFont::glyphBox(UT_UCS4Char g, UT_Rect & rec, GR_Graphics * pG)
 	FT_Face pFace = pango_fc_font_lock_face(PANGO_FC_FONT(m_pf));
 
 	double resRatio = 1.0;
+
 	if(pG->canQuickPrint())
 	{
-			resRatio = static_cast<GR_UnixPangoPrintGraphics *>(pG)->getResolutionRatio();
+	  		resRatio = static_cast<GR_UnixPangoPrintGraphics *>(pG)->getResolutionRatio();
 	}
 	FT_Error error = FT_Load_Glyph(pFace, iGlyphIndx,
 								   FT_LOAD_LINEAR_DESIGN |
@@ -2901,19 +2903,19 @@ bool GR_UnixPangoFont::glyphBox(UT_UCS4Char g, UT_Rect & rec, GR_Graphics * pG)
 		return false;
 	}
 
-	UT_uint32 iSize = (UT_uint32)(m_dPointSize * resRatio *(double)pG->getResolution() /
+	UT_uint32 iSize = (UT_uint32)(0.5 + m_dPointSize * resRatio *(double)pG->getResolution() /
 		(double)pG->getDeviceResolution());
 	
-	rec.left   = static_cast<UT_sint32>(fontPoints2float(iSize, pFace,
+	rec.left   = static_cast<UT_sint32>(0.5 + fontPoints2float(iSize, pFace,
 														 pFace->glyph->metrics.horiBearingX));
 	
-	rec.width  = static_cast<UT_sint32>(fontPoints2float(iSize, pFace,
+	rec.width  = static_cast<UT_sint32>(0.5 + fontPoints2float(iSize, pFace,
 														 pFace->glyph->metrics.width));
 	
-	rec.top    = static_cast<UT_sint32>(fontPoints2float(iSize, pFace,
+	rec.top    = static_cast<UT_sint32>(0.5 + fontPoints2float(iSize, pFace,
 														 pFace->glyph->metrics.horiBearingY));
 	
-	rec.height = static_cast<UT_sint32>(fontPoints2float(iSize, pFace,
+	rec.height = static_cast<UT_sint32>(0.5 + fontPoints2float(iSize, pFace,
 														 pFace->glyph->metrics.height));
 	
 	UT_DEBUGMSG(("GlyphBox: %c [l:%d, w:%d, t:%d, h:%d\n",
