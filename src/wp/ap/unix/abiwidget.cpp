@@ -876,6 +876,10 @@ abi_widget_file_open(AbiWidget * abi)
 	
 	PD_Document *pDoc = pView->getDocument();
 	IEFileType ieft  = pDoc->getLastOpenedType();
+	if(ieft < 0)
+	{
+		ieft =  IE_Exp::fileTypeForSuffix(".abw");
+	}
 	*(abi->priv->m_sMIMETYPE) =  IE_Exp::descriptionForFileType(ieft);
 	return TRUE;
 }
@@ -1034,6 +1038,7 @@ abi_widget_load_file(AbiWidget * abi, const char * pszFile)
 
 	// todo: this doesn't belong here. it should be bound as soon as the frame has a view,
 	// todo: or whenever the frame changes its view, such as a document load
+	UT_DEBUGMSG(("About to bind listener to view \n"));
 	_abi_widget_bindListenerToView(abi, pFrame->getCurrentView());
 	FV_View * pView = static_cast<FV_View *>(pFrame->getCurrentView());
 	if(pFrame->getZoomType() == XAP_Frame::z_PAGEWIDTH)
@@ -1042,7 +1047,16 @@ abi_widget_load_file(AbiWidget * abi, const char * pszFile)
 		pFrame->quickZoom(iZoom);
 	}
 	PD_Document *pDoc = pView->getDocument();
+	xxx_UT_DEBUGMSG(("Document from view is %x \n",pDoc));
 	IEFileType ieft  = pDoc->getLastOpenedType();
+	xxx_UT_DEBUGMSG(("Document Type loaded  is %d \n",ieft));
+	if(ieft < 0)
+	{
+		ieft =  IE_Exp::fileTypeForSuffix(".abw");
+	}
+	const char * szMIME = IE_Exp::descriptionForFileType(ieft);
+	xxx_UT_DEBUGMSG(("Setting MIMETYPE %s \n",szMIME));
+	xxx_UT_DEBUGMSG(("m_sMIMETYPE pointer %x \n",abi->priv->m_sMIMETYPE));
 	*(abi->priv->m_sMIMETYPE) =  IE_Exp::descriptionForFileType(ieft);
 
 	return TRUE;
@@ -1106,6 +1120,10 @@ static void abi_widget_get_prop (GObject  *object,
 						
 						PD_Document *pDoc = pView->getDocument();
 						IEFileType ieft  = pDoc->getLastOpenedType();
+						if(ieft < 0)
+						{
+								ieft =  IE_Exp::fileTypeForSuffix(".abw");
+						}
 						*(abi->priv->m_sMIMETYPE) =  IE_Exp::descriptionForFileType(ieft);
 					}
 			}
