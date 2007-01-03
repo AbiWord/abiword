@@ -452,6 +452,7 @@ void XAP_UnixFrameImpl::dragText()
 XAP_UnixFrameImpl::XAP_UnixFrameImpl(XAP_Frame *pFrame) : 
 	XAP_FrameImpl(pFrame),
 	m_imContext(NULL),
+	m_wTopLevelWindow(NULL),
 	m_pUnixMenu(NULL),
 	need_im_reset (false),
 	m_bDoZoomUpdate(false),

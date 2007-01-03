@@ -111,6 +111,7 @@ XAP_Frame::XAP_Frame(XAP_Frame * f)
 	m_iIdAutoSaveTimer(0),
 	m_iAutoSavePeriod(f->m_iAutoSavePeriod),
 	m_bBackupRunning(false),
+	m_bBackupInProgress(false),
 	m_isrcId(0),
 	m_isrcTBNr(0),
 	m_idestId(0),
