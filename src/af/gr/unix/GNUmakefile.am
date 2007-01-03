@@ -26,7 +26,7 @@ libGr_unix_a_SOURCES= gr_UnixPangoGraphics.cpp	\
 		      gr_UnixNullGraphics.cpp   \
 	              gr_UnixImage.cpp
 
-EXTRA_DIST = $(headers_DATA)
+EXTRA_DIST = $(headers_DATA) Makefile
 
 headersdir = $(ABIWORD_HEADERSDIR)/gr/unix
 headers_DATA = \

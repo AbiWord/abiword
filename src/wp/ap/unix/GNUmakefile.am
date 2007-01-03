@@ -119,6 +119,7 @@ libWpAp_unix_a_SOURCES=\
 	abiwidget.cpp				
 
 EXTRA_DIST = \
+	Makefile \
 	abiword_48.xpm \
 	$(glade_DATA) \
 	$(headers_DATA)

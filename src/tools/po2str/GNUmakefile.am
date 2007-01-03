@@ -18,3 +18,5 @@
 
 SUBDIRS= xp 
 
+EXTRA_DIST = \
+	Makefile

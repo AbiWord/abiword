@@ -28,7 +28,7 @@ libGr_win_a_SOURCES=\
 	gr_Win32Image.cpp       \
 	gr_Win32USPGraphics.cpp
 
-EXTRA_DIST = $(headers_DATA)
+EXTRA_DIST = $(headers_DATA) Makefile
 
 headersdir = $(ABIWORD_HEADERSDIR)/gr/win
 headers_DATA = \

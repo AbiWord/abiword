@@ -35,7 +35,7 @@ libUtil_win_a_SOURCES=\
 	ut_Win32Misc.cpp	\
 	ut_Win32Uuid.cpp
 
-EXTRA_DIST = $(headers_DATA)
+EXTRA_DIST = $(headers_DATA) Makefile
 
 headersdir = $(ABIWORD_HEADERSDIR)/util/win
 headers_DATA = \

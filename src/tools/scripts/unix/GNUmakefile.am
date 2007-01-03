@@ -22,6 +22,6 @@ include $(top_srcdir)/includes.mk
 
 noinst_SCRIPTS =
 
-EXTRA_DIST = $(noinst_SCRIPTS)
+EXTRA_DIST = $(noinst_SCRIPTS) Makefile
 
 install-exec-local:

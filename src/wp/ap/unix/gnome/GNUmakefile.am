@@ -29,6 +29,7 @@ libWpAp_Gnome_a_SOURCES = \
 	ap_NautilusView.cpp
 
 EXTRA_DIST = \
+	Makefile \
 	$(bonobo_DATA) \
 	$(headers_DATA)
 

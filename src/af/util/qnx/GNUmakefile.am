@@ -34,7 +34,7 @@ libUtil_qnx_a_SOURCES=		\
 	ut_qnxAssert.cpp \
 	ut_qnxMisc.cpp
 
-EXTRA_DIST = $(headers_DATA)
+EXTRA_DIST = $(headers_DATA) Makefile
 
 headersdir = $(ABIWORD_HEADERSDIR)/util/qnx
 headers_DATA = \

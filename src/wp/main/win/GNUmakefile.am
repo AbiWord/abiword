@@ -42,6 +42,9 @@ AbiWord_2_6_SOURCES = abi_ver.cpp Win32Main.cpp
 abi_ver.cpp:	@PLUGIN_LIST@
 	cp $(srcdir)/../xp/abi_ver.cpp .
 
+EXTRA_DIST = \
+	Makefile
+
 install-exec-local:	
 	@if test -f $(DESTDIR)/$(bindir)/abiword; then \
 	  echo "$(DESTDIR)/$(bindir)/abiword is a regular file - I'm not going to create a link."; \

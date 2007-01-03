@@ -38,7 +38,7 @@ endif
 
 libSpell_a_SOURCES = $(COMMONSOURCES) $(ENCHANTSOURCES) $(ISPELLSOURCES)
 
-EXTRA_DIST = $(headers_DATA)
+EXTRA_DIST = $(headers_DATA) Makefile
 
 # TODO Rob: conditional header install
 headersdir = $(ABIWORD_HEADERSDIR)/spell/xp

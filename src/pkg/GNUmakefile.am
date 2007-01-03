@@ -5,3 +5,24 @@ if WITH_HILDON
 SUBDIRS += maemo
 endif
 
+DIST_SUBDIRS = linux maemo
+
+EXTRA_DIST = \
+	aix \
+	common \
+	cygwin \
+	freebsd \
+	hpux \
+	iomega_activedisk \
+	irix \
+	netbsd \
+	openbsd \
+	osf1 \
+	qnx \
+	sunos \
+	win
+
+dist-hook:
+	for dir in $(EXTRA_DIST); do \
+		rm -rf `find $(distdir)/$$dir -name CVS`; \
+	done

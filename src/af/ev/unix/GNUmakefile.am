@@ -39,6 +39,7 @@ libEv_unix_a_SOURCES =			\
 	ev_UnixToolbar_ViewListener.cpp
 
 EXTRA_DIST = \
+	Makefile \
 	stock \
 	\
 	$(headers_DATA)

@@ -18,4 +18,4 @@
 
 SUBDIRS = fmt ptbl
 
-EXTRA_DIST = README.TXT
+EXTRA_DIST = README.TXT Makefile

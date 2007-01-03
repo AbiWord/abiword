@@ -1,3 +1,5 @@
 
 SUBDIRS = apkg
 
+EXTRA_DIST = \
+	Makefile

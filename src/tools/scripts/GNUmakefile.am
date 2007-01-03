@@ -20,3 +20,6 @@
 
 #SUBDIRS = @PLATFORM@
 SUBDIRS = unix
+
+EXTRA_DIST = \
+	Makefile

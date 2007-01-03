@@ -62,7 +62,7 @@ libXap_win_a_SOURCES=\
 	xap_Win32Dlg_History.cpp \
 	xap_Win32Dlg_DocComparison.cpp
 
-EXTRA_DIST = $(headers_DATA)
+EXTRA_DIST = $(headers_DATA) Makefile
 
 headersdir = $(ABIWORD_HEADERSDIR)/xap/win
 headers_DATA = \

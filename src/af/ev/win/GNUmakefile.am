@@ -30,7 +30,7 @@ libEv_win_a_SOURCES=		\
 	 ev_Win32Toolbar.cpp		\
 	 ev_Win32Toolbar_ViewListener.cpp
 
-EXTRA_DIST = $(headers_DATA)
+EXTRA_DIST = $(headers_DATA) Makefile
 
 headersdir = $(ABIWORD_HEADERSDIR)/ev/win
 headers_DATA = \

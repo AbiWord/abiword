@@ -80,7 +80,7 @@ libWpAp_win_a_SOURCES=\
 	ap_Win32TopRuler.cpp			\
 	ap_Win32Dialog_PageSetup.cpp
 
-EXTRA_DIST = $(headers_DATA)
+EXTRA_DIST = $(headers_DATA) Makefile
 
 headersdir = $(ABIWORD_HEADERSDIR)/ap/win
 headers_DATA = \

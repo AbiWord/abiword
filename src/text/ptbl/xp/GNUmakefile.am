@@ -81,7 +81,9 @@ libPtbl_a_SOURCES= \
 	fd_Field.cpp	\
 	pd_Iterator.cpp
 
-EXTRA_DIST = README.TXT \
+EXTRA_DIST = \
+	Makefile \
+	README.TXT \
 	$(headers_DATA)
 
 headersdir = $(ABIWORD_HEADERSDIR)/text/ptbl/xp

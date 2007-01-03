@@ -38,3 +38,6 @@ libXap_a_LIBADD = $(objects)
 libTestXap_a_SOURCES =
 
 libTestXap_a_LIBADD = @PLATFORM@/t/*.o
+
+EXTRA_DIST = \
+	Makefile

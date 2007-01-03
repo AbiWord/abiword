@@ -38,7 +38,7 @@ libImpExp_unix_a_SOURCES = \
 			ie_impexp_RegisterUnix.cpp \
 			ie_impGraphic_GdkPixbuf.cpp
 
-EXTRA_DIST = $(headers_DATA)
+EXTRA_DIST = $(headers_DATA) Makefile
 
 headersdir = $(ABIWORD_HEADERSDIR)/impexp/unix
 headers_DATA = \

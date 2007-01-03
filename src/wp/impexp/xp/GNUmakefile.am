@@ -54,7 +54,7 @@ libImpExp_xp_a_SOURCES=\
 	ie_mailmerge.cpp		\
 	ie_TOC.cpp
 
-EXTRA_DIST = $(headers_DATA)
+EXTRA_DIST = $(headers_DATA) Makefile 
 
 headersdir = $(ABIWORD_HEADERSDIR)/impexp/xp
 headers_DATA = \

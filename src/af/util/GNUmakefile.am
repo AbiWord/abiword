@@ -38,3 +38,6 @@ libUtil_a_LIBADD = $(ABI_BE_OBJECTS)
 libTestUtil_a_SOURCES =
 
 libTestUtil_a_LIBADD = $(ABI_TEST_OBJECTS)
+
+EXTRA_DIST = \
+	Makefile

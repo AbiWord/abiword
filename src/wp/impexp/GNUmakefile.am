@@ -29,4 +29,4 @@ libImpExp_a_SOURCES =
 
 libImpExp_a_LIBADD = $(objects)
 
-EXTRA_DIST = README.TXT
+EXTRA_DIST = README.TXT Makefile

@@ -33,7 +33,7 @@ libUtil_unix_a_SOURCES=\
 	ut_path.cpp	\
 	ut_unixMisc.cpp
 
-EXTRA_DIST = $(headers_DATA)
+EXTRA_DIST = $(headers_DATA) Makefile
 
 headersdir = $(ABIWORD_HEADERSDIR)/util/unix
 headers_DATA = \

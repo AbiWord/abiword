@@ -92,7 +92,7 @@ libXap_unix_a_SOURCES= $(print_src)	\
 	xap_UnixDlg_DocComparison.cpp 	\
 	xap_UnixWidget.cpp
 
-EXTRA_DIST = $(glade_DATA) $(headers_DATA)
+EXTRA_DIST = $(glade_DATA) $(headers_DATA) Makefile
 
 # TODO Rob: conditionally install print headers
 headersdir = $(ABIWORD_HEADERSDIR)/xap/unix

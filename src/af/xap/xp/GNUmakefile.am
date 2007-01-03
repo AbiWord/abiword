@@ -83,7 +83,7 @@ libXap_xp_a_SOURCES= $(print_src) \
 	xap_Dlg_History.cpp \
 	xap_Dlg_DocComparison.cpp
 
-EXTRA_DIST = $(headers_DATA)
+EXTRA_DIST = $(headers_DATA) Makefile
 
 headersdir = $(ABIWORD_HEADERSDIR)/xap/xp
 headers_DATA = \

@@ -17,3 +17,6 @@
 ## 02111-1307, USA.
 
 SUBDIRS = xp
+
+EXTRA_DIST = \
+	Makefile

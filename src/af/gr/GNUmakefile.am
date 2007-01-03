@@ -26,3 +26,6 @@ noinst_LIBRARIES= libGr.a
 libGr_a_SOURCES = 
 
 libGr_a_LIBADD = $(ABI_OBJECTS)
+
+EXTRA_DIST = \
+	Makefile

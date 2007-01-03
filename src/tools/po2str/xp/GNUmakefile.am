@@ -18,3 +18,6 @@
 
 noinst_PROGRAMS= po2str
 po2str_SOURCES = po2str.c
+
+EXTRA_DIST = \
+	Makefile

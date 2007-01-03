@@ -125,6 +125,7 @@ ap_wp_sidebar.cpp: $(CDUMP) $(srcdir)/sidebar.png
 	$(CDUMPAPP) $(srcdir)/sidebar.png g_pngSidebar > ap_wp_sidebar.cpp
 
 EXTRA_DIST = \
+	Makefile \
 	ToolbarIcons \
 	\
 	margin.xpm \

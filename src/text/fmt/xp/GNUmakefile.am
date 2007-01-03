@@ -72,7 +72,7 @@ libFmt_a_SOURCES= \
 	fp_MathRun.cpp \
 	fp_EmbedRun.cpp
 
-EXTRA_DIST = $(headers_DATA)
+EXTRA_DIST = $(headers_DATA) Makefile
 
 headersdir = $(ABIWORD_HEADERSDIR)/text/fmt/xp
 headers_DATA = \

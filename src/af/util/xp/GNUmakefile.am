@@ -94,7 +94,7 @@ libUtil_xp_a_SOURCES= \
 	ut_uuid.cpp \
 	ut_go_file.cpp
 
-EXTRA_DIST = $(headers_DATA)
+EXTRA_DIST = $(headers_DATA) Makefile
 
 headersdir = $(ABIWORD_HEADERSDIR)/util/xp
 headers_DATA = \

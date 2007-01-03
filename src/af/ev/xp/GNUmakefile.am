@@ -39,7 +39,7 @@ libEv_xp_a_SOURCES=	\
 	ev_Toolbar_Labels.cpp	\
 	ev_Toolbar_Layouts.cpp
 
-EXTRA_DIST = $(headers_DATA)
+EXTRA_DIST = $(headers_DATA) Makefile
 
 headersdir = $(ABIWORD_HEADERSDIR)/ev/xp
 headers_DATA = \

@@ -41,6 +41,7 @@ EXTRA_DIST = 			\
 	docs			\
 	po			\
 	\
+	Makefile		\
 	abi2po.pl		\
 	abiword.pc.in		\
 	abiword_48.png		\

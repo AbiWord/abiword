@@ -78,6 +78,7 @@ libWpAp_qnx_a_SOURCES=\
 	ap_QNXTopRuler.cpp
 
 EXTRA_DIST = \
+	Makefile \
 	abiword_48.xpm \
 	$(headers_DATA)
 

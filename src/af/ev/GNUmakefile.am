@@ -28,3 +28,6 @@ objects = $(ABI_OBJECTS)
 libEv_a_SOURCES = 
 
 libEv_a_LIBADD = $(objects)
+
+EXTRA_DIST = \
+	Makefile

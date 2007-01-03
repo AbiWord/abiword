@@ -18,4 +18,4 @@
 
 SUBDIRS = tf ev gr util xap
 
-EXTRA_DIST = README.TXT
+EXTRA_DIST = README.TXT Makefile

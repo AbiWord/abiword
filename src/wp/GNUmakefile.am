@@ -18,4 +18,4 @@
 
 SUBDIRS = ap impexp main test
 
-EXTRA_DIST = README.TXT
+EXTRA_DIST = README.TXT Makefile
