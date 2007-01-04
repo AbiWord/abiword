@@ -1,8 +1,8 @@
 
 if WITH_SYSTEM_GOFFICE
-SUBDIRS = src
+SUBDIRS = src user
 else
-SUBDIRS = goffice-bits src
+SUBDIRS = goffice-bits src user
 endif
 
 DIST_SUBDIRS = goffice-bits src user
