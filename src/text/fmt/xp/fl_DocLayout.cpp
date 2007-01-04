@@ -126,7 +126,7 @@ FL_DocLayout::FL_DocLayout(PD_Document* doc, GR_Graphics* pG)
         m_pDocLayout = this;
 #endif
         setLayoutIsFilling(false),
-	m_pRedrawUpdateTimer = UT_Timer::static_constructor(_redrawUpdate, this, m_pG);
+	m_pRedrawUpdateTimer = UT_Timer::static_constructor(_redrawUpdate, this);
 	if (m_pRedrawUpdateTimer && !pG->queryProperties(GR_Graphics::DGP_PAPER))
 	{
 		m_pRedrawUpdateTimer->set(REDRAW_UPDATE_MSECS);
@@ -2656,7 +2656,7 @@ FL_DocLayout::queueBlockForBackgroundCheck(UT_uint32 iReason,
 	    }
 	    UT_WorkerFactory::ConstructMode outMode = UT_WorkerFactory::NONE;
 	    
-	    m_pBackgroundCheckTimer = UT_WorkerFactory::static_constructor (_backgroundCheck, this, inMode, outMode, m_pG);
+	    m_pBackgroundCheckTimer = UT_WorkerFactory::static_constructor (_backgroundCheck, this, inMode, outMode);
 
 	    UT_ASSERT(m_pBackgroundCheckTimer);
 	    UT_ASSERT(outMode != UT_WorkerFactory::NONE);

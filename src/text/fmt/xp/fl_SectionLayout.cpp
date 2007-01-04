@@ -1383,7 +1383,7 @@ bool fl_DocSectionLayout::setHdrFtrHeightChange(bool bHdrFtr, UT_sint32 newHeigh
 	    int inMode = UT_WorkerFactory::IDLE | UT_WorkerFactory::TIMER;
 	    UT_WorkerFactory::ConstructMode outMode = UT_WorkerFactory::NONE;
 
-	    m_pHdrFtrChangeTimer = UT_WorkerFactory::static_constructor (_HdrFtrChangeCallback, this, inMode, outMode, m_pLayout->getGraphics());
+	    m_pHdrFtrChangeTimer = UT_WorkerFactory::static_constructor (_HdrFtrChangeCallback, this, inMode, outMode);
 
 	    UT_ASSERT(m_pHdrFtrChangeTimer);
 	    UT_ASSERT(outMode != UT_WorkerFactory::NONE);

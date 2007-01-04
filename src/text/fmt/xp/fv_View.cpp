@@ -6770,7 +6770,7 @@ void FV_View::extSelToXY(UT_sint32 xPos, UT_sint32 yPos, bool bDrag)
 			// offscreen ==> make sure it's set
 			if (!m_pAutoScrollTimer)
 			{
-				m_pAutoScrollTimer = UT_Timer::static_constructor(_autoScroll, this, m_pG);
+				m_pAutoScrollTimer = UT_Timer::static_constructor(_autoScroll, this);
 				if (m_pAutoScrollTimer)
 					m_pAutoScrollTimer->set(AUTO_SCROLL_MSECS);
 			}
@@ -6935,7 +6935,7 @@ endif
 			// offscreen ==> make sure it's set
 			if (!m_pAutoScrollTimer)
 			{
-				m_pAutoScrollTimer = UT_Timer::static_constructor(_autoScroll, this, m_pG);
+				m_pAutoScrollTimer = UT_Timer::static_constructor(_autoScroll, this);
 				if (m_pAutoScrollTimer)
 					m_pAutoScrollTimer->set(AUTO_SCROLL_MSECS);
 			}

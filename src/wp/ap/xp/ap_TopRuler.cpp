@@ -3335,7 +3335,7 @@ void AP_TopRuler::mouseMotion(EV_EditModifierState ems, UT_sint32 x, UT_sint32 y
 			// off the ruler since the last time it was on the ruler and we have MAJOR SELF-ESTEEM PROBLEMS!!!
 			if(m_pG)
 			{
-				m_pAutoScrollTimer = UT_Timer::static_constructor(_autoScroll, this, m_pG);
+				m_pAutoScrollTimer = UT_Timer::static_constructor(_autoScroll, this);
 				if (m_pAutoScrollTimer)
 					m_pAutoScrollTimer->set(s_tr_AUTOSCROLL_INTERVAL);
 			}

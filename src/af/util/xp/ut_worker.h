@@ -50,8 +50,7 @@ class ABI_EXPORT UT_WorkerFactory
 
   static UT_Worker * static_constructor ( UT_WorkerCallback cb, void * data, 
 					  int wantMode, 
-					  UT_WorkerFactory::ConstructMode & outMode, 
-					  GR_Graphics * pG=0 );
+					  UT_WorkerFactory::ConstructMode & outMode );
 
  private:
   UT_WorkerFactory ();

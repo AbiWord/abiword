@@ -90,11 +90,11 @@ GR_Caret::GR_Caret(GR_Graphics * pG)
 {
 	UT_WorkerFactory::ConstructMode outMode = UT_WorkerFactory::NONE;
 	m_worker = static_cast<UT_Timer *>(UT_WorkerFactory::static_constructor
-		(s_work, this, UT_WorkerFactory::TIMER, outMode, pG));
+		(s_work, this, UT_WorkerFactory::TIMER, outMode));
 	m_worker->set(getCursorBlinkTime ());
 
 	m_enabler = static_cast<UT_Timer *>(UT_WorkerFactory::static_constructor
-		(s_enable, this, UT_WorkerFactory::TIMER, outMode, pG));
+		(s_enable, this, UT_WorkerFactory::TIMER, outMode));
 	m_enabler->set(CURSOR_DELAY_TIME);
 	
 	setBlink (false);
@@ -126,11 +126,11 @@ GR_Caret::GR_Caret(GR_Graphics * pG, UT_UTF8String & sDocUUID)
 {
 	UT_WorkerFactory::ConstructMode outMode = UT_WorkerFactory::NONE;
 	m_worker = static_cast<UT_Timer *>(UT_WorkerFactory::static_constructor
-		(s_work, this, UT_WorkerFactory::TIMER, outMode, pG));
+		(s_work, this, UT_WorkerFactory::TIMER, outMode));
 	m_worker->set(getCursorBlinkTime ());
 
 	m_enabler = static_cast<UT_Timer *>(UT_WorkerFactory::static_constructor
-		(s_enable, this, UT_WorkerFactory::TIMER, outMode, pG));
+		(s_enable, this, UT_WorkerFactory::TIMER, outMode));
 	m_enabler->set(CURSOR_DELAY_TIME);
 	m_iCaretNumber = static_cast<UT_sint32>(pG->m_vecCarets.getItemCount()) + 1;
 	setBlink (false);

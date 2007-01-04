@@ -118,8 +118,7 @@ UT_WorkerFactory::~UT_WorkerFactory()
  */
 UT_Worker * UT_WorkerFactory::static_constructor ( UT_WorkerCallback cb, 
 						   void * data, int mode,
-						   UT_WorkerFactory::ConstructMode & outMode,
-						   GR_Graphics * pG )
+						   UT_WorkerFactory::ConstructMode & outMode )
 {
 
   UT_Worker * tmp = 0;
@@ -137,7 +136,7 @@ UT_Worker * UT_WorkerFactory::static_constructor ( UT_WorkerCallback cb,
     
 	  if ( mode & TIMER )
       {
-		  tmp = UT_Timer::static_constructor ( cb, data, pG );
+		  tmp = UT_Timer::static_constructor ( cb, data );
 		  outMode = TIMER;
       }
   else

@@ -71,7 +71,7 @@ void AP_Dialog_Stylist::setActiveFrame(XAP_Frame *pFrame)
 
 void AP_Dialog_Stylist::startUpdater(void)
 {
-	m_pAutoUpdater =  UT_Timer::static_constructor(autoUpdate,this, NULL);
+	m_pAutoUpdater =  UT_Timer::static_constructor(autoUpdate,this);
 	m_pAutoUpdater->set(500);
 	m_pAutoUpdater->start();
 }

@@ -242,7 +242,7 @@ void FV_VisualInlineImage::mouseDrag(UT_sint32 x, UT_sint32 y)
 		{
 			return;
 		}
-		m_pAutoScrollTimer = UT_Timer::static_constructor(_autoScroll, this, pG);
+		m_pAutoScrollTimer = UT_Timer::static_constructor(_autoScroll, this);
 		m_pAutoScrollTimer->set(AUTO_SCROLL_MSECS);
 		m_pAutoScrollTimer->start();
 		return;

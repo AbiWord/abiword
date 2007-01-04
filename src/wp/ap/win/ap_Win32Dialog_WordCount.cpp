@@ -285,8 +285,7 @@ BOOL AP_Win32Dialog_WordCount::_onInitDialog(HWND hWnd, WPARAM wParam, LPARAM lP
 	ConstructWindowName();
 	SetWindowText(hWnd, m_WindowName);
 			
-	GR_Graphics * pG = NULL;
-	m_pAutoUpdateWC = UT_Timer::static_constructor(autoupdateWC,this,pG);
+	m_pAutoUpdateWC = UT_Timer::static_constructor(autoupdateWC,this);
 	setUpdateCounter( 1 );
 
 	// localize controls

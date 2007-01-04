@@ -1,3 +1,4 @@
+/* -*- mode: C++; tab-width: 4; c-basic-offset: 4; -*- */
 /* AbiSource Program Utilities
  * Copyright (C) 1998 AbiSource, Inc.
  * 
@@ -27,30 +28,23 @@
 class ABI_EXPORT UT_Win32Timer : public UT_Timer
 {
 public:
-	UT_Win32Timer(UT_TimerCallback pCallback, void* pData, GR_Graphics * pG);
+	UT_Win32Timer(UT_TimerCallback pCallback, void* pData);
 	~UT_Win32Timer();
 
 	virtual UT_sint32 set(UT_uint32 iMilliseconds);
-	virtual void stop(void);
-	virtual void start(void);
+	virtual void      stop(void);
+	virtual void      start(void);
 
-	bool isActive(void) { return m_bStarted; }
+	bool              isActive(void) const { return m_bStarted; }
 
-	HWND getHWnd(void) { return m_hWnd; }
-	UINT getWin32Identifier(void) { return m_nIDEvent; }
-	static UT_Win32Timer* findWin32Timer(HWND hwnd, UINT win32ID);
-
-	static void pauseAllTimers(bool bPause){s_bPauseAllTimers = bPause;}
-	static bool timersPaused(){return s_bPauseAllTimers;}
+	static UT_Win32Timer* findWin32Timer(UINT win32ID);
+	static void           pauseAllTimers(bool bPause){s_bPauseAllTimers = bPause;}
+	static bool           timersPaused(){return s_bPauseAllTimers;}
 
 protected:
 	UT_sint32 m_iMilliseconds;
-	bool m_bStarted;
-	HWND m_hWnd;
-	UINT m_nIDEvent;	
-	static int _compareIdentifiers(const void* p1, const void* p2);
-	UT_uint32 _createIdentifier(void);
-	UINT _createWin32Identifier(void);
+	bool      m_bStarted;
+	UINT      m_win32ID;
 
 private:
 	static bool s_bPauseAllTimers;

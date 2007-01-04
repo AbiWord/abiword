@@ -28,7 +28,7 @@
 /*****************************************************************/
 extern PtWidget_t *gTimerWidget;
 	
-UT_Timer* UT_Timer::static_constructor(UT_TimerCallback pCallback, void* pData, GR_Graphics * /*pG*/)
+UT_Timer* UT_Timer::static_constructor(UT_TimerCallback pCallback, void* pData)
 {
 	UT_ASSERT(pCallback);
 	UT_QNXTimer * p = new UT_QNXTimer(pCallback, pData);

@@ -63,7 +63,7 @@ public:
 		*platform* code, so that it can instantiate the appropriate 
 		platform-specific subclass.
 	*/
-	static UT_Timer* static_constructor(UT_WorkerCallback pCallback, void* pData, GR_Graphics * pG=0);
+	static UT_Timer* static_constructor(UT_WorkerCallback pCallback, void* pData);
 	
 protected:
 	UT_Timer();		// should only be called from static_constructor()

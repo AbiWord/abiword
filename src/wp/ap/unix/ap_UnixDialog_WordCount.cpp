@@ -96,7 +96,7 @@ void AP_UnixDialog_WordCount::runModeless(XAP_Frame * pFrame)
 	gtk_widget_show(m_windowMain);
 
 	// Now construct the timer for auto-updating
-	m_pAutoUpdateWC = UT_Timer::static_constructor(autoupdateWC,this,NULL);
+	m_pAutoUpdateWC = UT_Timer::static_constructor(autoupdateWC,this);
 	m_pAutoUpdateWC->set(1000);
 }
          

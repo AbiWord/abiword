@@ -97,8 +97,7 @@ void AP_Dialog_SplitCells::startUpdater(void)
 {
 	m_bDestroy_says_stopupdating = false;
 	m_bAutoUpdate_happening_now = false;
-	GR_Graphics *pG = NULL;
-	m_pAutoUpdaterMC =  UT_Timer::static_constructor(autoUpdateMC,this,pG);
+	m_pAutoUpdaterMC =  UT_Timer::static_constructor(autoUpdateMC,this);
 	m_pAutoUpdaterMC->set(500);
 	m_pAutoUpdaterMC->start();
 }

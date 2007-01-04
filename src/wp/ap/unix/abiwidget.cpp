@@ -767,8 +767,7 @@ static void s_StartStopLoadingCursor( bool bStartStop, XAP_Frame * pFrame)
 		s_pLoadingDoc = pFrame->getCurrentDoc();
 		if(s_pToUpdateCursor == NULL)
 		{
-			GR_Graphics * pG = NULL;
-			s_pToUpdateCursor = UT_Timer::static_constructor(s_LoadingCursorCallback,NULL,pG);
+			s_pToUpdateCursor = UT_Timer::static_constructor(s_LoadingCursorCallback,NULL);
 		}
 		s_bFirstDrawDone = false;
 		s_pToUpdateCursor->set(1000);

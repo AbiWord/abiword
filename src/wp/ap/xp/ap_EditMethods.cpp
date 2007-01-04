@@ -1659,8 +1659,7 @@ static void s_StartStopLoadingCursor( bool bStartStop, XAP_Frame * pFrame)
 		s_pLoadingDoc = pFrame->getCurrentDoc();
 		if(s_pToUpdateCursor == NULL)
 		{
-			GR_Graphics * pG = NULL;
-			s_pToUpdateCursor = UT_Timer::static_constructor(s_LoadingCursorCallback,NULL,pG);
+			s_pToUpdateCursor = UT_Timer::static_constructor(s_LoadingCursorCallback,NULL);
 		}
 		s_bFirstDrawDone = false;
 		s_pToUpdateCursor->set(1000);
@@ -3921,9 +3920,8 @@ Defun1(warpInsPtLeft)
 	UT_return_val_if_fail (pView, false);
 	int inMode = UT_WorkerFactory::IDLE | UT_WorkerFactory::TIMER;
 	UT_WorkerFactory::ConstructMode outMode = UT_WorkerFactory::NONE;
-	GR_Graphics * pG = pView->getGraphics();
 	_Freq * pFreq = new _Freq(pView,NULL,sActualMoveLeft);
-	s_pFrequentRepeat = UT_WorkerFactory::static_constructor (_sFrequentRepeat,pFreq, inMode, outMode, pG);
+	s_pFrequentRepeat = UT_WorkerFactory::static_constructor (_sFrequentRepeat,pFreq, inMode, outMode);
 
 	UT_ASSERT(s_pFrequentRepeat);
 	UT_ASSERT(outMode != UT_WorkerFactory::NONE);
@@ -3972,9 +3970,8 @@ Defun1(warpInsPtRight)
 	UT_return_val_if_fail (pView, false);
 	int inMode = UT_WorkerFactory::IDLE | UT_WorkerFactory::TIMER;
 	UT_WorkerFactory::ConstructMode outMode = UT_WorkerFactory::NONE;
-	GR_Graphics * pG = pView->getGraphics();
 	_Freq * pFreq = new _Freq(pView,NULL,sActualMoveRight);
-	s_pFrequentRepeat = UT_WorkerFactory::static_constructor (_sFrequentRepeat,pFreq, inMode, outMode, pG);
+	s_pFrequentRepeat = UT_WorkerFactory::static_constructor (_sFrequentRepeat,pFreq, inMode, outMode);
 
 	UT_ASSERT(s_pFrequentRepeat);
 	UT_ASSERT(outMode != UT_WorkerFactory::NONE);
@@ -4870,12 +4867,11 @@ Defun(dragToXY)
 	UT_return_val_if_fail (pView, false);
 	int inMode = UT_WorkerFactory::IDLE | UT_WorkerFactory::TIMER;
 	UT_WorkerFactory::ConstructMode outMode = UT_WorkerFactory::NONE;
-	GR_Graphics * pG = pView->getGraphics();
 	EV_EditMethodCallData * pNewData = new  EV_EditMethodCallData(pCallData->m_pData,pCallData->m_dataLength);
 	pNewData->m_xPos = pCallData->m_xPos;
 	pNewData->m_yPos = pCallData->m_yPos;
 	_Freq * pFreq = new _Freq(pView,pNewData,sActualDragToXY);
-	s_pFrequentRepeat = UT_WorkerFactory::static_constructor (_sFrequentRepeat,pFreq, inMode, outMode, pG);
+	s_pFrequentRepeat = UT_WorkerFactory::static_constructor (_sFrequentRepeat,pFreq, inMode, outMode);
 
 	UT_ASSERT(s_pFrequentRepeat);
 	UT_ASSERT(outMode != UT_WorkerFactory::NONE);
@@ -5405,9 +5401,8 @@ Defun1(delLeft)
 	UT_return_val_if_fail (pView, false);
 	int inMode = UT_WorkerFactory::IDLE | UT_WorkerFactory::TIMER;
 	UT_WorkerFactory::ConstructMode outMode = UT_WorkerFactory::NONE;
-	GR_Graphics * pG = pView->getGraphics();
 	_Freq * pFreq = new _Freq(pView,NULL,sActualDelLeft);
-	s_pFrequentRepeat = UT_WorkerFactory::static_constructor (_sFrequentRepeat,pFreq, inMode, outMode, pG);
+	s_pFrequentRepeat = UT_WorkerFactory::static_constructor (_sFrequentRepeat,pFreq, inMode, outMode);
 
 	UT_ASSERT(s_pFrequentRepeat);
 	UT_ASSERT(outMode != UT_WorkerFactory::NONE);
@@ -5444,9 +5439,8 @@ Defun1(delRight)
 	UT_return_val_if_fail (pView, false);
 	int inMode = UT_WorkerFactory::IDLE | UT_WorkerFactory::TIMER;
 	UT_WorkerFactory::ConstructMode outMode = UT_WorkerFactory::NONE;
-	GR_Graphics * pG = pView->getGraphics();
 	_Freq * pFreq = new _Freq(pView,NULL,sActualDelRight);
-	s_pFrequentRepeat = UT_WorkerFactory::static_constructor (_sFrequentRepeat,pFreq, inMode, outMode, pG);
+	s_pFrequentRepeat = UT_WorkerFactory::static_constructor (_sFrequentRepeat,pFreq, inMode, outMode);
 
 	UT_ASSERT(s_pFrequentRepeat);
 	UT_ASSERT(outMode != UT_WorkerFactory::NONE);
@@ -7029,9 +7023,8 @@ Defun1(paste)
 	UT_return_val_if_fail(pView, false);
 	int inMode = UT_WorkerFactory::IDLE | UT_WorkerFactory::TIMER;
 	UT_WorkerFactory::ConstructMode outMode = UT_WorkerFactory::NONE;
-	GR_Graphics * pG = pView->getGraphics();
 	_Freq * pFreq = new _Freq(pView,NULL,sActualPaste);
-	s_pFrequentRepeat = UT_WorkerFactory::static_constructor (_sFrequentRepeat,pFreq, inMode, outMode, pG);
+	s_pFrequentRepeat = UT_WorkerFactory::static_constructor (_sFrequentRepeat,pFreq, inMode, outMode);
 
 	UT_ASSERT(s_pFrequentRepeat);
 	UT_ASSERT(outMode != UT_WorkerFactory::NONE);
@@ -14098,12 +14091,11 @@ Defun(dragInlineImage)
 	UT_return_val_if_fail(pView, false);
 	int inMode = UT_WorkerFactory::IDLE | UT_WorkerFactory::TIMER;
 	UT_WorkerFactory::ConstructMode outMode = UT_WorkerFactory::NONE;
-	GR_Graphics * pG = pView->getGraphics();
 	EV_EditMethodCallData * pNewData = new  EV_EditMethodCallData(pCallData->m_pData,pCallData->m_dataLength);
 	pNewData->m_xPos = pCallData->m_xPos;
 	pNewData->m_yPos = pCallData->m_yPos;
 	_Freq * pFreq = new _Freq(pView,pNewData,sActualDragInlineImage);
-	s_pFrequentRepeat = UT_WorkerFactory::static_constructor (_sFrequentRepeat,pFreq, inMode, outMode, pG);
+	s_pFrequentRepeat = UT_WorkerFactory::static_constructor (_sFrequentRepeat,pFreq, inMode, outMode);
 
 	UT_ASSERT(s_pFrequentRepeat);
 	UT_ASSERT(outMode != UT_WorkerFactory::NONE);
@@ -14192,12 +14184,11 @@ Defun(dragFrame)
 	UT_return_val_if_fail(pView, false);
 	int inMode = UT_WorkerFactory::IDLE | UT_WorkerFactory::TIMER;
 	UT_WorkerFactory::ConstructMode outMode = UT_WorkerFactory::NONE;
-	GR_Graphics * pG = pView->getGraphics();
 	EV_EditMethodCallData * pNewData = new  EV_EditMethodCallData(pCallData->m_pData,pCallData->m_dataLength);
 	pNewData->m_xPos = pCallData->m_xPos;
 	pNewData->m_yPos = pCallData->m_yPos;
 	_Freq * pFreq = new _Freq(pView,pNewData,sActualDragFrame);
-	s_pFrequentRepeat = UT_WorkerFactory::static_constructor (_sFrequentRepeat,pFreq, inMode, outMode, pG);
+	s_pFrequentRepeat = UT_WorkerFactory::static_constructor (_sFrequentRepeat,pFreq, inMode, outMode);
 
 	UT_ASSERT(s_pFrequentRepeat);
 	UT_ASSERT(outMode != UT_WorkerFactory::NONE);
@@ -14436,12 +14427,11 @@ Defun(dragVisualText)
 //
 	int inMode = UT_WorkerFactory::IDLE | UT_WorkerFactory::TIMER;
 	UT_WorkerFactory::ConstructMode outMode = UT_WorkerFactory::NONE;
-	GR_Graphics * pG = pView->getGraphics();
 	EV_EditMethodCallData * pNewData = new  EV_EditMethodCallData(pCallData->m_pData,pCallData->m_dataLength);
 	pNewData->m_xPos = pCallData->m_xPos;
 	pNewData->m_yPos = pCallData->m_yPos;
 	_Freq * pFreq = new _Freq(pView,pNewData,sActualVisualDrag);
-	s_pFrequentRepeat = UT_WorkerFactory::static_constructor (_sFrequentRepeat,pFreq, inMode, outMode, pG);
+	s_pFrequentRepeat = UT_WorkerFactory::static_constructor (_sFrequentRepeat,pFreq, inMode, outMode);
 
 	UT_ASSERT(s_pFrequentRepeat);
 	UT_ASSERT(outMode != UT_WorkerFactory::NONE);

@@ -258,7 +258,7 @@ void AP_UnixDialog_Lists::runModeless (XAP_Frame * pFrame)
 
 	// Next construct a timer for auto-updating the dialog
 	GR_Graphics * pG = NULL;
-	m_pAutoUpdateLists = UT_Timer::static_constructor(autoupdateLists,this,pG);
+	m_pAutoUpdateLists = UT_Timer::static_constructor(autoupdateLists,this);
 	m_bDestroy_says_stopupdating = false;
 
 	// OK fire up the auto-updater for 0.5 secs
