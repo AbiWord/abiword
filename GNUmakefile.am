@@ -63,14 +63,9 @@ CLEANFILES = \
 	abiword.pc \
 	abiword-$(ABIWORD_SERIES).pc
 
-# Ok, if we add 'test' to EXTRA_DIST, make dist will run the tests and exit.
-# So here we go with this hack (maybe it should just be renamed to 'tests')
-# Yours, - Rob
 dist-hook:
 	rm -rf `find $(distdir)/docs -name CVS`
 	rm -rf `find $(distdir)/po -name CVS`
-	cp -r $(srcdir)/test $(distdir)
-	rm -rf `find $(distdir)/test -name CVS`
 
 # Hack: make sure that the PEERS stuff is build first
 # We can not use the all target, because on parallel builds there is no
