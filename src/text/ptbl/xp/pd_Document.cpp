@@ -67,8 +67,6 @@
 #include "fl_BlockLayout.h"
 #include "fl_DocListener.h"
 #include "fl_DocLayout.h"
-#include <gsf/gsf-input.h>
-#include <gsf/gsf-output.h>
 
 #include "ut_go_file.h"
 
