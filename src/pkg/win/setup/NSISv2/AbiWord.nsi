@@ -203,7 +203,7 @@ SectionEnd
 	Delete "$INSTDIR\${MAINPROGRAM}"
 	Delete "$INSTDIR\${PRODUCT}\bin\zlib1.dll"
 	Delete "$INSTDIR\${PRODUCT}\bin\libglib-2.0-0.dll"
-	Delete "$INSTDIR\${PRODUCT}\bin\libgojbect-2.0-0.dll"
+	Delete "$INSTDIR\${PRODUCT}\bin\libgobject-2.0-0.dll"
 	Delete "$INSTDIR\${PRODUCT}\bin\libgsf-1-114.dll"
 	Delete "$INSTDIR\${PRODUCT}\bin\bzip2.dll"
 
