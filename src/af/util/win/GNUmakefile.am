@@ -35,7 +35,10 @@ libUtil_win_a_SOURCES=\
 	ut_Win32Misc.cpp	\
 	ut_Win32Uuid.cpp
 
-EXTRA_DIST = $(headers_DATA) Makefile
+EXTRA_DIST = \
+	$(headers_DATA) \
+	$(rc2data) \
+	Makefile
 
 headersdir = $(ABIWORD_HEADERSDIR)/util/win
 headers_DATA = \
@@ -48,3 +51,6 @@ headers_DATA = \
 	ut_Win32Timer.h \
 	ut_Win32Uuid.h \
 	ut_Xpm2Bmp.h
+
+rc2data = \
+	ut_Win32Resources.rc2

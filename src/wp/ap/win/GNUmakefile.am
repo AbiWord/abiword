@@ -80,7 +80,10 @@ libWpAp_win_a_SOURCES=\
 	ap_Win32TopRuler.cpp			\
 	ap_Win32Dialog_PageSetup.cpp
 
-EXTRA_DIST = $(headers_DATA) Makefile
+EXTRA_DIST = \
+	$(headers_DATA) \
+	$(rc2data) \
+	Makefile
 
 headersdir = $(ABIWORD_HEADERSDIR)/ap/win
 headers_DATA = \
@@ -134,3 +137,44 @@ headers_DATA = \
 	ap_Win32Toolbar_StyleCombo.h \
 	ap_Win32Toolbar_ZoomCombo.h \
 	ap_Win32TopRuler.h 
+
+rc2data = \
+	ap_Win32Res_DlgBreak.rc2 \
+	ap_Win32Res_DlgColumns.rc2 \
+	ap_Win32Res_DlgDownload_File.rc2 \
+	ap_Win32Res_DlgField.rc2 \
+	ap_Win32Res_DlgFormatTOC.rc2 \
+	ap_Win32Res_DlgGoto.rc2 \
+	ap_Win32Res_DlgHdrFtr.rc2 \
+	ap_Win32Res_DlgInsertBookmark.rc2 \
+	ap_Win32Res_DlgInsert_DateTime.rc2 \
+	ap_Win32Res_DlgInsertHyperlink.rc2 \
+	ap_Win32Res_DlgInsertTable.rc2 \
+	ap_Win32Res_DlgLatex.rc2 \
+	ap_Win32Res_DlgList.rc2 \
+	ap_Win32Res_DlgListRevisions.rc2 \
+	ap_Win32Res_DlgMarkRevisions.rc2 \
+	ap_Win32Res_DlgMetaData.rc2 \
+	ap_Win32Res_DlgNew.rc2 \
+	ap_Win32Res_DlgOptions.rc2 \
+	ap_Win32Res_DlgPageNumbers.rc2 \
+	ap_Win32Res_DlgPageSetup.rc2 \
+	ap_Win32Res_DlgParagraph.rc2 \
+	ap_Win32Res_DlgSpell.rc2 \
+	ap_Win32Res_DlgStylesNewModify.rc2 \
+	ap_Win32Res_DlgStylesTop.rc2 \
+	ap_Win32Res_DlgStylist.rc2 \
+	ap_Win32Res_DlgTabs.rc2 \
+	ap_Win32Res_DlgToggleCase.rc2 \
+	ap_Win32Res_DlgWordCount.rc2 \
+	ap_Win32Res_FormatFootnotes.rc2 \
+	ap_Win32Res_FormatFrame.rc2 \
+	ap_Win32Res_FormatTable.rc2 \
+	ap_Win32Res_Icons.rc2 \
+	ap_Win32Res_MailMerge.rc2 \
+	ap_Win32Res_Manifest.rc2 \
+	ap_Win32Res_MergeCells.rc2 \
+	ap_Win32Resources_DialogReplace.rc2 \
+	ap_Win32Resources.rc2 \
+	ap_Win32Res_SplitCells.rc2 \
+	ap_Win32Res_Version.rc2

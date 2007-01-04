@@ -1,4 +1,7 @@
 
+EXTRA_DIST = \
+	$(scripts_DATA)
+
 scriptsdir = $(ABIWORD_DATADIR)/scripts
 scripts_DATA = \
 	abw2html.pl

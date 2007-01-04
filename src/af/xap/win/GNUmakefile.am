@@ -62,7 +62,10 @@ libXap_win_a_SOURCES=\
 	xap_Win32Dlg_History.cpp \
 	xap_Win32Dlg_DocComparison.cpp
 
-EXTRA_DIST = $(headers_DATA) Makefile
+EXTRA_DIST = \
+	$(headers_DATA) \
+	$(rc2data) \
+	Makefile
 
 headersdir = $(ABIWORD_HEADERSDIR)/xap/win
 headers_DATA = \
@@ -106,3 +109,21 @@ headers_DATA = \
 	xap_Win32Slurp.h \
 	xap_Win32_TB_CFactory.h \
 	xap_Win32Toolbar_Icons.h 
+
+rc2data = \
+	xap_Win32Res_Cursors.rc2 \
+	xap_Win32Res_DlgDocComparison.rc2 \
+	xap_Win32Res_DlgEncoding.rc2 \
+	xap_Win32Res_DlgFont.rc2 \
+	xap_Win32Res_DlgHistory.rc2 \
+	xap_Win32Res_DlgHTMLOptions.rc2 \
+	xap_Win32Res_DlgImage.rc2 \
+	xap_Win32Res_DlgInsertPicture.rc2 \
+	xap_Win32Res_DlgInsertSymbol.rc2 \
+	xap_Win32Res_DlgLanguage.rc2 \
+	xap_Win32Res_DlgListDocuments.rc2 \
+	xap_Win32Res_DlgPassword.rc2 \
+	xap_Win32Res_DlgPlugin.rc2 \
+	xap_Win32Res_DlgWindowMore.rc2 \
+	xap_Win32Res_DlgZoom.rc2 \
+	xap_Win32Resources.rc2

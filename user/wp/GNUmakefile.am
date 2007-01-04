@@ -1,6 +1,9 @@
 
 SUBDIRS = scripts strings
 
+EXTRA_DIST = \
+	$(wp_DATA)
+
 wpdir = $(ABIWORD_DATADIR)
 wp_DATA = \
 	readme.txt \
