@@ -107,16 +107,23 @@ class GR_UnixAllocInfo : public GR_AllocInfo
 {
 public:
  	GR_UnixAllocInfo(GdkWindow * win)
-		: m_win(win), m_gpm (NULL), m_bPreview (false), m_bPrinter (false){};
-
+		: m_win(win),
+#ifndef WITHOUT_PRINTING
+		  m_gpm (NULL),
+#endif
+		  m_bPreview (false), m_bPrinter (false){};
+	
+#ifndef WITHOUT_PRINTING
 	GR_UnixAllocInfo(GnomePrintJob * gpm, bool bPreview)
 		: m_win(NULL), m_gpm (gpm), m_bPreview (bPreview), m_bPrinter (true){};
-
+#endif
 	virtual GR_GraphicsId getType() const {return GRID_UNIX;}
 	virtual bool isPrinterGraphics() const {return m_bPrinter;}
 
 	GdkWindow     * m_win;
+#ifndef WITHOUT_PRINTING
 	GnomePrintJob * m_gpm;
+#endif
 	bool            m_bPreview;
 	bool            m_bPrinter;
 };

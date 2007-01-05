@@ -2744,6 +2744,69 @@ inline int GR_UnixPangoGraphics::pftlu(int pf) const
 	return (int) d;
 }
 
+void GR_UnixPangoGraphics::fillRect(GR_Color3D c, UT_Rect &r)
+{
+	UT_ASSERT(c < COUNT_3D_COLORS);
+	fillRect(c,r.left,r.top,r.width,r.height);
+}
+
+void GR_UnixPangoGraphics::fillRect(GR_Color3D c, UT_sint32 x, UT_sint32 y, UT_sint32 w, UT_sint32 h)
+{
+	UT_ASSERT(c < COUNT_3D_COLORS);
+	gdk_gc_set_foreground(m_pGC, &m_3dColors[c]);
+	gdk_draw_rectangle(m_pWin, m_pGC, 1, tdu(x), tdu(y), tdu(w), tdu(h));
+}
+
+void GR_UnixPangoGraphics::polygon(UT_RGBColor& c, UT_Point *pts,
+								   UT_uint32 nPoints)
+{
+	// save away the current color, and restore it after we draw the polygon
+	GdkGCValues gcValues;
+	GdkColor oColor;
+
+	memset(&oColor, 0, sizeof(GdkColor));
+
+	gdk_gc_get_values(m_pGC, &gcValues);
+
+	oColor.pixel = gcValues.foreground.pixel;
+
+	// get the new color
+	GdkColor nColor;
+
+	nColor.red = c.m_red << 8;
+	nColor.blue = c.m_blu << 8;
+	nColor.green = c.m_grn << 8;
+
+	gdk_colormap_alloc_color(m_pColormap, &nColor, FALSE, TRUE);
+
+	gdk_gc_set_foreground(m_pGC, &nColor);
+
+	GdkPoint* points = new GdkPoint[nPoints];
+    UT_ASSERT(points);
+
+    for (UT_uint32 i = 0;i < nPoints;i++){
+		UT_sint32 idx = _tduX(pts[i].x);
+        points[i].x = idx;
+		UT_sint32 idy = _tduY(pts[i].y);
+        points[i].y = idy;
+    }
+	gdk_draw_polygon(m_pWin, m_pGC, 1, points, nPoints);
+	delete[] points;
+
+	gdk_gc_set_foreground(m_pGC, &oColor);
+}
+
+void GR_UnixPangoGraphics::clearArea(UT_sint32 x, UT_sint32 y,
+									 UT_sint32 width, UT_sint32 height)
+{
+	if (width > 0)
+	{
+		static const UT_RGBColor clrWhite(255,255,255);
+		fillRect(clrWhite, x, y, width, height);
+	}
+}
+
+
 ////////////////////////////////////////////////////////////////////////////////////////////////////
 //
 // GR_UnixPangFont implementation
@@ -2885,11 +2948,17 @@ bool GR_UnixPangoFont::glyphBox(UT_UCS4Char g, UT_Rect & rec, GR_Graphics * pG)
 	FT_Face pFace = pango_fc_font_lock_face(PANGO_FC_FONT(m_pf));
 
 	double resRatio = 1.0;
-
+	
+#ifndef WITHOUT_PRINTING
 	if(pG->canQuickPrint())
 	{
-	  		resRatio = static_cast<GR_UnixPangoPrintGraphics *>(pG)->_getResolutionRatio();
+		/* cast this safely */
+		GR_UnixPangoPrintGraphics * pPGP = dynamic_cast<GR_UnixPangoPrintGraphics *>(pG);
+
+		if (pPGP)
+	  		resRatio = pPGP->_getResolutionRatio();
 	}
+#endif
 	FT_Error error = FT_Load_Glyph(pFace, iGlyphIndx,
 								   FT_LOAD_LINEAR_DESIGN |
 								   FT_LOAD_IGNORE_TRANSFORM |
@@ -3609,68 +3678,6 @@ void GR_UnixPangoPrintGraphics::fillRect(const UT_RGBColor& c,
 	
 	// reset color to its original state
 	setColor (old);
-}
-
-void GR_UnixPangoGraphics::fillRect(GR_Color3D c, UT_Rect &r)
-{
-	UT_ASSERT(c < COUNT_3D_COLORS);
-	fillRect(c,r.left,r.top,r.width,r.height);
-}
-
-void GR_UnixPangoGraphics::fillRect(GR_Color3D c, UT_sint32 x, UT_sint32 y, UT_sint32 w, UT_sint32 h)
-{
-	UT_ASSERT(c < COUNT_3D_COLORS);
-	gdk_gc_set_foreground(m_pGC, &m_3dColors[c]);
-	gdk_draw_rectangle(m_pWin, m_pGC, 1, tdu(x), tdu(y), tdu(w), tdu(h));
-}
-
-void GR_UnixPangoGraphics::polygon(UT_RGBColor& c, UT_Point *pts,
-								   UT_uint32 nPoints)
-{
-	// save away the current color, and restore it after we draw the polygon
-	GdkGCValues gcValues;
-	GdkColor oColor;
-
-	memset(&oColor, 0, sizeof(GdkColor));
-
-	gdk_gc_get_values(m_pGC, &gcValues);
-
-	oColor.pixel = gcValues.foreground.pixel;
-
-	// get the new color
-	GdkColor nColor;
-
-	nColor.red = c.m_red << 8;
-	nColor.blue = c.m_blu << 8;
-	nColor.green = c.m_grn << 8;
-
-	gdk_colormap_alloc_color(m_pColormap, &nColor, FALSE, TRUE);
-
-	gdk_gc_set_foreground(m_pGC, &nColor);
-
-	GdkPoint* points = new GdkPoint[nPoints];
-    UT_ASSERT(points);
-
-    for (UT_uint32 i = 0;i < nPoints;i++){
-		UT_sint32 idx = _tduX(pts[i].x);
-        points[i].x = idx;
-		UT_sint32 idy = _tduY(pts[i].y);
-        points[i].y = idy;
-    }
-	gdk_draw_polygon(m_pWin, m_pGC, 1, points, nPoints);
-	delete[] points;
-
-	gdk_gc_set_foreground(m_pGC, &oColor);
-}
-
-void GR_UnixPangoGraphics::clearArea(UT_sint32 x, UT_sint32 y,
-									 UT_sint32 width, UT_sint32 height)
-{
-	if (width > 0)
-	{
-		static const UT_RGBColor clrWhite(255,255,255);
-		fillRect(clrWhite, x, y, width, height);
-	}
 }
 
 void GR_UnixPangoPrintGraphics::setCursor(GR_Graphics::Cursor c)
