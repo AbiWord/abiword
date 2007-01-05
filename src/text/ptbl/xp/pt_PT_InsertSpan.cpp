@@ -355,7 +355,7 @@ bool pt_PieceTable::_lastUndoIsThisFmtMark(PT_DocPosition dpos)
 
 	while (1)
 	{
-		bool bHaveUndo = m_history.getUndo(&pcr,undoNdx);
+		bool bHaveUndo = m_history.getNthUndo(&pcr,undoNdx);
 
 		if (!bHaveUndo)
 			return false;

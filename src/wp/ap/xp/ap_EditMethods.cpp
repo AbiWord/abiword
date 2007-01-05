@@ -1880,6 +1880,7 @@ static bool s_AskForPathname(XAP_Frame * pFrame,
 				UT_UTF8String sHome = getenv("HOME");
 				sHome += "/";
 				pDialog->setCurrentPathname(sHome.utf8_str());
+				UT_DEBUGMSG(("Home directory set to %s \n",sHome.utf8_str()));
 			}
 			else
 			{
@@ -1954,7 +1955,7 @@ static bool s_AskForPathname(XAP_Frame * pFrame,
 	  }
 
 	pDialog->setDefaultFileType(dflFileType);
-
+	UT_DEBUGMSG(("About to runModal on FileOpen \n"));
 	pDialog->runModal(pFrame);
 
 	XAP_Dialog_FileOpenSaveAs::tAnswer ans = pDialog->getAnswer();

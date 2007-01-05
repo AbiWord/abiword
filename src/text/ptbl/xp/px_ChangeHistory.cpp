@@ -251,11 +251,14 @@ bool px_ChangeHistory::getUndo(PX_ChangeRecord ** ppcr, bool bStatic) const
 
 bool px_ChangeHistory::getNthUndo(PX_ChangeRecord ** ppcr, UT_uint32 undoNdx) const
 {
-        if (m_undoPosition <= static_cast<UT_sint32>(undoNdx))
+	UT_sint32 iAdjust = m_iAdjustOffset;
+	iAdjust = static_cast<UT_sint32>(m_undoPosition) - m_iAdjustOffset;
+	UT_sint32 iAdjIdx = static_cast<UT_sint32>(undoNdx) - undoNdx;
+	if (iAdjust <= static_cast<UT_sint32>(iAdjIdx))
 		return false;
-        if(static_cast<UT_sint32>(undoNdx) <= m_iMinUndo)
+	if(static_cast<UT_sint32>(iAdjIdx) <= m_iMinUndo)
 	        return false;
-	PX_ChangeRecord * pcr = (PX_ChangeRecord *)m_vecChangeRecords.getNthItem(m_undoPosition-static_cast<UT_sint32>(undoNdx)-1);
+	PX_ChangeRecord * pcr = (PX_ChangeRecord *)m_vecChangeRecords.getNthItem(iAdjust-iAdjIdx-1);
 	UT_ASSERT_HARMLESS(pcr);
 	
 	*ppcr = pcr;
