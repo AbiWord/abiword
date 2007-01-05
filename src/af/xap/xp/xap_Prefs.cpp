@@ -637,6 +637,7 @@ bool XAP_Prefs::getPrefsValue(const XML_Char * szKey, const XML_Char ** pszValue
 		return true;
 	}
 
+	UT_DEBUGMSG(("PrefsKey %s PrefsValue %s \n",szKey,pszValue));
 	UT_ASSERT_HARMLESS(UT_SHOULD_NOT_HAPPEN);
 	return false;
 }

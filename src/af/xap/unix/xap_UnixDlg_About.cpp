@@ -78,7 +78,7 @@ void XAP_UnixDialog_About::runModal(XAP_Frame * pFrame)
 #ifdef HAVE_HILDON 
 	parent = gtk_widget_get_parent(pUnixFrameImpl->getTopLevelWindow());
 #else	
-	parent = pUnixFrameImpl->getTopLevelWindow();
+	parent = gtk_widget_get_parent(pUnixFrameImpl->getTopLevelWindow());
 #endif	
 
 	dlg = gtk_about_dialog_new();

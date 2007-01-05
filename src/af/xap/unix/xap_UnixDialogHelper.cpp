@@ -599,7 +599,11 @@ void centerDialog(GtkWidget * parent, GtkWidget * child, bool set_transient_for)
 
 	if (GTK_IS_DIALOG(child))
 	  go_dialog_guess_alternative_button_order(GTK_DIALOG(child));
-
+	if(GTK_IS_WINDOW(parent) != TRUE)
+		parent  = gtk_widget_get_parent(parent);
+	xxx_UT_DEBUGMSG(("center IS WIDGET_TOP_LEVL %d \n",(GTK_WIDGET_TOPLEVEL(parent))));
+	xxx_UT_DEBUGMSG(("center IS WIDGET WINDOW %d \n",(GTK_IS_WINDOW(parent))));
+	xxx_UT_DEBUGMSG(("center child IS WIDGET WINDOW %d \n",(GTK_IS_WINDOW(child))));
 	if (set_transient_for)
 	  gtk_window_set_transient_for(GTK_WINDOW(child),
 				       GTK_WINDOW(parent));
@@ -622,7 +626,8 @@ void abiSetupModalDialog(GtkDialog * dialog, XAP_Frame *pFrame, XAP_Dialog * pDl
 #else	
 	GtkWidget * parentWindow = pUnixFrameImpl->getTopLevelWindow();
 #endif	
-
+	if(GTK_IS_WINDOW(parentWindow) != TRUE)
+		parentWindow  = gtk_widget_get_parent(parentWindow);
 	GtkWidget *popup;
 
 	popup = GTK_WIDGET (dialog);
@@ -699,7 +704,7 @@ void abiSetupModelessDialog(GtkDialog * me, XAP_Frame * pFrame, XAP_Dialog * pDl
 	}
 
 	// Get the GtkWindow of the parent frame
-	GtkWidget * parentWindow = pUnixFrameImpl->getTopLevelWindow();
+	GtkWidget * parentWindow = gtk_widget_get_toplevel (pUnixFrameImpl->getTopLevelWindow());
  	
 	// center the dialog
 	centerDialog ( parentWindow, GTK_WIDGET(me), false ) ;

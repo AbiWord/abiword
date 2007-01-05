@@ -603,7 +603,14 @@ void XAP_UnixDialog_FileOpenSaveAs::runModal(XAP_Frame * pFrame)
 							);
 	
 #else	
-	
+	if(GTK_WIDGET_TOPLEVEL(parent) != TRUE)
+	{
+		xxx_UT_DEBUGMSG(("AbiWidget running prev parent %x \n",parent));
+			parent = gtk_widget_get_toplevel (parent);
+		xxx_UT_DEBUGMSG(("AbiWidget running new parent %x \n",parent));
+		xxx_UT_DEBUGMSG(("IS WIDGET_TOP_LEVL %d \n",(GTK_WIDGET_TOPLEVEL(parent))));
+		xxx_UT_DEBUGMSG(("IS WIDGET WINDOW %d \n",(GTK_IS_WINDOW(parent))));
+	}
 	m_FC = GTK_FILE_CHOOSER( gtk_file_chooser_dialog_new (szTitle.utf8_str(),
 									GTK_WINDOW(parent),
 									(!m_bSave ? GTK_FILE_CHOOSER_ACTION_OPEN : GTK_FILE_CHOOSER_ACTION_SAVE),
@@ -611,6 +618,7 @@ void XAP_UnixDialog_FileOpenSaveAs::runModal(XAP_Frame * pFrame)
 									GTK_STOCK_OK, GTK_RESPONSE_ACCEPT,
 									(gchar*)NULL)
 							);
+	xxx_UT_DEBUGMSG(("Have the filechooser now \n"));
 #endif	
 
 	gtk_file_chooser_set_local_only(m_FC, FALSE);
@@ -851,7 +859,10 @@ void XAP_UnixDialog_FileOpenSaveAs::runModal(XAP_Frame * pFrame)
 	}
 
 	// center the dialog
+	xxx_UT_DEBUGMSG(("before center IS WIDGET_TOP_LEVL %d \n",(GTK_WIDGET_TOPLEVEL(parent))));
+	xxx_UT_DEBUGMSG(("before center IS WIDGET WINDOW %d \n",(GTK_IS_WINDOW(parent))));
 	centerDialog(parent, GTK_WIDGET(m_FC));
+	xxx_UT_DEBUGMSG(("After center IS WIDGET WINDOW %d \n",(GTK_IS_WINDOW(parent))));
 
 	gtk_widget_show(GTK_WIDGET(m_FC));
 	gtk_grab_add(GTK_WIDGET(m_FC));
