@@ -19,4 +19,8 @@
 SUBDIRS = xp 
 
 EXTRA_DIST = \
+	win \
 	Makefile
+
+dist-hook:
+	rm -rf `find $(distdir)/win -name CVS`
