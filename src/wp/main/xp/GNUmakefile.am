@@ -5,4 +5,5 @@ INCLUDES = \
 SOURCES = abi_ver.cpp
 
 EXTRA_DIST = \
-	Makefile
+	Makefile \
+	$(SOURCES)

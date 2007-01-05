@@ -82,6 +82,7 @@ libWpAp_win_a_SOURCES=\
 
 EXTRA_DIST = \
 	$(headers_DATA) \
+	$(icodata) \
 	$(rc2data) \
 	Makefile
 
@@ -137,6 +138,11 @@ headers_DATA = \
 	ap_Win32Toolbar_StyleCombo.h \
 	ap_Win32Toolbar_ZoomCombo.h \
 	ap_Win32TopRuler.h 
+
+icodata = \
+	abiword_app_16.ico \
+	abiword_app_32.ico \
+	abiword_doc.ico
 
 rc2data = \
 	ap_Win32Res_DlgBreak.rc2 \

@@ -43,7 +43,9 @@ abi_ver.cpp:	@PLUGIN_LIST@
 	cp $(srcdir)/../xp/abi_ver.cpp .
 
 EXTRA_DIST = \
-	Makefile
+	Makefile \
+	Win32Main.rc \
+	dummy.cpp
 
 install-exec-local:	
 	@if test -f $(DESTDIR)/$(bindir)/abiword; then \

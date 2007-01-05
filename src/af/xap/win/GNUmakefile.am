@@ -64,6 +64,7 @@ libXap_win_a_SOURCES=\
 
 EXTRA_DIST = \
 	$(headers_DATA) \
+	$(curdata) \
 	$(rc2data) \
 	Makefile
 
@@ -109,6 +110,12 @@ headers_DATA = \
 	xap_Win32Slurp.h \
 	xap_Win32_TB_CFactory.h \
 	xap_Win32Toolbar_Icons.h 
+
+curdata = \
+	downarrow.cur \
+	exchange.cur \
+	hand1.cur \
+	rightcur.cur
 
 rc2data = \
 	xap_Win32Res_Cursors.rc2 \

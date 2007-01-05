@@ -30,7 +30,10 @@ libEv_win_a_SOURCES=		\
 	 ev_Win32Toolbar.cpp		\
 	 ev_Win32Toolbar_ViewListener.cpp
 
-EXTRA_DIST = $(headers_DATA) Makefile
+EXTRA_DIST = \
+	bmp \
+	$(headers_DATA) \
+	Makefile
 
 headersdir = $(ABIWORD_HEADERSDIR)/ev/win
 headers_DATA = \
@@ -39,3 +42,6 @@ headers_DATA = \
 	ev_Win32Mouse.h \
 	ev_Win32Toolbar.h \
 	ev_Win32Toolbar_ViewListener.h
+
+dist-hook:
+	rm -rf `find $(distdir)/bmp -name CVS`

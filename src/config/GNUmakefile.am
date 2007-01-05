@@ -1,5 +1,5 @@
 
-SUBDIRS = platforms
+SUBDIRS = platforms require
 
 EXTRA_DIST = \
 	abi_defs_hello.mk \
