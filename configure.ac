@@ -533,6 +533,7 @@ AC_CONFIG_FILES([
  src/af/xap/unix/t/GNUmakefile
  src/af/xap/unix/hildon/GNUmakefile
  src/config/GNUmakefile
+ src/config/platforms/GNUmakefile
  src/other/GNUmakefile
  src/other/spell/GNUmakefile
  src/other/spell/xp/GNUmakefile

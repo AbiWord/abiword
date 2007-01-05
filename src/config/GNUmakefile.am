@@ -1,4 +1,6 @@
 
+SUBDIRS = platforms
+
 EXTRA_DIST = \
 	abi_defs_hello.mk \
 	abi_defs.mk \
