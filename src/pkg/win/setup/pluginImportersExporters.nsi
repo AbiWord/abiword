@@ -68,13 +68,6 @@ DirText "Choose the AbiSuite directory where you previously installed Abiword:"
 ; For NSIS 2.xx
 CheckBitmap ..\..\pkg\win\setup\modern.bmp
 
-; Remember if we already enabled Glib or not
-var GLIB_ENABLED 
-
-Function .onInit
-	strcpy $GLIB_ENABLED "no"
-FunctionEnd
-
 ; The stuff that must be installed
 ; binary, license, or whatever
 ;Section "Importer/Exporter Plugins (required)"
@@ -103,23 +96,6 @@ SectionEnd
 
 ; OPTIONAL
 SubSection /e "Image Manipulation"
-
-Section "ImageMagick Plugin"
-	SectionIn 1 2
-
-	; Testing clause to Overwrite Existing Version - if exists
-	IfFileExists "$INSTDIR\AbiWord\plugins\AbiMagick.dll" 0 DoInstall
-	
-	MessageBox MB_YESNO "Overwrite Existing ImageMagick Plugin?" IDYES DoInstall
-	
-	DetailPrint "Skipping ImageMagick Plugin (already exists)!"
-	Goto End
-
-	DoInstall:
-	File "AbiMagick.dll"
-  
-	End:
-SectionEnd
 
 ;SectionDivider
 
@@ -265,7 +241,7 @@ SectionEnd
 
 
 
-Section "OpenDocument (*.odt) Import" ODT_IDX
+Section "OpenDocument (*.odt) Import"
 	SectionIn 2
 
 	; Testing clause to Overwrite Existing Version - if exists
@@ -284,7 +260,7 @@ SectionEnd
 
 
 
-Section "OpenWriter (*.sxw) Import/Export" SXW_IDX
+Section "OpenWriter (*.sxw) Import/Export"
 	SectionIn 2
 
 	; Testing clause to Overwrite Existing Version - if exists
@@ -358,7 +334,7 @@ Section "Palm .pdb DOC"
 SectionEnd
 
 
-Section "Star Office Writer 5.1 .sdw Importer" SDW_IDX
+Section "Star Office Writer 5.1 .sdw Importer"
 	SectionIn 2
 
 	; Testing clause to Overwrite Existing Version - if exists
@@ -396,7 +372,7 @@ Section "WML Wireless Markup"
 SectionEnd
 
 
-Section "WordPerfect Importer" WP_IDX
+Section "WordPerfect Importer"
 	SectionIn 2
 
 	; Testing clause to Overwrite Existing Version - if exists
@@ -799,10 +775,8 @@ Section "Uninstall"
 	Delete "$INSTDIR\AbiXSLFO.dll"
 
 	Delete "$INSTDIR\..\bin\libwpd-0.8.dll"
-	Delete "$INSTDIR\..\bin\libwpd-stream-0.8.dll"
 
 !ifdef 0
-	Delete "$INSTDIR\AbiMagick.dll"
 	Delete "$INSTDIR\Abi_IEG_BMP.dll"
 	Delete "$INSTDIR\Abi_IEG_jpeg.dll"
 	Delete "$INSTDIR\Abi_IEG_svg.dll"
@@ -815,31 +789,5 @@ Section "Uninstall"
 	Delete /REBOOTOK "$INSTDIR\UninstallAbiWordIEPlugins.exe"
 
 SectionEnd
-
-; Selection Change Handler 
-Function .onSelChange
-	; Make sure glib is selected when seleting one of the plugins that need it
-	strcmp $GLIB_ENABLED "yes" end_l
-		  
-	!insertmacro SectionFlagIsSet ${ODT_IDX} ${SF_SELECTED} "" sxw_l 
-		!insertmacro SelectSection ${GLIB_IDX}
-		strcpy $GLIB_ENABLED "yes"
-		goto end_l
-sxw_l:
-	!insertmacro SectionFlagIsSet ${SXW_IDX} ${SF_SELECTED} "" sdw_l 
-		!insertmacro SelectSection ${GLIB_IDX}
-		strcpy $GLIB_ENABLED "yes"
-		goto end_l 
-sdw_l:
-	!insertmacro SectionFlagIsSet ${SDW_IDX} ${SF_SELECTED} "" wpd_l 
-		!insertmacro SelectSection ${GLIB_IDX}
-		strcpy $GLIB_ENABLED "yes"
-		goto end_l
-wpd_l: 
-	!insertmacro SectionFlagIsSet ${WP_IDX} ${SF_SELECTED} "" end_l
-		!insertmacro SelectSection ${GLIB_IDX}
-		strcpy $GLIB_ENABLED "yes"
-end_l:
-FunctionEnd
 
 ; eof
