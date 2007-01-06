@@ -603,7 +603,7 @@ void XAP_UnixDialog_FileOpenSaveAs::runModal(XAP_Frame * pFrame)
 							);
 	
 #else	
-	if(GTK_WIDGET_TOPLEVEL(parent) != TRUE)
+	if(parent && (GTK_WIDGET_TOPLEVEL(parent) != TRUE))
 	{
 		xxx_UT_DEBUGMSG(("AbiWidget running prev parent %x \n",parent));
 			parent = gtk_widget_get_toplevel (parent);
