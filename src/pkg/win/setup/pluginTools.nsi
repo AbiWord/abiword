@@ -137,12 +137,12 @@ Section "Equation Editor"
 	DoInstall:
 
 	;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;
-	; Unzip libxml2 and friends into same directory as AbiWord.exe
+	; Unzip libmathview into same directory as AbiWord.exe
 	SetOutPath $INSTDIR\AbiWord
 
 	;;;;;;;;;
 	; libmathview
-	${dlFile} "http://www.abisource.com/downloads/dependencies/gtkmathview/libmathview-0.7.6-1-runtime.zip" "$TEMP\libmathview-0.7.6-1-runtime.zip" "ERROR: Dependency download failed.  Please make sure you are connected to the Internet, then click Retry.  File: http://www.abisource.com/downloads/dependencies/gtkmathview/libmathview-0.7.6-1-runtime.zip"
+	${dlFile} "http://www.abisource.com/downloads/dependencies/gtkmathview/libmathview-0.7.7-runtime.zip" "$TEMP\libmathview-0.7.7-runtime.zip" "ERROR: Dependency download failed.  Please make sure you are connected to the Internet, then click Retry.  File: http://www.abisource.com/downloads/dependencies/gtkmathview/libmathview-0.7.7-runtime.zip"
 	StrCmp $0 "success" 0 doCleanup
 	${unzipFile} "$TEMP\libmathview-0.7.7-runtime.zip" "$INSTDIR\AbiWord" "bin\libmathview-0.dll" "ERROR: failed to extract libmathview-0.dll from libmathview-0.7.7-runtime.zip"
 	StrCmp $0 "success" 0 doCleanup
@@ -159,8 +159,6 @@ Section "Equation Editor"
 	; Set output path back to the plugins directory.
 	SetOutPath $INSTDIR\AbiWord\plugins
 
-	;Note - Requires Libxml2 - code for download mooched off of impexp installer
-	
 	File "AbiMathView.dll"
 	;Install Configuration Files - This better work...
 	SetOutPath $INSTDIR\math
