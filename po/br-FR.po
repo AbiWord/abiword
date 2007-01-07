@@ -5805,8 +5805,9 @@ msgstr ""
 
 #. MSG_ConfirmSaveSecondary
 #: po/tmp/ap_String_Id.h.h:2515
+#, fuzzy
 msgid "Your changes will be lost if you don't save them."
-msgstr "Kollet e vo ar c'hemmoù graet abaoe ar %d munutenn, ma serrit hep Enrollañ."
+msgstr "Kollet e vo ar c'hemmoù graet abaoe ar , ma serrit hep Enrollañ."
 
 #. TOOLBAR_LABEL_ZOOM
 #: po/tmp/ap_String_Id.h.h:2519
