@@ -69,10 +69,16 @@
 void AP_UnixFrame::setXScrollRange(void)
 {
 	AP_UnixFrameImpl * pFrameImpl = static_cast<AP_UnixFrameImpl *>(getFrameImpl());
+	UT_return_if_fail(pFrameImpl);
 	GR_Graphics * pGr = pFrameImpl->getFrame ()->getCurrentView ()->getGraphics ();
 
-	int width = static_cast<AP_FrameData*>(m_pData)->m_pDocLayout->getWidth();
-	int windowWidth = static_cast<int>(pGr->tluD (GTK_WIDGET(pFrameImpl->m_dArea)->allocation.width));
+	int width = 0;
+	if(m_pData) //this isn't guaranteed in AbiCommand
+		width = static_cast<AP_FrameData*>(m_pData)->m_pDocLayout->getWidth();
+
+	int windowWidth = 0;
+	if(pFrameImpl->m_dArea) //this isn't guaranteed in AbiCommand
+		windowWidth = static_cast<int>(pGr->tluD (GTK_WIDGET(pFrameImpl->m_dArea)->allocation.width));
 	
 	int newvalue = ((m_pView) ? m_pView->getXScrollOffset() : 0);
 	int newmax = width - windowWidth; /* upper - page_size */
@@ -81,9 +87,14 @@ void AP_UnixFrame::setXScrollRange(void)
 	else if (newvalue > newmax)
 		newvalue = newmax;
 	
-	bool bDifferentPosition = (newvalue != pFrameImpl->m_pHadj->value);
-	bool bDifferentLimits = ((width-windowWidth) != pFrameImpl->m_pHadj->upper-
-							                        pFrameImpl->m_pHadj->page_size);
+	bool bDifferentPosition = false;
+	bool bDifferentLimits = false;
+	if(pFrameImpl->m_pHadj) //this isn't guaranteed in AbiCommand
+	{
+		bDifferentPosition = (newvalue != pFrameImpl->m_pHadj->value);
+		bDifferentLimits = ((width-windowWidth) != pFrameImpl->m_pHadj->upper-
+						                        pFrameImpl->m_pHadj->page_size);
+	}
 		
 	pFrameImpl->_setScrollRange(apufi_scrollX, newvalue, static_cast<gfloat>(width), static_cast<gfloat>(windowWidth));
 	
@@ -97,10 +108,16 @@ void AP_UnixFrame::setXScrollRange(void)
 void AP_UnixFrame::setYScrollRange(void)
 {
 	AP_UnixFrameImpl * pFrameImpl = static_cast<AP_UnixFrameImpl *>(getFrameImpl());
+	UT_return_if_fail(pFrameImpl);
 	GR_Graphics * pGr = pFrameImpl->getFrame ()->getCurrentView ()->getGraphics ();
 
-	int height = static_cast<AP_FrameData*>(m_pData)->m_pDocLayout->getHeight();
-	int windowHeight = static_cast<int>(pGr->tluD (GTK_WIDGET(pFrameImpl->m_dArea)->allocation.height));
+	int height = 0;
+	if(m_pData) //this isn't guaranteed in AbiCommand
+		height = static_cast<AP_FrameData*>(m_pData)->m_pDocLayout->getHeight();
+
+	int windowHeight = 0;
+	if(pFrameImpl->m_dArea) //this isn't guaranteed in AbiCommand
+		windowHeight = static_cast<int>(pGr->tluD (GTK_WIDGET(pFrameImpl->m_dArea)->allocation.height));
 
 	int newvalue = ((m_pView) ? m_pView->getYScrollOffset() : 0);
 	int newmax = height - windowHeight;	/* upper - page_size */
@@ -109,9 +126,16 @@ void AP_UnixFrame::setYScrollRange(void)
 	else if (newvalue > newmax)
 		newvalue = newmax;
 
-	bool bDifferentPosition = (newvalue != static_cast<UT_sint32>(pFrameImpl->m_pVadj->value +0.5));
-	UT_sint32 diff = static_cast<UT_sint32>(pFrameImpl->m_pVadj->upper-
-											pFrameImpl->m_pVadj->page_size +0.5);
+	bool bDifferentPosition = false;
+	UT_sint32 diff = 0;
+	if(pFrameImpl->m_pVadj) //this isn't guaranteed in AbiCommand
+	{
+		bDifferentPosition = (newvalue != static_cast<UT_sint32>(pFrameImpl->m_pVadj->value +0.5));
+		diff = static_cast<UT_sint32>(pFrameImpl->m_pVadj->upper-
+										pFrameImpl->m_pVadj->page_size +0.5);
+	}
+
+
 	if(bDifferentPosition)
 	{
 		UT_sint32 iDU = pGr->tdu( static_cast<UT_sint32>(pFrameImpl->m_pVadj->value +0.5) - newvalue);
