@@ -102,7 +102,7 @@ install-exec-local: $(INSTALL_EXEC_LOCAL_DEPS)
 	  (cd $(DESTDIR)/$(bindir) && ln -sf $(ABIWORD_BINARY) abiword); \
 	fi
 
-abiword_plugins = ../../../../../abiword-plugins
+abiword_plugins = $(top_builddir)/../abiword-plugins
 
 ltsubdir = .libs/
 
