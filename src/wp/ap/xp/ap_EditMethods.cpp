@@ -9835,8 +9835,10 @@ Defun1(viewFullScreen)
 	CHECK_FRAME;
 	UT_return_val_if_fail(pAV_View, false);
 	XAP_Frame * pFrame = static_cast<XAP_Frame *> ( pAV_View->getParentData());
+	UT_return_val_if_fail(pFrame, false);
 	AP_FrameData *pFrameData = static_cast<AP_FrameData *>(pFrame->getFrameData());
-	
+	UT_return_val_if_fail(pFrameData, false);
+
 #ifdef HAVE_HILDON
 	pFrame->setFullScreen(!pFrameData->m_bIsFullScreen);
 	pFrameData->m_bIsFullScreen = !pFrameData->m_bIsFullScreen;
