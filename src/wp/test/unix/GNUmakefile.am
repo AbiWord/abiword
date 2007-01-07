@@ -19,7 +19,6 @@
 include $(top_srcdir)/includes.mk
 
 TESTS = testwrap.sh
-CLEANFILES = vgcore.*
 
 check_SCRIPTS = testwrap.sh-stamp testwrap.sh
 check_PROGRAMS = AbiWord-test
@@ -39,5 +38,5 @@ testwrap.sh-stamp: testwrap.sh
 	chmod a+x testwrap.sh
 	touch $@
 
-CLEANFILES = \
+CLEANFILES = vgcore.* \
 	testwrap.sh-stamp
