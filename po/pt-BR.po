@@ -6780,12 +6780,12 @@ msgstr "Dinamarquês"
 #. DLG_PLUGIN_MANAGER_DEACTIVATE_ALL
 #: po/tmp/xap_String_Id.h.h:227
 msgid "Deactivate all plugins"
-msgstr "Ligar todos os plugins"
+msgstr "Desligar todos os plugins"
 
 #. DLG_PLUGIN_MANAGER_DEACTIVATE
 #: po/tmp/xap_String_Id.h.h:229
 msgid "Deactivate plugin"
-msgstr "Ligar todos os plugins"
+msgstr "Desligar todos os plugins"
 
 #. DLG_HTMLOPT_ExpDeclareXML
 #: po/tmp/xap_String_Id.h.h:231
