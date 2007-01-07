@@ -4882,9 +4882,7 @@ msgstr "Enregistre une copie de l'image dans le presse-papiers"
 #: po/tmp/ap_String_Id.h.h:2011
 #, c-format
 msgid "Save changes to document %s before closing?"
-msgstr ""
-"Voulez-vous enregistrer les modifications apportées à\n"
-"%s?"
+msgstr "Voulez-vous enregistrer les modifications apportées à %s ?"
 
 #. MENU_STATUSLINE_FILE_SAVEEMBED
 #: po/tmp/ap_String_Id.h.h:2013
@@ -6189,8 +6187,7 @@ msgstr ""
 #: po/tmp/ap_String_Id.h.h:2545
 msgid "Your changes will be lost if you don't save them."
 msgstr ""
-"Si vous fermez sans enregistrer, les modifications effectuées\n"
-"depuis les dernières %d minutes seront perdues."
+"Si vous fermez sans enregistrer, les modifications effectuées seront perdues."
 
 #. TOOLBAR_LABEL_ZOOM
 #. TOOLBAR_STATUSLINE_ZOOM
