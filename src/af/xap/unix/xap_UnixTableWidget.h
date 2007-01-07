@@ -30,6 +30,12 @@
 extern "C" {
 #endif
 
+#define ABITABLE_TYPE_WIDGET     (abi_table_get_type ())
+#define ABITABLE_WIDGET(obj)     (GTK_CHECK_CAST((obj), ABITABLE_TYPE_WIDGET, AbiTable))
+#define IS_ABITABLE_WIDGET(obj)  (GTK_CHECK_TYPE((obj), ABITABLE_TYPE_WIDGET))
+#define IS_ABITABLE_WIDGET_CLASS(obj)  (GTK_CHECK_CLASS_CAST((obj), ABITABLE_TYPE_WIDGET))
+#define ABITABLE_WIDGET_CLASS(k) (GTK_CHECK_CLASS_CAST((k), ABITABLE_TYPE_WIDGET,AbiTableClass))
+
 typedef struct _AbiTable
 {
 	GtkButton button;
@@ -66,11 +72,6 @@ typedef struct
 	/* Signals emited by this widget */
 	void (* selected) (AbiTable *abi_table, guint rows, guint cols);
 } AbiTableClass;
-
-#define ABI_TABLE_TYPE     (abi_table_get_type ())
-#define ABI_TABLE(obj)     (GTK_CHECK_CAST((obj), ABI_TABLE_TYPE, AbiTable))
-#define ABI_TABLE_CLASS(k) (GTK_CHECK_CLASS_CAST(k), ABI_TABLE_TYPE)
-#define IS_ABI_TABLE(obj)  (GTK_CHECK_TYPE((obj), ABI_TABLE_TYPE))
 
 
 GtkType    abi_table_get_type   (void);

@@ -55,7 +55,7 @@ g_cclosure_user_marshal_VOID__UINT_UINT (GClosure     *closure,
   register gpointer data1, data2;
 
   g_return_if_fail (n_param_values == 3);
-
+  UT_DEBUGMSG(("IN AbiTable g_cclose_.. \n"));
   if (G_CCLOSURE_SWAP_DATA (closure))
     {
       data1 = closure->data;
@@ -67,6 +67,7 @@ g_cclosure_user_marshal_VOID__UINT_UINT (GClosure     *closure,
       data2 = closure->data;
     }
   callback = (GMarshalFunc_VOID__UINT_UINT) (marshal_data ? marshal_data : cc->callback);
+  UT_DEBUGMSG(("Calling callback marshell data %x cc %x \n",callback,cc));
 
   callback (data1,
             g_value_get_uint (param_values + 1),
@@ -136,7 +137,7 @@ abi_table_resize(AbiTable* table)
 	g_free(text);
 }
 
-void
+extern "C" void
 abi_table_set_selected (AbiTable* abi_table, guint rows, guint cols)
 {
 	g_return_if_fail (abi_table);
@@ -147,7 +148,7 @@ abi_table_set_selected (AbiTable* abi_table, guint rows, guint cols)
 	abi_table_resize(abi_table);
 }
 
-void
+extern "C" void
 abi_table_get_selected (const AbiTable* abi_table, guint* rows, guint* cols)
 {
 	g_return_if_fail (abi_table);
@@ -159,7 +160,7 @@ abi_table_get_selected (const AbiTable* abi_table, guint* rows, guint* cols)
 		*cols = abi_table->selected_cols;
 }
 
-void
+extern "C" void
 abi_table_set_max_size (AbiTable* abi_table, guint rows, guint cols)
 {
 	g_return_if_fail (abi_table);
@@ -170,7 +171,7 @@ abi_table_set_max_size (AbiTable* abi_table, guint rows, guint cols)
 	abi_table_resize(abi_table);
 }
 
-void
+extern "C" void
 abi_table_get_max_size (const AbiTable* abi_table, guint* rows, guint* cols)
 {
 	g_return_if_fail (abi_table);
@@ -704,7 +705,7 @@ abi_table_init (AbiTable* table)
 }
 
 
-GType
+ GType
 abi_table_get_type (void)
 {
 	static GType type = 0;
@@ -731,9 +732,10 @@ abi_table_get_type (void)
 	return type;
 }
 
-GtkWidget*
+ GtkWidget*
 abi_table_new (void)
 {
+	UT_DEBUGMSG(("COnstructing ABITABLE widget \n"));
 	return GTK_WIDGET (g_object_new (abi_table_get_type (), NULL));
 }
 
