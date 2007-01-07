@@ -6169,10 +6169,8 @@ msgstr "A frequência da gravação automática deve ser um valor entre 1 e 120"
 
 #. MSG_ConfirmSaveSecondary
 #: po/tmp/ap_String_Id.h.h:2529
-#, fuzzy
 msgid "Your changes will be lost if you don't save them."
-msgstr ""
-"As alterações dos últimos serão perdidas se fechar sem salvar!"
+msgstr "As suas alterações serão perdidas se fechar sem salvar!"
 
 #. TOOLBAR_LABEL_ZOOM
 #. TOOLBAR_STATUSLINE_ZOOM
