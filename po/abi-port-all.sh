@@ -2,7 +2,7 @@
 
 ./update.pl --pot
 echo ""
-./abi-extract.pl -N gl-ES
+./abi-extract.pl -N gl
 ./abi-extract.pl -N nb-NO
 ./abi-extract.pl -N sv-SE
 ./abi-extract.pl -N de-DE

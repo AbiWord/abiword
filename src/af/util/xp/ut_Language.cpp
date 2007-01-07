@@ -82,7 +82,7 @@ static UT_LangRecord s_Table[] =
 	{"fr-FR",		NULL, XAP_STRING_ID_LANG_FR_FR, UTLANG_LTR},
 	{"fy-NL",		NULL, XAP_STRING_ID_LANG_FY_NL, UTLANG_LTR},	
 	{"ga-IE",		NULL, XAP_STRING_ID_LANG_GA_IE, UTLANG_LTR},
-	{"gl-ES",		NULL, XAP_STRING_ID_LANG_GL_ES, UTLANG_LTR},    // should this be hau- ?
+	{"gl",			NULL, XAP_STRING_ID_LANG_GL, UTLANG_LTR},
 	{"ha-NE",		NULL, XAP_STRING_ID_LANG_HA_NE, UTLANG_LTR},    // is this correct or just duplicate of the line below?
 	{"ha-NG",		NULL, XAP_STRING_ID_LANG_HA_NG, UTLANG_LTR},
 	{"haw-US",      NULL, XAP_STRING_ID_LANG_HAW_US,UTLANG_LTR},
