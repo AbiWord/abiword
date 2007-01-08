@@ -28,8 +28,13 @@ endif
 mimedir = $(datadir)/mime-info
 mime_DATA = abiword.keys
 
+if WITH_LIBABIWORD
 pkgconfigdir = $(libdir)/pkgconfig
 pkgconfig_DATA = abiword-$(ABIWORD_SERIES).pc
+else
+pkgconfigdir =
+pkgconfig_DATA = 
+endif
 
 abiword-$(ABIWORD_SERIES).pc: abiword.pc
 	cp abiword.pc abiword-$(ABIWORD_SERIES).pc
