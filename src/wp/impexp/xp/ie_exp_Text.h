@@ -78,7 +78,6 @@ public:
 protected:
 	virtual PL_Listener *	_constructListener(void);
 	virtual UT_Error	_writeDocument(void);
-	virtual GsfOutput*		_openFile(const char * szFilename);
 	bool				_doEncodingDialog(const char *szEncoding);
 	void				_setEncoding(const char *szEncoding);
 

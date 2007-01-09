@@ -6723,8 +6723,58 @@ void IE_Exp_HTML::_buildTOC()
 		m_toc_helper = new IE_TOCHelper (getDoc());
 }
 
+UT_Error IE_Exp_HTML::_doOptions ()
+{
+#ifdef HTML_DIALOG_OPTIONS
+	XAP_Frame * pFrame = getDoc()->getApp()->getLastFocussedFrame ();
+
+	if (m_bSuppressDialog || !pFrame || isCopying ()) return UT_OK;
+	if(pFrame)
+	{
+			AV_View * pView = pFrame->getCurrentView();
+			if(pView)
+			{
+				GR_Graphics * pG = pView->getGraphics();
+				if(pG && pG->queryProperties(GR_Graphics::DGP_PAPER))
+				{
+					return UT_OK;
+				}
+			}
+		}
+	/* run the dialog
+	 */
+
+	XAP_Dialog_Id id = XAP_DIALOG_ID_HTMLOPTIONS;
+
+	XAP_DialogFactory * pDialogFactory
+		= static_cast<XAP_DialogFactory *>(getDoc()->getApp()->getDialogFactory ());
+
+	XAP_Dialog_HTMLOptions * pDialog
+		= static_cast<XAP_Dialog_HTMLOptions *>(pDialogFactory->requestDialog (id));
+
+	UT_return_val_if_fail (pDialog, false);
+
+	pDialog->setHTMLOptions (&m_exp_opt, getDoc()->getApp ());
+
+	pDialog->runModal (pFrame);
+
+	/* extract what they did
+	 */
+	bool bSave = pDialog->shouldSave ();
+
+	pDialogFactory->releaseDialog (pDialog);
+
+	if (!bSave)
+	{
+		return UT_ERROR;
+	}
+#endif
+	return UT_OK;
+}
+
 UT_Error IE_Exp_HTML::_writeDocument ()
 {
+	_doOptions ();
 	_buildStyleTree ();
 	_buildTOC ();
 
@@ -6949,56 +6999,6 @@ UT_Error IE_Exp_HTML::_writeDocument (bool bClipBoard, bool bTemplateBody)
 	
 	if ((m_error == UT_OK) && (okay == true)) return UT_OK;
 	return UT_IE_COULDNOTWRITE;
-}
-
-GsfOutput* IE_Exp_HTML::_openFile (const char * szFilename)
-{
-#ifdef HTML_DIALOG_OPTIONS
-	XAP_Frame * pFrame = getDoc()->getApp()->getLastFocussedFrame ();
-
-	if (m_bSuppressDialog || !pFrame) return IE_Exp::_openFile (szFilename);
-	if(pFrame)
-	{
-			AV_View * pView = pFrame->getCurrentView();
-			if(pView)
-			{
-				GR_Graphics * pG = pView->getGraphics();
-				if(pG && pG->queryProperties(GR_Graphics::DGP_PAPER))
-				{
-					return IE_Exp::_openFile (szFilename);
-				}
-			}
-		}
-	/* run the dialog
-	 */
-
-	XAP_Dialog_Id id = XAP_DIALOG_ID_HTMLOPTIONS;
-
-	XAP_DialogFactory * pDialogFactory
-		= static_cast<XAP_DialogFactory *>(getDoc()->getApp()->getDialogFactory ());
-
-	XAP_Dialog_HTMLOptions * pDialog
-		= static_cast<XAP_Dialog_HTMLOptions *>(pDialogFactory->requestDialog (id));
-
-	UT_return_val_if_fail (pDialog, false);
-
-	pDialog->setHTMLOptions (&m_exp_opt, getDoc()->getApp ());
-
-	pDialog->runModal (pFrame);
-
-	/* extract what they did
-	 */
-	bool bSave = pDialog->shouldSave ();
-
-	pDialogFactory->releaseDialog (pDialog);
-
-	if (!bSave)
-	{
-		_cancelExport ();
-		return NULL;
-	}
-#endif
-	return IE_Exp::_openFile (szFilename);
 }
 
 void s_HTML_Listener::addFootnote(PD_DocumentRange * pDocRange)

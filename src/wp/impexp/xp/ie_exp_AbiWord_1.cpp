@@ -109,7 +109,7 @@ bool IE_Exp_AbiWord_1_Sniffer::getDlgLabels(const char ** pszDesc,
 /*****************************************************************/
 
 IE_Exp_AbiWord_1::IE_Exp_AbiWord_1(PD_Document * pDocument, bool isTemplate, bool isCompressed)
-	: IE_Exp(pDocument), m_bIsTemplate(isTemplate), m_bIsCompressed(isCompressed), m_pListener(0)
+	: IE_Exp(pDocument), m_bIsTemplate(isTemplate), m_bIsCompressed(isCompressed), m_pListener(0), m_output(0)
 {
 	m_error = 0;
 
@@ -126,12 +126,24 @@ IE_Exp_AbiWord_1::~IE_Exp_AbiWord_1()
 {
 }
 
-GsfOutput* IE_Exp_AbiWord_1::_openFile(const char * szFilename)
+UT_uint32 IE_Exp_AbiWord_1::_writeBytes(const UT_Byte * pBytes, UT_uint32 length)
 {
-  GsfOutput * output = UT_go_file_create(szFilename, NULL);
-  if(!output)
-    return NULL;
-  
+	if(!pBytes || !length)
+	  return 0;
+
+	if (m_output)
+		{
+			gsf_output_write(m_output, length, pBytes);
+			return length;
+		}
+	else
+		{
+			return IE_Exp::_writeBytes(pBytes, length);
+		}
+}
+
+void IE_Exp_AbiWord_1::_setupFile()
+{
   const UT_UTF8String * prop = 0;
   
   // allow people to override this on the command line or otherwise
@@ -141,15 +153,22 @@ GsfOutput* IE_Exp_AbiWord_1::_openFile(const char * szFilename)
 
   if (m_bIsCompressed)
 	  {
-		  GsfOutput * gzip = gsf_output_gzip_new(output, NULL);
-		  g_object_unref (G_OBJECT (output));
-
-		  return gzip;
+		  GsfOutput * gzip = gsf_output_gzip_new(getFp (), NULL);
+		  m_output = gzip;
 	  }
   else
 	  {
-		  return output;
+		  m_output = 0;
 	  }
+}
+
+static void close_gsf_handle(GsfOutput * output)
+{
+	if (output)
+		{
+			gsf_output_close (output);
+			g_object_unref (G_OBJECT (output));
+		}
 }
 
 /*****************************************************************/
@@ -1225,24 +1244,36 @@ UT_Error s_AbiWord_1_Listener::write_xml (void * /*context*/, const char * name)
 
 UT_Error IE_Exp_AbiWord_1::_writeDocument(void)
 {
+	_setupFile();
+
 	m_pListener = new s_AbiWord_1_Listener(getDoc(),this, m_bIsTemplate);
 	if (!m_pListener)
-		return UT_IE_NOMEMORY;
+		{
+			close_gsf_handle(m_output);
+			return UT_IE_NOMEMORY;
+		}
 
 	if (getDocRange())
 	{
 		if(!getDoc()->tellListenerSubset(static_cast<PL_Listener *>(m_pListener),getDocRange()))
-			return UT_ERROR;
+			{
+				close_gsf_handle(m_output);
+				return UT_ERROR;
+			}
 	}
 	else
 	{
 		if (!getDoc()->tellListener(static_cast<PL_Listener *>(m_pListener)))
-			return UT_ERROR;
+			{
+				close_gsf_handle(m_output);
+				return UT_ERROR;
+			}
 	}
 	
 	delete m_pListener;
-
 	m_pListener = NULL;
+
+	close_gsf_handle(m_output);
 
 	return ((m_error) ? UT_IE_COULDNOTWRITE : UT_OK);
 }

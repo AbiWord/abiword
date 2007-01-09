@@ -224,6 +224,10 @@ PL_Listener * IE_Exp_Text::_constructListener(void)
 
 UT_Error IE_Exp_Text::_writeDocument(void)
 {
+	// Don't call base method if user cancels encoding dialog
+	if (!(!m_bIsEncoded || m_bExplicitlySetEncoding || _doEncodingDialog(m_szEncoding)))
+		return UT_IE_COULDNOTWRITE;
+
 	// TODO If we're going to the clipboard and the OS supports unicode, set encoding.
 	// TODO Only supports Windows so far.
 	// TODO Should use a finer-grain technique than IsWinNT() since Win98 supports unicode clipboard.
@@ -246,22 +250,6 @@ UT_Error IE_Exp_Text::_writeDocument(void)
 	DELETEP(m_pListener);
 
 	return ((m_error) ? UT_IE_COULDNOTWRITE : UT_OK);
-}
-
-/*!
-  Open the file to export to
- \param szFilename File to open
- */
-GsfOutput* IE_Exp_Text::_openFile(const char * szFilename)
-{
-	// Don't call base method if user cancels encoding dialog
-	if (!m_bIsEncoded || m_bExplicitlySetEncoding || _doEncodingDialog(m_szEncoding))
-		return IE_Exp::_openFile(szFilename);
-	else
-	{
-		_cancelExport ();
-		return NULL;
-	}
 }
 
 /*!

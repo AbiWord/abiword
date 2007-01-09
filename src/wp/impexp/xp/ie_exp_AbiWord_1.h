@@ -54,12 +54,15 @@ public:
 
 protected:
 	virtual UT_Error	_writeDocument(void);
-	virtual GsfOutput*	_openFile(const char * szFilename);
+	void                    _setupFile(void);
+	virtual UT_uint32	_writeBytes(const UT_Byte * pBytes, UT_uint32 length);
 
- private:	
+private:	
 	bool m_bIsTemplate;
 	bool m_bIsCompressed;
 	s_AbiWord_1_Listener *	m_pListener;
+
+	GsfOutput * m_output;
 };
 
 #endif /* IE_EXP_ABIWORD_1_H */

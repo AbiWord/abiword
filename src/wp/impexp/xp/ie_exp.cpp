@@ -138,11 +138,6 @@ GsfOutput* IE_Exp::openFile(const char * szFilename)
 	m_szFileName = g_new(char, strlen(szFilename) + 1);
 	strcpy(m_szFileName, szFilename);
 
-	return _openFile(szFilename);
-}
-
-GsfOutput* IE_Exp::_openFile(const char * szFilename)
-{
 	return UT_go_file_create(szFilename, NULL);
 }
 

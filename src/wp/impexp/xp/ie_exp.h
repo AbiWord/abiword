@@ -157,13 +157,13 @@ protected:
 	// derived classes should use these to open/close
 	// and write data to the actual file.  this will
 	// let us handle file backups, etc.
-	virtual GsfOutput*	_openFile(const char * szFilename);
 	virtual UT_uint32	_writeBytes(const UT_Byte * pBytes, UT_uint32 length);
 	virtual bool		_writeBytes(const UT_Byte * sz);
-	virtual bool		_closeFile(void);
 	virtual void		_abortFile(void);
 
 	void				_cancelExport () { m_bCancelled = true; }
+
+	bool		_closeFile(void);
 
 	PD_Document * getDoc() const;
 	PD_DocumentRange * getDocRange() const;

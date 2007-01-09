@@ -195,10 +195,10 @@ public:
 	inline void			set_MHTML (bool enable = true) { m_exp_opt.bMultipart = enable; }
 
 private:
+	UT_Error            _doOptions ();
 	void				_buildStyleTree ();
 	void                _buildTOC ();
 protected:
-	virtual GsfOutput*		_openFile (const char * szFilename);
 	virtual UT_Error	_writeDocument ();
 public:
 	virtual UT_Error	_writeDocument (bool bClipBoard, bool bTemplateBody);
