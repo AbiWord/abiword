@@ -3389,7 +3389,9 @@ void s_HTML_Listener::_openTable (PT_AttrPropIndex api)
 	}
 
 	if(styles.size() != 0) styles += ";";
-	styles += "border-collapse:collapse;empty-cells:show;table-layout:fixed;border-style:solid";
+	styles += "border-collapse:collapse;empty-cells:show;table-layout:fixed";
+	// only add the border style if we didn't already add it in the "border shortcut"
+	if (!sS[iSMaxIndx].size()) styles += ";border-style:solid";
 	
 	if(iBCount[iBMaxIndx] != 3)
 	{
@@ -3464,7 +3466,7 @@ void s_HTML_Listener::_openTable (PT_AttrPropIndex api)
 	
 	//m_utf8_1  = "table cellpadding=\"";
 	//m_utf8_1 += UT_UTF8String_sprintf ("%d\" border=\"%d", cellPadding, border);
-	m_utf8_1 = UT_UTF8String_sprintf ("table cellpadding=\"0\" border=\"%d\" rules=\"all\" style=\"", border);
+	m_utf8_1 = UT_UTF8String_sprintf ("table cellpadding=\"0\" border=\"%d\" style=\"", border);
 	m_utf8_1 += s;
 	m_utf8_1 += "\"";
 
