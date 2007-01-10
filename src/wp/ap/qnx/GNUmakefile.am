@@ -82,8 +82,8 @@ EXTRA_DIST = \
 	abiword_48.xpm \
 	$(headers_DATA)
 
-headersdir = $(ABIWORD_HEADERSDIR)/ap/qnx
-headers_DATA = \
+#headersdir = $(ABIWORD_HEADERSDIR)/ap/qnx
+noinst_HEADERS = \
 	ap_QNXApp.h \
 	ap_QNXAppImpl.h \
 	ap_QNXClipboard.h \

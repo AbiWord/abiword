@@ -40,7 +40,7 @@ libImpExp_unix_a_SOURCES = \
 
 EXTRA_DIST = $(headers_DATA) Makefile
 
-headersdir = $(ABIWORD_HEADERSDIR)/impexp/unix
-headers_DATA = \
+#headersdir = $(ABIWORD_HEADERSDIR)/impexp/unix
+noinst_HEADERS = \
 	ie_exp_PDF.h \
 	ie_impGraphic_GdkPixbuf.h 

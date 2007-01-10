@@ -30,6 +30,6 @@ libImpExp_cocoa_a_SOURCES = ie_impexp_RegisterCocoa.cpp \
 
 EXTRA_DIST = $(headers_DATA)
 
-headersdir = $(ABIWORD_HEADERSDIR)/impexp/cocoa
-headers_DATA = \
+#headersdir = $(ABIWORD_HEADERSDIR)/impexp/cocoa
+noinst_HEADERS = \
 	ie_impGraphic_Cocoa.h 

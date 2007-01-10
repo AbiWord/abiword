@@ -56,8 +56,8 @@ libImpExp_xp_a_SOURCES=\
 
 EXTRA_DIST = $(headers_DATA) Makefile 
 
-headersdir = $(ABIWORD_HEADERSDIR)/impexp/xp
-headers_DATA = \
+#headersdir = $(ABIWORD_HEADERSDIR)/impexp/xp
+noinst_HEADERS = \
 	ie_exp_AbiWord_1.h \
 	ie_exp_AWT.h \
 	ie_exp.h \

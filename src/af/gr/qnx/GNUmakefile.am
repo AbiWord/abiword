@@ -29,7 +29,7 @@ libGr_qnx_a_SOURCES=		\
 
 EXTRA_DIST = $(headers_DATA) Makefile
 
-headersdir = $(ABIWORD_HEADERSDIR)/gr/qnx
-headers_DATA = \
+#headersdir = $(ABIWORD_HEADERSDIR)/gr/qnx
+noinst_HEADERS = \
 	gr_QNXGraphics.h \
 	gr_QNXImage.h

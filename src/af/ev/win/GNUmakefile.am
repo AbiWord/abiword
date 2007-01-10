@@ -35,8 +35,8 @@ EXTRA_DIST = \
 	$(headers_DATA) \
 	Makefile
 
-headersdir = $(ABIWORD_HEADERSDIR)/ev/win
-headers_DATA = \
+#headersdir = $(ABIWORD_HEADERSDIR)/ev/win
+noinst_HEADERS = \
 	ev_Win32Keyboard.h \
 	ev_Win32Menu.h \
 	ev_Win32Mouse.h \

@@ -40,8 +40,8 @@ EXTRA_DIST = \
 	$(rc2data) \
 	Makefile
 
-headersdir = $(ABIWORD_HEADERSDIR)/util/win
-headers_DATA = \
+#headersdir = $(ABIWORD_HEADERSDIR)/util/win
+noinst_HEADERS = \
 	ut_mutexImpl.h \
 	ut_sleep.h \
 	ut_threadImpl.h \

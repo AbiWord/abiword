@@ -36,8 +36,8 @@ libUtil_qnx_a_SOURCES=		\
 
 EXTRA_DIST = $(headers_DATA) Makefile
 
-headersdir = $(ABIWORD_HEADERSDIR)/util/qnx
-headers_DATA = \
+#headersdir = $(ABIWORD_HEADERSDIR)/util/qnx
+noinst_HEADERS = \
 	ut_files.h \
 	ut_mutexImpl.h \
 	ut_qnxAssert.h \

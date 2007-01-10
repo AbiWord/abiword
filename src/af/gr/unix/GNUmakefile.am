@@ -28,8 +28,8 @@ libGr_unix_a_SOURCES= gr_UnixPangoGraphics.cpp	\
 
 EXTRA_DIST = $(headers_DATA) Makefile
 
-headersdir = $(ABIWORD_HEADERSDIR)/gr/unix
-headers_DATA = \
+#headersdir = $(ABIWORD_HEADERSDIR)/gr/unix
+noinst_HEADERS = \
 	gr_UnixImage.h \
 	gr_UnixPangoGraphics.h \
 	gr_UnixNullGraphics.h

@@ -68,8 +68,8 @@ EXTRA_DIST = \
 	$(rc2data) \
 	Makefile
 
-headersdir = $(ABIWORD_HEADERSDIR)/xap/win
-headers_DATA = \
+#headersdir = $(ABIWORD_HEADERSDIR)/xap/win
+noinst_HEADERS = \
 	winezmouse.h \
 	xap_Win32App.h \
 	xap_Win32AppImpl.h \

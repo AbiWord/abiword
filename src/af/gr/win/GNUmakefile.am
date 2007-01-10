@@ -30,8 +30,8 @@ libGr_win_a_SOURCES=\
 
 EXTRA_DIST = $(headers_DATA) Makefile
 
-headersdir = $(ABIWORD_HEADERSDIR)/gr/win
-headers_DATA = \
+#headersdir = $(ABIWORD_HEADERSDIR)/gr/win
+noinst_HEADERS = \
 	gr_Win32CharWidths.h \
 	gr_Win32Graphics.h \
 	gr_Win32Image.h \

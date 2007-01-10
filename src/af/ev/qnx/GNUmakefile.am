@@ -32,8 +32,8 @@ libEv_qnx_a_SOURCES=		\
 
 EXTRA_DIST = $(headers_DATA) Makefile
 
-headersdir = $(ABIWORD_HEADERSDIR)/ev/qnx
-headers_DATA = \
+#headersdir = $(ABIWORD_HEADERSDIR)/ev/qnx
+noinst_HEADERS = \
 	ev_QNXKeyboard.h \
 	ev_QNXMenu.h \
 	ev_QNXMouse.h \

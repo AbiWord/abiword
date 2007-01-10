@@ -85,8 +85,8 @@ libXap_xp_a_SOURCES= $(print_src) \
 
 EXTRA_DIST = $(headers_DATA) Makefile
 
-headersdir = $(ABIWORD_HEADERSDIR)/xap/xp
-headers_DATA = \
+#headersdir = $(ABIWORD_HEADERSDIR)/xap/xp
+noinst_HEADERS = \
 	xad_Document.h \
 	xap_App.h \
 	xap_AppImpl.h \

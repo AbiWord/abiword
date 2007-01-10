@@ -41,8 +41,8 @@ libSpell_a_SOURCES = $(COMMONSOURCES) $(ENCHANTSOURCES) $(ISPELLSOURCES)
 EXTRA_DIST = $(headers_DATA) Makefile
 
 # TODO Rob: conditional header install
-headersdir = $(ABIWORD_HEADERSDIR)/spell/xp
-headers_DATA = \
+#headersdir = $(ABIWORD_HEADERSDIR)/spell/xp
+noinst_HEADERS = \
 	barbarisms.h \
 	enchant_checker.h \
 	ispell_checker.h \

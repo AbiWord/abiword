@@ -37,8 +37,8 @@ libGr_xp_a_SOURCES=\
 
 EXTRA_DIST = $(headers_DATA) Makefile
 
-headersdir = $(ABIWORD_HEADERSDIR)/gr/xp
-headers_DATA = \
+#headersdir = $(ABIWORD_HEADERSDIR)/gr/xp
+noinst_HEADERS = \
 	gr_Caret.h \
 	gr_CharWidthsCache.h \
 	gr_CharWidths.h \

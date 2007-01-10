@@ -41,7 +41,6 @@
 #include "fv_View.h"
 #include "ap_UnixFrame.h"
 #include "ap_FrameData.h"
-#include "xap_Args.h"
 #include "pd_Document.h"
 #include "ie_imp.h"
 #include "ie_exp.h"
@@ -86,10 +85,8 @@ class AbiWidget_ViewListener;
 // About that here
 
 struct _AbiPrivData {
-	AP_UnixApp           * m_pApp;
 	AP_UnixFrame         * m_pFrame;
 	char           * m_szFilename;
-	bool                 externalApp;
 	bool                 m_bMappedToScreen;
 	bool                 m_bPendingFile;
 	bool                 m_bMappedEventProcessed;
@@ -1053,7 +1050,6 @@ abi_widget_load_file(AbiWidget * abi, const char * pszFile)
 	{
 		ieft =  IE_Exp::fileTypeForSuffix(".abw");
 	}
-	const char * szMIME = IE_Exp::descriptionForFileType(ieft);
 	xxx_UT_DEBUGMSG(("Setting MIMETYPE %s \n",szMIME));
 	xxx_UT_DEBUGMSG(("m_sMIMETYPE pointer %x \n",abi->priv->m_sMIMETYPE));
 	*(abi->priv->m_sMIMETYPE) =  IE_Exp::descriptionForFileType(ieft);
@@ -1311,8 +1307,6 @@ abi_widget_init (AbiWidget * abi)
 	priv->m_bMappedEventProcessed = false;
 	priv->m_bUnlinkFileAfterLoad = false;
 	priv->m_iNumFileLoads = 0;
-	priv->m_pApp = NULL;
-	priv->externalApp = false;
 	priv->m_bShowMargin = true;
 	priv->m_bOlpcSelections = true;
 	priv->m_sMIMETYPE = new UT_UTF8String("");
@@ -1431,38 +1425,29 @@ abi_widget_destroy_gtk (GtkObject *object)
 	abi = ABI_WIDGET(object);
 
 	// order of deletion is important here
+	XAP_App *pApp = XAP_App::getApp();
 	bool bBonobo = false;
 	bool bKillApp = false;
 
 	if(abi->priv) 
 		{
 			_abi_widget_releaseListener(abi);
-
-			if(abi->priv->m_pApp)
+			bBonobo = pApp->isBonoboRunning();
+			if(abi->priv->m_pFrame)
 				{
-					bBonobo = abi->priv->m_pApp->isBonoboRunning();
-					if(abi->priv->m_pFrame)
-						{
 #ifdef LOGFILE
-							fprintf(getlogfile(),"frame count before forgetting = %d \n",abi->priv->m_pApp->getFrameCount());
+					fprintf(getlogfile(),"frame count before forgetting = %d \n",pApp->getFrameCount());
 #endif
-							if(abi->priv->m_pApp->getFrameCount() <= 1)
-								{
-									bKillApp = true;
-								}
-							abi->priv->m_pApp->forgetFrame(abi->priv->m_pFrame);
-							abi->priv->m_pFrame->close();
-							delete abi->priv->m_pFrame;
-#ifdef LOGFILE
-							fprintf(getlogfile(),"frame count = %d \n",abi->priv->m_pApp->getFrameCount());
-#endif
-						}
-					if(!abi->priv->externalApp)
+					if(pApp->getFrameCount() <= 1)
 						{
-							abi->priv->m_pApp->shutdown();
-							delete abi->priv->m_pApp;
 							bKillApp = true;
 						}
+					pApp->forgetFrame(abi->priv->m_pFrame);
+					abi->priv->m_pFrame->close();
+					delete abi->priv->m_pFrame;
+#ifdef LOGFILE
+					fprintf(getlogfile(),"frame count = %d \n",pApp->getFrameCount());
+#endif
 				}
 			g_free (abi->priv->m_szFilename);
 			delete abi->priv->m_sMIMETYPE;
@@ -1473,19 +1458,10 @@ abi_widget_destroy_gtk (GtkObject *object)
 #ifdef LOGFILE
 	fprintf(getlogfile(),"abiwidget destroyed in abi_widget_destroy_gtk\n");
 #endif
-	if(!bBonobo)
-	{
-		if (GTK_OBJECT_CLASS(parent_class)->destroy)
-			GTK_OBJECT_CLASS(parent_class)->destroy (GTK_OBJECT(object));
-		if(bKillApp)
-		{
-			gtk_main_quit();
-		}
-	}
+
 #ifdef HAVE_BONOBO
-	else
+	if(bBonobo)
 	{
-		
 		if (GTK_OBJECT_CLASS(parent_class)->destroy)
 			GTK_OBJECT_CLASS(parent_class)->destroy (GTK_OBJECT(object));
 	// chain up
@@ -1734,20 +1710,14 @@ abi_widget_class_init (AbiWidgetClass *abi_class)
 }
 
 static void
-abi_widget_construct (AbiWidget * abi, const char * file, AP_UnixApp * pApp)
+abi_widget_construct (AbiWidget * abi, const char * file)
 {
-	if(pApp != NULL)
-	{
-		abi->priv->m_pApp = pApp;
-		abi->priv->externalApp = true;
-	}
 	// this is all that we can do here, because we can't draw until we're
 	// realized and have a GdkWindow pointer
 
 	if (file)
 		abi->priv->m_szFilename = g_strdup (file);
 		
-	UT_DEBUGMSG(("AbiWidget Constructed Now %x \n",abi->priv->m_pApp));
 #ifdef LOGFILE
 	fprintf(getlogfile(),"AbiWidget Constructed %x \n",abi);
 #endif
@@ -1773,37 +1743,16 @@ abi_widget_map_to_screen(AbiWidget * abi)
 	fprintf(getlogfile(),"AbiWidget about to map_to_screen ref_count %d \n",G_OBJECT(abi)->ref_count);
 #endif
 
-	XAP_Args *pArgs = 0;
 	abi->priv->m_bMappedToScreen = true;
-	if(!abi->priv->externalApp)
-	{
-		if (abi->priv->m_szFilename)
-			// C++ casts don't seem to work here
-			pArgs = new XAP_Args (1, (const char **)(&abi->priv->m_szFilename));
-		else
-			pArgs = new XAP_Args(0, 0);
-
-		AP_UnixApp * pApp = static_cast<AP_UnixApp*>(XAP_App::getApp());
-
-		if ( !pApp )
-		    pApp = new AP_UnixApp (pArgs, "AbiWidget");
-
-		UT_ASSERT(pApp);
-		pApp->initialize(true);
-		abi->priv->m_pApp     = pApp;
-	}
-
 	AP_UnixFrame * pFrame  = new AP_UnixFrame();
 
 	UT_ASSERT(pFrame);
 	static_cast<XAP_UnixFrameImpl *>(pFrame->getFrameImpl())->setTopLevelWindow(widget);
 	pFrame->initialize(XAP_NoMenusWindowLess);
 	abi->priv->m_pFrame = pFrame;
-	if(!abi->priv->externalApp)
-		delete pArgs;
 
-	abi->priv->m_pApp->rememberFrame ( pFrame ) ;
-	abi->priv->m_pApp->rememberFocussedFrame ( pFrame ) ;
+	XAP_App::getApp()->rememberFrame ( pFrame ) ;
+	XAP_App::getApp()->rememberFocussedFrame ( pFrame ) ;
 
 	//_abi_widget_bindListenerToView(abi, pFrame->getCurrentView());
 
@@ -1860,7 +1809,7 @@ abi_widget_new (void)
 	AbiWidget * abi;
 	UT_DEBUGMSG(("Constructing AbiWidget \n"));
 	abi = static_cast<AbiWidget *>(g_object_new (abi_widget_get_type (), NULL));
-	abi_widget_construct (abi, 0, NULL);
+	abi_widget_construct (abi, 0);
 
 	return GTK_WIDGET (abi);
 }
@@ -1881,48 +1830,7 @@ abi_widget_new_with_file (const gchar * file)
 	g_return_val_if_fail (file != 0, 0);
 
 	abi = static_cast<AbiWidget *>(g_object_new (abi_widget_get_type (), NULL));
-	abi_widget_construct (abi, file,NULL);
-
-	return GTK_WIDGET (abi);
-}
-
-/**
- * abi_widget_new_with_app
- *
- * Creates a new AbiWord widget using an external Abiword App
- */
-extern "C" GtkWidget *
-abi_widget_new_with_app (AP_UnixApp * pApp)
-{
-	AbiWidget * abi;
-
-	g_return_val_if_fail (pApp != 0, 0);
-
-	abi = static_cast<AbiWidget *>(g_object_new (abi_widget_get_type (), NULL));
-	abi_widget_construct (abi, 0, pApp);
-
-	return GTK_WIDGET (abi);
-}
-
-/**
- * abi_widget_new_with_app_file
- *
- * Creates a new AbiWord widget and tries to load the file
- * This uses an external Abiword App
- *
- * \param file - A file on your HD
- * \param pApp - pointer to a valid AbiWord XAP_UnixApp
- */
-extern "C" GtkWidget *
-abi_widget_new_with_app_file (AP_UnixApp * pApp, const gchar * file)
-{
-	AbiWidget * abi;
-
-	g_return_val_if_fail (file != 0, 0);
-	g_return_val_if_fail (pApp != 0, 0);
-
-	abi = static_cast<AbiWidget *>(g_object_new (abi_widget_get_type (), NULL));
-	abi_widget_construct (abi, file, pApp);
+	abi_widget_construct (abi, file);
 
 	return GTK_WIDGET (abi);
 }
@@ -2007,10 +1915,10 @@ abi_widget_invoke_ex (AbiWidget * w, const char * mthdName,
 	// lots of conditional returns - code defensively
 	g_return_val_if_fail (w != 0, FALSE);
 	g_return_val_if_fail (mthdName != 0, FALSE);
-	g_return_val_if_fail (w->priv->m_pApp != 0, FALSE);
 
 	// get the method container
-	container = w->priv->m_pApp->getEditMethodContainer();
+	XAP_App *pApp = XAP_App::getApp();
+	container = pApp->getEditMethodContainer();
 	g_return_val_if_fail (container != 0, FALSE);
 
 	// get a handle to the actual EditMethod

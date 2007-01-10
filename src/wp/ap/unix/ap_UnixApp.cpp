@@ -2718,8 +2718,7 @@ bonobo_AbiWidget_factory  (BonoboGenericFactory *factory,
   /*
    * create a new AbiWidget instance
    */  
-  AP_UnixApp * pApp = static_cast<AP_UnixApp *>(XAP_App::getApp());
-  GtkWidget  * abi  = abi_widget_new_with_app (pApp);
+  GtkWidget  * abi  = abi_widget_new ();
 #ifdef LOGFILE
 	fprintf(logfile," After new_with_app ref count %d \n",G_OBJECT(abi)->ref_count);
 #endif

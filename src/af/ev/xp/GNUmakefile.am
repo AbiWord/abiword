@@ -41,8 +41,8 @@ libEv_xp_a_SOURCES=	\
 
 EXTRA_DIST = $(headers_DATA) Makefile
 
-headersdir = $(ABIWORD_HEADERSDIR)/ev/xp
-headers_DATA = \
+#headersdir = $(ABIWORD_HEADERSDIR)/ev/xp
+noinst_HEADERS = \
 	ev_EditBinding.h \
 	ev_EditBits.h \
 	ev_EditEventMapper.h \

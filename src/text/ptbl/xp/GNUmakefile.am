@@ -86,8 +86,8 @@ EXTRA_DIST = \
 	README.TXT \
 	$(headers_DATA)
 
-headersdir = $(ABIWORD_HEADERSDIR)/text/ptbl/xp
-headers_DATA = \
+#headersdir = $(ABIWORD_HEADERSDIR)/text/ptbl/xp
+noinst_HEADERS = \
 	fd_Field.h \
 	pd_Document.h \
 	pd_Iterator.h \

@@ -74,8 +74,8 @@ libFmt_a_SOURCES= \
 
 EXTRA_DIST = $(headers_DATA) Makefile
 
-headersdir = $(ABIWORD_HEADERSDIR)/text/fmt/xp
-headers_DATA = \
+#headersdir = $(ABIWORD_HEADERSDIR)/text/fmt/xp
+noinst_HEADERS = \
 	fb_Alignment.h \
 	fb_ColumnBreaker.h \
 	fb_LineBreaker.h \

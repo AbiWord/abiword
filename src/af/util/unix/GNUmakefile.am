@@ -35,8 +35,8 @@ libUtil_unix_a_SOURCES=\
 
 EXTRA_DIST = $(headers_DATA) Makefile
 
-headersdir = $(ABIWORD_HEADERSDIR)/util/unix
-headers_DATA = \
+#headersdir = $(ABIWORD_HEADERSDIR)/util/unix
+noinst_HEADERS = \
 	ut_files.h \
 	ut_mutexImpl.h \
 	ut_sleep.h \

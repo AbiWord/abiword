@@ -124,9 +124,10 @@ EXTRA_DIST = \
 	$(glade_DATA) \
 	$(headers_DATA)
 
-headersdir = $(ABIWORD_HEADERSDIR)/ap/unix
-headers_DATA = \
-	abiwidget.h \
+headersdir = $(ABIWORD_HEADERSDIR)
+headers_DATA = abiwidget.h 
+
+noinst_HEADERS = \
 	ap_UnixApp.h \
 	ap_UnixAppImpl.h \
 	ap_UnixClipboard.h \

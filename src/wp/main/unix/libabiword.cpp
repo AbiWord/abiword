@@ -31,6 +31,8 @@ void libabiword_init (int argc, const char **argv)
 		_abiword_app = new AP_UnixApp(&XArgs, PACKAGE);
 		AP_Args Args = AP_Args(&XArgs, PACKAGE, _abiword_app);
 		Args.parsePoptOpts();
+		_abiword_app->initialize(TRUE);
+		/* TODO set up segfault handlers */
 	}
 }
 

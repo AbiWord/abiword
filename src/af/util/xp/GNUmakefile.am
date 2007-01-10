@@ -96,8 +96,8 @@ libUtil_xp_a_SOURCES= \
 
 EXTRA_DIST = $(headers_DATA) Makefile
 
-headersdir = $(ABIWORD_HEADERSDIR)/util/xp
-headers_DATA = \
+#headersdir = $(ABIWORD_HEADERSDIR)/util/xp
+noinst_HEADERS = \
 	ut_AbiObject.h \
 	ut_AdobeEncoding.h \
 	ut_allocator.h \

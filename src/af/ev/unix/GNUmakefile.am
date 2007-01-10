@@ -47,8 +47,8 @@ EXTRA_DIST = \
 dist-hook:
 	rm -rf `find $(distdir)/stock -name CVS`
 
-headersdir = $(ABIWORD_HEADERSDIR)/ev/unix
-headers_DATA = \
+#headersdir = $(ABIWORD_HEADERSDIR)/ev/unix
+noinst_HEADERS = \
 	ev_UnixFontCombo.h \
 	ev_UnixKeyboard.h \
 	ev_UnixKeysym2ucs.h \

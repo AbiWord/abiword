@@ -29,7 +29,7 @@ libXap_hildon_a_SOURCES=\
 
 EXTRA_DIST = $(headers_DATA) Makefile
 
-headersdir = $(includedir)/abiword-$(PACKAGE_VERSION)/xap/unix/hildon
-headers_DATA = \
+#headersdir = $(includedir)/abiword-$(PACKAGE_VERSION)/xap/unix/hildon
+noinst_HEADERS = \
 	xap_UnixHildonApp.h \
 	xap_UnixHildonDlg_FontChooser.h

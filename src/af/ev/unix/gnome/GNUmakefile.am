@@ -34,6 +34,6 @@ endif
 
 EXTRA_DIST = $(headers_DATA)
 
-headersdir = $(ABIWORD_HEADERSDIR)/ev/unix/gnome
-headers_DATA = \
+#headersdir = $(ABIWORD_HEADERSDIR)/ev/unix/gnome
+noinst_HEADERS = \
 	ev_GnomeToolbar.h

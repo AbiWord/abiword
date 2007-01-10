@@ -24,19 +24,13 @@
 
 #include <gtk/gtk.h>
 
-#ifdef ABIWORD_INTERNAL
-#include "ap_UnixApp.h"
-#endif
-
 #ifdef HAVE_BONOBO
 #include <libbonoboui.h>
 #include <bonobo/bonobo-macros.h>
 #include <bonobo/bonobo-object.h>
 #endif
 
-#ifdef __cplusplus
-extern "C" {
-#endif /* c++ */
+G_BEGIN_DECLS
 	
 #define ABI_TYPE_WIDGET        (abi_widget_get_type ())
 #define ABI_WIDGET(obj)        (GTK_CHECK_CAST((obj), ABI_TYPE_WIDGET, AbiWidget))
@@ -362,13 +356,9 @@ gint* iLength);
 
 #ifdef ABIWORD_INTERNAL
   /* these functions are used by abiword internally and really aren't exported to the rest of the world */
-  GtkWidget * abi_widget_new_with_app (AP_UnixApp * pApp);
-  GtkWidget * abi_widget_new_with_app_file (AP_UnixApp * pApp,const gchar * file);
   XAP_Frame * abi_widget_get_frame ( AbiWidget * w ) ;
 #endif
 
-#ifdef __cplusplus
-}
-#endif /* c++ */
+G_END_DECLS
 
 #endif /* ABI_WIDGET_H */

@@ -32,8 +32,8 @@ libEv_cocoa_a_SOURCES=		\
 
 EXTRA_DIST = $(headers_DATA)
 
-headersdir = $(ABIWORD_HEADERSDIR)/ev/cocoa
-headers_DATA = \
+#headersdir = $(ABIWORD_HEADERSDIR)/ev/cocoa
+noinst_HEADERS = \
 	ev_CocoaKeyboard.h \
 	ev_CocoaMenuBar.h \
 	ev_CocoaMenu.h \

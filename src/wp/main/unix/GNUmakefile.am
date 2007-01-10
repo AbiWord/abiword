@@ -55,7 +55,7 @@ ABIWORD_LIBRARY = libabiword-$(ABIWORD_SERIES).so
 ABIWORD_SODIR = $(shell pwd)
 ABIWORD_DYNBINARY = abiword-dynamic
 
-$(ABIWORD_LIBRARY): $(ABI_LIBS) abi_ver.cpp
+$(ABIWORD_LIBRARY): $(ABI_LIBS) $(srcdir)/libabiword.cpp abi_ver.cpp
 	$(CXX) -shared -Wl,-soname,$(ABIWORD_LIBRARY) -o $@ 		\
 		$(CPPFLAGS) $(CXXFLAGS) $(INCLUDES)			\
 		-DPACKAGE="\"$(PACKAGE)\""				\
@@ -87,7 +87,7 @@ endif
 EXTRA_DIST = \
 	Makefile \
 	libabiword.cpp \
-	libabiword.h
+	$(noinst_HEADERS)
 
 ###
 
