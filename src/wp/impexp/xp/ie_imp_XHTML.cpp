@@ -236,7 +236,9 @@ IE_Imp_XHTML::IE_Imp_XHTML(PD_Document * pDocument) :
 	m_szBookMarkName(NULL),
 	m_addedPTXSection(false),
 	m_iPreCount(0),
-	m_bFirstBlock(false)
+	m_bFirstBlock(false),
+	m_bInMath(false),
+	m_pMathBB(NULL)
 {
 }
 
@@ -246,6 +248,12 @@ IE_Imp_XHTML::~IE_Imp_XHTML()
 	DELETEP(m_TableHelperStack);
 #endif
 	UT_VECTOR_PURGEALL(UT_UTF8String *,m_divStyles);
+
+	if(m_pMathBB)  //this should've been deleted
+	{
+		UT_ASSERT_HARMLESS(UT_SHOULD_NOT_HAPPEN);
+		DELETEP(m_pMathBB);
+	}
 }
 
 // to get lists to work:
@@ -293,6 +301,7 @@ static struct xmlToIdMapping s_Tokens[] =
 	{ "img",		TT_IMG			},
 	{ "kbd",		TT_KBD			},
 	{ "li",			TT_LI			},
+	{ "math",		TT_MATH			},
 	{ "meta",		TT_META			},
 	{ "ol",			TT_OL			},
 	{ "p",			TT_P			},
@@ -705,6 +714,15 @@ void IE_Imp_XHTML::startElement(const XML_Char *name, const XML_Char **atts)
 
 	UT_uint32 tokenIndex;
 	tokenIndex = _mapNameToToken (name, s_Tokens, TokenTableSize);
+
+	if(m_bInMath && (tokenIndex != TT_MATH))
+	{
+		UT_return_if_fail(m_pMathBB);
+		m_pMathBB->append(reinterpret_cast<const UT_Byte *>("<"), 1);
+		m_pMathBB->append(reinterpret_cast<const UT_Byte *>(name), strlen(name)); //build the mathml
+		m_pMathBB->append(reinterpret_cast<const UT_Byte *>(">"), 1);
+		return;
+	}
 
 	switch (tokenIndex)
 	{
@@ -1404,6 +1422,19 @@ void IE_Imp_XHTML::startElement(const XML_Char *name, const XML_Char **atts)
 		X_CheckError(appendFmt(new_atts));
 		return;
 
+	case TT_MATH:
+		X_VerifyParseState(_PS_Block);
+
+		if(m_pMathBB) //this should've been deleted
+		{
+			UT_ASSERT_HARMLESS(UT_SHOULD_NOT_HAPPEN);
+			DELETEP(m_pMathBB);
+		}
+		m_bInMath = true;
+		m_pMathBB = new UT_ByteBuf;
+		m_pMathBB->append(reinterpret_cast<const UT_Byte *>("<math xmlns='http://www.w3.org/1998/Math/MathML' display='block'>"), 65);
+		return;
+
 	case TT_OTHER:
 	default:
 		UT_DEBUGMSG(("Unknown tag [%s]\n",name));
@@ -1421,8 +1452,11 @@ X_Fail:
 
 void IE_Imp_XHTML::endElement(const XML_Char *name)
 {
-	int failLine;
-	failLine = 0;
+	int failLine = 0;
+	const XML_Char *atts[3];
+	UT_uint32 uid;
+	UT_UTF8String sUID;
+
 	UT_DEBUGMSG(("endElement: %s, parseState: %u, listType: %u\n", name, m_parseState, m_listType));
 	X_EatIfAlreadyError();				// xml parser keeps running until buffer consumed
 	
@@ -1430,6 +1464,16 @@ void IE_Imp_XHTML::endElement(const XML_Char *name)
 	UT_uint32 tokenIndex;
 	tokenIndex = _mapNameToToken (name, s_Tokens, TokenTableSize);
 	//if(!UT_strcmp(name == "html")) UT_DEBUGMSG(("tokenindex : %d\n", tokenIndex));
+
+	if(m_bInMath && (tokenIndex != TT_MATH))
+	{
+		UT_return_if_fail(m_pMathBB);
+		m_pMathBB->append(reinterpret_cast<const UT_Byte *>("</"), 2);
+		m_pMathBB->append(reinterpret_cast<const UT_Byte *>(name), strlen(name)); //build the mathml
+		m_pMathBB->append(reinterpret_cast<const UT_Byte *>(">"), 1);
+		return;
+	}
+
 	switch (tokenIndex)
 	{
 	case TT_HTML:
@@ -1647,6 +1691,29 @@ void IE_Imp_XHTML::endElement(const XML_Char *name)
 		X_CheckError(appendFmt(&m_vecInlineFmt));
 		return;
 
+	case TT_MATH:
+		X_VerifyParseState(_PS_Block);
+
+		UT_return_if_fail(m_pMathBB && m_bInMath);
+		m_pMathBB->append(reinterpret_cast<const UT_Byte *>("</math>"), 7);
+
+		// Create the data item
+
+		uid = getDoc()->getUID(UT_UniqueId::Math);
+		UT_UTF8String_sprintf(sUID,"MathLatex%d",uid);
+		X_CheckError(getDoc()->createDataItem(sUID.utf8_str(), false, m_pMathBB, NULL, NULL));
+
+		atts[0] = "dataid";
+		atts[1] = sUID.utf8_str();
+		atts[2] = NULL;
+
+		X_CheckError(appendObject(PTO_Math, atts));
+
+		DELETEP(m_pMathBB);
+		m_bInMath = false;
+
+		return;
+
 	case TT_OTHER:
 	default:
 	  	UT_DEBUGMSG(("Unknown end tag [%s]\n",name));
@@ -1668,6 +1735,13 @@ void IE_Imp_XHTML::charData (const XML_Char * buffer, int length)
 	UT_DEBUGMSG(("IE_Imp_XHTML::charData Text | %s | \n",sBuf.utf8_str()));
 #endif
 #endif
+	if(m_bInMath)
+	{
+		UT_return_if_fail(m_pMathBB);
+		m_pMathBB->append(reinterpret_cast<const UT_Byte *>(buffer), length);
+		return; //don't insert mathml character data
+	}
+
 	if ((m_parseState == _PS_StyleSec) || (m_parseState == _PS_Init))
 		{
 			xxx_UT_DEBUGMSG(("IE_Imp_XHTML::charData wrong parseState %d  \n",m_parseState));

@@ -215,4 +215,9 @@
 #define TT_RP		111	// <rp>		Ruby parenthesis
 #define TT_RT		112	// <rt>		Ruby text
 
+/* Math:
+ */
+#define TT_MATH		113 // <math>	MathML equation
+
+
 #endif /* IE_IMPEXP_HTML_H */
