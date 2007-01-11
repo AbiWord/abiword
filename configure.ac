@@ -566,6 +566,7 @@ AC_CONFIG_FILES([
  src/wp/test/unix/testwrap.sh
  src/wp/test/win/GNUmakefile
  src/wp/test/win/testwrap.sh
+ src/wp/test/cocoa/GNUmakefile
  src/tools/GNUmakefile
  src/tools/cdump/GNUmakefile
  src/tools/cdump/xp/GNUmakefile

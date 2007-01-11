@@ -196,12 +196,11 @@ elif test "$PLATFORM" = "mac"; then
 elif test "$PLATFORM" = "cocoa"; then
 	ABI_GLIB12_OPT(0,no)
 
-        GLIB_CFLAGS=`$GLIB_CONFIG --cflags`
-       	GLIB_LIBS=`$GLIB_CONFIG --libs`
+        GMODULE_CFLAGS=`$GLIB_CONFIG --cflags gmodule`
+        GMODULE_LIBS=`$GLIB_CONFIG --libs gmodule`
 
-        AC_SUBST(GLIB_CFLAGS)
-        AC_SUBST(GLIB_LIBS)
-
+        AC_SUBST(GMODULE_CFLAGS)
+        AC_SUBST(GMODULE_LIBS)
 fi
 
 ])
