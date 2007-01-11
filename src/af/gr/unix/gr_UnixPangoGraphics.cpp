@@ -136,6 +136,8 @@ class GR_UnixPangoRenderInfo : public GR_RenderInfo
 		m_iCharCount(0)
 	{
 		++s_iInstanceCount;
+		if(sUTF8 == NULL)
+			sUTF8 = new UT_UTF8String("");
 	};
 	
 	virtual ~GR_UnixPangoRenderInfo()
@@ -149,6 +151,7 @@ class GR_UnixPangoRenderInfo : public GR_RenderInfo
 		{
 			delete [] s_pLogAttrs;
 			s_pLogAttrs = NULL;
+			DELETEP(sUTF8);
 		}
 	};
 
@@ -180,7 +183,7 @@ class GR_UnixPangoRenderInfo : public GR_RenderInfo
 	UT_uint32         m_iZoom;
 	UT_uint32         m_iCharCount;
 	
-	static UT_UTF8String sUTF8;
+	static UT_UTF8String * sUTF8;
 	static GR_UnixPangoRenderInfo * s_pOwnerUTF8;
 	static UT_uint32  s_iInstanceCount;
 	static UT_uint32  s_iStaticSize;  // size of the static buffers
@@ -191,7 +194,7 @@ class GR_UnixPangoRenderInfo : public GR_RenderInfo
 
 
 GR_UnixPangoRenderInfo * GR_UnixPangoRenderInfo::s_pOwnerUTF8 = NULL;
-UT_UTF8String            GR_UnixPangoRenderInfo::sUTF8;
+UT_UTF8String *          GR_UnixPangoRenderInfo::sUTF8 = NULL;
 UT_uint32                GR_UnixPangoRenderInfo::s_iInstanceCount = 0;
 UT_uint32                GR_UnixPangoRenderInfo::s_iStaticSize = 0;
 GR_UnixPangoRenderInfo * GR_UnixPangoRenderInfo::s_pOwnerLogAttrs = NULL;
@@ -206,13 +209,13 @@ bool GR_UnixPangoRenderInfo::getUTF8Text()
 	UT_return_val_if_fail( m_pText, false );
 
 	UT_TextIterator & text = *m_pText;
-	sUTF8.clear();
+	sUTF8->clear();
 
 	// we intentionally run this as far as the iterator lets us, even if that is
 	// past the end of this item
 	for(; text.getStatus() == UTIter_OK; ++text)
 	{
-		sUTF8 += text.getChar();
+		*sUTF8 += text.getChar();
 	}
 
 	s_pOwnerUTF8 = this;
@@ -1266,13 +1269,13 @@ bool GR_UnixPangoGraphics::_scriptBreak(GR_UnixPangoRenderInfo &ri)
 	UT_return_val_if_fail(ri.getUTF8Text(), false);
 
 	// the buffer has to have at least one more slot than the number of glyphs
-	if(!ri.s_pLogAttrs || ri.s_iStaticSize < ri.sUTF8.length() + 1)
+	if(!ri.s_pLogAttrs || ri.s_iStaticSize < ri.sUTF8->length() + 1)
 	{
-		UT_return_val_if_fail(ri.allocStaticBuffers(ri.sUTF8.length()+1),false);
+		UT_return_val_if_fail(ri.allocStaticBuffers(ri.sUTF8->length()+1),false);
 	}
 	
-	pango_break(ri.sUTF8.utf8_str(),
-				ri.sUTF8.byteLength(),
+	pango_break(ri.sUTF8->utf8_str(),
+				ri.sUTF8->byteLength(),
 				&(pItem->m_pi->analysis),
 				ri.s_pLogAttrs, ri.s_iStaticSize);
 
