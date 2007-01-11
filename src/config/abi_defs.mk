@@ -347,11 +347,6 @@ HAVEPLAT=1
 endif
 endif
 
-ifeq ($(OS_NAME), MACOSX)
-include $(ABI_ROOT)/src/config/platforms/macosx.mk
-HAVEPLAT=1
-endif
-
 # DOS (via WxWindows)
 ifeq ($(OS_NAME), WXWIN)
 include $(ABI_ROOT)/src/config/platforms/wxwin.mk
