@@ -258,7 +258,7 @@ UT_uint32 XAP_Prefs::getMaxRecent(void) const
 
 void XAP_Prefs::setMaxRecent(UT_uint32 k)
 {
-	UT_ASSERT(k<=XAP_PREF_LIMIT_MaxRecent);
+	UT_ASSERT_HARMLESS(k<=XAP_PREF_LIMIT_MaxRecent);
 
 	if (k > XAP_PREF_LIMIT_MaxRecent)
 		k = XAP_PREF_LIMIT_MaxRecent;
@@ -274,7 +274,7 @@ UT_uint32 XAP_Prefs::getRecentCount(void) const
 const char * XAP_Prefs::getRecent(UT_uint32 k) const
 {
 	// NB: k is one-based
-	UT_ASSERT(k <= m_iMaxRecent);
+	UT_return_val_if_fail(k <= m_iMaxRecent, NULL);
 
 	const char * pRecent = NULL;
 	
@@ -324,8 +324,8 @@ void XAP_Prefs::addRecent(const char * szRecent)
 
 void XAP_Prefs::removeRecent(UT_uint32 k)
 {
-	UT_ASSERT(k>0);
-	UT_ASSERT(k<=getRecentCount());
+	UT_return_if_fail(k>0);
+	UT_return_if_fail(k<=getRecentCount());
 
 	char * sz = m_vecRecent.getNthItem(k-1);
 	FREEP(sz);
@@ -637,8 +637,6 @@ bool XAP_Prefs::getPrefsValue(const XML_Char * szKey, const XML_Char ** pszValue
 		return true;
 	}
 
-	UT_DEBUGMSG(("PrefsKey %s PrefsValue %s \n",szKey,pszValue));
-	UT_ASSERT_HARMLESS(UT_SHOULD_NOT_HAPPEN);
 	return false;
 }
 
@@ -660,8 +658,6 @@ bool XAP_Prefs::getPrefsValue(const UT_String &stKey, UT_String &stValue, bool b
 		return true;
 	}
 
-	UT_DEBUGMSG(("JCA: key: [%s] Value: [%s]", stKey.c_str(), stValue.c_str()));
-	UT_ASSERT_HARMLESS(UT_SHOULD_NOT_HAPPEN);
 	return false;
 }
 
@@ -684,7 +680,6 @@ bool XAP_Prefs::getPrefsValueBool(const XML_Char * szKey, bool * pbValue, bool b
 		return true;
 	}
 
-	UT_ASSERT_HARMLESS(UT_SHOULD_NOT_HAPPEN);
 	return false;
 }
 
