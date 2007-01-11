@@ -44,6 +44,7 @@ libWpAp_cocoa_a_SOURCES=\
 	ap_CocoaDialog_InsertBookmark.mm	\
 	ap_CocoaDialog_InsertHyperlink.mm	\
 	ap_CocoaDialog_InsertTable.mm	\
+	ap_CocoaDialog_Latex.mm	\
 	ap_CocoaDialog_Lists.mm	\
 	ap_CocoaDialog_ListRevisions.mm	\
 	ap_CocoaDialog_MailMerge.mm	\
@@ -71,6 +72,7 @@ libWpAp_cocoa_a_SOURCES=\
 	ap_Cocoa_ResourceIDs.mm	\
 	ap_CocoaSplash.mm		\
 	ap_CocoaStatusBar.mm		\
+	ap_CocoaTool.mm \
 	ap_CocoaToolbar_StyleCombo.mm	\
 	ap_CocoaToolbar_FontCombo.mm	\
 	ap_CocoaToolbar_SizeCombo.mm	\
