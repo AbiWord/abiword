@@ -1828,7 +1828,12 @@ bool AP_UnixApp::doWindowlessArgs(const AP_Args *Args, bool & bSuccess)
 void signalWrapper(int sig_num)
 {
     AP_UnixApp *pApp = static_cast<AP_UnixApp *>(XAP_App::getApp());
-    pApp->catchSignals(sig_num);
+
+	/* make sure we have application, in case we have been called after
+	 * the application object is gone
+	 */
+	if (pApp)
+		pApp->catchSignals(sig_num);
 }
 
 static gint s_signal_count = 0;

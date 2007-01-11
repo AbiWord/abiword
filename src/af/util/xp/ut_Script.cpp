@@ -1,3 +1,4 @@
+/* -*- mode: C++; tab-width: 4; c-basic-offset: 4; -*- */
 /* AbiWord
  * Copyright (C) 2001 Dom Lachowicz
  * 
@@ -104,9 +105,7 @@ void UT_ScriptLibrary::registerScript ( UT_ScriptSniffer * s )
 	UT_uint32 ndx = 0;
 	UT_Error err = mSniffers->addItem (s, &ndx);
 
-	UT_ASSERT(err == UT_OK);
-	UT_ASSERT(ndx >= 0);
-
+	UT_return_if_fail(err == UT_OK && ndx >= 0);
 	s->setType(ndx+1);
 }
 
@@ -114,8 +113,8 @@ void UT_ScriptLibrary::unregisterScript ( UT_ScriptSniffer * s )
 {
 	UT_uint32 ndx = s->getType(); // 1:1 mapping
   
-	UT_ASSERT(ndx >= 0);
-  
+	UT_return_if_fail( ndx > 0);
+	
 	mSniffers->deleteNthItem (ndx-1);
   
 	// Refactor the indexes
@@ -141,6 +140,8 @@ void UT_ScriptLibrary::unregisterAllScripts ()
 		if (pSniffer)
 			pSniffer->unref();
     }
+
+	mSniffers->clear();
 }
 
 UT_ScriptIdType	UT_ScriptLibrary::typeForContents(const char * szBuf,
@@ -238,9 +239,9 @@ UT_Error UT_ScriptLibrary::constructScript(const char * szFilename,
 										   UT_Script ** ppscript, 
 										   UT_ScriptIdType * pieft)
 {
-	UT_ASSERT(ieft != -1 || (szFilename && *szFilename));
-	UT_ASSERT(ppscript);
-  
+	UT_return_val_if_fail(((ieft != -1) || (szFilename && *szFilename)) &&
+						  ppscript, UT_ERROR);
+	
 	// no filter will support -1, so we try to detect
 	// from the contents of the file or the filename suffix
 	// the importer to use and assign that back to ieft.
@@ -263,8 +264,8 @@ UT_Error UT_ScriptLibrary::constructScript(const char * szFilename,
 		ieft = typeForSuffix(UT_pathSuffix(szFilename));
     }
   
-	UT_ASSERT(ieft != -1);
-  
+	UT_return_val_if_fail(ieft != -1, UT_ERROR);
+	
 	// tell the caller the type of importer they got
 	if (pieft != NULL) 
 		*pieft = ieft;

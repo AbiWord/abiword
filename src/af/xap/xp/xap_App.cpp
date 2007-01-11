@@ -172,6 +172,9 @@ XAP_App::~XAP_App()
 	DELETEP(m_pInputModes);
 	DELETEP(m_pImpl);
 	DELETEP(m_pScriptLibrary);
+
+	/* reset the static pointer, since it is no longer valid */
+	m_pApp = NULL;
 }
 
 const char* XAP_App::getBuildId ()
