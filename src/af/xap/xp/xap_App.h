@@ -69,7 +69,7 @@ class XAP_InputModes;
 class AV_Listener;
 class GR_EmbedManager;
 class XAP_Module;
-
+class UT_ScriptLibrary;
 #define XAP_SD_FILENAME_LENGTH 256
 #define XAP_SD_MAX_FILES 5
 
@@ -333,6 +333,7 @@ private:
 #endif
 	XAP_AppImpl* m_pImpl;
 	UT_GenericVector<AV_Listener *>			m_vecPluginListeners;
+	UT_ScriptLibrary *             m_pScriptLibrary;
 };
 
 #endif /* XAP_APP_H */

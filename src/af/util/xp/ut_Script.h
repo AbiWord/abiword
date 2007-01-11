@@ -41,7 +41,7 @@ class UT_ScriptLibrary;
 
 class ABI_EXPORT UT_ScriptSniffer : public UT_AbiObject
 {
-	friend class UT_ScriptLibrary;
+  	friend class UT_ScriptLibrary;
 	
 public:
 	virtual ~UT_ScriptSniffer();
@@ -60,7 +60,7 @@ public:
 	virtual UT_Error constructScript (UT_Script ** ppscript) = 0;
 	
 protected:
-	UT_ScriptSniffer();
+       	UT_ScriptSniffer();
 	
 private:
 	// only UT_ScriptLibrary ever calls this
@@ -86,9 +86,10 @@ private:
 class ABI_EXPORT UT_ScriptLibrary
 {
 public:
+	UT_ScriptLibrary();
 	virtual ~UT_ScriptLibrary();
 
-	static UT_ScriptLibrary& instance();
+	static UT_ScriptLibrary * instance();
 
 	bool	    enumerateDlgLabels(UT_uint32 ndx,
 								   const char ** pszDesc,
@@ -118,13 +119,11 @@ private:
 								UT_Script ** ppscript, 
 								UT_ScriptIdType * pieft = NULL);
   
-	UT_ScriptLibrary();
 	UT_ScriptLibrary(const UT_ScriptLibrary&);
 	UT_ScriptLibrary& operator=(const UT_ScriptLibrary&);
-	
+	static UT_ScriptLibrary * m_pInstance;	
 	friend void __dummy_method_dont_use(void);
 
-	static UT_ScriptLibrary mInstance;
 	UT_GenericVector<UT_ScriptSniffer *>* mSniffers;
 	UT_String m_stErrMsg;
 };

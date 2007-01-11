@@ -51,22 +51,25 @@ UT_Script::~UT_Script()
 
 /************************************************************************/
 /************************************************************************/
-
-UT_ScriptLibrary UT_ScriptLibrary::mInstance;
+UT_ScriptLibrary * UT_ScriptLibrary::m_pInstance = NULL;
 
 UT_ScriptLibrary::UT_ScriptLibrary ()
-	: mSniffers (new UT_GenericVector<UT_ScriptSniffer *>(5))
+  :     mSniffers (new UT_GenericVector<UT_ScriptSniffer *>(5)),
+    m_stErrMsg("")
 {
+  m_pInstance = this;
+  UT_DEBUGMSG(("Construct a scriptlibrary %x \n",this));
 }
 
 UT_ScriptLibrary::~UT_ScriptLibrary ()
 {
+  UT_DEBUGMSG(("Delete the scriptlibrary %x \n",this));
 	DELETEP(mSniffers);
 }
 
-UT_ScriptLibrary& UT_ScriptLibrary::instance ()
+UT_ScriptLibrary * UT_ScriptLibrary::instance ()
 {
-	return mInstance;
+	return m_pInstance;
 }
 
 UT_Error UT_ScriptLibrary::execute (const char * script,

@@ -700,8 +700,8 @@ Defun_EV_GetMenuItemState_Fn(ap_GetState_ScriptsActive)
 {
   EV_Menu_ItemState s = EV_MIS_ZERO;
 
-  UT_ScriptLibrary& instance = UT_ScriptLibrary::instance ();
-  UT_uint32 filterCount = instance.getNumScripts ();
+  UT_ScriptLibrary * instance = UT_ScriptLibrary::instance ();
+  UT_uint32 filterCount = instance->getNumScripts ();
 
   if ( filterCount == 0 )
     s = EV_MIS_Gray;

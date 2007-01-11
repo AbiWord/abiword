@@ -41,8 +41,8 @@
 #include "ut_locale.h"
 #ifdef ABI_OPT_PERL
 #include "ut_PerlBindings.h"
-#endif
 #include "ut_Script.h"
+#endif
 #include "ut_unixDirent.h"
 #include "ut_sleep.h"
 
@@ -382,8 +382,8 @@ bool AP_UnixApp::initialize(bool has_display)
 
 #ifdef ABI_OPT_PERL
     // hack to keep the perl bindings working on unix
-    UT_ScriptLibrary& instance = UT_ScriptLibrary::instance(); 
-    instance.registerScript ( new UT_PerlScriptSniffer () );
+    UT_ScriptLibrary * instance = UT_ScriptLibrary::instance(); 
+    instance->registerScript ( new UT_PerlScriptSniffer () );
 #endif
 
     return true;

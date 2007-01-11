@@ -1994,7 +1994,6 @@ static bool s_AskForPathname(XAP_Frame * pFrame,
 	FREEP(nTypeList);
 
 	pDialogFactory->releaseDialog(pDialog);
-
 	return bOK;
 }
 
@@ -12654,16 +12653,16 @@ static bool s_AskForScriptName(XAP_Frame * pFrame,
 	XAP_Dialog_FileOpenSaveAs * pDialog
 		= static_cast<XAP_Dialog_FileOpenSaveAs *>(pDialogFactory->requestDialog(id));
 UT_return_val_if_fail(pDialog, false);
-	UT_ScriptLibrary& instance = UT_ScriptLibrary::instance ();
+	UT_ScriptLibrary * instance = UT_ScriptLibrary::instance ();
 
-	UT_uint32 filterCount = instance.getNumScripts ();
+	UT_uint32 filterCount = instance->getNumScripts ();
 
 	const char ** szDescList = static_cast<const char **>(UT_calloc(filterCount + 1, sizeof(char *)));
 	const char ** szSuffixList = static_cast<const char **>(UT_calloc(filterCount + 1, sizeof(char *)));
 	UT_ScriptIdType * nTypeList = static_cast<UT_ScriptIdType *>(UT_calloc(filterCount + 1, sizeof(UT_ScriptIdType)));
 	UT_uint32 k = 0;
 
-	while (instance.enumerateDlgLabels(k, &szDescList[k],
+	while (instance->enumerateDlgLabels(k, &szDescList[k],
 					   &szSuffixList[k], &nTypeList[k]))
 		k++;
 
@@ -12817,9 +12816,9 @@ Defun1(scriptPlay)
 
 	UT_String pNewFile;
 
-	UT_ScriptLibrary &instance = UT_ScriptLibrary::instance ();
+	UT_ScriptLibrary * instance = UT_ScriptLibrary::instance ();
 
-	if (0 == instance.getNumScripts())
+	if (0 == instance->getNumScripts())
 	{
 		pFrame->showMessageBox(AP_STRING_ID_SCRIPT_NOSCRIPTS,
 				   XAP_Dialog_MessageBox::b_O,
@@ -12851,11 +12850,11 @@ Defun1(scriptPlay)
 
 	UT_DEBUGMSG(("scriptPlay (trying to play [%s])\n", pNewFile.c_str()));
 
-	if (UT_OK != instance.execute(scriptName, ieft))
+	if (UT_OK != instance->execute(scriptName, ieft))
 	{
-		if (instance.errmsg().size() > 0)
+		if (instance->errmsg().size() > 0)
 		{
-			pFrame->showMessageBox(instance.errmsg().c_str(),
+			pFrame->showMessageBox(instance->errmsg().c_str(),
 					       XAP_Dialog_MessageBox::b_O,
 					       XAP_Dialog_MessageBox::a_OK);
 		}
@@ -12879,7 +12878,7 @@ Defun(executeScript)
 	UT_return_val_if_fail(pFrame, false);
 	UT_DEBUGMSG(("executeScript (trying to execute [%s])\n", pCallData->getScriptName().c_str()));
 
-	UT_ScriptLibrary &instance = UT_ScriptLibrary::instance ();
+	UT_ScriptLibrary * instance = UT_ScriptLibrary::instance ();
 
 	// we have no expectations of executing a remote program
 	char * scriptName = UT_go_filename_from_uri (pCallData->getScriptName().c_str());
@@ -12896,10 +12895,10 @@ Defun(executeScript)
 	scriptName = g_strdup(script.utf8_str());
 #endif
 
-	if (UT_OK != instance.execute(scriptName))
+	if (UT_OK != instance->execute(scriptName))
 	{
-		if (instance.errmsg().size() > 0)
-			pFrame->showMessageBox(instance.errmsg().c_str(),
+		if (instance->errmsg().size() > 0)
+			pFrame->showMessageBox(instance->errmsg().c_str(),
 								   XAP_Dialog_MessageBox::b_O,
 								   XAP_Dialog_MessageBox::a_OK);
 

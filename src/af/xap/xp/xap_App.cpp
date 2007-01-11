@@ -60,6 +60,7 @@
 #include "gr_CharWidthsCache.h"
 #include "xav_Listener.h"
 #include "gr_EmbedManager.h"
+#include "ut_Script.h"
 
 UT_Map * abi_ut_map_instance = 0;
 
@@ -93,7 +94,8 @@ XAP_App::XAP_App(XAP_Args * pArgs, const char * szAppName)
 	  m_pGraphicsFactory(NULL),
 	  m_iDefaultGraphicsId(0),
 	  m_pInputModes(NULL),
-	  m_pImpl(NULL)
+	  m_pImpl(NULL),
+	  m_pScriptLibrary(NULL)
 {
 #ifdef DEBUG
 	_fundamentalAsserts(); // see the comments in the function itself
@@ -169,6 +171,7 @@ XAP_App::~XAP_App()
 	DELETEP(m_pGraphicsFactory);
 	DELETEP(m_pInputModes);
 	DELETEP(m_pImpl);
+	DELETEP(m_pScriptLibrary);
 }
 
 const char* XAP_App::getBuildId ()
@@ -435,7 +438,7 @@ bool XAP_App::initialize(const char * szKeyBindingsKey, const char * szKeyBindin
 			}
 		}
 	}
-	
+	m_pScriptLibrary = new UT_ScriptLibrary();
 	return true;
 }
 
