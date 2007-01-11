@@ -1940,7 +1940,7 @@ static bool s_AskForPathname(XAP_Frame * pFrame,
 
 		const XML_Char * ftype = 0;
 
-		pPrefs->getPrefsValue (static_cast<const XML_Char *>(AP_PREF_KEY_DefaultSaveFormat), &ftype, false);
+		pPrefs->getPrefsValue (static_cast<const XML_Char *>(AP_PREF_KEY_DefaultSaveFormat), &ftype, true);
 		if (ftype)
 			{
 				// load the default file format
@@ -3580,6 +3580,7 @@ Defun(closeWindowX)
 Defun(querySaveAndExit)
 {
 	CHECK_FRAME;
+		
 	XAP_Frame * pFrame = NULL;
 	bool bRet = true;
 
