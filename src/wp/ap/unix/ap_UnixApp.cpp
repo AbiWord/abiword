@@ -1360,180 +1360,187 @@ int AP_UnixApp::main(const char * szAppName, int argc, const char ** argv)
     // initialize our application.
 	XAP_Args XArgs = XAP_Args(argc,argv);
 	AP_UnixApp * pMyUnixApp = new AP_UnixApp(&XArgs, szAppName);
-	AP_Args Args = AP_Args(&XArgs, szAppName, pMyUnixApp);
 
-#ifdef LOGFILE
-	UT_String sLogFile = pMyUnixApp->getUserPrivateDirectory();
-//	UT_String sLogFile = "/home/msevior/.AbiSuite";
-	sLogFile += "abiLogFile";
-	logfile = fopen(sLogFile.c_str(),"a+");
-	fprintf(logfile,"About to do gtk_set_locale \n");
-	fprintf(logfile,"New logfile \n");
-#endif
-    
-	// Step 1: Initialize GTK and create the APP.
-	// hack needed to intialize gtk before ::initialize
-    gtk_set_locale();
-
-    gboolean have_display = gtk_init_check(&XArgs.m_argc,const_cast<char ***>(&XArgs.m_argv));
-
-#ifdef LOGFILE
-	fprintf(logfile,"Got display %d \n",have_display);
-	fprintf(logfile,"Really display %d \n",have_display);
-#endif
-
-    if (have_display > 0) {
-#ifndef HAVE_GNOMEUI
-      gtk_init (&XArgs.m_argc,const_cast<char ***>(&XArgs.m_argv));
-	  Args.parsePoptOpts();
-#else
-#ifdef LOGFILE
-	fprintf(logfile,"About to start gnome_program_init \n");
-#endif
-	  GnomeProgram * program = gnome_program_init (PACKAGE, VERSION, 
-												   LIBGNOMEUI_MODULE, XArgs.m_argc, const_cast<char **>(XArgs.m_argv),
-												   GNOME_PARAM_APP_PREFIX, PREFIX,
-												   GNOME_PARAM_APP_SYSCONFDIR, SYSCONFDIR,
-												   GNOME_PARAM_APP_DATADIR,	PREFIX "/" PACKAGE "-" ABIWORD_SERIES,
-												   GNOME_PARAM_APP_LIBDIR, PREFIX "/" PACKAGE "-" ABIWORD_SERIES,
-												   GNOME_PARAM_POPT_TABLE, AP_Args::options, 
-												   GNOME_PARAM_NONE);
-#ifdef LOGFILE
-	fprintf(logfile,"gnome_program_init completed \n");
-#endif
-
-	  g_object_get (G_OBJECT (program),
-					GNOME_PARAM_POPT_CONTEXT, &Args.poptcon,
-					NULL);
-#ifdef LOGFILE
-	fprintf(logfile,"g_object_get completed \n");
-#endif
-
-#ifdef HAVE_BONOBO
-#ifdef LOGFILE
-	fprintf(logfile,"About to init bonobo \n");
-#endif	  
-	  bonobo_init (&XArgs.m_argc, const_cast<char **>(XArgs.m_argv));
-#ifdef LOGFILE
-	fprintf(logfile,"bonobo initialized \n");
-#endif
-#endif
-	  // GNOME handles 'parsePoptOpts'.  Isn't it grand?
-#endif
-    }
-	else {
-		// no display, but we still need to at least parse our own arguments, damnit, for --to, --to-png, and --print
-		Args.parsePoptOpts();
-	}
-
-    // if the initialize fails, we don't have icons, fonts, etc.
-    if (!pMyUnixApp->initialize(have_display))
+	/* this brace is here to ensure that our local variables on the stack
+	 * do not outlive the application object by giving them a lower scope
+	 */
 	{
-		delete pMyUnixApp;
-		return -1;	// make this something standard?
-	}
-	
-	// Setup signal handlers, primarily for segfault
-	// If we segfaulted before here, we *really* blew it
-	
-	struct sigaction sa;
-	
-	sa.sa_handler = signalWrapper;
-    
-    sigfillset(&sa.sa_mask);  // We don't want to hear about other signals
-    sigdelset(&sa.sa_mask, SIGABRT); // But we will call abort(), so we can't ignore that
-#if defined (SA_NODEFER) && defined (SA_RESETHAND)
-    sa.sa_flags = SA_NODEFER | SA_RESETHAND; // Don't handle nested signals
-#else
-    sa.sa_flags = 0;
+		AP_Args Args = AP_Args(&XArgs, szAppName, pMyUnixApp);
+
+#ifdef LOGFILE
+		UT_String sLogFile = pMyUnixApp->getUserPrivateDirectory();
+//	UT_String sLogFile = "/home/msevior/.AbiSuite";
+		sLogFile += "abiLogFile";
+		logfile = fopen(sLogFile.c_str(),"a+");
+		fprintf(logfile,"About to do gtk_set_locale \n");
+		fprintf(logfile,"New logfile \n");
 #endif
     
-    sigaction(SIGSEGV, &sa, NULL);
-    sigaction(SIGBUS, &sa, NULL);
-    sigaction(SIGILL, &sa, NULL);
-    sigaction(SIGQUIT, &sa, NULL);
-    sigaction(SIGFPE, &sa, NULL);
+		// Step 1: Initialize GTK and create the APP.
+		// hack needed to intialize gtk before ::initialize
+		gtk_set_locale();
 
-    // TODO: handle SIGABRT
-	
-    // Step 2: Handle all non-window args.
-    
-	bool windowlessArgsWereSuccessful = true;
-    if (!Args.doWindowlessArgs(windowlessArgsWereSuccessful )) {
-		delete pMyUnixApp;
-		return (windowlessArgsWereSuccessful ? 0 : -1);
-	}
+		gboolean have_display = gtk_init_check(&XArgs.m_argc,const_cast<char ***>(&XArgs.m_argv));
 
-	if (have_display) {
+#ifdef LOGFILE
+		fprintf(logfile,"Got display %d \n",have_display);
+		fprintf(logfile,"Really display %d \n",have_display);
+#endif
+
+		if (have_display > 0) {
+#ifndef HAVE_GNOMEUI
+			gtk_init (&XArgs.m_argc,const_cast<char ***>(&XArgs.m_argv));
+			Args.parsePoptOpts();
+#else
+#ifdef LOGFILE
+			fprintf(logfile,"About to start gnome_program_init \n");
+#endif
+			GnomeProgram * program = gnome_program_init (PACKAGE, VERSION, 
+														 LIBGNOMEUI_MODULE, XArgs.m_argc, const_cast<char **>(XArgs.m_argv),
+														 GNOME_PARAM_APP_PREFIX, PREFIX,
+														 GNOME_PARAM_APP_SYSCONFDIR, SYSCONFDIR,
+														 GNOME_PARAM_APP_DATADIR,	PREFIX "/" PACKAGE "-" ABIWORD_SERIES,
+														 GNOME_PARAM_APP_LIBDIR, PREFIX "/" PACKAGE "-" ABIWORD_SERIES,
+														 GNOME_PARAM_POPT_TABLE, AP_Args::options, 
+														 GNOME_PARAM_NONE);
+#ifdef LOGFILE
+			fprintf(logfile,"gnome_program_init completed \n");
+#endif
+
+			g_object_get (G_OBJECT (program),
+						  GNOME_PARAM_POPT_CONTEXT, &Args.poptcon,
+						  NULL);
+#ifdef LOGFILE
+			fprintf(logfile,"g_object_get completed \n");
+#endif
 
 #ifdef HAVE_BONOBO
-		//
-		// Check to see if we've been activated as a control by OAF
-		//
-		bool bControlFactory = false;
-		for (UT_sint32 k = 1; k < XArgs.m_argc; k++)
-		{
-			if (*XArgs.m_argv[k] == '-')
-				if (strstr(XArgs.m_argv[k],"GNOME_AbiWord_ControlFactory") != 0)
-				{
-					bControlFactory = true;
-					break;
-				}
-		}
-		if(bControlFactory)
-		{
-			int rtn = mainBonobo(XArgs.m_argc, XArgs.m_argv);
 #ifdef LOGFILE
-			fprintf(logfile,"mainBonobo Finished \n");
-			fclose(logfile);
+			fprintf(logfile,"About to init bonobo \n");
+#endif	  
+			bonobo_init (&XArgs.m_argc, const_cast<char **>(XArgs.m_argv));
+#ifdef LOGFILE
+			fprintf(logfile,"bonobo initialized \n");
 #endif
-			pMyUnixApp->shutdown();
+#endif
+			// GNOME handles 'parsePoptOpts'.  Isn't it grand?
+#endif
+		}
+		else {
+			// no display, but we still need to at least parse our own arguments, damnit, for --to, --to-png, and --print
+			Args.parsePoptOpts();
+		}
+
+		// if the initialize fails, we don't have icons, fonts, etc.
+		if (!pMyUnixApp->initialize(have_display))
+		{
 			delete pMyUnixApp;
-			return rtn;
+			return -1;	// make this something standard?
 		}
-#endif
-		
-		// do we show the splash?
-		bool bShowSplash = Args.getShowSplash();
-		
-		const XAP_Prefs * pPrefs = pMyUnixApp->getPrefs();
-		UT_ASSERT(pPrefs);
-		bool bSplashPref = true;
-		if (pPrefs && 
-			pPrefs->getPrefsValueBool (AP_PREF_KEY_ShowSplash, &bSplashPref))
-			bShowSplash = bShowSplash && bSplashPref;
-		
-		if (bShowSplash)
-			_showSplash(1500);
+	
+		// Setup signal handlers, primarily for segfault
+		// If we segfaulted before here, we *really* blew it
+	
+		struct sigaction sa;
+	
+		sa.sa_handler = signalWrapper;
     
-		// Step 3: Create windows as appropriate.
-		// if some args are botched, it returns false and we should
-		// continue out the door.
-		// We used to check for bShowApp here.  It shouldn't be needed
-		// anymore, because doWindowlessArgs was supposed to bail already. -PL
-
-		if (pMyUnixApp->openCmdLineFiles(&Args))
-		{
-#ifdef HAVE_HILDON
-			s_bInitDone = true;
-			pMyUnixApp->processStartupQueue();
+		sigfillset(&sa.sa_mask);  // We don't want to hear about other signals
+		sigdelset(&sa.sa_mask, SIGABRT); // But we will call abort(), so we can't ignore that
+#if defined (SA_NODEFER) && defined (SA_RESETHAND)
+		sa.sa_flags = SA_NODEFER | SA_RESETHAND; // Don't handle nested signals
+#else
+		sa.sa_flags = 0;
 #endif
-			// turn over control to gtk
-			gtk_main();
-		}
-		else
-		{
-			UT_DEBUGMSG(("DOM: not parsing command line or showing app\n"));
-		}
-	}
-	else {
-		UT_DEBUGMSG(("No DISPLAY: this may not be what you want.\n"));
-	}
-	// unload all loaded plugins (remove some of the memory leaks shown at shutdown :-)
-	XAP_ModuleManager::instance().unloadAllPlugins();
+    
+		sigaction(SIGSEGV, &sa, NULL);
+		sigaction(SIGBUS, &sa, NULL);
+		sigaction(SIGILL, &sa, NULL);
+		sigaction(SIGQUIT, &sa, NULL);
+		sigaction(SIGFPE, &sa, NULL);
 
-	// Step 4: Destroy the App.  It should take care of deleting all frames.
-	pMyUnixApp->shutdown();
+		// TODO: handle SIGABRT
+	
+		// Step 2: Handle all non-window args.
+    
+		bool windowlessArgsWereSuccessful = true;
+		if (!Args.doWindowlessArgs(windowlessArgsWereSuccessful )) {
+			delete pMyUnixApp;
+			return (windowlessArgsWereSuccessful ? 0 : -1);
+		}
+
+		if (have_display) {
+
+#ifdef HAVE_BONOBO
+			//
+			// Check to see if we've been activated as a control by OAF
+			//
+			bool bControlFactory = false;
+			for (UT_sint32 k = 1; k < XArgs.m_argc; k++)
+			{
+				if (*XArgs.m_argv[k] == '-')
+					if (strstr(XArgs.m_argv[k],"GNOME_AbiWord_ControlFactory") != 0)
+					{
+						bControlFactory = true;
+						break;
+					}
+			}
+			if(bControlFactory)
+			{
+				int rtn = mainBonobo(XArgs.m_argc, XArgs.m_argv);
+#ifdef LOGFILE
+				fprintf(logfile,"mainBonobo Finished \n");
+				fclose(logfile);
+#endif
+				pMyUnixApp->shutdown();
+				delete pMyUnixApp;
+				return rtn;
+			}
+#endif
+		
+			// do we show the splash?
+			bool bShowSplash = Args.getShowSplash();
+		
+			const XAP_Prefs * pPrefs = pMyUnixApp->getPrefs();
+			UT_ASSERT(pPrefs);
+			bool bSplashPref = true;
+			if (pPrefs && 
+				pPrefs->getPrefsValueBool (AP_PREF_KEY_ShowSplash, &bSplashPref))
+				bShowSplash = bShowSplash && bSplashPref;
+		
+			if (bShowSplash)
+				_showSplash(1500);
+    
+			// Step 3: Create windows as appropriate.
+			// if some args are botched, it returns false and we should
+			// continue out the door.
+			// We used to check for bShowApp here.  It shouldn't be needed
+			// anymore, because doWindowlessArgs was supposed to bail already. -PL
+
+			if (pMyUnixApp->openCmdLineFiles(&Args))
+			{
+#ifdef HAVE_HILDON
+				s_bInitDone = true;
+				pMyUnixApp->processStartupQueue();
+#endif
+				// turn over control to gtk
+				gtk_main();
+			}
+			else
+			{
+				UT_DEBUGMSG(("DOM: not parsing command line or showing app\n"));
+			}
+		}
+		else {
+			UT_DEBUGMSG(("No DISPLAY: this may not be what you want.\n"));
+		}
+		// unload all loaded plugins (remove some of the memory leaks shown at shutdown :-)
+		XAP_ModuleManager::instance().unloadAllPlugins();
+
+		// Step 4: Destroy the App.  It should take care of deleting all frames.
+		pMyUnixApp->shutdown();
+	}
+	
 	delete pMyUnixApp;
 
 	
