@@ -739,6 +739,13 @@ bool EV_UnixToolbar::synthesize(void)
 // Hardwire the cool insert table widget onto the toolbar
 //
 					GtkWidget * abi_table = abi_table_new();
+					const XAP_StringSet * pSS = XAP_App::getApp()->getStringSet();
+					UT_UTF8String sTable;
+					pSS->getValueUTF8(XAP_STRING_ID_TB_Table,sTable);
+					UT_UTF8String sCancel;
+					pSS->getValueUTF8(XAP_STRING_ID_DLG_Cancel,sCancel);
+
+					abi_table_set_labels(ABITABLE_WIDGET(abi_table),const_cast<gchar *>(sTable.utf8_str()),const_cast<gchar *>(sCancel.utf8_str()));
 					gtk_widget_show(abi_table);
 					UT_DEBUGMSG(("SEVIOR: Made insert table widget \n"));
 					wd->m_handlerId = g_signal_connect(abi_table, "selected",

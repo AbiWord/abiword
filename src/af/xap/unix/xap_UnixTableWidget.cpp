@@ -32,10 +32,9 @@
 #include <gtk/gtksignal.h>
 #include <gtk/gtktoolbar.h>
 #include "xap_UnixTableWidget.h"
-#include "xap_Strings.h"
-#include "ap_Strings.h"
-#include "xap_App.h"
 #include "ut_debugmsg.h"
+#include "ut_assert.h"
+#include "ut_string_class.h"
 
 /* NONE:UINT,UINT (/dev/stdin:1) */
 static void
@@ -124,10 +123,14 @@ abi_table_resize(AbiTable* table)
 	g_return_if_fail(table);
 
 	if (table->selected_rows == 0 && table->selected_cols == 0)
-		text = g_strdup_printf("Cancel");
+		text = g_strdup_printf(table->szCancel);
 	else
-		text = g_strdup_printf("%d x %d Table", table->selected_rows, table->selected_cols);
-
+	{
+		UT_UTF8String prText =  "%d x %d ";
+		UT_UTF8String s = table->szTable;
+		prText += s;
+		text = g_strdup_printf(prText.utf8_str(), table->selected_rows, table->selected_cols);
+	}
 	cells_to_pixels(table->total_cols, table->total_rows, &width, &height);
 	gtk_widget_size_request(GTK_WIDGET(table->window_label), &size);
 	
@@ -169,6 +172,18 @@ abi_table_set_max_size (AbiTable* abi_table, guint rows, guint cols)
 	abi_table->total_cols = cols;
 
 	abi_table_resize(abi_table);
+}
+
+
+extern "C" void
+abi_table_set_labels(AbiTable* abi_table, gchar * szTable, gchar * szCancel)
+{
+	if(abi_table->szTable)
+		g_free(abi_table->szTable);
+	abi_table->szTable = g_strdup(szTable);	
+	if(abi_table->szCancel)
+		g_free(abi_table->szCancel);
+	abi_table->szCancel = g_strdup(szCancel);	
 }
 
 extern "C" void
@@ -622,11 +637,7 @@ abi_table_class_init (AbiTableClass *klass)
 static void
 abi_table_init (AbiTable* table)
 {
-	const XAP_StringSet * pSS = XAP_App::getApp()->getStringSet();
 	UT_UTF8String prText =  "%d x %d ";
-	UT_UTF8String s;
-	pSS->getValueUTF8(XAP_STRING_ID_TB_Table,s);
-	prText += s;
 	char* text = g_strdup_printf(prText.utf8_str(), init_rows, init_cols);
 
 	register_stock_icon();
@@ -641,7 +652,8 @@ abi_table_init (AbiTable* table)
 	table->handlers = 0;
 	table->window_label = GTK_LABEL(gtk_label_new(text));
 	g_free(text);
-	
+	table->szTable = NULL;
+	table->szCancel = NULL;
 	gtk_container_add(GTK_CONTAINER(table->window), GTK_WIDGET(table->window_vbox));
 	gtk_box_pack_end(GTK_BOX(table->window_vbox), GTK_WIDGET(table->window_label), FALSE, FALSE, 0);
 	gtk_box_pack_end(GTK_BOX(table->window_vbox), GTK_WIDGET(table->area), TRUE, TRUE, 0);

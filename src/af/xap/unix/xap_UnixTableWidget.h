@@ -63,6 +63,8 @@ typedef struct _AbiTable
 
 	guint max_rows;
 	guint max_cols;
+	gchar * szTable;
+	gchar * szCancel;
 } AbiTable;
 
 typedef struct
@@ -86,6 +88,9 @@ void	   abi_table_get_selected   (const AbiTable* abi_table, guint* rows, guint*
 void	   abi_table_set_max_size   (AbiTable* abi_table, guint rows, guint cols);
 /* gets the maximum number of selected rows & cols */
 void	   abi_table_get_max_size   (const AbiTable* abi_table, guint* rows, guint* cols);
+
+	/* Sets the labels */
+	void abi_table_set_labels(AbiTable* abi_table, gchar * szTable, gchar * szCancel);
 
 #ifdef __cplusplus
 }
