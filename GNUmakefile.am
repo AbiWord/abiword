@@ -90,16 +90,6 @@ libpng:
 
 test: check
 
-# Hack: don't allow distclean; it will delete Makefile, which is not what
-# we want at all.
-# We need to hook up to distclean-generic in this way to be in time to
-# stop the process.
-# late, especially in parallel builds
-distclean-generic: distclean-stop
-distclean-stop:
-	@echo "Please use \`make realclean' or \`make realrealclean' instead"
-	@exit 0 # TODO Rob exit val of 1 obviously stops make distcheck
-
 clean-local:
 	for i in . $(expat_peerdir)  $(wv_peerdir) \
                  $(libpng_peerdir) $(libpopt_peerdir); do \

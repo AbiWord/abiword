@@ -27,6 +27,8 @@
 G_BEGIN_DECLS
 
 void libabiword_init (int argc, const char **argv);
+// used by the python binding, e.g.
+void libabiword_init_noargs ();
 void libabiword_shutdown ();
 
 G_END_DECLS
