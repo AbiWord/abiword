@@ -1165,7 +1165,7 @@ bool AP_UnixApp:: makePngPreview(const char * pszInFile, const char * pszPNGFile
 
 /*****************************************************************/
 /*****************************************************************/
-
+#ifndef EMBEDDED_TARGET
 static GtkWidget * wSplash = NULL;
 static GR_Image * pSplashImage = NULL;
 static GR_UnixPangoGraphics * pUnixGraphics = NULL;
@@ -1340,6 +1340,7 @@ GR_Image * AP_UnixApp::_showSplash(UT_uint32 delay)
 
     return pSplashImage;
 }
+#endif
 
 GR_Graphics * AP_UnixApp::newDefaultScreenGraphics() const
 {
@@ -1503,7 +1504,8 @@ int AP_UnixApp::main(const char * szAppName, int argc, const char ** argv)
 				return rtn;
 			}
 #endif
-		
+
+#ifndef EMBEDDED_TARGET
 			// do we show the splash?
 			bool bShowSplash = Args.getShowSplash();
 		
@@ -1516,7 +1518,7 @@ int AP_UnixApp::main(const char * szAppName, int argc, const char ** argv)
 		
 			if (bShowSplash)
 				_showSplash(1500);
-    
+#endif
 			// Step 3: Create windows as appropriate.
 			// if some args are botched, it returns false and we should
 			// continue out the door.
