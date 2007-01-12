@@ -67,6 +67,7 @@
 
 #include "../../../wp/impexp/xp/ie_types.h"
 #include "../../../wp/impexp/xp/ie_imp.h"
+#include "../../../wp/impexp/xp/ie_exp.h"
 #include "../../../wp/impexp/xp/ie_impGraphic.h"
 
 #define PREVIEW_WIDTH  100
@@ -280,9 +281,8 @@ bool XAP_UnixDialog_FileOpenSaveAs::_run_gtk_main(XAP_Frame * pFrame,
 					(nFileType > 0) && wantSuffix)                                
 					{                                                       
 						// add suffix based on selected file type       
-						const char * szSuffix = UT_pathSuffix(m_szSuffixes[nIndex]);
-						UT_ASSERT(szSuffix);                            
-						UT_uint32 length = strlen(szDialogFilename) + strlen(szSuffix) + 1;
+						UT_UTF8String suffix (IE_Exp::preferredSuffixForFileType(m_nTypeList[nIndex]));
+						UT_uint32 length = strlen(szDialogFilename) + suffix.size() + 1;
 						
 						szFinalPathname = static_cast<char *>(UT_calloc(length,sizeof(char)));
 						
@@ -290,7 +290,7 @@ bool XAP_UnixDialog_FileOpenSaveAs::_run_gtk_main(XAP_Frame * pFrame,
 							{                                               
 								char * p = szFinalPathname;             
 								strcpy(p,szDialogFilename);             
-								strcat(p,szSuffix);                     
+								strcat(p,suffix.utf8_str());                     
 							}                                               
 						
 					}                                                       
@@ -824,8 +824,8 @@ void XAP_UnixDialog_FileOpenSaveAs::runModal(XAP_Frame * pFrame)
 			if(m_id == XAP_DIALOG_ID_FILE_SAVEAS)
 			{
 				const char * szInitialSuffix = UT_pathSuffix(m_szInitialPathname);
-				const char * szSaveTypeSuffix = UT_pathSuffix(m_szSuffixes[m_nDefaultFileType]);
-				if(szInitialSuffix && szSaveTypeSuffix && (UT_strcmp(szInitialSuffix,szSaveTypeSuffix) != 0))
+				const UT_UTF8String szSaveTypeSuffix = IE_Exp::preferredSuffixForFileType(m_nDefaultFileType);
+				if(szInitialSuffix && !szSaveTypeSuffix.empty() && (UT_strcmp(szInitialSuffix,szSaveTypeSuffix.utf8_str()) != 0))
 				{
 					UT_String sFileName = m_szInitialPathname;
 					bool bFoundSuffix = false;
@@ -841,7 +841,7 @@ void XAP_UnixDialog_FileOpenSaveAs::runModal(XAP_Frame * pFrame)
 					if( bFoundSuffix)
 					{
 						sFileName = sFileName.substr(0,i);
-						UT_String sSuffix = szSaveTypeSuffix;
+						UT_String sSuffix = szSaveTypeSuffix.utf8_str();
 						sFileName += sSuffix;
 						FREEP(m_szInitialPathname);
 						UT_cloneString(m_szInitialPathname,sFileName.c_str());

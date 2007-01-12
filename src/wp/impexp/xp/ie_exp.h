@@ -57,6 +57,9 @@ public:
 	virtual bool getDlgLabels (const char ** szDesc,
 							   const char ** szSuffixList,
 							   IEFileType * ft) = 0;
+
+	virtual UT_UTF8String getPreferredSuffix();
+
 	virtual UT_Error constructExporter (PD_Document * pDocument,
 										IE_Exp ** ppie) = 0;
 	
@@ -101,6 +104,7 @@ public:
 	static IE_ExpSniffer * snifferForFileType(IEFileType ieft);
 	static const char * suffixesForFileType(IEFileType ieft);
 	static const char * descriptionForFileType(IEFileType ieft);
+	static UT_UTF8String preferredSuffixForFileType(IEFileType ieft);
 	
 	static UT_Error		constructExporter(PD_Document * pDocument,
 										  const char * szFilename,

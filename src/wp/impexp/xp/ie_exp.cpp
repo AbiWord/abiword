@@ -53,6 +53,26 @@ IE_ExpSniffer::~IE_ExpSniffer ()
 {
 }
 
+UT_UTF8String IE_ExpSniffer::getPreferredSuffix()
+{
+	const char * szDummy;
+	const char * szSuffixes = 0;
+	IEFileType ieftDummy;
+	
+	if (!getDlgLabels(&szDummy,&szSuffixes,&ieftDummy))
+		return "";
+
+    UT_String suffixes(szSuffixes);
+
+    // semicolon-delimited list of suffixes
+    size_t first_suffix_end = UT_String_findCh(suffixes, ';');
+    if(first_suffix_end == (size_t)-1)
+      first_suffix_end = suffixes.size();
+
+    // strip off the '*'
+    return UT_UTF8String(suffixes.substr(1, first_suffix_end - 1).c_str());
+}
+
 /*****************************************************************/
 /*****************************************************************/
 
@@ -512,6 +532,21 @@ const char * IE_Exp::suffixesForFileType(IEFileType ieft)
 
 	// The passed in filetype is invalid.
 	return 0;
+}
+
+/*! 
+  Find the preferred suffix for the given filetype.
+ \param szSuffix File suffix
+
+ Returns "" if no exporter knows this filetype.
+*/
+UT_UTF8String IE_Exp::preferredSuffixForFileType(IEFileType ieft)
+{
+	IE_ExpSniffer * pSniffer = snifferForFileType(ieft);
+
+	UT_return_val_if_fail (pSniffer != NULL, "");
+
+	return pSniffer->getPreferredSuffix();
 }
 
 /*! 

@@ -325,15 +325,7 @@ bool AP_Convert::convertTo(const char * szFilename,
   // maybe it is a mime type. try that first
   ieft = IE_Exp::fileTypeForMimetype(szTargetSuffixOrMime);
   if(ieft != IEFT_Unknown) {
-    UT_String suffixes(IE_Exp::suffixesForFileType(ieft));
-
-    // semicolon-delimited list of suffixes
-    size_t first_suffix_end = UT_String_findCh(suffixes, ';');
-    if(first_suffix_end == (size_t)-1)
-      first_suffix_end = suffixes.size();
-
-    // strip of the '*'
-    ext = suffixes.substr(1, first_suffix_end - 1);
+    ext = IE_Exp::preferredSuffixForFileType(ieft).utf8_str();
   } 
   else
     {
