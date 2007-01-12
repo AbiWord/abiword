@@ -1874,8 +1874,9 @@ static bool s_AskForPathname(XAP_Frame * pFrame,
 			//
 			// If OLPC selection are set, set the path name to the users
 			// home directory.
+			// TODO Rob: remove this hack once the journal is working.
 			//
-			if(static_cast<AP_Frame *>(pFrame)->isOlpcSelections())
+			if(static_cast<AP_Frame *>(pFrame)->getDoWordSelections())
 			{
 				UT_UTF8String sHome = getenv("HOME");
 				sHome += "/";
@@ -4846,7 +4847,7 @@ static void sActualDragToXY(AV_View *  pAV_View, EV_EditMethodCallData * pCallDa
 	ABIWORD_VIEW;
 	UT_return_if_fail (pView);
 	AP_Frame *pFrame = static_cast<AP_Frame *>(pAV_View->getParentData());
-	if(pFrame->isOlpcSelections())
+	if(pFrame->getDoWordSelections())
 	{
 		pView->extSelToXYword(pCallData->m_xPos, pCallData->m_yPos, true);
 		return;
@@ -5131,7 +5132,7 @@ Defun(selectLine)
 	if(pView->getMouseContext(pCallData->m_xPos, pCallData->m_yPos) == EV_EMC_LEFTOFTEXT)
 	{
 		AP_Frame *pFrame = static_cast<AP_Frame *>(pAV_View->getParentData());
-		if(pFrame->isOlpcSelections())
+		if(pFrame->getDoWordSelections())
 		{
 			pView->cmdSelect(pCallData->m_xPos, pCallData->m_yPos, FV_DOCPOS_BOB, FV_DOCPOS_EOB);
 			return true;

@@ -28,7 +28,7 @@
 class ABI_EXPORT AP_Frame : public XAP_Frame
 {
  public:
-  AP_Frame(XAP_FrameImpl *pFrameImpl) : XAP_Frame(pFrameImpl),m_bShowMargin(false),m_bOlpcSelections(false) {}
+  AP_Frame(XAP_FrameImpl *pFrameImpl) : XAP_Frame(pFrameImpl),m_bShowMargin(false),m_bWordSelections(false) {}
     AP_Frame(AP_Frame *pFrame) : XAP_Frame(static_cast<XAP_Frame *>(pFrame)),m_bShowMargin(false){}
 	virtual ~AP_Frame();
 
@@ -48,10 +48,10 @@ class ABI_EXPORT AP_Frame : public XAP_Frame
 	{ return m_bShowMargin;}
 	void                        setShowMargin(bool b)
 	{ m_bShowMargin = b;}
-	void                        setOlpcSelections(bool b)
-	{ m_bOlpcSelections = b;}
-	bool                        isOlpcSelections(void) const
-	{ return m_bOlpcSelections;}
+	void                        setDoWordSelections(bool b)
+	{ m_bWordSelections = b;}
+	bool                        getDoWordSelections(void) const
+	{ return m_bWordSelections;}
 
 	  
  protected:
@@ -83,6 +83,6 @@ class ABI_EXPORT AP_Frame : public XAP_Frame
 
  private:
 	bool    m_bShowMargin;
-	bool    m_bOlpcSelections;
+	bool    m_bWordSelections;
 };
 #endif // AP_FRAME_H

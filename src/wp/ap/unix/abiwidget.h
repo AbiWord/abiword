@@ -342,11 +342,11 @@ G_BEGIN_DECLS
   gboolean abi_widget_set_show_margin (AbiWidget * w, gboolean b);
   gboolean abi_widget_get_show_margin (AbiWidget * w);
 
-  gboolean abi_widget_set_olpc_selections (AbiWidget * w, gboolean b);
-  gboolean abi_widget_get_olpc_selections (AbiWidget * w);
+  gboolean abi_widget_set_word_selections (AbiWidget * w, gboolean b);
+  gboolean abi_widget_get_word_selections (AbiWidget * w);
 
-  gchar * abi_widget_get_content_all(AbiWidget * w, gchar * mimetype, gint* iLength);
-  gchar * abi_widget_get_content_selection(AbiWidget * w, gchar * mimetype, 
+  gchar * abi_widget_get_content (AbiWidget * w, gchar * mimetype, gint* iLength);
+  gchar * abi_widget_get_selection (AbiWidget * w, gchar * mimetype, 
 gint* iLength);
 
 #ifdef HAVE_BONOBO

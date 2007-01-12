@@ -94,7 +94,7 @@ struct _AbiPrivData {
 	gint                 m_iNumFileLoads;
 	AbiWidget_ViewListener * m_pViewListener;
 	bool                 m_bShowMargin;
-	bool                 m_bOlpcSelections;
+	bool                 m_bWordSelections;
 	UT_UTF8String *      m_sMIMETYPE;
 	gint                 m_iContentLength;
 	gint                 m_iSelectionLength;
@@ -120,8 +120,8 @@ enum {
   MIMETYPE,
   CONTENT,
   SELECTION,
-  CONTENTLENGTH,
-  SELECTIONLENGTH,
+  CONTENT_LENGTH,
+  SELECTION_LENGTH,
   ARG_LAST
 };
 
@@ -831,12 +831,12 @@ abi_widget_get_show_margin(AbiWidget * abi)
 
 
 extern "C" gboolean
-abi_widget_set_olpc_selections(AbiWidget * abi, gboolean gb)
+abi_widget_set_word_selections(AbiWidget * abi, gboolean gb)
 {
 	bool b = static_cast<bool>(gb);
-	if(abi->priv->m_bOlpcSelections == b)
+	if(abi->priv->m_bWordSelections == b)
 		return gb;
-	abi->priv->m_bOlpcSelections = b;
+	abi->priv->m_bWordSelections = b;
 	if(!abi->priv->m_bMappedToScreen)
 	{
 		return gb;
@@ -844,16 +844,16 @@ abi_widget_set_olpc_selections(AbiWidget * abi, gboolean gb)
 	AP_Frame * pFrame = (AP_Frame *) abi->priv->m_pFrame;
 	if(pFrame == NULL)
 		return gb;
-	pFrame->setOlpcSelections(b);
+	pFrame->setDoWordSelections(b);
 	return gb;
 }
 
 
 
 extern "C" gboolean
-abi_widget_get_olpc_selections(AbiWidget * abi)
+abi_widget_get_word_selections(AbiWidget * abi)
 {
-	return static_cast<gboolean>(abi->priv->m_bOlpcSelections);
+	return static_cast<gboolean>(abi->priv->m_bWordSelections);
 }
 
 
@@ -886,7 +886,7 @@ abi_widget_file_open(AbiWidget * abi)
  * Number of bytes is returned in iLength
  */
 extern "C" gchar *
-abi_widget_get_content_all(AbiWidget * w, char * mimetype, gint * iLength)
+abi_widget_get_content(AbiWidget * w, char * mimetype, gint * iLength)
 {
 	// Don't put this auto-save in the most recent list.
 	XAP_App::getApp()->getPrefs()->setIgnoreNextRecent();
@@ -929,7 +929,7 @@ abi_widget_get_content_all(AbiWidget * w, char * mimetype, gint * iLength)
  * Number of bytes is returned in iLength
  */
 extern "C" gchar *
-abi_widget_get_content_selection(AbiWidget * w, gchar * mimetype,gint * iLength)
+abi_widget_get_selection(AbiWidget * w, gchar * mimetype,gint * iLength)
 {
 	// Don't put this auto-save in the most recent list.
 	XAP_App::getApp()->getPrefs()->setIgnoreNextRecent();
@@ -1010,10 +1010,10 @@ abi_widget_load_file(AbiWidget * abi, const char * pszFile)
 		static_cast<AP_Frame *>(pFrame)->setShowMargin(true);
 	else
 		static_cast<AP_Frame *>(pFrame)->setShowMargin(false);
-	if(abi->priv->m_bOlpcSelections)
-		static_cast<AP_Frame *>(pFrame)->setOlpcSelections(true);
+	if(abi->priv->m_bWordSelections)
+		static_cast<AP_Frame *>(pFrame)->setDoWordSelections(true);
 	else
-		static_cast<AP_Frame *>(pFrame)->setOlpcSelections(false);
+		static_cast<AP_Frame *>(pFrame)->setDoWordSelections(false);
 
 	pFrame->loadDocument(NULL,IEFT_Unknown ,true);
 	pFrame->toggleRuler(false);
@@ -1128,23 +1128,23 @@ static void abi_widget_get_prop (GObject  *object,
 	    case CONTENT:
 		{
 			gint i;
-			gchar * bytes = abi_widget_get_content_all(abi,(gchar *) abi->priv->m_sMIMETYPE->utf8_str() , &i);
+			gchar * bytes = abi_widget_get_content(abi,(gchar *) abi->priv->m_sMIMETYPE->utf8_str() , &i);
 			g_value_set_string(arg,bytes);
 			break;
 		}
 	    case SELECTION:
 		{
 			gint i;
-			gchar * bytes = abi_widget_get_content_selection(abi,(gchar *) abi->priv->m_sMIMETYPE->utf8_str() , &i);
+			gchar * bytes = abi_widget_get_selection(abi,(gchar *) abi->priv->m_sMIMETYPE->utf8_str() , &i);
 			g_value_set_string(arg,bytes);
 			break;
 		}
-	    case CONTENTLENGTH:
+	    case CONTENT_LENGTH:
 		{
 			g_value_set_int(arg,abi->priv->m_iContentLength);
 			break;
 		}
-	    case SELECTIONLENGTH:
+	    case SELECTION_LENGTH:
 		{
 			g_value_set_int(arg,abi->priv->m_iSelectionLength);
 			break;
@@ -1308,7 +1308,7 @@ abi_widget_init (AbiWidget * abi)
 	priv->m_bUnlinkFileAfterLoad = false;
 	priv->m_iNumFileLoads = 0;
 	priv->m_bShowMargin = true;
-	priv->m_bOlpcSelections = true;
+	priv->m_bWordSelections = true;
 	priv->m_sMIMETYPE = new UT_UTF8String("");
 	priv->m_iContentLength = 0;
 	priv->m_iSelectionLength = 0;
@@ -1691,7 +1691,7 @@ abi_widget_class_init (AbiWidgetClass *abi_class)
 													   static_cast<GParamFlags>(G_PARAM_READABLE)));
 
   g_object_class_install_property(gobject_class,
-								  CONTENTLENGTH,
+								  CONTENT_LENGTH,
 								  g_param_spec_string("content_length",
 													   NULL,
 													   NULL,
@@ -1699,7 +1699,7 @@ abi_widget_class_init (AbiWidgetClass *abi_class)
 													   static_cast<GParamFlags>(G_PARAM_READABLE)));
 
  g_object_class_install_property(gobject_class,
-								  SELECTIONLENGTH,
+								  SELECTION_LENGTH,
 								  g_param_spec_string("selection_length",
 													   NULL,
 													   NULL,
