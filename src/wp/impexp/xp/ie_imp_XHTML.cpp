@@ -1151,6 +1151,8 @@ void IE_Imp_XHTML::startElement(const XML_Char *name, const XML_Char **atts)
 		const XML_Char * szStyle  = _getXMLPropValue (static_cast<const XML_Char *>("style"),  atts);
 		const XML_Char * szWidth  = _getXMLPropValue (static_cast<const XML_Char *>("width"),  atts);
 		const XML_Char * szHeight = _getXMLPropValue (static_cast<const XML_Char *>("height"), atts);
+		const XML_Char * szTitle  = _getXMLPropValue (static_cast<const XML_Char *>("title"), atts);
+		const XML_Char * szAlt    = _getXMLPropValue (static_cast<const XML_Char *>("alt"), atts);
 
 		if ( szSrc == 0) break;
 		if (*szSrc == 0) break;
@@ -1286,7 +1288,7 @@ void IE_Imp_XHTML::startElement(const XML_Char *name, const XML_Char **atts)
 			utf8val = tmp.c_str ();
 		}
 		got_string:
-		const XML_Char * api_atts[5];
+		const XML_Char * api_atts[9];
 
 		UT_String dataid;
 		UT_String_sprintf (dataid, "image%u", static_cast<unsigned int>(m_iNewImage++));
@@ -1307,7 +1309,26 @@ void IE_Imp_XHTML::startElement(const XML_Char *name, const XML_Char **atts)
 		UT_XML_cloneString (sz, dataid.c_str ());
 		X_CheckError(sz);
 		api_atts[3] = sz;
-		api_atts[4] = NULL;
+
+		UT_XML_cloneString (sz, "title");
+		X_CheckError(sz);
+		api_atts[4] = sz;
+		sz = NULL;
+		UT_XML_cloneString (sz, (szTitle == NULL ? "" : szTitle));
+		X_CheckError(sz);
+		api_atts[5] = sz;
+		sz = NULL;
+
+		UT_XML_cloneString (sz, "alt");
+		X_CheckError(sz);
+		api_atts[6] = sz;
+		sz = NULL;
+		UT_XML_cloneString (sz, (szAlt == NULL ? "" : szAlt));
+		X_CheckError(sz);
+		api_atts[7] = sz;
+		sz = NULL;
+
+		api_atts[8] = NULL;
 
 		if (m_parseState == _PS_Sec)
 			{
