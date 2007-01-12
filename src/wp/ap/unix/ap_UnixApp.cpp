@@ -609,6 +609,8 @@ void AP_UnixApp::copyToClipboard(PD_DocumentRange * pDocRange, bool bUseClipboar
 			}
     }
 
+	m_pClipboard->finishedAddingData();
+
     return;
 }
 

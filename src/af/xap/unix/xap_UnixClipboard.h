@@ -51,6 +51,7 @@ public:
 								UT_sint32 iNumBytes);
 
 	void				clearData(bool bClipboard, bool bPrimary);
+	void			finishedAddingData(void);
 	bool				getData(T_AllowGet tFrom, const char** formatList,
 								void ** ppData, UT_uint32 * pLen,
 								const char **pszFormatFound);
