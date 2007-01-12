@@ -614,26 +614,65 @@ UT_Error PD_Document::_saveAs(const char * szFilename, int ieft,
 }
 
 UT_Error PD_Document::_saveAs(const char * szFilename, int ieft, bool cpy,
-							 const char * expProps)
+							  const char * expProps)
 {
-	GsfOutput * output;
+	IE_Exp * pie = NULL;
+	UT_Error errorCode;
+	IEFileType newFileType;
 
-	output = UT_go_file_create (szFilename, NULL);
-	if(!output)
-		return UT_SAVE_NAMEERROR;
+	errorCode = IE_Exp::constructExporter(this, szFilename, static_cast<IEFileType>(ieft), &pie, &newFileType);
+	if (errorCode)
+	{
+		UT_DEBUGMSG(("PD_Document::Save -- could not construct exporter\n"));
+		return UT_SAVE_EXPORTERROR;
+	}
+	if (expProps && strlen(expProps))
+		pie->setProps (expProps);
 
-	UT_Error result = _saveAs(output, ieft, cpy, expProps);
+	if (cpy && !XAP_App::getApp()->getPrefs()->isIgnoreRecent())
+	{
+		m_lastSavedAsType = newFileType;
+		_syncFileTypes(true);
+	}
+	if(!XAP_App::getApp()->getPrefs()->isIgnoreRecent())
+	{
+		// order of these calls matters
+		_adjustHistoryOnSave();
+		
+		// see if revisions table is still needed ...
+		purgeRevisionTable();
+	}
+	
+	errorCode = pie->writeFile(szFilename);
+	delete pie;
 
-	gsf_output_close(output);
-	g_object_unref(G_OBJECT(output));
+	if (errorCode)
+	{
+		UT_DEBUGMSG(("PD_Document::Save -- could not write file\n"));
+		return (errorCode == UT_SAVE_CANCELLED) ? UT_SAVE_CANCELLED : UT_SAVE_WRITEERROR;
+	}
 
-	return result;
+	if (cpy && !XAP_App::getApp()->getPrefs()->isIgnoreRecent()) // we want to make the current settings persistent
+	{
+	    // no file name currently set - make this filename the filename
+	    // stored for the doc
+	    char * szFilenameCopy = NULL;
+	    if (!UT_cloneString(szFilenameCopy,szFilename))
+			return UT_SAVE_OTHERERROR;
+	    _setFilename(szFilenameCopy);
+	    _setClean(); // only mark as clean if we're saving under a new name
+		signalListeners(PD_SIGNAL_DOCNAME_CHANGED);	
+	}
+	signalListeners(PD_SIGNAL_DOCSAVED);
+
+	//if (strstr(szFilename, "normal.awt") == NULL)
+	XAP_App::getApp()->getPrefs()->addRecent(szFilename);
+	return UT_OK;
 }
 
 UT_Error PD_Document::_saveAs(GsfOutput *output, int ieft, bool cpy, const char * expProps)
 {
-	if (!output)
-		return UT_SAVE_NAMEERROR;
+	UT_return_val_if_fail(output, UT_SAVE_NAMEERROR);
 
 	const char * szFilename = gsf_output_name(output);
 
