@@ -652,8 +652,14 @@ bool EV_UnixMenu::synthesizeMenu(GtkWidget * wMenuRoot, bool isPopup)
 	// we also have to bind the top level window to our
 	// accelerator group for this menu... it needs to join in
 	// on the action.
-
-	gtk_window_add_accel_group(GTK_WINDOW(gtk_widget_get_parent(static_cast<XAP_UnixFrameImpl *>(m_pFrame->getFrameImpl())->getTopLevelWindow())), m_accelGroup);
+	if(GTK_IS_WINDOW(static_cast<XAP_UnixFrameImpl *>(m_pFrame->getFrameImpl())->getTopLevelWindow()) == TRUE)
+	{
+		gtk_window_add_accel_group(GTK_WINDOW(static_cast<XAP_UnixFrameImpl *>(m_pFrame->getFrameImpl())->getTopLevelWindow()), m_accelGroup);
+	}
+	else
+	{
+		gtk_window_add_accel_group(GTK_WINDOW(gtk_widget_get_parent(static_cast<XAP_UnixFrameImpl *>(m_pFrame->getFrameImpl())->getTopLevelWindow())), m_accelGroup);
+	}
 	gtk_accel_group_lock(m_accelGroup);
 	
 #endif
