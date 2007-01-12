@@ -35,7 +35,11 @@ noinst_LIBRARIES = libWpAp_unix.a
 
 gladedir=$(ABIWORD_GLADEDIR)
 
-glade_DATA = \
+if WITH_SPELL
+spellglade=	ap_UnixDialog_Spell.glade
+endif
+
+glade_DATA = $(spellglade)	\
 	ap_UnixDialog_Break.glade \
 	ap_UnixDialog_Field.glade \
 	ap_UnixDialog_FormatTOC.glade \
@@ -54,7 +58,6 @@ glade_DATA = \
 	ap_UnixDialog_PageSetup.glade		\
 	ap_UnixDialog_Replace.glade		\
 	ap_UnixDialog_New.glade		\
-	ap_UnixDialog_Spell.glade		\
 	ap_UnixDialog_Styles.glade	\
 	ap_UnixDialog_Stylist.glade	\
 	ap_UnixDialog_Stylist_modal.glade	\
@@ -64,7 +67,11 @@ glade_DATA = \
 	ap_UnixDialog_Options.glade \
 	ap_UnixDialog_HdrFtr.glade
 
-libWpAp_unix_a_SOURCES=\
+if WITH_SPELL
+spellsrc=	ap_@ABI_FE@Dialog_Spell.cpp
+endif
+
+libWpAp_unix_a_SOURCES= $(spellsrc)\
 	ap_UnixApp.cpp			\
 	ap_UnixAppImpl.cpp			\
 	ap_UnixClipboard.cpp		\
@@ -84,7 +91,6 @@ libWpAp_unix_a_SOURCES=\
 	ap_UnixDialog_Options.cpp		\
 	ap_UnixDialog_Paragraph.cpp		\
 	ap_UnixDialog_Replace.cpp		\
-	ap_UnixDialog_Spell.cpp		\
 	ap_UnixDialog_Styles.cpp		\
 	ap_UnixDialog_WordCount.cpp		\
 	ap_UnixDialog_ToggleCase.cpp	\

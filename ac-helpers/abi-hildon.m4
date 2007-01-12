@@ -40,7 +40,7 @@ AC_ARG_ENABLE(hildon,[  --enable-hildon    Turn on hildon ],[
 ])
 
 if test "$hildon" = true ; then
-PKG_CHECK_MODULES(HILDON, hildon-libs dbus-1, HAVE_HILDON=yes,HAVE_HILDON=no)
+PKG_CHECK_MODULES(HILDON, hildon-libs hildon-fm dbus-1, HAVE_HILDON=yes,HAVE_HILDON=no)
 	PKG_CHECK_MODULES(HILDON,[
 		hildon-libs,
 		dbus-1,

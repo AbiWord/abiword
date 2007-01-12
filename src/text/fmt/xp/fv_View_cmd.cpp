@@ -62,7 +62,15 @@
 #include "ap_LeftRuler.h"
 #include "ap_Prefs.h"
 #include "fd_Field.h"
+
+#ifndef WITHOUT_SPELL
 #include "spell_manager.h"
+#if 1
+// todo: work around to remove the INPUTWORDLEN restriction for pspell
+#include "ispell_def.h"
+#endif
+#endif
+
 #include "ut_rand.h"
 #include "fp_TableContainer.h"
 #include "fl_FootnoteLayout.h"
@@ -73,11 +81,6 @@
 #include "ap_Dialog_SplitCells.h"
 #include "ev_Mouse.h"
 #include "fv_View.h"
-
-#if 1
-// todo: work around to remove the INPUTWORDLEN restriction for pspell
-#include "ispell_def.h"
-#endif
 
 // NB -- irrespective of this size, the piecetable will store
 // at max BOOKMARK_NAME_LIMIT of chars as defined in pf_Frag_Bookmark.h
@@ -5570,6 +5573,7 @@ UT_Error FV_View::cmdInsertGraphicAtStrux(FG_Graphic* pFG, PT_DocPosition iPos, 
 	return errorCode;
 }
 
+#ifndef WITHOUT_SPELL
 void FV_View::cmdContextSuggest(UT_uint32 ndx, fl_BlockLayout * ppBL,
 								fl_PartOfBlock * ppPOB)
 {
@@ -5695,7 +5699,7 @@ void FV_View::cmdContextAdd(void)
 		}
 	}
 }
-
+#endif
 
 
 /*!

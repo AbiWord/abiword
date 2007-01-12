@@ -103,9 +103,11 @@ public:
 	UT_uint32           getGraphicTick(void) const { return m_iGraphicTick;} 
 	void                incrementGraphicTick(void) { m_iGraphicTick++;}
 	inline PD_Document*	getDocument(void) const { return m_pDoc; }
+#ifndef WITHOUT_SPELL
 	inline fl_BlockLayout* getPendingBlockForSpell(void) const { return m_pPendingBlockForSpell; };
 	inline fl_PartOfBlock* getPendingWordForSpell(void) const { return m_pPendingWordForSpell; };
-	
+#endif
+    
 	// The smart quote stuff works by listening for insertions (typing
 	// and paste) and motion.  It needs one character of type-ahead
 	// before working the algorithm, so a single quote character going
@@ -163,6 +165,7 @@ public:
 	void        rebuildFromHere(fl_DocSectionLayout * pDSL);
 	void        updateColor();
 
+#ifndef WITHOUT_SPELL
 	bool		isPendingWordForSpell(void) const;
 	bool		touchesPendingWordForSpell(fl_BlockLayout *pBlock, 
 										   UT_sint32 iOffset, 
@@ -173,7 +176,8 @@ public:
 	void        queueAll(UT_uint32 iReason);
 	void 		queueBlockForBackgroundCheck(UT_uint32 reason, fl_BlockLayout *pBlock, bool bHead=false);
 	bool 		dequeueBlockForBackgroundCheck(fl_BlockLayout *pBlock);
-	fl_BlockLayout *spellQueueHead(void) const
+
+    fl_BlockLayout *spellQueueHead(void) const
 		{
 			return m_toSpellCheckHead;
 		}
@@ -189,8 +193,7 @@ public:
 		{
 			m_toSpellCheckTail = t;
 		}
-
-
+#endif
 	void		addSection(fl_DocSectionLayout*);
 	void		removeSection(fl_DocSectionLayout*);
 	void		insertSectionAfter(fl_DocSectionLayout* pAfter, fl_DocSectionLayout* pNewSL);
@@ -261,22 +264,27 @@ public:
 	void                recalculateTOCFields(void);
 	bool                updateTOCsOnBookmarkChange(const XML_Char * pBookmark);
 // --------------------------------------------------------------------
+#ifndef WITHOUT_SPELL
 	bool		getAutoSpellCheck(void) const { return (hasBackgroundCheckReason(bgcrSpelling)); }
 	bool		getAutoGrammarCheck(void) const { return (hasBackgroundCheckReason(bgcrGrammar)); }
 	bool		getSpellCheckCaps(void) const { return m_bSpellCheckCaps; }
 	bool		getSpellCheckNumbers(void) const { return m_bSpellCheckNumbers; }
 	bool		getSpellCheckInternet(void) const { return m_bSpellCheckInternet; }
 	void		recheckIgnoredWords();
-
+#endif
+    
 	inline void			addBackgroundCheckReason(UT_uint32 reason) {m_uDocBackgroundCheckReasons |= reason;}
 	inline void			removeBackgroundCheckReason(UT_uint32 reason) {m_uDocBackgroundCheckReasons &= ~reason;}
 	inline bool		hasBackgroundCheckReason(UT_uint32 reason) const {return ((m_uDocBackgroundCheckReasons & reason) ? true : false);}
 	inline UT_uint32	getBackgroundCheckReasons() const {return (m_uDocBackgroundCheckReasons);}
+
+#ifndef WITHOUT_SPELL
 	fl_BlockLayout *        getPendingBlockForGrammar(void)
 	  {
 	    return m_PendingBlockForGrammar;
 	  }
 	void        setPendingBlockForGrammar(fl_BlockLayout * pBL);
+#endif
 	void        triggerPendingBlock(fl_BlockLayout * pBL);
 
 	// These are used as bit flags in a UT_uint32.  The enum is here just
@@ -320,8 +328,10 @@ public:
 
 protected:
 	static void			_backgroundCheck(UT_Worker * pTimer);
+#ifndef WITHOUT_SPELL
 	void				_toggleAutoSpell(bool bSpell);
 	void				_toggleAutoGrammar(bool bGrammar);
+#endif
 	void				_toggleAutoSmartQuotes(bool bSQ);
 	
 	static void			_prefsListener(class XAP_App *, class XAP_Prefs *, 

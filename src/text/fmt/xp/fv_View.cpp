@@ -67,7 +67,9 @@
 #include "ap_LeftRuler.h"
 #include "ap_Prefs.h"
 #include "fd_Field.h"
+#ifndef WITHOUT_SPELL
 #include "spell_manager.h"
+#endif
 #include "ut_rand.h"
 #include "fp_TableContainer.h"
 #include "fl_TableLayout.h"
@@ -9887,6 +9889,7 @@ EV_EditMouseContext FV_View::getMouseContext(UT_sint32 xPos, UT_sint32 yPos)
 	switch (pRun->getType())
 	{
 	case FPRUN_TEXT:
+#ifndef WITHOUT_SPELL
 		if (!isPosSelected(pos))
 		{
 			if (pBlock->getSpellSquiggles()->get(pos - pBlock->getPosition()))
@@ -9897,6 +9900,7 @@ EV_EditMouseContext FV_View::getMouseContext(UT_sint32 xPos, UT_sint32 yPos)
 			}
 		}
 		else
+#endif
 		{
 			xxx_UT_DEBUGMSG(("pos selected \n"));
 		}
@@ -10238,6 +10242,7 @@ void FV_View::setCursorToContext()
 	getGraphics()->setCursor(cursor);
 }
 
+#ifndef WITHOUT_SPELL
 bool FV_View::isTextMisspelled() const
 {
 	PT_DocPosition pos = getPoint();
@@ -10254,6 +10259,7 @@ bool FV_View::isTextMisspelled() const
 
 	return false;
 }
+#endif
 
 bool FV_View::doesSelectionContainRevision() const
 {
@@ -10342,11 +10348,13 @@ EV_EditMouseContext FV_View::getInsertionPointContext(UT_sint32 * pxPos, UT_sint
 	switch (pRun->getType())
 	{
 	case FPRUN_TEXT:
+#ifndef WITHOUT_SPELL
 		if (!isPosSelected(m_iInsPoint))
 			if (pBlock->getSpellSquiggles()->get(m_iInsPoint - pBlock->getPosition()))
 			{
 				return EV_EMC_MISSPELLEDTEXT;
 			}
+#endif
 		return EV_EMC_TEXT;
 
 	case FPRUN_IMAGE:
@@ -10503,6 +10511,7 @@ UT_uint32 FV_View::getCurrentPageNumForStatusBar(void) const
 	return 0;
 }
 
+#ifndef WITHOUT_SPELL
 // ndx is one-based, not zero-based
 UT_UCSChar * FV_View::getContextSuggest(UT_uint32 ndx)
 {
@@ -10524,6 +10533,7 @@ UT_UCSChar * FV_View::getContextSuggest(UT_uint32 ndx)
 	// grab the suggestion
 	return _lookupSuggestion(pBL, pPOB, ndx);
 }
+#endif
 
 static bool s_notChar(UT_UCSChar c)
 {
@@ -13011,6 +13021,7 @@ void FV_View::stopImageDrag(UT_sint32 xPos, UT_sint32 yPos)
 
 
 
+#ifndef WITHOUT_SPELL
 SpellChecker * FV_View::getDictForSelection ()
 {
 	SpellChecker * checker = NULL;
@@ -13036,6 +13047,7 @@ SpellChecker * FV_View::getDictForSelection ()
 
 	return checker;
 }
+#endif
 
 /*
    There are some 'document' properties that are specific for a given

@@ -43,7 +43,11 @@
 #include "ap_Prefs.h"
 #include "pd_Document.h"
 #include "ut_Script.h"
+
+#ifndef WITHOUT_SPELL
 #include "spell_manager.h"
+#endif
+
 #include "ie_mailmerge.h"
 #include "fp_TableContainer.h"
 #include "fl_BlockLayout.h"
@@ -292,6 +296,7 @@ Defun_EV_GetMenuItemComputedLabel_Fn(ap_GetLabel_WindowMore)
 /*****************************************************************/
 /*****************************************************************/
 
+#ifndef WITHOUT_SPELL
 Defun_EV_GetMenuItemState_Fn(ap_GetState_Spelling)
 {
   EV_Menu_ItemState s = EV_MIS_ZERO ;
@@ -311,6 +316,7 @@ Defun_EV_GetMenuItemState_Fn(ap_GetState_Spelling)
 
  return s;
 }
+#endif
 
 Defun_EV_GetMenuItemState_Fn(ap_GetState_ColumnsActive)
 {
@@ -516,6 +522,7 @@ Defun_EV_GetMenuItemState_Fn(ap_GetState_HyperlinkOK)
 	return s ;
 }
 
+#ifndef WITHOUT_SPELL
 Defun_EV_GetMenuItemState_Fn(ap_GetState_Suggest)
 {
 	ABIWORD_VIEW;
@@ -606,7 +613,7 @@ Defun_EV_GetMenuItemComputedLabel_Fn(ap_GetLabel_Suggest)
 
 	return NULL;
 }
-
+#endif
 /****************************************************************/
 /****************************************************************/
 

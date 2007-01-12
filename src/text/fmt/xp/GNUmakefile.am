@@ -22,7 +22,11 @@ INCLUDES= $(TEXT_INCLUDES) $(WP_INCLUDES) $(AF_INCLUDES) $(OTHER_INCLUDES) $(ICO
 
 noinst_LIBRARIES = libFmt.a
 
-libFmt_a_SOURCES= \
+if WITH_SPELL
+squigglesrc = 	fl_Squiggles.cpp
+endif
+
+libFmt_a_SOURCES= $(squigglesrc)	\
 	fv_View.cpp			\
 	fv_View_cmd.cpp			\
 	fv_View_protected.cpp			\
@@ -30,7 +34,6 @@ libFmt_a_SOURCES= \
 	fb_LineBreaker.cpp		\
 	fb_Alignment.cpp		\
 	fl_BlockLayout.cpp		\
-	fl_Squiggles.cpp		\
 	fl_DocLayout.cpp		\
 	fl_DocListener.cpp		\
 	fl_Layout.cpp			\

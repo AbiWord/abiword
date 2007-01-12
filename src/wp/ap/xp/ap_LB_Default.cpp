@@ -199,7 +199,9 @@ ap_bs_Mouse MouseTable[] =
 	{_CT _B3,	{ "contextText",		"",			"",		"",			"",			""				}},
 	{_CVD _B3,  { "contextText",		"",			"",		"",			"",			""				}},
 	//{_CL _B3,	{ "contextLeftOfText",	"",			"",		"",			"",			""				}},
+#ifndef WITHOUT_SPELL
 	{_CM _B3,	{ "contextMisspellText","",			"",		"",			"",			""				}},
+#endif
 	{_CI _B3,	{ "contextImage",		"",			"",		"",			"",			""				}},
 	{_CZ _B3,	{ "contextImage",		"",			"",		"",			"",			""				}},
 	{_CTF _B3,	{ "contextFrame",		"",			"",		"",			"",			""				}},
@@ -358,8 +360,10 @@ ap_bs_NVK NVKTable[] =
 #else
 //	{EV_NVK_F6,			{ "",					"",					"",				"",
 //						  "",					"",					"",			""					}},
+#ifndef WITHOUT_SPELL
 	{EV_NVK_F7,			{ "dlgSpell",			"",					"",				"",
 						  "",					"",					"",				""					}},
+#endif
 //	{EV_NVK_F8,			{ "",					"",					"",				"",
 //						  "",					"",					"",				""					}},
 #endif

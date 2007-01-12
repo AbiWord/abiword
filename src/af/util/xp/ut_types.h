@@ -103,6 +103,9 @@ typedef UT_uint8 UT_Confidence_t;
      /* we are building an AbiWord plugin and want to use something declared in a library */
      #define ABI_EXPORT __declspec(dllimport)
   #endif
+#elif defined (ABI_UNIX_NO_EXPORTS)
+  #define ABI_EXPORT __attribute__ ((visibility ("hidden")))
+  #define ABI_PLUGIN_EXPORT __attribute__ ((visibility ("hidden")))
 #else
   #define ABI_EXPORT
   #define ABI_PLUGIN_EXPORT

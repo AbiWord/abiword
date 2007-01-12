@@ -51,7 +51,11 @@
 #include "ap_Convert.h"
 #include "ap_UnixFrame.h"
 #include "ap_UnixApp.h"
+
+#ifndef WITHOUT_SPELL
 #include "spell_manager.h"
+#endif
+
 #include "ap_Strings.h"
 #include "xap_EditMethods.h"
 #include "ap_LoadBindings.h"

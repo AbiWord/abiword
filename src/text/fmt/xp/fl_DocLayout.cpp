@@ -51,7 +51,11 @@
 #include "ut_timer.h"
 #include "ut_string.h"
 #include "xap_Frame.h"
+
+#ifndef WITHOUT_SPELL
 #include "spell_manager.h"
+#endif
+
 #include "gr_EmbedManager.h"
 
 #define REDRAW_UPDATE_MSECS	500
@@ -2328,6 +2332,7 @@ void FL_DocLayout::updateColor()
 
 #define BACKGROUND_CHECK_MSECS 100
 
+#ifndef WITHOUT_SPELL
 /*!
  Toggle auto spell-checking state
  \param bSpell True if spell-checking should be enabled, false otherwise
@@ -2458,6 +2463,7 @@ FL_DocLayout::_toggleAutoGrammar(bool bGrammar)
 		}
 	}
 }
+#endif
 
 void FL_DocLayout::_toggleAutoSmartQuotes(bool bSQ)
 {
@@ -2474,6 +2480,7 @@ void FL_DocLayout::_toggleAutoSmartQuotes(bool bSQ)
 	UT_DEBUGMSG(("FL_DocLayout::_toggleAutoSmartQuotes(%s)\n", bSQ ? "true" : "false" ));
 }
 
+#ifndef WITHOUT_SPELL
 /*!
  Do background spell-check
  \param pWorker Worker object
@@ -2604,7 +2611,6 @@ FL_DocLayout::_backgroundCheck(UT_Worker * pWorker)
 						pB->drawGrammarSquiggles();
 						break;
 					}
-					
 					case bgcrSmartQuotes:
 					default:
 						pB->removeBackgroundCheckReason(mask);
@@ -2974,6 +2980,7 @@ FL_DocLayout::touchesPendingWordForSpell(fl_BlockLayout *pBlock,
 
 	return m_pPendingWordForSpell->doesTouch(iOffset, len);
 }
+#endif // WITHOUT_SPELL
 
 /*!
  * This method appends a DocSectionLayout onto the linked list of SectionLayout's
@@ -3211,6 +3218,7 @@ fl_DocSectionLayout* FL_DocLayout::findSectionForHdrFtr(const char* pszHdrFtrID)
     // so the opton settings are reverted for use in the doclayout
     // (b = !b)
 	bool changed = false;
+#ifndef WITHOUT_SPELL
 	pPrefs->getPrefsValueBool(static_cast<const XML_Char *>(AP_PREF_KEY_SpellCheckCaps), &b );
     b = !b;
 	changed = changed || (b != pDocLayout->getSpellCheckCaps());
@@ -3243,7 +3251,7 @@ fl_DocSectionLayout* FL_DocLayout::findSectionForHdrFtr(const char* pszHdrFtrID)
 		pDocLayout->m_bAutoGrammarCheck = b;
 		pDocLayout->_toggleAutoGrammar( b );
 	}
-
+#endif
 // autosave
 
 	UT_String stTmp;
@@ -3298,6 +3306,7 @@ fl_DocSectionLayout* FL_DocLayout::findSectionForHdrFtr(const char* pszHdrFtrID)
 	}
 }
 
+#ifndef WITHOUT_SPELL
 void FL_DocLayout::recheckIgnoredWords()
 {
 	// recheck the whole doc
@@ -3319,6 +3328,7 @@ void FL_DocLayout::recheckIgnoredWords()
 		}
 	}
 }
+#endif
 
 void FL_DocLayout::_redrawUpdate(UT_Worker * pWorker)
 {
@@ -3920,7 +3930,9 @@ void FL_DocLayout::notifyBlockIsBeingDeleted(fl_BlockLayout *pBlock)
 	{
 		m_pPendingBlockForSmartQuote = NULL;
 	}
+#ifndef WITHOUT_SPELL
 	pBlock->dequeueFromSpellCheck();
+#endif
 }
 
 inline fl_AutoNum * FL_DocLayout::getListByID(UT_uint32 id) const

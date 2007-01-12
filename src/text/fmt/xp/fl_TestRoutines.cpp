@@ -87,6 +87,7 @@ void __dump_ch(void)
 */
 void __dump_sq(void)
 {
+#ifndef WITHOUT_SPELL
 	if (FL_DocLayout::m_pDocLayout->isPendingWordForSpell())
 	{
 		fl_PartOfBlock* pPOB = FL_DocLayout::m_pDocLayout->getPendingWordForSpell();
@@ -97,13 +98,15 @@ void __dump_sq(void)
 	{
 		fprintf(stdout, "No pending word.\n");
 	}
-
+#endif
 	fprintf(stdout,"FL_DocLayout::__dump(%p) sections:\n",(void*)FL_DocLayout::m_pDocLayout);
 	for (fl_SectionLayout * psl=FL_DocLayout::m_pDocLayout->getFirstSection(); (psl); psl=static_cast<fl_SectionLayout *>(psl->getNext()))
 	{
 		fprintf(stdout,"Section: %p [type %d]\n",(void*)psl,psl->getType());
+#ifndef WITHOUT_SPELL
 		for (fl_BlockLayout * pBL=(fl_BlockLayout *) psl->getFirstLayout(); (pBL); pBL= (fl_BlockLayout *) pBL->getNext())
 			pBL->getSpellSquiggles()->__dump(stdout);
+#endif
 	}
 }
 

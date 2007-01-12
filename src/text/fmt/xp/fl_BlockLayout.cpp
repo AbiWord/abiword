@@ -54,7 +54,16 @@
 #include "pp_AttrProp.h"
 #include "pt_Types.h"
 #include "gr_Graphics.h"
+
+#ifndef WITHOUT_SPELL
 #include "spell_manager.h"
+
+#if 1
+// todo: work around to remove the INPUTWORDLEN restriction for pspell
+#include "ispell_def.h"
+#endif
+#endif
+
 #include "px_CR_FmtMark.h"
 #include "px_CR_FmtMarkChange.h"
 #include "px_CR_Object.h"
@@ -82,13 +91,9 @@
 
 #include "xap_EncodingManager.h"
 
-#if 1
-// todo: work around to remove the INPUTWORDLEN restriction for pspell
-#include "ispell_def.h"
-#endif
-
 #define BIG_NUM_BLOCKBL 1000000
 
+#ifndef WITHOUT_SPELL
 SpellChecker *
 fl_BlockLayout::_getSpellChecker (UT_uint32 blockPos)
 {
@@ -152,6 +157,7 @@ fl_BlockLayout::_spellCheckWord(const UT_UCSChar * word,
 		return true;
 	return false;
 }
+#endif // WITHOUT_SPELL
 
 
 //////////////////////////////////////////////////////////////////
@@ -173,7 +179,12 @@ fl_BlockLayout::fl_BlockLayout(PL_StruxDocHandle sdh,
 	  m_bKeepWithNext(false),
 	  m_bStartList(false), m_bStopList(false),
 	  m_bListLabelCreated(false),
-	  m_pSpellSquiggles(NULL),
+#ifndef WITHOUT_SPELL
+ 	  m_pSpellSquiggles(NULL),
+	  m_pGrammarSquiggles(NULL),
+	  m_nextToSpell(0),
+	  m_prevToSpell(0),
+#endif
 	  m_bListItem(false),
 	  m_szStyle(NULL),
 	  m_bIsCollapsed(true),
@@ -188,10 +199,7 @@ fl_BlockLayout::fl_BlockLayout(PL_StruxDocHandle sdh,
 	  m_iLinePosInContainer(0),
 	  m_bForceSectionBreak(false),
 	  m_bPrevListLabel(false),
-	  m_pGrammarSquiggles(NULL),
-	  m_iAdditionalMarginAfter(0),
-	  m_nextToSpell(0),
-	  m_prevToSpell(0)
+	  m_iAdditionalMarginAfter(0)
 {
 	UT_DEBUGMSG(("BlockLayout %x created sdh %x \n",this,getStruxDocHandle()));
 	setPrev(pPrev);
@@ -266,10 +274,12 @@ fl_BlockLayout::fl_BlockLayout(PL_StruxDocHandle sdh,
 		_insertEndOfParagraphRun();
 	}
 
+#ifndef WITHOUT_SPELL
 	m_pSpellSquiggles = new fl_SpellSquiggles(this);
 	m_pGrammarSquiggles = new fl_GrammarSquiggles(this);
 	UT_ASSERT(m_pSpellSquiggles);
 	UT_ASSERT(m_pGrammarSquiggles);
+#endif
 	setUpdatableField(false);
 	updateEnclosingBlockIfNeeded();
 }
@@ -1065,9 +1075,11 @@ void fl_BlockLayout::_lookupProperties(const PP_AttrProp* pBlockAP)
 
 fl_BlockLayout::~fl_BlockLayout()
 {
+#ifndef WITHOUT_SPELL
 	dequeueFromSpellCheck();
 	DELETEP(m_pSpellSquiggles);
 	DELETEP(m_pGrammarSquiggles);
+#endif
 	purgeLayout();
 	UT_VECTOR_PURGEALL(fl_TabStop *, m_vecTabs);
 	DELETEP(m_pAlignment);
@@ -1086,7 +1098,9 @@ fl_BlockLayout::~fl_BlockLayout()
 	}
 	UT_ASSERT(m_pLayout != NULL);
 	m_pLayout->notifyBlockIsBeingDeleted(this);
+#ifndef WITHOUT_SPELL
 	m_pLayout->dequeueBlockForBackgroundCheck(this);
+#endif
 	m_pDoc = NULL;
 	m_pLayout = NULL;
 	xxx_UT_DEBUGMSG(("~fl_BlockLayout: Deleting block %x sdh %x \n",this,getStruxDocHandle()));
@@ -1328,8 +1342,10 @@ void fl_BlockLayout::updateOffsets(PT_DocPosition posEmbedded, UT_uint32 iEmbedd
 //
 // Now update the PartOfBlocks in the squiggles
 //
+#ifndef WITHOUT_SPELL
 		getSpellSquiggles()->updatePOBs(iFirstOffset,iSuggestDiff);
 		getGrammarSquiggles()->updatePOBs(iFirstOffset,iSuggestDiff);
+#endif
 	}
 #if 0
 #if DEBUG
@@ -4194,6 +4210,7 @@ fl_PartOfBlock::doesTouch(UT_sint32 iOffset, UT_sint32 iLength) const
 
 
 
+#ifndef WITHOUT_SPELL
 /*!
  Recalculate boundries for pending word
  \param iOffset Offset of change
@@ -4564,7 +4581,7 @@ fl_BlockLayout::checkWord(fl_PartOfBlock* pPOB)
 	delete pPOB;
 	return false;
 }
-
+#endif
 /*****************************************************************/
 /*****************************************************************/
 
@@ -5871,10 +5888,12 @@ bool fl_BlockLayout::doclistener_insertSpan(const PX_ChangeRecord_Span * pcrs)
 	format();
 	updateEnclosingBlockIfNeeded();
 
+#ifndef WITHOUT_SPELL
 	m_pSpellSquiggles->textInserted(blockOffset, len);
 	m_pGrammarSquiggles->textInserted(blockOffset, len);
 	xxx_UT_DEBUGMSG(("Set pending block for grammar - insertSpan \n"));
 	m_pLayout->setPendingBlockForGrammar(this);
+#endif
 	FV_View* pView = getView();
 	if (pView && (pView->isActive() || pView->isPreview()))
 	{
@@ -6316,11 +6335,13 @@ bool fl_BlockLayout::doclistener_deleteSpan(const PX_ChangeRecord_Span * pcrs)
 	xxx_UT_DEBUGMSG(("fl_BlockLayout:: deleteSpan offset %d len %d \n",blockOffset,len));
 	_delete(blockOffset, len);
 
+#ifndef WITHOUT_SPELL
 	m_pSpellSquiggles->textDeleted(blockOffset, len);
 	m_pGrammarSquiggles->textDeleted(blockOffset, len);
 	xxx_UT_DEBUGMSG(("Set pending block for grammar - deleteSpan \n"));
 	m_pLayout->setPendingBlockForGrammar(this);
-
+#endif
+	
 	FV_View* pView = getView();
 	if (pView && (pView->isActive() || pView->isPreview()))
 	{
@@ -6483,12 +6504,14 @@ bool fl_BlockLayout::doclistener_changeSpan(const PX_ChangeRecord_SpanChange * p
 	updateEnclosingBlockIfNeeded();
 	_assertRunListIntegrity();
 
+#ifndef WITHOUT_SPELL
 	// need to handle the case where we have a revisions based delete
 	if(pcrsc->isRevisionDelete())
 	{
 		m_pSpellSquiggles->textRevised(blockOffset, 0);
 		m_pGrammarSquiggles->textRevised(blockOffset, 0);
 	}
+#endif
 	
 	return true;
 }
@@ -6768,10 +6791,12 @@ fl_BlockLayout::doclistener_deleteStrux(const PX_ChangeRecord_Strux* pcrx)
 		}
 		pPrevBL->format();
 
+#ifndef WITHOUT_SPELL
 		// This call will dequeue the block from background checking
 		// if necessary
 		m_pSpellSquiggles->join(offset, pPrevBL);
 		m_pGrammarSquiggles->join(offset, pPrevBL);
+#endif
 		pPrevBL->setNeedsReformat(pPrevBL);
 		//
 		// Update if it's TOC entry by removing then restoring
@@ -6784,8 +6809,10 @@ fl_BlockLayout::doclistener_deleteStrux(const PX_ChangeRecord_Strux* pcrx)
 	}
 	else
 	{
+#ifndef WITHOUT_SPELL
 		// In case we've never checked this one
 		m_pLayout->dequeueBlockForBackgroundCheck(this);
+#endif
 	}
 	if(pSL)
 	{
@@ -7162,11 +7189,13 @@ bool fl_BlockLayout::doclistener_insertBlock(const PX_ChangeRecord_Strux * pcrx,
 	pNewBL->setNeedsReformat(pNewBL);
 	updateEnclosingBlockIfNeeded();
 
+#ifndef WITHOUT_SPELL
 	// Split squiggles between this and the new block
 	m_pSpellSquiggles->split(blockOffset, pNewBL);
 	m_pGrammarSquiggles->split(blockOffset, pNewBL);
 	m_pLayout->setPendingBlockForGrammar(pNewBL);
-
+#endif
+	
 	FV_View* pView = getView();
 	if (pView && (pView->isActive() || pView->isPreview()))
 		pView->_setPoint(pcrx->getPosition() + fl_BLOCK_STRUX_OFFSET);
@@ -7814,6 +7843,7 @@ fl_SectionLayout * fl_BlockLayout::doclistener_insertFrame(const PX_ChangeRecord
 	return pSL;
 }
 
+#ifndef WITHOUT_SPELL
 /*!
  Draw squiggles intersecting with Run
  \param pRun Run
@@ -7965,6 +7995,7 @@ fl_BlockLayout::findGrammarSquigglesForRun(fp_Run* pRun)
 		}
 	}
 }
+#endif
 
 //////////////////////////////////////////////////////////////////
 // Object-related stuff
@@ -8113,10 +8144,12 @@ bool fl_BlockLayout::doclistener_insertObject(const PX_ChangeRecord_Object * pcr
 	if(pView)
 		pView->updateCarets(pcro->getPosition(),1);
 
+#ifndef WITHOUT_SPELL
 	// TODO: are objects always one wide?
 	m_pSpellSquiggles->textInserted(blockOffset, 1);
 	m_pGrammarSquiggles->textInserted(blockOffset, 1);
-
+#endif
+	
 	_assertRunListIntegrity();
 	//
 	// OK Now do the insertSpan for any TOC's that shadow this block.
@@ -8219,12 +8252,14 @@ bool fl_BlockLayout::doclistener_deleteObject(const PX_ChangeRecord_Object * pcr
 	if(pView)
 		pView->updateCarets(pcro->getPosition(),-1);
 
+#ifndef WITHOUT_SPELL
 	// TODO: are objects always one wide?
 	if(m_pSpellSquiggles)
 		m_pSpellSquiggles->textDeleted(blockOffset, 1);
 	if(m_pGrammarSquiggles)
 		m_pGrammarSquiggles->textDeleted(blockOffset, 1);
-
+#endif
+	
 	_assertRunListIntegrity();
 	//
 	// OK Now do the deleteObject for any TOC's that shadow this block.
@@ -8923,6 +8958,7 @@ bool fl_BlockLayout::doclistener_changeFmtMark(const PX_ChangeRecord_FmtMarkChan
 	return true;
 }
 
+#ifndef WITHOUT_SPELL
 /*!
  Recheck ignored words
 
@@ -8947,6 +8983,7 @@ fl_BlockLayout::recheckIgnoredWords(void)
 		pView->updateScreen();
 	}
 }
+#endif
 
 ////////////////////////////////////////////////////////////////////////////
 //List Item Stuff
@@ -10591,6 +10628,7 @@ bool fl_BlockLayout::isSentenceSeparator(UT_UCS4Char c, UT_uint32 iBlockPos)
 
 
 
+#ifndef WITHOUT_SPELL
 void fl_BlockLayout::enqueueToSpellCheckAfter(fl_BlockLayout *prev)
 {
 	if (prev != NULL) {
@@ -10627,8 +10665,6 @@ void fl_BlockLayout::dequeueFromSpellCheck(void)
 	}
 	m_nextToSpell = m_prevToSpell = NULL;
 }
-
-
 
 /*!
   Constructor for iterator
@@ -11272,3 +11308,4 @@ fl_BlockSpellIterator::_ignoreLastWordCharacter(const UT_UCSChar c) const
         return false;
     }
 }
+#endif /* without spell */

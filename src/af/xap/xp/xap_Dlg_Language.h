@@ -32,7 +32,12 @@
 /* #include "ut_debugmsg.h" */
 
 #include "xap_Dialog.h"
+
+#ifndef WITHOUT_SPELL
 #include "spell_manager.h"
+#endif
+
+#include "ut_vector.h"
 
 class UT_Language;
 class UT_UTF8String;

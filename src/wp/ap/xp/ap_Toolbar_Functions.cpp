@@ -45,7 +45,11 @@
 #include "ap_FrameData.h"
 #include "pd_Document.h"
 #include "ut_Script.h"
+
+#ifndef WITHOUT_SPELL
 #include "spell_manager.h"
+#endif
+
 #include "ap_EditMethods.h"
 #include "fp_TableContainer.h"
 
@@ -174,6 +178,7 @@ Defun_EV_GetToolbarItemState_Fn(ap_ToolbarGetState_HyperlinkOK)
 	return s ;
 }
 
+#ifndef WITHOUT_SPELL
 Defun_EV_GetToolbarItemState_Fn(ap_ToolbarGetState_Spelling)
 {
 	//ABIWORD_VIEW;
@@ -196,6 +201,7 @@ Defun_EV_GetToolbarItemState_Fn(ap_ToolbarGetState_Spelling)
 
   return s;
 }
+#endif
 
 Defun_EV_GetToolbarItemState_Fn(ap_ToolbarGetState_Changes)
 {

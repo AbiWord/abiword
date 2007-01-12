@@ -120,13 +120,14 @@ AC_ARG_ENABLE(embedded,[  --enable-embedded    Include embedded features],[
 ],[	
 	if test "$embedded" != "true"; then
 	   embedded=undefined
-	   EMBEDDED_CFLAGS=""
 	fi
 ])
 
 if test "$embedded" = "true"; then
-   EMBEDDED_CFLAGS="-DEMBEDDED_TARGET=1"
+   AC_DEFINE(EMBEDDED_TARGET, 1, [Whether we are building for embedded device])
 fi
+
+AM_CONDITIONAL(EMBEDDED, test "x$embedded" = "xtrue")
 
 # by default we, of course, want Abi to be able to print, but on embedded
 # systems it might not be required and because of the dependencies, we want an
@@ -139,27 +140,33 @@ AC_MSG_CHECKING([for printing support])
 
 AC_ARG_ENABLE(printing,[  --enable-printing    Include printing capabilities],[
 	case "${enableval}" in
-	   yes)	print=true ;
-		PRINT_CFLAGS="" ;;
-	   no) print=false ;
-		PRINT_CFLAGS="-DWITHOUT_PRINTING" ;;
+	   yes)	print=true ;;
+	   no) print=false ;;
 	     *)	AC_MSG_ERROR(bad value ${enableval} for --enable-printing) ;;
 	esac
-],[	print=undefined
-	PRINT_CFLAGS=""
-])
+],[print=undefined])
 
 if test "$print" = "undefined" && test "$embedded" = "true"; then
    print=false
-   PRINT_CFLAGS="-DWITHOUT_PRINTING"
 elif test "$print" = "undefined"; then
    print=true;
-   PRINT_CFLAGS=""
+fi
+
+if test $print = false ; then
+   AC_DEFINE(WITHOUT_PRINTING, 1, [Whether printing capabilities should be disabled])
 fi
 
 AC_MSG_RESULT([${print}])
 
 AM_CONDITIONAL(WITH_PRINTING, test x$print = xtrue)
+
+AM_CONDITIONAL(BUILD_TTFTOOL,[test $PLATFORM = unix && test x$print != xfalse])
+
+AC_ARG_ENABLE(exports,[  --disable-exports    Do not export any symbols],[
+	if test x$enableval = xno && test x$PLATFORM = xunix ; then
+	   AC_DEFINE(ABI_UNIX_NO_EXPORTS, 1, [Whether no symbols should be exported])
+	fi
+],[])
 
 if test "$PLATFORM" = "unix"; then
 	ABI_FE="Unix"
@@ -400,10 +407,16 @@ if test "$PLATFORM" = "qnx"; then
 	PLATFORM_LIBS="-fexceptions"
 fi
 
-# this should be after all other platform cflags have been set
-if test "$embedded" = "true"; then
-   PLATFORM_CFLAGS="$PLATFORM_CFLAGS $EMBEDDED_CFLAGS"
+# if we are not using spell-checker, need to propagate the WITHOUT_SPELL
+# define down the tree
+if test x$do_spell = xfalse ; then
+   AC_DEFINE(WITHOUT_SPELL, 1, [Whether spellchecking should be disabled])
 fi
+
+# this should be after all other platform cflags have been set
+#if test "$embedded" = "true"; then
+#   PLATFORM_CFLAGS="$PLATFORM_CFLAGS $EMBEDDED_CFLAGS"
+#fi
 
 dnl SUBST all the variables we just defined
 AC_SUBST(ABI_FEATURE_DEFS)
@@ -411,7 +424,6 @@ AC_SUBST(OPTIMIZE_CFLAGS)
 AC_SUBST(PROFILE_CFLAGS)
 AC_SUBST(LIBJPEG_LIBS)
 AC_SUBST(DEBUG_CFLAGS)
-AC_SUBST(PRINT_CFLAGS)
 AC_SUBST(SCRIPT_CFLAGS)
 AC_SUBST(SCRIPT_LIBS)
 AC_SUBST(PLATFORM_CFLAGS)
@@ -640,6 +652,13 @@ case "$print" in
         AC_MSG_RESULT([Configured with printing capabilities.]) ;;
 	 "false" )
         AC_MSG_RESULT([Configured without printing capabilites.]) ;;
+esac
+
+case "$do_spell" in
+	 "false" )
+        AC_MSG_RESULT([Configured without spellchecking capabilities.]) ;;
+	 "*" )
+        AC_MSG_RESULT([Configured with spellchecking capabilites.]) ;;
 esac
 
 case "$script" in

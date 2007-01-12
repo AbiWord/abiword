@@ -110,10 +110,12 @@ class ABI_EXPORT fl_BlockLayout : public fl_ContainerLayout
 	friend class fl_TOCLayout;
 	friend class fb_LineBreaker;
 
+#ifndef WITHOUT_SPELL
 	// TODO: shack - code should be moved from toggleAuto to a function in
 	// here - to handle the squiggles
 	friend void FL_DocLayout::_toggleAutoSpell(bool bSpell);
-
+#endif
+	
 public:
 	fl_BlockLayout(PL_StruxDocHandle sdh,
 				   fl_ContainerLayout* pPrev, fl_SectionLayout*,
@@ -212,9 +214,12 @@ public:
 	fl_BlockLayout * getPreviousListOfSameMargin(void);
 	inline fl_BlockLayout * getParentItem(void);
 
+#ifndef WITHOUT_SPELL
 	void findSpellSquigglesForRun(fp_Run* pRun);
 	void drawGrammarSquiggles(void);
 	void findGrammarSquigglesForRun(fp_Run* pRun);
+#endif
+	
 	UT_uint32 canSlurp(fp_Line* pLine) const;
 
 	PT_DocPosition getPosition(bool bActualBlockPos=false) const;
@@ -252,15 +257,18 @@ public:
 	inline UT_BidiCharType getDominantDirection(void) const { return m_iDomDirection; }
 	void setDominantDirection(UT_BidiCharType iDirection);
 
+#ifndef WITHOUT_SPELL
 	inline fl_SpellSquiggles* getSpellSquiggles(void) const { return m_pSpellSquiggles; }
 	inline fl_GrammarSquiggles* getGrammarSquiggles(void) const { return  m_pGrammarSquiggles; }
-
+#endif
 
 	bool isHdrFtr(void);
 	void setHdrFtr(void) { m_bIsHdrFtr = true;}
 	void clearHdrFtr(void) { m_bIsHdrFtr = false;}
 
+#ifndef WITHOUT_SPELL
 	bool checkSpelling(void);
+#endif
 	void debugFlashing(void);
 	bool	findNextTabStop(UT_sint32 iStartX, UT_sint32 iMaxX,
 							UT_sint32& iPosition, eTabType& iType,
@@ -342,8 +350,10 @@ public:
 	
 	bool                    isWordDelimiter(UT_UCS4Char c, UT_UCS4Char next, UT_UCS4Char prev, UT_uint32 iBlockPos);
 	bool                    isSentenceSeparator(UT_UCS4Char c, UT_uint32 iBlockPos);
+#ifndef WITHOUT_SPELL
 	bool					checkWord(fl_PartOfBlock* pPOB);
 	void					recheckIgnoredWords();
+#endif
 	void                    setStyleInTOC(bool b)
 	{	m_bStyleInTOC = b;}
 	void                    forceSectionBreak(void);
@@ -374,6 +384,7 @@ public:
 												UT_UTF8String & sWord,
 												bool bIgnoreSpace);
 
+#ifndef WITHOUT_SPELL
 	/** put in queue for spellchecking after prev. If prev == NULL is put at the head */
 	void enqueueToSpellCheckAfter(fl_BlockLayout *prev);
 	/** remove from the spellchecking queue */
@@ -393,7 +404,8 @@ public:
 		return (m_prevToSpell != NULL) 
 			|| (m_pLayout->spellQueueHead() == this);
 	}
-
+#endif
+	
 #ifdef FMT_TEST
 	void					__dump(FILE * fp) const;
 #endif
@@ -410,9 +422,11 @@ protected:
 										 bool bAddSquiggle = true,
 										 bool bClearScreen = true);
 
+#ifndef WITHOUT_SPELL
 	bool					_spellCheckWord(const UT_UCSChar * word, UT_uint32 len, UT_uint32 blockPos);
 	SpellChecker * _getSpellChecker (UT_uint32 blockPos);
-
+#endif
+	
 	bool					_truncateLayout(fp_Run* pTruncRun);
 
 #ifndef NDEBUG
@@ -500,7 +514,12 @@ protected:
 	bool                    m_bStartList;
 	bool                    m_bStopList;
     bool                    m_bListLabelCreated;
+#ifndef WITHOUT_SPELL
 	fl_SpellSquiggles *     m_pSpellSquiggles;
+	fl_GrammarSquiggles *   m_pGrammarSquiggles;
+	fl_BlockLayout          *m_nextToSpell;
+	fl_BlockLayout          *m_prevToSpell;
+#endif
 	bool                    m_bListItem;
 	const XML_Char *		m_szStyle;
 	bool                    m_bIsCollapsed;
@@ -519,12 +538,7 @@ protected:
 	UT_sint32               m_iLinePosInContainer;
 	bool                    m_bForceSectionBreak;
 	bool                    m_bPrevListLabel;
-	fl_GrammarSquiggles *   m_pGrammarSquiggles;
     UT_sint32               m_iAdditionalMarginAfter;
-
-
-	fl_BlockLayout          *m_nextToSpell;
-	fl_BlockLayout          *m_prevToSpell;
 };
 
 /*
@@ -595,7 +609,7 @@ protected:
 	UT_uint32		iOffset;
 };
 
-
+#ifndef WITHOUT_SPELL
 class ABI_EXPORT fl_BlockSpellIterator
 {
 	friend class fl_BlockLayout;
@@ -639,5 +653,6 @@ public:
     const UT_UCSChar* getPreWord(UT_sint32& iLength);
     const UT_UCSChar* getPostWord(UT_sint32& iLength);
 };
+#endif
 
 #endif /* FL_BLOCKLAYOUT_H */

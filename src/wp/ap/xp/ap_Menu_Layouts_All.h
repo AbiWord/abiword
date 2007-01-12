@@ -29,7 +29,11 @@
 
 #include "ap_Menu_Layouts_MainMenu.h"
 #include "ap_ML_ContextText.h"
+
+#ifndef WITHOUT_SPELL
 #include "ap_ML_ContextSquiggle.h"
+#endif
+
 #include "ap_ML_ContextHyperlink.h"
 #include "ap_ML_ContextImage.h"
 #include "ap_ML_ContextPosObject.h"

@@ -63,8 +63,10 @@ fp_TextRun::fp_TextRun(fl_BlockLayout* pBL,
 					   bool bLookupProperties)
 :	fp_Run(pBL,iOffsetFirst, iLen, FPRUN_TEXT),
 	m_fPosition(TEXT_POSITION_NORMAL),
+#ifndef WITHOUT_SPELL
 	m_bSpellSquiggled(false),
 	m_bGrammarSquiggled(false),
+#endif
 	m_pLanguage(NULL),
 	m_bIsOverhanging(false),
 	m_bKeepWidths(false),
@@ -263,6 +265,7 @@ void fp_TextRun::_lookupProperties(const PP_AttrProp * pSpanAP,
 	xxx_UT_DEBUGMSG(("!!!!!!!! Language of run set to %s pointer %x run %x \n",getLanguage(),m_pLanguage,this));
 	if(pszOldLanguage && (m_pLanguage != pszOldLanguage))
 	{
+#ifndef WITHOUT_SPELL
 	        UT_uint32 reason =  0;
 		if( getBlock()->getDocLayout()->getAutoSpellCheck())
 		{
@@ -273,6 +276,7 @@ void fp_TextRun::_lookupProperties(const PP_AttrProp * pSpanAP,
 		        reason = reason | (UT_uint32) FL_DocLayout::bgcrGrammar;
 		}
 		getBlock()->getDocLayout()->queueBlockForBackgroundCheck(reason, getBlock());
+#endif
 		bChanged = true;
 	}
 
@@ -1939,6 +1943,7 @@ void fp_TextRun::_draw(dg_DrawArgs* pDA)
 		_drawInvisibles(pDA->xoff, yTopOfRun);
 	}
 
+#ifndef WITHOUT_SPELL
 	// TODO: draw this underneath (ie, before) the text and decorations
 	if(pG->queryProperties(GR_Graphics::DGP_SCREEN))
 	{
@@ -1947,6 +1952,7 @@ void fp_TextRun::_draw(dg_DrawArgs* pDA)
 		m_bGrammarSquiggled = false;
 		getBlock()->findGrammarSquigglesForRun(this);
 	}
+#endif
 }
 
 void fp_TextRun::_fillRect(UT_RGBColor& clr,
@@ -2238,6 +2244,7 @@ void fp_TextRun::_drawFirstChar(bool bSelection)
 	
 	pG->prepareToRenderChars(*m_pRenderInfo);
 	painter.renderChars(*m_pRenderInfo);
+#ifndef WITHOUT_SPELL
 	if(pG->queryProperties(GR_Graphics::DGP_SCREEN))
 	{
 		m_bSpellSquiggled = false;
@@ -2245,6 +2252,7 @@ void fp_TextRun::_drawFirstChar(bool bSelection)
 		m_bGrammarSquiggled = false;
 		getBlock()->findGrammarSquigglesForRun(this);
 	}
+#endif
 }
 
 void fp_TextRun::_drawInvisibleSpaces(UT_sint32 xoff, UT_sint32 yoff)
@@ -2301,6 +2309,7 @@ void fp_TextRun::_drawInvisibles(UT_sint32 xoff, UT_sint32 yoff)
 	_drawInvisibleSpaces(xoff,yoff);
 }
 
+#ifndef WITHOUT_SPELL
 void fp_TextRun::_drawSquiggle(UT_sint32 top, UT_sint32 left, UT_sint32 right, FL_SQUIGGLE_TYPE iSquiggle)
 {
 	if (!(getGraphics()->queryProperties(GR_Graphics::DGP_SCREEN)))
@@ -2452,6 +2461,7 @@ void fp_TextRun::drawSquiggle(UT_uint32 iOffset, UT_uint32 iLen,FL_SQUIGGLE_TYPE
 	_drawSquiggle(r.top + iAscent + iGap + getGraphics()->tlu(1), r.left, r.left + r.width,iSquiggle);
 	xxx_UT_DEBUGMSG(("Done draw sqiggle for run in block %x \n",getBlock()));
 }
+#endif
 
 UT_sint32 fp_TextRun::findCharacter(UT_uint32 startPosition, UT_UCSChar Character) const
 {

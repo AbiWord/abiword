@@ -54,7 +54,6 @@ WP_INCLUDES=-I'$(top_srcdir)/src/wp/ap/xp'
 WP_INCLUDES+=-I'$(top_srcdir)/src/wp/impexp/xp'
 WP_INCLUDES+=-I'$(top_srcdir)/src/wp/ap/@PLATFORM@'
 WP_INCLUDES+=-I'$(top_srcdir)/src/wp/ap/xp/ToolbarIcons'
-WP_INCLUDES+=-I'$(top_srcdir)/src/pkg/linux/apkg'
 AF_INCLUDES+=-I'$(top_srcdir)/src/wp/ap/@PLATFORM@/hildon'
 else
 WP_INCLUDES=-I'$(top_srcdir)/src/wp/ap/xp'
@@ -64,8 +63,12 @@ WP_INCLUDES+=-I'$(top_srcdir)/src/wp/ap/xp/ToolbarIcons'
 WP_INCLUDES+=-I'$(top_srcdir)/src/pkg/linux/apkg'
 endif
 
-OTHER_INCLUDES=-I'$(top_srcdir)/src/other/spell/xp'
-OTHER_INCLUDES+=-I'$(top_srcdir)/src/other/fribidi/xp'
+OTHER_INCLUDES=
+
+if WITH_SPELL
+OTHER_INCLUDES+=-I'$(top_srcdir)/src/other/spell/xp'
+endif
+
 TEXT_INCLUDES=-I'$(top_srcdir)/src/text/ptbl/xp'
 TEXT_INCLUDES+=-I'$(top_srcdir)/src/text/fmt/xp'
 
@@ -86,7 +89,7 @@ ABI_CFLAGS=@WARNING_CFLAGS@ @DEBUG_CFLAGS@ @OPTIMIZE_CFLAGS@ \
 	@PROFILE_CFLAGS@ @XML_CFLAGS@ @SCRIPT_CFLAGS@ @PLUGIN_CFLAGS@ @FRIBIDI_CFLAGS@ \
 	@WV_CFLAGS@ @LIBPOPT_CFLAGS@ @XFT_CFLAGS@ @FREETYPE_CFLAGS@ \
 	@LIBPNG_CFLAGS@ @ZLIB_CFLAGS@ @THREAD_CFLAGS@ @ABI_FEATURE_DEFS@ @ABITYPES_CFLAGS@ \
-	@PRINT_CFLAGS@ @GSF_CFLAGS@ @GOFFICE_CFLAGS@ 
+	@GSF_CFLAGS@ @GOFFICE_CFLAGS@ @DEFS@
 
 
 if WITH_WIN32
@@ -136,10 +139,18 @@ ABI_LIBS+=$(top_builddir)/src/af/xap/libXap.a
 ABI_LIBS+=$(top_builddir)/src/af/util/libUtil.a
 ABI_LIBS+=$(top_builddir)/src/af/gr/libGr.a
 ABI_LIBS+=$(top_builddir)/src/af/ev/libEv.a
-ABI_LIBS+=$(top_builddir)/src/other/spell/xp/libSpell.a
-ABI_LIBS+=$(top_builddir)/src/pkg/linux/apkg/libApkg.a
 ABI_LIBS+=$(top_builddir)/src/text/fmt/xp/libFmt.a
 ABI_LIBS+=$(top_builddir)/src/text/ptbl/xp/libPtbl.a
+
+
+if WITH_HILDON
+else
+ ABI_LIBS+=$(top_builddir)/src/pkg/linux/apkg/libApkg.a
+endif
+
+if WITH_SPELL
+ABI_LIBS+=$(top_builddir)/src/other/spell/xp/libSpell.a
+endif
 
 ABI_TEST_LIBS=$(top_builddir)/src/af/util/libTestUtil.a
 ABI_TEST_LIBS+=$(top_builddir)/src/text/ptbl/xp/t/libTestPtbl.a

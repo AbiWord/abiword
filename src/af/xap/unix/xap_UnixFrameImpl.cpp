@@ -76,6 +76,11 @@
 #include "ev_GnomeToolbar.h"
 #endif
 
+#ifdef HAVE_HILDON
+#include "xap_UnixHildonApp.h"
+#endif
+
+
 enum {
 	TARGET_DOCUMENT, // 0, to sync with gtk_drag_dest_add_text_target's default info value
  	TARGET_IMAGE,
@@ -584,6 +589,27 @@ gint XAP_UnixFrameImpl::_fe::button_press_event(GtkWidget * w, GdkEventButton * 
 
 	pUnixFrameImpl->resetIMContext ();
 
+#ifdef HAVE_HILDON
+	/* UGLY HACK -- for some reason in the OS2006 release of maemo the VKB
+	 * does not pop up automatically as it used to and we have to bring it up
+	 * ourselves; since this function is static we cannot make it virtual, and
+	 * adding an additional handler for the button_press_event does not work
+	 * for some reason (even after changing the return value from there to 0)
+	 */
+	if (e->button == 1)
+	{
+		XAP_UnixHildonApp * pThis =
+			static_cast<XAP_UnixHildonApp*>(XAP_App::getApp());
+		
+		UT_return_val_if_fail( pThis, FALSE );
+
+		UT_DEBUGMSG(("Hildon button_press_event: pThis 0x%x\n",
+					 pThis));
+
+		hildon_gtk_im_context_show(pThis->getIMContext());
+	}
+#endif
+	
 	if (pView)
 		pUnixMouse->mouseClick(pView,e);
 	return 1;

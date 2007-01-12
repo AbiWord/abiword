@@ -63,18 +63,21 @@
 #include "ap_LeftRuler.h"
 #include "ap_Prefs.h"
 #include "fd_Field.h"
+
+#ifndef WITHOUT_SPELL
 #include "spell_manager.h"
+#if 1
+// todo: work around to remove the INPUTWORDLEN restriction for pspell
+#include "ispell_def.h"
+#endif
+#endif
+
 #include "ut_rand.h"
 #include "fl_FootnoteLayout.h"
 #include "pp_Revision.h"
 #include "gr_Painter.h"
 
 #include "fv_View.h"
-
-#if 1
-// todo: work around to remove the INPUTWORDLEN restriction for pspell
-#include "ispell_def.h"
-#endif
 
 // NB -- irrespective of this size, the piecetable will store
 // at max BOOKMARK_NAME_LIMIT of chars as defined in pf_Frag_Bookmark.h
@@ -4180,6 +4183,7 @@ void FV_View::_fixInsertionPointCoords(bool bIgnoreAll)
 	xxx_UT_DEBUGMSG(("SEVIOR: m_yPoint = %d m_iPointHeight = %d \n",m_yPoint,m_iPointHeight));
 	// hang onto this for _moveInsPtNextPrevLine()
 	m_xPointSticky = m_xPoint + m_xScrollOffset - getPageViewLeftMargin();
+#ifndef WITHOUT_SPELL
 	if(pBlock && pBlock->getSpellSquiggles()->get(getPoint() - pBlock->getPosition()))
 	{
 		if(m_prevMouseContext == EV_EMC_TEXT)
@@ -4191,6 +4195,7 @@ void FV_View::_fixInsertionPointCoords(bool bIgnoreAll)
 	{
 		m_pLayout->triggerPendingBlock(pBlock);
 	}
+#endif
 }
 
 void FV_View::_draw(UT_sint32 x, UT_sint32 y,
@@ -4585,7 +4590,9 @@ void FV_View::_setPoint(PT_DocPosition pt, bool bEOL)
 	{
 		_fixInsertionPointCoords(true);
 		m_pLayout->considerPendingSmartQuoteCandidate();
+#ifndef WITHOUT_SPELL
 		_checkPendingWordForSpell();
+#endif
 	// So, if there is a selection now, we should disable the cursor; conversely,
 	// if there is no longer a selection, we should enable the cursor.
 		if (isSelectionEmpty())
@@ -4617,6 +4624,7 @@ void FV_View::_setPoint(PT_DocPosition pt, bool bEOL)
 }
 
 
+#ifndef WITHOUT_SPELL
 /*!
  Spell-check pending word
  If the IP does not touch the pending word, spell-check it.
@@ -4658,6 +4666,7 @@ FV_View::_checkPendingWordForSpell(void)
 		}
 	}
 }
+#endif
 
 UT_uint32 FV_View::_getDataCount(UT_uint32 pt1, UT_uint32 pt2)
 {
@@ -5111,7 +5120,9 @@ bool FV_View::_charMotion(bool bForward,UT_uint32 countChars, bool bSkipCannotCo
 	if (m_iInsPoint != posOld)
 	{
 		m_pLayout->considerPendingSmartQuoteCandidate();
+#ifndef WITHOUT_SPELL
 		_checkPendingWordForSpell();
+#endif
 		_clearIfAtFmtMark(posOld);
 		if(!m_pDoc->isDoingPaste())
 		{
@@ -5378,6 +5389,7 @@ void FV_View::_clearIfAtFmtMark(PT_DocPosition dpos)
 }
 
 
+#ifndef WITHOUT_SPELL
 // NB: returns a UCS string that the caller needs to FREEP
 UT_UCSChar * FV_View::_lookupSuggestion(fl_BlockLayout* pBL,
 										fl_PartOfBlock* pPOB, UT_uint32 ndx)
@@ -5498,7 +5510,7 @@ UT_UCSChar * FV_View::_lookupSuggestion(fl_BlockLayout* pBL,
 
 	return szSuggest;
 }
-
+#endif
 
 void FV_View::_prefsListener( XAP_App * /*pApp*/, XAP_Prefs *pPrefs, UT_StringPtrMap * /*phChanges*/, void *data )
 {

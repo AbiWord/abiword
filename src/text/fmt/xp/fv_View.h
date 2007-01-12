@@ -309,7 +309,9 @@ public:
 
 	bool	processPageNumber(HdrFtrType hfType, const XML_Char ** atts);
 
+#ifndef WITHOUT_SPELL
 	bool	isTextMisspelled()const ;
+#endif
 	bool	isTabListBehindPoint(UT_sint32 & iNumToDelete);
 	bool	isTabListAheadPoint(void);
 	void	processSelectedBlocks(FL_ListType listType);
@@ -393,8 +395,9 @@ public:
 	void			extSelToXYword(UT_sint32 xPos, UT_sint32 yPos, bool bDrag);
 	void			extSelTo(FV_DocPos dp);
 
+#ifndef WITHOUT_SPELL
 	SpellChecker * getDictForSelection ();
-
+#endif
 	void			extSelNextPrevLine(bool bNext);
 	void            extSelNextPrevPage(bool bNext);
 	void            extSelNextPrevScreen(bool bNext);
@@ -461,6 +464,7 @@ public:
 	PD_DocumentRange * getNthSelection(UT_sint32 i);
 	UT_sint32          getNumSelections(void) const;
 	void            setSelectionMode(FV_SelectionMode selMode);
+#ifndef WITHOUT_SPELL
 // ----------------------
 // Stuff for spellcheck context menu
 //
@@ -468,6 +472,7 @@ public:
 	void			cmdContextSuggest(UT_uint32 ndx, fl_BlockLayout * ppBL = NULL, fl_PartOfBlock * ppPOB = NULL);
 	void			cmdContextIgnoreAll(void);
 	void			cmdContextAdd(void);
+#endif
 // ----------------------
 // Stuff for edittable Headers/Footers
 //
@@ -833,8 +838,10 @@ protected:
 	void				_doPaste(bool bUseClipboard, bool bHonorFormatting = true);
 	void				_clearIfAtFmtMark(PT_DocPosition dpos);
 
+#ifndef WITHOUT_SPELL
 	void				_checkPendingWordForSpell(void);
-
+#endif
+	
 	bool				_isSpaceBefore(PT_DocPosition pos);
 	void				_removeThisHdrFtr(fl_HdrFtrSectionLayout * pHdrFtr);
 	void 				_cmdEditHdrFtr(HdrFtrType hfType);
