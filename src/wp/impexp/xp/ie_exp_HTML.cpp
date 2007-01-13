@@ -492,7 +492,7 @@ class s_HTML_Listener : public PL_Listener
 public:
 	s_HTML_Listener (PD_Document * pDocument, IE_Exp_HTML * pie, bool bClipBoard,
 					 bool bTemplateBody, const XAP_Exp_HTMLOptions * exp_opt,
-					 s_StyleTree * style_tree, IE_TOCHelper * toc_helper,
+					 s_StyleTree * style_tree,
 					 UT_UTF8String & linkCSS,
 					 UT_UTF8String & title);
 
@@ -4271,7 +4271,7 @@ void s_HTML_Listener::_outputData (const UT_UCSChar * data, UT_uint32 length)
 
 s_HTML_Listener::s_HTML_Listener (PD_Document * pDocument, IE_Exp_HTML * pie, bool bClipBoard,
 								  bool bTemplateBody, const XAP_Exp_HTMLOptions * exp_opt,
-								  s_StyleTree * style_tree, IE_TOCHelper * toc_helper,
+								  s_StyleTree * style_tree,
 								  UT_UTF8String & linkCSS,
 								  UT_UTF8String & title) :
 	m_pDocument (pDocument),
@@ -4316,7 +4316,7 @@ s_HTML_Listener::s_HTML_Listener (PD_Document * pDocument, IE_Exp_HTML * pie, bo
 		m_sTitle(title),
 		m_iOutputLen(0),
 		m_bCellHasData(true),  // we are not in cell to start with, set to true
-		m_toc(toc_helper),
+		m_toc(0),
 		m_heading_count(0)
 {
 	m_StyleTreeBody = m_style_tree->find ("Normal");
@@ -4334,6 +4334,7 @@ s_HTML_Listener::~s_HTML_Listener()
 	_outputEnd ();
 	
 	UT_VECTOR_PURGEALL(double *,m_vecDWidths);
+	DELETEP(m_toc);
 }
 
 /* dataid   is the raw string with the data ID
@@ -5393,6 +5394,8 @@ bool s_HTML_Listener::populateStrux (PL_StruxDocHandle sdh,
 			}
 		case PTX_SectionTOC: 
 			{
+				if (!m_toc)
+					m_toc = new IE_TOCHelper (m_pDocument);
 				_emitTOC (pcr->getIndexAP());
 				return true;
 			}
@@ -6651,7 +6654,6 @@ void s_TemplateHandler::Default (const XML_Char * buffer, int length)
 IE_Exp_HTML::IE_Exp_HTML (PD_Document * pDocument)
 	: IE_Exp(pDocument),
 	  m_style_tree(new s_StyleTree(pDocument)),
-	  m_toc_helper(0),
 	  m_bSuppressDialog(false)
 {
 	m_exp_opt.bIs4         = false;
@@ -6676,9 +6678,6 @@ IE_Exp_HTML::IE_Exp_HTML (PD_Document * pDocument)
 IE_Exp_HTML::~IE_Exp_HTML ()
 {
 	DELETEP(m_style_tree);
-	DELETEP(m_toc_helper);
-
-	// 
 }
 
 void IE_Exp_HTML::_buildStyleTree ()
@@ -6717,12 +6716,6 @@ void IE_Exp_HTML::_buildStyleTree ()
 		getDoc()->tellListenerSubset (m_style_tree, getDocRange ());
 	else
 		getDoc()->tellListener (m_style_tree);
-}
-
-void IE_Exp_HTML::_buildTOC()
-{
-	if (!m_toc_helper)
-		m_toc_helper = new IE_TOCHelper (getDoc());
 }
 
 UT_Error IE_Exp_HTML::_doOptions ()
@@ -6778,7 +6771,6 @@ UT_Error IE_Exp_HTML::_writeDocument ()
 {
 	_doOptions ();
 	_buildStyleTree ();
-	_buildTOC ();
 
 	if (isCopying ()) // ClipBoard
 	{
@@ -6966,7 +6958,7 @@ UT_Error IE_Exp_HTML::_writeDocument ()
 UT_Error IE_Exp_HTML::_writeDocument (bool bClipBoard, bool bTemplateBody)
 {
 	s_HTML_Listener * pListener = new s_HTML_Listener(getDoc(),this,bClipBoard,bTemplateBody,
-													  &m_exp_opt,m_style_tree, m_toc_helper,
+													  &m_exp_opt,m_style_tree,
 													  m_sLinkCSS, m_sTitle);
 	if (pListener == 0) return UT_IE_NOMEMORY;
 

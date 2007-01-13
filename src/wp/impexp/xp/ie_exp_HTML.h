@@ -172,7 +172,6 @@ struct XAP_Exp_HTMLOptions
 #endif /* HTML_DIALOG_OPTIONS */
 
 class s_StyleTree;
-class IE_TOCHelper;
 
 class ABI_EXPORT IE_Exp_HTML : public IE_Exp
 {
@@ -197,14 +196,12 @@ public:
 private:
 	UT_Error            _doOptions ();
 	void				_buildStyleTree ();
-	void                _buildTOC ();
 protected:
 	virtual UT_Error	_writeDocument ();
 public:
 	virtual UT_Error	_writeDocument (bool bClipBoard, bool bTemplateBody);
 private:
 	s_StyleTree *		m_style_tree;
-	IE_TOCHelper *      m_toc_helper;
 	bool				m_bSuppressDialog;
 	XAP_Exp_HTMLOptions	m_exp_opt;
 	UT_UTF8String       m_sLinkCSS;
