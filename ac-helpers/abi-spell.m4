@@ -45,7 +45,7 @@ if test x$do_spell != xfalse ; then
 fi
 
 AM_CONDITIONAL(WITH_ENCHANT,[test x$do_spell != xfalse])
-AM_CONDITIONAL(WITH_ISPELL, [/bin/false])
+AM_CONDITIONAL(WITH_ISPELL, [test /bin/false])
 
 AC_DEFINE(HAVE_ENCHANT, 1, [ Define if you have Enchant ])
 AC_SUBST(SPELL_CFLAGS)
