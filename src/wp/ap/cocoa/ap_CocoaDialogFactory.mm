@@ -44,11 +44,6 @@ AP_CocoaDialogFactory::AP_CocoaDialogFactory(XAP_App * pApp)
 {
 }
 
-AP_CocoaDialogFactory::AP_CocoaDialogFactory(XAP_Frame * pFrame, XAP_App * pApp)
-	: XAP_DialogFactory(pFrame, pApp, NrElements(s_dlg_table), s_dlg_table)
-{
-}
-
 AP_CocoaDialogFactory::~AP_CocoaDialogFactory(void)
 {
 }

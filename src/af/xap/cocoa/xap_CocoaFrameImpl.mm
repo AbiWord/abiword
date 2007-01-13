@@ -110,10 +110,9 @@ int XAP_CocoaFrameImpl::_fe::abi_expose_repaint(void * p)
 	
 /*****************************************************************/
 
-XAP_CocoaFrameImpl::XAP_CocoaFrameImpl(XAP_Frame* frame, XAP_CocoaApp * app)
+XAP_CocoaFrameImpl::XAP_CocoaFrameImpl(XAP_Frame* frame)
 	: XAP_FrameImpl (frame),
-	  m_dialogFactory(frame, app),
-	  m_pCocoaApp(app),
+	  m_dialogFactory(frame, XAP_App::getApp()),
 	  m_pCocoaPopup(NULL),
 	  m_frameController(nil),
 	  m_iAbiRepaintID(0)
@@ -127,8 +126,7 @@ XAP_CocoaFrameImpl::XAP_CocoaFrameImpl(XAP_Frame* frame, XAP_CocoaApp * app)
 /*
 XAP_CocoaFrameImpl::XAP_CocoaFrameImpl(XAP_CocoaFrameImpl * f)
 	: XAP_FrameImpl(f),
-	  m_dialogFactory(f->m_pFrame, static_cast<XAP_App *>(f->m_pCocoaApp)),
-	  m_pCocoaApp(f->m_pCocoaApp),
+	  m_dialogFactory(f->m_pFrame, XAP_App::getApp()),
 	  m_pCocoaMenu(NULL),
 	  m_pCocoaPopup(NULL),
 	  m_frameController(nil),
@@ -530,7 +528,7 @@ void XAP_CocoaFrameImpl::setToolbarRect(const NSRect &r)
 {
 	UT_DEBUGMSG (("shouldCloseDocument\n"));
 	UT_ASSERT (m_frame);
-	XAP_App * pApp = m_frame->getFrame()->getApp();
+	XAP_App * pApp = XAP_App::getApp();
 	UT_ASSERT(pApp);
 
 	const EV_Menu_ActionSet * pMenuActionSet = pApp->getMenuActionSet();

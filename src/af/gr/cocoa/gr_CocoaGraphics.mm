@@ -394,7 +394,7 @@ void GR_CocoaGraphics::_initColorAndImage(void)
 
 
 
-GR_CocoaGraphics::GR_CocoaGraphics(NSView * win, XAP_App * app) :
+GR_CocoaGraphics::GR_CocoaGraphics(NSView * win) :
 	m_updateCallback(NULL),
 	m_updateCBparam (NULL),
 	m_pWin(win),
@@ -420,7 +420,6 @@ GR_CocoaGraphics::GR_CocoaGraphics(NSView * win, XAP_App * app) :
 {
 	_initColorAndImage();
 	
-	m_pApp = app;
 	UT_ASSERT (m_pWin);
 	NSRect viewBounds = [m_pWin bounds];
 	if (![m_pWin isKindOfClass:[XAP_CocoaNSView class]]) {
@@ -947,88 +946,88 @@ GR_Font * GR_CocoaGraphics::_findFont(const char* pszFontFamily,
 										const char* pszLang)
 {
 	UT_DEBUGMSG (("GR_CocoaGraphics::findFont(%s, %s, %s)\n", pszFontFamily, pszFontStyle, pszFontSize));
-
+	
 	UT_ASSERT(pszFontFamily);
 	UT_ASSERT(pszFontStyle);
 	UT_ASSERT(pszFontWeight);
 	UT_ASSERT(pszFontSize);
-
+	
 	double size = ceil(UT_convertToPoints(pszFontSize));
-
+	
 	size = (size < 1.0) ? 1.0 : size;
-
+	
 	NSString * font_name = [NSString stringWithUTF8String:pszFontFamily];
-
+	
 	XAP_CocoaAppController * pController = (XAP_CocoaAppController *) [NSApp delegate];
-
+	
 	NSString * family_name = [pController familyNameForFont:font_name];
-
+	
 	NSFont * nsfont = nil;
-
+	
 	if (family_name)
-		{
-			// fprintf(stderr, "*font* name: \"%s\", size=%lgpt\n", [font_name UTF8String], size);
-			/* this looks like a font name, not a font-family name...
-			 */
-			nsfont = [NSFont fontWithName:font_name size:((float) size)];
-		}
+	{
+		// fprintf(stderr, "*font* name: \"%s\", size=%lgpt\n", [font_name UTF8String], size);
+		/* this looks like a font name, not a font-family name...
+		 */
+		nsfont = [NSFont fontWithName:font_name size:((float) size)];
+	}
 	if (!nsfont)
+	{
+		/* this probably is a real font-family name, not a font name...
+		 */
+		family_name = font_name;
+		// fprintf(stderr, "family name: \"%s\", size=%lgpt\n", [family_name UTF8String], size);
+		NSFontTraitMask s = 0;
+		
+		// this is kind of sloppy
+		if (UT_strcmp(pszFontStyle, "italic") == 0)
 		{
-			/* this probably is a real font-family name, not a font name...
-			 */
-			family_name = font_name;
-			// fprintf(stderr, "family name: \"%s\", size=%lgpt\n", [family_name UTF8String], size);
-			NSFontTraitMask s = 0;
-
-			// this is kind of sloppy
-			if (UT_strcmp(pszFontStyle, "italic") == 0)
-				{
-					s |= NSItalicFontMask;
-				}
-			if (UT_strcmp(pszFontWeight, "bold") == 0)
-				{
-					s |= NSBoldFontMask;
-				}
-
-			nsfont = [[NSFontManager sharedFontManager] fontWithFamily:family_name traits:s weight:5 size:size];
-
-			if (!nsfont) // this is bad; the wrong font name ends up in the font popups - FIXME please!
-				{
-					/* add a few hooks for a few predefined font names that MAY differ.
-					 * for example "Dingbats" is called "Zapf Dingbats" on MacOS X. 
-					 * Only fallback AFTER. WARNING: this is recursive call, watch out the
-					 * font family you pass.
-					 */
-					if (UT_stricmp(pszFontFamily, "Dingbats") == 0)
-						{
-							GR_Font * pGRFont = findFont("Zapf Dingbats", pszFontStyle, pszFontVariant, pszFontWeight, pszFontStretch, pszFontSize);
-							XAP_CocoaFont * pFont = static_cast<XAP_CocoaFont *>(pGRFont);
-							nsfont = pFont->getNSFont();
-						}
-					if (UT_stricmp(pszFontFamily, "Helvetic") == 0)
-						{
-							GR_Font * pGRFont = findFont("Helvetica", pszFontStyle, pszFontVariant, pszFontWeight, pszFontStretch, pszFontSize);
-							XAP_CocoaFont * pFont = static_cast<XAP_CocoaFont *>(pGRFont);
-							nsfont = pFont->getNSFont();
-						}
-				}
-			if (!nsfont) // this is bad; the wrong font name ends up in the font popups - FIXME please!
-				{
-					/* Oops!  We don't have that font here.
-					 * first try "Times New Roman", which should be sensible, and should
-					 * be there unless the user fidled with the installation
-					 */
-					NSLog (@"Unable to find font \"%s\".", pszFontFamily);
-
-					nsfont = [[NSFontManager sharedFontManager] fontWithFamily:@"Times" traits:s weight:5 size:size];
-				}
+			s |= NSItalicFontMask;
 		}
-
+		if (UT_strcmp(pszFontWeight, "bold") == 0)
+		{
+			s |= NSBoldFontMask;
+		}
+		
+		nsfont = [[NSFontManager sharedFontManager] fontWithFamily:family_name traits:s weight:5 size:size];
+		
+		if (!nsfont) // this is bad; the wrong font name ends up in the font popups - FIXME please!
+		{
+			/* add a few hooks for a few predefined font names that MAY differ.
+			 * for example "Dingbats" is called "Zapf Dingbats" on MacOS X. 
+			 * Only fallback AFTER. WARNING: this is recursive call, watch out the
+			 * font family you pass.
+			 */
+			if (UT_stricmp(pszFontFamily, "Dingbats") == 0)
+			{
+				GR_Font * pGRFont = findFont("Zapf Dingbats", pszFontStyle, pszFontVariant, pszFontWeight, pszFontStretch, pszFontSize, pszLang);
+				XAP_CocoaFont * pFont = static_cast<XAP_CocoaFont *>(pGRFont);
+				nsfont = pFont->getNSFont();
+			}
+			if (UT_stricmp(pszFontFamily, "Helvetic") == 0)
+			{
+				GR_Font * pGRFont = findFont("Helvetica", pszFontStyle, pszFontVariant, pszFontWeight, pszFontStretch, pszFontSize, pszLang);
+				XAP_CocoaFont * pFont = static_cast<XAP_CocoaFont *>(pGRFont);
+				nsfont = pFont->getNSFont();
+			}
+		}
+		if (!nsfont) // this is bad; the wrong font name ends up in the font popups - FIXME please!
+		{
+			/* Oops!  We don't have that font here.
+			 * first try "Times New Roman", which should be sensible, and should
+			 * be there unless the user fidled with the installation
+			 */
+			NSLog (@"Unable to find font \"%s\".", pszFontFamily);
+			
+			nsfont = [[NSFontManager sharedFontManager] fontWithFamily:@"Times" traits:s weight:5 size:size];
+		}
+	}
+	
 	/* bury the pointer to our Cocoa font in a XAP_CocoaFontHandle 
 	 */
 	XAP_CocoaFont * pFont = new XAP_CocoaFont(nsfont);
 	UT_ASSERT(pFont);
-
+	
 	return pFont;
 }
 
@@ -1819,5 +1818,5 @@ GR_Graphics *  GR_CocoaGraphics::graphicsAllocator(GR_AllocInfo& info)
 {
 	GR_CocoaAllocInfo & allocator = (GR_CocoaAllocInfo&)info;
 	
-	return new GR_CocoaGraphics(allocator.m_view, allocator.m_app);
+	return new GR_CocoaGraphics(allocator.m_view);
 }

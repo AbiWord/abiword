@@ -67,7 +67,7 @@ public:
 	static NSString* XAP_FrameNeedToolbar;
 	static NSString* XAP_FrameReleaseToolbar;
 
-	XAP_CocoaFrameImpl(XAP_Frame* frame, XAP_CocoaApp * app);
+	XAP_CocoaFrameImpl(XAP_Frame* frame);
 	friend class XAP_Frame;
 //	XAP_CocoaFrameImpl(XAP_CocoaFrame * f);
 	virtual ~XAP_CocoaFrameImpl();

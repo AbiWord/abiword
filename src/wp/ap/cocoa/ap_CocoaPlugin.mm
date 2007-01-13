@@ -500,10 +500,17 @@ static const char * s_GetMenuItemComputedLabel_Fn (const EV_Menu_Label * pLabel,
 	ext = [NSString stringWithFormat:@".%@", ext];
 
 	IEFileType ieft = IE_Exp::fileTypeForSuffix([ext UTF8String]);
+	GsfOutput * out = UT_go_file_create([path UTF8String], NULL);
 
-	UT_Error error = m_pDocument->saveAs([path UTF8String], ieft, [expProps UTF8String]);
+	if (out) {
+		UT_Error error = m_pDocument->saveAs(out, ieft, [expProps UTF8String]);
+		
+		gsf_output_close (out);
+		g_object_unref (G_OBJECT (out));
 
-	return (error == UT_OK) ? YES : NO;
+		return (error == UT_OK) ? YES : NO;
+	}
+	return NO;
 }
 
 @end

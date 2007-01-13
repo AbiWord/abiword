@@ -157,7 +157,7 @@ bool s_doPrint(FV_View * pView, bool bTryToSuppressDialog,bool bPrintDirectly)
 //		s_pLoadingFrame = pFrame;
 //		s_pLoadingDoc = static_cast<AD_Document *>(doc);
 
-	const XAP_StringSet * pSS = pFrame->getApp()->getStringSet();
+	const XAP_StringSet * pSS = XAP_App::getApp()->getStringSet();
 	UT_String msg =  pSS->getValue(AP_STRING_ID_MSG_PrintingDoc);
 
 	pFrame->setStatusMessage ( static_cast<const XML_Char *>(msg.c_str()) );
@@ -171,7 +171,7 @@ bool s_doPrint(FV_View * pView, bool bTryToSuppressDialog,bool bPrintDirectly)
 	UT_ASSERT(pGraphics->queryProperties(GR_Graphics::DGP_PAPER));
 
 	FL_DocLayout * pDocLayout = new FL_DocLayout(doc,pGraphics);
-	FV_View * pPrintView = new FV_View(pFrame->getApp(),0,pDocLayout);
+	FV_View * pPrintView = new FV_View(XAP_App::getApp(),0,pDocLayout);
 	pPrintView->getLayout()->fillLayouts();
 	pPrintView->getLayout()->formatAll();
 

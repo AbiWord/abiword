@@ -53,8 +53,8 @@
 @end
 
 /*****************************************************************/
-AP_CocoaFrameImpl::AP_CocoaFrameImpl(AP_CocoaFrame *pCocoaFrame, XAP_CocoaApp *pCocoaApp)
-	: XAP_CocoaFrameImpl (pCocoaFrame, pCocoaApp),
+AP_CocoaFrameImpl::AP_CocoaFrameImpl(AP_CocoaFrame *pCocoaFrame)
+	: XAP_CocoaFrameImpl (pCocoaFrame),
 		m_hScrollbar(nil),
 		m_vScrollbar(nil),
 		m_docAreaGRView(nil),
@@ -69,7 +69,7 @@ AP_CocoaFrameImpl::AP_CocoaFrameImpl(AP_CocoaFrame *pCocoaFrame, XAP_CocoaApp *p
 
 XAP_FrameImpl * AP_CocoaFrameImpl::createInstance(XAP_Frame *pFrame)
 {
-	return new AP_CocoaFrameImpl(static_cast<AP_CocoaFrame*>(pFrame), static_cast<XAP_CocoaApp*>(XAP_App::getApp()));
+	return new AP_CocoaFrameImpl(static_cast<AP_CocoaFrame*>(pFrame));
 }
 
 void AP_CocoaFrameImpl::_setHScrollValue(UT_sint32 value)
@@ -469,7 +469,7 @@ void AP_CocoaFrameImpl::_createDocView(GR_Graphics* &pG)
 	[m_docAreaGRView release];
 	
 	//pG = new GR_CocoaGraphics(m_docAreaGRView, pFrame->getApp());
-	GR_CocoaAllocInfo ai(m_docAreaGRView, pFrame->getApp());
+	GR_CocoaAllocInfo ai(m_docAreaGRView, XAP_App::getApp());
 	pG = (GR_CocoaGraphics*)XAP_App::getApp()->newGraphics(ai);
 
 	static_cast<GR_CocoaGraphics *>(pG)->_setUpdateCallback (&_graphicsUpdateCB, (void *)pFrame);

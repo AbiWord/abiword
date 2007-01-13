@@ -79,7 +79,7 @@ void AP_CocoaTopRuler::setView(AV_View * pView)
 
 	DELETEP(m_pG);
 
-	GR_CocoaAllocInfo ai(m_wTopRuler, m_pFrame->getApp());
+	GR_CocoaAllocInfo ai(m_wTopRuler, XAP_App::getApp());
 	GR_CocoaGraphics * pG = (GR_CocoaGraphics *) XAP_App::getApp()->newGraphics(ai);
 	UT_ASSERT(pG);
 	m_pG = pG;

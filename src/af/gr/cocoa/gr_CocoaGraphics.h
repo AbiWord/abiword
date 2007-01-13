@@ -185,7 +185,7 @@ class GR_CocoaGraphics : public GR_Graphics
 
 protected:
 	// all instances have to be created via GR_GraphicsFactory; see gr_Graphics.h
-	GR_CocoaGraphics(NSView * view, /*XAP_CocoaFontManager * fontManager,*/ XAP_App *app);
+	GR_CocoaGraphics(NSView * view);
 	virtual GR_Font*	_findFont(const char* pszFontFamily, 
 								  const char* pszFontStyle, 
 								  const char* pszFontVariant, 

@@ -163,7 +163,7 @@ Cleanup:
 	// clean up anything we created here
 	if (pClone)
 	{
-		static_cast<XAP_App *>(m_pApp)->forgetFrame(pClone);
+		XAP_App::getApp()->forgetFrame(pClone);
 		delete pClone;
 	}
 

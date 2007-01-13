@@ -50,7 +50,7 @@ class AP_CocooApp;
 class AP_CocoaFrameImpl : public XAP_CocoaFrameImpl
 {
  public:
-	AP_CocoaFrameImpl(AP_CocoaFrame *pCocoaFrame, XAP_CocoaApp *pCocoaApp); 
+	AP_CocoaFrameImpl(AP_CocoaFrame *pCocoaFrame); 
 	virtual XAP_FrameImpl * createInstance(XAP_Frame *pFrame);
 
 	virtual NSString *			_getNibName (); /* must be public to be called from Obj-C */
@@ -80,6 +80,8 @@ class AP_CocoaFrameImpl : public XAP_CocoaFrameImpl
 	XAP_CocoaNSView *_getDocAreaGRView(void)
 		{ return m_docAreaGRView; }
  protected:
+	virtual void _rebuildMenus(void);
+
 	void _showOrHideStatusbar(void);
 
 	void _showOrHideToolbars(void);
