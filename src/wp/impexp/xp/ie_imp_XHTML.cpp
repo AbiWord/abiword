@@ -1287,7 +1287,9 @@ void IE_Imp_XHTML::startElement(const XML_Char *name, const XML_Char **atts)
 
 			utf8val = tmp.c_str ();
 		}
+#if 0
 		got_string:
+#endif
 		const XML_Char * api_atts[9];
 
 		UT_String dataid;
@@ -1425,10 +1427,37 @@ void IE_Imp_XHTML::startElement(const XML_Char *name, const XML_Char **atts)
 		break;
 #endif /* USE_IE_IMP_TABLEHELPER */
 	case TT_HEAD:
-	case TT_TITLE:
-	case TT_META:
 	case TT_STYLE:
 		// these tags are ignored for the time being
+		return;
+
+	case TT_TITLE:
+		{
+			X_VerifyParseState(_PS_StyleSec);
+			m_parseState = _PS_MetaData;
+		}
+		return;
+
+	case TT_META:
+		{
+			if (!isPasting())
+				{
+					const XML_Char * szName    = _getXMLPropValue (static_cast<const XML_Char *>("name"),    atts);
+					const XML_Char * szContent = _getXMLPropValue (static_cast<const XML_Char *>("content"), atts);
+
+					if (szName && *szName && szContent && *szContent)
+						{
+							if (0 == UT_stricmp(szName, "title"))
+								getDoc()->setMetaDataProp(PD_META_KEY_TITLE, szContent);
+							else if (0 == UT_stricmp(szName, "author"))
+								getDoc()->setMetaDataProp(PD_META_KEY_CREATOR, szContent);
+							else if (0 == UT_stricmp(szName, "keywords"))
+								getDoc()->setMetaDataProp(PD_META_KEY_KEYWORDS, szContent);
+							else if (0 == UT_stricmp(szName, "subject"))
+								getDoc()->setMetaDataProp(PD_META_KEY_SUBJECT, szContent);
+						}
+				}
+		}
 		return;
 		
 	case TT_RUBY:
@@ -1653,10 +1682,18 @@ void IE_Imp_XHTML::endElement(const XML_Char *name)
 		}
 #endif /* USE_IE_IMP_TABLEHELPER */
 	case TT_HEAD:
-	case TT_TITLE:
 	case TT_META:
 	case TT_STYLE:
 		return;
+
+	case TT_TITLE:
+		{
+			X_VerifyParseState(_PS_MetaData);
+			m_parseState = _PS_StyleSec;
+
+			getDoc()->setMetaDataProp(PD_META_KEY_TITLE, m_Title.utf8_str());
+			m_Title.clear();
+		}
 
 	case TT_A:
 		if( m_szBookMarkName )
@@ -1762,6 +1799,12 @@ void IE_Imp_XHTML::charData (const XML_Char * buffer, int length)
 		m_pMathBB->append(reinterpret_cast<const UT_Byte *>(buffer), length);
 		return; //don't insert mathml character data
 	}
+
+	if (m_parseState == _PS_MetaData && !isPasting ())
+		{
+			m_Title.append(buffer, length);
+			return;
+		}
 
 	if ((m_parseState == _PS_StyleSec) || (m_parseState == _PS_Init))
 		{
