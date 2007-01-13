@@ -28,6 +28,9 @@
 #include "ie_imp.h"
 
 #if defined(WIN32)
+
+#include "ap_Win32App.h" //needed for AP_Win32App::s_fromWinLocaleToUTF8()
+
 AP_App::AP_App (HINSTANCE hInstance, XAP_Args * pArgs, const char * szAppName)
   : XAP_App_BaseClass ( hInstance, pArgs, szAppName )
 #else
@@ -56,7 +59,14 @@ bool AP_App::openCmdLineFiles(AP_Args * args)
 	while ((file = poptGetArg (poptcon)) != NULL) {
 		XAP_Frame * pFrame = newFrame();
 
-		char * uri = UT_go_shell_arg_to_uri (file);
+		char * uri = NULL;
+
+#if defined(WIN32)
+		uri = UT_go_shell_arg_to_uri (AP_Win32App::s_fromWinLocaleToUTF8(file).utf8_str());
+#else
+		uri = UT_go_shell_arg_to_uri (file);
+#endif
+
 		UT_Error error = pFrame->loadDocument (uri, IEFT_Unknown, true);
 		g_free (uri);
 
