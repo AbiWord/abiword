@@ -3335,7 +3335,7 @@ void fp_ImageRun::_lookupProperties(const PP_AttrProp * pSpanAP,
 									GR_Graphics * pG)
 {
 	fd_Field * fd = NULL;
-	UT_ASSERT(pSpanAP);
+	UT_return_if_fail(pSpanAP);
 	m_pSpanAP = pSpanAP;
 	getBlock()->getField(getBlockOffset(), fd);
 	_setField(fd);
