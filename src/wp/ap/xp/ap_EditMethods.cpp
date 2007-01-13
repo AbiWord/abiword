@@ -2592,7 +2592,10 @@ s_actuallySaveAs(AV_View * pAV_View, bool overwriteName)
 	XAP_Frame * pFrame = static_cast<XAP_Frame *> ( pAV_View->getParentData());
 	UT_return_val_if_fail (pFrame, false);
 
-	IEFileType ieft = static_cast<PD_Document *>(pFrame->getCurrentDoc())->getLastSavedAsType();
+	IEFileType ieft = IEFT_Unknown;
+
+	//ieft = static_cast<PD_Document *>(pFrame->getCurrentDoc())->getLastSavedAsType();
+
 	char * pNewFile = NULL;
 	XAP_Dialog_Id id = XAP_DIALOG_ID_FILE_SAVEAS;
 
