@@ -1215,6 +1215,28 @@ UT_go_file_split_urls (const char *data)
   return uris;
 }
 
+gboolean
+UT_go_file_exists (char const *uri)
+{
+#if defined (GOFFICE_WITH_GNOME)
+	GnomeVFSURI *vfs_uri = gnome_vfs_uri_new (uri);
+	if (vfs_uri) {
+		gnome_vfs_uri_unref (vfs_uri);
+		return TRUE;
+	}
+
+	return FALSE;
+#else
+	struct stat file_stat;
+	char *filename = UT_go_filename_from_uri (uri);
+	int result = filename ? g_stat (filename, &file_stat) : -1;
+
+	g_free (filename);
+
+	return result == 0;
+#endif
+}
+
 UT_GOFilePermissions *
 UT_go_get_file_permissions (char const *uri)
 {
