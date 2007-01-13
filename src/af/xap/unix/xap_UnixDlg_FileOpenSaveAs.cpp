@@ -306,20 +306,15 @@ bool XAP_UnixDialog_FileOpenSaveAs::_run_gtk_main(XAP_Frame * pFrame,
 				// might have been appended)                            
 				
 				FREEP(szDialogFilename);
-			}
-		
-			UT_cloneString(m_szFinalPathnameCandidate, szFinalPathname);
-			goto ReturnTrue;	
+			}	   
 
-#if 0			
 			UT_cloneString(szFinalPathnameCopy, szFinalPathname);
 
-			err = stat(szFinalPathnameCopy, &buf);
-			UT_ASSERT(err == 0 || err == -1);
+			bool exists = UT_go_file_exists(szFinalPathnameCopy);
 				
 			// Does the filename already exist?
 	
-			if (err == 0 && S_ISREG(buf.st_mode))
+			if (exists)
 			{
 				// we have an existing file, ask to overwrite
 	
@@ -347,7 +342,11 @@ bool XAP_UnixDialog_FileOpenSaveAs::_run_gtk_main(XAP_Frame * pFrame,
 				_notifyError_OKOnly(pFrame,XAP_STRING_ID_DLG_InvalidPathname);
 				goto ContinueLoop;
 			}
+
+			UT_cloneString(m_szFinalPathnameCandidate, szFinalPathname);
+			goto ReturnTrue;
 	
+#if 0			
 			// Trim the pathname at beginning of the filename
 			// keeping the trailing slash.
 				
@@ -390,6 +389,7 @@ bool XAP_UnixDialog_FileOpenSaveAs::_run_gtk_main(XAP_Frame * pFrame,
 	
 			_notifyError_OKOnly(pFrame,XAP_STRING_ID_DLG_NoSaveFile_DirNotWriteable,
 								szFinalPathname);
+		ContinueLoop:
 			FREEP(szFinalPathnameCopy);
 		}
 	} /* if m_bSave */
