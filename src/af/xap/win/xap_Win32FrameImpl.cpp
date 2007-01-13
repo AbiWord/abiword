@@ -980,7 +980,7 @@ LRESULT CALLBACK XAP_Win32FrameImpl::_FrameWndProc(HWND hwnd, UINT iMsg, WPARAM 
 						in the document, if not we assume that it's a document 		
 					*/								
 					// If there is no import graphic, it's a document...
-					char * uri = UT_go_filename_to_uri(szFileName);
+					char * uri = UT_go_filename_to_uri(AP_Win32App::s_fromWinLocaleToUTF8(szFileName).utf8_str());
 					if(uri)
 						errorCode = IE_ImpGraphic::constructImporter(uri, iegft, &pIEG);
 

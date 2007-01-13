@@ -40,6 +40,7 @@
 
 #include "gr_Win32Image.h"
 #include "gr_Win32Graphics.h"
+#include "ap_Win32App.h"
 
 #include "ie_types.h"
 #include "ie_imp.h"
@@ -450,17 +451,21 @@ void XAP_Win32Dialog_FileOpenSaveAs::runModal(XAP_Frame * pFrame)
 		}
 		else
 		{
-			char *uri = UT_go_filename_to_uri(szFile);
+			char *uri = UT_go_filename_to_uri(AP_Win32App::s_fromWinLocaleToUTF8(szFile).utf8_str());
 			if(uri)
 			{
-				UT_cloneString(m_szFinalPathname,uri);
+				if(!UT_cloneString(m_szFinalPathname,uri))
+				{
+					UT_ASSERT_HARMLESS(UT_SHOULD_NOT_HAPPEN);
+					m_szFinalPathname = NULL;
+				}
+				g_free(uri);
 			}
 			else
 			{
 				UT_ASSERT_HARMLESS(UT_SHOULD_NOT_HAPPEN);
 				m_szFinalPathname = NULL;
 			}
-			g_free(uri);
 		}
 
 		m_answer = a_OK;
