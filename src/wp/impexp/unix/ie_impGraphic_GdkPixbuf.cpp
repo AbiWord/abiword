@@ -666,7 +666,9 @@ UT_Confidence_t IE_ImpGraphicGdkPixbuf_Sniffer::recognizeContents(const char * s
 		return UT_CONFIDENCE_PERFECT;
 	}
 
-	return _gdk_pixbuf_get_module((guchar *)szBuf, iNum);
+	if (_gdk_pixbuf_get_module((guchar *)szBuf, iNum))
+		return UT_CONFIDENCE_PERFECT;
+	return UT_CONFIDENCE_ZILCH;
 }
 
 bool IE_ImpGraphicGdkPixbuf_Sniffer::getDlgLabels(const char ** pszDesc,
