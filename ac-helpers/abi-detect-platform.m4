@@ -104,9 +104,18 @@ AC_ARG_WITH(fink,[  --with-fink          add /sw/... to CPP/LDFLAGS (Mac OSX)],[
 	fi
 ])
 # 
+# convenience option for building with darwin ports installed...
+# 
+AC_ARG_WITH(fink,[  --with-darwinports          add /opt/local/... to CPP/LDFLAGS (Mac OSX)],[
+	if test "x$withval" != "xno"; then
+		CPPFLAGS="$CPPFLAGS -I/opt/local/include"
+		LDFLAGS="$LDFLAGS -L/opt/local/lib"
+	fi
+])
+# 
 # 1. Whether to consider using Cocoa API:
 # 
-AC_ARG_ENABLE(Cocoa,[  --disable-Cocoa    don't use Cocoa API  (MacOSX builds only)],[
+AC_ARG_ENABLE(Cocoa,[  --disable-cocoa    don't use Cocoa API  (MacOSX builds only)],[
 	if [ test "x$enableval" = "xno" ]; then
 		abi_gui_cocoa=no
 	else
