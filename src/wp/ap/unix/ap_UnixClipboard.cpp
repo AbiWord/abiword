@@ -179,7 +179,7 @@ bool  AP_UnixClipboard::getSupportedData(T_AllowGet tFrom,
 		return true;
 	else if (getData (tFrom, htmlszFormatsAccepted, (void**)ppData, pLen, pszFormatFound))
 		return true;
-	else if (getData(tFrom, &vec_DynamicFormatsAccepted[0], (void**)ppData, pLen, pszFormatFound))
+	else if (!vec_DynamicFormatsAccepted.empty() && getData(tFrom, &vec_DynamicFormatsAccepted[0], (void**)ppData, pLen, pszFormatFound))
 		return true;  
 	else if (getData(tFrom, imgszFormatsAccepted, (void**)ppData, pLen, pszFormatFound))
 		return true;  
@@ -269,7 +269,10 @@ bool AP_UnixClipboard::isImageTag ( const char * tag )
 
 bool AP_UnixClipboard::isDynamicTag ( const char * tag )
 {
+        if(vec_DynamicFormatsAccepted.empty())
+	    return false;
 	std::vector<const char*>::iterator i = vec_DynamicFormatsAccepted.begin();
+
 	while (*i && strcmp (tag, *i))
 		i++;
 	return *i != NULL;

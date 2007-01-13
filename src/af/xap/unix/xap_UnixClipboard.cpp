@@ -218,7 +218,6 @@ bool XAP_UnixClipboard::getData(T_AllowGet tFrom, const char** formatList,
 	*pszFormatFound = NULL;
 	*ppData = NULL;
 	*pLen = 0;
-	
 	if (TAG_ClipboardOnly == tFrom)
 		return _getDataFromServer(tFrom,formatList,ppData,pLen,pszFormatFound);
 	else if (TAG_PrimaryOnly == tFrom)
@@ -287,7 +286,9 @@ bool XAP_UnixClipboard::_getDataFromServer(T_AllowGet tFrom, const char** format
 										   const char **pszFormatFound)
 {
 	bool rval = false;
-	
+	if(formatList == NULL)
+	  return false;
+
 	GtkClipboard * clipboard = gtkClipboardForTarget (tFrom);
   
 	UT_GenericVector<GdkAtom> atoms ;
