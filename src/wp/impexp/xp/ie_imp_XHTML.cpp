@@ -1691,8 +1691,11 @@ void IE_Imp_XHTML::endElement(const XML_Char *name)
 			X_VerifyParseState(_PS_MetaData);
 			m_parseState = _PS_StyleSec;
 
-			getDoc()->setMetaDataProp(PD_META_KEY_TITLE, m_Title.utf8_str());
-			m_Title.clear();
+			if (!isPasting ())
+				{
+					getDoc()->setMetaDataProp(PD_META_KEY_TITLE, m_Title.utf8_str());
+					m_Title.clear();
+				}
 		}
 
 	case TT_A:
