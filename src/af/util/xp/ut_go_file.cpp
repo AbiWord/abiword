@@ -1221,8 +1221,9 @@ UT_go_file_exists (char const *uri)
 #if defined (GOFFICE_WITH_GNOME)
 	GnomeVFSURI *vfs_uri = gnome_vfs_uri_new (uri);
 	if (vfs_uri) {
+		gboolean exists = gnome_vfs_uri_exists (vfs_uri);
 		gnome_vfs_uri_unref (vfs_uri);
-		return TRUE;
+		return exists;
 	}
 
 	return FALSE;
