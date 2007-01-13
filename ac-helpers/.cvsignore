@@ -6,5 +6,5 @@ ltconfig
 ltmain.sh
 missing
 mkinstalldirs
-
+compile
 GNUmakefile
