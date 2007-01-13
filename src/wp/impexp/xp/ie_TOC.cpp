@@ -112,6 +112,7 @@ TOC_Listener::TOC_Listener(PD_Document * pDocument,
   
 TOC_Listener::~TOC_Listener()
 {
+  _commitTOCData();
 }
 
 bool TOC_Listener::populate(PL_StruxFmtHandle /*sfh*/,
@@ -218,34 +219,22 @@ bool IE_TOCHelper::hasTOC() const
   return mHasTOC;
 }
 
-bool IE_TOCHelper::_tocNameLevelHelper(const UT_UTF8String & styleName,
-				       const char * sLStyle) const
+bool IE_TOCHelper::_tocNameLevelHelper(const UT_UTF8String & style_name,
+				       const char * base_name) const
 {
-  UT_UTF8String sTmpStyle = styleName;
-
-  if(UT_stricmp(sLStyle,sTmpStyle.utf8_str()) == 0)
-    {
-      return true;
-    }
-
-  PD_Style * pStyle = NULL;
-  mDoc->getStyle(sTmpStyle.utf8_str(), &pStyle);
-  if(pStyle != NULL)
-    {
-      UT_sint32 iLoop = 0;
-      while((pStyle->getBasedOn()) != NULL && (iLoop < 10))
-	{
-	  pStyle = pStyle->getBasedOn();
-	  iLoop++;
-	  sTmpStyle = pStyle->getName();
-
-	  if(UT_stricmp(sLStyle,sTmpStyle.utf8_str()) == 0)
-	    {
-	      return true;
-	    }
-	}
-    }
+  PD_Style * style = 0;
+  mDoc->getStyle (style_name.utf8_str(), &style);
+  UT_sint32 iLoop = 0;
   
+  while (style && (iLoop < 10))
+    {
+      if (UT_stricmp (base_name, style->getName ()) == 0)
+	return true;
+      
+      style = style->getBasedOn ();
+      iLoop++;
+    }
+
   return false;
 }
 

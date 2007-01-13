@@ -5531,7 +5531,7 @@ void s_HTML_Listener::_emitTOC (PT_AttrPropIndex api) {
 			UT_UTF8String tocLink(UT_UTF8String_sprintf("<a href=\"#AbiTOC%d__\">", i));
 			tagOpen (TT_P, m_utf8_1);
 			m_bInBlock = true;
-			m_pie->write(tocLink.utf8_str(), tocLink.length());
+			m_pie->write(tocLink.utf8_str(), tocLink.byteLength());
 			_outputData (tocLevelText.ucs4_str(), tocLevelText.length());
 			_outputData (tocText.ucs4_str(), tocText.length());
 			m_pie->write("</a>", 4);
