@@ -214,7 +214,15 @@ void AP_UnixDialog_Field::setTypesList(void)
 	
 	// now select first item in box
  	gtk_widget_grab_focus (m_listTypes);
-	
+
+	GtkTreeSelection* selection = gtk_tree_view_get_selection( GTK_TREE_VIEW(m_listTypes) );
+	if (selection)
+	  {
+	    GtkTreePath * path = gtk_tree_path_new_first ();
+	    gtk_tree_selection_select_path (selection, path);
+	    gtk_tree_path_free (path);
+	  }
+
 	m_iTypeIndex = 0;
 }
 
