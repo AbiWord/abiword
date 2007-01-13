@@ -96,6 +96,10 @@ public:
 	inline const T	back() const			{ return getLastItem(); }
 
 	UT_sint32	addItem(const T p, UT_uint32 * pIndex);
+
+	/* FIXME -- this function assumes that it is possible to do
+	 *          static_cast<T>(0)
+	 */
 	inline T getNthItem(UT_uint32 n) const
 	{
 	    UT_ASSERT_HARMLESS(m_pEntries);

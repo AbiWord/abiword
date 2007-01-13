@@ -216,6 +216,7 @@ public:
 	const UT_UTF8String & escape (const UT_UTF8String & str1,
 				      const UT_UTF8String & str2);  // replaces <str1> with <str2> in the current string
 	const UT_UTF8String & escapeXML ();  // escapes '<', '>' & '&' in the current string
+	const UT_UTF8String & decodeXML ();  // unescapes '<', '>' & '&' in the current string
 	const UT_UTF8String & escapeMIME (); // translates the current string to MIME "quoted-printable" format
 	const UT_UTF8String & lowerCase ();  // forces current string to lowercase
 	const UT_UTF8String & escapeURL ();  // make URL confirm to RFC 1738

@@ -567,7 +567,67 @@ void UT_UTF8Stringbuf::escape (const UT_UTF8String & utf8_str1,
 		}
 }
 
-/* escapes '<', '>' & '&' in the current string
+/* FIXME -- these functions assume that &, <, > and " cannot appear in
+ *          multi-byte utf8 sequence -- I do not think that holds
+ *
+ *          Also, the decode function should handle other & tokens
+ *
+ *          Should use glib to traverse these strings
+ */
+void UT_UTF8Stringbuf::decodeXML ()
+{
+	if (!m_psz)
+		return;
+	
+	size_t shrink = 0;
+	char * p_src = m_psz;
+	char * p_dst = m_psz;
+	
+	while (p_src < m_pEnd && *p_src)
+	{
+		if(*p_src == '&')
+		{
+			if (!strncmp (p_src+1, "amp;", 4))
+			{
+				*p_dst++ = '&';
+				p_src += 5;
+				shrink += 4;
+				continue;
+			}
+			else if (!strncmp (p_src+1, "lt;", 3))
+			{
+				*p_dst++ = '<';
+				p_src += 4;
+				shrink += 3;
+				continue;
+			}
+			else if (!strncmp (p_src+1, "gt;", 3))
+			{
+				*p_dst++ = '>';
+				p_src += 4;
+				shrink += 3;
+				continue;
+			}
+			else if (!strncmp (p_src+1, "quot;", 5))
+			{
+				*p_dst++ = '"';
+				p_src += 6;
+				shrink += 5;
+				continue;
+			}
+		}
+
+		*p_dst = *p_src;
+		
+		p_dst++;
+		p_src++;
+	}
+
+	*p_dst = 0;
+	m_pEnd -= shrink;
+}
+
+/* escapes '<', '>', '\"' and '&' in the current string
  */
 void UT_UTF8Stringbuf::escapeXML ()
 {

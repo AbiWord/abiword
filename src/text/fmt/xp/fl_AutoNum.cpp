@@ -1,3 +1,4 @@
+/* -*- mode: C++; tab-width: 4; c-basic-offset: 4; -*- */
 /* AbiWord
  * Copyright (C) Luke Jordan, Martin Sevior.
  * BIDI Copyright (c) 2001,2002 Tomas Frydrych, Yaacov Akiba Slama
@@ -1391,43 +1392,47 @@ void fl_AutoNum::dec2hebrew(UT_UCSChar labelStr[], UT_uint32 * insPoint, UT_sint
 	} while (value >= 1);
 }
 
-
-const char ** fl_AutoNum::getAttributes(void)
+/* FIXME -- cannot use UT_GenericVector<> here due to the way
+ *          getNthItem() is implemented -- UT_GenericVector<UT_UTF8String>
+ *          cannot be constructed (see comment in ut_vector.h); do not want
+ *          to mess with that class at this very moment.
+ */
+void fl_AutoNum::getAttributes (std::vector<UT_UTF8String> & v,
+								bool bEscapeXML)
 {
-	static char  szID[15], szPid[15], szType[5], szStart[5];
-	UT_Vector va;
+	char szID[15], szPid[15], szType[5], szStart[5];
 
 	sprintf(szID, "%i", m_iID);
-	va.addItem( static_cast<const void *>("id"));
-	va.addItem( static_cast<void *>(szID));
+	v.push_back("id");
+	v.push_back(szID);
 
 	if (m_pParent)
 		sprintf(szPid, "%i", m_pParent->getID());
 	else
 		sprintf(szPid, "0");
-	va.addItem( static_cast<const void *>("parentid"));
-	va.addItem( static_cast<void *>(szPid));
+	v.push_back("parentid");
+	v.push_back(szPid);
 
 	sprintf(szType, "%i", m_List_Type);
-	va.addItem( static_cast<const void *>("type"));
-	va.addItem( static_cast<void *>(szType));
+	v.push_back("type");
+	v.push_back(szType);
 
 	sprintf(szStart, "%i", m_iStartValue);
-	va.addItem( static_cast<const void *>("start-value"));
-	va.addItem( static_cast<void *>(szStart));
+	v.push_back("start-value");
+	v.push_back(szStart);
 
-	va.addItem( static_cast<const void *>("list-delim"));
-	va.addItem( static_cast<void *>(m_pszDelim));
-
-	va.addItem( static_cast<const void *>("list-decimal"));
-	va.addItem( static_cast<void *>(m_pszDecimal));
-
-	UT_uint32 counta = va.getItemCount() + 1;
-	UT_uint32 i;
-	const char ** attribs = static_cast<const char **>(UT_calloc(counta, sizeof(char *)));
-	for (i = 0; i < va.getItemCount(); i++)
+	v.push_back("list-delim");
+	v.push_back (m_pszDelim);
+	if (bEscapeXML)
 	{
-		attribs[i] = static_cast<const char *>(va[i]);
+		v.back().escapeXML();
 	}
-	return attribs;
+	
+	v.push_back("list-decimal");
+	v.push_back (m_pszDecimal);
+	if (bEscapeXML)
+	{
+		v.back().escapeXML();
+	}
 }
+

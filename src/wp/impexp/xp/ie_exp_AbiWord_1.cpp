@@ -363,6 +363,8 @@ void s_AbiWord_1_Listener::_openTag(const char * szPrefix, const char * szSuffix
 
 	UT_UTF8String tag("<");
 	UT_UTF8String url;
+	UT_UTF8String esc;
+	
 	tag += szPrefix;
 
 	const PP_AttrProp * pAP = NULL;
@@ -401,7 +403,9 @@ void s_AbiWord_1_Listener::_openTag(const char * szPrefix, const char * szSuffix
 			}
 			else
 			{
-				tag += szValue;
+				esc = szValue;
+				esc.escapeXML();
+				tag += esc;
 			}
 			
 
@@ -435,7 +439,9 @@ void s_AbiWord_1_Listener::_openTag(const char * szPrefix, const char * szSuffix
 				tag += szName;
 				tag += ":";
 
-				_outputXMLChar (szValue, strlen (szValue));
+				esc = szValue;
+				esc.escapeXML();
+				tag += esc;
 			}
 			if (k > 1) tag += "\"";
 		}
@@ -485,7 +491,9 @@ void s_AbiWord_1_Listener::_openTag(const char * szPrefix, const char * szSuffix
 				_outputXMLChar(url.utf8_str(), url.byteLength());
 			}
 			else
+			{
 				_outputXMLChar(szValue, strlen(szValue));
+			}
 			
 			m_pie->write("\"");
 		}
@@ -646,37 +654,10 @@ void s_AbiWord_1_Listener::_openTag(const char * szPrefix, const char * szSuffix
 // This method is very much like _outputData but uses XML_Chars instead of UT_UCS4_Char's.
 void s_AbiWord_1_Listener::_outputXMLChar(const XML_Char * data, UT_uint32 length)
 {
-	UT_String sBuf;
-	const XML_Char * pData;
-
-	UT_return_if_fail(sizeof(UT_Byte) == sizeof(char));
-
-	for (pData=data; (pData<data+length); /**/)
-	{
-		switch (*pData)
-		{
-		case '<':
-			sBuf += "&lt;";
-			pData++;
-			break;
-
-		case '>':
-			sBuf += "&gt;";
-			pData++;
-			break;
-
-		case '&':
-			sBuf += "&amp;";
-			pData++;
-			break;
-
-		default:
-			sBuf += (char)*pData++;
-			break;
-		}
-	}
-
-	m_pie->write(sBuf.c_str(),sBuf.size());
+	UT_UTF8String sBuf (data, length);
+	sBuf.escapeXML();
+	
+	m_pie->write(sBuf.utf8_str(),sBuf.byteLength());
 }
 
 void s_AbiWord_1_Listener::_outputData(const UT_UCSChar * data, UT_uint32 length)
@@ -1341,8 +1322,9 @@ void s_AbiWord_1_Listener::_handleLists(void)
 	//const char * szPid;
 	//const char * szProps;
 
-#define LCheck(str) (0 == UT_strcmp(attr[0], str))
-
+#define LCheck(str) (0 == UT_strcmp(s.utf8_str(), str))
+	UT_UTF8String esc;
+	
 	fl_AutoNum * pAutoNum;
 	for (UT_uint32 k = 0; (m_pDocument->enumLists(k, &pAutoNum )); k++)
 	{
@@ -1351,20 +1333,31 @@ void s_AbiWord_1_Listener::_handleLists(void)
 		if (pAutoNum->isEmpty() == true)
 			continue;
 
+		std::vector<UT_UTF8String> vAttrs;
+		pAutoNum->getAttributes (vAttrs, true);
+		
 		if (!bWroteOpenListSection)
 		{
 			m_pie->write("<lists>\n");
 			bWroteOpenListSection = true;
 		}
 		m_pie->write("<l");
-		for (attr0 = attr = pAutoNum->getAttributes(); (*attr); attr++)
+		for (UT_sint32 i = 0; i < ((UT_sint32)vAttrs.size()) - 1;
+			 i += 2)
 		{
-			if (LCheck("id") || LCheck("parentid") || LCheck("type") || LCheck("start-value") || LCheck("list-delim") || LCheck("list-decimal"))
+			const UT_UTF8String & s = vAttrs[i];
+			
+			if (LCheck("id")           ||
+				LCheck("parentid")     ||
+				LCheck("type")         ||
+				LCheck("start-value")  ||
+				LCheck("list-delim")   ||
+				LCheck("list-decimal"))
 			{
 				m_pie->write(" ");
-				m_pie->write(attr[0]);
+				m_pie->write(s.utf8_str());
 				m_pie->write("=\"");
-				m_pie->write(attr[1]);
+				m_pie->write(vAttrs[i+1].utf8_str());
 				m_pie->write("\"");
 			}
 		}
@@ -1423,7 +1416,9 @@ void s_AbiWord_1_Listener::_handleMetaData(void)
 	      m_pie->write( "<m key=\"" ) ;
 	      _outputXMLChar ( cursor.key().c_str(), cursor.key().size() ) ;
 	      m_pie->write ( "\">" ) ;
-	      _outputXMLChar ( stringval->utf8_str(), stringval->byteLength() ) ;
+		  UT_UTF8String esc = *stringval;
+		  esc.escapeXML();
+	      _outputXMLChar ( esc.utf8_str(), esc.byteLength() ) ;
 	      m_pie->write ( "</m>\n" ) ;
 	    }
 	}

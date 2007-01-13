@@ -920,6 +920,14 @@ const UT_UTF8String & UT_UTF8String::escapeXML ()
 	return *this;
 }
 
+/* unescapes '<', '>', '"', & '&' in the current string
+ */
+const UT_UTF8String & UT_UTF8String::decodeXML ()
+{
+	pimpl->decodeXML ();
+	return *this;
+}
+
 /* translates the current string to MIME "quoted-printable" format
  */
 const UT_UTF8String & UT_UTF8String::escapeMIME ()

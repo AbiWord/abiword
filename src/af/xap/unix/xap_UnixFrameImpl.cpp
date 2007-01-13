@@ -1278,6 +1278,14 @@ void XAP_UnixFrameImpl::_createTopLevelWindow(void)
 		UT_String icon_location = XAP_App::getApp()->getAbiSuiteLibDir();
 		icon_location += "/icons/abiword_16.xpm" ;
 		wmIcon = gdk_pixbuf_new_from_file(icon_location.c_str(),&err);
+
+		if (err)
+		{
+			UT_DEBUGMSG(("could not load icon: %s\n",
+						 err->message));
+
+			g_error_free (err);
+		}
 	}
 	
 	bool bResult;

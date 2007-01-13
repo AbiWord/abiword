@@ -693,8 +693,12 @@ bool IE_Imp_XHTML::pasteFromBuffer(PD_DocumentRange * pDocRange,
 /*****************************************************************/
 /*****************************************************************/
 
-void IE_Imp_XHTML::startElement(const XML_Char *name, const XML_Char **atts)
+void IE_Imp_XHTML::startElement(const XML_Char *name,
+								const XML_Char **attributes)
 {
+	const XML_Char ** atts =
+		(const XML_Char **)UT_cloneAndDecodeAttributes (attributes);
+	
 	int i = 0;
 	int failLine;
 	failLine = 0;
@@ -721,7 +725,7 @@ void IE_Imp_XHTML::startElement(const XML_Char *name, const XML_Char **atts)
 		m_pMathBB->append(reinterpret_cast<const UT_Byte *>("<"), 1);
 		m_pMathBB->append(reinterpret_cast<const UT_Byte *>(name), strlen(name)); //build the mathml
 		m_pMathBB->append(reinterpret_cast<const UT_Byte *>(">"), 1);
-		return;
+		goto cleanup;
 	}
 
 	switch (tokenIndex)
@@ -730,13 +734,13 @@ void IE_Imp_XHTML::startElement(const XML_Char *name, const XML_Char **atts)
 	  //UT_DEBUGMSG(("Init %d\n", m_parseState));
 		X_VerifyParseState(_PS_Init);
 		m_parseState = _PS_StyleSec;
-		return;
+		goto cleanup;
 
 	case TT_BODY:
 	  //UT_DEBUGMSG(("Doc %d\n", m_parseState));
 		X_VerifyParseState(_PS_StyleSec);
 		m_parseState = _PS_Doc;
-		return;		
+		goto cleanup;		
 
 	case TT_DIV:
 		{
@@ -800,7 +804,7 @@ void IE_Imp_XHTML::startElement(const XML_Char *name, const XML_Char **atts)
 					X_CheckError(requireSection ()); // TODO: handle this intelligently
 				}
 		}
-		return;
+		goto cleanup;
 
 	case TT_Q:
 	case TT_SAMP:
@@ -811,34 +815,34 @@ void IE_Imp_XHTML::startElement(const XML_Char *name, const XML_Char **atts)
 	case TT_EM:
 	case TT_I:
 		X_CheckError(pushInline ("font-style:italic"));
-		return;
+		goto cleanup;
 
 	case TT_DFN:
 	case TT_STRONG:
 	case TT_B:
 		X_CheckError(pushInline ("font-weight:bold"));
-		return;
+		goto cleanup;
 
 	case TT_CODE:
 	case TT_TT:
 		X_CheckError(pushInline ("font-family:Courier"));
-		return;
+		goto cleanup;
 
 	case TT_U:
 		X_CheckError(pushInline ("text-decoration:underline"));
-		return;
+		goto cleanup;
 
 	case TT_S://	case TT_STRIKE:
 		X_CheckError(pushInline ("text-decoration:line-through"));
-		return;
+		goto cleanup;
 
 	case TT_SUP:
 		X_CheckError(pushInline ("text-position:superscript"));
-		return;
+		goto cleanup;
 
 	case TT_SUB:
 		X_CheckError(pushInline ("text-position:subscript"));
-		return;
+		goto cleanup;
 		
 	case TT_FONT:
 		UT_DEBUGMSG(("Font tag encountered\n"));
@@ -864,14 +868,14 @@ void IE_Imp_XHTML::startElement(const XML_Char *name, const XML_Char **atts)
 
 			X_CheckError(pushInline (style.utf8_str ()));
 		}
-		return;
+		goto cleanup;
 
 	case TT_PRE:
 		if (m_parseState == _PS_Block) m_parseState = _PS_Sec;
 		requireBlock ();
 		m_iPreCount++;
 		m_bWhiteSignificant = true;
-		return;
+		goto cleanup;
 
 	case TT_H1:
 	case TT_H2:
@@ -929,7 +933,7 @@ void IE_Imp_XHTML::startElement(const XML_Char *name, const XML_Char **atts)
 					X_CheckError (newBlock ("Normal", style, align));
 				}
 		}
-		return;
+		goto cleanup;
 
 	case TT_OL:	  
 	case TT_UL:
@@ -975,7 +979,7 @@ void IE_Imp_XHTML::startElement(const XML_Char *name, const XML_Char **atts)
 
 		X_CheckError(getDoc()->appendList (listAtts));
 
-		return;
+		goto cleanup;
 	}
 	case TT_LI:
 	case TT_DT:
@@ -1049,7 +1053,7 @@ void IE_Imp_XHTML::startElement(const XML_Char *name, const XML_Char **atts)
 			X_CheckError(appendSpan (&ucs, 1));
 			_data_NewBlock ();
 		}
-		return;
+		goto cleanup;
 	}
 
 	case TT_SPAN:
@@ -1065,7 +1069,7 @@ void IE_Imp_XHTML::startElement(const XML_Char *name, const XML_Char **atts)
 				}
 			X_CheckError(pushInline (utf8val.utf8_str ()));
 		}
-		return;
+		goto cleanup;
 
 	case TT_BR:
 	  //UT_DEBUGMSG(("B %d\n", m_parseState));
@@ -1074,7 +1078,7 @@ void IE_Imp_XHTML::startElement(const XML_Char *name, const XML_Char **atts)
 			UT_UCSChar ucs = UCS_LF;
 			X_CheckError(appendSpan(&ucs,1));
 		}
-		return;
+		goto cleanup;
 
 	case TT_A:
 	{
@@ -1142,7 +1146,7 @@ void IE_Imp_XHTML::startElement(const XML_Char *name, const XML_Char **atts)
 				}
 			}
 		}
-		return;
+		goto cleanup;
 	}
 
 	case TT_IMG:
@@ -1343,7 +1347,7 @@ void IE_Imp_XHTML::startElement(const XML_Char *name, const XML_Char **atts)
 
 		UT_DEBUGMSG(("insertion successful\n"));
 		}
-		return;
+		goto cleanup;
 #ifdef USE_IE_IMP_TABLEHELPER
 	case TT_CAPTION:
 		{
@@ -1429,14 +1433,14 @@ void IE_Imp_XHTML::startElement(const XML_Char *name, const XML_Char **atts)
 	case TT_HEAD:
 	case TT_STYLE:
 		// these tags are ignored for the time being
-		return;
+		goto cleanup;
 
 	case TT_TITLE:
 		{
 			X_VerifyParseState(_PS_StyleSec);
 			m_parseState = _PS_MetaData;
 		}
-		return;
+		goto cleanup;
 
 	case TT_META:
 		{
@@ -1458,7 +1462,7 @@ void IE_Imp_XHTML::startElement(const XML_Char *name, const XML_Char **atts)
 						}
 				}
 		}
-		return;
+		goto cleanup;
 		
 	case TT_RUBY:
 	case TT_RP:
@@ -1470,7 +1474,7 @@ void IE_Imp_XHTML::startElement(const XML_Char *name, const XML_Char **atts)
 		// be retained so it can be exported.
 		X_CheckError(requireBlock ());
 		X_CheckError(appendFmt(new_atts));
-		return;
+		goto cleanup;
 
 	case TT_MATH:
 		X_VerifyParseState(_PS_Block);
@@ -1483,7 +1487,7 @@ void IE_Imp_XHTML::startElement(const XML_Char *name, const XML_Char **atts)
 		m_bInMath = true;
 		m_pMathBB = new UT_ByteBuf;
 		m_pMathBB->append(reinterpret_cast<const UT_Byte *>("<math xmlns='http://www.w3.org/1998/Math/MathML' display='block'>"), 65);
-		return;
+		goto cleanup;
 
 	case TT_OTHER:
 	default:
@@ -1491,13 +1495,23 @@ void IE_Imp_XHTML::startElement(const XML_Char *name, const XML_Char **atts)
 
 		//It's imperative that we keep processing after finding an unknown element
 
-		return;
+		goto cleanup;
 	}
 	UT_ASSERT(m_error == 0);
-	return;
-X_Fail:
-	UT_DEBUGMSG (("X_Fail at %d\n", failLine));
-	return;
+
+  X_Fail:
+  cleanup:
+	XML_Char ** p = (XML_Char **) atts;
+	if (p)
+	{
+		while (*p)
+		{
+			FREEP(*p);
+			++p;
+		}
+
+		free ((void*)atts);
+	}
 }
 
 void IE_Imp_XHTML::endElement(const XML_Char *name)

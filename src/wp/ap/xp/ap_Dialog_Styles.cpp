@@ -937,7 +937,12 @@ void AP_Dialog_Styles::updateCurrentStyle(void)
 	{
 		m_curStyleDesc += (const XML_Char *) m_vecAllProps.getNthItem(i);
 		m_curStyleDesc += ":";
-		m_curStyleDesc += (const XML_Char *) m_vecAllProps.getNthItem(i+1);
+
+		if (m_vecAllProps.getNthItem(i+1) &&
+		    *((const XML_Char *) m_vecAllProps.getNthItem(i+1)))
+		    m_curStyleDesc +=
+			(const XML_Char *) m_vecAllProps.getNthItem(i+1);
+		
 		if(i+2<countp)
 			m_curStyleDesc += "; ";
 	}
@@ -1019,7 +1024,12 @@ bool AP_Dialog_Styles::createNewStyle(const XML_Char * szName)
 	{
 		m_curStyleDesc += (const XML_Char *) m_vecAllProps.getNthItem(i);
 		m_curStyleDesc += ":";
-		m_curStyleDesc += (const XML_Char *) m_vecAllProps.getNthItem(i+1);
+
+		if (m_vecAllProps.getNthItem(i+1) &&
+		    *((const XML_Char *) m_vecAllProps.getNthItem(i+1)))
+		    m_curStyleDesc +=
+			(const XML_Char *) m_vecAllProps.getNthItem(i+1);
+		
 		if(i+2<countp)
 			m_curStyleDesc += "; ";
 	}
@@ -1084,7 +1094,12 @@ bool AP_Dialog_Styles::applyModifiedStyleToDoc(void)
 	{
 		m_curStyleDesc += (const XML_Char *) m_vecAllProps.getNthItem(j);
 		m_curStyleDesc += ":";
-		m_curStyleDesc += (const XML_Char *) m_vecAllProps.getNthItem(j+1);
+
+		if((const XML_Char *) m_vecAllProps.getNthItem(j+1) &&
+		   *((const XML_Char *) m_vecAllProps.getNthItem(j+1)))
+		    m_curStyleDesc +=
+			(const XML_Char *) m_vecAllProps.getNthItem(j+1);
+		
 		if(j+2<countp)
 			m_curStyleDesc += "; ";
 	}
@@ -1397,7 +1412,12 @@ void AP_Dialog_Styles::_populateAbiPreview(bool isNew)
 	{
 		m_curStyleDesc += (const XML_Char *) m_vecAllProps.getNthItem(i);
 		m_curStyleDesc += ":";
-		m_curStyleDesc += (const XML_Char *) m_vecAllProps.getNthItem(i+1);
+
+		if(m_vecAllProps.getNthItem(i+1) &&
+		   *((const XML_Char *) m_vecAllProps.getNthItem(i+1)))
+		    m_curStyleDesc +=
+			(const XML_Char *) m_vecAllProps.getNthItem(i+1);
+		
 		if(i+2<countp)
 			m_curStyleDesc += "; ";
 	}
@@ -1633,7 +1653,9 @@ void AP_Dialog_Styles::_populatePreviews(bool isModify)
 				paraValues[i] = szValue;
 				m_curStyleDesc += (const char *)szName;
 				m_curStyleDesc += ":";
-				m_curStyleDesc += (const char *)szValue;
+
+				if (szValue && *szValue)
+				    m_curStyleDesc += (const char *)szValue;
 				m_curStyleDesc += "; ";
 			}
 		}
@@ -1667,7 +1689,8 @@ void AP_Dialog_Styles::_populatePreviews(bool isModify)
 			{
 				m_curStyleDesc += (const char *)szName;
 				m_curStyleDesc += ":";
-				m_curStyleDesc += (const char *)szValue;
+				if(szValue && *szValue)
+				    m_curStyleDesc += (const char *)szValue;
 				m_curStyleDesc += "; ";
 			}
 //

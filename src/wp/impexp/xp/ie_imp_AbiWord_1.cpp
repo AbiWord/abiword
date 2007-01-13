@@ -310,8 +310,12 @@ static struct xmlToIdMapping s_Tokens[] =
 
 #define TokenTableSize	((sizeof(s_Tokens)/sizeof(s_Tokens[0])))
 
-void IE_Imp_AbiWord_1::startElement(const XML_Char *name, const XML_Char **atts)
+void IE_Imp_AbiWord_1::startElement(const XML_Char *name,
+									const XML_Char **attributes)
 {
+	const XML_Char ** atts =
+		(const XML_Char **)UT_cloneAndDecodeAttributes (attributes);
+	
 	xxx_UT_DEBUGMSG(("startElement: %s\n", name));
 
 	X_EatIfAlreadyError();	// xml parser keeps running until buffer consumed
@@ -322,7 +326,7 @@ void IE_Imp_AbiWord_1::startElement(const XML_Char *name, const XML_Char **atts)
 	// but the two style tags and the doc tag ...
 	if(getLoadStylesOnly() &&
 	   tokenIndex != TT_STYLESECTION && tokenIndex != TT_STYLE && tokenIndex != TT_DOCUMENT)
-		return;
+		goto cleanup;
 
 	switch (tokenIndex)
 	{
@@ -334,7 +338,7 @@ void IE_Imp_AbiWord_1::startElement(const XML_Char *name, const XML_Char **atts)
 		{
 		  X_CheckError(getDoc()->setAttrProp(atts));
 		}
-		return;
+		goto cleanup;
 
 	case TT_SECTION:
 	{
@@ -352,7 +356,7 @@ void IE_Imp_AbiWord_1::startElement(const XML_Char *name, const XML_Char **atts)
 		    m_parseState = _PS_Sec;
 		    m_bWroteSection = true;
 		    X_CheckError(appendStrux(PTX_Section,atts));
-		    return;
+		    goto cleanup;
 		}
 		else
 		{
@@ -368,11 +372,11 @@ void IE_Imp_AbiWord_1::startElement(const XML_Char *name, const XML_Char **atts)
 				m_parseState = _PS_Sec;
 				m_bWroteSection = true;
 				X_CheckError(appendStrux(PTX_Section,atts));
-				return;
+				goto cleanup;
 			}
 			m_error = UT_IE_SKIPINVALID;
 		    X_EatIfAlreadyError();
-		    return;
+		    goto cleanup;
 		}
 	}
 	case TT_FOOTNOTE:
@@ -397,7 +401,7 @@ void IE_Imp_AbiWord_1::startElement(const XML_Char *name, const XML_Char **atts)
 
 		X_CheckError(appendStrux(PTX_SectionFootnote,atts));
 		xxx_UT_DEBUGMSG(("FInished Append footnote strux \n"));
-		return;
+		goto cleanup;
 	}
 	case TT_ENDNOTE:
 	{
@@ -421,7 +425,7 @@ void IE_Imp_AbiWord_1::startElement(const XML_Char *name, const XML_Char **atts)
 
 		X_CheckError(appendStrux(PTX_SectionEndnote,atts));
 		xxx_UT_DEBUGMSG(("Finished Append Endnote strux \n"));
-		return;
+		goto cleanup;
 	}
 	case TT_TOC:
 	{
@@ -431,7 +435,7 @@ void IE_Imp_AbiWord_1::startElement(const XML_Char *name, const XML_Char **atts)
 		m_bWroteSection = true;
 		X_CheckError(appendStrux(PTX_SectionTOC,atts));
 		UT_DEBUGMSG(("Finished Append TOC strux \n"));
-		return;
+		goto cleanup;
 	}
 	case TT_BLOCK:
 	{
@@ -459,11 +463,11 @@ void IE_Imp_AbiWord_1::startElement(const XML_Char *name, const XML_Char **atts)
 		}
 		X_CheckError(appendStrux(PTX_Block,atts));
 		m_iInlineStart = getOperationCount();
-		return;
+		goto cleanup;
 	}
 	case TT_INLINE:
 		// ignored for fields
-		if (m_parseState == _PS_Field) return;
+		if (m_parseState == _PS_Field) goto cleanup;
 
 		// when pasting from clipboard, the doc might not open with section/paragraph
 		if(!isClipboard() || m_bWroteParagraph)
@@ -481,7 +485,7 @@ void IE_Imp_AbiWord_1::startElement(const XML_Char *name, const XML_Char **atts)
 			X_CheckError(appendFmt(&m_vecInlineFmt));
 
 		m_iInlineStart++;
-		return;
+		goto cleanup;
 
 		// Images and Fields are not containers.  Therefore we don't
 		// push the ParseState (_PS_...).
@@ -493,12 +497,12 @@ void IE_Imp_AbiWord_1::startElement(const XML_Char *name, const XML_Char **atts)
 		if(m_bInMath)
 		{
 			UT_DEBUGMSG(("Ignore image in math-tag \n"));
-			return;
+			goto cleanup;
 		}
 		if(m_bInEmbed)
 		{
 			UT_DEBUGMSG(("Ignore image in embed-tag \n"));
-			return;
+			goto cleanup;
 		}
 		X_VerifyParseState(_PS_Block);
 #ifdef ENABLE_RESOURCE_MANAGER
@@ -512,7 +516,7 @@ void IE_Imp_AbiWord_1::startElement(const XML_Char *name, const XML_Char **atts)
 		//
 		X_CheckError(appendObject(PTO_Image,atts));
 #endif
-		return;
+		goto cleanup;
 	}
 	case TT_MATH:
 	{
@@ -521,7 +525,7 @@ void IE_Imp_AbiWord_1::startElement(const XML_Char *name, const XML_Char **atts)
 		m_iImageId++;
 		getDoc()->setMinUID(UT_UniqueId::Image, m_iImageId);
 		m_bInMath = true;
-		return;
+		goto cleanup;
 	}
 	case TT_EMBED:
 	{
@@ -531,17 +535,17 @@ void IE_Imp_AbiWord_1::startElement(const XML_Char *name, const XML_Char **atts)
 		m_iImageId++;
 		getDoc()->setMinUID(UT_UniqueId::Image, m_iImageId);
 		m_bInEmbed = true;
-		return;
+		goto cleanup;
 	}
 	case TT_BOOKMARK:
 		X_VerifyParseState(_PS_Block);
 		X_CheckError(appendObject(PTO_Bookmark,atts));
-		return;
+		goto cleanup;
 		
 	case TT_HYPERLINK:
 		X_VerifyParseState(_PS_Block);
 		X_CheckError(appendObject(PTO_Hyperlink,atts));
-		return;
+		goto cleanup;
 
 	case TT_FIELD:
 	{
@@ -558,7 +562,7 @@ void IE_Imp_AbiWord_1::startElement(const XML_Char *name, const XML_Char **atts)
 			}
 		}
 #endif
-		return;
+		goto cleanup;
 	}
 
 		// Forced Line Breaks are not containers.  Therefore we don't
@@ -570,7 +574,7 @@ void IE_Imp_AbiWord_1::startElement(const XML_Char *name, const XML_Char **atts)
 	
 	case TT_BREAK:
 		if(X_TestParseState(_PS_Field))
-			return; // just return
+			goto cleanup; // just return
 
 		X_VerifyParseState(_PS_Block);
 
@@ -583,7 +587,7 @@ void IE_Imp_AbiWord_1::startElement(const XML_Char *name, const XML_Char **atts)
 			UT_UCSChar ucs = UCS_LF;
 			X_CheckError(appendSpan(&ucs,1));
 		}
-		return;
+		goto cleanup;
 
 	case TT_COLBREAK:
 		X_VerifyParseState(_PS_Block);
@@ -597,7 +601,7 @@ void IE_Imp_AbiWord_1::startElement(const XML_Char *name, const XML_Char **atts)
 			UT_UCSChar ucs = UCS_VTAB;
 			X_CheckError(appendSpan(&ucs,1));
 		}
-		return;
+		goto cleanup;
 
 	case TT_PAGEBREAK:
 		X_VerifyParseState(_PS_Block);
@@ -610,14 +614,14 @@ void IE_Imp_AbiWord_1::startElement(const XML_Char *name, const XML_Char **atts)
 			UT_UCSChar ucs = UCS_FF;
 			X_CheckError(appendSpan(&ucs,1));
 		}
-		return;
+		goto cleanup;
 
 	case TT_DATASECTION:
 		X_VerifyParseState(_PS_Doc);
 		m_parseState = _PS_DataSec;
 		// We don't need to notify the piece table of the data section,
 		// it will get the hint when we begin sending data items.
-		return;
+		goto cleanup;
 
 	case TT_DATAITEM:
 		X_VerifyParseState(_PS_DataSec);
@@ -630,7 +634,7 @@ void IE_Imp_AbiWord_1::startElement(const XML_Char *name, const XML_Char **atts)
 		X_CheckError(UT_XML_cloneString(m_currentDataItemMimeType,_getDataItemMimeType(atts)));
 		m_currentDataItemEncoded = _getDataItemEncoded(atts);
 #endif
-		return;
+		goto cleanup;
 
 	case TT_RESOURCE:
 #ifdef ENABLE_RESOURCE_MANAGER
@@ -638,14 +642,14 @@ void IE_Imp_AbiWord_1::startElement(const XML_Char *name, const XML_Char **atts)
 		m_parseState = _PS_DataItem;
 		_handleResource (atts, true);
 #endif
-		return;
+		goto cleanup;
 
 	case TT_STYLESECTION:
 		X_VerifyParseState(_PS_Doc);
 		m_parseState = _PS_StyleSec;
 		// We don't need to notify the piece table of the style section,
 		// it will get the hint when we begin sending styles.
-		return;
+		goto cleanup;
 
 	case TT_STYLE:
 	{
@@ -666,7 +670,7 @@ void IE_Imp_AbiWord_1::startElement(const XML_Char *name, const XML_Char **atts)
 		{
 			X_CheckError(getDoc()->appendStyle(atts));
 		}
-		return;
+		goto cleanup;
 	}
 
 	case TT_REVISIONSECTION:
@@ -718,7 +722,7 @@ void IE_Imp_AbiWord_1::startElement(const XML_Char *name, const XML_Char **atts)
 			
 			
 		}
-		return;
+		goto cleanup;
 	}
 
 	case TT_REVISION:
@@ -741,7 +745,7 @@ void IE_Imp_AbiWord_1::startElement(const XML_Char *name, const XML_Char **atts)
 				m_currentRevisionVersion = atoi(szS);
 		}
 
-		return;
+		goto cleanup;
 	}
 
 	case TT_HISTORYSECTION:
@@ -778,7 +782,7 @@ void IE_Imp_AbiWord_1::startElement(const XML_Char *name, const XML_Char **atts)
 			getDoc()->setDocUUID(szS);
 		}
 		
-		return;
+		goto cleanup;
 	}
 	
 	case TT_VERSION:
@@ -814,14 +818,14 @@ void IE_Imp_AbiWord_1::startElement(const XML_Char *name, const XML_Char **atts)
 			getDoc()->addRecordToHistory(v);
 		}
 
-		return;
+		goto cleanup;
 	}
 
 		case TT_LISTSECTION:
 		X_VerifyParseState(_PS_Doc);
 		m_parseState = _PS_ListSec;
 		// As per styles, we don't need to notify the piece table.
-		return;
+		goto cleanup;
 
 	case TT_LIST:
 		X_VerifyParseState(_PS_ListSec);
@@ -829,59 +833,72 @@ void IE_Imp_AbiWord_1::startElement(const XML_Char *name, const XML_Char **atts)
 		// Urgh! Complex. I think how done.
 		X_CheckError(getDoc()->appendList(atts));
 		m_bDocHasLists = true;
-		return;
+		goto cleanup;
 
 	case TT_PAGESIZE:
 		X_VerifyParseState(_PS_Doc);
 		m_parseState = _PS_PageSize;
 		X_CheckError(getDoc()->setPageSizeFromFile(atts));
 		m_bDocHasPageSize = true;
-		return;
+		goto cleanup;
 
 	case TT_IGNOREDWORDS:
 		X_VerifyParseState(_PS_Doc);
 		m_parseState = _PS_IgnoredWordsSec;
-		return;
+		goto cleanup;
 
 	case TT_IGNOREDWORD:
 		X_VerifyParseState(_PS_IgnoredWordsSec);
 		m_parseState = _PS_IgnoredWordsItem;
-		return;
+		goto cleanup;
 
 	case TT_METADATA:
 		X_VerifyParseState(_PS_Doc);
 		m_parseState = _PS_MetaData;
-		return;
+		goto cleanup;
 
 	case TT_META:
 		X_VerifyParseState(_PS_MetaData);
 		m_parseState = _PS_Meta;
 		m_currentMetaDataName = _getXMLPropValue("key", atts);
-		return;
+		goto cleanup;
 
 	case TT_TABLE:
 		m_parseState = _PS_Sec;
 		m_bWroteSection = true;
 		X_CheckError(appendStrux(PTX_SectionTable,atts));
-		return;
+		goto cleanup;
 
 	case TT_CELL:
 		m_parseState = _PS_Sec;
 		m_bWroteSection = true;
 		X_CheckError(appendStrux(PTX_SectionCell,atts));
-		return;
+		goto cleanup;
 
 	case TT_FRAME:
 		m_parseState = _PS_Sec;
 		m_bWroteSection = true;
 		X_CheckError(appendStrux(PTX_SectionFrame,atts));
-		return;
+		goto cleanup;
 
 	case TT_OTHER:
 	default:
 		UT_DEBUGMSG(("Unknown tag [%s]\n",name));
 		   UT_ASSERT_NOT_REACHED();
-		return;
+		goto cleanup;
+	}
+
+  cleanup:
+	XML_Char ** p = (XML_Char **) atts;
+	if (p)
+	{
+		while (*p)
+		{
+			FREEP(*p);
+			++p;
+		}
+
+		free ((void*)atts);
 	}
 }
 

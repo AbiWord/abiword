@@ -1,4 +1,4 @@
-/* Copyright etc. */
+/* -*- mode: C++; tab-width: 4; c-basic-offset: 4; -*- */
 /* AbiWord
  * Copyright (C) 1998,1999 AbiSource, Inc.
  * BIDI Copyright (c) 2001,2002 Tomas Frydrych, Yaacov Akiba Slama
@@ -28,12 +28,14 @@
 #include "pt_Types.h"
 #include "fl_AutoLists.h"
 
+#include <vector>
+
 // fwd. decl.
 class fl_BlockLayout;
 class fl_Layout;
 class PD_Document;
 class FV_View;
-
+class UT_UTF8String;
 
 class ABI_EXPORT fl_AutoNum
 {
@@ -119,8 +121,10 @@ public:
 	static char *				dec2roman(UT_sint32 value, bool lower);
 	static char *				dec2ascii(UT_sint32 value, UT_uint32 offset);
 	static void					dec2hebrew(UT_UCSChar labelStr[], UT_uint32 * insPoint, UT_sint32 value);
-	const char **				getAttributes(void) ;
-	PL_StruxDocHandle                       getLastItemInHeiracy(void);
+	void                        getAttributes(std::vector<UT_UTF8String>&v,
+											  bool bEscapeXML);
+	
+	PL_StruxDocHandle           getLastItemInHeiracy(void);
 protected:
 	void                        _setParent(fl_AutoNum * pParent);
 	void                        _setParentID(UT_uint32 iParentID);
