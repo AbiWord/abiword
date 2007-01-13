@@ -32,6 +32,9 @@ PKG_CHECK_MODULES(GOFFICE, [ $goffice_modules ],
 	HAVE_SYSTEM_GOFFICE=no
 ])
 
+if test "x$PLATFORM" != "xunix" ; then
+	HAVE_SYSTEM_GOFFICE=yes
+fi
 if test "x$HAVE_SYSTEM_GOFFICE" = "xyes" ; then
 	abi_goffice_message="system"
 else
