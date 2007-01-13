@@ -4319,6 +4319,7 @@ s_HTML_Listener::s_HTML_Listener (PD_Document * pDocument, IE_Exp_HTML * pie, bo
 		m_toc(0),
 		m_heading_count(0)
 {
+	m_toc = new IE_TOCHelper (m_pDocument);
 	m_StyleTreeBody = m_style_tree->find ("Normal");
 }
 
@@ -5394,8 +5395,6 @@ bool s_HTML_Listener::populateStrux (PL_StruxDocHandle sdh,
 			}
 		case PTX_SectionTOC: 
 			{
-				if (!m_toc)
-					m_toc = new IE_TOCHelper (m_pDocument);
 				_emitTOC (pcr->getIndexAP());
 				return true;
 			}
