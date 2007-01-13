@@ -349,6 +349,8 @@ G_BEGIN_DECLS
   gchar * abi_widget_get_selection (AbiWidget * w, gchar * mimetype, 
 gint* iLength);
 
+ gboolean abi_widget_insert_table(AbiWidget * w, gint32 rows, gint32 cols);
+
 #ifdef HAVE_BONOBO
   void        abi_widget_set_Bonobo_uic(AbiWidget * abi,BonoboUIComponent * uic);
   BonoboUIComponent * abi_widget_get_Bonobo_uic(AbiWidget * abi);  

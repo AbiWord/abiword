@@ -92,6 +92,10 @@ void	   abi_table_get_max_size   (const AbiTable* abi_table, guint* rows, guint*
 	/* Sets the labels */
 	void abi_table_set_labels(AbiTable* abi_table, gchar * szTable, gchar * szCancel);
 
+	/* Returns the label widget */
+
+	GtkWidget * abi_table_get_label(AbiTable* abi_table);
+
 #ifdef __cplusplus
 }
 #endif

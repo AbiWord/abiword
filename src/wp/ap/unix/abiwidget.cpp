@@ -979,6 +979,17 @@ abi_widget_get_selection(AbiWidget * w, gchar * mimetype,gint * iLength)
 }
 
 extern "C" gboolean
+abi_widget_insert_table(AbiWidget * abi, gint32 rows, gint32 cols)
+{
+	AP_UnixFrame * pFrame = (AP_UnixFrame *) abi->priv->m_pFrame;
+	if(pFrame == NULL)
+		return FALSE;
+	FV_View * pView = static_cast<FV_View *>(pFrame->getCurrentView());
+	pView->cmdInsertTable(rows,cols,NULL);
+	return TRUE;
+}
+
+extern "C" gboolean
 abi_widget_load_file(AbiWidget * abi, const char * pszFile)
 {
 	if(abi->priv->m_szFilename)

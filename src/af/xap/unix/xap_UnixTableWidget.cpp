@@ -675,7 +675,9 @@ abi_table_init (AbiTable* table)
 		table->icon = gtk_image_new_from_stock ("abi-table-widget", GTK_ICON_SIZE_LARGE_TOOLBAR);
 		gtk_widget_show(table->icon);
 		gtk_widget_show(table->label);
-		gtk_box_pack_end(GTK_BOX(table->button_box), table->label, FALSE, FALSE, 0);
+		//
+		// We actually never want this label in toolbar
+		//		gtk_box_pack_end(GTK_BOX(table->button_box), table->label, FALSE, FALSE, 0);
 		gtk_box_pack_end(GTK_BOX(table->button_box), table->icon, FALSE, FALSE, 0);
 		UT_DEBUGMSG(("abi-table icon loaded %x !\n",table->icon));
 	}
@@ -685,7 +687,7 @@ abi_table_init (AbiTable* table)
 		UT_DEBUGMSG(("abi-table icon did not load !\n"));
 		UT_ASSERT_HARMLESS(UT_SHOULD_NOT_HAPPEN);
 		table->label = gtk_label_new_with_mnemonic("_Table");
-		gtk_box_pack_end(GTK_BOX(table->button_box), table->label, FALSE, FALSE, 0);
+		//		gtk_box_pack_end(GTK_BOX(table->button_box), table->label, FALSE, FALSE, 0);
 	}
 
 	gtk_container_add(GTK_CONTAINER(table), GTK_WIDGET(table->button_box));
@@ -751,3 +753,7 @@ abi_table_new (void)
 	return GTK_WIDGET (g_object_new (abi_table_get_type (), NULL));
 }
 
+ GtkWidget* abi_table_get_label(AbiTable* abi_table)
+{
+	return abi_table->label;
+}
