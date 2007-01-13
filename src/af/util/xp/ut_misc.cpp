@@ -618,40 +618,17 @@ const char * UT_pathSuffix(const char * path)
 	if (!path)
 		return NULL;
 
-	// This algorithm is pretty simple.  We search backwards for
+	// This algorithm is pretty simple.  We search for
 	// a dot, and if the dot happens AFTER the last slash (if there
 	// is a slash), we consider the stuff beyond the dot (in
 	// the forward direction) the extension.
-	const char * dotpos = strrchr(path, '.');
+
 	const char * slashpos = strrchr(path, ut_PATHSEP);
 
 	if (slashpos)
-	{
-		// There is a slash, we have a file like "/foo/bar/mox.txt"
-		// or "/foo/bar/mox" or "/foo.dir/bar/mox.txt" or
-		// "/foo.dir/bar/mox".
-
-		// If there is a dot, and it's after the slash, the extension
-		// is to the right.  If the dot is before the slash, there is
-		// no extension.  If there's no dot, there's no extension.
-		if (dotpos)
-			if (dotpos > slashpos)
-				return dotpos;
-			else
-				return NULL;
-		else
-			return NULL;
-	}
+	  return strchr (slashpos + 1, '.');
 	else
-	{
-		// There is no slash, we have a path like "file" or "file.txt".
-
-		// If there's a dot, return
-		if (dotpos)
-			return dotpos;
-		else
-			return NULL;
-	}
+	  return strchr (path, '.');
 }
 
 
