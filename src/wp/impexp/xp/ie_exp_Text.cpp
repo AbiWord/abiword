@@ -728,10 +728,8 @@ bool Text_Listener::populate(PL_StruxFmtHandle /*sfh*/,
 				// Lossy, but pretty much unavoidable
 				field = pcro->getField();
 				UT_return_val_if_fail(field, false);
-//
-// Sevior: This makes me really unconfortable. I this will only work for piecetable
-// fields
-//
+
+				m_pie->populateFields ();
 				if(field->getValue() != NULL)
 					m_pie->write(field->getValue());
 

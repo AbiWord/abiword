@@ -40,6 +40,7 @@ class UT_ByteBuf;
 //////////////////////////////////////////////////////////////////
 
 class IE_Exp;
+class IE_FieldUpdater;
 
 class ABI_EXPORT IE_ExpSniffer : public UT_AbiObject
 {
@@ -151,6 +152,8 @@ public:
 		return getDocRange () != NULL;
 	}
 
+	void populateFields();
+
 protected:
 	// todo: remove the = 0 for 2.2
 	IE_Exp(PD_Document * pDocument, UT_Confidence_t fidelity = 0);
@@ -197,6 +200,7 @@ private:
 	UT_UTF8Hash			m_props_map;
 
 	UT_Confidence_t		m_fidelity;
+	IE_FieldUpdater  *  m_fieldUpdater;
 };
 
 

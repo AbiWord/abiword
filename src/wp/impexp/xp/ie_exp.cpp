@@ -42,6 +42,60 @@ static UT_GenericVector<IE_ExpSniffer *> m_sniffers(20);
 /*****************************************************************/
 /*****************************************************************/
 
+#include "fv_View.h"
+#include "xap_App.h"
+
+#if defined(XP_UNIX_TARGET_GTK)
+#include "gr_UnixNullGraphics.h"
+#endif
+
+class IE_FieldUpdater
+{
+public:
+	
+	IE_FieldUpdater()
+	{
+		updatedFields_ = false;
+	}
+
+	void updateFields(PD_Document * pDoc)
+	{
+		if (updatedFields_)
+			return;
+
+		// todo: support other platforms when possible
+		GR_Graphics * graphics = NULL;
+
+#if defined(XP_UNIX_TARGET_GTK)
+		GR_UnixNullGraphicsAllocInfo ai;
+		graphics = XAP_App::getApp()->newGraphics(GRID_UNIX_NULL, (GR_AllocInfo&)ai);
+#endif
+
+		if (graphics)
+			{
+				FL_DocLayout * pDocLayout = new FL_DocLayout(pDoc, graphics);
+				FV_View * printView = new FV_View(XAP_App::getApp(), 0, pDocLayout);
+				
+				printView->getLayout()->fillLayouts();
+				printView->getLayout()->formatAll();
+				printView->getLayout()->recalculateTOCFields();
+				
+				DELETEP(pDocLayout);
+				DELETEP(printView);
+				DELETEP(graphics);
+				
+				updatedFields_ = true;
+			}
+	}
+
+private:
+
+	bool updatedFields_;
+};
+
+/*****************************************************************/
+/*****************************************************************/
+
 IE_ExpSniffer::IE_ExpSniffer (const char * name, bool canCopy)
 	: m_name(name),
 	  m_type(IEFT_Bogus),
@@ -128,7 +182,8 @@ void IE_Exp::unregisterAllExporters ()
 IE_Exp::IE_Exp(PD_Document * pDocument, UT_Confidence_t fidelity)
 	: m_error(false), m_pDocument(pDocument),
 	  m_pDocRange (0), m_pByteBuf(0),
-	  m_szFileName(0), m_fp(0), m_bOwnsFp(false), m_fidelity(fidelity)
+	  m_szFileName(0), m_fp(0), m_bOwnsFp(false), m_fidelity(fidelity),
+	  m_fieldUpdater(0)
 {
 	m_pDocument->invalidateCache();
 }
@@ -137,11 +192,21 @@ IE_Exp::~IE_Exp()
 {
 	if (m_fp)
 		_closeFile();
+
+	DELETEP(m_fieldUpdater);
 	g_free(m_szFileName);
 }
 
 /*****************************************************************/
 /*****************************************************************/
+
+void IE_Exp::populateFields()
+{
+	if (!m_fieldUpdater)
+		m_fieldUpdater = new IE_FieldUpdater;
+
+	m_fieldUpdater->updateFields (getDoc ());
+}
 
 void IE_Exp::setProps (const char * props)
 {

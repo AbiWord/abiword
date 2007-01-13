@@ -4832,6 +4832,8 @@ void s_HTML_Listener::_handleField (const PX_ChangeRecord_Object * pcro,
 
 	fd_Field * field = pcro->getField ();
 
+	m_pie->populateFields ();
+
 	if (UT_strcmp (szType, "list_label") != 0)
 	{
 		// TODO: Text styles?  (maybe not)
