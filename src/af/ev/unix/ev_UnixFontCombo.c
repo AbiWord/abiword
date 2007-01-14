@@ -258,7 +258,6 @@ renderer_prelight_cb (AbiFontCombo		*self,
 		   const gchar		*text, 
 		   GtkCellRenderer 	*renderer)
 {
-printf("got text: %p\n");
 	g_signal_emit (G_OBJECT (self), font_combo_signals[PRELIGHT],
 		       0, text);
 }
