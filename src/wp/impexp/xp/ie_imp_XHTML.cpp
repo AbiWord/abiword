@@ -601,14 +601,75 @@ static void s_append_color (UT_UTF8String & style, const char * color, const cha
 /*****************************************************************/
 /*****************************************************************/
 
+static bool recognizeXHTML (const char * szBuf, UT_uint32 iNumbytes)
+{
+	UT_uint32 iLinesToRead = 6 ;  // Only examine the first few lines of the file
+	UT_uint32 iBytesScanned = 0 ;
+	const char *p ;
+	char *magic ;
+	p = szBuf ;
+	while( iLinesToRead-- )
+	{
+		magic = "<?xml ";
+		if ( (iNumbytes - iBytesScanned) < strlen(magic) ) return(false);
+		if ( strncmp(p, magic, strlen(magic)) == 0 ) return(true);
+
+		magic = "<html xmlns=\"http://www.w3.org/1999/xhtml\" " ;
+		if ( (iNumbytes - iBytesScanned) < strlen(magic) ) return(false);
+		if ( strncmp(p, magic, strlen(magic)) == 0 ) return(true);
+
+		/*  Seek to the next newline:  */
+		while ( *p != '\n' && *p != '\r' )
+		{
+			iBytesScanned++ ; p++ ;
+			if( iBytesScanned+2 >= iNumbytes ) return(false);
+		}
+		/*  Seek past the next newline:  */
+		if ( *p == '\n' || *p == '\r' )
+		{
+			iBytesScanned++ ; p++ ;
+			if ( *p == '\n' || *p == '\r' )
+			{
+				iBytesScanned++ ; p++ ;
+			}
+		}
+	}
+
+	return false;
+}
+
 UT_Error IE_Imp_XHTML::_loadFile(GsfInput * input)
 {
-	UT_HTML parser;
-	setParser (&parser);
+	// see bug 10726 for why this is so convoluted, at least
+	// until libxml2's HTML4 parser supports embedded namespaces
+	bool is_xml = false;
+	UT_Error e = UT_ERROR;
 
-	UT_Error e = IE_Imp_XML::_loadFile(input);
+	{
+		GsfInputMarker input_marker (input);
 
+		gsf_off_t size = gsf_input_remaining (input);
+		if (size > 5 /* strlen(magic) */)
+			{
+				char buf[1024];
+
+				gsf_input_read (input, UT_MIN(size, sizeof(buf)), (guint8*)buf);
+				
+				is_xml = recognizeXHTML (buf, UT_MIN(size, sizeof(buf)));
+			}
+	}
+
+	UT_XML * parser;
+
+	if (is_xml)
+		parser = new UT_XML;
+	else
+		parser = new UT_HTML;
+			
+	setParser (parser);
+	e = IE_Imp_XML::_loadFile(input);
 	setParser(0);
+	delete parser;
 
 	// m_parseState = _PS_Sec; // no point having another sections the end
  	if (!requireBlock ()) e = UT_IE_BOGUSDOCUMENT;
@@ -625,7 +686,13 @@ bool IE_Imp_XHTML::pasteFromBuffer(PD_DocumentRange * pDocRange,
 	
 	PD_Document * newDoc = new PD_Document(getDoc()->getApp());
 	newDoc->createRawDocument();
-	UT_XML * newXML = new UT_XML;
+	UT_XML * newXML;
+
+	if (recognizeXHTML ((const char *)pData, lenData))
+		newXML = new UT_XML;
+	else
+		newXML = new UT_HTML;
+
 	IE_Imp_XHTML * p = new IE_Imp_XHTML(newDoc);
 	newXML->setListener(p);
 	UT_ByteBuf buf (lenData);
