@@ -1738,6 +1738,7 @@ bool fl_DocListener::insertStrux(PL_StruxFmtHandle sfh,
 #endif
 #endif
 	fl_Layout * pL = (fl_Layout *)sfh;
+	UT_return_val_if_fail(pL,false);
 	xxx_UT_DEBUGMSG(("Previous strux %x type %d \n",pL, pL->getType()));
 	xxx_UT_DEBUGMSG(("Insert strux type %d \n",pcrx->getStruxType()));
 	switch (pL->getType())				// see what the immediately prior strux is.
