@@ -41,9 +41,13 @@
 #endif
 #define XML_Char xmlChar
 
-UT_HTML::UT_HTML ()
+UT_HTML::UT_HTML (const char * szEncoding)
 {
-	// 
+	if (szEncoding && *szEncoding)
+		{
+			m_encoding = szEncoding;
+			m_encoding = m_encoding.lowerCase ();
+		}
 }
 
 UT_HTML::~UT_HTML ()
@@ -153,9 +157,11 @@ UT_Error UT_HTML::parse (const char * szFilename)
 
 	if (length != 0)
 		{
+			xmlCharEncoding encoding = xmlParseCharEncoding (m_encoding.utf8_str());
+
 			ctxt = htmlCreatePushParserCtxt (&hdl, static_cast<void *>(this),
 											 buffer, static_cast<int>(length),
-											 szFilename, XML_CHAR_ENCODING_NONE);
+											 szFilename, encoding);
 			if (ctxt == NULL)
 				{
 					UT_DEBUGMSG (("Unable to create libxml2 push-parser context!\n"));

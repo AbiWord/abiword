@@ -691,7 +691,7 @@ bool IE_Imp_XHTML::pasteFromBuffer(PD_DocumentRange * pDocRange,
 	if (recognizeXHTML ((const char *)pData, lenData))
 		newXML = new UT_XML;
 	else
-		newXML = new UT_HTML;
+		newXML = new UT_HTML (szEncoding);
 
 	IE_Imp_XHTML * p = new IE_Imp_XHTML(newDoc);
 	newXML->setListener(p);
