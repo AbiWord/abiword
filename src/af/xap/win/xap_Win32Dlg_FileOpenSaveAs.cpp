@@ -297,7 +297,10 @@ void XAP_Win32Dialog_FileOpenSaveAs::runModal(XAP_Frame * pFrame)
 		// it.	either way, we need to cut the pathname into two
 		// parts -- directory and file -- for the common dlg.
 
-		strcpy(szDir,m_szInitialPathname);
+		const char * szURI = g_filename_from_uri(m_szInitialPathname, NULL, NULL);
+		UT_return_if_fail(szURI);
+
+		strcpy(szDir,AP_Win32App::s_fromUTF8ToWinLocale(szURI).c_str());
 		char * pLastSlash = strrchr(szDir, '/');
 		if (pLastSlash)
 			pLastSlash[1] = 0;
@@ -306,9 +309,9 @@ void XAP_Win32Dialog_FileOpenSaveAs::runModal(XAP_Frame * pFrame)
 		if (m_bSuggestName)
 		{
 			if (pLastSlash)
-				strcpy(szFile, m_szInitialPathname + (pLastSlash-szDir+1));
+				strcpy(szFile, AP_Win32App::s_fromUTF8ToWinLocale(szURI).c_str() + (pLastSlash-szDir+1));
 			else
-				strcpy(szFile, m_szInitialPathname);
+				strcpy(szFile, AP_Win32App::s_fromUTF8ToWinLocale(szURI).c_str());
 
 			// if the file name has an extension, remove it
 			// (if we don't, and the document is of a different
@@ -319,6 +322,8 @@ void XAP_Win32Dialog_FileOpenSaveAs::runModal(XAP_Frame * pFrame)
 			if(dot)
 				*dot = 0;
 		}
+
+		g_free(szURI);
 	}
 
 	// display the appropriate dialog box.
