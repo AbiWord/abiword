@@ -1368,6 +1368,8 @@ int AP_UnixApp::main(const char * szAppName, int argc, const char ** argv)
 	XAP_Args XArgs = XAP_Args(argc,argv);
 	AP_UnixApp * pMyUnixApp = new AP_UnixApp(&XArgs, szAppName);
 
+	int exit_status = 0;
+
 	/* this brace is here to ensure that our local variables on the stack
 	 * do not outlive the application object by giving them a lower scope
 	 */
@@ -1540,7 +1542,8 @@ int AP_UnixApp::main(const char * szAppName, int argc, const char ** argv)
 			}
 		}
 		else {
-			UT_DEBUGMSG(("No DISPLAY: this may not be what you want.\n"));
+			fprintf(stderr, "No DISPLAY: this may not be what you want.\n");
+			exit_status = 1;
 		}
 		// unload all loaded plugins (remove some of the memory leaks shown at shutdown :-)
 		XAP_ModuleManager::instance().unloadAllPlugins();
@@ -1550,9 +1553,8 @@ int AP_UnixApp::main(const char * szAppName, int argc, const char ** argv)
 	}
 	
 	delete pMyUnixApp;
-
 	
-	return 0;
+	return exit_status;
 }
 	
 void AP_UnixApp::errorMsgBadArg(AP_Args * Args, int nextopt)
