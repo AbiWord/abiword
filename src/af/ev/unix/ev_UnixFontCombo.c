@@ -183,7 +183,7 @@ abi_cell_renderer_font_class_init (AbiCellRendererFontClass *klass)
 			NULL, NULL,
 			g_cclosure_marshal_VOID__POINTER,
 			G_TYPE_NONE, 1,
-			G_TYPE_STRING);
+			G_TYPE_POINTER);
 
 	cell_renderer_font_signals[RENDERER_POPUP_CLOSED] =
 		g_signal_new ("renderer-popup-closed",
@@ -258,6 +258,7 @@ renderer_prelight_cb (AbiFontCombo		*self,
 		   const gchar		*text, 
 		   GtkCellRenderer 	*renderer)
 {
+printf("got text: %p\n");
 	g_signal_emit (G_OBJECT (self), font_combo_signals[PRELIGHT],
 		       0, text);
 }
@@ -333,7 +334,7 @@ abi_font_combo_class_init (AbiFontComboClass *klass)
 			NULL, NULL,
 			g_cclosure_marshal_VOID__POINTER,
 			G_TYPE_NONE, 1,
-			G_TYPE_STRING);
+			G_TYPE_POINTER);
 
 	font_combo_signals[POPUP_CLOSED] =
 		g_signal_new ("popup-closed",
