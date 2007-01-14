@@ -29,15 +29,15 @@ mimedir = $(datadir)/mime-info
 mime_DATA = abiword.keys
 
 if WITH_LIBABIWORD
+pc_template = libabiword.pc
+else
+pc_template = abiword.pc
+endif
 pkgconfigdir = $(libdir)/pkgconfig
 pkgconfig_DATA = abiword-$(ABIWORD_SERIES).pc
-else
-pkgconfigdir =
-pkgconfig_DATA = 
-endif
 
-abiword-$(ABIWORD_SERIES).pc: abiword.pc
-	cp abiword.pc abiword-$(ABIWORD_SERIES).pc
+abiword-$(ABIWORD_SERIES).pc: $(pc_template)
+	cp $< abiword-$(ABIWORD_SERIES).pc
 
 # 'shots' are not distributed on purpose as they
 # should be removed from the source tree anyways.
@@ -49,6 +49,7 @@ EXTRA_DIST = 			\
 	Makefile		\
 	abi2po.pl		\
 	abiword.pc.in		\
+	libabiword.pc.in	\
 	abiword_48.png		\
 	abiword.desktop		\
 	abiword.keys		\
@@ -64,8 +65,9 @@ EXTRA_DIST = 			\
 	includes.mk		\
 	README.TXT
 
-CLEANFILES = \
+DISTCLEANFILES = \
 	abiword.pc \
+	libabiword.pc \
 	abiword-$(ABIWORD_SERIES).pc
 
 dist-hook:
@@ -90,6 +92,7 @@ libpng:
 
 test: check
 
+# TODO Rob: remove after making sure no more peer dirs are used
 clean-local:
 	for i in . $(expat_peerdir)  $(wv_peerdir) \
                  $(libpng_peerdir) $(libpopt_peerdir); do \
@@ -98,6 +101,7 @@ clean-local:
 	  fi; \
 	done
 
+# TODO Rob: phase out with 2.7
 realclean: clean
 	for i in . $(expat_peerdir)  $(wv_peerdir) \
                  $(libpng_peerdir) $(libpopt_peerdir); do \
@@ -109,6 +113,7 @@ realclean: clean
 	@find ./ -name .deps | xargs rm -rf
 	@find ./ -name GNUmakefile | xargs rm -f
 
+# TODO Rob: phase out with 2.7
 realrealclean: realclean
 	@find $(top_srcdir) -name GNUmakefile.in | xargs rm -f
 	@rm -f $(top_srcdir)/aclocal.m4 $(top_srcdir)/configure \

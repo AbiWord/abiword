@@ -4,9 +4,11 @@ libdir=@libdir@
 includedir=@includedir@
 datarootdir=@datarootdir@
 pkgdatadir=@ABIWORD_DATADIR@
-libabiword=false
+libabiword=true
 
 Name: abiword-@ABIWORD_SERIES@
-Description: AbiWord word processor
+Description: AbiWord word processing library
 Version: @VERSION@
 Requires: @ABIWORD_REQUIRED_PKGS@
+Libs: -L${libdir} -labiword-@ABIWORD_SERIES@
+Cflags: -I${includedir}/abiword-@ABIWORD_SERIES@

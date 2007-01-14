@@ -512,6 +512,7 @@ AC_CONFIG_FILES([goffice-bits/GNUmakefile])
 
 AC_CONFIG_FILES([
  abiword.pc
+ libabiword.pc
  GNUmakefile
  src/GNUmakefile
  src/af/GNUmakefile
