@@ -33,7 +33,9 @@ noinst_PROGRAMS = AbiWord
 
 DEFS = @DEFS@
 
-INCLUDES = $(AF_INCLUDES) $(WP_INCLUDES) $(OTHER_INCLUDES) $(TEXT_INCLUDES)
+INCLUDES =  \
+	-DABIWORD_DATADIR="\"$(ABIWORD_DATADIR)\"" \
+	$(AF_INCLUDES) $(WP_INCLUDES) $(OTHER_INCLUDES) $(TEXT_INCLUDES)
 
 abi_ver.cpp:
 	cp $(srcdir)/../xp/abi_ver.cpp .

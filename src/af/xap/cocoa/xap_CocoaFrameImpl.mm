@@ -112,7 +112,7 @@ int XAP_CocoaFrameImpl::_fe::abi_expose_repaint(void * p)
 
 XAP_CocoaFrameImpl::XAP_CocoaFrameImpl(XAP_Frame* frame)
 	: XAP_FrameImpl (frame),
-	  m_dialogFactory(frame, XAP_App::getApp()),
+	  m_dialogFactory(XAP_App::getApp(), frame),
 	  m_pCocoaPopup(NULL),
 	  m_frameController(nil),
 	  m_iAbiRepaintID(0)
@@ -126,7 +126,7 @@ XAP_CocoaFrameImpl::XAP_CocoaFrameImpl(XAP_Frame* frame)
 /*
 XAP_CocoaFrameImpl::XAP_CocoaFrameImpl(XAP_CocoaFrameImpl * f)
 	: XAP_FrameImpl(f),
-	  m_dialogFactory(f->m_pFrame, XAP_App::getApp()),
+	  m_dialogFactory(XAP_App::getApp(), f->m_pFrame),
 	  m_pCocoaMenu(NULL),
 	  m_pCocoaPopup(NULL),
 	  m_frameController(nil),
@@ -337,6 +337,26 @@ void XAP_CocoaFrameImpl::_createTopLevelWindow(void)
 		[theWindow setFrame:windowFrame display:YES];
 	}
 }
+
+
+void XAP_CocoaFrameImpl::_rebuildMenus()
+{
+#if 0
+	// destroy old menu
+	m_pUnixMenu->destroy();
+	DELETEP(m_pUnixMenu);
+	
+	// build new one.
+	m_pUnixMenu = new EV_CocoaMenuBar(static_cast<XAP_UnixApp*>(XAP_App::getApp()), getFrame(),
+					 m_szMenuLayoutName,
+					 m_szMenuLabelSetName);
+	UT_return_if_fail(m_pUnixMenu);
+	bool bResult = m_pUnixMenu->rebuildMenuBar();
+	UT_ASSERT_HARMLESS(bResult);
+#endif
+	UT_ASSERT(UT_NOT_IMPLEMENTED);
+}
+
 
 /*!
  * This code is used by the dynamic toolbar API to rebuild a toolbar after a

@@ -39,8 +39,8 @@ static struct XAP_DialogFactory::_dlg_table s_dlg_table[] = {
 
 /*****************************************************************/
   
-AP_CocoaDialogFactory::AP_CocoaDialogFactory(XAP_App * pApp)
-	: XAP_DialogFactory(pApp, NrElements(s_dlg_table), s_dlg_table)
+AP_CocoaDialogFactory::AP_CocoaDialogFactory(XAP_App * pApp, XAP_Frame *pFrame)
+	: XAP_DialogFactory(pApp, NrElements(s_dlg_table), s_dlg_table, pFrame)
 {
 }
 

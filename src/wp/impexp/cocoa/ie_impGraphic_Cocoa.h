@@ -36,6 +36,7 @@ class IE_ImpGraphicCocoa_Sniffer : public IE_ImpGraphicSniffer
 	virtual UT_Confidence_t recognizeContents (const char * szBuf, 
 					UT_uint32 iNumbytes);
 	virtual const IE_SuffixConfidence * getSuffixConfidence ();
+	virtual const IE_MimeConfidence * getMimeConfidence ();
 	virtual bool getDlgLabels (const char ** szDesc,
 				   const char ** szSuffixList,
 				   IEGraphicFileType * ft);

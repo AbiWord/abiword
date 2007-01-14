@@ -30,15 +30,67 @@
 
 #include "fg_GraphicRaster.h"
 
-UT_Confidence_t IE_ImpGraphicCocoa_Sniffer::recognizeSuffix(const char * szSuffix)
+const IE_SuffixConfidence *IE_ImpGraphicCocoa_Sniffer::getSuffixConfidence()
 {
-	UT_Confidence_t conf = UT_CONFIDENCE_ZILCH;
-	NSString* str = [[NSString alloc] initWithUTF8String:&(szSuffix[1])];
-	if ([[NSImage imageFileTypes] containsObject:str]) {
-		conf = UT_CONFIDENCE_PERFECT;
+	static IE_SuffixConfidence *suffixConfidence = NULL;
+	
+	if (suffixConfidence == NULL) {
+		NSArray *fileTypes = [NSImage imageFileTypes];
+		int count = [fileTypes count];		
+		suffixConfidence = new IE_SuffixConfidence[count + 1];
+		
+		NSEnumerator* suffixIter = [fileTypes objectEnumerator];
+		
+		NSString *aType;
+		int idx = 0;
+		
+		while((aType = [suffixIter nextObject]) != nil) {
+			suffixConfidence[idx].suffix = strdup([aType UTF8String]);
+			suffixConfidence[idx].confidence = UT_CONFIDENCE_PERFECT;
+			idx++;
+		}
+		
+		// NULL-terminator
+		suffixConfidence[idx].suffix = NULL;
+		suffixConfidence[idx].confidence = UT_CONFIDENCE_ZILCH;
 	}
-	[str release];
-	return conf;
+
+	return suffixConfidence;
+}
+
+const IE_MimeConfidence * IE_ImpGraphicCocoa_Sniffer::getMimeConfidence()
+{
+	static IE_MimeConfidence *mimeConfidence = NULL;
+	
+	if (mimeConfidence) {
+		return mimeConfidence;
+	}
+	
+	mimeConfidence = new IE_MimeConfidence[4];
+
+	// FIXME this shouldn't be hardcoded
+	int idx = 0;
+	mimeConfidence[idx].match = IE_MIME_MATCH_FULL;
+	mimeConfidence[idx].mimetype = "image/png";
+	mimeConfidence[idx].confidence = UT_CONFIDENCE_PERFECT;
+	idx++;
+
+	mimeConfidence[idx].match = IE_MIME_MATCH_FULL;
+	mimeConfidence[idx].mimetype = "image/jpeg";
+	mimeConfidence[idx].confidence = UT_CONFIDENCE_PERFECT;
+	idx++;
+
+	mimeConfidence[idx].match = IE_MIME_MATCH_FULL;
+	mimeConfidence[idx].mimetype = "image/tiff";
+	mimeConfidence[idx].confidence = UT_CONFIDENCE_PERFECT;
+	idx++;
+	
+	// null-terminator
+	mimeConfidence[idx].match = IE_MIME_MATCH_BOGUS;
+	mimeConfidence[idx].mimetype = NULL;
+	mimeConfidence[idx].confidence = UT_CONFIDENCE_ZILCH;
+	
+	return mimeConfidence;
 }
 
 UT_Confidence_t IE_ImpGraphicCocoa_Sniffer::recognizeContents(const char * szBuf, UT_uint32 iNumbytes)

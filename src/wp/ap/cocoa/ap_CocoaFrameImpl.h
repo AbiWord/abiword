@@ -80,7 +80,6 @@ class AP_CocoaFrameImpl : public XAP_CocoaFrameImpl
 	XAP_CocoaNSView *_getDocAreaGRView(void)
 		{ return m_docAreaGRView; }
  protected:
-	virtual void _rebuildMenus(void);
 
 	void _showOrHideStatusbar(void);
 
