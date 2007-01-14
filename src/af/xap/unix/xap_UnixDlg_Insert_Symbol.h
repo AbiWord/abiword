@@ -77,7 +77,6 @@ private:
 	GtkWidget * m_fontcombo;	
 	GList     * m_InsertS_Font_list;
 	UT_GenericVector<gchar*>   m_fontlist;
-	UT_uint32   m_Insert_Symbol_no_fonts;
 
 #ifndef USE_GUCHARMAP
 	// private construction functions
