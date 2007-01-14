@@ -35,6 +35,7 @@
 #include "ap_Dialog_Id.h"
 #include "ap_Dialog_New.h"
 #include "ap_Win32Dialog_New.h"
+#include "ap_Win32App.h"
 
 #include "xap_Dlg_FileOpenSaveAs.h"
 #include "ie_imp.h"
@@ -121,8 +122,18 @@ BOOL AP_Win32Dialog_New::_onInitDialog(HWND hWnd, WPARAM wParam, LPARAM lParam)
 			templateName += cfile.name;
 			if(!strstr(templateName.c_str(), "normal.awt-")) // don't truncate localized template names
 				templateName = templateName.substr ( 0, templateName.size () - 4 ) ;
-			UT_sint32 nIndex = SendMessage( hControl, LB_ADDSTRING, 0, (LPARAM) UT_basename( templateName.c_str() ) );
+
+			char *uri = UT_go_filename_to_uri(AP_Win32App::s_fromWinLocaleToUTF8(templateName.c_str()).utf8_str());
+			if(!uri)
+			{
+				UT_ASSERT_HARMLESS(uri);
+				continue;
+			}
+
+			UT_sint32 nIndex = SendMessage( hControl, LB_ADDSTRING, 0, (LPARAM) UT_basename( uri ) );
 			SendMessage( hControl, LB_SETITEMDATA, (WPARAM) nIndex, (LPARAM) 0 );
+
+			g_free(uri);
 		} while( _findnext( findtag, &cfile ) == 0 );
 	}
 	_findclose( findtag );
@@ -140,8 +151,18 @@ BOOL AP_Win32Dialog_New::_onInitDialog(HWND hWnd, WPARAM wParam, LPARAM lParam)
 			templateName += cfile.name;
 			if(!strstr(templateName.c_str(), "normal.awt-"))  // don't truncate localized template names
 				templateName = templateName.substr ( 0, templateName.size () - 4 ) ;
-			UT_sint32 nIndex = SendMessage( hControl, LB_ADDSTRING, 0, (LPARAM) UT_basename( templateName.c_str() ) );
+
+			char *uri = UT_go_filename_to_uri(AP_Win32App::s_fromWinLocaleToUTF8(templateName.c_str()).utf8_str());
+			if(!uri)
+			{
+				UT_ASSERT_HARMLESS(uri);
+				continue;
+			}
+
+			UT_sint32 nIndex = SendMessage( hControl, LB_ADDSTRING, 0, (LPARAM) UT_basename( uri ) );
 			SendMessage( hControl, LB_SETITEMDATA, (WPARAM) nIndex, (LPARAM) 1 );
+
+			g_free(uri);
 		} while( _findnext( findtag, &cfile ) == 0 );
 	}
 	_findclose( findtag );
@@ -332,6 +353,11 @@ void AP_Win32Dialog_New::_setFileName( UT_sint32 nIndex )
 		templateName += buf;
 		if(!strstr(buf, "normal.awt-")) // don't append awt to localized templates
 			templateName += ".awt";
-		setFileName(templateName.c_str());
+
+		char *uri = UT_go_filename_to_uri(AP_Win32App::s_fromWinLocaleToUTF8(templateName.c_str()).utf8_str());
+		UT_return_if_fail(uri);
+
+		setFileName(uri);
+		g_free(uri);
 	}
 }
