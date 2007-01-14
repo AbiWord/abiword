@@ -44,9 +44,11 @@ canonical:
 	@$(subst xxxx,$(CANON_AppDir),$(VERIFY_DIRECTORY))
 	@$(subst xxxx,$(CANON_AppDir)/strings,$(VERIFY_DIRECTORY))
 	@$(subst xxxx,$(CANON_AppDir)/help,$(VERIFY_DIRECTORY))
+	@$(subst xxxx,$(CANON_AppDir)/../templates,$(VERIFY_DIRECTORY))
 	@$(ABICOPY) $(USERDIR)/wp/readme.txt $(CANON_AppDir)
 	@$(ABICOPY) $(USERDIR)/wp/system.profile* $(CANON_AppDir)
 	@$(ABICOPY) $(USERDIR)/wp/strings/*.strings $(CANON_AppDir)/strings
+	@$(ABICOPY) $(USERDIR)/wp/templates/normal.awt* $(CANON_AppDir)/../templates
 ifeq ($(ABI_FE),Win32)
 	@if [ -d $(ABI_ROOT)/../abiword-docs ]; then				    \
 		echo "Found abiword-docs in peer directory - building help files"; \
