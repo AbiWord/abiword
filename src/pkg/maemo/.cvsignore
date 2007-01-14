@@ -1,2 +1,4 @@
 GNUmakefile.in
 GNUmakefile
+abiword.desktop
+com.abisource.abiword.service
