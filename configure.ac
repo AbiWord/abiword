@@ -616,6 +616,7 @@ AC_CONFIG_FILES([
  user/wp/GNUmakefile
  user/wp/scripts/GNUmakefile
  user/wp/strings/GNUmakefile
+ user/wp/templates/GNUmakefile
 ])
 AC_OUTPUT
 
