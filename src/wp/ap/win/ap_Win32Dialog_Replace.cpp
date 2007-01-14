@@ -432,7 +432,7 @@ FreeMemory:
 	DELETEP(pBufFromDialogFind);
 	FREEP(pUCSFind);
 	DELETEP(pBufFromDialogReplace);
-	FREEP(pUCSFind);
+	FREEP(pUCSReplace);
 	return 1;
 }
 
