@@ -28,6 +28,11 @@
 #include "pt_Types.h"
 #include "fl_AutoLists.h"
 
+#if defined(__MINGW32__)
+#undef snprintf
+#define _GLIBCXX_USE_C99_DYNAMIC 1
+#endif
+
 #include <vector>
 
 // fwd. decl.
