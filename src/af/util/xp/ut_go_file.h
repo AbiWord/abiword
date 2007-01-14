@@ -48,6 +48,8 @@ typedef enum {
 	UT_GO_DOTDOT_LEAVE         /* Leave alone.  */
 } UT_GODotDot;
 
+gboolean UT_go_path_is_uri (const char * path);
+
 char *UT_go_filename_simplify (const char *filename, UT_GODotDot dotdot, gboolean make_absolute);
 char *UT_go_url_simplify (const char *uri);
 

@@ -302,6 +302,16 @@ is_fd_uri (const char *uri, int *fd);
 /* ------------------------------------------------------------------------- */
 
 /*
+ * Return TRUE if @path represents a URI, false if not
+ */
+gboolean 
+UT_go_path_is_uri (const char * path)
+{
+	// hack until i come up with a better test
+	return (strstr (path, "://") != NULL);
+}
+
+/*
  * Convert an escaped URI into a filename.
  */
 char *

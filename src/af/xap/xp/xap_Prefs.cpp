@@ -28,6 +28,7 @@
 #include "ut_growbuf.h"
 #include "ut_string.h"
 #include "ut_string_class.h"
+#include "ut_go_file.h"
 #include "xap_Prefs.h"
 
 struct xmlToIdMapping {
@@ -943,7 +944,19 @@ void XAP_Prefs::startElement(const XML_Char *name, const XML_Char **atts)
 				// NOTE: taking advantage of the fact that XML_Char == char
 				UT_ASSERT((sizeof(XML_Char) == sizeof(char)));
 				XML_Char * sz;
-				UT_XML_cloneString((XML_Char *&)sz, a[1]);
+
+				// see bug 10709 - Non-URI paths aren't displayed correctly in the file menu
+				// this provides a seamless migration
+
+				char * uri;
+				if (UT_go_path_is_uri (a[1]))
+				  uri = g_strdup (a[1]);
+				else
+				  uri = UT_go_filename_to_uri (a[1]);
+
+				UT_XML_cloneString((XML_Char *&)sz, uri);
+
+				g_free (uri);
 
 				// NOTE: we keep the copied string in the vector
 				m_vecRecent.addItem(sz);
