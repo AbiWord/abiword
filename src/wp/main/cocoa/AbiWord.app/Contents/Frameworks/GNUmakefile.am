@@ -18,9 +18,4 @@
 
 include $(top_srcdir)/src/wp/main/cocoa/bundle.mk
 
-CLEANFILES = libwv.dylib
 
-frameworks_SCRIPTS = libwv.dylib
-
-libwv.dylib:	$(top_builddir)/../wv/libwv.dylib
-		cp -f $(top_builddir)/../wv/libwv.dylib libwv.dylib

@@ -1,2 +1,4 @@
 GNUmakefile
 GNUmakefile.in
+Info.plist
+PkgInfo
