@@ -74,11 +74,6 @@ TEXT_INCLUDES+=-I'$(top_srcdir)/src/text/fmt/xp'
 
 TOOLS_INCLUDES=-I'$(top_srcdir)/src/tools/cdump/xp'
 
-WV_INCLUDES=-I'$(top_srcdir)/../wv/'
-WV_INCLUDES+=-I'$(top_srcdir)/../wv/libole2'
-WV_INCLUDES+=-I'$(top_srcdir)/../wv/exporter'
-WV_INCLUDES+=-I'$(top_srcdir)/../wv/glib-wv'
-
 # expat includes are handled by @XML_INCLUDES@
 # iconv includes are handled by @ICONV_INCLUDES@
 

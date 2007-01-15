@@ -87,8 +87,6 @@ AC_DEFUN([ABI_GTK2],[
 
 # Usage: 
 # ABI_GLIB12_OPT(<micro-version>,<optional>) where <optional> = "no"|"yes"
-#
-# Pass "--with-glib=$abi_glib_opt" as option to peer wv's configure.
 
 AC_DEFUN([ABI_GLIB12_OPT], [	
 	if [ test "x$2" = "xyes" ]; then
@@ -158,15 +156,6 @@ AC_DEFUN([ABI_GLIB12_OPT], [
 				AC_MSG_ERROR([* * * unable to determine glib version! * * *])
 			fi
 			abi_glib_opt=no
-		fi
-	fi
-	if [ test $abi_glib_opt != no ]; then
-		dnl Pass "--with-glib=$abi_glib_opt" as option to peer wv's configure
-		dnl 
-		if [ test "x$GLIB_DIR" = "x" ]; then
-			abi_glib_opt=yes
-		else
-			abi_glib_opt="$GLIB_DIR"
 		fi
 	fi
 ])

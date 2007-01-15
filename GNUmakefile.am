@@ -70,7 +70,6 @@ dist-hook:
 
 test: check
 
-
 # TODO Rob: phase out with 2.7
 realclean: clean
 	@rm -f config.* stamp-h stamp-h[0-9]*

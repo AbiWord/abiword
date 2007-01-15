@@ -33,15 +33,7 @@ echo ""
 
 config_flags='--disable-shared --enable-static'
 
-if test "$_abi_peer" = "wv"; then
-		if test "$PLATFORM" = "qnx"; then
-	    config_flags="$config_flags --with-glib=no $abi_wv_xml $abi_wv_iconv $abi_wv_png $abi_wv_zlib"
-		else		
-	    config_flags="$config_flags --with-glib=glib2 $abi_wv_xml $abi_wv_iconv $abi_wv_png $abi_wv_zlib"
-		fi
-    (cd $_abi_bdir && if ! test -f $_abi_pdir/configure; then (cd $_abi_pdir && ./autogen.sh && cd $_abi_bdir); fi && CPPFLAGS="$CPPFLAGS $abi_wv_cppflags" LDFLAGS="$LDFLAGS" $_abi_pdir/configure $config_flags)
-
-elif test "$_abi_peer" = "expat"; then
+if test "$_abi_peer" = "expat"; then
     _expat_cppflags="-I`cd $_abi_bdir; pwd`/lib"
     (cd $_abi_bdir && CPPFLAGS="$CPPFLAGS $_expat_cppflags" $_abi_pdir/configure $config_flags)
 

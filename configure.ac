@@ -450,7 +450,6 @@ dnl check for an xml parser
 ABI_XML_PARSER
 
 dnl check for wv
-
 ABI_WV
 
 dnl check for zlib.

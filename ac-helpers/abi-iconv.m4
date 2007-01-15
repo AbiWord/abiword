@@ -30,8 +30,6 @@ dnl 3. Some new platforms have it.
 dnl 4. Some people have libiconv installed.
 dnl 5. Some people want/need to use peer libiconv.
 
-abi_wv_iconv=""
-
 ABI_LIBICONV_DIR=""
 AC_ARG_WITH(libiconv,[  --with-libiconv=DIR   use libiconv in DIR],[
 	if [ test "$withval" = "no" ]; then
@@ -100,7 +98,6 @@ if test $abi_iconv = peer; then
 	abi_iconv_message="peer libiconv"
 	ICONV_INCLUDES='-I$(top_builddir)/../libiconv/include'
 	ICONV_LIBS='$(top_builddir)/../libiconv/lib/.libs/libiconv.a'
-	abi_wv_iconv="--with-peer-iconv=abi"
 
         PEERDIRS="${PEERDIRS} ${LIBICONV_PEERDIR}"
 	PEERS="${PEERS} libiconv"
@@ -110,20 +107,16 @@ elif test $abi_iconv = sys_libiconv; then
 		abi_iconv_message="libiconv in -L$ABI_LIBICONV_DIR/lib -liconv"
 		ICONV_INCLUDES="-I$ABI_LIBICONV_DIR/include"
 		ICONV_LIBS="-L$ABI_LIBICONV_DIR/lib -liconv"
-		abi_wv_iconv="--with-libiconv=$withval"
 	else
 		abi_iconv_message="libiconv in -liconv"
 		ICONV_INCLUDES=""
 		ICONV_LIBS="-liconv"
-		abi_wv_iconv="--with-libiconv"
 	fi
 
 else
 	abi_iconv_message="system iconv"
 	ICONV_INCLUDES=""
 	ICONV_LIBS=""
-	abi_wv_iconv="--without-libiconv"
-
 fi
 
 AC_SUBST(LIBICONV_PEERDIR)

@@ -28,7 +28,6 @@ dnl Supports:
 dnl  *  libpng in system library locations
 dnl  *  Bundled libpng if a directory name argument is passed
 
-abi_wv_png=""
 abi_found_libpng="no"
 
 ABI_LIBPNG_DIR=""
@@ -42,7 +41,6 @@ AC_ARG_WITH(libpng,[  --with-libpng=DIR     use libpng in DIR],[
 	else
 		abi_libpng=sys
 		ABI_LIBPNG_DIR="$withval"
-		abi_wv_png="--with-png=$withval"
         fi
 ],[	abi_libpng=check
 ])
@@ -97,10 +95,6 @@ if test $abi_png = peer; then
 
 	PEERDIRS="${PEERDIRS} ${LIBPNG_PEERDIR}"
 	PEERS="${PEERS} libpng"
-
-	dnl abi_wv_cppflags is add to CPPFLAGS for configuring wv
-	dnl 
-	abi_wv_cppflags="$abi_wv_cppflags -I$LIBPNG_PEERDIR"
 else
 	if test $abi_libpng = sys; then
 		abi_libpng_message="libpng in -L$ABI_LIBPNG_DIR/lib -lpng"
@@ -108,7 +102,6 @@ else
 		LIBPNG_LIBS="-L$ABI_LIBPNG_DIR/lib -lpng"
 	elif test $abi_libpng = pkg; then
 		abi_libpng_message="libpng in $LIBPNG_LIBS"
-		abi_wv_cppflags="$abi_wv_cppflags $LIBPNG_CFLAGS"
 	else
 		abi_libpng_message="libpng in -lpng"
 		LIBPNG_CFLAGS=""

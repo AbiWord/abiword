@@ -36,22 +36,17 @@ XML_LIBS=""
 
 EXPAT_PEERDIR=""
 
-abi_wv_xml=""
-
 abi_xml=unknown
 
 ABI_XML_DIR=
 AC_ARG_WITH([libxml2],[  --with-libxml2         force use of libxml2 ],[
 	if test "x$withval" = "xno"; then
 		abi_xml=expat
-		abi_wv_xml="--with-expat"
 	elif test "x$withval" = "xyes"; then
 		abi_xml=xml2
-		abi_wv_xml="--with-libxml2"
 	else
 		abi_xml=xml2
 		ABI_XML_DIR="$withval"
-		abi_wv_xml="--with-libxml2=$withval"
 	fi
 ])
 
@@ -61,26 +56,22 @@ AC_ARG_WITH([expat],[  --with-expat         force use of expat ],[
 			AC_MSG_ERROR([* * * require either expat or libxml2 * * *])
 		fi
 		abi_xml=xml2
-		abi_wv_xml="--with-libxml2"
 	elif test "x$withval" = "xpeer"; then
 		if test $abi_xml = xml2; then
 			AC_MSG_ERROR([* * * don't specify both expat and libxml2 * * *])
 		fi
 		abi_xml=peer
-		abi_wv_xml="--with-expat=peer"
 	elif test "x$withval" = "xyes"; then
 		if test $abi_xml = xml2; then
 			AC_MSG_ERROR([* * * don't specify both expat and libxml2 * * *])
 		fi
 		abi_xml=expat
-		abi_wv_xml="--with-expat"
 	else
 		if test $abi_xml = xml2; then
 			AC_MSG_ERROR([* * * don't specify both expat and libxml2 * * *])
 		fi
 		abi_xml=expat
 		ABI_XML_DIR="$withval"
-		abi_wv_xml="--with-expat=$withval"
 	fi
 ])
 
@@ -88,7 +79,6 @@ dnl default to libxml2
 dnl 
 if test $abi_xml = unknown; then
 	abi_xml=xml2
-	abi_wv_xml="--with-libxml2"
 fi
 
 dnl check for libxml2
