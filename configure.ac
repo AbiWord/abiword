@@ -685,21 +685,21 @@ esac
 echo " "
 
 cat <<EOF
-  XML Parser:      ${abi_xml_parser_message}
-  zlib:            ${abi_zlib_message}
-  PNG Library:     ${abi_libpng_message}
-  popt:	           ${abi_libpopt_message}
-  WV Library:      ${abi_wv_message}
-  iconv:           ${abi_iconv_message}
-  spelling:        ${abi_spell_message}
-  goffice:         ${abi_goffice_message}
-  bonobo:          ${abi_bonobo_message}
-  gnome-vfs:       ${abi_gnomevfs_message}
-  gnome-ui:        ${abi_gnomeui_message}
-  libabiword:      ${abi_lib_message}
-  binreloc:        ${br_cv_binreloc}
+  XML Parser:             ${abi_xml_parser_message}
+  zlib:                   ${abi_zlib_message}
+  PNG Library:            ${abi_libpng_message}
+  popt:	                  ${abi_libpopt_message}
+  WV Library:             ${abi_wv_message}
+  iconv:                  ${abi_iconv_message}
+  spelling:               ${abi_spell_message}
+  goffice:                ${abi_goffice_message}
+  gnome-vfs:              ${abi_gnomevfs_message}
+  gnome-ui:               ${abi_gnomeui_message}
+  bonobo (deprecated):    ${abi_bonobo_message}
+  libabiword:             ${abi_lib_message}
+  binreloc:               ${br_cv_binreloc}
 
-  installing in:   ${prefix}
+  installing in:          ${prefix}
 
 EOF
 

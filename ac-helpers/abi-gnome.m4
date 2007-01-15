@@ -105,8 +105,8 @@ AC_ARG_ENABLE(bonobo,[  --enable-bonobo    Build bonobo widget ],
 ], [
 	PKG_CHECK_EXISTS([$bonobo_modules], 
 	[
-		bonobo=true
-		abi_bonobo_message="autodetected"
+		bonobo=false
+		abi_bonobo_message="off by default"
 	], [
 		abi_bonobo_message=">= $BONOBO_REQUIRED_VERSION not fulfilled"
 	])
