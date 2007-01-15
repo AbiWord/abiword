@@ -84,7 +84,7 @@ bool AP_App::openCmdLineFiles(AP_Args * args)
 			// Because of the incremental loader, we should not crash anymore;
 			// I've got other things to do now though.
 			kWindowsOpened++;
-			pFrame->loadDocument(NULL, IEFT_Unknown);
+			pFrame->loadDocument((const char *)NULL, IEFT_Unknown);
 			pFrame->raise();
 
 			errorMsgBadFile (pFrame, file, error);
@@ -101,7 +101,7 @@ bool AP_App::openCmdLineFiles(AP_Args * args)
 		// no documents specified or openable, open an untitled one
 		
 		XAP_Frame * pFrame = newFrame();
-		pFrame->loadDocument(NULL, IEFT_Unknown);
+		pFrame->loadDocument((const char *)NULL, IEFT_Unknown);
 		if (args->m_sMerge) {
 			PD_Document * pDoc = static_cast<PD_Document*>(pFrame->getCurrentDoc());
 			pDoc->setMailMergeLink(args->m_sMerge);

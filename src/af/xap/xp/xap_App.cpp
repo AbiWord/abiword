@@ -1698,7 +1698,7 @@ bool XAP_App::retrieveState()
 			return false;
 		
 		// Open a complete but blank frame, then load the document into it
-		errorCode = pFrame->loadDocument(NULL, 0 /*IEFT_Unknown*/);
+		errorCode = pFrame->loadDocument((const char *)NULL, 0 /*IEFT_Unknown*/);
 
 		bRet &= (errorCode == UT_OK);
 		

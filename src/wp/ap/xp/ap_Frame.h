@@ -37,6 +37,7 @@ class ABI_EXPORT AP_Frame : public XAP_Frame
 	virtual UT_Error   			loadDocument(AD_Document* pDoc);
 	virtual UT_Error   			loadDocument(const char * szFilename, int ieft);
 	virtual UT_Error			loadDocument(const char * szFilename, int ieft, bool createNew);
+	virtual UT_Error			loadDocument(GsfInput * input, int ieft);
 	virtual UT_Error			importDocument(const char * szFilename, int ieft, bool markClean);
 	virtual bool				initFrameData(void);
 	virtual void				killFrameData(void);
@@ -57,6 +58,7 @@ class ABI_EXPORT AP_Frame : public XAP_Frame
  protected:
 
 	UT_Error _loadDocument(const char * szFilename, IEFileType ieft, bool createNew);
+	UT_Error _loadDocument(GsfInput * input, IEFileType ieft);
 	virtual UT_Error _importDocument(const char * szFilename, int ieft, bool markClean);
 	UT_Error _replaceDocument(AD_Document * pDoc);
 	virtual UT_Error _showDocument(UT_uint32 iZoom = 100);

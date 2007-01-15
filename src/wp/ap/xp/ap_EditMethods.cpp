@@ -1531,7 +1531,7 @@ Defun1(fileNew)
 #endif
 
 	// the IEFileType here doesn't really matter, since the name is NULL
-	UT_Error error = pNewFrame->loadDocument(NULL, IEFT_Unknown);
+	UT_Error error = pNewFrame->loadDocument((const char *)NULL, IEFT_Unknown);
 
 	if (pNewFrame)
 	{
@@ -2257,7 +2257,7 @@ UT_Error fileOpen(XAP_Frame * pFrame, const char * pNewFile, IEFileType ieft)
 
 // Open a complete but blank frame, then load the document into it
 
-		errorCode = pNewFrame->loadDocument(NULL, IEFT_Unknown);
+		errorCode = pNewFrame->loadDocument((const char *)NULL, IEFT_Unknown);
 		if (!errorCode)
 		{
 			pNewFrame->show();
@@ -2299,7 +2299,7 @@ UT_Error fileOpen(XAP_Frame * pFrame, const char * pNewFile, IEFileType ieft)
 			// TODO to take an 'bool bShowWindow' argument....
 
 			// the IEFileType here doesn't really matter since the file name is NULL
-			errorCode = pNewFrame->loadDocument(NULL, IEFT_Unknown);
+			errorCode = pNewFrame->loadDocument((const char *)NULL, IEFT_Unknown);
 			if (!errorCode)
 				pNewFrame->updateZoom();
 				pNewFrame->show();
@@ -2422,7 +2422,7 @@ s_importFile (XAP_Frame * pFrame, const char * pNewFile, IEFileType ieft)
 		else
 		{
 			// see problem documented in ::fileOpen()
-			errorCode = pNewFrame->loadDocument(NULL, IEFT_Unknown);
+			errorCode = pNewFrame->loadDocument((const char *)NULL, IEFT_Unknown);
 			if (!errorCode)
 				pNewFrame->show();
 			s_CouldNotLoadFileMessage(pNewFrame,pNewFile, errorCode);
@@ -3360,7 +3360,7 @@ Defun(fileNewUsingTemplate)
 			if (pNewFrame)
 				pFrame = pNewFrame;
 
-			bOK = pFrame->loadDocument(NULL, IEFT_Unknown) == UT_OK;
+			bOK = pFrame->loadDocument((const char *)NULL, IEFT_Unknown) == UT_OK;
 
 			if (pNewFrame)
 			{
@@ -3559,7 +3559,7 @@ s_closeWindow (AV_View * pAV_View, EV_EditMethodCallData * pCallData,
 		else
 		{
 			// keep the app open with an empty document (in this frame)
-			pFrame->loadDocument(NULL, IEFT_Unknown);
+			pFrame->loadDocument((const char *)NULL, IEFT_Unknown);
 			pFrame->updateZoom();
 			pFrame->show();
 			return true;

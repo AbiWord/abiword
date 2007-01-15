@@ -23,6 +23,8 @@
 #define ABI_WIDGET_H
 
 #include <gtk/gtk.h>
+#include <gsf/gsf-input.h>
+#include <gsf/gsf-output.h>
 
 #ifdef HAVE_BONOBO
 #include <libbonoboui.h>
@@ -210,7 +212,6 @@ G_BEGIN_DECLS
   GtkWidget * abi_widget_new_with_file (const gchar * file);
   GtkType     abi_widget_get_type	(void);
   void        abi_widget_turn_on_cursor(AbiWidget * widget);
-  gboolean    abi_widget_load_file(AbiWidget * abi, const char * pszFile);
 
   gboolean    abi_widget_invoke(AbiWidget * w, const char * mthdName);    
   gboolean    abi_widget_invoke_ex (AbiWidget * w, const char *mthdName, 
@@ -218,10 +219,18 @@ G_BEGIN_DECLS
   
   void        abi_widget_draw(AbiWidget * w);
 
+  gboolean    abi_widget_load_file(AbiWidget * abi, const char * pszFile);
+
+  gboolean    abi_widget_load_file_from_gsf(AbiWidget * abi, GsfInput * input);
+
   gboolean abi_widget_save ( AbiWidget * w, const char * fname );
   gboolean abi_widget_save_ext ( AbiWidget * w, const char * fname,
 				 const char * extension ) ;
+  gboolean abi_widget_save_with_type ( AbiWidget * w, const char * fname,
+				       const char * extension_or_mime_type );
 
+  gboolean abi_widget_save_to_gsf ( AbiWidget * w, GsfOutput * output,
+				    const char * extension_or_mime_type );
 
   void abi_widget_map_to_screen(AbiWidget * abi);
   void abi_widget_set_property(GObject  *object,

@@ -219,6 +219,43 @@ ReplaceDocument:
 	m_pDoc = pNewDoc;
 	return UT_OK;
 }
+
+UT_Error AP_Frame::_loadDocument(GsfInput * input, IEFileType ieft)
+{
+	UT_return_val_if_fail (input != NULL, UT_ERROR);
+
+	// are we replacing another document?
+	if (m_pDoc)
+	{
+		// yep.  first make sure it's OK to discard it, 
+		// TODO: query user if dirty...
+	}
+
+	// load a document into the current frame.
+	// if no filename, create a new document.
+	if(XAP_App::getApp()->findFrame(this) < 0)
+	{
+		XAP_App::getApp()->rememberFrame(this);
+	}
+	AD_Document * pNewDoc = new PD_Document(XAP_App::getApp());
+	UT_return_val_if_fail (pNewDoc, UT_ERROR);
+	
+	UT_Error errorCode;
+	errorCode = static_cast<PD_Document*>(pNewDoc)->readFromFile(input, ieft);
+	if (errorCode)
+		{
+			UT_DEBUGMSG(("ap_Frame: could not open the file\n"));
+			UNREFP(pNewDoc);
+			return errorCode;
+		}
+
+	XAP_App::getApp()->forgetClones(this);
+	UT_DEBUGMSG(("Doing replace document \n"));
+	
+	// NOTE: prior document is discarded in _showDocument()
+	m_pDoc = pNewDoc;
+	return UT_OK;
+}
 	
 UT_Error AP_Frame::_importDocument(const char * szFilename, int ieft,
 									  bool markClean)
@@ -318,6 +355,61 @@ UT_Error AP_Frame::loadDocument(AD_Document* pDoc) {
 	}
 
 	return _replaceDocument(pDoc);
+}
+
+UT_Error AP_Frame::loadDocument(GsfInput * input, int ieft)
+{
+	bool bUpdateClones;
+	UT_GenericVector<XAP_Frame*> vClones;
+	XAP_App * pApp = XAP_App::getApp();
+	UT_uint32 j = 0;
+	if(pApp->findFrame(this) < 0)
+	{
+			pApp->rememberFrame(this);
+	}
+	bUpdateClones = (getViewNumber() > 0);
+	if (bUpdateClones)
+	{
+		pApp->getClones(&vClones, this);
+	}
+	for(j=0; j<vClones.getItemCount();j++)
+	{
+		XAP_Frame * pFrame = vClones.getNthItem(j);
+		if(pApp->findFrame(pFrame) < 0)
+		{
+			pApp->rememberFrame(pFrame,this);
+		}
+	}
+	UT_Error errorCode;
+	errorCode =  _loadDocument(input, static_cast<IEFileType>(ieft));
+	if (errorCode)
+	{
+		// we could not load the document.
+		// we cannot complain to the user here, we don't know
+		// if the app is fully up yet.  we force our caller
+		// to deal with the problem.
+		return errorCode;
+	}
+	XAP_Frame::tZoomType iZoomType;
+	UT_uint32 iZoom = getNewZoom(&iZoomType);
+	setZoomType(iZoomType);
+	if(pApp->findFrame(this) < 0)
+	{
+		pApp->rememberFrame(this);
+	}
+	if (bUpdateClones)
+	{
+		for (UT_uint32 i = 0; i < vClones.getItemCount(); i++)
+		{
+			AP_Frame * pFrame = static_cast<AP_Frame*>(vClones.getNthItem(i));
+			if(pFrame != this)
+			{
+				pFrame->_replaceDocument(m_pDoc);
+			}
+		}
+	}
+
+	return _showDocument(iZoom);
 }
 
 UT_Error AP_Frame::loadDocument(const char * szFilename, int ieft, bool createNew)

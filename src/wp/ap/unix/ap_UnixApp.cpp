@@ -1665,7 +1665,7 @@ bool AP_UnixApp::doWindowlessArgs(const AP_Args *Args, bool & bSuccess)
 			pGF = XAP_App::getApp()->getGraphicsFactory();
 			UT_return_val_if_fail(pGF, false);
 
-			UT_uint32 iDefaultPrintClass = pGF->getDefaultClass(false);		   
+			//UT_uint32 iDefaultPrintClass = pGF->getDefaultClass(false);		   
 			
 			GnomePrintJob *job = gnome_print_job_new (NULL);
 			UT_return_val_if_fail(job, false);
@@ -1911,6 +1911,9 @@ void AP_UnixApp::catchSignals(int sig_num)
 }
 
 #ifdef HAVE_BONOBO
+
+#include <gsf-gnome/gsf-input-bonobo.h>
+#include <gsf-gnome/gsf-output-bonobo.h>
 
 //-------------------------------------------------------------------
 // Bonobo Control factory stuff
@@ -2240,9 +2243,6 @@ load_document_from_stream (BonoboPersistStream *ps,
 					 CORBA_Environment *ev)
 {
 	AbiWidget *abiwidget;
-	Bonobo_Stream_iobuf *buffer;
-	size_t len_read;
-	FILE * tmpfile;
 #ifdef LOGFILE
 	fprintf(logfile,"Load file from stream \n");
 #endif
@@ -2255,56 +2255,14 @@ load_document_from_stream (BonoboPersistStream *ps,
 	fprintf(logfile,"At entry Load file from stream refcount %d \n",G_OBJECT(abiwidget)->ref_count);
 #endif
 	
-	//
-	// Create a temp file name.
-	//
-	char szTempfile[ 2048 ];
-	UT_tmpnam(szTempfile);
-	
-	tmpfile = fopen(szTempfile, "wb");
-#ifdef LOGFILE
-	fprintf(logfile,"Create Temp filename %s \n",szTempfile);
-	fprintf(logfile," After Create Temp ref count %d \n",G_OBJECT(abiwidget)->ref_count);
-#endif
-	
-	do 
-	{
-		Bonobo_Stream_read (stream, ABI_BUFFER_SIZE, &buffer, ev);
-		if (ev->_major != CORBA_NO_EXCEPTION)
-			goto exit_clean;
+	GsfInput * input = gsf_input_bonobo_new (stream, NULL);
+	g_return_if_fail (input != NULL);
 
-		len_read = buffer->_length;
+	(void)abi_widget_load_file_from_gsf (abiwidget, input);
 
-		if (buffer->_buffer && len_read)
-			if(fwrite(buffer->_buffer, 1, len_read, tmpfile) != len_read) 
-			{
-				CORBA_free (buffer);
-				goto exit_clean;
-			}
+	g_object_unref (G_OBJECT (input));
 
-		CORBA_free (buffer);
-	} 
-	while (len_read > 0);
-#ifdef LOGFILE
-	fprintf(logfile," After load_document_from_stream ref count %d \n",G_OBJECT(abiwidget)->ref_count);
-#endif
-
-	fclose(tmpfile);
-
-	//
-	// Load the file.
-	//
-	//
-	g_object_set(G_OBJECT(abiwidget),"AbiWidget--unlink-after-load",static_cast<gboolean>(TRUE),NULL);
-	g_object_set(G_OBJECT(abiwidget),"AbiWidget--load-file",static_cast<gchar *>(szTempfile),NULL);
 	abi_widget_map_to_screen(abiwidget);
-
-	return;
-
- exit_clean:
-	fclose (tmpfile);
-	unlink(szTempfile);
-	return;
 }
 
 /*
@@ -2319,69 +2277,18 @@ save_document_to_stream (BonoboPersistStream *ps,
 			 CORBA_Environment *ev)
 {
 	AbiWidget *abiwidget;
-	Bonobo_Stream_iobuf *stream_buffer;
-	CORBA_octet buffer [ ABI_BUFFER_SIZE ] = "" ;
-	CORBA_long len_read = 0;
-	FILE * tmpfile = NULL;
 
 	g_return_if_fail (data != NULL);
 	g_return_if_fail (IS_ABI_WIDGET (data));
 
 	abiwidget = static_cast<AbiWidget *>(data);
 
-	//
-	// Create a temp file name.
-	//
-	char szTempfile[ 2048 ];
-	UT_tmpnam(szTempfile);
+	GsfOutput * output = gsf_output_bonobo_new (stream, NULL);
 
-	char * ext = ".abw" ;
+	(void)abi_widget_save_to_gsf ( abiwidget, output, type );
 
-	if ( !strcmp ( "application/msword", type ) )
-	  ext = ".doc" ; 
-	else if ( !strcmp ( "application/rtf", type ) || !strcmp ("text/rtf", type) || !strcmp ("text/richtext", type) )
-	  ext = ".rtf" ;
-	else if ( !strcmp ( "text/plain", type ) )
-	  ext = ".txt" ;
-	else if ( !strcmp ( "text/html", type ) )
-	  ext = ".html" ;
-	else if ( !strcmp ( "application/xhtml+xml", type ) )
-	  ext = ".xhtml" ;
-	else if ( !strcmp ( "application/x-applix-word", type ) )
-	  ext = ".aw";
-	else if ( !strcmp ( "appplication/vnd.palm", type ) )
-	  ext = ".pdb" ;
-	else if ( !strcmp ( "text/vnd.wap.wml", type ) )
-	  ext = ".wml" ;
-
-	// todo: vary this based on the ContentType
-	if ( !abi_widget_save_ext ( abiwidget, szTempfile, ext ) )
-	  return ;
-
-	tmpfile = fopen(szTempfile, "wb");
-	if (!tmpfile)
-		return; // should never happen, but who knows...
-
-	do 
-	{
-		len_read = fread ( buffer, sizeof(CORBA_octet), ABI_BUFFER_SIZE, tmpfile ) ;
-
-		stream_buffer = Bonobo_Stream_iobuf__alloc ();
-		stream_buffer->_buffer = static_cast<CORBA_octet*>(buffer);
-		stream_buffer->_length = len_read;
-		
-		Bonobo_Stream_write (stream, stream_buffer, ev);
-		
-		if (ev->_major != CORBA_NO_EXCEPTION)
-			goto exit_clean;
-		
-		CORBA_free (buffer);
-	} 
-	while (len_read > 0);
-	
- exit_clean:
-	fclose (tmpfile);
-	unlink(szTempfile);
+	gsf_output_close (output);
+	g_object_unref (G_OBJECT (output));
 }
 
 //

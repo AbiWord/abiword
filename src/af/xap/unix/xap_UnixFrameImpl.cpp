@@ -260,7 +260,7 @@ s_loadDocument (const UT_UTF8String & file, XAP_Frame * pFrame)
 			// TODO: in it, so let's go ahead and open an untitled document
 			// TODO: for now.
 			UT_DEBUGMSG(("DOM: couldn't load document %s\n", file.utf8_str()));
-			pNewFrame->loadDocument(NULL, 0 /* IEFT_Unknown */);
+			pNewFrame->loadDocument((const char *)NULL, 0 /* IEFT_Unknown */);
 		}
 }
 

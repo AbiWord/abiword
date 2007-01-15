@@ -1068,6 +1068,80 @@ abi_widget_load_file(AbiWidget * abi, const char * pszFile)
 	return TRUE;
 }
 
+extern "C" gboolean
+abi_widget_load_file_from_gsf(AbiWidget * abi, GsfInput * input)
+{
+	if(abi->priv->m_szFilename)
+		free(abi->priv->m_szFilename);
+	abi->priv->m_szFilename = UT_strdup(gsf_input_name (input));
+	if(!abi->priv->m_bMappedToScreen)
+	{
+	  abi->priv->m_bPendingFile = true;
+	  return FALSE;
+	}
+	if(abi->priv->m_iNumFileLoads > 0)
+	{
+		return FALSE;
+	}
+
+	AP_UnixFrame * pFrame = (AP_UnixFrame *) abi->priv->m_pFrame;
+	if(pFrame == NULL)
+		return FALSE;
+	s_StartStopLoadingCursor( true, pFrame);
+//
+// First draw blank document
+//
+	AP_FrameData *pFrameData = static_cast<AP_FrameData *>(pFrame->getFrameData());
+	UT_return_val_if_fail(pFrameData, false);
+	pFrameData->m_pViewMode = VIEW_NORMAL;
+	pFrameData->m_bShowRuler = false;
+	pFrameData->m_bIsWidget = true;
+	if(abi->priv->m_bShowMargin)
+		static_cast<AP_Frame *>(pFrame)->setShowMargin(true);
+	else
+		static_cast<AP_Frame *>(pFrame)->setShowMargin(false);
+	if(abi->priv->m_bWordSelections)
+		static_cast<AP_Frame *>(pFrame)->setDoWordSelections(true);
+	else
+		static_cast<AP_Frame *>(pFrame)->setDoWordSelections(false);
+
+	pFrame->loadDocument(NULL,IEFT_Unknown ,true);
+	pFrame->toggleRuler(false);
+	pFrame->setCursor(GR_Graphics::GR_CURSOR_WAIT);
+//
+//Now load the file
+//
+	UT_DEBUGMSG(("ATTempting to load %s \n",abi->priv->m_szFilename));
+	/*bool res=*/ ( UT_OK == pFrame->loadDocument(input,IEFT_Unknown));
+	s_StartStopLoadingCursor( false, pFrame);
+	abi->priv->m_bPendingFile = false;
+	abi->priv->m_iNumFileLoads += 1;
+
+	// todo: this doesn't belong here. it should be bound as soon as the frame has a view,
+	// todo: or whenever the frame changes its view, such as a document load
+	UT_DEBUGMSG(("About to bind listener to view \n"));
+	_abi_widget_bindListenerToView(abi, pFrame->getCurrentView());
+	FV_View * pView = static_cast<FV_View *>(pFrame->getCurrentView());
+	if(pFrame->getZoomType() == XAP_Frame::z_PAGEWIDTH)
+	{
+		UT_uint32 iZoom =  pView->calculateZoomPercentForPageWidth();
+		pFrame->quickZoom(iZoom);
+	}
+	PD_Document *pDoc = pView->getDocument();
+	xxx_UT_DEBUGMSG(("Document from view is %x \n",pDoc));
+	IEFileType ieft  = pDoc->getLastOpenedType();
+	xxx_UT_DEBUGMSG(("Document Type loaded  is %d \n",ieft));
+	if(ieft < 0)
+	{
+		ieft =  IE_Exp::fileTypeForSuffix(".abw");
+	}
+	xxx_UT_DEBUGMSG(("Setting MIMETYPE %s \n",szMIME));
+	xxx_UT_DEBUGMSG(("m_sMIMETYPE pointer %x \n",abi->priv->m_sMIMETYPE));
+	*(abi->priv->m_sMIMETYPE) =  IE_Exp::descriptionForFileType(ieft);
+
+	return TRUE;
+}
+
 static gint s_abi_widget_load_file(gpointer p)
 {
   AbiWidget * abi = (AbiWidget *) p;
@@ -1969,12 +2043,31 @@ abi_widget_draw (AbiWidget * w)
 extern "C" gboolean
 abi_widget_save ( AbiWidget * w, const char * fname )
 {
-  return abi_widget_save_ext ( w, fname, ".abw" ) ;
+  return abi_widget_save_with_type ( w, fname, ".abw" ) ;
+}
+
+static IEFileType getImportFileType(const char * szSuffixOrMime)
+{
+  IEFileType ieft = IEFT_Unknown;
+
+  if(szSuffixOrMime && *szSuffixOrMime) {
+    IE_Imp::fileTypeForMimetype(szSuffixOrMime);
+    if(ieft == IEFT_Unknown) {
+      UT_String suffix;
+
+      if(*szSuffixOrMime != '.')
+		  suffix = ".";
+      suffix += szSuffixOrMime;
+      ieft = IE_Imp::fileTypeForSuffix(suffix.c_str());
+    }
+  }
+
+  return ieft;
 }
 
 extern "C" gboolean 
-abi_widget_save_ext ( AbiWidget * w, const char * fname,
-		      const char * extension )
+abi_widget_save_with_type ( AbiWidget * w, const char * fname,
+							const char * extension )
 {
   g_return_val_if_fail ( w != NULL, FALSE );
   g_return_val_if_fail ( IS_ABI_WIDGET(w), FALSE );
@@ -1985,12 +2078,36 @@ abi_widget_save_ext ( AbiWidget * w, const char * fname,
 	  return false;
   PD_Document * doc = view->getDocument () ;
 
-  // start out saving as abiword format by default
-  IEFileType ieft = IE_Exp::fileTypeForSuffix ( ".abw" ) ;
-
-  if ( extension != NULL && strlen ( extension ) > 0 && extension[0] == '.' )
-    ieft = IE_Exp::fileTypeForSuffix ( extension ) ;
-  *(w->priv->m_sMIMETYPE) =  IE_Exp::descriptionForFileType(ieft);
+  IEFileType ieft = getImportFileType (extension);
+  if (ieft == IEFT_Unknown)
+	  ieft = getImportFileType (".abw");
 
   return ( static_cast<AD_Document*>(doc)->saveAs ( fname, ieft ) == UT_OK ? TRUE : FALSE ) ;
+}
+
+extern "C" gboolean 
+abi_widget_save_to_gsf ( AbiWidget * w, GsfOutput * output,
+						 const char * extension )
+{
+  g_return_val_if_fail ( w != NULL, FALSE );
+  g_return_val_if_fail ( IS_ABI_WIDGET(w), FALSE );
+  g_return_val_if_fail ( output != NULL, FALSE );
+
+  FV_View * view = reinterpret_cast<FV_View *>(w->priv->m_pFrame->getCurrentView());
+  if(view == NULL)
+	  return false;
+  PD_Document * doc = view->getDocument () ;
+
+  IEFileType ieft = getImportFileType (extension);
+  if (ieft == IEFT_Unknown)
+	  ieft = getImportFileType (".abw");
+
+  return ( static_cast<PD_Document*>(doc)->saveAs ( output, ieft ) == UT_OK ? TRUE : FALSE ) ;
+}
+
+extern "C" gboolean 
+abi_widget_save_ext ( AbiWidget * w, const char * fname,
+					  const char * extension )
+{
+	return abi_widget_save_with_type (w, fname, extension);
 }
