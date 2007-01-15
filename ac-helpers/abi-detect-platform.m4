@@ -103,6 +103,7 @@ AC_ARG_WITH(fink,[  --with-fink          add /sw/... to CPP/LDFLAGS (Mac OSX)],[
 		LDFLAGS="$LDFLAGS -L/sw/lib"
 	fi
 ])
+
 # 
 # convenience option for building with darwin ports installed...
 # 
@@ -112,6 +113,16 @@ AC_ARG_WITH(fink,[  --with-darwinports          add /opt/local/... to CPP/LDFLAG
 		LDFLAGS="$LDFLAGS -L/opt/local/lib"
 	fi
 ])
+
+# convenience option for building with the abiports...
+# 
+AC_ARG_WITH(abiports,[  --with-abiports       add /opt/abi/... to CPP/LDFLAGS (Mac OSX)],[
+        if test "x$withval" = "xyes"; then
+                CPPFLAGS="$CPPFLAGS -I/opt/abi/include"
+                LDFLAGS="$LDFLAGS -L/opt/abi/lib"
+        fi
+])
+
 # 
 # 1. Whether to consider using Cocoa API:
 # 
