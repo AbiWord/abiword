@@ -23,6 +23,7 @@
 
 #include <glib.h>
 #include <abiwidget.h>
+#include <xap_UnixTableWidget.h>
 
 G_BEGIN_DECLS
 

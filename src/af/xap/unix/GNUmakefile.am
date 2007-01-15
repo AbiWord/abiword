@@ -92,10 +92,15 @@ libXap_unix_a_SOURCES= $(print_src)	\
 	xap_UnixDlg_DocComparison.cpp 	\
 	xap_UnixWidget.cpp
 
-EXTRA_DIST = $(glade_DATA) $(headers_DATA) Makefile
+EXTRA_DIST = \
+	$(glade_DATA) \
+	$(headers_DATA) \
+	Makefile
 
-# TODO Rob: conditionally install print headers
-#headersdir = $(ABIWORD_HEADERSDIR)/xap/unix
+headersdir = $(ABIWORD_HEADERSDIR)
+headers_DATA = \
+	xap_UnixTableWidget.h
+
 noinst_HEADERS = \
 	gtkintl.h \
 	xap_EmbeddedFeatures.h \
@@ -128,6 +133,5 @@ noinst_HEADERS = \
 	xap_UnixFontPreview.h \
 	xap_UnixFrameImpl.h \
 	xap_UnixModule.h \
-	xap_UnixTableWidget.h \
 	xap_Unix_TB_CFactory.h \
 	xap_UnixWidget.h 

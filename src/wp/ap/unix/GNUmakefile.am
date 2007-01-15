@@ -68,7 +68,7 @@ glade_DATA = $(spellglade)	\
 	ap_UnixDialog_HdrFtr.glade
 
 if WITH_SPELL
-spellsrc=	ap_@ABI_FE@Dialog_Spell.cpp
+spellsrc=	ap_UnixDialog_Spell.cpp
 endif
 
 libWpAp_unix_a_SOURCES= $(spellsrc)\
