@@ -20,4 +20,5 @@ noinst_PROGRAMS= cdump
 cdump_SOURCES = cdump.c
 
 EXTRA_DIST = \
-	Makefile
+	Makefile \
+	cdump.pl
