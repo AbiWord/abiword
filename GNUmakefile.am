@@ -7,12 +7,6 @@ endif
 
 DIST_SUBDIRS = goffice-bits src user
 
-expat_peerdir=$(top_builddir)/../expat
-wv_peerdir=$(top_builddir)/../wv
-libiconv_peerdir=$(top_builddir)/../libiconv
-libpng_peerdir=@LIBPNG_PEERDIR@
-libpopt_peerdir=$(top_builddir)/../popt
-
 desktopdir = $(datadir)/applications
 
 icondir= $(datadir)/icons
@@ -74,41 +68,11 @@ dist-hook:
 	rm -rf `find $(distdir)/docs -name CVS`
 	rm -rf `find $(distdir)/po -name CVS`
 
-# Hack: make sure that the PEERS stuff is build first
-# We can not use the all target, because on parallel builds there is no
-# guarantee that the peerdirs will be built before the main tree.
-all-recursive: @PEERS@
-
-expat:
-	$(MAKE) -C $(expat_peerdir)
-wv:
-	$(MAKE) -C $(wv_peerdir) BUILD_FOR_ABIWORD=1 @EPATH_WV_BUILD_FLAGS@
-libiconv:
-	$(MAKE) -C $(libiconv_peerdir)
-popt:
-	$(MAKE) -C $(libpopt_peerdir)
-libpng:
-	$(MAKE) -C $(libpng_peerdir)
-
 test: check
 
-# TODO Rob: remove after making sure no more peer dirs are used
-clean-local:
-	for i in . $(expat_peerdir)  $(wv_peerdir) \
-                 $(libpng_peerdir) $(libpopt_peerdir); do \
-	  if test $$i != . && test -d $$i ; then \
-	    $(MAKE) -C $$i clean || true; \
-	  fi; \
-	done
 
 # TODO Rob: phase out with 2.7
 realclean: clean
-	for i in . $(expat_peerdir)  $(wv_peerdir) \
-                 $(libpng_peerdir) $(libpopt_peerdir); do \
-	  if test $$i != . && test -d $$i ; then \
-	    $(MAKE) -C $$i distclean || true; \
-	  fi; \
-	done
 	@rm -f config.* stamp-h stamp-h[0-9]*
 	@find ./ -name .deps | xargs rm -rf
 	@find ./ -name GNUmakefile | xargs rm -f
