@@ -128,14 +128,7 @@ BeginLayout(Main,0)
 			MenuItem(AP_MENU_ID_VIEW_TB_1)
 			MenuItem(AP_MENU_ID_VIEW_TB_2)
 			MenuItem(AP_MENU_ID_VIEW_TB_3)
-			MenuItem(AP_MENU_ID_VIEW_TB_4)			
-// Currently we only can change toolbars in UNIX builds
-#ifdef XP_UNIX_TARGET_GTK
-			Separator()
-			MenuItem(AP_MENU_ID_VIEW_LOCK_TB_LAYOUT)
-			MenuItem(AP_MENU_ID_VIEW_DEFAULT_TB_LAYOUT)
-#endif
-
+			MenuItem(AP_MENU_ID_VIEW_TB_4)
 		EndSubMenu()
 
 		MenuItem(AP_MENU_ID_VIEW_RULER)
