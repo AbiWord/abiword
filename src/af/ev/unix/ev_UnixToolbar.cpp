@@ -91,10 +91,14 @@ toolbar_append_item (GtkToolbar *toolbar,
 
 	if (GTK_IS_TOOL_ITEM (widget)) {
 		tool_item = GTK_TOOL_ITEM (widget);
+		gtk_tool_item_set_tooltip (tool_item, toolbar->tooltips, text, private_text);
 	}
 	else {
 		tool_item = gtk_tool_item_new ();
-		gtk_container_add (GTK_CONTAINER (tool_item), widget);
+		GtkWidget *box = gtk_event_box_new ();
+		gtk_container_add (GTK_CONTAINER (tool_item), box);
+		gtk_container_add (GTK_CONTAINER (box), widget);
+		gtk_tooltips_set_tip (toolbar->tooltips, box, text, private_text);
 		if (action_name && data) {
 			GtkAction	*proxy_action;
 			GtkWidget 	*menu_item;
@@ -106,7 +110,6 @@ toolbar_append_item (GtkToolbar *toolbar,
 			g_object_unref (G_OBJECT (proxy_action));
 		}
 	}
-	gtk_tool_item_set_tooltip (tool_item, toolbar->tooltips, text, private_text);
 	gtk_toolbar_insert (toolbar, tool_item, -1);
 	if (show) {
 		gtk_widget_show_all (GTK_WIDGET (tool_item));
