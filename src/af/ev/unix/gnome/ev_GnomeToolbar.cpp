@@ -42,6 +42,7 @@ static void detachable_changed_cb(GConfClient *client,
 	self->setDetachable(detachable);
 }
 
+#if HONOR_GNOME_TOOLBAR_SETTINGS
 /*!
 * "toolbar style" value changed in gconf
 */
@@ -66,6 +67,7 @@ static void style_changed_cb(GConfClient *client,
 
 	self->setStyle(style);
 }
+#endif
 
 
 /*!

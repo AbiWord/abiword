@@ -663,8 +663,6 @@ GtkToolbarStyle EV_UnixToolbar::getStyle(void)
 bool EV_UnixToolbar::synthesize(void)
 {
 	// create a GTK toolbar from the info provided.
-	const XAP_StringSet * pSS = XAP_App::getApp()->getStringSet();
-
 	const EV_Toolbar_ActionSet * pToolbarActionSet = m_pUnixApp->getToolbarActionSet();
 	UT_ASSERT(pToolbarActionSet);
 
