@@ -66,6 +66,7 @@ AP_UnixDialog_Styles::AP_UnixDialog_Styles(XAP_DialogFactory * pDlgFactory,
 	m_wCharPreviewArea = NULL;
 	m_pCharPreviewWidget = NULL;
 
+	m_listStyles = NULL;
 	m_tvStyles = NULL;
 	m_rbList1 = NULL;
 	m_rbList2 = NULL;
@@ -600,7 +601,7 @@ void AP_UnixDialog_Styles::_connectSignals(void) const
 			  (void*)reinterpret_cast<gconstpointer>(this));
 }
 
-void AP_UnixDialog_Styles::_populateCList(void) const
+void AP_UnixDialog_Styles::_populateCList(void)
 {
 	const PD_Style * pStyle;
 	const gchar * name = NULL;
@@ -608,19 +609,17 @@ void AP_UnixDialog_Styles::_populateCList(void) const
 	size_t nStyles = getDoc()->getStyleCount();
 	xxx_UT_DEBUGMSG(("DOM: we have %d styles\n", nStyles));
 	
-	GtkListStore *model = NULL;
-	GtkTreeModel *m = gtk_tree_view_get_model (GTK_TREE_VIEW(m_tvStyles));
-	if (!m)
-	{
-		model = gtk_list_store_new (1, G_TYPE_STRING);	
-		gtk_tree_view_set_model(GTK_TREE_VIEW(m_tvStyles), reinterpret_cast<GtkTreeModel*>(model));	
+	if (m_listStyles == NULL) {
+		m_listStyles = gtk_list_store_new (1, G_TYPE_STRING);
+		GtkTreeModel *sort = gtk_tree_model_sort_new_with_model (GTK_TREE_MODEL (m_listStyles));
+		gtk_tree_sortable_set_sort_column_id (GTK_TREE_SORTABLE (sort), 0, GTK_SORT_ASCENDING);
+		gtk_tree_view_set_model (GTK_TREE_VIEW(m_tvStyles), sort);
+		g_object_unref (G_OBJECT (sort));
+		g_object_unref (G_OBJECT (m_listStyles));
+	} else {
+		gtk_list_store_clear (m_listStyles);
 	}
-	else
-	{
-		model = reinterpret_cast<GtkListStore*>(m);
-		gtk_list_store_clear (model);
-	}
-
+	
 	GtkTreeViewColumn *column = gtk_tree_view_get_column (GTK_TREE_VIEW(m_tvStyles), 0);
 	if (!column) 
 	{
@@ -643,8 +642,8 @@ void AP_UnixDialog_Styles::_populateCList(void) const
 			(m_whichType == USER_STYLES && pStyle->isUserDefined()) ||
 			(!UT_strcmp(m_sNewStyleName.utf8_str(), pStyle->getName()))) /* show newly created style anyways */
 		{
-			gtk_list_store_append(model, &iter);
-			gtk_list_store_set(model, &iter, 0, name, -1);
+			gtk_list_store_append(m_listStyles, &iter);
+			gtk_list_store_set(m_listStyles, &iter, 0, name, -1);
 			
 			if (!UT_strcmp(m_sNewStyleName.utf8_str(), pStyle->getName())) {
 				pHighlightIter = gtk_tree_iter_copy(&iter);

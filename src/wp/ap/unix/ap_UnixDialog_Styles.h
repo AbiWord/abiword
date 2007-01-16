@@ -102,7 +102,7 @@ protected:
 	virtual GtkWidget * _constructWindow(void);
 	GtkWidget * _constructWindowContents(GtkWidget * parent);
 	void				_populateWindowData(void);
-	void                            _populateCList(void) const;
+	void                            _populateCList(void);
 	void 				_storeWindowData(void) const;
 	void				_connectSignals(void) const;
 	virtual const char * getCurrentStyle (void) const;
@@ -123,6 +123,7 @@ protected:
 	GtkWidget * m_wCharPreviewArea;
 	GtkWidget * m_wGnomeButtons;
 
+	GtkListStore * m_listStyles;
 	GtkWidget * m_tvStyles;
 	GtkWidget * m_rbList1;
 	GtkWidget * m_rbList2;
