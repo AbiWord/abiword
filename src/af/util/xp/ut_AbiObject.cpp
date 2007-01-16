@@ -2,7 +2,7 @@
  * Copyright (C) 2001 AbiSource, Inc.
  * Copyright (C) 2001 Dom Lachowicz <cinamod@hotmail.com> 
  *
- * This program is free software; you can redistribute it and/or
+ * This program is g_free software; you can redistribute it and/or
  * modify it under the terms of the GNU General Public License
  * as published by the Free Software Foundation; either version 2
  * of the License, or (at your option) any later version.
@@ -125,7 +125,7 @@ UT_uint32 UT_AbiObject::hashcode () const
 	UT_DEBUGMSG(("DOM: operator new allocating %d bytes\n", nbytes));
 	UT_ASSERT (nbytes > 0);
 	
-	void * pBytes = malloc (nbytes);
+	void * pBytes = g_try_malloc (nbytes);
 	
 #ifdef ZERO_SET_BYTES
 	memset (pBytes, 0, nbytes);
@@ -151,7 +151,7 @@ UT_uint32 UT_AbiObject::hashcode () const
 		return;
     }
 	
-	free (pbytes);
+	g_free (pbytes);
 }
 
 #endif /* MANAGE_MEMORY */

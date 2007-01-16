@@ -3,7 +3,7 @@
 /* AbiWord
  * Copyright (C) 1998-2000 AbiSource, Inc.
  *
- * This program is free software; you can redistribute it and/or
+ * This program is g_free software; you can redistribute it and/or
  * modify it under the terms of the GNU General Public License
  * as published by the Free Software Foundation; either version 2
  * of the License, or (at your option) any later version.
@@ -336,9 +336,9 @@ bool AP_Dialog_Paragraph::setDialogData(const XML_Char ** pProps)
 }
 
 // This function returns a pointer to newly allocated memory, which contains
-// pointers to newly allocated memory.  The caller must free both dimensions
-// of this structure (use the FREEP() macro, we use calloc() to allocate it).
-// This function does not free any memory pointed to by its argument before
+// pointers to newly allocated memory.  The caller must g_free both dimensions
+// of this structure (use the FREEP() macro, we use UT_calloc() to allocate it).
+// This function does not g_free any memory pointed to by its argument before
 // writing into it.
 
 #define ALLOC_PROP_PAIR(p)									\
@@ -653,7 +653,7 @@ void AP_Dialog_Paragraph::_createPreviewFromGC(GR_Graphics * gc,
 {
 	UT_return_if_fail (gc);
 
-	// free any attached preview
+	// g_free any attached preview
 	DELETEP(m_paragraphPreview);
 
 	// platform's runModal should have set this

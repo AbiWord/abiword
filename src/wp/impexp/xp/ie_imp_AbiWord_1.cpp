@@ -3,7 +3,7 @@
 /* AbiWord
  * Copyright (C) 1998 AbiSource, Inc.
  *
- * This program is free software; you can redistribute it and/or
+ * This program is g_free software; you can redistribute it and/or
  * modify it under the terms of the GNU General Public License
  * as published by the Free Software Foundation; either version 2
  * of the License, or (at your option) any later version.
@@ -898,7 +898,7 @@ void IE_Imp_AbiWord_1::startElement(const XML_Char *name,
 			++p;
 		}
 
-		free ((void*)atts);
+		g_free ((void*)atts);
 	}
 }
 
@@ -1074,7 +1074,7 @@ void IE_Imp_AbiWord_1::endElement(const XML_Char *name)
 #undef MyIsWhite
  		X_CheckError(getDoc()->createDataItem(static_cast<const char*>(m_currentDataItemName),m_currentDataItemEncoded,&m_currentDataItem,m_currentDataItemMimeType,NULL));
 		FREEP(m_currentDataItemName);
-		// the data item will free the token we passed (mime-type)
+		// the data item will g_free the token we passed (mime-type)
 		m_currentDataItemMimeType = NULL;
 #endif
  		return;
@@ -1300,7 +1300,7 @@ bool IE_Imp_AbiWord_1::_handleImage(const XML_Char ** atts)
 
 	/* copy attribute list; replace dataid/href value with new ID
 	 */
-	const char ** new_atts = static_cast<const char **>(malloc ((natts + 2) * sizeof (char *)));
+	const char ** new_atts = static_cast<const char **>(g_try_malloc ((natts + 2) * sizeof (char *)));
 	if (new_atts == 0) return false; // hmm
 
 	const char ** new_attr = new_atts;
@@ -1325,7 +1325,7 @@ bool IE_Imp_AbiWord_1::_handleImage(const XML_Char ** atts)
 	m_iImageId++;
 	getDoc()->setMinUID(UT_UniqueId::Image, m_iImageId);
 
-	free (new_atts);
+	g_free (new_atts);
 
 	return success;
 #else

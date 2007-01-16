@@ -47,6 +47,9 @@
 
 /*
  * $Log$
+ * Revision 1.13  2007/01/16 21:45:42  dom
+ * bug 10751 - use glib's types and memory allocation functions. no more mismatched free/g_free malloc/g_malloc
+ *
  * Revision 1.12  2006/12/28 17:31:29  robsta
  * bug#10693 "Build Broken due to PATH_MAX stuff (Windows)"
  *
@@ -159,7 +162,7 @@
  * Revision 1.2  1998/12/29 14:55:33  eric
  *
  * I've doctored the ispell code pretty extensively here.  It is now
- * warning-free on Win32.  It also *works* on Win32 now, since I
+ * warning-g_free on Win32.  It also *works* on Win32 now, since I
  * replaced all the I/O calls with ANSI standard ones.
  *
  * Revision 1.1  1998/12/28 18:04:43  davet

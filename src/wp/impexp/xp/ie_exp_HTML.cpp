@@ -5,7 +5,7 @@
  * Copyright (C) 2002,2004 Francis James Franklin <fjf@alinameridon.com>
  * Copyright (C) 2001-2002 AbiSource, Inc.
  * 
- * This program is free software; you can redistribute it and/or
+ * This program is g_free software; you can redistribute it and/or
  * modify it under the terms of the GNU General Public License
  * as published by the Free Software Foundation; either version 2
  * of the License, or (at your option) any later version.
@@ -1344,7 +1344,7 @@ static const char * s_Delimiter =
 "=======================================================";
 
 static const char * s_Header[2] = {
-   "Created by AbiWord, a free, Open Source wordprocessor. ",
+   "Created by AbiWord, a g_free, Open Source wordprocessor. ",
    "For more information visit http://www.abisource.com.   "
 };
 
@@ -5876,14 +5876,14 @@ bool s_StyleTree::add (const char * style_name, PD_Style * style)
 {
 	if (m_list == 0)
 	{
-		m_list = reinterpret_cast<s_StyleTree **>(malloc (8 * sizeof (s_StyleTree *)));
+		m_list = reinterpret_cast<s_StyleTree **>(g_try_malloc (8 * sizeof (s_StyleTree *)));
 		if (m_list == 0) return false;
 		m_max = 8;
 	}
 	if (m_count == m_max)
 	{
 		s_StyleTree ** more = 0;
-		more = reinterpret_cast<s_StyleTree **>(realloc (m_list, (m_max + 8) * sizeof (s_StyleTree *)));
+		more = reinterpret_cast<s_StyleTree **>(g_try_realloc (m_list, (m_max + 8) * sizeof (s_StyleTree *)));
 		if (more == 0) return false;
 		m_list = more;
 		m_max += 8;

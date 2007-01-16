@@ -14,14 +14,14 @@ TFTEST_MAIN("UT_ByteBuf")
 {
 	UT_ByteBuf *mybuf = new UT_ByteBuf();
 
-	UT_Byte *buf = (UT_Byte *)malloc(1000);
+	UT_Byte *buf = (UT_Byte *)g_try_malloc(1000);
 	memset(buf, 0, 1000);
 
 	TFPASS(mybuf->append(buf, 1000));
 	TFPASS(mybuf->getLength() == 1000);
 
 
-	UT_Byte *buf2 = (UT_Byte *)malloc(500);
+	UT_Byte *buf2 = (UT_Byte *)g_try_malloc(500);
 	memset(buf2, 0xef, 500);
 
 	TFPASS(mybuf->ins(0, buf2, 500));

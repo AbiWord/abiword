@@ -3,7 +3,7 @@
 /* AbiWord
  * Copyright (C) 2001-2003 AbiSource, Inc.
  * 
- * This program is free software; you can redistribute it and/or
+ * This program is g_free software; you can redistribute it and/or
  * modify it under the terms of the GNU General Public License
  * as published by the Free Software Foundation; either version 2
  * of the License, or (at your option) any later version.
@@ -122,7 +122,7 @@ UT_XML::~UT_XML ()
 {
   _cleanup();
 
-  if (m_chardata_buffer) free (m_chardata_buffer);
+  if (m_chardata_buffer) g_free (m_chardata_buffer);
 
   FREEP (m_namespace);
 }
@@ -133,13 +133,13 @@ bool UT_XML::grow (char *& buffer, UT_uint32 & length, UT_uint32 & max, UT_uint3
 
   if (buffer == 0)
     {
-      buffer = static_cast<char *>(malloc (require + 1));
+      buffer = static_cast<char *>(g_try_malloc (require + 1));
       if (buffer == 0) return false;
       buffer[0] = 0;
       max = require + 1;
       return true;
     }
-  char * more = static_cast<char *>(realloc (buffer, max + require + 1));
+  char * more = static_cast<char *>(g_try_realloc (buffer, max + require + 1));
   if (more == 0) return false;
   buffer = more;
   max += require + 1;

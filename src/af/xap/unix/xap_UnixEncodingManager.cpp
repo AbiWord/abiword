@@ -46,7 +46,7 @@ g_i18n_get_language_list (const gchar *category_name);
  *
  * This file is part of the Gnome Library.
  *
- * The Gnome Library is free software; you can redistribute it and/or
+ * The Gnome Library is g_free software; you can redistribute it and/or
  * modify it under the terms of the GNU Library General Public License as
  * published by the Free Software Foundation; either version 2 of the
  * License, or (at your option) any later version.
@@ -499,7 +499,7 @@ void  XAP_UnixEncodingManager::initialize()
 			if (cs[1])
 			{
 				int length = strlen (cs + 1);
-				char * name = static_cast<char *>(malloc (length + 3));
+				char * name = static_cast<char *>(g_try_malloc (length + 3));
 				if (name)
 				{
 					strcpy (name, cs + 1);

@@ -2,7 +2,7 @@
  *
  * Copyright (C) 2004 Tomas Frydrych <tomasfrydrych@yahoo.co.uk>
  *
- * This program is free software; you can redistribute it and/or
+ * This program is g_free software; you can redistribute it and/or
  * modify it under the terms of the GNU General Public License
  * as published by the Free Software Foundation; either version 2
  * of the License, or (at your option) any later version.
@@ -183,7 +183,7 @@ template <class T> class ABI_EXPORT UT_GenericTree
 
 	
 	void      clear();           // empty and deallocate internal data structures (but not node data !!!)
-	void      freeData(void);    // deallocate node data using free()
+	void      freeData(void);    // deallocate node data using g_free()
 	void      purgeData(void);   // deallocate node data using delete
 	
 	UT_sint32 getMaxNodeLevel() const {return m_nodeMap.getItemCount()-1;}
@@ -483,7 +483,7 @@ UT_GenericTree<T>::freeData(void)
 	{
 		T t = hc1.getContent();
 		if (t) {
-			free(const_cast<T>(t));
+			g_free(const_cast<T>(t));
 		}
 	}
 

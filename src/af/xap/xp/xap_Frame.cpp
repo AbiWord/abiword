@@ -1,7 +1,7 @@
 /* AbiSource Application Framework
  * Copyright (C) 1998 AbiSource, Inc.
  * 
- * This program is free software; you can redistribute it and/or
+ * This program is g_free software; you can redistribute it and/or
  * modify it under the terms of the GNU General Public License
  * as published by the Free Software Foundation; either version 2
  * of the License, or (at your option) any later version.
@@ -248,7 +248,7 @@ bool XAP_Frame::initialize(const char * szKeyBindingsKey, const char * szKeyBind
 			UT_cloneString(szTempName,p);
 			m_pFrameImpl->m_vecToolbarLayoutNames.addItem(szTempName);
 		}
-		free(szTemp);
+		g_free(szTemp);
 	}
 	
 	//////////////////////////////////////////////////////////////////
@@ -747,7 +747,7 @@ XAP_Dialog_MessageBox * XAP_Frame::createMessageBox(XAP_String_Id id,
 	UT_return_val_if_fail(pDialog, NULL);
 
 	if (id > 0) {
-		char * szNewMessage = static_cast<char *>(malloc(sizeof(char) * 256));
+		char * szNewMessage = static_cast<char *>(g_try_malloc(sizeof(char) * 256));
 		const XAP_StringSet * pSS = XAP_App::getApp()->getStringSet();
 		UT_String s;
 		pSS->getValue(id, XAP_App::getApp()->getDefaultEncoding(), s);
@@ -759,7 +759,7 @@ XAP_Dialog_MessageBox * XAP_Frame::createMessageBox(XAP_String_Id id,
 
 		pDialog->setMessage("%s", szNewMessage);
 		
-		// XAP_MessageBox makes a copy of the message, so free it
+		// XAP_MessageBox makes a copy of the message, so g_free it
 		FREEP(szNewMessage);
 	}
 	pDialog->setButtons(buttons);

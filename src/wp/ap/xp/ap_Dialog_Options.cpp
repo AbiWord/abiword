@@ -5,7 +5,7 @@
  * Copyright (C) 2003 Hubert Figuiere
  * Copyright (C) 2004 Francis James Franklin
  *
- * This program is free software; you can redistribute it and/or
+ * This program is g_free software; you can redistribute it and/or
  * modify it under the terms of the GNU General Public License
  * as published by the Free Software Foundation; either version 2
  * of the License, or (at your option) any later version.
@@ -672,7 +672,7 @@ static const char * s_null_extension = XAP_PREF_DEFAULT_AutoSaveFileExt;
 #ifdef FREEP_EXT
 #undef FREEP_EXT
 #endif
-#define FREEP_EXT(S)	do { if (S) { if ((S) != s_null_extension) free((void *) (S)); }; (S) = 0; } while (0)
+#define FREEP_EXT(S)	do { if (S) { if ((S) != s_null_extension) g_free((void *) (S)); }; (S) = 0; } while (0)
 
 #ifdef CHECK_EXT
 #undef CHECK_EXT
@@ -1331,7 +1331,7 @@ AP_PreferenceSchemeManager::~AP_PreferenceSchemeManager()
 
 	while (m_PopUp_UnitsCount)
 		{
-			free(m_PopUp_UnitsList[--m_PopUp_UnitsCount]);
+			g_free(m_PopUp_UnitsList[--m_PopUp_UnitsCount]);
 		}
 }
 

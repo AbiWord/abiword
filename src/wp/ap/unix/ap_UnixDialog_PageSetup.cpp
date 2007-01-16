@@ -1,7 +1,7 @@
 /* AbiWord
  * Copyright (C) 1998 AbiSource, Inc.
  * 
- * This program is free software; you can redistribute it and/or
+ * This program is g_free software; you can redistribute it and/or
  * modify it under the terms of the GNU General Public License
  * as published by the Free Software Foundation; either version 2
  * of the License, or (at your option) any later version.
@@ -402,7 +402,7 @@ void AP_UnixDialog_PageSetup::event_PageSizeChanged (fp_PageSize::Predefined pd)
   {
 	  ps.setLandscape();
   }
-  // hmm, we should free the old pagesize.
+  // hmm, we should g_free the old pagesize.
   m_PageSize = ps;
   setPageUnits(ps.getDims());
 

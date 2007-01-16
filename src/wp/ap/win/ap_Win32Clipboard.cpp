@@ -1,7 +1,7 @@
 /* AbiWord
  * Copyright (C) 1998 AbiSource, Inc.
  * 
- * This program is free software; you can redistribute it and/or
+ * This program is g_free software; you can redistribute it and/or
  * modify it under the terms of the GNU General Public License
  * as published by the Free Software Foundation; either version 2
  * of the License, or (at your option) any later version.
@@ -45,7 +45,7 @@ AP_Win32Clipboard::AP_Win32Clipboard(void)
 	AddFmt(AP_CLIPBOARD_BMP,				CF_BITMAP);					
 	AddFmt(AP_CLIPBOARD_UNKNOWN,			0);					// must be last
 
-	// We don't need to free these strings in our destructor
+	// We don't need to g_free these strings in our destructor
 	// because we did not allocate any of the string pointers.
 
 #undef AddFmt

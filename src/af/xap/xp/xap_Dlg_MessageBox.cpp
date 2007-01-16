@@ -1,7 +1,7 @@
 /* AbiSource Application Framework
  * Copyright (C) 1998 AbiSource, Inc.
  * 
- * This program is free software; you can redistribute it and/or
+ * This program is g_free software; you can redistribute it and/or
  * modify it under the terms of the GNU General Public License
  * as published by the Free Software Foundation; either version 2
  * of the License, or (at your option) any later version.
@@ -51,7 +51,7 @@ void XAP_Dialog_MessageBox::setMessage(const char * szMessage, ...)
 	va_start(args, szMessage);
 
 	FREEP(m_szMessage);
-	m_szMessage = (char *)malloc(512*sizeof(char));
+	m_szMessage = (char *)g_try_malloc(512*sizeof(char));
 	vsprintf(m_szMessage, szMessage, args);
 
 	va_end(args);
@@ -67,7 +67,7 @@ void XAP_Dialog_MessageBox::setMessage(XAP_String_Id id, ...)
 
 	const XAP_StringSet * pSS = getApp()->getStringSet();
 
-	m_szMessage = (char *)malloc(512*sizeof(char));
+	m_szMessage = (char *)g_try_malloc(512*sizeof(char));
 	UT_String s;
 	pSS->getValue(id, getApp()->getDefaultEncoding(),s);
 	
@@ -83,7 +83,7 @@ void XAP_Dialog_MessageBox::setSecondaryMessage(const char * szMessage, ...)
 	va_start(args, szMessage);
 
 	FREEP(m_szSecondaryMessage);
-	m_szSecondaryMessage = (char *)malloc(512*sizeof(char));
+	m_szSecondaryMessage = (char *)g_try_malloc(512*sizeof(char));
 	vsprintf(m_szSecondaryMessage, szMessage, args);
 
 	va_end(args);
@@ -99,7 +99,7 @@ void XAP_Dialog_MessageBox::setSecondaryMessage(XAP_String_Id id, ...)
 
 	const XAP_StringSet * pSS = getApp()->getStringSet();
 
-	m_szSecondaryMessage = (char *)malloc(512*sizeof(char));
+	m_szSecondaryMessage = (char *)g_try_malloc(512*sizeof(char));
 	UT_String s;
 	pSS->getValue(id, getApp()->getDefaultEncoding(),s);
 	vsprintf(m_szSecondaryMessage, (char*)s.c_str(), args);

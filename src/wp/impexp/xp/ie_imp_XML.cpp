@@ -3,7 +3,7 @@
 /* Abiword
  * Copyright (C) 1998 AbiSource, Inc.
  *
- * This program is free software; you can redistribute it and/or
+ * This program is g_free software; you can redistribute it and/or
  * modify it under the terms of the GNU General Public License
  * as published by the Free Software Foundation; either version 2
  * of the License, or (at your option) any later version.
@@ -428,7 +428,7 @@ void IE_Imp_XML::_popInlineFmt(void)
 		const XML_Char * p = static_cast<XML_Char *>(m_vecInlineFmt.getNthItem(k-1));
 		m_vecInlineFmt.deleteNthItem(k-1);
 		if (p)
-			free(const_cast<void *>(static_cast<const void *>(p)));
+			g_free(const_cast<void *>(static_cast<const void *>(p)));
 	}
 }
 

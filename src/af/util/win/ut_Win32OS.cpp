@@ -1,7 +1,7 @@
 /* AbiSource Program Utilities
  * Copyright (C) 1998 AbiSource, Inc.
  * 
- * This program is free software; you can redistribute it and/or
+ * This program is g_free software; you can redistribute it and/or
  * modify it under the terms of the GNU General Public License
  * as published by the Free Software Foundation; either version 2
  * of the License, or (at your option) any later version.
@@ -95,7 +95,7 @@ DLGTEMPLATE * WINAPI UT_LockDlgRes(HINSTANCE hinst, LPCTSTR lpszResName)
 
     (It is real pain that such an elementary task should be so hard)
 
-    The caller must free the returned pointer when no longer needed
+    The caller must g_free the returned pointer when no longer needed
 */
 
 #ifdef UNICODE
@@ -115,7 +115,7 @@ char * UT_GetDefaultPrinterName()
 		iBufferSize *= 2;
 
 		if(pPrinterName)
-			free(pPrinterName);
+			g_free(pPrinterName);
 		
 		pPrinterName = (char *) UT_calloc(sizeof(char),iBufferSize);
 		UT_return_val_if_fail( pPrinterName, NULL );
@@ -244,7 +244,7 @@ HDC  UT_GetDefaultPrinterDC()
 
 	const char * pDriver = UT_IsWinNT() ? "WINSPOOL" : NULL;
 	HDC hdc = CreateDC(pDriver, pPrinterName, NULL, NULL);
-	free(pPrinterName);
+	g_free(pPrinterName);
 	return hdc;
 }
 
@@ -350,7 +350,7 @@ HWND UT_CreateWindowEx(DWORD dwExStyle, const char * pszClassName, const char * 
 		
 		HWND hwnd = CreateWindowExW(dwExStyle, buff1, ucs2str, dwStyle,
 									x, y, nWidth, nHeight, hWndParent, hMenu, hInstance, lpParam);
-		free(ucs2str);
+		g_free(ucs2str);
 		return hwnd;
 	}
 	else
@@ -376,7 +376,7 @@ BOOL UT_SetWindowText(HWND hWnd, const char * lpString, bool bForceANSI)
 		auto_iconv aic("UTF-8", ucs2Internal());
 		WCHAR * ucs2 = (WCHAR*)UT_convert_cd(lpString, -1, aic, NULL, NULL);
 		BOOL bRet = SetWindowTextW(hWnd, ucs2);
-		free(ucs2);
+		g_free(ucs2);
 		return bRet;
 	}
 	else

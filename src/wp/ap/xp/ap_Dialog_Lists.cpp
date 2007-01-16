@@ -1,7 +1,7 @@
 /* AbiWord
  * Copyright (C) 1998 AbiSource, Inc.
  *
- * This program is free software; you can redistribute it and/or
+ * This program is g_free software; you can redistribute it and/or
  * modify it under the terms of the GNU General Public License
  * as published by the Free Software Foundation; either version 2
  * of the License, or (at your option) any later version.
@@ -137,7 +137,7 @@ void AP_Dialog_Lists::_createPreviewFromGC(GR_Graphics* gc,
 	m_iWidth = width;
 	m_iHeight = height;
 
-// free any attached preview
+// g_free any attached preview
 
 	DELETEP(m_pListsPreview);
 
@@ -601,7 +601,7 @@ void  AP_Dialog_Lists::fillUncustomizedValues(void)
 	}
 
 	if(props_in)
-		free(props_in);
+		g_free(props_in);
 }
 
 /*!

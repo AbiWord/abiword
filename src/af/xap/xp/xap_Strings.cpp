@@ -3,7 +3,7 @@
  * BIDI Copyright (C) 2001,2002 Tomas Frydrych
  * Copyright (C) 2002 Dom Lachowicz
  *
- * This program is free software; you can redistribute it and/or
+ * This program is g_free software; you can redistribute it and/or
  * modify it under the terms of the GNU General Public License
  * as published by the Free Software Foundation; either version 2
  * of the License, or (at your option) any later version.
@@ -55,7 +55,7 @@ XAP_StringSet::XAP_StringSet(XAP_App * pApp, const XML_Char * szLanguageName)
 XAP_StringSet::~XAP_StringSet(void)
 {
 	if (m_szLanguageName)
-		free(const_cast<XML_Char *>(m_szLanguageName));
+		g_free(const_cast<XML_Char *>(m_szLanguageName));
 }
 
 const XML_Char * XAP_StringSet::getLanguageName(void) const
@@ -81,7 +81,7 @@ bool XAP_StringSet::getValue(XAP_String_Id id, const char * inEncoding, UT_Strin
 				UT_return_val_if_fail(translated, false);
 				s = translated;
 				
-				free(translated);
+				g_free(translated);
 			}
 		UT_CATCH(UT_CATCH_ANY)
 			{
@@ -111,7 +111,7 @@ bool XAP_StringSet::getValueUTF8(XAP_String_Id id, UT_UTF8String & s) const
 				UT_return_val_if_fail(translated, false);
 				s = translated;
 				
-				free(translated);
+				g_free(translated);
 			}
 		UT_CATCH(UT_CATCH_ANY)
 			{
@@ -195,7 +195,7 @@ XAP_DiskStringSet::~XAP_DiskStringSet(void)
 	{
 		XML_Char * sz = m_vecStringsXAP.getNthItem(k);
 		if (sz)
-			free(sz);
+			g_free(sz);
 	}
 
 	// we didn't create the fallback set, but we inherit ownership of it.
@@ -205,7 +205,7 @@ XAP_DiskStringSet::~XAP_DiskStringSet(void)
 bool XAP_DiskStringSet::setLanguage(const XML_Char * szLanguageName)
 {
 	if (m_szLanguageName)
-		free(const_cast<XML_Char *>(m_szLanguageName));
+		g_free(const_cast<XML_Char *>(m_szLanguageName));
 	m_szLanguageName = NULL;
 	if (szLanguageName && *szLanguageName)
 		UT_XML_cloneString((XML_Char *&)m_szLanguageName,szLanguageName);
@@ -274,7 +274,7 @@ bool XAP_DiskStringSet::setValue(XAP_String_Id id, const XML_Char * szString)
 		    };
 		}
 		length = str.getLength();
-		szDup = static_cast<XML_Char *>(malloc(length+1));
+		szDup = static_cast<XML_Char *>(g_try_malloc(length+1));
 		if (!szDup)
 			return false;
 		memcpy(szDup,str.getPointer(0),length);

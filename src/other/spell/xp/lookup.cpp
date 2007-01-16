@@ -42,6 +42,9 @@
 
 /*
  * $Log$
+ * Revision 1.10  2007/01/16 21:45:42  dom
+ * bug 10751 - use glib's types and memory allocation functions. no more mismatched free/g_free malloc/g_malloc
+ *
  * Revision 1.9  2005/10/08 14:41:37  uwog
  * Build fix for 64 bit archs
  *
@@ -157,7 +160,7 @@
  * Revision 1.4  1998/12/29 14:55:33  eric
  *
  * I've doctored the ispell code pretty extensively here.  It is now
- * warning-free on Win32.  It also *works* on Win32 now, since I
+ * warning-g_free on Win32.  It also *works* on Win32 now, since I
  * replaced all the I/O calls with ANSI standard ones.
  *
  * Revision 1.3  1998/12/28 23:11:30  eric
@@ -287,14 +290,14 @@ int ISpellChecker::linit (char *hashname)
 	{
 		m_hashtbl =
 		 (struct dent *)
-			calloc (static_cast<unsigned>(m_hashheader.tblsize), sizeof (struct dent));
+			UT_calloc (static_cast<unsigned>(m_hashheader.tblsize), sizeof (struct dent));
 		m_hashsize = m_hashheader.tblsize;
-		m_hashstrings = static_cast<char *>(malloc(static_cast<unsigned>(m_hashheader.stringsize)));
+		m_hashstrings = static_cast<char *>(g_try_malloc(static_cast<unsigned>(m_hashheader.stringsize)));
 	}
     m_numsflags = m_hashheader.stblsize;
     m_numpflags = m_hashheader.ptblsize;
     m_sflaglist = (struct flagent *)
-      malloc ((m_numsflags + m_numpflags) * sizeof (struct flagent));
+      g_try_malloc ((m_numsflags + m_numpflags) * sizeof (struct flagent));
     if (m_hashtbl == NULL  ||  m_hashstrings == NULL  ||  m_sflaglist == NULL)
 	{
 		fprintf (stderr, LOOKUP_C_NO_HASH_SPACE);
@@ -419,7 +422,7 @@ int ISpellChecker::linit (char *hashname)
 			i = m_numsflags - (entry - m_sflaglist);
 			ind->pu.fp =
 			  (struct flagptr *)
-			calloc (static_cast<unsigned>(SET_SIZE + m_hashheader.nstrchars),
+			UT_calloc (static_cast<unsigned>(SET_SIZE + m_hashheader.nstrchars),
 			  sizeof (struct flagptr));
 			if (ind->pu.fp == NULL)
 			{
@@ -481,7 +484,7 @@ int ISpellChecker::linit (char *hashname)
 			entry = ind->pu.ent - 1; /* -1 is for entry++ in loop */
 			i = m_numpflags - (entry - m_pflaglist);
 			ind->pu.fp =
-			  static_cast<struct flagptr *>(calloc(SET_SIZE + m_hashheader.nstrchars,
+			  static_cast<struct flagptr *>(UT_calloc(SET_SIZE + m_hashheader.nstrchars,
 				sizeof (struct flagptr)));
 			if (ind->pu.fp == NULL)
 			{
@@ -502,7 +505,7 @@ int ISpellChecker::linit (char *hashname)
     else
 	{
 		m_chartypes = (struct strchartype *)
-		  malloc (m_hashheader.nstrchartype * sizeof (struct strchartype));
+		  g_try_malloc (m_hashheader.nstrchartype * sizeof (struct strchartype));
 		if (m_chartypes == NULL)
 		{
 			fprintf (stderr, LOOKUP_C_NO_LANG_SPACE);
@@ -529,7 +532,7 @@ int ISpellChecker::linit (char *hashname)
 }
 
 #ifndef FREEP
-#define FREEP(p)	do { if (p) free(p); } while (0)
+#define FREEP(p)	do { if (p) g_free(p); } while (0)
 #endif
 
 /*!

@@ -2,7 +2,7 @@
  * Copyright (C) 2001 AbiSource, Inc.
  * Copyright (C) 2001 Dom Lachowicz <cinamod@hotmail.com>
  *
- * This program is free software; you can redistribute it and/or
+ * This program is g_free software; you can redistribute it and/or
  * modify it under the terms of the GNU General Public License
  * as published by the Free Software Foundation; either version 2
  * of the License, or (at your option) any later version.
@@ -31,16 +31,16 @@ UT_Allocator::~UT_Allocator ()
 
 void * UT_Allocator::allocate (size_t nbytes)
 {
-  if (0 == nbytes) // be safe & not malloc a 0-byte block
+  if (0 == nbytes) // be safe & not g_try_malloc a 0-byte block
     return NULL;
-  return static_cast<void *>(malloc(nbytes));
+  return static_cast<void *>(g_try_malloc(nbytes));
 }
 
 void UT_Allocator::deallocate (void * pointer)
 {
   if (NULL == pointer) // be sure not to deallocate a null block
     return;
-  free(pointer);
+  g_free(pointer);
 }
 
 UT_NullAllocator::UT_NullAllocator ()
@@ -58,7 +58,7 @@ void * UT_NullAllocator::allocate (size_t nbytes)
     return NULL;
 
 #ifdef DOESNT_HAVE_CALLOC
-  void * ptr = static_cast<void *>(malloc(nbytes));
+  void * ptr = static_cast<void *>(g_try_malloc(nbytes));
   memset (ptr, 0, nbytes);
   return ptr;
 #else

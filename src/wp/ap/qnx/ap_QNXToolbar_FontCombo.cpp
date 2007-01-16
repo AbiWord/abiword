@@ -1,7 +1,7 @@
 /* AbiWord
  * Copyright (C) 1998 AbiSource, Inc.
  * 
- * This program is free software; you can redistribute it and/or
+ * This program is g_free software; you can redistribute it and/or
  * modify it under the terms of the GNU General Public License
  * as published by the Free Software Foundation; either version 2
  * of the License, or (at your option) any later version.
@@ -70,7 +70,7 @@ bool AP_QNXToolbar_FontCombo::populate(void)
 	/* We should provide more than just the latin fonts */
 	alloc = PfQueryFonts(FONT_QUERY_CHAR, FONT_TYPES, NULL, 0) + 10;
 
-	if (!(font_list = (FontDetails *)malloc(alloc * sizeof(*font_list)))) {
+	if (!(font_list = (FontDetails *)g_try_malloc(alloc * sizeof(*font_list)))) {
 		fprintf(stderr, "ERROR GETTING FONT LIST \n");
 		return false;
 	}

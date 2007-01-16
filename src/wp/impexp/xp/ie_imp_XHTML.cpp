@@ -3,7 +3,7 @@
 /* AbiWord
  * Copyright (C) 1998-2000 AbiSource, Inc.
  * 
- * This program is free software; you can redistribute it and/or
+ * This program is g_free software; you can redistribute it and/or
  * modify it under the terms of the GNU General Public License
  * as published by the Free Software Foundation; either version 2
  * of the License, or (at your option) any later version.
@@ -424,7 +424,7 @@ static void s_append_font_family (UT_UTF8String & style, const char * face)
 			style += "font-family:";
 			style += value;
 		}
-	free (value);
+	g_free (value);
 }
 
 static const char * s_font_size[7] = {
@@ -544,13 +544,13 @@ static void s_append_color (UT_UTF8String & style, const char * color, const cha
 		}
 	if (!bValid)
 		{
-			free (value);
+			g_free (value);
 			return;
 		}
 	if (*value == '#')
 		if (!bHexal || ((length != 3) && (length != 6)))
 			{
-				free (value);
+				g_free (value);
 				return;
 			}
 
@@ -585,7 +585,7 @@ static void s_append_color (UT_UTF8String & style, const char * color, const cha
 		{
 			hex_color = hash_color.lookupNamedColor (color) + 1;
 		}
-	free (value);
+	g_free (value);
 
 	if (hex_color.byteLength () == 0) return;
 
@@ -816,7 +816,7 @@ void IE_Imp_XHTML::startElement(const XML_Char *name,
 			if (m_parseState == _PS_Block) m_parseState = _PS_Sec;
 
 			/* stack class attr. values if recognized;
-			 * NOTE: these are ptrs to static strings - don't alloc/free them
+			 * NOTE: these are ptrs to static strings - don't alloc/g_free them
 			 */
 			const XML_Char * p_val = _getXMLPropValue (static_cast<const XML_Char *>("class"), atts);
 			SectionClass sc = childOfSection () ? sc_other : s_class_query (p_val);
@@ -1577,7 +1577,7 @@ void IE_Imp_XHTML::startElement(const XML_Char *name,
 			++p;
 		}
 
-		free ((void*)atts);
+		g_free ((void*)atts);
 	}
 }
 
@@ -1947,7 +1947,7 @@ FG_Graphic * IE_Imp_XHTML::importDataURLImage (const XML_Char * szData)
 
 	size_t binmaxlen = ((b64length >> 2) + 1) * 3;
 	size_t binlength = binmaxlen;
-	char * binbuffer = static_cast<char *>(malloc (binmaxlen));
+	char * binbuffer = static_cast<char *>(g_try_malloc (binmaxlen));
 	if (binbuffer == 0)
 		{
 			UT_DEBUGMSG(("importDataURLImage: out of memory\n"));
@@ -2765,13 +2765,13 @@ static UT_UTF8String s_parseCSStyle (const UT_UTF8String & style, UT_uint32 css_
 		/* unfortunately there's no easy way to turn these two sequences into strings :-(
 		 * atm, anyway
 		 */
-		char * name = static_cast<char *>(malloc (name_end - name_start + 1));
+		char * name = static_cast<char *>(g_try_malloc (name_end - name_start + 1));
 		if (name)
 		{
 			strncpy (name, name_start, name_end - name_start);
 			name[name_end - name_start] = 0;
 		}
-		char * value = static_cast<char *>(malloc (value_end - value_start + 1));
+		char * value = static_cast<char *>(g_try_malloc (value_end - value_start + 1));
 		if (value)
 		{
 			strncpy (value, value_start, value_end - value_start);

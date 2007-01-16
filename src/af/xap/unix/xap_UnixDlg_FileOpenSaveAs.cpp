@@ -3,7 +3,7 @@
 /* AbiSource Application Framework
  * Copyright (C) 1998 AbiSource, Inc.
  * 
- * This program is free software; you can redistribute it and/or
+ * This program is g_free software; you can redistribute it and/or
  * modify it under the terms of the GNU General Public License
  * as published by the Free Software Foundation; either version 2
  * of the License, or (at your option) any later version.
@@ -301,7 +301,7 @@ bool XAP_UnixDialog_FileOpenSaveAs::_run_gtk_main(XAP_Frame * pFrame,
 						// exporter figure it out                       
 						UT_cloneString(szFinalPathname,szDialogFilename);
 					}                                                       
-				// free szDialogFilename since it's been put into szFinalPathname (with
+				// g_free szDialogFilename since it's been put into szFinalPathname (with
 				// or without changes) and it's invalid (missing an extension which
 				// might have been appended)                            
 				
@@ -777,7 +777,7 @@ void XAP_UnixDialog_FileOpenSaveAs::runModal(XAP_Frame * pFrame)
 	// use the persistence info and/or the suggested filename
 	// to properly seed the dialog.
 	
-	gchar * szPersistDirectory = NULL;	// we must free this
+	gchar * szPersistDirectory = NULL;	// we must g_free this
 
 	if (!m_szInitialPathname || !*m_szInitialPathname)
 	{

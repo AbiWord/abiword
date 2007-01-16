@@ -1,7 +1,7 @@
 /* AbiWord
  * Copyright (C) 2004 Tomas Frydrych <tomasfrydrych@yahoo.co.uk>
  * 
- * This program is free software; you can redistribute it and/or
+ * This program is g_free software; you can redistribute it and/or
  * modify it under the terms of the GNU General Public License
  * as published by the Free Software Foundation; either version 2
  * of the License, or (at your option) any later version.
@@ -371,7 +371,7 @@ bool GR_Win32USPGraphics::_constructorCommonCode()
 
 			if(iSize)
 			{
-				char * pBuff = (char*)malloc(iSize);
+				char * pBuff = (char*)g_try_malloc(iSize);
 				if(pBuff && GetFileVersionInfo(FileName, 0, iSize, pBuff))
 				{
 					LPVOID buff2;
@@ -401,7 +401,7 @@ bool GR_Win32USPGraphics::_constructorCommonCode()
 						s_sUSPVersion = s.c_str();
 					}
 				}
-				free(pBuff);
+				g_free(pBuff);
 			}
 		}
 #endif
@@ -997,9 +997,9 @@ bool GR_Win32USPGraphics::shape(GR_ShapingInfo & si, GR_RenderInfo *& ri)
 	}
 	else if(!bDeleteGlyphs && bCopyGlyphs)
 	{
-		// glyphs are in a static buffer, we need to (possibly) realloc and copy
+		// glyphs are in a static buffer, we need to (possibly) g_try_realloc and copy
 
-		// only realloc if necessary
+		// only g_try_realloc if necessary
 		if((UT_sint32)RI->m_iIndicesSize < iGlyphCount)
 		{
 			delete [] RI->m_pIndices;

@@ -1,7 +1,7 @@
 /* AbiSource Program Utilities
  * Copyright (C) 1998 AbiSource, Inc.
  * 
- * This program is free software; you can redistribute it and/or
+ * This program is g_free software; you can redistribute it and/or
  * modify it under the terms of the GNU General Public License
  * as published by the Free Software Foundation; either version 2
  * of the License, or (at your option) any later version.
@@ -359,7 +359,7 @@ bool EV_QNXMenu::synthesizeMenu(PtWidget_t * wMenuRoot)
 				}
 
 				struct _cb_menu *mcb;
-				mcb = (struct _cb_menu *)malloc(sizeof(*mcb));
+				mcb = (struct _cb_menu *)g_try_malloc(sizeof(*mcb));
 				mcb->widget = wbutton;
 				mcb->id = id;
 				mcb->qnxmenu = this;
@@ -610,7 +610,7 @@ bool EV_QNXMenu::_refreshMenu(AV_View * pView, void * wMenuRoot)
 						PtRealizeWidget(item);
 
 						struct _cb_menu *mcb;
-						mcb = (struct _cb_menu *)malloc(sizeof(*mcb));
+						mcb = (struct _cb_menu *)g_try_malloc(sizeof(*mcb));
 						mcb->widget = item;
 						mcb->id = id;
 						mcb->qnxmenu = this;
@@ -707,7 +707,7 @@ EV_QNXMenuBar::~EV_QNXMenuBar(void)
 		PtDestroyWidget(m_wMenuBar);
 	}
 	m_wMenuBar = NULL;
-	//TODO: Keep track of our alloced strucutres and free them too
+	//TODO: Keep track of our alloced strucutres and g_free them too
 }
 
 bool EV_QNXMenuBar::synthesizeMenuBar(void)
@@ -750,7 +750,7 @@ EV_QNXMenuPopup::~EV_QNXMenuPopup(void)
 		PtDestroyWidget(m_wMenuPopup);
 	}
 	m_wMenuPopup = NULL;
-	//TODO: Keep track of our alloced strucutres and free them too
+	//TODO: Keep track of our alloced strucutres and g_free them too
 }
 
 PtWidget_t * EV_QNXMenuPopup::getMenuHandle(void) const

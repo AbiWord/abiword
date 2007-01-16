@@ -2,7 +2,7 @@
  * Copyright (C) 1998-2005 AbiSource, Inc.
  * Copyright (C) 2005 Dom Lachowicz <cinamod@hotmail.com>
  *
- * This program is free software; you can redistribute it and/or
+ * This program is g_free software; you can redistribute it and/or
  * modify it under the terms of the GNU General Public License
  * as published by the Free Software Foundation; either version 2
  * of the License, or (at your option) any later version.
@@ -119,7 +119,7 @@ public:
     if(_copyFile(filename))
       exit_status = UT_OK;
     
-    /* free()'d for us by GnomePrint */
+    /* g_free()'d for us by GnomePrint */
     config = NULL;
     job = NULL;
     

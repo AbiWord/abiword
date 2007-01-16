@@ -1,7 +1,7 @@
 /* AbiSource Program Utilities
  * Copyright (C) 1998 AbiSource, Inc.
  * 
- * This program is free software; you can redistribute it and/or
+ * This program is g_free software; you can redistribute it and/or
  * modify it under the terms of the GNU General Public License
  * as published by the Free Software Foundation; either version 2
  * of the License, or (at your option) any later version.
@@ -313,7 +313,7 @@ bool EV_QNXToolbar::synthesize(void)
 					tb = PtCreateWidget(PtButton, tbgroup, n, args);
 					FREEP(image);
 					if (tb) {
-						tcb = (struct _cb_data *)malloc(sizeof(*tcb));
+						tcb = (struct _cb_data *)g_try_malloc(sizeof(*tcb));
 						tcb->tb = this;
 						tcb->id = id;	
 						tcb->m_widget = tb;
@@ -360,7 +360,7 @@ bool EV_QNXToolbar::synthesize(void)
 					tb = PtCreateWidget(PtButton, tbgroup, n, args);
 					FREEP(image);
 					if (tb) {
-						tcb = (struct _cb_data *)malloc(sizeof(*tcb));
+						tcb = (struct _cb_data *)g_try_malloc(sizeof(*tcb));
 						tcb->tb = this;
 						tcb->id = id;	
 						tcb->m_widget = tb;
@@ -416,7 +416,7 @@ bool EV_QNXToolbar::synthesize(void)
 					}
 				}
 				if (tb) {
-					tcb = (struct _cb_data *)malloc(sizeof(*tcb));
+					tcb = (struct _cb_data *)g_try_malloc(sizeof(*tcb));
 					tcb->tb = this;
 					tcb->id = id;	
 					tcb->m_widget = tb;
@@ -445,7 +445,7 @@ bool EV_QNXToolbar::synthesize(void)
 			n = 0;
 			tb = tbgroup = PtCreateWidget(PtGroup, m_wToolbar, n, args);
 			if (tb) {
-				tcb = (struct _cb_data *)malloc(sizeof(*tcb));
+				tcb = (struct _cb_data *)g_try_malloc(sizeof(*tcb));
 				tcb->tb = this;
 				tcb->id = id;	
 				tcb->m_widget = tb;

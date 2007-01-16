@@ -1,7 +1,7 @@
 /* AbiWord
  * Copyright (C) 1998 AbiSource, Inc.
  * 
- * This program is free software; you can redistribute it and/or
+ * This program is g_free software; you can redistribute it and/or
  * modify it under the terms of the GNU General Public License
  * as published by the Free Software Foundation; either version 2
  * of the License, or (at your option) any later version.
@@ -212,7 +212,7 @@ AP_DiskStringSet::~AP_DiskStringSet(void)
 	{
 		XML_Char * sz = (XML_Char *)m_vecStringsAP.getNthItem(k);
 		if (sz)
-			free(sz);
+			g_free(sz);
 	}
 }
 
@@ -272,7 +272,7 @@ bool AP_DiskStringSet::setValue(XAP_String_Id id, const XML_Char * szString)
 		    };
 		}
 		length = str.getLength();
-		szDup = (XML_Char *)malloc(length+1);
+		szDup = (XML_Char *)g_try_malloc(length+1);
 		if (!szDup)
 			return false;
 		memcpy(szDup,str.getPointer(0),length);

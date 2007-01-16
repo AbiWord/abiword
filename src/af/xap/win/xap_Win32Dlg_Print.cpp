@@ -1,7 +1,7 @@
 /* AbiSource Application Framework
  * Copyright (C) 1998 AbiSource, Inc.
  * 
- * This program is free software; you can redistribute it and/or
+ * This program is g_free software; you can redistribute it and/or
  * modify it under the terms of the GNU General Public License
  * as published by the Free Software Foundation; either version 2
  * of the License, or (at your option) any later version.
@@ -139,7 +139,7 @@ XAP_Win32Dialog_Print::~XAP_Win32Dialog_Print(void)
 			GlobalFree(m_pPersistPrintDlg->hDevMode);
 		if (m_pPersistPrintDlg->hDevNames)
 			GlobalFree(m_pPersistPrintDlg->hDevNames);
-		free(m_pPersistPrintDlg);
+		g_free(m_pPersistPrintDlg);
 	}
 }
 

@@ -1,7 +1,7 @@
 /* AbiSource Program Utilities
  * Copyright (C) 1998 AbiSource, Inc.
  * 
- * This program is free software; you can redistribute it and/or
+ * This program is g_free software; you can redistribute it and/or
  * modify it under the terms of the GNU General Public License
  * as published by the Free Software Foundation; either version 2
  * of the License, or (at your option) any later version.
@@ -394,7 +394,7 @@ LRESULT CALLBACK EV_Win32Toolbar::_ComboWndProc( HWND hWnd, UINT uMessage, WPARA
 					{							
 						static UT_UCSChar ucs_buf[COMBO_BUF_LEN];
 						UT_uint32 bufLength = SendMessage(hWnd, CB_GETLBTEXTLEN, iSelected, (LPARAM)0) + 1;
-						char* buf = (char*)malloc(bufLength);
+						char* buf = (char*)g_try_malloc(bufLength);
 						UT_uint32 dataLength = SendMessage(hWnd, CB_GETLBTEXT, iSelected, (LPARAM)buf);
 
 						UT_UCS4_strncpy_char(ucs_buf, buf, COMBO_BUF_LEN-1);

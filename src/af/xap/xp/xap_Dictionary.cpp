@@ -1,7 +1,7 @@
 /* AbiSource Application Framework
  * Copyright (C) 1998,1999 AbiSource, Inc.
  * 
- * This program is free software; you can redistribute it and/or
+ * This program is g_free software; you can redistribute it and/or
  * modify it under the terms of the GNU General Public License
  * as published by the Free Software Foundation; either version 2
  * of the License, or (at your option) any later version.
@@ -61,14 +61,14 @@ XAP_Dictionary::~XAP_Dictionary()
 
 	FREEP(m_szFilename);
 
-  	//UT_HASH_PURGEDATA(UT_UCSChar *, (&m_hashWords), free);
+  	//UT_HASH_PURGEDATA(UT_UCSChar *, (&m_hashWords), g_free);
 	m_hashWords.freeData();
 #if 0
 	UT_StringPtrMap::UT_Cursor _hc1(&m_hashWords);
 	for (UT_UCSChar * _hval1 = const_cast<UT_UCSChar *>(reinterpret_cast<const UT_UCSChar *>(_hc1.first())); _hc1.is_valid(); _hval1 = const_cast<UT_UCSChar *>(reinterpret_cast<const UT_UCSChar *>(_hc1.next())) )
 	{ 
 		if (_hval1)
-			free (_hval1);
+			g_free (_hval1);
 	}
 #endif
 }

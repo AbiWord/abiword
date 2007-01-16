@@ -3,7 +3,7 @@
 /* AbiWord
  * Copyright (C) 1998-2000 AbiSource, Inc.
  *
- * This program is free software; you can redistribute it and/or
+ * This program is g_free software; you can redistribute it and/or
  * modify it under the terms of the GNU General Public License
  * as published by the Free Software Foundation; either version 2
  * of the License, or (at your option) any later version.
@@ -33,7 +33,7 @@ dcl(MSG_SaveFailedWrite,		"Writing error when attempting to save %s")
 dcl(MSG_SaveFailedExport,		"Error while attempting to save %s: could not construct exporter")
 dcl(MSG_SaveFailedName, 		"Error while attempting to save %s: invalid name")
 dcl(MSG_OpenFailed, "Could not open file %s.")
-dcl(MSG_DlgNotImp,				"%s not implemented yet.\n\nIf you are a programmer, feel free to add code in %s, line %d\nand mail patches to:\n\n\tabiword-dev@abisource.com\n\nOtherwise, please be patient.")
+dcl(MSG_DlgNotImp,				"%s not implemented yet.\n\nIf you are a programmer, feel g_free to add code in %s, line %d\nand mail patches to:\n\n\tabiword-dev@abisource.com\n\nOtherwise, please be patient.")
 dcl(MSG_RevertBuffer,			"Revert to saved copy of %s?")
 dcl(MSG_QueryExit,				"Close all windows and exit?")
 dcl(MSG_ConfirmSave,			"Save changes to document %s before closing?")

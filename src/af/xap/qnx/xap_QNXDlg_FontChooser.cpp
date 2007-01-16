@@ -1,7 +1,7 @@
 /* AbiSource Application Framework
  * Copyright (C) 1998 AbiSource, Inc.
  * 
- * This program is free software; you can redistribute it and/or
+ * This program is g_free software; you can redistribute it and/or
  * modify it under the terms of the GNU General Public License
  * as published by the Free Software Foundation; either version 2
  * of the License, or (at your option) any later version.
@@ -133,7 +133,7 @@ void XAP_QNXDialog_FontChooser::runModal(XAP_Frame * pFrame)
 		
 		m_answer = XAP_Dialog_FontChooser::a_OK;
 		PfFreeFont(fontid);
-		free(newfont);
+		g_free(newfont);
 	}
 	else {
 		m_answer = XAP_Dialog_FontChooser::a_CANCEL;

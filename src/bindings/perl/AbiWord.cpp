@@ -59,14 +59,14 @@ XS(XS_AbiWord__FV_View_moveCursorAbs)
 			if (UT_UCS4_cloneString_char(&tmp, szWhere))
 			{
 				pView->gotoTarget(AP_JUMPTARGET_PAGE, tmp);
-				free(tmp);
+				g_free(tmp);
 			}
 			break;
 		case 'l': /* line */
 			if (UT_UCS4_cloneString_char(&tmp, szWhere))
 			{
 				pView->gotoTarget(AP_JUMPTARGET_LINE, tmp);
-				free(tmp);
+				g_free(tmp);
 			}
 			break;
 		}
@@ -328,7 +328,7 @@ XS(XS_AbiWord__FV_View_write)
 		// printf("write\n");
 		UT_UCS4_cloneString_char(&text, pszText);
 		pView->cmdCharInsert(text, strlen(pszText));
-		free(text);
+		g_free(text);
 		RETVAL = true;
 #line 334 "AbiWord.c"
 	ST(0) = boolSV(RETVAL);
@@ -477,7 +477,7 @@ XS(XS_AbiWord__FV_View_find)
 		bool bTmp;
 		pView->findSetMatchCase(matchCase);
 		RETVAL = pView->findNext(text, bTmp);
-		free(text);
+		g_free(text);
 #line 482 "AbiWord.c"
 	ST(0) = boolSV(RETVAL);
 	sv_2mortal(ST(0));
@@ -513,8 +513,8 @@ XS(XS_AbiWord__FV_View_replace)
 		pView->findSetFindString(textToFind);
 		pView->findSetReplaceString(replacement);
 		RETVAL = pView->findReplace(bTmp);
-		free(textToFind);
-		free(replacement);
+		g_free(textToFind);
+		g_free(replacement);
 #line 519 "AbiWord.c"
 	ST(0) = boolSV(RETVAL);
 	sv_2mortal(ST(0));
@@ -544,12 +544,12 @@ XS(XS_AbiWord__FV_View_getSelectionText)
 			UT_UCSChar* text;
 			pView->getSelectionText(text);
 			UT_uint32 size = UT_UCS4_strlen(text);
-			RETVAL = (char*) malloc(size);
+			RETVAL = (char*) g_try_malloc(size);
 			UT_UCS4_strcpy_to_char(RETVAL, text);
 		}
 		else
 		{
-			RETVAL = (char*) malloc(1);
+			RETVAL = (char*) g_try_malloc(1);
 			*RETVAL = '\0';
 		}
 

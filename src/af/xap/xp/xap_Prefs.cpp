@@ -1,7 +1,7 @@
 /* AbiSource Application Framework
  * Copyright (C) 1998 AbiSource, Inc.
  * 
- * This program is free software; you can redistribute it and/or
+ * This program is g_free software; you can redistribute it and/or
  * modify it under the terms of the GNU General Public License
  * as published by the Free Software Foundation; either version 2
  * of the License, or (at your option) any later version.
@@ -84,7 +84,7 @@ XAP_PrefsScheme::~XAP_PrefsScheme(void)
 {
 	FREEP(m_szName);
 
-	// loop through and free the values
+	// loop through and g_free the values
 	UT_GenericVector<XML_Char*> * pVec = m_hash.enumerate ();
 
 	UT_uint32 cnt = pVec->size();
@@ -466,7 +466,7 @@ XAP_Prefs::XAP_Prefs(XAP_App * pApp)
 	m_bIgnoreThisOne = false;
 	memset(&m_geom, 0, sizeof(m_geom));
 
-	// NOTE: since constructors cannot report malloc
+	// NOTE: since constructors cannot report g_try_malloc
 	// NOTE: failures (and since it is virtual back
 	// NOTE: to the application), our creator must call
 	// NOTE: loadBuiltinPrefs().

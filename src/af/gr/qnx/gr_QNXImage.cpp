@@ -1,7 +1,7 @@
 /* AbiWord
  * Copyright (C) 1998 AbiSource, Inc.
  * 
- * This program is free software; you can redistribute it and/or
+ * This program is g_free software; you can redistribute it and/or
  * modify it under the terms of the GNU General Public License
  * as published by the Free Software Foundation; either version 2
  * of the License, or (at your option) any later version.
@@ -142,7 +142,7 @@ bool		GR_QNXImage::convertToBuffer(UT_ByteBuf** ppBB) const
 
 	UT_Byte * pBits = ((unsigned char*) m_image->image);
 	
-	UT_Byte* pData = (UT_Byte*) malloc(iWidth * iHeight * 3);
+	UT_Byte* pData = (UT_Byte*) g_try_malloc(iWidth * iHeight * 3);
 	UT_ASSERT(pData); // TODO outofmem
 		
 	UT_uint32 	iRow;
@@ -179,16 +179,16 @@ bool		GR_QNXImage::convertToBuffer(UT_ByteBuf** ppBB) const
 	}
 
 	/*
-	  We then free our 24-bit buffer.
+	  We then g_free our 24-bit buffer.
 	*/
-	free(pData);
+	g_free(pData);
 
 	/*
 	  Wrap things up with libpng
 	*/
 	png_write_end(png_ptr, info_ptr);
 
-	/* clean up after the write, and free any memory allocated */
+	/* clean up after the write, and g_free any memory allocated */
 	png_destroy_write_struct(&png_ptr, (png_infopp)NULL);
 
 	// And pass the ByteBuf back to our caller
@@ -333,7 +333,7 @@ bool GR_QNXImage::_convertPNGFromBuffer(const UT_ByteBuf *pBB, UT_sint32 iDispla
 	/* read rest of file, and get additional chunks in info_ptr - REQUIRED */
 	png_read_end(png_ptr, info_ptr);
 
-	/* clean up after the read, and free any memory allocated - REQUIRED */
+	/* clean up after the read, and g_free any memory allocated - REQUIRED */
 	png_destroy_read_struct(&png_ptr, &info_ptr, (png_infopp)NULL);
 
 	return true;

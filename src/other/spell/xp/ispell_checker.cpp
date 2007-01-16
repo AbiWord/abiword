@@ -223,7 +223,7 @@ ISpellChecker::~ISpellChecker()
 	mRefCnt--;
 	if (mRefCnt == 0)
 	{
-		// free the elements
+		// g_free the elements
 		UT_VECTOR_PURGEALL(DictionaryMapping*, m_mapping);
 		m_mapping.clear ();
 	}
@@ -354,7 +354,7 @@ ISpellChecker::_suggestWord(const UT_UCSChar *ucszWord, size_t length)
 		{
 			int l = strlen(m_possibilities[c]);
 
-			UT_UCS4Char *ucszSugg = static_cast<UT_UCS4Char*>(malloc(sizeof(UT_UCS4Char) * (l + 1)));
+			UT_UCS4Char *ucszSugg = static_cast<UT_UCS4Char*>(g_try_malloc(sizeof(UT_UCS4Char) * (l + 1)));
 			if (ucszSugg == NULL)
 			{
 				// OOM, but return what we have so far

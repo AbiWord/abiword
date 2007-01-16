@@ -38,7 +38,7 @@ TFTEST_MAIN("UT_strdup()")
 	//TFFAIL(UT_strdup(NULL));
 	str = UT_strdup("foo");
 	TFPASS(strcmp(str, "foo") == 0);
-	free(str);
+	g_free(str);
 }
 
 
@@ -62,7 +62,7 @@ TFTEST_MAIN("UT_cloneString()")
 	TFPASS(retStr);
 	TFPASS(strcmp(retStr, "foo") == 0);
 
-	free(retStr);
+	g_free(retStr);
 }
 
 TFTEST_MAIN("UT_replaceString")
@@ -73,7 +73,7 @@ TFTEST_MAIN("UT_replaceString")
 	TFPASS(UT_replaceString(retStr, "barfoo"));
 	TFFAIL(strcmp(retStr, "foobar") == 0);
 	TFPASS(strcmp(retStr, "barfoo") == 0);
-	free(retStr);
+	g_free(retStr);
 }
 
 
@@ -87,7 +87,7 @@ TFTEST_MAIN("UT_upperString")
 	str = UT_upperString(str);
 	TFPASS(strcmp(str, "FOOBAR") == 0);
 
-	free(str);
+	g_free(str);
 }
 
 
@@ -100,7 +100,7 @@ TFTEST_MAIN("UT_lowerString")
 	str = UT_lowerString(str);
 	TFPASS(strcmp(str, "foobar") == 0);
 
-	free(str);
+	g_free(str);
 }
 
 

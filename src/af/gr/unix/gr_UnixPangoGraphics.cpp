@@ -2,7 +2,7 @@
 /* AbiWord
  * Copyright (C) 2004-6 Tomas Frydrych <dr.tomas@yahoo.co.uk>
  * 
- * This program is free software; you can redistribute it and/or
+ * This program is g_free software; you can redistribute it and/or
  * modify it under the terms of the GNU General Public License
  * as published by the Free Software Foundation; either version 2
  * of the License, or (at your option) any later version.
@@ -278,7 +278,7 @@ GR_UnixPangoGraphics::~GR_UnixPangoGraphics()
 	delete m_pPFontGUI;
 
 	if (m_pXftDraw)
-		free(m_pXftDraw);
+		g_free(m_pXftDraw);
 
 	UT_VECTOR_SPARSEPURGEALL( UT_Rect*, m_vSaveRect);
 
@@ -2564,7 +2564,7 @@ void GR_UnixPangoGraphics::polyLine(UT_Point * pts, UT_uint32 nPoints)
 {
 	// see bug #303 for what this is about
 
-	GdkPoint * points = static_cast<GdkPoint *>(calloc(nPoints, sizeof(GdkPoint)));
+	GdkPoint * points = static_cast<GdkPoint *>(UT_calloc(nPoints, sizeof(GdkPoint)));
 	UT_ASSERT(points);
 
 	for (UT_uint32 i = 0; i < nPoints; i++)

@@ -4,7 +4,7 @@
 
 // Copyright (C) 2001 Mike Nordell <tamlin@algonet.se>
 // 
-// This class is free software; you can redistribute it and/or
+// This class is g_free software; you can redistribute it and/or
 // modify it under the terms of the GNU General Public License
 // as published by the Free Software Foundation; either version 2
 // of the License, or (at your option) any later version.
@@ -911,7 +911,7 @@ void UT_UTF8Stringbuf::decodeURL()
 	if(!m_psz || !*m_psz)
 		return;
 
-	char * buff = (char*)malloc(byteLength() + 1);
+	char * buff = (char*)g_try_malloc(byteLength() + 1);
 	UT_return_if_fail( buff );
 	buff[0] = 0;
 
@@ -1019,7 +1019,7 @@ void UT_UTF8Stringbuf::decodeURL()
 	}
 	
 	assign(buff);
-	free(buff);
+	g_free(buff);
 }
 
 /* translates the current string to MIME "quoted-printable" format
@@ -1128,7 +1128,7 @@ UT_UTF8Stringbuf * UT_UTF8Stringbuf::lowerCase ()
 
 void UT_UTF8Stringbuf::clear ()
 {
-	if (m_psz) free (m_psz);
+	if (m_psz) g_free (m_psz);
 	m_psz = 0;
 	m_pEnd = 0;
 	m_strlen = 0;
@@ -1171,7 +1171,7 @@ bool UT_UTF8Stringbuf::grow (size_t length)
 	if (m_psz == 0)
 	{
 		if (length == 0) return true;
-		m_psz = static_cast<char *>(malloc(length));
+		m_psz = static_cast<char *>(g_try_malloc(length));
 		if (m_psz == 0) return false;
 		m_strlen = 0;
 		m_buflen = length;
@@ -1183,7 +1183,7 @@ bool UT_UTF8Stringbuf::grow (size_t length)
 	size_t new_length = length + (m_pEnd - m_psz) + 1;
 	size_t end_offset = m_pEnd - m_psz;
 
-	char * more = static_cast<char *>(realloc(static_cast<void *>(m_psz), new_length));
+	char * more = static_cast<char *>(g_try_realloc(static_cast<void *>(m_psz), new_length));
 	if (more == 0) return false;
 	m_psz = more;
 	m_pEnd = m_psz + end_offset;

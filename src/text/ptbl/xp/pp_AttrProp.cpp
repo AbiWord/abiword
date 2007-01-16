@@ -2,7 +2,7 @@
  * Copyright (C) 1998 AbiSource, Inc.
  * Copyright (c) 2001,2002 Tomas Frydrych
  *
- * This program is free software; you can redistribute it and/or
+ * This program is g_free software; you can redistribute it and/or
  * modify it under the terms of the GNU General Public License
  * as published by the Free Software Foundation; either version 2
  * of the License, or (at your option) any later version.
@@ -259,7 +259,7 @@ bool	PP_AttrProp::setAttribute(const XML_Char * szName, const XML_Char * szValue
 			// if there was no colon, this is invalid
 			if (!*q)
 			{
-				free(pOrig);
+				g_free(pOrig);
 				UT_DEBUGMSG(("props: %s\n", szValue));
 				return false;
 			}
@@ -290,7 +290,7 @@ bool	PP_AttrProp::setAttribute(const XML_Char * szName, const XML_Char * szValue
 			setProperty(p, q);
 		}
 
-		free(pOrig);
+		g_free(pOrig);
 		return true;
 	}
 	else if (0 == strcmp(szName, PT_XID_ATTRIBUTE_NAME) && *szValue)
@@ -430,7 +430,7 @@ bool	PP_AttrProp::setProperty(const XML_Char * szName, const XML_Char * szValue)
 		m_pProperties->insert(szName, new PropertyPair(szValue2, NULL));
 	}
 
-	// free the name duplicate if necessary
+	// g_free the name duplicate if necessary
 	FREEP(szName2);
 	
 	return true;
@@ -540,7 +540,7 @@ bool PP_AttrProp::getProperty(const XML_Char * szName, const XML_Char *& szValue
 /*! This method retrieves the entirety of [this] AP's "props", and returns it as an array of
 	 XML_Char * pairs (name and value).
 
-    WARNING: Do not free this memory. It's cached here.
+    WARNING: Do not g_free this memory. It's cached here.
 */
 const XML_Char ** PP_AttrProp::getProperties () const
 {

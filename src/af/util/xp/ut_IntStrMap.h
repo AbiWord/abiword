@@ -4,7 +4,7 @@
  * Copyright (C) 2003 Francis James Franklin <fjf@alinameridon.com>
  * Copyright (C) 2003 AbiSource, Inc.
  * 
- * This program is free software; you can redistribute it and/or
+ * This program is g_free software; you can redistribute it and/or
  * modify it under the terms of the GNU General Public License
  * as published by the Free Software Foundation; either version 2
  * of the License, or (at your option) any later version.
@@ -42,7 +42,7 @@
  *    
  * 3. UT_GenericUTF8Hash
  *    An alternative to UT_StringPtrMap (defined in ut_hash.h) but restricted to UTF-8 string keys;
- *    one important difference is that UT_GenericUTF8Hash automatically free()s/deletes its contents.
+ *    one important difference is that UT_GenericUTF8Hash automatically g_free()s/deletes its contents.
  *    Can't be instantiated, but isn't abstract. Designed for easy subclassing.
  *    
  *    NOTE: UT_GenericBase is declared in ut_string_class.h
@@ -209,7 +209,7 @@ public:
 	inline UT_uint32 count () const { return m_pair_count; }
 
 protected:
-	/* deletes all key/value pairs, but doesn't free() array of pointers
+	/* deletes all key/value pairs, but doesn't g_free() array of pointers
 	 */
 	void clear (bool delete_values);
 

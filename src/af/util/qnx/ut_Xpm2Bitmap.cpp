@@ -1,7 +1,7 @@
 /* AbiSource Program Utilities
  * Copyright (C) 1998 AbiSource, Inc.
  * 
- * This program is free software; you can redistribute it and/or
+ * This program is g_free software; you can redistribute it and/or
  * modify it under the terms of the GNU General Public License
  * as published by the Free Software Foundation; either version 2
  * of the License, or (at your option) any later version.
@@ -56,7 +56,7 @@ bool UT_Xpm2Bitmap(const char ** pIconData,
 	UT_ASSERT(charsPerPixel > 0);
 
 	//Create a new PhImage_t 
-	if (!(pImage = (PhImage_t *)malloc(sizeof(*pImage))))
+	if (!(pImage = (PhImage_t *)g_try_malloc(sizeof(*pImage))))
 		return(false);
 	memset(pImage, 0, sizeof(*pImage));
 
@@ -77,14 +77,14 @@ bool UT_Xpm2Bitmap(const char ** pIconData,
 	//Do we have to set the palette?
 	//pImage->palette = 0;
 	//printf("Allocating space for image %dx%d \n", width, height);
-	pImage->image = (char *)malloc(sizeof(PgColor_t) * width * height);
+	pImage->image = (char *)g_try_malloc(sizeof(PgColor_t) * width * height);
 	if (!pImage->image) {
-		free(pImage);	
+		g_free(pImage);	
 		return(false);
 	}
 
 	PgColor_t *pRGB;
-	pRGB = (PgColor_t *)malloc((nrColors + 1) * sizeof(*pRGB));
+	pRGB = (PgColor_t *)g_try_malloc((nrColors + 1) * sizeof(*pRGB));
 	UT_ASSERT(pRGB);
 
 	UT_StringPtrMap hash(61);
@@ -162,7 +162,7 @@ bool UT_Xpm2Bitmap(const char ** pIconData,
 		}
 	}
 	pImage->image_tag = PtCRC(pImage->image,sizeof(PgColor_t) * width * height);
-	free(pRGB);
+	g_free(pRGB);
 	*ppImage = pImage;
 	return(true);
 }

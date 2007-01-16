@@ -2,7 +2,7 @@
  * Copyright (C) 2001 AbiSource, Inc.
  * Copyright (C) 2001 Dom Lachowicz <cinamod@hotmail.com>
  *
- * This program is free software; you can redistribute it and/or
+ * This program is g_free software; you can redistribute it and/or
  * modify it under the terms of the GNU General Public License
  * as published by the Free Software Foundation; either version 2
  * of the License, or (at your option) any later version.
@@ -23,7 +23,7 @@
 
 /*!
  * This class is responsible for creating and destroying memory buffers
- * It provides a default implementation based on malloc/free
+ * It provides a default implementation based on g_try_malloc/g_free
  */
 class UT_Allocator
 {
@@ -40,7 +40,7 @@ class UT_Allocator
 };
 
 /*!
- * Returns zeroed memory, either via malloc&memset or calloc
+ * Returns zeroed memory, either via g_try_malloc&memset or UT_calloc
  */
 class UT_NullAllocator : public UT_Allocator
 {

@@ -11,7 +11,7 @@
  *    based upon work done by various members of the GLib team 
  *    (http://www.gtk.org)
  *
- * This program is free software; you can redistribute it and/or
+ * This program is g_free software; you can redistribute it and/or
  * modify it under the terms of the GNU General Public License
  * as published by the Free Software Foundation; either version 2
  * of the License, or (at your option) any later version.
@@ -401,7 +401,7 @@ char * UT_convert_cd(const char *str,
 	size_t outbuf_size = ((len + 3) & ~3) + 15;
 	size_t outbytes_remaining = outbuf_size - 4; /* -4 for null (allow for ucs4 0) */
 
-	char* pDest = static_cast<char*>(malloc(outbuf_size));
+	char* pDest = static_cast<char*>(g_try_malloc(outbuf_size));
 	char* outp = pDest;
 
 	bool have_error = false;
@@ -434,7 +434,7 @@ char * UT_convert_cd(const char *str,
 		      if (used + 16 > outbuf_size)
 		        {
 		          outbuf_size = outbuf_size  + 15;
-		          pDest = static_cast<char*>(realloc(pDest, outbuf_size));
+		          pDest = static_cast<char*>(g_try_realloc(pDest, outbuf_size));
 
 		          outp = pDest + used;
 		          outbytes_remaining = outbuf_size - used - 4; /* -1 for nul */
@@ -477,7 +477,7 @@ char * UT_convert_cd(const char *str,
 
 	if (have_error && pDest)
 	  {
-	    free(pDest);
+	    g_free(pDest);
 	  }
 
 	if (have_error)

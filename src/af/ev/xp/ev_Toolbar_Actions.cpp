@@ -3,7 +3,7 @@
 /* AbiSource Program Utilities
  * Copyright (C) 1998 AbiSource, Inc.
  * 
- * This program is free software; you can redistribute it and/or
+ * This program is g_free software; you can redistribute it and/or
  * modify it under the terms of the GNU General Public License
  * as published by the Free Software Foundation; either version 2
  * of the License, or (at your option) any later version.
@@ -84,7 +84,7 @@ EV_Toolbar_ItemState EV_Toolbar_Action::getToolbarItemState(AV_View * pView, con
 
 EV_Toolbar_ActionSet::EV_Toolbar_ActionSet(XAP_Toolbar_Id first, XAP_Toolbar_Id last)
 {
-	// TODO tis bad to call malloc/calloc from a constructor, since we cannot report failure.
+	// TODO tis bad to call g_try_malloc/UT_calloc from a constructor, since we cannot report failure.
 	// TODO move this allocation to somewhere else.
 	m_actionTable = static_cast<EV_Toolbar_Action **>(UT_calloc((last-first+1),sizeof(EV_Toolbar_Action *)));
 	m_first = first;
@@ -99,7 +99,7 @@ EV_Toolbar_ActionSet::~EV_Toolbar_ActionSet(void)
 	UT_uint32 k, kLimit;
 	for (k=0, kLimit=(m_last-m_first+1); (k<kLimit); k++)
 		DELETEP(m_actionTable[k]);
-	free(m_actionTable);
+	g_free(m_actionTable);
 }
 
 bool EV_Toolbar_ActionSet::setAction(XAP_Toolbar_Id id,

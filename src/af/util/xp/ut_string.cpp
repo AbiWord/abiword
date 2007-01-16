@@ -1,7 +1,7 @@
 /* AbiSource Program Utilities
  * Copyright (C) 1998 AbiSource, Inc.
  *
- * This program is free software; you can redistribute it and/or
+ * This program is g_free software; you can redistribute it and/or
  * modify it under the terms of the GNU General Public License
  * as published by the Free Software Foundation; either version 2
  * of the License, or (at your option) any later version.
@@ -151,7 +151,7 @@ char * UT_strdup(const char * szSource)
   UT_return_val_if_fail(szSource, NULL);
 
 	int len = strlen(szSource)+1;
-	if(char * ret = static_cast<char *>(malloc(len * sizeof(char))))
+	if(char * ret = static_cast<char *>(g_try_malloc(len * sizeof(char))))
 		return(static_cast<char *>(memcpy(ret, szSource, len)));
 	else
 		return(NULL);
@@ -224,7 +224,7 @@ bool UT_cloneString(char *& rszDest, const char * szSource)
 	if (szSource && *szSource)
 	{
 		UT_uint32 length = strlen(szSource) + 1;
-		rszDest = static_cast<char *>(malloc(length));
+		rszDest = static_cast<char *>(g_try_malloc(length));
 
 		if (!rszDest)
 			return false;
@@ -240,7 +240,7 @@ bool UT_cloneString(char *& rszDest, const char * szSource)
 bool UT_replaceString(char *& rszDest, const char * szSource)
 {
 	if (rszDest)
-		free(rszDest);
+		g_free(rszDest);
 	rszDest = NULL;
 
 	return UT_cloneString(rszDest,szSource);
@@ -409,7 +409,7 @@ XML_Char *UT_XML_transNoAmpersands(const XML_Char * szSource)
 	UT_uint32 length = UT_XML_strlen(szSource) + 1;
 	if (length > iDestBufferLength) {
 		if (rszDestBuffer && iDestBufferLength) {
-			free(rszDestBuffer);
+			g_free(rszDestBuffer);
 		}
 		iDestBufferLength = 0;
 		rszDestBuffer = static_cast<XML_Char *>(UT_calloc(length, sizeof(XML_Char)));
@@ -746,7 +746,7 @@ void UT_decodeUTF8string(const XML_Char * pString, UT_uint32 len, UT_GrowBuf * p
 /* Copyright (C) 1994, 1996 Free Software Foundation, Inc.
    This file is part of the GNU C Library.
 
-   The GNU C Library is free software; you can redistribute it and/or
+   The GNU C Library is g_free software; you can redistribute it and/or
    modify it under the terms of the GNU Library General Public License as
    published by the Free Software Foundation; either version 2 of the
    License, or (at your option) any later version.

@@ -4,7 +4,7 @@
  * Copyright (C) 2002 Martin Sevior <msevior@physics.unimelb.edu.au>
  * Copyright (C) 2003 Francis James Franklin <fjf@alinameridon.com>
  *
- * This program is free software; you can redistribute it and/or
+ * This program is g_free software; you can redistribute it and/or
  * modify it under the terms of the GNU General Public License
  * as published by the Free Software Foundation; either version 2
  * of the License, or (at your option) any later version.
@@ -2629,7 +2629,7 @@ IE_Imp_TableHelperStack::~IE_Imp_TableHelperStack ()
 	if (m_stack)
 		{
 			clear ();
-			free (m_stack);
+			g_free (m_stack);
 		}
 }
 
@@ -2645,7 +2645,7 @@ bool IE_Imp_TableHelperStack::push (const char * style)
 {
 	if (m_stack == 0)
 		{
-			m_stack = reinterpret_cast<IE_Imp_TableHelper **>(malloc (16 * sizeof (IE_Imp_TableHelper *)));
+			m_stack = reinterpret_cast<IE_Imp_TableHelper **>(g_try_malloc (16 * sizeof (IE_Imp_TableHelper *)));
 			if (m_stack == 0)
 				return false;
 			m_count = 0;
@@ -2654,7 +2654,7 @@ bool IE_Imp_TableHelperStack::push (const char * style)
 	else if (m_count == m_max)
 		{
 			IE_Imp_TableHelper ** more = 0;
-			more = reinterpret_cast<IE_Imp_TableHelper **>(realloc (m_stack, (m_max + 16) * sizeof (IE_Imp_TableHelper *)));
+			more = reinterpret_cast<IE_Imp_TableHelper **>(g_try_realloc (m_stack, (m_max + 16) * sizeof (IE_Imp_TableHelper *)));
 			if (more == 0)
 				return false;
 			m_max += 16;

@@ -2,7 +2,7 @@
  * Copyright (C) 1998 AbiSource, Inc.
  * BIDI Copyright (c) 2001,2002 Tomas Frydrych
  *
- * This program is free software; you can redistribute it and/or
+ * This program is g_free software; you can redistribute it and/or
  * modify it under the terms of the GNU General Public License
  * as published by the Free Software Foundation; either version 2
  * of the License, or (at your option) any later version.
@@ -138,7 +138,7 @@ FL_DocLayout::FL_DocLayout(PD_Document* doc, GR_Graphics* pG)
 	}
 	
 	// TODO the following (both the new() and the addListener() cause
-	// TODO malloc's to occur.  we are currently inside a constructor
+	// TODO g_try_malloc's to occur.  we are currently inside a constructor
 	// TODO and are not allowed to report failure.
 
 	// Turn off list updating until document is formatted

@@ -1,7 +1,7 @@
 /* AbiWord
  * Copyright (C) 1998 AbiSource, Inc.
  * 
- * This program is free software; you can redistribute it and/or
+ * This program is g_free software; you can redistribute it and/or
  * modify it under the terms of the GNU General Public License
  * as published by the Free Software Foundation; either version 2
  * of the License, or (at your option) any later version.
@@ -421,7 +421,7 @@ bool AP_Dialog_Replace::_manageList(UT_GenericVector<UT_UCS4Char*>* list, UT_UCS
 			UT_DEBUGMSG(("FODDEX: adding '%s' to list\n", us.utf8_str()));
 			return true;
 		} else {
-			// free the old string
+			// g_free the old string
 			UT_UCSChar* temp = static_cast<UT_UCSChar*>(list->getNthItem(i));
 			if (temp) FREEP(temp);
 			// remove the reference from the list

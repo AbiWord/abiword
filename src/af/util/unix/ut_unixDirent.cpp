@@ -2,7 +2,7 @@
  * Copyright (C) 2001 Hubert Figuiere
  * Code copyright by others.
  * 
- * This program is free software; you can redistribute it and/or
+ * This program is g_free software; you can redistribute it and/or
  * modify it under the terms of the GNU General Public License
  * as published by the Free Software Foundation; either version 2
  * of the License, or (at your option) any later version.
@@ -79,7 +79,7 @@ scandir(const char *dirname, struct dirent ***namelist,
 	 * and dividing it by a multiple of the minimum sizeentry. 
 	 */ 
 	arraysz = (stb.st_size / 24); 
-	names = static_cast<struct dirent **>(malloc(arraysz * sizeof(struct dirent *)));
+	names = static_cast<struct dirent **>(g_try_malloc(arraysz * sizeof(struct dirent *)));
 	if (names == NULL) 
 		return(-1); 
 	
@@ -90,7 +90,7 @@ scandir(const char *dirname, struct dirent ***namelist,
 		/* 
 		 * Make a minimum size copy of the data 
 		 */ 
-		p = static_cast<struct dirent *>(malloc(DIRSIZ(d)));
+		p = static_cast<struct dirent *>(g_try_malloc(DIRSIZ(d)));
 		if (p == NULL) 
 			return(-1); 
 		p->d_ino = d->d_ino; 
@@ -99,13 +99,13 @@ scandir(const char *dirname, struct dirent ***namelist,
 		memcpy(p->d_name, d->d_name, strlen(d->d_name) +1); 
 		/* 
 		 * Check to make sure the array has space left and 
-		 * realloc the maximum size. 
+		 * g_try_realloc the maximum size. 
 		 */ 
 		if (++nitems >= arraysz) { 
 			if (fstat(dirp->d_fd, &stb) < 0) 
 				return(-1); /* just might have grown */ 
 			arraysz = stb.st_size / 12; 
-			names = (struct dirent **)(realloc((char*)(names),
+			names = (struct dirent **)(g_try_realloc((char*)(names),
 											   arraysz * sizeof(struct dirent*)));
 			if (names == NULL) 
 				return(-1); 

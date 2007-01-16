@@ -4,7 +4,7 @@
  * Copyright (C) 1998 AbiSource, Inc.
  * Copyright (c) 2001,2002,2003 Tomas Frydrych
  *
- * This program is free software; you can redistribute it and/or
+ * This program is g_free software; you can redistribute it and/or
  * modify it under the terms of the GNU General Public License
  * as published by the Free Software Foundation; either version 2
  * of the License, or (at your option) any later version.
@@ -3910,7 +3910,7 @@ Failed:
 		delete pNew;
 	}
 
-	// we also have to free the pToken, which was created by UT_strdup
+	// we also have to g_free the pToken, which was created by UT_strdup
 	FREEP(pToken);
 
 	return false;
@@ -6114,10 +6114,10 @@ bool PD_Document::_acceptRejectRevision(bool bReject, UT_uint32 iStart, UT_uint3
 					bRet &= changeSpanFmt(PTC_AddFmt,iStart,iEnd,ppAttr2,ppProps);
 
 				for(i = 0; i < iPropCount; ++i)
-					free((XML_Char*)ppProps[i]);
+					g_free((XML_Char*)ppProps[i]);
 				
 				for(i = 0; i < iAttrCount; ++i)
-					free((XML_Char*)ppAttr2[i]);
+					g_free((XML_Char*)ppAttr2[i]);
 
 				delete ppProps;
 				delete ppAttr2;

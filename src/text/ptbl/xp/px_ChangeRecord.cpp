@@ -1,7 +1,7 @@
 /* AbiWord
  * Copyright (C) 1998 AbiSource, Inc.
  * 
- * This program is free software; you can redistribute it and/or
+ * This program is g_free software; you can redistribute it and/or
  * modify it under the terms of the GNU General Public License
  * as published by the Free Software Foundation; either version 2
  * of the License, or (at your option) any later version.
@@ -22,7 +22,7 @@
   PX_ChangeRecord describes a change made to the document.  This
   description should be sufficient to allow undo to work and
   sufficient to allow the formatter to do a partial format and screen
-  update (if appropriate).  The change record must be free of
+  update (if appropriate).  The change record must be g_free of
   pointers, since it represents what was done to the document -- and
   not how it was done (that is, not what was done to various
   intermediate data structures).  This also lets it be cached to disk

@@ -1,7 +1,7 @@
 /* AbiSource Program Utilities
  * Copyright (C) 1998-2000 AbiSource, Inc.
  * 
- * This program is free software; you can redistribute it and/or
+ * This program is g_free software; you can redistribute it and/or
  * modify it under the terms of the GNU General Public License
  * as published by the Free Software Foundation; either version 2
  * of the License, or (at your option) any later version.
@@ -150,7 +150,7 @@ bool ev_QNXKeyboard::keyPressEvent(AV_View* pView,
 			utf8[len]='\0';
 			ucs4Char = (UT_UCS4Char*) UT_convert((char*)utf8,len+1,"UTF-8",UCS_INTERNAL,NULL,NULL); 
 			invokeKeyboardMethod(pView,pEM,(UT_UCSChar *)ucs4Char,1); // no char data to offer*
-			free(ucs4Char);
+			g_free(ucs4Char);
 			return true;
 			
 		case EV_EEMR_INCOMPLETE:

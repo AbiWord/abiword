@@ -1,7 +1,7 @@
 /* AbiWord
  * Copyright (C) 1998 AbiSource, Inc.
  *
- * This program is free software; you can redistribute it and/or
+ * This program is g_free software; you can redistribute it and/or
  * modify it under the terms of the GNU General Public License
  * as published by the Free Software Foundation; either version 2
  * of the License, or (at your option) any later version.
@@ -2158,7 +2158,7 @@ BITMAPINFO * GR_Win32Graphics::ConvertDDBToDIB(HBITMAP bitmap, HPALETTE hPal, DW
 	RealizePalette(hDC);
 	
 	// Allocate enough memory to hold bitmapinfoheader and color table
-	hDIB = malloc(dwLen);	
+	hDIB = g_try_malloc(dwLen);	
 	if (!hDIB){
 		SelectPalette(hDC, hPal, TRUE);		
 		DeleteDC(hDC);
@@ -2193,10 +2193,10 @@ BITMAPINFO * GR_Win32Graphics::ConvertDDBToDIB(HBITMAP bitmap, HPALETTE hPal, DW
 	
 	// Realloc the buffer so that it can hold all the bits	
 	dwLen += bi.biSizeImage;
-	if (handle = realloc(hDIB, dwLen))		
+	if (handle = g_try_realloc(hDIB, dwLen))		
 		hDIB = handle;	
 	else{
-		free(hDIB);		
+		g_free(hDIB);		
 		// Reselect the original palette
 		SelectPalette(hDC,hPal,TRUE);		
 		DeleteDC(hDC);
@@ -2219,7 +2219,7 @@ BITMAPINFO * GR_Win32Graphics::ConvertDDBToDIB(HBITMAP bitmap, HPALETTE hPal, DW
 		);
 	
 	if (!bGotBits)	{
-		free(hDIB);				
+		g_free(hDIB);				
 		SelectPalette(hDC,hPal,TRUE);		
 		DeleteDC(hDC);
 		return NULL;	
@@ -2373,13 +2373,13 @@ GR_Graphics * GR_Win32Graphics::getPrinterGraphics(const char * pPrinterName,
 	
  cleanup:
 	if(bFreePN)
-		free(pPN);
+		g_free(pPN);
 
 	if(hDM && !pGr)
 		GlobalFree(hDM);
 
 	if(pDI && !pGr)
-		free(pDI);
+		g_free(pDI);
 	
 	if(hPrinter)
 		ClosePrinter(hPrinter);
@@ -2451,7 +2451,7 @@ bool GR_Win32Graphics::fixDevMode(HGLOBAL hDevMode)
 	// now get the printer driver to merge the data in the public section into its private part
 	dwRet = DocumentProperties(NULL,hPrinter, (char*)& pDM->dmDeviceName, pDM, pDM, DM_OUT_BUFFER | DM_IN_BUFFER);
 
-	// free what needs be ...
+	// g_free what needs be ...
 	ClosePrinter(hPrinter);
 	GlobalUnlock(hDevMode);
 

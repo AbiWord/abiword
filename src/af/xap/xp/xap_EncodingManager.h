@@ -2,7 +2,7 @@
  * Copyright (C) 2000
  * Orignially by Vlad Harchev <hvv@hippo.ru>
  * 
- * This program is free software; you can redistribute it and/or
+ * This program is g_free software; you can redistribute it and/or
  * modify it under the terms of the GNU General Public License
  * as published by the Free Software Foundation; either version 2
  * of the License, or (at your option) any later version.
@@ -58,7 +58,7 @@ class ABI_EXPORT XAP_EncodingManager
 {
 public:
     /*
-	These shouldn't return NULL. Don't free or write to returned strings.
+	These shouldn't return NULL. Don't g_free or write to returned strings.
 	The strings should be uppercased (extra font tarballs assume this).
     */
     virtual const char* getNativeEncodingName() const;
@@ -67,7 +67,7 @@ public:
     virtual const char* getNativeNonUnicodeEncodingName() const;
 
     /*
-	These can return NULL. Don't free or write to returned strings.
+	These can return NULL. Don't g_free or write to returned strings.
 	The strings should be uppercased (extra font tarballs assume this).
     */
     virtual const char* getNativeUnicodeEncodingName() const;
@@ -83,13 +83,13 @@ public:
 	inline virtual bool isUnicodeLocale() const {return m_bIsUnicodeLocale;}
 
     /*
-	This shouldn't return NULL. Don't free or write to returned string. 
+	This shouldn't return NULL. Don't g_free or write to returned string. 
 	Returns ISO two-letter name like "en"
     */    
     virtual const char* getLanguageISOName() const;
 
     /*
-	This can return NULL. Don't free or write to returned string. 
+	This can return NULL. Don't g_free or write to returned string. 
 	Returns ISO two-letter territory name like "UK".
     */    
 
@@ -141,7 +141,7 @@ public:
 	in any encoding).
 	If 'max_length' is 1, then approrixmation with exactly one character is
 	requested. If 'max_length' is not 1, then it's rather large (e.g. 16) - 
-	so there is no need to check whether there is enough free space in the 
+	so there is no need to check whether there is enough g_free space in the 
 	buffer.	
     */
     virtual UT_uint32  approximate(char* out,UT_uint32 max_length,UT_UCSChar c) const;
@@ -283,7 +283,7 @@ private:
 
 /*
     This one returns NULL-terminated vector of strings in static buffers (i.e.
-	don't try to free anything). On next call, filled data will be lost.
+	don't try to g_free anything). On next call, filled data will be lost.
     returns the following strings surrounded by prefix and suffix:
     if (!skip_fallback)
 	"";

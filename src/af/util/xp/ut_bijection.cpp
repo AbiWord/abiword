@@ -20,12 +20,12 @@ void UT_Bijection::clear()
 
     for(int i=0;i<m_n;++i) 
 	{
-		free(m_first[i]);
-		free(m_second[i]);	
+		g_free(m_first[i]);
+		g_free(m_second[i]);	
     };
 
-    free(m_first);
-    free(m_second);
+    g_free(m_first);
+    g_free(m_second);
     m_first = m_second = NULL;
     m_n = 0;
 }
@@ -61,10 +61,10 @@ const char *UT_Bijection::lookupBySource(const char *s) const
 
 void  UT_Bijection::add(const char *f, const char *s)
 {
-    m_first = static_cast<char**>(realloc(static_cast<void*>(m_first),(m_n+1)*sizeof(char*)));
+    m_first = static_cast<char**>(g_try_realloc(static_cast<void*>(m_first),(m_n+1)*sizeof(char*)));
     m_first[m_n] = UT_strdup(f);
 
-    m_second = static_cast<char**>(realloc(static_cast<void*>(m_second),(m_n+1)*sizeof(char*)));
+    m_second = static_cast<char**>(g_try_realloc(static_cast<void*>(m_second),(m_n+1)*sizeof(char*)));
     m_second[m_n] = UT_strdup(s);
     ++m_n;
 }

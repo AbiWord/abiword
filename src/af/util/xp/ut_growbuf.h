@@ -1,7 +1,7 @@
 /* AbiSource Program Utilities
  * Copyright (C) 1998 AbiSource, Inc.
  * 
- * This program is free software; you can redistribute it and/or
+ * This program is g_free software; you can redistribute it and/or
  * modify it under the terms of the GNU General Public License
  * as published by the Free Software Foundation; either version 2
  * of the License, or (at your option) any later version.
@@ -70,7 +70,7 @@ private:
 	UT_GrowBufElement *		m_pBuf;
 	UT_uint32			m_iSize;			/* amount currently used */
 	UT_uint32			m_iSpace;			/* space currently allocated */
-	UT_uint32			m_iChunk;			/* unit for realloc */
+	UT_uint32			m_iChunk;			/* unit for g_try_realloc */
 };
 
 #endif /* UT_GROWBUF_H */

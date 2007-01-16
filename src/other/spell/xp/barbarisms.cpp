@@ -1,7 +1,7 @@
 /* AbiSuite
  * Copyright (C) Jordi Mas i Hernàndez
  * 
- * This program is free software; you can redistribute it and/or
+ * This program is g_free software; you can redistribute it and/or
  * modify it under the terms of the GNU General Public License
  * as published by the Free Software Foundation; either version 2
  * of the License, or (at your option) any later version.
@@ -128,7 +128,7 @@ bool BarbarismChecker::suggestExactWord(const UT_UCSChar *word32, size_t length,
 	{
 		pWord = vec->getNthItem(iItem - 1);
 		nSize = sizeof(UT_UCS4Char) * (UT_UCS4_strlen(pWord) + 1);
-		suggest32 = static_cast<UT_UCS4Char*>(malloc(nSize));
+		suggest32 = static_cast<UT_UCS4Char*>(g_try_malloc(nSize));
 		memcpy (suggest32, pWord, nSize);
 		
 		pVecsugg->insertItemAt(suggest32, 0);
@@ -216,7 +216,7 @@ bool BarbarismChecker::suggestWord(const UT_UCSChar *word32, size_t length, UT_G
 		}
 
 		if (wordsearch)
-			free(wordsearch);
+			g_free(wordsearch);
 	}
 
 	return bIsBarbarism;

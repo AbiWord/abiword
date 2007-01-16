@@ -2,7 +2,7 @@
  * Copyright (C) 1998 AbiSource, Inc.
  * BIDI Copyright (C) 2001,2002 Tomas Frydrych
  *
- * This program is free software; you can redistribute it and/or
+ * This program is g_free software; you can redistribute it and/or
  * modify it under the terms of the GNU General Public License
  * as published by the Free Software Foundation; either version 2
  * of the License, or (at your option) any later version.
@@ -177,7 +177,7 @@ const char * EV_Toolbar_Label::getStatusMsg(void) const
 EV_Toolbar_LabelSet::EV_Toolbar_LabelSet(const char * szLanguage,
 										 XAP_Toolbar_Id first, XAP_Toolbar_Id last)
 {
-	// TODO tis bad to call malloc/calloc from a constructor, since we cannot report failure.
+	// TODO tis bad to call g_try_malloc/UT_calloc from a constructor, since we cannot report failure.
 	// TODO move this allocation to somewhere else.
 	UT_cloneString(m_szLanguage,szLanguage);
 	m_labelTable = static_cast<EV_Toolbar_Label **>(UT_calloc((last-first+1),sizeof(EV_Toolbar_Label *)));

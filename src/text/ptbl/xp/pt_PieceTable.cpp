@@ -3,7 +3,7 @@
 /* AbiWord
  * Copyright (C) 1998 AbiSource, Inc.
  *
- * This program is free software; you can redistribute it and/or
+ * This program is g_free software; you can redistribute it and/or
  * modify it under the terms of the GNU General Public License
  * as published by the Free Software Foundation; either version 2
  * of the License, or (at your option) any later version.
@@ -630,7 +630,7 @@ bool pt_PieceTable::getBlockBuf(PL_StruxDocHandle sdh,
 
             // TODO investigate appending the SPACES directly to
             // TODO the pgb.  **or** investigate the cost of this
-            // TODO malloc and what happens when it fails....
+            // TODO g_try_malloc and what happens when it fails....
 
             UT_UCSChar* pSpaces = new UT_UCSChar[length];
             for (UT_uint32 i=0; i<length; i++)

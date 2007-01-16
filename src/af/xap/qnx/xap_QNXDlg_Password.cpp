@@ -1,7 +1,7 @@
 /* AbiWord
  * Copyright (C) 2000 AbiSource, Inc.
  * 
- * This program is free software; you can redistribute it and/or
+ * This program is g_free software; you can redistribute it and/or
  * modify it under the terms of the GNU General Public License
  * as published by the Free Software Foundation; either version 2
  * of the License, or (at your option) any later version.
@@ -74,7 +74,7 @@ void XAP_QNXDialog_Password::runModal(XAP_Frame * pFrame)
 	const XAP_StringSet * pSS = m_pApp->getStringSet();
 	UT_UTF8String s,s1;
 	
-	char **buttons=(char**)calloc(2,sizeof(char*));
+	char **buttons=(char**)UT_calloc(2,sizeof(char*));
 	pSS->getValueUTF8(XAP_STRING_ID_DLG_Cancel,s);
 	buttons[0]= strdup((char*) s.utf8_str());
 	pSS->getValueUTF8(XAP_STRING_ID_DLG_OK,s);

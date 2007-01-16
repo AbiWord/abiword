@@ -1,7 +1,7 @@
 /* AbiWord
  * Copyright (C) 1998-2000 AbiSource, Inc.
  * 
- * This program is free software; you can redistribute it and/or
+ * This program is g_free software; you can redistribute it and/or
  * modify it under the terms of the GNU General Public License
  * as published by the Free Software Foundation; either version 2
  * of the License, or (at your option) any later version.
@@ -134,14 +134,14 @@ void AP_UnixPrefs::overlayEnvironmentPrefs(void)
 	m_builtinScheme->setValue((XML_Char*)AP_PREF_KEY_StringSet,
 				  (XML_Char*)szNewLang);
 
-	// free the language id, if it was allocated
-	if (lc_ctype != NULL) free(lc_ctype);
+	// g_free the language id, if it was allocated
+	if (lc_ctype != NULL) g_free(lc_ctype);
 
 	// change back to the previous locale setting
 	// although, we might want to leave it in the user's preferred locale?
 	if (old_locale != NULL) {
 	   setlocale(LC_ALL, old_locale);
-	   free(old_locale);
+	   g_free(old_locale);
 	}
 #endif
 	return;

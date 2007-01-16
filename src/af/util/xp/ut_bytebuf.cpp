@@ -1,7 +1,7 @@
 /* AbiSource Program Utilities
  * Copyright (C) 1998 AbiSource, Inc.
  * 
- * This program is free software; you can redistribute it and/or
+ * This program is g_free software; you can redistribute it and/or
  * modify it under the terms of the GNU General Public License
  * as published by the Free Software Foundation; either version 2
  * of the License, or (at your option) any later version.
@@ -39,7 +39,7 @@ UT_ByteBuf::UT_ByteBuf(UT_uint32 iChunk)
 		iChunk = DEFAULT_CHUNK;
 	m_iChunk = iChunk;
 
-	// we defer the malloc until the first use.
+	// we defer the g_try_malloc until the first use.
 }
 
 UT_ByteBuf::~UT_ByteBuf()
@@ -60,7 +60,7 @@ bool UT_ByteBuf::_byteBuf(UT_uint32 spaceNeeded)
 	if (m_pBuf)
 	{
 		memmove(pNew,m_pBuf,m_iSize*sizeof(*m_pBuf));
-		free(m_pBuf);
+		g_free(m_pBuf);
 	}
 
 	m_pBuf = pNew;
@@ -134,7 +134,7 @@ bool UT_ByteBuf::del(UT_uint32 position, UT_uint32 amount)
 	UT_uint32 newSpace = ((m_iSize+m_iChunk-1)/m_iChunk)*m_iChunk; //Calculate the new space needed
 	if (newSpace != m_iSpace)
 	{
-		m_pBuf = static_cast<UT_Byte *>(realloc(m_pBuf, newSpace*sizeof(*m_pBuf)));  //Re-allocate to the smaller size
+		m_pBuf = static_cast<UT_Byte *>(g_try_realloc(m_pBuf, newSpace*sizeof(*m_pBuf)));  //Re-allocate to the smaller size
 		m_iSpace = newSpace; //update m_iSpace to the new figure
 	}
 
@@ -187,7 +187,7 @@ void UT_ByteBuf::truncate(UT_uint32 position)
 	UT_uint32 newSpace = ((m_iSize+m_iChunk-1)/m_iChunk)*m_iChunk; //Calculate the new space needed
 	if (newSpace != m_iSpace)
 	{
-		m_pBuf = static_cast<UT_Byte *>(realloc(m_pBuf, newSpace*sizeof(*m_pBuf)));  //Re-allocate to the smaller size
+		m_pBuf = static_cast<UT_Byte *>(g_try_realloc(m_pBuf, newSpace*sizeof(*m_pBuf)));  //Re-allocate to the smaller size
 		m_iSpace = newSpace; //update m_iSpace to the new figure
 	}
 }

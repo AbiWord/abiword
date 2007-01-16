@@ -5,7 +5,7 @@
  * Copyright (C) 2001 Tomas Frydrych
  * Copyright (C) 2004 Hubert Figuiere
  *
- * This program is free software; you can redistribute it and/or
+ * This program is g_free software; you can redistribute it and/or
  * modify it under the terms of the GNU General Public License
  * as published by the Free Software Foundation; either version 2
  * of the License, or (at your option) any later version.
@@ -1825,7 +1825,7 @@ static bool s_AskForPathname(XAP_Frame * pFrame,
 	// the user hits.
 	// return a pointer a UT_strdup()'d string containing the
 	// pathname the user entered -- ownership of this goes
-	// to the caller (so free it when you're done with it).
+	// to the caller (so g_free it when you're done with it).
 
 	UT_DEBUGMSG(("s_AskForPathname: frame %p, bSaveAs %ld, suggest=[%s]\n",
 				 pFrame,bSaveAs,((pSuggestedName) ? pSuggestedName : "")));
@@ -2032,7 +2032,7 @@ static bool s_AskForGraphicPathname(XAP_Frame * pFrame,
 	// the user hits.
 	// return a pointer a UT_strdup()'d string containing the
 	// pathname the user entered -- ownership of this goes
-	// to the caller (so free it when you're done with it).
+	// to the caller (so g_free it when you're done with it).
 
 	UT_DEBUGMSG(("s_AskForGraphicPathname: frame %p\n",
 				 pFrame));
@@ -2372,11 +2372,11 @@ Defun1(fileOpen)
 	if (!bOK || !pNewFile)
 	  return false;
 
-	// we own storage for pNewFile and must free it.
+	// we own storage for pNewFile and must g_free it.
 
 	UT_Error error = ::fileOpen(pFrame, pNewFile, ieft);
 
-	free(pNewFile);
+	g_free(pNewFile);
 	return E2B(error);
 }
 
@@ -2463,11 +2463,11 @@ Defun1(openTemplate)
 	if (!bOK || !pNewFile)
 	  return false;
 
-	// we own storage for pNewFile and must free it.
+	// we own storage for pNewFile and must g_free it.
 
 	UT_Error error = s_importFile(pFrame, pNewFile, ieft);
 
-	free(pNewFile);
+	g_free(pNewFile);
 	return E2B(error);
 }
 
@@ -2615,7 +2615,7 @@ s_actuallySaveAs(AV_View * pAV_View, bool overwriteName)
 	{
 		// throw up a dialog
 		s_TellSaveFailed(pFrame, pNewFile, errSaved);
-		free(pNewFile);
+		g_free(pNewFile);
 		return false;
 	}
 
@@ -2626,7 +2626,7 @@ s_actuallySaveAs(AV_View * pAV_View, bool overwriteName)
 	// update the MRU list
 	XAP_App * pApp = XAP_App::getApp();
 	UT_return_val_if_fail (pApp, false);
-	free(pNewFile);
+	g_free(pNewFile);
 
 	if (pFrame->getViewNumber() > 0)
 	{
@@ -2657,11 +2657,11 @@ Defun1(fileImport)
 	if (!bOK || !pNewFile)
 	  return false;
 
-	// we own storage for pNewFile and must free it.
+	// we own storage for pNewFile and must g_free it.
 
 	UT_Error error = s_importFile(pFrame, pNewFile, ieft);
 
-	free(pNewFile);
+	g_free(pNewFile);
 	return E2B(error);
 }
 
@@ -2699,7 +2699,7 @@ Defun1(fileSaveTemplate)
     {
       // throw up a dialog
       s_TellSaveFailed(pFrame, pNewFile, errSaved);
-      free(pNewFile);
+      g_free(pNewFile);
       return false;
     }
 
@@ -2724,7 +2724,7 @@ Defun1(fileSaveAsWeb)
 	{
 	  // throw up a dialog
 	  s_TellSaveFailed(pFrame, pNewFile, errSaved);
-	  free(pNewFile);
+	  g_free(pNewFile);
 	  return false;
 	}
 
@@ -3777,7 +3777,7 @@ Defun1(fileInsertGraphic)
 	if (!bOK || !pNewFile)
 		return false;
 
-	// we own storage for pNewFile and must free it.
+	// we own storage for pNewFile and must g_free it.
 	UT_DEBUGMSG(("fileInsertGraphic: loading [%s]\n",pNewFile));
 
 	FG_Graphic* pFG;
@@ -3827,7 +3827,7 @@ Defun1(fileInsertPageBackgroundGraphic)
 	if (!bOK || !pNewFile)
 		return false;
 
-	// we own storage for pNewFile and must free it.
+	// we own storage for pNewFile and must g_free it.
 	UT_DEBUGMSG(("fileInsertBackgroundGraphic: loading [%s]\n",pNewFile));
 
 	FG_Graphic* pFG;
@@ -7823,7 +7823,7 @@ UT_return_val_if_fail(pDialog, false);
 	{
 	case AP_Dialog_Paragraph::a_OK:
 
-		// getDialogData() returns us XML_Char ** data we have to free
+		// getDialogData() returns us XML_Char ** data we have to g_free
 		pDialog->getDialogData(props);
 		UT_return_val_if_fail (props, false);
 
@@ -7845,7 +7845,7 @@ UT_return_val_if_fail(pDialog, false);
 			}
 		}
 
-		// now free props
+		// now g_free props
 		FREEP(props);
 
 		break;
@@ -8184,7 +8184,7 @@ static bool _toggleSpanOrBlock(FV_View * pView,
 				else
 					props_out[1] = vOff;	// nope, clear it
 
-				free(q);
+				g_free(q);
 			}
 			else
 			{

@@ -4,7 +4,7 @@
  * Copyright (C) 1998,1999 AbiSource, Inc.
  * Copyright (C) 2004 Tomas Frydrych <tomasfrydrych@yahoo.co.uk>
  * 
- * This program is free software; you can redistribute it and/or
+ * This program is g_free software; you can redistribute it and/or
  * modify it under the terms of the GNU General Public License
  * as published by the Free Software Foundation; either version 2
  * of the License, or (at your option) any later version.
@@ -118,7 +118,7 @@ AD_Document::~AD_Document()
 	UT_VECTOR_PURGEALL(AD_Revision*, m_vRevisions);
 
 	if (m_szFilename)
-		free(const_cast<void *>(static_cast<const void *>(m_szFilename)));
+		g_free(const_cast<void *>(static_cast<const void *>(m_szFilename)));
 
 	if(m_pUUID)
 		delete m_pUUID;

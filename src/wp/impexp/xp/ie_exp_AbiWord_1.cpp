@@ -3,7 +3,7 @@
 /* AbiWord
  * Copyright (C) 1998 AbiSource, Inc.
  *
- * This program is free software; you can redistribute it and/or
+ * This program is g_free software; you can redistribute it and/or
  * modify it under the terms of the GNU General Public License
  * as published by the Free Software Foundation; either version 2
  * of the License, or (at your option) any later version.
@@ -769,7 +769,7 @@ s_AbiWord_1_Listener::s_AbiWord_1_Listener(PD_Document * pDocument,
 
 	m_pie->write("<!-- ======================================================================== -->\n");
 	m_pie->write("<!-- This file is an AbiWord document.                                        -->\n");
-	m_pie->write("<!-- AbiWord is a free, Open Source word processor.                           -->\n");
+	m_pie->write("<!-- AbiWord is a g_free, Open Source word processor.                           -->\n");
 	m_pie->write("<!-- More information about AbiWord is available at http://www.abisource.com/ -->\n");
 	m_pie->write("<!-- You should not edit this file by hand.                                   -->\n");
 	m_pie->write("<!-- ======================================================================== -->\n\n");
@@ -1362,7 +1362,7 @@ void s_AbiWord_1_Listener::_handleLists(void)
 			}
 		}
 		m_pie->write("/>\n");
-		// No, no, you can't free attr and expect good things to happen.
+		// No, no, you can't g_free attr and expect good things to happen.
 		FREEP(attr0);
 	}
 

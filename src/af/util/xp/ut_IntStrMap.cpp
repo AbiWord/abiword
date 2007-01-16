@@ -4,7 +4,7 @@
  * Copyright (C) 2003 Francis James Franklin <fjf@alinameridon.com>
  * Copyright (C) 2003 AbiSource, Inc.
  * 
- * This program is free software; you can redistribute it and/or
+ * This program is g_free software; you can redistribute it and/or
  * modify it under the terms of the GNU General Public License
  * as published by the Free Software Foundation; either version 2
  * of the License, or (at your option) any later version.
@@ -59,7 +59,7 @@ UT_IntStrMap::UT_IntStrMap (UT_uint32 increment) :
 UT_IntStrMap::~UT_IntStrMap ()
 {
 	clear ();
-	if (m_pair) free (m_pair);
+	if (m_pair) g_free (m_pair);
 }
 
 void UT_IntStrMap::clear ()
@@ -237,14 +237,14 @@ bool UT_IntStrMap::grow ()
 
 	if (m_pair == 0)
 		{
-			m_pair = (IntStr *) malloc (m_increment * sizeof (IntStr));
+			m_pair = (IntStr *) g_try_malloc (m_increment * sizeof (IntStr));
 			if (m_pair == 0) return false;
 
 			m_pair_max = m_increment;
 		}
 	else
 		{
-			IntStr * more = (IntStr *) realloc (m_pair, (m_pair_max + m_increment) * sizeof (IntStr));
+			IntStr * more = (IntStr *) g_try_realloc (m_pair, (m_pair_max + m_increment) * sizeof (IntStr));
 			if (more == 0) return false;
 
 			m_pair = more;
@@ -267,7 +267,7 @@ UT_NumberMap::UT_NumberMap (UT_sint32 default_value, UT_uint32 increment) :
 UT_NumberMap::~UT_NumberMap ()
 {
 	clear ();
-	if (m_pair) free (m_pair);
+	if (m_pair) g_free (m_pair);
 }
 
 void UT_NumberMap::clear ()
@@ -418,14 +418,14 @@ bool UT_NumberMap::grow ()
 
 	if (m_pair == 0)
 		{
-			m_pair = (NumberStr *) malloc (m_increment * sizeof (NumberStr));
+			m_pair = (NumberStr *) g_try_malloc (m_increment * sizeof (NumberStr));
 			if (m_pair == 0) return false;
 
 			m_pair_max = m_increment;
 		}
 	else
 		{
-			NumberStr * more = (NumberStr *) realloc (m_pair, (m_pair_max + m_increment) * sizeof (NumberStr));
+			NumberStr * more = (NumberStr *) g_try_realloc (m_pair, (m_pair_max + m_increment) * sizeof (NumberStr));
 			if (more == 0) return false;
 
 			m_pair = more;
@@ -475,10 +475,10 @@ UT_GenericUTF8Hash::UT_GenericUTF8Hash (UT_uint32 increment) :
 UT_GenericUTF8Hash::~UT_GenericUTF8Hash ()
 {
 	clear (false);
-	if (m_pair) free (m_pair);
+	if (m_pair) g_free (m_pair);
 }
 
-/* deletes all key/value pairs, but doesn't free() array of pointers
+/* deletes all key/value pairs, but doesn't g_free() array of pointers
  */
 void UT_GenericUTF8Hash::clear (bool delete_values)
 {
@@ -708,14 +708,14 @@ bool UT_GenericUTF8Hash::grow ()
 
 	if (m_pair == 0)
 		{
-			m_pair = (KeyValue **) malloc (m_increment * sizeof (KeyValue *));
+			m_pair = (KeyValue **) g_try_malloc (m_increment * sizeof (KeyValue *));
 			if (m_pair == 0) return false;
 
 			m_pair_max = m_increment;
 		}
 	else
 		{
-			KeyValue ** more = (KeyValue **) realloc (m_pair, (m_pair_max + m_increment) * sizeof (KeyValue *));
+			KeyValue ** more = (KeyValue **) g_try_realloc (m_pair, (m_pair_max + m_increment) * sizeof (KeyValue *));
 			if (more == 0) return false;
 
 			m_pair = more;

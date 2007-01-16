@@ -1,7 +1,7 @@
 /* AbiWord
  * Copyright (C) 1998 AbiSource, Inc.
  * 
- * This program is free software; you can redistribute it and/or
+ * This program is g_free software; you can redistribute it and/or
  * modify it under the terms of the GNU General Public License
  * as published by the Free Software Foundation; either version 2
  * of the License, or (at your option) any later version.
@@ -556,7 +556,7 @@ void s_RTF_ListenerGetProps::_check_revs_for_color(const PP_AttrProp * pAP1,
 
 		if(pDup)
 		{
-			free(pDup);
+			g_free(pDup);
 			pDup = NULL;
 		}
 	}
@@ -665,7 +665,7 @@ void s_RTF_ListenerGetProps::_check_revs_for_font(const PP_AttrProp * pAP1,
 
 		if(pDup)
 		{
-			free(pDup);
+			g_free(pDup);
 			pDup = NULL;
 		}
 	}

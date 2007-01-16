@@ -1,7 +1,7 @@
 /* AbiSource Program Utilities
  * Copyright (C) 2000 AbiSource, Inc.
  * 
- * This program is free software; you can redistribute it and/or
+ * This program is g_free software; you can redistribute it and/or
  * modify it under the terms of the GNU General Public License
  * as published by the Free Software Foundation; either version 2
  * of the License, or (at your option) any later version.
@@ -83,7 +83,7 @@ public:
 	void  *cb_userdata;
 	void (*cb_start) (void * userdata,const char * name,const char** atts);
 	void (*cb_end)   (void * userdata,const char * name);
-	void (*cb_text)  (void * userdata,UT_ByteBuf * text); // caller's responsibility to free this.
+	void (*cb_text)  (void * userdata,UT_ByteBuf * text); // caller's responsibility to g_free this.
 
 	const char *getAttribute (const char * name,const char ** atts);
 };

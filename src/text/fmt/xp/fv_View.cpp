@@ -3,7 +3,7 @@
  * Copyright (C) 1998-2000 AbiSource, Inc.
  * Copyright (c) 2001,2002 Tomas Frydrych
  *
- * This program is free software; you can redistribute it and/or
+ * This program is g_free software; you can redistribute it and/or
  * modify it under the terms of the GNU General Public License
  * as published by the Free Software Foundation; either version 2
  * of the License, or (at your option) any later version.
@@ -1652,7 +1652,7 @@ void FV_View::toggleCase (ToggleCase c)
 	if(low >= high)
 		return;
 
-	// create a temp buffer of a reasonable size (will realloc if too small)
+	// create a temp buffer of a reasonable size (will g_try_realloc if too small)
 	UT_sint32	 iTempLen = 150;
 	UT_UCSChar * pTemp = new UT_UCSChar[iTempLen];
 	UT_ASSERT(pTemp);
@@ -4936,7 +4936,7 @@ bool FV_View::getCharFormat(const XML_Char *** pProps, bool bExpandStyles, PT_Do
 //
 // fixme
 #if 0
-	// NOTE: caller must free this, but not the referenced contents
+	// NOTE: caller must g_free this, but not the referenced contents
 	const XML_Char ** tprops = static_cast<const XML_Char **>(UT_calloc(3, sizeof(XML_Char *)));
 	UT_DEBUGMSG(("charFormat \n"));
 	tprops[0] = "fred";
@@ -5149,7 +5149,7 @@ bool FV_View::getCharFormat(const XML_Char *** pProps, bool bExpandStyles, PT_Do
 	// 3. export whatever's left
 	UT_uint32 count = v.getItemCount()*2 + 1;
 
-	// NOTE: caller must free this, but not the referenced contents
+	// NOTE: caller must g_free this, but not the referenced contents
 	const XML_Char ** props = static_cast<const XML_Char **>(UT_calloc(count, sizeof(XML_Char *)));
 	if (!props)
 		return false;
@@ -5894,7 +5894,7 @@ bool FV_View::getSectionFormat(const XML_Char ***pProps)
 	// 3. export whatever's left
 	UT_uint32 count = v.getItemCount()*2 + 1;
 
-	// NOTE: caller must free this, but not the referenced contents
+	// NOTE: caller must g_free this, but not the referenced contents
 	const XML_Char ** props = static_cast<const XML_Char **>(UT_calloc(count, sizeof(XML_Char *)));
 	if (!props)
 		return false;
@@ -6097,7 +6097,7 @@ bool FV_View::getBlockFormat(const XML_Char *** pProps,bool bExpandStyles)
 	// 3. export whatever's left
 	UT_uint32 count = v.getItemCount()*2 + 1;
 
-	// NOTE: caller must free this, but not the referenced contents
+	// NOTE: caller must g_free this, but not the referenced contents
 	const XML_Char ** props = static_cast<const XML_Char **>(UT_calloc(count, sizeof(XML_Char *)));
 	if (!props)
 		return false;
@@ -6164,7 +6164,7 @@ UT_uint32 FV_View::getSelectionLength(void) const
 	
 /*
 	This function is somewhat of a compromise.	It will return a new
-	range of memory (destroy with free()) full of what's in the selection,
+	range of memory (destroy with g_free()) full of what's in the selection,
 	but it will not cross block boundaries.  This is for convenience
 	in implementation, but could probably be accomplished without
 	too much more effort.  However, since an edit entry in a dialog
@@ -6172,7 +6172,7 @@ UT_uint32 FV_View::getSelectionLength(void) const
 	block break anyway, I don't see a reason to make this behave
 	differently.
 
-	The caller must free the returned pointer !!!
+	The caller must g_free the returned pointer !!!
 */
 void FV_View::getSelectionText(UT_UCS4Char * & pText)
 {
@@ -7617,7 +7617,7 @@ void FV_View::insertSymbol(UT_UCSChar c, XML_Char * symfont)
 	const XML_Char * currentfont;
 	getCharFormat(&props_in);
 	currentfont = UT_getAttribute("font-family",props_in);
-	free(props_in);
+	g_free(props_in);
 
 	if(strstr(symfont,currentfont) == NULL)
 	{
@@ -11973,7 +11973,7 @@ bool FV_View::insertFootnote(bool bFootnote)
 //
 		bRet = m_pDoc->changeSpanFmt(PTC_AddFmt,getPoint(),getPoint(),NULL,props_in);
 	}
-	free(props_in);
+	g_free(props_in);
 	fl_BlockLayout * pBL;
 
 //

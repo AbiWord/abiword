@@ -6,7 +6,7 @@
  * Copyright (C) 2004 Yukihiro Nakai  <nakai@gnome.gr.jp>
  * Copyright (C) 2003, Red Hat, Inc.
  *
- * This program is free software; you can redistribute it and/or
+ * This program is g_free software; you can redistribute it and/or
  * modify it under the terms of version 2 of the GNU General Public
  * License as published by the Free Software Foundation.
  *
@@ -1662,7 +1662,7 @@ UT_go_url_show (gchar const *url)
  * If no @std_ext is given or @uri already has some extension,
  * it just copies @uri.
  *
- * Value in new_uri:  newly allocated string which you should free after
+ * Value in new_uri:  newly allocated string which you should g_free after
  *                    use, containing (optionally) modified uri.
  *
  * Return Value:  FALSE if the uri has an extension not matching @std_ext
@@ -1892,7 +1892,7 @@ UT_go_guess_encoding (const char *raw, size_t len, const char *user_guess,
  * UT_go_get_real_name :
  *
  * Return a utf8 encoded string with the current user name.
- * Caller should _NOT_ free the result.
+ * Caller should _NOT_ g_free the result.
  **/
 char const *
 UT_go_get_real_name (void)

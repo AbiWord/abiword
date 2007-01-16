@@ -1,7 +1,7 @@
 /* AbiSource Program Utilities
  * Copyright (C) 1998 AbiSource, Inc.
  * 
- * This program is free software; you can redistribute it and/or
+ * This program is g_free software; you can redistribute it and/or
  * modify it under the terms of the GNU General Public License
  * as published by the Free Software Foundation; either version 2
  * of the License, or (at your option) any later version.
@@ -52,7 +52,7 @@ EV_Toolbar_Layout::EV_Toolbar_Layout(const char * szName, UT_uint32 nrLayoutItem
 {
 	UT_ASSERT(nrLayoutItems > 0);
 	m_nrLayoutItems = nrLayoutItems;
-	// TODO tis bad to call malloc/calloc from a constructor, since we cannot report failure.
+	// TODO tis bad to call g_try_malloc/UT_calloc from a constructor, since we cannot report failure.
 	// TODO move this allocation to somewhere else.
 	m_layoutTable = static_cast<EV_Toolbar_LayoutItem **>(UT_calloc(nrLayoutItems,sizeof(EV_Toolbar_LayoutItem *)));
 	UT_ASSERT(m_layoutTable);
@@ -63,7 +63,7 @@ EV_Toolbar_Layout::EV_Toolbar_Layout(EV_Toolbar_Layout * pTB)
 {
 	UT_ASSERT(pTB);
 	m_nrLayoutItems = pTB->getLayoutItemCount();
-	// TODO tis bad to call malloc/calloc from a constructor, since we cannot report failure.
+	// TODO tis bad to call g_try_malloc/UT_calloc from a constructor, since we cannot report failure.
 	// TODO move this allocation to somewhere else.
 	m_layoutTable = static_cast<EV_Toolbar_LayoutItem **>(UT_calloc(m_nrLayoutItems,sizeof(EV_Toolbar_LayoutItem *)));
 	UT_ASSERT(m_layoutTable);
@@ -84,7 +84,7 @@ EV_Toolbar_Layout::~EV_Toolbar_Layout(void)
 		return;
 	for (UT_uint32 k=0; k<m_nrLayoutItems; k++)
 		DELETEP(m_layoutTable[k]);
-	free(m_layoutTable);
+	g_free(m_layoutTable);
 }
 
 bool EV_Toolbar_Layout::setLayoutItem(UT_uint32 indexLayoutItem, XAP_Toolbar_Id id, EV_Toolbar_LayoutFlags flags)

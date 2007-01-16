@@ -3,7 +3,7 @@
  * Copyright (C) 2001 Mike Nordell <tamlin@alogonet.se>
  * Copyright (C) 2001 Dom Lachowicz <cinamod@hotmail.com>
  *
- * This program is free software; you can redistribute it and/or
+ * This program is g_free software; you can redistribute it and/or
  * modify it under the terms of the GNU General Public License
  * as published by the Free Software Foundation; either version 2
  * of the License, or (at your option) any later version.
@@ -154,7 +154,7 @@ public:
 			for ( T hval1 = hc1.first(); hc1.is_valid(); hval1 = hc1.next() ) {
 				if (hval1) {
 					hc1.make_deleted();
-					free(const_cast<T>(hval1));
+					g_free(const_cast<T>(hval1));
 				}
 			}
 		}
@@ -401,7 +401,7 @@ const XML_Char ** UT_GenericStringMap<T>::list()
 {
 	if (!m_list)
 	{
-		m_list = reinterpret_cast<XML_Char **>(malloc (2 * (n_keys + 1) * sizeof (XML_Char *)));
+		m_list = reinterpret_cast<XML_Char **>(g_try_malloc (2 * (n_keys + 1) * sizeof (XML_Char *)));
 		if (m_list == 0)
 			return 0;
 
@@ -555,7 +555,7 @@ void UT_GenericStringMap<T>::set(const UT_String& key, T value)
 
 /*!
  * Return a UT_Vector of elements in the HashTable that you must
- * Later free with a call to delete
+ * Later g_free with a call to delete
  */
 template <class T>
 UT_GenericVector<T>* UT_GenericStringMap<T>::enumerate (bool strip_null_values) const

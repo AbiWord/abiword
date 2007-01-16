@@ -42,7 +42,11 @@
 
 /*
  * $Log$
+ * Revision 1.3  2007/01/16 21:45:42  dom
+ * bug 10751 - use glib's types and memory allocation functions. no more mismatched free/g_free malloc/g_malloc
+ *
  * Revision 1.2  2003/01/29 05:50:11  hippietrail
+ *
  * Fixed my mess in EncodingManager.
  * Changed many C casts to C++ casts.
  *
@@ -91,7 +95,7 @@
  * Revision 1.3  1998/12/29 14:55:33  eric
  *
  * I've doctored the ispell code pretty extensively here.  It is now
- * warning-free on Win32.  It also *works* on Win32 now, since I
+ * warning-g_free on Win32.  It also *works* on Win32 now, since I
  * replaced all the I/O calls with ANSI standard ones.
  *
  * Revision 1.2  1998/12/28 23:11:30  eric

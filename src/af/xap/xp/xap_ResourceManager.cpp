@@ -5,7 +5,7 @@
  * Copyright (C) 2002 Francis James Franklin <fjf@alinameridon.com>
  * Copyright (C) 2002 AbiSource, Inc.
  * 
- * This program is free software; you can redistribute it and/or
+ * This program is g_free software; you can redistribute it and/or
  * modify it under the terms of the GNU General Public License
  * as published by the Free Software Foundation; either version 2
  * of the License, or (at your option) any later version.
@@ -45,7 +45,7 @@ XAP_ResourceManager::XAP_ResourceManager () :
 XAP_ResourceManager::~XAP_ResourceManager ()
 {
 	for (UT_uint32 i = 0; i < m_resource_count; i++) delete m_resource[i];
-	if (m_resource) free (m_resource);
+	if (m_resource) g_free (m_resource);
 }
 
 const UT_UTF8String XAP_ResourceManager::new_id (bool bInternal)
@@ -245,12 +245,12 @@ bool XAP_ResourceManager::grow ()
 
 	if (m_resource == 0)
 		{
-			m_resource = static_cast<XAP_Resource **>(malloc (8 * sizeof (XAP_Resource *)));
+			m_resource = static_cast<XAP_Resource **>(g_try_malloc (8 * sizeof (XAP_Resource *)));
 			if (m_resource == 0) return false;
 			m_resource_max = 8;
 			return true;
 		}
-	XAP_Resource ** more = static_cast<XAP_Resource **>(realloc (m_resource, (m_resource_max + 8) * sizeof (XAP_Resource *)));
+	XAP_Resource ** more = static_cast<XAP_Resource **>(g_try_realloc (m_resource, (m_resource_max + 8) * sizeof (XAP_Resource *)));
 	if (more == 0) return false;
 	m_resource = more;
 	m_resource_max += 8;

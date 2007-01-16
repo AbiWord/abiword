@@ -3,7 +3,7 @@
  * Copyright (C) 1998-2000 AbiSource, Inc.
  * Copyright (c) 2001,2002 Tomas Frydrych
  *
- * This program is free software; you can redistribute it and/or
+ * This program is g_free software; you can redistribute it and/or
  * modify it under the terms of the GNU General Public License
  * as published by the Free Software Foundation; either version 2
  * of the License, or (at your option) any later version.
@@ -2854,7 +2854,7 @@ FV_View::_findGetNextBlockBuffer(fl_BlockLayout** pBlock,
 	// clone a buffer (this could get really slow on large buffers!)
 	UT_UCSChar* bufferSegment = NULL;
 
-	// remember, the caller gets to free this memory
+	// remember, the caller gets to g_free this memory
 	bufferSegment = static_cast<UT_UCSChar*>(UT_calloc(bufferLength + 1, sizeof(UT_UCSChar)));
 	UT_ASSERT(bufferSegment);
 
@@ -2969,7 +2969,7 @@ FV_View::_findGetPrevBlockBuffer(fl_BlockLayout** pBlock,
 	// clone a buffer (this could get really slow on large buffers!)
 	UT_UCSChar* bufferSegment = NULL;
 
-	// remember, the caller gets to free this memory
+	// remember, the caller gets to g_free this memory
 	bufferSegment = (UT_UCSChar*)UT_calloc(bufferLength + 1, sizeof(UT_UCSChar));
 	UT_return_val_if_fail(bufferSegment, NULL);
 

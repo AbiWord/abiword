@@ -1,7 +1,7 @@
 /* AbiWord
  * Copyright (C) 1998 AbiSource, Inc.
  *
- * This program is free software; you can redistribute it and/or
+ * This program is g_free software; you can redistribute it and/or
  * modify it under the terms of the GNU General Public License
  * as published by the Free Software Foundation; either version 2
  * of the License, or (at your option) any later version.
@@ -313,7 +313,7 @@ if(pCharWidths == NULL && iLength > 1) {
 
 	if(iLength > (alloclen/2)) {
 		alloclen = iLength*2;
-		ucs2buffer = (UT_UCS2Char *)realloc(ucs2buffer,alloclen);
+		ucs2buffer = (UT_UCS2Char *)g_try_realloc(ucs2buffer,alloclen);
 	}
 
 	for(int i=0;i<iLength;i++)
@@ -1136,7 +1136,7 @@ GR_Image * GR_QNXGraphics::genImageFromRectangle(const UT_Rect & r) {
 	rect.lr.y= rect.ul.y + _tduR(r.height);
 	pImgshmem =PgReadScreen(&rect,NULL);
 
-	//PgReadScreen is kind of stupid and you need to free that image using PgShmemDestroy, therefor duplicate it so GR_QNXImage won't go nuts.
+	//PgReadScreen is kind of stupid and you need to g_free that image using PgShmemDestroy, therefor duplicate it so GR_QNXImage won't go nuts.
 
 	pImg = PiDuplicateImage(pImgshmem,NULL);
 	PgShmemDestroy(pImgshmem);

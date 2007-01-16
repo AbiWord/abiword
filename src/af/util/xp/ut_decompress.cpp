@@ -1,7 +1,7 @@
 /* AbiSource Program Utilities
  * Copyright (C) 1998,1999 AbiSource, Inc.
  *
- * This program is free software; you can redistribute it and/or
+ * This program is g_free software; you can redistribute it and/or
  * modify it under the terms of the GNU General Public License
  * as published by the Free Software Foundation; either version 2
  * of the License, or (at your option) any later version.
@@ -93,7 +93,7 @@ static char * strippath(char *fname)
  * szFName is the file to extract
  * szWantedFile is the file to extract
  * szDestPath is the path to extract to (without trailing slash) - if NULL, extracted data wont be saved to disk
- * retBuf is a pointer to a bufferpointer - will be malloc'ed and filled with data if retBuf != NULL
+ * retBuf is a pointer to a bufferpointer - will be g_try_malloc'ed and filled with data if retBuf != NULL
  * retFileSize will be filled with the size of the file, if it's != NULL
  *
  * extraction routines derived from logic in zlib's contrib untgz.c program
@@ -162,7 +162,7 @@ UT_untgz(const char *szFName, const char *szWantedFile, const char *szDestPath, 
 					
 					if (retBuf)
 					{
-						if (!(*retBuf = static_cast<char *>(malloc(fileSize))))
+						if (!(*retBuf = static_cast<char *>(g_try_malloc(fileSize))))
 							*retBuf = NULL;
 					}
 					

@@ -2,7 +2,7 @@
  * Copyright (C) 2001,2002 Francis James Franklin <fjf@alinameridon.com>
  * Copyright (C) 2001,2002 AbiSource, Inc.
  * 
- * This program is free software; you can redistribute it and/or
+ * This program is g_free software; you can redistribute it and/or
  * modify it under the terms of the GNU General Public License
  * as published by the Free Software Foundation; either version 2
  * of the License, or (at your option) any later version.
@@ -212,7 +212,7 @@ private:
 /* This reads bytes from the buffer provided at construction.
  * open(<file>) resets the position within the buffer, but ignores <file>.
  * 
- * NOTE: The buffer is not copied, or free()ed.
+ * NOTE: The buffer is not copied, or g_free()ed.
  */
 class UT_XML_BufReader : public UT_XML::Reader
 {

@@ -5,7 +5,7 @@
  * Copyright (C) 2001 Dom Lachowicz <dominicl@seas.upenn.edu>
  * Copyright (C) 2001-2003 Tomas Frydrych
  *
- * This program is free software; you can redistribute it and/or
+ * This program is g_free software; you can redistribute it and/or
  * modify it under the terms of the GNU General Public License
  * as published by the Free Software Foundation; either version 2
  * of the License, or (at your option) any later version.
@@ -241,7 +241,7 @@ static const XML_Char * s_translateStyleId(UT_uint32 id)
 
 /*!
     Strip characters that would confuse either the xml parser or our
-    property parser; caller is responsible to free the returned pointer
+    property parser; caller is responsible to g_free the returned pointer
 */
 static char * s_stripDangerousChars(const char *s)
 {
@@ -249,7 +249,7 @@ static char * s_stripDangerousChars(const char *s)
 	if(!s)
 		return NULL;
 	
-	char * t = (char*) malloc(strlen(s)+1);
+	char * t = (char*) g_try_malloc(strlen(s)+1);
 	UT_return_val_if_fail(t,NULL);
 	
 	for(j = 0, k = 0; j < strlen(s); )
@@ -824,7 +824,7 @@ IE_Imp_MsWord_97::~IE_Imp_MsWord_97()
 {
 	if(m_pBookmarks)
 	{
-		// free the names from the bookmarks
+		// g_free the names from the bookmarks
 		for(UT_uint32 i = 0; i < m_iBookmarksCount; i++)
 		{
 			// make sure we do not delete any name twice
@@ -5455,7 +5455,7 @@ int IE_Imp_MsWord_97::_handleBookmarks(const wvParseStruct *ps)
 	{
 		if(m_iBookmarksCount > 0)
 		{
-			//free the bkf and posf
+			//g_free the bkf and posf
 			wvFree(bkf);
 			wvFree(posf);
 			m_iBookmarksCount = 0;
@@ -5491,7 +5491,7 @@ int IE_Imp_MsWord_97::_handleBookmarks(const wvParseStruct *ps)
 			m_pBookmarks[j].pos  = posl[j - i];
 			m_pBookmarks[j].start = false;
 		}
-		// free bkf, bkl, posf, posl
+		// g_free bkf, bkl, posf, posl
 		wvFree(bkf);
 		wvFree(bkl);
 		wvFree(posf);

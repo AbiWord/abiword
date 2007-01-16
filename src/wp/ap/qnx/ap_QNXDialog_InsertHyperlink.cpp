@@ -1,7 +1,7 @@
 /* AbiWord
  * Copyright (C) 2000 AbiSource, Inc.
  * 
- * This program is free software; you can redistribute it and/or
+ * This program is g_free software; you can redistribute it and/or
  * modify it under the terms of the GNU General Public License
  * as published by the Free Software Foundation; either version 2
  * of the License, or (at your option) any later version.
@@ -175,7 +175,7 @@ PtWidget_t *PtButton_cancel;
 	localizeLabel(PtButton_ok,pSS,XAP_STRING_ID_DLG_OK);
 
 	//Add existing bookmarks to the list.
- XML_Char ** pBookmarks = (XML_Char **)calloc(getExistingBookmarksCount(),sizeof(XML_Char*));
+ XML_Char ** pBookmarks = (XML_Char **)UT_calloc(getExistingBookmarksCount(),sizeof(XML_Char*));
 	if(getHyperlink())
 	{
 	int start,end;
@@ -188,7 +188,7 @@ PtWidget_t *PtButton_cancel;
   for (int i = 0; i < (int)getExistingBookmarksCount(); i++)
    pBookmarks[i] =(XML_Char *) getNthExistingBookmark(i);
 	PtListAddItems(mBookmarkList,(const char **)pBookmarks,getExistingBookmarksCount(),0);
-	free(pBookmarks);	
+	g_free(pBookmarks);	
 	
 	PtAddCallback(PtButton_cancel,Pt_CB_ACTIVATE,ph_event_cancel,this);
 	PtAddCallback(PtButton_ok,Pt_CB_ACTIVATE,ph_event_ok,this);

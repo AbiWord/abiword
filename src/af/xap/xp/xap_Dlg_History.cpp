@@ -1,7 +1,7 @@
 /* AbiWord
  * Copyright (C) 2004 Tomas Frydrych <tomasfrydrych@yahoo.co.uk>
  * 
- * This program is free software; you can redistribute it and/or
+ * This program is g_free software; you can redistribute it and/or
  * modify it under the terms of the GNU General Public License
  * as published by the Free Software Foundation; either version 2
  * of the License, or (at your option) any later version.
@@ -113,7 +113,7 @@ char * XAP_Dialog_History::getHeaderValue(UT_uint32 indx) const
 				
 				tT = pUUID->getTime();
 				tM = localtime(&tT);
-				s = (char*)malloc(30);
+				s = (char*)g_try_malloc(30);
 				strftime(s,30,"%c",tM);
 				return s;
 			}
@@ -121,7 +121,7 @@ char * XAP_Dialog_History::getHeaderValue(UT_uint32 indx) const
 		case 3:
 			tT = m_pDoc->getLastSavedTime();
 			tM = localtime(&tT);
-			s = (char*)malloc(30);
+			s = (char*)g_try_malloc(30);
 			strftime(s,30,"%c",tM);
 			return s;
 
@@ -207,7 +207,7 @@ char * XAP_Dialog_History::getListValue(UT_uint32 item, UT_uint32 column) const
 		case 1:
 			tT = m_pDoc->getHistoryNthTimeStarted(item);
 			tM = localtime(&tT);
-			s = (char*)malloc(30);
+			s = (char*)g_try_malloc(30);
 			strftime(s,30,"%c",tM);
 			return s;
 

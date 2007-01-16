@@ -3,7 +3,7 @@
 /* AbiWord
  * Copyright (C) 1998-2000 AbiSource, Inc.
  * 
- * This program is free software; you can redistribute it and/or
+ * This program is g_free software; you can redistribute it and/or
  * modify it under the terms of the GNU General Public License
  * as published by the Free Software Foundation; either version 2
  * of the License, or (at your option) any later version.
@@ -599,7 +599,7 @@ void AP_UnixApp::copyToClipboard(PD_DocumentRange * pDocRange, bool bUseClipboar
 
 		if (pView && !pView->isSelectionEmpty())
 			{
-				// don't own, don't free
+				// don't own, don't g_free
 				const UT_ByteBuf * png = 0;
 	  
 				pView->saveSelectedImage (&png);
@@ -670,7 +670,7 @@ void AP_UnixApp::pasteFromClipboard(PD_DocumentRange * pDocRange, bool bUseClipb
 			const char * szutf8= static_cast<const char *>(UT_convert(reinterpret_cast<const char *>(pData),iLen,szRes,"UTF-8",&iread,&iwritten));
 			IE_Imp_XHTML * pImpHTML = new IE_Imp_XHTML(pDocRange->m_pDoc);
 			bSuccess = pImpHTML->pasteFromBuffer(pDocRange,reinterpret_cast<const unsigned char *>(szutf8),iwritten,"UTF-8");
-			free(const_cast<char *>(szutf8));
+			g_free(const_cast<char *>(szutf8));
 			DELETEP(pImpHTML);
 		}
 		else
@@ -833,13 +833,13 @@ void AP_UnixApp::loadAllPlugins ()
 			  if (len < 4)
 			  {
 				  UT_DEBUGMSG(("FJF: bad name for a plugin\n"));
-				  free(namelist[n]);
+				  g_free(namelist[n]);
 				  continue;
 			  }
 			  if(strcmp (namelist[n]->d_name+(len-3), "."G_MODULE_SUFFIX) != 0)
 			  {
 				  UT_DEBUGMSG(("FJF: not really a plugin?\n"));
-				  free(namelist[n]);
+				  g_free(namelist[n]);
 				  continue;
 			  }
 
@@ -851,9 +851,9 @@ void AP_UnixApp::loadAllPlugins ()
 			  {
 				  UT_DEBUGMSG(("DOM: didn't load plugin: %s\n", namelist[n]->d_name));
 			  }
-			  free(namelist[n]);
+			  g_free(namelist[n]);
 		  }
-		  free(namelist);
+		  g_free(namelist);
       }
   }
 }

@@ -1,7 +1,7 @@
 /* AbiWord
  * Copyright (C) 1998-2000 AbiSource, Inc.
  * 
- * This program is free software; you can redistribute it and/or
+ * This program is g_free software; you can redistribute it and/or
  * modify it under the terms of the GNU General Public License
  * as published by the Free Software Foundation; either version 2
  * of the License, or (at your option) any later version.
@@ -193,7 +193,7 @@ bool AP_Win32App::initialize(void)
 			getPrefsValueDirectory(true,AP_PREF_KEY_StringSetDirectory,&szDirectory);
 			UT_return_val_if_fail ((szDirectory) && (*szDirectory), false);
 
-			char * szPathname = (char *)calloc(sizeof(char),strlen(szDirectory)+strlen(szStringSet)+100);
+			char * szPathname = (char *)UT_calloc(sizeof(char),strlen(szDirectory)+strlen(szStringSet)+100);
 			UT_return_val_if_fail (szPathname, false);
 
 			sprintf(szPathname,"%s%s%s.strings",
@@ -217,7 +217,7 @@ bool AP_Win32App::initialize(void)
 				DELETEP(pDiskStringSet);
 			}
 				
-			free(szPathname);
+			g_free(szPathname);
 		}
 	}
 
@@ -1484,7 +1484,7 @@ bool AP_Win32App::handleModelessDialogMessage( MSG * msg )
 // cmdline processing call back I reckon
 void AP_Win32App::errorMsgBadArg(AP_Args * Args, int nextopt)
 {
-	char *pszMessage = (char*)malloc( 500 );
+	char *pszMessage = (char*)g_try_malloc( 500 );
 	UT_return_if_fail(pszMessage);
 	strcpy( pszMessage, "Error on option " );
 	strcat( pszMessage, poptBadOption (Args->poptcon, 0) );
@@ -1492,7 +1492,7 @@ void AP_Win32App::errorMsgBadArg(AP_Args * Args, int nextopt)
 	strcat( pszMessage, poptStrerror (nextopt) );
 	strcat( pszMessage, "\nRun with --help' to see a full list of available command line options.\n" );
 	MessageBox(NULL, pszMessage, "Command Line Option Error", MB_OK|MB_ICONERROR);
-	free( pszMessage );
+	g_free( pszMessage );
 }
 
 // cmdline processing call back I reckon
@@ -1665,7 +1665,7 @@ bool	AP_Win32App::doesStringSetExist(const char* pLocale)
 	getPrefsValueDirectory(true,AP_PREF_KEY_StringSetDirectory,&szDirectory);
 	UT_return_val_if_fail(((szDirectory) && (*szDirectory)), false);
 
-	char * szPathname = (char *)calloc(sizeof(char),strlen(szDirectory)+strlen(pLocale)+100);
+	char * szPathname = (char *)UT_calloc(sizeof(char),strlen(szDirectory)+strlen(pLocale)+100);
 	UT_return_val_if_fail(szPathname, false);
 				
 	sprintf(szPathname,"%s%s%s.strings",
@@ -1674,7 +1674,7 @@ bool	AP_Win32App::doesStringSetExist(const char* pLocale)
 				pLocale);				
 	
 	in =  fopen(szPathname, "r");	
-	free (szPathname);
+	g_free (szPathname);
 	
 	if (in)
 	{
@@ -1697,7 +1697,7 @@ UT_String  	AP_Win32App::s_fromUCS4ToWinLocale(const UT_UCS4Char * szIn)
 							  XAP_App::getApp()->getDefaultEncoding(),
 							  NULL, NULL);
 	sRslt = pText;
-	free(pText);
+	g_free(pText);
 	return sRslt;
 
 }

@@ -4,7 +4,7 @@
  * Copyright (C) 1998 AbiSource, Inc.
  * Copyright (c) 2001,2002 Tomas Frydrych
  *
- * This program is free software; you can redistribute it and/or
+ * This program is g_free software; you can redistribute it and/or
  * modify it under the terms of the GNU General Public License
  * as published by the Free Software Foundation; either version 2
  * of the License, or (at your option) any later version.
@@ -1919,7 +1919,7 @@ void fp_TabRun::_lookupProperties(const PP_AttrProp * pSpanAP,
 		}
 		q = strtok(NULL, " ");
 	}
-	free(p);
+	g_free(p);
 
 	bChanged |= (oldDecors != _getDecorations());
 
@@ -4017,7 +4017,7 @@ void fp_FieldRun::_lookupProperties(const PP_AttrProp * pSpanAP,
 		q = strtok(NULL, " ");
 	}
 
-	free(p);
+	g_free(p);
 }
 
 

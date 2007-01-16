@@ -3,7 +3,7 @@
 /* 
  * Copyright (C) 2006 Robert Staudinger <robert.staudinger@gmail.com>
  * 
- * This program is free software; you can redistribute it and/or
+ * This program is g_free software; you can redistribute it and/or
  * modify it under the terms of the GNU General Public License
  * as published by the Free Software Foundation; either version 2
  * of the License, or (at your option) any later version.
@@ -315,7 +315,7 @@ abi_stock_from_toolbar_id (const gchar *toolbar_id)
 
 /*!
  * Map AbiWord stock id to gtk counterpart.
- * Retval must be free'd.
+ * Retval must be g_free'd.
  */
 const gchar *
 abi_stock_get_gtk_stock_id (const gchar * abi_stock_id)

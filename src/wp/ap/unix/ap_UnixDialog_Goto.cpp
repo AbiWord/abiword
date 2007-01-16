@@ -2,7 +2,7 @@
  * Copyright (C) 1998 AbiSource, Inc.
  * Copyright (C) Robert Staudinger <robsta@stereolyzer.net>
  * 
- * This program is free software; you can redistribute it and/or
+ * This program is g_free software; you can redistribute it and/or
  * modify it under the terms of the GNU General Public License
  * as published by the Free Software Foundation; either version 2
  * of the License, or (at your option) any later version.
@@ -303,7 +303,7 @@ AP_UnixDialog_Goto::onJumpClicked ()
 		return;		
 
 	UT_uint32 len = UT_XML_strlen (text);
-	UT_UCSChar *number = (UT_UCSChar *) malloc (sizeof (UT_UCSChar) * (len + 1));
+	UT_UCSChar *number = (UT_UCSChar *) g_try_malloc (sizeof (UT_UCSChar) * (len + 1));
 	UT_UCS4_strcpy_utf8_char (number, text);
 	UT_DEBUGMSG (("ROB: onJumpClicked () gotoTarget () target='%d' number='%s'\n", m_JumpTarget, text));
 	getView()->gotoTarget (m_JumpTarget, number);

@@ -38,7 +38,11 @@
 
 /*
  * $Log$
+ * Revision 1.4  2007/01/16 21:45:42  dom
+ * bug 10751 - use glib's types and memory allocation functions. no more mismatched free/g_free malloc/g_malloc
+ *
  * Revision 1.3  2003/02/12 02:10:38  hippietrail
+ *
  * C casts -> C++ casts
  * Improved const-correctness due to changing casts
  * Fixed some warnings
@@ -112,13 +116,13 @@
  * Revision 1.3  1998/12/29 14:55:33  eric
  *
  * I've doctored the ispell code pretty extensively here.  It is now
- * warning-free on Win32.  It also *works* on Win32 now, since I
+ * warning-g_free on Win32.  It also *works* on Win32 now, since I
  * replaced all the I/O calls with ANSI standard ones.
  *
  * Revision 1.3  1998/12/29 14:55:33  eric
  *
  * I've doctored the ispell code pretty extensively here.  It is now
- * warning-free on Win32.  It also *works* on Win32 now, since I
+ * warning-g_free on Win32.  It also *works* on Win32 now, since I
  * replaced all the I/O calls with ANSI standard ones.
  *
  * Revision 1.2  1998/12/28 23:11:30  eric
@@ -268,7 +272,7 @@ int ISpellChecker::addvheader ( struct dent *dp)
     ** Add a second entry with the correct capitalization, and then make
     ** dp into a special dummy entry.
     */
-    tdent = static_cast<struct dent *>(malloc(sizeof (struct dent)));
+    tdent = static_cast<struct dent *>(g_try_malloc(sizeof (struct dent)));
     if (tdent == NULL)
 	{
 		fprintf (stderr, MAKEDENT_C_NO_WORD_SPACE, dp->word);
@@ -280,11 +284,11 @@ int ISpellChecker::addvheader ( struct dent *dp)
     else
 	{
 		/* Followcase words need a copy of the capitalization */
-		tdent->word = static_cast<char *>(malloc (static_cast<unsigned int>(strlen(tdent->word)) + 1));
+		tdent->word = static_cast<char *>(g_try_malloc (static_cast<unsigned int>(strlen(tdent->word)) + 1));
 		if (tdent->word == NULL)
 	    {
 			fprintf (stderr, MAKEDENT_C_NO_WORD_SPACE, dp->word);
-			free (reinterpret_cast<char *>(tdent));
+			g_free (reinterpret_cast<char *>(tdent));
 			return -1;
 	    }
 		strcpy (tdent->word, dp->word);
@@ -303,12 +307,12 @@ int ISpellChecker::addvheader ( struct dent *dp)
 **
 ** Hdrp is a pointer into a hash table.  If the word covered by hdrp has
 ** variations, hdrp must point to the header.  Newp is a pointer to temporary
-** storage, and space is malloc'ed if newp is to be kept.  The newp->word
-** field must have been allocated with mymalloc, so that this routine may free
+** storage, and space is g_try_malloc'ed if newp is to be kept.  The newp->word
+** field must have been allocated with mymalloc, so that this routine may g_free
 ** the space if it keeps newp but not the word.
 **
 ** Return value:  0 if the word was added, 1 if the word was combined
-** with an existing entry, and -1 if trouble occurred (e.g., malloc).
+** with an existing entry, and -1 if trouble occurred (e.g., g_try_malloc).
 ** If 1 is returned, newp->word may have been be freed using myfree.
 **
 ** Life is made much more difficult by the KEEP flag's possibilities.  We
@@ -853,7 +857,7 @@ ISpellChecker::findfiletype (const char *name, int searchnames, int *deformatter
 
 /*
 	HACK: macros replaced with function implementations 
-	so we could do a side-effect-free check for unicode
+	so we could do a side-effect-g_free check for unicode
 	characters which aren't in hashheader
 
 	TODO: this is just a workaround to keep us from crashing. 

@@ -6,7 +6,7 @@
  * Copyright (C) 2001,2002 Dom Lachowicz <cinamod@hotmail.com>
  * Copyright (C) 2002 Martin Sevior <msevior@physics.unimelb.edu.au>
  *
- * This program is free software; you can redistribute it and/or
+ * This program is g_free software; you can redistribute it and/or
  * modify it under the terms of the GNU General Public License
  * as published by the Free Software Foundation; either version 2
  * of the License, or (at your option) any later version.
@@ -882,7 +882,7 @@ abi_widget_file_open(AbiWidget * abi)
 
 /*!
  * Extract all the content in the document.
- * Caller must free the memory.
+ * Caller must g_free the memory.
  * Number of bytes is returned in iLength
  */
 extern "C" gchar *
@@ -925,7 +925,7 @@ abi_widget_get_content(AbiWidget * w, char * mimetype, gint * iLength)
 
 /*!
  * Extract all the content in the selection
- * Caller must free the memory.
+ * Caller must g_free the memory.
  * Number of bytes is returned in iLength
  */
 extern "C" gchar *
@@ -993,7 +993,7 @@ extern "C" gboolean
 abi_widget_load_file(AbiWidget * abi, const char * pszFile)
 {
 	if(abi->priv->m_szFilename)
-		free(abi->priv->m_szFilename);
+		g_free(abi->priv->m_szFilename);
 	abi->priv->m_szFilename = UT_strdup(pszFile);
 	if(!abi->priv->m_bMappedToScreen)
 	{
@@ -1072,7 +1072,7 @@ extern "C" gboolean
 abi_widget_load_file_from_gsf(AbiWidget * abi, GsfInput * input)
 {
 	if(abi->priv->m_szFilename)
-		free(abi->priv->m_szFilename);
+		g_free(abi->priv->m_szFilename);
 	abi->priv->m_szFilename = UT_strdup(gsf_input_name (input));
 	if(!abi->priv->m_bMappedToScreen)
 	{
@@ -1155,7 +1155,7 @@ static gint s_abi_widget_load_file(gpointer p)
   {
 	char * pszFile = UT_strdup(abi->priv->m_szFilename);
 	abi_widget_load_file(abi, pszFile);
-	free(pszFile);
+	g_free(pszFile);
   }
   return FALSE;
 }
@@ -1506,7 +1506,7 @@ abi_widget_destroy_gtk (GtkObject *object)
 	g_return_if_fail (object != NULL);
 	g_return_if_fail (IS_ABI_WIDGET(object));
 
-	// here we free any self-created data
+	// here we g_free any self-created data
 	abi = ABI_WIDGET(object);
 
 	// order of deletion is important here

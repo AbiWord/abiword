@@ -89,12 +89,12 @@ TFTEST_MAIN("UT_UTF8String")
 
 	// test append with a possibly overflowing buffer.
 	UT_UTF8String s4;
-	char *string = (char*)malloc(1024);
+	char *string = (char*)g_try_malloc(1024);
 	memcpy(string, "application/vnd.oasis.opendocument.text", 39);
 	s4.append(string, 39);
 	TFPASS(s4.size() == 39);
 	TFPASS(s4 == "application/vnd.oasis.opendocument.text");
-	free(string);
+	g_free(string);
 
 }
 

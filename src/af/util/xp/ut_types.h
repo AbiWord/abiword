@@ -1,7 +1,7 @@
 /* AbiSource Program Utilities
  * Copyright (C) 1998 AbiSource, Inc.
  * 
- * This program is free software; you can redistribute it and/or
+ * This program is g_free software; you can redistribute it and/or
  * modify it under the terms of the GNU General Public License
  * as published by the Free Software Foundation; either version 2
  * of the License, or (at your option) any later version.
@@ -21,15 +21,11 @@
 #define UT_TYPES_H
 
 #include <stdlib.h>
-
-#ifdef NULL
-#undef NULL
-#endif
-#define NULL 0
+#include <glib.h>
 
 #ifdef __cplusplus
-#define UT_BEGIN_EXTERN_C		extern "C" {
-#define UT_END_EXTERN_C			}
+#define UT_BEGIN_EXTERN_C		G_BEGIN_DECLS
+#define UT_END_EXTERN_C			G_END_DECLS
 #else
 #define UT_BEGIN_EXTERN_C
 #define UT_END_EXTERN_C
@@ -44,37 +40,27 @@
 #  define GNUC_EXTENSION
 #endif
 
-typedef unsigned char		UT_Byte;
+typedef guint8		UT_Byte;
+
+typedef gunichar        UT_UCS4Char;
+typedef guint16      UT_UCS2Char;
+typedef gint32          UT_GrowBufElement;
 
 /* NOTA BENE: UT_UCSChar is deprecated; all new code must use
    UT_UCS4Char instead !!! */
-typedef unsigned int		UT_UCSChar;	/* Unicode */
+typedef UT_UCS4Char		UT_UCSChar;	/* Unicode */
 
-typedef unsigned int        UT_UCS4Char;
-typedef unsigned short      UT_UCS2Char;
-typedef signed int          UT_GrowBufElement;
+typedef guint8       UT_uint8;
+typedef gint8        UT_sint8;
 
-typedef unsigned char       UT_uint8;
-typedef signed char         UT_sint8;
+typedef guint16		UT_uint16;
+typedef gint16       UT_sint16;
 
-typedef unsigned short		UT_uint16;
-typedef signed short        UT_sint16;
+typedef guint32		UT_uint32;
+typedef gint32		    UT_sint32;
 
-typedef unsigned int		UT_uint32;
-typedef signed int		    UT_sint32;
-
-#if defined(WIN32) && !defined(__GNUC__)
-typedef __int64             UT_uint64;
-typedef __int64             UT_sint64;
-#else
-#if ABISIZEOF_LONG_INT == 8
-typedef unsigned long int UT_uint64;
-typedef signed long int UT_sint64;
-#else
-GNUC_EXTENSION typedef unsigned long long  UT_uint64;
-GNUC_EXTENSION typedef signed long long    UT_sint64;
-#endif
-#endif
+typedef guint64 UT_uint64;
+typedef gint64 UT_sing64;
 
 /* If expat is in use, include <expat.h> before "ut_types.h"
  */
@@ -255,7 +241,7 @@ ABI_EXPORT void * UT_calloc ( UT_uint32 nmemb, UT_uint32 size );
 ** Some useful macros that we use throughout
 */
 
-#define FREEP(p)		do { if (p) { free((void *)p); (p)=NULL; } } while (0)
+#define FREEP(p)		do { if (p) { g_free((void *)p); (p)=NULL; } } while (0)
 #define DELETEP(p)		do { if (p) { delete(p); (p)=NULL; } } while (0)
 #define DELETEPV(pa)	do { if (pa) { delete [] (pa); (pa)=NULL; } } while (0)
 #define REPLACEP(p,q)		do { if (p) delete p; p = q; } while (0)

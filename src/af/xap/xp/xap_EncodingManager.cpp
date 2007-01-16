@@ -4,7 +4,7 @@
  * Copyright (C) 2000
  * Orignially by Vlad Harchev <hvv@hippo.ru>
  * 
- * This program is free software; you can redistribute it and/or
+ * This program is g_free software; you can redistribute it and/or
  * modify it under the terms of the GNU General Public License
  * as published by the Free Software Foundation; either version 2
  * of the License, or (at your option) any later version.
@@ -1461,7 +1461,7 @@ void 	XAP_EncodingManager::describe()
 
 /*
     This one returns NULL-terminated vector of strings in static buffers (i.e.
-	don't try to free anything). On next call, filled data will be lost.
+	don't try to g_free anything). On next call, filled data will be lost.
     returns the following strings surrounded by prefix and suffix:
     if (!skip_fallback)
 	"";

@@ -7,7 +7,7 @@
 // Copyright (C) 2002 Tomas Frydrych <tomas@frydrych.uklinux.net>
 // Copyright (C) 2002 Dom Lachowicz <cinamod@hotmail.com>
 // 
-// This class is free software; you can redistribute it and/or
+// This class is g_free software; you can redistribute it and/or
 // modify it under the terms of the GNU General Public License
 // as published by the Free Software Foundation; either version 2
 // of the License, or (at your option) any later version.
@@ -208,7 +208,7 @@ void UT_String::reserve(size_t n)
 }
 
 //////////////////////////////////////////////////////////////////
-// End of class members, start of free functions
+// End of class members, start of g_free functions
 //////////////////////////////////////////////////////////////////
 
 size_t UT_String_findCh(const UT_String &st, char ch)
@@ -1521,7 +1521,7 @@ void UT_UCS4String::swap(UT_UCS4String& rhs)
 
 
 //////////////////////////////////////////////////////////////////
-// End of class members, start of free functions
+// End of class members, start of g_free functions
 //////////////////////////////////////////////////////////////////
 
 //////////////////////////////////////////////////////////////////

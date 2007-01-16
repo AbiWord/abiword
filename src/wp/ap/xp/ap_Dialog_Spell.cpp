@@ -1,7 +1,7 @@
 /* AbiWord
  * Copyright (C) 1998,1999 AbiSource, Inc.
  * 
- * This program is free software; you can redistribute it and/or
+ * This program is g_free software; you can redistribute it and/or
  * modify it under the terms of the GNU General Public License
  * as published by the Free Software Foundation; either version 2
  * of the License, or (at your option) any later version.
@@ -102,7 +102,7 @@ AP_Dialog_Spell::~AP_Dialog_Spell(void)
 	DELETEP(m_pPreserver);
 
 	m_pChangeAll->freeData();
-//	UT_HASH_PURGEDATA(UT_UCSChar*,m_pChangeAll, free);
+//	UT_HASH_PURGEDATA(UT_UCSChar*,m_pChangeAll, g_free);
 	DELETEP(m_pChangeAll);
 	DELETEP(m_pIgnoreAll);
 	DELETEP(m_pWordIterator);
@@ -118,7 +118,7 @@ void AP_Dialog_Spell::_purgeSuggestions(void)
 	{
 		UT_UCS4Char * sug = m_Suggestions->getNthItem(i);
 		if (sug)
-			free(sug);
+			g_free(sug);
 	}
 
 	DELETEP(m_Suggestions);

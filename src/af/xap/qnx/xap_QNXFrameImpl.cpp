@@ -2,7 +2,7 @@
  * Copyright (C) 1998 AbiSource, Inc.
  * Copyright (C) 2002 Johan Björk 
  *
- * This program is free software; you can redistribute it and/or
+ * This program is g_free software; you can redistribute it and/or
  * modify it under the terms of the GNU General Public License
  * as published by the Free Software Foundation; either version 2
  * of the License, or (at your option) any later version.
@@ -484,7 +484,7 @@ void XAP_QNXFrameImpl::_nullUpdate() const
 		return;
 	}
 
-	PhEvent_t *event = (PhEvent_t*)malloc(EVENT_SIZE);
+	PhEvent_t *event = (PhEvent_t*)g_try_malloc(EVENT_SIZE);
         if (!event) return;
 
 	while(i < 5)
@@ -501,7 +501,7 @@ void XAP_QNXFrameImpl::_nullUpdate() const
 		i++;
 	}
 
-	free(event);
+	g_free(event);
 }
 
 void XAP_QNXFrameImpl::_setCursor(GR_Graphics::Cursor c)

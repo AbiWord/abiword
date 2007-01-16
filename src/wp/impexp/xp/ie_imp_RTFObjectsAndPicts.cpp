@@ -5,7 +5,7 @@
  * Copyright (C) 2003 Martin Sevior <msevior@physics.unimelb.edu.au> 
  * Copyright (C) 2001, 2004 Hubert Figuiere <hfiguiere@teaser.fr>
  *
- * This program is free software; you can redistribute it and/or
+ * This program is g_free software; you can redistribute it and/or
  * modify it under the terms of the GNU General Public License
  * as published by the Free Software Foundation; either version 2
  * of the License, or (at your option) any later version.
@@ -143,7 +143,7 @@ bool IE_Imp_RTF::LoadPictData(PictFormat format, const char * image_name,
 
 	if ((error == UT_OK) && pFG)
 	{
-		// TODO: according with IE_ImpGraphic header, we shouldn't free
+		// TODO: according with IE_ImpGraphic header, we shouldn't g_free
 		// TODO: the buffer. Confirm that.
 		pictData = NULL;
 

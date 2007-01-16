@@ -1,7 +1,7 @@
 /* AbiWord
  * Copyright (C) 1998 AbiSource, Inc.
  *
- * This program is free software; you can redistribute it and/or
+ * This program is g_free software; you can redistribute it and/or
  * modify it under the terms of the GNU General Public License
  * as published by the Free Software Foundation; either version 2
  * of the License, or (at your option) any later version.
@@ -866,7 +866,7 @@ void AP_Dialog_Styles::ModifyParagraph(void)
 
 	if(answer == AP_Dialog_Paragraph::a_OK)
 	{
-		// getDialogData() returns us XML_Char ** data we have to free
+		// getDialogData() returns us XML_Char ** data we have to g_free
 		pDialog->getDialogData(props);
 		UT_return_if_fail (props);
 
@@ -901,7 +901,7 @@ void AP_Dialog_Styles::ModifyParagraph(void)
 			}
 		}
 
-		// now free props
+		// now g_free props
 		FREEP(props);
 	}
 	pDialogFactory->releaseDialog(pDialog);

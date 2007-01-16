@@ -1,7 +1,7 @@
 /* AbiWord
  * Copyright (C) 2004 Tomas Frydrych <tomasfrydrych@yahoo.co.uk>
  * 
- * This program is free software; you can redistribute it and/or
+ * This program is g_free software; you can redistribute it and/or
  * modify it under the terms of the GNU General Public License
  * as published by the Free Software Foundation; either version 2
  * of the License, or (at your option) any later version.
@@ -192,7 +192,7 @@ char * XAP_Dialog_DocComparison::getResultValue(UT_uint32 indx) const
 				S1 += m_pSS->getValue(XAP_STRING_ID_DLG_DocComparison_Diverging);
 
 				tM = localtime(&m_tTimeOfDiff);
-				s = (char*)malloc(30);
+				s = (char*)g_try_malloc(30);
 				strftime(s,30,"%c",tM);
 
 				UT_String_sprintf(S2, S1.c_str(), m_iVersionOfDiff, s);

@@ -3,7 +3,7 @@
 /* AbiSource Program Utilities
  * Copyright (C) 1998-2000 AbiSource, Inc.
  *
- * This program is free software; you can redistribute it and/or
+ * This program is g_free software; you can redistribute it and/or
  * modify it under the terms of the GNU General Public License
  * as published by the Free Software Foundation; either version 2
  * of the License, or (at your option) any later version.
@@ -59,9 +59,9 @@
 	} while (0)
 
 #define UT_VECTOR_PURGEALL(d, v) UT_VECTOR_CLEANUP(d, v, delete)
-#define UT_VECTOR_FREEALL(d, v) UT_VECTOR_CLEANUP(d, v, free)
+#define UT_VECTOR_FREEALL(d, v) UT_VECTOR_CLEANUP(d, v, g_free)
 #define UT_VECTOR_SPARSEPURGEALL(d, v) UT_VECTOR_SPARSECLEANUP(d, v, delete)
-#define UT_VECTOR_SPARSEFREEALL(d, v) UT_VECTOR_SPARSECLEANUP(d, v, free)
+#define UT_VECTOR_SPARSEFREEALL(d, v) UT_VECTOR_SPARSECLEANUP(d, v, g_free)
 
 /* don't call this macro unless you are in Obj-C++ */
 /* release any non nil objective-C object of the array */
@@ -237,7 +237,7 @@ UT_sint32 UT_GenericVector<T>::grow(UT_uint32 ndx)
 		new_iSpace = ndx;
 	}
 
-	T * new_pEntries = static_cast<T *>(realloc(m_pEntries, new_iSpace * sizeof(T)));
+	T * new_pEntries = static_cast<T *>(g_try_realloc(m_pEntries, new_iSpace * sizeof(T)));
 	if (!new_pEntries) {
 		return -1;
 	}

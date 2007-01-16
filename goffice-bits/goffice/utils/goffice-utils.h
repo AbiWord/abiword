@@ -4,7 +4,7 @@
  *
  * Copyright (C) 2003-2004 Jody Goldberg (jody@gnome.org)
  *
- * This program is free software; you can redistribute it and/or
+ * This program is g_free software; you can redistribute it and/or
  * modify it under the terms of version 2 of the GNU General Public
  * License as published by the Free Software Foundation.
  *

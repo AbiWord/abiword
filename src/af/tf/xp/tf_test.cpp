@@ -13,7 +13,7 @@
 //#include "config.h"
 #include <stdio.h>
 #include <string.h>
-#include <malloc.h>
+#include <g_try_malloc.h>
 #include <ctype.h>
 #include <unistd.h>
 #include <signal.h>
@@ -159,7 +159,7 @@ void TF_Test::start(const char *file, int line, const char *condstr)
     printf("! %s:%-5d %-40s ", file2, line, condstr2);
     fflush(stdout);
 
-    free(condstr2);
+    g_free(condstr2);
 }
 
 

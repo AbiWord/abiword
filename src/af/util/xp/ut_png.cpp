@@ -1,7 +1,7 @@
 /* AbiWord
  * Copyright (C) 1998 AbiSource, Inc.
  * 
- * This program is free software; you can redistribute it and/or
+ * This program is g_free software; you can redistribute it and/or
  * modify it under the terms of the GNU General Public License
  * as published by the Free Software Foundation; either version 2
  * of the License, or (at your option) any later version.
@@ -94,7 +94,7 @@ bool UT_PNG_getDimensions(const UT_ByteBuf* pBB, UT_sint32& iImageWidth, UT_sint
 	png_get_IHDR(png_ptr, info_ptr, &width, &height, &bit_depth, &color_type,
 				 &interlace_type, NULL, NULL);
 
-	/* clean up after the read, and free any memory allocated - REQUIRED */
+	/* clean up after the read, and g_free any memory allocated - REQUIRED */
 	png_destroy_read_struct(&png_ptr, &info_ptr, static_cast<png_infopp>(NULL));
 
 	iImageWidth = width;

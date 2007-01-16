@@ -7,7 +7,7 @@
  * The hash functions can be compile to use Fowler/Noll/Vo (FNV) public domain algorithm;
  * see http://www.isthe.com/chongo/tech/comp/fnv/index.html
  *
- * This program is free software; you can redistribute it and/or
+ * This program is g_free software; you can redistribute it and/or
  * modify it under the terms of the GNU General Public License
  * as published by the Free Software Foundation; either version 2
  * of the License, or (at your option) any later version.

@@ -6,7 +6,7 @@
  * Copyright (C) 2003 Martin Sevior <msevior@physics.unimelb.edu.au> 
  * Copyright (C) 2001, 2004 Hubert Figuiere <hfiguiere@teaser.fr>
  *
- * This program is free software; you can redistribute it and/or
+ * This program is g_free software; you can redistribute it and/or
  * modify it under the terms of the GNU General Public License
  * as published by the Free Software Foundation; either version 2
  * of the License, or (at your option) any later version.
@@ -1136,8 +1136,8 @@ RTFFontTableItem::RTFFontTableItem(FontFamilyEnum fontFamily, int charSet,
 
 RTFFontTableItem::~RTFFontTableItem()
 {
-	free(m_pFontName);
-	free(m_pAlternativeFontName);
+	g_free(m_pFontName);
+	g_free(m_pAlternativeFontName);
 }
 
 // Character properties
@@ -3499,7 +3499,7 @@ XML_Char *IE_Imp_RTF::_parseFldinstBlock (UT_ByteBuf & buf, XML_Char *xmlField, 
 	len = buf.getLength ();
 	const UT_Byte *pBuf = buf.getPointer (0);
 
-	newBuf =  static_cast<char *>(malloc (sizeof (char) * (len + 1)));
+	newBuf =  static_cast<char *>(g_try_malloc (sizeof (char) * (len + 1)));
 	memcpy (newBuf, pBuf, len);
 	newBuf [len] = 0;
 	Instr = newBuf;
@@ -3509,8 +3509,8 @@ XML_Char *IE_Imp_RTF::_parseFldinstBlock (UT_ByteBuf & buf, XML_Char *xmlField, 
 	                                 // Within the class is contiguous.
 	if (instr == NULL)
 	{
-		free (newBuf);
-		free (xmlField);
+		g_free (newBuf);
+		g_free (xmlField);
 		return NULL;
 	}
 
@@ -3810,7 +3810,7 @@ XML_Char *IE_Imp_RTF::_parseFldinstBlock (UT_ByteBuf & buf, XML_Char *xmlField, 
 		UT_DEBUGMSG (("RTF: unhandled fieldinstr %s\n", instr));
 		break;
 	}
-	free (newBuf);
+	g_free (newBuf);
 	return xmlField;
 }
 
@@ -10334,7 +10334,7 @@ bool IE_Imp_RTF::_appendField (const XML_Char *xmlField, const XML_Char ** pszAt
 		getDoc()->insertObject(m_dposPaste, PTO_Field, propsArray, NULL);
 		m_dposPaste++;
 	}
-	free(propsArray);
+	g_free(propsArray);
 	m_bFieldRecognized = true;
 	return ok;
 }
@@ -10798,7 +10798,7 @@ bool IE_Imp_RTF::HandleStyleDefinition(void)
 				{
 					UT_sint32 istyle = BasedOn[i];
 					// must not mix static and dynamically allocated strings in the same
-					// array, otherwise there is no way we can free it !!!
+					// array, otherwise there is no way we can g_free it !!!
 					//attribs[attribsCount++] = UT_strdup(static_cast<const char *>(m_styleTable[istyle]));
 					attribs[attribsCount++] = m_styleTable[istyle];
 					UT_return_val_if_fail( attribsCount < PT_MAX_ATTRIBUTES * 2,false );
@@ -10816,7 +10816,7 @@ bool IE_Imp_RTF::HandleStyleDefinition(void)
 				{
 					UT_sint32 istyle = FollowedBy[i];
 					// must not mix static and dynamically allocated strings in the same
-					// array, otherwise there is no way we can free it !!!
+					// array, otherwise there is no way we can g_free it !!!
 					// attribs[attribsCount++] = UT_strdup(static_cast<const char *>(m_styleTable[istyle]));
 					attribs[attribsCount++] = m_styleTable[istyle];
 					UT_return_val_if_fail( attribsCount < PT_MAX_ATTRIBUTES * 2,false );
@@ -10870,9 +10870,9 @@ bool IE_Imp_RTF::HandleStyleDefinition(void)
 			const XML_Char * sz = pCurStyleVec->getNthItem(j);
 			if(sz != NULL)
 			{
-				// MUST NOT USED delete[] on strings allocated by malloc/calloc !!!
+				// MUST NOT USED delete[] on strings allocated by g_try_malloc/UT_calloc !!!
 				// delete [] sz;
-				free(const_cast<XML_Char*>(sz));
+				g_free(const_cast<XML_Char*>(sz));
 				sz = NULL;
 			}
 		}

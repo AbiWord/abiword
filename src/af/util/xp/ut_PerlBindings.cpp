@@ -194,10 +194,10 @@ UT_PerlBindings::UT_PerlBindings()
 
 		      evalFile ( script ) ;
 
-		      free(namelist[n]);
+		      g_free(namelist[n]);
 		    } 
 		}
-	      free (namelist);
+	      g_free (namelist);
 	    }
 	}
 }

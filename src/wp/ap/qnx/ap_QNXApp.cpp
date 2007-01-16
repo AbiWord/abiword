@@ -1,7 +1,7 @@
 /* AbiWord
  * Copyright (C) 1998-2000 AbiSource, Inc.
  * 
- * This program is free software; you can redistribute it and/or
+ * This program is g_free software; you can redistribute it and/or
  * modify it under the terms of the GNU General Public License
  * as published by the Free Software Foundation; either version 2
  * of the License, or (at your option) any later version.
@@ -216,7 +216,7 @@ bool AP_QNXApp::initialize(void)
 				UT_DEBUGMSG(("Unable to load StringSet [%s] -- using builtin strings instead.\n",szPathname));
 			}
 				
-			free(szPathname);
+			g_free(szPathname);
 		}
 	}
 
@@ -747,13 +747,13 @@ void AP_QNXApp::loadAllPlugins ()
 			  if (len < 4)
 			  {
 				  UT_DEBUGMSG(("FJF: bad name for a plugin\n"));
-				  free(namelist[n]);
+				  g_free(namelist[n]);
 				  continue;
 			  }
 			  if(strcmp (namelist[n]->d_name+(len-3), ".so") != 0)
 			  {
 				  UT_DEBUGMSG(("FJF: not really a plugin?\n"));
-				  free(namelist[n]);
+				  g_free(namelist[n]);
 				  continue;
 			  }
 
@@ -765,9 +765,9 @@ void AP_QNXApp::loadAllPlugins ()
 			  {
 				  UT_DEBUGMSG(("DOM: didn't load plugin: %s\n", namelist[n]->d_name));
 			  }
-			  free(namelist[n]);
+			  g_free(namelist[n]);
 		  }
-		  free(namelist);
+		  g_free(namelist);
       }
   }
 

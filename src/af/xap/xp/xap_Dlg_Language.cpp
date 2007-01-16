@@ -1,7 +1,7 @@
 /* AbiSource Application Framework
  * Copyright (C) 1998 AbiSource, Inc.
  * 
- * This program is free software; you can redistribute it and/or
+ * This program is g_free software; you can redistribute it and/or
  * modify it under the terms of the GNU General Public License
  * as published by the Free Software Foundation; either version 2
  * of the License, or (at your option) any later version.
@@ -145,7 +145,7 @@ bool XAP_Dialog_Language::getChangedLangProperty(const XML_Char ** pszLangProp) 
 /*
 	Creates a vector with a list of support languages for spell checking
 
-	You must to free the allocated memory
+	You must to g_free the allocated memory
 */
 UT_Vector* XAP_Dialog_Language::getAvailableDictionaries()
 {

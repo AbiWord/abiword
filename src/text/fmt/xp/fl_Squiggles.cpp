@@ -1,7 +1,7 @@
 /* AbiWord
  * Copyright (C) 1998,1999 AbiSource, Inc.
  * 
- * This program is free software; you can redistribute it and/or
+ * This program is g_free software; you can redistribute it and/or
  * modify it under the terms of the GNU General Public License
  * as published by the Free Software Foundation; either version 2
  * of the License, or (at your option) any later version.
@@ -323,7 +323,7 @@ fl_Squiggles::add(fl_PartOfBlock* pPOB)
 /*!
  Delete Nth squiggle
  \param iIndex Index of squiggle to delete
- Clear squiggle from screen and free the POB's memory
+ Clear squiggle from screen and g_free the POB's memory
 */
 void
 fl_Squiggles::_deleteNth(UT_sint32 iIndex)

@@ -1,7 +1,7 @@
 /* AbiWord
  * Copyright (C) 2000 AbiSource, Inc.
  * 
- * This program is free software; you can redistribute it and/or
+ * This program is g_free software; you can redistribute it and/or
  * modify it under the terms of the GNU General Public License
  * as published by the Free Software Foundation; either version 2
  * of the License, or (at your option) any later version.
@@ -125,7 +125,7 @@ PtWidget_t *PtButton_ok;
 PtWidget_t *MainWindow;
 PtWidget_t *PtButton_delete;
 int numBookmark = getExistingBookmarksCount();
-XML_Char **bookmarkList=(XML_Char **)calloc(numBookmark,sizeof(XML_Char*));
+XML_Char **bookmarkList=(XML_Char **)UT_calloc(numBookmark,sizeof(XML_Char*));
 int i;
 const XAP_StringSet * pSS = m_pApp->getStringSet();
 
@@ -145,7 +145,7 @@ const XAP_StringSet * pSS = m_pApp->getStringSet();
 		bookmarkList[i]=(XML_Char *)getNthExistingBookmark(i);
 	}	
 	PtListAddItems(m_comboBox,(const XML_Char **)bookmarkList,i,0);
-	free(bookmarkList);
+	g_free(bookmarkList);
 	if (getBookmark() && strlen(getBookmark()) > 0)
 	  {
 			PtSetResource(m_comboBox,Pt_ARG_TEXT_STRING,getBookmark(),0);

@@ -3,7 +3,7 @@
 /* AbiSource Application Framework
  * Copyright (C) 2001 Dom Lachowicz <cinamod@hotmail.com>
  * 
- * This program is free software; you can redistribute it and/or
+ * This program is g_free software; you can redistribute it and/or
  * modify it under the terms of the GNU General Public License
  * as published by the Free Software Foundation; either version 2
  * of the License, or (at your option) any later version.
@@ -122,7 +122,7 @@ bool XAP_Module::registered ()
 
 /*!
  * Before unloading a module, call this function to unregister
- * the plugin, so that it might free resources, de-init itself,
+ * the plugin, so that it might g_free resources, de-init itself,
  * etc...
  *
  * \return true on success, false on failure

@@ -1,7 +1,7 @@
 /* AbiWord
  * Copyright (C) 1998 AbiSource, Inc.
  *
- * This program is free software; you can redistribute it and/or
+ * This program is g_free software; you can redistribute it and/or
  * modify it under the terms of the GNU General Public License
  * as published by the Free Software Foundation; either version 2
  * of the License, or (at your option) any later version.
@@ -936,7 +936,7 @@ Defun_EV_GetMenuItemState_Fn(ap_GetState_CharFmt)
 			}
 		}
 
-		free(props_in);
+		g_free(props_in);
 	}
 
 
@@ -998,7 +998,7 @@ Defun_EV_GetMenuItemState_Fn(ap_GetState_BlockFmt)
 		if (sz && (0 == UT_strcmp(sz, val)))
 			s = EV_MIS_Toggled;
 
-		free(props_in);
+		g_free(props_in);
 	}
 
 	return s;
@@ -1089,7 +1089,7 @@ Defun_EV_GetMenuItemState_Fn(ap_GetState_SectFmt)
 		if (sz && (0 == UT_strcmp(sz, val)))
 			s = EV_MIS_Toggled;
 
-		free(props_in);
+		g_free(props_in);
 	}
 
 	return s;
