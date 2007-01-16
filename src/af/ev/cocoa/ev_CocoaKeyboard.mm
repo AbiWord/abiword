@@ -142,7 +142,7 @@ void ev_CocoaKeyboard::insertTextEvent(AV_View * pView, NSString* s)
 	EV_EditBits state = 0;
 
 	int uLength = [s length];
-	unichar* buffer = (unichar*)malloc(sizeof(unichar)*uLength);
+	unichar* buffer = (unichar*)g_try_malloc(sizeof(unichar)*uLength);
 
 	xxx_UT_DEBUGMSG(("insertTextEvent()\n"));
 	[s getCharacters:buffer];
@@ -174,7 +174,7 @@ bool ev_CocoaKeyboard::keyPressEvent(AV_View* pView, NSEvent* e)
 	NSString *characters = [e characters];
 	int uLength = [characters length];
 	UT_DEBUGMSG(("num of chars %d\n", uLength));
-	unichar* buffer = (unichar*)malloc(sizeof(unichar)*uLength);
+	unichar* buffer = (unichar*)g_try_malloc(sizeof(unichar)*uLength);
 	[characters getCharacters:buffer];
 	for (int ind = 0; ind < uLength; ind++) {
 		UT_uint32 charData = buffer[ind];

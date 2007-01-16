@@ -119,14 +119,14 @@ void AP_CocoaPrefs::overlayEnvironmentPrefs(void)
 	m_builtinScheme->setValue((XML_Char*)AP_PREF_KEY_StringSet,
 				  (XML_Char*)szNewLang);
 
-	// free the language id, if it was allocated
-	if (lc_ctype != NULL) free(lc_ctype);
+	// g_free the language id, if it was allocated
+	if (lc_ctype != NULL) g_free(lc_ctype);
 
 	// change back to the previous locale setting
 	// although, we might want to leave it in the user's preferred locale?
 	if (old_locale != NULL) {
 	   setlocale(LC_ALL, old_locale);
-	   free(old_locale);
+	   g_free(old_locale);
 	}
 #endif
 	return;

@@ -1,7 +1,7 @@
 /* AbiWord
  * Copyright (C) 2000 AbiSource, Inc.
  * 
- * This program is g_free software; you can redistribute it and/or
+ * This program is free software; you can redistribute it and/or
  * modify it under the terms of the GNU General Public License
  * as published by the Free Software Foundation; either version 2
  * of the License, or (at your option) any later version.
@@ -46,7 +46,7 @@ return Pt_PWD_ACCEPT;
 
 void XAP_QNXDialog_Password::SetPassword(char* pass)
 {
-m_pass=strdup(pass);
+m_pass=g_strdup(pass);
 }
 
 XAP_Dialog * XAP_QNXDialog_Password::static_constructor(XAP_DialogFactory * pFactory,
@@ -76,9 +76,9 @@ void XAP_QNXDialog_Password::runModal(XAP_Frame * pFrame)
 	
 	char **buttons=(char**)UT_calloc(2,sizeof(char*));
 	pSS->getValueUTF8(XAP_STRING_ID_DLG_Cancel,s);
-	buttons[0]= strdup((char*) s.utf8_str());
+	buttons[0]= g_strdup((char*) s.utf8_str());
 	pSS->getValueUTF8(XAP_STRING_ID_DLG_OK,s);
-	buttons[1]= strdup((char*)s.utf8_str());
+	buttons[1]= g_strdup((char*)s.utf8_str());
     
 	XAP_QNXFrameImpl * pQNXFrameImpl = (XAP_QNXFrameImpl*)pFrame->getFrameImpl();
 	PtWidget_t *parentWindow =	pQNXFrameImpl->getTopLevelWindow();	

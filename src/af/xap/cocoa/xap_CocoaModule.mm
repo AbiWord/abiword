@@ -352,9 +352,9 @@ void XAP_CocoaModule::loadAllPlugins ()
 			{
 				UT_DEBUGMSG(("FJF: didn't load plug-in: %s\n", namelist[n]->d_name));
 			}
-			free (namelist[n]);
+			g_free (namelist[n]);
 		}
-		free (namelist);
+		g_free (namelist);
 	}
 }
 

@@ -231,7 +231,7 @@ NSImage * AP_CocoaToolbar_Icons::getPixmapForIcon(const char * szIconID)
 	UT_uint32 n = sscanf(pIconData[0],"%ld %ld %ld %ld",
 					&width,&height,&nrColors,&charsPerPixel);
 	UT_ASSERT (n == 4);
-	my_argb *pRGB = (my_argb*)malloc((nrColors + 1) * sizeof(my_argb));
+	my_argb *pRGB = (my_argb*)g_try_malloc((nrColors + 1) * sizeof(my_argb));
 	UT_ASSERT(pRGB);
 	UT_StringPtrMap hash(61);
 	UT_RGBColor color(0,0,0);

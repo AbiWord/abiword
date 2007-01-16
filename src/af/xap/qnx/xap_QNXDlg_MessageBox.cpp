@@ -1,7 +1,7 @@
 /* AbiSource Application Framework
  * Copyright (C) 1998 AbiSource, Inc.
  * 
- * This program is g_free software; you can redistribute it and/or
+ * This program is free software; you can redistribute it and/or
  * modify it under the terms of the GNU General Public License
  * as published by the Free Software Foundation; either version 2
  * of the License, or (at your option) any later version.
@@ -68,25 +68,25 @@ void XAP_QNXDialog_MessageBox::runModal(XAP_Frame * pFrame)
 	{
 	case b_OC: // OK && Cancel
 		pSS->getValueUTF8(XAP_STRING_ID_DLG_Cancel,s);
-		str2 = strdup(s.utf8_str());
+		str2 = g_strdup(s.utf8_str());
 		if (m_defaultAnswer == a_CANCEL) {
 			def_button = 2;
 		}
 
 	case b_O: // OK
 		pSS->getValueUTF8(XAP_STRING_ID_DLG_OK,s);
-		str1 = strdup(s.utf8_str());
+		str1 = g_strdup(s.utf8_str());
 		break;
 
 	case b_YNC: // Yes && No && Cancel
 		pSS->getValueUTF8(XAP_STRING_ID_DLG_Cancel,s);
-		str3 = strdup(s.utf8_str());
+		str3 = g_strdup(s.utf8_str());
 
 	case b_YN: // Yes && No
 		pSS->getValueUTF8(XAP_STRING_ID_DLG_QNXMB_Yes,s);
-		str1 = strdup(s.utf8_str());
+		str1 = g_strdup(s.utf8_str());
 		pSS->getValueUTF8(XAP_STRING_ID_DLG_QNXMB_No,s);
-		str2 = strdup(s.utf8_str());
+		str2 = g_strdup(s.utf8_str());
 		if (m_defaultAnswer == a_NO) {
 			def_button = 2;
 		}

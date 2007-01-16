@@ -1,7 +1,7 @@
 /* AbiWord
  * Copyright (C) 1998-2000 AbiSource, Inc.
  * 
- * This program is g_free software; you can redistribute it and/or
+ * This program is free software; you can redistribute it and/or
  * modify it under the terms of the GNU General Public License
  * as published by the Free Software Foundation; either version 2
  * of the License, or (at your option) any later version.
@@ -1639,12 +1639,12 @@ UT_Vector*	AP_Win32App::getInstalledUILanguages(void)
 	{
 		const char *pLangCode = (const char*)lang.getNthLangCode(i);
 		if (doesStringSetExist(pLangCode))
-			pVec->addItem(strdup((char*)pLangCode));	
+			pVec->addItem(g_strdup((char*)pLangCode));	
 		else
 		{	
 			/*The en-US is the default internal string set and wont be found on disk but it should be also listed*/
 			if (strcmp(pLangCode, "en-US")==0)
-				pVec->addItem(strdup((char*)pLangCode));		
+				pVec->addItem(g_strdup((char*)pLangCode));		
 		}
 		
 	}		

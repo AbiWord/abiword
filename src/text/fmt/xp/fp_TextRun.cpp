@@ -3,7 +3,7 @@
  * Copyright (C) 1998,1999 AbiSource, Inc.
  * Copyright (c) 2001,2002 Tomas Frydrych
  *
- * This program is g_free software; you can redistribute it and/or
+ * This program is free software; you can redistribute it and/or
  * modify it under the terms of the GNU General Public License
  * as published by the Free Software Foundation; either version 2
  * of the License, or (at your option) any later version.
@@ -258,7 +258,7 @@ void fp_TextRun::_lookupProperties(const PP_AttrProp * pSpanAP,
 	const XML_Char * pszLanguage = PP_evalProperty("lang",pSpanAP,pBlockAP,pSectionAP, pDoc, true);
 
 	// NB: m_pLanguage is a pointer into static tables inside UT_Language class and as
-	// such has a guaranteed life-span same as the application; hence no strdup here and
+	// such has a guaranteed life-span same as the application; hence no g_strdup here and
 	// no strcmp later
 	const XML_Char * pszOldLanguage = m_pLanguage;
 	m_pLanguage = lls.getCodeFromCode(pszLanguage);

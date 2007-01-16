@@ -632,7 +632,7 @@ void XAP_CocoaDialog_FileOpenSaveAs::runModal(XAP_Frame * pFrame)
 
 	if ((result == NSFileHandlingPanelOKButton) && szPersistFile)
 	{
-		FREEP (m_szFinalPathname);	// free before reassigning
+		FREEP (m_szFinalPathname);	// g_free before reassigning
 		m_szFinalPathname = UT_strdup([szPersistFile UTF8String]);
 		m_answer = a_OK;
 	}

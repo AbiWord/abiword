@@ -42,8 +42,11 @@
 
 /*
  * $Log$
+ * Revision 1.11  2007/01/16 23:13:55  dom
+ * that was embarrassing. g_free software? :) also, handle strdup()
+ *
  * Revision 1.10  2007/01/16 21:45:42  dom
- * bug 10751 - use glib's types and memory allocation functions. no more mismatched free/g_free malloc/g_malloc
+ * bug 10751 - use glib's types and memory allocation functions. no more mismatched g_free/g_free g_try_malloc/g_malloc
  *
  * Revision 1.9  2005/10/08 14:41:37  uwog
  * Build fix for 64 bit archs

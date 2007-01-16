@@ -1,7 +1,7 @@
 /* AbiSource Program Utilities
  * Copyright (C) 1998-2000 AbiSource, Inc.
  * 
- * This program is g_free software; you can redistribute it and/or
+ * This program is free software; you can redistribute it and/or
  * modify it under the terms of the GNU General Public License
  * as published by the Free Software Foundation; either version 2
  * of the License, or (at your option) any later version.
@@ -112,7 +112,7 @@ bool UT_legalizeFileName(UT_UTF8String &filename)
 {
 	bool bRet = false;
 
-	char *tmp = strdup(filename.utf8_str());
+	char *tmp = g_strdup(filename.utf8_str());
 	char *ptr = tmp;
 
 	while (*ptr) {

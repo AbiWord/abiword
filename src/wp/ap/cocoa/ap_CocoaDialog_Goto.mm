@@ -69,11 +69,11 @@ void AP_CocoaDialog_Goto::s_blist_clicked(GtkWidget *clist, gint row, gint colum
 #endif
 void AP_CocoaDialog_Goto::doGoto(const char *number)
 {
-	UT_UCSChar *ucsnumber = (UT_UCSChar *) malloc (sizeof (UT_UCSChar) * (strlen(number) + 1));
+	UT_UCSChar *ucsnumber = (UT_UCSChar *) g_try_malloc (sizeof (UT_UCSChar) * (strlen(number) + 1));
 	UT_UCS4_strcpy_char (ucsnumber, number);
 	int target = getSelectedRow ();
 	getView()->gotoTarget (static_cast<AP_JumpTarget>(target), ucsnumber);
-	free (ucsnumber);
+	g_free (ucsnumber);
 }
 
 void AP_CocoaDialog_Goto::event_goto (const char* number)

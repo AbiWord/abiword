@@ -78,7 +78,7 @@ bool XAP_CocoaClipboard::getClipboardData(const char** formatAccepted, void ** p
 			NSData* data = [pb dataForType:pbType];
 			if (data) {
 				*pLen = [data length];
-				*ppData = malloc(*pLen);
+				*ppData = g_try_malloc(*pLen);
 				memcpy(*ppData, [data bytes], *pLen);
 				*szFormatFound = *current;
 				return true;

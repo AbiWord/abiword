@@ -45,7 +45,7 @@ const IE_SuffixConfidence *IE_ImpGraphicCocoa_Sniffer::getSuffixConfidence()
 		int idx = 0;
 		
 		while((aType = [suffixIter nextObject]) != nil) {
-			suffixConfidence[idx].suffix = strdup([aType UTF8String]);
+			suffixConfidence[idx].suffix = g_strdup([aType UTF8String]);
 			suffixConfidence[idx].confidence = UT_CONFIDENCE_PERFECT;
 			idx++;
 		}

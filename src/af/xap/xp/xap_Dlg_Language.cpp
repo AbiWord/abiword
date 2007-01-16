@@ -1,7 +1,7 @@
 /* AbiSource Application Framework
  * Copyright (C) 1998 AbiSource, Inc.
  * 
- * This program is g_free software; you can redistribute it and/or
+ * This program is free software; you can redistribute it and/or
  * modify it under the terms of the GNU General Public License
  * as published by the Free Software Foundation; either version 2
  * of the License, or (at your option) any later version.
@@ -162,7 +162,7 @@ UT_Vector* XAP_Dialog_Language::getAvailableDictionaries()
 		mapping = static_cast<DictionaryMapping*>(const_cast<void*>(vec.getNthItem(iItem - 1)));
 
 		if (checker->doesDictionaryExist(mapping->lang.c_str()))
-			vecRslt->addItem( strdup(mapping->lang.c_str()));
+			vecRslt->addItem( g_strdup(mapping->lang.c_str()));
 	}
 
 	return vecRslt;

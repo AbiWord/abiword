@@ -30,7 +30,7 @@
 	\param label UT_UTF8String to set. It is a well formed XP label
 	that will be converted.
 	\note if the control object you pass is of an unknown type, the function will
-	NSLog something on the console. Feel free to update the function if you want to
+	NSLog something on the console. Feel g_free to update the function if you want to
 	handle that kind of object.
 */
 void SetNSControlLabel (id control, const UT_UTF8String &label)

@@ -73,7 +73,7 @@ void  XAP_QNXEncodingManager::initialize()
 
 	if((ABLANG=getenv("ABLANG")))
 	{
-	lang=strdup(ABLANG);
+	lang=g_strdup(ABLANG);
 			if((val=strsep(&lang,"_")))
 				{
 					LanguageISOName=val;

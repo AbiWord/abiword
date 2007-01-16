@@ -149,7 +149,7 @@ void TF_Test::start(const char *file, int line, const char *condstr)
     else
 	file2++;
     
-    char *condstr2 = strdup(condstr), *cptr;
+    char *condstr2 = g_strdup(condstr), *cptr;
     for (cptr = condstr2; *cptr; cptr++)
     {
 	if (!isprint((unsigned char)*cptr))

@@ -47,8 +47,11 @@
 
 /*
  * $Log$
+ * Revision 1.14  2007/01/16 23:13:55  dom
+ * that was embarrassing. g_free software? :) also, handle strdup()
+ *
  * Revision 1.13  2007/01/16 21:45:42  dom
- * bug 10751 - use glib's types and memory allocation functions. no more mismatched free/g_free malloc/g_malloc
+ * bug 10751 - use glib's types and memory allocation functions. no more mismatched g_free/g_free g_try_malloc/g_malloc
  *
  * Revision 1.12  2006/12/28 17:31:29  robsta
  * bug#10693 "Build Broken due to PATH_MAX stuff (Windows)"

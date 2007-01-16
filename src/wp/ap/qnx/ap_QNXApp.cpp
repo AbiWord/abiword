@@ -1,7 +1,7 @@
 /* AbiWord
  * Copyright (C) 1998-2000 AbiSource, Inc.
  * 
- * This program is g_free software; you can redistribute it and/or
+ * This program is free software; you can redistribute it and/or
  * modify it under the terms of the GNU General Public License
  * as published by the Free Software Foundation; either version 2
  * of the License, or (at your option) any later version.
@@ -228,14 +228,14 @@ bool AP_QNXApp::initialize(void)
 	for (i = 0; fp_FieldTypes[i].m_Type != FPFIELDTYPE_END; i++)
 	{
 		m_pStringSet->getValueUTF8(fp_FieldTypes[i].m_DescId,s);
-		(&fp_FieldTypes[i])->m_Desc = strdup(s.utf8_str());
+		(&fp_FieldTypes[i])->m_Desc = g_strdup(s.utf8_str());
 	    UT_DEBUGMSG(("Setting field type desc for type %d, desc=%s\n", fp_FieldTypes[i].m_Type, fp_FieldTypes[i].m_Desc));
 	}
 
 	for (i = 0; fp_FieldFmts[i].m_Tag != NULL; i++)
 	{
 		m_pStringSet->getValueUTF8(fp_FieldFmts[i].m_DescId,s);
-		(&fp_FieldFmts[i])->m_Desc = strdup(s.utf8_str());
+		(&fp_FieldFmts[i])->m_Desc = g_strdup(s.utf8_str());
 	    UT_DEBUGMSG(("Setting field desc for field %s, desc=%s\n", fp_FieldFmts[i].m_Tag, fp_FieldFmts[i].m_Desc));
 	}
 
