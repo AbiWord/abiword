@@ -22,13 +22,9 @@
 
 #include <glib.h>
 
-#ifdef HAVE_GNOMEUI
-#include <gnome.h>
-#endif
-
 #include "xap_UnixAppImpl.h"
-#include "ut_files.h"
 #include "ut_string_class.h"
+#include "ut_files.h"
 #include "ut_go_file.h"
 
 UT_String XAP_UnixAppImpl::localizeHelpUrl (const char * pathBefore, 
@@ -40,20 +36,7 @@ UT_String XAP_UnixAppImpl::localizeHelpUrl (const char * pathBefore,
 
 bool XAP_UnixAppImpl::openHelpURL(const char * url)
 {
-#if 0 //def HAVE_GNOMEUI
-
-	UT_DEBUGMSG(("DOM: Help URL: %s\n", url));
-
-	GError * err = NULL;
-	gnome_help_display (url, NULL, &err);
-	if (err != NULL) {
-		UT_DEBUGMSG(("DOM: help error: %s\n", err->message));
-		g_error_free (err);
-	}
-	return false;
-#else
 	return openURL(url);
-#endif
 }
 
 bool XAP_UnixAppImpl::openURL(const char * url)
