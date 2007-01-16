@@ -1609,14 +1609,17 @@ void XAP_UnixFrameImpl::_setGeometry ()
 	if (user_w > USHRT_MAX) user_w = app_w;
         if (user_h > USHRT_MAX) user_h = app_h;
 
-	GdkGeometry geom;
-	geom.min_width   = 100;
-	geom.min_height  = 100;
 	if(getFrame()->getFrameMode() == XAP_NormalFrame)
 	{
+		GdkGeometry geom;
+		geom.min_width   = 100;
+		geom.min_height  = 100;
 		gtk_window_set_geometry_hints (GTK_WINDOW(m_wTopLevelWindow), m_wTopLevelWindow, &geom,
 									   static_cast<GdkWindowHints>(GDK_HINT_MIN_SIZE));
 
+		GdkScreen *screen = gdk_screen_get_default ();
+		user_w = user_w < gdk_screen_get_width (screen) ? user_w : gdk_screen_get_width (screen);
+		user_h = user_h < gdk_screen_get_height (screen) ? user_h : gdk_screen_get_height (screen);
 		gtk_window_set_default_size (GTK_WINDOW(m_wTopLevelWindow), user_w, user_h);
 	}
 
