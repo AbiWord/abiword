@@ -30,6 +30,8 @@
 #include <stdlib.h>
 #include <stdarg.h>
 
+#include <string>
+
 /* pre-emptive dismissal; ut_types.h is needed by just about everything,
  * so even if it's commented out in-file that's still a lot of work for
  * the preprocessor to do...
@@ -75,6 +77,7 @@ public:
 	UT_String();
 	UT_String(const char* sz, size_t n = 0 /* 0 == zero-terminate */);
 	UT_String(const UT_String& rhs);
+	UT_String(const std::basic_string<char> &s);
 	~UT_String();
 
 	size_t		size() const;

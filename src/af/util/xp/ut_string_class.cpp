@@ -28,7 +28,6 @@
 #include <locale.h>
 #include <ctype.h>
 #include <stdarg.h>
-
 #include <glib.h>
 
 #include "ut_string.h"
@@ -89,6 +88,12 @@ UT_String::UT_String(const char* sz, size_t n)
 :	pimpl(new UT_Stringbuf(sz, n ? n : (sz && *sz ? strlen(sz) : 0)))
 {
 }
+
+UT_String::UT_String(const std::basic_string<char> & s)
+	: pimpl(new UT_Stringbuf(s))
+{
+}
+
 
 UT_String::UT_String(const UT_String& rhs)
 :	pimpl(new UT_Stringbuf(*rhs.pimpl))

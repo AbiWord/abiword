@@ -91,6 +91,16 @@ UT_Stringbuf::UT_Stringbuf(const char_type* sz, size_t n)
 	m_psz[n] = 0;
 }
 
+UT_Stringbuf::UT_Stringbuf(const std::basic_string<char_type> &s)
+:	m_psz(new char_type[s.size()+1]),
+	m_pEnd(m_psz + s.size()),
+	m_size(s.size()+1)
+{
+	// string is terminated here, so we know
+	strcpy(m_psz, s.c_str());
+}
+
+
 UT_Stringbuf::~UT_Stringbuf()
 {
 	clear();

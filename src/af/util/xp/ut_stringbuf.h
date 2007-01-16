@@ -26,6 +26,8 @@
 
 #include <stdlib.h>	// size_t
 
+#include <string>
+
 /* pre-emptive dismissal; ut_types.h is needed by just about everything,
  * so even if it's commented out in-file that's still a lot of work for
  * the preprocessor to do...
@@ -53,6 +55,7 @@ public:
 	UT_Stringbuf();
 	UT_Stringbuf(const UT_Stringbuf& rhs);
 	UT_Stringbuf(const char_type* sz, size_t n);
+	UT_Stringbuf(const std::basic_string<char_type> &s);
 	~UT_Stringbuf();
 
 	void		operator=(const UT_Stringbuf& rhs);
