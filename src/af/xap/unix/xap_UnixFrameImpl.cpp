@@ -782,9 +782,16 @@ gint XAP_UnixFrameImpl::_fe::configure_event(GtkWidget* w, GdkEventConfigure *e)
         GtkWindow * pWin = NULL;
 		if(pFrame->getFrameMode() == XAP_NormalFrame) {
 			pWin = GTK_WINDOW(pUnixFrameImpl->m_wTopLevelWindow);
-	        gint gwidth,gheight;
-	        gtk_window_get_size(pWin,&gwidth,&gheight);
-	        pApp->setGeometry(e->x,e->y,gwidth,gheight,flags);
+			// worth remembering size?
+			GdkWindowState state = gdk_window_get_state (GTK_WIDGET(pWin)->window);
+			if (!(state & GDK_WINDOW_STATE_ICONIFIED ||
+				  state & GDK_WINDOW_STATE_MAXIMIZED ||
+				  state & GDK_WINDOW_STATE_FULLSCREEN)) {
+
+				gint gwidth,gheight;
+				gtk_window_get_size(pWin,&gwidth,&gheight);
+				pApp->setGeometry(e->x,e->y,gwidth,gheight,flags);
+			}
 		}
 #endif
 
