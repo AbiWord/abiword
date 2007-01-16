@@ -69,6 +69,7 @@ void XAP_UnixDialog_MessageBox::runModal(XAP_Frame * pFrame)
 	GtkWindow * toplevel;
 	GtkWidget * label;
 	GtkWidget * hbox;
+	gchar     * msg;
 
 #ifdef HAVE_HILDON
 	toplevel = GTK_WINDOW(gtk_widget_get_parent (pUnixFrameImpl->getTopLevelWindow()));
@@ -129,8 +130,10 @@ void XAP_UnixDialog_MessageBox::runModal(XAP_Frame * pFrame)
 			else
 				separator =UT_String("\n\n");
 			
+			msg = g_markup_escape_text (m_szMessage, -1);
 			labelText = UT_String_sprintf(labelText, "<span weight=\"bold\" size=\"larger\">%s</span>%s%s", 
-										  m_szMessage, separator.c_str(), m_szSecondaryMessage);
+										  msg, separator.c_str(), m_szSecondaryMessage);
+			g_free (msg); msg = NULL;
 			
 			gtk_label_set_markup(GTK_LABEL(label), labelText.c_str());
 
