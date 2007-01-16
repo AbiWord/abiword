@@ -30,6 +30,11 @@
 #include <stdlib.h>
 #include <stdarg.h>
 
+#if defined(__MINGW32__)
+#undef snprintf
+#define _GLIBCXX_USE_C99_DYNAMIC 1
+#endif
+
 #include <string>
 
 /* pre-emptive dismissal; ut_types.h is needed by just about everything,
