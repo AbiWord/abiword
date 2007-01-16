@@ -175,7 +175,7 @@ static int s_compareQ(const void * a, const void *b)
 	else if (A->m_nID == XAP_STRING_ID_LANG_0)
 		return -1;
 
-	return UT_strcoll(A->m_szLangName, B->m_szLangName);
+	return g_utf8_collate(A->m_szLangName, B->m_szLangName);
 #else
 
 	return UT_strcmp(A->m_szLangCode, B->m_szLangCode);
@@ -203,7 +203,7 @@ static int s_compareB(const void * l, const void *e)
 	else if (strcmp(L, s_Table[0].m_szLangName) == 0)
 		return -1;
 
-	return UT_strcoll(L, E->m_szLangName);
+	return g_utf8_collate(L, E->m_szLangName);
 #else
 	// make the comparison case insensitive to cope with buggy systems 
 	return UT_stricmp(L, E->m_szLangCode);

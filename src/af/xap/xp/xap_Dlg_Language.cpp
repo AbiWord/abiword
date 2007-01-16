@@ -33,7 +33,7 @@ static int s_compareQ(const void * a, const void * b)
 {                                                                               
 	const XML_Char ** A = (const XML_Char **)(a);                                              
 	const XML_Char ** B = (const XML_Char **)(b);                                   	
-	return UT_strcoll(*A,*B);                                               
+	return g_utf8_collate(*A,*B);                                               
 }       
 
 /*****************************************************************/
