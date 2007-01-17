@@ -181,8 +181,10 @@ void AP_TopRuler::setView(AV_View * pView)
 	static_cast<FV_View *>(pView)->setTopRuler(this);
 
 	// create an AV_ScrollObj to receive send*ScrollEvents()
-
-	m_pScrollObj = new AV_ScrollObj(this,_scrollFuncX,_scrollFuncY);
+	if (m_pScrollObj == NULL) 
+	{
+		m_pScrollObj = new AV_ScrollObj(this,_scrollFuncX,_scrollFuncY);
+	}
 	UT_return_if_fail (m_pScrollObj);
 	m_pView->addScrollListener(m_pScrollObj);
 

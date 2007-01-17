@@ -154,8 +154,10 @@ void AP_LeftRuler::setView(AV_View * pView)
 	m_pView = pView;
 	
 	// create an AV_ScrollObj to receive send*ScrollEvents()
-	
-	m_pScrollObj = new AV_ScrollObj(this,_scrollFuncX,_scrollFuncY);
+	if (m_pScrollObj == NULL) 
+	{
+		m_pScrollObj = new AV_ScrollObj(this,_scrollFuncX,_scrollFuncY);
+	}
 	UT_ASSERT(m_pScrollObj);
 	m_pView->addScrollListener(m_pScrollObj);
 
