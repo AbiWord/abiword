@@ -80,15 +80,16 @@ int IE_Imp_XML::_mapNameToToken (const char * name,
 {
 	xmlToIdMapping * id = NULL;
 
-	UT_sint32 iEntry = m_tokens[name];
+	token_map_t::iterator i = m_tokens.find(name);
 
-	if (iEntry >= 0) return static_cast<int>(iEntry);
+	if (i != m_tokens.end()) {
+		return static_cast<int>((*i).second);
+	}
 
 	id = static_cast<xmlToIdMapping *>(bsearch (name, idlist, len,
 									   sizeof (xmlToIdMapping), s_str_compare));
-	if (id)
-    {
-		m_tokens.ins (name, static_cast<UT_sint32>(id->m_type));
+	if (id) {
+		m_tokens.insert(token_map_t::value_type(name, static_cast<UT_sint32>(id->m_type)));
 		return id->m_type;
     }
 	return -1;
@@ -202,7 +203,7 @@ IE_Imp_XML::IE_Imp_XML(PD_Document * pDocument, bool whiteSignificant)
 	  m_lenCharDataSeen(0), m_lenCharDataExpected(0),
 	  m_iOperationCount(0), m_bSeenCR(false),
 	  m_bWhiteSignificant(whiteSignificant), m_bWasSpace(false),
-	  m_currentDataItemName(NULL), m_currentDataItemMimeType(NULL), m_tokens(-1,30)
+	  m_currentDataItemName(NULL), m_currentDataItemMimeType(NULL), m_tokens()
 {
 	XAP_App *pApp = getDoc()->getApp();
 	UT_return_if_fail(pApp);
@@ -423,7 +424,7 @@ void IE_Imp_XML::_popInlineFmt(void)
 		return;
 	UT_uint32 k;
 	UT_uint32 end = m_vecInlineFmt.getItemCount();
-	for (k=end; k>=start; k--)
+	for (k = end; k >= (UT_uint32)start; k--)
 	{
 		const XML_Char * p = static_cast<XML_Char *>(m_vecInlineFmt.getNthItem(k-1));
 		m_vecInlineFmt.deleteNthItem(k-1);

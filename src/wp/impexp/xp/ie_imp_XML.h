@@ -24,6 +24,8 @@
 #define IE_IMP_XML_H
 
 #include <stdio.h>
+#include <string>
+#include <map>
 
 #include "ut_xml.h"
 
@@ -32,7 +34,6 @@
 #include "ie_imp.h"
 #include "ut_bytebuf.h"
 #include "ut_string_class.h"
-#include "ut_IntStrMap.h"
 
 class PD_Document;
 
@@ -160,7 +161,8 @@ protected:
 	time_t          m_currentRevisionTime;
 	UT_uint32       m_currentRevisionVersion;
 
-	UT_NumberMap    m_tokens;
+	typedef std::map<std::string, UT_sint32> token_map_t;
+	token_map_t m_tokens;
 
 private:
 	UT_uint32	m_iCharCount;
