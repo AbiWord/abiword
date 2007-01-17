@@ -1235,7 +1235,10 @@ void XAP_UnixFrameImpl::_setCursor(GR_Graphics::Cursor c)
 	gdk_window_set_cursor(getVBoxWidget()->window, cursor);
 
 	gdk_window_set_cursor(m_wSunkenBox->window, cursor);
-	gdk_window_set_cursor(m_wStatusBar->window, cursor);
+
+	if (m_wStatusBar)
+		gdk_window_set_cursor(m_wStatusBar->window, cursor);
+	
 	gdk_cursor_unref(cursor);
 }
 
@@ -1423,9 +1426,12 @@ void XAP_UnixFrameImpl::_createTopLevelWindow(void)
 	// window (a peer with toolbars and the overall sunkenbox)
 	// so that it will appear outside of the scrollbars.
 	m_wStatusBar = NULL;
+
+#ifndef EMBEDDED_TARGET
 	if(m_iFrameMode == XAP_NormalFrame)
 		m_wStatusBar = _createStatusBarWindow();
-
+#endif
+	
 	if (m_wStatusBar) 
 	{
 		gtk_widget_show(m_wStatusBar);

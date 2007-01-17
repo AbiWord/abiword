@@ -39,6 +39,12 @@ if WITH_SPELL
 spellglade=	ap_UnixDialog_Spell.glade
 endif
 
+if EMBEDDED
+not_embedded = 
+else
+not_embedded = ap_UnixStatusBar.cpp
+endif
+
 glade_DATA = $(spellglade)	\
 	ap_UnixDialog_Break.glade \
 	ap_UnixDialog_Field.glade \
@@ -107,7 +113,6 @@ libWpAp_unix_a_SOURCES= $(spellsrc)\
 	ap_UnixDialog_MetaData.cpp		\
 	ap_UnixDialog_MailMerge.cpp		\
 	ap_UnixPrefs.cpp			\
-	ap_UnixStatusBar.cpp		\
 	ap_UnixToolbar_FontCombo.cpp	\
 	ap_UnixToolbar_SizeCombo.cpp	\
 	ap_UnixToolbar_StyleCombo.cpp	\
@@ -122,7 +127,8 @@ libWpAp_unix_a_SOURCES= $(spellsrc)\
 	ap_UnixDialog_PageSetup.cpp 	\
 	ap_UnixDialog_Latex.cpp 		\
 	ap_UnixStockIcons.cpp 		\
-	abiwidget.cpp				
+	abiwidget.cpp			\
+	$(not_embedded)
 
 EXTRA_DIST = \
 	Makefile \

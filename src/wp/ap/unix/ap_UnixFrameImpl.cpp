@@ -96,9 +96,11 @@ void AP_UnixFrameImpl::_refillToolbarsInFrameData()
 // Idem.
 void AP_UnixFrameImpl::_showOrHideStatusbar()
 {
+#ifndef EMBEDDED_TARGET
 	XAP_Frame* pFrame = getFrame();
 	bool bShowStatusBar = static_cast<AP_FrameData*> (pFrame->getFrameData())->m_bShowStatusBar;
 	static_cast<AP_UnixFrame *>(pFrame)->toggleStatusBar(bShowStatusBar);
+#endif
 }
 
 static void
@@ -321,6 +323,7 @@ void AP_UnixFrameImpl::_createWindow()
 
 GtkWidget * AP_UnixFrameImpl::_createStatusBarWindow()
 {
+#ifndef EMBEDDED_TARGET    
 	XAP_Frame* pFrame = getFrame();
 	AP_UnixStatusBar * pUnixStatusBar = new AP_UnixStatusBar(pFrame);
 	UT_ASSERT(pUnixStatusBar);
@@ -328,6 +331,9 @@ GtkWidget * AP_UnixFrameImpl::_createStatusBarWindow()
 	static_cast<AP_FrameData *>(pFrame->getFrameData())->m_pStatusBar = pUnixStatusBar;
 	
 	return pUnixStatusBar->createWidget();
+#else
+	return NULL;
+#endif
 }
 
 void AP_UnixFrameImpl::_setScrollRange(apufi_ScrollType scrollType, int iValue, gfloat fUpperLimit, gfloat fSize)

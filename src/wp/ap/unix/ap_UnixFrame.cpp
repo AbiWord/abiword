@@ -341,10 +341,12 @@ void AP_UnixFrame::translateDocumentToScreen(UT_sint32 &x, UT_sint32 &y)
 
 void AP_UnixFrame::setStatusMessage(const char * szMsg)
 {
+#ifndef EMBEDDED_TARGET
 	if((getFrameMode() == XAP_NormalFrame) && (m_pData))
 	{
 		static_cast<AP_FrameData *>(m_pData)->m_pStatusBar->setStatusMessage(szMsg);
 	}
+#endif
 }
 
 void AP_UnixFrame::toggleTopRuler(bool bRulerOn)
