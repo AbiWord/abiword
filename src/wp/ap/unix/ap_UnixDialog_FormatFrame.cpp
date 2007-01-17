@@ -365,7 +365,7 @@ void AP_UnixDialog_FormatFrame::event_BorderThicknessChanged(void)
 			sThickness = UT_UTF8String_sprintf("%fin",thickness);
 		}
 
-		setBorderThickness(sThickness);
+		setBorderThicknessAll(sThickness);
 		event_previewExposed();
 	}
 }
