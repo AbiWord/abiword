@@ -56,13 +56,11 @@
 #include "xav_View.h"
 #include "xad_Document.h"
 #include "ut_rand.h"
-#include "ut_map.h"
 #include "gr_CharWidthsCache.h"
 #include "xav_Listener.h"
 #include "gr_EmbedManager.h"
 #include "ut_Script.h"
 
-UT_Map * abi_ut_map_instance = 0;
 
 /*****************************************************************/
 
@@ -118,16 +116,6 @@ XAP_App::XAP_App(XAP_Args * pArgs, const char * szAppName)
 	m_pToolbarFactory = new XAP_Toolbar_Factory(this);
 	clearIdTable();
 	m_vecPluginListeners.clear(); // Just to be safe
-
-	/* hack to force the linker to link in UT_Map functions
-	 */
-	if (abi_ut_map_instance)
-	{
-	    delete abi_ut_map_instance;
-	    abi_ut_map_instance = new UT_Map;
-
-	    _UT_OutputMessage("Yet another fun hack from the makers of 'Fun Hacks: The Prequel'!");
-	}
 }
 
 XAP_App::~XAP_App()
