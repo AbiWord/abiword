@@ -664,7 +664,7 @@ IE_Imp_MsWord_97_Sniffer::IE_Imp_MsWord_97_Sniffer ()
 static IE_SuffixConfidence IE_Imp_MsWord_97_Sniffer__SuffixConfidence[] = {
 	{ "doc", 	UT_CONFIDENCE_PERFECT 	},
 	{ "dot", 	UT_CONFIDENCE_PERFECT 	},
-	{ NULL, 	UT_CONFIDENCE_ZILCH 	}
+	{ "", 	UT_CONFIDENCE_ZILCH 	}
 };
 
 const IE_SuffixConfidence * IE_Imp_MsWord_97_Sniffer::getSuffixConfidence ()
@@ -677,7 +677,7 @@ static IE_MimeConfidence IE_Imp_MsWord_97_Sniffer__MimeConfidence[] = {
 	{ IE_MIME_MATCH_FULL, 	IE_MIMETYPE_MSWord, 		UT_CONFIDENCE_GOOD 	},
 	{ IE_MIME_MATCH_FULL, 	"application/vnd.ms-word",	UT_CONFIDENCE_GOOD 	},
 	{ IE_MIME_MATCH_FULL, 	"text/doc", 				UT_CONFIDENCE_GOOD 	}, // or is it? [TODO: check!]
-	{ IE_MIME_MATCH_BOGUS, 	NULL, 						UT_CONFIDENCE_ZILCH }
+	{ IE_MIME_MATCH_BOGUS, 	"", 						UT_CONFIDENCE_ZILCH }
 };
 
 const IE_MimeConfidence * IE_Imp_MsWord_97_Sniffer::getMimeConfidence ()

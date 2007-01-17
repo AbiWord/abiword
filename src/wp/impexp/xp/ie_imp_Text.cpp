@@ -328,7 +328,7 @@ static IE_SuffixConfidence IE_Imp_Text_Sniffer__SuffixConfidence[] = {
 	{ "txt", 	UT_CONFIDENCE_PERFECT 	},
 	{ "text", 	UT_CONFIDENCE_PERFECT 	},
 	{ "doc", 	UT_CONFIDENCE_POOR 		},
-	{ NULL, 	UT_CONFIDENCE_ZILCH 	}
+	{ "", 	UT_CONFIDENCE_ZILCH 	}
 };
 
 const IE_SuffixConfidence * IE_Imp_Text_Sniffer::getSuffixConfidence ()
@@ -340,7 +340,7 @@ const IE_SuffixConfidence * IE_Imp_Text_Sniffer::getSuffixConfidence ()
 static IE_MimeConfidence IE_Imp_Text_Sniffer__MimeConfidence[] = {
 	{ IE_MIME_MATCH_FULL, 	IE_MIMETYPE_Text, 	UT_CONFIDENCE_GOOD 	},
 	{ IE_MIME_MATCH_CLASS, 	"text", 			UT_CONFIDENCE_SOSO 	}, 
-	{ IE_MIME_MATCH_BOGUS, 	NULL, 				UT_CONFIDENCE_ZILCH }
+	{ IE_MIME_MATCH_BOGUS, 	"", 				UT_CONFIDENCE_ZILCH }
 };
 
 const IE_MimeConfidence * IE_Imp_Text_Sniffer::getMimeConfidence ()
@@ -572,7 +572,7 @@ IE_Imp_EncodedText_Sniffer::~IE_Imp_EncodedText_Sniffer ()
 static IE_SuffixConfidence IE_Imp_EncodedText_Sniffer__SuffixConfidence[] = {
 	{ "txt", 	UT_CONFIDENCE_POOR 		},
 	{ "text", 	UT_CONFIDENCE_POOR 		},
-	{ NULL, 	UT_CONFIDENCE_ZILCH 	}
+	{ "", 	UT_CONFIDENCE_ZILCH 	}
 };
 
 const IE_SuffixConfidence * IE_Imp_EncodedText_Sniffer::getSuffixConfidence ()

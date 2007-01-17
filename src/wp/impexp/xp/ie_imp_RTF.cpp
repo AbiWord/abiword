@@ -111,7 +111,7 @@ IE_Imp_RTF_Sniffer::IE_Imp_RTF_Sniffer ()
 static IE_SuffixConfidence IE_Imp_RTF_Sniffer__SuffixConfidence[] = {
 	{ "rtf", 	UT_CONFIDENCE_PERFECT 	},
 	{ "doc", 	UT_CONFIDENCE_SOSO 		},
-	{ NULL, 	UT_CONFIDENCE_ZILCH 	}
+	{ "", 	UT_CONFIDENCE_ZILCH 	}
 };
 
 const IE_SuffixConfidence * IE_Imp_RTF_Sniffer::getSuffixConfidence ()
@@ -126,7 +126,7 @@ static IE_MimeConfidence IE_Imp_RTF_Sniffer__MimeConfidence[] = {
 	{ IE_MIME_MATCH_FULL, 	"application/richtext",	UT_CONFIDENCE_GOOD 	}, 
 	{ IE_MIME_MATCH_FULL, 	"text/richtext", 		UT_CONFIDENCE_GOOD 	}, 
 	{ IE_MIME_MATCH_FULL, 	"text/rtf", 			UT_CONFIDENCE_GOOD 	}, 
-	{ IE_MIME_MATCH_BOGUS, 	NULL, 					UT_CONFIDENCE_ZILCH }
+	{ IE_MIME_MATCH_BOGUS, 	"", 					UT_CONFIDENCE_ZILCH }
 };
 
 const IE_MimeConfidence * IE_Imp_RTF_Sniffer::getMimeConfidence ()

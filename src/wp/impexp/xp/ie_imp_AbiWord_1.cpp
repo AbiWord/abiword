@@ -85,7 +85,7 @@ static IE_SuffixConfidence IE_Imp_AbiWord_1_Sniffer__SuffixConfidence[] = {
 	{ "abw.gz", UT_CONFIDENCE_PERFECT 	},
 	{ "bzabw", 		UT_CONFIDENCE_PERFECT 	},
 	{ "abw.bz2", 	UT_CONFIDENCE_PERFECT 	},
-	{ NULL, 	UT_CONFIDENCE_ZILCH 	}
+	{ "", 	UT_CONFIDENCE_ZILCH 	}
 };
 
 const IE_SuffixConfidence * IE_Imp_AbiWord_1_Sniffer::getSuffixConfidence ()
@@ -103,7 +103,7 @@ static IE_MimeConfidence IE_Imp_AbiWord_1_Sniffer__MimeConfidence[] = {
 	{ IE_MIME_MATCH_FULL, 	"text/abiword",							UT_CONFIDENCE_GOOD	},
 	{ IE_MIME_MATCH_FULL, 	"text/x-abiword",						UT_CONFIDENCE_GOOD	},
 	{ IE_MIME_MATCH_FULL,	"application/abiword-compressed", 		UT_CONFIDENCE_POOR 	}, 
-	{ IE_MIME_MATCH_BOGUS, 	NULL, 									UT_CONFIDENCE_ZILCH }
+	{ IE_MIME_MATCH_BOGUS, 	"", 									UT_CONFIDENCE_ZILCH }
 };
 
 const IE_MimeConfidence * IE_Imp_AbiWord_1_Sniffer::getMimeConfidence ()

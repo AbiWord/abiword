@@ -572,48 +572,42 @@ const IE_MimeConfidence * IE_ImpGraphicGdkPixbuf_Sniffer::getMimeConfidence ()
 
 	GSList 		 	 *formatList = gdk_pixbuf_get_formats ();
 	GSList 		 	 *formatIter;
-	GSList 		 	 *tmp;
 	GdkPixbufFormat	 *format;
-	gchar 			**mime_types;
-	gsize			  n_mime_types;
 	gsize			  idx;
+	std::vector<std::string> all_mime_types;
 
 	// dry run to count entries
 	formatIter = formatList;
-	n_mime_types = 0;
 	while (formatIter) {
+		gchar **mime_types;
 		format = (GdkPixbufFormat *) formatIter->data;
 		mime_types = gdk_pixbuf_format_get_mime_types (format);
-		while (*mime_types) {
-			n_mime_types++;
-			mime_types++;
+		gchar **tmp = mime_types;
+		while (*tmp) {
+			all_mime_types.push_back(*tmp);
+			tmp++;
 		}
+		g_strfreev(mime_types);
+
+		GSList *node;
+		node = formatIter;
 		formatIter = formatIter->next;
+		g_slist_free1 (node);
 	}
 
-	mimeConfidence = new IE_MimeConfidence[n_mime_types + 1];
-
-	// build list
-	formatIter = formatList;
+	mimeConfidence = new IE_MimeConfidence[all_mime_types.size() + 1];
 	idx = 0;
-	while (formatIter) {
-		format = (GdkPixbufFormat *) formatIter->data;
-		mime_types = gdk_pixbuf_format_get_mime_types (format);
-		while (*mime_types) {
-			mimeConfidence[idx].match = IE_MIME_MATCH_FULL;
-			mimeConfidence[idx].mimetype = *mime_types;
-			mimeConfidence[idx].confidence = UT_CONFIDENCE_PERFECT;
-			idx++;
-			mime_types++;
-		}
-		tmp = formatIter;
-		formatIter = formatIter->next;
-		g_slist_free1 (tmp);
+	for(std::vector<std::string>::iterator iter = all_mime_types.begin();
+		iter != all_mime_types.end(); ++iter)
+	{
+		mimeConfidence[idx].match = IE_MIME_MATCH_FULL;
+		mimeConfidence[idx].mimetype = *iter;
+		mimeConfidence[idx].confidence = UT_CONFIDENCE_PERFECT;
+		idx++;
 	}
 
 	// null-terminator
 	mimeConfidence[idx].match = IE_MIME_MATCH_BOGUS;
-	mimeConfidence[idx].mimetype = NULL;
 	mimeConfidence[idx].confidence = UT_CONFIDENCE_ZILCH;
 
 	return mimeConfidence;
@@ -643,7 +637,6 @@ const IE_SuffixConfidence * IE_ImpGraphicGdkPixbuf_Sniffer::getSuffixConfidence 
 	}
 
 	// NULL-terminator
-	suffixConfidence[idx].suffix = NULL;
 	suffixConfidence[idx].confidence = UT_CONFIDENCE_ZILCH;
 	
 	return suffixConfidence;

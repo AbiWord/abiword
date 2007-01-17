@@ -30,6 +30,7 @@
   NOTE:  to (or less than) the number below.
 */
 
+#include <string>
 #include <glib.h>
 #include "ut_types.h"
 
@@ -84,7 +85,7 @@ enum IE_MimeMatch {
  */
 struct IE_MimeConfidence {
 	IE_MimeMatch	 match;			/*!< Match class or full mimetype. */
-	const gchar 	*mimetype;		/*!< Mimetype string itself. */
+	std::string 	 mimetype;		/*!< Mimetype string itself. */
 	UT_Confidence_t	 confidence;	/*!< Confidence for supporting that mimetype. */
 };
 
@@ -92,7 +93,7 @@ struct IE_MimeConfidence {
  * Entry for filename suffixes supported by a filter.
  */
 struct IE_SuffixConfidence {
-	const gchar		*suffix;		/*!< Filename suffix to match. */
+	std::string		 suffix;		/*!< Filename suffix to match. */
 	UT_Confidence_t	 confidence;	/*!< Confidence for supporting that mimetype. */
 };
 

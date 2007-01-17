@@ -81,7 +81,7 @@ static IE_SuffixConfidence IE_Imp_XHTML_Sniffer__SuffixConfidence[] = {
 	{ "xhtml", 	UT_CONFIDENCE_PERFECT 	},
 	{ "html", 	UT_CONFIDENCE_PERFECT	},
 	{ "htm", 	UT_CONFIDENCE_PERFECT	},
-	{ NULL, 	UT_CONFIDENCE_ZILCH 	}
+	{ "", 	UT_CONFIDENCE_ZILCH 	}
 };
 
 const IE_SuffixConfidence * IE_Imp_XHTML_Sniffer::getSuffixConfidence ()
@@ -96,7 +96,7 @@ static IE_MimeConfidence IE_Imp_XHTML_Sniffer__MimeConfidence[] = {
 	{ IE_MIME_MATCH_FULL, 	IE_MIMETYPE_XHTML, 		UT_CONFIDENCE_PERFECT 	}, 
 	{ IE_MIME_MATCH_FULL, 	"application/xhtml", 	UT_CONFIDENCE_PERFECT 	}, 
 	{ IE_MIME_MATCH_FULL, 	"text/html", 	 	 	UT_CONFIDENCE_PERFECT 	},
-	{ IE_MIME_MATCH_BOGUS, 	NULL, 					UT_CONFIDENCE_ZILCH }
+	{ IE_MIME_MATCH_BOGUS, 	"", 					UT_CONFIDENCE_ZILCH }
 };
 
 const IE_MimeConfidence * IE_Imp_XHTML_Sniffer::getMimeConfidence ()

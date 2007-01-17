@@ -45,13 +45,12 @@ const IE_SuffixConfidence *IE_ImpGraphicCocoa_Sniffer::getSuffixConfidence()
 		int idx = 0;
 		
 		while((aType = [suffixIter nextObject]) != nil) {
-			suffixConfidence[idx].suffix = g_strdup([aType UTF8String]);
+			suffixConfidence[idx].suffix = [aType UTF8String];
 			suffixConfidence[idx].confidence = UT_CONFIDENCE_PERFECT;
 			idx++;
 		}
 		
 		// NULL-terminator
-		suffixConfidence[idx].suffix = NULL;
 		suffixConfidence[idx].confidence = UT_CONFIDENCE_ZILCH;
 	}
 
@@ -60,35 +59,12 @@ const IE_SuffixConfidence *IE_ImpGraphicCocoa_Sniffer::getSuffixConfidence()
 
 const IE_MimeConfidence * IE_ImpGraphicCocoa_Sniffer::getMimeConfidence()
 {
-	static IE_MimeConfidence *mimeConfidence = NULL;
-	
-	if (mimeConfidence) {
-		return mimeConfidence;
-	}
-	
-	mimeConfidence = new IE_MimeConfidence[4];
-
-	// FIXME this shouldn't be hardcoded
-	int idx = 0;
-	mimeConfidence[idx].match = IE_MIME_MATCH_FULL;
-	mimeConfidence[idx].mimetype = "image/png";
-	mimeConfidence[idx].confidence = UT_CONFIDENCE_PERFECT;
-	idx++;
-
-	mimeConfidence[idx].match = IE_MIME_MATCH_FULL;
-	mimeConfidence[idx].mimetype = "image/jpeg";
-	mimeConfidence[idx].confidence = UT_CONFIDENCE_PERFECT;
-	idx++;
-
-	mimeConfidence[idx].match = IE_MIME_MATCH_FULL;
-	mimeConfidence[idx].mimetype = "image/tiff";
-	mimeConfidence[idx].confidence = UT_CONFIDENCE_PERFECT;
-	idx++;
-	
-	// null-terminator
-	mimeConfidence[idx].match = IE_MIME_MATCH_BOGUS;
-	mimeConfidence[idx].mimetype = NULL;
-	mimeConfidence[idx].confidence = UT_CONFIDENCE_ZILCH;
+	static IE_MimeConfidence *mimeConfidence = {
+		{ IE_MIME_MATCH_FULL, "image/png", UT_CONFIDENCE_PERFECT },
+		{ IE_MIME_MATCH_FULL, "image/jpeg", UT_CONFIDENCE_PERFECT },
+		{ IE_MIME_MATCH_FULL, "image/tiff", UT_CONFIDENCE_PERFECT },
+		{ IE_MIME_MATCH_BOGUS,"",           UT_CONFIDENCE_ZILCH }
+	};
 	
 	return mimeConfidence;
 }

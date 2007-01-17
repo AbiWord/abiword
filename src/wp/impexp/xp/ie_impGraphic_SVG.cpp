@@ -28,7 +28,7 @@
 // supported suffixes
 static IE_SuffixConfidence IE_ImpGraphicSVG_Sniffer__SuffixConfidence[] = {
 	{ "svg", 	UT_CONFIDENCE_PERFECT 	},
-	{ NULL, 	UT_CONFIDENCE_ZILCH 	}
+	{ "", 	UT_CONFIDENCE_ZILCH 	}
 };
 
 const IE_SuffixConfidence * IE_ImpGraphicSVG_Sniffer::getSuffixConfidence ()

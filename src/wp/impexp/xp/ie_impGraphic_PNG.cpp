@@ -28,7 +28,7 @@
 // supported suffixes
 static IE_SuffixConfidence IE_ImpGraphicPNG_Sniffer__SuffixConfidence[] = {
 	{ "png", 	UT_CONFIDENCE_PERFECT 	},
-	{ NULL, 	UT_CONFIDENCE_ZILCH 	}
+	{ "", 	UT_CONFIDENCE_ZILCH 	}
 };
 
 const IE_SuffixConfidence * IE_ImpGraphicPNG_Sniffer::getSuffixConfidence ()
@@ -39,7 +39,7 @@ const IE_SuffixConfidence * IE_ImpGraphicPNG_Sniffer::getSuffixConfidence ()
 // supported mimetypes
 static IE_MimeConfidence IE_ImpGraphicPNG_Sniffer__MimeConfidence[] = {
 	{ IE_MIME_MATCH_FULL, 	"image/png",	UT_CONFIDENCE_GOOD 	}, 
-	{ IE_MIME_MATCH_BOGUS, 	NULL, 			UT_CONFIDENCE_ZILCH }
+	{ IE_MIME_MATCH_BOGUS, 	"", 			UT_CONFIDENCE_ZILCH }
 };
 
 const IE_MimeConfidence * IE_ImpGraphicPNG_Sniffer::getMimeConfidence ()
