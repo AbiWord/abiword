@@ -30,6 +30,11 @@
   NOTE:  to (or less than) the number below.
 */
 
+#if defined(__MINGW32__)
+#undef snprintf
+#define _GLIBCXX_USE_C99_DYNAMIC 1
+#endif
+
 #include <string>
 #include <glib.h>
 #include "ut_types.h"
