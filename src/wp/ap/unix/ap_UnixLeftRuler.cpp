@@ -1,3 +1,5 @@
+/* -*- mode: C++; tab-width: 4; c-basic-offset: 4; -*- */
+
 /* AbiWord
  * Copyright (C) 1998 AbiSource, Inc.
  * 
@@ -33,19 +35,12 @@
 
 /*****************************************************************/
 
-// evil ugly hack
-static int ruler_style_changed (GtkWidget * w, GdkEventClient * event,
-								AP_UnixLeftRuler * ruler)
+static void
+ruler_style_changed (GtkWidget 			*w, 
+					 GtkStyle 			*previous_style,
+					 AP_UnixLeftRuler 	*ruler)
 {
-	static GdkAtom atom_rcfiles = GDK_NONE;
-	g_return_val_if_fail (w != NULL, FALSE);
-	g_return_val_if_fail (event != NULL, FALSE);
-	if (!atom_rcfiles)
-		atom_rcfiles = gdk_atom_intern ("_GTK_READ_RCFILES", FALSE);
-	if (event->message_type != atom_rcfiles)
-		return FALSE;
 	ruler->_ruler_style_changed();
-	return FALSE;
 }
 
 AP_UnixLeftRuler::AP_UnixLeftRuler(XAP_Frame * pFrame)
@@ -58,7 +53,7 @@ AP_UnixLeftRuler::AP_UnixLeftRuler(XAP_Frame * pFrame)
     // change ruler color on theme change
 	GtkWidget * toplevel = static_cast<XAP_UnixFrameImpl *>(pFrame->getFrameImpl())->getTopLevelWindow();
 	g_signal_connect_after (G_OBJECT(toplevel),
-							  "client_event",
+							  "style-set",
 							  G_CALLBACK(ruler_style_changed),
 							  static_cast<gpointer>(this));
 }
