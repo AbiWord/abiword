@@ -22,7 +22,6 @@
 #import "xap_CocoaTimer.h"
 
 #include "ut_assert.h"
-#include "ut_map.h"
 #include "ut_mutex.h"
 #include "ut_pair.h"
 #include "ut_debugmsg.h"

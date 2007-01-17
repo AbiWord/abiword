@@ -20,7 +20,6 @@
 #ifndef XP_TARGET_COCOA
 #include <gtk/gtk.h>
 #else
-# include "ut_map.h"
 # include "ut_mutex.h"
 # include "xap_CocoaTimer.h"
 #endif

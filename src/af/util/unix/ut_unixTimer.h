@@ -25,7 +25,6 @@
 #include "ut_timer.h"
 
 #ifdef XP_TARGET_COCOA
-# include "ut_map.h"
 typedef struct NSMutableDictionary;
 typedef struct NSLock;
 #endif
