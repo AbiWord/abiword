@@ -434,20 +434,45 @@ public:									// we create...
 };
 
 static void
-s_color_changed (GOComboColor 	*cc, 
-				 GOColor 		 color,
-				 gboolean 		 custom, 
-				 gboolean 		 by_user, 
-				 gboolean 		 is_default, 
-				 _wd 			*wd)
+s_fore_color_changed (GOComboColor 	*cc, 
+					  GOColor 		 color,
+					  gboolean 		 custom, 
+					  gboolean 		 by_user, 
+					  gboolean 		 is_default, 
+					  _wd 			*wd)
 {
+	UT_UTF8String str;
+
 	g_return_if_fail (wd);
 
-	UT_UTF8String str (UT_UTF8String_sprintf ("%02x%02x%02x", 
-											  UINT_RGBA_R (color),
-											  UINT_RGBA_G (color),
-											  UINT_RGBA_B (color)));
-	
+	str = UT_UTF8String_sprintf ("%02x%02x%02x", 
+								 UINT_RGBA_R (color),
+								 UINT_RGBA_G (color),
+								 UINT_RGBA_B (color));
+	wd->m_pUnixToolbar->toolbarEvent(wd, str.ucs4_str().ucs4_str(), str.size());
+}
+
+static void
+s_back_color_changed (GOComboColor 	*cc, 
+					  GOColor 		 color,
+					  gboolean 		 custom, 
+					  gboolean 		 by_user, 
+					  gboolean 		 is_default, 
+					  _wd 			*wd)
+{
+	UT_UTF8String str;
+
+	g_return_if_fail (wd);
+
+	if (is_default) {
+		str = "transparent";
+	} else {
+		str = UT_UTF8String_sprintf ("%02x%02x%02x", 
+									 UINT_RGBA_R (color),
+									 UINT_RGBA_G (color),
+									 UINT_RGBA_B (color));
+	}
+
 	wd->m_pUnixToolbar->toolbarEvent(wd, str.ucs4_str().ucs4_str(), str.size());
 }
 
@@ -541,7 +566,7 @@ bool EV_UnixToolbar::toolbarEvent(_wd 				* wd,
 	const char * szMethodName = pAction->getMethodName();
 	if (!szMethodName)
 		return false;
-	
+
 	const EV_EditMethodContainer * pEMC = m_pUnixApp->getEditMethodContainer();
 	UT_ASSERT(pEMC);
 
@@ -934,16 +959,28 @@ bool EV_UnixToolbar::synthesize(void)
 					stock_id = ABIWORD_COLOR_FORE;
 					pixbuf = gtk_widget_render_icon (m_wToolbar, ABIWORD_COLOR_FORE, 
 													 GTK_ICON_SIZE_LARGE_TOOLBAR, NULL);
-					cg = go_color_group_fetch ("back_color_group", m_wToolbar);
+					cg = go_color_group_fetch ("fore_color_group", m_wToolbar);
 					combo = go_combo_color_new (pixbuf, pLabel->getToolbarLabel(), 0, cg);
+
+				    wd->m_widget = combo;
+				    g_signal_connect (G_OBJECT (combo), "color-changed",
+									  G_CALLBACK (s_fore_color_changed), wd);
 				}
 				else {
+					const XAP_StringSet * pSS = XAP_App::getApp()->getStringSet();
+					UT_UTF8String sClear;
+					pSS->getValueUTF8(XAP_STRING_ID_TB_ClearBackground,sClear);
+
 					action_name = "dlgColorPickerBack";
 					stock_id = ABIWORD_COLOR_BACK;
 					pixbuf = gtk_widget_render_icon (m_wToolbar, ABIWORD_COLOR_BACK, 
 													 GTK_ICON_SIZE_LARGE_TOOLBAR, NULL);
-					cg = go_color_group_fetch ("fore_color_group", m_wToolbar);
-					combo = go_combo_color_new (pixbuf, pLabel->getToolbarLabel(), 0, cg);
+					cg = go_color_group_fetch ("back_color_group", m_wToolbar);
+					combo = go_combo_color_new (pixbuf, sClear.utf8_str(), 0, cg);
+
+				    wd->m_widget = combo;
+				    g_signal_connect (G_OBJECT (combo), "color-changed",
+									  G_CALLBACK (s_back_color_changed), wd);
 				}
 				go_combo_box_set_relief (GO_COMBO_BOX (combo), GTK_RELIEF_NONE);
 				go_combo_color_set_instant_apply (GO_COMBO_COLOR (combo), TRUE);
@@ -952,9 +989,6 @@ bool EV_UnixToolbar::synthesize(void)
 				toolbar_append_item (GTK_TOOLBAR(m_wToolbar), combo, szToolTip,
 									 static_cast<const char *>(NULL), 
 									 TRUE, action_name, stock_id, wd);
-			    wd->m_widget = combo;
-			    g_signal_connect (G_OBJECT (combo), "color-changed",
-								  G_CALLBACK (s_color_changed), wd);
 
 				//
 				// Add in a right drag method

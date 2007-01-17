@@ -301,6 +301,7 @@ For insert Table widget
 */
 dcl(TB_InsertNewTable,                   "Insert New Table")
 dcl(TB_Table,                            "Table")
+dcl(TB_ClearBackground,"Clear Background")
 
 /*
 	  Language property in different languages; alphabetical except English first.
