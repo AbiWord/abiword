@@ -1,3 +1,5 @@
+/* -*- mode: C++; tab-width: 4; c-basic-offset: 4; -*- */
+
 /* AbiWord
  * Copyright (C) 1998 AbiSource, Inc.
  * 
@@ -43,6 +45,13 @@
 #define CUSTOM_RESPONSE_INSERT 1
 
 /*****************************************************************/
+
+static void
+s_auto_colsize_toggled (GtkToggleButton *radio,
+                        GtkWidget       *spinner)
+{
+	gtk_widget_set_sensitive (spinner, !gtk_toggle_button_get_active (radio));
+}
 
 XAP_Dialog * AP_UnixDialog_InsertTable::static_constructor(XAP_DialogFactory * pFactory,
 													       XAP_Dialog_Id id)
@@ -118,6 +127,10 @@ GtkWidget * AP_UnixDialog_InsertTable::_constructWindow(void)
 	gtk_spin_button_set_value(GTK_SPIN_BUTTON(m_pColSpin), getNumCols());
 	gtk_spin_button_set_value(GTK_SPIN_BUTTON(m_pRowSpin), getNumRows());
 	gtk_spin_button_set_value(GTK_SPIN_BUTTON(m_pColWidthSpin), getColumnWidth());
+
+	GtkWidget *rbAutoColSize = glade_xml_get_widget (xml, "rbAutoColSize");
+	s_auto_colsize_toggled (GTK_TOGGLE_BUTTON (rbAutoColSize), m_pColWidthSpin);
+	g_signal_connect (G_OBJECT (rbAutoColSize), "toggled", G_CALLBACK (s_auto_colsize_toggled), m_pColWidthSpin);
 	
 	// set the dialog title
 	UT_UTF8String s;
