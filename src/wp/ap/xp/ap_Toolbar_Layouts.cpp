@@ -522,7 +522,7 @@ bool  XAP_Toolbar_Factory::resetToolbarToDefault(const char * szName)
 	for (i=0; !bFound && (i < count); i++)
 	{
 		pVec = (XAP_Toolbar_Factory_vec *) m_vecTT.getNthItem(i);
-		szCurName =  UT_strdup(pVec->getToolbarName());
+		szCurName =  g_strdup(pVec->getToolbarName());
 		if (UT_stricmp(szName,szCurName)==0)
 		{
 			bFound = true;

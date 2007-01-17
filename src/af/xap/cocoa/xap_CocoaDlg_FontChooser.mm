@@ -139,7 +139,7 @@ void XAP_CocoaDialog_FontChooser::fontRowChanged(void)
 	
 	fontFamily = [m_dlg selectedFont];
 	FREEP(m_currentFamily);
-	m_currentFamily = UT_strdup([fontFamily UTF8String]);
+	m_currentFamily = g_strdup([fontFamily UTF8String]);
 	addOrReplaceVecProp("font-family",m_currentFamily);
 
 	updatePreview();

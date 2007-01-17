@@ -92,19 +92,19 @@ char * XAP_Dialog_History::getHeaderValue(UT_uint32 indx) const
 				}
 				else
 				{
-					char * pP1 = UT_strdup(pPath);
+					char * pP1 = g_strdup(pPath);
 					pP1[6] = 0;
 					const char * pP2 = pPath + iPathLen - 35;
 					UT_String_sprintf(S, "%s ... %s", pP1, pP2);
 					FREEP(pP1);
 				}
 				
-				return UT_strdup(S.c_str());
+				return g_strdup(S.c_str());
 			}
 			
 		case 1:
 			UT_String_sprintf(S,"%d",m_pDoc->getDocVersion());
-			return UT_strdup(S.c_str());
+			return g_strdup(S.c_str());
 
 		case 2:
 			{
@@ -133,11 +133,11 @@ char * XAP_Dialog_History::getHeaderValue(UT_uint32 indx) const
 				UT_uint32 iSeconds = (iEditTime % 3600) % 60;
 				
 				UT_String_sprintf(S,"%.2d:%.2d:%.2d", iHours, iMinutes, iSeconds);
-				return UT_strdup(S.c_str());
+				return g_strdup(S.c_str());
 			}
 
 		case 5:
-			return UT_strdup(m_pDoc->getDocUUIDString());
+			return g_strdup(m_pDoc->getDocUUIDString());
 			
 		default:;
 	}
@@ -202,7 +202,7 @@ char * XAP_Dialog_History::getListValue(UT_uint32 item, UT_uint32 column) const
 	{
 		case 0:
 			UT_String_sprintf(S,"%d",m_pDoc->getHistoryNthId(item));
-			return UT_strdup(S.c_str());
+			return g_strdup(S.c_str());
 			
 		case 1:
 			tT = m_pDoc->getHistoryNthTimeStarted(item);
@@ -223,7 +223,7 @@ char * XAP_Dialog_History::getListValue(UT_uint32 item, UT_uint32 column) const
 					
 				UT_return_val_if_fail(pszS, NULL);
 
-				return UT_strdup(pszS);
+				return g_strdup(pszS);
 			}
 			
 		default:;

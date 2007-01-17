@@ -170,7 +170,7 @@ EnchantChecker::_requestDictionary (const char * szLang)
 	UT_return_val_if_fail (s_enchant_broker, false);
 
 	// Convert the language tag from en-US to en_US form
-	char * lang = UT_strdup (szLang);
+	char * lang = g_strdup (szLang);
 	char * hyphen = strchr (lang, '-');
 	if (hyphen)
 		*hyphen = '_';

@@ -57,8 +57,6 @@ ABI_EXPORT UT_uint32  UT_pointerArrayLength(void ** array);
 //
 ////////////////////////////////////////////////////////////////////////
 
-ABI_EXPORT char *  UT_strdup(const char * szSource);
-
 // Below are case-insensitive strcmp-like functions prototypes.  The functions
 // lexographically compare strings, returning <0, 0, >0 as strcmp(...) does.
 // For strings containing characters between 'Z' and 'a' in the ASCII table,

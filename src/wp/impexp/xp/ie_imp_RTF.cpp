@@ -1509,7 +1509,7 @@ UT_Error IE_Imp_RTF::_loadFile(GsfInput * fp)
 	m_newParaFlagged = true;
 	m_newSectionFlagged = true;
 
-	m_szFileDirName = UT_strdup (gsf_input_name (fp));
+	m_szFileDirName = g_strdup (gsf_input_name (fp));
 	// UT_basename returns a point INSIDE the passed string.
 	// the trick is to truncate the string by setting the char pointed
 	// by tmp to NULL. This IS useful code. (2 LOC)
@@ -3526,7 +3526,7 @@ XML_Char *IE_Imp_RTF::_parseFldinstBlock (UT_ByteBuf & buf, XML_Char *xmlField, 
 		if (strcmp (instr, "FILENAME") == 0)
 		{
 			// TODO handle parameters
-			xmlField = UT_strdup ("file_name");
+			xmlField = g_strdup ("file_name");
 			UT_ASSERT_HARMLESS (xmlField);
 			isXML = (xmlField != NULL);
 		}
@@ -3628,7 +3628,7 @@ XML_Char *IE_Imp_RTF::_parseFldinstBlock (UT_ByteBuf & buf, XML_Char *xmlField, 
 	case 'P':
 		if (strcmp (instr, "PAGE") == 0)
 		{
-			xmlField = UT_strdup ("page_number");
+			xmlField = g_strdup ("page_number");
 			UT_ASSERT_HARMLESS (xmlField);
 			isXML = (xmlField != NULL);
 		}
@@ -3640,20 +3640,20 @@ XML_Char *IE_Imp_RTF::_parseFldinstBlock (UT_ByteBuf & buf, XML_Char *xmlField, 
 	case 'N':
 		if (strcmp (instr, "NUMCHARS") == 0)
 		{
-			xmlField = UT_strdup ("char_count");
+			xmlField = g_strdup ("char_count");
 			UT_ASSERT_HARMLESS (xmlField);
 			isXML = (xmlField != NULL);
 		}
 		// this one have been found with ApplixWare exported RTF.
 		else if (strcmp (instr, "NUMPAGES") == 0)
 		{
-			xmlField = UT_strdup ("page_count");
+			xmlField = g_strdup ("page_count");
 			UT_ASSERT_HARMLESS (xmlField);
 			isXML = (xmlField != NULL);
 		}
 		else if (strcmp (instr, "NUMWORDS") == 0)
 		{
-			xmlField = UT_strdup ("word_count");
+			xmlField = g_strdup ("word_count");
 			UT_ASSERT_HARMLESS (xmlField);
 			isXML = (xmlField != NULL);
 		}
@@ -3661,7 +3661,7 @@ XML_Char *IE_Imp_RTF::_parseFldinstBlock (UT_ByteBuf & buf, XML_Char *xmlField, 
 	case 'S':
 		if (strcmp (instr, "SAVEDATE") == 0)
 		{
-			xmlField = UT_strdup ("date_dfl");
+			xmlField = g_strdup ("date_dfl");
 			UT_ASSERT_HARMLESS (xmlField);
 			isXML = (xmlField != NULL);
 		}
@@ -3673,49 +3673,49 @@ XML_Char *IE_Imp_RTF::_parseFldinstBlock (UT_ByteBuf & buf, XML_Char *xmlField, 
 
 			if(strstr(newBuf,"dddd, MMMM dd, yyyy") != NULL)
 			{
-				xmlField = UT_strdup("date");
+				xmlField = g_strdup("date");
 				UT_ASSERT_HARMLESS (xmlField);
 				isXML = (xmlField != NULL);
 			}
 			else if( strstr(newBuf,"m/d/yy") != NULL)
 			{
-				xmlField = UT_strdup("date_ddmmyy");
+				xmlField = g_strdup("date_ddmmyy");
 				UT_ASSERT_HARMLESS (xmlField);
 				isXML = (xmlField != NULL);
 			}
 			else if( strstr(newBuf,"MMMM d, yyyy") != NULL)
 			{
-				xmlField = UT_strdup("date_mdy");
+				xmlField = g_strdup("date_mdy");
 				UT_ASSERT_HARMLESS (xmlField);
 				isXML = (xmlField != NULL);
 			}
 			else if( strstr(newBuf,"MMM d, yy") != NULL)
 			{
-				xmlField = UT_strdup("date_mthdy");
+				xmlField = g_strdup("date_mthdy");
 				UT_ASSERT_HARMLESS (xmlField);
 				isXML = (xmlField != NULL);
 			}
 			else if( strstr(newBuf,"MMM d, yy") != NULL)
 			{
-				xmlField = UT_strdup("date_mthdy");
+				xmlField = g_strdup("date_mthdy");
 				UT_ASSERT_HARMLESS (xmlField);
 				isXML = (xmlField != NULL);
 			}
 			else if( strstr(newBuf,"MM-d-yy") != NULL)
 			{
-				xmlField = UT_strdup("date_ntdfl");
+				xmlField = g_strdup("date_ntdfl");
 				UT_ASSERT_HARMLESS (xmlField);
 				isXML = (xmlField != NULL);
 			}
 			else if( strstr(newBuf,"HH:mm:ss") != NULL)
 			{
-				xmlField = UT_strdup("time_miltime");
+				xmlField = g_strdup("time_miltime");
 				UT_ASSERT_HARMLESS (xmlField);
 				isXML = (xmlField != NULL);
 			}
 			else if( strstr(newBuf,"h:mm:ss am/pm") != NULL)
 			{
-				xmlField = UT_strdup("time_ampm");
+				xmlField = g_strdup("time_ampm");
 				UT_ASSERT_HARMLESS (xmlField);
 				isXML = (xmlField != NULL);
 			}
@@ -3724,13 +3724,13 @@ XML_Char *IE_Imp_RTF::_parseFldinstBlock (UT_ByteBuf & buf, XML_Char *xmlField, 
 //
 			else if( strstr(newBuf,"dddd") != NULL)
 			{
-				xmlField = UT_strdup("date_wkday");
+				xmlField = g_strdup("date_wkday");
 				UT_ASSERT_HARMLESS (xmlField);
 				isXML = (xmlField != NULL);
 			}
 			else
 			{
-				xmlField = UT_strdup ("time");
+				xmlField = g_strdup ("time");
 				UT_ASSERT_HARMLESS (xmlField);
 				isXML = (xmlField != NULL);
 			}
@@ -3746,7 +3746,7 @@ XML_Char *IE_Imp_RTF::_parseFldinstBlock (UT_ByteBuf & buf, XML_Char *xmlField, 
 		if (strcmp (instr, "date") == 0)
 		{
 			// TODO handle parameters
-			xmlField = UT_strdup ("date");
+			xmlField = g_strdup ("date");
 			UT_ASSERT_HARMLESS (xmlField);
 			isXML = (xmlField != NULL);
 		}
@@ -3755,7 +3755,7 @@ XML_Char *IE_Imp_RTF::_parseFldinstBlock (UT_ByteBuf & buf, XML_Char *xmlField, 
 		/* mostly StarOffice RTF fields */
 		if (strcmp (instr, "\\filename") == 0)
 		{
-			xmlField = UT_strdup ("file_name");
+			xmlField = g_strdup ("file_name");
 			UT_ASSERT_HARMLESS (xmlField);
 			isXML = (xmlField != NULL);
 		}
@@ -3801,7 +3801,7 @@ XML_Char *IE_Imp_RTF::_parseFldinstBlock (UT_ByteBuf & buf, XML_Char *xmlField, 
 		}
 		else if (strcmp (instr, "\\page") == 0)
 		{
-			xmlField = UT_strdup ("page_number");
+			xmlField = g_strdup ("page_number");
 			UT_ASSERT_HARMLESS (xmlField);
 			isXML = (xmlField != NULL);
 		}
@@ -5347,7 +5347,7 @@ bool IE_Imp_RTF::HandleStarKeyword()
 				{
 					char * pszField = strstr(reinterpret_cast<char *>(keyword_star),"D");
 					pszField++;
-					char * pszAbiField = UT_strdup(pszField);
+					char * pszAbiField = g_strdup(pszField);
 					char * pszD = strstr(pszAbiField,"D");
 					if(pszD)
 					{
@@ -10688,7 +10688,7 @@ bool IE_Imp_RTF::HandleStyleDefinition(void)
 					nesting--;
 				}
 			}
-			char * buffer  = UT_strdup(styleName.utf8_str());
+			char * buffer  = g_strdup(styleName.utf8_str());
 			char * oldbuffer;
 			if(styleNumber >= 0)
 			{
@@ -10732,7 +10732,7 @@ bool IE_Imp_RTF::HandleStyleDefinition(void)
 			{
 				if(attribs[i] != NULL)
 				{
-					pVecAttr->addItem(UT_strdup(attribs[i]));
+					pVecAttr->addItem(g_strdup(attribs[i]));
 				}
 				else
 				{
@@ -10799,7 +10799,7 @@ bool IE_Imp_RTF::HandleStyleDefinition(void)
 					UT_sint32 istyle = BasedOn[i];
 					// must not mix static and dynamically allocated strings in the same
 					// array, otherwise there is no way we can g_free it !!!
-					//attribs[attribsCount++] = UT_strdup(static_cast<const char *>(m_styleTable[istyle]));
+					//attribs[attribsCount++] = g_strdup(static_cast<const char *>(m_styleTable[istyle]));
 					attribs[attribsCount++] = m_styleTable[istyle];
 					UT_return_val_if_fail( attribsCount < PT_MAX_ATTRIBUTES * 2,false );
 				}
@@ -10817,7 +10817,7 @@ bool IE_Imp_RTF::HandleStyleDefinition(void)
 					UT_sint32 istyle = FollowedBy[i];
 					// must not mix static and dynamically allocated strings in the same
 					// array, otherwise there is no way we can g_free it !!!
-					// attribs[attribsCount++] = UT_strdup(static_cast<const char *>(m_styleTable[istyle]));
+					// attribs[attribsCount++] = g_strdup(static_cast<const char *>(m_styleTable[istyle]));
 					attribs[attribsCount++] = m_styleTable[istyle];
 					UT_return_val_if_fail( attribsCount < PT_MAX_ATTRIBUTES * 2,false );
 				}

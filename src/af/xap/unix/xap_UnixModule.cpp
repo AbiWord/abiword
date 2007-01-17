@@ -36,7 +36,7 @@ bool XAP_UnixModule::getModuleName (char ** dest) const
 {
   if (m_szname)
   {
-      *dest = static_cast<char *>(UT_strdup (m_szname));
+      *dest = static_cast<char *>(g_strdup (m_szname));
       return true;
   }
   return false;
@@ -78,6 +78,6 @@ bool XAP_UnixModule::resolveSymbol (const char * symbol_name, void ** symbol)
 
 bool XAP_UnixModule::getErrorMsg (char ** dest) const
 {
-	*dest = static_cast<char *>(UT_strdup (g_module_error ()));
+	*dest = static_cast<char *>(g_strdup (g_module_error ()));
 	return true;
 }

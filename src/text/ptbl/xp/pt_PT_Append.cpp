@@ -246,7 +246,7 @@ bool pt_PieceTable::appendLastStruxFmt(PTStruxType pst, const XML_Char ** attrib
 		if(*props == ';')
 			props++;
 		
-		char * pProps = UT_strdup(props);
+		char * pProps = g_strdup(props);
 
 		const XML_Char ** pPropsArray = UT_splitPropsToArray(pProps);
 		UT_return_val_if_fail( pPropsArray, false );

@@ -338,7 +338,7 @@ bool AP_Convert::convertTo(const char * szFilename,
 	return false;
     }
 
-  char * fileDup = UT_strdup ( szFilename );
+  char * fileDup = g_strdup ( szFilename );
       
   char *tmp = strrchr(fileDup, '.');
   if (tmp != NULL)

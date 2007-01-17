@@ -38,7 +38,7 @@ AP_Dialog_New::~AP_Dialog_New()
 void AP_Dialog_New::setFileName(const char * name)
 {
 	FREEP(m_fileName);
-	m_fileName = UT_strdup (name);
+	m_fileName = g_strdup (name);
 }
 
 /**************************************************************************/

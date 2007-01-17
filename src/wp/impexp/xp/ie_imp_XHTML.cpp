@@ -394,7 +394,7 @@ static void s_append_font_family (UT_UTF8String & style, const char * face)
 			quote = *face++;
 		}
 
-	char * value = UT_strdup (face);
+	char * value = g_strdup (face);
 	if (value == 0) return;
 
 	char * ptr = value;
@@ -511,7 +511,7 @@ static void s_append_color (UT_UTF8String & style, const char * color, const cha
 		}
 	if (*color == 0) return;
 
-	char * value = UT_strdup (color);
+	char * value = g_strdup (color);
 	if (value == 0) return;
 
 	int length = 0;
@@ -1242,7 +1242,7 @@ void IE_Imp_XHTML::startElement(const XML_Char *name,
 		UT_ByteBuf * pBB = static_cast<FG_GraphicRaster *>(pfg)->getRaster_PNG ();
 		X_CheckError(pBB);
 
-		char * mimetype = UT_strdup ("image/png");
+		char * mimetype = g_strdup ("image/png");
 		X_CheckError(mimetype);
 		if(szWidth)
 			{

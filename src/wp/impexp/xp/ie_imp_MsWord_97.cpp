@@ -4304,7 +4304,7 @@ UT_Error IE_Imp_MsWord_97::_handleImage (Blip * b, long width, long height, long
 	  goto Cleanup;
 	}
 
-  mimetype = UT_strdup("image/png");
+  mimetype = g_strdup("image/png");
   if (!getDoc()->createDataItem(propsName.c_str(), false,
 				buf, const_cast<void*>(static_cast<const void*>(mimetype)), NULL))
 	{
@@ -4417,7 +4417,7 @@ UT_Error IE_Imp_MsWord_97::_handlePositionedImage (Blip * b, UT_String & sImageN
 
   UT_String_sprintf(sImageName, "%d", getDoc()->getUID(UT_UniqueId::Image));
 
-  mimetype = UT_strdup ("image/png");
+  mimetype = g_strdup ("image/png");
   if (!getDoc()->createDataItem(sImageName.c_str(), false,
 				buf, const_cast<void*>(static_cast<const void*>(mimetype)), NULL))
 	{

@@ -204,7 +204,7 @@ bool IE_Imp_RTF::InsertImage (const UT_ByteBuf * buf, const char * image_name,
 		// Now, we should insert the picture into the document
 
 		const char * mimetype = NULL;
-		mimetype = UT_strdup("image/png");
+		mimetype = g_strdup("image/png");
 
 		switch (imgProps.sizeType)
 		{
@@ -330,7 +330,7 @@ bool IE_Imp_RTF::InsertImage (const UT_ByteBuf * buf, const char * image_name,
 		  Create the data item
 		*/
 		const char * mimetype = NULL;
-		mimetype = UT_strdup("image/png");
+		mimetype = g_strdup("image/png");
 		bool bOK = false;
 		bOK = getDoc()->createDataItem(szName.c_str(), false, buf, static_cast<const void *>(mimetype), NULL);
 		UT_return_val_if_fail(bOK, false);

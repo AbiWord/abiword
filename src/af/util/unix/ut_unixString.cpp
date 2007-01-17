@@ -54,7 +54,7 @@ void UT_unlink (const char * base)
 char * UT_tmpnam(char * base)
 {
 #if 1
-	char * name = UT_strdup ("/tmp/XXXXXX");
+	char * name = g_strdup ("/tmp/XXXXXX");
 
 	int fd = mkstemp (name);
 

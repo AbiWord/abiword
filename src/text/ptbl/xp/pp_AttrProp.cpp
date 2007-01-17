@@ -330,7 +330,7 @@ bool	PP_AttrProp::setAttribute(const XML_Char * szName, const XML_Char * szValue
 		}
 
 		UT_lowerString(copy);
-		char * szDupValue = szValue ? UT_strdup(szValue) : NULL;
+		char * szDupValue = szValue ? g_strdup(szValue) : NULL;
 
 		// get rid of any illegal chars we might have been given
 		UT_validXML(copy);
@@ -392,7 +392,7 @@ bool	PP_AttrProp::setProperty(const XML_Char * szName, const XML_Char * szValue)
 	char * szName2 = NULL;
 	if(!UT_isValidXML(szName))
 	{
-		szName2 = UT_strdup(szName);
+		szName2 = g_strdup(szName);
 
 		// get rid of any illegal chars we were passed
 		UT_validXML(szName2);
@@ -400,7 +400,7 @@ bool	PP_AttrProp::setProperty(const XML_Char * szName, const XML_Char * szValue)
 		szName = szName2;
 	}
 	
-	char * szValue2 = szValue ? UT_strdup(szValue) : NULL;
+	char * szValue2 = szValue ? g_strdup(szValue) : NULL;
 	UT_return_val_if_fail( szName && (szValue2 || !szValue), false);
 
 	// get rid of any illegal chars we might have been given in the value

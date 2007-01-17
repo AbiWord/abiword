@@ -370,7 +370,7 @@ UT_Error PD_Document::_importFile(GsfInput * input, int ieft,
 			_syncFileTypes(false);
 
 			UT_ASSERT_HARMLESS(!getFilename());
-			_setFilename(UT_strdup(szFilename));
+			_setFilename(g_strdup(szFilename));
 		}
 	repairDoc();
 	
@@ -3910,7 +3910,7 @@ Failed:
 		delete pNew;
 	}
 
-	// we also have to g_free the pToken, which was created by UT_strdup
+	// we also have to g_free the pToken, which was created by g_strdup
 	FREEP(pToken);
 
 	return false;
@@ -6031,8 +6031,8 @@ bool PD_Document::_acceptRejectRevision(bool bReject, UT_uint32 iStart, UT_uint3
 
 					// we have to make copies of these because they might be deleted
 					// before we need them
-					ppProps[2*i] = (XML_Char*)UT_strdup(ppProps[2*i]);
-					ppProps[2*i + 1] = (XML_Char*)UT_strdup(ppProps[2*i + 1]);
+					ppProps[2*i] = (XML_Char*)g_strdup(ppProps[2*i]);
+					ppProps[2*i + 1] = (XML_Char*)g_strdup(ppProps[2*i + 1]);
 					iPropCount += 2; // these will need to be freed later ...
 				}
 
@@ -6044,8 +6044,8 @@ bool PD_Document::_acceptRejectRevision(bool bReject, UT_uint32 iStart, UT_uint3
 					
 					// we have to make copies of these because they might be deleted
 					// before we need them
-					ppAttr2[2*i] = (XML_Char*)UT_strdup(ppAttr2[2*i]);
-					ppAttr2[2*i + 1] = (XML_Char*)UT_strdup(ppAttr2[2*i + 1]);
+					ppAttr2[2*i] = (XML_Char*)g_strdup(ppAttr2[2*i]);
+					ppAttr2[2*i + 1] = (XML_Char*)g_strdup(ppAttr2[2*i + 1]);
 					iAttrCount += 2; // these will need to be freed later ...
 				}
 

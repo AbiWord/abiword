@@ -63,11 +63,11 @@ UT_Error IE_Imp_GraphicAsDocument::_loadFile(GsfInput * input)
    	const char * mimetype = NULL;
 	if (pFG->getType() == FGT_Raster) {
 	   buf = (static_cast<FG_GraphicRaster*>(pFG))->getRaster_PNG();
-	   mimetype =UT_strdup("image/png");
+	   mimetype =g_strdup("image/png");
 	}
    	else if (pFG->getType() == FGT_Vector) { 
 	   buf = (static_cast<FG_GraphicVector*>(pFG))->getVector_SVG();
-	   mimetype = UT_strdup("image/svg+xml");
+	   mimetype = g_strdup("image/svg+xml");
 	}
    	else {
 	   delete pFG;

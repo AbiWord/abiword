@@ -708,7 +708,7 @@ XML_Char ** UT_cloneAndDecodeAttributes (const XML_Char ** attrs)
     {
 	s = attrs[i];
 	s.decodeXML();
-	attrs2[i] = UT_strdup(s.utf8_str());
+	attrs2[i] = g_strdup(s.utf8_str());
     }
 
     attrs2[i] = NULL;

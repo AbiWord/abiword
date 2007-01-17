@@ -515,14 +515,14 @@ void AP_QNXDialog_Spell::event_ReplacementChanged()
 char * AP_QNXDialog_Spell::_convertToMB(const UT_UCS4Char *wword)
 {
     UT_UCS4String ucs4(wword);
-    return UT_strdup(ucs4.utf8_str());
+    return g_strdup(ucs4.utf8_str());
 }
 
 // make a multibyte encoded version of a string
 char * AP_QNXDialog_Spell::_convertToMB(const UT_UCS4Char *wword, UT_sint32 iLength)
 {
    UT_UCS4String ucs4(wword, iLength);
-   return UT_strdup(ucs4.utf8_str());
+   return g_strdup(ucs4.utf8_str());
 }
 
 // make a wide string from a multibyte string

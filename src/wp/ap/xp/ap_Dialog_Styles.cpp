@@ -99,8 +99,8 @@ void AP_Dialog_Styles::addOrReplaceVecProp(const XML_Char * pszProp,
 	UT_sint32 iCount = m_vecAllProps.getItemCount();
 	if(iCount <= 0)
 	{
-		char * pSP = UT_strdup(pszProp);
-		char * pSV = UT_strdup(pszVal);
+		char * pSP = g_strdup(pszProp);
+		char * pSV = g_strdup(pszVal);
 		m_vecAllProps.addItem(pSP);
 		m_vecAllProps.addItem(pSV);
 		return;
@@ -116,13 +116,13 @@ void AP_Dialog_Styles::addOrReplaceVecProp(const XML_Char * pszProp,
 	{
 		char * pSV = (char*)m_vecAllProps.getNthItem(i+1);
 		FREEP(pSV);
-		pSV = UT_strdup(pszVal);
+		pSV = g_strdup(pszVal);
 		m_vecAllProps.setNthItem(i+1, pSV, NULL);
 	}
 	else
 	{
-		char * pSP = UT_strdup(pszProp);
-		char * pSV = UT_strdup(pszVal);
+		char * pSP = g_strdup(pszProp);
+		char * pSV = g_strdup(pszVal);
 		m_vecAllProps.addItem(pSP);
 		m_vecAllProps.addItem(pSV);
 	}
@@ -176,8 +176,8 @@ void AP_Dialog_Styles::addOrReplaceVecAttribs(const XML_Char * pszProp,
 	UT_sint32 iCount = m_vecAllAttribs.getItemCount();
 	if(iCount <= 0)
 	{
-		char * pSP = UT_strdup(pszProp);
-		char * pSV = UT_strdup(pszVal);
+		char * pSP = g_strdup(pszProp);
+		char * pSV = g_strdup(pszVal);
 		m_vecAllAttribs.addItem(pSP);
 		m_vecAllAttribs.addItem(pSV);
 		return;
@@ -193,13 +193,13 @@ void AP_Dialog_Styles::addOrReplaceVecAttribs(const XML_Char * pszProp,
 	{
 		char * pSV = (char*)m_vecAllAttribs.getNthItem(i+1);
 		FREEP(pSV);
-		pSV = UT_strdup(pszVal);
+		pSV = g_strdup(pszVal);
 		m_vecAllAttribs.setNthItem(i+1, pSV, NULL);
 	}
 	else
 	{
-		char * pSP = UT_strdup(pszProp);
-		char * pSV = UT_strdup(pszVal);
+		char * pSP = g_strdup(pszProp);
+		char * pSV = g_strdup(pszVal);
 		m_vecAllAttribs.addItem(pSP);
 		m_vecAllAttribs.addItem(pSV);
 	}
@@ -633,9 +633,9 @@ void AP_Dialog_Styles::_tabCallback(const char *szTabStops,
 {
 	// TODO: fix mem leaks
 	if (szTabStops)
-		addOrReplaceVecProp("tabstops", UT_strdup(szTabStops));
+		addOrReplaceVecProp("tabstops", g_strdup(szTabStops));
 	if (szDflTabStop)
-		addOrReplaceVecProp("default-tab-interval", UT_strdup(szDflTabStop));
+		addOrReplaceVecProp("default-tab-interval", g_strdup(szDflTabStop));
 }
 
 /*!

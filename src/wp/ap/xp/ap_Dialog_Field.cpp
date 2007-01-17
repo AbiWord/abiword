@@ -63,5 +63,5 @@ void AP_Dialog_Field::setParameter(const XML_Char * pParam)
 	if(m_pParameter)
 		FREEP( m_pParameter );
 	
-	m_pParameter = UT_strdup(pParam);
+	m_pParameter = g_strdup(pParam);
 }

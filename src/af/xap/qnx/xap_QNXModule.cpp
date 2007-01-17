@@ -52,7 +52,7 @@ bool XAP_QNXModule::getModuleName (char ** dest) const
 {
 	if (m_szname)
 	  {
-	    *dest = (char *)UT_strdup (m_szname);
+	    *dest = (char *)g_strdup (m_szname);
 	    return true;
 	  }
 	return false;
@@ -73,7 +73,7 @@ bool XAP_QNXModule::getErrorMsg (char ** dest) const
 {
   if (m_module)
     {
-      *dest = (char *)UT_strdup (dlerror());
+      *dest = (char *)g_strdup (dlerror());
       return true;
     }
   return false;

@@ -37,12 +37,12 @@ XAP_Dialog_ClipArt::~XAP_Dialog_ClipArt()
 void XAP_Dialog_ClipArt::setInitialDir (const char * szInitialDir)
 {
 	FREEP(m_szInitialDir);
-	m_szInitialDir = UT_strdup (szInitialDir);
+	m_szInitialDir = g_strdup (szInitialDir);
 }
 
 void XAP_Dialog_ClipArt::setGraphicName (const char * name)
 {
 	FREEP(m_szGraphicName);
-	m_szGraphicName = UT_strdup (name);
+	m_szGraphicName = g_strdup (name);
 }
 

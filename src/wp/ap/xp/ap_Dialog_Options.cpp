@@ -808,16 +808,16 @@ AP_PreferenceScheme::AP_PreferenceScheme(AP_PreferenceSchemeManager * pSchemeMan
 			UT_ASSERT(pszValue);
 			if (pszValue)
 				{
-					m_soAutoSaveExtension.m_original = UT_strdup(pszValue);
+					m_soAutoSaveExtension.m_original = g_strdup(pszValue);
 					CHECK_EXT(m_soAutoSaveExtension.m_original);
 				}
 		}
 	if (m_soAutoSaveExtension.m_original == 0)
 		{
-			m_soAutoSaveExtension.m_original = UT_strdup(m_soAutoSaveExtension.m_default);
+			m_soAutoSaveExtension.m_original = g_strdup(m_soAutoSaveExtension.m_default);
 			CHECK_EXT(m_soAutoSaveExtension.m_original);
 		}
-	m_soAutoSaveExtension.m_current = UT_strdup(m_soAutoSaveExtension.m_original);
+	m_soAutoSaveExtension.m_current = g_strdup(m_soAutoSaveExtension.m_original);
 	CHECK_EXT(m_soAutoSaveExtension.m_current);
 
 	/* StringSet
@@ -899,7 +899,7 @@ void AP_PreferenceScheme::restoreDefaults()
 	 */
 	FREEP_EXT(m_soAutoSaveExtension.m_current);
 
-	m_soAutoSaveExtension.m_current = UT_strdup(m_soAutoSaveExtension.m_default);
+	m_soAutoSaveExtension.m_current = g_strdup(m_soAutoSaveExtension.m_default);
 	CHECK_EXT(m_soAutoSaveExtension.m_current);
 
 	/* StringSet
@@ -1032,7 +1032,7 @@ void AP_PreferenceScheme::saveChanges()
 
 	FREEP_EXT(m_soAutoSaveExtension.m_original);
 
-	m_soAutoSaveExtension.m_original = UT_strdup(m_soAutoSaveExtension.m_current);
+	m_soAutoSaveExtension.m_original = g_strdup(m_soAutoSaveExtension.m_current);
 	CHECK_EXT(m_soAutoSaveExtension.m_original);
 
 	const XML_Char * szValue = 0;
@@ -1116,7 +1116,7 @@ const char * AP_PreferenceScheme::setAutoSaveExtension(const char * szAutoSaveEx
 		{
 			FREEP_EXT(m_soAutoSaveExtension.m_current);
 
-			m_soAutoSaveExtension.m_current = UT_strdup(szAutoSaveExtension);
+			m_soAutoSaveExtension.m_current = g_strdup(szAutoSaveExtension);
 			CHECK_EXT(m_soAutoSaveExtension.m_current);
 
 			sync();
@@ -1213,7 +1213,7 @@ void AP_PreferenceScheme::lookupDefaultOptionValues()
 	pScheme->getValue(XAP_PREF_KEY_AutoSaveFileExt, &pszValue);
 	UT_ASSERT(pszValue);
 	if (pszValue)
-		m_soAutoSaveExtension.m_default = UT_strdup(pszValue);
+		m_soAutoSaveExtension.m_default = g_strdup(pszValue);
 
 	CHECK_EXT(m_soAutoSaveExtension.m_default);
 
@@ -1548,19 +1548,19 @@ void AP_PreferenceSchemeManager::_constructPopUpArrays()
 	m_PopUp_UnitsCount = 0;
 
 	if (tmp = pSS->getValue(XAP_STRING_ID_DLG_Unit_inch))
-		if (tmpcopy = UT_strdup(tmp))
+		if (tmpcopy = g_strdup(tmp))
 			m_PopUp_UnitsList[m_PopUp_UnitsCount++] = tmpcopy;
 	if (tmp = pSS->getValue(XAP_STRING_ID_DLG_Unit_cm))
-		if (tmpcopy = UT_strdup(tmp))
+		if (tmpcopy = g_strdup(tmp))
 			m_PopUp_UnitsList[m_PopUp_UnitsCount++] = tmpcopy;
 	if (tmp = pSS->getValue(XAP_STRING_ID_DLG_Unit_mm))
-		if (tmpcopy = UT_strdup(tmp))
+		if (tmpcopy = g_strdup(tmp))
 			m_PopUp_UnitsList[m_PopUp_UnitsCount++] = tmpcopy;
 	if (tmp = pSS->getValue(XAP_STRING_ID_DLG_Unit_points))
-		if (tmpcopy = UT_strdup(tmp))
+		if (tmpcopy = g_strdup(tmp))
 			m_PopUp_UnitsList[m_PopUp_UnitsCount++] = tmpcopy;
 	if (tmp = pSS->getValue(XAP_STRING_ID_DLG_Unit_pica))
-		if (tmpcopy = UT_strdup(tmp))
+		if (tmpcopy = g_strdup(tmp))
 			m_PopUp_UnitsList[m_PopUp_UnitsCount++] = tmpcopy;
 
 	UT_ASSERT(m_PopUp_UnitsCount == 5); // must match size of s_internal_units[] // TODO: make dynamic!

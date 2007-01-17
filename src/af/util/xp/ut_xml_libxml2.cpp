@@ -105,7 +105,7 @@ static void _errorSAXFunc(void *xmlp,
   // Handle 'nbsp' here
   UT_XML * pXML = reinterpret_cast<UT_XML *>(xmlp);
   pXML->incMinorErrors();
-  char * szErr = UT_strdup(errorMessage.c_str() );
+  char * szErr = g_strdup(errorMessage.c_str() );
   if(strstr(szErr,"'nbsp' not defined") != NULL)
   {
     UT_DEBUGMSG(("nbsp found in stream errs %d \n",pXML->getNumMinorErrors()));

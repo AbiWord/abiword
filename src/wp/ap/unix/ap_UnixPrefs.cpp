@@ -68,7 +68,7 @@ void AP_UnixPrefs::overlayEnvironmentPrefs(void)
 	// TODO (see .../src/wp/ap/xp/ap_*_Languages.h)
 
         // make a copy of the current locale so we can set it back
-	char *old_locale = UT_strdup(setlocale(LC_ALL, NULL));
+	char *old_locale = g_strdup(setlocale(LC_ALL, NULL));
 
 	// this will set our current locale information
 	// according to the user's env variables
@@ -89,11 +89,11 @@ void AP_UnixPrefs::overlayEnvironmentPrefs(void)
 	const char * szNewLang = "en-US"; // default to US English
 #if defined (LC_MESSAGES) && defined (UNDEF) // raphael
 // #if defined (LC_MESSAGES)
-	char * lc_ctype = UT_strdup(setlocale(LC_MESSAGES, NULL));
+	char * lc_ctype = g_strdup(setlocale(LC_MESSAGES, NULL));
 #else
 	char * lc_ctype = getenv("LANG");
-	if (lc_ctype) lc_ctype = UT_strdup(lc_ctype);
-	else lc_ctype = UT_strdup("en_US");
+	if (lc_ctype) lc_ctype = g_strdup(lc_ctype);
+	else lc_ctype = g_strdup("en_US");
 #endif
 	// locale categories seem to always look like this:
 	// two letter for language (lowcase) _ two letter country code (upcase)

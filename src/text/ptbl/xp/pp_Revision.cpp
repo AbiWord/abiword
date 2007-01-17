@@ -36,7 +36,7 @@ PP_Revision::PP_Revision(UT_uint32 Id, PP_RevisionType eType, const XML_Char * p
 	
 	if(props)
 	{
-		char * pProps = UT_strdup(props);
+		char * pProps = g_strdup(props);
 		UT_return_if_fail (pProps);
 
 		char * p = strtok(pProps, ":");
@@ -76,7 +76,7 @@ PP_Revision::PP_Revision(UT_uint32 Id, PP_RevisionType eType, const XML_Char * p
 
 	if(attrs)
 	{
-		char * pAttrs = UT_strdup(attrs);
+		char * pAttrs = g_strdup(attrs);
 
 		UT_ASSERT_HARMLESS(pAttrs);
 		if(!pAttrs)
@@ -353,7 +353,7 @@ void PP_RevisionAttr::_init(const XML_Char *r)
 	// "+1,-2,!3{font-family: Times New Roman}"
 
 	// first duplicate the string so we can play with it ...
-	char * s = (char*) UT_strdup(r);
+	char * s = (char*) g_strdup(r);
 	char * end_s = s + strlen(s); // we need to remember where this
 								  // string ends because we cannot use strtok(NULL,...)
 

@@ -486,7 +486,7 @@ void s_RTF_ListenerGetProps::_check_revs_for_color(const PP_AttrProp * pAP1,
 		if(pAP->getAttribute("revision", pRev))
 		{
 			char * p;
-			pDup = p = UT_strdup(pRev);
+			pDup = p = g_strdup(pRev);
 
 			do
 			{
@@ -586,7 +586,7 @@ void s_RTF_ListenerGetProps::_check_revs_for_font(const PP_AttrProp * pAP1,
 		if(pAP->getAttribute("revision", pRev))
 		{
 			char * p;
-			pDup = p = UT_strdup(pRev);
+			pDup = p = g_strdup(pRev);
 
 			do
 			{

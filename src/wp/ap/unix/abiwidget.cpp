@@ -994,7 +994,7 @@ abi_widget_load_file(AbiWidget * abi, const char * pszFile)
 {
 	if(abi->priv->m_szFilename)
 		g_free(abi->priv->m_szFilename);
-	abi->priv->m_szFilename = UT_strdup(pszFile);
+	abi->priv->m_szFilename = g_strdup(pszFile);
 	if(!abi->priv->m_bMappedToScreen)
 	{
 	  abi->priv->m_bPendingFile = true;
@@ -1073,7 +1073,7 @@ abi_widget_load_file_from_gsf(AbiWidget * abi, GsfInput * input)
 {
 	if(abi->priv->m_szFilename)
 		g_free(abi->priv->m_szFilename);
-	abi->priv->m_szFilename = UT_strdup(gsf_input_name (input));
+	abi->priv->m_szFilename = g_strdup(gsf_input_name (input));
 	if(!abi->priv->m_bMappedToScreen)
 	{
 	  abi->priv->m_bPendingFile = true;
@@ -1153,7 +1153,7 @@ static gint s_abi_widget_load_file(gpointer p)
   }
   if(abi->priv->m_bPendingFile)
   {
-	char * pszFile = UT_strdup(abi->priv->m_szFilename);
+	char * pszFile = g_strdup(abi->priv->m_szFilename);
 	abi_widget_load_file(abi, pszFile);
 	g_free(pszFile);
   }

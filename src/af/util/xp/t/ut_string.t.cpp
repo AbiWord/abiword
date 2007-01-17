@@ -32,16 +32,6 @@ TFTEST_MAIN("UT_pointerArrayLength()")
 }
 
 
-TFTEST_MAIN("UT_strdup()")
-{
-	char * str;
-	//TFFAIL(UT_strdup(NULL));
-	str = UT_strdup("foo");
-	TFPASS(strcmp(str, "foo") == 0);
-	g_free(str);
-}
-
-
 TFTEST_MAIN("UT_stricmp()")
 {
 	// FIXME implement
@@ -69,7 +59,7 @@ TFTEST_MAIN("UT_replaceString")
 {
 	char *retStr;
 
-	retStr = UT_strdup("foobar");
+	retStr = g_strdup("foobar");
 	TFPASS(UT_replaceString(retStr, "barfoo"));
 	TFFAIL(strcmp(retStr, "foobar") == 0);
 	TFPASS(strcmp(retStr, "barfoo") == 0);
@@ -79,7 +69,7 @@ TFTEST_MAIN("UT_replaceString")
 
 TFTEST_MAIN("UT_upperString")
 {
-	char* str = UT_strdup("foobar");
+	char* str = g_strdup("foobar");
 
 	str = UT_upperString(str);
 	TFPASS(strcmp(str, "FOOBAR") == 0);
@@ -93,7 +83,7 @@ TFTEST_MAIN("UT_upperString")
 
 TFTEST_MAIN("UT_lowerString")
 {
-	char* str = UT_strdup("FOOBAR");
+	char* str = g_strdup("FOOBAR");
 
 	str = UT_lowerString(str);
 	TFPASS(strcmp(str, "foobar") == 0);

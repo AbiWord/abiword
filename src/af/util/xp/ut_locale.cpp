@@ -44,7 +44,7 @@
 UT_LocaleTransactor::UT_LocaleTransactor (int category, const char * locale)
   : mCategory (category), mOldLocale (0)
 {
-	mOldLocale = UT_strdup(setlocale(category, NULL));
+	mOldLocale = g_strdup(setlocale(category, NULL));
 	setlocale (category, locale);
 }
 

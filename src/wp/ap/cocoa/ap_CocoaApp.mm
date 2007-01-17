@@ -379,7 +379,7 @@ bool AP_CocoaApp::initialize(void)
 		szMenuLabelSetName = AP_PREF_DEFAULT_StringSet;
 	}
 	FREEP(m_szMenuLabelSetName);
-	m_szMenuLabelSetName = UT_strdup(szMenuLabelSetName);
+	m_szMenuLabelSetName = g_strdup(szMenuLabelSetName);
 	UT_ASSERT(m_szMenuLabelSetName);
 	if (!m_szMenuLabelSetName)
 		return false;
@@ -394,7 +394,7 @@ bool AP_CocoaApp::initialize(void)
 		szMenuLayoutName = AP_PREF_DEFAULT_MenuLayout;
 	}
 	FREEP(m_szMenuLayoutName);
-	m_szMenuLayoutName = UT_strdup(szMenuLayoutName);
+	m_szMenuLayoutName = g_strdup(szMenuLayoutName);
 	UT_ASSERT(m_szMenuLayoutName);
 	if (!m_szMenuLayoutName)
 		return false;

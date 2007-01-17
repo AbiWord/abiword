@@ -122,7 +122,7 @@ public:
 		}
 		if (m_pszModuleName)
 		{
-			*dest = UT_strdup(m_pszModuleName);
+			*dest = g_strdup(m_pszModuleName);
 			m_pszErr = 0;
 			return true;
 		}
@@ -138,7 +138,7 @@ public:
 		}
 		if (m_pszErr)
 		{
-			*dest = UT_strdup(m_pszErr);
+			*dest = g_strdup(m_pszErr);
 			return true;
 		}
 		return false;

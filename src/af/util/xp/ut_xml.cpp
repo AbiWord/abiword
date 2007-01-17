@@ -301,7 +301,7 @@ void UT_XML::defaultData (const char * buffer, int length)
 void UT_XML::setNameSpace (const char * xml_namespace)
 {
   FREEP (m_namespace);
-  if (xml_namespace) m_namespace = UT_strdup (xml_namespace);
+  if (xml_namespace) m_namespace = g_strdup (xml_namespace);
 
   m_nslength = 0;
   if (m_namespace) m_nslength = strlen (m_namespace);
@@ -399,7 +399,7 @@ char * UT_XML_Decode ( const char * inKey )
 	
 	parser.parse ( toDecode.c_str(), toDecode.size () ) ;
 
-	char * to_return = UT_strdup(decoder.getKey ().c_str());
+	char * to_return = g_strdup(decoder.getKey ().c_str());
 	xxx_UT_DEBUGMSG(("DOM: returning %s from %s\n", to_return, inKey));	
 	return to_return ;
 }

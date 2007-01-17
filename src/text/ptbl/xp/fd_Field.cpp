@@ -39,7 +39,7 @@ fd_Field::fd_Field(pf_Frag_Object& fO, pt_PieceTable * pt,
 	m_szValue = NULL;
 	if(pParam)
 	{
-		m_pParameter = UT_strdup(pParam);
+		m_pParameter = g_strdup(pParam);
 	}
 }
 
@@ -74,7 +74,7 @@ XML_Char* fd_Field::getValue(void) const
 void fd_Field::setValue(const XML_Char* szValue)
 {
         FREEP(m_szValue);
-	m_szValue = UT_strdup(szValue);
+	m_szValue = g_strdup(szValue);
 }
 
 bool fd_Field::update(void)

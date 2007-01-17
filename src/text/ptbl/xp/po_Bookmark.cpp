@@ -64,6 +64,6 @@ const XML_Char* po_Bookmark::getName(void) const
 void po_Bookmark::setName(const XML_Char* szValue)
 {
 	FREEP(m_pName);
-	m_pName = UT_strdup(szValue);
+	m_pName = g_strdup(szValue);
 }
 

@@ -57,7 +57,7 @@ bool XAP_CocoaModule::getModuleName (char ** dest) const
 {
 	if (dest)
 	{
-		*dest = (char *) UT_strdup(m_szname.utf8_str());
+		*dest = (char *) g_strdup(m_szname.utf8_str());
 		return (*dest ? true : false);
 	}
 	return false;
@@ -156,7 +156,7 @@ bool XAP_CocoaModule::getErrorMsg (char ** dest) const
 		return false;
 	}
 
-	*dest = (char *) UT_strdup(g_module_error());
+	*dest = (char *) g_strdup(g_module_error());
 	return (*dest ? true : false);
 }
 

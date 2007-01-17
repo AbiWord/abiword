@@ -130,7 +130,7 @@ char * AP_Dialog_ListRevisions::getNthItemText(UT_uint32 n) const
 		// selection, we get the comment from our stringset
 		
 		UT_return_val_if_fail(m_pSS,NULL);
-		char * pComment = UT_strdup(m_pSS->getValue(AP_STRING_ID_DLG_ListRevisions_LevelZero));
+		char * pComment = g_strdup(m_pSS->getValue(AP_STRING_ID_DLG_ListRevisions_LevelZero));
 		return pComment;
 	}
 	else

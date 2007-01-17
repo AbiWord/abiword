@@ -269,7 +269,7 @@ UT_Error FG_GraphicRaster::insertIntoDocument(PD_Document* pDoc, UT_uint32 res,
 	  Create the data item
 	*/
 	const char* mimetypePNG = NULL;
-	mimetypePNG = UT_strdup("image/png");
+	mimetypePNG = g_strdup("image/png");
    	pDoc->createDataItem(szName, false, m_pbbPNG, static_cast<void *>(const_cast<char *>(mimetypePNG)), NULL);
 
 	/*
@@ -312,7 +312,7 @@ UT_Error FG_GraphicRaster::insertAtStrux(PD_Document* pDoc,
 	  Create the data item
 	*/
 	const char* mimetypePNG = NULL;
-	mimetypePNG = UT_strdup("image/png");
+	mimetypePNG = g_strdup("image/png");
    	pDoc->createDataItem(szName, false, m_pbbPNG, static_cast<void *>(const_cast<char *>(mimetypePNG)), NULL);
 
 	/*

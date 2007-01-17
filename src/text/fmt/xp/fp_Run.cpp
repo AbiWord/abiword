@@ -4546,7 +4546,7 @@ bool fp_FieldWkdayRun::calculateValue(void)
 
 	strftime(szFieldValue, FPFIELD_MAX_LENGTH, "%A", pTime);
 	if (getField())
-		getField()->setValue(static_cast<const XML_Char*>(UT_strdup(szFieldValue)));
+		getField()->setValue(static_cast<const XML_Char*>(g_strdup(szFieldValue)));
 
 	UT_UCS4_strcpy_char(sz_ucs_FieldValue, szFieldValue);
 

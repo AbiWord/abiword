@@ -35,8 +35,8 @@ void UT_PropVector::addOrReplaceProp(const XML_Char * pszProp, const XML_Char * 
 	const char * pszV = NULL;
 /*	if(iCount <= 0)
 	{
-		char * prop = UT_strdup(pszProp);
-		char * val = UT_strdup(pszVal);
+		char * prop = g_strdup(pszProp);
+		char * val = g_strdup(pszVal);
 		vec.addItem(static_cast<void *>(prop));
 		vec.addItem(static_cast<void *>(val));
 		return;
@@ -50,13 +50,13 @@ void UT_PropVector::addOrReplaceProp(const XML_Char * pszProp, const XML_Char * 
 	}
 	if((iCount > 0) && (i < iCount)) {
 	    XML_Char* pVal;
-		XML_Char * val = UT_strdup(pszVal);
+		XML_Char * val = g_strdup(pszVal);
 		setNthItem(i+1, val, &pVal);
 		FREEP(pVal);
 	}
 	else {
-		XML_Char * prop = UT_strdup(pszProp);
-		XML_Char * val = UT_strdup(pszVal);
+		XML_Char * prop = g_strdup(pszProp);
+		XML_Char * val = g_strdup(pszVal);
 		addItem(prop);
 		addItem(val);
 	}

@@ -31,7 +31,7 @@ PD_Style::PD_Style(pt_PieceTable * pPT, PT_AttrPropIndex indexAP, const char * s
   m_pBasedOn(NULL), m_pFollowedBy(NULL)
 {
   if (szName)
-    m_szName = UT_strdup (szName);
+    m_szName = g_strdup (szName);
 }
 
 PD_Style::~PD_Style()

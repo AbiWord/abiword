@@ -170,7 +170,7 @@ void XAP_UnixDialog_Insert_Symbol::runModeless(XAP_Frame * pFrame)
 	if ( xap_UnixDlg_Insert_Symbol_first == 0)
 	{
 		iDrawSymbol->setSelectedFont(DEFAULT_UNIX_SYMBOL_FONT);
-		const gchar * buffer = UT_strdup(DEFAULT_UNIX_SYMBOL_FONT);
+		const gchar * buffer = g_strdup(DEFAULT_UNIX_SYMBOL_FONT);
 		gtk_entry_set_text(GTK_ENTRY(GTK_COMBO(m_fontcombo)->entry),buffer);
 		m_CurrentSymbol = ' ';
 		m_PreviousSymbol = ' ';
@@ -185,7 +185,7 @@ void XAP_UnixDialog_Insert_Symbol::runModeless(XAP_Frame * pFrame)
 	gtk_widget_show(mainWindow);
 
 	// Put the current font in the entry box
-	const char* iSelectedFont = UT_strdup(iDrawSymbol->getSelectedFont());
+	const char* iSelectedFont = g_strdup(iDrawSymbol->getSelectedFont());
 	xap_Unix_Prev_Font = iSelectedFont;
 	UT_DEBUGMSG(("Selected Font at startup %s \n",iSelectedFont));
 	gtk_entry_set_text(GTK_ENTRY(GTK_COMBO(m_fontcombo)->entry),
@@ -578,7 +578,7 @@ GList *XAP_UnixDialog_Insert_Symbol::_getGlistFonts (void)
 		   (currentfont.size() !=strlen(lgn)) )
 		{
 			currentfont = lgn;
-			m_fontlist.addItem(static_cast<gchar*>(UT_strdup(currentfont.c_str())));
+			m_fontlist.addItem(static_cast<gchar*>(g_strdup(currentfont.c_str())));
 			glFonts = g_list_prepend(glFonts, m_fontlist.getNthItem(j));
 			j++;
 		}

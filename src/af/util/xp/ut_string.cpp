@@ -146,17 +146,6 @@ UT_uint32 UT_pointerArrayLength(void ** array)
 // is defined in platform-specific code.
 //////////////////////////////////////////////////////////////////
 
-char * UT_strdup(const char * szSource)
-{
-  UT_return_val_if_fail(szSource, NULL);
-
-	int len = strlen(szSource)+1;
-	if(char * ret = static_cast<char *>(g_try_malloc(len * sizeof(char))))
-		return(static_cast<char *>(memcpy(ret, szSource, len)));
-	else
-		return(NULL);
-}
-
 UT_sint32 UT_stricmp(const char * s1, const char * s2)
 {
  UT_return_val_if_fail(s1, 1);

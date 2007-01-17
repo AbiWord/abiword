@@ -2013,7 +2013,7 @@ void GR_UnixPangoGraphics::setFont(GR_Font * pFont)
 	_setIsSymbol(false);
 	_setIsDingbat(false);
 
-	char * szUnixFontName = UT_strdup(m_pPFont->getFamily());
+	char * szUnixFontName = g_strdup(m_pPFont->getFamily());
 	const char * szLCFontName = UT_lowerString(szUnixFontName);
 
 	if (szLCFontName)

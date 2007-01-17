@@ -1292,7 +1292,7 @@ char *  fl_AutoNum::dec2roman(UT_sint32 value, bool lower)
 		value--;
 	}
 
-	char * rmn = UT_strdup (roman.c_str());
+	char * rmn = g_strdup (roman.c_str());
 
 	if (lower == true)
 	{
@@ -1326,7 +1326,7 @@ char * fl_AutoNum::dec2ascii(UT_sint32 value, UT_uint32 offset)
 	}
 	ascii[i] = '\0';
 
-	return UT_strdup(ascii);
+	return g_strdup(ascii);
 }
 
 void fl_AutoNum::dec2hebrew(UT_UCSChar labelStr[], UT_uint32 * insPoint, UT_sint32 value)

@@ -244,7 +244,7 @@ UT_Error FG_GraphicVector::insertIntoDocument(PD_Document* pDoc, UT_uint32 res,
 	/*
 	  Create the data item
 	*/
-	char * mimetype = UT_strdup("image/svg+xml");
+	char * mimetype = g_strdup("image/svg+xml");
    	pDoc->createDataItem(szName, false, m_pbbSVG, mimetype, NULL);
 
 	UT_String szProps;
@@ -294,7 +294,7 @@ UT_Error FG_GraphicVector::insertAtStrux(PD_Document* pDoc,
 	/*
 	  Create the data item
 	*/
-	char * mimetype = UT_strdup("image/svg+xml");
+	char * mimetype = g_strdup("image/svg+xml");
    	pDoc->createDataItem(szName, false, m_pbbSVG, mimetype, NULL);
 
 

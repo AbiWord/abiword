@@ -999,7 +999,7 @@ bool AD_Document::_restoreVersion(XAP_Frame * pFrame, UT_uint32 iVersion)
 	// create unique new name
 	UT_uint32 i = 0;
 
-	const char * pPath = UT_strdup(getFilename());
+	const char * pPath = g_strdup(getFilename());
 	UT_return_val_if_fail(pPath, false);
 	
 	char * pDot = (char *)strrchr(pPath,'.');

@@ -359,7 +359,7 @@ bool XAP_Dictionary::addWord(const UT_UCSChar * pWord, UT_uint32 len)
 //
 // Get exactly the same length.
 //
-	char * key2 = UT_strdup(key);
+	char * key2 = g_strdup(key);
 	copy[i] = 0;
 #if 0
 //
@@ -488,7 +488,7 @@ bool XAP_Dictionary::isWord(const UT_UCSChar * pWord, UT_uint32 len) const
 			break;
 	}
 	key[i] = 0;
-	char * key2 = UT_strdup(key);
+	char * key2 = g_strdup(key);
 	bool contains = m_hashWords.contains (key2, NULL);
 	FREEP(key);
 	FREEP(key2);

@@ -599,7 +599,7 @@ char *
 AP_UnixDialog_Spell::_convertToMB (const UT_UCSChar *wword)
 {
     UT_UCS4String ucs4(wword);
-    return UT_strdup(ucs4.utf8_str());
+    return g_strdup(ucs4.utf8_str());
 }
 
 /*!
@@ -610,7 +610,7 @@ AP_UnixDialog_Spell::_convertToMB (const UT_UCSChar *wword,
 								   UT_sint32 iLength)
 {
     UT_UCS4String ucs4(wword, iLength);
-    return UT_strdup(ucs4.utf8_str());
+    return g_strdup(ucs4.utf8_str());
 }
 
 /*!

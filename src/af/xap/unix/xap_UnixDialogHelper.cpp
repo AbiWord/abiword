@@ -440,7 +440,7 @@ static void fix_label_callback( GtkWidget *widget, gpointer _data )
 
 		/* convert the &'s into _'s .  Also handle \& as &'s */
 		accelch = 0;
-		newlbl = UT_strdup(str);				UT_ASSERT(newlbl);
+		newlbl = g_strdup(str);				UT_ASSERT(newlbl);
 		for ( i = 0; newlbl[i] != 0; i++ ) 
 		{
 			if ( newlbl[i] == '&' ) {
@@ -917,7 +917,7 @@ void localizeLabelUnderline(GtkWidget * widget, const XAP_StringSet * pSS, XAP_S
 {
 	UT_UTF8String s;
 	pSS->getValueUTF8(id,s);
-	XML_Char * newlbl = UT_strdup(s.utf8_str());
+	XML_Char * newlbl = g_strdup(s.utf8_str());
 	UT_ASSERT(newlbl);
 	convertMnemonics(newlbl);
 	gtk_label_set_text_with_mnemonic (GTK_LABEL(widget), newlbl);
@@ -962,7 +962,7 @@ void localizeButtonUnderline(GtkWidget * widget, const XAP_StringSet * pSS, XAP_
 {
 	UT_UTF8String s;
 	pSS->getValueUTF8(id,s);
-	XML_Char * newlbl = UT_strdup(s.utf8_str());
+	XML_Char * newlbl = g_strdup(s.utf8_str());
 	UT_ASSERT(newlbl);
 	convertMnemonics(newlbl);
 	gtk_button_set_use_underline (GTK_BUTTON(widget), TRUE);
@@ -982,7 +982,7 @@ void localizeButtonMarkup(GtkWidget * widget, const XAP_StringSet * pSS, XAP_Str
 {
 	UT_UTF8String s;
 	pSS->getValueUTF8(id,s);
-	XML_Char * newlbl = UT_strdup(s.utf8_str());
+	XML_Char * newlbl = g_strdup(s.utf8_str());
 	UT_ASSERT(newlbl);
 	convertMnemonics(newlbl);
 	UT_String markupStr(UT_String_sprintf(gtk_button_get_label (GTK_BUTTON(widget)), newlbl));
