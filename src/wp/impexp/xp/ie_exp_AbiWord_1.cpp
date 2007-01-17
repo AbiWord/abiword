@@ -85,7 +85,7 @@ UT_Confidence_t IE_Exp_AbiWord_1_Sniffer::supportsMIME (const char * szMIME)
 
 bool IE_Exp_AbiWord_1_Sniffer::recognizeSuffix(const char * szSuffix)
 {
-	return (!UT_stricmp(szSuffix,".abw") || !UT_stricmp(szSuffix,".zabw") || !UT_stricmp(szSuffix, ".abw.gz"));
+	return (!g_ascii_strcasecmp(szSuffix,".abw") || !g_ascii_strcasecmp(szSuffix,".zabw") || !g_ascii_strcasecmp(szSuffix, ".abw.gz"));
 }
 
 UT_Error IE_Exp_AbiWord_1_Sniffer::constructExporter(PD_Document * pDocument,

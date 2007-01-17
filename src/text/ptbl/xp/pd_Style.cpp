@@ -235,7 +235,7 @@ bool PD_Style::isCharStyle(void) const
 	const XML_Char * szValue = NULL;
 	if (getAttribute(PT_TYPE_ATTRIBUTE_NAME, szValue))
 		if (szValue && szValue[0])
-			return UT_stricmp(szValue, "C") == 0; // *PLEASE LEAVE THIS AS CASE
+			return g_ascii_strcasecmp(szValue, "C") == 0; // *PLEASE LEAVE THIS AS CASE
                                                // *INSESITIVE. IF YOU DON'T
                                                // * I'LL PUT YOUR EMAIL ADDRESS
                                                // * ON SPAM BLACK LIST!
@@ -250,7 +250,7 @@ bool PD_Style::isList(void)
 {
 	const char *szListStyle = NULL;
 	if (getPropertyExpand("list-style", szListStyle)) {
-		return UT_stricmp(szListStyle, "None") != NULL;
+		return g_ascii_strcasecmp(szListStyle, "None") != NULL;
 	}
 	else {
 		return FALSE;

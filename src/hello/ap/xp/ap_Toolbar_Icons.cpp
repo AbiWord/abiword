@@ -78,14 +78,14 @@ bool AP_Toolbar_Icons::_findIconDataByName(const char * szName,
 {
 	// This is a static function.
 
-	if (!szName || !*szName || (UT_stricmp(szName,"NoIcon")==0))
+	if (!szName || !*szName || (g_ascii_strcasecmp(szName,"NoIcon")==0))
 		return false;
 	
 	UT_uint32 kLimit = NrElements(s_itTable);
 	UT_uint32 k;
 
 	for (k=0; k < kLimit; k++)
-		if (UT_stricmp(szName,s_itTable[k].m_name) == 0)
+		if (g_ascii_strcasecmp(szName,s_itTable[k].m_name) == 0)
 		{
 			*pIconData = s_itTable[k].m_staticVariable;
 			*pSizeofData = s_itTable[k].m_sizeofVariable;

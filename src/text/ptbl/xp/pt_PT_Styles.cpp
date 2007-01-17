@@ -429,7 +429,7 @@ static UT_sint32 compareStyleNames(const void * vS1, const void * vS2)
 	const PD_Style ** pS2 = (const PD_Style **) vS2;
 	const char * sz1 = (*pS1)->getName();
 	const char * sz2 = (*pS2)->getName();
-	return UT_stricmp(sz1, sz2);
+	return g_ascii_strcasecmp(sz1, sz2);
 }
 #endif
 

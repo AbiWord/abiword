@@ -84,7 +84,7 @@ static bool findIconDataByName(const char * szName, const char *** pIconData, UT
 {
 	// This is a static function.
 
-	if (!szName || !*szName || (UT_stricmp(szName,"NoIcon")==0))
+	if (!szName || !*szName || (g_ascii_strcasecmp(szName,"NoIcon")==0))
 		return false;
 
 	UT_uint32 kLimit = NrElements(s_itTable);
@@ -93,7 +93,7 @@ static bool findIconDataByName(const char * szName, const char *** pIconData, UT
 	for (k=0; k < kLimit; k++)
 	{
 		UT_DEBUGMSG(("SEVIOR: examining %s \n",s_itTable[k].m_name));
-		if (UT_stricmp(szName,s_itTable[k].m_name) == 0)
+		if (g_ascii_strcasecmp(szName,s_itTable[k].m_name) == 0)
 		{
 			*pIconData = s_itTable[k].m_staticVariable;
 			*pSizeofData = s_itTable[k].m_sizeofVariable;

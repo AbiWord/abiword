@@ -135,7 +135,7 @@ UT_Confidence_t IE_Exp_Text_Sniffer::supportsMIME (const char * szMIME)
  */
 bool IE_Exp_Text_Sniffer::recognizeSuffix(const char * szSuffix)
 {
-	return (!UT_stricmp(szSuffix,".txt") || !UT_stricmp(szSuffix, ".text"));
+	return (!g_ascii_strcasecmp(szSuffix,".txt") || !g_ascii_strcasecmp(szSuffix, ".text"));
 }
 
 UT_Error IE_Exp_Text_Sniffer::constructExporter(PD_Document * pDocument,
@@ -174,7 +174,7 @@ IE_Exp_EncodedText_Sniffer::~IE_Exp_EncodedText_Sniffer ()
  */
 bool IE_Exp_EncodedText_Sniffer::recognizeSuffix(const char * szSuffix)
 {
-	return (!UT_stricmp(szSuffix,".txt") || !UT_stricmp(szSuffix, ".text"));
+	return (!g_ascii_strcasecmp(szSuffix,".txt") || !g_ascii_strcasecmp(szSuffix, ".text"));
 }
 
 UT_Error IE_Exp_EncodedText_Sniffer::constructExporter(PD_Document * pDocument,
@@ -335,7 +335,7 @@ void IE_Exp_Text::_setEncoding(const char *szEncoding)
 #endif
 		m_bUnicode = true;
 	}
-	else if(szEncoding && !UT_strnicmp(szEncoding,"UTF-",4))
+	else if(szEncoding && !g_ascii_strncasecmp(szEncoding,"UTF-",4))
 	{
 		// TODO -- can encoding be utf-16 or utf-32?
 		m_bIs16Bit = false;
@@ -505,12 +505,12 @@ void Text_Listener::_handleDirMarker(PT_AttrPropIndex api)
 		{
 			if(m_eDirOverride == DO_UNSET)
 			{
-				if(!UT_stricmp(szValue, "rtl"))
+				if(!g_ascii_strcasecmp(szValue, "rtl"))
 				{
 					m_eDirOverride = DO_RTL;
 					pMarker = &cRLO;
 				}
-				else if(!UT_stricmp(szValue, "ltr"))
+				else if(!g_ascii_strcasecmp(szValue, "ltr"))
 				{
 					m_eDirOverride = DO_LTR;
 					pMarker = &cLRO;
@@ -518,11 +518,11 @@ void Text_Listener::_handleDirMarker(PT_AttrPropIndex api)
 			}
 			else if(m_eDirOverride == DO_RTL)
 			{
-				if(!UT_stricmp(szValue, "rtl"))
+				if(!g_ascii_strcasecmp(szValue, "rtl"))
 				{
 					// no change
 				}
-				else if(!UT_stricmp(szValue, "ltr"))
+				else if(!g_ascii_strcasecmp(szValue, "ltr"))
 				{
 					m_eDirOverride = DO_LTR;
 					pMarker = &cLRO;
@@ -530,11 +530,11 @@ void Text_Listener::_handleDirMarker(PT_AttrPropIndex api)
 			}
 			else if(m_eDirOverride == DO_LTR)
 			{
-				if(!UT_stricmp(szValue, "ltr"))
+				if(!g_ascii_strcasecmp(szValue, "ltr"))
 				{
 					// no change
 				}
-				else if(!UT_stricmp(szValue, "rtl"))
+				else if(!g_ascii_strcasecmp(szValue, "rtl"))
 				{
 					m_eDirOverride = DO_RTL;
 					pMarker = &cRLO;
@@ -641,7 +641,7 @@ Text_Listener::Text_Listener(PD_Document * pDocument,
 		const XML_Char *szValue = NULL;
 		if(pAP->getProperty("dom-dir", szValue))
 		{
-			if(!UT_stricmp("rtl",szValue))
+			if(!g_ascii_strcasecmp("rtl",szValue))
 			{
 				m_eDocDir = DO_RTL;
 			}
@@ -786,7 +786,7 @@ bool Text_Listener::populateStrux(PL_StruxDocHandle /*sdh*/,
 				const XML_Char *szValue = NULL;
 				if(pAP->getProperty("dom-dir", szValue))
 				{
-					if(!UT_stricmp("rtl",szValue))
+					if(!g_ascii_strcasecmp("rtl",szValue))
 					{
 						m_eSectionDir = DO_RTL;
 					}
@@ -847,7 +847,7 @@ bool Text_Listener::populateStrux(PL_StruxDocHandle /*sdh*/,
 					szValue = NULL;
 					if(pAP->getProperty("dom-dir", szValue))
 					{
-						if(!UT_stricmp("rtl",szValue))
+						if(!g_ascii_strcasecmp("rtl",szValue))
 						{
 							m_eDirMarkerPending = DO_RTL;
 						}

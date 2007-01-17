@@ -130,7 +130,7 @@ bool UT_Xpm2Bmp(UT_uint32 maxWidth,
 
 		// store the actual color value in the rgb quad array with our color index.
 
-		if (UT_stricmp(bufColorValue,"None")==0)
+		if (g_ascii_strcasecmp(bufColorValue,"None")==0)
 		{
 			pRGB[k].rgbRed		= pBackgroundColor->m_red;
 			pRGB[k].rgbGreen	= pBackgroundColor->m_grn;

@@ -299,7 +299,7 @@ void XAP_Win32App::_setAbiSuiteLibDir(void)
 	int kLimit = m_pArgs->m_argc;
 
 	for (int k=1; k<kLimit; k++)
-		if ((*m_pArgs->m_argv[k] == '-') && (UT_stricmp(m_pArgs->m_argv[k],"-lib")==0) && (k+1 < kLimit))
+		if ((*m_pArgs->m_argv[k] == '-') && (g_ascii_strcasecmp(m_pArgs->m_argv[k],"-lib")==0) && (k+1 < kLimit))
 		{
 			strcpy(buf,m_pArgs->m_argv[k+1]);
 			int len = strlen(buf);
@@ -381,8 +381,8 @@ void XAP_Win32App::_setAbiSuiteLibDir(void)
 
 		int n = v.getItemCount();
 		if (   (n > 2)
-			&& (UT_stricmp((const char *)v.getNthItem(n-1),"bin")==0)
-			&& (UT_stricmp((const char *)v.getNthItem(n-2),szApplicationName)==0))
+			&& (g_ascii_strcasecmp((const char *)v.getNthItem(n-1),"bin")==0)
+			&& (g_ascii_strcasecmp((const char *)v.getNthItem(n-2),szApplicationName)==0))
 		{
 			s_buildDirName(v, n - 2, buf);
 			XAP_App::_setAbiSuiteLibDir(buf);
@@ -390,7 +390,7 @@ void XAP_Win32App::_setAbiSuiteLibDir(void)
 		}
 
 		if (   (n > 1)
-			&& (UT_stricmp((const char *)v.getNthItem(n-1),"bin")==0))
+			&& (g_ascii_strcasecmp((const char *)v.getNthItem(n-1),"bin")==0))
 		{
 			s_buildDirName(v, n - 1, buf);
 			strcat(buf,"\\AbiSuite");

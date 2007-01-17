@@ -228,7 +228,7 @@ bool IE_TOCHelper::_tocNameLevelHelper(const UT_UTF8String & style_name,
   
   while (style && (iLoop < 10))
     {
-      if (UT_stricmp (base_name, style->getName ()) == 0)
+      if (g_ascii_strcasecmp (base_name, style->getName ()) == 0)
 	return true;
       
       style = style->getBasedOn ();

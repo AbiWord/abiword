@@ -178,7 +178,7 @@ void XAP_CocoaDialog_Language::runModal(XAP_Frame * pFrame)
 					[m_Languages addObject:[NSString stringWithUTF8String:language]];
 
 					if (current_language)
-						if (UT_stricmp(current_language, language) == 0)
+						if (g_ascii_strcasecmp(current_language, language) == 0)
 							{
 								current_index = (int) i;
 							}

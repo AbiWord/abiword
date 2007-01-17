@@ -169,7 +169,7 @@ void AP_Win32Dialog_FormatTOC::setStyle(HWND hWnd, int nCtrlID)
 			break;
 	}
 
-	if(UT_stricmp("toc-heading-style",sProp.utf8_str()) != 0)
+	if(g_ascii_strcasecmp("toc-heading-style",sProp.utf8_str()) != 0)
 	{
 		UT_String sNum =  UT_String_sprintf("%d",getMainLevel());
 		sProp += sNum.c_str();
@@ -210,7 +210,7 @@ void AP_Win32Dialog_FormatTOC::setMainLevel(UT_sint32 iLevel)
 	sVal = getTOCPropVal("toc-has-label",getMainLevel());
 	
 	CheckDlgButton(m_pGeneral->getHandle(), AP_RID_DIALOG_FORMATTOC_GENERAL_CHECK_HASLEVEL,
-		(UT_stricmp(sVal.utf8_str(),"1") == 0) ? BST_CHECKED :BST_UNCHECKED);	
+		(g_ascii_strcasecmp(sVal.utf8_str(),"1") == 0) ? BST_CHECKED :BST_UNCHECKED);	
 }
 
 
@@ -300,7 +300,7 @@ void AP_Win32Dialog_FormatTOC_General::_fillGUI()
 	UT_String str;
 
 	sVal = getContainer()->getTOCPropVal("toc-has-heading"); 
-	if(UT_stricmp(sVal.utf8_str(),"1") == 0)
+	if(g_ascii_strcasecmp(sVal.utf8_str(),"1") == 0)
 	{
 		CheckDlgButton(getHandle(), AP_RID_DIALOG_FORMATTOC_GENERAL_CHECK_HASHEADING, BST_CHECKED);
 		EnableWindow(GetDlgItem(getHandle(),AP_RID_DIALOG_FORMATTOC_GENERAL_BUTTON_HEADINGSTYLE), true);
@@ -315,7 +315,7 @@ void AP_Win32Dialog_FormatTOC_General::_fillGUI()
 	
 	sVal = getContainer()->getTOCPropVal("toc-has-label", getContainer()->getMainLevel()); 	 
 	CheckDlgButton(getHandle(), AP_RID_DIALOG_FORMATTOC_GENERAL_CHECK_HASLEVEL,
-		(UT_stricmp(sVal.utf8_str(),"1") == 0) ? BST_CHECKED :BST_UNCHECKED);
+		(g_ascii_strcasecmp(sVal.utf8_str(),"1") == 0) ? BST_CHECKED :BST_UNCHECKED);
 
 	sVal = getContainer()->getTOCPropVal("toc-heading-style");
 	pt_PieceTable::s_getLocalisedStyleName (sVal.utf8_str(), str_loc);

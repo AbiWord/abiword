@@ -96,7 +96,7 @@ EV_Toolbar_LabelSet * AP_CreateToolbarLabelSet(const char * szLanguage)
 {
 	if (szLanguage && *szLanguage)
 		for (UT_uint32 k=0; k<NrElements(s_ltTable); k++)
-			if (UT_stricmp(szLanguage,s_ltTable[k].m_name)==0)
+			if (g_ascii_strcasecmp(szLanguage,s_ltTable[k].m_name)==0)
 				return (s_ltTable[k].m_fn)();
 
 	// we fall back to EnUS if they didn't give us a valid language name.

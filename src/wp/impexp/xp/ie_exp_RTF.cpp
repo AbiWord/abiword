@@ -107,7 +107,7 @@ UT_Confidence_t IE_Exp_RTF_Sniffer::supportsMIME (const char * szMIME)
 
 bool IE_Exp_RTF_Sniffer::recognizeSuffix(const char * szSuffix)
 {
-	return (!UT_stricmp(szSuffix,".rtf"));
+	return (!g_ascii_strcasecmp(szSuffix,".rtf"));
 }
 
 UT_Error IE_Exp_RTF_Sniffer::constructExporter(PD_Document * pDocument,
@@ -138,7 +138,7 @@ IE_Exp_RTF_attic_Sniffer::IE_Exp_RTF_attic_Sniffer ()
 
 bool IE_Exp_RTF_attic_Sniffer::recognizeSuffix(const char * szSuffix)
 {
-	return (!UT_stricmp(szSuffix,".rtf"));
+	return (!g_ascii_strcasecmp(szSuffix,".rtf"));
 }
 
 UT_Error IE_Exp_RTF_attic_Sniffer::constructExporter(PD_Document * pDocument,
@@ -167,7 +167,7 @@ IE_Exp_MsWord_Hack_Sniffer::IE_Exp_MsWord_Hack_Sniffer ()
 
 bool IE_Exp_MsWord_Hack_Sniffer::recognizeSuffix(const char * szSuffix)
 {
-	return (!UT_stricmp(szSuffix,".doc"));
+	return (!g_ascii_strcasecmp(szSuffix,".doc"));
 }
 
 UT_Error IE_Exp_MsWord_Hack_Sniffer::constructExporter(PD_Document * pDocument,
@@ -383,7 +383,7 @@ UT_sint32 IE_Exp_RTF::_findColor(const char * szColor) const
 	for (k=0; k<kLimit; k++)
 	{
 		const char * sz = (const char *)m_vecColors.getNthItem(k);
-		if (UT_stricmp(sz,szColor) == 0)
+		if (g_ascii_strcasecmp(sz,szColor) == 0)
 			return k;
 	}
 
@@ -527,7 +527,7 @@ void IE_Exp_RTF::_rtf_fontname(const char * szFontName)
 	    This is safe to do for both attic and non-attic format
 	    because we handle "helvetica" in a special way on import.
 	*/
-	if (UT_stricmp(szFontName,"helvetic")==0)
+	if (g_ascii_strcasecmp(szFontName,"helvetic")==0)
 		write("Helvetica");
 	else
 	{
@@ -658,7 +658,7 @@ bool IE_Exp_RTF::_write_rtf_header(void)
 	{
 		const char* cpgname = wvLIDToCodePageConverter(langcode);
 		xxx_UT_DEBUGMSG(("Belcon,after wvLIDToCodePageConverter(%d),cpgname=%s\n",langcode,cpgname));
-		if (UT_strnicmp(cpgname,"cp",2)==0 && UT_UCS4_isdigit(cpgname[2]))
+		if (g_ascii_strncasecmp(cpgname,"cp",2)==0 && UT_UCS4_isdigit(cpgname[2]))
 		{
 			int cpg;
 			if (sscanf(cpgname+2,"%d",&cpg)==1)
@@ -673,7 +673,7 @@ bool IE_Exp_RTF::_write_rtf_header(void)
 		else
 		{
 			const char* codepage=XAP_EncodingManager::get_instance()->CodepageFromCharset(const_cast<char*>(cpgname));
-			if(UT_strnicmp(codepage,"cp",2)==0 && UT_UCS4_isdigit(codepage[2]))
+			if(g_ascii_strncasecmp(codepage,"cp",2)==0 && UT_UCS4_isdigit(codepage[2]))
 			{
 				int cpg;
 				if (sscanf(codepage+2,"%d",&cpg)==1)
@@ -1741,7 +1741,7 @@ void IE_Exp_RTF::_write_charfmt(const s_RTF_AttrPropAdapter & apa)
 
 	szColor = _getStyleProp(pADStyle,&apa,"bgcolor");
 
-	if (szColor && UT_stricmp (szColor, "transparent") != 0)
+	if (szColor && g_ascii_strcasecmp (szColor, "transparent") != 0)
 	{
 		ndxColor = _findColor((char*)szColor);
 		UT_ASSERT_HARMLESS(ndxColor != -1);

@@ -377,7 +377,7 @@ UT_Confidence_t IE_Exp_MsWord_97_Sniffer::supportsMIME (const char * szMIME)
 
 bool IE_Exp_MsWord_97_Sniffer::recognizeSuffix(const char * szSuffix)
 {
-	return (!UT_stricmp(szSuffix,".doc") || !UT_stricmp(szSuffix, ".dot"));
+	return (!g_ascii_strcasecmp(szSuffix,".doc") || !g_ascii_strcasecmp(szSuffix, ".dot"));
 }
 
 UT_Error IE_Exp_MsWord_97_Sniffer::constructExporter(PD_Document * pDocument,

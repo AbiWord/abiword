@@ -634,20 +634,20 @@ void XAP_CocoaDialog_FontChooser::_deleteGC(void)
 	if (!style || !weight) {
 		st = -1;
 	}
-	else if (!UT_stricmp(style, "normal") &&
-					!UT_stricmp(weight, "normal")) {
+	else if (!g_ascii_strcasecmp(style, "normal") &&
+					!g_ascii_strcasecmp(weight, "normal")) {
 		st = 0;
 	}
-	else if (!UT_stricmp(style, "italic") &&
-					!UT_stricmp(weight, "normal")) {
+	else if (!g_ascii_strcasecmp(style, "italic") &&
+					!g_ascii_strcasecmp(weight, "normal")) {
 		st = 1;
 	}
-	else if (!UT_stricmp(style, "normal") &&
-					!UT_stricmp(weight, "bold")){
+	else if (!g_ascii_strcasecmp(style, "normal") &&
+					!g_ascii_strcasecmp(weight, "bold")){
 		st = 2;
 	}
-	else if (!UT_stricmp(style, "italic") &&
-					!UT_stricmp(weight, "bold")) {
+	else if (!g_ascii_strcasecmp(style, "italic") &&
+					!g_ascii_strcasecmp(weight, "bold")) {
 		st = 3;
 	}
 	else {

@@ -181,14 +181,14 @@ IE_Exp_PS_Sniffer::~IE_Exp_PS_Sniffer ()
   
 UT_Confidence_t IE_Exp_PS_Sniffer::supportsMIME (const char * szMIME)
 {
-  if(!UT_stricmp(szMIME, "application/postscript"))
+  if(!g_ascii_strcasecmp(szMIME, "application/postscript"))
     return UT_CONFIDENCE_PERFECT;
   return UT_CONFIDENCE_ZILCH;
 }
   
 bool IE_Exp_PS_Sniffer::recognizeSuffix (const char * szSuffix)
 {
-  return !UT_stricmp(szSuffix,".ps");
+  return !g_ascii_strcasecmp(szSuffix,".ps");
 }
 
 bool IE_Exp_PS_Sniffer::getDlgLabels (const char ** szDesc,
@@ -222,14 +222,14 @@ IE_Exp_PDF_Sniffer::~IE_Exp_PDF_Sniffer ()
   
 UT_Confidence_t IE_Exp_PDF_Sniffer::supportsMIME (const char * szMIME)
 {
-  if(!UT_stricmp(szMIME, "application/pdf"))
+  if(!g_ascii_strcasecmp(szMIME, "application/pdf"))
     return UT_CONFIDENCE_PERFECT;
   return UT_CONFIDENCE_ZILCH;
 }
   
 bool IE_Exp_PDF_Sniffer::recognizeSuffix (const char * szSuffix)
 {
-  return !UT_stricmp(szSuffix,".pdf");
+  return !g_ascii_strcasecmp(szSuffix,".pdf");
 }
 
 bool IE_Exp_PDF_Sniffer::getDlgLabels (const char ** szDesc,

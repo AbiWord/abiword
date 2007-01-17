@@ -317,7 +317,7 @@ EV_Toolbar_Layout * XAP_Toolbar_Factory::CreateToolbarLayout(const char * szName
 	{
 		XAP_Toolbar_Factory_vec * pVec = (XAP_Toolbar_Factory_vec *) m_vecTT.getNthItem(i);
 		const char * szCurName =  pVec->getToolbarName();
-		if (UT_stricmp(szName,szCurName)==0)
+		if (g_ascii_strcasecmp(szName,szCurName)==0)
 		{
 			bFound = true;
 			pLayout = new EV_Toolbar_Layout(pVec->getToolbarName(),pVec->getNrEntries());
@@ -362,7 +362,7 @@ void XAP_Toolbar_Factory::restoreToolbarLayout(EV_Toolbar_Layout *pTB)
 	{
 		pVec = (XAP_Toolbar_Factory_vec *) m_vecTT.getNthItem(i);
 		const char * szCurName =  pVec->getToolbarName();
-		if (UT_stricmp(strName.c_str(),szCurName)==0)
+		if (g_ascii_strcasecmp(strName.c_str(),szCurName)==0)
 		{
 			bFound = true;
 			break;
@@ -390,7 +390,7 @@ bool  XAP_Toolbar_Factory::addIconBefore(const char * szName,
 	{
 		pVec = (XAP_Toolbar_Factory_vec *) m_vecTT.getNthItem(i);
 		const char * szCurName =  pVec->getToolbarName();
-		if (UT_stricmp(szName,szCurName)==0)
+		if (g_ascii_strcasecmp(szName,szCurName)==0)
 		{
 			bFound = true;
 			break;
@@ -422,7 +422,7 @@ bool  XAP_Toolbar_Factory::addIconAtEnd(const char * szName,
 	{
 		pVec = (XAP_Toolbar_Factory_vec *) m_vecTT.getNthItem(i);
 		const char * szCurName =  pVec->getToolbarName();
-		if (UT_stricmp(szName,szCurName)==0)
+		if (g_ascii_strcasecmp(szName,szCurName)==0)
 		{
 			bFound = true;
 			break;
@@ -453,7 +453,7 @@ bool  XAP_Toolbar_Factory::addIconAfter(const char * szName,
 	{
 		pVec = (XAP_Toolbar_Factory_vec *) m_vecTT.getNthItem(i);
 		const char * szCurName =  pVec->getToolbarName();
-		if (UT_stricmp(szName,szCurName)==0)
+		if (g_ascii_strcasecmp(szName,szCurName)==0)
 		{
 			bFound = true;
 			break;
@@ -483,7 +483,7 @@ bool  XAP_Toolbar_Factory::removeIcon(const char * szName,
 	{
 		pVec = (XAP_Toolbar_Factory_vec *) m_vecTT.getNthItem(i);
 		const char * szCurName =  pVec->getToolbarName();
-		if (UT_stricmp(szName,szCurName)==0)
+		if (g_ascii_strcasecmp(szName,szCurName)==0)
 		{
 			bFound = true;
 			break;
@@ -523,7 +523,7 @@ bool  XAP_Toolbar_Factory::resetToolbarToDefault(const char * szName)
 	{
 		pVec = (XAP_Toolbar_Factory_vec *) m_vecTT.getNthItem(i);
 		szCurName =  g_strdup(pVec->getToolbarName());
-		if (UT_stricmp(szName,szCurName)==0)
+		if (g_ascii_strcasecmp(szName,szCurName)==0)
 		{
 			bFound = true;
 			break;
@@ -544,7 +544,7 @@ bool  XAP_Toolbar_Factory::resetToolbarToDefault(const char * szName)
 	bFound = false;
 	for(j=0; !bFound &&( j < count); j++)
 	{
-		if(UT_stricmp(szCurName,s_ttTable[j].m_name)== 0)
+		if(g_ascii_strcasecmp(szCurName,s_ttTable[j].m_name)== 0)
 		{
 			bFound = true;
 			break;

@@ -378,7 +378,7 @@ bool UT_PerlScriptSniffer::recognizeContents (const char * szBuf,
 
 bool UT_PerlScriptSniffer::recognizeSuffix (const char * szSuffix)
 {
-	if ( !UT_stricmp ( szSuffix, ".perl" ) || !UT_stricmp (szSuffix, ".pl" ) )
+	if ( !g_ascii_strcasecmp ( szSuffix, ".perl" ) || !g_ascii_strcasecmp (szSuffix, ".pl" ) )
 		return true;
 
 	return false;

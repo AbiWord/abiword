@@ -243,19 +243,19 @@ const char* UT_getFallBackStringSetLocale(const char* pLocale)
 	
 	// please keep these in alphabetical order
 
-	if (UT_stricmp(szLanguage,"de")==0)
+	if (g_ascii_strcasecmp(szLanguage,"de")==0)
 		return "de-DE";
 	
-	if (UT_stricmp(szLanguage,"en")==0)
+	if (g_ascii_strcasecmp(szLanguage,"en")==0)
 		return "en-US";		 	
 	
-	if (UT_stricmp(szLanguage,"es")==0)
+	if (g_ascii_strcasecmp(szLanguage,"es")==0)
 		return "es-ES";
 	
-	if (UT_stricmp(szLanguage,"fr")==0)
+	if (g_ascii_strcasecmp(szLanguage,"fr")==0)
 		return "fr-FR";		 
 	
-	if (UT_stricmp(szLanguage,"nl")==0) 	
+	if (g_ascii_strcasecmp(szLanguage,"nl")==0) 	
 		return "nl-NL";
 	
 	return NULL;

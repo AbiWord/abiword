@@ -188,7 +188,7 @@ bool AP_QNXApp::initialize(void)
 		if (   (getPrefsValue(AP_PREF_KEY_StringSet,&szStringSet))
 			&& (szStringSet)
 			&& (*szStringSet)
-			&& (UT_stricmp(szStringSet,AP_PREF_DEFAULT_StringSet) != 0))
+			&& (g_ascii_strcasecmp(szStringSet,AP_PREF_DEFAULT_StringSet) != 0))
 		{
 			getPrefsValueDirectory(true,AP_PREF_KEY_StringSetDirectory,&szDirectory);
 			UT_ASSERT((szDirectory) && (*szDirectory));

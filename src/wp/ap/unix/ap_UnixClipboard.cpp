@@ -223,11 +223,11 @@ bool AP_UnixClipboard::isTextTag ( const char * tag )
   if ( !tag || !strlen(tag) )
     return false ;
 
-  if ( !UT_stricmp( tag, AP_CLIPBOARD_TEXT_PLAIN ) ||
-	   !UT_stricmp( tag, AP_CLIPBOARD_TEXT_UTF8_STRING ) ||
-       !UT_stricmp( tag, AP_CLIPBOARD_TEXT ) ||
-       !UT_stricmp( tag, AP_CLIPBOARD_TEXT_STRING ) ||
-       !UT_stricmp( tag, AP_CLIPBOARD_TEXT_COMPOUND ) )
+  if ( !g_ascii_strcasecmp( tag, AP_CLIPBOARD_TEXT_PLAIN ) ||
+	   !g_ascii_strcasecmp( tag, AP_CLIPBOARD_TEXT_UTF8_STRING ) ||
+       !g_ascii_strcasecmp( tag, AP_CLIPBOARD_TEXT ) ||
+       !g_ascii_strcasecmp( tag, AP_CLIPBOARD_TEXT_STRING ) ||
+       !g_ascii_strcasecmp( tag, AP_CLIPBOARD_TEXT_COMPOUND ) )
     return true ;
   return false ;
 }
@@ -237,8 +237,8 @@ bool AP_UnixClipboard::isRichTextTag ( const char * tag )
   if ( !tag || !strlen(tag) )
     return false ;
 
-  if ( !UT_stricmp ( tag, AP_CLIPBOARD_TXT_RTF ) ||
-       !UT_stricmp ( tag, AP_CLIPBOARD_APPLICATION_RTF ) )
+  if ( !g_ascii_strcasecmp ( tag, AP_CLIPBOARD_TXT_RTF ) ||
+       !g_ascii_strcasecmp ( tag, AP_CLIPBOARD_APPLICATION_RTF ) )
     return true ;
   return false ;
 }
@@ -248,8 +248,8 @@ bool AP_UnixClipboard::isHTMLTag ( const char * tag )
   if ( !tag || !strlen(tag) )
     return false ;
 
-  if ( !UT_stricmp ( tag, AP_CLIPBOARD_TXT_HTML ) ||
-       !UT_stricmp ( tag, AP_CLIPBOARD_APPLICATION_XHTML ) )
+  if ( !g_ascii_strcasecmp ( tag, AP_CLIPBOARD_TXT_HTML ) ||
+       !g_ascii_strcasecmp ( tag, AP_CLIPBOARD_APPLICATION_XHTML ) )
     return true ;
   return false ;
 }

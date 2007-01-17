@@ -34,7 +34,7 @@ IE_Exp_AWT_Sniffer::IE_Exp_AWT_Sniffer ()
 
 bool IE_Exp_AWT_Sniffer::recognizeSuffix(const char * szSuffix)
 {
-	return (!UT_stricmp(szSuffix,".awt"));
+	return (!g_ascii_strcasecmp(szSuffix,".awt"));
 }
 
 UT_Error IE_Exp_AWT_Sniffer::constructExporter(PD_Document * pDocument,

@@ -57,18 +57,6 @@ ABI_EXPORT UT_uint32  UT_pointerArrayLength(void ** array);
 //
 ////////////////////////////////////////////////////////////////////////
 
-// Below are case-insensitive strcmp-like functions prototypes.  The functions
-// lexographically compare strings, returning <0, 0, >0 as strcmp(...) does.
-// For strings containing characters between 'Z' and 'a' in the ASCII table,
-// the strings /do/ compare differently depending on case.  For example,
-// "ABCDE" < "ABCD^", but "abcde" > "abcd^".
-// This functionality is comparable with the 'standard' GNU strcasecmp(...)
-// and the Microsoft stricmp functions.
-ABI_EXPORT UT_sint32 UT_stricmp(const char *s1, const char *s2);
-ABI_EXPORT UT_sint32 UT_strnicmp(const char *s1, const char *s2, int ilen);
-
-///////////////////////////////////////////////////////////////////////////////
-
 ABI_EXPORT bool  UT_cloneString(char *& rszDest, const char * szSource);
 ABI_EXPORT bool  UT_replaceString(char *& rszDest, const char * szSource);
 ABI_EXPORT size_t  UT_strnlen(const char *s, size_t maxlen);

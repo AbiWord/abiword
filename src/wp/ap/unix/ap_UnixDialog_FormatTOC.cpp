@@ -176,7 +176,7 @@ void AP_UnixDialog_FormatTOC::setStyle(GtkWidget * wid)
 	UT_UTF8String sVal;
 	GtkWidget * pLabel = static_cast<GtkWidget *> (g_object_get_data(G_OBJECT(wid),"display-widget"));
 	UT_UTF8String sProp = static_cast<char *> (g_object_get_data(G_OBJECT(pLabel),"toc-prop"));
-	if(UT_stricmp("toc-heading-style",sProp.utf8_str()) != 0)
+	if(g_ascii_strcasecmp("toc-heading-style",sProp.utf8_str()) != 0)
 	{
 		UT_String sNum =  UT_String_sprintf("%d",getMainLevel());
 		sProp += sNum.c_str();
@@ -244,7 +244,7 @@ void AP_UnixDialog_FormatTOC::event_HasHeadingChanged(GtkWidget * wid)
 	{
 		_setHasHeadingSensitivity(TRUE);
 	}
-	if(UT_stricmp("toc-has-heading",sProp.utf8_str()) != 0)
+	if(g_ascii_strcasecmp("toc-has-heading",sProp.utf8_str()) != 0)
 	{
 		UT_String sNum =  UT_String_sprintf("%d",getMainLevel());
 		sProp += sNum.c_str();
@@ -403,7 +403,7 @@ void AP_UnixDialog_FormatTOC::setMainLevel(UT_sint32 iLevel)
 
 	sVal = getTOCPropVal("toc-has-label",getMainLevel());
 	pW = _getWidget("wHasLabel");
-	if(UT_stricmp(sVal.utf8_str(),"1") == 0)
+	if(g_ascii_strcasecmp(sVal.utf8_str(),"1") == 0)
 	{
 		gtk_toggle_button_set_active(GTK_TOGGLE_BUTTON(pW),TRUE);
 	}
@@ -443,7 +443,7 @@ void AP_UnixDialog_FormatTOC::setDetailsLevel(UT_sint32 iLevel)
 
 	sVal = getTOCPropVal("toc-label-inherits",getDetailsLevel());
 	pW = _getWidget("cbInherit");
-	if(UT_stricmp(sVal.utf8_str(),"1") == 0)
+	if(g_ascii_strcasecmp(sVal.utf8_str(),"1") == 0)
 	{
 		gtk_toggle_button_set_active(GTK_TOGGLE_BUTTON(pW),TRUE);
 	}
@@ -466,19 +466,19 @@ void AP_UnixDialog_FormatTOC::setDetailsLevel(UT_sint32 iLevel)
 
 	sVal = getTOCPropVal("toc-tab-leader",getDetailsLevel());
 	pW = _getWidget("wTabLeaderChoose");
-	if(UT_stricmp(sVal.utf8_str(),"none") == 0)
+	if(g_ascii_strcasecmp(sVal.utf8_str(),"none") == 0)
 	{
 		iHist = 0;
 	}
-	else if(UT_stricmp(sVal.utf8_str(),"dot") == 0)
+	else if(g_ascii_strcasecmp(sVal.utf8_str(),"dot") == 0)
 	{
 		iHist = 1;
 	}
-	else if(UT_stricmp(sVal.utf8_str(),"hyphen") == 0)
+	else if(g_ascii_strcasecmp(sVal.utf8_str(),"hyphen") == 0)
 	{
 		iHist = 2;
 	}
-	else if(UT_stricmp(sVal.utf8_str(),"underline") == 0)
+	else if(g_ascii_strcasecmp(sVal.utf8_str(),"underline") == 0)
 	{
 		iHist = 3;
 	}
@@ -716,7 +716,7 @@ void  AP_UnixDialog_FormatTOC::_fillGUI(void)
 	gtk_option_menu_set_history(GTK_OPTION_MENU(pW), getMainLevel()-1);
 
 	pW = _getWidget("cbHasHeading");
-	if(UT_stricmp(sVal.utf8_str(),"1") == 0)
+	if(g_ascii_strcasecmp(sVal.utf8_str(),"1") == 0)
 	{
 		gtk_toggle_button_set_active(GTK_TOGGLE_BUTTON(pW),TRUE);
 		_setHasHeadingSensitivity(TRUE);
@@ -756,7 +756,7 @@ void  AP_UnixDialog_FormatTOC::_fillGUI(void)
 
 	sVal = getTOCPropVal("toc-has-label",getMainLevel());
 	pW = _getWidget("wHasLabel");
-	if(UT_stricmp(sVal.utf8_str(),"1") == 0)
+	if(g_ascii_strcasecmp(sVal.utf8_str(),"1") == 0)
 	{
 		gtk_toggle_button_set_active(GTK_TOGGLE_BUTTON(pW),TRUE);
 	}
@@ -782,7 +782,7 @@ void  AP_UnixDialog_FormatTOC::_fillGUI(void)
 
 	sVal = getTOCPropVal("toc-label-inherits",getDetailsLevel());
 	pW = _getWidget("cbInherit");
-	if(UT_stricmp(sVal.utf8_str(),"1") == 0)
+	if(g_ascii_strcasecmp(sVal.utf8_str(),"1") == 0)
 	{
 		gtk_toggle_button_set_active(GTK_TOGGLE_BUTTON(pW),TRUE);
 	}
@@ -836,19 +836,19 @@ void  AP_UnixDialog_FormatTOC::_fillGUI(void)
 
 	sVal = getTOCPropVal("toc-tab-leader",getDetailsLevel());
 	pW = _getWidget("wTabLeaderChoose");
-	if(UT_stricmp(sVal.utf8_str(),"none") == 0)
+	if(g_ascii_strcasecmp(sVal.utf8_str(),"none") == 0)
 	{
 		iHist = 0;
 	}
-	else if(UT_stricmp(sVal.utf8_str(),"dot") == 0)
+	else if(g_ascii_strcasecmp(sVal.utf8_str(),"dot") == 0)
 	{
 		iHist = 1;
 	}
-	else if(UT_stricmp(sVal.utf8_str(),"hyphen") == 0)
+	else if(g_ascii_strcasecmp(sVal.utf8_str(),"hyphen") == 0)
 	{
 		iHist = 2;
 	}
-	else if(UT_stricmp(sVal.utf8_str(),"underline") == 0)
+	else if(g_ascii_strcasecmp(sVal.utf8_str(),"underline") == 0)
 	{
 		iHist = 3;
 	}

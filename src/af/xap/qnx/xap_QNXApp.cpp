@@ -174,7 +174,7 @@ void XAP_QNXApp::_setAbiSuiteLibDir()
 	int k;
 	
 	for (k=nFirstArg; k<kLimit; k++)
-		if ((*m_pArgs->m_argv[k] == '-') && (UT_stricmp(m_pArgs->m_argv[k],"-lib")==0) && (k+1 < kLimit))
+		if ((*m_pArgs->m_argv[k] == '-') && (g_ascii_strcasecmp(m_pArgs->m_argv[k],"-lib")==0) && (k+1 < kLimit))
 		{
 			strcpy(buf,m_pArgs->m_argv[k+1]);
 			int len = strlen(buf);

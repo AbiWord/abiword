@@ -306,7 +306,7 @@ static int color_compare (const void * a, const void * b)
   const char * name = static_cast<const char *>(a);
   const colorToRGBMapping * id = static_cast<const colorToRGBMapping *>(b);
 		
-  return UT_stricmp (name, id->m_name);
+  return g_ascii_strcasecmp (name, id->m_name);
 }
 
 #ifdef __MRC__
@@ -958,13 +958,13 @@ bool UT_parseBool (const char * param, bool dfl)
 {
 	UT_return_val_if_fail (param && strlen(param), dfl);
 
-	if (!UT_strnicmp(param, "true", 4) || !UT_strnicmp(param, "1", 1) ||
-		!UT_strnicmp(param, "yes", 3) || !UT_strnicmp(param, "allow", 5) ||
-		!UT_strnicmp(param, "enable", 6) || !UT_strnicmp(param, "on", 2))
+	if (!g_ascii_strncasecmp(param, "true", 4) || !g_ascii_strncasecmp(param, "1", 1) ||
+		!g_ascii_strncasecmp(param, "yes", 3) || !g_ascii_strncasecmp(param, "allow", 5) ||
+		!g_ascii_strncasecmp(param, "enable", 6) || !g_ascii_strncasecmp(param, "on", 2))
 		return true;
-	else if (!UT_strnicmp(param, "false", 5) || !UT_strnicmp(param, "0", 1) ||
-			 !UT_strnicmp(param, "no", 2) || !UT_strnicmp(param, "disallow", 8) ||
-			 !UT_strnicmp(param, "disable", 7) || !UT_strnicmp(param, "off", 3))
+	else if (!g_ascii_strncasecmp(param, "false", 5) || !g_ascii_strncasecmp(param, "0", 1) ||
+			 !g_ascii_strncasecmp(param, "no", 2) || !g_ascii_strncasecmp(param, "disallow", 8) ||
+			 !g_ascii_strncasecmp(param, "disable", 7) || !g_ascii_strncasecmp(param, "off", 3))
 		return false;
 	
 	return dfl;

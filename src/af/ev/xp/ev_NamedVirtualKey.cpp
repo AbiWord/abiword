@@ -102,7 +102,7 @@ static const char * s_Table[] =
 
 const char * EV_NamedVirtualKey::getName(EV_EditBits eb)
 {
-	UT_ASSERT((UT_stricmp(s_Table[EV_NVK_F35&~EV_EKP_NAMEDKEY],"f35")==0));
+	UT_ASSERT((g_ascii_strcasecmp(s_Table[EV_NVK_F35&~EV_EKP_NAMEDKEY],"f35")==0));
 	UT_ASSERT((NrElements(s_Table) == EV_COUNT_NVK));
 
 	EV_EditVirtualKey evk = eb & ~EV_EKP_NAMEDKEY;
@@ -113,11 +113,11 @@ const char * EV_NamedVirtualKey::getName(EV_EditBits eb)
 
 EV_EditBits EV_NamedVirtualKey::getEB(const char * szName)
 {
-	UT_ASSERT((UT_stricmp(s_Table[EV_NVK_F35&~EV_EKP_NAMEDKEY],"f35")==0));
+	UT_ASSERT((g_ascii_strcasecmp(s_Table[EV_NVK_F35&~EV_EKP_NAMEDKEY],"f35")==0));
 	UT_ASSERT((NrElements(s_Table) == EV_COUNT_NVK));
 
 	for (UT_uint32 k=1; k<NrElements(s_Table); k++)
-		if (UT_stricmp(s_Table[k],szName)==0)
+		if (g_ascii_strcasecmp(s_Table[k],szName)==0)
 			return EV_NamedKey(k);
 	return 0;
 }

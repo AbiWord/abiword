@@ -130,7 +130,7 @@ EV_Menu_Layout * AP_CreateMenuLayout(const char * szName)
 	UT_ASSERT(szName && *szName);		// no defaults
 
 	for (UT_uint32 k=0; k<NrElements(s_ttTable); k++)
-		if (UT_stricmp(szName,s_ttTable[k].m_name)==0)
+		if (g_ascii_strcasecmp(szName,s_ttTable[k].m_name)==0)
 			return _ap_CreateMenuLayout(&s_ttTable[k]);
 
 	UT_ASSERT(0);						// no defaults

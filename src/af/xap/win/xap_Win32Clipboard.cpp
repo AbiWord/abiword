@@ -126,7 +126,7 @@ UT_uint32 XAP_Win32Clipboard::convertFormatString(const char * format) const
 	int k;
 
 	for (k=0; k<kLimit; k++)
-		if (UT_stricmp(format,(const char *)m_vecFormat.getNthItem(k)) == 0)
+		if (g_ascii_strcasecmp(format,(const char *)m_vecFormat.getNthItem(k)) == 0)
 			return (UT_uint32)m_vecCF.getNthItem(k);
 
 	return 0;

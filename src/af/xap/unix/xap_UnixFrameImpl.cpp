@@ -203,7 +203,7 @@ static int s_mapMimeToUriType (const char * uri)
 
 	DragInfo * dragInfo = s_getDragInfo();
 	for (size_t i = 0; i < dragInfo->count; i++)
-		if (!UT_stricmp (mimeType, dragInfo->entries[i].target)) {
+		if (!g_ascii_strcasecmp (mimeType, dragInfo->entries[i].target)) {
 			target = dragInfo->entries[i].info;
 			break;
 		}

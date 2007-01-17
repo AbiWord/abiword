@@ -113,7 +113,7 @@ bool AP_Toolbar_Icons::_findIconNameForID(const char * szID, const char ** pName
 	// Search the map for overloaded ID_LANG to iconname
 	for (m=0; m < mLimit; m++)
 	{
-		if (UT_stricmp(szID, s_imTable[m].m_id ) == 0)
+		if (g_ascii_strcasecmp(szID, s_imTable[m].m_id ) == 0)
 		{
 			bIDFound = true;
 			*pName = s_imTable[m].m_iconname;
@@ -134,7 +134,7 @@ bool AP_Toolbar_Icons::_findIconNameForID(const char * szID, const char ** pName
 				
 		for (m=0; m < mLimit; m++)
 		{
-			if (UT_stricmp(szBaseID, s_imTable[m].m_id ) == 0)
+			if (g_ascii_strcasecmp(szBaseID, s_imTable[m].m_id ) == 0)
 			{
 				bIDFound = true;
 				*pName = s_imTable[m].m_iconname;
@@ -164,7 +164,7 @@ bool AP_Toolbar_Icons::_findIconDataByName(const char * szID,
 	if( !bIDFound )
 		return false;
 
-	if( UT_stricmp(szName,"NoIcon") == 0)
+	if( g_ascii_strcasecmp(szName,"NoIcon") == 0)
 		return false;
 	
 	UT_uint32 kLimit = NrElements(s_itTable);
@@ -173,7 +173,7 @@ bool AP_Toolbar_Icons::_findIconDataByName(const char * szID,
 	// Search to match icon name with data
 	for (k=0; k < kLimit; k++)
 	{
-		if (UT_stricmp(szName,s_itTable[k].m_name) == 0)
+		if (g_ascii_strcasecmp(szName,s_itTable[k].m_name) == 0)
 		{
 			*pIconData = s_itTable[k].m_staticVariable;
 			*pSizeofData = s_itTable[k].m_sizeofVariable;

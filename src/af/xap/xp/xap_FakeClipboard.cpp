@@ -110,7 +110,7 @@ _ClipboardItem* XAP_FakeClipboard::_findFormatItem(const char* format)
 	for (UT_uint32 i=0; i<iCount; i++)
 	{
 		_ClipboardItem* pItem = (_ClipboardItem*) m_vecData.getNthItem(i);
-		if (UT_stricmp(format, pItem->m_szFormat) == 0)
+		if (g_ascii_strcasecmp(format, pItem->m_szFormat) == 0)
 			return pItem;
 	}
 

@@ -1125,7 +1125,7 @@ bool fl_TOCLayout::_isStyleInTOC(UT_UTF8String & sStyle, UT_UTF8String & sTOCSty
 	const char * sLStyle = sTOCStyle.utf8_str();
 	xxx_UT_DEBUGMSG(("Looking at TOC Style %s \n",sLStyle));
 	xxx_UT_DEBUGMSG(("Base input style is %s \n",sTmpStyle.utf8_str()));
-	if(UT_stricmp(sLStyle,sTmpStyle.utf8_str()) == 0)
+	if(g_ascii_strcasecmp(sLStyle,sTmpStyle.utf8_str()) == 0)
 	{
 		xxx_UT_DEBUGMSG(("Found initial match \n"));
 		return true;
@@ -1141,7 +1141,7 @@ bool fl_TOCLayout::_isStyleInTOC(UT_UTF8String & sStyle, UT_UTF8String & sTOCSty
 			iLoop++;
 			sTmpStyle = pStyle->getName();
 			xxx_UT_DEBUGMSG(("Level %d style is %s \n",iLoop,sTmpStyle.utf8_str()));
-			if(UT_stricmp(sLStyle,sTmpStyle.utf8_str()) == 0)
+			if(g_ascii_strcasecmp(sLStyle,sTmpStyle.utf8_str()) == 0)
 			{
 				UT_DEBUGMSG(("Found match  at Level %d \n",iLoop));
 				return true;
@@ -1734,7 +1734,7 @@ void fl_TOCLayout::_lookupProperties(const PP_AttrProp* pSectionAP)
 	}
 	else
 	{
-		if(UT_stricmp(pszTOCHASHEADING,"1") == 0)
+		if(g_ascii_strcasecmp(pszTOCHASHEADING,"1") == 0)
 		{
 			m_bTOCHeading = true;
 		}
@@ -1753,7 +1753,7 @@ void fl_TOCLayout::_lookupProperties(const PP_AttrProp* pSectionAP)
 	}
 	else
 	{
-		if(UT_stricmp(pszTOCLABEL,"1") == 0)
+		if(g_ascii_strcasecmp(pszTOCLABEL,"1") == 0)
 		{
 			m_bHasLabel1 = true;
 		}
@@ -1769,7 +1769,7 @@ void fl_TOCLayout::_lookupProperties(const PP_AttrProp* pSectionAP)
 	}
 	else
 	{
-		if(UT_stricmp(pszTOCLABEL,"1") == 0)
+		if(g_ascii_strcasecmp(pszTOCLABEL,"1") == 0)
 		{
 			m_bHasLabel2 = true;
 		}
@@ -1785,7 +1785,7 @@ void fl_TOCLayout::_lookupProperties(const PP_AttrProp* pSectionAP)
 	}
 	else
 	{
-		if(UT_stricmp(pszTOCLABEL,"1") == 0)
+		if(g_ascii_strcasecmp(pszTOCLABEL,"1") == 0)
 		{
 			m_bHasLabel3 = true;
 		}
@@ -1801,7 +1801,7 @@ void fl_TOCLayout::_lookupProperties(const PP_AttrProp* pSectionAP)
 	}
 	else
 	{
-		if(UT_stricmp(pszTOCLABEL,"1") == 0)
+		if(g_ascii_strcasecmp(pszTOCLABEL,"1") == 0)
 		{
 			m_bHasLabel4 = true;
 		}
@@ -1820,7 +1820,7 @@ void fl_TOCLayout::_lookupProperties(const PP_AttrProp* pSectionAP)
 	}
 	else
 	{
-		if(UT_stricmp(pszTOCLABELINHERITS,"1") == 0)
+		if(g_ascii_strcasecmp(pszTOCLABELINHERITS,"1") == 0)
 		{
 			m_bInherit1 = true;
 		}
@@ -1836,7 +1836,7 @@ void fl_TOCLayout::_lookupProperties(const PP_AttrProp* pSectionAP)
 	}
 	else
 	{
-		if(UT_stricmp(pszTOCLABELINHERITS,"1") == 0)
+		if(g_ascii_strcasecmp(pszTOCLABELINHERITS,"1") == 0)
 		{
 			m_bInherit2 = true;
 		}
@@ -1852,7 +1852,7 @@ void fl_TOCLayout::_lookupProperties(const PP_AttrProp* pSectionAP)
 	}
 	else
 	{
-		if(UT_stricmp(pszTOCLABELINHERITS,"1") == 0)
+		if(g_ascii_strcasecmp(pszTOCLABELINHERITS,"1") == 0)
 		{
 			m_bInherit3 = true;
 		}
@@ -1868,7 +1868,7 @@ void fl_TOCLayout::_lookupProperties(const PP_AttrProp* pSectionAP)
 	}
 	else
 	{
-		if(UT_stricmp(pszTOCLABELINHERITS,"1") == 0)
+		if(g_ascii_strcasecmp(pszTOCLABELINHERITS,"1") == 0)
 		{
 			m_bInherit4 = true;
 		}
@@ -2082,19 +2082,19 @@ void fl_TOCLayout::_lookupProperties(const PP_AttrProp* pSectionAP)
 	}
 	else
 	{
-		if(UT_stricmp(pszTOCTABTYPE,"none") == 0)
+		if(g_ascii_strcasecmp(pszTOCTABTYPE,"none") == 0)
 		{
 			m_iTabLeader1 = FL_LEADER_NONE;
 		}
-		else if(UT_stricmp(pszTOCTABTYPE,"dot") == 0)
+		else if(g_ascii_strcasecmp(pszTOCTABTYPE,"dot") == 0)
 		{
 			m_iTabLeader1 = FL_LEADER_DOT;
 		}
-		else if(UT_stricmp(pszTOCTABTYPE,"hyphen") == 0)
+		else if(g_ascii_strcasecmp(pszTOCTABTYPE,"hyphen") == 0)
 		{
 			m_iTabLeader1 = FL_LEADER_HYPHEN;
 		}
-		else if(UT_stricmp(pszTOCTABTYPE,"underline") == 0)
+		else if(g_ascii_strcasecmp(pszTOCTABTYPE,"underline") == 0)
 		{
 			m_iTabLeader1 = FL_LEADER_UNDERLINE;
 		}
@@ -2110,19 +2110,19 @@ void fl_TOCLayout::_lookupProperties(const PP_AttrProp* pSectionAP)
 	}
 	else
 	{
-		if(UT_stricmp(pszTOCTABTYPE,"none") == 0)
+		if(g_ascii_strcasecmp(pszTOCTABTYPE,"none") == 0)
 		{
 			m_iTabLeader2 = FL_LEADER_NONE;
 		}
-		else if(UT_stricmp(pszTOCTABTYPE,"dot") == 0)
+		else if(g_ascii_strcasecmp(pszTOCTABTYPE,"dot") == 0)
 		{
 			m_iTabLeader2 = FL_LEADER_DOT;
 		}
-		else if(UT_stricmp(pszTOCTABTYPE,"hyphen") == 0)
+		else if(g_ascii_strcasecmp(pszTOCTABTYPE,"hyphen") == 0)
 		{
 			m_iTabLeader2 = FL_LEADER_HYPHEN;
 		}
-		else if(UT_stricmp(pszTOCTABTYPE,"underline") == 0)
+		else if(g_ascii_strcasecmp(pszTOCTABTYPE,"underline") == 0)
 		{
 			m_iTabLeader2 = FL_LEADER_UNDERLINE;
 		}
@@ -2138,19 +2138,19 @@ void fl_TOCLayout::_lookupProperties(const PP_AttrProp* pSectionAP)
 	}
 	else
 	{
-		if(UT_stricmp(pszTOCTABTYPE,"none") == 0)
+		if(g_ascii_strcasecmp(pszTOCTABTYPE,"none") == 0)
 		{
 			m_iTabLeader3 = FL_LEADER_NONE;
 		}
-		else if(UT_stricmp(pszTOCTABTYPE,"dot") == 0)
+		else if(g_ascii_strcasecmp(pszTOCTABTYPE,"dot") == 0)
 		{
 			m_iTabLeader3 = FL_LEADER_DOT;
 		}
-		else if(UT_stricmp(pszTOCTABTYPE,"hyphen") == 0)
+		else if(g_ascii_strcasecmp(pszTOCTABTYPE,"hyphen") == 0)
 		{
 			m_iTabLeader3 = FL_LEADER_HYPHEN;
 		}
-		else if(UT_stricmp(pszTOCTABTYPE,"underline") == 0)
+		else if(g_ascii_strcasecmp(pszTOCTABTYPE,"underline") == 0)
 		{
 			m_iTabLeader3 = FL_LEADER_UNDERLINE;
 		}
@@ -2166,19 +2166,19 @@ void fl_TOCLayout::_lookupProperties(const PP_AttrProp* pSectionAP)
 	}
 	else
 	{
-		if(UT_stricmp(pszTOCTABTYPE,"none") == 0)
+		if(g_ascii_strcasecmp(pszTOCTABTYPE,"none") == 0)
 		{
 			m_iTabLeader4 = FL_LEADER_NONE;
 		}
-		else if(UT_stricmp(pszTOCTABTYPE,"dot") == 0)
+		else if(g_ascii_strcasecmp(pszTOCTABTYPE,"dot") == 0)
 		{
 			m_iTabLeader4 = FL_LEADER_DOT;
 		}
-		else if(UT_stricmp(pszTOCTABTYPE,"hyphen") == 0)
+		else if(g_ascii_strcasecmp(pszTOCTABTYPE,"hyphen") == 0)
 		{
 			m_iTabLeader4 = FL_LEADER_HYPHEN;
 		}
-		else if(UT_stricmp(pszTOCTABTYPE,"underline") == 0)
+		else if(g_ascii_strcasecmp(pszTOCTABTYPE,"underline") == 0)
 		{
 			m_iTabLeader4 = FL_LEADER_UNDERLINE;
 		}

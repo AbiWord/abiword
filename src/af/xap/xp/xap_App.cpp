@@ -241,7 +241,7 @@ XAP_Module * XAP_App::getPlugin(const char * szPluginName)
      {
           pModule = pVec->getNthItem (i);
 	  const char * szName = pModule->getModuleInfo()->name;
-	  if(UT_stricmp(szName,szPluginName) == 0)
+	  if(g_ascii_strcasecmp(szName,szPluginName) == 0)
 	  {
 	        bFound = true;
 	  }
@@ -924,7 +924,7 @@ UT_sint32 XAP_App::findFrame(const char * szFilename)
 		}
 		const char * s = f->getFilename();
 
-		if (s && *s && (0 == UT_stricmp(szFilename, s)))
+		if (s && *s && (0 == g_ascii_strcasecmp(szFilename, s)))
 		{
 			return static_cast<UT_sint32>(i);
 		}
@@ -1386,7 +1386,7 @@ UT_sint32 XAP_App::setInputMode(const char * szName)
 	
 	UT_return_val_if_fail(m_pInputModes,-1);
 	const char * szCurrentName = m_pInputModes->getCurrentMapName();
-	if (UT_stricmp(szName,szCurrentName) == 0)
+	if (g_ascii_strcasecmp(szName,szCurrentName) == 0)
 		return -1;					// already set, no change required
 
 	EV_EditEventMapper * p = m_pInputModes->getMapByName(szName);

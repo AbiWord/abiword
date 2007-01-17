@@ -32,18 +32,6 @@ TFTEST_MAIN("UT_pointerArrayLength()")
 }
 
 
-TFTEST_MAIN("UT_stricmp()")
-{
-	// FIXME implement
-}
-
-
-TFTEST_MAIN("UT_strnicmp()")
-{
-	//FIXME implement
-}
-
-
 TFTEST_MAIN("UT_cloneString()")
 {
 	char *retStr;
@@ -54,6 +42,7 @@ TFTEST_MAIN("UT_cloneString()")
 
 	g_free(retStr);
 }
+
 
 TFTEST_MAIN("UT_replaceString")
 {

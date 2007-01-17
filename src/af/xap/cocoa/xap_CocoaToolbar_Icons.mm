@@ -263,7 +263,7 @@ NSImage * AP_CocoaToolbar_Icons::getPixmapForIcon(const char * szIconID)
 		
 		// store the actual color value in the 
 		// rgb quad array with our color index.
-		if (UT_stricmp(bufColorValue,"None")==0) {
+		if (g_ascii_strcasecmp(bufColorValue,"None")==0) {
 			pRGB[k].rgb.m_red = 255;
 			pRGB[k].rgb.m_grn = 255;
 			pRGB[k].rgb.m_blu = 255;

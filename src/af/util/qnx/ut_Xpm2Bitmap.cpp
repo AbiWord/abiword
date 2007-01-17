@@ -116,7 +116,7 @@ bool UT_Xpm2Bitmap(const char ** pIconData,
 		
 		// store the actual color value in the 
 		// rgb quad array with our color index.
-		if (UT_stricmp(bufColorValue,"None")==0) {
+		if (g_ascii_strcasecmp(bufColorValue,"None")==0) {
 			pRGB[k]	= Pg_MAGENTA;
 		}
 		else

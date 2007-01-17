@@ -312,13 +312,13 @@ void AP_CocoaDialog_FormatTOC::_populateWindowData(void)
 
 		int iTabLeader = 1;
 
-		if      (UT_stricmp(sVal.utf8_str(), "none"     ) == 0)
+		if      (g_ascii_strcasecmp(sVal.utf8_str(), "none"     ) == 0)
 			iTabLeader = 0;
-		else if (UT_stricmp(sVal.utf8_str(), "dot"      ) == 0)
+		else if (g_ascii_strcasecmp(sVal.utf8_str(), "dot"      ) == 0)
 			iTabLeader = 1;
-		else if (UT_stricmp(sVal.utf8_str(), "hyphen"   ) == 0)
+		else if (g_ascii_strcasecmp(sVal.utf8_str(), "hyphen"   ) == 0)
 			iTabLeader = 2;
-		else if (UT_stricmp(sVal.utf8_str(), "underline") == 0)
+		else if (g_ascii_strcasecmp(sVal.utf8_str(), "underline") == 0)
 			iTabLeader = 3;
 
 		[   _tabLeadersData selectItemAtIndex:iTabLeader];

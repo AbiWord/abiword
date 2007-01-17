@@ -80,7 +80,7 @@ void XAP_UnixDialog_Language::event_setLang()
 	gtk_tree_model_get (model, &iter, 1, &row, -1);
   
 	if (row >= 0) {
-	  if (!m_pLanguage || UT_stricmp(m_pLanguage, m_ppLanguages[row]))
+	  if (!m_pLanguage || g_ascii_strcasecmp(m_pLanguage, m_ppLanguages[row]))
 	    {
 	      _setLanguage(m_ppLanguages[row]);
 	      m_bChangedLanguage = true;
@@ -175,7 +175,7 @@ void XAP_UnixDialog_Language::_populateWindowData()
 		gint foundAt = -1;
 		for (UT_uint32 i = 0; i < m_iLangCount; i++)
 		{
-			if (!UT_stricmp(m_pLanguage, m_ppLanguages[i])) {
+			if (!g_ascii_strcasecmp(m_pLanguage, m_ppLanguages[i])) {
 				foundAt = i;
 				break;
 			}

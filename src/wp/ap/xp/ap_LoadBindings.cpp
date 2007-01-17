@@ -106,7 +106,7 @@ const char * AP_BindingSet::s_getNextInCycle(const char * szCurrent)
 	int k;
 	
 	for (k=0; k<(int)NrElements(s_lbTable); k++)
-		if (UT_stricmp(s_lbTable[k].m_name,szCurrent) == 0)
+		if (g_ascii_strcasecmp(s_lbTable[k].m_name,szCurrent) == 0)
 		{
 			kMatch = k;
 			break;
@@ -150,7 +150,7 @@ EV_EditBindingMap * AP_BindingSet::getMap(const char * szName)
 	// NOTE: it is shared by all windows.
 	
 	for (UT_uint32 k=0; k<NrElements(s_lbTable); k++)
-		if (UT_stricmp(szName,s_lbTable[k].m_name)==0)
+		if (g_ascii_strcasecmp(szName,s_lbTable[k].m_name)==0)
 		{
 			// we now share maps.  any given map is loaded exactly once.
 			// if we haven't loaded this map before, load it and remember

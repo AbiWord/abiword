@@ -40,7 +40,7 @@ static  UT_sint32 compareStrings(const void * ppS1, const void * ppS2)
 {
 	const char * sz1 = static_cast<const char *>(ppS1);
 	const char * sz2 = static_cast<const char *>(ppS2);
-	return UT_stricmp(sz1, sz2);
+	return g_ascii_strcasecmp(sz1, sz2);
 }
 
 enum

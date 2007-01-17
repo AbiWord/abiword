@@ -724,16 +724,16 @@ void UT_UTF8Stringbuf::escapeURL ()
 	grow(iIncrease);
 	
 	UT_uint32 iScheme = 0;
-	if(!UT_strnicmp(m_psz, "ftp://", 6))            iScheme = 1;
-	else if(!UT_strnicmp(m_psz, "http://", 7))      iScheme = 2;
-	else if(!UT_strnicmp(m_psz, "gopher://", 9))    iScheme = 3;
-	else if(!UT_strnicmp(m_psz, "mailto:", 7))      iScheme = 4;
-	else if(!UT_strnicmp(m_psz, "news:", 5))      iScheme = 5;
-	else if(!UT_strnicmp(m_psz, "nntp://", 7))      iScheme = 6;
-	else if(!UT_strnicmp(m_psz, "telnet://", 9))    iScheme = 7;
-	else if(!UT_strnicmp(m_psz, "wais://", 7))      iScheme = 8;
-	else if(!UT_strnicmp(m_psz, "file://", 7))      iScheme = 9;
-	else if(!UT_strnicmp(m_psz, "prospero://", 11)) iScheme = 10;
+	if(!g_ascii_strncasecmp(m_psz, "ftp://", 6))            iScheme = 1;
+	else if(!g_ascii_strncasecmp(m_psz, "http://", 7))      iScheme = 2;
+	else if(!g_ascii_strncasecmp(m_psz, "gopher://", 9))    iScheme = 3;
+	else if(!g_ascii_strncasecmp(m_psz, "mailto:", 7))      iScheme = 4;
+	else if(!g_ascii_strncasecmp(m_psz, "news:", 5))      iScheme = 5;
+	else if(!g_ascii_strncasecmp(m_psz, "nntp://", 7))      iScheme = 6;
+	else if(!g_ascii_strncasecmp(m_psz, "telnet://", 9))    iScheme = 7;
+	else if(!g_ascii_strncasecmp(m_psz, "wais://", 7))      iScheme = 8;
+	else if(!g_ascii_strncasecmp(m_psz, "file://", 7))      iScheme = 9;
+	else if(!g_ascii_strncasecmp(m_psz, "prospero://", 11)) iScheme = 10;
 
 	// now we parse the string into its constituent parts
 	char * p = strstr(m_psz, "://");

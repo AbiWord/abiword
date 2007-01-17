@@ -998,13 +998,13 @@ GR_Font * GR_CocoaGraphics::_findFont(const char* pszFontFamily,
 			 * Only fallback AFTER. WARNING: this is recursive call, watch out the
 			 * font family you pass.
 			 */
-			if (UT_stricmp(pszFontFamily, "Dingbats") == 0)
+			if (g_ascii_strcasecmp(pszFontFamily, "Dingbats") == 0)
 			{
 				GR_Font * pGRFont = findFont("Zapf Dingbats", pszFontStyle, pszFontVariant, pszFontWeight, pszFontStretch, pszFontSize, pszLang);
 				XAP_CocoaFont * pFont = static_cast<XAP_CocoaFont *>(pGRFont);
 				nsfont = pFont->getNSFont();
 			}
-			if (UT_stricmp(pszFontFamily, "Helvetic") == 0)
+			if (g_ascii_strcasecmp(pszFontFamily, "Helvetic") == 0)
 			{
 				GR_Font * pGRFont = findFont("Helvetica", pszFontStyle, pszFontVariant, pszFontWeight, pszFontStretch, pszFontSize, pszLang);
 				XAP_CocoaFont * pFont = static_cast<XAP_CocoaFont *>(pGRFont);

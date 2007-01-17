@@ -302,7 +302,7 @@ NSButton * EV_CocoaToolbar::_makeToolbarButton (int type, EV_Toolbar_Label * pLa
 		[btn setTarget:m_target];
 		[btn setAction:@selector(toolbarSelected:)];
 
-		UT_ASSERT(UT_stricmp(pLabel->getIconName(),"NoIcon")!=0);
+		UT_ASSERT(g_ascii_strcasecmp(pLabel->getIconName(),"NoIcon")!=0);
 		NSImage * wPixmap = m_pCocoaToolbarIcons->getPixmapForIcon(pLabel->getIconName());		// autoreleased
 		UT_ASSERT(wPixmap);
 		[btn setImage:wPixmap];

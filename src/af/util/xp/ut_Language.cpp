@@ -206,7 +206,7 @@ static int s_compareB(const void * l, const void *e)
 	return g_utf8_collate(L, E->m_szLangName);
 #else
 	// make the comparison case insensitive to cope with buggy systems 
-	return UT_stricmp(L, E->m_szLangCode);
+	return g_ascii_strcasecmp(L, E->m_szLangCode);
 #endif
 }
 
@@ -269,7 +269,7 @@ const XML_Char * UT_Language::getCodeFromName(const XML_Char * szName)
 	for(UT_uint32 i = 0; i < NrElements(s_Table); i++)
 	{
 		// make the comparison case insensitive to cope with buggy systems 
-		if(!UT_stricmp(szName, s_Table[i].m_szLangName))
+		if(!g_ascii_strcasecmp(szName, s_Table[i].m_szLangName))
 			return s_Table[i].m_szLangCode;
 	}
 
@@ -284,7 +284,7 @@ UT_uint32 UT_Language::getIndxFromCode(const XML_Char * szCode)
 	for(UT_uint32 i = 0; i < NrElements(s_Table); i++)
 	{
 		// make the comparison case insensitive to cope with buggy systems 
-		if(!UT_stricmp(szCode, s_Table[i].m_szLangCode))
+		if(!g_ascii_strcasecmp(szCode, s_Table[i].m_szLangCode))
 			return i;
 	}
 
@@ -301,7 +301,7 @@ UT_uint32 UT_Language::getIndxFromCode(const XML_Char * szCode)
 		for(UT_uint32 i = 0; i < NrElements(s_Table); i++)
 		{
 			// make the comparison case insensitive to cope with buggy systems 
-			if(!UT_stricmp(szShortCode, s_Table[i].m_szLangCode))
+			if(!g_ascii_strcasecmp(szShortCode, s_Table[i].m_szLangCode))
 				return i;
 		}
 	}

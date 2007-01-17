@@ -297,22 +297,22 @@ bool XAP_Frame::initialize(const char * szKeyBindingsKey, const char * szKeyBind
 	pApp->getPrefsValue(XAP_PREF_KEY_ZoomType, stTmp);
 	UT_DEBUGMSG(("Zoom type from prefs is %s \n",stTmp.c_str()));
 	UT_uint32 iZoom = 100;
-	if( UT_stricmp( stTmp.c_str(), "100" ) == 0 )
+	if( g_ascii_strcasecmp( stTmp.c_str(), "100" ) == 0 )
 	{
 		m_zoomType = z_100;
 		iZoom = 100;
 	}
-	else if( UT_stricmp( stTmp.c_str(), "75" ) == 0 )
+	else if( g_ascii_strcasecmp( stTmp.c_str(), "75" ) == 0 )
 	{
 		m_zoomType = z_75;
 		iZoom = 75;
 	}
-	else if( UT_stricmp( stTmp.c_str(), "200" ) == 0 )
+	else if( g_ascii_strcasecmp( stTmp.c_str(), "200" ) == 0 )
 	{
 		m_zoomType = z_200;
 		iZoom = 200;
 	}
-	else if( UT_stricmp( stTmp.c_str(), "Width" ) == 0 )
+	else if( g_ascii_strcasecmp( stTmp.c_str(), "Width" ) == 0 )
 	{
 		m_zoomType = z_PAGEWIDTH;
 		const XML_Char * szZoom = NULL;
@@ -331,7 +331,7 @@ bool XAP_Frame::initialize(const char * szKeyBindingsKey, const char * szKeyBind
 			iZoom = 100;
 		}
 	}
-	else if( UT_stricmp( stTmp.c_str(), "Page" ) == 0 )
+	else if( g_ascii_strcasecmp( stTmp.c_str(), "Page" ) == 0 )
 	{
 		m_zoomType = z_WHOLEPAGE;
 		const XML_Char * szZoom = NULL;

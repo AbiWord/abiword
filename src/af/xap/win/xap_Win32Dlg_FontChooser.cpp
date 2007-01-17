@@ -125,7 +125,7 @@ void XAP_Win32Dialog_FontChooser::runModal(XAP_Frame * pFrame)
 
 	if (m_pFontWeight && *m_pFontWeight)
 	{
-		if (UT_stricmp(m_pFontWeight,"bold") == 0)
+		if (g_ascii_strcasecmp(m_pFontWeight,"bold") == 0)
 			lf.lfWeight = 700;
 		// TODO do we need any others here...
 	}
@@ -134,7 +134,7 @@ void XAP_Win32Dialog_FontChooser::runModal(XAP_Frame * pFrame)
 
 	if (m_pFontStyle && *m_pFontStyle)
 	{
-		if (UT_stricmp(m_pFontStyle,"italic") == 0)
+		if (g_ascii_strcasecmp(m_pFontStyle,"italic") == 0)
 			lf.lfItalic = TRUE;
 	}
 	else
@@ -163,7 +163,7 @@ void XAP_Win32Dialog_FontChooser::runModal(XAP_Frame * pFrame)
 	{
 		if(m_pFontFamily)
 		{
-			if((UT_stricmp(szFontFamily, m_pFontFamily) != 0))
+			if((g_ascii_strcasecmp(szFontFamily, m_pFontFamily) != 0))
 			{
 				m_bChangedFontFamily = true;
 				CLONEP((char *&) m_pFontFamily, szFontFamily);
@@ -186,7 +186,7 @@ void XAP_Win32Dialog_FontChooser::runModal(XAP_Frame * pFrame)
 		else
 			bufSize[0] = 0;
 
-		if (bIsSizeValid && bWasSizeValid && (UT_stricmp(bufSize,m_pFontSize) != 0))			
+		if (bIsSizeValid && bWasSizeValid && (g_ascii_strcasecmp(bufSize,m_pFontSize) != 0))			
 		{
 			m_bChangedFontSize = true;
 			CLONEP((char *&) m_pFontSize, bufSize);
@@ -197,11 +197,11 @@ void XAP_Win32Dialog_FontChooser::runModal(XAP_Frame * pFrame)
 		}
 
 		bool bIsBold = ((cf.nFontType & BOLD_FONTTYPE) != 0);
-		bool bWasBold = (m_pFontWeight && *m_pFontWeight && (UT_stricmp(m_pFontWeight,"bold") == 0));
+		bool bWasBold = (m_pFontWeight && *m_pFontWeight && (g_ascii_strcasecmp(m_pFontWeight,"bold") == 0));
 		bool bIsNormal = ((cf.nFontType & REGULAR_FONTTYPE) != 0);
 		bool bWasNormal = (!m_pFontWeight
 							  || !*m_pFontWeight
-							  || (UT_stricmp(m_pFontWeight,"normal") != 0));
+							  || (g_ascii_strcasecmp(m_pFontWeight,"normal") != 0));
 		if ((bIsBold != bWasBold) || (bIsNormal != bWasNormal))
 		{
 			m_bChangedFontWeight = true;
@@ -212,7 +212,7 @@ void XAP_Win32Dialog_FontChooser::runModal(XAP_Frame * pFrame)
 		}
 
 		bool bIsItalic = ((cf.nFontType & ITALIC_FONTTYPE) != 0);
-		bool bWasItalic = (m_pFontStyle && *m_pFontStyle && (UT_stricmp(m_pFontStyle,"italic") == 0));
+		bool bWasItalic = (m_pFontStyle && *m_pFontStyle && (g_ascii_strcasecmp(m_pFontStyle,"italic") == 0));
 		if (bIsItalic != bWasItalic)
 		{
 			m_bChangedFontStyle = true;
@@ -227,8 +227,8 @@ void XAP_Win32Dialog_FontChooser::runModal(XAP_Frame * pFrame)
 				GetGValue(cf.rgbColors),GetBValue(cf.rgbColors));
 		bool bWasColorValid = (m_pColor && *m_pColor);
 
-		if ( m_bChangedColor &&  ((bWasColorValid && (UT_stricmp(bufColor,m_pColor) != 0))
-								  || (!bWasColorValid && (UT_stricmp(bufColor,"000000") != 0))))
+		if ( m_bChangedColor &&  ((bWasColorValid && (g_ascii_strcasecmp(bufColor,m_pColor) != 0))
+								  || (!bWasColorValid && (g_ascii_strcasecmp(bufColor,"000000") != 0))))
 		{
 			CLONEP((char *&)m_pColor, bufColor);
 		}

@@ -1867,7 +1867,7 @@ static bool s_AskForPathname(XAP_Frame * pFrame,
 			const char * encoding;
 			bool bSet = false;
 			
-			if(UT_stricmp(l.getEncoding(), "UTF-8") != 0)
+			if(g_ascii_strcasecmp(l.getEncoding(), "UTF-8") != 0)
 			{
 				UT_iconv_t  cd = UT_iconv_open(l.getEncoding(), "UTF-8");
 
@@ -2860,7 +2860,7 @@ Defun1(filePreviewWeb)
 
 	  if( pWhere )
 	  {
-		if( UT_stricmp( pWhere, ".html" ) && UT_stricmp( pWhere, ".htm" ) )
+		if( g_ascii_strcasecmp( pWhere, ".html" ) && g_ascii_strcasecmp( pWhere, ".htm" ) )
 			strcpy( pWhere, ".html" );
 	  }
 	  else
@@ -8189,7 +8189,7 @@ static bool _toggleSpanOrBlock(FV_View * pView,
 			else
 			{
 				// nope...
-				if (UT_stricmp(s, vOff))
+				if (g_ascii_strcasecmp(s, vOff))
 				{
 					// ...put it in by appending to current contents
 					int len = strlen(s) + strlen(vOn) + 2;
@@ -8204,7 +8204,7 @@ static bool _toggleSpanOrBlock(FV_View * pView,
 		}
 		else
 		{
-			if (0 == UT_stricmp(s, vOn))
+			if (0 == g_ascii_strcasecmp(s, vOn))
 				props_out[1] = vOff;
 		}
 	}

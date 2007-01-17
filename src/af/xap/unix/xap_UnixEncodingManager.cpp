@@ -533,7 +533,7 @@ void  XAP_UnixEncodingManager::initialize()
 			Native8BitEncodingName = NativeSystemEncodingName = NativeEncodingName;
 			
 			// need to get non-unicode encoding if encoding is UTF-8
-			if(!UT_stricmp(NativeEncodingName.utf8_str(), "UTF-8"))
+			if(!g_ascii_strcasecmp(NativeEncodingName.utf8_str(), "UTF-8"))
 			{
 				// we want to get the encoding that would be used for the given
 				// language/territory if the UTF-8 encoding was not specified

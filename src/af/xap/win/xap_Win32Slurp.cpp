@@ -242,7 +242,7 @@ void XAP_Win32Slurp::processCommand(HDDEDATA hData)
 	if ( *next++ != ']' ) goto Finished;
 	
 	// now do something useful with the command and its parameter
-	if (UT_stricmp(command,"open") == 0)
+	if (g_ascii_strcasecmp(command,"open") == 0)
 		{
 			if (!pathname || !*pathname)
 			{
@@ -390,7 +390,7 @@ void XAP_Win32Slurp::stuffRegistry(const char * szSuffix,
 			UT_DEBUGMSG(("Registry: suffix [HKEY_CLASSES_ROOT\\%s] --> [%s]\n",
 						 szSuffix,buf));
 
-			if (UT_stricmp(buf,bufOurFoo) != 0)	// we didn't create this so ask first.
+			if (g_ascii_strcasecmp(buf,bufOurFoo) != 0)	// we didn't create this so ask first.
 			{
 				if (!_askForStealFromAnotherApplication())
 					goto CleanupMess;
@@ -429,7 +429,7 @@ void XAP_Win32Slurp::stuffRegistry(const char * szSuffix,
 	if ((eResult == ERROR_SUCCESS) && (dType == REG_SZ))
 	{
 		UT_DEBUGMSG(("Registry: Existing ContentType [%s]\n",buf));
-		if (UT_stricmp(buf,szContentType) == 0)
+		if (g_ascii_strcasecmp(buf,szContentType) == 0)
 			bUpdateContentType = false;
 		else							// we didn't create this so ask first.
 			bUpdateContentType = (_askForStealMimeFromAnotherApplication());
@@ -466,7 +466,7 @@ void XAP_Win32Slurp::stuffRegistry(const char * szSuffix,
 		UT_ASSERT(hKeyFoo);
 		len = NrElements(buf);
 		eResult = RegQueryValueEx(hKeyFoo,NULL,0,&dType,(LPBYTE)buf,&len);
-		if ((eResult==ERROR_SUCCESS) && (dType==REG_SZ) && (UT_stricmp(buf,bufOurFooValue)==0))
+		if ((eResult==ERROR_SUCCESS) && (dType==REG_SZ) && (g_ascii_strcasecmp(buf,bufOurFooValue)==0))
 			break;					// already has correct value, no need to overwrite.
 
 		/* otherwise, replace the value */
@@ -503,7 +503,7 @@ void XAP_Win32Slurp::stuffRegistry(const char * szSuffix,
 		eResult = RegQueryValueEx(hKeyCommand,NULL,0,&dType,(LPBYTE)buf,&len);
 		if ((eResult==ERROR_SUCCESS) && (dType==REG_SZ))
 		{
-			if (UT_stricmp(buf,commandPathWithParam) == 0)
+			if (g_ascii_strcasecmp(buf,commandPathWithParam) == 0)
 				break;					// already has correct value, no need to overwrite.
 			
 			if(memcmp(buf, commandPathWithParam, strlen(commandPathWithParam)) == 0)
@@ -546,7 +546,7 @@ void XAP_Win32Slurp::stuffRegistry(const char * szSuffix,
 		UT_ASSERT(hKeyDdeExec);
 		len = NrElements(buf);
 		eResult = RegQueryValueEx(hKeyDdeExec,NULL,0,&dType,(LPBYTE)buf,&len);
-		if ((eResult==ERROR_SUCCESS) && (dType==REG_SZ) && (UT_stricmp(buf,VALUE_DDEEXEC_OPEN)==0))
+		if ((eResult==ERROR_SUCCESS) && (dType==REG_SZ) && (g_ascii_strcasecmp(buf,VALUE_DDEEXEC_OPEN)==0))
 			break;						// already has correct value, no need to overwrite.
 
 		/* otherwise, replace the value */
@@ -574,7 +574,7 @@ void XAP_Win32Slurp::stuffRegistry(const char * szSuffix,
 		UT_ASSERT(hKeyApplication);
 		len = NrElements(buf);
 		eResult = RegQueryValueEx(hKeyApplication,NULL,0,&dType,(LPBYTE)buf,&len);
-		if ((eResult==ERROR_SUCCESS) && (dType==REG_SZ) && (UT_stricmp(buf,szApplicationName)==0))
+		if ((eResult==ERROR_SUCCESS) && (dType==REG_SZ) && (g_ascii_strcasecmp(buf,szApplicationName)==0))
 			break;						// already has correct value, no need to overwrite.
 
 		/* otherwise, replace the value */
@@ -602,7 +602,7 @@ void XAP_Win32Slurp::stuffRegistry(const char * szSuffix,
 		UT_ASSERT(hKeyTopic);
 		len = NrElements(buf);
 		eResult = RegQueryValueEx(hKeyTopic,NULL,0,&dType,(LPBYTE)buf,&len);
-		if ((eResult==ERROR_SUCCESS) && (dType==REG_SZ) && (UT_stricmp(buf,MY_DDE_TOPICNAME)==0))
+		if ((eResult==ERROR_SUCCESS) && (dType==REG_SZ) && (g_ascii_strcasecmp(buf,MY_DDE_TOPICNAME)==0))
 			break;						// already has correct value, no need to overwrite.
 
 		/* otherwise, replace the value */
@@ -631,7 +631,7 @@ void XAP_Win32Slurp::stuffRegistry(const char * szSuffix,
 		UT_ASSERT(hKeyDefaultIcon);
 		len = NrElements(buf);
 		eResult = RegQueryValueEx(hKeyDefaultIcon,NULL,0,&dType,(LPBYTE)buf,&len);
-		if ((eResult==ERROR_SUCCESS) && (dType==REG_SZ) && (UT_stricmp(buf,bufDefaultIconValue)==0))
+		if ((eResult==ERROR_SUCCESS) && (dType==REG_SZ) && (g_ascii_strcasecmp(buf,bufDefaultIconValue)==0))
 			break;						// already has correct value, no need to overwrite.
 
 		/* otherwise, replace the value */

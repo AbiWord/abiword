@@ -113,7 +113,7 @@ void XAP_QNXDialog_Language::runModal(XAP_Frame * pFrame)
 	if (m_answer == XAP_Dialog_Language::a_OK) {
 		PtTreeItem_t *titem =	PtTreeGetCurrent(m_pLanguageList);
 
-			if (!m_pLanguage || UT_stricmp(m_pLanguage, titem->string)) {
+			if (!m_pLanguage || g_ascii_strcasecmp(m_pLanguage, titem->string)) {
 				_setLanguage(titem->string);
 				m_bChangedLanguage = true;
 			}
@@ -179,7 +179,7 @@ PtWidget_t * XAP_QNXDialog_Language::constructWindow(void)
 		PtTreeItem_t *titem = PtTreeAllocItem(m_pLanguageList,item,img,img);
 		if(!titem_old)	PtTreeAddFirst(m_pLanguageList, titem,NULL);
 		else PtTreeAddAfter(m_pLanguageList,titem,titem_old);
-		if(!UT_stricmp(item,m_pLanguage))
+		if(!g_ascii_strcasecmp(item,m_pLanguage))
 			PtTreeGoto(m_pLanguageList,titem);
 		titem_old = titem;
 		img = -1;

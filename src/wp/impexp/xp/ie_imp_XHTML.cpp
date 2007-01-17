@@ -1518,13 +1518,13 @@ void IE_Imp_XHTML::startElement(const XML_Char *name,
 
 					if (szName && *szName && szContent && *szContent)
 						{
-							if (0 == UT_stricmp(szName, "title"))
+							if (0 == g_ascii_strcasecmp(szName, "title"))
 								getDoc()->setMetaDataProp(PD_META_KEY_TITLE, szContent);
-							else if (0 == UT_stricmp(szName, "author"))
+							else if (0 == g_ascii_strcasecmp(szName, "author"))
 								getDoc()->setMetaDataProp(PD_META_KEY_CREATOR, szContent);
-							else if (0 == UT_stricmp(szName, "keywords"))
+							else if (0 == g_ascii_strcasecmp(szName, "keywords"))
 								getDoc()->setMetaDataProp(PD_META_KEY_KEYWORDS, szContent);
-							else if (0 == UT_stricmp(szName, "subject"))
+							else if (0 == g_ascii_strcasecmp(szName, "subject"))
 								getDoc()->setMetaDataProp(PD_META_KEY_SUBJECT, szContent);
 						}
 				}

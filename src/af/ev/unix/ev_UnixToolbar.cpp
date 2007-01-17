@@ -751,7 +751,7 @@ bool EV_UnixToolbar::synthesize(void)
 			{
 			case EV_TBIT_PushButton:
 			{
-				UT_ASSERT(UT_stricmp(pLabel->getIconName(),"NoIcon")!=0);
+				UT_ASSERT(g_ascii_strcasecmp(pLabel->getIconName(),"NoIcon")!=0);
 				if(pAction->getToolbarId() != AP_TOOLBAR_ID_INSERT_TABLE)
 				{
 					wd->m_widget = toolbar_append_button (GTK_TOOLBAR (m_wToolbar), pLabel->getIconName(),
@@ -810,7 +810,7 @@ bool EV_UnixToolbar::synthesize(void)
 			case EV_TBIT_ToggleButton:
 			case EV_TBIT_GroupButton:
 				{
-					UT_ASSERT(UT_stricmp(pLabel->getIconName(),"NoIcon")!=0);
+					UT_ASSERT(g_ascii_strcasecmp(pLabel->getIconName(),"NoIcon")!=0);
 
 					gboolean show = TRUE;
 					if (0 == strncmp("ALIGN_RIGHT", pLabel->getIconName(), strlen("ALIGN_RIGHT")) && 
@@ -952,7 +952,7 @@ bool EV_UnixToolbar::synthesize(void)
 				const gchar		*action_name;
 				const gchar		*stock_id;
 
-				UT_ASSERT (UT_stricmp(pLabel->getIconName(),"NoIcon") != 0);
+				UT_ASSERT (g_ascii_strcasecmp(pLabel->getIconName(),"NoIcon") != 0);
 
 			    if (pAction->getItemType() == EV_TBIT_ColorFore) {
 					action_name = "dlgColorPickerFore";

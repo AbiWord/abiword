@@ -86,9 +86,9 @@ void XAP_QNXDialog_FontChooser::runModal(XAP_Frame * pFrame)
 	UT_uint32 size;
 	char fontname[MAX_FONT_TAG];
 
-	if(!UT_stricmp(getVal("font-weight"),"bold"))
+	if(!g_ascii_strcasecmp(getVal("font-weight"),"bold"))
 		flags |= PF_STYLE_BOLD;
-	if(!UT_stricmp(getVal("font-style"),"italic"))
+	if(!g_ascii_strcasecmp(getVal("font-style"),"italic"))
 		flags |= PF_STYLE_ITALIC;	
 	size = (UT_uint32)UT_convertToPoints(getVal("font-size"));
 		

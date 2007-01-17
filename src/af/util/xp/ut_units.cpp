@@ -65,8 +65,6 @@ const char * UT_dimensionName(UT_Dimension dim)
 	}
 }
 
-#define STR_COMPARE UT_stricmp
-
 UT_Dimension UT_determineDimension(const char * sz, UT_Dimension fallback)
 {
   char * p = NULL ;
@@ -80,7 +78,7 @@ UT_Dimension UT_determineDimension(const char * sz, UT_Dimension fallback)
   // workaround for QNX's strtod being overly ambitious
   // being totaly stupid and match 'in' for infinity, but still return 0.
   // it does work fine on qnx if there is a number before 'in..' though.
-  if (STR_COMPARE(sz,"inch")==0 || STR_COMPARE(sz,"in")==0)
+  if (g_ascii_strcasecmp(sz,"inch")==0 || g_ascii_strcasecmp(sz,"in")==0)
     return DIM_IN;
 #endif
 
@@ -91,25 +89,25 @@ UT_Dimension UT_determineDimension(const char * sz, UT_Dimension fallback)
       while (*p && isspace(*p))
 	p++;
 
-      if (STR_COMPARE(p,"in") == 0 || STR_COMPARE(p, "inch") == 0)
+      if (g_ascii_strcasecmp(p,"in") == 0 || g_ascii_strcasecmp(p, "inch") == 0)
 	return DIM_IN;
       
-      else if (STR_COMPARE(p,"cm") == 0)
+      else if (g_ascii_strcasecmp(p,"cm") == 0)
 	return DIM_CM;
       
-      else if (STR_COMPARE(p,"mm") == 0)
+      else if (g_ascii_strcasecmp(p,"mm") == 0)
 	return DIM_MM;
       
-      else if (STR_COMPARE(p,"pi") == 0)
+      else if (g_ascii_strcasecmp(p,"pi") == 0)
 	return DIM_PI;
       
-      else if (STR_COMPARE(p,"pt") == 0)
+      else if (g_ascii_strcasecmp(p,"pt") == 0)
 	return DIM_PT;
       
-      else if (STR_COMPARE(p,"px") == 0)
+      else if (g_ascii_strcasecmp(p,"px") == 0)
 	return DIM_PX;
       
-      else if (STR_COMPARE(p,"%") == 0)
+      else if (g_ascii_strcasecmp(p,"%") == 0)
 	return DIM_PERCENT;
 
       UT_DEBUGMSG(("ut_units - unknown unit presented '%s' \n",p));

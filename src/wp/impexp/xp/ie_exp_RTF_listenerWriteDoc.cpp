@@ -388,7 +388,7 @@ void s_RTF_ListenerWriteDoc::_writeTOC(PT_AttrPropIndex apiTOC)
 	}
 	else
 	{
-		if(UT_stricmp(pszTOCHASHEADING,"1") == 0)
+		if(g_ascii_strcasecmp(pszTOCHASHEADING,"1") == 0)
 		{
 		}
 		else
@@ -404,7 +404,7 @@ void s_RTF_ListenerWriteDoc::_writeTOC(PT_AttrPropIndex apiTOC)
 	}
 	else
 	{
-		if(UT_stricmp(pszTOCLABEL,"1") == 0)
+		if(g_ascii_strcasecmp(pszTOCLABEL,"1") == 0)
 		{
 		}
 		else
@@ -417,7 +417,7 @@ void s_RTF_ListenerWriteDoc::_writeTOC(PT_AttrPropIndex apiTOC)
 	}
 	else
 	{
-		if(UT_stricmp(pszTOCLABEL,"1") == 0)
+		if(g_ascii_strcasecmp(pszTOCLABEL,"1") == 0)
 		{
 		}
 		else
@@ -430,7 +430,7 @@ void s_RTF_ListenerWriteDoc::_writeTOC(PT_AttrPropIndex apiTOC)
 	}
 	else
 	{
-		if(UT_stricmp(pszTOCLABEL,"1") == 0)
+		if(g_ascii_strcasecmp(pszTOCLABEL,"1") == 0)
 		{
 		}
 		else
@@ -443,7 +443,7 @@ void s_RTF_ListenerWriteDoc::_writeTOC(PT_AttrPropIndex apiTOC)
 	}
 	else
 	{
-		if(UT_stricmp(pszTOCLABEL,"1") == 0)
+		if(g_ascii_strcasecmp(pszTOCLABEL,"1") == 0)
 		{
 		}
 		else
@@ -459,7 +459,7 @@ void s_RTF_ListenerWriteDoc::_writeTOC(PT_AttrPropIndex apiTOC)
 	}
 	else
 	{
-		if(UT_stricmp(pszTOCLABELINHERITS,"1") == 0)
+		if(g_ascii_strcasecmp(pszTOCLABELINHERITS,"1") == 0)
 		{
 		}
 		else
@@ -472,7 +472,7 @@ void s_RTF_ListenerWriteDoc::_writeTOC(PT_AttrPropIndex apiTOC)
 	}
 	else
 	{
-		if(UT_stricmp(pszTOCLABELINHERITS,"1") == 0)
+		if(g_ascii_strcasecmp(pszTOCLABELINHERITS,"1") == 0)
 		{
 		}
 		else
@@ -485,7 +485,7 @@ void s_RTF_ListenerWriteDoc::_writeTOC(PT_AttrPropIndex apiTOC)
 	}
 	else
 	{
-		if(UT_stricmp(pszTOCLABELINHERITS,"1") == 0)
+		if(g_ascii_strcasecmp(pszTOCLABELINHERITS,"1") == 0)
 		{
 		}
 		else
@@ -498,7 +498,7 @@ void s_RTF_ListenerWriteDoc::_writeTOC(PT_AttrPropIndex apiTOC)
 	}
 	else
 	{
-		if(UT_stricmp(pszTOCLABELINHERITS,"1") == 0)
+		if(g_ascii_strcasecmp(pszTOCLABELINHERITS,"1") == 0)
 		{
 		}
 		else
@@ -669,16 +669,16 @@ void s_RTF_ListenerWriteDoc::_writeTOC(PT_AttrPropIndex apiTOC)
 	}
 	else
 	{
-		if(UT_stricmp(pszTOCTABTYPE,"none") == 0)
+		if(g_ascii_strcasecmp(pszTOCTABTYPE,"none") == 0)
 		{
 		}
-		else if(UT_stricmp(pszTOCTABTYPE,"dot") == 0)
+		else if(g_ascii_strcasecmp(pszTOCTABTYPE,"dot") == 0)
 		{
 		}
-		else if(UT_stricmp(pszTOCTABTYPE,"hyphen") == 0)
+		else if(g_ascii_strcasecmp(pszTOCTABTYPE,"hyphen") == 0)
 		{
 		}
-		else if(UT_stricmp(pszTOCTABTYPE,"underline") == 0)
+		else if(g_ascii_strcasecmp(pszTOCTABTYPE,"underline") == 0)
 		{
 		}
 		else
@@ -691,16 +691,16 @@ void s_RTF_ListenerWriteDoc::_writeTOC(PT_AttrPropIndex apiTOC)
 	}
 	else
 	{
-		if(UT_stricmp(pszTOCTABTYPE,"none") == 0)
+		if(g_ascii_strcasecmp(pszTOCTABTYPE,"none") == 0)
 		{
 		}
-		else if(UT_stricmp(pszTOCTABTYPE,"dot") == 0)
+		else if(g_ascii_strcasecmp(pszTOCTABTYPE,"dot") == 0)
 		{
 		}
-		else if(UT_stricmp(pszTOCTABTYPE,"hyphen") == 0)
+		else if(g_ascii_strcasecmp(pszTOCTABTYPE,"hyphen") == 0)
 		{
 		}
-		else if(UT_stricmp(pszTOCTABTYPE,"underline") == 0)
+		else if(g_ascii_strcasecmp(pszTOCTABTYPE,"underline") == 0)
 		{
 		}
 		else
@@ -713,16 +713,16 @@ void s_RTF_ListenerWriteDoc::_writeTOC(PT_AttrPropIndex apiTOC)
 	}
 	else
 	{
-		if(UT_stricmp(pszTOCTABTYPE,"none") == 0)
+		if(g_ascii_strcasecmp(pszTOCTABTYPE,"none") == 0)
 		{
 		}
-		else if(UT_stricmp(pszTOCTABTYPE,"dot") == 0)
+		else if(g_ascii_strcasecmp(pszTOCTABTYPE,"dot") == 0)
 		{
 		}
-		else if(UT_stricmp(pszTOCTABTYPE,"hyphen") == 0)
+		else if(g_ascii_strcasecmp(pszTOCTABTYPE,"hyphen") == 0)
 		{
 		}
-		else if(UT_stricmp(pszTOCTABTYPE,"underline") == 0)
+		else if(g_ascii_strcasecmp(pszTOCTABTYPE,"underline") == 0)
 		{
 		}
 		else
@@ -735,16 +735,16 @@ void s_RTF_ListenerWriteDoc::_writeTOC(PT_AttrPropIndex apiTOC)
 	}
 	else
 	{
-		if(UT_stricmp(pszTOCTABTYPE,"none") == 0)
+		if(g_ascii_strcasecmp(pszTOCTABTYPE,"none") == 0)
 		{
 		}
-		else if(UT_stricmp(pszTOCTABTYPE,"dot") == 0)
+		else if(g_ascii_strcasecmp(pszTOCTABTYPE,"dot") == 0)
 		{
 		}
-		else if(UT_stricmp(pszTOCTABTYPE,"hyphen") == 0)
+		else if(g_ascii_strcasecmp(pszTOCTABTYPE,"hyphen") == 0)
 		{
 		}
-		else if(UT_stricmp(pszTOCTABTYPE,"underline") == 0)
+		else if(g_ascii_strcasecmp(pszTOCTABTYPE,"underline") == 0)
 		{
 		}
 		else

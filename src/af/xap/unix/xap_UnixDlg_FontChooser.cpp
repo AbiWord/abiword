@@ -82,7 +82,7 @@ static gint searchTreeView(GtkTreeView* tv, char * compareText)
        gint i = 0;
        do {
        	       gtk_tree_model_get(model, &iter, TEXT_COLUMN, &text, -1);
-	       if (!UT_stricmp(text, compareText))
+	       if (!g_ascii_strcasecmp(text, compareText))
 	                       return i;
 	       i++;
        } while(gtk_tree_model_iter_next (model, &iter));
@@ -933,17 +933,17 @@ void XAP_UnixDialog_FontChooser::runModal(XAP_Frame * pFrame)
 	listStyle st = LIST_STYLE_NORMAL;
 	if (!getVal("font-style") || !getVal("font-weight"))
 		st = LIST_STYLE_NONE;
-	else if (!UT_stricmp(getVal("font-style"), "normal") &&
-			 !UT_stricmp(getVal("font-weight"), "normal"))
+	else if (!g_ascii_strcasecmp(getVal("font-style"), "normal") &&
+			 !g_ascii_strcasecmp(getVal("font-weight"), "normal"))
 		st = LIST_STYLE_NORMAL;
-	else if (!UT_stricmp(getVal("font-style"), "normal") &&
-			 !UT_stricmp(getVal("font-weight"), "bold"))
+	else if (!g_ascii_strcasecmp(getVal("font-style"), "normal") &&
+			 !g_ascii_strcasecmp(getVal("font-weight"), "bold"))
 		st = LIST_STYLE_BOLD;
-	else if (!UT_stricmp(getVal("font-style"), "italic") &&
-			 !UT_stricmp(getVal("font-weight"), "normal"))
+	else if (!g_ascii_strcasecmp(getVal("font-style"), "italic") &&
+			 !g_ascii_strcasecmp(getVal("font-weight"), "normal"))
 		st = LIST_STYLE_ITALIC;
-	else if (!UT_stricmp(getVal("font-style"), "italic") &&
-			 !UT_stricmp(getVal("font-weight"), "bold"))
+	else if (!g_ascii_strcasecmp(getVal("font-style"), "italic") &&
+			 !g_ascii_strcasecmp(getVal("font-weight"), "bold"))
 		st = LIST_STYLE_BOLD_ITALIC;
 	else
 	{

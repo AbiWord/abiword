@@ -99,9 +99,9 @@ IE_Exp_HTML_Sniffer::IE_Exp_HTML_Sniffer ()
 
 bool IE_Exp_HTML_Sniffer::recognizeSuffix (const char * szSuffix)
 {
-	return (!UT_stricmp (szSuffix, ".xhtml") || 
-			!(UT_stricmp (szSuffix, ".html")) || 
-			!(UT_stricmp (szSuffix, ".htm")));
+	return (!g_ascii_strcasecmp (szSuffix, ".xhtml") || 
+			!(g_ascii_strcasecmp (szSuffix, ".html")) || 
+			!(g_ascii_strcasecmp (szSuffix, ".htm")));
 }
 
 UT_Error IE_Exp_HTML_Sniffer::constructExporter (PD_Document * pDocument,
@@ -145,7 +145,7 @@ IE_Exp_HTML4_Sniffer::IE_Exp_HTML4_Sniffer ()
 
 bool IE_Exp_HTML4_Sniffer::recognizeSuffix (const char * szSuffix)
 {
-	return (!(UT_stricmp (szSuffix, ".html")) || !(UT_stricmp (szSuffix, ".htm")));
+	return (!(g_ascii_strcasecmp (szSuffix, ".html")) || !(g_ascii_strcasecmp (szSuffix, ".htm")));
 }
 
 UT_Error IE_Exp_HTML4_Sniffer::constructExporter (PD_Document * pDocument,
@@ -190,7 +190,7 @@ IE_Exp_PHTML_Sniffer::IE_Exp_PHTML_Sniffer ()
 
 bool IE_Exp_PHTML_Sniffer::recognizeSuffix (const char * szSuffix)
 {
-	return (!(UT_stricmp (szSuffix, ".phtml")));
+	return (!(g_ascii_strcasecmp (szSuffix, ".phtml")));
 }
 
 UT_Error IE_Exp_PHTML_Sniffer::constructExporter (PD_Document * pDocument,
@@ -228,7 +228,7 @@ IE_Exp_MHTML_Sniffer::IE_Exp_MHTML_Sniffer ()
 
 bool IE_Exp_MHTML_Sniffer::recognizeSuffix (const char * szSuffix)
 {
-	return (!(UT_stricmp (szSuffix, ".mht")));
+	return (!(g_ascii_strcasecmp (szSuffix, ".mht")));
 }
 
 UT_Error IE_Exp_MHTML_Sniffer::constructExporter (PD_Document * pDocument,
@@ -2284,8 +2284,8 @@ void s_HTML_Listener::_openTag (PT_AttrPropIndex api, PL_StruxDocHandle sdh)
 		bool bAddAWMLStyle = false;
 		if (get_Allow_AWML () && !get_HTML4 ()) bAddAWMLStyle = true;
 
-		if ((UT_stricmp (static_cast<const char *>(szValue), "Heading 1") == 0) ||
-			(UT_stricmp (static_cast<const char *>(szValue), "Numbered Heading 1") == 0))
+		if ((g_ascii_strcasecmp (static_cast<const char *>(szValue), "Heading 1") == 0) ||
+			(g_ascii_strcasecmp (static_cast<const char *>(szValue), "Numbered Heading 1") == 0))
 		{
 			m_iBlockType = BT_HEADING1;
 			tagID = TT_H1;
@@ -2299,11 +2299,11 @@ void s_HTML_Listener::_openTag (PT_AttrPropIndex api, PL_StruxDocHandle sdh)
 			else
 				m_utf8_1 = "h1";
 
-			if (UT_stricmp (static_cast<const char *>(szValue), "Heading 1") == 0)
+			if (g_ascii_strcasecmp (static_cast<const char *>(szValue), "Heading 1") == 0)
 				bAddAWMLStyle = false;
 		}
-		else if ((UT_stricmp (static_cast<const char *>(szValue), "Heading 2") == 0) ||
-				 (UT_stricmp (static_cast<const char *>(szValue), "Numbered Heading 2") == 0))
+		else if ((g_ascii_strcasecmp (static_cast<const char *>(szValue), "Heading 2") == 0) ||
+				 (g_ascii_strcasecmp (static_cast<const char *>(szValue), "Numbered Heading 2") == 0))
 		{
 			m_iBlockType = BT_HEADING2;
 			tagID = TT_H2;
@@ -2317,11 +2317,11 @@ void s_HTML_Listener::_openTag (PT_AttrPropIndex api, PL_StruxDocHandle sdh)
 			else
 				m_utf8_1 = "h2";
 
-			if (UT_stricmp (static_cast<const char *>(szValue), "Heading 2") == 0)
+			if (g_ascii_strcasecmp (static_cast<const char *>(szValue), "Heading 2") == 0)
 				bAddAWMLStyle = false;
 		}
-		else if ((UT_stricmp (static_cast<const char *>(szValue), "Heading 3") == 0) ||
-				 (UT_stricmp (static_cast<const char *>(szValue), "Numbered Heading 3") == 0))
+		else if ((g_ascii_strcasecmp (static_cast<const char *>(szValue), "Heading 3") == 0) ||
+				 (g_ascii_strcasecmp (static_cast<const char *>(szValue), "Numbered Heading 3") == 0))
 		{
 			m_iBlockType = BT_HEADING3;
 			tagID = TT_H3;
@@ -2335,10 +2335,10 @@ void s_HTML_Listener::_openTag (PT_AttrPropIndex api, PL_StruxDocHandle sdh)
 			else
 				m_utf8_1 = "h3";
 
-			if (UT_stricmp (static_cast<const char *>(szValue), "Heading 3") == 0)
+			if (g_ascii_strcasecmp (static_cast<const char *>(szValue), "Heading 3") == 0)
 				bAddAWMLStyle = false;
 		}
-		else if (UT_stricmp (static_cast<const char *>(szValue), "Block Text") == 0)
+		else if (g_ascii_strcasecmp (static_cast<const char *>(szValue), "Block Text") == 0)
 		{
 			m_iBlockType = BT_BLOCKTEXT;
 			tagID = TT_BLOCKQUOTE;
@@ -2347,7 +2347,7 @@ void s_HTML_Listener::_openTag (PT_AttrPropIndex api, PL_StruxDocHandle sdh)
 			m_utf8_1 = "blockquote";
 			bAddAWMLStyle = false;
 		}
-		else if (UT_stricmp (static_cast<const char *>(szValue), "Plain Text") == 0)
+		else if (g_ascii_strcasecmp (static_cast<const char *>(szValue), "Plain Text") == 0)
 		{
 			m_iBlockType = BT_NORMAL;
 			tagID = TT_P;
@@ -2356,7 +2356,7 @@ void s_HTML_Listener::_openTag (PT_AttrPropIndex api, PL_StruxDocHandle sdh)
 			m_utf8_1 = "p class=\"plain_text\"";
 			bAddAWMLStyle = false;
 		}
-		else if (UT_stricmp (static_cast<const char *>(szValue), "Normal") == 0)
+		else if (g_ascii_strcasecmp (static_cast<const char *>(szValue), "Normal") == 0)
 		{
 			m_iBlockType = BT_NORMAL;
 			tagID = TT_P;
@@ -6005,7 +6005,7 @@ bool s_StyleTree::descends (const char * style_name) const
 	if (m_parent == 0) return false;
 
 	// the name comparison has to be be case insensitive
-	if (!UT_stricmp(m_style_name.utf8_str(),style_name)) return true;
+	if (!g_ascii_strcasecmp(m_style_name.utf8_str(),style_name)) return true;
 
 	return m_parent->descends (style_name);
 }
@@ -6853,7 +6853,7 @@ UT_Error IE_Exp_HTML::_writeDocument ()
 	}
 	
 	prop = getProperty ("class-only");
-	if (prop && !UT_stricmp("yes",prop->utf8_str()))
+	if (prop && !g_ascii_strcasecmp("yes",prop->utf8_str()))
 	{
 		m_exp_opt.bClassOnly = true;
 	}

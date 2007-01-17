@@ -419,7 +419,7 @@ s_mapNameToField (const char * name)
 	for (unsigned int k = 0; k < FieldMappingSize; k++)
 	{
 		// field names can be sometimes in lower-case
-		if (!UT_stricmp(s_Tokens[k].m_name,name))
+		if (!g_ascii_strcasecmp(s_Tokens[k].m_name,name))
 			return s_Tokens[k].m_id;
 	}
 	return F_OTHER;

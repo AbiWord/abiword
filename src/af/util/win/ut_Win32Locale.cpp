@@ -67,13 +67,13 @@ bool UT_getISO639Language(char * szLanguage)
 		// Fix Norwegian
 		if (!strcmp(szISOLang,"no"))
 		{
-			if (*szWinLang && !UT_stricmp(szWinLang,"NON"))
+			if (*szWinLang && !g_ascii_strcasecmp(szWinLang,"NON"))
 				strcpy(szISOLang,"nn");
-			else if (*szWinLang && !UT_stricmp(szWinLang,"NOR"))
+			else if (*szWinLang && !g_ascii_strcasecmp(szWinLang,"NOR"))
 				strcpy(szISOLang,"nb");
 		}
 		// Fix Hebrew
-		else if (!UT_stricmp(szISOLang, "iw"))
+		else if (!g_ascii_strcasecmp(szISOLang, "iw"))
 		{
 			strcpy(szISOLang, "he");
 		}
@@ -86,15 +86,15 @@ bool UT_getISO639Language(char * szLanguage)
 		// Convert to ISO 639
 		// TODO Handle any other special cases
 		// Fix Norwegian
-		if (!UT_stricmp(szWinLang,"NON"))
+		if (!g_ascii_strcasecmp(szWinLang,"NON"))
 			strcpy(szLanguage,"nn");
-		else if (!UT_stricmp(szWinLang,"NOR"))
+		else if (!g_ascii_strcasecmp(szWinLang,"NOR"))
 			strcpy(szLanguage,"nb");
 		// Fix Chinese codes
-		else if (!UT_strnicmp(szWinLang,"CH",2))
+		else if (!g_ascii_strncasecmp(szWinLang,"CH",2))
 			strcpy(szLanguage,"zh");
 		// Fix Japanese code
-		else if (!UT_stricmp(szWinLang,"JPN"))
+		else if (!g_ascii_strcasecmp(szWinLang,"JPN"))
 			strcpy(szLanguage,"ja");
 		else
 		{
@@ -118,7 +118,7 @@ bool UT_getISO3166Country(char *szCountry)
 	if (GetLocaleInfoA(LOCALE_USER_DEFAULT,LOCALE_SISO3166CTRYNAME,szCountry,3)) //!TODO Using ANSI function
 	{
 		// Fix Serbia
-		if (!UT_stricmp(szCountry, "SP"))
+		if (!g_ascii_strcasecmp(szCountry, "SP"))
 		{
 			strcpy(szCountry, "SR");
 		}

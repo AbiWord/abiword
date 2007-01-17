@@ -156,7 +156,7 @@ UT_untgz(const char *szFName, const char *szWantedFile, const char *szDestPath, 
 			{
 				remaining = getoct(buffer.header.size, 12);
 
-				if ((remaining) && (UT_stricmp(fname, szWantedFile) == 0))
+				if ((remaining) && (g_ascii_strcasecmp(fname, szWantedFile) == 0))
 				{
 					fileSize = remaining;
 					

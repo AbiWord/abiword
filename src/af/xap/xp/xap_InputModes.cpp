@@ -70,7 +70,7 @@ bool XAP_InputModes::setCurrentMap(const char * szName)
 	UT_uint32 k;
 
 	for (k=0; k<kLimit; k++)
-		if (UT_stricmp(szName,reinterpret_cast<const char *>(m_vecNames.getNthItem(k))) == 0)
+		if (g_ascii_strcasecmp(szName,reinterpret_cast<const char *>(m_vecNames.getNthItem(k))) == 0)
 		{
 			m_indexCurrentEventMap = k;
 			return true;
@@ -95,7 +95,7 @@ EV_EditEventMapper * XAP_InputModes::getMapByName(const char * szName) const
 	UT_uint32 k;
 
 	for (k=0; k<kLimit; k++)
-		if (UT_stricmp(szName,reinterpret_cast<const char *>(m_vecNames.getNthItem(k))) == 0)
+		if (g_ascii_strcasecmp(szName,reinterpret_cast<const char *>(m_vecNames.getNthItem(k))) == 0)
 			return static_cast<EV_EditEventMapper *>(m_vecEventMaps.getNthItem(k));
 
 	return NULL;

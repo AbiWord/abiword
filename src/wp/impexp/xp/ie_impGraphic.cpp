@@ -175,7 +175,7 @@ const char * IE_ImpGraphic::getMimeTypeForSuffix(const char * suffix)
 		IE_ImpGraphicSniffer *sniffer = IE_IMP_GraphicSniffers.getNthItem(i);
 		sc = sniffer->getSuffixConfidence();
 		while (sc && sc->suffix) {
-			if (0 == UT_stricmp(suffix, sc->suffix)) {
+			if (0 == g_ascii_strcasecmp(suffix, sc->suffix)) {
 				const IE_MimeConfidence *mc = sniffer->getMimeConfidence();
 				if (mc) {
 					return mc->mimetype;
@@ -215,7 +215,7 @@ IEGraphicFileType IE_ImpGraphic::fileTypeForMimetype(const char * szMimetype)
 		UT_Confidence_t confidence = UT_CONFIDENCE_ZILCH;
 		while (mc && mc->match) {
 			if (mc->match == IE_MIME_MATCH_FULL) {
-				if (0 == UT_stricmp(mc->mimetype, szMimetype) && 
+				if (0 == g_ascii_strcasecmp(mc->mimetype, szMimetype) && 
 					mc->confidence > confidence) {
 					confidence = mc->confidence;
 				}
@@ -265,7 +265,7 @@ IEGraphicFileType IE_ImpGraphic::fileTypeForSuffix(const char * szSuffix)
 		UT_Confidence_t confidence = UT_CONFIDENCE_ZILCH;
 		while (sc && sc->suffix) {
 			/* suffixes do not have a leading '.' */
-			if (0 == UT_stricmp(sc->suffix, szSuffix+1) && 
+			if (0 == g_ascii_strcasecmp(sc->suffix, szSuffix+1) && 
 				sc->confidence > confidence) {
 				confidence = sc->confidence;
 			}
@@ -477,7 +477,7 @@ UT_Error IE_ImpGraphic::constructImporter(GsfInput * input,
 					const IE_SuffixConfidence * sc = s->getSuffixConfidence();
 					while (sc && sc->suffix) {
 						/* suffixes do not have a leading '.' */
-						if (0 == UT_stricmp(sc->suffix, suffix+1) && 
+						if (0 == g_ascii_strcasecmp(sc->suffix, suffix+1) && 
 							sc->confidence > suffix_confidence) {
 							suffix_confidence = sc->confidence;
 						}

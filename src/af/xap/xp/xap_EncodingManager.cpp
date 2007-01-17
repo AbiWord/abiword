@@ -261,7 +261,7 @@ const char* XAP_EncodingManager::strToNative(const char* in, const char* charset
 	UT_iconv_t iconv_handle;
 	const char * pNative =  bUseSysEncoding ? getNativeSystemEncodingName() : getNativeEncodingName();
 	
-	if(!UT_stricmp(pNative, "UTF-8"))
+	if(!g_ascii_strcasecmp(pNative, "UTF-8"))
 		pNative = getNativeNonUnicodeEncodingName();
 
 	iconv_handle = UT_iconv_open(pNative, charset);
@@ -490,14 +490,14 @@ static const char* search_rmap(const _rmap* m,const char* key,bool* is_default =
 	{
 		if (!cur->keys)
 		{
-			if (!UT_stricmp(cur->value,key))
+			if (!g_ascii_strcasecmp(cur->value,key))
 				return cur->value;
 			else
 				continue;
 		};
 		const char** curkey = cur->keys;
 		for(;*curkey;++curkey)
-			if (!UT_stricmp(*curkey,key))
+			if (!g_ascii_strcasecmp(*curkey,key))
 				return cur->value;			
 	}
 	if (is_default)	
@@ -526,7 +526,7 @@ static const char* search_map(const _map* m,const char* key,bool* is_default = N
 	if (is_default)
 		*is_default = false;
 	for(;cur->key;++cur)
-		if (!UT_stricmp(cur->key,key))
+		if (!g_ascii_strcasecmp(cur->key,key))
 			return cur->value;
 	if (is_default)
 		*is_default = true;
@@ -1157,7 +1157,7 @@ const XAP_LangInfo* XAP_EncodingManager::findLangInfo(const char* key,XAP_LangIn
 		return NULL;
 	const XAP_LangInfo* cur = langinfo;
 	for(; cur->fields[0]; ++cur)
-		if (!UT_stricmp(cur->fields[idx],key))
+		if (!g_ascii_strcasecmp(cur->fields[idx],key))
 			return cur;
 	return NULL;
 }
@@ -1257,9 +1257,9 @@ void XAP_EncodingManager::initialize()
 	else
 		UT_DEBUGMSG(("This iconv does not support UCS-4LE!\n"));
 
-	if(!UT_stricmp(enc, "UTF-8") || !UT_stricmp(enc, "UTF8")
-		|| !UT_stricmp(enc, "UTF-16") || !UT_stricmp(enc, "UTF16")
-		|| !UT_stricmp(enc, "UCS-2") || !UT_stricmp(enc, "UCS2"))
+	if(!g_ascii_strcasecmp(enc, "UTF-8") || !g_ascii_strcasecmp(enc, "UTF8")
+		|| !g_ascii_strcasecmp(enc, "UTF-16") || !g_ascii_strcasecmp(enc, "UTF16")
+		|| !g_ascii_strcasecmp(enc, "UCS-2") || !g_ascii_strcasecmp(enc, "UCS2"))
 		m_bIsUnicodeLocale = true;
 	else
 		m_bIsUnicodeLocale = false;

@@ -188,7 +188,7 @@ bool AP_Win32App::initialize(void)
 		if (   (getPrefsValue(AP_PREF_KEY_StringSet,&szStringSet))
 			&& (szStringSet)
 			&& (*szStringSet)
-			&& (UT_stricmp(szStringSet,AP_PREF_DEFAULT_StringSet) != 0))
+			&& (g_ascii_strcasecmp(szStringSet,AP_PREF_DEFAULT_StringSet) != 0))
 		{
 			getPrefsValueDirectory(true,AP_PREF_KEY_StringSetDirectory,&szDirectory);
 			UT_return_val_if_fail ((szDirectory) && (*szDirectory), false);
@@ -1431,7 +1431,7 @@ IEFileType AP_Win32App::_getFileTypeFromDesc(const char *desc)
 	IEFileType ift;
 
 	// no description given or description == 'UNKNOWN' then unknown
-	if (!desc || !*desc || (UT_stricmp(desc, "Unknown")==0)) 
+	if (!desc || !*desc || (g_ascii_strcasecmp(desc, "Unknown")==0)) 
 		return IEFT_Unknown;  
 
 	UT_uint32 i = 0;
@@ -1440,7 +1440,7 @@ IEFileType AP_Win32App::_getFileTypeFromDesc(const char *desc)
 		// TODO: change to actually test all but suffixes, 
 		// ie if iftDesc == 'Some FileType (*.sft, *.someft)' then only
             // test against 'Some FileType'
-		if (UT_strnicmp(iftDesc, desc, strlen(desc)) == 0)
+		if (g_ascii_strncasecmp(iftDesc, desc, strlen(desc)) == 0)
 			return ift;
 		
 		// try next importer

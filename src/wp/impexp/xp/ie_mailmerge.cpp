@@ -549,7 +549,7 @@ public:
 	}
 	
 	virtual UT_Confidence_t recognizeSuffix (const char * szSuffix) {
-		return (!UT_stricmp (szSuffix, ".xml") ? UT_CONFIDENCE_SOSO : UT_CONFIDENCE_POOR);
+		return (!g_ascii_strcasecmp (szSuffix, ".xml") ? UT_CONFIDENCE_SOSO : UT_CONFIDENCE_POOR);
 	}
 	
 	virtual bool getDlgLabels (const char ** szDesc,
@@ -753,7 +753,7 @@ public:
 	
 	virtual UT_Confidence_t recognizeSuffix (const char * szSuffix) {
 	  // skip over "*"
-		return (!UT_stricmp (szSuffix, (m_suffix.utf8_str() + 1)) ? UT_CONFIDENCE_PERFECT : UT_CONFIDENCE_POOR);
+		return (!g_ascii_strcasecmp (szSuffix, (m_suffix.utf8_str() + 1)) ? UT_CONFIDENCE_PERFECT : UT_CONFIDENCE_POOR);
 	}
 
 	virtual bool getDlgLabels (const char ** szDesc,

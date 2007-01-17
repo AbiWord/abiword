@@ -146,68 +146,6 @@ UT_uint32 UT_pointerArrayLength(void ** array)
 // is defined in platform-specific code.
 //////////////////////////////////////////////////////////////////
 
-UT_sint32 UT_stricmp(const char * s1, const char * s2)
-{
- UT_return_val_if_fail(s1, 1);
- UT_return_val_if_fail(s2, -1);
-
-#if defined(HAVE_STRCASECMP)
-
-  return strcasecmp(s1,s2);
-
-#elif defined(HAVE_STRICMP)
-  
-  return stricmp(s1,s2);
-
-#else
-
-  // Lifted from glibc.  Looks better (in a constant-factor sort of way)
-  // than what we had before.  Ideally this should be per-platform.
-  const unsigned char *p1 = reinterpret_cast<const unsigned char *>(s1);
-  const unsigned char *p2 = reinterpret_cast<const unsigned char *>(s2);
-  unsigned char c1, c2;
-  
-  if (s1 == s2)
-	  return 0;
-  
-  do
-  {
-	  c1 = tolower (*p1++);
-	  c2 = tolower (*p2++);
-	  if (c1 == '\0')
-		  break;
-  }
-  while (c1 == c2);
-  
-  return c1 - c2;
-#endif /* HAVE_STRCASECMP || HAVE_STRICMP */
-}
-
-// should really be a size_t, but that might break compilation on weird
-// platforms.  I don't know.
-UT_sint32 UT_strnicmp(const char *s1, const char *s2, int n)
-{
-  UT_return_val_if_fail(s1, 1);
-  UT_return_val_if_fail(s2, -1);
-
-	const unsigned char *p1 = reinterpret_cast<const unsigned char *>(s1);
-	const unsigned char *p2 = reinterpret_cast<const unsigned char *>(s2);
-	unsigned char c1, c2;
-
-	if (p1 == p2 || n == 0)
-		return 0;
-
-	do
-    {
-		c1 = tolower (*p1++);
-		c2 = tolower (*p2++);
-		if (c1 == '\0' || c1 != c2)
-			return c1 - c2;
-    } while (--n > 0);
-
-	return c1 - c2;
-}
-
 bool UT_cloneString(char *& rszDest, const char * szSource)
 {
 	if (szSource && *szSource)
@@ -345,13 +283,13 @@ bool UT_XML_cloneString(XML_Char *& rszDest, const XML_Char * szSource)
 UT_sint32 UT_XML_stricmp(const XML_Char * sz1, const XML_Char * sz2)
 {
 	UT_ASSERT(sizeof(char) == sizeof(XML_Char));
-	return UT_stricmp(static_cast<const char*>(sz1),static_cast<const char*>(sz2));
+	return g_ascii_strcasecmp(static_cast<const char*>(sz1),static_cast<const char*>(sz2));
 }
 
 UT_sint32 UT_XML_strnicmp(const XML_Char * sz1, const XML_Char * sz2, const UT_uint32 n)
 {
 	UT_ASSERT(sizeof(char) == sizeof(XML_Char));
-	return UT_strnicmp(static_cast<const char*>(sz1),static_cast<const char*>(sz2),n);
+	return g_ascii_strncasecmp(static_cast<const char*>(sz1),static_cast<const char*>(sz2),n);
 }
 
 UT_sint32 UT_XML_strcmp(const XML_Char * sz1, const XML_Char * sz2)

@@ -527,7 +527,7 @@ UT_uint32 AP_Frame::getNewZoom(XAP_Frame::tZoomType * tZoom)
 		UT_String sZoom;
 		pApp->getPrefsValue(XAP_PREF_KEY_ZoomType, sZoom);
 		*tZoom = getZoomType();
-		if( (UT_stricmp( sZoom.c_str(), "Width" ) == 0 ) || (UT_stricmp( sZoom.c_str(), "Page" ) == 0 ))
+		if( (g_ascii_strcasecmp( sZoom.c_str(), "Width" ) == 0 ) || (g_ascii_strcasecmp( sZoom.c_str(), "Page" ) == 0 ))
 		{
 			iZoom = 100;
 		}

@@ -67,14 +67,14 @@ static bool label_button_with_abi_pixmap( PtWidget_t * button, const char * szIc
 
 static bool findIconDataByName(const char * szName, const char *** pIconData, UT_uint32 * pSizeofData)
 {
-	if (!szName || !*szName || (UT_stricmp(szName,"NoIcon")==0))
+	if (!szName || !*szName || (g_ascii_strcasecmp(szName,"NoIcon")==0))
 		return false;
 	
 	UT_uint32 kLimit = NrElements(s_itTable);
 	UT_uint32 k;
 
 	for (k=0; k < kLimit; k++) {
-		if (UT_stricmp(szName,s_itTable[k].m_name) == 0)
+		if (g_ascii_strcasecmp(szName,s_itTable[k].m_name) == 0)
 		{
 			*pIconData = s_itTable[k].m_staticVariable;
 			*pSizeofData = s_itTable[k].m_sizeofVariable;

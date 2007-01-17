@@ -331,7 +331,7 @@ void s_RTF_ListenerGetProps::_searchTableAPI(PT_AttrPropIndex api)
 
 	szColor = PP_evalProperty("background-color",pTableAP,NULL,NULL,m_pDocument,true);
 
-	if (szColor && UT_stricmp (szColor, "transparent") != 0)
+	if (szColor && g_ascii_strcasecmp (szColor, "transparent") != 0)
 	{
 		ndxColor = m_pie->_findColor(static_cast<const char*>(szColor));
 		if (ndxColor == -1)
@@ -342,7 +342,7 @@ void s_RTF_ListenerGetProps::_searchTableAPI(PT_AttrPropIndex api)
 
 	szColor = PP_evalProperty("bgcolor",pTableAP,NULL,NULL,m_pDocument,true);
 
-	if (szColor && UT_stricmp (szColor, "transparent") != 0)
+	if (szColor && g_ascii_strcasecmp (szColor, "transparent") != 0)
 	{
 		ndxColor = m_pie->_findColor(static_cast<const char*>(szColor));
 		if (ndxColor == -1)
@@ -353,7 +353,7 @@ void s_RTF_ListenerGetProps::_searchTableAPI(PT_AttrPropIndex api)
 
 	szColor = PP_evalProperty("left-color",pTableAP,NULL,NULL,m_pDocument,true);
 
-	if (szColor && (UT_stricmp (szColor, "transparent") != 0) && (UT_stricmp (szColor, "inherit") != 0) )
+	if (szColor && (g_ascii_strcasecmp (szColor, "transparent") != 0) && (g_ascii_strcasecmp (szColor, "inherit") != 0) )
 	{
 		ndxColor = m_pie->_findColor(static_cast<const char*>(szColor));
 		if (ndxColor == -1)
@@ -364,7 +364,7 @@ void s_RTF_ListenerGetProps::_searchTableAPI(PT_AttrPropIndex api)
 
 	szColor = PP_evalProperty("right-color",pTableAP,NULL,NULL,m_pDocument,true);
 
-	if (szColor && (UT_stricmp (szColor, "transparent") != 0) && (UT_stricmp (szColor, "inherit") != 0) )
+	if (szColor && (g_ascii_strcasecmp (szColor, "transparent") != 0) && (g_ascii_strcasecmp (szColor, "inherit") != 0) )
 	{
 		ndxColor = m_pie->_findColor(static_cast<const char*>(szColor));
 		if (ndxColor == -1)
@@ -375,7 +375,7 @@ void s_RTF_ListenerGetProps::_searchTableAPI(PT_AttrPropIndex api)
 
 	szColor = PP_evalProperty("bot-color",pTableAP,NULL,NULL,m_pDocument,true);
 
-	if (szColor && (UT_stricmp (szColor, "transparent") != 0) && (UT_stricmp (szColor, "inherit") != 0) )
+	if (szColor && (g_ascii_strcasecmp (szColor, "transparent") != 0) && (g_ascii_strcasecmp (szColor, "inherit") != 0) )
 	{
 		ndxColor = m_pie->_findColor(static_cast<const char*>(szColor));
 		if (ndxColor == -1)
@@ -386,7 +386,7 @@ void s_RTF_ListenerGetProps::_searchTableAPI(PT_AttrPropIndex api)
 
 	szColor = PP_evalProperty("top-color",pTableAP,NULL,NULL,m_pDocument,true);
 
-	if (szColor && (UT_stricmp (szColor, "transparent") != 0) && (UT_stricmp (szColor, "inherit") != 0) )
+	if (szColor && (g_ascii_strcasecmp (szColor, "transparent") != 0) && (g_ascii_strcasecmp (szColor, "inherit") != 0) )
 	{
 		ndxColor = m_pie->_findColor(static_cast<const char*>(szColor));
 		if (ndxColor == -1)
@@ -408,7 +408,7 @@ void s_RTF_ListenerGetProps::_searchCellAPI(PT_AttrPropIndex api)
 
 	szColor = PP_evalProperty("top-color",pCellAP,NULL,NULL,m_pDocument,true);
 
-	if (szColor && (UT_stricmp (szColor, "transparent") != 0) && (UT_stricmp (szColor, "inherit") != 0) )
+	if (szColor && (g_ascii_strcasecmp (szColor, "transparent") != 0) && (g_ascii_strcasecmp (szColor, "inherit") != 0) )
 	{
 		ndxColor = m_pie->_findColor(static_cast<const char*>(szColor));
 		if (ndxColor == -1)
@@ -419,7 +419,7 @@ void s_RTF_ListenerGetProps::_searchCellAPI(PT_AttrPropIndex api)
 
 	szColor = PP_evalProperty("left-color",pCellAP,NULL,NULL,m_pDocument,true);
 
-	if (szColor && (UT_stricmp (szColor, "transparent") != 0) && (UT_stricmp (szColor, "inherit") != 0) )
+	if (szColor && (g_ascii_strcasecmp (szColor, "transparent") != 0) && (g_ascii_strcasecmp (szColor, "inherit") != 0) )
 	{
 		ndxColor = m_pie->_findColor(static_cast<const char*>(szColor));
 		if (ndxColor == -1)
@@ -430,7 +430,7 @@ void s_RTF_ListenerGetProps::_searchCellAPI(PT_AttrPropIndex api)
 
 	szColor = PP_evalProperty("right-color",pCellAP,NULL,NULL,m_pDocument,true);
 
-	if (szColor && (UT_stricmp (szColor, "transparent") != 0) && (UT_stricmp (szColor, "inherit") != 0) )
+	if (szColor && (g_ascii_strcasecmp (szColor, "transparent") != 0) && (g_ascii_strcasecmp (szColor, "inherit") != 0) )
 	{
 		ndxColor = m_pie->_findColor(static_cast<const char*>(szColor));
 		if (ndxColor == -1)
@@ -441,7 +441,7 @@ void s_RTF_ListenerGetProps::_searchCellAPI(PT_AttrPropIndex api)
 
 	szColor = PP_evalProperty("bot-color",pCellAP,NULL,NULL,m_pDocument,true);
 
-	if (szColor && (UT_stricmp (szColor, "transparent") != 0) && (UT_stricmp (szColor, "inherit") != 0) )
+	if (szColor && (g_ascii_strcasecmp (szColor, "transparent") != 0) && (g_ascii_strcasecmp (szColor, "inherit") != 0) )
 	{
 		ndxColor = m_pie->_findColor(static_cast<const char*>(szColor));
 		if (ndxColor == -1)
@@ -452,7 +452,7 @@ void s_RTF_ListenerGetProps::_searchCellAPI(PT_AttrPropIndex api)
 
 	szColor = PP_evalProperty("background-color",pCellAP,NULL,NULL,m_pDocument,true);
 
-	if (szColor && (UT_stricmp (szColor, "transparent") != 0) && (UT_stricmp (szColor, "inherit") != 0) )
+	if (szColor && (g_ascii_strcasecmp (szColor, "transparent") != 0) && (g_ascii_strcasecmp (szColor, "inherit") != 0) )
 	{
 		ndxColor = m_pie->_findColor(static_cast<const char*>(szColor));
 		if (ndxColor == -1)
@@ -684,7 +684,7 @@ void s_RTF_ListenerGetProps::_compute_span_properties(const PP_AttrProp * pSpanA
 	
 	szColor = PP_evalProperty("bgcolor",pSpanAP,pBlockAP,pSectionAP,m_pDocument,true);
 
-	if (UT_stricmp (szColor, "transparent") != 0)
+	if (g_ascii_strcasecmp (szColor, "transparent") != 0)
 	{
 		ndxColor = m_pie->_findColor(static_cast<const char*>(szColor));
 		if (ndxColor == -1)

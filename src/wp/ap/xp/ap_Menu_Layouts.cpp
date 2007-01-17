@@ -292,7 +292,7 @@ EV_Menu_Layout * XAP_Menu_Factory::CreateMenuLayout(const char * szName)
 		_vectt * pVectt = (_vectt *)m_vecTT.getNthItem(k);
 		if (pVectt == NULL)
 			continue;
-		if (UT_stricmp(szName,pVectt->m_name)==0)
+		if (g_ascii_strcasecmp(szName,pVectt->m_name)==0)
 		{
 			UT_uint32 NrEntries = pVectt->getNrEntries();
 			EV_Menu_Layout * pLayout = new EV_Menu_Layout(pVectt->m_name,NrEntries);
@@ -344,7 +344,7 @@ XAP_Menu_Id XAP_Menu_Factory::addNewMenuAfter(const char * szMenu,
 		pVectt = (_vectt *)m_vecTT.getNthItem(k);
 		if (pVectt == NULL)
 			continue;
-		bFoundMenu = (UT_stricmp(szMenu,pVectt->m_name)==0);
+		bFoundMenu = (g_ascii_strcasecmp(szMenu,pVectt->m_name)==0);
 	}
 	if(!bFoundMenu)
 	{
@@ -384,7 +384,7 @@ XAP_Menu_Id XAP_Menu_Factory::addNewMenuAfter(const char * szMenu,
 		pVectt = (_vectt *)m_vecTT.getNthItem(k);
 		if (pVectt == NULL)
 			continue;
-		bFoundMenu = (UT_stricmp(szMenu,pVectt->m_name)==0);
+		bFoundMenu = (g_ascii_strcasecmp(szMenu,pVectt->m_name)==0);
 	}
 	if(!bFoundMenu)
 	{
@@ -442,7 +442,7 @@ XAP_Menu_Id XAP_Menu_Factory::addNewMenuBefore(const char * szMenu,
 		pVectt = (_vectt *)m_vecTT.getNthItem(k);
 		if (pVectt == NULL)
 			continue;
-		bFoundMenu = (UT_stricmp(szMenu,pVectt->m_name)==0);
+		bFoundMenu = (g_ascii_strcasecmp(szMenu,pVectt->m_name)==0);
 	}
 	if(!bFoundMenu)
 	{
@@ -488,7 +488,7 @@ XAP_Menu_Id XAP_Menu_Factory::addNewMenuBefore(const char * szMenu,
 		pVectt = (_vectt *)m_vecTT.getNthItem(k);
 		if (pVectt == NULL)
 			continue;
-		bFoundMenu = (UT_stricmp(szMenu,pVectt->m_name)==0);
+		bFoundMenu = (g_ascii_strcasecmp(szMenu,pVectt->m_name)==0);
 	}
 	if(!bFoundMenu)
 	{
@@ -562,7 +562,7 @@ XAP_Menu_Id XAP_Menu_Factory::removeMenuItem(const char * szMenu,
 		pVectt = (_vectt *)m_vecTT.getNthItem(k);
 		if (pVectt == NULL)
 			continue;
-		bFoundMenu = (UT_stricmp(szMenu,pVectt->m_name)==0);
+		bFoundMenu = (g_ascii_strcasecmp(szMenu,pVectt->m_name)==0);
 	}
 	if(!bFoundMenu)
 	{
@@ -590,7 +590,7 @@ XAP_Menu_Id XAP_Menu_Factory::removeMenuItem(const char * szMenu,
 		pVectt = (_vectt *)m_vecTT.getNthItem(k);
 		if (pVectt == NULL)
 			continue;
-		bFoundMenu = (UT_stricmp(szMenu,pVectt->m_name)==0);
+		bFoundMenu = (g_ascii_strcasecmp(szMenu,pVectt->m_name)==0);
 	}
 	if(!bFoundMenu)
 	{
