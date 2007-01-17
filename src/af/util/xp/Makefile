@@ -33,7 +33,6 @@ CPPSRCS=	ut_base64.cpp		\
 		ut_growbuf.cpp		\
 		ut_hash.cpp		\
 		ut_iconv.cpp		\
-		ut_map.cpp		\
 		ut_math.cpp		\
 		ut_mbtowc.cpp		\
 		ut_misc.cpp		\

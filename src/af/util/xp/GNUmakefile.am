@@ -54,7 +54,6 @@ libUtil_xp_a_SOURCES= \
 	ut_growbuf.cpp		\
 	ut_hash.cpp		\
 	ut_Language.cpp		\
-	ut_map.cpp		\
 	ut_math.cpp		\
 	ut_mbtowc.cpp		\
 	ut_misc.cpp		\
@@ -72,6 +71,7 @@ libUtil_xp_a_SOURCES= \
 	ut_test.cpp		\
 	ut_timer.cpp		\
 	ut_types.cpp		\
+	ut_unicode.cpp		\
 	ut_worker.cpp		\
 	ut_idle.cpp		\
 	ut_units.cpp		\
@@ -121,7 +121,6 @@ noinst_HEADERS = \
 	ut_IntStrMap.h \
 	ut_Language.h \
 	ut_locale.h \
-	ut_map.h \
 	ut_math.h \
 	ut_mbtowc.h \
 	ut_misc.h \
@@ -149,6 +148,7 @@ noinst_HEADERS = \
 	ut_timer.h \
 	ut_tree.h \
 	ut_types.h \
+	ut_unicode.h \
 	ut_units.h \
 	ut_uuid.h \
 	ut_vector.h \
