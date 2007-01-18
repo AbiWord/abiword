@@ -118,5 +118,7 @@ toolbaritem(MERGELEFT)
 toolbaritem(MERGERIGHT)
 toolbaritem(MERGEABOVE)
 toolbaritem(MERGEBELOW)
-
+#ifdef EMBEDDED_TARGET
+toolbaritem(MENU)
+#endif
 

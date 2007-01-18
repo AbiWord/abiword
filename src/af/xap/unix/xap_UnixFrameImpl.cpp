@@ -1411,6 +1411,10 @@ void XAP_UnixFrameImpl::_createTopLevelWindow(void)
 	g_signal_connect(G_OBJECT(m_wTopLevelWindow), "key_release_event",
 					   G_CALLBACK(_fe::key_release_event), NULL);
 
+	/* If refactoring the toolbars code, please make sure that toolbars
+	 * are created AFTER the main menu bar has been synthesized, otherwise
+	 * the embedded build will stop working
+	 */
 	if(m_iFrameMode == XAP_NormalFrame)
 		_createToolbars();
 

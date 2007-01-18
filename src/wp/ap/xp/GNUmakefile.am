@@ -251,6 +251,7 @@ noinst_HEADERS = \
 	ap_TB_Layouts_FormatOps.h \
 	ap_TB_Layouts_SimpleOps.h \
 	ap_TB_Layouts_TableOps.h \
+	ap_TB_Layouts_Embedded.h \
 	ap_Toolbar_Functions.h \
 	ap_Toolbar_Iconmap.h \
 	ap_Toolbar_Icons_All.h \

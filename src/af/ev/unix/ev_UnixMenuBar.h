@@ -1,3 +1,4 @@
+/* -*- mode: C++; tab-width: 4; c-basic-offset: 4; -*- */
 /* AbiSource Program Utilities
  * Copyright (C) 1998-2000 AbiSource, Inc.
  * 
@@ -43,6 +44,9 @@ public:
 	virtual bool		refreshMenu(AV_View * pView);
     virtual void        destroy(void);
 
+#ifdef EMBEDDED_TARGET
+    GtkWidget *         getMenuBar(void) const {return m_wMenuBar;}
+#endif
 protected:
 	GtkWidget *		m_wMenuBar;
 };

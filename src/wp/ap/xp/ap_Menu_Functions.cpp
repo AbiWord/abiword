@@ -73,7 +73,7 @@ Defun_EV_GetMenuItemComputedLabel_Fn(ap_GetLabel_Toolbar)
 	const UT_Vector & vec = pApp->getToolbarFactory()->getToolbarNames();
 
 
-	if (ndx <= vec.getItemCount())
+	if (ndx < vec.getItemCount())
 	{
 		const char * szFormat = pLabel->getMenuLabel();
 		static char buf[128];	

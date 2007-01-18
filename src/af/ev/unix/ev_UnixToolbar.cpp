@@ -57,6 +57,10 @@
 #include "ap_UnixStockIcons.h"
 #include "ev_UnixFontCombo.h"
 
+#ifdef EMBEDDED_TARGET
+#include "ev_UnixMenuBar.h"
+#endif
+
 #ifdef HAVE_HILDON
 #include "hildon-widgets/hildon-appview.h"
 #endif
@@ -172,6 +176,32 @@ toolbar_append_toggle (GtkToolbar 	*toolbar,
 											  label, private_text, show,
 											  NULL, NULL, NULL);
 }
+
+#ifdef EMBEDDED_TARGET
+/*!
+ * Append a GtkMenuToolButton to the toolbar.
+ */
+static GtkWidget *
+toolbar_append_menubutton (GtkToolbar 	*toolbar,
+						   GtkWidget    *menu,
+						   const gchar	*icon_name, 
+						   const gchar	*label, 
+						   const gchar  *private_text, 
+						   GCallback	 handler, 
+						   gpointer		 data, 
+						   gulong		*handler_id)
+{
+	GtkToolItem *item = gtk_menu_tool_button_new (NULL, NULL);
+// 	gtk_tool_button_set_label (GTK_TOOL_BUTTON (item), label);
+	gtk_menu_tool_button_set_menu (GTK_MENU_TOOL_BUTTON (item), menu);
+	
+	/* TODO -- populate the menu */
+	
+	return (GtkWidget *) toolbar_append_item (toolbar, GTK_WIDGET (item), 
+											  label, private_text, TRUE,
+											  NULL, NULL, NULL);
+}
+#endif
 
 /*!
  * Append a GtkSeparatorToolItem to the toolbar.
@@ -1006,7 +1036,36 @@ bool EV_UnixToolbar::synthesize(void)
 					
 			case EV_TBIT_Spacer:
 				break;
-					
+
+#ifdef EMBEDDED_TARGET
+			case EV_TBIT_MenuButton:
+			{
+				GtkWidget * wMenu = NULL;
+				EV_UnixMenuBar * pBar =
+					dynamic_cast<EV_UnixMenuBar*>(m_pFrame->getMainMenu());
+
+				UT_ASSERT_HARMLESS(pBar);
+				if (pBar)
+				{
+					wMenu = pBar->getMenuBar();
+				}
+				
+				wd->m_widget =
+					toolbar_append_menubutton (GTK_TOOLBAR (m_wToolbar),
+											   wMenu,
+											   pLabel->getIconName(),
+											   pLabel->getToolbarLabel(),
+											   NULL, 
+											   NULL,
+											   NULL, 
+											   NULL);
+				
+				GtkWidget * wwd = wd->m_widget;
+				
+				g_object_set_data(G_OBJECT(wwd), "wd_pointer", wd);
+			}
+			break;
+#endif
 			case EV_TBIT_BOGUS:
 			default:
 				break;

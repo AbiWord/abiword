@@ -550,7 +550,8 @@ bool EV_UnixMenu::synthesizeMenu(GtkWidget * wMenuRoot, bool isPopup)
 
 					FREEP(dup);
 				}
-				
+
+#ifndef EMBEDDED_TARGET
 				if ((keyCode != GDK_VoidSymbol) && !isPopup)
 				  {
 					  // bind to top level if parent is top level
@@ -564,7 +565,7 @@ bool EV_UnixMenu::synthesizeMenu(GtkWidget * wMenuRoot, bool isPopup)
  									       ACCEL_FLAGS);
  					    }
 				  }
-				
+#endif
 				// we always set an accel group, even if we don't actually bind any
 				// to this widget
 				GtkAccelGroup *accelGroup = gtk_accel_group_new();
@@ -952,6 +953,8 @@ bool EV_UnixMenuBar::synthesizeMenuBar()
 #ifdef HAVE_HILDON /* in hildon sdk you have get menu_bar from mainWidonw */
 	GtkWidget * wWidget = static_cast<XAP_UnixFrameImpl *>(m_pFrame->getFrameImpl())->getTopLevelWindow();
 	m_wMenuBar = GTK_WIDGET(hildon_appview_get_menu(HILDON_APPVIEW(wWidget)));
+#elif EMBEDDED_TARGET
+	m_wMenuBar = gtk_menu_new ();
 #else
 	GtkWidget * wVBox = static_cast<XAP_UnixFrameImpl *>(m_pFrame->getFrameImpl())->getVBoxWidget();
 	m_wMenuBar = gtk_menu_bar_new();
@@ -960,7 +963,7 @@ bool EV_UnixMenuBar::synthesizeMenuBar()
 	synthesizeMenu(m_wMenuBar, false);
 	gtk_widget_show_all(m_wMenuBar);
 
-#ifdef HAVE_HILDON	 /* in hildon no need */
+#ifdef EMBEDDED_TARGET
 #else
 	gtk_box_pack_start(GTK_BOX(wVBox), m_wMenuBar, FALSE, TRUE, 0);
 #endif	
@@ -971,11 +974,16 @@ bool EV_UnixMenuBar::synthesizeMenuBar()
 
 bool EV_UnixMenuBar::rebuildMenuBar()
 {
+#ifndef HAVE_HILDON
 	GtkWidget * wVBox = static_cast<XAP_UnixFrameImpl *>(m_pFrame->getFrameImpl())->getVBoxWidget();
 
 	// Just create, don't show the menu bar yet.  It is later added
 	// to a 3D handle box and shown
+#ifdef EMBEDDED_TARGET
+	m_wMenuBar = gtk_menu_new();
+#else
 	m_wMenuBar = gtk_menu_bar_new();
+#endif
 
 	synthesizeMenu(m_wMenuBar, false);
 
@@ -984,7 +992,7 @@ bool EV_UnixMenuBar::rebuildMenuBar()
 
 	gtk_box_pack_start(GTK_BOX(wVBox), m_wMenuBar, FALSE, TRUE, 0);
 	gtk_box_reorder_child(GTK_BOX(wVBox), m_wMenuBar, 0);
-
+#endif
 	return true;
 }
 

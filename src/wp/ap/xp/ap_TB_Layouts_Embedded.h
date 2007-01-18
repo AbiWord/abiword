@@ -1,5 +1,5 @@
 /* AbiWord
- * Copyright (C) 1998 AbiSource, Inc.
+ * Copyright (C) 2007 Tomas Frydrych.
  * 
  * This program is free software; you can redistribute it and/or
  * modify it under the terms of the GNU General Public License
@@ -17,31 +17,34 @@
  * 02111-1307, USA.
  */
 
+
 /*****************************************************************
 ******************************************************************
 ** IT IS IMPORTANT THAT THIS FILE ALLOW ITSELF TO BE INCLUDED
-** MORE THAN ONE TIME.  Each time you add an entry to the top-half
-** of this file be sure to add a corresponding entry to the other
-** half and be sure to add an entry to each of the other platforms.
+** MORE THAN ONE TIME.
 ******************************************************************
 *****************************************************************/
 
-#ifndef AP_UNIXTOOLBAR_CONTROL_ALL_H
+BeginLayout(Embedded, AP_STRING_ID_TB_Embedded, AP_PREF_KEY_StandardBarVisible)
 
-#	define AP_UNIXTOOLBAR_CONTROL_ALL_H
+	ToolbarItem(AP_TOOLBAR_ID_MENU)
+    
+	Spacer()
+	ToolbarItem(AP_TOOLBAR_ID_FILE_NEW)
+	ToolbarItem(AP_TOOLBAR_ID_FILE_OPEN)
+	ToolbarItem(AP_TOOLBAR_ID_FILE_SAVE)
+    
+	Spacer()
+	ToolbarItem(AP_TOOLBAR_ID_EDIT_CUT)
+	ToolbarItem(AP_TOOLBAR_ID_EDIT_COPY)
+	ToolbarItem(AP_TOOLBAR_ID_EDIT_PASTE)
+   
+	Spacer()
+	ToolbarItem(AP_TOOLBAR_ID_EDIT_UNDO)
+	ToolbarItem(AP_TOOLBAR_ID_EDIT_REDO)
+    
+	Spacer()
+	ToolbarItem(AP_TOOLBAR_ID_FMT_BOLD)
+	ToolbarItem(AP_TOOLBAR_ID_FMT_ITALIC)
 
-#	include "ap_UnixToolbar_StyleCombo.h"
-#	include "ap_UnixToolbar_FontCombo.h"
-#	include "ap_UnixToolbar_SizeCombo.h"
-#	include "ap_UnixToolbar_ZoomCombo.h"
-	// ... add new controls here ...
-
-#else
-
-	Declare_Control(AP_TOOLBAR_ID_FMT_STYLE,	        AP_UnixToolbar_StyleCombo)
-	Declare_Control(AP_TOOLBAR_ID_FMT_FONT,		        AP_UnixToolbar_FontCombo)
-	Declare_Control(AP_TOOLBAR_ID_FMT_SIZE,		        AP_UnixToolbar_SizeCombo)
-	Declare_Control(AP_TOOLBAR_ID_ZOOM,			        AP_UnixToolbar_ZoomCombo)
-	// ... also add new controls here ...
-
-#endif
+EndLayout()
