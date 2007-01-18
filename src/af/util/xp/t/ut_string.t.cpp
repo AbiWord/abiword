@@ -56,33 +56,6 @@ TFTEST_MAIN("UT_replaceString")
 }
 
 
-TFTEST_MAIN("UT_upperString")
-{
-	char* str = g_strdup("foobar");
-
-	str = UT_upperString(str);
-	TFPASS(strcmp(str, "FOOBAR") == 0);
-
-	str = UT_upperString(str);
-	TFPASS(strcmp(str, "FOOBAR") == 0);
-
-	g_free(str);
-}
-
-
-TFTEST_MAIN("UT_lowerString")
-{
-	char* str = g_strdup("FOOBAR");
-
-	str = UT_lowerString(str);
-	TFPASS(strcmp(str, "foobar") == 0);
-	str = UT_lowerString(str);
-	TFPASS(strcmp(str, "foobar") == 0);
-
-	g_free(str);
-}
-
-
 /* FIXME: this function looks really obsolete */
 TFTEST_MAIN("UT_XML_strlen")
 {

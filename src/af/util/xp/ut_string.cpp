@@ -192,30 +192,6 @@ size_t UT_strnlen(const char *s, size_t maxlen)
 #endif
 }
 
-// convert each character in a string to ASCII uppercase
-char * UT_upperString(char * string)
-{
-	if (!string)
-		return 0;
-
-	for (char * ch = string; *ch != 0; ch++)
-		*ch = toupper(*ch);
-
-	return string;
-}
-
-// convert each character in a string to ASCII lowercase
-char * UT_lowerString(char * string)
-{
-	if (!string)
-		return 0;
-
-	for (char * ch = string; *ch != 0; ch++)
-		*ch = tolower(*ch);
-
-	return string;
-}
-
 ////////////////////////////////////////////////////////////////////////
 //
 //  XML string (XML_Char)

@@ -2013,8 +2013,7 @@ void GR_UnixPangoGraphics::setFont(GR_Font * pFont)
 	_setIsSymbol(false);
 	_setIsDingbat(false);
 
-	char * szUnixFontName = g_strdup(m_pPFont->getFamily());
-	const char * szLCFontName = UT_lowerString(szUnixFontName);
+	char * szLCFontName = g_utf8_strdown (m_pPFont->getFamily(), -1);
 
 	if (szLCFontName)
 	{
@@ -2029,7 +2028,7 @@ void GR_UnixPangoGraphics::setFont(GR_Font * pFont)
 		if(strstr(szLCFontName,"dingbat"))
 			_setIsDingbat(true);
 	}
-	FREEP(szLCFontName);
+	g_free (szLCFontName); szLCFontName = NULL;
 	
 	if(!m_pPFont->isGuiFont() && m_pPFont->getZoom() != getZoomPercentage())
 	{

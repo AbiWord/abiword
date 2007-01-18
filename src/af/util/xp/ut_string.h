@@ -60,9 +60,6 @@ ABI_EXPORT UT_uint32  UT_pointerArrayLength(void ** array);
 ABI_EXPORT bool  UT_cloneString(char *& rszDest, const char * szSource);
 ABI_EXPORT bool  UT_replaceString(char *& rszDest, const char * szSource);
 ABI_EXPORT size_t  UT_strnlen(const char *s, size_t maxlen);
-ABI_EXPORT char *  UT_upperString(char * string);
-ABI_EXPORT char *  UT_lowerString(char * string);
-
 ABI_EXPORT char *  UT_catPathname(const char * szPath, const char * szFile);
 ABI_EXPORT char *  UT_tmpnam(char *);
 ABI_EXPORT void    UT_unlink(const char *);

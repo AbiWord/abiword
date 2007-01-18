@@ -322,14 +322,7 @@ bool	PP_AttrProp::setAttribute(const XML_Char * szName, const XML_Char * szValue
 		// make sure we store attribute names in lowercase
 		UT_ASSERT_HARMLESS(sizeof(char) == sizeof(XML_Char));
 
-		char * copy;
-		if (!UT_cloneString(copy, szName))
-		{
-			UT_DEBUGMSG(("setAttribute: could not allocate lowercase copy.\n"));
-			return false;
-		}
-
-		UT_lowerString(copy);
+		char * copy = g_ascii_strdown(szName, -1);
 		char * szDupValue = szValue ? g_strdup(szValue) : NULL;
 
 		// get rid of any illegal chars we might have been given
@@ -1235,12 +1228,11 @@ void PP_AttrProp::_computeCheckSum(void)
  	if (!m_pAttributes && !m_pProperties)
   		return;
  
-	const XML_Char * s1, *s2;
+	const XML_Char *s1, *s2;
  	UT_uint32	cch = 0;
- 	XML_Char	rgch[9];
-  
- 	rgch[8] = 0;
-  
+ 	XML_Char	*rgch;
+    
+	rgch = NULL;
  	if (m_pAttributes)
   	{
  		UT_GenericStringMap<XML_Char*>::UT_Cursor c1(m_pAttributes);
@@ -1256,12 +1248,12 @@ void PP_AttrProp::_computeCheckSum(void)
  			m_checkSum = hashcodeBytesAP(m_checkSum, s1, cch);
  
  			cch = UT_XML_strlen(s2);
- 
- 			UT_XML_strncpy(rgch, 8, s2);
- 			UT_lowerString(rgch);
-  
+
+			rgch = g_ascii_strdown(s2, 9);
+			rgch[8] = '\0';
  			m_checkSum = hashcodeBytesAP(m_checkSum, rgch, cch);
-  
+			g_free (rgch); rgch = NULL;
+
  			if (!c1.is_valid())
  				break;
  			val = c1.next();
@@ -1276,22 +1268,19 @@ void PP_AttrProp::_computeCheckSum(void)
  		val = c2.first();
  		while (val != NULL)
  		{
- 			s1 = c2.key().c_str();
- 			s2 = val->first();
- 
+ 			s1 = c2.key().c_str(); 
  			cch = UT_XML_strlen(s1);
- 
- 			UT_XML_strncpy(rgch, 8, s1);
- 			UT_lowerString(rgch);
- 
+			rgch = g_ascii_strdown(s1, 9);
+			rgch[8] = '\0';
  			m_checkSum = hashcodeBytesAP(m_checkSum, rgch, cch);
+			g_free (rgch); rgch = NULL;
   
+ 			s2 = val->first();
  			cch = UT_XML_strlen(s2);
-  
- 			UT_XML_strncpy(rgch, 8, s2);
- 			UT_lowerString(rgch);
- 
+			rgch = g_ascii_strdown(s2, 9);
+			rgch[8] = '\0';
  			m_checkSum = hashcodeBytesAP(m_checkSum, rgch, cch);
+			g_free (rgch); rgch = NULL;
  
  			if (!c2.is_valid())
  				break;
