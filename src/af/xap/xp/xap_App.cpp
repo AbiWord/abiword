@@ -336,7 +336,7 @@ bool XAP_App::initialize(const char * szKeyBindingsKey, const char * szKeyBindin
 
 	// HACK: for now, this works from XAP code
 	// TODO: where should this really go?
-	char * szPathname = UT_catPathname(getUserPrivateDirectory(),"custom.dic");
+	char * szPathname = g_build_filename(getUserPrivateDirectory(), "custom.dic", NULL);
 	UT_ASSERT(szPathname);
 	m_pDict = new XAP_Dictionary(szPathname);
 	FREEP(szPathname);

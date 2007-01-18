@@ -38,31 +38,9 @@ class UT_GrowBuf;
 UT_BEGIN_EXTERN_C
 
 ///////////////////////////////////////////////////////////////////////////////
-// UTF-XX -> UTF-8 character conversion
-ABI_EXPORT int  unichar_to_utf8 (int c, unsigned char *outbuf);
-
-///////////////////////////////////////////////////////////////////////////////
 // Replacements for common non-ANSI functions
 
-ABI_EXPORT char *  UT_F(const char * szSource);
-
 ABI_EXPORT UT_uint32  UT_pointerArrayLength(void ** array);
-
-////////////////////////////////////////////////////////////////////////
-//
-//  8-bit string (char)
-//
-//  String is built of 8-bit units (bytes)
-//  Encoding could be any single-byte or multi-byte encoding
-//
-////////////////////////////////////////////////////////////////////////
-
-ABI_EXPORT size_t  UT_strnlen(const char *s, size_t maxlen);
-ABI_EXPORT char *  UT_catPathname(const char * szPath, const char * szFile);
-ABI_EXPORT char *  UT_tmpnam(char *);
-ABI_EXPORT void    UT_unlink(const char *);
-
-ABI_EXPORT bool UT_isUrl ( const char * sz );
 
 ////////////////////////////////////////////////////////////////////////
 //

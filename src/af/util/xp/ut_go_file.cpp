@@ -308,7 +308,10 @@ gboolean
 UT_go_path_is_uri (const char * path)
 {
 	// hack until i come up with a better test
-	return (strstr (path, "://") != NULL);
+	if (g_str_has_prefix (path, "mailto:"))
+		return TRUE;
+	else
+		return (strstr (path, "://") != NULL);
 }
 
 /*

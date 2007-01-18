@@ -3565,7 +3565,7 @@ XML_Char *IE_Imp_RTF::_parseFldinstBlock (UT_ByteBuf & buf, XML_Char *xmlField, 
 
 			const char * s = href.c_str();
 
-			if(*s != '#' && !UT_isUrl(s))
+			if(*s != '#' && !UT_go_path_is_uri(s))
 			{
 				// TODO we are dealing with a relative URL; until AW
 				// can handle relative URLs we will convert it into an
@@ -3765,7 +3765,7 @@ XML_Char *IE_Imp_RTF::_parseFldinstBlock (UT_ByteBuf & buf, XML_Char *xmlField, 
 			{
 				char * fileName = NULL;
 				char * tok  = strtok (NULL, " ");
-				fileName = UT_catPathname (m_szFileDirName, tok);
+				fileName = g_build_filename (m_szFileDirName, tok, NULL);
 				UT_DEBUGMSG (("fileName is %s\n", fileName));
 
 				bool ok = FlushStoredChars ();

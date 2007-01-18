@@ -17,6 +17,7 @@
  * 02111-1307, USA.
  */
 
+#include "ut_go_file.h"
 #include "xap_Dialog_Id.h"
 #include "xap_DialogFactory.h"
 #include "ap_Dialog_InsertHyperlink.h"
@@ -92,7 +93,7 @@ void AP_Dialog_InsertHyperlink::setDoc(FV_View * pView)
 		
 		// now check if this is a valid URL, if not just delete the
 		// whole thing
-			if(!UT_isUrl(m_pHyperlink))
+			if(!UT_go_path_is_uri(m_pHyperlink))
 			{
 				delete [] m_pHyperlink;
 				m_pHyperlink = NULL;

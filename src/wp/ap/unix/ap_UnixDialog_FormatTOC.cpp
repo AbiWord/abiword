@@ -46,7 +46,7 @@ static void s_gchars_to_utf8str(const gchar * psz, UT_UTF8String & sStr)
 	{
 		s = static_cast<guchar>(*psz);
 		i = s;
-		unichar_to_utf8(i,sz);
+		g_unichar_to_utf8(i,sz);
 		psz++;
 		sStr += reinterpret_cast<const char *>(sz);
 	}

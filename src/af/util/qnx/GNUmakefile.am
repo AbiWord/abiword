@@ -24,7 +24,6 @@ INCLUDES= $(AF_INCLUDES) -I../unix
 noinst_LIBRARIES = libUtil_qnx.a
 
 libUtil_qnx_a_SOURCES=		\
-	ut_qnxString.cpp    \
 	ut_Xpm2Bitmap.cpp      \
 	ut_qnxTimer.cpp     \
 	ut_debugmsg.cpp		\

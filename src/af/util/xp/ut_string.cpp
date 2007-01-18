@@ -47,79 +47,6 @@
 #include "ut_case.h"
 #undef  UT_STRING_CPP
 
-// really simple way to determine if something is a hyperlink
-// probably not 100% correct, but better than !stricmp(http://), ...
-bool UT_isUrl ( const char * szName )
-{
-  UT_return_val_if_fail(szName, false);
-
-  int len = strlen ( szName );
-  int mailto_len = strlen ( "mailto:" );
-
-  if ( NULL != strstr ( szName, "://") ) // dumb check, but probably true
-    return true;
-  else if ( ( len >= mailto_len ) &&
-	    !UT_XML_strnicmp ( "mailto:", szName, mailto_len ) )
-    return true;
-  else
-    return false;
-}
-
-/*
- * This is cut & pasted from glib 1.3 (c) RedHat
- * We need this to convert UTF-32 to UTF-8
- */
-int
-unichar_to_utf8 (int c, unsigned char *outbuf)
-{
-  size_t len = 0;
-  int first;
-  int i;
-
-  if (c < 0x80)
-    {
-      first = 0;
-      len = 1;
-    }
-  else if (c < 0x800)
-    {
-      first = 0xc0;
-      len = 2;
-    }
-  else if (c < 0x10000)
-    {
-      first = 0xe0;
-      len = 3;
-    }
-   else if (c < 0x200000)
-    {
-      first = 0xf0;
-      len = 4;
-    }
-  else if (c < 0x4000000)
-    {
-      first = 0xf8;
-      len = 5;
-    }
-  else
-    {
-      first = 0xfc;
-      len = 6;
-    }
-
-  if (outbuf)
-    {
-      for (i = len - 1; i > 0; --i)
-	{
-	  outbuf[i] = (c & 0x3f) | 0x80;
-	  c >>= 6;
-	}
-      outbuf[0] = c | first;
-    }
-
-  return len;
-}
-
 UT_uint32 UT_pointerArrayLength(void ** array)
 {
 	if (! (array && *array))
@@ -130,39 +57,6 @@ UT_uint32 UT_pointerArrayLength(void ** array)
 		i++;
 
 	return i;
-}
-
-////////////////////////////////////////////////////////////////////////
-//
-//  8-bit string (char)
-//
-//  String is built of 8-bit units (bytes)
-//  Encoding could be any single-byte or multi-byte encoding
-//
-////////////////////////////////////////////////////////////////////////
-
-//////////////////////////////////////////////////////////////////
-// char * UT_catPathname(const char * szPath, const char * szFile);
-// is defined in platform-specific code.
-//////////////////////////////////////////////////////////////////
-
-// determine the length of a fixed-size string
-size_t UT_strnlen(const char *s, size_t maxlen)
-{
-#ifdef HAVE_STRNLEN
-  return strnlen(s, maxlen);
-#else
-  size_t i;
-  const char *p;
-
-  if(!s)
-    return 0;
-
-  for(i = 0, p = s; (*p) && (i < maxlen); i++, p++)
-    ;
-
-  return i;
-#endif
 }
 
 ////////////////////////////////////////////////////////////////////////

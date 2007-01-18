@@ -30,45 +30,6 @@
 #include "ut_assert.h"
 #include "ut_string.h"
 
-char * UT_catPathname(const char * szPath, const char * szFile)
-{
-	UT_return_val_if_fail((szPath) && (*szPath), NULL);
-	UT_return_val_if_fail((szFile) && (*szFile), NULL);
-
-	char * szPathname = (char *)UT_calloc(sizeof(char),strlen(szPath)+strlen(szFile)+2);
-	UT_return_val_if_fail(szPathname, NULL);
-
-	sprintf(szPathname,"%s%s%s",
-			szPath,
-			((szPath[strlen(szPath)-1]=='\\') ? "" : "\\"),
-			szFile);
-
-	return szPathname;
-}
-
-char * UT_tmpnam(char * pszBase)
-{
-	char szTempPath[ 1024 ];
-
-	UT_ASSERT(pszBase);
-
-	// Get a path to a temp directory...
-	GetTempPathA( 1024, szTempPath ); //!TODO Using ANSI function
-
-	// Then get a temp file name in the temp directory we just got.
-	GetTempFileNameA( szTempPath, "abi", 0, pszBase ); //!TODO Using ANSI function
-
-	return pszBase;
-}
-
-void UT_unlink (const char * base)
-{
-	// note: both remove & unlink are available in VC5, and both
-	// should perform identically, but remove was choosen since it is ANSI C (stdio.h)
-	// unlink (base);
-	remove(base);
-}
-
 UT_BidiCharType UT_bidiGetCharType(UT_UCS4Char c)
 {
 #ifndef NO_BIDI_SUPPORT

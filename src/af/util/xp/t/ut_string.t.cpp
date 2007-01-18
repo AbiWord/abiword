@@ -5,23 +5,6 @@
 
 
 
-TFTEST_MAIN("UT_isUrl()")
-{
-	TFPASS(UT_isUrl("http://www.abisource.com"));
-	TFPASS(UT_isUrl("mailto:hfiguiere@teaser.fr"));
-	TFFAIL(UT_isUrl("www.abisource.com"));
-}
-
-
-
-TFTEST_MAIN("unichar_to_utf8()")
-{
-	unsigned char buf[256];
-	TFPASS(unichar_to_utf8(0x20, buf) == 1);
-	TFPASS(buf[0] == ' ');
-}
-
-
 TFTEST_MAIN("UT_pointerArrayLength()")
 {
 	char *array3[] = { "foo", "bar", "baz", NULL };

@@ -17,6 +17,7 @@
  * 02111-1307, USA.
  */
 
+#include <glib/gstdio.h>
 #include "zlib.h"
 #include "stdio.h"
 
@@ -204,7 +205,7 @@ UT_untgz(const char *szFName, const char *szWantedFile, const char *szDestPath, 
 				{
 					UT_DEBUGMSG(("untgz: error writing, skipping %s", fname));
 					fclose(outfile);
-					UT_unlink(fname);
+					g_unlink(fname);
 				}
 			}
 			

@@ -18,6 +18,7 @@
  */
  
 
+#include <glib/gstdio.h>
 #include <string.h>
 #include <stdio.h>
 #include <stdlib.h>
@@ -140,7 +141,7 @@ XAP_Frame::~XAP_Frame(void)
 	if (/* autosave && */ m_stAutoSaveNamePrevious.size())
 	{
 		UT_DEBUGMSG(("DOM: removing backup file %s\n", m_stAutoSaveNamePrevious.c_str()));
-		UT_unlink ( m_stAutoSaveNamePrevious.c_str() );
+		g_unlink ( m_stAutoSaveNamePrevious.c_str() );
 	}
 
 	// only delete the things that we created...
@@ -854,7 +855,7 @@ UT_Error XAP_Frame::backup(const char* szExt, UT_sint32 iEFT)
 		/* If the user does a Save-As to rename the file then the auto-save name also changes, so
 		 * need to remove the old backup file...
 		 */
-		UT_unlink(m_stAutoSaveNamePrevious.c_str());
+		g_unlink(m_stAutoSaveNamePrevious.c_str());
 	}
 	m_stAutoSaveNamePrevious = backupName;
 	

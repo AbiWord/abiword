@@ -2848,51 +2848,48 @@ Defun1(filePreviewWeb)
 	CHECK_FRAME;
 	UT_return_val_if_fail (pAV_View, false);
 	XAP_Frame * pFrame = static_cast<XAP_Frame *>(pAV_View->getParentData());
-  char szTempFileName[ 2048 ];
+	gchar *szTempFileName = NULL;
+	GError *err = NULL;
 
-  UT_tmpnam(szTempFileName);
+	// to really make this bullet proof we must not hand away the open fp, 
+	// rather directly use with gsf stdio.
+	gint fp = g_file_open_tmp ("XXXXXX", &szTempFileName, &err);
+	if (err) {
+		g_warning (err->message);
+		g_error_free (err); err = NULL;
+		return UT_ERROR;
+	}
+	close(fp);
+	
+	std::string file(szTempFileName);
+	file += ".html";
 
-  // Make sure that our filename ends with .html
-  // This is necessary for this feature to work on Win32!
-  if( strlen( szTempFileName ) > 5 )
-  {
-	  char *pWhere = strrchr( szTempFileName, '.' );
+	UT_Error errSaved = UT_OK;
 
-	  if( pWhere )
-	  {
-		if( g_ascii_strcasecmp( pWhere, ".html" ) && g_ascii_strcasecmp( pWhere, ".htm" ) )
-			strcpy( pWhere, ".html" );
-	  }
-	  else
-		  strcat( szTempFileName, ".html" );
-  }
+	// we do this because we don't want to change the default
+	// document extension or rename what we're working on
+	char *uri = UT_go_filename_to_uri(file.c_str());
+	if(uri)
+		errSaved = pAV_View->cmdSaveAs(uri, IE_Exp::fileTypeForSuffix(".xhtml"), false);
+	else
+		errSaved = UT_IE_COULDNOTWRITE;
 
-  UT_Error errSaved = UT_OK;
-
-  // we do this because we don't want to change the default
-  // document extension or rename what we're working on
-  char *uri = UT_go_filename_to_uri(szTempFileName);
-  if(uri)
-    errSaved = pAV_View->cmdSaveAs(uri, IE_Exp::fileTypeForSuffix(".xhtml"), false);
-  else
-    errSaved = UT_IE_COULDNOTWRITE;
-
-  if(errSaved != UT_OK)
+	if(errSaved != UT_OK)
 	{
-	  // throw up a dialog
-	  s_TellSaveFailed(pFrame, szTempFileName, errSaved);
-	  return false;
+		// throw up a dialog
+		s_TellSaveFailed(pFrame, file.c_str(), errSaved);
+		return false;
 	}
 
-  bool bOk = _openURL(uri);
-  g_free(uri);
+	bool bOk = _openURL(uri);
+	g_free(uri);
 
-#if 0
-  // ugly race condition
-  UT_unlink (szTempFileName);
-#endif
-
-  return bOk;
+	#if 0
+		// ugly race condition
+		g_unlink (szTempFileName);
+	#endif
+	g_free(szTempFileName); szTempFileName = NULL;
+	return bOk;
 }
 
 Defun1(undo)

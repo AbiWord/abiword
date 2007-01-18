@@ -585,7 +585,7 @@ Defun_EV_GetMenuItemComputedLabel_Fn(ap_GetLabel_Suggest)
 		char *outbuf = cBuf;
 		int i;
 		for (i = 0; i < static_cast<int>(len); i++) {
-			outbuf += unichar_to_utf8(p[i], reinterpret_cast<unsigned char *>(outbuf));
+			outbuf += g_unichar_to_utf8(p[i], outbuf);
 		}
 		*outbuf = 0;
 		c = cBuf;		

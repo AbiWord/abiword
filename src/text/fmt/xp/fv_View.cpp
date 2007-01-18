@@ -7146,7 +7146,7 @@ bool FV_View::gotoTarget(AP_JumpTarget type, UT_UCSChar *data)
 			bool bFound = false;
 
 			UT_DEBUGMSG(("fv_View::gotoTarget: bookmark [%s]\n",numberString));
-			if(UT_isUrl(numberString))
+			if(UT_go_path_is_uri(numberString))
 			{
 				XAP_App::getApp()->openURL(numberString);
 				return false;

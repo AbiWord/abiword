@@ -66,7 +66,7 @@ bool progExists(const char* progName)
 	for(UT_uint32 i = 0; i < utvPath->getItemCount(); i++)
 	{
 		path = utvPath->getNthItem(i);
-		char * path2 = UT_catPathname(path->c_str(), progName);
+		char * path2 = g_build_filename(path->c_str(), progName, NULL);
 		laststat = stat(path2, &statbuf);
 		FREEP(path2);
 

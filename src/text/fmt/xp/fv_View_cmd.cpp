@@ -26,6 +26,7 @@
 
 #include "ut_assert.h"
 #include "ut_debugmsg.h"
+#include "ut_go_file.h"
 #include "ut_growbuf.h"
 #include "ut_misc.h"
 #include "ut_string.h"
@@ -4639,13 +4640,13 @@ UT_Error FV_View::cmdInsertHyperlink(const char * szName)
 	}
 
 	bool relLink = false;
-	if (!UT_isUrl(szName))
+	if (!UT_go_path_is_uri(szName))
 		relLink = m_pDoc->isBookmarkRelativeLink(szName);
 	// TODO: After strings freeze is lifted, we should
 	// TODO: display a message if relLink is true but
 	// TODO: szName does not stat.
 
-	if(!UT_isUrl(szName) && m_pDoc->isBookmarkUnique(szName) && !relLink)
+	if(!UT_go_path_is_uri(szName) && m_pDoc->isBookmarkUnique(szName) && !relLink)
 	{
 		//No bookmark of that name in document, tell user.
 		XAP_Frame * pFrame = static_cast<XAP_Frame *>(getParentData());
@@ -4723,7 +4724,7 @@ UT_Error FV_View::cmdInsertHyperlink(const char * szName)
 	UT_uint32 target_len = UT_XML_strlen(szName);
 	XML_Char * target  = new XML_Char[ target_len+ 2];
 
-	if(UT_isUrl(szName) || relLink)
+	if(UT_go_path_is_uri(szName) || relLink)
 	{
 		UT_XML_strncpy(target, target_len + 1, static_cast<const XML_Char*>(szName));
 	}
