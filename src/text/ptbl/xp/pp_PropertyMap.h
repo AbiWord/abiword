@@ -23,12 +23,14 @@
 #ifndef PP_PROPERTYMAP_H
 #define PP_PROPERTYMAP_H
 
+#if 0  // only used for code below. determine what to do with it
 #if defined(__MINGW32__)
 #undef snprintf
 #define _GLIBCXX_USE_C99_DYNAMIC 1
 #endif
 
 #include <map>
+#endif 
 
 /* pre-emptive dismissal; ut_types.h is needed by just about everything,
  * so even if it's commented out in-file that's still a lot of work for
