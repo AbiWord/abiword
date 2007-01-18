@@ -156,7 +156,7 @@ void fp_TextRun::_lookupProperties(const PP_AttrProp * pSpanAP,
 
 
 	const XML_Char *pszFontStyle = PP_evalProperty("font-style",pSpanAP,pBlockAP,pSectionAP, pDoc, true);
-	m_bIsOverhanging = (pszFontStyle && !UT_strcmp(pszFontStyle, "italic"));
+	m_bIsOverhanging = (pszFontStyle && !strcmp(pszFontStyle, "italic"));
 
 	const XML_Char *pszDecor = PP_evalProperty("text-decoration",pSpanAP,pBlockAP,pSectionAP, pDoc, true);
 
@@ -179,23 +179,23 @@ void fp_TextRun::_lookupProperties(const PP_AttrProp * pSpanAP,
 
 	while (q)
 	{
-		if (0 == UT_strcmp(q, "underline"))
+		if (0 == strcmp(q, "underline"))
 		{
 			_orDecorations(TEXT_DECOR_UNDERLINE);
 		}
-		else if (0 == UT_strcmp(q, "overline"))
+		else if (0 == strcmp(q, "overline"))
 		{
 			_orDecorations(TEXT_DECOR_OVERLINE);
 		}
-		else if (0 == UT_strcmp(q, "line-through"))
+		else if (0 == strcmp(q, "line-through"))
 		{
 		    _orDecorations(TEXT_DECOR_LINETHROUGH);
 		}
-		else if (0 == UT_strcmp(q, "topline"))
+		else if (0 == strcmp(q, "topline"))
 		{
 			_orDecorations(TEXT_DECOR_TOPLINE);
 		}
-		else if (0 == UT_strcmp(q, "bottomline"))
+		else if (0 == strcmp(q, "bottomline"))
 		{
 			_orDecorations(TEXT_DECOR_BOTTOMLINE);
 		}
@@ -210,11 +210,11 @@ void fp_TextRun::_lookupProperties(const PP_AttrProp * pSpanAP,
 
 	UT_Byte oldPos = m_fPosition;
 
-	if (0 == UT_strcmp(pszPosition, "superscript"))
+	if (0 == strcmp(pszPosition, "superscript"))
 	{
 		m_fPosition = TEXT_POSITION_SUPERSCRIPT;
 	}
-	else if (0 == UT_strcmp(pszPosition, "subscript"))
+	else if (0 == strcmp(pszPosition, "subscript"))
 	{
 		m_fPosition = TEXT_POSITION_SUBSCRIPT;
 	}

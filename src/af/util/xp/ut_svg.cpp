@@ -180,14 +180,14 @@ void UT_svg::startElement (const XML_Char * name, const XML_Char ** atts)
 	if (m_bContinue == false) return;
 	if (m_ePM != pm_parse) m_bContinue = false;
 
-	if (UT_strcmp(static_cast<const char*>(name),"svg")==0
-	 || UT_strcmp(static_cast<const char*>(name),"svg:svg")==0)
+	if (strcmp(static_cast<const char*>(name),"svg")==0
+	 || strcmp(static_cast<const char*>(name),"svg:svg")==0)
 	{
 		m_bSVG = true;
 		const XML_Char **attr = atts;
 		while (*attr && (m_ePM!=pm_recognizeContent))
 		{
-			if (UT_strcmp((const char*)(*attr),"width")==0)
+			if (strcmp((const char*)(*attr),"width")==0)
 			{
 				attr++;
 				_css_length((const char*)(*attr),m_pG,
@@ -195,7 +195,7 @@ void UT_svg::startElement (const XML_Char * name, const XML_Char ** atts)
 				attr++;
 				continue;
 			}
-			if (UT_strcmp((const char*)(*attr),"height")==0)
+			if (strcmp((const char*)(*attr),"height")==0)
 			{
 				attr++;
 				_css_length((const char*)(*attr),m_pG,
@@ -211,8 +211,8 @@ void UT_svg::startElement (const XML_Char * name, const XML_Char ** atts)
 	if ((m_ePM==pm_parse) && cb_start)
 		cb_start(cb_userdata, static_cast<const char *>(name), static_cast<const char **>(atts));
 
-	if (UT_strcmp(static_cast<const char*>(name),"text")==0
-	 || UT_strcmp(static_cast<const char*>(name),"svg:text")==0)
+	if (strcmp(static_cast<const char*>(name),"text")==0
+	 || strcmp(static_cast<const char*>(name),"svg:text")==0)
 	{
 		if (m_bIsText)
 		{
@@ -229,8 +229,8 @@ void UT_svg::startElement (const XML_Char * name, const XML_Char ** atts)
 			m_pBB = 0;
 		}
 	}
-	if (UT_strcmp(static_cast<const char*>(name),"tspan")==0
-	 || UT_strcmp(static_cast<const char*>(name),"svg:tspan")==0)
+	if (strcmp(static_cast<const char*>(name),"tspan")==0
+	 || strcmp(static_cast<const char*>(name),"svg:tspan")==0)
 	{
 		if (m_bIsTSpan)
 		{
@@ -256,8 +256,8 @@ void UT_svg::endElement (const XML_Char * name)
 {
 	if (m_bContinue == false) return;
 
-	if (UT_strcmp(static_cast<const char*>(name),"text")==0
-	 || UT_strcmp(static_cast<const char*>(name),"svg:text")==0)
+	if (strcmp(static_cast<const char*>(name),"text")==0
+	 || strcmp(static_cast<const char*>(name),"svg:text")==0)
 	{
 		if (m_bIsText && (m_bIsTSpan==false))
 		{
@@ -284,8 +284,8 @@ void UT_svg::endElement (const XML_Char * name)
 			return;
 		}
 	}
-	if (UT_strcmp(static_cast<const char*>(name),"tspan")==0
-	 || UT_strcmp(static_cast<const char*>(name),"svg:tspan")==0)
+	if (strcmp(static_cast<const char*>(name),"tspan")==0
+	 || strcmp(static_cast<const char*>(name),"svg:tspan")==0)
 	{
 		if (m_bIsTSpan)
 		{

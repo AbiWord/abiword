@@ -980,11 +980,11 @@ GR_Font * GR_CocoaGraphics::_findFont(const char* pszFontFamily,
 		NSFontTraitMask s = 0;
 		
 		// this is kind of sloppy
-		if (UT_strcmp(pszFontStyle, "italic") == 0)
+		if (strcmp(pszFontStyle, "italic") == 0)
 		{
 			s |= NSItalicFontMask;
 		}
-		if (UT_strcmp(pszFontWeight, "bold") == 0)
+		if (strcmp(pszFontWeight, "bold") == 0)
 		{
 			s |= NSBoldFontMask;
 		}

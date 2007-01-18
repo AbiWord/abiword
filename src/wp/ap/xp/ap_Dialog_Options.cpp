@@ -620,7 +620,7 @@ void AP_Dialog_Options::_initEnableControls()
 	// color button
 	// On UNIX/GTK, we have a nice color chooser and ignore this setting.
 #ifndef XP_UNIX_TARGET_GTK
-	if(UT_strcmp(m_CurrentTransparentColor,"ffffff") == 0)
+	if(strcmp(m_CurrentTransparentColor,"ffffff") == 0)
 	{
 		_controlEnable( id_PUSH_CHOOSE_COLOR_FOR_TRANSPARENT, false);
 	}

@@ -218,14 +218,14 @@ AP_UnixToolbar_StyleCombo::getPangoAttrs (PD_Style *pStyle,
 
 	if (pStyle->getPropertyExpand ("font-style", value)) {
 		PangoStyle style = PANGO_STYLE_NORMAL;
-		if (!UT_strcmp (value, "italic"))
+		if (!strcmp (value, "italic"))
 			style = PANGO_STYLE_ITALIC;
 		pango_font_description_set_style (desc, style);
 	}
 
 	if (pStyle->getPropertyExpand ("font-weight", value)) {
 		PangoWeight weight = PANGO_WEIGHT_NORMAL;
-		if (!UT_strcmp (value, "bold"))
+		if (!strcmp (value, "bold"))
 			weight = PANGO_WEIGHT_BOLD;
 		pango_font_description_set_weight (desc, weight);
 	}

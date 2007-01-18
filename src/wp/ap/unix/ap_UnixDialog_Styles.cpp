@@ -640,12 +640,12 @@ void AP_UnixDialog_Styles::_populateCList(void)
 		if ((m_whichType == ALL_STYLES) || 
 			(m_whichType == USED_STYLES && pStyle->isUsed()) ||
 			(m_whichType == USER_STYLES && pStyle->isUserDefined()) ||
-			(!UT_strcmp(m_sNewStyleName.utf8_str(), pStyle->getName()))) /* show newly created style anyways */
+			(!strcmp(m_sNewStyleName.utf8_str(), pStyle->getName()))) /* show newly created style anyways */
 		{
 			gtk_list_store_append(m_listStyles, &iter);
 			gtk_list_store_set(m_listStyles, &iter, 0, name, -1);
 			
-			if (!UT_strcmp(m_sNewStyleName.utf8_str(), pStyle->getName())) {
+			if (!strcmp(m_sNewStyleName.utf8_str(), pStyle->getName())) {
 				pHighlightIter = gtk_tree_iter_copy(&iter);
 			}
 		}

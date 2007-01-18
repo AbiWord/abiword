@@ -400,10 +400,10 @@ GR_Font * GR_QNXGraphics::_findFont(const char* pszFontFamily,
 	int style = 0;
 	FontID *fid;
 	// Only check for bold weight and italic style
-	if (UT_strcmp(pszFontWeight, "bold") == 0) {
+	if (strcmp(pszFontWeight, "bold") == 0) {
 		style |= PF_STYLE_BOLD;
 	}
-	if (UT_strcmp(pszFontStyle, "italic") == 0) {
+	if (strcmp(pszFontStyle, "italic") == 0) {
 		style |= PF_STYLE_ITALIC;
 	}
 	fid = PfFindFont((const char *)pszFontFamily, style, size);

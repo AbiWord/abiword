@@ -824,7 +824,7 @@ void XAP_UnixDialog_FileOpenSaveAs::runModal(XAP_Frame * pFrame)
 			{
 				const char * szInitialSuffix = UT_pathSuffix(m_szInitialPathname);
 				const UT_UTF8String szSaveTypeSuffix = IE_Exp::preferredSuffixForFileType(m_nDefaultFileType);
-				if(szInitialSuffix && !szSaveTypeSuffix.empty() && (UT_strcmp(szInitialSuffix,szSaveTypeSuffix.utf8_str()) != 0))
+				if(szInitialSuffix && !szSaveTypeSuffix.empty() && (strcmp(szInitialSuffix,szSaveTypeSuffix.utf8_str()) != 0))
 				{
 					UT_String sFileName = m_szInitialPathname;
 					bool bFoundSuffix = false;

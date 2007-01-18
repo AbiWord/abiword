@@ -609,7 +609,7 @@ bool AP_Win32App::_copyFmtToClipboard(PD_DocumentRange * pDocRange, const char *
 	UT_Error status;;
 	UT_Byte b = 0;
 
-	if(0 == UT_strcmp(AP_CLIPBOARD_TEXTPLAIN_8BIT, pszFmt))
+	if(0 == strcmp(AP_CLIPBOARD_TEXTPLAIN_8BIT, pszFmt))
 	{
 		IE_Exp_Text * pExpText = new IE_Exp_Text(pDocRange->m_pDoc);
 		if (pExpText)
@@ -632,7 +632,7 @@ bool AP_Win32App::_copyFmtToClipboard(PD_DocumentRange * pDocRange, const char *
 		}
 		
 	}
-	else if(0 == UT_strcmp(AP_CLIPBOARD_TEXTPLAIN_UCS2, pszFmt))
+	else if(0 == strcmp(AP_CLIPBOARD_TEXTPLAIN_UCS2, pszFmt))
 	{
 		const char *szEnc = XAP_EncodingManager::get_instance()->getNativeUnicodeEncodingName(); 
 		IE_Exp_Text * pExpUnicodeText = new IE_Exp_Text(pDocRange->m_pDoc,szEnc);
@@ -656,7 +656,7 @@ bool AP_Win32App::_copyFmtToClipboard(PD_DocumentRange * pDocRange, const char *
 			return false;
 		}
 	}
-	else if(0 == UT_strcmp(AP_CLIPBOARD_RTF, pszFmt))
+	else if(0 == strcmp(AP_CLIPBOARD_RTF, pszFmt))
 	{
 		IE_Exp_RTF * pExpRtf = new IE_Exp_RTF(pDocRange->m_pDoc);
 		if (pExpRtf)
@@ -1588,7 +1588,7 @@ bool AP_Win32App::doWindowlessArgs(const AP_Args *Args, bool & bSuccess)
 			{
 				pModule = (XAP_Module *)pVec->getNthItem (i);
 				szName = pModule->getModuleInfo()->name;
-				if(UT_strcmp(szName,Args->m_sPlugin) == 0)
+				if(strcmp(szName,Args->m_sPlugin) == 0)
 					bFound = true;
 			}
 		}

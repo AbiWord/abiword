@@ -498,11 +498,11 @@ FV_View::FV_View(XAP_App * pApp, void* pParentData, FL_DocLayout* pLayout)
 
 		if(szValue)
 		{
-			if(0 == UT_strcmp(szValue, "logical-ltr"))
+			if(0 == strcmp(szValue, "logical-ltr"))
 			{
 				m_eBidiOrder = FV_Order_Logical_LTR;
 			}
-			else if(0 == UT_strcmp(szValue, "logical-rtl"))
+			else if(0 == strcmp(szValue, "logical-rtl"))
 			{
 				m_eBidiOrder = FV_Order_Logical_RTL;
 			}
@@ -3500,7 +3500,7 @@ void FV_View::insertParagraphBreak(void)
 				UT_ASSERT((szValue));
 				getEditableBounds(true, posEOD);
 
-				if ((getPoint() <= posEOD) && (UT_strcmp(static_cast<const char *>(szValue), static_cast<const char *>(style)) != 0))
+				if ((getPoint() <= posEOD) && (strcmp(static_cast<const char *>(szValue), static_cast<const char *>(style)) != 0))
 				{
 					setStyle(szValue,true);
 //
@@ -4412,7 +4412,7 @@ bool FV_View::setCharFormat(const XML_Char * properties[], const XML_Char * attr
 			if(posStart == 2 && posEnd == posEOD && properties)
 			{
 				const XML_Char * hidden = UT_getAttribute("display", properties);
-				if(hidden && !UT_strcmp(hidden, "none"))
+				if(hidden && !strcmp(hidden, "none"))
 				{
 					// we will be applying fmt ourselves ...
 					bChangeFmt = false;
@@ -4475,7 +4475,7 @@ bool FV_View::setCharFormat(const XML_Char * properties[], const XML_Char * attr
 							UT_uint32 j = 0;
 							for(UT_uint32 i = 0; i < prop_count; i += 2)
 							{
-								if(UT_strcmp("display", properties[i]))
+								if(strcmp("display", properties[i]))
 								{
 									reducedProps[j++] = properties[i];
 									reducedProps[j++] = properties[i+1];
@@ -4538,7 +4538,7 @@ bool FV_View::resetCharFormat(bool bAll)
 			while(pAP->getNthProperty(i++,szName,szValue))
 			{
 				// add other props as required ...
-				if(!UT_strcmp(szName,"lang"))
+				if(!strcmp(szName,"lang"))
 				   AP.setProperty(szName,szValue);
 			}
 			
@@ -5395,10 +5395,10 @@ bool FV_View::setBlockFormat(const XML_Char * properties[])
 
 	while(*p)
 	{
-		if(!UT_strcmp(*p,"dom-dir"))
+		if(!strcmp(*p,"dom-dir"))
 		{
 			bDomDirChange = true;
-			if(!UT_strcmp(*(p+1), "rtl"))
+			if(!strcmp(*(p+1), "rtl"))
 			{
 				iDomDir = UT_BIDI_RTL;
 			}

@@ -242,7 +242,7 @@ static int s_compareB(const void * l, const void *e)
 {
 	const XML_Char * L   = static_cast<const XML_Char *>(l);
 	const enc_entry * E = static_cast<const enc_entry *>(e);
-	return UT_strcmp(L, E->encs[0]);
+	return strcmp(L, E->encs[0]);
 }
 
 bool UT_Encoding::s_Init = true;
@@ -330,7 +330,7 @@ const XML_Char * UT_Encoding::getEncodingFromDescription(const XML_Char * desc)
 	UT_ASSERT (s_Init == false);
 	for (UT_uint32 i = 0; i < s_iCount; i++)
 	{
-		if (!UT_strcmp(desc, s_Table[i].desc))
+		if (!strcmp(desc, s_Table[i].desc))
 		{
 			return s_Table[i].encs[0];
 		}
@@ -343,7 +343,7 @@ UT_uint32 UT_Encoding::getIndxFromEncoding(const XML_Char * enc)
 	UT_ASSERT(s_Init == false);
 	for (UT_uint32 i = 0; i < s_iCount; i++)
 	{
-		if (!UT_strcmp(enc, s_Table[i].encs[0]))
+		if (!strcmp(enc, s_Table[i].encs[0]))
 		{
 			return i;
 		}

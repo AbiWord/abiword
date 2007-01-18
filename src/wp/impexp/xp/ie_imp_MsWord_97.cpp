@@ -1050,7 +1050,7 @@ cb_print_property (char const *name, GsfDocProp const *prop, PD_Document * doc)
 				  char * tmp = g_strdup_value_contents (val);
 				  char * meta = tmp;
 				  // strip beginning and ending quotes
-				  if(meta && UT_strcmp(meta,"\"\"")) { // ignore '""' props
+				  if(meta && strcmp(meta,"\"\"")) { // ignore '""' props
 					  if(meta[0] == '"')
 						  meta++;
 					  int len = strlen(meta);

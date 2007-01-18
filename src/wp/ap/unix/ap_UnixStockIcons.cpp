@@ -324,7 +324,7 @@ abi_stock_get_gtk_stock_id (const gchar * abi_stock_id)
 
 	i = 0;
 	while (stock_mapping[i].abi_stock_id) {
-		if (0 == UT_strcmp (abi_stock_id, stock_mapping[i].abi_stock_id)) {
+		if (0 == strcmp (abi_stock_id, stock_mapping[i].abi_stock_id)) {
 			return stock_mapping[i].gtk_stock_id;
 		}
 		i++;

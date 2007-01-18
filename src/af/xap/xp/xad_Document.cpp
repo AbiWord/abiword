@@ -136,7 +136,7 @@ bool AD_Document::isOrigUUID(void) const
 	  return false;
   m_pMyUUID->toString(sDoc);
   m_pOrigUUID->toString(sOrig);
-  bool b = (UT_strcmp(sDoc.utf8_str(),sOrig.utf8_str()) == 0);
+  bool b = (strcmp(sDoc.utf8_str(),sOrig.utf8_str()) == 0);
   return b;
 }
 

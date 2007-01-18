@@ -4490,10 +4490,10 @@ void s_RTF_ListenerWriteDoc::_rtf_open_section(PT_AttrPropIndex api)
 												 pSpanAP,pBlockAP,pSectionAP,
 												 m_pDocument,true);
 
-	bool bSectRTL = UT_strcmp (szDomDir,"rtl") == 0;
+	bool bSectRTL = strcmp (szDomDir,"rtl") == 0;
 
 	bool bColLine = false;
-	if (szColumnLine && !UT_strcmp (szColumnLine, "on"))
+	if (szColumnLine && !strcmp (szColumnLine, "on"))
 		bColLine = true;
 
 	// TODO add other properties here
@@ -4570,7 +4570,7 @@ void s_RTF_ListenerWriteDoc::_rtf_open_section(PT_AttrPropIndex api)
 		m_pie->_rtf_keyword_ifnotdefault_twips("margrsxn", static_cast<const char*>(szMarginRight), 1440);
 	}
 
-	if(szRestartNumbering && UT_strcmp(szRestartNumbering,"1") == 0)
+	if(szRestartNumbering && strcmp(szRestartNumbering,"1") == 0)
 	{
 		m_pie->_rtf_keyword("pgnrestart");
 		if(szRestartAt)
@@ -4661,10 +4661,10 @@ void s_RTF_ListenerWriteDoc::_writeBookmark(const PX_ChangeRecord_Object * pcro)
 	m_pie->_rtf_open_brace();
 	{
 		m_pie->_rtf_keyword("*");
-		if (UT_strcmp (szType, "start") == 0) {
+		if (strcmp (szType, "start") == 0) {
 			m_pie->_rtf_keyword("bkmkstart");
 		}
-		else if (UT_strcmp (szType, "end") == 0) {
+		else if (strcmp (szType, "end") == 0) {
 			m_pie->_rtf_keyword("bkmkend");
 		}
 		m_pie->_rtf_chardata(szName, strlen(szName));

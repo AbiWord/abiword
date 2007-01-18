@@ -100,7 +100,7 @@ bool AP_UnixToolbar_FontCombo::populate(void)
 		{
 			// sort out dups
 			const char * str = m_vecContents.getNthItem(j);
-			if (str && !UT_strcmp (str, fName))
+			if (str && !strcmp (str, fName))
 			{
 				foundAt = j;
 				break;

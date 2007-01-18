@@ -410,7 +410,7 @@ if (sz) \
 if (multiple) \
 val = (NULL != strstr(sz, prop_val)); \
 else \
-val = (0 == UT_strcmp(sz, prop_val)); \
+val = (0 == strcmp(sz, prop_val)); \
 if (val != var) { \
 var = val; \
 fire(var); \

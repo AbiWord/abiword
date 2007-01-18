@@ -76,7 +76,7 @@ IE_Exp_AbiWord_1_Sniffer::IE_Exp_AbiWord_1_Sniffer ()
 
 UT_Confidence_t IE_Exp_AbiWord_1_Sniffer::supportsMIME (const char * szMIME)
 {
-	if (UT_strcmp (szMIME, IE_MIMETYPE_AbiWord) == 0)
+	if (strcmp (szMIME, IE_MIMETYPE_AbiWord) == 0)
 		{
 			return UT_CONFIDENCE_GOOD;
 		}
@@ -534,7 +534,7 @@ void s_AbiWord_1_Listener::_openTag(const char * szPrefix, const char * szSuffix
 			m_pie->write("\"");
 		}
 	}
-	if(UT_strcmp(szPrefix,"math") == 0)
+	if(strcmp(szPrefix,"math") == 0)
 	{
 		UT_UTF8String tag;
 		const char * szPropVal = NULL;
@@ -587,7 +587,7 @@ void s_AbiWord_1_Listener::_openTag(const char * szPrefix, const char * szSuffix
 		}
 		m_pie->write (tag.utf8_str (), tag.byteLength());
 	}
-	else if(UT_strcmp(szPrefix,"embed") == 0)
+	else if(strcmp(szPrefix,"embed") == 0)
 	{
 		UT_UTF8String tag;
 		const char * szPropVal = NULL;
@@ -1324,7 +1324,7 @@ void s_AbiWord_1_Listener::_handleLists(void)
 	//const char * szPid;
 	//const char * szProps;
 
-#define LCheck(str) (0 == UT_strcmp(s.utf8_str(), str))
+#define LCheck(str) (0 == strcmp(s.utf8_str(), str))
 	UT_UTF8String esc;
 	
 	fl_AutoNum * pAutoNum;
@@ -1494,7 +1494,7 @@ void s_AbiWord_1_Listener::_handleDataItems(void)
 	   	bool status = false;
 	   	bool encoded = true;
 
-		if (szMimeType && (UT_strcmp(szMimeType, "image/svg+xml") == 0 || UT_strcmp(szMimeType, "application/mathml+xml") == 0))
+		if (szMimeType && (strcmp(szMimeType, "image/svg+xml") == 0 || strcmp(szMimeType, "application/mathml+xml") == 0))
 	    {
 		   bbEncoded.truncate(0);
 		   bbEncoded.append(reinterpret_cast<const UT_Byte*>("<![CDATA["), 9);

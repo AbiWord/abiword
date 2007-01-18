@@ -325,7 +325,7 @@ bool fl_DocListener::populateStrux(PL_StruxDocHandle sdh,
 			pAP->getAttribute("type", pszSectionType);
 			UT_DEBUGMSG(("fl_DocListener::populateStrux for '%s'\n",
 						 pszSectionType ? pszSectionType : "(null)"));
-			if (!pszSectionType	|| (0 == UT_strcmp(pszSectionType, "doc")))
+			if (!pszSectionType	|| (0 == strcmp(pszSectionType, "doc")))
 			{
 				// Append a SectionLayout to this DocLayout
 				//
@@ -503,7 +503,7 @@ bool fl_DocListener::populateStrux(PL_StruxDocHandle sdh,
 			pAP->getAttribute("type", pszSectionType);
 			if (
 				!pszSectionType
-				|| (0 == UT_strcmp(pszSectionType, "doc"))
+				|| (0 == strcmp(pszSectionType, "doc"))
 				)
 			{
 				UT_ASSERT(UT_SHOULD_NOT_HAPPEN);
@@ -2386,28 +2386,28 @@ static HdrFtrType s_convertToHdrFtrType(const XML_Char * pszHFType)
 	if (!pszHFType)
 		return FL_HDRFTR_NONE;
 
-	if (UT_strcmp(pszHFType,"header") == 0)
+	if (strcmp(pszHFType,"header") == 0)
 		return FL_HDRFTR_HEADER;
 
-	if (UT_strcmp(pszHFType,"header-even") == 0)
+	if (strcmp(pszHFType,"header-even") == 0)
 		return FL_HDRFTR_HEADER_EVEN;
 
-	if (UT_strcmp(pszHFType,"header-first") == 0)
+	if (strcmp(pszHFType,"header-first") == 0)
 		return FL_HDRFTR_HEADER_FIRST;
 
-	if (UT_strcmp(pszHFType,"header-last") == 0)
+	if (strcmp(pszHFType,"header-last") == 0)
 		return FL_HDRFTR_HEADER_LAST;
 
-	if (UT_strcmp(pszHFType,"footer") == 0)
+	if (strcmp(pszHFType,"footer") == 0)
 		return FL_HDRFTR_FOOTER;
 
-	if (UT_strcmp(pszHFType,"footer-even") == 0)
+	if (strcmp(pszHFType,"footer-even") == 0)
 		return FL_HDRFTR_FOOTER_EVEN;
 
-	if (UT_strcmp(pszHFType,"footer-first") == 0)
+	if (strcmp(pszHFType,"footer-first") == 0)
 		return FL_HDRFTR_FOOTER_FIRST;
 
-	if (UT_strcmp(pszHFType,"footer-last") == 0)
+	if (strcmp(pszHFType,"footer-last") == 0)
 	    return FL_HDRFTR_FOOTER_LAST;
 
 	return FL_HDRFTR_NONE;

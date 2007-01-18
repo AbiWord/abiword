@@ -485,21 +485,21 @@ bool fl_SectionLayout::bl_doclistener_insertSection(fl_ContainerLayout* pPrevL,
 			HdrFtrType hfType = FL_HDRFTR_NONE;
 			if (pszSectionType && *pszSectionType)
 			{
-				if(UT_strcmp(pszSectionType,"header") == 0)
+				if(strcmp(pszSectionType,"header") == 0)
 					hfType = FL_HDRFTR_HEADER;
-				else if (UT_strcmp(pszSectionType,"header-even") == 0)
+				else if (strcmp(pszSectionType,"header-even") == 0)
 					hfType = FL_HDRFTR_HEADER_EVEN;
-				else if (UT_strcmp(pszSectionType,"header-first") == 0)
+				else if (strcmp(pszSectionType,"header-first") == 0)
 					hfType = FL_HDRFTR_HEADER_FIRST;
-				else if (UT_strcmp(pszSectionType,"header-last") == 0)
+				else if (strcmp(pszSectionType,"header-last") == 0)
 					hfType = FL_HDRFTR_HEADER_LAST;
-				else if (UT_strcmp(pszSectionType,"footer") == 0)
+				else if (strcmp(pszSectionType,"footer") == 0)
 					hfType = FL_HDRFTR_FOOTER;
-				else if (UT_strcmp(pszSectionType,"footer-even") == 0)
+				else if (strcmp(pszSectionType,"footer-even") == 0)
 					hfType = FL_HDRFTR_FOOTER_EVEN;
-				else if (UT_strcmp(pszSectionType,"footer-first") == 0)
+				else if (strcmp(pszSectionType,"footer-first") == 0)
 					hfType = FL_HDRFTR_FOOTER_FIRST;
-				else if (UT_strcmp(pszSectionType,"footer-last") == 0)
+				else if (strcmp(pszSectionType,"footer-last") == 0)
 					hfType = FL_HDRFTR_FOOTER_LAST;
 
 				if(hfType != FL_HDRFTR_NONE)
@@ -2168,7 +2168,7 @@ void fl_DocSectionLayout::_lookupProperties(const PP_AttrProp* pSectionAP)
 	pSectionAP->getProperty("section-restart", (const XML_Char *&)pszRestart);
 	if (pszRestart && pszRestart[0])
 	{
-		m_bRestart = (UT_strcmp(pszRestart,"1")==0);
+		m_bRestart = (strcmp(pszRestart,"1")==0);
 	}
 	else
 	{
@@ -2383,7 +2383,7 @@ void fl_DocSectionLayout::setPaperColor(void)
 	const char* pszClrPaper = NULL;
 	pSectionAP->getProperty("background-color", (const XML_Char *&)pszClrPaper);
 	FV_View * pView = m_pLayout->getView();
-	if(pszClrPaper && UT_strcmp(pszClrPaper,"transparent") != 0)
+	if(pszClrPaper && strcmp(pszClrPaper,"transparent") != 0)
 	{
 		m_sPaperColor = pszClrPaper;
 		m_sScreenColor.clear();
@@ -5417,21 +5417,21 @@ bool fl_ShadowListener::populateStrux(PL_StruxDocHandle sdh,
 			pAP->getAttribute("type", pszSectionType);
 			if (
 				!pszSectionType
-				|| (0 == UT_strcmp(pszSectionType, "doc"))
+				|| (0 == strcmp(pszSectionType, "doc"))
 				)
 			{
 				m_bListening = false;
 			}
 			else
 			{
-				if ( (0 == UT_strcmp(pszSectionType, "header"))
-					|| (0 == UT_strcmp(pszSectionType, "footer"))
-					 || (0 == UT_strcmp(pszSectionType, "header-first"))
-					|| (0 == UT_strcmp(pszSectionType, "footer-first"))
-					 || (0 == UT_strcmp(pszSectionType, "header-even"))
-					|| (0 == UT_strcmp(pszSectionType, "footer-even"))
-					 || (0 == UT_strcmp(pszSectionType, "header-last"))
-					|| (0 == UT_strcmp(pszSectionType, "footer-last"))
+				if ( (0 == strcmp(pszSectionType, "header"))
+					|| (0 == strcmp(pszSectionType, "footer"))
+					 || (0 == strcmp(pszSectionType, "header-first"))
+					|| (0 == strcmp(pszSectionType, "footer-first"))
+					 || (0 == strcmp(pszSectionType, "header-even"))
+					|| (0 == strcmp(pszSectionType, "footer-even"))
+					 || (0 == strcmp(pszSectionType, "header-last"))
+					|| (0 == strcmp(pszSectionType, "footer-last"))
 					)
 				{
 					// TODO verify id match
@@ -5497,21 +5497,21 @@ bool fl_ShadowListener::populateStrux(PL_StruxDocHandle sdh,
 			pAP->getAttribute("type", pszSectionType);
 			if (
 				!pszSectionType
-				|| (0 == UT_strcmp(pszSectionType, "doc"))
+				|| (0 == strcmp(pszSectionType, "doc"))
 				)
 			{
 				m_bListening = false;
 			}
 			else
 			{
-				if ( (0 == UT_strcmp(pszSectionType, "header"))
-					|| (0 == UT_strcmp(pszSectionType, "footer"))
-					 || (0 == UT_strcmp(pszSectionType, "header-first"))
-					|| (0 == UT_strcmp(pszSectionType, "footer-first"))
-					 || (0 == UT_strcmp(pszSectionType, "header-even"))
-					|| (0 == UT_strcmp(pszSectionType, "footer-even"))
-					 || (0 == UT_strcmp(pszSectionType, "header-last"))
-					|| (0 == UT_strcmp(pszSectionType, "footer-last"))
+				if ( (0 == strcmp(pszSectionType, "header"))
+					|| (0 == strcmp(pszSectionType, "footer"))
+					 || (0 == strcmp(pszSectionType, "header-first"))
+					|| (0 == strcmp(pszSectionType, "footer-first"))
+					 || (0 == strcmp(pszSectionType, "header-even"))
+					|| (0 == strcmp(pszSectionType, "footer-even"))
+					 || (0 == strcmp(pszSectionType, "header-last"))
+					|| (0 == strcmp(pszSectionType, "footer-last"))
 					)
 				{
 					// TODO verify id match

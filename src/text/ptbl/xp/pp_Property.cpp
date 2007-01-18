@@ -260,7 +260,7 @@ static int s_compare (const void * a, const void * b)
   name = static_cast<const char *>(a);
   prop = static_cast<const PP_Property *>(b);
 
-  return UT_strcmp (name, prop->getName());
+  return strcmp (name, prop->getName());
 }
 
 /*****************************************************************/
@@ -411,7 +411,7 @@ const XML_Char * PP_evalProperty (const XML_Char *  pszName,
 		szValue = s_evalProperty (pProp, pSpanAttrProp, pDoc, bExpandStyles);
 
 		if (szValue)
-			if (UT_strcmp (szValue, "inherit") == 0)
+			if (strcmp (szValue, "inherit") == 0)
 			{
 				szValue = NULL;
 				bInherit = true;
@@ -425,7 +425,7 @@ const XML_Char * PP_evalProperty (const XML_Char *  pszName,
 				szValue = s_evalProperty (pProp, pBlockAttrProp, pDoc, bExpandStyles);
 
 				if (szValue)
-					if (UT_strcmp (szValue, "inherit") == 0)
+					if (strcmp (szValue, "inherit") == 0)
 					{
 						szValue = NULL;
 						bInherit = true;
@@ -439,7 +439,7 @@ const XML_Char * PP_evalProperty (const XML_Char *  pszName,
 						szValue = s_evalProperty (pProp, pSectionAttrProp, pDoc, bExpandStyles);
 
 						if (szValue)
-							if (UT_strcmp (szValue, "inherit") == 0)
+							if (strcmp (szValue, "inherit") == 0)
 							{
 								szValue = NULL;
 								bInherit = true;
@@ -460,7 +460,7 @@ const XML_Char * PP_evalProperty (const XML_Char *  pszName,
 		szValue = s_evalProperty (pProp, pBlockAttrProp, pDoc, bExpandStyles);
 
 		if (szValue)
-			if (UT_strcmp (szValue, "inherit") == 0)
+			if (strcmp (szValue, "inherit") == 0)
 			{
 				szValue = NULL;
 				bInherit = true;
@@ -474,7 +474,7 @@ const XML_Char * PP_evalProperty (const XML_Char *  pszName,
 				szValue = s_evalProperty (pProp, pSectionAttrProp, pDoc, bExpandStyles);
 
 				if (szValue)
-					if (UT_strcmp (szValue, "inherit") == 0)
+					if (strcmp (szValue, "inherit") == 0)
 					{
 						szValue = NULL;
 						bInherit = true;
@@ -493,7 +493,7 @@ const XML_Char * PP_evalProperty (const XML_Char *  pszName,
 		szValue = s_evalProperty (pProp, pSectionAttrProp, pDoc, bExpandStyles);
 
 		if (szValue)
-			if (UT_strcmp (szValue, "inherit") == 0)
+			if (strcmp (szValue, "inherit") == 0)
 			{
 				szValue = NULL;
 				bInherit = true;
@@ -513,16 +513,16 @@ const XML_Char * PP_evalProperty (const XML_Char *  pszName,
 			pDocAP->getProperty (pszName, szValue);
 
 			// dom-dir requires special treatment at document level
-			if(szValue && UT_strcmp(pszName, "dom-dir") == 0)
+			if(szValue && strcmp(pszName, "dom-dir") == 0)
 			{
-				if(   UT_strcmp(szValue, "logical-ltr") == 0
-				   || UT_strcmp(szValue, "logical-rtl") == 0)
+				if(   strcmp(szValue, "logical-ltr") == 0
+				   || strcmp(szValue, "logical-rtl") == 0)
 					szValue += 8;
 			}
 		}
 	}
 	if (szValue)
-		if (UT_strcmp (szValue, "inherit") == 0) // shouldn't happen, but doesn't hurt to check
+		if (strcmp (szValue, "inherit") == 0) // shouldn't happen, but doesn't hurt to check
 			szValue = NULL;
 
 	if (szValue == NULL)
@@ -537,7 +537,7 @@ const XML_Char * PP_evalProperty (const XML_Char *  pszName,
 				pStyle->getProperty (pszName, szValue);
 
 				if (szValue)
-					if (UT_strcmp (szValue, "inherit") == 0)
+					if (strcmp (szValue, "inherit") == 0)
 						szValue = NULL;
 			}
 		}
@@ -736,7 +736,7 @@ PP_PropertyTypeColor::PP_PropertyTypeColor(const XML_Char *p_init)
 
 PP_PropertyTypeBool::PP_PropertyTypeBool(const XML_Char *p_init)
 {
-	State = (UT_strcmp("yes", p_init) != 0);
+	State = (strcmp("yes", p_init) != 0);
 }
 
 PP_PropertyTypeInt::PP_PropertyTypeInt(const XML_Char *p_init)

@@ -931,7 +931,7 @@ Defun_EV_GetMenuItemState_Fn(ap_GetState_CharFmt)
 			}
 			else
 			{
-				if (0 == UT_strcmp(sz, val))
+				if (0 == strcmp(sz, val))
 					s = EV_MIS_Toggled;
 			}
 		}
@@ -995,7 +995,7 @@ Defun_EV_GetMenuItemState_Fn(ap_GetState_BlockFmt)
 			return s;
 
 		sz = UT_getAttribute(prop, props_in);
-		if (sz && (0 == UT_strcmp(sz, val)))
+		if (sz && (0 == strcmp(sz, val)))
 			s = EV_MIS_Toggled;
 
 		g_free(props_in);
@@ -1043,7 +1043,7 @@ Defun_EV_GetMenuItemState_Fn(ap_GetState_DocFmt)
 		if (!pAP->getProperty(prop, sz))
 			return s;
 
-		if (sz && (0 == UT_strcmp(sz, val)))
+		if (sz && (0 == strcmp(sz, val)))
 			s = EV_MIS_Toggled;
 	}
 
@@ -1086,7 +1086,7 @@ Defun_EV_GetMenuItemState_Fn(ap_GetState_SectFmt)
 			return s;
 
 		sz = UT_getAttribute(prop, props_in);
-		if (sz && (0 == UT_strcmp(sz, val)))
+		if (sz && (0 == strcmp(sz, val)))
 			s = EV_MIS_Toggled;
 
 		g_free(props_in);

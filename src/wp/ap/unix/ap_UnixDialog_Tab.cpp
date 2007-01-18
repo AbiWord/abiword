@@ -643,7 +643,7 @@ AP_UnixDialog_Tab::_gatherAlignment ()
 {
 	const gchar *text =  gtk_combo_box_get_active_text (GTK_COMBO_BOX (m_cobAlignment));
 	for (guint i = 0; i < __FL_TAB_MAX; i++) {
-		if (UT_strcmp (text, m_AlignmentMapping[i]) == 0)
+		if (strcmp (text, m_AlignmentMapping[i]) == 0)
 			return (eTabType)i;
 	}
 	return FL_TAB_NONE;
@@ -676,7 +676,7 @@ AP_UnixDialog_Tab::_gatherLeader ()
 			break;
 
 		UT_DEBUGMSG (("ROB: %d='%s' (%s)\n", i, m_LeaderMapping[i], text));
-		if (UT_strcmp (text, m_LeaderMapping[i]) == 0) 
+		if (strcmp (text, m_LeaderMapping[i]) == 0) 
 			return (eTabLeader)i;
 	}
 	return FL_LEADER_NONE;

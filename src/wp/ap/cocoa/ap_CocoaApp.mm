@@ -1134,7 +1134,7 @@ bool AP_CocoaApp::doWindowlessArgs(const AP_Args *Args, bool & bSuccess)
 			{
 				pModule = (XAP_Module *)pVec->getNthItem (i);
 				szName = pModule->getModuleInfo()->name;
-				if(UT_strcmp(szName,Args->m_sPlugin) == 0)
+				if(strcmp(szName,Args->m_sPlugin) == 0)
 					bFound = true;
 			}
 		}

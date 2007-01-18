@@ -53,7 +53,7 @@ PP_Revision::PP_Revision(UT_uint32 Id, PP_RevisionType eType, const XML_Char * p
 
 			// if we have no p, that means the property is being removed ...
 			const char * v = p ? p : empty;
-			if(! UT_strcmp(v, "-/-"))
+			if(! strcmp(v, "-/-"))
 				v = empty;
 		
 			if(n)
@@ -93,7 +93,7 @@ PP_Revision::PP_Revision(UT_uint32 Id, PP_RevisionType eType, const XML_Char * p
 			p = strtok(NULL, ";");
 
 			const char * v = p ? p : empty;
-			if(! UT_strcmp(v, "-/-"))
+			if(! strcmp(v, "-/-"))
 				v = empty;
 			
 			if(n)
@@ -277,7 +277,7 @@ bool PP_Revision::operator == (const PP_Revision &op2) const
 		getNthProperty(i,n,v1);
 		op2.getProperty(n,v2);
 
-		if(UT_strcmp(v1,v2))
+		if(strcmp(v1,v2))
 			return false;
 	}
 
@@ -287,7 +287,7 @@ bool PP_Revision::operator == (const PP_Revision &op2) const
 		getNthAttribute(i,n,v1);
 		op2.getAttribute(n,v2);
 
-		if(UT_strcmp(v1,v2))
+		if(strcmp(v1,v2))
 			return false;
 	}
 	return true;

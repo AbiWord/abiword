@@ -1517,11 +1517,11 @@ void AP_Dialog_Styles::event_paraPreviewUpdated (const XML_Char * pageLeftMargin
 	if (!align)
 		goto LblIndent; // skip to the next label if nothing's set here
 
-	if (!UT_strcmp(align, "right"))
+	if (!strcmp(align, "right"))
 		tAlign = AP_Dialog_Paragraph::align_RIGHT;
-	else if (!UT_strcmp(align, "center"))
+	else if (!strcmp(align, "center"))
 		tAlign = AP_Dialog_Paragraph::align_CENTERED;
-	else if (!UT_strcmp(align, "justify"))
+	else if (!strcmp(align, "justify"))
 		tAlign = AP_Dialog_Paragraph::align_JUSTIFIED;
 
  LblIndent:
@@ -1552,11 +1552,11 @@ void AP_Dialog_Styles::event_paraPreviewUpdated (const XML_Char * pageLeftMargin
 	{
 		if(UT_hasDimensionComponent(sz))
 			tSpacing = AP_Dialog_Paragraph::spacing_EXACTLY;
-		else if(!UT_strcmp("1.0", sz))
+		else if(!strcmp("1.0", sz))
 			tSpacing = AP_Dialog_Paragraph::spacing_SINGLE;
-		else if(!UT_strcmp("1.5", sz))
+		else if(!strcmp("1.5", sz))
 			tSpacing = AP_Dialog_Paragraph::spacing_ONEANDHALF;
-		else if(!UT_strcmp("2.0", sz))
+		else if(!strcmp("2.0", sz))
 			tSpacing = AP_Dialog_Paragraph::spacing_DOUBLE;
 	}
 

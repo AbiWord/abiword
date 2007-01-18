@@ -1101,7 +1101,7 @@ pf_Frag *    pt_PieceTable::_findPrevHyperlink(pf_Frag * pfStart)
 				UT_uint32 k = 0;
 				while((pAP)->getNthAttribute(k++,pszHname, pszHref))
 				{
-					if(!UT_strcmp(pszHname, "xlink:href"))
+					if(!strcmp(pszHname, "xlink:href"))
 				    {
 						return pf;
 					}
@@ -1159,7 +1159,7 @@ pf_Frag *    pt_PieceTable::_findNextHyperlink(pf_Frag * pfStart)
 				UT_uint32 k = 0;
 				while((pAP)->getNthAttribute(k++,pszHname, pszHref))
 				{
-					if(!UT_strcmp(pszHname, "xlink:href"))
+					if(!strcmp(pszHname, "xlink:href"))
 				    {
 						return NULL;
 					}

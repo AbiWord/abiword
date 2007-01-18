@@ -238,17 +238,17 @@ GR_EmbedManager * FL_DocLayout::getQuickPrintEmbedManager(const char * szEmbedTy
   for(i=0; i< m_vecQuickPrintEmbedManager.getItemCount(); i++)
     {
       pEmbed = m_vecQuickPrintEmbedManager.getNthItem(i);
-      if(UT_strcmp(pEmbed->getObjectType(),szEmbedType) == 0)
+      if(strcmp(pEmbed->getObjectType(),szEmbedType) == 0)
 	{
 	  return pEmbed;
 	}
-      if(UT_strcmp(pEmbed->getObjectType(),"default") == 0)
+      if(strcmp(pEmbed->getObjectType(),"default") == 0)
 	{
 	  pDefault = pEmbed;
 	}
     }
   pEmbed = XAP_App::getApp()->getEmbeddableManager(m_pQuickPrintGraphics,szEmbedType);
-  if((UT_strcmp(pEmbed->getObjectType(),"default") == 0) && pDefault != NULL)
+  if((strcmp(pEmbed->getObjectType(),"default") == 0) && pDefault != NULL)
     {
       delete pEmbed;
       return pDefault;
@@ -272,17 +272,17 @@ GR_EmbedManager * FL_DocLayout::getEmbedManager(const char * szEmbedType)
   for(i=0; i< m_vecEmbedManager.getItemCount(); i++)
     {
       pEmbed = m_vecEmbedManager.getNthItem(i);
-      if(UT_strcmp(pEmbed->getObjectType(),szEmbedType) == 0)
+      if(strcmp(pEmbed->getObjectType(),szEmbedType) == 0)
 	{
 	  return pEmbed;
 	}
-      if(UT_strcmp(pEmbed->getObjectType(),"default") == 0)
+      if(strcmp(pEmbed->getObjectType(),"default") == 0)
 	{
 	  pDefault = pEmbed;
 	}
     }
   pEmbed = XAP_App::getApp()->getEmbeddableManager(m_pG,szEmbedType);
-  if((UT_strcmp(pEmbed->getObjectType(),"default") == 0) && pDefault != NULL)
+  if((strcmp(pEmbed->getObjectType(),"default") == 0) && pDefault != NULL)
     {
       delete pEmbed;
       return pDefault;
@@ -1535,7 +1535,7 @@ bool FL_DocLayout::updateTOCsOnBookmarkChange(const XML_Char * pBookmark)
 		fl_TOCLayout * pTOC = getNthTOC(i);
 		UT_return_val_if_fail( pTOC, false );
 
-		if(pTOC->getRangeBookmarkName().size() && !UT_strcmp(pTOC->getRangeBookmarkName().utf8_str(), pBookmark))
+		if(pTOC->getRangeBookmarkName().size() && !strcmp(pTOC->getRangeBookmarkName().utf8_str(), pBookmark))
 		{
 			// this TOC depends on the given bookmark, update ...
 			fillTOC(pTOC);
@@ -1631,12 +1631,12 @@ const GR_Font* FL_DocLayout::findFont(const PP_AttrProp * pSpanAP,
 	const char* pszPosition = PP_evalProperty("text-position",pSpanAP,pBlockAP,pSectionAP, m_pDoc, true);
 	const char* pszLang     = PP_evalProperty("lang",pSpanAP,pBlockAP,pSectionAP, m_pDoc, true);
 
-	if (pszField != NULL && isField && UT_strcmp(pszField, "NULL"))
+	if (pszField != NULL && isField && strcmp(pszField, "NULL"))
 		pszFamily = pszField;
 
 	// for superscripts and subscripts, we'll automatically shrink the font size
-	if ((0 == UT_strcmp(pszPosition, "superscript")) ||
-		(0 == UT_strcmp(pszPosition, "subscript")))
+	if ((0 == strcmp(pszPosition, "superscript")) ||
+		(0 == strcmp(pszPosition, "subscript")))
 	{
 		double newSize = UT_convertToPoints(pszSize) * 2.0 / 3.0;
 		pszSize = UT_formatDimensionedValue(newSize,"pt",".0");
@@ -1674,12 +1674,12 @@ const GR_Font* FL_DocLayout::findFont(const PP_AttrProp * pSpanAP,
 	const char* pszPosition = PP_evalProperty("text-position",pSpanAP,pBlockAP,pSectionAP, m_pDoc, true);
 	const char* pszLang     = PP_evalProperty("lang",pSpanAP,pBlockAP,pSectionAP, m_pDoc, true);
 
-	if (pszField != NULL && isField && UT_strcmp(pszField, "NULL"))
+	if (pszField != NULL && isField && strcmp(pszField, "NULL"))
 		pszFamily = pszField;
 
 	// for superscripts and subscripts, we'll automatically shrink the font size
-	if ((0 == UT_strcmp(pszPosition, "superscript")) ||
-		(0 == UT_strcmp(pszPosition, "subscript")))
+	if ((0 == strcmp(pszPosition, "superscript")) ||
+		(0 == strcmp(pszPosition, "subscript")))
 	{
 		double newSize = UT_convertToPoints(pszSize) * 2.0 / 3.0;
 		pszSize = UT_formatDimensionedValue(newSize,"pt",".0");
@@ -3297,7 +3297,7 @@ fl_DocSectionLayout* FL_DocLayout::findSectionForHdrFtr(const char* pszHdrFtrID)
 
 	const XML_Char * pszTransparentColor = NULL;
 	pPrefs->getPrefsValue(static_cast<const XML_Char *>(XAP_PREF_KEY_ColorForTransparent),&pszTransparentColor);
-	if(UT_strcmp(pszTransparentColor,pDocLayout->m_szCurrentTransparentColor) != 0)
+	if(strcmp(pszTransparentColor,pDocLayout->m_szCurrentTransparentColor) != 0)
 	{
 		if(pDocLayout->getView() && (pDocLayout->getView()->getPoint() > 0))
 		{

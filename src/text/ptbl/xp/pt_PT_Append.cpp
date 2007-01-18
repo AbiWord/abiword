@@ -572,14 +572,14 @@ bool pt_PieceTable::_makeStrux(PTStruxType pts, const XML_Char ** attributes, pf
 		const char * szStruxType = UT_getAttribute("type",attributes);
 		if(szStruxType)
 		{
-			if(UT_strcmp(szStruxType,"header") == 0 ||
-			   UT_strcmp(szStruxType,"footer") == 0 ||
-			   UT_strcmp(szStruxType,"header-even") == 0 ||
-			   UT_strcmp(szStruxType,"footer-even") == 0 ||
-			   UT_strcmp(szStruxType,"header-first") == 0 ||
-			   UT_strcmp(szStruxType,"footer-first") == 0 ||
-			   UT_strcmp(szStruxType,"header-last") == 0 ||
-			   UT_strcmp(szStruxType,"footer-last") == 0)
+			if(strcmp(szStruxType,"header") == 0 ||
+			   strcmp(szStruxType,"footer") == 0 ||
+			   strcmp(szStruxType,"header-even") == 0 ||
+			   strcmp(szStruxType,"footer-even") == 0 ||
+			   strcmp(szStruxType,"header-first") == 0 ||
+			   strcmp(szStruxType,"footer-first") == 0 ||
+			   strcmp(szStruxType,"header-last") == 0 ||
+			   strcmp(szStruxType,"footer-last") == 0)
 			{
 				pts = PTX_SectionHdrFtr;
 			}

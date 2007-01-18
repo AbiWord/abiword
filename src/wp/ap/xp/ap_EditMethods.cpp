@@ -7418,7 +7418,7 @@ static bool s_doLangDlg(FV_View * pView)
 		if(k > 0 && bChange)								// if something changed
 			pView->setCharFormat(props_out);
 
-		if(k > 0 && pDialog->isMakeDocumentDefault() && UT_strcmp(pLang, s))
+		if(k > 0 && pDialog->isMakeDocumentDefault() && strcmp(pLang, s))
 		{
 #ifndef WITHOUT_SPELL
 			FL_DocLayout* pLayout = pView->getLayout();
@@ -13177,7 +13177,7 @@ UT_return_val_if_fail(pDialog, false);//
 	const char * szRestartValue = NULL;
 	szRestartValue = UT_getAttribute("section-restart-value",propsSectionIn);
 	bool bRestart = false;
-	if(szRestart && *szRestart && (UT_strcmp(szRestart,"1") == 0))
+	if(szRestart && *szRestart && (strcmp(szRestart,"1") == 0))
 	{
 		bRestart = true;
 	}

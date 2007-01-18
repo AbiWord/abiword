@@ -178,7 +178,7 @@ static int s_compareQ(const void * a, const void *b)
 	return g_utf8_collate(A->m_szLangName, B->m_szLangName);
 #else
 
-	return UT_strcmp(A->m_szLangCode, B->m_szLangCode);
+	return strcmp(A->m_szLangCode, B->m_szLangCode);
 #endif
 }
 

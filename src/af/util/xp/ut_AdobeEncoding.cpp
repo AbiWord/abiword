@@ -34,7 +34,7 @@ static int s_compare (const void * a, const void * b)
   name = static_cast<const char *>(a);
   ep   = static_cast<const encoding_pair *>(b);
 
-  return UT_strcmp (name, ep->adb);
+  return strcmp (name, ep->adb);
 }
 
 

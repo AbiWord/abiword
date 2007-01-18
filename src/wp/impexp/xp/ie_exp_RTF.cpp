@@ -98,7 +98,7 @@ IE_Exp_RTF_Sniffer::IE_Exp_RTF_Sniffer ()
 
 UT_Confidence_t IE_Exp_RTF_Sniffer::supportsMIME (const char * szMIME)
 {
-	if (UT_strcmp (szMIME, IE_MIMETYPE_RTF) == 0)
+	if (strcmp (szMIME, IE_MIMETYPE_RTF) == 0)
 		{
 			return UT_CONFIDENCE_GOOD;
 		}
@@ -1089,7 +1089,7 @@ void IE_Exp_RTF::_write_prop_ifyes(const PD_Style * pStyle,
 				   const char * szRTFName)
 {
     const XML_Char * sz = NULL;
-    if (pStyle->getProperty((const XML_Char *)szPropName, sz) && UT_strcmp(sz, "yes") == 0) {
+    if (pStyle->getProperty((const XML_Char *)szPropName, sz) && strcmp(sz, "yes") == 0) {
 	    _rtf_keyword(szRTFName);
     }
 }
@@ -1325,11 +1325,11 @@ void IE_Exp_RTF::_write_parafmt(const PP_AttrProp * pSpanAP, const PP_AttrProp *
 		_rtf_keyword("listtext");
 		// if string is "left" use "ql", but that is the default, so we don't need to write it out.
 		_rtf_keyword("pard");		// restore all defaults for this paragraph
-		if (UT_strcmp(szTextAlign,"right")==0)		// output one of q{lrcj} depending upon paragraph alignment
+		if (strcmp(szTextAlign,"right")==0)		// output one of q{lrcj} depending upon paragraph alignment
 			_rtf_keyword("qr");
-		else if (UT_strcmp(szTextAlign,"center")==0)
+		else if (strcmp(szTextAlign,"center")==0)
 			_rtf_keyword("qc");
-		else if (UT_strcmp(szTextAlign,"justify")==0)
+		else if (strcmp(szTextAlign,"justify")==0)
 			_rtf_keyword("qj");
 		_rtf_keyword_ifnotdefault_twips("fi",static_cast<const char*>(szFirstLineIndent),0);
 		_rtf_keyword_ifnotdefault_twips("li",static_cast<const char*>(szLeftIndent),0);
@@ -1391,7 +1391,7 @@ void IE_Exp_RTF::_write_parafmt(const PP_AttrProp * pSpanAP, const PP_AttrProp *
 	xxx_UT_DEBUGMSG(("bidi paragraph: pSectionAp 0x%x, pBlockAP 0x%x, dom-dir\"%s\"\n",pSectionAP,pBlockAP,szBidiDir));
 	if (szBidiDir)
 	{
-		if (!UT_strcmp (szBidiDir, "ltr"))
+		if (!strcmp (szBidiDir, "ltr"))
 			_rtf_keyword ("ltrpar");
 		else
 			_rtf_keyword ("rtlpar");
@@ -1403,13 +1403,13 @@ void IE_Exp_RTF::_write_parafmt(const PP_AttrProp * pSpanAP, const PP_AttrProp *
 	// style, we probably need to issue this (Tomas, Apr 12, 2003)
 
 	// output q{lrcj depending upon paragraph alignment
-	if (UT_strcmp(szTextAlign,"left")==0)	
+	if (strcmp(szTextAlign,"left")==0)	
 		_rtf_keyword("ql");
-	else if (UT_strcmp(szTextAlign,"justify")==0)
+	else if (strcmp(szTextAlign,"justify")==0)
 		_rtf_keyword("qj");
-	else if (UT_strcmp(szTextAlign,"right")==0)	
+	else if (strcmp(szTextAlign,"right")==0)	
 		_rtf_keyword("qr");
-	else if (UT_strcmp(szTextAlign,"center")==0)
+	else if (strcmp(szTextAlign,"center")==0)
 		_rtf_keyword("qc");
 
 
@@ -1691,9 +1691,9 @@ void IE_Exp_RTF::_write_parafmt(const PP_AttrProp * pSpanAP, const PP_AttrProp *
 	}
 	_rtf_keyword("itap",iNestLevel);
 
-	if (UT_strcmp(szKeepTogether,"yes")==0)
+	if (strcmp(szKeepTogether,"yes")==0)
 		_rtf_keyword("keep");
-	if (UT_strcmp(szKeepWithNext,"yes")==0)
+	if (strcmp(szKeepWithNext,"yes")==0)
 		_rtf_keyword("keepn");
 
 	_write_tabdef(szTabStops);
@@ -1774,11 +1774,11 @@ void IE_Exp_RTF::_write_charfmt(const s_RTF_AttrPropAdapter & apa)
 		_rtf_keyword("fs",d);	// font size in half points
 	}
 	const XML_Char * szFontStyle = _getStyleProp(pADStyle,&apa,"font-style");
-	if (szFontStyle && *szFontStyle && (UT_strcmp(szFontStyle,"italic")==0))
+	if (szFontStyle && *szFontStyle && (strcmp(szFontStyle,"italic")==0))
 		_rtf_keyword("i");
 
 	const XML_Char * szFontWeight = _getStyleProp(pADStyle,&apa,"font-weight");
-	if (szFontWeight && *szFontWeight && (UT_strcmp(szFontWeight,"bold")==0))
+	if (szFontWeight && *szFontWeight && (strcmp(szFontWeight,"bold")==0))
 		_rtf_keyword("b");
 
 	const XML_Char * szFontDecoration = _getStyleProp(pADStyle,&apa,"text-decoration");
@@ -1803,9 +1803,9 @@ void IE_Exp_RTF::_write_charfmt(const s_RTF_AttrPropAdapter & apa)
 	const XML_Char * szFontPosition = _getStyleProp(pADStyle,&apa,"text-position");
 	if (szFontPosition && *szFontPosition)
 	{
-		if (!UT_strcmp(szFontPosition,"superscript"))
+		if (!strcmp(szFontPosition,"superscript"))
 			_rtf_keyword("super");
-		else if (!UT_strcmp(szFontPosition,"subscript"))
+		else if (!strcmp(szFontPosition,"subscript"))
 			_rtf_keyword("sub");
 	}
 
@@ -1823,14 +1823,14 @@ void IE_Exp_RTF::_write_charfmt(const s_RTF_AttrPropAdapter & apa)
 	bool bProceed = true;
 	if (szDirOvrr)
 	{
-		if (!UT_strcmp (szDirOvrr, "ltr"))
+		if (!strcmp (szDirOvrr, "ltr"))
 		{
 			_rtf_keyword ("ltrch");
 			_rtf_keyword ("abiltr");
 			m_CharRTL = UT_BIDI_LTR;
 			bProceed = false;
 		}
-		else if (!UT_strcmp (szDirOvrr, "rtl"))
+		else if (!strcmp (szDirOvrr, "rtl"))
 		{
 			_rtf_keyword ("rtlch");
 			_rtf_keyword ("abirtl");
@@ -1841,14 +1841,14 @@ void IE_Exp_RTF::_write_charfmt(const s_RTF_AttrPropAdapter & apa)
 	/*
 	if (bProceed || szDir)
 	{
-		if (!UT_strcmp (szDir, "ltr"))
+		if (!strcmp (szDir, "ltr"))
 			_rtf_keyword ("ltrch");
-		else if (!UT_strcmp (szDir, "rtl"))
+		else if (!strcmp (szDir, "rtl"))
 			_rtf_keyword ("rtlch");
 	}  */
 
 	const XML_Char * szHidden = _getStyleProp(pADStyle,&apa,"display");
-	if(szHidden && *szHidden && !UT_strcmp(szHidden, "none"))
+	if(szHidden && *szHidden && !strcmp(szHidden, "none"))
 	{
 		_rtf_keyword ("v");
 	}
@@ -2088,19 +2088,19 @@ void IE_Exp_RTF::_write_style_fmt(const PD_Style * pStyle)
     const XML_Char * sz = NULL;
     if (pStyle->getProperty((const XML_Char *)"text-align", sz))
 	{
-		if (UT_strcmp(sz, "left") == 0)
+		if (strcmp(sz, "left") == 0)
 		{
 			// Default, so no need to print anything
 		}
-		else if (UT_strcmp(sz, "right") == 0)
+		else if (strcmp(sz, "right") == 0)
 		{
 			_rtf_keyword("qr");
 		}
-		else if (UT_strcmp(sz, "center") == 0)
+		else if (strcmp(sz, "center") == 0)
 		{
 			_rtf_keyword("qc");
 		}
-		else if (UT_strcmp(sz, "justify") == 0)
+		else if (strcmp(sz, "justify") == 0)
 		{
 			_rtf_keyword("qj");
 		}
@@ -3159,7 +3159,7 @@ bool _rtf_font_info::init(const s_RTF_AttrPropAdapter & apa, bool bDoFieldFont)
 			m_szName = szName;
 		}
 	}
-	if (szName == NULL || UT_strcmp(szName, "NULL") == 0)  // Field-font is "NULL" when there is no special field-font.
+	if (szName == NULL || strcmp(szName, "NULL") == 0)  // Field-font is "NULL" when there is no special field-font.
 	{                                                      // We don't want it in the \fonttbl
 		return false;
 	}
@@ -3222,7 +3222,7 @@ bool _rtf_font_info::_is_same(const _rtf_font_info & fi) const
 	bool bMatchFontName = true;
 	if(szFamily && *szFamily && fi.szFamily && *fi.szFamily)
 	{
-		bMatchFontFamily =  UT_strcmp(szFamily, fi.szFamily) == 0;
+		bMatchFontFamily =  strcmp(szFamily, fi.szFamily) == 0;
 	}
 	else if ( szFamily == fi.szFamily) // Both null pointers
 	{
@@ -3234,7 +3234,7 @@ bool _rtf_font_info::_is_same(const _rtf_font_info & fi) const
 	}
 	if((m_szName.size() > 0) && (fi.m_szName.size() >0))
 	{
-		bMatchFontName =  UT_strcmp(m_szName.c_str(), fi.m_szName.c_str()) == 0;
+		bMatchFontName =  strcmp(m_szName.c_str(), fi.m_szName.c_str()) == 0;
 	}
 	else if ( m_szName.size()  == fi.m_szName.size()) // Both null pointers
 	{

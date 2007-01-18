@@ -664,7 +664,7 @@ void AP_UnixApp::pasteFromClipboard(PD_DocumentRange * pDocRange, bool bUseClipb
 	{
 		IE_Imp_Text_Sniffer SniffBuf;
 		const char * szRes = SniffBuf.recognizeContentsType(reinterpret_cast<const char *>(pData),iLen);
-		if(UT_strcmp(szRes,"none") != 0)
+		if(strcmp(szRes,"none") != 0)
 		{
 			UT_uint32 iread,iwritten = 0;
 			const char * szutf8= static_cast<const char *>(UT_convert(reinterpret_cast<const char *>(pData),iLen,szRes,"UTF-8",&iread,&iwritten));
@@ -1784,7 +1784,7 @@ bool AP_UnixApp::doWindowlessArgs(const AP_Args *Args, bool & bSuccess)
 			{
 				pModule = pVec->getNthItem (i);
 				szName = pModule->getModuleInfo()->name;
-				if(UT_strcmp(szName,szRequest) == 0)
+				if(strcmp(szName,szRequest) == 0)
 				{
 					bFound = true;
 				}
@@ -2026,35 +2026,35 @@ verb_generic_cb (BonoboUIComponent *uic, gpointer data, const char *name)
 	AbiWidget * abi = ABI_WIDGET (G_OBJECT(data));
 	GObject * object = G_OBJECT(abi);
 	AbiWidgetClass * abi_klazz = ABI_WIDGET_CLASS (G_OBJECT_GET_CLASS(object));
-	if(UT_strcmp(name,"redo") == 0)
+	if(strcmp(name,"redo") == 0)
 	{
 		abi_klazz->redo(abi);
 	}
-	else if(UT_strcmp(name,"copy") == 0)
+	else if(strcmp(name,"copy") == 0)
 	{
 		abi_klazz->copy(abi);
 	}
-	else if(UT_strcmp(name,"cut") == 0)
+	else if(strcmp(name,"cut") == 0)
 	{
 		abi_klazz->cut(abi);
 	}
-	else if(UT_strcmp(name,"paste") == 0)
+	else if(strcmp(name,"paste") == 0)
 	{
 		abi_klazz->paste(abi);
 	}
-	else if(UT_strcmp(name,"print") == 0)
+	else if(strcmp(name,"print") == 0)
 	{
 		abi_widget_invoke(abi,"print");
 	}
-	else if(UT_strcmp(name,"printPreview") == 0)
+	else if(strcmp(name,"printPreview") == 0)
 	{
 		abi_widget_invoke(abi,"printPreview");
 	}
-	else if(UT_strcmp(name,"fileSave") == 0)
+	else if(strcmp(name,"fileSave") == 0)
 	{
 		abi_widget_invoke(abi,"fileSave");
 	}
-	else if(UT_strcmp(name,"fileSaveAs") == 0)
+	else if(strcmp(name,"fileSaveAs") == 0)
 	{
 		abi_widget_invoke(abi,"fileSaveAs");
 	}

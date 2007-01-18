@@ -343,7 +343,7 @@ static bool is_CSS (const char * prop_name, const char ** prop_default = 0)
 	bool bCSS = false;
 
 	for (UT_uint32 i = 0; i < s_PropListLen; i += 2)
-		if (!UT_strcmp (prop_name, s_prop_list[i]))
+		if (!strcmp (prop_name, s_prop_list[i]))
 		{
 			if (prop_default) *prop_default = s_prop_list[i+1];
 			bCSS = true;
@@ -388,7 +388,7 @@ static char * s_removeWhiteSpace (const char * text, UT_UTF8String & utf8str,
 /*****************************************************************/
 /*****************************************************************/
 
-#define IS_TRANSPARENT_COLOR(c) (!UT_strcmp(c, "transparent"))
+#define IS_TRANSPARENT_COLOR(c) (!strcmp(c, "transparent"))
 
 #define BT_NORMAL		1
 #define BT_HEADING1		2
@@ -1760,13 +1760,13 @@ void s_HTML_Listener::_outputStyles (const PP_AttrProp * pAP)
 			if (strstr (szName, "margin")) continue;
 			if (!is_CSS (reinterpret_cast<const char *>(szName))) continue;
 
-			if (UT_strcmp (szName, "font-family") == 0)
+			if (strcmp (szName, "font-family") == 0)
 			{
-				if ((UT_strcmp (szValue, "serif")      == 0) ||
-					(UT_strcmp (szValue, "sans-serif") == 0) ||
-					(UT_strcmp (szValue, "cursive")    == 0) ||
-					(UT_strcmp (szValue, "fantasy")    == 0) ||
-					(UT_strcmp (szValue, "monospace")  == 0))
+				if ((strcmp (szValue, "serif")      == 0) ||
+					(strcmp (szValue, "sans-serif") == 0) ||
+					(strcmp (szValue, "cursive")    == 0) ||
+					(strcmp (szValue, "fantasy")    == 0) ||
+					(strcmp (szValue, "monospace")  == 0))
 				{
 					m_utf8_1 = static_cast<const char *>(szValue);
 				}
@@ -1777,7 +1777,7 @@ void s_HTML_Listener::_outputStyles (const PP_AttrProp * pAP)
 					m_utf8_1 += "'";
 				}
 			}
-			else if (UT_strcmp (szName, "color") == 0)
+			else if (strcmp (szName, "color") == 0)
 			{
 				if (IS_TRANSPARENT_COLOR (szValue)) continue;
 
@@ -2006,7 +2006,7 @@ bool s_HTML_Listener::_inherits (const char * style, const char * from)
 					s_removeWhiteSpace (static_cast<const char *>(szName), m_utf8_0, true);
 
 					if (m_utf8_0.utf8_str ())
-						bret = (UT_strcmp (from, m_utf8_0.utf8_str ()) == 0);
+						bret = (strcmp (from, m_utf8_0.utf8_str ()) == 0);
 				}
 			}
 		}
@@ -2177,7 +2177,7 @@ void s_HTML_Listener::_openTag (PT_AttrPropIndex api, PL_StruxDocHandle sdh)
 	bool zero_listID = true;
 	bool bClassAsTag = false;
 
-	if (have_listID) zero_listID = (UT_strcmp (szListID, "0") == 0);
+	if (have_listID) zero_listID = (strcmp (szListID, "0") == 0);
 
 	/* A nonzero "listid" attribute value indicates that we
 	 * are in a list item, so we need to process it, HTML-style.
@@ -2198,7 +2198,7 @@ void s_HTML_Listener::_openTag (PT_AttrPropIndex api, PL_StruxDocHandle sdh)
 		 */
 		if (!pAP->getProperty ("list-style", szStyleType)) szStyleType = szValue;
 
-		if (UT_strcmp (static_cast<const char *>(szStyleType), "Bullet List") == 0)
+		if (strcmp (static_cast<const char *>(szStyleType), "Bullet List") == 0)
 		{
 			m_iBlockType = BT_BULLETLIST;
 		}
@@ -2793,7 +2793,7 @@ void s_HTML_Listener::_openSpan (PT_AttrPropIndex api)
 		/* TODO: this bold/italic check needs re-thought
 		 */
 		if (szP_FontWeight)
-			if (UT_strcmp (szP_FontWeight, "bold") == 0)
+			if (strcmp (szP_FontWeight, "bold") == 0)
 				if (!compareStyle ("font-weight", "bold"))
 				{
 					if (!first) m_utf8_1 += ";";
@@ -2801,7 +2801,7 @@ void s_HTML_Listener::_openSpan (PT_AttrPropIndex api)
 					first = false;
 				}
 		if (szP_FontStyle)
-			if (UT_strcmp (szP_FontStyle, "italic") == 0)
+			if (strcmp (szP_FontStyle, "italic") == 0)
 				if (!compareStyle ("font-style", "italic"))
 				{
 					if (!first) m_utf8_1 += ";";
@@ -2830,11 +2830,11 @@ void s_HTML_Listener::_openSpan (PT_AttrPropIndex api)
 		}
 		if (szP_FontFamily)
 		{
-			if ((UT_strcmp (szP_FontFamily, "serif")      == 0) ||
-				(UT_strcmp (szP_FontFamily, "sans-serif") == 0) ||
-				(UT_strcmp (szP_FontFamily, "cursive")    == 0) ||
-				(UT_strcmp (szP_FontFamily, "fantasy")    == 0) ||
-				(UT_strcmp (szP_FontFamily, "monospace")  == 0))
+			if ((strcmp (szP_FontFamily, "serif")      == 0) ||
+				(strcmp (szP_FontFamily, "sans-serif") == 0) ||
+				(strcmp (szP_FontFamily, "cursive")    == 0) ||
+				(strcmp (szP_FontFamily, "fantasy")    == 0) ||
+				(strcmp (szP_FontFamily, "monospace")  == 0))
 			{
 				m_utf8_0  = static_cast<const char *>(szP_FontFamily);
 			}
@@ -2883,7 +2883,7 @@ void s_HTML_Listener::_openSpan (PT_AttrPropIndex api)
 		}
 		if (szP_TextPosition)
 		{
-			if (UT_strcmp (szP_TextPosition, "superscript") == 0)
+			if (strcmp (szP_TextPosition, "superscript") == 0)
 			{
 				if (!compareStyle ("vertical-align", "super"))
 				{
@@ -2892,7 +2892,7 @@ void s_HTML_Listener::_openSpan (PT_AttrPropIndex api)
 					first = false;
 				}
 			}
-			else if (UT_strcmp (szP_TextPosition, "subscript") == 0)
+			else if (strcmp (szP_TextPosition, "subscript") == 0)
 			{
 				if (!compareStyle ("vertical-align", "sub"))
 				{
@@ -4127,13 +4127,13 @@ void s_HTML_Listener::_openTextBox (PT_AttrPropIndex api)
 	// This might need to be updated for textbox (and wrapped-image?) changes that
 	// occured in 2.3. 
 	pAP->getProperty("wrap-mode", tempProp); // Get the wrap mode
-	if(!UT_strcmp(tempProp, "wrapped-both"))
+	if(!strcmp(tempProp, "wrapped-both"))
 		m_utf8_1 += " clear: none;";
-	else if(!UT_strcmp(tempProp, "wrapped-left"))
+	else if(!strcmp(tempProp, "wrapped-left"))
 		m_utf8_1 += " clear: right;";
-	else if(!UT_strcmp(tempProp, "wrapped-right"))
+	else if(!strcmp(tempProp, "wrapped-right"))
 		m_utf8_1 += " clear: left;";
-	else if(!UT_strcmp(tempProp, "above-text"))
+	else if(!strcmp(tempProp, "above-text"))
 		m_utf8_1 += " clear: none; z-index: 999;";
 	
 	m_utf8_1 += "\"";
@@ -4421,7 +4421,7 @@ void s_HTML_Listener::_handleEmbedded (PT_AttrPropIndex api)
 		{
 			k++;
 			if (szName == 0) continue;
-			if (UT_strcmp (szDataID, szName) == 0) break;
+			if (strcmp (szDataID, szName) == 0) break;
 				
 			szName = 0;
 			szMimeType = 0;
@@ -4606,7 +4606,7 @@ void s_HTML_Listener::_handleImage (const PP_AttrProp * pAP, const char * szData
 	{
 		k++;
 		if (szName == 0) continue;
-		if (UT_strcmp (szDataID, szName) == 0) break;
+		if (strcmp (szDataID, szName) == 0) break;
 
 		szName = 0;
 		szMimeType = 0;
@@ -4614,7 +4614,7 @@ void s_HTML_Listener::_handleImage (const PP_AttrProp * pAP, const char * szData
 	}
 	if ((pByteBuf == 0) || (szMimeType == 0)) return; // ??
 
-	if (UT_strcmp (szMimeType, "image/png") != 0)
+	if (strcmp (szMimeType, "image/png") != 0)
 	{
 		UT_DEBUGMSG(("Object not of MIME type image/png - ignoring...\n"));
 		return;
@@ -4792,7 +4792,7 @@ void s_HTML_Listener::_handlePendingImages ()
 		{
 			k++;
 			if (szName == 0) continue;
-			if (UT_strcmp (dataid, szName) == 0) break;
+			if (strcmp (dataid, szName) == 0) break;
 
 			szName = 0;
 			szMimeType = 0;
@@ -4836,7 +4836,7 @@ void s_HTML_Listener::_handleField (const PX_ChangeRecord_Object * pcro,
 
 	m_pie->populateFields ();
 
-	if (UT_strcmp (szType, "list_label") != 0)
+	if (strcmp (szType, "list_label") != 0)
 	{
 		// TODO: Text styles?  (maybe not)
 		// TODO: Line before footnotes?  Or use the table as in embedded target idea?
@@ -4847,10 +4847,10 @@ void s_HTML_Listener::_handleField (const PX_ChangeRecord_Object * pcro,
 		m_utf8_1 = "span";
 		
 		// TODO: branch out to get the format of the refs/anchors correct.
-		if ((UT_strcmp (szType, "footnote_anchor") == 0) ||
-			(UT_strcmp (szType, "endnote_anchor") == 0) ||
-			(UT_strcmp (szType, "footnote_ref") == 0) ||
-			(UT_strcmp (szType, "endnote_ref") == 0))
+		if ((strcmp (szType, "footnote_anchor") == 0) ||
+			(strcmp (szType, "endnote_anchor") == 0) ||
+			(strcmp (szType, "footnote_ref") == 0) ||
+			(strcmp (szType, "endnote_ref") == 0))
 		{
 			const XML_Char * szA_Style = 0;
 			bool have_style = pAP->getAttribute (PT_STYLE_ATTRIBUTE_NAME, szA_Style);
@@ -4903,9 +4903,9 @@ void s_HTML_Listener::_handleField (const PX_ChangeRecord_Object * pcro,
 				PT_AttrPropIndex docApi = m_pDocument->getAttrPropIndex();
 				const PP_AttrProp * pDAP = NULL;
 				m_pDocument->getAttrProp (docApi, &pDAP);
-				if(!UT_strcmp(noteToken, "footnote") && pDAP->getProperty("document-footnote-initial", szNoteNumInit))
+				if(!strcmp(noteToken, "footnote") && pDAP->getProperty("document-footnote-initial", szNoteNumInit))
 					noteNumInit = atoi(szNoteNumInit);
-				else if(!UT_strcmp(noteToken, "endnote") && pDAP->getProperty("document-endnote-initial", szNoteNumInit))
+				else if(!strcmp(noteToken, "endnote") && pDAP->getProperty("document-endnote-initial", szNoteNumInit))
 					noteNumInit = atoi(szNoteNumInit);
 			pAP->getAttribute (strcat(idAttr, "-id"), szID);
 			UT_uint32 ID = atoi(szID);
@@ -5366,7 +5366,7 @@ bool s_HTML_Listener::populateStrux (PL_StruxDocHandle sdh,
 				const XML_Char * szType = 0;
 				if((pAP->getProperty ("frame-type", szType)) && szType)
 				  {
-				     if (!UT_strcmp(szType, "textbox"))
+				     if (!strcmp(szType, "textbox"))
 				     {
 					_openTextBox(pcr->getIndexAP()); // Open a new text box
 					return true;
@@ -5678,7 +5678,7 @@ bool s_HTML_HdrFtr_Listener::populateStrux (PL_StruxDocHandle sdh,
 				m_pDocument->getBounds(true, m_iHdrFtrStopPos);
 			}
 			PD_DocumentRange * pDocRange = new PD_DocumentRange(m_pDocument, m_iHdrFtrStartPos, m_iHdrFtrStopPos);
-			if(!UT_strcmp(szType, "header"))
+			if(!strcmp(szType, "header"))
 			{
 				m_pHdrDocRange = pDocRange;
 				s_HTML_Listener * pHL = (s_HTML_Listener *)m_pHTML_Listener;
@@ -5937,7 +5937,7 @@ bool s_StyleTree::add (const char * style_name, PD_Document * pDoc)
 			if (!basis_name) return false;
 
 			if (basis->getBasedOn() && basis->getBasedOn()->getName() &&
-				!UT_strcmp(style_name, basis->getBasedOn()->getName()))
+				!strcmp(style_name, basis->getBasedOn()->getName()))
 			{
 				parent = this;
 			}

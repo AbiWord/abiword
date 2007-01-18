@@ -59,27 +59,27 @@ pf_Frag_Object::pf_Frag_Object(pt_PieceTable * pPT,
     	switch(*pszType)
     	{
     		case 'a':
-				if (0 == UT_strcmp(pszType, "app_ver"))
+				if (0 == strcmp(pszType, "app_ver"))
 				{
 					fieldType = fd_Field::FD_App_Version;
 				}
-				else if (0 == UT_strcmp(pszType, "app_id"))
+				else if (0 == strcmp(pszType, "app_id"))
 				{
 					fieldType = fd_Field::FD_App_ID;
 				}
-				else if (0 == UT_strcmp(pszType, "app_options"))
+				else if (0 == strcmp(pszType, "app_options"))
 				{
 					fieldType = fd_Field::FD_App_Options;
 				}
-				else if (0 == UT_strcmp(pszType, "app_target"))
+				else if (0 == strcmp(pszType, "app_target"))
 				{
 					fieldType = fd_Field::FD_App_Target;
 				}
-				else if (0 == UT_strcmp(pszType, "app_compiledate"))
+				else if (0 == strcmp(pszType, "app_compiledate"))
 				{
 					fieldType = fd_Field::FD_App_CompileDate;
 				}
-				else if (0 == UT_strcmp(pszType, "app_compiletime"))
+				else if (0 == strcmp(pszType, "app_compiletime"))
 				{
 					fieldType = fd_Field::FD_App_CompileTime;
 				}
@@ -91,7 +91,7 @@ pf_Frag_Object::pf_Frag_Object(pt_PieceTable * pPT,
         		}
 				break;
     		case 'c':
-				if (0 == UT_strcmp(pszType, "char_count"))
+				if (0 == strcmp(pszType, "char_count"))
 				{
 					fieldType = fd_Field::FD_Doc_CharCount;
 				}
@@ -103,43 +103,43 @@ pf_Frag_Object::pf_Frag_Object(pt_PieceTable * pPT,
         		}
     			break;
     		case 'd':
-				if (0 == UT_strcmp(pszType, "date"))
+				if (0 == strcmp(pszType, "date"))
 				{
 					fieldType = fd_Field::FD_Date;
 				}
-				else if (0 == UT_strcmp(pszType, "date_mmddyy"))
+				else if (0 == strcmp(pszType, "date_mmddyy"))
 				{
 					fieldType = fd_Field::FD_Date_MMDDYY;
 				}
-				else if (0 == UT_strcmp(pszType, "date_ddmmyy"))
+				else if (0 == strcmp(pszType, "date_ddmmyy"))
 				{
 					fieldType = fd_Field::FD_Date_DDMMYY;
 				}
-				else if (0 == UT_strcmp(pszType, "date_mdy"))
+				else if (0 == strcmp(pszType, "date_mdy"))
 				{
 					fieldType = fd_Field::FD_Date_MDY;
 				}
-				else if (0 == UT_strcmp(pszType, "date_mthdy"))
+				else if (0 == strcmp(pszType, "date_mthdy"))
 				{
 					fieldType = fd_Field::FD_Date_MthDY;
 				}
-				else if (0 == UT_strcmp(pszType, "date_dfl"))
+				else if (0 == strcmp(pszType, "date_dfl"))
 				{
 					fieldType = fd_Field::FD_Date_DFL;
 				}
-				else if (0 == UT_strcmp(pszType, "date_ntdfl"))
+				else if (0 == strcmp(pszType, "date_ntdfl"))
 				{
 					fieldType = fd_Field::FD_Date_NTDFL;
 				}
-				else if (0 == UT_strcmp(pszType, "date_wkday"))
+				else if (0 == strcmp(pszType, "date_wkday"))
 				{
 					fieldType = fd_Field::FD_Date_Wkday;
 				}
-				else if (0 == UT_strcmp(pszType, "date_doy"))
+				else if (0 == strcmp(pszType, "date_doy"))
 				{
 					fieldType = fd_Field::FD_Date_DOY;
 				}
-				else if (0 == UT_strcmp(pszType, "datetime_custom"))
+				else if (0 == strcmp(pszType, "datetime_custom"))
 				{
 					fieldType = fd_Field::FD_DateTime_Custom;
 				}
@@ -151,11 +151,11 @@ pf_Frag_Object::pf_Frag_Object(pt_PieceTable * pPT,
         		}
 				break;
     		case 'e':
-				if (0 == UT_strcmp(pszType, "endnote_ref"))
+				if (0 == strcmp(pszType, "endnote_ref"))
 				{
 					fieldType = fd_Field::FD_Endnote_Ref;
 				}
-				else if (0 == UT_strcmp(pszType, "endnote_anchor"))
+				else if (0 == strcmp(pszType, "endnote_anchor"))
 				{
 					fieldType = fd_Field::FD_Endnote_Anchor;
 				}
@@ -167,15 +167,15 @@ pf_Frag_Object::pf_Frag_Object(pt_PieceTable * pPT,
         		}
 				break;
     		case 'f':
-				if (0 == UT_strcmp(pszType, "file_name"))
+				if (0 == strcmp(pszType, "file_name"))
 				{
 					fieldType = fd_Field::FD_FileName;
 				}
-				else if (0 == UT_strcmp(pszType, "footnote_ref"))
+				else if (0 == strcmp(pszType, "footnote_ref"))
 				{
 					fieldType = fd_Field::FD_Footnote_Ref;
 				}
-				else if (0 == UT_strcmp(pszType, "footnote_anchor"))
+				else if (0 == strcmp(pszType, "footnote_anchor"))
 				{
 					fieldType = fd_Field::FD_Footnote_Anchor;
 				}
@@ -187,11 +187,11 @@ pf_Frag_Object::pf_Frag_Object(pt_PieceTable * pPT,
         		}
 				break;
     		case 'l':
-				if (0 == UT_strcmp(pszType, "list_label"))
+				if (0 == strcmp(pszType, "list_label"))
 		        {
         		    fieldType = fd_Field::FD_ListLabel;
 		        }
-				else if (0 == UT_strcmp(pszType, "line_count"))
+				else if (0 == strcmp(pszType, "line_count"))
 				{
 					fieldType = fd_Field::FD_Doc_LineCount;
 				}
@@ -203,59 +203,59 @@ pf_Frag_Object::pf_Frag_Object(pt_PieceTable * pPT,
         		}
     			break;
     		case 'm':
-		        if (0 == UT_strcmp(pszType, "mail_merge"))
+		        if (0 == strcmp(pszType, "mail_merge"))
 		        {
         		    fieldType = fd_Field::FD_MailMerge;
 		        }
-			else if(0 == UT_strcmp(pszType, "meta_title"))
+			else if(0 == strcmp(pszType, "meta_title"))
 			  {
 			    fieldType = fd_Field::FD_Meta_Title;
 			  }
-			else if(0 == UT_strcmp(pszType, "meta_creator"))
+			else if(0 == strcmp(pszType, "meta_creator"))
 			  {
 			    fieldType = fd_Field::FD_Meta_Creator;
 			  }
-			else if(0 == UT_strcmp(pszType, "meta_subject"))
+			else if(0 == strcmp(pszType, "meta_subject"))
 			  {
 			    fieldType = fd_Field::FD_Meta_Subject;
 			  }
-			else if(0 == UT_strcmp(pszType, "meta_publisher"))
+			else if(0 == strcmp(pszType, "meta_publisher"))
 			  {
 			    fieldType = fd_Field::FD_Meta_Publisher;
 			  }
-			else if(0 == UT_strcmp(pszType, "meta_date"))
+			else if(0 == strcmp(pszType, "meta_date"))
 			  {
 			    fieldType = fd_Field::FD_Meta_Date;
 			  }
-			else if(0 == UT_strcmp(pszType, "meta_type"))
+			else if(0 == strcmp(pszType, "meta_type"))
 			  {
 			    fieldType = fd_Field::FD_Meta_Type;
 			  }
-			else if(0 == UT_strcmp(pszType, "meta_language"))
+			else if(0 == strcmp(pszType, "meta_language"))
 			  {
 			    fieldType = fd_Field::FD_Meta_Language;
 			  }
-			else if(0 == UT_strcmp(pszType, "meta_rights"))
+			else if(0 == strcmp(pszType, "meta_rights"))
 			  {
 			    fieldType = fd_Field::FD_Meta_Rights;
 			  }
-			else if(0 == UT_strcmp(pszType, "meta_keywords"))
+			else if(0 == strcmp(pszType, "meta_keywords"))
 			  {
 			    fieldType = fd_Field::FD_Meta_Keywords;
 			  }
-			else if(0 == UT_strcmp(pszType, "meta_contributor"))
+			else if(0 == strcmp(pszType, "meta_contributor"))
 			  {
 			    fieldType = fd_Field::FD_Meta_Contributor;
 			  }
-			else if(0 == UT_strcmp(pszType, "meta_coverage"))
+			else if(0 == strcmp(pszType, "meta_coverage"))
 			  {
 			    fieldType = fd_Field::FD_Meta_Coverage;
 			  }
-			else if(0 == UT_strcmp(pszType, "meta_description"))
+			else if(0 == strcmp(pszType, "meta_description"))
 			  {
 			    fieldType = fd_Field::FD_Meta_Description;
 			  }
-		        else if (0 == UT_strcmp(pszType, "martin_test"))
+		        else if (0 == strcmp(pszType, "martin_test"))
 		        {
         		    fieldType = fd_Field::FD_MartinTest;
 		        }
@@ -267,7 +267,7 @@ pf_Frag_Object::pf_Frag_Object(pt_PieceTable * pPT,
         		}
 		        break;
     		case 'n':
-				if (0 == UT_strcmp(pszType, "nbsp_count"))
+				if (0 == strcmp(pszType, "nbsp_count"))
 				{
 					fieldType = fd_Field::FD_Doc_NbspCount;
 				}
@@ -279,19 +279,19 @@ pf_Frag_Object::pf_Frag_Object(pt_PieceTable * pPT,
         		}
 				break;
     		case 'p':
-				if (0 == UT_strcmp(pszType, "page_number"))
+				if (0 == strcmp(pszType, "page_number"))
 		        {
         		    fieldType = fd_Field::FD_PageNumber;
 		        }
-		        else if (0 == UT_strcmp(pszType, "page_count"))
+		        else if (0 == strcmp(pszType, "page_count"))
         		{
 		            fieldType = fd_Field::FD_PageCount;
         		}
-				else if (0 == UT_strcmp(pszType, "para_count"))
+				else if (0 == strcmp(pszType, "para_count"))
 				{
 					fieldType = fd_Field::FD_Doc_ParaCount;
 				}
-				else if (0 == UT_strcmp(pszType, "page_ref"))
+				else if (0 == strcmp(pszType, "page_ref"))
 				{
 					fieldType = fd_Field::FD_PageReference;
 				}
@@ -303,37 +303,37 @@ pf_Frag_Object::pf_Frag_Object(pt_PieceTable * pPT,
         		}
         		break;
 		    case 's':
-				if(0 == UT_strcmp(pszType, "sum_rows"))
+				if(0 == strcmp(pszType, "sum_rows"))
 				{
 					fieldType = fd_Field::FD_Table_sum_rows;
 				}
-				if(0 == UT_strcmp(pszType, "sum_cols"))
+				if(0 == strcmp(pszType, "sum_cols"))
 				{
 					fieldType = fd_Field::FD_Table_sum_cols;
 				}
 				break;
     		case 't':
-		        if (0 == UT_strcmp(pszType, "test"))
+		        if (0 == strcmp(pszType, "test"))
         		{
 		            fieldType = fd_Field::FD_Test;
         		}
-		        else if (0 == UT_strcmp(pszType, "time"))
+		        else if (0 == strcmp(pszType, "time"))
         		{
 		            fieldType = fd_Field::FD_Time;
         		}
-				else if (0 == UT_strcmp(pszType, "time_miltime"))
+				else if (0 == strcmp(pszType, "time_miltime"))
 				{
 					fieldType = fd_Field::FD_Time_MilTime;
 				}
-				else if (0 == UT_strcmp(pszType, "time_ampm"))
+				else if (0 == strcmp(pszType, "time_ampm"))
 				{
 					fieldType = fd_Field::FD_Time_AMPM;
 				}
-				else if (0 == UT_strcmp(pszType, "time_zone"))
+				else if (0 == strcmp(pszType, "time_zone"))
 				{
 					fieldType = fd_Field::FD_Time_Zone;
 				}
-				else if (0 == UT_strcmp(pszType, "time_epoch"))
+				else if (0 == strcmp(pszType, "time_epoch"))
 				{
 					fieldType = fd_Field::FD_Time_Epoch;
 				}
@@ -345,7 +345,7 @@ pf_Frag_Object::pf_Frag_Object(pt_PieceTable * pPT,
         		}
         		break;
     		case 'w':
-				if (0 == UT_strcmp(pszType, "word_count"))
+				if (0 == strcmp(pszType, "word_count"))
 				{
 					fieldType = fd_Field::FD_Doc_WordCount;
 				}
@@ -390,7 +390,7 @@ pf_Frag_Object::pf_Frag_Object(pt_PieceTable * pPT,
 			// see bug 6489...
 			UT_ASSERT_NOT_REACHED();
 			BT = po_Bookmark::POBOOKMARK_END;
-		} else if(0 == UT_strcmp(pszType, "end"))
+		} else if(0 == strcmp(pszType, "end"))
 			BT = po_Bookmark::POBOOKMARK_END;
 		else
 			BT = po_Bookmark::POBOOKMARK_START;

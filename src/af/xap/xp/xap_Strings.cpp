@@ -67,7 +67,7 @@ bool XAP_StringSet::getValue(XAP_String_Id id, const char * inEncoding, UT_Strin
 {
 	const char * toTranslate = getValue(id);
 
-	if(!UT_strcmp(m_encoding.c_str(),inEncoding))
+	if(!strcmp(m_encoding.c_str(),inEncoding))
 	{
 		s = toTranslate;
 	}
@@ -97,7 +97,7 @@ bool XAP_StringSet::getValueUTF8(XAP_String_Id id, UT_UTF8String & s) const
 {	
 	const char * toTranslate = getValue(id);
 
-	if(!UT_strcmp(m_encoding.c_str(), "UTF-8"))
+	if(!strcmp(m_encoding.c_str(), "UTF-8"))
 	{
 		s = toTranslate;
 	}

@@ -237,7 +237,7 @@ combo_box_set_active_text (GtkComboBox *combo,
 		gtk_tree_model_get (model, &iter, 
 							0, &value, 
 							-1);
-		if (0 == UT_strcmp (text, value)) {
+		if (0 == strcmp (text, value)) {
 			g_free (value);
 			value = NULL;
 			break;

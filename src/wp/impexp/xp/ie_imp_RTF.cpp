@@ -10227,7 +10227,7 @@ bool IE_Imp_RTF::_appendField (const XML_Char *xmlField, const XML_Char ** pszAt
 		pStyleName = m_styleTable[m_currentRTFState.m_charProps.m_styleNumber];
 	}
 	bool bNoteRef = false;
-	if((UT_strcmp(xmlField,"endnote_ref") == 0) || (UT_strcmp(xmlField,"footnote_ref") == 0))
+	if((strcmp(xmlField,"endnote_ref") == 0) || (strcmp(xmlField,"footnote_ref") == 0))
 	{
 		bNoteRef = true;
 	}
@@ -10783,12 +10783,12 @@ bool IE_Imp_RTF::HandleStyleDefinition(void)
 		{
 			const char * szAtt = pCurStyleVec->getNthItem(j++);
 			attribs[attribsCount++] = szAtt;
-			if( UT_strcmp(szAtt, PT_NAME_ATTRIBUTE_NAME)== 0)
+			if( strcmp(szAtt, PT_NAME_ATTRIBUTE_NAME)== 0)
 			{
 				szName = pCurStyleVec->getNthItem(j++);
 				attribs[attribsCount++] = szName;
 			}
-			else if( UT_strcmp(szAtt, PT_BASEDON_ATTRIBUTE_NAME)== 0)
+			else if( strcmp(szAtt, PT_BASEDON_ATTRIBUTE_NAME)== 0)
 			{
 				const char * szNext = pCurStyleVec->getNthItem(j++);
 				if(NULL == szNext)
@@ -10806,7 +10806,7 @@ bool IE_Imp_RTF::HandleStyleDefinition(void)
 					UT_return_val_if_fail( attribsCount < PT_MAX_ATTRIBUTES * 2,false );
 				}
 			}
-			else if( UT_strcmp(szAtt, PT_FOLLOWEDBY_ATTRIBUTE_NAME)== 0)
+			else if( strcmp(szAtt, PT_FOLLOWEDBY_ATTRIBUTE_NAME)== 0)
 			{
 				const char * szNext = pCurStyleVec->getNthItem(j++);
 				if(NULL == szNext)

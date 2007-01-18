@@ -368,7 +368,7 @@ static SectionClass s_class_query (const char * class_value)
 	SectionClass sc = sc_other;
 
 	for (int i = 0; i < static_cast<int>(sc_other); i++)
-		if (UT_strcmp (class_value, s_section_classes[i]) == 0)
+		if (strcmp (class_value, s_section_classes[i]) == 0)
 			{
 				sc = static_cast<SectionClass>(i);
 				break;
@@ -1594,7 +1594,7 @@ void IE_Imp_XHTML::endElement(const XML_Char *name)
 	
 	UT_uint32 tokenIndex;
 	tokenIndex = _mapNameToToken (name, s_Tokens, TokenTableSize);
-	//if(!UT_strcmp(name == "html")) UT_DEBUGMSG(("tokenindex : %d\n", tokenIndex));
+	//if(!strcmp(name == "html")) UT_DEBUGMSG(("tokenindex : %d\n", tokenIndex));
 
 	if(m_bInMath && (tokenIndex != TT_MATH))
 	{
@@ -2217,7 +2217,7 @@ bool IE_Imp_XHTML::appendFmt(const UT_GenericVector<XML_Char*>* pVecAttributes)
 			{
 				XML_Char * pszProp = pVecAttributes->getNthItem(0);
 				XML_Char * pszVal = pVecAttributes->getNthItem(1);
-				if(UT_strcmp(pszProp,"props") == 0 && strlen(pszVal) == 0)
+				if(strcmp(pszProp,"props") == 0 && strlen(pszVal) == 0)
 				{
 					const_cast<UT_GenericVector<XML_Char*>*>(pVecAttributes)->deleteNthItem(0);
 					const_cast<UT_GenericVector<XML_Char*>*>(pVecAttributes)->deleteNthItem(0);
@@ -2476,7 +2476,7 @@ static void s_props_append (UT_UTF8String & props, UT_uint32 css_mask,
 
 	if (css_mask & CSS_MASK_INLINE)
 		{
-			if (UT_strcmp (name, "font-weight") == 0)
+			if (strcmp (name, "font-weight") == 0)
 				switch (*value)
 					{
 					case '1': case '2': case '3': case '4': case '5': case 'n': case 'l':
@@ -2494,17 +2494,17 @@ static void s_props_append (UT_UTF8String & props, UT_uint32 css_mask,
 					default: // inherit
 						break;
 					}
-			else if (UT_strcmp (name, "font-style") == 0)
+			else if (strcmp (name, "font-style") == 0)
 				{
-					if (UT_strcmp (value, "normal") == 0)
+					if (strcmp (value, "normal") == 0)
 						{
 							if (props.byteLength ()) props += "; ";
 							props += name;
 							props += ":";
 							props += "normal";
 						}
-					else if ((UT_strcmp (value, "italic") == 0) ||
-							 (UT_strcmp (value, "oblique") == 0))
+					else if ((strcmp (value, "italic") == 0) ||
+							 (strcmp (value, "oblique") == 0))
 						{
 							if (props.byteLength ()) props += "; ";
 							props += name;
@@ -2513,19 +2513,19 @@ static void s_props_append (UT_UTF8String & props, UT_uint32 css_mask,
 						}
 					// else inherit
 				}
-			else if ((UT_strcmp (name, "font-size")    == 0) ||
-					 (UT_strcmp (name, "font-stretch") == 0) ||
-					 (UT_strcmp (name, "font-variant") == 0))
+			else if ((strcmp (name, "font-size")    == 0) ||
+					 (strcmp (name, "font-stretch") == 0) ||
+					 (strcmp (name, "font-variant") == 0))
 				{
 					verbatim = value;
 				}
-			else if (UT_strcmp (name, "font-family") == 0)
+			else if (strcmp (name, "font-family") == 0)
 				{
-					if ((UT_strcmp (value, "serif")      == 0) ||
-						(UT_strcmp (value, "sans-serif") == 0) ||
-						(UT_strcmp (value, "cursive")    == 0) ||
-						(UT_strcmp (value, "fantasy")    == 0) ||
-						(UT_strcmp (value, "monospace")  == 0))
+					if ((strcmp (value, "serif")      == 0) ||
+						(strcmp (value, "sans-serif") == 0) ||
+						(strcmp (value, "cursive")    == 0) ||
+						(strcmp (value, "fantasy")    == 0) ||
+						(strcmp (value, "monospace")  == 0))
 						{
 							verbatim = value;
 						}
@@ -2548,7 +2548,7 @@ static void s_props_append (UT_UTF8String & props, UT_uint32 css_mask,
 								}
 						}
 				}
-			else if (UT_strcmp (name, "text-decoration") == 0)
+			else if (strcmp (name, "text-decoration") == 0)
 				{
 					bool bInherit     = (strstr (value, "inherit")      != NULL);
 					bool bUnderline   = (strstr (value, "underline")    != NULL);
@@ -2581,32 +2581,32 @@ static void s_props_append (UT_UTF8String & props, UT_uint32 css_mask,
 							props += "none";
 						}
 				}
-			else if (UT_strcmp (name, "vertical-align") == 0)
+			else if (strcmp (name, "vertical-align") == 0)
 				{
 					/* AbiWord uses "text-position" for CSS's "vertical-align" in the case
 					 * of super-/subscripts.
 					 */
-					if (UT_strcmp (value, "super") == 0)
+					if (strcmp (value, "super") == 0)
 						{
 							static const char * text_position = "text-position";
 							name = text_position;
 							verbatim = "superscript";
 						}
-					if (UT_strcmp (value, "sub") == 0)
+					if (strcmp (value, "sub") == 0)
 						{
 							static const char * text_position = "text-position";
 							name = text_position;
 							verbatim = "subscript";
 						}
 				}
-			else if ((UT_strcmp (name, "color") == 0) || (UT_strcmp (name, "background") == 0))
+			else if ((strcmp (name, "color") == 0) || (strcmp (name, "background") == 0))
 				{
 					/* AbiWord uses rgb hex-sequence w/o the # prefix used by CSS
 					 * and uses "bgcolor" instead of background
 					 */
 					static const char * bgcolor = "bgcolor";
 
-					if (UT_strcmp (name, "background") == 0) name = bgcolor;
+					if (strcmp (name, "background") == 0) name = bgcolor;
 
 					if (*value == '#')
 						{
@@ -2681,20 +2681,20 @@ static void s_props_append (UT_UTF8String & props, UT_uint32 css_mask,
 		{
 			/* potentially dangerous; TODO: check list-state??
 			 */
-			if ((UT_strcmp (name, "margin-left")   == 0) ||
-				(UT_strcmp (name, "margin-right")  == 0) ||
-				(UT_strcmp (name, "text-align")    == 0) ||
-				(UT_strcmp (name, "text-indent")   == 0) ||
-				(UT_strcmp (name, "orphans")       == 0) ||
-				(UT_strcmp (name, "widows")        == 0))
+			if ((strcmp (name, "margin-left")   == 0) ||
+				(strcmp (name, "margin-right")  == 0) ||
+				(strcmp (name, "text-align")    == 0) ||
+				(strcmp (name, "text-indent")   == 0) ||
+				(strcmp (name, "orphans")       == 0) ||
+				(strcmp (name, "widows")        == 0))
 				{
 					verbatim = value;
 				}
 		}
 	if (css_mask & CSS_MASK_IMAGE)
 		{
-			if ((UT_strcmp (name, "width")  == 0) ||
-				(UT_strcmp (name, "height") == 0))
+			if ((strcmp (name, "width")  == 0) ||
+				(strcmp (name, "height") == 0))
 				{
 					UT_Dimension units = UT_determineDimension (value, DIM_PX);
 					double d = UT_convertDimensionless (value);
@@ -2717,9 +2717,9 @@ static void s_props_append (UT_UTF8String & props, UT_uint32 css_mask,
 		}
 	if (css_mask & CSS_MASK_BODY)
 		{
-			if ((UT_strcmp (name, "margin-bottom")    == 0) ||
-				(UT_strcmp (name, "margin-top")       == 0) ||
-				(UT_strcmp (name, "background-color") == 0))
+			if ((strcmp (name, "margin-bottom")    == 0) ||
+				(strcmp (name, "margin-top")       == 0) ||
+				(strcmp (name, "background-color") == 0))
 				{
 					verbatim = value;
 				}

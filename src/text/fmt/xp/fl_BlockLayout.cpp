@@ -129,7 +129,7 @@ fl_BlockLayout::_getSpellChecker (UT_uint32 blockPos)
 		return checker;
 	}
 	
-	if(!szPrevLang[0] || UT_strcmp(pszLang,szPrevLang))
+	if(!szPrevLang[0] || strcmp(pszLang,szPrevLang))
 	{
 		checker = SpellManager::instance().requestDictionary(pszLang);
 
@@ -722,7 +722,7 @@ void fl_BlockLayout::_lookupProperties(const PP_AttrProp* pBlockAP)
 		const char* pszKeepTogether = getProperty("keep-together");
 		if (pszKeepTogether)
 		{
-			if (0 == UT_strcmp("yes", pszKeepTogether))
+			if (0 == strcmp("yes", pszKeepTogether))
 			{
 				m_bKeepTogether = true;
 			}
@@ -736,7 +736,7 @@ void fl_BlockLayout::_lookupProperties(const PP_AttrProp* pBlockAP)
 		const char* pszKeepWithNext = getProperty("keep-with-next");
 		if (pszKeepWithNext)
 		{
-			if (0 == UT_strcmp("yes", pszKeepWithNext))
+			if (0 == strcmp("yes", pszKeepWithNext))
 			{
 				m_bKeepWithNext = true;
 			}
@@ -796,7 +796,7 @@ void fl_BlockLayout::_lookupProperties(const PP_AttrProp* pBlockAP)
 
 		xxx_UT_DEBUGMSG(("block: _lookupProperties, text-align=%s, current %d\n", pszAlign, m_pAlignment?m_pAlignment->getType():0xffff));
 
-		if (0 == UT_strcmp(pszAlign, "left"))
+		if (0 == strcmp(pszAlign, "left"))
 		{
 			if(!m_pAlignment || m_pAlignment->getType() != FB_ALIGNMENT_LEFT)
 			{
@@ -804,7 +804,7 @@ void fl_BlockLayout::_lookupProperties(const PP_AttrProp* pBlockAP)
 				m_pAlignment = new fb_Alignment_left;
 			}
 		}
-		else if (0 == UT_strcmp(pszAlign, "center"))
+		else if (0 == strcmp(pszAlign, "center"))
 		{
 			if(!m_pAlignment || m_pAlignment->getType() != FB_ALIGNMENT_CENTER)
 			{
@@ -812,7 +812,7 @@ void fl_BlockLayout::_lookupProperties(const PP_AttrProp* pBlockAP)
 				m_pAlignment = new fb_Alignment_center;
 			}
 		}
-		else if (0 == UT_strcmp(pszAlign, "right"))
+		else if (0 == strcmp(pszAlign, "right"))
 		{
 			if(!m_pAlignment || m_pAlignment->getType() != FB_ALIGNMENT_RIGHT)
 			{
@@ -820,7 +820,7 @@ void fl_BlockLayout::_lookupProperties(const PP_AttrProp* pBlockAP)
 				m_pAlignment = new fb_Alignment_right;
 			}
 		}
-		else if (0 == UT_strcmp(pszAlign, "justify"))
+		else if (0 == strcmp(pszAlign, "justify"))
 		{
 			if(!m_pAlignment || m_pAlignment->getType() != FB_ALIGNMENT_JUSTIFY)
 			{
@@ -5173,7 +5173,7 @@ bool	fl_BlockLayout::_doInsertFieldRun(PT_BlockOffset blockOffset, const PX_Chan
 			UT_ASSERT (pszType); 	
 			pNewRun = new fp_FieldRun(this, blockOffset,1);
 		}
-	else if(UT_strcmp(pszType, "list_label") == 0)
+	else if(strcmp(pszType, "list_label") == 0)
 	{
 		if(!isContainedByTOC())
 		{
@@ -5194,7 +5194,7 @@ bool	fl_BlockLayout::_doInsertFieldRun(PT_BlockOffset blockOffset, const PX_Chan
 			return true;
 		}
 	}
-	else if(UT_strcmp(pszType, "footnote_ref") == 0)
+	else if(strcmp(pszType, "footnote_ref") == 0)
 	{
 		if(isContainedByTOC())
 		{
@@ -5206,7 +5206,7 @@ bool	fl_BlockLayout::_doInsertFieldRun(PT_BlockOffset blockOffset, const PX_Chan
 		xxx_UT_DEBUGMSG(("Footnoet ref run created at %d \n",blockOffset));
 		pNewRun = new fp_FieldFootnoteRefRun(this,   blockOffset, 1);
 	}
-	else if(UT_strcmp(pszType, "footnote_anchor") == 0)
+	else if(strcmp(pszType, "footnote_anchor") == 0)
 	{
 		if(isContainedByTOC())
 		{
@@ -5216,7 +5216,7 @@ bool	fl_BlockLayout::_doInsertFieldRun(PT_BlockOffset blockOffset, const PX_Chan
 		}
 		pNewRun = new fp_FieldFootnoteAnchorRun(this,   blockOffset, 1);
 	}
-	else if(UT_strcmp(pszType, "endnote_ref") == 0)
+	else if(strcmp(pszType, "endnote_ref") == 0)
 	{
 		if(isContainedByTOC())
 		{
@@ -5228,7 +5228,7 @@ bool	fl_BlockLayout::_doInsertFieldRun(PT_BlockOffset blockOffset, const PX_Chan
 		xxx_UT_DEBUGMSG(("Endnote ref run created at %d \n",blockOffset));
 		pNewRun = new fp_FieldEndnoteRefRun(this,   blockOffset, 1);
 	}
-	else if(UT_strcmp(pszType, "endnote_anchor") == 0)
+	else if(strcmp(pszType, "endnote_anchor") == 0)
 	{
 		if(isContainedByTOC())
 		{
@@ -5238,183 +5238,183 @@ bool	fl_BlockLayout::_doInsertFieldRun(PT_BlockOffset blockOffset, const PX_Chan
 		}
 		pNewRun = new fp_FieldEndnoteAnchorRun(this,   blockOffset, 1);
 	}
-	else if(UT_strcmp(pszType, "time") == 0)
+	else if(strcmp(pszType, "time") == 0)
 	{
 		pNewRun = new fp_FieldTimeRun(this,   blockOffset, 1);
 	}
-	else if(UT_strcmp(pszType, "page_number") == 0)
+	else if(strcmp(pszType, "page_number") == 0)
 	{
 		pNewRun = new fp_FieldPageNumberRun(this,   blockOffset, 1);
 	}
-	else if(UT_strcmp(pszType, "page_ref") == 0)
+	else if(strcmp(pszType, "page_ref") == 0)
 	{
 		pNewRun = new fp_FieldPageReferenceRun(this,   blockOffset, 1);
 	}
-	else if(UT_strcmp(pszType, "page_count") == 0)
+	else if(strcmp(pszType, "page_count") == 0)
 	{
 		pNewRun = new fp_FieldPageCountRun(this,   blockOffset, 1);
 	}
-	else if(UT_strcmp(pszType, "date") == 0)
+	else if(strcmp(pszType, "date") == 0)
 	{
 		pNewRun = new fp_FieldDateRun(this,   blockOffset, 1);
 	}
-	else if(UT_strcmp(pszType, "date_mmddyy") == 0)
+	else if(strcmp(pszType, "date_mmddyy") == 0)
 	{
 		pNewRun = new fp_FieldMMDDYYRun(this,   blockOffset, 1);
 	}
-	else if(UT_strcmp(pszType, "date_ddmmyy") == 0)
+	else if(strcmp(pszType, "date_ddmmyy") == 0)
 	{
 		pNewRun = new fp_FieldDDMMYYRun(this,   blockOffset, 1);
 	}
-	else if(UT_strcmp(pszType, "date_mdy") == 0)
+	else if(strcmp(pszType, "date_mdy") == 0)
 	{
 		pNewRun = new fp_FieldMonthDayYearRun(this,   blockOffset, 1);
 	}
-	else if(UT_strcmp(pszType, "date_mthdy") == 0)
+	else if(strcmp(pszType, "date_mthdy") == 0)
 	{
 		pNewRun = new fp_FieldMthDayYearRun(this,   blockOffset, 1);
 	}
-	else if(UT_strcmp(pszType, "date_dfl") == 0)
+	else if(strcmp(pszType, "date_dfl") == 0)
 	{
 		pNewRun = new fp_FieldDefaultDateRun(this,   blockOffset, 1);
 	}
-	else if(UT_strcmp(pszType, "date_ntdfl") == 0)
+	else if(strcmp(pszType, "date_ntdfl") == 0)
 	{
 		pNewRun = new fp_FieldDefaultDateNoTimeRun(this,   blockOffset, 1);
 	}
-	else if(UT_strcmp(pszType, "date_wkday") == 0)
+	else if(strcmp(pszType, "date_wkday") == 0)
 	{
 		pNewRun = new fp_FieldWkdayRun(this,   blockOffset, 1);
 	}
-	else if(UT_strcmp(pszType, "date_doy") == 0)
+	else if(strcmp(pszType, "date_doy") == 0)
 	{
 		pNewRun = new fp_FieldDOYRun(this,   blockOffset, 1);
 	}
-	else if(UT_strcmp(pszType, "time_miltime") == 0)
+	else if(strcmp(pszType, "time_miltime") == 0)
 	{
 		pNewRun = new fp_FieldMilTimeRun(this,   blockOffset, 1);
 	}
-	else if(UT_strcmp(pszType, "time_ampm") == 0)
+	else if(strcmp(pszType, "time_ampm") == 0)
 	{
 		pNewRun = new fp_FieldAMPMRun(this,   blockOffset, 1);
 	}
-	else if(UT_strcmp(pszType, "time_zone") == 0)
+	else if(strcmp(pszType, "time_zone") == 0)
 	{
 		pNewRun = new fp_FieldTimeZoneRun(this,   blockOffset, 1);
 	}
-	else if(UT_strcmp(pszType, "time_epoch") == 0)
+	else if(strcmp(pszType, "time_epoch") == 0)
 	{
 		pNewRun = new fp_FieldTimeEpochRun(this,   blockOffset, 1);
 	}
-	else if(UT_strcmp(pszType, "datetime_custom") == 0)
+	else if(strcmp(pszType, "datetime_custom") == 0)
 	{
 		pNewRun = new fp_FieldDateTimeCustomRun(this,   blockOffset, 1);
 	}
-	else if(UT_strcmp(pszType, "word_count") == 0)
+	else if(strcmp(pszType, "word_count") == 0)
 	{
 		pNewRun = new fp_FieldWordCountRun(this,   blockOffset, 1);
 	}
-	else if(UT_strcmp(pszType, "char_count") == 0)
+	else if(strcmp(pszType, "char_count") == 0)
 	{
 		pNewRun = new fp_FieldCharCountRun(this,   blockOffset, 1);
 	}
-	else if(UT_strcmp(pszType, "line_count") == 0)
+	else if(strcmp(pszType, "line_count") == 0)
 	{
 		pNewRun = new fp_FieldLineCountRun(this,   blockOffset, 1);
 	}
-	else if(UT_strcmp(pszType, "para_count") == 0)
+	else if(strcmp(pszType, "para_count") == 0)
 	{
 		pNewRun = new fp_FieldParaCountRun(this,   blockOffset, 1);
 	}
-	else if(UT_strcmp(pszType, "nbsp_count") == 0)
+	else if(strcmp(pszType, "nbsp_count") == 0)
 	{
 		pNewRun = new fp_FieldNonBlankCharCountRun(this,   blockOffset, 1);
 	}
-	else if(UT_strcmp(pszType, "file_name") == 0)
+	else if(strcmp(pszType, "file_name") == 0)
 	{
 		pNewRun = new fp_FieldFileNameRun(this,   blockOffset, 1);
 	}
-	else if(UT_strcmp(pszType, "app_ver") == 0)
+	else if(strcmp(pszType, "app_ver") == 0)
 	{
 		pNewRun = new fp_FieldBuildVersionRun(this,   blockOffset, 1);
 	}
-	else if(UT_strcmp(pszType, "app_id") == 0)
+	else if(strcmp(pszType, "app_id") == 0)
 	{
 		pNewRun = new fp_FieldBuildIdRun(this,   blockOffset, 1);
 	}
-	else if(UT_strcmp(pszType, "app_options") == 0)
+	else if(strcmp(pszType, "app_options") == 0)
 	  {
 		pNewRun = new fp_FieldBuildOptionsRun(this,   blockOffset, 1);
 	  }
-	else if(UT_strcmp(pszType, "app_target") == 0)
+	else if(strcmp(pszType, "app_target") == 0)
 	  {
 		pNewRun = new fp_FieldBuildTargetRun(this,   blockOffset, 1);
 	  }
-	else if(UT_strcmp(pszType, "app_compiledate") == 0)
+	else if(strcmp(pszType, "app_compiledate") == 0)
 	  {
 		pNewRun = new fp_FieldBuildCompileDateRun(this,   blockOffset, 1);
 	  }
-	else if(UT_strcmp(pszType, "app_compiletime") == 0)
+	else if(strcmp(pszType, "app_compiletime") == 0)
 	  {
 		pNewRun = new fp_FieldBuildCompileTimeRun(this,   blockOffset, 1);
 	  }
-	else if(UT_strcmp(pszType, "mail_merge") == 0)
+	else if(strcmp(pszType, "mail_merge") == 0)
 	  {
 	    pNewRun = new fp_FieldMailMergeRun(this,   blockOffset, 1);
 	  }
-	else if(UT_strcmp(pszType, "meta_title") == 0)
+	else if(strcmp(pszType, "meta_title") == 0)
 	  {
 	    pNewRun = new fp_FieldMetaTitleRun(this,   blockOffset, 1);
 	  }
-	else if(UT_strcmp(pszType, "meta_creator") == 0)
+	else if(strcmp(pszType, "meta_creator") == 0)
 	  {
 	    pNewRun = new fp_FieldMetaCreatorRun(this,   blockOffset, 1);
 	  }
-	else if(UT_strcmp(pszType, "meta_subject") == 0)
+	else if(strcmp(pszType, "meta_subject") == 0)
 	  {
 	    pNewRun = new fp_FieldMetaSubjectRun(this,   blockOffset, 1);
 	  }
-	else if(UT_strcmp(pszType, "meta_publisher") == 0)
+	else if(strcmp(pszType, "meta_publisher") == 0)
 	  {
 	    pNewRun = new fp_FieldMetaPublisherRun(this,   blockOffset, 1);
 	  }
-	else if(UT_strcmp(pszType, "meta_contributor") == 0)
+	else if(strcmp(pszType, "meta_contributor") == 0)
 	  {
 	    pNewRun = new fp_FieldMetaContributorRun(this,   blockOffset, 1);
 	  }
-	else if(UT_strcmp(pszType, "meta_date") == 0)
+	else if(strcmp(pszType, "meta_date") == 0)
 	  {
 	    pNewRun = new fp_FieldMetaDateRun(this,   blockOffset, 1);
 	  }
-	else if(UT_strcmp(pszType, "meta_type") == 0)
+	else if(strcmp(pszType, "meta_type") == 0)
 	  {
 	    pNewRun = new fp_FieldMetaTypeRun(this,   blockOffset, 1);
 	  }
-	else if(UT_strcmp(pszType, "meta_language") == 0)
+	else if(strcmp(pszType, "meta_language") == 0)
 	  {
 	    pNewRun = new fp_FieldMetaLanguageRun(this,   blockOffset, 1);
 	  }
-	else if(UT_strcmp(pszType, "meta_coverage") == 0)
+	else if(strcmp(pszType, "meta_coverage") == 0)
 	  {
 	    pNewRun = new fp_FieldMetaCoverageRun(this,   blockOffset, 1);
 	  }
-	else if(UT_strcmp(pszType, "meta_rights") == 0)
+	else if(strcmp(pszType, "meta_rights") == 0)
 	  {
 	    pNewRun = new fp_FieldMetaRightsRun(this,   blockOffset, 1);
 	  }
-	else if(UT_strcmp(pszType, "meta_keywords") == 0)
+	else if(strcmp(pszType, "meta_keywords") == 0)
 	  {
 	    pNewRun = new fp_FieldMetaKeywordsRun(this,   blockOffset, 1);
 	  }
-	else if(UT_strcmp(pszType, "meta_description") == 0)
+	else if(strcmp(pszType, "meta_description") == 0)
 	  {
 	    pNewRun = new fp_FieldMetaDescriptionRun(this,   blockOffset, 1);
 	  }
-	else if(UT_strcmp(pszType, "sum_rows") == 0)
+	else if(strcmp(pszType, "sum_rows") == 0)
 	  {
 	    pNewRun = new fp_FieldTableSumRows(this,   blockOffset, 1);
 	  }
-	else if(UT_strcmp(pszType, "sum_cols") == 0)
+	else if(strcmp(pszType, "sum_cols") == 0)
 	  {
 	    pNewRun = new fp_FieldTableSumCols(this,   blockOffset, 1);
 	  }
@@ -7398,21 +7398,21 @@ bool fl_BlockLayout::doclistener_insertSection(const PX_ChangeRecord_Strux * pcr
 			HdrFtrType hfType = FL_HDRFTR_NONE;
 			if (pszSectionType && *pszSectionType)
 			{
-				if(UT_strcmp(pszSectionType,"header") == 0)
+				if(strcmp(pszSectionType,"header") == 0)
 					hfType = FL_HDRFTR_HEADER;
-				else if (UT_strcmp(pszSectionType,"header-even") == 0)
+				else if (strcmp(pszSectionType,"header-even") == 0)
 					hfType = FL_HDRFTR_HEADER_EVEN;
-				else if (UT_strcmp(pszSectionType,"header-first") == 0)
+				else if (strcmp(pszSectionType,"header-first") == 0)
 					hfType = FL_HDRFTR_HEADER_FIRST;
-				else if (UT_strcmp(pszSectionType,"header-last") == 0)
+				else if (strcmp(pszSectionType,"header-last") == 0)
 					hfType = FL_HDRFTR_HEADER_LAST;
-				else if (UT_strcmp(pszSectionType,"footer") == 0)
+				else if (strcmp(pszSectionType,"footer") == 0)
 					hfType = FL_HDRFTR_FOOTER;
-				else if (UT_strcmp(pszSectionType,"footer-even") == 0)
+				else if (strcmp(pszSectionType,"footer-even") == 0)
 					hfType = FL_HDRFTR_FOOTER_EVEN;
-				else if (UT_strcmp(pszSectionType,"footer-first") == 0)
+				else if (strcmp(pszSectionType,"footer-first") == 0)
 					hfType = FL_HDRFTR_FOOTER_FIRST;
-				else if (UT_strcmp(pszSectionType,"footer-last") == 0)
+				else if (strcmp(pszSectionType,"footer-last") == 0)
 					hfType = FL_HDRFTR_FOOTER_LAST;
 
 				if(hfType != FL_HDRFTR_NONE)

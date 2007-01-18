@@ -2112,7 +2112,7 @@ const char* GR_UnixPangoGraphics::findNearestFont(const char* pszFontFamily,
 
 	const char * cs = s.c_str() + s.length() - 2;
 
-	if(!UT_strcmp(cs, "pt"))
+	if(!strcmp(cs, "pt"))
 	   s[s.length()-2] = 0;
 
 	xxx_UT_DEBUGMSG(("---FinfFont size %s \n",pszFontSize));

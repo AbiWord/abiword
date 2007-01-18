@@ -374,7 +374,7 @@ UT_Error IE_ImpGraphic::constructImporterWithDescription(const char * szDesc, IE
 
 		if (s->getDlgLabels(&szDescription, &szSuffixList, &ft))
 			if (szDescription)
-				if (UT_strcmp (szDescription, szDesc) == 0)
+				if (strcmp (szDescription, szDesc) == 0)
 				{
 					err = s->constructImporter(ppieg);
 					break;

@@ -1377,11 +1377,11 @@ bool PP_AttrProp::isEquivalent(const PP_AttrProp * pAP2) const
 			return false;
 
 		// ignore property attribute
-		if(0 == UT_strcmp(pValue, PT_PROPS_ATTRIBUTE_NAME))
+		if(0 == strcmp(pValue, PT_PROPS_ATTRIBUTE_NAME))
 			continue;
 
 		// handle revision attribute correctly
-		if(0 == UT_strcmp(pValue, PT_REVISION_ATTRIBUTE_NAME))
+		if(0 == strcmp(pValue, PT_REVISION_ATTRIBUTE_NAME))
 		{
 			// requires special treatment
 			PP_RevisionAttr r1(pValue);
@@ -1392,7 +1392,7 @@ bool PP_AttrProp::isEquivalent(const PP_AttrProp * pAP2) const
 				return false;
 			}
 		}
-		else if(0 != UT_strcmp(pValue,pValue2))
+		else if(0 != strcmp(pValue,pValue2))
 			return false;
 	}
 
@@ -1403,7 +1403,7 @@ bool PP_AttrProp::isEquivalent(const PP_AttrProp * pAP2) const
 		if(!pAP2->getProperty(pName,pValue2))
 			return false;
 
-		if(0 != UT_strcmp(pValue,pValue2))
+		if(0 != strcmp(pValue,pValue2))
 			return false;
 	}
 
@@ -1453,11 +1453,11 @@ bool PP_AttrProp::isEquivalent(const XML_Char ** attrs, const XML_Char ** props)
 			return false;
 
 		// ignore property attribute
-		if(0 == UT_strcmp(pValue, PT_PROPS_ATTRIBUTE_NAME))
+		if(0 == strcmp(pValue, PT_PROPS_ATTRIBUTE_NAME))
 			continue;
 
 		// handle revision attribute correctly
-		if(0 == UT_strcmp(pValue, PT_REVISION_ATTRIBUTE_NAME))
+		if(0 == strcmp(pValue, PT_REVISION_ATTRIBUTE_NAME))
 		{
 			// requires special treatment
 			PP_RevisionAttr r1(pValue);
@@ -1468,7 +1468,7 @@ bool PP_AttrProp::isEquivalent(const XML_Char ** attrs, const XML_Char ** props)
 				return false;
 			}
 		}
-		else if(0 != UT_strcmp(pValue,pValue2))
+		else if(0 != strcmp(pValue,pValue2))
 			return false;
 	}
 
@@ -1480,7 +1480,7 @@ bool PP_AttrProp::isEquivalent(const XML_Char ** attrs, const XML_Char ** props)
 		if(!getProperty(pName,pValue2))
 			return false;
 
-		if(0 != UT_strcmp(pValue,pValue2))
+		if(0 != strcmp(pValue,pValue2))
 			return false;
 	}
 
@@ -1502,7 +1502,7 @@ bool PP_AttrProp::explodeStyle(const PD_Document * pDoc, bool bOverwrite)
 	{
 		PD_Style * pStyle = NULL;
 
-        if(pszStyle && (UT_strcmp(pszStyle, "None") != 0) && pDoc->getStyle(pszStyle,&pStyle))
+        if(pszStyle && (strcmp(pszStyle, "None") != 0) && pDoc->getStyle(pszStyle,&pStyle))
         {
 			UT_Vector vAttrs;
 			UT_Vector vProps;
@@ -1529,11 +1529,11 @@ bool PP_AttrProp::explodeStyle(const PD_Document * pDoc, bool bOverwrite)
 			for(i = 0; i < vAttrs.getItemCount(); i += 2)
 			{
 				const XML_Char * pName = (const XML_Char *)vAttrs.getNthItem(i);
-				if(!pName || !UT_strcmp(pName, "type")
-				          || !UT_strcmp(pName, "name")
-				          || !UT_strcmp(pName, "basedon")
-				          || !UT_strcmp(pName, "followedby")
- 				          || !UT_strcmp(pName, "props"))
+				if(!pName || !strcmp(pName, "type")
+				          || !strcmp(pName, "name")
+				          || !strcmp(pName, "basedon")
+				          || !strcmp(pName, "followedby")
+ 				          || !strcmp(pName, "props"))
 				{
 					continue;
 				}

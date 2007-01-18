@@ -524,7 +524,7 @@ void fg_FillType::setColor(const char * pszColor)
 {
 	if(pszColor)
 	{
-		if(UT_strcmp(pszColor,"transparent") == 0)
+		if(strcmp(pszColor,"transparent") == 0)
 		{
 			if(!m_bTransColorSet)
 			{
@@ -590,7 +590,7 @@ void fg_FillType::setTransColor(const char * pszColor)
 {
 	if(pszColor)
 	{
-		if(UT_strcmp(pszColor,"transparent") == 0)
+		if(strcmp(pszColor,"transparent") == 0)
 		{
 			if(!m_bColorSet)
 			{

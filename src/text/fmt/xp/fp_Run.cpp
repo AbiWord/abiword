@@ -415,7 +415,7 @@ void fp_Run::lookupProperties(GR_Graphics * pG)
 	const XML_Char *pszDisplay = PP_evalProperty("display",pSpanAP,pBlockAP,
 												 pSectionAP, pDoc, true);
 
-	if(pszDisplay && !UT_strcmp(pszDisplay,"none"))
+	if(pszDisplay && !strcmp(pszDisplay,"none"))
 	{
 		if(m_eVisibility == FP_VISIBLE)
 			setVisibility(FP_HIDDEN_TEXT);
@@ -1897,23 +1897,23 @@ void fp_TabRun::_lookupProperties(const PP_AttrProp * pSpanAP,
 
 	while (q)
 	{
-		if (0 == UT_strcmp(q, "underline"))
+		if (0 == strcmp(q, "underline"))
 		{
 			_orDecorations(TEXT_DECOR_UNDERLINE);
 		}
-		else if (0 == UT_strcmp(q, "overline"))
+		else if (0 == strcmp(q, "overline"))
 		{
 			_orDecorations(TEXT_DECOR_OVERLINE);
 		}
-		else if (0 == UT_strcmp(q, "line-through"))
+		else if (0 == strcmp(q, "line-through"))
 		{
 			_orDecorations(TEXT_DECOR_LINETHROUGH);
 		}
-		else if (0 == UT_strcmp(q, "topline"))
+		else if (0 == strcmp(q, "topline"))
 		{
 			_orDecorations(TEXT_DECOR_TOPLINE);
 		}
-		else if (0 == UT_strcmp(q, "bottomline"))
+		else if (0 == strcmp(q, "bottomline"))
 		{
 			_orDecorations(TEXT_DECOR_BOTTOMLINE);
 		}
@@ -3897,13 +3897,13 @@ void fp_FieldRun::_lookupProperties(const PP_AttrProp * pSpanAP,
 // with lists. I think this is a good solution for now. However it does mean
 // field-color of "ffffff", pure white is actually transparent.
 //
-	if(pszFieldColor && UT_strcmp(pszFieldColor,"transparent") != 0 && UT_strcmp(pszFieldColor,"ffffff" ) != 0 && pG->queryProperties(GR_Graphics::DGP_SCREEN))
+	if(pszFieldColor && strcmp(pszFieldColor,"transparent") != 0 && strcmp(pszFieldColor,"ffffff" ) != 0 && pG->queryProperties(GR_Graphics::DGP_SCREEN))
 	{
 		UT_RGBColor r;
 		UT_parseColor(pszFieldColor, r);
 		_setColorHL(r);
 	} 
-	else if (pszBGColor && UT_strcmp(pszFieldColor,"transparent") != 0)
+	else if (pszBGColor && strcmp(pszFieldColor,"transparent") != 0)
 	{
 		UT_RGBColor r;
 		UT_parseColor(pszBGColor, r);
@@ -3966,11 +3966,11 @@ void fp_FieldRun::_lookupProperties(const PP_AttrProp * pSpanAP,
 
 	const XML_Char * pszPosition = PP_evalProperty("text-position",pSpanAP,pBlockAP,pSectionAP, pDoc, true);
 
-	if (0 == UT_strcmp(pszPosition, "superscript"))
+	if (0 == strcmp(pszPosition, "superscript"))
 	{
 		m_fPosition = TEXT_POSITION_SUPERSCRIPT;
 	}
-	else if (0 == UT_strcmp(pszPosition, "subscript"))
+	else if (0 == strcmp(pszPosition, "subscript"))
 	{
 		m_fPosition = TEXT_POSITION_SUBSCRIPT;
 	}
@@ -3994,23 +3994,23 @@ void fp_FieldRun::_lookupProperties(const PP_AttrProp * pSpanAP,
 
 	while (q)
 	{
-		if (0 == UT_strcmp(q, "underline"))
+		if (0 == strcmp(q, "underline"))
 		{
 			_orDecorations(TEXT_DECOR_UNDERLINE);
 		}
-		else if (0 == UT_strcmp(q, "overline"))
+		else if (0 == strcmp(q, "overline"))
 		{
 			_orDecorations(TEXT_DECOR_OVERLINE);
 		}
-		else if (0 == UT_strcmp(q, "line-through"))
+		else if (0 == strcmp(q, "line-through"))
 		{
 			_orDecorations(TEXT_DECOR_LINETHROUGH);
 		}
-		else if (0 == UT_strcmp(q, "topline"))
+		else if (0 == strcmp(q, "topline"))
 		{
 			_orDecorations(TEXT_DECOR_TOPLINE);
 		}
-		else if (0 == UT_strcmp(q, "bottomline"))
+		else if (0 == strcmp(q, "bottomline"))
 		{
 			_orDecorations(TEXT_DECOR_BOTTOMLINE);
 		}
@@ -5141,7 +5141,7 @@ bool fp_FieldPageReferenceRun::calculateValue(void)
 				if(pRun->getType() == FPRUN_BOOKMARK)
 				{
 					fp_BookmarkRun * pB = static_cast<fp_BookmarkRun*>(pRun);
-					if(pB->isStartOfBookmark() && !UT_strcmp(_getParameter(),pB->getName()))
+					if(pB->isStartOfBookmark() && !strcmp(_getParameter(),pB->getName()))
 					{
 						bFound = true;
 						break;

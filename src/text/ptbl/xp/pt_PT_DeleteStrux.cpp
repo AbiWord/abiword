@@ -503,56 +503,56 @@ bool pt_PieceTable::_deleteHdrFtrsFromSectionStruxIfPresent(pf_Frag_Strux_Sectio
 	vecHdrFtr.clear();
 	const XML_Char * szHeaderV = NULL;
 	bool bres = pAP->getAttribute("header",szHeaderV);
-	if(szHeaderV && *szHeaderV && (UT_strcmp(szHeaderV,"0") != 0))
+	if(szHeaderV && *szHeaderV && (strcmp(szHeaderV,"0") != 0))
 	{
 		HeaderV = szHeaderV;
 		vecHdrFtr.addItem((void *) HeaderV.c_str());
 	}
 	szHeaderV =  NULL;
 	bres = pAP->getAttribute("header-even",szHeaderV);
-	if(szHeaderV && *szHeaderV && (UT_strcmp(szHeaderV,"0") != 0))
+	if(szHeaderV && *szHeaderV && (strcmp(szHeaderV,"0") != 0))
 	{
 		HeaderEvenV = szHeaderV;
 		vecHdrFtr.addItem((void *) HeaderEvenV.c_str());
 	}
 	szHeaderV =  NULL;
 	bres = pAP->getAttribute("header-last",szHeaderV);
-	if(szHeaderV && *szHeaderV && (UT_strcmp(szHeaderV,"0") != 0))
+	if(szHeaderV && *szHeaderV && (strcmp(szHeaderV,"0") != 0))
 	{
 		HeaderLastV = szHeaderV;
 		vecHdrFtr.addItem((void *) HeaderLastV.c_str());
 	}
 	szHeaderV =  NULL;
 	bres = pAP->getAttribute("header-first",szHeaderV);
-	if(szHeaderV && *szHeaderV && (UT_strcmp(szHeaderV,"0") != 0))
+	if(szHeaderV && *szHeaderV && (strcmp(szHeaderV,"0") != 0))
 	{
 		HeaderFirstV = szHeaderV;
 		vecHdrFtr.addItem((void *) HeaderFirstV.c_str());
 	}
 	szHeaderV =  NULL;
 	bres = pAP->getAttribute("footer",szHeaderV);
-	if(szHeaderV && *szHeaderV && (UT_strcmp(szHeaderV,"0") != 0))
+	if(szHeaderV && *szHeaderV && (strcmp(szHeaderV,"0") != 0))
 	{
 		FooterV = szHeaderV;
 		vecHdrFtr.addItem((void *) FooterV.c_str());
 	}
 	szHeaderV =  NULL;
 	bres = pAP->getAttribute("footer-even",szHeaderV);
-	if(szHeaderV && *szHeaderV && (UT_strcmp(szHeaderV,"0") != 0))
+	if(szHeaderV && *szHeaderV && (strcmp(szHeaderV,"0") != 0))
 	{
 		FooterEvenV = szHeaderV;
 		vecHdrFtr.addItem((void *) FooterEvenV.c_str());
 	}
 	szHeaderV =  NULL;
 	bres = pAP->getAttribute("footer-last",szHeaderV);
-	if(szHeaderV && *szHeaderV && (UT_strcmp(szHeaderV,"0") != 0))
+	if(szHeaderV && *szHeaderV && (strcmp(szHeaderV,"0") != 0))
 	{
 		FooterLastV = szHeaderV;
 		vecHdrFtr.addItem((void *) FooterLastV.c_str());
 	}
 	szHeaderV =  NULL;
 	bres = pAP->getAttribute("footer-first",szHeaderV);
-	if(szHeaderV && *szHeaderV && (UT_strcmp(szHeaderV,"0") != 0))
+	if(szHeaderV && *szHeaderV && (strcmp(szHeaderV,"0") != 0))
 	{
 		FooterFirstV = szHeaderV;
 		vecHdrFtr.addItem((void *) FooterFirstV.c_str());

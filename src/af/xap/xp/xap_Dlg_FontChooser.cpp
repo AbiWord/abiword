@@ -232,11 +232,11 @@ void XAP_Dialog_FontChooser::setAllPropsFromVec(UT_Vector * vProps)
 	m_bBottomline = (NULL != strstr(s,"bottomline"));
 
 	s = getVal("display");
-	m_bHidden = !UT_strcmp(s,"none");
+	m_bHidden = !strcmp(s,"none");
 	
 	s = getVal("text-position");
-	m_bSuperScript = UT_strcmp(s,"superscript")==0;
-	m_bSubScript = UT_strcmp(s,"subscript")==0;
+	m_bSuperScript = strcmp(s,"superscript")==0;
+	m_bSubScript = strcmp(s,"subscript")==0;
 }
 
 void XAP_Dialog_FontChooser::setFontFamily(const XML_Char * pFontFamily)

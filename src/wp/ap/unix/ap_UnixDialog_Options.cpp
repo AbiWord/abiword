@@ -139,7 +139,7 @@ void AP_UnixDialog_Options::runModal(XAP_Frame * pFrame)
 
   UT_DEBUGMSG (("Changing Color [%s]\n", color));
 
-  if (UT_strcmp (dlg->m_CurrentTransparentColor, "#ffffff") == 0)
+  if (strcmp (dlg->m_CurrentTransparentColor, "#ffffff") == 0)
 	gtk_widget_set_sensitive (dlg->m_buttonColSel_Defaults, FALSE);
   else
 	gtk_widget_set_sensitive (dlg->m_buttonColSel_Defaults, TRUE);

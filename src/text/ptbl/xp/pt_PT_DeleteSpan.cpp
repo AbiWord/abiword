@@ -1706,7 +1706,7 @@ bool pt_PieceTable::_deleteComplexSpan(PT_DocPosition & origPos1,
         		    bool bStart = false;
 				    while((pAP)->getNthAttribute(k++,pszHname, pszHref))
 				    {
-		    			if(!UT_strcmp(pszHname, "xlink:href"))
+		    			if(!strcmp(pszHname, "xlink:href"))
 				    	{
 				    		bStart = true;
 		    				break;

@@ -587,7 +587,7 @@ Defun_EV_GetToolbarItemState_Fn(ap_ToolbarGetState_CharFmt)
 			}
 			else
 			{
-				if (0 == UT_strcmp(sz, val))
+				if (0 == strcmp(sz, val))
 					s = EV_TIS_Toggled;
 			}
 		}
@@ -667,7 +667,7 @@ Defun_EV_GetToolbarItemState_Fn(ap_ToolbarGetState_SectionFmt)
 
 		if (sz)
 		{
-			if (0 == UT_strcmp(sz, val))
+			if (0 == strcmp(sz, val))
 			{
 				s = EV_TIS_Toggled;
 			}
@@ -781,7 +781,7 @@ Defun_EV_GetToolbarItemState_Fn(ap_ToolbarGetState_BlockFmt)
 			}
 			else
 			{
-				if (0 == UT_strcmp(sz, val))
+				if (0 == strcmp(sz, val))
 					s = EV_TIS_Toggled;
 			}
 		}

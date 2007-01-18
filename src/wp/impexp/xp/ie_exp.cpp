@@ -538,7 +538,7 @@ IEFileType IE_Exp::fileTypeForDescription(const char * szDescription)
 
 		if (pSniffer->getDlgLabels(&szDescription2,&szDummy,&ieft))
 		{
-			if (!UT_strcmp(szDescription,szDescription2))
+			if (!strcmp(szDescription,szDescription2))
 				return ieft;
 		}
 		else

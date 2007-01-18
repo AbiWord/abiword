@@ -183,7 +183,7 @@ IEMergeType IE_MailMerge::fileTypeForDescription(const char * szDescription)
 		
 		if (pSniffer->getDlgLabels(&szDescription2,&szDummy,&ieft))
 		{
-			if (!UT_strcmp(szDescription,szDescription2))
+			if (!strcmp(szDescription,szDescription2))
 				return ieft;
 		}
 		else
@@ -454,7 +454,7 @@ public:
 			mCharData.clear ();
 			mKey.clear ();
 			
-			if (!UT_strcmp (name, "awmm:field"))
+			if (!strcmp (name, "awmm:field"))
 			{
 				const XML_Char * key = UT_getAttribute("name", atts);
 				if (key) {
@@ -466,13 +466,13 @@ public:
 	
 	virtual void endElement (const XML_Char * name)
 		{
-			if (!UT_strcmp(name, "awmm:field") && mLooping) {      
+			if (!strcmp(name, "awmm:field") && mLooping) {      
 				if (m_vecHeaders)
 					addOrReplaceVecProp (mKey);
 				else
 					addMergePair (mKey, mCharData);
 			} 
-			else if (!UT_strcmp(name, "awmm:record") && mLooping) {
+			else if (!strcmp(name, "awmm:record") && mLooping) {
 				if (m_vecHeaders)
 					mLooping = false;
 				else

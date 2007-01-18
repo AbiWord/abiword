@@ -284,7 +284,7 @@ bool pt_VarSet::mergeAP(PTChangeFmt ptc, PT_AttrPropIndex apiOld,
 		PP_AttrProp * pNew1 = NULL;
 		PD_Style * pStyle = NULL;
 
-        if(bFound && szStyle && (UT_strcmp(szStyle, "None") != 0))
+        if(bFound && szStyle && (strcmp(szStyle, "None") != 0))
         {
 	        UT_DEBUGMSG(("current style [%s]\n",szStyle));
 			pDoc->getStyle(szStyle,&pStyle);
@@ -296,7 +296,7 @@ bool pt_VarSet::mergeAP(PTChangeFmt ptc, PT_AttrPropIndex apiOld,
 			UT_ASSERT_HARMLESS(UT_SHOULD_NOT_HAPPEN);
 		}
 
-        if(bFound && szStyle && UT_strcmp(szStyle, "None") && pStyle)
+        if(bFound && szStyle && strcmp(szStyle, "None") && pStyle)
 		{
 			// first of all deal with list-attributes if the new style is not
 			// a list style and the old style is a list style

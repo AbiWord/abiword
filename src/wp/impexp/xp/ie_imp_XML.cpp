@@ -69,7 +69,7 @@ extern "C" { // for MRC compiler (Mac)
 		const char * name = static_cast<const char *>(a);
 		const xmlToIdMapping * id = static_cast<const xmlToIdMapping *>(b);
 
-		return UT_strcmp (name, id->m_name);
+		return strcmp (name, id->m_name);
 	}
 }
 

@@ -3571,7 +3571,7 @@ pf_Frag * PD_Document::findBookmark(const char * pName, bool bEnd, pf_Frag * pfS
 				if(  (!bEnd && pb->getBookmarkType() == po_Bookmark::POBOOKMARK_START)
 				   ||( bEnd && pb->getBookmarkType() == po_Bookmark::POBOOKMARK_END))
 				{
-					if(0 == UT_strcmp(pName, pb->getName()))
+					if(0 == strcmp(pName, pb->getName()))
 					   return pf;
 				}
 			}
@@ -4198,7 +4198,7 @@ PD_Style * PD_Document::getStyleFromSDH( PL_StruxDocHandle sdh)
 	UT_return_val_if_fail (pAP, NULL);
 	const XML_Char * pszStyleName = NULL;
 	(pAP)->getAttribute(PT_STYLE_ATTRIBUTE_NAME, pszStyleName);
-	if(pszStyleName == NULL  || UT_strcmp(pszStyleName,"Current Settings") == 0 || UT_strcmp(pszStyleName,"None") == 0)
+	if(pszStyleName == NULL  || strcmp(pszStyleName,"Current Settings") == 0 || strcmp(pszStyleName,"None") == 0)
 	{
 		return NULL;
 	}

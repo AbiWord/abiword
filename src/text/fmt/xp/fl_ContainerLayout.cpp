@@ -104,7 +104,7 @@ bool fl_ContainerLayout::_getPropertiesAP(const PP_AttrProp*& pAP)
 	// display property
 	const char* pszDisplay = NULL;
 	pAP->getProperty("display", (const XML_Char *&)pszDisplay);
-	if(isHidden() == FP_VISIBLE && pszDisplay && !UT_strcmp(pszDisplay, "none"))
+	if(isHidden() == FP_VISIBLE && pszDisplay && !strcmp(pszDisplay, "none"))
 	{
 		setVisibility(FP_HIDDEN_TEXT);
 	}

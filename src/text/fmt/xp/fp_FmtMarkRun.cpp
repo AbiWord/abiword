@@ -83,11 +83,11 @@ void fp_FmtMarkRun::_lookupProperties(const PP_AttrProp * pSpanAP,
 												   pDoc,
 												   true);
 
-	if (0 == UT_strcmp(pszPosition, "superscript"))
+	if (0 == strcmp(pszPosition, "superscript"))
 	{
 		m_fPosition = TEXT_POSITION_SUPERSCRIPT;
 	}
-	else if (0 == UT_strcmp(pszPosition, "subscript"))
+	else if (0 == strcmp(pszPosition, "subscript"))
 	{
 		m_fPosition = TEXT_POSITION_SUBSCRIPT;
 	}

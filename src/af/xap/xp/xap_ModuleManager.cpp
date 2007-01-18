@@ -130,7 +130,7 @@ bool XAP_ModuleManager::loadModule (const char * szFilename)
 		char * moduleName = 0;
 		if(pModuleLoop && pModuleLoop->getModuleName(&moduleName))
 		{
-			if (!UT_strcmp(UT_basename(szFilename), UT_basename(moduleName)))
+			if (!strcmp(UT_basename(szFilename), UT_basename(moduleName)))
 			{
 				// already loaded, don't attempt to load again and exit quietly
 				FREEP(moduleName);
