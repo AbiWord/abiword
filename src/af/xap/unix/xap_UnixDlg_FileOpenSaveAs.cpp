@@ -207,7 +207,7 @@ bool XAP_UnixDialog_FileOpenSaveAs::_run_gtk_main(XAP_Frame * pFrame,
 			if (m_answer == a_CANCEL)			// The easy way out
 				return false;
 
-			UT_cloneString(m_szFinalPathnameCandidate, gtk_file_chooser_get_uri(m_FC));
+			m_szFinalPathnameCandidate = g_strdup(gtk_file_chooser_get_uri(m_FC));
 			UT_ASSERT(m_szFinalPathnameCandidate);
 			return (m_answer == a_OK);
 		}
@@ -222,7 +222,7 @@ bool XAP_UnixDialog_FileOpenSaveAs::_run_gtk_main(XAP_Frame * pFrame,
 	
 			// Give us a filename we can mangle
 	
-			UT_cloneString(szDialogFilename, gtk_file_chooser_get_uri(m_FC));
+			szDialogFilename = g_strdup(gtk_file_chooser_get_uri(m_FC));
 			if (!szDialogFilename)
 				continue;
 	
@@ -299,7 +299,7 @@ bool XAP_UnixDialog_FileOpenSaveAs::_run_gtk_main(XAP_Frame * pFrame,
 						// the file type is special (auto detect)       
 						// set to plain name, and let the auto detector in the
 						// exporter figure it out                       
-						UT_cloneString(szFinalPathname,szDialogFilename);
+						szFinalPathname = g_strdup(szDialogFilename);
 					}                                                       
 				// g_free szDialogFilename since it's been put into szFinalPathname (with
 				// or without changes) and it's invalid (missing an extension which
@@ -308,7 +308,7 @@ bool XAP_UnixDialog_FileOpenSaveAs::_run_gtk_main(XAP_Frame * pFrame,
 				FREEP(szDialogFilename);
 			}	   
 
-			UT_cloneString(szFinalPathnameCopy, szFinalPathname);
+			szFinalPathnameCopy = g_strdup(szFinalPathname);
 
 			bool exists = UT_go_file_exists(szFinalPathnameCopy);
 				
@@ -320,7 +320,7 @@ bool XAP_UnixDialog_FileOpenSaveAs::_run_gtk_main(XAP_Frame * pFrame,
 	
 				if (_askOverwrite_YesNo(pFrame, szFinalPathname))
 				{
-					UT_cloneString(m_szFinalPathnameCandidate, szFinalPathname);
+					m_szFinalPathnameCandidate = g_strdup(szFinalPathname);
 					goto ReturnTrue;
 				}
 	
@@ -343,7 +343,7 @@ bool XAP_UnixDialog_FileOpenSaveAs::_run_gtk_main(XAP_Frame * pFrame,
 				goto ContinueLoop;
 			}
 
-			UT_cloneString(m_szFinalPathnameCandidate, szFinalPathname);
+			m_szFinalPathnameCandidate = g_strdup(szFinalPathname);
 			goto ReturnTrue;
 	
 #if 0			
@@ -374,7 +374,7 @@ bool XAP_UnixDialog_FileOpenSaveAs::_run_gtk_main(XAP_Frame * pFrame,
 			if (!access(szFinalPathnameCopy, W_OK))
 			{
 				// we've got what we need, save it to the candidate
-				UT_cloneString(m_szFinalPathnameCandidate, szFinalPathname);
+				m_szFinalPathnameCandidate = g_strdup(szFinalPathname);
 				goto ReturnTrue;
 			}
 	
@@ -844,7 +844,7 @@ void XAP_UnixDialog_FileOpenSaveAs::runModal(XAP_Frame * pFrame)
 						UT_String sSuffix = szSaveTypeSuffix.utf8_str();
 						sFileName += sSuffix;
 						FREEP(m_szInitialPathname);
-						UT_cloneString(m_szInitialPathname,sFileName.c_str());
+						m_szInitialPathname = g_strdup(sFileName.c_str());
 					}
 				}
 			}
@@ -874,7 +874,7 @@ void XAP_UnixDialog_FileOpenSaveAs::runModal(XAP_Frame * pFrame)
 		UT_ASSERT(m_szFinalPathnameCandidate);
 		
 		// store final path name and file type
-		UT_cloneString(m_szFinalPathname, m_szFinalPathnameCandidate);
+		m_szFinalPathname = g_strdup(m_szFinalPathnameCandidate);
 
 		FREEP(m_szFinalPathnameCandidate);
 

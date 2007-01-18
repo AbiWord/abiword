@@ -117,21 +117,21 @@ void XAP_Dialog_Print::setPaperSize(const char * szPageSize)
 {
 	FREEP(m_pageSize);
 	if (szPageSize && *szPageSize)
-		UT_cloneString(m_pageSize,szPageSize);
+		m_pageSize = g_strdup(szPageSize);
 }
 
 void XAP_Dialog_Print::setDocumentTitle(const char * szDocTitle)
 {
 	FREEP(m_szDocumentTitle);
 	if (szDocTitle && *szDocTitle)
-		UT_cloneString(m_szDocumentTitle,szDocTitle);
+		m_szDocumentTitle = g_strdup(szDocTitle);
 }
 
 void XAP_Dialog_Print::setDocumentPathname(const char * szDocPath)
 {
 	FREEP(m_szDocumentPathname);
 	if (szDocPath && *szDocPath)
-		UT_cloneString(m_szDocumentPathname,szDocPath);
+		m_szDocumentPathname = g_strdup(szDocPath);
 }
 
 void XAP_Dialog_Print::setEnablePageRangeButton(bool bEnable,
@@ -264,7 +264,7 @@ bool XAP_Dialog_Print::_getPrintToFilePathname(XAP_Frame * pFrame,
 	bool bOK = (ans == XAP_Dialog_FileOpenSaveAs::a_OK);
 
 	if (bOK)
-		UT_cloneString(m_szPrintToFilePathname,pDialog->getPathname());       
+		m_szPrintToFilePathname = g_strdup(pDialog->getPathname());       
 
 	FREEP(szDescList);
 	FREEP(szSuffixList);

@@ -247,7 +247,7 @@ ABI_EXPORT void * UT_calloc ( UT_uint32 nmemb, UT_uint32 size );
 #define REPLACEP(p,q)		do { if (p) delete p; p = q; } while (0)
 #define REFP(p)			((p)->ref(), (p))
 #define UNREFP(p)		do { if (p) { (p)->unref(); (p)=NULL; } } while (0)
-#define CLONEP(p,q)		do { FREEP(p); if (q && *q) UT_cloneString(p,q); } while (0)
+#define CLONEP(p,q)		do { FREEP(p); if (q && *q) p = g_strdup(q); } while (0)
 
 #define NrElements(a)		((sizeof(a) / sizeof(a[0])))
 

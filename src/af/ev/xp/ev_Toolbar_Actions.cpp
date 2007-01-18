@@ -41,7 +41,7 @@ EV_Toolbar_Action::EV_Toolbar_Action(XAP_Toolbar_Id id,
 {
 	m_id = id;
 	m_type = type;
-	UT_cloneString(m_szMethodName,szMethodName);
+	m_szMethodName = g_strdup(szMethodName);
 	m_maskOfInterest = maskOfInterest;
 	m_pfnGetState = pfnGetState;
 }

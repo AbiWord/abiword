@@ -153,7 +153,7 @@ void XAP_QNXDialog_FileOpenSaveAs::runModal(XAP_Frame * pFrame)
 			// extract the directory portion and start
 			// the dialog there (but without a filename).
 
-			UT_cloneString(szPersistDirectory,m_szPersistPathname);
+			szPersistDirectory = g_strdup(m_szPersistPathname);
 			char * pLastSlash = strrchr(szPersistDirectory, '/');
 			if (pLastSlash)
 				pLastSlash[1] = 0;
@@ -165,7 +165,7 @@ void XAP_QNXDialog_FileOpenSaveAs::runModal(XAP_Frame * pFrame)
 			// it come up in the current working directory.
 			char thisdir[PATH_MAX];
 			getcwd(thisdir, PATH_MAX);
-			UT_cloneString(szPersistDirectory, thisdir);
+			szPersistDirectory = g_strdup(thisdir);
 		}
 	}
 	else
@@ -182,12 +182,12 @@ void XAP_QNXDialog_FileOpenSaveAs::runModal(XAP_Frame * pFrame)
 		if (m_bSuggestName)
 		{
 			// use m_szInitialPathname
-			UT_cloneString(szPersistDirectory, m_szInitialPathname);
+			szPersistDirectory = g_strdup(m_szInitialPathname);
 		}
 		else
 		{
 			// use directory(m_szInitialPathname)
-			UT_cloneString(szPersistDirectory,m_szInitialPathname);
+			szPersistDirectory = g_strdup(m_szInitialPathname);
 			char * pLastSlash = strrchr(szPersistDirectory, '/');
 			if (pLastSlash)
 				pLastSlash[1] = 0;
@@ -288,12 +288,12 @@ while((tmp=strchr(tmp,';')))
 		}
 
 		// store final path name and file type
-		UT_cloneString(m_szFinalPathname, info.path);
+		m_szFinalPathname = g_strdup(info.path);
 
 		//Not sure if I should do this here or not
 		if (m_szPersistPathname)
 			FREEP(m_szPersistPathname);
-		UT_cloneString(m_szPersistPathname, info.path);
+		m_szPersistPathname = g_strdup(info.path);
 
 		//Store other info here too ....
 		//info.format, info.fspec

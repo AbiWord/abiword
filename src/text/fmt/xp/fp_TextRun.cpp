@@ -170,7 +170,7 @@ void fp_TextRun::_lookupProperties(const PP_AttrProp * pSpanAP,
 	_setDecorations(0);
 
 	XML_Char* p;
-	if (!UT_cloneString((char *&)p, pszDecor))
+	if (!(p = g_strdup(pszDecor)))
 	{
 		// TODO outofmem
 	}

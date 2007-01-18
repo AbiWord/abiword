@@ -48,7 +48,7 @@ XAP_Dictionary::XAP_Dictionary(const char * szFilename)
 	: m_hashWords(29)
 {
 	UT_ASSERT(szFilename && *szFilename);
-	UT_cloneString((char *&)m_szFilename, szFilename);
+	m_szFilename = g_strdup(szFilename);
 
 	m_fp = 0;
 	m_bDirty = false;

@@ -146,33 +146,6 @@ UT_uint32 UT_pointerArrayLength(void ** array)
 // is defined in platform-specific code.
 //////////////////////////////////////////////////////////////////
 
-bool UT_cloneString(char *& rszDest, const char * szSource)
-{
-	if (szSource && *szSource)
-	{
-		UT_uint32 length = strlen(szSource) + 1;
-		rszDest = static_cast<char *>(g_try_malloc(length));
-
-		if (!rszDest)
-			return false;
-
-		memmove(rszDest, szSource, length);
-	}
-	else
-		rszDest = NULL;
-	
-	return true;
-}
-
-bool UT_replaceString(char *& rszDest, const char * szSource)
-{
-	if (rszDest)
-		g_free(rszDest);
-	rszDest = NULL;
-
-	return UT_cloneString(rszDest,szSource);
-}
-
 // determine the length of a fixed-size string
 size_t UT_strnlen(const char *s, size_t maxlen)
 {

@@ -316,7 +316,7 @@ void XAP_Prefs::addRecent(const char * szRecent)
 	if (!bFound)
 	{
 		// nope.  make a new copy to store
-		UT_cloneString(sz, szRecent);
+		sz = g_strdup(szRecent);
 	}
 
 	m_vecRecent.insertItemAt(sz, 0);
@@ -789,7 +789,7 @@ void XAP_Prefs::startElement(const XML_Char *name, const XML_Char **atts)
 			if (strcmp(static_cast<const char*>(a[0]), "scheme") == 0)
 			{
 				FREEP(m_parserState.m_szSelectedSchemeName);
-				if (!UT_cloneString((char *&)m_parserState.m_szSelectedSchemeName,static_cast<const char*>(a[1])))
+				if (!(m_parserState.m_szSelectedSchemeName = g_strdup(static_cast<const char*>(a[1]))))
 					goto MemoryError;
 			}
 			else if (strcmp(static_cast<const char*>(a[0]), "autosaveprefs") == 0)

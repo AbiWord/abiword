@@ -233,9 +233,9 @@ bool	PP_AttrProp::setAttribute(const XML_Char * szName, const XML_Char * szValue
 	{
 		char * pOrig = NULL;
 		
-		if (!UT_cloneString(pOrig,szValue))
+		if (!(pOrig = g_strdup(szValue)))
 		{
-			UT_DEBUGMSG(("setAttribute: UT_cloneString failed on [%s]\n",szValue));
+			UT_DEBUGMSG(("setAttribute: g_strdup() failed on [%s]\n",szValue));
 			return false;
 		}
 

@@ -1888,7 +1888,7 @@ void fp_TabRun::_lookupProperties(const PP_AttrProp * pSpanAP,
 	UT_uint32 oldDecors = _getDecorations();
 	_setDecorations(0);
 	XML_Char* p;
-	if (!UT_cloneString((char *&)p, pszDecor))
+	if (!(p = g_strdup(pszDecor)))
 	{
 		// TODO outofmem
 	}
@@ -3985,7 +3985,7 @@ void fp_FieldRun::_lookupProperties(const PP_AttrProp * pSpanAP,
 	_setLineWidth(getToplineThickness());
 	_setDecorations(0);
 	XML_Char* p;
-	if (!UT_cloneString((char *&)p, pszDecor))
+	if (!(p = g_strdup(pszDecor)))
 	{
 		// TODO outofmem
 	}

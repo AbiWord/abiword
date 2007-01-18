@@ -56,7 +56,7 @@ EV_Toolbar_Layout::EV_Toolbar_Layout(const char * szName, UT_uint32 nrLayoutItem
 	// TODO move this allocation to somewhere else.
 	m_layoutTable = static_cast<EV_Toolbar_LayoutItem **>(UT_calloc(nrLayoutItems,sizeof(EV_Toolbar_LayoutItem *)));
 	UT_ASSERT(m_layoutTable);
-	UT_cloneString(m_szName,szName);
+	m_szName = g_strdup(szName);
 }
 
 EV_Toolbar_Layout::EV_Toolbar_Layout(EV_Toolbar_Layout * pTB)
@@ -67,7 +67,7 @@ EV_Toolbar_Layout::EV_Toolbar_Layout(EV_Toolbar_Layout * pTB)
 	// TODO move this allocation to somewhere else.
 	m_layoutTable = static_cast<EV_Toolbar_LayoutItem **>(UT_calloc(m_nrLayoutItems,sizeof(EV_Toolbar_LayoutItem *)));
 	UT_ASSERT(m_layoutTable);
-	UT_cloneString(m_szName,pTB->getName());
+	m_szName = g_strdup(pTB->getName());
 	UT_uint32 i = 0;
 	for(i=0; i < m_nrLayoutItems; i++)
 	{

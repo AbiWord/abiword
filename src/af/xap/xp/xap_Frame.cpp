@@ -209,7 +209,7 @@ bool XAP_Frame::initialize(const char * szKeyBindingsKey, const char * szKeyBind
 		;
 	else
 		szMenuLayoutName = szMenuLayoutDefaultValue;
-	UT_cloneString((char *&)m_pFrameImpl->m_szMenuLayoutName,szMenuLayoutName);
+	m_pFrameImpl->m_szMenuLayoutName = g_strdup(szMenuLayoutName);
 	
 	//////////////////////////////////////////////////////////////////
 	// select language for menu labels
@@ -222,7 +222,7 @@ bool XAP_Frame::initialize(const char * szKeyBindingsKey, const char * szKeyBind
 		;
 	else
 		szMenuLabelSetName = szMenuLabelSetDefaultValue;
-	UT_cloneString((char *&)m_pFrameImpl->m_szMenuLabelSetName,szMenuLabelSetName);
+	m_pFrameImpl->m_szMenuLabelSetName = g_strdup(szMenuLabelSetName);
 	
 	//////////////////////////////////////////////////////////////////
 	// select which toolbars we should display
@@ -240,12 +240,12 @@ bool XAP_Frame::initialize(const char * szKeyBindingsKey, const char * szKeyBind
 	
 	{
 		char * szTemp;
-		UT_cloneString(szTemp,szToolbarLayouts);
+		szTemp = g_strdup(szToolbarLayouts);
 		UT_ASSERT(szTemp);
 		for (char * p=strtok(szTemp," "); (p); p=strtok(NULL," "))
 		{
 			char * szTempName;
-			UT_cloneString(szTempName,p);
+			szTempName = g_strdup(p);
 			m_pFrameImpl->m_vecToolbarLayoutNames.addItem(szTempName);
 		}
 		g_free(szTemp);
@@ -266,7 +266,7 @@ bool XAP_Frame::initialize(const char * szKeyBindingsKey, const char * szKeyBind
 		;
 	else
 		szToolbarLabelSetName = szToolbarLabelSetDefaultValue;
-	UT_cloneString((char *&)m_pFrameImpl->m_szToolbarLabelSetName,szToolbarLabelSetName);
+	m_pFrameImpl->m_szToolbarLabelSetName = g_strdup(szToolbarLabelSetName);
 	
 	//////////////////////////////////////////////////////////////////
 	// select the appearance of the toolbar buttons
@@ -276,7 +276,7 @@ bool XAP_Frame::initialize(const char * szKeyBindingsKey, const char * szKeyBind
 	pApp->getPrefsValue(XAP_PREF_KEY_ToolbarAppearance,
 			    static_cast<const XML_Char**>(&szToolbarAppearance));
 	UT_ASSERT((szToolbarAppearance) && (*szToolbarAppearance));
-	UT_cloneString((char *&)m_pFrameImpl->m_szToolbarAppearance,szToolbarAppearance);
+	m_pFrameImpl->m_szToolbarAppearance = g_strdup(szToolbarAppearance);
 
 	//////////////////////////////////////////////////////////////////
 	// select the auto save options

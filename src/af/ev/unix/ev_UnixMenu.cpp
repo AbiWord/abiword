@@ -539,7 +539,7 @@ bool EV_UnixMenu::synthesizeMenu(GtkWidget * wMenuRoot, bool isPopup)
 
 					// clone string just for the space it gives us, the data
 					// is trashed by _ev_strip_underlines()
-					UT_cloneString(dup, buf);
+					dup = g_strdup(buf);
 
 					// get a clean string
 					_ev_strip_underline(dup, buf);

@@ -1991,7 +1991,7 @@ static bool s_AskForPathname(XAP_Frame * pFrame,
 	{
 		const char * szResultPathname = pDialog->getPathname();
 		if (szResultPathname && *szResultPathname)
-			UT_cloneString(*ppPathname,szResultPathname);
+			*ppPathname = g_strdup(szResultPathname);
 
 		UT_sint32 type = pDialog->getFileType();
 		dflFileType = type;
@@ -2078,7 +2078,7 @@ static bool s_AskForGraphicPathname(XAP_Frame * pFrame,
 	{
 		const char * szResultPathname = pDialog->getPathname();
 		if (szResultPathname && *szResultPathname)
-			UT_cloneString(*ppPathname,szResultPathname);
+			*ppPathname = g_strdup(szResultPathname);
 
 		UT_sint32 type = pDialog->getFileType();
 
@@ -8176,8 +8176,7 @@ static bool _toggleSpanOrBlock(FV_View * pView,
 				strcat(buf, s + (p - s) + strlen(vOn));
 
 				// now see if anything's left
-				XML_Char * q;
-				UT_cloneString((char *&)q, buf);
+				XML_Char * q  = g_strdup(buf);
 
 				if (q && strtok(q, " "))
 					props_out[1] = buf; 	// yep, use it

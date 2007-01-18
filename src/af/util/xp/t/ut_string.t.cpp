@@ -32,30 +32,6 @@ TFTEST_MAIN("UT_pointerArrayLength()")
 }
 
 
-TFTEST_MAIN("UT_cloneString()")
-{
-	char *retStr;
-	bool ret = UT_cloneString(retStr, "foo");
-	TFPASS(ret);
-	TFPASS(retStr);
-	TFPASS(strcmp(retStr, "foo") == 0);
-
-	g_free(retStr);
-}
-
-
-TFTEST_MAIN("UT_replaceString")
-{
-	char *retStr;
-
-	retStr = g_strdup("foobar");
-	TFPASS(UT_replaceString(retStr, "barfoo"));
-	TFFAIL(strcmp(retStr, "foobar") == 0);
-	TFPASS(strcmp(retStr, "barfoo") == 0);
-	g_free(retStr);
-}
-
-
 /* FIXME: this function looks really obsolete */
 TFTEST_MAIN("UT_XML_strlen")
 {

@@ -656,7 +656,7 @@ UT_Error PD_Document::_saveAs(const char * szFilename, int ieft, bool cpy,
 	    // no file name currently set - make this filename the filename
 	    // stored for the doc
 	    char * szFilenameCopy = NULL;
-	    if (!UT_cloneString(szFilenameCopy,szFilename))
+	    if (!(szFilenameCopy = g_strdup(szFilename)))
 			return UT_SAVE_OTHERERROR;
 	    _setFilename(szFilenameCopy);
 	    _setClean(); // only mark as clean if we're saving under a new name
@@ -716,7 +716,7 @@ UT_Error PD_Document::_saveAs(GsfOutput *output, int ieft, bool cpy, const char 
 	    // no file name currently set - make this filename the filename
 	    // stored for the doc
 	    char * szFilenameCopy = NULL;
-	    if (!UT_cloneString(szFilenameCopy,szFilename))
+	    if (!(szFilenameCopy = g_strdup(szFilename)))
 			return UT_SAVE_OTHERERROR;
 	    _setFilename(szFilenameCopy);
 	    _setClean(); // only mark as clean if we're saving under a new name

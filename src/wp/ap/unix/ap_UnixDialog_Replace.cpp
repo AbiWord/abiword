@@ -485,8 +485,7 @@ void AP_UnixDialog_Replace::_updateList(GtkWidget* combo, UT_GenericVector<UT_UC
 		UT_UCS4String ucs4s(list->getNthItem(i), 0); 
 		
 		// clone the string, since we can't use utf8_str()'s result -> ucs4s will disappear from stack
-		char* utf8s;
-		UT_cloneString(utf8s, ucs4s.utf8_str()); 
+		char* utf8s = g_strdup(ucs4s.utf8_str()); 
 		
 		// add it to the list
 		UT_DEBUGMSG(("FODDEX: find/replace list: %d = '%s'\n", i, utf8s));

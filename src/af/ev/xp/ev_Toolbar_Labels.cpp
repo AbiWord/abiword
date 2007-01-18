@@ -42,10 +42,10 @@ EV_Toolbar_Label::EV_Toolbar_Label(XAP_Toolbar_Id id,
 {
 
 	m_id = id;
-	UT_cloneString(m_szToolbarLabel,szToolbarLabel);
-	UT_cloneString(m_szIconName,szIconName);
-	UT_cloneString(m_szToolTip,szToolTip);
-	UT_cloneString(m_szStatusMsg,szStatusMsg);
+	m_szToolbarLabel = g_strdup(szToolbarLabel);
+	m_szIconName = g_strdup(szIconName);
+	m_szToolTip = g_strdup(szToolTip);
+	m_szStatusMsg = g_strdup(szStatusMsg);
 
 	// TODO: the following code causes crashes; after spending several hours over it
 	// it would appear that the glib memory functions that fribidi uses
@@ -179,7 +179,7 @@ EV_Toolbar_LabelSet::EV_Toolbar_LabelSet(const char * szLanguage,
 {
 	// TODO tis bad to call g_try_malloc/UT_calloc from a constructor, since we cannot report failure.
 	// TODO move this allocation to somewhere else.
-	UT_cloneString(m_szLanguage,szLanguage);
+	m_szLanguage = g_strdup(szLanguage);
 	m_labelTable = static_cast<EV_Toolbar_Label **>(UT_calloc((last-first+1),sizeof(EV_Toolbar_Label *)));
 	m_first = first;
 	m_last = last;
@@ -234,5 +234,5 @@ void EV_Toolbar_LabelSet::setLanguage(const char *szLanguage)
 {
 	if (m_szLanguage)
 		FREEP(m_szLanguage);
-	UT_cloneString(m_szLanguage,szLanguage);
+	m_szLanguage = g_strdup(szLanguage);
 }

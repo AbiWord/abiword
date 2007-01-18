@@ -51,7 +51,7 @@ EV_Menu_Action::EV_Menu_Action(XAP_Menu_Id id,
 {
 	UT_ASSERT((bHoldsSubMenu + bRaisesDialog + bCheckable) < 2); // a 3-way exclusive OR
 	UT_ASSERT((!bCheckable) || pfnGetState);
-	UT_cloneString(m_szMethodName,szMethodName);
+	m_szMethodName = g_strdup(szMethodName);
 }
 
 EV_Menu_Action::~EV_Menu_Action()

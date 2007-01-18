@@ -68,7 +68,7 @@ XAP_Dialog_FileOpenSaveAs::XAP_Dialog_FileOpenSaveAs(XAP_DialogFactory * pDlgFac
   const XML_Char * savedir = 0;
   if (getApp()->getPrefsValue(XAP_PREF_KEY_DefaultSaveDirectory, &savedir) && strlen(savedir))
     {
-      UT_cloneString(m_szPersistPathname,savedir);
+      m_szPersistPathname = g_strdup(savedir);
     }
 }
 
@@ -110,7 +110,7 @@ void XAP_Dialog_FileOpenSaveAs::setCurrentPathname(const char * szPathname)
 
 	FREEP(m_szInitialPathname);
 	if (szPathname && *szPathname)
-		UT_cloneString(m_szInitialPathname,szPathname);
+		m_szInitialPathname = g_strdup(szPathname);
 }
 
 void XAP_Dialog_FileOpenSaveAs::setSuggestFilename(bool bSuggestName)

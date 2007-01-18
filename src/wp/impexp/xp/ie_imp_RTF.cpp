@@ -953,13 +953,10 @@ RTFFontTableItem::RTFFontTableItem(FontFamilyEnum fontFamily, int charSet,
 	m_pitch = pitch;
 	if (panose)
 		memcpy(m_panose, panose, 10*sizeof(unsigned char));
-	m_pFontName = m_pAlternativeFontName = NULL;
 	// TODO KAY: If we run out of memory then m_pFontName and m_pAlternativeFontName,
 	// get left as NULL. Could we throw an exception from here?
-	if (pFontName)
-		UT_cloneString(m_pFontName, pFontName);
-	if (pAlternativeFontName)
-		UT_cloneString(m_pAlternativeFontName, pAlternativeFontName);
+	m_pFontName = g_strdup(pFontName);
+	m_pAlternativeFontName = g_strdup(pAlternativeFontName);
 
 	// Set charset/codepage converter
 	if (m_codepage && m_charSet)

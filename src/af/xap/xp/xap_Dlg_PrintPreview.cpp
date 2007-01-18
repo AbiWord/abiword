@@ -44,19 +44,19 @@ void XAP_Dialog_PrintPreview::setDocumentTitle(const char * szDocTitle)
 {
 	FREEP(m_szDocumentTitle);
 	if (szDocTitle && *szDocTitle)
-		UT_cloneString(m_szDocumentTitle,szDocTitle);
+		m_szDocumentTitle = g_strdup(szDocTitle);
 }
 
 void XAP_Dialog_PrintPreview::setDocumentPathname(const char * szDocPath)
 {
 	FREEP(m_szDocumentPathname);
 	if (szDocPath && *szDocPath)
-		UT_cloneString(m_szDocumentPathname,szDocPath);
+		m_szDocumentPathname = g_strdup(szDocPath);
 }
 
 void XAP_Dialog_PrintPreview::setPaperSize(const char * szPaperSize)
 {
 	FREEP(m_szPaperSize);
 	if (szPaperSize && *szPaperSize)
-		UT_cloneString(m_szPaperSize,szPaperSize);
+		m_szPaperSize = g_strdup(szPaperSize);
 }

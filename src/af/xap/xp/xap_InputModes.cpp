@@ -49,7 +49,7 @@ bool XAP_InputModes::createInputMode(const char * szName,
 	char * szDup = NULL;
 	EV_EditEventMapper * pEEM = NULL;
 
-	UT_cloneString(szDup,szName);
+	szDup = g_strdup(szName);
 	UT_ASSERT(szDup);
 	
 	pEEM = new EV_EditEventMapper(pBindingMap);

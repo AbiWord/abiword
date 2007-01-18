@@ -459,7 +459,7 @@ void XAP_Win32Dialog_FileOpenSaveAs::runModal(XAP_Frame * pFrame)
 			char *uri = UT_go_filename_to_uri(AP_Win32App::s_fromWinLocaleToUTF8(szFile).utf8_str());
 			if(uri)
 			{
-				if(!UT_cloneString(m_szFinalPathname,uri))
+				if(!(m_szFinalPathname = g_strdup(uri)))
 				{
 					UT_ASSERT_HARMLESS(UT_SHOULD_NOT_HAPPEN);
 					m_szFinalPathname = NULL;

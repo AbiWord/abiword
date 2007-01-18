@@ -394,8 +394,7 @@ void IE_Exp_RTF::_addColor(const char * szColor)
 {
 	UT_return_if_fail(szColor && *szColor && (_findColor(szColor)==-1));
 
-	char * sz = NULL;
-	UT_cloneString(sz,szColor);
+	char * sz = g_strdup(szColor);
 	if (sz)
 		m_vecColors.addItem(sz);
 	return;

@@ -456,8 +456,7 @@ void AP_Win32Dialog_Replace::_updateList(HWND hWnd, UT_GenericVector<UT_UCS4Char
 		UT_UCS4String ucs4s((UT_UCS4Char*)list->getNthItem(i), 0); 
 		
 		// clone the string, since we can't use utf8_str()'s result -> ucs4s will disappear from stack
-		char* utf8s;
-		UT_cloneString(utf8s, ucs4s.utf8_str()); 
+		char* utf8s = g_strdup(ucs4s.utf8_str()); 
 		
 		// add it to the list
 		UT_DEBUGMSG(("FODDEX: find/replace list: %d = '%s'\n", i, utf8s));   

@@ -95,9 +95,7 @@ int CALLBACK AP_Win32Toolbar_FontCombo::_EnumFontsProc(LPLOGFONT lplf,
 		return 1 ;
 #endif	
 
-	char * p;
-	UT_cloneString(p, lplf->lfFaceName);
-
+	char * p = g_strdup(lplf->lfFaceName);
 	ctl->m_vecContents.addItem(p);
 	ctl->m_vecFontCharSet.addItem((void*)lplf->lfCharSet);
 
