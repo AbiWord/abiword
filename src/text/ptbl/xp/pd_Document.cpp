@@ -414,16 +414,15 @@ UT_Error PD_Document::_importFile(GsfInput * input, int ieft,
 	else
 	  	_setForceDirty(true); // force this to be dirty
 
-	if (strstr(szFilename, "normal.awt") == NULL)
-		XAP_App::getApp()->getPrefs()->addRecent(szFilename);
-
-
 	// show warning if document contains revisions and they are hidden
 	// from view ...
 	XAP_Frame * pFrame = XAP_App::getApp()->getLastFocussedFrame();
 
 	bool bHidden = (isMarkRevisions() && (getHighestRevisionId() <= getShowRevisionId()));
 	bHidden |= (!isMarkRevisions() && !isShowRevisions() && getRevisions().getItemCount());
+
+	if(pFrame && (strstr(szFilename, "normal.awt") == NULL))
+		XAP_App::getApp()->getPrefs()->addRecent(szFilename);
 
 	if(pFrame && bHidden)
 	{
