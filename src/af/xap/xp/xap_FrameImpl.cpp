@@ -117,8 +117,8 @@ bool XAP_FrameImpl::_updateTitle()
 
 	if (szURI && *szURI) 
 	{
-		gchar *szName = g_filename_from_uri(szURI, NULL, NULL);
-		UT_UTF8String sUntruncatedString(UT_basename(szName));
+		gchar *szName = UT_go_basename_from_uri (szURI);
+		UT_UTF8String sUntruncatedString(szName);
 		g_free (szName); szName = NULL;
 		// WL_FIXME: we probably need a string truncation function, in the ut_utf8string class..
 		UT_UTF8Stringbuf::UTF8Iterator iter = sUntruncatedString.getIterator ();
