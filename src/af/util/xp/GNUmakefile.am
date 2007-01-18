@@ -61,8 +61,6 @@ libUtil_xp_a_SOURCES= \
 	ut_locale.cpp		\
 	ut_png.cpp		\
 	ut_svg.cpp		\
-	ut_rbtree.cpp		\
-	ut_set.cpp		\
 	ut_Script.cpp		\
 	ut_stack.cpp		\
 	ut_string.cpp		\
@@ -133,10 +131,8 @@ noinst_HEADERS = \
 	ut_PropVector.h \
 	ut_queue.h \
 	ut_rand.h \
-	ut_rbtree.h \
 	ut_regex.h \
 	ut_Script.h \
-	ut_set.h \
 	ut_stack.h \
 	ut_stringbuf.h \
 	ut_string_class.h \

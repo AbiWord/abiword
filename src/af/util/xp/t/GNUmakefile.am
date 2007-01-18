@@ -25,7 +25,6 @@ check_LIBRARIES = libTestUtil_xp.a
 libTestUtil_xp_a_SOURCES=\
 	ut_bytebuf.t.cpp \
 	ut_locale.t.cpp \
-	ut_set.t.cpp \
 	ut_string.t.cpp \
 	ut_string_class.t.cpp \
 	ut_types.t.cpp \

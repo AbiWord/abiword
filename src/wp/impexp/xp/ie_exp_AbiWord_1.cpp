@@ -20,6 +20,7 @@
  */
 
 #include <time.h>
+#include <set>
 
 #include "ut_locale.h"
 #include "ut_string.h"
@@ -27,7 +28,6 @@
 #include "ut_bytebuf.h"
 #include "ut_base64.h"
 #include "ut_debugmsg.h"
-#include "ut_set.h"
 #include "ut_string_class.h"
 #include "ut_uuid.h"
 
@@ -253,7 +253,9 @@ protected:
 
 
 private:
-	UT_Set				m_pUsedImages;
+	// despite being a std::string, it will store an UTF-8 buffer
+	typedef std::set<std::string> string_set;
+	string_set m_pUsedImages;
 	const XML_Char*		getObjectKey(const PT_AttrPropIndex& api, const XML_Char* key);
 };
 
@@ -723,7 +725,7 @@ void s_AbiWord_1_Listener::_outputData(const UT_UCSChar * data, UT_uint32 length
 s_AbiWord_1_Listener::s_AbiWord_1_Listener(PD_Document * pDocument,
 										   IE_Exp_AbiWord_1 * pie,
 										   bool isTemplate)
-	: m_pUsedImages(ut_lexico_lesser)
+	: m_pUsedImages()
 {
 	m_bIsTemplate = isTemplate;
 	m_pDocument = pDocument;
@@ -1328,7 +1330,7 @@ void s_AbiWord_1_Listener::_handleLists(void)
 	fl_AutoNum * pAutoNum;
 	for (UT_uint32 k = 0; (m_pDocument->enumLists(k, &pAutoNum )); k++)
 	{
-		const char ** attr = NULL, ** attr0 = NULL;
+		const char ** attr0 = NULL;
 
 		if (pAutoNum->isEmpty() == true)
 			continue;
@@ -1464,13 +1466,13 @@ void s_AbiWord_1_Listener::_handleDataItems(void)
 	const UT_ByteBuf * pByteBuf;
 
 	UT_ByteBuf bbEncoded(1024);
-	UT_Set::Iterator end(m_pUsedImages.end());
-	UT_DEBUGMSG(("USed images are... \n"));
+	string_set::iterator end(m_pUsedImages.end());
+	UT_DEBUGMSG(("Used images are... \n"));
 	for (UT_uint32 k=0;
 		 (m_pDocument->enumDataItems(k,NULL,&szName,&pByteBuf,reinterpret_cast<const void**>(&szMimeType)));
 		 k++)
 	{
-		UT_Set::Iterator it(m_pUsedImages.find_if(szName, ut_lexico_equal));
+		string_set::iterator it(m_pUsedImages.find(szName));
 		if (it == end)
 		{
 			// This data item is no longer used. Don't output it to a file.

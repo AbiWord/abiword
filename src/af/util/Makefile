@@ -88,8 +88,6 @@ OBJS=		$(PLATFORM_OBJS)						\
 		$(OBJDIR)/ut_png.$(OBJ_SUFFIX)			\
 		$(OBJDIR)/ut_locale.$(OBJ_SUFFIX)		\
 		$(OBJDIR)/ut_svg.$(OBJ_SUFFIX)			\
-		$(OBJDIR)/ut_rbtree.$(OBJ_SUFFIX)		\
-		$(OBJDIR)/ut_set.$(OBJ_SUFFIX)			\
 		$(OBJDIR)/ut_Script.$(OBJ_SUFFIX)		\
 		$(OBJDIR)/ut_stack.$(OBJ_SUFFIX)		\
 		$(OBJDIR)/ut_string.$(OBJ_SUFFIX)		\
