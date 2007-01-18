@@ -178,7 +178,6 @@ void AP_TopRuler::setView(AV_View * pView)
 	}
 
 	m_pView = pView;
-	static_cast<FV_View *>(pView)->setTopRuler(this);
 
 	// create an AV_ScrollObj to receive send*ScrollEvents()
 	if (m_pScrollObj == NULL) 
@@ -186,19 +185,24 @@ void AP_TopRuler::setView(AV_View * pView)
 		m_pScrollObj = new AV_ScrollObj(this,_scrollFuncX,_scrollFuncY);
 	}
 	UT_return_if_fail (m_pScrollObj);
-	m_pView->addScrollListener(m_pScrollObj);
 
-	// Register the TopRuler as a ViewListeners on the View.
-	// This lets us receive notify events as the user interacts
-	// with the document (cmdCharMotion, etc).  This will let
-	// us update the display as we move from block to block and
-	// from column to column.
+	if (m_pView) {
+	  static_cast<FV_View *>(pView)->setTopRuler(this);
+	  m_pView->addScrollListener(m_pScrollObj);
 
-	m_pView->addListener(static_cast<AV_Listener *>(this),&m_lidTopRuler);
+	  // Register the TopRuler as a ViewListeners on the View.
+	  // This lets us receive notify events as the user interacts
+	  // with the document (cmdCharMotion, etc).  This will let
+	  // us update the display as we move from block to block and
+	  // from column to column.
+	  
+	  m_pView->addListener(static_cast<AV_Listener *>(this),&m_lidTopRuler);
+	}
 }
 
 void AP_TopRuler::_refreshView(void)
 {
+  if (m_pView)
 	setView(m_pView);
 }
 
