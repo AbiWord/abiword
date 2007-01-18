@@ -24,4 +24,5 @@ INCLUDES= $(TEXT_INCLUDES) $(WP_INCLUDES) $(AF_INCLUDES) $(OTHER_INCLUDES)
 check_LIBRARIES = libTestPtbl.a
 
 libTestPtbl_a_SOURCES= \
-	pt_PieceTable.t.cpp
+	pt_PieceTable.t.cpp \
+	pp_PropertyMap.t.cpp

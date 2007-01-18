@@ -23,6 +23,8 @@
 #ifndef PP_PROPERTYMAP_H
 #define PP_PROPERTYMAP_H
 
+#include <map>
+
 /* pre-emptive dismissal; ut_types.h is needed by just about everything,
  * so even if it's commented out in-file that's still a lot of work for
  * the preprocessor to do...
@@ -31,8 +33,8 @@
 #include "ut_types.h"
 #endif
 
+#include "ut_string_class.h"
 #include "ut_misc.h"
-#include "ut_IntStrMap.h"
 
 class ABI_EXPORT PP_PropertyMap
 {
@@ -284,11 +286,12 @@ public:
 	static const char * abi_property_name (AbiPropertyIndex index);
 
 	static bool abi_property_lookup (const char * name, AbiPropertyIndex & index);
-
+#if 0
+	typedef std::map<UT_sint32, UT_UTF8String *> map_type;
 private:
-	UT_IntStrMap	m_map;
+	map_type m_map;
 public:
-	const UT_IntStrMap & map () const { return m_map; }
+	const map_type & map () const { return m_map; }
 
 	inline void clear ()
 	{
@@ -297,33 +300,61 @@ public:
 
 	bool ins (AbiPropertyIndex key, UT_UTF8String * value) // responsibility for value passes here
 	{
-		if ((value == 0) || (key == abi__count)) return false;
-		return m_map.ins (static_cast<UT_sint32>(key), value);
+		if ((value == 0) || (key == abi__count)) 
+			return false;
+		std::pair<map_type::iterator, bool> p =
+			m_map.insert(map_type::value_type(static_cast<UT_sint32>(key), 
+											  value));
+		return p.second;
 	}
 	bool ins (AbiPropertyIndex key, const char * value)
 	{
-		if ((value == 0) || (key == abi__count)) return false;
-		return m_map.ins (static_cast<UT_sint32>(key), value);
+		if ((value == 0) || (key == abi__count)) 
+			return false;
+		std::pair<map_type::iterator, bool> p = 
+			m_map.insert(map_type::value_type(static_cast<UT_sint32>(key), 
+											  new UT_UTF8String(value)));
+		return p.second;
 	}
 
 	/* returns false if no such key-value
 	 */
 	inline bool del (AbiPropertyIndex key) // value is deleted
 	{
-		if (key == abi__count) return false;
-		return m_map.del (static_cast<UT_sint32>(key));
+		if (key == abi__count) {
+			return false;
+		}
+		map_type::iterator i = m_map.find(static_cast<UT_sint32>(key));
+		if (i == m_map.end()) {
+			return false;
+		}
+		delete (*i).second;
+		m_map.erase(i);
+		return true;
 	}
 	inline bool del (AbiPropertyIndex key, UT_UTF8String *& value) // value is passed back
 	{
 		if (key == abi__count) return false;
-		return m_map.del (static_cast<UT_sint32>(key), value);
+		map_type::iterator i = m_map.find(static_cast<UT_sint32>(key));
+		if (i == m_map.end()) {
+			return false;
+		}
+		value = (*i).second;
+		m_map.erase(i);
+		return true;
 	}
 
 	inline const UT_UTF8String * operator[] (AbiPropertyIndex key)
 	{
-		if (key == abi__count) return 0;
-		return m_map[static_cast<UT_sint32>(key)];
+		if (key == abi__count) 
+			return 0;
+		map_type::iterator i = m_map.find(static_cast<UT_sint32>(key));
+		if (i == m_map.end()) {
+			return NULL;
+		}
+		return (*i).second;
 	}
+#endif
 };
 
 #endif /* ! PP_PROPERTYMAP_H */
