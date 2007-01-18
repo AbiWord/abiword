@@ -96,7 +96,7 @@ char * XAP_Win32Dialog_FileOpenSaveAs::_getDefaultExtension(UT_uint32 indx)
 {
 	static char abw_sfx[] = "abw";
 	
-	UT_uint32 end = UT_pointerArrayLength((void **) m_szDescriptions);
+	UT_uint32 end = g_strv_length((gchar **) m_szDescriptions);
 	if(indx >= end)
 		return abw_sfx;
 	
@@ -124,11 +124,10 @@ void XAP_Win32Dialog_FileOpenSaveAs::_buildFilterList(UT_String& sFilter)
 
 	const XAP_StringSet*  pSS	= XAP_App::getApp()->getStringSet();
 
-	UT_ASSERT(UT_pointerArrayLength((void **) m_szSuffixes) ==
-			  UT_pointerArrayLength((void **) m_szDescriptions));
+	UT_ASSERT(g_strv_length((gchar **) m_szSuffixes) == g_strv_length((gchar **) m_szDescriptions));
 
 	// measure one list, they should all be the same length
-	UT_uint32 end = UT_pointerArrayLength((void **) m_szDescriptions);
+	UT_uint32 end = g_strv_length((gchar **) m_szDescriptions);
 
 	for (UT_uint32 i = 0; i < end; i++)
 	{
@@ -333,7 +332,7 @@ void XAP_Win32Dialog_FileOpenSaveAs::runModal(XAP_Frame * pFrame)
 	if( m_nDefaultFileType != XAP_DIALOG_FILEOPENSAVEAS_FILE_TYPE_AUTO )
 	{
 		// Find the index of the type we were given
-		UT_uint32 iCounter, iNumTypes = UT_pointerArrayLength((void **) m_nTypeList);
+		UT_uint32 iCounter, iNumTypes = g_strv_length((gchar **) m_nTypeList);
 
 		for( iCounter = 0; iCounter < iNumTypes; iCounter++ )
 		{
@@ -352,7 +351,7 @@ void XAP_Win32Dialog_FileOpenSaveAs::runModal(XAP_Frame * pFrame)
 	case XAP_DIALOG_ID_FILE_OPEN:
 		ofn.lpstrTitle = pSS->getValue(XAP_STRING_ID_DLG_FOSA_OpenTitle);
 		ofn.Flags |= OFN_FILEMUSTEXIST;
-		ofn.nFilterIndex = UT_pointerArrayLength((void **) m_szDescriptions) + 1;
+		ofn.nFilterIndex = g_strv_length((gchar **) m_szDescriptions) + 1;
 		bDialogResult = GetOpenFileName((OPENFILENAME *)&ofn);
 		break;
 
@@ -377,7 +376,7 @@ void XAP_Win32Dialog_FileOpenSaveAs::runModal(XAP_Frame * pFrame)
 		ofn.hInstance	   = pWin32App->getInstance();
 		ofn.lpTemplateName = MAKEINTRESOURCE(XAP_RID_DIALOG_INSERT_PICTURE);
 		ofn.lpfnHook	   = (LPOFNHOOKPROC) s_hookInsertPicProc;
-		ofn.nFilterIndex   = UT_pointerArrayLength((void **) m_szDescriptions) + 1;
+		ofn.nFilterIndex   = g_strv_length((gchar **) m_szDescriptions) + 1;
 		ofn.Flags |= OFN_EXPLORER;
 		ofn.Flags |= OFN_ENABLETEMPLATE;
 		ofn.Flags |= OFN_ENABLEHOOK;
@@ -386,14 +385,14 @@ void XAP_Win32Dialog_FileOpenSaveAs::runModal(XAP_Frame * pFrame)
 
 	case XAP_DIALOG_ID_FILE_IMPORT:
 		ofn.lpstrTitle	 = pSS->getValue(XAP_STRING_ID_DLG_FOSA_ImportTitle);
-		ofn.nFilterIndex = UT_pointerArrayLength((void **) m_szDescriptions) + 1;
+		ofn.nFilterIndex = g_strv_length((gchar **) m_szDescriptions) + 1;
 		ofn.Flags |= OFN_FILEMUSTEXIST;
 		bDialogResult = GetOpenFileName((OPENFILENAME *)&ofn);
 		break;
 
 	case XAP_DIALOG_ID_INSERTMATHML:
 		ofn.lpstrTitle	 = pSS->getValue(XAP_STRING_ID_DLG_FOSA_InsertMath);
-		ofn.nFilterIndex = UT_pointerArrayLength((void **) m_szDescriptions) + 1;
+		ofn.nFilterIndex = g_strv_length((gchar **) m_szDescriptions) + 1;
 		ofn.Flags |= OFN_FILEMUSTEXIST;
 		bDialogResult = GetOpenFileName((OPENFILENAME *)&ofn);
 		break;
@@ -410,7 +409,7 @@ void XAP_Win32Dialog_FileOpenSaveAs::runModal(XAP_Frame * pFrame)
 	case XAP_DIALOG_ID_INSERT_FILE:
 		ofn.lpstrTitle = pSS->getValue(XAP_STRING_ID_DLG_FOSA_InsertTitle);
 		ofn.Flags |= OFN_FILEMUSTEXIST;
-		ofn.nFilterIndex = UT_pointerArrayLength((void **) m_szDescriptions) + 1;
+		ofn.nFilterIndex = g_strv_length((gchar **) m_szDescriptions) + 1;
 		bDialogResult = GetOpenFileName((OPENFILENAME *)&ofn);
 		break;
 
@@ -424,7 +423,7 @@ void XAP_Win32Dialog_FileOpenSaveAs::runModal(XAP_Frame * pFrame)
 
 	if (bDialogResult != FALSE)
 	{
-		UT_uint32 end = UT_pointerArrayLength((void **) m_szSuffixes);
+		UT_uint32 end = g_strv_length((gchar **) m_szSuffixes);
 
 		if ((m_id == XAP_DIALOG_ID_FILE_SAVEAS) &&
 			(!UT_pathSuffix(szFile)))
@@ -476,7 +475,7 @@ void XAP_Win32Dialog_FileOpenSaveAs::runModal(XAP_Frame * pFrame)
 		m_answer = a_OK;
 
 		// Set filetype to auto if a generic filter was set
-		if (ofn.nFilterIndex > UT_pointerArrayLength((void **) m_szSuffixes))
+		if (ofn.nFilterIndex > g_strv_length((gchar **) m_szSuffixes))
 			m_nFileType = XAP_DIALOG_FILEOPENSAVEAS_FILE_TYPE_AUTO;
 		else
 			m_nFileType = ofn.nFilterIndex;

@@ -4,17 +4,6 @@
 #include "ut_string.h"
 
 
-
-TFTEST_MAIN("UT_pointerArrayLength()")
-{
-	char *array3[] = { "foo", "bar", "baz", NULL };
-	char *array6[] = { "foo", "bar", "baz", "foo", "bar", "baz", NULL };
-
-	TFPASS(UT_pointerArrayLength((void**)array3) == 3);
-	TFPASS(UT_pointerArrayLength((void**)array6) == 6);
-}
-
-
 /* FIXME: this function looks really obsolete */
 TFTEST_MAIN("UT_XML_strlen")
 {

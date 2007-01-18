@@ -232,7 +232,7 @@ bool XAP_UnixDialog_FileOpenSaveAs::_run_gtk_main(XAP_Frame * pFrame,
 			// If, however, the user doesn't want suffixes, they don't have to have them.  
 	
 			{
-				//UT_uint32 end = UT_pointerArrayLength(static_cast<void **>(m_szSuffixes));
+				//UT_uint32 end = g_strv_length(m_szSuffixes);
 	
 				GtkWidget * activeItem = gtk_menu_get_active(GTK_MENU(
 					gtk_option_menu_get_menu(GTK_OPTION_MENU(filetypes_pulldown))));
@@ -714,11 +714,10 @@ void XAP_UnixDialog_FileOpenSaveAs::runModal(XAP_Frame * pFrame)
 	
 	// add list items
 	{
-		UT_ASSERT(UT_pointerArrayLength(reinterpret_cast<void **>(const_cast<char **>(m_szSuffixes))) ==
-				  UT_pointerArrayLength(reinterpret_cast<void **>(const_cast<char **>(m_szDescriptions))));
+		UT_ASSERT(g_strv_length((gchar **) m_szSuffixes) == g_strv_length((gchar **) m_szDescriptions));
 		
 		// measure one list, they should all be the same length
-		UT_uint32 end = UT_pointerArrayLength(reinterpret_cast<void **>(const_cast<char **>(m_szDescriptions)));
+		UT_uint32 end = g_strv_length((gchar **) m_szDescriptions);
 	  
 		for (UT_uint32 i = 0; i < end; i++)
 		{

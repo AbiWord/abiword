@@ -207,11 +207,10 @@ void XAP_QNXDialog_FileOpenSaveAs::runModal(XAP_Frame * pFrame)
 	//TODO: Dynamically create the file specification
 	file_filter[0] = '\0';
 	{
-		UT_ASSERT(UT_pointerArrayLength((void **) m_szSuffixes) ==
-				  UT_pointerArrayLength((void **) m_szDescriptions));
+		UT_ASSERT(g_strv_length((gchar **) m_szSuffixes) == g_strv_length((gchar **) m_szDescriptions));
 
 		// measure one list, they should all be the same length
-		UT_uint32 end = UT_pointerArrayLength((void **) m_szDescriptions);
+		UT_uint32 end = g_strv_length((gchar **) m_szDescriptions);
 
 		for (UT_uint32 i = 0; i < end; i++) {
 			UT_uint32 totallen;

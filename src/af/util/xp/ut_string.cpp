@@ -47,18 +47,6 @@
 #include "ut_case.h"
 #undef  UT_STRING_CPP
 
-UT_uint32 UT_pointerArrayLength(void ** array)
-{
-	if (! (array && *array))
-		return 0;
-
-	UT_uint32 i = 0;
-	while (array[i])
-		i++;
-
-	return i;
-}
-
 ////////////////////////////////////////////////////////////////////////
 //
 //  XML string (XML_Char)
@@ -93,13 +81,13 @@ bool UT_XML_cloneList(XML_Char **& rszDest, const XML_Char ** szSource)
 		return true;
 
 	XML_Char ** newmemory = (XML_Char **)
-		UT_calloc(UT_pointerArrayLength(reinterpret_cast<void **>(const_cast<XML_Char **>(szSource))) + 1, sizeof(XML_Char *));
+		UT_calloc(g_strv_length((gchar **) szSource) + 1, sizeof(XML_Char *));
 
 	if (newmemory == NULL)
 		return false;
 
 	memcpy(static_cast<void *>(newmemory), static_cast<const void *>(szSource),
-		   UT_pointerArrayLength(reinterpret_cast<void **>(const_cast<XML_Char **>(szSource)) ) * sizeof(XML_Char *));
+		   g_strv_length((gchar **) szSource) * sizeof(XML_Char *));
 
 	rszDest = newmemory;
 

@@ -31,16 +31,9 @@
 #include "ut_types.h"
 #endif
 
-#define UT_strcmp(a, b) strcmp((a), (b))
-
 class UT_GrowBuf;
 
 UT_BEGIN_EXTERN_C
-
-///////////////////////////////////////////////////////////////////////////////
-// Replacements for common non-ANSI functions
-
-ABI_EXPORT UT_uint32  UT_pointerArrayLength(void ** array);
 
 ////////////////////////////////////////////////////////////////////////
 //

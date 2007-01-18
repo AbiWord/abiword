@@ -442,10 +442,9 @@ void XAP_CocoaDialog_FileOpenSaveAs::runModal(XAP_Frame * pFrame)
 		[m_accessoryViewsController addItemWithTitle:title fileType:type];
 	}
 
-	UT_ASSERT(UT_pointerArrayLength(reinterpret_cast<void **>(const_cast<char **>(m_szSuffixes    ))) ==
-			  UT_pointerArrayLength(reinterpret_cast<void **>(const_cast<char **>(m_szDescriptions))));
+	UT_ASSERT(g_strv_length((gchar **) m_szSuffixes) == g_strv_length((gchar **) m_szDescriptions));
 
-	m_szFileTypeCount = UT_pointerArrayLength(reinterpret_cast<void **>(const_cast<char **>(m_szDescriptions)));
+	m_szFileTypeCount = g_strv_length((gchar **) m_szDescriptions);
 
 	UT_sint32 defaultFileType = m_nDefaultFileType;
 
