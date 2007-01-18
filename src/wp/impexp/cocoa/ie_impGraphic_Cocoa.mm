@@ -59,7 +59,7 @@ const IE_SuffixConfidence *IE_ImpGraphicCocoa_Sniffer::getSuffixConfidence()
 
 const IE_MimeConfidence * IE_ImpGraphicCocoa_Sniffer::getMimeConfidence()
 {
-	static IE_MimeConfidence *mimeConfidence = {
+	static IE_MimeConfidence mimeConfidence[] = {
 		{ IE_MIME_MATCH_FULL, "image/png", UT_CONFIDENCE_PERFECT },
 		{ IE_MIME_MATCH_FULL, "image/jpeg", UT_CONFIDENCE_PERFECT },
 		{ IE_MIME_MATCH_FULL, "image/tiff", UT_CONFIDENCE_PERFECT },
