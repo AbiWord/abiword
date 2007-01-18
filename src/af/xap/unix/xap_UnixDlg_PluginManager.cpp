@@ -305,20 +305,6 @@ void XAP_UnixDialog_PluginManager::_refresh ()
 
 /*****************************************************************/
 
-void XAP_UnixDialog_PluginManager::s_deactivate_clicked (GtkWidget * w, 
-														 XAP_UnixDialog_PluginManager * dlg)
-{
-	UT_return_if_fail (dlg);
-	dlg->event_Deactivate ();
-}
-
-void XAP_UnixDialog_PluginManager::s_deactivate_all_clicked (GtkWidget * w, 
-															 XAP_UnixDialog_PluginManager * dlg)
-{
-	UT_return_if_fail (dlg);
-	dlg->event_DeactivateAll ();
-}
-
 void XAP_UnixDialog_PluginManager::s_load_clicked (GtkWidget * w,
 												   XAP_UnixDialog_PluginManager * dlg)
 {
@@ -381,12 +367,8 @@ GtkWidget * XAP_UnixDialog_PluginManager::_constructWindow ()
 	localizeLabel(glade_xml_get_widget(xml, "lbAuthorLabel"), pSS, XAP_STRING_ID_DLG_PLUGIN_MANAGER_AUTHOR);
 	localizeLabel(glade_xml_get_widget(xml, "lbVersionLabel"), pSS, XAP_STRING_ID_DLG_PLUGIN_MANAGER_VERSION);
 
-	GtkWidget * btDeactivate = glade_xml_get_widget(xml, "btDeactivate");
-	GtkWidget * btDeactivateAll = glade_xml_get_widget(xml, "btDeactivateAll");
 	GtkWidget * btInstall = glade_xml_get_widget(xml, "btInstall");
 
-	localizeButton(btDeactivate, pSS, XAP_STRING_ID_DLG_PLUGIN_MANAGER_DEACTIVATE);
-	localizeButton(btDeactivateAll, pSS, XAP_STRING_ID_DLG_PLUGIN_MANAGER_DEACTIVATE_ALL);
 	localizeButton(btInstall, pSS, XAP_STRING_ID_DLG_PLUGIN_MANAGER_INSTALL);
 
 	GtkCellRenderer *renderer;
@@ -400,14 +382,6 @@ GtkWidget * XAP_UnixDialog_PluginManager::_constructWindow ()
 													   NULL);
 	gtk_tree_view_append_column( GTK_TREE_VIEW(m_list), column);
 
-	g_signal_connect (G_OBJECT(btDeactivate), "clicked",
-					  G_CALLBACK(s_deactivate_clicked), 
-					  static_cast<gpointer>(this));
-	
-	g_signal_connect (G_OBJECT(btDeactivateAll), "clicked",
-					  G_CALLBACK(s_deactivate_all_clicked), 
-					  static_cast<gpointer>(this));
-	
 	g_signal_connect (G_OBJECT(btInstall), "clicked",
 					  G_CALLBACK(s_load_clicked), 
 					  static_cast<gpointer>(this));
