@@ -1548,10 +1548,14 @@ bool pt_PieceTable::_deleteComplexSpan(PT_DocPosition & origPos1,
 					{
 						m_fragments.cleanFrags();
 					}
-					PT_DocPosition myPos = pfs->getPos();
-					isFrame =  pfs->getStruxType() == PTX_SectionFrame;
-					_deleteFormatting(myPos - pfs->getLength(), myPos);
-					bResult = _deleteStruxWithNotify(myPos, pfs, &pff, &dpp);
+					PT_DocPosition myPos = 0;
+					if(pfs)
+					{
+						myPos = pfs->getPos();
+						isFrame =  pfs->getStruxType() == PTX_SectionFrame;
+						_deleteFormatting(myPos - pfs->getLength(), myPos);
+						bResult = _deleteStruxWithNotify(myPos, pfs, &pff, &dpp);
+					}
 //
 // Each strux is one in length, we've added one while delaying the delete
 // so subtract it now.

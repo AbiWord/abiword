@@ -1817,7 +1817,8 @@ void FV_FrameEdit::mouseRelease(UT_sint32 x, UT_sint32 y)
 		      getGraphics()->getCaret()->disable();
 		      m_pView->m_countDisable++;
 		}
-		m_pFrameContainer = static_cast<fp_FrameContainer *>(m_pFrameLayout->getFirstContainer());
+		if(m_pFrameLayout)
+			m_pFrameContainer = static_cast<fp_FrameContainer *>(m_pFrameLayout->getFirstContainer());
 		drawFrame(true);
 		m_bFirstDragDone = false;
 	}
