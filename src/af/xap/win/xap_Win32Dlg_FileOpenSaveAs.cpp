@@ -297,7 +297,8 @@ void XAP_Win32Dialog_FileOpenSaveAs::runModal(XAP_Frame * pFrame)
 		// parts -- directory and file -- for the common dlg.
 
 		const char * szURI = g_filename_from_uri(m_szInitialPathname, NULL, NULL);
-		UT_return_if_fail(szURI);
+		if(!szURI)
+			szURI = "";
 
 		strcpy(szDir,AP_Win32App::s_fromUTF8ToWinLocale(szURI).c_str());
 		char * pLastSlash = strrchr(szDir, '/');
@@ -322,7 +323,7 @@ void XAP_Win32Dialog_FileOpenSaveAs::runModal(XAP_Frame * pFrame)
 				*dot = 0;
 		}
 
-		g_free(szURI);
+		FREEP(szURI);
 	}
 
 	// display the appropriate dialog box.
@@ -463,7 +464,7 @@ void XAP_Win32Dialog_FileOpenSaveAs::runModal(XAP_Frame * pFrame)
 					UT_ASSERT_HARMLESS(UT_SHOULD_NOT_HAPPEN);
 					m_szFinalPathname = NULL;
 				}
-				g_free(uri);
+				FREEP(uri);
 			}
 			else
 			{
@@ -485,8 +486,6 @@ void XAP_Win32Dialog_FileOpenSaveAs::runModal(XAP_Frame * pFrame)
 		m_answer = a_CANCEL;
 		UT_DEBUGMSG(("Didn't get a file: reason=0x%x\n", CommDlgExtendedError()));
 	}
-
-	return;
 }
 
 /*!
@@ -699,14 +698,14 @@ UINT XAP_Win32Dialog_FileOpenSaveAs::_previewPicture(HWND hDlg)
 			DELETEP(pIEG);
 			DELETEP(pBB);
 			DELETEP(pTempBB);
-			g_free(uri);
+			FREEP(uri);
 			return false;
 		}
 	}
 	// Reset file type based on conversion
 	iegft = pIEG->fileTypeForContents( (const char *) pBB->getPointer(0), 50);
 	DELETEP(pIEG);
-	g_free(uri);
+	FREEP(uri);
 
 	double		scale_factor = 0.0;
 	UT_sint32	scaled_width,scaled_height;
