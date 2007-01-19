@@ -27,7 +27,7 @@
 // NOTE: we need to be sure that legal text is built into the app
 
 #define XAP_ABOUT_TITLE "About %s"
-#define XAP_ABOUT_DESCRIPTION "%s is an Open Source application licensed under the GNU GPL.\nYou are g_free to redistribute this application."
+#define XAP_ABOUT_DESCRIPTION "%s is an Open Source application licensed under the GNU GPL.\nYou are free to redistribute this application."
 #define XAP_ABOUT_COPYRIGHT "Copyright (C) 1998-2007 Dom Lachowicz, and others"
 #define XAP_ABOUT_GPL "%s is available for use under the the terms\nof the GNU General Public License"
 #define XAP_ABOUT_VERSION "Version: %s"

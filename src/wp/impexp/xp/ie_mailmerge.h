@@ -38,7 +38,7 @@ public:
 
 	virtual ~IE_MergeSniffer();
 	
-	// these you get for g_free
+	// these you get for free
 	inline bool supportsFileType (IEMergeType type) {return m_type == type;}
 	inline IEMergeType getFileType() const {return m_type;}
 	
