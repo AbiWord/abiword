@@ -155,7 +155,7 @@ void AP_UnixDialog_InsertHyperlink::_constructWindowContents ( GtkWidget * vbox2
   	  m_pBookmarks[i] = getNthExistingBookmark(i);
 
   int (*my_cmp)(const void *, const void *) =
-  	  (int (*)(const void*, const void*)) UT_XML_strcmp;
+  	  (int (*)(const void*, const void*)) strcmp;
     	
   qsort(m_pBookmarks, getExistingBookmarksCount(),sizeof(XML_Char*),my_cmp);
 

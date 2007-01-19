@@ -55,86 +55,12 @@
 //
 ////////////////////////////////////////////////////////////////////////
 
-UT_uint32 UT_XML_strlen(const XML_Char * sz)
-{
-	if (!sz || !*sz)
-		return 0;
-
-#if 0
-	// this is waste of time, and we assume sizeof(XML_Char) == sizeof(char)
-	UT_uint32 k = 0;
-	while (sz[k])
-		k++;
-
-	return k;
-#else
-	UT_ASSERT_HARMLESS( sizeof(XML_Char) == sizeof(char) );
-	return strlen(sz);
-#endif
-}
-
-// Is this function implemented somewhere else?
-
-bool UT_XML_cloneList(XML_Char **& rszDest, const XML_Char ** szSource)
-{
-	if (!szSource)
-		return true;
-
-	XML_Char ** newmemory = (XML_Char **)
-		UT_calloc(g_strv_length((gchar **) szSource) + 1, sizeof(XML_Char *));
-
-	if (newmemory == NULL)
-		return false;
-
-	memcpy(static_cast<void *>(newmemory), static_cast<const void *>(szSource),
-		   g_strv_length((gchar **) szSource) * sizeof(XML_Char *));
-
-	rszDest = newmemory;
-
-	return true;
-}
-
-bool UT_XML_replaceList(XML_Char **& rszDest, const XML_Char ** szSource)
-{
-	FREEP(rszDest);
-
-	return UT_XML_cloneList(rszDest, szSource);
-}
-
-bool UT_XML_cloneString(XML_Char *& rszDest, const XML_Char * szSource)
-{
-	UT_uint32 length = UT_XML_strlen(szSource) + 1;
-	rszDest = static_cast<XML_Char *>(UT_calloc(length,sizeof(XML_Char)));
-	if (!rszDest)
-		return false;
-	memmove(rszDest,szSource,length*sizeof(XML_Char));
-	return true;
-}
-
-UT_sint32 UT_XML_stricmp(const XML_Char * sz1, const XML_Char * sz2)
-{
-	UT_ASSERT(sizeof(char) == sizeof(XML_Char));
-	return g_ascii_strcasecmp(static_cast<const char*>(sz1),static_cast<const char*>(sz2));
-}
-
-UT_sint32 UT_XML_strnicmp(const XML_Char * sz1, const XML_Char * sz2, const UT_uint32 n)
-{
-	UT_ASSERT(sizeof(char) == sizeof(XML_Char));
-	return g_ascii_strncasecmp(static_cast<const char*>(sz1),static_cast<const char*>(sz2),n);
-}
-
-UT_sint32 UT_XML_strcmp(const XML_Char * sz1, const XML_Char * sz2)
-{
-	UT_ASSERT(sizeof(char) == sizeof(XML_Char));
-	return strcmp(static_cast<const char*>(sz1),static_cast<const char*>(sz2));
-}
-
 bool UT_XML_cloneNoAmpersands(XML_Char *& rszDest, const XML_Char * szSource)
 {
 	if (szSource == NULL)
 		return false;
 
-	UT_uint32 length = UT_XML_strlen(szSource) + 1;
+	UT_uint32 length = strlen(szSource) + 1;
 	rszDest = static_cast<XML_Char *>(UT_calloc(length, sizeof(XML_Char)));
 
 	if (!rszDest)
@@ -164,7 +90,7 @@ XML_Char *UT_XML_transNoAmpersands(const XML_Char * szSource)
 	if (szSource == NULL)
 		return NULL;
 
-	UT_uint32 length = UT_XML_strlen(szSource) + 1;
+	UT_uint32 length = strlen(szSource) + 1;
 	if (length > iDestBufferLength) {
 		if (rszDestBuffer && iDestBufferLength) {
 			g_free(rszDestBuffer);
@@ -192,32 +118,6 @@ XML_Char *UT_XML_transNoAmpersands(const XML_Char * szSource)
 	}
 
 	return rszDestBuffer;
-}
-
-
-// TODO : put a better strncpy here; resolve to platform version if available
-
-UT_uint32 UT_XML_strncpy(XML_Char * szDest, UT_uint32 nLen, const XML_Char * szSource)
-{
-	if (!szSource)
-		return 0;
-
-	UT_ASSERT(szDest);
-
-	UT_uint32 i = 0;
-
-	while (i < nLen)
-	{
-		szDest[i] = szSource[i];
-
-		// if we just wrote NULL, return
-		if (szDest[i] == 0)
-			return i;
-
-		i++;
-	}
-
-	return i;
 }
 
 UT_UCSChar UT_decodeUTF8char(const XML_Char * p, UT_uint32 len)

@@ -573,7 +573,7 @@ AP_UnixDialog_Spell::onSuggestionChanged ()
 		do {
 			gchar *label = NULL;
 			gtk_tree_model_get (model, &iter, COLUMN_SUGGESTION, &label, -1);
-			if (UT_XML_strnicmp (modtext, label, UT_XML_strlen (modtext)) == 0) {
+			if (g_ascii_strncasecmp (modtext, label, strlen (modtext)) == 0) {
 				GtkTreePath *path = gtk_tree_model_get_path (model, &iter);
 				g_signal_handler_block(G_OBJECT(selection), m_listHandlerID);
 				gtk_tree_selection_select_path (selection, path);

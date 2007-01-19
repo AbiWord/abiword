@@ -49,7 +49,7 @@ XAP_StringSet::XAP_StringSet(XAP_App * pApp, const XML_Char * szLanguageName)
 
 	m_szLanguageName = NULL;
 	if (szLanguageName && *szLanguageName)
-		UT_XML_cloneString((XML_Char *&)m_szLanguageName,szLanguageName);
+		m_szLanguageName = g_strdup(szLanguageName);
 }
 
 XAP_StringSet::~XAP_StringSet(void)
@@ -208,7 +208,7 @@ bool XAP_DiskStringSet::setLanguage(const XML_Char * szLanguageName)
 		g_free(const_cast<XML_Char *>(m_szLanguageName));
 	m_szLanguageName = NULL;
 	if (szLanguageName && *szLanguageName)
-		UT_XML_cloneString((XML_Char *&)m_szLanguageName,szLanguageName);
+		m_szLanguageName = g_strdup(szLanguageName);
 	return true;
 }
 
@@ -224,7 +224,7 @@ bool XAP_DiskStringSet::setValue(XAP_String_Id id, const XML_Char * szString)
 	if (szString && *szString)
 	{
 		UT_GrowBuf gb;
-		UT_decodeUTF8string(szString,UT_XML_strlen(szString),&gb);
+		UT_decodeUTF8string(szString,strlen(szString),&gb);
 
 		// TODO The strings that we use (for dialogs and etc) are currently
 		// TODO limited to single-byte encodings by the code below.
@@ -337,7 +337,7 @@ bool XAP_DiskStringSet::setValue(const XML_Char * szId, const XML_Char * szStrin
 	// case-insensitive comparison (and it is costing us lot of time, particularly at
 	// startup).
 	for (k=0; k<kLimit; k++)
-		if (UT_XML_strcmp(s_map[k].szName,szId) == 0)
+		if (strcmp(s_map[k].szName,szId) == 0)
 			return XAP_DiskStringSet::setValue(s_map[k].id,szString);
 
 	// TODO should we promote this message to a message box ??

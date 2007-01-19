@@ -127,7 +127,7 @@ void AP_UnixDialog_InsertBookmark::_setList(void)
 	GList *glist=NULL;
 
 	gint (*my_cmp)(const void *, const void *)
-		= (gint (*)(const void *, const void *)) UT_XML_strcmp;
+		= (gint (*)(const void *, const void *)) strcmp;
 	for(i = 0; i < static_cast<gint>(getExistingBookmarksCount()); i++)
 		glist = g_list_insert_sorted(glist, const_cast<gchar *>(reinterpret_cast<const gchar *>(getNthExistingBookmark(i))),my_cmp);
 	

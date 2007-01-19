@@ -226,7 +226,7 @@ bool AP_DiskStringSet::setValue(XAP_String_Id id, const XML_Char * szString)
 	if (szString && *szString)
 	{
 		UT_GrowBuf gb;
-		UT_decodeUTF8string(szString,UT_XML_strlen(szString),&gb);
+		UT_decodeUTF8string(szString,strlen(szString),&gb);
 
 		// TODO The strings that we use (for dialogs and etc) are currently
 		// TODO limited to single-byte encodings by the code below.  
@@ -343,7 +343,7 @@ bool AP_DiskStringSet::setValue(const XML_Char * szId, const XML_Char * szString
 	// we use predefined IDs to access the preferences, so there is no need to do
 	// case-insensitive comparison (and it is costing us lot of time).
 	for (k=0; k<kLimit; k++)
-		if (UT_XML_strcmp(s_map[k].szName,szId) == 0)
+		if (strcmp(s_map[k].szName,szId) == 0)
 			return setValue(s_map[k].id,szString);
 
 	// the name (szId) is not in our table, see if the base class knows about it.

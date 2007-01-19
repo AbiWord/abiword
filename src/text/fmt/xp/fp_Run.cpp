@@ -2658,7 +2658,7 @@ fp_BookmarkRun::fp_BookmarkRun( fl_BlockLayout* pBL,
 
 	// have to cache the name, since we will need to use it for a while
 	// after the associated PT fragment has been deleted.
-	UT_XML_strncpy(m_pName, BOOKMARK_NAME_SIZE, m_pBookmark->getName());
+	strncpy(m_pName, m_pBookmark->getName(), BOOKMARK_NAME_SIZE);
 	m_pName[BOOKMARK_NAME_SIZE] = 0;
 
 	_setWidth(0);
@@ -2668,7 +2668,7 @@ fp_BookmarkRun::fp_BookmarkRun( fl_BlockLayout* pBL,
 bool fp_BookmarkRun::isComrade(fp_BookmarkRun *pBR) const
 {
 	UT_ASSERT(m_pName && *m_pName && pBR->m_pName && *pBR->m_pName);
-	return (0 == UT_XML_strcmp(m_pName, pBR->m_pName));
+	return (0 == strcmp(m_pName, pBR->m_pName));
 }
 
 void fp_BookmarkRun::_lookupProperties(const PP_AttrProp * /*pSpanAP*/,
@@ -2896,7 +2896,7 @@ fp_HyperlinkRun::fp_HyperlinkRun( fl_BlockLayout* pBL,
 
 	while(pAP->getNthAttribute(k++, pName, pTarget))
 	{
-		bFound = (0 == UT_XML_strnicmp(pName,"xlink:href",10));
+		bFound = (0 == g_ascii_strncasecmp(pName,"xlink:href",10));
 		if(bFound)
 			break;
 	}
@@ -2905,9 +2905,9 @@ fp_HyperlinkRun::fp_HyperlinkRun( fl_BlockLayout* pBL,
 	// is to a potentially volatile location
 	if(bFound)
 	{
-		UT_uint32 iTargetLen = UT_XML_strlen(pTarget);
+		UT_uint32 iTargetLen = strlen(pTarget);
 		m_pTarget = new XML_Char [iTargetLen + 1];
-		UT_XML_strncpy(m_pTarget, iTargetLen + 1, pTarget);
+		strncpy(m_pTarget, pTarget, iTargetLen + 1);
 		m_bIsStart = true;
 		//if this is a start of the hyperlink, we set m_pHyperlink to this,
 		//so that when a run gets inserted after this one, its m_pHyperlink is

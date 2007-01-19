@@ -230,11 +230,11 @@ bool EV_QNXToolbar::synthesize(void)
 
 	char style = Pt_IMAGE;
 
-	if (UT_XML_stricmp(szValue,"icon")==0)
+	if (g_ascii_strcasecmp(szValue,"icon")==0)
 		style = Pt_IMAGE;
-	else if (UT_XML_stricmp(szValue,"text")==0)
+	else if (g_ascii_strcasecmp(szValue,"text")==0)
 		style = Pt_Z_STRING;
-	else if (UT_XML_stricmp(szValue,"both")==0)
+	else if (g_ascii_strcasecmp(szValue,"both")==0)
 		style = Pt_TEXT_IMAGE;
 	
 	XAP_QNXFrameImpl * pQNXFrameImpl = static_cast<XAP_QNXFrameImpl *>(m_pFrame->getFrameImpl()); 

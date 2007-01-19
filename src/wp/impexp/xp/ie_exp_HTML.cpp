@@ -4884,11 +4884,11 @@ void s_HTML_Listener::_handleField (const PX_ChangeRecord_Object * pcro,
 				m_utf8_1 += "\"";
 			}
 			
-			XML_Char * szTypeCpy = new XML_Char[UT_XML_strlen(szType) + 2];
-			UT_XML_strncpy(szTypeCpy, UT_XML_strlen(szType)+1, szType);
+			XML_Char * szTypeCpy = new XML_Char[strlen(szType) + 2];
+			strncpy(szTypeCpy, szType, strlen(szType)+1);
 			const XML_Char * noteToken = (XML_Char *)strtok((char *)szTypeCpy, "_");
-			XML_Char * idAttr = new XML_Char[UT_XML_strlen(noteToken) + 4];
-			UT_XML_strncpy(idAttr, UT_XML_strlen(noteToken)+1, noteToken);
+			XML_Char * idAttr = new XML_Char[strlen(noteToken) + 4];
+			strncpy(idAttr, noteToken, strlen(noteToken)+1);
 			const XML_Char * partToken = (XML_Char *)strtok(NULL, "_");
 			const XML_Char * szID = 0;
 			const XML_Char * szNoteNumInit = 0;
@@ -4994,7 +4994,7 @@ void s_HTML_Listener::_handleBookmark (PT_AttrPropIndex api)
 
 	if (szType == 0) return; // ??
 
-	if (UT_XML_stricmp (szType, "start") == 0)
+	if (g_ascii_strcasecmp (szType, "start") == 0)
 	{
 		const XML_Char * szName = 0;
 		pAP->getAttribute ("name", szName);
@@ -5927,7 +5927,7 @@ bool s_StyleTree::add (const char * style_name, PD_Document * pDoc)
 	const XML_Char * parent_name = NULL;
 	if (basis && 
 		basis->getAttribute (PT_NAME_ATTRIBUTE_NAME, parent_name) &&
-		UT_XML_strcmp(style_name, parent_name) != 0)
+		strcmp(style_name, parent_name) != 0)
 	{
 		parent = const_cast<s_StyleTree *>(find (basis));
 		if (parent == 0)

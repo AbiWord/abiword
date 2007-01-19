@@ -778,59 +778,59 @@ bool IE_Exp_RTF::_write_rtf_header(void)
 	{
 		_rtf_keyword("ftnnar");			// Numeric Footnotes
 	}
-	else if(UT_XML_strcmp(pszFootnoteType,"numeric") == 0)
+	else if(strcmp(pszFootnoteType,"numeric") == 0)
 	{
 		_rtf_keyword("ftnnar");			// Numeric Footnotes
 	}
-	else if(UT_XML_strcmp(pszFootnoteType,"numeric-square-brackets") == 0)
+	else if(strcmp(pszFootnoteType,"numeric-square-brackets") == 0)
 	{
 		_rtf_keyword("ftnnar");			// Numeric Footnotes
 	}
-	else if(UT_XML_strcmp(pszFootnoteType,"numeric-paren") == 0)
+	else if(strcmp(pszFootnoteType,"numeric-paren") == 0)
 	{
 		_rtf_keyword("ftnnar");			// Numeric Footnotes
 	}
-	else if(UT_XML_strcmp(pszFootnoteType,"numeric-open-paren") == 0)
+	else if(strcmp(pszFootnoteType,"numeric-open-paren") == 0)
 	{
 		_rtf_keyword("ftnnar");			// Numeric Footnotes
 	}
-	else if(UT_XML_strcmp(pszFootnoteType,"upper") == 0)
+	else if(strcmp(pszFootnoteType,"upper") == 0)
 	{
 		_rtf_keyword("ftnnauc");			// Alphabetic Upper case
 	}
-	else if(UT_XML_strcmp(pszFootnoteType,"upper-paren") == 0)
+	else if(strcmp(pszFootnoteType,"upper-paren") == 0)
 	{
 		_rtf_keyword("ftnnauc");			// Alphabetic Upper case
 	}
-	else if(UT_XML_strcmp(pszFootnoteType,"upper-paren-open") == 0)
+	else if(strcmp(pszFootnoteType,"upper-paren-open") == 0)
 	{
 		_rtf_keyword("ftnnauc");			// Alphabetic Upper case
 	}
-	else if(UT_XML_strcmp(pszFootnoteType,"lower") == 0)
+	else if(strcmp(pszFootnoteType,"lower") == 0)
 	{
 		_rtf_keyword("ftnnalc");			// Alphabetic Lower case
 	}
-	else if(UT_XML_strcmp(pszFootnoteType,"lower-paren") == 0)
+	else if(strcmp(pszFootnoteType,"lower-paren") == 0)
 	{
 		_rtf_keyword("ftnnalc");			// Alphabetic Lower case
 	}
-	else if(UT_XML_strcmp(pszFootnoteType,"lower-paren-open") == 0)
+	else if(strcmp(pszFootnoteType,"lower-paren-open") == 0)
 	{
 		_rtf_keyword("ftnnalc");			// Alphabetic Lower case
 	}
-	else if(UT_XML_strcmp(pszFootnoteType,"lower-roman") == 0)
+	else if(strcmp(pszFootnoteType,"lower-roman") == 0)
 	{
 		_rtf_keyword("ftnnrlc");			// Roman Lower case
 	}
-	else if(UT_XML_strcmp(pszFootnoteType,"lower-roman-paren") == 0)
+	else if(strcmp(pszFootnoteType,"lower-roman-paren") == 0)
 	{
 		_rtf_keyword("ftnnrlc");			// Roman Lower case
 	}
-	else if(UT_XML_strcmp(pszFootnoteType,"upper-roman") == 0)
+	else if(strcmp(pszFootnoteType,"upper-roman") == 0)
 	{
 		_rtf_keyword("ftnnruc");			// Roman Upper case
 	}
-	else if(UT_XML_strcmp(pszFootnoteType,"upper-roman-paren") == 0)
+	else if(strcmp(pszFootnoteType,"upper-roman-paren") == 0)
 	{
 		_rtf_keyword("ftnnruc");			// Roman Upper case
 	}
@@ -849,59 +849,59 @@ bool IE_Exp_RTF::_write_rtf_header(void)
 	{
 		_rtf_keyword("aftnnar");			// Numeric Endnotes
 	}
-	else if(UT_XML_strcmp(pszEndnoteType,"numeric") == 0)
+	else if(strcmp(pszEndnoteType,"numeric") == 0)
 	{
 		_rtf_keyword("aftnnar");			// Numeric Endnotes
 	}
-	else if(UT_XML_strcmp(pszEndnoteType,"numeric-square-brackets") == 0)
+	else if(strcmp(pszEndnoteType,"numeric-square-brackets") == 0)
 	{
 		_rtf_keyword("aftnnar");			// Numeric Endnotes
 	}
-	else if(UT_XML_strcmp(pszEndnoteType,"numeric-paren") == 0)
+	else if(strcmp(pszEndnoteType,"numeric-paren") == 0)
 	{
 		_rtf_keyword("aftnnar");			// Numeric Endnotes
 	}
-	else if(UT_XML_strcmp(pszEndnoteType,"numeric-open-paren") == 0)
+	else if(strcmp(pszEndnoteType,"numeric-open-paren") == 0)
 	{
 		_rtf_keyword("aftnnar");			// Numeric Endnotes
 	}
-	else if(UT_XML_strcmp(pszEndnoteType,"upper") == 0)
+	else if(strcmp(pszEndnoteType,"upper") == 0)
 	{
 		_rtf_keyword("aftnnauc");			// Alphabetic Upper Endnotes
 	}
-	else if(UT_XML_strcmp(pszEndnoteType,"upper-paren") == 0)
+	else if(strcmp(pszEndnoteType,"upper-paren") == 0)
 	{
 		_rtf_keyword("aftnnauc");			// Alphabetic Upper Endnotes
 	}
-	else if(UT_XML_strcmp(pszEndnoteType,"upper-paren-open") == 0)
+	else if(strcmp(pszEndnoteType,"upper-paren-open") == 0)
 	{
 		_rtf_keyword("aftnnauc");			// Alphabetic Upper Endnotes
 	}
-	else if(UT_XML_strcmp(pszEndnoteType,"lower") == 0)
+	else if(strcmp(pszEndnoteType,"lower") == 0)
 	{
 		_rtf_keyword("aftnnalc");			// Alphabetic Lower Endnotes
 	}
-	else if(UT_XML_strcmp(pszEndnoteType,"lower-paren") == 0)
+	else if(strcmp(pszEndnoteType,"lower-paren") == 0)
 	{
 		_rtf_keyword("aftnnalc");			// Alphabetic Lower Endnotes
 	}
-	else if(UT_XML_strcmp(pszEndnoteType,"lower-paren-open") == 0)
+	else if(strcmp(pszEndnoteType,"lower-paren-open") == 0)
 	{
 		_rtf_keyword("aftnnalc");			// Alphabetic Lower Endnotes
 	}
-	else if(UT_XML_strcmp(pszEndnoteType,"lower-roman") == 0)
+	else if(strcmp(pszEndnoteType,"lower-roman") == 0)
 	{
 		_rtf_keyword("aftnnrlc");			// Roman Lower Endnotes
 	}
-	else if(UT_XML_strcmp(pszEndnoteType,"lower-roman-paren") == 0)
+	else if(strcmp(pszEndnoteType,"lower-roman-paren") == 0)
 	{
 		_rtf_keyword("aftnnrlc");			// Roman Lower Endnotes
 	}
-	else if(UT_XML_strcmp(pszEndnoteType,"upper-roman") == 0)
+	else if(strcmp(pszEndnoteType,"upper-roman") == 0)
 	{
 		_rtf_keyword("aftnnruc");			// Roman Upper Endnotes
 	}
-	else if(UT_XML_strcmp(pszEndnoteType,"upper-roman-paren") == 0)
+	else if(strcmp(pszEndnoteType,"upper-roman-paren") == 0)
 	{
 		_rtf_keyword("aftnnruc");			// Roman Upper Endnotes
 	}
@@ -924,7 +924,7 @@ bool IE_Exp_RTF::_write_rtf_header(void)
 	pDocAP->getProperty("document-footnote-restart-section", (const XML_Char *&)pszTmp);
 	if(pszTmp && pszTmp[0])
 	{
-		if(UT_XML_strcmp(pszTmp,"1") == 0)
+		if(strcmp(pszTmp,"1") == 0)
 		{
 			_rtf_keyword("ftnrestart");			// footnote restarts each section
 		}
@@ -933,7 +933,7 @@ bool IE_Exp_RTF::_write_rtf_header(void)
 	pDocAP->getProperty("document-footnote-restart-page", (const XML_Char *&)pszTmp);
 	if(pszTmp && pszTmp[0])
 	{
-		if(UT_XML_strcmp(pszTmp,"1") == 0)
+		if(strcmp(pszTmp,"1") == 0)
 		{
 			_rtf_keyword("ftnrstpg");			// footnote restarts each page
 		}
@@ -947,7 +947,7 @@ bool IE_Exp_RTF::_write_rtf_header(void)
 	pDocAP->getProperty("document-endnote-restart-section", (const XML_Char *&)pszTmp);
 	if(pszTmp && pszTmp[0])
 	{
-		if(UT_XML_strcmp(pszTmp,"1") == 0)
+		if(strcmp(pszTmp,"1") == 0)
 		{
 			_rtf_keyword("aftnrestart"); // restart endnotes each section
 		}
@@ -956,7 +956,7 @@ bool IE_Exp_RTF::_write_rtf_header(void)
 	pDocAP->getProperty("document-endnote-place-endsection", (const XML_Char *&)pszTmp);
 	if(pszTmp && pszTmp[0])
 	{
-		if(UT_XML_strcmp(pszTmp,"1") == 0)
+		if(strcmp(pszTmp,"1") == 0)
 		{
 			_rtf_keyword("aendnotes"); // endnotes at end of section
 		}
@@ -965,7 +965,7 @@ bool IE_Exp_RTF::_write_rtf_header(void)
 	pDocAP->getProperty("document-endnote-place-enddoc", (const XML_Char *&)pszTmp);
 	if(pszTmp && pszTmp[0])
 	{
-		if(UT_XML_strcmp(pszTmp,"1") == 0)
+		if(strcmp(pszTmp,"1") == 0)
 		{
 			_rtf_keyword("aenddoc"); // endnotes at end of document
 		}
@@ -2250,7 +2250,7 @@ UT_uint32 IE_Exp_RTF::_getStyleNumber(const PD_Style * pStyle)
  */
 UT_uint32 IE_Exp_RTF::_getStyleNumber(const XML_Char * szStyle)
 {
-	if(UT_XML_strcmp(szStyle, "Normal Clean")== 0)
+	if(strcmp(szStyle, "Normal Clean")== 0)
 	{
 		szStyle = "Normal";
 	}

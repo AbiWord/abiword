@@ -496,17 +496,17 @@ bool EV_Win32Toolbar::synthesize(void)
 	m_pWin32App->getPrefsValue(XAP_PREF_KEY_ToolbarAppearance,&szValue);
 	UT_return_val_if_fail((szValue) && (*szValue),false);
 
-	if (UT_XML_stricmp(szValue,"icon") == 0)
+	if (g_ascii_strcasecmp(szValue,"icon") == 0)
 	{
 		bIcons = true;
 		bText = false;
 	}
-	else if (UT_XML_stricmp(szValue,"text") == 0)
+	else if (g_ascii_strcasecmp(szValue,"text") == 0)
 	{
 		bIcons = false;
 		bText = true;
 	}
-	else if (UT_XML_stricmp(szValue,"both") == 0)
+	else if (g_ascii_strcasecmp(szValue,"both") == 0)
 	{
 		bIcons = true;
 		bText = true;

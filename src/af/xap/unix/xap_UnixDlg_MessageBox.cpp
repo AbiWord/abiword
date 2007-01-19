@@ -110,7 +110,7 @@ void XAP_UnixDialog_MessageBox::runModal(XAP_Frame * pFrame)
 			// YES - NO - CANCEL
 			// this is only used for saving files.
 			pSS->getValueUTF8(XAP_STRING_ID_DLG_Exit_CloseWithoutSaving,s);
-	        UT_XML_cloneString(tmp_str, s.utf8_str());
+			tmp_str = g_strdup(s.utf8_str());
 			convertMnemonics(tmp_str);
 			message = gtk_dialog_new_with_buttons("",
 							      toplevel, 

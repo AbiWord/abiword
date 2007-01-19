@@ -407,7 +407,7 @@ bool IE_Imp_XML::_pushInlineFmt(const XML_Char ** atts)
 	for (k=0; (atts[k]); k++)
 	{
 		XML_Char * p;
-		if (!UT_XML_cloneString(p,atts[k]))
+		if (!(p = g_strdup(atts[k])))
 			return false;
 		if (m_vecInlineFmt.addItem(p)!=0)
 			return false;

@@ -5198,7 +5198,7 @@ UT_Error FV_View::_deleteBookmark(const char* szName, bool bSignal, PT_DocPositi
 					if(pRun->getType()== FPRUN_BOOKMARK)
 					{
 						pB1 = static_cast<fp_BookmarkRun*>(pRun);
-						if(!UT_XML_strcmp(static_cast<const XML_Char *>(szName), pB1->getName()))
+						if(!strcmp(static_cast<const XML_Char *>(szName), pB1->getName()))
 						{
 							bmBlockOffset[i] = pRun->getBlockOffset();
 							pBlock[i] = pRun->getBlock();

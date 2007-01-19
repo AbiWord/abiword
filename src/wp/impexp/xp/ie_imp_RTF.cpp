@@ -6123,7 +6123,7 @@ UT_uint32 IE_Imp_RTF::mapID(UT_uint32 id)
 				UT_uint32 size_xml_lists = al.getXmlListsSize();
 				for(j=0; j < size_xml_lists; j++)
 				{
-					if( UT_XML_strcmp(m_currentRTFState.m_paraProps.m_pszStyle,al.getXmlList(j))==0)
+					if( strcmp(m_currentRTFState.m_paraProps.m_pszStyle,al.getXmlList(j))==0)
 						break;
 				}
 				if(j < size_xml_lists)
@@ -6808,7 +6808,7 @@ bool IE_Imp_RTF::ApplyParagraphAttributes(bool bDontInsert)
 				UT_uint32 size_xml_lists = al.getXmlListsSize();
 				for(j=0; j< size_xml_lists; j++)
 				{
-					if( UT_XML_strcmp(szStyle.c_str(),al.getXmlList(j)) ==0)
+					if( strcmp(szStyle.c_str(),al.getXmlList(j)) ==0)
 					{
 						break;
 					}

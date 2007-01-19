@@ -1799,7 +1799,7 @@ bool s_RTF_ListenerWriteDoc::populate(PL_StruxFmtHandle /*sfh*/,
 				UT_uint32 k = 0;
 				while(pAP->getNthAttribute(k++, pName, pValue))
 				{
-					bFound = (0 == UT_XML_strnicmp(pName,"xlink:href",10));
+					bFound = (0 == g_ascii_strncasecmp(pName,"xlink:href",10));
 					if(bFound)
 						break;
 				}
@@ -1926,7 +1926,7 @@ void	 s_RTF_ListenerWriteDoc::_openTag(const char * szPrefix, const char * szSuf
 								 bool bNewLineAfter, PT_AttrPropIndex api)
 {
 	 xxx_UT_DEBUGMSG(("TODO: Write code to go in here. In _openTag, szPrefix = %s  szSuffix = %s api = %x \n",szPrefix,szSuffix,api));
-	 if(UT_XML_strcmp(szPrefix,"field") == 0)
+	 if(strcmp(szPrefix,"field") == 0)
 	 {
 		 const PP_AttrProp * pSpanAP = NULL;
 		 const XML_Char * pszType = NULL;
@@ -1936,36 +1936,36 @@ void	 s_RTF_ListenerWriteDoc::_openTag(const char * szPrefix, const char * szSuf
 		 {
 			 return;
 		 }
-		 if(UT_XML_strcmp(pszType,"list_label") == 0)
+		 if(strcmp(pszType,"list_label") == 0)
 		 {
 			 return;
 		 }
 
-		 if(UT_XML_strcmp(pszType,"footnote_ref") == 0)
+		 if(strcmp(pszType,"footnote_ref") == 0)
 		 {
 			 _openSpan(api,pSpanAP);
 			 m_pie->_rtf_keyword("chftn");
 			 return;
 		 }
-		 else if(UT_XML_strcmp(pszType,"footnote_anchor") == 0)
+		 else if(strcmp(pszType,"footnote_anchor") == 0)
 		 {
 			 _openSpan(api,pSpanAP);
 			 m_pie->_rtf_keyword("chftn");
 			 return;
 		 }
-		 else if(UT_XML_strcmp(pszType,"endnote_ref") == 0)
+		 else if(strcmp(pszType,"endnote_ref") == 0)
 		 {
 			 _openSpan(api,pSpanAP);
 			 m_pie->_rtf_keyword("chftn");
 			 return;
 		 }
-		 else if(UT_XML_strcmp(pszType,"endnote_anchor") == 0)
+		 else if(strcmp(pszType,"endnote_anchor") == 0)
 		 {
 			 _openSpan(api,pSpanAP);
 			 m_pie->_rtf_keyword("chftn");
 			 return;
 		 }
-		 else if(UT_XML_strcmp(pszType,"page_number") == 0)
+		 else if(strcmp(pszType,"page_number") == 0)
 		 {
 			 _writeFieldPreamble(pSpanAP);
 			 m_pie->write("PAGE ");
@@ -1974,7 +1974,7 @@ void	 s_RTF_ListenerWriteDoc::_openTag(const char * szPrefix, const char * szSuf
 			 _writeFieldTrailer();
 			 return;
 		 }
-		 else if(UT_XML_strcmp(pszType,"time") == 0)
+		 else if(strcmp(pszType,"time") == 0)
 		 {
 			 _writeFieldPreamble(pSpanAP);
 			 m_pie->write("TIME ");
@@ -1983,7 +1983,7 @@ void	 s_RTF_ListenerWriteDoc::_openTag(const char * szPrefix, const char * szSuf
 			 _writeFieldTrailer();
 			 return;
 		 }
-		 else if(UT_XML_strcmp(pszType,"page_ref") == 0)
+		 else if(strcmp(pszType,"page_ref") == 0)
 		 {
                          m_pie->_rtf_open_brace();
 			 m_pie->_rtf_keyword("*");
@@ -1991,7 +1991,7 @@ void	 s_RTF_ListenerWriteDoc::_openTag(const char * szPrefix, const char * szSuf
              m_pie->_rtf_close_brace();
 			 return;
 		 }
-		 else if(UT_XML_strcmp(pszType,"page_count") == 0)
+		 else if(strcmp(pszType,"page_count") == 0)
 		 {
 			 _writeFieldPreamble(pSpanAP);
 			 m_pie->write("NUMPAGES ");
@@ -2000,7 +2000,7 @@ void	 s_RTF_ListenerWriteDoc::_openTag(const char * szPrefix, const char * szSuf
              m_pie->_rtf_close_brace();
 			 return;
 		 }
-		 else if(UT_XML_strcmp(pszType,"date") == 0)
+		 else if(strcmp(pszType,"date") == 0)
 		 {
 			 _writeFieldPreamble(pSpanAP);
 			 m_pie->write("TIME  \\");
@@ -2011,7 +2011,7 @@ void	 s_RTF_ListenerWriteDoc::_openTag(const char * szPrefix, const char * szSuf
 			 _writeFieldTrailer();
 			 return;
 		 }
-		 else if(UT_XML_strcmp(pszType,"date_mmddyy") == 0)
+		 else if(strcmp(pszType,"date_mmddyy") == 0)
 		 {
 			 _writeFieldPreamble(pSpanAP);
 			 m_pie->write("DATE ");
@@ -2020,7 +2020,7 @@ void	 s_RTF_ListenerWriteDoc::_openTag(const char * szPrefix, const char * szSuf
 			 _writeFieldTrailer();
 			 return;
 		 }
-		 else if(UT_XML_strcmp(pszType,"date_ddmmyy") == 0)
+		 else if(strcmp(pszType,"date_ddmmyy") == 0)
 		 {
 			 _writeFieldPreamble(pSpanAP);
 			 m_pie->write("TIME \\");
@@ -2031,7 +2031,7 @@ void	 s_RTF_ListenerWriteDoc::_openTag(const char * szPrefix, const char * szSuf
 			 _writeFieldTrailer();
 			 return;
 		 }
-		 else if(UT_XML_strcmp(pszType,"date_mdy") == 0)
+		 else if(strcmp(pszType,"date_mdy") == 0)
 		 {
 			 _writeFieldPreamble(pSpanAP);
 			 m_pie->write("TIME  \\");
@@ -2042,7 +2042,7 @@ void	 s_RTF_ListenerWriteDoc::_openTag(const char * szPrefix, const char * szSuf
 			 _writeFieldTrailer();
 			 return;
 		 }
-		 else if(UT_XML_strcmp(pszType,"date_mthdy") == 0)
+		 else if(strcmp(pszType,"date_mthdy") == 0)
 		 {
 			 _writeFieldPreamble(pSpanAP);
 			 m_pie->write("TIME  \\");
@@ -2053,7 +2053,7 @@ void	 s_RTF_ListenerWriteDoc::_openTag(const char * szPrefix, const char * szSuf
 			 _writeFieldTrailer();
 			 return;
 		 }
-		 else if(UT_XML_strcmp(pszType,"date_dfl") == 0)
+		 else if(strcmp(pszType,"date_dfl") == 0)
 		 {
 			 _writeFieldPreamble(pSpanAP);
 			 m_pie->write("SAVEDATE  ");
@@ -2062,7 +2062,7 @@ void	 s_RTF_ListenerWriteDoc::_openTag(const char * szPrefix, const char * szSuf
 			 _writeFieldTrailer();
 			 return;
 		 }
-		 else if(UT_XML_strcmp(pszType,"date_ntdfl") == 0)
+		 else if(strcmp(pszType,"date_ntdfl") == 0)
 		 {
 			 _writeFieldPreamble(pSpanAP);
 			 m_pie->write("TIME  \\");
@@ -2073,7 +2073,7 @@ void	 s_RTF_ListenerWriteDoc::_openTag(const char * szPrefix, const char * szSuf
 			 _writeFieldTrailer();
 			 return;
 		 }
-		 else if(UT_XML_strcmp(pszType,"date_wkday") == 0)
+		 else if(strcmp(pszType,"date_wkday") == 0)
 		 {
 			 _writeFieldPreamble(pSpanAP);
 			 m_pie->write("TIME  \\");
@@ -2084,7 +2084,7 @@ void	 s_RTF_ListenerWriteDoc::_openTag(const char * szPrefix, const char * szSuf
 			 _writeFieldTrailer();
 			 return;
 		 }
-		 else if(UT_XML_strcmp(pszType,"date_doy") == 0)
+		 else if(strcmp(pszType,"date_doy") == 0)
 		 {
              m_pie->_rtf_open_brace();
 			 m_pie->_rtf_keyword("*");
@@ -2092,7 +2092,7 @@ void	 s_RTF_ListenerWriteDoc::_openTag(const char * szPrefix, const char * szSuf
              m_pie->_rtf_close_brace();
 			 return;
 		 }
-		 else if(UT_XML_strcmp(pszType,"time_miltime") == 0)
+		 else if(strcmp(pszType,"time_miltime") == 0)
 		 {
 			 _writeFieldPreamble(pSpanAP);
 			 m_pie->write("TIME  \\");
@@ -2103,7 +2103,7 @@ void	 s_RTF_ListenerWriteDoc::_openTag(const char * szPrefix, const char * szSuf
 			 _writeFieldTrailer();
 			 return;
 		 }
-		 else if(UT_XML_strcmp(pszType,"time_ampm") == 0)
+		 else if(strcmp(pszType,"time_ampm") == 0)
 		 {
 			 _writeFieldPreamble(pSpanAP);
 			 m_pie->write("TIME  \\");
@@ -2114,7 +2114,7 @@ void	 s_RTF_ListenerWriteDoc::_openTag(const char * szPrefix, const char * szSuf
 			 _writeFieldTrailer();
 			 return;
 		 }
-		 else if(UT_XML_strcmp(pszType,"time_zone") == 0)
+		 else if(strcmp(pszType,"time_zone") == 0)
 		 {
              m_pie->_rtf_open_brace();
 			 m_pie->_rtf_keyword("*");
@@ -2122,7 +2122,7 @@ void	 s_RTF_ListenerWriteDoc::_openTag(const char * szPrefix, const char * szSuf
              m_pie->_rtf_close_brace();
 			 return;
 		 }
-		 else if(UT_XML_strcmp(pszType,"time_epoch") == 0)
+		 else if(strcmp(pszType,"time_epoch") == 0)
 		 {
              m_pie->_rtf_open_brace();
 			 m_pie->_rtf_keyword("*");
@@ -2130,7 +2130,7 @@ void	 s_RTF_ListenerWriteDoc::_openTag(const char * szPrefix, const char * szSuf
              m_pie->_rtf_close_brace();
 			 return;
 		 }
-		 else if(UT_XML_strcmp(pszType,"word_count") == 0)
+		 else if(strcmp(pszType,"word_count") == 0)
 		 {
 			 _writeFieldPreamble(pSpanAP);
 			 m_pie->write("NUMWORDS ");
@@ -2139,7 +2139,7 @@ void	 s_RTF_ListenerWriteDoc::_openTag(const char * szPrefix, const char * szSuf
 			 _writeFieldTrailer();
 			 return;
 		 }
-		 else if(UT_XML_strcmp(pszType,"char_count") == 0)
+		 else if(strcmp(pszType,"char_count") == 0)
 		 {
 			 _writeFieldPreamble(pSpanAP);
   			 m_pie->write("NUMCHARS  ");
@@ -2148,7 +2148,7 @@ void	 s_RTF_ListenerWriteDoc::_openTag(const char * szPrefix, const char * szSuf
 			 _writeFieldTrailer();
 			 return;
 		 }
-		 else if(UT_XML_strcmp(pszType,"line_count") == 0)
+		 else if(strcmp(pszType,"line_count") == 0)
 		 {
 		         m_pie->_rtf_open_brace();
 			 m_pie->_rtf_keyword("*");
@@ -2156,7 +2156,7 @@ void	 s_RTF_ListenerWriteDoc::_openTag(const char * szPrefix, const char * szSuf
              m_pie->_rtf_close_brace();
 			 return;
 		 }
-		 else if(UT_XML_strcmp(pszType,"para_count") == 0)
+		 else if(strcmp(pszType,"para_count") == 0)
 		 {
                          m_pie->_rtf_open_brace();
 			 m_pie->_rtf_keyword("*");
@@ -2165,7 +2165,7 @@ void	 s_RTF_ListenerWriteDoc::_openTag(const char * szPrefix, const char * szSuf
 			 UT_DEBUGMSG(("SEVIOR: paragraph count field here \n"));
 			 return;
 		 }
-		 else if(UT_XML_strcmp(pszType,"nbsp_count") == 0)
+		 else if(strcmp(pszType,"nbsp_count") == 0)
 		 {
              m_pie->_rtf_open_brace();
 			 m_pie->_rtf_keyword("*");
@@ -2173,7 +2173,7 @@ void	 s_RTF_ListenerWriteDoc::_openTag(const char * szPrefix, const char * szSuf
              m_pie->_rtf_close_brace();
 			 return;
 		 }
-		 else if(UT_XML_strcmp(pszType,"file_name") == 0)
+		 else if(strcmp(pszType,"file_name") == 0)
 		 {
 		         m_pie->_rtf_open_brace();
 			 m_pie->_rtf_keyword("*");
@@ -2182,7 +2182,7 @@ void	 s_RTF_ListenerWriteDoc::_openTag(const char * szPrefix, const char * szSuf
 			 UT_DEBUGMSG(("SEVIOR: File Name field here \n"));
 			 return;
 		 }
-		 else if(UT_XML_strcmp(pszType,"app_ver") == 0)
+		 else if(strcmp(pszType,"app_ver") == 0)
 		 {
                          m_pie->_rtf_open_brace();
 			 m_pie->_rtf_keyword("*");
@@ -2190,7 +2190,7 @@ void	 s_RTF_ListenerWriteDoc::_openTag(const char * szPrefix, const char * szSuf
 			 m_pie->_rtf_close_brace();
 			 return;
 		 }
-		 else if(UT_XML_strcmp(pszType,"app_id") == 0)
+		 else if(strcmp(pszType,"app_id") == 0)
 		 {
 		         m_pie->_rtf_open_brace();
 			 m_pie->_rtf_keyword("*");
@@ -2199,7 +2199,7 @@ void	 s_RTF_ListenerWriteDoc::_openTag(const char * szPrefix, const char * szSuf
 			 UT_DEBUGMSG(("SEVIOR: Application ID field here \n"));
 			 return;
 		 }
-		 else if(UT_XML_strcmp(pszType,"app_options") == 0)
+		 else if(strcmp(pszType,"app_options") == 0)
 		 {
                          m_pie->_rtf_open_brace();
 			 m_pie->_rtf_keyword("*");
@@ -2207,7 +2207,7 @@ void	 s_RTF_ListenerWriteDoc::_openTag(const char * szPrefix, const char * szSuf
 			 m_pie->_rtf_close_brace();
 			 return;
 		 }
-		 else if(UT_XML_strcmp(pszType,"app_target") == 0)
+		 else if(strcmp(pszType,"app_target") == 0)
 		 {
              m_pie->_rtf_open_brace();
 			 m_pie->_rtf_keyword("*");
@@ -2215,7 +2215,7 @@ void	 s_RTF_ListenerWriteDoc::_openTag(const char * szPrefix, const char * szSuf
              m_pie->_rtf_close_brace();
 			 return;
 		 }
-		 else if(UT_XML_strcmp(pszType,"app_compiledate") == 0)
+		 else if(strcmp(pszType,"app_compiledate") == 0)
 		 {
 		         m_pie->_rtf_open_brace();
 			 m_pie->_rtf_keyword("*");
@@ -2223,7 +2223,7 @@ void	 s_RTF_ListenerWriteDoc::_openTag(const char * szPrefix, const char * szSuf
                          m_pie->_rtf_close_brace();
 			 return;
 		 }
-		 else if(UT_XML_strcmp(pszType,"app_compiletime") == 0)
+		 else if(strcmp(pszType,"app_compiletime") == 0)
 		 {
 		         m_pie->_rtf_open_brace();
 			 m_pie->_rtf_keyword("*");
@@ -2237,7 +2237,7 @@ void	 s_RTF_ListenerWriteDoc::_openTag(const char * szPrefix, const char * szSuf
 			 return;
 		 }
 	 }
-	 else if(UT_XML_strcmp(szPrefix,"math") == 0)
+	 else if(strcmp(szPrefix,"math") == 0)
 	 {
 		 const PP_AttrProp * pSpanAP = NULL;
 		 const XML_Char * pszDataId = NULL;
@@ -2287,7 +2287,7 @@ void	 s_RTF_ListenerWriteDoc::_openTag(const char * szPrefix, const char * szSuf
 		 m_pie->write(sAllProps.utf8_str());
 		 m_pie->_rtf_close_brace();
 	 }
-	 else if(UT_XML_strcmp(szPrefix,"embed") == 0)
+	 else if(strcmp(szPrefix,"embed") == 0)
 	 {
 		 const PP_AttrProp * pSpanAP = NULL;
 		 const XML_Char * pszDataId = NULL;

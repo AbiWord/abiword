@@ -38,7 +38,7 @@
 
 int sort_cb(gconstpointer a, gconstpointer b)
 {
-	return UT_XML_strcmp((const XML_Char*)a, (const XML_Char*)b);
+	return strcmp((const XML_Char*)a, (const XML_Char*)b);
 }
 
 EV_Toolbar_Control * AP_UnixToolbar_StyleCombo::static_constructor(EV_Toolbar * pToolbar,

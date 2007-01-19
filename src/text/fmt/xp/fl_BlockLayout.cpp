@@ -6867,7 +6867,7 @@ bool fl_BlockLayout::doclistener_changeStrux(const PX_ChangeRecord_StruxChange *
 //
 // Not sure why we need this IF - Sevior
 //	if ((szOldStyle != m_szStyle) &&
-//		(!szOldStyle || !m_szStyle || !!(UT_XML_strcmp(szOldStyle, m_szStyle))))
+//		(!szOldStyle || !m_szStyle || !!(strcmp(szOldStyle, m_szStyle))))
 	{
 		/*
 		  A block-level style change means that we also need to update
@@ -9015,7 +9015,7 @@ FL_ListType fl_BlockLayout::getListTypeFromStyle( const XML_Char* style)
 	UT_uint32 size_xml_lists = al.getXmlListsSize();
 	for(j=0; j < size_xml_lists; j++)
 	{
-		if( UT_XML_strcmp(style,al.getXmlList(j))==0)
+		if( strcmp(style,al.getXmlList(j))==0)
 			break;
 	}
 	if(j < size_xml_lists)
@@ -9113,7 +9113,7 @@ void fl_BlockLayout::remItemFromList(void)
 			for(i=0; i<vp.getItemCount();i++)
 			{
 				if( i > 0 &&
-					UT_XML_strcmp(props[i-1],
+					strcmp(props[i-1],
 								  "text-indent")==0)
 				{
 					props[i] = "0.0000in";
@@ -9135,7 +9135,7 @@ void fl_BlockLayout::remItemFromList(void)
 			for(i=0; i<vp.getItemCount();i++)
 			{
 				if( i > 0 &&
-					UT_XML_strcmp(props[i-1],
+					strcmp(props[i-1],
 								  "text-indent")==0)
 				{
 					props[i] = "0.0000in";
@@ -9481,13 +9481,9 @@ void	fl_BlockLayout::StartList( FL_ListType lType, UT_uint32 start,const XML_Cha
 	sprintf(buf, "%i", curlevel);
 	sprintf(pszStart,"%i",start);
 
-	UT_XML_strncpy( pszAlign,
-					sizeof(pszAlign),
-					UT_convertInchesToDimensionString(DIM_IN, Align, 0));
+	strncpy( pszAlign, UT_convertInchesToDimensionString(DIM_IN, Align, 0), sizeof(pszAlign));
 
-	UT_XML_strncpy( pszIndent,
-					sizeof(pszIndent),
-					UT_convertInchesToDimensionString(DIM_IN, indent, 0));
+	strncpy( pszIndent, UT_convertInchesToDimensionString(DIM_IN, indent, 0), sizeof(pszIndent));
 
 	va.addItem("listid"); 		va.addItem(lid);
 	va.addItem("parentid");		va.addItem(pid);
@@ -9629,21 +9625,21 @@ void	fl_BlockLayout::StopListInBlock(void)
 				pStyle->getProperty(static_cast<const XML_Char *>("text-indent"), szIndent);
 				fAlign = static_cast<float>(UT_convertToInches(szAlign));
 				fAlign *= level;
-				UT_XML_strncpy( align,
-								sizeof(align),
-								UT_convertInchesToDimensionString(DIM_IN, fAlign, 0));
+				strncpy( align,
+								UT_convertInchesToDimensionString(DIM_IN, fAlign, 0),
+								sizeof(align));
 				sprintf(indent, "%s", szIndent);
 			}
 			else
 			{
 				fAlign =  static_cast<float>(LIST_DEFAULT_INDENT) * level;
 				fIndent = static_cast<float>(-LIST_DEFAULT_INDENT_LABEL);
-				UT_XML_strncpy( align,
-								sizeof(align),
-								UT_convertInchesToDimensionString(DIM_IN, fAlign, 0));
-				UT_XML_strncpy( indent,
-								sizeof(indent),
-								UT_convertInchesToDimensionString(DIM_IN, fIndent, 0));
+				strncpy( align,
+								UT_convertInchesToDimensionString(DIM_IN, fAlign, 0),
+								sizeof(align));
+				strncpy( indent,
+								UT_convertInchesToDimensionString(DIM_IN, fIndent, 0),
+								sizeof(indent));
 			}
 
 			if(m_iDomDirection == UT_BIDI_RTL)

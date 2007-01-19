@@ -43,15 +43,6 @@ UT_BEGIN_EXTERN_C
 //
 ////////////////////////////////////////////////////////////////////////
 
-ABI_EXPORT UT_uint32  UT_XML_strlen(const XML_Char * sz);
-ABI_EXPORT bool  UT_XML_cloneString(XML_Char *& rszDest, const XML_Char * szSource);
-ABI_EXPORT bool  UT_XML_cloneList(XML_Char **& rszDest, const XML_Char ** szSource);
-ABI_EXPORT bool  UT_XML_replaceList(XML_Char **& rszDest, const XML_Char ** szSource);
-ABI_EXPORT UT_sint32  UT_XML_stricmp(const XML_Char * sz1, const XML_Char * sz2);
-ABI_EXPORT UT_sint32  UT_XML_strnicmp(const XML_Char * sz1, const XML_Char * sz2, const UT_uint32 n);
-ABI_EXPORT UT_sint32  UT_XML_strcmp(const XML_Char * sz1, const XML_Char * sz2);
-ABI_EXPORT UT_uint32  UT_XML_strncpy(XML_Char * szDest, UT_uint32 nLen, const XML_Char * szSource);
-
 // this function allocates (and returns a pointer to) new memory for the new string
 ABI_EXPORT bool  UT_XML_cloneNoAmpersands(XML_Char *& rszDest, const XML_Char * szSource);
 // This function uses a static buffer to do the translation

@@ -765,13 +765,13 @@ void AP_QNXDialog_Lists::_gatherData(void)
 
 	sdata = NULL;
 	PtGetResource(m_wDelimEntry, Pt_ARG_TEXT_STRING, &sdata, 0);
-	//UT_XML_strncpy((XML_Char *)m_pszDelim, 80, (const XML_Char *) sdata);
+	//strncpy((XML_Char *)m_pszDelim, (const XML_Char *) sdata, 80);
 	copyCharToDelim((const char *) sdata);
 
 #if 0
 	sdata = NULL;
 	PtGetResource(m_wDecimalEntry, Pt_ARG_TEXT_STRING, &sdata, 0);
-	UT_XML_strncpy( (XML_Char *) m_pszDecimal, 80, (const XML_Char *) ".");
+	strncpy( (XML_Char *) m_pszDecimal, (const XML_Char *) ".", 80);
 #else
 	copyCharToDecimal( (const char *) ".");
 #endif

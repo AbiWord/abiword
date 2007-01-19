@@ -280,11 +280,11 @@ void AP_Dialog_Lists::Apply(void)
  */
 	if(m_NewListType == BULLETED_LIST || m_NewListType == IMPLIES_LIST)
 	{
-		UT_XML_strncpy( (XML_Char *) m_pszFont, 80, (const XML_Char *) "Symbol");
+		strncpy( (XML_Char *) m_pszFont, (const XML_Char *) "Symbol", 80);
 	}
 	else if(m_NewListType > DASHED_LIST && m_NewListType < OTHER_NUMBERED_LISTS)
 	{
-		UT_XML_strncpy( (XML_Char *) m_pszFont, 80, _getDingbatsFontName());
+		strncpy( (XML_Char *) m_pszFont, _getDingbatsFontName(), 80);
 	}
 
 /*!
@@ -528,12 +528,12 @@ void  AP_Dialog_Lists::fillUncustomizedValues(void)
 
 	if(m_NewListType == NOT_A_LIST)
 	{
-		UT_XML_strncpy( (XML_Char *) m_pszDelim, 80, (const XML_Char *) "%L");
+		strncpy( (XML_Char *) m_pszDelim, (const XML_Char *) "%L", 80);
 		m_fAlign = 0.0;
 		m_fIndent = 0.0;
 		m_iLevel = 0;
-		UT_XML_strncpy( (XML_Char *) m_pszFont, 80, (const XML_Char *) "NULL");
-		UT_XML_strncpy( (XML_Char *) m_pszDecimal, 80, (const XML_Char *) ".");
+		strncpy( (XML_Char *) m_pszFont, (const XML_Char *) "NULL", 80);
+		strncpy( (XML_Char *) m_pszDecimal, (const XML_Char *) ".", 80);
 		m_iStartValue = 1;
 	}
 
@@ -542,62 +542,62 @@ void  AP_Dialog_Lists::fillUncustomizedValues(void)
 		m_iLevel = 1;
 	}
 
-	UT_XML_strncpy( (XML_Char *) m_pszDelim, 80, (const XML_Char *) "%L");
+	strncpy( (XML_Char *) m_pszDelim, (const XML_Char *) "%L", 80);
 	m_fAlign =  (float)(LIST_DEFAULT_INDENT * m_iLevel);
 	m_fIndent = (float)-LIST_DEFAULT_INDENT_LABEL;
 
 	if( m_NewListType == NUMBERED_LIST)
 	{
-		UT_XML_strncpy( (XML_Char *) m_pszFont, 80, font_family);
-		UT_XML_strncpy( (XML_Char *) m_pszDecimal, 80, (const XML_Char *) ".");
+		strncpy( (XML_Char *) m_pszFont, font_family, 80);
+		strncpy( (XML_Char *) m_pszDecimal, (const XML_Char *) ".", 80);
 		m_iStartValue = 1;
-		UT_XML_strncpy( (XML_Char *) m_pszDelim, 80, (const XML_Char *) "%L.");
+		strncpy( (XML_Char *) m_pszDelim, (const XML_Char *) "%L.", 80);
 	}
 	else if( m_NewListType == LOWERCASE_LIST)
 	{
-		UT_XML_strncpy( (XML_Char *) m_pszFont, 80, font_family);
-		UT_XML_strncpy( (XML_Char *) m_pszDecimal, 80, (const XML_Char *) ".");
+		strncpy( (XML_Char *) m_pszFont, font_family, 80);
+		strncpy( (XML_Char *) m_pszDecimal, (const XML_Char *) ".", 80);
 		m_iStartValue = 1;
-		UT_XML_strncpy( (XML_Char *) m_pszDelim, 80, (const XML_Char *) "%L)");
+		strncpy( (XML_Char *) m_pszDelim, (const XML_Char *) "%L)", 80);
 	}
 	else if( m_NewListType == UPPERCASE_LIST)
 	{
-		UT_XML_strncpy( (XML_Char *) m_pszFont, 80, font_family);
-		UT_XML_strncpy( (XML_Char *) m_pszDecimal, 80, (const XML_Char *) ".");
+		strncpy( (XML_Char *) m_pszFont, font_family, 80);
+		strncpy( (XML_Char *) m_pszDecimal, (const XML_Char *) ".", 80);
 		m_iStartValue = 1;
-		UT_XML_strncpy( (XML_Char *) m_pszDelim, 80, (const XML_Char *) "%L)");
+		strncpy( (XML_Char *) m_pszDelim, (const XML_Char *) "%L)", 80);
 	}
 	else if( m_NewListType == HEBREW_LIST)
 	{
-		UT_XML_strncpy( (XML_Char *) m_pszFont, 80, font_family);
-		UT_XML_strncpy( (XML_Char *) m_pszDecimal, 80, (const XML_Char *) "");
+		strncpy( (XML_Char *) m_pszFont, font_family, 80);
+		strncpy( (XML_Char *) m_pszDecimal, (const XML_Char *) "", 80);
 		m_iStartValue = 1;
-		UT_XML_strncpy( (XML_Char *) m_pszDelim, 80, (const XML_Char *) "%L");
+		strncpy( (XML_Char *) m_pszDelim, (const XML_Char *) "%L", 80);
 	}
 	else if( m_NewListType < BULLETED_LIST)
 	{
-		UT_XML_strncpy( (XML_Char *) m_pszFont, 80, (const XML_Char *) "NULL");
-		UT_XML_strncpy( (XML_Char *) m_pszDecimal, 80, (const XML_Char *) ".");
+		strncpy( (XML_Char *) m_pszFont, (const XML_Char *) "NULL", 80);
+		strncpy( (XML_Char *) m_pszDecimal, (const XML_Char *) ".", 80);
 		m_iStartValue = 1;
-		UT_XML_strncpy( (XML_Char *) m_pszDelim, 80, (const XML_Char *) "%L");
+		strncpy( (XML_Char *) m_pszDelim, (const XML_Char *) "%L", 80);
 	}
 	else
 	{
-		UT_XML_strncpy( (XML_Char *) m_pszFont, 80, (const XML_Char *) "NULL");
-		UT_XML_strncpy( (XML_Char *) m_pszDecimal, 80, (const XML_Char *) ".");
+		strncpy( (XML_Char *) m_pszFont, (const XML_Char *) "NULL", 80);
+		strncpy( (XML_Char *) m_pszDecimal, (const XML_Char *) ".", 80);
 		m_iStartValue = 0;
 	}
 	if(m_NewListType == BULLETED_LIST || m_NewListType == IMPLIES_LIST)
 	{
-		UT_XML_strncpy( (XML_Char *) m_pszFont, 80, (const XML_Char *) "Symbol");
+		strncpy( (XML_Char *) m_pszFont, (const XML_Char *) "Symbol", 80);
 	}
 	else if (m_NewListType == NOT_A_LIST)
 	{
-		UT_XML_strncpy( (XML_Char *) m_pszFont, 80, (const XML_Char *) "NULL");
+		strncpy( (XML_Char *) m_pszFont, (const XML_Char *) "NULL", 80);
 	}
 	else if(m_NewListType > DASHED_LIST && m_NewListType < OTHER_NUMBERED_LISTS)
 	{
-		UT_XML_strncpy( (XML_Char *) m_pszFont, 80, _getDingbatsFontName());
+		strncpy( (XML_Char *) m_pszFont, _getDingbatsFontName(), 80);
 	}
 
 	if(props_in)
@@ -644,18 +644,18 @@ void  AP_Dialog_Lists::fillFakeLabels(void)
 		 m_NewListType == IMPLIES_LIST  ||
 		 m_NewListType == DASHED_LIST )
 	{
-		UT_XML_strncpy( (XML_Char *) m_pszFont, 80, (const XML_Char *) "Symbol");
-		UT_XML_strncpy( (XML_Char *) m_pszDelim, 80, (const XML_Char *) "%L");
+		strncpy( (XML_Char *) m_pszFont, (const XML_Char *) "Symbol", 80);
+		strncpy( (XML_Char *) m_pszDelim, (const XML_Char *) "%L", 80);
 	}
 	else if (m_NewListType == NOT_A_LIST)
 	{
-		UT_XML_strncpy( (XML_Char *) m_pszFont, 80, (const XML_Char *) "NULL");
-		UT_XML_strncpy( (XML_Char *) m_pszDelim, 80, (const XML_Char *) "%L");
+		strncpy( (XML_Char *) m_pszFont, (const XML_Char *) "NULL", 80);
+		strncpy( (XML_Char *) m_pszDelim, (const XML_Char *) "%L", 80);
 	}
 	else if(m_NewListType > DASHED_LIST && m_NewListType < OTHER_NUMBERED_LISTS)
 	{
-		UT_XML_strncpy( (XML_Char *) m_pszFont, 80, _getDingbatsFontName());
-		UT_XML_strncpy( (XML_Char *) m_pszDelim, 80, (const XML_Char *) "%L");
+		strncpy( (XML_Char *) m_pszFont, _getDingbatsFontName(), 80);
+		strncpy( (XML_Char *) m_pszDelim, (const XML_Char *) "%L", 80);
 	}
 /*!
  * OK fill the preview variables with what they need and load them into
@@ -769,30 +769,30 @@ void AP_Dialog_Lists::fillDialogFromVector( UT_GenericVector<const XML_Char*> * 
 		i = findVecItem(vp,"list-delim");
 		if( i>= 0)
 		{
-			UT_XML_strncpy( (XML_Char *) m_pszDelim, 80, vp->getNthItem(i+1));
+			strncpy( (XML_Char *) m_pszDelim, vp->getNthItem(i+1), 80);
 		}
 		else
 		{
-			UT_XML_strncpy( (XML_Char *) m_pszDelim, 80, "%L");
+			strncpy( (XML_Char *) m_pszDelim, "%L", 80);
 		}
 		i = findVecItem(vp,"list-decimal");
 		if( i>= 0)
 		{
-			UT_XML_strncpy( (XML_Char *) m_pszDecimal, 80, vp->getNthItem(i+1));
+			strncpy( (XML_Char *) m_pszDecimal, vp->getNthItem(i+1), 80);
 		}
 		else
 		{
-			UT_XML_strncpy( (XML_Char *) m_pszDecimal, 80, ".");
+			strncpy( (XML_Char *) m_pszDecimal, ".", 80);
 		}
 
 		i = findVecItem(vp,"field-font");
 		if( i>= 0)
 		{
-			UT_XML_strncpy( (XML_Char *) m_pszFont, 80, vp->getNthItem(i+1));
+			strncpy( (XML_Char *) m_pszFont, vp->getNthItem(i+1), 80);
 		}
 		else
 		{
-			UT_XML_strncpy( (XML_Char *) m_pszFont, 80, "NULL");
+			strncpy( (XML_Char *) m_pszFont, "NULL", 80);
 		}
 		i = findVecItem(vp,"list-style");
 		if( i>= 0)
@@ -886,15 +886,15 @@ void AP_Dialog_Lists::fillDialogFromBlock(void)
 		i = findVecItem(&vp,"list-delim");
 		if(getAutoNum())
 		{
-			UT_XML_strncpy( (XML_Char *) m_pszDelim, 80, getAutoNum()->getDelim());
+			strncpy( (XML_Char *) m_pszDelim, getAutoNum()->getDelim(), 80);
 		}
 		else if(i >=0 )
 		{
-			UT_XML_strncpy( (XML_Char *) m_pszDelim, 80, vp.getNthItem(i+1));
+			strncpy( (XML_Char *) m_pszDelim, vp.getNthItem(i+1), 80);
 		}
 		else
 		{
-			UT_XML_strncpy( (XML_Char *) m_pszDelim, 80, "%L");
+			strncpy( (XML_Char *) m_pszDelim, "%L", 80);
 		}
 
 
@@ -906,25 +906,25 @@ void AP_Dialog_Lists::fillDialogFromBlock(void)
 		i = findVecItem(&vp,"list-decimal");
 		if(getAutoNum())
 		{
-			UT_XML_strncpy( (XML_Char *) m_pszDecimal, 80, getAutoNum()->getDecimal());
+			strncpy( (XML_Char *) m_pszDecimal, getAutoNum()->getDecimal(), 80);
 		}
 		else if( i>= 0)
 		{
-			UT_XML_strncpy( (XML_Char *) m_pszDecimal, 80, vp.getNthItem(i+1));
+			strncpy( (XML_Char *) m_pszDecimal, vp.getNthItem(i+1), 80);
 		}
 		else
 		{
-			UT_XML_strncpy( (XML_Char *) m_pszDecimal, 80, ".");
+			strncpy( (XML_Char *) m_pszDecimal, ".", 80);
 		}
 
 		i = findVecItem(&vp,"field-font");
 		if( i>= 0)
 		{
-			UT_XML_strncpy( (XML_Char *) m_pszFont, 80, vp.getNthItem(i+1));
+			strncpy( (XML_Char *) m_pszFont, vp.getNthItem(i+1), 80);
 		}
 		else
 		{
-			UT_XML_strncpy( (XML_Char *) m_pszFont, 80, "NULL");
+			strncpy( (XML_Char *) m_pszFont, "NULL", 80);
 		}
 		i = findVecItem(&vp,"list-style");
 		if( i>= 0)
@@ -965,7 +965,7 @@ void AP_Dialog_Lists::fillDialogFromBlock(void)
 	{
 		m_iID = getAutoNum()->getID();
 		m_DocListType = getAutoNum()->getType();
-		UT_XML_strncpy( (XML_Char *) m_pszDecimal, 80, (const XML_Char *) getAutoNum()->getDecimal());
+		strncpy( (XML_Char *) m_pszDecimal, (const XML_Char *) getAutoNum()->getDecimal(), 80);
 
 	}
 	else

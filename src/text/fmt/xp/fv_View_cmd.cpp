@@ -4114,7 +4114,7 @@ void FV_View::cmdHyperlinkJump(UT_sint32 xPos, UT_sint32 yPos)
 	if(*pTarget == '#')
 		pTarget++;
 
-	UT_uint32 iTargetLen = UT_XML_strlen(pTarget);
+	UT_uint32 iTargetLen = strlen(pTarget);
 	UT_UCSChar * pTargetU = new UT_UCSChar[iTargetLen+1];
 
 	UT_ASSERT(pTargetU);
@@ -4143,7 +4143,7 @@ void FV_View::cmdHyperlinkJump(PT_DocPosition pos)
 	if(*pTarget == '#')
 		pTarget++;
 
-	UT_uint32 iTargetLen = UT_XML_strlen(pTarget);
+	UT_uint32 iTargetLen = strlen(pTarget);
 	UT_UCSChar * pTargetU = new UT_UCSChar[iTargetLen+1];
 
 	UT_ASSERT(pTargetU);
@@ -4721,17 +4721,17 @@ UT_Error FV_View::cmdInsertHyperlink(const char * szName)
 	}
 	XML_Char * pAttr[4];
 
-	UT_uint32 target_len = UT_XML_strlen(szName);
+	UT_uint32 target_len = strlen(szName);
 	XML_Char * target  = new XML_Char[ target_len+ 2];
 
 	if(UT_go_path_is_uri(szName) || relLink)
 	{
-		UT_XML_strncpy(target, target_len + 1, static_cast<const XML_Char*>(szName));
+		strncpy(target, static_cast<const XML_Char*>(szName), target_len + 1);
 	}
 	else
 	{
 		target[0] =  '#';
-		UT_XML_strncpy(target + 1, target_len + 1, static_cast<const XML_Char*>(szName));
+		strncpy(target + 1, static_cast<const XML_Char*>(szName), target_len + 1);
 	}
 
 	XML_Char target_l[]  = "xlink:href";
@@ -4870,7 +4870,7 @@ UT_Error FV_View::cmdInsertBookmark(const char * szName)
 	XML_Char name_l [] = "name";
 	XML_Char type_l [] = "type";
 	XML_Char name[BOOKMARK_NAME_SIZE + 1];
-	UT_XML_strncpy(name, BOOKMARK_NAME_SIZE, static_cast<const XML_Char*>(szName));
+	strncpy(name, static_cast<const XML_Char*>(szName), BOOKMARK_NAME_SIZE);
 	name[BOOKMARK_NAME_SIZE] = 0;
 
 	XML_Char type[] = "start";
@@ -4889,7 +4889,7 @@ UT_Error FV_View::cmdInsertBookmark(const char * szName)
 
 	if(bRet)
 	{
-		UT_XML_strncpy(type, 3,static_cast<const XML_Char*>("end"));
+		strncpy(type,static_cast<const XML_Char*>("end"), 3);
 		type[3] = 0;
 		bRet = m_pDoc->insertObject(posEnd, PTO_Bookmark, pAttrs, pProps);
 	}

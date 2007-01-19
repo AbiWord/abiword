@@ -710,9 +710,9 @@ GtkToolbarStyle EV_UnixToolbar::getStyle(void)
 	UT_ASSERT((szValue) && (*szValue));
 	
 	GtkToolbarStyle style = GTK_TOOLBAR_ICONS;
-	if (UT_XML_stricmp(szValue,"text")==0)
+	if (g_ascii_strcasecmp(szValue,"text")==0)
 		style = GTK_TOOLBAR_TEXT;
-	else if (UT_XML_stricmp(szValue,"both")==0)
+	else if (g_ascii_strcasecmp(szValue,"both")==0)
 		style = GTK_TOOLBAR_BOTH;
 
 	return style;	

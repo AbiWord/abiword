@@ -119,13 +119,13 @@ bool AP_Dialog_Paragraph::setDialogData(const XML_Char ** pProps)
 		{
 			tAlignState t = align_LEFT;
 
-			if (UT_XML_strcmp(sz, "center") == 0)
+			if (strcmp(sz, "center") == 0)
 				t = align_CENTERED;
-			else if (UT_XML_strcmp(sz, "right") == 0)
+			else if (strcmp(sz, "right") == 0)
 				t = align_RIGHT;
-			else if (UT_XML_strcmp(sz, "justify") == 0)
+			else if (strcmp(sz, "justify") == 0)
 				t = align_JUSTIFIED;
-			else if (UT_XML_strcmp(sz, "left") == 0)
+			else if (strcmp(sz, "left") == 0)
 				t = align_LEFT;
 			else
 				UT_ASSERT_HARMLESS(UT_SHOULD_NOT_HAPPEN);
@@ -138,9 +138,9 @@ bool AP_Dialog_Paragraph::setDialogData(const XML_Char ** pProps)
 		{
 			tCheckState t = check_FALSE;
 
-			if (UT_XML_strcmp(sz, "ltr") == 0)
+			if (strcmp(sz, "ltr") == 0)
 				t = check_FALSE;
-			else if (UT_XML_strcmp(sz, "rtl") == 0)
+			else if (strcmp(sz, "rtl") == 0)
 				t = check_TRUE;
 			else
 				UT_ASSERT_HARMLESS(UT_SHOULD_NOT_HAPPEN);
@@ -304,23 +304,21 @@ bool AP_Dialog_Paragraph::setDialogData(const XML_Char ** pProps)
 		sz = UT_getAttribute("page-margin-left", pProps);
 		if (sz)
 		{
-			UT_XML_cloneString(m_pageLeftMargin, sz);
+			m_pageLeftMargin = g_strdup(sz);
 		}
 		else
 		{
-		  	UT_XML_cloneString(m_pageLeftMargin,
-					   PP_lookupProperty("page-margin-left")->getInitial());
+		  	m_pageLeftMargin = g_strdup(PP_lookupProperty("page-margin-left")->getInitial());
 		}
 
 		sz = UT_getAttribute("page-margin-right", pProps);
 		if (sz)
 		{
-			UT_XML_cloneString(m_pageRightMargin, sz);
+			m_pageRightMargin = g_strdup(sz);
 		}
 		else
 		{
-		  	UT_XML_cloneString(m_pageRightMargin,
-					   PP_lookupProperty("page-margin-right")->getInitial());
+		  	m_pageRightMargin = g_strdup(PP_lookupProperty("page-margin-right")->getInitial());
 		}
 
 		// TODO : add these to PP_Property (pp_Property.cpp) !!!
@@ -363,21 +361,21 @@ bool AP_Dialog_Paragraph::getDialogData(const XML_Char **& pProps)
 	if (_wasChanged(id_MENU_ALIGNMENT)  && _getMenuItemValue(id_MENU_ALIGNMENT))
 	{
 		ALLOC_PROP_PAIR(p);
-		UT_XML_cloneString(p->prop, "text-align");
+		p->prop = g_strdup("text-align");
 
 		switch (_getMenuItemValue(id_MENU_ALIGNMENT))
 		{
 			case align_LEFT:
-				UT_XML_cloneString(p->val, "left");
+				p->val = g_strdup("left");
 				break;
 			case align_CENTERED:
-				UT_XML_cloneString(p->val, "center");
+				p->val = g_strdup("center");
 				break;
 			case align_RIGHT:
-				UT_XML_cloneString(p->val, "right");
+				p->val = g_strdup("right");
 				break;
 			case align_JUSTIFIED:
-				UT_XML_cloneString(p->val, "justify");
+				p->val = g_strdup("justify");
 				break;
 			default:
 				UT_ASSERT_HARMLESS(UT_SHOULD_NOT_HAPPEN);
@@ -389,12 +387,12 @@ bool AP_Dialog_Paragraph::getDialogData(const XML_Char **& pProps)
 	if (_wasChanged(id_CHECK_DOMDIRECTION))
 	{
 		ALLOC_PROP_PAIR(p);
-		UT_XML_cloneString(p->prop, "dom-dir");
+		p->prop = g_strdup("dom-dir");
 
 		if (_getCheckItemValue(id_CHECK_DOMDIRECTION) == check_TRUE)
-			UT_XML_cloneString(p->val, "rtl");
+			p->val = g_strdup("rtl");
 		else
-			UT_XML_cloneString(p->val, "ltr");
+			p->val = g_strdup("ltr");
 
 		v.addItem(p);
 
@@ -404,8 +402,8 @@ bool AP_Dialog_Paragraph::getDialogData(const XML_Char **& pProps)
 	if (_wasChanged(id_SPIN_LEFT_INDENT))
 	{
 		ALLOC_PROP_PAIR(p);
-		UT_XML_cloneString(p->prop, "margin-left");
-		UT_XML_cloneString(p->val, _getSpinItemValue(id_SPIN_LEFT_INDENT));
+		p->prop = g_strdup("margin-left");
+		p->val = g_strdup(_getSpinItemValue(id_SPIN_LEFT_INDENT));
 
 		v.addItem(p);
 	}
@@ -413,8 +411,8 @@ bool AP_Dialog_Paragraph::getDialogData(const XML_Char **& pProps)
 	if (_wasChanged(id_SPIN_RIGHT_INDENT))
 	{
 		ALLOC_PROP_PAIR(p);
-		UT_XML_cloneString(p->prop, "margin-right");
-		UT_XML_cloneString(p->val, _getSpinItemValue(id_SPIN_RIGHT_INDENT));
+		p->prop = g_strdup("margin-right");
+		p->val = g_strdup(_getSpinItemValue(id_SPIN_RIGHT_INDENT));
 
 		v.addItem(p);
 	}
@@ -429,14 +427,14 @@ bool AP_Dialog_Paragraph::getDialogData(const XML_Char **& pProps)
 		(_wasChanged(id_MENU_SPECIAL_INDENT) || _wasChanged(id_SPIN_SPECIAL_INDENT)))
 	{
 		ALLOC_PROP_PAIR(p);
-		UT_XML_cloneString(p->prop, "text-indent");
+		p->prop = g_strdup("text-indent");
 
 		tIndentState i = (tIndentState) _getMenuItemValue(id_MENU_SPECIAL_INDENT);
 
 		if (i == indent_NONE)
-			UT_XML_cloneString(p->val, UT_convertInchesToDimensionString(m_dim, 0));
+			p->val = g_strdup(UT_convertInchesToDimensionString(m_dim, 0));
 		else if (i == indent_FIRSTLINE)
-			UT_XML_cloneString(p->val, _getSpinItemValue(id_SPIN_SPECIAL_INDENT));
+			p->val = g_strdup(_getSpinItemValue(id_SPIN_SPECIAL_INDENT));
 		else if (i == indent_HANGING)
 		{
 			// we have to flip the sign for "hanging" indents to a negative quantity for
@@ -452,7 +450,7 @@ bool AP_Dialog_Paragraph::getDialogData(const XML_Char **& pProps)
 			val = val * (double) -1;
 
 			// store the reconstructed
-			UT_XML_cloneString(p->val, UT_convertInchesToDimensionString(dim, val));
+			p->val = g_strdup(UT_convertInchesToDimensionString(dim, val));
 		}
 
 		v.addItem(p);
@@ -461,8 +459,8 @@ bool AP_Dialog_Paragraph::getDialogData(const XML_Char **& pProps)
 	if (_wasChanged(id_SPIN_BEFORE_SPACING))
 	{
 		ALLOC_PROP_PAIR(p);
-		UT_XML_cloneString(p->prop, "margin-top");
-		UT_XML_cloneString(p->val, _getSpinItemValue(id_SPIN_BEFORE_SPACING));
+		p->prop = g_strdup("margin-top");
+		p->val = g_strdup(_getSpinItemValue(id_SPIN_BEFORE_SPACING));
 
 		v.addItem(p);
 	}
@@ -470,8 +468,8 @@ bool AP_Dialog_Paragraph::getDialogData(const XML_Char **& pProps)
 	if (_wasChanged(id_SPIN_AFTER_SPACING))
 	{
 		ALLOC_PROP_PAIR(p);
-		UT_XML_cloneString(p->prop, "margin-bottom");
-		UT_XML_cloneString(p->val, _getSpinItemValue(id_SPIN_AFTER_SPACING));
+		p->prop = g_strdup("margin-bottom");
+		p->val = g_strdup(_getSpinItemValue(id_SPIN_AFTER_SPACING));
 
 		v.addItem(p);
 	}
@@ -486,7 +484,7 @@ bool AP_Dialog_Paragraph::getDialogData(const XML_Char **& pProps)
 		 (_wasChanged(id_MENU_SPECIAL_SPACING) || _wasChanged(id_SPIN_SPECIAL_SPACING)))
 	{
 		ALLOC_PROP_PAIR(p);
-		UT_XML_cloneString(p->prop, "line-height");
+		p->prop = g_strdup("line-height");
 
 		// normal spacings (single, 1.5, double) are just simple numbers.
 		// "at least" needs a "+" at the end of the number (no units).
@@ -500,23 +498,23 @@ bool AP_Dialog_Paragraph::getDialogData(const XML_Char **& pProps)
 		switch(_getMenuItemValue(id_MENU_SPECIAL_SPACING))
 		{
 		case spacing_SINGLE:
-			UT_XML_cloneString(p->val, "1.0");
+			p->val = g_strdup("1.0");
 			break;
 		case spacing_ONEANDHALF:
-			UT_XML_cloneString(p->val, "1.5");
+			p->val = g_strdup("1.5");
 			break;
 		case spacing_DOUBLE:
-			UT_XML_cloneString(p->val, "2.0");
+			p->val = g_strdup("2.0");
 			break;
 		case spacing_ATLEAST:
-			nSize = UT_XML_strlen(pString);
+			nSize = strlen(pString);
 			pTmp = (XML_Char *) UT_calloc(nSize + 2, sizeof(XML_Char));
 			UT_return_val_if_fail (pTmp, false);
 
-			UT_XML_strncpy(pTmp, nSize, pString);
+			strncpy(pTmp, pString, nSize);
 			// stick a '+' at the end
 			pTmp[nSize] = '+';
-			UT_XML_cloneString(p->val, pTmp);
+			p->val = g_strdup(pTmp);
 			FREEP(pTmp);
 			break;
 
@@ -525,7 +523,7 @@ bool AP_Dialog_Paragraph::getDialogData(const XML_Char **& pProps)
 		case spacing_MULTIPLE:
 			// both these cases either do or don't have units associated with them.
 			// the platform dialog code takes care of that.
-			UT_XML_cloneString(p->val, pString);
+			p->val = g_strdup(pString);
 			break;
 		default:
 			UT_ASSERT_HARMLESS(UT_SHOULD_NOT_HAPPEN);
@@ -547,24 +545,24 @@ bool AP_Dialog_Paragraph::getDialogData(const XML_Char **& pProps)
 
 		{
 			ALLOC_PROP_PAIR(p);
-			UT_XML_cloneString(p->prop, "orphans");
+			p->prop = g_strdup("orphans");
 
 			if (_getCheckItemValue(id_CHECK_WIDOW_ORPHAN) == check_TRUE)
-				UT_XML_cloneString(p->val, "2");
+				p->val = g_strdup("2");
 			else
-				UT_XML_cloneString(p->val, "0");
+				p->val = g_strdup("0");
 
 			v.addItem(p);
 		}
 
 		{
 			ALLOC_PROP_PAIR(p);
-			UT_XML_cloneString(p->prop, "widows");
+			p->prop = g_strdup("widows");
 
 			if (_getCheckItemValue(id_CHECK_WIDOW_ORPHAN) == check_TRUE)
-				UT_XML_cloneString(p->val, "2");
+				p->val = g_strdup("2");
 			else
-				UT_XML_cloneString(p->val, "0");
+				p->val = g_strdup("0");
 
 			v.addItem(p);
 		}
@@ -573,12 +571,12 @@ bool AP_Dialog_Paragraph::getDialogData(const XML_Char **& pProps)
 	if (_wasChanged(id_CHECK_KEEP_LINES))
 	{
 		ALLOC_PROP_PAIR(p);
-		UT_XML_cloneString(p->prop, "keep-together");
+		p->prop = g_strdup("keep-together");
 
 		if (_getCheckItemValue(id_CHECK_KEEP_LINES) == check_TRUE)
-			UT_XML_cloneString(p->val, "yes");
+			p->val = g_strdup("yes");
 		else
-			UT_XML_cloneString(p->val, "no");
+			p->val = g_strdup("no");
 
 		v.addItem(p);
 	}
@@ -586,12 +584,12 @@ bool AP_Dialog_Paragraph::getDialogData(const XML_Char **& pProps)
 	if (_wasChanged(id_CHECK_KEEP_NEXT))
 	{
 		ALLOC_PROP_PAIR(p);
-		UT_XML_cloneString(p->prop, "keep-with-next");
+		p->prop = g_strdup("keep-with-next");
 
 		if (_getCheckItemValue(id_CHECK_KEEP_NEXT) == check_TRUE)
-			UT_XML_cloneString(p->val, "yes");
+			p->val = g_strdup("yes");
 		else
-			UT_XML_cloneString(p->val, "no");
+			p->val = g_strdup("no");
 
 		v.addItem(p);
 	}
@@ -1343,7 +1341,7 @@ bool AP_Dialog_Paragraph::sControlData::setData (const XML_Char * data)
 			m_szData[SPIN_BUF_TEXT_SIZE-1] = 0;
 		}
 	if (data)
-		UT_XML_strncpy (m_szData, SPIN_BUF_TEXT_SIZE - 1, data);
+		strncpy (m_szData, data, SPIN_BUF_TEXT_SIZE - 1);
 	else
 		m_szData[0] = 0;
 

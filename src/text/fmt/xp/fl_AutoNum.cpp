@@ -70,9 +70,8 @@ fl_AutoNum::fl_AutoNum(	UT_uint32 id,
 	_setParent(pParent);
 	memset(m_pszDelim, 0, 80);
 	memset(m_pszDecimal, 0, 80);
-	UT_uint32 i;
-	i =  UT_XML_strncpy( m_pszDelim, 80, lDelim);
-	i =  UT_XML_strncpy( m_pszDecimal, 80, lDecimal);
+	strncpy( m_pszDelim, lDelim, 80);
+	strncpy( m_pszDecimal, lDecimal, 80);
  	addItem(pFirst);
 
 	m_pDoc->addList(this);
@@ -106,8 +105,8 @@ fl_AutoNum::fl_AutoNum(	UT_uint32 id,
 	// Set in Block???
 	memset(m_pszDelim, 0, 80);
 	memset(m_pszDecimal, 0, 80);
-	UT_XML_strncpy( m_pszDelim, 80, lDelim);
-	UT_XML_strncpy( m_pszDecimal, 80, lDecimal);
+	strncpy( m_pszDelim, lDelim, 80);
+	strncpy( m_pszDecimal, lDecimal, 80);
 	if(m_iParentID != 0)
 	{
 		_setParent(m_pDoc->getListByID(parent_id));
@@ -393,7 +392,7 @@ void    fl_AutoNum::_getLabelstr( UT_UCSChar labelStr[], UT_uint32 * insPoint,
 	// TODO This is a bit of a hack to split the delim string. It would be
 	// TODO nice to clear it up.
 
-	UT_XML_strncpy (p, sizeof(p), m_pszDelim);
+	strncpy (p, m_pszDelim, sizeof(p));
 	UT_uint32 rTmp;
 
 	i = 0;
@@ -428,7 +427,7 @@ void    fl_AutoNum::_getLabelstr( UT_UCSChar labelStr[], UT_uint32 * insPoint,
 		m_pParent->_getLabelstr( labelStr, insPoint, depth+1,getParentItem());
 		if(*insPoint != 0)
 		{
-			psz = UT_XML_strlen(m_pszDecimal);
+			psz = strlen(m_pszDecimal);
 			for(i=0; i<=psz;i++)
 			{
 				labelStr[(*insPoint)++] = CONV_TO_UCS m_pszDecimal[i];
@@ -450,7 +449,7 @@ void    fl_AutoNum::_getLabelstr( UT_UCSChar labelStr[], UT_uint32 * insPoint,
 	//	if (depth == 0 )
 	if(IS_NUMBERED_LIST_TYPE(m_List_Type))
 	{
-		psz = UT_XML_strlen(leftDelim);
+		psz = strlen(leftDelim);
 		for (i = 0; i < psz; i++)
 		{
 			labelStr[(*insPoint)++] = CONV_TO_UCS leftDelim[i];
@@ -460,7 +459,7 @@ void    fl_AutoNum::_getLabelstr( UT_UCSChar labelStr[], UT_uint32 * insPoint,
 	{
 	case NUMBERED_LIST:
 		sprintf(p,"%i",place);
-		psz = UT_XML_strlen( p);
+		psz = strlen( p);
 		for(i=0; i<psz; i++)
 		{
 			labelStr[(*insPoint)++] =  CONV_TO_UCS p[i];
@@ -472,7 +471,7 @@ void    fl_AutoNum::_getLabelstr( UT_UCSChar labelStr[], UT_uint32 * insPoint,
 		char * val = dec2ascii(place - 1, 65);
 		sprintf(p,"%s",val);
 		FREEP(val);
-		psz = UT_XML_strlen( p);
+		psz = strlen( p);
 		for(i=0; i<psz; i++)
 		{
 			labelStr[(*insPoint)++] =  CONV_TO_UCS p[i];
@@ -485,7 +484,7 @@ void    fl_AutoNum::_getLabelstr( UT_UCSChar labelStr[], UT_uint32 * insPoint,
 		char * val = dec2ascii(place - 1, 97);
 		sprintf(p,"%s",val);
 		FREEP(val);
-		psz = UT_XML_strlen( p);
+		psz = strlen( p);
 		for(i=0; i<psz; i++)
 		{
 			labelStr[(*insPoint)++] =  CONV_TO_UCS p[i];
@@ -498,7 +497,7 @@ void    fl_AutoNum::_getLabelstr( UT_UCSChar labelStr[], UT_uint32 * insPoint,
 		char * val = dec2roman(place,false);
 		sprintf(p,"%s",val);
 		FREEP(val);
-		psz = UT_XML_strlen( p);
+		psz = strlen( p);
 		for(i=0; i<psz; i++)
 		{
 			labelStr[(*insPoint)++] =  CONV_TO_UCS p[i];
@@ -511,7 +510,7 @@ void    fl_AutoNum::_getLabelstr( UT_UCSChar labelStr[], UT_uint32 * insPoint,
 		char * val = dec2roman(place,true);
 		sprintf(p,"%s",val);
 		FREEP(val);
-		psz = UT_XML_strlen( p);
+		psz = strlen( p);
 		for(i=0; i<psz; i++)
 		{
 			labelStr[(*insPoint)++] =  CONV_TO_UCS p[i];
@@ -521,7 +520,7 @@ void    fl_AutoNum::_getLabelstr( UT_UCSChar labelStr[], UT_uint32 * insPoint,
 
 	case ARABICNUMBERED_LIST:
 		sprintf(p,"%i",place);
-		psz = UT_XML_strlen( p);
+		psz = strlen( p);
 		for(i=0; i<psz; i++)
 		{
 			labelStr[(*insPoint)++] =  (CONV_TO_UCS p[i]) + 0x0660 - (CONV_TO_UCS '0');
@@ -582,9 +581,9 @@ void    fl_AutoNum::_getLabelstr( UT_UCSChar labelStr[], UT_uint32 * insPoint,
 	}
 	
 	if( m_List_Type < BULLETED_LIST &&
-	    (UT_XML_strnicmp(m_pszDecimal,rightDelim,4) != 0 || depth == 0) )
+	    (g_ascii_strncasecmp(m_pszDecimal,rightDelim,4) != 0 || depth == 0) )
 	{
-		psz = UT_XML_strlen(rightDelim);
+		psz = strlen(rightDelim);
 		for (i = 0; i < psz; i++)
 		{
 			labelStr[(*insPoint)++] =  CONV_TO_UCS rightDelim[i];
@@ -628,8 +627,7 @@ bool fl_AutoNum::isDirty() const
 
 void fl_AutoNum::setDelim(const XML_Char * lDelim)
 {
-	UT_uint32 i;
-	i =  UT_XML_strncpy( m_pszDelim, 80, lDelim);
+	strncpy( m_pszDelim, lDelim, 80);
 	m_bDirty = true;
 }
 
@@ -646,8 +644,7 @@ const XML_Char * fl_AutoNum::getDecimal() const
 
 void fl_AutoNum::setDecimal(const XML_Char * lDecimal)
 {
-	UT_uint32 i;
-	i =  UT_XML_strncpy( m_pszDecimal, 80, lDecimal);
+	strncpy( m_pszDecimal, lDecimal, 80);
 	m_bDirty = true;
 }
 

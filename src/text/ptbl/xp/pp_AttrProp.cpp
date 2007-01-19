@@ -1243,11 +1243,11 @@ void PP_AttrProp::_computeCheckSum(void)
  			s1 = c1.key().c_str();
  			s2 = val;
   
- 			cch = UT_XML_strlen(s1);
+ 			cch = strlen(s1);
   
  			m_checkSum = hashcodeBytesAP(m_checkSum, s1, cch);
  
- 			cch = UT_XML_strlen(s2);
+ 			cch = strlen(s2);
 
 			rgch = g_ascii_strdown(s2, 9);
 			rgch[8] = '\0';
@@ -1269,14 +1269,14 @@ void PP_AttrProp::_computeCheckSum(void)
  		while (val != NULL)
  		{
  			s1 = c2.key().c_str(); 
- 			cch = UT_XML_strlen(s1);
+ 			cch = strlen(s1);
 			rgch = g_ascii_strdown(s1, 9);
 			rgch[8] = '\0';
  			m_checkSum = hashcodeBytesAP(m_checkSum, rgch, cch);
 			g_free (rgch); rgch = NULL;
   
  			s2 = val->first();
- 			cch = UT_XML_strlen(s2);
+ 			cch = strlen(s2);
 			rgch = g_ascii_strdown(s2, 9);
 			rgch[8] = '\0';
  			m_checkSum = hashcodeBytesAP(m_checkSum, rgch, cch);

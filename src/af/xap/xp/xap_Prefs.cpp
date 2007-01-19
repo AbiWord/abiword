@@ -75,7 +75,7 @@ XAP_PrefsScheme::XAP_PrefsScheme( XAP_Prefs *pPrefs, const XML_Char * szSchemeNa
 	m_uTick = 0;
 
 	if (szSchemeName && *szSchemeName)
-		UT_XML_cloneString((XML_Char *&)m_szName,szSchemeName);
+		m_szName = g_strdup(szSchemeName);
 	else
 		m_szName = NULL;
 }
@@ -106,7 +106,7 @@ const XML_Char * XAP_PrefsScheme::getSchemeName(void) const
 bool XAP_PrefsScheme::setSchemeName(const XML_Char * szNewSchemeName)
 {
 	FREEP(m_szName);
-	return UT_XML_cloneString(m_szName,szNewSchemeName);
+	return (NULL != (m_szName = g_strdup(szNewSchemeName)));
 }
 
 bool XAP_PrefsScheme::setValue(const XML_Char * szKey, const XML_Char * szValue)
@@ -632,7 +632,7 @@ bool XAP_Prefs::getPrefsValue(const XML_Char * szKey, const XML_Char ** pszValue
 	// It is legal for there to be arbitrary preference tags that start with 
 	// "Debug", and Abi apps won't choke.  The idea is that developers can use
 	// these to selectively trigger development-time behaviors.
-	if (UT_XML_strnicmp(szKey, DEBUG_PREFIX, sizeof(DEBUG_PREFIX) - 1) == 0)
+	if (g_ascii_strncasecmp(szKey, DEBUG_PREFIX, sizeof(DEBUG_PREFIX) - 1) == 0)
 	{
 		*pszValue = NO_PREF_VALUE;
 		return true;
@@ -653,7 +653,7 @@ bool XAP_Prefs::getPrefsValue(const UT_String &stKey, UT_String &stValue, bool b
 	// It is legal for there to be arbitrary preference tags that start with 
 	// "Debug", and Abi apps won't choke.  The idea is that developers can use
 	// these to selectively trigger development-time behaviors.
-	if (UT_XML_strnicmp(stKey.c_str(), DEBUG_PREFIX, sizeof(DEBUG_PREFIX) - 1) == 0)
+	if (g_ascii_strncasecmp(stKey.c_str(), DEBUG_PREFIX, sizeof(DEBUG_PREFIX) - 1) == 0)
 	{
 		stValue = NO_PREF_VALUE;
 		return true;
@@ -675,7 +675,7 @@ bool XAP_Prefs::getPrefsValueBool(const XML_Char * szKey, bool * pbValue, bool b
 	// It is legal for there to be arbitrary preference tags that start with 
 	// "Debug", and Abi apps won't choke.  The idea is that developers can use
 	// these to selectively trigger development-time behaviors.
-	if (UT_XML_strnicmp(szKey, DEBUG_PREFIX, sizeof(DEBUG_PREFIX) - 1) == 0)
+	if (g_ascii_strncasecmp(szKey, DEBUG_PREFIX, sizeof(DEBUG_PREFIX) - 1) == 0)
 	{
 		*pbValue = false;
 		return true;
@@ -954,7 +954,7 @@ void XAP_Prefs::startElement(const XML_Char *name, const XML_Char **atts)
 				else
 				  uri = UT_go_filename_to_uri (a[1]);
 
-				UT_XML_cloneString((XML_Char *&)sz, uri);
+				sz = g_strdup(uri);
 
 				g_free (uri);
 
@@ -1301,7 +1301,7 @@ bool XAP_Prefs::savePrefsFile(void)
 					// UTF-8 the next time the application reads the
 					// prefs file.
 					UT_GrowBuf gb;
-					UT_decodeUTF8string(szValue, UT_XML_strlen(szValue), &gb);
+					UT_decodeUTF8string(szValue, strlen(szValue), &gb);
 					UT_uint32 length = gb.getLength();
 					fprintf(fp,"\t\t%s=\"",szKey);
 					for (UT_uint32 udex=0; udex<length; ++udex)
@@ -1358,7 +1358,7 @@ bool XAP_Prefs::savePrefsFile(void)
 					// UTF-8 the next time the application reads the
 					// prefs file.
 					UT_GrowBuf gb;
-					UT_decodeUTF8string(szValue, UT_XML_strlen(szValue), &gb);
+					UT_decodeUTF8string(szValue, strlen(szValue), &gb);
 					UT_uint32 length = gb.getLength();
 					fprintf(fp,"\t\t%s=\"",szKey);
 					for (UT_uint32 udex=0; udex<length; ++udex)

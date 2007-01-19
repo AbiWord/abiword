@@ -170,7 +170,7 @@ bool AP_DiskStringSet::setValue(XAP_String_Id id, const XML_Char * szString)
 
 	XML_Char * szDup = NULL;
 	if (szString && *szString)
-		if (!UT_XML_cloneString(szDup,szString))
+		if (!(szDup = g_strdup(szString)))
 			return false;
 
 	void * pOldValue = NULL;
@@ -233,7 +233,7 @@ bool AP_DiskStringSet::setValue(const XML_Char * szId, const XML_Char * szString
 	// case-insensitive comparison (and it is costing us lot of time, particularly on
 	// startup).
 	for (k=0; k<kLimit; k++)
-		if (UT_XML_strcmp(s_map[k].szName,szId) == 0)
+		if (strcmp(s_map[k].szName,szId) == 0)
 			return setValue(s_map[k].id,szString);
 
 	// the name (szId) is not in our table, see if the base class knows about it.

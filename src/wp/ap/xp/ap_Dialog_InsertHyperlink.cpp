@@ -66,9 +66,9 @@ void AP_Dialog_InsertHyperlink::setHyperlink(const XML_Char * link)
 	if(m_pHyperlink)
 		delete [] m_pHyperlink;
 
-	UT_uint32 len = UT_XML_strlen(link);
+	UT_uint32 len = strlen(link);
 	m_pHyperlink = new XML_Char [len+1];
-	UT_XML_strncpy(m_pHyperlink, len + 1, link);
+	strncpy(m_pHyperlink, link, len + 1);
 }
 
 void AP_Dialog_InsertHyperlink::setDoc(FV_View * pView)

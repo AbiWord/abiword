@@ -377,7 +377,7 @@ void AP_Dialog_Columns::_convertToPreferredUnits(XAP_Frame * pFrame,const char *
 	{
 		PreferedUnits = UT_determineDimension(static_cast<const char *>(pszRulerUnits));
 	};
-	UT_XML_strncpy(pRet, 25, static_cast<const XML_Char *>(UT_reformatDimensionString(PreferedUnits,sz)));
+	strncpy(pRet, static_cast<const XML_Char *>(UT_reformatDimensionString(PreferedUnits,sz)), 25);
 }
 
 

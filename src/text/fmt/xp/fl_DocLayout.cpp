@@ -308,59 +308,59 @@ FootnoteType FL_DocLayout::FootnoteTypeFromString(const XML_Char * pszFootnoteTy
 	{
 		iFootnoteType = FOOTNOTE_TYPE_NUMERIC;
 	}
-	else if(UT_XML_strcmp(pszFootnoteType,"numeric") == 0)
+	else if(strcmp(pszFootnoteType,"numeric") == 0)
 	{
 		iFootnoteType = FOOTNOTE_TYPE_NUMERIC;
 	}
-	else if(UT_XML_strcmp(pszFootnoteType,"numeric-square-brackets") == 0)
+	else if(strcmp(pszFootnoteType,"numeric-square-brackets") == 0)
 	{
 		iFootnoteType = FOOTNOTE_TYPE_NUMERIC_SQUARE_BRACKETS;
 	}
-	else if(UT_XML_strcmp(pszFootnoteType,"numeric-paren") == 0)
+	else if(strcmp(pszFootnoteType,"numeric-paren") == 0)
 	{
 		iFootnoteType = FOOTNOTE_TYPE_NUMERIC_PAREN;
 	}
-	else if(UT_XML_strcmp(pszFootnoteType,"numeric-open-paren") == 0)
+	else if(strcmp(pszFootnoteType,"numeric-open-paren") == 0)
 	{
 		iFootnoteType = FOOTNOTE_TYPE_NUMERIC_OPEN_PAREN;
 	}
-	else if(UT_XML_strcmp(pszFootnoteType,"upper") == 0)
+	else if(strcmp(pszFootnoteType,"upper") == 0)
 	{
 		iFootnoteType = FOOTNOTE_TYPE_UPPER;
 	}
-	else if(UT_XML_strcmp(pszFootnoteType,"upper-paren") == 0)
+	else if(strcmp(pszFootnoteType,"upper-paren") == 0)
 	{
 		iFootnoteType = FOOTNOTE_TYPE_UPPER_PAREN;
 	}
-	else if(UT_XML_strcmp(pszFootnoteType,"upper-paren-open") == 0)
+	else if(strcmp(pszFootnoteType,"upper-paren-open") == 0)
 	{
 		iFootnoteType = FOOTNOTE_TYPE_UPPER_OPEN_PAREN;
 	}
-	else if(UT_XML_strcmp(pszFootnoteType,"lower") == 0)
+	else if(strcmp(pszFootnoteType,"lower") == 0)
 	{
 		iFootnoteType = FOOTNOTE_TYPE_LOWER;
 	}
-	else if(UT_XML_strcmp(pszFootnoteType,"lower-paren") == 0)
+	else if(strcmp(pszFootnoteType,"lower-paren") == 0)
 	{
 		iFootnoteType = FOOTNOTE_TYPE_LOWER_PAREN;
 	}
-	else if(UT_XML_strcmp(pszFootnoteType,"lower-paren-open") == 0)
+	else if(strcmp(pszFootnoteType,"lower-paren-open") == 0)
 	{
 		iFootnoteType = FOOTNOTE_TYPE_LOWER_OPEN_PAREN;
 	}
-	else if(UT_XML_strcmp(pszFootnoteType,"lower-roman") == 0)
+	else if(strcmp(pszFootnoteType,"lower-roman") == 0)
 	{
 		iFootnoteType = FOOTNOTE_TYPE_LOWER_ROMAN;
 	}
-	else if(UT_XML_strcmp(pszFootnoteType,"lower-roman-paren") == 0)
+	else if(strcmp(pszFootnoteType,"lower-roman-paren") == 0)
 	{
 		iFootnoteType = FOOTNOTE_TYPE_LOWER_ROMAN_PAREN;
 	}
-	else if(UT_XML_strcmp(pszFootnoteType,"upper-roman") == 0)
+	else if(strcmp(pszFootnoteType,"upper-roman") == 0)
 	{
 		iFootnoteType = FOOTNOTE_TYPE_UPPER_ROMAN;
 	}
-	else if(UT_XML_strcmp(pszFootnoteType,"upper-roman-paren") == 0)
+	else if(strcmp(pszFootnoteType,"upper-roman-paren") == 0)
 	{
 		iFootnoteType = FOOTNOTE_TYPE_UPPER_ROMAN_PAREN;
 	}
@@ -401,7 +401,7 @@ void FL_DocLayout::_lookupProperties(void)
 	pDocAP->getProperty("document-footnote-restart-section", (const XML_Char *&)pszTmp);
 	if(pszTmp && pszTmp[0])
 	{
-		if(UT_XML_strcmp(pszTmp,"1") == 0)
+		if(strcmp(pszTmp,"1") == 0)
 		{
 			m_bRestartFootSection = true;
 		}
@@ -418,7 +418,7 @@ void FL_DocLayout::_lookupProperties(void)
 	pDocAP->getProperty("document-footnote-restart-page", (const XML_Char *&)pszTmp);
 	if(pszTmp && pszTmp[0])
 	{
-		if(UT_XML_strcmp(pszTmp,"1") == 0)
+		if(strcmp(pszTmp,"1") == 0)
 		{
 			m_bRestartFootPage = true;
 		}
@@ -445,7 +445,7 @@ void FL_DocLayout::_lookupProperties(void)
 	pDocAP->getProperty("document-endnote-restart-section", (const XML_Char *&)pszTmp);
 	if(pszTmp && pszTmp[0])
 	{
-		if(UT_XML_strcmp(pszTmp,"1") == 0)
+		if(strcmp(pszTmp,"1") == 0)
 		{
 			m_bRestartEndSection = true;
 		}
@@ -462,7 +462,7 @@ void FL_DocLayout::_lookupProperties(void)
 	pDocAP->getProperty("document-endnote-place-endsection", (const XML_Char *&)pszTmp);
 	if(pszTmp && pszTmp[0])
 	{
-		if(UT_XML_strcmp(pszTmp,"1") == 0)
+		if(strcmp(pszTmp,"1") == 0)
 		{
 			m_bPlaceAtDocEnd = false;
 		}
@@ -479,7 +479,7 @@ void FL_DocLayout::_lookupProperties(void)
 	pDocAP->getProperty("document-endnote-place-enddoc", (const XML_Char *&)pszTmp);
 	if(pszTmp && pszTmp[0])
 	{
-		if(UT_XML_strcmp(pszTmp,"1") == 0)
+		if(strcmp(pszTmp,"1") == 0)
 		{
 			m_bPlaceAtSecEnd = false;
 		}

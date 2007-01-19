@@ -843,13 +843,13 @@ void IE_Imp_XHTML::startElement(const XML_Char *name,
 					p_val = _getXMLPropValue (static_cast<const XML_Char *>("align"), atts);
 					if (p_val)
 						{
-							if (!UT_XML_strcmp (p_val, "right"))
+							if (!strcmp (p_val, "right"))
 								*style += "text-align: right; ";
-							else if (!UT_XML_strcmp (p_val, "center"))
+							else if (!strcmp (p_val, "center"))
 								*style += "text-align: center; ";
-							else if (!UT_XML_strcmp (p_val, "left"))
+							else if (!strcmp (p_val, "left"))
 								*style += "text-align: left; ";
-							else if (!UT_XML_strcmp (p_val, "justify"))
+							else if (!strcmp (p_val, "justify"))
 								*style += "text-align: justify; ";
 						}
 				}
@@ -1101,16 +1101,16 @@ void IE_Imp_XHTML::startElement(const XML_Char *name,
 			listAtts[propsPos] = temp;
 
 			// append a field
-			UT_XML_cloneString(sz, "type");
+			sz = g_strdup("type");
 			new_atts[0] = sz;
-			UT_XML_cloneString(sz, "list_label");
+			sz = g_strdup("list_label");
 			new_atts[1] = sz;
 			X_CheckError(appendObject(PTO_Field, new_atts));
 
 			// append the character run
-			UT_XML_cloneString(sz, "type");
+			sz = g_strdup("type");
 			new_atts[0] = sz;
-			UT_XML_cloneString(sz, "list_label");
+			sz = g_strdup("list_label");
 			new_atts[1] = sz;
 			X_CheckError(appendFmt(new_atts));
 
@@ -1155,10 +1155,10 @@ void IE_Imp_XHTML::startElement(const XML_Char *name,
 		if( p_val )
 		{
 			X_CheckError(requireBlock ());
-		    UT_XML_cloneString(sz, "xlink:href");
+		    sz = g_strdup("xlink:href");
 		    new_atts[0] = sz;
 	    	sz = NULL;
-		    UT_XML_cloneString(sz, p_val);
+		    sz = g_strdup(p_val);
 		    new_atts[1] = sz;
 			X_CheckError(appendObject(PTO_Hyperlink,new_atts));
 		}
@@ -1174,17 +1174,17 @@ void IE_Imp_XHTML::startElement(const XML_Char *name,
  				const XML_Char *bm_new_atts[5];
 				for( i = 0; i < 5; i++) bm_new_atts[i] = NULL;
 	    		sz = NULL;
-			    UT_XML_cloneString(sz, "type");
+			    sz = g_strdup("type");
 				bm_new_atts[0] = sz; 
 	    		sz = NULL;
-			    UT_XML_cloneString(sz, "start");
+			    sz = g_strdup("start");
 				bm_new_atts[1] = sz;
 	    		sz = NULL;
-			    UT_XML_cloneString(sz, "name");
+			    sz = g_strdup("name");
 			    bm_new_atts[2] = sz;
 	    		sz = NULL;
-		    	UT_XML_cloneString(sz, p_val);
-				UT_XML_cloneString(m_szBookMarkName, p_val);
+		    	sz = g_strdup(p_val);
+				m_szBookMarkName = g_strdup(p_val);
 			    bm_new_atts[3] = sz;
 				if (m_szBookMarkName)
 				{
@@ -1195,16 +1195,16 @@ void IE_Imp_XHTML::startElement(const XML_Char *name,
 				if (m_szBookMarkName && (m_parseState == _PS_Sec))
 				{
 					for(i = 0; i < 5; i++) bm_new_atts[i] = NULL;
-					UT_XML_cloneString(sz, "type");
+					sz = g_strdup("type");
 					bm_new_atts[0] = sz; 
 					sz = NULL;
-					UT_XML_cloneString(sz, "end");
+					sz = g_strdup("end");
 					bm_new_atts[1] = sz;
 					sz = NULL;
-					UT_XML_cloneString(sz, "name");
+					sz = g_strdup("name");
 					bm_new_atts[2] = sz;
 					sz = NULL;
-					UT_XML_cloneString(sz, m_szBookMarkName);
+					sz = g_strdup(m_szBookMarkName);
 					bm_new_atts[3] = sz;
 					X_CheckError(appendObject(PTO_Bookmark,bm_new_atts));
 
@@ -1367,36 +1367,36 @@ void IE_Imp_XHTML::startElement(const XML_Char *name,
 		UT_String_sprintf (dataid, "image%u", static_cast<unsigned int>(m_iNewImage++));
 
 		sz = NULL;
-		UT_XML_cloneString (sz, PT_PROPS_ATTRIBUTE_NAME);
+		sz = g_strdup(PT_PROPS_ATTRIBUTE_NAME);
 		X_CheckError(sz);
 		api_atts[0] = sz;
 		sz = NULL;
-		UT_XML_cloneString (sz, utf8val.utf8_str ());
+		sz = g_strdup(utf8val.utf8_str ());
 		X_CheckError(sz);
 		api_atts[1] = sz;
 		sz = NULL;
-		UT_XML_cloneString (sz, "dataid");
+		sz = g_strdup("dataid");
 		X_CheckError(sz);
 		api_atts[2] = sz;
 		sz = NULL;
-		UT_XML_cloneString (sz, dataid.c_str ());
+		sz = g_strdup(dataid.c_str ());
 		X_CheckError(sz);
 		api_atts[3] = sz;
 
-		UT_XML_cloneString (sz, "title");
+		sz = g_strdup("title");
 		X_CheckError(sz);
 		api_atts[4] = sz;
 		sz = NULL;
-		UT_XML_cloneString (sz, (szTitle == NULL ? "" : szTitle));
+		sz = g_strdup(szTitle == NULL ? "" : szTitle);
 		X_CheckError(sz);
 		api_atts[5] = sz;
 		sz = NULL;
 
-		UT_XML_cloneString (sz, "alt");
+		sz = g_strdup("alt");
 		X_CheckError(sz);
 		api_atts[6] = sz;
 		sz = NULL;
-		UT_XML_cloneString (sz, (szAlt == NULL ? "" : szAlt));
+		sz = g_strdup(szAlt == NULL ? "" : szAlt);
 		X_CheckError(sz);
 		api_atts[7] = sz;
 		sz = NULL;
@@ -1786,16 +1786,16 @@ void IE_Imp_XHTML::endElement(const XML_Char *name)
 			XML_Char * sz = NULL;
 			const XML_Char *bm_new_atts[5];
 			for(i = 0; i < 5; i++) bm_new_atts[i] = NULL;
-		    UT_XML_cloneString(sz, "type");
+		    sz = g_strdup("type");
 			bm_new_atts[0] = sz; 
     		sz = NULL;
-		    UT_XML_cloneString(sz, "end");
+		    sz = g_strdup("end");
 			bm_new_atts[1] = sz;
     		sz = NULL;
-		    UT_XML_cloneString(sz, "name");
+		    sz = g_strdup("name");
 		    bm_new_atts[2] = sz;
     		sz = NULL;
-	    	UT_XML_cloneString(sz, m_szBookMarkName);
+	    	sz = g_strdup(m_szBookMarkName);
 		    bm_new_atts[3] = sz;
 			X_CheckError(appendObject(PTO_Bookmark,bm_new_atts));
 			for(i = 0; i < 5; i++) FREEP(bm_new_atts[i]);
@@ -2018,7 +2018,7 @@ bool IE_Imp_XHTML::pushInline (const char * props)
 
 	XML_Char * sz = NULL;
 
-	UT_XML_cloneString (sz, PT_PROPS_ATTRIBUTE_NAME);
+	sz = g_strdup(PT_PROPS_ATTRIBUTE_NAME);
 	if (sz == NULL)
 		{
 			UT_return_val_if_fail(0,false);
@@ -2027,7 +2027,7 @@ bool IE_Imp_XHTML::pushInline (const char * props)
 
 	sz = NULL;
 
-	UT_XML_cloneString (sz, props);
+	sz = g_strdup(props);
 	if (sz == NULL)
 		{
 			UT_return_val_if_fail(0,false);
@@ -2057,13 +2057,13 @@ bool IE_Imp_XHTML::newBlock (const char * style_name, const char * css_style, co
 		style = *div_style;
 	if (align)
 		{
-			if (!UT_XML_strcmp (align, "right"))
+			if (!strcmp (align, "right"))
 				style += "text-align: right; ";
-			else if (!UT_XML_strcmp (align, "center"))
+			else if (!strcmp (align, "center"))
 				style += "text-align: center; ";
-			else if (!UT_XML_strcmp (align, "left"))
+			else if (!strcmp (align, "left"))
 				style += "text-align: left; ";
-			else if (!UT_XML_strcmp (align, "justify"))
+			else if (!strcmp (align, "justify"))
 				style += "text-align: justify; ";
 		}
 	if (css_style)
@@ -2079,7 +2079,7 @@ bool IE_Imp_XHTML::newBlock (const char * style_name, const char * css_style, co
 
 	XML_Char * sz = NULL;
 
-	UT_XML_cloneString (sz, PT_STYLE_ATTRIBUTE_NAME);
+	sz = g_strdup(PT_STYLE_ATTRIBUTE_NAME);
 	if (sz == NULL)
 		{
 			UT_return_val_if_fail(0,false);
@@ -2088,7 +2088,7 @@ bool IE_Imp_XHTML::newBlock (const char * style_name, const char * css_style, co
 
 	sz = NULL;
 
-	UT_XML_cloneString (sz, style_name);
+	sz = g_strdup(style_name);
 	if (sz == NULL)
 		{
 			UT_return_val_if_fail(0,false);
@@ -2099,7 +2099,7 @@ bool IE_Imp_XHTML::newBlock (const char * style_name, const char * css_style, co
 		{
 			sz = NULL;
 
-			UT_XML_cloneString (sz, PT_PROPS_ATTRIBUTE_NAME);
+			sz = g_strdup(PT_PROPS_ATTRIBUTE_NAME);
 			if (sz == NULL)
 				{
 					UT_return_val_if_fail(0,false);
@@ -2108,7 +2108,7 @@ bool IE_Imp_XHTML::newBlock (const char * style_name, const char * css_style, co
 
 			sz = NULL;
 
-			UT_XML_cloneString (sz, utf8val.utf8_str ());
+			sz = g_strdup(utf8val.utf8_str ());
 			if (sz == NULL)
 				{
 					UT_return_val_if_fail(0,false);

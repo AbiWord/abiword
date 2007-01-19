@@ -929,7 +929,7 @@ bool s_AbiWord_1_Listener::populate(PL_StruxFmtHandle /*sfh*/,
 
 					while(pAP->getNthAttribute(k++, pName, pValue))
 					{
-						bFound = (0 == UT_XML_strnicmp(pName,"xlink:href",10));
+						bFound = (0 == g_ascii_strncasecmp(pName,"xlink:href",10));
 						if(bFound)
 							break;
 					}

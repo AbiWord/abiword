@@ -61,7 +61,7 @@ const XML_Char * AP_Dialog_InsertBookmark::getBookmark() const
 
 void AP_Dialog_InsertBookmark::setBookmark(const XML_Char * mark)
 {
-	UT_XML_strncpy(m_pBookmark, BOOKMARK_SIZE_LIMIT, mark);
+	strncpy(m_pBookmark, mark, BOOKMARK_SIZE_LIMIT);
 }
 
 void AP_Dialog_InsertBookmark::setDoc(FV_View * pView)

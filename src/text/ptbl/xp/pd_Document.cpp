@@ -4973,7 +4973,7 @@ bool PD_Document:: setPageSizeFromFile(const XML_Char ** attributes)
 
 	if( szWidth && szHeight && szUnits && szPageScale)
 	  {
-		if(UT_XML_stricmp(szPageSize,"Custom") == 0)
+		if(g_ascii_strcasecmp(szPageSize,"Custom") == 0)
 		  {
 		    width = UT_convertDimensionless(szWidth);
 		    height = UT_convertDimensionless(szHeight);
@@ -4992,7 +4992,7 @@ bool PD_Document:: setPageSizeFromFile(const XML_Char ** attributes)
 
 	// set portrait by default
 	m_docPageSize.setPortrait();
-	if( UT_XML_stricmp(szOrientation,"landscape") == 0 )
+	if( g_ascii_strcasecmp(szOrientation,"landscape") == 0 )
 	{
 		width = UT_convertDimensionless(szWidth);
 		height = UT_convertDimensionless(szHeight);
@@ -5022,7 +5022,7 @@ void PD_Document::removeBookmark(const XML_Char * pName)
 	for(UT_uint32 i = 0; i < m_vBookmarkNames.getItemCount(); i++)
 	{
 		const XML_Char * pBM =  reinterpret_cast<const XML_Char *>(m_vBookmarkNames.getNthItem(i));
-		if(!UT_XML_strcmp(pName, pBM))
+		if(!strcmp(pName, pBM))
 		{
 			m_vBookmarkNames.deleteNthItem(i);
 			break;
@@ -5037,7 +5037,7 @@ bool PD_Document::isBookmarkUnique(const XML_Char * pName) const
 	for(UT_uint32 i = 0; i < m_vBookmarkNames.getItemCount(); i++)
 	{
 		const XML_Char * pBM =  reinterpret_cast<const XML_Char *>(m_vBookmarkNames.getNthItem(i));
-		if(!UT_XML_strcmp(pName, pBM))
+		if(!strcmp(pName, pBM))
 			return false;
 	}
 	return true;

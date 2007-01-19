@@ -630,8 +630,8 @@ void IE_Imp_AbiWord_1::startElement(const XML_Char *name,
 		_handleResource (atts, false);
 #else
 		m_currentDataItem.truncate(0);
-		X_CheckError(UT_XML_cloneString(m_currentDataItemName,_getDataItemName(atts)));
-		X_CheckError(UT_XML_cloneString(m_currentDataItemMimeType,_getDataItemMimeType(atts)));
+		X_CheckError((m_currentDataItemName = g_strdup(_getDataItemName(atts))));
+		X_CheckError((m_currentDataItemMimeType = g_strdup(_getDataItemMimeType(atts))));
 		m_currentDataItemEncoded = _getDataItemEncoded(atts);
 #endif
 		goto cleanup;
@@ -1205,7 +1205,7 @@ bool IE_Imp_AbiWord_1::_getDataItemEncoded(const XML_Char ** atts)
 {
   	const XML_Char *val = _getXMLPropValue ("base64", atts);
 
-	if ((!val) || (UT_XML_strcmp (val, "no") != 0))
+	if ((!val) || (strcmp (val, "no") != 0))
 	  return true;
 
 	return false;
