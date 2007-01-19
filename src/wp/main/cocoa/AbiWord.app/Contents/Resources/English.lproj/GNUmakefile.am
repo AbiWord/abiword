@@ -34,17 +34,23 @@ nibinst: GNUmakefile.am
 	    nib=`basename $$i`; \
 	    echo 'nibs="$$nibs '$$nib'"' >> nibinst; \
 	    mkdir -p $$nib; \
-	    for j in classes.nib info.nib; do cp -f $$i/$$j $$nib/$$j; done \
+	    for j in objects.nib keyedobjects.nib classes.nib info.nib; do cp -f $$i/$$j $$nib/$$j; done \
 	 done; \
 	 for i in $(apsrcdir)/*.nib; do \
 	    nib=`basename $$i`; \
 	    echo 'nibs="$$nibs '$$nib'"' >> nibinst; \
 	    mkdir -p $$nib; \
-	    for j in classes.nib info.nib; do cp -f $$i/$$j $$nib/$$j; done \
+	    for j in objects.nib keyedobjects.nib classes.nib info.nib; do cp -f $$i/$$j $$nib/$$j; done \
+	 done; \
+	 for i in $(mainsrcdir)/*.nib; do \
+	    nib=`basename $$i`; \
+	    echo 'nibs="$$nibs '$$nib'"' >> nibinst; \
+	    mkdir -p $$nib; \
+	    for j in objects.nib keyedobjects.nib classes.nib info.nib; do cp -f $$i/$$j $$nib/$$j; done \
 	 done; \
 	 echo 'for nib in $$nibs; do' >> nibinst; \
 	 echo '   mkdir -p $$1/$$nib' >> nibinst; \
-	 echo '   for j in classes.nib info.nib; do cp -f $$nib/$$j $$1/$$nib/$$j; done' >> nibinst; \
+	 echo '   for j in objects.nib keyedobjects.nib classes.nib info.nib; do cp -f $$nib/$$j $$1/$$nib/$$j; done' >> nibinst; \
 	 echo 'done' >> nibinst; \
 	 chmod 755 nibinst
 
