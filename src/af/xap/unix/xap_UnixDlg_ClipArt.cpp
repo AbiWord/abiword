@@ -50,7 +50,7 @@ static gint clipartCount = 0;
  * Create list store for the icon view.
  */
 static GtkListStore *
-create_store (void)
+create_store ()
 {
 	GtkListStore *store;
 
@@ -68,7 +68,20 @@ create_store (void)
 static gboolean
 fill_store (XAP_UnixDialog_ClipArt *self)
 {
-	return self->fillStore();
+	gboolean ret = self->fillStore();
+	if (!ret) {
+		GtkWidget *dlg = self->getDialog ();
+		const XAP_StringSet *pSS = XAP_App::getApp()->getStringSet ();
+		UT_UTF8String s;
+		pSS->getValueUTF8(XAP_STRING_ID_DLG_CLIPART_Error,s);
+
+		GtkWidget *err = gtk_message_dialog_new (GTK_WINDOW (dlg), GTK_DIALOG_DESTROY_WITH_PARENT, GTK_MESSAGE_ERROR, GTK_BUTTONS_CLOSE, "%s", s.utf8_str());
+		gtk_dialog_run (GTK_DIALOG (err));
+		gtk_widget_destroy (err); err = NULL;
+
+		gtk_dialog_response(GTK_DIALOG(dlg), GTK_RESPONSE_CANCEL);
+	}
+	return FALSE;
 }
 
 /**
@@ -101,7 +114,7 @@ XAP_UnixDialog_ClipArt::XAP_UnixDialog_ClipArt(XAP_DialogFactory * pDlgFactory, 
 /**
  *
  */
-XAP_UnixDialog_ClipArt::~XAP_UnixDialog_ClipArt(void)
+XAP_UnixDialog_ClipArt::~XAP_UnixDialog_ClipArt()
 {
 	this->dir_path = NULL;
 	this->progress = NULL;
@@ -195,7 +208,7 @@ void XAP_UnixDialog_ClipArt::runModal(XAP_Frame * pFrame)
 /**
  * Fill list store updating progress bar as we go.
  */
-gboolean XAP_UnixDialog_ClipArt::fillStore(void)
+gboolean XAP_UnixDialog_ClipArt::fillStore()
 {
 	GDir 		*dir;
 	const gchar *name;
@@ -203,6 +216,10 @@ gboolean XAP_UnixDialog_ClipArt::fillStore(void)
 	GError		*error;
 	GtkTreeIter  iter;
 	gint		 count;
+
+	if (!g_file_test (this->dir_path, G_FILE_TEST_IS_DIR)) {
+		return FALSE;
+	}
 
 	error = NULL;
 	dir = g_dir_open (this->dir_path, 0, &error);
@@ -275,7 +292,7 @@ next:
 /**
  * Clipart clicked handler.
  */
-void XAP_UnixDialog_ClipArt::onItemActivated(void)
+void XAP_UnixDialog_ClipArt::onItemActivated()
 {
 	gtk_dialog_response(GTK_DIALOG(this->dlg), GTK_RESPONSE_OK);
 }

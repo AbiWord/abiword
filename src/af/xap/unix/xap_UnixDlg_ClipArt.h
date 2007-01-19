@@ -1,3 +1,5 @@
+/* -*- mode: C++; tab-width: 4; c-basic-offset: 4; -*- */
+
 /* AbiWord
  * Copyright (C) 2000 AbiSource, Inc.
  * Copyright (C) 2006 Rob Staudinger <robert.staudinger@gmail.com>
@@ -31,14 +33,15 @@ class XAP_UnixDialog_ClipArt: public XAP_Dialog_ClipArt
 {
 public:
 	XAP_UnixDialog_ClipArt(XAP_DialogFactory * pDlgFactory, XAP_Dialog_Id id);
-	virtual ~XAP_UnixDialog_ClipArt(void);
+	virtual ~XAP_UnixDialog_ClipArt();
 
 	virtual void			runModal(XAP_Frame * pFrame);
 
 	static XAP_Dialog *		static_constructor(XAP_DialogFactory *, XAP_Dialog_Id id);
 	
-	gboolean 	fillStore		(void);
-	void 		onItemActivated	(void);
+	GtkWidget * getDialog		() const { return dlg; }
+	gboolean 	fillStore		();
+	void 		onItemActivated	();
 
 protected:
 	const gchar 	*dir_path;
