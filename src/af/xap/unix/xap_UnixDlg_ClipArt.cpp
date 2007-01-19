@@ -73,7 +73,7 @@ fill_store (XAP_UnixDialog_ClipArt *self)
 		GtkWidget *dlg = self->getDialog ();
 		const XAP_StringSet *pSS = XAP_App::getApp()->getStringSet ();
 		UT_UTF8String s;
-		pSS->getValueUTF8(XAP_STRING_ID_DLG_CLIPART_Error,s);
+		pSS->getValueUTF8(XAP_STRING_ID_DLG_CLIPART_Error, s);
 
 		GtkWidget *err = gtk_message_dialog_new (GTK_WINDOW (dlg), GTK_DIALOG_DESTROY_WITH_PARENT, GTK_MESSAGE_ERROR, GTK_BUTTONS_CLOSE, "%s", s.utf8_str());
 		gtk_dialog_run (GTK_DIALOG (err));
@@ -131,6 +131,7 @@ void XAP_UnixDialog_ClipArt::runModal(XAP_Frame * pFrame)
 	GList 		*list;
 	GError		*error;
 
+	UT_UTF8String s;
 	const XAP_StringSet *pSS = m_pApp->getStringSet ();
 
 	UT_ASSERT(pFrame);
@@ -144,8 +145,9 @@ void XAP_UnixDialog_ClipArt::runModal(XAP_Frame * pFrame)
 	GtkWidget *vbox = gtk_vbox_new (FALSE, 10);
 	gtk_container_add (GTK_CONTAINER (GTK_DIALOG(this->dlg)->vbox), vbox);
 	
+	pSS->getValueUTF8(XAP_STRING_ID_DLG_CLIPART_Loading, s);
 	this->progress = gtk_progress_bar_new ();
-	gtk_progress_bar_set_text (GTK_PROGRESS_BAR (this->progress), "Loading images");
+	gtk_progress_bar_set_text (GTK_PROGRESS_BAR (this->progress), s.utf8_str());
 	gtk_box_pack_start (GTK_BOX (vbox), this->progress, FALSE, FALSE, 0);
 
 	scroll = gtk_scrolled_window_new (NULL, NULL);
