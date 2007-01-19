@@ -1118,7 +1118,7 @@ void XAP_App::clearIdTable()
 
 void XAP_App::rememberModelessId(UT_sint32 id, XAP_Dialog_Modeless * pDialog)
 {
-	// find a g_free slot in the m_IdTable
+	// find a free slot in the m_IdTable
  
 	UT_sint32 i;
 	for(i=0; (i<= NUM_MODELESSID) && (m_IdTable[i].id !=  -1); i++);
