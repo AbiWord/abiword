@@ -1344,7 +1344,7 @@ static const char * s_Delimiter =
 "=======================================================";
 
 static const char * s_Header[2] = {
-   "Created by AbiWord, a g_free, Open Source wordprocessor. ",
+   "Created by AbiWord, a free, Open Source wordprocessor. ",
    "For more information visit http://www.abisource.com.   "
 };
 
