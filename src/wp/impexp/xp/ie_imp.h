@@ -56,7 +56,7 @@ public:
 
 	virtual ~IE_ImpSniffer();
 	
-	// these you get for g_free
+	// these you get for free
 	inline bool supportsFileType (IEFileType type) {return m_type == type;}
 	inline IEFileType getFileType() const {return m_type;}
 	

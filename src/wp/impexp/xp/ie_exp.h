@@ -49,7 +49,7 @@ class ABI_EXPORT IE_ExpSniffer : public UT_AbiObject
 public:
 	virtual ~IE_ExpSniffer();
 	
-	// these you get for g_free
+	// these you get for free
 	inline bool supportsFileType (IEFileType type) {return m_type == type;}
 	inline IEFileType getFileType() const {return m_type;}
 	

@@ -10,7 +10,7 @@
 // This class stores the pagesize in mm. The resoning behind
 // that is that mm is at least a derived unit from an ISO standard.
 // If anyone think it's more apropriate to express it in meters,
-// you're g_free to change the implementation.
+// you're free to change the implementation.
 
 static const int cMaxSymbolicLength = 25;
 static const UT_Dimension FUND = DIM_MM;

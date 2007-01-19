@@ -44,7 +44,7 @@ class ABI_EXPORT IE_ImpGraphicSniffer : public UT_AbiObject
 public:
 	virtual ~IE_ImpGraphicSniffer() {}
 	
-	// these you get for g_free
+	// these you get for free
 	inline bool supportsType (IEGraphicFileType type) {return m_type == type;}
 	inline IEGraphicFileType getType() const {return m_type;}
 

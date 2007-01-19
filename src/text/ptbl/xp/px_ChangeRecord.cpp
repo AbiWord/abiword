@@ -22,7 +22,7 @@
   PX_ChangeRecord describes a change made to the document.  This
   description should be sufficient to allow undo to work and
   sufficient to allow the formatter to do a partial format and screen
-  update (if appropriate).  The change record must be g_free of
+  update (if appropriate).  The change record must be free of
   pointers, since it represents what was done to the document -- and
   not how it was done (that is, not what was done to various
   intermediate data structures).  This also lets it be cached to disk
