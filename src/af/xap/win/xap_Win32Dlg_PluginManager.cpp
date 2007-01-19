@@ -63,8 +63,8 @@ XAP_Win32Dialog_PluginManager::~XAP_Win32Dialog_PluginManager(void)
 
 void XAP_Win32Dialog_PluginManager::runModal(XAP_Frame * pFrame)
 {
-	UT_ASSERT(pFrame);
-	UT_ASSERT(m_id == XAP_DIALOG_ID_PLUGIN_MANAGER);
+	UT_return_if_fail(pFrame);
+	UT_return_if_fail(m_id == XAP_DIALOG_ID_PLUGIN_MANAGER);
 
 	setDialog(this);
 	createModal(pFrame,MAKEINTRESOURCE(XAP_RID_DIALOG_PLUGIN_MANAGER));
@@ -78,8 +78,6 @@ BOOL XAP_Win32Dialog_PluginManager::_onInitDialog(HWND hWnd, WPARAM wParam, LPAR
 	/* Localise controls */	
 	localizeControlText(IDOK,			XAP_STRING_ID_DLG_OK);
 	localizeControlText(XAP_RID_DIALOG_PLUGIN_MANAGER_BTN_ACTIVE,		XAP_STRING_ID_DLG_PLUGIN_MANAGER_ACTIVE);
-	localizeControlText(XAP_RID_DIALOG_PLUGIN_MANAGER_BTN_DEACTIVATE,	XAP_STRING_ID_DLG_PLUGIN_MANAGER_DEACTIVATE);
-	localizeControlText(XAP_RID_DIALOG_PLUGIN_MANAGER_BTN_DEACTIVATEALL,XAP_STRING_ID_DLG_PLUGIN_MANAGER_DEACTIVATE_ALL);
 	localizeControlText(XAP_RID_DIALOG_PLUGIN_MANAGER_BTN_INSTALL,		XAP_STRING_ID_DLG_PLUGIN_MANAGER_INSTALL);			
 
 	localizeControlText(XAP_RID_DIALOG_PLUGIN_MANAGER_LBL_NAME,			XAP_STRING_ID_DLG_PLUGIN_MANAGER_NAME);
@@ -112,34 +110,6 @@ BOOL XAP_Win32Dialog_PluginManager::_onCommand(HWND hWnd, WPARAM wParam, LPARAM 
 
 	case XAP_RID_DIALOG_PLUGIN_MANAGER_BTN_INSTALL:
 		event_Load();
-		return 0;
-
-	case XAP_RID_DIALOG_PLUGIN_MANAGER_BTN_DEACTIVATE:
-		if( m_curSelection != LB_ERR )
-		{
-			XAP_Module * pModule = 0;
-			pModule = (XAP_Module *) XAP_ModuleManager::instance().enumModules()->getNthItem(m_curSelection);
-			if (pModule)
-			{
-				if( deactivatePlugin(pModule) )
-				{
-					SendDlgItemMessage( hWnd,
-                        				XAP_RID_DIALOG_PLUGIN_MANAGER_LBX_LIST,
-                            			LB_DELETESTRING ,
-										(WPARAM) m_curSelection,
-										(LPARAM) 0 );
-										
-					refreshPluginInfo();										
-				}
-			}
-		}
-		return 0;
-
-	case XAP_RID_DIALOG_PLUGIN_MANAGER_BTN_DEACTIVATEALL:
-		// Clear the List Box
-		resetContent( XAP_RID_DIALOG_PLUGIN_MANAGER_LBX_LIST );
-		deactivateAllPlugins();
-		refreshPluginInfo();
 		return 0;
 
 	case XAP_RID_DIALOG_PLUGIN_MANAGER_LBX_LIST:
@@ -175,7 +145,7 @@ void XAP_Win32Dialog_PluginManager::event_Load()
 	
 	XAP_Dialog_FileOpenSaveAs * pDialog
 		= (XAP_Dialog_FileOpenSaveAs *)(pDialogFactory->requestDialog(XAP_DIALOG_ID_FILE_OPEN));
-	UT_ASSERT(pDialog);
+	UT_return_if_fail(pDialog);
 	
 	// set the intial plugin directory to the user-local plugin directory
 	// could also set to: XAP_App::getApp()->getUserPrivateDirectory()\plugins
